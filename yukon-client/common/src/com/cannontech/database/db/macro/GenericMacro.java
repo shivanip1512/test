@@ -5,6 +5,8 @@ package com.cannontech.database.db.macro;
  */
 import java.sql.SQLException;
 
+import com.cannontech.database.SqlUtils;
+
 public class GenericMacro extends com.cannontech.database.db.DBPersistent {
 	
 	private Integer ownerID = null;
@@ -170,15 +172,7 @@ public static GenericMacro[] getGenericMacros(Integer ownerID, String macroType,
 	}
 	finally
 	{
-		try
-		{
-			if (pstmt != null)
-				pstmt.close();
-		}
-		catch (java.sql.SQLException e2)
-		{
-			com.cannontech.clientutils.CTILogger.error( e2.getMessage(), e2 ); //something is up
-		}
+		SqlUtils.close(rset, pstmt);
 	}
 
 	GenericMacro retVal[] = new GenericMacro[tmpList.size()];

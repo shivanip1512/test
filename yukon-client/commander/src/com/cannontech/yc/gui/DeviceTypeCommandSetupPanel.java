@@ -12,6 +12,7 @@ import com.cannontech.clientutils.CTILogger;
 import com.cannontech.common.util.CtiUtilities;
 import com.cannontech.core.dao.DaoFactory;
 import com.cannontech.database.PoolManager;
+import com.cannontech.database.SqlUtils;
 import com.cannontech.database.Transaction;
 import com.cannontech.database.TransactionException;
 import com.cannontech.database.cache.DefaultDatabaseCache;
@@ -784,17 +785,7 @@ constraintsDeviceTypeCommandSetupPanel.gridheight = 6;
 		}
 		finally
 		{
-			try
-			{
-				if( stmt != null )
-					stmt.close();
-				if( conn != null )
-					conn.close();
-			}
-			catch( java.sql.SQLException e )
-			{
-				e.printStackTrace();
-			}
+			SqlUtils.close(rset, stmt, conn );
 		}
 		return types;
 	}

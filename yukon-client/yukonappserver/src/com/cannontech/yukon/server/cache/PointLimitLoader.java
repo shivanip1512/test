@@ -2,6 +2,7 @@ package com.cannontech.yukon.server.cache;
 
 import java.util.List;
 
+import com.cannontech.database.SqlUtils;
 import com.cannontech.database.data.lite.LitePointLimit;
 
 /**
@@ -51,14 +52,7 @@ public class PointLimitLoader implements Runnable {
 		} catch (java.sql.SQLException e) {
 			com.cannontech.clientutils.CTILogger.error(e.getMessage(), e);
 		} finally {
-			try {
-				if (stmt != null)
-					stmt.close();
-				if (conn != null)
-					conn.close();
-			} catch (java.sql.SQLException e) {
-				com.cannontech.clientutils.CTILogger.error(e.getMessage(), e);
-			}
+			SqlUtils.close(rset, stmt, conn );
 
 			timerStop = System.currentTimeMillis();
 			com.cannontech.clientutils.CTILogger.info(

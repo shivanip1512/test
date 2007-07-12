@@ -6,6 +6,8 @@
  */
 package com.cannontech.database.db.config;
 
+import com.cannontech.database.SqlUtils;
+
 /**
  * @author jdayton
  *
@@ -100,20 +102,22 @@ public static boolean deleteAMapping(Integer mctID, java.sql.Connection conn)
 
 public void deleteAMapping(Integer mctID)
 {
+	java.sql.Connection conn = null;
 	try
 	{
-		java.sql.Connection conn = null;
 	
 		conn = com.cannontech.database.PoolManager.getInstance().getConnection("yukon");
 	
 		deleteAMapping(mctID, conn);
 		conn.commit();	
-		conn.close();
 	}
 	catch( java.sql.SQLException e2 )
 	{
 		com.cannontech.clientutils.CTILogger.error( e2.getMessage(), e2 );
 	}	
+	finally{
+		SqlUtils.close(conn );
+	}
 }
 /**
  * This method was created by Cannon Technologies Inc.
@@ -154,14 +158,7 @@ public static final java.util.Vector getAllMCTsIDList(Integer configID, java.sql
 	}
 	finally
 	{
-		try
-		{
-			if( pstmt != null ) pstmt.close();
-		} 
-		catch( java.sql.SQLException e2 )
-		{
-			com.cannontech.clientutils.CTILogger.error( e2.getMessage(), e2 );//something is up
-		}	
+		SqlUtils.close(rset, pstmt );
 	}
 
 	return tmpList;
@@ -271,15 +268,7 @@ public static final Integer getTheConfigID(Integer mctID, java.sql.Connection co
 	}
 	finally
 	{
-		try
-		{
-			if( pstmt != null ) pstmt.close();
-			if( rset != null ) rset.close();
-		} 
-		catch( java.sql.SQLException e2 )
-		{
-			com.cannontech.clientutils.CTILogger.error( e2.getMessage(), e2 );//something is up
-		}	
+		SqlUtils.close(rset, pstmt);
 	}
 
 	return returnedID;

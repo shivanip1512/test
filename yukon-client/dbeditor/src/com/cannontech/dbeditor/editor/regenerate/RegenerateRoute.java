@@ -12,6 +12,7 @@ import java.util.Vector;
 
 import org.springframework.jdbc.support.JdbcUtils;
 
+import com.cannontech.database.SqlUtils;
 import com.cannontech.database.Transaction;
 import com.cannontech.database.TransactionException;
 import com.cannontech.database.cache.DefaultDatabaseCache;
@@ -487,9 +488,10 @@ public class RegenerateRoute
                       conn = com.cannontech.database.PoolManager.getInstance().getConnection(CtiUtilities.getDatabaseAlias());
                       heavyRoute.setDbConnection(conn);
                       heavyRoute.retrieve();
-                      conn.close();
                   } catch (SQLException e) {
                       CTILogger.error(e);
+                  } finally {
+                	  SqlUtils.close(conn);
                   }
                   int deviceID = ((RouteBase)heavyRoute).getDeviceID().intValue();
                   LiteYukonPAObject liteCCUYuk = DaoFactory.getPaoDao().getLiteYukonPAO(deviceID);
@@ -658,9 +660,10 @@ public class RegenerateRoute
                             conn = com.cannontech.database.PoolManager.getInstance().getConnection(CtiUtilities.getDatabaseAlias());
                             heavyRoute.setDbConnection(conn);
                             heavyRoute.retrieve();
-                            conn.close();
                         } catch (SQLException e) {
                             CTILogger.error(e);
+                        } finally {
+                        	SqlUtils.close(conn);
                         }
                         int deviceID = ((RouteBase)heavyRoute).getDeviceID().intValue();
                         LiteYukonPAObject liteCCUYuk = DaoFactory.getPaoDao().getLiteYukonPAO(deviceID);
@@ -719,9 +722,10 @@ public class RegenerateRoute
                 conn = com.cannontech.database.PoolManager.getInstance().getConnection(CtiUtilities.getDatabaseAlias());
                 heavyRoute.setDbConnection(conn);
                 heavyRoute.retrieve();
-                conn.close();
             } catch (SQLException e) {
                 CTILogger.error(e);
+            } finally {
+            	SqlUtils.close(conn);
             }
             int deviceID = ((RouteBase)heavyRoute).getDeviceID().intValue();
             LiteYukonPAObject liteCCUYuk = DaoFactory.getPaoDao().getLiteYukonPAO(deviceID);

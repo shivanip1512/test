@@ -1,5 +1,7 @@
 package com.cannontech.database.db.device.lm;
 
+import com.cannontech.database.SqlUtils;
+
 /**
  * This type was created in VisualAge.
  */
@@ -200,14 +202,7 @@ public final static boolean isAddressUsed( java.sql.Connection conn, int addID )
 	}
 	finally
 	{
-		try
-		{
-			if( pstmt != null ) pstmt.close();
-		} 
-		catch( java.sql.SQLException e2 )
-		{
-			com.cannontech.clientutils.CTILogger.error( e2.getMessage(), e2 );//something is up
-		}	
+		SqlUtils.close(rset, pstmt);
 	}
 
 	return false;
@@ -220,7 +215,6 @@ public final static void purgeUnusedAddresses( java.sql.Connection conn )
 {
 	int retVal = 0;
 	java.sql.PreparedStatement pstmt = null;
-	java.sql.ResultSet rset = null;
 		
 	try
 	{		
@@ -253,14 +247,7 @@ public final static void purgeUnusedAddresses( java.sql.Connection conn )
 	}
 	finally
 	{
-		try
-		{
-			if( pstmt != null ) pstmt.close();
-		} 
-		catch( java.sql.SQLException e2 )
-		{
-			com.cannontech.clientutils.CTILogger.error( e2.getMessage(), e2 );//something is up
-		}	
+		SqlUtils.close(pstmt);
 	}
 
 }

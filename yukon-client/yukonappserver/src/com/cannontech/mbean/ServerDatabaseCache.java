@@ -13,6 +13,7 @@ import com.cannontech.common.device.configuration.model.DeviceConfiguration;
 import com.cannontech.common.util.CtiUtilities;
 import com.cannontech.common.util.Pair;
 import com.cannontech.core.dao.DaoFactory;
+import com.cannontech.database.SqlUtils;
 import com.cannontech.database.cache.CacheDBChangeListener;
 import com.cannontech.database.cache.DBChangeListener;
 import com.cannontech.database.cache.DBChangeLiteListener;
@@ -992,15 +993,7 @@ public synchronized List<LiteYukonPAObject> getAllUnusedCCDevices()
 		}
 		finally
 		{
-			try
-			{
-				if( stmt != null ) stmt.close();
-				if( conn != null ) conn.close();
-			}
-			catch( java.sql.SQLException e )
-			{
-				CTILogger.error( e.getMessage(), e );
-			}
+			SqlUtils.close(rset, stmt, conn );
 		}
 
 		return allUnusedCCDevices;

@@ -4,6 +4,7 @@ import com.cannontech.clientutils.CTILogger;
 import com.cannontech.common.util.CtiUtilities;
 import com.cannontech.common.util.NativeIntVector;
 import com.cannontech.database.PoolManager;
+import com.cannontech.database.SqlUtils;
 
 /**
  * Feeder object
@@ -161,17 +162,7 @@ public class CapControlFeeder extends com.cannontech.database.db.DBPersistent
 		}
 		finally
 		{
-			try
-			{
-				if( pstmt != null ) 
-					pstmt.close();
-				if( conn != null ) 
-					conn.close();
-			} 
-			catch( java.sql.SQLException e2 )
-			{
-				CTILogger.error( e2.getMessage(), e2 );//something is up
-			}	
+			SqlUtils.close(rset, pstmt, conn );
 		}
 	
 	
@@ -217,13 +208,7 @@ public class CapControlFeeder extends com.cannontech.database.db.DBPersistent
 			CTILogger.error( e.getMessage(), e );
 		}
 		finally {
-			try {
-				if( pstmt != null ) pstmt.close();
-				if( conn != null ) conn.close();
-			} 
-			catch( java.sql.SQLException e2 ) {
-				CTILogger.error( e2.getMessage(), e2 );//something is up
-			}	
+			SqlUtils.close(rset, pstmt, conn );
 		}
 
 		return intVect.toArray();

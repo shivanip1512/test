@@ -1,5 +1,7 @@
 package com.cannontech.database.db.point;
 
+import com.cannontech.database.SqlUtils;
+
 /**
  * This type was created in VisualAge.
  */
@@ -171,15 +173,7 @@ public final static PointLimit[] getPointLimits(Integer pointID, String database
 	}
 	finally
 	{
-		try
-		{
-			if( pstmt != null ) pstmt.close();
-			if( conn != null ) conn.close();
-		} 
-		catch( java.sql.SQLException e2 )
-		{
-			com.cannontech.clientutils.CTILogger.error( e2.getMessage(), e2 );//something is up
-		}	
+		SqlUtils.close(rset, pstmt, conn );
 	}
 
 	PointLimit retVal[] = new PointLimit[ tmpList.size() ];

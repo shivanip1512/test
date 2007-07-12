@@ -6,6 +6,7 @@ import java.util.HashMap;
 import com.cannontech.clientutils.CTILogger;
 import com.cannontech.common.util.CtiUtilities;
 import com.cannontech.database.PoolManager;
+import com.cannontech.database.SqlUtils;
 
 /**
  * This type was created in VisualAge.
@@ -91,15 +92,7 @@ public abstract class CapControlYukonPAOBase extends com.cannontech.database.dat
 		}
 		finally
 		{
-			try
-			{
-				if( pstmt != null ) pstmt.close();
-				if( conn != null ) conn.close();
-			} 
-			catch( java.sql.SQLException e2 )
-			{
-				CTILogger.error( e2.getMessage(), e2 );//something is up
-			}	
+			SqlUtils.close(rset, pstmt, conn );
 		}
 	
 		String[] vals = new String[ mapIDs.size() ];

@@ -6,6 +6,7 @@ import com.cannontech.clientutils.CTILogger;
 import com.cannontech.common.util.CtiUtilities;
 import com.cannontech.core.dao.DaoFactory;
 import com.cannontech.database.PoolManager;
+import com.cannontech.database.SqlUtils;
 import com.cannontech.database.data.point.PointQualities;
 
 /*
@@ -81,17 +82,7 @@ public class LiteRawPointHistory extends LiteBase
 		}
 		finally
 		{
-			try
-			{
-				if( stmt != null )
-					stmt.close();
-				if( conn != null )
-					conn.close();
-			}
-			catch( java.sql.SQLException e )
-			{
-				CTILogger.error( e.getMessage(), e );
-			}
+			SqlUtils.close(rset, stmt, conn );
 		}
 	}
 	

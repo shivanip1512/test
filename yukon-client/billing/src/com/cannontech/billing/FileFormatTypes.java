@@ -5,6 +5,7 @@ import java.util.Vector;
 import com.cannontech.clientutils.CTILogger;
 import com.cannontech.common.util.CtiUtilities;
 import com.cannontech.database.PoolManager;
+import com.cannontech.database.SqlUtils;
 
 /**
  * Insert the type's description here.
@@ -172,15 +173,7 @@ public static synchronized boolean retrieveFileFormats()
 	}
 	finally
 	{
-		try {
-			if( stmt != null )
-				stmt.close();
-			if( conn != null )
-				conn.close();
-		}
-		catch( java.sql.SQLException e ) {
-			CTILogger.error(e);
-		}
+		SqlUtils.close(rset, stmt, conn );
 	}
 	return returnStatus;
 }

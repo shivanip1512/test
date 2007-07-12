@@ -17,6 +17,7 @@ import java.util.HashMap;
 import com.cannontech.clientutils.CTILogger;
 import com.cannontech.common.util.CtiUtilities;
 import com.cannontech.core.dao.DaoFactory;
+import com.cannontech.database.SqlUtils;
 import com.cannontech.database.data.point.AccumulatorPoint;
 import com.cannontech.database.data.point.CalculatedPoint;
 import com.cannontech.database.db.point.PointAlarming;
@@ -1673,17 +1674,7 @@ public class PointImportUtility
         
         finally 
         {
-            try 
-            {
-                if ( stmt != null) stmt.close();
-            }
-            catch (java.sql.SQLException e2) 
-            {
-                e2.printStackTrace();
-            }
-            try {
-                    conn.close();
-                } catch(java.sql.SQLException e) { }
+        	SqlUtils.close(rset, stmt, conn );
         }
         //strange, should not get here
         return new Integer(com.cannontech.common.util.CtiUtilities.NONE_ZERO_ID);
@@ -1720,17 +1711,7 @@ public class PointImportUtility
         
         finally 
         {
-            try 
-            {
-                if ( stmt != null) stmt.close();
-            }
-            catch (java.sql.SQLException e2) 
-            {
-                e2.printStackTrace();
-            }
-            try {
-                    conn.close();
-                } catch(java.sql.SQLException e) { }
+        	SqlUtils.close(rset, stmt, conn );
         }
         //strange, should not get here
         return new Integer(com.cannontech.common.util.CtiUtilities.NONE_ZERO_ID);

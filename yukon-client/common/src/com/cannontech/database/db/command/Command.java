@@ -7,6 +7,7 @@ import com.cannontech.clientutils.CTILogger;
 import com.cannontech.common.util.CtiUtilities;
 import com.cannontech.core.dao.DaoFactory;
 import com.cannontech.database.PoolManager;
+import com.cannontech.database.SqlUtils;
 import com.cannontech.database.cache.DefaultDatabaseCache;
 import com.cannontech.database.data.command.DeviceTypeCommand;
 import com.cannontech.database.data.lite.LiteDeviceTypeCommand;
@@ -153,15 +154,7 @@ public static long[] getAllCommandIDs(String dbAlias) {
 	}
 	finally
 	{
-		try
-		{
-			if( stmt != null ) stmt.close();
-			if( conn != null ) conn.close();
-		}
-		catch( java.sql.SQLException e2 )
-		{
-			CTILogger.error( e2.getMessage(), e2 );
-		}
+		SqlUtils.close(rset, stmt, conn );
 	}
 
 	// An exception must have occured
@@ -211,14 +204,7 @@ public static final Command[] getCommands(java.sql.Connection conn)
 	}
 	finally
 	{
-		try
-		{
-			if( pstmt != null ) pstmt.close();
-		} 
-		catch( java.sql.SQLException e2 )
-		{
-			CTILogger.error( e2.getMessage(), e2 );//something is up
-		}	
+		SqlUtils.close(rset, pstmt );
 	}
 
 
@@ -267,15 +253,7 @@ public static final Integer getNextID(String databaseAlias)
 	}
 	finally
 	{
-		try
-		{
-			if( pstmt != null ) pstmt.close();
-			if( conn != null ) conn.close();
-		} 
-		catch( java.sql.SQLException e2 )
-		{
-			CTILogger.error( e2.getMessage(), e2 ); //something is up
-		}	
+		SqlUtils.close(rset, pstmt, conn );
 	}
 
 	return result;

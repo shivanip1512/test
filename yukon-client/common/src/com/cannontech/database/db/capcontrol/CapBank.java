@@ -4,6 +4,7 @@ import com.cannontech.clientutils.CTILogger;
 import com.cannontech.common.util.CtiUtilities;
 import com.cannontech.common.util.NativeIntVector;
 import com.cannontech.database.PoolManager;
+import com.cannontech.database.SqlUtils;
 import com.cannontech.database.Transaction;
 import com.cannontech.database.TransactionException;
 
@@ -195,15 +196,7 @@ public static CapBank[] getUnassignedCapBanksList()
 	}
 	finally
 	{
-		try
-		{
-			if( pstmt != null ) pstmt.close();
-			if( conn != null ) conn.close();
-		} 
-		catch( java.sql.SQLException e2 )
-		{
-			CTILogger.error( e2.getMessage(), e2 );//something is up
-		}	
+		SqlUtils.close(rset, pstmt, conn );
 	}
 
 
@@ -249,13 +242,7 @@ public static int[] getUnassignedCapBankIDs()
 		CTILogger.error( e.getMessage(), e );
 	}
 	finally {
-		try {
-			if( pstmt != null ) pstmt.close();
-			if( conn != null ) conn.close();
-		} 
-		catch( java.sql.SQLException e2 ) {
-			CTILogger.error( e2.getMessage(), e2 );//something is up
-		}	
+		SqlUtils.close(rset, pstmt, conn );
 	}
 
 	return intVect.toArray();
@@ -440,14 +427,7 @@ public static int getParentFeederID( int capBankID )
 		CTILogger.error( e.getMessage(), e );
 	}
 	finally {
-		try {
-			if( pstmt != null ) pstmt.close();
-			if( conn != null ) conn.close();
-		} 
-		catch( java.sql.SQLException e2 )
-		{
-			CTILogger.error( e2.getMessage(), e2 );//something is up
-		}	
+		SqlUtils.close(rset, pstmt, conn );
 	}
 	
 	

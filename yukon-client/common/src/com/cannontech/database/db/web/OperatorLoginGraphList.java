@@ -1,5 +1,7 @@
 package com.cannontech.database.db.web;
 
+import com.cannontech.database.SqlUtils;
+
 /**
  * Creation date: (6/2/2001 4:29:56 PM)
  * @author: Aaron Lauinger
@@ -84,15 +86,7 @@ public static long[] getGraphDefinitionIDs(long operatorLoginID, String dbAlias)
 	}
 	finally
 	{
-		try
-		{
-			if( pstmt != null ) pstmt.close();
-			if( conn != null ) conn.close();
-		}
-		catch( java.sql.SQLException e2 )
-		{
-			com.cannontech.clientutils.CTILogger.error( e2.getMessage(), e2 );
-		}
+		SqlUtils.close(rset, pstmt, conn );
 	}
 
 	// An exception must have occured

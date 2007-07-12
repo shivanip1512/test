@@ -6,6 +6,8 @@
  */
 package com.cannontech.yukon.server.cache;
 
+import com.cannontech.database.SqlUtils;
+
 /**
  * @author jdayton
  *
@@ -70,17 +72,7 @@ public void run()
 	}
 	finally
 	{
-		try
-		{
-			if (stmt != null)
-				stmt.close();
-			if (conn != null)
-				conn.close();
-		}
-		catch (java.sql.SQLException e)
-		{
-			com.cannontech.clientutils.CTILogger.error( e.getMessage(), e );
-		}
+		SqlUtils.close(rset, stmt, conn );
 		//temp code
 		timerStop = new java.util.Date();
 		com.cannontech.clientutils.CTILogger.info(

@@ -1,5 +1,7 @@
 package com.cannontech.database.db.holiday;
 
+import com.cannontech.database.SqlUtils;
+
 /**
  * Insert the type's description here.
  * Creation date: (8/24/2001 10:32:52 AM)
@@ -76,19 +78,21 @@ public static boolean deleteAllDateHolidays(Integer holidayScheduleID, java.sql.
 	if( conn == null )
 		throw new IllegalArgumentException("Database connection should not be (null)");
 
+	java.sql.Statement stat = null;
 	try
 	{
-		java.sql.Statement stat = conn.createStatement();
+		stat = conn.createStatement();
 
 		stat.execute("DELETE FROM DateOfHoliday WHERE holidayScheduleID=" + holidayScheduleID);
 
-		if (stat != null)
-			stat.close();
 	}
 	catch (Exception e)
 	{
 		com.cannontech.clientutils.CTILogger.error( e.getMessage(), e );
 		return false;
+	}
+	finally{
+		SqlUtils.close(stat);
 	}
 
 	return true;
@@ -156,14 +160,7 @@ public static final java.util.Vector getAllHolidayDates(Integer scheduleID, java
 	}
 	finally
 	{
-		try
-		{
-			if( pstmt != null ) pstmt.close();
-		} 
-		catch( java.sql.SQLException e2 )
-		{
-			com.cannontech.clientutils.CTILogger.error( e2.getMessage(), e2 );//something is up
-		}	
+		SqlUtils.close(rset, pstmt);
 	}
 
 

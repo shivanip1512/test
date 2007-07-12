@@ -7,6 +7,7 @@
 package com.cannontech.database.db.device.lm;
 
 import com.cannontech.common.util.CtiUtilities;
+import com.cannontech.database.SqlUtils;
 
 /**
  * @author jdayton
@@ -93,14 +94,7 @@ public static synchronized Integer getNextGroupID( java.sql.Connection conn )
 		}
 		finally 
 		{
-			try 
-			{
-				if ( stmt != null) stmt.close();
-			}
-			catch (java.sql.SQLException e2) 
-			{
-				e2.printStackTrace();
-			}
+			SqlUtils.close(rset, stmt );
 		}
 		
 		//strange, should not get here

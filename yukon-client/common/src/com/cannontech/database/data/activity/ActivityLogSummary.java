@@ -10,6 +10,7 @@ import java.util.Date;
 import java.util.Vector;
 
 import com.cannontech.common.util.CtiUtilities;
+import com.cannontech.database.SqlUtils;
 import com.cannontech.database.db.activity.ActivityLog;
 import com.cannontech.util.ServletUtil;
 
@@ -101,15 +102,7 @@ public class ActivityLogSummary
 		}
 		finally
 		{
-			try
-			{
-				if( pstmt != null ) pstmt.close();
-				if( conn != null ) conn.close();
-			} 
-			catch( java.sql.SQLException e2 )
-			{
-				com.cannontech.clientutils.CTILogger.error( e2.getMessage(), e2 );//something is up
-			}	
+			SqlUtils.close(rset, pstmt, conn );
 		}
 	}	
 	/**

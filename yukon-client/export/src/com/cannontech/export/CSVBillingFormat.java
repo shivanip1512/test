@@ -7,6 +7,7 @@ import java.util.Vector;
 import com.cannontech.calchist.Baseline;
 import com.cannontech.calchist.HoursAndValues;
 import com.cannontech.common.util.CtiUtilities;
+import com.cannontech.database.SqlUtils;
 import com.cannontech.database.data.point.PointTypes;
 import com.cannontech.database.db.point.calculation.CalcComponentTypes;
 import com.cannontech.export.record.CSVBillingCustomerRecord;
@@ -249,17 +250,7 @@ public class CSVBillingFormat extends ExportFormatBase
 		}
 		finally
 		{
-			try
-			{
-				if( stmt != null )
-					stmt.close();
-				if( conn != null )
-					conn.close();
-			}
-			catch( java.sql.SQLException e )
-			{
-				e.printStackTrace();
-			}
+			SqlUtils.close(rset, stmt, conn );
 		}
 		logEvent("...BASELINE DATA RETRIEVED: Took " + (System.currentTimeMillis() - timer) + " millis.", com.cannontech.common.util.LogWriter.INFO);
 		return;
@@ -348,17 +339,7 @@ public class CSVBillingFormat extends ExportFormatBase
 		}
 		finally
 		{
-			try
-			{
-				if( stmt != null )
-					stmt.close();
-				if( conn != null )
-					conn.close();
-			}
-			catch( java.sql.SQLException e )
-			{
-				e.printStackTrace();
-			}
+			SqlUtils.close(rset, stmt, conn );
 		}
 		return curtailHistoryVector;
 	}
@@ -480,17 +461,7 @@ public class CSVBillingFormat extends ExportFormatBase
 		}
 		finally
 		{
-			try
-			{
-				if( stmt != null )
-					stmt.close();
-				if( conn != null )
-					conn.close();
-			}
-			catch( java.sql.SQLException e )
-			{
-				e.printStackTrace();
-			}
+			SqlUtils.close(rset, stmt, conn );
 		}
 		return;
 	}

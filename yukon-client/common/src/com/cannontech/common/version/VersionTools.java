@@ -16,6 +16,7 @@ import com.cannontech.common.util.CtiUtilities;
 import com.cannontech.core.dao.DaoFactory;
 import com.cannontech.database.JdbcTemplateHelper;
 import com.cannontech.database.PoolManager;
+import com.cannontech.database.SqlUtils;
 import com.cannontech.database.db.version.CTIDatabase;
 import com.cannontech.roles.yukon.SystemRole;
 import com.cannontech.spring.YukonSpringHook;
@@ -86,10 +87,10 @@ public synchronized static CTIDatabase getDatabaseVersion()
 	db_obj = new CTIDatabase();
 	java.sql.Connection conn = PoolManager.getInstance().getConnection(com.cannontech.common.util.CtiUtilities.getDatabaseAlias());
 	java.sql.PreparedStatement stat = null;
+	java.sql.ResultSet rs = null;
 
 	try
 	{	
-		java.sql.ResultSet rs = null;
 		
 		int i = 0;
 		for( i = 0; i < QUERY_STRS.length; i++ )
@@ -125,18 +126,7 @@ public synchronized static CTIDatabase getDatabaseVersion()
 	}
 	finally
 	{
-		try
-		{
-			if( stat != null )
-				stat.close();
-				
-			if( conn != null )
-				conn.close();
-		}
-		catch( java.sql.SQLException e )
-		{
-			CTILogger.error( e.getMessage(), e );
-		}
+		SqlUtils.close(rs, stat, conn );
 	}
 		
 	return db_obj;

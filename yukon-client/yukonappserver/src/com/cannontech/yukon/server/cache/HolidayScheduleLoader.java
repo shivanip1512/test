@@ -1,5 +1,7 @@
 package com.cannontech.yukon.server.cache;
 
+import com.cannontech.database.SqlUtils;
+
 /**
  * Insert the type's description here.
  * Creation date: (8/24/2001 10:53:23 AM)
@@ -63,17 +65,7 @@ public void run()
 	}
 	finally
 	{
-		try
-		{
-			if (stmt != null)
-				stmt.close();
-			if (conn != null)
-				conn.close();
-		}
-		catch (java.sql.SQLException e)
-		{
-			com.cannontech.clientutils.CTILogger.error( e.getMessage(), e );
-		}
+		SqlUtils.close(rset, stmt, conn );
 		//temp code
 		timerStop = new java.util.Date();
 		com.cannontech.clientutils.CTILogger.info(

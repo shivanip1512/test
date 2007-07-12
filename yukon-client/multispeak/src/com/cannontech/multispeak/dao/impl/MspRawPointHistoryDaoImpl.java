@@ -15,6 +15,7 @@ import com.cannontech.clientutils.CTILogger;
 import com.cannontech.common.util.CtiUtilities;
 import com.cannontech.core.dynamic.impl.SimplePointValue;
 import com.cannontech.database.PoolManager;
+import com.cannontech.database.SqlUtils;
 import com.cannontech.database.data.pao.PAOGroups;
 import com.cannontech.database.data.point.PointTypes;
 import com.cannontech.database.db.device.DeviceMeterGroup;
@@ -143,16 +144,7 @@ public class MspRawPointHistoryDaoImpl implements MspRawPointHistoryDao
         }
         finally
         {
-            try
-            {
-                if( pstmt != null )
-                    pstmt.close();
-                if( conn != null )
-                    conn.close();
-            }
-            catch( java.sql.SQLException e ) {
-                CTILogger.error(e);
-            }
+        	SqlUtils.close(rset, pstmt, conn );
         }
         return meterReadArray;
     }
@@ -260,16 +252,7 @@ public class MspRawPointHistoryDaoImpl implements MspRawPointHistoryDao
         }
         finally
         {
-            try
-            {
-                if( pstmt != null )
-                    pstmt.close();
-                if( conn != null )
-                    conn.close();
-            }
-            catch( java.sql.SQLException e ) {
-                CTILogger.error(e);
-            }
+        	SqlUtils.close(rset, pstmt, conn );
         }
         return block.createFormattedBlock(blockList);
     }
@@ -372,16 +355,7 @@ public class MspRawPointHistoryDaoImpl implements MspRawPointHistoryDao
         }
         finally
         {
-            try
-            {
-                if( pstmt != null )
-                    pstmt.close();
-                if( conn != null )
-                    conn.close();
-            }
-            catch( java.sql.SQLException e ) {
-                CTILogger.error(e);
-            }
+        	SqlUtils.close(rset, pstmt, conn );
         }
         return block.createFormattedBlock(blockList);
     }

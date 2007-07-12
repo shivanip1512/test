@@ -16,6 +16,7 @@ import com.cannontech.core.dao.DaoFactory;
 import com.cannontech.core.dynamic.AsyncDynamicDataSource;
 import com.cannontech.database.PoolManager;
 import com.cannontech.database.SqlStatement;
+import com.cannontech.database.SqlUtils;
 import com.cannontech.database.cache.DBChangeLiteListener;
 import com.cannontech.database.cache.DefaultDatabaseCache;
 import com.cannontech.database.data.device.DeviceTypesFuncs;
@@ -1311,17 +1312,7 @@ public class CommandDeviceBean implements DBChangeLiteListener
 			}
 			finally
 			{
-				try
-				{
-					if( stmt != null )
-						stmt.close();
-					if( conn != null )
-						conn.close();
-				}
-				catch( java.sql.SQLException e )
-				{
-					e.printStackTrace();
-				}
+				SqlUtils.close(rset, stmt, conn );
 			}
 		}
 		return loadGroupIDToLiteLoadGroupsMap;

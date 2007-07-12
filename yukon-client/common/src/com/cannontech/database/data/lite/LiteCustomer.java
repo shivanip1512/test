@@ -9,6 +9,7 @@ import com.cannontech.common.util.CtiUtilities;
 import com.cannontech.common.version.VersionTools;
 import com.cannontech.core.dao.DaoFactory;
 import com.cannontech.database.PoolManager;
+import com.cannontech.database.SqlUtils;
 import com.cannontech.database.db.customer.Customer;
 
 /**
@@ -101,11 +102,7 @@ public class LiteCustomer extends LiteBase {
             CTILogger.error( e.getMessage(), e );
         }
         finally {
-            try {
-                if (pstmt != null) pstmt.close();
-                if (conn != null) conn.close();
-            }
-            catch (java.sql.SQLException e) {}
+        	SqlUtils.close(rset, pstmt, conn );
         }
     }
 

@@ -2,6 +2,7 @@ package com.cannontech.database.db.state;
 
 import java.sql.SQLException;
 
+import com.cannontech.database.SqlUtils;
 import com.cannontech.database.db.DBPersistent;
 
 /**
@@ -127,14 +128,7 @@ public class YukonImage extends DBPersistent implements com.cannontech.database.
       }
       finally
       {
-         try
-         {
-            if( pstmt != null ) pstmt.close();
-         } 
-         catch( java.sql.SQLException e2 )
-         {
-            com.cannontech.clientutils.CTILogger.error( e2.getMessage(), e2 );//something is up
-         }  
+    	  SqlUtils.close(rSet, pstmt);
       }
    
    

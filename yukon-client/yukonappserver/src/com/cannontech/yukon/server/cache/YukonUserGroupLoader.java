@@ -11,6 +11,7 @@ import java.util.List;
 import java.util.Map;
 
 import com.cannontech.clientutils.CTILogger;
+import com.cannontech.database.SqlUtils;
 import com.cannontech.database.data.lite.LiteYukonGroup;
 import com.cannontech.database.data.lite.LiteYukonUser;
 
@@ -104,15 +105,7 @@ public class YukonUserGroupLoader implements Runnable
          	com.cannontech.clientutils.CTILogger.error( e.getMessage(), e );
       	}
       	finally {
-         	try {
-            	if( stmt != null )
-               		stmt.close();
-            	if( conn != null )
-               	conn.close();
-         	}
-         	catch( java.sql.SQLException e ) {
-            	com.cannontech.clientutils.CTILogger.error( e.getMessage(), e );
-         	}
+      		SqlUtils.close(rset, stmt, conn );
    
    		CTILogger.info( 
        (System.currentTimeMillis() - timerStart)*.001 + 

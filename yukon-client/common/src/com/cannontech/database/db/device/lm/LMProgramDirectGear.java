@@ -3,6 +3,7 @@ package com.cannontech.database.db.device.lm;
 import java.sql.Statement;
 
 import com.cannontech.common.util.CtiUtilities;
+import com.cannontech.database.SqlUtils;
 import com.cannontech.database.data.device.lm.NoControlGear;
 import com.cannontech.database.data.device.lm.MagnitudeCycleGear;
 import com.cannontech.database.data.device.lm.TargetCycleGear;
@@ -310,15 +311,7 @@ public abstract class LMProgramDirectGear
 		}
 		finally
 		{
-			try
-			{
-				if (pstmt != null)
-					pstmt.close();
-			}
-			catch (java.sql.SQLException e2)
-			{
-				com.cannontech.clientutils.CTILogger.error( e2.getMessage(), e2 ); //something is up
-			}
+			SqlUtils.close(rset, pstmt);
 		}
 
 		return gearList;
@@ -361,15 +354,7 @@ public static final java.util.Vector getTheGearIDs(
    	}
    	finally
    	{
-       	try
-       	{
-          	if (pstmt != null)
-           	pstmt.close();
-       	}
-      	catch (java.sql.SQLException e2)
-       	{
-       		e2.printStackTrace(); //something is up
-       	}
+   		SqlUtils.close(rset, pstmt);
    	}
  
     throw new java.sql.SQLException("Unable to retrieve the gearIDs where deviceID = " + deviceID);
@@ -405,15 +390,7 @@ public static final Integer getDefaultGearID(Integer programID, java.sql.Connect
 	}
 	finally
 	{
-		try
-		{
-			if (pstmt != null)
-			pstmt.close();
-		}
-		catch (java.sql.SQLException e2)
-		{
-			e2.printStackTrace(); //something is up
-		}
+		SqlUtils.close(rset, pstmt);
 	}
  
 	throw new java.sql.SQLException("Unable to retrieve a gearid for the program with id " + programID);
@@ -939,15 +916,7 @@ public static final Integer getDefaultGearID(Integer programID, java.sql.Connect
       }
       finally
       {
-         try
-         {
-            if (pstmt != null)
-               pstmt.close();
-         }
-         catch (java.sql.SQLException e2)
-         {
-            com.cannontech.clientutils.CTILogger.error( e2.getMessage(), e2 ); //something is up
-         }
+    	  SqlUtils.close(rset, pstmt);
       }
 
       throw new java.sql.SQLException("Unable to retrieve the next GearID");

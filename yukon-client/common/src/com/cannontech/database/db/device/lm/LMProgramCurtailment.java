@@ -1,5 +1,6 @@
 package com.cannontech.database.db.device.lm;
 
+import com.cannontech.database.SqlUtils;
 import com.cannontech.database.db.customer.CICustomerBase;
 
 
@@ -117,14 +118,7 @@ public static final com.cannontech.database.data.device.lm.LMProgramCurtailCusto
 	}
 	finally
 	{
-		try
-		{
-			if( pstmt != null ) pstmt.close();
-		} 
-		catch( java.sql.SQLException e2 )
-		{
-			com.cannontech.clientutils.CTILogger.error( e2.getMessage(), e2 );//something is up
-		}	
+		SqlUtils.close(rset, pstmt);
 	}
 
 

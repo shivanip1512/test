@@ -9,6 +9,7 @@ import java.sql.SQLException;
 import java.sql.Statement;
 import java.util.Date;
 
+import com.cannontech.database.SqlUtils;
 import com.cannontech.database.db.DBPersistent;
 
 /**
@@ -220,12 +221,7 @@ public class CttpCmd extends DBPersistent {
 				com.cannontech.clientutils.CTILogger.error( e.getMessage(), e );
 		}
 		finally {
-			try {
-				if( stmt != null ) stmt.close();
-			}
-			catch( java.sql.SQLException e2 ) {
-				com.cannontech.clientutils.CTILogger.error( e2.getMessage(), e2 );//something is up
-			}
+			SqlUtils.close(rset, stmt);
 		}
 
 		return retVal;

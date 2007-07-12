@@ -8,6 +8,7 @@ import java.util.List;
 import com.cannontech.clientutils.CTILogger;
 import com.cannontech.common.util.CtiUtilities;
 import com.cannontech.common.util.StopWatch;
+import com.cannontech.database.SqlUtils;
 import com.cannontech.database.data.lite.LiteTag;
 
 /**
@@ -52,14 +53,7 @@ public class TagLoader implements Runnable {
 		} catch (java.sql.SQLException e) {
 			com.cannontech.clientutils.CTILogger.error(e.getMessage(), e);
 		} finally {
-			try {
-				if (stmt != null)
-					stmt.close();
-				if (conn != null)
-					conn.close();
-			} catch (java.sql.SQLException e) {
-				com.cannontech.clientutils.CTILogger.error(e.getMessage(), e);
-			}
+			SqlUtils.close(rset, stmt, conn );
 		}
 		CTILogger.info(sw.stop().getElapsedTime() * 0.001 + " Secs for TagLoader (" + _allTags.size() + " loaded)");
 	}

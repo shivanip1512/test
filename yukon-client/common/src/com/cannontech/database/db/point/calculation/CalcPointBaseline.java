@@ -1,5 +1,7 @@
 package com.cannontech.database.db.point.calculation;
 
+import com.cannontech.database.SqlUtils;
+
 /**
  * This type was created in VisualAge.
  */
@@ -151,15 +153,7 @@ public class CalcPointBaseline extends com.cannontech.database.db.DBPersistent
 		}
 		finally
 		{
-			try
-			{
-				if( pstmt != null ) pstmt.close();
-				if( conn != null ) conn.close();
-			} 
-			catch( java.sql.SQLException e2 )
-			{
-				com.cannontech.clientutils.CTILogger.error( e2.getMessage(), e2 ); //something is up
-			}	
+			SqlUtils.close(rset, pstmt, conn );
 		}
 		return returnPoint;
 	}

@@ -1,5 +1,6 @@
 package com.cannontech.database.db.point.fdr;
 
+import com.cannontech.database.SqlUtils;
 import com.cannontech.database.data.fdr.FDRInterface;
 
 /**
@@ -187,15 +188,7 @@ public static java.util.Vector getFDRTranslations(Integer pointID, String databa
 	}
 	finally
 	{
-		try
-		{
-			if( pstmt != null ) pstmt.close();
-			if( conn != null ) conn.close();
-		} 
-		catch( java.sql.SQLException e2 )
-		{
-			com.cannontech.clientutils.CTILogger.error( e2.getMessage(), e2 );//something is up
-		}	
+		SqlUtils.close(rset, pstmt, conn );
 	}
 	
 	return returnVector;

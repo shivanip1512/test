@@ -4,6 +4,7 @@ import java.util.Vector;
 
 import com.cannontech.clientutils.CTILogger;
 import com.cannontech.common.util.CtiUtilities;
+import com.cannontech.database.SqlUtils;
 import com.cannontech.database.db.DBPersistent;
 
 /**
@@ -146,26 +147,27 @@ public class PAOScheduleAssign extends DBPersistent
 	 */
 	public static synchronized boolean deleteAllPAOExclusions(int paoID, java.sql.Connection conn )
 	{
+		java.sql.Statement stat = null;
 		try
 		{
 			if( conn == null )
 				throw new IllegalStateException("Database connection should not be null.");
 	
-			java.sql.Statement stat = conn.createStatement();
+			stat = conn.createStatement();
 			
 			stat.execute( 
 					"DELETE FROM " + TABLE_NAME + 
 					" WHERE PAOid=" + paoID );
 	
-			if( stat != null )
-				stat.close();
 		}
 		catch(Exception e)
 		{
 			com.cannontech.clientutils.CTILogger.error( e.getMessage(), e );
 			return false;
 		}
-	
+		finally{
+			SqlUtils.close(stat);
+		}
 	
 		return true;
 	}
@@ -196,12 +198,7 @@ public class PAOScheduleAssign extends DBPersistent
 		}
 		finally 
 		{
-			 try {
-				if ( stmt != null) stmt.close();
-			 }
-			 catch (java.sql.SQLException e2) {
-				e2.printStackTrace();
-			 }
+			SqlUtils.close(rset, stmt);
 		}
 			
 		//strange, should not get here

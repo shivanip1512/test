@@ -7,6 +7,7 @@ import com.cannontech.common.util.CtiUtilities;
 import com.cannontech.common.util.NativeIntVector;
 import com.cannontech.database.JdbcTemplateHelper;
 import com.cannontech.database.PoolManager;
+import com.cannontech.database.SqlUtils;
 import com.cannontech.database.db.point.Point;
 
 /**
@@ -288,17 +289,7 @@ public void update() throws java.sql.SQLException
 		}
 		finally
 		{
-			try
-			{
-				if( pstmt != null ) 
-					pstmt.close();
-				if( conn != null ) 
-					conn.close();
-			} 
-			catch( java.sql.SQLException e2 )
-			{
-				CTILogger.error( e2.getMessage(), e2 );//something is up
-			}	
+			SqlUtils.close(rset, pstmt, conn );
 		}
 	
 	

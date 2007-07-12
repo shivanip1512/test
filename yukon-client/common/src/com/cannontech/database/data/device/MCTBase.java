@@ -1,5 +1,6 @@
 package com.cannontech.database.data.device;
 
+import com.cannontech.database.SqlUtils;
 import com.cannontech.database.db.config.MCTConfigMapping;
 import com.cannontech.database.db.device.DeviceLoadProfile;
 import com.cannontech.database.db.device.DeviceMeterGroup;
@@ -179,20 +180,22 @@ public Integer getConfigID()
 	
 	if(hasConfig)
 	{
+		java.sql.Connection conn = null;
 		try
 		{
-			java.sql.Connection conn = null;
 	
 			conn = com.cannontech.database.PoolManager.getInstance().getConnection("yukon");
 	
 			id = MCTConfigMapping.getTheConfigID(getDevice().getDeviceID(), conn);
 			
-			conn.close();
 		}
 		catch( java.sql.SQLException e2 )
 		{
 			com.cannontech.clientutils.CTILogger.error( e2.getMessage(), e2 );
 		}	
+		finally{
+			SqlUtils.close(conn );
+		}
 	}
 	else
 		id = configMapping.getConfigID();

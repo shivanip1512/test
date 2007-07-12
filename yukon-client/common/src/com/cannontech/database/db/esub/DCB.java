@@ -1,5 +1,7 @@
 package com.cannontech.database.db.esub;
 
+import com.cannontech.database.SqlUtils;
+
 /**
  * Insert the type's description here.
  * Creation date: (12/19/2000 9:45:44 AM)
@@ -117,18 +119,7 @@ public static DCB[] getAllDCBs(int substationID, String dbAlias)
 	}
 	finally
 	{
-		try
-		{
-			if( pstmt != null )
-				pstmt.close();
-
-			if( conn != null )
-				conn.close();
-		}
-		catch( java.sql.SQLException e2 )
-		{
-			com.cannontech.clientutils.CTILogger.error( e2.getMessage(), e2 );
-		}
+		SqlUtils.close(rset, pstmt, conn );
 	}
 
 	return retVal;

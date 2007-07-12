@@ -2,6 +2,8 @@ package com.cannontech.database.db.capcontrol;
 
 import java.util.ArrayList;
 
+import com.cannontech.database.SqlUtils;
+
 /**
  * This type was created in VisualAge.
  */
@@ -148,14 +150,7 @@ public static ArrayList getCCFeedersOnSub(Integer subId, java.sql.Connection con
 	}
 	finally
 	{
-		try
-		{
-			if( pstmt != null ) pstmt.close();
-		} 
-		catch( java.sql.SQLException e2 )
-		{
-			com.cannontech.clientutils.CTILogger.error( e2.getMessage(), e2 );//something is up
-		}	
+		SqlUtils.close(rset, pstmt);
 	}
 
 

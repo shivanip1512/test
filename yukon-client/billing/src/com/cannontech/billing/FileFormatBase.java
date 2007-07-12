@@ -14,6 +14,7 @@ import com.cannontech.billing.record.MVRSRecord;
 import com.cannontech.clientutils.CTILogger;
 import com.cannontech.common.util.CtiUtilities;
 import com.cannontech.database.PoolManager;
+import com.cannontech.database.SqlUtils;
 
 public abstract class FileFormatBase
 {
@@ -436,14 +437,7 @@ public abstract class FileFormatBase
 		}
 		finally
 		{
-			try {
-				if( pstmt != null ) pstmt.close();
-				if( conn != null ) conn.close();
-			} 
-			catch( java.sql.SQLException e2 ) {
-				CTILogger.error(e2);
-				return null;
-			}	
+			SqlUtils.close(rset, pstmt, conn );
 		}
 	
 		return multiplierHashTable;

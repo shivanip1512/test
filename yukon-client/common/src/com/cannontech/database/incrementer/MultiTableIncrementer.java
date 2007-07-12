@@ -21,6 +21,7 @@ import org.springframework.transaction.support.TransactionCallback;
 import org.springframework.transaction.support.TransactionTemplate;
 
 import com.cannontech.clientutils.CTILogger;
+import com.cannontech.database.SqlUtils;
 
 public class MultiTableIncrementer {
     private DataSource dataSource;
@@ -102,13 +103,11 @@ public class MultiTableIncrementer {
         } finally {
             try {
                 con.commit();
-                JdbcUtils.closeResultSet(resultSet);
-                JdbcUtils.closeStatement(vStatement);
-                JdbcUtils.closeStatement(pStatement);
                 con.setAutoCommit(previousAutoCommit);
-                con.close();
             } catch (Exception e) {
                 CTILogger.error("Exception in finally block", e);
+            } finally{
+            	SqlUtils.close(resultSet, vStatement, pStatement, con);
             }
         }
 

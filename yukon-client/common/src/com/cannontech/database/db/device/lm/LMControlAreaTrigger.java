@@ -1,6 +1,7 @@
 package com.cannontech.database.db.device.lm;
 
 import com.cannontech.core.dao.DaoFactory;
+import com.cannontech.database.SqlUtils;
 import com.cannontech.database.data.lite.LitePoint;
 import com.cannontech.database.data.lite.LiteYukonPAObject;
 import com.cannontech.database.data.point.PointTypes;
@@ -183,15 +184,7 @@ public static final LMControlAreaTrigger[] getAllControlAreaTriggers(Integer ctr
 	}
 	finally
 	{
-		try
-		{
-			if( pstmt != null ) pstmt.close();
-			if( conn != null ) conn.close();
-		} 
-		catch( java.sql.SQLException e2 )
-		{
-			com.cannontech.clientutils.CTILogger.error( e2.getMessage(), e2 );//something is up
-		}	
+		SqlUtils.close(rset, pstmt, conn );
 	}
 
 
@@ -255,15 +248,7 @@ public static final java.util.Vector getAllTriggersForAnArea( Integer ctrlAreaDe
 	}
 	finally
 	{
-		try
-		{
-			if (pstmt != null)
-				pstmt.close();
-		}
-		catch (java.sql.SQLException e2)
-		{
-			com.cannontech.clientutils.CTILogger.error( e2.getMessage(), e2 ); //something is up
-		}
+		SqlUtils.close(rset, pstmt);
 	}
 
 	return tmpList;

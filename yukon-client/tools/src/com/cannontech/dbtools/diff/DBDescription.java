@@ -1,4 +1,7 @@
 package com.cannontech.dbtools.diff;
+
+import com.cannontech.database.SqlUtils;
+
 /**
  * DBDescription is a utility program that connected with a database
  * and dumps the tables and columns to standard out in the java
@@ -108,34 +111,13 @@ public static void main(String[] args)
 		}
 	}
 	catch( java.sql.SQLException e )
-				{
-					System.out.println( e.getMessage() );
-				}
-				finally
-				{
-					try
-					{
-						if( rset != null )
-							rset.close();
-					}
-					catch( java.sql.SQLException e )
-					{
-						System.out.println( e );						
-					}
-
-					try
-					{
-						if( stmt != null )
-							stmt.close();
-					}
-					catch( java.sql.SQLException e )
-					{
-						System.out.println( e.getMessage());
-					}
-
-					rset = null;
-					stmt = null;
-				}
+	{
+		System.out.println( e.getMessage() );
+	}
+	finally
+	{
+		SqlUtils.close(rset, stmt, conn);
+	}
 			
 }
 }

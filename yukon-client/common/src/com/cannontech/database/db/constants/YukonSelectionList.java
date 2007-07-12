@@ -3,6 +3,7 @@ package com.cannontech.database.db.constants;
 import java.sql.SQLException;
 
 import com.cannontech.common.util.CtiUtilities;
+import com.cannontech.database.SqlUtils;
 import com.cannontech.database.db.DBPersistent;
 
 /**
@@ -114,12 +115,7 @@ public class YukonSelectionList extends DBPersistent {
 		    e.printStackTrace();
 		}
 		finally {
-		    try {
-				if ( stmt != null) stmt.close();
-		    }
-		    catch (java.sql.SQLException e2) {
-				e2.printStackTrace();
-		    }
+			SqlUtils.close(rset, stmt);
 		}
 		
 		//strange, should not get here

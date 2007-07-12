@@ -1,5 +1,6 @@
 package com.cannontech.dbtools.diff;
 
+import com.cannontech.database.SqlUtils;
 import com.cannontech.dbtools.tools.ModifyConstraints;
 
 /**
@@ -58,10 +59,8 @@ public static void main(String[] args)
 	java.sql.Connection conn2 = null;
 
 	java.sql.Statement stmt1 = null;
-	java.sql.Statement stmt2 = null;
-	java.sql.PreparedStatement pstmt = null;
 
-	java.sql.ResultSet rset = null;
+	java.sql.ResultSet rset1 = null;
 
 	StringBuffer buf = null;
 		
@@ -72,16 +71,13 @@ public static void main(String[] args)
 		
 		//Get a list of all the tables
 		stmt1 = conn1.createStatement();
-		rset = stmt1.executeQuery( selectAllTables );			
+		rset1 = stmt1.executeQuery( selectAllTables );			
 		
 		java.util.LinkedList tableNames = new java.util.LinkedList();
 
-		while( rset.next() )
-			tableNames.add( rset.getObject(1) );
+		while( rset1.next() )
+			tableNames.add( rset1.getObject(1) );
 	
-		rset.close();
-		stmt1.close();
-
 		// Go through tableNames and copy all the data
 		java.util.Iterator iter = tableNames.iterator();
 		String name;
@@ -89,11 +85,15 @@ public static void main(String[] args)
 		while( iter.hasNext() )
 		{
 			name = (String) iter.next();
+
+			java.sql.Statement stmt2 = null;
+			java.sql.PreparedStatement pstmt = null;
+			java.sql.ResultSet rset2 = null;
 			try
 			{
-				stmt1 = conn1.createStatement();
-				rset = stmt1.executeQuery("select * from " + name);
-				java.sql.ResultSetMetaData metaData = rset.getMetaData();
+				stmt2 = conn1.createStatement();
+				rset2 = stmt2.executeQuery("select * from " + name);
+				java.sql.ResultSetMetaData metaData = rset2.getMetaData();
 			
 				System.out.println(name);
 			
@@ -114,11 +114,11 @@ public static void main(String[] args)
 				int rowCount = 0;
 				int soFar = 0;
 								
-				while( rset.next() )
+				while( rset2.next() )
 				{
 					for( int i = 0; i < metaData.getColumnCount(); i++ )
 					{
-						pstmt.setObject( i+1, rset.getObject(i+1));							
+						pstmt.setObject( i+1, rset2.getObject(i+1));							
 					}
 
 					pstmt.execute();
@@ -141,14 +141,15 @@ public static void main(String[] args)
 			}
 			finally
 			{
-				if( stmt1 != null ) stmt1.close();
-				if( pstmt != null ) pstmt.close();				
+				SqlUtils.close(rset2, stmt2, pstmt);
 			}
 		}
 	}
 	catch( java.sql.SQLException e )
 	{
 		e.printStackTrace();
-	}	
+	} finally{
+		SqlUtils.close(rset1, stmt1, conn1, conn2);
+	}
 }
 }

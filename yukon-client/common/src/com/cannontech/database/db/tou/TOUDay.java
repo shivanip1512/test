@@ -6,6 +6,8 @@
  */
 package com.cannontech.database.db.tou;
 
+import com.cannontech.database.SqlUtils;
+
 
 /**
  * @author jdayton
@@ -136,14 +138,7 @@ public static synchronized Integer getNextTOUDayID( java.sql.Connection conn )
 	}
 	finally 
 	{
-		try 
-		{
-			if ( stmt != null) stmt.close();
-		}
-		catch (java.sql.SQLException e2) 
-		{
-			e2.printStackTrace();
-		}
+		SqlUtils.close(rset, stmt);
 	}
 	
 	//strange, should not get here

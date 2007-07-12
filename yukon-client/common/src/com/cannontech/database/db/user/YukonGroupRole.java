@@ -3,6 +3,7 @@ package com.cannontech.database.db.user;
 import java.sql.SQLException;
 import java.util.ArrayList;
 
+import com.cannontech.database.SqlUtils;
 import com.cannontech.database.db.DBPersistent;
 
 /**
@@ -85,14 +86,7 @@ public class YukonGroupRole extends DBPersistent implements IDefinedYukonRole
 		}
 		finally 
 		{
-			 try 
-			 {
-				if ( pstmt != null) pstmt.close();
-			 }
-			 catch (java.sql.SQLException e2) 
-			 {
-				e2.printStackTrace();
-			 }
+			SqlUtils.close(rset, pstmt);
 		}
 		
 		YukonGroupRole[] roles = new YukonGroupRole[list.size()];
@@ -134,14 +128,7 @@ public class YukonGroupRole extends DBPersistent implements IDefinedYukonRole
 		}
 		finally
 		{
-			try
-			{
-				if( pstmt != null ) pstmt.close();
-			} 
-			catch( java.sql.SQLException e2 )
-			{
-				com.cannontech.clientutils.CTILogger.error( e2.getMessage(), e2 ); //something is up
-			}	
+			SqlUtils.close(rset, pstmt);
 		}	
 		
 		return new Integer( newID );

@@ -4,6 +4,7 @@ package com.cannontech.database.data.customer;
  * Mapping table to putting points with labels onto CICustomers
  * 
  */
+import com.cannontech.database.SqlUtils;
 import com.cannontech.database.db.company.EnergyCompany;
 import com.cannontech.database.db.customer.Address;
 import com.cannontech.database.db.customer.CICustomerPointData;
@@ -89,15 +90,7 @@ public class CICustomerBase extends Customer implements com.cannontech.common.ed
 		}
 		finally
 		{
-			try
-			{
-				if( pstmt != null ) pstmt.close();
-				if( conn != null ) conn.close();
-			} 
-			catch( java.sql.SQLException e2 )
-			{
-				com.cannontech.clientutils.CTILogger.error( e2.getMessage(), e2 );//something is up
-			}	
+			SqlUtils.close(rset, pstmt, conn );
 		}
 	
 	

@@ -7,6 +7,7 @@ import java.sql.SQLException;
 import java.sql.Statement;
 
 import com.cannontech.database.PoolManager;
+import com.cannontech.database.SqlUtils;
 import com.cannontech.database.data.point.PointQualities;
 
 /**
@@ -415,11 +416,7 @@ private boolean initYukonStuff() {
 		e.printStackTrace();
 	}	
 	finally {
-		try {
-				if(stmt != null) stmt.close();
-				if(conn != null) conn.close();
-		}
-		catch(SQLException e2) {}
+		SqlUtils.close(rset, stmt, conn );
 	}	
 	
 	return false;

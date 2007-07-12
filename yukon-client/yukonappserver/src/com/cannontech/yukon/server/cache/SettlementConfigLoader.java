@@ -9,6 +9,7 @@ import java.util.Map;
 import com.cannontech.clientutils.CTILogger;
 import com.cannontech.common.util.StopWatch;
 import com.cannontech.database.PoolManager;
+import com.cannontech.database.SqlUtils;
 import com.cannontech.database.data.lite.LiteSettlementConfig;
 import com.cannontech.database.db.company.SettlementConfig;
 
@@ -58,14 +59,7 @@ public class SettlementConfigLoader implements Runnable {
 		} catch (java.sql.SQLException e) {
 			CTILogger.error(e.getMessage(), e);
 		} finally {
-			try {
-				if (stmt != null)
-					stmt.close();
-				if (conn != null)
-					conn.close();
-			} catch (java.sql.SQLException e) {
-				CTILogger.error(e.getMessage(), e);
-			}
+			SqlUtils.close(rset, stmt, conn );
 		}
 		CTILogger.info(sw.stop().getElapsedTime() * 0.001 + " Secs for SettlementConfigLoader (" + _allSettlementConfigs.size() + " loaded)");
 	}

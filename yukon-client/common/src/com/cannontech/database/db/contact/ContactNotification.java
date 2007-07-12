@@ -3,6 +3,7 @@ package com.cannontech.database.db.contact;
 import com.cannontech.clientutils.CTILogger;
 import com.cannontech.common.util.CtiUtilities;
 import com.cannontech.database.PoolManager;
+import com.cannontech.database.SqlUtils;
 import com.cannontech.database.db.NestedDBPersistent;
 import com.cannontech.database.db.notification.NotificationDestination;
 import com.cannontech.database.db.point.PointAlarming;
@@ -160,15 +161,7 @@ public class ContactNotification extends NestedDBPersistent
 		}
 		finally
 		{
-			try
-			{
-				if( pstmt != null ) pstmt.close();
-				if( conn != null ) conn.close();
-			} 
-			catch( java.sql.SQLException e2 )
-			{
-				CTILogger.error( e2.getMessage(), e2 );//something is up
-			}	
+			SqlUtils.close(rset, pstmt, conn );
 		}
 	
 		ContactNotification retVal[] = new ContactNotification[ tmpList.size() ];
@@ -287,14 +280,7 @@ public class ContactNotification extends NestedDBPersistent
 		}
 		finally
 		{
-			try
-			{
-				if( pstmt != null ) pstmt.close();
-			} 
-			catch( java.sql.SQLException e2 )
-			{
-				CTILogger.error( e2.getMessage(), e2 );//something is up
-			}	
+			SqlUtils.close(rset, pstmt);
 		}
 	
 		return tmpList;
@@ -342,12 +328,7 @@ public class ContactNotification extends NestedDBPersistent
 		}
 		finally
 		{
-			try
-			{
-				if (pstmt1 != null) pstmt1.close();
-				if (pstmt2 != null) pstmt2.close();
-			}
-			catch (java.sql.SQLException e) {}
+			SqlUtils.close(pstmt1, pstmt2 );
 		}
 	}
 
@@ -445,14 +426,7 @@ public class ContactNotification extends NestedDBPersistent
 		}
 		finally 
 		{
-		    try 
-		    {
-				if ( stmt != null) stmt.close();
-		    }
-		    catch (java.sql.SQLException e2) 
-		    {
-				e2.printStackTrace();
-		    }
+			SqlUtils.close(rset, stmt );
 		}
 		
 		//strange, should not get here

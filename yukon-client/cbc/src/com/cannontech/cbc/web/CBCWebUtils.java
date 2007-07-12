@@ -19,6 +19,7 @@ import com.cannontech.common.util.CtiUtilities;
 import com.cannontech.core.dao.DaoFactory;
 import com.cannontech.database.JdbcTemplateHelper;
 import com.cannontech.database.PoolManager;
+import com.cannontech.database.SqlUtils;
 import com.cannontech.database.data.lite.LiteYukonRoleProperty;
 import com.cannontech.database.data.lite.LiteYukonUser;
 import com.cannontech.database.data.point.PointTypes;
@@ -239,15 +240,7 @@ public class CBCWebUtils implements CBCParamValues
 		}
 		finally
 		{
-			try
-			{
-				if( pstmt != null ) pstmt.close();
-				if( conn != null ) conn.close();
-			} 
-			catch( SQLException e2 )
-			{
-				CTILogger.error( e2.getMessage(), e2 );
-			}	
+			SqlUtils.close(rset, pstmt, conn );
 		}
 
 		return (SystemLogData[])tmpList.toArray( new SystemLogData[tmpList.size()] );

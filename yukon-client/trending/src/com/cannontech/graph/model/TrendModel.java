@@ -55,6 +55,7 @@ import com.cannontech.common.util.CtiUtilities;
 import com.cannontech.common.util.Pair;
 import com.cannontech.common.util.TimeUtil;
 import com.cannontech.database.PoolManager;
+import com.cannontech.database.SqlUtils;
 import com.cannontech.database.data.graph.GraphDefinition;
 import com.cannontech.database.data.lite.LitePoint;
 import com.cannontech.database.data.point.PointTypes;
@@ -518,16 +519,7 @@ public Pair getMostRecentMarkerValue(int pointID, long maxTS)
 	}
 	finally
 	{
-		try
-		{
-			if( pstmt != null ) pstmt.close();
-			if( conn != null ) conn.close();
-		} 
-		catch( java.sql.SQLException e2 )
-		{
-			e2.printStackTrace();//sometin is up
-			return null;
-		}
+		SqlUtils.close(rset, pstmt, conn );
 	}
 	return timeAndValue;							
 }	
@@ -813,16 +805,7 @@ private void hitDatabase_Basic()
 	}
 	finally
 	{
-		try
-		{
-			if( pstmt != null ) pstmt.close();
-			if( conn != null ) conn.close();
-		} 
-		catch( java.sql.SQLException e2 )
-		{
-			e2.printStackTrace();//sometin is up
-			return;
-		}	
+		SqlUtils.close(rset, pstmt, conn );
 		java.util.Date timerStop = new java.util.Date();
 //		CTILogger.info( (timerStop.getTime() - timerStart.getTime())*.001 + 
 //				" Secs for Trend Data Load ( for type:" + GDSTypesFuncs.getType(seriesTypeMask) + " )");
@@ -988,16 +971,7 @@ private void hitDatabase_Date(int seriesTypeMask, int serieIndex)
 	}
 	finally
 	{
-		try
-		{
-			if( pstmt != null ) pstmt.close();
-			if( conn != null ) conn.close();
-		} 
-		catch( java.sql.SQLException e2 )
-		{
-			e2.printStackTrace();//sometin is up
-			return;
-		}	
+		SqlUtils.close(rset, pstmt, conn );
 		java.util.Date timerStop = new java.util.Date();
 		CTILogger.info( (timerStop.getTime() - timerStart.getTime())*.001 + 
 				" Secs for Trend Data Load ( for type:" + GDSTypesFuncs.getType(seriesTypeMask) + " )");
@@ -1116,17 +1090,7 @@ private List getPeakPointHistory(int serieIndex)
 	}
 	finally
 	{
-		try
-		{
-			if( pstmt != null )
-				pstmt.close();
-			if( conn != null )
-				conn.close();
-		}
-		catch( java.sql.SQLException e )
-		{
-			CTILogger.error( e.getMessage(), e );
-		}
+		SqlUtils.close(rset, pstmt, conn );
 				
 		//temp code
 		timerStop = new java.util.Date();

@@ -1,5 +1,7 @@
 package com.cannontech.database.db.customer;
 
+import com.cannontech.database.SqlUtils;
+
 /**
  * This type was created in VisualAge.
  */
@@ -130,15 +132,7 @@ public static final CustomerLogin getCustomerLogin(Integer loginID, String datab
 	}
 	finally
 	{
-		try
-		{
-			if( pstmt != null ) pstmt.close();
-			if( conn != null ) conn.close();
-		} 
-		catch( java.sql.SQLException e2 )
-		{
-			com.cannontech.clientutils.CTILogger.error( e2.getMessage(), e2 );//something is up
-		}	
+		SqlUtils.close(rset, pstmt, conn );
 	}
 
 
@@ -207,15 +201,7 @@ public static final Integer getNextLoginID()
 	}
 	finally
 	{
-		try
-		{
-			if( pstmt != null ) pstmt.close();
-			if( conn != null ) conn.close();
-		} 
-		catch( java.sql.SQLException e2 )
-		{
-			com.cannontech.clientutils.CTILogger.error( e2.getMessage(), e2 ); //something is up
-		}	
+		SqlUtils.close(rset, pstmt, conn );
 	}
 
 

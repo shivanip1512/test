@@ -1,5 +1,6 @@
 package com.cannontech.database.db.web;
 
+import com.cannontech.database.SqlUtils;
 import com.cannontech.database.db.DBPersistent;
 /**
  * Creation date: (7/24/2001 12:19:25 AM)
@@ -79,15 +80,7 @@ public static long[] getProgramIDs(long customerID, String dbAlias) {
 	}
 	finally
 	{
-		try
-		{
-			if( pstmt != null ) pstmt.close();
-			if( conn != null ) conn.close();
-		}
-		catch( java.sql.SQLException e2 )
-		{
-			com.cannontech.clientutils.CTILogger.error( e2.getMessage(), e2 );
-		}
+		SqlUtils.close(rset, pstmt, conn );
 	}
 
 	// An exception must have occured

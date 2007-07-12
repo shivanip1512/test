@@ -11,6 +11,7 @@ import com.cannontech.clientutils.CTILogger;
 import com.cannontech.common.util.CtiUtilities;
 import com.cannontech.database.PoolManager;
 import com.cannontech.database.SqlStatement;
+import com.cannontech.database.SqlUtils;
 import com.cannontech.database.cache.StarsDatabaseCache;
 import com.cannontech.database.data.customer.CustomerTypes;
 import com.cannontech.database.db.DBPersistent;
@@ -345,15 +346,7 @@ public class CustomerAccount extends DBPersistent {
             }
             finally
             {
-                try
-                {
-                    if( pstmt != null ) pstmt.close();
-                    if( conn != null ) conn.close();
-                } 
-                catch( java.sql.SQLException e2 )
-                {
-                    e2.printStackTrace();
-                }
+            	SqlUtils.close(rset, pstmt, conn );
             }
             return returnAcctIDs;
     }
@@ -448,15 +441,7 @@ public class CustomerAccount extends DBPersistent {
         }
         finally
         {
-            try
-            {
-                if( pstmt != null ) pstmt.close();
-                if( conn != null ) conn.close();
-            } 
-            catch( java.sql.SQLException e2 )
-            {
-                e2.printStackTrace();
-            }
+        	SqlUtils.close(rset, pstmt, conn );
         }
         return returnAcctIDs;
     }
@@ -583,15 +568,7 @@ public class CustomerAccount extends DBPersistent {
         }
         finally
         {
-            try
-            {
-                if( pstmt != null ) pstmt.close();
-                if( conn != null ) conn.close();
-            } 
-            catch( java.sql.SQLException e2 )
-            {
-                e2.printStackTrace();
-            }
+        	SqlUtils.close(rset, pstmt, conn );
         }
         return account;
     }

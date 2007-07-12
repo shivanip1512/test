@@ -2,6 +2,8 @@ package com.cannontech.database.db.device.lm;
 
 import java.util.Vector;
 
+import com.cannontech.database.SqlUtils;
+
 /**
  * This type was created in VisualAge.
  */
@@ -160,14 +162,7 @@ public static final LMControlAreaProgram[] getAllControlAreaList(Integer ctrlAre
 	}
 	finally
 	{
-		try
-		{
-			if( pstmt != null ) pstmt.close();
-		} 
-		catch( java.sql.SQLException e2 )
-		{
-			com.cannontech.clientutils.CTILogger.error( e2.getMessage(), e2 );//something is up
-		}	
+		SqlUtils.close(rset, pstmt );
 	}
 
 
@@ -246,14 +241,7 @@ public static final java.util.Vector getAllProgramsForAnArea( Integer ctrlAreaDe
 	}
 	finally
 	{
-		try
-		{
-			if( pstmt != null ) pstmt.close();
-		} 
-		catch( java.sql.SQLException e2 )
-		{
-			com.cannontech.clientutils.CTILogger.error( e2.getMessage(), e2 );//something is up
-		}	
+		SqlUtils.close(rset, pstmt);
 	}
 
 	return progList;

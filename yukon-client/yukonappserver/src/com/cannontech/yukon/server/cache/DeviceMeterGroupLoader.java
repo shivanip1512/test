@@ -1,5 +1,6 @@
 package com.cannontech.yukon.server.cache;
 
+import com.cannontech.database.SqlUtils;
 import com.cannontech.database.data.lite.LiteDeviceMeterNumber;
 
 
@@ -57,17 +58,7 @@ public void run()
 	}
 	finally
 	{
-		try
-		{
-			if (stmt != null)
-				stmt.close();
-			if (conn != null)
-				conn.close();
-		}
-		catch (java.sql.SQLException e)
-		{
-			com.cannontech.clientutils.CTILogger.error( e.getMessage(), e );
-		}
+		SqlUtils.close(rset, stmt, conn );
 
 		com.cannontech.clientutils.CTILogger.info( 
             ((System.currentTimeMillis() - timer)*.001) + 

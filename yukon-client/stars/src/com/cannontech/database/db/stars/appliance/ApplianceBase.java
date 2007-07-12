@@ -6,6 +6,7 @@ import java.util.HashMap;
 import com.cannontech.clientutils.CTILogger;
 import com.cannontech.common.util.CtiUtilities;
 import com.cannontech.database.SqlStatement;
+import com.cannontech.database.SqlUtils;
 import com.cannontech.database.db.DBPersistent;
 
 
@@ -78,8 +79,7 @@ public class ApplianceBase extends DBPersistent {
 			return appIDVct;
 		}
 		finally {
-			if (rset != null) rset.close();
-			if (stmt != null) stmt.close();
+			SqlUtils.close(rset, stmt);
 		}
 	}
 

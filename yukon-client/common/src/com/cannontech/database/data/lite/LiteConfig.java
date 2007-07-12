@@ -6,6 +6,8 @@
  */
 package com.cannontech.database.data.lite;
 
+import com.cannontech.database.SqlUtils;
+
 /**
  * @author jdayton
  *
@@ -188,14 +190,7 @@ public final java.util.Vector getAllConfigs(java.sql.Connection conn)
 	}
 	finally
 	{
-		try
-		{
-			if( pstmt != null ) pstmt.close();
-		} 
-		catch( java.sql.SQLException e2 )
-		{
-			com.cannontech.clientutils.CTILogger.error( e2.getMessage(), e2 );//something is up
-		}	
+		SqlUtils.close(rset, pstmt );
 	}
 
 

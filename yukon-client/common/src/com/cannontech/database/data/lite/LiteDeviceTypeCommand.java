@@ -1,6 +1,7 @@
 package com.cannontech.database.data.lite;
 
 import com.cannontech.clientutils.CTILogger;
+import com.cannontech.database.SqlUtils;
 
 /*
  */
@@ -67,17 +68,7 @@ public class LiteDeviceTypeCommand extends LiteBase
 		}
 		finally
 		{
-			try
-			{
-				if( stmt != null )
-					stmt.close();
-				if( conn != null )
-					conn.close();
-			}
-			catch( java.sql.SQLException e )
-			{
-				CTILogger.error( e.getMessage(), e );
-			}
+			SqlUtils.close(rset, stmt, conn );
 		}
 	}
 	

@@ -1,6 +1,7 @@
 package com.cannontech.database.data.lite;
 
 import com.cannontech.clientutils.CTILogger;
+import com.cannontech.database.SqlUtils;
 import com.cannontech.database.data.point.PointTypes;
 import com.cannontech.database.data.point.PointUnits;
 
@@ -184,18 +185,7 @@ private synchronized void loadPointTags( String databaseAlias )
 	}
 	finally
 	{
-		try
-		{
-			if( stmt != null )
-				 stmt.close();
-			if( conn != null )
-				conn.close();
-		}
-		catch( java.sql.SQLException e )
-		{
-			CTILogger.error( e.getMessage(), e );
-		}
-
+		SqlUtils.close(rset, stmt, conn );
 	}
 }
 
@@ -275,21 +265,6 @@ public void retrieve(String databaseAlias)
 	}
 	catch( java.sql.SQLException e )
 	{
-		try
-		{ ///close all the stuff here
-			if( stmt != null )
-				stmt.close();
-			if( conn != null )
-				conn.close();
-            
-			stmt = null;
-			conn = null;
-		}
-		catch( java.sql.SQLException ex )
-		{
-			CTILogger.error( ex.getMessage(), ex);
-		}
-
 		CTILogger.error(" DB : LitePoint.retrieve() query did not work, trying Query with a non SQL-92 query");
 		//try using a nonw SQL-92 method, will be slower
 		//  Oracle 8.1.X and less will use this
@@ -297,18 +272,7 @@ public void retrieve(String databaseAlias)
 	}
 	finally
 	{
-		try
-		{
-			if( stmt != null )
-				stmt.close();
-			if( conn != null )
-				conn.close();
-		}
-		catch( java.sql.SQLException e )
-		{
-			CTILogger.error( e.getMessage(), e );
-		}
-
+		SqlUtils.close(rset, stmt, conn );
 	}
 
 }

@@ -1,5 +1,7 @@
 package com.cannontech.customer.wpsc;
 
+import com.cannontech.database.SqlUtils;
+
 /**
  * Insert the type's description here.
  * Creation date: (5/22/00 9:44:11 AM)
@@ -248,18 +250,11 @@ public String getGroupAddress(String name) {
 	}
 	finally
 	{
-		try
-		{			
-			if( stmt != null ) stmt.close();
-			if( conn != null ) conn.close();
-		}
-		catch( java.sql.SQLException e2 )
-		{
-			e2.printStackTrace();
-		}
+		SqlUtils.close(rset, stmt, conn );
 
-		return retVal;
 	}
+	
+	return retVal;
 	
 }
 /**

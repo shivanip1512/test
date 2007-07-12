@@ -2,6 +2,7 @@ package com.cannontech.yukon.server.cache;
 
 import java.util.List;
 
+import com.cannontech.database.SqlUtils;
 import com.cannontech.database.data.lite.LitePoint;
 import com.cannontech.database.data.point.PointUnits;
 
@@ -68,17 +69,7 @@ private void executeNonSQL92Query()
    }
    finally
    {
-      try
-      {
-         if( stmt != null )
-            stmt.close();
-         if( conn != null )
-            conn.close();
-      }
-      catch( java.sql.SQLException e )
-      {
-         com.cannontech.clientutils.CTILogger.error( e.getMessage(), e );
-      }
+	   SqlUtils.close(rset, stmt, conn );
       
    }
 
@@ -138,20 +129,7 @@ timerStart = new java.util.Date();
     }
    catch( java.sql.SQLException e )
    {
-      try
-      { ///close all the stuff here
-         if( stmt != null )
-            stmt.close();
-         if( conn != null )
-            conn.close();
-            
-         stmt = null;
-         conn = null;
-      }
-      catch( java.sql.SQLException ex )
-      {
-         com.cannontech.clientutils.CTILogger.error( ex.getMessage(), ex);
-      }
+	   SqlUtils.close(rset, stmt, conn );
 
       com.cannontech.clientutils.CTILogger.error(" DB : PointLoader query did not work, trying Query with a non SQL-92 query");
       //try using a nonw SQL-92 method, will be slower

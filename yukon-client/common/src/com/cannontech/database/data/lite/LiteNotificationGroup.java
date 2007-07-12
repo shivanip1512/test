@@ -3,6 +3,7 @@ package com.cannontech.database.data.lite;
 import com.cannontech.clientutils.CTILogger;
 import com.cannontech.common.util.CtiUtilities;
 import com.cannontech.database.PoolManager;
+import com.cannontech.database.SqlUtils;
 import com.cannontech.database.data.notification.ContactNotifGroupMap;
 import com.cannontech.database.data.notification.CustomerNotifGroupMap;
 import com.cannontech.database.data.notification.NotifDestinationMap;
@@ -96,26 +97,10 @@ public class LiteNotificationGroup extends LiteBase
 
 		}
 		catch( java.sql.SQLException e ) {
-			try { ///close all the stuff here
-				if( stmt != null ) stmt.close();
-				if( conn != null ) conn.close();
-            
-				stmt = null;
-				conn = null;
-			}
-			catch( java.sql.SQLException ex ) {
-				CTILogger.error( ex.getMessage(), ex);
-			}
+			CTILogger.error( e.getMessage(), e);
 		}
 		finally {
-			try {
-				if( stmt != null ) stmt.close();
-				if( conn != null ) conn.close();
-			}
-			catch( java.sql.SQLException e ) {
-				CTILogger.error( e.getMessage(), e );
-			}
-
+			SqlUtils.close(rset, stmt, conn );
 		}
 	 	
 	 	

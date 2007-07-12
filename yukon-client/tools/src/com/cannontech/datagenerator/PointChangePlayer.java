@@ -11,6 +11,7 @@ import java.util.Date;
 import com.cannontech.common.util.CtiUtilities;
 import com.cannontech.core.dao.DaoFactory;
 import com.cannontech.database.PoolManager;
+import com.cannontech.database.SqlUtils;
 import com.cannontech.database.data.point.PointTypes;
 import com.cannontech.message.dispatch.ClientConnection;
 import com.cannontech.message.dispatch.message.Multi;
@@ -106,10 +107,7 @@ public class PointChangePlayer {
 		} catch(Exception e ) {
 		}
 		finally {
-			try {
-			pstmt.close();
-			conn.close();
-			}catch(Exception e2) {}				
+			SqlUtils.close(rset, pstmt, conn );			
 		}		
 		
 		PointData[] retVal = new PointData[changeList.size()];

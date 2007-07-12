@@ -1,6 +1,7 @@
 package com.cannontech.database.db.notification;
 
 import com.cannontech.common.util.CtiUtilities;
+import com.cannontech.database.SqlUtils;
 
 /**
  * This type was created in VisualAge.
@@ -128,15 +129,7 @@ public class NotificationGroup extends com.cannontech.database.db.DBPersistent
 		}
 		finally
 		{
-			try
-			{
-				if (stmt != null)
-					stmt.close();
-			}
-			catch (java.sql.SQLException e2)
-			{
-				e2.printStackTrace();
-			}
+			SqlUtils.close(rset, stmt );
 		}
 
 		//strange, should not get here
@@ -201,17 +194,7 @@ public class NotificationGroup extends com.cannontech.database.db.DBPersistent
 		}
 		finally
 		{
-			try
-			{
-				if (pstmt != null)
-					pstmt.close();
-				if (conn != null)
-					conn.close();
-			}
-			catch (java.sql.SQLException e2)
-			{
-				com.cannontech.clientutils.CTILogger.error(e2.getMessage(), e2); //something is up
-			}
+			SqlUtils.close(rset, pstmt, conn );
 		}
 
 		NotificationGroup retVal[] = new NotificationGroup[tmpList.size()];

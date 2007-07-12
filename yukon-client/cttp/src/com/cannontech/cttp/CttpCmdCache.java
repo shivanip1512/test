@@ -20,6 +20,7 @@ import com.cannontech.core.dao.DaoFactory;
 import com.cannontech.cttp.data.CttpCmd;
 import com.cannontech.cttp.db.CttpCmdGroup;
 import com.cannontech.database.PoolManager;
+import com.cannontech.database.SqlUtils;
 import com.cannontech.database.Transaction;
 import com.cannontech.database.TransactionException;
 import com.cannontech.database.data.device.lm.LMGroup;
@@ -282,10 +283,7 @@ public class CttpCmdCache implements Serializable {
 			e.printStackTrace();
 		}
 		finally {
-			try {
-				if(stmt != null) stmt.close();
-				if(conn != null) conn.close();
-			} catch(SQLException e2) { }
+			SqlUtils.close(rset, rset2, stmt, stmt2, conn);
 		}
 		
 		return cmdCache;

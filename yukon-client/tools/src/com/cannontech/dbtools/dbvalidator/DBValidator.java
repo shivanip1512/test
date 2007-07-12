@@ -1,5 +1,7 @@
 package com.cannontech.dbtools.dbvalidator;
 
+import com.cannontech.database.SqlUtils;
+
 /**
  * Insert the type's description here.
  * Creation date: (8/7/2001 3:43:05 PM)
@@ -161,12 +163,14 @@ com.cannontech.clientutils.CTILogger.info("				" + ((java.io.File)files.get(i)).
 			if( conn != null )
 			{
 				conn.commit();
-				conn.close();
 			}
 		}
 		catch( java.sql.SQLException e )
 		{
 			com.cannontech.clientutils.CTILogger.error( e.getMessage(), e );
+		}
+		finally{			
+			SqlUtils.close(conn);
 		}
 		
 	}

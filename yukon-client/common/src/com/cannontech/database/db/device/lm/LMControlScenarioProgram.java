@@ -6,6 +6,8 @@
  */
 package com.cannontech.database.db.device.lm;
 
+import com.cannontech.database.SqlUtils;
+
 /**
  * @author jdayton
  *
@@ -204,15 +206,7 @@ public class LMControlScenarioProgram extends com.cannontech.database.db.NestedD
 			}
 			finally
 			{
-				try
-				{
-					if (pstmt != null)
-						pstmt.close();
-				}
-				catch (java.sql.SQLException e2)
-				{
-					com.cannontech.clientutils.CTILogger.error( e2.getMessage(), e2 ); //something is up
-				}
+				SqlUtils.close(rset, pstmt);
 			}
 
 			return progList;

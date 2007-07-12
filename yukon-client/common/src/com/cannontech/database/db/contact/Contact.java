@@ -5,6 +5,7 @@ import com.cannontech.common.util.CtiUtilities;
 import com.cannontech.common.util.NativeIntVector;
 import com.cannontech.database.PoolManager;
 import com.cannontech.database.SqlStatement;
+import com.cannontech.database.SqlUtils;
 import com.cannontech.database.db.customer.Customer;
 import com.cannontech.database.db.user.YukonUser;
 import com.cannontech.user.UserUtils;
@@ -371,15 +372,7 @@ public class Contact extends com.cannontech.database.db.DBPersistent implements 
 		}
 		finally 
 		{
-			try 
-			{
-				if( stmt != null ) stmt.close();
-				if( conn != null ) conn.close();
-			}
-			catch (java.sql.SQLException e2) 
-			{
-				CTILogger.error(e2);
-			}
+			SqlUtils.close(rset, stmt, conn );
 		}	
 
 		return intVect.toArray();

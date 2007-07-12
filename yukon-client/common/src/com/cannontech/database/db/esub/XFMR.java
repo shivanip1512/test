@@ -1,5 +1,7 @@
 package com.cannontech.database.db.esub;
 
+import com.cannontech.database.SqlUtils;
+
 /**
  * Insert the type's description here.
  * Creation date: (12/21/2000 5:24:26 PM)
@@ -128,18 +130,7 @@ public static XFMR[] getAllXFMRs(int substationID, String dbAlias) {
 	}
 	finally
 	{
-		try
-		{
-			if( stmt != null )
-				stmt.close();
-
-			if( conn != null )
-				conn.close();
-		}
-		catch( java.sql.SQLException e2 )
-		{
-			com.cannontech.clientutils.CTILogger.error( e2.getMessage(), e2 );
-		}
+		SqlUtils.close(rset, stmt, conn );
 	}
 	
 

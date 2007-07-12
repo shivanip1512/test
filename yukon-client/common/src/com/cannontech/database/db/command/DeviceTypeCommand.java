@@ -4,6 +4,7 @@ import com.cannontech.clientutils.CTILogger;
 import com.cannontech.common.util.CtiUtilities;
 import com.cannontech.database.PoolManager;
 import com.cannontech.database.SqlStatement;
+import com.cannontech.database.SqlUtils;
 import com.cannontech.database.db.DBPersistent;
 
 /**
@@ -121,15 +122,7 @@ public static long[] getAllCommandIDsForType(String dbAlias, String deviceType_)
 	}
 	finally
 	{
-		try
-		{
-			if( stmt != null ) stmt.close();
-			if( conn != null ) conn.close();
-		}
-		catch( java.sql.SQLException e2 )
-		{
-			CTILogger.error( e2.getMessage(), e2 );
-		}
+		SqlUtils.close(rset, stmt, conn );
 	}
 
 	// An exception must have occured

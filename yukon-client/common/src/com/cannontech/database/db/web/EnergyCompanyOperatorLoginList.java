@@ -1,5 +1,7 @@
 package com.cannontech.database.db.web;
 
+import com.cannontech.database.SqlUtils;
+
 /**
  * Creation date: (6/4/2001 2:46:17 PM)
  * @author: Aaron Lauinger
@@ -103,15 +105,7 @@ public static long getEnergyCompanyID(long operatorLoginID, String dbAlias) {
 	}
 	finally
 	{
-		try
-		{
-			if( pstmt != null ) pstmt.close();
-			if( conn != null ) conn.close();
-		}
-		catch( java.sql.SQLException e2 )
-		{
-			com.cannontech.clientutils.CTILogger.error( e2.getMessage(), e2 );
-		}
+		SqlUtils.close(rset, pstmt, conn );
 	}
 
 	// An exception must have occured
@@ -156,15 +150,7 @@ public static long[] getEnergyCompanyIDs(long operatorLoginID, String dbAlias) {
 	}
 	finally
 	{
-		try
-		{
-			if( pstmt != null ) pstmt.close();
-			if( conn != null ) conn.close();
-		}
-		catch( java.sql.SQLException e2 )
-		{
-			com.cannontech.clientutils.CTILogger.error( e2.getMessage(), e2 );
-		}
+		SqlUtils.close(rset, pstmt, conn );
 	}
 
 	// An exception must have occured
@@ -217,15 +203,7 @@ public static long[] getOperatorLoginIDs(long energyCompanyID, String dbAlias) {
 	}
 	finally
 	{
-		try
-		{
-			if( pstmt != null ) pstmt.close();
-			if( conn != null ) conn.close();
-		}
-		catch( java.sql.SQLException e2 )
-		{
-			com.cannontech.clientutils.CTILogger.error( e2.getMessage(), e2 );
-		}
+		SqlUtils.close(rset, pstmt, conn );
 	}
 
 	// An exception must have occured

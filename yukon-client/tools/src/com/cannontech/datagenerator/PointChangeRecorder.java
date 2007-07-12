@@ -12,6 +12,7 @@ import java.util.Date;
 
 import com.cannontech.common.util.CtiUtilities;
 import com.cannontech.database.PoolManager;
+import com.cannontech.database.SqlUtils;
 
 /**
  * Saves an interval of days worth of point changes by looking at the rawpointhistory table
@@ -70,10 +71,7 @@ System.out.println(endDate);
 		} catch(Exception e ) {
 		}
 		finally {
-			try {
-			pstmt.close();
-			conn.close();
-			}catch(Exception e2) {}				
+			SqlUtils.close(rset, pstmt, conn );			
 		}	
 		
 		System.out.println("Wrote: " + count);	

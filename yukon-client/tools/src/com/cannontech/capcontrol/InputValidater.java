@@ -10,6 +10,7 @@ import javax.swing.JFrame;
 import javax.swing.JOptionPane;
 
 import com.cannontech.clientutils.CTILogger;
+import com.cannontech.database.SqlUtils;
 import com.cannontech.database.db.capcontrol.DeviceCBC;
 import com.cannontech.yukon.IDatabaseCache;
 
@@ -78,15 +79,7 @@ public class InputValidater
 		}
 		finally
 		{
-			try
-			{
-				if( stmt != null ) stmt.close();
-				if( conn != null ) conn.close();
-			}
-			catch( java.sql.SQLException e2 )
-			{
-				CTILogger.error( e2.getMessage(), e2 );//something is up
-			}
+			SqlUtils.close(rset, stmt, conn );
 		}
 		
 		if( devices.size() > 0 )

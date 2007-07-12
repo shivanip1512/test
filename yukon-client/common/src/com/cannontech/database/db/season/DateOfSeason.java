@@ -1,5 +1,7 @@
 package com.cannontech.database.db.season;
 
+import com.cannontech.database.SqlUtils;
+
 /**
  * Insert the type's description here.
  * Creation date: (6/22/2004 10:32:52 AM)
@@ -162,14 +164,7 @@ public static final java.util.Vector getAllSeasonDates(Integer scheduleID, java.
 	}
 	finally
 	{
-		try
-		{
-			if( pstmt != null ) pstmt.close();
-		} 
-		catch( java.sql.SQLException e2 )
-		{
-			com.cannontech.clientutils.CTILogger.error( e2.getMessage(), e2 );//something is up
-		}	
+		SqlUtils.close(rset, pstmt);
 	}
 
 

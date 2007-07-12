@@ -10,6 +10,7 @@ import com.cannontech.cbc.db.CapControlFactory;
 import com.cannontech.cbc.model.CBCCreationModel;
 import com.cannontech.common.util.SqlStatementBuilder;
 import com.cannontech.database.PoolManager;
+import com.cannontech.database.SqlUtils;
 import com.cannontech.database.data.pao.PAOGroups;
 import com.cannontech.database.db.capcontrol.*;
 import com.cannontech.spring.YukonSpringHook;
@@ -317,6 +318,7 @@ public class ProgressCCImporter {
                         }
                     }
                 }
+            SqlUtils.close(dbConnection);
             }
         }
     }

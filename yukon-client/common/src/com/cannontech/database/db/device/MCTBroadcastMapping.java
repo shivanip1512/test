@@ -1,4 +1,7 @@
 package com.cannontech.database.db.device;
+
+import com.cannontech.database.SqlUtils;
+
 /**
  * Insert the type's description here.
  * Creation date: (6/18/2002 1:29:24 PM)
@@ -129,14 +132,7 @@ public static final com.cannontech.common.util.NativeIntVector getAllMCTsIDList(
 	}
 	finally
 	{
-		try
-		{
-			if( pstmt != null ) pstmt.close();
-		} 
-		catch( java.sql.SQLException e2 )
-		{
-			com.cannontech.clientutils.CTILogger.error( e2.getMessage(), e2 );//something is up
-		}	
+		SqlUtils.close(rset, pstmt );
 	}
 
 	return tmpList;

@@ -6,6 +6,8 @@
  */
 package com.cannontech.database.data.lite;
 
+import com.cannontech.database.SqlUtils;
+
 /**
  * @author jdayton
  *
@@ -180,14 +182,7 @@ public class LiteLMConstraint extends LiteBase
 		}
 		finally
 		{
-			try
-			{
-				if( pstmt != null ) pstmt.close();
-			} 
-			catch( java.sql.SQLException e2 )
-			{
-				com.cannontech.clientutils.CTILogger.error( e2.getMessage(), e2 );//something is up
-			}	
+			SqlUtils.close(rset, pstmt);
 		}
 
 
@@ -198,21 +193,14 @@ public class LiteLMConstraint extends LiteBase
 	{
 		java.util.Vector tempVector = null;
 	
-		try
-		{
-			java.sql.Connection conn = null;
-	
-			conn = com.cannontech.database.PoolManager.getInstance().getConnection("yukon");
+		java.sql.Connection conn = null;
 
-			tempVector = getAllLMConstraints(conn);
+		conn = com.cannontech.database.PoolManager.getInstance().getConnection("yukon");
 
-			conn.close();
-		}
-		catch( java.sql.SQLException e2 )
-		{
-			com.cannontech.clientutils.CTILogger.error( e2.getMessage(), e2 );
-		}	
-	
+		tempVector = getAllLMConstraints(conn);
+
+		SqlUtils.close(conn);
+		
 		return tempVector;
 	 
 	

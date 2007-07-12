@@ -36,6 +36,7 @@ import com.cannontech.core.authorization.service.PaoCommandAuthorizationService;
 import com.cannontech.core.dao.DaoFactory;
 import com.cannontech.core.dao.PaoDao;
 import com.cannontech.database.PoolManager;
+import com.cannontech.database.SqlUtils;
 import com.cannontech.database.Transaction;
 import com.cannontech.database.cache.DefaultDatabaseCache;
 import com.cannontech.database.data.command.DeviceTypeCommand;
@@ -1586,17 +1587,7 @@ public class YC extends Observable implements MessageListener
 	    	}
 	    	finally
 	    	{
-	    		try
-	    		{
-	    			if (stmt != null)
-	    				stmt.close();
-	    			if (conn != null)
-	    				conn.close();
-	    		}
-	    		catch (java.sql.SQLException e)
-	    		{
-	    			CTILogger.error( e.getMessage(), e );
-	    		}
+	    		SqlUtils.close(rset, stmt, conn );
 	    	}
 	    }
         return command;

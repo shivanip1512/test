@@ -10,6 +10,7 @@ import java.sql.SQLException;
 
 import com.cannontech.common.util.CtiUtilities;
 import com.cannontech.database.PoolManager;
+import com.cannontech.database.SqlUtils;
 import com.cannontech.database.db.DBPersistent;
 
 /**
@@ -118,24 +119,25 @@ public class DeviceCustomerList extends DBPersistent
 	 */
 	public static synchronized boolean deleteDeviceCustomerList(Integer customerID, java.sql.Connection conn )
 	{
+		java.sql.Statement stat = null;
 		try
 		{
 			if( conn == null )
 				throw new IllegalStateException("Database connection should not be null.");
 	
-			java.sql.Statement stat = conn.createStatement();
+			stat = conn.createStatement();
 			
 			stat.execute( "DELETE FROM " + 
 					DeviceCustomerList.TABLE_NAME + 
 					" WHERE CustomerID=" + customerID );
-	
-			if( stat != null )
-				stat.close();
 		}
 		catch(Exception e)
 		{
 			com.cannontech.clientutils.CTILogger.error( e.getMessage(), e );
 			return false;
+		}
+		finally{
+			SqlUtils.close(stat);
 		}
 		return true;
 	}

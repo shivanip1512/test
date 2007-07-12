@@ -3,6 +3,7 @@ package com.cannontech.database.db.constants;
 import java.sql.SQLException;
 
 import com.cannontech.common.util.CtiUtilities;
+import com.cannontech.database.SqlUtils;
 
 /**
  * @author rneuharth
@@ -112,12 +113,7 @@ public class YukonListEntry extends com.cannontech.database.db.DBPersistent
 		    e.printStackTrace();
 		}
 		finally {
-		    try {
-				if ( stmt != null) stmt.close();
-		    }
-		    catch (SQLException e2) {
-				e2.printStackTrace();
-		    }
+			SqlUtils.close(rset, stmt);
 		}
 		
 		//strange, should not get here

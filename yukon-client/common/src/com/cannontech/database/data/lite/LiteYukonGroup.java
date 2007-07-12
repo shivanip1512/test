@@ -5,6 +5,7 @@ import java.sql.ResultSet;
 import java.sql.SQLException;
 import java.sql.Statement;
 
+import com.cannontech.database.SqlUtils;
 import com.cannontech.database.db.user.YukonGroup;
 
 /**
@@ -122,15 +123,7 @@ public class LiteYukonGroup extends LiteBase {
 		}
 		finally 
 		{
-				try {
-					if( stmt != null )
-						stmt.close();
-					if( conn != null )
-						conn.close();
-				}
-				catch( java.sql.SQLException e ) {
-					com.cannontech.clientutils.CTILogger.error( e.getMessage(), e );
-				}
+			SqlUtils.close(rset, stmt, conn );
 		}
       
 	}

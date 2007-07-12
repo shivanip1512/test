@@ -4,6 +4,7 @@ import java.util.Vector;
 
 import com.cannontech.common.util.CtiUtilities;
 import com.cannontech.database.SqlStatement;
+import com.cannontech.database.SqlUtils;
 import com.cannontech.database.data.point.PointTypes;
 import com.cannontech.database.db.NestedDBPersistent;
 
@@ -374,14 +375,7 @@ public class PAOExclusion extends NestedDBPersistent
 		}
 		finally 
 		{
-			 try 
-			 {
-				if ( stmt != null) stmt.close();
-			 }
-			 catch (java.sql.SQLException e2) 
-			 {
-				e2.printStackTrace();
-			 }
+			SqlUtils.close(rset, stmt);
 		}
 			
 		//strange, should not get here

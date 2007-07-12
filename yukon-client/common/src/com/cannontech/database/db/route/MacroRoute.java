@@ -5,6 +5,8 @@ package com.cannontech.database.db.route;
  */
 import java.sql.SQLException;
 
+import com.cannontech.database.SqlUtils;
+
 public class MacroRoute extends com.cannontech.database.db.DBPersistent 
 {	
 	private Integer RouteID = null;
@@ -161,15 +163,7 @@ public static MacroRoute[] getMacroRoutes(Integer routeID, String databaseAlias)
 	}
 	finally
 	{
-		try
-		{
-			if( pstmt != null ) pstmt.close();
-			if( conn != null ) conn.close();
-		} 
-		catch( java.sql.SQLException e2 )
-		{
-			com.cannontech.clientutils.CTILogger.error( e2.getMessage(), e2 );//something is up
-		}	
+		SqlUtils.close(rset, pstmt, conn );	
 	}
 
 

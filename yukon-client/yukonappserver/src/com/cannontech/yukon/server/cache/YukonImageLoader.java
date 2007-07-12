@@ -1,5 +1,7 @@
 package com.cannontech.yukon.server.cache;
 
+import com.cannontech.database.SqlUtils;
+
 /**
  * @author rneuharth
  * Aug 1, 2002 at 2:58:33 PM
@@ -74,17 +76,7 @@ public class YukonImageLoader implements Runnable
       }
       finally
       {
-         try
-         {
-            if( stmt != null )
-               stmt.close();
-            if( conn != null )
-               conn.close();
-         }
-         catch( java.sql.SQLException e )
-         {
-            com.cannontech.clientutils.CTILogger.error( e.getMessage(), e );
-         }
+    	  SqlUtils.close(rset, stmt, conn );
    //temp code
    timerStop = new java.util.Date();
    com.cannontech.clientutils.CTILogger.info( 
