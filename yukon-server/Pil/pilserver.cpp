@@ -6,8 +6,8 @@
 *
 * PVCS KEYWORDS:
 * ARCHIVE      :  $Archive:   Z:/SOFTWAREARCHIVES/YUKON/PIL/pilserver.cpp-arc  $
-* REVISION     :  $Revision: 1.95 $
-* DATE         :  $Date: 2007/07/09 21:51:28 $
+* REVISION     :  $Revision: 1.96 $
+* DATE         :  $Date: 2007/07/12 20:23:19 $
 *
 * Copyright (c) 1999, 2000, 2001 Cannon Technologies Inc. All rights reserved.
 *-----------------------------------------------------------------------------*/
@@ -1496,6 +1496,14 @@ INT CtiPILServer::analyzeWhiteRabbits(CtiRequestMsg& Req, CtiCommandParser &pars
             if( altgroup )  groupname = parse.getsValue("altgroup");
             if( billgroup ) groupname = parse.getsValue("billgroup");
 
+            //  if it's not a new-style group, convert it
+            if( groupname.find_first_of('/') == string::npos )
+            {
+                if( group )     groupname = "/Meters/Collection/" + groupname;
+                if( altgroup )  groupname = "/Meters/Alternate/"  + groupname;
+                if( billgroup ) groupname = "/Meters/Billing/"    + groupname;
+            }
+
             //  this catches any old-style group names with embedded slashes
             if( groupname.find_first_of('/') > 0 )
             {
@@ -1504,14 +1512,6 @@ INT CtiPILServer::analyzeWhiteRabbits(CtiRequestMsg& Req, CtiCommandParser &pars
             }
             else
             {
-                //  if it's not a new-style group, convert it
-                if( groupname.find_first_of('/') == string::npos )
-                {
-                    if( group )     groupname = "/Meters/Collection/" + groupname;
-                    if( altgroup )  groupname = "/Meters/Alternate/"  + groupname;
-                    if( billgroup ) groupname = "/Meters/Billing/"    + groupname;
-                }
-
                 std::transform(groupname.begin(), groupname.end(), groupname.begin(), ::tolower);
 
                 getDeviceGroupMembers(groupname, members);
@@ -1626,6 +1626,12 @@ INT CtiPILServer::analyzeWhiteRabbits(CtiRequestMsg& Req, CtiCommandParser &pars
 
                 queue<long> members;
 
+                //  if it's not a new-style group, convert it
+                if( groupname.find_first_of('/') == string::npos )
+                {
+                    groupname = "/Meters/Collection/" + groupname;
+                }
+
                 //  this catches any old-style group names with embedded slashes
                 if( groupname.find_first_of('/') > 0 )
                 {
@@ -1634,12 +1640,6 @@ INT CtiPILServer::analyzeWhiteRabbits(CtiRequestMsg& Req, CtiCommandParser &pars
                 }
                 else
                 {
-                    //  if it's not a new-style group, convert it
-                    if( groupname.find_first_of('/') == string::npos )
-                    {
-                        groupname = "/Meters/Collection/" + groupname;
-                    }
-
                     std::transform(groupname.begin(), groupname.end(), groupname.begin(), ::tolower);
 
                     getDeviceGroupMembers(groupname, members);
