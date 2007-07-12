@@ -292,12 +292,14 @@ function enableDates(value)
         }
         
         function changeFilter(filterBy) {
-          document.getElementById('selectAll').disabled = (filterBy == -1);
-          var filterModelValues = document.reportForm.filterValues;
-          for (var i = 0; i < filterModelValues.length; i++) {
-            filterModelValues[i].selectedIndex = -1;
-          }
-        
+          if( document.getElementById('selectAll') != null) {
+	          document.getElementById('selectAll').disabled = (filterBy == -1);
+	          var filterModelValues = document.reportForm.filterValues;
+    	      for (var i = 0; i < filterModelValues.length; i++) {
+        	    filterModelValues[i].selectedIndex = -1;
+	          }
+	      }
+	      
         <%
         //Create a local instance of the map.
         Map<ReportFilter,List<? extends Object>> filterObjectsMap = REPORT_BEAN.getFilterObjectsMap();
@@ -328,14 +330,10 @@ function enableDates(value)
             			<%if( filter.equals(ReportFilter.METER ) ){%>
                     		<div id="Div<%=filter.getFilterTitle()%>" style="display:<%=isFirst==0?"true":"none"%>">
                     		<input type='text' name="filterMeterValues" style='width:650px;'/>
-                    		<input type='hidden' name='selectAll' value='-1'>
-                    		<input type = 'hidden' name='filterValues' value = '-1'>
                     		<BR><span class='NavText'>* Enter a comma separated list of Meter Number(s).</span><br></div>
             			<%} else if( filter.equals(ReportFilter.DEVICE)) {%>
                     		<div id="Div<%=filter.getFilterTitle()%>" style="display:<%=isFirst==0?"true":"none"%>">
 		                    <input type='text' name='filterDeviceValues' style='width:650px;'/>
-		                    <input type='hidden' name='selectAll' value='-1'>
-		                    <input type = 'hidden' name='filterValues' value = '-1' >
         		            <BR><span class='NavText'>* Enter a comma separated list of Device Name(s).</span><br></div>                    
             			<% }else {%>
             				<div id="Div<%=filter.getFilterTitle()%>" style="display:<%=isFirst==0?"true":"none"%>">
