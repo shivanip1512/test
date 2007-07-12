@@ -16,6 +16,7 @@ import org.springframework.web.context.support.WebApplicationContextUtils;
 
 import com.cannontech.common.version.VersionTools;
 import com.cannontech.database.data.lite.LiteYukonUser;
+import com.cannontech.util.ServletUtil;
 import com.cannontech.web.menu.CommonModuleBuilder;
 import com.cannontech.web.menu.ModuleBase;
 import com.cannontech.web.menu.ModuleBuilder;
@@ -70,8 +71,7 @@ public class StandardPageTag extends BodyTagSupport {
         ModuleBuilder moduleBuilder = getModuleBuilder();
         
         ModuleBase moduleBase = moduleBuilder.getModuleBase(getModule());
-        LiteYukonUser user = 
-            (LiteYukonUser) pageContext.getSession().getAttribute("YUKON_USER");
+        LiteYukonUser user = ServletUtil.getYukonUser(pageContext.getSession());
         if (!moduleBase.isUserAuthorized(user)) {
             HttpServletResponse response = 
                 (HttpServletResponse) pageContext.getResponse();
@@ -142,6 +142,10 @@ public class StandardPageTag extends BodyTagSupport {
     }
     
     private void cleanup() {
+        
+        // we have no need for the body anymore
+        setBodyContent(null);
+        
         title = "";
         htmlLevel = HTML_TRANSITIONAL;
         module = "";
