@@ -6,12 +6,15 @@ import java.util.*;
 import java.io.*;
 import java.util.StringTokenizer;
 
+import org.springframework.dao.DataAccessException;
 import org.springframework.dao.DataAccessResourceFailureException;
 import org.springframework.jdbc.core.simple.SimpleJdbcOperations;
 
 import com.cannontech.core.dao.DaoFactory;
 import com.cannontech.database.data.lite.LitePoint;
+import com.cannontech.database.data.lite.LiteYukonPAObject;
 import com.cannontech.spring.YukonSpringHook;
+import com.cannontech.yukon.IDatabaseCache;
 
 
 
@@ -110,20 +113,51 @@ public class ProgressPointList extends LinkedList {
             Iterator itr = super.iterator();
             for(  ; itr.hasNext(); ){
                 vd = ((ProgressTranslatedPoint)itr.next()).getDevice();
-                if( !deviceList.contains(vd) ){
+                //if( !deviceList.contains(vd) ){
                     deviceList.add(vd);
-                }
+                //}
             }
-            
+            IDatabaseCache cache = com.cannontech.database.cache.DefaultDatabaseCache.getInstance();
             if( deviceList.size() > 0 ){
-                itr = deviceList.iterator();
-                while( itr.hasNext() ){
-                    vd = ((VirtualDeviceTS)itr.next());
-                    vd.setDbConnection(poolConnection);
-                    try {
-                        vd.add();
-                    } catch (SQLException e) {
-                        System.out.println("Error adding " + vd.getPAOName() );
+                synchronized(cache)
+                {
+                    List devicesInDB = cache.getAllDevices();
+                    itr = deviceList.iterator();
+                    
+                    while( itr.hasNext() ){
+                        vd = ((VirtualDeviceTS)itr.next());
+                        vd.setDbConnection(poolConnection);
+                        try {
+                            LiteYukonPAObject dbDevice = null;
+                            //Check to see if it is already there
+                            for( Object obj : devicesInDB )
+                            {
+                                if( obj != null)
+                                {
+                                    LiteYukonPAObject pao = (LiteYukonPAObject)obj;
+                                    String one = pao.getPaoName();
+                                    String two = vd.getPAOName();
+                                    if( one.compareTo(two) == 0  )
+                                    {
+                                        dbDevice = pao;
+                                        break;
+                                    }
+                                }
+                            }
+                            //if there we need to get the device id and set it then call update.
+                            if ( dbDevice != null )
+                            {
+                                vd.setDeviceID(dbDevice.getYukonID());
+                                vd.update();
+                                System.out.println("Device Existed, updating: " + vd.getPAOName());
+                            }else{
+                            //if not add it
+                                vd.add();
+                                System.out.println("Device does not exist, adding: " + vd.getPAOName());
+                            }
+                        } catch (SQLException e) {
+                            System.out.println("Error adding " + vd.getPAOName() );
+                        }
                     }
                 }
     
@@ -169,7 +203,7 @@ public class ProgressPointList extends LinkedList {
             SimpleJdbcOperations jdbcOps = (SimpleJdbcOperations) YukonSpringHook.getBean("simpleJdbcTemplate");
             List<LitePoint> allPointsOnPao = DaoFactory.getPointDao().getLitePointsByPaObjectId( ptp.getDevice().getPAObjectID() );
             for (LitePoint point : allPointsOnPao) {
-                if ( 0 == point.getPointName().compareTo( ptp.getPointName()) ){
+                if ( 0 == (point.getPointName().toUpperCase()).compareTo( ptp.getPointName().toUpperCase() ) ){
                     pid = point.getLiteID();
                     break;
                 }
@@ -179,10 +213,24 @@ public class ProgressPointList extends LinkedList {
              INSERT INTO fdrtranslation ( POINTID,DIRECTIONTYPE,InterfaceType,DESTINATION,TRANSLATION )
              VALUES(6288,'Receive','TEXTIMPORT','TEXTIMPORT','Point ID:ALDM_C5013_kvar;DrivePath:;Filename:;POINTTYPE:ANALOG;')
              */
-            if( pid != 0 )
+            if( pid != 0 && notInDB(pid) ){
                 jdbcOps.update("insert into fdrtranslation VALUES (?,?,?,?,?)", pid, DirectionType, Interface, Destination, translation );
-            
+                System.out.println("Inserted translation for Point Id: " + pid);
+            }
+            else
+                System.out.println("Translation in Database for Point Id: " + pid);
         }
         
+    }
+    private boolean notInDB( int pid )
+    {
+        SimpleJdbcOperations jdbcOps = (SimpleJdbcOperations) YukonSpringHook.getBean("simpleJdbcTemplate");
+        try{
+            jdbcOps.queryForInt("select pointid from fdrtranslation where pointid = ?", pid );
+        }catch(DataAccessException e)
+        {
+            return true;
+        }
+        return false;
     }
 }

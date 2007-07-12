@@ -16,7 +16,24 @@ public class ProgCCArea {
         this.name = name;
     }
 
-
+    public ProgCCFeeder getFeeder( String subName, String feederName )
+    {
+        //Find sub
+        for( ProgCCSubstation sub : ccSubstationList )
+        {
+            if( sub.getName().compareTo(subName) == 0)
+                return sub.getFeeder(feederName);
+        }
+        
+        //No sub found, so lets make it, and add make a feeder while we are at it.
+        ProgCCSubstation sub = new ProgCCSubstation(subName);
+        ccSubstationList.add( sub );
+        // new sub, so no feeders. make one and return it.
+        ProgCCFeeder feeder = new ProgCCFeeder(feederName);
+        sub.addFeeder(feeder);
+        
+        return feeder;
+    }
     public int getId() {
         return id;
     }

@@ -5,7 +5,10 @@ import java.sql.SQLException;
 import java.util.ArrayList;
 import java.util.StringTokenizer;
 
+import org.springframework.dao.DataAccessException;
 import org.springframework.jdbc.core.simple.SimpleJdbcOperations;
+import org.springframework.jdbc.support.JdbcUtils;
+
 import com.cannontech.cbc.db.CapControlFactory;
 import com.cannontech.cbc.model.CBCCreationModel;
 import com.cannontech.common.util.SqlStatementBuilder;
@@ -14,6 +17,7 @@ import com.cannontech.database.SqlUtils;
 import com.cannontech.database.data.pao.PAOGroups;
 import com.cannontech.database.db.capcontrol.*;
 import com.cannontech.spring.YukonSpringHook;
+import com.cannontech.tools.csv.CSVReader;
 
 
 /*
@@ -25,20 +29,11 @@ public class ProgressCCImporter {
 
     private  String fileName;
     private  ArrayList<ProgCCArea> areaList = new ArrayList<ProgCCArea>();
-    BufferedReader in = null;
     boolean testrun;
     
     public ProgressCCImporter(){
         super();
         testrun = false;
-    }
-        
-    public BufferedReader getIn() {
-        return in;
-    }
-
-    public void setIn(BufferedReader in) {
-        this.in = in;
     }
 
     public String getFileName() {
@@ -59,37 +54,30 @@ public class ProgressCCImporter {
     
     private boolean readInData( ){
         //Comma Delimited file
-        String line;
+        String [] line = null;
         boolean result = true;
-                        
-        if ( in == null )
-        {
-            return false;
+        CSVReader reader = null;
+        try{
+            reader = new CSVReader( new FileReader(fileName));
+        }catch(FileNotFoundException e){
+            System.out.print(e);
         }
         
-        while( true ){
-            try{
-                if( in.ready() )
-                    line = new String(in.readLine());
-                else
-                    break;
-            }catch(IOException e){
-                System.out.print(e);
-                result = false;
-                break;
-            }
-
-            try {
-                if( !processInputText(line)){
+        try{
+            while( (line = reader.readNext()) != null  )
+            {
+                if( !processInputText(line))
+                {
                     System.out.println(" Error processing line: ");
                     System.out.println("---Start---");
                     System.out.println(line);
                     System.out.println("---Stop ---");
                 }
-            } catch (Exception e) {
-                System.out.println("Error while Processing Text" );
-                e.printStackTrace();
             }
+        }catch(Exception e){
+            System.out.print(e);
+            System.out.println("Syntax error, some lines were not processed!");
+            return false;
         }
         
         return result;
@@ -97,7 +85,7 @@ public class ProgressCCImporter {
     }
     
     /* This is going to be clunky :( */
-    public boolean processInputText( String areaText ) throws Exception
+    public boolean processInputTextOLD( String areaText ) throws Exception
     {
         ProgCCArea area = new ProgCCArea();
         int size = 0;
@@ -145,6 +133,80 @@ public class ProgressCCImporter {
         
         return true;
     }
+    public boolean processInputText( String [] capBankStr ) throws Exception
+    {
+        if( capBankStr.length < 16)// there will be more than 16, but we skip the rest.
+            return false;
+        String area = null;
+        String feeder = null;
+        String substation = null;
+        ProgCCCapbank bank = new ProgCCCapbank();
+                
+        //File Order: ( Progress Names )
+        // EQUIPMENT_ID : SKIP : REGION : FEEDER : SUBSTATION : OP_CENTER : GEO_WORK_AREA :  
+        // SKIP : SKIP : LAT : LON : LOCATION : SKIP : CAPBANKTYPE : CTL_TYPE : 
+        // CAPBANK_SIZE (field 16): SKIP : SKIP : SKIP : SKIP
+
+        //build the capbank. storing the area and feeder and substation
+        bank.setEquipmentID(capBankStr[0].toUpperCase());
+        // SKIP
+        if(capBankStr[2].compareTo("") == 0)
+            area = "blankArea";
+        else
+            area = capBankStr[2].toUpperCase();
+        if(capBankStr[3].compareTo("") == 0)
+            feeder = "blankFeeder";
+        else
+            feeder = capBankStr[3].toUpperCase();
+        if(capBankStr[4].compareTo("") == 0)
+            substation = "blankSubstation";
+        else
+            substation = capBankStr[4].toUpperCase();
+        bank.setOpCenterAbv(capBankStr[5].toUpperCase());
+        bank.setGeoWorkArea(capBankStr[6].toUpperCase());
+        // SKIP
+        // SKIP
+        bank.setLat(capBankStr[9].toUpperCase());
+        bank.setLon(capBankStr[10].toUpperCase());
+        bank.setAddress(capBankStr[11].toUpperCase());
+        // SKIP
+        bank.setBankType(capBankStr[13].toUpperCase());
+        bank.setCtlType(capBankStr[14].toUpperCase());
+        bank.setBankSize(capBankStr[15].toUpperCase());
+        // SKIP : SKIP : SKIP : SKIP
+        
+        
+        //Find the feeder, if it does not exist create the feeder, and substation/area if needed.
+        ProgCCFeeder fdr = null;
+        
+        for( ProgCCArea itr : areaList )
+        {
+            if( itr.getName().compareTo(area) == 0)
+            {
+                fdr = itr.getFeeder(substation,feeder);
+                break;//should only be one
+            }
+        }
+        //add the capbank to the feeder
+        if( fdr != null)
+        {
+            //we found it!
+            fdr.addCapbank(bank);
+        }
+        else
+        {//did not get one. that can only mean there is not area/sub/feeder for this bank. lets make one.
+            ProgCCArea newArea = new ProgCCArea(area);
+            ProgCCSubstation newSub = new ProgCCSubstation(substation);
+            ProgCCFeeder newFeeder = new ProgCCFeeder(feeder);
+            
+            newFeeder.addCapbank(bank);
+            newSub.addFeeder(newFeeder);
+            newArea.addSub(newSub);
+            
+            areaList.add(newArea);
+        }
+        return true;
+    }   
     
     public void insertToDatabase(){
         CBCCreationModel cpf = null;
@@ -172,14 +234,20 @@ public class ProgressCCImporter {
                 //see if the object exists and set the id up            
                 SqlStatementBuilder sqlStatement = new SqlStatementBuilder();
                 sqlStatement.append("select paobjectid from yukonpaobject");
-                sqlStatement.append("where paoname = ?");
+                sqlStatement.append("where paoname = ? and type = ?");
                 
-                itemId = jdbcOps.queryForInt(sqlStatement.toString(), area.getName() );
+                try {
+                    itemId = jdbcOps.queryForInt(sqlStatement.toString(), area.getName(), "CCArea" );
+                } catch (DataAccessException e) {
+                    System.out.println("Exception executing query for id for area: " + area.getName() );
+                    e.printStackTrace();
+                    throw e;
+                }
             }
             if( itemId != 0 ){
                 dbConnection = PoolManager.getYukonConnection();
                 area.setId( itemId );    
-
+                
                 //counter to set sub display order
                 subDisplayOrder = 1;
                 for( ProgCCSubstation sub : area.getSubs() ){
@@ -187,14 +255,21 @@ public class ProgressCCImporter {
                     cpf = new CBCCreationImpl();
                     cpf.setName(sub.getName());
                     cpf.setWizPaoType(PAOGroups.CAP_CONTROL_SUBBUS);
+                    itemId = -1;
                     itemId = CapControlFactory.createCapControlObject(cpf);
                     if( itemId == -1){
                         //see if the object exists and set the id up
                         SqlStatementBuilder sqlStatement = new SqlStatementBuilder();
                         sqlStatement.append("select paobjectid from yukonpaobject");
-                        sqlStatement.append("where paoname = ?");
+                        sqlStatement.append("where paoname = ? and type = ?");
                         
-                        itemId = jdbcOps.queryForInt(sqlStatement.toString(), sub.getName() );
+                        try {
+                            itemId = jdbcOps.queryForInt(sqlStatement.toString(), sub.getName(), "CCSubBus");
+                        } catch (DataAccessException e) {
+                            System.out.println("Exception executing query for id for sub: " + sub.getName() );
+                            e.printStackTrace();
+                            throw e;
+                        }                        
                     }
                     if( itemId != 0 )
                     {
@@ -208,12 +283,23 @@ public class ProgressCCImporter {
                         ccsa.setAreaID(area.getId());
                         ccsa.setSubstationBusID(sub.getId());
                         ccsa.setDisplayOrder(subDisplayOrder);
+                        
                         try {
-                            ccsa.add();
-                        } catch (SQLException e) {
-                            //e.printStackTrace();
-                            System.out.println("Exception adding " + area.getName() + " to " + sub.getName() + " CCSubAreaAssignment");
-                        }
+                            itemId = jdbcOps.queryForInt("select AreaID from CCSubAreaAssignment where substationbusid = ?", sub.getId());
+                            try {
+                                ccsa.update();
+                            } catch (SQLException e2) {
+                                System.out.println("Exception updating " + sub.getId() + " to " + area.getId() + " CCSubAreaAssignment");
+                            }
+                        } catch (DataAccessException e) {
+                            try {
+                                ccsa.add();
+                            } catch (SQLException e2) {
+                                System.out.println("Exception adding " + sub.getId() + " to " + area.getId() + " CCSubAreaAssignment");
+                            }
+                        }    
+                            
+
                         
                         subDisplayOrder++;
                         
@@ -222,16 +308,22 @@ public class ProgressCCImporter {
                             cpf = new CBCCreationImpl();
                             cpf.setName(feeder.getName());
                             cpf.setWizPaoType(PAOGroups.CAP_CONTROL_FEEDER);
-                            
+                            itemId = -1;
                             itemId = CapControlFactory.createCapControlObject(cpf);
                             if( itemId == -1){
                                 //see if the object exists and set the id up
                                 //see if the object exists and set the id up
                                 SqlStatementBuilder sqlStatement = new SqlStatementBuilder();
                                 sqlStatement.append("select paobjectid from yukonpaobject");
-                                sqlStatement.append("where paoname = ?");
+                                sqlStatement.append("where paoname = ? and type = ?");
                                 
-                                itemId = jdbcOps.queryForInt(sqlStatement.toString(), feeder.getName() );
+                                try {
+                                    itemId = jdbcOps.queryForInt(sqlStatement.toString(), feeder.getName(), "CCFeeder" );
+                                } catch (DataAccessException e) {
+                                    System.out.println("Exception executing query for id for feeder: " + feeder.getName() );
+                                    e.printStackTrace();
+                                    throw e;
+                                }
                             }
                             if( itemId != 0 )
                             {
@@ -243,11 +335,20 @@ public class ProgressCCImporter {
                                 CCFeederSubAssignment ccfs = new CCFeederSubAssignment(feeder.getId(), sub.getId(), feederDisplayOrder);
                                 ccfs.setDbConnection(dbConnection);
                                 try {
-                                    ccfs.add();
-                                } catch (SQLException e) {
-                                    //e.printStackTrace();
-                                    System.out.println("Exception adding " + sub.getName() + " to " + feeder.getName() + " CCFeederSubAssignment");
-                                }
+                                    itemId = jdbcOps.queryForInt("select SubStationBusID from CCFeederSubAssignment where feederid = ?", feeder.getId());
+                                    try {
+                                        
+                                        ccfs.update();
+                                    } catch (SQLException e2) {
+                                        System.out.println("Exception updating " + feeder.getId() + " to " + sub.getId() + " CCFeederSubAssignment");
+                                    }
+                                } catch (DataAccessException e) {
+                                    try {
+                                        ccfs.add();
+                                    } catch (SQLException e2) {
+                                        System.out.println("Exception adding " + feeder.getId() + " to " + sub.getId() + " CCFeederSubAssignment");
+                                    }
+                                }    
                                 //increment feeder order, if there is another feeder it will use the new value
                                 feederDisplayOrder++;
                                 for( ProgCCCapbank bank : feeder.getCcCapBanks() ){
@@ -255,7 +356,7 @@ public class ProgressCCImporter {
                                     cpf = new CBCCreationImpl();
                                     cpf.setName(bank.getEquipmentID());
                                     cpf.setWizPaoType(PAOGroups.CAPBANK);
-                                    
+                                    itemId = -1;
                                     itemId = CapControlFactory.createCapControlObject(cpf);
                                     if( itemId == -1){
                                         //see if the object exists and set the id up
@@ -264,7 +365,13 @@ public class ProgressCCImporter {
                                         sqlStatement.append("select paobjectid from yukonpaobject");
                                         sqlStatement.append("where paoname = ?");
                                         
-                                        itemId = jdbcOps.queryForInt(sqlStatement.toString(), bank.getEquipmentID() );
+                                        try {
+                                            itemId = jdbcOps.queryForInt(sqlStatement.toString(),bank.getEquipmentID());
+                                        } catch (DataAccessException e) {
+                                            System.out.println("Exception executing query for id for bank: " + bank.getEquipmentID() );
+                                            e.printStackTrace();
+                                            throw e;
+                                        }                                        
                                     }
                                     if( itemId != 0 )
                                     {
@@ -304,12 +411,27 @@ public class ProgressCCImporter {
                                         //LINK Capbank and Feeder
                                         CCFeederBankList ccbl = new CCFeederBankList(feeder.getId(), bank.getId(), capBankDisplayOrder,capBankDisplayOrder, feeder.getCcCapBanks().size() - (capBankDisplayOrder-1));
                                         ccbl.setDbConnection(dbConnection);
-                                        try {
-                                            ccbl.add();
-                                        } catch (SQLException e) {
-                                            e.printStackTrace();
-                                            System.out.println("Exception adding " + feeder.getName() + " to " + bank.getEquipmentID() + " CCFeederBankList");
-                                        }
+                                        try 
+                                        {
+                                            itemId = jdbcOps.queryForInt("select FeederId from CCFeederBankList where deviceid = ?", bank.getId() );
+                                            try 
+                                            {
+                                                ccbl.update();
+                                            } catch (SQLException e2) 
+                                            {
+                                                System.out.println("Exception updating " + bank.getId() + " to " + feeder.getId() + " CCFeederBankList");
+                                            }
+                                        } 
+                                        catch (DataAccessException e) 
+                                        {
+                                            try 
+                                            {
+                                                ccbl.add();
+                                            } catch (SQLException e2) 
+                                            {
+                                                System.out.println("Exception adding " + bank.getId() + " to " + feeder.getId() + " CCFeederBankList");
+                                            }
+                                        }  
                                         
                                         capBankDisplayOrder++;
                                     }
@@ -318,7 +440,7 @@ public class ProgressCCImporter {
                         }
                     }
                 }
-            SqlUtils.close(dbConnection);
+                JdbcUtils.closeConnection(dbConnection);
             }
         }
     }
@@ -328,11 +450,11 @@ public class ProgressCCImporter {
         for( ProgCCArea area : areaList ){            
             System.out.println("Area Name: " + area.getName());
             for( ProgCCSubstation sub : area.getSubs() ){
-                System.out.println("Sub Name: " + sub.getName());
+                System.out.println("\tSub Name: " + sub.getName());
                 for( ProgCCFeeder feeder : sub.getCcFeederList() ){
-                    System.out.println("Feeder Name: " + feeder.getName() );
+                    System.out.println("\t\tFeeder Name: " + feeder.getName() );
                     for( ProgCCCapbank bank : feeder.getCcCapBanks() ){
-                        System.out.println( bank.getString() );
+                        System.out.println( "\t\t\t" + bank.getString() );
                     }
                 }
             }
@@ -356,16 +478,8 @@ public class ProgressCCImporter {
         }
         System.out.print("\n");
         
-        try {
-            importer.setIn(new BufferedReader(new FileReader(importer.getFileName())) );
-        }catch (FileNotFoundException e) {
-            e.printStackTrace();
-            System.exit(0);
-        }
 
-        //read in data
-        if (importer.getIn() != null)
-            ret = importer.readInData(); 
+        ret = importer.readInData(); 
         
         if( importer.isTestrun() == false ){
             if ( !ret ){
@@ -386,7 +500,7 @@ public class ProgressCCImporter {
             System.out.println("The information successfully read in: ");
             importer.print();
         }
-        System.exit(0);  
+        System.exit(0);
     }
 
 }

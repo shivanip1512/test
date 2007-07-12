@@ -17,7 +17,20 @@ public class ProgCCSubstation {
         this.name = name;
     }
 
-    
+    public ProgCCFeeder getFeeder(String feederName )
+    {
+        //if its there, return it, if not make a new one and return that.
+        for( ProgCCFeeder fdr : ccFeederList )
+        {
+            if( fdr.getName().compareTo(feederName) == 0 )
+            {
+                return fdr;
+            }
+        }
+        ProgCCFeeder newFdr = new ProgCCFeeder(feederName);
+        ccFeederList.add(newFdr);
+        return newFdr;
+    }
     public int getId() {
         return id;
     }
