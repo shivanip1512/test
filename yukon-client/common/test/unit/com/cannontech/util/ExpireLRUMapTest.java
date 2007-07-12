@@ -1,66 +1,72 @@
 package com.cannontech.util;
 
-import static org.junit.Assert.assertNull;
-import static org.junit.Assert.assertNotNull;
-import static org.junit.Assert.assertTrue;
 import static org.junit.Assert.assertFalse;
+import static org.junit.Assert.assertNotNull;
+import static org.junit.Assert.assertNull;
+import static org.junit.Assert.assertTrue;
+
+import java.util.Calendar;
+import java.util.Date;
+import java.util.GregorianCalendar;
 
 import org.junit.After;
 import org.junit.Before;
 import org.junit.Test;
 
-import java.util.GregorianCalendar;
-import java.util.Date;
-
 public class ExpireLRUMapTest {
-    private static final int KEY_COUNT = 20;
-    private GregorianCalendar now;
-    private ExpireLRUMap<Integer,SimpleReadDate> map;
+    private Calendar now;
+    private Calendar yesterday;
+    private ExpireLRUMap<String,SimpleReadDate> map;
+    private SimpleReadDate nowRead;
+    private SimpleReadDate yesterdayRead;
     
     @Before
     public void setUp() {
-        now = new GregorianCalendar();
-        map = new ExpireLRUMap<Integer,SimpleReadDate>();
-        for (int x = 1; x < KEY_COUNT; x++) {
-            SimpleReadDate readDate = new SimpleReadDate();
-            readDate.setReadDate(new GregorianCalendar(now.get(now.YEAR), now.get(now.MONTH), now.get(now.DAY_OF_MONTH) - x).getTime());
-            map.put(x, readDate);
-        }
+        now = Calendar.getInstance();
+        
+        yesterday = Calendar.getInstance();
+        yesterday.set(Calendar.DAY_OF_YEAR, now.get(Calendar.DAY_OF_YEAR) - 1);
+        
+        nowRead = new SimpleReadDate();
+        nowRead.setReadDate(now.getTime());
+        
+        yesterdayRead = new SimpleReadDate();
+        yesterdayRead.setReadDate(yesterday.getTime());
+        
+        map = new ExpireLRUMap<String,SimpleReadDate>();
+        map.put("now", nowRead);
+        map.put("yesterday", yesterdayRead);
     }
     
     @After
     public void tearDown() {
         map = null;
+        now = null;
+        yesterday = null;
+        nowRead = null;
+        yesterdayRead = null;
     }
     
     @Test
     public void test_get() {
-        for (int x = 1; x < KEY_COUNT; x++) {
-            assertNotNull("has not expired yet, should not be null", map.get(x, x + 1));
-            assertNull("has expired, should be null", map.get(x));
-            assertNull("has already been expired, should be null", map.get(x));
-        }
+        assertNull("has expired, should be null", map.get("yesterday"));
+        assertNull("has already been expired, should be null", map.get("yesterday"));
+        assertNotNull("has not expired yet, should not be null", map.get("now"));
     }
     
     @Test
     public void test_containsKey() {
-        for (int x = 1; x < KEY_COUNT; x++) {
-            assertTrue("has not expired yet, should be true", map.containsKey(x, x + 1));
-            assertNotNull("has not expired yet, should not be null", map.get(x, x + 1));
-            assertFalse("has expired, should be false", map.containsKey(x));
-            assertNull("has expired, should be null", map.get(x));
-            assertNull("has already been expired, should be null", map.get(x));
-        }
+        assertTrue("has not expired yet, should be true", map.containsKey("now"));
+        assertNotNull("has not expired yet, should not be null", map.get("now"));
+        assertFalse("has expired, should be false", map.containsKey("yesterday"));
+        assertNull("has expired, should be null", map.get("yesterday"));
     }
+    
     
     @Test 
     public void test_containsValue() {
-        int days = 2;
-        for (final SimpleReadDate readDate : map.values()) {
-            assertTrue("has not expired yet, should be true", map.containsValue(readDate, days));
-            assertFalse("has expired, should be false", map.containsValue(readDate));
-            days++;
-        }
+        assertTrue("has not expired yet, should be true", map.containsValue(nowRead));
+        assertFalse("has expired, should be false", map.containsValue(yesterdayRead));
     }
     
     public static class SimpleReadDate implements ExpireLRUMap.ReadDate {

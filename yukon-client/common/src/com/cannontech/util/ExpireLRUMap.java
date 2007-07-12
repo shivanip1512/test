@@ -1,15 +1,16 @@
 package com.cannontech.util;
 
 import java.util.ArrayList;
+import java.util.Calendar;
 import java.util.Collection;
 import java.util.Collections;
 import java.util.Date;
-import java.util.GregorianCalendar;
 import java.util.HashSet;
 import java.util.Map;
 import java.util.Set;
 
 import org.apache.commons.collections.map.LRUMap;
+import org.apache.commons.lang.time.DateUtils;
 
 @SuppressWarnings("unchecked")
 public class ExpireLRUMap<K, V extends ExpireLRUMap.ReadDate> {
@@ -77,13 +78,13 @@ public class ExpireLRUMap<K, V extends ExpireLRUMap.ReadDate> {
     }
     
     public boolean isExpired(final V t, final int days) {
-        final GregorianCalendar now = new GregorianCalendar();
-        int currentDay = now.get(GregorianCalendar.DAY_OF_YEAR);
-
-        now.setTime(t.getReadDate());
-        int readDay = now.get(GregorianCalendar.DAY_OF_YEAR);
-
-        boolean result = Math.abs(currentDay - readDay) >= days;
+        final Calendar now = Calendar.getInstance();
+        final Calendar readDate = Calendar.getInstance();
+        
+        readDate.setTime(DateUtils.truncate(t.getReadDate(), Calendar.HOUR));
+        readDate.add(Calendar.DAY_OF_YEAR, days);
+        
+        boolean result = readDate.before(now);
         return result;
     }
     
