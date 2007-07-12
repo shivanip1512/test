@@ -17,6 +17,7 @@ import com.cannontech.common.chart.model.AttributeGraphType;
 import com.cannontech.common.chart.model.ChartPeriod;
 import com.cannontech.common.device.YukonDevice;
 import com.cannontech.common.device.attribute.model.Attribute;
+import com.cannontech.common.device.attribute.model.BuiltInAttribute;
 import com.cannontech.common.device.attribute.service.AttributeService;
 import com.cannontech.core.dao.DeviceDao;
 import com.cannontech.database.data.lite.LitePoint;
@@ -64,12 +65,13 @@ public class TrendWidget extends WidgetControllerBase {
         // the device
         Set<Attribute> existingAtributes = attributeService.getAllExistingAtributes(device);
 
+        boolean graphSelected = selectedAttributeGraph != null;
         Set<AttributeGraphType> availableAttributeGraphs = new HashSet<AttributeGraphType>();
         for (AttributeGraphType agt : supportedAttributeGraphMap.values()) {
             if (existingAtributes.contains(agt.getAttribute())) {
                 availableAttributeGraphs.add(agt);
 
-                if (selectedAttributeGraph == null) {
+                if (selectedAttributeGraph == null || (!graphSelected && agt.getAttribute() == BuiltInAttribute.USAGE)) {
                     selectedAttributeGraph = agt;
                 }
 
@@ -85,7 +87,7 @@ public class TrendWidget extends WidgetControllerBase {
             // Get start date and period
             Calendar startDate = new GregorianCalendar();
             startDate.setTime(new Date());
-            String periodString = WidgetParameterHelper.getStringParameter(request, "period", "DAY");
+            String periodString = WidgetParameterHelper.getStringParameter(request, "period", "YEAR");
             ChartPeriod period = ChartPeriod.valueOf(periodString);
     
             mav.addObject("availableAttributeGraphs", availableAttributeGraphs);

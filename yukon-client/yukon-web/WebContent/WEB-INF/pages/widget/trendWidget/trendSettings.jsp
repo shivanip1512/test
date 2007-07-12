@@ -37,8 +37,8 @@
     <margins>                                                 <!-- plot area margins -->
       <left>60</left>                                         <!-- [60](Number) --> 
       <top>60</top>                                           <!-- [60](Number) --> 
-      <right>10</right>                                       <!-- [60](Number) --> 
-      <bottom>0</bottom>                                     <!-- [80](Number) --> 
+      <right>30</right>                                       <!-- [60](Number) --> 
+      <bottom>25</bottom>                                     <!-- [80](Number) --> 
     </margins>
   </plot_area>
   
