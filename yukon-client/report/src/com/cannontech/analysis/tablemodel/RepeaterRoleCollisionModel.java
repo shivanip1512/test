@@ -156,4 +156,14 @@ public class RepeaterRoleCollisionModel extends ReportModelBase {
     public String getTitleString() {
         return title ;
     }
+    
+    @Override
+    public boolean useStartDate() {
+        return false;
+    }
+    
+    @Override
+    public boolean useStopDate() {
+        return false;
+    }
 }
