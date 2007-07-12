@@ -96,16 +96,26 @@ public class BillingFile extends java.util.Observable implements Runnable
 				else if( argLowerCase.startsWith("test") ||  argLowerCase.startsWith("alt") )
 				{//BillingFileDefaults.billGroupTypeString=TESTCOLLECTIONGROUP
 				 //BillingFileDefaults.billGroup
-					String subString = args[i].substring(startIndex);
-					String group = FixedDeviceGroups.TESTCOLLECTIONGROUP.getGroup(subString);
-					billingFile.getBillingDefaults().setDeviceGroups(Collections.singletonList(group));
+                    String group;
+                    String subString = args[i].substring(startIndex);
+                    if (subString.startsWith("/")) {
+                        group = subString;
+                    } else {
+                        group = FixedDeviceGroups.TESTCOLLECTIONGROUP.getGroup(subString);
+                    }
+                    billingFile.getBillingDefaults().setDeviceGroups(Collections.singletonList(group));
 				}
 				else if( argLowerCase.startsWith("bill") )
 				{//BillingFileDefaults.billGroupTypeString.BILLINGGROUP
 				 //BillingFileDefaults.billGroup
-					String subString = args[i].substring(startIndex);
-					String group = FixedDeviceGroups.BILLINGGROUP.getGroup(subString);
-					billingFile.getBillingDefaults().setDeviceGroups(Collections.singletonList(group));
+                    String group;
+                    String subString = args[i].substring(startIndex);
+                    if (subString.startsWith("/")) {
+                        group = subString;
+                    } else {
+                        group = FixedDeviceGroups.BILLINGGROUP.getGroup(subString);
+                    }
+                    billingFile.getBillingDefaults().setDeviceGroups(Collections.singletonList(group));
 				}
 				else if( argLowerCase.startsWith("end"))
 				{//BillingFileDefaults.endDate
