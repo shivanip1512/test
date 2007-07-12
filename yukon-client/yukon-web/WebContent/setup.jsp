@@ -62,7 +62,7 @@
 			</div>
 		</div>
 	
-		<div class="loginMain">
+		<div class="loginMain" style="width: 550px">
 			<div class="loginTopSection">
 				<div class="loginTitleIntroText">Welcome to</div>
 				<div class="loginTitleText">Yukon Administration Setup</div>
@@ -118,7 +118,7 @@
 					</div>
 				
 					<form name="form1" method="post" action="<%=request.getContextPath()%>/servlet/SetupServlet">
-						<table align="center" >
+						<table align="center">
 	  
 <%
 	boolean isValidConn = false;
