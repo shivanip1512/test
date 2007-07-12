@@ -17,7 +17,7 @@
 <div style="text-align: right">
   <ct:widgetActionRefresh method="read" label="Read Now" labelBusy="Reading"/>
 </div>
-<BR>
+<br>
 
 <ct:nameValueContainer>
   <ct:nameValue name="Outages Last Retrieved">
@@ -25,7 +25,8 @@
     	Outage Log Analog Point is not configured.
     </c:if>
     <c:if test="${isOutageConfigured}">
-		<cti:formatDate value="${data.readDate}" type="both" var="formattedReadDate" />${formattedReadDate}
+		<cti:formatDate value="${data.readDate}" type="both" var="formattedReadDate" />
+        ${formattedReadDate}
     </c:if>
   </ct:nameValue>
 </ct:nameValueContainer>
@@ -36,15 +37,25 @@
     <th>Time</th>
     <th>Duration</th>
   </tr>
+  <c:if test="${empty data.outageData}">
+    <c:forEach items="1">
+      <tr class="<ct:alternateRow odd="" even="altRow"/>">
+    	<td>n/a</td>
+    	<td>n/a</td>
+      </tr>
+    </c:forEach>
+  </c:if>
+  <c:if test="${not empty data.outageData}">
   <c:forEach items="${data.outageData}" var="outage">
   <tr class="<ct:alternateRow odd="" even="altRow"/>">
 	<td>${outage.timestamp }</td>
 	<td>${outage.duration }</td>
   </tr>
   </c:forEach>
+  </c:if>
 </table>
 </div>
-<BR>
+<br>
 
 <c:if test="${isRead}">
 	<c:import url="/WEB-INF/pages/widget/common/meterReadingsResult.jsp"/>
