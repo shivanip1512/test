@@ -2,23 +2,16 @@ package com.cannontech.analysis.tablemodel;
 
 import java.sql.ResultSet;
 import java.sql.SQLException;
-import java.sql.Timestamp;
 import java.util.ArrayList;
-import java.util.Collections;
-import java.util.Date;
 import java.util.List;
 import java.util.Set;
 
-import org.apache.commons.lang.Validate;
 import org.springframework.jdbc.core.JdbcOperations;
 import org.springframework.jdbc.core.RowCallbackHandler;
 
-import com.cannontech.analysis.tablemodel.CapControlOperationsModel.ModelRow;
 import com.cannontech.clientutils.CTILogger;
-import com.cannontech.common.util.CtiUtilities;
 import com.cannontech.common.util.SqlStatementBuilder;
 import com.cannontech.database.JdbcTemplateHelper;
-import com.cannontech.database.PoolManager;
 
 public class CBCInventoryModel extends BareReportModelBase<CBCInventoryModel.ModelRow> implements CapControlFilterable {
 

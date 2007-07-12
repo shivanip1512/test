@@ -28,18 +28,6 @@ import com.cannontech.database.data.lite.LitePoint;
 import com.cannontech.database.data.point.PointTypes;
 import com.cannontech.spring.YukonSpringHook;
 
-/**
- * Created on Dec 15, 2003
- * @author snebben
- * DatabaseModel TableModel object
- * Innerclass object for row data is CarrierData:
- *  String paoName			- YukonPaobject.paoName (device)
- *  String paoType			- YukonPaobject.type
- *  String address			- DeviceCarrierSettings.address
- *  String routeName		- YukonPaobject.paoName (route)
- *  String collGroup		- DeviceMeterGroup.collectionGroup
- *  String testCollGroup	- DeviceMeterGroup.testCollectionGroup
- */
 public class PointDataSummaryModel extends ReportModelBase
 {
 	/** Number of columns */
@@ -207,7 +195,6 @@ public class PointDataSummaryModel extends ReportModelBase
 	
 	private boolean showDetails = false;
 	
-	//Order by CollectionGroup, Route based on FILTER selection, and not the user's sort by option
 	public static final int ORDER_BY_DEVICE_NAME = 0;
 	public static final int ORDER_BY_METER_NUMBER = 1;
 	public static final int ORDER_BY_PHYSICAL_ADDRESS = 2;

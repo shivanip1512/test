@@ -1,12 +1,8 @@
 package com.cannontech.analysis.report;
 
-import java.text.DateFormat;
 import java.util.Arrays;
 import java.util.List;
 
-import org.jfree.report.JFreeReportBoot;
-
-import com.cannontech.analysis.ReportFuncs;
 import com.cannontech.analysis.function.AggregateFooterFieldFactory;
 import com.cannontech.analysis.function.LabelFooterFieldFactory;
 import com.cannontech.analysis.function.SumFooterFieldFactory;

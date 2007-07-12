@@ -12,7 +12,7 @@ import org.jfree.report.elementfactory.StaticShapeElementFactory;
 import org.jfree.report.elementfactory.TextFieldElementFactory;
 
 import com.cannontech.analysis.ReportFactory;
-import com.cannontech.analysis.tablemodel.RepeaterRoleCollisionModel;;
+import com.cannontech.analysis.tablemodel.RepeaterRoleCollisionModel;
 
 public class RepeaterRoleCollisionReport extends YukonReportBase
 {

@@ -1,6 +1,7 @@
 package com.cannontech.analysis.report;
 
 import java.awt.BasicStroke;
+import java.awt.Color;
 import java.awt.geom.Point2D;
 import java.awt.print.PageFormat;
 import java.util.Date;
@@ -20,6 +21,8 @@ import org.jfree.report.function.ExpressionCollection;
 import org.jfree.report.function.FunctionInitializeException;
 import org.jfree.report.function.ItemHideFunction;
 import org.jfree.report.modules.gui.base.PreviewDialog;
+import org.jfree.report.style.ElementStyleSheet;
+import org.jfree.ui.FloatDimension;
 
 import com.cannontech.analysis.ReportFactory;
 import com.cannontech.analysis.tablemodel.PowerFailModel;
@@ -103,22 +106,22 @@ public class PowerFailReport extends YukonReportBase
     }       
 
     /**
-     * Create a Group for CollectionGroup  
+     * Create a Group for Group  
      * @return Group
      */
-    private Group createCollGrpGroup()
+    private Group createGroupGroup()
     {
-        final Group collGrpGroup = new Group();
-        collGrpGroup.setName( ((PowerFailModel)getModel()).getColumnName(PowerFailModel.COLL_GROUP_NAME_COLUMN) + ReportFactory.NAME_GROUP);
-        collGrpGroup.addField( ((PowerFailModel)getModel()).getColumnName(PowerFailModel.COLL_GROUP_NAME_COLUMN));
+        final Group groupGroup = new Group();
+        groupGroup.setName( ((PowerFailModel)getModel()).getColumnName(PowerFailModel.GROUP_NAME_COLUMN) + ReportFactory.NAME_GROUP);
+        groupGroup.addField( ((PowerFailModel)getModel()).getColumnName(PowerFailModel.GROUP_NAME_COLUMN));
 
         GroupHeader header = ReportFactory.createGroupHeaderDefault();
 
-        LabelElementFactory factory = ReportFactory.createGroupLabelElementDefault(getModel(), PowerFailModel.COLL_GROUP_NAME_COLUMN);
+        LabelElementFactory factory = ReportFactory.createGroupLabelElementDefault(getModel(), PowerFailModel.GROUP_NAME_COLUMN);
         factory.setText(factory.getText() + ":");
         header.addElement(factory.createElement());
 
-        TextFieldElementFactory tfactory = ReportFactory.createGroupTextFieldElementDefault(getModel(), PowerFailModel.COLL_GROUP_NAME_COLUMN);
+        TextFieldElementFactory tfactory = ReportFactory.createGroupTextFieldElementDefault(getModel(), PowerFailModel.GROUP_NAME_COLUMN);
         tfactory.setAbsolutePosition(new Point2D.Float(110, 1));    //override the posX location
         header.addElement(tfactory.createElement());
 
@@ -128,17 +131,38 @@ public class PowerFailReport extends YukonReportBase
         {
             factory = ReportFactory.createGroupLabelElementDefault(getModel(), i);
             factory.setAbsolutePosition(new Point2D.Float(getModel().getColumnProperties(i).getPositionX(), getModel().getColumnProperties(i).getPositionY() + 18));
+            if( i >= PowerFailModel.POWER_FAIL_COUNT_COLUMN)
+                factory.setHorizontalAlignment(ElementAlignment.RIGHT);
             header.addElement(factory.createElement());
         }
-        header.addElement(StaticShapeElementFactory.createHorizontalLine("line2", null, new BasicStroke(0.5f), 38));
-        collGrpGroup.setHeader(header);
+
+        groupGroup.setHeader(header);
 
 
         GroupFooter footer = ReportFactory.createGroupFooterDefault();
-        collGrpGroup.setFooter(footer);
-        return collGrpGroup;
+        groupGroup.setFooter(footer);
+        return groupGroup;
     }   
 
+    /**
+     * Create a Group for DeviceName, (by scheduleName, collGorup).  
+     * @return Group
+     */
+    private Group createDeviceGroup()
+    {
+        final Group devGroup = new Group();
+        devGroup.setName(PowerFailModel.DEVICE_NAME_STRING + ReportFactory.NAME_GROUP);
+        devGroup.addField( ((PowerFailModel)getModel()).getColumnName(PowerFailModel.GROUP_NAME_COLUMN));
+        devGroup.addField(PowerFailModel.DEVICE_NAME_STRING);
+          
+        GroupHeader header = ReportFactory.createGroupHeaderDefault();
+        header.getStyle().setStyleProperty(ElementStyleSheet.MINIMUMSIZE, new FloatDimension(0, 2));
+
+        header.addElement(StaticShapeElementFactory.createHorizontalLine("line2", Color.LIGHT_GRAY, new BasicStroke(0.5f), 0));
+        devGroup.setHeader(header);     
+        return devGroup;
+    }
+    
     /**
      * Creates the expression collection. The xml definition for this construct:
      * @return the functions.
@@ -171,7 +195,8 @@ public class PowerFailReport extends YukonReportBase
     protected GroupList createGroups()
     {
         final GroupList list = new GroupList();
-        list.add(createCollGrpGroup());
+        list.add(createGroupGroup());
+        list.add(createDeviceGroup());
         return list;
     }
 

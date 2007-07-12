@@ -9,18 +9,6 @@ import com.cannontech.common.util.CtiUtilities;
 import com.cannontech.database.PoolManager;
 import com.cannontech.database.data.pao.DeviceClasses;
 
-/**
- * Created on Dec 15, 2003
- * @author snebben
- * DatabaseModel TableModel object
- * Innerclass object for row data is CarrierData:
- *  String paoName			- YukonPaobject.paoName (device)
- *  String paoType			- YukonPaobject.type
- *  String address			- DeviceCarrierSettings.address
- *  String routeName		- YukonPaobject.paoName (route)
- *  String collGroup		- DeviceMeterGroup.collectionGroup
- *  String testCollGroup	- DeviceMeterGroup.testCollectionGroup
- */
 public class RouteMacroModel extends ReportModelBase
 {
 	/** Number of columns */

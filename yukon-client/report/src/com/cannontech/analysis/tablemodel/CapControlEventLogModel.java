@@ -379,34 +379,6 @@ public class CapControlEventLogModel extends ReportModelBase
 		return title;
 	}
 	
-	/**
-	 * @return
-	 */
-	/*public int getOrderBy()
-	{
-		return orderBy;
-	}
-	public void setOrderBy(int i)
-	{
-		orderBy = i;
-	}
-	public String getOrderByString(int orderBy)
-	{
-		switch (orderBy)
-		{
-			case ORDER_BY_METER_NAME:
-				return "Meter Name";
-			case ORDER_BY_METER_NUMBER:
-				return "Meter Number";
-			case ORDER_BY_COLL_GRP:
-			    return "Collection Group";
-		}
-		return "UNKNOWN";
-	}
-	public static int[] getAllOrderBys()
-	{
-		return ALL_ORDER_BYS;
-	}*/	
 	@Override
 	public String getHTMLOptionsTable()
 	{
@@ -511,11 +483,6 @@ public class CapControlEventLogModel extends ReportModelBase
 					setControlStates(null);
 			}
 			
-//			String param = req.getParameter(ATT_ORDER_BY);
-//			if( param != null)
-//				setOrderBy(Integer.valueOf(param).intValue());
-//			else
-//				setOrderBy(ORDER_BY_METER_NAME);			
 		}
 	}
     public int[] getControlStates()

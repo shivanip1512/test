@@ -3,7 +3,6 @@ package com.cannontech.analysis.tablemodel;
 import java.sql.Connection;
 import java.sql.PreparedStatement;
 import java.sql.ResultSet;
-import java.sql.Timestamp;
 import java.util.Arrays;
 import java.util.Collections;
 import java.util.Comparator;
@@ -21,29 +20,17 @@ import com.cannontech.clientutils.CTILogger;
 import com.cannontech.common.device.groups.model.DeviceGroup;
 import com.cannontech.common.device.groups.service.DeviceGroupService;
 import com.cannontech.common.util.CtiUtilities;
-import com.cannontech.core.dao.DaoFactory;
 import com.cannontech.database.PoolManager;
-import com.cannontech.database.data.lite.LiteDeviceMeterNumber;
 import com.cannontech.database.data.pao.PAOGroups;
 import com.cannontech.database.data.point.PointTypes;
 import com.cannontech.spring.YukonSpringHook;
 
-/**
- * Created on Dec 15, 2003
- * MeterData TableModel object
- *  String collGroup	- DeviceMeterGroup.collectionGroup 
- *  String deviceName	- YukonPaobject.paoName
- *  String pointName	- Point.pointName
- *  Integer pointID		- Point.pointID
- *  String routeName  
- * @author snebben
- */
 public class StarsAMRDetailModel extends ReportModelBase<StarsAMRDetail> implements Comparator<StarsAMRDetail> {
     /** Number of columns */
     protected final int NUMBER_COLUMNS = 10;
 
     /** Enum values for column representation */
-    public final static int SORT_BY_COLUMN = 0;	//collgroup or route
+    public final static int ROUTE_NAME_COLUMN = 0;
     public final static int ACCOUNT_NUMBER_COLUMN = 1;
     public final static int CONTACT_NAME_COLUMN = 2;
     public final static int MAP_NUMBER_COLUMN = 3;
@@ -62,12 +49,11 @@ public class StarsAMRDetailModel extends ReportModelBase<StarsAMRDetail> impleme
     public final static String DEVICE_TYPE_STRING = "Device Type";
     public final static String PHYSICAL_ADDRESS_STRING = "Address";
     public final static String METER_NUMBER_STRING = "Meter #";
-    public final static String ROUTE_NAME_STRING = "Route Name";	//the other one of the sort by column value
+    public final static String ROUTE_NAME_STRING = "Route Name";
     public final static String LAST_KWH_READING_STRING = "Last kWh";
     public final static String DATE_TIME_STRING = "Date/Time";
 
     /** Class fields */
-    //Order by CollectionGroup, Route based on FILTER selection, and not the user's sort by option
     public static final int ORDER_BY_ACCOUNT_NUMBER = 0;
     public static final int ORDER_BY_LAST_NAME = 1;
     public static final int ORDER_BY_MAP_NUMBER = 2;
@@ -304,12 +290,8 @@ public class StarsAMRDetailModel extends ReportModelBase<StarsAMRDetail> impleme
             
             switch( columnIndex)
             {
-            case SORT_BY_COLUMN:
-            {
-                if( getFilterModelType().equals(ReportFilter.ROUTE))
-                    return mpData.getMeter().getRoute();
-                return null;	//UNKNOWN????
-            }
+            case ROUTE_NAME_COLUMN:
+                return mpData.getMeter().getRoute();
             case ACCOUNT_NUMBER_COLUMN:
                 return detail.getAccountNumber();
             case CONTACT_NAME_COLUMN:
@@ -340,36 +322,18 @@ public class StarsAMRDetailModel extends ReportModelBase<StarsAMRDetail> impleme
     {
         if( columnNames == null)
         {
-            if (getFilterModelType().equals(ReportFilter.ROUTE))
-            {
-                columnNames = new String[]{
-                        ROUTE_NAME_STRING,
-                        ACCOUNT_NUMBER_STRING, 
-                        CONTACT_NAME_STRING,
-                        MAP_NUMBER_STRING,
-                        DEVICE_NAME_STRING,
-                        DEVICE_TYPE_STRING,
-                        PHYSICAL_ADDRESS_STRING,
-                        METER_NUMBER_STRING,
-                        LAST_KWH_READING_STRING,
-                        DATE_TIME_STRING
-                };
-            }
-            else //ReportFilter.COLLECTIONGROUP)
-            {
-                columnNames = new String[]{
-                        ACCOUNT_NUMBER_STRING, 
-                        CONTACT_NAME_STRING,
-                        MAP_NUMBER_STRING,
-                        DEVICE_NAME_STRING,
-                        DEVICE_TYPE_STRING,
-                        PHYSICAL_ADDRESS_STRING,
-                        METER_NUMBER_STRING,
-                        ROUTE_NAME_STRING,
-                        LAST_KWH_READING_STRING,
-                        DATE_TIME_STRING
-                };
-            }
+            columnNames = new String[]{
+                    ROUTE_NAME_STRING,
+                    ACCOUNT_NUMBER_STRING, 
+                    CONTACT_NAME_STRING,
+                    MAP_NUMBER_STRING,
+                    DEVICE_NAME_STRING,
+                    DEVICE_TYPE_STRING,
+                    PHYSICAL_ADDRESS_STRING,
+                    METER_NUMBER_STRING,
+                    LAST_KWH_READING_STRING,
+                    DATE_TIME_STRING
+            };
         }
         return columnNames;
     }
@@ -382,7 +346,6 @@ public class StarsAMRDetailModel extends ReportModelBase<StarsAMRDetail> impleme
         if( columnTypes == null)
         {
             columnTypes = new Class[]{
-                    String.class,
                     String.class,
                     String.class,
                     String.class,
@@ -408,7 +371,6 @@ public class StarsAMRDetailModel extends ReportModelBase<StarsAMRDetail> impleme
             int offset = 0;
             columnProperties = new ColumnProperties[]{
                     //posX, posY, width, height, numberFormatString
-                    new ColumnProperties(offset, 1, 200, null),
                     new ColumnProperties(offset, 1, offset+=60, null),
                     new ColumnProperties(offset, 1, offset+=95, null),
                     new ColumnProperties(offset, 1, offset+=70, null),

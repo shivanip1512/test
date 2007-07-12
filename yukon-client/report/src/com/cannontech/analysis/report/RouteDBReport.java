@@ -84,7 +84,7 @@ public class RouteDBReport extends YukonReportBase
 		dialog.setVisible(true);
 	}
 	/**
-	 * Create a Group for Device, (by collectionGroup).  
+	 * Create a Group for Device.  
 	 * @return Group
 	 */
 	private Group createRouteGroup()

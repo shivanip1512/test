@@ -4,7 +4,9 @@ import java.sql.ResultSet;
 import java.sql.Timestamp;
 import java.util.Arrays;
 import java.util.Date;
+import java.util.HashMap;
 import java.util.List;
+import java.util.Map;
 import java.util.Set;
 import java.util.Vector;
 
@@ -13,30 +15,20 @@ import javax.servlet.http.HttpServletRequest;
 import com.cannontech.analysis.ColumnProperties;
 import com.cannontech.analysis.data.device.PowerFail;
 import com.cannontech.clientutils.CTILogger;
+import com.cannontech.common.device.groups.editor.dao.DeviceGroupEditorDao;
 import com.cannontech.common.device.groups.model.DeviceGroup;
 import com.cannontech.common.device.groups.service.DeviceGroupService;
 import com.cannontech.common.util.CtiUtilities;
 import com.cannontech.database.PoolManager;
 import com.cannontech.spring.YukonSpringHook;
 
-/**
- * Created on Dec 15, 2003
- * MissedMeterData TableModel object
- * Innerclass object for row data is MissedMeter:
- *  String collGroup	- DeviceMeterGroup.collectionGroup 
- *  String deviceName	- YukonPaobject.paoName
- *  String pointName	- Point.pointName
- *  Integer pointID		- Point.pointID
- *  String routeName  
- * @author snebben
- */
 public class PowerFailModel extends ReportModelBase
 {
 	/** Number of columns */
 	protected final int NUMBER_COLUMNS = 7;
 
 	/** Enum values for column representation */
-	public final static int COLL_GROUP_NAME_COLUMN = 0;
+	public final static int GROUP_NAME_COLUMN = 0;
 	public final static int DEVICE_NAME_COLUMN = 1;
 	public final static int POINT_NAME_COLUMN = 2;
 	public final static int DATE_COLUMN = 3;
@@ -46,7 +38,7 @@ public class PowerFailModel extends ReportModelBase
     public final static int TOTAL_DIFFERENCE_COLUMN = 7;
 
 	/** String values for column representation */
-	public final static String COLL_GROUP_NAME_STRING = "Collection Group";
+	public final static String GROUP_NAME_STRING = "Group";
 	public final static String DEVICE_NAME_STRING = "Device Name";
 	public final static String POINT_NAME_STRING = "Point Name";
 	public final static String DATE_STRING = "Date";
@@ -56,18 +48,20 @@ public class PowerFailModel extends ReportModelBase
     public final static String TOTAL_DIFFERENCE_STRING = "Total Diff";
 
 	/** A string for the title of the data */
-	private static String title = "Power Fail Count By Collection Group";
+	private static String title = "Power Fail Count By Groups";
     
     public final static String ATT_MINIMUM_DIFFERENCE = "minimumDifference";
     
     /** Temporary counters */
     private Integer previousCount = null;
     private String previousDevice = null;
-    private String previousCollection = null;
+    private String previousGroup = null;
     private Integer totalDifference = 0;
     private Integer minimumDifference = 0;
     private Vector tempData = new Vector();
     
+    
+    private Map<Integer,DeviceGroup> deviceGroupsMap = new HashMap<Integer,DeviceGroup>();
 	/**
 	 * 
 	 */
@@ -97,41 +91,49 @@ public class PowerFailModel extends ReportModelBase
 	{
 		try
 		{
+            final DeviceGroupEditorDao deviceGroupEditorDao = YukonSpringHook.getBean("deviceGroupEditorDao", DeviceGroupEditorDao.class);
+            
             PowerFail powerFail;
-			String collGrp = rset.getString(1);
+            Integer groupId = rset.getInt(1);
+            DeviceGroup deviceGroup = deviceGroupsMap.get(groupId);
+            if( deviceGroup == null){
+                deviceGroup = deviceGroupEditorDao.getGroupById(groupId);
+                deviceGroupsMap.put(groupId, deviceGroup);
+            }
+            String groupName = deviceGroup.getFullName();
 			String paoName = rset.getString(2);
             String pointName = rset.getString(3);
             Timestamp timestamp = rset.getTimestamp(4);
             Integer powerFailCount = new Integer(rset.getInt(5));
             
-            if( previousCollection != null && previousDevice != null) {
+            if( previousGroup != null && previousDevice != null) {
                 
-                if( !previousCollection.equals(collGrp) || !previousDevice.equals(paoName)) {
+                if( !previousGroup.equals(groupName) || !previousDevice.equals(paoName)) {
                     // new device or new collection grp or both
-                    powerFail = new PowerFail(collGrp, paoName, pointName, new Date(timestamp.getTime()), powerFailCount, null, 0);
+                    powerFail = new PowerFail(groupName, paoName, pointName, new Date(timestamp.getTime()), powerFailCount, null, 0);
                     previousCount = powerFailCount;
                     previousDevice = paoName;
-                    previousCollection = collGrp;
+                    previousGroup = groupName;
                     totalDifference = 0;
                 }else {
                     //same device and collection grp
                     int intervalDif = powerFailCount - previousCount;
                     totalDifference = totalDifference + intervalDif;
-                    powerFail = new PowerFail(collGrp, paoName, 
+                    powerFail = new PowerFail(groupName, paoName, 
                                               pointName, 
                                               new Date(timestamp.getTime()),
                                               powerFailCount, 
                                               new Integer(powerFailCount - previousCount), 
                                               totalDifference);
                     previousCount = powerFailCount;
-                    previousCollection = collGrp;
+                    previousGroup = groupName;
                     previousDevice = paoName;
                 }
             }else {
                 // first result
-                powerFail = new PowerFail(collGrp, paoName, pointName, new Date(timestamp.getTime()), powerFailCount, null, totalDifference);
+                powerFail = new PowerFail(groupName, paoName, pointName, new Date(timestamp.getTime()), powerFailCount, null, totalDifference);
                 previousCount = powerFailCount;
-                previousCollection = collGrp;
+                previousGroup = groupName;
                 previousDevice = paoName;
             }
 			
@@ -144,34 +146,40 @@ public class PowerFailModel extends ReportModelBase
 		}
 	}
     
+    /**
+     * This method will load data based on the minimumDifference selected by the user.
+     * The First AND Last entry for each Group/Device pair will be added to the list.
+     * Any intermediate entries will be added to the list IF their IntervalDifference is >= minimumDifferenc. 
+     */
     @SuppressWarnings("unchecked")
-    public void loadTempData()
-    {
-        Vector tempDeviceVector = new Vector(); 
+    public void loadTempData() {
+        
+        PowerFail currentPF = null;
         for (int i = 0; i < tempData.size(); i ++) {
-            PowerFail currentPF = (PowerFail)tempData.get(i);
-            tempDeviceVector.add(currentPF);
+            
+            currentPF = (PowerFail)tempData.get(i);
+            boolean addEntry = false;
+            
             if(i+1 < tempData.size()) {
+                
                 PowerFail nextPF = (PowerFail)tempData.get(i + 1);
-                if(!nextPF.getCollGroup().equals(currentPF.getCollGroup()) ||
-                        !nextPF.getDeviceName().equals(currentPF.getDeviceName())) {
-                    //done with this device's readings for this collection grp
-                    if(currentPF.getTotalDifference() >= minimumDifference ) {
-                        // add these device readings to the report and clear the holding vector
-                        getData().addAll(tempDeviceVector);
-                        tempDeviceVector = new Vector();
-                    }else {
-                        tempDeviceVector = new Vector();
-                    }
-                }
-            }else {
-                //very last item in tempData
-                if(currentPF.getTotalDifference() >= minimumDifference ) {
-                    // add these device readings to the report
-                    getData().addAll(tempDeviceVector);
-                }
+                
+                //New Group/Device unique entry
+                if (!nextPF.getGroupName().equalsIgnoreCase(currentPF.getGroupName()) || !nextPF.getDeviceName().equalsIgnoreCase(currentPF.getDeviceName()))
+                    addEntry = true;
+                //Compare currentEntry with nextEntry
+                else if(currentPF.getIntervalDifference() == null || currentPF.getIntervalDifference() >= minimumDifference)
+                   addEntry = true;
+                    
             }
+            if( addEntry)
+                getData().add(currentPF);
         }
+        
+        //Always add the last entry.
+        if (currentPF != null)
+            getData().add(currentPF);
+    
     }
     
     @Override
@@ -205,9 +213,11 @@ public class PowerFailModel extends ReportModelBase
 	 */
 	public StringBuffer buildSQLStatement()
 	{
-		StringBuffer sql = new StringBuffer	("SELECT DMG.COLLECTIONGROUP, PAO.PAONAME, P.POINTNAME, RPH.TIMESTAMP, RPH.VALUE " + 
-			" FROM YUKONPAOBJECT PAO, DEVICEMETERGROUP DMG, POINT P, RAWPOINTHISTORY RPH "+
+		StringBuffer sql = new StringBuffer	("SELECT DGM.DEVICEGROUPID, PAO.PAONAME, P.POINTNAME, RPH.TIMESTAMP, RPH.VALUE " + 
+			" FROM YUKONPAOBJECT PAO, DEVICEMETERGROUP DMG, POINT P, RAWPOINTHISTORY RPH, "+
+            " DEVICEGROUPMEMBER DGM " +
 			" WHERE PAO.PAOBJECTID = DMG.DEVICEID  AND P.POINTID = RPH.POINTID"+
+            " AND P.PAOBJECTID = DGM.YUKONPAOID " +
 			" AND P.PAOBJECTID = PAO.PAOBJECTID AND P.POINTOFFSET = 20 ");
 			
 //		Use paoIDs in query if they exist			
@@ -234,7 +244,8 @@ public class PowerFailModel extends ReportModelBase
 		}
 
 			 
-			sql.append(" AND RPH.TIMESTAMP > ? AND TIMESTAMP <= ? ORDER BY DMG.COLLECTIONGROUP, PAO.PAONAME, P.POINTNAME, TIMESTAMP");
+			sql.append(" AND RPH.TIMESTAMP > ? AND TIMESTAMP <= ? " +
+                       " ORDER BY DGM.DEVICEGROUPID, PAO.PAONAME, P.POINTNAME, TIMESTAMP");
 		return sql;
 	
 	}
@@ -309,8 +320,8 @@ public class PowerFailModel extends ReportModelBase
 			PowerFail meter = ((PowerFail)o); 
 			switch( columnIndex)
 			{
-				case COLL_GROUP_NAME_COLUMN:
-					return meter.getCollGroup();
+				case GROUP_NAME_COLUMN:
+					return meter.getGroupName();
 		
 				case DEVICE_NAME_COLUMN:
 					return meter.getDeviceName();
@@ -345,7 +356,7 @@ public class PowerFailModel extends ReportModelBase
 		if( columnNames == null)
 		{
 			columnNames = new String[]{
-				COLL_GROUP_NAME_STRING,
+				GROUP_NAME_STRING,
 				DEVICE_NAME_STRING,
 				POINT_NAME_STRING,
 				DATE_STRING,
@@ -388,13 +399,6 @@ public class PowerFailModel extends ReportModelBase
 		{
 			columnProperties = new ColumnProperties[]{
 				//posX, posY, width, height, numberFormatString
-//				new ColumnProperties(0, 1, 200, null),
-//				new ColumnProperties(0, 1, 160, null),
-//				new ColumnProperties(160, 1, 160, null),
-//				new ColumnProperties(320, 1, 75, "MM/dd/yyyy"),
-//				new ColumnProperties(395, 1, 75, "HH:mm:ss"),
-//				new ColumnProperties(470, 1, 80, "#")
-                    
                 new ColumnProperties(0, 1, 200, null),
                 new ColumnProperties(0, 1, 120, null),
                 new ColumnProperties(120, 1, 100, null),

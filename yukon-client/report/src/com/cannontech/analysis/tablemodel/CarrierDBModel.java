@@ -22,8 +22,6 @@ import com.cannontech.spring.YukonSpringHook;
  *  String paoType			- YukonPaobject.type
  *  String address			- DeviceCarrierSettings.address
  *  String routeName		- YukonPaobject.paoName (route)
- *  String collGroup		- DeviceMeterGroup.collectionGroup
- *  String testCollGroup	- DeviceMeterGroup.testCollectionGroup
  */
 public class CarrierDBModel extends ReportModelBase
 {
@@ -45,8 +43,6 @@ public class CarrierDBModel extends ReportModelBase
 	public final static String METER_NUMBER_STRING = "Meter Number";
 	public final static String ADDRESS_STRING  = "Address";
 	public final static String ROUTE_NAME_STRING = "Route Name";
-	public final static String COLL_GROUP_NAME_STRING = "Collection Group";
-	public final static String TEST_COLL_GROUP_NAME_STRING = "Alternate Group";
 	
 	/** A string for the title of the data */
 	private static String title = "Database Report";

@@ -20,16 +20,6 @@ import com.cannontech.common.util.CtiUtilities;
 import com.cannontech.database.PoolManager;
 import com.cannontech.spring.YukonSpringHook;
 
-/**
- * Created on Dec 15, 2003
- * MeterData TableModel object
- *  String collGroup	- DeviceMeterGroup.collectionGroup 
- *  String deviceName	- YukonPaobject.paoName
- *  String pointName	- Point.pointName
- *  Integer pointID		- Point.pointID
- *  String routeName  
- * @author snebben
- */
 public class ScheduledMeterReadModel extends ReportModelBase<ScheduledMeterReadModel.ScheduledMeterReadRow>
 {
     static public class ScheduledMeterReadRow {
@@ -42,7 +32,6 @@ public class ScheduledMeterReadModel extends ReportModelBase<ScheduledMeterReadM
     	public Date requestStopTime;
         public Date readTimestamp;
         public Integer statusCode;
-        public String collGroup;
         public String paoName;
         public String meterNumber;
         public String address;
@@ -50,7 +39,7 @@ public class ScheduledMeterReadModel extends ReportModelBase<ScheduledMeterReadM
     }
     
 	/** Number of columns */
-	protected final int NUMBER_COLUMNS = 14;
+	protected final int NUMBER_COLUMNS = 13;
 	
 	/** Enum values for column representation */
 	public final static int SCHEDULE_NAME_COLUMN = 0;
@@ -60,13 +49,12 @@ public class ScheduledMeterReadModel extends ReportModelBase<ScheduledMeterReadM
 	public final static int REQUEST_ID_COLUMN = 4;
 	public final static int REQUEST_START_TIME_COLUMN = 5;
 	public final static int REQUEST_STOP_TIME_COLUMN = 6;
-	public final static int COLLECTION_GROUP_COLUMN = 7;
-	public final static int DEVICE_NAME_COLUMN = 8;
-	public final static int METER_NUMBER_COLUMN = 9;
-	public final static int PHYSICAL_ADDRESS_COLUMN = 10;
-	public final static int ROUTE_NAME_COLUMN = 11;
-	public final static int READ_TIMESTAMP_COLUMN = 12;
-	public final static int STATUS_CODE_COLUMN = 13;
+	public final static int DEVICE_NAME_COLUMN = 7;
+	public final static int METER_NUMBER_COLUMN = 8;
+	public final static int PHYSICAL_ADDRESS_COLUMN = 9;
+	public final static int ROUTE_NAME_COLUMN = 10;
+	public final static int READ_TIMESTAMP_COLUMN = 11;
+	public final static int STATUS_CODE_COLUMN = 12;
 
 	/** String values for column representation */
 	public final static String SCHEDULE_NAME_STRING = "ScheduleName";
@@ -76,7 +64,6 @@ public class ScheduledMeterReadModel extends ReportModelBase<ScheduledMeterReadM
 	public final static String REQUEST_ID_STRING = "RequestID";
 	public final static String REQUEST_START_TIME_STRING = "RequestStart";
 	public final static String REQUEST_STOP_TIME_STRING = "RequestStop";
-	public final static String COLLECTION_GROUP_STRING = "Collection Group";
 	public final static String DEVICE_NAME_STRING = "Device Name";
 	public final static String METER_NUMBER_STRING = "Meter No.";
 	public final static String PHYSICAL_ADDRESS_STRING = "Address";
@@ -184,8 +171,7 @@ public class ScheduledMeterReadModel extends ReportModelBase<ScheduledMeterReadM
 			String paoName = rset.getString(10);
 			int address = rset.getInt(11);
 			String meterNumber = rset.getString(12);
-			String collGroup = rset.getString(13);
-			String routeName = rset.getString(14);
+			String routeName = rset.getString(13);
 
 			ScheduledMeterReadRow row = new ScheduledMeterReadRow();
 			row.scheduleName = scheduleName;
@@ -200,7 +186,6 @@ public class ScheduledMeterReadModel extends ReportModelBase<ScheduledMeterReadM
 			row.paoName = paoName;
 			row.address = String.valueOf(address);
 			row.meterNumber = meterNumber;
-			row.collGroup = collGroup;
 			row.routeName = routeName;
 			
 			getData().add(row);
@@ -218,7 +203,7 @@ public class ScheduledMeterReadModel extends ReportModelBase<ScheduledMeterReadM
 		StringBuffer sql = new StringBuffer	("SELECT SCHEDULE.PAONAME, DRJL.STARTTIME, DRJL.STOPTIME, " +
 											" DRRL.REQUESTID, DRRL.COMMAND, DRRL.STARTTIME, DRRL.STOPTIME, " +
 											" DRL.TIMESTAMP, DRL.STATUSCODE, " +
-											" PAO.PAONAME, DCS.ADDRESS, DMG.METERNUMBER, DMG.COLLECTIONGROUP, ROUTE.PAONAME " + 
+											" PAO.PAONAME, DCS.ADDRESS, DMG.METERNUMBER, ROUTE.PAONAME " + 
 											" FROM DEVICEREADLOG DRL, DEVICEREADREQUESTLOG DRRL, DEVICEREADJOBLOG DRJL, " + 
 											" YUKONPAOBJECT PAO, DEVICECARRIERSETTINGS DCS, DEVICEMETERGROUP DMG, " +
 											" YUKONPAOBJECT ROUTE, DEVICEROUTES DR, YUKONPAOBJECT SCHEDULE " + 
@@ -295,7 +280,6 @@ public class ScheduledMeterReadModel extends ReportModelBase<ScheduledMeterReadM
 		setData(null);
 		totals = null;
 				
-		int rowCount = 0;
 		StringBuffer sql = buildSQLStatement();
 		CTILogger.info("SQL for MeterReadModel: " + sql.toString());
 		
@@ -366,9 +350,6 @@ public class ScheduledMeterReadModel extends ReportModelBase<ScheduledMeterReadM
 				case REQUEST_STOP_TIME_COLUMN:
 					return row.requestStopTime;
 					
-				case COLLECTION_GROUP_COLUMN:
-					return row.collGroup;
-					
 				case DEVICE_NAME_COLUMN:
 					return row.paoName;
 					
@@ -406,7 +387,6 @@ public class ScheduledMeterReadModel extends ReportModelBase<ScheduledMeterReadM
 				REQUEST_ID_STRING,
 				REQUEST_START_TIME_STRING,
 				REQUEST_STOP_TIME_STRING,
-				COLLECTION_GROUP_STRING,
 				DEVICE_NAME_STRING,
 				METER_NUMBER_STRING,
 				PHYSICAL_ADDRESS_STRING,
@@ -438,7 +418,6 @@ public class ScheduledMeterReadModel extends ReportModelBase<ScheduledMeterReadM
 					String.class,
 					String.class,
 					String.class,
-					String.class,
 					Date.class,
 					Integer.class
 			};
@@ -463,7 +442,6 @@ public class ScheduledMeterReadModel extends ReportModelBase<ScheduledMeterReadM
 				new ColumnProperties(390, 1, 90, "MM/dd/yy HH:mm:ss"),
 				new ColumnProperties(540, 1, 90, "MM/dd/yy HH:mm:ss"),
 				
-				new ColumnProperties(20, 1, 200, null),
 				new ColumnProperties(40, 1, 210, null),
 				new ColumnProperties(250, 1, 70, null),
 				new ColumnProperties(320, 1, 70, null),

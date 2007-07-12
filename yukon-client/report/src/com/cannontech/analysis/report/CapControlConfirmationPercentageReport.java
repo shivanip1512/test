@@ -3,9 +3,6 @@ package com.cannontech.analysis.report;
 import java.util.Arrays;
 import java.util.List;
 
-import org.jfree.report.elementfactory.LabelElementFactory;
-import org.jfree.report.elementfactory.TextFieldElementFactory;
-
 import com.cannontech.analysis.tablemodel.BareReportModel;
 import com.cannontech.analysis.tablemodel.CapControlOperationsModel;
 

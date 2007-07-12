@@ -19,6 +19,21 @@ public class ColumnLayoutData {
     private String format = null;
     private ElementAlignment horizontalAlignment = null;
 
+    public ColumnLayoutData(String columnName, String fieldName, Integer width, String format, ElementAlignment horizontalAlignment) {
+        this.columnName = columnName;
+        this.fieldName = fieldName;
+        this.width = width;
+        this.format = format;
+        this.horizontalAlignment = horizontalAlignment;
+    }
+    
+    public ColumnLayoutData(String columnName, String fieldName, Integer width, String format) {
+        this.columnName = columnName;
+        this.fieldName = fieldName;
+        this.width = width;
+        this.format = format;
+    }
+
     public ColumnLayoutData(String columnName, String fieldName, Integer width) {
         this.columnName = columnName;
         this.fieldName = fieldName;

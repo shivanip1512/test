@@ -15,7 +15,7 @@ import java.util.Date;
 public class PowerFail
 {	
 	/** Number of columns */
-	private String collGroup = null;
+	private String groupName  = null;
 	private String deviceName = null;
 	private String pointName = null;
 	private Date timestamp = null;
@@ -32,15 +32,15 @@ public class PowerFail
 	}
 
 	/**
-	 * @param collGroup_
+	 * @param groupName_
 	 * @param deviceName_
 	 * @param pointName_
 	 * @param pointID_
 	 * @param powerFailCount_
 	 */
-	public PowerFail(String collGroup_, String deviceName_, String pointName_, Date timestamp_, Integer powerFailCount_, Integer intervalDifference_, Integer totalDifference_)
+	public PowerFail(String groupName_, String deviceName_, String pointName_, Date timestamp_, Integer powerFailCount_, Integer intervalDifference_, Integer totalDifference_)
 	{
-		collGroup = collGroup_;
+		groupName = groupName_;
 		deviceName = deviceName_;
 		pointName = pointName_;
 		timestamp = timestamp_;
@@ -52,9 +52,9 @@ public class PowerFail
 	/**
 	 * @return
 	 */
-	public String getCollGroup()
+	public String getGroupName()
 	{
-		return collGroup;
+		return groupName;
 	}
 
 	/**

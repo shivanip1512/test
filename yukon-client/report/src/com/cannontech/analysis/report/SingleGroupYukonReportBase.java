@@ -48,6 +48,7 @@ public abstract class SingleGroupYukonReportBase extends SimpleYukonReportBase {
         Class<?> columnClass = getModel().getColumnClass(groupFieldIndex);
         if (Number.class.isAssignableFrom(columnClass)) {
             NumberFieldElementFactory numFieldFactory = new NumberFieldElementFactory();
+            numFieldFactory.setHorizontalAlignment(getGroupFieldData().getHorizontalAlignment());
             numFieldFactory.setFormatString(getGroupFieldData().getFormat());
             groupFieldFactory = numFieldFactory;
         } else if (Date.class.isAssignableFrom(columnClass)) {

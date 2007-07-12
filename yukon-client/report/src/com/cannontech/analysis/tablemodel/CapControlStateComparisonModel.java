@@ -4,28 +4,15 @@ import java.sql.ResultSet;
 import java.sql.SQLException;
 import java.sql.Timestamp;
 import java.util.ArrayList;
-import java.util.Collections;
-import java.util.Date;
 import java.util.List;
 import java.util.Set;
 
-import org.apache.commons.lang.StringUtils;
-import org.apache.commons.lang.Validate;
 import org.springframework.jdbc.core.JdbcOperations;
 import org.springframework.jdbc.core.RowCallbackHandler;
 
-import com.cannontech.analysis.tablemodel.CurtailmentInterruptionSummaryModel.ModelRow;
-import com.cannontech.cc.dao.BaseEventDao;
-import com.cannontech.cc.dao.CustomerStubDao;
-import com.cannontech.cc.model.BaseEvent;
-import com.cannontech.cc.model.CICustomerStub;
 import com.cannontech.clientutils.CTILogger;
-import com.cannontech.common.util.CtiUtilities;
 import com.cannontech.common.util.SqlStatementBuilder;
 import com.cannontech.database.JdbcTemplateHelper;
-import com.cannontech.database.PoolManager;
-import com.cannontech.spring.YukonSpringHook;
-import com.cannontech.support.CustomerPointTypeHelper;
 
 public class CapControlStateComparisonModel extends BareReportModelBase<CapControlStateComparisonModel.ModelRow> implements CapControlFilterable  {
 

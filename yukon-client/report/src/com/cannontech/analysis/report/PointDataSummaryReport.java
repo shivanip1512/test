@@ -151,7 +151,7 @@ public class PointDataSummaryReport extends YukonReportBase
 		return devGroup;
 	}
 	/**
-	 * Create a Group for Device, (by collectionGroup).  
+	 * Create a Group for Device  
 	 * @return Group
 	 */
 	private Group createPointGroup()

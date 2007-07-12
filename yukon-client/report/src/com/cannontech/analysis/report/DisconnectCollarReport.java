@@ -4,7 +4,7 @@ import java.util.Arrays;
 import java.util.List;
 
 import com.cannontech.analysis.tablemodel.BareReportModel;
-import com.cannontech.analysis.tablemodel.DisconnectCollarModel;;
+import com.cannontech.analysis.tablemodel.DisconnectCollarModel;
 
 public class DisconnectCollarReport extends SimpleYukonReportBase {
     

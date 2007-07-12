@@ -1,7 +1,5 @@
 package com.cannontech.analysis.tablemodel;
 
-import java.sql.Connection;
-import java.sql.PreparedStatement;
 import java.sql.ResultSet;
 import java.sql.Timestamp;
 import java.util.Arrays;
@@ -431,11 +429,11 @@ public class MeterReadModel extends ReportModelBase<MeterAndPointData> implement
 		    {
 		    	columnProperties = new ColumnProperties[]{
 					//posX, posY, width, height, numberFormatString
-                    new ColumnProperties(0, 1, 150, null),
-                    new ColumnProperties(150, 1, 75, null),
-                    new ColumnProperties(225, 1, 75, null),
-                    new ColumnProperties(300, 1, 100, null),
+                    new ColumnProperties(0, 1, 250, null),
+                    new ColumnProperties(250, 1, 75, null),
+                    new ColumnProperties(325, 1, 75, null),
                     new ColumnProperties(400, 1, 150, null),
+                    new ColumnProperties(550, 1, 150, null),
 				};
 			}
 		}

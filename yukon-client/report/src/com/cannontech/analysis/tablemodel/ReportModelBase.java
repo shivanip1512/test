@@ -2,7 +2,6 @@ package com.cannontech.analysis.tablemodel;
 
 import java.io.IOException;
 import java.io.OutputStream;
-import java.text.DecimalFormat;
 import java.text.SimpleDateFormat;
 import java.util.Calendar;
 import java.util.Date;
@@ -20,7 +19,6 @@ import com.cannontech.analysis.ColumnProperties;
 import com.cannontech.analysis.Reportable;
 import com.cannontech.core.dao.DaoFactory;
 import com.cannontech.database.data.lite.LiteYukonPAObject;
-import com.cannontech.database.db.device.DeviceMeterGroup;
 import com.cannontech.util.ServletUtil;
 
 

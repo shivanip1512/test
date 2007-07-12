@@ -155,6 +155,19 @@ public class ScheduledMeterReadReport extends YukonReportBase
 	    
 	    
 	    header.addElement(StaticShapeElementFactory.createHorizontalLine("line1", null, new BasicStroke(0.5f), 20));
+        
+        
+        if ( ((ScheduledMeterReadModel)getModel()).getGroupBy() != ScheduledMeterReadModel.GroupBy.GROUP_BY_SCHEDULE_REQUESTS){
+            header.addElement(StaticShapeElementFactory.createHorizontalLine("line2", Color.LIGHT_GRAY, new BasicStroke(0.5f), 18));
+            for (int i = ScheduledMeterReadModel.DEVICE_NAME_COLUMN; i < getModel().getColumnCount(); i++)
+            {
+                factory = ReportFactory.createGroupLabelElementDefault(getModel(), i);
+                factory.setMinimumSize(new FloatDimension(getModel().getColumnProperties()[i].getWidth(), 12));
+                factory.setAbsolutePosition(new Point2D.Float(getModel().getColumnProperties(i).getPositionX(), getModel().getColumnProperties(i).getPositionY() + 20));
+                header.addElement(factory.createElement());
+            }
+        }
+            
 	    scheduleGroup.setHeader(header);
 	  	return scheduleGroup;
 	}
@@ -221,42 +234,6 @@ public class ScheduledMeterReadReport extends YukonReportBase
 	}
 	
 	/**
-	 * Create a Group for CollectionGroup, (by scheduleName).  
-	 * @return Group
-	 */
-	private Group createCollGrpGroup()
-	{
-		final Group collGrpGroup = new Group();
-		collGrpGroup.setName(ScheduledMeterReadModel.COLLECTION_GROUP_STRING + ReportFactory.NAME_GROUP);
-		collGrpGroup.addField(ScheduledMeterReadModel.SCHEDULE_NAME_STRING);
-		collGrpGroup.addField(ScheduledMeterReadModel.SCHEDULE_START_TIME_STRING);
-		collGrpGroup.addField(ScheduledMeterReadModel.SCHEDULE_STOP_TIME_STRING);
-		collGrpGroup.addField(ScheduledMeterReadModel.COLLECTION_GROUP_STRING);
-		  
-		GroupHeader header = ReportFactory.createGroupHeaderDefault();
-		header.getStyle().setStyleProperty(ElementStyleSheet.MINIMUMSIZE, new FloatDimension(0, 20));
-
-		LabelElementFactory factory = ReportFactory.createGroupLabelElementDefault(getModel(), ScheduledMeterReadModel.COLLECTION_GROUP_COLUMN);
-	    factory.setText(factory.getText() + ":");
-	    header.addElement(factory.createElement());
-
-	    TextFieldElementFactory  tfactory = ReportFactory.createGroupTextFieldElementDefault(getModel(), ScheduledMeterReadModel.COLLECTION_GROUP_COLUMN);
-	    tfactory.setAbsolutePosition(new Point2D.Float(150, 1));	//override the posX location
-	    
-	    header.addElement(tfactory.createElement());
-	    header.addElement(StaticShapeElementFactory.createHorizontalLine("line1", Color.LIGHT_GRAY, new BasicStroke(0.5f), 18));
-		for (int i = ScheduledMeterReadModel.DEVICE_NAME_COLUMN; i < getModel().getColumnCount(); i++)
-		{
-		    factory = ReportFactory.createGroupLabelElementDefault(getModel(), i);
-		    factory.setMinimumSize(new FloatDimension(getModel().getColumnProperties()[i].getWidth(), 12));
-		    factory.setAbsolutePosition(new Point2D.Float(getModel().getColumnProperties(i).getPositionX(), getModel().getColumnProperties(i).getPositionY() + 18));
-		    header.addElement(factory.createElement());
-		}
-		collGrpGroup.setHeader(header);		
-		return collGrpGroup;
-	}
-
-	/**
 	 * Create a Group for DeviceName, (by scheduleName, collGorup).  
 	 * @return Group
 	 */
@@ -267,7 +244,6 @@ public class ScheduledMeterReadReport extends YukonReportBase
 		collGrpGroup.addField(ScheduledMeterReadModel.SCHEDULE_NAME_STRING);
 		collGrpGroup.addField(ScheduledMeterReadModel.SCHEDULE_START_TIME_STRING);
 		collGrpGroup.addField(ScheduledMeterReadModel.SCHEDULE_STOP_TIME_STRING);
-		collGrpGroup.addField(ScheduledMeterReadModel.COLLECTION_GROUP_STRING);
 		collGrpGroup.addField(ScheduledMeterReadModel.DEVICE_NAME_STRING);
 		  
 		GroupHeader header = ReportFactory.createGroupHeaderDefault();
@@ -289,7 +265,6 @@ public class ScheduledMeterReadReport extends YukonReportBase
 	  if ( ((ScheduledMeterReadModel)getModel()).getGroupBy() == ScheduledMeterReadModel.GroupBy.GROUP_BY_SCHEDULE_REQUESTS)
 		  list.add(createRequestGroup());
 	  else {
-		  list.add(createCollGrpGroup());
 		  list.add(createDeviceGroup());
 	  }
 	  return list;

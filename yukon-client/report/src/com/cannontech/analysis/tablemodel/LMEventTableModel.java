@@ -7,8 +7,6 @@ import java.util.Date;
 import java.util.List;
 
 import com.cannontech.clientutils.CTILogger;
-import com.cannontech.common.util.CtiUtilities;
-import com.cannontech.database.PoolManager;
 
 public class LMEventTableModel extends BareReportModelBase<LMEventTableModel.ModelRow> implements LoadableModel//, CommonModelAttributes 
 {

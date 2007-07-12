@@ -8,18 +8,6 @@ import javax.servlet.http.HttpServletRequest;
 import com.cannontech.amr.meter.model.Meter;
 import com.cannontech.analysis.ColumnProperties;
 
-/**
- * Created on May 17, 2005
- * @author snebben
- * RouteModel TableModel object
- * Innerclass object for row data is CarrierData:
- *  String paoName			- YukonPaobject.paoName (device)
- *  String paoType			- YukonPaobject.type
- *  String address			- DeviceCarrierSettings.address
- *  String routeName		- YukonPaobject.paoName (route)
- *  String collGroup		- DeviceMeterGroup.collectionGroup
- *  String testCollGroup	- DeviceMeterGroup.testCollectionGroup
- */
 public class RouteDBModel extends CarrierDBModel 
 {
 	public final static int ROUTE_NAME_COLUMN = 0;

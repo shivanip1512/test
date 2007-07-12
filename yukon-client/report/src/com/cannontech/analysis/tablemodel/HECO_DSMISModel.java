@@ -10,7 +10,6 @@ import com.cannontech.analysis.data.lm.SettlementCustomer;
 import com.cannontech.core.dao.DaoFactory;
 import com.cannontech.database.data.lite.LiteCustomer;
 import com.cannontech.database.data.lite.stars.LiteStarsCustAccountInformation;
-import com.cannontech.util.ServletUtil;
 
 /**
  * Created on Jan 15, 2006

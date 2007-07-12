@@ -18,7 +18,6 @@ import com.cannontech.database.data.pao.PAOGroups;
 /**
  * Created on Dec 15, 2003
  * MeterData TableModel object
- *  String collGroup	- DeviceMeterGroup.collectionGroup 
  *  String deviceName	- YukonPaobject.paoName
  *  String pointName	- Point.pointName
  *  Integer pointID		- Point.pointID

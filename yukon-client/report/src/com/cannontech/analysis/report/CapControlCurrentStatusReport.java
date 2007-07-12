@@ -1,7 +1,6 @@
 package com.cannontech.analysis.report;
 
 import java.awt.BasicStroke;
-import java.awt.geom.Point2D;
 
 import org.jfree.report.Group;
 import org.jfree.report.GroupFooter;
@@ -20,7 +19,6 @@ import org.jfree.report.modules.gui.base.PreviewDialog;
 
 import com.cannontech.analysis.ReportFactory;
 import com.cannontech.analysis.tablemodel.CapControlCurrentStatusModel;
-import com.cannontech.analysis.tablemodel.MeterReadModel;
 
 /**
  * Created on Dec 15, 2003

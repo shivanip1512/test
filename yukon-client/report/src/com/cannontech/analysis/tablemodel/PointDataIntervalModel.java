@@ -20,24 +20,12 @@ import com.cannontech.common.device.groups.model.DeviceGroup;
 import com.cannontech.common.device.groups.service.DeviceGroupService;
 import com.cannontech.common.util.CtiUtilities;
 import com.cannontech.database.PoolManager;
-import com.cannontech.database.data.lite.LiteYukonPAObject;
 import com.cannontech.database.data.point.CTIPointQuailtyException;
 import com.cannontech.database.data.point.PointQualities;
 import com.cannontech.database.data.point.PointTypes;
 import com.cannontech.spring.YukonSpringHook;
 
 /**
- * Created on Dec 15, 2003
- * @author snebben
- * DatabaseModel TableModel object
- * Innerclass object for row data is CarrierData:
- *  String paoName			- YukonPaobject.paoName (device)
- *  String paoType			- YukonPaobject.type
- *  String address			- DeviceCarrierSettings.address
- *  String routeName		- YukonPaobject.paoName (route)
- *  String collGroup		- DeviceMeterGroup.collectionGroup
- *  String testCollGroup	- DeviceMeterGroup.testCollectionGroup
- * 
  *  WARNING!!! LiteRawPointHistory objects created in this report are NOT intended to be changed into RawPointHistory DBPersistent objects
  *  due to the changeID (primary key) value is not set in order to retrieve distinct values!!!
  */

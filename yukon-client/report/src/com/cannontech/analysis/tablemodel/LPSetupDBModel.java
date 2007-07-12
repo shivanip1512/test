@@ -14,13 +14,8 @@ import com.cannontech.analysis.data.device.LPMeterData;
 import com.cannontech.analysis.data.device.MeterAndPointData;
 import com.cannontech.clientutils.CTILogger;
 import com.cannontech.common.util.CtiUtilities;
-import com.cannontech.core.dao.DaoFactory;
 import com.cannontech.database.PoolManager;
-import com.cannontech.database.data.lite.LiteDeviceMeterNumber;
-import com.cannontech.database.data.lite.LiteYukonPAObject;
-import com.cannontech.database.data.pao.DeviceClasses;
 import com.cannontech.database.data.pao.PAOGroups;
-import com.cannontech.database.data.point.PointTypes;
 
 /**
  * Created on Dec 15, 2003

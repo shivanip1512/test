@@ -106,11 +106,11 @@ public class StarsAMRDetailReport extends YukonReportBase
         
 		GroupHeader header = ReportFactory.createGroupHeaderDefault();
 		
-		LabelElementFactory factory = ReportFactory.createGroupLabelElementDefault(getModel(), StarsAMRDetailModel.SORT_BY_COLUMN);
+		LabelElementFactory factory = ReportFactory.createGroupLabelElementDefault(getModel(), StarsAMRDetailModel.ROUTE_NAME_COLUMN);
 		factory.setText(factory.getText() + ":");
 		header.addElement(factory.createElement());
 		
-		TextFieldElementFactory tfactory = ReportFactory.createGroupTextFieldElementDefault(getModel(), StarsAMRDetailModel.SORT_BY_COLUMN);
+		TextFieldElementFactory tfactory = ReportFactory.createGroupTextFieldElementDefault(getModel(), StarsAMRDetailModel.ROUTE_NAME_COLUMN);
 		tfactory.setAbsolutePosition(new Point2D.Float(80, 1));	//override posX		
 		header.addElement(tfactory.createElement());
 		

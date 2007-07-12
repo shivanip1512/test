@@ -20,8 +20,6 @@ import org.jfree.report.modules.gui.base.PreviewDialog;
 
 import com.cannontech.analysis.ReportFactory;
 import com.cannontech.analysis.tablemodel.StatisticHistoryModel;
-import com.cannontech.analysis.tablemodel.StatisticHistoryPortModel;
-import com.cannontech.analysis.tablemodel.StatisticModel;
 
 /**
  * Created on Dec 15, 2003

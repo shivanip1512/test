@@ -1,7 +1,6 @@
 package com.cannontech.analysis.report;
 
 import java.awt.BasicStroke;
-import java.awt.geom.Point2D;
 import java.util.Date;
 
 import org.jfree.report.Group;
@@ -104,51 +103,14 @@ public class MeterReadReport extends YukonReportBase
 		dialog.setVisible(true);
 	}		
 
-//	/**
-//	 * Create a Group for CollectionGroup  
-//	 * @return Group
-//	 */
-//	private Group createCollGrpGroup()
-//	{
-//	    final Group collGrpGroup = new Group();
-//	    collGrpGroup.setName( ((MeterReadModel)getModel()).getColumnName(MeterReadModel.SORT_BY_GROUP_NAME_COLUMN) + ReportFactory.NAME_GROUP);
-//	    collGrpGroup.addField( ((MeterReadModel)getModel()).getColumnName(MeterReadModel.SORT_BY_GROUP_NAME_COLUMN));
-//
-//	    GroupHeader header = ReportFactory.createGroupHeaderDefault();
-//
-//	    LabelElementFactory factory = ReportFactory.createGroupLabelElementDefault(getModel(), MeterReadModel.SORT_BY_GROUP_NAME_COLUMN);
-//	    factory.setText(factory.getText() + ":");
-//	    header.addElement(factory.createElement());
-//
-//	    TextFieldElementFactory tfactory = ReportFactory.createGroupTextFieldElementDefault(getModel(), MeterReadModel.SORT_BY_GROUP_NAME_COLUMN);
-//	    tfactory.setAbsolutePosition(new Point2D.Float(110, 1));	//override the posX location
-//	    header.addElement(tfactory.createElement());
-//
-//	    header.addElement(StaticShapeElementFactory.createHorizontalLine("line1", null, new BasicStroke(0.5f), 20));
-//
-//	    for (int i = MeterReadModel.DEVICE_NAME_COLUMN; i < getModel().getColumnCount(); i++)
-//	    {
-//	        factory = ReportFactory.createGroupLabelElementDefault(getModel(), i);
-//			factory.setAbsolutePosition(new Point2D.Float(getModel().getColumnProperties(i).getPositionX(), getModel().getColumnProperties(i).getPositionY() + 18));
-//		    header.addElement(factory.createElement());
-//		}
-//	    header.addElement(StaticShapeElementFactory.createHorizontalLine("line2", null, new BasicStroke(0.5f), 38));
-//	    collGrpGroup.setHeader(header);
-//
-//
-//	  	GroupFooter footer = ReportFactory.createGroupFooterDefault();
-//	  	collGrpGroup.setFooter(footer);
-//	  	return collGrpGroup;
-//	}
 	/**
-	 * Create a Group for Device, (by collectionGroup).  
+	 * Create a Group for Device  
 	 * @return Group
 	 */
 	private Group createDeviceGroup()
 	{
 		final Group devGrpGroup = new Group();
 		devGrpGroup.setName(MeterReadModel.DEVICE_NAME_STRING + ReportFactory.NAME_GROUP);
-//		devGrpGroup.addField( ((MeterReadModel)getModel()).getColumnName(MeterReadModel.SORT_BY_GROUP_NAME_COLUMN));
 		devGrpGroup.addField(MeterReadModel.DEVICE_NAME_STRING);
 		  
 		GroupHeader header = ReportFactory.createGroupHeaderDefault();
@@ -199,7 +161,6 @@ public class MeterReadReport extends YukonReportBase
 	protected GroupList createGroups()
 	{
 	  final GroupList list = new GroupList();
-//	  list.add(createCollGrpGroup());
 	  list.add(createDeviceGroup());
 	  return list;
 	}

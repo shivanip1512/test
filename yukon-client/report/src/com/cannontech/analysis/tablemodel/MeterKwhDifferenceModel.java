@@ -4,15 +4,20 @@ import java.sql.ResultSet;
 import java.sql.SQLException;
 import java.sql.Timestamp;
 import java.util.ArrayList;
+import java.util.HashMap;
 import java.util.List;
+import java.util.Map;
 import java.util.Set;
 
 import org.springframework.jdbc.core.JdbcOperations;
 import org.springframework.jdbc.core.RowCallbackHandler;
 
 import com.cannontech.clientutils.CTILogger;
+import com.cannontech.common.device.groups.editor.dao.DeviceGroupEditorDao;
+import com.cannontech.common.device.groups.model.DeviceGroup;
 import com.cannontech.common.util.SqlStatementBuilder;
 import com.cannontech.database.JdbcTemplateHelper;
+import com.cannontech.spring.YukonSpringHook;
 
 public class MeterKwhDifferenceModel extends BareDatedReportModelBase<MeterKwhDifferenceModel.ModelRow> {
     
@@ -22,9 +27,11 @@ public class MeterKwhDifferenceModel extends BareDatedReportModelBase<MeterKwhDi
     private Set<Integer> deviceIds;
     private Set<Integer> deviceNames;
     private Double previousKwh = null;
-    private String previousDevice= null;
+    private String previousGroup = null;
+    private String previousDevice = null;
     
     static public class ModelRow {
+        public String groupName;
         public String deviceName;
         public String meterNumber;
         public Timestamp date;
@@ -38,22 +45,33 @@ public class MeterKwhDifferenceModel extends BareDatedReportModelBase<MeterKwhDi
         StringBuffer sql = buildSQLStatement();
         CTILogger.info(sql.toString()); 
         
+        final DeviceGroupEditorDao deviceGroupEditorDao = YukonSpringHook.getBean("deviceGroupEditorDao", DeviceGroupEditorDao.class);
+        final Map<Integer,DeviceGroup> deviceGroupsMap = new HashMap<Integer,DeviceGroup>();
+
         Timestamp[] dateRange = {new java.sql.Timestamp(getStartDate().getTime()), new java.sql.Timestamp(getStopDate().getTime())};
         jdbcOps.query(sql.toString(), dateRange, new RowCallbackHandler() {
             public void processRow(ResultSet rs) throws SQLException {
                 
                 MeterKwhDifferenceModel.ModelRow row = new MeterKwhDifferenceModel.ModelRow();
 
+                Integer groupId = rs.getInt("grp");
+                DeviceGroup deviceGroup = deviceGroupsMap.get(groupId);
+                if( deviceGroup == null){
+                    deviceGroup = deviceGroupEditorDao.getGroupById(groupId);
+                    deviceGroupsMap.put(groupId, deviceGroup);
+                }
+                    
+                String groupName = deviceGroup.getFullName();
+                row.groupName = groupName;
                 String deviceName = rs.getString("deviceName");
-                row.deviceName = deviceName;
+                row.deviceName = rs.getString("deviceName");
                 row.meterNumber = rs.getString("meterNumber");
                 row.date = rs.getTimestamp("date");
                 Double kWh = rs.getDouble("kWh"); 
                 row.kWh = kWh;
                 
-                if(previousDevice != null) {
-                    if(!deviceName.equals(previousDevice)) {
-                        data.add(new MeterKwhDifferenceModel.ModelRow());
+                if(previousGroup != null && previousDevice != null) {
+                    if(!groupName.equalsIgnoreCase(previousGroup) || !deviceName.equals(previousDevice)) {
                         previousKwh = null;
                     }
                 }
@@ -68,6 +86,7 @@ public class MeterKwhDifferenceModel extends BareDatedReportModelBase<MeterKwhDi
                 data.add(row);
                 previousKwh = kWh;
                 previousDevice = deviceName;
+                previousGroup = groupName;
             }
         });
         
@@ -76,12 +95,13 @@ public class MeterKwhDifferenceModel extends BareDatedReportModelBase<MeterKwhDi
     
     public StringBuffer buildSQLStatement()
     {
-        StringBuffer sql = new StringBuffer ("SELECT DISTINCT PAO.PAOBJECTID,PAO.PAONAME as deviceName, PAO.TYPE, DMG.METERNUMBER as meterNumber, "); 
-        sql.append("DMG.COLLECTIONGROUP as collectionGroup, P.POINTNAME, TIMESTAMP as date, VALUE as kwh ");
-        sql.append("FROM RAWPOINTHISTORY RPH, POINT P, YUKONPAOBJECT PAO ");
-        sql.append("left outer join DEVICEMETERGROUP DMG on PAO.PAOBJECTID = DMG.DEVICEID ");
-        sql.append("left outer join DEVICECARRIERSETTINGS DCS on PAO.PAOBJECTID = DCS.DEVICEID ");
+        StringBuffer sql = new StringBuffer ("SELECT DGM.DEVICEGROUPID as grp, PAO.PAOBJECTID, PAO.PAONAME as deviceName, PAO.TYPE, DMG.METERNUMBER as meterNumber, "); 
+        sql.append("P.POINTNAME, TIMESTAMP as date, VALUE as kwh ");
+        sql.append("FROM RAWPOINTHISTORY RPH, POINT P, YUKONPAOBJECT PAO, ");
+        sql.append("DEVICEGROUPMEMBER DGM, DEVICEMETERGROUP DMG ");
         sql.append("WHERE P.POINTID = RPH.POINTID ");
+        sql.append("AND PAO.PAOBJECTID = DMG.DEVICEID ");
+        sql.append("AND PAO.PAOBJECTID = DGM.YUKONPAOID ");
         sql.append("AND P.PAOBJECTID = PAO.PAOBJECTID ");
         sql.append("AND TIMESTAMP > ? ");
         sql.append("AND TIMESTAMP <= ? ");
