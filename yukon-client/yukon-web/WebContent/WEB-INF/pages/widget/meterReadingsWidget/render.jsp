@@ -14,23 +14,26 @@
     </c:when>
     <c:when test="${supportedAttributes[attribute]}">
     <ct:attributeValue device="${device}" attribute="${attribute}" />
+    <c:if test="${attribute == 'USAGE'}">
+      <ct:nameValue name="Previous Usage">
+      <select onChange="${widgetParameters.widgetId}_usageUpdate()"  name="prevSelect" id="${widgetParameters.widgetId}_prevSelect">
+        <c:forEach items="${previousReadings}" var = "reading">
+          <option value="${reading.value}"><cti:pointValueFormatter format="FULL" value="${reading}"/></option>
+        </c:forEach>
+      </select>
+      </ct:nameValue>
+      
+      <ct:nameValue name="Total Consumption">
+        <div id="${widgetParameters.widgetId}_totalConsumption" > 
+        </div>
+      </ct:nameValue>
+    </c:if>
     </c:when>
   </c:choose>
   </ct:nameValue>
 </c:forEach>
 
-<ct:nameValue name="Previous Usage">
-<select onChange="${widgetParameters.widgetId}_usageUpdate()"  name="prevSelect" id="${widgetParameters.widgetId}_prevSelect">
-	<c:forEach items="${previousReadings}" var = "reading">
-		<option value="${reading.value}"><cti:pointValueFormatter format="FULL" value="${reading}"/></option>
-	</c:forEach>
-</select>
-</ct:nameValue>
 
-<ct:nameValue name="Total Consumption">
-	<div id="${widgetParameters.widgetId}_totalConsumption" > 
-	</div>
-</ct:nameValue>
 
 <div style="display:none" id="${widgetParameters.widgetId}_currentUsage">
 <cti:attributeResolver device="${device}" attributeName="USAGE" var="pointId"/>
