@@ -13,6 +13,7 @@ import com.cannontech.clientutils.CTILogger;
 import com.cannontech.common.util.CtiUtilities;
 import com.cannontech.common.util.TimeUtil;
 import com.cannontech.database.PoolManager;
+import com.cannontech.database.SqlUtils;
 import com.cannontech.database.data.pao.PAOGroups;
 
 /**
@@ -210,17 +211,7 @@ Meter meter = new Meter();
 		}
 		finally
 		{
-			try
-			{
-				if( pstmt != null )
-					pstmt.close();
-				if( conn != null )
-					conn.close();
-			}
-			catch( java.sql.SQLException e )
-			{
-				e.printStackTrace();
-			}
+			SqlUtils.close(rset, pstmt, conn );
 		}
 		CTILogger.info("Report Records Collected from Database: " + getData().size());
 		return;

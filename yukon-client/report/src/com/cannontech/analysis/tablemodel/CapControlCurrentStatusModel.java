@@ -13,6 +13,7 @@ import com.cannontech.clientutils.CTILogger;
 import com.cannontech.common.util.CtiUtilities;
 import com.cannontech.core.dao.DaoFactory;
 import com.cannontech.database.PoolManager;
+import com.cannontech.database.SqlUtils;
 import com.cannontech.database.data.lite.LiteState;
 import com.cannontech.database.data.lite.LiteYukonPAObject;
 import com.cannontech.database.db.state.StateGroupUtils;
@@ -253,17 +254,7 @@ public class CapControlCurrentStatusModel extends ReportModelBase
 		}
 		finally
 		{
-			try
-			{
-				if( pstmt != null )
-					pstmt.close();
-				if( conn != null )
-					conn.close();
-			}
-			catch( java.sql.SQLException e )
-			{
-				e.printStackTrace();
-			}
+			SqlUtils.close(rset, pstmt, conn );
 		}
 		CTILogger.info("Report Records Collected from Database: " + getData().size());
 		return;

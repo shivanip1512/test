@@ -12,6 +12,7 @@ import com.cannontech.clientutils.CTILogger;
 import com.cannontech.common.util.CtiUtilities;
 import com.cannontech.core.dao.DaoFactory;
 import com.cannontech.database.PoolManager;
+import com.cannontech.database.SqlUtils;
 import com.cannontech.database.data.lite.LiteFactory;
 import com.cannontech.database.data.lite.LiteYukonPAObject;
 import com.cannontech.database.data.route.RouteBase;
@@ -67,7 +68,7 @@ public class RepeaterRoleCollisionModel extends ReportModelBase {
                             CTILogger.error(e);
                         }
                         finally {
-                            JdbcUtils.closeConnection(conn);
+                        	SqlUtils.close(conn);
                         }
                         int deviceID = ((RouteBase)heavyRoute).getDeviceID().intValue();
                         String ccuName = DaoFactory.getPaoDao().getYukonPAOName(deviceID);

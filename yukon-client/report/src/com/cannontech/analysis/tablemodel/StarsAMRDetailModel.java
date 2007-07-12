@@ -21,6 +21,7 @@ import com.cannontech.common.device.groups.model.DeviceGroup;
 import com.cannontech.common.device.groups.service.DeviceGroupService;
 import com.cannontech.common.util.CtiUtilities;
 import com.cannontech.database.PoolManager;
+import com.cannontech.database.SqlUtils;
 import com.cannontech.database.data.pao.PAOGroups;
 import com.cannontech.database.data.point.PointTypes;
 import com.cannontech.spring.YukonSpringHook;
@@ -246,17 +247,7 @@ public class StarsAMRDetailModel extends ReportModelBase<StarsAMRDetail> impleme
         }
         finally
         {
-            try
-            {
-                if( pstmt != null )
-                    pstmt.close();
-                if( conn != null )
-                    conn.close();
-            }
-            catch( java.sql.SQLException e )
-            {
-                e.printStackTrace();
-            }
+        	SqlUtils.close(rset, pstmt, conn );
         }
         
         if( getData() != null)

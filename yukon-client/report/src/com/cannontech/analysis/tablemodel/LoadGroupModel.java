@@ -14,6 +14,7 @@ import com.cannontech.common.util.TimeUtil;
 import com.cannontech.core.authorization.support.Permission;
 import com.cannontech.core.dao.DaoFactory;
 import com.cannontech.database.PoolManager;
+import com.cannontech.database.SqlUtils;
 import com.cannontech.database.db.company.EnergyCompany;
 import com.cannontech.database.db.device.lm.LMProgramDirectGroup;
 import com.cannontech.database.db.macro.GenericMacro;
@@ -312,17 +313,7 @@ public class LoadGroupModel extends ReportModelBase
 		}
 		finally
 		{
-			try
-			{
-				if( pstmt != null )
-					pstmt.close();
-				if( conn != null )
-					conn.close();
-			}
-			catch( java.sql.SQLException e )
-			{
-				e.printStackTrace();
-			}
+			SqlUtils.close(rset, pstmt, conn );
 		}
 		CTILogger.info("Report Records Collected from Database: " + getData().size());
 		return;

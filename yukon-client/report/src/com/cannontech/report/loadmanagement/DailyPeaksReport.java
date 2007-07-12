@@ -12,6 +12,7 @@ import java.util.Vector;
 import com.cannontech.clientutils.CTILogger;
 import com.cannontech.common.util.CtiUtilities;
 import com.cannontech.database.PoolManager;
+import com.cannontech.database.SqlUtils;
 import com.cannontech.database.data.point.PointQualities;
 import com.cannontech.database.db.point.RawPointHistory;
 import com.cannontech.report.ReportBase;
@@ -142,6 +143,10 @@ public boolean retrieveReportData(String dbAlias)
 	}
 
 	java.sql.Connection conn = null;
+	java.sql.PreparedStatement pstmt = null;
+	java.sql.PreparedStatement pstmt2 = null;
+	java.sql.ResultSet rset = null;
+	java.sql.ResultSet rset2 = null;
 	try
 	{
 		conn = PoolManager.getInstance().getConnection(dbAlias);
@@ -158,8 +163,7 @@ public boolean retrieveReportData(String dbAlias)
 						"where paobjectid = ca.deviceid and ca.deviceid = trig.deviceid and peakpointid > 0 " +
 						"order by paoname");
 
-			java.sql.PreparedStatement pstmt = conn.prepareStatement(sqlString.toString());
-			java.sql.ResultSet rset = null;
+			pstmt = conn.prepareStatement(sqlString.toString());
 			rset = pstmt.executeQuery();
 			if( rset != null )
 			{
@@ -183,11 +187,10 @@ public boolean retrieveReportData(String dbAlias)
 						"from rawpointhistory where pointid = ? and timestamp > ? and timestamp <= ? " +
 						"order by value desc");
 
-			java.sql.PreparedStatement pstmt2 = conn.prepareStatement(sqlString2.toString());
+			pstmt2 = conn.prepareStatement(sqlString2.toString());
 			pstmt2.setInt(1,((TempControlAreaObject)controlAreaVector.get(i)).getPeakPointId().intValue());
 			pstmt2.setObject(2,new java.sql.Date(getStartDate().getTime().getTime()));
 			pstmt2.setObject(3,new java.sql.Date(getStopDate().getTime().getTime()));
-			java.sql.ResultSet rset2 = null;
 
 			{
 				rset2 = pstmt2.executeQuery();
@@ -296,14 +299,7 @@ public boolean retrieveReportData(String dbAlias)
 	}
 	finally
 	{
-		try
-		{
-			if( conn != null ) conn.close();
-		} 
-		catch( java.sql.SQLException e2 )
-		{
-			e2.printStackTrace();//sometin is up
-		}	
+		SqlUtils.close(rset, rset2, pstmt, pstmt2, conn);
 	}
 
 	return returnBoolean;

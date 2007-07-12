@@ -8,6 +8,7 @@ package com.cannontech.report.loadmanagement;
 import java.util.GregorianCalendar;
 import java.util.Vector;
 
+import com.cannontech.database.SqlUtils;
 import com.cannontech.database.db.macro.MacroTypes;
 import com.cannontech.report.ReportBase;
 import com.cannontech.report.ReportTypes;
@@ -158,6 +159,10 @@ public boolean retrieveReportData(String dbAlias)
 	}
 
 	java.sql.Connection conn = null;
+	java.sql.PreparedStatement pstmt = null;
+	java.sql.PreparedStatement pstmt2 = null;
+	java.sql.ResultSet rset = null;
+	java.sql.ResultSet rset2 = null;
 	try
 	{
 		conn = com.cannontech.database.PoolManager.getInstance().getConnection(dbAlias);
@@ -171,8 +176,7 @@ public boolean retrieveReportData(String dbAlias)
 		{
 			StringBuffer sqlString = new StringBuffer("select paobjectid, paoname from yukonpaobject, lmcontrolarea where paobjectid = deviceid order by paoname");
 
-			java.sql.PreparedStatement pstmt = conn.prepareStatement(sqlString.toString());
-			java.sql.ResultSet rset = null;
+			pstmt = conn.prepareStatement(sqlString.toString());
 			rset = pstmt.executeQuery();
 			if( rset != null )
 			{
@@ -213,12 +217,11 @@ public boolean retrieveReportData(String dbAlias)
 //				"where deviceid = ?)) " +
 				
 
-			java.sql.PreparedStatement pstmt2 = conn.prepareStatement(sqlString2.toString());
+			pstmt2 = conn.prepareStatement(sqlString2.toString());
 			pstmt2.setTimestamp(1, new java.sql.Timestamp( getStartDate().getTimeInMillis()));			
 			pstmt2.setTimestamp(2, new java.sql.Timestamp( getStopDate().getTimeInMillis()));
 			pstmt2.setInt(3,((TempControlAreaIdNameObject)controlAreaVector.get(i)).getControlAreaId().intValue());
 			pstmt2.setInt(4,((TempControlAreaIdNameObject)controlAreaVector.get(i)).getControlAreaId().intValue());
-			java.sql.ResultSet rset2 = null;
 
 			{
 				rset2 = pstmt2.executeQuery();
@@ -259,14 +262,7 @@ public boolean retrieveReportData(String dbAlias)
 	}
 	finally
 	{
-		try
-		{
-			if( conn != null ) conn.close();
-		} 
-		catch( java.sql.SQLException e2 )
-		{
-			e2.printStackTrace();//sometin is up
-		}	
+		SqlUtils.close(rset, rset2, pstmt, pstmt2, conn);
 	}
 
 	return returnBoolean;

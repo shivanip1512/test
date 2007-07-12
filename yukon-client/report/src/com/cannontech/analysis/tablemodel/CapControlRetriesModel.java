@@ -8,6 +8,7 @@ import com.cannontech.clientutils.CTILogger;
 import com.cannontech.common.util.CtiUtilities;
 import com.cannontech.common.util.SqlStatementBuilder;
 import com.cannontech.database.PoolManager;
+import com.cannontech.database.SqlUtils;
 
 public class CapControlRetriesModel extends BareDatedReportModelBase<CapControlRetriesModel.ModelRow> implements CapControlFilterable  {
 
@@ -77,14 +78,7 @@ public class CapControlRetriesModel extends BareDatedReportModelBase<CapControlR
         } catch (java.sql.SQLException e) {
             e.printStackTrace();
         } finally {
-            try {
-                if (pstmt != null)
-                    pstmt.close();
-                if (conn != null)
-                    conn.close();
-            } catch (java.sql.SQLException e) {
-                e.printStackTrace();
-            }
+        	SqlUtils.close(rs, pstmt, conn );
         }
         CTILogger.info("Report Records Collected from Database: " + data.size());
         return;

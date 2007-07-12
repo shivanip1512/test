@@ -15,6 +15,7 @@ import com.cannontech.analysis.data.device.MeterAndPointData;
 import com.cannontech.clientutils.CTILogger;
 import com.cannontech.common.util.CtiUtilities;
 import com.cannontech.database.PoolManager;
+import com.cannontech.database.SqlUtils;
 import com.cannontech.database.data.pao.PAOGroups;
 
 /**
@@ -181,17 +182,7 @@ public class LPSetupDBModel extends ReportModelBase<LPMeterData> implements Comp
 		}
 		finally
 		{
-			try
-			{
-				if( pstmt != null )
-					pstmt.close();
-				if( conn != null )
-					conn.close();
-			}
-			catch( java.sql.SQLException e )
-			{
-				e.printStackTrace();
-			}
+			SqlUtils.close(rset, pstmt, conn );
 		}
         
         if(getData() != null) {

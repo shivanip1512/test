@@ -18,6 +18,7 @@ import com.cannontech.common.device.groups.model.DeviceGroup;
 import com.cannontech.common.device.groups.service.DeviceGroupService;
 import com.cannontech.common.util.CtiUtilities;
 import com.cannontech.database.PoolManager;
+import com.cannontech.database.SqlUtils;
 import com.cannontech.spring.YukonSpringHook;
 
 public class ScheduledMeterReadModel extends ReportModelBase<ScheduledMeterReadModel.ScheduledMeterReadRow>
@@ -311,15 +312,7 @@ public class ScheduledMeterReadModel extends ReportModelBase<ScheduledMeterReadM
 		}
 		finally
 		{
-			try {
-				if( pstmt != null )
-					pstmt.close();
-				if( conn != null )
-					conn.close();
-			}
-			catch( java.sql.SQLException e ) {
-				CTILogger.error(e);
-			}
+			SqlUtils.close(rset, pstmt, conn );
 		}
 		CTILogger.info("Report Records Collected from Database: " + getData().size());
 		return;
