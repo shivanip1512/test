@@ -17,22 +17,21 @@ import com.cannontech.yukon.IServerConnection;
 
 public class PointDataGenerator implements PointValueUpdater {
     private Logger log = YukonLogManager.getLogger(PointDataGenerator.class);
-    private YukonDeviceLookup yukonDeviceLookup;
     private IServerConnection dispatchConnection;
     private PointDao pointDao;
     private int type;
     private int offset;
     private boolean cachePoints = true;
     private boolean invertStatus = false;
-    private Map<Integer, PointHolder> repIdToPoint = new HashMap<Integer, PointHolder>(); // use only in synchronized in method
+    private Map<Integer, PointHolder> paoIdToPoint = new HashMap<Integer, PointHolder>(); // use only in synchronized in method
     
     private class PointHolder {
         LitePoint point = null;
         double multiplier = 1;
     }
     
-    public void writePointDataMessage(int repId, double rawValue, Date time) {
-        PointHolder holder = getPointForRepId(repId);
+    public void writePointDataMessage(LiteYukonPAObject lpao, double rawValue, Date time) {
+        PointHolder holder = getPointForPaoId(lpao);
         if (holder == null) {
             return;
         }
@@ -45,43 +44,37 @@ public class PointDataGenerator implements PointValueUpdater {
         pointData.setValue(value);
 
         pointData.setTime(time);
-        log.info("Updating point " + holder.point.getPointID() + " with value=" + value);
+        log.info("Updating " + lpao.getPaoName() + " point " + holder.point.getPointID() + ": " + holder.point.getPointName() + " with value=" + value);
         dispatchConnection.write(pointData);
     }
 
-    public void writePointDataMessage(int repId, boolean value, Date time) {
-        writePointDataMessage(repId, (value != invertStatus) ? 1 : 0, time);
+    public void writePointDataMessage(LiteYukonPAObject lpao, boolean value, Date time) {
+        writePointDataMessage(lpao, (value != invertStatus) ? 1 : 0, time);
     }
     
-    public void setYukonDeviceLookup(YukonDeviceLookup yukonDeviceLookup) {
-        this.yukonDeviceLookup = yukonDeviceLookup;
-    }
-    
-    private synchronized PointHolder getPointForRepId(int repId) {
+    private synchronized PointHolder getPointForPaoId(LiteYukonPAObject lpao) {
+    	if (lpao == null) {
+    		log.info("No device found for pao: " + lpao.getPaoName());
+    		return null;
+    	}
         PointHolder holder;
         if (cachePoints) {
-            holder = repIdToPoint.get(new Integer(repId));
+            holder = paoIdToPoint.get(lpao.getLiteID());
             if (holder != null) {
                 return holder;
             }
         }
         holder = new PointHolder();
         // find status point
-        LiteYukonPAObject device = yukonDeviceLookup.getDeviceForRepId(repId);
-        if (device == null) {
-            log.info("No device found for repId: " + repId);
-            return null;
-        }
-        int pointId = pointDao.getPointIDByDeviceID_Offset_PointType(device.getLiteID(), 
-                                                                     offset, 
-                                                                     type);
+        
+        int pointId = pointDao.getPointIDByDeviceID_Offset_PointType(lpao.getLiteID(), offset, type);
         LitePoint point = pointDao.getLitePoint(pointId);
         if (point == null) {
-            log.warn("Unable to find point. DeviceId=" + device.getLiteID() 
+            log.warn("Unable to find point. DeviceId=" + lpao.getLiteID() 
                      + ", offset=" + offset + ", type=" + type);
             return null;
         }
-        log.debug("Got point " + point.getPointID() + " from dao for device=" + device + ", offset=" + offset + ", type=" + type);
+        log.debug("Got point " + point.getPointID() + " from dao for device=" + lpao + ", offset=" + offset + ", type=" + type);
         
         holder.point = point;
         try {
@@ -90,7 +83,7 @@ public class PointDataGenerator implements PointValueUpdater {
         }
 
         if (cachePoints) {
-            repIdToPoint.put(new Integer(repId), holder);
+            paoIdToPoint.put(lpao.getLiteID(), holder);
         }
         return holder;
     }

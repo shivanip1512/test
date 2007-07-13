@@ -11,7 +11,7 @@ import com.cannontech.database.data.lite.LiteYukonPAObject;
 public class ConfigurablePaoLookup implements YukonDeviceLookup {
     private Map<Integer, Integer> paoMapping;
     private PaoDao paoDao;
-    private Logger log = YukonLogManager.getLogger(ConfigurableDeviceLookup.class);
+    private Logger log = YukonLogManager.getLogger(ConfigurablePaoLookup.class);
 
     public void setPaoMapping(Map<Integer, Integer> paoMapping) {
         this.paoMapping = paoMapping;

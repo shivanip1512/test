@@ -70,7 +70,7 @@
   
   <bean id="faultDetectProcessor" class="com.cannontech.sensus.FaultDetectProcessor">
       <property name="messageEncoder"><bean class="com.amdswireless.common.MessageEncoder"/></property>
-      <property name="yukonDeviceLookup" ref="oneDeviceLookup"/>
+      <property name="yukonDeviceLookup" ref="deviceIdLookup"/>
       <property name="bindingKeyRegEx" value="^CPS.*"/>
       <property name="ignoreEventBit" value="true"/>
       <property name="faultGenerator" ref="faultStatusGenerator"/>
@@ -86,7 +86,6 @@
   <bean id="nullPointDataGenerator" class="com.cannontech.sensus.NullPointValueUpdater"/>
 
   <bean id="abstractPointDataGenerator" class="com.cannontech.sensus.PointDataGenerator" abstract="true">
-    <property name="yukonDeviceLookup" ref="deviceLookup"/>
     <property name="dispatchConnection" ref="dispatchConnection"/>
     <property name="pointDao" ref="pointDao"/>
     <property name="cachePoints" value="false"/>

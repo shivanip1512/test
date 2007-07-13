@@ -53,35 +53,36 @@ public class FaultDetectProcessor implements SensusMessageHandler {
     private void processStatusMessage(AppMessageType22 message) {
         int repId = message.getRepId();
         log.debug("Processing message for repId=" + repId + ": " + message);
-
+        
+        LiteYukonPAObject device = yukonDeviceLookup.getDeviceForRepId(repId);
         Date toi = message.getTimestampOfIntercept();
         if ((message.isStatusEventTransBit() || ignoreEventBit) && message.getLastEvent().isPopulated()) {
             boolean fault = message.getLastEvent().isFaultDetected();
             long millis = toi.getTime() - message.getLastEvent().getSecondsSinceEvent() * 1000;
             Date eventDate = new Date(millis);
-            faultGenerator.writePointDataMessage(repId, fault, eventDate);
+            faultGenerator.writePointDataMessage(device, fault, eventDate);
         } else {
             log.info("Got supervisory message or event message without lastEvent populated");
 
             // CGP: This is the best info we have on the curent fault status.
             boolean latchedFault = message.isStatusLatchedFault();
-            faultGenerator.writePointDataMessage(repId, latchedFault, toi);
+            faultGenerator.writePointDataMessage(device, latchedFault, toi);
         }
 
         boolean latchedFault = message.isStatusLatchedFault();
-        faultLatchGenerator.writePointDataMessage(repId, latchedFault, toi);
+        faultLatchGenerator.writePointDataMessage(device, latchedFault, toi);
 
         boolean no60 = message.isStatusNo60HzOrUnderLineCurrent();
-        no60Generator.writePointDataMessage(repId, no60, toi);
+        no60Generator.writePointDataMessage(device, no60, toi);
 
         float lastBatteryVoltage = message.getLastTxBatteryVoltage();
-        batteryVoltageGenerator.writePointDataMessage(repId, lastBatteryVoltage, toi);
+        batteryVoltageGenerator.writePointDataMessage(device, lastBatteryVoltage, toi);
 
         int currentDeviceTemperature = message.getCurrentDeviceTemperature();
-        deviceTemperatureGenerator.writePointDataMessage(repId, currentDeviceTemperature, toi);
+        deviceTemperatureGenerator.writePointDataMessage(device, currentDeviceTemperature, toi);
 
         boolean batterLow = message.isLowBattery();
-        batteryLowGenerator.writePointDataMessage(repId, batterLow, toi);
+        batteryLowGenerator.writePointDataMessage(device, batterLow, toi);
     }
 
     private void processBindingMessage(AppMessageType5 message) {
@@ -104,8 +105,8 @@ public class FaultDetectProcessor implements SensusMessageHandler {
         float longitude = message.getLongitude();
 
         if (latitude != 0 || longitude != 0) {
-            latGenerator.writePointDataMessage(repId, latitude, message.getTimestampOfIntercept());
-            longGenerator.writePointDataMessage(repId, longitude, message.getTimestampOfIntercept());
+            latGenerator.writePointDataMessage(device, latitude, message.getTimestampOfIntercept());
+            longGenerator.writePointDataMessage(device, longitude, message.getTimestampOfIntercept());
         }
 
     }
