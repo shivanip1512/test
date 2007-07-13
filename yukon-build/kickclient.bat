@@ -22,7 +22,7 @@ if NOT exist "..\yukon\yukon-client" (
 	echo:
 	echo performing cvs checkout...
 	echo:
-	cmd.exe /c %ANT_HOME%\bin\ant -f build.xml checkout
+	cmd.exe /c %ANT_HOME%\bin\ant -f build-verbose.xml checkout-client
 )
 
 if "%1" == "noupdate" (

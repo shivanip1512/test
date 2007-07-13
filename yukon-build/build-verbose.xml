@@ -63,12 +63,12 @@
     
     <target name="update-client" depends="init">
     	<echo message="updating module yukon-client by tag or branch: ${branch}" />
-    	<cvs dest="${module.name}/yukon-client" package="yukon-client"/>
+    	<cvs dest="${module.name}" package="yukon-client"/>
     </target>
     
     <target name="update-server" depends="init">
     	<echo message="updating module yukon-server by tag or branch: ${branch}" />
-    	<cvs dest="${module.name}/yukon-server" package="yukon-server"/>
+    	<cvs dest="${module.name}" package="yukon-server"/>
     </target>
     
     <target name="build-client" depends="update-client,build-clientTarget"/>
