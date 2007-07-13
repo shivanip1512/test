@@ -6,10 +6,8 @@ import java.net.URL;
 import java.util.Enumeration;
 import java.util.jar.Manifest;
 
-import org.apache.commons.lang.StringUtils;
-import org.springframework.dao.DataAccessException;
+import org.springframework.jdbc.BadSqlGrammarException;
 import org.springframework.jdbc.core.JdbcOperations;
-import org.springframework.jdbc.core.JdbcTemplate;
 
 import com.cannontech.clientutils.CTILogger;
 import com.cannontech.common.util.CtiUtilities;
@@ -19,7 +17,6 @@ import com.cannontech.database.PoolManager;
 import com.cannontech.database.SqlUtils;
 import com.cannontech.database.db.version.CTIDatabase;
 import com.cannontech.roles.yukon.SystemRole;
-import com.cannontech.spring.YukonSpringHook;
 
 /**
  * Insert the type's description here.
@@ -32,7 +29,7 @@ public final class VersionTools
     public static final String KEY_YUKON_DETAILS = "Yukon-Details";
 	public static final String COMMON_JAR = "common.jar";
 	
-    private static Boolean starsExists = null;
+    private static boolean appCatFound = false;
 	private static Boolean crsPtjIntegration = null;
     private static Boolean staticLoadGroupMapping = null;
 	public static String yukonVersion = null;
@@ -138,17 +135,15 @@ public synchronized static CTIDatabase getDatabaseVersion()
  */
 public static boolean starsExists()
 {
-    if (starsExists == null) {
-        boolean appCatExists = VersionTools.tableExists("APPLIANCECATEGORY");
-        if (!appCatExists) {
+    if (!appCatFound) {
+        // we'll keep checking until we find it
+        appCatFound = VersionTools.tableExists("APPLIANCECATEGORY");
+        if (!appCatFound) {
             throw new RuntimeException("STARS tables not present in this database.");
         }
-        else {
-            return CtiUtilities.isTrue( DaoFactory.getRoleDao().getGlobalPropertyValue( SystemRole.STARS_ACTIVATION ));
-        }
+        // appCatFound is now true and we'll not check in the future
     }
-
-    return starsExists;
+    return CtiUtilities.isTrue( DaoFactory.getRoleDao().getGlobalPropertyValue( SystemRole.STARS_ACTIVATION ));
 }
 
 /**
@@ -192,10 +187,10 @@ private final static boolean tableExists( String tableName_ )
     // A previous version used meta data but it didn't work with oracle!
     try {
         JdbcOperations jdbcOps = JdbcTemplateHelper.getYukonTemplate();
-        int num = (Integer) jdbcOps.queryForObject("select count(*) from " + tableName_, Integer.class);
+        jdbcOps.queryForObject("select count(*) from " + tableName_, Integer.class);
         return true;
     } 
-    catch(DataAccessException dae) {
+    catch (BadSqlGrammarException dae) {
         // fine, guess it didn't exist
     }
     
