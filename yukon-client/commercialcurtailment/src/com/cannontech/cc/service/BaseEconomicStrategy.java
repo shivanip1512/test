@@ -65,6 +65,7 @@ public abstract class BaseEconomicStrategy extends StrategyBase implements Econo
     private EconomicService economicService;
     private PointDao pointDao;
     private TimeSource timeSource;
+    private final int UNSTOPPABLE_WINDOW_MINUTES = 2;
     
     @Transactional
     public EconomicBuilder createBuilder(Program program) {
@@ -352,7 +353,6 @@ public abstract class BaseEconomicStrategy extends StrategyBase implements Econo
         if (event.getState() != EconomicEventState.INITIAL) {
             return false;
         }
-        final int UNSTOPPABLE_WINDOW_MINUTES = 2;
         Date now = timeSource.getCurrentTime();
         Date paddedNotif = TimeUtil.addMinutes(event.getNotificationTime(), 0);
         Date paddedStart = TimeUtil.addMinutes(event.getStartTime(), -UNSTOPPABLE_WINDOW_MINUTES);
@@ -360,7 +360,6 @@ public abstract class BaseEconomicStrategy extends StrategyBase implements Econo
     }
     
     public Boolean canEventBeDeleted(EconomicEvent event, LiteYukonUser user) {
-        final int UNSTOPPABLE_WINDOW_MINUTES = 2;
         Date now = timeSource.getCurrentTime();
         Date paddedNotif = TimeUtil.addMinutes(event.getNotificationTime(), -UNSTOPPABLE_WINDOW_MINUTES);
         return now.before(paddedNotif);
@@ -370,7 +369,6 @@ public abstract class BaseEconomicStrategy extends StrategyBase implements Econo
         if (event.getState() != EconomicEventState.INITIAL) {
             return false;
         }
-        final int UNSTOPPABLE_WINDOW_MINUTES = 2;
         Date now = timeSource.getCurrentTime();
         Date start = TimeUtil.addMinutes(event.getStartTime(), 0);
         Date paddedStop = TimeUtil.addMinutes(event.getStopTime(), -UNSTOPPABLE_WINDOW_MINUTES);
@@ -381,7 +379,6 @@ public abstract class BaseEconomicStrategy extends StrategyBase implements Econo
         if (event.getState() != EconomicEventState.INITIAL) {
             return false;
         }
-        final int UNSTOPPABLE_WINDOW_MINUTES = 2;
         Date now = timeSource.getCurrentTime();
         Date paddedStop = TimeUtil.addMinutes(event.getStopTime(), -UNSTOPPABLE_WINDOW_MINUTES);
         

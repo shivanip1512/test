@@ -13,6 +13,7 @@ import com.cannontech.cc.service.builder.EventBuilderBase;
 import com.cannontech.cc.service.builder.VerifiedCustomer;
 import com.cannontech.cc.service.exception.EventCreationException;
 import com.cannontech.cc.service.exception.EventModificationException;
+import com.cannontech.clientutils.CTILogger;
 import com.cannontech.database.data.lite.LiteYukonPAObject;
 import com.cannontech.database.data.lite.LiteYukonUser;
 import com.cannontech.database.db.web.LMDirectCustomerList;
@@ -33,6 +34,8 @@ public abstract class BaseDirectStrategy extends BaseNotificationStrategy {
             public void forProgram(int lmProgramId) {
                 Date startTime = curtailmentEvent.getStartTime();
                 Date stopTime = curtailmentEvent.getStopTime();
+                CTILogger.debug("Sending startProgram for event: " + curtailmentEvent);
+                CTILogger.debug("  lmProgramId=" + lmProgramId + ", startTime=" + startTime + ", stopTime=" + stopTime);
                 loadManagementService.startProgram(lmProgramId, startTime, stopTime);
             }
         });
@@ -44,7 +47,9 @@ public abstract class BaseDirectStrategy extends BaseNotificationStrategy {
         super.cancelEvent(event, user);
         sendMessages(event, new DoWithId() {
             public void forProgram(int lmProgramId) {
-                loadManagementService.changeProgramStop(lmProgramId, event.getStopTime());
+                CTILogger.debug("Sending changeProgramStop for event: " + event);
+                CTILogger.debug("  lmProgramId=" + lmProgramId + ", stopTime=" + event.getStopTime());
+                loadManagementService.stopProgram(lmProgramId);
             }
         });
     }
@@ -54,6 +59,8 @@ public abstract class BaseDirectStrategy extends BaseNotificationStrategy {
         final CurtailmentEvent event = super.adjustEvent(builder, user);
         sendMessages(event, new DoWithId() {
             public void forProgram(int lmProgramId) {
+                CTILogger.debug("Sending changeProgramStop for event: " + event);
+                CTILogger.debug("  lmProgramId=" + lmProgramId + ", stopTime=" + event.getStopTime());
                 loadManagementService.changeProgramStop(lmProgramId, event.getStopTime());
             }
         });
@@ -61,10 +68,12 @@ public abstract class BaseDirectStrategy extends BaseNotificationStrategy {
     }
     
     @Override
-    protected void doBeforeDeleteEvent(CurtailmentEvent event, LiteYukonUser user) {
+    protected void doBeforeDeleteEvent(final CurtailmentEvent event, LiteYukonUser user) {
         super.doBeforeDeleteEvent(event, user);
         sendMessages(event, new DoWithId() {
             public void forProgram(int lmProgramId) {
+                CTILogger.debug("Sending stopProgram for event: " + event);
+                CTILogger.debug("  lmProgramId=" + lmProgramId);
                 loadManagementService.stopProgram(lmProgramId);
             }
         });

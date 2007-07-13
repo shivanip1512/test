@@ -35,6 +35,7 @@ public abstract class BaseNotificationStrategy extends StrategyBase implements N
     private CurtailmentEventNotifDao curtailmentEventNotifDao;
     private CurtailmentEventParticipantDao curtailmentEventParticipantDao;
     private TransactionTemplate transactionTemplate;
+    private final int UNSTOPPABLE_WINDOW_MINUTES = 1;
     
     public void setTransactionTemplate(TransactionTemplate transactionTemplate) {
         this.transactionTemplate = transactionTemplate;
@@ -131,6 +132,7 @@ public abstract class BaseNotificationStrategy extends StrategyBase implements N
             }
         });
         
+        CTILogger.debug("Created event " + event);
         getNotificationProxy().sendCurtailmentNotification(event.getId(), CurtailmentEventAction.STARTING);
         sendProgramNotifications(event, curtailmentEventParticipantDao.getForEvent(event), "started");
         return event;
@@ -161,7 +163,6 @@ public abstract class BaseNotificationStrategy extends StrategyBase implements N
         if (event.getState().equals(CurtailmentEventState.MODIFIED)) {
             return false;
         }
-        final int UNSTOPPABLE_WINDOW_MINUTES = 2;
         Date now = new Date();
         Date paddedNotif = event.getNotificationTime();
         Date paddedStart = TimeUtil.addMinutes(event.getStartTime(), -UNSTOPPABLE_WINDOW_MINUTES);
@@ -172,7 +173,6 @@ public abstract class BaseNotificationStrategy extends StrategyBase implements N
         if (event.getState().equals(CurtailmentEventState.CANCELLED)) {
             return false;
         }
-        final int UNSTOPPABLE_WINDOW_MINUTES = 2;
         Date now = new Date();
         Date paddedStart = TimeUtil.addMinutes(event.getNotificationTime(), 0);
         Date paddedStop = TimeUtil.addMinutes(event.getStopTime(), -UNSTOPPABLE_WINDOW_MINUTES);
@@ -184,7 +184,6 @@ public abstract class BaseNotificationStrategy extends StrategyBase implements N
     }
     
     public Boolean canEventBeDeleted(CurtailmentEvent event, LiteYukonUser user) {
-        final int UNSTOPPABLE_WINDOW_MINUTES = 2;
         Date now = new Date();
         Date paddedNotif = TimeUtil.addMinutes(event.getNotificationTime(), -UNSTOPPABLE_WINDOW_MINUTES);
         return now.before(paddedNotif);
@@ -202,6 +201,7 @@ public abstract class BaseNotificationStrategy extends StrategyBase implements N
     public CurtailmentEvent adjustEvent(final CurtailmentChangeBuilder builder, final LiteYukonUser user) 
     throws EventModificationException {
         final CurtailmentEvent event = builder.getOriginalEvent();
+        CTILogger.debug("Adjusting event: " + event);
         transactionTemplate.execute(new TransactionCallback(){
             public Object doInTransaction(TransactionStatus status) {
                 if (!canEventBeAdjusted(event, user)) {
@@ -227,6 +227,7 @@ public abstract class BaseNotificationStrategy extends StrategyBase implements N
         if (!canEventBeDeleted(event, user)) {
             throw new RuntimeException("Event can't be deleted right now by this user");
         }
+        CTILogger.info(event + " deleted by " + user);
         boolean success = getNotificationProxy()
             .attemptDeleteCurtailmentNotification(event.getId(), true);
 
@@ -246,6 +247,7 @@ public abstract class BaseNotificationStrategy extends StrategyBase implements N
     @Transactional
     public void forceDelete(BaseEvent event) {
         CurtailmentEvent economicEvent = (CurtailmentEvent) event;
+        CTILogger.info(event + " force deleted");
 
         // notifications????
         curtailmentEventDao.delete(economicEvent);
@@ -255,6 +257,7 @@ public abstract class BaseNotificationStrategy extends StrategyBase implements N
         if (!canEventBeCancelled(event, user)) {
             throw new RuntimeException("Event can't be cancelled right now by this user");
         }
+        CTILogger.info(event + " cancelled by " + user);
         getNotificationProxy().attemptDeleteCurtailmentNotification(event.getId(), false);
         getNotificationProxy().sendCurtailmentNotification(event.getId(), CurtailmentEventAction.CANCELING);
 
