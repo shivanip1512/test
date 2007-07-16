@@ -18,7 +18,7 @@
 			<div style="font-size: 10px; text-align: right;">
 				<span onmouseover="javascript:toggleWhatsThis()" onmouseout="javascript:toggleWhatsThis()">What's this?</span>
 			</div>
-			<div id="whatsThisText" class="trendPopup" style="display:none;">${selectedAttributeGraph.description}</div>
+			<div id="whatsThisText" class="widgetPopup" style="display:none;">${selectedAttributeGraph.description}</div>
 		</c:if>
 		
 		<!-- Trend -->

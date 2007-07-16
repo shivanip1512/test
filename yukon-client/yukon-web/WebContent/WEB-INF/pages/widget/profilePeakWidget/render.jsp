@@ -5,6 +5,14 @@
 <cti:includeScript link="/JavaScript/hideReveal.js"/>
 <cti:includeScript link="/JavaScript/longLoadProfile.js"/>
 
+<script type="text/javascript"> 
+	
+	function toggleLP(){
+		$('lpDiv').toggle();
+	}
+
+</script>
+
 <span class="widgetText">
 	
 	<c:if test="${errorMsg != null}">
@@ -104,8 +112,9 @@
 												<tags:longLoadProfile styleClass="Link1" deviceId="${deviceId}" lpStartDate="${preResult.startDate}" lpStopDate="${preResult.stopDate}">LP</tags:longLoadProfile>
 											</c:when>
 											<c:otherwise>
-												<div title="The current load profile request will gather more than 90 days of load profile.  Multiple requests of this size could affect overall system performance while being completed.   Please contact the system administrator or break the request into smaller data ranges.">
-													LP N/A
+												<span onmouseover="javascript:toggleLP()" onmouseout="javascript:toggleLP()">LP N/A</span>
+												<div id="lpDiv"  class="widgetPopup" style="top 0; display:none;">
+													The current load profile request will gather more than 90 days of load profile.  Multiple requests of this size could affect overall system performance while being completed.   Please contact the system administrator or break the request into smaller data ranges.
 												</div>
 											</c:otherwise>
 										</c:choose>

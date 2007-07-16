@@ -247,7 +247,7 @@ div.widgetInternalSection {
 	margin-left: 20px;
 }
 
-div.trendPopup {
+div.widgetPopup {
 	position: absolute;
 	top: 50px; 
 	right: 0px; 
@@ -255,6 +255,7 @@ div.trendPopup {
 	padding: 5px;
 	background-color: #FFF68F;
 	border: 1px solid black;
+	width: 350px;
 }
 
 .highlighted {
