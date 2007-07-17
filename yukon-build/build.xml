@@ -422,28 +422,39 @@
     </target>
     
     <target name="tag">
-        <echo message="command: rtag -D '${currenttime}' ${tag.name} yukon"/>
-        <cvs command="rtag -D '${currenttime}' ${tag.name} yukon"/>
-        
-        <exec failonerror="false" dir="yukon-build/symbolserver/" executable="cmd.exe">
-            <arg line='/c symstore add /r /f ${basedir}\${module.name}\yukon-server\*.PDB /s \\swbuild\symbol /t "Yukon Server" /v "${yukon.build.details}"'/>
-        </exec>
+		<antcall target="tag-cvsexecute"/>
+        <antcall target="symstore"/>
+    </target>
+    
+    <target name="tag-cvsexecute">
+        <echo message="command: rtag -D '${currenttime}' ${tag.name} ${module.name}"/>
+        <cvs command="rtag -D '${currenttime}' ${tag.name} ${module.name}"/>   
     </target>
     
     <target name="branch">
-        <echo message="command: rtag -b -D '${currenttime}' ${branch.name} yukon"/>
-        <echo message="command: rtag -r ${branch.name} ${tag.name} yukon"/>
-        <cvs command="rtag -b -D '${currenttime}' ${branch.name} yukon"/>
-        <cvs command="rtag -r ${branch.name} ${tag.name} yukon"/>
+        <antcall target="branch-cvsexecute"/>
+        <antcall target="tag-cvsexecute"/>
         
         <replace file="yukon-build/build_version.properties" token="branch = ${branch}" value="branch = ${branch.name}"/>
-        <cvs command="commit -m 'branch property update' -r ${branch} yukon-build/build_version.properties"/>
+        <cvs command='commit -m "branch property update" -r ${branch} yukon-build/build_version.properties'/>
+
+        <antcall target="updatedbscripts-cvsexecute"/>
         
-        <exec failonerror="false" dir="yukon-build/symbolserver/" executable="cmd.exe">
-            <arg line='/c symstore add /r /f ${basedir}\${module.name}\yukon-server\*.PDB /s \\swbuild\symbol /t "Yukon Server" /v "${yukon.build.details}"'/>
-        </exec>
+        <antcall target="symstore"/>
+
     </target>
     
+    <target name="branch-cvsexecute">
+        <echo message="command: rtag -b -D '${currenttime}' ${branch.name} ${module.name}"/>
+        <cvs command="rtag -b -D '${currenttime}' ${branch.name} ${module.name}"/>
+    </target>
+        
+    <target name="symstore">
+        <exec failonerror="false" dir="yukon-build/symbolserver/" executable="cmd.exe">
+            <arg line='/c symstore add /r /f ${basedir}\${module.name}\yukon-server\*.PDB /s \\swbuild\symbol /t "Yukon Server" /v "${yukon.build.details}"'/>
+        </exec>   
+    </target>
+        
     <target name="updatedbscripts">
     	<taskdef name="createdbversions" 
                  classname="com.cannontech.customtasks.CreateDBVersions"
@@ -460,6 +471,14 @@
         	<property name="yukon.revision" value="${yukon.revision}"/>
         </ant>
         
+    </target>
+    
+    <target name="updatedbscripts-cvsexecute">
+        <property name="sqlfilename" value="${yukon.major}.${yukon.minor}_${yukon.revision}.sql"/>
+        <cvs command='commit -m "branch yukon version update" -r ${branch} ${module.name}/yukon-database/DBUpdates/sqlserver/${sqlfilename}'/>
+        <cvs command='commit -m "branch yukon version update" -r ${branch} ${module.name}/yukon-database/DBUpdates/oracle/${sqlfilename}'/>
+        <cvs command='commit -m "branch yukon version update" -r HEAD ${module.name}/yukon-database/DBUpdates/sqlserver/${sqlfilename}'/>
+        <cvs command='commit -m "branch yukon version update" -r HEAD ${module.name}/yukon-database/DBUpdates/oracle/${sqlfilename}'/>
     </target>
     
 </project>
