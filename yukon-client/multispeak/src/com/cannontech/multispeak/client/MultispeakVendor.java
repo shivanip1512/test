@@ -39,21 +39,24 @@ public class MultispeakVendor
 
 	public int DEFAULT_TIMEOUT = 60000;	//TODO Added this to the MultispeakRole
 
-	public static int DEFAULT_PAONAME = 0;
-    public static int ACCOUNT_NUMBER_PAONAME = 1;
-    public static int SERVICE_LOCATION_PAONAME = 2;
-    public static int CUSTOMER_PAONAME = 3;
+	public static final int DEFAULT_PAONAME = 0;
+    public static final int ACCOUNT_NUMBER_PAONAME = 1;
+    public static final int SERVICE_LOCATION_PAONAME = 2;
+    public static final int CUSTOMER_PAONAME = 3;
+    public static final int EA_LOCATION_PAONAME = 4;
 
     public static String DEFAULT_PAONAME_STRING = "Device Name";
     public static String ACCOUNT_NUMBER_PAONAME_STRING = "Account Number";
     public static String SERVICE_LOCATION_PAONAME_STRING = "Service Location";
     public static String CUSTOMER_PAONAME_STRING = "Customer";
+    public static String EA_LOCATION_PAONAME_STRING = "EA Location";
     
     public static String[] paoNameAliasStrings = new String[]{
            DEFAULT_PAONAME_STRING,
            ACCOUNT_NUMBER_PAONAME_STRING,
            SERVICE_LOCATION_PAONAME_STRING,
-           CUSTOMER_PAONAME_STRING
+           CUSTOMER_PAONAME_STRING,
+           EA_LOCATION_PAONAME_STRING
        };
     private int timeout = 0;
     private String url = "http://127.0.0.1:8080/soap/";    //some default url string for formatting example
