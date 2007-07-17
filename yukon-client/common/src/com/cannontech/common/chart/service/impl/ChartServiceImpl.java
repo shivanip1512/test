@@ -79,19 +79,9 @@ public class ChartServiceImpl implements ChartService {
 
                 chartData.add(chartValue);
             }
-
-            System.out.println("Orig:\n");
-            for(ChartValue<Double> value : chartData){
-                System.out.println(timeFormat.format(new Date(value.getTime())));
-            }
             
             // Assign each chart value to an x-axis spot
             List<ChartValue<Double>> axisChartData = this.setXAxisIds(unit, startDate, chartData);
-
-            System.out.println("\n\nSelected:\n");
-            for(ChartValue<Double> value : axisChartData){
-                System.out.println(timeFormat.format(new Date(value.getTime())));
-            }
 
             // Convert data to specified graph type
             ChartDataConverter converter = graphType.getDataConverter();
