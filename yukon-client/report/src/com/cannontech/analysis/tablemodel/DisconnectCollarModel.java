@@ -18,6 +18,8 @@ public class DisconnectCollarModel extends BareReportModelBase<DisconnectCollarM
     private static String title = "Disconnect Collar Report";
     private List<ModelRow> data = new ArrayList<ModelRow>();
     private JdbcOperations jdbcOps = JdbcTemplateHelper.getYukonTemplate();
+    private Set<Integer> deviceIds;
+    private Set<Integer> deviceNames;
     
     static public class ModelRow {
         public String deviceName;
@@ -58,6 +60,26 @@ public class DisconnectCollarModel extends BareReportModelBase<DisconnectCollarM
         sql.append("WHERE PAO.PAOBJECTID = DMCT400.DEVICEID ");
         sql.append(" AND PAO.PAOBJECTID = DMG.DEVICEID ");
         sql.append(" AND PAO.PAOBJECTID = DCS.DEVICEID ");
+String result = null;
+        
+        if(deviceIds != null && !deviceIds.isEmpty()) {
+            result = "DMG.DEVICEID in ( ";
+            String wheres = SqlStatementBuilder.convertToSqlLikeList(deviceIds);
+            result += wheres;
+            result += " ) ";
+        }
+        else if(deviceNames != null && !deviceNames.isEmpty()) {
+            result = "PAO.PAOBJECTID in ( ";
+            String wheres = SqlStatementBuilder.convertToSqlLikeList(deviceNames);
+            result += wheres;
+            result += " ) ";
+        }
+        
+        if (result != null) {
+            sql.append(" and ");
+            sql.append(result);
+        }
+        sql.append(";");
         return sql;
     }
 
@@ -78,4 +100,13 @@ public class DisconnectCollarModel extends BareReportModelBase<DisconnectCollarM
     public String getTitle() {
         return title;
     }
+    
+    public void setDeviceIdsFilter(Set<Integer> deviceIds) {
+        this.deviceIds = deviceIds;
+    }
+    
+    public void setDeviceNamesFilter(Set<Integer> deviceNameIds) {
+        this.deviceNames = deviceNameIds;
+    }
+
 }
