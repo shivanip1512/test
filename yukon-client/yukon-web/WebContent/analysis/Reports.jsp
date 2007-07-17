@@ -353,8 +353,8 @@ function enableDates(value)
                     			}
                 			}%>
                         	</select>
-                			<BR><span class='NavText'>* Hold &ltCTRL&gt key down to select multiple values</span><br>
-                			<span class='NavText'>* Hold &ltShift&gt key down to select range of values</span>
+                			<BR><span class='NavText'>* Hold &lt;CTRL&gt; key down to select multiple values</span><br>
+                			<span class='NavText'>* Hold &lt;Shift&gt; key down to select range of values</span>
                       		<div id='DivSelectAll' style='display:true'>
                         	<input type='checkbox' name='selectAll' value='selectAll' onclick='selectAllFilter(this.checked, document.reportForm.filterValues);'>Select All
                       		</div>
