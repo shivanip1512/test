@@ -22,7 +22,11 @@ function SubstationToRouteMappings_removeRoute() {
         return false;
     }
     var routeIndex = $("routeIdSelectList").selectedIndex;
+    var route = $("routeIdSelectList").options[routeIndex];
     $("routeIdSelectList").options[routeIndex] = null;
+    
+    var length = $("avRoutesSelectList").options.length;
+    $("avRoutesSelectList").options[length] = new Option(route.text, route.value);
 }
 function SubstationToRouteMappings_updateRoutes(url) {
     var substationIndex = $("subSelectList").selectedIndex;
@@ -32,21 +36,5 @@ function SubstationToRouteMappings_updateRoutes(url) {
     var jsonObject = array2.toJSON();
     new Ajax.Request(url, {"method": "post", "parameters": {"array": jsonObject, "substationid": substationId, "update": ""}});
 }
-function SubstationToRouteMappings_move(direction) {
-    var routeIndex = $("routeIdSelectList").selectedIndex;
-    if (routeIndex == -1) {
-        return false;
-    }
-    var routeIndex2 = routeIndex + direction;
-    if (routeIndex2 == -1 || routeIndex2 == $("routeIdSelectList").options.length) {
-        return false;
-    }
-    var selectList = $("routeIdSelectList");
-    var selectedIndex = selectList.selectedIndex;
-    var one = selectList.options[routeIndex];
-    var two = selectList.options[routeIndex2];
-    selectList.options[routeIndex] = new Option(two.text, two.value);
-    selectList.options[routeIndex2] = new Option(one.text, one.value);
-    selectList.selectedIndex = selectedIndex + direction;
-}
+
 
