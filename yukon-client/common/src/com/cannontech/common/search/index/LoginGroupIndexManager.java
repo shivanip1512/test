@@ -89,7 +89,7 @@ public class LoginGroupIndexManager extends AbstractIndexManager {
         List<Document> docList = new ArrayList<Document>();
 
         StringBuffer sql = new StringBuffer(this.getDocumentQuery());
-        sql.append(" AND group.groupid = ?");
+        sql.append(" AND groupid = ?");
 
         docList = this.jdbcTemplate.query(sql.toString(),
                                           new Object[] { groupId },
