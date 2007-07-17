@@ -16,7 +16,7 @@ public class RegexReplaceProperty extends Task {
         if (value == null) throw new BuildException("value not set");
         
         String clean = replaceAll(match, value, replace);
-        this.getProject().setNewProperty(name, clean);
+        this.getProject().setProperty(name, clean);
     }
     
     private String replaceAll(final String match, final String input, final String replace) {

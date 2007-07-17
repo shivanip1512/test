@@ -38,14 +38,8 @@
         <echo message=""/>
     </target>
 
-	<target name="init">
-	    <antcall target="setupcustomtasks"/>
-	    <antcall target="cleanwhitespace"/>
-	    
-	    <property file="yukon-build/build_version.properties"/>	        
-
-	    <antcall target="cleanlabels"/>
-	    
+	<target name="init" depends="setupcustomtasks,cleanwhitespace,loadpropertiesfile,cleanlabels">
+	
 	    <condition property="internal.label" value="${internal}-${label}" else="${internal}">
     	    <isset property="label"/>
 	    </condition>
@@ -81,6 +75,10 @@
     
     	<cleanwhitespace file="yukon-build/build_version.properties"/>
 
+    </target>
+    
+    <target name="loadpropertiesfile">
+        <property file="yukon-build/build_version.properties"/>
     </target>
         
     <target name="cleanlabels">
