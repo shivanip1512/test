@@ -31,7 +31,11 @@ public class DeviceErrorTranslatorDaoImpl implements DeviceErrorTranslatorDao {
         if (dded != null) {
             return dded;
         }
-        return defaultTranslation;
+
+        // Clone the defaultTranslation and set the error code
+        DeviceErrorDescription ded = defaultTranslation.clone();
+        ded.setErrorCode(error);
+        return ded;
     }
 
     @SuppressWarnings("unchecked")

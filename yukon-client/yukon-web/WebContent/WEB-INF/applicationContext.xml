@@ -146,7 +146,7 @@
     
     <bean id="profilePeakWidget"
     	class="com.cannontech.web.widget.ProfilePeakWidget">
-    	<property name="title" value="Profile Peak Summary"/>
+    	<property name="title" value="Profile Period"/>
         <property name="identityPath" value="common/deviceIdentity.jsp" />
         <property name="inputs">
            <set>

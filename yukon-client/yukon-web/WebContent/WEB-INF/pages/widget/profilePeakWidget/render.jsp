@@ -21,33 +21,8 @@
 	<table width="95%">
 		<tr>
 			<td>
-				Report:
-				<select id="reportType" name="reportType">
-					<c:choose>
-						<c:when test="${reportType == 'day'}">
-							<option value="day" selected="true">Peak Daily Usage</option>
-						</c:when>
-						<c:otherwise>
-							<option value="day">Peak Daily Usage</option>
-						</c:otherwise>
-					</c:choose>
-					<c:choose>
-						<c:when test="${reportType == 'hour'}">
-							<option value="hour" selected="true">Peak Hour Usage</option>
-						</c:when>
-						<c:otherwise>
-							<option value="hour">Peak Hour Usage</option>
-						</c:otherwise>
-					</c:choose>
-					<c:choose>
-						<c:when test="${reportType == 'interval'}">
-							<option value="interval" selected="true">Peak Interval</option>
-						</c:when>
-						<c:otherwise>
-							<option value="interval">Peak Interval</option>
-						</c:otherwise>
-					</c:choose>
-				</select>
+				Report: Peak Daily Usage
+				<input type="hidden" id="reportType" name="reportType" value="day">
 			</td>
 			<td>
 				Start Date:
@@ -65,7 +40,7 @@
 	
 	<!-- Profile peak results section -->
 	<c:if test="${!empty preResult || !empty postResult}">
-		<br><b>Previous Profile Peak Reports:</b><br>
+		<br><b>Previous Profile Reports:</b><br>
 	</c:if>
 	
 	<br/><br/>
@@ -87,7 +62,7 @@
 				</th>
 				<th>&nbsp;</th>
 			</tr>
-				<c:if test="${! empty preResult && !preResult.noData}">
+				<c:if test="${! empty preResult}">
 					<c:choose>
 						<c:when test="${!preResult.noData}">
 							<tr>

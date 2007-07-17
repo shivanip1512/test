@@ -90,6 +90,18 @@ public class DeviceErrorDescription {
         return true;
     }
     
-    
+    @Override
+    public DeviceErrorDescription clone() {
+
+    	DeviceErrorDescription ded = new DeviceErrorDescription();
+    	
+    	ded.setErrorCode(errorCode);
+    	ded.setCategory(category);
+    	ded.setPorter(porter);
+    	ded.setDescription(description);
+    	ded.setTroubleshooting(troubleshooting);
+    	
+    	return ded;
+    }
 
 }

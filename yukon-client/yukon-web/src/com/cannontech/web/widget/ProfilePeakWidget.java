@@ -117,7 +117,7 @@ public class ProfilePeakWidget extends WidgetControllerBase {
                                                                   timeZone);
             } catch (ParseException e) {
                 mav.addObject("errorMsg",
-                              "Start date: " + startDateStr + " is not formatted correctly - example(mm/dd/yyyy).  Please try again.");
+                              "Start date: " + startDateStr + " is not formatted correctly - example (mm/dd/yyyy).  Please try again.");
                 return mav;
             }
             Date preCommandStopDate = null;
@@ -127,7 +127,7 @@ public class ProfilePeakWidget extends WidgetControllerBase {
                                                                  timeZone);
             } catch (ParseException e) {
                 mav.addObject("errorMsg",
-                              "Stop date: " + stopDateStr + " is not formatted correctly - example(mm/dd/yyyy).  Please try again.");
+                              "Stop date: " + stopDateStr + " is not formatted correctly - example (mm/dd/yyyy).  Please try again.");
                 return mav;
             }
 
@@ -158,9 +158,6 @@ public class ProfilePeakWidget extends WidgetControllerBase {
                 postCommand.append(" " + COMMAND_FORMAT.format(postCommandStopDate));
                 postCommand.append(" " + postCommandDays);
             }
-
-            System.out.println("pre: " + preCommand.toString());
-            System.out.println("post: " + postCommand.toString());
 
             int deviceId = WidgetParameterHelper.getRequiredIntParameter(request, "deviceId");
 
