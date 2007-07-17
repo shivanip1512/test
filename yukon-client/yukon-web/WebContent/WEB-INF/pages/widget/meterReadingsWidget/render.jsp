@@ -16,8 +16,8 @@
     <ct:attributeValue device="${device}" attribute="${attribute}" />
     <c:if test="${attribute == 'USAGE'}">
       <ct:nameValue name="Previous Usage">
-      <select onChange="${widgetParameters.widgetId}_usageUpdate()"  name="prevSelect" id="${widgetParameters.widgetId}_prevSelect">
-        <c:forEach items="${previousReadings}" var = "reading">
+      <select onChange="${widgetParameters.widgetId}_usageSelection()" id="${widgetParameters.widgetId}_prevSelect">
+        <c:forEach items="${previousReadings}" var="reading">
           <option value="${reading.value}"><cti:pointValueFormatter format="FULL" value="${reading}"/></option>
         </c:forEach>
       </select>
@@ -32,6 +32,7 @@
   </c:choose>
   </ct:nameValue>
 </c:forEach>
+</ct:nameValueContainer>
 
 
 
@@ -41,14 +42,27 @@
 </div>
 
 <script type="text/javascript">
-Event.observe(window,"load", ${widgetParameters.widgetId}_usageUpdate);
-function ${widgetParameters.widgetId}_usageUpdate() {
-	yukonGeneral_updatePrevious('${widgetParameters.widgetId}_currentUsage', 
-    	                        '${widgetParameters.widgetId}_prevSelect', 
-                                '${widgetParameters.widgetId}_totalConsumption');
+<%--
+  The following sets up a global variable (with a unique name) to hold the current usage value.
+  This variable is updated by the <widgetId>_usageUpdate function which is registered with the
+  dataUpdaterCallback tag to be called whenever the point's value changes. It simply updates the 
+  global variable and then calls the yukonGeneral_updatePrevious function. Similarily, 
+  <widgetId>_currentSelection is registered as a change callback on the drop down and as the 
+  page load callback. This method creates a closure around the <widgetId>_currentUsage variable
+  so that its value can always be passed to the yukonGeneral_updatePrevious function. This is 
+  the function that actually does the subtraction and updates the screen elements.
+--%>
+var ${widgetParameters.widgetId}_currentUsage = null;
+function ${widgetParameters.widgetId}_usageSelection() {
+  yukonGeneral_updatePrevious('${widgetParameters.widgetId}', ${widgetParameters.widgetId}_currentUsage);
 }
+function ${widgetParameters.widgetId}_usageUpdate(newUsage) {
+  ${widgetParameters.widgetId}_currentUsage = newUsage;
+  yukonGeneral_updatePrevious('${widgetParameters.widgetId}', ${widgetParameters.widgetId}_currentUsage);
+}
+Event.observe(window,"load", ${widgetParameters.widgetId}_usageSelection);
 </script>
-</ct:nameValueContainer>
+<cti:dataUpdaterCallback function="${widgetParameters.widgetId}_usageUpdate" identifier="POINT/${pointId}/{value}"/>
 
 <br>
 <div id="${widgetParameters.widgetId}_results"></div>

@@ -21,6 +21,17 @@ function initiateCannonDataUpdate(url, periodSecs) {
             }
            
         });
+        // find all of the callbacks
+        cannonDataUpdateRegistrations.each(function(it) {
+            var id = it.identifier;
+            // use the cannonUpdater "id" to look up value in response
+            var newData = responseStruc.data[id];
+            if (newData) {
+                // we got a new value, call the callback
+                it.callback(newData);
+            }
+           
+        });
         // save latest date
         lastUpdate = responseStruc.toDate;
         // schedule next update
@@ -39,16 +50,19 @@ function initiateCannonDataUpdate(url, periodSecs) {
         // trim down to removed duplicates (there probably won't be any)
         updatableElements = updatableElements.uniq();
         // if none exist on this page, get out
-        if (updatableElements.length == 0) {
-            return;
-        }
-        
         // build up JS object to be used for request
         var requestData = $H();
         requestData.fromDate = lastUpdate;
         // create an array of strings, with the value of the cannonUpdater attribute for each element
         // use readAttribute to avoid IE weirdness
         requestData.data = updatableElements.invoke('readAttribute', 'cannonUpdater');
+        // add elements from JS registrations
+        var callbackIdentifiers = cannonDataUpdateRegistrations.pluck('identifier');
+        requestData.data = requestData.data.concat(callbackIdentifiers);
+        
+        if (updatableElements.length == 0) {
+            return;
+        }
         
         var requestJson = requestData.toJSON();
         
@@ -66,5 +80,15 @@ function initiateCannonDataUpdate(url, periodSecs) {
         updatableElements = null;
     };
     setTimeout(doUpdate, periodSecs * 1000);
+}
+
+var cannonDataUpdateRegistrations = $A();
+
+function cannonDataUpdateRegistration(identifier, callback) {
+  // callback will include the formatted string as its one argument
+  var theData = [];
+  theData.identifier = identifier;
+  theData.callback = callback;
+  cannonDataUpdateRegistrations.push(theData);
 }
 

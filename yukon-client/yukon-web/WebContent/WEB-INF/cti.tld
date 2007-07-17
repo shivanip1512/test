@@ -484,6 +484,22 @@
   </tag>
   
   <tag>
+    <name>dataUpdaterCallback</name>
+    <tag-class>com.cannontech.web.updater.DataUpdaterCallbackTag</tag-class>
+    <body-content>empty</body-content>
+    <attribute>
+      <name>identifier</name>
+      <required>true</required>
+      <rtexprvalue>true</rtexprvalue>
+    </attribute>
+    <attribute>
+      <name>function</name>
+      <required>true</required>
+      <rtexprvalue>true</rtexprvalue>
+    </attribute>
+  </tag>
+  
+  <tag>
     <name>attributeResolver</name>
     <tag-class>com.cannontech.web.util.AttributeResolverTag</tag-class>
     <body-content>empty</body-content>

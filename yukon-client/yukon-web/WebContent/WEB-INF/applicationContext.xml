@@ -233,6 +233,12 @@
         <property name="meterDao" ref="meterDao"/>
     </bean>
 
+    <bean id="dataUpdaterCallbackTagPrototype" class="com.cannontech.web.updater.DataUpdaterCallbackTag"
+        abstract="false" singleton="true" lazy-init="default" autowire="default"
+        dependency-check="default">
+        <property name="registrationService" ref="dataUpdaterService"/>
+    </bean>
+
     <bean id="pointValueFormatterTagPrototype" class="com.cannontech.web.util.PointValueFormatterTag"
         abstract="false" singleton="true" lazy-init="default" autowire="default"
         dependency-check="default">
