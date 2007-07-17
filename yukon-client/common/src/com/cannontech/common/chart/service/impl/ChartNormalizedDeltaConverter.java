@@ -23,7 +23,7 @@ public class ChartNormalizedDeltaConverter implements ChartDataConverter {
         for (ChartValue<Double> chartValue : chartValues) {
 
             double currVal = chartValue.getValue();
-            long currTime = chartValue.getId();
+            long currTime = chartValue.getTime();
 
             if (previousValue != null && previousTime != null) {
 

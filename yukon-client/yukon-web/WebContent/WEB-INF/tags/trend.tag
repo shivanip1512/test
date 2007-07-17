@@ -9,6 +9,7 @@
 <c:url  var="amline_settingsFile" scope="page" value="/spring/chart/settings">
 	<c:param name="title" value="${title}" />
 	<c:param name="graphType" value="${graphType}" />
+	<c:param name="pointId" value="${pointIds}" />
 </c:url>
 <c:url  var="amline_dataFile" scope="page" value="/spring/chart/chart">
 	<c:param name="pointIds" value="${pointIds}" />

@@ -1,3 +1,6 @@
+<%@ taglib uri="http://java.sun.com/jsp/jstl/core" prefix="c" %>
+<%@ taglib uri="http://java.sun.com/jsp/jstl/functions" prefix="fn" %>
+
 <script type="text/javascript" src="/JavaScript/prototype.js" ></script>
 
 <!-- Value between [] brackets, for example [#FFFFFF] shows default value which is used if this parameter is not set -->
@@ -35,7 +38,15 @@
     <color>#FFFFFF</color>                                    <!-- [#FFFFFF](hex color code) -->
     <alpha>0</alpha>                                          <!-- [0] (0 - 100) if you want it to be different than background color, use bigger than 0 value -->                                        
     <margins>                                                 <!-- plot area margins -->
-      <left>60</left>                                         <!-- [60](Number) --> 
+		<c:choose>
+			<c:when test="${fn:length(units) * 10 > 50}">
+				<left>${fn:length(units) * 10}</left>		  <!-- [60](Number) --> 
+			</c:when>
+			<c:otherwise>
+				<left>50</left>                               <!-- [60](Number) --> 
+			</c:otherwise>
+		</c:choose>
+      
       <top>60</top>                                           <!-- [60](Number) --> 
       <right>30</right>                                       <!-- [60](Number) --> 
       <bottom>25</bottom>                                     <!-- [80](Number) --> 
@@ -77,7 +88,7 @@
     </x>
     <y_left>                                                  <!-- y left axis -->
       <enabled>true</enabled>                                 <!-- [true] (true / false) -->    
-      <min></min>                                             <!-- [] (Number) minimum value of this axis. If empty, this value will be calculated automatically. -->
+      <min>0</min>                                             <!-- [] (Number) minimum value of this axis. If empty, this value will be calculated automatically. -->
       <max></max>                                             <!-- [] (Number) maximum value of this axis. If empty, this value will be calculated automatically -->
                                                               <!-- max and min values are recalculated and may be different from entered here. For example, if you set min value -1000 and max value 994, the max value will be changed to 1000. -->
       <frequency>1</frequency>                                <!-- [1] (Number) how often values should be placed, 1 - near every gridline, 2 - near every second gridline... -->

@@ -6,6 +6,7 @@ public class ChartValue<T> {
     private long id = 0;
     private T value = null;
     private String description = null;
+    private long time = 0;
 
     private Format format = null;
 
@@ -48,9 +49,17 @@ public class ChartValue<T> {
     public void setFormat(Format format) {
         this.format = format;
     }
-    
-    public String getFormattedValue(){
+
+    public String getFormattedValue() {
         return format.format(value);
+    }
+
+    public long getTime() {
+        return time;
+    }
+
+    public void setTime(long time) {
+        this.time = time;
     }
 
 }

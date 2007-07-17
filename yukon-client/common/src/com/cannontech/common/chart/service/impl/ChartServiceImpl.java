@@ -17,9 +17,11 @@ import com.cannontech.common.chart.service.ChartDataConverter;
 import com.cannontech.common.chart.service.ChartService;
 import com.cannontech.core.dao.PointDao;
 import com.cannontech.core.dao.RawPointHistoryDao;
+import com.cannontech.core.dao.UnitMeasureDao;
 import com.cannontech.core.dynamic.PointValueHolder;
 import com.cannontech.database.data.lite.LitePoint;
 import com.cannontech.database.data.lite.LitePointUnit;
+import com.cannontech.database.data.lite.LiteUnitMeasure;
 
 /**
  * Implementation of the ChartService
@@ -28,6 +30,7 @@ public class ChartServiceImpl implements ChartService {
 
     private RawPointHistoryDao rphDao = null;
     private PointDao pointDao = null;
+    private UnitMeasureDao unitMeasureDao = null;
     private SimpleDateFormat timeFormat = new SimpleDateFormat("MM/dd/yyyy hh:mm:ss.SSS a");
 
     public void setRphDao(RawPointHistoryDao rphDao) {
@@ -36,6 +39,10 @@ public class ChartServiceImpl implements ChartService {
 
     public void setPointDao(PointDao pointDao) {
         this.pointDao = pointDao;
+    }
+
+    public void setUnitMeasureDao(UnitMeasureDao unitMeasureDao) {
+        this.unitMeasureDao = unitMeasureDao;
     }
 
     public List<Graph> getGraphs(int[] pointIds, Date startDate, Date stopDate, ChartInterval unit,
@@ -54,6 +61,9 @@ public class ChartServiceImpl implements ChartService {
             pointValueFormat.setMaximumFractionDigits(pointUnit.getDecimalPlaces());
             pointValueFormat.setMinimumFractionDigits(pointUnit.getDecimalPlaces());
             pointValueFormat.setGroupingUsed(false);
+            
+            LiteUnitMeasure unitMeasure = unitMeasureDao.getLiteUnitMeasure(pointUnit.getUomID());
+            String units = graphType.getUnits(unitMeasure);
 
             // Make a list of each of the data points
             List<ChartValue<Double>> chartData = new ArrayList<ChartValue<Double>>();
@@ -62,15 +72,26 @@ public class ChartServiceImpl implements ChartService {
                 ChartValue<Double> chartValue = new ChartValue<Double>();
 
                 chartValue.setId(data.getPointDataTimeStamp().getTime());
+                chartValue.setTime(data.getPointDataTimeStamp().getTime());
                 chartValue.setValue(data.getValue());
-                chartValue.setDescription(timeFormat.format(data.getPointDataTimeStamp()));
+                chartValue.setDescription(units + "\n" + timeFormat.format(data.getPointDataTimeStamp()));
                 chartValue.setFormat(pointValueFormat);
 
                 chartData.add(chartValue);
             }
 
+            System.out.println("Orig:\n");
+            for(ChartValue<Double> value : chartData){
+                System.out.println(timeFormat.format(new Date(value.getTime())));
+            }
+            
             // Assign each chart value to an x-axis spot
             List<ChartValue<Double>> axisChartData = this.setXAxisIds(unit, startDate, chartData);
+
+            System.out.println("\n\nSelected:\n");
+            for(ChartValue<Double> value : axisChartData){
+                System.out.println(timeFormat.format(new Date(value.getTime())));
+            }
 
             // Convert data to specified graph type
             ChartDataConverter converter = graphType.getDataConverter();

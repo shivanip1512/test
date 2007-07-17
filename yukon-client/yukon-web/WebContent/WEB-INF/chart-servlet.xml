@@ -38,6 +38,8 @@
         </property>
         
         <property name="chartService" ref="chartService" />
+        <property name="pointDao" ref="pointDao" />
+        <property name="unitMeasureDao" ref="unitMeasureDao" />
     </bean>
     
 </beans>
