@@ -8,7 +8,7 @@ echo:
 echo:
 echo: updating yukon-build...
 echo:
-cvs update yukon-build
+cvs update
 
 if NOT exist "yukon-client\build\ant" (
 	echo:
