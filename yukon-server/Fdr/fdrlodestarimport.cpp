@@ -6,8 +6,8 @@
 *
 *    PVCS KEYWORDS:
 *    ARCHIVE      :  $Archive:   Z:/SOFTWAREARCHIVES/YUKON/FDR/fdrlodestarimport.cpp-arc  $
-*    REVISION     :  $Revision: 1.29 $
-*    DATE         :  $Date: 2007/04/06 18:58:06 $
+*    REVISION     :  $Revision: 1.30 $
+*    DATE         :  $Date: 2007/07/17 16:53:39 $
 *
 *
 *    AUTHOR: Josh Wolberg
@@ -19,6 +19,10 @@
 *    ---------------------------------------------------
 *    History:
       $Log: fdrlodestarimport.cpp,v $
+      Revision 1.30  2007/07/17 16:53:39  jrichter
+      YUK-3163
+      FDR doesn't log reason for failure to import LSE data
+
       Revision 1.29  2007/04/06 18:58:06  jrichter
       BUG ID: 923
       fdrlodestar enhance debug/send message to system log on corrupt file data
@@ -232,7 +236,7 @@ USHORT CtiFDR_LodeStarImportBase::ForeignToYukonQuality (string aQuality)
 	return(Quality);
 }
 
-bool CtiFDR_LodeStarImportBase::fillUpMissingTimeStamps(CtiMultiMsg* multiDispatchMsg, list< CtiMultiMsg* > &dispatchList, const CtiTime& savedStartTime,const CtiTime& savedStopTime,long stdLsSecondsPerInterval)
+bool CtiFDR_LodeStarImportBase::fillUpMissingTimeStamps(CtiMultiMsg* multiDispatchMsg, list< CtiMultiMsg* > &dispatchList, const CtiTime& savedStartTime,const CtiTime& savedStopTime,long stdLsSecondsPerInterval, string savedCustomerIdentifier)
 {
     bool returnBool = true;
     int msgCnt = 0;
@@ -292,15 +296,12 @@ bool CtiFDR_LodeStarImportBase::fillUpMissingTimeStamps(CtiMultiMsg* multiDispat
         pData = NULL;
 
     }
-    /*if (msgPtr != NULL)
-    {   
-        delete msgPtr;
-        msgPtr = NULL;
-    } */
+    
     if( savedStopTime.seconds() != savedStartTime.seconds()+(nbrPoints*stdLsSecondsPerInterval)-getSubtractValue() )
     {
         string text = "NbrPoints * SecondsPerInterval != StopTime - StartTime";
-        string additional = "Possible File Corruption!";
+        string additional = savedCustomerIdentifier;
+        additional += " Possible File Corruption!";
         if (getDebugLevel() & MAJOR_DETAIL_FDR_DEBUGLEVEL)
         {
             CtiLockGuard<CtiLogger> doubt_guard(dout);
@@ -784,7 +785,7 @@ void CtiFDR_LodeStarImportBase::threadFunctionReadFromFile( void )
                                              list< CtiMultiMsg* > dispatchList;
                                              delete_list(dispatchList);
                                              dispatchList.clear();
-                                             if( fillUpMissingTimeStamps(multiDispatchMsg, dispatchList, savedStartTime,savedStopTime,secondsPerInterval) )
+                                             if( fillUpMissingTimeStamps(multiDispatchMsg, dispatchList, savedStartTime,savedStopTime,secondsPerInterval, savedCustomerIdentifier) )
                                              {
                                                  CtiMultiMsg *dispatchMsg = NULL;
 
@@ -849,7 +850,7 @@ void CtiFDR_LodeStarImportBase::threadFunctionReadFromFile( void )
                                      list< CtiMultiMsg* > dispatchList;
                                      delete_list(dispatchList);
                                      dispatchList.clear();
-                                     if( fillUpMissingTimeStamps(multiDispatchMsg, dispatchList, savedStartTime,savedStopTime,secondsPerInterval) )
+                                     if( fillUpMissingTimeStamps(multiDispatchMsg, dispatchList, savedStartTime,savedStopTime,secondsPerInterval, savedCustomerIdentifier) )
                                      {
                                          while( !dispatchList.empty())
                                          {       
