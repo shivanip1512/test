@@ -1,3 +1,5 @@
+yukon-build/bin
+yukon-build/build
 yukon-client/billing/.cvsignore
 yukon-client/billing/bin
 yukon-client/billing/build

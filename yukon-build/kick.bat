@@ -12,7 +12,7 @@ cvs update yukon-build
 
 if NOT exist "yukon-client\build\ant" (
 	echo:
-	echo: checking out ant
+	echo: checking out ant...
 	echo:
 	cvs -Q checkout yukon-client/build/ant
 	SET ANT_HOME=yukon-client\build\ant

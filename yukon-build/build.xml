@@ -1,7 +1,6 @@
 <?xml version="1.0" ?>
 <project name="Yukon CruiseControl Ant Build Script" default="targets" basedir="..">
 
-    <property file="yukon-build/build_version.properties"/>
     <property environment="env" />
     <tstamp/>
 	<tstamp>
@@ -40,12 +39,12 @@
     </target>
 
 	<target name="init">
-	    <!-- Clean trailing white space -->
-        <replaceregexp file="yukon-build/build_version.properties"
-            				   flags="g"
-                               match="\s+$"
-                               replace=""
-                               byline="true"/>
+	    <antcall target="setupcustomtasks"/>
+	    <antcall target="cleanwhitespace"/>
+	    
+	    <property file="yukon-build/build_version.properties"/>	        
+
+	    <antcall target="cleanlabels"/>
 	    
 	    <condition property="internal.label" value="${internal}-${label}" else="${internal}">
     	    <isset property="label"/>
@@ -53,28 +52,53 @@
     
     	<property name="yukon.build.label" value="${external}"/>
     	<property name="yukon.build.details" value="BUILD ${internal.label} ${currenttime} ${env.COMPUTERNAME} ${branch}"/>
+
 	</target>
     
-    <target name="init-cleanlabels">
-        <exec failonerror="true" executable="cmd">
-            <arg value="cmd /c echo cleaninternal = ${internal} > yukon-build\cleanversion.properties"/>
-        </exec>
-       	<exec failonerror="true" executable="cmd">
-	       	 <arg value="cmd /c echo cleanexternal = ${external} >> yukon-build\cleanversion.properties"/>
-       	</exec>
-
-        <replaceregexp file="yukon-build/cleanversion.properties"
-            				   flags="g"
-                               match="[^a-zA-Z0-9=_\s]"
-                               replace="_"
-                               byline="true"/>
-        <replaceregexp file="yukon-build/cleanversion.properties"
-            				   flags="g"
-                               match="\s+$"
-                               replace=""
-                               byline="true"/>
+    <target name="setupcustomtasks">
+        <delete dir="yukon-build/build"/>
         
-     	<property file="yukon-build/cleanversion.properties"/>
+        <mkdir dir="yukon-build/build"/>
+        
+        <mkdir dir="yukon-build/build/classes"/>
+    	<javac srcdir="yukon-build/src"
+        	   destdir="yukon-build/build/classes"
+               classpath="yukon-build/lib/ant.jar"
+               fork="true"
+        	   debug="on"/>
+        
+        <mkdir dir="yukon-build/build/dist"/>
+        <jar destfile="yukon-build/build/dist/customtasks.jar"
+        	 basedir="yukon-build/build/classes"
+        	 includes="**/*.class"/>
+    </target>
+    
+    <target name="cleanwhitespace">
+
+    	<taskdef name="cleanwhitespace" 
+                 classname="com.cannontech.customtasks.CleanWhiteSpace"
+                 classpath="yukon-build/build/dist/customtasks.jar"/>
+    
+    	<cleanwhitespace file="yukon-build/build_version.properties"/>
+
+    </target>
+        
+    <target name="cleanlabels">
+
+        <taskdef name="regexprop" 
+                 classname="com.cannontech.customtasks.RegexReplaceProperty"
+                 classpath="yukon-build/build/dist/customtasks.jar"/>
+        
+        <regexprop name="cleaninternal" 
+        	   value="${internal}"
+               match = "[^a-zA-Z0-9]"
+        	   replace="_"/>
+
+        <regexprop name="cleanexternal" 
+        	   value="${external}"
+        	   match="[^a-zA-Z0-9]"
+        	   replace="_"/>
+        
     </target>
     
     <target name="checkout" depends="init">
@@ -117,7 +141,7 @@
         <mkdir dir="${log.dir}" />
 
         <exec failonerror="false" dir="${module.name}/yukon-client/build" executable="cmd.exe" error="${log.dir}/client-error.log" output="${log.dir}/client-output.log" resultproperty="errorcode">
-            <arg line="/c antExit.bat -Dyukon.build.version='${yukon.build.label}' -Dyukon.build.details='${yukon.build.details}' clean build" />
+            <arg line='/c antExit.bat -Dyukon.build.version="${yukon.build.label}" -Dyukon.build.details="${yukon.build.details}" clean build'/>
         </exec>
 
         <loadfile property="errormessage" srcFile="${log.dir}/client-error.log" />
@@ -146,9 +170,7 @@
     <target name="build-serverTarget">
         <echo message="building module yukon-server" />
         <mkdir dir="${log.dir}" />
-        <!--
-        <replace file="${module.name}/yukon-server/COMMON/include/id_build.h" token="BUILDLABEL" value="${build.label}"/>
--->
+
         <exec failonerror="false" dir="${module.name}/yukon-server/" executable="cmd.exe" error="${log.dir}/server-error.log" output="${log.dir}/server-output.log" resultproperty="errorcode">
             <arg line='/c ${basedir}\yukon-build\buildhere.cmd /exit /basedir "${basedir}" /labels "${yukon.build.label}" "${yukon.build.details}"' />
         </exec>
@@ -315,7 +337,7 @@
         </fail>
     </target>
 
-    <target name="builddist" depends="init-cleanlabels">
+    <target name="builddist" depends="updatedbscripts">
         <mkdir dir="${temp.dir}" />
         <copy todir="${temp.dir}/installer">
             <fileset dir="${module.name}/yukon-install/YukonSetupX/Media/CD/Disk Images/Disk1" />
@@ -354,7 +376,7 @@
 
     <target name="runUnitTests">
         <exec failonerror="true" dir="${module.name}/yukon-client/build" executable="cmd.exe">
-            <arg line="/c antExit.bat -Dyukon.build.version=${build.label} runUnitTests" />
+            <arg line="/c antExit.bat -Dyukon.build.version='${yukon.build.label}' runUnitTests" />
         </exec>
     </target>
 
@@ -364,7 +386,7 @@
         </exec>
     </target>
 
-    <target name="tag-build" depends="init-cleanlabels">
+    <target name="tag-build" depends="cleanlabels">
         <property name="tag.name" value="TG${DSTAMP}_${cleaninternal}_${cleanexternal}_${TSTAMP}"/>
         
         <input
@@ -382,7 +404,7 @@
 		
     </target>
     
-    <target name="branch-build" depends="init-cleanlabels">
+    <target name="branch-build" depends="cleanlabels">
 		<property name="branch.name" value="BR${DSTAMP}_${cleaninternal}_${cleanexternal}_${TSTAMP}"/>
         <property name="tag.name" value="TG${DSTAMP}_${cleaninternal}_${cleanexternal}_${TSTAMP}"/>
         
@@ -406,7 +428,7 @@
         <cvs command="rtag -D '${currenttime}' ${tag.name} yukon"/>
         
         <exec failonerror="false" dir="yukon-build/symbolserver/" executable="cmd.exe">
-            <arg line='/c symstore add /r /f ${module.name}\yukon-server\*.PDB /s \\swbuild\symbol /t "Yukon Server" /v "${yukon.build.details}"'/>
+            <arg line='/c symstore add /r /f ${basedir}\${module.name}\yukon-server\*.PDB /s \\swbuild\symbol /t "Yukon Server" /v "${yukon.build.details}"'/>
         </exec>
     </target>
     
@@ -420,8 +442,26 @@
         <cvs command="commit -m 'branch property update' -r ${branch} yukon-build/build_version.properties"/>
         
         <exec failonerror="false" dir="yukon-build/symbolserver/" executable="cmd.exe">
-            <arg line='/c symstore add /r /f ${module.name}\yukon-server\*.PDB /s \\swbuild\symbol /t "Yukon Server" /v "${yukon.build.details}"'/>
+            <arg line='/c symstore add /r /f ${basedir}\${module.name}\yukon-server\*.PDB /s \\swbuild\symbol /t "Yukon Server" /v "${yukon.build.details}"'/>
         </exec>
+    </target>
+    
+    <target name="updatedbscripts">
+    	<taskdef name="createdbversions" 
+                 classname="com.cannontech.customtasks.CreateDBVersions"
+                 classpath="yukon-build/build/dist/customtasks.jar"/>
+        
+        <createdbversions buildlabel="${internal}"/>
+        
+        <ant dir="${module.name}/yukon-database"
+             target="build"
+             inheritAll="false"
+             inheritRefs="false">
+        	<property name="yukon.major" value="${yukon.major}"/>
+        	<property name="yukon.minor" value="${yukon.minor}"/>
+        	<property name="yukon.revision" value="${yukon.revision}"/>
+        </ant>
+        
     </target>
     
 </project>
