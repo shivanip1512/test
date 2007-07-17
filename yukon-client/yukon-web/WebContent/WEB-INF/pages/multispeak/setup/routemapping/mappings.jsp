@@ -9,6 +9,7 @@
 	</cti:breadCrumbs>
 	
     <cti:includeScript link="/JavaScript/mspmappings.js" />
+    <cti:includeScript link="/JavaScript/yukonGeneral.js"/>
 
     <table style="margin: auto" cellpadding="25px">
         <tr>

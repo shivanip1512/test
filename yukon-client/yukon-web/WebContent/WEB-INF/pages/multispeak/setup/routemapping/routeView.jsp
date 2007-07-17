@@ -23,12 +23,12 @@
                 <div style="padding-bottom: 5px">
                     <input type="button" value="&#9650" size="5"
                         name="up"
-                        onclick="javascript:SubstationToRouteMappings_move(-1)" />
+                        onclick="javascript:yukonGeneral_moveOptionPositionInSelect(routeIdSelectList, -1)" />
                 </div>
                 <div>
                     <input type="button" value="&#9660" size="5"
                         name="down"
-                        onclick="javascript:SubstationToRouteMappings_move(1)" />
+                        onclick="javascript:yukonGeneral_moveOptionPositionInSelect(routeIdSelectList, 1)" />
                 </div>
                 <div style="padding-top: 65px">
                     <input type="button" value="Delete" size="5"
