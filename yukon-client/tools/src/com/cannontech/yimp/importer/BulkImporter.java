@@ -747,6 +747,7 @@ private void porterWorker() {
                                 messageIDToRouteIDMap.put(new Long(porterRequest.getUserMessageID()), routeIDsFromSub.get(0));
                                 for(int i = 1; i < routeIDsFromSub.size(); i++) {
                                     porterRequest = new Request( pc.getPendingID().intValue(), LOOP_COMMAND, currentMessageID );
+                                    generateMessageID();
                                     porterRequest.setRouteID(routeIDsFromSub.get(i).intValue());
                                     cmdMultipleRouteList.add(porterRequest);
                                     messageIDToRouteIDMap.put(new Long(porterRequest.getUserMessageID()), routeIDsFromSub.get(i));
@@ -756,6 +757,7 @@ private void porterWorker() {
                             //going to have to do a general loop locate to find it; we apparently don't know a possible route
                             else {
                                 porterRequest = new Request( pc.getPendingID().intValue(), LOOP_LOCATE_COMMAND, currentMessageID );
+                                log.info("General location loop attempt written to porter: device " + porterRequest.getDeviceID() + " on route " + routeName);
                                 writeToPorter(porterRequest);
                             }
 						}
@@ -809,6 +811,7 @@ public void messageReceived(MessageEvent e) {
                         if(returnMsg.getUserMessageID() == cmdMultipleRouteList.get(j).getUserMessageID()) {
                             cmdMultipleRouteList.remove(j);
                             removed = true;
+                            j--;
                         }
                     }
 
@@ -836,12 +839,14 @@ public void messageReceived(MessageEvent e) {
                                 for(int j = 0; j < cmdMultipleRouteList.size(); j++) {
                                     if(removed && returnMsg.getDeviceID() == cmdMultipleRouteList.get(j).getDeviceID()) {
                                         cmdMultipleRouteList.remove(j);
+                                        j--;
                                     }
                                 }
                             } 
                         }
                         //failed, on to the next one
                         else if (nextRouteLoop!= null ) {
+                            log.info("Locate attempt written to porter: device " + porterRequest.getDeviceID() + " on route with ID " + porterRequest.getRouteID());
                             writeToPorter(nextRouteLoop);
                         }
                     }
@@ -888,6 +893,7 @@ public void writeToPorter(Request request_) {
     if( getPorterConnection().isValid() ) {
         getPorterConnection().write( porterRequest );
         porterMessageIDs.add(new Long(porterRequest.getUserMessageID()));
+        
     }
     else {
         log.info(porterRequest.getUserMessageID() + " REQUEST NOT SENT: CONNECTION TO PORTER IS NULL");
@@ -912,14 +918,15 @@ private void handleSuccessfulLocate(Return returnMsg) {
         
         //interval write
         porterRequest = new Request( retMCT.getPAObjectID().intValue(), INTERVAL_COMMAND, currentMessageID );
+        log.info("Interval write attempted: device " + returnMsg.getDeviceID() + " on route with ID " + routeID + ".");
         writeToPorter(porterRequest);
-        log.info("Interval write sent to porter: device " + returnMsg.getDeviceID() + " on route " + routeID + ".");
+        log.info("Interval write sent to porter: device " + returnMsg.getDeviceID() + " on route with " + routeID + ".");
     }
     catch( TransactionException e ) {
         if(DBFuncs.writePendingCommToFail(ImportFuncs.FAIL_DATABASE, e.toString(), retMCT.getPAObjectID()))
-            log.info("Could not assign device " + retMCT.getPAObjectID() + " the route " + routeID + ".");
+            log.info("Could not assign device " + retMCT.getPAObjectID() + "on the route " + routeID + ".");
         else
-            log.error("Could not move pending communication to fail table, but failure occurred assigning device " + porterRequest.getDeviceID() + " the route " + routeID + ".");
+            log.error("Could not move pending communication to fail table, but failure occurred assigning device " + porterRequest.getDeviceID() + " on route with ID " + routeID + ".");
     }
 }
 }
