@@ -36,19 +36,12 @@ public class CBCPointFactory {
     private static Integer DEFAULT_STATUS_GRPID = new Integer(StateGroupUtils.STATEGROUP_TWO_STATE_STATUS);
 
     private static final PointParams[] PAO_POINT_PARAMS = {
-            new AnalogPointParams(1.0,
-                                  1,
-                                  "Estimated Var Load",
-                                  PointUnits.UOMID_VARS),
-            new AnalogPointParams(1.0,
-                                  1,
-                                  "Daily Operations",
-                                  PointUnits.UOMID_OPS),
-            new AnalogPointParams(1.0, 1, "Power Factor", PointUnits.UOMID_PF),
-            new AnalogPointParams(1.0,
-                                  1,
-                                  "Estimated Power Factor",
-                                  PointUnits.UOMID_PF), };
+        new AnalogPointParams(1.0, 1, "Estimated Var Load", PointUnits.UOMID_VARS),
+        new AnalogPointParams(1.0, 2, "Daily Operations", PointUnits.UOMID_OPS),
+        new AnalogPointParams(1.0, 3, "Power Factor", PointUnits.UOMID_PF),
+        new AnalogPointParams(1.0, 4, "Estimated Power Factor", PointUnits.UOMID_PF), 
+        
+};
 
     private static final PointParams[] CBC_POINT_PROTOTYPES = {
             new StatusPointParams(1,
