@@ -81,7 +81,6 @@ public final class BulkImporter extends Observable implements MessageListener
 	private static IServerConnection connToPorter = null;
     private Set<Long> porterMessageIDs = new HashSet<Long>();
     private Map<Long, Integer> messageIDToRouteIDMap = new HashMap<Long, Integer>();
-    public Request porterRequest = null;
     /* Singleton incrementor for messageIDs to send to porter connection */
     private static volatile long currentMessageID = 1;
     private List<Request> cmdMultipleRouteList = new ArrayList<Request>();
@@ -720,7 +719,7 @@ private void porterWorker() {
     					}
     					
                         log.info("Porter worker thread has obtained " + pending.size() + " MCT IDs.  Communication attempt.");
-                        
+                        Request porterRequest = null;
 						for(int j = 0; j < pending.size(); j++) {
 							//locate attempt (only if given multiple routes via substation)
                             ImportPendingComm pc = pending.get(j);
@@ -822,7 +821,7 @@ public void messageReceived(MessageEvent e) {
                         if(DBFuncs.writePendingCommToFail(ImportFuncs.FAIL_COMMUNICATION, "Unable to communicate with device.", new Integer(returnMsg.getDeviceID())))
                             log.info("Communication failure with device " + returnMsg.getDeviceID() + ".");
                         else
-                            log.error("Could not move pending communication to fail table, but communication failure occurred with device " + porterRequest.getDeviceID() + ".");
+                            log.error("Could not move pending communication to fail table, but communication failure occurred with device " + returnMsg.getDeviceID() + ".");
                         return;
                     }
                     //it was a loop locate (checking all available routes) and succeeded, save the route and then write the interval out
@@ -846,7 +845,7 @@ public void messageReceived(MessageEvent e) {
                         }
                         //failed, on to the next one
                         else if (nextRouteLoop!= null ) {
-                            log.info("Locate attempt written to porter: device " + porterRequest.getDeviceID() + " on route with ID " + porterRequest.getRouteID());
+                            log.info("Locate attempt written to porter: device " + nextRouteLoop.getDeviceID() + " on route with ID " + nextRouteLoop.getRouteID());
                             writeToPorter(nextRouteLoop);
                         }
                     }
@@ -888,7 +887,7 @@ private synchronized long generateMessageID() {
     return currentMessageID;
 }
 
-public void writeToPorter(Request request_) {
+public void writeToPorter(Request porterRequest) {
     porterRequest.setPriority(PORTER_PRIORITY);
     if( getPorterConnection().isValid() ) {
         getPorterConnection().write( porterRequest );
@@ -906,7 +905,10 @@ private void handleSuccessfulLocate(Return returnMsg) {
     Integer routeID = messageIDToRouteIDMap.get(new Long(returnMsg.getUserMessageID()));
     MCT400SeriesBase retMCT = new MCT400SeriesBase();
     retMCT.setDeviceID(new Integer(returnMsg.getDeviceID()));
+    Request porterRequest = null;
+    
     try {
+        porterRequest = new Request( retMCT.getPAObjectID().intValue(), INTERVAL_COMMAND, currentMessageID );
         log.info("Sucessful location of device " + returnMsg.getDeviceID() + " on route " + routeID + ".");
         retMCT = (MCT400SeriesBase) Transaction.createTransaction(Transaction.RETRIEVE, retMCT).execute();
         if(routeID != null)
@@ -917,7 +919,6 @@ private void handleSuccessfulLocate(Return returnMsg) {
         log.info(retMCT.getPAOType() + "with name " + retMCT.getPAOName() + " was successfully located on route with ID " + routeID + ".");
         
         //interval write
-        porterRequest = new Request( retMCT.getPAObjectID().intValue(), INTERVAL_COMMAND, currentMessageID );
         log.info("Interval write attempted: device " + returnMsg.getDeviceID() + " on route with ID " + routeID + ".");
         writeToPorter(porterRequest);
         log.info("Interval write sent to porter: device " + returnMsg.getDeviceID() + " on route with " + routeID + ".");
