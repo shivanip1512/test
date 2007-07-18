@@ -1267,8 +1267,11 @@ public class Multispeak implements MessageListener {
 		        return deviceDao.getLiteYukonPaobjectByDeviceName(paoName);
 				
 			case MultispeakVendor.EA_LOCATION_PAONAME:
-		        paoName = mspServiceLocation.getCustID();
-		        return deviceDao.getLiteYukonPaobjectByDeviceName(paoName);
+		        if( mspServiceLocation.getNetwork() != null && mspServiceLocation.getNetwork().getEaLoc() != null) {
+		        	paoName = mspServiceLocation.getNetwork().getEaLoc().getName();
+		        	return deviceDao.getLiteYukonPaobjectByDeviceName(paoName);
+		        }
+				return null;
 				
 			default:
 			{ // lookup by meter number
