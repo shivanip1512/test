@@ -6,8 +6,8 @@
 *
 *    PVCS KEYWORDS:
 *    ARCHIVE      :  $Archive:   Z:/SOFTWAREARCHIVES/YUKON/FDR/fdrtextimport.cpp-arc  $
-*    REVISION     :  $Revision: 1.21 $
-*    DATE         :  $Date: 2007/05/11 19:05:06 $
+*    REVISION     :  $Revision: 1.22 $
+*    DATE         :  $Date: 2007/07/19 19:41:48 $
 *
 *
 *    AUTHOR: David Sutton
@@ -19,6 +19,9 @@
 *    ---------------------------------------------------
 *    History: 
       $Log: fdrtextimport.cpp,v $
+      Revision 1.22  2007/07/19 19:41:48  tspar
+      Fixed replacement of '/' characters in the time string. Rather than expecting them to be in certain positions in the string.
+
       Revision 1.21  2007/05/11 19:05:06  tspar
       YUK-3880
 
@@ -1120,17 +1123,28 @@ void CtiFDR_TextImport::threadFunctionReadFromFile( void )
                                             } 
                                             CtiTime timestamp= CtiTime(); 
                                             string tempTime = timestamp.asString().erase(16);
-                                            tempTime = tempTime.replace(10,1,"_");
-                                            tempTime = tempTime.replace(7,1,"_");
-                                            tempTime = tempTime.replace(3,1,"_");
-                                            tempTime = tempTime.erase(13,1); 
 
-                                            _snprintf(newFileName, 250, "%s%s%s", fileNameAndPath, ".", tempTime.c_str() ); 
-                                            MoveFileEx(oldFileName,newFileName, MOVEFILE_REPLACE_EXISTING | MOVEFILE_COPY_ALLOWED); 
-
-                                            DWORD lastError = GetLastError(); 
-                                            if ( lastError )
+                                            bool slashesInString = true;
+                                            while( slashesInString )
                                             {
+                                                int pos = tempTime.find("/");
+                                                if( pos == string::npos )
+                                                {
+                                                    slashesInString = false;
+                                                    pos = tempTime.find(":");
+                                                    tempTime = tempTime.erase(pos,1); 
+                                                }
+                                                else
+                                                {
+                                                    tempTime = tempTime.replace(pos,1,"_"); 
+                                                }
+                                            }   
+
+                                            _snprintf(newFileName, 250, "%s%s%s%s", fileNameAndPath, ".", tempTime.c_str(),".txt" ); 
+                                            bool success = MoveFileEx(oldFileName,newFileName, MOVEFILE_REPLACE_EXISTING | MOVEFILE_COPY_ALLOWED); 
+                                            if ( !success )
+                                            {
+                                                DWORD lastError = GetLastError(); 
                                                 CtiLockGuard<CtiLogger> doubt_guard(dout); 
                                                 dout << "Last Error Code: " << lastError << " for MoveFile()" << endl; 
                                             }
