@@ -19,8 +19,8 @@ import java.util.Observable;
 import java.util.Set;
 import java.util.Vector;
 
-import org.apache.log4j.Logger;
 import org.apache.commons.lang.StringUtils;
+import org.apache.log4j.Logger;
 
 import com.cannontech.clientutils.CTILogger;
 import com.cannontech.clientutils.YukonLogManager;
@@ -40,10 +40,12 @@ import com.cannontech.database.data.device.MCT410FL;
 import com.cannontech.database.data.device.MCT410GL;
 import com.cannontech.database.data.device.MCT410IL;
 import com.cannontech.database.data.device.MCT430A;
-import com.cannontech.database.data.device.MCT430SN;
 import com.cannontech.database.data.device.MCT430S4;
+import com.cannontech.database.data.device.MCT430SN;
 import com.cannontech.database.data.device.MCT470;
+import com.cannontech.database.data.multi.MultiDBPersistent;
 import com.cannontech.database.data.pao.DeviceTypes;
+import com.cannontech.database.data.point.PointBase;
 import com.cannontech.database.data.point.PointTypes;
 import com.cannontech.database.db.device.DeviceMeterGroup;
 import com.cannontech.database.db.device.DeviceRoutes;
@@ -505,16 +507,18 @@ public void runImport(List<ImportData> imps) {
             else
                 current400Series.getDeviceRoutes().setRouteID(routeID);
             
-			com.cannontech.database.data.multi.MultiDBPersistent objectsToAdd = new com.cannontech.database.data.multi.MultiDBPersistent();
+			MultiDBPersistent objectsToAdd = new MultiDBPersistent();
 			objectsToAdd.getDBPersistentVector().add(current400Series);
+//			log.info("Added object to Add: Device(" + current400Series.getPAObjectID() + ").");
 			
 			//grab the points we need off the template
 			Vector points = DBFuncs.getPointsForPAO(templateID);
 			boolean hasPoints = false;
 			for (int i = 0; i < points.size(); i++) {
-				((com.cannontech.database.data.point.PointBase) points.get(i)).setPointID(DaoFactory.getPointDao().getNextPointId());
-				((com.cannontech.database.data.point.PointBase) points.get(i)).getPoint().setPaoID(deviceID);
+				((PointBase) points.get(i)).setPointID(DaoFactory.getPointDao().getNextPointId());
+				((PointBase) points.get(i)).getPoint().setPaoID(deviceID);
 				objectsToAdd.getDBPersistentVector().add(points.get(i));
+//				log.info("Added object to Add: Device(" + current400Series.getPAObjectID() + ") Point(" + ((PointBase)points.get(i)).getPoint().getPointID()+").");
 				hasPoints = true;
 			}
 			
@@ -698,6 +702,10 @@ private synchronized IServerConnection getPorterConnection() {
  */
 private void porterWorker() {
 	if(worker == null) {
+		
+		//get the porter connection so that is created when we need it.  isValid is causing u
+		getPorterConnection();
+		
 		Runnable runner = new Runnable() {
 			public void run() {
                 log.info("Porter submission thread created.");
@@ -723,8 +731,8 @@ private void porterWorker() {
 						for(int j = 0; j < pending.size(); j++) {
 							//locate attempt (only if given multiple routes via substation)
                             ImportPendingComm pc = pending.get(j);
-                            String routeName = pc.getRouteName();
                             List<Integer> routeIDsFromSub = DBFuncs.getRouteIDsFromSubstationName(pc.getSubstationName());
+                            String routeName = pc.getRouteName();
                             if(routeName.length() > 1) {
                                 /*
                                  * Don't actually need to set a routeID; loop will use what is attached to the device
@@ -733,24 +741,31 @@ private void porterWorker() {
                                  */
                                 porterRequest = new Request( pc.getPendingID().intValue(), LOOP_COMMAND, currentMessageID );
                                 Integer routeID = DBFuncs.getRouteFromName(routeName);
-                                log.info("Locate attempt written to porter: device " + porterRequest.getDeviceID() + " on route " + routeName);
+                                log.info("Locate attempt written to porter: device " + porterRequest.getDeviceID() + " on route " + routeName +" ("+ routeID+").");
                                 writeToPorter(porterRequest);
                                 messageIDToRouteIDMap.put(new Long(porterRequest.getUserMessageID()), routeID);
                             }
                             else if(routeIDsFromSub.size() > 0) {
                                 //send first one right off
+                                int routeID = routeIDsFromSub.get(0).intValue();
+                                routeName = DaoFactory.getPaoDao().getYukonPAOName(routeID);
+                                
                                 porterRequest = new Request( pc.getPendingID().intValue(), LOOP_COMMAND, currentMessageID );
                                 porterRequest.setRouteID(routeIDsFromSub.get(0).intValue());
-                                log.info("Locate attempt written to porter: device " + porterRequest.getDeviceID() + " on route " + routeName);
+                                cmdMultipleRouteList.add(porterRequest);
+                                log.info("Locate attempt written to porter: device " + porterRequest.getDeviceID() + " on route " + routeName +" ("+ routeID+").");
                                 writeToPorter(porterRequest);
-                                messageIDToRouteIDMap.put(new Long(porterRequest.getUserMessageID()), routeIDsFromSub.get(0));
+                                messageIDToRouteIDMap.put(new Long(porterRequest.getUserMessageID()), routeID);
                                 for(int i = 1; i < routeIDsFromSub.size(); i++) {
+                                    routeID = routeIDsFromSub.get(i).intValue();
+                                    routeName = DaoFactory.getPaoDao().getYukonPAOName(routeID);
+                                
                                     porterRequest = new Request( pc.getPendingID().intValue(), LOOP_COMMAND, currentMessageID );
                                     generateMessageID();
-                                    porterRequest.setRouteID(routeIDsFromSub.get(i).intValue());
+                                    porterRequest.setRouteID(routeID);
                                     cmdMultipleRouteList.add(porterRequest);
-                                    messageIDToRouteIDMap.put(new Long(porterRequest.getUserMessageID()), routeIDsFromSub.get(i));
-                                    log.info("Locate attempt queued: device " + porterRequest.getDeviceID() + " on route " + routeName);
+                                    messageIDToRouteIDMap.put(new Long(porterRequest.getUserMessageID()), routeID);
+                                    log.info("Locate attempt queued: device " + porterRequest.getDeviceID() + " on route " + routeName +" ("+ routeID+").");
                                 }
                             }
                             //going to have to do a general loop locate to find it; we apparently don't know a possible route
@@ -805,6 +820,7 @@ public void messageReceived(MessageEvent e) {
                     for(int j = 0; j < cmdMultipleRouteList.size(); j++) {
                         if(removed && returnMsg.getDeviceID() == cmdMultipleRouteList.get(j).getDeviceID()) {
                             nextRouteLoop = cmdMultipleRouteList.get(j);
+                            log.info("NextRoute("+ nextRouteLoop.getRouteID() +") to process for device(" + nextRouteLoop.getDeviceID() + ").");
                             break;
                         }
                         if(returnMsg.getUserMessageID() == cmdMultipleRouteList.get(j).getUserMessageID()) {
@@ -892,7 +908,7 @@ public void writeToPorter(Request porterRequest) {
     if( getPorterConnection().isValid() ) {
         getPorterConnection().write( porterRequest );
         porterMessageIDs.add(new Long(porterRequest.getUserMessageID()));
-        
+        log.info("Locate sent to porter: device (" + porterRequest.getDeviceID() + "); route ("+ porterRequest.getRouteID()+").");
     }
     else {
         log.info(porterRequest.getUserMessageID() + " REQUEST NOT SENT: CONNECTION TO PORTER IS NULL");
@@ -903,31 +919,33 @@ public void writeToPorter(Request porterRequest) {
 
 private void handleSuccessfulLocate(Return returnMsg) {
     Integer routeID = messageIDToRouteIDMap.get(new Long(returnMsg.getUserMessageID()));
+    String routeName = DaoFactory.getPaoDao().getYukonPAOName(routeID.intValue());
+    
     MCT400SeriesBase retMCT = new MCT400SeriesBase();
     retMCT.setDeviceID(new Integer(returnMsg.getDeviceID()));
     Request porterRequest = null;
     
     try {
         porterRequest = new Request( retMCT.getPAObjectID().intValue(), INTERVAL_COMMAND, currentMessageID );
-        log.info("Sucessful location of device " + returnMsg.getDeviceID() + " on route " + routeID + ".");
+        log.info("Successful location of device " + returnMsg.getDeviceID() + " on route " + routeName +" ("+ routeID+").");
         retMCT = (MCT400SeriesBase) Transaction.createTransaction(Transaction.RETRIEVE, retMCT).execute();
         if(routeID != null)
             retMCT.getDeviceRoutes().setRouteID(routeID);
         else
             throw new TransactionException("Route not found for a message ID of " + returnMsg.getUserMessageID());
         Transaction.createTransaction(Transaction.UPDATE, retMCT).execute();
-        log.info(retMCT.getPAOType() + "with name " + retMCT.getPAOName() + " was successfully located on route with ID " + routeID + ".");
+        log.info(retMCT.getPAOType() + "with name " + retMCT.getPAOName() + " was successfully located on route " + routeName +" ("+ routeID+").");
         
         //interval write
         log.info("Interval write attempted: device " + returnMsg.getDeviceID() + " on route with ID " + routeID + ".");
         writeToPorter(porterRequest);
-        log.info("Interval write sent to porter: device " + returnMsg.getDeviceID() + " on route with " + routeID + ".");
+        log.info("Interval write sent to porter: device " + returnMsg.getDeviceID() + " on route " + routeName +" ("+ routeID+").");
     }
     catch( TransactionException e ) {
         if(DBFuncs.writePendingCommToFail(ImportFuncs.FAIL_DATABASE, e.toString(), retMCT.getPAObjectID()))
-            log.info("Could not assign device " + retMCT.getPAObjectID() + "on the route " + routeID + ".");
+            log.info("Could not assign device " + retMCT.getPAObjectID() + " the route " + routeName +" ("+ routeID+").");
         else
-            log.error("Could not move pending communication to fail table, but failure occurred assigning device " + porterRequest.getDeviceID() + " on route with ID " + routeID + ".");
+            log.error("Could not move pending communication to fail table, but failure occurred assigning device " + porterRequest.getDeviceID() + " the route " + routeName +" ("+ routeID+").");
     }
 }
 }
