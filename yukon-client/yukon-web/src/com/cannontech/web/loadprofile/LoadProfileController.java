@@ -23,13 +23,18 @@ import org.springframework.web.bind.ServletRequestUtils;
 import org.springframework.web.servlet.ModelAndView;
 import org.springframework.web.servlet.mvc.multiaction.MultiActionController;
 
+import com.cannontech.common.util.SimpleTemplateProcessor;
+import com.cannontech.common.util.TemplateProcessor;
 import com.cannontech.common.util.TimeUtil;
 import com.cannontech.core.dao.ContactDao;
+import com.cannontech.core.dao.DeviceDao;
 import com.cannontech.core.dao.PaoDao;
+import com.cannontech.core.dao.PointDao;
 import com.cannontech.core.dao.YukonUserDao;
 import com.cannontech.core.service.LongLoadProfileService;
 import com.cannontech.core.service.LongLoadProfileService.ProfileRequestInfo;
 import com.cannontech.database.data.lite.LiteContact;
+import com.cannontech.database.data.lite.LiteDeviceMeterNumber;
 import com.cannontech.database.data.lite.LiteYukonPAObject;
 import com.cannontech.database.data.lite.LiteYukonUser;
 import com.cannontech.tools.email.DefaultEmailMessage;
@@ -41,10 +46,30 @@ public class LoadProfileController extends MultiActionController {
     private LongLoadProfileService loadProfileService;
     private EmailService emailService;
     private PaoDao paoDao;
+    private DeviceDao deviceDao;
     private YukonUserDao yukonUserDao;
     private ContactDao contactDao;
     private static DateFormat dateFormat = new SimpleDateFormat("MM/dd/yy hh:mma");
-
+    /*
+     * Long load profile email message format
+     * NOTE: Outlook will sometimes strip extra line breaks of its own accord.  For some
+     * reason putting extra spaces in front of the line breaks seems to prevent this.  
+     * Not sure about other email clients.
+     */
+    private final String lpNotificationFormat = "{statusMsg}\n\n" +
+            "Device Summary\n" +
+            "Device Name: {deviceName}    \n" +
+            "Meter Number: {meterNumber}    \n" +
+            "Physical Address: {physAddress}\n\n" +
+            "Request Range: {startDate} to {stopDate}    \n" +
+            "Total Requested Days: {totalDays}\n\n" +
+            "Data is now available online." ;
+    
+    final long MS_IN_A_DAY = 1000*60*60*24;
+    /*    String template = "{name} is {age|####.000#}";
+    ********************************************************************
+    FULL("{default} {status||{unit}} {time|MM/dd/yyyy HH:mm:ss z}"),*/
+        
     public ModelAndView initiateLoadProfile(HttpServletRequest request, HttpServletResponse response) {
         ModelAndView mav = new ModelAndView("json");
         
@@ -52,6 +77,7 @@ public class LoadProfileController extends MultiActionController {
             
             LiteYukonUser user = ServletUtil.getYukonUser(request);
             TimeZone timeZone = yukonUserDao.getUserTimeZone(user);
+            TemplateProcessor tp = new SimpleTemplateProcessor();
             
             String email = ServletRequestUtils.getRequiredStringParameter(request, "email");
             int deviceId = ServletRequestUtils.getRequiredIntParameter(request, "deviceId");
@@ -60,41 +86,34 @@ public class LoadProfileController extends MultiActionController {
             String stopDateStr = ServletRequestUtils.getStringParameter(request, "stopDate", "");
             Date stopDate = TimeUtil.flexibleDateParser(stopDateStr, TimeUtil.NO_TIME_MODE.END_OF_DAY, timeZone);
             
-            
             Validate.isTrue(startDate == null || stopDate == null || startDate.before(stopDate), 
                             "Start Date must be before Stop Date");
 
             LiteYukonPAObject device = paoDao.getLiteYukonPAO(deviceId);
+            LiteDeviceMeterNumber meterNum = deviceDao.getLiteDeviceMeterNumber(deviceId);
             
             DefaultEmailMessage successEmailer = new DefaultEmailMessage();
             successEmailer.setRecipient(email);
-            String subject = "Long Load Profile for " + device.getPaoName() + " completed";
+            String subject = "Data collection for " + device.getPaoName() + " completed";
             successEmailer.setSubject(subject);
-            StringBuilder body = new StringBuilder();
-            body.append("Your long load profile request has completed.\n\n");
-            body.append("device: ");
-            body.append(device.getPaoName());
-            body.append("\nstart: ");
-            body.append(dateFormat.format(startDate));
-            body.append("\nstop: " );
-            body.append(dateFormat.format(stopDate));
-            body.append("\n");
-            successEmailer.setBody(body.toString());
+            
+            Map<String, Object> msgData = new HashMap<String, Object>();
+            msgData.put("statusMsg", "Your long load profile request has completed.");
+            msgData.put("deviceName", device.getPaoName());
+            msgData.put("meterNumber", meterNum.getMeterNumber());
+            msgData.put("physAddress", device.getAddress());
+            msgData.put("startDate", dateFormat.format(startDate));
+            msgData.put("stopDate", dateFormat.format(stopDate));
+            long numDays = (stopDate.getTime() - startDate.getTime())/MS_IN_A_DAY;
+            msgData.put("totalDays", Long.toString(numDays));
+            successEmailer.setBody(tp.process(lpNotificationFormat, msgData));
             
             DefaultEmailMessage failureEmailer = new DefaultEmailMessage();
             failureEmailer.setRecipient(email);
-            subject = "Long Load Profile for " + device.getPaoName() + " failed";
+            subject = "Data collection for " + device.getPaoName() + " failed";
             failureEmailer.setSubject(subject);
-            body = new StringBuilder();
-            body.append("Your long load profile request has encountered an unknown error.\n\n");
-            body.append("device: ");
-            body.append(device.getPaoName());
-            body.append("\nstart: ");
-            body.append(dateFormat.format(startDate));
-            body.append("\nstop: " );
-            body.append(dateFormat.format(stopDate));
-            body.append("\n");
-            failureEmailer.setBody(body.toString());
+            msgData.put("statusMsg", "Your long load profile request has encountered an unknown error.");
+            failureEmailer.setBody(tp.process(lpNotificationFormat, msgData));
             
             EmailCompletionCallback callback = new EmailCompletionCallback(emailService);
             callback.setSuccessMessage(successEmailer);
@@ -203,6 +222,16 @@ public class LoadProfileController extends MultiActionController {
     @Required
     public void setContactDao(ContactDao contactDao) {
         this.contactDao = contactDao;
+    }
+
+    @Required
+    public DeviceDao getDeviceDao() {
+        return deviceDao;
+    }
+
+    @Required
+    public void setDeviceDao(DeviceDao deviceDao) {
+        this.deviceDao = deviceDao;
     }
 
 }
