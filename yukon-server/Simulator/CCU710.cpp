@@ -78,26 +78,31 @@ void CCU710::CreateMsg(){
 			if(incomingMsg[0].getWordFunction()== 'r') {
 				//  Read energy, etc
 				newMessage.CreateMessage('d', someData);
+				newMessage.InsertAck();
 			}
 			else if(incomingMsg[0].getWordFunction()== 'f') {
-				// ALSO CHECK FOR   MULTIPLE   WORDS !
-				std::cout<<"IncomingMsg Size: "<<incomingMsg[0].getMessageSize()<<std::endl;
 				if(incomingMsg[0].getMessageSize()==17){
 					//  putconfig, etc
+					newMessage.InsertAck();
 					newMessage.InsertAck();
 				}
 				else if(incomingMsg[0].getMessageSize()==10){
 					//  MCT410 ping
 					newMessage.CreateMessage('d', someData);
+					newMessage.InsertAck();
 				}
 			}
 			else if(incomingMsg[0].getWordFunction()== 'w') {
 				// getconfig etc
 				newMessage.CreateMessage('d', someData);
+				newMessage.InsertAck();
+				EmetconWord newWord;
+				for(int i=1; i<incomingMsg[0].getWTF(); i++) {
+					newMessage.InsertWord(newWord);
+					newMessage.InsertAck();
+				}
 			}
 		}
-		
-		newMessage.InsertAck();
 		outgoingMsg[0]=newMessage;
 	}
 	else if(incomingMsg[0].getMessageType()=='p') {
@@ -113,17 +118,9 @@ void CCU710::SendMsg(){
 	unsigned char * WriteBuffer = outgoingMsg[0].getMessageArray();
 	int MsgSize = outgoingMsg[0].getMessageSize();
 	unsigned char SendData[300];
-	SendData[0]= WriteBuffer[0];
-	SendData[1]= WriteBuffer[1];
-	SendData[2]= WriteBuffer[2];
-	SendData[3]= WriteBuffer[3];
-	SendData[4]= WriteBuffer[4];
-	SendData[5]= WriteBuffer[5];
-	SendData[6]= WriteBuffer[6];
-	SendData[7]= WriteBuffer[7];
-	SendData[8]= WriteBuffer[8];
-	SendData[9]= WriteBuffer[9];
-	SendData[10]= WriteBuffer[10];
+	for(int i=0; i<30; i++) {
+		SendData[i]= WriteBuffer[i];
+	}
 
 	newSocket->CTINexusWrite(&SendData, MsgSize, &bytesWritten, 15); 
 	RWDBDateTime DateSent;
@@ -134,14 +131,19 @@ void CCU710::SendMsg(){
 	SET_FOREGROUND_BRIGHT_MAGNETA;
 	for(int byteitr = 0; byteitr < bytesWritten; byteitr++ )
 	{
-		std::cout <<string(CtiNumStr(WriteBuffer[byteitr]).xhex())<<' ';
+		std::cout <<string(CtiNumStr(SendData[byteitr]).hex().zpad(2))<<' ';
 	}
 	std::cout<<std::endl;
 	SET_FOREGROUND_WHITE;
 	std::cout<<"Message Type: "<<outgoingMsg[0].getMessageType()<<"    Word Type: "<<outgoingMsg[0].getWordType();
 	std::cout<<"    Word Function: "<<outgoingMsg[0].getWordFunction()<<std::endl;
 	std::cout<<"------------------------------------------------------"<<std::endl;
-	
+
+	// Reset inmessage
+	Message blankMessage;
+	incomingMsg[0] = blankMessage;
+	// reset outbound message
+	outgoingMsg[0] = blankMessage;
 }
 
 //Returns a pointer to the listening socket

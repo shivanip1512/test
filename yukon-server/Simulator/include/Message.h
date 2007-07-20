@@ -23,14 +23,12 @@ class Message{
 		Message();
 		// Constructor to build a new Message
 		void CreateMessage(char MsgType, unsigned char Data[]);
-		// Constructor to copy and decode an existing Message
-		void DecodeMessage(unsigned char ReadBuffer[], CTINEXUS * newSocket);
 		// Destructor
 
-		// Add an existing word to a message
-		void InsertWord(EmetconWord oneWord);
-		//  Just store the definition of a word in a message
+		// This is used to insert words into incoming messages 
 		void InsertWord(char WordType, unsigned char Data[]);
+		// This is used to insert words into outgoing messages
+		void InsertWord(EmetconWord oneWord);
 		// Function to read the data in the Message to the screen
 		void ReadMessage();
 		//  Figure out what the preamble says
@@ -38,7 +36,7 @@ class Message{
 		//  Determine what kind of word it is
 		char DecodeDefinition();
 		//  Determine the number of words to follow
-		int DecodeWTF();
+		int DecodeWTF(char WordType, unsigned char Data[]);
 		//  Determine what function the word specifies
 		char DecodeFunction(char WordType, unsigned char Data[]);
 		//  Returns a copy of the message array
@@ -51,21 +49,26 @@ class Message{
 		int getMessageSize();
 		//  Returns the number type of word in the message
 		char getWordType();
+		//  Returns the words to follow value from a 'b' word
+		int getWTF();
 		//  Returns the number function of the word in the message
 		char getWordFunction();
 		//  Put the correct preamble at the beginning of message
 		void CreatePreamble();
 		//  Add an ack character to the current message
 		void InsertAck();
+		// Constructor to copy and decode an existing Message
+		void DecodeMessage(unsigned char ReadBuffer[], CTINEXUS * newSocket);
 
 
 
 	private:
 		char MessageType;
-		unsigned char MessageData[300];
-		EmetconWord Words[50];
+		unsigned char MessageData[50];
+		EmetconWord Words[4];
 		int BytesToFollow;
 		int IndexOfEnd;
+		int IndexOfWords;
 };
 
 #endif

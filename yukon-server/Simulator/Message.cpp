@@ -22,7 +22,18 @@ namespace std {}
 ***************************************************/
 Message::Message(){
 	IndexOfEnd = 0;
+	IndexOfWords = 0;
 	MessageType = '?';
+	for (int i =0; i < 48; i++) {
+		MessageData[i] = 0x0;
+	}
+	MessageType;
+	EmetconWord blankWord;
+	Words[0] = blankWord;
+	Words[1] = blankWord;
+	Words[2] = blankWord;
+	Words[3] = blankWord;
+	BytesToFollow = 0;;
 }
 	
 // Constructor to build a new Message 
@@ -57,97 +68,80 @@ void Message::CreateMessage(char MsgType, unsigned char Data[]){
 	}
 }
 
-// Constructor to copy and decode an existing Message
-void Message::DecodeMessage(unsigned char ReadBuffer[], CTINEXUS * newSocket){
-	EmetconWord newWord;
-	newWord.DecodeWord(ReadBuffer, newSocket);
-	newWord.ReadWord();
-}
-
-// Function to read the data in the Message to the screen
-void Message::ReadMessage(){
-}
-
-//  Returns a copy of the message array
-unsigned char * Message::getMessageArray(){
-	return MessageData;
-}
-
-void Message::CreatePreamble(){
-	MessageData[0] = 0xc3;
-	MessageData[1] = 0xc3;
-	MessageData[2] = 0x82;
-	IndexOfEnd += 3;
-}
-
-int Message::getBytesToFollow(){
-	return BytesToFollow;
-}
-
-char Message::getMessageType(){
-	return MessageType;
-}
-
-int Message::getMessageSize(){
-	return IndexOfEnd;
-}
-
-char Message::getWordType(){
-	return Words[0].getWordType();
-}
-
-char Message::getWordFunction(){
-	return Words[0].getWordFunction();
-}
-
+//  This is used to insert words into incoming messages
 void Message::InsertWord(char WordType, unsigned char Data[]){
 	char WordFunction;
+	int InsertMore = 0;
 	int WTF = 0;
 	if(WordType == 'i') {
 		MessageData[3]=Data[0];
 		WordType = DecodeDefinition();
 		WordFunction = DecodeFunction(WordType, Data);
 		WTF = DecodeWTF(WordType, Data);
+		//  If there is a 'c' word following the 'b' word
+		//  then WTF indicates 'c' words to follow so they should be stored
+		if(WTF>0) {
+			if((Data[7] & 0xc0) == 0xc0) {
+				InsertMore = WTF;
+			}
 		}
-		//std::cout<<"WordType: "<<WordType<<std::endl;
+	}
+	//std::cout<<"WordType: "<<WordType<<std::endl;
 
 	EmetconWord oneWord;
 	oneWord.CreateWord(WordType, Data, WordFunction);
+	oneWord.setWTF(WTF);
 	IndexOfEnd += oneWord.getWordSize();
-	Words[0]= oneWord;
+	Words[IndexOfWords]= oneWord;
+	IndexOfWords++;
 	//  If the first word is a b word, see how many c words follow it
 	//  and insert them into the incoming message
 	if(Words[0].getWordType() == 'b') {
-		int InsertMore = Words[0].getWTF();
 		for(int i=0; i<InsertMore; i++) {
 			EmetconWord anotherWord;
-			oneWord.CreateWord('c', Data, WordFunction);
+			anotherWord.CreateWord('c', Data, WordFunction);
 			IndexOfEnd += anotherWord.getWordSize();
-			Words[i+1]= anotherWord;
+			Words[IndexOfWords]= anotherWord;
+			IndexOfWords++;
 		}
 	}
 }
 
+//  This is used to insert words into outgoing messages
 void Message::InsertWord(EmetconWord oneWord){
-	Words[0] = oneWord;
+	Words[IndexOfWords] = oneWord;
+	IndexOfWords++;
+	//  Determine where the message write should take place
+	//  considering words that have already been copied into MessageData
+	int Here = (IndexOfWords-1) * 8;
 	if(Words[0].getWordType()=='c') {
-		MessageData[3] = Words[0][0];
-		MessageData[4] = Words[0][1];
-		MessageData[5] = Words[0][2];
-		MessageData[6] = Words[0][3];
-		MessageData[7] = Words[0][4];
-		MessageData[8] = Words[0][5];
-		MessageData[9] = Words[0][6];
+		MessageData[Here + 3] = Words[0][0];
+		MessageData[Here + 4] = Words[0][1];
+		MessageData[Here + 5] = Words[0][2];
+		MessageData[Here + 6] = Words[0][3];
+		MessageData[Here + 7] = Words[0][4];
+		MessageData[Here + 8] = Words[0][5];
+		MessageData[Here + 9] = Words[0][6];
 		IndexOfEnd+=7;
 	}
 	else if(Words[0].getWordType()=='d') {
-		MessageData[3] = Words[0][0];
-		MessageData[4] = Words[0][1];
-		MessageData[5] = Words[0][2];
-		MessageData[6] = Words[0][3];
-		MessageData[7] = Words[0][4];
-		MessageData[8] = Words[0][5];
-		MessageData[9] = Words[0][6];
+		MessageData[Here + 3] = Words[0][0];
+		MessageData[Here + 4] = Words[0][1];
+		MessageData[Here + 5] = Words[0][2];
+		MessageData[Here + 6] = Words[0][3];
+		MessageData[Here + 7] = Words[0][4];
+		MessageData[Here + 8] = Words[0][5];
+		MessageData[Here + 9] = Words[0][6];
+		IndexOfEnd+=7;
+	}
+	else if(Words[0].getWordType()=='e') {
+		MessageData[Here + 3] = Words[0][0];
+		MessageData[Here + 4] = Words[0][1];
+		MessageData[Here + 5] = Words[0][2];
+		MessageData[Here + 6] = Words[0][3];
+		MessageData[Here + 7] = Words[0][4];
+		MessageData[Here + 8] = Words[0][5];
+		MessageData[Here + 9] = Words[0][6];
 		IndexOfEnd+=7;
 	}
 	//else 
@@ -180,6 +174,19 @@ int Message::DecodePreamble(){
 	if(MessageData[2]== 0x0){
 	}
 	return bytesToFollow;
+}
+
+int Message::DecodeWTF(char WordType, unsigned char Data[]){
+	if((Data[4] & 0x10) == 0x10) {
+		return 1;
+	}
+	if((Data[4] & 0x20) == 0x20) {
+		return 2;
+	}
+	if((Data[4] & 0x30) == 0x30) {
+		return 3;
+	}
+	else return 0;
 }
 
 char Message::DecodeDefinition(){
@@ -224,3 +231,51 @@ void Message::InsertAck(){
 	MessageData[IndexOfEnd] = 0xc3;
 	IndexOfEnd++;
 }
+
+// Constructor to copy and decode an existing Message
+void Message::DecodeMessage(unsigned char ReadBuffer[], CTINEXUS * newSocket){
+	EmetconWord newWord;
+	newWord.DecodeWord(ReadBuffer, newSocket);
+	newWord.ReadWord();
+}
+
+// Function to read the data in the Message to the screen
+void Message::ReadMessage(){
+}
+
+//  Returns a copy of the message array
+unsigned char * Message::getMessageArray(){
+	return MessageData;
+}
+
+void Message::CreatePreamble(){
+	MessageData[0] = 0xc3;
+	MessageData[1] = 0xc3;
+	MessageData[2] = 0x82;
+	IndexOfEnd += 3;
+}
+
+int Message::getBytesToFollow(){
+	return BytesToFollow;
+}
+
+char Message::getMessageType(){
+	return MessageType;
+}
+
+int Message::getMessageSize(){
+	return IndexOfEnd;
+}
+
+int Message::getWTF(){
+	return Words[0].getWTF();
+}
+
+char Message::getWordType(){
+	return Words[0].getWordType();
+}
+
+char Message::getWordFunction(){
+	return Words[0].getWordFunction();
+}
+

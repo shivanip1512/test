@@ -15,6 +15,10 @@
 #include "EmetconWord.h"
 #include "stdio.h"
 
+//  Delete these next two lines if not using rand()
+#include "stdlib.h"
+#include "time.h"
+
 /**************************************************
 /*  EmetconWord functions   
 ***************************************************/
@@ -25,12 +29,23 @@ EmetconWord::EmetconWord(){
 	WordType = '?';
 	WordSize = 0;
 	WTF = 0;
+	for(int i=0; i<18; i++) {
+		WordData[i] = 0x0;
+	}
 }
 
 // build a new word
 void EmetconWord::CreateWord(char Type, unsigned char Data[], char WordFunc){
 	WordType = Type;
 	WordFunction = WordFunc;
+
+	//  Temporary code to randomly send back e words instead of d words
+	if(WordType == 'd') {
+		if(rand() % 2){
+			WordType = 'e';
+		}
+	}
+
 	if(WordType == 'd') {
 		WordSize = 7;
 		// calculate bch code
@@ -85,13 +100,59 @@ void EmetconWord::CreateWord(char Type, unsigned char Data[], char WordFunc){
 		cWord[5] |= BCH >> 6;
 		cWord[6] = BCH << 2;
 	}
+	else if(WordType == 'e') {
+		WordSize = 7;
+		// calculate bch code
+		unsigned short BCH;
+		unsigned char* dWord = WordData;
+
+		int pickError = rand() % 6;
+
+		dWord[0] = 0xe0;  
+		dWord[1] = 0x24;
+		switch(pickError) {
+		case 1:  // incoming BCH error
+			dWord[2] = 0x08;
+			dWord[3] = 0x00; 
+			break;
+		case 2:  // incoming no response
+			dWord[2] = 0x04;
+			dWord[3] = 0x00; 
+			break;
+		case 3:  // listen ahead BCH eror
+			dWord[2] = 0x02;
+			dWord[3] = 0x00; 
+			break;
+		case 4:  // listen ahead no response
+			dWord[2] = 0x01;
+			dWord[3] = 0x00; 
+			break;
+		case 5:  // weak signal
+			dWord[2] = 0x00;
+			dWord[3] = 0x80; 
+			break;
+		case 6:  // repeater code mis-match
+			dWord[2] = 0x00;
+			dWord[3] = 0x40; 
+			break;
+		}
+		dWord[4] = 0x00;
+		dWord[5] = 0x00;            
+		dWord[6] = 0x00;  
+
+		BCH = BCHCalc (dWord, 46);
+		dWord[5] |= BCH >> 6;
+		dWord[6] = BCH << 2;
+	}
 }
 
 // copy and decode an existing word
 void EmetconWord::DecodeWord(unsigned char ReadBuffer[], CTINEXUS * newSocket){
-	 
 }
 
+void EmetconWord::setWTF(int newWTF){
+	WTF = newWTF;
+}
 
 unsigned short EmetconWord::BCHCalc(unsigned char* pStr, unsigned long bits)
 {

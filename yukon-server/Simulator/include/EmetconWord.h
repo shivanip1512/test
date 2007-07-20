@@ -40,10 +40,12 @@ class EmetconWord{
 		int  getWordSize();
 		//  Returns the number of words following the first b word
 		int getWTF();
+		//  Allow the WTF to be set after it is determined
+		void setWTF(int newWTF);
 		//  Allow access to WordData for copying into messages
 		unsigned char operator[](int index);
 	private:
-		unsigned char WordData[300];
+		unsigned char WordData[20];
 		char WordType;
 		char WordFunction;
 		int  WordSize;
