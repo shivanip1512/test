@@ -113,7 +113,7 @@
 		<row><td>Common Dlls</td><td>{0A34D87B-E6BA-4B1D-BA50-8F4DB4F519D0}</td><td>SERVER</td><td>0</td><td/><td/><td>264705</td><td/><td/><td/><td>/LogFile=</td><td>/LogFile=</td><td>/LogFile=</td><td>/LogFile=</td></row>
 		<row><td>Config Properties</td><td>{9B7AB4F9-1715-44AC-AB68-5934AE771B03}</td><td>CONFIG</td><td>16</td><td/><td/><td>10753</td><td/><td/><td/><td>/LogFile=</td><td>/LogFile=</td><td>/LogFile=</td><td>/LogFile=</td></row>
 		<row><td>Database Editor</td><td>{9BCF06B7-0196-4018-BADA-8047223F1A4E}</td><td>CLIENT</td><td>0</td><td/><td/><td>281089</td><td/><td/><td/><td>/LogFile=</td><td>/LogFile=</td><td>/LogFile=</td><td>/LogFile=</td></row>
-		<row><td>ESub Editor</td><td>{9FDC2ABD-23BF-4290-A9D3-AC5B93DBA740}</td><td>BIN</td><td>0</td><td/><td/><td>281089</td><td/><td/><td/><td>/LogFile=</td><td>/LogFile=</td><td>/LogFile=</td><td>/LogFile=</td></row>
+		<row><td>ESub Editor</td><td>{9FDC2ABD-23BF-4290-A9D3-AC5B93DBA740}</td><td>CLIENT</td><td>0</td><td/><td/><td>281089</td><td/><td/><td/><td>/LogFile=</td><td>/LogFile=</td><td>/LogFile=</td><td>/LogFile=</td></row>
 		<row><td>Foreign Data Router</td><td>{7B5F36F3-9B88-4E0C-817F-222A041C2D13}</td><td>SERVER</td><td>0</td><td/><td/><td>281089</td><td/><td/><td/><td>/LogFile=</td><td>/LogFile=</td><td>/LogFile=</td><td>/LogFile=</td></row>
 		<row><td>Help</td><td>{1FEA837D-476D-4C29-9278-559F5C6BE084}</td><td>HELP</td><td>0</td><td/><td/><td>281089</td><td/><td/><td/><td>/LogFile=</td><td>/LogFile=</td><td>/LogFile=</td><td>/LogFile=</td></row>
 		<row><td>Initial Server Config</td><td>{2A29ABC8-AB74-453B-BCD5-A2734E40465C}</td><td>SERVER</td><td>16</td><td/><td/><td>10753</td><td/><td/><td/><td>/LogFile=</td><td>/LogFile=</td><td>/LogFile=</td><td>/LogFile=</td></row>
@@ -122,7 +122,7 @@
 		<row><td>Load Management</td><td>{70724B8A-16D6-4800-B7FB-752C0F31E590}</td><td>SERVER</td><td>0</td><td/><td/><td>281089</td><td/><td/><td/><td>/LogFile=</td><td>/LogFile=</td><td>/LogFile=</td><td>/LogFile=</td></row>
 		<row><td>MACS Server</td><td>{10C988E4-A975-41EF-AC11-A56DF1CBD643}</td><td>SERVER</td><td>0</td><td/><td/><td>264705</td><td/><td/><td/><td>/LogFile=</td><td>/LogFile=</td><td>/LogFile=</td><td>/LogFile=</td></row>
 		<row><td>Message Dispatcher</td><td>{955F515A-D38D-444A-9B1B-091D2E6B8429}</td><td>SERVER</td><td>0</td><td/><td/><td>281089</td><td/><td/><td/><td>/LogFile=</td><td>/LogFile=</td><td>/LogFile=</td><td>/LogFile=</td></row>
-		<row><td>Notification</td><td>{054F4508-F404-409E-8877-0B26421CCAAD}</td><td>BIN</td><td>0</td><td/><td/><td>264705</td><td/><td/><td/><td>/LogFile=</td><td>/LogFile=</td><td>/LogFile=</td><td>/LogFile=</td></row>
+		<row><td>Notification</td><td>{054F4508-F404-409E-8877-0B26421CCAAD}</td><td>TARGETDIR</td><td>0</td><td/><td/><td>264705</td><td/><td/><td/><td>/LogFile=</td><td>/LogFile=</td><td>/LogFile=</td><td>/LogFile=</td></row>
 		<row><td>Port Control</td><td>{73DC694D-F725-4C09-A12F-70D7643594B7}</td><td>SERVER</td><td>0</td><td/><td/><td>281089</td><td/><td/><td/><td>/LogFile=</td><td>/LogFile=</td><td>/LogFile=</td><td>/LogFile=</td></row>
 		<row><td>Scanner</td><td>{99E72965-B85A-4BEB-81FE-F7E985453A1C}</td><td>SERVER</td><td>0</td><td/><td/><td>281089</td><td/><td/><td/><td>/LogFile=</td><td>/LogFile=</td><td>/LogFile=</td><td>/LogFile=</td></row>
 		<row><td>Tabular Data Console</td><td>{7FE662D9-03C5-49CE-B2A3-49A9E178D51F}</td><td>CLIENT</td><td>0</td><td/><td/><td>281089</td><td/><td/><td/><td>/LogFile=</td><td>/LogFile=</td><td>/LogFile=</td><td>/LogFile=</td></row>
