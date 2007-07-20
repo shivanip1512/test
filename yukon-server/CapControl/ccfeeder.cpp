@@ -1754,7 +1754,7 @@ CtiCCCapBank* CtiCCFeeder::findCapBankToChangeVars(DOUBLE kvarSolution)
                         additional += currentCapBank->getPAODescription();
                         additional += ")";
                     }
-                    CtiCapController::getInstance()->sendMessageToDispatch(new CtiSignalMsg(SYS_PID_CAPCONTROL,5,text,additional,CapControlLogType,SignalAlarm0, "cap control"));
+                    CtiCapController::getInstance()->sendMessageToDispatch(new CtiSignalMsg(currentCapBank->getOperationAnalogPointId(),5,text,additional,CapControlLogType,SignalAlarm0, "cap control"));
 
                     //we should disable feeder if the flag says so
                     if( currentCapBank->getMaxOpsDisableFlag() )
@@ -1772,7 +1772,7 @@ CtiCCCapBank* CtiCCFeeder::findCapBankToChangeVars(DOUBLE kvarSolution)
                             additional += currentCapBank->getPAODescription();
                             additional += ")";
                         }
-                        CtiCapController::getInstance()->sendMessageToDispatch(new CtiSignalMsg(SYS_PID_CAPCONTROL,0,text,additional,CapControlLogType,SignalAlarm0, "cap control"));
+                        CtiCapController::getInstance()->sendMessageToDispatch(new CtiSignalMsg(currentCapBank->getOperationAnalogPointId(),0,text,additional,CapControlLogType,SignalAlarm0, "cap control"));
                     }  
                 }
                 
@@ -1828,7 +1828,7 @@ CtiCCCapBank* CtiCCFeeder::findCapBankToChangeVars(DOUBLE kvarSolution)
                         additional += currentCapBank->getPAODescription();
                         additional += ")";
                     }
-                    CtiCapController::getInstance()->sendMessageToDispatch(new CtiSignalMsg(SYS_PID_CAPCONTROL,5,text,additional,CapControlLogType,SignalAlarm0, "cap control"));
+                    CtiCapController::getInstance()->sendMessageToDispatch(new CtiSignalMsg(currentCapBank->getOperationAnalogPointId(),5,text,additional,CapControlLogType,SignalAlarm0, "cap control"));
 
                     //we should disable feeder if the flag says so
                     if( currentCapBank->getMaxOpsDisableFlag() )
@@ -1846,7 +1846,7 @@ CtiCCCapBank* CtiCCFeeder::findCapBankToChangeVars(DOUBLE kvarSolution)
                             additional += currentCapBank->getPAODescription();
                             additional += ")";
                         }
-                        CtiCapController::getInstance()->sendMessageToDispatch(new CtiSignalMsg(SYS_PID_CAPCONTROL,0,text,additional,CapControlLogType,SignalAlarm0, "cap control"));
+                        CtiCapController::getInstance()->sendMessageToDispatch(new CtiSignalMsg(currentCapBank->getOperationAnalogPointId(),0,text,additional,CapControlLogType,SignalAlarm0, "cap control"));
                     } 
                 }
                 
@@ -3650,7 +3650,8 @@ BOOL CtiCCFeeder::isAlreadyControlled(LONG minConfirmPercent)
                             returnBoolean = FALSE;
                         }
                         found = TRUE;
-                        setLastCapBankControlledDeviceId(currentCapBank->getPAOId());
+                        if (!stringCompareIgnoreCase(currentCapBank->getOperationalState(),CtiCCCapBank::SwitchedOperationalState)) 
+                            setLastCapBankControlledDeviceId(currentCapBank->getPAOId());
                     }
                 }
             }
