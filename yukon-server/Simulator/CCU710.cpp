@@ -83,7 +83,7 @@ void CCU710::CreateMsg(){
 			else if(incomingMsg[0].getWordFunction()== 'f') {
 				if(incomingMsg[0].getMessageSize()==17){
 					//  putconfig, etc
-					newMessage.InsertAck();
+					newMessage.CreateMessage('c',  someData);
 					newMessage.InsertAck();
 				}
 				else if(incomingMsg[0].getMessageSize()==10){
@@ -107,6 +107,16 @@ void CCU710::CreateMsg(){
 	}
 	else if(incomingMsg[0].getMessageType()=='p') {
 		newMessage.CreateMessage('p', someData);
+		outgoingMsg[0]=newMessage;
+	}
+	else if(incomingMsg[0].getMessageType()=='1') {
+		newMessage.InsertAck();
+		newMessage.InsertAck();
+		outgoingMsg[0]=newMessage;
+	}
+	else if(incomingMsg[0].getMessageType()=='2') {
+		newMessage.InsertAck();
+		newMessage.InsertAck();
 		outgoingMsg[0]=newMessage;
 	}
 	CTISleep(5000);

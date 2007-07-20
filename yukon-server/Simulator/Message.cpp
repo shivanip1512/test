@@ -167,6 +167,16 @@ int Message::DecodePreamble(){
 		MessageType = 'p';
 		bytesToFollow = 0;
 	}
+	else if((MessageData[0]==0x47) && (MessageData[1]==0x30) && (MessageData[2]==0x8e)) {
+		// CCU710 ping
+		MessageType = '1';
+		bytesToFollow = 14;
+	}
+	else if((MessageData[0]==0x47) && (MessageData[1]==0x30) && (MessageData[2]==0x95)) {
+		// CCU710 ping
+		MessageType = '2';
+		bytesToFollow = 21;
+	}
 	//else
 		//std::cout<<"Unknown operation specified"<<std::endl;
 	if(MessageData[1]== 0x0){

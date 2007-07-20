@@ -75,6 +75,9 @@ void EmetconWord::CreateWord(char Type, unsigned char Data[], char WordFunc){
 		cWord[2] = 0x00;
 		cWord[3] = 0x00;            
 		cWord[4] = 0x00;
+		if(Data[4]==0x0) {
+			cWord[5] = 0x08; 
+		}
 		cWord[5] = 0x00;            
 		cWord[6] = 0x00;  
 
@@ -143,6 +146,21 @@ void EmetconWord::CreateWord(char Type, unsigned char Data[], char WordFunc){
 		BCH = BCHCalc (dWord, 46);
 		dWord[5] |= BCH >> 6;
 		dWord[6] = BCH << 2;
+	}
+	else if(WordType == 'a') {
+		WordSize = 4;
+		// calculate bch code
+		unsigned short BCH;
+		unsigned char* cWord = WordData;
+
+		cWord[0] = 0x80;
+		cWord[1] = 0x00; 
+		cWord[2] = 0x00;
+		cWord[3] = 0x00;             
+
+		BCH = BCHCalc (cWord, 24);
+		cWord[5] |= BCH >> 6;
+		cWord[6] = BCH << 2;
 	}
 }
 
