@@ -933,9 +933,14 @@ private void handleSuccessfulLocate(Return returnMsg) {
             retMCT.getDeviceRoutes().setRouteID(routeID);
         else
             throw new TransactionException("Route not found for a message ID of " + returnMsg.getUserMessageID());
-        Transaction.createTransaction(Transaction.UPDATE, retMCT).execute();
+
         log.info(retMCT.getPAOType() + "with name " + retMCT.getPAOName() + " was successfully located on route " + routeName +" ("+ routeID+").");
-        
+        Transaction.createTransaction(Transaction.UPDATE, retMCT).execute();
+        DBChangeMsg retMCTChange = new DBChangeMsg(retMCT.getPAObjectID().intValue(), DBChangeMsg.CHANGE_PAO_DB, 
+        		retMCT.getPAOCategory(), retMCT.getPAOType(), DBChangeMsg.CHANGE_TYPE_UPDATE);
+			
+		getDispatchConnection().write(retMCTChange);
+		
         //interval write
         log.info("Interval write attempted: device " + returnMsg.getDeviceID() + " on route with ID " + routeID + ".");
         writeToPorter(porterRequest);
