@@ -12,6 +12,7 @@ import java.io.IOException;
 import java.io.InputStream;
 import java.io.PrintWriter;
 import java.io.StringWriter;
+import java.lang.management.ManagementFactory;
 import java.lang.reflect.Field;
 import java.lang.reflect.Modifier;
 import java.net.InetAddress;
@@ -26,6 +27,7 @@ import java.util.Collections;
 import java.util.Enumeration;
 import java.util.HashSet;
 import java.util.LinkedHashSet;
+import java.util.List;
 import java.util.Set;
 import java.util.TimeZone;
 import java.util.Vector;
@@ -1659,6 +1661,9 @@ public static double convertTemperature(double temperature, String fromUnit, Str
         out.println("JAVA_LIBRARY_PATH: " + SystemUtils.JAVA_LIBRARY_PATH);
         out.println("JAVA_EXT_DIRS: " + SystemUtils.JAVA_EXT_DIRS);
         out.println("JAVA_ENDORSED_DIRS: " + SystemUtils.JAVA_ENDORSED_DIRS);
+        out.println("JAVA_VM_NAME: " + SystemUtils.JAVA_VM_NAME);
+        out.println("JAVA_VM_INPUT_ARGS: " + CtiUtilities.getJvmInputArgs());
+        
 
         return sw.toString();
     }
@@ -1702,7 +1707,14 @@ public static double convertTemperature(double temperature, String fromUnit, Str
         }
     }
 
-
+    private static String getJvmInputArgs() {
+        final List<String> inputArgs = ManagementFactory.getRuntimeMXBean().getInputArguments();
+        final StringBuilder sb = new StringBuilder();
+        for (final String arg : inputArgs) {
+            sb.append(arg + " ");
+        }
+        return sb.toString().trim();
+    }
 
 }
 
