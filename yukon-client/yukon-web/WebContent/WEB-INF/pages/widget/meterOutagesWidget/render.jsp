@@ -19,42 +19,44 @@
 </div>
 <br>
 
-<ct:nameValueContainer>
-  <ct:nameValue name="Outages Last Retrieved">
-    <c:if test="${not isOutageConfigured}">
-    	Outage Log Analog Point is not configured.
-    </c:if>
-    <c:if test="${isOutageConfigured}">
-		<cti:formatDate value="${data.readDate}" type="both" var="formattedReadDate" />
-        ${formattedReadDate}
-    </c:if>
-  </ct:nameValue>
-</ct:nameValueContainer>
-
-<div class="widgetInternalSection">
-<table class="miniResultsTable">
-  <tr>
-    <th>Time</th>
-    <th>Duration</th>
-  </tr>
-  <c:if test="${empty data.outageData}">
-    <c:forEach items="1">
-      <tr class="<ct:alternateRow odd="" even="altRow"/>">
-    	<td>n/a</td>
-    	<td>n/a</td>
-      </tr>
-    </c:forEach>
-  </c:if>
-  <c:if test="${not empty data.outageData}">
-  <c:forEach items="${data.outageData}" var="outage">
-  <tr class="<ct:alternateRow odd="" even="altRow"/>">
-	<td>${outage.timestamp }</td>
-	<td>${outage.duration }</td>
-  </tr>
-  </c:forEach>
-  </c:if>
-</table>
-</div>
+<c:if test="${isOutageSupported}">
+	<ct:nameValueContainer>
+	  <ct:nameValue name="Outages Last Retrieved">
+	    <c:if test="${not isOutageConfigured}">
+	    	Outage Log Analog Point is not configured.
+	    </c:if>
+	    <c:if test="${isOutageConfigured}">
+			<cti:formatDate value="${data.readDate}" type="both" var="formattedReadDate" />
+	        ${formattedReadDate}
+	    </c:if>
+	  </ct:nameValue>
+	</ct:nameValueContainer>
+	
+	<div class="widgetInternalSection">
+	<table class="miniResultsTable">
+	  <tr>
+	    <th>Time</th>
+	    <th>Duration</th>
+	  </tr>
+	  <c:if test="${empty data.outageData}">
+	    <c:forEach items="1">
+	      <tr class="<ct:alternateRow odd="" even="altRow"/>">
+	    	<td>n/a</td>
+	    	<td>n/a</td>
+	      </tr>
+	    </c:forEach>
+	  </c:if>
+	  <c:if test="${not empty data.outageData}">
+	  <c:forEach items="${data.outageData}" var="outage">
+	  <tr class="<ct:alternateRow odd="" even="altRow"/>">
+		<td>${outage.timestamp }</td>
+		<td>${outage.duration }</td>
+	  </tr>
+	  </c:forEach>
+	  </c:if>
+	</table>
+	</div>
+</c:if>
 <br>
 
 <c:if test="${isRead}">

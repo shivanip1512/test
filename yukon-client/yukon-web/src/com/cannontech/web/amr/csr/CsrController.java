@@ -132,7 +132,10 @@ public class CsrController extends MultiActionController {
         mav.addObject("highBillSupported", highBillSupported);
         
         Set<Attribute> availableAttributes = attributeService.getAvailableAttributes(device);
-        mav.addObject("outageSupported", availableAttributes.contains(BuiltInAttribute.OUTAGE_LOG));
+        
+        boolean outageSupported = (availableAttributes.contains(BuiltInAttribute.OUTAGE_LOG) ||
+        		availableAttributes.contains(BuiltInAttribute.BLINK_COUNT));
+        mav.addObject("outageSupported", outageSupported);
         
         mav.addObject("mspSupported",
                       Integer.valueOf(roleDao.getGlobalPropertyValue(MultispeakRole.MSP_PRIMARY_CB_VENDORID))
