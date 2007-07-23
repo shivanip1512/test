@@ -2,6 +2,8 @@ package com.cannontech.database.data.lite;
 
 import java.util.Comparator;
 
+import com.cannontech.clientutils.CTILogger;
+
 /**
  * This type was created in VisualAge.
  */
@@ -242,7 +244,7 @@ public final class LiteComparators
 		public int compare(Object o1, Object o2)
 		{
 			String thisVal = null, anotherVal = null;
-			
+            
 			if(o1 instanceof LiteYukonPAObject && o2 instanceof LiteYukonPAObject)
 			{
 				thisVal = ((LiteYukonPAObject)o1).getPaoName();
@@ -382,9 +384,22 @@ public final class LiteComparators
 				throw new IllegalArgumentException("Unhandled lite types or the 2 objects being compared are not the same object types in comparator of : " + this.getClass().toString() );
 			}
 
-			
-			return ( thisVal.compareToIgnoreCase(anotherVal) );
-		}
+            int ret;
+			try
+            {
+			    ret = thisVal.compareToIgnoreCase(anotherVal);
+            }
+            catch( java.lang.NullPointerException e )
+            {
+                String errMsg = new String();
+                errMsg += o1.getClass();
+                CTILogger.debug( "Unexpected Null Value: " + errMsg + " " , e );
+                throw e;
+            }
+            
+            return ret;
+
+        }
 		
 		public boolean equals(Object obj)
 		{
