@@ -249,6 +249,7 @@
             <fileset file="${module.name}/yukon-client/dbeditor/resource/dbEditorIcon.ico"/>
             <fileset file="${module.name}/yukon-client/tdc/resource/tdcIcon.ico"/>
             <fileset file="${module.name}/yukon-client/commander/resource/CommanderIcon.ico"/>
+            <fileset file="${module.name}/yukon-client/esub-editor/resource/esubEditorIcon.ico"/>
         </copy>
        	    
         <!-- Yukon Base Component (Server) -->      
