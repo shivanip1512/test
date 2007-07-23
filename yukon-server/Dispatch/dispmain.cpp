@@ -6,8 +6,8 @@
 *
 * PVCS KEYWORDS:
 * ARCHIVE      :  $Archive:   Z:/SOFTWAREARCHIVES/YUKON/DISPATCH/dispmain.cpp-arc  $
-* REVISION     :  $Revision: 1.11 $
-* DATE         :  $Date: 2007/07/10 21:07:09 $
+* REVISION     :  $Revision: 1.12 $
+* DATE         :  $Date: 2007/07/23 15:36:17 $
 *
 * Copyright (c) 1999, 2000, 2001 Cannon Technologies Inc. All rights reserved.
 *-----------------------------------------------------------------------------*/
@@ -79,7 +79,7 @@ int main(int argc, char* argv[] )
       //Process command line
       if( argc > 1 && strcmp(argv[1], "-install") == 0  )
       {
-         cout << CtiTime()  << " - Installing Yukon Dispatch Service" << endl;
+         cout << CtiTime()  << " - Installing Yukon " << CompileInfo.project << " service" << endl;
          CServiceConfig si(szName, szDisplay);
          si.Install(SERVICE_WIN32_OWN_PROCESS,
                     SERVICE_DEMAND_START,
@@ -92,7 +92,7 @@ int main(int argc, char* argv[] )
       }
       else if( argc > 1 && strcmp(argv[1], "-auto") == 0  )
       {
-         cout << CtiTime()  << " - Installing Yukon Dispatch Service" << endl;
+         cout << CtiTime()  << " - Installing Yukon " << CompileInfo.project << " Service" << endl;
          CServiceConfig si(szName, szDisplay);
          si.Install(SERVICE_WIN32_OWN_PROCESS,
                     SERVICE_AUTO_START,
@@ -105,7 +105,7 @@ int main(int argc, char* argv[] )
       }
       else if( argc > 1 && strcmp(argv[1], "-remove" ) == 0 )
       {
-         cout << CtiTime()  << " - Removing CTI Dispatch Service" << endl;
+         cout << CtiTime()  << " - Removing Yukon " << CompileInfo.project << " Service" << endl;
          CServiceConfig si(szName, szDisplay);
          si.Remove();
          return 0;
