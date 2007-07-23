@@ -6,8 +6,8 @@
 *
 * PVCS KEYWORDS:
 * ARCHIVE      :  $Archive:   Z:/SOFTWAREARCHIVES/YUKON/RTDB/INCLUDE/id_pntdll.h-arc  $
-* REVISION     :  $Revision: 1.1 $
-* DATE         :  $Date: 2007/07/10 22:08:36 $
+* REVISION     :  $Revision: 1.2 $
+* DATE         :  $Date: 2007/07/23 14:36:47 $
 *
 * Copyright (c) 2007 Cannon Technologies. All rights reserved.
 *-----------------------------------------------------------------------------*/
@@ -15,5 +15,5 @@
 
 #include "utility.h"
 
-PROJECT_ID("CTI Load Management");
+PROJECT_ID("Load Management");
 
