@@ -1,7 +1,3 @@
-#include "yukon.h"
-
-#pragma title ( "Porter Process Interface Routines" )
-#pragma subtitle ( "CTI Copyright (c) 1990-1993" )
 /*---------------------------------------------------------------------
     Copyright (c) 1990-1993 Cannon Technologies, Inc. All rights reserved.
 
@@ -33,6 +29,7 @@
         8-30-93     Converted to 32 bit                         WRO
 
    -------------------------------------------------------------------- */
+#include "yukon.h"
 
 #include <windows.h>       // These next few are required for Win32
 #include <process.h>

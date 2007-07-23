@@ -6,16 +6,14 @@
 *
 * PVCS KEYWORDS:
 * ARCHIVE      :  $Archive:   Z:/SOFTWAREARCHIVES/YUKON/PORTER/porter.cpp-arc  $
-* REVISION     :  $Revision: 1.109 $
-* DATE         :  $Date: 2007/07/10 21:07:09 $
+* REVISION     :  $Revision: 1.110 $
+* DATE         :  $Date: 2007/07/23 15:36:40 $
 *
 * Copyright (c) 1999, 2000, 2001 Cannon Technologies Inc. All rights reserved.
 *-----------------------------------------------------------------------------*/
 #include "yukon.h"
 
 
-#pragma title ( "PORTER -- Port Control Program" )
-#pragma subtitle ( "CTI Copyright (c) 1990-1999" )
 /*---------------------------------------------------------------------
     Copyright (c) 1990-1993 Cannon Technologies, Inc. All rights reserved.
 

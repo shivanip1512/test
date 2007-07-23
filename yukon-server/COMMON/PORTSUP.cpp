@@ -1,8 +1,6 @@
 #include "yukon.h"
 
 
-#pragma title ( "Low Level Port Routines" )
-#pragma subtitle ( "CTI Copyright (c) 1990-1993" )
 /*---------------------------------------------------------------------
     Copyright (c) 1990-1993 Cannon Technologies, Inc. All rights reserved.
 

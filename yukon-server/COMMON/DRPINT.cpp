@@ -1,6 +1,3 @@
-#include "yukon.h"
-#pragma title ( "DRP Interface Routines" )
-#pragma subtitle ( "CTI Copyright (c) 1990-1993" )
 /*---------------------------------------------------------------------
     Copyright (c) 1992-1993 Cannon Technologies, Inc. All rights reserved.
 
@@ -30,6 +27,7 @@
 
 
    -------------------------------------------------------------------- */
+#include "yukon.h"
 
 #include <windows.h>
 #include <stdlib.h>

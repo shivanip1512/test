@@ -6,16 +6,14 @@
 *
 * PVCS KEYWORDS:
 * ARCHIVE      :  $Archive$
-* REVISION     :  $Revision: 1.51 $
-* DATE         :  $Date: 2007/06/25 19:05:55 $
+* REVISION     :  $Revision: 1.52 $
+* DATE         :  $Date: 2007/07/23 15:36:40 $
 *
 * Copyright (c) 1999, 2000, 2001 Cannon Technologies Inc. All rights reserved.
 *-----------------------------------------------------------------------------*/
 #include "yukon.h"
 
 
-#pragma title ( "Process Request Server Routines" )
-#pragma subtitle ( "CTI Copyright (c) 1990-1999" )
 /*---------------------------------------------------------------------
     Copyright (c) 1990-1993 Cannon Technologies, Inc. All rights reserved.
 

@@ -1,6 +1,3 @@
-#include "yukon.h"
-#pragma title ( "Route and Device Performance Routines" )
-#pragma subtitle ( "CTI Copyright (c) 1990-1993" )
 /*---------------------------------------------------------------------
     Copyright (c) 1990-1993 Cannon Technologies, Inc. All rights reserved.
 
@@ -33,6 +30,8 @@
 
 
    -------------------------------------------------------------------- */
+#include "yukon.h"
+
 #include <windows.h>       // These next few are required for Win32
 #include "os2_2w32.h"
 #include "cticalls.h"

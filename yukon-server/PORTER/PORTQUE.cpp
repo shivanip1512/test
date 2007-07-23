@@ -6,16 +6,14 @@
 *
 * PVCS KEYWORDS:
 * ARCHIVE      :  $Archive:   Z:/SOFTWAREARCHIVES/YUKON/PORTER/PORTQUE.cpp-arc  $
-* REVISION     :  $Revision: 1.60 $
-* DATE         :  $Date: 2007/06/25 19:32:58 $
+* REVISION     :  $Revision: 1.61 $
+* DATE         :  $Date: 2007/07/23 15:36:40 $
 *
 * Copyright (c) 1999, 2000, 2001 Cannon Technologies Inc. All rights reserved.
 *-----------------------------------------------------------------------------*/
 #include "yukon.h"
 
 
-#pragma title ( "Queing and Actin Message Builders" )
-#pragma subtitle ( "CTI Copyright (c) 1990-1993" )
 /*---------------------------------------------------------------------
     Copyright (c) 1990-1993 Cannon Technologies, Inc. All rights reserved.
 

@@ -22,8 +22,6 @@
 
    -------------------------------------------------------------------- */
 #include "yukon.h"
-#pragma title ( "Low Level TCP Terminal Routines" )
-#pragma subtitle ( "CTI Copyright (c) 1990-1996" )
 
 
 #include <windows.h>       // These next few are required for Win32

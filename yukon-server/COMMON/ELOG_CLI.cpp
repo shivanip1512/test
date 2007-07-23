@@ -1,6 +1,3 @@
-#include "yukon.h"
-#pragma title ( "Logger Client Routines" )
-#pragma subtitle ( "CTI Copyright (c) 1990-1993" )
 /*---------------------------------------------------------------------
     Copyright (c) 1990-1993 Cannon Technologies, Inc. All rights reserved.
 
@@ -32,6 +29,7 @@
          03-30-99    Converted to Win32 API                       CGP
 
    -------------------------------------------------------------------- */
+#include "yukon.h"
 
 #include <windows.h>
 #include <stdlib.h>

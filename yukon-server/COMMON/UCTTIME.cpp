@@ -1,8 +1,3 @@
-#include "yukon.h"
-
-
-#pragma title ( "DST Time Routines" )
-#pragma subtitle ( "CTI Copyright (c) 1990-1994" )
 /*---------------------------------------------------------------------
     Copyright (c) 1990-1993 Cannon Technologies, Inc. All rights reserved.
 
@@ -39,6 +34,7 @@
         03-30-99  Convert to Win32 API for YUKON                  CGP
 
    -------------------------------------------------------------------- */
+#include "yukon.h"
 
 #include <windows.h>
 #include <stdlib.h>
