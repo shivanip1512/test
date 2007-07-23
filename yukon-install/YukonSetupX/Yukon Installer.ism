@@ -115,7 +115,6 @@
 		<row><td>Database Editor</td><td>{9BCF06B7-0196-4018-BADA-8047223F1A4E}</td><td>CLIENT</td><td>0</td><td/><td/><td>281089</td><td/><td/><td/><td>/LogFile=</td><td>/LogFile=</td><td>/LogFile=</td><td>/LogFile=</td></row>
 		<row><td>ESub Editor</td><td>{9FDC2ABD-23BF-4290-A9D3-AC5B93DBA740}</td><td>CLIENT</td><td>0</td><td/><td/><td>281089</td><td/><td/><td/><td>/LogFile=</td><td>/LogFile=</td><td>/LogFile=</td><td>/LogFile=</td></row>
 		<row><td>Foreign Data Router</td><td>{7B5F36F3-9B88-4E0C-817F-222A041C2D13}</td><td>SERVER</td><td>0</td><td/><td/><td>281089</td><td/><td/><td/><td>/LogFile=</td><td>/LogFile=</td><td>/LogFile=</td><td>/LogFile=</td></row>
-		<row><td>Help</td><td>{1FEA837D-476D-4C29-9278-559F5C6BE084}</td><td>HELP</td><td>0</td><td/><td/><td>281089</td><td/><td/><td/><td>/LogFile=</td><td>/LogFile=</td><td>/LogFile=</td><td>/LogFile=</td></row>
 		<row><td>Initial Server Config</td><td>{2A29ABC8-AB74-453B-BCD5-A2734E40465C}</td><td>SERVER</td><td>16</td><td/><td/><td>10753</td><td/><td/><td/><td>/LogFile=</td><td>/LogFile=</td><td>/LogFile=</td><td>/LogFile=</td></row>
 		<row><td>JRE 1.5</td><td>{F366538E-F2A8-4DF3-9640-06DCF38B4BC2}</td><td>RUNTIME</td><td>0</td><td/><td/><td>2561</td><td/><td/><td/><td>/LogFile=</td><td>/LogFile=</td><td>/LogFile=</td><td>/LogFile=</td></row>
 		<row><td>Java Service Manager</td><td>{BD673D38-EFB5-4405-950F-B4BF50190A2A}</td><td>TARGETDIR</td><td>0</td><td/><td/><td>281089</td><td/><td/><td/><td>/LogFile=</td><td>/LogFile=</td><td>/LogFile=</td><td>/LogFile=</td></row>
@@ -353,7 +352,6 @@
 		<row><td>{54FF9F5F-5E39-45F8-B799-BA8F0AD883AD}</td><td>Tomcat</td></row>
 		<row><td>{54FF9F5F-5E39-45F8-B799-BA8F0AD883AD}</td><td>WebStart</td></row>
 		<row><td>{54FF9F5F-5E39-45F8-B799-BA8F0AD883AD}</td><td>Yukon Web Deployment</td></row>
-		<row><td>{7DA58387-606C-49E2-A3AD-E11F866C0C40}</td><td>Help</td></row>
 		<row><td>{7E0C5FC7-B54D-4F6D-8D1A-0946CFF2CE2E}</td><td>JRE 1.5</td></row>
 		<row><td>{9910613D-86BA-428E-8798-FD86096FFE62}</td><td>Common Directories</td></row>
 		<row><td>{9910613D-86BA-428E-8798-FD86096FFE62}</td><td>Common Dlls</td></row>
@@ -431,7 +429,6 @@
 		<row><td>Database Editor</td><td>0</td><td/><td>_62680E66_D76C_41E9_BE61_641B4226E623_FILTER</td><td/><td/><td/><td/></row>
 		<row><td>ESub Editor</td><td>0</td><td/><td>_A62DC5BB_FFFA_4641_AC50_CCC6873DE667_FILTER</td><td/><td/><td/><td/></row>
 		<row><td>Foreign Data Router</td><td>0</td><td/><td>_3536D6D6_BC3C_4DFF_ABA4_40B90B6BC56E_FILTER</td><td/><td/><td/><td/></row>
-		<row><td>Help</td><td>0</td><td/><td>_4FE55A86_EEEB_4597_AE0A_2365C9602121_FILTER</td><td/><td/><td/><td/></row>
 		<row><td>Initial Server Config</td><td>0</td><td/><td>_2B654781_3513_431D_92FC_178C60417E91_FILTER</td><td/><td/><td/><td/></row>
 		<row><td>JRE 1.5</td><td/><td/><td>_4EEF871E_3531_44B7_8418_D6B8A510B7A4_FILTER</td><td/><td/><td/><td/></row>
 		<row><td>Java Service Manager</td><td/><td/><td>_72E48809_F354_49B0_8B8C_B1F43C0B149C_FILTER</td><td/><td/><td/><td/></row>
@@ -501,7 +498,6 @@
 		<col def="I4">ISAttributes</col>
 		<row><td>Common Directories</td><td>&lt;PATH_TO_COMMON_DIRECTORIES_FILES&gt;</td><td>1</td><td>*.*</td><td/><td>2</td></row>
 		<row><td>Config Properties</td><td>&lt;PATH_TO_CONFIG_PROPERTIES_FILES&gt;</td><td>1</td><td>*.*</td><td/><td>2</td></row>
-		<row><td>Help</td><td>&lt;PATH_TO_HELP_FILES&gt;</td><td>1</td><td>*.*</td><td/><td>2</td></row>
 		<row><td>Initial Server Config</td><td>&lt;PATH_TO_INITIAL_SERV_CONF_FILES&gt;</td><td>1</td><td>*.*</td><td/><td>2</td></row>
 		<row><td>JRE 1.5</td><td>&lt;PATH_TO_JRE15_FILES&gt;</td><td>1</td><td>*.*</td><td/><td>2</td></row>
 		<row><td>Java Service Manager</td><td>&lt;PATH_TO_WRAPPER_FILES&gt;</td><td>1</td><td>*.*</td><td/><td>2</td></row>
@@ -722,7 +718,6 @@
 		<row><td>PATH_TO_DATABASE_EDITOR_FILES</td><td>yukon\yukon-install\build\Database Editor</td><td/><td>2</td></row>
 		<row><td>PATH_TO_DATA_ROUTER_FILES</td><td>yukon\yukon-install\build\Foreign Data Router</td><td/><td>2</td></row>
 		<row><td>PATH_TO_ESUB_EDITOR_FILES</td><td>yukon\yukon-install\build\ESub Editor</td><td/><td>2</td></row>
-		<row><td>PATH_TO_HELP_FILES</td><td>yukon\yukon-install\build\Help</td><td/><td>2</td></row>
 		<row><td>PATH_TO_INITIAL_SERV_CONF_FILES</td><td>yukon\yukon-install\build\Initial Server Config</td><td/><td>2</td></row>
 		<row><td>PATH_TO_JAVA BACKUP_FILES</td><td>Z:\Java backup</td><td/><td>2</td></row>
 		<row><td>PATH_TO_JAVA_SERVICE_MAN_FILES</td><td>yukon\yukon-install\build\Java Service Manager</td><td/><td>2</td></row>
