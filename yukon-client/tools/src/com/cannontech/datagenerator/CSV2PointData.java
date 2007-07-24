@@ -80,10 +80,10 @@ public class CSV2PointData {
             
             try {
                 PointData pData = new PointData();
-                pData.setId(Integer.parseInt(split[0]));
-                pData.setTime(Timestamp.valueOf(split[1]));
-                pData.setQuality(Long.parseLong(split[2]));
-                pData.setValue(Double.parseDouble(split[3]));
+                pData.setId(Integer.parseInt(split[0].trim()));
+                pData.setTime(Timestamp.valueOf(split[1].trim()));
+                pData.setQuality(Long.parseLong(split[2].trim()));
+                pData.setValue(Double.parseDouble(split[3].trim()));
                 list.add(pData);
             } catch (Exception e) {
                 log.error("invalid line: " + line, e);
