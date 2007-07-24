@@ -69,7 +69,7 @@ public class CSV2PointData {
             
         String line;
         while ((line = in.readLine()) != null) {
-            if (line.startsWith("#")) continue;
+            if (line.startsWith("#") || line.matches("^\\s*$")) continue;
                 
             String[] split = line.split(",");
                 
