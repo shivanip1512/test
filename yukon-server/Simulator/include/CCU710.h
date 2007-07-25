@@ -23,6 +23,8 @@ class CCU710{
 	public:
 		//Default constructor
 		CCU710();
+		//  Constructor with socket needed by 710
+		void setSocket(CTINEXUS * Socket);
 		//Destructor
 
 		//Send the message back to porter

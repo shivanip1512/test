@@ -22,7 +22,7 @@ class Message{
 		// Default constructor
 		Message();
 		// Constructor to build a new Message
-		void CreateMessage(char MsgType, unsigned char Data[]);
+		void CreateMessage(char MsgType, unsigned char Data[], unsigned char Address = 0x00);
 		// Destructor
 
 		// This is used to insert words into incoming messages 
@@ -31,6 +31,8 @@ class Message{
 		void InsertWord(EmetconWord oneWord);
 		// Function to read the data in the Message to the screen
 		void ReadMessage();
+		//  Figure out the IDLC protocol
+		int DecodeIDLC();
 		//  Figure out what the preamble says
 		int DecodePreamble();
 		//  Determine what kind of word it is
@@ -45,6 +47,8 @@ class Message{
 		int getBytesToFollow();
 		//  Returns the type of message
 		char getMessageType();
+		//  Returns the type of message
+		unsigned char getAddress();
 		//  Returns the size of the message
 		int getMessageSize();
 		//  Returns the number type of word in the message

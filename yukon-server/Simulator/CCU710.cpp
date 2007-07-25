@@ -30,6 +30,11 @@ CCU710::CCU710(){
 	newSocket = new CTINEXUS();
 }
 
+void CCU710::setSocket(CTINEXUS * Socket){
+	//WSAStartup(MAKEWORD (1,1), &wsaData);
+	newSocket = Socket;
+}
+
 //Listen for and store an incoming message
 void CCU710::ReceiveMsg(){
 	unsigned char ReadBuffer[300];

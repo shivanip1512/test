@@ -15,6 +15,12 @@
 #include "Message.h"
 #include "stdio.h"
 
+#define INPUT    '0'
+#define RESETREQ '1'
+#define RESETACK '2'
+#define GENREQ   '3'
+#define GENREP   '4'
+
 namespace std {}
 
 /**************************************************
@@ -37,35 +43,98 @@ Message::Message(){
 }
 	
 // Constructor to build a new Message 
-void Message::CreateMessage(char MsgType, unsigned char Data[]){
+void Message::CreateMessage(char MsgType, unsigned char Data[], unsigned char Address){
 	MessageType = MsgType;
-	if(MessageType == 'i') {
+	if(MessageType == INPUT) {
 		MessageData[0] = Data[0];
 		MessageData[1] = Data[1];
 		MessageData[2] = Data[2];
-		IndexOfEnd = 3;
-		BytesToFollow = DecodePreamble();
-		//std::cout<<"MessageType: "<<MessageType<<std::endl;
+		MessageData[3] = Data[3];
+		IndexOfEnd = 4;
+		BytesToFollow = DecodeIDLC();
 	}
-	else if(MessageType == 'c') {
-		CreatePreamble();
-		EmetconWord newWord;
-		newWord.CreateWord('c', Data);
-		InsertWord(newWord);
-	}
-	else if(MessageType == 'd') {
-		CreatePreamble();
-		EmetconWord newWord;
-		newWord.CreateWord('d', Data);
-		InsertWord(newWord);
-	}
-	else if(MessageType == 'p') {
-		MessageData[0] = 0xc3;
-		MessageData[1] = 0xc3;
-		MessageData[2] = 0xf5;
-		MessageData[3] = 0x55;
+	else if(MessageType == RESETACK) {
+		MessageData[0] = 0x7e;
+		MessageData[1] = Address;   //  slave address
+		MessageData[2] = 0x73;
+		MessageData[3] = 0x00;   //  insert CRC code
 		IndexOfEnd = 4;
 	}
+	else if(MessageType == GENREP) {
+		MessageData[0] = 0x7e;
+		MessageData[1] = Address;   //  slave address
+		MessageData[2] = 0x73;
+		MessageData[3] = 0x00;
+		MessageData[4] = 0x00;
+		MessageData[5] = 0x00;
+		MessageData[6] = 0x00;
+		MessageData[7] = 0x00;
+		MessageData[8] = 0x00;
+		MessageData[9] = 0x00;
+		MessageData[10] = 0x00;
+		MessageData[11] = 0x00;
+		MessageData[12] = 0x00;
+		MessageData[13] = 0x00;
+		MessageData[14] = 0x00;
+		MessageData[15] = 0x00;
+		MessageData[16] = 0x00;
+		MessageData[17] = 0x00;
+		MessageData[18] = 0x00;   //  insert CRC code
+		IndexOfEnd = 9;
+	}
+}
+
+int Message::DecodeIDLC(){
+	char bytesToFollow = 0;
+	if((MessageData[0] & 0x7e) == 0x7e){
+		//  IDLC LAYER 2 Asynchronous Link Control
+			if((MessageData[2] & 0x1f)== 0x1f){
+			//  Reset Request
+				MessageType = RESETREQ;
+				bytesToFollow = 1;
+			}
+			if((MessageData[2] & 0x01) == 0x00){
+			//  General Request
+				MessageType = GENREQ;
+				bytesToFollow = 5;
+			}
+	}
+	return bytesToFollow;
+}
+
+
+int Message::DecodePreamble(){
+	char bytesToFollow = 0;
+	if((MessageData[0] & 0x4) == 0x4){
+		//  Feeder operation specified
+		MessageType = 'f';
+			if((MessageData[2] & 0x7)== 0x7){
+				bytesToFollow = 7;
+			}
+			else if((MessageData[2] & 0xe)== 0xe){
+				bytesToFollow = 14;
+			}
+	}
+	else if((MessageData[0]==0x53) && (MessageData[1]==0xf5) && (MessageData[2]==0x55)) {
+		// CCU710 ping
+		MessageType = 'p';
+		bytesToFollow = 0;
+	}
+	else if((MessageData[0]==0x47) && (MessageData[1]==0x30) && (MessageData[2]==0x8e)) {
+		// CCU710 ping
+		MessageType = '1';
+		bytesToFollow = 14;
+	}
+	else if((MessageData[0]==0x47) && (MessageData[1]==0x30) && (MessageData[2]==0x95)) {
+		// CCU710 ping
+		MessageType = '2';
+		bytesToFollow = 21;
+	}
+	if(MessageData[1]== 0x0){
+	}
+	if(MessageData[2]== 0x0){
+	}
+	return bytesToFollow;
 }
 
 //  This is used to insert words into incoming messages
@@ -86,7 +155,6 @@ void Message::InsertWord(char WordType, unsigned char Data[]){
 			}
 		}
 	}
-	//std::cout<<"WordType: "<<WordType<<std::endl;
 
 	EmetconWord oneWord;
 	oneWord.CreateWord(WordType, Data, WordFunction);
@@ -144,46 +212,6 @@ void Message::InsertWord(EmetconWord oneWord){
 		MessageData[Here + 9] = Words[0][6];
 		IndexOfEnd+=7;
 	}
-	//else 
-		//std::cout<<"Could not insert word of type: "<<Words[0][0]<<std::endl;	
-}
-
-int Message::DecodePreamble(){
-	char bytesToFollow = 0;
-	if((MessageData[0] & 0x4) == 0x4){
-		//  Feeder operation specified
-		MessageType = 'f';
-			if((MessageData[2] & 0x7)== 0x7){
-				bytesToFollow = 7;
-			}
-			else if((MessageData[2] & 0xe)== 0xe){
-				bytesToFollow = 14;
-			}
-			//else
-				//std::cout<<"Unknown number of characters to be transmitted"<<std::endl;
-	}
-	else if((MessageData[0]==0x53) && (MessageData[1]==0xf5) && (MessageData[2]==0x55)) {
-		// CCU710 ping
-		MessageType = 'p';
-		bytesToFollow = 0;
-	}
-	else if((MessageData[0]==0x47) && (MessageData[1]==0x30) && (MessageData[2]==0x8e)) {
-		// CCU710 ping
-		MessageType = '1';
-		bytesToFollow = 14;
-	}
-	else if((MessageData[0]==0x47) && (MessageData[1]==0x30) && (MessageData[2]==0x95)) {
-		// CCU710 ping
-		MessageType = '2';
-		bytesToFollow = 21;
-	}
-	//else
-		//std::cout<<"Unknown operation specified"<<std::endl;
-	if(MessageData[1]== 0x0){
-	}
-	if(MessageData[2]== 0x0){
-	}
-	return bytesToFollow;
 }
 
 int Message::DecodeWTF(char WordType, unsigned char Data[]){
@@ -204,9 +232,6 @@ char Message::DecodeDefinition(){
 	if((MessageData[3] & 0xa0) == 0xa0){
 		WordType = 'b';
 	}
-	//else
-		//std::cout<<"Unknown word defined: "<< string(CtiNumStr(MessageData[3]).xhex())<<std::endl;
-
 	return WordType;
 }
 
@@ -263,6 +288,10 @@ void Message::CreatePreamble(){
 	MessageData[1] = 0xc3;
 	MessageData[2] = 0x82;
 	IndexOfEnd += 3;
+}
+
+unsigned char Message::getAddress(){
+	return MessageData[1];
 }
 
 int Message::getBytesToFollow(){
