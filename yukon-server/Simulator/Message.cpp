@@ -85,7 +85,7 @@ void Message::CreateMessage(char MsgType, unsigned char Data[], unsigned char Ad
 }
 
 int Message::DecodeIDLC(){
-	char bytesToFollow = 0;
+	int bytesToFollow = 0;
 	if((MessageData[0] & 0x7e) == 0x7e){
 		//  IDLC LAYER 2 Asynchronous Link Control
 			if((MessageData[2] & 0x1f)== 0x1f){
@@ -96,7 +96,7 @@ int Message::DecodeIDLC(){
 			if((MessageData[2] & 0x01) == 0x00){
 			//  General Request
 				MessageType = GENREQ;
-				bytesToFollow = 5;
+				bytesToFollow = (MessageData[3] + 0x02);  
 			}
 	}
 	return bytesToFollow;

@@ -58,6 +58,7 @@ void CCU711::ReceiveMsg(){
 	//determine the type of message
 	inMsg.CreateMessage(INPUT,ReadBuffer);
 	bytesRead=0;
+
 	while(bytesRead !=inMsg.getBytesToFollow()) {
 		newSocket->CTINexusRead(ReadBuffer,inMsg.getBytesToFollow(), &bytesRead, 15);
 	}
@@ -111,7 +112,6 @@ void CCU711::CreateMsg(){
 		newMessage.CreateMessage(GENREP, someData, Address);
 		outgoingMsg[0]=newMessage;
 	}
-	CTISleep(1000);
 }
 
 //Send the message back to porter
