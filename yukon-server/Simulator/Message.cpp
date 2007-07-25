@@ -14,6 +14,9 @@
 *****************************************************************************/
 #include "Message.h"
 #include "stdio.h"
+#include "cticalls.h"
+#include "cti_asmc.h"
+
 
 #define INPUT    '0'
 #define RESETREQ '1'
@@ -57,16 +60,16 @@ void Message::CreateMessage(char MsgType, unsigned char Data[], unsigned char Ad
 		MessageData[0] = 0x7e;
 		MessageData[1] = Address;   //  slave address
 		MessageData[2] = 0x73;
-		MessageData[3] = 0x00;   //  insert CRC code
+		MessageData[3] = InsertCRC(4);   //  insert CRC code
 		IndexOfEnd = 4;
 	}
 	else if(MessageType == GENREP) {
 		MessageData[0] = 0x7e;
 		MessageData[1] = Address;   //  slave address
-		MessageData[2] = 0x73;
-		MessageData[3] = 0x00;
-		MessageData[4] = 0x00;
-		MessageData[5] = 0x00;
+		MessageData[2] = 0xd8;      //  control
+		MessageData[3] = 0x0c;//e;      // # of bytes to follow 
+		MessageData[4] = 0x02;      // SRC/DES
+		MessageData[5] = 0x26;      // Echo of command received
 		MessageData[6] = 0x00;
 		MessageData[7] = 0x00;
 		MessageData[8] = 0x00;
@@ -79,8 +82,8 @@ void Message::CreateMessage(char MsgType, unsigned char Data[], unsigned char Ad
 		MessageData[15] = 0x00;
 		MessageData[16] = 0x00;
 		MessageData[17] = 0x00;
-		MessageData[18] = 0x00;   //  insert CRC code
-		IndexOfEnd = 9;
+		MessageData[18] = InsertCRC(19);   //  insert CRC code
+		IndexOfEnd = 19;
 	}
 }
 
@@ -214,6 +217,7 @@ void Message::InsertWord(EmetconWord oneWord){
 	}
 }
 
+
 int Message::DecodeWTF(char WordType, unsigned char Data[]){
 	if((Data[4] & 0x10) == 0x10) {
 		return 1;
@@ -288,6 +292,16 @@ void Message::CreatePreamble(){
 	MessageData[1] = 0xc3;
 	MessageData[2] = 0x82;
 	IndexOfEnd += 3;
+}
+
+unsigned char Message::InsertCRC(unsigned long Length){
+	unsigned char CRC;
+	unsigned short uCRC;
+	// ptr to UCHAR and USHORT
+	unsigned char * Message = MessageData;
+	uCRC = CrcCalc_C (Message, Length);
+	CRC = uCRC;
+	return CRC;
 }
 
 unsigned char Message::getAddress(){
