@@ -67,7 +67,7 @@ void Message::CreateMessage(char MsgType, unsigned char Data[], unsigned char Ad
 		MessageData[0] = 0x7e;
 		MessageData[1] = Address;   //  slave address
 		MessageData[2] = 0xd8;      //  control
-		MessageData[3] = 0x0c;//e;      // # of bytes to follow 
+		MessageData[3] = 0x0e;      // # of bytes to follow minus two
 		MessageData[4] = 0x02;      // SRC/DES
 		MessageData[5] = 0x26;      // Echo of command received
 		MessageData[6] = 0x00;
@@ -82,8 +82,10 @@ void Message::CreateMessage(char MsgType, unsigned char Data[], unsigned char Ad
 		MessageData[15] = 0x00;
 		MessageData[16] = 0x00;
 		MessageData[17] = 0x00;
-		MessageData[18] = InsertCRC(19);   //  insert CRC code
-		IndexOfEnd = 19;
+		unsigned short CRC = (InsertCRC(20));   //  insert CRC code
+		MessageData[18] = HIBYTE (CRC);
+		MessageData[19] = LOBYTE (CRC);
+		IndexOfEnd = 20;
 	}
 }
 
@@ -294,13 +296,11 @@ void Message::CreatePreamble(){
 	IndexOfEnd += 3;
 }
 
-unsigned char Message::InsertCRC(unsigned long Length){
-	unsigned char CRC;
-	unsigned short uCRC;
+unsigned short Message::InsertCRC(unsigned long Length){
+	unsigned short CRC;
 	// ptr to UCHAR and USHORT
 	unsigned char * Message = MessageData;
-	uCRC = CrcCalc_C (Message, Length);
-	CRC = uCRC;
+	CRC = SCrcCalc_C (Message, Length);
 	return CRC;
 }
 

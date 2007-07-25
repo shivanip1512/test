@@ -42,7 +42,7 @@ class Message{
 		//  Determine what function the word specifies
 		char DecodeFunction(char WordType, unsigned char Data[]);
 		//  Determine and insert the CRC code
-		unsigned char InsertCRC(unsigned long Length);
+		unsigned short InsertCRC(unsigned long Length);
 		//  Returns a copy of the message array
 		unsigned char * getMessageArray();
 		//  Returns the number of bytes left to read in the message
