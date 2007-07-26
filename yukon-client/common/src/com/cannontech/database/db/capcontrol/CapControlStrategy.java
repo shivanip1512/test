@@ -23,7 +23,7 @@ public class CapControlStrategy extends com.cannontech.database.db.DBPersistent 
 	private Integer maxDailyOperation = new Integer(0);
 	private Character maxOperationDisableFlag = new Character('N');
 	private Integer peakStartTime = new Integer(0);
-	private Integer peakStopTime = new Integer(86340);  //23:59
+	private Integer peakStopTime = new Integer(86400);  //24:00
 	private Integer controlInterval = new Integer(900);
 	private Integer minResponseTime = new Integer(900);
 	private Integer minConfirmPercent = new Integer(75);
@@ -43,8 +43,8 @@ public class CapControlStrategy extends com.cannontech.database.db.DBPersistent 
 	private Double offpkVarLead = new Double(0.0);
 	private Double offpkVarLag = new Double(0.0);
 
-	private Double pkPFPoint = new Double (0.0);
-	private Double offPkPFPoint = new Double (0.0);
+	private Double pkPFPoint = new Double (0.1);
+	private Double offPkPFPoint = new Double (0.1);
     
     private String integrateFlag = "N";
     private Integer integratePeriod = new Integer (0);

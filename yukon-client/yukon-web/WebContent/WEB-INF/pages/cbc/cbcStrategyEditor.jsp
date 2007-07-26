@@ -33,9 +33,9 @@
 			if($("offpeak_lower"))
 				$("offpeak_lower").value = "0.0";
 			if($("Target_Peak_PF_Point"))
-				$("Target_Peak_PF_Point").value = "0.0";
+				$("Target_Peak_PF_Point").value = "100.0";
 			if($("Target_OffPeak_PF_point"))			
-				$("Target_OffPeak_PF_point").value = "0.0";
+				$("Target_OffPeak_PF_point").value = "100.0";
 			
 			$("controlAlgoToggle").value = "false";
 		}
