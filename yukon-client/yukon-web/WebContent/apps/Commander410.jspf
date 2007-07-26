@@ -19,7 +19,15 @@ if( request.getParameter("clearids") != null)
 YC_BEAN.setDeviceID(deviceID);
 %>
 
-<SCRIPT language="JavaScript">
+<cti:breadCrumbs>
+    <cti:crumbLink url="/operator/Operations.jsp" title="Operations Home"  />
+    <cti:crumbLink url="/spring/csr/search" title="Device Selection"  />
+    <cti:crumbLink url="/spring/csr/home?deviceId=${deviceId}" title="Device Detail"  />
+    &gt; TOU &amp; Voltage
+</cti:breadCrumbs>
+
+
+<script type="text/javascript">
 
 function updatePrevious()
 {
@@ -103,8 +111,9 @@ function setCommand(cmd)
 {
     document.commandForm.command.value = cmd;
 }
-</SCRIPT>
+</script>
 
+<div style="width: 70%; margin: auto">
 
     <div class="commanderHeader">
     	MCT 400series - Control Commands:&nbsp;&nbsp;<%= liteYukonPao.getPaoName()%>
@@ -502,37 +511,8 @@ function setCommand(cmd)
 <%
 	}
 %>           
-        <table width="100%" border="0" cellspacing="0" cellpadding="0" align="center" class="TableCell">
-			<tr>
-				<td height="10"></td>
-			</tr>
-            <tr> 
-            	<td align="center" rowspan="3"><input type="reset" name="refresh" value="Refresh" onClick="window.location.reload()"></td>
-<% 
-	String gotoLink = "";
-	if (request.getParameter("InvNo") != null){ //we came from the Customer Account page
-		gotoLink =  request.getContextPath()+"/operator/Consumer/CommandInv.jsp?InvNo="+invNo+"&manual&command=null";
-	} else {
-		gotoLink = request.getContextPath()+"/apps/CommandDevice.jsp?deviceID="+deviceID+"&manual&command=null";
-	}
-%>
-            	<td class="bottomLink"><a href='<%=gotoLink%>' name="manualCommander"  class="Link1">Commander: Manual</a></td>
-			</tr> 
-            <tr>
-<%
-	if (request.getParameter("InvNo") != null) {  //we came from the Customer Account page
-		gotoLink = request.getContextPath()+"/operator/Consumer/CommandInv.jsp?InvNo="+invNo+"&lp";
-	} else {
-		gotoLink = request.getContextPath()+"/apps/CommandDevice.jsp?deviceID="+deviceID+"&lp";
-	}
-%>
-				<td class="bottomLink"><a href='<%= gotoLink%>' name="advCommander4XX"  class="Link1">Commander: MCT400series Profile</a></td>
-			</tr>               
-            <tr>
-            	<td class="bottomLink">
-                	<tags:longLoadProfile styleClass="Link1" deviceId="${deviceId}">Long Load Profile</tags:longLoadProfile>
-                </td>
-            </tr>               
-		</table>
+
 	</form>
     <a href="<%=referrer%>&clearids" class="link">.</a>
+    
+</div>

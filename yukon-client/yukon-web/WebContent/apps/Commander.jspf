@@ -161,7 +161,7 @@ div.scroll { font-size: 12px;
 	if (request.getParameter("InvNo") != null){ //we came from the Customer Account page
 		gotoLink =  request.getContextPath()+"/operator/Consumer/CommandInv.jsp?InvNo="+invNo+"&command=null";
 	} else {
-		gotoLink = request.getContextPath()+"/apps/CommandDevice.jsp?deviceID="+deviceID+"&command=null";
+		gotoLink = request.getContextPath()+"/apps/CommandDevice2.jsp?deviceID="+deviceID+"&command=null";
 	}
     if (isMCT4XX) {
 %>
@@ -173,7 +173,7 @@ div.scroll { font-size: 12px;
 	if (request.getParameter("InvNo") != null) {  //we came from the Customer Account page
     		gotoLink = request.getContextPath()+"/operator/Consumer/CommandInv.jsp?InvNo="+invNo+"&lp";
 	} else {
-		gotoLink = request.getContextPath()+"/apps/CommandDevice.jsp?deviceID="+deviceID+"&lp";
+		gotoLink = request.getContextPath()+"/apps/CommandDevice2.jsp?deviceID="+deviceID+"&lp";
 	}
 	if (isMCT4XX ) {
 %>

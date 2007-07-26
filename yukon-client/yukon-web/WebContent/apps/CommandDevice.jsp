@@ -58,14 +58,7 @@
     if (deviceID >= 0)
         liteYukonPao = DaoFactory.getPaoDao().getLiteYukonPAO(deviceID);
 	
-	boolean manual = false;
-	if( request.getParameter("manual") != null) {	//Force going to the Commander page instead of a page based on the DeviceType
-		manual = true;
-	}
-	boolean lp = false;
-	if( request.getParameter("lp") != null) {	//Force going to the Load Profile
-		lp = true;
-	}
+	boolean manual = true;
 	boolean isMCT4XX = liteYukonPao!=null && com.cannontech.database.data.device.DeviceTypesFuncs.isMCT4XX(liteYukonPao.getType());
 	if( !isMCT4XX ) {	//MUST BE Manual...force it
 		manual = true;
@@ -89,7 +82,7 @@
 	}
 %>
 
-<cti:standardPage title="Energy Services Operations Center" module="commander">
+<cti:standardPage title="Energy Services Operations Center" module="commanderSelect">
 	<cti:standardMenu/>
 
 	<script  language="JavaScript" src="../JavaScript/calendar.js"></script>
@@ -107,9 +100,6 @@
     if(manual) {
     	redirect = redirect + "&manual";
     }
-    if(lp) {
-    	redirect = redirect + "&lp";
-    }
     String referrer = request.getRequestURI()+ "?deviceID=" + deviceID;
     String pageName = "CommandDevice.jsp?deviceID=" + deviceID;
     if( serialType.length() > 0 ) {
@@ -120,7 +110,6 @@
 %>
 	
 	<c:set var="manual" scope="page" value="<%=manual%>"/>
-	<c:set var="lp" scope="page" value="<%=lp%>"/>
 	<c:set var="deviceId" scope="page" value="<%=deviceID%>"/>
 	<c:set var="isMCT4XX" scope="page" value="<%=isMCT4XX%>"/>
 	<c:set var="serialType" scope="page" value="<%=serialType%>"/>
@@ -155,67 +144,15 @@
 				</c:otherwise>
 			</c:choose>
 
-			<!-- MCT410 Custom side menu section -->
-			<c:choose>
-				<c:when test="${!(lp || manual)}">
-					<div class="selected sideMenuLink">MCT410 Custom</div>
-				</c:when>
-				<c:when test="${isMCT4XX}">
-					<c:choose>
-						<c:when test="${!empty param.InvNo}">
-							<c:set var="link" scope="page" value="${pageContext.request.contextPath}/operator/Consumer/CommandInv.jsp?InvNo=${param.InvNo}&command=null"/> 
-						</c:when>
-						<c:otherwise>
-							<c:set var="link" scope="page" value="${pageContext.request.contextPath}/apps/CommandDevice.jsp?deviceID=${deviceId}&command=null"/> 
-						</c:otherwise>
-					</c:choose>
-					<div class="sideMenuLink">
-						<a href="${link}" class="Link1">MCT410 Custom</a>
-					</div>
-				</c:when>
-				<c:otherwise>
-					<div class="sideMenuLink disabled">
-						MCT410 Custom
-					</div>
-				</c:otherwise>
-			</c:choose>
-			<!-- MCT410 Profile side menu section -->
-			<c:choose>
-				<c:when test="${lp}">
-					<div class="sideMenuLink selected">MCT410 Profile</div>
-				</c:when>
-				<c:when test="${isMCT4XX}">
-					<c:choose>
-						<c:when test="${!empty param.InvNo}">
-							<c:set var="link" scope="page" value="${pageContext.request.contextPath}/operator/Consumer/CommandInv.jsp?InvNo=${param.InvNo}&lp"/> 
-						</c:when>
-						<c:otherwise>
-							<c:set var="link" scope="page" value="${pageContext.request.contextPath}/apps/CommandDevice.jsp?deviceID=${deviceId}&lp"/> 
-						</c:otherwise>
-					</c:choose>
-					<div class="sideMenuLink">
-						<a href="${link}" class="Link1">MCT410 Profile</a>
-					</div>
-				</c:when>
-				<c:otherwise>
-					<div class="sideMenuLink disabled">
-						MCT410 Profile
-					</div>
-				</c:otherwise>
-			</c:choose>
-			
-			<!-- Select Device link -->
-			<div class="sideMenuLink">
-				<a href="SelectDevice.jsp" class="Link1">Select Device</a>
-			</div>
-
+			<c:if test="${isMCT4XX}">
 			<div class="sideMenuLink">
 						<c:url var="devDetailsUrl" value="/spring/csr/home">
 							<c:param name="deviceId" value="${deviceId}" />
 						</c:url>
 						<a href="${devDetailsUrl}" class="Link1">Device Details</a>
 			</div>
-			
+			</c:if>
+      
 			<div class="horizontalRule" ></div>
 		
 			<!-- Devices side menu section -->
@@ -440,17 +377,7 @@
 	
 		<div class="commandInclude">
 		
-			<c:choose>
-				<c:when test="${lp}">
-					<%@ include file="AdvancedCommander410.jspf"%>
-				</c:when>
-				<c:when test="${isMCT4XX && !manual}">
-					<%@ include file="Commander410.jspf"%>
-				</c:when>
-				<c:otherwise>
-					<%@ include file="Commander.jspf"%>
-				</c:otherwise>
-			</c:choose>
+		<%@ include file="Commander.jspf"%>
 		
 		</div>
 	</div>

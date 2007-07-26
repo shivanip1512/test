@@ -47,10 +47,24 @@
 					</c:otherwise>
 				</c:choose>
 		        <cti:checkRole role="CommanderRole.ROLEID">
+						<c:url var="profileUrl" value="/apps/CommandDevice2.jsp">
+							<c:param name="deviceID" value="${deviceId}" />
+							<c:param name="lp" value="" />
+						</c:url>
+						<a href="${profileUrl}">Profile</a><br/>
+            
+						<c:url var="voltageTouUrl" value="/apps/CommandDevice2.jsp">
+							<c:param name="deviceID" value="${deviceId}" />
+							<c:param name="command" value="null" />
+						</c:url>
+                        <a href="${voltageTouUrl}">Voltage &amp; TOU</a><br>
+                        
 						<c:url var="commanderUrl" value="/apps/CommandDevice.jsp">
 							<c:param name="deviceID" value="${deviceId}" />
+							<c:param name="manual" value="" />
+							<c:param name="command" value="null" />
 						</c:url>
-						<a href="${commanderUrl}">Manual Commander</a><br/>
+                        <a href="${commanderUrl}">Manual Commander</a><br>
 		        </cti:checkRole>
 			</cti:titledContainer>
 

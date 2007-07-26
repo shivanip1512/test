@@ -313,6 +313,11 @@
   </module>
 
   <module name="commander">
+    <toplinks>
+      <option name="Device Selection">
+        <link>/apps/SelectDevice.jsp</link>
+      </option>
+    </toplinks>
     <skin name="standard"/>
     <css file="/WebConfig/yukon/styles/commanderStyles.css"/>
     <css file="/WebConfig/yukon/Base.css"/>

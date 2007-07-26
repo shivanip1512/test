@@ -1,3 +1,4 @@
+<%@ taglib prefix="tags" tagdir="/WEB-INF/tags" %>
 <%@ page import="com.cannontech.database.data.lite.LitePoint"%>
 <%@ page import="com.cannontech.core.dao.DaoFactory" %>
 <%@ page import="java.util.List" %>
@@ -35,7 +36,15 @@
 	}
 %>
 
-<SCRIPT language="JavaScript">
+<cti:breadCrumbs>
+    <cti:crumbLink url="/operator/Operations.jsp" title="Operations Home"  />
+    <cti:crumbLink url="/spring/csr/search" title="Device Selection"  />
+    <cti:crumbLink url="/spring/csr/home?deviceId=${deviceId}" title="Device Detail"  />
+    &gt; Profile
+</cti:breadCrumbs>
+
+
+<script type="text/javascript">
 
 	function StopPropagation(e)
 	{
@@ -96,7 +105,9 @@
 		document.getElementById('LoadRPH1ID').disabled = true;
 		document.getElementById('LoadRPH4ID').disabled = true;
 	}
-</SCRIPT>
+</script>
+
+<div style="width: 70%; margin: auto">
 
 	<div class="commanderHeader">
     	MCT 400series - Advanced Control Commands:&nbsp;&nbsp;<%= liteYukonPao.getPaoName()%>
@@ -461,39 +472,17 @@ for (int i = 0; i < 60; i=i+5) {
 			</jsp:body>
 		</cti:titledContainer>
 			  	
+        <br>
        	<table height="20" width="95%" align="center" border="0" cellspacing="0" cellpadding="0" class="TableCell">
-   	    	<tr>
-   	    		<td height="10"></td>
-   	    	</tr>
   			<tr> 
- 				<td align="center" rowspan="2">
+ 				<td align="center">
  					<input type="reset" name="refresh" value="Refresh" onClick="window.location.reload()">
  				</td>
-<% 
-	String gotoLink = "";
-	if (request.getParameter("InvNo") != null){	//we came from the Customer Account page
-      	gotoLink =  request.getContextPath()+"/operator/Consumer/CommandInv.jsp?InvNo="+invNo+"&manual&command=null";
-    } else {
-      	gotoLink = request.getContextPath()+"/apps/CommandDevice.jsp?deviceID="+deviceID+"&manual&command=null";
-    }
-%>
-				<td class="bottomLink"><a href='<%=gotoLink%>' name="manualCommander"  class="Link1">Commander: Manual</a></td>
-    		</tr>	
-			<tr>
-<%
-	if (request.getParameter("InvNo") != null){	//we came from the Customer Account page
-     	gotoLink =  request.getContextPath()+"/operator/Consumer/CommandInv.jsp?InvNo="+invNo+"&command=null";
-   	} else {
-     	gotoLink = request.getContextPath()+"/apps/CommandDevice.jsp?deviceID="+deviceID+"&command=null";
-   	}
-	if ((lp || manual ) && isMCT4XX) {
-%>
-				<td class="bottomLink">
-					<a href='<%= gotoLink%>' name="advCommander4XX"  class="Link1">Commander: MCT400series Custom</a>
-				</td>
-<%
-	}
-%>
-           	</tr>			          
+              <td class="bottomLink">
+                  <tags:longLoadProfile styleClass="Link1" deviceId="${deviceId}">Schedule Load Profile Request</tags:longLoadProfile>
+                </td>
+            </tr>               
 	  	</table>								  
 	</form>
+  
+</div>
