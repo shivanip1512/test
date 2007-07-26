@@ -5,9 +5,6 @@ import java.sql.SQLException;
 import java.util.ArrayList;
 import java.util.List;
 
-import javax.xml.namespace.QName;
-
-import org.apache.axis.message.MessageElement;
 import org.springframework.dao.IncorrectResultSizeDataAccessException;
 import org.springframework.jdbc.core.JdbcOperations;
 import org.springframework.jdbc.core.RowMapper;
@@ -22,7 +19,6 @@ import com.cannontech.database.db.device.DeviceMeterGroup;
 import com.cannontech.database.db.pao.YukonPAObject;
 import com.cannontech.multispeak.client.MultispeakDefines;
 import com.cannontech.multispeak.dao.MspMeterDao;
-import com.cannontech.multispeak.service.Extensions;
 import com.cannontech.multispeak.service.Meter;
 import com.cannontech.multispeak.service.Nameplate;
 import com.cannontech.multispeak.service.UtilityInfo;
@@ -56,7 +52,7 @@ public final class MspMeterDaoImpl implements MspMeterDao
             if( lastReceived == null)
             	lastReceived = "";
 
-            String sql = "SELECT " + uniqueKey + ", COLLECTIONGROUP, BILLINGGROUP, PAOBJECTID, ADDRESS, TYPE " +
+            String sql = "SELECT " + uniqueKey + ", PAOBJECTID, ADDRESS, TYPE " +
                          " FROM " + DeviceMeterGroup.TABLE_NAME + " dmg, " + 
                          YukonPAObject.TABLE_NAME + " pao, " +
                          DeviceCarrierSettings.TABLE_NAME + " dcs " +
@@ -81,7 +77,7 @@ public final class MspMeterDaoImpl implements MspMeterDao
             if( lastReceived == null)
             	lastReceived = "";
 
-            String sql = "SELECT " + uniqueKey + ", COLLECTIONGROUP, BILLINGGROUP, PAOBJECTID, ADDRESS, TYPE, DISCONNECTADDRESS " +
+            String sql = "SELECT " + uniqueKey + ", PAOBJECTID, ADDRESS, TYPE, DISCONNECTADDRESS " +
             			 " FROM " + DeviceMeterGroup.TABLE_NAME + " dmg, " +
             			 DeviceCarrierSettings.TABLE_NAME + " dcs, " +
             			 YukonPAObject.TABLE_NAME + " pao left outer join " + DeviceMCT400Series.TABLE_NAME + " mct on pao.paobjectid = mct.deviceid " +
@@ -90,9 +86,7 @@ public final class MspMeterDaoImpl implements MspMeterDao
             			 " AND ( PAO.TYPE in ('" + DeviceTypes.STRING_MCT_213[0] + "', " +
                        			             "'" + DeviceTypes.STRING_MCT_310ID[0] + "', " +
                        			             "'" + DeviceTypes.STRING_MCT_310IDL[0] + "') " +
-                               " OR ( PAO.TYPE in ('" + DeviceTypes.STRING_MCT_410CL[0] + "', " +
-                             					  "'" + DeviceTypes.STRING_MCT_410IL[0] + "') " +
-                             					  " AND DISCONNECTADDRESS IS NOT NULL) ) " +
+                               " OR ( DISCONNECTADDRESS IS NOT NULL) ) " +
                          " AND " + uniqueKey + " > ? ORDER BY " + uniqueKey; 
           
             List<Meter> mspMeters = new ArrayList<Meter>();
@@ -115,7 +109,7 @@ public final class MspMeterDaoImpl implements MspMeterDao
           if( key.toLowerCase().startsWith("device") || key.toLowerCase().startsWith("pao"))
               uniqueKey = "PAONAME"; 
 
-          String sql = "SELECT " + uniqueKey + ", COLLECTIONGROUP, BILLINGGROUP, PAOBJECTID, ADDRESS, TYPE, DISCONNECTADDRESS " +
+          String sql = "SELECT " + uniqueKey + ", PAOBJECTID, ADDRESS, TYPE, DISCONNECTADDRESS " +
                        " FROM " + DeviceMeterGroup.TABLE_NAME + " dmg, " +
                        DeviceCarrierSettings.TABLE_NAME + " dcs, " +
                        YukonPAObject.TABLE_NAME + " pao left outer join " + DeviceMCT400Series.TABLE_NAME + " mct on pao.paobjectid = mct.deviceid " +
@@ -142,32 +136,28 @@ public final class MspMeterDaoImpl implements MspMeterDao
     private static Meter createMspMeter( ResultSet rset) throws SQLException {
 
         String objectID = rset.getString(1).trim();
-        String collectionGroup = rset.getString(2).trim();
-        String billingGroup = rset.getString(3).trim();
-        int paobjectID = rset.getInt(4);
-        String address = rset.getString(5).trim();
-        String paoType = rset.getString(6).trim();
+        int paobjectID = rset.getInt(2);
+        String address = rset.getString(3).trim();
+        String paoType = rset.getString(4).trim();
 
-        Meter mspMeter = createMeter(objectID, paoType, collectionGroup, billingGroup, address);
+        Meter mspMeter = createMeter(objectID, paoType, address);
         return mspMeter;
     }
     
     private static Meter createMspCDMeter( ResultSet rset) throws SQLException {
 
         String objectID = rset.getString(1).trim();
-        String collectionGroup = rset.getString(2).trim();
-        String billingGroup = rset.getString(3).trim();
-        int paobjectID = rset.getInt(4);
-        String address = rset.getString(5).trim();
-        String paoType = rset.getString(6).trim();
-        String discAddress = rset.getString(7);
+        int paobjectID = rset.getInt(2);
+        String address = rset.getString(3).trim();
+        String paoType = rset.getString(4).trim();
+        String discAddress = rset.getString(5);
         
         if( (paoType.equalsIgnoreCase(DeviceTypes.STRING_MCT_410CL[0]) ||
             paoType.equalsIgnoreCase(DeviceTypes.STRING_MCT_410IL[0]) ) &&
             discAddress == null)
             return null;
         
-        Meter mspMeter = createMeter(objectID, paoType, collectionGroup, billingGroup, address);
+        Meter mspMeter = createMeter(objectID, paoType, address);
         return mspMeter;
     }
     
@@ -177,15 +167,15 @@ public final class MspMeterDaoImpl implements MspMeterDao
      * @param address The meter's transponderID (Physical Address)
      * @return
      */
-    public static Meter createMeter(String objectID, String paoType, String collectionGroup, String billingGroup, String address)
+    public static Meter createMeter(String objectID, String paoType, String address)
     {
         Meter meter = new Meter();
         meter.setObjectID(objectID);
 //      MessageElement element = new MessageElement(QName.valueOf("AMRMeterType"), paoType);
-        MessageElement element2 = new MessageElement(QName.valueOf("AMRRdgGrp"), collectionGroup);
-        Extensions ext = new Extensions();
-        ext.set_any(new MessageElement[]{element2});
-        meter.setExtensions(ext);
+//        MessageElement element2 = new MessageElement(QName.valueOf("AMRRdgGrp"), collectionGroup);
+//        Extensions ext = new Extensions();
+//        ext.set_any(new MessageElement[]{element2});
+//        meter.setExtensions(ext);
         meter.setMeterNo(objectID);
 //        meter.setSerialNumber( );    //Meter serial number. This is the original number assigned to the meter by the manufacturer.
         meter.setMeterType(paoType);  //Meter type/model.
