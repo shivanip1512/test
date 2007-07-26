@@ -179,7 +179,7 @@ public class ServerMACSConnection extends ClientConnection implements IMACSConne
 	 */
 	private void handleSchedule(Schedule sched) 
 	{
-		com.cannontech.clientutils.CTILogger.info("Received a schedule named " + sched.getScheduleName() + "/" + sched.getCategoryName() );
+		com.cannontech.clientutils.CTILogger.debug("Received a schedule named " + sched.getScheduleName() + "/" + sched.getCategoryName() );
 	
 		boolean found = false;
 		for( int j = 0; j < getSchedules().size(); j++ )
