@@ -28,6 +28,7 @@
 		 		<include name="**/*.au"/>
 			</fileset>
 		    <fileset dir="src">
+		 		<include name="**/*.tcl"/>
 		 		<include name="**/*.xml"/>
 			</fileset>
        	</jar>
