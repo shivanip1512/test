@@ -1010,7 +1010,7 @@ public Object getValue(Object val)
     String customGroup2 = (String)getCustomGroup2ComboBox().getSelectedItem();
     String customGroup3 = (String)getCustomGroup3ComboBox().getSelectedItem();
     
-    LiteYukonPAObject liteYuk = DaoFactory.getPaoDao().getLiteYukonPAO(((MCTBase) val).getPAObjectID());
+    LiteYukonPAObject liteYuk = DaoFactory.getPaoDao().getLiteYukonPAO(dmg.getDeviceID());
     YukonDevice yukonDevice = DaoFactory.getDeviceDao().getYukonDevice(liteYuk);
     hacker.setGroup(FixedDeviceGroups.BILLINGGROUP, yukonDevice, billingGroup);
     hacker.setGroup(FixedDeviceGroups.COLLECTIONGROUP, yukonDevice, cycleGroup);
@@ -1263,7 +1263,7 @@ public void setValue(Object val)
 	
 	getMeterNumberTextField().setText( dmg.getMeterNumber() );
     
-    LiteYukonPAObject liteYuk = DaoFactory.getPaoDao().getLiteYukonPAO(((MCTBase) val).getPAObjectID());
+    LiteYukonPAObject liteYuk = DaoFactory.getPaoDao().getLiteYukonPAO(dmg.getDeviceID());
     YukonDevice yukonDevice = DaoFactory.getDeviceDao().getYukonDevice(liteYuk);
     String billingGroup = hacker.getGroupForDevice(FixedDeviceGroups.BILLINGGROUP, yukonDevice);
     String alternateGroup = hacker.getGroupForDevice(FixedDeviceGroups.TESTCOLLECTIONGROUP, yukonDevice);
