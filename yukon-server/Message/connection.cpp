@@ -6,8 +6,8 @@
 *
 * PVCS KEYWORDS:
 * ARCHIVE      :  $Archive:   Z:/SOFTWAREARCHIVES/YUKON/MESSAGE/connection.cpp-arc  $
-* REVISION     :  $Revision: 1.41 $
-* DATE         :  $Date: 2007/06/25 18:57:56 $
+* REVISION     :  $Revision: 1.42 $
+* DATE         :  $Date: 2007/07/26 19:01:51 $
 *
 * Copyright (c) 1999, 2000, 2001 Cannon Technologies Inc. All rights reserved.
 *-----------------------------------------------------------------------------*/
@@ -806,7 +806,7 @@ void CtiConnection::ShutdownConnection()
                 }
             }
 
-            if( inQueue && inQueue->entries() != 0 )
+            if( inQueue && _localQueueAlloc && inQueue->entries() != 0 )
             {
                 inQueue->clearAndDestroy();      // Get rid of the evidence...
             }
