@@ -294,7 +294,7 @@
             	<attribute name="KVAR"/>
                 <name>Peak kVAr (Rate A kVAr)</name>
                 <offset value="12"/>
-                <multiplier value="0.001"/>
+                <multiplier value="0.01"/>
                 <unitofmeasure value="kVAr"/>
             </point>
             <point init="true" type="Analog">
@@ -307,7 +307,7 @@
             <point type="Analog">
                 <name>Peak kVAr (Rate B kVAr)</name>
                 <offset value="14"/>
-                <multiplier value="0.001"/>
+                <multiplier value="0.01"/>
                 <unitofmeasure value="kVAr"/>
             </point>
             <point type="Analog">
@@ -319,7 +319,7 @@
             <point type="Analog">
                 <name>Peak kVAr (Rate C kVAr)</name>
                 <offset value="16"/>
-                <multiplier value="0.001"/>
+                <multiplier value="0.01"/>
                 <unitofmeasure value="kVAr"/>
             </point>
             <point type="Analog">
@@ -331,7 +331,7 @@
             <point type="Analog">
                 <name>Peak kVAr (Rate D kVAr)</name>
                 <offset value="18"/>
-                <multiplier value="0.001"/>
+                <multiplier value="0.01"/>
                 <unitofmeasure value="kVAr"/>
             </point>
             <point type="Analog">
@@ -343,7 +343,7 @@
             <point type="Analog">
                 <name>Last Interval kVAr</name>
                 <offset value="20"/>
-                <multiplier value="0.001"/>
+                <multiplier value="0.01"/>
                 <unitofmeasure value="kVAr"/>
             </point>
 			<point init="true" type="Analog">
@@ -642,7 +642,7 @@
             	<attribute name="KVAR"/>
                 <name>Peak kVAr (Rate A kVAr)</name>
                 <offset value="12"/>
-                <multiplier value="0.001"/>
+                <multiplier value="0.01"/>
                 <unitofmeasure value="kVAr"/>
             </point>
             <point init="true" type="Analog">
@@ -655,7 +655,7 @@
             <point type="Analog">
                 <name>Peak kVAr (Rate B kVAr)</name>
                 <offset value="14"/>
-                <multiplier value="0.001"/>
+                <multiplier value="0.01"/>
                 <unitofmeasure value="kVAr"/>
             </point>
             <point type="Analog">
@@ -667,7 +667,7 @@
             <point type="Analog">
                 <name>Peak kVAr (Rate C kVAr)</name>
                 <offset value="16"/>
-                <multiplier value="0.001"/>
+                <multiplier value="0.01"/>
                 <unitofmeasure value="kVAr"/>
             </point>
             <point type="Analog">
@@ -679,7 +679,7 @@
             <point type="Analog">
                 <name>Peak kVAr (Rate D kVAr)</name>
                 <offset value="18"/>
-                <multiplier value="0.001"/>
+                <multiplier value="0.01"/>
                 <unitofmeasure value="kVAr"/>
             </point>
             <point type="Analog">
@@ -691,7 +691,7 @@
             <point type="Analog">
                 <name>Last Interval kVAr</name>
                 <offset value="20"/>
-                <multiplier value="0.001"/>
+                <multiplier value="0.01"/>
                 <unitofmeasure value="kVAr"/>
             </point>
             <point init="true" type="Analog">
@@ -891,7 +891,7 @@
             	<attribute name="KVAR"/>
                 <name>Peak kVAr (Rate A kVAr)</name>
                 <offset value="12"/>
-                <multiplier value="0.001"/>
+                <multiplier value="0.01"/>
                 <unitofmeasure value="kVAr"/>
             </point>
             <point init="true" type="Analog">
@@ -904,7 +904,7 @@
             <point type="Analog">
                 <name>Peak kVAr (Rate B kVAr)</name>
                 <offset value="14"/>
-                <multiplier value="0.001"/>
+                <multiplier value="0.01"/>
                 <unitofmeasure value="kVAr"/>
             </point>
             <point type="Analog">
@@ -916,7 +916,7 @@
             <point type="Analog">
                 <name>Peak kVAr (Rate C kVAr)</name>
                 <offset value="16"/>
-                <multiplier value="0.001"/>
+                <multiplier value="0.01"/>
                 <unitofmeasure value="kVAr"/>
             </point>
             <point type="Analog">
@@ -928,7 +928,7 @@
             <point type="Analog">
                 <name>Peak kVAr (Rate D kVAr)</name>
                 <offset value="18"/>
-                <multiplier value="0.001"/>
+                <multiplier value="0.01"/>
                 <unitofmeasure value="kVAr"/>
             </point>
             <point type="Analog">
@@ -940,7 +940,7 @@
             <point type="Analog">
                 <name>Last Interval kVAr</name>
                 <offset value="20"/>
-                <multiplier value="0.001"/>
+                <multiplier value="0.01"/>
                 <unitofmeasure value="kVAr"/>
             </point>
             <point type="Analog">
@@ -1158,7 +1158,7 @@
             	<attribute name="KVAR"/>
                 <name>Peak kVAr (Rate A kVAr)</name>
                 <offset value="12"/>
-                <multiplier value="0.001"/>
+                <multiplier value="0.01"/>
                 <unitofmeasure value="kVAr"/>
             </point>
             <point init="true" type="Analog">
@@ -1171,7 +1171,7 @@
             <point type="Analog">
                 <name>Peak kVAr (Rate B kVAr)</name>
                 <offset value="14"/>
-                <multiplier value="0.001"/>
+                <multiplier value="0.01"/>
                 <unitofmeasure value="kVAr"/>
             </point>
             <point type="Analog">
@@ -1183,7 +1183,7 @@
             <point type="Analog">
                 <name>Peak kVAr (Rate C kVAr)</name>
                 <offset value="16"/>
-                <multiplier value="0.001"/>
+                <multiplier value="0.01"/>
                 <unitofmeasure value="kVAr"/>
             </point>
             <point type="Analog">
@@ -1195,7 +1195,7 @@
             <point type="Analog">
                 <name>Peak kVAr (Rate D kVAr)</name>
                 <offset value="18"/>
-                <multiplier value="0.001"/>
+                <multiplier value="0.01"/>
                 <unitofmeasure value="kVAr"/>
             </point>
             <point type="Analog">
@@ -1207,7 +1207,7 @@
             <point type="Analog">
                 <name>Last Interval kVAr</name>
                 <offset value="20"/>
-                <multiplier value="0.001"/>
+                <multiplier value="0.01"/>
                 <unitofmeasure value="kVAr"/>
             </point>
             <point type="Analog">
