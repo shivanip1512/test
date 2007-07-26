@@ -1020,11 +1020,12 @@ public Object getValue(Object val)
 	
 		//some status points are needed for control history
 		com.cannontech.database.data.multi.SmartMultiDBPersistent smartDB = new com.cannontech.database.data.multi.SmartMultiDBPersistent();
-		smartDB.addDBPersistent( lmGroup );
-		smartDB.setOwnerDBPersistent( lmGroup );
-			
+		
         int groupId = DaoFactory.getPaoDao().getNextPaoId();
         lmGroup.setDeviceID(groupId);
+        
+        smartDB.addDBPersistent( lmGroup );
+		smartDB.setOwnerDBPersistent( lmGroup );
         
 		createExtraObjects( lmGroup, smartDB );
 
