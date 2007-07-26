@@ -11,6 +11,18 @@ public interface PaoDao {
      * @return String
      */
     public LiteYukonPAObject getLiteYukonPAO(int paoID);
+    
+    /**
+     * Will find a device based on the four parameters that make up its unique key.
+     * @param deviceName
+     * @param category
+     * @param paoClass
+     * @param type
+     * @return the LiteYukonPaoObject that matches the criteria
+     * @throws NotFoundException
+     */
+    public LiteYukonPAObject getLiteYukonPAObject(String deviceName,
+            int category, int paoClass, int type);
 
     /**
      * Returns a list of lite pao objects by type
@@ -67,7 +79,7 @@ public interface PaoDao {
     public String getYukonPAOName(int paoID);
 
     public LiteYukonPAObject[] getAllLiteRoutes();
-
+    
     public LiteYukonPAObject[] getRoutesByType(int[] routeTypes);
 
     /**

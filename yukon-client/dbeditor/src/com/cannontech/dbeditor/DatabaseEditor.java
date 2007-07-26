@@ -54,8 +54,10 @@ import com.cannontech.core.dao.DaoFactory;
 import com.cannontech.core.dynamic.AsyncDynamicDataSource;
 import com.cannontech.database.DatabaseTypes;
 import com.cannontech.database.Transaction;
+import com.cannontech.database.data.device.CCUBase;
 import com.cannontech.database.data.device.DeviceBase;
 import com.cannontech.database.data.device.DeviceTypesFuncs;
+import com.cannontech.database.data.device.RepeaterBase;
 import com.cannontech.database.data.device.lm.LMScenario;
 import com.cannontech.database.data.lite.LiteBase;
 import com.cannontech.database.data.lite.LiteFactory;
@@ -2587,13 +2589,18 @@ public void selectionPerformed( PropertyPanelEvent event)
 	if( event.getID() == PropertyPanelEvent.APPLY_SELECTION ||
 		 event.getID() == PropertyPanelEvent.OK_SELECTION		)
 	{
-		com.cannontech.database.db.DBPersistent object = (com.cannontech.database.db.DBPersistent) panel.getValue(null);
+		final com.cannontech.database.db.DBPersistent object = (com.cannontech.database.db.DBPersistent) panel.getValue(null);
 		
 		if( panel.hasChanged() )
 		{
 			panel.setChanged(false);
+            
+			if (DatabaseEditorUtil.showUpdateRouteName(object)) {
+			    DatabaseEditorUtil.updateRouteName(panel, object);
+            }    
+			            
 			updateResult = updateDBPersistent(object);
-
+            
 			if( updateResult )
 			{			
                 panel.postSave(object);

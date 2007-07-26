@@ -86,7 +86,7 @@ public class DBPersistentDaoImpl implements DBPersistentDao
                 for( int i = 0; i < dbChange.length; i++)
                 {
                     cacheDBChangeListener.handleDBChangeMessage(dbChange[i]);
-                    connToDispatch.write(dbChange[i]);
+                    connToDispatch.queue(dbChange[i]);
                 }
             }
         }

@@ -61,6 +61,30 @@ public final class PaoDaoImpl implements PaoDao {
             throw new NotFoundException("A PAObject with id " + paoID + " cannot be found.");
         }
     }
+    
+    /*
+     * (non-Javadoc)
+     * @see com.cannontech.core.dao.PaoDao#getLiteYukonPAO(Sring, int, int, int)
+     */
+    public LiteYukonPAObject getLiteYukonPAObject(final String deviceName, 
+            final int category, final int paoClass, final int type) {
+        
+        try {
+            String sql = litePaoSql + "WHERE y.PAOName = ? AND y.Category = ? AND y.PAOClass = ? AND y.Type = ?";
+            String stringCategory = PAOGroups.getCategory(category);
+            String stringClass = PAOGroups.getPAOClass(category, paoClass);
+            String stringType = PAOGroups.getPAOTypeString(type);
+            
+            LiteYukonPAObject pao = 
+                (LiteYukonPAObject) jdbcOps.queryForObject(
+                                                           sql, 
+                                                           new Object[]{deviceName, stringCategory, stringClass, stringType}, 
+                                                           litePaoRowMapper);
+            return pao;
+        } catch (IncorrectResultSizeDataAccessException e) {
+            throw new NotFoundException("A PAObject with deviceName '" + deviceName + "' cannot be found.");
+        }
+    }
 
     public List<LiteYukonPAObject> getLiteYukonPAObjectByType(int paoType) {
         String typeStr = PAOGroups.getPAOTypeString(paoType);
@@ -155,7 +179,7 @@ public final class PaoDaoImpl implements PaoDao {
         routeList.toArray(retVal);
         return retVal;
     }
-
+    
     /*
      * (non-Javadoc)
      * @see com.cannontech.core.dao.PaoDao#getRoutesByType(int[])
