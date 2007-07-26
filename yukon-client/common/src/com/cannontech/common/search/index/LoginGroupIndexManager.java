@@ -35,7 +35,7 @@ public class LoginGroupIndexManager extends AbstractIndexManager {
         String query = "select *                                                        "
                 + " from                                                                "
                 + "     yukongroup where                                                "
-                + " not groupid = " + UserUtils.USER_ADMIN_ID + " order by groupname    ";
+                + " not groupid = " + UserUtils.USER_ADMIN_ID;
         return query;
     }
 
