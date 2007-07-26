@@ -729,6 +729,7 @@ public static boolean isDisconnectMCT( int type)
 	{
 		case MCT213:
 		case MCT310ID:
+        case MCT310IDL:
 			return true;
 		default:
 			return false;
