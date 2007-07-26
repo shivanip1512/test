@@ -2606,15 +2606,18 @@ DOUBLE CtiCCSubstationBus::calculateKVARSolution(const string& controlUnits, DOU
     else if( !stringCompareIgnoreCase(controlUnits,CtiCCSubstationBus::PF_BY_KVARControlUnits) ||
              !stringCompareIgnoreCase(controlUnits,CtiCCSubstationBus::PF_BY_KQControlUnits))
     {
-        DOUBLE targetKVA = wattValue / (setPoint/100.0);
-        DOUBLE NaNDefenseDouble = (targetKVA*targetKVA)-(wattValue*wattValue);
         DOUBLE targetKVAR = 0.0;
-        if( NaNDefenseDouble > 0.0 )
+        if (setPoint != 0) 
         {
-            targetKVAR = sqrt(NaNDefenseDouble);
-            if (setPoint < 0) 
+            DOUBLE targetKVA = wattValue / (setPoint/100.0);
+            DOUBLE NaNDefenseDouble = (targetKVA*targetKVA)-(wattValue*wattValue);
+            if( NaNDefenseDouble > 0.0 )
             {
-                targetKVAR = 0 - targetKVAR;
+                targetKVAR = sqrt(NaNDefenseDouble);
+                if (setPoint < 0) 
+                {
+                    targetKVAR = 0 - targetKVAR;
+                }
             }
         }
        

@@ -151,6 +151,12 @@ void CtiCCCommandExecutor::Execute()
     case CtiCCCommand::SYSTEM_STATUS:
         SendSystemStatus();
         break;
+    case CtiCCCommand::SEND_ALL_OPEN:
+    case CtiCCCommand::SEND_ALL_CLOSE:
+    case CtiCCCommand::SEND_ALL_ENABLE_OVUV:
+    case CtiCCCommand::SEND_ALL_DISABLE_OVUV:
+        SendAllCapBankCommands(_command->getCommand());
+        break;
         
     default:
         {
@@ -975,6 +981,192 @@ void CtiCCCommandExecutor::DisableOvUv()
     }
 
 }
+
+void CtiCCCommandExecutor::SendAllCapBankCommands(LONG action)
+{
+    CtiCCSubstationBusStore* store = CtiCCSubstationBusStore::getInstance();
+    RWRecursiveLock<RWMutexLock>::LockGuard  guard(store->getMux());
+
+    LONG paoId = _command->getId();
+    LONG controlID = 0;
+    BOOL found = FALSE;
+    string actionText = "";
+    CtiMultiMsg* multi = new CtiMultiMsg();
+    CtiMultiMsg* actionMulti = new CtiMultiMsg();
+    CtiMultiMsg* multiPilMsg = new CtiMultiMsg();
+    CtiMultiMsg* eventMulti = new CtiMultiMsg();
+    CtiMultiMsg_vec& pilMessages = multiPilMsg->getData();
+    CtiMultiMsg_vec& pointChanges = multi->getData();
+    CtiMultiMsg_vec& ccEvents = eventMulti->getData();
+
+    switch (action) 
+    {
+        case CtiCCCommand::OPEN_CAPBANK:
+        {
+            actionText = string(" - Open");
+            break;
+        }
+        case CtiCCCommand::CLOSE_CAPBANK:
+        {
+            actionText = string(" - Close");
+            break;
+        }
+        case CtiCCCommand::ENABLE_OVUV:
+        {
+            actionText = string(" - Enable OvUv");
+            break;
+        }
+        case CtiCCCommand::DISABLE_OVUV:
+        {
+            actionText = string(" - Disable OvUv");
+            break;
+        }
+        default:
+        {
+            actionText = string(" - ERROR...");
+            break;
+        }    }
+
+
+    CtiCCArea_vec& ccAreas = *store->getCCGeoAreas(CtiTime().seconds());
+
+    CtiCCAreaPtr currentArea = NULL;
+    CtiCCSubstationBusPtr currentSubstationBus = NULL;
+    CtiCCFeederPtr currentFeeder = store->findFeederByPAObjectID(paoId);
+    if (currentFeeder != NULL) 
+    {
+        currentSubstationBus = store->findSubBusByPAObjectID(currentFeeder->getParentId());
+        if (currentSubstationBus != NULL) 
+        {
+            currentArea = store->findAreaByPAObjectID(currentSubstationBus->getParentId());
+            if (currentArea != NULL) 
+            {
+                string text1 = string("Feeder: ");
+                text1 += currentFeeder->getPAOName();
+                text1 += actionText;
+                text1 += string(" All CapBanks");
+                string additional1 = string("Feeder: ");
+                additional1 += currentFeeder->getPAOName();
+
+                pointChanges.push_back(new CtiSignalMsg(SYS_PID_CAPCONTROL,1,text1,additional1,CapControlLogType,SignalEvent,_command->getUser()));
+                currentSubstationBus->setEventSequence(currentSubstationBus->getEventSequence() +1);
+                ccEvents.push_back(new CtiCCEventLogMsg(0, SYS_PID_CAPCONTROL, currentSubstationBus->getPAOId(), 0, capControlManualCommand, currentSubstationBus->getEventSequence(), 0, text1, _command->getUser()));
+
+                CtiCCCapBank_SVector& ccCapBanks = currentFeeder->getCCCapBanks();
+
+                for(LONG k=0;k<ccCapBanks.size();k++)
+                {
+                    CtiCCCapBankPtr currentCapBank = (CtiCCCapBankPtr)ccCapBanks[k];
+                    actionMulti->insert(new CtiCCCommand(action, currentCapBank->getPAOId()));
+                }
+
+            }
+        }
+    }
+    if (currentSubstationBus == NULL) 
+    {
+        currentSubstationBus = store->findSubBusByPAObjectID(paoId);
+        if (currentSubstationBus != NULL) 
+        {
+            currentArea = store->findAreaByPAObjectID(currentSubstationBus->getParentId());
+            if (currentArea != NULL) 
+            {
+
+                string text1 = string("SubBus: ");
+                text1 += currentSubstationBus->getPAOName();
+                text1 += actionText;
+                text1 += string(" All CapBanks");
+                string additional1 = string("SubBus: ");
+                additional1 += currentSubstationBus->getPAOName();
+
+                pointChanges.push_back(new CtiSignalMsg(SYS_PID_CAPCONTROL,1,text1,additional1,CapControlLogType,SignalEvent,_command->getUser()));
+                currentSubstationBus->setEventSequence(currentSubstationBus->getEventSequence() +1);
+                ccEvents.push_back(new CtiCCEventLogMsg(0, SYS_PID_CAPCONTROL, currentSubstationBus->getPAOId(), 0, capControlManualCommand, currentSubstationBus->getEventSequence(), 0, text1, _command->getUser()));
+
+                CtiFeeder_vec& ccFeeders = currentSubstationBus->getCCFeeders();
+
+                for(LONG j=0;j<ccFeeders.size();j++)
+                {
+                    CtiCCFeeder* currentFeeder = (CtiCCFeeder*)ccFeeders.at(j);
+                    CtiCCCapBank_SVector& ccCapBanks = currentFeeder->getCCCapBanks();
+
+                    for(LONG k=0;k<ccCapBanks.size();k++)
+                    {
+                        CtiCCCapBankPtr currentCapBank = (CtiCCCapBankPtr)ccCapBanks[k];
+                        actionMulti->insert(new CtiCCCommand(action, currentCapBank->getPAOId()));
+                    }
+                }
+            }
+        }
+    }
+    if (currentArea == NULL) 
+    {
+        currentArea = store->findAreaByPAObjectID(paoId);
+        if (currentArea != NULL) 
+        {
+            string text1 = string("Area: ");
+            text1 += currentArea->getPAOName();
+            text1 += actionText;
+            text1 += string(" All CapBanks");
+            string additional1 = string("Area: ");
+            additional1 += currentArea->getPAOName();
+
+            pointChanges.push_back(new CtiSignalMsg(SYS_PID_CAPCONTROL,1,text1,additional1,CapControlLogType,SignalEvent,_command->getUser()));
+
+            currentSubstationBus->setEventSequence(currentSubstationBus->getEventSequence() +1);
+            ccEvents.push_back(new CtiCCEventLogMsg(0, SYS_PID_CAPCONTROL, currentSubstationBus->getPAOId(), 0, capControlManualCommand, currentSubstationBus->getEventSequence(), 0, text1, _command->getUser()));
+
+            
+            CtiCCSubstationBus_vec& ccSubstationBuses = *store->getCCSubstationBuses(CtiTime().seconds());
+            for(LONG i=0;i<ccSubstationBuses.size();i++)
+            {
+                currentSubstationBus = (CtiCCSubstationBus*)ccSubstationBuses[i];
+           
+                if (currentSubstationBus->getParentId() == currentArea->getPAOId())
+                {
+                    currentSubstationBus->setEventSequence(currentSubstationBus->getEventSequence() +1);
+                    ccEvents.push_back(new CtiCCEventLogMsg(0, SYS_PID_CAPCONTROL, currentSubstationBus->getPAOId(), 0, capControlManualCommand, currentSubstationBus->getEventSequence(), 0, text1, _command->getUser()));
+                   
+                    CtiFeeder_vec& ccFeeders = currentSubstationBus->getCCFeeders();
+                   
+                    for(LONG j=0;j<ccFeeders.size();j++)
+                    {
+                        CtiCCFeeder* currentFeeder = (CtiCCFeeder*)ccFeeders.at(j);
+                        CtiCCCapBank_SVector& ccCapBanks = currentFeeder->getCCCapBanks();
+                   
+                        for(LONG k=0;k<ccCapBanks.size();k++)
+                        {
+                            CtiCCCapBankPtr currentCapBank = (CtiCCCapBankPtr)ccCapBanks[k];
+                            actionMulti->insert(new CtiCCCommand(action, currentCapBank->getPAOId()));
+                        }
+                    }
+                }
+
+            }
+
+        }
+    }
+
+    if (actionMulti->getCount() > 0)
+    {
+       CtiCCExecutorFactory f;
+       CtiCCExecutor* executor = f.createExecutor(actionMulti);
+       executor->Execute();
+
+
+       executor = f.createExecutor(new CtiCCGeoAreasMsg(ccAreas));
+       executor->Execute();
+       delete executor;
+    }
+
+
+    if (multi->getCount() > 0 || multiPilMsg->getCount() > 0)
+        CtiCapController::getInstance()->confirmCapBankControl(multiPilMsg, multi);
+    if (eventMulti->getCount() > 0)
+        CtiCapController::getInstance()->getCCEventMsgQueueHandle().write(eventMulti);
+
+}
+
 
 /*---------------------------------------------------------------------------
     DeleteItem

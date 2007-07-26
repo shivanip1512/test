@@ -5219,15 +5219,15 @@ void CtiCCFeeder::saveGuts(RWvostream& ostrm ) const
     << _maxdailyoperation
     << _maxoperationdisableflag
     << _currentvarloadpointid
-    << _currentvarloadpointvalue
-    << _currentwattloadpointid
-    << _currentwattloadpointvalue
+    << _currentvarloadpointvalue //DOUBLE
+    << _currentwattloadpointid 
+    << _currentwattloadpointvalue //DOUBLE
     << _maplocationid
     << _displayorder
     << _newpointdatareceivedflag
     << _lastcurrentvarpointupdatetime
     << _estimatedvarloadpointid
-    << _estimatedvarloadpointvalue
+    << _estimatedvarloadpointvalue   //DOUBLE
     << _dailyoperationsanalogpointid
     << _powerfactorpointid
     << _estimatedpowerfactorpointid
@@ -5235,22 +5235,22 @@ void CtiCCFeeder::saveGuts(RWvostream& ostrm ) const
     << _recentlycontrolledflag
     << _lastoperationtime
     << _varvaluebeforecontrol
-    << temppowerfactorvalue
-    << tempestimatedpowerfactorvalue
+    << temppowerfactorvalue //DOUBLE
+    << tempestimatedpowerfactorvalue //DOUBLE
     << _currentvarpointquality
     << _waivecontrolflag
     << _controlunits
     << _decimalPlaces
     << _peakTimeFlag
-    << _peaklag
-    << _offpklag
-    << _peaklead
-    << _offpklead
+    << _peaklag //DOUBLE
+    << _offpklag //DOUBLE
+    << _peaklead //DOUBLE
+    << _offpklead //DOUBLE
     << _currentvoltloadpointid
-    << _currentvoltloadpointvalue
+    << _currentvoltloadpointvalue //DOUBLE
     << _currentwattpointquality
     << _currentvoltpointquality
-    << _targetvarvalue
+    << _targetvarvalue //DOUBLE
     << _solution;
 
     ostrm << _cccapbanks.size();

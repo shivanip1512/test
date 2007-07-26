@@ -1915,7 +1915,7 @@ void CtiCCSubstationBusStore::doResetThr()
         {
             rwRunnable().sleep(500);
         }
-      /*  rwnow = rwnow.now();
+       rwnow = rwnow.now();
         if(rwnow.seconds() > tickleTime.seconds())
         {
             tickleTime = nextScheduledTimeAlignedOnRate( rwnow, CtiThreadMonitor::StandardTickleTime );
@@ -1927,18 +1927,18 @@ void CtiCCSubstationBusStore::doResetThr()
             }
 
            /* if(!_shutdownOnThreadTimeout)
-            {
-                ThreadMonitor.tickle( CTIDBG_new CtiThreadRegData( rwThreadId(), "CapControl doAMFMThr", CtiThreadRegData::Action, CtiThreadMonitor::StandardMonitorTime, &CtiCCSubstationBusStore::periodicComplain, 0) );
-            }
+            { */
+                ThreadMonitor.tickle( CTIDBG_new CtiThreadRegData( rwThreadId(), "CapControl doResetThr", CtiThreadRegData::Action, CtiThreadMonitor::StandardMonitorTime, &CtiCCSubstationBusStore::periodicComplain, 0) );
+            /*}
             else
             {   
                 ThreadMonitor.tickle( CTIDBG_new CtiThreadRegData( rwThreadId(), "CapControl doResetThr", CtiThreadRegData::Action, CtiThreadMonitor::StandardMonitorTime, &CtiCCSubstationBusStore::sendUserQuit, CTIDBG_new string("CapControl doResetThr")) );
-            //}
-        }  */
+            } */
+        }  
 
     }
 
-   // ThreadMonitor.tickle( CTIDBG_new CtiThreadRegData( rwThreadId(), "CapControl doResetThr", CtiThreadRegData::LogOut ) );
+    ThreadMonitor.tickle( CTIDBG_new CtiThreadRegData( rwThreadId(), "CapControl doResetThr", CtiThreadRegData::LogOut ) );
 }
 
 /*---------------------------------------------------------------------------
