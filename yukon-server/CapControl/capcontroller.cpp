@@ -980,15 +980,6 @@ void CtiCapController::processCCEventMsgs()
         CtiTime tempTime;
 
         CtiCCEventLogMsg* msg = NULL;
-        //INT logId = CCEventLogIdGen();
-        /*CtiMultiMsg_vec& temp = msgMulti->getData( );
-        for(int i=0;i<temp.entries( );i++)
-        {
-
-            msg = (CtiCCEventLogMsg *) temp[i];
-            CtiCCSubstationBusStore::getInstance()->InsertCCEventLogInDB(msg);
-            delete msg;
-        } */
 
         RWCollectable* msg1 = NULL;
         while(_ccEventMsgQueue.canRead())
