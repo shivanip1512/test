@@ -1041,6 +1041,11 @@ void CtiCCCommandExecutor::SendAllCapBankCommands(LONG action)
             currentArea = store->findAreaByPAObjectID(currentSubstationBus->getParentId());
             if (currentArea != NULL) 
             {
+                if (action == CtiCCCommand::ENABLE_OVUV) 
+                    currentFeeder->setOvUvDisabledFlag(FALSE);
+                if (action == CtiCCCommand::DISABLE_OVUV) 
+                    currentFeeder->setOvUvDisabledFlag(TRUE);
+
                 string text1 = string("Feeder: ");
                 text1 += currentFeeder->getPAOName();
                 text1 += actionText;
@@ -1071,6 +1076,10 @@ void CtiCCCommandExecutor::SendAllCapBankCommands(LONG action)
             currentArea = store->findAreaByPAObjectID(currentSubstationBus->getParentId());
             if (currentArea != NULL) 
             {
+                if (action == CtiCCCommand::ENABLE_OVUV) 
+                    currentSubstationBus->setOvUvDisabledFlag(FALSE);
+                if (action == CtiCCCommand::DISABLE_OVUV) 
+                    currentSubstationBus->setOvUvDisabledFlag(TRUE);
 
                 string text1 = string("SubBus: ");
                 text1 += currentSubstationBus->getPAOName();
@@ -1088,6 +1097,12 @@ void CtiCCCommandExecutor::SendAllCapBankCommands(LONG action)
                 for(LONG j=0;j<ccFeeders.size();j++)
                 {
                     CtiCCFeeder* currentFeeder = (CtiCCFeeder*)ccFeeders.at(j);
+
+                    if (action == CtiCCCommand::ENABLE_OVUV) 
+                        currentFeeder->setOvUvDisabledFlag(FALSE);
+                    if (action == CtiCCCommand::DISABLE_OVUV) 
+                        currentFeeder->setOvUvDisabledFlag(TRUE);
+
                     CtiCCCapBank_SVector& ccCapBanks = currentFeeder->getCCCapBanks();
 
                     for(LONG k=0;k<ccCapBanks.size();k++)
@@ -1124,6 +1139,11 @@ void CtiCCCommandExecutor::SendAllCapBankCommands(LONG action)
            
                 if (currentSubstationBus->getParentId() == currentArea->getPAOId())
                 {
+                    if (action == CtiCCCommand::ENABLE_OVUV) 
+                        currentSubstationBus->setOvUvDisabledFlag(FALSE);
+                    if (action == CtiCCCommand::DISABLE_OVUV) 
+                        currentSubstationBus->setOvUvDisabledFlag(TRUE);
+
                     currentSubstationBus->setEventSequence(currentSubstationBus->getEventSequence() +1);
                     ccEvents.push_back(new CtiCCEventLogMsg(0, SYS_PID_CAPCONTROL, currentSubstationBus->getPAOId(), 0, capControlManualCommand, currentSubstationBus->getEventSequence(), 0, text1, _command->getUser()));
                    
@@ -1132,6 +1152,11 @@ void CtiCCCommandExecutor::SendAllCapBankCommands(LONG action)
                     for(LONG j=0;j<ccFeeders.size();j++)
                     {
                         CtiCCFeeder* currentFeeder = (CtiCCFeeder*)ccFeeders.at(j);
+
+                        if (action == CtiCCCommand::ENABLE_OVUV) 
+                            currentFeeder->setOvUvDisabledFlag(FALSE);
+                        if (action == CtiCCCommand::DISABLE_OVUV) 
+                            currentFeeder->setOvUvDisabledFlag(TRUE);
                         CtiCCCapBank_SVector& ccCapBanks = currentFeeder->getCCCapBanks();
                    
                         for(LONG k=0;k<ccCapBanks.size();k++)

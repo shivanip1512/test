@@ -161,6 +161,7 @@ RWDECLARE_COLLECTABLE( CtiCCFeeder )
     BOOL getPostOperationMonitorPointScanFlag() const;
     BOOL getWaitForReCloseDelayFlag() const;
     BOOL getMaxDailyOpsHitFlag() const;
+    BOOL getOvUvDisabledFlag() const;
     LONG getCurrentVerificationCapBankId() const;
     LONG getCurrentVerificationCapBankOrigState() const;
     DOUBLE getTargetVarValue() const;
@@ -258,6 +259,7 @@ RWDECLARE_COLLECTABLE( CtiCCFeeder )
     CtiCCFeeder& setPostOperationMonitorPointScanFlag( BOOL flag);
     CtiCCFeeder& setWaitForReCloseDelayFlag(BOOL flag);
     CtiCCFeeder& setMaxDailyOpsHitFlag(BOOL flag);
+    CtiCCFeeder& setOvUvDisabledFlag(BOOL flag);
     CtiCCFeeder& setCurrentVerificationCapBankId(LONG capBankId);
     CtiCCFeeder& setCurrentVerificationCapBankState(LONG status);
     CtiCCFeeder& setTargetVarValue(DOUBLE value);
@@ -438,6 +440,7 @@ private:
     BOOL _porterRetFailFlag;
     BOOL _waitForReCloseDelayFlag;
     BOOL _maxDailyOpsHitFlag;
+    BOOL _ovUvDisabledFlag;
 
     LONG   _eventSeq;
 

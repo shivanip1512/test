@@ -3990,6 +3990,15 @@ CtiCCFeeder& CtiCCFeeder::setMaxDailyOpsHitFlag(BOOL flag)
     return *this;
 }
 
+CtiCCFeeder& CtiCCFeeder::setOvUvDisabledFlag(BOOL flag)
+{
+    if (_ovUvDisabledFlag != flag)
+        _dirty = TRUE;
+    _ovUvDisabledFlag = flag;
+
+    return *this;
+}
+
 CtiCCFeeder& CtiCCFeeder::setCurrentVerificationCapBankId(LONG capBankId)
 {
     if( _currentVerificationCapBankId != capBankId )
@@ -4170,6 +4179,10 @@ BOOL CtiCCFeeder::getMaxDailyOpsHitFlag() const
     return _maxDailyOpsHitFlag;
 }
 
+BOOL CtiCCFeeder::getOvUvDisabledFlag() const
+{
+    return _ovUvDisabledFlag;
+}
 
 LONG CtiCCFeeder::getCurrentVerificationCapBankId() const
 {
@@ -4984,6 +4997,7 @@ void CtiCCFeeder::dumpDynamicData(RWDBConnection& conn, CtiTime& currentDateTime
             addFlags[6] = (_waitForReCloseDelayFlag?'Y':'N');
             addFlags[7] = (_peakTimeFlag?'Y':'N');
             addFlags[8] = (_maxDailyOpsHitFlag?'Y':'N');
+            addFlags[9] = (_ovUvDisabledFlag?'Y':'N');
             _additionalFlags = char2string(*addFlags);
             _additionalFlags.append(char2string(*(addFlags+1)));
             _additionalFlags.append(char2string(*(addFlags+2))); 
@@ -4993,7 +5007,8 @@ void CtiCCFeeder::dumpDynamicData(RWDBConnection& conn, CtiTime& currentDateTime
             _additionalFlags.append(char2string(*(addFlags+6))); 
             _additionalFlags.append(char2string(*(addFlags+7)));
             _additionalFlags.append(char2string(*(addFlags+8)));
-            _additionalFlags.append("NNNNNNNNNNN");
+            _additionalFlags.append(char2string(*(addFlags+9)));
+            _additionalFlags.append("NNNNNNNNNN");
 
             updater.clear();
 
@@ -5173,7 +5188,8 @@ void CtiCCFeeder::restoreGuts(RWvistream& istrm)
     >> _currentwattpointquality
     >> _currentvoltpointquality
     >> _targetvarvalue
-    >> _solution;
+    >> _solution
+    >> _ovUvDisabledFlag;
 
    
     istrm >> numberOfCapBanks;
@@ -5219,15 +5235,15 @@ void CtiCCFeeder::saveGuts(RWvostream& ostrm ) const
     << _maxdailyoperation
     << _maxoperationdisableflag
     << _currentvarloadpointid
-    << _currentvarloadpointvalue //DOUBLE
-    << _currentwattloadpointid 
-    << _currentwattloadpointvalue //DOUBLE
+    << _currentvarloadpointvalue
+    << _currentwattloadpointid
+    << _currentwattloadpointvalue
     << _maplocationid
     << _displayorder
     << _newpointdatareceivedflag
     << _lastcurrentvarpointupdatetime
     << _estimatedvarloadpointid
-    << _estimatedvarloadpointvalue   //DOUBLE
+    << _estimatedvarloadpointvalue
     << _dailyoperationsanalogpointid
     << _powerfactorpointid
     << _estimatedpowerfactorpointid
@@ -5235,23 +5251,24 @@ void CtiCCFeeder::saveGuts(RWvostream& ostrm ) const
     << _recentlycontrolledflag
     << _lastoperationtime
     << _varvaluebeforecontrol
-    << temppowerfactorvalue //DOUBLE
-    << tempestimatedpowerfactorvalue //DOUBLE
+    << temppowerfactorvalue
+    << tempestimatedpowerfactorvalue
     << _currentvarpointquality
     << _waivecontrolflag
     << _controlunits
     << _decimalPlaces
     << _peakTimeFlag
-    << _peaklag //DOUBLE
-    << _offpklag //DOUBLE
-    << _peaklead //DOUBLE
-    << _offpklead //DOUBLE
+    << _peaklag
+    << _offpklag
+    << _peaklead
+    << _offpklead
     << _currentvoltloadpointid
-    << _currentvoltloadpointvalue //DOUBLE
+    << _currentvoltloadpointvalue
     << _currentwattpointquality
     << _currentvoltpointquality
-    << _targetvarvalue //DOUBLE
-    << _solution;
+    << _targetvarvalue
+    << _solution
+    << _ovUvDisabledFlag;
 
     ostrm << _cccapbanks.size();
     for(LONG i=0;i<_cccapbanks.size();i++)
@@ -5340,6 +5357,7 @@ CtiCCFeeder& CtiCCFeeder::operator=(const CtiCCFeeder& right)
         _postOperationMonitorPointScanFlag = right._postOperationMonitorPointScanFlag;
         _waitForReCloseDelayFlag = right._waitForReCloseDelayFlag;
         _maxDailyOpsHitFlag = right._maxDailyOpsHitFlag;
+        _ovUvDisabledFlag = right._ovUvDisabledFlag;
 
         _targetvarvalue = right._targetvarvalue;
         _solution = right._solution;
@@ -5477,6 +5495,7 @@ void CtiCCFeeder::restore(RWDBReader& rdr)
     setPostOperationMonitorPointScanFlag(FALSE);
     setWaitForReCloseDelayFlag(FALSE);
     setMaxDailyOpsHitFlag(FALSE);
+    setOvUvDisabledFlag(FALSE);
     setPeakTimeFlag(FALSE);
     setEventSequence(0);
     setCurrentVerificationCapBankId(-1);
@@ -5588,6 +5607,7 @@ void CtiCCFeeder::setDynamicData(RWDBReader& rdr)
     _waitForReCloseDelayFlag = (_additionalFlags[6]=='y'?TRUE:FALSE);
     _peakTimeFlag = (_additionalFlags[7]=='y'?TRUE:FALSE);
     _maxDailyOpsHitFlag = (_additionalFlags[8]=='y'?TRUE:FALSE);
+    _ovUvDisabledFlag = (_additionalFlags[9]=='y'?TRUE:FALSE);
     rdr["eventSeq"] >> _eventSeq;
     rdr["currverifycbid"] >> _currentVerificationCapBankId;
     rdr["currverifycborigstate"] >> _currentCapBankToVerifyAssumedOrigState;

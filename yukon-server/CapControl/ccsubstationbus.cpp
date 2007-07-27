@@ -940,6 +940,10 @@ BOOL CtiCCSubstationBus::getMaxDailyOpsHitFlag() const
 {
     return _maxDailyOpsHitFlag;
 }
+BOOL CtiCCSubstationBus::getOvUvDisabledFlag() const
+{
+    return _ovUvDisabledFlag;
+}
 
 LONG CtiCCSubstationBus::getCurrentVerificationFeederId() const
 {
@@ -4884,6 +4888,15 @@ CtiCCSubstationBus& CtiCCSubstationBus::setMaxDailyOpsHitFlag(BOOL flag)
     return *this;
 }
 
+CtiCCSubstationBus& CtiCCSubstationBus::setOvUvDisabledFlag(BOOL flag)
+{
+    if (_ovUvDisabledFlag != flag) 
+    {
+        _dirty = TRUE;
+    }
+    _ovUvDisabledFlag = flag;
+    return *this;
+}
 
  
 
@@ -5719,11 +5732,12 @@ void CtiCCSubstationBus::dumpDynamicData(RWDBConnection& conn, CtiTime& currentD
             addFlags[8] = (_waitForReCloseDelayFlag?'Y':'N');
             addFlags[9] = (_waitToFinishRegularControlFlag?'Y':'N');
             addFlags[10] = (_maxDailyOpsHitFlag?'Y':'N');
+            addFlags[11] = (_ovUvDisabledFlag?'Y':'N');
 			_additionalFlags = string(char2string(*addFlags) + char2string(*(addFlags+1)) + char2string(*(addFlags+2))+ 
                                          char2string(*(addFlags+3)) + char2string(*(addFlags+4)) +  char2string(*(addFlags+5)) +
                                          char2string(*(addFlags+6)) + char2string(*(addFlags+7)) + char2string(*(addFlags+8)) +
-                                         char2string(*(addFlags+9)) +char2string(*(addFlags+10)));
-            _additionalFlags.append("NNNNNNNNN");
+                                         char2string(*(addFlags+9)) + char2string(*(addFlags+10)) + char2string(*(addFlags+11)));
+            _additionalFlags.append("NNNNNNNN");
 
             updater.clear();
 
@@ -7902,6 +7916,7 @@ void CtiCCSubstationBus::restoreGuts(RWvistream& istrm)
     >> _currentvoltpointquality
     >> _targetvarvalue
     >> _solution
+    >> _ovUvDisabledFlag
     >> _ccfeeders;
 
     _lastcurrentvarpointupdatetime = CtiTime(tempTime2);
@@ -7995,6 +8010,7 @@ void CtiCCSubstationBus::saveGuts(RWvostream& ostrm ) const
     << _currentvoltpointquality
     << _targetvarvalue
     << _solution
+    << _ovUvDisabledFlag
     << _ccfeeders;
 }
 
@@ -8086,6 +8102,7 @@ CtiCCSubstationBus& CtiCCSubstationBus::operator=(const CtiCCSubstationBus& righ
         _waitForReCloseDelayFlag = right._waitForReCloseDelayFlag;
         _waitToFinishRegularControlFlag = right._waitToFinishRegularControlFlag;
         _maxDailyOpsHitFlag = right._maxDailyOpsHitFlag;
+        _ovUvDisabledFlag = right._ovUvDisabledFlag;
 
         _altDualSubId = right._altDualSubId;
         _switchOverPointId = right._switchOverPointId;
@@ -8243,6 +8260,7 @@ void CtiCCSubstationBus::restore(RWDBReader& rdr)
     setWaitForReCloseDelayFlag(FALSE);
     setWaitToFinishRegularControlFlag(FALSE);
     setMaxDailyOpsHitFlag(FALSE);
+    setOvUvDisabledFlag(FALSE);
     setCurrentVerificationCapBankId(-1);
     setCurrentVerificationFeederId(-1);
     setCurrentVerificationCapBankState(0);
@@ -8380,6 +8398,7 @@ void CtiCCSubstationBus::setDynamicData(RWDBReader& rdr)
         _waitForReCloseDelayFlag = (_additionalFlags[8]=='y'?TRUE:FALSE);
         _waitToFinishRegularControlFlag = (_additionalFlags[9]=='y'?TRUE:FALSE);
         _maxDailyOpsHitFlag = (_additionalFlags[10]=='y'?TRUE:FALSE);
+        _ovUvDisabledFlag = (_additionalFlags[11]=='y'?TRUE:FALSE);
 
         rdr["currverifycbid"] >> _currentVerificationCapBankId;
         rdr["currverifyfeederid"] >> _currentVerificationFeederId;
