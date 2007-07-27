@@ -63,6 +63,7 @@
 	<bean id="ccPointTimestampController"
 		class="com.cannontech.web.editor.CCPointTimestampServlet">
 		<property name="cbcDao" ref="cbcDao" />
+		<property name="requireSession" value="true"/> 
 	</bean>
 	<bean id="capBankAdditionalController"
 		class="com.cannontech.web.editor.CapBankAdditionalServlet" />
@@ -72,6 +73,7 @@
 		<property name="methodNameResolver">
 			<ref bean="methodNameResolver" />
 		</property>
+		<property name="requireSession" value="true"/>  
 	</bean>
 
 	<bean id="onelineBookmarkController"

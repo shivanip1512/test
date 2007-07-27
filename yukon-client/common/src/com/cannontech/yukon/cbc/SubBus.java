@@ -13,6 +13,7 @@ public class SubBus extends StreamableCapObject implements
     private Integer maxDailyOperation = null;
     private Boolean maxOperationDisableFlag = null;
     private Double currentVarLoadPointValue = null;
+    private Boolean ovUvDisabledFlag = null;
 
     private Double currentWattLoadPointValue = null;
     private String mapLocationID = null;
@@ -672,5 +673,13 @@ public class SubBus extends StreamableCapObject implements
     public void setTargetvarvalue(Double targetvarvalue) {
         this.targetvarvalue = targetvarvalue;
     }
+
+	public Boolean getOvUvDisabledFlag() {
+		return ovUvDisabledFlag;
+	}
+
+	public void setOvUvDisabledFlag(Boolean ovUvDisabledFlag) {
+		this.ovUvDisabledFlag = ovUvDisabledFlag;
+	}
 
 }

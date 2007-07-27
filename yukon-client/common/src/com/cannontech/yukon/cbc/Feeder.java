@@ -13,6 +13,7 @@ public class Feeder extends StreamableCapObject implements PointQualityCheckable
 {
 	private Integer maxDailyOperation = null;
 	private Boolean maxOperationDisableFlag = null;
+	private Boolean ovUvDisabledFlag = null;
 
 	private Integer currentVarLoadPointID = null;
 	private Double currentVarLoadPointValue = null;
@@ -53,7 +54,7 @@ public class Feeder extends StreamableCapObject implements PointQualityCheckable
     private Integer currentvoltpointquality = null;
     private Double targetvarvalue = null;
     private String solution = null;
-    
+        
 	//should only contain objects of type CapBankDevice
 	private java.util.Vector ccCapBanks = null;
 	
@@ -628,6 +629,12 @@ public void setVarValueBeforeControl(java.lang.Double newVarValueBeforeControl) 
 	}
 	public void setTargetvarvalue(Double targetvarvalue) {
 		this.targetvarvalue = targetvarvalue;
+	}
+	public Boolean getOvUvDisabledFlag() {
+		return ovUvDisabledFlag;
+	}
+	public void setOvUvDisabledFlag(Boolean ovUvDisabledFlag) {
+		this.ovUvDisabledFlag = ovUvDisabledFlag;
 	}
 
 }

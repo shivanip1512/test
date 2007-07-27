@@ -138,6 +138,9 @@ public void restoreGuts(Object obj, com.roguewave.vsj.VirtualInputStream vstr, c
 	subBus.setCurrentvoltpointquality(new Integer( vstr.extractInt() ));
 	subBus.setTargetvarvalue( new Double( vstr.extractDouble() ));
 	subBus.setSolution((String) vstr.restoreObject( SimpleMappings.CString ));
+	subBus.setOvUvDisabledFlag( 
+			((int)vstr.extractUnsignedInt() == 1)
+			? new Boolean(true) : new Boolean(false) );
 	subBus.setCcFeeders( VectorExtract.extractVector(vstr, polystr));
 }
 /**
@@ -232,7 +235,9 @@ public void saveGuts(Object obj, com.roguewave.vsj.VirtualOutputStream vstr, com
 	vstr.insertInt( subBus.getCurrentvoltpointquality() );
 	vstr.insertDouble( subBus.getTargetvarvalue() );
 	vstr.saveObject(subBus.getSolution(), SimpleMappings.CString);
-	
+	vstr.insertUnsignedInt( 
+			(subBus.getOvUvDisabledFlag().booleanValue() == true)
+			? 1 : 0 );
 	VectorInsert.insertVector(subBus.getCcFeeders(), vstr, polystr);
 }
 }
