@@ -4178,12 +4178,23 @@ void CtiCCPointDataMsgExecutor::Execute()
                     }
                     else if( currentCapBank->getOperationAnalogPointId() == pointID )
                     {
-                        if (currentCapBank->getDisableFlag()) 
+                        if (!currentCapBank->getDisableFlag()) 
                         {
                             currentSubstationBus->setBusUpdatedFlag(TRUE);
                             currentCapBank->setTotalOperations((LONG) value);
                             currentCapBank->setCurrentDailyOperations((LONG) value);
                             currentCapBank->setLastStatusChangeTime(timestamp);
+
+                            char tempchar[80] = "";
+                            string text = "CapBank: ";
+                            text+= currentCapBank->getPAOName();
+                            text += " Operation Count Change";
+                            string additional = "Value = ";
+                            _snprintf(tempchar,80,"%.*f",1,currentCapBank->getTotalOperations());
+                            additional += tempchar;
+
+                            CtiCapController::getInstance()->getCCEventMsgQueueHandle().write(new CtiCCEventLogMsg(0, currentCapBank->getOperationAnalogPointId(), currentSubstationBus->getPAOId(), currentFeeder->getPAOId(), capControlSetOperationCount, currentSubstationBus->getEventSequence(), currentCapBank->getTotalOperations(), text, "unknown user" )); 
+                            CtiCapController::getInstance()->sendMessageToDispatch(new CtiSignalMsg(currentCapBank->getOperationAnalogPointId(),currentCapBank->getTotalOperations(),text,additional,CapControlLogType,SignalEvent,"unknown user"));
                         }
                         found = TRUE;
                         break;
