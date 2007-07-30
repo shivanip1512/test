@@ -115,6 +115,10 @@ function generateSubMenu (id, state, opts) {
  				 	 enable_sub:0,
 	 				 disable_sub:1,
 	 				 reset_op_cnt:12,
+	 				 send_all_open:29, 
+	 				 send_all_close:30, 
+	 				 send_all_enable_ovuv:31, 
+	 				 send_all_disable_ovuv:32,
 	 				 v_all_banks:40,
 	 				 v_fq_banks:41,
 	 				 v_failed_banks:42,
@@ -137,6 +141,10 @@ function generateSubMenu (id, state, opts) {
  	}
  	
  	table_body += add_AJAX_Function('sub', id, ALL_SUB_CMDS.reset_op_cnt, 'Reset_Op_Counts');
+ 	table_body += add_AJAX_Function('sub', id, ALL_SUB_CMDS.send_all_open, 'Open_All_CapBanks');
+ 	table_body += add_AJAX_Function('sub', id, ALL_SUB_CMDS.send_all_close, 'Close_All_CapBanks');
+ 	table_body += add_AJAX_Function('sub', id, ALL_SUB_CMDS.send_all_enable_ovuv, 'Enable_OvUv');
+	table_body += add_AJAX_Function('sub', id, ALL_SUB_CMDS.send_all_disable_ovuv, 'Disable_OvUv');
  	if (!opts[0]){
  		table_body += add_AJAX_Function('sub', id, ALL_SUB_CMDS.v_all_banks, 'Verify_All_Banks');
  		table_body += add_AJAX_Function('sub', id, ALL_SUB_CMDS.v_fq_banks, 'Verify_Failed_And_Questionable_Banks');
@@ -161,7 +169,11 @@ function generateFeederMenu (id, state, opts) {
  var ALL_FDR_CMDS = {
  				 	 enable_fdr:2,
 	 				 disable_fdr:3,
-	 				 reset_op_cnt:12
+	 				 reset_op_cnt:12,
+	 				 send_all_open:29, 
+	 				 send_all_close:30, 
+	 				 send_all_enable_ovuv:31, 
+	 				 send_all_disable_ovuv:32
 	 				}
  //var table_header = "<table>";
  var table_footer = "</table>";
@@ -177,6 +189,11 @@ function generateFeederMenu (id, state, opts) {
  	}
  	
  	table_body += add_AJAX_Function('feeder', id, ALL_FDR_CMDS.reset_op_cnt, 'Reset_Op_Counts');
+ 	table_body += add_AJAX_Function('feeder', id, ALL_FDR_CMDS.send_all_open, 'Open_All_CapBanks');
+ 	table_body += add_AJAX_Function('feeder', id, ALL_FDR_CMDS.send_all_close, 'Close_All_CapBanks');
+ 	table_body += add_AJAX_Function('feeder', id, ALL_FDR_CMDS.send_all_enable_ovuv, 'Enable_OvUv');
+	table_body += add_AJAX_Function('feeder', id, ALL_FDR_CMDS.send_all_disable_ovuv, 'Disable_OvUv');
+ 	
  }
 
 	//table_header+= table_body;
@@ -212,6 +229,7 @@ function generate_CB_Move_Back (id, name, red) {
 
 //function to generate the cap bank move back menu
 function generate_SubAreaMenu (id, name, enable) {
+	
      //start and end of div html
      var div_start_tag = "<HTML><BODY><div id='area" + id + "' ";
      var div_end_tag = " </div></BODY></HTML>";
@@ -229,6 +247,11 @@ function generate_SubAreaMenu (id, name, enable) {
         table_body += add_AJAX_Function('area', id, 22, 'Enable_Area');
      else
         table_body += add_AJAX_Function('area', id, 23, 'Disable_Area');
+     table_body += add_AJAX_Function('area', id, 29, 'Open_All_CapBanks');
+ 	table_body += add_AJAX_Function('area', id, 30, 'Close_All_CapBanks');
+ 	table_body += add_AJAX_Function('area', id, 31, 'Enable_OvUv');
+	table_body += add_AJAX_Function('area', id, 32, 'Disable_OvUv');
+
      
      table_body+= table_footer;
      //append table to the div
