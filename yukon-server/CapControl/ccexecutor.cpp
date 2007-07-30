@@ -155,7 +155,7 @@ void CtiCCCommandExecutor::Execute()
     case CtiCCCommand::SEND_ALL_CLOSE:
     case CtiCCCommand::SEND_ALL_ENABLE_OVUV:
     case CtiCCCommand::SEND_ALL_DISABLE_OVUV:
-        SendAllCapBankCommands(_command->getCommand());
+        SendAllCapBankCommands(); 
         break;
         
     default:
@@ -982,7 +982,7 @@ void CtiCCCommandExecutor::DisableOvUv()
 
 }
 
-void CtiCCCommandExecutor::SendAllCapBankCommands(LONG action)
+void CtiCCCommandExecutor::SendAllCapBankCommands()
 {
     CtiCCSubstationBusStore* store = CtiCCSubstationBusStore::getInstance();
     RWRecursiveLock<RWMutexLock>::LockGuard  guard(store->getMux());
@@ -991,6 +991,7 @@ void CtiCCCommandExecutor::SendAllCapBankCommands(LONG action)
     LONG controlID = 0;
     BOOL found = FALSE;
     string actionText = "";
+    LONG action = CtiCCCommand::UNDEFINED;
     CtiMultiMsg* multi = new CtiMultiMsg();
     CtiMultiMsg* actionMulti = new CtiMultiMsg();
     CtiMultiMsg* multiPilMsg = new CtiMultiMsg();
@@ -999,33 +1000,39 @@ void CtiCCCommandExecutor::SendAllCapBankCommands(LONG action)
     CtiMultiMsg_vec& pointChanges = multi->getData();
     CtiMultiMsg_vec& ccEvents = eventMulti->getData();
 
-    switch (action) 
-    {
-        case CtiCCCommand::OPEN_CAPBANK:
+    switch ( _command->getCommand() ) 
+    {       
+
+        case CtiCCCommand::SEND_ALL_OPEN:
         {
             actionText = string(" - Open");
+            action = CtiCCCommand::OPEN_CAPBANK;
             break;
         }
-        case CtiCCCommand::CLOSE_CAPBANK:
+        case CtiCCCommand::SEND_ALL_CLOSE:
         {
             actionText = string(" - Close");
+            action = CtiCCCommand::CLOSE_CAPBANK;
             break;
         }
-        case CtiCCCommand::ENABLE_OVUV:
+        case CtiCCCommand::SEND_ALL_ENABLE_OVUV:
         {
             actionText = string(" - Enable OvUv");
+            action = CtiCCCommand::ENABLE_OVUV;
             break;
         }
-        case CtiCCCommand::DISABLE_OVUV:
+        case CtiCCCommand::SEND_ALL_DISABLE_OVUV:
         {
             actionText = string(" - Disable OvUv");
+            action = CtiCCCommand::DISABLE_OVUV;
             break;
         }
         default:
         {
             actionText = string(" - ERROR...");
             break;
-        }    }
+        }    
+    }
 
 
     CtiCCArea_vec& ccAreas = *store->getCCGeoAreas(CtiTime().seconds());
@@ -1041,9 +1048,9 @@ void CtiCCCommandExecutor::SendAllCapBankCommands(LONG action)
             currentArea = store->findAreaByPAObjectID(currentSubstationBus->getParentId());
             if (currentArea != NULL) 
             {
-                if (action == CtiCCCommand::ENABLE_OVUV) 
+                if (_command->getCommand() == CtiCCCommand::SEND_ALL_ENABLE_OVUV) 
                     currentFeeder->setOvUvDisabledFlag(FALSE);
-                if (action == CtiCCCommand::DISABLE_OVUV) 
+                if (_command->getCommand() == CtiCCCommand::SEND_ALL_DISABLE_OVUV) 
                     currentFeeder->setOvUvDisabledFlag(TRUE);
 
                 string text1 = string("Feeder: ");
@@ -1062,7 +1069,7 @@ void CtiCCCommandExecutor::SendAllCapBankCommands(LONG action)
                 for(LONG k=0;k<ccCapBanks.size();k++)
                 {
                     CtiCCCapBankPtr currentCapBank = (CtiCCCapBankPtr)ccCapBanks[k];
-                    actionMulti->insert(new CtiCCCommand(action, currentCapBank->getPAOId()));
+                    actionMulti->insert(new CtiCCCommand(action, currentCapBank->getControlDeviceId()));
                 }
 
             }
@@ -1076,9 +1083,9 @@ void CtiCCCommandExecutor::SendAllCapBankCommands(LONG action)
             currentArea = store->findAreaByPAObjectID(currentSubstationBus->getParentId());
             if (currentArea != NULL) 
             {
-                if (action == CtiCCCommand::ENABLE_OVUV) 
+                if (_command->getCommand() == CtiCCCommand::SEND_ALL_ENABLE_OVUV) 
                     currentSubstationBus->setOvUvDisabledFlag(FALSE);
-                if (action == CtiCCCommand::DISABLE_OVUV) 
+                if (_command->getCommand() == CtiCCCommand::SEND_ALL_DISABLE_OVUV) 
                     currentSubstationBus->setOvUvDisabledFlag(TRUE);
 
                 string text1 = string("SubBus: ");
@@ -1098,9 +1105,9 @@ void CtiCCCommandExecutor::SendAllCapBankCommands(LONG action)
                 {
                     CtiCCFeeder* currentFeeder = (CtiCCFeeder*)ccFeeders.at(j);
 
-                    if (action == CtiCCCommand::ENABLE_OVUV) 
+                    if (_command->getCommand() == CtiCCCommand::SEND_ALL_ENABLE_OVUV) 
                         currentFeeder->setOvUvDisabledFlag(FALSE);
-                    if (action == CtiCCCommand::DISABLE_OVUV) 
+                    if (_command->getCommand() == CtiCCCommand::SEND_ALL_DISABLE_OVUV) 
                         currentFeeder->setOvUvDisabledFlag(TRUE);
 
                     CtiCCCapBank_SVector& ccCapBanks = currentFeeder->getCCCapBanks();
@@ -1108,7 +1115,7 @@ void CtiCCCommandExecutor::SendAllCapBankCommands(LONG action)
                     for(LONG k=0;k<ccCapBanks.size();k++)
                     {
                         CtiCCCapBankPtr currentCapBank = (CtiCCCapBankPtr)ccCapBanks[k];
-                        actionMulti->insert(new CtiCCCommand(action, currentCapBank->getPAOId()));
+                        actionMulti->insert(new CtiCCCommand(action, currentCapBank->getControlDeviceId()));
                     }
                 }
             }
@@ -1139,9 +1146,9 @@ void CtiCCCommandExecutor::SendAllCapBankCommands(LONG action)
            
                 if (currentSubstationBus->getParentId() == currentArea->getPAOId())
                 {
-                    if (action == CtiCCCommand::ENABLE_OVUV) 
+                    if (_command->getCommand() == CtiCCCommand::SEND_ALL_ENABLE_OVUV) 
                         currentSubstationBus->setOvUvDisabledFlag(FALSE);
-                    if (action == CtiCCCommand::DISABLE_OVUV) 
+                    if (_command->getCommand() == CtiCCCommand::SEND_ALL_DISABLE_OVUV) 
                         currentSubstationBus->setOvUvDisabledFlag(TRUE);
 
                     currentSubstationBus->setEventSequence(currentSubstationBus->getEventSequence() +1);
@@ -1153,16 +1160,18 @@ void CtiCCCommandExecutor::SendAllCapBankCommands(LONG action)
                     {
                         CtiCCFeeder* currentFeeder = (CtiCCFeeder*)ccFeeders.at(j);
 
-                        if (action == CtiCCCommand::ENABLE_OVUV) 
+                        if (_command->getCommand() == CtiCCCommand::SEND_ALL_ENABLE_OVUV) 
                             currentFeeder->setOvUvDisabledFlag(FALSE);
-                        if (action == CtiCCCommand::DISABLE_OVUV) 
+                        if (_command->getCommand() == CtiCCCommand::SEND_ALL_DISABLE_OVUV) 
                             currentFeeder->setOvUvDisabledFlag(TRUE);
+
                         CtiCCCapBank_SVector& ccCapBanks = currentFeeder->getCCCapBanks();
                    
                         for(LONG k=0;k<ccCapBanks.size();k++)
                         {
                             CtiCCCapBankPtr currentCapBank = (CtiCCCapBankPtr)ccCapBanks[k];
-                            actionMulti->insert(new CtiCCCommand(action, currentCapBank->getPAOId()));
+                            actionMulti->insert(new CtiCCCommand(action, currentCapBank->getControlDeviceId())); 
+                           
                         }
                     }
                 }

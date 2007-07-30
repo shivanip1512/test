@@ -73,6 +73,7 @@ public:
 
     enum 
     {
+        UNDEFINED = -1,
         ENABLE_SUBSTATION_BUS = 0,
         DISABLE_SUBSTATION_BUS,//1
         ENABLE_FEEDER,//2

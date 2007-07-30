@@ -89,7 +89,7 @@ private:
     void Scan2WayDevice();
     void Flip7010Device();
     void SendSystemStatus();
-    void SendAllCapBankCommands(LONG action);
+    void SendAllCapBankCommands();
     
     CtiCCCommand* _command;
 };
