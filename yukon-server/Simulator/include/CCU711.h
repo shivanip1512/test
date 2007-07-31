@@ -32,6 +32,9 @@
 
 #define A_WORD 31
 #define B_WORD 32
+#define C_WORD 33
+#define D_WORD 34
+#define E_WORD 35
 
 #define FUNCACK 41
 #define READ    42

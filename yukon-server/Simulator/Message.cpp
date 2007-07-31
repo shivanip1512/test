@@ -111,6 +111,7 @@ void Message::CreateMessage(int MsgType, int WrdFnc, unsigned char Data[], unsig
 			_messageData[Ctr++] = 0x42;							
 			_messageData[Ctr++] = 0x42;	
 			_messageData[Ctr++] = 0x82;	
+
 			EmetconWord newWord;
 			int Function = 0;
 			Ctr = newWord.InsertWord(D_WORD,  _messageData, Function, Ctr);
@@ -174,6 +175,11 @@ int Message::DecodePreamble()
 		//  Feeder operation specified
 		_preamble = FEEDEROP;
 
+        //////////////////////////////////////////////////////////////////////////
+        // ///////////////////////////////////////////////////////////////////////
+        // ///////    CHANGE THESE NEXT TWO LINES SO THAT        /////////////////
+        // //////     THEY DETERMINE THE BYTES TO FOLLOW BASED  //////////////////
+        // //////     SOLELY ON THE B WORD  !!!                 //////////////////
         if( (_messageData[2] & 0x07) == 0x07 )
         {
             _bytesToFollow = 7;
@@ -380,35 +386,12 @@ unsigned char Message::getFrame(){
 	return Frame;
 }
 
-int Message::getBytesToFollow(){
-	return _bytesToFollow;
-}
-
-int Message::getCommand(){
-	return _commandType;
-}
-
-int Message::getPreamble(){
-	return _preamble;
-}
-
-int Message::getMessageType(){
-	return _messageType;
-}
-
-int Message::getMessageSize(){
-	return _indexOfEnd;
-}
-
-int Message::getWTF(){
-	return _words[0].getWTF();
-}
-
-int Message::getWordType(){
-	return _words[0].getWordType();
-}
-
-int Message::getWordFunction(){
-	return _words[0].getWordFunction();
-}
+int Message::getBytesToFollow(){    return _bytesToFollow;              }
+int Message::getCommand(){          return _commandType;                }
+int Message::getPreamble(){         return _preamble;                   }
+int Message::getMessageType(){      return _messageType;                }
+int Message::getMessageSize(){      return _indexOfEnd;                 }
+int Message::getWTF(){              return _words[0].getWTF();          }
+int Message::getWordType(){         return _words[0].getWordType();     }
+int Message::getWordFunction(){     return _words[0].getWordFunction(); }
 

@@ -52,10 +52,12 @@ void CCU711::ReceiveMsg()
 		cout << string(CtiNumStr(ReadBuffer[byteitr]).hex().zpad(2)) << ' ';
 	}
 
+
 	Message inMsg;
 	//determine the type of message
 	inMsg.CreateMessage(INPUT, DEFAULT, ReadBuffer);
 	bytesRead=0;
+
 
 	while(bytesRead !=inMsg.getBytesToFollow()) {
 		newSocket->CTINexusRead(ReadBuffer,inMsg.getBytesToFollow(), &bytesRead, 15);
@@ -64,6 +66,8 @@ void CCU711::ReceiveMsg()
 	{
 		cout<<string(CtiNumStr(ReadBuffer[byteitr]).hex().zpad(2))<<' ';
 	}
+
+
 	cout<<endl;
 	SET_FOREGROUND_WHITE;
 	inMsg.DecodeCommand(ReadBuffer);
@@ -71,11 +75,7 @@ void CCU711::ReceiveMsg()
 	inMsg.InsertWord(INPUT, ReadBuffer);
 	_incomingMsg[0] = inMsg;
 
-	string printMsg;
-	string printCmd;
-	string printPre;
-	string printWrd;
-	string printFnc;
+    string printMsg, printCmd, printPre, printWrd, printFnc;
 
 	TranslateInfo(INCOMING, printMsg, printCmd, printPre, printWrd, printFnc);
 
@@ -138,28 +138,24 @@ void CCU711::SendMsg(){
 	SET_FOREGROUND_WHITE;
 	string printType;
 	switch(_outgoingMsg[0].getMessageType()){
-	case 0:
+	case INPUT:
 		printType.append("INPUT");
 		break;
-	case 1:
+	case RESETREQ:
 		printType.append("RESETREQ");
 		break;
-	case 2:
+	case RESETACK:
 		printType.append("RESETACK");
 		break;
-	case 3:
+	case GENREQ:
 		printType.append("GENREQ");
 		break;
-	case 4:
+	case GENREP:
 		printType.append("GENREP");
 		break;
 	}
 
-	string printMsg;
-	string printCmd;
-	string printPre;
-	string printWrd;
-	string printFnc;
+	string printMsg, printCmd, printPre, printWrd, printFnc;
 
 	TranslateInfo(OUTGOING, printMsg, printCmd, printPre, printWrd, printFnc);
 
@@ -179,113 +175,61 @@ void CCU711::TranslateInfo(bool direction, string & printMsg, string & printCmd,
 {
 	if(direction == INCOMING){
 		switch(_incomingMsg[0].getMessageType()){
-		case 0:
-			printMsg.append("INPUT");
-			break;
-		case 1:
-			printMsg.append("RESETREQ");
-			break;
-		case 2:
-			printMsg.append("RESETACK");
-			break;
-		case 3:
-			printMsg.append("GENREQ");
-			break;
-		case 4:
-			printMsg.append("GENREP");
-			break;
+            case INPUT:     printMsg.append("INPUT");       break;
+            case RESETREQ:  printMsg.append("RESETREQ");    break;
+            case RESETACK:  printMsg.append("RESETACK");    break;
+            case GENREQ:    printMsg.append("GENREQ");      break;
+            case GENREP:    printMsg.append("GENREP");      break;
 		}
 		switch(_incomingMsg[0].getCommand()){
-		case 11:
-			printCmd.append("DTRAN");
-			break;
+            case 11:        printCmd.append("DTRAN");       break;
 		}
 		switch(_incomingMsg[0].getPreamble()){
-		case 21:
-			printPre.append("FEEDEROP");
-			break;
+            case FEEDEROP:  printPre.append("FEEDEROP");    break;
 		}
 		switch(_incomingMsg[0].getWordType())
         {
-            case A_WORD:    printWrd.append("A_WORD");  break;
-            case B_WORD:    printWrd.append("B_WORD");  break;
-            case C_WORD:    printWrd.append("C_WORD");  break;
-		case 34:
-			printWrd.append("D_WORD");
-			break;
-		case 35:
-			printWrd.append("E_WORD");
-			break;
+            case A_WORD:    printWrd.append("A_WORD");      break;
+            case B_WORD:    printWrd.append("B_WORD");      break;
+            case C_WORD:    printWrd.append("C_WORD");      break;
+            case D_WORD:    printWrd.append("D_WORD");      break;
+            case E_WORD:    printWrd.append("E_WORD");      break;
 		}
 		switch(_incomingMsg[0].getWordFunction()){
-		case 41:
-			printFnc.append("FUNCACK");
-			break;
-		case 42:
-			printFnc.append("READ");
-			break;
-		case 43:
-			printFnc.append("WRITE");
-			break;
+            case FUNCACK:   printFnc.append("FUNCACK");     break;
+            case READ:      printFnc.append("READ");        break;
+            case WRITE:     printFnc.append("WRITE");       break;
 		}
 	}
 	else if(direction == OUTGOING){
-		switch(_incomingMsg[0].getMessageType()){
-		case 0:
-			printMsg.append("INPUT");
-			break;
-		case 1:
-			printMsg.append("RESETREQ");
-			break;
-		case 2:
-			printMsg.append("RESETACK");
-			break;
-		case 3:
-			printMsg.append("GENREQ");
-			break;
-		case 4:
-			printMsg.append("GENREP");
-			break;
-		}
-		switch(_outgoingMsg[0].getCommand()){
-		case 11:
-			printCmd.append("DTRAN");
-			break;
-		}
-		switch(_incomingMsg[0].getPreamble()){
-		case 21:
-			printPre.append("FEEDEROP");
-			break;
-		}
-		switch(_outgoingMsg[0].getWordType()){
-		case 31:
-			printWrd.append("A_WORD");
-			break;
-		case 32:
-			printWrd.append("B_WORD");
-			break;
-		case 33:
-			printWrd.append("C_WORD");
-			break;
-		case 34:
-			printWrd.append("D_WORD");
-			break;
-		case 35:
-			printWrd.append("E_WORD");
-			break;
-		}
-		switch(_outgoingMsg[0].getWordFunction()){
-		case 41:
-			printFnc.append("FUNCACK");
-			break;
-		case 42:
-			printFnc.append("READ");
-			break;
-		case 43:
-			printFnc.append("WRITE");
-			break;
-		}
+        switch(_outgoingMsg[0].getMessageType()){
+            case INPUT:     printMsg.append("INPUT");       break;
+            case RESETREQ:  printMsg.append("RESETREQ");    break;
+            case RESETACK:  printMsg.append("RESETACK");    break;
+            case GENREQ:    printMsg.append("GENREQ");      break;
+            case GENREP:    printMsg.append("GENREP");      break;
+        }
+        switch(_outgoingMsg[0].getCommand()){
+            case 11:        printCmd.append("DTRAN");       break;
+        }
+        switch(_outgoingMsg[0].getPreamble()){
+            case FEEDEROP:  printPre.append("FEEDEROP");    break;
+        }
+        switch(_outgoingMsg[0].getWordType())
+        {
+            case A_WORD:    printWrd.append("A_WORD");      break;
+            case B_WORD:    printWrd.append("B_WORD");      break;
+            case C_WORD:    printWrd.append("C_WORD");      break;
+            case D_WORD:    printWrd.append("D_WORD");      break;
+            case E_WORD:    printWrd.append("E_WORD");      break;
+        }
+        switch(_outgoingMsg[0].getWordFunction()){
+            case FUNCACK:   printFnc.append("FUNCACK");     break;
+            case READ:      printFnc.append("READ");        break;
+            case WRITE:     printFnc.append("WRITE");       break;
+        }
 	}
+	
 }
 
 //Returns a pointer to the listening socket
