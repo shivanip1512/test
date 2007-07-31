@@ -23,7 +23,7 @@ class EmetconWord{
 		// Default constructor
 		EmetconWord();
 		// Initialize a word
-		void CreateWord(char WordType, unsigned char Data[], char WordFunc = '?');
+		int InsertWord(int _wordType, unsigned char * MessageData, int WordFunc, int Ctr = 0);
 		// Constructor to copy and decode an existing word
 		void DecodeWord(unsigned char ReadBuffer[], CTINEXUS * newSocket);
 		// Calculate the BCH code
@@ -33,9 +33,9 @@ class EmetconWord{
 		// Function to read the data in the word to the screen
 		void ReadWord();
 		// Return the word's definition
-		char getWordType();
+		int getWordType();
 		// Return the word's function
-		char getWordFunction();
+		int getWordFunction();
 		// Return the word's size
 		int  getWordSize();
 		//  Returns the number of words following the first b word
@@ -45,11 +45,11 @@ class EmetconWord{
 		//  Allow access to WordData for copying into messages
 		unsigned char operator[](int index);
 	private:
-		unsigned char WordData[20];
-		char WordType;
-		char WordFunction;
-		int  WordSize;
-		int  WTF;
+		unsigned char _wordData[20];
+		int _wordType;
+		int _wordFunction;
+		int  _wordSize;
+		int  _wtf;
 };
 #endif
 

@@ -22,11 +22,11 @@ class Message{
 		// Default constructor
 		Message();
 		// Constructor to build a new Message
-		void CreateMessage(char MsgType, unsigned char Data[], unsigned char Address = 0x00);
+		void CreateMessage(int MsgType, unsigned char Data[], unsigned char Address = 0x00, unsigned char Frame = 0x00);
 		// Destructor
 
 		// This is used to insert words into incoming messages 
-		void InsertWord(char WordType, unsigned char Data[]);
+		void InsertWord(int WordType, unsigned char Data[]);
 		// This is used to insert words into outgoing messages
 		void InsertWord(EmetconWord oneWord);
 		// Function to read the data in the Message to the screen
@@ -34,13 +34,15 @@ class Message{
 		//  Figure out the IDLC protocol
 		int DecodeIDLC();
 		//  Figure out what the preamble says
+		void DecodeCommand(unsigned char Data[]);
+		//  Figure out what the preamble says
 		int DecodePreamble();
 		//  Determine what kind of word it is
-		char DecodeDefinition();
+		int DecodeDefinition();
 		//  Determine the number of words to follow
-		int DecodeWTF(char WordType, unsigned char Data[]);
+		int DecodeWTF(int WordType, unsigned char Data[]);
 		//  Determine what function the word specifies
-		char DecodeFunction(char WordType, unsigned char Data[]);
+		int DecodeFunction(int WordType, unsigned char Data[]);
 		//  Determine and insert the CRC code
 		unsigned short InsertCRC(unsigned long Length);
 		//  Returns a copy of the message array
@@ -48,17 +50,23 @@ class Message{
 		//  Returns the number of bytes left to read in the message
 		int getBytesToFollow();
 		//  Returns the type of message
-		char getMessageType();
+		int getCommand();
+		//  Returns the type of message
+		int getPreamble();
+		//  Returns the type of message
+		int getMessageType();
 		//  Returns the type of message
 		unsigned char getAddress();
+		//  Returns the type of message
+		unsigned char getFrame();
 		//  Returns the size of the message
 		int getMessageSize();
 		//  Returns the number type of word in the message
-		char getWordType();
+		int getWordType();
 		//  Returns the words to follow value from a 'b' word
 		int getWTF();
 		//  Returns the number function of the word in the message
-		char getWordFunction();
+		int getWordFunction();
 		//  Put the correct preamble at the beginning of message
 		void CreatePreamble();
 		//  Add an ack character to the current message
@@ -69,12 +77,14 @@ class Message{
 
 
 	private:
-		char MessageType;
-		unsigned char MessageData[50];
-		EmetconWord Words[4];
-		int BytesToFollow;
-		int IndexOfEnd;
-		int IndexOfWords;
+		int _messageType;
+		int _commandType;
+		int _preamble;
+		unsigned char _messageData[100];
+		EmetconWord _words[4];
+		int _bytesToFollow;
+		int _indexOfEnd;
+		int _indexOfWords;
 };
 
 #endif

@@ -18,11 +18,25 @@
 #include "cticalls.h"
 #include "color.h"
 
-#define INPUT    '0'
-#define RESETREQ '1'
-#define RESETACK '2'
-#define GENREQ   '3'
-#define GENREP   '4'
+#define INPUT    0
+#define RESETREQ 1
+#define RESETACK 2
+#define GENREQ   3
+#define GENREP   4
+
+#define DTRAN 11
+
+#define FEEDEROP 21
+
+#define A_WORD 31
+#define B_WORD 32
+
+#define FUNCACK 41
+#define READ    42
+#define WRITE   43
+
+#define INCOMING 0
+#define OUTGOING 1
 
 
 /**************************************************
@@ -68,59 +82,53 @@ void CCU711::ReceiveMsg(){
 	}
 	std::cout<<std::endl;
 	SET_FOREGROUND_WHITE;
-	//  inMsg.InsertWord('i', ReadBuffer);
+	inMsg.DecodeCommand(ReadBuffer);
+	inMsg.DecodePreamble();
+	inMsg.InsertWord(INPUT, ReadBuffer);
+	_incomingMsg[0] = inMsg;
 
-	std::string printType;
-	switch(inMsg.getMessageType()){
-	case '0':
-		printType.append("INPUT");
-		break;
-	case '1':
-		printType.append("RESETREQ");
-		break;
-	case '2':
-		printType.append("RESETACK");
-		break;
-	case '3':
-		printType.append("GENREQ");
-		break;
-	case '4':
-		printType.append("GENREP");
-		break;
-	}
+	std::string printMsg;
+	std::string printCmd;
+	std::string printPre;
+	std::string printWrd;
+	std::string printFnc;
 
-	std::cout<<"Message Type: "<<printType<<"    Word Type: "<<inMsg.getWordType();
-	std::cout<<"    Word Function: "<<inMsg.getWordFunction()<<std::endl;
-	incomingMsg[0] = inMsg;
+	TranslateInfo(INCOMING, printMsg, printCmd, printPre, printWrd, printFnc);
+
+	std::cout<<"Msg: "<<printMsg<<"    Cmd: "<<printCmd<<"    Pre: "<<printPre;
+	std::cout<<"    Wrd: "<<printWrd<<"    Fnc: "<<printFnc<<std::endl;
+
 }
 
 //Build a new message
 void CCU711::CreateMsg(){
 	unsigned char someData[10];
 	Message newMessage;
-	if(incomingMsg[0].getMessageType()== RESETREQ)
+	if(_incomingMsg[0].getMessageType()== RESETREQ)
 	{
 		//  Reset request
-		unsigned char Address = incomingMsg[0].getAddress();
+		unsigned char Address = _incomingMsg[0].getAddress();
 		newMessage.CreateMessage(RESETACK, someData, Address);
-		outgoingMsg[0]=newMessage;
+		_outgoingMsg[0]=newMessage;
 	}
-	else if(incomingMsg[0].getMessageType()==GENREQ)
+	else if(_incomingMsg[0].getMessageType()==GENREQ)
 	{
 		//  General Request
-		unsigned char Address = incomingMsg[0].getAddress();
-		newMessage.CreateMessage(GENREP, someData, Address);
-		outgoingMsg[0]=newMessage;
+		unsigned char Frame = _incomingMsg[0].getFrame();
+		unsigned char Address = _incomingMsg[0].getAddress();
+		newMessage.CreateMessage(GENREP, someData, Address, Frame);
+
+		_outgoingMsg[0]=newMessage;
 	}
 }
 
 //Send the message back to porter
 void CCU711::SendMsg(){
 	unsigned long bytesWritten = 0;
-	unsigned char * WriteBuffer = outgoingMsg[0].getMessageArray();
-	int MsgSize = outgoingMsg[0].getMessageSize();
+	unsigned char * WriteBuffer = _outgoingMsg[0].getMessageArray();
+	int MsgSize = _outgoingMsg[0].getMessageSize();
 	unsigned char SendData[300];
-	for(int i=0; i<30; i++) {
+	for(int i=0; i<100; i++) {
 		SendData[i]= WriteBuffer[i];
 	}
 
@@ -138,33 +146,160 @@ void CCU711::SendMsg(){
 	std::cout<<std::endl;
 	SET_FOREGROUND_WHITE;
 	std::string printType;
-	switch(outgoingMsg[0].getMessageType()){
-	case '0':
+	switch(_outgoingMsg[0].getMessageType()){
+	case 0:
 		printType.append("INPUT");
 		break;
-	case '1':
+	case 1:
 		printType.append("RESETREQ");
 		break;
-	case '2':
+	case 2:
 		printType.append("RESETACK");
 		break;
-	case '3':
+	case 3:
 		printType.append("GENREQ");
 		break;
-	case '4':
+	case 4:
 		printType.append("GENREP");
 		break;
 	}
 
-	std::cout<<"Message Type: "<<printType<<"    Word Type: "<<outgoingMsg[0].getWordType();
-	std::cout<<"    Word Function: "<<outgoingMsg[0].getWordFunction()<<std::endl;
-	std::cout<<"------------------------------------------------------"<<std::endl;
+	std::string printMsg;
+	std::string printCmd;
+	std::string printPre;
+	std::string printWrd;
+	std::string printFnc;
+
+	TranslateInfo(OUTGOING, printMsg, printCmd, printPre, printWrd, printFnc);
+
+	std::cout<<"Msg: "<<printMsg<<"    Cmd: "<<printCmd<<"         Pre: "<<printPre;
+	std::cout<<"    Wrd: "<<printWrd<<"    Fnc: "<<printFnc<<std::endl;
+	std::cout<<"________________________________________________________________________________"<<std::endl;
+	           
 
 	// Reset inmessage
 	Message blankMessage;
-	incomingMsg[0] = blankMessage;
+	_incomingMsg[0] = blankMessage;
 	// reset outbound message
-	outgoingMsg[0] = blankMessage;
+	_outgoingMsg[0] = blankMessage;
+}
+
+void CCU711::TranslateInfo(bool direction, string & printMsg, string & printCmd, string & printPre, string & printWrd, string & printFnc)
+{
+	if(direction == 0){
+		switch(_incomingMsg[0].getMessageType()){
+		case 0:
+			printMsg.append("INPUT");
+			break;
+		case 1:
+			printMsg.append("RESETREQ");
+			break;
+		case 2:
+			printMsg.append("RESETACK");
+			break;
+		case 3:
+			printMsg.append("GENREQ");
+			break;
+		case 4:
+			printMsg.append("GENREP");
+			break;
+		}
+		switch(_incomingMsg[0].getCommand()){
+		case 11:
+			printCmd.append("DTRAN");
+			break;
+		}
+		switch(_incomingMsg[0].getPreamble()){
+		case 21:
+			printPre.append("FEEDEROP");
+			break;
+		}
+		switch(_incomingMsg[0].getWordType()){
+		case 31:
+			printWrd.append("A_WORD");
+			break;
+		case 32:
+			printWrd.append("B_WORD");
+			break;
+		case 33:
+			printWrd.append("C_WORD");
+			break;
+		case 34:
+			printWrd.append("D_WORD");
+			break;
+		case 35:
+			printWrd.append("E_WORD");
+			break;
+		}
+		switch(_incomingMsg[0].getWordFunction()){
+		case 41:
+			printFnc.append("FUNCACK");
+			break;
+		case 42:
+			printFnc.append("READ");
+			break;
+		case 43:
+			printFnc.append("WRITE");
+			break;
+		}
+	}
+	else if(direction == 1){
+		switch(_incomingMsg[0].getMessageType()){
+		case 0:
+			printMsg.append("INPUT");
+			break;
+		case 1:
+			printMsg.append("RESETREQ");
+			break;
+		case 2:
+			printMsg.append("RESETACK");
+			break;
+		case 3:
+			printMsg.append("GENREQ");
+			break;
+		case 4:
+			printMsg.append("GENREP");
+			break;
+		}
+		switch(_outgoingMsg[0].getCommand()){
+		case 11:
+			printCmd.append("DTRAN");
+			break;
+		}
+		switch(_incomingMsg[0].getPreamble()){
+		case 21:
+			printPre.append("FEEDEROP");
+			break;
+		}
+		switch(_outgoingMsg[0].getWordType()){
+		case 31:
+			printWrd.append("A_WORD");
+			break;
+		case 32:
+			printWrd.append("B_WORD");
+			break;
+		case 33:
+			printWrd.append("C_WORD");
+			break;
+		case 34:
+			printWrd.append("D_WORD");
+			break;
+		case 35:
+			printWrd.append("E_WORD");
+			break;
+		}
+		switch(_outgoingMsg[0].getWordFunction()){
+		case 41:
+			printFnc.append("FUNCACK");
+			break;
+		case 42:
+			printFnc.append("READ");
+			break;
+		case 43:
+			printFnc.append("WRITE");
+			break;
+		}
+	}
 }
 
 //Returns a pointer to the listening socket

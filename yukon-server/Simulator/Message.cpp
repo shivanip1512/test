@@ -16,211 +16,276 @@
 #include "stdio.h"
 #include "cticalls.h"
 #include "cti_asmc.h"
+#include "numstr.h"
+#include<iostream>
 
 
-#define INPUT    '0'
-#define RESETREQ '1'
-#define RESETACK '2'
-#define GENREQ   '3'
-#define GENREP   '4'
+#define INPUT    0
+#define RESETREQ 1
+#define RESETACK 2
+#define GENREQ   3
+#define GENREP   4
 
-namespace std {}
+#define DTRAN 11
+
+#define FEEDEROP 21
+
+#define A_WORD 31
+#define B_WORD 32
+#define C_WORD 33
+#define D_WORD 34
+
+#define FUNCACK 41
+#define READ    42
+#define WRITE   43
+
+using namespace std;
 
 /**************************************************
 /*  Message functions   
 ***************************************************/
 Message::Message(){
-	IndexOfEnd = 0;
-	IndexOfWords = 0;
-	MessageType = '?';
-	for (int i =0; i < 48; i++) {
-		MessageData[i] = 0x0;
+	_indexOfEnd = 0;
+	_indexOfWords = 0;
+	_messageType = 0;
+	_commandType = 0;
+	_preamble = 0;
+	for (int i =0; i < 99; i++) {
+		_messageData[i] = 0x0;
 	}
-	MessageType;
 	EmetconWord blankWord;
-	Words[0] = blankWord;
-	Words[1] = blankWord;
-	Words[2] = blankWord;
-	Words[3] = blankWord;
-	BytesToFollow = 0;;
+	_words[0] = blankWord;
+	_words[1] = blankWord;
+	_words[2] = blankWord;
+	_words[3] = blankWord;
+	_bytesToFollow = 0;
 }
 	
 // Constructor to build a new Message 
-void Message::CreateMessage(char MsgType, unsigned char Data[], unsigned char Address){
-	MessageType = MsgType;
-	if(MessageType == INPUT) {
-		MessageData[0] = Data[0];
-		MessageData[1] = Data[1];
-		MessageData[2] = Data[2];
-		MessageData[3] = Data[3];
-		IndexOfEnd = 4;
-		BytesToFollow = DecodeIDLC();
+void Message::CreateMessage(int MsgType, unsigned char Data[], unsigned char Address, unsigned char Frame){
+	_messageType = MsgType;
+	if(_messageType == INPUT) {
+		_messageData[0] = Data[0];
+		_messageData[1] = Data[1];
+		_messageData[2] = Data[2];
+		_messageData[3] = Data[3];
+		_indexOfEnd = 4;
+		_bytesToFollow = DecodeIDLC();
 	}
-	else if(MessageType == RESETACK) {
-		MessageData[0] = 0x7e;
-		MessageData[1] = Address;   //  slave address
-		MessageData[2] = 0x73;
-		MessageData[3] = InsertCRC(4);   //  insert CRC code
-		IndexOfEnd = 4;
+	else if(_messageType == RESETACK) {
+		_messageData[0] = 0x7e;
+		_messageData[1] = Address;   //  slave address
+		_messageData[2] = 0x73;
+		unsigned short CRC = NCrcCalc_C ((_messageData + 1), 2);
+		_messageData[3] = HIBYTE(CRC);   //  insert CRC code
+		_messageData[4] = LOBYTE(CRC);   //  insert CRC code
+		_indexOfEnd = 5;
 	}
-	else if(MessageType == GENREP) {
-		MessageData[0] = 0x7e;
-		MessageData[1] = Address;   //  slave address
-		MessageData[2] = 0xd8;      //  control
-		MessageData[3] = 0x0e;      // # of bytes to follow minus two
-		MessageData[4] = 0x02;      // SRC/DES
-		MessageData[5] = 0x26;      // Echo of command received
-		MessageData[6] = 0x00;
-		MessageData[7] = 0x00;
-		MessageData[8] = 0x00;
-		MessageData[9] = 0x00;
-		MessageData[10] = 0x00;
-		MessageData[11] = 0x00;
-		MessageData[12] = 0x00;
-		MessageData[13] = 0x00;
-		MessageData[14] = 0x00;
-		MessageData[15] = 0x00;
-		MessageData[16] = 0x00;
-		MessageData[17] = 0x00;
-		unsigned short CRC = (InsertCRC(20));   //  insert CRC code
-		MessageData[18] = HIBYTE (CRC);
-		MessageData[19] = LOBYTE (CRC);
-		IndexOfEnd = 20;
+	else if(_messageType == GENREP) {
+		int Ctr = 0;
+		_messageData[Ctr++] = 0x7e;
+		_messageData[Ctr++] = Address;   //  slave address
+		_messageData[Ctr++] = Frame;     //  control
+		Ctr++;  		// # of bytes to follow minus two filled in at bottom of section
+		_messageData[Ctr++] = 0x02;      // SRC/DES
+		_messageData[Ctr++] = 0x26;      // Echo of command received
+		_messageData[Ctr++] = 0x00;      // system status items
+		_messageData[Ctr++] = 0x00;      //    "   "
+		_messageData[Ctr++] = 0x00;      //    "   "
+		_messageData[Ctr++] = 0x00;      //    "   "  
+		_messageData[Ctr++] = 0x00;     // device status items
+		_messageData[Ctr++] = 0x00;     //    "   "
+		_messageData[Ctr++] = 0x00;     //    "   "   
+		_messageData[Ctr++] = 0x00;     //    "   "
+		_messageData[Ctr++] = 0x00;     //    "   "
+		_messageData[Ctr++] = 0x00;     //    "   "
+		_messageData[Ctr++] = 0x00;     // process status items
+		_messageData[Ctr++] = 0x00;     //    "   "									
+
+		_messageData[Ctr++] = 0x42;							
+		_messageData[Ctr++] = 0x42;	
+		_messageData[Ctr++] = 0x82;	
+		EmetconWord newWord;
+		int Function = 0;
+		Ctr = newWord.InsertWord(D_WORD,  _messageData, Function, Ctr);
+		_words[0]=newWord;
+		/*_messageData[Ctr++] = 0xd4; //beginning of d word
+		_messageData[Ctr++] = 0x24;
+		_messageData[Ctr++] = 0x13; //data begins in second half of this byte
+		_messageData[Ctr++] = 0xff; // data
+		_messageData[Ctr++] = 0xff; // data
+		_messageData[Ctr++] = 0xf0; // data ends first half of this byte
+		_messageData[Ctr++] = 0x00; 
+
+		unsigned char BCH = BCHCalc_C (_messageData+Ctr-7, 46);
+		_messageData[Ctr-2] |= BCH >> 6;
+		_messageData[Ctr-1] = BCH << 2;*/
+		_messageData[Ctr++] = 0x42; 
+
+		_messageData[3] = Ctr-4;      // # of bytes to follow minus two (see note above)
+									
+		unsigned short CRC = NCrcCalc_C ((_messageData + 1), Ctr-1);
+		_messageData[Ctr++] = HIBYTE (CRC);
+		_messageData[Ctr++] = LOBYTE (CRC);
+
+		//  Output for debugging only
+		/*for(int i=0; i<Ctr; i++) {
+			std::cout<<"_messageData "<<string(CtiNumStr(_messageData[i]).hex().zpad(2))<<std::endl;
+		}*/
+
+		_indexOfEnd = Ctr;
 	}
 }
 
 int Message::DecodeIDLC(){
-	int bytesToFollow = 0;
-	if((MessageData[0] & 0x7e) == 0x7e){
+	int _bytesToFollow = 0;
+	if((_messageData[0] & 0x7e) == 0x7e){
 		//  IDLC LAYER 2 Asynchronous Link Control
-			if((MessageData[2] & 0x1f)== 0x1f){
+			if((_messageData[2] & 0x1f)== 0x1f){
 			//  Reset Request
-				MessageType = RESETREQ;
-				bytesToFollow = 1;
+				_messageType = RESETREQ;
+				_bytesToFollow = 1;
 			}
-			if((MessageData[2] & 0x01) == 0x00){
+			else if((_messageData[2] & 0x01) == 0x00){
 			//  General Request
-				MessageType = GENREQ;
-				bytesToFollow = (MessageData[3] + 0x02);  
+				_messageType = GENREQ;
+				_bytesToFollow = (_messageData[3] + 0x02);  
 			}
 	}
-	return bytesToFollow;
+	return _bytesToFollow;
 }
 
+void Message::DecodeCommand(unsigned char Data[]){
+	_messageData[4]=Data[0];
+	_messageData[5]=Data[1];
+	_messageData[6]=Data[2];
+	_messageData[7]=Data[3];
+	_messageData[8]=Data[4];
+	_messageData[9]=Data[5];
+	if((Data[1] & 0x26)==0x26) {
+		_commandType = DTRAN;
+	}
+
+
+}
 
 int Message::DecodePreamble(){
-	char bytesToFollow = 0;
-	if((MessageData[0] & 0x4) == 0x4){
+	char _bytesToFollow = 0;
+	if((_messageData[3] & 0x4) == 0x4){
 		//  Feeder operation specified
-		MessageType = 'f';
-			if((MessageData[2] & 0x7)== 0x7){
-				bytesToFollow = 7;
+		_preamble = FEEDEROP;
+			if((_messageData[2] & 0x7)== 0x7){
+				_bytesToFollow = 7;
 			}
-			else if((MessageData[2] & 0xe)== 0xe){
-				bytesToFollow = 14;
+			else if((_messageData[2] & 0xe)== 0xe){
+				_bytesToFollow = 14;
 			}
 	}
-	else if((MessageData[0]==0x53) && (MessageData[1]==0xf5) && (MessageData[2]==0x55)) {
+	else if((_messageData[3]==0x53) && (_messageData[4]==0xf5) && (_messageData[5]==0x55)) {
 		// CCU710 ping
-		MessageType = 'p';
-		bytesToFollow = 0;
+		_messageType = 'p';
+		_bytesToFollow = 0;
 	}
-	else if((MessageData[0]==0x47) && (MessageData[1]==0x30) && (MessageData[2]==0x8e)) {
+	else if((_messageData[3]==0x47) && (_messageData[4]==0x30) && (_messageData[5]==0x8e)) {
 		// CCU710 ping
-		MessageType = '1';
-		bytesToFollow = 14;
+		_messageType = '1';
+		_bytesToFollow = 14;
 	}
-	else if((MessageData[0]==0x47) && (MessageData[1]==0x30) && (MessageData[2]==0x95)) {
+	else if((_messageData[3]==0x47) && (_messageData[4]==0x30) && (_messageData[5]==0x95)) {
 		// CCU710 ping
-		MessageType = '2';
-		bytesToFollow = 21;
+		_messageType = '2';
+		_bytesToFollow = 21;
 	}
-	if(MessageData[1]== 0x0){
+	if(_messageData[4]== 0x0){
 	}
-	if(MessageData[2]== 0x0){
+	if(_messageData[5]== 0x0){
 	}
-	return bytesToFollow;
+	return _bytesToFollow;
 }
 
-//  This is used to insert words into incoming messages
-void Message::InsertWord(char WordType, unsigned char Data[]){
-	char WordFunction;
+//  This is used to insert _words into incoming messages
+void Message::InsertWord(int WordType, unsigned char Data[]){
+	_messageData[10]=Data[6];
+	_messageData[12]=Data[7];
+	_messageData[13]=Data[8];
+	_messageData[14]=Data[9];
+	_messageData[15]=Data[10];
+	_messageData[16]=Data[11];
+	int WordFunction;
 	int InsertMore = 0;
 	int WTF = 0;
-	if(WordType == 'i') {
-		MessageData[3]=Data[0];
-		WordType = DecodeDefinition();
-		WordFunction = DecodeFunction(WordType, Data);
-		WTF = DecodeWTF(WordType, Data);
-		//  If there is a 'c' word following the 'b' word
-		//  then WTF indicates 'c' words to follow so they should be stored
-		if(WTF>0) {
-			if((Data[7] & 0xc0) == 0xc0) {
-				InsertMore = WTF;
-			}
+	//_messageData[3]=Data[0];
+	WordType = DecodeDefinition();
+	WordFunction = DecodeFunction(WordType, Data);
+	WTF = DecodeWTF(WordType, Data);
+	//  If there is a 'c' word following the 'b' word
+	//  then WTF indicates 'c' _words to follow so they should be stored
+	if(WTF>0) {
+		if((Data[7] & 0xc0) == 0xc0) {
+			InsertMore = WTF;
 		}
 	}
 
 	EmetconWord oneWord;
-	oneWord.CreateWord(WordType, Data, WordFunction);
+	oneWord.InsertWord(WordType, Data, WordFunction);
 	oneWord.setWTF(WTF);
-	IndexOfEnd += oneWord.getWordSize();
-	Words[IndexOfWords]= oneWord;
-	IndexOfWords++;
-	//  If the first word is a b word, see how many c words follow it
+	_indexOfEnd += oneWord.getWordSize();
+	_words[_indexOfWords]= oneWord;
+	_indexOfWords++;
+	//  If the first word is a b word, see how many c _words follow it
 	//  and insert them into the incoming message
-	if(Words[0].getWordType() == 'b') {
+	if(_words[0].getWordType() == 2) {
 		for(int i=0; i<InsertMore; i++) {
 			EmetconWord anotherWord;
-			anotherWord.CreateWord('c', Data, WordFunction);
-			IndexOfEnd += anotherWord.getWordSize();
-			Words[IndexOfWords]= anotherWord;
-			IndexOfWords++;
+			anotherWord.InsertWord(3, Data, WordFunction);
+			_indexOfEnd += anotherWord.getWordSize();
+			_words[_indexOfWords]= anotherWord;
+			_indexOfWords++;
 		}
 	}
 }
 
-//  This is used to insert words into outgoing messages
+//  This is used to insert _words into outgoing messages
 void Message::InsertWord(EmetconWord oneWord){
-	Words[IndexOfWords] = oneWord;
-	IndexOfWords++;
+	_words[_indexOfWords] = oneWord;
+	_indexOfWords++;
 	//  Determine where the message write should take place
-	//  considering words that have already been copied into MessageData
-	int Here = (IndexOfWords-1) * 8;
-	if(Words[0].getWordType()=='c') {
-		MessageData[Here + 3] = Words[0][0];
-		MessageData[Here + 4] = Words[0][1];
-		MessageData[Here + 5] = Words[0][2];
-		MessageData[Here + 6] = Words[0][3];
-		MessageData[Here + 7] = Words[0][4];
-		MessageData[Here + 8] = Words[0][5];
-		MessageData[Here + 9] = Words[0][6];
-		IndexOfEnd+=7;
+	//  considering _words that have already been copied into _messageData
+	int Here = (_indexOfWords-1) * 8;
+	if(_words[0].getWordType()==D_WORD) {
+		_messageData[Here + 3] = _words[0][0];
+		_messageData[Here + 4] = _words[0][1];
+		_messageData[Here + 5] = _words[0][2];
+		_messageData[Here + 6] = _words[0][3];
+		_messageData[Here + 7] = _words[0][4];
+		_messageData[Here + 8] = _words[0][5];
+		_messageData[Here + 9] = _words[0][6];
+		_indexOfEnd+=7;
 	}
-	else if(Words[0].getWordType()=='d') {
-		MessageData[Here + 3] = Words[0][0];
-		MessageData[Here + 4] = Words[0][1];
-		MessageData[Here + 5] = Words[0][2];
-		MessageData[Here + 6] = Words[0][3];
-		MessageData[Here + 7] = Words[0][4];
-		MessageData[Here + 8] = Words[0][5];
-		MessageData[Here + 9] = Words[0][6];
-		IndexOfEnd+=7;
+	else if(_words[0].getWordType()==4) {
+		_messageData[Here + 3] = _words[0][0];
+		_messageData[Here + 4] = _words[0][1];
+		_messageData[Here + 5] = _words[0][2];
+		_messageData[Here + 6] = _words[0][3];
+		_messageData[Here + 7] = _words[0][4];
+		_messageData[Here + 8] = _words[0][5];
+		_messageData[Here + 9] = _words[0][6];
+		_indexOfEnd+=7;
 	}
-	else if(Words[0].getWordType()=='e') {
-		MessageData[Here + 3] = Words[0][0];
-		MessageData[Here + 4] = Words[0][1];
-		MessageData[Here + 5] = Words[0][2];
-		MessageData[Here + 6] = Words[0][3];
-		MessageData[Here + 7] = Words[0][4];
-		MessageData[Here + 8] = Words[0][5];
-		MessageData[Here + 9] = Words[0][6];
-		IndexOfEnd+=7;
+	else if(_words[0].getWordType()==5) {
+		_messageData[Here + 3] = _words[0][0];
+		_messageData[Here + 4] = _words[0][1];
+		_messageData[Here + 5] = _words[0][2];
+		_messageData[Here + 6] = _words[0][3];
+		_messageData[Here + 7] = _words[0][4];
+		_messageData[Here + 8] = _words[0][5];
+		_messageData[Here + 9] = _words[0][6];
+		_indexOfEnd+=7;
 	}
 }
 
 
-int Message::DecodeWTF(char WordType, unsigned char Data[]){
+int Message::DecodeWTF(int WordType, unsigned char Data[]){
 	if((Data[4] & 0x10) == 0x10) {
 		return 1;
 	}
@@ -233,44 +298,39 @@ int Message::DecodeWTF(char WordType, unsigned char Data[]){
 	else return 0;
 }
 
-char Message::DecodeDefinition(){
-	char WordType ='?';
-	if((MessageData[3] & 0xa0) == 0xa0){
-		WordType = 'b';
+int Message::DecodeDefinition(){
+	int WordType = 0;
+	if(_messageData[10] == 0xaf){  
+		WordType = B_WORD;
 	}
+	else
+		WordType = 999;
 	return WordType;
 }
 
-char Message::DecodeFunction(char WordType, unsigned char Data[]){
-	char FunctionType = '?';
-	if(WordType=='b') {
-		//  Store the rest of the word into MessageData
-		MessageData[4] = Data[1];
-		MessageData[5] = Data[2];
-		MessageData[6] = Data[3];
-		MessageData[7] = Data[4];
-		MessageData[8] = Data[5];
-		MessageData[9] = Data[6];
+int Message::DecodeFunction(int WordType, unsigned char Data[]){
+	char FunctionType = 0;
+	if(WordType== B_WORD) {
 		//   check to see what function is specified
-		if((MessageData[8] & 0x3) == 0x03) {
+		if((_messageData[15] & 0xc) == 0x0c) {
 			//  Function with acknowledge
-			FunctionType = 'f';
+			FunctionType = FUNCACK;
 		}
-		else if((MessageData[8] & 0x01) == 0x01) {
+		else if((_messageData[15] & 0x04) == 0x04) {
 			//  Read
-			FunctionType = 'r';
+			FunctionType = READ;
 		}
-		else if((MessageData[8] & 0x01) == 0x00) {
+		else if((_messageData[15] & 0x00) == 0x00) {
 			//  Write
-			FunctionType = 'w';
+			FunctionType = WRITE;
 		}
 	}
 		return FunctionType;
 }
 
 void Message::InsertAck(){
-	MessageData[IndexOfEnd] = 0xc3;
-	IndexOfEnd++;
+	_messageData[_indexOfEnd] = 0xc3;
+	_indexOfEnd++;
 }
 
 // Constructor to copy and decode an existing Message
@@ -286,49 +346,65 @@ void Message::ReadMessage(){
 
 //  Returns a copy of the message array
 unsigned char * Message::getMessageArray(){
-	return MessageData;
+	return _messageData;
 }
 
 void Message::CreatePreamble(){
-	MessageData[0] = 0xc3;
-	MessageData[1] = 0xc3;
-	MessageData[2] = 0x82;
-	IndexOfEnd += 3;
+	_messageData[0] = 0xc3;
+	_messageData[1] = 0xc3;
+	_messageData[2] = 0x82;
+	_indexOfEnd += 3;
 }
 
 unsigned short Message::InsertCRC(unsigned long Length){
 	unsigned short CRC;
 	// ptr to UCHAR and USHORT
-	unsigned char * Message = MessageData;
-	CRC = SCrcCalc_C (Message, Length);
+	unsigned char * Message = _messageData;
+	CRC = NCrcCalc_C ((Message + 1), Length);
 	return CRC;
 }
 
 unsigned char Message::getAddress(){
-	return MessageData[1];
+	return _messageData[1];
+}
+
+unsigned char Message::getFrame(){
+	unsigned char Frame = 0x00;
+	Frame =	(_messageData[2] & 0xe0);
+	Frame = (Frame >> 4);
+	Frame = (Frame | 0x10);
+	return Frame;
 }
 
 int Message::getBytesToFollow(){
-	return BytesToFollow;
+	return _bytesToFollow;
 }
 
-char Message::getMessageType(){
-	return MessageType;
+int Message::getCommand(){
+	return _commandType;
+}
+
+int Message::getPreamble(){
+	return _preamble;
+}
+
+int Message::getMessageType(){
+	return _messageType;
 }
 
 int Message::getMessageSize(){
-	return IndexOfEnd;
+	return _indexOfEnd;
 }
 
 int Message::getWTF(){
-	return Words[0].getWTF();
+	return _words[0].getWTF();
 }
 
-char Message::getWordType(){
-	return Words[0].getWordType();
+int Message::getWordType(){
+	return _words[0].getWordType();
 }
 
-char Message::getWordFunction(){
-	return Words[0].getWordFunction();
+int Message::getWordFunction(){
+	return _words[0].getWordFunction();
 }
 

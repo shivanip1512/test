@@ -16,8 +16,9 @@
 #define  __CCU711_H__
 #include "Message.h"
 #include "Winsock2.h"
+#include <iostream>
 
-
+using namespace std;
 
 class CCU711{
 	public:
@@ -31,6 +32,8 @@ class CCU711{
 		void CreateMsg();
 		//Listen for and store an incoming message
 		void ReceiveMsg();
+		//  Translate message for user
+		void TranslateInfo(bool direction, string & printMsg, string & printCmd, string & printPre, string & printWrd, string & printFnc);
 		//Returns a pointer to the listening socket
 		CTINEXUS * getListenSocket();
 		//Returns a pointer to newSocket
@@ -38,9 +41,9 @@ class CCU711{
 
 	private:
 		//Array to store incoming message
-		Message incomingMsg[1];
+		Message _incomingMsg[1];
 		//Array to store outgoing message
-		Message outgoingMsg[1];
+		Message _outgoingMsg[1];
 
 		//Storage for sockets
 		WSADATA wsaData;
