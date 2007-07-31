@@ -51,12 +51,15 @@ public class StatisticHistoryModel extends ReportModelBase
 	public final static String PORT_NAME_STRING = "Port Name";
 	public final static String PORT_FAILURES_STRING = "Port Failures";
 	public final static String PORT_PERCENT_STRING = "Port Percent";
+	public final static String PORT_DB_STRING = "PORT";
 	//Device
 	public final static String DEVICE_NAME_STRING = "Device Name";
 	public final static String TOTAL_ERRORS_STRING = "Total Errors";
 	public final static String COMM_ERROR_PERCENT_STRING = "Communication Error%";
+	public final static String DEVICE_DB_STRING = "DEVICE";
 	//Transmitter
 	public final static String TRANSMITTER_NAME_STRING = "Transmitter Name";
+	public final static String TRANSMITTER_DB_STRING = "TRANSMITTER";
 			
 	/** Class fields */
 	public static final int STAT_CARRIER_COMM_DATA = 0;
@@ -182,6 +185,19 @@ public class StatisticHistoryModel extends ReportModelBase
 				sql.append("," + getPaoIDs()[i]);
 			}
 			sql.append(")");
+		}
+		
+		if(statType == STAT_TRANS_COMM_DATA)
+		{
+			sql.append(" and PAO.PAOCLASS = '" + TRANSMITTER_DB_STRING + "'");
+		}
+		else if(statType == STAT_DEVICE_COMM_DATA)
+		{
+			sql.append(" and PAO.CATEGORY = '" + DEVICE_DB_STRING + "'");
+		}
+		else if(statType == STAT_COMM_CHANNEL_DATA)
+		{
+			sql.append(" and PAO.CATEGORY = '" + PORT_DB_STRING + "'");
 		}
 
 		int stopCount = daysFrom1970(getStopDate());
