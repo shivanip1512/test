@@ -54,11 +54,15 @@ class CCU711{
 		//Destructor
 
 		//Send the message back to porter
-		void SendMsg();
+		int SendMsg(unsigned char SendData[]);
 		//Build a new message
 		void CreateMsg();
 		//Listen for and store an incoming message
-		void ReceiveMsg();
+		int ReceiveMsg(unsigned char ReadBuffer[]);
+		//Listen for and store the rest of the message
+		void ReceiveMore(unsigned char ReadBuffer[]);
+        //Output the outgoing message information to the screen
+        void PrintMessage();
 		//  Translate message for user
 		void TranslateInfo(bool direction, string & printMsg, string & printCmd, string & printPre, string & printWrd, string & printFnc);
 		//Returns a pointer to the listening socket
