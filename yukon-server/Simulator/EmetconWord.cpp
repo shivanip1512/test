@@ -23,29 +23,23 @@
 
 #include <iostream>
 
-#define A_WORD 31
-#define B_WORD 32
-#define C_WORD 33
-#define D_WORD 34
-#define E_WORD 35
-
 /**************************************************
 /*  EmetconWord functions   
 ***************************************************/
 
 //  Default constructor
-EmetconWord::EmetconWord(){
+EmetconWord::EmetconWord()
+{
 	_wordFunction = 0;
 	_wordType = 0;
 	_wordSize = 0;
 	_wtf = 0;
-	for(int i=0; i<18; i++) {
-		_wordData[i] = 0x0;
-	}
+	memset(_wordData, 0, 20);
 }
 
 // build a new word
-int EmetconWord::InsertWord(int Type, unsigned char * pMessageData, int WordFunc, int Ctr){
+int EmetconWord::InsertWord(int Type, unsigned char * pMessageData, int WordFunc, int Ctr)
+{
 	_wordType = Type;
 	_wordFunction = WordFunc;
 
@@ -55,7 +49,8 @@ int EmetconWord::InsertWord(int Type, unsigned char * pMessageData, int WordFunc
 			_wordType = E_WORD;
 		}
 	}*/
-	if(_wordType == D_WORD) {
+	if( _wordType == D_WORD ) 
+	{
 		_wordSize = 7;
 
 
@@ -211,29 +206,29 @@ unsigned short EmetconWord::BCHCalc(unsigned char* pStr, unsigned long bits)
    return(axreg);
 }
 
-int EmetconWord::getWordType(){
-	return _wordType;
-}
+int EmetconWord::getWordType()		{   return _wordType;   	}
 
-int EmetconWord::getWTF(){
-	return _wtf;
-}
+int EmetconWord::getWTF()			{   return _wtf;        	}
 
-int EmetconWord::getWordFunction(){
-	return _wordFunction;
-}
+int EmetconWord::getWordFunction()	{   return _wordFunction;   }
 
-int EmetconWord::getWordSize(){
-	return _wordSize;
-}
+int EmetconWord::getWordSize()		{   return _wordSize;   	}
+
 
 // Function to read the data in the word to the screen
 void EmetconWord::ReadWord(){
 	if(_wordType == 'b') {
 		unsigned char Data[3];
-		Data[0] = ((_wordData[7] & 0x0f) << 4) | ((_wordData[8] & 0xf0) >> 4);
-		Data[1] = ((_wordData[8] & 0x0f) << 4) | ((_wordData[9] & 0xf0) >> 4); 
-		Data[2] = ((_wordData[9] & 0x0f) << 4) | ((_wordData[10] & 0xf0) >> 4); 
+
+		Data[0] = ((_wordData[ 7] & 0x0f) << 4) | 
+			      ((_wordData[ 8] & 0xf0) >> 4);
+
+		Data[1] = ((_wordData[ 8] & 0x0f) << 4) | 
+                  ((_wordData[ 9] & 0xf0) >> 4); 
+
+		Data[2] = ((_wordData[ 9] & 0x0f) << 4) | 
+                  ((_wordData[10] & 0xf0) >> 4); 
+
  //   	std::cout <<"Received 3 bytes of data after a b word"<<std::endl;
 	//	std::cout <<"Byte 1: "<< string(CtiNumStr(Data[0]).xhex())<<std::endl;
 //		std::cout <<"Byte 2: "<< string(CtiNumStr(Data[1]).xhex())<<std::endl;

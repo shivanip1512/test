@@ -18,59 +18,43 @@
 #include "cticalls.h"
 #include "color.h"
 
-#define INPUT    0
-#define RESETREQ 1
-#define RESETACK 2
-#define GENREQ   3
-#define GENREP   4
-
-#define DTRAN 11
-
-#define FEEDEROP 21
-
-#define A_WORD 31
-#define B_WORD 32
-
-#define FUNCACK 41
-#define READ    42
-#define WRITE   43
-
-#define INCOMING 0
-#define OUTGOING 1
+using namespace std;
 
 
 /**************************************************
 /*  CCU711 functions   
 ***************************************************/
 
-CCU711::CCU711(){
+CCU711::CCU711()
+{
 	WSAStartup(MAKEWORD (1,1), &wsaData);
 
 	listenSocket = new CTINEXUS();
-	newSocket = new CTINEXUS();
+	newSocket    = new CTINEXUS();
 }
 
 //Listen for and store an incoming message
-void CCU711::ReceiveMsg(){
+void CCU711::ReceiveMsg()
+{
 	unsigned char ReadBuffer[300];
 	unsigned long bytesRead=0;
-	RWDBDateTime AboutToRead;
+	RWTime AboutToRead;
 	while(bytesRead !=4) {
-		newSocket->CTINexusRead(ReadBuffer,4, &bytesRead, 15);
+		newSocket->CTINexusRead(ReadBuffer  ,4, &bytesRead, 15);
 	}
 	SET_FOREGROUND_BRIGHT_YELLOW;
-	std::cout<<AboutToRead.asString();
+	cout << AboutToRead.asString();
 	SET_FOREGROUND_BRIGHT_CYAN;
-	std::cout<<" IN:"<<std::endl;
+	cout << " IN:" << endl;
 	SET_FOREGROUND_BRIGHT_GREEN;
 	for( int byteitr = 0; byteitr < bytesRead; byteitr++ )
 	{
-		std::cout<<std::string(CtiNumStr(ReadBuffer[byteitr]).hex().zpad(2))<<' ';
+		cout << string(CtiNumStr(ReadBuffer[byteitr]).hex().zpad(2)) << ' ';
 	}
 
 	Message inMsg;
 	//determine the type of message
-	inMsg.CreateMessage(INPUT,ReadBuffer);
+	inMsg.CreateMessage(INPUT, DEFAULT, ReadBuffer);
 	bytesRead=0;
 
 	while(bytesRead !=inMsg.getBytesToFollow()) {
@@ -78,25 +62,25 @@ void CCU711::ReceiveMsg(){
 	}
 	for( byteitr = 0; byteitr < bytesRead; byteitr++ )
 	{
-		std::cout<<string(CtiNumStr(ReadBuffer[byteitr]).hex().zpad(2))<<' ';
+		cout<<string(CtiNumStr(ReadBuffer[byteitr]).hex().zpad(2))<<' ';
 	}
-	std::cout<<std::endl;
+	cout<<endl;
 	SET_FOREGROUND_WHITE;
 	inMsg.DecodeCommand(ReadBuffer);
 	inMsg.DecodePreamble();
 	inMsg.InsertWord(INPUT, ReadBuffer);
 	_incomingMsg[0] = inMsg;
 
-	std::string printMsg;
-	std::string printCmd;
-	std::string printPre;
-	std::string printWrd;
-	std::string printFnc;
+	string printMsg;
+	string printCmd;
+	string printPre;
+	string printWrd;
+	string printFnc;
 
 	TranslateInfo(INCOMING, printMsg, printCmd, printPre, printWrd, printFnc);
 
-	std::cout<<"Msg: "<<printMsg<<"    Cmd: "<<printCmd<<"    Pre: "<<printPre;
-	std::cout<<"    Wrd: "<<printWrd<<"    Fnc: "<<printFnc<<std::endl;
+	cout<<"Msg: "<<printMsg<<"    Cmd: "<<printCmd<<"    Pre: "<<printPre;
+	cout<<"    Wrd: "<<printWrd<<"    Fnc: "<<printFnc<<endl;
 
 }
 
@@ -108,7 +92,7 @@ void CCU711::CreateMsg(){
 	{
 		//  Reset request
 		unsigned char Address = _incomingMsg[0].getAddress();
-		newMessage.CreateMessage(RESETACK, someData, Address);
+		newMessage.CreateMessage(RESETACK, DEFAULT, someData, Address);
 		_outgoingMsg[0]=newMessage;
 	}
 	else if(_incomingMsg[0].getMessageType()==GENREQ)
@@ -116,7 +100,12 @@ void CCU711::CreateMsg(){
 		//  General Request
 		unsigned char Frame = _incomingMsg[0].getFrame();
 		unsigned char Address = _incomingMsg[0].getAddress();
-		newMessage.CreateMessage(GENREP, someData, Address, Frame);
+		if(_incomingMsg[0].getWordFunction()==FUNCACK) {
+			newMessage.CreateMessage(GENREP, ACKACK, someData, Address, Frame);
+		}
+		else{ 
+			newMessage.CreateMessage(GENREP, DEFAULT, someData, Address, Frame);
+		}
 
 		_outgoingMsg[0]=newMessage;
 	}
@@ -125,27 +114,29 @@ void CCU711::CreateMsg(){
 //Send the message back to porter
 void CCU711::SendMsg(){
 	unsigned long bytesWritten = 0;
-	unsigned char * WriteBuffer = _outgoingMsg[0].getMessageArray();
+	unsigned char *WriteBuffer = _outgoingMsg[0].getMessageArray();
 	int MsgSize = _outgoingMsg[0].getMessageSize();
 	unsigned char SendData[300];
-	for(int i=0; i<100; i++) {
-		SendData[i]= WriteBuffer[i];
-	}
+
+    memcpy(SendData, WriteBuffer, 100);
 
 	newSocket->CTINexusWrite(&SendData, MsgSize, &bytesWritten, 15); 
-	RWDBDateTime DateSent;
+
+	RWTime DateSent;
 	SET_FOREGROUND_BRIGHT_YELLOW;
-	std::cout<<DateSent.asString();
+	cout<<DateSent.asString();
 	SET_FOREGROUND_BRIGHT_CYAN;
-	std::cout<<" OUT:"<<std::endl;
+	cout<<" OUT:"<<endl;
 	SET_FOREGROUND_BRIGHT_MAGNETA;
+
 	for(int byteitr = 0; byteitr < bytesWritten; byteitr++ )
 	{
-		std::cout <<string(CtiNumStr(SendData[byteitr]).hex().zpad(2))<<' ';
+		cout <<string(CtiNumStr(SendData[byteitr]).hex().zpad(2))<<' ';
 	}
-	std::cout<<std::endl;
+
+	cout<<endl;
 	SET_FOREGROUND_WHITE;
-	std::string printType;
+	string printType;
 	switch(_outgoingMsg[0].getMessageType()){
 	case 0:
 		printType.append("INPUT");
@@ -164,17 +155,17 @@ void CCU711::SendMsg(){
 		break;
 	}
 
-	std::string printMsg;
-	std::string printCmd;
-	std::string printPre;
-	std::string printWrd;
-	std::string printFnc;
+	string printMsg;
+	string printCmd;
+	string printPre;
+	string printWrd;
+	string printFnc;
 
 	TranslateInfo(OUTGOING, printMsg, printCmd, printPre, printWrd, printFnc);
 
-	std::cout<<"Msg: "<<printMsg<<"    Cmd: "<<printCmd<<"         Pre: "<<printPre;
-	std::cout<<"    Wrd: "<<printWrd<<"    Fnc: "<<printFnc<<std::endl;
-	std::cout<<"________________________________________________________________________________"<<std::endl;
+	cout<<"Msg: "<<printMsg<<"    Cmd: "<<printCmd<<"         Pre: "<<printPre;
+	cout<<"    Wrd: "<<printWrd<<"    Fnc: "<<printFnc<<endl;
+	cout<<"________________________________________________________________________________"<<endl;
 	           
 
 	// Reset inmessage
@@ -186,7 +177,7 @@ void CCU711::SendMsg(){
 
 void CCU711::TranslateInfo(bool direction, string & printMsg, string & printCmd, string & printPre, string & printWrd, string & printFnc)
 {
-	if(direction == 0){
+	if(direction == INCOMING){
 		switch(_incomingMsg[0].getMessageType()){
 		case 0:
 			printMsg.append("INPUT");
@@ -214,16 +205,11 @@ void CCU711::TranslateInfo(bool direction, string & printMsg, string & printCmd,
 			printPre.append("FEEDEROP");
 			break;
 		}
-		switch(_incomingMsg[0].getWordType()){
-		case 31:
-			printWrd.append("A_WORD");
-			break;
-		case 32:
-			printWrd.append("B_WORD");
-			break;
-		case 33:
-			printWrd.append("C_WORD");
-			break;
+		switch(_incomingMsg[0].getWordType())
+        {
+            case A_WORD:    printWrd.append("A_WORD");  break;
+            case B_WORD:    printWrd.append("B_WORD");  break;
+            case C_WORD:    printWrd.append("C_WORD");  break;
 		case 34:
 			printWrd.append("D_WORD");
 			break;
@@ -243,7 +229,7 @@ void CCU711::TranslateInfo(bool direction, string & printMsg, string & printCmd,
 			break;
 		}
 	}
-	else if(direction == 1){
+	else if(direction == OUTGOING){
 		switch(_incomingMsg[0].getMessageType()){
 		case 0:
 			printMsg.append("INPUT");

@@ -22,7 +22,7 @@
 /**************************************************
 /*  CCU710 functions   
 ***************************************************/
-
+/*
 CCU710::CCU710(){
 	WSAStartup(MAKEWORD (1,1), &wsaData);
 
@@ -39,7 +39,7 @@ void CCU710::setSocket(CTINEXUS * Socket){
 void CCU710::ReceiveMsg(){
 	unsigned char ReadBuffer[300];
 	unsigned long bytesRead=0;
-	RWDBDateTime AboutToRead;
+	RWTime AboutToRead;
 	while(bytesRead !=3) {
 		newSocket->CTINexusRead(ReadBuffer,3, &bytesRead, 15);
 	}
@@ -138,7 +138,7 @@ void CCU710::SendMsg(){
 	}
 
 	newSocket->CTINexusWrite(&SendData, MsgSize, &bytesWritten, 15); 
-	RWDBDateTime DateSent;
+	RWTime DateSent;
 	SET_FOREGROUND_BRIGHT_YELLOW;
 	std::cout<<DateSent.asString();
 	SET_FOREGROUND_BRIGHT_CYAN;
@@ -173,4 +173,4 @@ CTINEXUS * CCU710::getNewSocket(){
 	return(Socket);
 }
 
-
+*/

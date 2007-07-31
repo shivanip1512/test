@@ -16,13 +16,36 @@
 #define  __MESSAGE_H__
 #include "EmetconWord.h"
 
+#define DEFAULT 0
+
+#define INPUT    0
+#define RESETREQ 1
+#define RESETACK 2
+#define GENREQ   3
+#define GENREP   4
+
+#define DTRAN 11
+
+#define FEEDEROP 21
+
+#define A_WORD 31
+#define B_WORD 32
+#define C_WORD 33
+#define D_WORD 34
+
+#define FUNCACK 41
+#define READ    42
+#define WRITE   43
+
+#define ACKACK  51
+
 //  The Message class can be used to build/store messages as well as to build outgoing messages
 class Message{
 	public:
 		// Default constructor
 		Message();
 		// Constructor to build a new Message
-		void CreateMessage(int MsgType, unsigned char Data[], unsigned char Address = 0x00, unsigned char Frame = 0x00);
+		void CreateMessage(int MsgType, int WrdFnc, unsigned char Data[], unsigned char Address = 0x00, unsigned char Frame = 0x00);
 		// Destructor
 
 		// This is used to insert words into incoming messages 

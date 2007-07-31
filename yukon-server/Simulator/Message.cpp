@@ -17,52 +17,30 @@
 #include "cticalls.h"
 #include "cti_asmc.h"
 #include "numstr.h"
-#include<iostream>
+#include <iostream>
 
 
-#define INPUT    0
-#define RESETREQ 1
-#define RESETACK 2
-#define GENREQ   3
-#define GENREP   4
-
-#define DTRAN 11
-
-#define FEEDEROP 21
-
-#define A_WORD 31
-#define B_WORD 32
-#define C_WORD 33
-#define D_WORD 34
-
-#define FUNCACK 41
-#define READ    42
-#define WRITE   43
 
 using namespace std;
 
 /**************************************************
 /*  Message functions   
 ***************************************************/
-Message::Message(){
-	_indexOfEnd = 0;
-	_indexOfWords = 0;
-	_messageType = 0;
-	_commandType = 0;
-	_preamble = 0;
-	for (int i =0; i < 99; i++) {
-		_messageData[i] = 0x0;
-	}
-	EmetconWord blankWord;
-	_words[0] = blankWord;
-	_words[1] = blankWord;
-	_words[2] = blankWord;
-	_words[3] = blankWord;
-	_bytesToFollow = 0;
+Message::Message() : 
+	_indexOfEnd(0),
+	_indexOfWords(0)
+{
+	_messageType  = 0;
+	_commandType  = 0;
+	_preamble     = 0;
+
+    memset(_messageData, 0, 100);
+
+    _bytesToFollow = 0;
 }
 	
 // Constructor to build a new Message 
-void Message::CreateMessage(int MsgType, unsigned char Data[], unsigned char Address, unsigned char Frame){
+void Message::CreateMessage(int MsgType, int WrdFnc, unsigned char Data[], unsigned char Address, unsigned char Frame){
 	_messageType = MsgType;
 	if(_messageType == INPUT) {
 		_messageData[0] = Data[0];
@@ -83,56 +61,74 @@ void Message::CreateMessage(int MsgType, unsigned char Data[], unsigned char Add
 	}
 	else if(_messageType == GENREP) {
 		int Ctr = 0;
-		_messageData[Ctr++] = 0x7e;
-		_messageData[Ctr++] = Address;   //  slave address
-		_messageData[Ctr++] = Frame;     //  control
-		Ctr++;  		// # of bytes to follow minus two filled in at bottom of section
-		_messageData[Ctr++] = 0x02;      // SRC/DES
-		_messageData[Ctr++] = 0x26;      // Echo of command received
-		_messageData[Ctr++] = 0x00;      // system status items
-		_messageData[Ctr++] = 0x00;      //    "   "
-		_messageData[Ctr++] = 0x00;      //    "   "
-		_messageData[Ctr++] = 0x00;      //    "   "  
-		_messageData[Ctr++] = 0x00;     // device status items
-		_messageData[Ctr++] = 0x00;     //    "   "
-		_messageData[Ctr++] = 0x00;     //    "   "   
-		_messageData[Ctr++] = 0x00;     //    "   "
-		_messageData[Ctr++] = 0x00;     //    "   "
-		_messageData[Ctr++] = 0x00;     //    "   "
-		_messageData[Ctr++] = 0x00;     // process status items
-		_messageData[Ctr++] = 0x00;     //    "   "									
-
-		_messageData[Ctr++] = 0x42;							
-		_messageData[Ctr++] = 0x42;	
-		_messageData[Ctr++] = 0x82;	
-		EmetconWord newWord;
-		int Function = 0;
-		Ctr = newWord.InsertWord(D_WORD,  _messageData, Function, Ctr);
-		_words[0]=newWord;
-		/*_messageData[Ctr++] = 0xd4; //beginning of d word
-		_messageData[Ctr++] = 0x24;
-		_messageData[Ctr++] = 0x13; //data begins in second half of this byte
-		_messageData[Ctr++] = 0xff; // data
-		_messageData[Ctr++] = 0xff; // data
-		_messageData[Ctr++] = 0xf0; // data ends first half of this byte
-		_messageData[Ctr++] = 0x00; 
-
-		unsigned char BCH = BCHCalc_C (_messageData+Ctr-7, 46);
-		_messageData[Ctr-2] |= BCH >> 6;
-		_messageData[Ctr-1] = BCH << 2;*/
-		_messageData[Ctr++] = 0x42; 
-
-		_messageData[3] = Ctr-4;      // # of bytes to follow minus two (see note above)
-									
-		unsigned short CRC = NCrcCalc_C ((_messageData + 1), Ctr-1);
-		_messageData[Ctr++] = HIBYTE (CRC);
-		_messageData[Ctr++] = LOBYTE (CRC);
-
-		//  Output for debugging only
-		/*for(int i=0; i<Ctr; i++) {
-			std::cout<<"_messageData "<<string(CtiNumStr(_messageData[i]).hex().zpad(2))<<std::endl;
-		}*/
-
+		if(WrdFnc==ACKACK) {
+			_messageData[Ctr++] = 0x7e;
+			_messageData[Ctr++] = Address;   //  slave address
+			_messageData[Ctr++] = Frame;     //  control
+			Ctr++;  		// # of bytes to follow minus two filled in at bottom of section
+			_messageData[Ctr++] = 0x02;      // SRC/DES
+			_messageData[Ctr++] = 0x26;      // Echo of command received
+			_messageData[Ctr++] = 0x00;      // system status items
+			_messageData[Ctr++] = 0x00;      //    "   "
+			_messageData[Ctr++] = 0x00;      //    "   "
+			_messageData[Ctr++] = 0x00;      //    "   "  
+			_messageData[Ctr++] = 0x00;     // device status items
+			_messageData[Ctr++] = 0x00;     //    "   "
+			_messageData[Ctr++] = 0x00;     //    "   "   
+			_messageData[Ctr++] = 0x00;     //    "   "
+			_messageData[Ctr++] = 0x00;     //    "   "
+			_messageData[Ctr++] = 0x00;     //    "   "
+			_messageData[Ctr++] = 0x00;     // process status items
+			_messageData[Ctr++] = 0x00;     //    "   "		
+			_messageData[Ctr++] = 0x42;
+			_messageData[Ctr++] = 0x42;
+			_messageData[3] = Ctr-4;      // # of bytes to follow minus two (see note above)
+										
+			unsigned short CRC = NCrcCalc_C ((_messageData + 1), Ctr-1);
+			_messageData[Ctr++] = HIBYTE (CRC);
+			_messageData[Ctr++] = LOBYTE (CRC);
+		}
+		else if(WrdFnc==DEFAULT){ 
+			_messageData[Ctr++] = 0x7e;
+			_messageData[Ctr++] = Address;   //  slave address
+			_messageData[Ctr++] = Frame;     //  control
+			Ctr++;  		// # of bytes to follow minus two filled in at bottom of section
+			_messageData[Ctr++] = 0x02;      // SRC/DES
+			_messageData[Ctr++] = 0x26;      // Echo of command received
+			_messageData[Ctr++] = 0x00;      // system status items
+			_messageData[Ctr++] = 0x00;      //    "   "
+			_messageData[Ctr++] = 0x00;      //    "   "
+			_messageData[Ctr++] = 0x00;      //    "   "  
+			_messageData[Ctr++] = 0x00;     // device status items
+			_messageData[Ctr++] = 0x00;     //    "   "
+			_messageData[Ctr++] = 0x00;     //    "   "   
+			_messageData[Ctr++] = 0x00;     //    "   "
+			_messageData[Ctr++] = 0x00;     //    "   "
+			_messageData[Ctr++] = 0x00;     //    "   "
+			_messageData[Ctr++] = 0x00;     // process status items
+			_messageData[Ctr++] = 0x00;     //    "   "									
+	
+			_messageData[Ctr++] = 0x42;							
+			_messageData[Ctr++] = 0x42;	
+			_messageData[Ctr++] = 0x82;	
+			EmetconWord newWord;
+			int Function = 0;
+			Ctr = newWord.InsertWord(D_WORD,  _messageData, Function, Ctr);
+			_words[0]=newWord;
+			_messageData[Ctr++] = 0x42; 
+	
+			_messageData[3] = Ctr-4;      // # of bytes to follow minus two (see note above)
+										
+			unsigned short CRC = NCrcCalc_C ((_messageData + 1), Ctr-1);
+			_messageData[Ctr++] = HIBYTE (CRC);
+			_messageData[Ctr++] = LOBYTE (CRC);
+	
+			//  Output for debugging only
+			/*for(int i=0; i<Ctr; i++) {
+				std::cout<<"_messageData "<<string(CtiNumStr(_messageData[i]).hex().zpad(2))<<std::endl;
+			}*/
+	
+		}
 		_indexOfEnd = Ctr;
 	}
 }
@@ -169,19 +165,27 @@ void Message::DecodeCommand(unsigned char Data[]){
 
 }
 
-int Message::DecodePreamble(){
+int Message::DecodePreamble()
+{
 	char _bytesToFollow = 0;
-	if((_messageData[3] & 0x4) == 0x4){
+
+	if( _messageData[3] & 0x04 )
+    {
 		//  Feeder operation specified
 		_preamble = FEEDEROP;
-			if((_messageData[2] & 0x7)== 0x7){
-				_bytesToFollow = 7;
-			}
-			else if((_messageData[2] & 0xe)== 0xe){
-				_bytesToFollow = 14;
-			}
-	}
-	else if((_messageData[3]==0x53) && (_messageData[4]==0xf5) && (_messageData[5]==0x55)) {
+
+        if( (_messageData[2] & 0x07) == 0x07 )
+        {
+            _bytesToFollow = 7;
+        }
+        else if( (_messageData[2] & 0x0e)== 0x0e )
+        {
+            _bytesToFollow = 14;
+        }
+    }
+	else if((_messageData[3]==0x53) && 
+            (_messageData[4]==0xf5) && 
+            (_messageData[5]==0x55)) {
 		// CCU710 ping
 		_messageType = 'p';
 		_bytesToFollow = 0;

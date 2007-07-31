@@ -18,6 +18,30 @@
 #include "Winsock2.h"
 #include <iostream>
 
+#define DEFAULT  0
+
+#define INPUT    0
+#define RESETREQ 1
+#define RESETACK 2
+#define GENREQ   3
+#define GENREP   4
+
+#define DTRAN 11
+
+#define FEEDEROP 21
+
+#define A_WORD 31
+#define B_WORD 32
+
+#define FUNCACK 41
+#define READ    42
+#define WRITE   43
+
+#define ACKACK  51
+
+#define INCOMING 0
+#define OUTGOING 1
+
 using namespace std;
 
 class CCU711{

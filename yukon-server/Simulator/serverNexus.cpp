@@ -27,6 +27,7 @@
 int main()
 {	
 	CCU711 aCCU;
+    //CCU710 aCCU;
 
 	CTINEXUS * listenSocket; 
 	listenSocket = aCCU.getListenSocket();
@@ -37,7 +38,7 @@ int main()
 
 	for(int i = 0; i<25 && !(newSocket->CTINexusValid()); i++) {
 		listenSocket->CTINexusConnect(newSocket, NULL, 1000, CTINEXUS_FLAG_READEXACTLY);
-		RWDBDateTime Listening;
+		RWTime Listening;
 		std::cout<<Listening.asString()<<" Listening..."<<std::endl;
 	}
 
