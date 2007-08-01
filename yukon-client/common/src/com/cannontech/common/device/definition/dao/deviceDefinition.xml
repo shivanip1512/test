@@ -726,6 +726,13 @@
                 <multiplier value="0.01"/>
                 <unitofmeasure value="Volts"/>
             </point>
+            <point init="true" type="PulseAccumulator">
+            	<attribute name="BLINK_COUNT"/>
+                <name>Blink Count</name>
+                <offset value="20"/>
+                <multiplier value="1.0"/>
+                <unitofmeasure value="Counts"/>
+            </point>
         </points>
   		<commands>
 			<command name="Read Profile Data Channel 1">
@@ -743,6 +750,10 @@
 			<command name="Read Profile Data Channel 4">
         		<cmd text="getvalue lp channel 4 ?'mm/dd/yyyy hh:mm mm/dd/yyyy hh:mm'"/>
         		<pointRef name="Voltage Profile"/>
+        	</command>
+			<command name="Read Blink Count">
+        		<cmd text="getvalue powerfail"/>
+        		<pointRef name="Blink Count"/>
         	</command>
         	
 			<command name="Read Outage Log (6 most recent)">
@@ -993,6 +1004,13 @@
                 <multiplier value="0.01"/>
                 <unitofmeasure value="Volts"/>
             </point>
+            <point init="true" type="PulseAccumulator">
+            	<attribute name="BLINK_COUNT"/>
+                <name>Blink Count</name>
+                <offset value="20"/>
+                <multiplier value="1.0"/>
+                <unitofmeasure value="Counts"/>
+            </point>
         </points>
   		<commands>
 			<command name="Read Profile Data Channel 1">
@@ -1010,6 +1028,10 @@
 			<command name="Read Profile Data Channel 4">
         		<cmd text="getvalue lp channel 4 ?'mm/dd/yyyy hh:mm mm/dd/yyyy hh:mm'"/>
         		<pointRef name="Voltage Profile"/>
+        	</command>
+			<command name="Read Blink Count">
+        		<cmd text="getvalue powerfail"/>
+        		<pointRef name="Blink Count"/>
         	</command>
         	
 			<command name="Read Outage Log (6 most recent)">
@@ -1260,6 +1282,13 @@
                 <multiplier value="0.01"/>
                 <unitofmeasure value="Volts"/>
             </point>
+            <point init="true" type="PulseAccumulator">
+            	<attribute name="BLINK_COUNT"/>
+                <name>Blink Count</name>
+                <offset value="20"/>
+                <multiplier value="1.0"/>
+                <unitofmeasure value="Counts"/>
+            </point>
         </points>
   		<commands>
 			<command name="Read Profile Data Channel 1">
@@ -1277,6 +1306,10 @@
 			<command name="Read Profile Data Channel 4">
         		<cmd text="getvalue lp channel 4 ?'mm/dd/yyyy hh:mm mm/dd/yyyy hh:mm'"/>
         		<pointRef name="Voltage Profile"/>
+        	</command>
+			<command name="Read Blink Count">
+        		<cmd text="getvalue powerfail"/>
+        		<pointRef name="Blink Count"/>
         	</command>
         	
 			<command name="Read Outage Log (6 most recent)">
