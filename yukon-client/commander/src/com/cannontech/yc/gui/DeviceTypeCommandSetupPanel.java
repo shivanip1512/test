@@ -24,9 +24,8 @@ import com.cannontech.database.db.CTIDbChange;
 import com.cannontech.database.db.DBPersistent;
 import com.cannontech.database.db.command.Command;
 import com.cannontech.database.db.command.CommandCategory;
-import com.cannontech.message.dispatch.ClientConnection;
 import com.cannontech.message.dispatch.message.DBChangeMsg;
-import com.cannontech.roles.yukon.SystemRole;
+import com.cannontech.yukon.BasicServerConnection;
 import com.cannontech.yukon.conns.ConnPool;
 
 
@@ -55,7 +54,6 @@ public class DeviceTypeCommandSetupPanel extends javax.swing.JPanel implements c
 	private javax.swing.JList ivjCategoryList = null;
 	private javax.swing.JScrollPane ivjCategoryListScrollPane = null;
 	
-	private ClientConnection connToDispatch = null;
 /**
  * Constructor
  */
@@ -410,11 +408,10 @@ private javax.swing.JScrollPane getCategoryListScrollPane() {
 	}
 	return ivjCategoryListScrollPane;
 }
-	public ClientConnection getClientConnection()
+
+	protected BasicServerConnection getClientConnection()
 	{
-		if( connToDispatch == null)
-			connToDispatch = (ClientConnection) ConnPool.getInstance().getDefDispatchConn();	
-		return connToDispatch;
+		return ConnPool.getInstance().getDefPorterConn();        
 	}
 
 /**
