@@ -6,8 +6,8 @@
 *
 * PVCS KEYWORDS:
 * ARCHIVE      :  $Archive:   Z:/SOFTWAREARCHIVES/YUKON/COMMON/resolvers.cpp-arc  $
-* REVISION     :  $Revision: 1.78 $
-* DATE         :  $Date: 2007/05/30 17:49:03 $
+* REVISION     :  $Revision: 1.79 $
+* DATE         :  $Date: 2007/08/01 20:53:04 $
 *
 * Copyright (c) 1999, 2000, 2001 Cannon Technologies Inc. All rights reserved.
 *-----------------------------------------------------------------------------*/
@@ -430,7 +430,7 @@ INT resolveDeviceType(const string& _rwsTemp)
     {
         nRet = TYPE_DR87;
     }
-    else if(rwsTemp == "kv2")
+    else if(rwsTemp == "kv2" || rwsTemp == "kv")
     {
         nRet = TYPE_KV2;
     }
