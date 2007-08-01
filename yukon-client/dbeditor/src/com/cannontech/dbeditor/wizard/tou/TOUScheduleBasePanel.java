@@ -917,7 +917,7 @@ public class TOUScheduleBasePanel extends DataInputPanel {
 	public void refreshDayCombos()
 	{
 		healthyAction = false;
-		Vector tempDays = new Vector(4);
+		Vector<TOUDay> tempDays = new Vector<TOUDay>(4);
 		tempDays.addAll(touDays.values());
 		java.util.Collections.sort(tempDays);
 		
@@ -933,12 +933,23 @@ public class TOUScheduleBasePanel extends DataInputPanel {
 			if(tempDays.size() < 4)
 			{
 				int initialDayID = TOUDay.getNextTOUDayID().intValue();
-				for(int d = tempDays.size(); d < 4; d++)
+				for(int d = 1; d < 5; d++)
 				{
-					TOUDay day = new TOUDay(new Integer(initialDayID + d),"Daily" + d);
-					day.getTOURateSwitchVector().addElement(new TOUDayRateSwitches("A", new Integer(0)));
-					touDays.put(day.getDayID(), day);
-					theWeekCombos[u].addItem(day);
+					boolean alreadyThere = false;
+					String touDayName = "Daily" + d;
+					
+					for(TOUDay day : tempDays){
+						if(day.getDayName().equals(touDayName)){
+							alreadyThere = true;
+						}
+					}
+					
+					if(!alreadyThere){
+						TOUDay day = new TOUDay(new Integer(initialDayID + d),touDayName);
+						day.getTOURateSwitchVector().addElement(new TOUDayRateSwitches("A", new Integer(0)));
+						touDays.put(day.getDayID(), day);
+						theWeekCombos[u].addItem(day);
+					}
 				}
 			}
 			
