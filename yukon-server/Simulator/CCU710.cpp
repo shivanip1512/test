@@ -29,15 +29,6 @@ CCU710::CCU710()
 {
 }
 
-int CCU710::FirstByte(unsigned char ReadBuffer[]){
-    if(ReadBuffer[0]==0x53)
-    {
-        return 3;
-    }
-    else
-        return 3;
-}
-
 //Listen for and store an incoming message
 int CCU710::ReceiveMsg(unsigned char ReadBuffer[])
 {
@@ -78,7 +69,7 @@ void CCU710::CreateMsg(){
 		//  Feeder operation
 		unsigned char Frame = _incomingMsg[0].getFrame();
 		unsigned char Address = _incomingMsg[0].getAddress();
-		if(_incomingMsg[0].getWordFunction()==WRITE) {
+		if(_incomingMsg[0].getWordFunction()==READ) {
 			newMessage.CreateMessage(FEEDEROP, READENERGY, someData, Address, Frame);
 		}
 		else{ 

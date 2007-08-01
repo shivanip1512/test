@@ -54,12 +54,13 @@ int EmetconWord::InsertWord(int Type, unsigned char * pMessageData, int WordFunc
 		_wordSize = 7;
 
 
-		pMessageData[Ctr++] = 0xd0;//4; //beginning of d word
+		pMessageData[Ctr++] = 0xd0;   //beginning of d word
 		pMessageData[Ctr++] = 0x24;
-		pMessageData[Ctr++] = 0x00;//10; //data begins in second half of this byte
-		pMessageData[Ctr++] = 0x0f; // data
-		pMessageData[Ctr++] = 0x00; // data
-		pMessageData[Ctr++] = 0x00; // data ends first half of this byte
+		//pMessageData[Ctr++] = 0x00;   //data begins in second half of this byte
+        pMessageData[Ctr++] = 0x20;    //for 711 ONLY!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!
+        pMessageData[Ctr++] = 0x0f;   // data
+		pMessageData[Ctr++] = 0x00;   // data
+		pMessageData[Ctr++] = 0x00;   // data ends first half of this byte
 		pMessageData[Ctr++] = 0x00; 
 
 		unsigned char BCH = BCHCalc_C (pMessageData+Ctr-7, 46);

@@ -60,7 +60,9 @@ class CCU711{
 		//Listen for and store an incoming message
 		int ReceiveMsg(unsigned char ReadBuffer[]);
 		//Listen for and store the rest of the message
-		void ReceiveMore(unsigned char ReadBuffer[]);
+		void ReceiveMore(unsigned char ReadBuffer[], int counter);
+        //Print the incoming message information to the screen
+        void PrintInput(unsigned char ReadBuffer[]);
         //Output the outgoing message information to the screen
         void PrintMessage();
 		//  Translate message for user

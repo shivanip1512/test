@@ -53,8 +53,6 @@ class CCU710{
             INCOMING   = 0 ,
             OUTGOING   = 1 ,
         };
-        //Read in the first byte to determine if the message is a ping, feeder op, or wrong message 
-        int CCU710::FirstByte(unsigned char ReadBuffer[]);
 		//Send the message back to porter
 		int SendMsg(unsigned char SendData[]);
 		//Build a new message

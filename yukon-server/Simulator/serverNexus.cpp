@@ -27,8 +27,8 @@
 
 int main()
 {	
-	//CCU711 aCCU;
-    CCU710 aCCU;
+	CCU711 aCCU711;
+    CCU710 aCCU710;
 
     WSADATA wsaData;
 
@@ -50,75 +50,146 @@ int main()
 
 	while(newSocket->CTINexusValid()) {
         unsigned char TempBuffer[1];
-        unsigned char ReadBuffer[300];
         unsigned long bytesRead=0;
-        RWTime AboutToRead;
-        int counter = 0;
-
+                
         //  Peek at first byte
         newSocket->CTINexusPeek(TempBuffer,1, &bytesRead);
-
-        int BytesToFollow = aCCU.FirstByte(TempBuffer);
-
-        bytesRead=0;
-        //  Read first few bytes
-        while(bytesRead < BytesToFollow) {
-            newSocket->CTINexusRead(ReadBuffer + counter  ,1, &bytesRead, 15);
-            counter ++;
-        }
-
-        SET_FOREGROUND_BRIGHT_YELLOW;
-        cout << AboutToRead.asString();
-        SET_FOREGROUND_BRIGHT_CYAN;
-        cout << " IN:" << endl;
-        SET_FOREGROUND_BRIGHT_GREEN;
-        for( int byteitr = 0; byteitr < (bytesRead); byteitr++ )
-        {
-            cout << string(CtiNumStr(ReadBuffer[byteitr]).hex().zpad(2)) << ' ';
-        }
-
-
-        BytesToFollow = aCCU.ReceiveMsg(ReadBuffer);
-
-        if(BytesToFollow>0)
-        {
+             
+        if(TempBuffer[0]==0x7e)
+        {   //  It's a 711 IDLC message
+            RWTime AboutToRead;
+            unsigned char ReadBuffer[300];
+            int BytesToFollow;
+            int counter = 0;
             bytesRead=0;
-            //  Read any additional bytes
+            BytesToFollow = 4;
+            //  Read first few bytes
             while(bytesRead < BytesToFollow) {
-                newSocket->CTINexusRead(ReadBuffer + counter, 1, &bytesRead, 15);
-                counter++;
-            }
-            for( byteitr = 0; byteitr < BytesToFollow; byteitr++ )
-                {
-                cout<<string(CtiNumStr(ReadBuffer[byteitr+3]).hex().zpad(2))<<' ';
+                newSocket->CTINexusRead(ReadBuffer + counter  ,1, &bytesRead, 15);
+                counter ++;
             }
     
-    
-            aCCU.ReceiveMore(ReadBuffer, counter);
-        }
-        aCCU.PrintInput(ReadBuffer);
-        aCCU.CreateMsg();
-
-        unsigned char SendData[300];
-
-        int MsgSize = aCCU.SendMsg(SendData);
-
-        unsigned long bytesWritten = 0;
-        newSocket->CTINexusWrite(&SendData, MsgSize, &bytesWritten, 15); 
-
-        RWTime DateSent;
-        SET_FOREGROUND_BRIGHT_YELLOW;
-        cout<<DateSent.asString();
-        SET_FOREGROUND_BRIGHT_CYAN;
-        cout<<" OUT:"<<endl;
-        SET_FOREGROUND_BRIGHT_MAGNETA;
-
-        for(byteitr = 0; byteitr < bytesWritten; byteitr++ )
+            SET_FOREGROUND_BRIGHT_YELLOW;
+            cout << AboutToRead.asString();
+            SET_FOREGROUND_BRIGHT_CYAN;
+            cout << " IN:" << endl;
+            SET_FOREGROUND_BRIGHT_GREEN;
+            for( int byteitr = 0; byteitr < (bytesRead); byteitr++ )
             {
-            cout <<string(CtiNumStr(SendData[byteitr]).hex().zpad(2))<<' ';
+                cout << string(CtiNumStr(ReadBuffer[byteitr]).hex().zpad(2)) << ' ';
+            }
+    
+    
+            BytesToFollow = aCCU711.ReceiveMsg(ReadBuffer);
+    
+            if(BytesToFollow>0)
+            {
+                bytesRead=0;
+                //  Read any additional bytes
+                while(bytesRead < BytesToFollow) {
+                    newSocket->CTINexusRead(ReadBuffer + counter, 1, &bytesRead, 15);
+                    counter++;
+                }
+                for( byteitr = 0; byteitr < BytesToFollow; byteitr++ )
+                    {
+                    cout<<string(CtiNumStr(ReadBuffer[byteitr+3]).hex().zpad(2))<<' ';
+                }
+        
+        
+                aCCU711.ReceiveMore(ReadBuffer, counter);
+            }
+            aCCU711.PrintInput(ReadBuffer);
+            aCCU711.CreateMsg();
+    
+            unsigned char SendData[300];
+    
+            int MsgSize = aCCU711.SendMsg(SendData);
+    
+            unsigned long bytesWritten = 0;
+            newSocket->CTINexusWrite(&SendData, MsgSize, &bytesWritten, 15); 
+    
+            RWTime DateSent;
+            SET_FOREGROUND_BRIGHT_YELLOW;
+            cout<<DateSent.asString();
+            SET_FOREGROUND_BRIGHT_CYAN;
+            cout<<" OUT:"<<endl;
+            SET_FOREGROUND_BRIGHT_MAGNETA;
+    
+            for(byteitr = 0; byteitr < bytesWritten; byteitr++ )
+                {
+                cout <<string(CtiNumStr(SendData[byteitr]).hex().zpad(2))<<' ';
+            }
+    
+            aCCU711.PrintMessage();
+        }
+        else
+        {   //  It's a 710 message
+            RWTime AboutToRead;
+            unsigned char ReadBuffer[300];
+            int BytesToFollow;
+            int counter = 0;
+            bytesRead=0;
+            BytesToFollow = 3;
+            //  Read first few bytes
+            while(bytesRead < BytesToFollow) {
+                newSocket->CTINexusRead(ReadBuffer + counter  ,1, &bytesRead, 15);
+                counter ++;
+            }
+
+            SET_FOREGROUND_BRIGHT_YELLOW;
+            cout << AboutToRead.asString();
+            SET_FOREGROUND_BRIGHT_CYAN;
+            cout << " IN:" << endl;
+            SET_FOREGROUND_BRIGHT_GREEN;
+            for( int byteitr = 0; byteitr < (bytesRead); byteitr++ )
+            {
+                cout << string(CtiNumStr(ReadBuffer[byteitr]).hex().zpad(2)) << ' ';
+            }
+
+
+            BytesToFollow = aCCU710.ReceiveMsg(ReadBuffer);
+
+            if(BytesToFollow>0)
+            {
+                bytesRead=0;
+                //  Read any additional bytes
+                while(bytesRead < BytesToFollow) {
+                    newSocket->CTINexusRead(ReadBuffer + counter, 1, &bytesRead, 15);
+                    counter++;
+                }
+                for( byteitr = 0; byteitr < BytesToFollow; byteitr++ )
+                    {
+                    cout<<string(CtiNumStr(ReadBuffer[byteitr+3]).hex().zpad(2))<<' ';
+                }
+
+
+                aCCU710.ReceiveMore(ReadBuffer, counter);
+            }
+            aCCU710.PrintInput(ReadBuffer);
+            aCCU710.CreateMsg();
+
+            unsigned char SendData[300];
+
+            int MsgSize = aCCU710.SendMsg(SendData);
+
+            unsigned long bytesWritten = 0;
+            newSocket->CTINexusWrite(&SendData, MsgSize, &bytesWritten, 15); 
+
+            RWTime DateSent;
+            SET_FOREGROUND_BRIGHT_YELLOW;
+            cout<<DateSent.asString();
+            SET_FOREGROUND_BRIGHT_CYAN;
+            cout<<" OUT:"<<endl;
+            SET_FOREGROUND_BRIGHT_MAGNETA;
+
+            for(byteitr = 0; byteitr < bytesWritten; byteitr++ )
+                {
+                cout <<string(CtiNumStr(SendData[byteitr]).hex().zpad(2))<<' ';
+            }
+
+            aCCU710.PrintMessage();
         }
 
-        aCCU.PrintMessage();
     }
 
     CTISleep(5000);

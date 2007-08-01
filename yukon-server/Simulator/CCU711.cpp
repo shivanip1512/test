@@ -40,21 +40,24 @@ int CCU711::ReceiveMsg(unsigned char ReadBuffer[])
 }
 
 //Listen for and store an incoming message
-void CCU711::ReceiveMore(unsigned char ReadBuffer[])
-{
-	cout<<endl;
+void CCU711::ReceiveMore(unsigned char ReadBuffer[], int counter)
+{	
 	SET_FOREGROUND_WHITE;
 	_incomingMsg[0].DecodeCommand(ReadBuffer);
 	_incomingMsg[0].DecodePreamble();
 	_incomingMsg[0].InsertWord(INPUT, ReadBuffer, 6);      //  CHANGE THIS 6 TO SOMETHING ELSE !!!  (a counter passed in from serverNexus)
+}
 
+
+void CCU711::PrintInput(unsigned char ReadBuffer[])
+{
+    cout<<endl;
     string printMsg, printCmd, printPre, printWrd, printFnc;
 
 	TranslateInfo(INCOMING, printMsg, printCmd, printPre, printWrd, printFnc);
 
 	cout<<"Msg: "<<printMsg<<"    Cmd: "<<printCmd<<"    Pre: "<<printPre;
 	cout<<"    Wrd: "<<printWrd<<"    Fnc: "<<printFnc<<endl;
-
 }
 
 //Build a new message
