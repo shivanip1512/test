@@ -27,8 +27,8 @@
 
 int main()
 {	
-	CCU711 aCCU;
-    //CCU710 aCCU;
+	//CCU711 aCCU;
+    CCU710 aCCU;
 
     WSADATA wsaData;
 
@@ -49,43 +49,54 @@ int main()
 
 
 	while(newSocket->CTINexusValid()) {
+        unsigned char TempBuffer[1];
         unsigned char ReadBuffer[300];
         unsigned long bytesRead=0;
         RWTime AboutToRead;
-        ////////////////////////////////////////////////////////////////
-        // ////////////////////////////////////
-        // /////////////////  CHANGE THIS NEXT LINE TO <=4 and increment readbuffer !!!
-        while(bytesRead !=4) {
-            newSocket->CTINexusRead(ReadBuffer  ,4, &bytesRead, 15);
+        int counter = 0;
+
+        //  Peek at first byte
+        newSocket->CTINexusPeek(TempBuffer,1, &bytesRead);
+
+        int BytesToFollow = aCCU.FirstByte(TempBuffer);
+
+        bytesRead=0;
+        //  Read first few bytes
+        while(bytesRead < BytesToFollow) {
+            newSocket->CTINexusRead(ReadBuffer + counter  ,1, &bytesRead, 15);
+            counter ++;
         }
+
         SET_FOREGROUND_BRIGHT_YELLOW;
         cout << AboutToRead.asString();
         SET_FOREGROUND_BRIGHT_CYAN;
         cout << " IN:" << endl;
         SET_FOREGROUND_BRIGHT_GREEN;
-        for( int byteitr = 0; byteitr < bytesRead; byteitr++ )
+        for( int byteitr = 0; byteitr < (bytesRead); byteitr++ )
         {
             cout << string(CtiNumStr(ReadBuffer[byteitr]).hex().zpad(2)) << ' ';
         }
 
 
-        int BytesToFollow = aCCU.ReceiveMsg(ReadBuffer);
+        BytesToFollow = aCCU.ReceiveMsg(ReadBuffer);
 
-
-        bytesRead=0;
-        ////////////////////////////////////////////////////////////////
-        // ////////////////////////////////////
-        // /////////////////  CHANGE THIS NEXT LINE TO <= BytesToFollow and increment readbuffer !!!
-        while(bytesRead != BytesToFollow) {
-            newSocket->CTINexusRead(ReadBuffer, BytesToFollow, &bytesRead, 15);
+        if(BytesToFollow>0)
+        {
+            bytesRead=0;
+            //  Read any additional bytes
+            while(bytesRead < BytesToFollow) {
+                newSocket->CTINexusRead(ReadBuffer + counter, 1, &bytesRead, 15);
+                counter++;
+            }
+            for( byteitr = 0; byteitr < BytesToFollow; byteitr++ )
+                {
+                cout<<string(CtiNumStr(ReadBuffer[byteitr+3]).hex().zpad(2))<<' ';
+            }
+    
+    
+            aCCU.ReceiveMore(ReadBuffer, counter);
         }
-        for( byteitr = 0; byteitr < bytesRead; byteitr++ )
-            {
-            cout<<string(CtiNumStr(ReadBuffer[byteitr]).hex().zpad(2))<<' ';
-        }
-
-
-        aCCU.ReceiveMore(ReadBuffer);
+        aCCU.PrintInput(ReadBuffer);
         aCCU.CreateMsg();
 
         unsigned char SendData[300];
@@ -123,7 +134,8 @@ int main()
 
 ////////////////////////////////////////
 // 
-// 
+//       CODE BELOW ALLOWS FOR PORT CONTROL
+//       USING SELECT()
 
 /*
 #include <winsock2.h>

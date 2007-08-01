@@ -46,7 +46,7 @@ void CCU711::ReceiveMore(unsigned char ReadBuffer[])
 	SET_FOREGROUND_WHITE;
 	_incomingMsg[0].DecodeCommand(ReadBuffer);
 	_incomingMsg[0].DecodePreamble();
-	_incomingMsg[0].InsertWord(INPUT, ReadBuffer);
+	_incomingMsg[0].InsertWord(INPUT, ReadBuffer, 6);      //  CHANGE THIS 6 TO SOMETHING ELSE !!!  (a counter passed in from serverNexus)
 
     string printMsg, printCmd, printPre, printWrd, printFnc;
 
@@ -190,7 +190,6 @@ void CCU711::TranslateInfo(bool direction, string & printMsg, string & printCmd,
             case WRITE:     printFnc.append("WRITE");       break;
         }
 	}
-	
 }
 
 //Returns a pointer to the listening socket

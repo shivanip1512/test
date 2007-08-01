@@ -8,7 +8,7 @@
 *
 *    PURPOSE: CCU Simulator
 *
-*    DESCRIPTION: Simulate the behavior of CCU 710s
+*    DESCRIPTION: Simulate the behavior of CCU 711s
 *    
 *    Copyright (C) 2007 Cannon Technologies, Inc.  All rights reserved.
 *****************************************************************************/
@@ -18,147 +18,194 @@
 #include "cticalls.h"
 #include "color.h"
 
+using namespace std;
+
 
 /**************************************************
 /*  CCU710 functions   
 ***************************************************/
-/*
-CCU710::CCU710(){
-	WSAStartup(MAKEWORD (1,1), &wsaData);
 
-	listenSocket = new CTINEXUS();
-	newSocket = new CTINEXUS();
+CCU710::CCU710()
+{
 }
 
-void CCU710::setSocket(CTINEXUS * Socket){
-	//WSAStartup(MAKEWORD (1,1), &wsaData);
-	newSocket = Socket;
+int CCU710::FirstByte(unsigned char ReadBuffer[]){
+    if(ReadBuffer[0]==0x53)
+    {
+        return 3;
+    }
+    else
+        return 3;
 }
 
 //Listen for and store an incoming message
-void CCU710::ReceiveMsg(){
-	unsigned char ReadBuffer[300];
-	unsigned long bytesRead=0;
-	RWTime AboutToRead;
-	while(bytesRead !=3) {
-		newSocket->CTINexusRead(ReadBuffer,3, &bytesRead, 15);
-	}
-	SET_FOREGROUND_BRIGHT_YELLOW;
-	std::cout<<AboutToRead.asString();
-	SET_FOREGROUND_BRIGHT_CYAN;
-	std::cout<<" IN:"<<std::endl;
-	SET_FOREGROUND_BRIGHT_GREEN;
-	for( int byteitr = 0; byteitr < bytesRead; byteitr++ )
-	{
-		std::cout<<std::string(CtiNumStr(ReadBuffer[byteitr]).hex().zpad(2))<<' ';
-	}
-
+int CCU710::ReceiveMsg(unsigned char ReadBuffer[])
+{
 	Message inMsg;
 	//determine the type of message
-	inMsg.CreateMessage('i',ReadBuffer);
-	bytesRead=0;
-	while(bytesRead !=inMsg.getBytesToFollow()) {
-		newSocket->CTINexusRead(ReadBuffer,inMsg.getBytesToFollow(), &bytesRead, 15);
-	}
-	for( byteitr = 0; byteitr < bytesRead; byteitr++ )
-	{
-		std::cout<<string(CtiNumStr(ReadBuffer[byteitr]).hex().zpad(2))<<' ';
-	}
-	std::cout<<std::endl;
-	SET_FOREGROUND_WHITE;
-	inMsg.InsertWord('i', ReadBuffer);
-
-	std::cout<<"Message Type: "<<inMsg.getMessageType()<<"    Word Type: "<<inMsg.getWordType();
-	std::cout<<"    Word Function: "<<inMsg.getWordFunction()<<std::endl;
-	incomingMsg[0] = inMsg;
+	inMsg.CreateMessage(INPUT, DEFAULT, ReadBuffer);
+    _incomingMsg[0] = inMsg;
+    return inMsg.getBytesToFollow();
 }
+
+
+//Listen for and store an incoming message
+void CCU710::ReceiveMore(unsigned char ReadBuffer[], int counter)
+{
+	_incomingMsg[0].InsertWord(INPUT, ReadBuffer, counter);
+}
+
+
+void CCU710::PrintInput(unsigned char ReadBuffer[])
+{
+    cout<<endl;
+    SET_FOREGROUND_WHITE;
+    string printMsg, printCmd, printPre, printWrd, printFnc;
+
+	TranslateInfo(INCOMING, printMsg, printCmd, printPre, printWrd, printFnc);
+
+	cout<<"Msg: "<<printMsg<<"    Cmd: "<<printCmd<<"    Pre: "<<printPre;
+	cout<<"    Wrd: "<<printWrd<<"    Fnc: "<<printFnc<<endl;
+}
+
 
 //Build a new message
 void CCU710::CreateMsg(){
 	unsigned char someData[10];
 	Message newMessage;
-	if(incomingMsg[0].getMessageType()=='f')
+	if(_incomingMsg[0].getPreamble()==FEEDEROP)
 	{
-		if(incomingMsg[0].getWordType()=='b') {
-			if(incomingMsg[0].getWordFunction()== 'r') {
-				//  Read energy, etc
-				newMessage.CreateMessage('d', someData);
-				newMessage.InsertAck();
-			}
-			else if(incomingMsg[0].getWordFunction()== 'f') {
-				if(incomingMsg[0].getMessageSize()==17){
-					//  putconfig, etc
-					newMessage.CreateMessage('c',  someData);
-					newMessage.InsertAck();
-				}
-				else if(incomingMsg[0].getMessageSize()==10){
-					//  MCT410 ping
-					newMessage.CreateMessage('d', someData);
-					newMessage.InsertAck();
-				}
-			}
-			else if(incomingMsg[0].getWordFunction()== 'w') {
-				// getconfig etc
-				newMessage.CreateMessage('d', someData);
-				newMessage.InsertAck();
-				EmetconWord newWord;
-				for(int i=1; i<incomingMsg[0].getWTF(); i++) {
-					newMessage.InsertWord(newWord);
-					newMessage.InsertAck();
-				}
-			}
+		//  Feeder operation
+		unsigned char Frame = _incomingMsg[0].getFrame();
+		unsigned char Address = _incomingMsg[0].getAddress();
+		if(_incomingMsg[0].getWordFunction()==WRITE) {
+			newMessage.CreateMessage(FEEDEROP, READENERGY, someData, Address, Frame);
 		}
-		outgoingMsg[0]=newMessage;
+		else{ 
+			newMessage.CreateMessage(FEEDEROP, DEFAULT, someData, Address, Frame);
+		}
+
+		_outgoingMsg[0]=newMessage;
 	}
-	else if(incomingMsg[0].getMessageType()=='p') {
-		newMessage.CreateMessage('p', someData);
-		outgoingMsg[0]=newMessage;
-	}
-	else if(incomingMsg[0].getMessageType()=='1') {
-		newMessage.InsertAck();
-		newMessage.InsertAck();
-		outgoingMsg[0]=newMessage;
-	}
-	else if(incomingMsg[0].getMessageType()=='2') {
-		newMessage.InsertAck();
-		newMessage.InsertAck();
-		outgoingMsg[0]=newMessage;
-	}
-	CTISleep(5000);
+    else
+    {   //  Ping response
+        newMessage.CreateMessage(PING, DEFAULT, someData);
+        _outgoingMsg[0]=newMessage;
+    }
 }
 
+
 //Send the message back to porter
-void CCU710::SendMsg(){
-	unsigned long bytesWritten = 0;
-	unsigned char * WriteBuffer = outgoingMsg[0].getMessageArray();
-	int MsgSize = outgoingMsg[0].getMessageSize();
-	unsigned char SendData[300];
-	for(int i=0; i<30; i++) {
-		SendData[i]= WriteBuffer[i];
-	}
+int CCU710::SendMsg(unsigned char SendData[]){
+    unsigned char *WriteBuffer = _outgoingMsg[0].getMessageArray();
+    int MsgSize = _outgoingMsg[0].getMessageSize();
 
-	newSocket->CTINexusWrite(&SendData, MsgSize, &bytesWritten, 15); 
-	RWTime DateSent;
-	SET_FOREGROUND_BRIGHT_YELLOW;
-	std::cout<<DateSent.asString();
-	SET_FOREGROUND_BRIGHT_CYAN;
-	std::cout<<" OUT:"<<std::endl;
-	SET_FOREGROUND_BRIGHT_MAGNETA;
-	for(int byteitr = 0; byteitr < bytesWritten; byteitr++ )
-	{
-		std::cout <<string(CtiNumStr(SendData[byteitr]).hex().zpad(2))<<' ';
-	}
-	std::cout<<std::endl;
-	SET_FOREGROUND_WHITE;
-	std::cout<<"Message Type: "<<outgoingMsg[0].getMessageType()<<"    Word Type: "<<outgoingMsg[0].getWordType();
-	std::cout<<"    Word Function: "<<outgoingMsg[0].getWordFunction()<<std::endl;
-	std::cout<<"------------------------------------------------------"<<std::endl;
+    memcpy(SendData, WriteBuffer, 100);
 
-	// Reset inmessage
-	Message blankMessage;
-	incomingMsg[0] = blankMessage;
-	// reset outbound message
-	outgoingMsg[0] = blankMessage;
+    return MsgSize;
+}
+
+
+void CCU710::PrintMessage(){
+    cout<<endl;
+    SET_FOREGROUND_WHITE;
+    string printType;
+    switch(_outgoingMsg[0].getMessageType()){
+    case INPUT:
+        printType.append("INPUT");
+        break;
+    case RESETREQ:
+        printType.append("RESETREQ");
+        break;
+    case RESETACK:
+        printType.append("RESETACK");
+        break;
+    case GENREQ:
+        printType.append("GENREQ");
+        break;
+    case GENREP:
+        printType.append("GENREP");
+        break;
+    }
+
+    string printMsg, printCmd, printPre, printWrd, printFnc;
+
+    TranslateInfo(OUTGOING, printMsg, printCmd, printPre, printWrd, printFnc);
+
+    cout<<"Msg: "<<printMsg<<"    Cmd: "<<printCmd<<"         Pre: "<<printPre;
+    cout<<"    Wrd: "<<printWrd<<"    Fnc: "<<printFnc<<endl;
+    cout<<"________________________________________________________________________________"<<endl;
+
+
+    // Reset inmessage
+    Message blankMessage;
+    _incomingMsg[0] = blankMessage;
+    // reset outbound message
+    _outgoingMsg[0] = blankMessage;
+}
+
+
+void CCU710::TranslateInfo(bool direction, string & printMsg, string & printCmd, string & printPre, string & printWrd, string & printFnc)
+{
+	if(direction == INCOMING){
+		switch(_incomingMsg[0].getMessageType()){
+            case INPUT:     printMsg.append("INPUT");       break;
+            case RESETREQ:  printMsg.append("RESETREQ");    break;
+            case RESETACK:  printMsg.append("RESETACK");    break;
+            case GENREQ:    printMsg.append("GENREQ");      break;
+            case GENREP:    printMsg.append("GENREP");      break;
+		}
+		switch(_incomingMsg[0].getCommand()){
+            case 11:        printCmd.append("DTRAN");       break;
+		}
+		switch(_incomingMsg[0].getPreamble()){
+            case FEEDEROP:  printPre.append("FEEDEROP");    break;
+		}
+		switch(_incomingMsg[0].getWordType())
+        {
+            case A_WORD:    printWrd.append("A_WORD");      break;
+            case B_WORD:    printWrd.append("B_WORD");      break;
+            case C_WORD:    printWrd.append("C_WORD");      break;
+            case D_WORD:    printWrd.append("D_WORD");      break;
+            case E_WORD:    printWrd.append("E_WORD");      break;
+		}
+		switch(_incomingMsg[0].getWordFunction()){
+            case FUNCACK:   printFnc.append("FUNCACK");     break;
+            case READ:      printFnc.append("READ");        break;
+            case WRITE:     printFnc.append("WRITE");       break;
+		}
+	}
+	else if(direction == OUTGOING){
+        switch(_outgoingMsg[0].getMessageType()){
+            case INPUT:     printMsg.append("INPUT");       break;
+            case RESETREQ:  printMsg.append("RESETREQ");    break;
+            case RESETACK:  printMsg.append("RESETACK");    break;
+            case GENREQ:    printMsg.append("GENREQ");      break;
+            case GENREP:    printMsg.append("GENREP");      break;
+            case PING:      printPre.append("PING");        break;
+        }
+        switch(_outgoingMsg[0].getCommand()){
+            case 11:        printCmd.append("DTRAN");       break;
+        }
+        switch(_outgoingMsg[0].getPreamble()){
+            case FEEDEROP:  printPre.append("FEEDEROP");    break;
+            case PING:      printPre.append("PING");            break;
+
+        }
+        switch(_outgoingMsg[0].getWordType())
+        {
+            case A_WORD:    printWrd.append("A_WORD");      break;
+            case B_WORD:    printWrd.append("B_WORD");      break;
+            case C_WORD:    printWrd.append("C_WORD");      break;
+            case D_WORD:    printWrd.append("D_WORD");      break;
+            case E_WORD:    printWrd.append("E_WORD");      break;
+        }
+        switch(_outgoingMsg[0].getWordFunction()){
+            case FUNCACK:   printFnc.append("FUNCACK");     break;
+            case READ:      printFnc.append("READ");        break;
+            case WRITE:     printFnc.append("WRITE");       break;
+        }
+	}
 }
 
 //Returns a pointer to the listening socket
@@ -173,4 +220,5 @@ CTINEXUS * CCU710::getNewSocket(){
 	return(Socket);
 }
 
-*/
+
+

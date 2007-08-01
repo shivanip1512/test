@@ -54,19 +54,17 @@ int EmetconWord::InsertWord(int Type, unsigned char * pMessageData, int WordFunc
 		_wordSize = 7;
 
 
-		pMessageData[Ctr++] = 0xd4; //beginning of d word
+		pMessageData[Ctr++] = 0xd0;//4; //beginning of d word
 		pMessageData[Ctr++] = 0x24;
-		pMessageData[Ctr++] = 0x13; //data begins in second half of this byte
-		pMessageData[Ctr++] = 0xff; // data
-		pMessageData[Ctr++] = 0xff; // data
-		pMessageData[Ctr++] = 0xf0; // data ends first half of this byte
+		pMessageData[Ctr++] = 0x00;//10; //data begins in second half of this byte
+		pMessageData[Ctr++] = 0x0f; // data
+		pMessageData[Ctr++] = 0x00; // data
+		pMessageData[Ctr++] = 0x00; // data ends first half of this byte
 		pMessageData[Ctr++] = 0x00; 
 
 		unsigned char BCH = BCHCalc_C (pMessageData+Ctr-7, 46);
 		pMessageData[Ctr-2] |= BCH >> 6;
 		pMessageData[Ctr-1] = BCH << 2;
-
-
 
 		return Ctr;
 	}
@@ -90,6 +88,7 @@ int EmetconWord::InsertWord(int Type, unsigned char * pMessageData, int WordFunc
 		BCH = BCHCalc (cWord, 46);
 		cWord[5] |= BCH >> 6;
 		cWord[6] = BCH << 2;
+        return Ctr;
 	}
 	else if(_wordType == 2) {
 		_wordSize = 7;
@@ -108,6 +107,7 @@ int EmetconWord::InsertWord(int Type, unsigned char * pMessageData, int WordFunc
 		BCH = BCHCalc (cWord, 46);
 		cWord[5] |= BCH >> 6;
 		cWord[6] = BCH << 2;
+        return Ctr;
 	}
 	else if(_wordType == 5) {
 		_wordSize = 7;
@@ -152,6 +152,7 @@ int EmetconWord::InsertWord(int Type, unsigned char * pMessageData, int WordFunc
 		BCH = BCHCalc (dWord, 46);
 		dWord[5] |= BCH >> 6;
 		dWord[6] = BCH << 2;
+        return Ctr;
 	}
 	else if(_wordType == 1) {
 		_wordSize = 4;
@@ -167,7 +168,12 @@ int EmetconWord::InsertWord(int Type, unsigned char * pMessageData, int WordFunc
 		BCH = BCHCalc (cWord, 24);
 		cWord[5] |= BCH >> 6;
 		cWord[6] = BCH << 2;
+        return Ctr;
 	}
+    else
+    {
+        return Ctr;
+    }
 }
 
 // copy and decode an existing word

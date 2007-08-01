@@ -27,28 +27,30 @@ class Message{
         
         enum WordTypes
         {   
-            DEFAULT  = 0,
-            INPUT    = 0,
-            RESETREQ = 1,
-            RESETACK = 2,
-            GENREQ   = 3,
-            GENREP   = 4,
-            A_WORD   = 31,
-            B_WORD   = 32,
-            C_WORD   = 33,
-            D_WORD   = 34,
-            E_WORD   = 35,
-            DTRAN    = 11,
-            FEEDEROP = 21,
-            FUNCACK  = 41,
-            READ     = 42,
-            WRITE    = 43,
-            ACKACK   = 51,
+            DEFAULT    = 0,
+            INPUT      = 0,
+            RESETREQ   = 1,
+            RESETACK   = 2,
+            GENREQ     = 3,
+            GENREP     = 4,
+            A_WORD     = 31,
+            B_WORD     = 32,
+            C_WORD     = 33,
+            D_WORD     = 34,
+            E_WORD     = 35,
+            DTRAN      = 11,
+            FEEDEROP   = 21,
+            PING       = 22,
+            FUNCACK    = 41,
+            READ       = 42,
+            WRITE      = 43,
+            READENERGY = 44,
+            ACKACK     = 51,
 
         };
 
 		// This is used to insert words into incoming messages 
-		void InsertWord(int WordType, unsigned char Data[]);
+		void InsertWord(int WordType, unsigned char Data[], int counter);
 		// This is used to insert words into outgoing messages
 		void InsertWord(EmetconWord oneWord);
 		// Function to read the data in the Message to the screen

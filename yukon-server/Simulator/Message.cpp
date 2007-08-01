@@ -47,8 +47,12 @@ void Message::CreateMessage(int MsgType, int WrdFnc, unsigned char Data[], unsig
 		_messageData[1] = Data[1];
 		_messageData[2] = Data[2];
 		_messageData[3] = Data[3];
-		_indexOfEnd = 4;
+		_indexOfEnd = 4;           //   this may cause a PROBLEM  SINCE 710 should be 3 bytes !!!
 		_bytesToFollow = DecodeIDLC();
+        if(_bytesToFollow==-1)
+        {
+            _bytesToFollow = DecodePreamble();   
+        }
 	}
 	else if(_messageType == RESETACK) {
 		_messageData[0] = 0x7e;
@@ -132,6 +136,43 @@ void Message::CreateMessage(int MsgType, int WrdFnc, unsigned char Data[], unsig
 		}
 		_indexOfEnd = Ctr;
 	}
+    else if(_messageType == FEEDEROP) {
+        int Ctr = 0;
+        if(WrdFnc==READENERGY) {
+            //_messageData[Ctr++] = Address;   //  slave address
+            //Ctr++;  		// btf -2 filled in @ bottom 
+            
+            // ///////////////////////////////////////////////////////////////////////////
+            // /////////////////////////////////////////// ////////////////////////////
+            // ///  MAKE THE ADDRESS IN PREAMBLE GENERAL FOR ALL CUU ADDRESSES !!!
+            _messageData[Ctr++] = 0xc3;							
+            _messageData[Ctr++] = 0xc3;	
+            _messageData[Ctr++] = 0x82;	
+
+            EmetconWord newWord;
+            int Function = 0;
+            Ctr = newWord.InsertWord(D_WORD,  _messageData, Function, Ctr);
+            _words[0]=newWord;
+            _messageData[Ctr++] = 0xc3; 
+
+
+            //  Output for debugging only
+            /*for(int i=0; i<Ctr; i++) {
+                std::cout<<"_messageData "<<string(CtiNumStr(_messageData[i]).hex().zpad(2))<<std::endl;
+            }*/
+
+        }
+        _indexOfEnd = Ctr;
+    }
+    else if(_messageType == PING) {
+        int Ctr = 0;
+        _messageData[Ctr++] = 0xc3;							
+        _messageData[Ctr++] = 0xc3;
+        _messageData[Ctr++] = 0xf5;							
+        _messageData[Ctr++] = 0x55;	
+        _indexOfEnd = Ctr;
+    }
+	
 }
 
 int Message::DecodeIDLC(){
@@ -149,6 +190,9 @@ int Message::DecodeIDLC(){
 				_bytesToFollow = (_messageData[3] + 0x02);  
 			}
 	}
+    else{  //  The message is not an IDLC message.  Probably 710 protocol instead
+        return -1;
+    }
 	return _bytesToFollow;
 }
 
@@ -170,7 +214,7 @@ int Message::DecodePreamble()
 {
 	char _bytesToFollow = 0;
 
-	if( _messageData[3] & 0x04 )
+	if( _messageData[2] & 0x04 )
     {
 		//  Feeder operation specified
 		_preamble = FEEDEROP;
@@ -192,10 +236,18 @@ int Message::DecodePreamble()
 	else if((_messageData[3]==0x53) && 
             (_messageData[4]==0xf5) && 
             (_messageData[5]==0x55)) {
-		// CCU710 ping
-		_messageType = 'p';
+		// CCU710 ping in IDLC wrap
+		_messageType = PING;
 		_bytesToFollow = 0;
 	}
+    else if((_messageData[0]==0x53) && 
+            (_messageData[1]==0xf5) && 
+            (_messageData[2]==0x55)) {
+        // CCU710 ping
+        _messageType = PING;
+        _bytesToFollow = 0;
+    }
+
 	else if((_messageData[3]==0x47) && (_messageData[4]==0x30) && (_messageData[5]==0x8e)) {
 		// CCU710 ping
 		_messageType = '1';
@@ -214,13 +266,25 @@ int Message::DecodePreamble()
 }
 
 //  This is used to insert _words into incoming messages
-void Message::InsertWord(int WordType, unsigned char Data[]){
-	_messageData[10]=Data[6];
-	_messageData[12]=Data[7];
-	_messageData[13]=Data[8];
-	_messageData[14]=Data[9];
-	_messageData[15]=Data[10];
-	_messageData[16]=Data[11];
+void Message::InsertWord(int WordType, unsigned char Data[], int counter){
+    if(counter>4)
+    {
+        _messageData[10]=Data[6];   //  THIS SECTION MAY CAUSE PROBLEMS IN 711 BECAUSE THE BUFFER NOW CONTAINS 
+        _messageData[12]=Data[7];   //  THE WHOLE MESSAGE, NOT JUST SECTIONS OF IT
+        _messageData[13]=Data[8];
+        _messageData[14]=Data[9];
+        _messageData[15]=Data[10];
+        _messageData[16]=Data[11];
+    }
+    else
+    {
+        _messageData[counter]=Data[counter];
+        _messageData[counter]=Data[counter];
+        _messageData[counter]=Data[counter];
+        _messageData[counter]=Data[counter];
+        _messageData[counter]=Data[counter];
+        _messageData[counter]=Data[counter];
+    }
 	int WordFunction;
 	int InsertMore = 0;
 	int WTF = 0;
@@ -296,52 +360,43 @@ void Message::InsertWord(EmetconWord oneWord){
 
 
 int Message::DecodeWTF(int WordType, unsigned char Data[]){
-	if((Data[4] & 0x10) == 0x10) {
-		return 1;
-	}
-	if((Data[4] & 0x20) == 0x20) {
-		return 2;
-	}
-	if((Data[4] & 0x30) == 0x30) {
-		return 3;
-	}
+	if((Data[4] & 0x10) == 0x10) {  return 1;   }
+	else if((Data[4] & 0x20) == 0x20) {  return 2;   }
+	else if((Data[4] & 0x30) == 0x30) {  return 3;   }
 	else return 0;
 }
 
+
 int Message::DecodeDefinition(){
 	int WordType = 0;
-	if(_messageData[10] == 0xaf){  
-		WordType = B_WORD;
-	}
+   	if(_messageData[10] == 0xaf)    {   WordType = B_WORD;   }    //  IDLC CCU711 
+	else if(_messageData[3] == 0xaf){   WordType = B_WORD;   }    //CCU710
 	else
-		WordType = 999;
+    {
+            WordType = 999;
+    }
 	return WordType;
 }
 
+
 int Message::DecodeFunction(int WordType, unsigned char Data[]){
 	char FunctionType = 0;
-	if(WordType== B_WORD) {
+	if(WordType== B_WORD) 
+    {
 		//   check to see what function is specified
-		if((_messageData[15] & 0xc) == 0x0c) {
-			//  Function with acknowledge
-			FunctionType = FUNCACK;
-		}
-		else if((_messageData[15] & 0x04) == 0x04) {
-			//  Read
-			FunctionType = READ;
-		}
-		else if((_messageData[15] & 0x00) == 0x00) {
-			//  Write
-			FunctionType = WRITE;
-		}
+		if((_messageData[15] & 0xc) == 0x0c)       {  FunctionType = FUNCACK;     }     //  Function with acknowledge
+		else if((_messageData[15] & 0x04) == 0x04) {  FunctionType = READ;        }     //  Read
+		else if((_messageData[15] & 0x00) == 0x00) {  FunctionType = WRITE;       }     //  Write
 	}
 		return FunctionType;
 }
+
 
 void Message::InsertAck(){
 	_messageData[_indexOfEnd] = 0xc3;
 	_indexOfEnd++;
 }
+
 
 // Constructor to copy and decode an existing Message
 void Message::DecodeMessage(unsigned char ReadBuffer[], CTINEXUS * newSocket){
@@ -350,14 +405,17 @@ void Message::DecodeMessage(unsigned char ReadBuffer[], CTINEXUS * newSocket){
 	newWord.ReadWord();
 }
 
+
 // Function to read the data in the Message to the screen
 void Message::ReadMessage(){
 }
+
 
 //  Returns a copy of the message array
 unsigned char * Message::getMessageArray(){
 	return _messageData;
 }
+
 
 void Message::CreatePreamble(){
 	_messageData[0] = 0xc3;
@@ -365,6 +423,7 @@ void Message::CreatePreamble(){
 	_messageData[2] = 0x82;
 	_indexOfEnd += 3;
 }
+
 
 unsigned short Message::InsertCRC(unsigned long Length){
 	unsigned short CRC;
@@ -374,9 +433,6 @@ unsigned short Message::InsertCRC(unsigned long Length){
 	return CRC;
 }
 
-unsigned char Message::getAddress(){
-	return _messageData[1];
-}
 
 unsigned char Message::getFrame(){
 	unsigned char Frame = 0x00;
@@ -386,6 +442,7 @@ unsigned char Message::getFrame(){
 	return Frame;
 }
 
+
 int Message::getBytesToFollow(){    return _bytesToFollow;              }
 int Message::getCommand(){          return _commandType;                }
 int Message::getPreamble(){         return _preamble;                   }
@@ -394,4 +451,5 @@ int Message::getMessageSize(){      return _indexOfEnd;                 }
 int Message::getWTF(){              return _words[0].getWTF();          }
 int Message::getWordType(){         return _words[0].getWordType();     }
 int Message::getWordFunction(){     return _words[0].getWordFunction(); }
+unsigned char Message::getAddress(){return _messageData[1];             }
 
