@@ -79,6 +79,11 @@ public class PaoPermissionServiceImpl implements PaoPermissionService {
 
     public boolean hasPermission(LiteYukonUser user, LiteYukonPAObject pao, Permission permission) {
 
+    	if(permission.equals(Permission.ALLOWED_COMMAND)) {
+    		// ALLOWED_COMMAND permission are always allowed
+    		return true;
+    	}
+    	
         // Get all groups that the user is in
         List<LiteYukonGroup> userGroups = groupDao.getGroupsForUser(user);
 
@@ -104,11 +109,23 @@ public class PaoPermissionServiceImpl implements PaoPermissionService {
     }
 
     public boolean hasPermission(LiteYukonGroup group, LiteYukonPAObject pao, Permission permission) {
-        return groupPaoPermissionDao.hasPermissionForPao(group, pao, permission);
+    	
+    	if(permission.equals(Permission.ALLOWED_COMMAND)) {
+    		// ALLOWED_COMMAND permission are always allowed
+    		return true;
+    	}
+    	
+    	return groupPaoPermissionDao.hasPermissionForPao(group, pao, permission);
     }
 
     public boolean hasPermission(List<LiteYukonGroup> groupList, LiteYukonPAObject pao,
             Permission permission) {
+    	
+    	if(permission.equals(Permission.ALLOWED_COMMAND)) {
+    		// ALLOWED_COMMAND permission are always allowed
+    		return true;
+    	}
+    	
         return groupPaoPermissionDao.hasPermissionForPao(groupList, pao, permission);
     }
 

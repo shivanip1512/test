@@ -134,6 +134,16 @@ http://www.springframework.org/schema/util http://www.springframework.org/schema
 					<property name="commandString" value="control" />
 					<property name="permission" value="CONTROL_COMMAND" />
 				</bean>
+				
+				<!-- These commands are always allowed regardless of other role property settings -->
+				<bean class="com.cannontech.core.authorization.support.CommandPermissionConverter$CommandPermissionMapping">
+					<property name="commandString" value="ping" />
+					<property name="permission" value="ALLOWED_COMMAND" />
+				</bean>
+				<bean class="com.cannontech.core.authorization.support.CommandPermissionConverter$CommandPermissionMapping">
+					<property name="commandString" value="loop*" />
+					<property name="permission" value="ALLOWED_COMMAND" />
+				</bean>
 			</list>
 		</property>
 	</bean>

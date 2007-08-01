@@ -67,6 +67,17 @@ div.scroll { font-size: 12px;
 	<div class="commanderHeader"> 
 		<center>Control Commands:&nbsp;&nbsp;<%=name%></center>
 	</div>
+
+<% 
+	if (errorMsg != null && errorMsg.length() != 0) {
+	    out.write("<br/><center><span class=\"ErrorMsg\">* " + errorMsg + "</span></center><br/>");
+	    errorMsg = null;
+	}
+	if (YC_BEAN.getErrorMsg().length() > 0 ) {
+	    out.write("<br/><center><span class=\"ErrorMsg\">" + YC_BEAN.getErrorMsg() + "</span></center><br/>");
+	    YC_BEAN.setErrorMsg("");
+	}
+%>
 	
 	<form name="commandForm" method="POST" action="<%= request.getContextPath() %>/servlet/CommanderServlet">
 		<input type="hidden" name="deviceID" value="<%=deviceID%>">
