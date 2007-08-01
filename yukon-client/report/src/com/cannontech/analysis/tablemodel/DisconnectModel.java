@@ -20,6 +20,7 @@ import com.cannontech.database.PoolManager;
 import com.cannontech.database.SqlUtils;
 import com.cannontech.database.data.lite.LitePoint;
 import com.cannontech.database.data.lite.LiteState;
+import com.cannontech.database.data.pao.DeviceTypes;
 import com.cannontech.database.data.pao.PAOGroups;
 import com.cannontech.database.data.point.PointTypes;
 import com.cannontech.spring.YukonSpringHook;
@@ -186,7 +187,8 @@ public class DisconnectModel extends ReportModelBase<MeterAndPointData> implemen
         sql.append("P.POINTID, P.POINTNAME, RPH1.TIMESTAMP, RPH1.VALUE ");
 
         //FROM
-        sql.append("FROM YUKONPAOBJECT PAO, DEVICEMETERGROUP DMG, DEVICECARRIERSETTINGS DCS, ");
+        sql.append("FROM YukonPAObject pao left outer join DeviceMCT400Series mct on pao.paobjectid = mct.deviceid, ");
+        sql.append("DEVICEMETERGROUP DMG, DEVICECARRIERSETTINGS DCS, ");
         sql.append("POINT P, DEVICEROUTES DR, YUKONPAOBJECT ROUTE, RAWPOINTHISTORY RPH1 ");
 
         //WHERE
@@ -194,10 +196,14 @@ public class DisconnectModel extends ReportModelBase<MeterAndPointData> implemen
         sql.append("AND PAO.PAOBJECTID = DMG.DEVICEID ");
         sql.append("AND PAO.PAOBJECTID = DCS.DEVICEID ");
         sql.append("AND PAO.PAOBJECTID = DR.DEVICEID ");
+        sql.append("AND ROUTE.PAOBJECTID = DR.ROUTEID ");
         sql.append("AND P.POINTID = RPH1.POINTID ");
         sql.append("AND P.POINTOFFSET = 1 ");
         sql.append("AND P.POINTTYPE = '" + PointTypes.getType(PointTypes.STATUS_POINT) + "' ");
-        sql.append("AND ROUTE.PAOBJECTID = DR.ROUTEID ");
+        sql.append(" AND ( PAO.TYPE in ('" + DeviceTypes.STRING_MCT_213[0] + "', ");
+        sql.append("'" + DeviceTypes.STRING_MCT_310ID[0] + "', ");
+        sql.append("'" + DeviceTypes.STRING_MCT_310IDL[0] + "') ");
+        sql.append(" OR ( DISCONNECTADDRESS IS NOT NULL) ) ");        
 
         if( isShowHistory())
         {
