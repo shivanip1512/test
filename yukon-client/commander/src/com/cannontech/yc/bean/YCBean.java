@@ -309,6 +309,11 @@ public class YCBean extends YC implements MessageListener, HttpSessionBindingLis
 						getReturnNameToRecentPDMap().put(id, fakePtData);
 						CTILogger.info("Put (returnNameToRecentReadMap): " +id + ":"+fakePtData.getId()+"-"+fakePtData.getValue()+"-"+fakePtData.getPointDataTimeStamp());					    
 					}
+					else if ( tempResult.toLowerCase().indexOf("role ") > 0)	//getconfig role # stuff
+					{
+						//do nothing.  No point data information can be retrieved from this command
+						// but since the result string has '=' (equal sign) we need to "if" this out of here.
+					}						
 					else if( tempResult.indexOf('=') > 0)
 					{
 						int equal = tempResult.indexOf('=');
