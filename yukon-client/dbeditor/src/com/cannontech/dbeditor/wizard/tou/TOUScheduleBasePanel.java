@@ -923,23 +923,24 @@ public class TOUScheduleBasePanel extends DataInputPanel {
 		
 		for(int u = 1; u < theWeekCombos.length; u++)
 		{
-			TOUDay selectedDay = (TOUDay) theWeekCombos[u].getSelectedItem();
-			theWeekCombos[u].removeAllItems();
+			JComboBox weekCombo = theWeekCombos[u];
+			TOUDay selectedDay = (TOUDay) weekCombo.getSelectedItem();
+			weekCombo.removeAllItems();
 			for(int j = 0; j < tempDays.size(); j++)
 			{
-				theWeekCombos[u].addItem(tempDays.elementAt(j));
+				weekCombo.addItem(tempDays.elementAt(j));
 			}
 			//add any extra days needed
-			if(tempDays.size() < 4)
+			if(weekCombo.getItemCount() < 4)
 			{
 				int initialDayID = TOUDay.getNextTOUDayID().intValue();
-				for(int d = 1; d < 5; d++)
+				for(int d = 1; weekCombo.getItemCount() < 4; d++)
 				{
 					boolean alreadyThere = false;
 					String touDayName = "Daily" + d;
 					
-					for(TOUDay day : tempDays){
-						if(day.getDayName().equals(touDayName)){
+					for(Object day : tempDays){
+						if(((TOUDay) day).getDayName().equals(touDayName)){
 							alreadyThere = true;
 						}
 					}
@@ -947,18 +948,19 @@ public class TOUScheduleBasePanel extends DataInputPanel {
 					if(!alreadyThere){
 						TOUDay day = new TOUDay(new Integer(initialDayID + d),touDayName);
 						day.getTOURateSwitchVector().addElement(new TOUDayRateSwitches("A", new Integer(0)));
+						
 						touDays.put(day.getDayID(), day);
-						theWeekCombos[u].addItem(day);
+						weekCombo.addItem(day);
 					}
 				}
 			}
 			
 			if(selectedDay == null)
-				theWeekCombos[u].setSelectedItem((TOUDay)tempDays.elementAt(0));
+				weekCombo.setSelectedItem((TOUDay)tempDays.elementAt(0));
 			else if(currentlySelected != null && currentlySelected.getDayID().intValue() == selectedDay.getDayID().intValue())
-				theWeekCombos[u].setSelectedItem(currentlySelected);
+				weekCombo.setSelectedItem(currentlySelected);
 			else
-				theWeekCombos[u].setSelectedItem(selectedDay);
+				weekCombo.setSelectedItem(selectedDay);
 				
 		}
 		healthyAction = true;
