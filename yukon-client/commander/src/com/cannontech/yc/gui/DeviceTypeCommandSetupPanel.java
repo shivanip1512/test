@@ -27,6 +27,7 @@ import com.cannontech.database.db.command.CommandCategory;
 import com.cannontech.message.dispatch.ClientConnection;
 import com.cannontech.message.dispatch.message.DBChangeMsg;
 import com.cannontech.roles.yukon.SystemRole;
+import com.cannontech.yukon.conns.ConnPool;
 
 
 /**
@@ -202,42 +203,7 @@ public DeviceTypeCommandSetupPanel() {
 			exit();
 		}
 	}
-	private void connect() 
-	{
-		String host = "127.0.0.1";
-		int port = 1510;
-		try
-		{
-			host = DaoFactory.getRoleDao().getGlobalPropertyValue( SystemRole.DISPATCH_MACHINE );
-			port = Integer.parseInt( DaoFactory.getRoleDao().getGlobalPropertyValue( SystemRole.DISPATCH_PORT ) ); 
-		}
-		catch( Exception e)
-		{
-			CTILogger.error( e.getMessage(), e );
-		}
 
-		connToDispatch = new ClientConnection();
-
-		com.cannontech.message.dispatch.message.Registration reg = new com.cannontech.message.dispatch.message.Registration();
-		reg.setAppName(CtiUtilities.getAppRegistration());
-		reg.setAppIsUnique(0);
-		reg.setAppKnownPort(0);
-		reg.setAppExpirationDelay( 1000000 );
-	
-		connToDispatch.setHost(host);
-		connToDispatch.setPort(port);
-		connToDispatch.setAutoReconnect(true);
-		connToDispatch.setRegistrationMsg(reg);
-
-		try
-		{
-			connToDispatch.connectWithoutWait();
-		}
-		catch ( Exception e )
-		{
-			e.printStackTrace();
-		}
-	}
 	/* (non-Javadoc)
 	 * @see com.cannontech.common.gui.dnd.DragAndDropListener#drop_actionPerformed(java.util.EventObject)
 	 */
@@ -444,10 +410,10 @@ private javax.swing.JScrollPane getCategoryListScrollPane() {
 	}
 	return ivjCategoryListScrollPane;
 }
-	public com.cannontech.message.util.ClientConnection getClientConnection()
+	public ClientConnection getClientConnection()
 	{
 		if( connToDispatch == null)
-			connect();	
+			connToDispatch = (ClientConnection) ConnPool.getInstance().getDefDispatchConn();	
 		return connToDispatch;
 	}
 
