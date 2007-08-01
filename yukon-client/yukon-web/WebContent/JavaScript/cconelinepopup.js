@@ -425,21 +425,53 @@ function createCapBankMenu(paoID) {
 	return str;
 }
 function createFeederMenu(paoID) {
-	resetOpcount = new Command (paoID, ALL_FDR_CMDS.reset_op_cnt, ALL_CMD_TYPES.feeder);
+	var resetOpcount = new Command (paoID, ALL_FDR_CMDS.reset_op_cnt, ALL_CMD_TYPES.feeder);
+	var openAllFdr = new Command (paoID, ALL_FDR_CMDS.send_all_open, ALL_CMD_TYPES.feeder);
+	var closeAllFdr = new Command (paoID, ALL_FDR_CMDS.send_all_close, ALL_CMD_TYPES.feeder);
+	var enableOvUvFdr = new Command (paoID, ALL_FDR_CMDS.send_all_enable_ovuv, ALL_CMD_TYPES.feeder);
+	var disableOvUvFdr = new Command (paoID, ALL_FDR_CMDS.send_all_disable_ovuv, ALL_CMD_TYPES.feeder);
+	
 	var str='';
 	str+='<html>';
 	str+='	<body>';
 	str+='	<table style="background-color:black" name="commandTable">';
-	str+='			<tr align="center">';
+	str+='			<tr align="left" valign="top">';
 	str+='				<td>';
 	str+='				<input type="submit" name="';
 	str+= 				resetOpcount.createName();
-	str+='" value="Reset Opcount " onclick = "disableAll(); submitWithConfirm(this); reset(this)"\/>';
-	str+='				<\/td>';
+	str+='" value="Reset Opcount " onclick = "disableAll(); submitWithConfirm(this); reset(this)"\/><br\/>';
+	str+='              </td>';
 	str+='				<td align="right" valign="top">';
 	str+='				<a href="javascript:void(0)" style="color=gray" title="Click To Close" onclick="closePopupWindow();"> x <\/a>';
 	str+='				<\/td>';
+	str+='			<tr align="left">';
+	str+='				<td>';
+	str+='<font color="gray">Fdr-Level CBC Commands: </font>'
+	str+='						<select id="subSelect" style="background-color=gray; margin: 2px 2px 2px 2px" >';
+	
+	str+='							<option  value="" style="color: white"> <\/option>';
+	str+='							<option  value="';
+	str+=							openAllFdr.createName();
+	str+='" style="color: white"> Open All CapBanks<\/option>';
+	str+='							<option  value="';
+	str+=							closeAllFdr.createName();
+	str+='" style="color: white"> Close All CapBanks<\/option>';
+	str+='							<option  value="';
+	str+=							enableOvUvFdr.createName();
+	str+='" style="color: white"> Enable OvUv<\/option>';
+	str+='							<option  value="';
+	str+=							disableOvUvFdr.createName();
+	str+='" style="color: white"> Disable OvUv<\/option>';
+	str+='						<\/select>';
+	str+='				<\/td>';
 	str+='			<\/tr>';
+	str+='			<tr>';
+	str+='				<td>';
+	str+='				<input type="submit"  name="execute" value = "Execute" onclick="disableAll(); submitWithConfirm(subSelect); reset(subSelect);"\/>';
+	str+='				<input type="submit" name="cancel" value = "Cancel" onclick="disableAll(); reset(subSelect);"\/><\/br>';
+	str+='				<\/td>';
+	str+='			<\/tr>';
+
 	str+='		<\/table>';
 	str+='	<\/body>';
 	str+='<\/html>';
@@ -450,6 +482,10 @@ function createSubMenu() {
 	paoId = getSubId();
 	var resetOpcount = new Command (paoId, ALL_SUB_CMDS.reset_op_cnt, ALL_CMD_TYPES.sub);
 	var confirmSub = new Command (paoId, ALL_SUB_CMDS.confirm_close, ALL_CMD_TYPES.sub);
+	var openAllSub = new Command (paoId, ALL_SUB_CMDS.send_all_open, ALL_CMD_TYPES.sub);
+	var closeAllSub = new Command (paoId, ALL_SUB_CMDS.send_all_close, ALL_CMD_TYPES.sub);
+	var enableOvUvSub = new Command (paoId, ALL_SUB_CMDS.send_all_enable_ovuv, ALL_CMD_TYPES.sub);
+	var disableOvUvSub = new Command (paoId, ALL_SUB_CMDS.send_all_disable_ovuv, ALL_CMD_TYPES.sub);
 	
 	var verifyAll = new Command (paoId, ALL_SUB_CMDS.v_all_banks, ALL_CMD_TYPES.sub);
 	var verifyFQ = new Command (paoId, ALL_SUB_CMDS.v_fq_banks, ALL_CMD_TYPES.sub);
@@ -471,10 +507,31 @@ function createSubMenu() {
 	str+='						<input type ="submit"    style="margin: 2px 2px 2px 2px" name="';
 	str+= 						confirmSub.createName();
 	str+='" value = "Confirm All" onclick="disableAll(); submitWithConfirm(this); reset(this.name);"\/><br\/>';
-	str+='<font color="gray">On-Demand Verify: </font>'
+	str+='					<\/td>';
+	str+='					<td align ="right" valign="top">';
+	str+='						<a  href="#" onclick="closePopupWindow()" style="color:gray" title="Click here to close"> x <\/a><br\/>';
+	str+='					<\/td>';
+	str+='				<\/tr>';    
+    str+='				<tr>';
+	str+='					<td>';
+	str+='<font color="gray">Sub-Level CBC Commands: </font>'
 	str+='						<select id="subSelect" style="background-color=gray; margin: 2px 2px 2px 2px" >';
+	
+	str+='							<option  value="" style="color: white"> <\/option>';
+	str+='							<option  value="';
+	str+=							openAllSub.createName();
+	str+='" style="color: white"> Open All CapBanks<\/option>';
+	str+='							<option  value="';
+	str+=							closeAllSub.createName();
+	str+='" style="color: white"> Close All CapBanks<\/option>';
+	str+='							<option  value="';
+	str+=							enableOvUvSub.createName();
+	str+='" style="color: white"> Enable OvUv<\/option>';
+	str+='							<option  value="';
+	str+=							disableOvUvSub.createName();
+	str+='" style="color: white"> Disable OvUv<\/option>';
+
 	if (isV != "true") {
-		str+='							<option  value="" style="color: white"> <\/option>';
 		str+='							<option  value="';
 		str+=							verifyAll.createName();
 		str+='" style="color: white"> Verify All<\/option>';
@@ -493,15 +550,11 @@ function createSubMenu() {
 
 	}
 	else {
-		str+='							<option  value="" style="color: white"> <\/option>';
 		str+='							<option  value="';
 		str+=							verifyStop.createName();
 		str+='" style="color: white"> Stop Verify <\/option>';
 	}
 	str+='						<\/select>';
-	str+='					<\/td>';
-	str+='					<td align ="right" valign="top">';
-	str+='						<a  href="#" onclick="closePopupWindow()" style="color:gray" title="Click here to close"> x <\/a><br\/>';
 	str+='					<\/td>';
 	str+='				<\/tr>';
 	str+='				<tr>';
@@ -559,7 +612,7 @@ function reset(select, dontCloseCurrentPopup) {
 }
 function submitWithConfirm(obj) {
 	var cmdStr; 
-	if (obj.tagName == "SELECT") 
+		if (obj.tagName == "SELECT") 
 		cmdStr = getCommandVerbal(obj.options[obj.selectedIndex].value);
 	else
 		cmdStr = getCommandVerbal (obj.name);
