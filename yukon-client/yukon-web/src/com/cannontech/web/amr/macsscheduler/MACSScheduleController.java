@@ -111,10 +111,9 @@ public class MACSScheduleController extends MultiActionController {
     private boolean isEditable(LiteYukonUser user, int rolePropertyId) {
         if (authDao.checkRole(user, TDCRole.ROLEID)) {
             String value = authDao.getRolePropertyValue(user, TDCRole.TDC_RIGHTS);
-            Integer i = Integer.decode(value);
+            Integer i = Integer.valueOf(value, 16);
             boolean result = (i & 0x00001000) != 0x00001000;
             return result;
-            
         }
         return false;
     }
