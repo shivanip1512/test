@@ -6,12 +6,15 @@
  */
 package com.cannontech.dbeditor.wizard.tou;
 
+import java.awt.event.FocusAdapter;
 import java.awt.event.FocusEvent;
+import java.awt.event.FocusListener;
 import java.util.Calendar;
 import java.util.HashMap;
 import java.util.Vector;
 
 import javax.swing.JComboBox;
+import javax.swing.event.ChangeEvent;
 
 import com.cannontech.common.gui.util.ComboBoxTableRenderer;
 import com.cannontech.common.gui.util.DataInputPanel;
@@ -868,6 +871,15 @@ public class TOUScheduleBasePanel extends DataInputPanel {
 				{
 					fireInputUpdate();
 				};
+			});
+			// Add focus adapter so that table model is updated when the user
+			// enters a time.
+			field.addFocusListener(new FocusAdapter(){
+
+				public void focusLost(FocusEvent e) {
+					getJTableMadTOUDisease().editingStopped(new ChangeEvent(e.getSource()));
+				}
+				
 			});
 		
 			field.setHorizontalAlignment( javax.swing.JTextField.CENTER );
