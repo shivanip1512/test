@@ -277,6 +277,9 @@ public final static PointBase createNewPoint( Integer pointID, int pointType, St
 public static PointBase createPulseAccumPoint( String pointName, Integer paoID, 
       Integer pointID, int pointOffset, int pointUnit, double multiplier )
 {
+   final int defaultDecimalPlaces = (pointOffset != 1) ? 
+           com.cannontech.database.db.point.PointUnit.DEFAULT_DECIMAL_PLACES : 1;
+    
    PointBase point = PointFactory.createNewPoint(  
          pointID,
          PointTypes.PULSE_ACCUMULATOR_POINT,
@@ -299,7 +302,7 @@ public static PointBase createPulseAccumPoint( String pointName, Integer paoID,
       new com.cannontech.database.db.point.PointUnit(
          pointID,
          new Integer(pointUnit),
-         new Integer(com.cannontech.database.db.point.PointUnit.DEFAULT_DECIMAL_PLACES),
+         new Integer(defaultDecimalPlaces),
          new Double(0.0),
          new Double(0.0),
          new Integer (0)));
