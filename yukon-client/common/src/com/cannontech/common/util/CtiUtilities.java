@@ -1724,7 +1724,7 @@ public static double convertTemperature(double temperature, String fromUnit, Str
     
     public static String getJREDownloadURL() {
         try {
-            String urlString = "http://java.sun.com/javase/downloads/index_jdk5.jsp";
+            String urlString = "http://www.java.com/getjava/";
             HttpURLConnection connection = (HttpURLConnection) new URL(urlString).openConnection();
             if (connection.getResponseCode() == HttpURLConnection.HTTP_OK) {
                 return urlString;
