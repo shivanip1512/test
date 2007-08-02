@@ -363,10 +363,11 @@ public class WorkOrderBean {
 					
 				if (filterTypeID.intValue() == YukonListEntryTypes.YUK_DEF_ID_SO_FILTER_BY_STATUS) {
                     for (int j = 0; j < workOrders.size(); j++) {
-                        LiteWorkOrderBase liteOrder = (LiteWorkOrderBase) workOrders.get(j);
+                        LiteWorkOrderBase liteOrder = workOrders.get(j);
                         /*no dates are specified, just check current state ID*/
-                        if (getStartDate() == null && getStopDate() == null && liteOrder.getCurrentStateID() == specificFilterID) {
-                            filteredWorkOrders.add( liteOrder );
+                        if (getStartDate() == null && getStopDate() == null) {
+                            if(liteOrder.getCurrentStateID() == specificFilterID) 
+                                filteredWorkOrders.add( liteOrder );
     					}
     					/*Dates were specified so we look at the event type to see if it matches the status filter*/
                         else {
