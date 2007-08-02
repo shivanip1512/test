@@ -3073,6 +3073,9 @@ void CtiCCSubstationBusStore::reloadAreaFromDatabase(long areaId, map< long, Cti
                     RWDBTable yukonPAObjectTable = db.table("yukonpaobject");
                     RWDBTable capControlAreaTable = db.table("capcontrolarea");
                     RWDBTable ccSubAreaAssignmentTable = db.table("ccsubareaassignment");
+                    RWDBTable ccScheduleStrat = db.table("ccseasonstrategyassignment");
+                    RWDBTable dateOfSeason = db.table("dateofseason");
+
 
                     {
                         RWDBSelector selector = db.selector();
@@ -3082,9 +3085,8 @@ void CtiCCSubstationBusStore::reloadAreaFromDatabase(long areaId, map< long, Cti
                         << yukonPAObjectTable["paoname"]
                         << yukonPAObjectTable["type"]
                         << yukonPAObjectTable["description"]
-                        << yukonPAObjectTable["disableflag"]
-                        << capControlAreaTable["strategyid"];
-
+                        << yukonPAObjectTable["disableflag"];
+ 
                         selector.from(yukonPAObjectTable);
                         selector.from(capControlAreaTable);
 
@@ -3094,7 +3096,7 @@ void CtiCCSubstationBusStore::reloadAreaFromDatabase(long areaId, map< long, Cti
                                           yukonPAObjectTable["paobjectid"] == areaId);
                         }
                         else
-                            selector.where(yukonPAObjectTable["paobjectid"]==capControlAreaTable["areaid"]);
+                            selector.where(yukonPAObjectTable["paobjectid"]==capControlAreaTable["areaid"]  );
                             
                         
                         if ( _CC_DEBUG & CC_DEBUG_DATABASE )
@@ -3103,37 +3105,80 @@ void CtiCCSubstationBusStore::reloadAreaFromDatabase(long areaId, map< long, Cti
                             dout << CtiTime() << " - " << selector.asString().data() << endl;
                         }
                         RWDBReader rdr = selector.reader(conn);
-                        CtiCCStrategyPtr currentCCStrategy = NULL;
                         while ( rdr() )
                         {
+
                             CtiCCAreaPtr currentCCArea = CtiCCAreaPtr(new CtiCCArea(rdr));
                             paobject_area_map->insert(make_pair(currentCCArea->getPAOId(),currentCCArea));
 
-                            if (areaId > 0)
-                            {               
-                                currentCCStrategy = findStrategyByStrategyID(currentCCArea->getStrategyId());
-                                if (currentCCStrategy == NULL)
-                                {
-                                    currentCCArea->setStrategyId(0);
-                                    currentCCStrategy = findStrategyByStrategyID(0);
-                                }
-                                currentCCArea->setStrategyValues(currentCCStrategy);
-                            }
-                            else
-                            {
-                               if (strategy_map->find(currentCCArea->getStrategyId()) == strategy_map->end())
-                               {
-                                   currentCCArea->setStrategyId(0);
-                               }
-                               currentCCStrategy = strategy_map->find(currentCCArea->getStrategyId())->second;
-                               currentCCArea->setStrategyValues(currentCCStrategy);
-                            }
+                            
                             ccGeoAreas->push_back( currentCCArea );
 
 
                         }
 
                     }
+                    {
+                        RWDBSelector selector = db.selector();
+                                     selector << ccScheduleStrat["paobjectid"]
+                                              <<  ccScheduleStrat["seasonscheduleid"]
+                                              <<  ccScheduleStrat["seasonname"]
+                                              <<  ccScheduleStrat["strategyid"]
+                                              <<  dateOfSeason["seasonstartmonth"]
+                                              <<  dateOfSeason["seasonendmonth"]
+                                              <<  dateOfSeason["seasonstartday"]
+                                              <<  dateOfSeason["seasonendday"];
+
+                         selector.from(capControlAreaTable);
+                         selector.from(ccScheduleStrat);
+                         selector.from(dateOfSeason);
+
+                         if (areaId > 0)
+                         {                
+                             selector.where(ccScheduleStrat["paobjectid"]==capControlAreaTable["areaid"] && 
+                                           ccScheduleStrat["paobjectid"] == areaId &&
+                                           ccScheduleStrat["seasonscheduleid"] == dateOfSeason["seasonscheduleid"] &&
+                                           ccScheduleStrat["seasonname"] == dateOfSeason["seasonname"] );
+                         }
+                         else
+                             selector.where(ccScheduleStrat["paobjectid"]==capControlAreaTable["areaid"]  &&
+                                           ccScheduleStrat["seasonscheduleid"] == dateOfSeason["seasonscheduleid"] &&
+                                           ccScheduleStrat["seasonname"] == dateOfSeason["seasonname"]);
+
+                         RWDBReader rdr = selector.reader(conn);
+                         while ( rdr() )
+                         {
+                             int startMon, startDay, endMon, endDay;
+                             rdr["seasonstartmonth"] >> startMon;
+                             rdr["seasonendmonth"] >> endMon; 
+                             rdr["seasonstartday"] >> startDay; 
+                             rdr["seasonendday"] >> endDay; 
+
+                             CtiDate today = CtiDate();
+
+                             if (today  >= CtiDate(startDay, startMon, today.year()) &&
+                                 today < CtiDate(endDay, endMon, today.year())  )
+                             { 
+                                 long areaId, stratId;
+                                 rdr["paobjectid"] >> areaId;
+                                 rdr["strategyid"] >> stratId;
+
+                                 CtiCCAreaPtr currentCCArea = findAreaByPAObjectID(areaId);
+                                 if (currentCCArea != NULL) 
+                                 {
+                                     CtiCCStrategyPtr currentCCStrategy = findStrategyByStrategyID(stratId);
+                                     if (currentCCStrategy == NULL)
+                                     {
+                                         currentCCArea->setStrategyId(0);
+                                         currentCCStrategy = findStrategyByStrategyID(0);
+                                     }
+                                     currentCCArea->setStrategyValues(currentCCStrategy);
+
+                                 }
+                             }
+                         }
+                    }
+
                     if (areaId > 0) // else, when reloading all, then the reload of subs will be called after areaReload and take care of it.
                     {
                         RWDBSelector selector = db.selector();
@@ -3225,6 +3270,8 @@ void CtiCCSubstationBusStore::reloadSubBusFromDatabase(long subBusId, map< long,
                     RWDBTable dynamicCCSubstationBusTable = db.table("dynamicccsubstationbus");
                     RWDBTable ccFeederSubAssignmentTable = db.table("ccfeedersubassignment");
                     RWDBTable ccSubAreaAssignmentTable = db.table("ccsubareaassignment");
+                    RWDBTable ccScheduleStrat = db.table("ccseasonstrategyassignment");
+                    RWDBTable dateOfSeason = db.table("dateofseason");
 
                     {
                         RWDBSelector selector = db.selector();
@@ -3238,7 +3285,7 @@ void CtiCCSubstationBusStore::reloadSubBusFromDatabase(long subBusId, map< long,
                         << capControlSubstationBusTable["currentvarloadpointid"]
                         << capControlSubstationBusTable["currentwattloadpointid"]
                         << capControlSubstationBusTable["maplocationid"]
-                        << capControlSubstationBusTable["strategyid"]
+                        //<< capControlSubstationBusTable["strategyid"]
                         << capControlSubstationBusTable["currentvoltloadpointid"]
                         << capControlSubstationBusTable["AltSubID"] 
                         << capControlSubstationBusTable["SwitchPointID"] 
@@ -3263,7 +3310,7 @@ void CtiCCSubstationBusStore::reloadSubBusFromDatabase(long subBusId, map< long,
                         RWDBReader rdr = selector.reader(conn);
 
                         CtiCCSubstationBusPtr  currentCCSubstationBus;
-                        CtiCCStrategyPtr currentCCStrategy = NULL;
+                        //CtiCCStrategyPtr currentCCStrategy = NULL;
                         while ( rdr() )
                         {
                             currentCCSubstationBus = CtiCCSubstationBusPtr(new CtiCCSubstationBus(rdr));
@@ -3296,30 +3343,70 @@ void CtiCCSubstationBusStore::reloadSubBusFromDatabase(long subBusId, map< long,
                                 altsub_sub_idmap->insert(make_pair(currentCCSubstationBus->getAltDualSubId(), currentCCSubstationBus->getPAOId()));
                             }
 
-                            if (subBusId > 0)
-                            {               
-                                currentCCStrategy = findStrategyByStrategyID(currentCCSubstationBus->getStrategyId());
-                                if (currentCCStrategy == NULL)
-                                {
-                                    currentCCSubstationBus->setStrategyId(0);
-                                    currentCCStrategy = findStrategyByStrategyID(0);
-                                }
-                                currentCCSubstationBus->setStrategyValues(currentCCStrategy);
-                            }
-                            else
-                            {
-                               if (strategy_map->find(currentCCSubstationBus->getStrategyId()) == strategy_map->end())
-                               {
-                                   currentCCSubstationBus->setStrategyId(0);
-                               }
-                               currentCCStrategy = strategy_map->find(currentCCSubstationBus->getStrategyId())->second;
-                               currentCCSubstationBus->setStrategyValues(currentCCStrategy);
-                            }
-
-                            //if (currentCCSubstationBus->getStrategyId() > 0)
+                            
                                 cCSubstationBuses->push_back(currentCCSubstationBus);
 
                         }
+                        {
+                            RWDBSelector selector = db.selector();
+                                         selector <<  ccScheduleStrat["paobjectid"]
+                                                  <<  ccScheduleStrat["seasonscheduleid"]
+                                                  <<  ccScheduleStrat["seasonname"]
+                                                  <<  ccScheduleStrat["strategyid"]
+                                                  <<  dateOfSeason["seasonstartmonth"]
+                                                  <<  dateOfSeason["seasonendmonth"]
+                                                  <<  dateOfSeason["seasonstartday"]
+                                                  <<  dateOfSeason["seasonendday"];
+
+                             selector.from(capControlSubstationBusTable);
+                             selector.from(ccScheduleStrat);
+                             selector.from(dateOfSeason);
+
+                             if (subBusId > 0)
+                             {                
+                                 selector.where(ccScheduleStrat["paobjectid"]==capControlSubstationBusTable["substationbusid"] && 
+                                               ccScheduleStrat["paobjectid"] == subBusId &&
+                                               ccScheduleStrat["seasonscheduleid"] == dateOfSeason["seasonscheduleid"] &&
+                                               ccScheduleStrat["seasonname"] == dateOfSeason["seasonname"] );
+                             }
+                             else
+                                 selector.where(ccScheduleStrat["paobjectid"]==capControlSubstationBusTable["substationbusid"]  &&
+                                               ccScheduleStrat["seasonscheduleid"] == dateOfSeason["seasonscheduleid"] &&
+                                               ccScheduleStrat["seasonname"] == dateOfSeason["seasonname"]);
+                             RWDBReader rdr = selector.reader(conn);
+                             while ( rdr() )
+                             {
+                                 int startMon, startDay, endMon, endDay;
+                                 rdr["seasonstartmonth"] >> startMon;
+                                 rdr["seasonendmonth"] >> endMon; 
+                                 rdr["seasonstartday"] >> startDay; 
+                                 rdr["seasonendday"] >> endDay; 
+
+                                 CtiDate today = CtiDate();
+
+                                 if (today  >= CtiDate(startDay, startMon, today.year()) &&
+                                     today < CtiDate(endDay, endMon, today.year())  )
+                                 { 
+                                     long busId, stratId;
+                                     rdr["paobjectid"] >> busId;
+                                     rdr["strategyid"] >> stratId;
+
+                                     CtiCCSubstationBusPtr currentCCSubstationBus = findSubBusByPAObjectID(busId);
+                                     if (currentCCSubstationBus != NULL) 
+                                     {
+                                         CtiCCStrategyPtr currentCCStrategy = findStrategyByStrategyID(stratId);
+                                         if (currentCCStrategy == NULL)
+                                         {
+                                             currentCCSubstationBus->setStrategyId(0);
+                                             currentCCStrategy = findStrategyByStrategyID(0);
+                                         }
+                                         currentCCSubstationBus->setStrategyValues(currentCCStrategy);
+
+                                     }
+                                 }
+                             }
+                        }
+
                         {
                             RWDBSelector selector = db.selector();
                             
@@ -3534,7 +3621,10 @@ void CtiCCSubstationBusStore::reloadSubBusFromDatabase(long subBusId, map< long,
                         << dynamicCCSubstationBusTable["ivcontroltot"]
                         << dynamicCCSubstationBusTable["ivcount"]
                         << dynamicCCSubstationBusTable["iwcontroltot"]
-                        << dynamicCCSubstationBusTable["iwcount"];
+                        << dynamicCCSubstationBusTable["iwcount"]
+                        << dynamicCCSubstationBusTable["phaseavalue"]
+                        << dynamicCCSubstationBusTable["phasebvalue"]
+                        << dynamicCCSubstationBusTable["phasecvalue"];
 
                         selector.from(capControlSubstationBusTable);
                         selector.from(dynamicCCSubstationBusTable);
@@ -3761,6 +3851,8 @@ void CtiCCSubstationBusStore::reloadFeederFromDatabase(long feederId, map< long,
                     RWDBTable ccFeederBankListTable = db.table("ccfeederbanklist");
                     RWDBTable capControlFeederTable = db.table("capcontrolfeeder");
                     RWDBTable dynamicCCFeederTable = db.table("dynamicccfeeder");
+                    RWDBTable ccScheduleStrat = db.table("ccseasonstrategyassignment");
+                    RWDBTable dateOfSeason = db.table("dateofseason");
 
                     {
 
@@ -3775,7 +3867,7 @@ void CtiCCSubstationBusStore::reloadFeederFromDatabase(long feederId, map< long,
                         << capControlFeederTable["currentvarloadpointid"]
                         << capControlFeederTable["currentwattloadpointid"]
                         << capControlFeederTable["maplocationid"]
-                        << capControlFeederTable["strategyid"]
+                        //<< capControlFeederTable["strategyid"]
                         << capControlFeederTable["currentvoltloadpointid"]
                         << capControlFeederTable["multiMonitorControl"];
 
@@ -3822,28 +3914,69 @@ void CtiCCSubstationBusStore::reloadFeederFromDatabase(long feederId, map< long,
                                 pointid_feeder_map->insert(make_pair(currentCCFeeder->getCurrentVoltLoadPointId(), currentCCFeeder));
                                 currentCCFeeder->getPointIds()->push_back(currentCCFeeder->getCurrentVoltLoadPointId());
                             }
-
-                            if (feederId > 0)
-                            {               
-                                currentCCStrategy = findStrategyByStrategyID(currentCCFeeder->getStrategyId());
-                                if (currentCCStrategy == NULL)
-                                {
-                                    currentCCFeeder->setStrategyId(0);
-                                    currentCCStrategy = findStrategyByStrategyID(0);
-                                }
-                                currentCCFeeder->setStrategyValues(currentCCStrategy);
-                            }
-                            else
-                            {
-                                if (strategy_map->find(currentCCFeeder->getStrategyId()) == strategy_map->end())
-                                {
-                                    currentCCFeeder->setStrategyId(0);
-                                }
-                                currentCCStrategy = strategy_map->find(currentCCFeeder->getStrategyId())->second;
-                                currentCCFeeder->setStrategyValues(currentCCStrategy);
-                            }
                         } 
                     }
+                    {
+                        RWDBSelector selector = db.selector();
+                                     selector <<  ccScheduleStrat["paobjectid"]
+                                              <<  ccScheduleStrat["seasonscheduleid"]
+                                              <<  ccScheduleStrat["seasonname"]
+                                              <<  ccScheduleStrat["strategyid"]
+                                              <<  dateOfSeason["seasonstartmonth"]
+                                              <<  dateOfSeason["seasonendmonth"]
+                                              <<  dateOfSeason["seasonstartday"]
+                                              <<  dateOfSeason["seasonendday"];
+
+                         selector.from(capControlFeederTable);
+                         selector.from(ccScheduleStrat);
+                         selector.from(dateOfSeason);
+
+                         if (feederId > 0)
+                         {                
+                             selector.where(ccScheduleStrat["paobjectid"]==capControlFeederTable["feederid"] && 
+                                           ccScheduleStrat["paobjectid"] == feederId &&
+                                           ccScheduleStrat["seasonscheduleid"] == dateOfSeason["seasonscheduleid"] &&
+                                           ccScheduleStrat["seasonname"] == dateOfSeason["seasonname"] );
+                         }
+                         else
+                             selector.where(ccScheduleStrat["paobjectid"]==capControlFeederTable["feederid"]  &&
+                                           ccScheduleStrat["seasonscheduleid"] == dateOfSeason["seasonscheduleid"] &&
+                                           ccScheduleStrat["seasonname"] == dateOfSeason["seasonname"]);
+                         RWDBReader rdr = selector.reader(conn);
+                        while ( rdr() )
+                         {
+                             int startMon, startDay, endMon, endDay;
+                             rdr["seasonstartmonth"] >> startMon;
+                             rdr["seasonendmonth"] >> endMon; 
+                             rdr["seasonstartday"] >> startDay; 
+                             rdr["seasonendday"] >> endDay; 
+
+                             CtiDate today = CtiDate();
+
+                             if (today  >= CtiDate(startDay, startMon, today.year()) &&
+                                 today < CtiDate(endDay, endMon, today.year()) )
+                             { 
+                                 long feedId, stratId;
+                                 rdr["paobjectid"] >> feedId;
+                                 rdr["strategyid"] >> stratId;
+
+                                 CtiCCFeederPtr currentCCFeeder = findFeederByPAObjectID(feedId);
+                                 if (currentCCFeeder != NULL) 
+                                 {
+                                     CtiCCStrategyPtr currentCCStrategy = findStrategyByStrategyID(stratId);
+                                     if (currentCCStrategy == NULL)
+                                     {
+                                         currentCCFeeder->setStrategyId(0);
+                                         currentCCStrategy = findStrategyByStrategyID(0);
+                                     }
+                                     currentCCFeeder->setStrategyValues(currentCCStrategy);
+
+                                 }
+                             }
+                         }
+                    }
+
+
                 {
                     RWDBSelector selector = db.selector();
                     
@@ -4046,7 +4179,10 @@ void CtiCCSubstationBusStore::reloadFeederFromDatabase(long feederId, map< long,
                     << dynamicCCFeederTable["ivcontroltot"]
                     << dynamicCCFeederTable["ivcount"]
                     << dynamicCCFeederTable["iwcontroltot"]
-                    << dynamicCCFeederTable["iwcount"];
+                    << dynamicCCFeederTable["iwcount"]
+                    << dynamicCCFeederTable["phaseavalue"]
+                    << dynamicCCFeederTable["phasebvalue"]
+                    << dynamicCCFeederTable["phasecvalue"];
 
                     selector.from(dynamicCCFeederTable);
                     selector.from(capControlFeederTable);

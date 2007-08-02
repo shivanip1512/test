@@ -178,7 +178,7 @@ void CtiCCArea::restore(RWDBReader& rdr)
     rdr["disableflag"] >> tempBoolString;
     std::transform(tempBoolString.begin(), tempBoolString.end(), tempBoolString.begin(), tolower);
     _disableflag = (tempBoolString=="y"?TRUE:FALSE);
-    rdr["strategyid"] >> _strategyId;
+    //rdr["strategyid"] >> _strategyId;
 }
 
 

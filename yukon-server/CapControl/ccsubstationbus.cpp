@@ -265,6 +265,35 @@ DOUBLE CtiCCSubstationBus::getIWControl() const
 {
     return _iWControl;
 }
+/*---------------------------------------------------------------------------
+    getPhaseAValue
+
+    Returns the getPhaseAValue VAR of the substation
+---------------------------------------------------------------------------*/
+DOUBLE CtiCCSubstationBus::getPhaseAValue() const
+{
+    return _phaseAvalue;
+}
+
+/*---------------------------------------------------------------------------
+    getPhaseBValue
+
+    Returns the getPhaseBValue VAR of the substation
+---------------------------------------------------------------------------*/
+DOUBLE CtiCCSubstationBus::getPhaseBValue() const
+{
+    return _phaseBvalue;
+}
+
+/*---------------------------------------------------------------------------
+    getPhaseCValue
+
+    Returns the getPhaseCValue VAR of the substation
+---------------------------------------------------------------------------*/
+DOUBLE CtiCCSubstationBus::getPhaseCValue() const
+{
+    return _phaseCvalue;
+}
 
 /*---------------------------------------------------------------------------
     getStrategyId
@@ -1235,6 +1264,43 @@ CtiCCSubstationBus& CtiCCSubstationBus::setIWControl(DOUBLE value)
     _iWControl = value;
     return *this;
 }
+
+/*---------------------------------------------------------------------------
+    setPhaseAValue 
+        
+    Sets the setPhaseAValue Var of the substation
+---------------------------------------------------------------------------*/
+CtiCCSubstationBus& CtiCCSubstationBus::setPhaseAValue(DOUBLE value)
+{
+    _phaseAvalue = value;
+    return *this;
+}
+
+/*---------------------------------------------------------------------------
+    setPhaseBValue 
+        
+    Sets the setPhaseBValue Var of the substation
+---------------------------------------------------------------------------*/
+CtiCCSubstationBus& CtiCCSubstationBus::setPhaseBValue(DOUBLE value)
+{
+    _phaseBvalue = value;
+    return *this;
+}
+
+
+
+/*---------------------------------------------------------------------------
+    setPhaseCValue 
+        
+    Sets the setPhaseCValue Var of the substation
+---------------------------------------------------------------------------*/
+CtiCCSubstationBus& CtiCCSubstationBus::setPhaseCValue(DOUBLE value)
+{
+    _phaseCvalue = value;
+    return *this;
+}
+
+
 
 
 /*---------------------------------------------------------------------------
@@ -5765,7 +5831,10 @@ void CtiCCSubstationBus::dumpDynamicData(RWDBConnection& conn, CtiTime& currentD
             << dynamicCCSubstationBusTable["ivcontroltot"].assign( _iVControlTot )
             << dynamicCCSubstationBusTable["ivcount"].assign( _iVCount )
             << dynamicCCSubstationBusTable["iwcontroltot"].assign( _iWControlTot )
-            << dynamicCCSubstationBusTable["iwcount"].assign( _iWCount );
+            << dynamicCCSubstationBusTable["iwcount"].assign( _iWCount )
+            << dynamicCCSubstationBusTable["iwcount"].assign( _phaseAvalue )
+            << dynamicCCSubstationBusTable["iwcount"].assign( _phaseBvalue )
+            << dynamicCCSubstationBusTable["iwcount"].assign( _phaseCvalue );
              
             /*{
                 CtiLockGuard<CtiLogger> logger_guard(dout);
@@ -5837,7 +5906,10 @@ void CtiCCSubstationBus::dumpDynamicData(RWDBConnection& conn, CtiTime& currentD
             << _iVControlTot
             << _iVCount
             <<  _iWControlTot
-            <<  _iWCount;
+            <<  _iWCount
+            << _phaseAvalue
+            << _phaseBvalue
+            << _phaseCvalue;
 
             if( _CC_DEBUG & CC_DEBUG_DATABASE )
             {
@@ -8129,6 +8201,10 @@ CtiCCSubstationBus& CtiCCSubstationBus::operator=(const CtiCCSubstationBus& righ
         _iVControl = right._iVControl;
         _iWControl = right._iWControl;
 
+        _phaseAvalue = right._phaseAvalue;
+        _phaseBvalue = right._phaseBvalue;
+        _phaseCvalue = right._phaseCvalue;
+
         _ccfeeders.clear();
         for(LONG i=0;i<right._ccfeeders.size();i++)
         {
@@ -8185,7 +8261,7 @@ void CtiCCSubstationBus::restore(RWDBReader& rdr)
     rdr["currentvarloadpointid"] >> _currentvarloadpointid;
     rdr["currentwattloadpointid"] >> _currentwattloadpointid;
     rdr["maplocationid"] >> _maplocationid;
-    rdr["strategyid"] >> _strategyId;
+    //rdr["strategyid"] >> _strategyId;
     rdr["currentvoltloadpointid"] >> _currentvoltloadpointid;
     rdr["AltSubID"] >> _altDualSubId;
     rdr["SwitchPointID"] >> _switchOverPointId;
@@ -8204,6 +8280,7 @@ void CtiCCSubstationBus::restore(RWDBReader& rdr)
     _dailyoperationsanalogpointid = 0;
     _powerfactorpointid = 0;
     _estimatedpowerfactorpointid = 0;
+    _strategyId = 0;
 
 
     //initialize strategy members
@@ -8308,6 +8385,10 @@ void CtiCCSubstationBus::restore(RWDBReader& rdr)
     setIWCount(0);
     setIVControl(0);
     setIWControl(0);
+
+    setPhaseAValue(0);
+    setPhaseBValue(0);
+    setPhaseCValue(0);
 
 }
 
@@ -8423,6 +8504,10 @@ void CtiCCSubstationBus::setDynamicData(RWDBReader& rdr)
         rdr["ivcount"] >> _iVCount;
         rdr["iwcontroltot"] >> _iWControlTot;
         rdr["iwcount"] >> _iWCount;
+
+        rdr["phaseavalue"] >> _phaseAvalue;
+        rdr["phasebvalue"] >> _phaseBvalue;
+        rdr["phasecvalue"] >> _phaseCvalue;
         
         _insertDynamicDataFlag = FALSE;
 

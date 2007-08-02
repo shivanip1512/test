@@ -557,6 +557,36 @@ DOUBLE CtiCCFeeder::getIWControl() const
 {
     return _iWControl;
 }
+
+/*---------------------------------------------------------------------------
+    getPhaseAValue
+
+    Returns the PhaseAValue VAr of the feeder
+---------------------------------------------------------------------------*/
+DOUBLE CtiCCFeeder::getPhaseAValue() const
+{
+    return _phaseAvalue;
+}
+/*---------------------------------------------------------------------------
+    getPhaseBValue
+
+    Returns the PhaseBValue VAr of the feeder
+---------------------------------------------------------------------------*/
+DOUBLE CtiCCFeeder::getPhaseBValue() const
+{
+    return _phaseBvalue;
+}
+/*---------------------------------------------------------------------------
+    getPhaseCValue
+
+    Returns the PhaseCValue VAr of the feeder
+---------------------------------------------------------------------------*/
+DOUBLE CtiCCFeeder::getPhaseCValue() const
+{
+    return _phaseCvalue;
+}
+
+
 /*---------------------------------------------------------------------------
     getNewPointDataReceivedFlag
 
@@ -4131,7 +4161,8 @@ CtiCCFeeder& CtiCCFeeder::setIVControl(DOUBLE value)
 {
     _iVControl = value;
     return *this;
-}/*---------------------------------------------------------------------------
+}
+/*---------------------------------------------------------------------------
     setIWControl 
         
     Sets the Integrated Watt Control  of the feeder
@@ -4141,6 +4172,39 @@ CtiCCFeeder& CtiCCFeeder::setIWControl(DOUBLE value)
     _iWControl = value;
     return *this;
 }
+
+/*---------------------------------------------------------------------------
+    setPhaseAValue 
+        
+    Sets the PhaseAValue VAr  of the feeder
+---------------------------------------------------------------------------*/
+CtiCCFeeder& CtiCCFeeder::setPhaseAValue(DOUBLE value)
+{
+    _phaseAvalue = value;
+    return *this;
+}
+/*---------------------------------------------------------------------------
+    setPhaseBValue 
+        
+    Sets the PhaseBValue VAr  of the feeder
+---------------------------------------------------------------------------*/
+CtiCCFeeder& CtiCCFeeder::setPhaseBValue(DOUBLE value)
+{
+    _phaseBvalue = value;
+    return *this;
+}
+/*---------------------------------------------------------------------------
+    setPhaseCValue 
+        
+    Sets the PhaseCValue VAr  of the feeder
+---------------------------------------------------------------------------*/
+CtiCCFeeder& CtiCCFeeder::setPhaseCValue(DOUBLE value)
+{
+    _phaseCvalue = value;
+    return *this;
+}
+
+
 
 BOOL CtiCCFeeder::getVerificationFlag() const
 {
@@ -5030,7 +5094,10 @@ void CtiCCFeeder::dumpDynamicData(RWDBConnection& conn, CtiTime& currentDateTime
             << dynamicCCFeederTable["ivcontroltot"].assign(_iVControlTot)
             << dynamicCCFeederTable["ivcount"].assign(_iVCount)
             << dynamicCCFeederTable["iwcontroltot"].assign(_iWControlTot)
-            << dynamicCCFeederTable["iwcount"].assign(_iWCount);
+            << dynamicCCFeederTable["iwcount"].assign(_iWCount)
+            << dynamicCCFeederTable["phaseavalue"].assign(_phaseAvalue)
+            << dynamicCCFeederTable["phasebvalue"].assign(_phaseBvalue)
+            << dynamicCCFeederTable["phasecvalue"].assign(_phaseCvalue);
 
             /*{
                 CtiLockGuard<CtiLogger> logger_guard(dout);
@@ -5097,7 +5164,10 @@ void CtiCCFeeder::dumpDynamicData(RWDBConnection& conn, CtiTime& currentDateTime
             << _iVControlTot
             << _iVCount
             <<  _iWControlTot
-            <<  _iWCount;
+            <<  _iWCount
+            << _phaseAvalue
+            << _phaseBvalue
+            << _phaseCvalue;
 
 
             if( _CC_DEBUG & CC_DEBUG_DATABASE )
@@ -5370,6 +5440,10 @@ CtiCCFeeder& CtiCCFeeder::operator=(const CtiCCFeeder& right)
         _iVControl = right._iVControl;
         _iWControl = right._iWControl;
 
+        _phaseAvalue = right._phaseAvalue;
+        _phaseBvalue = right._phaseBvalue;
+        _phaseCvalue = right._phaseCvalue;
+
         _cccapbanks.clear();
         for(LONG i=0;i<right._cccapbanks.size();i++)
         {
@@ -5432,13 +5506,12 @@ void CtiCCFeeder::restore(RWDBReader& rdr)
     rdr["maplocationid"] >> _maplocationid;
  
     //rdr["displayorder"] >> _displayorder;
-    rdr["strategyid"] >> _strategyId;
     rdr["currentvoltloadpointid"] >> _currentvoltloadpointid;
     rdr["multiMonitorControl"] >> tempBoolString;
     std::transform(tempBoolString.begin(), tempBoolString.end(), tempBoolString.begin(), tolower);
     _multiMonitorFlag = (tempBoolString=="y"?TRUE:FALSE);
 
-
+    _strategyId = 0;
     //initialize strategy members
     setStrategyName("default");
     setControlMethod("SubstationBus");
@@ -5533,6 +5606,10 @@ void CtiCCFeeder::restore(RWDBReader& rdr)
     setIVControl(0);
     setIWControl(0);
 
+    setPhaseAValue(0);
+    setPhaseBValue(0);
+    setPhaseCValue(0);
+
 }
 
 void CtiCCFeeder::setStrategyValues(CtiCCStrategyPtr strategy)
@@ -5618,6 +5695,11 @@ void CtiCCFeeder::setDynamicData(RWDBReader& rdr)
     rdr["ivcount"] >> _iVCount;
     rdr["iwcontroltot"] >> _iWControlTot;
     rdr["iwcount"] >> _iWCount;
+
+    rdr["phaseavalue"] >> _phaseAvalue;
+    rdr["phasebvalue"] >> _phaseBvalue;
+    rdr["phasecvalue"] >> _phaseCvalue;
+
 
     
     _insertDynamicDataFlag = FALSE;
