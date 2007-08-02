@@ -8,6 +8,7 @@ import java.io.Serializable;
 import java.util.AbstractList;
 import java.util.List;
 
+import org.apache.commons.lang.builder.ToStringBuilder;
 import org.springframework.core.style.ToStringCreator;
 
 /**
@@ -115,6 +116,15 @@ public class AppMessageType22 extends ReadMessage implements AppMessage, Seriali
                 .append("secondsSinceEvent", secondsSinceEvent);
             return creator.toString();
         }
+
+        public String toCSV() {
+        	String cvsStr = populated + 
+        	", " + restoreAfterFault +
+        	", " + no60HzDetectedFollowingFault +
+        	", " + faultDetected + 
+        	", " + secondsSinceEvent; 
+            return cvsStr;
+        }
     }
 
     /**
@@ -143,7 +153,7 @@ public class AppMessageType22 extends ReadMessage implements AppMessage, Seriali
         currentDeviceTemperature = tempByte; // allow sign extension to occur
         currentBatteryVoltage = (float)(((msg[3 + offset] & 0xff) << 8) | (msg[2 + offset] & 0xff)) / 64 + 2;
         tempByte = 0;
-        tempByte |= msg[1 + offset];
+        tempByte |= msg[4 + offset];
         lastTxTemperature = tempByte;
         lastTxBatteryVoltage = (float)(msg[5 + offset] & 0xff) / 64 + 2;
 
@@ -157,8 +167,11 @@ public class AppMessageType22 extends ReadMessage implements AppMessage, Seriali
         lastEvent.no60HzDetectedFollowingFault = (msg[6 + offset] & 0x2) == 0x2;
         lastEvent.faultDetected = (msg[6 + offset] & 0x4) == 0x4;
         lastEvent.secondsSinceEvent = extractTime(msg, 7);
+        // Make certain that both the Fault and restore bits are not set.  This is impossible.
         if ((msg[6 + offset] & 0x05) != 0x05) {
             lastEvent.populated = lastEvent.secondsSinceEvent != 0xffffffffL;
+        } else {
+        	lastEvent.secondsSinceEvent = 0; // If they are both set, we should not allow garbage data in here.
         }
 
         // first historical
@@ -271,4 +284,22 @@ public class AppMessageType22 extends ReadMessage implements AppMessage, Seriali
         return creator.toString() + getRawMessage();
     }
 
+    public String toCSV() {
+    	String cvsStr = isStatusNo60HzOrUnderLineCurrent() + 
+    	", " + isStatusLatchedFault() +
+    	", " + isStatusEventTransBit() +
+    	", " + getCurrentDeviceTemperature() + 
+    	", " + getCurrentBatteryVoltage() + 
+    	", " + getLastTxTemperature() + 
+    	", " + getLastTxBatteryVoltage() +
+    	", " + lastEvent.toCSV() +
+    	", " + firstHistoricalEvent.toCSV() +
+    	", " + secondHistoricalEvent.toCSV() +
+    	", " + thirdHistoricalEvent.toCSV() +
+    	", " + cleanHex(getRawMessage());  
+    	
+    	
+    		
+        return cvsStr;
+    }   
 }

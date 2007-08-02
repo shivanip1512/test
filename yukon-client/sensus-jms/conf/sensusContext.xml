@@ -24,7 +24,12 @@
 
   <!-- this is the Message Driven POJO (MDP) -->
   <bean id="sensusMessageListener" class="com.cannontech.sensus.SensusMessageListener">
-    <property name="sensusMessageHandler" ref="faultDetectProcessor"/>
+    <property name="sensusMessageHandlerSet">
+        <set>
+        	<ref bean="faultDetectProcessor" />
+<!--        	<ref bean="setupMessageProcessor" />  -->
+	    </set>
+  </property>
   </bean>
   
   <bean id="destination" class="org.apache.activemq.command.ActiveMQTopic">
@@ -81,6 +86,10 @@
       <property name="deviceTemperatureGenerator" ref="deviceTemperatureGenerator"/>
       <property name="batteryLowGenerator" ref="batteryLowGenerator"/>
       <property name="faultLatchGenerator" ref="nullPointDataGenerator"/>
+      <property name="tgbIdGenerator" ref="tgbIdGenerator"/>
+      <property name="sigStrengthGenerator" ref="sigStrengthGenerator"/>
+      <property name="nameOfAppInstance" value="AppCode"/>
+      <property name="handlerTimeZone" value="UTC"/>
   </bean>
 
   <bean id="nullPointDataGenerator" class="com.cannontech.sensus.NullPointValueUpdater"/>
@@ -128,6 +137,16 @@
 
   <bean id="faultLatchGenerator" parent="abstractPointDataGenerator">
     <property name="offset" value="99"/>
+    <property name="type" value="0"/>  <!-- Status -->
+  </bean>
+
+  <bean id="tgbIdGenerator" parent="abstractPointDataGenerator">
+    <property name="offset" value="10"/>
+    <property name="type" value="0"/>  <!-- Status -->
+  </bean>
+
+  <bean id="sigStrengthGenerator" parent="abstractPointDataGenerator">
+    <property name="offset" value="11"/>
     <property name="type" value="0"/>  <!-- Status -->
   </bean>
 

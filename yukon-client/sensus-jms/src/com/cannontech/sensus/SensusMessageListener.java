@@ -1,8 +1,10 @@
 package com.cannontech.sensus;
 
 import java.util.Enumeration;
+import java.util.Iterator;
 import java.util.Timer;
 import java.util.TimerTask;
+import java.util.Set;
 
 import javax.jms.JMSException;
 import javax.jms.Message;
@@ -17,7 +19,7 @@ import com.cannontech.clientutils.YukonLogManager;
 
 public class SensusMessageListener implements MessageListener, InitializingBean {
     private Logger log = YukonLogManager.getLogger(SensusMessageListener.class);
-    SensusMessageHandler sensusMessageHandler;
+    Set<SensusMessageHandler> sensusMessageHandlerSet;
     int messageCount = 0;
 
     public void onMessage(Message msg) {
@@ -40,7 +42,10 @@ public class SensusMessageListener implements MessageListener, InitializingBean 
                     }
                     int repId = Integer.parseInt(repIdObj);
                     int appCode = Integer.parseInt(appCodeObj);
-                    sensusMessageHandler.processMessage(repId, appCode, bytes);
+                    
+                    for (SensusMessageHandler handler : sensusMessageHandlerSet) {
+                    	handler.processMessage(repId, appCode, bytes);                    	
+                    }
                 } else {
                     log.info("payload wasn't a char[]");
                 }
@@ -62,38 +67,18 @@ public class SensusMessageListener implements MessageListener, InitializingBean 
         }
     }
 
-    public SensusMessageHandler getSensusMessageHandler() {
-        return sensusMessageHandler;
-    }
-
-    public void setSensusMessageHandler(SensusMessageHandler sensusMessageHandler) {
-        this.sensusMessageHandler = sensusMessageHandler;
+    public void setSensusMessageHandlerSet(Set<SensusMessageHandler> sensusHandlers) {
+        this.sensusMessageHandlerSet = sensusHandlers;
     }
 
     public void afterPropertiesSet() throws Exception {
         Timer timer = new Timer(true);
         timer.schedule(new TimerTask() {
-
+        	
             public void run() {
-                log.debug("Message count = " + messageCount);
+                log.info("Message count = " + messageCount);
             }
-        }, 5000, 10000);
+        }, 5000, 180000);
         
     }
-
-    
-    
-    /* Available properties:
-       Toi
-       Noise
-       RfSeq
-       Repeat
-       RepId
-       ReceiverMessageType
-       Class
-       AppCode
-       Signal
-       TgbId
-     */
-
 }

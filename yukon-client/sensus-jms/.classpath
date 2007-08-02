@@ -6,7 +6,7 @@
 	<classpathentry combineaccessrules="false" kind="src" path="/commercialcurtailment"/>
 	<classpathentry combineaccessrules="false" kind="src" path="/notification"/>
 	<classpathentry combineaccessrules="false" kind="src" path="/yukonappserver"/>
-	<classpathentry kind="lib" path="lib/apache-activemq-4.1.0-incubator.jar"/>
+	<classpathentry kind="lib" path="lib/apache-activemq-4.1.0-incubator.jar" sourcepath="C:/Yukon/Client/bin/apache-activemq-4.1.0-incubator.jar"/>
 	<classpathentry kind="lib" path="resource"/>
 	<classpathentry kind="output" path="bin"/>
 </classpath>
