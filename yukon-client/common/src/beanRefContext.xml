@@ -23,6 +23,7 @@
          <value>com/cannontech/common/chart/chartContext.xml</value>
          <value>com/cannontech/core/authentication/authContext.xml</value>
          <value>com/cannontech/amr/amrContext.xml</value>
+         <value>com/cannontech/amr/amrContext-client.xml</value>
          <value>com/cannontech/foreign/itron/applicationContext.xml</value>
        </list>
      </constructor-arg>
@@ -34,6 +35,7 @@
         lazy-init="true">
      <constructor-arg>
        <list>
+         <value>com/cannontech/amr/amrContext-client.xml</value>
          <value>com/cannontech/mainContext.xml</value>
 		 <value>com/cannontech/core/authorization/applicationContext.xml</value>
          <value>com/cannontech/core/authentication/authContext.xml</value>

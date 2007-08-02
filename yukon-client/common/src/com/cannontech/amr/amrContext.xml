@@ -5,15 +5,6 @@
     <bean id="deviceReadJobLogDao" class="com.cannontech.amr.deviceread.dao.impl.DeviceReadJobLogDaoImpl">
       <property name="template" ref="simpleJdbcTemplate"/>
     </bean>
-
-    <bean id="deviceErrorTranslator" class="com.cannontech.amr.errors.dao.impl.DeviceErrorTranslatorDaoImpl" 
-          singleton="true" init-method="initialize">
-	  	<property name="errorDefinitions">
-	  		<value type="java.io.InputStream">
-	  			com/cannontech/amr/errors/dao/impl/error-code.xml
-	  		</value>
-	  	</property>
-	</bean>
 	
 	<bean id="csrService" class="com.cannontech.amr.csr.service.impl.CsrServiceImpl">
 		<property name="csrSearchDao" ref="csrSearchDao" />
