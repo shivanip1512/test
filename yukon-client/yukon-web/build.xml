@@ -32,8 +32,12 @@
     
     <target name="build.applets">
         <!-- This is meant to be run by hand, the output should be checked into CVS -->
-        <javac srcdir="resources" destdir="${yukon-web}/WebContent/JavaScript" target="${yukon.javac.target}" 
-              source="${yukon.javac.source}" debug="${yukon.javac.debug}">
+        <javac srcdir="resources"
+               destdir="${yukon-web}/WebContent/JavaScript"
+               target="${yukon.javac.target}" 
+               source="${yukon.javac.source}"
+               bootclasspath="${yukon.javac.bootclasspath}"
+               debug="${yukon.javac.debug}">
         </javac>
     </target>
 	
@@ -60,8 +64,12 @@
 
 		<mkdir dir="${yukon.web.src_build}" />
 
-		<javac srcdir="src" destdir="${yukon.web.src_build}" target="${yukon.javac.target}" 
-	 	      source="${yukon.javac.source}" debug="${yukon.javac.debug}">
+		<javac srcdir="src"
+		       destdir="${yukon.web.src_build}"
+		       target="${yukon.javac.target}" 
+	 	       source="${yukon.javac.source}"
+   		       bootclasspath="${yukon.javac.bootclasspath}"
+		       debug="${yukon.javac.debug}">
 			<classpath>
 				<fileset dir="${yukon.lib}">
 					<include name="**/*.jar" />
@@ -115,8 +123,14 @@
        
         <mkdir dir="${yukon-web}/build_jsp" />
         <!-- Compile the .java files into .class files -->   
-        <javac fork="true" memoryMaximumSize="512M" srcdir="${yukon-web}/WebContent_temp" destdir="${yukon-web}/build_jsp" target="${yukon.javac.target}" 
-            source="${yukon.javac.source}" debug="${yukon.javac.debug}">
+        <javac fork="true" 
+               memoryMaximumSize="512M"
+               srcdir="${yukon-web}/WebContent_temp"
+               destdir="${yukon-web}/build_jsp"
+               target="${yukon.javac.target}" 
+               source="${yukon.javac.source}"
+               bootclasspath="${yukon.javac.bootclasspath}"
+               debug="${yukon.javac.debug}">
             <classpath refid="jspc.class.path"/>
         </javac>
         <jar jarfile="${yukon.lib}/yukon-web-jsp.jar" basedir="${yukon-web}/build_jsp/" excludes="*.xml *.jar"/>

@@ -10,8 +10,13 @@
 	<target name="build">
        <mkdir dir="build"/>
        
-       <javac srcdir="src" destdir="build" target="${yukon.javac.target}" 
- 	      source="${yukon.javac.source}" debug="${yukon.javac.debug}" fork="true" >                               
+       <javac srcdir="src"
+              destdir="build"
+              target="${yukon.javac.target}" 
+ 	          source="${yukon.javac.source}"
+              bootclasspath="${yukon.javac.bootclasspath}"
+              debug="${yukon.javac.debug}"
+              fork="true" >                               
           <classpath>
              <fileset dir="${yukon.lib}">
                 <include name="**/*.jar"/>
