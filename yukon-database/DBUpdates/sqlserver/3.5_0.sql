@@ -110,7 +110,7 @@ go
 insert into BillingFileFormats values(-25,'Itron Register Readings Export');
 go
 
-alter table ActivityLog alter column Description varchar2(240);
+alter table ActivityLog alter column Description varchar(240);
 go
 
 insert into command values(-130, 'getvalue lp channel ?''Channel #'' ?''Enter Start Date: xx/xx/xxxx'' ?''Enter End Date: xx/xx/xxxx''', 'Read LP Channel Data', 'ALL MCT-4xx Series');
