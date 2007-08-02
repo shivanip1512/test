@@ -15,6 +15,7 @@ import java.io.StringWriter;
 import java.lang.management.ManagementFactory;
 import java.lang.reflect.Field;
 import java.lang.reflect.Modifier;
+import java.net.HttpURLConnection;
 import java.net.InetAddress;
 import java.net.NetworkInterface;
 import java.net.SocketException;
@@ -1707,6 +1708,31 @@ public static double convertTemperature(double temperature, String fromUnit, Str
         }
     }
 
+    public static String getJREInstaller() {
+        final StringBuilder dirPath = new StringBuilder(CtiUtilities.getYukonBase());
+        dirPath.append(System.getProperty("file.separator"));
+        dirPath.append("Server");
+        dirPath.append(System.getProperty("file.separator"));
+        dirPath.append("Static");
+        
+        File[] fileList = new File(dirPath.toString()).listFiles();
+        if (fileList.length > 0) {
+            return fileList[0].getName();
+        }
+        return null;
+    }
+    
+    public static String getJREDownloadURL() {
+        try {
+            String urlString = "http://java.sun.com/javase/downloads/index_jdk5.jsp";
+            HttpURLConnection connection = (HttpURLConnection) new URL(urlString).openConnection();
+            if (connection.getResponseCode() == HttpURLConnection.HTTP_OK) {
+                return urlString;
+            }
+        } catch (java.io.IOException ignore) { }
+        return "http://java.sun.com";
+    }
+    
     private static String getJvmInputArgs() {
         final List<String> inputArgs = ManagementFactory.getRuntimeMXBean().getInputArguments();
         final StringBuilder sb = new StringBuilder();

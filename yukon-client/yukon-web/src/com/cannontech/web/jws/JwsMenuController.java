@@ -16,6 +16,7 @@ import org.springframework.context.ApplicationContext;
 import org.springframework.web.servlet.ModelAndView;
 import org.springframework.web.servlet.mvc.AbstractController;
 
+import com.cannontech.common.util.CtiUtilities;
 import com.cannontech.database.data.lite.LiteYukonUser;
 import com.cannontech.user.checker.UserChecker;
 import com.cannontech.util.ServletUtil;
@@ -40,6 +41,14 @@ public class JwsMenuController extends AbstractController implements Initializin
         
         CheckUserPredicate predicate = new CheckUserPredicate(ServletUtil.getYukonUser(request));
         Iterator filteredList = IteratorUtils.filteredIterator(jnlpList.iterator(), predicate);
+        
+        String jreInstaller = CtiUtilities.getJREInstaller();
+        mav.addObject("jreInstaller", jreInstaller);
+        
+        if (jreInstaller == null) {
+            String jreDownloadURL = CtiUtilities.getJREDownloadURL();
+            mav.addObject("jreDownloadURL", jreDownloadURL);
+        }
         
         mav.addObject("jnlpList", filteredList);
         return mav;
