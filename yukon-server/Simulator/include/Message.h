@@ -22,7 +22,7 @@ class Message{
 		// Default constructor
 		Message();
 		// Constructor to build a new Message
-		void CreateMessage(int MsgType, int WrdFnc, unsigned char Data[], int ccuNumber, unsigned char Address = 0x00, unsigned char Frame = 0x00);
+		void CreateMessage(int MsgType, int WrdFnc, unsigned char Data[], int ccuNumber, int &setccuNumber, unsigned char Address = 0x00, unsigned char Frame = 0x00);
 		// Destructor
         
         enum WordTypes
@@ -56,11 +56,11 @@ class Message{
 		// Function to read the data in the Message to the screen
 		void ReadMessage();
 		//  Figure out the IDLC protocol
-		int DecodeIDLC();
+		int DecodeIDLC(int & setccuNumber);
 		//  Figure out what the preamble says
 		void DecodeCommand(unsigned char Data[]);
 		//  Figure out what the preamble says
-		int DecodePreamble();
+		int DecodePreamble(int &setccuNumber);
 		//  Determine what kind of word it is
 		int DecodeDefinition();
 		//  Determine the number of words to follow

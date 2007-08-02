@@ -58,7 +58,7 @@ class CCU711{
 		//Build a new message
 		void CreateMsg(int ccuNumber);
 		//Listen for and store an incoming message
-		int ReceiveMsg(unsigned char ReadBuffer[]);
+		int ReceiveMsg(unsigned char ReadBuffer[], int &setccuNumber);
 		//Listen for and store the rest of the message
 		void ReceiveMore(unsigned char ReadBuffer[], int counter);
         //Print the incoming message information to the screen

@@ -36,23 +36,13 @@ int main(int argc, char *argv[])
     int ccuNumber = 0;
 
     if(argc>1)
-    {
+    {   // Specify port number
         cout<<"Found argument "<<argv[1]<<endl;
         portNumber = atoi(argv[1]);
     }
     else
     {
             cout<<"No command line argument found specifying port!"<<endl;
-            return 0;
-    }
-    if(argc>2)
-    {
-        cout<<"Found argument "<<argv[2]<<endl;
-        ccuNumber = atoi(argv[2]);
-    }
-    else
-    {
-            cout<<"No command line argument found specifying ccuNumber!"<<endl;
             return 0;
     }
 
@@ -106,7 +96,7 @@ int main(int argc, char *argv[])
             }
     
     
-            BytesToFollow = aCCU711.ReceiveMsg(ReadBuffer);
+            BytesToFollow = aCCU711.ReceiveMsg(ReadBuffer, ccuNumber);
     
             if(BytesToFollow>0)
             {
@@ -173,7 +163,7 @@ int main(int argc, char *argv[])
             }
 
 
-            BytesToFollow = aCCU710.ReceiveMsg(ReadBuffer);
+            BytesToFollow = aCCU710.ReceiveMsg(ReadBuffer, ccuNumber);
 
             if(BytesToFollow>0)
             {

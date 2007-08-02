@@ -30,21 +30,22 @@ CCU711::CCU711()
 }
 
 //Listen for and store an incoming message
-int CCU711::ReceiveMsg(unsigned char ReadBuffer[])
+int CCU711::ReceiveMsg(unsigned char ReadBuffer[], int &setccuNumber)
 {
 	Message inMsg;
 	//determine the type of message
-	inMsg.CreateMessage(INPUT, DEFAULT, ReadBuffer, 0);
+	inMsg.CreateMessage(INPUT, DEFAULT, ReadBuffer, 0, setccuNumber);
     _incomingMsg[0] = inMsg;
     return inMsg.getBytesToFollow();
 }
 
 //Listen for and store an incoming message
 void CCU711::ReceiveMore(unsigned char ReadBuffer[], int counter)
-{	
+{
+    int setccuNumber = 0;
 	SET_FOREGROUND_WHITE;
 	_incomingMsg[0].DecodeCommand(ReadBuffer);
-	_incomingMsg[0].DecodePreamble();
+	_incomingMsg[0].DecodePreamble(setccuNumber);
 	_incomingMsg[0].InsertWord(INPUT, ReadBuffer, 6);      //  CHANGE THIS 6 TO SOMETHING ELSE !!!  (a counter passed in from serverNexus)
 }
 
@@ -64,11 +65,12 @@ void CCU711::PrintInput(unsigned char ReadBuffer[])
 void CCU711::CreateMsg(int ccuNumber){
 	unsigned char someData[10];
 	Message newMessage;
+    int setccuNumber = 0;
 	if(_incomingMsg[0].getMessageType()== RESETREQ)
 	{
 		//  Reset request
 		unsigned char Address = _incomingMsg[0].getAddress();
-		newMessage.CreateMessage(RESETACK, DEFAULT, someData, ccuNumber, Address);
+		newMessage.CreateMessage(RESETACK, DEFAULT, someData, ccuNumber, setccuNumber, Address);
 		_outgoingMsg[0]=newMessage;
 	}
 	else if(_incomingMsg[0].getMessageType()==GENREQ)
@@ -77,10 +79,10 @@ void CCU711::CreateMsg(int ccuNumber){
 		unsigned char Frame = _incomingMsg[0].getFrame();
 		unsigned char Address = _incomingMsg[0].getAddress();
 		if(_incomingMsg[0].getWordFunction()==FUNCACK) {
-			newMessage.CreateMessage(GENREP, ACKACK, someData, ccuNumber, Address, Frame);
+			newMessage.CreateMessage(GENREP, ACKACK, someData, ccuNumber, setccuNumber, Address, Frame);
 		}
 		else{ 
-			newMessage.CreateMessage(GENREP, DEFAULT, someData, ccuNumber, Address, Frame);
+			newMessage.CreateMessage(GENREP, DEFAULT, someData, ccuNumber, setccuNumber, Address, Frame);
 		}
 
 		_outgoingMsg[0]=newMessage;

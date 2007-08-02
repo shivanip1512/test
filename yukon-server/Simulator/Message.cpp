@@ -40,7 +40,7 @@ Message::Message() :
 }
 	
 // Constructor to build a new Message 
-void Message::CreateMessage(int MsgType, int WrdFnc, unsigned char Data[], int ccuNumber, unsigned char Address, unsigned char Frame){
+void Message::CreateMessage(int MsgType, int WrdFnc, unsigned char Data[], int ccuNumber, int &setccuNumber, unsigned char Address, unsigned char Frame){
 	_messageType = MsgType;
 	if(_messageType == INPUT) {
 		_messageData[0] = Data[0];
@@ -48,10 +48,10 @@ void Message::CreateMessage(int MsgType, int WrdFnc, unsigned char Data[], int c
 		_messageData[2] = Data[2];
 		_messageData[3] = Data[3];
 		_indexOfEnd = 4;           //   this may cause a PROBLEM  SINCE 710 should be 3 bytes !!!
-		_bytesToFollow = DecodeIDLC();
+		_bytesToFollow = DecodeIDLC(setccuNumber);
         if(_bytesToFollow==-1)
         {
-            _bytesToFollow = DecodePreamble();   
+            _bytesToFollow = DecodePreamble(setccuNumber);   
         }
 	}
 	else if(_messageType == RESETACK) {
@@ -175,7 +175,7 @@ void Message::CreateMessage(int MsgType, int WrdFnc, unsigned char Data[], int c
 	
 }
 
-int Message::DecodeIDLC(){
+int Message::DecodeIDLC(int & setccuNumber){
 	int _bytesToFollow = 0;
 	if((_messageData[0] & 0x7e) == 0x7e){
 		//  IDLC LAYER 2 Asynchronous Link Control
@@ -189,6 +189,22 @@ int Message::DecodeIDLC(){
 				_messageType = GENREQ;
 				_bytesToFollow = (_messageData[3] + 0x02);  
 			}
+            if(!(_messageData[1] & 0x06))
+            {
+                setccuNumber = 0;
+            }
+            if((_messageData[1] & 0x02) ==0x02)
+            {
+                setccuNumber = 1;
+            }
+            if((_messageData[1] & 0x04) == 0x04)
+            {
+                setccuNumber = 2;
+            }
+            if((_messageData[1] & 0x06) == 0x06)
+            {
+                setccuNumber = 3;
+            } 
 	}
     else{  //  The message is not an IDLC message.  Probably 710 protocol instead
         return -1;
@@ -210,9 +226,12 @@ void Message::DecodeCommand(unsigned char Data[]){
 
 }
 
-int Message::DecodePreamble()
+int Message::DecodePreamble(int &setccuNumber)
 {
 	char _bytesToFollow = 0;
+
+    // set the ccu number by checking the preamble for the address
+    setccuNumber = 0;
 
 	if( _messageData[2] & 0x04 )
     {

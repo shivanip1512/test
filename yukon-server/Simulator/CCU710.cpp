@@ -30,11 +30,11 @@ CCU710::CCU710()
 }
 
 //Listen for and store an incoming message
-int CCU710::ReceiveMsg(unsigned char ReadBuffer[])
+int CCU710::ReceiveMsg(unsigned char ReadBuffer[], int &ccuNumber)
 {
 	Message inMsg;
 	//determine the type of message
-	inMsg.CreateMessage(INPUT, DEFAULT, ReadBuffer, 0);
+	inMsg.CreateMessage(INPUT, DEFAULT, ReadBuffer, 0, ccuNumber);
     _incomingMsg[0] = inMsg;
     return inMsg.getBytesToFollow();
 }
@@ -62,6 +62,7 @@ void CCU710::PrintInput(unsigned char ReadBuffer[])
 
 //Build a new message
 void CCU710::CreateMsg(int ccuNumber){
+    int setccuNumber = 0;
 	unsigned char someData[10];
 	Message newMessage;
 	if(_incomingMsg[0].getPreamble()==FEEDEROP)
@@ -70,20 +71,20 @@ void CCU710::CreateMsg(int ccuNumber){
 		unsigned char Frame = _incomingMsg[0].getFrame();
 		unsigned char Address = _incomingMsg[0].getAddress();
 		if(_incomingMsg[0].getWordFunction()==READ) {      // on 711 readenergy is sent as a read
-			newMessage.CreateMessage(FEEDEROP, READENERGY, someData, ccuNumber, Address, Frame);
+			newMessage.CreateMessage(FEEDEROP, READENERGY, someData, ccuNumber, setccuNumber, Address, Frame);
 		}
         else if(_incomingMsg[0].getWordFunction()==WRITE) {     // on 711 readenergy is sent as a write
-			newMessage.CreateMessage(FEEDEROP, READENERGY, someData, ccuNumber, Address, Frame);
+			newMessage.CreateMessage(FEEDEROP, READENERGY, someData, ccuNumber, setccuNumber, Address, Frame);
 		}
 		else{ 
-			newMessage.CreateMessage(FEEDEROP, DEFAULT, someData, ccuNumber, Address, Frame);
+			newMessage.CreateMessage(FEEDEROP, DEFAULT, someData, ccuNumber, setccuNumber, Address, Frame);
 		}
 
 		_outgoingMsg[0]=newMessage;
 	}
     else
     {   //  Ping response
-        newMessage.CreateMessage(PING, DEFAULT, someData, ccuNumber);
+        newMessage.CreateMessage(PING, DEFAULT, someData, ccuNumber, setccuNumber);
         _outgoingMsg[0]=newMessage;
     }
 }
