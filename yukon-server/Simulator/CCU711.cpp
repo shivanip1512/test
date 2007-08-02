@@ -34,7 +34,7 @@ int CCU711::ReceiveMsg(unsigned char ReadBuffer[])
 {
 	Message inMsg;
 	//determine the type of message
-	inMsg.CreateMessage(INPUT, DEFAULT, ReadBuffer);
+	inMsg.CreateMessage(INPUT, DEFAULT, ReadBuffer, 0);
     _incomingMsg[0] = inMsg;
     return inMsg.getBytesToFollow();
 }
@@ -61,14 +61,14 @@ void CCU711::PrintInput(unsigned char ReadBuffer[])
 }
 
 //Build a new message
-void CCU711::CreateMsg(){
+void CCU711::CreateMsg(int ccuNumber){
 	unsigned char someData[10];
 	Message newMessage;
 	if(_incomingMsg[0].getMessageType()== RESETREQ)
 	{
 		//  Reset request
 		unsigned char Address = _incomingMsg[0].getAddress();
-		newMessage.CreateMessage(RESETACK, DEFAULT, someData, Address);
+		newMessage.CreateMessage(RESETACK, DEFAULT, someData, ccuNumber, Address);
 		_outgoingMsg[0]=newMessage;
 	}
 	else if(_incomingMsg[0].getMessageType()==GENREQ)
@@ -77,10 +77,10 @@ void CCU711::CreateMsg(){
 		unsigned char Frame = _incomingMsg[0].getFrame();
 		unsigned char Address = _incomingMsg[0].getAddress();
 		if(_incomingMsg[0].getWordFunction()==FUNCACK) {
-			newMessage.CreateMessage(GENREP, ACKACK, someData, Address, Frame);
+			newMessage.CreateMessage(GENREP, ACKACK, someData, ccuNumber, Address, Frame);
 		}
 		else{ 
-			newMessage.CreateMessage(GENREP, DEFAULT, someData, Address, Frame);
+			newMessage.CreateMessage(GENREP, DEFAULT, someData, ccuNumber, Address, Frame);
 		}
 
 		_outgoingMsg[0]=newMessage;

@@ -40,7 +40,7 @@ Message::Message() :
 }
 	
 // Constructor to build a new Message 
-void Message::CreateMessage(int MsgType, int WrdFnc, unsigned char Data[], unsigned char Address, unsigned char Frame){
+void Message::CreateMessage(int MsgType, int WrdFnc, unsigned char Data[], int ccuNumber, unsigned char Address, unsigned char Frame){
 	_messageType = MsgType;
 	if(_messageType == INPUT) {
 		_messageData[0] = Data[0];
@@ -118,7 +118,7 @@ void Message::CreateMessage(int MsgType, int WrdFnc, unsigned char Data[], unsig
 
 			EmetconWord newWord;
 			int Function = 0;
-			Ctr = newWord.InsertWord(D_WORD,  _messageData, Function, Ctr);
+			Ctr = newWord.InsertWord(D_WORD,  _messageData, Function, ccuNumber, Ctr);
 			_words[0]=newWord;
 			_messageData[Ctr++] = 0x42; 
 	
@@ -151,7 +151,7 @@ void Message::CreateMessage(int MsgType, int WrdFnc, unsigned char Data[], unsig
 
             EmetconWord newWord;
             int Function = 0;
-            Ctr = newWord.InsertWord(D_WORD,  _messageData, Function, Ctr);
+            Ctr = newWord.InsertWord(D_WORD,  _messageData, Function, ccuNumber, Ctr);
             _words[0]=newWord;
             _messageData[Ctr++] = 0xc3; 
 
@@ -197,12 +197,12 @@ int Message::DecodeIDLC(){
 }
 
 void Message::DecodeCommand(unsigned char Data[]){
-	_messageData[4]=Data[0];
-	_messageData[5]=Data[1];
-	_messageData[6]=Data[2];
-	_messageData[7]=Data[3];
-	_messageData[8]=Data[4];
-	_messageData[9]=Data[5];
+	_messageData[4]=Data[3];
+	_messageData[5]=Data[4];
+	_messageData[6]=Data[5];
+	_messageData[7]=Data[6];
+	_messageData[8]=Data[7];
+	_messageData[9]=Data[8];
 	if((Data[1] & 0x26)==0x26) {
 		_commandType = DTRAN;
 	}
@@ -269,12 +269,13 @@ int Message::DecodePreamble()
 void Message::InsertWord(int WordType, unsigned char Data[], int counter){
     if(counter>4)
     {
-        _messageData[10]=Data[6];   //  THIS SECTION MAY CAUSE PROBLEMS IN 711 BECAUSE THE BUFFER NOW CONTAINS 
-        _messageData[12]=Data[7];   //  THE WHOLE MESSAGE, NOT JUST SECTIONS OF IT
-        _messageData[13]=Data[8];
-        _messageData[14]=Data[9];
-        _messageData[15]=Data[10];
-        _messageData[16]=Data[11];
+        _messageData[10]=Data[9];   //  THIS SECTION MAY CAUSE PROBLEMS IN 711 BECAUSE THE BUFFER NOW CONTAINS
+        _messageData[11]=Data[10];                             // 
+        _messageData[12]=Data[11];   //  THE WHOLE MESSAGE, NOT JUST SECTIONS OF IT
+        _messageData[13]=Data[12];
+        _messageData[14]=Data[13];
+        _messageData[15]=Data[14];
+        _messageData[16]=Data[15];
     }
     else
     {
@@ -301,7 +302,7 @@ void Message::InsertWord(int WordType, unsigned char Data[], int counter){
 	}
 
 	EmetconWord oneWord;
-	oneWord.InsertWord(WordType, Data, WordFunction);
+	oneWord.InsertWord(WordType, Data, WordFunction, 0);
 	oneWord.setWTF(WTF);
 	_indexOfEnd += oneWord.getWordSize();
 	_words[_indexOfWords]= oneWord;
@@ -311,7 +312,7 @@ void Message::InsertWord(int WordType, unsigned char Data[], int counter){
 	if(_words[0].getWordType() == 2) {
 		for(int i=0; i<InsertMore; i++) {
 			EmetconWord anotherWord;
-			anotherWord.InsertWord(3, Data, WordFunction);
+			anotherWord.InsertWord(3, Data, WordFunction, 0);
 			_indexOfEnd += anotherWord.getWordSize();
 			_words[_indexOfWords]= anotherWord;
 			_indexOfWords++;
@@ -369,7 +370,7 @@ int Message::DecodeWTF(int WordType, unsigned char Data[]){
 
 int Message::DecodeDefinition(){
 	int WordType = 0;
-   	if(_messageData[10] == 0xaf)    {   WordType = B_WORD;   }    //  IDLC CCU711 
+   	if(_messageData[11] == 0xaf)    {   WordType = B_WORD;   }    //  IDLC CCU711 
 	else if(_messageData[3] == 0xaf){   WordType = B_WORD;   }    //CCU710
 	else
     {

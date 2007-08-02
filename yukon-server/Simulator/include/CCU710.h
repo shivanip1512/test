@@ -56,7 +56,7 @@ class CCU710{
 		//Send the message back to porter
 		int SendMsg(unsigned char SendData[]);
 		//Build a new message
-		void CreateMsg();
+		void CreateMsg(int ccuNumber);
 		//Listen for and store an incoming message
 		int ReceiveMsg(unsigned char ReadBuffer[]);
 		//Listen for and store the rest of the message

@@ -22,7 +22,7 @@ class Message{
 		// Default constructor
 		Message();
 		// Constructor to build a new Message
-		void CreateMessage(int MsgType, int WrdFnc, unsigned char Data[], unsigned char Address = 0x00, unsigned char Frame = 0x00);
+		void CreateMessage(int MsgType, int WrdFnc, unsigned char Data[], int ccuNumber, unsigned char Address = 0x00, unsigned char Frame = 0x00);
 		// Destructor
         
         enum WordTypes

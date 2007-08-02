@@ -25,18 +25,44 @@
 #include "color.h"
 
 
-int main()
+int main(int argc, char *argv[])
 {	
 	CCU711 aCCU711;
     CCU710 aCCU710;
 
     WSADATA wsaData;
 
+    int portNumber = 0;
+    int ccuNumber = 0;
+
+    if(argc>1)
+    {
+        cout<<"Found argument "<<argv[1]<<endl;
+        portNumber = atoi(argv[1]);
+    }
+    else
+    {
+            cout<<"No command line argument found specifying port!"<<endl;
+            return 0;
+    }
+    if(argc>2)
+    {
+        cout<<"Found argument "<<argv[2]<<endl;
+        ccuNumber = atoi(argv[2]);
+    }
+    else
+    {
+            cout<<"No command line argument found specifying ccuNumber!"<<endl;
+            return 0;
+    }
+
+
+
     WSAStartup(MAKEWORD (1,1), &wsaData);
 
 	CTINEXUS * listenSocket; 
 	listenSocket = new CTINEXUS();
-	listenSocket->CTINexusCreate(12345);   // or 11234
+	listenSocket->CTINexusCreate(portNumber);   //12345 or 11234 for example
 
 	CTINEXUS * newSocket;
 	newSocket = new CTINEXUS();
@@ -99,7 +125,7 @@ int main()
                 aCCU711.ReceiveMore(ReadBuffer, counter);
             }
             aCCU711.PrintInput(ReadBuffer);
-            aCCU711.CreateMsg();
+            aCCU711.CreateMsg(ccuNumber);
     
             unsigned char SendData[300];
     
@@ -166,7 +192,7 @@ int main()
                 aCCU710.ReceiveMore(ReadBuffer, counter);
             }
             aCCU710.PrintInput(ReadBuffer);
-            aCCU710.CreateMsg();
+            aCCU710.CreateMsg(ccuNumber);
 
             unsigned char SendData[300];
 
@@ -209,6 +235,7 @@ int main()
 //       USING SELECT()
 
 /*
+
 #include <winsock2.h>
 #include <windows.h>
 #include <stdio.h>
@@ -462,15 +489,15 @@ void main(void)
 				   std::cout<<std::string(CtiNumStr(SocketInfo->DataBuf.buf[byteitr]).hex().zpad(2))<<std::endl;
 			   }
 
-			   std::cout<<"Creating CCU710..."<<std::endl;
+			   //std::cout<<"Creating CCU710..."<<std::endl;
 
-			   CCU710 new710;
-			   CTINEXUS * scktPtr = & SocketInfo->Socket;
-			   new710.setSocket(scktPtr);
+			   //CCU710 new710;
+			   //CTINEXUS * scktPtr = & SocketInfo->Socket;
+			   //new710.setSocket(scktPtr);
 
-			   new710.ReceiveMsg();
-			   new710.CreateMsg();
-			   new710.SendMsg();
+			   //new710.ReceiveMsg();
+			   //new710.CreateMsg();
+			   //new710.SendMsg();
 
 
 			   // If zero bytes are received, this indicates connection is closed.
@@ -564,9 +591,9 @@ void FreeSocketInformation(DWORD Index)
    }
 
    TotalSockets--;
-}*/
+}
 
-
+*/
 
 
 

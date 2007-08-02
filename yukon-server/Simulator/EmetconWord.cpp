@@ -38,7 +38,7 @@ EmetconWord::EmetconWord()
 }
 
 // build a new word
-int EmetconWord::InsertWord(int Type, unsigned char * pMessageData, int WordFunc, int Ctr)
+int EmetconWord::InsertWord(int Type, unsigned char * pMessageData, int WordFunc, int ccuNumber, int Ctr)
 {
 	_wordType = Type;
 	_wordFunction = WordFunc;
@@ -53,11 +53,25 @@ int EmetconWord::InsertWord(int Type, unsigned char * pMessageData, int WordFunc
 	{
 		_wordSize = 7;
 
-
+        unsigned char ccuNum = 0x00;
+        switch(ccuNumber)
+        {
+            case 0:
+                ccuNum = 0x00;
+                break;
+            case 1:
+                ccuNum = 0x10;
+                break;
+            case 2:
+                ccuNum = 0x20;
+                break; 
+            case 3:
+                ccuNum = 0x30;
+                break; 
+        }
 		pMessageData[Ctr++] = 0xd0;   //beginning of d word
 		pMessageData[Ctr++] = 0x24;
-		//pMessageData[Ctr++] = 0x00;   //data begins in second half of this byte
-        pMessageData[Ctr++] = 0x20;    //for 711 ONLY!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!
+		pMessageData[Ctr++] = ccuNum;   //data begins in second half of this byte
         pMessageData[Ctr++] = 0x0f;   // data
 		pMessageData[Ctr++] = 0x00;   // data
 		pMessageData[Ctr++] = 0x00;   // data ends first half of this byte
