@@ -222,8 +222,6 @@ void Message::DecodeCommand(unsigned char Data[]){
 	if((Data[1] & 0x26)==0x26) {
 		_commandType = DTRAN;
 	}
-
-
 }
 
 int Message::DecodePreamble(int &setccuNumber)

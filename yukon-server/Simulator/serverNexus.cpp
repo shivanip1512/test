@@ -34,6 +34,7 @@ int main(int argc, char *argv[])
 
     int portNumber = 0;
     int ccuNumber = 0;
+    int mctNumber = 0;
 
     if(argc>1)
     {   // Specify port number
@@ -108,9 +109,8 @@ int main(int argc, char *argv[])
                 }
                 for( byteitr = 0; byteitr < BytesToFollow; byteitr++ )
                     {
-                    cout<<string(CtiNumStr(ReadBuffer[byteitr+3]).hex().zpad(2))<<' ';
+                    cout<<string(CtiNumStr(ReadBuffer[byteitr+4]).hex().zpad(2))<<' ';
                 }
-        
         
                 aCCU711.ReceiveMore(ReadBuffer, counter);
             }
@@ -179,10 +179,10 @@ int main(int argc, char *argv[])
                 }
 
 
-                aCCU710.ReceiveMore(ReadBuffer, counter);
+                aCCU710.ReceiveMore(ReadBuffer, mctNumber,counter);
             }
             aCCU710.PrintInput(ReadBuffer);
-            aCCU710.CreateMsg(ccuNumber);
+            aCCU710.CreateMsg(ccuNumber, mctNumber);
 
             unsigned char SendData[300];
 

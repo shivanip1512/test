@@ -38,10 +38,11 @@ EmetconWord::EmetconWord()
 }
 
 // build a new word
-int EmetconWord::InsertWord(int Type, unsigned char * pMessageData, int WordFunc, int ccuNumber, int Ctr)
+int EmetconWord::InsertWord(int Type, unsigned char * pMessageData, int WordFunc, int mctNumber, int Ctr)
 {
 	_wordType = Type;
 	_wordFunction = WordFunc;
+    unsigned char mctNum;
 
 	//  Temporary code to randomly send back e words instead of d words
 	/*if(_wordType == D_WORD) {
@@ -53,25 +54,24 @@ int EmetconWord::InsertWord(int Type, unsigned char * pMessageData, int WordFunc
 	{
 		_wordSize = 7;
 
-        unsigned char ccuNum = 0x00;
-        switch(ccuNumber)
+        switch(mctNumber)
         {
             case 0:
-                ccuNum = 0x00;
+                mctNum = 0x00;
                 break;
             case 1:
-                ccuNum = 0x10;
+                mctNum = 0x10;
                 break;
             case 2:
-                ccuNum = 0x20;
+                mctNum = 0x20;
                 break; 
             case 3:
-                ccuNum = 0x30;
+                mctNum = 0x30;
                 break; 
         }
 		pMessageData[Ctr++] = 0xd0;   //beginning of d word
 		pMessageData[Ctr++] = 0x24;
-		pMessageData[Ctr++] = ccuNum;   //data begins in second half of this byte
+		pMessageData[Ctr++] = mctNum;   //data begins in second half of this byte
         pMessageData[Ctr++] = 0x0f;   // data
 		pMessageData[Ctr++] = 0x00;   // data
 		pMessageData[Ctr++] = 0x00;   // data ends first half of this byte

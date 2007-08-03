@@ -24,7 +24,7 @@ class EmetconWord
 		// Default constructor
 		EmetconWord();
 		// Initialize a word
-		int InsertWord(int _wordType, unsigned char * MessageData, int WordFunc, int ccuNumber, int Ctr = 0);
+		int InsertWord(int _wordType, unsigned char * MessageData, int WordFunc, int mctNumber, int Ctr = 0);
 		// Constructor to copy and decode an existing word
 		void DecodeWord(unsigned char ReadBuffer[], CTINEXUS *newSocket);
 		// Calculate the BCH code

@@ -14,36 +14,9 @@
 *****************************************************************************/
 #ifndef  __CCU711_H__
 #define  __CCU711_H__
-#include "Message.h"
 #include "Winsock2.h"
 #include <iostream>
-
-#define DEFAULT  0
-
-#define INPUT    0
-#define RESETREQ 1
-#define RESETACK 2
-#define GENREQ   3
-#define GENREP   4
-
-#define DTRAN 11
-
-#define FEEDEROP 21
-
-#define A_WORD 31
-#define B_WORD 32
-#define C_WORD 33
-#define D_WORD 34
-#define E_WORD 35
-
-#define FUNCACK 41
-#define READ    42
-#define WRITE   43
-
-#define ACKACK  51
-
-#define INCOMING 0
-#define OUTGOING 1
+#include "CCU710.h"
 
 using namespace std;
 
@@ -53,6 +26,33 @@ class CCU711{
 		CCU711();
 		//Destructor
 
+        enum WordTypes
+        {   
+            DEFAULT    = 0,
+            INPUT      = 0,
+            RESETREQ   = 1,
+            RESETACK   = 2,
+            GENREQ     = 3,
+            GENREP     = 4,
+            A_WORD     = 31,
+            B_WORD     = 32,
+            C_WORD     = 33,
+            D_WORD     = 34,
+            E_WORD     = 35,
+            DTRAN      = 11,
+            FEEDEROP   = 21,
+            PING       = 22,
+            FUNCACK    = 41,
+            READ       = 42,
+            WRITE      = 43,
+            READENERGY = 44,
+            ACKACK     = 51,
+            INCOMING   = 0,
+            OUTGOING   = 1
+        };
+
+        // Constructor to build a new Message
+        void CreateMessage(int MsgType, int WrdFnc, unsigned char Data[], int ccuNumber, int &setccuNumber, unsigned char Address = 0x00, unsigned char Frame = 0x00);
 		//Send the message back to porter
 		int SendMsg(unsigned char SendData[]);
 		//Build a new message
@@ -71,17 +71,51 @@ class CCU711{
 		CTINEXUS * getListenSocket();
 		//Returns a pointer to newSocket
 		CTINEXUS * getNewSocket();
+        //  Figure out what the preamble says
+		void DecodeCommand(unsigned char Data[]);
+        //  Figure out what the preamble says
+		int DecodePreamble(int &setccuNumber);
+        // This is used to insert words into incoming messages 
+		void InsertWord(int WordType, unsigned char Data[], int counter);
+        //  Returns the type of message
+		unsigned char getFrame();
+        //  Figure out the IDLC protocol
+		int DecodeIDLC(int & setccuNumber);
+        //  Determine what kind of word it is
+		int DecodeDefinition();
+        //  Determine the number of words to follow
+		int DecodeWTF(int WordType, unsigned char Data[]);
+		//  Determine what function the word specifies
+		int DecodeFunction(int WordType, unsigned char Data[]);
+
+
+
+
 
 	private:
-		//Array to store incoming message
-		Message _incomingMsg[1];
-		//Array to store outgoing message
-		Message _outgoingMsg[1];
-
 		//Storage for sockets
 		WSADATA wsaData;
 		CTINEXUS * listenSocket;
 		CTINEXUS * newSocket;
+
+        CCU710 subCCU710;
+
+        int _messageType;
+        int _commandType;
+        int _preamble;
+        unsigned char _messageData[100];
+        EmetconWord _words[4];
+        int _bytesToFollow;
+        int _indexOfEnd;
+        int _indexOfWords;
+
+        int _outmessageType;
+        int _outcommandType;
+        int _outpreamble;
+        unsigned char _outmessageData[100];
+        EmetconWord _outwords[4];
+        int _outindexOfEnd;
+        int _outindexOfWords;
 };
 
 #endif
