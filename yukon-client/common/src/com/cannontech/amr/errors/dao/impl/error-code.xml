@@ -483,7 +483,7 @@
   </troubleshooting>
   </error>
   
-<error code="85">
+<error code="83">
 	<category>Yukon System</category> 
 	<porter>Operation Attempted on Inhibited Device</porter>
     <description>The targeted device is disabled or inhibited in the Yukon System.</description>
