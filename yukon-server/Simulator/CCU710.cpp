@@ -105,7 +105,7 @@ int CCU710::ReceiveMsg(unsigned char Data[], int &setccuNumber)
 
 
 //Listen for and store an incoming message
-void CCU710::ReceiveMore(unsigned char Data[], int &setmctNumber, int counter)
+int CCU710::ReceiveMore(unsigned char Data[], int &setmctNumber, int counter)
 {
     _messageData[counter++]=Data[counter++];
     _messageData[counter++]=Data[counter++];
@@ -146,26 +146,26 @@ void CCU710::ReceiveMore(unsigned char Data[], int &setmctNumber, int counter)
             _words[_indexOfWords]= anotherWord;
             _indexOfWords++;
         }
-    }   
+    }
+    cout<<endl;
+    return setmctNumber;
 }
 
 
-void CCU710::PrintInput(unsigned char ReadBuffer[])
+void CCU710::PrintInput()
 {
-    cout<<endl;
     SET_FOREGROUND_WHITE;
     string printMsg, printCmd, printPre, printWrd, printFnc;
 
 	TranslateInfo(INCOMING, printMsg, printCmd, printPre, printWrd, printFnc);
 
-	cout<<"Msg: "<<printMsg<<"    Cmd: "<<printCmd<<"    Pre: "<<printPre;
+	cout<<"Pre: "<<printPre;
 	cout<<"    Wrd: "<<printWrd<<"    Fnc: "<<printFnc<<endl;
 }
 
 
 //Build a new message
 void CCU710::CreateMsg(int ccuNumber, int mctNumber){
-    int setccuNumber = 0;
 	unsigned char someData[10];
 	if(_preamble==FEEDEROP)
 	{
@@ -173,15 +173,15 @@ void CCU710::CreateMsg(int ccuNumber, int mctNumber){
 		unsigned char Frame = getFrame();
 		unsigned char Address = _messageData[1];
         if(_words[0].getWordFunction()==WRITE) {     // on 710 readenergy is sent as a write
-			CreateMessage(FEEDEROP, READENERGY, mctNumber, ccuNumber, setccuNumber);
+			CreateMessage(FEEDEROP, READENERGY, mctNumber, ccuNumber);
 		}
 		else{ 
-			CreateMessage(FEEDEROP, DEFAULT, mctNumber, ccuNumber, setccuNumber);
+			CreateMessage(FEEDEROP, DEFAULT, mctNumber, ccuNumber);
 		}
 	}
     else
     {   //  Ping response
-       CreateMessage(PING, DEFAULT, mctNumber, ccuNumber, setccuNumber);
+       CreateMessage(PING, DEFAULT, mctNumber, ccuNumber);
     }
 }
 
@@ -197,7 +197,6 @@ int CCU710::SendMsg(unsigned char SendData[]){
 
 
 void CCU710::PrintMessage(){
-    cout<<endl;
     SET_FOREGROUND_WHITE;
     string printType;
     switch(_outmessageType){
@@ -222,7 +221,7 @@ void CCU710::PrintMessage(){
 
     TranslateInfo(OUTGOING, printMsg, printCmd, printPre, printWrd, printFnc);
 
-    cout<<"Msg: "<<printMsg<<"    Cmd: "<<printCmd<<"         Pre: "<<printPre;
+    cout<<"Pre: "<<printPre;
     cout<<"    Wrd: "<<printWrd<<"    Fnc: "<<printFnc<<endl;
     cout<<"________________________________________________________________________________"<<endl;
 }
@@ -400,8 +399,7 @@ unsigned char CCU710::getFrame(){
 
 
 // Constructor to build a new Message 
-void CCU710::CreateMessage(int MsgType, int WrdFnc, int mctNumber, int ccuNumber, int &setccuNumber){
-    cout<<"ccu #"<<ccuNumber<<endl;
+void CCU710::CreateMessage(int MsgType, int WrdFnc, int mctNumber, int ccuNumber){
 	_messageType = MsgType;
 
     if(_messageType == FEEDEROP) {
@@ -480,7 +478,7 @@ int CCU710::DecodeMctAddress()
     {
         setmctAddress = 3;
     }
-    return 0;
+    return setmctAddress;
 }
 
 int CCU710::DecodeCCUAddress()

@@ -114,7 +114,7 @@ int main(int argc, char *argv[])
         
                 aCCU711.ReceiveMore(ReadBuffer, counter);
             }
-            aCCU711.PrintInput(ReadBuffer);
+            aCCU711.PrintInput();
             aCCU711.CreateMsg(ccuNumber);
     
             unsigned char SendData[300];
@@ -181,7 +181,7 @@ int main(int argc, char *argv[])
 
                 aCCU710.ReceiveMore(ReadBuffer, mctNumber,counter);
             }
-            aCCU710.PrintInput(ReadBuffer);
+            aCCU710.PrintInput();
             aCCU710.CreateMsg(ccuNumber, mctNumber);
 
             unsigned char SendData[300];
@@ -203,6 +203,7 @@ int main(int argc, char *argv[])
                 cout <<string(CtiNumStr(SendData[byteitr]).hex().zpad(2))<<' ';
             }
 
+            cout<<endl;
             aCCU710.PrintMessage();
         }
 

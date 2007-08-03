@@ -60,9 +60,9 @@ class CCU710{
 		//Listen for and store an incoming message
 		int ReceiveMsg(unsigned char ReadBuffer[], int &ccuNumber);
 		//Listen for and store the rest of the message
-		void ReceiveMore(unsigned char ReadBuffer[], int &setmctNumber, int counter);
+		int ReceiveMore(unsigned char ReadBuffer[], int &setmctNumber, int counter);
         //Print the incoming message information to the screen
-        void PrintInput(unsigned char ReadBuffer[]);
+        void PrintInput();
         //Output the outgoing message information to the screen
         void PrintMessage();
 		//  Translate message for user
@@ -76,7 +76,7 @@ class CCU710{
         int DecodeFunction(int WordType, unsigned char Data[]);
         int DecodeWTF(int WordType, unsigned char Data[]);
         unsigned char getFrame();
-        void CreateMessage(int MsgType, int WrdFnc, int mctNumber, int ccuNumber, int &setccuNumber);
+        void CreateMessage(int MsgType, int WrdFnc, int mctNumber, int ccuNumber);
         unsigned char makeAck(int ccuNumber);
         //  Determines the mct address from the incoming word
         int DecodeMctAddress();

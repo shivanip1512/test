@@ -32,13 +32,14 @@ CCU711::CCU711() :
       _outindexOfEnd(0),
       _outindexOfWords(0)
 {
-    _messageType  = 0;
-    _commandType  = 0;
-    _preamble     = 0;
-    _bytesToFollow = 0;
+    _messageType     = 0;
+    _commandType     = 0;
+    _preamble        = 0;
+    _bytesToFollow   = 0;
     _outmessageType  = 0;
     _outcommandType  = 0;
     _outpreamble     = 0;
+    _mctNumber       = 0;
 
     memset(_messageData, 0, 100);
     memset(_outmessageData, 0, 100);
@@ -58,20 +59,31 @@ void CCU711::ReceiveMore(unsigned char ReadBuffer[], int counter)
     int setccuNumber = 0;
 	SET_FOREGROUND_WHITE;
 	DecodeCommand(ReadBuffer);
-	DecodePreamble(setccuNumber);
-	InsertWord(INPUT, ReadBuffer, 6);      //  CHANGE THIS 6 TO SOMETHING ELSE !!!  (a counter passed in from serverNexus)
+	//DecodePreamble(setccuNumber);
+	//InsertWord(INPUT, ReadBuffer, 6);      //  CHANGE THIS 6 TO SOMETHING ELSE !!!  (a counter passed in from serverNexus)
+
+    _messageData[10]=ReadBuffer[10];   
+    _messageData[11]=ReadBuffer[11];                              
+    _messageData[12]=ReadBuffer[12];   
+    _messageData[13]=ReadBuffer[13];
+    _messageData[14]=ReadBuffer[14];
+    _messageData[15]=ReadBuffer[15];
+    _messageData[16]=ReadBuffer[16];
+    int Ctr = 7;
+    int dummyNum = 0;
+    subCCU710.ReceiveMsg(_messageData + 7, dummyNum);
+    _mctNumber = subCCU710.ReceiveMore(_messageData + 7, dummyNum, Ctr);
 }
 
 
-void CCU711::PrintInput(unsigned char ReadBuffer[])
+void CCU711::PrintInput()
 {
-    cout<<endl;
     string printMsg, printCmd, printPre, printWrd, printFnc;
 
 	TranslateInfo(INCOMING, printMsg, printCmd, printPre, printWrd, printFnc);
 
-	cout<<"Msg: "<<printMsg<<"    Cmd: "<<printCmd<<"    Pre: "<<printPre;
-	cout<<"    Wrd: "<<printWrd<<"    Fnc: "<<printFnc<<endl;
+	cout<<"Msg: "<<printMsg<<"    Cmd:         "<<printCmd;
+    subCCU710.PrintInput();
 }
 
 //Build a new message
@@ -134,9 +146,8 @@ void CCU711::PrintMessage(){
 
     TranslateInfo(OUTGOING, printMsg, printCmd, printPre, printWrd, printFnc);
 
-    cout<<"Msg: "<<printMsg<<"    Cmd: "<<printCmd<<"         Pre: "<<printPre;
-    cout<<"    Wrd: "<<printWrd<<"    Fnc: "<<printFnc<<endl;
-    cout<<"________________________________________________________________________________"<<endl;
+    cout<<"Msg: "<<printMsg<<"     Cmd:"<<printCmd;
+    subCCU710.PrintMessage();
 }
 
 void CCU711::TranslateInfo(bool direction, string & printMsg, string & printCmd, string & printPre, string & printWrd, string & printFnc)
@@ -155,7 +166,7 @@ void CCU711::TranslateInfo(bool direction, string & printMsg, string & printCmd,
 		switch(_preamble){
             case FEEDEROP:  printPre.append("FEEDEROP");    break;
 		}
-		switch(_outwords[0].getWordType())
+		switch(_words[0].getWordType())
         {
             case A_WORD:    printWrd.append("A_WORD");      break;
             case B_WORD:    printWrd.append("B_WORD");      break;
@@ -163,7 +174,7 @@ void CCU711::TranslateInfo(bool direction, string & printMsg, string & printCmd,
             case D_WORD:    printWrd.append("D_WORD");      break;
             case E_WORD:    printWrd.append("E_WORD");      break;
 		}
-		switch(_outwords[0].getWordFunction()){
+		switch(_words[0].getWordFunction()){
             case FUNCACK:   printFnc.append("FUNCACK");     break;
             case READ:      printFnc.append("READ");        break;
             case WRITE:     printFnc.append("WRITE");       break;
@@ -221,10 +232,6 @@ void CCU711::CreateMessage(int MsgType, int WrdFnc, unsigned char Data[], int cc
 		_messageData[3] = Data[3];
 		_indexOfEnd = 4;           //   this may cause a PROBLEM  SINCE 710 should be 3 bytes !!!
 		_bytesToFollow = DecodeIDLC(setccuNumber);
-        if(_bytesToFollow==-1)
-        {
-            _bytesToFollow = DecodePreamble(setccuNumber);   
-        }
 	}
 	else if(_messageType == RESETACK) {
 		_outmessageData[0] = 0x7e;
@@ -284,26 +291,11 @@ void CCU711::CreateMessage(int MsgType, int WrdFnc, unsigned char Data[], int cc
 			_outmessageData[Ctr++] = 0x00;     // process status items
 			_outmessageData[Ctr++] = 0x00;     //    "   "									
 	
-			/*_outmessageData[Ctr++] = 0x42;							
-			_outmessageData[Ctr++] = 0x42;	
-			_outmessageData[Ctr++] = 0x82;	
-
-			EmetconWord newWord;
-			int Function = 0;
-			Ctr = newWord.InsertWord(D_WORD,  _outmessageData, Function, ccuNumber, Ctr);
-			_words[0]=newWord;
-			_outmessageData[Ctr++] = 0x42;*/
 
             int setccuNumber;  // delete this from param list!!!
-            int mctNumber = 2;
-            int dummyNum = 0;
-            ccuNumber = 2;
-            int counter = 10;
-
+            // ccuNumber = 2;
             // Use a 710 to form the content in the message
-            subCCU710.ReceiveMsg(_messageData + 10, dummyNum);
-            subCCU710.ReceiveMore(_messageData + 10, dummyNum, counter);
-            subCCU710.CreateMessage(FEEDEROP, READENERGY, mctNumber, ccuNumber, setccuNumber);
+            subCCU710.CreateMessage(FEEDEROP, READENERGY, _mctNumber, ccuNumber);
             unsigned char SendData[300];
             subCCU710.SendMsg(SendData);
             int smallCtr = 0;

@@ -62,7 +62,7 @@ class CCU711{
 		//Listen for and store the rest of the message
 		void ReceiveMore(unsigned char ReadBuffer[], int counter);
         //Print the incoming message information to the screen
-        void PrintInput(unsigned char ReadBuffer[]);
+        void PrintInput();
         //Output the outgoing message information to the screen
         void PrintMessage();
 		//  Translate message for user
@@ -116,6 +116,7 @@ class CCU711{
         EmetconWord _outwords[4];
         int _outindexOfEnd;
         int _outindexOfWords;
+        int _mctNumber;
 };
 
 #endif
