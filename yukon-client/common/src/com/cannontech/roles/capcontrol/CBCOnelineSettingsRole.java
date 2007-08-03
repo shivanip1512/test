@@ -18,7 +18,8 @@ public interface CBCOnelineSettingsRole {
     public static final int SUB_MAX_DAILY_OPCNT = SUB_ONELINE_PROPID_BASE - 8;
     public static final int SUB_AREA = SUB_ONELINE_PROPID_BASE - 9;
     public static final int SUB_CTL_METHOD = SUB_ONELINE_PROPID_BASE - 10;
-       
+    public static final int SUB_DAILY_MAX_OPCNT = SUB_ONELINE_PROPID_BASE - 11;
+    public static final int SUB_TIMESTAMP = SUB_ONELINE_PROPID_BASE - 12;
     
     //FEEDER
     public static final int FDR_ONELINE_PROPID_BASE = SUB_ONELINE_PROPID_BASE - 100;
@@ -29,6 +30,7 @@ public interface CBCOnelineSettingsRole {
     public static final int FDR_OP_CNT = FDR_ONELINE_PROPID_BASE - 3;
     public static final int FDR_VOLT = FDR_ONELINE_PROPID_BASE - 4;
     public static final int FDR_TARGET = FDR_ONELINE_PROPID_BASE - 5;
+    public static final int FDR_TIMESTAMP = FDR_ONELINE_PROPID_BASE - 6;
     
     
     
@@ -38,5 +40,6 @@ public interface CBCOnelineSettingsRole {
     public static final int CAP_OPCNT = CAP_ONELINE_PROPID_BASE;
     public static final int CAP_BANK_SIZE = CAP_ONELINE_PROPID_BASE - 1;
     public static final int CAP_CBC_NAME = CAP_ONELINE_PROPID_BASE - 2;
+    public static final int CAP_TIMESTAMP = CAP_ONELINE_PROPID_BASE - 3;
 
 }

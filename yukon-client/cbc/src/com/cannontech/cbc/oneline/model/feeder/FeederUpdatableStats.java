@@ -23,27 +23,28 @@ import com.loox.jloox.LxGraph;
 @SuppressWarnings("serial")
 public class FeederUpdatableStats extends LxAbstractView implements
         UpdatableStats, AdjustablePosition {
+    public static final String LBL_TIMESTAMP = "Updated: ";
     public static final String LBL_KVAR_LOAD = "KVAR: ";
     public static final String LBL_PFACTOR = "PF: ";
     public static final String LBL_WATT_VOLT = "Watt/Volt";
-    public static final String LBL_DAILYOPS = "Daily Ops: ";
+    public static final String LBL_DAILYOPS = "Daily / Max Ops: ";
     private static final String LBL_WATT = "Watt";
     private static final String LBL_VOLT = "Volt";
     private static final String LBL_TARGET = "Target: ";
     
-    private PointQualCheckUpdatTextList varLoad = new PointQualCheckUpdatTextList(CBCOnelineSettingsRole.FDR_KVAR,
-                                                                                  this);
-    private UpdatableTextList pFactor = new UpdatableTextList(CBCOnelineSettingsRole.FDR_PF,
-                                                              this);
-    private PointQualCheckUpdatTextList wattLoad = new PointQualCheckUpdatTextList(CBCOnelineSettingsRole.FDR_WATT,
-                                                                                   this);
-    private UpdatableTextList dailyOps = new UpdatableTextList(CBCOnelineSettingsRole.FDR_OP_CNT,
-                                                               this);
-    private PointQualCheckUpdatTextList voltLoad = new PointQualCheckUpdatTextList(CBCOnelineSettingsRole.FDR_VOLT,
-                                                                                   this);
+    public UpdatableTextList timestamp = new UpdatableTextList(CBCOnelineSettingsRole.FDR_TIMESTAMP, this);
+    
+    private PointQualCheckUpdatTextList varLoad = new PointQualCheckUpdatTextList(CBCOnelineSettingsRole.FDR_KVAR,this);
+    
+    private UpdatableTextList pFactor = new UpdatableTextList(CBCOnelineSettingsRole.FDR_PF,this);
+    
+    private PointQualCheckUpdatTextList wattLoad = new PointQualCheckUpdatTextList(CBCOnelineSettingsRole.FDR_WATT,this);
+    
+    private UpdatableTextList dailyOps = new UpdatableTextList(CBCOnelineSettingsRole.FDR_OP_CNT,this);
+    
+    private PointQualCheckUpdatTextList voltLoad = new PointQualCheckUpdatTextList(CBCOnelineSettingsRole.FDR_VOLT,this);
 
-    private UpdatableTextList target = new UpdatableTextList(CBCOnelineSettingsRole.FDR_TARGET,
-                                                               this);
+    private UpdatableTextList target = new UpdatableTextList(CBCOnelineSettingsRole.FDR_TARGET,this);
 
     private LxGraph graph;
     private OnelineFeeder parent;
@@ -69,6 +70,7 @@ public class FeederUpdatableStats extends LxAbstractView implements
 
     private void initPropLabelMap() {
 
+        propLabelMap.put(CBCOnelineSettingsRole.FDR_TIMESTAMP, LBL_TIMESTAMP);
         propLabelMap.put(CBCOnelineSettingsRole.FDR_KVAR, LBL_KVAR_LOAD);
         propLabelMap.put(CBCOnelineSettingsRole.FDR_PF, LBL_PFACTOR);
         propLabelMap.put(CBCOnelineSettingsRole.FDR_WATT, LBL_WATT);
@@ -79,6 +81,8 @@ public class FeederUpdatableStats extends LxAbstractView implements
     }
 
     private void initPropColumnMap() {
+        propColumnMap.put(CBCOnelineSettingsRole.FDR_TIMESTAMP,
+                          CBCDisplay.FDR_SHORT_TIME_STAMP_COLUMN);        
         propColumnMap.put(CBCOnelineSettingsRole.FDR_KVAR,
                           CBCDisplay.FDR_ONELINE_VAR_LOAD_COLUMN);
         propColumnMap.put(CBCOnelineSettingsRole.FDR_PF,
@@ -170,6 +174,7 @@ public class FeederUpdatableStats extends LxAbstractView implements
     }
 
     public void initAllStats() {
+        allStats.add(timestamp);
         initPointQualCheckable();
         allStats.add(pFactor);
         allStats.add(dailyOps);

@@ -28,6 +28,7 @@ public class SubUpdatableStats extends LxAbstractView implements
     private static final String CTL_METHOD = "Ctl. Method: ";
 
     private static final String TARGET = "Target: ";
+    private static final String TIMESTAMP = "Updated: ";
 
     private static final String VARLOAD = "VarLoad: ";
     private static final String EST_VARLOAD = "Est VarLoad: ";
@@ -37,12 +38,15 @@ public class SubUpdatableStats extends LxAbstractView implements
 
     private static final String WATTLOAD = "Watts: ";
     private static final String VOLTLOAD = "Volts: ";
-
+    
     private static final String DAYOP = "Daily Ops: ";
     private static final String MAX_DAYOP = "Max Daily Ops: ";
-
-    public UpdatableTextList target = new UpdatableTextList(CBCOnelineSettingsRole.SUB_TARGET,
-                                                            this);
+    private static final String DAYOP_MAXOP = "Daily / Max Ops: ";
+    
+    public UpdatableTextList target = new UpdatableTextList(CBCOnelineSettingsRole.SUB_TARGET, this);
+    
+    public UpdatableTextList timestamp = new UpdatableTextList(CBCOnelineSettingsRole.SUB_TIMESTAMP, this);
+    
     public PointQualCheckUpdatTextList varLoad = new PointQualCheckUpdatTextList(CBCOnelineSettingsRole.SUB_VARLOAD,
                                                                                  this);
     public UpdatableTextList estVarLoad = new UpdatableTextList(CBCOnelineSettingsRole.SUB_EST_VARLOAD,
@@ -58,10 +62,11 @@ public class SubUpdatableStats extends LxAbstractView implements
     public PointQualCheckUpdatTextList voltLoad = new PointQualCheckUpdatTextList(CBCOnelineSettingsRole.SUB_VOLTS,
                                                               this);
 
-    public UpdatableTextList dayOp = new UpdatableTextList(CBCOnelineSettingsRole.SUB_DAILY_OPCNT,
-                                                           this);
-    public UpdatableTextList maxDayOp = new UpdatableTextList(CBCOnelineSettingsRole.SUB_MAX_DAILY_OPCNT,
-                                                              this);
+    public UpdatableTextList dayOp = new UpdatableTextList(CBCOnelineSettingsRole.SUB_DAILY_OPCNT, this);
+    public UpdatableTextList maxDayOp = new UpdatableTextList(CBCOnelineSettingsRole.SUB_MAX_DAILY_OPCNT, this);
+    
+    public UpdatableTextList dayMaxOp = new UpdatableTextList( CBCOnelineSettingsRole.SUB_DAILY_MAX_OPCNT, this );
+    
     public UpdatableTextList areaName = new UpdatableTextList(CBCOnelineSettingsRole.SUB_AREA,
                                                               this);
 
@@ -89,18 +94,19 @@ public class SubUpdatableStats extends LxAbstractView implements
     private void initPropLabelMap() {
 
         propLabelMap.put(CBCOnelineSettingsRole.SUB_TARGET, TARGET);
+        propLabelMap.put(CBCOnelineSettingsRole.SUB_TIMESTAMP, TIMESTAMP);
         propLabelMap.put(CBCOnelineSettingsRole.SUB_VARLOAD, VARLOAD);
         propLabelMap.put(CBCOnelineSettingsRole.SUB_EST_VARLOAD, EST_VARLOAD);
 
         propLabelMap.put(CBCOnelineSettingsRole.SUB_POWER_FACTOR, POWERFACTOR);
-        propLabelMap.put(CBCOnelineSettingsRole.SUB_EST_POWER_FACTOR,
-                         EST_POWERFACTOR);
+        propLabelMap.put(CBCOnelineSettingsRole.SUB_EST_POWER_FACTOR, EST_POWERFACTOR);
 
         propLabelMap.put(CBCOnelineSettingsRole.SUB_WATTS, WATTLOAD);
         propLabelMap.put(CBCOnelineSettingsRole.SUB_VOLTS, VOLTLOAD);
 
         propLabelMap.put(CBCOnelineSettingsRole.SUB_DAILY_OPCNT, DAYOP);
         propLabelMap.put(CBCOnelineSettingsRole.SUB_MAX_DAILY_OPCNT, MAX_DAYOP);
+        propLabelMap.put(CBCOnelineSettingsRole.SUB_DAILY_MAX_OPCNT, DAYOP_MAXOP);
 
         propLabelMap.put(CBCOnelineSettingsRole.SUB_AREA, AREA_NAME);
         propLabelMap.put(CBCOnelineSettingsRole.SUB_CTL_METHOD, CTL_METHOD);
@@ -108,32 +114,26 @@ public class SubUpdatableStats extends LxAbstractView implements
     }
 
     private void initPropColumnMap() {
-        propColumnMap.put(CBCOnelineSettingsRole.SUB_TARGET,
-                          CBCDisplay.SUB_TARGET_COLUMN);
+        propColumnMap.put(CBCOnelineSettingsRole.SUB_TARGET, CBCDisplay.SUB_TARGET_COLUMN);
+        
+        propColumnMap.put(CBCOnelineSettingsRole.SUB_TIMESTAMP, CBCDisplay.SUB_SHORT_TIME_STAMP_COLUMN);
 
-        propColumnMap.put(CBCOnelineSettingsRole.SUB_VARLOAD,
-                          CBCDisplay.SUB_ONELINE_KVAR_LOAD_COLUMN);
-        propColumnMap.put(CBCOnelineSettingsRole.SUB_EST_VARLOAD,
-                          CBCDisplay.SUB_ONELINE_KVAR_ESTMATED_COLUMN);
+        propColumnMap.put(CBCOnelineSettingsRole.SUB_VARLOAD, CBCDisplay.SUB_ONELINE_KVAR_LOAD_COLUMN);
+        propColumnMap.put(CBCOnelineSettingsRole.SUB_EST_VARLOAD, CBCDisplay.SUB_ONELINE_KVAR_ESTMATED_COLUMN);
 
-        propColumnMap.put(CBCOnelineSettingsRole.SUB_POWER_FACTOR,
-                          CBCDisplay.SUB_ONELINE_PF_COLUMN);
-        propColumnMap.put(CBCOnelineSettingsRole.SUB_EST_POWER_FACTOR,
-                          CBCDisplay.SUB_ONELINE_EST_PF_COLUMN);
+        propColumnMap.put(CBCOnelineSettingsRole.SUB_POWER_FACTOR, CBCDisplay.SUB_ONELINE_PF_COLUMN);
+        propColumnMap.put(CBCOnelineSettingsRole.SUB_EST_POWER_FACTOR, CBCDisplay.SUB_ONELINE_EST_PF_COLUMN);
 
-        propColumnMap.put(CBCOnelineSettingsRole.SUB_WATTS,
-                          CBCDisplay.SUB_ONELINE_WATT_COLUMN);
-        propColumnMap.put(CBCOnelineSettingsRole.SUB_VOLTS,
-                          CBCDisplay.SUB_ONELINE_VOLT_COLUMN);
+        propColumnMap.put(CBCOnelineSettingsRole.SUB_WATTS, CBCDisplay.SUB_ONELINE_WATT_COLUMN);
+        propColumnMap.put(CBCOnelineSettingsRole.SUB_VOLTS, CBCDisplay.SUB_ONELINE_VOLT_COLUMN);
 
-        propColumnMap.put(CBCOnelineSettingsRole.SUB_DAILY_OPCNT,
-                          CBCDisplay.SUB_ONELINE_DAILY_OPCNT_COLUMN);
-        propColumnMap.put(CBCOnelineSettingsRole.SUB_MAX_DAILY_OPCNT,
-                          CBCDisplay.SUB_ONELINE_MAX_OPCNT_COLUMN);
-        propColumnMap.put(CBCOnelineSettingsRole.SUB_AREA,
-                          CBCDisplay.SUB_ONELINE_AREANAME_COLUMN);
-        propColumnMap.put(CBCOnelineSettingsRole.SUB_CTL_METHOD,
-                          CBCDisplay.SUB_ONELINE_CTL_METHOD_COLUMN);
+        propColumnMap.put(CBCOnelineSettingsRole.SUB_DAILY_OPCNT, CBCDisplay.SUB_ONELINE_DAILY_OPCNT_COLUMN);
+        propColumnMap.put(CBCOnelineSettingsRole.SUB_MAX_DAILY_OPCNT, CBCDisplay.SUB_ONELINE_MAX_OPCNT_COLUMN);
+        propColumnMap.put(CBCOnelineSettingsRole.SUB_DAILY_MAX_OPCNT, CBCDisplay.SUB_ONELINE_DAILY_MAX_OPCNT_COLUMN);        
+        
+        
+        propColumnMap.put(CBCOnelineSettingsRole.SUB_AREA, CBCDisplay.SUB_ONELINE_AREANAME_COLUMN);
+        propColumnMap.put(CBCOnelineSettingsRole.SUB_CTL_METHOD, CBCDisplay.SUB_ONELINE_CTL_METHOD_COLUMN);
 
     }
 
@@ -187,17 +187,17 @@ public class SubUpdatableStats extends LxAbstractView implements
 
     public void initAllStats() {
         allStats.add(target);
+        allStats.add(timestamp);
         initPointQualCheckable();
         allStats.add(estVarLoad);
 
         allStats.add(powerFactor);
         allStats.add(estPowerFactor);
 
-
-
-        allStats.add(dayOp);
-        allStats.add(maxDayOp);
-
+        allStats.add(dayOp);   // day Ops
+        allStats.add(maxDayOp);// max Ops
+        allStats.add(dayMaxOp);// day / max Ops
+        
         allStats.add(areaName);
         allStats.add(ctlMethod);
 

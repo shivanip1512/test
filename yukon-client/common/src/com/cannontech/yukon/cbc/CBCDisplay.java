@@ -34,6 +34,7 @@ public class CBCDisplay {
     public static final String DASH_LINE = "  ----";
     public static final String STR_UNKNOWN = "Unknown";
     public short dateTimeFormat = ModifiedDate.FRMT_DEFAULT;
+    public short shortTimeFormat = ModifiedDate.FRMT_NOSECS_NOYR;
 
     // Column numbers for the CabBank display
     public static final int CB_NAME_COLUMN = 0;
@@ -45,6 +46,7 @@ public class CBCDisplay {
     public static final int CB_PARENT_COLUMN = 6;
     public static final int CB_CURRENT_DAILY_OP_COLUMN = 7;
     public static final int CB_DAILY_TOTAL_OP_COLUMN = 8;
+    public static final int CB_SHORT_TIME_STAMP_COLUMN = 9;
 
     // Column numbers for the Feeder display
     public static final int FDR_NAME_COLUMN = 0;
@@ -59,7 +61,8 @@ public class CBCDisplay {
     public static final int FDR_ONELINE_WATTS_COLUMN = 8;
     public static final int FDR_ONELINE_VOLTS_COLUMN = 9;
     public static final int FDR_ONELINE_VAR_LOAD_COLUMN = 10;
-
+    public static final int FDR_SHORT_TIME_STAMP_COLUMN = 11;
+    
     // Column numbers for the SubBus display
     public static final int SUB_AREA_NAME_COLUMN = 0;
     public static final int SUB_NAME_COLUMN = 1;
@@ -70,7 +73,7 @@ public class CBCDisplay {
     public static final int SUB_POWER_FACTOR_COLUMN = 6;
     public static final int SUB_TIME_STAMP_COLUMN = 7;
     public static final int SUB_DAILY_OPERATIONS_COLUMN = 8;
-
+    
     public static final int SUB_ONELINE_CONTROL_METHOD_COLUMN = 9;
     public static final int SUB_ONELINE_KVAR_LOAD_COLUMN = 10;
     public static final int SUB_ONELINE_KVAR_ESTMATED_COLUMN = 11;
@@ -82,6 +85,8 @@ public class CBCDisplay {
     public static final int SUB_ONELINE_MAX_OPCNT_COLUMN = 17;
     public static final int SUB_ONELINE_AREANAME_COLUMN = 18;
     public static final int SUB_ONELINE_CTL_METHOD_COLUMN = 19;
+    public static final int SUB_ONELINE_DAILY_MAX_OPCNT_COLUMN = 20;
+    public static final int SUB_SHORT_TIME_STAMP_COLUMN = 21;
 
     // The color schemes - based on the schedule status
     private static final Color[] _DEFAULT_COLORS = {
@@ -136,19 +141,34 @@ public class CBCDisplay {
             } else {
                 boolean isCapBankDisabled = capBank.getCcDisableFlag().booleanValue() == true;
                 boolean isFixedState = capBank.getOperationalState().equalsIgnoreCase(CapBank.FIXED_OPSTATE);
+                boolean isStandaloneState = capBank.getOperationalState().equalsIgnoreCase(CapBank.STANDALONE_OPSTATE);
                 String currentState = getCBCStateNames()[controlStatus].getStateText();
                 boolean showIgnoreReason = capBank.isIgnoreFlag();
                 
                 if (isCapBankDisabled) {
 
-                    String disStateString = "DISABLED : " + (isFixedState ? CapBank.FIXED_OPSTATE
+                    String disStateString = "DISABLED : " + (isFixedState ? CapBank.FIXED_OPSTATE 
                                                 : currentState);
+                    if (capBank.getOvUVDisabled()){
+                    	disStateString += "-oVuV";
+                    }
+                    
                     disStateString += (showIgnoreReason ? "<br/>" + CapBankDevice.getIgnoreReason( capBank.getIgnoreReason()) : "");
                     return disStateString;
                 } else {
 
-                    String EnStateString = (isFixedState ? CapBank.FIXED_OPSTATE + " : "
-                                                : "") + currentState;
+                    String EnStateString = "";
+                    if (isFixedState){
+                    	EnStateString = CapBank.FIXED_OPSTATE + " : ";
+                    }
+                    else if (isStandaloneState ){
+                    	EnStateString = CapBank.STANDALONE_OPSTATE + " : ";
+                    }
+                   
+                    EnStateString += currentState;
+                    if (capBank.getOvUVDisabled()){
+                    	EnStateString += "-oVuV";
+                    }
                     EnStateString += (showIgnoreReason ? "<br/>" + CapBankDevice.getIgnoreReason( capBank.getIgnoreReason()) : "");
                     return EnStateString;
                 }
@@ -164,15 +184,17 @@ public class CBCDisplay {
         }
 
         case CB_TIME_STAMP_COLUMN: {
-            if (capBank.getLastStatusChangeTime().getTime() <= CtiUtilities.get1990GregCalendar()
-                                                                           .getTime()
-                                                                           .getTime())
+            if (capBank.getLastStatusChangeTime().getTime() <= CtiUtilities.get1990GregCalendar().getTime().getTime())
                 return DASH_LINE;
             else
-                return new ModifiedDate(capBank.getLastStatusChangeTime()
-                                               .getTime(), dateTimeFormat);
+                return new ModifiedDate(capBank.getLastStatusChangeTime().getTime(), dateTimeFormat);
         }
-
+        case CB_SHORT_TIME_STAMP_COLUMN: {
+            if (capBank.getLastStatusChangeTime().getTime() <= CtiUtilities.get1990GregCalendar().getTime().getTime())
+                return DASH_LINE;
+            else
+                return new ModifiedDate(capBank.getLastStatusChangeTime().getTime(), shortTimeFormat);
+        }
         case CB_PARENT_COLUMN: {
             LiteYukonPAObject paoParent = DaoFactory.getPaoDao()
                                                     .getLiteYukonPAO(capBank.getParentID());
@@ -237,7 +259,8 @@ public class CBCDisplay {
             // show waived with a W at the end of the state
             if (subBus.getWaiveControlFlag().booleanValue())
                 state += "-W";
-
+            if (subBus.getOvUvDisabledFlag().booleanValue())
+                state += "-oVuV";
             return state;
 
         }
@@ -353,16 +376,19 @@ public class CBCDisplay {
         }
 
         case SUB_TIME_STAMP_COLUMN: {
-            if (subBus.getLastCurrentVarPointUpdateTime().getTime() <= com.cannontech.common.util.CtiUtilities.get1990GregCalendar()
-                                                                                                              .getTime()
-                                                                                                              .getTime())
+            if (subBus.getLastCurrentVarPointUpdateTime().getTime() <= CtiUtilities.get1990GregCalendar().getTime().getTime())
                 return DASH_LINE;
             else
-                return new ModifiedDate(subBus.getLastCurrentVarPointUpdateTime()
-                                              .getTime(),
-                                        dateTimeFormat);
+                return new ModifiedDate(subBus.getLastCurrentVarPointUpdateTime().getTime(),dateTimeFormat);
         }
 
+        case SUB_SHORT_TIME_STAMP_COLUMN: {
+            if (subBus.getLastCurrentVarPointUpdateTime().getTime() <= CtiUtilities.get1990GregCalendar().getTime().getTime())
+                return DASH_LINE;
+            else
+                return new ModifiedDate(subBus.getLastCurrentVarPointUpdateTime().getTime(),shortTimeFormat);
+        }
+        
         default:
             return null;
         }
@@ -483,6 +509,8 @@ public class CBCDisplay {
             // show waived with a W at the end of the state
             if (feeder.getWaiveControlFlag().booleanValue())
                 state += "-W";
+            if (feeder.getOvUvDisabledFlag().booleanValue())
+                state += "-oVuV";
 
             return state;
         }
@@ -593,15 +621,19 @@ public class CBCDisplay {
         }
 
         case FDR_TIME_STAMP_COLUMN: {
-            if (feeder.getLastCurrentVarPointUpdateTime().getTime() <= com.cannontech.common.util.CtiUtilities.get1990GregCalendar()
-                                                                                                              .getTime()
-                                                                                                              .getTime())
+            if (feeder.getLastCurrentVarPointUpdateTime().getTime() <= 
+                CtiUtilities.get1990GregCalendar().getTime().getTime())
                 return DASH_LINE;
             else
-                return new ModifiedDate(feeder.getLastCurrentVarPointUpdateTime()
-                                              .getTime(),
-                                        dateTimeFormat);
+                return new ModifiedDate(feeder.getLastCurrentVarPointUpdateTime().getTime(),dateTimeFormat);
         }
+        case FDR_SHORT_TIME_STAMP_COLUMN: {
+            if (feeder.getLastCurrentVarPointUpdateTime().getTime() <= 
+                CtiUtilities.get1990GregCalendar().getTime().getTime() )
+                return DASH_LINE;
+            else
+                return new ModifiedDate(feeder.getLastCurrentVarPointUpdateTime().getTime(),shortTimeFormat);
+        }        
 
         case FDR_ONELINE_WATTS_COLUMN: {
             String retVal = DASH_LINE; // default just in case
@@ -817,7 +849,12 @@ public class CBCDisplay {
                     : subBus.getMaxDailyOperation().toString());
             return retStr;
         }
-
+        case SUB_ONELINE_DAILY_MAX_OPCNT_COLUMN: {
+            String retStr = (subBus.getCurrentDailyOperations().toString() + " / " + (subBus.getMaxDailyOperation().intValue() <= 0 ? STR_NA
+                    : subBus.getMaxDailyOperation().toString()) );
+            
+            return retStr;
+        }
         case SUB_ONELINE_KVAR_LOAD_COLUMN: {
             String retVal = DASH_LINE; //default just in case
 
@@ -871,25 +908,23 @@ public class CBCDisplay {
             if (subBus.getCurrentVoltLoadPointID().intValue() <= PointTypes.SYS_PID_SYSTEM)
                 retVal = DASH_LINE;
             else {
-                retVal = CommonUtils.formatDecimalPlaces(subBus.getCurrentVoltLoadPointValue()
-                                                               .doubleValue(),
-                                                         decPlaces);
+                retVal = CommonUtils.formatDecimalPlaces(subBus.getCurrentVoltLoadPointValue().doubleValue(),decPlaces);
             }
 
             return retVal;
         }
-
         case SUB_TIME_STAMP_COLUMN: {
-            if (subBus.getLastCurrentVarPointUpdateTime().getTime() <= com.cannontech.common.util.CtiUtilities.get1990GregCalendar()
-                                                                                                              .getTime()
-                                                                                                              .getTime())
+            if (subBus.getLastCurrentVarPointUpdateTime().getTime() <= CtiUtilities.get1990GregCalendar().getTime().getTime())
                 return DASH_LINE;
             else
-                return new ModifiedDate(subBus.getLastCurrentVarPointUpdateTime()
-                                              .getTime(),
-                                        dateTimeFormat).toString();
+                return new ModifiedDate(subBus.getLastCurrentVarPointUpdateTime().getTime(),dateTimeFormat).toString();
         }
-
+        case SUB_SHORT_TIME_STAMP_COLUMN: {
+            if (subBus.getLastCurrentVarPointUpdateTime().getTime() <= CtiUtilities.get1990GregCalendar().getTime().getTime())
+                return DASH_LINE;
+            else
+                return new ModifiedDate(subBus.getLastCurrentVarPointUpdateTime().getTime(),shortTimeFormat).toString();
+        }
         default:
             return null;
         }

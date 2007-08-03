@@ -23,6 +23,7 @@ import com.loox.jloox.LxGraph;
 public class CapBankUpdatableStats extends LxAbstractView implements
         UpdatableStats, AdjustablePosition {
 
+    private UpdatableTextList timestamp = new UpdatableTextList(CBCOnelineSettingsRole.CAP_TIMESTAMP, this);
     private UpdatableTextList bankSize = new UpdatableTextList(CBCOnelineSettingsRole.CAP_BANK_SIZE, this);
     private UpdatableTextList opcount = new UpdatableTextList(CBCOnelineSettingsRole.CAP_OPCNT, this);
     private UpdatableTextList cbcName = new UpdatableTextList(CBCOnelineSettingsRole.CAP_CBC_NAME, this);
@@ -49,6 +50,7 @@ public class CapBankUpdatableStats extends LxAbstractView implements
     }
 
     private void initPropLabelMap() {
+        propLabelMap.put(CBCOnelineSettingsRole.CAP_TIMESTAMP, "Updated:");
         propLabelMap.put(CBCOnelineSettingsRole.CAP_OPCNT, "Op Count:");
         propLabelMap.put(CBCOnelineSettingsRole.CAP_BANK_SIZE, "Bank Size");
         propLabelMap.put(CBCOnelineSettingsRole.CAP_CBC_NAME, "CBC:");
@@ -56,6 +58,8 @@ public class CapBankUpdatableStats extends LxAbstractView implements
     }
 
     private void initPropColumnMap() {
+        propColumnMap.put(CBCOnelineSettingsRole.CAP_TIMESTAMP,
+                CBCDisplay.CB_SHORT_TIME_STAMP_COLUMN);
         propColumnMap.put(CBCOnelineSettingsRole.CAP_BANK_SIZE,
                           CBCDisplay.CB_BANK_SIZE_COLUMN);
         propColumnMap.put(CBCOnelineSettingsRole.CAP_OPCNT,
@@ -142,6 +146,7 @@ public class CapBankUpdatableStats extends LxAbstractView implements
     }
 
     public void initAllStats() {
+        allStats.add(timestamp);
         allStats.add(opcount);
         allStats.add(bankSize);
         allStats.add(cbcName);
