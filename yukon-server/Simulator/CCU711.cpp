@@ -299,6 +299,8 @@ void CCU711::CreateMessage(int MsgType, int WrdFnc, unsigned char Data[], int cc
             int dummyNum = 0;
             ccuNumber = 2;
             int counter = 10;
+
+            // Use a 710 to form the content in the message
             subCCU710.ReceiveMsg(_messageData + 10, dummyNum);
             subCCU710.ReceiveMore(_messageData + 10, dummyNum, counter);
             subCCU710.CreateMessage(FEEDEROP, READENERGY, mctNumber, ccuNumber, setccuNumber);
