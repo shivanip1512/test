@@ -1716,7 +1716,7 @@ public static double convertTemperature(double temperature, String fromUnit, Str
         dirPath.append("Static");
         
         File[] fileList = new File(dirPath.toString()).listFiles();
-        if (fileList.length > 0) {
+        if (fileList != null && fileList.length > 0) {
             return fileList[0].getName();
         }
         return null;
