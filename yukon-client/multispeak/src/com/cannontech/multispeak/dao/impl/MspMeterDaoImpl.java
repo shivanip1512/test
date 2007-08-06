@@ -181,7 +181,7 @@ public final class MspMeterDaoImpl implements MspMeterDao
         meter.setMeterType(paoType);  //Meter type/model.
 //        meter.setManufacturer();    //Meter manufacturer.
 //        meter.setSealNumberList(null);  //Seal Number List
-        meter.setAMRDeviceType(paoType);
+//        meter.setAMRDeviceType(paoType);	//This is the Yukon Template Field, Yukon doesn't store what this meter used as it's template.
         meter.setAMRVendor(MultispeakDefines.AMR_VENDOR);
         meter.setNameplate(getNameplate(objectID, address));
 //        meter.setSealNumberList(null);  //List of seals applied to this meter.
