@@ -280,7 +280,7 @@
                 <tr id="upperLimit1">
                     <td id="lbl_upperLimit1">
             </f:verbatim>
-                <x:outputText value="VAR Leading" styleClass="char16PadLabel"
+                <x:outputText value="KVAR Leading" styleClass="char16PadLabel"
                              rendered="#{capControlForm.currentStratModel.enableTable[capControlForm.currentStratModel.PEAK_LEAD]
                              && capControlForm.currentStratModel.KVarAlgorithm}"/> 
                 <x:outputText value="Upper Volt Limit" styleClass="char16PadLabel"
@@ -352,7 +352,7 @@
               <tr id="lowLimit1">
                 <td id="lbl_lowLimit1">
             </f:verbatim>
-               <x:outputText value="VAR Lagging" styleClass="char16PadLabel"
+               <x:outputText value="KVAR Lagging" styleClass="char16PadLabel"
                              rendered="#{ capControlForm.currentStratModel.enableTable[capControlForm.currentStratModel.PEAK_LAG]
                              && capControlForm.currentStratModel.KVarAlgorithm}"/>
                <x:outputText value="Lower Volt Limit" styleClass="char16PadLabel"
@@ -424,7 +424,7 @@
                <x:outputText value="Upper Volt Limit" styleClass="char16PadLabel"
                              rendered="#{capControlForm.currentStratModel.enableTable[capControlForm.currentStratModel.PEAK_UPPER]
                              && !capControlForm.currentStratModel.voltVar}"/>
-                <x:outputText value="VAR Leading" styleClass="char16PadLabel"
+                <x:outputText value="KVAR Leading" styleClass="char16PadLabel"
                              rendered="#{capControlForm.currentStratModel.enableTable[capControlForm.currentStratModel.PEAK_UPPER]
                              && capControlForm.currentStratModel.voltVar}"/>
             <f:verbatim>
@@ -466,7 +466,7 @@
                          rendered="#{capControlForm.currentStratModel.enableTable[capControlForm.currentStratModel.PEAK_LOWER]
                          && !capControlForm.currentStratModel.voltVar
                          }"/>
-            <x:outputText value="VAR Lagging" styleClass="char16PadLabel" 
+            <x:outputText value="KVAR Lagging" styleClass="char16PadLabel" 
                          rendered="#{capControlForm.currentStratModel.enableTable[capControlForm.currentStratModel.PEAK_LOWER]
                          && capControlForm.currentStratModel.voltVar
                          }"/>              

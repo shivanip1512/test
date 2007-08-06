@@ -86,7 +86,7 @@ String css = "tableCell";
 					<th>Sub Name</th>
 					<th>State</th>
 					<th>Target</th>
-					<th>VAR Load / Est.</th>
+					<th>KVAR Load / Est.</th>
 					<th>Date/Time</th>
 					<th>PFactor / Est.</th>
 					<th>Watts / Volts</th>
@@ -208,7 +208,7 @@ if( subBus != null ) {
               onclick="checkAll(this, 'cti_chkbxFdrs');" /> Feeder Name</td>
          <td>State</td>
          <td>Target</td>
-         <td>VAR Load / Est.</td>
+         <td>KVAR Load / Est.</td>
          <td>Date/Time</td>
          <td>PFactor / Est.</td>
          <td>Watts / Volts</td>

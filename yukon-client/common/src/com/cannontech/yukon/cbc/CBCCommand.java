@@ -42,6 +42,11 @@ public class CBCCommand extends com.cannontech.yukon.cbc.CBCMessage
     public static final int DISABLE_SYSTEM = 26;
     public static final int FLIP_7010_CAPBANK = 27;
     public static final int SYSTEM_STATUS = 28;
+    public static final int SEND_ALL_OPEN = 29;
+    public static final int SEND_ALL_CLOSE = 30;
+    public static final int SEND_ALL_ENABLE_OVUV = 31;
+    public static final int SEND_ALL_DISABLE_OVUV = 32;
+
 
 
 	//server does not use these commands
