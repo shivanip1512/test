@@ -83,7 +83,8 @@ void CtiCCArea::restoreGuts(RWvistream& istrm)
     >> _paoname
     >> _paotype
     >> _paodescription
-    >> _disableflag;
+    >> _disableflag
+    >> _ovUvDisabledFlag;
 
     //>> _ccsubs;
 }
@@ -103,7 +104,8 @@ void CtiCCArea::saveGuts(RWvostream& ostrm ) const
     << _paoname
     << _paotype
     << _paodescription
-    << _disableflag;
+    << _disableflag
+    << _ovUvDisabledFlag;
 
    // << _ccsubs;
 }
@@ -122,6 +124,7 @@ CtiCCArea& CtiCCArea::operator=(const CtiCCArea& right)
         _paotype = right._paotype;
         _paodescription = right._paodescription;
         _disableflag = right._disableflag;
+        _ovUvDisabledFlag = right._ovUvDisabledFlag;
 
        /* delete_vector(_ccsubs);
      
@@ -178,17 +181,118 @@ void CtiCCArea::restore(RWDBReader& rdr)
     rdr["disableflag"] >> tempBoolString;
     std::transform(tempBoolString.begin(), tempBoolString.end(), tempBoolString.begin(), tolower);
     _disableflag = (tempBoolString=="y"?TRUE:FALSE);
-    //rdr["strategyid"] >> _strategyId;
+    setOvUvDisabledFlag(FALSE);
 }
 
 
+/*---------------------------------------------------------------------------
+    dumpDynamicData
 
+    Writes out the dynamic information for this cc feeder.
+---------------------------------------------------------------------------*/
+void CtiCCArea::dumpDynamicData()
+{
+    CtiLockGuard<CtiSemaphore> cg(gDBAccessSema);
+    RWDBConnection conn = getConnection();
+
+    dumpDynamicData(conn,CtiTime());
+}
+
+/*---------------------------------------------------------------------------
+    dumpDynamicData
+
+    Writes out the dynamic information for this substation bus.
+---------------------------------------------------------------------------*/
+void CtiCCArea::dumpDynamicData(RWDBConnection& conn, CtiTime& currentDateTime)
+{
+    {
+        RWDBTable dynamicCCAreaTable = getDatabase().table( "dynamicccarea" );
+
+        if( !_insertDynamicDataFlag )
+        {
+            RWDBUpdater updater = dynamicCCAreaTable.updater();
+
+            
+            unsigned char addFlags[] = {'N','N','N','N','N','N','N','N','N','N','N','N','N','N','N','N','N','N','N','N'};
+            addFlags[0] = (_ovUvDisabledFlag?'Y':'N');
+			_additionalFlags = string(char2string(*addFlags));
+            _additionalFlags.append("NNNNNNNNNNNNNNNNNNN");
+
+            updater.clear();
+
+            updater.where(dynamicCCAreaTable["areaid"]==_paoid);
+
+            updater.execute( conn );
+
+            if(updater.status().errorCode() == RWDBStatus::ok)    // No error occured!
+            {
+                _dirty = FALSE;
+            }
+            else
+            {
+                /*{
+                    CtiLockGuard<CtiLogger> doubt_guard(dout);
+                    dout << CtiTime() << " - _dirty = TRUE  " << __FILE__ << " (" << __LINE__ << ")" << endl;
+                }*/
+                _dirty = TRUE;
+                {
+                    CtiLockGuard<CtiLogger> doubt_guard(dout);
+                    dout << CtiTime() << " **** Checkpoint **** " << __FILE__ << " (" << __LINE__ << ")" << endl;
+                    dout << "  " << updater.asString() << endl;
+                }
+            }
+        }
+        else
+        {
+            {
+                CtiLockGuard<CtiLogger> logger_guard(dout);
+                dout << CtiTime() << " - Inserted area into dynamicCCArea: " << getPAOName() << endl;
+            }
+            string addFlags ="NNNNNNNNNNNNNNNNNNNN";
+
+            RWDBInserter inserter = dynamicCCAreaTable.inserter();
+            //TS FLAG
+            inserter << _paoid
+            << addFlags;
+
+            if( _CC_DEBUG & CC_DEBUG_DATABASE )
+            {
+                CtiLockGuard<CtiLogger> logger_guard(dout);
+                dout << CtiTime() << " - " << inserter.asString().data() << endl;
+            }
+
+            inserter.execute( conn );
+
+            if(inserter.status().errorCode() == RWDBStatus::ok)    // No error occured!
+            {
+                _insertDynamicDataFlag = FALSE;
+                _dirty = FALSE;
+            }
+            else
+            {
+                /*{
+                    CtiLockGuard<CtiLogger> doubt_guard(dout);
+                    dout << CtiTime() << " - _dirty = TRUE  " << __FILE__ << " (" << __LINE__ << ")" << endl;
+                }*/
+                _dirty = TRUE;
+                {
+                    CtiLockGuard<CtiLogger> doubt_guard(dout);
+                    dout << CtiTime() << " **** Checkpoint **** " << __FILE__ << " (" << __LINE__ << ")" << endl;
+                    dout << "  " << inserter.asString() << endl;
+                }
+            }
+        }
+    }
+}
 void CtiCCArea::setDynamicData(RWDBReader& rdr)
 {   
-      _insertDynamicDataFlag = FALSE;
+    rdr["additionalflags"] >> _additionalFlags;
+    _ovUvDisabledFlag = (_additionalFlags[0]=='y'?TRUE:FALSE);
+    
+    _insertDynamicDataFlag = FALSE;
+    _dirty = false;
 
-        _dirty = false;
-    //}
+
 }
 
 /*---------------------------------------------------------------------------
@@ -260,7 +364,15 @@ BOOL CtiCCArea::getDisableFlag() const
 {
     return _disableflag;
 }
+/*---------------------------------------------------------------------------
+    getOvUvDisabledFlag
 
+    Returns the ovuv disable flag of the area
+---------------------------------------------------------------------------*/
+BOOL CtiCCArea::getOvUvDisabledFlag() const
+{
+    return _ovUvDisabledFlag;
+}
 
 /*---------------------------------------------------------------------------
     getStrategyId
@@ -380,6 +492,17 @@ CtiCCArea& CtiCCArea::setPAODescription(const string& description)
 CtiCCArea& CtiCCArea::setDisableFlag(BOOL disable)
 {
     _disableflag = disable;
+    return *this;
+}
+
+/*---------------------------------------------------------------------------
+    setOvUvDisabledFlag
+
+    Sets the ovuv disable flag of the area
+---------------------------------------------------------------------------*/
+CtiCCArea& CtiCCArea::setOvUvDisabledFlag(BOOL flag)
+{
+    _ovUvDisabledFlag = flag;
     return *this;
 }
 

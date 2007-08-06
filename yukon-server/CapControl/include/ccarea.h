@@ -63,6 +63,7 @@ RWDECLARE_COLLECTABLE( CtiCCArea )
     const string& getPAODescription() const;
     BOOL getDisableFlag() const;
     LONG getStrategyId() const;
+    BOOL getOvUvDisabledFlag() const;
 
     CtiCCSubstationBus_vec& getCCSubs();
     void deleteCCSubs(long subId);
@@ -75,6 +76,7 @@ RWDECLARE_COLLECTABLE( CtiCCArea )
     CtiCCArea& setPAODescription(const string& description);
     CtiCCArea& setDisableFlag(BOOL disable);
     CtiCCArea& setStrategyId(LONG strategyId);
+    CtiCCArea& setOvUvDisabledFlag(BOOL flag);
     void setStrategyValues(CtiCCStrategyPtr strategy);
 
     list <LONG>* getPointIds() {return &_pointIds;};
@@ -134,6 +136,9 @@ RWDECLARE_COLLECTABLE( CtiCCArea )
     DOUBLE _offpkPFSetPoint;
     BOOL _integrateflag;
     LONG _integrateperiod;
+
+    string _additionalFlags;
+    BOOL _ovUvDisabledFlag;
 
     std:: vector <CtiCCSubstationBus*> _ccsubs;
    //don't stream

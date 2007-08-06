@@ -3075,6 +3075,7 @@ void CtiCCSubstationBusStore::reloadAreaFromDatabase(long areaId, map< long, Cti
                     RWDBTable ccSubAreaAssignmentTable = db.table("ccsubareaassignment");
                     RWDBTable ccScheduleStrat = db.table("ccseasonstrategyassignment");
                     RWDBTable dateOfSeason = db.table("dateofseason");
+                    RWDBTable dynamicCCAreaTable = db.table("dynamicccarea");
 
 
                     {
@@ -3178,7 +3179,43 @@ void CtiCCSubstationBusStore::reloadAreaFromDatabase(long areaId, map< long, Cti
                              }
                          }
                     }
+                    {
+                        RWDBSelector selector = db.selector();
+                        selector << dynamicCCAreaTable["areaid"]
+                        << dynamicCCAreaTable["additionalflags"];
 
+                        selector.from(capControlAreaTable);
+                        selector.from(dynamicCCAreaTable);
+                        if (areaId > 0)
+                        {               
+                            selector.where(capControlAreaTable["areaid"]==dynamicCCAreaTable["areaid"] &&
+                                           capControlAreaTable["substationbusid"] == areaId);
+                        }
+                        else
+                            selector.where(capControlAreaTable["areaid"]==dynamicCCAreaTable["areaid"]);
+
+
+                        if ( _CC_DEBUG & CC_DEBUG_DATABASE )
+                        {
+                            CtiLockGuard<CtiLogger> logger_guard(dout);
+                            dout << CtiTime() << " - " << selector.asString().data() << endl;
+                        }
+                        RWDBReader rdr = selector.reader(conn);
+
+                        while ( rdr() )
+                        {
+                            long currentAreaId;
+
+                            rdr["areaid"] >> currentAreaId;
+                            CtiCCAreaPtr currentCCArea = paobject_area_map->find(currentAreaId)->second;
+
+                            if (currentCCArea->getPAOId() == currentAreaId)
+                            {
+                                 currentCCArea->setDynamicData(rdr);
+                            }
+
+                        }
+                    }
                     if (areaId > 0) // else, when reloading all, then the reload of subs will be called after areaReload and take care of it.
                     {
                         RWDBSelector selector = db.selector();

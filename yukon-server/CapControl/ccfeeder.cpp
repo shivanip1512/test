@@ -5259,8 +5259,10 @@ void CtiCCFeeder::restoreGuts(RWvistream& istrm)
     >> _currentvoltpointquality
     >> _targetvarvalue
     >> _solution
-    >> _ovUvDisabledFlag;
-
+    >> _ovUvDisabledFlag
+    >> _peakpfsetpoint
+    >> _offpkpfsetpoint
+    >> _controlmethod;
    
     istrm >> numberOfCapBanks;
     for(LONG i=0;i<numberOfCapBanks;i++)
@@ -5338,7 +5340,10 @@ void CtiCCFeeder::saveGuts(RWvostream& ostrm ) const
     << _currentvoltpointquality
     << _targetvarvalue
     << _solution
-    << _ovUvDisabledFlag;
+    << _ovUvDisabledFlag
+    << _peakpfsetpoint
+    << _offpkpfsetpoint
+    << _controlmethod;
 
     ostrm << _cccapbanks.size();
     for(LONG i=0;i<_cccapbanks.size();i++)

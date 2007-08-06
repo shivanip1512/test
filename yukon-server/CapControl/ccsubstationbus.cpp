@@ -7989,6 +7989,9 @@ void CtiCCSubstationBus::restoreGuts(RWvistream& istrm)
     >> _targetvarvalue
     >> _solution
     >> _ovUvDisabledFlag
+    >> _peakpfsetpoint
+    >> _offpkpfsetpoint
+    >> _controlmethod
     >> _ccfeeders;
 
     _lastcurrentvarpointupdatetime = CtiTime(tempTime2);
@@ -8083,6 +8086,9 @@ void CtiCCSubstationBus::saveGuts(RWvostream& ostrm ) const
     << _targetvarvalue
     << _solution
     << _ovUvDisabledFlag
+    << _peakpfsetpoint
+    << _offpkpfsetpoint
+    << _controlmethod
     << _ccfeeders;
 }
 
