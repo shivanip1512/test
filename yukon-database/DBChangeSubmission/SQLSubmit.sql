@@ -12,3 +12,7 @@ insert into yukonroleproperty values (-100106,-1001, 'Feeder Last Update Timesta
 insert into yukonroleproperty values (-100203,-1002, 'CapBank Last Update Timestamp', 'true', 'is last update timstamp shown for capbanks');
 update yukonroleproperty set DefaultValue = 'false' where rolepropertyid = -100008;
 update yukonroleproperty set DefaultValue = 'false' where rolepropertyid = -100007;
+
+
+/* Needed in 3.4.6, 3.5, and Head  8-6-7*/
+insert into yukonroleproperty values (-100105,-1001, 'Target', 'true', 'is target stat displayed');
