@@ -1068,9 +1068,11 @@ void CtiLoadManager::pointDataMsg( long pointID, double value, unsigned quality,
             if( currentTrigger->getPointId() == pointID )
             {
                 string text = ("");
+                bool isNewData = false;
                 string additional = ("");
                 if( timestamp > currentTrigger->getLastPointValueTimestamp() )
                 {
+                    isNewData = true;
                     currentTrigger->setLastPointValueTimestamp(timestamp);
                     currentControlArea->setNewPointDataReceivedFlag(TRUE);
                     if( _LM_POINT_EVENT_LOGGING &&
@@ -1094,8 +1096,7 @@ void CtiLoadManager::pointDataMsg( long pointID, double value, unsigned quality,
                 if( (stringCompareIgnoreCase(currentTrigger->getProjectionType(), CtiLMControlAreaTrigger::NoneProjectionType) && stringCompareIgnoreCase(currentTrigger->getProjectionType(), "(none)"))/*"(none)" is a hack*/ &&
                     stringCompareIgnoreCase(currentTrigger->getTriggerType(), CtiLMControlAreaTrigger::StatusTriggerType) )
                 {//This IS supposed to be != so don't add a ! at the beginning like the other compareTo calls!!!!!!!!!!!
-                    if( quality != NonUpdatedQuality &&
-                        currentControlArea->getNewPointDataReceivedFlag() )
+                    if( quality != NonUpdatedQuality && isNewData )
                     {
                         if( currentTrigger->getProjectionPointEntriesQueue().size() < currentTrigger->getProjectionPoints() )
                         {//first reading plug in multiple copies
