@@ -26,7 +26,10 @@ public class FormattedBlockValSyntaxBase extends FormattedBlockValSyntax{
         
         StringBuffer value = new StringBuffer();
         for (int i = 0; i < syntaxItem.length; i++) {
-            appendField(value, block.getField(syntaxItem[i]), separator);
+        	if( i == syntaxItem.length-1)	//no separator on last item
+        		appendField(value, block.getField(syntaxItem[i]), "");
+        	else
+        		appendField(value, block.getField(syntaxItem[i]), separator);
         }
         return value.toString();
     }
