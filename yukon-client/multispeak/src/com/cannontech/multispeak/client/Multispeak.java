@@ -1256,23 +1256,27 @@ public class Multispeak implements MessageListener {
 		switch (paoAlias) {
 			case MultispeakVendor.SERVICE_LOCATION_PAONAME:
 		        paoName = mspServiceLocation.getObjectID();
+		        CTILogger.info("Get YukonPaobject by ServiceLocation.ObjectID (" + paoName + ").");
 		        return deviceDao.getLiteYukonPaobjectByDeviceName(paoName);
 		        
 			case MultispeakVendor.ACCOUNT_NUMBER_PAONAME:
 		        paoName = mspServiceLocation.getAccountNumber();
+		        CTILogger.info("Get YukonPaobject by ServiceLocation.AccountNumber (" + paoName + ").");
 		        return deviceDao.getLiteYukonPaobjectByDeviceName(paoName);
 				
 			case MultispeakVendor.CUSTOMER_PAONAME:
 		        paoName = mspServiceLocation.getCustID();
+		        CTILogger.info("Get YukonPaobject by ServiceLocation.CustID (" + paoName + ").");
 		        return deviceDao.getLiteYukonPaobjectByDeviceName(paoName);
 				
 			case MultispeakVendor.EA_LOCATION_PAONAME:
 		        if( mspServiceLocation.getNetwork() != null && mspServiceLocation.getNetwork().getEaLoc() != null) {
 		        	paoName = mspServiceLocation.getNetwork().getEaLoc().getName();
+		        	CTILogger.info("Get YukonPaobject by ServiceLocation.Network.EALoc.Name (" + paoName + ").");
 		        	return deviceDao.getLiteYukonPaobjectByDeviceName(paoName);
 		        }
 				return null;
-				
+
 			default:
 			{ // lookup by meter number
 		        //lookup meter by servicelocation
