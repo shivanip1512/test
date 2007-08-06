@@ -3,6 +3,7 @@ package com.cannontech.yukon.cbc;
 public class CBCArea extends StreamableCapObject {
 
     private Boolean disableFlag;
+    private Boolean ovUvDisabledFlag;
     private String paoDescription;
     private String paoType;
     private String paoName;
@@ -86,5 +87,13 @@ public class CBCArea extends StreamableCapObject {
         copy.setDisableFlag(getDisableFlag());
         return copy;
     }
+
+	public Boolean getOvUvDisabledFlag() {
+		return ovUvDisabledFlag;
+	}
+
+	public void setOvUvDisabledFlag(Boolean ovUvDisabledFlag) {
+		this.ovUvDisabledFlag = ovUvDisabledFlag;
+	}
 
 }

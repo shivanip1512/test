@@ -141,6 +141,9 @@ public void restoreGuts(Object obj, com.roguewave.vsj.VirtualInputStream vstr, c
 	subBus.setOvUvDisabledFlag( 
 			((int)vstr.extractUnsignedInt() == 1)
 			? new Boolean(true) : new Boolean(false) );
+    subBus.setPeakPFSetPoint(new Double( vstr.extractDouble() ));
+    subBus.setOffpeakPFSetPoint(new Double( vstr.extractDouble() ));
+    subBus.setControlmethod((String) vstr.restoreObject( SimpleMappings.CString ));
 	subBus.setCcFeeders( VectorExtract.extractVector(vstr, polystr));
 }
 /**
@@ -238,6 +241,9 @@ public void saveGuts(Object obj, com.roguewave.vsj.VirtualOutputStream vstr, com
 	vstr.insertUnsignedInt( 
 			(subBus.getOvUvDisabledFlag().booleanValue() == true)
 			? 1 : 0 );
-	VectorInsert.insertVector(subBus.getCcFeeders(), vstr, polystr);
+    vstr.insertDouble(subBus.getPeakPFSetPoint());
+    vstr.insertDouble(subBus.getOffpeakPFSetPoint());
+    vstr.saveObject(subBus.getControlmethod(), SimpleMappings.CString);
+		VectorInsert.insertVector(subBus.getCcFeeders(), vstr, polystr);
 }
 }

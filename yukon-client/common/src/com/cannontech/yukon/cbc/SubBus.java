@@ -57,7 +57,10 @@ public class SubBus extends StreamableCapObject implements
     // should only contain objects of type Feeder
     private java.util.Vector ccFeeders = null;
     private Boolean switchOverStatus = null;
-
+    private Double peakPFSetPoint = new Double(100.0);
+    private Double offpeakPFSetPoint = new Double(100.0);
+    private String controlmethod = null;
+    
     /**
      * constructor comment.
      */
@@ -680,6 +683,30 @@ public class SubBus extends StreamableCapObject implements
 
 	public void setOvUvDisabledFlag(Boolean ovUvDisabledFlag) {
 		this.ovUvDisabledFlag = ovUvDisabledFlag;
+	}
+
+    public Double getOffpeakPFSetPoint() {
+        return offpeakPFSetPoint;
+    }
+
+    public void setOffpeakPFSetPoint(Double offpeakPFSetting) {
+        this.offpeakPFSetPoint = offpeakPFSetting;
+    }
+
+    public Double getPeakPFSetPoint() {
+        return peakPFSetPoint;
+    }
+
+    public void setPeakPFSetPoint(Double peakPFSetting) {
+        this.peakPFSetPoint = peakPFSetting;
+    }
+
+	public String getControlmethod() {
+		return controlmethod;
+	}
+
+	public void setControlmethod(String controlmethod) {
+		this.controlmethod = controlmethod;
 	}
 
 }

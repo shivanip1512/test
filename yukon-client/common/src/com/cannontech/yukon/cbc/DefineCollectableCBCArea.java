@@ -65,6 +65,8 @@ public class DefineCollectableCBCArea extends
         area.setPaoDescription((String) vstr.restoreObject(SimpleMappings.CString));
         area.setDisableFlag(((int) vstr.extractUnsignedInt() == 1) ? new Boolean(true)
                 : new Boolean(false));
+        area.setOvUvDisabledFlag(((int) vstr.extractUnsignedInt() == 1) ? new Boolean(true)
+        : new Boolean(false));
 
     }
 
@@ -85,6 +87,7 @@ public class DefineCollectableCBCArea extends
         vstr.saveObject(area.getPaoType(), SimpleMappings.CString);
         vstr.saveObject(area.getPaoDescription(), SimpleMappings.CString);
         vstr.insertUnsignedInt((area.getDisableFlag().booleanValue()) ? 1 : 0);
+        vstr.insertUnsignedInt((area.getOvUvDisabledFlag().booleanValue()) ? 1 : 0);
 
     }
 }

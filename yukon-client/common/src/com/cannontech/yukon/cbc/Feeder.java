@@ -54,7 +54,10 @@ public class Feeder extends StreamableCapObject implements PointQualityCheckable
     private Integer currentvoltpointquality = null;
     private Double targetvarvalue = null;
     private String solution = null;
-        
+    private Double peakPFSetPoint = new Double(100.0);
+    private Double offpeakPFSetPoint = new Double(100.0);
+    private String controlmethod = null;
+    
 	//should only contain objects of type CapBankDevice
 	private java.util.Vector ccCapBanks = null;
 	
@@ -637,4 +640,25 @@ public void setVarValueBeforeControl(java.lang.Double newVarValueBeforeControl) 
 		this.ovUvDisabledFlag = ovUvDisabledFlag;
 	}
 
+    public Double getOffpeakPFSetPoint() {
+        return offpeakPFSetPoint;
+    }
+
+    public void setOffpeakPFSetPoint(Double offpeakPFSetting) {
+        this.offpeakPFSetPoint = offpeakPFSetting;
+    }
+
+    public Double getPeakPFSetPoint() {
+        return peakPFSetPoint;
+    }
+
+    public void setPeakPFSetPoint(Double peakPFSetting) {
+        this.peakPFSetPoint = peakPFSetting;
+    }
+	public String getControlmethod() {
+		return controlmethod;
+	}
+	public void setControlmethod(String controlmethod) {
+		this.controlmethod = controlmethod;
+	}
 }

@@ -115,7 +115,8 @@ public void restoreGuts(Object obj, com.roguewave.vsj.VirtualInputStream vstr, c
 	feeder.setOvUvDisabledFlag(
 			((int)vstr.extractUnsignedInt() == 1)
 			? new Boolean(true) : new Boolean(false));
-    feeder.setCcCapBanks(VectorExtract.extractVector(vstr,polystr));
+	feeder.setControlmethod((String) vstr.restoreObject( SimpleMappings.CString ));
+	feeder.setCcCapBanks(VectorExtract.extractVector(vstr,polystr));
 }
 
 /**
@@ -189,7 +190,8 @@ public void saveGuts(Object obj, com.roguewave.vsj.VirtualOutputStream vstr, com
 	vstr.insertUnsignedInt( 
 			(feeder.getOvUvDisabledFlag().booleanValue() == true)
 			? 1 : 0 );
-
+	vstr.saveObject(feeder.getControlmethod(), SimpleMappings.CString);
+	
 
 	/*	we have to do this manually because the new Rogue Wave object in the server
 			doesn't stream correctly */
