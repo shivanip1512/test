@@ -41,9 +41,10 @@ public class OutageBlock implements Block{
         if( syntaxItem.equals(SyntaxItem.METER_NUMBER))
             return meterNumber;
         
-        else if (syntaxItem.equals(SyntaxItem.BLINK_COUNT))
+        else if (syntaxItem.equals(SyntaxItem.BLINK_COUNT)) {
             if( blinkCount != null)
                 return String.valueOf(blinkCount);
+        }
             
         else if (syntaxItem.equals(SyntaxItem.BLINK_COUNT_DATETIME)){
             if( blinkCountDateTime != null) {
@@ -52,7 +53,7 @@ public class OutageBlock implements Block{
             }
         }
         else {
-            CTILogger.error("SyntaxItem: " + syntaxItem + " - Not Valid for LoadBlock");
+            CTILogger.error("SyntaxItem: " + syntaxItem + " - Not Valid for OutageBlock");
         }
         
         return "";
@@ -62,7 +63,6 @@ public class OutageBlock implements Block{
         
         //TODO - Probably shouldn't set this everytime...need to find a better way.
         meterNumber = meter.getMeterNumber();
-        hasData = true;
     }
 
     public void populate(Meter meter, PointValueHolder pointValue) {
@@ -77,6 +77,7 @@ public class OutageBlock implements Block{
             if( pointValue.getId() == litePoint.getPointID()){
                 blinkCount = pointValue.getValue();
                 blinkCountDateTime = pointValue.getPointDataTimeStamp();
+                hasData = true;
             }
         } catch (IllegalArgumentException e) {}
     }
