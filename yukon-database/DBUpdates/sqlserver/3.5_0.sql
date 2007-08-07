@@ -3,6 +3,13 @@
 /******************************************/
 
 /*3.4 changes that may have been missed*/
+
+/* Delete roles that are no longer in use. */
+delete from YukonGroupRole 		where RoleID in (-204,-205,-301,-302)
+delete from YukonRoleProperty 	where RoleID in (-204,-205,-301,-302)
+delete from YukonUserRole 		where RoleID in (-204,-205,-301,-302)
+delete from YukonRole 			where RoleID in (-204,-205,-301,-302)
+
 /* @error ignore-begin */
 insert into YukonRoleProperty values(-100105, -1001, 'Target', 'true', 'display target settings');
 go
