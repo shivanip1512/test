@@ -14,14 +14,15 @@
 
 <script language="JavaScript">
 
-	function forwardToCsrHome(id) {
+	function forwardToCsrHome(row, id) {
+		$('deviceTable').removeClassName('activeResultsTable');
 		window.location = "${csrHomeUrl}?deviceId=" + id;
 	}
 
 	function clearFilter() {
 
-		<c:forEach var="field" items="${fields}">
-			$('${field.name}').value = '';
+		<c:forEach var="filter" items="${filterByList}">
+			$('${filter.name}').value = '';
 		</c:forEach>
 		
 		$('filterForm').submit();
@@ -74,9 +75,9 @@
         
         
         <div>
-        <c:forEach var="field" items="${fields}">
-            <div style="width: 21em; text-align: right; float:left; margin-bottom: 5px;margin-right: 5px;">${field.csrString}:&nbsp;<input style="width: 10em" type="text" id="${field.name}" name="${field.name}" value="${param[field.name]}"></input></div>
-        </c:forEach>
+	        <c:forEach var="filter" items="${filterByList}">
+	            <div style="width: 21em; text-align: right; float:left; margin-bottom: 5px;margin-right: 5px;">${filter.name}:&nbsp;<input style="width: 10em" type="text" id="${filter.name}" name="${filter.name}" value="${filter.filterValue}"></input></div>
+	        </c:forEach>
         </div>
         <div style="clear:both"></div>
         
@@ -89,25 +90,25 @@
     <br>
 			
 	<c:if test="${results.hitCount > 0}">
-		<amr:searchNavigation orderBy="${orderBy}" results="${results}" filterByList="${filterByList}"></amr:searchNavigation>
+		<amr:searchNavigation 
+			orderBy="${orderBy}" 
+			results="${results}" 
+			filterByList="${filterByList}">
+		</amr:searchNavigation>
 		
-		<table class="resultsTable">
+		<table id="deviceTable" class="resultsTable activeResultsTable">
 		  <tr>
 		  	<th>
 				Name
 		  	</th>
 	
 			<!-- Output column headers -->
-			<c:forEach var="field" items="${fields}">
+			<c:forEach var="field" items="${orderByFields}">
 			    <th>
 			    	<amr:sortByLink 
-			    		fieldName="${field.name}" 
-			    		startIndex="${results.startIndex}" 
-			    		count="${results.count}" 
-			    		orderByField="${orderBy.field}" 
-			    		orderByDesc="${orderBy.descending}" 
-			    		selected="${orderBy.field == field.name}" 
-			    		arrow="true" 
+			    		field="${field}" 
+			    		results="${results}" 
+			    		orderBy="${orderBy}" 
 			    		filterByList="${filterByList}">
 			    			${field.csrString}
 			    	</amr:sortByLink>
@@ -117,7 +118,7 @@
 			</tr>
 		    
 		    <c:forEach var="device" items="${results.resultList}">
-			  <tr class="<tags:alternateRow odd="" even="altRow"/>" onclick="javascript:forwardToCsrHome(${device.deviceId})" onmouseover="highLightRow(this)" onmouseout="unHighLightRow(this)">
+			  <tr class="<tags:alternateRow odd="" even="altRow"/>" onclick="javascript:forwardToCsrHome(this, ${device.deviceId})" onmouseover="highLightRow(this)" onmouseout="unHighLightRow(this)">
 			    <td>
 			    	<cti:deviceName device="${device}"/>&nbsp;
 			    </td>
@@ -140,7 +141,11 @@
 		    </c:forEach>
 		</table>
 	
-		<amr:searchNavigation orderBy="${orderBy}" results="${results}" filterByList="${filterByList}"></amr:searchNavigation>
+		<amr:searchNavigation 
+			orderBy="${orderBy}" 
+			results="${results}" 
+			filterByList="${filterByList}">
+		</amr:searchNavigation>
 
 	</c:if>
 
