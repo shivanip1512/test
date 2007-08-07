@@ -59,8 +59,6 @@ void CCU711::ReceiveMore(unsigned char ReadBuffer[], int counter)
     int setccuNumber = 0;
 	SET_FOREGROUND_WHITE;
 	DecodeCommand(ReadBuffer);
-	//DecodePreamble(setccuNumber);
-	//InsertWord(INPUT, ReadBuffer, 6);      //  CHANGE THIS 6 TO SOMETHING ELSE !!!  (a counter passed in from serverNexus)
 
     _messageData[10]=ReadBuffer[10];   
     _messageData[11]=ReadBuffer[11];                              
@@ -69,10 +67,12 @@ void CCU711::ReceiveMore(unsigned char ReadBuffer[], int counter)
     _messageData[14]=ReadBuffer[14];
     _messageData[15]=ReadBuffer[15];
     _messageData[16]=ReadBuffer[16];
-    int Ctr = 7;
+    _messageData[17]=ReadBuffer[17];
+    _messageData[18]=ReadBuffer[18];
+    int Ctr = 3;
     int dummyNum = 0;
-    subCCU710.ReceiveMsg(_messageData + 7, dummyNum);
-    _mctNumber = subCCU710.ReceiveMore(_messageData + 7, dummyNum, Ctr);
+    subCCU710.ReceiveMsg((_messageData + 7), dummyNum);
+    _mctNumber = subCCU710.ReceiveMore((_messageData + 7), dummyNum, Ctr);
 }
 
 
@@ -82,7 +82,7 @@ void CCU711::PrintInput()
 
 	TranslateInfo(INCOMING, printMsg, printCmd, printPre, printWrd, printFnc);
 
-	cout<<"Msg: "<<printMsg<<"    Cmd:         "<<printCmd;
+	cout<<"Msg: "<<printMsg<<"    Cmd: "<<printCmd<<"    ";
     subCCU710.PrintInput();
 }
 
@@ -146,7 +146,7 @@ void CCU711::PrintMessage(){
 
     TranslateInfo(OUTGOING, printMsg, printCmd, printPre, printWrd, printFnc);
 
-    cout<<"Msg: "<<printMsg<<"     Cmd:"<<printCmd;
+    cout<<"Msg: "<<printMsg<<"     Cmd:          "<<printCmd;
     subCCU710.PrintMessage();
 }
 
@@ -271,7 +271,7 @@ void CCU711::CreateMessage(int MsgType, int WrdFnc, unsigned char Data[], int cc
 			_outmessageData[Ctr++] = HIBYTE (CRC);
 			_outmessageData[Ctr++] = LOBYTE (CRC);
 		}
-		else if(WrdFnc==DEFAULT){ 
+		else if(_commandType==DTRAN){ 
 			_outmessageData[Ctr++] = 0x7e;
 			_outmessageData[Ctr++] = Address;   //  slave address
 			_outmessageData[Ctr++] = Frame;     //  control
@@ -291,9 +291,6 @@ void CCU711::CreateMessage(int MsgType, int WrdFnc, unsigned char Data[], int cc
 			_outmessageData[Ctr++] = 0x00;     // process status items
 			_outmessageData[Ctr++] = 0x00;     //    "   "									
 	
-
-            int setccuNumber;  // delete this from param list!!!
-            // ccuNumber = 2;
             // Use a 710 to form the content in the message
             subCCU710.CreateMessage(FEEDEROP, READENERGY, _mctNumber, ccuNumber);
             unsigned char SendData[300];
@@ -344,7 +341,7 @@ void CCU711::DecodeCommand(unsigned char Data[]){
 	_messageData[7]=Data[7];
 	_messageData[8]=Data[8];
 	_messageData[9]=Data[9];
-	if((Data[1] & 0x26)==0x26) {
+	if((Data[5] & 0x26)==0x26) {
 		_commandType = DTRAN;
 	}
 }

@@ -62,6 +62,7 @@ int CCU710::ReceiveMsg(unsigned char Data[], int &setccuNumber)
         _messageData[1] = Data[1];
         _messageData[2] = Data[2];
         _messageData[3] = Data[3];
+
         _indexOfEnd = 4;           //   this may cause a PROBLEM  SINCE 710 should be 3 bytes !!!
         _bytesToFollow = DecodePreamble(setccuNumber);   
     }
@@ -107,19 +108,18 @@ int CCU710::ReceiveMsg(unsigned char Data[], int &setccuNumber)
 //Listen for and store an incoming message
 int CCU710::ReceiveMore(unsigned char Data[], int &setmctNumber, int counter)
 {
-    _messageData[counter++]=Data[counter++];
-    _messageData[counter++]=Data[counter++];
-    _messageData[counter++]=Data[counter++];
-    _messageData[counter++]=Data[counter++];
-    _messageData[counter++]=Data[counter++];
-    _messageData[counter++]=Data[counter++];
+    _messageData[counter]=Data[counter++];
+    _messageData[counter]=Data[counter++];
+    _messageData[counter]=Data[counter++];
+    _messageData[counter]=Data[counter++];
+    _messageData[counter]=Data[counter++];
+    _messageData[counter]=Data[counter++];
 
     int WordFunction;
     int InsertMore = 0;
     int WTF = 0;
-    //_messageData[3]=Data[0];
     int WordType = DecodeDefinition();
-    WordFunction = DecodeFunction(WordType, Data);
+    WordFunction = DecodeFunction(WordType);
     setmctNumber = DecodeMctAddress();
     WTF = DecodeWTF(WordType, Data);
     //  If there is a 'c' word following the 'b' word
@@ -368,14 +368,14 @@ int CCU710::DecodeDefinition(){
 }
 
 
-int CCU710::DecodeFunction(int WordType, unsigned char Data[]){
+int CCU710::DecodeFunction(int WordType){
 	char FunctionType = 0;
 	if(WordType== B_WORD) 
     {
 		//   check to see what function is specified
-		if((_messageData[15] & 0xc) == 0x0c)       {  FunctionType = FUNCACK;     }     //  Function with acknowledge
-		else if((_messageData[15] & 0x04) == 0x04) {  FunctionType = READ;        }     //  Read
-		else if((_messageData[15] & 0x00) == 0x00) {  FunctionType = WRITE;       }     //  Write
+		if((_messageData[8] & 0x0c) == 0x0c)      {  FunctionType = FUNCACK;     }     //  Function with acknowledge
+		else if((_messageData[8] & 0x04) == 0x04) {  FunctionType = READ;        }     //  Read
+		else if((_messageData[8] & 0x00) == 0x00) {  FunctionType = WRITE;       }     //  Write
 	}
 		return FunctionType;
 }

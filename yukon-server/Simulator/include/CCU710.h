@@ -73,7 +73,7 @@ class CCU710{
 		CTINEXUS * getNewSocket();
         int DecodePreamble(int &setccuNumber);
         int DecodeDefinition();
-        int DecodeFunction(int WordType, unsigned char Data[]);
+        int DecodeFunction(int WordType);
         int DecodeWTF(int WordType, unsigned char Data[]);
         unsigned char getFrame();
         void CreateMessage(int MsgType, int WrdFnc, int mctNumber, int ccuNumber);
