@@ -265,6 +265,37 @@ DOUBLE CtiCCSubstationBus::getIWControl() const
 {
     return _iWControl;
 }
+
+/*---------------------------------------------------------------------------
+    get UsePhaseData flag
+
+    Returns the usePhaseData flag of the substation
+---------------------------------------------------------------------------*/
+BOOL CtiCCSubstationBus::getUsePhaseData() const
+{
+    return _usePhaseData;
+}
+
+/*---------------------------------------------------------------------------
+    getPhaseBid
+
+    Returns the getPhaseB pointid of the substation
+---------------------------------------------------------------------------*/
+LONG CtiCCSubstationBus::getPhaseBId() const
+{
+    return _phaseBid;
+}
+/*---------------------------------------------------------------------------
+    getPhaseCid
+
+    Returns the getPhaseC pointid of the substation
+---------------------------------------------------------------------------*/
+LONG CtiCCSubstationBus::getPhaseCId() const
+{
+    return _phaseCid;
+}
+
+
 /*---------------------------------------------------------------------------
     getPhaseAValue
 
@@ -1262,6 +1293,37 @@ CtiCCSubstationBus& CtiCCSubstationBus::setIVControl(DOUBLE value)
 CtiCCSubstationBus& CtiCCSubstationBus::setIWControl(DOUBLE value)
 {
     _iWControl = value;
+    return *this;
+}
+/*---------------------------------------------------------------------------
+    setUsePhaseData flag 
+        
+    Sets the UsePhaseData flag  of the substation
+---------------------------------------------------------------------------*/
+CtiCCSubstationBus& CtiCCSubstationBus::setUsePhaseData(BOOL flag)
+{
+    _usePhaseData = flag;
+    return *this;
+}
+/*---------------------------------------------------------------------------
+    setPhaseBid 
+        
+    Sets the PhaseB pointid  of the substation
+---------------------------------------------------------------------------*/
+CtiCCSubstationBus& CtiCCSubstationBus::setPhaseBId(LONG pointid)
+{
+    _phaseBid = pointid;
+    return *this;
+}
+
+/*---------------------------------------------------------------------------
+    setPhaseCid 
+        
+    Sets the PhaseC pointid  of the substation
+---------------------------------------------------------------------------*/
+CtiCCSubstationBus& CtiCCSubstationBus::setPhaseCId(LONG pointid)
+{
+    _phaseCid = pointid;
     return *this;
 }
 
@@ -8040,6 +8102,9 @@ void CtiCCSubstationBus::restoreGuts(RWvistream& istrm)
     >> _peakpfsetpoint
     >> _offpkpfsetpoint
     >> _controlmethod
+    >> _phaseAvalue
+    >> _phaseBvalue
+    >> _phaseCvalue
     >> _ccfeeders;
 
     _lastcurrentvarpointupdatetime = CtiTime(tempTime2);
@@ -8137,6 +8202,9 @@ void CtiCCSubstationBus::saveGuts(RWvostream& ostrm ) const
     << _peakpfsetpoint
     << _offpkpfsetpoint
     << _controlmethod
+    << _phaseAvalue
+    << _phaseBvalue
+    << _phaseCvalue
     << _ccfeeders;
 }
 
@@ -8255,6 +8323,9 @@ CtiCCSubstationBus& CtiCCSubstationBus::operator=(const CtiCCSubstationBus& righ
         _iVControl = right._iVControl;
         _iWControl = right._iWControl;
 
+        _usePhaseData = right._usePhaseData;
+        _phaseBid = right._phaseBid;
+        _phaseCid = right._phaseCid;
         _phaseAvalue = right._phaseAvalue;
         _phaseBvalue = right._phaseBvalue;
         _phaseCvalue = right._phaseCvalue;
@@ -8325,7 +8396,11 @@ void CtiCCSubstationBus::restore(RWDBReader& rdr)
     rdr["multiMonitorControl"] >> tempBoolString;
     std::transform(tempBoolString.begin(), tempBoolString.end(), tempBoolString.begin(), tolower);
     _multiMonitorFlag = (tempBoolString=="y"?TRUE:FALSE);
-
+    rdr["usephasedata"] >> tempBoolString;
+    std::transform(tempBoolString.begin(), tempBoolString.end(), tempBoolString.begin(), tolower);
+    _usePhaseData = (tempBoolString=="y"?TRUE:FALSE);
+    rdr["phaseb"] >> _phaseBid;
+    rdr["phasec"] >> _phaseCid;
 
 
     _parentId =  0;

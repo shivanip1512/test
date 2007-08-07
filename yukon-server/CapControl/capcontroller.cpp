@@ -1371,6 +1371,15 @@ void CtiCapController::registerForPoints(const CtiCCSubstationBus_vec& subBuses)
             {
                 regMsg->insert(currentSubstationBus->getSwitchOverPointId());
             }
+            if (currentSubstationBus->getPhaseBId() > 0) 
+            {
+                regMsg->insert(currentSubstationBus->getPhaseBId());
+            }
+            if (currentSubstationBus->getPhaseCId() > 0) 
+            {
+                regMsg->insert(currentSubstationBus->getPhaseCId());
+            }
+
             
             
             CtiFeeder_vec &ccFeeders = currentSubstationBus->getCCFeeders();
@@ -1406,7 +1415,16 @@ void CtiCapController::registerForPoints(const CtiCCSubstationBus_vec& subBuses)
                 if (currentFeeder->getEstimatedPowerFactorPointId() > 0)
                 {
                     regMsg->insert(currentFeeder->getEstimatedPowerFactorPointId());
-                }                
+                }
+
+                if (currentFeeder->getPhaseBId() > 0) 
+                 {
+                     regMsg->insert(currentFeeder->getPhaseBId());
+                 }
+                 if (currentFeeder->getPhaseCId() > 0) 
+                 {
+                     regMsg->insert(currentFeeder->getPhaseCId());
+                 }
 
                 CtiCCCapBank_SVector& ccCapBanks = currentFeeder->getCCCapBanks();
 
@@ -1985,6 +2003,24 @@ void CtiCapController::pointDataMsg( long pointID, double value, unsigned qualit
                         currentSubstationBus->setBusUpdatedFlag(TRUE);
                         found = TRUE;
                     }
+                    else if ((currentSubstationBus->getPhaseBId() == pointID ||
+                             currentSubstationBus->getPhaseCId() == pointID ) &&
+                             currentSubstationBus->getUsePhaseData())
+                    {
+                        if( _CC_DEBUG & CC_DEBUG_RIDICULOUS )
+                        {
+                            CtiLockGuard<CtiLogger> logger_guard(dout);
+                            dout << CtiTime() << " - 3-Phase DEVELOPMENT NEEDED! " << pointID << " on SUB: " << currentSubstationBus->getPAOName() << endl;
+                        }
+                        if (currentSubstationBus->getPhaseBId() == pointID) 
+                        {
+                            currentSubstationBus->setPhaseBValue(value);
+                        }
+                        if (currentSubstationBus->getPhaseCId() == pointID) 
+                        {
+                            currentSubstationBus->setPhaseCValue(value);
+                        }
+                    }
                     else if (currentSubstationBus->getEstimatedPowerFactorPointId()  == pointID|| 
                              currentSubstationBus->getEstimatedVarLoadPointId()  == pointID||
                              currentSubstationBus->getDailyOperationsAnalogPointId()  == pointID||
@@ -2156,6 +2192,25 @@ void CtiCapController::pointDataMsg( long pointID, double value, unsigned qualit
                             found = TRUE;
                            // break;
                         }
+                        else if ((currentFeeder->getPhaseBId() == pointID ||
+                                 currentFeeder->getPhaseCId() == pointID ) &&
+                                 currentFeeder->getUsePhaseData())
+                        {
+                            if( _CC_DEBUG & CC_DEBUG_RIDICULOUS )
+                            {
+                                CtiLockGuard<CtiLogger> logger_guard(dout);
+                                dout << CtiTime() << " - 3-Phase DEVELOPMENT NEEDED! " << pointID << " on FEEDER: " << currentFeeder->getPAOName() << endl;
+                            }
+                            if (currentFeeder->getPhaseBId() == pointID) 
+                            {
+                                currentFeeder->setPhaseBValue(value);
+                            }
+                            if (currentFeeder->getPhaseCId() == pointID) 
+                            {
+                                currentFeeder->setPhaseCValue(value);
+                            }
+                        }
+
                     }
                 }
             }

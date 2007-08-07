@@ -187,6 +187,9 @@ RWDECLARE_COLLECTABLE( CtiCCFeeder )
     LONG getIWCount() const;
     DOUBLE getIVControl() const;
     DOUBLE getIWControl() const;
+    BOOL getUsePhaseData() const;
+    LONG getPhaseBId() const;
+    LONG getPhaseCId() const;
     DOUBLE getPhaseAValue() const;
     DOUBLE getPhaseBValue() const;
     DOUBLE getPhaseCValue() const;
@@ -288,6 +291,9 @@ RWDECLARE_COLLECTABLE( CtiCCFeeder )
     CtiCCFeeder& setIWCount(LONG value);
     CtiCCFeeder& setIVControl(DOUBLE value);
     CtiCCFeeder& setIWControl(DOUBLE value);
+    CtiCCFeeder& setUsePhaseData(BOOL flag);
+    CtiCCFeeder& setPhaseBId(LONG pointid);
+    CtiCCFeeder& setPhaseCId(LONG pointid);
     CtiCCFeeder& setPhaseAValue(DOUBLE value);
     CtiCCFeeder& setPhaseBValue(DOUBLE value);
     CtiCCFeeder& setPhaseCValue(DOUBLE value);
@@ -476,6 +482,10 @@ private:
 
     DOUBLE _iVControl;
     DOUBLE _iWControl;
+
+    BOOL _usePhaseData;
+    LONG _phaseBid;
+    LONG _phaseCid;
 
     DOUBLE _phaseAvalue;
     DOUBLE _phaseBvalue;

@@ -164,6 +164,9 @@ RWDECLARE_COLLECTABLE( CtiCCSubstationBus )
     LONG getIWCount() const;
     DOUBLE getIVControl() const;
     DOUBLE getIWControl() const;
+    BOOL getUsePhaseData() const;
+    LONG getPhaseBId() const;
+    LONG getPhaseCId() const;
     DOUBLE getPhaseAValue() const;
     DOUBLE getPhaseBValue() const;
     DOUBLE getPhaseCValue() const;
@@ -266,6 +269,9 @@ RWDECLARE_COLLECTABLE( CtiCCSubstationBus )
     CtiCCSubstationBus& setIWCount(LONG value);
     CtiCCSubstationBus& setIVControl(DOUBLE value);
     CtiCCSubstationBus& setIWControl(DOUBLE value);
+    CtiCCSubstationBus& setUsePhaseData(BOOL flag);
+    CtiCCSubstationBus& setPhaseBId(LONG pointid);
+    CtiCCSubstationBus& setPhaseCId(LONG pointid);
     CtiCCSubstationBus& setPhaseAValue(DOUBLE value);
     CtiCCSubstationBus& setPhaseBValue(DOUBLE value);
     CtiCCSubstationBus& setPhaseCValue(DOUBLE value);
@@ -504,6 +510,10 @@ RWDECLARE_COLLECTABLE( CtiCCSubstationBus )
 
     DOUBLE _iVControl;
     DOUBLE _iWControl;
+
+    BOOL _usePhaseData;
+    LONG _phaseBid;
+    LONG _phaseCid;
 
     DOUBLE _phaseAvalue;
     DOUBLE _phaseBvalue;

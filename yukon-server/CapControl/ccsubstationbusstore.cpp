@@ -3327,7 +3327,10 @@ void CtiCCSubstationBusStore::reloadSubBusFromDatabase(long subBusId, map< long,
                         << capControlSubstationBusTable["AltSubID"] 
                         << capControlSubstationBusTable["SwitchPointID"] 
                         << capControlSubstationBusTable["DualBusEnabled"]
-                        << capControlSubstationBusTable["multiMonitorControl"];
+                        << capControlSubstationBusTable["multiMonitorControl"]
+                        << capControlSubstationBusTable["usephasedata"]
+                        << capControlSubstationBusTable["phaseb"]
+                        << capControlSubstationBusTable["phasec"];
                         
                         selector.from(yukonPAObjectTable);
                         selector.from(capControlSubstationBusTable);
@@ -3378,6 +3381,14 @@ void CtiCCSubstationBusStore::reloadSubBusFromDatabase(long subBusId, map< long,
                                 currentCCSubstationBus->getAltDualSubId() != currentCCSubstationBus->getPAOId())
                             {
                                 altsub_sub_idmap->insert(make_pair(currentCCSubstationBus->getAltDualSubId(), currentCCSubstationBus->getPAOId()));
+                            }
+                            if (currentCCSubstationBus->getUsePhaseData()) 
+                            {
+                                if (currentCCSubstationBus->getPhaseBId() > 0)
+                                    pointid_subbus_map->insert(make_pair(currentCCSubstationBus->getPhaseBId(), currentCCSubstationBus));
+                                if (currentCCSubstationBus->getPhaseCId() > 0)
+                                    pointid_subbus_map->insert(make_pair(currentCCSubstationBus->getPhaseCId(), currentCCSubstationBus));
+
                             }
 
                             
@@ -3906,8 +3917,11 @@ void CtiCCSubstationBusStore::reloadFeederFromDatabase(long feederId, map< long,
                         << capControlFeederTable["maplocationid"]
                         //<< capControlFeederTable["strategyid"]
                         << capControlFeederTable["currentvoltloadpointid"]
-                        << capControlFeederTable["multiMonitorControl"];
-
+                        << capControlFeederTable["multiMonitorControl"]
+                        << capControlFeederTable["usephasedata"]
+                        << capControlFeederTable["phaseb"]
+                        << capControlFeederTable["phasec"];
+                        
                         selector.from(yukonPAObjectTable);
                         selector.from(capControlFeederTable);
 
@@ -3950,6 +3964,14 @@ void CtiCCSubstationBusStore::reloadFeederFromDatabase(long feederId, map< long,
                             {
                                 pointid_feeder_map->insert(make_pair(currentCCFeeder->getCurrentVoltLoadPointId(), currentCCFeeder));
                                 currentCCFeeder->getPointIds()->push_back(currentCCFeeder->getCurrentVoltLoadPointId());
+                            }
+                            if (currentCCFeeder->getUsePhaseData()) 
+                            {
+                                if (currentCCFeeder->getPhaseBId() > 0)
+                                    pointid_feeder_map->insert(make_pair(currentCCFeeder->getPhaseBId(), currentCCFeeder));
+                                if (currentCCFeeder->getPhaseCId() > 0)
+                                    pointid_feeder_map->insert(make_pair(currentCCFeeder->getPhaseCId(), currentCCFeeder));
+
                             }
                         } 
                     }

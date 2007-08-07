@@ -557,6 +557,34 @@ DOUBLE CtiCCFeeder::getIWControl() const
 {
     return _iWControl;
 }
+/*---------------------------------------------------------------------------
+    get UsePhaseData flag
+
+    Returns the usePhaseData flag of the feeder
+---------------------------------------------------------------------------*/
+BOOL CtiCCFeeder::getUsePhaseData() const
+{
+    return _usePhaseData;
+}
+
+/*---------------------------------------------------------------------------
+    getPhaseBid
+
+    Returns the getPhaseB pointid of the feeder
+---------------------------------------------------------------------------*/
+LONG CtiCCFeeder::getPhaseBId() const
+{
+    return _phaseBid;
+}
+/*---------------------------------------------------------------------------
+    getPhaseCid
+
+    Returns the getPhaseC pointid of the feeder
+---------------------------------------------------------------------------*/
+LONG CtiCCFeeder::getPhaseCId() const
+{
+    return _phaseCid;
+}
 
 /*---------------------------------------------------------------------------
     getPhaseAValue
@@ -4186,6 +4214,38 @@ CtiCCFeeder& CtiCCFeeder::setIWControl(DOUBLE value)
     _iWControl = value;
     return *this;
 }
+/*---------------------------------------------------------------------------
+    setUsePhaseData flag 
+        
+    Sets the UsePhaseData flag  of the feeder
+---------------------------------------------------------------------------*/
+CtiCCFeeder& CtiCCFeeder::setUsePhaseData(BOOL flag)
+{
+    _usePhaseData = flag;
+    return *this;
+}
+/*---------------------------------------------------------------------------
+    setPhaseBid 
+        
+    Sets the PhaseB pointid  of the feeder
+---------------------------------------------------------------------------*/
+CtiCCFeeder& CtiCCFeeder::setPhaseBId(LONG pointid)
+{
+    _phaseBid = pointid;
+    return *this;
+}
+
+/*---------------------------------------------------------------------------
+    setPhaseCid 
+        
+    Sets the PhaseC pointid  of the feeder
+---------------------------------------------------------------------------*/
+CtiCCFeeder& CtiCCFeeder::setPhaseCId(LONG pointid)
+{
+    _phaseCid = pointid;
+    return *this;
+}
+
 
 /*---------------------------------------------------------------------------
     setPhaseAValue 
@@ -5276,7 +5336,10 @@ void CtiCCFeeder::restoreGuts(RWvistream& istrm)
     >> _ovUvDisabledFlag
     >> _peakpfsetpoint
     >> _offpkpfsetpoint
-    >> _controlmethod;
+    >> _controlmethod
+    >> _phaseAvalue
+    >> _phaseBvalue
+    >> _phaseCvalue;
    
     istrm >> numberOfCapBanks;
     for(LONG i=0;i<numberOfCapBanks;i++)
@@ -5357,7 +5420,10 @@ void CtiCCFeeder::saveGuts(RWvostream& ostrm ) const
     << _ovUvDisabledFlag
     << _peakpfsetpoint
     << _offpkpfsetpoint
-    << _controlmethod;
+    << _controlmethod
+    << _phaseAvalue
+    << _phaseBvalue
+    << _phaseCvalue;
 
     ostrm << _cccapbanks.size();
     for(LONG i=0;i<_cccapbanks.size();i++)
@@ -5459,6 +5525,9 @@ CtiCCFeeder& CtiCCFeeder::operator=(const CtiCCFeeder& right)
         _iVControl = right._iVControl;
         _iWControl = right._iWControl;
 
+        _usePhaseData = right._usePhaseData;
+        _phaseBid = right._phaseBid;
+        _phaseCid = right._phaseCid;
         _phaseAvalue = right._phaseAvalue;
         _phaseBvalue = right._phaseBvalue;
         _phaseCvalue = right._phaseCvalue;
@@ -5529,6 +5598,12 @@ void CtiCCFeeder::restore(RWDBReader& rdr)
     rdr["multiMonitorControl"] >> tempBoolString;
     std::transform(tempBoolString.begin(), tempBoolString.end(), tempBoolString.begin(), tolower);
     _multiMonitorFlag = (tempBoolString=="y"?TRUE:FALSE);
+    rdr["usephasedata"] >> tempBoolString;
+    std::transform(tempBoolString.begin(), tempBoolString.end(), tempBoolString.begin(), tolower);
+    _usePhaseData = (tempBoolString=="y"?TRUE:FALSE);
+    rdr["phaseb"] >> _phaseBid;
+    rdr["phasec"] >> _phaseCid;
+
 
     _strategyId = 0;
     //initialize strategy members
