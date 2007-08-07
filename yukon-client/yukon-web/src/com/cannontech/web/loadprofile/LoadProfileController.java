@@ -160,7 +160,7 @@ public class LoadProfileController extends MultiActionController {
             
             try {
                 Date startDate = TimeUtil.flexibleDateParser(startDateStr, TimeUtil.NO_TIME_MODE.START_OF_DAY, timeZone);
-                Date stopDate = TimeUtil.flexibleDateParser(stopDateStr, TimeUtil.NO_TIME_MODE.END_OF_DAY, timeZone);
+                Date stopDate = TimeUtil.flexibleDateParser(stopDateStr, TimeUtil.NO_TIME_MODE.START_OF_DAY, timeZone);
             
                 SimpleDateFormat format = new SimpleDateFormat("MM/dd/yy");
                 
