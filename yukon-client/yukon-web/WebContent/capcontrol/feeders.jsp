@@ -16,7 +16,6 @@
 <div id="overDiv" style="position:absolute; visibility:hidden; z-index:1000;"></div>
 
 <%
-	
 	String nd = "\"return nd();\"";
 	int subid = cbcSession.getLastSubID();
 	LiteYukonUser user = (LiteYukonUser) session.getAttribute(LoginController.YUKON_USER);			
@@ -30,6 +29,13 @@
 	boolean hasControl = CBCWebUtils.hasControlRights(session);
 	
 %>
+<script type="text/javascript"> 
+	
+	function togglePopup( v ){
+		$(v).toggle();
+	}
+
+</script>
 
 <cti:standardMenu/>
 
@@ -129,9 +135,13 @@ if( subBus != null ) {
 					</a>
 					</td>
 					
-					
-					<td><a type="param1" name="cti_dyn" id="<%=subBus.getCcId()%>">
+					<td><a onmouseover="javascript:togglePopup('subPFPopup_<%=subBus.getCcId()%>')" 
+					       onmouseout="javascript:togglePopup('subPFPopup_<%=subBus.getCcId()%>')"
+						   type="param1" name="cti_dyn" id="<%=subBus.getCcId()%>">
 					<%=CBCUtils.CBC_DISPLAY.getSubBusValueAt(subBus, CBCDisplay.SUB_TARGET_COLUMN) %></a>
+					<div class="ccPFPopup" id="subPFPopup_<%=subBus.getCcId()%>" style="display:none" > 
+					  <span type="param9" name="cti_dyn" id="<%=subBus.getCcId()%>"><%=CBCUtils.CBC_DISPLAY.getSubBusValueAt(subBus, CBCDisplay.SUB_TARGET_POPUP) %></span>
+					</div>
 					</td>
 					<td><a type="param2" name="cti_dyn" id="<%=subBus.getCcId()%>">
 					<%=CBCUtils.CBC_DISPLAY.getSubBusValueAt(subBus, CBCDisplay.SUB_VAR_LOAD_COLUMN)%></a>
@@ -245,9 +255,13 @@ for( int i = 0; i < feeders.length; i++ )
 	<%=CBCUtils.CBC_DISPLAY.getFeederValueAt(feeder, CBCDisplay.FDR_CURRENT_STATE_COLUMN)%>
 </a>
 					</td>
-
-					<td><a type="param1" name="cti_dyn" id="<%=feeder.getCcId()%>">
+					<td><a onmouseover="javascript:togglePopup('feederPFPopup_<%=feeder.getCcId()%>')"
+						   onmouseout="javascript:togglePopup('feederPFPopup_<%=feeder.getCcId()%>')"
+						   type="param1" name="cti_dyn" id="<%=feeder.getCcId()%>">
 					<%=CBCUtils.CBC_DISPLAY.getFeederValueAt(feeder, CBCDisplay.FDR_TARGET_COLUMN)%></a>
+					<div class="ccPFPopup" id="feederPFPopup_<%=feeder.getCcId()%>" style="display:none" > 
+					  <span type="param8" name="cti_dyn" id="<%=feeder.getCcId()%>"><%=CBCUtils.CBC_DISPLAY.getFeederValueAt(feeder, CBCDisplay.FDR_TARGET_POPUP) %></span>
+					</div>
 					</td>
 					<td><a type="param2" name="cti_dyn" id="<%=feeder.getCcId()%>">
 					<%=CBCUtils.CBC_DISPLAY.getFeederValueAt(feeder, CBCDisplay.FDR_VAR_LOAD_COLUMN)%></a>

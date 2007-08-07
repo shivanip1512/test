@@ -115,6 +115,8 @@ public void restoreGuts(Object obj, com.roguewave.vsj.VirtualInputStream vstr, c
 	feeder.setOvUvDisabledFlag(
 			((int)vstr.extractUnsignedInt() == 1)
 			? new Boolean(true) : new Boolean(false));
+    feeder.setPeakPFSetPoint(new Double( vstr.extractDouble() ));
+    feeder.setOffpeakPFSetPoint(new Double( vstr.extractDouble() ));
 	feeder.setControlmethod((String) vstr.restoreObject( SimpleMappings.CString ));
 	feeder.setCcCapBanks(VectorExtract.extractVector(vstr,polystr));
 }
@@ -190,6 +192,8 @@ public void saveGuts(Object obj, com.roguewave.vsj.VirtualOutputStream vstr, com
 	vstr.insertUnsignedInt( 
 			(feeder.getOvUvDisabledFlag().booleanValue() == true)
 			? 1 : 0 );
+    vstr.insertDouble(feeder.getPeakPFSetPoint());
+    vstr.insertDouble(feeder.getOffpeakPFSetPoint());
 	vstr.saveObject(feeder.getControlmethod(), SimpleMappings.CString);
 	
 

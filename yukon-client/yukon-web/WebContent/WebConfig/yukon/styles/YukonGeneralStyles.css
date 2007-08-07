@@ -23,6 +23,18 @@ div.simplePopup {
   top: 30%
 }
 
+div.ccPFPopup {
+  padding: 3px;
+  position: absolute;
+  border: 1px solid #000000;
+  width: 85px;
+  height: 12px;
+  background-color: #eee;
+  left: 25%;
+  right: 25%;
+  top: 30%;
+}
+
 div.simplePopup h2 {
   margin: 0;
   padding: 0;

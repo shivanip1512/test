@@ -324,7 +324,8 @@ private boolean handleSubGET( String ids, ResultXML[] xmlMsgs, int indx )
 		/*param6*/CBCUtils.CBC_DISPLAY.getSubBusValueAt(sub, CBCDisplay.SUB_DAILY_OPERATIONS_COLUMN).toString(),
 		
 		/*param7*/(sub.getVerificationFlag().booleanValue())? "true" : "false",
-		/*param8*/CBCUtils.CBC_DISPLAY.getSubBusValueAt (sub, CBCDisplay.SUB_NAME_COLUMN).toString()	
+		/*param8*/CBCUtils.CBC_DISPLAY.getSubBusValueAt (sub, CBCDisplay.SUB_NAME_COLUMN).toString(),
+        /*param9*/CBCUtils.CBC_DISPLAY.getSubBusValueAt(sub, CBCDisplay.SUB_TARGET_POPUP).toString()
 
 	};
 
@@ -359,8 +360,8 @@ private boolean handleFeederGET( String ids, ResultXML[] xmlMsgs, int indx )
 		/*param4*/CBCUtils.CBC_DISPLAY.getFeederValueAt(fdr, CBCDisplay.FDR_POWER_FACTOR_COLUMN).toString(),
 		/*param5*/CBCUtils.CBC_DISPLAY.getFeederValueAt(fdr, CBCDisplay.FDR_WATTS_COLUMN).toString(),
 		/*param6*/CBCUtils.CBC_DISPLAY.getFeederValueAt(fdr, CBCDisplay.FDR_DAILY_OPERATIONS_COLUMN).toString(),
-		/*param7*/CBCUtils.CBC_DISPLAY.getFeederValueAt (fdr, CBCDisplay.FDR_NAME_COLUMN).toString()	
-		
+		/*param7*/CBCUtils.CBC_DISPLAY.getFeederValueAt (fdr, CBCDisplay.FDR_NAME_COLUMN).toString(),
+		/*param8*/CBCUtils.CBC_DISPLAY.getFeederValueAt(fdr, CBCDisplay.FDR_TARGET_POPUP).toString()
 	};
 
 	xmlMsgs[indx] = new ResultXML(

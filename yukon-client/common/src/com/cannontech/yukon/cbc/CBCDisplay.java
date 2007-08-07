@@ -62,6 +62,7 @@ public class CBCDisplay {
     public static final int FDR_ONELINE_VOLTS_COLUMN = 9;
     public static final int FDR_ONELINE_VAR_LOAD_COLUMN = 10;
     public static final int FDR_SHORT_TIME_STAMP_COLUMN = 11;
+    public static final int FDR_TARGET_POPUP = 12;
     
     // Column numbers for the SubBus display
     public static final int SUB_AREA_NAME_COLUMN = 0;
@@ -87,7 +88,8 @@ public class CBCDisplay {
     public static final int SUB_ONELINE_CTL_METHOD_COLUMN = 19;
     public static final int SUB_ONELINE_DAILY_MAX_OPCNT_COLUMN = 20;
     public static final int SUB_SHORT_TIME_STAMP_COLUMN = 21;
-
+    public static final int SUB_TARGET_POPUP = 22;
+    
     // The color schemes - based on the schedule status
     private static final Color[] _DEFAULT_COLORS = {
     // Enabled subbus (Green like color)
@@ -223,9 +225,6 @@ public class CBCDisplay {
     public synchronized Object getSubBusValueAt(SubBus subBus, int col) {
         if (subBus == null)
             return "";
-        NumberFormat num = NumberFormat.getNumberInstance();
-        num.setMaximumFractionDigits(1);
-        num.setMinimumFractionDigits(1);
         
         int decPlaces = subBus.getDecimalPlaces().intValue();
         switch (col) {
@@ -267,39 +266,39 @@ public class CBCDisplay {
 
         case SUB_TARGET_COLUMN: {
             // decide which set Point we are to use
+            NumberFormat num = NumberFormat.getNumberInstance();
+            num.setMaximumFractionDigits(1);
+            num.setMinimumFractionDigits(1);
+            
             if (subBus.getPeakTimeFlag().booleanValue()) {
 
                 if (CBCUtils.isPowerFactorControlled(subBus.getControlUnits())) {
 
-                    return CommonUtils.formatDecimalPlaces(subBus.getPeakLag()
-                                                                 .doubleValue(),
-                                                           0) + "%C : " + num.format(subBus.getTargetvarvalue()) + " : " + CommonUtils.formatDecimalPlaces(subBus.getPeakLead()
-                                                                                                                    .doubleValue(),
-                                                                                                              0) + "%T";
+                    return CommonUtils.formatDecimalPlaces(subBus.getPeakLag().doubleValue(),0) + "%C : " 
+                            + num.format(subBus.getPeakPFSetPoint() ) + " : " 
+                            + CommonUtils.formatDecimalPlaces(subBus.getPeakLead().doubleValue(),0) + "%T";
                 } else
-                    return CommonUtils.formatDecimalPlaces(subBus.getPeakLead()
-                                                                 .doubleValue(),
-                                                           0) + " to " + CommonUtils.formatDecimalPlaces(subBus.getPeakLag()
-                                                                                                               .doubleValue(),
-                                                                                                         0) + " Pk";
+                    return CommonUtils.formatDecimalPlaces(subBus.getPeakLead().doubleValue(),0) 
+                            + " to " + CommonUtils.formatDecimalPlaces(subBus.getPeakLag().doubleValue(),0) + " Pk";
             } else {
                 if (CBCUtils.isPowerFactorControlled(subBus.getControlUnits())) {
 
-                    return CommonUtils.formatDecimalPlaces(subBus.getOffPkLag()
-                                                                 .doubleValue(),
-                                                           0) + "%C : " + num.format(subBus.getTargetvarvalue()) + " : " + CommonUtils.formatDecimalPlaces(subBus.getOffPkLead()
-                                                                                                                    .doubleValue(),
-                                                                                                              0) + "%T";
+                    return CommonUtils.formatDecimalPlaces(subBus.getOffPkLag().doubleValue(),0) 
+                            + "%C : " + num.format(subBus.getOffpeakPFSetPoint()) 
+                            + " : " + CommonUtils.formatDecimalPlaces(subBus.getOffPkLead().doubleValue(),0) + "%T";
                 } else
-                    return CommonUtils.formatDecimalPlaces(subBus.getOffPkLead()
-                                                                 .doubleValue(),
-                                                           0) + " to " + CommonUtils.formatDecimalPlaces(subBus.getOffPkLag()
-                                                                                                               .doubleValue(),
-                                                                                                         0) + " OffPk";
+                    return CommonUtils.formatDecimalPlaces(subBus.getOffPkLead().doubleValue(),0) 
+                            + " to " + CommonUtils.formatDecimalPlaces(subBus.getOffPkLag().doubleValue(),0) + " OffPk";
             }
 
         }
-
+        case SUB_TARGET_POPUP: {
+            NumberFormat num = NumberFormat.getNumberInstance();
+            num.setMaximumFractionDigits(3);
+            num.setMinimumFractionDigits(0);
+            
+            return "Target Var: " + num.format( subBus.getTargetvarvalue() );
+        }
         case SUB_DAILY_OPERATIONS_COLUMN: {
             return new String(subBus.getCurrentDailyOperations() + " / " + (subBus.getMaxDailyOperation()
                                                                                   .intValue() <= 0 ? STR_NA
@@ -480,9 +479,6 @@ public class CBCDisplay {
     public synchronized Object getFeederValueAt(Feeder feeder, int col) {
         if (feeder == null)
             return "";
-        NumberFormat num = NumberFormat.getNumberInstance();
-        num.setMaximumFractionDigits(1);
-        num.setMinimumFractionDigits(1);
         
         int decPlaces = feeder.getDecimalPlaces();
         switch (col) {
@@ -517,13 +513,17 @@ public class CBCDisplay {
 
         case FDR_TARGET_COLUMN: {
             // decide which set Point we are to use
+            NumberFormat num = NumberFormat.getNumberInstance();
+            num.setMaximumFractionDigits(1);
+            num.setMinimumFractionDigits(1);
+            
             if (feeder.getPeakTimeFlag().booleanValue()) {
 
                 if (CBCUtils.isPowerFactorControlled(feeder.getControlUnits())) {
 
                     return CommonUtils.formatDecimalPlaces(feeder.getPeakLag()
                                                                  .doubleValue(),
-                                                           0) + "%C : " + num.format( feeder.getTargetvarvalue() ) + " : " + CommonUtils.formatDecimalPlaces(feeder.getPeakLead()
+                                                           0) + "%C : " + num.format( feeder.getPeakPFSetPoint() ) + " : " + CommonUtils.formatDecimalPlaces(feeder.getPeakLead()
                                                                                                                     .doubleValue(),
                                                                                                               0) + "%T";
                 } else
@@ -537,7 +537,7 @@ public class CBCDisplay {
 
                     return CommonUtils.formatDecimalPlaces(feeder.getOffPkLag()
                                                                  .doubleValue(),
-                                                           0) + "%C : " + num.format( feeder.getTargetvarvalue() ) + " : " + CommonUtils.formatDecimalPlaces(feeder.getOffPkLead()
+                                                           0) + "%C : " + num.format( feeder.getOffpeakPFSetPoint() ) + " : " + CommonUtils.formatDecimalPlaces(feeder.getOffPkLead()
                                                                                                                     .doubleValue(),
                                                                                                               0) + "%T";
                 } else
@@ -549,7 +549,13 @@ public class CBCDisplay {
             }
 
         }
-
+        case FDR_TARGET_POPUP: {
+            NumberFormat num = NumberFormat.getNumberInstance();
+            num.setMaximumFractionDigits(3);
+            num.setMinimumFractionDigits(0);
+            
+            return "Target Var: " + num.format( feeder.getTargetvarvalue() );
+        }
         case FDR_POWER_FACTOR_COLUMN: {
             return getPowerFactorText(feeder.getPowerFactorValue()
                                             .doubleValue(), true) + " / " + getPowerFactorText(feeder.getEstimatedPFValue()
@@ -783,6 +789,7 @@ public class CBCDisplay {
 
     public String getOnelineSubBusValueAt(SubBus subBus, Integer col) 
     {
+        
         if (subBus == null)
             return "";
 
@@ -799,43 +806,31 @@ public class CBCDisplay {
         }
 
         case SUB_TARGET_COLUMN: {
-            // decide which set Point we are to use
-            double targetVarValue = subBus.getTargetvarvalue().doubleValue();
-            String tagetVarFmtString = CommonUtils.formatDecimalPlaces(targetVarValue, 0);
-
+            NumberFormat num = NumberFormat.getNumberInstance();
+            num.setMaximumFractionDigits(1);
+            num.setMinimumFractionDigits(1);
+            
             if (subBus.getPeakTimeFlag().booleanValue()) {
                 
                 if (CBCUtils.isPowerFactorControlled(subBus.getControlUnits())) {
 
-                    return CommonUtils.formatDecimalPlaces(subBus.getPeakLag()
-                                                                 .doubleValue(),
-                                                           0) + "% close > " + tagetVarFmtString + " > " 
-                                                           + CommonUtils.formatDecimalPlaces(subBus.getPeakLead()
-                                                                                                                    .doubleValue(),
-                                                                                                              1) + "% trip";
+                    return CommonUtils.formatDecimalPlaces(subBus.getPeakLag().doubleValue(),0) 
+                                                           + "%C : " + num.format(subBus.getPeakPFSetPoint()) + " : " 
+                                                           + CommonUtils.formatDecimalPlaces(subBus.getPeakLead().doubleValue(),1) + "%T";
                 } else
-                    return CommonUtils.formatDecimalPlaces(subBus.getPeakLead()
-                                                                 .doubleValue(),
-                                                           0) + " > " + tagetVarFmtString + " > " 
-                                                           + CommonUtils.formatDecimalPlaces(subBus.getPeakLag()
-                                                                                                               .doubleValue(),
-                                                                                                         0) + " Pk";
+                    return CommonUtils.formatDecimalPlaces(subBus.getPeakLead().doubleValue(),0) 
+                                                           + " : " + num.format(subBus.getPeakPFSetPoint()) + " : " 
+                                                           + CommonUtils.formatDecimalPlaces(subBus.getPeakLag().doubleValue(),0) + " Pk";
             } else {
                 if (CBCUtils.isPowerFactorControlled(subBus.getControlUnits())) {
 
-                    return CommonUtils.formatDecimalPlaces(subBus.getOffPkLag()
-                                                                 .doubleValue(),
-                                                           0) + "% close > " + tagetVarFmtString + " > " 
-                                                           + CommonUtils.formatDecimalPlaces(subBus.getOffPkLead()
-                                                                                                                    .doubleValue(),
-                                                                                                              0) + "% trip";
+                    return CommonUtils.formatDecimalPlaces(subBus.getOffPkLag().doubleValue(),0) 
+                                                           + "%C : " + num.format(subBus.getOffpeakPFSetPoint()) + " : " 
+                                                           + CommonUtils.formatDecimalPlaces(subBus.getOffPkLead().doubleValue(),0) + "%T";
                 } else
-                    return CommonUtils.formatDecimalPlaces(subBus.getOffPkLead()
-                                                                 .doubleValue(),
-                                                           0) + " > " + tagetVarFmtString + " > " 
-                                                           + CommonUtils.formatDecimalPlaces(subBus.getOffPkLag()
-                                                                                                               .doubleValue(),
-                                                                                                         0) + " OffPk";
+                    return CommonUtils.formatDecimalPlaces(subBus.getOffPkLead().doubleValue(), 0)
+                                                           + " : " + num.format(subBus.getOffpeakPFSetPoint()) + " : " 
+                                                           + CommonUtils.formatDecimalPlaces(subBus.getOffPkLag().doubleValue(),0) + " OffPk";
             }
 
         }
