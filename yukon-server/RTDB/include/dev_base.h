@@ -9,8 +9,8 @@
 *
 * PVCS KEYWORDS:
 * ARCHIVE      :  $Archive:   Z:/SOFTWAREARCHIVES/YUKON/RTDB/INCLUDE/dev_base.h-arc  $
-* REVISION     :  $Revision: 1.62 $
-* DATE         :  $Date: 2007/07/10 16:59:24 $
+* REVISION     :  $Revision: 1.63 $
+* DATE         :  $Date: 2007/08/07 19:56:17 $
 *
 * Copyright (c) 1999 Cannon Technologies Inc. All rights reserved.
 *-----------------------------------------------------------------------------*/
@@ -60,8 +60,6 @@ namespace Protocol  {
 class Interface;
 }
 }
-
-using namespace Cti;  //  in preparation for moving devices to their own namespace
 
 using CtiTableDynamicPaoInfo::Keys;  //  Allows us to refer to the keys by Key::keyname
 
@@ -165,7 +163,7 @@ public:
 
     virtual LONG getDemandInterval() const;
 
-    virtual Protocol::Interface *getProtocol();
+    virtual Cti::Protocol::Interface *getProtocol();
 
 
     virtual ULONG getUniqueIdentifier() const;
@@ -350,20 +348,20 @@ public:
 
 typedef CtiDeviceBase CtiDevice;
 
-inline bool   CtiDeviceBase::isDialup() const               { return false; }
+inline bool   CtiDeviceBase::isDialup() const                   { return false; }
 inline string CtiDeviceBase::getDescription(const CtiCommandParser & parse) const    { return getName();}
-inline bool   CtiDeviceBase::isMeter() const                { return false;}
-inline LONG   CtiDeviceBase::getPortID() const              { return -1;}
-inline LONG   CtiDeviceBase::getAddress() const             { return -1;}
-inline LONG   CtiDeviceBase::getMasterAddress() const       { return -1;}
-inline INT    CtiDeviceBase::getPostDelay() const           { return 0;}
-inline string CtiDeviceBase::getPassword() const            { return string();}
-inline string CtiDeviceBase::getPhoneNumber() const         { return string();}
-inline LONG   CtiDeviceBase::getRouteID() const             { return -1;}
-inline LONG   CtiDeviceBase::getDemandInterval() const      { return LONG_MAX;}
-inline Protocol::Interface *CtiDeviceBase::getProtocol()    { return NULL;}
-inline void   CtiDeviceBase::invalidateScanRates()          { }
-inline void   CtiDeviceBase::deleteNonUpdatedScanRates()    { }
+inline bool   CtiDeviceBase::isMeter() const                    { return false;}
+inline LONG   CtiDeviceBase::getPortID() const                  { return -1;}
+inline LONG   CtiDeviceBase::getAddress() const                 { return -1;}
+inline LONG   CtiDeviceBase::getMasterAddress() const           { return -1;}
+inline INT    CtiDeviceBase::getPostDelay() const               { return 0;}
+inline string CtiDeviceBase::getPassword() const                { return string();}
+inline string CtiDeviceBase::getPhoneNumber() const             { return string();}
+inline LONG   CtiDeviceBase::getRouteID() const                 { return -1;}
+inline LONG   CtiDeviceBase::getDemandInterval() const          { return LONG_MAX;}
+inline Cti::Protocol::Interface *CtiDeviceBase::getProtocol()   { return NULL;}
+inline void   CtiDeviceBase::invalidateScanRates()              { }
+inline void   CtiDeviceBase::deleteNonUpdatedScanRates()        { }
 
 inline INT  CtiDeviceBase::getCommFailCount() const         { LockGuard guard(monitor()); return _commFailCount;}
 inline INT  CtiDeviceBase::getAttemptCount() const          { LockGuard guard(monitor()); return _attemptCount;}

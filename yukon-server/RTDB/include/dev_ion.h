@@ -77,7 +77,7 @@ public:
     virtual void DecodeDatabaseReader(RWDBReader &rdr);
 
     virtual string getDescription(const CtiCommandParser & parse) const;
-    Protocol::Interface *getProtocol( void );
+    Cti::Protocol::Interface *getProtocol( void );
 
     //  virtual in case different ION devices need to form up alternate requests for the same command
     virtual INT ExecuteRequest(CtiRequestMsg *pReq, CtiCommandParser &parse, OUTMESS *&OutMessage, list< CtiMessage* > &vgList, list< CtiMessage* > &retList, list< OUTMESS* > &outList);

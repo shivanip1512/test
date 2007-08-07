@@ -9,8 +9,8 @@
 *
 * PVCS KEYWORDS:
 * ARCHIVE      :  $Archive$
-* REVISION     :  $Revision: 1.7 $
-* DATE         :  $Date: 2006/03/02 23:03:19 $
+* REVISION     :  $Revision: 1.8 $
+* DATE         :  $Date: 2007/08/07 19:56:17 $
 *
 * Copyright (c) 2004 Cannon Technologies Inc. All rights reserved.
 *-----------------------------------------------------------------------------*/
@@ -30,11 +30,10 @@ using boost::crc_16_type;
 
 #include "dlldefs.h"
 #include "prot_base.h"
-using namespace Cti;  //  in preparation for moving devices to their own namespace
 
 #include "pointtypes.h"
 
-class IM_EX_PROT CtiProtocolSeriesV : public Protocol::Interface
+class IM_EX_PROT CtiProtocolSeriesV : public Cti::Protocol::Interface
 {
 public:
     enum SeriesVCommand

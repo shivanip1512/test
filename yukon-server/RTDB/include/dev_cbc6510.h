@@ -9,8 +9,8 @@
 *
 * PVCS KEYWORDS:
 * ARCHIVE      :  $Archive:   Z:/SOFTWAREARCHIVES/YUKON/RTDB/INCLUDE/dev_cbc.h-arc  $
-* REVISION     :  $Revision: 1.13 $
-* DATE         :  $Date: 2006/09/21 21:31:37 $
+* REVISION     :  $Revision: 1.14 $
+* DATE         :  $Date: 2007/08/07 19:56:17 $
 *
 * Copyright (c) 2002 Cannon Technologies Inc. All rights reserved.
 *-----------------------------------------------------------------------------*/
@@ -23,13 +23,11 @@
 #include "dev_dnp.h"
 #include "tbl_dv_idlcremote.h"
 
-using namespace Cti;  //  in preparation for moving devices to their own namespace
-
-class IM_EX_DEVDB CtiDeviceCBC6510 : public Device::DNP
+class IM_EX_DEVDB CtiDeviceCBC6510 : public Cti::Device::DNP
 {
 private:
 
-    typedef Device::DNP Inherited;
+    typedef Cti::Device::DNP Inherited;
 
     enum
     {
@@ -48,7 +46,7 @@ private:
 
 protected:
 
-    virtual void processPoints( Protocol::Interface::pointlist_t &points );
+    virtual void processPoints( Cti::Protocol::Interface::pointlist_t &points );
 
 public:
 

@@ -8,11 +8,14 @@
 * Author: Corey G. Plender
 *
 * CVS KEYWORDS:
-* REVISION     :  $Revision: 1.19 $
-* DATE         :  $Date: 2006/04/19 15:48:30 $
+* REVISION     :  $Revision: 1.20 $
+* DATE         :  $Date: 2007/08/07 19:56:17 $
 * HISTORY      :
 *
 * $Log: prot_sa3rdparty.h,v $
+* Revision 1.20  2007/08/07 19:56:17  mfisher
+* removed "using namespace Cti;" from header files
+*
 * Revision 1.19  2006/04/19 15:48:30  mfisher
 * added an overloaded int version of parseGolayAddress()
 *
@@ -98,8 +101,6 @@
 #include "prot_base.h"
 #include "protocol_sa.h"        // Telvent provided sa library.
 
-using namespace Cti;  //  in preparation for moving devices to their own namespace
-
 using std::pair;
 
 #define MAX_SAERR_MSG_SIZE 256
@@ -109,7 +110,7 @@ using std::pair;
                                     // CPARMS for setting "PROTOCOL_SA_TELVENT"
 #define CTIPROT_ABRUPT_RESTORE                  0x00000010          // Using this could make the restores work WRONG...  Remove this and code wrapped one day soon.
 
-class IM_EX_PROT CtiProtocolSA3rdParty : public Protocol::Interface
+class IM_EX_PROT CtiProtocolSA3rdParty : public Cti::Protocol::Interface
 {
 protected:
 

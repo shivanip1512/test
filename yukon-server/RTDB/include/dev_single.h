@@ -9,8 +9,8 @@
 *
 * PVCS KEYWORDS:
 * ARCHIVE      :  $Archive:   Z:/SOFTWAREARCHIVES/YUKON/RTDB/INCLUDE/dev_single.h-arc  $
-* REVISION     :  $Revision: 1.31 $
-* DATE         :  $Date: 2007/02/07 18:02:33 $
+* REVISION     :  $Revision: 1.32 $
+* DATE         :  $Date: 2007/08/07 19:56:17 $
 *
 * Copyright (c) 1999 Cannon Technologies Inc. All rights reserved.
 *-----------------------------------------------------------------------------*/
@@ -38,7 +38,6 @@
 #include "tbl_dv_wnd.h"
 #include "connection.h"
 #include "prot_base.h"
-using namespace Cti;  //  in preparation for moving devices to their own namespace
 
 //#include "verification_objects.h"
 class CtiVerificationBase;  //  this is so boost_time.h isn't included via verification_objects.h - for now
@@ -123,7 +122,7 @@ protected:
 
     bool validatePendingStatus(bool status, int scantype, CtiTime &now = CtiTime());
 
-    virtual Protocol::Interface *getProtocol();
+    virtual Cti::Protocol::Interface *getProtocol();
 
 private:
 

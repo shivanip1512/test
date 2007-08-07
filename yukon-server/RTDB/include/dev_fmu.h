@@ -9,10 +9,13 @@
 * Author: Julie Richter
 *
 * CVS KEYWORDS:
-* REVISION     :  $Revision: 1.2 $
-* DATE         :  $Date: 2007/02/12 19:19:16 $
+* REVISION     :  $Revision: 1.3 $
+* DATE         :  $Date: 2007/08/07 19:56:17 $
 * HISTORY      :
 * $Log: dev_fmu.h,v $
+* Revision 1.3  2007/08/07 19:56:17  mfisher
+* removed "using namespace Cti;" from header files
+*
 * Revision 1.2  2007/02/12 19:19:16  jotteson
 * Communications with the FMU are now working.
 *
@@ -37,8 +40,6 @@ using std::queue;
 #include "dev_ied.h"
 #include "queue.h"
 #include "verification_objects.h"
-
-using namespace Cti;         
 
 #define NAK_ACTION_RESEND_LAST_MSG 0x80
 #define NAK_ACTION_RESET_SEQUENCE  0x40

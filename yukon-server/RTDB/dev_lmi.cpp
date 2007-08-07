@@ -6,8 +6,8 @@
 *
 * PVCS KEYWORDS:
 * ARCHIVE      :  $Archive:     $
-* REVISION     :  $Revision: 1.33 $
-* DATE         :  $Date: 2006/05/11 15:31:16 $
+* REVISION     :  $Revision: 1.34 $
+* DATE         :  $Date: 2007/08/07 19:56:17 $
 *
 * Copyright (c) 2004 Cannon Technologies Inc. All rights reserved.
 *-----------------------------------------------------------------------------*/
@@ -34,9 +34,9 @@ CtiDeviceLMI::~CtiDeviceLMI()
 }
 
 
-Protocol::Interface *CtiDeviceLMI::getProtocol()
+Cti::Protocol::Interface *CtiDeviceLMI::getProtocol()
 {
-    return (Protocol::Interface *)&_lmi;
+    return (Cti::Protocol::Interface *)&_lmi;
 }
 
 
@@ -70,8 +70,8 @@ void CtiDeviceLMI::sendDispatchResults(CtiConnection &vg_connection)
     string                      resultString;
     CtiTime                       Now;
 
-    Protocol::Interface::pointlist_t points;
-    Protocol::Interface::pointlist_t::iterator itr;
+    Cti::Protocol::Interface::pointlist_t points;
+    Cti::Protocol::Interface::pointlist_t::iterator itr;
 
     vgMsg  = CTIDBG_new CtiReturnMsg(getID());
 

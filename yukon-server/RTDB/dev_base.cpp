@@ -6,8 +6,8 @@
 *
 * PVCS KEYWORDS:
 * ARCHIVE      :  $Archive:   Z:/SOFTWAREARCHIVES/YUKON/RTDB/dev_base.cpp-arc  $
-* REVISION     :  $Revision: 1.65 $
-* DATE         :  $Date: 2007/04/30 21:20:35 $
+* REVISION     :  $Revision: 1.66 $
+* DATE         :  $Date: 2007/08/07 19:56:17 $
 *
 * Copyright (c) 1999, 2000, 2001 Cannon Technologies Inc. All rights reserved.
 *-----------------------------------------------------------------------------*/
@@ -1266,7 +1266,7 @@ Cti::Config::CtiConfigDeviceSPtr CtiDeviceBase::getDeviceConfig()
     return _deviceConfig;
 }
 
-DeviceQueueInterface* CtiDeviceBase::getDeviceQueueHandler()
+Cti::DeviceQueueInterface* CtiDeviceBase::getDeviceQueueHandler()
 {
     return NULL;
 }

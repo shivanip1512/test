@@ -9,8 +9,8 @@
 *
 * PVCS KEYWORDS:
 * ARCHIVE      :  $Archive$
-* REVISION     :  $Revision: 1.23 $
-* DATE         :  $Date: 2006/03/02 23:03:19 $
+* REVISION     :  $Revision: 1.24 $
+* DATE         :  $Date: 2007/08/07 19:56:17 $
 *
 * Copyright (c) 2002 Cannon Technologies Inc. All rights reserved.
 *-----------------------------------------------------------------------------*/
@@ -25,13 +25,12 @@
 #include <map>
 using std::map;
 #include "prot_base.h"
-using namespace Cti;  //  in preparation for moving devices to their own namespace
 
 #include "ion_datastream.h"
 #include "ion_net_application.h"
 
 
-class IM_EX_PROT CtiProtocolION : public Protocol::Interface
+class IM_EX_PROT CtiProtocolION : public Cti::Protocol::Interface
 {
     enum IONCommand;
     enum IONStates;
