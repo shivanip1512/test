@@ -48,7 +48,6 @@ class CCU710{
             FUNCACK    = 41,
             READ       = 42,
             WRITE      = 43,
-            READENERGY = 44,
             ACKACK     = 51,
             INCOMING   = 0 ,
             OUTGOING   = 1 ,
@@ -82,6 +81,8 @@ class CCU710{
         int DecodeMctAddress();
         //  Determines the ccu address from the preamble
         int DecodeCCUAddress();
+        //  Return the funciton of the word stored in the incoming array of words based on index
+        int getWordFunction(int wordNum);
 
 	private:
 		//Storage for sockets

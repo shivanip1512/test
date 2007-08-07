@@ -68,7 +68,7 @@ int CCU710::ReceiveMsg(unsigned char Data[], int &setccuNumber)
     }
     else if(_messageType == FEEDEROP) {
         int Ctr = 0;
-        if(WrdFnc==READENERGY) {
+        if(WrdFnc==FUNCACK) {
             //_messageData[Ctr++] = Address;   //  slave address
             //Ctr++;  		// btf -2 filled in @ bottom 
 
@@ -167,13 +167,14 @@ void CCU710::PrintInput()
 //Build a new message
 void CCU710::CreateMsg(int ccuNumber, int mctNumber){
 	unsigned char someData[10];
+    cout<<" _preamble  "<< _preamble <<endl;
 	if(_preamble==FEEDEROP)
 	{
 		//  Feeder operation
 		unsigned char Frame = getFrame();
 		unsigned char Address = _messageData[1];
-        if(_words[0].getWordFunction()==WRITE) {     // on 710 readenergy is sent as a write
-			CreateMessage(FEEDEROP, READENERGY, mctNumber, ccuNumber);
+        if(_words[0].getWordFunction()==FUNCACK) {     
+			CreateMessage(FEEDEROP, FUNCACK, mctNumber, ccuNumber);
 		}
 		else{ 
 			CreateMessage(FEEDEROP, DEFAULT, mctNumber, ccuNumber);
@@ -404,7 +405,7 @@ void CCU710::CreateMessage(int MsgType, int WrdFnc, int mctNumber, int ccuNumber
 
     if(_messageType == FEEDEROP) {
         int Ctr = 0;
-        if(WrdFnc==READENERGY) {
+        if(WrdFnc==FUNCACK) {
             //_messageData[Ctr++] = Address;   //  slave address
             //Ctr++;  		// btf -2 filled in @ bottom 
             
@@ -503,3 +504,10 @@ int CCU710::DecodeCCUAddress()
 
     return setCCUAddress;
 }
+
+
+int CCU710::getWordFunction(int wordNum)
+{
+    return _words[wordNum].getWordFunction();
+}
+

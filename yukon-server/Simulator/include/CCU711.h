@@ -45,7 +45,6 @@ class CCU711{
             FUNCACK    = 41,
             READ       = 42,
             WRITE      = 43,
-            READENERGY = 44,
             ACKACK     = 51,
             INCOMING   = 0,
             OUTGOING   = 1

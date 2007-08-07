@@ -101,8 +101,8 @@ void CCU711::CreateMsg(int ccuNumber){
 		//  General Request
 		unsigned char Frame = getFrame();
 		unsigned char Address = _messageData[1];
-		if(_words[0].getWordFunction()==FUNCACK) {
-			CreateMessage(GENREP, ACKACK, someData, ccuNumber, setccuNumber, Address, Frame);
+		if(subCCU710.getWordFunction(0)==FUNCACK) {
+			CreateMessage(GENREP, FUNCACK, someData, ccuNumber, setccuNumber, Address, Frame);
 		}
 		else{ 
 			CreateMessage(GENREP, DEFAULT, someData, ccuNumber, setccuNumber, Address, Frame);
@@ -243,6 +243,7 @@ void CCU711::CreateMessage(int MsgType, int WrdFnc, unsigned char Data[], int cc
 		_outindexOfEnd = 5;
 	}
 	else if(_messageType == GENREP) {
+        _outmessageType = GENREP;
 		int Ctr = 0;
 		if(WrdFnc==ACKACK) {
 			_outmessageData[Ctr++] = 0x7e;
@@ -271,54 +272,57 @@ void CCU711::CreateMessage(int MsgType, int WrdFnc, unsigned char Data[], int cc
 			_outmessageData[Ctr++] = HIBYTE (CRC);
 			_outmessageData[Ctr++] = LOBYTE (CRC);
 		}
-		else if(_commandType==DTRAN){ 
-			_outmessageData[Ctr++] = 0x7e;
-			_outmessageData[Ctr++] = Address;   //  slave address
-			_outmessageData[Ctr++] = Frame;     //  control
-			Ctr++;  		// # of bytes to follow minus two filled in at bottom of section
-			_outmessageData[Ctr++] = 0x02;      // SRC/DES
-			_outmessageData[Ctr++] = 0x26;      // Echo of command received
-			_outmessageData[Ctr++] = 0x00;      // system status items
-			_outmessageData[Ctr++] = 0x00;      //    "   "
-			_outmessageData[Ctr++] = 0x00;      //    "   "
-			_outmessageData[Ctr++] = 0x00;      //    "   "  
-			_outmessageData[Ctr++] = 0x00;     // device status items
-			_outmessageData[Ctr++] = 0x00;     //    "   "
-			_outmessageData[Ctr++] = 0x00;     //    "   "   
-			_outmessageData[Ctr++] = 0x00;     //    "   "
-			_outmessageData[Ctr++] = 0x00;     //    "   "
-			_outmessageData[Ctr++] = 0x00;     //    "   "
-			_outmessageData[Ctr++] = 0x00;     // process status items
-			_outmessageData[Ctr++] = 0x00;     //    "   "									
-	
-            // Use a 710 to form the content in the message
-            subCCU710.CreateMessage(FEEDEROP, READENERGY, _mctNumber, ccuNumber);
-            unsigned char SendData[300];
-            subCCU710.SendMsg(SendData);
-            int smallCtr = 0;
-            _outmessageData[Ctr++] = SendData[smallCtr++];
-            _outmessageData[Ctr++] = SendData[smallCtr++];
-            _outmessageData[Ctr++] = SendData[smallCtr++];
-            _outmessageData[Ctr++] = SendData[smallCtr++];
-            _outmessageData[Ctr++] = SendData[smallCtr++];
-            _outmessageData[Ctr++] = SendData[smallCtr++];
-            _outmessageData[Ctr++] = SendData[smallCtr++];
-            _outmessageData[Ctr++] = SendData[smallCtr++];
-            _outmessageData[Ctr++] = SendData[smallCtr++];
-            _outmessageData[Ctr++] = SendData[smallCtr++];
-            _outmessageData[Ctr++] = SendData[smallCtr++];
+		else if(_commandType==DTRAN)
+            {
+                _outmessageData[Ctr++] = 0x7e;
+                _outmessageData[Ctr++] = Address;   //  slave address
+                _outmessageData[Ctr++] = Frame;     //  control
+                Ctr++;  		// # of bytes to follow minus two filled in at bottom of section
+                _outmessageData[Ctr++] = 0x02;      // SRC/DES
+                _outmessageData[Ctr++] = 0x26;      // Echo of command received
+                _outmessageData[Ctr++] = 0x00;      // system status items
+                _outmessageData[Ctr++] = 0x00;      //    "   "
+                _outmessageData[Ctr++] = 0x00;      //    "   "
+                _outmessageData[Ctr++] = 0x00;      //    "   "  
+                _outmessageData[Ctr++] = 0x00;     // device status items
+                _outmessageData[Ctr++] = 0x00;     //    "   "
+                _outmessageData[Ctr++] = 0x00;     //    "   "   
+                _outmessageData[Ctr++] = 0x00;     //    "   "
+                _outmessageData[Ctr++] = 0x00;     //    "   "
+                _outmessageData[Ctr++] = 0x00;     //    "   "
+                _outmessageData[Ctr++] = 0x00;     // process status items
+                _outmessageData[Ctr++] = 0x00;     //    "   "									
+
+                if(subCCU710.getWordFunction(0) == FUNCACK)
+                {
+                // Use a 710 to form the content in the message
+                subCCU710.CreateMessage(FEEDEROP, FUNCACK, _mctNumber, ccuNumber);
+                unsigned char SendData[300];
+                subCCU710.SendMsg(SendData);
+                int smallCtr = 0;
+                _outmessageData[Ctr++] = SendData[smallCtr++];
+                _outmessageData[Ctr++] = SendData[smallCtr++];
+                _outmessageData[Ctr++] = SendData[smallCtr++];
+                _outmessageData[Ctr++] = SendData[smallCtr++];
+                _outmessageData[Ctr++] = SendData[smallCtr++];
+                _outmessageData[Ctr++] = SendData[smallCtr++];
+                _outmessageData[Ctr++] = SendData[smallCtr++];
+                _outmessageData[Ctr++] = SendData[smallCtr++];
+                _outmessageData[Ctr++] = SendData[smallCtr++];
+                _outmessageData[Ctr++] = SendData[smallCtr++];
+                _outmessageData[Ctr++] = SendData[smallCtr++];
+                }
+            
+                _outmessageData[3] = Ctr-4;      // # of bytes to follow minus two (see note above)
+                                            
+                unsigned short CRC = NCrcCalc_C ((_outmessageData + 1), Ctr-1);
+                _outmessageData[Ctr++] = HIBYTE (CRC);
+                _outmessageData[Ctr++] = LOBYTE (CRC);
         
-			_outmessageData[3] = Ctr-4;      // # of bytes to follow minus two (see note above)
-										
-			unsigned short CRC = NCrcCalc_C ((_outmessageData + 1), Ctr-1);
-			_outmessageData[Ctr++] = HIBYTE (CRC);
-			_outmessageData[Ctr++] = LOBYTE (CRC);
-	
-			//  Output for debugging only
-			/*for(int i=0; i<Ctr; i++) {
-				std::cout<<"_outmessageData "<<string(CtiNumStr(_outmessageData[i]).hex().zpad(2))<<std::endl;
-			}*/
-	
+                //  Output for debugging only
+                /*for(int i=0; i<Ctr; i++) {
+                    std::cout<<"_outmessageData "<<string(CtiNumStr(_outmessageData[i]).hex().zpad(2))<<std::endl;
+                }*/
 		}
 		_outindexOfEnd = Ctr;
 	}

@@ -23,6 +23,7 @@
 #include "CCU710.h"
 #include "CCU711.h"
 #include "color.h"
+#include "ctiTime.h"
 
 
 int main(int argc, char *argv[])
@@ -60,7 +61,7 @@ int main(int argc, char *argv[])
 
 	for(int i = 0; i<25 && !(newSocket->CTINexusValid()); i++) {
 		listenSocket->CTINexusConnect(newSocket, NULL, 1000, CTINEXUS_FLAG_READEXACTLY);
-		RWTime Listening;
+		CtiTime Listening;
 		std::cout<<Listening.asString()<<" Listening..."<<std::endl;
 	}
 
@@ -74,7 +75,7 @@ int main(int argc, char *argv[])
              
         if(TempBuffer[0]==0x7e)
         {   //  It's a 711 IDLC message
-            RWTime AboutToRead;
+            CtiTime AboutToRead;
             unsigned char ReadBuffer[300];
             int BytesToFollow;
             int counter = 0;
@@ -124,7 +125,7 @@ int main(int argc, char *argv[])
             unsigned long bytesWritten = 0;
             newSocket->CTINexusWrite(&SendData, MsgSize, &bytesWritten, 15); 
     
-            RWTime DateSent;
+            CtiTime DateSent;
             SET_FOREGROUND_BRIGHT_YELLOW;
             cout<<DateSent.asString();
             SET_FOREGROUND_BRIGHT_CYAN;
@@ -140,7 +141,7 @@ int main(int argc, char *argv[])
         }
         else
         {   //  It's a 710 message
-            RWTime AboutToRead;
+            CtiTime AboutToRead;
             unsigned char ReadBuffer[300];
             int BytesToFollow;
             int counter = 0;
@@ -191,7 +192,7 @@ int main(int argc, char *argv[])
             unsigned long bytesWritten = 0;
             newSocket->CTINexusWrite(&SendData, MsgSize, &bytesWritten, 15); 
 
-            RWTime DateSent;
+            CtiTime DateSent;
             SET_FOREGROUND_BRIGHT_YELLOW;
             cout<<DateSent.asString();
             SET_FOREGROUND_BRIGHT_CYAN;
