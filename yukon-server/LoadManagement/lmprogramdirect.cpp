@@ -652,7 +652,7 @@ DOUBLE CtiLMProgramDirect::reduceProgramLoad(DOUBLE loadReductionNeeded, LONG cu
                         {
                             // Only a time refresh dynamic shed time refresh type should have its shed times adjusted based on constraints
                             bool adjust_shed_time = (CtiLMProgramDirectGear::DynamicShedTimeMethodOptionType == refreshCountDownType ||
-                                                     CtiLMProgramDirectGear::FixedCountMethodOptionType == refreshCountDownType);
+                                                     CtiLMProgramDirectGear::CountDownMethodOptionType == refreshCountDownType);
 
                             CtiLMGroupConstraintChecker con_checker(*this, currentLMGroup, secondsFrom1901);
                             int oldShedTime = shedTime;
@@ -1171,7 +1171,7 @@ DOUBLE CtiLMProgramDirect::manualReduceProgramLoad(ULONG secondsFrom1901, CtiMul
 
                     //take all groups in a manual control
                     string refreshCountDownType = currentGearObject->getMethodOptionType();
-                    LONG maxRefreshShedTime = currentGearObject->getMethodOptionMax();
+                    LONG maxRefreshShedTime = currentGearObject->getMethodPeriod();
 
                     if( _LM_DEBUG & LM_DEBUG_STANDARD )
                     {
@@ -1184,7 +1184,8 @@ DOUBLE CtiLMProgramDirect::manualReduceProgramLoad(ULONG secondsFrom1901, CtiMul
                         if( !currentLMGroup->getDisableFlag() &&
                             !currentLMGroup->getControlInhibit() )
                         {
-                            if( !stringCompareIgnoreCase(refreshCountDownType, CtiLMProgramDirectGear::DynamicShedTimeMethodOptionType) )
+                            if( !stringCompareIgnoreCase(refreshCountDownType, CtiLMProgramDirectGear::DynamicShedTimeMethodOptionType) ||
+                                !stringCompareIgnoreCase(refreshCountDownType, CtiLMProgramDirectGear::CountDownMethodOptionType) )
                             {
                                 if( maxRefreshShedTime > 0 )
                                 {   // Try to fit the shed time into the time the program will run
@@ -2624,7 +2625,7 @@ DOUBLE CtiLMProgramDirect::updateProgramControlForGearChange(ULONG secondsFrom19
                 LONG shedTime = currentGearObject->getMethodPeriod();
                 LONG numberOfGroupsToTake = currentGearObject->getMethodRateCount();
                 string refreshCountDownType = currentGearObject->getMethodOptionType();
-                LONG maxRefreshShedTime = currentGearObject->getMethodOptionMax();
+                LONG maxRefreshShedTime = currentGearObject->getMethodPeriod();
 
                 if( numberOfGroupsToTake == 0 )
                 {
@@ -2643,7 +2644,8 @@ DOUBLE CtiLMProgramDirect::updateProgramControlForGearChange(ULONG secondsFrom19
                     }
                     else
                     {
-                        if( !stringCompareIgnoreCase(refreshCountDownType, CtiLMProgramDirectGear::DynamicShedTimeMethodOptionType) )
+                        if( !stringCompareIgnoreCase(refreshCountDownType, CtiLMProgramDirectGear::DynamicShedTimeMethodOptionType) ||
+                            !stringCompareIgnoreCase(refreshCountDownType, CtiLMProgramDirectGear::CountDownMethodOptionType) )
                         {
                             if( maxRefreshShedTime > 0 )
                             {
@@ -3400,7 +3402,7 @@ BOOL CtiLMProgramDirect::refreshStandardProgramControl(ULONG secondsFrom1901, Ct
             long refresh_rate = currentGearObject->getMethodRate();
             long shed_time = currentGearObject->getMethodPeriod();
             string refresh_count_down_type = currentGearObject->getMethodOptionType();
-            long max_refresh_shed_time = currentGearObject->getMethodOptionMax();
+            long max_refresh_shed_time = currentGearObject->getMethodPeriod();
 
             for(CtiLMGroupIter i = _lmprogramdirectgroups.begin(); i != _lmprogramdirectgroups.end(); i++)
             {
