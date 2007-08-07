@@ -18,9 +18,11 @@
 <div id="${thisId}_holder" style="display:none; position:absolute; right: 0px; top: 5px; background-color: white; padding: .5em; border: 1px #888 solid;" class="longLoadProfileHolder">
 <input id="${thisId}_startOffset" type="hidden" value="${startOffset}">
 <input id="${thisId}_deviceId" type="hidden" value="${deviceId}">
-  <table>
-  	<tr>
-  		<th colspan="4">Collect Long Load Profile</th>
+  
+  <table> 	
+	<tr>
+  		<th colspan="3">Collect Long Load Profile </th>
+  		<th> <a class="${styleClass}" href="javascript:longLoadProfile_display('${thisId}')">close</a> </th>
   	</tr>
     <tr>
     	<td>

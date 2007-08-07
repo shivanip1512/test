@@ -49,16 +49,16 @@
 		<table class="miniResultsTable" width="100%">
 			<tr>
 				<th width="150px">
-					Range
+					Period
+				</th>
+				<th width="130px">
+					Avg Daily / <br /> Total Usage
 				</th>
 				<th>
-					Avg Daily / Total
+					Peak Day
 				</th>
-				<th>
-					Peak kWh
-				</th>
-				<th>
-					Peak Date
+				<th width="200px">
+					Peak Day Total Usage
 				</th>
 				<th>&nbsp;</th>
 			</tr>
@@ -72,11 +72,11 @@
 								<td>
 									${preResult.averageDailyUsage} / ${preResult.totalUsage}
 								</td>
-								<td>
-									${preResult.usage}
+								<td width="150px">
+									${preResult.peakDate}
 								</td>
 								<td>
-									${preResult.peakDate}
+									${preResult.usage}
 								</td>
 								<td>
 									<!-- Load Profile collection -->
@@ -84,7 +84,7 @@
 										<br/>
 										<c:choose>
 											<c:when test="${preResult.days <= 90}">
-												<tags:longLoadProfile styleClass="Link1" deviceId="${deviceId}" lpStartDate="${preResult.startDate}" lpStopDate="${preResult.stopDate}">LP</tags:longLoadProfile>
+												<tags:longLoadProfile styleClass="Link1" deviceId="${deviceId}" lpStartDate="${preResult.startDate}" lpStopDate="${preResult.stopDate}">Profile</tags:longLoadProfile>
 											</c:when>
 											<c:otherwise>
 												<span onmouseover="javascript:toggleLP()" onmouseout="javascript:toggleLP()">LP N/A</span>
@@ -120,7 +120,7 @@
 								<td>
 									${postResult.averageDailyUsage} / ${postResult.totalUsage}
 								</td>
-								<td>
+								<td width="150px">
 									${postResult.usage}
 								</td>
 								<td>
