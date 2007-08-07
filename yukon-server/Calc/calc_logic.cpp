@@ -17,6 +17,8 @@
 
 #include "calclogicsvc.h"
 
+using namespace std;
+
 int install( DWORD dwStart = SERVICE_DEMAND_START );
 int remove( void );
 

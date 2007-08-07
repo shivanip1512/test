@@ -6,8 +6,8 @@
 *
 * PVCS KEYWORDS:
 * ARCHIVE      :  $Archive:   Z:/SOFTWAREARCHIVES/YUKON/MACS/INCLUDE/mgr_mcsched.h-arc  $
-* REVISION     :  $Revision: 1.5 $
-* DATE         :  $Date: 2006/08/09 05:03:17 $
+* REVISION     :  $Revision: 1.6 $
+* DATE         :  $Date: 2007/08/07 21:04:32 $
 *
 * Copyright (c) 1999, 2000, 2001 Cannon Technologies Inc. All rights reserved.
 *-----------------------------------------------------------------------------*/
@@ -62,6 +62,6 @@ private:
     long nextScheduleID();
 };
 
-ostream& operator<<( ostream& ostrm, CtiMCScheduleManager& mgr );
+std::ostream& operator<<( std::ostream& ostrm, CtiMCScheduleManager& mgr );
 
 #endif

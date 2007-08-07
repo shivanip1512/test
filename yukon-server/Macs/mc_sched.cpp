@@ -1,6 +1,3 @@
-#include "yukon.h"
-
-
 /*-----------------------------------------------------------------------------*
 *
 * File:   mcsched
@@ -9,8 +6,8 @@
 *
 * PVCS KEYWORDS:
 * ARCHIVE      :  $Archive:   Z:/SOFTWAREARCHIVES/YUKON/MACS/mc_sched.cpp-arc  $
-* REVISION     :  $Revision: 1.9 $
-* DATE         :  $Date: 2007/01/11 21:58:23 $
+* REVISION     :  $Revision: 1.10 $
+* DATE         :  $Date: 2007/08/07 21:04:32 $
 *
 * Copyright (c) 1999, 2000, 2001 Cannon Technologies Inc. All rights reserved.
 *-----------------------------------------------------------------------------*/
@@ -27,12 +24,15 @@
 
         COPYRIGHT:  Copyright (C) Cannon Technologies, Inc., 1999, 2001
 ---------------------------------------------------------------------------*/
+#include "yukon.h"
+
 #include "mc_sched.h"
 #include "utility.h"
 #include "ctidate.h"
 #include <rw/collstr.h>
 #include <rwutil.h>
 
+using namespace std;
 
 RWDEFINE_COLLECTABLE( CtiMCSchedule, MSG_MC_SCHEDULE );
 

@@ -8,8 +8,8 @@
 *
 * PVCS KEYWORDS:
 * ARCHIVE      :  $Archive$
-* REVISION     :  $Revision: 1.36 $
-* DATE         :  $Date: 2006/03/02 23:03:19 $
+* REVISION     :  $Revision: 1.37 $
+* DATE         :  $Date: 2007/08/07 21:05:11 $
 *
 * Copyright (c) 2002 Cannon Technologies Inc. All rights reserved.
 *-----------------------------------------------------------------------------*/
@@ -30,6 +30,8 @@
 #include "ion_value_struct_types.h"
 
 #include "numstr.h"
+
+using namespace std;
 
 
 CtiProtocolION::CtiProtocolION()

@@ -10,8 +10,8 @@
 *
 * PVCS KEYWORDS:
 * ARCHIVE      :  $Archive$
-* REVISION     :  $Revision: 1.1 $
-* DATE         :  $Date: 2006/10/05 16:44:51 $
+* REVISION     :  $Revision: 1.2 $
+* DATE         :  $Date: 2007/08/07 21:05:11 $
 *
 * Copyright (c) 2006 Cannon Technologies Inc. All rights reserved.
 *-----------------------------------------------------------------------------*/
@@ -21,7 +21,6 @@
 
 
 #include <list>
-using namespace std;
 
 #include "dlldefs.h"
 #include "pointtypes.h"

@@ -9,8 +9,8 @@
 *
 * PVCS KEYWORDS:
 * ARCHIVE      :  $Archive:   Z:/SOFTWAREARCHIVES/YUKON/MACS/INCLUDE/mc_server.h-arc  $
-* REVISION     :  $Revision: 1.9 $
-* DATE         :  $Date: 2007/03/08 21:56:14 $
+* REVISION     :  $Revision: 1.10 $
+* DATE         :  $Date: 2007/08/07 21:04:32 $
 *
 * Copyright (c) 1999, 2000, 2001 Cannon Technologies Inc. All rights reserved.
 *-----------------------------------------------------------------------------*/
@@ -59,8 +59,6 @@
 #include "mc_scheduler.h"
 #include "mc_fileint.h"
 
-using namespace std;
-
 class CtiMCServer : public CtiThread
 {
 public:
@@ -79,18 +77,18 @@ public:
     void dumpRunningScripts();
 private:
 
-    set < ScheduledEvent > work_around;
-    set< ScheduledEvent >::iterator work_around_iter;
+    std::set < ScheduledEvent > work_around;
+    std::set< ScheduledEvent >::iterator work_around_iter;
 
     // All of the client messages are put into here
     // and processed in the macs main thread.
     CtiQueue< CtiMessage, less<CtiMessage> > _main_queue;
 
     // Keeps track of running script type schedules
-    map< long, CtiInterpreter* > _running_scripts;
+    std::map< long, CtiInterpreter* > _running_scripts;
 
     // Keeps track of interpreters commands are executing on
-    deque< CtiInterpreter* > _executing_commands;
+    std::deque< CtiInterpreter* > _executing_commands;
 
     // Schedules the events
     CtiMCScheduler _scheduler;

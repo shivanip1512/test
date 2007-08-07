@@ -9,8 +9,8 @@
 *
 * PVCS KEYWORDS:
 * ARCHIVE      :  $Archive:   Z:/SOFTWAREARCHIVES/YUKON/MACS/INCLUDE/mc_fileint.h-arc  $
-* REVISION     :  $Revision: 1.4 $
-* DATE         :  $Date: 2005/12/20 19:35:38 $
+* REVISION     :  $Revision: 1.5 $
+* DATE         :  $Date: 2007/08/07 21:04:32 $
 *
 * Copyright (c) 1999, 2000, 2001 Cannon Technologies Inc. All rights reserved.
 *-----------------------------------------------------------------------------*/
@@ -67,14 +67,14 @@ public:
     virtual void handleFile(const string& filename );
 
     // Messages generated from the file interface will be put in here
-    void setQueue(CtiQueue< CtiMessage, less<CtiMessage> >* queue );
+    void setQueue(CtiQueue< CtiMessage, std::less<CtiMessage> >* queue );
 
 private:
 
     CtiMCScheduleManager& _schedule_manager;
-    CtiQueue< CtiMessage, less<CtiMessage> >* _message_queue;
+    CtiQueue< CtiMessage, std::less<CtiMessage> >* _message_queue;
     string _consumed_dir;
 
-    void execute(const string& function, const string& name);
+    void execute(const std::string& function, const std::string& name);
 };
 #endif

@@ -6,8 +6,8 @@
 *
 * PVCS KEYWORDS:
 * ARCHIVE      :  $Archive:   Z:/SOFTWAREARCHIVES/YUKON/RTDB/mgr_device.cpp-arc  $
-* REVISION     :  $Revision: 1.87 $
-* DATE         :  $Date: 2007/07/10 19:23:49 $
+* REVISION     :  $Revision: 1.88 $
+* DATE         :  $Date: 2007/08/07 21:05:11 $
 *
 * Copyright (c) 1999, 2000, 2001 Cannon Technologies Inc. All rights reserved.
 *-----------------------------------------------------------------------------*/
@@ -60,6 +60,7 @@
 #include "rtdb.h"
 
 using namespace Cti;  //  in preparation for moving devices to their own namespace
+using namespace std;
 
 
 bool findExecutingAndExcludedDevice(const long key, CtiDeviceSPtr devsptr, void* d)

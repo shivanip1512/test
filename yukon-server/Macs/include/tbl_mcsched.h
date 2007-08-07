@@ -8,8 +8,8 @@
 *
 * PVCS KEYWORDS:
 * ARCHIVE      :  $Archive:   Z:/SOFTWAREARCHIVES/YUKON/MACS/INCLUDE/tbl_mcsched.h-arc  $
-* REVISION     :  $Revision: 1.6 $
-* DATE         :  $Date: 2005/12/20 19:47:42 $
+* REVISION     :  $Revision: 1.7 $
+* DATE         :  $Date: 2007/08/07 21:04:32 $
 *
 * Copyright (c) 1999, 2000, 2001 Cannon Technologies Inc. All rights reserved.
 *-----------------------------------------------------------------------------*/
@@ -32,7 +32,6 @@
 #define _TBL_MCSCHED_H__
 
 #include <string>
-using namespace std;
 
 #include <rw/db/db.h>
 

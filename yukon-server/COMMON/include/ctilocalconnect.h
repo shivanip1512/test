@@ -8,8 +8,8 @@
 *
 * PVCS KEYWORDS:
 * ARCHIVE      :  $Archive:   Z:/SOFTWAREARCHIVES/YUKON/RTDB/dev_710.cpp-arc  $
-* REVISION     :  $Revision: 1.5 $
-* DATE         :  $Date: 2006/12/11 17:08:22 $
+* REVISION     :  $Revision: 1.6 $
+* DATE         :  $Date: 2007/08/07 21:04:52 $
 *
 * Copyright (c) 2006 Cannon Technologies Inc. All rights reserved.
 *-----------------------------------------------------------------------------*/
@@ -28,7 +28,6 @@
 #include "netports.h"
 #include "cticonnect.h"
 
-using namespace std;
 struct DirectDataKeeper
 {
     BYTE *data;

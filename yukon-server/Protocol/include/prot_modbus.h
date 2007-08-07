@@ -9,8 +9,8 @@
 *
 * PVCS KEYWORDS:
 * ARCHIVE      :  $Archive$
-* REVISION     :  $Revision: 1.2 $
-* DATE         :  $Date: 2006/04/25 22:00:08 $
+* REVISION     :  $Revision: 1.3 $
+* DATE         :  $Date: 2007/08/07 21:05:11 $
 *
 * Copyright (c) 2005 Cannon Technologies Inc. All rights reserved.
 *-----------------------------------------------------------------------------*/
@@ -20,7 +20,6 @@
 
 
 #include <list>
-using namespace std;
 
 #include "dlldefs.h"
 #include "pointtypes.h"
@@ -73,11 +72,11 @@ private:
         }
     };
 
-    set<point_data> _points;
+    std::set<point_data> _points;
 
     //two iterators necessary to make retries easier.
-    set<point_data>::iterator _points_start;
-    set<point_data>::iterator _points_finish;
+    std::set<point_data>::iterator _points_start;
+    std::set<point_data>::iterator _points_finish;
 
     unsigned short CRC16(unsigned char *puchMsg, unsigned short usDataLen);
     unsigned char calcModbusLRC(char *dataString);

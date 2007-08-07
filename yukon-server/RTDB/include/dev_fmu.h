@@ -9,10 +9,13 @@
 * Author: Julie Richter
 *
 * CVS KEYWORDS:
-* REVISION     :  $Revision: 1.3 $
-* DATE         :  $Date: 2007/08/07 19:56:17 $
+* REVISION     :  $Revision: 1.4 $
+* DATE         :  $Date: 2007/08/07 21:05:12 $
 * HISTORY      :
 * $Log: dev_fmu.h,v $
+* Revision 1.4  2007/08/07 21:05:12  mfisher
+* removed "using namespace std;" from header files
+*
 * Revision 1.3  2007/08/07 19:56:17  mfisher
 * removed "using namespace Cti;" from header files
 *
@@ -33,9 +36,6 @@
 #include <queue>
 
 using std::queue;
-//using namespace Cti;
-//using namespace Protocol;
-//using namespace fmuProtocol;
 
 #include "dev_ied.h"
 #include "queue.h"

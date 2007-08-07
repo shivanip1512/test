@@ -54,17 +54,17 @@ private:
         long holidays;
         string excludedWeekDays;
     };
-    typedef pair<long, double> PointValuePair;
-    typedef vector<double> HourlyValues;
-    typedef map<long, CtiTime> PointTimeMap;
-    typedef set<CtiDate> DatesSet;
-    typedef map<long, double> HistoricalPointValueMap;
-    typedef map<long, long> PointBaselineMap;
-    typedef map<long, BaselineData> BaselineMap;
-    typedef map<CtiTime, HistoricalPointValueMap > DynamicTableData;
-    typedef map<CtiTime, HistoricalPointValueMap >::iterator DynamicTableDataIter;
-    typedef map<CtiTime, PointValuePair> DynamicTableSinglePointData;
-    typedef map<CtiTime, PointValuePair >::iterator DynamicTableSinglePointDataIter;
+    typedef std::pair<long, double> PointValuePair;
+    typedef std::vector<double> HourlyValues;
+    typedef std::map<long, CtiTime> PointTimeMap;
+    typedef std::set<CtiDate> DatesSet;
+    typedef std::map<long, double> HistoricalPointValueMap;
+    typedef std::map<long, long> PointBaselineMap;
+    typedef std::map<long, BaselineData> BaselineMap;
+    typedef std::map<CtiTime, HistoricalPointValueMap > DynamicTableData;
+    typedef std::map<CtiTime, HistoricalPointValueMap >::iterator DynamicTableDataIter;
+    typedef std::map<CtiTime, PointValuePair> DynamicTableSinglePointData;
+    typedef std::map<CtiTime, PointValuePair >::iterator DynamicTableSinglePointDataIter;
 
     void periodicThread( void );
     void onUpdateThread( void );

@@ -19,6 +19,8 @@
 
 #include "calcthread.h"
 
+using namespace std;
+
 extern ULONG _CALC_DEBUG;
 extern BOOL  UserQuit;
 extern bool _shutdownOnThreadTimeout;

@@ -6,8 +6,8 @@
 *
 * PVCS KEYWORDS:
 * ARCHIVE      :  $Archive:   Z:/SOFTWAREARCHIVES/YUKON/MACS/mc_svc.cpp-arc  $
-* REVISION     :  $Revision: 1.8 $
-* DATE         :  $Date: 2007/07/10 21:04:06 $
+* REVISION     :  $Revision: 1.9 $
+* DATE         :  $Date: 2007/08/07 21:04:32 $
 *
 * Copyright (c) 1999, 2000, 2001 Cannon Technologies Inc. All rights reserved.
 *-----------------------------------------------------------------------------*/
@@ -28,6 +28,8 @@
 #include "mc_svc.h"
 #include "CParms.h"
 #include "mc_script.h"
+
+using namespace std;
 
 /* CtrlHandler handles is used to catch ctrl-c in the case where macs is being
    run in a console */

@@ -8,6 +8,8 @@
 #include "fdrinterface.h"
 #include "fdrscadaserver.h"
 
+using namespace std;
+
 int CtiFDRClientServerConnection::_nextConnectionNumber = 1;
 
 

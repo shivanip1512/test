@@ -54,7 +54,7 @@ private:
     bool _ok, _restart, _update;
     string _dispatchMachine;
     INT _dispatchPort;
-    typedef queue<CtiDBChangeMsg> messageQueue;
+    typedef std::queue<CtiDBChangeMsg> messageQueue;
     messageQueue _dbChangeMessages;
     CtiCalculateThread::CtiCalcThreadInterruptReason _interruptReason;
     CtiCalculateThread *calcThread;

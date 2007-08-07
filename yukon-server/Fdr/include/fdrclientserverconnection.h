@@ -4,6 +4,9 @@
  *
  *    History: 
  *     $Log$
+ *     Revision 1.4  2007/08/07 21:04:40  mfisher
+ *     removed "using namespace std;" from header files
+ *
  *     Revision 1.3  2005/12/20 17:17:15  tspar
  *     Commiting  RougeWave Replacement of:  RWCString RWTokenizer RWtime RWDate Regex
  *
@@ -30,8 +33,6 @@
 
 #include "dlldefs.h"
 #include "queues.h"
-
-using namespace std;
 
 class CtiFDRScadaServer;
 
@@ -72,7 +73,7 @@ class IM_EX_FDRBASE CtiFDRClientServerConnection
     protected:
         void failConnection();
         ULONG getDebugLevel();
-        ostream logNow();
+        std::ostream logNow();
         void sendLinkState(bool linkUp);
     
     private:

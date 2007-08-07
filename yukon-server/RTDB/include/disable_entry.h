@@ -9,8 +9,8 @@
 *
 * PVCS KEYWORDS:
 * ARCHIVE      :  $Archive:   Z:/SOFTWAREARCHIVES/YUKON/RTDB/INCLUDE/disable_entry.h-arc  $
-* REVISION     :  $Revision: 1.3 $
-* DATE         :  $Date: 2007/02/09 20:56:01 $
+* REVISION     :  $Revision: 1.4 $
+* DATE         :  $Date: 2007/08/07 21:05:12 $
 *
 * Copyright (c) 2006 Cannon Technologies Inc. All rights reserved.
 *-----------------------------------------------------------------------------*/
@@ -25,7 +25,6 @@ using boost::shared_ptr;
 #include <rw/db/table.h>
 #include <rw/tpslist.h>
 #include "ctistring.h"
-using namespace std;
 
 typedef set<long>           DisableList;
 typedef set<long>::_Pairib  DisableListPair;

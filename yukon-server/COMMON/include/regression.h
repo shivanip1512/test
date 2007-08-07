@@ -9,10 +9,13 @@
 * Author: Corey G. Plender
 *
 * CVS KEYWORDS:
-* REVISION     :  $Revision: 1.3 $
-* DATE         :  $Date: 2007/06/13 15:28:29 $
+* REVISION     :  $Revision: 1.4 $
+* DATE         :  $Date: 2007/08/07 21:04:52 $
 * HISTORY      :
 * $Log: regression.h,v $
+* Revision 1.4  2007/08/07 21:04:52  mfisher
+* removed "using namespace std;" from header files
+*
 * Revision 1.3  2007/06/13 15:28:29  jotteson
 * YUK-3797
 * Added more control over the number of points used in a regression, also added regression functions that return more data.
@@ -37,14 +40,12 @@
 
 #include "dlldefs.h"
 
-using namespace std;
-
 
 class IM_EX_CTIBASE CtiRegression
 {
 public:
-    typedef pair< double, double > val_type;
-    typedef deque< val_type > regress_col;
+    typedef std::pair< double, double > val_type;
+    typedef std::deque< val_type > regress_col;
 
 private:
 

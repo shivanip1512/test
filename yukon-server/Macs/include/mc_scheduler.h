@@ -9,8 +9,8 @@
 *
 * PVCS KEYWORDS:
 * ARCHIVE      :  $Archive:   Z:/SOFTWAREARCHIVES/YUKON/MACS/INCLUDE/mc_scheduler.h-arc  $
-* REVISION     :  $Revision: 1.5 $
-* DATE         :  $Date: 2005/12/20 19:47:42 $
+* REVISION     :  $Revision: 1.6 $
+* DATE         :  $Date: 2007/08/07 21:04:32 $
 *
 * Copyright (c) 1999, 2000, 2001 Cannon Technologies Inc. All rights reserved.
 *-----------------------------------------------------------------------------*/
@@ -48,8 +48,6 @@
 #include "mc_sched.h"
 #include "mgr_mcsched.h"
 #include "mgr_holiday.h"
-
-using namespace std;
 
 enum ScheduledEventType
 {
@@ -136,7 +134,7 @@ private:
     // use this for an invalid time
     static CtiTime _invalid_time;
 
-    deque< ScheduledEvent > _event_deque;
+    std::deque< ScheduledEvent > _event_deque;
 
     void handleEvent(const ScheduledEvent& event);
 
@@ -181,7 +179,7 @@ private:
         return ( CtiDate(t).day() == CtiDate::now().day() );
     }
 
-    bool inInterval(const CtiTime& t, const pair< CtiTime, CtiTime >& interval) const
+    bool inInterval(const CtiTime& t, const std::pair< CtiTime, CtiTime >& interval) const
     {
         return ( interval.first <= t && interval.second > t );
     }

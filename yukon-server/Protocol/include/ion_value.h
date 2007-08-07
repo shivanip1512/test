@@ -15,7 +15,6 @@
 
 
 #include <vector>
-using namespace std;
 
 #include "dlldefs.h"
 
