@@ -1755,12 +1755,18 @@ CtiCCFeeder& CtiCCFeeder::setMultiMonitorFlag(BOOL flag)
 CtiCCCapBank* CtiCCFeeder::findCapBankToChangeVars(DOUBLE kvarSolution)
 {
     CtiCCCapBank* returnCapBank = NULL;
+    int i = 0;
 
     if( kvarSolution < 0.0 )
     {
-        for(int i=0;i<_cccapbanks.size();i++)
+        //sort according to CloseOrder..
+        CtiCCCapBank_SCloseVector closeCaps;
+        for (i = 0; i < _cccapbanks.size(); i++) 
+            closeCaps.insert(_cccapbanks[i]);
+
+        for(i=0;i<closeCaps.size();i++)
         {
-            CtiCCCapBank* currentCapBank = (CtiCCCapBank*)_cccapbanks[i];
+            CtiCCCapBank* currentCapBank = (CtiCCCapBank*)closeCaps[i];
 
             if( !currentCapBank->getDisableFlag() && !currentCapBank->getControlInhibitFlag() &&
                 !stringCompareIgnoreCase(currentCapBank->getOperationalState(),CtiCCCapBank::SwitchedOperationalState) &&
@@ -1814,9 +1820,10 @@ CtiCCCapBank* CtiCCFeeder::findCapBankToChangeVars(DOUBLE kvarSolution)
         }
         if (returnCapBank == NULL && _RETRY_FAILED_BANKS) 
         {
-            for(int i=0;i<_cccapbanks.size();i++)
+            
+            for(i=0;i<closeCaps.size();i++)
             {
-                CtiCCCapBank* currentCapBank = (CtiCCCapBank*)_cccapbanks[i];
+                CtiCCCapBank* currentCapBank = (CtiCCCapBank*)closeCaps[i];
 
                 if( !currentCapBank->getRetryCloseFailedFlag() && !currentCapBank->getDisableFlag() && !currentCapBank->getControlInhibitFlag() &&
                     !stringCompareIgnoreCase(currentCapBank->getOperationalState(), CtiCCCapBank::SwitchedOperationalState) &&
@@ -1828,14 +1835,20 @@ CtiCCCapBank* CtiCCFeeder::findCapBankToChangeVars(DOUBLE kvarSolution)
                     break;
                 }
             }
-        } 
+        }         
 
     }
     else if( kvarSolution > 0.0 )
     {
-        for(int i=_cccapbanks.size()-1;i>=0;i--)
+        //sort according to TripOrder..
+        CtiCCCapBank_STripVector tripCaps;
+        for (i = 0; i < _cccapbanks.size(); i++) 
+            tripCaps.insert(_cccapbanks[i]);
+
+
+        for(i=0; i < tripCaps.size();i++)
         {
-            CtiCCCapBank* currentCapBank = (CtiCCCapBank*)_cccapbanks[i];
+            CtiCCCapBank* currentCapBank = (CtiCCCapBank*)tripCaps[i];
             if( !currentCapBank->getDisableFlag() && !currentCapBank->getControlInhibitFlag() &&
                 !stringCompareIgnoreCase(currentCapBank->getOperationalState(),CtiCCCapBank::SwitchedOperationalState) &&
                 ( currentCapBank->getControlStatus() == CtiCCCapBank::Close ||
@@ -1888,9 +1901,9 @@ CtiCCCapBank* CtiCCFeeder::findCapBankToChangeVars(DOUBLE kvarSolution)
         }
         if (returnCapBank == NULL && _RETRY_FAILED_BANKS) 
         {
-            for(int i=_cccapbanks.size()-1;i>=0;i--)
+            for(i=0; i < tripCaps.size();i++)
             {
-                CtiCCCapBank* currentCapBank = (CtiCCCapBank*)_cccapbanks[i];
+                CtiCCCapBank* currentCapBank = (CtiCCCapBank*)tripCaps[i];
 
                 if( !currentCapBank->getRetryOpenFailedFlag() && !currentCapBank->getDisableFlag() && !currentCapBank->getControlInhibitFlag() &&
                     !stringCompareIgnoreCase(currentCapBank->getOperationalState(), CtiCCCapBank::SwitchedOperationalState) &&
@@ -2966,6 +2979,7 @@ BOOL CtiCCFeeder::capBankVerificationStatusUpdate(CtiMultiMsg_vec& pointChanges,
     string text = "";
     string additional = "";
     BOOL assumedWrongFlag = FALSE;
+
 
     BOOL vResult = FALSE; //fail
 
@@ -5958,3 +5972,4 @@ CtiCCCapBank* CtiCCFeeder::getMonitorPointParentBank(CtiCCMonitorPoint* point)
     }
     return NULL;
 }
+

@@ -41,8 +41,21 @@ struct CtiCCCapBank_less
     bool operator()( const CtiCCCapBank* _X , const CtiCCCapBank *_Y)
         { return ( _X->getControlOrder() < _Y->getControlOrder() ); }
 };
+struct CtiCCCapBank_lessClose 
+{
+    bool operator()( const CtiCCCapBank* _X , const CtiCCCapBank *_Y)
+        { return ( _X->getCloseOrder() < _Y->getCloseOrder() ); }
+};
+struct CtiCCCapBank_lessTrip 
+{
+    bool operator()( const CtiCCCapBank* _X , const CtiCCCapBank *_Y)
+        { return ( _X->getTripOrder() < _Y->getTripOrder() ); }
+};
 //Typedef for Sanity using sorted vectors
 typedef codeproject::sorted_vector<CtiCCCapBank*,false,CtiCCCapBank_less> CtiCCCapBank_SVector;
+typedef codeproject::sorted_vector<CtiCCCapBank*,false,CtiCCCapBank_lessClose> CtiCCCapBank_SCloseVector;
+typedef codeproject::sorted_vector<CtiCCCapBank*,false,CtiCCCapBank_lessTrip> CtiCCCapBank_STripVector;
+
 
 template<class T>
 struct FeederVARComparison
