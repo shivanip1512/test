@@ -295,37 +295,72 @@ void CCU711::CreateMessage(int MsgType, int WrdFnc, unsigned char Data[], int cc
 
                 if(subCCU710.getWordFunction(0) == FUNCACK)
                 {
-                // Use a 710 to form the content in the message
-                subCCU710.CreateMessage(FEEDEROP, FUNCACK, _mctNumber, ccuNumber);
-                unsigned char SendData[300];
-                subCCU710.SendMsg(SendData);
-                int smallCtr = 0;
-                _outmessageData[Ctr++] = SendData[smallCtr++];
-                _outmessageData[Ctr++] = SendData[smallCtr++];
-                _outmessageData[Ctr++] = SendData[smallCtr++];
-                _outmessageData[Ctr++] = SendData[smallCtr++];
-                _outmessageData[Ctr++] = SendData[smallCtr++];
-                _outmessageData[Ctr++] = SendData[smallCtr++];
-                _outmessageData[Ctr++] = SendData[smallCtr++];
-                _outmessageData[Ctr++] = SendData[smallCtr++];
-                _outmessageData[Ctr++] = SendData[smallCtr++];
-                _outmessageData[Ctr++] = SendData[smallCtr++];
-                _outmessageData[Ctr++] = SendData[smallCtr++];
+                    // Use a 710 to form the content in the message
+                    subCCU710.CreateMessage(FEEDEROP, FUNCACK, _mctNumber, ccuNumber);
+                    unsigned char SendData[300];
+                    subCCU710.SendMsg(SendData);
+                    int smallCtr = 0;
+                    _outmessageData[Ctr++] = SendData[smallCtr++];
+                    _outmessageData[Ctr++] = SendData[smallCtr++];
+                    _outmessageData[Ctr++] = SendData[smallCtr++];
+                    _outmessageData[Ctr++] = SendData[smallCtr++];
+                    _outmessageData[Ctr++] = SendData[smallCtr++];
+                    _outmessageData[Ctr++] = SendData[smallCtr++];
+                    _outmessageData[Ctr++] = SendData[smallCtr++];
+                    _outmessageData[Ctr++] = SendData[smallCtr++];
+                    _outmessageData[Ctr++] = SendData[smallCtr++];
+                    _outmessageData[Ctr++] = SendData[smallCtr++];
+                    _outmessageData[Ctr++] = SendData[smallCtr++];
                 }
-            
+                else if(subCCU710.getWordFunction(0) == READ)
+                {
+                    unsigned char SendData[300];
+                    int smallCtr = 0;
+
+                    // Use a 710 to form the content in the message
+                    switch(subCCU710.getWordsRequested())
+                    {
+                        case 1:
+                            subCCU710.CreateMessage(FEEDEROP, READREP1, _mctNumber, ccuNumber);
+                            break;
+                        case 2:
+                            subCCU710.CreateMessage(FEEDEROP, READREP2, _mctNumber, ccuNumber);
+                            break;
+                        case 3:
+                            subCCU710.CreateMessage(FEEDEROP, READREP3, _mctNumber, ccuNumber);
+                            break;
+                    }
+                    subCCU710.SendMsg(SendData);
+                    smallCtr = 0;
+                    for(int i = 0; i < subCCU710.getWordsRequested(); i++)
+                    {
+                        _outmessageData[Ctr++] = SendData[smallCtr++];
+                        _outmessageData[Ctr++] = SendData[smallCtr++];
+                        _outmessageData[Ctr++] = SendData[smallCtr++];
+                        _outmessageData[Ctr++] = SendData[smallCtr++];
+                        _outmessageData[Ctr++] = SendData[smallCtr++];
+                        _outmessageData[Ctr++] = SendData[smallCtr++];
+                        _outmessageData[Ctr++] = SendData[smallCtr++];
+                        _outmessageData[Ctr++] = SendData[smallCtr++];
+                        _outmessageData[Ctr++] = SendData[smallCtr++];
+                        _outmessageData[Ctr++] = SendData[smallCtr++];
+                        _outmessageData[Ctr++] = SendData[smallCtr++];
+                    }
+                }
+
                 _outmessageData[3] = Ctr-4;      // # of bytes to follow minus two (see note above)
-                                            
+
                 unsigned short CRC = NCrcCalc_C ((_outmessageData + 1), Ctr-1);
                 _outmessageData[Ctr++] = HIBYTE (CRC);
                 _outmessageData[Ctr++] = LOBYTE (CRC);
-        
+
                 //  Output for debugging only
                 /*for(int i=0; i<Ctr; i++) {
-                    std::cout<<"_outmessageData "<<string(CtiNumStr(_outmessageData[i]).hex().zpad(2))<<std::endl;
-                }*/
-		}
-		_outindexOfEnd = Ctr;
-	}
+                        std::cout<<"_outmessageData "<<string(CtiNumStr(_outmessageData[i]).hex().zpad(2))<<std::endl;
+                    }*/
+        }
+        _outindexOfEnd = Ctr;
+    }
     else if(_messageType == PING) {
         int Ctr = 0;
         _outmessageData[Ctr++] = 0xc3;							

@@ -29,18 +29,16 @@ CCU710::CCU710() :
       _indexOfEnd(0),
       _indexOfWords(0),
       _outindexOfEnd(0),
-      _outindexOfWords(0)
+      _outindexOfWords(0),
+      _wordsRequested(0),
+      _messageType(0),
+      _commandType(0),
+      _preamble(0),
+      _outmessageType(0),
+      _outcommandType(0),
+      _outpreamble(0),
+      _bytesToFollow(0)
 {
-      _messageType  = 0;
-      _commandType  = 0;
-      _preamble     = 0;
-
-      _outmessageType  = 0;
-      _outcommandType  = 0;
-      _outpreamble     = 0;
-
-      _bytesToFollow = 0;
-
       memset(_messageData, 0, 100);
       memset(_outmessageData, 0, 100);
 }
@@ -122,6 +120,7 @@ int CCU710::ReceiveMore(unsigned char Data[], int &setmctNumber, int counter)
     WordFunction = DecodeFunction(WordType);
     setmctNumber = DecodeMctAddress();
     WTF = DecodeWTF(WordType, Data);
+    _wordsRequested = WTF;
     //  If there is a 'c' word following the 'b' word
     //  then WTF indicates 'c' _words to follow so they should be stored
     if(WTF>0) {
@@ -383,10 +382,11 @@ int CCU710::DecodeFunction(int WordType){
 
 
 int CCU710::DecodeWTF(int WordType, unsigned char Data[]){
-	if((Data[4] & 0x10) == 0x10) {  return 1;   }
-	else if((Data[4] & 0x20) == 0x20) {  return 2;   }
-	else if((Data[4] & 0x30) == 0x30) {  return 3;   }
-	else return 0;
+    int WTF = 0;
+	if((Data[7] & 0x10) == 0x10) {  WTF = 1;   }
+	if((Data[7] & 0x20) == 0x20) {  WTF = 2;   }
+	if((Data[7] & 0x30) == 0x30) {  WTF = 3;   }
+	return WTF;
 }
 
 
@@ -425,6 +425,84 @@ void CCU710::CreateMessage(int MsgType, int WrdFnc, int mctNumber, int ccuNumber
             /*for(int i=0; i<Ctr; i++) {
                 std::cout<<"_messageData "<<string(CtiNumStr(_messageData[i]).hex().zpad(2))<<std::endl;
             }*/
+        }
+        else if(WrdFnc==READREP1) {
+            unsigned char ack = makeAck(ccuNumber);
+            _outmessageData[Ctr++] = ack;							
+            _outmessageData[Ctr++] = ack;	
+            _outmessageData[Ctr++] = 0x82;	
+
+            EmetconWord newWord;
+            int Function = 0;
+            Ctr = newWord.InsertWord(D_WORD,  _outmessageData, Function, mctNumber, Ctr);
+            _words[0]=newWord;
+            _outmessageData[Ctr++] = ack; 
+        }
+        else if(WrdFnc==READREP1) {
+            unsigned char ack = makeAck(ccuNumber);
+            _outmessageData[Ctr++] = ack;							
+            _outmessageData[Ctr++] = ack;	
+            _outmessageData[Ctr++] = 0x82;	
+
+            EmetconWord newWord;
+            int Function = 0;
+            Ctr = newWord.InsertWord(D_WORD,  _outmessageData, Function, mctNumber, Ctr);
+            _words[0]=newWord;
+            _outmessageData[Ctr++] = ack; 
+        }
+        else if(WrdFnc==READREP1) {
+            unsigned char ack = makeAck(ccuNumber);
+            _outmessageData[Ctr++] = ack;							
+            _outmessageData[Ctr++] = ack;	
+            _outmessageData[Ctr++] = 0x82;	
+
+            EmetconWord newWord;
+            int Function = 0;
+            Ctr = newWord.InsertWord(D_WORD,  _outmessageData, Function, mctNumber, Ctr);
+            _words[0]=newWord;
+            _outmessageData[Ctr++] = ack; 
+        }
+        else if(WrdFnc==READREP2) {
+            unsigned char ack = makeAck(ccuNumber);
+            _outmessageData[Ctr++] = ack;							
+            _outmessageData[Ctr++] = ack;	
+            _outmessageData[Ctr++] = 0x82;	
+
+            EmetconWord newWord;
+            int Function = 0;
+            Ctr = newWord.InsertWord(D_WORD,  _outmessageData, Function, mctNumber, Ctr);
+            _words[0]=newWord;
+            _outmessageData[Ctr++] = ack;
+
+            EmetconWord newWord2;
+            Function = 0;
+            Ctr = newWord.InsertWord(D_WORD,  _outmessageData, Function, mctNumber, Ctr);
+            _words[1]=newWord;
+            _outmessageData[Ctr++] = ack; 
+        }
+        else if(WrdFnc==READREP3) {
+            unsigned char ack = makeAck(ccuNumber);
+            _outmessageData[Ctr++] = ack;							
+            _outmessageData[Ctr++] = ack;	
+            _outmessageData[Ctr++] = 0x82;	
+
+            EmetconWord newWord;
+            int Function = 0;
+            Ctr = newWord.InsertWord(D_WORD,  _outmessageData, Function, mctNumber, Ctr);
+            _words[0]=newWord;
+            _outmessageData[Ctr++] = ack;
+
+            EmetconWord newWord2;
+            Function = 0;
+            Ctr = newWord.InsertWord(D_WORD,  _outmessageData, Function, mctNumber, Ctr);
+            _words[1]=newWord;
+            _outmessageData[Ctr++] = ack; 
+
+            EmetconWord newWord3;
+            Function = 0;
+            Ctr = newWord.InsertWord(D_WORD,  _outmessageData, Function, mctNumber, Ctr);
+            _words[2]=newWord;
+            _outmessageData[Ctr++] = ack;
         }
         _outindexOfEnd = Ctr;
     }
@@ -506,8 +584,7 @@ int CCU710::DecodeCCUAddress()
 }
 
 
-int CCU710::getWordFunction(int wordNum)
-{
-    return _words[wordNum].getWordFunction();
-}
+int CCU710::getWordFunction(int wordNum)    {   return _words[wordNum].getWordFunction();   }
+int CCU710::getWordsRequested()             {   return _wordsRequested;                     }
+
 

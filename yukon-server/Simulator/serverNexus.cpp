@@ -59,7 +59,7 @@ int main(int argc, char *argv[])
 	CTINEXUS * newSocket;
 	newSocket = new CTINEXUS();
 
-	for(int i = 0; i<25 && !(newSocket->CTINexusValid()); i++) {
+	for(int i = 0; i<1000000 && !(newSocket->CTINexusValid()); i++) {
 		listenSocket->CTINexusConnect(newSocket, NULL, 1000, CTINEXUS_FLAG_READEXACTLY);
 		CtiTime Listening;
 		std::cout<<Listening.asString()<<" Listening..."<<std::endl;
