@@ -7,8 +7,8 @@
 
 <script type="text/javascript"> 
 	
-	function toggleLP(){
-		$('lpDiv').toggle();
+	function toggleLP(theDiv){
+		$(theDiv).toggle();
 	}
 
 </script>
@@ -84,10 +84,10 @@
 										<br/>
 										<c:choose>
 											<c:when test="${preResult.days <= 90}">
-												<tags:longLoadProfile styleClass="Link1" deviceId="${deviceId}" lpStartDate="${preResult.startDate}" lpStopDate="${preResult.stopDate}">Profile</tags:longLoadProfile>
+												<tags:longLoadProfile styleClass="Link1" deviceId="${widgetParameters.deviceId}" lpStartDate="${preResult.startDate}" lpStopDate="${preResult.stopDate}">Profile</tags:longLoadProfile>
 											</c:when>
 											<c:otherwise>
-												<span onmouseover="javascript:toggleLP()" onmouseout="javascript:toggleLP()">LP N/A</span>
+												<span onmouseover="javascript:toggleLP($('lpDiv'))" onmouseout="javascript:toggleLP($('lpDiv'))">Profile N/A</span>
 												<div id="lpDiv"  class="widgetPopup" style="top 0; display:none;">
 													The current load profile request will gather more than 90 days of load profile.  Multiple requests of this size could affect overall system performance while being completed.   Please contact the system administrator or break the request into smaller data ranges.
 												</div>
@@ -121,10 +121,10 @@
 									${postResult.averageDailyUsage} / ${postResult.totalUsage}
 								</td>
 								<td width="150px">
-									${postResult.usage}
+									${postResult.peakDate}
 								</td>
 								<td>
-									${postResult.peakDate}
+									${postResult.usage}
 								</td>
 								<td>
 									<!-- Load Profile collection -->
@@ -132,11 +132,12 @@
 										<br/>
 										<c:choose>
 											<c:when test="${postResult.days <= 90}">
-												<tags:longLoadProfile styleClass="Link1" deviceId="${deviceId}" lpStartDate="${postResult.startDate}" lpStopDate="${postResult.stopDate}">LP</tags:longLoadProfile>
+												<tags:longLoadProfile styleClass="Link1" deviceId="${widgetParameters.deviceId}" lpStartDate="${postResult.startDate}" lpStopDate="${postResult.stopDate}">Profile</tags:longLoadProfile>
 											</c:when>
 											<c:otherwise>
-												<div title="Load Profile Collection is unavailable for collection periods of more than 90 days.">
-													LP N/A
+												<span onmouseover="javascript:toggleLP($('lpDiv2'))" onmouseout="javascript:toggleLP($('lpDiv2'))">Profile N/A</span>
+												<div id="lpDiv2"  class="widgetPopup" style="top 0; display:none;">
+													The current load profile request will gather more than 90 days of load profile.  Multiple requests of this size could affect overall system performance while being completed.   Please contact the system administrator or break the request into smaller data ranges.
 												</div>
 											</c:otherwise>
 										</c:choose>
