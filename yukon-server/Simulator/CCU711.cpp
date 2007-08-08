@@ -78,12 +78,15 @@ void CCU711::ReceiveMore(unsigned char ReadBuffer[], int counter)
 
 void CCU711::PrintInput()
 {
-    string printMsg, printCmd, printPre, printWrd, printFnc;
+    if(_messageData[0]==0x7e)
+        {
+        string printMsg, printCmd, printPre, printWrd, printFnc;
 
-	TranslateInfo(INCOMING, printMsg, printCmd, printPre, printWrd, printFnc);
+        TranslateInfo(INCOMING, printMsg, printCmd, printPre, printWrd, printFnc);
 
-	cout<<"Msg: "<<printMsg<<"    Cmd: "<<printCmd<<"    ";
-    subCCU710.PrintInput();
+        cout<<"Msg: "<<printMsg<<"    Cmd: "<<printCmd<<"    ";
+        subCCU710.PrintInput();
+    }
 }
 
 //Build a new message
@@ -142,12 +145,16 @@ void CCU711::PrintMessage(){
         break;
     }
 
-    string printMsg, printCmd, printPre, printWrd, printFnc;
 
-    TranslateInfo(OUTGOING, printMsg, printCmd, printPre, printWrd, printFnc);
-
-    cout<<"Msg: "<<printMsg<<"     Cmd:          "<<printCmd;
-    subCCU710.PrintMessage();
+    if(_messageData[0]==0x7e)
+    {
+        string printMsg, printCmd, printPre, printWrd, printFnc;
+    
+        TranslateInfo(OUTGOING, printMsg, printCmd, printPre, printWrd, printFnc);
+    
+        cout<<"Msg: "<<printMsg<<"     Cmd:          "<<printCmd;
+        subCCU710.PrintMessage();
+    }
 }
 
 void CCU711::TranslateInfo(bool direction, string & printMsg, string & printCmd, string & printPre, string & printWrd, string & printFnc)
@@ -346,6 +353,13 @@ void CCU711::CreateMessage(int MsgType, int WrdFnc, unsigned char Data[], int cc
                         _outmessageData[Ctr++] = SendData[smallCtr++];
                         _outmessageData[Ctr++] = SendData[smallCtr++];
                     }
+                }
+                else if(subCCU710.getWordFunction(0) == WRITE)
+                {
+                    cout<<"Write detected"<<endl;/////////////////////////YOU WERE HERE//////////////////////
+                                                  ///////////////////////   HERE     ////////////////////
+                                                  // ///////////////////////   HERE     ////////////////////
+
                 }
 
                 _outmessageData[3] = Ctr-4;      // # of bytes to follow minus two (see note above)

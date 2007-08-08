@@ -166,7 +166,6 @@ void CCU710::PrintInput()
 //Build a new message
 void CCU710::CreateMsg(int ccuNumber, int mctNumber){
 	unsigned char someData[10];
-    cout<<" _preamble  "<< _preamble <<endl;
 	if(_preamble==FEEDEROP)
 	{
 		//  Feeder operation
@@ -302,7 +301,7 @@ CTINEXUS * CCU710::getNewSocket(){
 int CCU710::DecodePreamble(int &setccuNumber)
 {
 	char _bytesToFollow = 0;
-
+    _preamble = 0;
     // set the ccu number by checking the preamble for the address
     setccuNumber = DecodeCCUAddress();
 
@@ -339,7 +338,6 @@ int CCU710::DecodePreamble(int &setccuNumber)
         _messageType = PING;
         _bytesToFollow = 0;
     }
-
 	else if((_messageData[3]==0x47) && (_messageData[4]==0x30) && (_messageData[5]==0x8e)) {
 		// CCU710 ping
 		_messageType = '1';

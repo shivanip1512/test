@@ -48,12 +48,9 @@ class CCU710{
             FUNCACK    = 41,
             READ       = 42,
             WRITE      = 43,
-<<<<<<< CCU710.h
             READREP1   = 44,
             READREP2   = 45,
             READREP3   = 46,
-=======
->>>>>>> 1.10
             ACKACK     = 51,
             INCOMING   = 0 ,
             OUTGOING   = 1 ,
@@ -87,15 +84,10 @@ class CCU710{
         int DecodeMctAddress();
         //  Determines the ccu address from the preamble
         int DecodeCCUAddress();
-<<<<<<< CCU710.h
         //  Return the funciton of the word stored in the incoming array of words based on index
         int getWordFunction(int wordNum);
         //  Return the number of d words requested
         int getWordsRequested();
-=======
-        //  Return the funciton of the word stored in the incoming array of words based on index
-        int getWordFunction(int wordNum);
->>>>>>> 1.10
 
 	private:
 		//Storage for sockets
