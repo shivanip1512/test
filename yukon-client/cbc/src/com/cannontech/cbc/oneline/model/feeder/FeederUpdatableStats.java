@@ -174,11 +174,11 @@ public class FeederUpdatableStats extends LxAbstractView implements
     }
 
     public void initAllStats() {
+        allStats.add(target);
         allStats.add(timestamp);
         initPointQualCheckable();
         allStats.add(pFactor);
         allStats.add(dailyOps);
-        allStats.add(target);
 
         for (UpdatableTextList list : allStats) {
             list.adjustVisibility();
