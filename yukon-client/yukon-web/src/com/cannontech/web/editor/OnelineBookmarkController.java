@@ -20,13 +20,9 @@ public class OnelineBookmarkController extends AbstractController {
         String itemID = ParamUtil.getString(req, "itemid", null);
         HttpSession session = req.getSession(false);
         String url = null;
-        CapControlForm capForm = null;
-        capForm = (CapControlForm) session.getAttribute("capControlForm");
         
         if (itemID != null)
         {
-            if (capForm != null)
-                capForm.initItem(Integer.parseInt( itemID), OnelineUtil.EDITOR_CAPCONTROL);
             url = OnelineUtil.createEditLink(Integer.parseInt( itemID));
             CtiNavObject navObject = (CtiNavObject) session.getAttribute("CtiNavObject");
             navObject.setNavigation(url);

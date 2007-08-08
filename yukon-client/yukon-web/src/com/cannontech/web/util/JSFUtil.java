@@ -2,6 +2,7 @@ package com.cannontech.web.util;
 
 import java.io.IOException;
 import java.util.List;
+import java.util.Map;
 
 import javax.faces.application.FacesMessage;
 import javax.faces.component.EditableValueHolder;
@@ -101,15 +102,17 @@ public abstract class JSFUtil {
         }
     }
     public static LiteYukonUser getYukonUser() {
-        FacesContext facesCxtInstance = FacesContext.getCurrentInstance();
-        LiteYukonUser liteYukonUser = null;
-        if (facesCxtInstance != null)
-        {
-            ExternalContext externalContext = facesCxtInstance.getExternalContext();
-            liteYukonUser = (LiteYukonUser) externalContext.getSessionMap().get(LoginController.YUKON_USER);
+        FacesContext fc = FacesContext.getCurrentInstance();
+        if( fc != null ){
+            ExternalContext externalContext = fc.getExternalContext();
+            Map map = externalContext.getSessionMap();
+            LiteYukonUser liteYukonUser = (LiteYukonUser) map.get(LoginController.YUKON_USER);
+            return liteYukonUser;
         }
-
-        return liteYukonUser;
+        else
+        {
+            throw new RuntimeException("Could not get Current Instance of FacesContext, returning null user");
+        }
     }
 
     public static void resetForm(String name) {
