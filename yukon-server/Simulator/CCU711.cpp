@@ -18,6 +18,7 @@
 #include "cticalls.h"
 #include "cti_asmc.h"
 #include "color.h"
+#include <queue>
 
 using namespace std;
 
@@ -43,6 +44,11 @@ CCU711::CCU711() :
 
     memset(_messageData, 0, 100);
     memset(_outmessageData, 0, 100);
+
+    if(_messageQueue.empty())
+    {
+        cout<<"empty!"<<endl;
+    }
 }
 
 //Listen for and store an incoming message
@@ -114,7 +120,6 @@ void CCU711::CreateMsg(int ccuNumber){
             CreateMessage(GENREP, ONEACK, someData, ccuNumber, setccuNumber, Address, Frame);
         }
         else if(_commandType==RCOLQ) {
-            cout<<"here!"<<endl;
             CreateMessage(GENREP, FUNCACK, someData, ccuNumber, setccuNumber, Address, Frame); //CHANGE THIS TO POP MESSAGE FROM QUEUE
         }
 		else{ 
@@ -273,7 +278,7 @@ void CCU711::CreateMessage(int MsgType, int WrdFnc, unsigned char Data[], int cc
 			_outmessageData[Ctr++] = Frame;     //  control
 			Ctr++;  		// # of bytes to follow minus two filled in at bottom of section
 			_outmessageData[Ctr++] = 0x02;      // SRC/DES
-			_outmessageData[Ctr++] = 0x26;      // Echo of command received
+			_outmessageData[Ctr++] = 0xa6;      // Echo of command received
 			_outmessageData[Ctr++] = 0x00;      // system status items
 			_outmessageData[Ctr++] = 0x00;      //    "   "
 			_outmessageData[Ctr++] = 0x00;      //    "   "
@@ -303,7 +308,7 @@ void CCU711::CreateMessage(int MsgType, int WrdFnc, unsigned char Data[], int cc
                 _outmessageData[Ctr++] = Frame;     //  control
                 Ctr++;  		// # of bytes to follow minus two filled in at bottom of section
                 _outmessageData[Ctr++] = 0x02;      // SRC/DES
-                _outmessageData[Ctr++] = 0x26;      // Echo of command received
+                _outmessageData[Ctr++] = 0xb2;      // Echo of command received
                 _outmessageData[Ctr++] = 0x00;      // system status items
                 _outmessageData[Ctr++] = 0x00;      //    "   "
                 _outmessageData[Ctr++] = 0x00;      //    "   "
@@ -316,14 +321,16 @@ void CCU711::CreateMessage(int MsgType, int WrdFnc, unsigned char Data[], int cc
                 _outmessageData[Ctr++] = 0x00;     //    "   "
                 _outmessageData[Ctr++] = 0x00;     // process status items
                 _outmessageData[Ctr++] = 0x00;     //    "   "		
-                _outmessageData[Ctr++] = 0x42;
-                _outmessageData[Ctr++] = 0x42;
                 _outmessageData[3] = Ctr-4;      // # of bytes to follow minus two (see note above)
 
                 unsigned short CRC = NCrcCalc_C ((_outmessageData + 1), Ctr-1);
                 _outmessageData[Ctr++] = HIBYTE (CRC);
                 _outmessageData[Ctr++] = LOBYTE (CRC);
             }
+        }
+        else if(_commandType==RCOLQ)
+        {
+            // copy message over from array in message struct
         }
 		else if(_commandType==DTRAN)
         {
@@ -332,7 +339,7 @@ void CCU711::CreateMessage(int MsgType, int WrdFnc, unsigned char Data[], int cc
                 _outmessageData[Ctr++] = Frame;     //  control
                 Ctr++;  		// # of bytes to follow minus two filled in at bottom of section
                 _outmessageData[Ctr++] = 0x02;      // SRC/DES
-                _outmessageData[Ctr++] = 0x26;      // Echo of command received
+                _outmessageData[Ctr++] = 0xa6;      // Echo of command received
                 _outmessageData[Ctr++] = 0x00;      // system status items
                 _outmessageData[Ctr++] = 0x00;      //    "   "
                 _outmessageData[Ctr++] = 0x00;      //    "   "

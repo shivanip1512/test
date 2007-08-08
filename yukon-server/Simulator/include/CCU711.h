@@ -17,6 +17,9 @@
 #include "Winsock2.h"
 #include <iostream>
 #include "CCU710.h"
+#include "ctiTime.h"
+#include <queue>
+
 
 using namespace std;
 
@@ -56,6 +59,15 @@ class CCU711{
             ACKACK     = 51,
             INCOMING   = 0,
             OUTGOING   = 1
+        };
+
+        struct _queueMessage {
+            public:
+
+            private:
+                int _bytesToReturn;
+                unsigned char _data [50];
+                CtiTime _timeWhenReady;
         };
 
         // Constructor to build a new Message
@@ -124,6 +136,7 @@ class CCU711{
         int _outindexOfEnd;
         int _outindexOfWords;
         int _mctNumber;
+        queue <_queueMessage> _messageQueue;
 };
 
 #endif
