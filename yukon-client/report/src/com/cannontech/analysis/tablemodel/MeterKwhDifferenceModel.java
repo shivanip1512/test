@@ -4,6 +4,7 @@ import java.sql.ResultSet;
 import java.sql.SQLException;
 import java.sql.Timestamp;
 import java.util.ArrayList;
+import java.util.Arrays;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
@@ -15,6 +16,7 @@ import org.springframework.jdbc.core.RowCallbackHandler;
 import com.cannontech.clientutils.CTILogger;
 import com.cannontech.common.device.groups.editor.dao.DeviceGroupEditorDao;
 import com.cannontech.common.device.groups.model.DeviceGroup;
+import com.cannontech.common.device.groups.service.DeviceGroupService;
 import com.cannontech.common.util.SqlStatementBuilder;
 import com.cannontech.database.JdbcTemplateHelper;
 import com.cannontech.spring.YukonSpringHook;
@@ -26,6 +28,7 @@ public class MeterKwhDifferenceModel extends BareDatedReportModelBase<MeterKwhDi
     private JdbcOperations jdbcOps = JdbcTemplateHelper.getYukonTemplate();
     private Set<Integer> deviceIds;
     private Set<Integer> deviceNames;
+    private Set<String> groupNames;
     private Double previousKwh = null;
     private String previousGroup = null;
     private String previousDevice = null;
@@ -123,14 +126,23 @@ public class MeterKwhDifferenceModel extends BareDatedReportModelBase<MeterKwhDi
             String wheres = SqlStatementBuilder.convertToSqlLikeList(deviceNames);
             result += wheres;
             result += " ) ";
-        }
+        } else if (groupNames != null && !groupNames.isEmpty()) {
+			
+        	final DeviceGroupService deviceGroupService = YukonSpringHook.getBean("deviceGroupService", DeviceGroupService.class);
+	        result = " PAO.PAOBJECTID IN (";
+	        
+            Set<? extends DeviceGroup> deviceGroups = deviceGroupService.resolveGroupNames(groupNames);
+            String deviceGroupSqlInClause = deviceGroupService.getDeviceGroupSqlInClause(deviceGroups);
+            result += deviceGroupSqlInClause;
+            
+            result += ") ";
+		}
         
         if (result != null) {
             sql.append(" and ");
             sql.append(result);
         }
         
-        sql.append(";");
         return sql;
     }
 
@@ -159,5 +171,9 @@ public class MeterKwhDifferenceModel extends BareDatedReportModelBase<MeterKwhDi
     public void setDeviceNamesFilter(Set<Integer> deviceNameIds) {
         this.deviceNames = deviceNameIds;
     }
+    
+    public void setGroupNames(Set<String> groupNames) {
+		this.groupNames = groupNames;
+	}
     
 }

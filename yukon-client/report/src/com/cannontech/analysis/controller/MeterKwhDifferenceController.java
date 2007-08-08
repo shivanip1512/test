@@ -8,6 +8,7 @@ import javax.servlet.http.HttpServletRequest;
 
 import org.springframework.web.bind.ServletRequestUtils;
 
+import com.cannontech.analysis.ReportFactory;
 import com.cannontech.analysis.report.MeterKwhDifferenceReport;
 import com.cannontech.analysis.report.YukonReportBase;
 import com.cannontech.analysis.tablemodel.MeterKwhDifferenceModel;
@@ -21,7 +22,8 @@ public class MeterKwhDifferenceController extends ReportControllerBase {
     
     private ReportFilter[] filterModelTypes = new ReportFilter[]{
             ReportFilter.METER,
-            ReportFilter.DEVICE};
+            ReportFilter.DEVICE,
+            ReportFilter.GROUPS};
     
     private TimeZone timeZone = TimeZone.getDefault();
     public static final String LINE_SEPARATOR = System.getProperty("line.separator");
@@ -72,6 +74,7 @@ public class MeterKwhDifferenceController extends ReportControllerBase {
             for (int id : idsArray) {
                 idsSet.add(id);
             }
+            kwhModel.setGroupNames(null);
             kwhModel.setDeviceNamesFilter(null);
             kwhModel.setDeviceIdsFilter(idsSet);
         }else if (filterModelType == ReportFilter.DEVICE.ordinal()) {
@@ -90,10 +93,24 @@ public class MeterKwhDifferenceController extends ReportControllerBase {
             for (int id : devicesArray) {
                 devicesSet.add(id);
             }
+            kwhModel.setGroupNames(null);
             kwhModel.setDeviceIdsFilter(null);
             kwhModel.setDeviceNamesFilter(devicesSet);
-        }
-        
+        } else if ( filterModelType == ReportFilter.GROUPS.ordinal() )
+		{
+			String[] paramArray = request.getParameterValues(ReportModelBase.ATT_FILTER_MODEL_VALUES);
+			if( paramArray != null) {
+				HashSet<String> groupsSet = new HashSet<String>();
+				for (String string : paramArray) {
+					groupsSet.add(string);
+				}
+					
+				//Unload paoIDs
+				kwhModel.setDeviceIdsFilter(null);
+				kwhModel.setDeviceNamesFilter(null);
+				kwhModel.setGroupNames(groupsSet);
+			}
+		}
         String param = request.getParameter(ReportModelBase.ATT_START_DATE);
         if( param != null) {
             ((MeterKwhDifferenceModel)model).setStartDate(ServletUtil.parseDateStringLiberally(param, timeZone));
