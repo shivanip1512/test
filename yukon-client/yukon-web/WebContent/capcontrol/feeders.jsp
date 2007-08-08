@@ -32,7 +32,9 @@
 <script type="text/javascript"> 
 	
 	function togglePopup( v ){
-		$(v).toggle();
+		var c = "_true";
+		if( document.getElementById(v + c) != null )
+			$(v + c).toggle();
 	}
 
 </script>
@@ -139,7 +141,7 @@ if( subBus != null ) {
 					       onmouseout="javascript:togglePopup('subPFPopup_<%=subBus.getCcId()%>')"
 						   type="param1" name="cti_dyn" id="<%=subBus.getCcId()%>">
 					<%=CBCUtils.CBC_DISPLAY.getSubBusValueAt(subBus, CBCDisplay.SUB_TARGET_COLUMN) %></a>
-					<div class="ccPFPopup" id="subPFPopup_<%=subBus.getCcId()%>" style="display:none" > 
+					<div class="ccPFPopup" id="subPFPopup_<%=subBus.getCcId()%>_<%=CBCUtils.isPowerFactorControlled(subBus.getControlUnits())%>" style="display:none" > 
 					  <span type="param9" name="cti_dyn" id="<%=subBus.getCcId()%>"><%=CBCUtils.CBC_DISPLAY.getSubBusValueAt(subBus, CBCDisplay.SUB_TARGET_POPUP) %></span>
 					</div>
 					</td>
@@ -259,7 +261,7 @@ for( int i = 0; i < feeders.length; i++ )
 						   onmouseout="javascript:togglePopup('feederPFPopup_<%=feeder.getCcId()%>')"
 						   type="param1" name="cti_dyn" id="<%=feeder.getCcId()%>">
 					<%=CBCUtils.CBC_DISPLAY.getFeederValueAt(feeder, CBCDisplay.FDR_TARGET_COLUMN)%></a>
-					<div class="ccPFPopup" id="feederPFPopup_<%=feeder.getCcId()%>" style="display:none" > 
+					<div class="ccPFPopup" id="feederPFPopup_<%=feeder.getCcId()%>_<%=CBCUtils.isPowerFactorControlled(feeder.getControlUnits())%>" style="display:none" > 
 					  <span type="param8" name="cti_dyn" id="<%=feeder.getCcId()%>"><%=CBCUtils.CBC_DISPLAY.getFeederValueAt(feeder, CBCDisplay.FDR_TARGET_POPUP) %></span>
 					</div>
 					</td>
