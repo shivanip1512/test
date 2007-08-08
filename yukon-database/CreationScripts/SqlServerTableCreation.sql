@@ -1,7 +1,7 @@
 /*==============================================================*/
 /* Database name:  YukonDatabase                                */
 /* DBMS name:      Microsoft SQL Server 2000                    */
-/* Created on:     7/23/2007 1:33:48 PM                         */
+/* Created on:     8/8/2007 3:24:25 PM                          */
 /*==============================================================*/
 
 
@@ -489,6 +489,33 @@ if exists (select 1
             and   indid > 0
             and   indid < 255)
    drop index PAOSchedule.Indx_SchedName
+go
+
+if exists (select 1
+            from  sysindexes
+           where  id    = object_id('POINT')
+            and   name  = 'INDX_PAOBJECTID'
+            and   indid > 0
+            and   indid < 255)
+   drop index POINT.INDX_PAOBJECTID
+go
+
+if exists (select 1
+            from  sysindexes
+           where  id    = object_id('POINT')
+            and   name  = 'INDX_POINTOFFSET'
+            and   indid > 0
+            and   indid < 255)
+   drop index POINT.INDX_POINTOFFSET
+go
+
+if exists (select 1
+            from  sysindexes
+           where  id    = object_id('POINT')
+            and   name  = 'INDX_POINTTYPE'
+            and   indid > 0
+            and   indid < 255)
+   drop index POINT.INDX_POINTTYPE
 go
 
 if exists (select 1
@@ -7529,6 +7556,30 @@ go
 /*==============================================================*/
 create index Indx_PointStGrpID on POINT (
 STATEGROUPID ASC
+)
+go
+
+/*==============================================================*/
+/* Index: INDX_PAOBJECTID                                       */
+/*==============================================================*/
+create unique index INDX_PAOBJECTID on POINT (
+PAObjectID ASC
+)
+go
+
+/*==============================================================*/
+/* Index: INDX_POINTOFFSET                                      */
+/*==============================================================*/
+create unique index INDX_POINTOFFSET on POINT (
+POINTOFFSET ASC
+)
+go
+
+/*==============================================================*/
+/* Index: INDX_POINTTYPE                                        */
+/*==============================================================*/
+create unique index INDX_POINTTYPE on POINT (
+POINTTYPE ASC
 )
 go
 
