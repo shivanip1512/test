@@ -6,8 +6,8 @@
 *
 *    PVCS KEYWORDS:
 *    ARCHIVE      :  $Archive:   Z:/SOFTWAREARCHIVES/YUKON/FDR/fdrlodestarimport.cpp-arc  $
-*    REVISION     :  $Revision: 1.30 $
-*    DATE         :  $Date: 2007/07/17 16:53:39 $
+*    REVISION     :  $Revision: 1.31 $
+*    DATE         :  $Date: 2007/08/08 14:10:05 $
 *
 *
 *    AUTHOR: Josh Wolberg
@@ -19,6 +19,12 @@
 *    ---------------------------------------------------
 *    History:
       $Log: fdrlodestarimport.cpp,v $
+      Revision 1.31  2007/08/08 14:10:05  tspar
+      YUK-4192
+
+      This was limited to lodestar and textimport only.  Text time format was changed and these functions expected a certain format.
+      Changed both to be more adaptable, also put the seconds back into the filename to keep names unique. In case import cycles are ever less than 60 seconds.
+
       Revision 1.30  2007/07/17 16:53:39  jrichter
       YUK-3163
       FDR doesn't log reason for failure to import LSE data
@@ -877,35 +883,51 @@ void CtiFDR_LodeStarImportBase::threadFunctionReadFromFile( void )
                              }
                              if( shouldRenameSaveFileAfterImport() )
                              {
-                                 CHAR oldFileName[250];
-                                 strcpy(oldFileName,fileNameAndPath);
-                                 CHAR newFileName[250];
-                                 CHAR* periodPtr = strchr(fileNameAndPath,'.');//reverse lookup
-                                 if( periodPtr )
-                                 {
-                                     *periodPtr = NULL;
-                                 }
-                                 else
-                                 {
-                                     CtiLockGuard<CtiLogger> doubt_guard(dout);
-                                     dout << "Uh Sir" << endl;
-                                 }
-                                 CtiTime timestamp= CtiTime();
-                                 string tempTime = timestamp.asString().erase(16);
-                                 tempTime = tempTime.replace(10,1,"_");
-                                 tempTime = tempTime.replace(7,1,"_");
-                                 tempTime = tempTime.replace(3,1,"_");
-                                 tempTime = tempTime.erase(13,1);
+                                CHAR oldFileName[250];
+                                strcpy(oldFileName,fileNameAndPath);
+                                CHAR newFileName[250];
+                                CHAR* periodPtr = strchr(fileNameAndPath,'.');//reverse lookup
+                                if( periodPtr )
+                                {
+                                 *periodPtr = NULL;
+                                }
+                                else
+                                {
+                                 CtiLockGuard<CtiLogger> doubt_guard(dout);
+                                 dout << "Uh Sir" << endl;
+                                }
+                                CtiTime timestamp= CtiTime();
+                                string tempTime = timestamp.asString();
 
-                                 _snprintf(newFileName, 250, "%s%s%s",fileNameAndPath, ".", tempTime.c_str());
-                                 MoveFileEx(oldFileName,newFileName, MOVEFILE_REPLACE_EXISTING | MOVEFILE_COPY_ALLOWED);
+                                bool slashesInString = true;
+                                while( slashesInString )
+                                {
+                                    int pos = tempTime.find("/");
+                                    if( pos == string::npos )
+                                    {
+                                        slashesInString = false;
+                                        pos = tempTime.find(":");
+                                        while (pos != string::npos )
+                                        {
+                                            tempTime = tempTime.erase(pos,1);
+                                            pos = tempTime.find(":");
+                                        }
+                                    }
+                                    else
+                                    {
+                                        tempTime = tempTime.replace(pos,1,"_"); 
+                                    }
+                                }
+                                
+                                _snprintf(newFileName, 250, "%s%s%s%s", fileNameAndPath, ".", tempTime.c_str(),".txt" ); 
 
-                                 DWORD lastError = GetLastError();
-                                 if( lastError )
-                                 {
-                                     CtiLockGuard<CtiLogger> doubt_guard(dout);
-                                     dout << "Last Error Code: " << lastError << " for MoveFile()" << endl;
-                                 }
+                                bool success = MoveFileEx(oldFileName,newFileName, MOVEFILE_REPLACE_EXISTING | MOVEFILE_COPY_ALLOWED); 
+                                if ( !success )
+                                {
+                                    DWORD lastError = GetLastError(); 
+                                    CtiLockGuard<CtiLogger> doubt_guard(dout); 
+                                    dout << "Last Error Code: " << lastError << " for MoveFile()" << endl;
+                                }
                              }
                              if( shouldDeleteFileAfterImport() )
                              {

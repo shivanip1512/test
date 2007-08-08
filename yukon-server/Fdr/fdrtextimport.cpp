@@ -6,8 +6,8 @@
 *
 *    PVCS KEYWORDS:
 *    ARCHIVE      :  $Archive:   Z:/SOFTWAREARCHIVES/YUKON/FDR/fdrtextimport.cpp-arc  $
-*    REVISION     :  $Revision: 1.22 $
-*    DATE         :  $Date: 2007/07/19 19:41:48 $
+*    REVISION     :  $Revision: 1.23 $
+*    DATE         :  $Date: 2007/08/08 14:10:05 $
 *
 *
 *    AUTHOR: David Sutton
@@ -19,6 +19,12 @@
 *    ---------------------------------------------------
 *    History: 
       $Log: fdrtextimport.cpp,v $
+      Revision 1.23  2007/08/08 14:10:05  tspar
+      YUK-4192
+
+      This was limited to lodestar and textimport only.  Text time format was changed and these functions expected a certain format.
+      Changed both to be more adaptable, also put the seconds back into the filename to keep names unique. In case import cycles are ever less than 60 seconds.
+
       Revision 1.22  2007/07/19 19:41:48  tspar
       Fixed replacement of '/' characters in the time string. Rather than expecting them to be in certain positions in the string.
 
@@ -1122,7 +1128,7 @@ void CtiFDR_TextImport::threadFunctionReadFromFile( void )
                                                 dout << "Uh Sir" << endl; 
                                             } 
                                             CtiTime timestamp= CtiTime(); 
-                                            string tempTime = timestamp.asString().erase(16);
+                                            string tempTime = timestamp.asString();
 
                                             bool slashesInString = true;
                                             while( slashesInString )
@@ -1132,13 +1138,17 @@ void CtiFDR_TextImport::threadFunctionReadFromFile( void )
                                                 {
                                                     slashesInString = false;
                                                     pos = tempTime.find(":");
-                                                    tempTime = tempTime.erase(pos,1); 
+                                                    while (pos != string::npos )
+                                                    {
+                                                        tempTime = tempTime.erase(pos,1);
+                                                        pos = tempTime.find(":");
+                                                    }
                                                 }
                                                 else
                                                 {
                                                     tempTime = tempTime.replace(pos,1,"_"); 
                                                 }
-                                            }   
+                                            }
 
                                             _snprintf(newFileName, 250, "%s%s%s%s", fileNameAndPath, ".", tempTime.c_str(),".txt" ); 
                                             bool success = MoveFileEx(oldFileName,newFileName, MOVEFILE_REPLACE_EXISTING | MOVEFILE_COPY_ALLOWED); 
@@ -1274,13 +1284,29 @@ void CtiFDR_TextImport::threadFunctionReadFromFile( void )
                                             dout << "Uh Sir" << endl; 
                                         }
                                         CtiTime timestamp= CtiTime(); 
-                                        string tempTime = timestamp.asString().erase(16);
-                                        tempTime = tempTime.replace(10,1,"_");
-                                        tempTime = tempTime.replace(5,1,"_");
-                                        tempTime = tempTime.replace(2,1,"_");
-                                        tempTime = tempTime.erase(13,1);
+                                        string tempTime = timestamp.asString();
 
-                                        _snprintf(newFileName, 250, "%s%s%s",fileNameAndPath, ".", tempTime.c_str()); 
+                                        bool slashesInString = true;
+                                        while( slashesInString )
+                                        {
+                                            int pos = tempTime.find("/");
+                                            if( pos == string::npos )
+                                            {
+                                                slashesInString = false;
+                                                pos = tempTime.find(":");
+                                                while (pos != string::npos )
+                                                {
+                                                    tempTime = tempTime.erase(pos,1);
+                                                    pos = tempTime.find(":");
+                                                }
+                                            }
+                                            else
+                                            {
+                                                tempTime = tempTime.replace(pos,1,"_"); 
+                                            }
+                                        }
+
+                                        _snprintf(newFileName, 250, "%s%s%s%s", fileNameAndPath, ".", tempTime.c_str(),".txt" ); 
                                         MoveFileEx(oldFileName,newFileName, MOVEFILE_REPLACE_EXISTING | MOVEFILE_COPY_ALLOWED); 
 
                                         DWORD lastError = GetLastError(); 
