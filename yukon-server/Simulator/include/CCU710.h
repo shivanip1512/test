@@ -42,7 +42,6 @@ class CCU710{
             C_WORD     = 33,
             D_WORD     = 34,
             E_WORD     = 35,
-            DTRAN      = 11,
             FEEDEROP   = 21,
             PING       = 22,
             FUNCACK    = 41,

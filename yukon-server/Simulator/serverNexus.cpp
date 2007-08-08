@@ -97,7 +97,7 @@ int main(int argc, char *argv[])
             SET_FOREGROUND_BRIGHT_GREEN;
             for( int byteitr = 0; byteitr < (bytesRead); byteitr++ )
             {
-                cout << string(CtiNumStr(ReadBuffer[byteitr]).hex().zpad(2)) << ' ';
+                    cout << string(CtiNumStr(ReadBuffer[byteitr]).hex().zpad(2)) << ' ';
             }
     
     
@@ -112,17 +112,21 @@ int main(int argc, char *argv[])
                     counter++;
                 }
                 for( byteitr = 0; byteitr < BytesToFollow; byteitr++ )
+                {
+                    if(byteitr == 1)
                     {
-                    cout<<string(CtiNumStr(ReadBuffer[byteitr+4]).hex().zpad(2))<<' ';
+                        SET_FOREGROUND_BRIGHT_RED;
+                        cout << string(CtiNumStr(ReadBuffer[byteitr+4]).hex().zpad(2)) << ' ';
+                        SET_FOREGROUND_BRIGHT_GREEN;
+                    }
+                    else
+                        cout<<string(CtiNumStr(ReadBuffer[byteitr+4]).hex().zpad(2))<<' ';
                 }
         
                 aCCU711.ReceiveMore(ReadBuffer, counter);
                 aCCU711.PrintInput();
             }
            
-
-            if(BytesToFollow>0)
-                {
                 aCCU711.CreateMsg(ccuNumber);
 
                 unsigned char SendData[300];
@@ -148,7 +152,11 @@ int main(int argc, char *argv[])
 
                     aCCU711.PrintMessage();
                 }
-            }
+                else
+                {
+                        SET_FOREGROUND_BRIGHT_RED;
+                        cout<<"Error: Outgoing message size < 1"<<endl;
+                }
         }
         else if(TempBuffer[0] & 0x04)
         {   //  It's a 710 message

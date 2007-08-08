@@ -104,9 +104,19 @@ void CCU711::CreateMsg(int ccuNumber){
 		//  General Request
 		unsigned char Frame = getFrame();
 		unsigned char Address = _messageData[1];
-		if(subCCU710.getWordFunction(0)==FUNCACK) {
-			CreateMessage(GENREP, FUNCACK, someData, ccuNumber, setccuNumber, Address, Frame);
-		}
+        if(_commandType==DTRAN)
+        {
+            if(subCCU710.getWordFunction(0)==FUNCACK) {
+                CreateMessage(GENREP, FUNCACK, someData, ccuNumber, setccuNumber, Address, Frame);
+            }
+        }
+        else if(_commandType==LGRPQ) {
+            CreateMessage(GENREP, ONEACK, someData, ccuNumber, setccuNumber, Address, Frame);
+        }
+        else if(_commandType==RCOLQ) {
+            cout<<"here!"<<endl;
+            CreateMessage(GENREP, FUNCACK, someData, ccuNumber, setccuNumber, Address, Frame); //CHANGE THIS TO POP MESSAGE FROM QUEUE
+        }
 		else{ 
 			CreateMessage(GENREP, DEFAULT, someData, ccuNumber, setccuNumber, Address, Frame);
 		}
@@ -168,7 +178,12 @@ void CCU711::TranslateInfo(bool direction, string & printMsg, string & printCmd,
             case GENREP:    printMsg.append("GENREP");      break;
 		}
 		switch(_commandType){
-            case 11:        printCmd.append("DTRAN");       break;
+            case DTRAN:        printCmd.append("DTRAN");       break;
+            case LGRPQ:        printCmd.append("LGRPQ");       break;
+            case RCOLQ:        printCmd.append("RCOLQ");       break;
+            case ACTIN:        printCmd.append("ACTIN");       break;
+            case WSETS:        printCmd.append("WSETS");       break;
+
 		}
 		switch(_preamble){
             case FEEDEROP:  printPre.append("FEEDEROP");    break;
@@ -279,8 +294,39 @@ void CCU711::CreateMessage(int MsgType, int WrdFnc, unsigned char Data[], int cc
 			_outmessageData[Ctr++] = HIBYTE (CRC);
 			_outmessageData[Ctr++] = LOBYTE (CRC);
 		}
+        else if(_commandType==LGRPQ)
+        {
+            _outmessageType = GENREP;
+            if(WrdFnc==ONEACK) {
+                _outmessageData[Ctr++] = 0x7e;
+                _outmessageData[Ctr++] = Address;   //  slave address
+                _outmessageData[Ctr++] = Frame;     //  control
+                Ctr++;  		// # of bytes to follow minus two filled in at bottom of section
+                _outmessageData[Ctr++] = 0x02;      // SRC/DES
+                _outmessageData[Ctr++] = 0x26;      // Echo of command received
+                _outmessageData[Ctr++] = 0x00;      // system status items
+                _outmessageData[Ctr++] = 0x00;      //    "   "
+                _outmessageData[Ctr++] = 0x00;      //    "   "
+                _outmessageData[Ctr++] = 0x00;      //    "   "  
+                _outmessageData[Ctr++] = 0x00;     // device status items
+                _outmessageData[Ctr++] = 0x00;     //    "   "
+                _outmessageData[Ctr++] = 0x00;     //    "   "   
+                _outmessageData[Ctr++] = 0x00;     //    "   "
+                _outmessageData[Ctr++] = 0x00;     //    "   "
+                _outmessageData[Ctr++] = 0x00;     //    "   "
+                _outmessageData[Ctr++] = 0x00;     // process status items
+                _outmessageData[Ctr++] = 0x00;     //    "   "		
+                _outmessageData[Ctr++] = 0x42;
+                _outmessageData[Ctr++] = 0x42;
+                _outmessageData[3] = Ctr-4;      // # of bytes to follow minus two (see note above)
+
+                unsigned short CRC = NCrcCalc_C ((_outmessageData + 1), Ctr-1);
+                _outmessageData[Ctr++] = HIBYTE (CRC);
+                _outmessageData[Ctr++] = LOBYTE (CRC);
+            }
+        }
 		else if(_commandType==DTRAN)
-            {
+        {
                 _outmessageData[Ctr++] = 0x7e;
                 _outmessageData[Ctr++] = Address;   //  slave address
                 _outmessageData[Ctr++] = Frame;     //  control
@@ -357,9 +403,6 @@ void CCU711::CreateMessage(int MsgType, int WrdFnc, unsigned char Data[], int cc
                 else if(subCCU710.getWordFunction(0) == WRITE)
                 {
                     cout<<"Write detected"<<endl;/////////////////////////YOU WERE HERE//////////////////////
-                                                  ///////////////////////   HERE     ////////////////////
-                                                  // ///////////////////////   HERE     ////////////////////
-
                 }
 
                 _outmessageData[3] = Ctr-4;      // # of bytes to follow minus two (see note above)
@@ -383,6 +426,8 @@ void CCU711::CreateMessage(int MsgType, int WrdFnc, unsigned char Data[], int cc
         _outmessageData[Ctr++] = 0x55;	
         _outindexOfEnd = Ctr;
     }
+    else
+        cout<<"Error: Could not form a suitable reply"<<endl;
 	
 }
 
@@ -394,9 +439,21 @@ void CCU711::DecodeCommand(unsigned char Data[]){
 	_messageData[7]=Data[7];
 	_messageData[8]=Data[8];
 	_messageData[9]=Data[9];
-	if((Data[5] & 0x26)==0x26) {
+	if(Data[5] == 0x26) {
 		_commandType = DTRAN;
 	}
+    else if(Data[5] == 0x2b) {
+        _commandType = LGRPQ;    //  Load request group into queue  CMND=43 in book
+    }
+    else if(Data[5] == 0x27) {
+        _commandType = RCOLQ;    //  Read collected queue entries  CMND=39 in book
+    }
+    else if(Data[5] == 0x00) {
+        _commandType = ACTIN;    //  Action/Action sequence  CMND=00 in book
+    }
+    else if(Data[5] == 0x09) {      
+        _commandType = WSETS;    //  Write Parameter sets by ID  CMND=9 in book
+    }
 }
 
 
