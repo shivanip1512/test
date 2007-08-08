@@ -53,7 +53,7 @@ public class ProfilePeakResult {
     }
 
     public String getPeakDate() {
-        return peakDate;
+        return removeTimeSingle(peakDate);
     }
 
     public void setPeakDate(String peakDate) {
@@ -132,4 +132,14 @@ public class ProfilePeakResult {
         this.days = days;
     }
 
+    // This function is used to truncate the time component off of a 
+    // single timestamp object that is kept in string formate
+    private String removeTimeSingle(String dateStr){
+    	String modDateStr = "";
+    	String[] datePieces = null;
+    	datePieces = dateStr.split(" ");
+    	modDateStr = datePieces[0];
+    	return modDateStr;
+    }
+    
 }
