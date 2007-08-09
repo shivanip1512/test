@@ -5,7 +5,6 @@
 <%@ page import="com.cannontech.core.dao.DaoFactory" %>
 <%@ page import="com.cannontech.database.data.lite.LiteYukonPAObject" %>
 <%@ page import="com.cannontech.yukon.cbc.CBCUtils" %>
-<%@ page import="com.cannontech.yukon.cbc.SubSnapshotParams" %>
 
 <jsp:useBean id="capControlCache"
     class="com.cannontech.cbc.web.CapControlCache"
@@ -32,9 +31,7 @@
 <script type="text/javascript"> 
 	
 	function togglePopup( v ){
-		var c = "_true";
-		if( document.getElementById(v + c) != null )
-			$(v + c).toggle();
+		$(v).toggle();
 	}
 
 </script>
@@ -138,15 +135,20 @@ if( subBus != null ) {
 					</td>
 					
 					<td><a onmouseover="javascript:togglePopup('subPFPopup_<%=subBus.getCcId()%>')" 
-					       onmouseout="javascript:togglePopup('subPFPopup_<%=subBus.getCcId()%>')"
-						   type="param1" name="cti_dyn" id="<%=subBus.getCcId()%>">
+					       	onmouseout="javascript:togglePopup('subPFPopup_<%=subBus.getCcId()%>')"
+						   	type="param1" name="cti_dyn" id="<%=subBus.getCcId()%>">
 					<%=CBCUtils.CBC_DISPLAY.getSubBusValueAt(subBus, CBCDisplay.SUB_TARGET_COLUMN) %></a>
 					<div class="ccPFPopup" id="subPFPopup_<%=subBus.getCcId()%>_<%=CBCUtils.isPowerFactorControlled(subBus.getControlUnits())%>" style="display:none" > 
 					  <span type="param9" name="cti_dyn" id="<%=subBus.getCcId()%>"><%=CBCUtils.CBC_DISPLAY.getSubBusValueAt(subBus, CBCDisplay.SUB_TARGET_POPUP) %></span>
 					</div>
 					</td>
-					<td><a type="param2" name="cti_dyn" id="<%=subBus.getCcId()%>">
+					<td><a onmouseover="javascript:togglePopup('subVarLoadPopup_<%=subBus.getCcId()%>')" 
+					       	onmouseout="javascript:togglePopup('subVarLoadPopup_<%=subBus.getCcId()%>')"
+							type="param2" name="cti_dyn" id="<%=subBus.getCcId()%>">
 					<%=CBCUtils.CBC_DISPLAY.getSubBusValueAt(subBus, CBCDisplay.SUB_VAR_LOAD_COLUMN)%></a>
+					<div class="ccVarLoadPopup" id="subVarLoadPopup_<%=subBus.getCcId()%>" style="display:none" > 
+					  <span type="param10" name="cti_dyn" id="<%=subBus.getCcId()%>"><%=CBCUtils.CBC_DISPLAY.getSubBusValueAt(subBus, CBCDisplay.SUB_VAR_LOAD_POPUP) %></span>
+					</div>
 					</td>
 					<td><a type="param3" name="cti_dyn" id="<%=subBus.getCcId()%>">
 					<%=CBCUtils.CBC_DISPLAY.getSubBusValueAt(subBus, CBCDisplay.SUB_TIME_STAMP_COLUMN)%></a>
@@ -167,7 +169,6 @@ if( subBus != null ) {
 		<%
 		if (subBus != null)
 		{
-			SubSnapshotParams snap =  CBCUtils.getSubSnapshot(subBus.getCcId().intValue());
 			String areaName = CBCUtils.getAreaNameFromSubId(subBus.getCcId().intValue());			
 			int varPoint = subBus.getCurrentVarLoadPointID().intValue();
 			int wattPoint = subBus.getCurrentWattLoadPointID().intValue();
@@ -183,7 +184,7 @@ if( subBus != null ) {
 		        <td><font  class="lIndent">Area:<%=areaName%></font></td>
 				</tr>
 		        <tr class="tableCell" style="display: none;">
-		        <td><b><font  class="lIndent">Control Method: <%=snap.getControlMethod()%> (<%=snap.getAlgorithm()%>)</font></b></td>
+		        <td><b><font  class="lIndent">Control Method: <%=subBus.getControlMethod()%> (<%=subBus.getControlUnits()%>)</font></b></td>
 				</tr>
 		        <tr class="tableCell" style="display: none;">
 		     	<%String vrPoint = "(none)";
@@ -265,8 +266,13 @@ for( int i = 0; i < feeders.length; i++ )
 					  <span type="param8" name="cti_dyn" id="<%=feeder.getCcId()%>"><%=CBCUtils.CBC_DISPLAY.getFeederValueAt(feeder, CBCDisplay.FDR_TARGET_POPUP) %></span>
 					</div>
 					</td>
-					<td><a type="param2" name="cti_dyn" id="<%=feeder.getCcId()%>">
+					<td ><a onmouseover="javascript:togglePopup('feederVarLoadPopup_<%=feeder.getCcId()%>')" 
+					       	onmouseout="javascript:togglePopup('feederVarLoadPopup_<%=feeder.getCcId()%>')"
+							type="param2" name="cti_dyn" id="<%=feeder.getCcId()%>">
 					<%=CBCUtils.CBC_DISPLAY.getFeederValueAt(feeder, CBCDisplay.FDR_VAR_LOAD_COLUMN)%></a>
+					<div class="ccVarLoadPopup" id="feederVarLoadPopup_<%=feeder.getCcId()%>" style="display:none" > 
+					  <span type="param9" name="cti_dyn" id="<%=feeder.getCcId()%>"><%=CBCUtils.CBC_DISPLAY.getFeederValueAt(feeder, CBCDisplay.FDR_VAR_LOAD_POPUP) %></span>
+					</div>
 					</td>
 					<td><a type="param3" name="cti_dyn" id="<%=feeder.getCcId()%>">
 					<%=CBCUtils.CBC_DISPLAY.getFeederValueAt(feeder, CBCDisplay.FDR_TIME_STAMP_COLUMN)%></a>

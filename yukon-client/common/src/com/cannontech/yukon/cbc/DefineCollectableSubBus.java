@@ -143,7 +143,10 @@ public void restoreGuts(Object obj, com.roguewave.vsj.VirtualInputStream vstr, c
 			? new Boolean(true) : new Boolean(false) );
     subBus.setPeakPFSetPoint(new Double( vstr.extractDouble() ));
     subBus.setOffpeakPFSetPoint(new Double( vstr.extractDouble() ));
-    subBus.setControlmethod((String) vstr.restoreObject( SimpleMappings.CString ));
+    subBus.setControlMethod((String) vstr.restoreObject( SimpleMappings.CString ));
+    subBus.setPhaseA( new Double( vstr.extractDouble() ));
+    subBus.setPhaseB( new Double( vstr.extractDouble() ));
+    subBus.setPhaseC( new Double( vstr.extractDouble() ));
 	subBus.setCcFeeders( VectorExtract.extractVector(vstr, polystr));
 }
 /**
@@ -243,7 +246,10 @@ public void saveGuts(Object obj, com.roguewave.vsj.VirtualOutputStream vstr, com
 			? 1 : 0 );
     vstr.insertDouble(subBus.getPeakPFSetPoint());
     vstr.insertDouble(subBus.getOffpeakPFSetPoint());
-    vstr.saveObject(subBus.getControlmethod(), SimpleMappings.CString);
-		VectorInsert.insertVector(subBus.getCcFeeders(), vstr, polystr);
+    vstr.saveObject(subBus.getControlMethod(), SimpleMappings.CString);
+    vstr.insertDouble(subBus.getPhaseA());
+    vstr.insertDouble(subBus.getPhaseB());
+    vstr.insertDouble(subBus.getPhaseC());
+	VectorInsert.insertVector(subBus.getCcFeeders(), vstr, polystr);
 }
 }

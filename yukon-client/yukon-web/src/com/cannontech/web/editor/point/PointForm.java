@@ -738,7 +738,7 @@ public SelectItem[] getEmailNotifcations() {
             String location = path + query;                                       
             //bookmark the current page
             HttpSession session = (HttpSession) FacesContext.getCurrentInstance().getExternalContext().getSession(false);
-            CBCNavigationUtil.bookmarkLocation(location,session);
+            CBCNavigationUtil.bookmarkLocationAndRedirect(location,session);
             FacesContext.getCurrentInstance().getExternalContext().redirect(location);            
             FacesContext.getCurrentInstance().responseComplete();            
         } 

@@ -63,6 +63,7 @@ public class CBCDisplay {
     public static final int FDR_ONELINE_VAR_LOAD_COLUMN = 10;
     public static final int FDR_SHORT_TIME_STAMP_COLUMN = 11;
     public static final int FDR_TARGET_POPUP = 12;
+    public static final int FDR_VAR_LOAD_POPUP = 13;
     
     // Column numbers for the SubBus display
     public static final int SUB_AREA_NAME_COLUMN = 0;
@@ -89,6 +90,7 @@ public class CBCDisplay {
     public static final int SUB_ONELINE_DAILY_MAX_OPCNT_COLUMN = 20;
     public static final int SUB_SHORT_TIME_STAMP_COLUMN = 21;
     public static final int SUB_TARGET_POPUP = 22;
+    public static final int SUB_VAR_LOAD_POPUP = 23;
     
     // The color schemes - based on the schedule status
     private static final Color[] _DEFAULT_COLORS = {
@@ -298,6 +300,15 @@ public class CBCDisplay {
             num.setMinimumFractionDigits(0);
             
             return "Target Var: " + num.format( subBus.getTargetvarvalue() );
+        }
+        case SUB_VAR_LOAD_POPUP: {
+            NumberFormat num = NumberFormat.getNumberInstance();
+            num.setMaximumFractionDigits(2);
+            num.setMinimumFractionDigits(0);
+            String str = "Phase A:" + num.format( subBus.getPhaseA() ) 
+                + " Phase B:" + num.format( subBus.getPhaseB() )
+                + " Phase C:" + num.format( subBus.getPhaseC() );
+            return str;
         }
         case SUB_DAILY_OPERATIONS_COLUMN: {
             return new String(subBus.getCurrentDailyOperations() + " / " + (subBus.getMaxDailyOperation()
@@ -556,6 +567,15 @@ public class CBCDisplay {
             
             return "Target Var: " + num.format( feeder.getTargetvarvalue() );
         }
+        case FDR_VAR_LOAD_POPUP: {
+            NumberFormat num = NumberFormat.getNumberInstance();
+            num.setMaximumFractionDigits(2);
+            num.setMinimumFractionDigits(0);
+            String str = "Phase A:" + num.format( feeder.getPhaseA() ) 
+                + " Phase B:" + num.format( feeder.getPhaseB() )
+                + " Phase C:" + num.format( feeder.getPhaseC() );
+            return str;
+        }
         case FDR_POWER_FACTOR_COLUMN: {
             return getPowerFactorText(feeder.getPowerFactorValue()
                                             .doubleValue(), true) + " / " + getPowerFactorText(feeder.getEstimatedPFValue()
@@ -801,8 +821,7 @@ public class CBCDisplay {
             return CBCUtils.getAreaName(subBus.getCcId());
         }
         case SUB_ONELINE_CTL_METHOD_COLUMN: {
-            SubSnapshotParams subSnapshot = CBCUtils.getSubSnapshot(subBus.getCcId());
-            return subSnapshot.getControlMethod();
+            return subBus.getControlMethod();
         }
 
         case SUB_TARGET_COLUMN: {

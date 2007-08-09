@@ -54,7 +54,7 @@ public void add() throws java.sql.SQLException
  */
 public void delete() throws java.sql.SQLException 
 {
-	com.cannontech.database.db.season.DateOfSeason.deleteAllDateSeasons(getSeasonSchedule().getScheduleID(), getDbConnection());
+	com.cannontech.database.db.season.DateOfSeason.deleteAllDateSeasons(getSeasonSchedule().getScheduleId(), getDbConnection());
 
 	getSeasonSchedule().delete();	
 }
@@ -107,7 +107,7 @@ private com.cannontech.database.db.season.SeasonSchedule getSeasonSchedule()
  */
 public Integer getScheduleID()
 {
-	return getSeasonSchedule().getScheduleID();
+	return getSeasonSchedule().getScheduleId();
 }
 /**
  * Insert the method's description here.
@@ -126,7 +126,7 @@ public void retrieve() throws java.sql.SQLException
 	getSeasonSchedule().retrieve();
 
 	java.util.Vector seasonDates = com.cannontech.database.db.season.DateOfSeason.getAllSeasonDates(
-				getSeasonSchedule().getScheduleID(), getDbConnection() );
+				getSeasonSchedule().getScheduleId(), getDbConnection() );
 
 	for( int i = 0; i < seasonDates.size(); i++ )
 		getSeasonDatesVector().add( seasonDates.get(i) );
@@ -186,7 +186,7 @@ public void update() throws java.sql.SQLException
 	getSeasonSchedule().update();
 
 	//delete all the Dates
-	com.cannontech.database.db.season.DateOfSeason.deleteAllDateSeasons(getSeasonSchedule().getScheduleID(), getDbConnection());
+	com.cannontech.database.db.season.DateOfSeason.deleteAllDateSeasons(getSeasonSchedule().getScheduleId(), getDbConnection());
 
 	for (int i = 0; i < getSeasonDatesVector().size(); i++)
 		((com.cannontech.database.db.season.DateOfSeason) getSeasonDatesVector().elementAt(i)).add();	

@@ -25,6 +25,7 @@
          <value>com/cannontech/amr/amrContext.xml</value>
          <value>com/cannontech/amr/amrContext-client.xml</value>
          <value>com/cannontech/foreign/itron/applicationContext.xml</value>
+         <value>com/cannontech/cbc/cbcContext.xml</value>
        </list>
      </constructor-arg>
    </bean>

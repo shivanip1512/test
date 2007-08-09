@@ -59,7 +59,10 @@ public class SubBus extends StreamableCapObject implements
     private Boolean switchOverStatus = null;
     private Double peakPFSetPoint = new Double(100.0);
     private Double offpeakPFSetPoint = new Double(100.0);
-    private String controlmethod = null;
+    private Double phaseA = new Double(0.0);
+    private Double phaseB = new Double(0.0);
+    private Double phaseC = new Double(0.0);
+    private String controlMethod = null;
     
     /**
      * constructor comment.
@@ -701,12 +704,36 @@ public class SubBus extends StreamableCapObject implements
         this.peakPFSetPoint = peakPFSetting;
     }
 
-	public String getControlmethod() {
-		return controlmethod;
+	public String getControlMethod() {
+		return controlMethod;
 	}
 
-	public void setControlmethod(String controlmethod) {
-		this.controlmethod = controlmethod;
+	public void setControlMethod(String controlMethod) {
+		this.controlMethod = controlMethod;
 	}
+
+    public Double getPhaseA() {
+        return phaseA;
+    }
+
+    public void setPhaseA(Double phaseA) {
+        this.phaseA = phaseA;
+    }
+
+    public Double getPhaseB() {
+        return phaseB;
+    }
+
+    public void setPhaseB(Double phaseB) {
+        this.phaseB = phaseB;
+    }
+
+    public Double getPhaseC() {
+        return phaseC;
+    }
+
+    public void setPhaseC(Double phaseC) {
+        this.phaseC = phaseC;
+    }
 
 }

@@ -12,6 +12,7 @@ import com.cannontech.database.cache.DefaultDatabaseCache;
 import com.cannontech.database.data.capcontrol.CapBank;
 import com.cannontech.database.data.lite.LiteComparators;
 import com.cannontech.database.data.lite.LiteYukonPAObject;
+import com.cannontech.database.data.pao.DBEditorTypes;
 import com.cannontech.database.data.pao.DeviceTypes;
 import com.cannontech.database.data.pao.PAOGroups;
 import com.cannontech.database.data.point.PointTypes;
@@ -35,6 +36,7 @@ public class CBCSelectionLists {
     public static final int CapBankSetup = 6;
 	public static final int CapControlSubBusSetup = 1;
 	public static final int CapControlFeederCapBank = 5;
+    public static final int CapControlStrategyEditor = 13;
     
     /* MyFaces 1.10 does not seem to show the correct time with h:outPutText, */
 	/* so we only show date for now within our pages */
@@ -478,6 +480,10 @@ public class CBCSelectionLists {
     
     public Integer getCapType () {
         return DeviceTypes.CAPBANK;
+    }
+    
+    public Integer getStrategyEditorType () {
+        return DBEditorTypes.EDITOR_STRATEGY;
     }
     
     public SelectItem[] getCapBankConfigs (){

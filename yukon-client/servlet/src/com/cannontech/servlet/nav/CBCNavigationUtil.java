@@ -19,10 +19,17 @@ public class CBCNavigationUtil {
         super();
     }
 
-    public static void bookmarkLocation(String redirectURL, HttpSession session) {
+    @SuppressWarnings("unchecked")
+    public static void bookmarkLocationAndRedirect(String redirectURL, HttpSession session) {
         CtiNavObject navObject = (CtiNavObject) session.getAttribute("CtiNavObject");
         navObject.getHistory().push(navObject.getCurrentPage());
         navObject.setNavigation(redirectURL);
+    }
+    
+    @SuppressWarnings("unchecked")
+    public static void bookmarkThisLocation(HttpSession session) {
+        CtiNavObject navObject = (CtiNavObject) session.getAttribute("CtiNavObject");
+        navObject.getHistory().push(navObject.getCurrentPage());
     }
                         
     public static String goBack(HttpSession session) {        

@@ -283,4 +283,18 @@ protected void update( String tableName, String setColumnName[], Object setColum
                constraintColumnValue );
 }
 
+/**
+ * This method was created in VisualAge.
+ * @param tableName java.lang.String
+ * @param constraintColumnName java.lang.String[]
+ * @param constraintColumnNameValue java.lang.String[]
+ */
+protected void update( String tableName, String constraintColumnName[], Object constraintColumnValue[]) throws SQLException
+{
+   getDB().update( 
+               tableName, 
+               constraintColumnName,
+               constraintColumnValue );
+}
+
 }

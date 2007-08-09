@@ -36,7 +36,6 @@ public class TestCapControlArea extends TestCase {
     public void testCapControlAreaCreate() {
         CapControlArea area = new CapControlArea();
         area.setPAOName("CapControlArea " + 1);
-        area.getCapControlArea().setStrategyID(CBCTestUtil.getStrategyID());
         area.setDbConnection(connection);
         areaID = area.getPAObjectID();
         try {
@@ -46,10 +45,6 @@ public class TestCapControlArea extends TestCase {
         }
         assertNotNull(area);
     }
-
-
-
-   
     
     public void testRetrieveArea () {
         CapControlArea area = retrieve();
@@ -72,9 +67,6 @@ public class TestCapControlArea extends TestCase {
 
     public void testUpdateArea () {
         CapControlArea area = retrieve();
-        Integer oldStrategyID = area.getCapControlArea().getStrategyID();
-        Integer newStratID = CBCTestUtil.getStratIDToUpdate();
-        area.getCapControlArea().setStrategyID(newStratID);
         area.setAreaSubs(CBCTestUtil.getFirstFourSubs(area.getCapControlPAOID()));
         try {
             area.update();
@@ -83,21 +75,7 @@ public class TestCapControlArea extends TestCase {
         }
         area = retrieve();
         assertNotNull(area);
-        assertEquals(newStratID, area.getCapControlArea().getStrategyID());
-        assertNotSame(oldStrategyID, area.getCapControlArea());
-        
     }
-/*    public void testDeleteArea() {
-        CapControlArea area = new CapControlArea();
-        area.setCapControlPAOID(31);
-        area.setDbConnection(connection);
-        try {
-            area.delete();
-        } catch (SQLException e) {
-            area = null;
-        }
-        assertNotNull(area);
-    }*/
 
     protected void tearDown() throws Exception {
         if (connection != null) {

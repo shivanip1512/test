@@ -31,6 +31,8 @@ public interface IDBPersistent
    
 	public void update( String tableName, String setColumnName[], Object setColumnValue[], 
                      String constraintColumnName[], Object constraintColumnValue[]) throws SQLException;
+    
+    public void update( String tableName, String constraintColumnName[], Object constraintColumnValue[]) throws SQLException;
                      
    public Connection getDbConnection();
    public void setDbConnection(java.sql.Connection newValue);

@@ -21,9 +21,7 @@ public class TestSubAreaAssignment extends TestCase {
     protected void setUp() throws Exception {
         area = new CapControlArea();
         area.setPAOName("CapControlArea " + 1);
-        area.getCapControlArea().setStrategyID(1);
-        connection = PoolManager.getInstance()
-                                .getConnection(CtiUtilities.getDatabaseAlias());
+        connection = PoolManager.getInstance().getConnection(CtiUtilities.getDatabaseAlias());
         area.setDbConnection(connection);
         try {
             area.add();

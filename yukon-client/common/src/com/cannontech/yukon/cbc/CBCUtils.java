@@ -272,41 +272,41 @@ public final class CBCUtils {
         return areaName;
     }
 
-    /**
-     * @param paoID
-     * @return CapControlStrategy for Paobject. If no strategy exists returns a
-     *         strategy with stratID = 0, stratName = "(none)"
-     */
-    public static SubSnapshotParams getSubSnapshot(int subID) {
-        if (subID >= CtiUtilities.NONE_ZERO_ID) {
-
-            String sqlStmt = "SELECT SubstationbusID, ControlUnits, ControlMethod FROM CapControlSubstationBus, " + "CapControlStrategy WHERE CapControlSubstationBus.StrategyID = CapControlStrategy.StrategyID " + "AND SubStationBusID = ?";
-
-            JdbcOperations yukonTemplate = JdbcTemplateHelper.getYukonTemplate();
-            SubSnapshotParams snapshot = null;
-            try {
-                snapshot = (SubSnapshotParams) yukonTemplate.queryForObject(sqlStmt,
-                                                                            new Integer[] { new Integer(subID) },
-                                                                            new RowMapper() {
-                                                                                public Object mapRow(
-                                                                                        ResultSet rs,
-                                                                                        int rowNum)
-                                                                                        throws SQLException {
-                                                                                    SubSnapshotParams snapParam = new SubSnapshotParams();
-                                                                                    snapParam.setBusID(rs.getInt(1));
-                                                                                    snapParam.setAlgorithm((rs.getString(2)));
-                                                                                    snapParam.setControlMethod(rs.getString(3));
-                                                                                    return snapParam;
-                                                                                }
-
-                                                                            });
-            } catch (IncorrectResultSizeDataAccessException e) {
-                snapshot = new SubSnapshotParams();
-            }
-            return snapshot;
-        }
-        return new SubSnapshotParams();
-    }
+//    /**
+//     * @param paoID
+//     * @return CapControlStrategy for Paobject. If no strategy exists returns a
+//     *         strategy with stratID = 0, stratName = "(none)"
+//     */
+//    public static SubSnapshotParams getSubSnapshot(int subID) {
+//        if (subID >= CtiUtilities.NONE_ZERO_ID) {
+//
+//            String sqlStmt = "SELECT SubstationbusID, ControlUnits, ControlMethod FROM CapControlSubstationBus, " + "CapControlStrategy WHERE CapControlSubstationBus.StrategyID = CapControlStrategy.StrategyID " + "AND SubStationBusID = ?";
+//
+//            JdbcOperations yukonTemplate = JdbcTemplateHelper.getYukonTemplate();
+//            SubSnapshotParams snapshot = null;
+//            try {
+//                snapshot = (SubSnapshotParams) yukonTemplate.queryForObject(sqlStmt,
+//                                                                            new Integer[] { new Integer(subID) },
+//                                                                            new RowMapper() {
+//                                                                                public Object mapRow(
+//                                                                                        ResultSet rs,
+//                                                                                        int rowNum)
+//                                                                                        throws SQLException {
+//                                                                                    SubSnapshotParams snapParam = new SubSnapshotParams();
+//                                                                                    snapParam.setBusID(rs.getInt(1));
+//                                                                                    snapParam.setAlgorithm((rs.getString(2)));
+//                                                                                    snapParam.setControlMethod(rs.getString(3));
+//                                                                                    return snapParam;
+//                                                                                }
+//
+//                                                                            });
+//            } catch (IncorrectResultSizeDataAccessException e) {
+//                snapshot = new SubSnapshotParams();
+//            }
+//            return snapshot;
+//        }
+//        return new SubSnapshotParams();
+//    }
 
     public static Integer getStateGroupIDByGroupName(String groupName) {
         LiteStateGroup[] allStateGroups = DaoFactory.getStateDao()

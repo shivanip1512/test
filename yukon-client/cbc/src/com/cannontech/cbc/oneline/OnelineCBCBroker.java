@@ -78,7 +78,7 @@ public class OnelineCBCBroker implements MessageListener {
                     SubBus subBusAt = subBusMsg.getSubBusAt(i);
 
                     String subName = subBusAt.getCcName();
-                    CTILogger.debug("Generating SubBus: " + getDirBase() + "/" + subName);
+                    CTILogger.info("Generating SubBus: " + getDirBase() + "/" + subName);
 
                     String dirAndFileExt = createFileName(subName);
                     CapControlOnelineCanvas emptyCanvas = new CapControlOnelineCanvas(800,

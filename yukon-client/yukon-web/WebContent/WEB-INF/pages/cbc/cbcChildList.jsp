@@ -126,7 +126,7 @@
 	    				<legend>Links</legend>
 	    			</f:verbatim>
 	    				<f:verbatim><br/></f:verbatim>
-					<x:commandLink action="#{capControlForm.dataModel.createLink}" 
+					<x:commandLink action="#{capControlForm.dataModel.createWizardLink}" 
 								   value="Create Feeder" 
 								   title="Click here to create a feeder. Return after creation to assign the feeder.">
 								   		<f:param  name="type" id="type" value="#{selLists.feederType}"/>
@@ -285,7 +285,7 @@
 	    				<legend>Links</legend>
 	    			</f:verbatim>
 	    				<f:verbatim><br/></f:verbatim>
-					<x:commandLink action="#{capControlForm.dataModel.createLink}" 
+					<x:commandLink action="#{capControlForm.dataModel.createWizardLink}" 
 								   value="Create CapBank" 
 								   title="Click here to create a CapBank. Return after creation to assign the CapBank.">
 								   		<f:param  name="type" id="type" value="#{selLists.capType}"/>

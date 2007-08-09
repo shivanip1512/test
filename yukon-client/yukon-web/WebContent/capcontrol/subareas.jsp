@@ -138,30 +138,43 @@ if (areaBuses.length > 0) {
             </table>
 			</div>
 			</form>
+			
 <script type="text/javascript">
 Event.observe(window, 'load', function() { new CtiNonScrollTable('areaTable','areaHeaderTable');});
 Event.observe(window, 'load', function () {
     getServerData();     
 });
+
 //register the event handler for the system command
-if ($('systemCommandLink'))
-{
-	Event.observe(window, 'load', function () {
-	     new Ajax.PeriodicalUpdater('systemCommandLink', 
-	     '/spring/capcontrol/cbcAjaxController?action=updateSystemCommandMenu', 
-	      {method:'post', asynchronous:true, frequency: 5});
-	      
-	      });
+if ($('systemCommandLink')) {
+	Event.observe(window, 'load', function () { new Ajax.PeriodicalUpdater('systemCommandLink', 
+	    '/spring/capcontrol/cbcAjaxController?action=updateSystemCommandMenu', {
+	    method:'post', 
+	    asynchronous:true, 
+	    frequency: 5, 
+	    onFailure: shitHappened,
+	    onSuccess: allIsWell});
+	});
 }
+
+function shitHappened() {
+  $('bigFatErrorDiv').show();
+}
+
+function allIsWell() {
+	$('bigFatErrorDiv').hide();
+}
+
 function getServerData() {
 	var els = document.getElementsByName('area_state');
 	for (var i=0; i < els.length; i++) {
-	     new Ajax.PeriodicalUpdater("serverMessage"+i, '/servlet/CBCServlet', 
-	                                {method:'post', asynchronous:true, parameters:'areaIndex='+i, frequency:5, onSuccess: updateAreaMenu});
-     
-
-}
-
+	     new Ajax.PeriodicalUpdater("serverMessage"+i, '/servlet/CBCServlet', {
+	     method:'post', 
+	     asynchronous:true, 
+	     parameters:'areaIndex='+i, 
+	     frequency:5, 
+	     onSuccess: updateAreaMenu});
+	}
 }
 
 
@@ -179,14 +192,15 @@ if (areastate == 'ENABLED')
 if (areastate == 'DISABLED')
     document.getElementById('cmd_area_' + areaID).value = generate_SubAreaMenu(areaID,areaname, 1);
 }
-
-
-
 </script>
-      </cti:titledContainer>
-      <div style = "display:none" id = "outerDiv">
-      <cti:titledContainer title="Current Status">
-          <div id="cmd_msg_div" />
-      </cti:titledContainer>
-      </div>
+</cti:titledContainer>
+<div id="bigFatErrorDiv" style="background: red none repeat scroll 0%; display: none; position: fixed; bottom: 0pt; left: 0pt; width: auto; -moz-background-clip: -moz-initial; -moz-background-origin: -moz-initial; -moz-background-inline-policy: -moz-initial; color: white; font-weight: bold;">
+	Your session is invalid.  Refresh this page.
+</div>
+<div style = "display:none" id = "outerDiv">
+	<cti:titledContainer title="Current Status">
+    	<div id="cmd_msg_div" />
+     </cti:titledContainer>
+</div>
+
 </cti:standardPage>

@@ -1,5 +1,12 @@
 package com.cannontech.database.db.season;
 
+import java.util.Vector;
+
+import com.cannontech.clientutils.CTILogger;
+import com.cannontech.common.util.CtiUtilities;
+import com.cannontech.database.PoolManager;
+import com.cannontech.database.SqlUtils;
+import com.cannontech.database.db.capcontrol.CapControlStrategy;
 import com.cannontech.yukon.IDatabaseCache;
 
 /**
@@ -33,7 +40,7 @@ public SeasonSchedule() {
  */
 public void add() throws java.sql.SQLException 
 {
-	Object addValues[] = { getScheduleID(), getScheduleName()};
+	Object addValues[] = { getScheduleId(), getScheduleName()};
 
 	add( TABLE_NAME, addValues );
 }
@@ -43,13 +50,13 @@ public void add() throws java.sql.SQLException
  */
 public void delete() throws java.sql.SQLException 
 {
-	delete( TABLE_NAME, CONSTRAINT_COLUMNS[0], getScheduleID());
+	delete( TABLE_NAME, CONSTRAINT_COLUMNS[0], getScheduleId());
 }
 /**
  * Insert the method's description here.
  * Creation date: (6/22/2004 1:31:31 PM)
  */
-public Integer getScheduleID()
+public Integer getScheduleId()
 {
 	return scheduleID;
 }
@@ -94,7 +101,7 @@ public final static Integer getNextSeasonScheduleID()
  */
 public void retrieve() throws java.sql.SQLException
 {
-	Object constraintValues[] = { getScheduleID()};
+	Object constraintValues[] = { getScheduleId()};
 
 	Object results[] = retrieve(SETTER_COLUMNS, TABLE_NAME, CONSTRAINT_COLUMNS, constraintValues);
 
@@ -128,8 +135,58 @@ public void setScheduleName(String name) {
 public void update() throws java.sql.SQLException
 {
 	Object setValues[] = { getScheduleName()};
-	Object constraintValues[] = { getScheduleID()};
+	Object constraintValues[] = { getScheduleId()};
 
 	update( TABLE_NAME, SETTER_COLUMNS, setValues, CONSTRAINT_COLUMNS, constraintValues);
 }
+
+/**
+ * This method returns all SeasonSchedule currently
+ * in the database with all their attributes populated
+ *
+ */
+@SuppressWarnings("unchecked")
+public static SeasonSchedule[] getAllCBCSchedules() {
+    java.sql.Connection conn = null;
+    java.sql.PreparedStatement pstmt = null;
+    java.sql.ResultSet rset = null;
+    Vector vect = new Vector(32);
+
+   //Get all the data from the database                
+   String sql = "select " + 
+       "ScheduleID, ScheduleName" +
+       " from " + TABLE_NAME + " order by ScheduleName";
+
+    try {       
+        conn = PoolManager.getInstance().getConnection(CtiUtilities.getDatabaseAlias());
+
+        if( conn == null ) {
+            throw new IllegalStateException("Error getting database connection.");
+        }
+        else {
+            pstmt = conn.prepareStatement(sql.toString());          
+            rset = pstmt.executeQuery();
+
+            while( rset.next() ) {
+                SeasonSchedule cbcSS = new SeasonSchedule();
+
+                cbcSS.setScheduleID( new Integer(rset.getInt(1)) );
+                cbcSS.setScheduleName( rset.getString(2) );
+                vect.add( cbcSS );               
+            }
+
+        }       
+    }
+    catch( java.sql.SQLException e ) {
+        CTILogger.error( e.getMessage(), e );
+    }
+    finally {
+        SqlUtils.close(rset, pstmt, conn );
+    }
+
+
+    SeasonSchedule[] strats = new SeasonSchedule[vect.size()];
+    return (SeasonSchedule[])vect.toArray( strats );
+}
+
 }

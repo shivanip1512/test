@@ -118,6 +118,9 @@ public void restoreGuts(Object obj, com.roguewave.vsj.VirtualInputStream vstr, c
     feeder.setPeakPFSetPoint(new Double( vstr.extractDouble() ));
     feeder.setOffpeakPFSetPoint(new Double( vstr.extractDouble() ));
 	feeder.setControlmethod((String) vstr.restoreObject( SimpleMappings.CString ));
+    feeder.setPhaseA( new Double( vstr.extractDouble() ));
+    feeder.setPhaseB( new Double( vstr.extractDouble() ));
+    feeder.setPhaseC( new Double( vstr.extractDouble() ));
 	feeder.setCcCapBanks(VectorExtract.extractVector(vstr,polystr));
 }
 
@@ -196,7 +199,6 @@ public void saveGuts(Object obj, com.roguewave.vsj.VirtualOutputStream vstr, com
     vstr.insertDouble(feeder.getOffpeakPFSetPoint());
 	vstr.saveObject(feeder.getControlmethod(), SimpleMappings.CString);
 	
-
 	/*	we have to do this manually because the new Rogue Wave object in the server
 			doesn't stream correctly */
 //	vstr.insertUnsignedInt( feeder.getCcCapBanks().size() );
@@ -204,7 +206,9 @@ public void saveGuts(Object obj, com.roguewave.vsj.VirtualOutputStream vstr, com
 //	{
 //		vstr.saveObject( ((java.util.Vector)feeder.getCcCapBanks()).get(i), polystr );
 //	}
-    
+    vstr.insertDouble(feeder.getPhaseA());
+    vstr.insertDouble(feeder.getPhaseB());
+    vstr.insertDouble(feeder.getPhaseC());
     VectorInsert.insertVector(feeder.getCcCapBanks(), vstr, polystr);
     
 }

@@ -161,7 +161,7 @@ public class DBCopyForm extends DBEditorForm {
                                                             .getExternalContext()
                                                             .getSession(false);
             String url = "/editor/" + red;
-            CBCNavigationUtil.bookmarkLocation(url, session);
+            CBCNavigationUtil.bookmarkLocationAndRedirect(url, session);
         }
     }
 

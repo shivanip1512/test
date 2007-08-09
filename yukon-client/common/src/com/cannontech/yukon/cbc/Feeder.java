@@ -57,6 +57,9 @@ public class Feeder extends StreamableCapObject implements PointQualityCheckable
     private Double peakPFSetPoint = new Double(100.0);
     private Double offpeakPFSetPoint = new Double(100.0);
     private String controlmethod = null;
+    private Double phaseA = new Double(0.0);
+    private Double phaseB = new Double(0.0);
+    private Double phaseC = new Double(0.0);
     
 	//should only contain objects of type CapBankDevice
 	private java.util.Vector ccCapBanks = null;
@@ -661,4 +664,28 @@ public void setVarValueBeforeControl(java.lang.Double newVarValueBeforeControl) 
 	public void setControlmethod(String controlmethod) {
 		this.controlmethod = controlmethod;
 	}
+    
+    public Double getPhaseA() {
+        return phaseA;
+    }
+
+    public void setPhaseA(Double phaseA) {
+        this.phaseA = phaseA;
+    }
+
+    public Double getPhaseB() {
+        return phaseB;
+    }
+
+    public void setPhaseB(Double phaseB) {
+        this.phaseB = phaseB;
+    }
+
+    public Double getPhaseC() {
+        return phaseC;
+    }
+
+    public void setPhaseC(Double phaseC) {
+        this.phaseC = phaseC;
+    }
 }

@@ -125,7 +125,7 @@
 	    				<legend>Links</legend>
 	    			</f:verbatim>
 	    				<f:verbatim><br/></f:verbatim>
-					<x:commandLink action="#{capControlForm.dataModel.createLink}" 
+					<x:commandLink action="#{capControlForm.dataModel.createWizardLink}" 
 								   value="Create Sub" 
 								   title="Click here to create a sub. Return after creation to assign the sub.">
 								   		<f:param  name="type" id="type" value="#{selLists.substationType}"/>

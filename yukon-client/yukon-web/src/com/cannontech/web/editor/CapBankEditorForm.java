@@ -203,9 +203,10 @@ public class CapBankEditorForm extends DBEditorForm {
             } catch (SQLException e) {
 
             }
-            int stratId = feeder.getCapControlFeeder()
-                                .getStrategyID()
-                                .intValue();
+            int stratId = 0;
+//            int stratId = feeder.getCapControlFeeder()
+//                                .getStrategyID()
+//                                .intValue();
 
             CapControlStrategy strategy = new CapControlStrategy();
             strategy.setStrategyID(new Integer(stratId));

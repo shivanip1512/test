@@ -497,7 +497,7 @@ public class CBControllerEditor implements ICBControllerModel {
             String location = red + val;            
             //bookmark the current page
             HttpSession session = (HttpSession) FacesContext.getCurrentInstance().getExternalContext().getSession(false);
-            new CBCNavigationUtil().bookmarkLocation(location, session);
+            new CBCNavigationUtil().bookmarkLocationAndRedirect(location, session);
             //go to the next page
             FacesContext.getCurrentInstance().getExternalContext().redirect(location);
             FacesContext.getCurrentInstance().responseComplete();
@@ -528,7 +528,7 @@ public class CBControllerEditor implements ICBControllerModel {
             String val = JSFParamUtil.getJSFReqParam("parentId");
             HttpSession session = (HttpSession) FacesContext.getCurrentInstance().getExternalContext().getSession(false);
             String location = "pointWizBase.jsf?parentId=" + val;
-            CBCNavigationUtil.bookmarkLocation(location,session);            
+            CBCNavigationUtil.bookmarkLocationAndRedirect(location,session);            
             FacesContext.getCurrentInstance().getExternalContext().redirect(location);
             FacesContext.getCurrentInstance().responseComplete();
         } 
@@ -560,7 +560,7 @@ public class CBControllerEditor implements ICBControllerModel {
             }
             HttpSession session = (HttpSession) FacesContext.getCurrentInstance().getExternalContext().getSession(false);
             String location = "deleteBasePoint.jsf?" + attribVal;
-            CBCNavigationUtil.bookmarkLocation(location,session);            
+            CBCNavigationUtil.bookmarkLocationAndRedirect(location,session);            
             FacesContext.getCurrentInstance().getExternalContext().redirect(location);
             FacesContext.getCurrentInstance().responseComplete();
         } 
