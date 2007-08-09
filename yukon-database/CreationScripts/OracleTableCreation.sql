@@ -1,7 +1,7 @@
 /*==============================================================*/
 /* Database name:  YukonDatabase                                */
 /* DBMS name:      ORACLE Version 9i                            */
-/* Created on:     8/8/2007 3:25:53 PM                          */
+/* Created on:     8/9/2007 2:10:38 PM                          */
 /*==============================================================*/
 
 
@@ -180,12 +180,6 @@ drop index "Indx_SchedName"
 /
 
 drop index INDX_PAOBJECTID
-/
-
-drop index INDX_POINTOFFSET
-/
-
-drop index INDX_POINTTYPE
 /
 
 drop index "Indx_PointStGrpID"
@@ -6172,22 +6166,6 @@ create index "Indx_PointStGrpID" on POINT (
 /*==============================================================*/
 create unique index INDX_PAOBJECTID on POINT (
    "PAObjectID" ASC
-)
-/
-
-/*==============================================================*/
-/* Index: INDX_POINTOFFSET                                      */
-/*==============================================================*/
-create unique index INDX_POINTOFFSET on POINT (
-   POINTOFFSET ASC
-)
-/
-
-/*==============================================================*/
-/* Index: INDX_POINTTYPE                                        */
-/*==============================================================*/
-create unique index INDX_POINTTYPE on POINT (
-   POINTTYPE ASC
 )
 /
 

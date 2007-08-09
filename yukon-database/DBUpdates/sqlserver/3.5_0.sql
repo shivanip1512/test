@@ -362,6 +362,23 @@ insert into DeviceTypeCommand values (-674, -134, 'Expresscom Group', 4, 'Y', -1
 insert into DeviceTypeCommand values (-675, -135, 'Expresscom Group', 5, 'Y', -1);
 go
 
+if exists (select 1
+            from  sysindexes
+           where  id    = object_id('POINT')
+            and   name  = 'INDX_PAOBJECTID'
+            and   indid > 0
+            and   indid < 255)
+   drop index POINT.INDX_PAOBJECTID
+go
+
+/*==============================================================*/
+/* Index: INDX_PAOBJECTID                                       */
+/*==============================================================*/
+create unique index INDX_PAOBJECTID on POINT (
+PAObjectID ASC
+)
+go
+
 /******************************************************************************/
 /* Run the Stars Update if needed here */
 /* Note: DBUpdate application will ignore this if STARS is not present */

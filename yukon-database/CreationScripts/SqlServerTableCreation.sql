@@ -1,7 +1,7 @@
 /*==============================================================*/
 /* Database name:  YukonDatabase                                */
 /* DBMS name:      Microsoft SQL Server 2000                    */
-/* Created on:     8/8/2007 3:24:25 PM                          */
+/* Created on:     8/9/2007 2:13:17 PM                          */
 /*==============================================================*/
 
 
@@ -498,24 +498,6 @@ if exists (select 1
             and   indid > 0
             and   indid < 255)
    drop index POINT.INDX_PAOBJECTID
-go
-
-if exists (select 1
-            from  sysindexes
-           where  id    = object_id('POINT')
-            and   name  = 'INDX_POINTOFFSET'
-            and   indid > 0
-            and   indid < 255)
-   drop index POINT.INDX_POINTOFFSET
-go
-
-if exists (select 1
-            from  sysindexes
-           where  id    = object_id('POINT')
-            and   name  = 'INDX_POINTTYPE'
-            and   indid > 0
-            and   indid < 255)
-   drop index POINT.INDX_POINTTYPE
 go
 
 if exists (select 1
@@ -7564,22 +7546,6 @@ go
 /*==============================================================*/
 create unique index INDX_PAOBJECTID on POINT (
 PAObjectID ASC
-)
-go
-
-/*==============================================================*/
-/* Index: INDX_POINTOFFSET                                      */
-/*==============================================================*/
-create unique index INDX_POINTOFFSET on POINT (
-POINTOFFSET ASC
-)
-go
-
-/*==============================================================*/
-/* Index: INDX_POINTTYPE                                        */
-/*==============================================================*/
-create unique index INDX_POINTTYPE on POINT (
-POINTTYPE ASC
 )
 go
 
