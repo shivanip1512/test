@@ -6,8 +6,8 @@
 *
 * PVCS KEYWORDS:
 * ARCHIVE      :  $Archive:   Z:/SOFTWAREARCHIVES/YUKON/RTDB/slctdev.cpp-arc  $
-* REVISION     :  $Revision: 1.55 $
-* DATE         :  $Date: 2007/01/26 19:56:13 $
+* REVISION     :  $Revision: 1.56 $
+* DATE         :  $Date: 2007/08/09 21:37:57 $
 *
 * Copyright (c) 1999, 2000, 2001 Cannon Technologies Inc. All rights reserved.
 *-----------------------------------------------------------------------------*/
@@ -30,6 +30,7 @@
 #include "dev_lmi.h"
 #include "dev_tcu.h"
 #include "dev_meter.h"
+#include "dev_gridadvisor.h"
 #include "dev_modbus.h"
 #include "dev_schlum.h"
 #include "dev_fulcrum.h"
@@ -272,6 +273,9 @@ DLLEXPORT CtiDeviceBase* DeviceFactory(RWDBReader &rdr)
 
         case TYPE_RTM:                  NewDevice = CTIDBG_new CtiDeviceRTM;            break;
         case TYPE_FMU:                  NewDevice = CTIDBG_new CtiDeviceFMU;            break;
+
+        case TYPE_FCI:                  NewDevice = CTIDBG_new CtiDeviceGridAdvisor;    break;
+        case TYPE_NEUTRAL_MONITOR:      NewDevice = CTIDBG_new CtiDeviceGridAdvisor;    break;
 
         case TYPE_ENERGYPRO:
         {
