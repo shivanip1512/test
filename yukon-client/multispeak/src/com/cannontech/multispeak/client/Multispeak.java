@@ -19,6 +19,7 @@ import java.util.Vector;
 import org.apache.axis.AxisFault;
 import org.apache.commons.lang.StringUtils;
 import org.springframework.dao.DataAccessException;
+import org.springframework.dao.IncorrectResultSizeDataAccessException;
 
 import com.cannontech.amr.meter.dao.MeterDao;
 import com.cannontech.clientutils.CTILogger;
@@ -99,7 +100,7 @@ public class Multispeak implements MessageListener {
     private static String DISCONNECTED_STATUS_FLAG = "/Meters/Flags/DisconnectedStatus";
     private static String USAGE_MONITORING_FLAG = "/Meters/Flags/UsageMonitoring";
 
-    public static final String REMOVED_METER_NUMBER_SUFFIX = "_REM";
+    public static final String REMOVED_METER_SUFFIX = "_REM";
     
 	/** Singleton incrementor for messageIDs to send to porter connection */
 	private static long messageID = 1;
@@ -298,20 +299,21 @@ public class Multispeak implements MessageListener {
 		
         for (String meterNumber : meterNumbers) {
             
-			com.cannontech.amr.meter.model.Meter meter = 
-                multispeakFuncs.getMeter(vendor.getUniqueKey(), meterNumber);
-			if (meter == null) {
-                ErrorObject err = multispeakFuncs.getErrorObject(meterNumber, 
-                                                                 "MeterNumber: " + meterNumber + " - Was NOT found in Yukon.",
-                                                                 "Meter");
-				errorObjects.add(err);
-			}
-			else {
+			com.cannontech.amr.meter.model.Meter meter;
+			try {
+				meter = multispeakFuncs.getMeter(vendor.getUniqueKey(), meterNumber);
 				long id = generateMessageID();		
 				ODEvent event = new ODEvent(vendor, id);
 				getEventsMap().put(new Long(id), event);
-			    writePilRequest(meter, "ping noqueue", id, 13); 
-			}
+				writePilRequest(meter, "ping noqueue", id, 13); 
+
+			} catch (IncorrectResultSizeDataAccessException e) {
+
+				ErrorObject err = multispeakFuncs.getErrorObject(meterNumber, 
+                       "MeterNumber: " + meterNumber + " - Was NOT found in Yukon.",
+                       "Meter");
+        	   errorObjects.add(err);              
+           }
 		}
     		
 		return toErrorObject(errorObjects);
@@ -329,32 +331,33 @@ public class Multispeak implements MessageListener {
         CTILogger.info("Received " + meterNumbers.length + " Meter(s) for MeterReading from " + vendor.getCompanyName());
         
         for (String meterNumber : meterNumbers) {
-            com.cannontech.amr.meter.model.Meter meter =
-                multispeakFuncs.getMeter(vendor.getUniqueKey(), meterNumber);
-            if (meter == null) {
-                ErrorObject err = multispeakFuncs.getErrorObject(meterNumber, 
-                                                                 "MeterNumber: " + meterNumber + " - Was NOT found in Yukon.",
-                                                                 "Meter");
-                errorObjects.add(err);
-            }
-            else {
-                
-                long id = generateMessageID();      
-                MeterReadEvent event = new MeterReadEvent(vendor, id, meter);
-                getEventsMap().put(new Long(id), event);
-                
-                String commandStr = "getvalue kwh update";
-                if( DeviceTypesFuncs.isMCT4XX(meter.getType()) )
-                    commandStr = "getvalue peak update"; // getvalue peak returns the peak kW and the total kWh
+        	
+            com.cannontech.amr.meter.model.Meter meter;
+            try {
+            	meter = multispeakFuncs.getMeter(vendor.getUniqueKey(), meterNumber);
+ 	        	
+            	long id = generateMessageID();      
+ 	            MeterReadEvent event = new MeterReadEvent(vendor, id, meter);
+ 	            getEventsMap().put(new Long(id), event);
+ 	                
+ 	            String commandStr = "getvalue kwh update";
+ 	            if( DeviceTypesFuncs.isMCT4XX(meter.getType()) )
+ 	            	commandStr = "getvalue peak update"; // getvalue peak returns the peak kW and the total kWh
 
-                writePilRequest(meter, commandStr, id, 13);
+ 	            writePilRequest(meter, commandStr, id, 13);
 
-                //Second message (legacy but kept here for reminder.
-//                MeterReadEvent event = new MeterReadEvent(vendor, id, 2);
-//                pilRequest.setCommandString("getvalue demand update");
-//                porterConnection.write(pilRequest);
+ 	            //Second message (legacy but kept here for reminder.
+// 	            MeterReadEvent event = new MeterReadEvent(vendor, id, 2);
+// 	            pilRequest.setCommandString("getvalue demand update");
+// 	            porterConnection.write(pilRequest);
+ 	        } 
+            catch (IncorrectResultSizeDataAccessException e) {
+ 	               
+            	ErrorObject err = multispeakFuncs.getErrorObject(meterNumber, 
+                        "MeterNumber: " + meterNumber + " - Was NOT found in Yukon.",
+                        "Meter");
+            	errorObjects.add(err);            
             }
-            
         }
         
         return toErrorObject(errorObjects);
@@ -372,20 +375,15 @@ public class Multispeak implements MessageListener {
         CTILogger.info("Received " + meterNumbers.length + " Meter(s) for BlockMeterReading from " + vendor.getCompanyName());
         
         for (String meterNumber : meterNumbers) {
-            com.cannontech.amr.meter.model.Meter meter =
-                multispeakFuncs.getMeter(vendor.getUniqueKey(), meterNumber);
-            if (meter == null) {
-                ErrorObject err = multispeakFuncs.getErrorObject(meterNumber, 
-                                                                 "MeterNumber: " + meterNumber + " - Was NOT found in Yukon.",
-                                                                 "Meter");
-                errorObjects.add(err);
-            }
-            else {
+            com.cannontech.amr.meter.model.Meter meter;
+            
+            try {
+            	meter = multispeakFuncs.getMeter(vendor.getUniqueKey(), meterNumber);
                 
-                long id = generateMessageID();
+            	long id = generateMessageID();
                 
-                if (block instanceof LoadFormattedBlockImpl){
-                    int returnMessages = 0;
+            	if (block instanceof LoadFormattedBlockImpl){
+            		int returnMessages = 0;
                     SimpleDateFormat format = new SimpleDateFormat("MM/dd/yyyy HH:mm");
                     String lpCommandStr = "getvalue lp channel 1 " + format.format(new Date());
                     returnMessages++;
@@ -416,9 +414,14 @@ public class Multispeak implements MessageListener {
                     String commandStr = "getvalue demand update";
                     writePilRequest(meter, commandStr, id, 13);
                 }
-
+            } 
+            catch (IncorrectResultSizeDataAccessException e) {
+ 	               
+                ErrorObject err = multispeakFuncs.getErrorObject(meterNumber, 
+                        "MeterNumber: " + meterNumber + " - Was NOT found in Yukon.",
+                        "Meter");
+                errorObjects.add(err);
             }
-            
         }
         
         return toErrorObject(errorObjects);
@@ -441,33 +444,38 @@ public class Multispeak implements MessageListener {
         for (int i = 0; i < cdEvents.length; i++) {
             ConnectDisconnectEvent cdEvent = cdEvents[i];
             String meterNumber = cdEvent.getObjectID();
-            com.cannontech.amr.meter.model.Meter meter =
-                multispeakFuncs.getMeter(vendor.getUniqueKey(), meterNumber);
-            if (meter == null) {
+            com.cannontech.amr.meter.model.Meter meter;
+            try {
+ 	        	meter = multispeakFuncs.getMeter(vendor.getUniqueKey(), meterNumber);
+
+        		if (mspMeterDao.isCDSupportedMeter(meterNumber, vendor.getUniqueKey())){
+ 	                long id = generateMessageID();      
+ 	                CDEvent event = new CDEvent(vendor, id);
+ 	                getEventsMap().put(new Long(id), event);
+ 	                
+ 	                String commandStr = "control "; //connect|disconnect
+ 	                String loadActionCode = cdEvent.getLoadActionCode().getValue();
+ 	                if( loadActionCode.equalsIgnoreCase(LoadActionCode._Connect))
+ 	                    commandStr += "connect";
+ 	                else if( loadActionCode.equalsIgnoreCase(LoadActionCode._Disconnect))
+ 	                    commandStr += "disconnect";
+ 	                
+ 	                writePilRequest(meter, commandStr, id, 13);
+ 	                logMSPActivity("initiateConnectDisconnect",
+ 	        						"(ID:" + meter.getDeviceId() + ") MeterNumber (" + meterNumber + ") - " + commandStr + " sent for ReasonCode: " + cdEvent.getReasonCode().getValue(),
+ 	        						vendor.getCompanyName());
+ 	            } else {
+ 	                ErrorObject err = multispeakFuncs.getErrorObject(meterNumber, 
+ 	                												"MeterNumber (" + meterNumber + ") - Invalid Yukon Connect/Disconnect Meter.",
+ 	                												"Meter");
+ 	                errorObjects.add(err);
+ 	            }
+            } 
+            catch (IncorrectResultSizeDataAccessException e) {
+ 	               
                 ErrorObject err = multispeakFuncs.getErrorObject(meterNumber,
-                												 "MeterNumber (" + meterNumber + ") - Invalid Yukon MeterNumber.",
-                                                                 "Meter");
-                errorObjects.add(err);
-            } else if (mspMeterDao.isCDSupportedMeter(meterNumber, vendor.getUniqueKey())){
-                long id = generateMessageID();      
-                CDEvent event = new CDEvent(vendor, id);
-                getEventsMap().put(new Long(id), event);
-                
-                String commandStr = "control "; //connect|disconnect
-                String loadActionCode = cdEvent.getLoadActionCode().getValue();
-                if( loadActionCode.equalsIgnoreCase(LoadActionCode._Connect))
-                    commandStr += "connect";
-                else if( loadActionCode.equalsIgnoreCase(LoadActionCode._Disconnect))
-                    commandStr += "disconnect";
-                
-                writePilRequest(meter, commandStr, id, 13);
-                logMSPActivity("initiateConnectDisconnect",
-        						"(ID:" + meter.getDeviceId() + ") MeterNumber (" + meterNumber + ") - " + commandStr + " sent for ReasonCode: " + cdEvent.getReasonCode().getValue(),
-        						vendor.getCompanyName());
-            } else {
-                ErrorObject err = multispeakFuncs.getErrorObject(meterNumber, 
-                												"MeterNumber (" + meterNumber + ") - Invalid Yukon Connect/Disconnect Meter.",
-                												"Meter");
+						 "MeterNumber (" + meterNumber + ") - Invalid Yukon MeterNumber.",
+                        "Meter");
                 errorObjects.add(err);
             }
         }
@@ -546,8 +554,13 @@ public class Multispeak implements MessageListener {
             ServiceLocation mspServiceLocation = null;
             
             //Find Meter by MeterNumber in Yukon
-            com.cannontech.amr.meter.model.Meter meter =
-                multispeakFuncs.getMeter(mspVendor.getUniqueKey(), meterNo);
+            com.cannontech.amr.meter.model.Meter meter = null;
+            try {
+ 	           meter = multispeakFuncs.getMeter(mspVendor.getUniqueKey(), meterNo);
+            } 
+            catch (IncorrectResultSizeDataAccessException e) {
+            	//Do nothing, its okay (almost better) if one doesn't exist
+            }
             
             if( meter != null) {    //Meter exists in Yukon
                 LiteYukonPAObject liteYukonPaobject = paoDao.getLiteYukonPAO(meter.getDeviceId());
@@ -571,7 +584,7 @@ public class Multispeak implements MessageListener {
                             updateBillingCyle(billingCycle, meter, "MeterAddNotification", mspVendor);
                             
                             String oldPaoName = yukonPaobject.getPAOName();
-                            yukonPaobject.setPAOName(yukonPaobject.getPAOName().replaceAll(REMOVED_METER_NUMBER_SUFFIX, ""));
+                            yukonPaobject.setPAOName(yukonPaobject.getPAOName().replaceAll(REMOVED_METER_SUFFIX, ""));
                             
                             yukonPaobject.setDisabled(false);
                             String logTemp = "";
@@ -612,8 +625,8 @@ public class Multispeak implements MessageListener {
                             
                             if (liteYukonPaoByAddressList.isEmpty()) {  //New Hardware
                                 //Need to "remove" the existing (disabled) Meter Number
-                                deviceMeterGroup.setMeterNumber(meterNo + REMOVED_METER_NUMBER_SUFFIX);
-                                yukonPaobject.setPAOName(yukonPaobject.getPAOName() + REMOVED_METER_NUMBER_SUFFIX);
+                                //deviceMeterGroup.setMeterNumber(meterNo + REMOVED_METER_NUMBER_SUFFIX); DO NOT DO ANYMORE, IT'S A PAIN!
+                                yukonPaobject.setPAOName(yukonPaobject.getPAOName() + REMOVED_METER_SUFFIX);
                                 
 //                              Add meter to Inventory
                                 addFlag(meter, INVENTORY_FLAG, "MeterAddNotification", mspVendor);
@@ -684,7 +697,7 @@ public class Multispeak implements MessageListener {
                                     updateBillingCyle(billingCycle, meter, "MeterAddNotification", mspVendor);
                                     
                                     String oldPaoName = yukonPaobject.getPAOName();
-                                    yukonPaobject.setPAOName(yukonPaobject.getPAOName().replaceAll(REMOVED_METER_NUMBER_SUFFIX, ""));
+                                    yukonPaobject.setPAOName(yukonPaobject.getPAOName().replaceAll(REMOVED_METER_SUFFIX, ""));
                                     
                                     String oldAddress = String.valueOf(deviceCarrierSettings.getAddress());
                                     deviceCarrierSettings.setAddress(Integer.valueOf(mspAddress));
@@ -824,7 +837,7 @@ public class Multispeak implements MessageListener {
                         String oldMeterNo = deviceMeterGroup.getMeterNumber();
                         deviceMeterGroup.setMeterNumber(meterNo);
 
-                        yukonPaobjectByAddress.setPAOName(yukonPaobjectByAddress.getPAOName().replaceAll(REMOVED_METER_NUMBER_SUFFIX, ""));
+                        yukonPaobjectByAddress.setPAOName(yukonPaobjectByAddress.getPAOName().replaceAll(REMOVED_METER_SUFFIX, ""));
                         
                         dbPersistentDao.performDBChange(yukonPaobjectByAddress, Transaction.UPDATE);
                         logMSPActivity("MeterAddNotification",
@@ -865,9 +878,11 @@ public class Multispeak implements MessageListener {
             Meter mspMeter = removeMeters[i];
             String meterNo = mspMeter.getMeterNo().trim();
             //Lookup meter in Yukon by msp meter number
-            com.cannontech.amr.meter.model.Meter meter = 
-                multispeakFuncs.getMeter(mspVendor.getUniqueKey(), meterNo);
-            if( meter != null) {    //Meter exists
+            com.cannontech.amr.meter.model.Meter meter;
+            try {
+            	meter = multispeakFuncs.getMeter(mspVendor.getUniqueKey(), meterNo);
+            	
+            	//Meter exists if no exception was thrown
                 LiteYukonPAObject liteYukonPaobject = paoDao.getLiteYukonPAO(meter.getDeviceId());
                 YukonPAObject yukonPaobject = (YukonPAObject)dbPersistentDao.retrieveDBPersistent(liteYukonPaobject);
                 if (yukonPaobject instanceof MCTBase){
@@ -878,14 +893,14 @@ public class Multispeak implements MessageListener {
                         
                         String oldMeterNo = deviceMeterGroup.getMeterNumber();
                         String oldPaoName = yukonPaobject.getPAOName();
-                        if( oldMeterNo.indexOf(REMOVED_METER_NUMBER_SUFFIX) < 0)
-                            deviceMeterGroup.setMeterNumber(oldMeterNo + REMOVED_METER_NUMBER_SUFFIX);
+//                        if( oldMeterNo.indexOf(REMOVED_METER_NUMBER_SUFFIX) < 0)	//DON"T DO ANYMORE!!!
+//                            deviceMeterGroup.setMeterNumber(oldMeterNo + REMOVED_METER_NUMBER_SUFFIX);
 
 //                      Added meter to Inventory
                         addFlag(meter, INVENTORY_FLAG, "MeterRemovedNotification", mspVendor);
 
-                        if( oldPaoName.indexOf(REMOVED_METER_NUMBER_SUFFIX) < 0)
-                            yukonPaobject.setPAOName(oldPaoName + REMOVED_METER_NUMBER_SUFFIX);
+                        if( oldPaoName.indexOf(REMOVED_METER_SUFFIX) < 0)
+                            yukonPaobject.setPAOName(oldPaoName + REMOVED_METER_SUFFIX);
                         
                         dbPersistentDao.performDBChange(yukonPaobject, Transaction.UPDATE);
                         logMSPActivity("MeterRemoveNotification",
@@ -906,15 +921,17 @@ public class Multispeak implements MessageListener {
                                        mspVendor.getCompanyName());
                     }
                 }
-            }else {
-                ErrorObject err = multispeakFuncs.getErrorObject(meterNo, 
-                                                                 "Error: MeterNumber(" + meterNo + ") - Meter was NOT found in Yukon. No updates were made.",
-                                                                 "Meter");
-                errorObjects.add(err);
-                logMSPActivity("MeterRemoveNotification",
-                               "Error: MeterNumber(" + meterNo + ") - Meter was NOT found in Yukon. No updates were made.",
-                               mspVendor.getCompanyName());
-            }
+            } 
+            catch (IncorrectResultSizeDataAccessException e) {
+ 	               
+            	ErrorObject err = multispeakFuncs.getErrorObject(meterNo, 
+                        "Error: MeterNumber(" + meterNo + ") - Meter was NOT found in Yukon. No updates were made.",
+                        "Meter");
+				errorObjects.add(err);
+				logMSPActivity("MeterRemoveNotification",
+								"Error: MeterNumber(" + meterNo + ") - Meter was NOT found in Yukon. No updates were made.",
+								mspVendor.getCompanyName());              
+            } 
         }
         
         return toErrorObject(errorObjects);
@@ -1087,11 +1104,12 @@ public class Multispeak implements MessageListener {
        
        for  (int i = 0; i < meterNos.length; i++){
            String meterNo = meterNos[i];
-           com.cannontech.amr.meter.model.Meter meter =
-               multispeakFuncs.getMeter(mspVendor.getUniqueKey(), meterNo);
+           com.cannontech.amr.meter.model.Meter meter;
 
-           if( meter != null){
-               try {
+           try {
+	           meter = multispeakFuncs.getMeter(mspVendor.getUniqueKey(), meterNo);
+
+	           try {
                    deviceGroupMemberEditorDao.addDevices((StoredDeviceGroup)deviceGroup, Collections.singletonList(meter) );
 
                    logMSPActivity(logActionStr,
@@ -1103,12 +1121,13 @@ public class Multispeak implements MessageListener {
                                                                     "Meter");
                    errorObjects.add(err);
                } 
-               
-           }else {
+           } 
+           catch (IncorrectResultSizeDataAccessException e) {
+	               
                ErrorObject err = multispeakFuncs.getErrorObject(meterNo, 
-                                                                "MeterNumber: " + meterNo + " - Was NOT found in Yukon.",
-                                                                "Meter");
-               errorObjects.add(err);              
+                       "MeterNumber: " + meterNo + " - Was NOT found in Yukon.",
+                       "Meter");
+               errorObjects.add(err);
            }
        }
        
@@ -1125,13 +1144,13 @@ public class Multispeak implements MessageListener {
        
        for  (int i = 0; i < meterNos.length; i++){
            String meterNo = meterNos[i];
-           com.cannontech.amr.meter.model.Meter meter =
-               multispeakFuncs.getMeter(mspVendor.getUniqueKey(), meterNo);
-
-           if( meter != null){
+           com.cannontech.amr.meter.model.Meter meter;
+           try {
+	           meter = multispeakFuncs.getMeter(mspVendor.getUniqueKey(), meterNo);
                meters.add(meter);
-               
-           }else {
+           } 
+           catch (IncorrectResultSizeDataAccessException e) {
+	               
                ErrorObject err = multispeakFuncs.getErrorObject(meterNo, 
                                                                 "MeterNumber: " + meterNo + " - Was NOT found in Yukon.",
                                                                 "Meter");
