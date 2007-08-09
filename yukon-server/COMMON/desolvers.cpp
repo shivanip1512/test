@@ -8,8 +8,8 @@
 *
 * PVCS KEYWORDS:
 * ARCHIVE      :  $Archive:   Z:/SOFTWAREARCHIVES/YUKON/COMMON/desolvers.cpp-arc  $
-* REVISION     :  $Revision: 1.45 $
-* DATE         :  $Date: 2007/01/26 19:56:12 $
+* REVISION     :  $Revision: 1.46 $
+* DATE         :  $Date: 2007/08/09 21:41:44 $
 *
 * Copyright (c) 1999, 2000, 2001 Cannon Technologies Inc. All rights reserved.
 *-----------------------------------------------------------------------------*/
@@ -36,128 +36,97 @@ string desolveScanType( LONG scanType )
    ScanRateInvalid
 */
 
-   string Ret;
+    string Ret;
 
-   if(scanType == ScanRateGeneral)
-   {
-      Ret = SCANRATE_GENERAL;
-   }
-   else if(scanType == ScanRateAccum)
-   {
-      Ret = SCANRATE_ACCUM;
-   }
-   else if(scanType == ScanRateIntegrity)
-   {
-      Ret = SCANRATE_INTEGRITY;
-   }
-//   else if(scanType == ScanRateGeneral)
-   else if(scanType == ScanRateStatus)
-   {
-      Ret = SCANRATE_STATUS;
-   }
-   else if(scanType == ScanRateGeneral)
-   {
-      Ret = SCANRATE_EXCEPTION;
-   }
-   else
-   {
-        CtiLockGuard<CtiLogger> doubt_guard(dout);
-      dout << "Unsupported scan rate type " << endl;
-      Ret = SCANRATE_INVALID;
-   }
+    switch( scanType )
+    {
+        case ScanRateGeneral:   Ret = SCANRATE_GENERAL;     break;
+        case ScanRateAccum:     Ret = SCANRATE_ACCUM;       break;
+        case ScanRateIntegrity: Ret = SCANRATE_INTEGRITY;   break;
+        case ScanRateStatus:    Ret = SCANRATE_STATUS;      break;
+        default:
+        {
+            {
+                CtiLockGuard<CtiLogger> doubt_guard(dout);
+                dout << "Unsupported scan rate type " << endl;
+            }
 
-   return Ret;
+            Ret = SCANRATE_INVALID;
+
+            break;
+        }
+    }
+
+    return Ret;
 }
 
 string desolveDeviceWindowType( LONG aType )
 {
-   string Ret;
+    string Ret;
 
-   if(aType == DeviceWindowScan)
-   {
-      Ret = DEVICE_WINDOW_TYPE_SCAN;
-   }
-   else if(aType == DeviceWindowPeak)
-   {
-      Ret = DEVICE_WINDOW_TYPE_PEAK;
-   }
-   else if(aType == DeviceWindowAlternateRate)
-   {
-      Ret = DEVICE_WINDOW_TYPE_ALTERNATE_RATE;
-   }
-   else
-   {
-        CtiLockGuard<CtiLogger> doubt_guard(dout);
-      dout << "Unsupported device window type " << endl;
-        Ret = DEVICE_WINDOW_TYPE_INVALID;
-   }
+    switch( aType )
+    {
+        case DeviceWindowScan:          Ret = DEVICE_WINDOW_TYPE_SCAN;              break;
+        case DeviceWindowPeak:          Ret = DEVICE_WINDOW_TYPE_PEAK;              break;
+        case DeviceWindowAlternateRate: Ret = DEVICE_WINDOW_TYPE_ALTERNATE_RATE;    break;
+        default:
+        {
+            {
+                CtiLockGuard<CtiLogger> doubt_guard(dout);
+                dout << "Unsupported device window type " << endl;
+            }
 
-   return Ret;
+            Ret = DEVICE_WINDOW_TYPE_INVALID;
+
+            break;
+        }
+    }
+    
+    return Ret;
 }
 
 
 string desolveStatisticsType( INT statType )
 {
-   string Ret;
+    string Ret;
 
-   if(statType == StatTypeMonthly)
-   {
-      Ret = STATTYPE_MONTHLY;
-   }
-   else if(statType == StatTypeHourly)
-   {
-      Ret = STATTYPE_HOURLY;
-   }
-   else if(statType == StatType24Hour)
-   {
-      Ret = STATTYPE_DAILY;
-   }
-   else
-   {
-        CtiLockGuard<CtiLogger> doubt_guard(dout);
-      dout << "Unsupported statistics collection type " << endl;
-      Ret = STATTYPE_INVALID;
-   }
+    switch( statType )
+    {
+        case StatTypeMonthly:   Ret = STATTYPE_MONTHLY;     break;
+        case StatTypeHourly:    Ret = STATTYPE_HOURLY;      break;
+        case StatType24Hour:    Ret = STATTYPE_DAILY;       break;
+        default:
+        {
+            {
+                CtiLockGuard<CtiLogger> doubt_guard(dout);
+                dout << "Unsupported statistics collection type " << endl;
+            }
 
-   return Ret;
+            Ret = STATTYPE_INVALID;
 
+            break;
+        }
+    }
+
+    return Ret;
 }
 
 string desolveAmpUseType( INT useType )
 {
-   string autype;
+    string autype;
 
-   if( useType == RouteAmpAlternating )
-   {
-      autype = AMPUSE_ATLTERNATE;
-   }
-   else if(useType == RouteAmpAltFail)
-   {
-      autype = AMPUSE_WITHFAIL;
-   }
-   else if(useType == RouteAmpDefault1Fail2)
-   {
-      autype = AMPUSE_DEFAULTONE;
-   }
-   else if(useType == RouteAmpDefault2Fail1)
-   {
-      autype = AMPUSE_DEFAULTTWO;
-   }
-   else if(useType == RouteAmp1)
-   {
-      autype = AMPUSE_AMPONE;
-   }
-   else if(useType == RouteAmp2)
-   {
-      autype = AMPUSE_AMPTWO;
-   }
-   else
-   {
-      autype = AMPUSE_DEFAULTTWO;
-   }
+    switch( useType )
+    {
+        case RouteAmpAlternating:    autype = AMPUSE_ATLTERNATE;     break;
+        case RouteAmpAltFail:        autype = AMPUSE_WITHFAIL;       break;
+        case RouteAmpDefault1Fail2:  autype = AMPUSE_DEFAULTONE;     break;
+        case RouteAmpDefault2Fail1:  autype = AMPUSE_DEFAULTTWO;     break;
+        case RouteAmp1:              autype = AMPUSE_AMPONE;         break;
+        case RouteAmp2:              autype = AMPUSE_AMPTWO;         break;
+        default:                     autype = AMPUSE_DEFAULTTWO;     break;
+    }
 
-   return autype;
-
+    return autype;
 }
 
 
@@ -165,568 +134,277 @@ string desolveDeviceType( INT aType )
 {
     string Ret;
 
+    switch( aType )
+    {
+        case TYPE_CCU721:       Ret = "ccu-721";        break;       
+        case TYPE_CCU711:       Ret = "ccu-711";        break;
+        case TYPE_CCU710:       Ret = "ccu-710a";       break;
+        case TYPE_CCU700:       Ret = "ccu-700";        break;
 
-   if(aType == TYPE_CCU721)
-   {
-      Ret = "ccu-721";
-   }
-   else if(aType == TYPE_CCU711)
-   {
-      Ret = "ccu-711";
-   }
-   else if(aType == TYPE_CCU710)
-   {
-      Ret = "ccu-710a";
-   }
-   else if(aType == TYPE_CCU700)
-   {
-      Ret = "ccu-700";
-   }
-   else if(aType == TYPE_REPEATER900)
-   {
-      Ret = "repeater";
-   }
-   else if(aType == TYPE_REPEATER800)
-   {
-      Ret = "repeater 800";
-   }
-   else if(aType == TYPE_ILEXRTU)
-   {
-      Ret = "rtu-ilex";
-   }
-   else if(aType == TYPE_WELCORTU)
-   {
-      Ret = "rtu-welco";
-   }
-   else if(aType == TYPE_SES92RTU)
-   {
-      Ret = "rtu-ses92";
-   }
-   else if(aType == TYPE_DNPRTU)
-   {
-      Ret = "rtu-dnp";
-   }
-   else if(aType == TYPE_DARTRTU)
-   {
-      Ret = "rtu-dart";
-   }
-   else if(aType == TYPE_ION7330)
-   {
-       Ret = "ion-7330";
-   }
-   else if(aType == TYPE_ION7700)
-   {
-       Ret = "ion-7700";
-   }
-   else if(aType == TYPE_ION8300)
-   {
-       Ret = "ion-8300";
-   }
-   else if(aType == TYPE_LCU415)
-   {
-      Ret = "lcu-415";
-   }
-   else if(aType == TYPE_LCU415LG)
-   {
-      Ret = "lcu-lg";
-   }
-   else if(aType == TYPE_LCU415ER)
-   {
-      Ret = "lcu-eastriver";
-   }
-   else if(aType == TYPE_LCUT3026)
-   {
-      Ret = "lcu-t026";
-   }
-   else if(aType == TYPE_TCU5000)
-   {
-      Ret = "tcu-5000";
-   }
-   else if(aType == TYPE_TCU5500)
-   {
-      Ret = "tcu-5500";
-   }
-   else if(aType == TYPE_TDMARKV)
-   {
-      Ret = "transdata mark-v";
-   }
-   else if(aType == TYPE_DAVIS)
-   {
-      Ret = "davisweather";
-   }
-   else if(aType == TYPE_ALPHA_PPLUS)
-   {
-      Ret = "alpha power plus";
-   }
-   else if(aType == TYPE_ALPHA_A1)
-   {
-      Ret = "alpha a1";
-   }
-   else if(aType == TYPE_FULCRUM)
-   {
-      Ret = "fulcrum";
-   }
-   else if(aType == TYPE_QUANTUM)
-   {
-      Ret = "quantum";
-   }
-   else if(aType == TYPE_VECTRON)
-   {
-      Ret = "vectron";
-   }
-   else if(aType == TYPE_LGS4)
-   {
-      Ret = "landis-gyr s4";
-   }
-   else if(aType == TYPE_DR87)
-   {
-      Ret = "dr-87";
-   }
-   else if(aType == TYPE_KV2)
-   {
-      Ret = "kv2";
-   }
-   else if(aType == TYPE_ALPHA_A3)
-   {
-      Ret = "alpha a3";
-   }
-   else if(aType == TYPE_SENTINEL)
-   {
-      Ret = "sentinel";
-   }
-   else if(aType == TYPEDCT501)
-   {
-      Ret = "dct-501";
-   }
-   else if(aType == TYPEMCT210)
-   {
-      Ret = "mct-210";
-   }
-   else if(aType == TYPEMCT212)
-   {
-      Ret = "mct-212";
-   }
-   else if(aType == TYPEMCT213)
-   {
-      Ret = "mct-213";
-   }
-   else if(aType == TYPEMCT224)
-   {
-      Ret = "mct-224";
-   }
-   else if(aType == TYPEMCT226)
-   {
-      Ret = "mct-226";
-   }
-   else if(aType == TYPEMCT240)
-   {
-      Ret = "mct-240";
-   }
-   else if(aType == TYPEMCT242)
-   {
-      Ret = "mct-242";
-   }
-   else if(aType == TYPEMCT248)
-   {
-      Ret = "mct-248";
-   }
-   else if(aType == TYPEMCT250)
-   {
-      Ret = "mct-250";
-   }
-   else if(aType == TYPEMCT310)
-   {
-      Ret = "mct-310";
-   }
-   else if(aType == TYPEMCT310ID)
-   {
-      Ret = "mct-310id";
-   }
-   else if(aType == TYPEMCT310IL)
-   {
-      Ret = "mct-310il";
-   }
-   else if(aType == TYPEMCT310IDL)
-   {
-      Ret = "mct-310idl";
-   }
-   else if(aType == TYPEMCT318)
-   {
-      Ret = "mct-318";
-   }
-   else if(aType == TYPEMCT360)
-   {
-      Ret = "mct-360";
-   }
-   else if(aType == TYPEMCT370)
-   {
-      Ret = "mct-370";
-   }
-   else if(aType == TYPEMCT410)
-   {
-      //  encapsulates mct-410il and mct-410cl...  both resolve to TYPEMCT410
-      Ret = "mct-410";
-   }
-   else if(aType == TYPEMCT470)
-   {
-      Ret = "mct-470";
-   }
-   else if(aType == TYPE_MODBUS)
-   {
-      Ret = "rtu-modbus";
-   }
-   else if(aType == TYPELMT2)
-   {
-      Ret = "lmt-2";
-   }
-   else if(aType == TYPE_SIXNET)
-   {
-      Ret = "sixnet";
-   }
-   else if(aType == TYPE_LMGROUP_EMETCON)
-   {
-      Ret = "emetcon group";
-   }
-   else if(aType == TYPE_LMGROUP_POINT)
-   {
-      Ret = "point group";
-   }
-   else if(aType == TYPE_LMGROUP_RIPPLE)
-   {
-      Ret = "ripple group";
-   }
-   else if(aType == TYPE_LMGROUP_VERSACOM)
-   {
-      Ret = "versacom group";
-   }
-   else if(aType == TYPE_LMGROUP_EXPRESSCOM)
-   {
-      Ret = "expresscom group";
-   }
-   else if(aType == TYPE_LMGROUP_ENERGYPRO)
-   {
-      Ret = "energypro group";
-   }
-   else if(aType == TYPE_LMGROUP_MCT)
-   {
-      Ret = "mct group";
-   }
-   else if(aType == TYPE_MACRO)
-   {
-      Ret = "macro group";
-   }
-   else if(aType == TYPEVERSACOMCBC)
-   {
-      Ret = "cbc versacom";
-   }
-   else if(aType == TYPEEXPRESSCOMCBC)
-   {
-      Ret = "cbc expresscom";
-   }
-   else if(aType == TYPEFISHERPCBC)
-   {
-      Ret = "cbc fp-2800";
-   }
-   else if(aType == TYPECBC6510)
-   {
-      Ret = "cbc 6510";
-   }
-   else if(aType == TYPECBC7010)
-   {
-      Ret = "cbc 7010";
-   }
-   else if(aType == TYPECBC7020)
-   {
-      Ret = "cbc 7020";
-   }
-   else if(aType == TYPE_TAPTERM)
-   {
-      Ret = "tap terminal";
-   }
-   else if(aType == TYPE_SNPP)
-   {
-      Ret = "snpp terminal";
-   }
-   else if(aType == TYPE_TNPP)
-   {
-       Ret = "tnpp terminal";
-   }
-   else if(aType == TYPE_PAGING_RECEIVER)
-   {
-      Ret = "page receiver";
-   }
-   else if(aType == TYPE_WCTP)
-   {
-      Ret = "wctp terminal";
-   }
-   else if(aType == TYPE_LMPROGRAM_DIRECT)
-   {
-      Ret = "lm direct program";
-   }
-   else if(aType == TYPE_LMPROGRAM_CURTAILMENT)
-   {
-      Ret = "lm curtail program";
-   }
-   else if(aType == TYPE_LM_CONTROL_AREA)
-   {
-      Ret = "lm control area";
-   }
-   else if(aType == TYPE_CI_CUSTOMER)
-   {
-      Ret = "ci customer";
-   }
-   else if(aType == TYPE_LMPROGRAM_ENERGYEXCHANGE)
-   {
-      Ret = "lm energy exchange";
-   }
-   else if(aType == TYPE_DAVIS)
-   {
-      Ret = "davis weather";
-   }
-   else if(aType == TYPE_SYSTEM)
-   {
-      Ret = "system";
-   }
-   else if(aType == TYPE_LMGROUP_GOLAY)
-   {
-      Ret = "golay group";
-   }
-   else if(aType == TYPE_LMGROUP_SADIGITAL)
-   {
-      Ret = "sa-digital group";
-   }
-   else if(aType == TYPE_LMGROUP_SA105)
-   {
-      Ret = "sa-105 group";
-   }
-   else if(aType == TYPE_LMGROUP_SA205)
-   {
-      Ret = "sa-205 group";
-   }
-   else if(aType == TYPE_LMGROUP_SA305)
-   {
-      Ret = "sa-305 group";
-   }
-   else if(aType == TYPE_RTC)
-   {
-      Ret = "rtc";
-   }
-   else if(aType == TYPE_RTM)
-   {
-      Ret = "rtm";
-   }
-   else if(aType == TYPE_FMU)
-   {
-      Ret = "fmu";
-   }
-   else
-   {
-       {
-          CtiLockGuard<CtiLogger> doubt_guard(dout);
-          dout << "Unknown DEVICE type \"" << aType << "\" " << endl;
-       }
-   }
+        case TYPE_REPEATER900:  Ret = "repeater";       break;
+        case TYPE_REPEATER800:  Ret = "repeater 800";   break;
 
-   CtiToUpper(Ret);
-   return Ret;
+        case TYPE_ILEXRTU:      Ret = "rtu-ilex";       break;
+        case TYPE_WELCORTU:     Ret = "rtu-welco";      break;
+        case TYPE_SES92RTU:     Ret = "rtu-ses92";      break;
+        case TYPE_DNPRTU:       Ret = "rtu-dnp";        break;
+        case TYPE_DARTRTU:      Ret = "rtu-dart";       break;
+        case TYPE_MODBUS:       Ret = "rtu-modbus";     break;
+
+        case TYPE_ION7330:      Ret = "ion-7330";       break;
+        case TYPE_ION7700:      Ret = "ion-7700";       break;
+        case TYPE_ION8300:      Ret = "ion-8300";       break;
+                                
+        case TYPE_LCU415:       Ret = "lcu-415";        break;
+        case TYPE_LCU415LG:     Ret = "lcu-lg";         break;
+        case TYPE_LCU415ER:     Ret = "lcu-eastriver";  break;
+        case TYPE_LCUT3026:     Ret = "lcu-t026";       break;
+        case TYPE_TCU5000:      Ret = "tcu-5000";       break;
+        case TYPE_TCU5500:      Ret = "tcu-5500";       break;
+                                
+        case TYPE_TDMARKV:      Ret = "transdata mark-v";   break;
+                                
+        case TYPE_DAVIS:        Ret = "davisweather";       break;
+
+        case TYPE_ALPHA_PPLUS:  Ret = "alpha power plus";   break;
+        case TYPE_ALPHA_A1:     Ret = "alpha a1";       break;
+        case TYPE_FULCRUM:      Ret = "fulcrum";        break;
+        case TYPE_QUANTUM:      Ret = "quantum";        break;
+        case TYPE_VECTRON:      Ret = "vectron";        break;
+        case TYPE_LGS4:         Ret = "landis-gyr s4";  break;
+        case TYPE_DR87:         Ret = "dr-87";          break;
+        case TYPE_KV2:          Ret = "kv2";            break;
+        case TYPE_ALPHA_A3:     Ret = "alpha a3";       break;
+        case TYPE_SENTINEL:     Ret = "sentinel";       break;
+
+        case TYPEDCT501:        Ret = "dct-501";        break;
+        case TYPEMCT210:        Ret = "mct-210";        break;
+        case TYPEMCT212:        Ret = "mct-212";        break;
+        case TYPEMCT213:        Ret = "mct-213";        break;
+        case TYPEMCT224:        Ret = "mct-224";        break;
+        case TYPEMCT226:        Ret = "mct-226";        break;
+        case TYPEMCT240:        Ret = "mct-240";        break;
+        case TYPEMCT242:        Ret = "mct-242";        break;
+        case TYPEMCT248:        Ret = "mct-248";        break;
+        case TYPEMCT250:        Ret = "mct-250";        break;
+        case TYPEMCT310:        Ret = "mct-310";        break;
+        case TYPEMCT310ID:      Ret = "mct-310id";      break;
+        case TYPEMCT310IL:      Ret = "mct-310il";      break;
+        case TYPEMCT310IDL:     Ret = "mct-310idl";     break;
+        case TYPEMCT318:        Ret = "mct-318";        break;
+        case TYPEMCT360:        Ret = "mct-360";        break;
+        case TYPEMCT370:        Ret = "mct-370";        break;
+            //  encapsulates mct-410il and mct-410cl...  both resolve to TYPEMCT410
+        case TYPEMCT410:        Ret = "mct-410";        break;
+        case TYPEMCT470:        Ret = "mct-470";        break;
+        case TYPELMT2:          Ret = "lmt-2";          break;
+
+        case TYPE_SIXNET:       Ret = "sixnet";         break;
+
+        case TYPE_RTC:          Ret = "rtc";            break;
+        case TYPE_RTM:          Ret = "rtm";            break;
+        case TYPE_FMU:          Ret = "fmu";            break;
+
+        case TYPE_SYSTEM:       Ret = "system";         break;
+
+        case TYPE_FCI:              Ret = "faulted circuit indicator";          break;
+        case TYPE_NEUTRAL_MONITOR:  Ret = "capacitor bank neutral monitor";     break;
+
+        case TYPE_LMGROUP_EMETCON:      Ret = "emetcon group";      break;
+        case TYPE_LMGROUP_POINT:        Ret = "point group";        break;
+        case TYPE_LMGROUP_RIPPLE:       Ret = "ripple group";       break;
+        case TYPE_LMGROUP_VERSACOM:     Ret = "versacom group";     break;
+        case TYPE_LMGROUP_EXPRESSCOM:   Ret = "expresscom group";   break;
+        case TYPE_LMGROUP_ENERGYPRO:    Ret = "energypro group";    break;
+        case TYPE_LMGROUP_MCT:          Ret = "mct group";          break;
+        case TYPE_LMGROUP_GOLAY:        Ret = "golay group";        break;
+        case TYPE_LMGROUP_SADIGITAL:    Ret = "sa-digital group";   break;
+        case TYPE_LMGROUP_SA105:        Ret = "sa-105 group";       break;
+        case TYPE_LMGROUP_SA205:        Ret = "sa-205 group";       break;
+        case TYPE_LMGROUP_SA305:        Ret = "sa-305 group";       break;
+        case TYPE_MACRO:                Ret = "macro group";        break;
+
+        case TYPEVERSACOMCBC:           Ret = "cbc versacom";       break;
+        case TYPEEXPRESSCOMCBC:         Ret = "cbc expresscom";     break;
+        case TYPEFISHERPCBC:            Ret = "cbc fp-2800";        break;
+                                                                    
+        case TYPECBC6510:               Ret = "cbc 6510";           break;
+        case TYPECBC7010:               Ret = "cbc 7010";           break;
+        case TYPECBC7020:               Ret = "cbc 7020";           break;
+                                                                    
+        case TYPE_TAPTERM:              Ret = "tap terminal";       break;
+        case TYPE_SNPP:                 Ret = "snpp terminal";      break;
+        case TYPE_TNPP:                 Ret = "tnpp terminal";      break;
+        case TYPE_WCTP:                 Ret = "wctp terminal";      break;
+                                                                    
+        case TYPE_PAGING_RECEIVER:      Ret = "page receiver";      break;
+
+        case TYPE_LMPROGRAM_DIRECT:         Ret = "lm direct program";  break;
+        case TYPE_LMPROGRAM_CURTAILMENT:    Ret = "lm curtail program"; break;
+        case TYPE_LMPROGRAM_ENERGYEXCHANGE: Ret = "lm energy exchange"; break;
+        case TYPE_LM_CONTROL_AREA:          Ret = "lm control area";    break;
+        case TYPE_CI_CUSTOMER:              Ret = "ci customer";        break;
+
+        default:
+        {
+            {
+                CtiLockGuard<CtiLogger> doubt_guard(dout);
+                dout << "Unknown DEVICE type \"" << aType << "\" " << endl;
+            }
+
+            break;
+        }
+    }
+
+    CtiToUpper(Ret);
+
+    return Ret;
 }
 
 string desolvePAOCategory( INT aCategory )
 {
-string Ret;
+    string Ret;
 
-    if(aCategory == PAO_CATEGORY_DEVICE)
+    switch( aCategory )
     {
-        Ret = "device";
-    }
-    else if(aCategory == PAO_CATEGORY_PORT)
-    {
-        Ret = "port";
-    }
-    else if(aCategory == PAO_CATEGORY_ROUTE)
-    {
-        Ret = "route";
-    }
-    else if(aCategory == PAO_CATEGORY_LOAD_MANAGEMENT)
-    {
-        Ret = "loadmanagement";
-    }
-    else if(aCategory == PAO_CATEGORY_CAP_CONTROL)
-    {
-        Ret = "capcontrol";
-    }
-    else
-    {
-        CtiLockGuard<CtiLogger> doubt_guard(dout);
-        dout << "Unsupported pao category in: " << __FILE__ << " at: " << __LINE__ << endl;
-        Ret = "invalid";
+        case PAO_CATEGORY_DEVICE:           Ret = "device";         break;
+        case PAO_CATEGORY_PORT:             Ret = "port";           break;
+        case PAO_CATEGORY_ROUTE:            Ret = "route";          break;
+        case PAO_CATEGORY_LOAD_MANAGEMENT:  Ret = "loadmanagement"; break;
+        case PAO_CATEGORY_CAP_CONTROL:      Ret = "capcontrol";     break;
+        default:
+        {
+            {
+                CtiLockGuard<CtiLogger> doubt_guard(dout);
+                dout << "Unsupported pao category in: " << __FILE__ << " at: " << __LINE__ << endl;
+            }
+
+            Ret = "invalid";
+
+            break;
+        }
     }
 
-return Ret;
+    return Ret;
 }
 
 
 string desolvePortType( INT aType )
 {
-string Ret;
+    string Ret;
 
-    if(aType == PortTypeLocalDirect)
+    switch( aType )
     {
-        Ret = "local serial port";
-    }
-    else if(aType == PortTypeLocalDialup)
-    {
-        Ret = "local dialup";
-    }
-    else if(aType == PortTypeLocalDialBack)
-    {
-        Ret = "local dialback";
-    }
-    else if(aType == PortTypeTServerDirect)
-    {
-        Ret = "terminal server";
-    }
-    else if(aType == PortTypeTServerDialup)
-    {
-        Ret = "terminal server dialup";
-    }
-    else if(aType == PortTypeTServerDialBack)
-    {
-        Ret = "terminal server dialback";
-    }
-    else if(aType == PortTypePoolDialout)
-    {
-        Ret = "dialout pool";
-    }
-    else
-    {
-        CtiLockGuard<CtiLogger> doubt_guard(dout);
-        dout << "Unsupported port type in: " << __FILE__ << " at: " << __LINE__ << endl;
-        Ret = "invalid";
+        case PortTypeLocalDirect:       Ret = "local serial port";      break;
+        case PortTypeLocalDialup:       Ret = "local dialup";           break;
+        case PortTypeLocalDialBack:     Ret = "local dialback";         break;
+        case PortTypeTServerDirect:     Ret = "terminal server";        break;
+        case PortTypeTServerDialup:     Ret = "terminal server dialup"; break;
+        case PortTypeTServerDialBack:   Ret = "terminal server dialback";   break;
+        case PortTypePoolDialout:       Ret = "dialout pool";           break;
+        default:
+        {
+            {
+                CtiLockGuard<CtiLogger> doubt_guard(dout);
+                dout << "Unsupported port type in: " << __FILE__ << " at: " << __LINE__ << endl;
+            }
+
+            Ret = "invalid";
+
+            break;
+        }
     }
 
-return Ret;
+    return Ret;
 }
 
 
 string desolveRouteType( INT aType )
 {
-string Ret;
+    string Ret;
 
-    if(aType == RouteTypeCCU)
+    switch( aType )
     {
-        Ret = "ccu";
-    }
-    else if(aType == RouteTypeTCU)
-    {
-        Ret = "tcu";
-    }
-    else if(aType == RouteTypeMacro)
-    {
-        Ret = "macro";
-    }
-    else if(aType == RouteTypeLCU)
-    {
-        Ret = "lcu";
-    }
-    else if(aType == RouteTypeRepeater)
-    {
-        Ret = "repeater";
-    }
-    else if(aType == RouteTypeVersacom)
-    {
-        Ret = "versacom";
-    }
-    else if(aType == RouteTypeExpresscom)
-    {
-        Ret = "expresscom";
-    }
-    else if(aType == RouteTypeTap)
-    {
-        Ret = "tap paging";
-    }
-    else if(aType == RouteTypeWCTP)
-    {
-        Ret = "wctp paging";
-    }
-    else if(aType == RouteTypeSNPP)
-    {
-        Ret = "snpp terminal";//paging?
-    }
-    else if(aType == RouteTypeRTC)
-    {
-        Ret = "rtc";
-    }
-    else if(aType == RouteTypeSeriesVLMI)
-    {
-        Ret = "series 5 lmi";
-    }
-    else
-    {
-        CtiLockGuard<CtiLogger> doubt_guard(dout);
-        dout << "Unsupported route type in: " << __FILE__ << " at: " << __LINE__ << endl;
-        Ret = "invalid";
+        case RouteTypeCCU:          Ret = "ccu";    break;
+        case RouteTypeTCU:          Ret = "tcu";    break;
+        case RouteTypeMacro:        Ret = "macro";  break;
+        case RouteTypeLCU:          Ret = "lcu";    break;
+        case RouteTypeRepeater:     Ret = "repeater";   break;
+        case RouteTypeVersacom:     Ret = "versacom";   break;
+        case RouteTypeExpresscom:   Ret = "expresscom"; break;
+        case RouteTypeTap:          Ret = "tap paging"; break;
+        case RouteTypeWCTP:         Ret = "wctp paging";    break;
+        //paging? 
+        case RouteTypeSNPP:         Ret = "snpp terminal";  break;
+        case RouteTypeRTC:          Ret = "rtc";    break;
+        case RouteTypeSeriesVLMI:   Ret = "series 5 lmi";   break;
+        default:
+        {
+            {
+                CtiLockGuard<CtiLogger> doubt_guard(dout);
+                dout << "Unsupported route type in: " << __FILE__ << " at: " << __LINE__ << endl;
+            }
+
+            Ret = "invalid";
+
+            break;
+        }
     }
 
-return Ret;
+    return Ret;
 }
 
 
 string desolveLoadManagementType( INT aType )
 {
-string Ret;
+    string Ret;
 
-    if(aType == TYPE_LMPROGRAM_DIRECT)
+    switch( aType )
     {
-        Ret = "lm direct program";
-    }
-    else if(aType == TYPE_LMPROGRAM_CURTAILMENT)
-    {
-        Ret = "lm curtail program";
-    }
-    else if(aType == TYPE_LM_CONTROL_AREA)
-    {
-        Ret = "lm control area";
-    }
-    else if(aType == TYPE_CI_CUSTOMER)
-    {
-        Ret = "ci customer";
-    }
-    else if(aType == TYPE_LMPROGRAM_ENERGYEXCHANGE)
-    {
-        Ret = "lm energy exchange";
-    }
-    else
-    {
-        CtiLockGuard<CtiLogger> doubt_guard(dout);
-        dout << "Unsupported load management type in: " << __FILE__ << " at: " << __LINE__ << endl;
-        Ret = "invalid";
+        case TYPE_LMPROGRAM_DIRECT:         Ret = "lm direct program";      break;
+        case TYPE_LMPROGRAM_CURTAILMENT:    Ret = "lm curtail program";     break;
+        case TYPE_LM_CONTROL_AREA:          Ret = "lm control area";        break;
+        case TYPE_CI_CUSTOMER:              Ret = "ci customer";            break;
+        case TYPE_LMPROGRAM_ENERGYEXCHANGE: Ret = "lm energy exchange";     break;
+        default:
+        {
+            {
+                CtiLockGuard<CtiLogger> doubt_guard(dout);
+                dout << "Unsupported load management type in: " << __FILE__ << " at: " << __LINE__ << endl;
+            }
+
+            Ret = "invalid";
+
+            break;
+        }
     }
 
-return Ret;
+    return Ret;
 }
 
 
 string desolveCapControlType( INT aType )
 {
-string Ret;
+    string Ret;
 
-    if(aType == TYPE_CC_SUBSTATION_BUS)
+    switch( aType )
     {
-        Ret = "ccsubbus";
-    }
-    else if(aType == TYPE_CC_FEEDER)
-    {
-        Ret = "ccfeeder";
-    }
-    else
-    {
-        CtiLockGuard<CtiLogger> doubt_guard(dout);
-        dout << "Unsupported cap control type in: " << __FILE__ << " at: " << __LINE__ << endl;
-        Ret = "invalid";
+        case TYPE_CC_SUBSTATION_BUS:    Ret = "ccsubbus";   break;
+        case TYPE_CC_FEEDER:            Ret = "ccfeeder";   break;
+        default:
+        {
+            {
+                CtiLockGuard<CtiLogger> doubt_guard(dout);
+                dout << "Unsupported cap control type in: " << __FILE__ << " at: " << __LINE__ << endl;
+            }
+    
+            Ret = "invalid";
+    
+        break;
+        }
     }
 
-return Ret;
+    return Ret;
 }
 
 
