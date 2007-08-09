@@ -38,94 +38,95 @@ INCLPATHS+= \
 
 
 YUKONDEVDLLOBJS=\
-mgr_config.obj \
-device.obj \
 dev_710.obj \
+dev_a1.obj \
+dev_alpha.obj \
+dev_aplus.obj \
 dev_base.obj \
 dev_carrier.obj \
-dev_macro.obj \
 dev_cbc.obj \
 dev_cbc6510.obj \
 dev_cbc7020.obj \
 dev_ccu.obj \
 dev_ccu721.obj \
-dev_dnp.obj \
-dev_dct501.obj \
 dev_davis.obj \
+dev_dct501.obj \
 dev_dlcbase.obj \
+dev_dnp.obj \
+dev_dr87.obj \
 dev_exclusion.obj \
+dev_fmu.obj \
+dev_foreignporter.obj \
+dev_fulcrum.obj \
 dev_gateway.obj \
+dev_gridadvisor.obj \
 dev_grp_emetcon.obj \
-dev_grp_expresscom.obj \
 dev_grp_energypro.obj \
+dev_grp_expresscom.obj \
 dev_grp_golay.obj \
 dev_grp_mct.obj \
 dev_grp_point.obj \
 dev_grp_ripple.obj \
-dev_grp_sadigital.obj \
 dev_grp_sa105.obj \
 dev_grp_sa205.obj \
 dev_grp_sa305.obj \
+dev_grp_sadigital.obj \
 dev_grp_versacom.obj \
 dev_gwstat.obj \
 dev_ilex.obj \
+dev_ion.obj \
+dev_kv2.obj \
 dev_lcu.obj \
 dev_lgs4.obj \
 dev_lmi.obj \
-dev_dr87.obj \
-dev_ion.obj \
-dev_meter.obj \
+dev_macro.obj \
+dev_mark_v.obj \
 dev_mct.obj \
-dev_mct2XX.obj \
 dev_mct210.obj \
 dev_mct22X.obj \
 dev_mct24X.obj \
+dev_mct2XX.obj \
 dev_mct310.obj \
 dev_mct31X.obj \
-dev_mct4xx.obj \
 dev_mct410.obj \
 dev_mct470.obj \
+dev_mct4xx.obj \
 dev_mct_broadcast.obj \
 dev_mct_lmt2.obj \
+dev_meter.obj \
 dev_modbus.obj \
 dev_pagingreceiver.obj \
+dev_quantum.obj \
 dev_repeater.obj \
 dev_repeater800.obj \
 dev_rtc.obj \
 dev_rtm.obj \
+dev_schlum.obj \
+dev_sentinel.obj \
 dev_seriesv.obj \
 dev_single.obj \
 dev_sixnet.obj \
 dev_snpp.obj \
-dev_tnpp.obj \
 dev_system.obj \
 dev_tap.obj \
 dev_tcu.obj \
+dev_tnpp.obj \
+dev_vectron.obj \
 dev_wctp.obj \
 dev_welco.obj \
+device.obj \
 device_queue_interface.obj \
 dlldev.obj \
+mgr_config.obj \
 mgr_device.obj \
 mgr_exclusion.obj \
 mgr_route.obj \
-rte_versacom.obj \
-rte_expresscom.obj \
 rte_ccu.obj \
-rte_xcu.obj \
+rte_expresscom.obj \
 rte_macro.obj \
+rte_versacom.obj \
+rte_xcu.obj \
 slctdev.obj \
-dev_alpha.obj \
-dev_a1.obj \
-dev_aplus.obj \
-dev_fulcrum.obj \
-dev_quantum.obj \
-dev_schlum.obj \
-dev_vectron.obj \
-dev_kv2.obj \
-dev_sentinel.obj \
-dev_mark_v.obj \
-dev_foreignporter.obj \
-dev_fmu.obj \
 
 
 
@@ -154,7 +155,7 @@ ctidevdb.dll:   $(YUKONDEVDLLOBJS) Makefile
                 @echo:
                 @echo Compiling $@
                 @%cd $(OBJ)
-                $(RWCPPINVOKE) $(INCLPATHS) $(RWLINKFLAGS) $(DLLFLAGS) -Fe..\$@ $(YUKONDEVDLLOBJS) id_devdll.obj -link $(RWLIBS) $(DEVDBLIBS) $(BOOSTLIBS)
+                $(RWCPPINVOKE) $(INCLPATHS) $(RWLINKFLAGS) $(DLLFLAGS) -Fe..\$@ $(YUKONDEVDLLOBJS) id_devdll.obj -link $(RWLIBS) $(DEVDBLIBS) $(BOOSTLIBS) advapi32.lib
                -@if not exist $(YUKONOUTPUT) md $(YUKONOUTPUT)
                -if exist ..\$@ copy ..\$@ $(YUKONOUTPUT)
                -@if not exist $(COMPILEBASE)\lib md $(COMPILEBASE)\lib
@@ -702,6 +703,32 @@ dev_gateway.obj:	yukon.h precompiled.h ctidbgmem.h ctidate.h dlldefs.h \
 		cparms.h configkey.h configval.h prot_base.h xfer.h dialup.h \
 		tbl_dialup.h tbl_direct.h tbl_dv_ied.h gateway.h \
 		pending_stat_operation.h
+dev_gridadvisor.obj:	yukon.h precompiled.h ctidbgmem.h porter.h dsm2.h \
+		mutex.h dlldefs.h guard.h numstr.h clrdump.h cticonnect.h \
+		netports.h dsm2err.h devicetypes.h queues.h types.h \
+		tbl_ptdispatch.h ctibase.h ctinexus.h dllbase.h os2_2w32.h \
+		cticalls.h dbmemobject.h pointdefs.h ctitime.h \
+		dev_gridadvisor.h ctitypes.h dev_meter.h tbl_metergrp.h \
+		vcomdefs.h dbaccess.h sema.h resolvers.h pointtypes.h \
+		db_entry_defines.h dev_ied.h dev_remote.h dev_single.h \
+		dev_base.h cmdparse.h ctitokenizer.h parsevalue.h counter.h \
+		dev_exclusion.h tbl_paoexclusion.h config_device.h logger.h \
+		thread.h CtiPCPtrQueue.h utility.h sorted_vector.h \
+		config_base.h config_resolvers.h rte_base.h message.h \
+		collectable.h rwutil.h boost_time.h tbl_pao.h tbl_rtcomm.h \
+		desolvers.h msg_signal.h tbl_base.h tbl_2way.h tbl_stats.h \
+		tbl_scanrate.h tbl_dyn_paoinfo.h pt_base.h pt_dyn_base.h \
+		tbl_pt_base.h tbl_pt_trigger.h msg_pcrequest.h msg_pcreturn.h \
+		msg_multi.h msg_pdata.h tbl_dv_scandata.h tbl_dv_wnd.h \
+		connection.h exchange.h msg_ptreg.h msg_reg.h queue.h \
+		cparms.h configkey.h configval.h prot_base.h xfer.h dialup.h \
+		tbl_dialup.h tbl_direct.h tbl_dv_ied.h mgr_point.h smartmap.h \
+		hashkey.h hash_functions.h slctpnt.h tbl_dv_address.h \
+		pt_status.h tbl_pt_status.h pt_analog.h pt_numeric.h \
+		tbl_pt_unit.h tbl_unitmeasure.h tbl_pt_limit.h \
+		tbl_pt_analog.h pt_accum.h tbl_pt_accum.h \
+		tbl_pt_accumhistory.h msg_cmd.h msg_lmcontrolhistory.h \
+		dllyukon.h
 dev_grp_emetcon.obj:	yukon.h precompiled.h ctidbgmem.h dsm2.h mutex.h \
 		dlldefs.h guard.h numstr.h clrdump.h cticonnect.h netports.h \
 		porter.h dsm2err.h devicetypes.h queues.h types.h pt_base.h \
@@ -2039,8 +2066,8 @@ mgr_device.obj:	yukon.h precompiled.h ctidbgmem.h rtdb.h dlldefs.h \
 		ion_value_fixed_intunsigned.h ion_value_struct.h \
 		ion_value_structarray.h ion_value_struct_types.h \
 		ion_value_fixed_time.h ion_net_application.h \
-		ion_net_network.h ion_net_datalink.h dev_idlc.h \
-		tbl_dv_idlcremote.h trx_info.h porter.h dsm2err.h \
+		ion_net_network.h ion_net_datalink.h dev_gridadvisor.h \
+		dev_idlc.h tbl_dv_idlcremote.h trx_info.h porter.h dsm2err.h \
 		devicetypes.h trx_711.h dev_carrier.h dev_dlcbase.h \
 		tbl_route.h tbl_carrier.h prot_emetcon.h tbl_loadprofile.h \
 		tbl_dv_mctiedport.h dev_lmi.h tbl_dv_seriesv.h prot_lmi.h \
