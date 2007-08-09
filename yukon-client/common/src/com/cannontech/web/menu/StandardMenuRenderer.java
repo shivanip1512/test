@@ -180,11 +180,10 @@ public class StandardMenuRenderer implements MenuRenderer {
             }
             right.addElement(select);
         }
+
+        right.addElement("&nbsp;&nbsp;");
+        right.addElement(new A(buildUrl("/operator/Operations.jsp"), "Home").setClass("stdhdr_menuLink"));
         right.addElement(" ");
-        //TODO there is nowhere to send to right now
-        //right.addElement(new A("x", "Help").setClass("stdhdr_menuLink"));
-        //right.addElement(SEPERATOR);
-        right.addElement("&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;");
         right.addElement(new A(buildUrl("/servlet/LoginController?ACTION=LOGOUT"), "Log Out").setClass("stdhdr_menuLink"));
         right.addElement(" ");
         return right;

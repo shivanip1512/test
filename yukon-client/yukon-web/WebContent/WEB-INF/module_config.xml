@@ -23,9 +23,6 @@
      respectively.
 -->
   <quicklinks>
-    <option name="Home">
-      <link>/home</link>
-    </option>
     <option name="CapControl">
       <link>/capcontrol/subareas.jsp</link>
       <requireProperty value="capcontrol.CBCSettingsRole.ACCESS"/>
