@@ -191,13 +191,13 @@ public class CBCDisplay {
             if (capBank.getLastStatusChangeTime().getTime() <= CtiUtilities.get1990GregCalendar().getTime().getTime())
                 return DASH_LINE;
             else
-                return new ModifiedDate(capBank.getLastStatusChangeTime().getTime(), dateTimeFormat);
+                return new ModifiedDate(capBank.getLastStatusChangeTime().getTime(), dateTimeFormat).toString();
         }
         case CB_SHORT_TIME_STAMP_COLUMN: {
             if (capBank.getLastStatusChangeTime().getTime() <= CtiUtilities.get1990GregCalendar().getTime().getTime())
                 return DASH_LINE;
             else
-                return new ModifiedDate(capBank.getLastStatusChangeTime().getTime(), shortTimeFormat);
+                return new ModifiedDate(capBank.getLastStatusChangeTime().getTime(), shortTimeFormat).toString();
         }
         case CB_PARENT_COLUMN: {
             LiteYukonPAObject paoParent = DaoFactory.getPaoDao()
@@ -389,14 +389,14 @@ public class CBCDisplay {
             if (subBus.getLastCurrentVarPointUpdateTime().getTime() <= CtiUtilities.get1990GregCalendar().getTime().getTime())
                 return DASH_LINE;
             else
-                return new ModifiedDate(subBus.getLastCurrentVarPointUpdateTime().getTime(),dateTimeFormat);
+                return new ModifiedDate(subBus.getLastCurrentVarPointUpdateTime().getTime(),dateTimeFormat).toString();
         }
 
         case SUB_SHORT_TIME_STAMP_COLUMN: {
             if (subBus.getLastCurrentVarPointUpdateTime().getTime() <= CtiUtilities.get1990GregCalendar().getTime().getTime())
                 return DASH_LINE;
             else
-                return new ModifiedDate(subBus.getLastCurrentVarPointUpdateTime().getTime(),shortTimeFormat);
+                return new ModifiedDate(subBus.getLastCurrentVarPointUpdateTime().getTime(),shortTimeFormat).toString();
         }
         
         default:
@@ -651,14 +651,14 @@ public class CBCDisplay {
                 CtiUtilities.get1990GregCalendar().getTime().getTime())
                 return DASH_LINE;
             else
-                return new ModifiedDate(feeder.getLastCurrentVarPointUpdateTime().getTime(),dateTimeFormat);
+                return new ModifiedDate(feeder.getLastCurrentVarPointUpdateTime().getTime(),dateTimeFormat).toString();
         }
         case FDR_SHORT_TIME_STAMP_COLUMN: {
             if (feeder.getLastCurrentVarPointUpdateTime().getTime() <= 
                 CtiUtilities.get1990GregCalendar().getTime().getTime() )
                 return DASH_LINE;
             else
-                return new ModifiedDate(feeder.getLastCurrentVarPointUpdateTime().getTime(),shortTimeFormat);
+                return new ModifiedDate(feeder.getLastCurrentVarPointUpdateTime().getTime(),shortTimeFormat).toString();
         }        
 
         case FDR_ONELINE_WATTS_COLUMN: {
