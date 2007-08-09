@@ -9,8 +9,8 @@
 *
 * PVCS KEYWORDS:
 * ARCHIVE      :  $Archive:   Z:/SOFTWAREARCHIVES/YUKON/RTDB/INCLUDE/port_base.h-arc  $
-* REVISION     :  $Revision: 1.5 $
-* DATE         :  $Date: 2007/03/12 16:51:31 $
+* REVISION     :  $Revision: 1.6 $
+* DATE         :  $Date: 2007/08/09 21:46:17 $
 *
 * Copyright (c) 2006 Cannon Technologies Inc. All rights reserved.
 *-----------------------------------------------------------------------------*/
@@ -24,8 +24,6 @@
 #include "queue.h"
 #include "dev_single.h"
 #include "port_base.h"
-
-using namespace std;
 
 //#include "portglob.h"
 //#include "msg_trace.h"
@@ -108,6 +106,7 @@ protected:
     };
 
     typedef map< pair< unsigned short, unsigned short >, device_record * > dr_address_map;
+    typedef map< pair< unsigned short, unsigned short >, device_record * > dr_type_serial_map;
     typedef map< long, device_record * > dr_id_map;
 
     CtiFIFOQueue< packet >     _packet_queue;
@@ -136,25 +135,28 @@ protected:
 
     struct udp_load_info
     {
-        udp_load_info(long p, dr_id_map &d, dr_address_map &a) :
+        udp_load_info(long p, dr_id_map &d, dr_address_map &a, dr_type_serial_map &ts) :
             portid   (p),
             devices  (d),
-            addresses(a)
+            addresses(a),
+            types_serials(ts)
         {
         }
 
         long portid;
 
-        dr_id_map      &devices;
-        dr_address_map &addresses;
+        dr_id_map          &devices;
+        dr_address_map     &addresses;
+        dr_type_serial_map &types_serials;
     };
 
     static void applyGetUDPInfo(const long unusedid, CtiDeviceSPtr RemoteDevice, void *prtid);
 
     device_record *validateDeviceRecord( device_record *dr );
 
-    device_record *getDeviceRecordByAddress( unsigned short master, unsigned short slave );
-    device_record *getDeviceRecordByID     ( long device_id );
+    device_record *getDeviceRecordByDNPAddress           ( unsigned short master, unsigned short slave );
+    device_record *getDeviceRecordByGPUFFDeviceTypeSerial( unsigned short device_type, unsigned short serial );
+    device_record *getDeviceRecordByID                   ( long device_id );
 
     CtiQueue< CtiOutMessage, less<CtiOutMessage> > OutMessageQueue;
     CtiFIFOQueue< CtiMessage > MessageQueue;
@@ -163,8 +165,9 @@ protected:
 
     list< CtiMessage * > _traceList;
 
-    dr_address_map _addresses;
-    dr_id_map      _devices;
+    dr_address_map     _addresses;
+    dr_type_serial_map _types_serials;
+    dr_id_map          _devices;
 
     SOCKET _udp_socket;
 
