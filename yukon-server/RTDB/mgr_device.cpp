@@ -6,8 +6,8 @@
 *
 * PVCS KEYWORDS:
 * ARCHIVE      :  $Archive:   Z:/SOFTWAREARCHIVES/YUKON/RTDB/mgr_device.cpp-arc  $
-* REVISION     :  $Revision: 1.88 $
-* DATE         :  $Date: 2007/08/07 21:05:11 $
+* REVISION     :  $Revision: 1.89 $
+* DATE         :  $Date: 2007/08/09 21:45:19 $
 *
 * Copyright (c) 1999, 2000, 2001 Cannon Technologies Inc. All rights reserved.
 *-----------------------------------------------------------------------------*/
@@ -26,6 +26,7 @@
 #include "dev_ion.h"
 #include "dev_remote.h"
 #include "dev_meter.h"
+#include "dev_gridadvisor.h"
 #include "dev_idlc.h"
 #include "dev_carrier.h"
 #include "dev_lmi.h"
@@ -787,6 +788,43 @@ void CtiDeviceManager::refreshList(CtiDeviceBase* (*Factory)(RWDBReader &), bool
                         CtiDeviceIED().getSQL( db, keyTable, selector );
 
                         selector.where( rwdbUpper(keyTable["type"]) == "SIXNET" && selector.where() );
+                        if(paoID != 0) selector.where( keyTable["paobjectid"] == RWDBExpr( paoID ) && selector.where() );
+
+                        RWDBReader rdr = selector.reader(conn);
+                        if(DebugLevel & 0x00020000 || setErrorCode(selector.status().errorCode()) != RWDBStatus::ok)
+                        {
+                            CtiLockGuard<CtiLogger> doubt_guard(dout); dout << selector.asString() << endl;
+                        }
+
+                        refreshDevices(rowFound, rdr, Factory);
+
+                        if(DebugLevel & 0x00020000)
+                        {
+                            CtiLockGuard<CtiLogger> doubt_guard(dout); dout << "Done looking for Sixnet IEDs" << endl;
+                        }
+                    }
+                    stop = stop.now();
+                    if(DebugLevel & 0x80000000 || stop.seconds() - start.seconds() > 5)
+                    {
+                        CtiLockGuard<CtiLogger> doubt_guard(dout);
+                        dout << CtiTime() << " " << stop.seconds() - start.seconds() << " seconds to load  SIXNET " << endl;
+                    }
+
+                    start = start.now();
+                    {
+                        RWDBConnection conn = getConnection();
+                        RWDBDatabase db = getDatabase();
+
+                        RWDBTable   keyTable;
+                        RWDBSelector selector = db.selector();
+
+                        if(DebugLevel & 0x00020000)
+                        {
+                            CtiLockGuard<CtiLogger> doubt_guard(dout);
+                            dout << "Looking for Grid Advisor Devices" << endl;
+                        }
+                        CtiDeviceGridAdvisor().getSQL( db, keyTable, selector );
+
                         if(paoID != 0) selector.where( keyTable["paobjectid"] == RWDBExpr( paoID ) && selector.where() );
 
                         RWDBReader rdr = selector.reader(conn);
