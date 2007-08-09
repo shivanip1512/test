@@ -39,7 +39,7 @@ int main(int argc, char *argv[])
 
     if(argc>1)
     {   // Specify port number
-        cout<<"Found argument "<<argv[1]<<endl;
+        cout<<"Port set to "<<argv[1]<<endl;
         portNumber = atoi(argv[1]);
     }
     else
@@ -72,9 +72,9 @@ int main(int argc, char *argv[])
                 
         //  Peek at first byte
         newSocket->CTINexusPeek(TempBuffer,1, &bytesRead);
-             
+
         if(TempBuffer[0]==0x7e)
-        {   //  It's a 711 IDLC message
+            {   //  It's a 711 IDLC message
             CtiTime AboutToRead;
             unsigned char ReadBuffer[300];
             int BytesToFollow;
@@ -88,7 +88,7 @@ int main(int argc, char *argv[])
             }
 
             if(ReadBuffer[0]==0x7e )
-            {
+                {
                 SET_FOREGROUND_BRIGHT_YELLOW;
                 cout << AboutToRead.asString();
                 SET_FOREGROUND_BRIGHT_CYAN;
@@ -96,13 +96,13 @@ int main(int argc, char *argv[])
             }
             SET_FOREGROUND_BRIGHT_GREEN;
             for( int byteitr = 0; byteitr < (bytesRead); byteitr++ )
-            {
-                    cout << string(CtiNumStr(ReadBuffer[byteitr]).hex().zpad(2)) << ' ';
+                {
+                cout << string(CtiNumStr(ReadBuffer[byteitr]).hex().zpad(2)) << ' ';
             }
-    
-    
+
+
             BytesToFollow = aCCU711.ReceiveMsg(ReadBuffer, ccuNumber);
-    
+
             if(BytesToFollow>0)
             {
                 bytesRead=0;
@@ -112,9 +112,9 @@ int main(int argc, char *argv[])
                     counter++;
                 }
                 for( byteitr = 0; byteitr < BytesToFollow; byteitr++ )
-                {
-                    if(byteitr == 1)
                     {
+                    if(byteitr == 1)
+                        {
                         SET_FOREGROUND_BRIGHT_RED;
                         cout << string(CtiNumStr(ReadBuffer[byteitr+4]).hex().zpad(2)) << ' ';
                         SET_FOREGROUND_BRIGHT_GREEN;
@@ -122,41 +122,42 @@ int main(int argc, char *argv[])
                     else
                         cout<<string(CtiNumStr(ReadBuffer[byteitr+4]).hex().zpad(2))<<' ';
                 }
-        
+
                 aCCU711.ReceiveMore(ReadBuffer, counter);
                 aCCU711.PrintInput();
             }
-           
-                aCCU711.CreateMsg(ccuNumber);
 
-                unsigned char SendData[300];
+            aCCU711.CreateMsg(ccuNumber);
 
-                int MsgSize = aCCU711.SendMsg(SendData);
+            unsigned char SendData[300];
 
-                if(MsgSize>0)
+            int MsgSize = aCCU711.SendMsg(SendData);
+
+            if(MsgSize>0)
+             {
+                unsigned long bytesWritten = 0;
+                newSocket->CTINexusWrite(&SendData, MsgSize, &bytesWritten, 15); 
+
+                CtiTime DateSent;
+                SET_FOREGROUND_BRIGHT_YELLOW;
+                cout<<DateSent.asString();
+                SET_FOREGROUND_BRIGHT_CYAN;
+                cout<<" OUT:"<<endl;
+                SET_FOREGROUND_BRIGHT_MAGNETA;
+
+                for(byteitr = 0; byteitr < bytesWritten; byteitr++ )
                     {
-                    unsigned long bytesWritten = 0;
-                    newSocket->CTINexusWrite(&SendData, MsgSize, &bytesWritten, 15); 
-
-                    CtiTime DateSent;
-                    SET_FOREGROUND_BRIGHT_YELLOW;
-                    cout<<DateSent.asString();
-                    SET_FOREGROUND_BRIGHT_CYAN;
-                    cout<<" OUT:"<<endl;
-                    SET_FOREGROUND_BRIGHT_MAGNETA;
-
-                    for(byteitr = 0; byteitr < bytesWritten; byteitr++ )
-                        {
-                        cout <<string(CtiNumStr(SendData[byteitr]).hex().zpad(2))<<' ';
-                    }
-
-                    aCCU711.PrintMessage();
+                    cout <<string(CtiNumStr(SendData[byteitr]).hex().zpad(2))<<' ';
                 }
-                else
+
+                aCCU711.PrintMessage();
+            }
+            else
                 {
-                        SET_FOREGROUND_BRIGHT_RED;
-                        cout<<"Error: Outgoing message size < 1"<<endl;
-                }
+                SET_FOREGROUND_BRIGHT_RED;
+                cout<<"Error: Outgoing message is null"<<endl;
+                SET_FOREGROUND_WHITE;
+            }
         }
         else if(TempBuffer[0] & 0x04)
         {   //  It's a 710 message

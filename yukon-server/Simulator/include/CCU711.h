@@ -63,6 +63,10 @@ class CCU711{
 
         struct _queueMessage {
             public:
+                int getbytesToReturn();
+                void copyInto(unsigned char Data[], int bytes);
+                void setbytesToReturn(int bytes);
+                void copyOut(unsigned char Data[]);
 
             private:
                 int _bytesToReturn;
@@ -106,9 +110,8 @@ class CCU711{
 		int DecodeWTF(int WordType, unsigned char Data[]);
 		//  Determine what function the word specifies
 		int DecodeFunction(int WordType, unsigned char Data[]);
-
-
-
+        //  Store the response to an incoming message in a message struct
+        void StoreMessage();
 
 
 	private:
