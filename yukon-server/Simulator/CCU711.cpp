@@ -666,7 +666,14 @@ void CCU711::LoadQueuedMsg()
     {
         _messageData[i]=Data[i];
     }
-    _outindexOfEnd = 10;
+    int Ctr = 0;
+    unsigned char Frame = getFrame();
+    unsigned char Address = _messageData[1];
+    _outmessageData[Ctr++] = 0x7e;
+    _outmessageData[Ctr++] = Address;   //  slave address
+    _outmessageData[Ctr++] = Frame;     //  control
+
+    _outindexOfEnd = 22;    ////////  CHANGE THIS FROM HARDCODED!!!  ///////////
     _messageQueue.pop();
 }
 
