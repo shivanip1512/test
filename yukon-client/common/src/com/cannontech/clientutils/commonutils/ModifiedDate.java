@@ -7,18 +7,22 @@ package com.cannontech.clientutils.commonutils;
  */
 import java.text.SimpleDateFormat;
 
+/**
+ * @deprecated Do not use this class for formating Dates. It doesn't honor a user's timezone.
+ */
+@Deprecated
 public class ModifiedDate extends java.util.Date 
 {
 	//default pattern for this guy
-	private static SimpleDateFormat formatter_def = 
+	private SimpleDateFormat formatter_def = 
 				new SimpleDateFormat("MM-dd-yyyy HH:mm:ss");
 
 	//month, day, year, hour, minutes
-	private static SimpleDateFormat formatter_nosecs = 
+	private SimpleDateFormat formatter_nosecs = 
 				new SimpleDateFormat("MM-dd-yyyy HH:mm");
 
 	//month, day, hours, minutes
-	private static SimpleDateFormat formatter_nosecs_noyr = 
+	private SimpleDateFormat formatter_nosecs_noyr = 
 				new SimpleDateFormat("MM-dd HH:mm");
 
 	//month, day, year, hour, minutes, timezone
