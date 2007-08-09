@@ -61,19 +61,18 @@ void CCU711::ReceiveMore(unsigned char ReadBuffer[], int counter)
 	SET_FOREGROUND_WHITE;
 	DecodeCommand(ReadBuffer);
 
-    _messageData[10]=ReadBuffer[10];   
-    _messageData[11]=ReadBuffer[11];                              
-    _messageData[12]=ReadBuffer[12];   
-    _messageData[13]=ReadBuffer[13];
-    _messageData[14]=ReadBuffer[14];
-    _messageData[15]=ReadBuffer[15];
-    _messageData[16]=ReadBuffer[16];
-    _messageData[17]=ReadBuffer[17];
-    _messageData[18]=ReadBuffer[18];
+    for(int i=11; i<50; i++)
+    {
+        _messageData[i]=ReadBuffer[i];   
+    }
+
     int Ctr = 3;
     int dummyNum = 0;
-    subCCU710.ReceiveMsg((_messageData + 7), dummyNum);
-    _mctNumber = subCCU710.ReceiveMore((_messageData + 7), dummyNum, Ctr);
+    if(_commandType==DTRAN)
+    {
+        subCCU710.ReceiveMsg((_messageData + 7), dummyNum);
+        _mctNumber = subCCU710.ReceiveMore((_messageData + 7), dummyNum, Ctr);
+    }
 }
 
 
@@ -113,12 +112,11 @@ void CCU711::CreateMsg(int ccuNumber)
             }
         }
         else if(_commandType==LGRPQ) {
-            CreateMessage(GENREP, FUNCACK, someData, ccuNumber, setccuNumber, Address, Frame);
-            StoreMessage();
-            CreateMessage(GENREP, ONEACK, someData, ccuNumber, setccuNumber, Address, Frame);
+            CreateQueuedMsg();
+            CreateResponse(LGRPQ);
         }
         else if(_commandType==RCOLQ) {
-            CreateMessage(GENREP, FUNCACK, someData, ccuNumber, setccuNumber, Address, Frame); 
+            LoadQueuedMsg(); 
         }
 		else{ 
 			CreateMessage(GENREP, DEFAULT, someData, ccuNumber, setccuNumber, Address, Frame);
@@ -301,153 +299,6 @@ void CCU711::CreateMessage(int MsgType, int WrdFnc, unsigned char Data[], int cc
 			_outmessageData[Ctr++] = HIBYTE (CRC);
 			_outmessageData[Ctr++] = LOBYTE (CRC);
 		}
-        else if(_commandType==LGRPQ)
-        {
-            _outmessageType = GENREP;
-            if(WrdFnc==ONEACK) 
-            {
-                _outmessageData[Ctr++] = 0x7e;
-                _outmessageData[Ctr++] = Address;   //  slave address
-                _outmessageData[Ctr++] = Frame;     //  control
-                Ctr++;  		// # of bytes to follow minus two filled in at bottom of section
-                _outmessageData[Ctr++] = 0x02;      // SRC/DES
-                _outmessageData[Ctr++] = 0xb2;      // Echo of command received
-                _outmessageData[Ctr++] = 0x00;      // system status items
-                _outmessageData[Ctr++] = 0x00;      //    "   "
-                _outmessageData[Ctr++] = 0x00;      //    "   "
-                _outmessageData[Ctr++] = 0x00;      //    "   "  
-                _outmessageData[Ctr++] = 0x00;     // device status items
-                _outmessageData[Ctr++] = 0x00;     //    "   "
-                _outmessageData[Ctr++] = 0x00;     //    "   "   
-                _outmessageData[Ctr++] = 0x00;     //    "   "
-                _outmessageData[Ctr++] = 0x00;     //    "   "
-                _outmessageData[Ctr++] = 0x00;     //    "   "
-                _outmessageData[Ctr++] = 0x00;     // process status items
-                _outmessageData[Ctr++] = 0x00;     //    "   "		
-                _outmessageData[3] = Ctr-4;      // # of bytes to follow minus two (see note above)
-
-                unsigned short CRC = NCrcCalc_C ((_outmessageData + 1), Ctr-1);
-                _outmessageData[Ctr++] = HIBYTE (CRC);
-                _outmessageData[Ctr++] = LOBYTE (CRC);
-            }
-            else if(WrdFnc==FUNCACK)
-            {
-                    _outmessageData[Ctr++] = 0x7e;
-                    _outmessageData[Ctr++] = Address;   //  slave address
-                    _outmessageData[Ctr++] = Frame;     //  control
-                    Ctr++;  		// # of bytes to follow minus two filled in at bottom of section
-                    _outmessageData[Ctr++] = 0x02;      // SRC/DES
-                    _outmessageData[Ctr++] = 0xa6;      // Echo of command received
-                    _outmessageData[Ctr++] = 0x00;      // system status items
-                    _outmessageData[Ctr++] = 0x00;      //    "   "
-                    _outmessageData[Ctr++] = 0x00;      //    "   "
-                    _outmessageData[Ctr++] = 0x00;      //    "   "  
-                    _outmessageData[Ctr++] = 0x00;     // device status items
-                    _outmessageData[Ctr++] = 0x00;     //    "   "
-                    _outmessageData[Ctr++] = 0x00;     //    "   "   
-                    _outmessageData[Ctr++] = 0x00;     //    "   "
-                    _outmessageData[Ctr++] = 0x00;     //    "   "
-                    _outmessageData[Ctr++] = 0x00;     //    "   "
-                    _outmessageData[Ctr++] = 0x00;     // process status items
-                    _outmessageData[Ctr++] = 0x00;     //    "   "									
-
-                    if(subCCU710.getWordFunction(0) == FUNCACK)
-                    {
-                        // Use a 710 to form the content in the message
-                        subCCU710.CreateMessage(FEEDEROP, FUNCACK, _mctNumber, ccuNumber);
-                        unsigned char SendData[300];
-                        subCCU710.SendMsg(SendData);
-                        int smallCtr = 0;
-                        _outmessageData[Ctr++] = SendData[smallCtr++];
-                        _outmessageData[Ctr++] = SendData[smallCtr++];
-                        _outmessageData[Ctr++] = SendData[smallCtr++];
-                        _outmessageData[Ctr++] = SendData[smallCtr++];
-                        _outmessageData[Ctr++] = SendData[smallCtr++];
-                        _outmessageData[Ctr++] = SendData[smallCtr++];
-                        _outmessageData[Ctr++] = SendData[smallCtr++];
-                        _outmessageData[Ctr++] = SendData[smallCtr++];
-                        _outmessageData[Ctr++] = SendData[smallCtr++];
-                        _outmessageData[Ctr++] = SendData[smallCtr++];
-                        _outmessageData[Ctr++] = SendData[smallCtr++];
-                    }
-                    else if(subCCU710.getWordFunction(0) == READ)
-                    {
-                        unsigned char SendData[300];
-                        int smallCtr = 0;
-
-                        // Use a 710 to form the content in the message
-                        switch(subCCU710.getWordsRequested())
-                        {
-                            case 1:
-                                subCCU710.CreateMessage(FEEDEROP, READREP1, _mctNumber, ccuNumber);
-                                break;
-                            case 2:
-                                subCCU710.CreateMessage(FEEDEROP, READREP2, _mctNumber, ccuNumber);
-                                break;
-                            case 3:
-                                subCCU710.CreateMessage(FEEDEROP, READREP3, _mctNumber, ccuNumber);
-                                break;
-                        }
-                        subCCU710.SendMsg(SendData);
-                        smallCtr = 0;
-                        for(int i = 0; i < subCCU710.getWordsRequested(); i++)
-                        {
-                            _outmessageData[Ctr++] = SendData[smallCtr++];
-                            _outmessageData[Ctr++] = SendData[smallCtr++];
-                            _outmessageData[Ctr++] = SendData[smallCtr++];
-                            _outmessageData[Ctr++] = SendData[smallCtr++];
-                            _outmessageData[Ctr++] = SendData[smallCtr++];
-                            _outmessageData[Ctr++] = SendData[smallCtr++];
-                            _outmessageData[Ctr++] = SendData[smallCtr++];
-                            _outmessageData[Ctr++] = SendData[smallCtr++];
-                            _outmessageData[Ctr++] = SendData[smallCtr++];
-                            _outmessageData[Ctr++] = SendData[smallCtr++];
-                            _outmessageData[Ctr++] = SendData[smallCtr++];
-                        }
-                    }
-                    else if(subCCU710.getWordFunction(0) == WRITE)
-                    {
-                        cout<<"Write detected"<<endl;/////////////////////////YOU WERE HERE//////////////////////
-                    }
-
-                    _outmessageData[3] = Ctr-4;      // # of bytes to follow minus two (see note above)
-
-                    unsigned short CRC = NCrcCalc_C ((_outmessageData + 1), Ctr-1);
-                    _outmessageData[Ctr++] = HIBYTE (CRC);
-                    _outmessageData[Ctr++] = LOBYTE (CRC);
-            }
-        }
-        else if(_commandType==RCOLQ)
-        {
-            // copy message over from array in message struct
-            if(!_messageQueue.empty())
-            {
-                unsigned char tempArray[50];
-                _messageQueue.front().copyOut(tempArray);
-                for(int i=0; i<50; i++)
-                {
-                    _outmessageData[i]=tempArray[i];
-                }
-
-                if(_messageQueue.front().getbytesToReturn()==0)
-                {
-                     SET_FOREGROUND_BRIGHT_RED;
-                     cout<<"Error: There are no bytes in the outgoing message"<<endl;
-                     SET_FOREGROUND_WHITE;
-                }
-                else
-                    Ctr=_messageQueue.front().getbytesToReturn();
-
-                _messageQueue.pop();
-
-            }
-            else
-            {
-                 SET_FOREGROUND_BRIGHT_RED;
-                 cout<<"Error: Outgoing message queue is empty"<<endl;
-                 SET_FOREGROUND_WHITE;
-            }
-        }
 		else if(_commandType==DTRAN)
         {
                 _outmessageData[Ctr++] = 0x7e;
@@ -764,14 +615,75 @@ int CCU711::DecodeFunction(int WordType, unsigned char Data[]){
 }
 
 
-void CCU711::StoreMessage()
+void CCU711::CreateQueuedMsg()
 {
-   _queueMessage newMessage;
-   newMessage.copyInto(_outmessageData, _outindexOfEnd);
-   _messageQueue.push(newMessage);
+    _queueMessage newMessage;
+    newMessage.initializeMessage();
+    unsigned char Data[50];
+    newMessage.copyInto(Data, 10);
+    _messageQueue.push(newMessage);
+}
+
+void CCU711::CreateResponse(int command)
+{
+    int Ctr = 0;
+    unsigned char Frame = getFrame();
+    unsigned char Address = _messageData[1];
+    _outmessageData[Ctr++] = 0x7e;
+    _outmessageData[Ctr++] = Address;   //  slave address
+    _outmessageData[Ctr++] = Frame;     //  control
+    Ctr++;  		// # of bytes to follow minus two filled in at bottom of section
+    _outmessageData[Ctr++] = 0x02;      // SRC/DES
+    _outmessageData[Ctr++] = 0xa6;      // Echo of command received
+    _outmessageData[Ctr++] = 0x00;      // system status items
+    _outmessageData[Ctr++] = 0x00;      //    "   "
+    _outmessageData[Ctr++] = 0x00;      //    "   "
+    _outmessageData[Ctr++] = 0x00;      //    "   "  
+    _outmessageData[Ctr++] = 0x00;     // device status items
+    _outmessageData[Ctr++] = 0x00;     //    "   "
+    _outmessageData[Ctr++] = 0x00;     //    "   "   
+    _outmessageData[Ctr++] = 0x00;     //    "   "
+    _outmessageData[Ctr++] = 0x00;     //    "   "
+    _outmessageData[Ctr++] = 0x00;     //    "   "
+    _outmessageData[Ctr++] = 0x00;     // process status items
+    _outmessageData[Ctr++] = 0x00;     //    "   "		
+    _outmessageData[Ctr++] = 0x42;
+    _outmessageData[Ctr++] = 0x42;
+    _outmessageData[3] = Ctr-4;      // # of bytes to follow minus two (see note above)
+
+    unsigned short CRC = NCrcCalc_C ((_outmessageData + 1), Ctr-1);
+    _outmessageData[Ctr++] = HIBYTE (CRC);
+    _outmessageData[Ctr++] = LOBYTE (CRC);
+    _outindexOfEnd = Ctr;
 }
 
 
+void CCU711::LoadQueuedMsg()
+{
+    unsigned char Data[50];
+    _messageQueue.front().copyOut(Data);
+    for(int i=0; i<50; i++)
+    {
+        _messageData[i]=Data[i];
+    }
+    _outindexOfEnd = 10;
+    _messageQueue.pop();
+}
+
+
+void CCU711::_queueMessage::initializeMessage()
+{
+    memset(_data, 0, 50);
+    //CtiTime _timeWhenReady;
+    //route infot (3 elements)
+    _repeaters     = 0;
+    _address       = 0;
+    _wordType      = 0;      //a,b,g words
+    _ioType        = 0;       // i/o
+    _function      = 0;
+    _QENID         = 0;
+    _bytesToReturn = 0;
+}
 
 int CCU711::_queueMessage::getbytesToReturn()           {   return _bytesToReturn;  }
 void CCU711::_queueMessage::setbytesToReturn(int bytes) {   _bytesToReturn = bytes; }
@@ -793,4 +705,6 @@ void CCU711::_queueMessage::copyOut(unsigned char Data[])
         Data[i]=_data[i];
     }
 }
+
+
 

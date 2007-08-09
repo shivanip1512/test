@@ -154,9 +154,9 @@ int main(int argc, char *argv[])
             }
             else
                 {
-                SET_FOREGROUND_BRIGHT_RED;
-                cout<<"Error: Outgoing message is null"<<endl;
-                SET_FOREGROUND_WHITE;
+                //SET_FOREGROUND_BRIGHT_RED;
+                //cout<<"Error: Outgoing message is null"<<endl;
+                //SET_FOREGROUND_WHITE;
             }
         }
         else if(TempBuffer[0] & 0x04)

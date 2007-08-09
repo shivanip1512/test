@@ -67,11 +67,19 @@ class CCU711{
                 void copyInto(unsigned char Data[], int bytes);
                 void setbytesToReturn(int bytes);
                 void copyOut(unsigned char Data[]);
+                void initializeMessage();
 
             private:
                 int _bytesToReturn;
                 unsigned char _data [50];
                 CtiTime _timeWhenReady;
+                int _address;
+                //route infot (3 elements)
+                int _repeaters;                
+                int _wordType;      //a,b,g words
+                int _ioType;       // i/o
+                int _function;
+                int _QENID;
         };
 
         // Constructor to build a new Message
@@ -110,8 +118,13 @@ class CCU711{
 		int DecodeWTF(int WordType, unsigned char Data[]);
 		//  Determine what function the word specifies
 		int DecodeFunction(int WordType, unsigned char Data[]);
-        //  Store the response to an incoming message in a message struct
-        void StoreMessage();
+        //  Build a message to store in the queue
+        void CreateQueuedMsg();
+        //  Create a response for immediate use (not to put into the queue)
+        void CreateResponse(int command);
+        //  Copy the message from the queue into the 711 outgoing message storage
+        void LoadQueuedMsg();
+
 
 
 	private:
