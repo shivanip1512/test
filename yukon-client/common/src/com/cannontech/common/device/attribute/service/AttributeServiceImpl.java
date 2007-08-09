@@ -1,6 +1,7 @@
 package com.cannontech.common.device.attribute.service;
 
 import java.util.HashSet;
+import java.util.List;
 import java.util.Set;
 
 import org.springframework.dao.DataAccessException;
@@ -12,6 +13,7 @@ import com.cannontech.common.device.definition.dao.DeviceDefinitionDao;
 import com.cannontech.common.device.definition.model.PointTemplate;
 import com.cannontech.common.device.service.PointService;
 import com.cannontech.core.dao.NotFoundException;
+import com.cannontech.core.dao.PointDao;
 import com.cannontech.database.Transaction;
 import com.cannontech.database.TransactionException;
 import com.cannontech.database.data.lite.LitePoint;
@@ -21,6 +23,7 @@ public class AttributeServiceImpl implements AttributeService {
 
     private DeviceDefinitionDao deviceDefinitionDao = null;
     private PointService pointService = null;
+    private PointDao pointDao;
 
     public void setDeviceDefinitionDao(DeviceDefinitionDao deviceDefinitionDao) {
         this.deviceDefinitionDao = deviceDefinitionDao;
@@ -30,6 +33,10 @@ public class AttributeServiceImpl implements AttributeService {
         this.pointService = pointService;
     }
 
+    public void setPointDao(PointDao pointDao) {
+        this.pointDao = pointDao;
+    }
+    
     public LitePoint getPointForAttribute(YukonDevice device, Attribute attribute) {
 
         PointTemplate pointTemplate = deviceDefinitionDao.getPointTemplateForAttribute(device,
@@ -44,20 +51,19 @@ public class AttributeServiceImpl implements AttributeService {
     public Set<Attribute> getAllExistingAtributes(YukonDevice device) {
 
         Set<Attribute> attributes = new HashSet<Attribute>();
-
         Set<Attribute> availableAttribute = this.getAvailableAttributes(device);
-        for (Attribute attribute : availableAttribute) {
+        List<LitePoint> pointList = pointDao.getLitePointsByPaObjectId(device.getDeviceId()); 
+        
+        for (final Attribute attribute : availableAttribute) {
             try {
                 PointTemplate template = deviceDefinitionDao.getPointTemplateForAttribute(device,
                                                                                           attribute);
-                if (pointService.pointExistsForDevice(device, template)) {
-                    attributes.add(attribute);
+                for (final LitePoint point : pointList) {
+                    if ((point.getPointOffset() == template.getOffset()) &&
+                        (point.getPointType() == template.getType())) attributes.add(attribute);
                 }
-            } catch (NotFoundException e) {
-                // point doesn't exist for current attribute
-            }
+            } catch (NotFoundException ignore) { }
         }
-
         return attributes;
     }
     

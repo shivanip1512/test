@@ -5,6 +5,7 @@
     <bean id="attributeService" class="com.cannontech.common.device.attribute.service.AttributeServiceImpl" singleton="true">
         <property name="deviceDefinitionDao" ref="deviceDefinitionDao" />
         <property name="pointService" ref="devicePointService" />
+        <property name="pointDao" ref="pointDao"/>
     </bean>
     
     <bean id="devicePointService" class="com.cannontech.common.device.service.PointServiceImpl" singleton="true">

@@ -231,26 +231,25 @@ public final class PointDaoImpl implements PointDao {
 	/* (non-Javadoc)
      * @see com.cannontech.core.dao.PointDao#getPointIDByDeviceID_Offset_PointType(int, int, int)
      */
-	public int getPointIDByDeviceID_Offset_PointType(int deviceID, int pointOffset, int pointType) {
-        List<LitePoint> litePoints = getLitePointsByPaObjectId(deviceID);
-		for (LitePoint lp : litePoints) {
-			if( lp.getPointOffset() == pointOffset && pointType == lp.getPointType())
-				return lp.getPointID();
-		}
-	
-		return PointTypes.SYS_PID_SYSTEM; //not found
+	public int getPointIDByDeviceID_Offset_PointType(int deviceId, int pointOffset, int pointType) {
+        try {
+            LitePoint point = getLitePointIdByDeviceId_Offset_PointType(deviceId, pointOffset, pointType);
+            return point.getPointID();
+        } catch (NotFoundException e) {
+            return PointTypes.SYS_PID_SYSTEM; //not found
+        }
 	}
 
     public LitePoint getLitePointIdByDeviceId_Offset_PointType(int deviceId, int pointOffset, int pointType) {
-	    List<LitePoint> litePoints = getLitePointsByPaObjectId(deviceId);
-	    for (LitePoint point : litePoints) {
-	        if( point.getPointOffset() == pointOffset && pointType == point.getPointType())
-	            return point;
-	    }
-	    
-	    throw new NotFoundException("Unable to find point for deviceId=" + deviceId + ", pointOffset=" + pointOffset + ", pointType=" + pointType); 
+	    final String sqlString = litePointSql + " WHERE PaObjectId = ? AND POINTOFFSET = ? AND POINTTYPE = ?";
+        try {
+            return (LitePoint) jdbcOps.queryForObject(sqlString,
+                                                      new Object[]{deviceId, pointOffset, PointTypes.getType(pointType)},
+                                                      PointDaoImpl.litePointRowMapper);   
+        } catch (IncorrectResultSizeDataAccessException e) {
+            throw new NotFoundException("Unable to find point for deviceId=" + deviceId + ", pointOffset=" + pointOffset + ", pointType=" + pointType);
+        }
 	}
-    
     
 	/* (non-Javadoc)
      * @see com.cannontech.core.dao.PointDao#retrievePointData(int)
