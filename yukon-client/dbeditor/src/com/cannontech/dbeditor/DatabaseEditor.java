@@ -54,10 +54,8 @@ import com.cannontech.core.dao.DaoFactory;
 import com.cannontech.core.dynamic.AsyncDynamicDataSource;
 import com.cannontech.database.DatabaseTypes;
 import com.cannontech.database.Transaction;
-import com.cannontech.database.data.device.CCUBase;
 import com.cannontech.database.data.device.DeviceBase;
 import com.cannontech.database.data.device.DeviceTypesFuncs;
-import com.cannontech.database.data.device.RepeaterBase;
 import com.cannontech.database.data.device.lm.LMScenario;
 import com.cannontech.database.data.lite.LiteBase;
 import com.cannontech.database.data.lite.LiteFactory;
@@ -420,61 +418,7 @@ public void actionPerformed(ActionEvent event)
 	else
 	if( item == viewMenu.refreshMenuItem )
 	{
-		java.awt.Frame f = CtiUtilities.getParentFrame(getContentPane());
-		java.awt.Cursor savedCursor = f.getCursor();
-		
-		try
-		{
-			f.setCursor( new java.awt.Cursor( java.awt.Cursor.WAIT_CURSOR ) );
-			
-			//refresh the cache and the connections state
-			com.cannontech.database.cache.DefaultDatabaseCache.getInstance().releaseAllCache();
-			
-			//grab the current selected object in the tree
-			Object holder = treeViewPanel.getSelectedItem();
-			//do the actual refresh of the tree
-			treeViewPanel.refresh();
-			if(holder != null && holder instanceof LiteBase)
-			{
-				//reselect the object, wherever it may have ended up now
-				//make sure it isn't a point, as this will result in a failed selection
-				//which will leave the treeviewpanel on the final sort-by model
-				if(! (holder instanceof LitePoint))
-					treeViewPanel.selectLiteObject((LiteBase)holder);
-				DefaultMutableTreeNode tempNode = treeViewPanel.getSelectedNode();
-				
-				if(tempNode != null)
-				{
-					javax.swing.tree.TreeNode[] path = tempNode.getPath();
-					javax.swing.tree.TreePath newPath = new javax.swing.tree.TreePath(path);
-					
-					treeViewPanel.selectLiteBase(newPath, (LiteBase)holder);
-				}
-			}
-			
-			if( getConnToDispatch().isValid() )
-			{
-				f.setTitle("Yukon Database Editor [Connected to Dispatch@" +
-							 		 getConnToDispatch().getHost() + ":" +
-							 		 getConnToDispatch().getPort() + "]" );
-				f.repaint();
-			}
-			else
-			{
-				f.setTitle("Yukon Database Editor [Not Connected to Dispatch]");
-				f.repaint();
-			}
-
-		}
-		catch(Exception e)
-		{
-			com.cannontech.clientutils.CTILogger.error( e.getMessage(), e );
-		}
-		finally
-		{
-			f.setCursor(savedCursor);
-			fireMessage( new MessageEvent( this, "Tree view, connection state and cache have been refreshed", MessageEvent.INFORMATION_MESSAGE) );
-		}
+		viewMenuRefreshAction();
 		
 	}
 	else
@@ -501,6 +445,63 @@ public void actionPerformed(ActionEvent event)
 		displayAWizardPanel( item );
 	}
 	
+}
+public void viewMenuRefreshAction() {
+    java.awt.Frame f = CtiUtilities.getParentFrame(getContentPane());
+    java.awt.Cursor savedCursor = f.getCursor();
+    
+    try
+    {
+    	f.setCursor( new java.awt.Cursor( java.awt.Cursor.WAIT_CURSOR ) );
+    	
+    	//refresh the cache and the connections state
+    	com.cannontech.database.cache.DefaultDatabaseCache.getInstance().releaseAllCache();
+    	
+    	//grab the current selected object in the tree
+    	Object holder = treeViewPanel.getSelectedItem();
+    	//do the actual refresh of the tree
+    	treeViewPanel.refresh();
+    	if(holder != null && holder instanceof LiteBase)
+    	{
+    		//reselect the object, wherever it may have ended up now
+    		//make sure it isn't a point, as this will result in a failed selection
+    		//which will leave the treeviewpanel on the final sort-by model
+    		if(! (holder instanceof LitePoint))
+    			treeViewPanel.selectLiteObject((LiteBase)holder);
+    		DefaultMutableTreeNode tempNode = treeViewPanel.getSelectedNode();
+    		
+    		if(tempNode != null)
+    		{
+    			javax.swing.tree.TreeNode[] path = tempNode.getPath();
+    			javax.swing.tree.TreePath newPath = new javax.swing.tree.TreePath(path);
+    			
+    			treeViewPanel.selectLiteBase(newPath, (LiteBase)holder);
+    		}
+    	}
+    	
+    	if( getConnToDispatch().isValid() )
+    	{
+    		f.setTitle("Yukon Database Editor [Connected to Dispatch@" +
+    					 		 getConnToDispatch().getHost() + ":" +
+    					 		 getConnToDispatch().getPort() + "]" );
+    		f.repaint();
+    	}
+    	else
+    	{
+    		f.setTitle("Yukon Database Editor [Not Connected to Dispatch]");
+    		f.repaint();
+    	}
+
+    }
+    catch(Exception e)
+    {
+    	com.cannontech.clientutils.CTILogger.error( e.getMessage(), e );
+    }
+    finally
+    {
+    	f.setCursor(savedCursor);
+    	fireMessage( new MessageEvent( this, "Tree view, connection state and cache have been refreshed", MessageEvent.INFORMATION_MESSAGE) );
+    }
 }
 /**
  * This method was created in VisualAge.
@@ -2596,9 +2597,13 @@ public void selectionPerformed( PropertyPanelEvent event)
 			panel.setChanged(false);
             
 			if (DatabaseEditorUtil.showUpdateRouteName(object)) {
-			    DatabaseEditorUtil.updateRouteName(panel, object);
+			    DatabaseEditorUtil.updateRouteName(this, panel, object);
             }    
-			            
+			
+            if (DatabaseEditorUtil.isMCT410Series(object)) {
+                DatabaseEditorUtil.updateDisconnectStatus(this, panel, object);
+            }
+            
 			updateResult = updateDBPersistent(object);
             
 			if( updateResult )
