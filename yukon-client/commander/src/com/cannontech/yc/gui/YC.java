@@ -590,6 +590,15 @@ public class YC extends Observable implements MessageListener
 					else
 					{
 						Integer value = null;
+						
+						for (int j = 0; j < valueSubstring.length(); j++)
+						{
+							if ( valueSubstring.charAt(j) == ' ' || valueSubstring.charAt(j) == '\t')	//skip whitespaces
+							{
+								valueSubstring = valueSubstring.substring(0, j );
+								break;
+							}
+						}
 						try
 						{
 							value = new Integer(valueSubstring );	//assume it is an integer.
