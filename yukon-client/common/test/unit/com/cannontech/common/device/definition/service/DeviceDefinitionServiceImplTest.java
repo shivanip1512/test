@@ -22,6 +22,7 @@ import com.cannontech.common.device.definition.model.DeviceDefinitionImpl;
 import com.cannontech.common.device.definition.model.PointTemplate;
 import com.cannontech.common.device.service.PointServiceImpl;
 import com.cannontech.common.mock.MockPointDao;
+import com.cannontech.core.dao.PointDao;
 import com.cannontech.database.data.pao.DeviceTypes;
 import com.cannontech.database.data.point.PointBase;
 import com.cannontech.database.incrementer.NextValueHelper;
@@ -36,7 +37,8 @@ public class DeviceDefinitionServiceImplTest {
     private YukonDevice device = null;
     private DeviceDefinitionDao deviceDefinitionDao = null;
     private AttributeServiceImpl attributeService = null;
-
+    private PointDao pointDao;
+    
     @Before
     public void setUp() throws Exception {
 
@@ -44,9 +46,11 @@ public class DeviceDefinitionServiceImplTest {
         deviceDefinitionDao = DeviceDefinitionDaoImplTest.getTestDeviceDefinitionDao();
         service.setDeviceDefinitionDao(deviceDefinitionDao);
 
+        pointDao = new MockPointDao();
+        
         pointService = new PointServiceImpl();
         // Create the point service for testing
-        pointService.setPointDao(new MockPointDao());
+        pointService.setPointDao(pointDao);
         pointService.setNextValueHelper(new NextValueHelper() {
             public int getNextValue(String tableName) {
                 return 1;
@@ -58,6 +62,7 @@ public class DeviceDefinitionServiceImplTest {
         attributeService = new AttributeServiceImpl();
         attributeService.setDeviceDefinitionDao(deviceDefinitionDao);
         attributeService.setPointService(pointService);
+        attributeService.setPointDao(pointDao);
         service.setAttributeService(attributeService);
 
         device = new YukonDevice(1, DeviceTypes.MCT310);

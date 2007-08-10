@@ -38,6 +38,7 @@ public class AttributeServiceImplTest extends TestCase {
         });
         pointDao = new MockPointDao();
         pointService.setPointDao(pointDao);
+        service.setPointDao(pointDao);
         service.setPointService(pointService);
 
         device = new YukonDevice(1, 1019);

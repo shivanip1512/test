@@ -1,5 +1,6 @@
 package com.cannontech.common.mock;
 
+import java.util.ArrayList;
 import java.util.Date;
 import java.util.List;
 
@@ -30,11 +31,11 @@ public class MockPointDao implements PointDao {
         case 1:
             return new LitePoint(1, "analog1", 1, 1, 1, 0, 0, 1);
         case 2:
-            return new LitePoint(1, "pulse1", 2, 1, 1, 0, 0, 1);
+            return new LitePoint(1, "pulse1", 2, 1, 2, 0, 0, 1);
         case 3:
             return new LitePoint(1, "demand1", 3, 1, 1, 0, 0, 0);
         case 4:
-            return new LitePoint(1, "pulse2", 3, 1, 4, 0, 0, 0);
+            return new LitePoint(1, "pulse2", 2, 1, 4, 0, 0, 0);
         }
         throw new NotFoundException("point not found");
     }
@@ -75,7 +76,11 @@ public class MockPointDao implements PointDao {
     }
 
     public List<LitePoint> getLitePointsByPaObjectId(int paObjectId) {
-        return null;
+        List<LitePoint> pointList = new ArrayList<LitePoint>();
+        for (int x = 1; x < 5; x++) {
+            pointList.add(getLitePoint(x));
+        }
+        return pointList;
     }
 
     public int[][] getAllPointIDsAndTypesForPAObject(int deviceid) {
