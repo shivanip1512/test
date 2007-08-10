@@ -42,6 +42,7 @@ class CCU711{
             C_WORD     = 33,
             D_WORD     = 34,
             E_WORD     = 35,
+            G_WORD     = 36,
             DTRAN      = 11,
             LGRPQ      = 12,
             RCOLQ      = 13,
@@ -66,8 +67,12 @@ class CCU711{
                 int getbytesToReturn();
                 void copyInto(unsigned char Data[], int bytes);
                 void setbytesToReturn(int bytes);
+                void setQENID(unsigned char one,unsigned char two, unsigned char three, unsigned char four);
+                unsigned char getQENID(int index);
                 void copyOut(unsigned char Data[]);
                 void initializeMessage();
+                int getWord();
+                void setWord(int type);
 
             private:
                 int _bytesToReturn;
@@ -75,11 +80,13 @@ class CCU711{
                 CtiTime _timeWhenReady;
                 int _address;
                 //route infot (3 elements)
-                int _repeaters;                
+                unsigned char _RTE_CIRCUIT;
+                unsigned char _RTE_RPTCON;
+                unsigned char _RTE_TYPCON;
                 int _wordType;      //a,b,g words
                 int _ioType;       // i/o
                 int _function;
-                int _QENID;
+                unsigned char _QENID[4];
         };
 
         // Constructor to build a new Message
@@ -124,6 +131,13 @@ class CCU711{
         void CreateResponse(int command);
         //  Copy the message from the queue into the 711 outgoing message storage
         void LoadQueuedMsg();
+        //  Return the correct RLEN plus 14
+        unsigned char getRLEN();
+        //  Create a response to a message that has been received and store it in the array of a queue message struct
+        void CreateQueuedResponse();
+        //  Decode the information contained in an incoming message 
+        void decodeForQueueMessage(int & type);
+
 
 
 

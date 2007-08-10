@@ -58,8 +58,8 @@ int CCU711::ReceiveMsg(unsigned char ReadBuffer[], int &setccuNumber)
 void CCU711::ReceiveMore(unsigned char ReadBuffer[], int counter)
 {
     int setccuNumber = 0;
-	SET_FOREGROUND_WHITE;
-	DecodeCommand(ReadBuffer);
+    SET_FOREGROUND_WHITE;
+    DecodeCommand(ReadBuffer);
 
     for(int i=11; i<50; i++)
     {
@@ -73,6 +73,10 @@ void CCU711::ReceiveMore(unsigned char ReadBuffer[], int counter)
         subCCU710.ReceiveMsg((_messageData + 7), dummyNum);
         _mctNumber = subCCU710.ReceiveMore((_messageData + 7), dummyNum, Ctr);
     }
+    else if(_commandType==LGRPQ)
+    {
+        CreateQueuedMsg();
+    }
 }
 
 
@@ -85,7 +89,14 @@ void CCU711::PrintInput()
         TranslateInfo(INCOMING, printMsg, printCmd, printPre, printWrd, printFnc);
 
         cout<<"Msg: "<<printMsg<<"    Cmd: "<<printCmd<<"    ";
-        subCCU710.PrintInput();
+        if(_commandType==DTRAN)
+        {
+            subCCU710.PrintInput();
+        }
+        else if(!_messageQueue.empty())
+        {
+            cout<<"Wrd: "<<_messageQueue.front().getWord()<<endl;
+        }
     }
 }
 
@@ -112,7 +123,7 @@ void CCU711::CreateMsg(int ccuNumber)
             }
         }
         else if(_commandType==LGRPQ) {
-            CreateQueuedMsg();
+            CreateQueuedResponse();
             CreateResponse(LGRPQ);
         }
         else if(_commandType==RCOLQ) {
@@ -158,13 +169,27 @@ void CCU711::PrintMessage(){
 
 
     if(_messageData[0]==0x7e)
-    {
+        {
         string printMsg, printCmd, printPre, printWrd, printFnc;
-    
+
         TranslateInfo(OUTGOING, printMsg, printCmd, printPre, printWrd, printFnc);
-    
-        cout<<"Msg: "<<printMsg<<"     Cmd:          "<<printCmd;
-        subCCU710.PrintMessage();
+
+        cout<<"Msg: "<<printMsg<<"      "<<printCmd;
+        if(_commandType==DTRAN)
+            {
+            subCCU710.PrintMessage();
+        }
+        else if(!_messageQueue.empty())
+            {
+            cout<<"QENID : "<<string(CtiNumStr(_messageQueue.front().getQENID(0)).hex().zpad(2))<<' ';
+            cout<<string(CtiNumStr(_messageQueue.front().getQENID(1)).hex().zpad(2))<<' ';
+            cout<<string(CtiNumStr(_messageQueue.front().getQENID(2)).hex().zpad(2))<<' ';
+            cout<<string(CtiNumStr(_messageQueue.front().getQENID(3)).hex().zpad(2))<<endl;
+            if(_commandType==RCOLQ)
+            {
+                _messageQueue.pop();
+            }
+        }
     }
 }
 
@@ -619,9 +644,38 @@ void CCU711::CreateQueuedMsg()
 {
     _queueMessage newMessage;
     newMessage.initializeMessage();
-    unsigned char Data[50];
-    newMessage.copyInto(Data, 10);
+
+    unsigned char one, two, three, four;
+    one   = _messageData[7];
+    two   = _messageData[8];
+    three = _messageData[9];
+    four  = _messageData[10];
+    newMessage.setQENID(one, two, three, four);
+
+    int type = 0;
+    decodeForQueueMessage(type);
+    newMessage.setWord(type);
+
+    int _bytesToReturn;
+    //CtiTime _timeWhenReady;
+    unsigned char _address;
+    unsigned char RTE_CIRCUIT;
+    unsigned char RTE_RPTCON;
+    unsigned char RTE_TYPCON;
+    int _wordType;      //a,b,g words
+    int _ioType;       // i/o
+    int _function;
+    unsigned char _QENID[4];
+
     _messageQueue.push(newMessage);
+}
+
+
+
+void CCU711::CreateQueuedResponse()
+{
+    unsigned char Data[50];
+    _messageQueue.front().copyInto(Data, 3);
 }
 
 void CCU711::CreateResponse(int command)
@@ -662,33 +716,74 @@ void CCU711::LoadQueuedMsg()
 {
     unsigned char Data[50];
     _messageQueue.front().copyOut(Data);
-    for(int i=0; i<50; i++)
+    for(int i=0; i<3; i++)
     {
-        _messageData[i]=Data[i];
+        _outmessageData[i]=Data[i];
     }
-    int Ctr = 0;
-    unsigned char Frame = getFrame();
-    unsigned char Address = _messageData[1];
-    _outmessageData[Ctr++] = 0x7e;
-    _outmessageData[Ctr++] = Address;   //  slave address
-    _outmessageData[Ctr++] = Frame;     //  control
+    _outmessageData[3] = getRLEN(); 		// # of bytes to follow 
+    _outmessageData[4] = 0x00;
+    _outmessageData[5] = 0xa7;
+    _outmessageData[18] = 0x14;
+    _outmessageData[19] = 0x98;
+    _outmessageData[20] = 0x00;
+    _outmessageData[21] = 0x90;
+    _outmessageData[22] = 0x03;
+    _outmessageData[23] = 0x00;
+    _outmessageData[24] = 0x00;
+    _outmessageData[25] = 0x00;
+    _outmessageData[26] = 0x00;
+    _outmessageData[27] = 0x00;
+    _outmessageData[28] = 0x01;
+    unsigned short CRC = NCrcCalc_C ((_outmessageData + 1), 31);
+    _outmessageData[32] = HIBYTE (CRC);
+    _outmessageData[33] = LOBYTE (CRC);
 
-    _outindexOfEnd = 22;    ////////  CHANGE THIS FROM HARDCODED!!!  ///////////
-    _messageQueue.pop();
+    _outindexOfEnd = 34;    ////////  CHANGE THIS FROM HARDCODED to getBytesToReturn !!!  ///////////
 }
 
+
+unsigned char CCU711::getRLEN()
+{
+     unsigned char RLEN14;
+     unsigned char rlen = _messageData[6];
+     RLEN14 = rlen + 0x0e;
+     return RLEN14;
+}
+
+void CCU711::decodeForQueueMessage(int & type)
+{
+    switch(_messageData[19] & 0xc0)
+    {
+        case 0x40:
+            type = A_WORD;
+            break;
+        case 0x80:
+            type = B_WORD;
+            break;
+        case 0xc0:
+            type = G_WORD;
+            break;
+    }
+}
+
+
+/***************************************************************************************
+*     Functions for the _queueMessage struct
+****************************************************************************************/
 
 void CCU711::_queueMessage::initializeMessage()
 {
     memset(_data, 0, 50);
+    memset(_QENID, 0, 4);
     //CtiTime _timeWhenReady;
     //route infot (3 elements)
-    _repeaters     = 0;
+    _RTE_CIRCUIT =0x00;
+    _RTE_RPTCON  =0x00;
+    _RTE_TYPCON  =0x00;
     _address       = 0;
     _wordType      = 0;      //a,b,g words
     _ioType        = 0;       // i/o
     _function      = 0;
-    _QENID         = 0;
     _bytesToReturn = 0;
 }
 
@@ -714,4 +809,16 @@ void CCU711::_queueMessage::copyOut(unsigned char Data[])
 }
 
 
+void CCU711::_queueMessage::setQENID(unsigned char one,unsigned char two, unsigned char three, unsigned char four)
+{
+    _QENID[0] = one;
+    _QENID[1] = two;
+    _QENID[2] = three;
+    _QENID[3] = four;
+}
 
+unsigned char CCU711::_queueMessage::getQENID(int index)    {   return _QENID[index];   }
+int CCU711::_queueMessage::getWord()                        {   return _wordType;       }
+void CCU711::_queueMessage::setWord(int type)               {   _wordType = type;       }
+
+                 
