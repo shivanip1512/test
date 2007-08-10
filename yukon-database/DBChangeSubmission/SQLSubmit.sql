@@ -16,3 +16,10 @@ update yukonroleproperty set DefaultValue = 'false' where rolepropertyid = -1000
 
 /* Needed in 3.4.6, 3.5, and Head  8-6-7*/
 insert into yukonroleproperty values (-100105,-1001, 'Target', 'true', 'is target stat displayed');
+
+/********* Needed for 3.5 and Head    SN 8-8-07 */
+/* Scheduler Role */
+insert into YukonRole values(-212,'Scheduler','Operator','Operator access to Scheduler'); 
+/* Scheduler Role properties */
+insert into YukonRoleProperty values(-21200,-212,'Enable/Disable Schedule','true','Right to enable or disable a schedule'); 
+/**********************************/
