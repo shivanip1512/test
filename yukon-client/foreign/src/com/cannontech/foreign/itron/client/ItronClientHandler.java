@@ -7,23 +7,23 @@ import java.util.List;
 import org.jdom.Document;
 
 import com.cannontech.billing.device.base.BillableDevice;
-import com.cannontech.billing.format.BillingFormatter;
-import com.cannontech.billing.mainprograms.BillingFileDefaults;
+import com.cannontech.billing.format.BillingFormatterBase;
 import com.cannontech.foreign.itron.util.ItronXmlBuilder;
 import com.cannontech.foreign.itron.util.ItronXmlBuilderImpl;
 
-public class ItronClientHandler implements BillingFormatter {
-    private ItronClient client;
-    
+public class ItronClientHandler extends BillingFormatterBase {
+	private ItronClient client;
+
     public void setItronClient(final ItronClient client) {
         this.client = client;
     }
 
+    @Override
     public String dataToString(BillableDevice device) {
         throw new java.lang.UnsupportedOperationException("method not supported");
     }
     
-    public int writeBillingFile(final List<BillableDevice> deviceList) throws IOException {
+    public int writeBillingFileToClient(final List<BillableDevice> deviceList) throws IOException {
         try {
             ItronXmlBuilder builder = new ItronXmlBuilderImpl();
             Document doc = builder.buildDocument(deviceList);
@@ -35,6 +35,7 @@ public class ItronClientHandler implements BillingFormatter {
         }
     }
     
+    @Override
     public int writeBillingFile(final List<BillableDevice> deviceList, final OutputStream out) throws IOException {
         try {
             ItronXmlBuilder builder = new ItronXmlBuilderImpl();
@@ -46,9 +47,16 @@ public class ItronClientHandler implements BillingFormatter {
             throw new IOException("Unable to create XML file: " + e);
         }
     }
-
-    public void setBillingFileDefaults(BillingFileDefaults billingFileDefaults) {
-        
-    }
     
+    @Override
+    public StringBuffer getBillingFileString(List<BillableDevice> deviceList) {
+        try {
+            ItronXmlBuilder builder = new ItronXmlBuilderImpl();
+            Document doc = builder.buildDocument(deviceList);
+            String docToString = builder.documentToString(doc);
+            return new StringBuffer(docToString);
+        } catch (Exception e) {
+            return new StringBuffer();
+        }
+    }
 }
