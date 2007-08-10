@@ -16,6 +16,7 @@ import org.springframework.web.servlet.mvc.multiaction.MultiActionController;
 import com.cannontech.amr.csr.model.CsrSearchField;
 import com.cannontech.amr.csr.model.ExtendedMeter;
 import com.cannontech.amr.csr.model.FilterBy;
+import com.cannontech.amr.csr.model.FilterByGenerator;
 import com.cannontech.amr.csr.model.OrderBy;
 import com.cannontech.amr.csr.service.CsrService;
 import com.cannontech.common.device.YukonDevice;
@@ -74,7 +75,7 @@ public class CsrController extends MultiActionController {
         if (request.getParameter("Filter") != null) {
             startIndex = 0;
         }
-
+        
         // Get the search result count
         int count = ServletRequestUtils.getIntParameter(request, "count", 25);
 
@@ -88,32 +89,39 @@ public class CsrController extends MultiActionController {
                                                                               false));
 
         // Build up filter by list
-        List<FilterBy> filterByList = new ArrayList<FilterBy>();
-        for (CsrSearchField field : CsrSearchField.values()) {
+        List<FilterBy> filterByList = FilterByGenerator.getFilterByList();
+        List<FilterBy> queryFilter = new ArrayList<FilterBy>();
+        List<String> filterByString = new ArrayList<String>();
 
-            String fieldValue = ServletRequestUtils.getStringParameter(request, field.getName(), "");
-            if (StringUtils.isNotBlank(fieldValue)) {
-                filterByList.add(new FilterBy(field, fieldValue));
+        for (FilterBy filterBy : filterByList) {
+            String filterValue = ServletRequestUtils.getStringParameter(request, filterBy.getName());
+            if (!StringUtils.isBlank(filterValue)) {
+                filterBy.setFilterValue(filterValue);
+                queryFilter.add(filterBy);
+                filterByString.add(filterBy.toCsrString());
             }
         }
 
-        // Create filter by string to display on jsp
-        List<String> filterByString = new ArrayList<String>();
-        for (FilterBy filterBy : filterByList) {
-            filterByString.add(filterBy.toCsrString());
-        }
-
         // Perform the search
-        SearchResult<ExtendedMeter> results = csrService.search(filterByList,
+        SearchResult<ExtendedMeter> results = csrService.search(queryFilter,
                                                                 orderBy,
                                                                 startIndex,
                                                                 count);
 
-        mav.addObject("filterByString", StringUtils.join(filterByString, " and "));
-        mav.addObject("orderBy", orderBy);
-        mav.addObject("results", results);
-        mav.addObject("fields", CsrSearchField.values());
-        mav.addObject("filterByList", filterByList);
+        // Forward to device home page if only one result is found
+        if (results.getResultCount() == 1) {
+            mav.setViewName("deviceHome.jsp");
+
+            ExtendedMeter meter = results.getResultList().get(0);
+            mav.addObject("deviceId", meter.getDeviceId());
+
+        } else {
+            mav.addObject("filterByString", StringUtils.join(filterByString, " and "));
+            mav.addObject("orderBy", orderBy);
+            mav.addObject("results", results);
+            mav.addObject("orderByFields", CsrSearchField.values());
+            mav.addObject("filterByList", filterByList);
+        }
 
         return mav;
     }
@@ -141,7 +149,7 @@ public class CsrController extends MultiActionController {
                       Integer.valueOf(roleDao.getGlobalPropertyValue(MultispeakRole.MSP_PRIMARY_CB_VENDORID))
                              .intValue() > 0);
 
-        boolean disconnectSupported =  DeviceTypesFuncs.isDisconnectEnabled(device);
+        boolean disconnectSupported = DeviceTypesFuncs.isDisconnectEnabled(device);
         mav.addObject("disconnectSupported", disconnectSupported);
 
         return mav;

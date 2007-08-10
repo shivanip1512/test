@@ -18,6 +18,13 @@
 			</td>
 			<td align="right">
 				<amr:searchResultsLink></amr:searchResultsLink>
+				<div style="margin-top: 5px;">
+					<form name="quickSearchForm" action="/spring/csr/search">
+						<input type="hidden" name="orderBy" value="METERNUMBER"/>
+						Quick Search: <input type="text" id="Quick Search" name="Quick Search" />
+						<input type="submit" value="Search" />
+					</form>
+				</div>
 			</td>
 		</tr>
 	</table>

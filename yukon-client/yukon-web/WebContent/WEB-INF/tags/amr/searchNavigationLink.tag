@@ -14,7 +14,7 @@
 		<c:param name="descending" value="true"/>
 	</c:if>
 	<c:forEach var="filter" items="${filterByList}">
-		<c:param name="${filter.field}" value="${filter.filterValue}" />
+		<c:param name="${filter.name}" value="${filter.filterValue}" />
 	</c:forEach>
 </c:url>
 

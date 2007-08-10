@@ -56,7 +56,7 @@ public class CsrSearchDaoImpl implements CsrSearchDao {
         List<String> filterList = new ArrayList<String>();
         if(filterByList.size() > 0) {
             for(FilterBy filter : filterByList) {
-                filterList.add(filter.getFilterValue() + "%");
+                filterList.addAll(filter.getFilterValues());
             }
         }
 
@@ -90,9 +90,9 @@ public class CsrSearchDaoImpl implements CsrSearchDao {
 
 
         resultList = (List<ExtendedMeter>) jdbcTemplate.getJdbcOperations()
-        .query(sql,
-               filterList.toArray(),
-               new SearchPaoResultSetExtractor(start, count));
+            .query(sql,
+                   filterList.toArray(),
+                   new SearchPaoResultSetExtractor(start, count));
 
         SearchResult<ExtendedMeter> searchResult = new SearchResult<ExtendedMeter>();
         searchResult.setBounds(start, count, totalCount);
