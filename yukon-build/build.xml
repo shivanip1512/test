@@ -57,9 +57,14 @@
         <mkdir dir="yukon-build/build/classes"/>
     	<javac srcdir="yukon-build/src"
         	   destdir="yukon-build/build/classes"
-               classpath="yukon-build/lib/ant.jar"
                fork="true"
-        	   debug="on"/>
+        	   debug="on">
+    	    <classpath>
+    	    	<fileset dir="yukon-build/lib">
+    	        	<include name="**/*.jar"/>
+    	        </fileset>
+    	    </classpath> 
+    	</javac>
         
         <mkdir dir="yukon-build/build/dist"/>
         <jar destfile="yukon-build/build/dist/customtasks.jar"
@@ -76,8 +81,14 @@
     <target name="cleanwhitespace">
 
     	<taskdef name="cleanwhitespace" 
-                 classname="com.cannontech.customtasks.CleanWhiteSpace"
-                 classpath="yukon-build/build/dist/customtasks.jar"/>
+                 classname="com.cannontech.customtasks.CleanWhiteSpace">
+            <classpath>
+                <fileset dir="yukon-build/lib">
+                	<include name="**/*.jar"/>
+                </fileset>
+                <fileset file="yukon-build/build/dist/customtasks.jar"/>
+            </classpath>    
+    	</taskdef>
     
     	<cleanwhitespace file="yukon-build/build_version.properties"/>
 
@@ -90,8 +101,14 @@
     <target name="cleanlabels">
 
         <taskdef name="regexprop" 
-                 classname="com.cannontech.customtasks.RegexReplaceProperty"
-                 classpath="yukon-build/build/dist/customtasks.jar"/>
+                 classname="com.cannontech.customtasks.RegexReplaceProperty">
+            <classpath>
+                <fileset dir="yukon-build/lib">
+                	<include name="**/*.jar"/>
+                </fileset>
+                <fileset file="yukon-build/build/dist/customtasks.jar"/>
+            </classpath> 
+        </taskdef>
         
         <regexprop name="cleaninternal" 
         	   value="${internal}"
@@ -201,24 +218,18 @@
 
         <!-- C++ Unit Tests -->
         <mkdir dir="${module.name}/yukon-server/bin/unittests"/>
-        <exec failonerror="false" dir="${module.name}/yukon-server/bin/" executable="cmd.exe" error="${log.dir}/servertests-error.log" output="${log.dir}/servertests-output.log" resultproperty="testserrorcode">
-            <arg line="/c runalltestsexit.cmd unittests/"/>
-        </exec>
-
-        <loadfile property="testserrormessage" srcFile="${log.dir}/servertests-error.log" />
-        <loadfile property="testserroroutput" srcFile="${log.dir}/servertests-output.log" />
-
-        <condition property="testsout" value="${testerroroutput}" else="">
-            <isfailure code="${testserrorcode}"/>
-        </condition>
-
-        <echo message="${testsout}" />
-
-        <fail message="${testserrormessage}">
-            <condition>
-                <isfailure code="${testserrorcode}" />
-            </condition>
-        </fail>
+        <taskdef name="customexec" 
+                 classname="com.cannontech.customtasks.ExecServerUnitTests">
+            <classpath>
+                <fileset dir="yukon-build/lib">
+                	<include name="**/*.jar"/>
+                </fileset>
+                <fileset file="yukon-build/build/dist/customtasks.jar"/>
+            </classpath>
+        </taskdef>
+  
+        <customexec failonerror="true" dir="${basedir}/${module.name}/yukon-server/bin" todir="${basedir}/${module.name}/yukon-server/bin/unittests"/>
+        
     </target>
 
     <target name="build-install" depends="build-installTarget"/>
