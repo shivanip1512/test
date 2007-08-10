@@ -288,10 +288,10 @@ function validate(form) {
                               </tr>
                               <tr> 
                                 <td width="88" class="TableCell"> 
-                                  <div align="right">Date Received:</div>
+                                  <div align="right">Field Date Received:</div>
                                 </td>
                                 <td width="210"> 
-                                  <input type="text" name="ReceiveDate" maxlength="30" size="24" value="<%= StarsUtils.forceNotNull(savedReq.getProperty("ReceiveDate")) %>" onChange="setContentChanged(true)">
+                                  <input type="text" name="fieldReceiveDate" maxlength="30" size="24" value="<%= StarsUtils.forceNotNull(savedReq.getProperty("fieldReceiveDate")) %>" onChange="setContentChanged(true)">
                                 </td>
                               </tr>
                               <tr> 

@@ -1511,7 +1511,7 @@ public class InventoryManager extends HttpServlet {
 			member = StarsDatabaseCache.getInstance().getEnergyCompany( user.getEnergyCompanyID() );
 		
 		ServletUtils.saveRequest(req, session, new String[] {
-			"Member", "MCTType", "DeviceName", "PhysicalAddr", "MeterNumber", "MCTRoute", "DeviceLabel", "AltTrackNo", "ReceiveDate", "Voltage", "ServiceCompany", "Notes"});
+			"Member", "MCTType", "DeviceName", "PhysicalAddr", "MeterNumber", "MCTRoute", "DeviceLabel", "AltTrackNo", "fieldReceiveDate", "Voltage", "ServiceCompany", "Notes"});
 		
 		try {
 			StarsCreateLMHardware createHw = new StarsCreateLMHardware();
