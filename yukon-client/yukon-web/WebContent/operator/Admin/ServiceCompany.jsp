@@ -223,31 +223,33 @@ function newCode(form) {
                 </tr>
               </table>
               <br clear="all">
-              <cti:checkProperty propertyid="<%= AdministratorRole.ADMIN_ALLOW_DESIGNATION_CODES %>">
-	              <input type="hidden" name="hasCodes" value="true">
-	              <table width="300" border="1" cellspacing="0" cellpadding="0" align="center">
-	              	<tr> 
-	                  <td class="HeaderCell">Contractor Zip Codes</td>
-	                </tr>
-	                <c:set target="${servComp}" property="serviceCompanyID"> <%=company.getCompanyID()%> </c:set>
-	                <tr>
-	                	<td>
-		                	<table width="100%" border="0" cellspacing="0" cellpadding="5" align="center">
-				                <c:forEach items="${servComp.designationCodes}" var="thisCode">
-					                <tr> 
-					                  <td class="TableCell" align="center" width="30%"> 	
-					                  	<input type="text" name='CodeUpdate_<c:out value="${thisCode.designationCodeID}"/>' size="16" value='<c:out value="${thisCode.designationCodeValue}"/>' onchange="setContentChanged(true)"/>
-                                 	  </td>
-					                </tr>
-				                </c:forEach>
-				        		<td class="TableCell" align="center" width="30%">                                    
-                                	<input type="button" name="AddCodes" value="Create New" onClick="newCode(this.form)">
-                           </table>
-						</td>
-					</tr>
-				 </table>
-	  		  <br clear="all">
-	  		  </cti:checkProperty>
+              <c:set target="${servComp}" property="serviceCompanyID"> <%=company.getCompanyID()%> </c:set>
+              <c:if test="${servComp.serviceCompanyID > -1}">
+	              <cti:checkProperty propertyid="<%= AdministratorRole.ADMIN_ALLOW_DESIGNATION_CODES %>">
+		              <input type="hidden" name="hasCodes" value="true">
+		              <table width="300" border="1" cellspacing="0" cellpadding="0" align="center">
+		              	<tr> 
+		                  <td class="HeaderCell">Contractor Zip Codes</td>
+		                </tr>
+		                <tr>
+		                	<td>
+			                	<table width="100%" border="0" cellspacing="0" cellpadding="5" align="center">
+					                <c:forEach items="${servComp.designationCodes}" var="thisCode">
+						                <tr> 
+						                  <td class="TableCell" align="center" width="30%"> 	
+						                  	<input type="text" name='CodeUpdate_<c:out value="${thisCode.designationCodeID}"/>' size="16" value='<c:out value="${thisCode.designationCodeValue}"/>' onchange="setContentChanged(true)"/>
+	                                 	  </td>
+						                </tr>
+					                </c:forEach>
+					        		<td class="TableCell" align="center" width="30%">                                    
+	                                	<input type="button" name="AddCodes" value="Create New" onClick="newCode(this.form)">
+	                           </table>
+							</td>
+						</tr>
+					 </table>
+		  		  <br clear="all">
+		  		  </cti:checkProperty>
+		  	  </c:if>
               <table width="600" border="0" cellspacing="0" cellpadding="5" align="center">
                 <tr>
                   <td width="290" align="right"> 
