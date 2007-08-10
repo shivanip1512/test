@@ -1,11 +1,18 @@
 package com.cannontech.billing;
 
-import java.util.Vector;
+import java.sql.ResultSet;
+import java.sql.SQLException;
+import java.util.HashMap;
+import java.util.List;
+import java.util.Map;
 
-import com.cannontech.clientutils.CTILogger;
-import com.cannontech.common.util.CtiUtilities;
-import com.cannontech.database.PoolManager;
-import com.cannontech.database.SqlUtils;
+import org.springframework.dao.DataAccessException;
+import org.springframework.dao.DataRetrievalFailureException;
+import org.springframework.jdbc.core.RowCallbackHandler;
+import org.springframework.jdbc.core.simple.ParameterizedRowMapper;
+import org.springframework.jdbc.core.simple.SimpleJdbcTemplate;
+
+import com.cannontech.spring.YukonSpringHook;
 
 /**
  * Insert the type's description here.
@@ -13,7 +20,8 @@ import com.cannontech.database.SqlUtils;
  * @author: 
  */
 public final class FileFormatTypes {
-
+    private static SimpleJdbcTemplate jdbcTemplate = YukonSpringHook.getBean("simpleJdbcTemplate", SimpleJdbcTemplate.class);
+    
 	// Constants representing types of file formats
 	// ** THESE MUST MATCH THE DATABASE TABLE BILLINGFILEFORMATS **
 	// ** IF YOU ADD TO THESE VALUES, YOU MUST ADD TO THE DATABASE
@@ -71,172 +79,138 @@ public final class FileFormatTypes {
 	public static final String EXTENDED_TOU_INCODE_STRING = "INCODE (Extended TOU)";
 	public static final String ITRON_REGISTER_READINGS_EXPORT_STRING = "Itron Register Readings Export";
 	
-	private static int[] validFormatIDs = null;
-	private static String[] validFormatTypes = null;
+    private static final int[] defaultValidFormatIDs;
+    private static final String[] defaultValidFormatTypes;
+    
+    static {
+        defaultValidFormatIDs = new int[] {
+                SEDC, 
+                CADP,
+                CADPXL2, 
+                CTICSV, 
+                OPU, 
+                DAFFRON, 
+                NCDC,
+                CTIStandard2, 
+                SEDC_5_4,
+                NISC_TURTLE,
+                NISC_NCDC,
+                NCDC_HANDHELD,
+                ATS,
+                IVUE_BI_T65,
+                SIMPLE_TOU,
+                EXTENDED_TOU
+        };
+        
+        defaultValidFormatTypes = new String[]{
+                SEDC_STRING, 
+                CADP_STRING, 
+                CADPXL2_STRING, 
+                CTICSV_STRING, 
+                OPU_STRING, 
+                DAFFRON_STRING, 
+                NCDC_STRING, 
+                CTI_STANDARD2_STRING,
+                SEDC_5_4_STRING,
+                NISC_TURTLE_STRING,
+                NISC_NCDC_STRING,
+                NCDC_HANDHELD_STRING,
+                ATS_STRING,
+                IVUE_BI_T65_STRING,
+                SIMPLE_TOU_STRING,
+                EXTENDED_TOU_STRING
+        };
+    }
+    /**
+     * This method was created in VisualAge.
+     * @return int
+     * @param typeStr java.lang.String
+     */
+    public final static int getFormatID(String typeStr) {
+        final String sql = "SELECT FORMATID FROM BillingFileFormats WHERE FORMATTYPE = ?";
+        try {
+            int formatId = jdbcTemplate.queryForInt(sql, typeStr);
+            return formatId;
+        } catch (DataAccessException e) {
+            throw new DataRetrievalFailureException("FileFormatTypes::getFormatID(String) - Unrecognized type: " + typeStr);
+        }
+    }
+    
+    /**
+     * Insert the method's description here.
+     * Creation date: (5/18/00 2:34:54 PM)
+     */
+    public final static String getFormatType(int typeEnum) {
+        final String sql = "SELECT FORMATTYPE FROM BillingFileFormats WHERE FORMATID = ?";
+        try {
+            String formatType = jdbcTemplate.queryForObject(sql, String.class, typeEnum);
+            return formatType;
+        } catch (DataAccessException e) {
+            throw new DataRetrievalFailureException("FileFormatTypes::getFormatType(int) - received unknown type: " + typeEnum );
+        }
+    }
 
-/**
- * This method was created in VisualAge.
- * @return int
- * @param typeStr java.lang.String
- */
-public final static int getFormatID(String typeStr)
-{
-	//Go through the valid FormatTypes Array and return 
-	//  the int associated with it from valid FormatIDs Array
-	for(int i = 0; i < getValidFormatTypes().length; i++)
-	{
-		if( getValidFormatTypes()[i].equalsIgnoreCase(typeStr) )
-			return getValidFormatIDs()[i];
-	}
-
-	//Must not have found it
-	throw new Error("FileFormatTypes::getFormatID(String) - Unrecognized type: " + typeStr);
-}
-/**
- * Insert the method's description here.
- * Creation date: (5/18/00 2:34:54 PM)
- */
-public final static String getFormatType(int typeEnum) 
-{
-	//Go through the valid FormatIDs Array and return 
-	//  the int associated with it from valid FormatTypes Array
-	for(int i = 0; i < getValidFormatIDs().length; i++)
-	{
-		if( getValidFormatIDs()[i] == typeEnum )
-			return getValidFormatTypes()[i];
-	}
-
-	//Must not have found it
-	throw new Error("FileFormatTypes::getFormatType(int) - received unknown type: " + typeEnum );			
-}
-
-/**
- * Method retrieveFileFormats.
- * Retrieve possible fileformats from yukon.BillingFileFormats db table.
- * Returns true when loaded correctly
- */
-public static synchronized boolean retrieveFileFormats() 
-{
-    boolean returnStatus = false;
-    String sql = "SELECT FORMATID, FORMATTYPE FROM BILLINGFILEFORMATS" +
-				" WHERE FORMATID >= 0";
-	
-	java.sql.Connection conn = null;
-	java.sql.Statement stmt = null;
-	java.sql.ResultSet rset = null;
-
-	try
-	{
-		java.util.Vector<Integer> formatIDVector = new Vector<Integer>();
-		java.util.Vector<String> formatTypeVector = new Vector<String>();
-		
-		conn = PoolManager.getInstance().getConnection(CtiUtilities.getDatabaseAlias());
-		if( conn == null )
-		{
-			CTILogger.info( "Error getting database connection.");
-			return returnStatus;
-		}
-		else
-		{
-			stmt = conn.createStatement();	
-			rset = stmt.executeQuery(sql.toString());
-			int rowCount = 0;
-			while( rset.next())
-			{
-				formatIDVector.add(new Integer(rset.getInt(1)));
-				formatTypeVector.add( rset.getString(2));
-				rowCount++;
-			}
-
-			if( rowCount > 0)
-			{
-				//(Re-)Initialize the validFormat..Arrays.
-				int[] formatIDs = new int[rowCount];
-				String[] formatTypes = new String[rowCount];
-				
-				for (int i = 0; i < rowCount; i++)
-				{
-					formatIDs[i] = ((Integer)formatIDVector.get(i)).intValue();
-					formatTypes[i] = (String)formatTypeVector.get(i);
-				}	
-				
-				//Copy into class arrays.
-				validFormatIDs = formatIDs;
-				validFormatTypes = formatTypes;
-				returnStatus = true;
-			}
-		}
-	}
-			
-	catch( java.sql.SQLException e ) {
-		CTILogger.error(e);
-	}
-	finally
-	{
-		SqlUtils.close(rset, stmt, conn );
-	}
-	return returnStatus;
-}
     /**
      * @return Returns the validFormatIds.
      */
-    public static int[] getValidFormatIDs()
-    {
-        if (validFormatIDs == null)
-        {
-            boolean success = retrieveFileFormats();
-            if( !success)	//if load failed, default them.
-            {
-                validFormatIDs = new int[]{
-                        SEDC, 
-                		CADP,
-                		CADPXL2, 
-                		CTICSV, 
-                		OPU, 
-                		DAFFRON, 
-                		NCDC,
-                		CTIStandard2, 
-                		SEDC_5_4,
-                		NISC_TURTLE,
-                		NISC_NCDC,
-                		NCDC_HANDHELD,
-                		ATS,
-                        IVUE_BI_T65,
-                        SIMPLE_TOU,
-                        EXTENDED_TOU
-                };
-            }
+    public static int[] getValidFormatIDs() {
+        final String sql = "SELECT FORMATID FROM BillingFileFormats WHERE FORMATID >= 0";
+        try {
+            List<Integer> list = jdbcTemplate.query(sql, new ParameterizedRowMapper<Integer>() {
+                public Integer mapRow(ResultSet rs, int rowNum) throws SQLException {
+                    return rs.getInt("FORMATID");
+                }
+            });
+            
+            if (list.size() > 0) {
+                int[] formatIds = new int[list.size()];
+                for (int x = 0; x < list.size(); x++) {
+                    formatIds[x] = list.get(x);
+                }
+                return formatIds;
+            }    
+        } catch (DataAccessException e) {
+            return defaultValidFormatIDs;
         }
-        return validFormatIDs;
+        return defaultValidFormatIDs;
     }
 
-	public static  String[] getValidFormatTypes()
-	{
-	    if (validFormatTypes == null)
-	    {
-	        boolean success = retrieveFileFormats();
-	        if( !success) 	//if load failed, default them
-	        {
-	            validFormatTypes = new String[]{
-	                    SEDC_STRING, 
-	                    CADP_STRING, 
-	            		CADPXL2_STRING, 
-	            		CTICSV_STRING, 
-	            		OPU_STRING, 
-	            		DAFFRON_STRING, 
-	            		NCDC_STRING, 
-	            		CTI_STANDARD2_STRING,
-	            		SEDC_5_4_STRING,
-	            		NISC_TURTLE_STRING,
-	            		NISC_NCDC_STRING,
-	            		NCDC_HANDHELD_STRING,
-	            		ATS_STRING,
-                        IVUE_BI_T65_STRING,
-                        SIMPLE_TOU_STRING,
-                        EXTENDED_TOU_STRING
-	            };
-	        }
-	    }
-		return validFormatTypes;
+	public static String[] getValidFormatTypes() {
+        final String sql = "SELECT FORMATTYPE FROM BillingFileFormats WHERE FORMATID >= 0";
+        try {
+            List<String> list = jdbcTemplate.query(sql, new ParameterizedRowMapper<String>(){
+                public String mapRow(ResultSet rs, int rowNum) throws SQLException {
+                    return rs.getString("FORMATTYPE");
+                }
+            });
+            
+            if (list.size() > 0) {
+                return list.toArray(new String[list.size()]);
+            }
+        } catch (DataAccessException e) {
+            return defaultValidFormatTypes;
+        }
+        return defaultValidFormatTypes;
 	}
+    
+    public static Map<Integer,String> getValidFormats() {
+        final String sql = "SELECT FORMATID,FORMATTYPE FROM BillingFileFormats WHERE FORMATID >= 0";
+        final Map<Integer,String> resultMap = new HashMap<Integer,String>();
+        try {
+            jdbcTemplate.getJdbcOperations().query(sql, new RowCallbackHandler() {
+                public void processRow(ResultSet rs) throws SQLException {
+                    resultMap.put(rs.getInt("FORMATID"), rs.getString("FORMATTYPE"));
+                }
+            });
+        } catch (DataAccessException e) {
+            for (int x = 0; x < defaultValidFormatIDs.length; x++) {
+                resultMap.put(defaultValidFormatIDs[x], defaultValidFormatTypes[x]);
+            }
+        }
+        return resultMap;
+    }
+    
+    public static void setSimpleJdbcTemplate(final SimpleJdbcTemplate jdbcTemplate) {
+        FileFormatTypes.jdbcTemplate = jdbcTemplate;
+    }
 }

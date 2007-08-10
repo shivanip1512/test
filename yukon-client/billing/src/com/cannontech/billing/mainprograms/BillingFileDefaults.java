@@ -227,8 +227,10 @@ public class BillingFileDefaults
 		if( formatID < 0)
 		{
 			//set default value
-			if( FileFormatTypes.getValidFormatIDs().length > 0 )
-				formatID = FileFormatTypes.getValidFormatIDs()[0];
+            int[] validFormatIDs = FileFormatTypes.getValidFormatIDs();
+            if (validFormatIDs.length > 0) {
+                formatID = validFormatIDs[0];
+            }
 		}
 		return formatID;
 	}

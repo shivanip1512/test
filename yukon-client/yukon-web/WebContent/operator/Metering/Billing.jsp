@@ -19,15 +19,16 @@
         <td width="80%"> 
             <select name="fileFormat">
                 <% /* Fill in the possible file format types*/
-                int [] formats = FileFormatTypes.getValidFormatIDs();    
                 int selectedFormat = billingBean.getFileFormat();
-                for( int i = 0; i < formats.length; i++ )
-                {
-                    if( formats[i] == selectedFormat)
-                        out.println("<OPTION VALUE='" + formats[i] + "' SELECTED>" + FileFormatTypes.getFormatType(selectedFormat));
-                    else
-                        out.println("<OPTION VALUE='" + formats[i] + "'>" + FileFormatTypes.getFormatType(formats[i]));
-                }%>
+                java.util.Map<Integer,String> validFormats = FileFormatTypes.getValidFormats();
+                for (final Integer key : validFormats.keySet()) {
+                    if (key.equals(selectedFormat)) {
+                        out.println("<OPTION VALUE='" + key + "' SELECTED>" + validFormats.get(key));        
+                    } else {
+                        out.println("<OPTION VALUE='" + key + "'>" + validFormats.get(key));
+                    }
+                }
+                %>
             </select>
         </td>
     </tr>
