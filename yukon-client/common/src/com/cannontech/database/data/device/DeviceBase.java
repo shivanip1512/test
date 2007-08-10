@@ -31,8 +31,8 @@ public void add() throws java.sql.SQLException
 	if( getDevice().getDeviceID() == null ) {
 	    PaoDao paoDao = DaoFactory.getPaoDao();   
         setDeviceID(paoDao.getNextPaoId());
-        if( this instanceof GridAdvBase ){
-           ((GridAdvBase)this).setDefaultPort();
+        if( this instanceof GridAdvisorBase ){
+           ((GridAdvisorBase)this).setDefaultPort();
         }
     }
 

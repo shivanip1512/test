@@ -1708,21 +1708,21 @@ public Object getValue(Object val)
 		}
 	}
     
-    if( val instanceof GridAdvBase )
+    if( val instanceof GridAdvisorBase )
     {
         LiteYukonPAObject litePort = null;
         Integer postCommWait = null;
         
         litePort = (LiteYukonPAObject)getPortComboBox().getSelectedItem();
         //get new port from combo box and set it.
-        ((GridAdvBase)val).getDeviceDirectCommSettings().setPortID(litePort.getLiteID());
+        ((GridAdvisorBase)val).getDeviceDirectCommSettings().setPortID(litePort.getLiteID());
         try
         {
-            ((GridAdvBase)val).getDeviceAddress().setMasterAddress( new Integer(getPhysicalAddressTextField().getText()) );
+            ((GridAdvisorBase)val).getDeviceAddress().setMasterAddress( new Integer(getPhysicalAddressTextField().getText()) );
         }
         catch( NumberFormatException e )
         {
-            ((GridAdvBase)val).getDeviceAddress().setMasterAddress( new Integer(0) );
+            ((GridAdvisorBase)val).getDeviceAddress().setMasterAddress( new Integer(0) );
         }        
     }
     
@@ -2319,7 +2319,7 @@ private void setNonRemBaseValue( Object base )
    
 }
 
-private void setGridBaseValue ( GridAdvBase gBase, int intType )
+private void setGridBaseValue ( GridAdvisorBase gBase, int intType )
 {
     getRouteLabel().setVisible(false);
     getRouteComboBox().setVisible(false);
@@ -2739,8 +2739,8 @@ public void setValue(Object val)
 	if( val instanceof RemoteBase )
 	{
 		setRemoteBaseValue( (RemoteBase)val, deviceType );		
-	}else if( val instanceof GridAdvBase ){
-        setGridBaseValue( (GridAdvBase)val, deviceType );
+	}else if( val instanceof GridAdvisorBase ){
+        setGridBaseValue( (GridAdvisorBase)val, deviceType );
     }
 	
 	else

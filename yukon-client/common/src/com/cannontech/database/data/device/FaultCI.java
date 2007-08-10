@@ -3,7 +3,7 @@ package com.cannontech.database.data.device;
 import com.cannontech.database.data.pao.DeviceClasses;
 
 
-public class FaultCI extends GridAdvBase {
+public class FaultCI extends GridAdvisorBase {
 
 public FaultCI() {
 	super();

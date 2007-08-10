@@ -8,8 +8,8 @@ import org.apache.log4j.Logger;
 import com.cannontech.clientutils.YukonLogManager;
 import com.cannontech.database.db.device.*;
 
-public class GridAdvBase extends DeviceBase {
-    private static final Logger log = YukonLogManager.getLogger(GridAdvBase.class);
+public class GridAdvisorBase extends DeviceBase {
+    private static final Logger log = YukonLogManager.getLogger(GridAdvisorBase.class);
     private DeviceDirectCommSettings deviceDirectCommSettings = null;
     private DeviceAddress deviceAddress = null;
     
