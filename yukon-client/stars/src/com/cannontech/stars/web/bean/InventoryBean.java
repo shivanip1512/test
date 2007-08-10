@@ -464,17 +464,15 @@ public class InventoryBean {
                 /*Adding OR logic to the filters instead of AND logic, so we need to send the same original set
                  * of hardware back through the filter if they are the same type of filter
                  * */
-                if(nextFilterType != null && filterType.compareTo(nextFilterType) == 0) {
+                if(nextFilterType != null && filterType.compareTo(nextFilterType) == 0) 
                     previousFilteredHardwareFromSameFilterType.addAll(filteredHardware);
-                }
                 else if(previousFilterType != null && filterType.compareTo(previousFilterType) == 0) {
                     previousFilteredHardwareFromSameFilterType.addAll(filteredHardware);
                     hardwares = previousFilteredHardwareFromSameFilterType;
                     previousFilteredHardwareFromSameFilterType = new ArrayList();
                 }
-                else {
+                else
                     hardwares = filteredHardware;
-                }
             }
             
             /*
@@ -590,17 +588,15 @@ public class InventoryBean {
                 /*Adding OR logic to the filters instead of AND logic, so we need to send the same original set
                  * of hardware back through the filter if they are the same type of filter
                  * */
-                if(nextFilterType != null && filterType.compareTo(nextFilterType) == 0) {
+                if(nextFilterType != null && filterType.compareTo(nextFilterType) == 0) 
                     previousFilteredHardwareFromSameFilterType.addAll(filteredHardware);
-                }
                 else if(previousFilterType != null && filterType.compareTo(previousFilterType) == 0) {
                     previousFilteredHardwareFromSameFilterType.addAll(filteredHardware);
                     hardwares = previousFilteredHardwareFromSameFilterType;
                     previousFilteredHardwareFromSameFilterType = new ArrayList();
                 }
-                else {
+                else
                     hardwares = filteredHardware;
-                }
             }
         }
             
