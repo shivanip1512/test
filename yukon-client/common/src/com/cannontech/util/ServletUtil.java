@@ -1251,4 +1251,15 @@ public static Date roundToMinute(Date toRound) {
         }
         return sw.toString();
     }
+    
+	public static boolean isAjaxRequest(ServletRequest req) {
+		if (req instanceof HttpServletRequest) {
+			HttpServletRequest httpReq = (HttpServletRequest) req;
+			String header = httpReq.getHeader("X-Requested-With");
+			if (header != null) {
+				return header.startsWith("XMLHttpRequest");
+			}
+		}
+		return false;
+	}
 }

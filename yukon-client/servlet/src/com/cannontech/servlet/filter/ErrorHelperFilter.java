@@ -96,17 +96,6 @@ public class ErrorHelperFilter  implements Filter {
 		throw new RuntimeException("Can't output AJAX exception, not HttpServletResponse",t);
 	}
 	
-	private boolean isAjaxRequest(ServletRequest req) {
-		if (req instanceof HttpServletRequest) {
-			HttpServletRequest httpReq = (HttpServletRequest) req;
-			String header = httpReq.getHeader("X-Requested-With");
-			if (header != null) {
-				return header.startsWith("XMLHttpRequest");
-			}
-		}
-		return false;
-	}
-
 	public void doFilter(ServletRequest request, ServletResponse response, FilterChain chain) throws IOException, ServletException {
 		CTILogger.debug("Starting request handling: " + getRequestInfo(request));
         
@@ -136,7 +125,7 @@ public class ErrorHelperFilter  implements Filter {
 			Throwable rc = CtiUtilities.getRootCause(e);
             String key = setupUniqueLogKey(request);
             CTILogger.error("Servlet error filter caught an Error processing {" + key + "}: " + getRequestInfo(request), rc);
-			if (isAjaxRequest(request)) {
+			if (ServletUtil.isAjaxRequest(request)) {
 				handleAjaxErrorResponse(response, rc);
 			} else {
 				throw e;
@@ -145,7 +134,7 @@ public class ErrorHelperFilter  implements Filter {
 		    Throwable rc = CtiUtilities.getRootCause(re);
 		    String key = setupUniqueLogKey(request);
 			handleException(request, rc, key);
-			if (isAjaxRequest(request)) {
+			if (ServletUtil.isAjaxRequest(request)) {
 				handleAjaxErrorResponse(response, rc);
 			} else {
 				throw re;
@@ -154,7 +143,7 @@ public class ErrorHelperFilter  implements Filter {
 		    Throwable rc = CtiUtilities.getRootCause(t);
 		    String key = setupUniqueLogKey(request);
 		    handleException(request, rc, key);
-			if (isAjaxRequest(request)) {
+			if (ServletUtil.isAjaxRequest(request)) {
 				handleAjaxErrorResponse(response, rc);
 			} else {
 				throw new ServletException(t);

@@ -13,6 +13,7 @@ import javax.servlet.http.HttpServletRequest;
 import org.apache.log4j.Logger;
 
 import com.cannontech.clientutils.YukonLogManager;
+import com.cannontech.util.ServletUtil;
 
 /**
  * Filter that times how long a request takes.
@@ -37,8 +38,10 @@ public class TimerFilter implements Filter {
 	    if (req instanceof HttpServletRequest) {
       		name = ((HttpServletRequest)req).getRequestURI();
     	}	
-
-    	log.info(name + ": " + (after - before) + "ms");
+		if (ServletUtil.isAjaxRequest(req))
+			log.debug(name + ": " + (after - before) + "ms");
+		else
+			log.info(name + ": " + (after - before) + "ms");
   	}
 
 	public void destroy() { }
