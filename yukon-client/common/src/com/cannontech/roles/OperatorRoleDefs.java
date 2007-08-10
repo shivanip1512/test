@@ -15,6 +15,7 @@ public interface OperatorRoleDefs extends RoleDefs {
 	public static final int INVENTORY_ROLEID = OPERATOR_ROLEID_BASE - 9;
 	public static final int WORK_ORDER_ROLEID = OPERATOR_ROLEID_BASE - 10;
 	public static final int CI_CURTAILMENT_ROLEID = OPERATOR_ROLEID_BASE - 11;
+	public static final int SCHEDULER_ROLEID = OPERATOR_ROLEID_BASE - 12;
 		
 	static final int ADMINISTRATOR_PROPERTYID_BASE = OPERATOR_PROPERTYID_BASE;
 	static final int CONSUMER_INFO_PROPERTYID_BASE = OPERATOR_PROPERTYID_BASE - 100;
@@ -28,5 +29,6 @@ public interface OperatorRoleDefs extends RoleDefs {
 	static final int INVENTORY_PROPERTYID_BASE = OPERATOR_PROPERTYID_BASE - 900;
 	static final int WORK_ORDER_PROPERTYID_BASE = OPERATOR_PROPERTYID_BASE - 1000;
 	static final int CI_CURTAILMENT_PROPERTYID_BASE = OPERATOR_PROPERTYID_BASE - 1100;
+	static final int SCHEDULER_PROPERTYID_BASE = OPERATOR_PROPERTYID_BASE - 1200;
 
 }
