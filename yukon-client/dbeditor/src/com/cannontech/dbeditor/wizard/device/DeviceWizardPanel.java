@@ -271,7 +271,7 @@ protected com.cannontech.common.gui.util.DataInputPanel getNextInputPanel(
 			getDeviceVirtualNamePanel().setFirstFocus();
             return getDeviceVirtualNamePanel();
 		}
-        else if ( devType == PAOGroups.NEUTRAL_CS || devType == PAOGroups.FAULT_CI )
+        else if ( devType == PAOGroups.NEUTRAL_MONITOR || devType == PAOGroups.FAULT_CI )
         {
             getDeviceGridPanel().setFirstFocus();
             return getDeviceGridPanel();

@@ -357,9 +357,9 @@ public final static DeviceBase createDevice(int deviceType) {
 			returnDevice.setDeviceClass(DeviceClasses.STRING_CLASS_VIRTUAL);
 			break;
             
-        case PAOGroups.NEUTRAL_CS :
-            returnDevice = new NuetralCS();
-            returnDevice.setDeviceType(  PAOGroups.STRING_NEUTRAL_CS[0] );
+        case PAOGroups.NEUTRAL_MONITOR :
+            returnDevice = new NeutralMonitor();
+            returnDevice.setDeviceType(  PAOGroups.STRING_NEUTRAL_MONITOR[0] );
             break;
             
         case PAOGroups.FAULT_CI:
