@@ -8,16 +8,10 @@
 		<property name="mappings">
 			<props>
 				<prop key="/schedules/*">scheduleController</prop>
-				<prop key="/scheduledscripts/*">scheduledscripts</prop>
 			</props>
 		</property>
 	</bean>
 
-	<bean id="scheduledscripts"
-		class="org.springframework.web.servlet.mvc.ParameterizableViewController">
-		<property name="viewName" value="scheduledscripts.jsp" />
-	</bean>
-	
 	<bean id="viewResolver"
 		class="org.springframework.web.servlet.view.UrlBasedViewResolver">
 		<property name="viewClass"

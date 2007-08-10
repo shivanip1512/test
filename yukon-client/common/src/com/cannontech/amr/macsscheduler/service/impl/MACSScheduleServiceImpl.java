@@ -25,24 +25,33 @@ public class MACSScheduleServiceImpl implements MACSScheduleService<Schedule> {
             throw new java.lang.IllegalArgumentException("startDate cannot be after stopDate");
         }
 
-        OverrideRequest startRequest = buildRequest(OverrideRequest.OVERRIDE_START, schedule.getId(), startDate);
-        OverrideRequest stopRequest = buildRequest(OverrideRequest.OVERRIDE_STOP, schedule.getId(), stopDate);
-
-        connection.write(startRequest);
-        connection.write(stopRequest);
+        schedule.setWebCurrentState(Schedule.STATE_PENDING);
+        connection.sendStartStopSchedule(schedule, startDate, stopDate, OverrideRequest.OVERRIDE_START);
     }
 
     public void stop(final Schedule schedule, final Date stopDate) throws IOException {
         Validate.notNull(schedule, "schedule cannot be null");
         Validate.notNull(stopDate, "stopDate cannot be null");
 
-        OverrideRequest stopRequest = buildRequest(OverrideRequest.OVERRIDE_STOP, schedule.getId(), stopDate);
-
-        connection.write(stopRequest);
+        schedule.setWebCurrentState(Schedule.STATE_PENDING);
+        connection.sendStartStopSchedule(schedule, stopDate, stopDate, OverrideRequest.OVERRIDE_STOP);
+    }
+    
+    public void enable(final Schedule schedule) throws IOException {
+        Validate.notNull(schedule, "schedule cannot be null");
+        
+        schedule.setWebCurrentState(Schedule.STATE_PENDING);
+        connection.sendEnableDisableSchedule(schedule);
+    }
+    
+    public void disable(final Schedule schedule) throws IOException {
+        Validate.notNull(schedule, "schedule cannot be null");
+        
+        schedule.setWebCurrentState(Schedule.STATE_PENDING);
+        connection.sendEnableDisableSchedule(schedule);
     }
 
     public Schedule getById(final int scheduleId) throws NotFoundException,IOException {
-        connection.sendRetrieveAllSchedules();
         for (final Schedule schedule : connection.retrieveSchedules()) {
             if (schedule.getId() == scheduleId) return schedule;
         }
@@ -50,19 +59,7 @@ public class MACSScheduleServiceImpl implements MACSScheduleService<Schedule> {
     }
 
     public List<Schedule> getAll() throws IOException {
-        connection.sendRetrieveAllSchedules();
         return Arrays.asList(connection.retrieveSchedules());
-    }
-
-    private OverrideRequest buildRequest(final int type, final int scheduleId, final Date date) {
-        final OverrideRequest request = new OverrideRequest();
-        request.setSchedId(scheduleId);
-        request.setAction(type);
-
-        if (type == OverrideRequest.OVERRIDE_START) request.setStart(date);
-        if (type == OverrideRequest.OVERRIDE_STOP) request.setStop(date);
-
-        return request;
     }
 
     public void setConnection(final IMACSConnection connection) {

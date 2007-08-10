@@ -14,7 +14,7 @@
             ${schedule.scheduleName}
         </div>
         <div>
-            <form id="startform" method="post" action="${submitUrl}/action">
+            <form id="startform" method="post" action="${submitUrl}/action" style="margin: 0px; padding: 0px;">
                 <div style="padding: 10px;">
                     <table cellspacing="5">
                         <tr>
@@ -140,6 +140,8 @@
                             value="${schedule.id}" />
                     </div>
                 </div>
+                <input type="hidden" name="sortBy" value="${sortBy}"/>
+                <input type="hidden" name="descending" value="${descending}"/>
             </form>
         </div>
     </center>

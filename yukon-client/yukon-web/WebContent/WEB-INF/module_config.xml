@@ -60,7 +60,7 @@
           </sublinks>	
    		</option>
 		<option id="scheduler" name="Scheduler">
-   		   <link>/spring/macsscheduler/scheduledscripts/view</link>	
+   		   <link>/spring/macsscheduler/schedules/view</link>	
    		</option>
   	</toplinks>  
   </module>

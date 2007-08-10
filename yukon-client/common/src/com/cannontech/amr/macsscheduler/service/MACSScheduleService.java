@@ -12,6 +12,10 @@ public interface MACSScheduleService<E> {
     
     public void stop(E schedule, Date stopDate) throws IOException;
     
+    public void enable(E schedule) throws IOException;
+    
+    public void disable(E schedule) throws IOException;
+    
     public E getById(int scheduleId) throws NotFoundException,IOException;
     
     public List<E> getAll() throws IOException;
