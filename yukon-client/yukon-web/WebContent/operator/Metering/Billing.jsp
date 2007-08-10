@@ -5,7 +5,7 @@
 <%@ page import="com.cannontech.billing.FileFormatTypes"%>
 
 <cti:standardPage module="amr" title="Billing">
-<cti:standardMenu menuSelection="billing"/>
+<cti:standardMenu menuSelection="billing|generation"/>
 
 <cti:includeScript link="/JavaScript/calendar.js"/>
 

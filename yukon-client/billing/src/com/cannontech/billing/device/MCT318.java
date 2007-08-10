@@ -2,11 +2,11 @@ package com.cannontech.billing.device;
 
 import java.sql.Timestamp;
 
-import com.cannontech.billing.device.base.BillableField;
 import com.cannontech.billing.device.base.BillingData;
 import com.cannontech.billing.device.base.BillingDeviceBase;
-import com.cannontech.billing.device.base.Channel;
 import com.cannontech.billing.device.base.DeviceData;
+import com.cannontech.common.dynamicBilling.Channel;
+import com.cannontech.common.dynamicBilling.model.BillableField;
 import com.cannontech.database.data.point.PointTypes;
 
 /**

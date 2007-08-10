@@ -1,19 +1,96 @@
+
 function yukonGeneral_moveOptionPositionInSelect(selectElement, direction) {
-    var routeIndex = selectElement.selectedIndex;
-    if (routeIndex == -1) {
+	
+	//this contains all the selected indexes
+	var index = new Array(); 
+	index[0] = -1;
+	//the array index to remember all the selection of the user :)
+	indexNo = 0; 
+	var selectList = selectElement;
+	
+	//loop to remember all the selection in the select element
+	for (var i = 0; i < selectElement.options.length; i++){	
+		if (selectElement.options[ i ].selected){
+			index[indexNo] = i;
+			indexNo ++;
+		}
+	}
+	
+	//if no options are selected, quit
+	var routeIndex = selectElement.selectedIndex; 
+    if (index[0] == -1) { //none selected
         return false;
     }
-    var routeIndex2 = routeIndex + direction;
-    if (routeIndex2 == -1 || routeIndex2 == selectElement.options.length) {
-        return false;
+    
+    //if selection is at the top, can't move up anymore
+    if ( index[0] + direction == -1 && direction == -1){ 
+    	return false;
     }
-    var selectList = selectElement;
-    var selectedIndex = selectList.selectedIndex;
-    var one = selectList.options[routeIndex];
-    var two = selectList.options[routeIndex2];
-    selectList.options[routeIndex] = new Option(two.text, two.value);
-    selectList.options[routeIndex2] = new Option(one.text, one.value);
-    selectList.selectedIndex = selectedIndex + direction;
+    
+    //if selection is at the bottom and can't move down anymore
+    if ( index.last() == selectElement.options.length - 1 && direction == 1){ 
+    	return false;
+    }
+    
+    //all the options of the select
+    var options = selectElement.options;
+    
+    //clone the select element - for ie fix 
+	var copy = $A(options).clone(); 
+
+	//empty the whole select so that ie doesn't complain unable to insert
+    while (selectElement.options.length > 0) { 
+		selectElement.options[0] = null;
+	}
+	
+	//the logic is going down = going up but reversed...
+	
+	//going down
+	if (direction == 1){ 
+		j = index.length;
+		for (i = 0; i< index.length; i++){
+			
+			//we do it reverse of the going up
+			var routeIndex = index[j - 1]; 
+			var routeIndex2 = routeIndex + direction;
+			
+			var temp1 = copy[routeIndex]; 
+			var temp2 = copy[routeIndex2];
+			
+			//swap the elements
+			copy[routeIndex] = temp2;
+			copy[routeIndex2] = temp1;
+			
+			//the reverse index is decremented
+			j --; 
+		}
+	}
+	//going up
+	else{
+		for (i = 0; i < index.length; i++){ 
+		
+			//simple swapping
+			var routeIndex = index[i];
+			var routeIndex2 = routeIndex + direction;
+			
+			var temp1 = copy[routeIndex];
+			var temp2 = copy[routeIndex2];
+				
+			copy[routeIndex] = temp2;
+			copy[routeIndex2] = temp1;
+		}
+	}
+	
+	//copy the array back to the select element
+	for (var x = 0; x < copy.length; x++) { 
+		selectElement.options[x] = copy[x];
+	}
+	
+	//highlight all the previously selected elements in their new position
+	for (j = 0; j < index.length; j++){ 
+		selectList.options[index[j] + direction].selected = true;
+	}
+	
 }
 
 function yukonGeneral_updatePrevious(idPrefix, currentUsage) {
@@ -22,4 +99,3 @@ function yukonGeneral_updatePrevious(idPrefix, currentUsage) {
   
   $(idPrefix + '_totalConsumption').innerHTML = totalUsage.toFixed(3);
 }
-

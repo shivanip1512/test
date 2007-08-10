@@ -237,6 +237,13 @@
 	</servlet>
 
 	<servlet>
+		<servlet-name>dynamicBilling</servlet-name>
+		<servlet-class>
+			com.cannontech.servlet.CannonDispatcherServlet
+		</servlet-class>
+		<load-on-startup>1</load-on-startup>
+	</servlet>
+	<servlet>
 		<servlet-name>logging</servlet-name>
 		<servlet-class>
 			com.cannontech.servlet.CannonDispatcherServlet
@@ -766,7 +773,10 @@
 		<url-pattern>/spring/editor/*</url-pattern>
 	</servlet-mapping>
 
-
+	<servlet-mapping>
+		<servlet-name>dynamicBilling </servlet-name>
+		<url-pattern>/spring/dynamicBilling/* </url-pattern>
+	</servlet-mapping>
 
 	<servlet-mapping>
 		<servlet-name>csr</servlet-name>

@@ -5,7 +5,7 @@ import java.text.Format;
 import java.text.SimpleDateFormat;
 
 import com.cannontech.billing.device.base.BillableDevice;
-import com.cannontech.billing.device.base.BillableField;
+import com.cannontech.common.dynamicBilling.model.BillableField;
 
 /**
  * Class used to create a billing file with row format as follows:

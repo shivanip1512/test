@@ -1,4 +1,4 @@
-package com.cannontech.billing.device.base;
+package com.cannontech.common.dynamicBilling;
 
 /**
  * Enumeration of all of the possible device channels

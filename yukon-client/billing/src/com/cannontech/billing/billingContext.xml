@@ -1,0 +1,11 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE beans PUBLIC "-//SPRING//DTD BEAN//EN" "http://www.springframework.org/dtd/spring-beans.dtd">
+
+<beans>
+<description>This file defines beans that live under the com.cannontech.billing package.</description>
+  
+  <bean id="dynamicBillingFormatter" class="com.cannontech.billing.format.dynamic.DynamicBillingFormatter">
+  	<property name="dynamicBillingFileDao" ref="dynamicBillingFileDao" />
+  </bean>
+  
+</beans>

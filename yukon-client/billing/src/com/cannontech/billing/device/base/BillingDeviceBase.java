@@ -4,6 +4,9 @@ import java.sql.Timestamp;
 import java.util.HashMap;
 import java.util.Map;
 
+import com.cannontech.common.dynamicBilling.Channel;
+import com.cannontech.common.dynamicBilling.ReadingType;
+import com.cannontech.common.dynamicBilling.model.BillableField;
 import com.cannontech.database.data.point.PointUnits;
 
 /**
@@ -84,7 +87,7 @@ public abstract class BillingDeviceBase implements BillableDevice {
         // Check to see if the field is a device base data field
         if (BillableField.meterNumber.equals(field) || BillableField.address.equals(field)
                 || BillableField.paoName.equals(field) || BillableField.accountNumber.equals(field)
-                || BillableField.meterPositionNumber.equals(type)) {
+                || BillableField.meterPositionNumber.equals(field)) {
             type = ReadingType.DEVICE_DATA;
         }
 

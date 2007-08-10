@@ -48,8 +48,16 @@
    		   <link>/spring/csr/search</link>	
    		</option>
    		<option id="billing" name="Billing">
-		   <requireRole value="BillingRole.ROLEID"/>
-   		   <link>/operator/Metering/Billing.jsp</link>	
+   		   <sublinks>
+	          <option id="generation" name="Billing Generation">
+	            <requireRole value="BillingRole.ROLEID"/>
+	   		    <link>/operator/Metering/Billing.jsp</link>
+	          </option>
+	          <option id="setup" name="Billing Setup">
+	          	<requireRole value="BillingRole.ROLEID"/>
+	            <link>/spring/dynamicBilling/overview</link>
+	          </option>
+          </sublinks>	
    		</option>
 		<option id="scheduler" name="Scheduler">
    		   <link>/spring/macsscheduler/scheduledscripts/view</link>	

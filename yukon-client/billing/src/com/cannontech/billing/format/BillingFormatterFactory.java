@@ -1,6 +1,7 @@
 package com.cannontech.billing.format;
 
 import com.cannontech.billing.FileFormatTypes;
+import com.cannontech.billing.format.dynamic.DynamicBillingFormatter;
 import com.cannontech.spring.YukonSpringHook;
 
 /**
@@ -78,16 +79,26 @@ public final class BillingFormatterFactory {
 
         case FileFormatTypes.ITRON_REGISTER_READINGS_EXPORT:
             return YukonSpringHook.getBean("itronClientHandler", BillingFormatter.class);
-            
-        default:
-            /*  return null if format not found - other formats will be handled
+        case FileFormatTypes.WLT_40:
+        case FileFormatTypes.MV_90:
+        case FileFormatTypes.NCDC_HANDHELD:
+        case FileFormatTypes.MVRS:
+        	/*  return null if format not found - other formats will be handled
                 by the FileFormatFactory:
                     case FileFormatTypes.WLT_40:
                     case FileFormatTypes.MV_90:
                     case FileFormatTypes.NCDC_HANDHELD:
                     case FileFormatTypes.MVRS:
-            */
-            return null;
+        	 */
+        	return null;
+        default:
+        	// Assume dynamic format
+        	
+            DynamicBillingFormatter formatter = 
+            		(DynamicBillingFormatter) YukonSpringHook.getBean("dynamicBillingFormatter");
+        	formatter.loadFormat(type);
+        	
+        	return formatter;
         }
     }
 }

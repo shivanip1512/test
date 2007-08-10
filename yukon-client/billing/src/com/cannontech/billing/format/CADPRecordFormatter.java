@@ -8,11 +8,10 @@ import java.util.List;
 import javax.swing.JOptionPane;
 
 import com.cannontech.billing.device.base.BillableDevice;
-import com.cannontech.billing.device.base.BillableField;
-import com.cannontech.billing.device.base.Channel;
-import com.cannontech.billing.device.base.ReadingType;
 import com.cannontech.clientutils.CTILogger;
-import com.cannontech.common.login.ClientSession;
+import com.cannontech.common.dynamicBilling.Channel;
+import com.cannontech.common.dynamicBilling.ReadingType;
+import com.cannontech.common.dynamicBilling.model.BillableField;
 import com.cannontech.core.dao.DaoFactory;
 import com.cannontech.roles.yukon.BillingRole;
 

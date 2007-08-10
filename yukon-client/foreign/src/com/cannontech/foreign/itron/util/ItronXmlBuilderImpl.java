@@ -14,9 +14,9 @@ import org.jdom.output.Format;
 import org.jdom.output.XMLOutputter;
 
 import com.cannontech.billing.device.base.BillableDevice;
-import com.cannontech.billing.device.base.BillableField;
-import com.cannontech.billing.device.base.Channel;
-import com.cannontech.billing.device.base.ReadingType;
+import com.cannontech.common.dynamicBilling.Channel;
+import com.cannontech.common.dynamicBilling.ReadingType;
+import com.cannontech.common.dynamicBilling.model.BillableField;
 
 public class ItronXmlBuilderImpl implements ItronXmlBuilder{
     private static final DateFormat df = new SimpleDateFormat("yyyy-MM-dd'T'HH:mm:ss", Locale.US);

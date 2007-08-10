@@ -9,6 +9,7 @@
      <constructor-arg>
        <list>
          <value>com/cannontech/mainContext.xml</value>
+         <value>com/cannontech/billing/billingContext.xml</value>
          <value>com/cannontech/core/dao/applicationContext.xml</value>
          <value>com/cannontech/core/dynamic/applicationContext.xml</value>
          <value>com/cannontech/core/service/applicationContext.xml</value>
@@ -38,6 +39,7 @@
        <list>
          <value>com/cannontech/amr/amrContext-client.xml</value>
          <value>com/cannontech/mainContext.xml</value>
+         <value>com/cannontech/billing/billingContext.xml</value>
 		 <value>com/cannontech/core/authorization/applicationContext.xml</value>
          <value>com/cannontech/core/authentication/authContext.xml</value>
          <value>com/cannontech/core/dao/applicationContext.xml</value>

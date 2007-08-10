@@ -1,16 +1,24 @@
-package com.cannontech.billing.device.base;
+package com.cannontech.common.dynamicBilling.model;
 
 /**
  * Enumeration of all of the possible field types a BillableDevice may have
  */
 public enum BillableField {
-    meterNumber(true, false, false, false), meterPositionNumber(true, false, false, false), accountNumber(
-            true, false, false, false), paoName(true, false, false, false), address(true, false,
-            false, false), totalConsumption(true, true, true, true), totalPeakDemand(true, true,
-            true, true), rateAConsumption(true, true, true, true), rateBConsumption(true, true,
-            true, true), rateCConsumption(true, true, true, true), rateDConsumption(true, true,
-            true, true), rateADemand(true, true, true, true), rateBDemand(true, true, true, true), rateCDemand(
-            true, true, true, true), rateDDemand(true, true, true, true);
+    meterNumber(true, false, false, false), 
+    meterPositionNumber(true, false, false, false), 
+    accountNumber(true, false, false, false), 
+    paoName(true, false, false, false), 
+    address(true, false, false, false), 
+    totalConsumption(true, true, true, true), 
+    totalPeakDemand(true, true, true, true), 
+    rateAConsumption(true, true, true, true), 
+    rateBConsumption(true, true, true, true), 
+    rateCConsumption(true, true, true, true), 
+    rateDConsumption(true, true, true, true), 
+    rateADemand(true, true, true, true), 
+    rateBDemand(true, true, true, true), 
+    rateCDemand(true, true, true, true), 
+    rateDDemand(true, true, true, true);
 
     private boolean hasData = false;
     private boolean hasValue = false;

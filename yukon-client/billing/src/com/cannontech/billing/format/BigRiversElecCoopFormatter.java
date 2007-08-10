@@ -3,9 +3,9 @@ package com.cannontech.billing.format;
 import java.text.SimpleDateFormat;
 
 import com.cannontech.billing.device.base.BillableDevice;
-import com.cannontech.billing.device.base.BillableField;
-import com.cannontech.billing.device.base.Channel;
-import com.cannontech.billing.device.base.ReadingType;
+import com.cannontech.common.dynamicBilling.Channel;
+import com.cannontech.common.dynamicBilling.ReadingType;
+import com.cannontech.common.dynamicBilling.model.BillableField;
 
 public class BigRiversElecCoopFormatter extends BillingFormatterBase {
 

@@ -74,5 +74,14 @@
       <sequence name="ProfilePeakResult">
         <table name="ProfilePeakResult" identitycolumn="resultId" initsequence="true"/>
       </sequence>
+      <sequence name="BillingFileFormats">
+        <table name="BillingFileFormats" identitycolumn="FormatID" initsequence="false" />
+      </sequence>
+      <sequence name="DynamicBillingFormat">
+        <table name="DynamicBillingFormat" identitycolumn="id" initsequence="true"/>
+      </sequence>
+      <sequence name="DynamicBillingField">
+        <table name="DynamicBillingField" identitycolumn="id" initsequence="true"/>
+      </sequence>
   </sequencetable>
 </sequencetables>

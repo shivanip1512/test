@@ -1,0 +1,43 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE beans PUBLIC "-//SPRING//DTD BEAN//EN" "http://www.springframework.org/dtd/spring-beans.dtd">
+
+<beans>
+
+	<bean class="org.springframework.web.servlet.handler.SimpleUrlHandlerMapping">
+        <property name="mappings">
+            <value>
+            	/*=controller
+            </value>
+        </property>
+    </bean>
+
+	<bean id="viewResolver"
+      class="org.springframework.web.servlet.view.UrlBasedViewResolver">
+        <property name="viewClass" value="org.springframework.web.servlet.view.JstlView"/>
+        <property name="prefix" value="/WEB-INF/pages/spring/dynamicBilling/"/>
+    </bean>
+    
+    <bean id="controller" class="com.cannontech.web.dynamicBilling.DynamicBillingController" >
+            <property name="cacheSeconds">
+            	<value type="int">0</value>
+	        </property>
+	        <property name="validators">
+	            <null />
+	        </property>
+	        <property name="methodNameResolver">
+	           <bean class="org.springframework.web.servlet.mvc.multiaction.InternalPathMethodNameResolver"/>
+	        </property>
+	        <property name="requireSession">
+	            <value type="boolean">true</value>
+	        </property>
+	        <property name="synchronizeOnSession">
+	            <value type="boolean">true</value>
+	        </property>
+	        <property name="dynamicBillingFileDao" ref="dynamicBillingFileDao" />
+	        <property name="dynamicFormatter" ref="dynamicBillingFormatter" />
+    </bean>
+    
+    <bean id="dynamicBillingFormatter" class="com.cannontech.billing.format.dynamic.DynamicBillingFormatter">
+    </bean>
+
+</beans>
