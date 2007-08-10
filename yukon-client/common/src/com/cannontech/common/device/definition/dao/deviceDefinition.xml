@@ -9316,12 +9316,12 @@
     <!-- Grid Advisor -->
     <device>
         <type value="1102" javaConstant="FAULT_CI"/>
-        <displayName value="Fault Current Indicator"/>
+        <displayName value="Faulted Circuit Indicator"/>
         <displayGroup value="Grid Advisor"/>
     </device>
     <device>
-        <type value="1103" javaConstant="NEUTRAL_CS"/>
-        <displayName value="Neutral Current Sensor"/>
+        <type value="1103" javaConstant="NEUTRAL_MONITOR"/>
+        <displayName value="Capacitor Bank Neutral Monitor"/>
         <displayGroup value="Grid Advisor"/>
     </device>
     
