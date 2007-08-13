@@ -24,8 +24,19 @@ insert into YukonRole values(-212,'Scheduler','Operator','Operator access to Sch
 insert into YukonRoleProperty values(-21200,-212,'Enable/Disable Schedule','true','Right to enable or disable a schedule'); 
 /**********************************/
 
-
-
 /* MACS YUK-4118 fix 8-13-2007 in  3.4.6  3.5 and head*/
 ALTER TABLE DeviceReadJobLog DROP CONSTRAINT FK_DEVICERE_FK_DRJOBL_MACSCHED
 /************/
+
+/* CapControlSpecialArea and CCSubSpecialAreaAssignment Tables added: Needed in Head  8-13-07*/
+
+create table CAPCONTROLSPECIALAREA ( AreaID numeric not null );
+
+create table CCSUBSPECIALAREAASSIGNMENT (
+
+   AreaID numeric not null,
+   SubstationBusID numeric not null,
+   DisplayOrder numeric not null
+
+);
+/*********************************************************************************************/
