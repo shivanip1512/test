@@ -10,8 +10,12 @@ public class VectorInsert
 {
     public static void insertVector(List v, VirtualOutputStream vstr, CollectableStreamer polystr) throws IOException
     {
-        vstr.insertUnsignedInt( v.size() );
-        for(int i=0;i<v.size();i++)
+    	int size = 0;
+    	if (v != null) {
+    		size = v.size();
+    	}
+        vstr.insertUnsignedInt( size );
+        for(int i=0;i<size;i++)
         {
             vstr.saveObject( v.get(i), polystr );
         }
