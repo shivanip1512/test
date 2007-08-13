@@ -659,7 +659,7 @@ void CCU711::CreateQueuedMsg()
     int iotype = 0;
     int function = 0;
     unsigned char address;
-    int bytesToReturn;
+    int bytesToReturn = 0;
     decodeForQueueMessage(type, iotype, function, address, bytesToReturn);
     newMessage.setWord(type);
     newMessage.setiotype(iotype);
@@ -691,8 +691,8 @@ void CCU711::CreateQueuedResponse()
 
                 Data[ctr++] = 0x7e;
                 Data[ctr++] = _messageQueue.front().getAddress();
-                Data[ctr++] = _messageData[2];
-                Data[ctr++] = 0x0e;  //length;
+                Data[ctr++] = 0x32; //_messageData[2];
+                Data[ctr++] = 0x13;  //length;
                 Data[ctr++] = 0x00;
                 Data[ctr++] = 0xa7;
                 Data[ctr++] = 0x00;
@@ -707,11 +707,13 @@ void CCU711::CreateQueuedResponse()
                 Data[ctr++] = 0x00;
                 Data[ctr++] = 0x00;
                 Data[ctr++] = 0x00;
-                //Data[ctr++] = 0x42;
-               // Data[ctr++] = 0x42;
-               // Data[ctr++] = 0x82;
+                Data[ctr++] = 0x13;
+                Data[ctr++] = _messageQueue.front().getQENID(0);
+                Data[ctr++] = _messageQueue.front().getQENID(1);
+                Data[ctr++] = _messageQueue.front().getQENID(2);
+                Data[ctr++] = _messageQueue.front().getQENID(3);
 
-                unsigned short CRC = NCrcCalc_C ((Data + 1), ctr);
+                unsigned short CRC = NCrcCalc_C ((Data + 1), ctr-1);
                 Data[ctr++] = HIBYTE (CRC);
                 Data[ctr++] = LOBYTE (CRC);
 
@@ -766,7 +768,7 @@ void CCU711::LoadQueuedMsg()
         {
             _outmessageData[i]=Data[i];
         } 
-    
+
         _outindexOfEnd = _messageQueue.front().getbytesToReturn();    
     }
 }
