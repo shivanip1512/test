@@ -3,13 +3,11 @@ package com.cannontech.sensus;
 import java.io.File;
 import java.io.FileWriter;
 import java.io.IOException;
-
 import java.text.DateFormat;
-
 import java.util.Date;
 import java.util.HashMap;
-import java.util.TimeZone;
 import java.util.Map;
+import java.util.TimeZone;
 
 import org.apache.log4j.Logger;
 
@@ -21,6 +19,7 @@ import com.amdswireless.messages.rx.DataMessage;
 import com.cannontech.clientutils.YukonLogManager;
 import com.cannontech.common.util.CtiUtilities;
 import com.cannontech.database.data.lite.LiteYukonPAObject;
+import com.cannontech.yukon.INotifConnection;
 
 public class FaultDetectProcessor implements SensusMessageHandler {
     private Logger log = YukonLogManager.getLogger(FaultDetectProcessor.class);
@@ -40,6 +39,8 @@ public class FaultDetectProcessor implements SensusMessageHandler {
     private PointValueUpdater faultLatchGenerator = new NullPointValueUpdater();
     private PointValueUpdater tgbIdGenerator = new NullPointValueUpdater();
     private PointValueUpdater sigStrengthGenerator = new NullPointValueUpdater();
+    private INotifConnection notificationProxy;
+    private Integer notificationGroup;
     
     private class tgbStrength {
         int tgbId = 0;
@@ -182,8 +183,6 @@ public class FaultDetectProcessor implements SensusMessageHandler {
     private void processStatusMessage(AppMessageType22 message) {
         int repId = message.getRepId();
         log.debug("Processing message for repId=" + repId + ": " + message);
-        int sigStrength = message.getSigStrength();
-        int sigNoise = message.getSigNoise();
         
         LiteYukonPAObject device = yukonDeviceLookup.getDeviceForRepId(repId);
         Date toi = message.getTimestampOfIntercept();
@@ -295,6 +294,10 @@ public class FaultDetectProcessor implements SensusMessageHandler {
         if (deviceType == 12) {
             log.info(csvStr);
             logMessage("0x01", csvStr, fileHeaders.get(message.getAppCode()));
+            
+            String subject = "Grid Advisor Setup Message: Id = " + repId;
+            String body = "Setup/Commission message received at Yukon server:\n\r\n\r" + csvStr;                        
+            notificationProxy.sendNotification(getNotificationGroup(), subject, body);
         } else {
             log.debug(csvStr);
         }
@@ -404,5 +407,23 @@ public class FaultDetectProcessor implements SensusMessageHandler {
 
 	public void setTgbIdGenerator(PointValueUpdater tgbIdGenerator) {
 		this.tgbIdGenerator = tgbIdGenerator;
-	}    
+	}
+
+	public INotifConnection getNotificationProxy() {
+		return notificationProxy;
+	}
+
+	public void setNotificationProxy(INotifConnection notificationProxy) {
+		this.notificationProxy = notificationProxy;
+	}
+
+	public Integer getNotificationGroup() {
+		return notificationGroup;
+	}
+
+	public void setNotificationGroup(Integer notificationGroup) {
+		this.notificationGroup = notificationGroup;
+	}
+	
+
 }

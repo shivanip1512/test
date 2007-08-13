@@ -73,7 +73,7 @@
     </property>
   </bean>
   
-  <bean id="faultDetectProcessor" class="com.cannontech.sensus.FaultDetectProcessor">
+  <bean id="faultDetectProcessor" class="com.cannontech.sensus.FaultDetectProcessor" init-method="init">
       <property name="messageEncoder"><bean class="com.amdswireless.common.MessageEncoder"/></property>
       <property name="yukonDeviceLookup" ref="deviceIdLookup"/>
       <property name="bindingKeyRegEx" value="^CPS.*"/>
@@ -90,6 +90,8 @@
       <property name="sigStrengthGenerator" ref="sigStrengthGenerator"/>
       <property name="nameOfAppInstance" value="AppCode"/>
       <property name="handlerTimeZone" value="UTC"/>
+      <property name="notificationProxy" ref="notificationProxy"/>
+      <property name="notificationGroup" value="0"/>      
   </bean>
 
   <bean id="nullPointDataGenerator" class="com.cannontech.sensus.NullPointValueUpdater"/>
