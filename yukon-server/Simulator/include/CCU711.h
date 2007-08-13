@@ -143,7 +143,7 @@ class CCU711{
         //  Create a response to a message that has been received and store it in the array of a queue message struct
         void CreateQueuedResponse();
         //  Decode the information contained in an incoming message 
-        void decodeForQueueMessage(int & type, int & iotype, int & function, unsigned char & address);
+        void decodeForQueueMessage(int & type, int & iotype, int & function, unsigned char & address, int bytesToReturn);
 
 
 

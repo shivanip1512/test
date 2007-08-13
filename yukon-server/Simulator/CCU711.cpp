@@ -659,7 +659,8 @@ void CCU711::CreateQueuedMsg()
     int iotype = 0;
     int function = 0;
     unsigned char address;
-    decodeForQueueMessage(type, iotype, function, address);
+    int bytesToReturn;
+    decodeForQueueMessage(type, iotype, function, address, bytesToReturn);
     newMessage.setWord(type);
     newMessage.setiotype(iotype);
     newMessage.setFunction(function);
@@ -682,15 +683,42 @@ void CCU711::CreateQueuedResponse()
     if(!_messageQueue.empty())
     {
         unsigned char Data[50];
+        int ctr=0;
         if(_messageQueue.front().getWord()==B_WORD)
         {
             if(_messageQueue.front().getioType()==FUNC_READ)
             {
-                Data[0]=0x7e;
-                Data[1]=_messageQueue.front().getAddress();
+
+                Data[ctr++] = 0x7e;
+                Data[ctr++] = _messageQueue.front().getAddress();
+                Data[ctr++] = _messageData[2];
+                Data[ctr++] = 0x0e;  //length;
+                Data[ctr++] = 0x00;
+                Data[ctr++] = 0xa7;
+                Data[ctr++] = 0x00;
+                Data[ctr++] = 0x00;
+                Data[ctr++] = 0x00;
+                Data[ctr++] = 0x00;
+                Data[ctr++] = 0x00;
+                Data[ctr++] = 0x00;
+                Data[ctr++] = 0x00;
+                Data[ctr++] = 0x00;
+                Data[ctr++] = 0x00;
+                Data[ctr++] = 0x00;
+                Data[ctr++] = 0x00;
+                Data[ctr++] = 0x00;
+                //Data[ctr++] = 0x42;
+               // Data[ctr++] = 0x42;
+               // Data[ctr++] = 0x82;
+
+                unsigned short CRC = NCrcCalc_C ((Data + 1), ctr);
+                Data[ctr++] = HIBYTE (CRC);
+                Data[ctr++] = LOBYTE (CRC);
+
             }
         }
-        _messageQueue.front().copyInto(Data, 3);
+        _messageQueue.front().setbytesToReturn(ctr);
+        _messageQueue.front().copyInto(Data, ctr);
     }
 }
 
@@ -734,29 +762,12 @@ void CCU711::LoadQueuedMsg()
     {
         unsigned char Data[50];
         _messageQueue.front().copyOut(Data);
-        for(int i=0; i<3; i++)
+        for(int i=0; i<_messageQueue.front().getbytesToReturn(); i++)
         {
             _outmessageData[i]=Data[i];
-        }
-        _outmessageData[3] = getRLEN(); 		// # of bytes to follow 
-        _outmessageData[4] = 0x00;
-        _outmessageData[5] = 0xa7;
-        _outmessageData[18] = 0x14;
-        _outmessageData[19] = 0x98;
-        _outmessageData[20] = 0x00;
-        _outmessageData[21] = 0x90;
-        _outmessageData[22] = 0x03;
-        _outmessageData[23] = 0x00;
-        _outmessageData[24] = 0x00;
-        _outmessageData[25] = 0x00;
-        _outmessageData[26] = 0x00;
-        _outmessageData[27] = 0x00;
-        _outmessageData[28] = 0x01;
-        unsigned short CRC = NCrcCalc_C ((_outmessageData + 1), 31);
-        _outmessageData[32] = HIBYTE (CRC);
-        _outmessageData[33] = LOBYTE (CRC);
+        } 
     
-        _outindexOfEnd = 34;    ////////  CHANGE THIS FROM HARDCODED to getBytesToReturn !!!  ///////////
+        _outindexOfEnd = _messageQueue.front().getbytesToReturn();    
     }
 }
 
@@ -769,7 +780,7 @@ unsigned char CCU711::getRLEN()
      return RLEN14;
 }
 
-void CCU711::decodeForQueueMessage(int & type, int & iotype, int & function, unsigned char & address)
+void CCU711::decodeForQueueMessage(int & type, int & iotype, int & function, unsigned char & address, int bytesToReturn)
 {
     switch(_messageData[19] & 0xc0)
     {
