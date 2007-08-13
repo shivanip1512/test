@@ -25,7 +25,7 @@ public class MACSScheduleServiceImpl implements MACSScheduleService<Schedule> {
             throw new java.lang.IllegalArgumentException("startDate cannot be after stopDate");
         }
 
-        schedule.setWebCurrentState(Schedule.STATE_PENDING);
+        schedule.setUpdatingState(true);
         connection.sendStartStopSchedule(schedule, startDate, stopDate, OverrideRequest.OVERRIDE_START);
     }
 
@@ -33,21 +33,21 @@ public class MACSScheduleServiceImpl implements MACSScheduleService<Schedule> {
         Validate.notNull(schedule, "schedule cannot be null");
         Validate.notNull(stopDate, "stopDate cannot be null");
 
-        schedule.setWebCurrentState(Schedule.STATE_PENDING);
+        schedule.setUpdatingState(true);
         connection.sendStartStopSchedule(schedule, stopDate, stopDate, OverrideRequest.OVERRIDE_STOP);
     }
     
     public void enable(final Schedule schedule) throws IOException {
         Validate.notNull(schedule, "schedule cannot be null");
         
-        schedule.setWebCurrentState(Schedule.STATE_PENDING);
+        schedule.setUpdatingState(true);
         connection.sendEnableDisableSchedule(schedule);
     }
     
     public void disable(final Schedule schedule) throws IOException {
         Validate.notNull(schedule, "schedule cannot be null");
         
-        schedule.setWebCurrentState(Schedule.STATE_PENDING);
+        schedule.setUpdatingState(true);
         connection.sendEnableDisableSchedule(schedule);
     }
 

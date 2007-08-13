@@ -1,6 +1,6 @@
 <%@ taglib uri="http://cannontech.com/tags/cti" prefix="cti"%>
 <%@ taglib uri="http://java.sun.com/jsp/jstl/core" prefix="c"%>
-<c:url var="url" value="/spring/macsscheduler/schedules/view"/>
+<c:url var="url" value="/spring/macsscheduler/schedules/innerView"/>
 
 <cti:standardPage title="Scheduled Scripts"
     module="amr">

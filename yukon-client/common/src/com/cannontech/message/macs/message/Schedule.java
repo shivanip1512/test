@@ -38,7 +38,7 @@ public class Schedule extends com.cannontech.message.util.Message implements jav
 	private int holidayScheduleId = 0;
 	private String scriptFileName = "";
 	private String currentState = STATE_WAITING;
-    private String webCurrentState = LAST_STATUS_NONE;
+    private boolean updatingState = false;
 	private String startPolicy = "";
 	private String stopPolicy = "";
 	private java.util.Date lastRunTime = new java.util.Date(INVALID_DATE);
@@ -549,10 +549,10 @@ public void setType(java.lang.String newType) {
 public void setValidWeekDays(java.lang.String newValidWeekDays) {
 	validWeekDays = newValidWeekDays;
 }
-public String getWebCurrentState() {
-    return webCurrentState;
+public boolean getUpdatingState() {
+    return updatingState;
 }
-public void setWebCurrentState(String webCurrentState) {
-    this.webCurrentState = webCurrentState;
+public void setUpdatingState(boolean updatingState) {
+    this.updatingState = updatingState;
 }
 }

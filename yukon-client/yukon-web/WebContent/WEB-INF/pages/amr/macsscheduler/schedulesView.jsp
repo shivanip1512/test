@@ -133,84 +133,110 @@
             </th>
             <th id="Disable"></th>
         </tr>
-        <c:forEach var="schedule" items="${list}">
-                <c:choose>
-                    <c:when
-                        test="${schedule.webCurrentState == 'Pending'}">
-                        <c:set var="color" scope="page">#FFFF33</c:set>
-                    </c:when>
-                    <c:when
-                        test="${schedule.currentState == 'Disabled'}">
-                        <c:set var="color" scope="page">#FF3333</c:set>
-                    </c:when>
-                    <c:when test="${schedule.currentState == 'Running'}">
-                        <c:set var="color" scope="page">#33FF00</c:set>
-                    </c:when>
-                    <c:otherwise>
-                        <c:set var="color" scope="page">white</c:set>
-                    </c:otherwise>
-                </c:choose>
-                <c:choose>
-                    <c:when
-                        test="${schedule.webCurrentState == 'Pending'}">
-                        <tr style="background-color: ${color }"
-                            disabled="true">
-                    </c:when>
-                    <c:otherwise>
-                        <tr style="background-color: ${color }">
-                    </c:otherwise>
-                </c:choose>
+        <c:forEach var="scheduleInfo" items="${list}">
+            <c:choose>
+                <c:when test="${scheduleInfo.updatingState}">
+                    <c:set var="color" scope="page">#FFFF33</c:set>
+                </c:when>
+                <c:when test="${scheduleInfo.disabledState}">
+                    <c:set var="color" scope="page">#FF3333</c:set>
+                </c:when>
+                <c:when test="${scheduleInfo.runningState}">
+                    <c:set var="color" scope="page">#33FF00</c:set>
+                </c:when>
+                <c:otherwise>
+                    <c:set var="color" scope="page">white</c:set>
+                </c:otherwise>
+            </c:choose>
+            <c:choose>
+                <c:when test="${scheduleInfo.updatingState}">
+                    <tr
+                        style="background-color: ${color}"
+                        disabled="true">
+                </c:when>
+                <c:otherwise>
+                    <tr
+                        style="background-color: ${color}">
+                </c:otherwise>
+            </c:choose>
 
-                <td>
-                    <c:choose>
-                        <c:when test="${editable && schedule.currentState != 'Disabled' && schedule.webCurrentState != 'Pending'}">
-                            <form id="controlform_${schedule.id}" action="${controlUrl}" method="POST" style="margin: 0px; padding: 0px;">
-                                <a href="javascript:document.getElementById('controlform_${schedule.id}').submit();">${schedule.scheduleName}</a>
-                                <input type="hidden" name="id" value="${schedule.id}"/>
-                                <input type="hidden" name="sortBy" value="${sortBy}"/>
-                                <input type="hidden" name="descending" value="${descending}"/>
-                            </form>
-                        </c:when>
-                        <c:otherwise>
-                        ${schedule.scheduleName}    
+            <td>
+                <c:choose>
+                    <c:when
+                        test="${scheduleInfo.showControllable}">
+                        <form id="controlform_${scheduleInfo.schedule.id}"
+                            action="${controlUrl}" method="POST"
+                            style="margin: 0px; padding: 0px;">
+                            <a
+                                href="javascript:document.getElementById('controlform_${scheduleInfo.schedule.id}').submit();">${scheduleInfo.schedule.scheduleName}</a>
+                            <input type="hidden" name="id"
+                                value="${scheduleInfo.schedule.id}" />
+                            <input type="hidden" name="sortBy"
+                                value="${sortBy}" />
+                            <input type="hidden" name="descending"
+                                value="${descending}" />
+                        </form>
+                    </c:when>
+                    <c:otherwise>
+                        ${scheduleInfo.schedule.scheduleName}    
                     </c:otherwise>
-                    </c:choose>
-                </td>
-                <td>
-                    <c:choose>
-                        <c:when
-                            test="${schedule.webCurrentState == 'Pending'}">
+                </c:choose>
+            </td>
+            <td>
+                <c:choose>
+                    <c:when test="${scheduleInfo.updatingState}">
                         Updating...
                     </c:when>
-                        <c:otherwise>
-                        ${schedule.currentState}                        
+                    <c:otherwise>
+                        ${scheduleInfo.schedule.currentState}                        
                     </c:otherwise>
-                    </c:choose>
-                </td>
-                <td>
-                    <cti:formatDate value="${schedule.nextRunTime}"
-                        type="both" var="formattedStartTime" />
-                    ${formattedStartTime}
-                </td>
-                <td>
-                    <cti:formatDate value="${schedule.nextStopTime}"
-                        type="both" var="formattedStopTime" />
-                    ${formattedStopTime}
-                </td>
-                <td style="background-color: white">
-                    <c:if test="${editable && schedule.webCurrentState != 'Pending'}">
-                        <form id="toggleform_${schedule.id }" action="${toggleUrl}" method="POST" style="margin: 0px; padding: 0px;">
-                            <a href="javascript:document.getElementById('toggleform_${schedule.id}').submit();" style="text-decoration:  none;"><c:choose><c:when test="${schedule.currentState == 'Disabled'}"><img src="<c:url value='/WebConfig/yukon/Icons/Disabled.gif'/>" title="Click to Enable" style="border-width:0px;"/></c:when><c:otherwise><img src="<c:url value='/WebConfig/yukon/Icons/Enabled.gif'/>" title="Click to Disable" style="border-width:0px;"/></c:otherwise></c:choose></a>
-                            <input type="hidden" name="id"
-                                value="${schedule.id}" />
-                            <input type="hidden" name="sortBy" value="${sortBy}"/>
-                            <input type="hidden" name="descending" value="${descending}"/>
-                        </form>
-                    </c:if>
-                </td>
-                </tr>
-            </c:forEach>
-        </table>
+                </c:choose>
+            </td>
+            <td>
+                <cti:formatDate value="${scheduleInfo.schedule.nextRunTime}"
+                    type="both" var="formattedStartTime" />
+                ${formattedStartTime}
+            </td>
+            <td>
+                <cti:formatDate value="${scheduleInfo.schedule.nextStopTime}"
+                    type="both" var="formattedStopTime" />
+                ${formattedStopTime}
+            </td>
+            <td style="background-color: white">
+                <c:if test="${scheduleInfo.showToggleButton}">
+                    <form id="toggleform_${scheduleInfo.schedule.id }"
+                        action="${toggleUrl}" method="POST"
+                        style="margin: 0px; padding: 0px;">
+                        <a
+                            href="javascript:document.getElementById('toggleform_${scheduleInfo.schedule.id}').submit();"
+                            style="text-decoration:  none;"><c:choose>
+                                <c:when
+                                    test="${scheduleInfo.disabledState}">
+                                    <img
+                                        src="<c:url value='/WebConfig/yukon/Icons/Disabled.gif'/>"
+                                        title="Click to Enable"
+                                        style="border-width:0px;" />
+                                </c:when>
+                                <c:otherwise>
+                                    <img
+                                        src="<c:url value='/WebConfig/yukon/Icons/Enabled.gif'/>"
+                                        title="Click to Disable"
+                                        style="border-width:0px;" />
+                                </c:otherwise>
+                            </c:choose>
+                        </a>
+                        <input type="hidden" name="id"
+                            value="${scheduleInfo.schedule.id}" />
+                        <input type="hidden" name="sortBy"
+                            value="${sortBy}" />
+                        <input type="hidden" name="descending"
+                            value="${descending}" />
+                    </form>
+                </c:if>
+            </td>
+            </tr>
+        </c:forEach>
+    </table>
     </div>
 
 

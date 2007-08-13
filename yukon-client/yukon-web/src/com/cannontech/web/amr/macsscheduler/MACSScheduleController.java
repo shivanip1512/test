@@ -1,5 +1,6 @@
 package com.cannontech.web.amr.macsscheduler;
 
+import java.util.ArrayList;
 import java.util.Calendar;
 import java.util.Collections;
 import java.util.Comparator;
@@ -128,12 +129,12 @@ public class MACSScheduleController extends MultiActionController {
         if (descending == null) descending = false;
         
         sort(list, sortBy, descending);
+        List<MACSScheduleInfo> infoList = createScheduleInfoList(list, isEditable(user, SchedulerRole.ROLEID));
         
         mav.setViewName("schedulesView.jsp");
-        mav.addObject("list", list);
+        mav.addObject("list", infoList);
         mav.addObject("sortBy", sortBy);
         mav.addObject("descending", descending);
-        mav.addObject("editable", isEditable(user, SchedulerRole.ROLEID));
         return mav;
     }
     
@@ -272,6 +273,14 @@ public class MACSScheduleController extends MultiActionController {
         return redirect;
     }
     
+    private List<MACSScheduleInfo> createScheduleInfoList(final List<Schedule> scheduleList, final boolean editable) {
+        List<MACSScheduleInfo> infoList = new ArrayList<MACSScheduleInfo>(scheduleList.size());
+        for (final Schedule schedule : scheduleList) {
+            infoList.add(new MACSScheduleInfo(schedule, editable));
+        }
+        return infoList;
+    }
+    
     public void setScheduleService(final MACSScheduleService<Schedule> service) {
         this.service = service;
     }
@@ -284,6 +293,4 @@ public class MACSScheduleController extends MultiActionController {
         this.userDao = userDao;
     }
     
-
-
 }
