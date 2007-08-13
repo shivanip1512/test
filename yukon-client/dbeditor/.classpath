@@ -2,6 +2,10 @@
 <classpath>
 	<classpathentry kind="src" path="src"/>
 	<classpathentry exported="true" kind="src" path="/common"/>
+	<classpathentry kind="src" path="/yukonappserver"/>
+	<classpathentry kind="src" path="/billing"/>
+	<classpathentry combineaccessrules="false" kind="src" path="/foreign"/>
+	<classpathentry kind="con" path="org.eclipse.jdt.launching.JRE_CONTAINER"/>
 	<classpathentry kind="lib" path="/third-party/SqlServer.jar"/>
 	<classpathentry kind="lib" path="/third-party/acme.jar"/>
 	<classpathentry kind="lib" path="/third-party/classes12.jar"/>
@@ -10,18 +14,14 @@
 	<classpathentry kind="lib" path="/third-party/jcpagelayout450K.jar"/>
 	<classpathentry kind="lib" path="/third-party/rwav.jar"/>
 	<classpathentry kind="lib" path="/third-party/saaj.jar"/>
-	<classpathentry kind="src" path="/billing"/>
 	<classpathentry kind="lib" path="/third-party/jfreechart.jar"/>
 	<classpathentry kind="lib" path="/third-party/jcommon.jar"/>
-	<classpathentry kind="src" path="/yukonappserver"/>
 	<classpathentry kind="lib" path="/third-party/jtds.jar"/>
-	<classpathentry kind="con" path="org.eclipse.jdt.launching.JRE_CONTAINER"/>
 	<classpathentry kind="lib" path="resource"/>
 	<classpathentry kind="lib" path="/common/resource"/>
 	<classpathentry kind="lib" path="/third-party/axis.jar"/>
 	<classpathentry kind="lib" path="/third-party/commons-discovery.jar"/>
 	<classpathentry kind="lib" path="/third-party/jaxrpc.jar"/>
 	<classpathentry kind="lib" path="/third-party/wsdl4j.jar"/>
-	<classpathentry combineaccessrules="false" kind="src" path="/foreign"/>
 	<classpathentry kind="output" path="bin"/>
 </classpath>

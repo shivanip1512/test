@@ -3,6 +3,7 @@
 	<classpathentry path="src" kind="src"/>
 	<classpathentry path="test/integration" kind="src"/>
 	<classpathentry path="test/unit" kind="src"/>
+	<classpathentry path="org.eclipse.jdt.launching.JRE_CONTAINER" kind="con"/>
 	<classpathentry path="/third-party/SqlServer.jar" kind="lib"/>
 	<classpathentry path="/third-party/acme.jar" kind="lib"/>
 	<classpathentry path="/third-party/classes12.jar" kind="lib"/>
@@ -15,7 +16,6 @@
 	<classpathentry path="/third-party/jcommon.jar" kind="lib"/>
 	<classpathentry path="/third-party/jtds.jar" kind="lib"/>
 	<classpathentry path="/third-party/jradius-client.jar" kind="lib"/>
-	<classpathentry path="org.eclipse.jdt.launching.JRE_CONTAINER" kind="con"/>
 	<classpathentry path="/third-party/mx4j.jar" kind="lib"/>
 	<classpathentry path="/third-party/commons-lang-2.3.jar" exported="true" kind="lib"/>
 	<classpathentry path="/third-party/ecs-1.4.2.jar" kind="lib"/>

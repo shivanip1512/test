@@ -2,6 +2,7 @@
 <classpath>
 	<classpathentry kind="src" path="src"/>
 	<classpathentry kind="src" path="test/unit"/>
+	<classpathentry kind="con" path="org.eclipse.jdt.launching.JRE_CONTAINER"/>
 	<classpathentry exported="true" kind="lib" path="/third-party/SqlServer.jar"/>
 	<classpathentry exported="true" kind="lib" path="/third-party/acme.jar"/>
 	<classpathentry exported="true" kind="lib" path="/third-party/jaxm-api.jar"/>
@@ -22,7 +23,6 @@
 	<classpathentry exported="true" kind="lib" path="/third-party/jtds.jar"/>
 	<classpathentry exported="true" kind="src" path="/common"/>
 	<classpathentry kind="src" path="/esub"/>
-	<classpathentry kind="con" path="org.eclipse.jdt.launching.JRE_CONTAINER"/>
 	<classpathentry kind="lib" path="/third-party/commons-discovery.jar"/>
 	<classpathentry kind="lib" path="/third-party/commons-httpclient.jar"/>
 	<classpathentry kind="lib" path="/third-party/jaxrpc.jar"/>
