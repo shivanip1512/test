@@ -57,6 +57,8 @@ class CCU711{
             READREP1   = 44,
             READREP2   = 45,
             READREP3   = 46,
+            FUNC_WRITE = 47,
+            FUNC_READ  = 48,
             ACKACK     = 51,
             INCOMING   = 0,
             OUTGOING   = 1
@@ -73,6 +75,7 @@ class CCU711{
                 void initializeMessage();
                 int getWord();
                 void setWord(int type);
+                void setiotype(int iotype);
 
             private:
                 int _bytesToReturn;
@@ -136,8 +139,7 @@ class CCU711{
         //  Create a response to a message that has been received and store it in the array of a queue message struct
         void CreateQueuedResponse();
         //  Decode the information contained in an incoming message 
-        void decodeForQueueMessage(int & type);
-
+        void decodeForQueueMessage(int & type, int & iotype);
 
 
 

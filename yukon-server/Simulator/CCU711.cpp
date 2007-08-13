@@ -656,8 +656,10 @@ void CCU711::CreateQueuedMsg()
     newMessage.setQENID(one, two, three, four);
 
     int type = 0;
-    decodeForQueueMessage(type);
+    int iotype = 0;
+    decodeForQueueMessage(type, iotype);
     newMessage.setWord(type);
+    newMessage.setiotype(iotype);
 
     int _bytesToReturn;
     //CtiTime _timeWhenReady;
@@ -759,7 +761,7 @@ unsigned char CCU711::getRLEN()
      return RLEN14;
 }
 
-void CCU711::decodeForQueueMessage(int & type)
+void CCU711::decodeForQueueMessage(int & type, int & iotype)
 {
     switch(_messageData[19] & 0xc0)
     {
@@ -773,6 +775,23 @@ void CCU711::decodeForQueueMessage(int & type)
             type = G_WORD;
             break;
     }
+
+    switch(_messageData[19] & 0x18)
+    {
+        case 0x00:
+            iotype = WRITE;
+            break;
+        case 0x08:
+            iotype = READ;
+            break;
+        case 0x10:
+            iotype = FUNC_WRITE;
+            break;
+        case 0x18:
+            iotype = FUNC_READ;
+            break;
+    }
+    cout<<"ioTYPE is : "<<iotype<<endl;
 }
 
 
@@ -829,5 +848,5 @@ void CCU711::_queueMessage::setQENID(unsigned char one,unsigned char two, unsign
 unsigned char CCU711::_queueMessage::getQENID(int index)    {   return _QENID[index];   }
 int CCU711::_queueMessage::getWord()                        {   return _wordType;       }
 void CCU711::_queueMessage::setWord(int type)               {   _wordType = type;       }
-
+void CCU711::_queueMessage::setiotype(int iotype)           {   _ioType = iotype;       }
                  
