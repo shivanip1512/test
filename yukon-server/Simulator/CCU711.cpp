@@ -692,7 +692,7 @@ void CCU711::CreateQueuedResponse()
                 Data[ctr++] = 0x7e;
                 Data[ctr++] = _messageQueue.front().getAddress();
                 Data[ctr++] = 0x32; //_messageData[2];
-                Data[ctr++] = 0x13;  //length;
+                ctr++;              //length set below
                 Data[ctr++] = 0x00;
                 Data[ctr++] = 0xa7;
                 Data[ctr++] = 0x00;
@@ -712,11 +712,19 @@ void CCU711::CreateQueuedResponse()
                 Data[ctr++] = _messageQueue.front().getQENID(1);
                 Data[ctr++] = _messageQueue.front().getQENID(2);
                 Data[ctr++] = _messageQueue.front().getQENID(3);
+                Data[ctr++] = 0xf0; //  ENSTA
+                Data[ctr++] = 0x00;
+                Data[ctr++] = 0x00;
+                Data[ctr++] = 0x00;
+                Data[ctr++] = 0x00; //  ROUTE
+                Data[ctr++] = 0x00; //  S1
+                Data[ctr++] = 0x00; //  S1
+                Data[3] = ctr-4;       //length;
+
 
                 unsigned short CRC = NCrcCalc_C ((Data + 1), ctr-1);
                 Data[ctr++] = HIBYTE (CRC);
                 Data[ctr++] = LOBYTE (CRC);
-
             }
         }
         _messageQueue.front().setbytesToReturn(ctr);
