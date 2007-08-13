@@ -1,6 +1,6 @@
 /* see the dataUpdateEnabler.tag to see where this is referenced */
 
-function initiateCannonDataUpdate(url, periodSecs) {
+function initiateCannonDataUpdate(url, delayMs) {
     var lastUpdate = 0;
     var processResponseCallback = function(transport) {
         // looks like stuff is working, hide error div
@@ -35,14 +35,14 @@ function initiateCannonDataUpdate(url, periodSecs) {
         // save latest date
         lastUpdate = responseStruc.toDate;
         // schedule next update
-        setTimeout(doUpdate, periodSecs * 1000);
+        setTimeout(doUpdate, delayMs);
     };
     
     var failureCallback = function(transport) {
         // something bad happened, show user that updates are off
         $('cannonUpdaterErrorDiv').show();
         // schedule another update incase the server comes back, but slow it down a bit
-        setTimeout(doUpdate, periodSecs * 1000 * 5);
+        setTimeout(doUpdate, delayMs * 5);
     };
     var doUpdate = function() {
         // get all elements that have the cannonUpdater attribute on them
@@ -79,7 +79,7 @@ function initiateCannonDataUpdate(url, periodSecs) {
         requestData = null;
         updatableElements = null;
     };
-    setTimeout(doUpdate, periodSecs * 1000);
+    setTimeout(doUpdate, delayMs);
 }
 
 var cannonDataUpdateRegistrations = $A();

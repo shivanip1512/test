@@ -40,3 +40,8 @@ create table CCSUBSPECIALAREAASSIGNMENT (
 
 );
 /*********************************************************************************************/
+
+/* 3.5 and head  for tom */
+insert into YukonRoleProperty values(-10815, -108,'Data Updater Delay (milliseconds)', '4000', 'The number of milliseconds between requests for the latest point values on pages that support the data updater.');
+/* end */
+
