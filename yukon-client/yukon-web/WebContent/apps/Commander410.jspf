@@ -23,86 +23,17 @@ YC_BEAN.setDeviceID(deviceID);
     <cti:crumbLink url="/operator/Operations.jsp" title="Operations Home"  />
     <cti:crumbLink url="/spring/csr/search" title="Device Selection"  />
     <cti:crumbLink url="/spring/csr/home?deviceId=${deviceId}" title="Device Detail"  />
-    &gt; TOU &amp; Voltage
+    &gt; Voltage &amp; TOU
 </cti:breadCrumbs>
 
 
 <script type="text/javascript">
-
-function updatePrevious()
-{
-    var currVal = document.getElementById('currEnergyPD').innerHTML;
-    document.getElementById('prevEnergyPD').innerHTML = formatNum(document.getElementById('prevSelect').value);
-    
-    var selected = document.getElementById('prevSelect').options[document.getElementById('prevSelect').selectedIndex].text;
-    var prevVal = document.getElementById('prevEnergyPD').innerHTML;
-    currVal = currVal.replace(/^\s*/,"").replace(/\s*$/,"");
-    prevVal = prevVal.replace(/^\s*/,"").replace(/\s*$/,"");
-    
-    if( currVal == "---" || prevVal == "---")
-    {
-        document.getElementById('totalUsage').innerHTML = "---";
-        if( prevVal == "---")
-        {
-            document.getElementById('prevEnergyPD').innerHTML = "---";
-        }
-    }
-    else
-    {
-        document.getElementById('totalUsage').innerHTML = formatNum(currVal - prevVal);
-    }
-}
-
-function formatNum(valuein)
-{ 
-    valuein = "" + Math.round( parseFloat(valuein) * 1000 ) / 1000 ;
-
-    if (valuein=="NaN") valuein = "0";
-    decimalpos = valuein.indexOf(".");
-    if (decimalpos==-1) //add a decimal if not exist
-    {
-        decimalpos = valuein.length;
-        valuein = valuein + ".";
-    }
-    valuein = valuein + "000";  //pad with zeros if needed.
-    valuein = valuein.substring(0, decimalpos+4);   //truncate the extra zeros
-    return valuein;
-}
-
-
 function disableAllButtons()
 {
     document.body.style.cursor = 'wait';
-    document.getElementById('readEnergyID').style.cursor = 'wait';
-    document.getElementById('readEnergyID').href="javascript:;";
-    document.getElementById('readEnergyID').disabled = true;
-    
-    document.getElementById('readDemandID').style.cursor = 'wait';
-    document.getElementById('readDemandID').href="javascript:;";
-    document.getElementById('readDemandID').disabled = true;
-
     document.getElementById('readVoltageID').style.cursor = 'wait';
     document.getElementById('readVoltageID').href="javascript:;";
     document.getElementById('readVoltageID').disabled = true;
-
-    document.getElementById('readOutageID').style.cursor = 'wait';
-    document.getElementById('readOutageID').href="javascript:;";
-    document.getElementById('readOutageID').disabled = true;
-    
-    if( document.getElementById('readDiscID') )
-    {
-        document.getElementById('controlConnID').style.cursor = 'wait';
-        document.getElementById('controlConnID').href="javascript:;";
-        document.getElementById('controlConnID').disabled = true;
-
-        document.getElementById('controlDiscID').style.cursor = 'wait';
-        document.getElementById('controlDiscID').href="javascript:;";
-        document.getElementById('controlDiscID').disabled = true;
-    
-        document.getElementById('readDiscID').style.cursor = 'wait';
-        document.getElementById('readDiscID').href="javascript:;";
-        document.getElementById('readDiscID').disabled = true;
-    }       
 
     document.commandForm.submit();
 }
@@ -113,14 +44,9 @@ function setCommand(cmd)
 }
 </script>
 
-<div style="width: 70%; margin: auto">
+<h2>MCT 400series - Voltage &amp; TOU:&nbsp;&nbsp;<%= liteYukonPao.getPaoName()%></h2>
+<div style="width: 50%;">
 
-    <div class="commanderHeader">
-    	MCT 400series - Control Commands:&nbsp;&nbsp;<%= liteYukonPao.getPaoName()%>
-    </div>
-    <div align="center"> 
-		
-	<%@ include file="MspCISDetail.jspf"%>
 <% 
 	if (errorMsg != null && errorMsg.length() != 0) {
 	    out.write("<span class=\"ErrorMsg\">* " + errorMsg + "</span><br/><br/>");
@@ -131,8 +57,7 @@ function setCommand(cmd)
 	    YC_BEAN.setErrorMsg("");
 	}
 %>
-    </div>
-     
+
 	<form name="commandForm" method="POST" action="<%= request.getContextPath() %>/servlet/CommanderServlet">
 	  	<input type="hidden" name="deviceID" value="<%=deviceID%>">
 	  	<input type="hidden" name="command" value="">
@@ -140,137 +65,7 @@ function setCommand(cmd)
 	  	<input id="redirect" type="hidden" name="REDIRECT" value="<%= redirect%>">
 	  	<input id="referrer" type="hidden" name="REFERRER" value="<%= referrer%>">
   
-  <div>
-  
-	  	<cti:titledContainer styleClass="styledContainer">
-  		
-			<jsp:attribute name="title">
-				<table cellpadding="0" cellspacing="0" width="100%">
-					<tr>
-						<td>Energy</td>
-						<td align="right">
-						    <a class="link" href="javascript:setCommand('getvalue kwh');disableAllButtons()" id="readEnergyID" name="readEnergy"
-							  onMouseOver="window.status='Read Energy (from the meter)';return true;"
-					          onMouseOut="window.status='';return true;">Read</a>
-		        		</td>
-		        	</tr>
-		        </table>
-			</jsp:attribute>
-		
-		  	<jsp:body>
-					  			
-	            <table width="100%" border="0" cellspacing="0" cellpadding="0" align="center">
-                	<tr> 
-                    	<td width="20%" class="columnHeader">Current</td>
-                      	<td width="35%"class="main" align="center"> 
-<%
-	pointData = YC_BEAN.getRecentPointData(deviceID, 1, PointTypes.PULSE_ACCUMULATOR_POINT);
-%>
-							<%= YC_BEAN.getFormattedTimestamp(pointData, "---")%>
-						</td>
-	                    <td width="35%" class="main" align="right"> 
-							<div id="currEnergyPD"> 
-								<%=YC_BEAN.getFormattedValue(pointData, "#0.000", "---")%>
-	                        </div>
-	                    </td>
-					</tr>
-	                <tr class="altRow"> 
-	                	<td class="columnHeader">Previous</td>
-	                    <td class="main" align="center"> 
-<%
-	int xID = YC_BEAN.getPointID(deviceID, 1, PointTypes.PULSE_ACCUMULATOR_POINT);
-	java.util.TreeMap tempMap = YC_BEAN.getPrevMonthTSToValueMap(xID);
-	java.util.Date[] keyArray = YC_BEAN.getPrevDateArray(xID);
-	String value = "---";
-	if( keyArray.length > 0) { 
-		//save the initial value string to set in the value TD below
-		value = format_nv3.format(tempMap.get(keyArray[keyArray.length-1]));
-%>
-							<select onChange="updatePrevious()"  name="prevSelect" id="prevSelect">
-<%
-		for (int i = keyArray.length -1; i>= 0; i--) {
-%>
-	                        	<option value="<%=format_nv3.format(tempMap.get(keyArray[i]))%>"><%=dateTimeFormat.format(keyArray[i])%></option>
-<%		
-		}
-%>
-							</select>
-<% 
-	} else {
-%>
-	                        <select onChange="updatePrevious()"  name="prevSelect" id="prevSelect">
-	                          	<option value="---">---</option>
-	                        </select>
-<%
-	}
-%>
-	                    </td>
-						<td class="main" align="right">
-	                    	<div id="prevEnergyPD"><%=value%></div>
-	                    </td>
-					</tr>
-	                <tr> 
-	                	<td class="columnHeader">Usage</td>
-	                    <td class="main">&nbsp;</td>
-	                    <td class="main" align="right"> 
-	                    	<div id="totalUsage"> 
-	                        	<script>javascript:updatePrevious()</script>
-	                        </div>
-	                    </td>
-					</tr>
-				</table>
-	            
-			</jsp:body>
-		  </cti:titledContainer>
-		  <br/>
-		  <cti:titledContainer styleClass="styledContainer">
-	  		
-			<jsp:attribute name="title">
-				<table width="100%" class="titleTable">
-					<tr>
-						<td>Demand</td>
-					
-						<td align="right">
-						    <a class="link" href="javascript:setCommand('getvalue peak & getvalue demand');disableAllButtons()" id="readDemandID" name="readDemand"
-	              			  onMouseOver="window.status='Read Demand and Peak Demand (from the meter)';return true;"
-	              			  onMouseOut="window.status='';return true;">Read</a>
-		        		</td>
-		        	</tr>
-		        </table>
-			</jsp:attribute>
-			
-		  	<jsp:body>
-				
-				<table width="100%" border="0" cellspacing="2" cellpadding="0" bordercolor="#FFFFFF" align="center">
-					<tr> 
-	                	<td width="20%" class="columnHeader">Last Interval</td>
-	                    <td width="35%"class="main" align="center"> 
-<%
-	pointData = YC_BEAN.getRecentPointData(deviceID, 1, PointTypes.DEMAND_ACCUMULATOR_POINT);
-%>
-							<%= YC_BEAN.getFormattedTimestamp(pointData, "---")%>
-						</td>
-	                    <td width="35%" class="main" align="right"> 
-							<%= YC_BEAN.getFormattedValue(pointData, "#0", "&nbsp;")%>
-						</td>
-					</tr>
-	                <tr class="altRow"> 
-	                	<td class="columnHeader">Peak</td>
-	                    <td class="main" align="center"> 
-<%
-	pointData = YC_BEAN.getRecentPointData(deviceID, 11, PointTypes.DEMAND_ACCUMULATOR_POINT);
-%>
-							<%= YC_BEAN.getFormattedTimestamp(pointData, "---")%>
-						</td>
-	                    <td class="main" align="right"> 
-							<%= YC_BEAN.getFormattedValue(pointData, "#0", "&nbsp;")%>
-						</td>
-					</tr>
-				</table>
-	            
-	        </jsp:body>
-	      </cti:titledContainer>
-		  <br/>
+	<div>
 		  <cti:titledContainer styleClass="styledContainer">
 	  		
 			<jsp:attribute name="title">
@@ -330,151 +125,10 @@ function setCommand(cmd)
 			</jsp:body>
 		  </cti:titledContainer>
 		  <br/>
-		  <cti:titledContainer styleClass="styledContainer">
-	  		
-			<jsp:attribute name="title">
-				<table width="100%" class="titleTable">
-					<tr>
-						<td>Outage</td>
-						<td align="right">
-						    <a class="link" href="javascript:setCommand('getvalue demand & getvalue outage 1 & getvalue outage 3 & getvalue outage 5');disableAllButtons()" id="readOutageID" name="readOutage"
-				              onMouseOver="window.status='Read Current Blink Count, Last 6 Outages (from the meter)';return true;"
-				              onMouseOut="window.status='';return true;">Read</a>
-		        		</td>
-		        	</tr>
-		        </table>			
-			</jsp:attribute>
-			
-		  	<jsp:body>            
-	            <table width="100%" border="0" cellspacing="0" cellpadding="0" align="center">
-	            	<tr> 
-	                	<td width="20%" class="columnHeader">Blink Count</td>
-	                    <td width="35%"class="main" align="center"> 
 <%
-	pointData = YC_BEAN.getRecentPointData(deviceID, 20, PointTypes.PULSE_ACCUMULATOR_POINT);
-%>
-							<%= YC_BEAN.getFormattedTimestamp(pointData, "---")%>
-						</td>
-	                    <td width="35%" class="main" align="right"> 
-							<%= YC_BEAN.getFormattedValue(pointData, "#0", "&nbsp;")%>
-	                    </td>
-					</tr>
-	                <tr class="altRow"> 
-	                	<td class="columnHeader">&nbsp;</td>
-	                    <td colspan="2" class="main">&nbsp; 
-					</tr>
-	                <tr> 
-	                	<td class="columnHeader">History (Last 6)</td>
-	                    <td colspan="2" class="mainLeft">1.&nbsp;&nbsp; 
-<%
-	pointData = (PointData)YC_BEAN.getRecentPointData(deviceID, -1, PointTypes.OUTAGE_1);
-%>
-	                        <%= YC_BEAN.getFormattedStr(pointData, "---")%>
-	                    </td>
-					</tr>
-	                <tr class="altRow"> 
-	                    <td class="columnHeader">&nbsp;</td>
-	                    <td colspan="2" class="mainLeft">2.&nbsp;&nbsp; 
-<%
-	pointData = (PointData)YC_BEAN.getRecentPointData(deviceID, -1, PointTypes.OUTAGE_2);
-%>
-	                        <%= YC_BEAN.getFormattedStr(pointData, "---")%>
-	                    </td>
-					</tr>
-	                <tr> 
-	                	<td class="columnHeader">&nbsp;</td>
-	                    <td colspan="2" class="mainLeft">3.&nbsp;&nbsp; 
-<%
-	pointData = (PointData)YC_BEAN.getRecentPointData(deviceID, -1, PointTypes.OUTAGE_3);
-%>
-	                        <%= YC_BEAN.getFormattedStr(pointData, "---")%>
-	                    </td>
-					</tr>
-	                <tr class="altRow"> 
-						<td class="columnHeader">&nbsp;</td>
-	                    <td colspan="2" class="mainLeft">4.&nbsp;&nbsp; 
-<%
-	pointData = (PointData)YC_BEAN.getRecentPointData(deviceID, -1, PointTypes.OUTAGE_4);
-%>
-	                        <%= YC_BEAN.getFormattedStr(pointData, "---")%>
-	                    </td>
-					</tr>
-	                <tr> 
-	                	<td class="columnHeader">&nbsp;</td>
-	                    <td colspan="2" class="mainLeft">5.&nbsp;&nbsp; 
-<%
-	pointData = (PointData)YC_BEAN.getRecentPointData(deviceID, -1, PointTypes.OUTAGE_5);
-%>
-	                        <%= YC_BEAN.getFormattedStr(pointData, "---")%>
-	                    </td>
-					</tr>
-	                <tr class="altRow"> 
-						<td class="columnHeader">&nbsp;</td>
-	                    <td colspan="2" class="mainLeft">6.&nbsp;&nbsp; 
-<%
-	pointData = (PointData)YC_BEAN.getRecentPointData(deviceID, -1, PointTypes.OUTAGE_6);
-%>
-	                        <%= YC_BEAN.getFormattedStr(pointData, "---")%>
-	                    </td>
-					</tr>
-	            </table>
-
-			</jsp:body>
-		  </cti:titledContainer>            
-		  <br/>
-<% 
-	int discAddress = YC_BEAN.getMCT410DisconnectAddress(deviceID); 
-	if( discAddress >= 0 ) {
-%>
-		  <cti:titledContainer styleClass="styledContainer">
-	  		
-			<jsp:attribute name="title">
-				<table width="100%" class="titleTable">
-					<tr>
-						<td>Disconnect</td>
-					
-						<td align="right">
-						    <a class="link" href="javascript:setCommand('control connect');disableAllButtons()" id="controlConnID" name="controlConn"
-				              onMouseOver="window.status='Control Connect';return true;"
-				              onMouseOut="window.status='';return true;">Connect</a>
-				            &nbsp;&nbsp;
-				            <a class="link" href="javascript:setCommand('control disconnect');disableAllButtons()" id="controlDiscID" name="controlDisc"
-				              onMouseOver="window.status='Control Disconnect';return true;"
-				              onMouseOut="window.status='';return true;">Disconnect</a>
-				            &nbsp;&nbsp;
-				            <a class="link" href="javascript:setCommand('getstatus disconnect');disableAllButtons()" id="readDiscID" name="readDisc"
-				              onMouseOver="window.status='Read Disconnect Status';return true;"
-				              onMouseOut="window.status='';return true;">Read</a>
-		        		</td>
-		        	</tr>
-		        </table>			
-			</jsp:attribute>
-			
-		  	<jsp:body>            
-	            <table width="100%" border="0" cellspacing="0" cellpadding="0" align="center">
-					<tr> 
-	                	<td width="20%" class="columnHeader">Status</td>
-	                    <td width="35%"class="main" align="center"> 
-<%
-		pointData = YC_BEAN.getRecentPointData(deviceID, 1, PointTypes.STATUS_POINT);
-%>
-	                        <%= YC_BEAN.getFormattedTimestamp(pointData, "---")%>
-	                    </td>
-	                    <td width="35%" class="main" align="right"> 
-							<%= YC_BEAN.getFormattedStr(pointData, "&nbsp;")%>
-	                    </td>
-					</tr>
-	            </table>
-
-	        </jsp:body>
-	      </cti:titledContainer>
-		  <br/>
-<%
-	}
-	
 	IDatabaseCache cache = DefaultDatabaseCache.getInstance();
 	List scheds = cache.getAllTOUSchedules();
-	if( scheds != null) {
+	if( scheds != null && scheds.size() > 0) {
 %>
 		  <cti:titledContainer styleClass="styledContainer">
 	  		

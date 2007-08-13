@@ -113,9 +113,11 @@
 	        	<a href="../bulk/importer.jsp">Bulk Importer</a>
 	        </tags:sectionLink>
         </cti:checkProperty>
-		<tags:sectionLink>
-        	<a href="<c:url value="/spring/csr/search"/>">Metering</a>
-        </tags:sectionLink>
+        <cti:checkMultiRole roles="operator.MeteringRole.ROLEID,BillingRole.ROLEID,SchedulerRole.ROLEID,CommanderRole.ROLEID">
+			<tags:sectionLink>
+    	    	<a href="<c:url value="/spring/csr/search"/>">Metering</a>
+	        </tags:sectionLink>
+        </cti:checkMultiRole>
 	</tags:operationSection>
 
 </cti:checkMultiRole>

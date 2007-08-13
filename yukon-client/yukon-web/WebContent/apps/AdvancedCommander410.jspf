@@ -99,23 +99,18 @@
 		document.body.style.cursor = 'wait';
 		document.getElementById('DCChannel1ID').disabled = true;
 		document.getElementById('DCChannel4ID').disabled = true;
-	
-		document.getElementById('PRChannel1ID').disabled = true;
 		
+		document.getElementById('PRChannel1ID').disabled = true;
+	
 		document.getElementById('LoadRPH1ID').disabled = true;
 		document.getElementById('LoadRPH4ID').disabled = true;
 	}
 </script>
 
-<div style="width: 70%; margin: auto">
+<div style="width: 70%;">
 
-	<div class="commanderHeader">
-    	MCT 400series - Advanced Control Commands:&nbsp;&nbsp;<%= liteYukonPao.getPaoName()%>
-	</div>
-
-	<div align="center"> 
+	<h2>MCT 400series - Profile:&nbsp;&nbsp;<%= liteYukonPao.getPaoName()%></h2>
 	
-	<%@ include file="MspCISDetail.jspf"%>
 <% 
 	if (errorMsg != null && errorMsg.length() != 0) {
 	    out.write("<span class=\"ErrorMsg\">* " + errorMsg + "</span><br/><br/>");
@@ -126,7 +121,7 @@
 	    YC_BEAN.setErrorMsg("");
 	}
 %>
-	</div>	
+
 	<form name="commandForm" method="POST" action="<%= request.getContextPath() %>/servlet/CommanderServlet">
     	<input type="hidden" name="deviceID" value="<%=deviceID%>">
         <input type="hidden" name="lpDate" value="<%= datePart.format(YC_BEAN.getLPDate()) %>">
@@ -479,7 +474,7 @@ for (int i = 0; i < 60; i=i+5) {
  					<input type="reset" name="refresh" value="Refresh" onClick="window.location.reload()">
  				</td>
               <td class="bottomLink">
-                  <tags:longLoadProfile styleClass="Link1" deviceId="${deviceId}">Schedule Load Profile Request</tags:longLoadProfile>
+                  <tags:longLoadProfile styleClass="breadCrumbs" deviceId="${deviceId}">Schedule Load Profile Request</tags:longLoadProfile>
                 </td>
             </tr>               
 	  	</table>								  

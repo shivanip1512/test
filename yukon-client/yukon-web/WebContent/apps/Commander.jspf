@@ -62,8 +62,6 @@ div.scroll { font-size: 12px;
 %>
 
 
-<%@ include file="MspCISDetail.jspf"%>
-
 	<div class="commanderHeader"> 
 		<center>Control Commands:&nbsp;&nbsp;<%=name%></center>
 	</div>
@@ -166,32 +164,3 @@ div.scroll { font-size: 12px;
 				</td>
 			</tr>
 		</table>
-	</form>
-<% 
-	String gotoLink = "";
-	if (request.getParameter("InvNo") != null){ //we came from the Customer Account page
-		gotoLink =  request.getContextPath()+"/operator/Consumer/CommandInv.jsp?InvNo="+invNo+"&command=null";
-	} else {
-		gotoLink = request.getContextPath()+"/apps/CommandDevice2.jsp?deviceID="+deviceID+"&command=null";
-	}
-    if (isMCT4XX) {
-%>
-	<div class="bottomLink">
-		<a href="<%= gotoLink%>" name="advCommander4XX"  class="Link1">Commander: MCT400series Custom</a>
-	</div>
-<%
-	}
-	if (request.getParameter("InvNo") != null) {  //we came from the Customer Account page
-    		gotoLink = request.getContextPath()+"/operator/Consumer/CommandInv.jsp?InvNo="+invNo+"&lp";
-	} else {
-		gotoLink = request.getContextPath()+"/apps/CommandDevice2.jsp?deviceID="+deviceID+"&lp";
-	}
-	if (isMCT4XX ) {
-%>
-	<div class="bottomLink">
-		<a href="<%= gotoLink%>" name="advCommander4XX"  class="Link1">Commander: MCT400series Profile</a>
-	</div>
-<%
-	}
-%>
-

@@ -33,6 +33,7 @@
 <cti:checklogin/> 
 
 <jsp:useBean id="YC_BEAN" class="com.cannontech.yc.bean.YCBean" scope="session"/>
+<jsp:useBean id="commandDeviceBean" class="com.cannontech.yc.bean.CommandDeviceBean" scope="session"/>
 <jsp:setProperty name="YC_BEAN" property="userID" value="<%= lYukonUser.getUserID()%>"/>
 
 <%-- Grab the search criteria --%>
@@ -82,9 +83,11 @@
 	}
 %>
 
-<cti:standardPage title="Energy Services Operations Center" module="commanderSelect">
-	<cti:standardMenu/>
+<%@ include file="/apps/CommanderMenu.jspf" %>
 
+<cti:standardPage title="Energy Services Operations Center" module="commanderSelect">
+	<cti:standardMenu menuSelection="<%= menuSelection %>" />
+	
 	<script  language="JavaScript" src="../JavaScript/calendar.js"></script>
 	<script language="JavaScript">
 		function setMspCommand(cmd)

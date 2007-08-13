@@ -4,8 +4,12 @@
 <%@ taglib prefix="amr" tagdir="/WEB-INF/tags/amr" %>
 <%@ taglib prefix="ct" tagdir="/WEB-INF/tags" %>
 
-<cti:standardPage title="Commander Results" module="blank">
-<cti:standardMenu/>
+<cti:standardPage title="Commander Results" module="amr">
+<cti:standardMenu menuSelection="devicegroups|commander"/>
+   	<cti:breadCrumbs>
+	    <cti:crumbLink url="/operator/Operations.jsp" title="Operations Home" />
+	    &gt; Group Processing
+	</cti:breadCrumbs>
 
 <script type="text/javascript">
 	

@@ -1,23 +1,27 @@
 <%@ taglib uri="http://cannontech.com/tags/cti" prefix="cti"%>
 <%@ taglib uri="http://java.sun.com/jsp/jstl/core" prefix="c"%>
-<c:url var="url" value="/spring/macsscheduler/schedules/innerView"/>
+<c:url var="url" value="/spring/macsscheduler/schedules/view"/>
 
 <cti:standardPage title="Scheduled Scripts"
     module="amr">
 	<cti:standardMenu menuSelection="scheduler"/>
+	<cti:breadCrumbs>
+	    <cti:crumbLink url="/operator/Operations.jsp" title="Operations Home" />
+	    &gt; Scheduler
+	</cti:breadCrumbs>
+
     <cti:includeScript link="/JavaScript/macsscheduledscripts.js" />
 
 <script language="JavaScript">
     Event.observe(window, 'load', function() {
-        macsscheduledscripts_updater('${url}','${sortBy}','${descending}');
+       new Ajax.PeriodicalUpdater('main', '${url}', {
+           "method": 'post', "frequency": 5, "decay": 1
+       });
     });
 </script>
 
 <div id="main" style="margin-left: 5%; margin-right: 5%;">
-    <jsp:include page="${url}">
-        <jsp:param name="sortBy" value="${sortBy}"/>
-        <jsp:param name="descending" value="${descending}"/>
-    </jsp:include>
+    <jsp:include page="${url}"/>
 </div>
     
 </cti:standardPage>

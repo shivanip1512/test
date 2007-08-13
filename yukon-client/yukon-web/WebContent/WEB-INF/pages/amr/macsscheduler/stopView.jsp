@@ -3,6 +3,11 @@
 <c:url var="submitUrl" value="/spring/macsscheduler/schedules" />
 <cti:standardPage title="Scheduled Scripts" module="amr">
     <cti:standardMenu />
+   	<cti:breadCrumbs>
+	    <cti:crumbLink url="/operator/Operations.jsp" title="Operations Home" />
+  	    <cti:crumbLink url="/spring/macsscheduler/schedules/view" title="Scheduler" />
+	    &gt; Stop Schedule
+	</cti:breadCrumbs>
     <cti:includeScript link="/JavaScript/macsscheduledscripts.js" />
     
     <center>

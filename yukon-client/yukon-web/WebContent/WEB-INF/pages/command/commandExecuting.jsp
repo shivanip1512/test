@@ -3,8 +3,13 @@
 <%@ taglib prefix="amr" tagdir="/WEB-INF/tags/amr" %>
 <%@ taglib prefix="ct" tagdir="/WEB-INF/tags" %>
 
-<cti:standardPage title="Commander Results" module="blank">
-<cti:standardMenu/>
+<cti:standardPage title="Commander Results" module="amr">
+<cti:standardMenu menuSelection="devicegroups|commander"/>
+   	<cti:breadCrumbs>
+	    <cti:crumbLink url="/operator/Operations.jsp" title="Operations Home" />
+   	    <cti:crumbLink url="/spring/command/configure" title="Group Processing" />
+	    &gt; Command Executing
+	</cti:breadCrumbs>
 
 	Your group request has been started:<br/><br/>
 	Executing <b>${command}</b> on <b>${group}</b> group.<br/><br/>

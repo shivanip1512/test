@@ -60,8 +60,18 @@
           </sublinks>	
    		</option>
 		<option id="scheduler" name="Scheduler">
+		   <requireRole value="SchedulerRole.ROLEID"/>
    		   <link>/spring/macsscheduler/schedules/view</link>	
    		</option>
+		<option id="devicegroups" name="Device Groups">
+          <requireRole value="CommanderRole.ROLEID"/> <!-- THIS ROLE will change when more group items are added -->
+		  <sublinks>
+		    <option id="commander" name="Commander">
+              <link>/spring/command/configure</link>
+              <requireRole value="CommanderRole.ROLEID"/>
+            </option>
+          </sublinks>
+	    </option>
   	</toplinks>  
   </module>
   
