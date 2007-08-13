@@ -16,6 +16,7 @@ import com.cannontech.message.notif.NotifEmailMsg;
 import com.cannontech.message.util.Message;
 import com.cannontech.notif.outputs.*;
 import com.cannontech.notif.server.NotifServerConnection;
+import com.cannontech.tools.email.EmailMessage;
 import com.cannontech.tools.email.SimpleEmailMessage;
 
 public class NotifEmailMessageHandler extends MessageHandler {
@@ -24,7 +25,8 @@ public class NotifEmailMessageHandler extends MessageHandler {
 	public NotifEmailMessageHandler() {
 	}
 
-    public boolean handleMessage(NotifServerConnection connection, Message msg_) {
+    @SuppressWarnings("deprecation")
+	public boolean handleMessage(NotifServerConnection connection, Message msg_) {
         if (!(msg_ instanceof NotifEmailMsg)) {
             return false;
         }
@@ -40,6 +42,10 @@ public class NotifEmailMessageHandler extends MessageHandler {
 			LiteNotificationGroup liteNotifGroup = DaoFactory.getNotificationGroupDao()
 					.getLiteNotificationGroup(notifGroupId);
             
+			if(liteNotifGroup == null) {
+                return true; // we "handled" it, by not sending anything
+			}
+			
             if (liteNotifGroup.isDisabled()) {
                 log.warn("Ignoring notification request because notification group is disabled: group=" + liteNotifGroup);
                 return true; // we "handled" it, by not sending anything
