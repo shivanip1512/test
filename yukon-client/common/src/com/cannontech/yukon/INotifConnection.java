@@ -31,4 +31,6 @@ public interface INotifConnection
                                              Date stopTime,
                                              Date notificationTime,
                                              int customerIds[]);
+    
+    public void sendNotification(Integer ngId, String subject, String body	);
 }

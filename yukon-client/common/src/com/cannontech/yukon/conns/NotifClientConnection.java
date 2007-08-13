@@ -21,6 +21,7 @@ import com.cannontech.message.notif.DefColl_VoiceDataResponseMsg;
 import com.cannontech.message.notif.EconomicEventDeleteMsg;
 import com.cannontech.message.notif.EconomicEventMsg;
 import com.cannontech.message.notif.NotifCompletedMsg;
+import com.cannontech.message.notif.NotifEmailMsg;
 import com.cannontech.message.notif.ProgramActionMsg;
 import com.cannontech.message.notif.VoiceDataRequestMsg;
 import com.cannontech.message.notif.VoiceDataResponseMsg;
@@ -192,6 +193,15 @@ public class NotifClientConnection extends ClientConnection implements INotifCon
         msg.notificationTime = notificationTime;
         msg.customerIds = customerIds;
         write(msg);
+    }
+
+    public void sendNotification(Integer ngId, String subject,String body	) {
+		NotifEmailMsg msg = new NotifEmailMsg();
+		msg.setNotifGroupID(ngId);
+		msg.setSubject(subject);
+		msg.setBody(body); 
+
+		write(msg);    		
     }
 
 }
