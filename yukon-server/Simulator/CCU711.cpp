@@ -645,35 +645,43 @@ int CCU711::DecodeFunction(int WordType, unsigned char Data[]){
 
 void CCU711::CreateQueuedMsg()
 {
-    _queueMessage newMessage;
-    newMessage.initializeMessage();
+    int LengthDiv17 = _messageData[3];
+    LengthDiv17 = (LengthDiv17 / 17);
+    cout<<"LengthDiv17 = "<<LengthDiv17<<" !!!"<<endl;
 
-    unsigned char one, two, three, four;
-    one   = _messageData[7];
-    two   = _messageData[8];
-    three = _messageData[9];
-    four  = _messageData[10];
-    newMessage.setQENID(one, two, three, four);
-
-    int type = 0;
-    int iotype = 0;
-    int function = 0;
-    unsigned char address;
-    int bytesToReturn = 0;
-    decodeForQueueMessage(type, iotype, function, address, bytesToReturn);
-    newMessage.setWord(type);
-    newMessage.setiotype(iotype);
-    newMessage.setFunction(function);
-    newMessage.setAddress(address);
-
-    int _bytesToReturn;
-    //CtiTime _timeWhenReady;
-
-    //RTE_CIRCUIT;
-    //RTE_RPTCON;
-    //RTE_TYPCON;
-
-    _messageQueue.push(newMessage);
+    for(int i = 0; i<LengthDiv17; i++)
+    {
+        _queueMessage newMessage;
+        newMessage.initializeMessage();
+    
+        unsigned char one, two, three, four;
+        one   = _messageData[7];
+        two   = _messageData[8];
+        three = _messageData[9];
+        four  = _messageData[10];
+        newMessage.setQENID(one, two, three, four);
+    
+        int type = 0;
+        int iotype = 0;
+        int function = 0;
+        unsigned char address;
+        int bytesToReturn = 0;
+        decodeForQueueMessage(type, iotype, function, address, bytesToReturn);
+        newMessage.setWord(type);
+        newMessage.setiotype(iotype);
+        newMessage.setFunction(function);
+        newMessage.setAddress(address);
+    
+        int _bytesToReturn;
+        //CtiTime _timeWhenReady;
+    
+        //RTE_CIRCUIT;
+        //RTE_RPTCON;
+        //RTE_TYPCON;
+    
+        _messageQueue.push(newMessage);
+    }
+    cout<<"Queue size: "<<_messageQueue.size()<<endl;
 }
 
 
@@ -719,9 +727,14 @@ void CCU711::CreateQueuedResponse()
                 Data[ctr++] = 0x00; //  ROUTE
                 Data[ctr++] = 0x00; //  S1
                 Data[ctr++] = 0x00; //  S1
-                Data[3] = ctr-4;       //length;
-
-
+                Data[ctr++] = 0x00; // L1
+                Data[ctr++] = 0x00; // S2
+                Data[ctr++] = 0x00; // L2                         
+                Data[ctr++] = 0x00; // S3
+                Data[ctr++] = 0x00; // L3
+                Data[3] = ctr-4;    //length;
+                                       
+                                                         
                 unsigned short CRC = NCrcCalc_C ((Data + 1), ctr-1);
                 Data[ctr++] = HIBYTE (CRC);
                 Data[ctr++] = LOBYTE (CRC);
