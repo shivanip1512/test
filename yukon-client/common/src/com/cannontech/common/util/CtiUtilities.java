@@ -1714,6 +1714,8 @@ public static double convertTemperature(double temperature, String fromUnit, Str
         dirPath.append("Server");
         dirPath.append(System.getProperty("file.separator"));
         dirPath.append("Static");
+        dirPath.append(System.getProperty("file.separator"));
+        dirPath.append("JRE");
         
         File[] fileList = new File(dirPath.toString()).listFiles();
         if (fileList != null && fileList.length > 0) {

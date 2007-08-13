@@ -27,7 +27,7 @@ application.
 <div id="javaWebStartLinks" style="text-align:center;padding: 15px;">
 <c:choose>
     <c:when test='${jreInstaller != null}'>
-        <a href="<c:url value="/spring/static/${jreInstaller}"/>" onclick="jwsClosePopup()">Install Java</a>    
+        <a href="<c:url value="/spring/static/jre/${jreInstaller}"/>" onclick="jwsClosePopup()">Install Java</a>    
     </c:when>
     <c:otherwise>
         <a href="${jreDownloadURL}" onclick="jwsClosePopup()">Install Java</a>
