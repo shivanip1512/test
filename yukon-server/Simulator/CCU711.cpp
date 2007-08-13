@@ -187,7 +187,10 @@ void CCU711::PrintMessage(){
             cout<<string(CtiNumStr(_messageQueue.front().getQENID(3)).hex().zpad(2))<<endl;
             if(_commandType==RCOLQ)
             {
-                _messageQueue.pop();
+                if(!_messageQueue.empty())
+                {
+                    _messageQueue.pop();
+                }
             }
         }
     }
@@ -674,8 +677,11 @@ void CCU711::CreateQueuedMsg()
 
 void CCU711::CreateQueuedResponse()
 {
-    unsigned char Data[50];
-    _messageQueue.front().copyInto(Data, 3);
+    if(!_messageQueue.empty())
+    {
+        unsigned char Data[50];
+        _messageQueue.front().copyInto(Data, 3);
+    }
 }
 
 void CCU711::CreateResponse(int command)
@@ -714,31 +720,34 @@ void CCU711::CreateResponse(int command)
 
 void CCU711::LoadQueuedMsg()
 {
-    unsigned char Data[50];
-    _messageQueue.front().copyOut(Data);
-    for(int i=0; i<3; i++)
+    if(!_messageQueue.empty())
     {
-        _outmessageData[i]=Data[i];
+        unsigned char Data[50];
+        _messageQueue.front().copyOut(Data);
+        for(int i=0; i<3; i++)
+        {
+            _outmessageData[i]=Data[i];
+        }
+        _outmessageData[3] = getRLEN(); 		// # of bytes to follow 
+        _outmessageData[4] = 0x00;
+        _outmessageData[5] = 0xa7;
+        _outmessageData[18] = 0x14;
+        _outmessageData[19] = 0x98;
+        _outmessageData[20] = 0x00;
+        _outmessageData[21] = 0x90;
+        _outmessageData[22] = 0x03;
+        _outmessageData[23] = 0x00;
+        _outmessageData[24] = 0x00;
+        _outmessageData[25] = 0x00;
+        _outmessageData[26] = 0x00;
+        _outmessageData[27] = 0x00;
+        _outmessageData[28] = 0x01;
+        unsigned short CRC = NCrcCalc_C ((_outmessageData + 1), 31);
+        _outmessageData[32] = HIBYTE (CRC);
+        _outmessageData[33] = LOBYTE (CRC);
+    
+        _outindexOfEnd = 34;    ////////  CHANGE THIS FROM HARDCODED to getBytesToReturn !!!  ///////////
     }
-    _outmessageData[3] = getRLEN(); 		// # of bytes to follow 
-    _outmessageData[4] = 0x00;
-    _outmessageData[5] = 0xa7;
-    _outmessageData[18] = 0x14;
-    _outmessageData[19] = 0x98;
-    _outmessageData[20] = 0x00;
-    _outmessageData[21] = 0x90;
-    _outmessageData[22] = 0x03;
-    _outmessageData[23] = 0x00;
-    _outmessageData[24] = 0x00;
-    _outmessageData[25] = 0x00;
-    _outmessageData[26] = 0x00;
-    _outmessageData[27] = 0x00;
-    _outmessageData[28] = 0x01;
-    unsigned short CRC = NCrcCalc_C ((_outmessageData + 1), 31);
-    _outmessageData[32] = HIBYTE (CRC);
-    _outmessageData[33] = LOBYTE (CRC);
-
-    _outindexOfEnd = 34;    ////////  CHANGE THIS FROM HARDCODED to getBytesToReturn !!!  ///////////
 }
 
 

@@ -90,7 +90,7 @@ int main(int argc, char *argv[])
             if(ReadBuffer[0]==0x7e )
                 {
                 SET_FOREGROUND_BRIGHT_YELLOW;
-                cout << AboutToRead.asString();
+                cout <<'\n'<< AboutToRead.asString();
                 SET_FOREGROUND_BRIGHT_CYAN;
                 cout << " IN:" << endl;
             }
