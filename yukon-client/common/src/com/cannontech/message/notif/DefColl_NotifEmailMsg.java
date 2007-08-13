@@ -3,6 +3,7 @@ package com.cannontech.message.notif;
 /**
  * This type was created in VisualAge.
  */
+import com.cannontech.message.util.VectorInsert;
 import com.cannontech.message.util.VectorExtract;
 import com.roguewave.tools.v2_0.Comparator;
 import com.roguewave.vsj.DefineCollectable;
@@ -67,7 +68,6 @@ public class DefColl_NotifEmailMsg extends com.cannontech.message.util.DefineCol
 		super.restoreGuts( obj, vstr, polystr );
 		NotifEmailMsg nEmailMsg = (NotifEmailMsg) obj;
 
-
 		nEmailMsg.setTo( (String)vstr.restoreObject(SimpleMappings.CString) );
 		nEmailMsg.setNotifGroupID( vstr.extractInt() );
 		nEmailMsg.setSubject( (String)vstr.restoreObject(SimpleMappings.CString) );
@@ -93,6 +93,7 @@ public class DefColl_NotifEmailMsg extends com.cannontech.message.util.DefineCol
 		vstr.saveObject( nEmailMsg.getBody(), SimpleMappings.CString );
 		vstr.saveObject( nEmailMsg.getTo_CC(), SimpleMappings.CString );
 		vstr.saveObject( nEmailMsg.getTo_BCC(), SimpleMappings.CString );
-		vstr.saveObject( nEmailMsg.getAttachments(), polystr);
+		// vstr.saveObject( nEmailMsg.getAttachments(), polystr);
+		VectorInsert.insertVector(nEmailMsg.getAttachments(), vstr, polystr);
 	}
 }
