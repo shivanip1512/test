@@ -657,20 +657,20 @@ void CCU711::CreateQueuedMsg()
 
     int type = 0;
     int iotype = 0;
-    decodeForQueueMessage(type, iotype);
+    int function = 0;
+    unsigned char address;
+    decodeForQueueMessage(type, iotype, function, address);
     newMessage.setWord(type);
     newMessage.setiotype(iotype);
+    newMessage.setFunction(function);
+    newMessage.setAddress(address);
 
     int _bytesToReturn;
     //CtiTime _timeWhenReady;
-    unsigned char _address;
-    unsigned char RTE_CIRCUIT;
-    unsigned char RTE_RPTCON;
-    unsigned char RTE_TYPCON;
-    int _wordType;      //a,b,g words
-    int _ioType;       // i/o
-    int _function;
-    unsigned char _QENID[4];
+
+    //RTE_CIRCUIT;
+    //RTE_RPTCON;
+    //RTE_TYPCON;
 
     _messageQueue.push(newMessage);
 }
@@ -682,6 +682,14 @@ void CCU711::CreateQueuedResponse()
     if(!_messageQueue.empty())
     {
         unsigned char Data[50];
+        if(_messageQueue.front().getWord()==B_WORD)
+        {
+            if(_messageQueue.front().getioType()==FUNC_READ)
+            {
+                Data[0]=0x7e;
+                Data[1]=_messageQueue.front().getAddress();
+            }
+        }
         _messageQueue.front().copyInto(Data, 3);
     }
 }
@@ -761,7 +769,7 @@ unsigned char CCU711::getRLEN()
      return RLEN14;
 }
 
-void CCU711::decodeForQueueMessage(int & type, int & iotype)
+void CCU711::decodeForQueueMessage(int & type, int & iotype, int & function, unsigned char & address)
 {
     switch(_messageData[19] & 0xc0)
     {
@@ -791,7 +799,12 @@ void CCU711::decodeForQueueMessage(int & type, int & iotype)
             iotype = FUNC_READ;
             break;
     }
-    cout<<"ioTYPE is : "<<iotype<<endl;
+
+    //switch(_messageData[21] & 0x18)
+    //{   INSERT CODE HERE TO DETERMINE FUNCTION
+    //}
+
+    address = _messageData[1];
 }
 
 
@@ -845,8 +858,11 @@ void CCU711::_queueMessage::setQENID(unsigned char one,unsigned char two, unsign
     _QENID[3] = four;
 }
 
-unsigned char CCU711::_queueMessage::getQENID(int index)    {   return _QENID[index];   }
-int CCU711::_queueMessage::getWord()                        {   return _wordType;       }
-void CCU711::_queueMessage::setWord(int type)               {   _wordType = type;       }
-void CCU711::_queueMessage::setiotype(int iotype)           {   _ioType = iotype;       }
-                 
+unsigned char CCU711::_queueMessage::getQENID(int index)     {   return _QENID[index];   }
+int CCU711::_queueMessage::getWord()                         {   return _wordType;       }
+void CCU711::_queueMessage::setWord(int type)                {   _wordType = type;       }
+void CCU711::_queueMessage::setiotype(int iotype)            {   _ioType = iotype;       }
+void CCU711::_queueMessage::setFunction(int function)        {   _function = function;   }
+int CCU711::_queueMessage::getioType()                       {   return _ioType;         }
+void CCU711::_queueMessage::setAddress(unsigned char address){   _address = address;     }
+unsigned char CCU711::_queueMessage::getAddress()            {   return _address;        }

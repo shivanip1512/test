@@ -76,12 +76,16 @@ class CCU711{
                 int getWord();
                 void setWord(int type);
                 void setiotype(int iotype);
+                void setFunction(int function);
+                int  getioType();
+                void setAddress(unsigned char address);
+                unsigned char getAddress();
 
             private:
                 int _bytesToReturn;
                 unsigned char _data [50];
                 CtiTime _timeWhenReady;
-                int _address;
+                unsigned char _address;
                 //route infot (3 elements)
                 unsigned char _RTE_CIRCUIT;
                 unsigned char _RTE_RPTCON;
@@ -139,7 +143,7 @@ class CCU711{
         //  Create a response to a message that has been received and store it in the array of a queue message struct
         void CreateQueuedResponse();
         //  Decode the information contained in an incoming message 
-        void decodeForQueueMessage(int & type, int & iotype);
+        void decodeForQueueMessage(int & type, int & iotype, int & function, unsigned char & address);
 
 
 
