@@ -310,78 +310,70 @@ public class LiteStarsEnergyCompany extends LiteBase {
         
         if (dftRouteID == CtiUtilities.NONE_ZERO_ID) {
             String dbAlias = com.cannontech.common.util.CtiUtilities.getDatabaseAlias();
-            String sql = new String();
             
             PaoPermissionService pService = (PaoPermissionService) YukonSpringHook.getBean("paoPermissionService");
             Set<Integer> permittedPaoIDs = pService.getPaoIdsForUserPermission(new LiteYukonUser(getUserID()), Permission.LM_VISIBLE);
-            if(permittedPaoIDs.isEmpty()) {
-                sql = 
-                    "select CHILDID from GENERICMACRO " +
-                    "WHERE MacroType = '" + MacroTypes.GROUP + "'" +
-                    " ORDER BY CHILDORDER";
-            }
-            else {
-                sql = 
-                    "select CHILDID from GENERICMACRO " +
-                    "WHERE MacroType = '" + MacroTypes.GROUP + 
-                    "' AND OWNERID IN (";
+            if(! permittedPaoIDs.isEmpty()) {
+                String sql = "SELECT exc.LMGroupID, macro.OwnerID FROM LMGroupExpressCom exc, GenericMacro macro " +
+                    "WHERE macro.MacroType = '" + MacroTypes.GROUP + "' AND macro.ChildID = exc.LMGroupID AND exc.SerialNumber = '0'";
+                sql += " AND macro.OwnerID in (";
                 Integer[] permittedIDs = new Integer[permittedPaoIDs.size()];
                 permittedIDs = permittedPaoIDs.toArray(permittedIDs);
                 for(Integer paoID : permittedIDs) {
-                    sql += paoID.toString() + ", ";
+                    sql += paoID.toString() + ",";
                 }
-                sql = sql.substring(0, sql.lastIndexOf(','));
-                sql += ") ORDER BY CHILDORDER";
-            }
-            
-            Object[][] serialGroupIDs = com.cannontech.util.ServletUtil.executeSQL(
-                    dbAlias, sql, new Class[] { Integer.class } );
-            
-            // get a serial group whose serial number is set to 0, the route id of this group is the default route id
-            if (serialGroupIDs != null && serialGroupIDs.length > 0) {
-                
-                // get versacom serial groups
-                sql = "SELECT YUKONPAOBJECT.PAONAME,LMGROUPVERSACOM.SERIALADDRESS,LMGROUPVERSACOM.DEVICEID,LMGROUPVERSACOM.ROUTEID "
-                    + "FROM YUKONPAOBJECT,LMGROUPVERSACOM WHERE YUKONPAOBJECT.PAOBJECTID=LMGROUPVERSACOM.DEVICEID AND ";
-                for (int i = 0; i < serialGroupIDs.length; i++) {
-                    if( i == 0 )
-                        sql += "(LMGROUPVERSACOM.DEVICEID=" + serialGroupIDs[i][0];
-                    else
-                        sql += " OR LMGROUPVERSACOM.DEVICEID=" + serialGroupIDs[i][0];
-                }
+                sql = sql.substring(0, sql.length() - 1);
                 sql += ")";
-            
-                Object[][] versacomNameSerial = com.cannontech.util.ServletUtil.executeSQL(
-                        dbAlias, sql, new Class[] { String.class, Integer.class, Integer.class, Integer.class } );
                 
-                if (versacomNameSerial != null) {
-                    for (int i = 0; i < versacomNameSerial.length; i++) {
-                        if (((Integer) versacomNameSerial[i][1]).intValue() == 0) {
-                            dftRouteID = ((Integer) versacomNameSerial[i][3]).intValue();
-                            return dftRouteID;
+                Object[][] serialGroupIDs = com.cannontech.util.ServletUtil.executeSQL(
+                        dbAlias, sql, new Class[] { Integer.class } );
+                
+                // get a serial group whose serial number is set to 0, the route id of this group is the default route id
+                if (serialGroupIDs != null && serialGroupIDs.length > 0) {
+                    
+                    // get versacom serial groups
+                    sql = "SELECT YUKONPAOBJECT.PAONAME,LMGROUPVERSACOM.SERIALADDRESS,LMGROUPVERSACOM.DEVICEID,LMGROUPVERSACOM.ROUTEID "
+                        + "FROM YUKONPAOBJECT,LMGROUPVERSACOM WHERE YUKONPAOBJECT.PAOBJECTID=LMGROUPVERSACOM.DEVICEID AND ";
+                    for (int i = 0; i < serialGroupIDs.length; i++) {
+                        if( i == 0 )
+                            sql += "(LMGROUPVERSACOM.DEVICEID=" + serialGroupIDs[i][0];
+                        else
+                            sql += " OR LMGROUPVERSACOM.DEVICEID=" + serialGroupIDs[i][0];
+                    }
+                    sql += ")";
+                
+                    Object[][] versacomNameSerial = com.cannontech.util.ServletUtil.executeSQL(
+                            dbAlias, sql, new Class[] { String.class, Integer.class, Integer.class, Integer.class } );
+                    
+                    if (versacomNameSerial != null) {
+                        for (int i = 0; i < versacomNameSerial.length; i++) {
+                            if (((Integer) versacomNameSerial[i][1]).intValue() == 0) {
+                                dftRouteID = ((Integer) versacomNameSerial[i][3]).intValue();
+                                return dftRouteID;
+                            }
                         }
                     }
-                }
-                
-                // get expresscom serial groups 
-                sql = "SELECT YUKONPAOBJECT.PAONAME,LMGROUPEXPRESSCOM.SERIALNUMBER,LMGROUPEXPRESSCOM.LMGROUPID,LMGROUPEXPRESSCOM.ROUTEID "
-                    + "FROM YUKONPAOBJECT,LMGROUPEXPRESSCOM WHERE YUKONPAOBJECT.PAOBJECTID=LMGROUPEXPRESSCOM.LMGROUPID AND ";
-                for (int i = 0; i < serialGroupIDs.length; i++) {
-                    if( i == 0 )
-                        sql += "(LMGROUPEXPRESSCOM.LMGROUPID=" + serialGroupIDs[i][0];
-                    else
-                        sql += " OR LMGROUPEXPRESSCOM.LMGROUPID=" + serialGroupIDs[i][0];
-                }
-                sql += ")";
-               
-                Object[][] expresscomNameSerial = com.cannontech.util.ServletUtil.executeSQL(
-                        dbAlias, sql, new Class[] { String.class, Integer.class, Integer.class, Integer.class } );
-                
-                if (expresscomNameSerial != null) {
-                    for (int i = 0; i < expresscomNameSerial.length; i++) {
-                        if (((Integer) expresscomNameSerial[i][1]).intValue() == 0) {
-                            dftRouteID = ((Integer) expresscomNameSerial[i][3]).intValue();
-                            return dftRouteID;
+                    
+                    // get expresscom serial groups 
+                    sql = "SELECT YUKONPAOBJECT.PAONAME,LMGROUPEXPRESSCOM.SERIALNUMBER,LMGROUPEXPRESSCOM.LMGROUPID,LMGROUPEXPRESSCOM.ROUTEID "
+                        + "FROM YUKONPAOBJECT,LMGROUPEXPRESSCOM WHERE YUKONPAOBJECT.PAOBJECTID=LMGROUPEXPRESSCOM.LMGROUPID AND ";
+                    for (int i = 0; i < serialGroupIDs.length; i++) {
+                        if( i == 0 )
+                            sql += "(LMGROUPEXPRESSCOM.LMGROUPID=" + serialGroupIDs[i][0];
+                        else
+                            sql += " OR LMGROUPEXPRESSCOM.LMGROUPID=" + serialGroupIDs[i][0];
+                    }
+                    sql += ")";
+                   
+                    Object[][] expresscomNameSerial = com.cannontech.util.ServletUtil.executeSQL(
+                            dbAlias, sql, new Class[] { String.class, Integer.class, Integer.class, Integer.class } );
+                    
+                    if (expresscomNameSerial != null) {
+                        for (int i = 0; i < expresscomNameSerial.length; i++) {
+                            if (((Integer) expresscomNameSerial[i][1]).intValue() == 0) {
+                                dftRouteID = ((Integer) expresscomNameSerial[i][3]).intValue();
+                                return dftRouteID;
+                            }
                         }
                     }
                 }

@@ -132,33 +132,33 @@ public class StarsAdminUtil {
 				
                 PaoPermissionService pService = (PaoPermissionService) YukonSpringHook.getBean("paoPermissionService");
                 Set<Integer> permittedPaoIDs = pService.getPaoIdsForUserPermission(new LiteYukonUser(energyCompany.getUserID()), Permission.LM_VISIBLE);
-                String sql = "SELECT exc.LMGroupID FROM LMGroupExpressCom exc, GenericMacro macro " +
-						"WHERE macro.MacroType = '" + MacroTypes.GROUP +
-						"' AND macro.ChildID = exc.LMGroupID AND exc.SerialNumber = '0'";
                 if(! permittedPaoIDs.isEmpty()) {
+                    String sql = "SELECT exc.LMGroupID, FROM LMGroupExpressCom exc, GenericMacro macro " +
+                        "WHERE macro.MacroType = '" + MacroTypes.GROUP + "' AND macro.ChildID = exc.LMGroupID AND exc.SerialNumber = '0'";
                     sql += " AND macro.OwnerID in (";
                     Integer[] permittedIDs = new Integer[permittedPaoIDs.size()];
                     permittedIDs = permittedPaoIDs.toArray(permittedIDs);
                     for(Integer paoID : permittedIDs) {
-                        sql += paoID.toString() + ", ";
+                        sql += paoID.toString() + ",";
                     }
                     sql = sql.substring(0, sql.length() - 1);
                     sql += ")";
+                    
+                    SqlStatement stmt = new SqlStatement( sql, CtiUtilities.getDatabaseAlias() );
+                    stmt.execute();
+				
+    				if (stmt.getRowCount() == 0)
+    					throw new Exception( "Not able to find the default route group, sql = \"" + sql + "\"" );
+    				int groupID = ((java.math.BigDecimal) stmt.getRow(0)[0]).intValue();
+    				LMGroupExpressCom group = (LMGroupExpressCom)LMFactory.createLoadManagement( DeviceTypes.LM_GROUP_EXPRESSCOMM );
+    				group.setLMGroupID( new Integer(groupID) );
+    				group = (LMGroupExpressCom) Transaction.createTransaction( Transaction.RETRIEVE, group ).execute();
+				
+    				com.cannontech.database.db.device.lm.LMGroupExpressCom grpDB = group.getLMGroupExpressComm();
+    				grpDB.setRouteID( new Integer(routeID) );
+    				Transaction.createTransaction( Transaction.UPDATE, grpDB ).execute();
+    				ServerUtils.handleDBChangeMsg( group.getDBChangeMsgs(DBChangeMsg.CHANGE_TYPE_UPDATE)[0] );
                 }
-				SqlStatement stmt = new SqlStatement( sql, CtiUtilities.getDatabaseAlias() );
-				stmt.execute();
-				
-				if (stmt.getRowCount() == 0)
-					throw new Exception( "Not able to find the default route group, sql = \"" + sql + "\"" );
-				int groupID = ((java.math.BigDecimal) stmt.getRow(0)[0]).intValue();
-				LMGroupExpressCom group = (LMGroupExpressCom)LMFactory.createLoadManagement( DeviceTypes.LM_GROUP_EXPRESSCOMM );
-				group.setLMGroupID( new Integer(groupID) );
-				group = (LMGroupExpressCom) Transaction.createTransaction( Transaction.RETRIEVE, group ).execute();
-				
-				com.cannontech.database.db.device.lm.LMGroupExpressCom grpDB = group.getLMGroupExpressComm();
-				grpDB.setRouteID( new Integer(routeID) );
-				Transaction.createTransaction( Transaction.UPDATE, grpDB ).execute();
-				ServerUtils.handleDBChangeMsg( group.getDBChangeMsgs(DBChangeMsg.CHANGE_TYPE_UPDATE)[0] );
 			}
 			
 			energyCompany.setDefaultRouteID( routeID );
@@ -168,41 +168,42 @@ public class StarsAdminUtil {
 	public static void removeDefaultRoute(LiteStarsEnergyCompany energyCompany) throws Exception {
         PaoPermissionService pService = (PaoPermissionService) YukonSpringHook.getBean("paoPermissionService");
         Set<Integer> permittedPaoIDs = pService.getPaoIdsForUserPermission(new LiteYukonUser(energyCompany.getUserID()), Permission.LM_VISIBLE);
-        String sql = "SELECT exc.LMGroupID FROM LMGroupExpressCom exc, GenericMacro macro " +
-				"WHERE macro.MacroType = '" + MacroTypes.GROUP + "' AND macro.ChildID = exc.LMGroupID AND exc.SerialNumber = '0'";
         if(! permittedPaoIDs.isEmpty()) {
+            String sql = "SELECT exc.LMGroupID, macro.OwnerID FROM LMGroupExpressCom exc, GenericMacro macro " +
+				"WHERE macro.MacroType = '" + MacroTypes.GROUP + "' AND macro.ChildID = exc.LMGroupID AND exc.SerialNumber = '0'";
             sql += " AND macro.OwnerID in (";
             Integer[] permittedIDs = new Integer[permittedPaoIDs.size()];
             permittedIDs = permittedPaoIDs.toArray(permittedIDs);
             for(Integer paoID : permittedIDs) {
-                sql += paoID.toString() + ", ";
+                sql += paoID.toString() + ",";
             }
             sql = sql.substring(0, sql.length() - 1);
             sql += ")";
+            
+    		SqlStatement stmt = new SqlStatement( sql, CtiUtilities.getDatabaseAlias() );
+    		stmt.execute();
+    		
+    		if (stmt.getRowCount() > 0) {
+    			int dftRtGrpID = ((java.math.BigDecimal) stmt.getRow(0)[0]).intValue();
+    			int serialGrpID = ((java.math.BigDecimal) stmt.getRow(0)[1]).intValue();
+                /*Load groups are only assigned to users, so for now we only have to worry about removing from
+                 * the user.
+                 */
+                pService.removePermission(new LiteYukonUser(energyCompany.getUserID()), new LiteYukonPAObject(serialGrpID), Permission.LM_VISIBLE);
+    			stmt.setSQLString( sql );
+    			stmt.execute();
+    			
+    			MacroGroup grpSerial = (MacroGroup) LMFactory.createLoadManagement( DeviceTypes.MACRO_GROUP );
+    			grpSerial.setDeviceID( new Integer(serialGrpID) );
+    			Transaction.createTransaction( Transaction.DELETE, grpSerial ).execute();
+    			ServerUtils.handleDBChangeMsg( grpSerial.getDBChangeMsgs(DBChangeMsg.CHANGE_TYPE_DELETE)[0] );
+    			
+    			LMGroupExpressCom grpDftRoute = (LMGroupExpressCom) LMFactory.createLoadManagement( DeviceTypes.LM_GROUP_EXPRESSCOMM );
+    			grpDftRoute.setLMGroupID( new Integer(dftRtGrpID) );
+    			Transaction.createTransaction( Transaction.DELETE, grpDftRoute ).execute();
+    			ServerUtils.handleDBChangeMsg( grpDftRoute.getDBChangeMsgs(DBChangeMsg.CHANGE_TYPE_DELETE)[0] );
+    		}
         }
-		SqlStatement stmt = new SqlStatement( sql, CtiUtilities.getDatabaseAlias() );
-		stmt.execute();
-		
-		if (stmt.getRowCount() > 0) {
-			int dftRtGrpID = ((java.math.BigDecimal) stmt.getRow(0)[0]).intValue();
-			int serialGrpID = ((java.math.BigDecimal) stmt.getRow(0)[1]).intValue();
-            /*Load groups are only assigned to users, so for now we only have to worry about removing from
-             * the user.
-             */
-            pService.removePermission(new LiteYukonUser(energyCompany.getUserID()), new LiteYukonPAObject(serialGrpID), Permission.LM_VISIBLE);
-			stmt.setSQLString( sql );
-			stmt.execute();
-			
-			MacroGroup grpSerial = (MacroGroup) LMFactory.createLoadManagement( DeviceTypes.MACRO_GROUP );
-			grpSerial.setDeviceID( new Integer(serialGrpID) );
-			Transaction.createTransaction( Transaction.DELETE, grpSerial ).execute();
-			ServerUtils.handleDBChangeMsg( grpSerial.getDBChangeMsgs(DBChangeMsg.CHANGE_TYPE_DELETE)[0] );
-			
-			LMGroupExpressCom grpDftRoute = (LMGroupExpressCom) LMFactory.createLoadManagement( DeviceTypes.LM_GROUP_EXPRESSCOMM );
-			grpDftRoute.setLMGroupID( new Integer(dftRtGrpID) );
-			Transaction.createTransaction( Transaction.DELETE, grpDftRoute ).execute();
-			ServerUtils.handleDBChangeMsg( grpDftRoute.getDBChangeMsgs(DBChangeMsg.CHANGE_TYPE_DELETE)[0] );
-		}
 	}
 	
 	public static boolean updateGroupRoleProperty(LiteYukonGroup group, int roleID, int rolePropertyID, String newVal) throws Exception {

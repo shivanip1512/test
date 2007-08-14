@@ -638,7 +638,7 @@ public class StarsAdmin extends HttpServlet {
 				
 				ServerUtils.handleDBChange( liteContact, DBChangeMsg.CHANGE_TYPE_ADD );
 			}
-			else {
+			else if(contact.getContact().getContLastName() != null) {
 				contact = (com.cannontech.database.data.customer.Contact)
 						Transaction.createTransaction( Transaction.UPDATE, contact ).execute();
 				StarsLiteFactory.setLiteContact( liteContact, contact );
