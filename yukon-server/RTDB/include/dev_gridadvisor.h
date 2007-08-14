@@ -31,6 +31,24 @@ protected:
 
 public:
 
+    enum FCIPoints
+    {
+        FCI_Status_Fault = 1,
+        FCI_Status_CurrentSurveyEnabled = 101,
+        FCI_Status_UDPAck               = 102,
+
+        FCI_Analog_NominalAmps    =   1,
+        FCI_Analog_PeakAmps       =   2,
+        FCI_Analog_Phase          =   3,
+        FCI_Analog_Temperature    =   4,
+        FCI_Analog_BatteryVoltage =   5,
+        FCI_Analog_Latitude       =  11,
+        FCI_Analog_Longitude      =  12,
+        FCI_Analog_FaultHistory   =  21,
+        FCI_Analog_CurrentSurvey  =  31,
+        FCI_Analog_UDPRepeats     = 101,
+    };
+
     CtiDeviceGridAdvisor();
     CtiDeviceGridAdvisor(const CtiDeviceGridAdvisor& aRef);
 
