@@ -8,7 +8,7 @@
 <cti:breadCrumbs>
     <cti:crumbLink url="/operator/Operations.jsp" title="Operations Home"  />
     <cti:crumbLink url="/spring/csr/search" title="Device Selection"  />
-    &gt; Device Details
+    &gt; Device Detail
 </cti:breadCrumbs>
 
 	<table class="widgetColumns">

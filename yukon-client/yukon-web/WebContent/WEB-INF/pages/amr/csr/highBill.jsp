@@ -6,8 +6,8 @@
 <cti:standardMenu/>
 <cti:breadCrumbs>
     <cti:crumbLink url="/operator/Operations.jsp" title="Operations Home" />
-    <cti:crumbLink url="/spring/csr/search" title="Device selection" />
-    <cti:crumbLink url="/spring/csr/home?deviceId=${deviceId}" title="Device page" />
+    <cti:crumbLink url="/spring/csr/search" title="Device Selection" />
+    <cti:crumbLink url="/spring/csr/home?deviceId=${deviceId}" title="Device Detail" />
     &gt; High Bill Complaint
 </cti:breadCrumbs>
 
