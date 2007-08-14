@@ -123,7 +123,6 @@ void CCU711::CreateMsg(int ccuNumber)
             }
         }
         else if(_commandType==LGRPQ) {
-            CreateQueuedResponse();
             CreateResponse(LGRPQ);
         }
         else if(_commandType==RCOLQ) {
@@ -139,6 +138,8 @@ void CCU711::CreateMsg(int ccuNumber)
 int CCU711::SendMsg(unsigned char SendData[]){
     unsigned char *WriteBuffer = _outmessageData;
     int MsgSize = _outindexOfEnd;
+
+    cout<<"MsgSize "<<MsgSize<<" !!!"<<endl;
 
     memcpy(SendData, WriteBuffer, 100);
 
@@ -174,6 +175,8 @@ void CCU711::PrintMessage(){
 
         TranslateInfo(OUTGOING, printMsg, printCmd, printPre, printWrd, printFnc);
 
+        cout<<"Queue size: "<<_messageQueue.size()<<endl;
+        cout<<"!_messageQueue.empty() "<<!_messageQueue.empty()<<endl;
         cout<<"Msg: "<<printMsg<<"      "<<printCmd;
         if(_commandType==DTRAN)
             {
@@ -647,7 +650,7 @@ void CCU711::CreateQueuedMsg()
 {
     int LengthDiv17 = _messageData[3];
     LengthDiv17 = (LengthDiv17 / 17);
-    cout<<"LengthDiv17 = "<<LengthDiv17<<" !!!"<<endl;
+    //cout<<"LengthDiv17 = "<<LengthDiv17<<" !!!"<<endl;
 
     for(int i = 0; i<LengthDiv17; i++)
     {
@@ -680,8 +683,8 @@ void CCU711::CreateQueuedMsg()
         //RTE_TYPCON;
     
         _messageQueue.push(newMessage);
+        CreateQueuedResponse();
     }
-    cout<<"Queue size: "<<_messageQueue.size()<<endl;
 }
 
 
@@ -692,13 +695,13 @@ void CCU711::CreateQueuedResponse()
     {
         unsigned char Data[50];
         int ctr=0;
-        if(_messageQueue.front().getWord()==B_WORD)
-        {
-            if(_messageQueue.front().getioType()==FUNC_READ)
-            {
+        //if(_messageQueue.back().getWord()==B_WORD)
+        //{
+          //  if(_messageQueue.back().getioType()==FUNC_READ)
+           // {
 
                 Data[ctr++] = 0x7e;
-                Data[ctr++] = _messageQueue.front().getAddress();
+                Data[ctr++] = _messageQueue.back().getAddress();
                 Data[ctr++] = 0x32; //_messageData[2];
                 ctr++;              //length set below
                 Data[ctr++] = 0x00;
@@ -716,10 +719,10 @@ void CCU711::CreateQueuedResponse()
                 Data[ctr++] = 0x00;
                 Data[ctr++] = 0x00;
                 Data[ctr++] = 0x13;
-                Data[ctr++] = _messageQueue.front().getQENID(0);
-                Data[ctr++] = _messageQueue.front().getQENID(1);
-                Data[ctr++] = _messageQueue.front().getQENID(2);
-                Data[ctr++] = _messageQueue.front().getQENID(3);
+                Data[ctr++] = _messageQueue.back().getQENID(0);
+                Data[ctr++] = _messageQueue.back().getQENID(1);
+                Data[ctr++] = _messageQueue.back().getQENID(2);
+                Data[ctr++] = _messageQueue.back().getQENID(3);
                 Data[ctr++] = 0xf0; //  ENSTA
                 Data[ctr++] = 0x00;
                 Data[ctr++] = 0x00;
@@ -738,10 +741,10 @@ void CCU711::CreateQueuedResponse()
                 unsigned short CRC = NCrcCalc_C ((Data + 1), ctr-1);
                 Data[ctr++] = HIBYTE (CRC);
                 Data[ctr++] = LOBYTE (CRC);
-            }
-        }
-        _messageQueue.front().setbytesToReturn(ctr);
-        _messageQueue.front().copyInto(Data, ctr);
+           // }
+       // }
+        _messageQueue.back().setbytesToReturn(ctr);
+        _messageQueue.back().copyInto(Data, ctr);
     }
 }
 
