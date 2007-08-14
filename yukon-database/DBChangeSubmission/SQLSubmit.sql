@@ -209,3 +209,12 @@ insert into DynamicBillingField values(103,21,'rateBDemand- timestamp',14,'MM/dd
 
 /*********** END END END Michael/Jason's Dynamic billing generation additions (Head - 4.0 only)    ***********/
 
+/********* 430 name change (head only) - Jason 8/13/07    */
+/* Note - In addition to these changes, please do a find  */
+/* and replace in the creation scripts - change any 430SN */
+/* inserts into 430SL  */
+
+update yukonpaobject set type = 'MCT-430SL' where type = 'MCT-430SN' or type = 'MCT430SN'
+update devicetypecommand set devicetype = 'MCT-430SL' where devicetype = 'MCT-430SN' or devicetype = 'MCT430SN'
+/**********************************/
+

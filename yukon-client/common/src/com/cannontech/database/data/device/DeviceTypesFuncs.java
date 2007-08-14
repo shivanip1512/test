@@ -165,7 +165,7 @@ public final static boolean isLoopable(int intType)
 		intType == MCT410GL ||
         intType == MCT430A ||
         intType == MCT430S4 ||
-        intType == MCT430SN ||
+        intType == MCT430SL ||
 		intType == MCT470) //||
 //		isRTU(intType) ) //FUTURE
 		return true;
@@ -241,7 +241,7 @@ public final static boolean isCarrier(int deviceType)
 		case MCT410GL:
         case MCT430A:
         case MCT430S4:
-        case MCT430SN:
+        case MCT430SL:
 		case MCT470:
       	case MCT310CT:
       	case MCT310IM:      
@@ -461,7 +461,7 @@ public final static boolean isLoadProfile4Channel(int deviceType)
 		case MCT410GL:
         case MCT430A:
         case MCT430S4:
-        case MCT430SN:
+        case MCT430SL:
 		case MCT470:
 			return true;
 	
@@ -505,7 +505,7 @@ public final static boolean isLoadProfileVoltage(int deviceType)
 		case MCT410GL:
         case MCT430A:
         case MCT430S4:
-        case MCT430SN:
+        case MCT430SL:
 		case MCT470:
 			return true;
 		default:
@@ -541,7 +541,7 @@ public final static boolean isMCTOnly(int deviceType)
 		case MCT410GL:
         case MCT430A:
         case MCT430S4:
-        case MCT430SN:
+        case MCT430SL:
 		case MCT470:
 		case MCT310CT:
     	case MCT310IM:
@@ -583,7 +583,7 @@ public final static boolean isMCT(int deviceType)
 		case MCT410GL:
         case MCT430A:
         case MCT430S4:
-        case MCT430SN:
+        case MCT430SL:
 		case MCT470:
       	case MCT310CT:
       	case MCT310IM:
@@ -662,7 +662,7 @@ public static boolean isMCT4XX( int type )
 		case MCT410GL:
         case MCT430A:
         case MCT430S4:
-        case MCT430SN:
+        case MCT430SL:
 		case MCT470:  
 			return true;
 		default :
@@ -688,7 +688,7 @@ public static boolean isMCT430( int type )
     {
         case MCT430A:
         case MCT430S4:
-        case MCT430SN:
+        case MCT430SL:
             return true;
         default:
             return false;
@@ -938,7 +938,7 @@ public final static boolean usesDeviceMeterGroup(int deviceType)
 		case MCT410GL:
         case MCT430A:
         case MCT430S4:
-        case MCT430SN:
+        case MCT430SL:
 		case MCT470:
 		case MCT310CT:
 		case MCT310IM:

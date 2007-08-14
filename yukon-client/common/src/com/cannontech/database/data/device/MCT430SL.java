@@ -5,9 +5,9 @@ import java.sql.Connection;
 /**
  * 430 Sentinal
  */
-public class MCT430SN extends MCT400SeriesBase {
+public class MCT430SL extends MCT400SeriesBase {
 
-    public MCT430SN() {
+    public MCT430SL() {
         super();
     }
 

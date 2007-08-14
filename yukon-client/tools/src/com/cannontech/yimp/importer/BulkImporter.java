@@ -41,7 +41,7 @@ import com.cannontech.database.data.device.MCT410GL;
 import com.cannontech.database.data.device.MCT410IL;
 import com.cannontech.database.data.device.MCT430A;
 import com.cannontech.database.data.device.MCT430S4;
-import com.cannontech.database.data.device.MCT430SN;
+import com.cannontech.database.data.device.MCT430SL;
 import com.cannontech.database.data.device.MCT470;
 import com.cannontech.database.data.multi.MultiDBPersistent;
 import com.cannontech.database.data.pao.DeviceTypes;
@@ -332,7 +332,7 @@ public void runImport(List<ImportData> imps) {
             badEntry = true;
             errorMsg.append("address out of MCT430EL range; "); 
         }
-        else if(template400SeriesBase instanceof MCT430SN && !DeviceAddressRange.isValidRange(DeviceTypes.MCT430SN, Long.parseLong(address))) {
+        else if(template400SeriesBase instanceof MCT430SL && !DeviceAddressRange.isValidRange(DeviceTypes.MCT430SL, Long.parseLong(address))) {
             log.error("Import entry with name " + name + " has an incorrect MCT430IN address.");
             badEntry = true;
             errorMsg.append("address out of MCT430IN range; "); 

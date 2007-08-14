@@ -108,7 +108,7 @@ public class DeviceAddressRange
             return RANGE_MCT430S;    
         }
         
-        if(deviceType_ == DeviceTypesFuncs.MCT430SN)
+        if(deviceType_ == DeviceTypesFuncs.MCT430SL)
         {
             return RANGE_MCT430IN;    
         }

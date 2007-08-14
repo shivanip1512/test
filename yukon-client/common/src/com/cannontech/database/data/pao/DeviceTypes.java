@@ -123,7 +123,7 @@ public interface DeviceTypes extends TypeBase
     public final static int MCT410FL                = DEVICE_OFFSET + 95;
     public final static int MCT410GL                = DEVICE_OFFSET + 96;
     
-    public final static int MCT430SN                  = DEVICE_OFFSET + 97;
+    public final static int MCT430SL                  = DEVICE_OFFSET + 97;
     
     public final static int CCU721                  = DEVICE_OFFSET + 98;
 
@@ -174,7 +174,7 @@ public interface DeviceTypes extends TypeBase
 	public static final String[] STRING_MCT_470 = {"MCT-470", "MCT470"};
     public static final String[] STRING_MCT_430A = {"MCT-430A"};
     public static final String[] STRING_MCT_430S4 = {"MCT-430S4"};
-    public static final String[] STRING_MCT_430SN = {"MCT-430SN"};
+    public static final String[] STRING_MCT_430SL = {"MCT-430SL"};
 	public static final String[] STRING_MCT_318 = {"MCT-318", "MCT318"};
 	public static final String[] STRING_MCT_360 = {"MCT-360", "MCT360"};
 	public static final String[] STRING_MCT_370 = {"MCT-370", "MCT370"};

@@ -262,7 +262,7 @@ protected DataInputPanel getNextInputPanel(
             && (getDeviceType() == DeviceTypes.MCT470
                     || getDeviceType() == DeviceTypes.MCT430S4
                     || getDeviceType() == DeviceTypes.MCT430A
-                    || getDeviceType() == DeviceTypes.MCT430SN
+                    || getDeviceType() == DeviceTypes.MCT430SL
                     || getDeviceType() == DeviceTypes.MCT410IL
                     || getDeviceType() == DeviceTypes.MCT410CL
                     || getDeviceType() == DeviceTypes.MCT410FL
@@ -314,7 +314,7 @@ protected DataInputPanel getNextInputPanel(
     }else if( currentInputPanel == getRoutePanel() && (getDeviceType() == DeviceTypes.MCT470
                                                     || getDeviceType() == DeviceTypes.MCT430S4
                                                     || getDeviceType() == DeviceTypes.MCT430A
-                                                    || getDeviceType() == DeviceTypes.MCT430SN
+                                                    || getDeviceType() == DeviceTypes.MCT430SL
                                                     || getDeviceType() == DeviceTypes.MCT410IL
                                                     || getDeviceType() == DeviceTypes.MCT410CL
                                                     || getDeviceType() == DeviceTypes.MCT410FL
@@ -429,7 +429,7 @@ protected boolean isLastInputPanel(com.cannontech.common.gui.util.DataInputPanel
     }else if( (currentPanel == getDeviceCopyNameAddressPanel()) && (getDeviceType() == DeviceTypes.MCT470
                                                                  || getDeviceType() == DeviceTypes.MCT430S4
                                                                  || getDeviceType() == DeviceTypes.MCT430A
-                                                                 || getDeviceType() == DeviceTypes.MCT430SN
+                                                                 || getDeviceType() == DeviceTypes.MCT430SL
                                                                  || getDeviceType() == DeviceTypes.MCT410IL
                                                                  || getDeviceType() == DeviceTypes.MCT410CL
                                                                  || getDeviceType() == DeviceTypes.MCT410FL
@@ -454,7 +454,7 @@ protected boolean isLastInputPanel(com.cannontech.common.gui.util.DataInputPanel
     }else if((currentPanel == getRoutePanel()) && (getDeviceType() == DeviceTypes.MCT470
                                                                 || getDeviceType() == DeviceTypes.MCT430S4
                                                                 || getDeviceType() == DeviceTypes.MCT430A
-                                                                || getDeviceType() == DeviceTypes.MCT430SN
+                                                                || getDeviceType() == DeviceTypes.MCT430SL
                                                                 || getDeviceType() == DeviceTypes.MCT410IL
                                                                 || getDeviceType() == DeviceTypes.MCT410CL
                                                                 || getDeviceType() == DeviceTypes.MCT410FL

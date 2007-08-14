@@ -54,7 +54,7 @@ public class BillableDeviceFactory {
 
         case DeviceTypes.MCT430A:
         case DeviceTypes.MCT430S4:
-        case DeviceTypes.MCT430SN:
+        case DeviceTypes.MCT430SL:
             device = new MCT430();
             break;
 

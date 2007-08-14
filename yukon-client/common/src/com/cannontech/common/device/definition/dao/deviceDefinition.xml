@@ -1103,8 +1103,8 @@
         </commands>
     </device>
         <device>
-        <type value="1097" javaConstant="MCT430SN"/>
-        <displayName value="MCT-430SN"/>
+        <type value="1097" javaConstant="MCT430SL"/>
+        <displayName value="MCT-430SL"/>
         <displayGroup value="MCT"/>
         <points>
             <point init="true" type="Analog">
