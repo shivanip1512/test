@@ -15,17 +15,13 @@ import javax.swing.table.TableColumn;
 import com.cannontech.common.constants.YukonListEntry;
 import com.cannontech.common.constants.YukonSelectionListDefs;
 import com.cannontech.common.gui.util.ComboBoxTableRenderer;
-import com.cannontech.common.gui.util.DataInputPanel;
 import com.cannontech.common.gui.util.TextFieldDocument;
 import com.cannontech.common.util.CtiUtilities;
 import com.cannontech.core.dao.DaoFactory;
-import com.cannontech.database.cache.DefaultDatabaseCache;
 import com.cannontech.database.data.customer.Contact;
 import com.cannontech.database.data.lite.LiteYukonUser;
-import com.cannontech.database.db.DBPersistent;
 import com.cannontech.database.db.contact.ContactNotification;
 import com.cannontech.user.UserUtils;
-import com.cannontech.yukon.IDatabaseCache;
 
 
 public class ContactPanel extends com.cannontech.common.gui.util.DataInputPanel implements java.awt.event.ActionListener, javax.swing.event.CaretListener, javax.swing.event.ListSelectionListener {
@@ -1328,11 +1324,4 @@ public void valueChanged(javax.swing.event.ListSelectionEvent event)
 	
 }
 
-@Override
-public void postSave(DBPersistent o) {
-    IDatabaseCache cache = DefaultDatabaseCache.getInstance();
-    synchronized (cache) {
-        cache.releaseAllContacts();
-    }
-}
 }

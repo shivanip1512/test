@@ -3149,6 +3149,7 @@ public synchronized LiteContact getAContactByContactID(int contactID)
 
         //found it, put it in the cache for later searches
         if (specifiedContact != null) {
+            allContacts.add(specifiedContact);
             allContactsMap.put(contactID, specifiedContact);  
             userContactMap.put(specifiedContact.getLoginID(), specifiedContact);
         }
