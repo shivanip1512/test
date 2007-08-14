@@ -12,6 +12,8 @@
 	<classpathentry kind="src" path="/tdc"/>
 	<classpathentry kind="src" path="/multispeak"/>
 	<classpathentry kind="src" path="/tools"/>
+	<classpathentry combineaccessrules="false" kind="src" path="/foreign"/>
+	<classpathentry combineaccessrules="false" kind="src" path="/billing"/>
 	<classpathentry kind="con" path="org.eclipse.jdt.launching.JRE_CONTAINER"/>
 	<classpathentry kind="con" path="org.eclipse.jdt.junit.JUNIT_CONTAINER/3.8.1"/>
 	<classpathentry kind="lib" path="/third-party/SqlServer.jar"/>
@@ -59,8 +61,6 @@
 	<classpathentry kind="lib" path="/third-party/commons-beanutils-1.7.0.jar"/>
 	<classpathentry kind="lib" path="/third-party/jsp-api.jar" sourcepath="Z:/java/Third-Party Sources/apache-tomcat-5.5.20-src.zip"/>
 	<classpathentry kind="lib" path="/third-party/servlet-api.jar" sourcepath="Z:/java/Third-Party Sources/apache-tomcat-5.5.20-src.zip"/>
-	<classpathentry combineaccessrules="false" kind="src" path="/foreign"/>
-	<classpathentry combineaccessrules="false" kind="src" path="/billing"/>
 	<classpathentry kind="var" path="TOMCAT_HOME/common/lib/servlet-api.jar"/>
 	<classpathentry kind="var" path="TOMCAT_HOME/common/lib/jasper-runtime.jar"/>
 	<classpathentry kind="var" path="TOMCAT_HOME/common/lib/jsp-api.jar"/>
