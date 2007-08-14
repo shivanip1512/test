@@ -39,7 +39,8 @@ CCU711::CCU711() :
       _outmessageType(0),  
       _outcommandType(0),  
       _outpreamble(0),     
-      _mctNumber(0)       
+      _mctNumber(0),
+      _qmessagesSent(0)
 {
 
     memset(_messageData, 0, 100);
@@ -792,12 +793,41 @@ void CCU711::LoadQueuedMsg()
 
         _outmessageData[2] = getFrame(0);//0x32;
 
+        switch(_qmessagesSent)
+        {
+            case 0:
+                break;
+            case 1:
+                _outmessageData[19] = 0x01;
+                break;
+            case 2:
+                _outmessageData[19] = 0x02;
+                break;
+            case 3:
+                _outmessageData[19] = 0x03;
+                break;
+            case 4:
+                _outmessageData[19] = 0x04;
+                break;
+            case 5:
+                break;
+            case 6:
+                break;
+            case 7:
+                break;
+            case 8:
+                break;
+            case 9:
+                break;
+        }
+
         int ctr = _messageQueue.front().getbytesToReturn();
         unsigned short CRC = NCrcCalc_C ((_outmessageData + 1), ctr-1);
         _outmessageData[ctr++] = HIBYTE (CRC);
         _outmessageData[ctr++] = LOBYTE (CRC);
 
-        _outindexOfEnd = ctr;     
+        _outindexOfEnd = ctr;
+        _qmessagesSent++;
     }
 }
 

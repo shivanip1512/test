@@ -174,6 +174,7 @@ class CCU711{
         int _outindexOfWords;
         int _mctNumber;
         queue <_queueMessage> _messageQueue;
+        int _qmessagesSent;
 };
 
 #endif
