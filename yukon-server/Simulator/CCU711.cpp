@@ -692,13 +692,13 @@ void CCU711::CreateQueuedMsg()
 void CCU711::CreateQueuedResponse()
 {
     if(!_messageQueue.empty())
-    {
+        {
         unsigned char Data[50];
         int ctr=0;
-        //if(_messageQueue.back().getWord()==B_WORD)
-        //{
-          //  if(_messageQueue.back().getioType()==FUNC_READ)
-           // {
+        if(_messageQueue.back().getWord()==B_WORD)
+            {
+            if(_messageQueue.back().getioType()==FUNC_READ)
+            {
 
                 Data[ctr++] = 0x7e;
                 Data[ctr++] = _messageQueue.back().getAddress();
@@ -736,13 +736,13 @@ void CCU711::CreateQueuedResponse()
                 Data[ctr++] = 0x00; // S3
                 Data[ctr++] = 0x00; // L3
                 Data[3] = ctr-4;    //length;
-                                       
-                                                         
-                unsigned short CRC = NCrcCalc_C ((Data + 1), ctr-1);
-                Data[ctr++] = HIBYTE (CRC);
-                Data[ctr++] = LOBYTE (CRC);
-           // }
-       // }
+
+
+                //unsigned short CRC = NCrcCalc_C ((Data + 1), ctr-1);
+                //Data[ctr++] = 0x00;//HIBYTE (CRC);
+                //Data[ctr++] = 0x00;//LOBYTE (CRC);
+            }
+        }
         _messageQueue.back().setbytesToReturn(ctr);
         _messageQueue.back().copyInto(Data, ctr);
     }
@@ -791,9 +791,14 @@ void CCU711::LoadQueuedMsg()
         for(int i=0; i<_messageQueue.front().getbytesToReturn(); i++)
         {
             _outmessageData[i]=Data[i];
-        } 
+        }
 
-        _outindexOfEnd = _messageQueue.front().getbytesToReturn();    
+        int ctr = _messageQueue.front().getbytesToReturn();
+        unsigned short CRC = NCrcCalc_C ((_outmessageData + 1), ctr-1);
+        _outmessageData[ctr++] = HIBYTE (CRC);
+        _outmessageData[ctr++] = LOBYTE (CRC);
+
+        _outindexOfEnd = ctr;     
     }
 }
 
