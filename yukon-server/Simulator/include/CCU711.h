@@ -122,8 +122,10 @@ class CCU711{
 		int DecodePreamble(int &setccuNumber);
         // This is used to insert words into incoming messages 
 		void InsertWord(int WordType, unsigned char Data[], int counter);
-        //  Returns the type of message
+        //  Returns the frame of message
 		unsigned char getFrame();
+        //  Returns the frame when in queued mode
+		unsigned char getFrame(int frameCount);
         //  Figure out the IDLC protocol
 		int DecodeIDLC(int & setccuNumber);
         //  Determine what kind of word it is
@@ -144,7 +146,6 @@ class CCU711{
         void CreateQueuedResponse();
         //  Decode the information contained in an incoming message 
         void decodeForQueueMessage(int & type, int & iotype, int & function, unsigned char & address, int bytesToReturn);
-
 
 
 	private:

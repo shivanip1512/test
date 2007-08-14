@@ -139,8 +139,6 @@ int CCU711::SendMsg(unsigned char SendData[]){
     unsigned char *WriteBuffer = _outmessageData;
     int MsgSize = _outindexOfEnd;
 
-    cout<<"MsgSize "<<MsgSize<<" !!!"<<endl;
-
     memcpy(SendData, WriteBuffer, 100);
 
     return MsgSize;
@@ -176,7 +174,6 @@ void CCU711::PrintMessage(){
         TranslateInfo(OUTGOING, printMsg, printCmd, printPre, printWrd, printFnc);
 
         cout<<"Queue size: "<<_messageQueue.size()<<endl;
-        cout<<"!_messageQueue.empty() "<<!_messageQueue.empty()<<endl;
         cout<<"Msg: "<<printMsg<<"      "<<printCmd;
         if(_commandType==DTRAN)
             {
@@ -702,7 +699,7 @@ void CCU711::CreateQueuedResponse()
 
                 Data[ctr++] = 0x7e;
                 Data[ctr++] = _messageQueue.back().getAddress();
-                Data[ctr++] = 0x32; //_messageData[2];
+                Data[ctr++] = 0x00; // Frame;
                 ctr++;              //length set below
                 Data[ctr++] = 0x00;
                 Data[ctr++] = 0xa7;
@@ -793,6 +790,8 @@ void CCU711::LoadQueuedMsg()
             _outmessageData[i]=Data[i];
         }
 
+        _outmessageData[2] = getFrame(0);//0x32;
+
         int ctr = _messageQueue.front().getbytesToReturn();
         unsigned short CRC = NCrcCalc_C ((_outmessageData + 1), ctr-1);
         _outmessageData[ctr++] = HIBYTE (CRC);
@@ -849,6 +848,21 @@ void CCU711::decodeForQueueMessage(int & type, int & iotype, int & function, uns
     address = _messageData[1];
 }
 
+
+unsigned char CCU711::getFrame(int frameCount)
+{
+    unsigned char frame = 0x10;
+    unsigned char rrr = 0x00;
+    unsigned char sss = 0x00;
+    sss = _messageData[2];
+    sss = (sss >> 4) & 0x0e;
+    cout <<"sss = "<<string(CtiNumStr(sss).hex().zpad(2))<<endl;
+    rrr = 0x20;
+    frame = frame | rrr;
+    frame = frame | sss;
+
+    return frame;
+}
 
 /***************************************************************************************
 *     Functions for the _queueMessage struct
