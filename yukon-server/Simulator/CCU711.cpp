@@ -62,7 +62,7 @@ void CCU711::ReceiveMore(unsigned char ReadBuffer[], int counter)
     SET_FOREGROUND_WHITE;
     DecodeCommand(ReadBuffer);
 
-    for(int i=10; i<50; i++)
+    for(int i=10; i<300; i++)
     {
         _messageData[i]=ReadBuffer[i];   
     }
@@ -660,13 +660,15 @@ void CCU711::CreateQueuedMsg()
         newMessage.initializeMessage();
     
         unsigned char one, two, three, four;
-        one   = _messageData[7];
-        two   = _messageData[8];
-        three = _messageData[9];
-        four  = _messageData[10];
-        //cout<<"setting qenid to :" <<endl;
-        //cout <<string(CtiNumStr(_messageData[9]).hex().zpad(2))<<"   ";
-        //cout <<string(CtiNumStr(_messageData[10]).hex().zpad(2))<<"!!!!";
+        one   = _messageData[7+(i*17)];
+        two   = _messageData[8+(i*17)];
+        three = _messageData[9+(i*17)];
+        four  = _messageData[10+(i*17)];
+        cout<<"setting qenid to :";
+        cout <<string(CtiNumStr(_messageData[7+(i*17)]).hex().zpad(2))<<"   ";
+        cout <<string(CtiNumStr(_messageData[8+(i*17)]).hex().zpad(2))<<"   ";
+        cout <<string(CtiNumStr(_messageData[9+(i*17)]).hex().zpad(2))<<"   ";
+        cout <<string(CtiNumStr(_messageData[10+(i*17)]).hex().zpad(2))<<"!!!!"<<endl;
         newMessage.setQENID(one, two, three, four);
     
         int type = 0;
@@ -725,7 +727,7 @@ void CCU711::CreateQueuedResponse()
                 Data[ctr++] = 0x00; //StatP
                 Data[ctr++] = 0x00; // "  "
                 Data[ctr++] = 0x13;
-                Data[ctr++] = _qmessagesSent;
+                Data[ctr++] = _messageQueue.back().getQENID(0);
                 Data[ctr++] = _messageQueue.back().getQENID(1);
                 Data[ctr++] = _messageQueue.back().getQENID(2);
                 Data[ctr++] = _messageQueue.back().getQENID(3);
