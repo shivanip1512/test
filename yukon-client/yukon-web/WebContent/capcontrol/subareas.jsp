@@ -79,6 +79,8 @@ if (allowCtlVal!=null)
 	String estPF = CBCDisplay.getPowerFactorText(
 		CBCUtils.calcAvgEstPF(areaBuses), true);
             String areaState = ((Boolean)(userOwner.getAreaStateMap().get(area.getPaoName())))?"ENABLED":"DISABLED";
+			if( area.getOvUvDisabledFlag() )
+				areaState += "-oVuV";
 %>
 	        <tr class="<%=css%>">
 				<td>				
@@ -187,9 +189,9 @@ var areastate = msgs[3];
 //update state
 document.getElementById ('area_state_' + areaindex).innerHTML = areastate;
 //update menu
-if (areastate == 'ENABLED')
+if (areastate == 'ENABLED' || areastate == 'ENABLED-oVuV')
     document.getElementById('cmd_area_' + areaID).value = generate_SubAreaMenu(areaID,areaname, 0);
-if (areastate == 'DISABLED')
+if (areastate == 'DISABLED' || areastate == 'DISABLED-oVuV')
     document.getElementById('cmd_area_' + areaID).value = generate_SubAreaMenu(areaID,areaname, 1);
 }
 </script>

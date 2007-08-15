@@ -188,6 +188,8 @@ private void updateSubAreaMenu(Integer areaIndex, Writer writer) throws IOExcept
     Integer areaID = area.getPaoID();
     String msg = area.getPaoName() + ":" + areaIndex + ":" + areaID + ":";
     msg += (state)?"ENABLED":"DISABLED";
+    if ( area.getOvUvDisabledFlag() )
+        msg += "-oVuV";
     writer.write (msg);
     writer.flush();
 }
