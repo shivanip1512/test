@@ -130,27 +130,24 @@
     </target>
 
     <target name="update" depends="init">
-        <echo message="updating module yukon by timestamp: ${currenttime}" />
+        <echo message="updating module yukon" />
         <cvs dest="${module.name}" 
-             command="update -A -d" 
-             reallyquiet="false"
-             date="${currenttime}"/>
+             command="update -d" 
+             reallyquiet="false"/>
     </target>
 
     <target name="update-client" depends="init">
-        <echo message="updating module yukon-client by timestamp: ${currenttime}" />
+        <echo message="updating module yukon-client" />
         <cvs dest="${module.name}/yukon-client" 
-             command="update -A -d" 
-             reallyquiet="false"
-        	 date="${currenttime}"/>
+             command="update -d" 
+             reallyquiet="false"/>
     </target>
 
     <target name="update-server" depends="init">
-        <echo message="updating module yukon-server by timestamp: ${currenttime}" />
+        <echo message="updating module yukon-server" />
         <cvs dest="${module.name}/yukon-server" 
-             command="update -A -d"
-             reallyquiet="false"
-             date="${currenttime}"/>
+             command="update -d"
+             reallyquiet="false"/>
     </target>
 
     <target name="build" depends="clean,checkout,buildTarget,builddist" />
