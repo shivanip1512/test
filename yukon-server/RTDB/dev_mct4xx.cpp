@@ -8,8 +8,8 @@
 *
 * PVCS KEYWORDS:
 * ARCHIVE      :  $Archive:   Z:/SOFTWAREARCHIVES/YUKON/RTDB/dev_mct4xx-arc  $
-* REVISION     :  $Revision: 1.63 $
-* DATE         :  $Date: 2007/05/01 16:43:04 $
+* REVISION     :  $Revision: 1.64 $
+* DATE         :  $Date: 2007/08/15 21:04:22 $
 *
 * Copyright (c) 2005 Cannon Technologies Inc. All rights reserved.
 *-----------------------------------------------------------------------------*/
@@ -833,109 +833,130 @@ INT CtiDeviceMCT4xx::executeGetValue( CtiRequestMsg        *pReq,
                 }
                 else if( !cmd.compare("peak") )
                 {
-                    if( getDynamicInfo(Keys::Key_MCT_SSpec) == CtiDeviceMCT410::Sspec
-                        && getDynamicInfo(Keys::Key_MCT_SSpecRevision) < CtiDeviceMCT410::SspecRev_NewLLP_Min )
+                    /*
+                    if( InterlockedCompareExchange((PVOID *)&_llpPeakInterest.in_progress, (PVOID)true, (PVOID)false) )
                     {
-                        CtiReturnMsg *ReturnMsg = CTIDBG_new CtiReturnMsg(getID(), OutMessage->Request.CommandStr);
-
-                        if( ReturnMsg )
+                        if( errRet )
                         {
-                            ReturnMsg->setUserMessageId(OutMessage->Request.UserID);
-                            ReturnMsg->setResultString(getName() + " / Load profile reporting for MCT 410 only supported for SSPECs " + CtiNumStr(CtiDeviceMCT410::Sspec) + " revision " + CtiNumStr((double)(CtiDeviceMCT410::SspecRev_NewLLP_Min) / 10.0, 1) + " and up");
-
-                            retMsgHandler( OutMessage->Request.CommandStr, NoMethod, ReturnMsg, vgList, retList, true );
+                            CtiString temp = "Load profile peak request already in progress - use \"getvalue lp peak cancel\" to cancel\n";
+                            errRet->setResultString(temp);
+                            errRet->setStatus(NOTNORMAL);
+                            retList.push_back(errRet);
+                            errRet = NULL;
                         }
                     }
                     else
+                    */
                     {
-                        function = Emetcon::GetValue_LoadProfilePeakReport;
-                        found = getOperation(function, OutMessage->Buffer.BSt);
-                    }
-
-                    if( found )
-                    {
-                        int lp_peak_command = -1;
-                        string lp_peaktype = parse.getsValue("lp_peaktype");
-                        int request_range  = parse.getiValue("lp_range");  //  add safeguards to check that we're not >30 days... ?
-
-                        if( !lp_peaktype.compare("day") )
+                        if( getDynamicInfo(Keys::Key_MCT_SSpec) == CtiDeviceMCT410::Sspec
+                            && getDynamicInfo(Keys::Key_MCT_SSpecRevision) < CtiDeviceMCT410::SspecRev_NewLLP_Min )
                         {
-                            lp_peak_command = FuncRead_LLPPeakDayPos;
-                        }
-                        else if( !lp_peaktype.compare("hour") )
-                        {
-                            lp_peak_command = FuncRead_LLPPeakHourPos;
-                        }
-                        else if( !lp_peaktype.compare("interval") )
-                        {
-                            lp_peak_command = FuncRead_LLPPeakIntervalPos;
-                        }
-
-                        if( lp_peak_command > 0 )
-                        {
-                            //  add on a day - this is the end of the interval, not the beginning,
-                            //    so we need to start at midnight of the following day
-                            request_time  = CtiTime(CtiDate(day, month, year)).seconds() + 86400;
-
-                            if( request_time    != _llpPeakInterest.time    ||
-                                request_channel != _llpPeakInterest.channel ||
-                                request_range   != _llpPeakInterest.period )
+                            CtiReturnMsg *ReturnMsg = CTIDBG_new CtiReturnMsg(getID(), OutMessage->Request.CommandStr);
+    
+                            if( ReturnMsg )
                             {
-                                //  we need to set it to the requested interval
-                                CtiOutMessage *interest_om = new CtiOutMessage(*OutMessage);
+                                ReturnMsg->setUserMessageId(OutMessage->Request.UserID);
+                                ReturnMsg->setResultString(getName() + " / Load profile reporting for MCT 410 only supported for SSPECs " + CtiNumStr(CtiDeviceMCT410::Sspec) + " revision " + CtiNumStr((double)(CtiDeviceMCT410::SspecRev_NewLLP_Min) / 10.0, 1) + " and up");
+    
+                                retMsgHandler( OutMessage->Request.CommandStr, NoMethod, ReturnMsg, vgList, retList, true );
+                            }
+                        }
+                        else
+                        {
+                            function = Emetcon::GetValue_LoadProfilePeakReport;
+                            found = getOperation(function, OutMessage->Buffer.BSt);
+                        }
+    
+                        if( found )
+                        {
+                            int lp_peak_command = -1;
+                            string lp_peaktype = parse.getsValue("lp_peaktype");
+                            int request_range  = parse.getiValue("lp_range");  //  add safeguards to check that we're not >30 days... ?
+    
+                            if( !lp_peaktype.compare("day") )
+                            {
+                                lp_peak_command = FuncRead_LLPPeakDayPos;
+                            }
+                            else if( !lp_peaktype.compare("hour") )
+                            {
+                                lp_peak_command = FuncRead_LLPPeakHourPos;
+                            }
+                            else if( !lp_peaktype.compare("interval") )
+                            {
+                                lp_peak_command = FuncRead_LLPPeakIntervalPos;
+                            }
+    
+                            if( lp_peak_command > 0 )
+                            {
+                                //  add on a day - this is the end of the interval, not the beginning,
+                                //    so we need to start at midnight of the following day
+                                request_time  = CtiTime(CtiDate(day, month, year)).seconds() + 86400;
+    
+                                //  if we need to send the period of interest, we'll use this later to 
+                                //    generate the actual read command
+                                _llpPeakInterest.command = lp_peak_command;
 
-                                if( interest_om )
+                                if( request_time    != _llpPeakInterest.time    ||
+                                    request_channel != _llpPeakInterest.channel ||
+                                    request_range   != _llpPeakInterest.period )
                                 {
+                                    //  we need to set it to the requested interval
                                     _llpPeakInterest.time    = request_time;
                                     _llpPeakInterest.channel = request_channel;
                                     _llpPeakInterest.period  = request_range;
-
-                                    interest_om->Priority = OutMessage->Priority + 1;  //  just make sure this goes out first
-                                    interest_om->Sequence = Emetcon::PutConfig_LoadProfileReportPeriod;
-                                    interest_om->Request.Connection = 0;
-
-                                    interest_om->Buffer.BSt.Function = FuncWrite_LLPPeakInterestPos;
-                                    interest_om->Buffer.BSt.IO       = Emetcon::IO_Function_Write;
-                                    interest_om->Buffer.BSt.Length   = FuncWrite_LLPPeakInterestLen;
-                                    interest_om->MessageFlags |= MessageFlag_ExpectMore;
-
+    
+                                    function = Emetcon::PutConfig_LoadProfileReportPeriod;
+    
+                                    OutMessage->Buffer.BSt.Function = FuncWrite_LLPPeakInterestPos;
+                                    OutMessage->Buffer.BSt.IO       = Emetcon::IO_Function_Write;
+                                    OutMessage->Buffer.BSt.Length   = FuncWrite_LLPPeakInterestLen;
+                                    OutMessage->MessageFlags |= MessageFlag_ExpectMore;
+    
                                     unsigned long utc_time = request_time;
+    
+                                    OutMessage->Buffer.BSt.Message[0] = gMCT400SeriesSPID;
+    
+                                    OutMessage->Buffer.BSt.Message[1] = (request_channel + 1) & 0x000000ff;
+    
+                                    OutMessage->Buffer.BSt.Message[2] = (utc_time >> 24)      & 0x000000ff;
+                                    OutMessage->Buffer.BSt.Message[3] = (utc_time >> 16)      & 0x000000ff;
+                                    OutMessage->Buffer.BSt.Message[4] = (utc_time >>  8)      & 0x000000ff;
+                                    OutMessage->Buffer.BSt.Message[5] = (utc_time)            & 0x000000ff;
+    
+                                    if( request_range < 256 )
+                                    {
+                                        OutMessage->Buffer.BSt.Message[6] = request_range & 0xff;
+                                        
+                                        OutMessage->Buffer.BSt.Message[7] = 0;
+                                        OutMessage->Buffer.BSt.Message[8] = 0;
+                                    }
+                                    else
+                                    {
+                                        OutMessage->Buffer.BSt.Message[6] = 0;
 
-                                    interest_om->Buffer.BSt.Message[0] = gMCT400SeriesSPID;
-
-                                    interest_om->Buffer.BSt.Message[1] = (request_channel + 1) & 0x000000ff;
-
-                                    interest_om->Buffer.BSt.Message[2] = (utc_time >> 24)      & 0x000000ff;
-                                    interest_om->Buffer.BSt.Message[3] = (utc_time >> 16)      & 0x000000ff;
-                                    interest_om->Buffer.BSt.Message[4] = (utc_time >>  8)      & 0x000000ff;
-                                    interest_om->Buffer.BSt.Message[5] = (utc_time)            & 0x000000ff;
-
-                                    interest_om->Buffer.BSt.Message[6] = request_range         & 0x000000ff;
-
+                                        OutMessage->Buffer.BSt.Message[7] = (request_range >> 8) & 0xff;
+                                        OutMessage->Buffer.BSt.Message[8] = (request_range     ) & 0xff;
+                                    }
+    
                                     //  add a bit of a delay so the 410 can calculate...
                                     //    this delay may need to be increased by other means, depending
                                     //    on how long the larger peak report calculations take
-                                    interest_om->MessageFlags |= MessageFlag_AddSilence;
-
-                                    outList.push_back(interest_om);
-                                    interest_om = 0;
+                                    //interest_om->MessageFlags |= MessageFlag_AddSilence;
+    
+                                    //outList.push_back(interest_om);
+                                    //interest_om = 0;
                                 }
                                 else
                                 {
-                                    {
-                                        CtiLockGuard<CtiLogger> doubt_guard(dout);
-                                        dout << CtiTime() << " **** Checkpoint - unable to create outmessage, cannot set interval **** " << __FILE__ << " (" << __LINE__ << ")" << endl;
-                                    }
+                                    function = Emetcon::GetValue_LoadProfilePeakReport;
+
+                                    OutMessage->Buffer.BSt.Function = _llpPeakInterest.command;
+                                    OutMessage->Buffer.BSt.IO       = Emetcon::IO_Function_Read;
+                                    OutMessage->Buffer.BSt.Length   = 13;
                                 }
+    
+                                nRet = NoError;
                             }
-
-                            _llpPeakInterest.command = lp_peak_command;
-
-                            OutMessage->Buffer.BSt.Function = lp_peak_command;
-                            OutMessage->Buffer.BSt.IO       = Emetcon::IO_Function_Read;
-                            OutMessage->Buffer.BSt.Length   = 13;
-
-                            nRet = NoError;
                         }
                     }
                 }
@@ -1814,6 +1835,50 @@ INT CtiDeviceMCT4xx::decodePutConfig(INMESS *InMessage, CtiTime &TimeNow, list< 
 
                 //note that at the moment only putconfig install will ever have a group message count.
                 decrementGroupMessageCount(InMessage->Return.UserID, (long)InMessage->Return.Connection);
+
+                break;
+            }
+
+            case Emetcon::PutConfig_LoadProfileReportPeriod:
+            {
+                CTISleep(gConfigParms.getValueAsInt("PORTER_MCT_PEAK_REPORT_DELAY", 10) * 1000);
+/*
+                string command_str;
+
+                command_str  = "getvalue lp peak ";
+
+                switch( _llpPeakInterest.command )
+                {
+                    case FuncRead_LLPPeakDayPos:        command_str += "day ";      break;
+                    case FuncRead_LLPPeakHourPos:       command_str += "hour ";     break;
+                    case FuncRead_LLPPeakIntervalPos:   command_str += "interval "; break;
+                }
+
+                command_str += "channel " + CtiNumStr(_llpPeakInterest.channel + 1) + " ";
+
+                CtiDate lp_date(CtiTime(_llpPeakInterest.time - 86400));
+
+                command_str += CtiNumStr(lp_date.month()) + "/" +
+                               CtiNumStr(lp_date.dayOfMonth()) + "/" +
+                               CtiNumStr(lp_date.year()) + " ";
+
+                command_str += CtiNumStr(_llpPeakInterest.period);
+
+                noqueue 
+*/
+                CtiRequestMsg newReq(getID(),
+                                     InMessage->Return.CommandStr,
+                                     InMessage->Return.UserID,
+                                     0,
+                                     InMessage->Return.RouteID,
+                                     InMessage->Return.MacroOffset,
+                                     0,
+                                     0,
+                                     InMessage->Priority);
+
+                newReq.setConnectionHandle((void *)InMessage->Return.Connection);
+
+                CtiDeviceBase::ExecuteRequest(&newReq, CtiCommandParser(newReq.CommandString()), vgList, retList, outList);
 
                 break;
             }
@@ -3226,6 +3291,8 @@ INT CtiDeviceMCT4xx::decodeGetValuePeakDemand(INMESS *InMessage, CtiTime &TimeNo
 
             pi_kw          = getDemandData(DSt->Message + 3, 2);
             pi_kw_time     = getData(DSt->Message + 5, 4, ValueType_Raw);
+
+            pi_freezecount = getData(DSt->Message + 9, 1, ValueType_Raw);
         }
         else
         {
