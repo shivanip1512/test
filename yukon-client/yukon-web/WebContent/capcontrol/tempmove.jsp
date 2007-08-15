@@ -62,7 +62,7 @@ for( int i = 0; i < allSubs.length; i++ )
 				<td>
 				<input type="image" id="chkBxSub<%=i%>"
 					src="images/nav-plus.gif"
-					onclick="showRowElems( 'subId<%=i%>', toggleImg('chkBxSub<%=i%>') ); return false;"/>
+					onclick="showRowElems( 'subId<%=i%>', 'chkBxSub<%=i%>' ); return false;"/>
 				<%=CBCUtils.CBC_DISPLAY.getSubBusValueAt(subBus, CBCDisplay.SUB_NAME_COLUMN) %>
 				</td>
 				<td></td>
@@ -83,7 +83,7 @@ for( int i = 0; i < allSubs.length; i++ )
 %>
 				<tr class="<%=css%>" style="display: none;">
 					<td><a href="#" class="<%=css%> lIndent"
-						onclick="postMany('frmCapBankMove', 'opt[1]', <%=feeder.getCcId()%>, 'opt[2]', frmCapBankMove.txtCntrlOrder.value);">
+						onclick="postMany('frmCapBankMove', 'opt[1]', <%=feeder.getCcId()%>, 'opt[2]', frmCapBankMove.txtCntrlOrder.value);parent.parent.GB_hide()">
 					<%=CBCUtils.CBC_DISPLAY.getFeederValueAt(feeder, CBCDisplay.FDR_NAME_COLUMN) %></a>
 					</td>
 					<td>
