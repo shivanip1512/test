@@ -1,7 +1,7 @@
 /*==============================================================*/
 /* Database name:  YukonDatabase                                */
 /* DBMS name:      ORACLE Version 9i                            */
-/* Created on:     8/9/2007 2:10:38 PM                          */
+/* Created on:     8/15/2007 4:37:16 PM                         */
 /*==============================================================*/
 
 
@@ -257,6 +257,9 @@ drop table CAPBANKADDITIONAL cascade constraints
 drop table CAPCONTROLAREA cascade constraints
 /
 
+drop table CAPCONTROLSPECIALAREA cascade constraints
+/
+
 drop table CAPCONTROLSUBSTATIONBUS cascade constraints
 /
 
@@ -273,6 +276,9 @@ drop table CCMONITORBANKLIST cascade constraints
 /
 
 drop table CCSUBAREAASSIGNMENT cascade constraints
+/
+
+drop table CCSUBSPECIALAREAASSIGNMENT cascade constraints
 /
 
 drop table CCURTACCTEVENT cascade constraints
@@ -486,6 +492,12 @@ drop table DISPLAYCOLUMNS cascade constraints
 /
 
 drop table DYNAMICACCUMULATOR cascade constraints
+/
+
+drop table DYNAMICBILLINGFIELD cascade constraints
+/
+
+drop table DYNAMICBILLINGFORMAT cascade constraints
 /
 
 drop table DYNAMICCCTWOWAYCBC cascade constraints
@@ -1138,7 +1150,8 @@ alter table "BaseLine"
 /*==============================================================*/
 create table "BillingFileFormats"  (
    "FormatID"           NUMBER                          not null,
-   "FormatType"         VARCHAR2(30)                    not null
+   "FormatType"         VARCHAR2(100)                   not null,
+   "SystemFormat"       SMALLINT                       default 1
 )
 /
 
@@ -1288,6 +1301,14 @@ alter table CAPCONTROLAREA
 /
 
 /*==============================================================*/
+/* Table: CAPCONTROLSPECIALAREA                                 */
+/*==============================================================*/
+create table CAPCONTROLSPECIALAREA  (
+   "AreaID"             NUMBER                          not null
+)
+/
+
+/*==============================================================*/
 /* Table: CAPCONTROLSUBSTATIONBUS                               */
 /*==============================================================*/
 create table CAPCONTROLSUBSTATIONBUS  (
@@ -1401,6 +1422,16 @@ create table CCSUBAREAASSIGNMENT  (
 
 alter table CCSUBAREAASSIGNMENT
    add constraint PK_CCSUBAREAASSIGNMENT primary key ("AreaID", "SubstationBusID")
+/
+
+/*==============================================================*/
+/* Table: CCSUBSPECIALAREAASSIGNMENT                            */
+/*==============================================================*/
+create table CCSUBSPECIALAREAASSIGNMENT  (
+   "AreaID"             NUMBER                          not null,
+   "SubstationBusID"    NUMBER                          not null,
+   "DisplayOrder"       NUMBER                          not null
+)
 /
 
 /*==============================================================*/
@@ -2768,6 +2799,8 @@ create table DEVICEREADJOBLOG  (
 )
 /
 
+ALTER TABLE DeviceReadJobLog DROP CONSTRAINT FK_DEVICERE_FK_DRJOBL_MACSCHED
+
 alter table DEVICEREADJOBLOG
    add constraint PK_DEVICEREADJOBLOG primary key ("DeviceReadJobLogID")
 /
@@ -3177,6 +3210,170 @@ create table DYNAMICACCUMULATOR  (
 
 alter table DYNAMICACCUMULATOR
    add constraint PK_DYNAMICACCUMULATOR primary key (POINTID)
+/
+
+/*==============================================================*/
+/* Table: DYNAMICBILLINGFIELD                                   */
+/*==============================================================*/
+create table DYNAMICBILLINGFIELD  (
+   "id"                 NUMBER                          not null,
+   "FormatID"           NUMBER                          not null,
+   "FieldName"          VARCHAR2(50)                    not null,
+   "FieldOrder"         NUMBER                          not null,
+   "FieldFormat"        VARCHAR2(50)
+)
+/
+
+/* ATS */
+insert into DynamicBillingFormat VALUES( '-18',',','H    Meter    kWh   Time   Date    Peak   PeakT   PeakD  Stat Sig  Freq Phase','');
+insert into DynamicBillingField values(1,-18,'Plain Text',0,'M')
+insert into DynamicBillingField values(2,-18, 'meterNumber',1,'')
+insert into DynamicBillingField values(3,-18, 'totalConsumption - reading',2,'#####')
+insert into DynamicBillingField values(4,-18, 'totalConsumption - timestamp',3,'HH:mm')
+insert into DynamicBillingField values(5,-18, 'totalConsumption - timestamp',4,'yy/MM/dd')
+insert into DynamicBillingField values(6,-18,'totalPeakDemand - reading',5,'##0.000')
+insert into DynamicBillingField values(7,-18,'totalPeakDemand - timestamp',6,'HH:mm')
+insert into DynamicBillingField values(8,-18,'totalPeakDemand - timestamp',7,'yy/MM/dd')
+insert into DynamicBillingField values(9,-18,'Plain Text',8,'')
+insert into DynamicBillingField values(10,-18,'Plain Text',9,'')
+insert into DynamicBillingField values(11,-18,'Plain Text',10,';')
+
+/* DAFFRON */
+insert into DynamicBillingFormat values(6,',','H    Meter    kWh   Time   Date   Peak   PeakT  PeakD  Stat Sig Freq Phase','')
+insert into DynamicBillingField values(12,6,'Plain Text',0,'M')
+insert into DynamicBillingField values(13,6, 'meterNumber',1,'')
+insert into DynamicBillingField values(14,6, 'totalConsumption - reading',2,'#####')
+insert into DynamicBillingField values(15,6, 'totalConsumption - timestamp',3,'HH:mm')
+insert into DynamicBillingField values(16,6, 'totalConsumption - timestamp',4,'yy/MM/dd')
+insert into DynamicBillingField values(17,6,'totalPeakDemand - reading',5,'##0.000')
+insert into DynamicBillingField values(18,6,'totalPeakDemand - timestamp',6,'HH:mm')
+insert into DynamicBillingField values(19,6,'totalPeakDemand - timestamp',7,'yy/MM/dd')
+insert into DynamicBillingField values(20,6,'Plain Text',8,'  6')
+insert into DynamicBillingField values(21,6,'Plain Text',9,'')
+insert into DynamicBillingField values(22,6,'Plain Text',10,';')
+
+/* NCDC */
+insert into DynamicBillingFormat values(7,',','H    Meter    kWh   Time   Date    Peak   PeakT   PeakD','')
+insert into DynamicBillingField values(23,7,'Plain Text',0,'M')
+insert into DynamicBillingField values(24,7, 'meterNumber',1,'')
+insert into DynamicBillingField values(25,7, 'totalConsumption - reading',2,'#####')
+insert into DynamicBillingField values(26,7, 'totalConsumption - timestamp',3,'HH:mm')
+insert into DynamicBillingField values(27,7, 'totalConsumption - timestamp',4,'yyyy/MM/dd')
+insert into DynamicBillingField values(28,7,'totalPeakDemand - reading',5,'##0.00')
+insert into DynamicBillingField values(29,7,'totalPeakDemand - timestamp',6,'HH:mm')
+insert into DynamicBillingField values(30,7,'totalPeakDemand - timestamp',7,'yyyy/MM/dd')
+
+/* NISC_NCDC */
+insert into DynamicBillingFormat values(14,',','H    Meter    kWh   Time   Date    Peak   PeakT   PeakD','')
+insert into DynamicBillingField values(31,14,'Plain Text',0,'M')
+insert into DynamicBillingField values(32,14, 'meterNumber',1,'')
+insert into DynamicBillingField values(33,14, 'totalConsumption - reading',2,'#####')
+insert into DynamicBillingField values(34,14, 'totalConsumption - timestamp',3,'HH:mm')
+insert into DynamicBillingField values(35,14, 'totalConsumption - timestamp',4,'MM/dd/yyyy')
+insert into DynamicBillingField values(36,14,'totalPeakDemand - reading',5,'##0.00')
+insert into DynamicBillingField values(37,14,'totalPeakDemand - timestamp',6,'HH:mm')
+insert into DynamicBillingField values(38,14,'totalPeakDemand - timestamp',7,'MM/dd/yyyy')
+
+/* NISC_NoLimt_kWh */
+insert into DynamicBillingFormat values(-19,',','H    Meter    kWh   Time   Date    Peak   PeakT   PeakD  Stat Sig  Freq Phase','')
+insert into DynamicBillingField values(39,-19,'Plain Text',0,'M')
+insert into DynamicBillingField values(40,-19, 'meterNumber',1,'')
+insert into DynamicBillingField values(41,-19, 'totalConsumption - reading',2,'#####')
+insert into DynamicBillingField values(42,-19, 'totalConsumption - timestamp',3,'HH:mm')
+insert into DynamicBillingField values(43,-19, 'totalConsumption - timestamp',4,'yy/MM/dd')
+insert into DynamicBillingField values(44,-19,'totalPeakDemand - reading',5,'##0.00')
+insert into DynamicBillingField values(45,-19,'totalPeakDemand - timestamp',6,'HH:mm')
+insert into DynamicBillingField values(46,-19,'totalPeakDemand - timestamp',7,'yy/MM/dd')
+insert into DynamicBillingField values(47,-19,'Plain Text',8,'')
+insert into DynamicBillingField values(48,-19,'Plain Text',9,'')
+insert into DynamicBillingField values(49,-19,'Plain Text',10,';')
+
+/* NISC */
+insert into DynamicBillingFormat values(13,',','H    Meter    kWh   Time   Date    Peak   PeakT   PeakD  Stat Sig  Freq Phase','')
+insert into DynamicBillingField values(50,13,'Plain Text',0,'M')
+insert into DynamicBillingField values(51,13, 'meterNumber',1,'')
+insert into DynamicBillingField values(52,13, 'totalConsumption - reading',2,'#####')
+insert into DynamicBillingField values(53,13, 'totalConsumption - timestamp',3,'HH:mm')
+insert into DynamicBillingField values(54,13, 'totalConsumption - timestamp',4,'yy/MM/dd')
+insert into DynamicBillingField values(55,13,'totalPeakDemand - reading',5,'##0.00')
+insert into DynamicBillingField values(56,13,'totalPeakDemand - timestamp',6,'HH:mm')
+insert into DynamicBillingField values(57,13,'totalPeakDemand - timestamp',7,'yy/MM/dd')
+insert into DynamicBillingField values(58,13,'Plain Text',8,'')
+insert into DynamicBillingField values(59,13,'Plain Text',9,'')
+insert into DynamicBillingField values(60,13,'Plain Text',10,';')
+
+/* SEDC_yyyyMMdd */
+insert into DynamicBillingFormat values(-17,',', 'H    Meter    kWh   Time   Date    Peak   PeakT   PeakD  Stat Sig  Freq Phase','')
+insert into DynamicBillingField values(61,-17,'Plain Text',0,'M')
+insert into DynamicBillingField values(62,-17, 'meterNumber',1,'')
+insert into DynamicBillingField values(63,-17, 'totalConsumption - reading',2,'#####')
+insert into DynamicBillingField values(64,-17, 'totalConsumption - timestamp',3,'HH:mm')
+insert into DynamicBillingField values(65,-17, 'totalConsumption - timestamp',4,'yyyy/MM/dd')
+insert into DynamicBillingField values(66,-17,'totalPeakDemand - reading',5,'##0.000')
+insert into DynamicBillingField values(67,-17,'totalPeakDemand - timestamp',6,'HH:mm')
+insert into DynamicBillingField values(68,-17,'totalPeakDemand - timestamp',7,'yyyy/MM/dd')
+insert into DynamicBillingField values(69,-17,'Plain Text',8,'')
+insert into DynamicBillingField values(70,-17,'Plain Text',9,'')
+insert into DynamicBillingField values(71,-17,'Plain Text',10,';')
+
+/* SEDC54 */
+insert into DynamicBillingFormat values(12,',', 'H    Meter    kWh   Time   Date','')
+insert into DynamicBillingField values(72,12,'Plain Text',0,'M')
+insert into DynamicBillingField values(73,12, 'meterNumber',1,'')
+insert into DynamicBillingField values(74,12, 'totalConsumption - reading',2,'#####')
+insert into DynamicBillingField values(75,12, 'totalConsumption - timestamp',3,'HH:mm')
+insert into DynamicBillingField values(76,12, 'totalConsumption - timestamp',4,'yy/MM/dd')
+insert into DynamicBillingField values(77,12, 'Plain Text',5,'')
+
+/* SEDC */
+insert into DynamicBillingFormat values(0,',', 'H    Meter    kWh   Time   Date    Peak   PeakT   PeakD  Stat Sig  Freq Phase','')
+insert into DynamicBillingField values(78,0,'Plain Text',0,'M')
+insert into DynamicBillingField values(79,0, 'meterNumber',1,'')
+insert into DynamicBillingField values(80,0, 'totalConsumption - reading',2,'#####')
+insert into DynamicBillingField values(81,0, 'totalConsumption - timestamp',3,'HH:mm')
+insert into DynamicBillingField values(82,0, 'totalConsumption - timestamp',4,'yy/MM/dd')
+insert into DynamicBillingField values(83,0,'totalPeakDemand - reading',5,'##0.000')
+insert into DynamicBillingField values(84,0,'totalPeakDemand - timestamp',6,'HH:mm')
+insert into DynamicBillingField values(85,0,'totalPeakDemand - timestamp',7,'yy/MM/dd')
+insert into DynamicBillingField values(86,0,'Plain Text',8,'')
+insert into DynamicBillingField values(87,0,'Plain Text',9,'')
+insert into DynamicBillingField values(88,0,'Plain Text',10,';')
+
+/* SimpleTOU */
+insert into DynamicBillingFormat values(21,',','','')
+insert into DynamicBillingField values(89,21,'meterNumber',0,'')
+insert into DynamicBillingField values(90,21,'totalConsumption - reading',1,'#####')
+insert into DynamicBillingField values(91,21,'totalConsumption - timestamp',2,'HH:mm')
+insert into DynamicBillingField values(92,21,'totalConsumption - timestamp',3,'MM/dd/yyyy')
+insert into DynamicBillingField values(93,21,'totalPeakDemand - reading',4,'##0.000')
+insert into DynamicBillingField values(94,21,'totalPeakDemand - timestamp',5,'HH:mm')
+insert into DynamicBillingField values(95,21,'totalPeakDemand - timestamp',6,'MM/dd/yyyy')
+insert into DynamicBillingField values(96,21,'rateAConsumption - reading',7,'#####')
+insert into DynamicBillingField values(97,21,'rateADemand- reading',8,'##0.000')
+insert into DynamicBillingField values(98,21,'rateADemand- timestamp',9,'HH:mm')
+insert into DynamicBillingField values(99,21,'rateADemand- timestamp',10,'MM/dd/yyyy')
+insert into DynamicBillingField values(100,21,'rateBConsumption - reading',11,'#####')
+insert into DynamicBillingField values(101,21,'rateBDemand- reading',12,'##0.000')
+insert into DynamicBillingField values(102,21,'rateBDemand- timestamp',13,'HH:mm')
+insert into DynamicBillingField values(103,21,'rateBDemand- timestamp',14,'MM/dd/yyyy')
+
+alter table DYNAMICBILLINGFIELD
+   add constraint PK_DYNAMICBILLINGFIELD primary key ("id")
+/
+
+/*==============================================================*/
+/* Table: DYNAMICBILLINGFORMAT                                  */
+/*==============================================================*/
+create table DYNAMICBILLINGFORMAT  (
+   "FormatID"           NUMBER                          not null,
+   "Delimiter"          VARCHAR2(20),
+   "Header"             VARCHAR2(255),
+   "Footer"             VARCHAR2(255)
+)
+/
+
+alter table DYNAMICBILLINGFORMAT
+   add constraint PK_DYNAMICBILLINGFORMAT primary key ("FormatID")
 /
 
 /*==============================================================*/
@@ -4057,19 +4254,19 @@ INSERT INTO DEVICETYPECOMMAND VALUES (-552, -112, 'All MCT-4xx Series', 23, 'Y',
 INSERT INTO DEVICETYPECOMMAND VALUES (-553, -113, 'All MCT-4xx Series', 24, 'Y', -1);
 INSERT INTO DEVICETYPECOMMAND VALUES (-554, -114, 'MCT-410GL', 25, 'Y', -1);
 
-INSERT INTO DEVICETYPECOMMAND VALUES (-555, -3, 'MCT-430SN', 1, 'Y', -1);
-INSERT INTO DEVICETYPECOMMAND VALUES (-556, -20, 'MCT-430SN', 2, 'Y', -1);
-INSERT INTO DEVICETYPECOMMAND VALUES (-557, -21, 'MCT-430SN', 3, 'Y', -1);
-INSERT INTO DEVICETYPECOMMAND VALUES (-558, -22, 'MCT-430SN', 4, 'Y', -1);
-INSERT INTO DEVICETYPECOMMAND VALUES (-559, -115, 'MCT-430SN', 5, 'Y', -1);
-INSERT INTO DEVICETYPECOMMAND VALUES (-560, -116, 'MCT-430SN', 6, 'N', -1);
-INSERT INTO DEVICETYPECOMMAND VALUES (-561, -117, 'MCT-430SN', 7, 'N', -1);
-INSERT INTO DEVICETYPECOMMAND VALUES (-562, -118, 'MCT-430SN', 8, 'N', -1);
-INSERT INTO DEVICETYPECOMMAND VALUES (-563, -119, 'MCT-430SN', 9, 'Y', -1);
-INSERT INTO DEVICETYPECOMMAND VALUES (-564, -120, 'MCT-430SN', 10, 'N', -1);
-INSERT INTO DEVICETYPECOMMAND VALUES (-565, -121, 'MCT-430SN', 11, 'N', -1);
-INSERT INTO DEVICETYPECOMMAND VALUES (-566, -122, 'MCT-430SN', 12, 'N', -1);
-INSERT INTO DEVICETYPECOMMAND VALUES (-567, -123, 'MCT-430SN', 13, 'Y', -1);
+INSERT INTO DEVICETYPECOMMAND VALUES (-555, -3, 'MCT-430SL', 1, 'Y', -1);
+INSERT INTO DEVICETYPECOMMAND VALUES (-556, -20, 'MCT-430SL', 2, 'Y', -1);
+INSERT INTO DEVICETYPECOMMAND VALUES (-557, -21, 'MCT-430SL', 3, 'Y', -1);
+INSERT INTO DEVICETYPECOMMAND VALUES (-558, -22, 'MCT-430SL', 4, 'Y', -1);
+INSERT INTO DEVICETYPECOMMAND VALUES (-559, -115, 'MCT-430SL', 5, 'Y', -1);
+INSERT INTO DEVICETYPECOMMAND VALUES (-560, -116, 'MCT-430SL', 6, 'N', -1);
+INSERT INTO DEVICETYPECOMMAND VALUES (-561, -117, 'MCT-430SL', 7, 'N', -1);
+INSERT INTO DEVICETYPECOMMAND VALUES (-562, -118, 'MCT-430SL', 8, 'N', -1);
+INSERT INTO DEVICETYPECOMMAND VALUES (-563, -119, 'MCT-430SL', 9, 'Y', -1);
+INSERT INTO DEVICETYPECOMMAND VALUES (-564, -120, 'MCT-430SL', 10, 'N', -1);
+INSERT INTO DEVICETYPECOMMAND VALUES (-565, -121, 'MCT-430SL', 11, 'N', -1);
+INSERT INTO DEVICETYPECOMMAND VALUES (-566, -122, 'MCT-430SL', 12, 'N', -1);
+INSERT INTO DEVICETYPECOMMAND VALUES (-567, -123, 'MCT-430SL', 13, 'Y', -1);
 
 INSERT INTO DEVICETYPECOMMAND VALUES (-568, -52, 'Repeater 801', 1, 'Y', -1);
 INSERT INTO DEVICETYPECOMMAND VALUES (-569, -3, 'Repeater 801', 2, 'Y', -1);
@@ -4125,9 +4322,9 @@ insert into devicetypecommand values (-606, -15, 'MCT-430A', 14, 'Y', -1);
 insert into devicetypecommand values (-607, -18, 'MCT-430A', 15, 'Y', -1);
 insert into devicetypecommand values (-608, -19, 'MCT-430A', 16, 'Y', -1);
 
-insert into devicetypecommand values (-609, -15, 'MCT-430SN', 14, 'Y', -1);
-insert into devicetypecommand values (-610, -18, 'MCT-430SN', 15, 'Y', -1);
-insert into devicetypecommand values (-611, -19, 'MCT-430SN', 16, 'Y', -1);
+insert into devicetypecommand values (-609, -15, 'MCT-430SL', 14, 'Y', -1);
+insert into devicetypecommand values (-610, -18, 'MCT-430SL', 15, 'Y', -1);
+insert into devicetypecommand values (-611, -19, 'MCT-430SL', 16, 'Y', -1);
 
 insert into devicetypecommand values (-612, -15, 'MCT-430S4', 14, 'Y', -1);
 insert into devicetypecommand values (-613, -18, 'MCT-430S4', 15, 'Y', -1);
@@ -4140,8 +4337,8 @@ insert into devicetypecommand values (-617, -19, 'MCT-470', 23, 'Y', -1);
 insert into devicetypecommand values (-618, -6, 'MCT-430A', 17, 'Y', -1);
 insert into devicetypecommand values (-619, -34, 'MCT-430A', 18, 'Y', -1);
 
-insert into devicetypecommand values (-620, -6, 'MCT-430SN', 17, 'Y', -1);
-insert into devicetypecommand values (-621, -34, 'MCT-430SN', 18, 'Y', -1);
+insert into devicetypecommand values (-620, -6, 'MCT-430SL', 17, 'Y', -1);
+insert into devicetypecommand values (-621, -34, 'MCT-430SL', 18, 'Y', -1);
 
 insert into devicetypecommand values (-622, -6, 'MCT-430S4', 17, 'Y', -1);
 insert into devicetypecommand values (-623, -34, 'MCT-430S4', 18, 'Y', -1);
@@ -4151,10 +4348,10 @@ insert into devicetypecommand values (-625, -109, 'MCT-430A', 20, 'Y', -1);
 insert into devicetypecommand values (-626, -112, 'MCT-430A', 21, 'Y', -1);
 insert into devicetypecommand values (-627, -113, 'MCT-430A', 22, 'Y', -1);
 
-insert into devicetypecommand values (-628, -105, 'MCT-430SN', 19, 'Y', -1);
-insert into devicetypecommand values (-629, -109, 'MCT-430SN', 20, 'Y', -1);
-insert into devicetypecommand values (-630, -112, 'MCT-430SN', 21, 'Y', -1);
-insert into devicetypecommand values (-631, -113, 'MCT-430SN', 22, 'Y', -1);
+insert into devicetypecommand values (-628, -105, 'MCT-430SL', 19, 'Y', -1);
+insert into devicetypecommand values (-629, -109, 'MCT-430SL', 20, 'Y', -1);
+insert into devicetypecommand values (-630, -112, 'MCT-430SL', 21, 'Y', -1);
+insert into devicetypecommand values (-631, -113, 'MCT-430SL', 22, 'Y', -1);
 
 insert into devicetypecommand values (-632, -105, 'MCT-430S4', 19, 'Y', -1);
 insert into devicetypecommand values (-633, -109, 'MCT-430S4', 20, 'Y', -1);
@@ -4174,7 +4371,7 @@ insert into devicetypecommand values(-644, -130, 'MCT-410IL', 27, 'N', -1);
 insert into devicetypecommand values(-645, -130, 'MCT-410iLE', 21, 'N', -1);
 insert into devicetypecommand values(-646, -130, 'MCT-430A', 23, 'N', -1);
 insert into devicetypecommand values(-647, -130, 'MCT-430S4', 23, 'N', -1);
-insert into devicetypecommand values(-648, -130, 'MCT-430SN', 23, 'N', -1);
+insert into devicetypecommand values(-648, -130, 'MCT-430SL', 23, 'N', -1);
 insert into devicetypecommand values(-649, -130, 'MCT-470', 29, 'N', -1);
 
 insert into devicetypecommand values(-650, -131, 'MCT-410 kWh Only', 22, 'N', -1);
@@ -4185,7 +4382,7 @@ insert into devicetypecommand values(-654, -131, 'MCT-410IL', 28, 'N', -1);
 insert into devicetypecommand values(-655, -131, 'MCT-410iLE', 22, 'N', -1);
 insert into devicetypecommand values(-656, -131, 'MCT-430A', 24, 'N', -1);
 insert into devicetypecommand values(-657, -131, 'MCT-430S4', 24, 'N', -1);
-insert into devicetypecommand values(-658, -131, 'MCT-430SN', 24, 'N', -1);
+insert into devicetypecommand values(-658, -131, 'MCT-430SL', 24, 'N', -1);
 insert into devicetypecommand values(-659, -131, 'MCT-470', 30, 'N', -1);
 
 insert into devicetypecommand values(-660, -132, 'MCT-410 kWh Only', 23, 'N', -1);
@@ -4196,7 +4393,7 @@ insert into devicetypecommand values(-664, -132, 'MCT-410IL', 29, 'N', -1);
 insert into devicetypecommand values(-665, -132, 'MCT-410iLE', 23, 'N', -1);
 insert into devicetypecommand values(-666, -132, 'MCT-430A', 25, 'N', -1);
 insert into devicetypecommand values(-667, -132, 'MCT-430S4', 25, 'N', -1);
-insert into devicetypecommand values(-668, -132, 'MCT-430SN', 25, 'N', -1);
+insert into devicetypecommand values(-668, -132, 'MCT-430SL', 25, 'N', -1);
 insert into devicetypecommand values(-669, -132, 'MCT-470', 31, 'N', -1);
 
 insert into DeviceTypeCommand values (-670, -133, 'ExpresscomSerial', 21, 'Y', -1);
@@ -6164,7 +6361,7 @@ create index "Indx_PointStGrpID" on POINT (
 /*==============================================================*/
 /* Index: INDX_PAOBJECTID                                       */
 /*==============================================================*/
-create unique index INDX_PAOBJECTID on POINT (
+create index INDX_PAOBJECTID on POINT (
    "PAObjectID" ASC
 )
 /
@@ -6692,6 +6889,7 @@ create table "SequenceNumber"  (
 insert into SequenceNumber values (1,'DeviceReadLog');
 insert into SequenceNumber values (1,'DeviceReadRequestLog');
 insert into SequenceNumber values (1,'DeviceReadJobLog');
+insert into sequenceNumber values (100, 'BillingFileFormats');
 
 alter table "SequenceNumber"
    add constraint PK_SEQUENCENUMBER primary key ("SequenceName")
@@ -7069,6 +7267,9 @@ insert into YukonGroupRole values(-16,-1,-1,-1015,'(none)');
 insert into YukonGroupRole values(-17,-1,-1,-1016,'(none)');
 insert into YukonGroupRole values(-18,-1,-1,-1017,'(none)');
 insert into YukonGroupRole values(-19,-1,-1,-1018,'(none)');
+
+insert into YukonGroupRole values(-20,-1,-1,-1019,'(none)');
+insert into YukonGroupRole values(-21,-1,-1,-1020,'(none)');
 
 insert into YukonGroupRole values(-70,-1,-5,-1400,'(none)');
 insert into YukonGroupRole values(-71,-1,-5,-1401,'(none)');
@@ -8298,6 +8499,9 @@ insert into YukonRole values (-210,'Work Order','Operator','Operator Access to w
 /*ISOC*/
 insert into YukonRole values(-211,'CI Curtailment','Operator','Operator access to C&I Curtailment'); 
 
+/* Scheduler Role */
+insert into YukonRole values(-212,'Scheduler','Operator','Operator access to Scheduler'); 
+
 /* CI customer roles */
 insert into YukonRole values(-300,'Direct Loadcontrol','CICustomer','Customer access to commercial/industrial customer direct loadcontrol');
 insert into YukonRole values(-305,'Administrator','CICustomer','Administrator privileges.');
@@ -8511,6 +8715,7 @@ insert into YukonRoleProperty values(-10810,-108, 'pop_up_appear_style','onmouse
 insert into YukonRoleProperty values(-10811,-108, 'inbound_voice_home_url', '/voice/inboundOptOut.jsp', 'Home URL for inbound voice logins');
 insert into YukonRoleProperty values(-10812, -108,'Java Web Start Launcher Enabled', 'true', 'Allow access to the Java Web Start Launcher for client applications.');
 insert into YukonRoleProperty values(-10814, -108,'Suppress Error Page Details', 'false', 'Disable stack traces for this user.');
+insert into YukonRoleProperty values(-10815, -108,'Data Updater Delay (milliseconds)', '4000', 'The number of milliseconds between requests for the latest point values on pages that support the data updater.');
 
 /* Reporting Analysis role properties */
 insert into YukonRoleProperty values(-10900,-109,'Header Label','Reporting','The header label for reporting.');
@@ -8679,6 +8884,9 @@ insert into YukonRoleProperty values(-21003,-210,'Addtl Order Number Label','Add
 
 insert into YukonRoleProperty values(-21100,-211,'CI Curtailment Label','CI Curtailment','The operator specific name for C&I Curtailment'); 
 
+/* Scheduler Role properties */
+insert into YukonRoleProperty values(-21200,-212,'Enable/Disable Schedule','true','Right to enable or disable a schedule'); 
+
 /* CICustomer Direct Loadcontrol Role Properties */
 insert into YukonRoleProperty values(-30000,-300,'Direct Loadcontrol Label','Direct Control','The customer specific name for direct loadcontrol');
 insert into YukonRoleProperty values(-30001,-300,'Individual Switch','false','Controls access to customer individual switch control');
@@ -8803,19 +9011,25 @@ insert into YukonRoleProperty values(-100003, -1000, 'Power Factor', 'true', 'di
 insert into YukonRoleProperty values(-100004, -1000, 'Estimated Power Factor', 'true', 'display estimated Power Factor');
 insert into YukonRoleProperty values(-100005, -1000, 'Watts', 'true', 'display Watts');
 insert into YukonRoleProperty values(-100006, -1000, 'Volts', 'true', 'display Volts');
-insert into YukonRoleProperty values(-100007, -1000, 'Daily Op Count', 'true', 'display Daily Operation Count');
-insert into YukonRoleProperty values(-100008, -1000, 'Max Op Count', 'true', 'display Max Operation Count');
+insert into YukonRoleProperty values(-100007, -1000, 'Daily Op Count', 'false', 'display Daily Operation Count');
+insert into YukonRoleProperty values(-100008, -1000, 'Max Op Count', 'false', 'display Max Operation Count');
 
 insert into YukonRoleProperty values(-100100, -1001, 'kVAR', 'true', 'display kVAR');
 insert into YukonRoleProperty values(-100101, -1001, 'Power Factor', 'true', 'display Power Factor');
 insert into YukonRoleProperty values(-100102, -1001, 'Watts', 'true', 'display Watts');
 insert into YukonRoleProperty values(-100103, -1001, 'Daily Op Count', 'true', 'display Daily Operation Count');
 insert into YukonRoleProperty values(-100104, -1001, 'Volts', 'true', 'display Volts');
-insert into YukonRoleProperty values(-100105, -1001, 'Target', 'true', 'display target settings');
+insert into YukonRoleProperty values(-100105, -1001, 'Target', 'true', 'is target stat displayed');
 
 insert into YukonRoleProperty values(-100200, -1002, 'Total Op Count', 'true', 'display Total Operation Count');
 insert into YukonRoleProperty values(-100201, -1002, 'Bank Size', 'true', 'display Bank Size');
 insert into YukonRoleProperty values(-100202, -1002, 'CBC Name', 'true', 'display CBC Name');
+
+insert into yukonroleproperty values (-100011,-1000, 'Daily/Max Operation Count', 'true', 'is Daily/Max Operation stat displayed');
+insert into yukonroleproperty values (-100012,-1000, 'Substation Last Update Timestamp', 'true', 'is last update timstamp shown for substations');
+insert into yukonroleproperty values (-100106,-1001, 'Feeder Last Update Timestamp', 'true', 'is last update timstamp shown for feeders');
+insert into yukonroleproperty values (-100203,-1002, 'CapBank Last Update Timestamp', 'true', 'is last update timstamp shown for capbanks');
+
 
 alter table "YukonRoleProperty"
    add constraint PK_YUKONROLEPROPERTY primary key ("RolePropertyID")
@@ -9926,6 +10140,17 @@ alter table DISPLAYCOLUMNS
 alter table DYNAMICACCUMULATOR
    add constraint SYS_C0015129 foreign key (POINTID)
       references POINT (POINTID)
+/
+
+alter table DYNAMICBILLINGFIELD
+   add constraint FK_DBF_REF_BFF foreign key ("FormatID")
+      references "BillingFileFormats" ("FormatID")
+      on delete cascade
+/
+
+alter table DYNAMICBILLINGFORMAT
+   add constraint FK_DYNAMICB_REF_BILLI_BILLINGF foreign key ("FormatID")
+      references "BillingFileFormats" ("FormatID")
 /
 
 alter table DYNAMICCCTWOWAYCBC
