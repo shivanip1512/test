@@ -62,7 +62,7 @@ void CCU711::ReceiveMore(unsigned char ReadBuffer[], int counter)
     SET_FOREGROUND_WHITE;
     DecodeCommand(ReadBuffer);
 
-    for(int i=11; i<50; i++)
+    for(int i=10; i<50; i++)
     {
         _messageData[i]=ReadBuffer[i];   
     }
@@ -664,6 +664,9 @@ void CCU711::CreateQueuedMsg()
         two   = _messageData[8];
         three = _messageData[9];
         four  = _messageData[10];
+        //cout<<"setting qenid to :" <<endl;
+        //cout <<string(CtiNumStr(_messageData[9]).hex().zpad(2))<<"   ";
+        //cout <<string(CtiNumStr(_messageData[10]).hex().zpad(2))<<"!!!!";
         newMessage.setQENID(one, two, three, four);
     
         int type = 0;
@@ -747,6 +750,7 @@ void CCU711::CreateQueuedResponse()
         }
         _messageQueue.back().setmessageLength(ctr);
         _messageQueue.back().copyInto(Data, ctr);
+        _qmessagesSent++;
     }
 }
 
@@ -796,7 +800,7 @@ void CCU711::LoadQueuedMsg()
         }
 
         _outmessageData[2] = getFrame(0);//0x32;
-        _outmessageData[19] = _qmessagesSent;
+        _outmessageData[19] = _qmessagesSent-1;
 
         int ctr = _messageQueue.front().getmessageLength();
 
@@ -805,7 +809,12 @@ void CCU711::LoadQueuedMsg()
         _outmessageData[ctr++] = LOBYTE (CRC);
 
         _outindexOfEnd = ctr;
-        _qmessagesSent++;
+        _qmessagesSent--;
+    }
+    else
+    {
+            _outindexOfEnd = 0;
+            _qmessagesSent = 0;
     }
 }
 
@@ -866,7 +875,7 @@ unsigned char CCU711::getFrame(int frameCount)
     unsigned char sss = 0x00;
     sss = _messageData[2];
     sss = (sss >> 4) & 0x0e;
-    cout <<"sss = "<<string(CtiNumStr(sss).hex().zpad(2))<<endl;
+    //cout <<"sss = "<<string(CtiNumStr(sss).hex().zpad(2))<<endl;
     rrr = 0x20;
     frame = frame | rrr;
     frame = frame | sss;
