@@ -34,7 +34,7 @@ public class OnelineUtil {
     @SuppressWarnings("cast")
     private static final double ASPECT_RATIO = (double) DEFAULT_WIDTH / (double) DEFAULT_HEIGHT;
     //public static final int OFFSET_TO_RIGHT = 210;
-    public static final int PXLS_PER_FEEDER = 130;
+    public static final int PXLS_PER_FEEDER = 160;
     public static final int PXLS_PER_CAPBANK = 130;
     public static final int PXLS_PER_CHAR = 7;
     public static final int SUB_ST_EN = 0;
