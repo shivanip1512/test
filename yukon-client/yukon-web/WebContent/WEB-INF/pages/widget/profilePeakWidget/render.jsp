@@ -4,6 +4,9 @@
 <%@ taglib prefix="tags" tagdir="/WEB-INF/tags" %>
 <cti:includeScript link="/JavaScript/hideReveal.js"/>
 <cti:includeScript link="/JavaScript/longLoadProfile.js"/>
+<cti:includeScript link="/JavaScript/calendarControl.js"/>
+
+<cti:includeCss link="/WebConfig/yukon/styles/calendarControl.css"/>
 
 <script type="text/javascript"> 
 	
@@ -27,10 +30,16 @@
 			<td>
 				Start Date:
 				<input type="text" id="startDate" name="startDate" value="${startDate}" size="10" />
+				<a href="javascript:showCalendarControl($('startDate'))"> 
+					<img src="<c:url value="/WebConfig/yukon/Icons/StartCalendar.gif"/>" width="20" height="15" align="ABSMIDDLE" border="0">
+				</a>
 			</td>
 			<td>
 				End Date:
 				<input type="text" id="stopDate" name="stopDate" value="${stopDate}" size="10" />
+				<a href="javascript:showCalendarControl($('stopDate'))"> 
+					<img src="<c:url value="/WebConfig/yukon/Icons/StartCalendar.gif"/>" width="20" height="15" align="ABSMIDDLE" border="0">
+				</a>
 			</td>
 			<td align="right">
 				<tags:widgetActionRefresh method="getReport" label="Get Report" labelBusy="Get Report" />
