@@ -725,7 +725,7 @@ void CCU711::CreateQueuedResponse()
                 Data[ctr++] = 0x00; //StatP
                 Data[ctr++] = 0x00; // "  "
                 Data[ctr++] = 0x13;
-                Data[ctr++] = _messageQueue.back().getQENID(0);
+                Data[ctr++] = _qmessagesSent;
                 Data[ctr++] = _messageQueue.back().getQENID(1);
                 Data[ctr++] = _messageQueue.back().getQENID(2);
                 Data[ctr++] = _messageQueue.back().getQENID(3);
@@ -800,7 +800,6 @@ void CCU711::LoadQueuedMsg()
         }
 
         _outmessageData[2] = getFrame(0);//0x32;
-        _outmessageData[19] = _qmessagesSent-1;
 
         int ctr = _messageQueue.front().getmessageLength();
 
@@ -814,7 +813,6 @@ void CCU711::LoadQueuedMsg()
     else
     {
             _outindexOfEnd = 0;
-            _qmessagesSent = 0;
     }
 }
 
