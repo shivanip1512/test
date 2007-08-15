@@ -146,9 +146,9 @@ public class CapBankUpdatableStats extends LxAbstractView implements
     }
 
     public void initAllStats() {
-        allStats.add(timestamp);
-        allStats.add(opcount);
         allStats.add(bankSize);
+        allStats.add(opcount);
+        allStats.add(timestamp);        
         allStats.add(cbcName);
         for (UpdatableTextList list : allStats) {
             list.adjustVisibility();
