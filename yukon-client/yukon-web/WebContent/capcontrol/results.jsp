@@ -18,6 +18,8 @@
 	// String type = ParamUtil.getString(request, "type", "");
 	String srchCriteria = ParamUtil.getString(request, CBCSessionInfo.STR_LAST_SEARCH, null);
 	String returnURL = request.getParameter("returnURL");
+	if( returnURL == null )
+		returnURL = "subareas.jsp";
 	ParentStringPrinter psp = new ParentStringPrinter (capControlCache);
 	psp.setLinkedToEditors(true);
 	if( srchCriteria == null )
