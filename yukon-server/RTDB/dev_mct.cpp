@@ -8,8 +8,8 @@
 *
 * PVCS KEYWORDS:
 * ARCHIVE      :  $Archive:   Z:/SOFTWAREARCHIVES/YUKON/RTDB/dev_mct.cpp-arc  $
-* REVISION     :  $Revision: 1.119 $
-* DATE         :  $Date: 2007/06/22 15:39:23 $
+* REVISION     :  $Revision: 1.120 $
+* DATE         :  $Date: 2007/08/15 21:00:38 $
 *
 * Copyright (c) 1999, 2000 Cannon Technologies Inc. All rights reserved.
 *-----------------------------------------------------------------------------*/
@@ -433,6 +433,11 @@ INT CtiDeviceMCT::ExecuteRequest( CtiRequestMsg              *pReq,
 {
     int nRet = NoError;
     list< OUTMESS* > tmpOutList;
+
+    if( OutMessage )
+    {
+        EstablishOutMessagePriority( OutMessage, MAXPRIORITY - 4 );
+    }
 
     switch( parse.getCommand( ) )
     {
