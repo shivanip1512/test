@@ -79,6 +79,10 @@ public final class BillingFormatterFactory {
 
         case FileFormatTypes.ITRON_REGISTER_READINGS_EXPORT:
             return YukonSpringHook.getBean("itronClientHandler", BillingFormatter.class);
+            
+        case FileFormatTypes.BASIC_DEVICE_NAME:
+            return new Basic_DeviceNameRecordFormatter();
+            
         case FileFormatTypes.WLT_40:
         case FileFormatTypes.MV_90:
         case FileFormatTypes.NCDC_HANDHELD:

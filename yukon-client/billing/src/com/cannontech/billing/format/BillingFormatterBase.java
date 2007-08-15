@@ -18,8 +18,10 @@ public abstract class BillingFormatterBase implements BillingFormatter {
     public static final SimpleDateFormat TIME_FORMAT = new SimpleDateFormat("HH:mm");
 
     public static final DecimalFormat FORMAT_NODECIMAL = new DecimalFormat("#####");
+    public static final DecimalFormat DECIMAL_FORMAT_2v4 = new DecimalFormat("#0.0000");
     public static final DecimalFormat DECIMAL_FORMAT_3v2 = new DecimalFormat("##0.00");
     public static final DecimalFormat DECIMAL_FORMAT4V3 = new DecimalFormat("0000.000");
+	public static final DecimalFormat DECIMAL_FORMAT_4v2= new DecimalFormat("###0.00");
     public static final DecimalFormat DECIMAL_FORMAT5V0 = new DecimalFormat("00000");
     public static final DecimalFormat DECIMAL_FORMAT6V3 = new DecimalFormat("000000.000");
     public static final DecimalFormat DECIMAL_FORMAT_7V2 = new DecimalFormat("#######.00");
