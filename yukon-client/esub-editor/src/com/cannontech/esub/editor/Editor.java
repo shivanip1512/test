@@ -498,7 +498,7 @@ public class Editor extends JPanel {
 		System.setProperty("cti.app.name", APPLICATION_NAME);
         CTILogger.info(APPLICATION_NAME + " starting...");
 		CtiUtilities.setLaF();
-		JFrame frame = new JFrame();
+		final JFrame frame = new JFrame();
 
 		frame.addWindowListener(new java.awt.event.WindowAdapter() {
 			public void windowClosing(java.awt.event.WindowEvent e) {
@@ -523,7 +523,7 @@ public class Editor extends JPanel {
 		frame.setSize(defaultSize);
 		frame.setIconImage(java.awt.Toolkit.getDefaultToolkit().getImage(ESUBEDITOR_GIF));
 
-		ClientSession session = ClientSession.getInstance(); 
+		final ClientSession session = ClientSession.getInstance(); 
 		if(!session.establishSession(frame)) {
 			System.exit(-1);			
 		}
@@ -533,16 +533,27 @@ public class Editor extends JPanel {
 		}
 		
 		if(!session.checkRole(EsubEditorRole.ROLEID)) {
-			JOptionPane.showMessageDialog(null, "User: '" + session.getUser().getUsername() + "' is not authorized to use this application, exiting.", "Access Denied", JOptionPane.WARNING_MESSAGE);
-			System.exit(-1);				
+            javax.swing.SwingUtilities.invokeLater(new Runnable() {
+                public void run() {
+                    JOptionPane.showMessageDialog(null, "User: '" + session.getUser().getUsername() + "' is not authorized to use this application, exiting.", "Access Denied", JOptionPane.WARNING_MESSAGE);
+                    System.exit(-1);                        
+                }
+            });
+			
 		}
 		
 		Editor editor = new Editor();
 
 		frame.getContentPane().add(editor);
 		editor.setFrameTitle("Untitled");
-		frame.pack();
-		frame.setVisible(true);
+        
+        javax.swing.SwingUtilities.invokeLater(new Runnable() {
+            public void run() {
+                frame.pack();
+                frame.setVisible(true);        
+            }
+        });
+		
 		
 		//get this stuff loaded into the cache asap
 		DefaultDatabaseCache.getInstance().getAllDevices();

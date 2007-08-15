@@ -80,7 +80,15 @@ import com.cannontech.common.util.CtiUtilities;
 	
 		 this.displayText = displayText;
 		 
-		 showSplashScreen();
+         if (!javax.swing.SwingUtilities.isEventDispatchThread()) {
+             javax.swing.SwingUtilities.invokeLater(new Runnable() {
+                 public void run() {
+                     showSplashScreen();
+                 }
+             });
+         } else {
+             showSplashScreen();
+         }
 	
 		 // Close the splash window when the parent frame is opened
 		 if( f != null )

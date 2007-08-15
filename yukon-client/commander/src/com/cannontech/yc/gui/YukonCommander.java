@@ -1505,21 +1505,23 @@ public class YukonCommander extends JFrame implements DBChangeLiteListener, Acti
 			System.setProperty("cti.app.name", "Commander");
             CTILogger.info("Commander starting...");
 			javax.swing.UIManager.setLookAndFeel( javax.swing.UIManager.getSystemLookAndFeelClassName());
-			SplashWindow splash = SplashWindow.createYukonSplash(null);
+			final SplashWindow splash = SplashWindow.createYukonSplash(null);
 	
-			ClientSession session = ClientSession.getInstance(); 
+			final ClientSession session = ClientSession.getInstance(); 
 			if(!session.establishSession(null)) {
 				System.exit(-1);			
 			}
 		
 			if(!session.checkRole(CommanderRole.ROLEID)) {
-			  JOptionPane.showMessageDialog(null, "User: '" + session.getUser().getUsername() + "' is not authorized to use this application, exiting.", "Access Denied", JOptionPane.WARNING_MESSAGE);
-			  System.exit(-1);				
+              javax.swing.SwingUtilities.invokeLater(new Runnable() {
+                 public void run() {
+                     JOptionPane.showMessageDialog(null, "User: '" + session.getUser().getUsername() + "' is not authorized to use this application, exiting.", "Access Denied", JOptionPane.WARNING_MESSAGE);
+                     System.exit(-1);
+                 }
+              });
 			}
-
 	
-			YukonCommander ycClient;
-			ycClient = new YukonCommander();
+			final YukonCommander ycClient = new YukonCommander();
 			
 			ycClient.setIconImage(java.awt.Toolkit.getDefaultToolkit().getImage(COMMANDER_GIF));
 						
@@ -1557,12 +1559,15 @@ public class YukonCommander extends JFrame implements DBChangeLiteListener, Acti
 			java.awt.Dimension d = java.awt.Toolkit.getDefaultToolkit().getScreenSize();
 			ycClient.setLocation((int)(d.width * .07),(int)(d.height * .07));
 
-
-			splash.setVisible( false );
-			splash.dispose();			
-			ycClient.setVisible(true);
-//			ycClient.getTreeViewPanel().getTree().setSelectionInterval(1,1);
-			ycClient.getTreeViewPanel().getTree().requestFocusInWindow();
+			javax.swing.SwingUtilities.invokeLater(new Runnable() {
+			    public void run() {
+                    splash.setVisible( false );
+                    splash.dispose();           
+                    ycClient.setVisible(true);
+//                  ycClient.getTreeViewPanel().getTree().setSelectionInterval(1,1);
+                    ycClient.getTreeViewPanel().getTree().requestFocusInWindow();
+                }
+            });
 
 		}
 		catch (Throwable exception)

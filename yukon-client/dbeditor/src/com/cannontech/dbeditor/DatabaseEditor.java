@@ -2209,7 +2209,7 @@ public static void main(String[] args) {
         System.setProperty("cti.app.name", "DBEditor");
         CTILogger.info("DBEditor starting...");
 
-		javax.swing.JFrame f = new javax.swing.JFrame("Yukon Database Editor [Not Connected to Dispatch]");
+		final javax.swing.JFrame f = new javax.swing.JFrame("Yukon Database Editor [Not Connected to Dispatch]");
 		f.setDefaultCloseOperation( WindowConstants.DO_NOTHING_ON_CLOSE );
         SplashWindow.createYukonSplash(f);
 		
@@ -2247,7 +2247,12 @@ public static void main(String[] args) {
 		f.addWindowListener(editor);
 		
 		editor.displayDatabaseEditor( f.getRootPane() );
-		f.show();
+        
+        javax.swing.SwingUtilities.invokeLater(new Runnable() {
+            public void run() {
+                f.setVisible(true);
+            }
+        });
 		
 	}
 	catch( Throwable t )
