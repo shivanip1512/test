@@ -1,5 +1,5 @@
 #
-# @(#)tzmappings	1.5 03/10/29
+# @(#)tzmappings	1.8 06/07/02
 # 
 # This file describes mapping information between Windows and Java
 # time zones.
@@ -117,10 +117,11 @@ AUS Eastern Standard Time:20,21::Australia/Sydney:
 E. Australia:20,21::Australia/Brisbane:
 E. Australia Standard Time:20,21::Australia/Brisbane:
 Sydney Standard Time:20,21::Australia/Sydney:
+Tasmania Standard Time:20,65::Australia/Hobart:
 Central Pacific:22,23::Pacific/Guadalcanal:
 Central Pacific Standard Time:22,23::Pacific/Guadalcanal:
-Dateline:24,25:MH:Pacific/Majuro:
-Dateline Standard Time:24,25:MH:Pacific/Majuro:
+Dateline:24,25::GMT-1200:
+Dateline Standard Time:24,25::GMT-1200:
 Fiji:24,25::Pacific/Fiji:
 Fiji Standard Time:24,25::Pacific/Fiji:
 Samoa:26,27::Pacific/Apia:
@@ -138,8 +139,8 @@ Central:36,37::America/Chicago:
 Central Standard Time:36,37::America/Chicago:
 Eastern:38,39::America/New_York:
 Eastern Standard Time:38,39::America/New_York:
-E. Europe:4,5::Europe/Bucharest:
-E. Europe Standard Time:4,5::Europe/Bucharest:
+E. Europe:4,5:BY:Europe/Minsk:
+E. Europe Standard Time:4,5:BY:Europe/Minsk:
 Egypt:4,68::Africa/Cairo:
 Egypt Standard Time:4,68::Africa/Cairo:
 South Africa:4,69::Africa/Harare:
@@ -160,8 +161,18 @@ New Zealand Standard Time:78,79::Pacific/Auckland:
 Tonga Standard Time:78,79::Pacific/Tongatapu:
 Arabian:8,9::Asia/Muscat:
 Arabian Standard Time:8,9::Asia/Muscat:
-Caucasus:8,9:GE:Asia/Tbilisi:
-Caucasus Standard Time:8,9:GE:Asia/Tbilisi:
+Caucasus:8,9::Asia/Yerevan:
+Caucasus Standard Time:8,9::Asia/Yerevan:
 GMT Standard Time:88,89::GMT:
 Greenwich:88,89::GMT:
 Greenwich Standard Time:88,89::GMT:
+Central Brazilian Standard Time:900;900:BR:America/Manaus:
+Central Standard Time (Mexico):901;901::America/Mexico_City:
+Georgian Standard Time:902;902:GE:Asia/Tbilisi:
+Mountain Standard Time (Mexico):903;903::America/Chihuahua:
+Namibia Standard Time:904;904:NA:Africa/Windhoek:
+Pacific Standard Time (Mexico):905;905:MX:America/Tijuana:
+Western Brazilian Standard Time:906;906::America/Rio_Branco:
+Azerbaijan Standard Time:907;907:AZ:Asia/Baku:
+Jordan Standard Time:908;908:JO:Asia/Amman:
+Middle East Standard Time:909;909:LB:Asia/Beirut:

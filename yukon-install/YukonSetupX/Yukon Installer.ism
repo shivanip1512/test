@@ -116,7 +116,7 @@
 		<row><td>ESub Editor</td><td>{9FDC2ABD-23BF-4290-A9D3-AC5B93DBA740}</td><td>CLIENT</td><td>0</td><td/><td/><td>281089</td><td/><td/><td/><td>/LogFile=</td><td>/LogFile=</td><td>/LogFile=</td><td>/LogFile=</td></row>
 		<row><td>Foreign Data Router</td><td>{7B5F36F3-9B88-4E0C-817F-222A041C2D13}</td><td>SERVER</td><td>0</td><td/><td/><td>281089</td><td/><td/><td/><td>/LogFile=</td><td>/LogFile=</td><td>/LogFile=</td><td>/LogFile=</td></row>
 		<row><td>Initial Server Config</td><td>{2A29ABC8-AB74-453B-BCD5-A2734E40465C}</td><td>SERVER</td><td>16</td><td/><td/><td>10753</td><td/><td/><td/><td>/LogFile=</td><td>/LogFile=</td><td>/LogFile=</td><td>/LogFile=</td></row>
-		<row><td>JRE 1.5</td><td>{F366538E-F2A8-4DF3-9640-06DCF38B4BC2}</td><td>RUNTIME</td><td>0</td><td/><td/><td>2561</td><td/><td/><td/><td>/LogFile=</td><td>/LogFile=</td><td>/LogFile=</td><td>/LogFile=</td></row>
+		<row><td>JRE</td><td>{F366538E-F2A8-4DF3-9640-06DCF38B4BC2}</td><td>RUNTIME</td><td>0</td><td/><td/><td>2561</td><td/><td/><td/><td>/LogFile=</td><td>/LogFile=</td><td>/LogFile=</td><td>/LogFile=</td></row>
 		<row><td>Java Service Manager</td><td>{BD673D38-EFB5-4405-950F-B4BF50190A2A}</td><td>TARGETDIR</td><td>0</td><td/><td/><td>281089</td><td/><td/><td/><td>/LogFile=</td><td>/LogFile=</td><td>/LogFile=</td><td>/LogFile=</td></row>
 		<row><td>Load Management</td><td>{70724B8A-16D6-4800-B7FB-752C0F31E590}</td><td>SERVER</td><td>0</td><td/><td/><td>281089</td><td/><td/><td/><td>/LogFile=</td><td>/LogFile=</td><td>/LogFile=</td><td>/LogFile=</td></row>
 		<row><td>MACS Server</td><td>{10C988E4-A975-41EF-AC11-A56DF1CBD643}</td><td>SERVER</td><td>0</td><td/><td/><td>264705</td><td/><td/><td/><td>/LogFile=</td><td>/LogFile=</td><td>/LogFile=</td><td>/LogFile=</td></row>
@@ -353,7 +353,7 @@
 		<row><td>{54FF9F5F-5E39-45F8-B799-BA8F0AD883AD}</td><td>Tomcat</td></row>
 		<row><td>{54FF9F5F-5E39-45F8-B799-BA8F0AD883AD}</td><td>WebStart</td></row>
 		<row><td>{54FF9F5F-5E39-45F8-B799-BA8F0AD883AD}</td><td>Yukon Web Deployment</td></row>
-		<row><td>{7E0C5FC7-B54D-4F6D-8D1A-0946CFF2CE2E}</td><td>JRE 1.5</td></row>
+		<row><td>{7E0C5FC7-B54D-4F6D-8D1A-0946CFF2CE2E}</td><td>JRE</td></row>
 		<row><td>{9910613D-86BA-428E-8798-FD86096FFE62}</td><td>Common Directories</td></row>
 		<row><td>{9910613D-86BA-428E-8798-FD86096FFE62}</td><td>Common Dlls</td></row>
 		<row><td>{9910613D-86BA-428E-8798-FD86096FFE62}</td><td>Initial Server Config</td></row>
@@ -431,7 +431,7 @@
 		<row><td>ESub Editor</td><td>0</td><td/><td>_A62DC5BB_FFFA_4641_AC50_CCC6873DE667_FILTER</td><td/><td/><td/><td/></row>
 		<row><td>Foreign Data Router</td><td>0</td><td/><td>_3536D6D6_BC3C_4DFF_ABA4_40B90B6BC56E_FILTER</td><td/><td/><td/><td/></row>
 		<row><td>Initial Server Config</td><td>0</td><td/><td>_2B654781_3513_431D_92FC_178C60417E91_FILTER</td><td/><td/><td/><td/></row>
-		<row><td>JRE 1.5</td><td/><td/><td>_4EEF871E_3531_44B7_8418_D6B8A510B7A4_FILTER</td><td/><td/><td/><td/></row>
+		<row><td>JRE</td><td/><td/><td>_4EEF871E_3531_44B7_8418_D6B8A510B7A4_FILTER</td><td/><td/><td/><td/></row>
 		<row><td>Java Service Manager</td><td/><td/><td>_72E48809_F354_49B0_8B8C_B1F43C0B149C_FILTER</td><td/><td/><td/><td/></row>
 		<row><td>Load Management</td><td>0</td><td/><td>_019F0DA4_96F4_482A_B54E_1E401C865E6E_FILTER</td><td/><td/><td/><td/></row>
 		<row><td>MACS Server</td><td>0</td><td/><td>_FE5E9873_D169_4D60_82DB_F1BA971B72A8_FILTER</td><td/><td/><td/><td/></row>
@@ -500,7 +500,7 @@
 		<row><td>Common Directories</td><td>&lt;PATH_TO_COMMON_DIRECTORIES_FILES&gt;</td><td>1</td><td>*.*</td><td/><td>2</td></row>
 		<row><td>Config Properties</td><td>&lt;PATH_TO_CONFIG_PROPERTIES_FILES&gt;</td><td>1</td><td>*.*</td><td/><td>2</td></row>
 		<row><td>Initial Server Config</td><td>&lt;PATH_TO_INITIAL_SERV_CONF_FILES&gt;</td><td>1</td><td>*.*</td><td/><td>2</td></row>
-		<row><td>JRE 1.5</td><td>&lt;PATH_TO_JRE15_FILES&gt;</td><td>1</td><td>*.*</td><td/><td>2</td></row>
+		<row><td>JRE</td><td>&lt;PATH_TO_JRE_FILES&gt;</td><td>1</td><td>*.*</td><td/><td>2</td></row>
 		<row><td>Java Service Manager</td><td>&lt;PATH_TO_WRAPPER_FILES&gt;</td><td>1</td><td>*.*</td><td/><td>2</td></row>
 		<row><td>Notification</td><td>&lt;PATH_TO_WRAPPER_FILES&gt;</td><td>1</td><td>*.*</td><td/><td>2</td></row>
 		<row><td>Tomcat</td><td>&lt;PATH_TO_TOMCAT_FILES&gt;</td><td>1</td><td>*.*</td><td/><td>2</td></row>
@@ -723,7 +723,7 @@
 		<row><td>PATH_TO_JAVA BACKUP_FILES</td><td>Z:\Java backup</td><td/><td>2</td></row>
 		<row><td>PATH_TO_JAVA_SERVICE_MAN_FILES</td><td>yukon\yukon-install\build\Java Service Manager</td><td/><td>2</td></row>
 		<row><td>PATH_TO_JDK_FILES</td><td>Z:\java\archive\jdk</td><td/><td>2</td></row>
-		<row><td>PATH_TO_JRE15_FILES</td><td>yukon\yukon-install\build\JRE 1.5</td><td/><td>2</td></row>
+		<row><td>PATH_TO_JRE_FILES</td><td>yukon\yukon-install\build\JRE</td><td/><td>2</td></row>
 		<row><td>PATH_TO_LOAD_MAN_FILES</td><td>yukon\yukon-install\build\Load Management</td><td/><td>2</td></row>
 		<row><td>PATH_TO_MACS_SERVER_FILES</td><td>yukon\yukon-install\build\MACS Server</td><td/><td>2</td></row>
 		<row><td>PATH_TO_MESS_DISPATCHER_FILES</td><td>yukon\yukon-install\build\Message Dispatcher</td><td/><td>2</td></row>

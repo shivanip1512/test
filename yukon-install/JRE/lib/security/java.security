@@ -36,10 +36,9 @@
 #
 # (The number 1 is used for the default provider.)
 #
-# Note: Statically registered Provider subclasses are instantiated
-# when the system is initialized. Providers can be dynamically
-# registered instead by calls to either the addProvider or
-# insertProviderAt method in the Security class.
+# Note: Providers can be dynamically registered instead by calls to
+# either the addProvider or insertProviderAt method in the Security
+# class.
 
 #
 # List of providers and their preference orders (see above):
@@ -50,6 +49,9 @@ security.provider.3=com.sun.net.ssl.internal.ssl.Provider
 security.provider.4=com.sun.crypto.provider.SunJCE
 security.provider.5=sun.security.jgss.SunProvider
 security.provider.6=com.sun.security.sasl.Provider
+security.provider.7=org.jcp.xml.dsig.internal.dom.XMLDSigRI
+security.provider.8=sun.security.smartcardio.SunPCSC
+security.provider.9=sun.security.mscapi.SunMSCAPI
 
 #
 # Select the source of seed data for SecureRandom. By default an
@@ -154,16 +156,6 @@ ssl.KeyManagerFactory.algorithm=SunX509
 ssl.TrustManagerFactory.algorithm=PKIX
 
 #
-# Determines the default SSLSocketFactory and SSLServerSocketFactory
-# provider implementations for the javax.net.ssl package.  If, due to
-# export and/or import regulations, the providers are not allowed to be
-# replaced, changing these values will produce non-functional
-# SocketFactory or ServerSocketFactory implementations.
-#
-#ssl.SocketFactory.provider=
-#ssl.ServerSocketFactory.provider=
-
-#
 # The Java-level namelookup cache policy for successful lookups:
 #
 # any negative value: caching forever
@@ -171,7 +163,8 @@ ssl.TrustManagerFactory.algorithm=PKIX
 # zero: do not cache
 #
 # default value is forever (FOREVER). For security reasons, this
-# caching is made forever when a security manager is set.
+# caching is made forever when a security manager is set. When a security
+# manager is not set, the default behavior is to cache for 30 seconds.
 #
 # NOTE: setting this to anything other than the default value can have
 #       serious security implications. Do not set it unless 

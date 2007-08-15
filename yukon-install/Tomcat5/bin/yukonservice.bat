@@ -42,7 +42,7 @@ set PR_LOGPATH=%CATALINA_BASE%\logs
 set PR_CLASSPATH=%CATALINA_HOME%\bin\bootstrap.jar
 
 rem Set the client jvm from JRE_HOME
-set PR_JVM=%JRE_HOME%\bin\client\jvm.dll
+set PR_JVM=%JRE_HOME%\bin\server\jvm.dll
 if exist "%PR_JVM%" goto foundJvm
 
 :foundJvm
