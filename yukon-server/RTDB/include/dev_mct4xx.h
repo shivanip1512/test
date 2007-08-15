@@ -9,8 +9,8 @@
 *
 * PVCS KEYWORDS:
 * ARCHIVE      :  $Archive:   Z:/SOFTWAREARCHIVES/YUKON/RTDB/INCLUDE/dev_mct4xx.h-arc  $
-* REVISION     :  $Revision: 1.30 $
-* DATE         :  $Date: 2007/04/30 21:22:04 $
+* REVISION     :  $Revision: 1.31 $
+* DATE         :  $Date: 2007/08/15 21:04:13 $
 *
 * Copyright (c) 2005 Cannon Technologies Inc. All rights reserved.
 *-----------------------------------------------------------------------------*/
@@ -131,7 +131,7 @@ protected:
         FuncWrite_LLPInterestLen     =    6,
 
         FuncWrite_LLPPeakInterestPos = 0x06,
-        FuncWrite_LLPPeakInterestLen =    7,
+        FuncWrite_LLPPeakInterestLen =    9,
 
         FuncWrite_TOUSchedule1Pos    = 0x30,
         FuncWrite_TOUSchedule1Len    =   15,
@@ -154,7 +154,7 @@ protected:
         FuncRead_LLPPeakLen          =   13,
 
         FuncRead_TOUBasePos          = 0xb0,
-        FuncRead_TOULen              =    9,
+        FuncRead_TOULen              =   10,
         FuncRead_TOUFrozenOffset     =    4,
 
         FuncRead_TOUDaySchedulePos   = 0xad,
