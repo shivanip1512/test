@@ -180,9 +180,25 @@ public class OnelineCap implements OnelineObject {
             return true;
         }
         return false;
-
     }
-
+    public boolean isFixed() {
+        if (getCurrentCapBankState().equalsIgnoreCase(CapBank.FIXED_OPSTATE)) {
+            return true;
+        }
+        return false;
+    }
+    public boolean isSwitched() {
+        if (getCurrentCapBankState().equalsIgnoreCase(CapBank.SWITCHED_OPSTATE)) {
+            return true;
+        }
+        return false;
+    }
+    public boolean isUninstalled() {
+        if (getCurrentCapBankState().equalsIgnoreCase(CapBank.UNINSTALLED_OPSTATE)) {
+            return true;
+        }
+        return false;
+    }
     private String getCurrentCapBankState() {
         String state = getStreamable().getOperationalState();
         return state;

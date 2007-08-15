@@ -69,7 +69,15 @@ public class CapBankHiddenStates extends LxAbstractView implements HiddenStates 
     protected boolean isStandalone() {
         return parent.isStandalone();
     }
-
+    protected boolean isSwitched() {
+        return parent.isSwitched();
+    }
+    protected boolean isFixed() {
+        return parent.isFixed();
+    }
+    protected boolean isUninstalled() {
+        return parent.isUninstalled();
+    }
     protected boolean isOVUVDisabled() {
         return parent.isOVUVDisabled();
     }

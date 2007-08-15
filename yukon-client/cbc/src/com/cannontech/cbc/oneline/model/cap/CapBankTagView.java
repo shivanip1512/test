@@ -103,8 +103,9 @@ public class CapBankTagView extends LxAbstractView implements TagView {
         else
             tagString += ":";
         if (states.isStandalone())
-
             tagString += "S";
+        else if (states.isFixed())
+            tagString += "F";
         else
             tagString += "";
         return tagString;
