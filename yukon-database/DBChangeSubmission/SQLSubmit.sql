@@ -46,6 +46,10 @@ insert into YukonRoleProperty values(-10815, -108,'Data Updater Delay (milliseco
 /* end */
 
 
+/********* New billing file format for    3.4    3.5  and HEAD    SN 08/14/2007*/
+insert into billingfileformats values(-26, 'Basic_DeviceName');
+/**********************/
+
 /*********** Michael/Jason's Dynamic billing generation additions (Head - 4.0 only)    ***********/
 
 create table DynamicBillingField (
