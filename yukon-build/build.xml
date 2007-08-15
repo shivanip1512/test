@@ -291,8 +291,8 @@
         <!-- Common Directories Component -->
         <copy todir="${install.bag}/Common Directories/Config/Example" file="${module.name}/yukon-install/resources/master.cfg" preservelastmodified="true"/>
         
-        <!-- JRE 1.5 Component -->
-        <copy todir="${install.bag}/JRE 1.5" preservelastmodified="true">
+        <!-- JRE Component -->
+        <copy todir="${install.bag}/JRE" preservelastmodified="true">
             <fileset dir="${module.name}/yukon-install/JRE" />
         </copy>
 
@@ -308,7 +308,7 @@
 
         <!-- Yukon Web Deployment Component -->
         <copy todir="${install.bag}/Yukon Web Deployment/bin" preservelastmodified="true">
-            <fileset dir="${module.name}/yukon-install/JRE/bin" includes="jar.exe,hpi.dll,java.dll,verify.dll,zip.dll" />
+            <fileset dir="${module.name}/yukon-install/JRE/bin" includes="jar.exe,hpi.dll,java.dll,verify.dll,zip.dll,jli.dll" />
             <fileset file="${client.bag}/yukon.war" />
         </copy>
         <copy todir="${install.bag}/Yukon Web Deployment/bin/client" file="${module.name}/yukon-install/JRE/bin/client/jvm.dll" preservelastmodified="true"/>

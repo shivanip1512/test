@@ -1,14 +1,22 @@
 package com.cannontech.database.debug;
 
+import java.sql.Array;
+import java.sql.Blob;
 import java.sql.CallableStatement;
+import java.sql.Clob;
 import java.sql.Connection;
 import java.sql.DatabaseMetaData;
+import java.sql.NClob;
 import java.sql.PreparedStatement;
+import java.sql.SQLClientInfoException;
 import java.sql.SQLException;
 import java.sql.SQLWarning;
+import java.sql.SQLXML;
 import java.sql.Savepoint;
 import java.sql.Statement;
+import java.sql.Struct;
 import java.util.Map;
+import java.util.Properties;
 
 import org.apache.commons.lang.StringUtils;
 import org.apache.log4j.Logger;
@@ -169,6 +177,62 @@ public class LoggingConnection implements Connection {
 
     public void setTypeMap(Map<String, Class<?>> arg0) throws SQLException {
         delegate.setTypeMap(arg0);
+    }
+
+    public Array createArrayOf(String typeName, Object[] elements)
+            throws SQLException {
+        return delegate.createArrayOf(typeName, elements);
+    }
+
+    public Blob createBlob() throws SQLException {
+        return delegate.createBlob();
+    }
+
+    public Clob createClob() throws SQLException {
+        return delegate.createClob();
+    }
+
+    public NClob createNClob() throws SQLException {
+        return delegate.createNClob();
+    }
+
+    public SQLXML createSQLXML() throws SQLException {
+        return delegate.createSQLXML();
+    }
+
+    public Struct createStruct(String typeName, Object[] attributes)
+            throws SQLException {
+        return delegate.createStruct(typeName, attributes);
+    }
+
+    public Properties getClientInfo() throws SQLException {
+        return delegate.getClientInfo();
+    }
+
+    public String getClientInfo(String name) throws SQLException {
+        return delegate.getClientInfo(name);
+    }
+
+    public boolean isValid(int timeout) throws SQLException {
+        return delegate.isValid(timeout);
+    }
+
+    public boolean isWrapperFor(Class<?> iface) throws SQLException {
+        return delegate.isWrapperFor(iface);
+    }
+
+    public void setClientInfo(Properties properties)
+            throws SQLClientInfoException {
+        delegate.setClientInfo(properties);
+    }
+
+    public void setClientInfo(String name, String value)
+            throws SQLClientInfoException {
+        delegate.setClientInfo(name, value);
+    }
+
+    public <T> T unwrap(Class<T> iface) throws SQLException {
+        return delegate.unwrap(iface);
     }
 
 

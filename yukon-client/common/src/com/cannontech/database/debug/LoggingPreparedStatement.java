@@ -9,13 +9,16 @@ import java.sql.Blob;
 import java.sql.Clob;
 import java.sql.Connection;
 import java.sql.Date;
+import java.sql.NClob;
 import java.sql.ParameterMetaData;
 import java.sql.PreparedStatement;
 import java.sql.Ref;
 import java.sql.ResultSet;
 import java.sql.ResultSetMetaData;
+import java.sql.RowId;
 import java.sql.SQLException;
 import java.sql.SQLWarning;
+import java.sql.SQLXML;
 import java.sql.Time;
 import java.sql.Timestamp;
 import java.util.Calendar;
@@ -345,6 +348,112 @@ public class LoggingPreparedStatement implements PreparedStatement {
 
     public void setURL(int parameterIndex, URL x) throws SQLException {
         delegate.setURL(parameterIndex, x);
+    }
+
+    public boolean isClosed() throws SQLException {
+        return delegate.isClosed();
+    }
+
+    public boolean isPoolable() throws SQLException {
+        return delegate.isPoolable();
+    }
+
+    public boolean isWrapperFor(Class<?> iface) throws SQLException {
+        return delegate.isWrapperFor(iface);
+    }
+
+    public void setAsciiStream(int parameterIndex, InputStream x, long length)
+            throws SQLException {
+        delegate.setAsciiStream(parameterIndex, x, length);
+    }
+
+    public void setAsciiStream(int parameterIndex, InputStream x)
+            throws SQLException {
+        delegate.setAsciiStream(parameterIndex, x);
+    }
+
+    public void setBinaryStream(int parameterIndex, InputStream x, long length)
+            throws SQLException {
+        delegate.setBinaryStream(parameterIndex, x, length);
+    }
+
+    public void setBinaryStream(int parameterIndex, InputStream x)
+            throws SQLException {
+        delegate.setBinaryStream(parameterIndex, x);
+    }
+
+    public void setBlob(int parameterIndex, InputStream inputStream, long length)
+            throws SQLException {
+        delegate.setBlob(parameterIndex, inputStream, length);
+    }
+
+    public void setBlob(int parameterIndex, InputStream inputStream)
+            throws SQLException {
+        delegate.setBlob(parameterIndex, inputStream);
+    }
+
+    public void setCharacterStream(int parameterIndex, Reader reader,
+            long length) throws SQLException {
+        delegate.setCharacterStream(parameterIndex, reader, length);
+    }
+
+    public void setCharacterStream(int parameterIndex, Reader reader)
+            throws SQLException {
+        delegate.setCharacterStream(parameterIndex, reader);
+    }
+
+    public void setClob(int parameterIndex, Reader reader, long length)
+            throws SQLException {
+        delegate.setClob(parameterIndex, reader, length);
+    }
+
+    public void setClob(int parameterIndex, Reader reader) throws SQLException {
+        delegate.setClob(parameterIndex, reader);
+    }
+
+    public void setNCharacterStream(int parameterIndex, Reader value,
+            long length) throws SQLException {
+        delegate.setNCharacterStream(parameterIndex, value, length);
+    }
+
+    public void setNCharacterStream(int parameterIndex, Reader value)
+            throws SQLException {
+        delegate.setNCharacterStream(parameterIndex, value);
+    }
+
+    public void setNClob(int parameterIndex, NClob value) throws SQLException {
+        delegate.setNClob(parameterIndex, value);
+    }
+
+    public void setNClob(int parameterIndex, Reader reader, long length)
+            throws SQLException {
+        delegate.setNClob(parameterIndex, reader, length);
+    }
+
+    public void setNClob(int parameterIndex, Reader reader) throws SQLException {
+        delegate.setNClob(parameterIndex, reader);
+    }
+
+    public void setNString(int parameterIndex, String value)
+            throws SQLException {
+        delegate.setNString(parameterIndex, value);
+    }
+
+    public void setPoolable(boolean poolable) throws SQLException {
+        delegate.setPoolable(poolable);
+    }
+
+    public void setRowId(int parameterIndex, RowId x) throws SQLException {
+        delegate.setRowId(parameterIndex, x);
+    }
+
+    public void setSQLXML(int parameterIndex, SQLXML xmlObject)
+            throws SQLException {
+        delegate.setSQLXML(parameterIndex, xmlObject);
+    }
+
+    public <T> T unwrap(Class<T> iface) throws SQLException {
+        return delegate.unwrap(iface);
     }
 
  

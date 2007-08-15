@@ -176,5 +176,25 @@ public class LoggingStatement implements Statement {
         delegate.setQueryTimeout(seconds);
     }
 
+    public boolean isClosed() throws SQLException {
+        return delegate.isClosed();
+    }
+
+    public boolean isPoolable() throws SQLException {
+        return delegate.isPoolable();
+    }
+
+    public boolean isWrapperFor(Class<?> iface) throws SQLException {
+        return delegate.isWrapperFor(iface);
+    }
+
+    public void setPoolable(boolean poolable) throws SQLException {
+        delegate.setPoolable(poolable);
+    }
+
+    public <T> T unwrap(Class<T> iface) throws SQLException {
+        return delegate.unwrap(iface);
+    }
+
  
 }

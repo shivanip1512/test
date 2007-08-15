@@ -32,4 +32,12 @@ public class LoggingDataSource extends AbstractDataSource {
         throw new UnsupportedOperationException();
     }
 
+    public <T> T unwrap(Class<T> iface) throws SQLException {
+        return delegate.unwrap(iface);
+    }
+
+    public boolean isWrapperFor(Class<?> iface) throws SQLException {
+        return delegate.isWrapperFor(iface);
+    }
+
 }
