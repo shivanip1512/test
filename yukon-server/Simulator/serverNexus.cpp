@@ -68,8 +68,9 @@ int main(int argc, char *argv[])
 
 	while(newSocket->CTINexusValid()) {
         unsigned char TempBuffer[1];
+        TempBuffer[0] = 0x00;
         unsigned long bytesRead=0;
-                
+
         //  Peek at first byte
         newSocket->CTINexusPeek(TempBuffer,1, &bytesRead);
 
@@ -100,64 +101,74 @@ int main(int argc, char *argv[])
                 cout << string(CtiNumStr(ReadBuffer[byteitr]).hex().zpad(2)) << ' ';
             }
 
-
-            BytesToFollow = aCCU711.ReceiveMsg(ReadBuffer, ccuNumber);
-
-            if(BytesToFollow>0)
+            if(ReadBuffer[1] != 0x7e)  //  Make sure it didn't try to send two messages at once and overlap the two HDLC flags
             {
-                bytesRead=0;
-                //  Read any additional bytes
-                while(bytesRead < BytesToFollow) {
-                    newSocket->CTINexusRead(ReadBuffer + counter, 1, &bytesRead, 15);
-                    counter++;
-                }
-                for( byteitr = 0; byteitr < BytesToFollow; byteitr++ )
-                    {
-                    if(byteitr == 1)
-                        {
-                        SET_FOREGROUND_BRIGHT_RED;
-                        cout << string(CtiNumStr(ReadBuffer[byteitr+4]).hex().zpad(2)) << ' ';
-                        SET_FOREGROUND_BRIGHT_GREEN;
+    
+                BytesToFollow = aCCU711.ReceiveMsg(ReadBuffer, ccuNumber);
+    
+                if(BytesToFollow>0)
+                {
+                    bytesRead=0;
+                    //  Read any additional bytes
+                    while(bytesRead < BytesToFollow) {
+                        newSocket->CTINexusRead(ReadBuffer + counter, 1, &bytesRead, 15);
+                        counter++;
                     }
-                    else
-                        cout<<string(CtiNumStr(ReadBuffer[byteitr+4]).hex().zpad(2))<<' ';
+                    for( byteitr = 0; byteitr < BytesToFollow; byteitr++ )
+                        {
+                        if(byteitr == 1)
+                            {
+                            SET_FOREGROUND_BRIGHT_RED;
+                            cout << string(CtiNumStr(ReadBuffer[byteitr+4]).hex().zpad(2)) << ' ';
+                            SET_FOREGROUND_BRIGHT_GREEN;
+                        }
+                        else
+                            cout<<string(CtiNumStr(ReadBuffer[byteitr+4]).hex().zpad(2))<<' ';
+                    }
+    
+                    aCCU711.ReceiveMore(ReadBuffer, counter);
+                    aCCU711.PrintInput();
                 }
-
-                aCCU711.ReceiveMore(ReadBuffer, counter);
-                aCCU711.PrintInput();
-            }
-
-            aCCU711.CreateMsg(ccuNumber);
-
-            unsigned char SendData[300];
-
-            int MsgSize = aCCU711.SendMsg(SendData);
-
-            if(MsgSize>0)
-             {
-                unsigned long bytesWritten = 0;
-                newSocket->CTINexusWrite(&SendData, MsgSize, &bytesWritten, 15); 
-
-                CtiTime DateSent;
-                SET_FOREGROUND_BRIGHT_YELLOW;
-                cout<<DateSent.asString();
-                SET_FOREGROUND_BRIGHT_CYAN;
-                cout<<" OUT:"<<endl;
-                SET_FOREGROUND_BRIGHT_MAGNETA;
-
-                for(byteitr = 0; byteitr < bytesWritten; byteitr++ )
-                    {
-                    cout <<string(CtiNumStr(SendData[byteitr]).hex().zpad(2))<<' ';
+    
+                aCCU711.CreateMsg(ccuNumber);
+    
+                unsigned char SendData[300];
+    
+                int MsgSize = aCCU711.SendMsg(SendData);
+    
+                if(MsgSize>0)
+                 {
+                    unsigned long bytesWritten = 0;
+                    newSocket->CTINexusWrite(&SendData, MsgSize, &bytesWritten, 15); 
+    
+                    CtiTime DateSent;
+                    SET_FOREGROUND_BRIGHT_YELLOW;
+                    cout<<DateSent.asString();
+                    SET_FOREGROUND_BRIGHT_CYAN;
+                    cout<<" OUT:"<<endl;
+                    SET_FOREGROUND_BRIGHT_MAGNETA;
+    
+                    for(byteitr = 0; byteitr < bytesWritten; byteitr++ )
+                        {
+                        cout <<string(CtiNumStr(SendData[byteitr]).hex().zpad(2))<<' ';
+                    }
+    
+                    aCCU711.PrintMessage();
                 }
-
-                aCCU711.PrintMessage();
+                else
+                {
+                    //SET_FOREGROUND_BRIGHT_RED;
+                    //cout<<"Error: Outgoing message is null"<<endl;
+                    //SET_FOREGROUND_WHITE;
+                }
             }
             else
-                {
-                //SET_FOREGROUND_BRIGHT_RED;
-                //cout<<"Error: Outgoing message is null"<<endl;
-                //SET_FOREGROUND_WHITE;
+            {
+                SET_FOREGROUND_BRIGHT_RED;
+                cout<<"Error: Two IDLC messages overlapped since bytes 0 and 1 are both 0x7e"<<endl;
+                SET_FOREGROUND_WHITE;
             }
+
         }
         else if(TempBuffer[0] & 0x04)
         {   //  It's a 710 message

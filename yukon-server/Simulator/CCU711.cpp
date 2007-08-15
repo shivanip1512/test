@@ -213,6 +213,7 @@ void CCU711::TranslateInfo(bool direction, string & printMsg, string & printCmd,
             case RCOLQ:        printCmd.append("RCOLQ");       break;
             case ACTIN:        printCmd.append("ACTIN");       break;
             case WSETS:        printCmd.append("WSETS");       break;
+            case XTIME:        printCmd.append("XTIME");       break;
 
 		}
 		switch(_preamble){
@@ -447,6 +448,9 @@ void CCU711::DecodeCommand(unsigned char Data[]){
     else if(Data[5] == 0x2b) {
         _commandType = LGRPQ;    //  Load request group into queue  CMND=43 in book
     }
+    else if(Data[5] == 0x2a) {      
+        _commandType = XTIME;    //  Transmit time sync  CMND=42 in book
+    }
     else if(Data[5] == 0x27) {
         _commandType = RCOLQ;    //  Read collected queue entries  CMND=39 in book
     }
@@ -672,6 +676,7 @@ void CCU711::CreateQueuedMsg()
         newMessage.setiotype(iotype);
         newMessage.setFunction(function);
         newMessage.setAddress(address);
+        newMessage.setbytesToReturn(bytesToReturn);
     
         int _bytesToReturn;
         //CtiTime _timeWhenReady;
@@ -704,35 +709,34 @@ void CCU711::CreateQueuedResponse()
                 ctr++;              //length set below
                 Data[ctr++] = 0x00;
                 Data[ctr++] = 0xa7;
-                Data[ctr++] = 0x00;
-                Data[ctr++] = 0x00;
-                Data[ctr++] = 0x00;
-                Data[ctr++] = 0x00;
-                Data[ctr++] = 0x00;
-                Data[ctr++] = 0x00;
-                Data[ctr++] = 0x00;
-                Data[ctr++] = 0x00;
-                Data[ctr++] = 0x00;
-                Data[ctr++] = 0x00;
-                Data[ctr++] = 0x00;
-                Data[ctr++] = 0x00;
+                Data[ctr++] = 0x10; //Stats
+                Data[ctr++] = 0x00; // "  "
+                Data[ctr++] = 0x18; // "  "
+                Data[ctr++] = 0x50; // "  "
+                Data[ctr++] = 0x00; //StatD
+                Data[ctr++] = 0x00; // "  "
+                Data[ctr++] = 0x1f; // "  "
+                Data[ctr++] = 0x01; // "  "
+                Data[ctr++] = 0x00; // "  "
+                Data[ctr++] = 0x1d; // "  "
+                Data[ctr++] = 0x00; //StatP
+                Data[ctr++] = 0x00; // "  "
                 Data[ctr++] = 0x13;
                 Data[ctr++] = _messageQueue.back().getQENID(0);
                 Data[ctr++] = _messageQueue.back().getQENID(1);
                 Data[ctr++] = _messageQueue.back().getQENID(2);
                 Data[ctr++] = _messageQueue.back().getQENID(3);
-                Data[ctr++] = 0xf0; //  ENSTA
+                Data[ctr++] = 0xf0; // ENSTA
                 Data[ctr++] = 0x00;
                 Data[ctr++] = 0x00;
                 Data[ctr++] = 0x00;
-                Data[ctr++] = 0x00; //  ROUTE
-                Data[ctr++] = 0x00; //  S1
-                Data[ctr++] = 0x00; //  S1
+                Data[ctr++] = 0x00; // ROUTE
+                Data[ctr++] = 0x00;//      THIS SHOULD ALWAYS BE 0x01 !!!!        // NFUNC
+                Data[ctr++] = 0x00; // S1
                 Data[ctr++] = 0x00; // L1
-                Data[ctr++] = 0x00; // S2
-                Data[ctr++] = 0x00; // L2                         
-                Data[ctr++] = 0x00; // S3
-                Data[ctr++] = 0x00; // L3
+                Data[ctr++] = 0x00;
+                Data[ctr++] = 0x00;
+                Data[ctr++] = 0x00;
                 Data[3] = ctr-4;    //length;
 
 
@@ -741,7 +745,7 @@ void CCU711::CreateQueuedResponse()
                 //Data[ctr++] = 0x00;//LOBYTE (CRC);
             }
         }
-        _messageQueue.back().setbytesToReturn(ctr);
+        _messageQueue.back().setmessageLength(ctr);
         _messageQueue.back().copyInto(Data, ctr);
     }
 }
@@ -786,16 +790,16 @@ void CCU711::LoadQueuedMsg()
     {
         unsigned char Data[50];
         _messageQueue.front().copyOut(Data);
-        for(int i=0; i<_messageQueue.front().getbytesToReturn(); i++)
+        for(int i=0; i<_messageQueue.front().getmessageLength(); i++)
         {
             _outmessageData[i]=Data[i];
         }
 
         _outmessageData[2] = getFrame(0);//0x32;
-
         _outmessageData[19] = _qmessagesSent;
 
-        int ctr = _messageQueue.front().getbytesToReturn();
+        int ctr = _messageQueue.front().getmessageLength();
+
         unsigned short CRC = NCrcCalc_C ((_outmessageData + 1), ctr-1);
         _outmessageData[ctr++] = HIBYTE (CRC);
         _outmessageData[ctr++] = LOBYTE (CRC);
@@ -814,7 +818,7 @@ unsigned char CCU711::getRLEN()
      return RLEN14;
 }
 
-void CCU711::decodeForQueueMessage(int & type, int & iotype, int & function, unsigned char & address, int bytesToReturn)
+void CCU711::decodeForQueueMessage(int & type, int & iotype, int & function, unsigned char & address, int  & bytesToReturn)
 {
     switch(_messageData[19] & 0xc0)
     {
@@ -848,6 +852,8 @@ void CCU711::decodeForQueueMessage(int & type, int & iotype, int & function, uns
     //switch(_messageData[21] & 0x18)
     //{   INSERT CODE HERE TO DETERMINE FUNCTION
     //}
+
+    bytesToReturn = _messageData[16];
 
     address = _messageData[1];
 }
@@ -886,15 +892,17 @@ void CCU711::_queueMessage::initializeMessage()
     _ioType        = 0;       // i/o
     _function      = 0;
     _bytesToReturn = 0;
+    _messageLength = 0;
+
 }
 
-int CCU711::_queueMessage::getbytesToReturn()           {   return _bytesToReturn;  }
-void CCU711::_queueMessage::setbytesToReturn(int bytes) {   _bytesToReturn = bytes; }
+int CCU711::_queueMessage::getmessageLength()           {   return _messageLength;  }
+void CCU711::_queueMessage::setmessageLength(int bytes) {   _messageLength = bytes; }
 
 
 void CCU711::_queueMessage::copyInto(unsigned char Data[], int bytes)
 {
-    setbytesToReturn(bytes);
+    setmessageLength(bytes);
     for(int i = 0; i<50; i++)
     {
         _data[i]=Data[i];
@@ -918,11 +926,14 @@ void CCU711::_queueMessage::setQENID(unsigned char one,unsigned char two, unsign
     _QENID[3] = four;
 }
 
-unsigned char CCU711::_queueMessage::getQENID(int index)     {   return _QENID[index];   }
-int CCU711::_queueMessage::getWord()                         {   return _wordType;       }
-void CCU711::_queueMessage::setWord(int type)                {   _wordType = type;       }
-void CCU711::_queueMessage::setiotype(int iotype)            {   _ioType = iotype;       }
-void CCU711::_queueMessage::setFunction(int function)        {   _function = function;   }
-int CCU711::_queueMessage::getioType()                       {   return _ioType;         }
-void CCU711::_queueMessage::setAddress(unsigned char address){   _address = address;     }
-unsigned char CCU711::_queueMessage::getAddress()            {   return _address;        }
+unsigned char CCU711::_queueMessage::getQENID(int index)       {   return _QENID[index];           }
+int CCU711::_queueMessage::getWord()                           {   return _wordType;               }
+void CCU711::_queueMessage::setWord(int type)                  {   _wordType = type;               }
+void CCU711::_queueMessage::setiotype(int iotype)              {   _ioType = iotype;               }
+void CCU711::_queueMessage::setFunction(int function)          {   _function = function;           }
+int CCU711::_queueMessage::getioType()                         {   return _ioType;                 }
+void CCU711::_queueMessage::setAddress(unsigned char address)  {   _address = address;             }
+unsigned char CCU711::_queueMessage::getAddress()              {   return _address;                }
+void CCU711::_queueMessage::setbytesToReturn(int bytesToReturn){   _bytesToReturn = bytesToReturn; }
+int CCU711::_queueMessage::getbytesToReturn()                  {   return _bytesToReturn;          }
+

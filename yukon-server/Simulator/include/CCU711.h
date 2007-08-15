@@ -48,6 +48,7 @@ class CCU711{
             RCOLQ      = 13,
             ACTIN      = 14,
             WSETS      = 15,
+            XTIME      = 16,
             FEEDEROP   = 21,
             PING       = 22,
             ONEACK     = 23,
@@ -66,23 +67,26 @@ class CCU711{
 
         struct _queueMessage {
             public:
-                int getbytesToReturn();
+                int getmessageLength();
                 void copyInto(unsigned char Data[], int bytes);
-                void setbytesToReturn(int bytes);
+                void setmessageLength(int bytes);
                 void setQENID(unsigned char one,unsigned char two, unsigned char three, unsigned char four);
                 unsigned char getQENID(int index);
                 void copyOut(unsigned char Data[]);
                 void initializeMessage();
-                int getWord();
+                int  getWord();
                 void setWord(int type);
                 void setiotype(int iotype);
                 void setFunction(int function);
                 int  getioType();
                 void setAddress(unsigned char address);
+                void setbytesToReturn(int bytesToReturn);
+                int  getbytesToReturn();
                 unsigned char getAddress();
 
             private:
-                int _bytesToReturn;
+                int _bytesToReturn;  // Store L1
+                int _messageLength;
                 unsigned char _data [50];
                 CtiTime _timeWhenReady;
                 unsigned char _address;
@@ -145,7 +149,7 @@ class CCU711{
         //  Create a response to a message that has been received and store it in the array of a queue message struct
         void CreateQueuedResponse();
         //  Decode the information contained in an incoming message 
-        void decodeForQueueMessage(int & type, int & iotype, int & function, unsigned char & address, int bytesToReturn);
+        void decodeForQueueMessage(int & type, int & iotype, int & function, unsigned char & address, int & bytesToReturn);
 
 
 	private:
