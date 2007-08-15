@@ -390,12 +390,14 @@ public class RegenerateRoute
                     int matrixNumber = maskedFixedBit / 32;
                     int realFixedBit = maskedFixedBit % 32;
                     int[][] matrix = (int[][])currentMatriciesVector.get(matrixNumber);
-                    matrix[realFixedBit][variableBit] = -1;
-                    Vector rptVector = route.getRepeaterVector();
-                    for (int i=0; i < rptVector.size()-1; i++ ) {
-                        RepeaterRoute rpt = ((RepeaterRoute) rptVector.get(i));
-                        int rptVariableBits = rpt.getVariableBits().intValue();
-                        matrix[realFixedBit][rptVariableBits] = -1;
+                    if(variableBit < 7) {
+                        matrix[realFixedBit][variableBit] = -1;
+                        Vector rptVector = route.getRepeaterVector();
+                        for (int i=0; i < rptVector.size()-1; i++ ) {
+                            RepeaterRoute rpt = ((RepeaterRoute) rptVector.get(i));
+                            int rptVariableBits = rpt.getVariableBits().intValue();
+                            matrix[realFixedBit][rptVariableBits] = -1;
+                        }
                     }
                 }
             }
@@ -460,16 +462,15 @@ public class RegenerateRoute
             int matrixNumber = maskedFixedBit / 32;
             int realFixedBit = maskedFixedBit % 32;
             int[][] matrix = (int[][])currentMatriciesVector.get(matrixNumber);
-            if(variableBit == 7){
-                System.out.println("fixed:" +maskedFixedBit);
-            }
-            matrix[realFixedBit][variableBit] = route.getRouteID().intValue();
-            
-            Vector rptVector = route.getRepeaterVector();
-            for (int i=0; i < rptVector.size()-1; i++ ) {
-                RepeaterRoute rpt = ((RepeaterRoute) rptVector.get(i));
-                int rptVariableBits = rpt.getVariableBits().intValue();
-                matrix[realFixedBit][rptVariableBits] = route.getRouteID().intValue();
+            if(variableBit < 7){
+                matrix[realFixedBit][variableBit] = route.getRouteID().intValue();
+                
+                Vector rptVector = route.getRepeaterVector();
+                for (int i=0; i < rptVector.size()-1; i++ ) {
+                    RepeaterRoute rpt = ((RepeaterRoute) rptVector.get(i));
+                    int rptVariableBits = rpt.getVariableBits().intValue();
+                    matrix[realFixedBit][rptVariableBits] = route.getRouteID().intValue();
+                }
             }
         }
         
