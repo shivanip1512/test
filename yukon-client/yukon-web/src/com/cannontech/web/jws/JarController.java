@@ -2,6 +2,7 @@ package com.cannontech.web.jws;
 
 import java.io.File;
 import java.io.FileInputStream;
+import java.io.IOException;
 import java.net.SocketException;
 
 import javax.servlet.ServletOutputStream;
@@ -29,26 +30,53 @@ public class JarController extends AbstractController {
         String uri = request.getRequestURI();
         File uriFile = new File(uri);
         String jarName = uriFile.getName();
-        
+
         // construct file that points to jar
         File jarFile = new File(jarBaseFile, jarName);
-        
+
         // set content length
         response.setContentLength((int) jarFile.length());
-        
+
         // set last-modified header
         response.setDateHeader("Last-Modified", jarFile.lastModified());
-        
+
         //copy bytes to output
+        boolean alreadyBad = false;
+        
+        // the following is kind of copied from FileCopyUtils, I added it here
+        // so that I could prevent a full stack trace dump on exceptions
+        FileInputStream fis = null;
+        ServletOutputStream sos = null;
         try {
-            FileInputStream fis = new FileInputStream(jarFile);
-            ServletOutputStream sos = response.getOutputStream();
-            FileCopyUtils.copy(fis, sos);
-        } catch (SocketException e) {
+            fis = new FileInputStream(jarFile);
+            sos = response.getOutputStream();
+            int byteCount = 0;
+            byte[] buffer = new byte[4096];
+            int bytesRead = -1;
+            while ((bytesRead = fis.read(buffer)) != -1) {
+                sos.write(buffer, 0, bytesRead);
+                byteCount += bytesRead;
+            }
+            sos.flush();
+        } catch (IOException e) {
             // For some reason, this exception occurs often when JWS downloads the JARs.
             // Everytime this happens, the application is still able to start just fine,
             // so I'd like to ignore it for the time being.
-            log.warn("Got SocketException while downloading Web Start JAR (this can be ignored): " + e.getMessage());
+            log.warn("Got Exception while downloading Web Start JAR (this can be ignored): " + e);
+            alreadyBad = true;
+        } finally {
+            try {
+                fis.close();
+            }
+            catch (IOException ex) {
+                if (!alreadyBad) logger.warn("Could not close InputStream: " + ex);
+            }
+            try {
+                sos.close();
+            }
+            catch (IOException ex) {
+                if (!alreadyBad) logger.warn("Could not close OutputStream: " + ex);
+            }
         }
         return null;
     }
