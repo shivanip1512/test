@@ -619,10 +619,10 @@ function submitWithConfirm(obj) {
 	
 	if (confirm("Are you sure you want to execute " + cmdStr + "?"))
 	{
-		response = prompt("Reason:", "");
+		//response = prompt("Reason:", "");
 		var paoID = obj.name.split("_")[1];
 		var tagDesc = obj.name.split("_")[0];
-		executeReasonUpdate(paoID, tagDesc, response); 
+		executeReasonUpdate(paoID, tagDesc, ""); 
 		submit(obj);
 	}
 	

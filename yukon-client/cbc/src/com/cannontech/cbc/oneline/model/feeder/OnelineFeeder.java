@@ -58,8 +58,8 @@ public class OnelineFeeder implements OnelineObject {
                                   .getInjectionLine()
                                   .getPoint2()
                                   .getX();
-
-        LineElement feederLn = createFeederLn(fdrYCoord, subInjLnX);
+        //TODO: the +1 is not right.  There is a black line being drawn above this line that i need to find to officially fix this.
+        LineElement feederLn = createFeederLn(fdrYCoord+1, subInjLnX);
 
         initEditorImage();
         initInformationImage();
