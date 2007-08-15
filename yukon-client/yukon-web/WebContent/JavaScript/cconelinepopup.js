@@ -181,7 +181,7 @@ function createFeederTagMenu(feederID) {
 	str+='				<\/span>';
 	str+='			<\/td>';
 	str+='			<td align="right" valign="top" id = "popupplaceholder">';
-	str+='				<a   href="javascript:void(0)" style="color=gray" title="Click To Close" onclick="closePopupWindow();"> x <\/a>';
+	str+='				<a   href="javascript:void(0)" style="color=gray" title="Click To Close" onclick="clearClickCount(' + feederID+ ');closePopupWindow();"> x <\/a>';
 	str+='			<\/td>';
 	str+='		<\/tr>';
 	str+='		<tr>';
@@ -241,7 +241,7 @@ function createSubTagMenu() {
 	str+='>'; 
 	str+='				<font color="white">Disable<\/font><\/><\/br>';
 	str+='			<td align="right" valign="top" id = "popupplaceholder">';
-	str+='				<a   href="javascript:void(0)" style="color=gray" title="Click To Close" onclick="closePopupWindow();">  x <\/a>';
+	str+='				<a   href="javascript:void(0)" style="color=gray" title="Click To Close" onclick="clearClickCount(' + paoId + ');closePopupWindow();">  x <\/a>';
 	str+='			<\/td>';
 	str+='		<\/tr>';
 	str+='		<tr>';
@@ -320,7 +320,7 @@ function createCapTagMenu (paoID) {
 	str+='			<tr style="color:#9FBBAC; font-weight: bold; font-size: 16; border-color: black black white black;" >';
 	str+='				<td style="border-color: black black black black;" align="center" colspan="2" > ' + paoName + ' <\/td>';
 	str+='				<td style="border-color: black black black black;" align="right" valign="top" id = "popupplaceholder">';
-	str+='					<a   href="javascript:void(0)" style="color=#9FBBAC" title="Click To Close" onclick="closePopupWindow();"> x <\/a>';
+	str+='					<a   href="javascript:void(0)" style="color=#9FBBAC" title="Click To Close" onclick="clearClickCount(' +paoID + ',1);clearClickCount(' +paoID + ',2);clearClickCount(' +paoID + ',3);closePopupWindow();"> x <\/a>';
 	str+='				<\/td>';
 	str+='			<\/tr>';
 	str += '<\/table>'
@@ -827,4 +827,14 @@ function addClickCount (paoID, itemName)
 	}
 }
 
+function clearClickCount (paoID, itemName) 
+{
+	var key="";
+	if (itemName)
+		key = paoID + "_" + itemName;
+	else
+		key = paoID;	
+
+	clkCountQueue[key] = 0;
+}
 
