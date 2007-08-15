@@ -7,8 +7,8 @@
 * Author: Matt Fisher
 *
 * CVS KEYWORDS:
-* REVISION     :  $Revision: 1.10 $
-* DATE         :  $Date: 2007/08/09 21:46:17 $
+* REVISION     :  $Revision: 1.11 $
+* DATE         :  $Date: 2007/08/15 18:59:55 $
 *
 * Copyright (c) 2004 Cannon Technologies Inc. All rights reserved.
 *-----------------------------------------------------------------------------*/
@@ -26,6 +26,7 @@ using namespace std;
 #include "portglob.h"
 #include "mgr_device.h"
 #include "dev_dnp.h"
+#include "dev_gridadvisor.h"
 #include "cparms.h"
 #include "numstr.h"
 #include "msg_trace.h"
@@ -631,339 +632,31 @@ bool UDPInterface::getPackets( int wait )
                         }
                     }
 
+                    //  do we have a device yet?
                     if( dr && dr->device )
                     {
-                        int pos = 13, usedbytes = 0;
-    
-                        switch( devt )
+                        if( dr->ip   != p->ip ||
+                            dr->port != p->port )
                         {
-                            case 1:  //  Faulted Circuit Indicator
+                            if( gConfigParms.getValueAsULong("PORTER_UDP_DEBUGLEVEL", 0, 16) & 0x00000001 )
                             {
-                                while( pos < (len - (crc_included * 2)) )
-                                {
-                                    switch( p->data[pos++] )
-                                    {
-                                        case 0x00:
-                                        {
-                                            bool request_ack    =  p->data[pos] & 0x80;
-                                            int  udp_repeats    = (p->data[pos] & 0x70) >> 4;
-                                            int  phase          = (p->data[pos] & 0x0c) >> 2;
-                                            bool current_survey =  p->data[pos] & 0x02;
-    
-                                            pos++;
-    
-                                            float latitude, longitude;
-    
-                                            latitude   = p->data[pos++] << 24 |
-                                                         p->data[pos++] << 16 |
-                                                         p->data[pos++] <<  8 |
-                                                         p->data[pos++];
-    
-                                            latitude  /= 1000.0;
-                                                      
-                                            longitude  = p->data[pos++] << 24 |
-                                                         p->data[pos++] << 16 |
-                                                         p->data[pos++] <<  8 |
-                                                         p->data[pos++];
-    
-                                            longitude /= 1000.0;
-    
-                                            string device_name;
-    
-                                            device_name.assign((char *)p->data + pos, 128);
-                                            device_name.erase(device_name.find_first_of('\0'));
-    
-                                            {
-                                                CtiLockGuard<CtiLogger> doubt_guard(dout);
-                                                dout << CtiTime() << " **** Checkpoint - FCI device has reported in **** " << __FILE__ << " (" << __LINE__ << ")" << endl;
-                                                dout << CtiTime() << " name: \"" << device_name << "\"" << endl;
-                                                dout << CtiTime() << " latitude:  " << string(CtiNumStr(latitude))  << endl;
-                                                dout << CtiTime() << " longitude: " << string(CtiNumStr(longitude)) << endl;
-                                            }
-    
-                                            break;
-                                        }
-                                        case 0x01:
-                                        {
-                                            unsigned char items_included = p->data[pos++];
-                                            bool fault = p->data[pos++] & 0x80;
-    
-                                            unsigned long time = 0;
-                                            float battery_voltage, temperature, amps_nominal, amps_peak;
-    
-                                            if( items_included & 0x20 )
-                                            {
-                                                time  = p->data[pos++] << 24;
-                                                time |= p->data[pos++] << 16;
-                                                time |= p->data[pos++] <<  8;
-                                                time |= p->data[pos++];
-    
-                                                if( items_included & 0x40 )
-                                                {
-                                                    time = CtiTime::now().seconds() - time;
-                                                }
-                                            }
-                                            if( items_included & 0x10 )
-                                            {
-                                                battery_voltage = p->data[pos++] << 8 |
-                                                                  p->data[pos++];
-    
-                                                battery_voltage /= 1000.0;
-                                            }
-                                            if( items_included & 0x08 )
-                                            {
-                                                temperature = p->data[pos++] << 8 |
-                                                              p->data[pos++];
-    
-                                                temperature /= 100.0;
-                                            }
-                                            if( items_included & 0x04 )
-                                            {
-                                                amps_nominal = p->data[pos++] << 8 |
-                                                               p->data[pos++];
-    
-                                                amps_nominal /= 1000.0;
-                                            }
-                                            if( items_included & 0x02 )
-                                            {
-                                                amps_peak = p->data[pos++] << 8 |
-                                                            p->data[pos++];
-    
-                                                amps_peak /= 1000.0;
-                                            }
-    
-                                            break;
-                                        }
-                                        case 0x02:
-                                        {
-                                            unsigned char flags = p->data[pos++];
-    
-                                            unsigned long time = 0;
-                                            unsigned long duration = 0;
-    
-                                            bool current_fault_status = flags & 0x40;
-                                            bool event_report_status = false;
-    
-                                            time  = p->data[pos++] << 24;
-                                            time |= p->data[pos++] << 16;
-                                            time |= p->data[pos++] <<  8;
-                                            time |= p->data[pos++];
-    
-                                            if( flags & 0x40 )
-                                            {
-                                                time = CtiTime::now().seconds() - time;
-                                            }
-    
-                                            if( flags & 0x20 )
-                                            {
-                                                //  it's an event report
-                                                event_report_status = flags & 0x01;
-                                            }
-                                            else
-                                            {
-                                                //  if it's not an event report, it has duration
-                                                duration  = p->data[pos++] << 24;
-                                                duration |= p->data[pos++] << 16;
-                                                duration |= p->data[pos++] <<  8;
-                                                duration |= p->data[pos++];
-                                            }
-    
-                                            break;
-                                        }
-                                        case 0x03:
-                                        {
-                                            unsigned char flags = p->data[pos++];
-    
-                                            unsigned long time = 0;
-                                            int   rate, 
-                                                  count;
-                                            float reading;
-    
-                                            time  = p->data[pos++] << 24;
-                                            time |= p->data[pos++] << 16;
-                                            time |= p->data[pos++] <<  8;
-                                            time |= p->data[pos++];
-    
-                                            if( flags & 0x80 && time )
-                                            {
-                                                time = CtiTime::now().seconds() - time;
-                                            }
-    
-                                            rate  = (p->data[pos  ] & 0xf8) >> 3;
-                                            count = (p->data[pos++] & 0x07) << 8 | 
-                                                     p->data[pos++];
-    
-                                            for( int i = 0; i < count; i++ )
-                                            {
-                                                reading = p->data[pos++] << 8 | 
-                                                          p->data[pos++];
-    
-                                                reading /= 1000.0;
-    
-                                                time -= rate;
-                                            }
-    
-                                            break;
-                                        }
-                                        case 0x04:
-                                        {
-                                            int index, port, len;
-    
-                                            string hostname;
-    
-                                            index = p->data[pos++];
-    
-                                            port = p->data[pos++] << 8 | p->data[pos++];
-    
-                                            len = p->data[pos++] << 8 | p->data[pos++];
-    
-                                            hostname.assign((char *)p->data + pos, len);
-    
-                                            {
-                                                CtiLockGuard<CtiLogger> doubt_guard(dout);
-                                                //dout << CtiTime() << " **** Checkpoint - device \"" << device->getName() << "\" host config report - index " << index << " : " << hostname << " : " << port << " **** " << __FILE__ << " (" << __LINE__ << ")" << endl;
-                                            }
-    
-                                            break;
-                                        }
-                                    }
-                                }
-    
-                                break;
+                                CtiLockGuard<CtiLogger> doubt_guard(dout);
+                                dout << CtiTime() << " Cti::Porter::UDPInterface::getPackets - IP or port mismatch for device \"" << dr->device->getName() << "\", updating (" << dr->ip << " != " << p->ip << " || " << dr->port << " != " << p->port << ") " << __FILE__ << " (" << __LINE__ << ")" << endl;
                             }
-    
-                            case 2:  //  Neutral Current Sensor
-                            {
-                                while( pos < (len - (crc_included * 2)) )
-                                {
-                                    switch( p->data[pos++] )
-                                    {
-                                        case 0x00:
-                                        {
-                                            bool request_ack    =  p->data[pos] & 0x80;
-                                            int  udp_repeats    = (p->data[pos] & 0x70) >> 4;
-                                            bool current_survey =  p->data[pos] & 0x02;
-    
-                                            pos++;
-    
-                                            float latitude, longitude, amp_threshold;
-    
-                                            latitude   = p->data[pos++] << 24 |
-                                                         p->data[pos++] << 16 |
-                                                         p->data[pos++] <<  8 |
-                                                         p->data[pos++];
-    
-                                            latitude  /= 1000.0;
-    
-                                            longitude  = p->data[pos++] << 24 |
-                                                         p->data[pos++] << 16 |
-                                                         p->data[pos++] <<  8 |
-                                                         p->data[pos++];      
-    
-                                            longitude /= 1000.0;
-    
-                                            amp_threshold  = p->data[pos++] << 8 |
-                                                             p->data[pos++];
-    
-                                            amp_threshold /= 1000.0;
-    
-                                            string device_name;
-    
-                                            device_name.assign((char *)p->data + pos, 128);
-                                            device_name.erase(device_name.find_first_of('\0'));
-    
-                                            {
-                                                CtiLockGuard<CtiLogger> doubt_guard(dout);
-                                                dout << CtiTime() << " **** Checkpoint - Neutral Monitor device has reported in **** " << __FILE__ << " (" << __LINE__ << ")" << endl;
-                                                dout << CtiTime() << " name: \"" << device_name << "\"" << endl;
-                                                dout << CtiTime() << " latitude:      " << string(CtiNumStr(latitude))      << endl;
-                                                dout << CtiTime() << " longitude:     " << string(CtiNumStr(longitude))     << endl;
-                                                dout << CtiTime() << " amp threshold: " << string(CtiNumStr(amp_threshold)) << endl;
-                                            }
-    
-                                            break;
-                                        }
-                                        case 0x01:
-                                        {
-                                            unsigned char items_included = p->data[pos++];
-                                            bool fault = p->data[pos++] & 0x80;
-    
-                                            unsigned long time = 0;
-                                            float battery_voltage, temperature;
-    
-                                            if( items_included & 0x20 )
-                                            {
-                                                time  = p->data[pos++] << 24;
-                                                time |= p->data[pos++] << 16;
-                                                time |= p->data[pos++] <<  8;
-                                                time |= p->data[pos++];
-    
-                                                if( items_included & 0x80 )
-                                                {
-                                                    time = CtiTime::now().seconds() - time;
-                                                }
-                                            }
-                                            if( items_included & 0x10 )
-                                            {
-                                                battery_voltage = p->data[pos++] << 8 |
-                                                                  p->data[pos++];
-    
-                                                battery_voltage /= 1000.0;
-                                            }
-                                            if( items_included & 0x08 )
-                                            {
-                                                temperature = p->data[pos++] << 8 |
-                                                              p->data[pos++];
-    
-                                                temperature /= 100.0;
-                                            }
-    
-                                            break;
-                                        }
-                                        case 0x02:
-                                        {
-                                            unsigned char flags = p->data[pos++];
-    
-                                            unsigned long time = 0;
-                                            int rate, count, reading;
-    
-                                            time  = p->data[pos++] << 24;
-                                            time |= p->data[pos++] << 16;
-                                            time |= p->data[pos++] <<  8;
-                                            time |= p->data[pos++];
-    
-                                            if( flags & 0x80 && time )
-                                            {
-                                                time = CtiTime::now().seconds() - time;
-                                            }
-    
-                                            rate  = (p->data[pos  ] & 0xc0) >> 6;
-                                            count = (p->data[pos++] & 0x3f) << 8 | p->data[pos++];
-    
-                                            for( int i = 0; i < count; i++ )
-                                            {
-                                                reading = p->data[pos++] << 8 | 
-                                                          p->data[pos++];
-    
-                                                time -= rate;
-                                            }
-    
-                                            break;
-                                        }
-                                    }
-                                }
-    
-                                break;
-                            }
-    
-                            default:
-                            {
-                                {
-                                    CtiLockGuard<CtiLogger> doubt_guard(dout);
-                                    dout << CtiTime() << " **** Checkpoint - unknown GPUFF device type " << devt << " **** " << __FILE__ << " (" << __LINE__ << ")" << endl;
-                                }
-                            }
+
+                            dr->ip   = p->ip;
+                            dr->port = p->port;
+
+                            dr->device->setDynamicInfo(CtiTableDynamicPaoInfo::Key_UDP_IP,   dr->ip);
+                            dr->device->setDynamicInfo(CtiTableDynamicPaoInfo::Key_UDP_Port, dr->port);
                         }
+
+                        //  sends IP and port as pointdata messages
+                        sendDeviceInfo(dr);
+
+                        dr->work.inbound.push(p);
+
+                        p = 0;
                     }
                     else
                     {
@@ -1205,79 +898,502 @@ void UDPInterface::processInbounds( void )
 
         if( dr && dr->device )
         {
-            //  are we doing anything?
-            if( !dr->device->isTransactionComplete() )
+            switch( dr->device->getType() )
             {
-                if( !dr->work.inbound.empty() || (dr->work.xfer.getInCountExpected() == 0) || dr->work.timeout < CtiTime::now().seconds() )
+                case TYPE_DNPRTU:
+                case TYPECBC7020:
                 {
-                    if( dr->work.timeout < CtiTime::now().seconds() )
+                    //  are we doing anything?
+                    if( !dr->device->isTransactionComplete() )
                     {
-                        if( gConfigParms.getValueAsULong("PORTER_UDP_DEBUGLEVEL", 0, 16) & 0x00000001 )
+                        if( !dr->work.inbound.empty() || (dr->work.xfer.getInCountExpected() == 0) || dr->work.timeout < CtiTime::now().seconds() )
                         {
-                            CtiLockGuard<CtiLogger> doubt_guard(dout);
-                            dout << CtiTime() << " Cti::Porter::UDPInterface::processInbound - status = READTIMEOUT (" << dr->work.timeout << " < " << CtiTime::now().seconds() << ") " << __FILE__ << " (" << __LINE__ << ")" << endl;
-                        }
-
-                        status = READTIMEOUT;
-
-                        dr->work.xfer.setInCountActual(0UL);
-                    }
-                    else if( !dr->work.inbound.empty() )
-                    {
-                        if( p = dr->work.inbound.front() )
-                        {
-                            if( p->len - p->used < dr->work.xfer.getInCountExpected() )
+                            if( dr->work.timeout < CtiTime::now().seconds() )
                             {
                                 if( gConfigParms.getValueAsULong("PORTER_UDP_DEBUGLEVEL", 0, 16) & 0x00000001 )
                                 {
                                     CtiLockGuard<CtiLogger> doubt_guard(dout);
-                                    dout << CtiTime() << " Cti::Porter::UDPInterface::processInbound - status = READTIMEOUT (" << (p->len - p->used) << " < " << dr->work.xfer.getInCountExpected() << ") " << __FILE__ << " (" << __LINE__ << ")" << endl;
+                                    dout << CtiTime() << " Cti::Porter::UDPInterface::processInbound - status = READTIMEOUT (" << dr->work.timeout << " < " << CtiTime::now().seconds() << ") " << __FILE__ << " (" << __LINE__ << ")" << endl;
                                 }
-
+        
                                 status = READTIMEOUT;
-
-                                dr->work.xfer.setInCountActual(p->len - p->used);
+        
+                                dr->work.xfer.setInCountActual(0UL);
+                            }
+                            else if( !dr->work.inbound.empty() )
+                            {
+                                if( p = dr->work.inbound.front() )
+                                {
+                                    if( p->len - p->used < dr->work.xfer.getInCountExpected() )
+                                    {
+                                        if( gConfigParms.getValueAsULong("PORTER_UDP_DEBUGLEVEL", 0, 16) & 0x00000001 )
+                                        {
+                                            CtiLockGuard<CtiLogger> doubt_guard(dout);
+                                            dout << CtiTime() << " Cti::Porter::UDPInterface::processInbound - status = READTIMEOUT (" << (p->len - p->used) << " < " << dr->work.xfer.getInCountExpected() << ") " << __FILE__ << " (" << __LINE__ << ")" << endl;
+                                        }
+        
+                                        status = READTIMEOUT;
+        
+                                        dr->work.xfer.setInCountActual(p->len - p->used);
+                                    }
+                                    else
+                                    {
+                                        dr->work.xfer.setInCountActual(dr->work.xfer.getInCountExpected());
+                                    }
+        
+                                    memcpy(dr->work.xfer.getInBuffer(), p->data + p->used, dr->work.xfer.getInCountActual());
+        
+                                    p->used += dr->work.xfer.getInCountActual();
+                                }
+                                else
+                                {
+                                    dr->work.inbound.pop();
+                                }
                             }
                             else
                             {
-                                dr->work.xfer.setInCountActual(dr->work.xfer.getInCountExpected());
+                                dr->work.xfer.setInCountActual(0UL);
+                            }
+        
+                            dr->work.status = dr->device->decode(dr->work.xfer, status);
+        
+                            dr->work.pending_decode = false;
+        
+                            if( status || dr->work.xfer.getInCountActual() )
+                            {
+                                traceInbound(dr->ip, dr->port, dr->work.status, dr->work.xfer.getInBuffer(), dr->work.xfer.getInCountActual(), _traceList, dr->device);
+                            }
+        
+                            if( p && (p->used >= p->len) )
+                            {
+                                //  we've used the packet up
+                                delete p->data;
+                                delete p;
+        
+                                dr->work.inbound.pop();
+                            }
+        
+                            //  if we're done, we're not waiting for anything
+                            _devices_idle &= dr->device->isTransactionComplete() & dr->work.outbound.empty() & dr->work.inbound.empty();
+                        }
+                    }
+                }
+    
+                case TYPE_FCI:
+                case TYPE_NEUTRAL_MONITOR:
+                {
+                    if( !dr->work.inbound.empty() )
+                    {
+                        if( p = dr->work.inbound.front() )
+                        {
+                            unsigned len, seq, devt, devr, ser, crc;
+                            bool crc_included, ack_required;
+        
+                            len  = p->data[2] | (p->data[3] & 0x03 << 8);
+                            crc_included = p->data[3] & 0x80;
+                            ack_required = p->data[3] & 0x40;
+        
+                            devt = p->data[6] | (p->data[7] << 8);
+                            devr = p->data[8];
+
+                            int pos = 13, usedbytes = 0;
+            
+                            CtiPointSPtr     point;
+                            CtiPointDataMsg *pdm;
+
+                            CtiMultiMsg *m = new CtiMultiMsg;
+
+                            switch( devt )
+                            {
+                                case 1:  //  Faulted Circuit Indicator
+                                {
+                                    while( pos < (len - (crc_included * 2)) )
+                                    {
+                                        switch( p->data[pos++] )
+                                        {
+                                            case 0x00:
+                                            {
+                                                bool request_ack    =  p->data[pos] & 0x80;
+                                                int  udp_repeats    = (p->data[pos] & 0x70) >> 4;
+                                                int  phase          = (p->data[pos] & 0x0c) >> 2;
+                                                bool current_survey =  p->data[pos] & 0x02;
+            
+                                                pos++;
+            
+                                                float latitude, longitude;
+            
+                                                latitude   = p->data[pos++] << 24 |
+                                                             p->data[pos++] << 16 |
+                                                             p->data[pos++] <<  8 |
+                                                             p->data[pos++];
+            
+                                                latitude  /= 1000.0;
+                                                          
+                                                longitude  = p->data[pos++] << 24 |
+                                                             p->data[pos++] << 16 |
+                                                             p->data[pos++] <<  8 |
+                                                             p->data[pos++];
+            
+                                                longitude /= 1000.0;
+            
+                                                if( point = dr->device->getDevicePointOffsetTypeEqual(CtiDeviceGridAdvisor::FCI_Analog_Latitude, AnalogPointType) )
+                                                {
+                                                    m->insert(CTIDBG_new CtiPointDataMsg(point->getID(), latitude));
+                                                }
+
+                                                if( point = dr->device->getDevicePointOffsetTypeEqual(CtiDeviceGridAdvisor::FCI_Analog_Longitude, AnalogPointType) )
+                                                {
+                                                    m->insert(CTIDBG_new CtiPointDataMsg(point->getID(), longitude));
+                                                }
+
+                                                string device_name;
+            
+                                                device_name.assign((char *)p->data + pos, 128);
+                                                device_name.erase(device_name.find_first_of('\0'));
+            
+                                                {
+                                                    CtiLockGuard<CtiLogger> doubt_guard(dout);
+                                                    dout << CtiTime() << " **** Checkpoint - FCI device has reported in **** " << __FILE__ << " (" << __LINE__ << ")" << endl;
+                                                    dout << CtiTime() << " name: \"" << device_name << "\"" << endl;
+                                                    dout << CtiTime() << " latitude:  " << string(CtiNumStr(latitude))  << endl;
+                                                    dout << CtiTime() << " longitude: " << string(CtiNumStr(longitude)) << endl;
+                                                }
+            
+                                                break;
+                                            }
+                                            case 0x01:
+                                            {
+                                                unsigned char items_included = p->data[pos++];
+                                                bool fault = p->data[pos++] & 0x80;
+            
+                                                unsigned long time = 0;
+                                                float battery_voltage, temperature, amps_nominal, amps_peak;
+            
+                                                if( items_included & 0x20 )
+                                                {
+                                                    time  = p->data[pos++] << 24;
+                                                    time |= p->data[pos++] << 16;
+                                                    time |= p->data[pos++] <<  8;
+                                                    time |= p->data[pos++];
+            
+                                                    if( items_included & 0x40 )
+                                                    {
+                                                        time = CtiTime::now().seconds() - time;
+                                                    }
+
+                                                }
+
+                                                if( point = dr->device->getDevicePointOffsetTypeEqual(CtiDeviceGridAdvisor::FCI_Status_Fault, StatusPointType) )
+                                                {
+                                                    pdm = CTIDBG_new CtiPointDataMsg(point->getID(), fault);
+
+                                                    if( items_included & 0x20 )
+                                                    {
+                                                        pdm->setTime(time);
+                                                    }
+
+                                                    m->insert(pdm);
+                                                }
+
+                                                if( items_included & 0x10 )
+                                                {
+                                                    battery_voltage = p->data[pos++] << 8 |
+                                                                      p->data[pos++];
+            
+                                                    battery_voltage /= 1000.0;
+
+                                                    if( point = dr->device->getDevicePointOffsetTypeEqual(CtiDeviceGridAdvisor::FCI_Analog_BatteryVoltage, AnalogPointType) )
+                                                    {
+                                                        m->insert(CTIDBG_new CtiPointDataMsg(point->getID(), battery_voltage));
+                                                    }
+                                                }
+                                                if( items_included & 0x08 )
+                                                {
+                                                    temperature = p->data[pos++] << 8 |
+                                                                  p->data[pos++];
+            
+                                                    temperature /= 100.0;
+
+                                                    if( point = dr->device->getDevicePointOffsetTypeEqual(CtiDeviceGridAdvisor::FCI_Analog_Temperature, AnalogPointType) )
+                                                    {
+                                                        m->insert(CTIDBG_new CtiPointDataMsg(point->getID(), temperature));
+                                                    }
+                                                }
+                                                if( items_included & 0x04 )
+                                                {
+                                                    amps_nominal = p->data[pos++] << 8 |
+                                                                   p->data[pos++];
+            
+                                                    amps_nominal /= 1000.0;
+
+                                                    if( point = dr->device->getDevicePointOffsetTypeEqual(CtiDeviceGridAdvisor::FCI_Analog_NominalAmps, AnalogPointType) )
+                                                    {
+                                                        m->insert(CTIDBG_new CtiPointDataMsg(point->getID(), amps_nominal));
+                                                    }
+                                                }
+                                                if( items_included & 0x02 )
+                                                {
+                                                    amps_peak = p->data[pos++] << 8 |
+                                                                p->data[pos++];
+            
+                                                    amps_peak /= 1000.0;
+
+                                                    if( point = dr->device->getDevicePointOffsetTypeEqual(CtiDeviceGridAdvisor::FCI_Analog_PeakAmps, AnalogPointType) )
+                                                    {
+                                                        m->insert(CTIDBG_new CtiPointDataMsg(point->getID(), amps_peak));
+                                                    }
+                                                }
+            
+                                                break;
+                                            }
+                                            case 0x02:
+                                            {
+                                                unsigned char flags = p->data[pos++];
+            
+                                                unsigned long time = 0;
+                                                unsigned long duration = 0;
+            
+                                                bool current_fault_status = flags & 0x40;
+                                                bool event_report_status = false;
+            
+                                                time  = p->data[pos++] << 24;
+                                                time |= p->data[pos++] << 16;
+                                                time |= p->data[pos++] <<  8;
+                                                time |= p->data[pos++];
+            
+                                                if( flags & 0x40 )
+                                                {
+                                                    time = CtiTime::now().seconds() - time;
+                                                }
+            
+                                                if( flags & 0x20 )
+                                                {
+                                                    //  it's an event report
+                                                    event_report_status = flags & 0x01;
+                                                }
+                                                else
+                                                {
+                                                    //  if it's not an event report, it has duration
+                                                    duration  = p->data[pos++] << 24;
+                                                    duration |= p->data[pos++] << 16;
+                                                    duration |= p->data[pos++] <<  8;
+                                                    duration |= p->data[pos++];
+                                                }
+            
+                                                break;
+                                            }
+                                            case 0x03:
+                                            {
+                                                unsigned char flags = p->data[pos++];
+            
+                                                unsigned long time = 0;
+                                                int   rate, 
+                                                      count;
+                                                float reading;
+            
+                                                time  = p->data[pos++] << 24;
+                                                time |= p->data[pos++] << 16;
+                                                time |= p->data[pos++] <<  8;
+                                                time |= p->data[pos++];
+            
+                                                if( flags & 0x80 && time )
+                                                {
+                                                    time = CtiTime::now().seconds() - time;
+                                                }
+            
+                                                rate  = (p->data[pos  ] & 0xf8) >> 3;
+                                                count = (p->data[pos++] & 0x07) << 8 | 
+                                                         p->data[pos++];
+            
+                                                for( int i = 0; i < count; i++ )
+                                                {
+                                                    reading = p->data[pos++] << 8 | 
+                                                              p->data[pos++];
+            
+                                                    reading /= 1000.0;
+            
+                                                    time -= rate;
+                                                }
+            
+                                                break;
+                                            }
+                                            case 0x04:
+                                            {
+                                                int index, port, len;
+            
+                                                string hostname;
+            
+                                                index = p->data[pos++];
+            
+                                                port = p->data[pos++] << 8 | p->data[pos++];
+            
+                                                len = p->data[pos++] << 8 | p->data[pos++];
+            
+                                                hostname.assign((char *)p->data + pos, len);
+            
+                                                {
+                                                    CtiLockGuard<CtiLogger> doubt_guard(dout);
+                                                    dout << CtiTime() << " **** Checkpoint - device \"" << dr->device->getName() << "\" host config report - index " << index << " : " << hostname << ":" << port << " **** " << __FILE__ << " (" << __LINE__ << ")" << endl;
+                                                }
+            
+                                                break;
+                                            }
+                                        }
+                                    }
+            
+                                    break;
+                                }
+            
+                                case 2:  //  Neutral Current Sensor
+                                {
+                                    while( pos < (len - (crc_included * 2)) )
+                                    {
+                                        switch( p->data[pos++] )
+                                        {
+                                            case 0x00:
+                                            {
+                                                bool request_ack    =  p->data[pos] & 0x80;
+                                                int  udp_repeats    = (p->data[pos] & 0x70) >> 4;
+                                                bool current_survey =  p->data[pos] & 0x02;
+            
+                                                pos++;
+            
+                                                float latitude, longitude, amp_threshold;
+            
+                                                latitude   = p->data[pos++] << 24 |
+                                                             p->data[pos++] << 16 |
+                                                             p->data[pos++] <<  8 |
+                                                             p->data[pos++];
+            
+                                                latitude  /= 1000.0;
+            
+                                                longitude  = p->data[pos++] << 24 |
+                                                             p->data[pos++] << 16 |
+                                                             p->data[pos++] <<  8 |
+                                                             p->data[pos++];      
+            
+                                                longitude /= 1000.0;
+            
+                                                amp_threshold  = p->data[pos++] << 8 |
+                                                                 p->data[pos++];
+            
+                                                amp_threshold /= 1000.0;
+            
+                                                string device_name;
+            
+                                                device_name.assign((char *)p->data + pos, 128);
+                                                device_name.erase(device_name.find_first_of('\0'));
+            
+                                                {
+                                                    CtiLockGuard<CtiLogger> doubt_guard(dout);
+                                                    dout << CtiTime() << " **** Checkpoint - Neutral Monitor device has reported in **** " << __FILE__ << " (" << __LINE__ << ")" << endl;
+                                                    dout << CtiTime() << " name: \"" << device_name << "\"" << endl;
+                                                    dout << CtiTime() << " latitude:      " << string(CtiNumStr(latitude))      << endl;
+                                                    dout << CtiTime() << " longitude:     " << string(CtiNumStr(longitude))     << endl;
+                                                    dout << CtiTime() << " amp threshold: " << string(CtiNumStr(amp_threshold)) << endl;
+                                                }
+            
+                                                break;
+                                            }
+                                            case 0x01:
+                                            {
+                                                unsigned char items_included = p->data[pos++];
+                                                bool fault = p->data[pos++] & 0x80;
+            
+                                                unsigned long time = 0;
+                                                float battery_voltage, temperature;
+            
+                                                if( items_included & 0x20 )
+                                                {
+                                                    time  = p->data[pos++] << 24;
+                                                    time |= p->data[pos++] << 16;
+                                                    time |= p->data[pos++] <<  8;
+                                                    time |= p->data[pos++];
+            
+                                                    if( items_included & 0x80 )
+                                                    {
+                                                        time = CtiTime::now().seconds() - time;
+                                                    }
+                                                }
+                                                if( items_included & 0x10 )
+                                                {
+                                                    battery_voltage = p->data[pos++] << 8 |
+                                                                      p->data[pos++];
+            
+                                                    battery_voltage /= 1000.0;
+                                                }
+                                                if( items_included & 0x08 )
+                                                {
+                                                    temperature = p->data[pos++] << 8 |
+                                                                  p->data[pos++];
+            
+                                                    temperature /= 100.0;
+                                                }
+            
+                                                break;
+                                            }
+                                            case 0x02:
+                                            {
+                                                unsigned char flags = p->data[pos++];
+            
+                                                unsigned long time = 0;
+                                                int rate, count, reading;
+            
+                                                time  = p->data[pos++] << 24;
+                                                time |= p->data[pos++] << 16;
+                                                time |= p->data[pos++] <<  8;
+                                                time |= p->data[pos++];
+            
+                                                if( flags & 0x80 && time )
+                                                {
+                                                    time = CtiTime::now().seconds() - time;
+                                                }
+            
+                                                rate  = (p->data[pos  ] & 0xc0) >> 6;
+                                                count = (p->data[pos++] & 0x3f) << 8 | p->data[pos++];
+            
+                                                for( int i = 0; i < count; i++ )
+                                                {
+                                                    reading = p->data[pos++] << 8 | 
+                                                              p->data[pos++];
+            
+                                                    time -= rate;
+                                                }
+            
+                                                break;
+                                            }
+                                        }
+                                    }
+            
+                                    break;
+                                }
+            
+                                default:
+                                {
+                                    {
+                                        CtiLockGuard<CtiLogger> doubt_guard(dout);
+                                        dout << CtiTime() << " **** Checkpoint - unknown GPUFF device type " << devt << " **** " << __FILE__ << " (" << __LINE__ << ")" << endl;
+                                    }
+                                }
                             }
 
-                            memcpy(dr->work.xfer.getInBuffer(), p->data + p->used, dr->work.xfer.getInCountActual());
+                            if( !m->getData().empty() )
+                            {
+                                VanGoghConnection.WriteConnQue(m);
+                            }
+                            else
+                            {
+                                delete m;
+                            }
 
-                            p->used += dr->work.xfer.getInCountActual();
+                            delete p->data;
+                            delete p;
                         }
-                        else
-                        {
-                            dr->work.inbound.pop();
-                        }
-                    }
-                    else
-                    {
-                        dr->work.xfer.setInCountActual(0UL);
-                    }
-
-                    dr->work.status = dr->device->decode(dr->work.xfer, status);
-
-                    dr->work.pending_decode = false;
-
-                    if( status || dr->work.xfer.getInCountActual() )
-                    {
-                        traceInbound(dr->ip, dr->port, dr->work.status, dr->work.xfer.getInBuffer(), dr->work.xfer.getInCountActual(), _traceList, dr->device);
-                    }
-
-                    if( p && (p->used >= p->len) )
-                    {
-                        //  we've used the packet up
-                        delete p->data;
-                        delete p;
 
                         dr->work.inbound.pop();
                     }
-
-                    //  if we're done, we're not waiting for anything
-                    _devices_idle &= dr->device->isTransactionComplete() & dr->work.outbound.empty() & dr->work.inbound.empty();
                 }
+    
             }
         }
         else if( gConfigParms.getValueAsULong("PORTER_UDP_DEBUGLEVEL", 0, 16) & 0x00000001 )
