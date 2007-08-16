@@ -737,9 +737,10 @@ void CCU711::CreateQueuedResponse()
                 Data[ctr++] = 0x00;
                 Data[ctr++] = 0x00;
                 Data[ctr++] = 0x00; // ROUTE
-                Data[ctr++] = 0x00;//      THIS SHOULD ALWAYS BE 0x01 !!!!        // NFUNC
-                Data[ctr++] = 0x00; // S1
-                Data[ctr++] = 0x00; // L1
+                Data[ctr++] = 0x01;//      THIS SHOULD ALWAYS BE 0x01 !!!!        // NFUNC
+                Data[ctr++] = 0x40; // S1
+                Data[ctr++] = 0x01; // "  "
+                Data[ctr++] = 0x03; // L1
                 Data[ctr++] = 0x00;
                 Data[ctr++] = 0x00;
                 Data[ctr++] = 0x00;
