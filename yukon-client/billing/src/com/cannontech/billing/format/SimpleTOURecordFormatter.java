@@ -1,5 +1,7 @@
 package com.cannontech.billing.format;
 
+import java.text.DecimalFormat;
+
 import com.cannontech.billing.device.base.BillableDevice;
 import com.cannontech.common.dynamicBilling.model.BillableField;
 
@@ -34,11 +36,13 @@ public class SimpleTOURecordFormatter extends BillingFormatterBase {
 
         addToStringBuffer(writeToFile, device.getData(BillableField.meterNumber), true);
 
-        if (device.getCalculatedValue(BillableField.totalConsumption) != null) {
+        if (device.getCalculatedValue(BillableField.totalConsumption) != null ||
+        		device.getCalculatedValue(BillableField.rateAConsumption) != null ||
+        		device.getCalculatedValue(BillableField.rateBConsumption) != null ) {
             // KWH
             addToStringBuffer(writeToFile,
                               format(device.getCalculatedValue(BillableField.totalConsumption),
-                                     FORMAT_NODECIMAL),
+                            		  getKWHFormat()),
                               true);
 
             addToStringBuffer(writeToFile,
@@ -54,7 +58,7 @@ public class SimpleTOURecordFormatter extends BillingFormatterBase {
             // KW
             addToStringBuffer(writeToFile,
                               format(device.getCalculatedValue(BillableField.totalPeakDemand),
-                                     KW_FORMAT),
+                                     getKWFormat()),
                               true);
 
             addToStringBuffer(writeToFile,
@@ -69,10 +73,10 @@ public class SimpleTOURecordFormatter extends BillingFormatterBase {
 
             // On Peak
             addToStringBuffer(writeToFile, format(device.getValue(BillableField.rateAConsumption),
-                                                  FORMAT_NODECIMAL), true);
+                                                  getKWHFormat()), true);
 
             addToStringBuffer(writeToFile, format(device.getValue(BillableField.rateADemand),
-                                                  KW_FORMAT), true);
+                                                  getKWFormat()), true);
 
             addToStringBuffer(writeToFile, format(device.getTimestamp(BillableField.rateADemand),
                                                   TIME_FORMAT), true);
@@ -82,10 +86,10 @@ public class SimpleTOURecordFormatter extends BillingFormatterBase {
 
             // Off Peak
             addToStringBuffer(writeToFile, format(device.getValue(BillableField.rateBConsumption),
-                                                  FORMAT_NODECIMAL), true);
+                                                  getKWHFormat()), true);
 
             addToStringBuffer(writeToFile, format(device.getValue(BillableField.rateBDemand),
-                                                  KW_FORMAT), true);
+                                                  getKWFormat()), true);
 
             addToStringBuffer(writeToFile, format(device.getTimestamp(BillableField.rateBDemand),
                                                   TIME_FORMAT), true);
@@ -99,5 +103,13 @@ public class SimpleTOURecordFormatter extends BillingFormatterBase {
         } else {
             return "";
         }
+    }
+    
+    public DecimalFormat getKWHFormat() {
+    	return FORMAT_NODECIMAL;
+    }
+    
+    public DecimalFormat getKWFormat() {
+    	return KW_FORMAT;
     }
 }

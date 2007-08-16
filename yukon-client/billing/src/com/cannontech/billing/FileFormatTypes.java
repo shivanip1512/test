@@ -53,7 +53,7 @@ public final class FileFormatTypes {
     public static final int BIG_RIVERS_ELEC_COOP = 23;
   	public static final int EXTENDED_TOU_INCODE = 24;
   	public static final int ITRON_REGISTER_READINGS_EXPORT = 25;
-  	public static final int BASIC_DEVICE_NAME = 26;
+  	public static final int SIMPLE_TOU_DEVICE_NAME = 26;
 
 	public static final String SEDC_STRING = "SEDC";
 	public static final String CADP_STRING = "CADP";
@@ -79,7 +79,7 @@ public final class FileFormatTypes {
     public static final String BIG_RIVERS_STRING = "Big Rivers Elec Coop";
 	public static final String EXTENDED_TOU_INCODE_STRING = "INCODE (Extended TOU)";
 	public static final String ITRON_REGISTER_READINGS_EXPORT_STRING = "Itron Register Readings Export";
-	public static final String BASIC_DEVICE_NAME_STRING = "Basic_DeviceName";
+	public static final String SIMPLE_TOU_DEVICE_NAME_STRING  = "SIMPLE_TOU_DeviceName";
 	
     private static final int[] defaultValidFormatIDs;
     private static final String[] defaultValidFormatTypes;
