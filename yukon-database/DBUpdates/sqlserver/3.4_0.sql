@@ -549,7 +549,7 @@ go
 insert into SequenceNumber values (1,'DeviceReadLog');
 insert into SequenceNumber values (1,'DeviceReadRequestLog');
 insert into SequenceNumber values (1,'DeviceReadJobLog');
-go   
+go
       
 insert into StateGroup values (-8, 'TwoStateActive', 'Status');
 go
