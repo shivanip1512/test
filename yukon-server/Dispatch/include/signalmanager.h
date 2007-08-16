@@ -8,8 +8,8 @@
 * Author: Corey G. Plender
 *
 * CVS KEYWORDS:
-* REVISION     :  $Revision: 1.8 $
-* DATE         :  $Date: 2006/09/26 14:11:52 $
+* REVISION     :  $Revision: 1.9 $
+* DATE         :  $Date: 2007/08/16 20:52:13 $
 *
 * Copyright (c) 2002 Cannon Technologies Inc. All rights reserved.
 *-----------------------------------------------------------------------------*/
@@ -58,6 +58,7 @@ public:
 
     CtiSignalMsg* setAlarmActive(long pointid, int alarm_condition, bool active = true);
     CtiSignalMsg* setAlarmAcknowledged(long pointid, int alarm_condition, bool acked = true);
+    CtiSignalMsg* clearAlarms(long pointid);
 
     bool isAlarmed(long pointid, int alarm_condition) const;                // The manager has an active and/or unacknowledged alarm on this condition for this point.
     bool isAlarmActive(long pointid, int alarm_condition) const;            // The manager has an active alarm on this condition for this point.  It could be acknowledged or otherwise

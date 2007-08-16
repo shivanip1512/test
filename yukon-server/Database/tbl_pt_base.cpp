@@ -6,8 +6,8 @@
 *
 * PVCS KEYWORDS:
 * ARCHIVE      :  $Archive:   Z:/SOFTWAREARCHIVES/YUKON/DATABASE/tbl_pt_base.cpp-arc  $
-* REVISION     :  $Revision: 1.8 $
-* DATE         :  $Date: 2007/04/17 15:25:00 $
+* REVISION     :  $Revision: 1.9 $
+* DATE         :  $Date: 2007/08/16 20:52:13 $
 *
 * Copyright (c) 1999, 2000, 2001 Cannon Technologies Inc. All rights reserved.
 *-----------------------------------------------------------------------------*/
@@ -19,6 +19,10 @@
 #include "tbl_pt_base.h"
 
 #include "rwutil.h"
+
+const int CtiTablePointBase::MASK_POINT_BASE_TAGS = TAG_DISABLE_ALARM_BY_POINT
+                                                  | TAG_DISABLE_POINT_BY_POINT 
+                                                  | TAG_ATTRIB_PSEUDO;
 
 CtiTablePointBase& CtiTablePointBase::operator=(const CtiTablePointBase& aRef)
 {

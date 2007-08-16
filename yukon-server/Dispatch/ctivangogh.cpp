@@ -6,8 +6,8 @@
 *
 * PVCS KEYWORDS:
 * ARCHIVE      :  $Archive:   Z:/SOFTWAREARCHIVES/YUKON/DISPATCH/ctivangogh.cpp-arc  $
-* REVISION     :  $Revision: 1.168 $
-* DATE         :  $Date: 2007/07/10 21:06:58 $
+* REVISION     :  $Revision: 1.169 $
+* DATE         :  $Date: 2007/08/16 20:52:13 $
 *
 * Copyright (c) 1999, 2000, 2001 Cannon Technologies Inc. All rights reserved.
 *-----------------------------------------------------------------------------*/
@@ -3694,6 +3694,18 @@ INT CtiVanGogh::checkPointDataStateQuality(CtiPointDataMsg  *pData, CtiMultiWrap
                         else if(pPoint->isStatus())
                         {
                             status = checkForStatusAlarms(pData, aWrap, pPoint);
+                        }
+                    }
+                    else
+                    {
+                        if(_signalManager.getTagMask(pPoint->getPointID()) & TAG_ACTIVE_ALARM)
+                        {
+                            CtiSignalMsg *sigMsg = _signalManager.clearAlarms(pPoint->getPointID());
+                            pDyn->getDispatch().resetTags(MASK_ANY_ALARM);
+                            if( sigMsg != NULL )
+                            {
+                                aWrap.getMulti()->insert(sigMsg);
+                            }
                         }
                     }
                 }

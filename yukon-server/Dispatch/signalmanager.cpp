@@ -7,8 +7,8 @@
 * Author: Corey G. Plender
 *
 * CVS KEYWORDS:
-* REVISION     :  $Revision: 1.18 $
-* DATE         :  $Date: 2007/04/19 15:41:10 $
+* REVISION     :  $Revision: 1.19 $
+* DATE         :  $Date: 2007/08/16 20:52:13 $
 *
 * Copyright (c) 2002 Cannon Technologies Inc. All rights reserved.
 *-----------------------------------------------------------------------------*/
@@ -22,6 +22,7 @@
 #include "sema.h"
 #include "signalmanager.h"
 #include "tbl_dyn_ptalarming.h"
+#include "tbl_pt_alarm.h"
 
 
 using std::pair;
@@ -167,6 +168,48 @@ CtiSignalManager& CtiSignalManager::addSignal(const CtiSignalMsg &sig)          
     }
 
     return *this;
+}
+
+CtiSignalMsg * CtiSignalManager::clearAlarms(long pointid)
+{
+    CtiSignalMsg *pSigActive = NULL;
+    bool found = false;
+    UINT tags = 0;
+    SigMgrMap_t::key_type key;
+    SigMgrMap_t::iterator itr;
+
+    int maxVal = __max(CtiTablePointAlarming::invalidstatusstate, CtiTablePointAlarming::invalidnumericstate);
+
+    for(int i=0; i<maxVal; i++)
+    {
+        key = make_pair(pointid, i);
+        itr = _map.find( key );
+
+        if(itr != _map.end())
+        {
+            found = true;
+            SigMgrMap_t::value_type vt = *itr;
+            CtiSignalMsg *&pOriginalSig = vt.second;
+
+            pOriginalSig->resetTags(TAG_ACTIVE_ALARM);
+
+            tags = ( pOriginalSig->getTags() & SIGNAL_MANAGER_MASK );
+            if(tags == 0)
+            {
+                // This guy has already been acknowledged and now has been cleared.  Get it out of the table!
+                _map.erase( itr );
+                CtiTableDynamicPointAlarming::Delete(pointid, i);
+                pOriginalSig = 0;
+            }
+        }
+    }
+
+    if( found )
+    {
+        pSigActive = CTIDBG_new CtiSignalMsg(pointid, 0, "Alarms Cleared");
+    }
+    return pSigActive;
+    
 }
 
 // This is now based on the TAG_ACTIVE_CONDITION more than the TAG_ACTIVE_ALARM

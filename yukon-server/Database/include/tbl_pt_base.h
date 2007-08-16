@@ -14,8 +14,8 @@
 *
 * PVCS KEYWORDS:
 * ARCHIVE      :  $Archive:   Z:/SOFTWAREARCHIVES/YUKON/DATABASE/INCLUDE/tbl_pt_base.h-arc  $
-* REVISION     :  $Revision: 1.4 $
-* DATE         :  $Date: 2005/12/20 17:16:08 $
+* REVISION     :  $Revision: 1.5 $
+* DATE         :  $Date: 2007/08/16 20:52:13 $
 *
 * Copyright (c) 1999, 2000 Cannon Technologies Inc. All rights reserved.
 *-----------------------------------------------------------------------------*/
@@ -141,6 +141,8 @@ public:
 
    UINT getStaticTags() const;
    UINT adjustStaticTags(UINT &tags) const;
+
+   static const int MASK_POINT_BASE_TAGS;
 
 };
 #endif // #ifndef __TBL_PT_BASE_H__

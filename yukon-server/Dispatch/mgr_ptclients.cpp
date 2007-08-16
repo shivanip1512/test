@@ -6,8 +6,8 @@
 *
 * PVCS KEYWORDS:
 * ARCHIVE      :  $Archive:   Z:/SOFTWAREARCHIVES/YUKON/DISPATCH/mgr_ptclients.cpp-arc  $
-* REVISION     :  $Revision: 1.22 $
-* DATE         :  $Date: 2006/09/26 14:16:11 $
+* REVISION     :  $Revision: 1.23 $
+* DATE         :  $Date: 2007/08/16 20:52:13 $
 *
 * Copyright (c) 1999, 2000, 2001 Cannon Technologies Inc. All rights reserved.
 *-----------------------------------------------------------------------------*/
@@ -116,6 +116,7 @@ void verifyInitialDynamicData(CtiPointSPtr &pTempPoint)
 
         if(statictags != pDyn->getDispatch().getTags())
         {
+            pDyn->getDispatch().resetTags(CtiTablePointBase::MASK_POINT_BASE_TAGS);
             pDyn->getDispatch().setTags(statictags);
         }
     }
