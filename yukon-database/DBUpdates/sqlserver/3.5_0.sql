@@ -10,6 +10,7 @@ delete from YukonRoleProperty 	where RoleID in (-204,-205,-301,-302)
 delete from YukonUserRole 		where RoleID in (-204,-205,-301,-302)
 delete from YukonRole 			where RoleID in (-204,-205,-301,-302)
 
+
 /* @error ignore-begin */
 insert into YukonRoleProperty values(-100105, -1001, 'Target', 'true', 'display target settings');
 go
@@ -258,8 +259,12 @@ alter table DeviceMeterGroup drop column TestCollectionGroup;
 alter table DeviceMeterGroup drop column BillingGroup;
 go
 
+/* @error ignore-begin */
+insert into YukonRoleProperty values(-1019,-1,'batched_switch_command_timer','auto','Specifies whether the STARS application should automatically process batched switch commands');
+/* @error ignore-end */
 insert into YukonGroupRole values(-20,-1,-1,-1019,'(none)');
 insert into YukonGroupRole values(-21,-1,-1,-1020,'(none)');
+go
 
 update YukonGroupRole set RoleID=-102, RolePropertyID=-10206 where RoleID= -304 and RolePropertyID = -30403;
 update YukonGroupRole set RoleID=-102, RolePropertyID=-10205 where RoleID= -304 and RolePropertyID = -30402;
