@@ -104,6 +104,10 @@ insert into YukonRoleProperty values(-10814, -108,'Suppress Error Page Details',
 
 insert into BillingFileFormats values(-25,'Itron Register Readings Export');
 
+/* @error ignore-begin */
+insert into billingfileformats values(-26, 'SIMPLE_TOU_DeviceName');
+/* @error ignore-end */
+
 alter table ActivityLog modify Description varchar2(240);
 
 insert into command values(-130, 'getvalue lp channel ?''Channel #'' ?''Enter Start Date: xx/xx/xxxx'' ?''Enter End Date: xx/xx/xxxx''', 'Read LP Channel Data', 'ALL MCT-4xx Series');

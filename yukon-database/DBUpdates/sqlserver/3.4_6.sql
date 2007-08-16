@@ -15,6 +15,7 @@ ALTER TABLE DeviceReadJobLog DROP CONSTRAINT FK_DEVICERE_FK_DRJOBL_MACSCHED
 update yukonroleproperty set DefaultValue = 'false' where rolepropertyid = -100008;
 update yukonroleproperty set DefaultValue = 'false' where rolepropertyid = -100007;
 
+insert into billingfileformats values(-26, 'SIMPLE_TOU_DeviceName');
 
 /******************************************************************************/
 /* Run the Stars Update if needed here */
@@ -27,4 +28,4 @@ update yukonroleproperty set DefaultValue = 'false' where rolepropertyid = -1000
 /* VERSION INFO                                               */
 /*   Automatically gets inserted from build script            */
 /**************************************************************/
-insert into CTIDatabase values('3.4', 'David', '15-Aug-2007', 'Latest Update', 6 );
+insert into CTIDatabase values('3.4', 'David', '16-Aug-2007', 'Latest Update', 6 );
