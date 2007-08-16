@@ -148,7 +148,7 @@
 						Opteam Comments
 					</td>
 					<td>
-						<%=addtional.getOtherComments()%>
+						<%=addtional.getOpTeamComments()%>
 					</td>
 				</tr>
 				<tr>

@@ -838,7 +838,7 @@ public class CBCDisplay {
                                                            + CommonUtils.formatDecimalPlaces(subBus.getPeakLead().doubleValue(),1) + "%T";
                 } else
                     return CommonUtils.formatDecimalPlaces(subBus.getPeakLead().doubleValue(),0) 
-                                                           + " : " + num.format(subBus.getPeakPFSetPoint()) + " : " 
+                                                           + " to " 
                                                            + CommonUtils.formatDecimalPlaces(subBus.getPeakLag().doubleValue(),0) + " Pk";
             } else {
                 if (CBCUtils.isPowerFactorControlled(subBus.getControlUnits())) {
@@ -848,7 +848,7 @@ public class CBCDisplay {
                                                            + CommonUtils.formatDecimalPlaces(subBus.getOffPkLead().doubleValue(),0) + "%T";
                 } else
                     return CommonUtils.formatDecimalPlaces(subBus.getOffPkLead().doubleValue(), 0)
-                                                           + " : " + num.format(subBus.getOffpeakPFSetPoint()) + " : " 
+                                                           + " to " 
                                                            + CommonUtils.formatDecimalPlaces(subBus.getOffPkLag().doubleValue(),0) + " OffPk";
             }
 

@@ -252,7 +252,7 @@
 	
 	               <h:column>
 	                   <f:facet name="header">
-							<x:outputText value="Control Order" title="Order used for control (Range: 1 to 1000 )" />
+							<x:outputText value="Display Order" title="Order used for control (Range: 1 to 1000 )" />
 	                   </f:facet>
 	                   <x:inputText value="#{capBank.controlOrder}" styleClass="char4Label" required="true" >
 	                   		<f:validateLongRange minimum="1" maximum="1000" />
