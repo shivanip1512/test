@@ -6,8 +6,8 @@
 *
 * PVCS KEYWORDS:
 * ARCHIVE      :  $Archive:   Z:/SOFTWAREARCHIVES/YUKON/PORTER/porter.cpp-arc  $
-* REVISION     :  $Revision: 1.110 $
-* DATE         :  $Date: 2007/07/23 15:36:40 $
+* REVISION     :  $Revision: 1.111 $
+* DATE         :  $Date: 2007/08/16 21:32:57 $
 *
 * Copyright (c) 1999, 2000, 2001 Cannon Technologies Inc. All rights reserved.
 *-----------------------------------------------------------------------------*/
@@ -2073,6 +2073,7 @@ bool processInputFunction(CHAR Char)
             dout << "Alt - R     Download all CCU Default Routes" << endl;
             dout << "Alt - S     Issue a system wide timesync" << endl;
             dout << "Alt - T     Trace all communications" << endl;
+            dout << "Alt - Z     Reload all CPARMs" << endl;
             dout << endl;
 
             break;
@@ -2099,6 +2100,17 @@ bool processInputFunction(CHAR Char)
                     CtiLockGuard<CtiLogger> doubt_guard(dout);
                     dout << CtiTime() << " Trace is Now Off for All Messages" << endl;
                 }
+            }
+
+            break;
+        }
+    case 0x7a:              // alt-z
+        {
+            gConfigParms.RefreshConfigParameters();
+
+            {
+                CtiLockGuard<CtiLogger> doubt_guard(dout);
+                dout << CtiTime() << " CPARMs have been reloaded" << endl;
             }
 
             break;
