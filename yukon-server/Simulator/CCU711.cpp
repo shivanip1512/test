@@ -650,25 +650,26 @@ int CCU711::DecodeFunction(int WordType, unsigned char Data[]){
 
 void CCU711::CreateQueuedMsg()
 {
-    int LengthDiv17 = _messageData[3];
-    LengthDiv17 = (LengthDiv17 / 17);
-    //cout<<"LengthDiv17 = "<<LengthDiv17<<" !!!"<<endl;
+    int Offset = _messageData[6];
+    int Length = _messageData[3];
+    int counter = Length / Offset;
 
-    for(int i = 0; i<LengthDiv17; i++)
+    for(int i = 0; i<(counter); i++)
     {
+        cout<<"Offset : "<<Offset<<" !"<<endl;
         _queueMessage newMessage;
         newMessage.initializeMessage();
     
         unsigned char one, two, three, four;
-        one   = _messageData[7+(i*17)];
-        two   = _messageData[8+(i*17)];
-        three = _messageData[9+(i*17)];
-        four  = _messageData[10+(i*17)];
+        one   = _messageData[7+(i*Offset)];
+        two   = _messageData[8+(i*Offset)];
+        three = _messageData[9+(i*Offset)];
+        four  = _messageData[10+(i*Offset)];
         cout<<"setting qenid to :";
-        cout <<string(CtiNumStr(_messageData[7+(i*17)]).hex().zpad(2))<<"   ";
-        cout <<string(CtiNumStr(_messageData[8+(i*17)]).hex().zpad(2))<<"   ";
-        cout <<string(CtiNumStr(_messageData[9+(i*17)]).hex().zpad(2))<<"   ";
-        cout <<string(CtiNumStr(_messageData[10+(i*17)]).hex().zpad(2))<<"!!!!"<<endl;
+        cout <<string(CtiNumStr(_messageData[7+(i*Offset)]).hex().zpad(2))<<"   ";
+        cout <<string(CtiNumStr(_messageData[8+(i*Offset)]).hex().zpad(2))<<"   ";
+        cout <<string(CtiNumStr(_messageData[9+(i*Offset)]).hex().zpad(2))<<"   ";
+        cout <<string(CtiNumStr(_messageData[10+(i*Offset)]).hex().zpad(2))<<"!"<<endl;
         newMessage.setQENID(one, two, three, four);
     
         int type = 0;
@@ -683,7 +684,6 @@ void CCU711::CreateQueuedMsg()
         newMessage.setAddress(address);
         newMessage.setbytesToReturn(bytesToReturn);
     
-        int _bytesToReturn;
         //CtiTime _timeWhenReady;
     
         //RTE_CIRCUIT;
@@ -692,6 +692,7 @@ void CCU711::CreateQueuedMsg()
     
         _messageQueue.push(newMessage);
         CreateQueuedResponse();
+        Offset = _messageData[6 + Offset];
     }
 }
 
