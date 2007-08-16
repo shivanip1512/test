@@ -677,7 +677,7 @@ void CCU711::CreateQueuedMsg()
         int function = 0;
         unsigned char address;
         int bytesToReturn = 0;
-        decodeForQueueMessage(type, iotype, function, address, bytesToReturn);
+        decodeForQueueMessage(type, iotype, function, address, bytesToReturn, Offset);
         newMessage.setWord(type);
         newMessage.setiotype(iotype);
         newMessage.setFunction(function);
@@ -740,10 +740,13 @@ void CCU711::CreateQueuedResponse()
                 Data[ctr++] = 0x01;//      THIS SHOULD ALWAYS BE 0x01 !!!!        // NFUNC
                 Data[ctr++] = 0x40; // S1
                 Data[ctr++] = 0x01; // "  "
-                Data[ctr++] = 0x03; // L1
-                Data[ctr++] = 0x00;
-                Data[ctr++] = 0x00;
-                Data[ctr++] = 0x00;
+                Data[ctr++] = _messageQueue.back().getbytesToReturn(); // L1
+                for(int i=0; i<_messageQueue.back().getbytesToReturn(); i++)
+                {
+                    Data[ctr++] = 0x00;
+                }
+                Data[ctr++] = 0xff; //Data
+                Data[ctr++] = 0xff; //Data
                 Data[3] = ctr-4;    //length;
 
 
@@ -829,9 +832,9 @@ unsigned char CCU711::getRLEN()
      return RLEN14;
 }
 
-void CCU711::decodeForQueueMessage(int & type, int & iotype, int & function, unsigned char & address, int  & bytesToReturn)
+void CCU711::decodeForQueueMessage(int & type, int & iotype, int & function, unsigned char & address, int  & bytesToReturn, int offset)
 {
-    switch(_messageData[19] & 0xc0)
+    switch(_messageData[2 + offset] & 0xc0)
     {
         case 0x40:
             type = A_WORD;
@@ -844,7 +847,7 @@ void CCU711::decodeForQueueMessage(int & type, int & iotype, int & function, uns
             break;
     }
 
-    switch(_messageData[19] & 0x18)
+    switch(_messageData[2 + offset] & 0x18)
     {
         case 0x00:
             iotype = WRITE;
@@ -864,7 +867,7 @@ void CCU711::decodeForQueueMessage(int & type, int & iotype, int & function, uns
     //{   INSERT CODE HERE TO DETERMINE FUNCTION
     //}
 
-    bytesToReturn = _messageData[16];
+    bytesToReturn = _messageData[5 + offset];
 
     address = _messageData[1];
 }
