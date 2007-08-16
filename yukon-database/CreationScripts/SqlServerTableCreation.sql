@@ -2576,6 +2576,7 @@ insert into billingfileformats values(22, 'EXTENDED_TOU',1);
 insert into billingfileformats values (-23, 'Big Rivers Elec Coop',1);
 insert into billingfileformats values(-24, 'INCODE (Extended TOU)',1);
 insert into BillingFileFormats values(-25,'Itron Register Readings Export',1);
+insert into billingfileformats values(-26, 'SIMPLE_TOU_DeviceName');
 
 alter table BillingFileFormats
    add constraint PK_BILLINGFILEFORMATS primary key nonclustered (FormatID)
