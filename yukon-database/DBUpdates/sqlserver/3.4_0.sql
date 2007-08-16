@@ -3,6 +3,7 @@
 /******************************************/
 
 /* @error ignore-begin */
+/* @start-block */
 CREATE proc removeColumn
 (@tablename nvarchar(100), @columnname nvarchar(100))
 AS
@@ -24,6 +25,7 @@ exec (@cmd)
 select @cmd='alter table '+@tablename+ ' drop column '+@columnname
 exec (@cmd)
 END
+/* @end-block */
 go
 /* @error ignore-end */
 
@@ -66,16 +68,16 @@ create table Substation (
    SubstationID         numeric              not null,
    SubstationName       varchar(50)          null,
    LMRouteID              numeric              null
-)
+);
 go
 
 insert into Substation values (0,'(none)',0);
 alter table Substation
-   add constraint PK_SUBSTATION primary key  (SubstationID)
+   add constraint PK_SUBSTATION primary key  (SubstationID);
 go
 alter table Substation
    add constraint FK_Sub_Rt foreign key (LMRouteID)
-      references Route (RouteID)
+      references Route (RouteID);
 go
 
 sp_rename 'Substation.RouteID', 'LMRouteID', 'COLUMN';
@@ -85,21 +87,21 @@ create table SubstationToRouteMapping (
    SubstationID		numeric              not null,
    RouteID              numeric              not null,
    Ordering             numeric              not null
-)
+);
 go
 
 alter table SubstationToRouteMapping
-   add constraint PK_SUB_Rte_Map primary key  (SubstationID, RouteID)
+   add constraint PK_SUB_Rte_Map primary key  (SubstationID, RouteID);
 go
 
 alter table SubstationToRouteMapping
    add constraint FK_Sub_Rte_Map_SubID foreign key (SubstationID)
-      references Substation (SubstationID)
+      references Substation (SubstationID);
 go
 
 alter table SubstationToRouteMapping
    add constraint FK_Sub_Rte_Map_RteID foreign key (RouteID)
-      references Route (RouteID)
+      references Route (RouteID);
 go
 
 alter table ImportData add BillGrp varchar(64);
@@ -148,15 +150,15 @@ create table ImportPendingComm (
    TemplateName	       	varchar(64)          not null,
    BillGrp             	varchar(64)          not null, 
    SubstationName      	varchar(64)          not null
-)
+);
 go
 alter table ImportPendingComm
-   add constraint PK_IMPPENDINGCOMM primary key  (DeviceID)
+   add constraint PK_IMPPENDINGCOMM primary key  (DeviceID);
 go
 
 alter table ImportPendingComm
    add constraint FK_ImpPC_PAO foreign key (DeviceID)
-      references YukonPAObject (PAObjectID)
+      references YukonPAObject (PAObjectID);
 go
 
 insert into YukonRoleProperty values(-20011,-200,'Multispeak Setup','false','Controls access to configure the Multispeak Interfaces.');
@@ -203,11 +205,11 @@ alter table devicemetergroup alter column MeterNumber varchar(50) not null;
 go
 /* @error ignore-end */
 
-update yukonpaobject set type = 'MCT-430EL' where type = 'MCT-430A' or type = 'MCT430A'
-update yukonpaobject set type = 'MCT-430LG' where type = 'MCT-430S' or type = 'MCT430S'
+update yukonpaobject set type = 'MCT-430EL' where type = 'MCT-430A' or type = 'MCT430A';
+update yukonpaobject set type = 'MCT-430LG' where type = 'MCT-430S' or type = 'MCT430S';
 
-update devicetypecommand set devicetype = 'MCT-430EL' where devicetype = 'MCT-430A' or devicetype = 'MCT430A'
-update devicetypecommand set devicetype = 'MCT-430LG' where devicetype = 'MCT-430S' or devicetype = 'MCT430S'
+update devicetypecommand set devicetype = 'MCT-430EL' where devicetype = 'MCT-430A' or devicetype = 'MCT430A';
+update devicetypecommand set devicetype = 'MCT-430LG' where devicetype = 'MCT-430S' or devicetype = 'MCT430S';
 
 INSERT INTO DEVICETYPECOMMAND VALUES (-501, -34, 'CCU-721', 1, 'Y', -1);
 INSERT INTO DEVICETYPECOMMAND VALUES (-502, -35, 'CCU-721', 2, 'Y', -1);
@@ -368,21 +370,21 @@ insert into FDRInterfaceOption values(24, 'SchedName', 1, 'Text', '(none)' );
 insert into FDRInterfaceOption values(24, 'Path', 2, 'Text', 'c:\\yukon\\server\\export\\' );
 insert into FDRInterfaceOption values(24, 'Filename', 3, 'Text', 'control.txt' );
 
-insert into yukonroleproperty values (-10306, -103, 'Read device', 'true', 'Allow the ability to read values from a device')
-insert into yukonroleproperty values (-10307, -103, 'Write to device', 'true', 'Allow the ability to write values to a device')
-insert into yukonroleproperty values (-10308, -103, 'Read disconnect', 'true', 'Allow the ability to read disconnect from a device')
-insert into yukonroleproperty values (-10309, -103, 'Write disconnect', 'true', 'Allow the ability to write a disconnect to a device')
+insert into yukonroleproperty values (-10306, -103, 'Read device', 'true', 'Allow the ability to read values from a device');
+insert into yukonroleproperty values (-10307, -103, 'Write to device', 'true', 'Allow the ability to write values to a device');
+insert into yukonroleproperty values (-10308, -103, 'Read disconnect', 'true', 'Allow the ability to read disconnect from a device');
+insert into yukonroleproperty values (-10309, -103, 'Write disconnect', 'true', 'Allow the ability to write a disconnect to a device');
 
-insert into yukonroleproperty values (-10310, -103, 'Read LM device', 'true', 'Allow the ability to read values from an LM device')
-insert into yukonroleproperty values (-10311, -103, 'Write to LM device', 'true', 'Allow the ability to write values to an LM device')
-insert into yukonroleproperty values (-10312, -103, 'Control LM device', 'true', 'Allow the ability to control an LM device')
+insert into yukonroleproperty values (-10310, -103, 'Read LM device', 'true', 'Allow the ability to read values from an LM device');
+insert into yukonroleproperty values (-10311, -103, 'Write to LM device', 'true', 'Allow the ability to write values to an LM device');
+insert into yukonroleproperty values (-10312, -103, 'Control LM device', 'true', 'Allow the ability to control an LM device');
 
-insert into yukonroleproperty values (-10313, -103, 'Read Cap Control device', 'true', 'Allow the ability to read values from a Cap Control device')
-insert into yukonroleproperty values (-10314, -103, 'Write to Cap Control device', 'true', 'Allow the ability to write values to a Cap Control device')
-insert into yukonroleproperty values (-10315, -103, 'Control Cap Control device', 'true', 'Allow the ability to control a Cap Control device')
+insert into yukonroleproperty values (-10313, -103, 'Read Cap Control device', 'true', 'Allow the ability to read values from a Cap Control device');
+insert into yukonroleproperty values (-10314, -103, 'Write to Cap Control device', 'true', 'Allow the ability to write values to a Cap Control device');
+insert into yukonroleproperty values (-10315, -103, 'Control Cap Control device', 'true', 'Allow the ability to control a Cap Control device');
 
-insert into yukonroleproperty values (-10316, -103, 'Execute Unknown Command', 'true', 'Allow the ability to execute commands which do not fall under another role property.')
-insert into yukonroleproperty values (-10317, -103, 'Execute Manual Command', 'true', 'Allow the ability to execute manual commands')
+insert into yukonroleproperty values (-10316, -103, 'Execute Unknown Command', 'true', 'Allow the ability to execute commands which do not fall under another role property.');
+insert into yukonroleproperty values (-10317, -103, 'Execute Manual Command', 'true', 'Allow the ability to execute manual commands');
 go
 
 alter table YukonUser add AuthType varchar(16);
@@ -567,7 +569,7 @@ create table CAPCONTROLAREA (
 go
 
 alter table CAPCONTROLAREA
-   add constraint PK_CAPCONTROLAREA primary key  (AreaID)
+   add constraint PK_CAPCONTROLAREA primary key  (AreaID);
 go
 
 alter table CAPCONTROLAREA
