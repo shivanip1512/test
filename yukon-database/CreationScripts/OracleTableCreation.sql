@@ -1,7 +1,7 @@
 /*==============================================================*/
 /* Database name:  YukonDatabase                                */
 /* DBMS name:      ORACLE Version 9i                            */
-/* Created on:     8/15/2007 4:37:16 PM                         */
+/* Created on:     8/16/2007 3:55:37 PM                         */
 /*==============================================================*/
 
 
@@ -1155,31 +1155,31 @@ create table "BillingFileFormats"  (
 )
 /
 
-insert into billingfileformats values( -11, 'MV_90 DATA Import');
-insert into BillingFileFormats values( -1,'INVALID');
-insert into BillingFileFormats values( 0,'SEDC');
-insert into BillingFileFormats values( 1,'CADP');
-insert into BillingFileFormats values( 2,'CADPXL2');
-insert into BillingFileFormats values( 3,'WLT-40');
-insert into BillingFileFormats values( 4,'CTI-CSV');
-insert into BillingFileFormats values( 5,'OPU');
-insert into BillingFileFormats values( 6,'DAFRON');
-insert into BillingFileFormats values( 7,'NCDC');
-insert into billingFileformats values( 9, 'CTI2');
-insert into billingfileformats values( 12, 'SEDC 5.4');
-insert into billingfileformats values( 13, 'NISC-Turtle');
-insert into billingfileformats values( 14, 'NISC-NCDC');
-insert into billingfileformats values( 15, 'NCDC-Handheld');
-insert into billingfileformats values( 16, 'NISC TOU (kVarH)');
-insert into billingfileformats values( -17, 'SEDC (yyyyMMdd)');
-insert into billingfileformats values( -18, 'ATS');
-insert into billingfileformats values( -19, ' NISC-Turtle No Limit kWh ');
-insert into billingfileformats values(-20, 'IVUE_BI_T65');
-insert into billingfileformats values(21, 'SIMPLE_TOU');
-insert into billingfileformats values(22, 'EXTENDED_TOU');
-insert into billingfileformats values (-23, 'Big Rivers Elec Coop');
-insert into billingfileformats values(-24, 'INCODE (Extended TOU)');
-insert into BillingFileFormats values(-25,'Itron Register Readings Export');
+insert into billingfileformats values( -11, 'MV_90 DATA Import',1);
+insert into BillingFileFormats values( -1,'INVALID',1);
+insert into BillingFileFormats values( 0,'SEDC',1);
+insert into BillingFileFormats values( 1,'CADP',1);
+insert into BillingFileFormats values( 2,'CADPXL2',1);
+insert into BillingFileFormats values( 3,'WLT-40',1);
+insert into BillingFileFormats values( 4,'CTI-CSV',1);
+insert into BillingFileFormats values( 5,'OPU',1);
+insert into BillingFileFormats values( 6,'DAFRON',1);
+insert into BillingFileFormats values( 7,'NCDC',1);
+insert into billingFileformats values( 9, 'CTI2',1);
+insert into billingfileformats values( 12, 'SEDC 5.4',1);
+insert into billingfileformats values( 13, 'NISC-Turtle',1);
+insert into billingfileformats values( 14, 'NISC-NCDC',1);
+insert into billingfileformats values( 15, 'NCDC-Handheld',1);
+insert into billingfileformats values( 16, 'NISC TOU (kVarH)',1);
+insert into billingfileformats values( -17, 'SEDC (yyyyMMdd)',1);
+insert into billingfileformats values( -18, 'ATS',1);
+insert into billingfileformats values( -19, ' NISC-Turtle No Limit kWh ',1);
+insert into billingfileformats values(-20, 'IVUE_BI_T65',1);
+insert into billingfileformats values(21, 'SIMPLE_TOU',1);
+insert into billingfileformats values(22, 'EXTENDED_TOU',1);
+insert into billingfileformats values (-23, 'Big Rivers Elec Coop',1);
+insert into billingfileformats values(-24, 'INCODE (Extended TOU)',1);
+insert into BillingFileFormats values(-25,'Itron Register Readings Export',1);
 
 alter table "BillingFileFormats"
    add constraint PK_BILLINGFILEFORMATS primary key ("FormatID")
@@ -2792,14 +2792,12 @@ alter table DEVICEMETERGROUP
 /* Table: DEVICEREADJOBLOG                                      */
 /*==============================================================*/
 create table DEVICEREADJOBLOG  (
-   "DeviceReadJobLogID" NUMBER                          not null,
+   "DeviceReadJobLogID" NUMBER(6)                       not null,
    "ScheduleID"         NUMBER                          not null,
    "StartTime"          DATE                            not null,
    "StopTime"           DATE                            not null
 )
 /
-
-ALTER TABLE DeviceReadJobLog DROP CONSTRAINT FK_DEVICERE_FK_DRJOBL_MACSCHED
 
 alter table DEVICEREADJOBLOG
    add constraint PK_DEVICEREADJOBLOG primary key ("DeviceReadJobLogID")
@@ -3224,6 +3222,21 @@ create table DYNAMICBILLINGFIELD  (
 )
 /
 
+alter table DYNAMICBILLINGFIELD
+   add constraint PK_DYNAMICBILLINGFIELD primary key ("id")
+/
+
+/*==============================================================*/
+/* Table: DYNAMICBILLINGFORMAT                                  */
+/*==============================================================*/
+create table DYNAMICBILLINGFORMAT  (
+   "FormatID"           NUMBER                          not null,
+   "Delimiter"          VARCHAR2(20),
+   "Header"             VARCHAR2(255),
+   "Footer"             VARCHAR2(255)
+)
+/
+
 /* ATS */
 insert into DynamicBillingFormat VALUES( '-18',',','H    Meter    kWh   Time   Date    Peak   PeakT   PeakD  Stat Sig  Freq Phase','');
 insert into DynamicBillingField values(1,-18,'Plain Text',0,'M')
@@ -3356,21 +3369,6 @@ insert into DynamicBillingField values(100,21,'rateBConsumption - reading',11,'#
 insert into DynamicBillingField values(101,21,'rateBDemand- reading',12,'##0.000')
 insert into DynamicBillingField values(102,21,'rateBDemand- timestamp',13,'HH:mm')
 insert into DynamicBillingField values(103,21,'rateBDemand- timestamp',14,'MM/dd/yyyy')
-
-alter table DYNAMICBILLINGFIELD
-   add constraint PK_DYNAMICBILLINGFIELD primary key ("id")
-/
-
-/*==============================================================*/
-/* Table: DYNAMICBILLINGFORMAT                                  */
-/*==============================================================*/
-create table DYNAMICBILLINGFORMAT  (
-   "FormatID"           NUMBER                          not null,
-   "Delimiter"          VARCHAR2(20),
-   "Header"             VARCHAR2(255),
-   "Footer"             VARCHAR2(255)
-)
-/
 
 alter table DYNAMICBILLINGFORMAT
    add constraint PK_DYNAMICBILLINGFORMAT primary key ("FormatID")
@@ -10090,11 +10088,6 @@ alter table DEVICEMCTIEDPORT
 alter table DEVICEMETERGROUP
    add constraint SYS_C0013213 foreign key (DEVICEID)
       references DEVICE (DEVICEID)
-/
-
-alter table DEVICEREADJOBLOG
-   add constraint FK_DEVICERE_FK_DRJOBL_MACSCHED foreign key ("ScheduleID")
-      references "MACSchedule" ("ScheduleID")
 /
 
 alter table DEVICEREADLOG
