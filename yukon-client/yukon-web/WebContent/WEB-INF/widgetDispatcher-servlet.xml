@@ -8,7 +8,8 @@
       <property name="order" value="1"/>
       <property name="interceptors">
         <list>
-        <bean class="com.cannontech.web.widget.support.WidgetInterceptor"/>
+          <bean class="com.cannontech.web.widget.support.WidgetInterceptor"/>
+          <ref bean="yukonLoginCheckInterceptor"/>
         </list>
       </property>
     </bean>

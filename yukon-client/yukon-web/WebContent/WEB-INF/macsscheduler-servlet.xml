@@ -5,6 +5,11 @@
 
 	<bean id="simpleUrlMapping"
 		class="org.springframework.web.servlet.handler.SimpleUrlHandlerMapping">
+        <property name="interceptors">
+            <list>
+              <ref bean="yukonLoginCheckInterceptor"/>
+            </list>
+        </property>
 		<property name="mappings">
 			<props>
 				<prop key="/schedules/*">scheduleController</prop>
