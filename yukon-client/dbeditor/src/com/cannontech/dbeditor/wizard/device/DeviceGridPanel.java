@@ -6,13 +6,26 @@ package com.cannontech.dbeditor.wizard.device;
  * @author: 
  */
 import java.awt.Dimension;
+import java.util.List;
+
+import com.cannontech.common.device.definition.service.DeviceDefinitionService;
+import com.cannontech.core.dao.DaoFactory;
+import com.cannontech.database.data.device.GridAdvBase;
+import com.cannontech.database.data.lite.LiteYukonPAObject;
+import com.cannontech.database.data.multi.SmartMultiDBPersistent;
+import com.cannontech.database.data.point.PointBase;
+import com.cannontech.spring.YukonSpringHook;
+import com.cannontech.yukon.IDatabaseCache;
+
 
 
 // This is here in the event we add a port
 public class DeviceGridPanel extends com.cannontech.common.gui.util.DataInputPanel implements javax.swing.event.CaretListener {
 	private javax.swing.JLabel ivjJLabelName = null;
+	private javax.swing.JComboBox PortComboBox = null;
+	private javax.swing.JLabel PortLabel = null;
 	private javax.swing.JTextField ivjJTextFieldName = null;
-    
+	  
 /**
  * DeviceVirtualNamePanel constructor comment.
  */
@@ -33,6 +46,7 @@ public void caretUpdate(javax.swing.event.CaretEvent e) {
 	// user code begin {2}
 	// user code end
 }
+
 /**
  * connEtoC1:  (JTextField1.caret.caretUpdate(javax.swing.event.CaretEvent) --> DeviceVirtualNamePanel.fireInputUpdate()V)
  * @param arg1 javax.swing.event.CaretEvent
@@ -51,7 +65,9 @@ private void connEtoC1(javax.swing.event.CaretEvent arg1) {
 		handleException(ivjExc);
 	}
 }
+
 /**
+ * 
  * Return the JLabelName property value.
  * @return javax.swing.JLabel
  */
@@ -72,6 +88,61 @@ private javax.swing.JLabel getJLabelName() {
 		}
 	}
 	return ivjJLabelName;
+}
+private javax.swing.JComboBox getPortComboBox() {
+	if (PortComboBox == null) {
+		try {
+			PortComboBox = new javax.swing.JComboBox();
+			PortComboBox.setName("PortComboBox");
+			PortComboBox.setMaximumSize(new java.awt.Dimension(162,20));
+			PortComboBox.setPreferredSize(new java.awt.Dimension(162,20));
+			PortComboBox.setFont(new java.awt.Font("dialog", 0, 14));
+			PortComboBox.setMinimumSize(new java.awt.Dimension(162,20));
+			
+		    IDatabaseCache cache = com.cannontech.database.cache.DefaultDatabaseCache.getInstance();
+		    synchronized(cache)
+		    {
+		        java.util.List ports = cache.getAllPorts();
+		        if( getPortComboBox().getModel().getSize() > 0 )
+		            getPortComboBox().removeAllItems();
+		            
+		        LiteYukonPAObject litePort = null;
+		        for( int i = 0; i < ports.size(); i++ )
+		        {
+		            litePort = (LiteYukonPAObject)ports.get(i);
+		            getPortComboBox().addItem(litePort);
+		        }
+		    }			
+
+			// user code begin {1}
+		} catch (java.lang.Throwable ivjExc) {
+			// user code begin {2}
+			// user code end
+			handleException(ivjExc);
+		}
+	}
+	return PortComboBox;
+}
+
+private javax.swing.JLabel getPortLabel() {
+	if (PortLabel == null) {
+		try {
+			PortLabel = new javax.swing.JLabel();
+			PortLabel.setName("PortLabel");
+			PortLabel.setText("Communication Channel:");
+			PortLabel.setMaximumSize(new java.awt.Dimension(172,19));
+			PortLabel.setPreferredSize(new java.awt.Dimension(172,19));
+			PortLabel.setFont(new java.awt.Font("dialog", 0, 14));
+			PortLabel.setMinimumSize(new java.awt.Dimension(172,19));
+			// user code begin {1}
+			// user code end
+		} catch (java.lang.Throwable ivjExc) {
+			// user code begin {2}
+			// user code end
+			handleException(ivjExc);
+		}
+	}
+	return PortLabel;
 }
 
 /**
@@ -120,12 +191,30 @@ public Dimension getPreferredSize() {
 public Object getValue(Object val) 
 {
 	com.cannontech.database.data.device.DeviceBase device = (com.cannontech.database.data.device.DeviceBase)val;
+	int groupId = DaoFactory.getPaoDao().getNextPaoId();
 	
 	String nameString = getJTextFieldName().getText();
 	device.setPAOName( nameString );
-//	device.getDeviceIED().setPassword("0");
-//	ied.getDeviceIED().setSlaveAddress("Master");
+	device.setDeviceID(groupId);
+	
+	//SmartMultiDBPersistent smartDB = new SmartMultiDBPersistent();
+	//Integer pointID = DaoFactory.getPointDao().getNextPointId();
+	LiteYukonPAObject port = null;
+	port = (LiteYukonPAObject)getPortComboBox().getSelectedItem();
+	((GridAdvBase)val).getDeviceDirectCommSettings().setPortID( port.getLiteID() );//
+	
+    if (true) {
 
+        DeviceDefinitionService deviceDefinitionService = (DeviceDefinitionService) YukonSpringHook.getBean("deviceService");
+        List<PointBase> defaultPoints = deviceDefinitionService.createDefaultPointsForDevice(device);
+
+        SmartMultiDBPersistent persistant = new SmartMultiDBPersistent();
+        persistant.addOwnerDBPersistent(device);
+        for (PointBase point : defaultPoints) {
+            persistant.addDBPersistent(point);
+        }
+        return persistant;
+    }
 	return val;
 }
 /**
@@ -156,27 +245,43 @@ private void initialize() {
 	try {
 		// user code begin {1}
 		// user code end
-		setName("DeviceVirtualNamePanel");
+		setName("DeviceGridAdvisorPanel");
 		setLayout(new java.awt.GridBagLayout());
 		setSize(351, 264);
-
+		
 		java.awt.GridBagConstraints constraintsJTextFieldName = new java.awt.GridBagConstraints();
-		constraintsJTextFieldName.gridx = 2; constraintsJTextFieldName.gridy = 1;
+		constraintsJTextFieldName.insets = new java.awt.Insets(3,3,3,17);
+		constraintsJTextFieldName.ipadx = -5;
 		constraintsJTextFieldName.fill = java.awt.GridBagConstraints.HORIZONTAL;
-		constraintsJTextFieldName.anchor = java.awt.GridBagConstraints.WEST;
 		constraintsJTextFieldName.weightx = 1.0;
-		constraintsJTextFieldName.ipadx = 149;
-		constraintsJTextFieldName.insets = new java.awt.Insets(114, 3, 130, 84);
+		constraintsJTextFieldName.gridwidth = 2;
+		constraintsJTextFieldName.gridy = 0;
+		constraintsJTextFieldName.gridx = 1;
 		add(getJTextFieldName(), constraintsJTextFieldName);
 
 		java.awt.GridBagConstraints constraintsJLabelName = new java.awt.GridBagConstraints();
-		constraintsJLabelName.gridx = 1; constraintsJLabelName.gridy = 1;
-		constraintsJLabelName.anchor = java.awt.GridBagConstraints.WEST;
-		constraintsJLabelName.ipady = -5;
-		constraintsJLabelName.insets = new java.awt.Insets(115, 22, 135, 2);
+		constraintsJLabelName.insets = new java.awt.Insets(3,33,7,2);
+		constraintsJLabelName.ipady = -3;
+		constraintsJLabelName.gridy = 0;
+		constraintsJLabelName.gridx = 0;
 		add(getJLabelName(), constraintsJLabelName);
         
-        
+		java.awt.GridBagConstraints constraintsJComboBox = new java.awt.GridBagConstraints();
+		constraintsJComboBox.insets = new java.awt.Insets(4,3,5,17);
+		constraintsJComboBox.ipadx = -5;
+		constraintsJComboBox.fill = java.awt.GridBagConstraints.HORIZONTAL;
+		constraintsJComboBox.weightx = 1.0;
+		constraintsJComboBox.gridwidth = 2;
+		constraintsJComboBox.gridy = 1;
+		constraintsJComboBox.gridx = 1;
+		add(getPortComboBox(), constraintsJComboBox);
+
+		java.awt.GridBagConstraints constraintsPortLabelName = new java.awt.GridBagConstraints();
+		constraintsPortLabelName.gridx = 0; constraintsJLabelName.gridy = 1;
+		constraintsPortLabelName.anchor = java.awt.GridBagConstraints.WEST;
+		constraintsPortLabelName.ipady = -5;
+		constraintsPortLabelName.insets = new java.awt.Insets(6,33,4,2);
+		add(getPortLabel(), constraintsJLabelName);        
         
 		initConnections();
 	} catch (java.lang.Throwable ivjExc) {
