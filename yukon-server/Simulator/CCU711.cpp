@@ -677,7 +677,7 @@ void CCU711::CreateQueuedMsg()
         int function = 0;
         unsigned char address;
         int bytesToReturn = 0;
-        decodeForQueueMessage(type, iotype, function, address, bytesToReturn, Offset);
+        decodeForQueueMessage(type, iotype, function, address, bytesToReturn);
         newMessage.setWord(type);
         newMessage.setiotype(iotype);
         newMessage.setFunction(function);
@@ -721,6 +721,54 @@ void CCU711::CreateQueuedResponse()
                 Data[ctr++] = 0x50; // "  "
                 Data[ctr++] = 0x00; //StatD
                 Data[ctr++] = 0x00; // "  "
+                Data[ctr++] = 0x22; //1f; // "  "
+                Data[ctr++] = 0x01; // "  "
+                Data[ctr++] = 0x00; // "  "
+                Data[ctr++] = 0x1d; // "  "
+                Data[ctr++] = 0x00; //StatP
+                Data[ctr++] = 0x00; // "  "
+                Data[ctr++] = 0x13;
+                Data[ctr++] = _messageQueue.back().getQENID(0);
+                Data[ctr++] = _messageQueue.back().getQENID(1);
+                Data[ctr++] = _messageQueue.back().getQENID(2);
+                Data[ctr++] = _messageQueue.back().getQENID(3);
+                Data[ctr++] = 0xf0; // ENSTA
+                Data[ctr++] = 0x00;
+                Data[ctr++] = 0x00;
+                Data[ctr++] = 0x00;
+                Data[ctr++] = 0x00; // ROUTE
+                Data[ctr++] = 0x01;//      THIS SHOULD ALWAYS BE 0x01 !!!!        // NFUNC
+                Data[ctr++] = 0x40; // S1
+                Data[ctr++] = 0x01; // "  "
+                Data[ctr++] = 0x03; // L1
+                Data[ctr++] = 0x00; // TS
+                Data[ctr++] = 0x00; // "  "
+                Data[ctr++] = 0x0f; //Data
+                Data[ctr++] = 0x0f; // " "
+                Data[ctr++] = 0x0f; //  "  "
+                Data[ctr++] = 0x00;  //SETL=0
+                Data[3] = ctr-4;    //length;
+
+
+                //unsigned short CRC = NCrcCalc_C ((Data + 1), ctr-1);
+                //Data[ctr++] = 0x00;//HIBYTE (CRC);
+                //Data[ctr++] = 0x00;//LOBYTE (CRC);
+            }
+            else if(_messageQueue.back().getioType()==READ)
+            {
+
+                Data[ctr++] = 0x7e;
+                Data[ctr++] = _messageQueue.back().getAddress();
+                Data[ctr++] = 0x00; // Frame;
+                ctr++;              //length set below
+                Data[ctr++] = 0x00;
+                Data[ctr++] = 0xa7;
+                Data[ctr++] = 0x10; //Stats
+                Data[ctr++] = 0x00; // "  "
+                Data[ctr++] = 0x18; // "  "
+                Data[ctr++] = 0x50; // "  "
+                Data[ctr++] = 0x00; //StatD
+                Data[ctr++] = 0x00; // "  "
                 Data[ctr++] = 0x1f; // "  "
                 Data[ctr++] = 0x01; // "  "
                 Data[ctr++] = 0x00; // "  "
@@ -740,13 +788,10 @@ void CCU711::CreateQueuedResponse()
                 Data[ctr++] = 0x01;//      THIS SHOULD ALWAYS BE 0x01 !!!!        // NFUNC
                 Data[ctr++] = 0x40; // S1
                 Data[ctr++] = 0x01; // "  "
-                Data[ctr++] = _messageQueue.back().getbytesToReturn(); // L1
-                for(int i=0; i<_messageQueue.back().getbytesToReturn(); i++)
-                {
-                    Data[ctr++] = 0x00;
-                }
-                Data[ctr++] = 0xff; //Data
-                Data[ctr++] = 0xff; //Data
+                Data[ctr++] = 0x03; // L1
+                Data[ctr++] = 0x00;
+                Data[ctr++] = 0x00;
+                Data[ctr++] = 0x00;
                 Data[3] = ctr-4;    //length;
 
 
@@ -832,9 +877,9 @@ unsigned char CCU711::getRLEN()
      return RLEN14;
 }
 
-void CCU711::decodeForQueueMessage(int & type, int & iotype, int & function, unsigned char & address, int  & bytesToReturn, int offset)
+void CCU711::decodeForQueueMessage(int & type, int & iotype, int & function, unsigned char & address, int  & bytesToReturn)
 {
-    switch(_messageData[2 + offset] & 0xc0)
+    switch(_messageData[19] & 0xc0)
     {
         case 0x40:
             type = A_WORD;
@@ -847,7 +892,7 @@ void CCU711::decodeForQueueMessage(int & type, int & iotype, int & function, uns
             break;
     }
 
-    switch(_messageData[2 + offset] & 0x18)
+    switch(_messageData[19] & 0x18)
     {
         case 0x00:
             iotype = WRITE;
@@ -867,7 +912,7 @@ void CCU711::decodeForQueueMessage(int & type, int & iotype, int & function, uns
     //{   INSERT CODE HERE TO DETERMINE FUNCTION
     //}
 
-    bytesToReturn = _messageData[5 + offset];
+    bytesToReturn = _messageData[16];
 
     address = _messageData[1];
 }
