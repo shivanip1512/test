@@ -9318,11 +9318,209 @@
         <type value="1102" javaConstant="FAULT_CI"/>
         <displayName value="Faulted Circuit Indicator"/>
         <displayGroup value="Grid Advisor"/>
+                <points>
+            <point init="true" type="Status">
+                <name>Fault Status</name>
+                <offset value="1"/>
+                <stategroup value="TrueFalse"/>
+            </point>
+            <point init="true" type="Status">
+                <name>No 60Hz or Low Current</name>
+                <offset value="2"/>
+                <stategroup value="TrueFalse"/>
+            </point>
+            <point init="true" type="Status">
+                <name>Battery Low</name>
+                <offset value="3"/>
+                <stategroup value="TrueFalse"/>
+            </point>
+            <point init="true" type="Status">
+                <name>Configured to send Current Survey</name>
+                <offset value="101"/>
+                <stategroup value="TrueFalse"/>
+            </point>
+            <point init="true" type="Status">
+                <name>Request ACK</name>
+                <offset value="102"/>
+				<stategroup value="TrueFalse"/>
+            </point>
+            <point init="true" type="Analog">
+                <name>Nominal Amps</name>
+                <offset value="1"/>
+                <multiplier value="1.0"/>
+                <unitofmeasure value="Amps"/>
+            </point>
+            <point init="true" type="Analog">
+                <name>Peak Amps</name>
+                <offset value="2"/>
+                <multiplier value="1.0"/>
+                <unitofmeasure value="Amps"/>
+            </point>
+            <point init="true" type="Analog">
+                <name>Phase</name>
+                <offset value="3"/>
+                <multiplier value="1.0"/>
+                <unitofmeasure value="Undefined"/>
+            </point>
+            <point init="true" type="Analog">
+                <name>Device Temperature</name>
+                <offset value="4"/>
+                <multiplier value="1.0"/>
+                <unitofmeasure value="Temp-C"/>
+            </point>
+            <point init="true" type="Analog">
+                <name>Battery Voltage</name>
+                <offset value="5"/>
+                <multiplier value="1.0"/>
+                <unitofmeasure value="Volts"/>
+            </point>
+            <point init="true" type="Analog">
+                <name>Latitude</name>
+                <offset value="11"/>
+                <multiplier value="1.0"/>
+                <unitofmeasure value="Degrees"/>
+            </point>
+            <point init="true" type="Analog">
+                <name>Longitude</name>
+                <offset value="12"/>
+                <multiplier value="1.0"/>
+                <unitofmeasure value="Degrees"/>
+            </point>
+            <point init="true" type="Analog">
+                <name>Current Survey</name>
+                <offset value="31"/>
+                <multiplier value="1.0"/>
+                <unitofmeasure value="Amps"/>
+            </point>
+            <point init="true" type="Analog">
+                <name>UDP repeats</name>
+                <offset value="101"/>
+                <multiplier value="1.0"/>
+                <unitofmeasure value="Counts"/>
+            </point>
+            <point init="true" type="Analog">
+                <name>TGB Id - Max Signal</name>
+                <offset value="201"/>
+                <multiplier value="1.0"/>
+                <unitofmeasure value="Undefined"/>
+            </point>
+            <point init="true" type="Analog">
+                <name>Normal Mode - Max Signal</name>
+                <offset value="202"/>
+                <multiplier value="1.0"/>
+                <unitofmeasure value="Undefined"/>
+            </point>
+            <point init="true" type="Analog">
+                <name>Boost Mode - Max Signal</name>
+                <offset value="203"/>
+                <multiplier value="1.0"/>
+                <unitofmeasure value="Undefined"/>
+            </point>
+        </points>    
     </device>
     <device>
-        <type value="1103" javaConstant="NEUTRAL_MONITOR"/>
+        <type value="1103" javaConstant="NEUTRAL_CS"/>
         <displayName value="Capacitor Bank Neutral Monitor"/>
         <displayGroup value="Grid Advisor"/>
+                <points>
+            <point init="true" type="Status">
+                <name>Fault Status</name>
+                <offset value="1"/>
+                <stategroup value="TrueFalse"/>
+            </point>
+            <point init="true" type="Status">
+                <name>No 60Hz or Low Current</name>
+                <offset value="2"/>
+                <stategroup value="TrueFalse"/>
+            </point>
+            <point init="true" type="Status">
+                <name>Battery Low</name>
+                <offset value="3"/>
+                <stategroup value="TrueFalse"/>
+            </point>
+            <point init="true" type="Status">
+                <name>Configured to send Current Survey</name>
+                <offset value="101"/>
+                <stategroup value="TrueFalse"/>
+            </point>
+            <point init="true" type="Status">
+                <name>Request ACK</name>
+                <offset value="102"/>
+				<stategroup value="TrueFalse"/>
+            </point>
+            <point init="true" type="Analog">
+                <name>Nominal Amps</name>
+                <offset value="1"/>
+                <multiplier value="1.0"/>
+                <unitofmeasure value="Amps"/>
+            </point>
+            <point init="true" type="Analog">
+                <name>Peak Amps</name>
+                <offset value="2"/>
+                <multiplier value="1.0"/>
+                <unitofmeasure value="Amps"/>
+            </point>
+            <point init="true" type="Analog">
+                <name>Phase</name>
+                <offset value="3"/>
+                <multiplier value="1.0"/>
+                <unitofmeasure value="Undefined"/>
+            </point>
+            <point init="true" type="Analog">
+                <name>Device Temperature</name>
+                <offset value="4"/>
+                <multiplier value="1.0"/>
+                <unitofmeasure value="Temp-C"/>
+            </point>
+            <point init="true" type="Analog">
+                <name>Battery Voltage</name>
+                <offset value="5"/>
+                <multiplier value="1.0"/>
+                <unitofmeasure value="Volts"/>
+            </point>
+            <point init="true" type="Analog">
+                <name>Latitude</name>
+                <offset value="11"/>
+                <multiplier value="1.0"/>
+                <unitofmeasure value="Degrees"/>
+            </point>
+            <point init="true" type="Analog">
+                <name>Longitude</name>
+                <offset value="12"/>
+                <multiplier value="1.0"/>
+                <unitofmeasure value="Degrees"/>
+            </point>
+            <point init="true" type="Analog">
+                <name>Current Survey</name>
+                <offset value="31"/>
+                <multiplier value="1.0"/>
+                <unitofmeasure value="Amps"/>
+            </point>
+            <point init="true" type="Analog">
+                <name>UDP repeats</name>
+                <offset value="101"/>
+                <multiplier value="1.0"/>
+                <unitofmeasure value="Counts"/>
+            </point>
+            <point init="true" type="Analog">
+                <name>TGB Id - Max Signal</name>
+                <offset value="201"/>
+                <multiplier value="1.0"/>
+                <unitofmeasure value="Undefined"/>
+            </point>
+            <point init="true" type="Analog">
+                <name>Normal Mode - Max Signal</name>
+                <offset value="202"/>
+                <multiplier value="1.0"/>
+                <unitofmeasure value="Undefined"/>
+            </point>
+            <point init="true" type="Analog">
+                <name>Boost Mode - Max Signal</name>
+                <offset value="203"/>
+                <multiplier value="1.0"/>
+                <unitofmeasure value="Undefined"/>
+            </point>
+        </points>    
     </device>
     
     <!-- LM Groups -->

@@ -10,7 +10,7 @@ import java.util.List;
 
 import com.cannontech.common.device.definition.service.DeviceDefinitionService;
 import com.cannontech.core.dao.DaoFactory;
-import com.cannontech.database.data.device.GridAdvBase;
+import com.cannontech.database.data.device.GridAdvisorBase;
 import com.cannontech.database.data.lite.LiteYukonPAObject;
 import com.cannontech.database.data.multi.SmartMultiDBPersistent;
 import com.cannontech.database.data.point.PointBase;
@@ -201,7 +201,7 @@ public Object getValue(Object val)
 	//Integer pointID = DaoFactory.getPointDao().getNextPointId();
 	LiteYukonPAObject port = null;
 	port = (LiteYukonPAObject)getPortComboBox().getSelectedItem();
-	((GridAdvBase)val).getDeviceDirectCommSettings().setPortID( port.getLiteID() );//
+	((GridAdvisorBase)val).getDeviceDirectCommSettings().setPortID( port.getLiteID() );//
 	
     if (true) {
 
