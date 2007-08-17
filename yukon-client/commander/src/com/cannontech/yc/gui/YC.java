@@ -960,8 +960,8 @@ public class YC extends Observable implements MessageListener
                                 " More:" + returnMsg.getExpectMore()+"]");
 				if( !getRequestMessageIDs().contains( new Long(returnMsg.getUserMessageID())))
 				{
-					CTILogger.info("Unknown Message: "+ returnMsg.getUserMessageID() +" Command [" + returnMsg.getCommandString()+"]");
-					CTILogger.info("Unknown Message: "+ returnMsg.getUserMessageID() +" Result [" + returnMsg.getResultString()+"]");
+					CTILogger.debug("Unknown Message: "+ returnMsg.getUserMessageID() +" Command [" + returnMsg.getCommandString()+"]");
+					CTILogger.debug("Unknown Message: "+ returnMsg.getUserMessageID() +" Result [" + returnMsg.getResultString()+"]");
 					return;
 				}
 				else
