@@ -832,7 +832,7 @@ void CCU711::CreateResponse(int command)
     _outmessageData[Ctr++] = Frame;     //  control
     Ctr++;  		// # of bytes to follow minus two filled in at bottom of section
     _outmessageData[Ctr++] = 0x02;      // SRC/DES
-    _outmessageData[Ctr++] = 0xa6;      // Echo of command received
+    _outmessageData[Ctr++] = (0xa0 | (0x0f & _messageData[5]));      // Echo of command received
     _outmessageData[Ctr++] = 0x00;      // system status items
     _outmessageData[Ctr++] = 0x00;      //    "   "
     _outmessageData[Ctr++] = 0x00;      //    "   "
