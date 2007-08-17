@@ -83,6 +83,8 @@ class CCU711{
                 void setbytesToReturn(int bytesToReturn);
                 int  getbytesToReturn();
                 unsigned char getAddress();
+                void setTime(CtiTime currentTime, int delay);
+                CtiTime getTime();
 
             private:
                 int _bytesToReturn;  // Store L1

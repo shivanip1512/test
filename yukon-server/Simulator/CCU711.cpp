@@ -656,7 +656,7 @@ void CCU711::CreateQueuedMsg()
 
     for(int i = 0; i<(counter); i++)
     {
-        cout<<"Offset : "<<Offset<<" !"<<endl;
+        //cout<<"Offset : "<<Offset<<" !"<<endl;
         _queueMessage newMessage;
         newMessage.initializeMessage();
     
@@ -665,11 +665,11 @@ void CCU711::CreateQueuedMsg()
         two   = _messageData[8+(i*Offset)];
         three = _messageData[9+(i*Offset)];
         four  = _messageData[10+(i*Offset)];
-        cout<<"setting qenid to :";
-        cout <<string(CtiNumStr(_messageData[7+(i*Offset)]).hex().zpad(2))<<"   ";
-        cout <<string(CtiNumStr(_messageData[8+(i*Offset)]).hex().zpad(2))<<"   ";
-        cout <<string(CtiNumStr(_messageData[9+(i*Offset)]).hex().zpad(2))<<"   ";
-        cout <<string(CtiNumStr(_messageData[10+(i*Offset)]).hex().zpad(2))<<"!"<<endl;
+        //cout<<"setting qenid to :";
+        //cout <<string(CtiNumStr(_messageData[7+(i*Offset)]).hex().zpad(2))<<"   ";
+        //cout <<string(CtiNumStr(_messageData[8+(i*Offset)]).hex().zpad(2))<<"   ";
+        //cout <<string(CtiNumStr(_messageData[9+(i*Offset)]).hex().zpad(2))<<"   ";
+        //cout <<string(CtiNumStr(_messageData[10+(i*Offset)]).hex().zpad(2))<<"!"<<endl;
         newMessage.setQENID(one, two, three, four);
     
         int type = 0;
@@ -683,9 +683,18 @@ void CCU711::CreateQueuedMsg()
         newMessage.setFunction(function);
         newMessage.setAddress(address);
         newMessage.setbytesToReturn(bytesToReturn);
-    
-        //CtiTime _timeWhenReady;
-    
+        if(_messageQueue.empty())
+        {
+            CtiTime currentTime;
+            newMessage.setTime(currentTime, 6);
+            cout<<'\n'<<"setting currentTime to "<<currentTime<<endl;
+        }
+        else
+        {
+                newMessage.setTime(_messageQueue.back().getTime(), 6);
+                cout<<"setting last message time to "<<_messageQueue.back().getTime()<<endl;
+        }
+            
         //RTE_CIRCUIT;
         //RTE_RPTCON;
         //RTE_TYPCON;
@@ -986,14 +995,15 @@ void CCU711::_queueMessage::setQENID(unsigned char one,unsigned char two, unsign
     _QENID[3] = four;
 }
 
-unsigned char CCU711::_queueMessage::getQENID(int index)       {   return _QENID[index];           }
-int CCU711::_queueMessage::getWord()                           {   return _wordType;               }
-void CCU711::_queueMessage::setWord(int type)                  {   _wordType = type;               }
-void CCU711::_queueMessage::setiotype(int iotype)              {   _ioType = iotype;               }
-void CCU711::_queueMessage::setFunction(int function)          {   _function = function;           }
-int CCU711::_queueMessage::getioType()                         {   return _ioType;                 }
-void CCU711::_queueMessage::setAddress(unsigned char address)  {   _address = address;             }
-unsigned char CCU711::_queueMessage::getAddress()              {   return _address;                }
-void CCU711::_queueMessage::setbytesToReturn(int bytesToReturn){   _bytesToReturn = bytesToReturn; }
-int CCU711::_queueMessage::getbytesToReturn()                  {   return _bytesToReturn;          }
-
+unsigned char CCU711::_queueMessage::getQENID(int index)           {   return _QENID[index];                 }
+int CCU711::_queueMessage::getWord()                               {   return _wordType;                     }
+void CCU711::_queueMessage::setWord(int type)                      {   _wordType = type;                     }
+void CCU711::_queueMessage::setiotype(int iotype)                  {   _ioType = iotype;                     }
+void CCU711::_queueMessage::setFunction(int function)              {   _function = function;                 }
+int CCU711::_queueMessage::getioType()                             {   return _ioType;                       }
+void CCU711::_queueMessage::setAddress(unsigned char address)      {   _address = address;                   }
+unsigned char CCU711::_queueMessage::getAddress()                  {   return _address;                      }
+void CCU711::_queueMessage::setbytesToReturn(int bytesToReturn)    {   _bytesToReturn = bytesToReturn;       }
+int CCU711::_queueMessage::getbytesToReturn()                      {   return _bytesToReturn;                }
+CtiTime CCU711::_queueMessage::getTime()                           {   return _timeWhenReady;                }
+void CCU711::_queueMessage::setTime(CtiTime currentTime, int delay){   _timeWhenReady = currentTime + delay; }
