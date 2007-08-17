@@ -729,7 +729,7 @@ void CCU711::CreateQueuedResponse()
                 Data[ctr++] = 0x50; // "  "
                 Data[ctr++] = 0x00; //StatD
                 Data[ctr++] = 0x00; // "  "
-                Data[ctr++] = 0x22; //1f; // "  "
+                Data[ctr++] = 0x22; // "  "
                 Data[ctr++] = 0x01; // "  "
                 Data[ctr++] = 0x00; // "  "
                 Data[ctr++] = 0x1d; // "  "
@@ -777,9 +777,9 @@ void CCU711::CreateQueuedResponse()
                 Data[ctr++] = 0x00; //StatD
                 Data[ctr++] = 0x00; // "  "
                 Data[ctr++] = 0x22; //1f; // "  "
-                Data[ctr++] = 0x01; // "  "
                 Data[ctr++] = 0x00; // "  "
-                Data[ctr++] = 0x1d; // "  "
+                Data[ctr++] = 0x00; // "  "
+                Data[ctr++] = 0x00; // "  "
                 Data[ctr++] = 0x00; //StatP
                 Data[ctr++] = 0x00; // "  "
                 Data[ctr++] = (0x10 + _messageQueue.back().getbytesToReturn());
@@ -861,7 +861,19 @@ void CCU711::LoadQueuedMsg()
             _outmessageData[i]=Data[i];
         }
 
-        _outmessageData[2] = getFrame(0);//0x32;
+        _outmessageData[2] = getFrame(0);
+        if(_messageQueue.size()!=1)
+        {
+            _outmessageData[13]= 0x01;     // NCSETS
+            _outmessageData[14]= 0x00;     // NCOCTS
+            _outmessageData[15]= 0x1d;     // " 
+        }
+        else 
+        {
+            _outmessageData[13]= 0x00;
+            _outmessageData[14]= 0x00;     // NCOCTS
+            _outmessageData[15]= 0x03;     // " 
+        }
 
         int ctr = _messageQueue.front().getmessageLength();
 
