@@ -1,56 +1,7 @@
 /*Please be kind and keep things cleanly organized.  Add new entries to the end and use /**********************/
 /*to split your new additions from those already there.  Thanks!*/
 
-/*Fixes YUK-4109, needs to be in creation and update scripts for 3.5 and HEAD*/
-insert into YukonGroupRole values(-20,-1,-1,-1019,'(none)');
-insert into YukonGroupRole values(-21,-1,-1,-1020,'(none)');
-
-/* Needed in 3.4.6, 3.5, and Head  TS*/
-insert into yukonroleproperty values (-100011,-1000, 'Daily/Max Operation Count', 'true', 'is Daily/Max Operation stat displayed');
-insert into yukonroleproperty values (-100012,-1000, 'Substation Last Update Timestamp', 'true', 'is last update timstamp shown for substations');
-insert into yukonroleproperty values (-100106,-1001, 'Feeder Last Update Timestamp', 'true', 'is last update timstamp shown for feeders');
-insert into yukonroleproperty values (-100203,-1002, 'CapBank Last Update Timestamp', 'true', 'is last update timstamp shown for capbanks');
-update yukonroleproperty set DefaultValue = 'false' where rolepropertyid = -100008;
-update yukonroleproperty set DefaultValue = 'false' where rolepropertyid = -100007;
-
-
-/* Needed in 3.4.6, 3.5, and Head  8-6-7*/
-insert into yukonroleproperty values (-100105,-1001, 'Target', 'true', 'is target stat displayed');
-
-/********* Needed for 3.5 and Head    SN 8-8-07 */
-/* Scheduler Role */
-insert into YukonRole values(-212,'Scheduler','Operator','Operator access to Scheduler'); 
-/* Scheduler Role properties */
-insert into YukonRoleProperty values(-21200,-212,'Enable/Disable Schedule','true','Right to enable or disable a schedule'); 
-/**********************************/
-
-/* MACS YUK-4118 fix 8-13-2007 in  3.4.6  3.5 and head*/
-ALTER TABLE DeviceReadJobLog DROP CONSTRAINT FK_DEVICERE_FK_DRJOBL_MACSCHED
-/************/
-
-/* CapControlSpecialArea and CCSubSpecialAreaAssignment Tables added: Needed in Head  8-13-07*/
-
-create table CAPCONTROLSPECIALAREA ( AreaID numeric not null );
-
-create table CCSUBSPECIALAREAASSIGNMENT (
-
-   AreaID numeric not null,
-   SubstationBusID numeric not null,
-   DisplayOrder numeric not null
-
-);
-/*********************************************************************************************/
-
-/* 3.5 and head  for tom */
-insert into YukonRoleProperty values(-10815, -108,'Data Updater Delay (milliseconds)', '4000', 'The number of milliseconds between requests for the latest point values on pages that support the data updater.');
-/* end */
-
-
-/********* New billing file format for    3.4    3.5  and HEAD    SN 08/14/2007*/
-insert into billingfileformats values(-26, 'SIMPLE_TOU_DeviceName');
-/**********************/
-
-/*********** Michael/Jason's Dynamic billing generation additions (Head - 4.0 only)    ***********/
+/* Needs to go into 4.0_0 update scripts */
 
 create table DynamicBillingField (
 	 id numeric,
@@ -211,14 +162,24 @@ insert into DynamicBillingField values(101,21,'rateBDemand- reading',12,'##0.000
 insert into DynamicBillingField values(102,21,'rateBDemand- timestamp',13,'HH:mm')
 insert into DynamicBillingField values(103,21,'rateBDemand- timestamp',14,'MM/dd/yyyy')
 
-/*********** END END END Michael/Jason's Dynamic billing generation additions (Head - 4.0 only)    ***********/
 
-/********* 430 name change (head only) - Jason 8/13/07    */
-/* Note - In addition to these changes, please do a find  */
-/* and replace in the creation scripts - change any 430SN */
-/* inserts into 430SL  */
+/*Needs to go into 4.0_0.sql*/
 
 update yukonpaobject set type = 'MCT-430SL' where type = 'MCT-430SN' or type = 'MCT430SN'
 update devicetypecommand set devicetype = 'MCT-430SL' where devicetype = 'MCT-430SN' or devicetype = 'MCT430SN'
-/**********************************/
+
+
+
+/* Needed in 4.0_0.sql update script */
+
+create table CAPCONTROLSPECIALAREA ( AreaID numeric not null );
+
+create table CCSUBSPECIALAREAASSIGNMENT (
+
+   AreaID numeric not null,
+   SubstationBusID numeric not null,
+   DisplayOrder numeric not null
+
+);
+/*********************************************************************************************/
 
