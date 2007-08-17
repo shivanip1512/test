@@ -126,6 +126,12 @@ void CCU711::CreateMsg(int ccuNumber)
         else if(_commandType==LGRPQ) {
             CreateResponse(LGRPQ);
         }
+        else if(_commandType==ACTIN) {
+            CreateResponse(ACTIN);
+        }
+        else if(_commandType==WSETS) {
+            CreateResponse(WSETS);
+        }
         else if(_commandType==RCOLQ) {
             LoadQueuedMsg(); 
         }
