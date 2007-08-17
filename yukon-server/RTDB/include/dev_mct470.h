@@ -9,8 +9,8 @@
 *
 * PVCS KEYWORDS:
 * ARCHIVE      :  $Archive:   Z:/SOFTWAREARCHIVES/YUKON/RTDB/INCLUDE/dev_MCT470.h-arc  $
-* REVISION     :  $Revision: 1.39 $
-* DATE         :  $Date: 2007/05/31 20:29:05 $
+* REVISION     :  $Revision: 1.40 $
+* DATE         :  $Date: 2007/08/17 17:50:51 $
 *
 * Copyright (c) 2005 Cannon Technologies Inc. All rights reserved.
 *-----------------------------------------------------------------------------*/
@@ -64,6 +64,8 @@ private:
         PointOffset_TotalKMH    = 11,
         PointOffset_TOU_KMBase  = 12,
         PointOffset_TotalKM     = 20,
+
+        PointOffset_AveragePowerFactor = 31,
 
         PointOffset_VoltsPhaseA = 41,
         PointOffset_VoltsPhaseB = 42,

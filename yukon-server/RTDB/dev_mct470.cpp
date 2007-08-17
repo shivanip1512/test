@@ -8,8 +8,8 @@
 *
 * PVCS KEYWORDS:
 * ARCHIVE      :  $Archive:   Z:/SOFTWAREARCHIVES/YUKON/RTDB/dev_mct310.cpp-arc  $
-* REVISION     :  $Revision: 1.99 $
-* DATE         :  $Date: 2007/05/31 20:29:04 $
+* REVISION     :  $Revision: 1.100 $
+* DATE         :  $Date: 2007/08/17 17:50:51 $
 *
 * Copyright (c) 2005 Cannon Technologies Inc. All rights reserved.
 *-----------------------------------------------------------------------------*/
@@ -3922,8 +3922,16 @@ INT CtiDeviceMCT470::decodeGetValueIED(INMESS *InMessage, CtiTime &TimeNow, list
 
                 pi = getData(DSt->Message + 10, 2, ValueType_IED);
 
-                resultString += valueReport("Average power factor since last freeze", pi).c_str();
-                resultString += "\n";
+                if( pi.value!= 0xFEFE )
+                {
+                    insertPointDataReport(AnalogPointType, PointOffset_AveragePowerFactor,
+                                          ReturnMsg, pi, "Average power factor since last freeze");
+                }
+                else
+                {
+                    resultString += getName() + " / Average power factor since last freeze: Data Unavailable" + "\n";
+                    insertPointFail(InMessage, ReturnMsg, ScanRateGeneral, PointOffset_TotalKMH, AnalogPointType);
+                }
             }
         }
         else if( parse.isKeyValid("ied_dnp") )
