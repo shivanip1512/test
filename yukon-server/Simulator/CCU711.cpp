@@ -686,12 +686,12 @@ void CCU711::CreateQueuedMsg()
         if(_messageQueue.empty())
         {
             CtiTime currentTime;
-            newMessage.setTime(currentTime, 6);
+            newMessage.setTime(currentTime, 6*(bytesToReturn/3));
             cout<<'\n'<<"setting currentTime to "<<currentTime<<endl;
         }
         else
         {
-                newMessage.setTime(_messageQueue.back().getTime(), 6);
+                newMessage.setTime(_messageQueue.back().getTime(), 6*(bytesToReturn/3));
                 cout<<"setting last message time to "<<_messageQueue.back().getTime()<<endl;
         }
             
