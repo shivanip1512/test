@@ -8,8 +8,8 @@
 *
 * PVCS KEYWORDS:
 * ARCHIVE      :  $Archive:   Z:/SOFTWAREARCHIVES/YUKON/RTDB/dev_mct4xx-arc  $
-* REVISION     :  $Revision: 1.65 $
-* DATE         :  $Date: 2007/08/17 14:46:27 $
+* REVISION     :  $Revision: 1.66 $
+* DATE         :  $Date: 2007/08/17 15:34:23 $
 *
 * Copyright (c) 2005 Cannon Technologies Inc. All rights reserved.
 *-----------------------------------------------------------------------------*/
@@ -1847,6 +1847,12 @@ INT CtiDeviceMCT4xx::decodePutConfig(INMESS *InMessage, CtiTime &TimeNow, list< 
                 fixed_delay     = gConfigParms.getValueAsInt("PORTER_MCT_PEAK_REPORT_DELAY", 10) * 1000;
 
                 variable_delay  = ((3600 / getLoadProfileInterval(_llpPeakInterest.channel)) * 24 * _llpPeakInterest.period);
+
+                if( !strstr(InMessage->Return.CommandStr, " noqueue") )
+                {
+                    //  take two seconds off if it's queued
+                    fixed_delay -= 2000;
+                }
 
                 CTISleep(fixed_delay + variable_delay);
 /*
