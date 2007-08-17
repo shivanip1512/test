@@ -8,8 +8,8 @@
 *
 * PVCS KEYWORDS:
 * ARCHIVE      :  $Archive:   Z:/SOFTWAREARCHIVES/YUKON/RTDB/dev_mct4xx-arc  $
-* REVISION     :  $Revision: 1.64 $
-* DATE         :  $Date: 2007/08/15 21:04:22 $
+* REVISION     :  $Revision: 1.65 $
+* DATE         :  $Date: 2007/08/17 14:46:27 $
 *
 * Copyright (c) 2005 Cannon Technologies Inc. All rights reserved.
 *-----------------------------------------------------------------------------*/
@@ -1841,7 +1841,14 @@ INT CtiDeviceMCT4xx::decodePutConfig(INMESS *InMessage, CtiTime &TimeNow, list< 
 
             case Emetcon::PutConfig_LoadProfileReportPeriod:
             {
-                CTISleep(gConfigParms.getValueAsInt("PORTER_MCT_PEAK_REPORT_DELAY", 10) * 1000);
+                int variable_delay, 
+                    fixed_delay;
+
+                fixed_delay     = gConfigParms.getValueAsInt("PORTER_MCT_PEAK_REPORT_DELAY", 10) * 1000;
+
+                variable_delay  = ((3600 / getLoadProfileInterval(_llpPeakInterest.channel)) * 24 * _llpPeakInterest.period);
+
+                CTISleep(fixed_delay + variable_delay);
 /*
                 string command_str;
 
