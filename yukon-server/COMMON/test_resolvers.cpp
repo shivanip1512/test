@@ -7,8 +7,8 @@
 *
 * PVCS KEYWORDS:
 * ARCHIVE      :  $Archive:   Z:/SOFTWAREARCHIVES/YUKON/COMMON/resolvers.cpp-arc  $
-* REVISION     :  $Revision: 1.3 $
-* DATE         :  $Date: 2007/05/17 22:22:40 $
+* REVISION     :  $Revision: 1.4 $
+* DATE         :  $Date: 2007/08/17 18:47:40 $
 *
 * Copyright (c) 2007 Cannon Technologies. All rights reserved.
 *-----------------------------------------------------------------------------*/
@@ -345,7 +345,7 @@ BOOST_AUTO_UNIT_TEST(test_resolveDeviceType)
     BOOST_CHECK_EQUAL(resolveDeviceType(tempName), devType);
     tempName = "mct-430s";
     BOOST_CHECK_EQUAL(resolveDeviceType(tempName) == devType, false);
-    tempName = "mct-430sn";
+    tempName = "mct-430sl";
     BOOST_CHECK_EQUAL(resolveDeviceType(tempName), devType);
     tempName = "mct-430s4";
     BOOST_CHECK_EQUAL(resolveDeviceType(tempName), devType);

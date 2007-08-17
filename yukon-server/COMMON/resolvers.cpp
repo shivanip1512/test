@@ -6,8 +6,8 @@
 *
 * PVCS KEYWORDS:
 * ARCHIVE      :  $Archive:   Z:/SOFTWAREARCHIVES/YUKON/COMMON/resolvers.cpp-arc  $
-* REVISION     :  $Revision: 1.79 $
-* DATE         :  $Date: 2007/08/01 20:53:04 $
+* REVISION     :  $Revision: 1.80 $
+* DATE         :  $Date: 2007/08/17 18:47:40 $
 *
 * Copyright (c) 1999, 2000, 2001 Cannon Technologies Inc. All rights reserved.
 *-----------------------------------------------------------------------------*/
@@ -524,7 +524,7 @@ INT resolveDeviceType(const string& _rwsTemp)
         nRet = TYPEMCT410;
     }
     else if(rwsTemp == "mct-470" || rwsTemp == "mct-430a"
-                                 || rwsTemp == "mct-430s4" || rwsTemp == "mct-430sn")
+                                 || rwsTemp == "mct-430s4" || rwsTemp == "mct-430sl")
     {
         nRet = TYPEMCT470;
     }
