@@ -755,7 +755,6 @@ void CCU711::CreateQueuedResponse()
             }
             else if(_messageQueue.back().getioType()==READ)
             {
-
                 Data[ctr++] = 0x7e;
                 Data[ctr++] = _messageQueue.back().getAddress();
                 Data[ctr++] = 0x00; // Frame;
@@ -768,13 +767,13 @@ void CCU711::CreateQueuedResponse()
                 Data[ctr++] = 0x50; // "  "
                 Data[ctr++] = 0x00; //StatD
                 Data[ctr++] = 0x00; // "  "
-                Data[ctr++] = 0x1f; // "  "
+                Data[ctr++] = 0x22; //1f; // "  "
                 Data[ctr++] = 0x01; // "  "
                 Data[ctr++] = 0x00; // "  "
                 Data[ctr++] = 0x1d; // "  "
                 Data[ctr++] = 0x00; //StatP
                 Data[ctr++] = 0x00; // "  "
-                Data[ctr++] = 0x13;
+                Data[ctr++] = (0x10 + _messageQueue.back().getbytesToReturn());
                 Data[ctr++] = _messageQueue.back().getQENID(0);
                 Data[ctr++] = _messageQueue.back().getQENID(1);
                 Data[ctr++] = _messageQueue.back().getQENID(2);
@@ -784,15 +783,18 @@ void CCU711::CreateQueuedResponse()
                 Data[ctr++] = 0x00;
                 Data[ctr++] = 0x00;
                 Data[ctr++] = 0x00; // ROUTE
-                Data[ctr++] = 0x01;//      THIS SHOULD ALWAYS BE 0x01 !!!!        // NFUNC
+                Data[ctr++] = 0x01; //      THIS SHOULD ALWAYS BE 0x01 !!!!        // NFUNC
                 Data[ctr++] = 0x40; // S1
                 Data[ctr++] = 0x01; // "  "
-                Data[ctr++] = 0x03; // L1
-                Data[ctr++] = 0x00;
-                Data[ctr++] = 0x00;
-                Data[ctr++] = 0x00;
+                Data[ctr++] = _messageQueue.back().getbytesToReturn(); // L1
+                Data[ctr++] = 0x00; // TS
+                Data[ctr++] = 0x00; // "  "
+                for(int i = 0; i<_messageQueue.back().getbytesToReturn(); i++)
+                {
+                    Data[ctr++] = 0x0f; //Data
+                }
+                Data[ctr++] = 0x00;  //SETL=0
                 Data[3] = ctr-4;    //length;
-
 
                 //unsigned short CRC = NCrcCalc_C ((Data + 1), ctr-1);
                 //Data[ctr++] = 0x00;//HIBYTE (CRC);
