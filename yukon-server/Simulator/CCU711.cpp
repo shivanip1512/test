@@ -677,7 +677,7 @@ void CCU711::CreateQueuedMsg()
         int function = 0;
         unsigned char address;
         int bytesToReturn = 0;
-        decodeForQueueMessage(type, iotype, function, address, bytesToReturn);
+        decodeForQueueMessage(type, iotype, function, address, bytesToReturn, Offset);
         newMessage.setWord(type);
         newMessage.setiotype(iotype);
         newMessage.setFunction(function);
@@ -701,14 +701,13 @@ void CCU711::CreateQueuedMsg()
 void CCU711::CreateQueuedResponse()
 {
     if(!_messageQueue.empty())
-        {
+    {
         unsigned char Data[50];
         int ctr=0;
         if(_messageQueue.back().getWord()==B_WORD)
             {
             if(_messageQueue.back().getioType()==FUNC_READ)
             {
-
                 Data[ctr++] = 0x7e;
                 Data[ctr++] = _messageQueue.back().getAddress();
                 Data[ctr++] = 0x00; // Frame;
@@ -727,7 +726,7 @@ void CCU711::CreateQueuedResponse()
                 Data[ctr++] = 0x1d; // "  "
                 Data[ctr++] = 0x00; //StatP
                 Data[ctr++] = 0x00; // "  "
-                Data[ctr++] = 0x13;
+                Data[ctr++] = (0x10 + _messageQueue.back().getbytesToReturn());
                 Data[ctr++] = _messageQueue.back().getQENID(0);
                 Data[ctr++] = _messageQueue.back().getQENID(1);
                 Data[ctr++] = _messageQueue.back().getQENID(2);
@@ -737,18 +736,18 @@ void CCU711::CreateQueuedResponse()
                 Data[ctr++] = 0x00;
                 Data[ctr++] = 0x00;
                 Data[ctr++] = 0x00; // ROUTE
-                Data[ctr++] = 0x01;//      THIS SHOULD ALWAYS BE 0x01 !!!!        // NFUNC
+                Data[ctr++] = 0x01; //      THIS SHOULD ALWAYS BE 0x01 !!!!        // NFUNC
                 Data[ctr++] = 0x40; // S1
                 Data[ctr++] = 0x01; // "  "
-                Data[ctr++] = 0x03; // L1
+                Data[ctr++] = _messageQueue.back().getbytesToReturn(); // L1
                 Data[ctr++] = 0x00; // TS
                 Data[ctr++] = 0x00; // "  "
-                Data[ctr++] = 0x0f; //Data
-                Data[ctr++] = 0x0f; // " "
-                Data[ctr++] = 0x0f; //  "  "
+                for(int i = 0; i<_messageQueue.back().getbytesToReturn(); i++)
+                {
+                    Data[ctr++] = 0x0f; //Data
+                }
                 Data[ctr++] = 0x00;  //SETL=0
                 Data[3] = ctr-4;    //length;
-
 
                 //unsigned short CRC = NCrcCalc_C ((Data + 1), ctr-1);
                 //Data[ctr++] = 0x00;//HIBYTE (CRC);
@@ -877,7 +876,7 @@ unsigned char CCU711::getRLEN()
      return RLEN14;
 }
 
-void CCU711::decodeForQueueMessage(int & type, int & iotype, int & function, unsigned char & address, int  & bytesToReturn)
+void CCU711::decodeForQueueMessage(int & type, int & iotype, int & function, unsigned char & address, int  & bytesToReturn, int offset)
 {
     switch(_messageData[19] & 0xc0)
     {
@@ -912,7 +911,7 @@ void CCU711::decodeForQueueMessage(int & type, int & iotype, int & function, uns
     //{   INSERT CODE HERE TO DETERMINE FUNCTION
     //}
 
-    bytesToReturn = _messageData[16];
+    bytesToReturn = _messageData[offset+5];
 
     address = _messageData[1];
 }
