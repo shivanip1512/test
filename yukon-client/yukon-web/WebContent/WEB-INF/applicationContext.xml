@@ -98,6 +98,7 @@
         <property name="attributeService" ref="attributeService"/>
         <property name="meterDao" ref="meterDao"/>
         <property name="pointFormattingService" ref="pointFormattingService"/>
+        <property name="commandRequestExecutor" ref="commandRequestExecutor"/>
     </bean>
     
     <bean id="meterInformationWidget"
@@ -156,6 +157,7 @@
         <property name="yukonUserDao" ref="yukonUserDao" />
         <property name="commandRequestExecutor" ref="commandRequestExecutor" />
         <property name="profilePeakDao" ref="profilePeakDao" />
+        <property name="meterDao" ref="meterDao"/>
     </bean>
     
     <bean id="miniTdcWidget"
