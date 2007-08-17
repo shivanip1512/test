@@ -6,7 +6,7 @@
 <div style="max-height: 240px; overflow: auto">
 There was an error reading the meter<br>
   <c:forEach items="${result.errors}" var="error">
-    <ct:hideReveal title="${error.description}" showInitially="false">
+    <ct:hideReveal title="${error.description} (${error.errorCode})" showInitially="false">
     ${error.porter}<br>
     ${error.troubleshooting}<br>
     </ct:hideReveal><br>
