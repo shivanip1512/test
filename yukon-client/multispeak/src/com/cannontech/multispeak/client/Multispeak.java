@@ -221,7 +221,7 @@ public class Multispeak implements MessageListener {
             
             CTILogger.info("Received " + meterNumber + " for CDMeterState from " + mspVendor.getCompanyName());
 
-            String commandStr = "getstatus disconnect update";
+            String commandStr = "getstatus disconnect";
             writePilRequest(meter, commandStr, id, 15);
             logMSPActivity("getCDMeterState",
             				"(ID:" + meter.getDeviceId() + ") MeterNumber (" + meterNumber + ") - " + commandStr,
@@ -259,9 +259,9 @@ public class Multispeak implements MessageListener {
         MeterReadEvent event = new MeterReadEvent(mspVendor, id, meter);
         
         getEventsMap().put(new Long(id), event);
-        String commandStr = "getvalue kwh update";
+        String commandStr = "getvalue kwh";
         if( DeviceTypesFuncs.isMCT4XX(meter.getType()) )
-            commandStr = "getvalue peak update";    // getvalue peak returns the peak kW and the total kWh
+            commandStr = "getvalue peak";    // getvalue peak returns the peak kW and the total kWh
         
         CTILogger.info("Received " + meterNumber + " for LatestReadingInterrogate from " + mspVendor.getCompanyName());
         writePilRequest(meter, commandStr, id, 15);
@@ -305,7 +305,7 @@ public class Multispeak implements MessageListener {
 				long id = generateMessageID();		
 				ODEvent event = new ODEvent(vendor, id);
 				getEventsMap().put(new Long(id), event);
-				writePilRequest(meter, "ping noqueue", id, 13); 
+				writePilRequest(meter, "ping", id, 13); 
 
 			} catch (IncorrectResultSizeDataAccessException e) {
 
@@ -340,15 +340,15 @@ public class Multispeak implements MessageListener {
  	            MeterReadEvent event = new MeterReadEvent(vendor, id, meter);
  	            getEventsMap().put(new Long(id), event);
  	                
- 	            String commandStr = "getvalue kwh update";
+ 	            String commandStr = "getvalue kwh";
  	            if( DeviceTypesFuncs.isMCT4XX(meter.getType()) )
- 	            	commandStr = "getvalue peak update"; // getvalue peak returns the peak kW and the total kWh
+ 	            	commandStr = "getvalue peak"; // getvalue peak returns the peak kW and the total kWh
 
  	            writePilRequest(meter, commandStr, id, 13);
 
  	            //Second message (legacy but kept here for reminder.
 // 	            MeterReadEvent event = new MeterReadEvent(vendor, id, 2);
-// 	            pilRequest.setCommandString("getvalue demand update");
+// 	            pilRequest.setCommandString("getvalue demand");
 // 	            porterConnection.write(pilRequest);
  	        } 
             catch (IncorrectResultSizeDataAccessException e) {
@@ -391,12 +391,12 @@ public class Multispeak implements MessageListener {
                     
                     String commandStr = null;
                     if( DeviceTypesFuncs.isMCT410(meter.getType())) {
-                        commandStr = "getvalue demand update";
+                        commandStr = "getvalue demand";
                         returnMessages++;
                     }
                     else if (DeviceTypesFuncs.isMCT430(meter.getType()) ||
                             DeviceTypesFuncs.isMCT470(meter.getType())) {
-                        commandStr = "getvalue ied kvar update";
+                        commandStr = "getvalue ied kvar";
                         returnMessages++;
                     }
                     
@@ -411,7 +411,7 @@ public class Multispeak implements MessageListener {
                     
                     BlockMeterReadEvent event = new BlockMeterReadEvent(vendor, id, meter, block);
                     getEventsMap().put(new Long(id), event);
-                    String commandStr = "getvalue demand update";
+                    String commandStr = "getvalue demand";
                     writePilRequest(meter, commandStr, id, 13);
                 }
             } 
@@ -489,6 +489,8 @@ public class Multispeak implements MessageListener {
      */
     public void writePilRequest(com.cannontech.amr.meter.model.Meter meter, String commandStr, long id, int priority) {
         Request pilRequest = null;
+        commandStr += " update";
+        commandStr += " noqueue";
         pilRequest = new Request(meter.getDeviceId(), commandStr, id);
         pilRequest.setPriority(priority);
         porterConnection.write(pilRequest);

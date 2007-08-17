@@ -77,7 +77,9 @@ public class GroupCommandExecutorImpl implements GroupCommandExecutor {
         for (final Integer id : deviceIds) {
             CommandRequest request = new CommandRequest();
             request.setDeviceId(id);
-            request.setCommand(command);
+            
+            final String commandStr = command + " update" + " noqueue";
+            request.setCommand(commandStr);
 
             CollectingCommandCompletionCallback collectingCommandCompletionCallback = new CollectingCommandCompletionCallback() {
 
@@ -144,7 +146,7 @@ public class GroupCommandExecutorImpl implements GroupCommandExecutor {
                         pendingIdList.remove(id);
 
                         if (pendingIdList.size() == 0) {
-                            sendResultEmail(command,
+                            sendResultEmail(commandStr,
                                             resultBuffer.toString(),
                                             successBuffer.toString(),
                                             missedList,

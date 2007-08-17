@@ -67,6 +67,7 @@ public class MeterReadServiceImpl implements MeterReadService {
                 CommandRequest request = new CommandRequest();
                 request.setDeviceId(device.getDeviceId());
                 commandStr += " update";
+                commandStr += " noqueue";
                 request.setCommand(commandStr);
                 commands.add(request);
             }

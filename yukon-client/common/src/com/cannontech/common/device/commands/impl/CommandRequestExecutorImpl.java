@@ -17,6 +17,7 @@ import org.springframework.core.style.ToStringCreator;
 
 import com.cannontech.amr.errors.dao.DeviceErrorTranslatorDao;
 import com.cannontech.amr.errors.model.DeviceErrorDescription;
+import com.cannontech.amr.meter.model.Meter;
 import com.cannontech.clientutils.YukonLogManager;
 import com.cannontech.common.device.commands.CollectingCommandCompletionCallback;
 import com.cannontech.common.device.commands.CommandCompletionCallback;
@@ -149,7 +150,18 @@ public class CommandRequestExecutorImpl implements CommandRequestExecutor {
             return new ToStringCreator(this).toString();
         }
     }
-
+    
+    public CommandResultHolder execute(Meter meter, String command, LiteYukonUser user) throws Exception {
+        CommandRequest cmdRequest = new CommandRequest();
+        cmdRequest.setDeviceId(meter.getDeviceId());
+        
+        String commandStr = command;
+        commandStr += " update";
+        commandStr += " noqueue";
+        cmdRequest.setCommand(commandStr);
+        return execute(cmdRequest, user);
+    }
+    
     public CommandResultHolder execute(CommandRequest command, LiteYukonUser user)  throws CommandCompletionException, PaoAuthorizationException {
         return execute(Collections.singletonList(command), user);
     }

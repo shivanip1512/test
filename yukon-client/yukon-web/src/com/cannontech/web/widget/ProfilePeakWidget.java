@@ -13,12 +13,14 @@ import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
 
 import org.apache.commons.lang.StringUtils;
+import org.springframework.beans.factory.annotation.Required;
 import org.springframework.web.bind.ServletRequestBindingException;
 import org.springframework.web.bind.ServletRequestUtils;
 import org.springframework.web.servlet.ModelAndView;
 
 import com.cannontech.amr.errors.model.DeviceErrorDescription;
-import com.cannontech.common.device.commands.CommandRequest;
+import com.cannontech.amr.meter.dao.MeterDao;
+import com.cannontech.amr.meter.model.Meter;
 import com.cannontech.common.device.commands.CommandRequestExecutor;
 import com.cannontech.common.device.commands.CommandResultHolder;
 import com.cannontech.common.device.commands.impl.CommandCompletionException;
@@ -45,19 +47,28 @@ public class ProfilePeakWidget extends WidgetControllerBase {
     private YukonUserDao yukonUserDao = null;
     private ProfilePeakDao profilePeakDao = null;
     private CommandRequestExecutor commandRequestExecutor = null;
+    private MeterDao meterDao = null;
 
+    @Required
     public void setYukonUserDao(YukonUserDao yukonUserDao) {
         this.yukonUserDao = yukonUserDao;
     }
 
+    @Required
     public void setProfilePeakDao(ProfilePeakDao profilePeakDao) {
         this.profilePeakDao = profilePeakDao;
     }
 
+    @Required
     public void setCommandRequestExecutor(CommandRequestExecutor commandRequestExecutor) {
         this.commandRequestExecutor = commandRequestExecutor;
     }
 
+    @Required
+    public void setMeterDao(MeterDao meterDao) {
+        this.meterDao = meterDao;
+    }
+    
     public ModelAndView render(HttpServletRequest request, HttpServletResponse response)
             throws Exception {
 
@@ -240,12 +251,10 @@ public class ProfilePeakWidget extends WidgetControllerBase {
      * @throws PaoAuthorizationException 
      */
     private ProfilePeakResult executeCommand(String command, int deviceId,
-            ProfilePeakResultType type, LiteYukonUser user) throws CommandCompletionException, PaoAuthorizationException {
+            ProfilePeakResultType type, LiteYukonUser user) throws Exception, PaoAuthorizationException {
 
-        CommandRequest commandRequest = new CommandRequest();
-        commandRequest.setCommand(command);
-        commandRequest.setDeviceId(deviceId);
-        CommandResultHolder resultHolder = commandRequestExecutor.execute(commandRequest, user);
+        Meter meter = meterDao.getForId(deviceId);
+        CommandResultHolder resultHolder = commandRequestExecutor.execute(meter, command, user);
 
         ProfilePeakResult result = parseResults(resultHolder);
         result.setRunDate(DISPLAY_FORMAT.format(new Date()));

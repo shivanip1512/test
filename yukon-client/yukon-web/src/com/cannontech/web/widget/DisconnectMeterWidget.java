@@ -16,7 +16,6 @@ import com.cannontech.amr.meter.model.Meter;
 import com.cannontech.common.device.attribute.model.Attribute;
 import com.cannontech.common.device.attribute.model.BuiltInAttribute;
 import com.cannontech.common.device.attribute.service.AttributeService;
-import com.cannontech.common.device.commands.CommandRequest;
 import com.cannontech.common.device.commands.CommandRequestExecutor;
 import com.cannontech.common.device.commands.CommandResultHolder;
 import com.cannontech.core.dao.NotFoundException;
@@ -119,7 +118,7 @@ public class DisconnectMeterWidget extends WidgetControllerBase {
         ModelAndView mav = getReadModelAndView(meter);
         
         LiteYukonUser user = ServletUtil.getYukonUser(request);
-        CommandResultHolder result = sendCommand(meter, command, user);
+        CommandResultHolder result = commandRequestExecutor.execute(meter, command, user);
         
         mav.addObject("state", getDisconnectedState(result));
         
@@ -127,13 +126,6 @@ public class DisconnectMeterWidget extends WidgetControllerBase {
         mav.addObject("result", result);
         
         return mav;
-    }
-    
-    private CommandResultHolder sendCommand(Meter meter, String command, LiteYukonUser user) throws Exception {
-        CommandRequest cmdRequest = new CommandRequest();
-        cmdRequest.setDeviceId(meter.getDeviceId());
-        cmdRequest.setCommand(command);
-        return commandRequestExecutor.execute(cmdRequest, user);
     }
     
     private DISCONNECT_STATE getDisconnectedState(CommandResultHolder result) {
