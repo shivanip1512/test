@@ -128,6 +128,8 @@ public class BillingFile extends java.util.Observable implements Runnable
 					String subString = argLowerCase.substring(startIndex);
 					if( subString.indexOf(':') > 0)	//they remembered the whole directory
 						billingFile.getBillingDefaults().setOutputFileDir(subString);
+					else if( subString.indexOf("\\") > -1 || subString.indexOf("//") > -1)	//they are trying to use a UNC name
+						billingFile.getBillingDefaults().setOutputFileDir(subString);					
 					else	//try to help out and default the directory
 						billingFile.getBillingDefaults().setOutputFileDir(CtiUtilities.getExportDirPath() + subString);
 				}
