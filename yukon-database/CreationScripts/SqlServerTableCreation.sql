@@ -1,7 +1,7 @@
 /*==============================================================*/
 /* Database name:  YukonDatabase                                */
 /* DBMS name:      Microsoft SQL Server 2000                    */
-/* Created on:     8/16/2007 12:12:59 PM                        */
+/* Created on:     8/20/2007 11:51:10 AM                        */
 /*==============================================================*/
 
 
@@ -1270,6 +1270,13 @@ if exists (select 1
            where  id = object_id('DYNAMICBILLINGFORMAT')
             and   type = 'U')
    drop table DYNAMICBILLINGFORMAT
+go
+
+if exists (select 1
+            from  sysobjects
+           where  id = object_id('DYNAMICCCAREA')
+            and   type = 'U')
+   drop table DYNAMICCCAREA
 go
 
 if exists (select 1
@@ -2551,31 +2558,31 @@ create table BillingFileFormats (
 )
 go
 
-insert into billingfileformats values( -11, 'MV_90 DATA Import',1);
-insert into BillingFileFormats values( -1,'INVALID',1);
-insert into BillingFileFormats values( 0,'SEDC',1);
-insert into BillingFileFormats values( 1,'CADP',1);
-insert into BillingFileFormats values( 2,'CADPXL2',1);
-insert into BillingFileFormats values( 3,'WLT-40',1);
-insert into BillingFileFormats values( 4,'CTI-CSV',1);
-insert into BillingFileFormats values( 5,'OPU',1);
-insert into BillingFileFormats values( 6,'DAFRON',1);
-insert into BillingFileFormats values( 7,'NCDC',1);
-insert into billingFileformats values( 9, 'CTI2',1);
-insert into billingfileformats values( 12, 'SEDC 5.4',1);
-insert into billingfileformats values( 13, 'NISC-Turtle',1);
-insert into billingfileformats values( 14, 'NISC-NCDC',1);
-insert into billingfileformats values( 15, 'NCDC-Handheld',1);
-insert into billingfileformats values( 16, 'NISC TOU (kVarH)',1);
-insert into billingfileformats values( -17, 'SEDC (yyyyMMdd)',1);
-insert into billingfileformats values( -18, 'ATS',1);
-insert into billingfileformats values( -19, ' NISC-Turtle No Limit kWh ',1);
-insert into billingfileformats values(-20, 'IVUE_BI_T65',1);
-insert into billingfileformats values(21, 'SIMPLE_TOU',1);
-insert into billingfileformats values(22, 'EXTENDED_TOU',1);
-insert into billingfileformats values (-23, 'Big Rivers Elec Coop',1);
-insert into billingfileformats values(-24, 'INCODE (Extended TOU)',1);
-insert into BillingFileFormats values(-25,'Itron Register Readings Export',1);
+insert into billingfileformats values( -11, 'MV_90 DATA Import');
+insert into BillingFileFormats values( -1,'INVALID');
+insert into BillingFileFormats values( 0,'SEDC');
+insert into BillingFileFormats values( 1,'CADP');
+insert into BillingFileFormats values( 2,'CADPXL2');
+insert into BillingFileFormats values( 3,'WLT-40');
+insert into BillingFileFormats values( 4,'CTI-CSV');
+insert into BillingFileFormats values( 5,'OPU');
+insert into BillingFileFormats values( 6,'DAFRON');
+insert into BillingFileFormats values( 7,'NCDC');
+insert into billingFileformats values( 9, 'CTI2');
+insert into billingfileformats values( 12, 'SEDC 5.4');
+insert into billingfileformats values( 13, 'NISC-Turtle');
+insert into billingfileformats values( 14, 'NISC-NCDC');
+insert into billingfileformats values( 15, 'NCDC-Handheld');
+insert into billingfileformats values( 16, 'NISC TOU (kVarH)');
+insert into billingfileformats values( -17, 'SEDC (yyyyMMdd)');
+insert into billingfileformats values( -18, 'ATS');
+insert into billingfileformats values( -19, ' NISC-Turtle No Limit kWh ');
+insert into billingfileformats values(-20, 'IVUE_BI_T65');
+insert into billingfileformats values(21, 'SIMPLE_TOU');
+insert into billingfileformats values(22, 'EXTENDED_TOU');
+insert into billingfileformats values (-23, 'Big Rivers Elec Coop');
+insert into billingfileformats values(-24, 'INCODE (Extended TOU)');
+insert into BillingFileFormats values(-25,'Itron Register Readings Export');
 insert into billingfileformats values(-26, 'SIMPLE_TOU_DeviceName');
 
 alter table BillingFileFormats
@@ -4189,12 +4196,14 @@ go
 /* Table: DEVICEREADJOBLOG                                      */
 /*==============================================================*/
 create table DEVICEREADJOBLOG (
-   DeviceReadJobLogID   numeric              identity,
+   DeviceReadJobLogID   numeric              not null,
    ScheduleID           numeric              not null,
    StartTime            datetime             not null,
    StopTime             datetime             not null
 )
 go
+
+ALTER TABLE DeviceReadJobLog DROP CONSTRAINT FK_DEVICERE_FK_DRJOBL_MACSCHED
 
 alter table DEVICEREADJOBLOG
    add constraint PK_DEVICEREADJOBLOG primary key nonclustered (DeviceReadJobLogID)
@@ -4619,21 +4628,6 @@ create table DYNAMICBILLINGFIELD (
 )
 go
 
-alter table DYNAMICBILLINGFIELD
-   add constraint PK_DYNAMICBILLINGFIELD primary key (id)
-go
-
-/*==============================================================*/
-/* Table: DYNAMICBILLINGFORMAT                                  */
-/*==============================================================*/
-create table DYNAMICBILLINGFORMAT (
-   FormatID             numeric              not null,
-   Delimiter            varchar(20)          null,
-   Header               varchar(255)         null,
-   Footer               varchar(255)         null
-)
-go
-
 /* ATS */
 insert into DynamicBillingFormat VALUES( '-18',',','H    Meter    kWh   Time   Date    Peak   PeakT   PeakD  Stat Sig  Freq Phase','');
 insert into DynamicBillingField values(1,-18,'Plain Text',0,'M')
@@ -4767,9 +4761,35 @@ insert into DynamicBillingField values(101,21,'rateBDemand- reading',12,'##0.000
 insert into DynamicBillingField values(102,21,'rateBDemand- timestamp',13,'HH:mm')
 insert into DynamicBillingField values(103,21,'rateBDemand- timestamp',14,'MM/dd/yyyy')
 
+alter table DYNAMICBILLINGFIELD
+   add constraint PK_DYNAMICBILLINGFIELD primary key (id)
+go
+
+/*==============================================================*/
+/* Table: DYNAMICBILLINGFORMAT                                  */
+/*==============================================================*/
+create table DYNAMICBILLINGFORMAT (
+   FormatID             numeric              not null,
+   Delimiter            varchar(20)          null,
+   Header               varchar(255)         null,
+   Footer               varchar(255)         null
+)
+go
+
 alter table DYNAMICBILLINGFORMAT
    add constraint PK_DYNAMICBILLINGFORMAT primary key (FormatID)
 go
+
+/*==============================================================*/
+/* Table: DYNAMICCCAREA                                         */
+/*==============================================================*/
+create table DYNAMICCCAREA (
+   AreaID               numeric              not null,
+   additionalflags      varchar(20)          not null
+)
+go
+
+insert into dynamicccarea (areaid, additionalflags) select areaid, 'NNNNNNNNNNNNNNNNNNNN' from capcontrolarea;
 
 /*==============================================================*/
 /* Table: DYNAMICCCTWOWAYCBC                                    */
@@ -5649,19 +5669,19 @@ INSERT INTO DEVICETYPECOMMAND VALUES (-552, -112, 'All MCT-4xx Series', 23, 'Y',
 INSERT INTO DEVICETYPECOMMAND VALUES (-553, -113, 'All MCT-4xx Series', 24, 'Y', -1);
 INSERT INTO DEVICETYPECOMMAND VALUES (-554, -114, 'MCT-410GL', 25, 'Y', -1);
 
-INSERT INTO DEVICETYPECOMMAND VALUES (-555, -3, 'MCT-430SL', 1, 'Y', -1);
-INSERT INTO DEVICETYPECOMMAND VALUES (-556, -20, 'MCT-430SL', 2, 'Y', -1);
-INSERT INTO DEVICETYPECOMMAND VALUES (-557, -21, 'MCT-430SL', 3, 'Y', -1);
-INSERT INTO DEVICETYPECOMMAND VALUES (-558, -22, 'MCT-430SL', 4, 'Y', -1);
-INSERT INTO DEVICETYPECOMMAND VALUES (-559, -115, 'MCT-430SL', 5, 'Y', -1);
-INSERT INTO DEVICETYPECOMMAND VALUES (-560, -116, 'MCT-430SL', 6, 'N', -1);
-INSERT INTO DEVICETYPECOMMAND VALUES (-561, -117, 'MCT-430SL', 7, 'N', -1);
-INSERT INTO DEVICETYPECOMMAND VALUES (-562, -118, 'MCT-430SL', 8, 'N', -1);
-INSERT INTO DEVICETYPECOMMAND VALUES (-563, -119, 'MCT-430SL', 9, 'Y', -1);
-INSERT INTO DEVICETYPECOMMAND VALUES (-564, -120, 'MCT-430SL', 10, 'N', -1);
-INSERT INTO DEVICETYPECOMMAND VALUES (-565, -121, 'MCT-430SL', 11, 'N', -1);
-INSERT INTO DEVICETYPECOMMAND VALUES (-566, -122, 'MCT-430SL', 12, 'N', -1);
-INSERT INTO DEVICETYPECOMMAND VALUES (-567, -123, 'MCT-430SL', 13, 'Y', -1);
+INSERT INTO DEVICETYPECOMMAND VALUES (-555, -3, 'MCT-430SN', 1, 'Y', -1);
+INSERT INTO DEVICETYPECOMMAND VALUES (-556, -20, 'MCT-430SN', 2, 'Y', -1);
+INSERT INTO DEVICETYPECOMMAND VALUES (-557, -21, 'MCT-430SN', 3, 'Y', -1);
+INSERT INTO DEVICETYPECOMMAND VALUES (-558, -22, 'MCT-430SN', 4, 'Y', -1);
+INSERT INTO DEVICETYPECOMMAND VALUES (-559, -115, 'MCT-430SN', 5, 'Y', -1);
+INSERT INTO DEVICETYPECOMMAND VALUES (-560, -116, 'MCT-430SN', 6, 'N', -1);
+INSERT INTO DEVICETYPECOMMAND VALUES (-561, -117, 'MCT-430SN', 7, 'N', -1);
+INSERT INTO DEVICETYPECOMMAND VALUES (-562, -118, 'MCT-430SN', 8, 'N', -1);
+INSERT INTO DEVICETYPECOMMAND VALUES (-563, -119, 'MCT-430SN', 9, 'Y', -1);
+INSERT INTO DEVICETYPECOMMAND VALUES (-564, -120, 'MCT-430SN', 10, 'N', -1);
+INSERT INTO DEVICETYPECOMMAND VALUES (-565, -121, 'MCT-430SN', 11, 'N', -1);
+INSERT INTO DEVICETYPECOMMAND VALUES (-566, -122, 'MCT-430SN', 12, 'N', -1);
+INSERT INTO DEVICETYPECOMMAND VALUES (-567, -123, 'MCT-430SN', 13, 'Y', -1);
 
 INSERT INTO DEVICETYPECOMMAND VALUES (-568, -52, 'Repeater 801', 1, 'Y', -1);
 INSERT INTO DEVICETYPECOMMAND VALUES (-569, -3, 'Repeater 801', 2, 'Y', -1);
@@ -5717,9 +5737,9 @@ insert into devicetypecommand values (-606, -15, 'MCT-430A', 14, 'Y', -1);
 insert into devicetypecommand values (-607, -18, 'MCT-430A', 15, 'Y', -1);
 insert into devicetypecommand values (-608, -19, 'MCT-430A', 16, 'Y', -1);
 
-insert into devicetypecommand values (-609, -15, 'MCT-430SL', 14, 'Y', -1);
-insert into devicetypecommand values (-610, -18, 'MCT-430SL', 15, 'Y', -1);
-insert into devicetypecommand values (-611, -19, 'MCT-430SL', 16, 'Y', -1);
+insert into devicetypecommand values (-609, -15, 'MCT-430SN', 14, 'Y', -1);
+insert into devicetypecommand values (-610, -18, 'MCT-430SN', 15, 'Y', -1);
+insert into devicetypecommand values (-611, -19, 'MCT-430SN', 16, 'Y', -1);
 
 insert into devicetypecommand values (-612, -15, 'MCT-430S4', 14, 'Y', -1);
 insert into devicetypecommand values (-613, -18, 'MCT-430S4', 15, 'Y', -1);
@@ -5732,8 +5752,8 @@ insert into devicetypecommand values (-617, -19, 'MCT-470', 23, 'Y', -1);
 insert into devicetypecommand values (-618, -6, 'MCT-430A', 17, 'Y', -1);
 insert into devicetypecommand values (-619, -34, 'MCT-430A', 18, 'Y', -1);
 
-insert into devicetypecommand values (-620, -6, 'MCT-430SL', 17, 'Y', -1);
-insert into devicetypecommand values (-621, -34, 'MCT-430SL', 18, 'Y', -1);
+insert into devicetypecommand values (-620, -6, 'MCT-430SN', 17, 'Y', -1);
+insert into devicetypecommand values (-621, -34, 'MCT-430SN', 18, 'Y', -1);
 
 insert into devicetypecommand values (-622, -6, 'MCT-430S4', 17, 'Y', -1);
 insert into devicetypecommand values (-623, -34, 'MCT-430S4', 18, 'Y', -1);
@@ -5743,10 +5763,10 @@ insert into devicetypecommand values (-625, -109, 'MCT-430A', 20, 'Y', -1);
 insert into devicetypecommand values (-626, -112, 'MCT-430A', 21, 'Y', -1);
 insert into devicetypecommand values (-627, -113, 'MCT-430A', 22, 'Y', -1);
 
-insert into devicetypecommand values (-628, -105, 'MCT-430SL', 19, 'Y', -1);
-insert into devicetypecommand values (-629, -109, 'MCT-430SL', 20, 'Y', -1);
-insert into devicetypecommand values (-630, -112, 'MCT-430SL', 21, 'Y', -1);
-insert into devicetypecommand values (-631, -113, 'MCT-430SL', 22, 'Y', -1);
+insert into devicetypecommand values (-628, -105, 'MCT-430SN', 19, 'Y', -1);
+insert into devicetypecommand values (-629, -109, 'MCT-430SN', 20, 'Y', -1);
+insert into devicetypecommand values (-630, -112, 'MCT-430SN', 21, 'Y', -1);
+insert into devicetypecommand values (-631, -113, 'MCT-430SN', 22, 'Y', -1);
 
 insert into devicetypecommand values (-632, -105, 'MCT-430S4', 19, 'Y', -1);
 insert into devicetypecommand values (-633, -109, 'MCT-430S4', 20, 'Y', -1);
@@ -5766,7 +5786,7 @@ insert into devicetypecommand values(-644, -130, 'MCT-410IL', 27, 'N', -1);
 insert into devicetypecommand values(-645, -130, 'MCT-410iLE', 21, 'N', -1);
 insert into devicetypecommand values(-646, -130, 'MCT-430A', 23, 'N', -1);
 insert into devicetypecommand values(-647, -130, 'MCT-430S4', 23, 'N', -1);
-insert into devicetypecommand values(-648, -130, 'MCT-430SL', 23, 'N', -1);
+insert into devicetypecommand values(-648, -130, 'MCT-430SN', 23, 'N', -1);
 insert into devicetypecommand values(-649, -130, 'MCT-470', 29, 'N', -1);
 
 insert into devicetypecommand values(-650, -131, 'MCT-410 kWh Only', 22, 'N', -1);
@@ -5777,7 +5797,7 @@ insert into devicetypecommand values(-654, -131, 'MCT-410IL', 28, 'N', -1);
 insert into devicetypecommand values(-655, -131, 'MCT-410iLE', 22, 'N', -1);
 insert into devicetypecommand values(-656, -131, 'MCT-430A', 24, 'N', -1);
 insert into devicetypecommand values(-657, -131, 'MCT-430S4', 24, 'N', -1);
-insert into devicetypecommand values(-658, -131, 'MCT-430SL', 24, 'N', -1);
+insert into devicetypecommand values(-658, -131, 'MCT-430SN', 24, 'N', -1);
 insert into devicetypecommand values(-659, -131, 'MCT-470', 30, 'N', -1);
 
 insert into devicetypecommand values(-660, -132, 'MCT-410 kWh Only', 23, 'N', -1);
@@ -5788,7 +5808,7 @@ insert into devicetypecommand values(-664, -132, 'MCT-410IL', 29, 'N', -1);
 insert into devicetypecommand values(-665, -132, 'MCT-410iLE', 23, 'N', -1);
 insert into devicetypecommand values(-666, -132, 'MCT-430A', 25, 'N', -1);
 insert into devicetypecommand values(-667, -132, 'MCT-430S4', 25, 'N', -1);
-insert into devicetypecommand values(-668, -132, 'MCT-430SL', 25, 'N', -1);
+insert into devicetypecommand values(-668, -132, 'MCT-430SN', 25, 'N', -1);
 insert into devicetypecommand values(-669, -132, 'MCT-470', 31, 'N', -1);
 
 insert into DeviceTypeCommand values (-670, -133, 'ExpresscomSerial', 21, 'Y', -1);
@@ -11487,6 +11507,11 @@ alter table DEVICEMETERGROUP
       references DEVICE (DEVICEID)
 go
 
+alter table DEVICEREADJOBLOG
+   add constraint FK_DEVICERE_FK_DRJOBL_MACSCHED foreign key (ScheduleID)
+      references MACSchedule (ScheduleID)
+go
+
 alter table DEVICEREADLOG
    add constraint FK_DEVICERE_FK_DRLOGR_DEVICERE foreign key (DeviceReadRequestLogID)
       references DEVICEREADREQUESTLOG (DeviceReadRequestLogID)
@@ -11541,6 +11566,11 @@ go
 alter table DYNAMICBILLINGFORMAT
    add constraint FK_DYNAMICB_REF_BILLI_BILLINGF foreign key (FormatID)
       references BillingFileFormats (FormatID)
+go
+
+alter table DYNAMICCCAREA
+   add constraint FK_ccarea_Dynccarea foreign key (AreaID)
+      references CAPCONTROLAREA (AreaID)
 go
 
 alter table DYNAMICCCTWOWAYCBC
@@ -12546,4 +12576,65 @@ BEGIN
 END
 go
 
+
+create or replace procedure RenCol(
+  User in varchar2,       -- name of the schema. 
+  Table_Name in varchar2, -- name of the table. 
+  Old_Name in varchar2,   -- name of the column to be renamed. 
+  New_Name in varchar2    -- new name of the column. 
+) 
+As
+declare
+  obj_id number; 
+  col_id number; 
+  cursor_name1 INTEGER; 
+  cursor_name2 INTEGER; 
+  ret1 INTEGER; 
+  ret2 INTEGER; 
+
+begin
+  Select object_id 
+  Into obj_id 
+  From dba_objects 
+  Where object_name=UPPER(table_name) 
+  And owner=UPPER(user) 
+  And object_type='TABLE'; 
+
+  --DBMS_OutPut.put_line(obj_id); 
+
+  Select col# 
+  Into col_id 
+  From col$ 
+  Where obj#=obj_id 
+  And name=UPPER(old_name); 
+
+  --DBMS_OutPut.put_line(col_id); 
+
+  Update col$ 
+  Set name=UPPER(new_name) 
+  Where obj#=obj_id 
+  And col#=col_id; 
+
+  Commit; 
+
+  cursor_name1 := DBMS_Sql.Open_Cursor; 
+  DBMS_Sql.Parse(cursor_name1, 'ALTER SYSTEM FLUSH SHARED_POOL',DBMS_Sql.Native); 
+  ret1 := DBMS_Sql.Execute(cursor_name1); 
+  DBMS_Sql.Close_Cursor(cursor_name1); 
+
+  cursor_name2:= DBMS_Sql.Open_Cursor; 
+  DBMS_Sql.Parse(cursor_name2, 'ALTER SYSTEM CHECKPOINT',DBMS_Sql.Native); 
+  ret2:= DBMS_Sql.Execute(cursor_name2); 
+  DBMS_Sql.Close_Cursor(cursor_name2); 
+end;
+/**************************************************************************************/
+/* Example of use:                                                                    */
+/*  SQL> Exec RenCol( 'username', 'tablename', 'old col name', 'new col name' );      */
+/*                                                                                    */
+/**************************************************************************************/
+/
+
+alter procedure RenCol compile
+/
+go
 
