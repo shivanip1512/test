@@ -102,6 +102,14 @@ public class PowerFailModel extends ReportModelBase
                 deviceGroupsMap.put(groupId, deviceGroup);
             }
             String groupName = deviceGroup.getFullName();
+            
+            final String[] groups = getBillingGroups();
+            if (groups != null && groups.length > 0) {  //Device Groups were specified, only include groups that were selected 
+                List<String> deviceGroupNames = Arrays.asList(groups);
+                if( !deviceGroupNames.contains(groupName) )
+                    return;
+            }
+            
 			String paoName = rset.getString(2);
             String pointName = rset.getString(3);
             Timestamp timestamp = rset.getTimestamp(4);
