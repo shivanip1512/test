@@ -129,6 +129,9 @@ void CCU711::CreateMsg(int ccuNumber)
         else if(_commandType==ACTIN) {
             CreateResponse(ACTIN);
         }
+        else if(_commandType==XTIME) {
+            CreateResponse(XTIME);
+        }
         else if(_commandType==WSETS) {
             CreateResponse(WSETS);
         }
@@ -697,7 +700,7 @@ void CCU711::CreateQueuedMsg()
         }
         else
         {
-                newMessage.setTime(_messageQueue.back().getTime(), 6*(bytesToReturn/3));
+                newMessage.setTime(_messageQueue.back().getTime(), 6*(bytesToReturn/3));   //Should be words !!!!!
                 cout<<"setting last message time to "<<_messageQueue.back().getTime()<<endl;
         }
             
@@ -767,6 +770,30 @@ void CCU711::CreateQueuedResponse()
                     Data[ctr++] = 0x0f; //Data
                 }
             }
+            else if(_messageQueue.back().getioType()==XTIME)
+            {
+                Data[ctr++] = (0x10 + _messageQueue.back().getbytesToReturn());
+                Data[ctr++] = _messageQueue.back().getQENID(0);
+                Data[ctr++] = _messageQueue.back().getQENID(1);
+                Data[ctr++] = _messageQueue.back().getQENID(2);
+                Data[ctr++] = _messageQueue.back().getQENID(3);
+                Data[ctr++] = 0xf0; // ENSTA
+                Data[ctr++] = 0x00;
+                Data[ctr++] = 0x00;
+                Data[ctr++] = 0x00;
+                Data[ctr++] = 0x00; // ROUTE
+                Data[ctr++] = 0x01; //      THIS SHOULD ALWAYS BE 0x01 !!!!        // NFUNC
+                Data[ctr++] = 0x40; // S1
+                Data[ctr++] = 0x01; // "  "
+                Data[ctr++] = _messageQueue.back().getbytesToReturn(); // L1
+                Data[ctr++] = 0x00; // TS
+                Data[ctr++] = 0x00; // "  "
+                for(int i = 0; i<_messageQueue.back().getbytesToReturn(); i++)
+                {
+                    Data[ctr++] = 0x0f; //Data
+                }
+            }
+
         }
         _messageQueue.back().setmessageLength(ctr);
         _messageQueue.back().copyInto(Data, ctr);
