@@ -4617,6 +4617,22 @@ alter table DYNAMICACCUMULATOR
 go
 
 /*==============================================================*/
+/* Table: DYNAMICBILLINGFORMAT                                  */
+/*==============================================================*/
+create table DYNAMICBILLINGFORMAT (
+   FormatID             numeric              not null,
+   Delimiter            varchar(20)          null,
+   Header               varchar(255)         null,
+   Footer               varchar(255)         null
+)
+go
+
+alter table DYNAMICBILLINGFORMAT
+   add constraint PK_DYNAMICBILLINGFORMAT primary key (FormatID)
+go
+
+
+/*==============================================================*/
 /* Table: DYNAMICBILLINGFIELD                                   */
 /*==============================================================*/
 create table DYNAMICBILLINGFIELD (
@@ -4763,21 +4779,6 @@ insert into DynamicBillingField values(103,21,'rateBDemand- timestamp',14,'MM/dd
 
 alter table DYNAMICBILLINGFIELD
    add constraint PK_DYNAMICBILLINGFIELD primary key (id)
-go
-
-/*==============================================================*/
-/* Table: DYNAMICBILLINGFORMAT                                  */
-/*==============================================================*/
-create table DYNAMICBILLINGFORMAT (
-   FormatID             numeric              not null,
-   Delimiter            varchar(20)          null,
-   Header               varchar(255)         null,
-   Footer               varchar(255)         null
-)
-go
-
-alter table DYNAMICBILLINGFORMAT
-   add constraint PK_DYNAMICBILLINGFORMAT primary key (FormatID)
 go
 
 /*==============================================================*/
