@@ -9419,7 +9419,7 @@
         </points>    
     </device>
     <device>
-        <type value="1103" javaConstant="NEUTRAL_CS"/>
+        <type value="1103" javaConstant="NEUTRAL_MONITOR"/>
         <displayName value="Capacitor Bank Neutral Monitor"/>
         <displayGroup value="Grid Advisor"/>
                 <points>
