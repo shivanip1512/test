@@ -824,17 +824,17 @@ void CCU711::LoadQueuedMsg()
         int ctr = 0;
         _outmessageData[ctr++] = 0x7e;
         _outmessageData[ctr++] = _messageQueue.back().getAddress(); //  Store in 711 on startup within outside of servernexus loop !!!!!!!!!!
-        _outmessageData[ctr++] = 0x00; // Frame;
+        _outmessageData[ctr++] = getFrame(1);
         ctr++;                 //length set below
         _outmessageData[ctr++] = 0x00;
         _outmessageData[ctr++] = 0xa7;
-        _outmessageData[ctr++] = 0x10; //Stats
+        _outmessageData[ctr++] = 0x00; //Stats
         _outmessageData[ctr++] = 0x00; // "  "
         _outmessageData[ctr++] = 0x18; // "  "
         _outmessageData[ctr++] = 0x50; // "  "
         _outmessageData[ctr++] = 0x00; //StatD
         _outmessageData[ctr++] = 0x00; // "  "
-        _outmessageData[ctr++] = 0x22; // "  "
+        _outmessageData[ctr++] = 0x32-_messageQueue.size(); // "  "
         _outmessageData[ctr++] = _messageQueue.size();     // NCSETS
         _outmessageData[ctr++] = 0x00;                       // NCOCTS
         _outmessageData[ctr++] = ncocts;  // "    "
@@ -860,7 +860,12 @@ void CCU711::LoadQueuedMsg()
         _outindexOfEnd = ctr;
     }
     else
+    {
+        SET_FOREGROUND_BRIGHT_RED;
+        cout<<'\n'<<"Error: Message queue is empty"<<endl;
+        SET_FOREGROUND_WHITE;
         _outindexOfEnd = 0;
+    }
 }
 
 
