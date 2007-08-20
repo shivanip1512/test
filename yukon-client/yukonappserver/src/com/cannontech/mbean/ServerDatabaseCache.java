@@ -3149,13 +3149,22 @@ public synchronized LiteContact getAContactByContactID(int contactID)
 
         //found it, put it in the cache for later searches
         if (specifiedContact != null) {
-            allContacts.add(specifiedContact);
+            getAllContactsList().add(specifiedContact);
             allContactsMap.put(contactID, specifiedContact);  
             userContactMap.put(specifiedContact.getLoginID(), specifiedContact);
         }
     }
     
     return specifiedContact;
+}
+
+public List<LiteContact> getAllContactsList() {
+    synchronized (allContacts) {
+        if (allContacts == null) {
+            allContacts = new ArrayList<LiteContact>();
+        }
+    }
+    return allContacts;
 }
 
 public synchronized LiteContact[] getContactsByLastName(String lastName, boolean partialMatch) 
