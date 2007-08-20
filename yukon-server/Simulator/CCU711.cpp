@@ -724,7 +724,6 @@ void CCU711::CreateQueuedResponse()
             if(_messageQueue.back().getioType()==FUNC_READ)
             {
                 Data[ctr++] = (0x10 + _messageQueue.back().getbytesToReturn());
-                cout <<'\n'<<"setting length to "<<string(CtiNumStr(0x10 + _messageQueue.back().getbytesToReturn()).hex().zpad(2))<<endl;
                 Data[ctr++] = _messageQueue.back().getQENID(0);
                 Data[ctr++] = _messageQueue.back().getQENID(1);
                 Data[ctr++] = _messageQueue.back().getQENID(2);
