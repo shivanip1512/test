@@ -89,7 +89,7 @@ class CCU711{
             private:
                 int _bytesToReturn;  // Store L1
                 int _messageLength;
-                unsigned char _data [50];
+                unsigned char _data [300];
                 CtiTime _timeWhenReady;
                 unsigned char _address;
                 //route infot (3 elements)
@@ -165,7 +165,7 @@ class CCU711{
         int _messageType;
         int _commandType;
         int _preamble;
-        unsigned char _messageData[100];
+        unsigned char _messageData[300];
         EmetconWord _words[4];
         int _bytesToFollow;
         int _indexOfEnd;
@@ -174,7 +174,7 @@ class CCU711{
         int _outmessageType;
         int _outcommandType;
         int _outpreamble;
-        unsigned char _outmessageData[100];
+        unsigned char _outmessageData[300];
         EmetconWord _outwords[4];
         int _outindexOfEnd;
         int _outindexOfWords;

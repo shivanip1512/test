@@ -43,8 +43,8 @@ CCU711::CCU711() :
       _qmessagesSent(0)
 {
 
-    memset(_messageData, 0, 100);
-    memset(_outmessageData, 0, 100);
+    memset(_messageData, 0, 300);
+    memset(_outmessageData, 0, 300);
 }
 
 //Listen for and store an incoming message
@@ -146,7 +146,7 @@ int CCU711::SendMsg(unsigned char SendData[]){
     unsigned char *WriteBuffer = _outmessageData;
     int MsgSize = _outindexOfEnd;
 
-    memcpy(SendData, WriteBuffer, 100);
+    memcpy(SendData, WriteBuffer, 300);
 
     return MsgSize;
 }
@@ -717,13 +717,14 @@ void CCU711::CreateQueuedResponse()
 {
     if(!_messageQueue.empty())
     {
-        unsigned char Data[50];
+        unsigned char Data[300];
         int ctr=0;
         if(_messageQueue.back().getWord()==B_WORD)
             {
             if(_messageQueue.back().getioType()==FUNC_READ)
             {
                 Data[ctr++] = (0x10 + _messageQueue.back().getbytesToReturn());
+                cout <<'\n'<<"setting length to "<<string(CtiNumStr(0x10 + _messageQueue.back().getbytesToReturn()).hex().zpad(2))<<endl;
                 Data[ctr++] = _messageQueue.back().getQENID(0);
                 Data[ctr++] = _messageQueue.back().getQENID(1);
                 Data[ctr++] = _messageQueue.back().getQENID(2);
@@ -820,7 +821,7 @@ void CCU711::LoadQueuedMsg()
              _queueMessage temp = *itr;
              ncocts += temp.getbytesToReturn(); 
         }
-        unsigned char preData[50];
+        unsigned char preData[300];
         int ctr = 0;
         _outmessageData[ctr++] = 0x7e;
         _outmessageData[ctr++] = _messageQueue.back().getAddress(); //  Store in 711 on startup within outside of servernexus loop !!!!!!!!!!
@@ -842,7 +843,7 @@ void CCU711::LoadQueuedMsg()
         _outmessageData[ctr++] = 0x00;    // "  "
         while(!_messageQueue.empty())
         {
-            unsigned char Data[50];
+            unsigned char Data[300];
             _messageQueue.front().copyOut(Data);
             for(int i=0; i<_messageQueue.front().getmessageLength(); i++)
             {
@@ -939,7 +940,7 @@ unsigned char CCU711::getFrame(int frameCount)
 
 void CCU711::_queueMessage::initializeMessage()
 {
-    memset(_data, 0, 50);
+    memset(_data, 0, 300);
     memset(_QENID, 0, 4);
     //CtiTime _timeWhenReady;
     //route infot (3 elements)
@@ -962,7 +963,7 @@ void CCU711::_queueMessage::setmessageLength(int bytes) {   _messageLength = byt
 void CCU711::_queueMessage::copyInto(unsigned char Data[], int bytes)
 {
     setmessageLength(bytes);
-    for(int i = 0; i<50; i++)
+    for(int i = 0; i<300; i++)
     {
         _data[i]=Data[i];
     }
@@ -970,7 +971,7 @@ void CCU711::_queueMessage::copyInto(unsigned char Data[], int bytes)
 
 void CCU711::_queueMessage::copyOut(unsigned char Data[])
 {
-    for(int i = 0; i<50; i++)
+    for(int i = 0; i<300; i++)
     {
         Data[i]=_data[i];
     }
