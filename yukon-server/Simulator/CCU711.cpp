@@ -196,7 +196,7 @@ void CCU711::PrintMessage(){
             {
                 if(!_messageQueue.empty())
                 {
-                    _messageQueue.pop();
+                    _messageQueue.pop_front();
                 }
             }
         }
@@ -705,7 +705,7 @@ void CCU711::CreateQueuedMsg()
         //RTE_RPTCON;
         //RTE_TYPCON;
     
-        _messageQueue.push(newMessage);
+        _messageQueue.push_back(newMessage);
         CreateQueuedResponse();
         Offset = _messageData[6 + Offset];
     }
@@ -743,28 +743,9 @@ void CCU711::CreateQueuedResponse()
                 {
                     Data[ctr++] = 0x0f; //Data
                 }
-                Data[ctr++] = 0x00;  //SETL=0
             }
             else if(_messageQueue.back().getioType()==READ)
             {
-                Data[ctr++] = 0x7e;
-                Data[ctr++] = _messageQueue.back().getAddress();
-                Data[ctr++] = 0x00; // Frame;
-                ctr++;              //length set below
-                Data[ctr++] = 0x00;
-                Data[ctr++] = 0xa7;
-                Data[ctr++] = 0x10; //Stats
-                Data[ctr++] = 0x00; // "  "
-                Data[ctr++] = 0x18; // "  "
-                Data[ctr++] = 0x50; // "  "
-                Data[ctr++] = 0x00; //StatD
-                Data[ctr++] = 0x00; // "  "
-                Data[ctr++] = 0x22; //1f; // "  "
-                Data[ctr++] = 0x00; // "  "
-                Data[ctr++] = 0x00; // "  "
-                Data[ctr++] = 0x00; // "  "
-                Data[ctr++] = 0x00; //StatP
-                Data[ctr++] = 0x00; // "  "
                 Data[ctr++] = (0x10 + _messageQueue.back().getbytesToReturn());
                 Data[ctr++] = _messageQueue.back().getQENID(0);
                 Data[ctr++] = _messageQueue.back().getQENID(1);
@@ -785,12 +766,6 @@ void CCU711::CreateQueuedResponse()
                 {
                     Data[ctr++] = 0x0f; //Data
                 }
-                Data[ctr++] = 0x00;  //SETL=0
-                Data[3] = ctr-4;    //length;
-
-                //unsigned short CRC = NCrcCalc_C ((Data + 1), ctr-1);
-                //Data[ctr++] = 0x00;//HIBYTE (CRC);
-                //Data[ctr++] = 0x00;//LOBYTE (CRC);
             }
         }
         _messageQueue.back().setmessageLength(ctr);
@@ -835,44 +810,57 @@ void CCU711::CreateResponse(int command)
 
 void CCU711::LoadQueuedMsg()
 {
-    unsigned char preData[50];
-    int ctr = 0;
-    _messageQueue.front().copyOut(preData);
-    _outmessageData[ctr++] = 0x7e;
-    _outmessageData[ctr++] = _messageQueue.back().getAddress();
-    _outmessageData[ctr++] = 0x00; // Frame;
-    ctr++;                 //length set below
-    _outmessageData[ctr++] = 0x00;
-    _outmessageData[ctr++] = 0xa7;
-    _outmessageData[ctr++] = 0x10; //Stats
-    _outmessageData[ctr++] = 0x00; // "  "
-    _outmessageData[ctr++] = 0x18; // "  "
-    _outmessageData[ctr++] = 0x50; // "  "
-    _outmessageData[ctr++] = 0x00; //StatD
-    _outmessageData[ctr++] = 0x00; // "  "
-    _outmessageData[ctr++]= _messageQueue.size()-1;     // NCSETS
-    _outmessageData[ctr++]= 0x00;                       // NCOCTS
-    _outmessageData[ctr++]= 0x03*_messageQueue.size();  // "    "
-    _outmessageData[ctr++] = 0x1d; // "  "
-    _outmessageData[ctr++] = 0x00; //StatP
-    _outmessageData[ctr++] = 0x00; // "  "
-    while(!_messageQueue.empty())
-    {
-        unsigned char Data[50];
-        _messageQueue.front().copyOut(Data);
-        for(int i=0; i<_messageQueue.front().getmessageLength(); i++)
-        {
-            _outmessageData[ctr++]=Data[i];       
-        }
-        _qmessagesSent--;
-        _messageQueue.pop();
-    }
-    _outmessageData[3] = ctr-4;
-    unsigned short CRC = NCrcCalc_C ((_outmessageData + 1), ctr-1);
-    _outmessageData[ctr++] = HIBYTE (CRC);
-    _outmessageData[ctr++] = LOBYTE (CRC);
 
-    _outindexOfEnd = ctr;
+    if(!_messageQueue.empty())
+    {
+        int ncocts = 0;
+        deque <_queueMessage> ::iterator itr;
+        for(itr=_messageQueue.begin(); itr!=_messageQueue.end(); itr++)
+        {
+             _queueMessage temp = *itr;
+             ncocts += temp.getbytesToReturn(); 
+        }
+        unsigned char preData[50];
+        int ctr = 0;
+        _outmessageData[ctr++] = 0x7e;
+        _outmessageData[ctr++] = _messageQueue.back().getAddress(); //  Store in 711 on startup within outside of servernexus loop !!!!!!!!!!
+        _outmessageData[ctr++] = 0x00; // Frame;
+        ctr++;                 //length set below
+        _outmessageData[ctr++] = 0x00;
+        _outmessageData[ctr++] = 0xa7;
+        _outmessageData[ctr++] = 0x10; //Stats
+        _outmessageData[ctr++] = 0x00; // "  "
+        _outmessageData[ctr++] = 0x18; // "  "
+        _outmessageData[ctr++] = 0x50; // "  "
+        _outmessageData[ctr++] = 0x00; //StatD
+        _outmessageData[ctr++] = 0x00; // "  "
+        _outmessageData[ctr++] = 0x22; // "  "
+        _outmessageData[ctr++] = _messageQueue.size();     // NCSETS
+        _outmessageData[ctr++] = 0x00;                       // NCOCTS
+        _outmessageData[ctr++] = ncocts;  // "    "
+        _outmessageData[ctr++] = 0x00;    //StatP
+        _outmessageData[ctr++] = 0x00;    // "  "
+        while(!_messageQueue.empty())
+        {
+            unsigned char Data[50];
+            _messageQueue.front().copyOut(Data);
+            for(int i=0; i<_messageQueue.front().getmessageLength(); i++)
+            {
+                _outmessageData[ctr++]=Data[i];       
+            }
+            _qmessagesSent--;
+            _messageQueue.pop_front();
+        }
+        _outmessageData[ctr++] = 0x00;  //  SETL = 0
+        _outmessageData[3] = ctr-4;
+        unsigned short CRC = NCrcCalc_C ((_outmessageData + 1), ctr-1);
+        _outmessageData[ctr++] = HIBYTE (CRC);
+        _outmessageData[ctr++] = LOBYTE (CRC);
+    
+        _outindexOfEnd = ctr;
+    }
+    else
+        _outindexOfEnd = 0;
 }
 
 
