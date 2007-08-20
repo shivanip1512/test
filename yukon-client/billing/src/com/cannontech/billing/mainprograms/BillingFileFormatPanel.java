@@ -1148,16 +1148,19 @@ public BillingFileDefaults retrieveBillingDefaultsFromGui()
 	// Get all selected collection groups from the groupList scroll panel.
     List<String> deviceGroups = new ArrayList<String>(getGroupList().getSelectionCount());
     TreePath[] selectedPaths = getGroupList().getSelectionPaths();
-    for (TreePath path : selectedPaths) {
-         DeviceGroup groupForPath = modelFactory.getGroupForPath(path);
-         String fullName = groupForPath.getFullName();
-         deviceGroups.add(fullName);
+    if( selectedPaths != null) {
+	    for (TreePath path : selectedPaths) {
+	         DeviceGroup groupForPath = modelFactory.getGroupForPath(path);
+	         String fullName = groupForPath.getFullName();
+	         deviceGroups.add(fullName);
+	    }
     }
     
     
 	if( deviceGroups.isEmpty())
 	{
-		getBillingFile().getFileFormatBase().closeDBConnection();
+		if ( getBillingFile().getFileFormatBase() != null)
+			getBillingFile().getFileFormatBase().closeDBConnection();
 		update( billingFile, "Please make a billing group selection." );
 		return null;
 	}
