@@ -859,7 +859,7 @@ void CCU711::LoadQueuedMsg()
 
     if(!_messageQueue.empty())
     {
-        int ncocts = 0;
+        int ncocts = _qmessagesReady * 3;
         deque <_queueMessage> ::iterator itr;
         for(itr=_messageQueue.begin(); itr!=_messageQueue.end(); itr++)
         {
@@ -882,7 +882,7 @@ void CCU711::LoadQueuedMsg()
         _outmessageData[ctr++] = 0x00; //StatD
         _outmessageData[ctr++] = 0x00; // "  "
         _outmessageData[ctr++] = 0x20-_messageQueue.size(); // "  "
-        _outmessageData[ctr++] = _messageQueue.size();     // NCSETS
+        _outmessageData[ctr++] = _qmessagesReady;     // NCSETS
         _outmessageData[ctr++] = 0x00;                       // NCOCTS
         _outmessageData[ctr++] = ncocts;  // "    "
         _outmessageData[ctr++] = 0x00;    //StatP
