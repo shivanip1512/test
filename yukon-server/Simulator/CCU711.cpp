@@ -40,7 +40,7 @@ CCU711::CCU711() :
       _outcommandType(0),  
       _outpreamble(0),     
       _mctNumber(0),
-      _qmessagesSent(0)
+      _qmessagesReady(0)
 {
 
     memset(_messageData, 0, 300);
@@ -186,13 +186,13 @@ void CCU711::PrintMessage(){
 
         TranslateInfo(OUTGOING, printMsg, printCmd, printPre, printWrd, printFnc);
 
-        cout<<"Queue size: "<<_messageQueue.size()<<endl;
-        cout<<"Msg: "<<printMsg<<"      "<<printCmd;
+        cout<<"Queue size: "<<_messageQueue.size();
+        cout<<"     Msg: "<<printMsg<<"      "<<printCmd;
         if(_commandType==DTRAN)
-            {
+        {
             subCCU710.PrintMessage();
         }
-        else if(!_messageQueue.empty())
+        /*else if(!_messageQueue.empty())
             {
             cout<<"QENID : "<<string(CtiNumStr(_messageQueue.front().getQENID(0)).hex().zpad(2))<<' ';
             cout<<string(CtiNumStr(_messageQueue.front().getQENID(1)).hex().zpad(2))<<' ';
@@ -200,12 +200,12 @@ void CCU711::PrintMessage(){
             cout<<string(CtiNumStr(_messageQueue.front().getQENID(3)).hex().zpad(2))<<endl;
             if(_commandType==RCOLQ)
             {
-                if(!_messageQueue.empty())
+                if(!_messageQueue.empty() &&)
                 {
                     _messageQueue.pop_front();
                 }
             }
-        }
+        }*/
     }
 }
 
@@ -817,7 +817,6 @@ void CCU711::CreateQueuedResponse()
         }
         _messageQueue.back().setmessageLength(ctr);
         _messageQueue.back().copyInto(Data, ctr);
-        _qmessagesSent++;
     }
 }
 
@@ -865,7 +864,8 @@ void CCU711::LoadQueuedMsg()
         for(itr=_messageQueue.begin(); itr!=_messageQueue.end(); itr++)
         {
              _queueMessage temp = *itr;
-             ncocts += temp.getbytesToReturn(); 
+             ncocts += temp.getbytesToReturn();
+             _qmessagesReady += temp.isReady();
         }
         unsigned char preData[300];
         int ctr = 0;
@@ -893,9 +893,9 @@ void CCU711::LoadQueuedMsg()
             _messageQueue.front().copyOut(Data);
             for(int i=0; i<_messageQueue.front().getmessageLength(); i++)
             {
-                _outmessageData[ctr++]=Data[i];       
+                _outmessageData[ctr++]=Data[i]; 
             }
-            _qmessagesSent--;
+            _qmessagesReady--;
             _messageQueue.pop_front();
         }
         _outmessageData[ctr++] = 0x00;  //  SETL = 0
