@@ -122,6 +122,9 @@ void CCU711::CreateMsg(int ccuNumber)
             if(subCCU710.getWordFunction(0)==FUNCACK) {
                 CreateMessage(GENREP, FUNCACK, someData, ccuNumber, setccuNumber, Address, Frame);
             }
+            if(subCCU710.getWordFunction(0)==WRITE) {
+                CreateMessage(GENREP, FUNCACK, someData, ccuNumber, setccuNumber, Address, Frame);
+            }
         }
         else if(_commandType==LGRPQ) {
             CreateResponse(LGRPQ);
@@ -415,7 +418,22 @@ void CCU711::CreateMessage(int MsgType, int WrdFnc, unsigned char Data[], int cc
                 }
                 else if(subCCU710.getWordFunction(0) == WRITE)
                 {
-                    cout<<"Write detected"<<endl;/////////////////////////YOU WERE HERE//////////////////////
+                                        // Use a 710 to form the content in the message
+                    subCCU710.CreateMessage(FEEDEROP, FUNCACK, _mctNumber, ccuNumber);
+                    unsigned char SendData[300];
+                    subCCU710.SendMsg(SendData);
+                    int smallCtr = 0;
+                    _outmessageData[Ctr++] = SendData[smallCtr++];
+                    _outmessageData[Ctr++] = SendData[smallCtr++];
+                    _outmessageData[Ctr++] = SendData[smallCtr++];
+                    _outmessageData[Ctr++] = SendData[smallCtr++];
+                    _outmessageData[Ctr++] = SendData[smallCtr++];
+                    _outmessageData[Ctr++] = SendData[smallCtr++];
+                    _outmessageData[Ctr++] = SendData[smallCtr++];
+                    _outmessageData[Ctr++] = SendData[smallCtr++];
+                    _outmessageData[Ctr++] = SendData[smallCtr++];
+                    _outmessageData[Ctr++] = SendData[smallCtr++];
+                    _outmessageData[Ctr++] = SendData[smallCtr++];
                 }
 
                 _outmessageData[3] = Ctr-4;      // # of bytes to follow minus two (see note above)
@@ -600,22 +618,24 @@ int CCU711::DecodeIDLC(int & setccuNumber){
 				_messageType = GENREQ;
 				_bytesToFollow = (_messageData[3] + 0x02);  
 			}
-            if(!(_messageData[1] & 0x06))
-            {
-                setccuNumber = 0;
-            }
+            //if(!(_messageData[1] & 0x06))
+            //{
+            //    setccuNumber = 0;
+            //}
             if((_messageData[1] & 0x02) ==0x02)
             {
                 setccuNumber = 1;
             }
-            if((_messageData[1] & 0x04) == 0x04)
-            {
+            else if((_messageData[1] & 0x04) == 0x04)
+            { 
                 setccuNumber = 2;
             }
-            if((_messageData[1] & 0x06) == 0x06)
+            else if((_messageData[1] & 0x06) == 0x06)
             {
                 setccuNumber = 3;
-            } 
+            }
+            else
+                setccuNumber = 0;
 	}
     else{  //  The message is not an IDLC message.  Probably 710 protocol instead
         return -1;
