@@ -707,7 +707,7 @@ void CCU711::CreateQueuedMsg()
         int iotype = 0;
         int function = 0;
         unsigned char address;
-        unsigned char mctaddress;
+        int mctaddress;
         int bytesToReturn = 0;
         decodeForQueueMessage(type, iotype, function, address, mctaddress, bytesToReturn, Offset);
         newMessage.setWord(type);
@@ -934,7 +934,7 @@ unsigned char CCU711::getRLEN()
      return RLEN14;
 }
 
-void CCU711::decodeForQueueMessage(int & type, int & iotype, int & function, unsigned char & address, unsigned char & mctaddress, int  & bytesToReturn, int offset)
+void CCU711::decodeForQueueMessage(int & type, int & iotype, int & function, unsigned char & address, int & mctaddress, int  & bytesToReturn, int offset)
 {
     switch(_messageData[19] & 0xc0)
     {
@@ -972,7 +972,7 @@ void CCU711::decodeForQueueMessage(int & type, int & iotype, int & function, uns
     bytesToReturn = _messageData[offset+5];
 
     address = _messageData[1];
-    mctaddress = 0x0f;
+    mctaddress = (_messageData[12] << 16) | ( _messageData[13] << 8) | _messageData[14];
 }
 
 
@@ -992,9 +992,10 @@ unsigned char CCU711::getFrame(int frameCount)
 }
 
 
-void CCU711::getData(unsigned char mctAddress, int function, int ioType, int bytesToReturn)
+void CCU711::getData(int mctAddress, int function, int ioType, int bytesToReturn)
 {
-    _data[0]=mctAddress;
+    _data[1]=mctAddress; //>> 16;
+    cout<<'\n'<<"mctAddress  "<<mctAddress<<endl;
 }
 
 /***************************************************************************************
@@ -1016,6 +1017,8 @@ void CCU711::_queueMessage::initializeMessage()
     _function      = 0;
     _bytesToReturn = 0;
     _messageLength = 0;
+    _mctAddress    = 0;
+
 
 }
 
@@ -1073,6 +1076,6 @@ int CCU711::_queueMessage::getbytesToReturn()                      {   return _b
 CtiTime CCU711::_queueMessage::getTime()                           {   return _timeWhenReady;                }
 void CCU711::_queueMessage::setTime(CtiTime currentTime, int delay){   _timeWhenReady = currentTime + delay; }
 int CCU711::_queueMessage::getFunction()                           {   return _function;                     }
-void CCU711::_queueMessage::setmctAddress(unsigned char address)   {   _mctAddress = address;                }
-unsigned char CCU711::_queueMessage::getmctAddress()               {   return _mctAddress;                   }
+void CCU711::_queueMessage::setmctAddress(int address)             {   _mctAddress = address;                }
+int CCU711::_queueMessage::getmctAddress()                         {   return _mctAddress;                   }
 
