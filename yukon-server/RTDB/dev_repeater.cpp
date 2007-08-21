@@ -8,8 +8,8 @@
 *
 * PVCS KEYWORDS:
 * ARCHIVE      :  $Archive:     $
-* REVISION     :  $Revision: 1.38 $
-* DATE         :  $Date: 2007/04/11 14:37:50 $
+* REVISION     :  $Revision: 1.39 $
+* DATE         :  $Date: 2007/08/21 20:24:38 $
 *
 * Copyright (c) 2001 Cannon Technologies Inc. All rights reserved.
 *-----------------------------------------------------------------------------*/
@@ -404,6 +404,11 @@ INT CtiDeviceRepeater900::executePutConfig(CtiRequestMsg          *pReq,
        boost::tokenizer<> vintok(strVarIn);
        boost::tokenizer<> stftok(strStages);
 
+       boost::tokenizer<>::iterator fixitr  = fixtok.begin();
+       boost::tokenizer<>::iterator voutitr = vouttok.begin();
+       boost::tokenizer<>::iterator vinitr  = vintok.begin();
+       boost::tokenizer<>::iterator stfitr  = stftok.begin();
+
        for(j = 0; j < msgcnt; j++)
        {
            rolenum = firstrole + (j * 6);       // This is where we begin.
@@ -428,27 +433,31 @@ INT CtiDeviceRepeater900::executePutConfig(CtiRequestMsg          *pReq,
 
            for(i = 0; i < pOutMessage->Buffer.BSt.Length; i = i + 2)       // This is the number of defined roles.
            {
-               if( fixtok.begin() != fixtok.end() )
+               if( fixitr != fixtok.end() )
                {
-                   strTemp = *fixtok.begin();
+                   strTemp = *fixitr;
+                   fixitr++;
                }
                fixbits = !strTemp.empty() ? atoi(strTemp.c_str()) : 31;
 
-               if( vouttok.begin() != vouttok.end() )
+               if( voutitr != vouttok.end() )
                {
-                   strTemp = *vouttok.begin();
+                   strTemp = *voutitr;
+                   voutitr++;
                }
                varbits_out = !strTemp.empty() ? atoi(strTemp.c_str()) : 7;
 
-               if( vintok.begin() != vintok.end() )
+               if( vinitr != vintok.end() )
                {
-                   strTemp = *vintok.begin();
+                   strTemp = *vinitr;
+                   vinitr++;
                }
                varbits_in = !strTemp.empty() ? atoi(strTemp.c_str()) : 7;
 
-               if( stftok.begin() != stftok.end() )
+               if( stfitr != stftok.end() )
                {
-                   strTemp = *stftok.begin();
+                   strTemp = *stfitr;
+                   stfitr++;
                }
                stagestf = !strTemp.empty() ? atoi(strTemp.c_str()) : 15;
 
