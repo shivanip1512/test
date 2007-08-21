@@ -78,6 +78,7 @@ class CCU711{
                 void setWord(int type);
                 void setiotype(int iotype);
                 void setFunction(int function);
+                int  getFunction();
                 int  getioType();
                 void setAddress(unsigned char address);
                 void setbytesToReturn(int bytesToReturn);
@@ -153,8 +154,9 @@ class CCU711{
         void CreateQueuedResponse();
         //  Decode the information contained in an incoming message 
         void decodeForQueueMessage(int & type, int & iotype, int & function, unsigned char & address, int & bytesToReturn, int offset);
-        //  Returns data to be sent to poerter at an index
-        unsigned char getData(int ctr);
+        //  Returns number of data bytes to be sent to poerter at an index and fills the data array
+        void getData(unsigned char mctAddress, int function, int ioType, int bytesToReturn);
+
 
 
 	private:

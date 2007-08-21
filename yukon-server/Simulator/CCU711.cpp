@@ -764,9 +764,11 @@ void CCU711::CreateQueuedResponse()
                 Data[ctr++] = 0x03;//_messageQueue.back().getbytesToReturn(); // L1
                 Data[ctr++] = 0x00; // TS
                 Data[ctr++] = 0x00; // "  "
+                unsigned char mctAddress = 0x00;
+                getData(mctAddress, _messageQueue.back().getFunction(), _messageQueue.back().getioType(), _messageQueue.back().getbytesToReturn());
                 for(int i = 0; i<_messageQueue.back().getbytesToReturn(); i++)
                 {
-                    Data[ctr++] = getData(i); //Data
+                    Data[ctr++] = _data[i]; //Data
                 }
             }
             else if(_messageQueue.back().getioType()==READ)
@@ -787,9 +789,11 @@ void CCU711::CreateQueuedResponse()
                 Data[ctr++] = _messageQueue.back().getbytesToReturn(); // L1
                 Data[ctr++] = 0x00; // TS
                 Data[ctr++] = 0x00; // "  "
+                unsigned char mctAddress = 0x00;
+                getData(mctAddress, _messageQueue.back().getFunction(), _messageQueue.back().getioType(), _messageQueue.back().getbytesToReturn());
                 for(int i = 0; i<_messageQueue.back().getbytesToReturn(); i++)
                 {
-                    Data[ctr++] = getData(i); //Data
+                    Data[ctr++] = _data[i]; //Data
                 }
             }
             else if(_messageQueue.back().getioType()==XTIME)
@@ -810,9 +814,11 @@ void CCU711::CreateQueuedResponse()
                 Data[ctr++] = _messageQueue.back().getbytesToReturn(); // L1
                 Data[ctr++] = 0x00; // TS
                 Data[ctr++] = 0x00; // "  "
+                unsigned char mctAddress = 0x00;
+                getData(mctAddress, _messageQueue.back().getFunction(), _messageQueue.back().getioType(), _messageQueue.back().getbytesToReturn());
                 for(int i = 0; i<_messageQueue.back().getbytesToReturn(); i++)
                 {
-                    Data[ctr++] = 0x0f; //Data
+                    Data[ctr++] = _data[i]; //Data
                 }
             }
 
@@ -982,9 +988,10 @@ unsigned char CCU711::getFrame(int frameCount)
     return frame;
 }
 
-unsigned char CCU711::getData(int ctr)
+
+void CCU711::getData(unsigned char mctAddress, int function, int ioType, int bytesToReturn)
 {
-    return _data[ctr];
+    _data[0]=0x0f;
 }
 
 /***************************************************************************************
@@ -1062,3 +1069,5 @@ void CCU711::_queueMessage::setbytesToReturn(int bytesToReturn)    {   _bytesToR
 int CCU711::_queueMessage::getbytesToReturn()                      {   return _bytesToReturn;                }
 CtiTime CCU711::_queueMessage::getTime()                           {   return _timeWhenReady;                }
 void CCU711::_queueMessage::setTime(CtiTime currentTime, int delay){   _timeWhenReady = currentTime + delay; }
+int CCU711::_queueMessage::getFunction()                           {   return _function;                     }
+
