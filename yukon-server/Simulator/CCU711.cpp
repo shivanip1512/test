@@ -44,6 +44,7 @@ CCU711::CCU711(unsigned char addressFound) :
 {
     _address = addressFound;
 
+    memset(_data, 0, 300);
     memset(_messageData, 0, 300);
     memset(_outmessageData, 0, 300);
 }
@@ -765,7 +766,7 @@ void CCU711::CreateQueuedResponse()
                 Data[ctr++] = 0x00; // "  "
                 for(int i = 0; i<_messageQueue.back().getbytesToReturn(); i++)
                 {
-                    Data[ctr++] = 0x0f; //Data
+                    Data[ctr++] = getData(i); //Data
                 }
             }
             else if(_messageQueue.back().getioType()==READ)
@@ -788,7 +789,7 @@ void CCU711::CreateQueuedResponse()
                 Data[ctr++] = 0x00; // "  "
                 for(int i = 0; i<_messageQueue.back().getbytesToReturn(); i++)
                 {
-                    Data[ctr++] = 0x0f; //Data
+                    Data[ctr++] = getData(i); //Data
                 }
             }
             else if(_messageQueue.back().getioType()==XTIME)
@@ -979,6 +980,11 @@ unsigned char CCU711::getFrame(int frameCount)
     frame = frame | sss;
 
     return frame;
+}
+
+unsigned char CCU711::getData(int ctr)
+{
+    return _data[ctr];
 }
 
 /***************************************************************************************

@@ -153,6 +153,8 @@ class CCU711{
         void CreateQueuedResponse();
         //  Decode the information contained in an incoming message 
         void decodeForQueueMessage(int & type, int & iotype, int & function, unsigned char & address, int & bytesToReturn, int offset);
+        //  Returns data to be sent to poerter at an index
+        unsigned char getData(int ctr);
 
 
 	private:
@@ -164,6 +166,7 @@ class CCU711{
         CCU710 subCCU710;
 
         unsigned char _address;
+        unsigned char _data[300];
 
         int _messageType;
         int _commandType;
