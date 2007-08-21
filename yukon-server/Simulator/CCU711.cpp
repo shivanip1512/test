@@ -972,6 +972,7 @@ void CCU711::decodeForQueueMessage(int & type, int & iotype, int & function, uns
     bytesToReturn = _messageData[offset+5];
 
     address = _messageData[1];
+    mctaddress = 0x0f;
 }
 
 
