@@ -28,9 +28,6 @@
 
 int main(int argc, char *argv[])
 {	
-	CCU711 aCCU711;
-    CCU710 aCCU710;
-
     WSADATA wsaData;
 
     int portNumber = 0;
@@ -48,8 +45,6 @@ int main(int argc, char *argv[])
             return 0;
     }
 
-
-
     WSAStartup(MAKEWORD (1,1), &wsaData);
 
 	CTINEXUS * listenSocket; 
@@ -65,17 +60,24 @@ int main(int argc, char *argv[])
 		std::cout<<Listening.asString()<<" Listening..."<<std::endl;
 	}
 
+    CCU710 aCCU710;
 
 	while(newSocket->CTINexusValid()) {
-        unsigned char TempBuffer[1];
+        unsigned char TempBuffer[2];
         TempBuffer[0] = 0x00;
         unsigned long bytesRead=0;
+        unsigned long addressFound = 0x00;
 
         //  Peek at first byte
-        newSocket->CTINexusPeek(TempBuffer,1, &bytesRead);
+        newSocket->CTINexusPeek(TempBuffer,2, &bytesRead);
+        addressFound = TempBuffer[1];
 
         if(TempBuffer[0]==0x7e)
-            {   //  It's a 711 IDLC message
+            {   
+
+             CCU711 *aCCU711 = new CCU711();
+
+            //  It's a 711 IDLC message
             CtiTime AboutToRead;
             unsigned char ReadBuffer[300];
             int BytesToFollow;
@@ -104,7 +106,7 @@ int main(int argc, char *argv[])
             if(ReadBuffer[1] != 0x7e)  //  Make sure it didn't try to send two messages at once and overlap the two HDLC flags
             {
     
-                BytesToFollow = aCCU711.ReceiveMsg(ReadBuffer, ccuNumber);
+                BytesToFollow = aCCU711->ReceiveMsg(ReadBuffer, ccuNumber);
     
                 if(BytesToFollow>0)
                 {
@@ -126,15 +128,15 @@ int main(int argc, char *argv[])
                             cout<<string(CtiNumStr(ReadBuffer[byteitr+4]).hex().zpad(2))<<' ';
                     }
     
-                    aCCU711.ReceiveMore(ReadBuffer, counter);
-                    aCCU711.PrintInput();
+                    aCCU711->ReceiveMore(ReadBuffer, counter);
+                    aCCU711->PrintInput();
                 }
     
-                aCCU711.CreateMsg(ccuNumber);
+                aCCU711->CreateMsg(ccuNumber);
     
                 unsigned char SendData[300];
     
-                int MsgSize = aCCU711.SendMsg(SendData);
+                int MsgSize = aCCU711->SendMsg(SendData);
     
                 if(MsgSize>0)
                  {
@@ -153,7 +155,7 @@ int main(int argc, char *argv[])
                         cout <<string(CtiNumStr(SendData[byteitr]).hex().zpad(2))<<' ';
                     }
     
-                    aCCU711.PrintMessage();
+                    aCCU711->PrintMessage();
                 }
                 else
                 {
