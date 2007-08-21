@@ -1,15 +1,17 @@
 /*==============================================================*/
 /* Database name:  YukonDatabase                                */
 /* DBMS name:      ORACLE Version 9i                            */
-/* Created on:     8/20/2007 11:49:09 AM                        */
+/* Created on:     8/21/2007 4:03:35 PM                         */
 /*==============================================================*/
 
+
+/* @error ignore-begin */
 set define off;
+/* @error ignore-end */
+
+
 
 drop procedure RenCol
-;
-
-drop procedure RemoveColumn
 ;
 
 drop view SubstationAddress_View
@@ -1159,32 +1161,32 @@ create table BillingFileFormats  (
 )
 ;
 
-insert into billingfileformats values( -11, 'MV_90 DATA Import');
-insert into BillingFileFormats values( -1,'INVALID');
-insert into BillingFileFormats values( 0,'SEDC');
-insert into BillingFileFormats values( 1,'CADP');
-insert into BillingFileFormats values( 2,'CADPXL2');
-insert into BillingFileFormats values( 3,'WLT-40');
-insert into BillingFileFormats values( 4,'CTI-CSV');
-insert into BillingFileFormats values( 5,'OPU');
-insert into BillingFileFormats values( 6,'DAFRON');
-insert into BillingFileFormats values( 7,'NCDC');
-insert into billingFileformats values( 9, 'CTI2');
-insert into billingfileformats values( 12, 'SEDC 5.4');
-insert into billingfileformats values( 13, 'NISC-Turtle');
-insert into billingfileformats values( 14, 'NISC-NCDC');
-insert into billingfileformats values( 15, 'NCDC-Handheld');
-insert into billingfileformats values( 16, 'NISC TOU (kVarH)');
-insert into billingfileformats values( -17, 'SEDC (yyyyMMdd)');
-insert into billingfileformats values( -18, 'ATS');
-insert into billingfileformats values( -19, ' NISC-Turtle No Limit kWh ');
-insert into billingfileformats values(-20, 'IVUE_BI_T65');
-insert into billingfileformats values(21, 'SIMPLE_TOU');
-insert into billingfileformats values(22, 'EXTENDED_TOU');
-insert into billingfileformats values (-23, 'Big Rivers Elec Coop');
-insert into billingfileformats values(-24, 'INCODE (Extended TOU)');
-insert into BillingFileFormats values(-25,'Itron Register Readings Export');
-insert into billingfileformats values(-26, 'SIMPLE_TOU_DeviceName');
+insert into billingfileformats values( -11, 'MV_90 DATA Import',1);
+insert into BillingFileFormats values( -1,'INVALID',1);
+insert into BillingFileFormats values( 0,'SEDC',1);
+insert into BillingFileFormats values( 1,'CADP',1);
+insert into BillingFileFormats values( 2,'CADPXL2',1);
+insert into BillingFileFormats values( 3,'WLT-40',1);
+insert into BillingFileFormats values( 4,'CTI-CSV',1);
+insert into BillingFileFormats values( 5,'OPU',1);
+insert into BillingFileFormats values( 6,'DAFRON',1);
+insert into BillingFileFormats values( 7,'NCDC',1);
+insert into billingFileformats values( 9, 'CTI2',1);
+insert into billingfileformats values( 12, 'SEDC 5.4',1);
+insert into billingfileformats values( 13, 'NISC-Turtle',1);
+insert into billingfileformats values( 14, 'NISC-NCDC',1);
+insert into billingfileformats values( 15, 'NCDC-Handheld',1);
+insert into billingfileformats values( 16, 'NISC TOU (kVarH)',1);
+insert into billingfileformats values( -17, 'SEDC (yyyyMMdd)',1);
+insert into billingfileformats values( -18, 'ATS',1);
+insert into billingfileformats values( -19, ' NISC-Turtle No Limit kWh ',1);
+insert into billingfileformats values(-20, 'IVUE_BI_T65',1);
+insert into billingfileformats values(21, 'SIMPLE_TOU',1);
+insert into billingfileformats values(22, 'EXTENDED_TOU',1);
+insert into billingfileformats values (-23, 'Big Rivers Elec Coop',1);
+insert into billingfileformats values(-24, 'INCODE (Extended TOU)',1);
+insert into BillingFileFormats values(-25,'Itron Register Readings Export',1);
+insert into billingfileformats values(-26, 'SIMPLE_TOU_DeviceName',1);
 
 alter table BillingFileFormats
    add constraint PK_BILLINGFILEFORMATS primary key (FormatID)
@@ -3218,22 +3220,6 @@ alter table DYNAMICACCUMULATOR
 ;
 
 /*==============================================================*/
-/* Table: DYNAMICBILLINGFORMAT                                  */
-/*==============================================================*/
-create table DYNAMICBILLINGFORMAT  (
-   FormatID             NUMBER                          not null,
-   Delimiter            VARCHAR2(20),
-   Header               VARCHAR2(255),
-   Footer               VARCHAR2(255)
-)
-;
-
-alter table DYNAMICBILLINGFORMAT
-   add constraint PK_DYNAMICBILLINGFORMAT primary key (FormatID)
-;
-
-
-/*==============================================================*/
 /* Table: DYNAMICBILLINGFIELD                                   */
 /*==============================================================*/
 create table DYNAMICBILLINGFIELD  (
@@ -3246,140 +3232,156 @@ create table DYNAMICBILLINGFIELD  (
 ;
 
 /* ATS */
-insert into DynamicBillingFormat VALUES( '-18',',','H    Meter    kWh   Time   Date    Peak   PeakT   PeakD  Stat Sig  Freq Phase','');
-insert into DynamicBillingField values(1,-18,'Plain Text',0,'M')
-insert into DynamicBillingField values(2,-18, 'meterNumber',1,'')
-insert into DynamicBillingField values(3,-18, 'totalConsumption - reading',2,'#####')
-insert into DynamicBillingField values(4,-18, 'totalConsumption - timestamp',3,'HH:mm')
-insert into DynamicBillingField values(5,-18, 'totalConsumption - timestamp',4,'yy/MM/dd')
-insert into DynamicBillingField values(6,-18,'totalPeakDemand - reading',5,'##0.000')
-insert into DynamicBillingField values(7,-18,'totalPeakDemand - timestamp',6,'HH:mm')
-insert into DynamicBillingField values(8,-18,'totalPeakDemand - timestamp',7,'yy/MM/dd')
-insert into DynamicBillingField values(9,-18,'Plain Text',8,'')
-insert into DynamicBillingField values(10,-18,'Plain Text',9,'')
-insert into DynamicBillingField values(11,-18,'Plain Text',10,';')
+insert into DynamicBillingField values(1,-18,'Plain Text',0,'M');
+insert into DynamicBillingField values(2,-18, 'meterNumber',1,'');
+insert into DynamicBillingField values(3,-18, 'totalConsumption - reading',2,'#####');
+insert into DynamicBillingField values(4,-18, 'totalConsumption - timestamp',3,'HH:mm');
+insert into DynamicBillingField values(5,-18, 'totalConsumption - timestamp',4,'yy/MM/dd');
+insert into DynamicBillingField values(6,-18,'totalPeakDemand - reading',5,'##0.000');
+insert into DynamicBillingField values(7,-18,'totalPeakDemand - timestamp',6,'HH:mm');
+insert into DynamicBillingField values(8,-18,'totalPeakDemand - timestamp',7,'yy/MM/dd');
+insert into DynamicBillingField values(9,-18,'Plain Text',8,'');
+insert into DynamicBillingField values(10,-18,'Plain Text',9,'');
+insert into DynamicBillingField values(11,-18,'Plain Text',10,';');
 
 /* DAFFRON */
-insert into DynamicBillingFormat values(6,',','H    Meter    kWh   Time   Date   Peak   PeakT  PeakD  Stat Sig Freq Phase','')
-insert into DynamicBillingField values(12,6,'Plain Text',0,'M')
-insert into DynamicBillingField values(13,6, 'meterNumber',1,'')
-insert into DynamicBillingField values(14,6, 'totalConsumption - reading',2,'#####')
-insert into DynamicBillingField values(15,6, 'totalConsumption - timestamp',3,'HH:mm')
-insert into DynamicBillingField values(16,6, 'totalConsumption - timestamp',4,'yy/MM/dd')
-insert into DynamicBillingField values(17,6,'totalPeakDemand - reading',5,'##0.000')
-insert into DynamicBillingField values(18,6,'totalPeakDemand - timestamp',6,'HH:mm')
-insert into DynamicBillingField values(19,6,'totalPeakDemand - timestamp',7,'yy/MM/dd')
-insert into DynamicBillingField values(20,6,'Plain Text',8,'  6')
-insert into DynamicBillingField values(21,6,'Plain Text',9,'')
-insert into DynamicBillingField values(22,6,'Plain Text',10,';')
+insert into DynamicBillingField values(12,6,'Plain Text',0,'M');
+insert into DynamicBillingField values(13,6, 'meterNumber',1,'');
+insert into DynamicBillingField values(14,6, 'totalConsumption - reading',2,'#####');
+insert into DynamicBillingField values(15,6, 'totalConsumption - timestamp',3,'HH:mm');
+insert into DynamicBillingField values(16,6, 'totalConsumption - timestamp',4,'yy/MM/dd');
+insert into DynamicBillingField values(17,6,'totalPeakDemand - reading',5,'##0.000');
+insert into DynamicBillingField values(18,6,'totalPeakDemand - timestamp',6,'HH:mm');
+insert into DynamicBillingField values(19,6,'totalPeakDemand - timestamp',7,'yy/MM/dd');
+insert into DynamicBillingField values(20,6,'Plain Text',8,'  6');
+insert into DynamicBillingField values(21,6,'Plain Text',9,'');
+insert into DynamicBillingField values(22,6,'Plain Text',10,';');
 
 /* NCDC */
-insert into DynamicBillingFormat values(7,',','H    Meter    kWh   Time   Date    Peak   PeakT   PeakD','')
-insert into DynamicBillingField values(23,7,'Plain Text',0,'M')
-insert into DynamicBillingField values(24,7, 'meterNumber',1,'')
-insert into DynamicBillingField values(25,7, 'totalConsumption - reading',2,'#####')
-insert into DynamicBillingField values(26,7, 'totalConsumption - timestamp',3,'HH:mm')
-insert into DynamicBillingField values(27,7, 'totalConsumption - timestamp',4,'yyyy/MM/dd')
-insert into DynamicBillingField values(28,7,'totalPeakDemand - reading',5,'##0.00')
-insert into DynamicBillingField values(29,7,'totalPeakDemand - timestamp',6,'HH:mm')
-insert into DynamicBillingField values(30,7,'totalPeakDemand - timestamp',7,'yyyy/MM/dd')
+insert into DynamicBillingField values(23,7,'Plain Text',0,'M');
+insert into DynamicBillingField values(24,7, 'meterNumber',1,'');
+insert into DynamicBillingField values(25,7, 'totalConsumption - reading',2,'#####');
+insert into DynamicBillingField values(26,7, 'totalConsumption - timestamp',3,'HH:mm');
+insert into DynamicBillingField values(27,7, 'totalConsumption - timestamp',4,'yyyy/MM/dd');
+insert into DynamicBillingField values(28,7,'totalPeakDemand - reading',5,'##0.00');
+insert into DynamicBillingField values(29,7,'totalPeakDemand - timestamp',6,'HH:mm');
+insert into DynamicBillingField values(30,7,'totalPeakDemand - timestamp',7,'yyyy/MM/dd');
 
 /* NISC_NCDC */
-insert into DynamicBillingFormat values(14,',','H    Meter    kWh   Time   Date    Peak   PeakT   PeakD','')
-insert into DynamicBillingField values(31,14,'Plain Text',0,'M')
-insert into DynamicBillingField values(32,14, 'meterNumber',1,'')
-insert into DynamicBillingField values(33,14, 'totalConsumption - reading',2,'#####')
-insert into DynamicBillingField values(34,14, 'totalConsumption - timestamp',3,'HH:mm')
-insert into DynamicBillingField values(35,14, 'totalConsumption - timestamp',4,'MM/dd/yyyy')
-insert into DynamicBillingField values(36,14,'totalPeakDemand - reading',5,'##0.00')
-insert into DynamicBillingField values(37,14,'totalPeakDemand - timestamp',6,'HH:mm')
-insert into DynamicBillingField values(38,14,'totalPeakDemand - timestamp',7,'MM/dd/yyyy')
+insert into DynamicBillingField values(31,14,'Plain Text',0,'M');
+insert into DynamicBillingField values(32,14, 'meterNumber',1,'');
+insert into DynamicBillingField values(33,14, 'totalConsumption - reading',2,'#####');
+insert into DynamicBillingField values(34,14, 'totalConsumption - timestamp',3,'HH:mm');
+insert into DynamicBillingField values(35,14, 'totalConsumption - timestamp',4,'MM/dd/yyyy');
+insert into DynamicBillingField values(36,14,'totalPeakDemand - reading',5,'##0.00');
+insert into DynamicBillingField values(37,14,'totalPeakDemand - timestamp',6,'HH:mm');
+insert into DynamicBillingField values(38,14,'totalPeakDemand - timestamp',7,'MM/dd/yyyy');
 
 /* NISC_NoLimt_kWh */
-insert into DynamicBillingFormat values(-19,',','H    Meter    kWh   Time   Date    Peak   PeakT   PeakD  Stat Sig  Freq Phase','')
-insert into DynamicBillingField values(39,-19,'Plain Text',0,'M')
-insert into DynamicBillingField values(40,-19, 'meterNumber',1,'')
-insert into DynamicBillingField values(41,-19, 'totalConsumption - reading',2,'#####')
-insert into DynamicBillingField values(42,-19, 'totalConsumption - timestamp',3,'HH:mm')
-insert into DynamicBillingField values(43,-19, 'totalConsumption - timestamp',4,'yy/MM/dd')
-insert into DynamicBillingField values(44,-19,'totalPeakDemand - reading',5,'##0.00')
-insert into DynamicBillingField values(45,-19,'totalPeakDemand - timestamp',6,'HH:mm')
-insert into DynamicBillingField values(46,-19,'totalPeakDemand - timestamp',7,'yy/MM/dd')
-insert into DynamicBillingField values(47,-19,'Plain Text',8,'')
-insert into DynamicBillingField values(48,-19,'Plain Text',9,'')
-insert into DynamicBillingField values(49,-19,'Plain Text',10,';')
+insert into DynamicBillingField values(39,-19,'Plain Text',0,'M');
+insert into DynamicBillingField values(40,-19, 'meterNumber',1,'');
+insert into DynamicBillingField values(41,-19, 'totalConsumption - reading',2,'#####');
+insert into DynamicBillingField values(42,-19, 'totalConsumption - timestamp',3,'HH:mm');
+insert into DynamicBillingField values(43,-19, 'totalConsumption - timestamp',4,'yy/MM/dd');
+insert into DynamicBillingField values(44,-19,'totalPeakDemand - reading',5,'##0.00');
+insert into DynamicBillingField values(45,-19,'totalPeakDemand - timestamp',6,'HH:mm');
+insert into DynamicBillingField values(46,-19,'totalPeakDemand - timestamp',7,'yy/MM/dd');
+insert into DynamicBillingField values(47,-19,'Plain Text',8,'');
+insert into DynamicBillingField values(48,-19,'Plain Text',9,'');
+insert into DynamicBillingField values(49,-19,'Plain Text',10,';');
 
 /* NISC */
-insert into DynamicBillingFormat values(13,',','H    Meter    kWh   Time   Date    Peak   PeakT   PeakD  Stat Sig  Freq Phase','')
-insert into DynamicBillingField values(50,13,'Plain Text',0,'M')
-insert into DynamicBillingField values(51,13, 'meterNumber',1,'')
-insert into DynamicBillingField values(52,13, 'totalConsumption - reading',2,'#####')
-insert into DynamicBillingField values(53,13, 'totalConsumption - timestamp',3,'HH:mm')
-insert into DynamicBillingField values(54,13, 'totalConsumption - timestamp',4,'yy/MM/dd')
-insert into DynamicBillingField values(55,13,'totalPeakDemand - reading',5,'##0.00')
-insert into DynamicBillingField values(56,13,'totalPeakDemand - timestamp',6,'HH:mm')
-insert into DynamicBillingField values(57,13,'totalPeakDemand - timestamp',7,'yy/MM/dd')
-insert into DynamicBillingField values(58,13,'Plain Text',8,'')
-insert into DynamicBillingField values(59,13,'Plain Text',9,'')
-insert into DynamicBillingField values(60,13,'Plain Text',10,';')
+insert into DynamicBillingField values(50,13,'Plain Text',0,'M');
+insert into DynamicBillingField values(51,13, 'meterNumber',1,'');
+insert into DynamicBillingField values(52,13, 'totalConsumption - reading',2,'#####');
+insert into DynamicBillingField values(53,13, 'totalConsumption - timestamp',3,'HH:mm');
+insert into DynamicBillingField values(54,13, 'totalConsumption - timestamp',4,'yy/MM/dd');
+insert into DynamicBillingField values(55,13,'totalPeakDemand - reading',5,'##0.00');
+insert into DynamicBillingField values(56,13,'totalPeakDemand - timestamp',6,'HH:mm');
+insert into DynamicBillingField values(57,13,'totalPeakDemand - timestamp',7,'yy/MM/dd');
+insert into DynamicBillingField values(58,13,'Plain Text',8,'');
+insert into DynamicBillingField values(59,13,'Plain Text',9,'');
+insert into DynamicBillingField values(60,13,'Plain Text',10,';');
 
 /* SEDC_yyyyMMdd */
-insert into DynamicBillingFormat values(-17,',', 'H    Meter    kWh   Time   Date    Peak   PeakT   PeakD  Stat Sig  Freq Phase','')
-insert into DynamicBillingField values(61,-17,'Plain Text',0,'M')
-insert into DynamicBillingField values(62,-17, 'meterNumber',1,'')
-insert into DynamicBillingField values(63,-17, 'totalConsumption - reading',2,'#####')
-insert into DynamicBillingField values(64,-17, 'totalConsumption - timestamp',3,'HH:mm')
-insert into DynamicBillingField values(65,-17, 'totalConsumption - timestamp',4,'yyyy/MM/dd')
-insert into DynamicBillingField values(66,-17,'totalPeakDemand - reading',5,'##0.000')
-insert into DynamicBillingField values(67,-17,'totalPeakDemand - timestamp',6,'HH:mm')
-insert into DynamicBillingField values(68,-17,'totalPeakDemand - timestamp',7,'yyyy/MM/dd')
-insert into DynamicBillingField values(69,-17,'Plain Text',8,'')
-insert into DynamicBillingField values(70,-17,'Plain Text',9,'')
-insert into DynamicBillingField values(71,-17,'Plain Text',10,';')
+insert into DynamicBillingField values(61,-17,'Plain Text',0,'M');
+insert into DynamicBillingField values(62,-17, 'meterNumber',1,'');
+insert into DynamicBillingField values(63,-17, 'totalConsumption - reading',2,'#####');
+insert into DynamicBillingField values(64,-17, 'totalConsumption - timestamp',3,'HH:mm');
+insert into DynamicBillingField values(65,-17, 'totalConsumption - timestamp',4,'yyyy/MM/dd');
+insert into DynamicBillingField values(66,-17,'totalPeakDemand - reading',5,'##0.000');
+insert into DynamicBillingField values(67,-17,'totalPeakDemand - timestamp',6,'HH:mm');
+insert into DynamicBillingField values(68,-17,'totalPeakDemand - timestamp',7,'yyyy/MM/dd');
+insert into DynamicBillingField values(69,-17,'Plain Text',8,'');
+insert into DynamicBillingField values(70,-17,'Plain Text',9,'');
+insert into DynamicBillingField values(71,-17,'Plain Text',10,';');
 
 /* SEDC54 */
-insert into DynamicBillingFormat values(12,',', 'H    Meter    kWh   Time   Date','')
-insert into DynamicBillingField values(72,12,'Plain Text',0,'M')
-insert into DynamicBillingField values(73,12, 'meterNumber',1,'')
-insert into DynamicBillingField values(74,12, 'totalConsumption - reading',2,'#####')
-insert into DynamicBillingField values(75,12, 'totalConsumption - timestamp',3,'HH:mm')
-insert into DynamicBillingField values(76,12, 'totalConsumption - timestamp',4,'yy/MM/dd')
-insert into DynamicBillingField values(77,12, 'Plain Text',5,'')
+insert into DynamicBillingField values(72,12,'Plain Text',0,'M');
+insert into DynamicBillingField values(73,12, 'meterNumber',1,'');
+insert into DynamicBillingField values(74,12, 'totalConsumption - reading',2,'#####');
+insert into DynamicBillingField values(75,12, 'totalConsumption - timestamp',3,'HH:mm');
+insert into DynamicBillingField values(76,12, 'totalConsumption - timestamp',4,'yy/MM/dd');
+insert into DynamicBillingField values(77,12, 'Plain Text',5,'');
 
 /* SEDC */
-insert into DynamicBillingFormat values(0,',', 'H    Meter    kWh   Time   Date    Peak   PeakT   PeakD  Stat Sig  Freq Phase','')
-insert into DynamicBillingField values(78,0,'Plain Text',0,'M')
-insert into DynamicBillingField values(79,0, 'meterNumber',1,'')
-insert into DynamicBillingField values(80,0, 'totalConsumption - reading',2,'#####')
-insert into DynamicBillingField values(81,0, 'totalConsumption - timestamp',3,'HH:mm')
-insert into DynamicBillingField values(82,0, 'totalConsumption - timestamp',4,'yy/MM/dd')
-insert into DynamicBillingField values(83,0,'totalPeakDemand - reading',5,'##0.000')
-insert into DynamicBillingField values(84,0,'totalPeakDemand - timestamp',6,'HH:mm')
-insert into DynamicBillingField values(85,0,'totalPeakDemand - timestamp',7,'yy/MM/dd')
-insert into DynamicBillingField values(86,0,'Plain Text',8,'')
-insert into DynamicBillingField values(87,0,'Plain Text',9,'')
-insert into DynamicBillingField values(88,0,'Plain Text',10,';')
+insert into DynamicBillingField values(78,0,'Plain Text',0,'M');
+insert into DynamicBillingField values(79,0, 'meterNumber',1,'');
+insert into DynamicBillingField values(80,0, 'totalConsumption - reading',2,'#####');
+insert into DynamicBillingField values(81,0, 'totalConsumption - timestamp',3,'HH:mm');
+insert into DynamicBillingField values(82,0, 'totalConsumption - timestamp',4,'yy/MM/dd');
+insert into DynamicBillingField values(83,0,'totalPeakDemand - reading',5,'##0.000');
+insert into DynamicBillingField values(84,0,'totalPeakDemand - timestamp',6,'HH:mm');
+insert into DynamicBillingField values(85,0,'totalPeakDemand - timestamp',7,'yy/MM/dd');
+insert into DynamicBillingField values(86,0,'Plain Text',8,'');
+insert into DynamicBillingField values(87,0,'Plain Text',9,'');
+insert into DynamicBillingField values(88,0,'Plain Text',10,';');
 
 /* SimpleTOU */
-insert into DynamicBillingFormat values(21,',','','')
-insert into DynamicBillingField values(89,21,'meterNumber',0,'')
-insert into DynamicBillingField values(90,21,'totalConsumption - reading',1,'#####')
-insert into DynamicBillingField values(91,21,'totalConsumption - timestamp',2,'HH:mm')
-insert into DynamicBillingField values(92,21,'totalConsumption - timestamp',3,'MM/dd/yyyy')
-insert into DynamicBillingField values(93,21,'totalPeakDemand - reading',4,'##0.000')
-insert into DynamicBillingField values(94,21,'totalPeakDemand - timestamp',5,'HH:mm')
-insert into DynamicBillingField values(95,21,'totalPeakDemand - timestamp',6,'MM/dd/yyyy')
-insert into DynamicBillingField values(96,21,'rateAConsumption - reading',7,'#####')
-insert into DynamicBillingField values(97,21,'rateADemand- reading',8,'##0.000')
-insert into DynamicBillingField values(98,21,'rateADemand- timestamp',9,'HH:mm')
-insert into DynamicBillingField values(99,21,'rateADemand- timestamp',10,'MM/dd/yyyy')
-insert into DynamicBillingField values(100,21,'rateBConsumption - reading',11,'#####')
-insert into DynamicBillingField values(101,21,'rateBDemand- reading',12,'##0.000')
-insert into DynamicBillingField values(102,21,'rateBDemand- timestamp',13,'HH:mm')
-insert into DynamicBillingField values(103,21,'rateBDemand- timestamp',14,'MM/dd/yyyy')
+insert into DynamicBillingField values(89,21,'meterNumber',0,'');
+insert into DynamicBillingField values(90,21,'totalConsumption - reading',1,'#####');
+insert into DynamicBillingField values(91,21,'totalConsumption - timestamp',2,'HH:mm');
+insert into DynamicBillingField values(92,21,'totalConsumption - timestamp',3,'MM/dd/yyyy');
+insert into DynamicBillingField values(93,21,'totalPeakDemand - reading',4,'##0.000');
+insert into DynamicBillingField values(94,21,'totalPeakDemand - timestamp',5,'HH:mm');
+insert into DynamicBillingField values(95,21,'totalPeakDemand - timestamp',6,'MM/dd/yyyy');
+insert into DynamicBillingField values(96,21,'rateAConsumption - reading',7,'#####');
+insert into DynamicBillingField values(97,21,'rateADemand- reading',8,'##0.000');
+insert into DynamicBillingField values(98,21,'rateADemand- timestamp',9,'HH:mm');
+insert into DynamicBillingField values(99,21,'rateADemand- timestamp',10,'MM/dd/yyyy');
+insert into DynamicBillingField values(100,21,'rateBConsumption - reading',11,'#####');
+insert into DynamicBillingField values(101,21,'rateBDemand- reading',12,'##0.000');
+insert into DynamicBillingField values(102,21,'rateBDemand- timestamp',13,'HH:mm');
+insert into DynamicBillingField values(103,21,'rateBDemand- timestamp',14,'MM/dd/yyyy');
 
 alter table DYNAMICBILLINGFIELD
    add constraint PK_DYNAMICBILLINGFIELD primary key (id)
+;
+
+/*==============================================================*/
+/* Table: DYNAMICBILLINGFORMAT                                  */
+/*==============================================================*/
+create table DYNAMICBILLINGFORMAT  (
+   FormatID             NUMBER                          not null,
+   Delimiter            VARCHAR2(20),
+   Header               VARCHAR2(255),
+   Footer               VARCHAR2(255)
+)
+;
+
+insert into DynamicBillingFormat VALUES( '-18',',','H    Meter    kWh   Time   Date    Peak   PeakT   PeakD  Stat Sig  Freq Phase','');
+insert into DynamicBillingFormat values(6,',','H    Meter    kWh   Time   Date   Peak   PeakT  PeakD  Stat Sig Freq Phase','');
+insert into DynamicBillingFormat values(7,',','H    Meter    kWh   Time   Date    Peak   PeakT   PeakD','');
+insert into DynamicBillingFormat values(14,',','H    Meter    kWh   Time   Date    Peak   PeakT   PeakD','');
+insert into DynamicBillingFormat values(-19,',','H    Meter    kWh   Time   Date    Peak   PeakT   PeakD  Stat Sig  Freq Phase','');
+insert into DynamicBillingFormat values(13,',','H    Meter    kWh   Time   Date    Peak   PeakT   PeakD  Stat Sig  Freq Phase','');
+insert into DynamicBillingFormat values(-17,',', 'H    Meter    kWh   Time   Date    Peak   PeakT   PeakD  Stat Sig  Freq Phase','');
+insert into DynamicBillingFormat values(12,',', 'H    Meter    kWh   Time   Date','');
+insert into DynamicBillingFormat values(0,',', 'H    Meter    kWh   Time   Date    Peak   PeakT   PeakD  Stat Sig  Freq Phase','');
+insert into DynamicBillingFormat values(21,',','','');
+
+alter table DYNAMICBILLINGFORMAT
+   add constraint PK_DYNAMICBILLINGFORMAT primary key (FormatID)
 ;
 
 /*==============================================================*/
@@ -3387,7 +3389,7 @@ alter table DYNAMICBILLINGFIELD
 /*==============================================================*/
 create table DYNAMICCCAREA  (
    AreaID               NUMBER                          not null,
-   additionalflags      varchar(20)                     not null
+   additionalflags      VARCHAR2(20)                    not null
 )
 ;
 
@@ -9438,9 +9440,9 @@ GROUP BY op.LogID) OpConf INNER JOIN
 /* View: DISPLAY2WAYDATA_VIEW                                   */
 /*==============================================================*/
 create or replace view DISPLAY2WAYDATA_VIEW as
-select POINTID as PointID, POINTNAME as PointName, POINTTYPE as PointType, SERVICEFLAG as PointState, "YukonPAObject"."PAOName" as DeviceName, "YukonPAObject"."Type" as DeviceType, "YukonPAObject"."Description" as DeviceCurrentState, "YukonPAObject"."PAObjectID" as DeviceID, '**DYNAMIC**' as PointValue, '**DYNAMIC**' as PointQuality, '**DYNAMIC**' as PointTimeStamp, (select uomname from pointunit,unitmeasure where pointunit.pointid=point.pointid and pointunit.uomid=unitmeasure.uomid) as UofM, '**DYNAMIC**' as Tags
-from "YukonPAObject", POINT
-where "YukonPAObject"."PAObjectID" = POINT."PAObjectID"
+select POINTID as PointID, POINTNAME as PointName, POINTTYPE as PointType, SERVICEFLAG as PointState, YukonPAObject.PAOName as DeviceName, YukonPAObject.Type as DeviceType, YukonPAObject.Description as DeviceCurrentState, YukonPAObject.PAObjectID as DeviceID, '**DYNAMIC**' as PointValue, '**DYNAMIC**' as PointQuality, '**DYNAMIC**' as PointTimeStamp, (select uomname from pointunit,unitmeasure where pointunit.pointid=point.pointid and pointunit.uomid=unitmeasure.uomid) as UofM, '**DYNAMIC**' as Tags
+from YukonPAObject, POINT
+where YukonPAObject.PAObjectID = POINT.PAObjectID
 ;
 
 /*==============================================================*/
@@ -9477,18 +9479,18 @@ where ( x.FeederID = a.AddressID and ( a.AddressType = 'FEEDER' or a.AddressID =
 /* View: FullEventLog_View                                      */
 /*==============================================================*/
 create or replace view FullEventLog_View(EventID, PointID, EventTimeStamp, EventSequence, EventType, EventAlarmID, DeviceName, PointName, EventDescription, AdditionalInfo, EventUserName) as
-select s.LOGID, s.POINTID, s.DATETIME, s.SOE_TAG, s.TYPE, s.PRIORITY, y."PAOName", p.POINTNAME, s.DESCRIPTION, s.ACTION, s.USERNAME
-from "YukonPAObject" y, POINT p, SYSTEMLOG s
-where s.POINTID = p.POINTID and p."PAObjectID" = y."PAObjectID"
+select s.LOGID, s.POINTID, s.DATETIME, s.SOE_TAG, s.TYPE, s.PRIORITY, y.PAOName, p.POINTNAME, s.DESCRIPTION, s.ACTION, s.USERNAME
+from YukonPAObject y, POINT p, SYSTEMLOG s
+where s.POINTID = p.POINTID and p.PAObjectID = y.PAObjectID
 ;
 
 /*==============================================================*/
 /* View: FullPointHistory_View                                  */
 /*==============================================================*/
 create or replace view FullPointHistory_View(PointID, DeviceName, PointName, DataValue, DataTimeStamp, DataQuality) as
-select r.POINTID, y."PAOName", p.POINTNAME, r.VALUE, r.TIMESTAMP, r.QUALITY
-from "YukonPAObject" y, POINT p, RAWPOINTHISTORY r
-where r.POINTID = p.POINTID and p."PAObjectID" = y."PAObjectID"
+select r.POINTID, y.PAOName, p.POINTNAME, r.VALUE, r.TIMESTAMP, r.QUALITY
+from YukonPAObject y, POINT p, RAWPOINTHISTORY r
+where r.POINTID = p.POINTID and p.PAObjectID = y.PAObjectID
 ;
 
 /*==============================================================*/
@@ -9504,18 +9506,18 @@ where ( x.GeoID = a.AddressID and ( a.AddressType = 'GEO' or a.AddressID = 0 ) )
 /* View: LMCurtailCustomerActivity_View                         */
 /*==============================================================*/
 create or replace view LMCurtailCustomerActivity_View as
-select cust."CustomerID", prog."CurtailmentStartTime", prog."CurtailReferenceID", prog."CurtailmentStopTime", cust."AcknowledgeStatus", cust."AckDateTime", cust."NameOfAckPerson", cust."AckLateFlag"
-from "LMCurtailProgramActivity" prog, "LMCurtailCustomerActivity" cust
-where prog."CurtailReferenceID" = cust."CurtailReferenceID"
+select cust.CustomerID, prog.CurtailmentStartTime, prog.CurtailReferenceID, prog.CurtailmentStopTime, cust.AcknowledgeStatus, cust.AckDateTime, cust.NameOfAckPerson, cust.AckLateFlag
+from LMCurtailProgramActivity prog, LMCurtailCustomerActivity cust
+where prog.CurtailReferenceID = cust.CurtailReferenceID
 ;
 
 /*==============================================================*/
 /* View: LMProgram_View                                         */
 /*==============================================================*/
 create or replace view LMProgram_View as
-select t."DeviceID", t."ControlType", u."ConstraintID", u."ConstraintName", u."AvailableWeekDays", u."MaxHoursDaily", u."MaxHoursMonthly", u."MaxHoursSeasonal", u."MaxHoursAnnually", u."MinActivateTime", u."MinRestartTime", u."MaxDailyOps", u."MaxActivateTime", u."HolidayScheduleID", u."SeasonScheduleID"
-from LMPROGRAM t, "LMProgramConstraints" u
-where u."ConstraintID" = t."ConstraintID"
+select t.DeviceID, t.ControlType, u.ConstraintID, u.ConstraintName, u.AvailableWeekDays, u.MaxHoursDaily, u.MaxHoursMonthly, u.MaxHoursSeasonal, u.MaxHoursAnnually, u.MinActivateTime, u.MinRestartTime, u.MaxDailyOps, u.MaxActivateTime, u.HolidayScheduleID, u.SeasonScheduleID
+from LMPROGRAM t, LMProgramConstraints u
+where u.ConstraintID = t.ConstraintID
 ;
 
 /*==============================================================*/
@@ -11161,21 +11163,6 @@ alter table YukonUserRole
 alter table YukonUserRole
    add constraint FK_YkUsRlr_YkUsr foreign key (UserID)
       references YukonUser (UserID)
-;
-
-
-CREATE proc removeColumn (@tablename nvarchar(100), @columnname nvarchar(100))
-AS
-BEGIN
-    DECLARE @tab VARCHAR(100),@defname varchar(100),@cmd varchar(100)
-    select @defname = name FROM sysobjects so JOIN sysconstraints sc ON so.id = sc.constid WHERE object_name(so.parent_obj) = @tablename
-    AND so.xtype = 'D' AND sc.colid = (SELECT colid FROM syscolumns WHERE id = object_id(@tablename) AND name = @columnname)
-
-    select @cmd='alter table '+@tablename+ ' drop constraint '+@defname
-    exec (@cmd)
-    select @cmd='alter table '+@tablename+ ' drop column '+@columnname
-    exec (@cmd)
-END
 ;
 
 
