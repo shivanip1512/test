@@ -42,6 +42,10 @@ public class CommandRequestExecutorImpl implements CommandRequestExecutor {
     private DeviceErrorTranslatorDao deviceErrorTranslatorDao;
     private PaoDao paoDao;
     private PaoCommandAuthorizationService commandAuthorizationService;
+    
+    private int defaultForegroundPriority = 14;
+    private int defaultBackgroundPriority = 6;
+    
     private Logger log = YukonLogManager.getLogger(CommandRequestExecutorImpl.class);
 
     private final class CommandResultMessageListener implements MessageListener {
@@ -150,7 +154,7 @@ public class CommandRequestExecutorImpl implements CommandRequestExecutor {
             return new ToStringCreator(this).toString();
         }
     }
-    
+
     public CommandResultHolder execute(Meter meter, String command, LiteYukonUser user) throws Exception {
         CommandRequest cmdRequest = new CommandRequest();
         cmdRequest.setDeviceId(meter.getDeviceId());
@@ -231,6 +235,8 @@ public class CommandRequestExecutorImpl implements CommandRequestExecutor {
         request.setDeviceID(command.getDeviceId());
         long requestId = RandomUtils.nextInt();
         request.setUserMessageID(requestId);
+        int priority = command.isBackgroundPriority() ? defaultBackgroundPriority : defaultForegroundPriority;
+        request.setPriority(priority);
         log.debug("Built request '" + command.getCommand() + "' for device " + command.getDeviceId() + " with user id " + requestId);
         return request;
     }
@@ -240,6 +246,7 @@ public class CommandRequestExecutorImpl implements CommandRequestExecutor {
         this.porterConnection = porterConnection;
     }
     
+    @Required
     public void setCommandAuthorizationService(PaoCommandAuthorizationService commandAuthorizationService) {
         this.commandAuthorizationService = commandAuthorizationService;
     }
@@ -249,8 +256,17 @@ public class CommandRequestExecutorImpl implements CommandRequestExecutor {
         this.deviceErrorTranslatorDao = deviceErrorTranslatorDao;
     }
     
+    @Required
     public void setPaoDao(PaoDao paoDao) {
         this.paoDao = paoDao;
+    }
+
+    public void setDefaultBackgroundPriority(int defaultBackgroundPriority) {
+        this.defaultBackgroundPriority = defaultBackgroundPriority;
+    }
+
+    public void setDefaultForegroundPriority(int defaultForegroundPriority) {
+        this.defaultForegroundPriority = defaultForegroundPriority;
     }
 
 }

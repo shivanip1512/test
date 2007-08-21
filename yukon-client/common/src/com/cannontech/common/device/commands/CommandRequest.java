@@ -5,6 +5,7 @@ import org.springframework.core.style.ToStringCreator;
 public class CommandRequest {
     private String command;
     private int deviceId;
+    private boolean backgroundPriority = false;
     
     public String getCommand() {
         return command;
@@ -18,12 +19,20 @@ public class CommandRequest {
     public void setDeviceId(int deviceId) {
         this.deviceId = deviceId;
     }
+
+    public boolean isBackgroundPriority() {
+        return backgroundPriority;
+    }
+    public void setBackgroundPriority(boolean backgroundPriority) {
+        this.backgroundPriority = backgroundPriority;
+    }
     
     @Override
     public String toString() {
         ToStringCreator tsc = new ToStringCreator(this);
         tsc.append("deviceId", getDeviceId());
         tsc.append("command", getCommand());
+        tsc.append("backgroundPriority", isBackgroundPriority());
         return tsc.toString();
     }
 
