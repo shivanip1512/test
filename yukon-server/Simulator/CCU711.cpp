@@ -881,13 +881,13 @@ void CCU711::LoadQueuedMsg()
         _outmessageData[ctr++] = 0x50; // "  "
         _outmessageData[ctr++] = 0x00; //StatD
         _outmessageData[ctr++] = 0x00; // "  "
-        _outmessageData[ctr++] = 0x32-_messageQueue.size(); // "  "
+        _outmessageData[ctr++] = 0x20-_messageQueue.size(); // "  "
         _outmessageData[ctr++] = _messageQueue.size();     // NCSETS
         _outmessageData[ctr++] = 0x00;                       // NCOCTS
         _outmessageData[ctr++] = ncocts;  // "    "
         _outmessageData[ctr++] = 0x00;    //StatP
         _outmessageData[ctr++] = 0x00;    // "  "
-        while(!_messageQueue.empty())
+        while(!_messageQueue.empty() && _messageQueue.front().isReady())
         {
             unsigned char Data[300];
             _messageQueue.front().copyOut(Data);
@@ -1030,6 +1030,17 @@ void CCU711::_queueMessage::setQENID(unsigned char one,unsigned char two, unsign
     _QENID[1] = two;
     _QENID[2] = three;
     _QENID[3] = four;
+}
+
+bool CCU711::_queueMessage::isReady()
+{
+    CtiTime currentTime;
+    if(_timeWhenReady < currentTime)
+    {
+        return true;
+    }
+    else
+        return false;
 }
 
 unsigned char CCU711::_queueMessage::getQENID(int index)           {   return _QENID[index];                 }

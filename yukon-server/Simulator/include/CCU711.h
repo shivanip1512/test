@@ -85,6 +85,7 @@ class CCU711{
                 unsigned char getAddress();
                 void setTime(CtiTime currentTime, int delay);
                 CtiTime getTime();
+                bool isReady();
 
             private:
                 int _bytesToReturn;  // Store L1
