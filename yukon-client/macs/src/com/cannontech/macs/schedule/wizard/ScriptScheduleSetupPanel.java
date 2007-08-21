@@ -42,6 +42,7 @@ import javax.swing.ButtonGroup;
 import javax.swing.JButton;
 import javax.swing.JCheckBox;
 import javax.swing.JComboBox;
+import javax.swing.JFileChooser;
 import javax.swing.JLabel;
 import javax.swing.JPanel;
 import javax.swing.JScrollPane;
@@ -188,11 +189,15 @@ public class ScriptScheduleSetupPanel extends DataInputPanel implements JCValueL
      * Comment
      */
     private String browseOutput(String directory) {
-    	javax.swing.JFileChooser chooser = new javax.swing.JFileChooser();
+    	JFileChooser chooser = new JFileChooser();
+    	chooser.setFileSelectionMode(JFileChooser.DIRECTORIES_ONLY);
     	chooser.setCurrentDirectory(new java.io.File(directory));
     	int returnVal = chooser.showOpenDialog(this);
-    	if( returnVal == javax.swing.JFileChooser.APPROVE_OPTION ) {
-    		return chooser.getSelectedFile().getPath();
+    	if( returnVal == JFileChooser.APPROVE_OPTION ) {
+    		String macsSupportedPath = chooser.getSelectedFile().getPath().replace('\\', '/');
+    		if( macsSupportedPath.charAt(macsSupportedPath.length()-1) != '/')
+    			macsSupportedPath += "/";
+    		return macsSupportedPath;
     	}
     	return null;
     }
@@ -1901,7 +1906,6 @@ public class ScriptScheduleSetupPanel extends DataInputPanel implements JCValueL
     		constraintsScriptNamePanel.weightx = 1.0;
     		constraintsScriptNamePanel.insets = new java.awt.Insets(15, 4, 15, 4);
     		add(getScriptNamePanel(), constraintsScriptNamePanel);
-            initializeConnections();
             initSwingCompValues();
     	} catch (java.lang.Throwable ivjExc) {
     		handleException(ivjExc);
