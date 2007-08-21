@@ -82,7 +82,7 @@ int main(int argc, char *argv[])
             if(ccuList.find(addressFound) == ccuList.end())
             {
                 std::cout<<'\n'<<addressFound<<" is not in the map!";
-                aCCU711 = new CCU711();
+                aCCU711 = new CCU711(addressFound);
                 ccuList[addressFound] = aCCU711;
             }
             else

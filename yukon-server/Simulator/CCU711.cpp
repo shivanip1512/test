@@ -27,7 +27,7 @@ using namespace std;
 /*  CCU711 functions   
 ***************************************************/
 
-CCU711::CCU711() :
+CCU711::CCU711(unsigned char addressFound) :
       _indexOfEnd(0),
       _indexOfWords(0),
       _outindexOfEnd(0),
@@ -42,6 +42,7 @@ CCU711::CCU711() :
       _mctNumber(0),
       _qmessagesReady(0)
 {
+    _address = addressFound;
 
     memset(_messageData, 0, 300);
     memset(_outmessageData, 0, 300);
@@ -303,7 +304,7 @@ void CCU711::CreateMessage(int MsgType, int WrdFnc, unsigned char Data[], int cc
 	else if(_messageType == RESETACK) 
     {
 		_outmessageData[0] = 0x7e;
-		_outmessageData[1] = Address;   //  slave address
+		_outmessageData[1] = _address;   //  slave address
 		_outmessageData[2] = 0x73;
 		unsigned short CRC = NCrcCalc_C ((_outmessageData + 1), 2);
 		_outmessageData[3] = HIBYTE(CRC);   //  insert CRC code
@@ -316,7 +317,7 @@ void CCU711::CreateMessage(int MsgType, int WrdFnc, unsigned char Data[], int cc
 		int Ctr = 0;
 		if(WrdFnc==ACKACK) {
 			_outmessageData[Ctr++] = 0x7e;
-			_outmessageData[Ctr++] = Address;   //  slave address
+			_outmessageData[Ctr++] = _address;   //  slave address
 			_outmessageData[Ctr++] = Frame;     //  control
 			Ctr++;  		// # of bytes to follow minus two filled in at bottom of section
 			_outmessageData[Ctr++] = 0x02;      // SRC/DES
@@ -344,7 +345,7 @@ void CCU711::CreateMessage(int MsgType, int WrdFnc, unsigned char Data[], int cc
 		else if(_commandType==DTRAN)
         {
                 _outmessageData[Ctr++] = 0x7e;
-                _outmessageData[Ctr++] = Address;   //  slave address
+                _outmessageData[Ctr++] = _address;   //  slave address
                 _outmessageData[Ctr++] = Frame;     //  control
                 Ctr++;  		// # of bytes to follow minus two filled in at bottom of section
                 _outmessageData[Ctr++] = 0x02;      // SRC/DES
@@ -826,7 +827,7 @@ void CCU711::CreateResponse(int command)
     unsigned char Frame = getFrame();
     unsigned char Address = _messageData[1];
     _outmessageData[Ctr++] = 0x7e;
-    _outmessageData[Ctr++] = Address;   //  slave address
+    _outmessageData[Ctr++] = _address;   //  slave address
     _outmessageData[Ctr++] = Frame;     //  control
     Ctr++;  		// # of bytes to follow minus two filled in at bottom of section
     _outmessageData[Ctr++] = 0x02;      // SRC/DES
@@ -870,7 +871,7 @@ void CCU711::LoadQueuedMsg()
         unsigned char preData[300];
         int ctr = 0;
         _outmessageData[ctr++] = 0x7e;
-        _outmessageData[ctr++] = _messageQueue.back().getAddress(); //  Store in 711 on startup within outside of servernexus loop !!!!!!!!!!
+        _outmessageData[ctr++] = _address; //  Stored in 711 on startup  
         _outmessageData[ctr++] = getFrame(1);
         ctr++;                 //length set below
         _outmessageData[ctr++] = 0x00;

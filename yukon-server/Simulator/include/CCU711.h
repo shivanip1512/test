@@ -26,7 +26,7 @@ using namespace std;
 class CCU711{
 	public:
 		//Default constructor
-		CCU711();
+		CCU711(unsigned char addressFound);
 		//Destructor
 
         enum WordTypes
@@ -162,6 +162,8 @@ class CCU711{
 		CTINEXUS * newSocket;
 
         CCU710 subCCU710;
+
+        unsigned char _address;
 
         int _messageType;
         int _commandType;
