@@ -87,8 +87,8 @@ class CCU711{
                 void setTime(CtiTime currentTime, int delay);
                 CtiTime getTime();
                 bool isReady();
-                int getmctAddress();
-                void setmctAddress(int address);
+                long int getmctAddress();
+                void setmctAddress(long int address);
 
             private:
                 int _bytesToReturn;  // Store L1
@@ -103,7 +103,7 @@ class CCU711{
                 int _wordType;      //a,b,g words
                 int _ioType;       // i/o
                 int _function;
-                int _mctAddress;
+                long int _mctAddress;
                 unsigned char _QENID[4];
         };
 
@@ -156,9 +156,9 @@ class CCU711{
         //  Create a response to a message that has been received and store it in the array of a queue message struct
         void CreateQueuedResponse();
         //  Decode the information contained in an incoming message 
-        void decodeForQueueMessage(int & type, int & iotype, int & function, unsigned char & address, int & mctaddress,int & bytesToReturn, int offset);
+        void decodeForQueueMessage(int & type, int & iotype, int & function, unsigned char & address, long int & mctaddress,int & bytesToReturn, int offset);
         //  Returns number of data bytes to be sent to poerter at an index and fills the data array
-        void getData(int mctAddress, int function, int ioType, int bytesToReturn);
+        void getData(long int mctAddress, int function, int ioType, int bytesToReturn);
 
 
 
