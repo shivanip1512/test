@@ -6,8 +6,8 @@
 *
 * PVCS KEYWORDS:
 * ARCHIVE      :  $Archive:   Z:/SOFTWAREARCHIVES/YUKON/RTDB/dev_cbc.cpp-arc  $
-* REVISION     :  $Revision: 1.58 $
-* DATE         :  $Date: 2007/03/13 19:58:44 $
+* REVISION     :  $Revision: 1.59 $
+* DATE         :  $Date: 2007/08/22 20:19:21 $
 *
 * Copyright (c) 2002 Cannon Technologies Inc. All rights reserved.
 *-----------------------------------------------------------------------------*/
@@ -1036,15 +1036,7 @@ INT DNP::ErrorDecode(INMESS *InMessage, CtiTime &TimeNow, list< CtiMessage* > &v
     INT retCode = NORMAL;
 
     CtiCommandParser  parse(InMessage->Return.CommandStr);
-    CtiReturnMsg     *pPIL = CTIDBG_new CtiReturnMsg(getID(),
-                                              string(InMessage->Return.CommandStr),
-                                              string(),
-                                              InMessage->EventCode & 0x7fff,
-                                              InMessage->Return.RouteID,
-                                              InMessage->Return.MacroOffset,
-                                              InMessage->Return.Attempt,
-                                              InMessage->Return.TrxID,
-                                              InMessage->Return.UserID);
+    
     CtiPointDataMsg  *commFailed;
     CtiPointSPtr     commPoint;
 
@@ -1064,34 +1056,26 @@ INT DNP::ErrorDecode(INMESS *InMessage, CtiTime &TimeNow, list< CtiMessage* > &v
         setScanFlag(ScanRateGeneral, false);
     }
 
-    if( pPIL != NULL )
-    {
-        CtiCommandMsg *pMsg = CTIDBG_new CtiCommandMsg(CtiCommandMsg::UpdateFailed);
+    CtiCommandMsg *pMsg = CTIDBG_new CtiCommandMsg(CtiCommandMsg::UpdateFailed);
 
-        if(pMsg != NULL)
+    if(pMsg != NULL)
+    {
+        pMsg->insert( -1 );             // This is the dispatch token and is unimplemented at this time
+        pMsg->insert(OP_DEVICEID);      // This device failed.  OP_POINTID indicates a point fail situation.  defined in msg_cmd.h
+        pMsg->insert(getID());          // The id (device or point which failed)
+        pMsg->insert(ScanRateInvalid);  // One of ScanRateGeneral,ScanRateAccum,ScanRateStatus,ScanRateIntegrity, or if unknown -> ScanRateInvalid defined in yukon.h
+
+        if(InMessage->EventCode != 0)
         {
-            pMsg->insert( -1 );             // This is the dispatch token and is unimplemented at this time
-            pMsg->insert(OP_DEVICEID);      // This device failed.  OP_POINTID indicates a point fail situation.  defined in msg_cmd.h
-            pMsg->insert(getID());          // The id (device or point which failed)
-            pMsg->insert(ScanRateInvalid);  // One of ScanRateGeneral,ScanRateAccum,ScanRateStatus,ScanRateIntegrity, or if unknown -> ScanRateInvalid defined in yukon.h
-
-            if(InMessage->EventCode != 0)
-            {
-                pMsg->insert(InMessage->EventCode);
-            }
-            else
-            {
-                //  does this ever get called?  should probably be removed...
-                pMsg->insert(GeneralScanAborted);
-            }
-
-            retList.push_back( pMsg );
+            pMsg->insert(InMessage->EventCode);
         }
-    }
-    else
-    {
-        CtiLockGuard<CtiLogger> doubt_guard(dout);
-        dout << CtiTime() << " **** Checkpoint **** " << __FILE__ << " (" << __LINE__ << ")" << endl;
+        else
+        {
+            //  does this ever get called?  should probably be removed...
+            pMsg->insert(GeneralScanAborted);
+        }
+
+        retList.push_back( pMsg );
     }
 
     return retCode;
