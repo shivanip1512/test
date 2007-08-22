@@ -328,7 +328,7 @@ create index INDX_PAOBJECTID on POINT (
 )
 /
 
-/*@error ignore-begin */
+/* @error ignore-begin */
 insert into YukonRole values(-212,'Scheduler','Operator','Operator access to Scheduler'); 
 insert into yukonroleproperty values (-100011,-1000, 'Daily/Max Operation Count', 'true', 'is Daily/Max Operation stat displayed');
 insert into yukonroleproperty values (-100012,-1000, 'Substation Last Update Timestamp', 'true', 'is last update timstamp shown for substations');
@@ -337,8 +337,8 @@ insert into yukonroleproperty values (-100203,-1002, 'CapBank Last Update Timest
 insert into yukonroleproperty values (-100105,-1001, 'Target', 'true', 'is target stat displayed');
 insert into YukonRoleProperty values(-21200,-212,'Enable/Disable Schedule','true','Right to enable or disable a schedule'); 
 insert into YukonRoleProperty values(-10815, -108,'Data Updater Delay (milliseconds)', '4000', 'The number of milliseconds between requests for the latest point values on pages that support the data updater.');
-ALTER TABLE DeviceReadJobLog DROP CONSTRAINT FK_DEVICERE_FK_DRJOBL_MACSCHED
-/*@error ignore-end */
+ALTER TABLE DeviceReadJobLog DROP CONSTRAINT FK_DEVICERE_FK_DRJOBL_MACSCHED;
+/* @error ignore-end */
 update yukonroleproperty set DefaultValue = 'false' where rolepropertyid = -100008;
 update yukonroleproperty set DefaultValue = 'false' where rolepropertyid = -100007;
 /

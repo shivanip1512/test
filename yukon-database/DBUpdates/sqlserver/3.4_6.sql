@@ -10,6 +10,7 @@ insert into yukonroleproperty values (-100203,-1002, 'CapBank Last Update Timest
 insert into yukonroleproperty values (-100105,-1001, 'Target', 'true', 'is target stat displayed');
 
 ALTER TABLE DeviceReadJobLog DROP CONSTRAINT FK_DEVICERE_FK_DRJOBL_MACSCHED
+go
 /* @error ignore-end */
 
 update yukonroleproperty set DefaultValue = 'false' where rolepropertyid = -100008;

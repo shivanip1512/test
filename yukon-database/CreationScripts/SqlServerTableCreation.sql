@@ -4203,6 +4203,7 @@ create table DEVICEREADJOBLOG (
 go
 
 ALTER TABLE DeviceReadJobLog DROP CONSTRAINT FK_DEVICERE_FK_DRJOBL_MACSCHED
+go
 
 alter table DEVICEREADJOBLOG
    add constraint PK_DEVICEREADJOBLOG primary key nonclustered (DeviceReadJobLogID)
