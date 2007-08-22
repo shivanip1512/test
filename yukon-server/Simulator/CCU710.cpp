@@ -414,7 +414,6 @@ void CCU710::CreateMessage(int MsgType, int WrdFnc, int mctNumber, int ccuNumber
 
             EmetconWord newWord;
             int Function = 0;
-            cout<<'\n'<<"About to call InsertWord "<<endl;
             Ctr = newWord.InsertWord(D_WORD,  _outmessageData, Function, mctNumber, Ctr);
             _words[0]=newWord;
             _outmessageData[Ctr++] = ack; 
@@ -573,7 +572,5 @@ int CCU710::DecodeCCUAddress()
 
 int CCU710::getWordFunction(int wordNum)    {   return _words[wordNum].getWordFunction();   }
 int CCU710::getWordsRequested()             {   return _wordsRequested;                     }
-int CCU710::getRepeaters()                     {  
-    cout<<'\n'<<"Returning "<<string(CtiNumStr(_messageData[1]).hex().zpad(2))<<endl;
-    return _messageData[1];                     }
+int CCU710::getRepeaters()                  {   return (_messageData[1] & 0x07);         }
 

@@ -44,7 +44,6 @@ int EmetconWord::InsertWord(int Type, unsigned char * pMessageData, int WordFunc
 {
 	_wordType = Type;
 	_wordFunction = WordFunc;
-    cout<<'\n'<<"This mctNumber "<<mctNumber<<endl;
     unsigned char mctNum1 = 0x00; //0x0f & (mctNumber >> 12);
     unsigned char mctNum2 = mctNumber >> 4;
     unsigned char mctNum3 = 0xf0 & mctNumber << 4;

@@ -367,7 +367,6 @@ void CCU711::CreateMessage(int MsgType, int WrdFnc, unsigned char Data[], int cc
                 if(subCCU710.getWordFunction(0) == FUNCACK)
                 {
                     // Use a 710 to form the content in the message
-                    cout<<'\n'<<"Passing in _mctNumber from 711 code: "<<_mctNumber<<endl;
                     subCCU710.CreateMessage(FEEDEROP, FUNCACK, _mctNumber, ccuNumber);
                     unsigned char SendData[300];
                     subCCU710.SendMsg(SendData);
@@ -386,7 +385,9 @@ void CCU711::CreateMessage(int MsgType, int WrdFnc, unsigned char Data[], int cc
 
                     float words = subCCU710.getWordsRequested();
                     float repeaters = subCCU710.getRepeaters();
-                    CTISleep(((words * 8.0)/1200.0)*1000.0);  //  Delay at 1200 baud
+                    cout<<"Repeaters "<<repeaters<<endl;
+                    cout<<"Waiting "<<(((repeaters +1 ) * words * 52.0)/72.0)*1000.0<<" miliseconds "<<endl;
+                    CTISleep(((repeaters * words * 52.0)/72.0)*1000.0);  //  Delay at 1200 baud
                 }
                 else if(subCCU710.getWordFunction(0) == READ)
                 {
@@ -425,7 +426,7 @@ void CCU711::CreateMessage(int MsgType, int WrdFnc, unsigned char Data[], int cc
 
                     float words = subCCU710.getWordsRequested();
                     float repeaters = subCCU710.getRepeaters();
-                    CTISleep(((words * 8.0)/1200.0)*1000.0);  //  Delay at 1200 baud
+                    CTISleep((((repeaters +1 ) * words * 52.0)/72.0)*1000.0);  //  Delay at 1200 baud
                 }
                 else if(subCCU710.getWordFunction(0) == WRITE)
                 {
@@ -448,7 +449,7 @@ void CCU711::CreateMessage(int MsgType, int WrdFnc, unsigned char Data[], int cc
 
                     float words = subCCU710.getWordsRequested();
                     float repeaters = subCCU710.getRepeaters();
-                    CTISleep(((words * 8.0)/1200.0)*1000.0);  //  Delay at 1200 baud
+                    CTISleep((((repeaters +1 ) * words * 52.0)/72.0)*1000.0);  //  Delay at 1200 baud
                 }
 
                 _outmessageData[3] = Ctr-4;      // # of bytes to follow minus two (see note above)
