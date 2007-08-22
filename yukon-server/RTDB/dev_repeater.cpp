@@ -8,8 +8,8 @@
 *
 * PVCS KEYWORDS:
 * ARCHIVE      :  $Archive:     $
-* REVISION     :  $Revision: 1.39 $
-* DATE         :  $Date: 2007/08/21 20:24:38 $
+* REVISION     :  $Revision: 1.40 $
+* DATE         :  $Date: 2007/08/22 21:39:47 $
 *
 * Copyright (c) 2001 Cannon Technologies Inc. All rights reserved.
 *-----------------------------------------------------------------------------*/
@@ -433,6 +433,8 @@ INT CtiDeviceRepeater900::executePutConfig(CtiRequestMsg          *pReq,
 
            for(i = 0; i < pOutMessage->Buffer.BSt.Length; i = i + 2)       // This is the number of defined roles.
            {
+               strTemp = "";
+
                if( fixitr != fixtok.end() )
                {
                    strTemp = *fixitr;
@@ -742,8 +744,8 @@ INT CtiDeviceRepeater900::decodeGetConfigRole(INMESS *InMessage, CtiTime &TimeNo
       {
           tmpStr = getName() + " / role " + CtiNumStr(i+rolenum).spad(2) + ": ";
           tmpStr += "F = " + CtiNumStr((int)(buf[(i*2)+0] & 0x1F)).spad(2)        + string(", ") +
-                    "O = " + CtiNumStr((int)((buf[(i*2)+0] & 0xE0) >> 5)).spad(2) + ", " +
-                    "I = " + CtiNumStr((int)((buf[(i*2)+1] & 0xE0) >> 5)).spad(2) + ", " +
+                    "I = " + CtiNumStr((int)((buf[(i*2)+0] & 0xE0) >> 5)).spad(2) + ", " +
+                    "O = " + CtiNumStr((int)((buf[(i*2)+1] & 0xE0) >> 5)).spad(2) + ", " +
                     "S = " + CtiNumStr((int)((buf[(i*2)+1] & 0x1E) >> 1)).spad(2) + "\n";
 
           roleStr += tmpStr;
