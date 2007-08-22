@@ -133,7 +133,6 @@ drop table DCConfigurationType;
 go
 drop table DCItemValue;
 go
-/*@error ignore-end */
 
 /*==============================================================*/
 /* Table: DCItemType                                            */
@@ -398,6 +397,7 @@ alter table DCDeviceConfigurationType
    add constraint FK_DCCFGTYPE_DCCFGDVCFGTYPE foreign key (ConfigTypeID)
       references DCConfigurationType (ConfigTypeID);
 go
+/*@error ignore-end */
 
 
 /******************************************************************************/
