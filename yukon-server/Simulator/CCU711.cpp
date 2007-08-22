@@ -720,12 +720,10 @@ void CCU711::CreateQueuedMsg()
         {
             CtiTime currentTime;
             newMessage.setTime(currentTime, 6*(bytesToReturn/3));
-            cout<<'\n'<<"setting currentTime to "<<currentTime<<endl;
         }
         else
         {
                 newMessage.setTime(_messageQueue.back().getTime(), 6*(bytesToReturn/3));   //Should be words !!!!!
-                cout<<"setting last message time to "<<_messageQueue.back().getTime()<<endl;
         }
             
         //RTE_CIRCUIT;

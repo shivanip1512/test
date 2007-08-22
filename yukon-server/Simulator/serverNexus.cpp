@@ -70,6 +70,7 @@ int main(int argc, char *argv[])
         TempBuffer[0] = 0x00;
         unsigned long bytesRead=0;
         unsigned long addressFound = 0x00;
+        int totalBytesRead = 0;
 
         //  Peek at first byte
         newSocket->CTINexusPeek(TempBuffer,2, &bytesRead);
@@ -108,6 +109,8 @@ int main(int argc, char *argv[])
                 counter ++;
             }
 
+            totalBytesRead = bytesRead;
+
             if(ReadBuffer[0]==0x7e )
                 {
                 SET_FOREGROUND_BRIGHT_YELLOW;
@@ -117,7 +120,8 @@ int main(int argc, char *argv[])
             }
             SET_FOREGROUND_BRIGHT_GREEN;
             for( int byteitr = 0; byteitr < (bytesRead); byteitr++ )
-                {
+            {
+                CTISleep((8.0/1200.0)*1000.0); //  Delay at 1200 baud 
                 cout << string(CtiNumStr(ReadBuffer[byteitr]).hex().zpad(2)) << ' ';
             }
 
@@ -134,8 +138,10 @@ int main(int argc, char *argv[])
                         newSocket->CTINexusRead(ReadBuffer + counter, 1, &bytesRead, 15);
                         counter++;
                     }
+
                     for( byteitr = 0; byteitr < BytesToFollow; byteitr++ )
-                        {
+                    {
+                        CTISleep((8.0/1200.0)*1000.0);  //  Delay at 1200 baud
                         if(byteitr == 1)
                             {
                             SET_FOREGROUND_BRIGHT_RED;
@@ -158,6 +164,8 @@ int main(int argc, char *argv[])
 
                 if(MsgSize>0)
                     {
+                    int napTime = (((MsgSize)*8.0)/1200.0)*1000.0;  //  Delay at 1200 baud 
+                    CTISleep(napTime);
                     unsigned long bytesWritten = 0;
                     newSocket->CTINexusWrite(&SendData, MsgSize, &bytesWritten, 15); 
 
@@ -245,7 +253,9 @@ int main(int argc, char *argv[])
                 int MsgSize = aCCU710.SendMsg(SendData);
 
                 if(MsgSize>0)
-                    {
+                {
+                    int napTime = ((MsgSize*8)/1200)*2*1000;  //  Delay at 1200 baud in both directions
+                    CTISleep(napTime);
                     unsigned long bytesWritten = 0;
                     newSocket->CTINexusWrite(&SendData, MsgSize, &bytesWritten, 15); 
 
