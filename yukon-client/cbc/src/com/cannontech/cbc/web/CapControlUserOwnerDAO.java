@@ -38,6 +38,11 @@ public class CapControlUserOwnerDAO implements CapControlDAO {
 		List names = _ccDao.getCbcAreas();
 		return names;
 	}
+    
+    public List getSpecialCbcAreas() {
+        List names = _ccDao.getSpecialCbcAreas();
+        return names;
+    }
 
 	public CapBankDevice getCapBankDevice(Integer capBankDeviceID) {
 		return _ccDao.getCapBankDevice(capBankDeviceID);
@@ -124,10 +129,4 @@ public class CapControlUserOwnerDAO implements CapControlDAO {
         return _ccDao.getAreaStateMap();
     }
     
-
-
-
-
-
-
 }

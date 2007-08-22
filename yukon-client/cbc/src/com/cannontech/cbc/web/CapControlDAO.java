@@ -123,6 +123,13 @@ public interface CapControlDAO {
 	 * @return List
 	 */
 	public abstract List getCbcAreas();
+    
+    /**
+     * Distinct special area Strings that are used by substations
+     * 
+     * @return List
+     */
+    public abstract List getSpecialCbcAreas();
 
 	/**
 	 * State group & states to use for CapBanks

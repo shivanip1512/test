@@ -53,6 +53,7 @@ import com.cannontech.database.data.capcontrol.CapBankController;
 import com.cannontech.database.data.capcontrol.CapBankController702x;
 import com.cannontech.database.data.capcontrol.CapControlArea;
 import com.cannontech.database.data.capcontrol.CapControlFeeder;
+import com.cannontech.database.data.capcontrol.CapControlSpecialArea;
 import com.cannontech.database.data.capcontrol.CapControlSubBus;
 import com.cannontech.database.data.capcontrol.ICapBankController;
 import com.cannontech.database.data.device.DeviceBase;
@@ -241,13 +242,6 @@ public class CapControlForm extends DBEditorForm implements ICapControlModel{
 
 	public int getCurrentStrategyID() {
 		int stratID = CtiUtilities.NONE_ZERO_ID;
-//		if (getDbPersistent() instanceof CapControlFeeder) {
-//			stratID = ((CapControlFeeder) getDbPersistent()).getCapControlFeeder().getStrategyID().intValue();
-//        }else if (getDbPersistent() instanceof CapControlSubBus) {
-//			stratID = ((CapControlSubBus) getDbPersistent()).getCapControlSubstationBus().getStrategyID().intValue();
-//		}else if (getDbPersistent() instanceof CapControlArea) {
-//            stratID = ((CapControlArea) getDbPersistent()).getCapControlArea().getStrategyID().intValue();
-//        } else 
         if (getDbPersistent() instanceof CapControlStrategy) {
             stratID = ((CapControlStrategy)getDbPersistent()).getStrategyID();
         }
@@ -549,7 +543,7 @@ public class CapControlForm extends DBEditorForm implements ICapControlModel{
 
     //initiatiates data model for our specific object
 	private void initDataModel(DBPersistent dbPersistent) {
-        if ((dbPersistent instanceof CapControlArea) || (dbPersistent instanceof CapControlSubBus) || (dbPersistent instanceof CapControlFeeder)) {
+        if ((dbPersistent instanceof CapControlArea) || (dbPersistent instanceof CapControlSpecialArea) || (dbPersistent instanceof CapControlSubBus) || (dbPersistent instanceof CapControlFeeder)) {
             dataModel = DataModelFactory.createModel(dbPersistent);
         }
     }
@@ -624,6 +618,7 @@ public class CapControlForm extends DBEditorForm implements ICapControlModel{
 		// all type specifc panels
 		getVisibleTabs().put("GeneralPAO", Boolean.TRUE);
         getVisibleTabs().put("CBCArea", Boolean.FALSE);
+        getVisibleTabs().put("CBCSpecialArea", Boolean.FALSE);
 		getVisibleTabs().put("BaseCapControl", Boolean.FALSE);
 		getVisibleTabs().put("CBCSubstation", Boolean.FALSE);
 		getVisibleTabs().put("CBCFeeder", Boolean.FALSE);
@@ -647,6 +642,13 @@ public class CapControlForm extends DBEditorForm implements ICapControlModel{
                 setPaoDescLabel("Substation Area");
                 setChildLabel("Substations");
                 getVisibleTabs().put("CBCArea", Boolean.TRUE);
+                break;
+                
+            case PAOGroups.CAP_CONTROL_SPECIAL_AREA:
+                setEditorTitle("Substation Special Area");
+                setPaoDescLabel("Substation Special Area");
+                setChildLabel("Substations");
+                getVisibleTabs().put("CBCSpecialArea", Boolean.TRUE);
                 break;
     
             case PAOGroups.CAP_CONTROL_SUBBUS:

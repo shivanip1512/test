@@ -90,7 +90,7 @@
                         <jsp:include page="/WEB-INF/pages/cbc/cbcFeederSetup.jsp"/>
                     </x:panelTab>
 
-                    <x:panelTab id="tabStrategySetup" label="Control Strategy Setup" rendered="#{capControlForm.visibleTabs['CBCArea'] || capControlForm.visibleTabs['CBCSubstation'] || capControlForm.visibleTabs['CBCFeeder']}">
+                    <x:panelTab id="tabStrategySetup" label="Control Strategy Setup" rendered="#{capControlForm.visibleTabs['CBCArea'] || capControlForm.visibleTabs['CBCSpecialArea'] || capControlForm.visibleTabs['CBCSubstation'] || capControlForm.visibleTabs['CBCFeeder']}">
                         <jsp:include page="/WEB-INF/pages/cbc/cbcStrategySetup.jsp"/>
                     </x:panelTab>
                     
@@ -124,6 +124,10 @@
                     
 					<x:panelTab id="tabAreaSubs" label="#{capControlForm.childLabel}" rendered="#{capControlForm.visibleTabs['CBCArea']}">
                         <jsp:include page="/WEB-INF/pages/cbc/cbcAreaSubs.jsp"/>
+                    </x:panelTab>
+                    
+                    <x:panelTab id="tabSpecialAreaSubs" label="#{capControlForm.childLabel}" rendered="#{capControlForm.visibleTabs['CBCSpecialArea']}">
+                        <jsp:include page="/WEB-INF/pages/cbc/cbcSpecialAreaSubs.jsp"/>
                     </x:panelTab>
 	
 	                <x:panelTab id="tabStrategyEditor" label="Control Strategy Editor" rendered="#{capControlForm.visibleTabs['CBCStrategy']}">
