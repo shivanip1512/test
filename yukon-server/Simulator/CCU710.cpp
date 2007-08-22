@@ -572,5 +572,6 @@ int CCU710::DecodeCCUAddress()
 
 int CCU710::getWordFunction(int wordNum)    {   return _words[wordNum].getWordFunction();   }
 int CCU710::getWordsRequested()             {   return _wordsRequested;                     }
-int CCU710::getRepeaters()                  {   return (_messageData[1] & 0x07);         }
+int CCU710::getRepeaters()                  {   return (_messageData[1] & 0x07);            }
+int CCU710::getWordsInbound()               {   return (_indexOfEnd)/6;                     }
 
