@@ -85,8 +85,8 @@ GROUP BY op.LogID) OpConf INNER JOIN
         (SELECT EntryID, PAObjectID, Owner, InfoKey, Value, UpdateTime
         FROM DynamicPAOInfo WHERE (InfoKey LIKE '%udp ip%')) 
         p ON p.PAObjectID = cb.CONTROLDEVICEID LEFT OUTER JOIN
-        ccsubareaassignment as csa on csa.substationbusid = el.SubID left outer join 
-        YukonPAObject AS yp4 ON yp4.paobjectid = csa.areaid; 
+        ccsubareaassignment csa on csa.substationbusid = el.SubID left outer join 
+        YukonPAObject yp4 ON yp4.paobjectid = csa.areaid; 
 
 /******************************************************************************/
 /* Run the Stars Update if needed here */
