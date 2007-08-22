@@ -171,7 +171,6 @@ insert into yukongrouprole values (-2192,-303,-201,-20892,'(none)');
 go
 insert into yukongrouprole values (-2193,-303,-201,-20893,'(none)');
 go
-/* @error ignore-end */
 
 /*==============================================================*/
 /* Table: CCurtCENotif                                          */
@@ -686,7 +685,7 @@ alter table CCurtProgramParameter
    add constraint FK_CCURTPRGPARAM_CCURTPRGID foreign key (CCurtProgramID)
       references CCurtProgram (CCurtProgramID);
 go
-
+/* @error ignore-end */ 
 /******************************************************************************/
 /* Run the Stars Update if needed here */
 /* Note: DBUpdate application will ignore this if STARS is not present */
