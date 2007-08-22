@@ -137,7 +137,7 @@ go
 insert into YukonRoleProperty values(-80002,-800,'Intro Text','An important message from your energy provider','The text that is read after the phone is answered, but before the pin has been entered');
 go
 
-
+/* @error ignore-begin */
 create table SequenceNumber  (
    LastValue            numeric                          not null,
    SequenceName         VARCHAR(20)                    not null
@@ -148,7 +148,6 @@ alter table SequenceNumber
    add constraint PK_SEQUENCENUMBER primary key (SequenceName);
 go
 
-/* @error ignore-begin */
 insert into YukonRoleProperty values(-20890,-201,'Address State Label','State','Labelling for the address field which is usually state in the US or province in Canada');
 go
 insert into YukonRoleProperty values(-20891,-201,'Address County Label','County','Labelling for the address field which is usually county in the US or postal code in Canada');
