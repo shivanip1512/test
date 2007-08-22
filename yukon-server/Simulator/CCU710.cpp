@@ -66,7 +66,7 @@ int CCU710::ReceiveMsg(unsigned char Data[], int &setccuNumber)
     }
     else if(_messageType == FEEDEROP) {
         int Ctr = 0;
-        if(WrdFnc==FUNCACK) {
+        if(WrdFnc==FUNCREAD) {
             //_messageData[Ctr++] = Address;   //  slave address
             //Ctr++;  		// btf -2 filled in @ bottom 
 
@@ -171,8 +171,8 @@ void CCU710::CreateMsg(int ccuNumber, int mctNumber){
 		//  Feeder operation
 		unsigned char Frame = getFrame();
 		unsigned char Address = _messageData[1];
-        if(_words[0].getWordFunction()==FUNCACK) {     
-			CreateMessage(FEEDEROP, FUNCACK, mctNumber, ccuNumber);
+        if(_words[0].getWordFunction()==FUNCREAD) {     
+			CreateMessage(FEEDEROP, FUNCREAD, mctNumber, ccuNumber);
 		}
 		else{ 
 			CreateMessage(FEEDEROP, DEFAULT, mctNumber, ccuNumber);
@@ -251,7 +251,7 @@ void CCU710::TranslateInfo(bool direction, string & printMsg, string & printCmd,
             case E_WORD:    printWrd.append("E_WORD");      break;
 		}
 		switch(_words[0].getWordFunction()){
-            case FUNCACK:   printFnc.append("FUNCACK");     break;
+            case FUNCREAD:   printFnc.append("FUNCREAD");     break;
             case READ:      printFnc.append("READ");        break;
             case WRITE:     printFnc.append("WRITE");       break;
 		}
@@ -279,7 +279,7 @@ void CCU710::TranslateInfo(bool direction, string & printMsg, string & printCmd,
             case E_WORD:    printWrd.append("E_WORD");      break;
 		}
 		switch(_outwords[0].getWordFunction()){
-            case FUNCACK:   printFnc.append("FUNCACK");     break;
+            case FUNCREAD:   printFnc.append("FUNCREAD");     break;
             case READ:      printFnc.append("READ");        break;
             case WRITE:     printFnc.append("WRITE");       break;
 		}
@@ -371,7 +371,7 @@ int CCU710::DecodeFunction(int WordType){
 	if(WordType== B_WORD) 
     {
 		//   check to see what function is specified
-		if((_messageData[8] & 0x0c) == 0x0c)      {  FunctionType = FUNCACK;     }     //  Function with acknowledge
+		if((_messageData[8] & 0x0c) == 0x0c)      {  FunctionType = FUNCREAD;     }     //  Function with acknowledge
 		else if((_messageData[8] & 0x04) == 0x04) {  FunctionType = READ;        }     //  Read
 		else if((_messageData[8] & 0x00) == 0x00) {  FunctionType = WRITE;       }     //  Write
 	}
@@ -403,7 +403,7 @@ void CCU710::CreateMessage(int MsgType, int WrdFnc, int mctNumber, int ccuNumber
 
     if(_messageType == FEEDEROP) {
         int Ctr = 0;
-        if(WrdFnc==FUNCACK) {
+        if(WrdFnc==FUNCREAD) {
             //_messageData[Ctr++] = Address;   //  slave address
             //Ctr++;  		// btf -2 filled in @ bottom 
             

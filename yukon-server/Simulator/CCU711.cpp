@@ -121,11 +121,11 @@ void CCU711::CreateMsg(int ccuNumber)
 		unsigned char Address = _messageData[1];
         if(_commandType==DTRAN)
         {
-            if(subCCU710.getWordFunction(0)==FUNCACK) {
-                CreateMessage(GENREP, FUNCACK, someData, ccuNumber, setccuNumber, Address, Frame);
+            if(subCCU710.getWordFunction(0)==FUNCREAD) {
+                CreateMessage(GENREP, FUNCREAD, someData, ccuNumber, setccuNumber, Address, Frame);
             }
             if(subCCU710.getWordFunction(0)==WRITE) {
-                CreateMessage(GENREP, FUNCACK, someData, ccuNumber, setccuNumber, Address, Frame);
+                CreateMessage(GENREP, FUNCREAD, someData, ccuNumber, setccuNumber, Address, Frame);
             }
         }
         else if(_commandType==LGRPQ) {
@@ -242,7 +242,7 @@ void CCU711::TranslateInfo(bool direction, string & printMsg, string & printCmd,
             case E_WORD:    printWrd.append("E_WORD");      break;
 		}
 		switch(_words[0].getWordFunction()){
-            case FUNCACK:   printFnc.append("FUNCACK");     break;
+            case FUNCREAD:   printFnc.append("FUNCREAD");     break;
             case READ:      printFnc.append("READ");        break;
             case WRITE:     printFnc.append("WRITE");       break;
 		}
@@ -270,7 +270,7 @@ void CCU711::TranslateInfo(bool direction, string & printMsg, string & printCmd,
             case E_WORD:    printWrd.append("E_WORD");      break;
         }
         switch(_outwords[0].getWordFunction()){
-            case FUNCACK:   printFnc.append("FUNCACK");     break;
+            case FUNCREAD:   printFnc.append("FUNCREAD");     break;
             case READ:      printFnc.append("READ");        break;
             case WRITE:     printFnc.append("WRITE");       break;
         }
@@ -364,10 +364,10 @@ void CCU711::CreateMessage(int MsgType, int WrdFnc, unsigned char Data[], int cc
                 _outmessageData[Ctr++] = 0x00;     // process status items
                 _outmessageData[Ctr++] = 0x00;     //    "   "									
 
-                if(subCCU710.getWordFunction(0) == FUNCACK)
+                if(subCCU710.getWordFunction(0) == FUNCREAD)
                 {
                     // Use a 710 to form the content in the message
-                    subCCU710.CreateMessage(FEEDEROP, FUNCACK, _mctNumber, ccuNumber);
+                    subCCU710.CreateMessage(FEEDEROP, FUNCREAD, _mctNumber, ccuNumber);
                     unsigned char SendData[300];
                     subCCU710.SendMsg(SendData);
                     int smallCtr = 0;
@@ -431,7 +431,7 @@ void CCU711::CreateMessage(int MsgType, int WrdFnc, unsigned char Data[], int cc
                 else if(subCCU710.getWordFunction(0) == WRITE)
                 {
                                         // Use a 710 to form the content in the message
-                    subCCU710.CreateMessage(FEEDEROP, FUNCACK, _mctNumber, ccuNumber);
+                    subCCU710.CreateMessage(FEEDEROP, FUNCREAD, _mctNumber, ccuNumber);
                     unsigned char SendData[300];
                     subCCU710.SendMsg(SendData);
                     int smallCtr = 0;
@@ -685,7 +685,7 @@ int CCU711::DecodeFunction(int WordType, unsigned char Data[]){
 	if(WordType== B_WORD) 
     {
 		//   check to see what function is specified
-		if((_messageData[15] & 0xc) == 0x0c)       {  FunctionType = FUNCACK;     }     //  Function with acknowledge
+		if((_messageData[15] & 0xc) == 0x0c)       {  FunctionType = FUNCREAD;     }     //  Function with acknowledge
 		else if((_messageData[15] & 0x04) == 0x04) {  FunctionType = READ;        }     //  Read
 		else if((_messageData[15] & 0x00) == 0x00) {  FunctionType = WRITE;       }     //  Write
 	}

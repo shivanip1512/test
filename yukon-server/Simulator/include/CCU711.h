@@ -52,7 +52,7 @@ class CCU711{
             FEEDEROP   = 21,
             PING       = 22,
             ONEACK     = 23,
-            FUNCACK    = 41,
+            FUNCREAD   = 41,
             READ       = 42,
             WRITE      = 43,
             READREP1   = 44,

@@ -44,7 +44,7 @@ class CCU710{
             E_WORD     = 35,
             FEEDEROP   = 21,
             PING       = 22,
-            FUNCACK    = 41,
+            FUNCREAD    = 41,
             READ       = 42,
             WRITE      = 43,
             READREP1   = 44,
