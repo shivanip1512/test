@@ -75,6 +75,11 @@ void CCU711::ReceiveMore(unsigned char ReadBuffer[], int counter)
     {
         subCCU710.ReceiveMsg((_messageData + 7), dummyNum);
         _mctNumber = subCCU710.ReceiveMore((_messageData + 7), dummyNum, Ctr);
+        float words = subCCU710.getWordsRequested();
+        float repeaters = subCCU710.getRepeaters();
+        cout<<"Repeaters "<<repeaters<<endl;
+        cout<<"Waiting inbound  "<<(((repeaters +1 ) * words * 52.0)/72.0)*1000.0<<" miliseconds "<<endl;
+        CTISleep((((repeaters +1 ) * words * 52.0)/72.0)*1000.0);  //  Delay at 1200 baud
     }
     else if(_commandType==LGRPQ)
     {
@@ -387,7 +392,7 @@ void CCU711::CreateMessage(int MsgType, int WrdFnc, unsigned char Data[], int cc
                     float repeaters = subCCU710.getRepeaters();
                     cout<<"Repeaters "<<repeaters<<endl;
                     cout<<"Waiting "<<(((repeaters +1 ) * words * 52.0)/72.0)*1000.0<<" miliseconds "<<endl;
-                    CTISleep(((repeaters * words * 52.0)/72.0)*1000.0);  //  Delay at 1200 baud
+                    CTISleep((((repeaters +1 ) * words * 52.0)/72.0)*1000.0);  //  Delay at 1200 baud
                 }
                 else if(subCCU710.getWordFunction(0) == READ)
                 {
