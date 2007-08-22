@@ -154,7 +154,7 @@ public class CBCDisplay {
                     String disStateString = "DISABLED : " + (isFixedState ? CapBank.FIXED_OPSTATE 
                                                 : currentState);
                     if (capBank.getOvUVDisabled()){
-                    	disStateString += "-oVuV";
+                    	disStateString += "-V";
                     }
                     
                     disStateString += (showIgnoreReason ? "<br/>" + CapBankDevice.getIgnoreReason( capBank.getIgnoreReason()) : "");
@@ -171,7 +171,7 @@ public class CBCDisplay {
                    
                     EnStateString += currentState;
                     if (capBank.getOvUVDisabled()){
-                    	EnStateString += "-oVuV";
+                    	EnStateString += "-V";
                     }
                     EnStateString += (showIgnoreReason ? "<br/>" + CapBankDevice.getIgnoreReason( capBank.getIgnoreReason()) : "");
                     return EnStateString;
@@ -261,7 +261,7 @@ public class CBCDisplay {
             if (subBus.getWaiveControlFlag().booleanValue())
                 state += "-W";
             if (subBus.getOvUvDisabledFlag().booleanValue())
-                state += "-oVuV";
+                state += "-V";
             return state;
 
         }
@@ -517,7 +517,7 @@ public class CBCDisplay {
             if (feeder.getWaiveControlFlag().booleanValue())
                 state += "-W";
             if (feeder.getOvUvDisabledFlag().booleanValue())
-                state += "-oVuV";
+                state += "-V";
 
             return state;
         }
