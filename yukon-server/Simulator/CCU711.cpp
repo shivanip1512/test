@@ -878,36 +878,60 @@ void CCU711::LoadQueuedMsg()
              ncocts += temp.getbytesToReturn();
              _qmessagesReady += temp.isReady();
         }
-        unsigned char preData[300];
         int ctr = 0;
-        _outmessageData[ctr++] = 0x7e;
-        _outmessageData[ctr++] = _address; //  Stored in 711 on startup  
-        _outmessageData[ctr++] = getFrame(1);
-        ctr++;                 //length set below
-        _outmessageData[ctr++] = 0x00;
-        _outmessageData[ctr++] = 0xa7;
-        _outmessageData[ctr++] = 0x00; //Stats
-        _outmessageData[ctr++] = 0x00; // "  "
-        _outmessageData[ctr++] = 0x18; // "  "
-        _outmessageData[ctr++] = 0x50; // "  "
-        _outmessageData[ctr++] = 0x00; //StatD
-        _outmessageData[ctr++] = 0x00; // "  "
-        _outmessageData[ctr++] = 0x20-_messageQueue.size(); // "  "
-        _outmessageData[ctr++] = _qmessagesReady;     // NCSETS
-        _outmessageData[ctr++] = 0x00;                       // NCOCTS
-        _outmessageData[ctr++] = ncocts;  // "    "
-        _outmessageData[ctr++] = 0x00;    //StatP
-        _outmessageData[ctr++] = 0x00;    // "  "
-        while(!_messageQueue.empty() && _messageQueue.front().isReady())
+        unsigned char preData[300];
+        if(_qmessagesReady==0)
         {
-            unsigned char Data[300];
-            _messageQueue.front().copyOut(Data);
-            for(int i=0; i<_messageQueue.front().getmessageLength(); i++)
+            _outmessageData[ctr++] = 0x7e;
+            _outmessageData[ctr++] = _address; //  Stored in 711 on startup  
+            _outmessageData[ctr++] = getFrame(1);
+            ctr++;                 //length set below
+            _outmessageData[ctr++] = 0x00;
+            _outmessageData[ctr++] = 0xa7;
+            _outmessageData[ctr++] = 0x00; //Stats
+            _outmessageData[ctr++] = 0x00; // "  "
+            _outmessageData[ctr++] = 0x18; // "  "
+            _outmessageData[ctr++] = 0x50; // "  "
+            _outmessageData[ctr++] = 0x00; //StatD
+            _outmessageData[ctr++] = 0x00; // "  "
+            _outmessageData[ctr++] = 0x20-_messageQueue.size(); // "  "
+            _outmessageData[ctr++] = 0x00;     // NCSETS
+            _outmessageData[ctr++] = 0x00;                       // NCOCTS
+            _outmessageData[ctr++] = 0x00;  // "    "
+            _outmessageData[ctr++] = 0x00;    //StatP
+            _outmessageData[ctr++] = 0x00;    // "  "
+        }
+        else
+        {
+            _outmessageData[ctr++] = 0x7e;
+            _outmessageData[ctr++] = _address; //  Stored in 711 on startup  
+            _outmessageData[ctr++] = getFrame(1);
+            ctr++;                 //length set below
+            _outmessageData[ctr++] = 0x00;
+            _outmessageData[ctr++] = 0xa7;
+            _outmessageData[ctr++] = 0x00; //Stats
+            _outmessageData[ctr++] = 0x00; // "  "
+            _outmessageData[ctr++] = 0x18; // "  "
+            _outmessageData[ctr++] = 0x50; // "  "
+            _outmessageData[ctr++] = 0x00; //StatD
+            _outmessageData[ctr++] = 0x00; // "  "
+            _outmessageData[ctr++] = 0x20-_messageQueue.size(); // "  "
+            _outmessageData[ctr++] = _qmessagesReady;     // NCSETS
+            _outmessageData[ctr++] = 0x00;                       // NCOCTS
+            _outmessageData[ctr++] = ncocts;  // "    "
+            _outmessageData[ctr++] = 0x00;    //StatP
+            _outmessageData[ctr++] = 0x00;    // "  "
+            while(!_messageQueue.empty() && _messageQueue.front().isReady())
             {
-                _outmessageData[ctr++]=Data[i]; 
+                unsigned char Data[300];
+                _messageQueue.front().copyOut(Data);
+                for(int i=0; i<_messageQueue.front().getmessageLength(); i++)
+                {
+                    _outmessageData[ctr++]=Data[i]; 
+                }
+                _qmessagesReady--;
+                _messageQueue.pop_front();
             }
-            _qmessagesReady--;
-            _messageQueue.pop_front();
         }
         _outmessageData[ctr++] = 0x00;  //  SETL = 0
         _outmessageData[3] = ctr-4;
