@@ -382,6 +382,10 @@ void CCU711::CreateMessage(int MsgType, int WrdFnc, unsigned char Data[], int cc
                     _outmessageData[Ctr++] = SendData[smallCtr++];
                     _outmessageData[Ctr++] = SendData[smallCtr++];
                     _outmessageData[Ctr++] = SendData[smallCtr++];
+
+                    float words = subCCU710.getWordsRequested();
+                    float repeaters = subCCU710.getRepeaters();
+                    CTISleep(((words * 8.0)/1200.0)*1000.0);  //  Delay at 1200 baud
                 }
                 else if(subCCU710.getWordFunction(0) == READ)
                 {
@@ -417,6 +421,10 @@ void CCU711::CreateMessage(int MsgType, int WrdFnc, unsigned char Data[], int cc
                         _outmessageData[Ctr++] = SendData[smallCtr++];
                         _outmessageData[Ctr++] = SendData[smallCtr++];
                     }
+
+                    float words = subCCU710.getWordsRequested();
+                    float repeaters = subCCU710.getRepeaters();
+                    CTISleep(((words * 8.0)/1200.0)*1000.0);  //  Delay at 1200 baud
                 }
                 else if(subCCU710.getWordFunction(0) == WRITE)
                 {
@@ -436,6 +444,10 @@ void CCU711::CreateMessage(int MsgType, int WrdFnc, unsigned char Data[], int cc
                     _outmessageData[Ctr++] = SendData[smallCtr++];
                     _outmessageData[Ctr++] = SendData[smallCtr++];
                     _outmessageData[Ctr++] = SendData[smallCtr++];
+
+                    float words = subCCU710.getWordsRequested();
+                    float repeaters = subCCU710.getRepeaters();
+                    CTISleep(((words * 8.0)/1200.0)*1000.0);  //  Delay at 1200 baud
                 }
 
                 _outmessageData[3] = Ctr-4;      // # of bytes to follow minus two (see note above)

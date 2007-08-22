@@ -87,6 +87,8 @@ class CCU710{
         int getWordFunction(int wordNum);
         //  Return the number of d words requested
         int getWordsRequested();
+        //  Return the number of repeaters
+        int getRepeaters();
 
 	private:
 		//Storage for sockets

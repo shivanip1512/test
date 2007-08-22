@@ -357,7 +357,7 @@ int CCU710::DecodePreamble(int &setccuNumber)
 
 int CCU710::DecodeDefinition(){
 	int WordType = 0;
-	if(_messageData[3] == 0xaf){   WordType = B_WORD;   }    //CCU710
+	if((_messageData[3] & 0xa0)== 0xa0){   WordType = B_WORD;   }    //CCU710
 	else
     {
             WordType = 999;
@@ -584,5 +584,7 @@ int CCU710::DecodeCCUAddress()
 
 int CCU710::getWordFunction(int wordNum)    {   return _words[wordNum].getWordFunction();   }
 int CCU710::getWordsRequested()             {   return _wordsRequested;                     }
-
+int CCU710::getRepeaters()                     {  
+    cout<<'\n'<<"Returning "<<string(CtiNumStr(_messageData[1]).hex().zpad(2))<<endl;
+    return _messageData[1];                     }
 
