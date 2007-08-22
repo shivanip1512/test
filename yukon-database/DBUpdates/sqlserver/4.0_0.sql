@@ -33,8 +33,11 @@ go
  )
  
 alter table BillingFileFormats ALTER COLUMN FormatType varchar(100);
+go
 
 alter table BillingFileFormats ADD SystemFormat bit;
+go
+
 update BillingFileFormats SET SystemFormat=1;
 
 insert into sequenceNumber values (100, 'BillingFileFormats');
