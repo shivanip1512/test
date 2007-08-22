@@ -248,6 +248,8 @@ void CCU711::TranslateInfo(bool direction, string & printMsg, string & printCmd,
 		}
 		switch(_words[0].getWordFunction()){
             case FUNCREAD:   printFnc.append("FUNCREAD");     break;
+            case FUNC_READ:   printFnc.append("FUNC_READ");     break;
+            case FUNC_WRITE:   printFnc.append("FUNC_WRITE");     break;
             case READ:      printFnc.append("READ");        break;
             case WRITE:     printFnc.append("WRITE");       break;
 		}
@@ -850,6 +852,15 @@ void CCU711::CreateQueuedResponse()
 
 void CCU711::CreateResponse(int command)
 {
+    int ncocts = _qmessagesReady * 3;
+    deque <_queueMessage> ::iterator itr;
+    for(itr=_messageQueue.begin(); itr!=_messageQueue.end(); itr++)
+    {
+         _queueMessage temp = *itr;
+         ncocts += temp.getbytesToReturn();
+         _qmessagesReady += temp.isReady();
+    }
+
     int Ctr = 0;
     unsigned char Frame = getFrame();
     unsigned char Address = _messageData[1];
@@ -865,14 +876,18 @@ void CCU711::CreateResponse(int command)
     _outmessageData[Ctr++] = 0x00;      //    "   "  
     _outmessageData[Ctr++] = 0x00;     // device status items
     _outmessageData[Ctr++] = 0x00;     //    "   "
-    _outmessageData[Ctr++] = 0x00;     //    "   "   
-    _outmessageData[Ctr++] = 0x00;     //    "   "
-    _outmessageData[Ctr++] = 0x00;     //    "   "
-    _outmessageData[Ctr++] = 0x00;     //    "   "
+    _outmessageData[Ctr++] = 0x20-_messageQueue.size();  // "  "
+    _outmessageData[Ctr++] = _qmessagesReady;            // NCSETS
+    _outmessageData[Ctr++] = 0x00;                       // NCOCTS
+    _outmessageData[Ctr++] = ncocts;                     // "    "
     _outmessageData[Ctr++] = 0x00;     // process status items
-    _outmessageData[Ctr++] = 0x00;     //    "   "		
-    _outmessageData[Ctr++] = 0x42;
-    _outmessageData[Ctr++] = 0x42;
+    _outmessageData[Ctr++] = 0x00;     //    "   "	
+
+    if((command!=WSETS) && (command!=XTIME))
+    {
+        _outmessageData[Ctr++] = 0x42;
+        _outmessageData[Ctr++] = 0x42;
+    }
     _outmessageData[3] = Ctr-4;      // # of bytes to follow minus two (see note above)
 
     unsigned short CRC = NCrcCalc_C ((_outmessageData + 1), Ctr-1);

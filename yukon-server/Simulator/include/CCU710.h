@@ -50,6 +50,7 @@ class CCU710{
             READREP1   = 44,
             READREP2   = 45,
             READREP3   = 46,
+            FUNCWRITE  = 47,
             ACKACK     = 51,
             INCOMING   = 0 ,
             OUTGOING   = 1 ,

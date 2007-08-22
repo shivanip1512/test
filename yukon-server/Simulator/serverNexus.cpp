@@ -93,9 +93,6 @@ int main(int argc, char *argv[])
             }
 
             
-
-            std::cout<<"     The ccuList is size "<<ccuList.size()<<std::endl;
-
             //  It's a 711 IDLC message
             CtiTime AboutToRead;
             unsigned char ReadBuffer[300];

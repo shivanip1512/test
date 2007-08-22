@@ -89,6 +89,30 @@ int CCU710::ReceiveMsg(unsigned char Data[], int &setccuNumber)
                 std::cout<<"_messageData "<<string(CtiNumStr(_messageData[i]).hex().zpad(2))<<std::endl;
             }*/
         }
+        else if(WrdFnc==FUNCWRITE) {
+            //_messageData[Ctr++] = Address;   //  slave address
+            //Ctr++;  		// btf -2 filled in @ bottom 
+
+            // ///////////////////////////////////////////////////////////////////////////
+            // /////////////////////////////////////////// ////////////////////////////
+            // ///  MAKE THE ADDRESS IN PREAMBLE GENERAL FOR ALL CUU ADDRESSES !!!
+            _messageData[Ctr++] = 0xc3;							
+            _messageData[Ctr++] = 0xc3;	
+            _messageData[Ctr++] = 0x82;	
+
+            EmetconWord newWord;
+            int Function = 0;
+            Ctr = newWord.InsertWord(D_WORD,  _messageData, Function, mctNumber, Ctr);
+            _words[0]=newWord;
+            _messageData[Ctr++] = 0xc3; 
+
+
+            //  Output for debugging only
+            /*for(int i=0; i<Ctr; i++) {
+                std::cout<<"_messageData "<<string(CtiNumStr(_messageData[i]).hex().zpad(2))<<std::endl;
+            }*/
+        }
+
         _indexOfEnd = Ctr;
     }
     else if(_messageType == PING) {
@@ -174,6 +198,9 @@ void CCU710::CreateMsg(int ccuNumber, int mctNumber){
         if(_words[0].getWordFunction()==FUNCREAD) {     
 			CreateMessage(FEEDEROP, FUNCREAD, mctNumber, ccuNumber);
 		}
+        else if(_words[0].getWordFunction()==FUNCWRITE) {     
+            CreateMessage(FEEDEROP, FUNCWRITE, mctNumber, ccuNumber);
+        }
 		else{ 
 			CreateMessage(FEEDEROP, DEFAULT, mctNumber, ccuNumber);
 		}
@@ -252,6 +279,7 @@ void CCU710::TranslateInfo(bool direction, string & printMsg, string & printCmd,
 		}
 		switch(_words[0].getWordFunction()){
             case FUNCREAD:   printFnc.append("FUNCREAD");     break;
+            case FUNCWRITE:   printFnc.append("FUNCWRITE");     break;
             case READ:      printFnc.append("READ");        break;
             case WRITE:     printFnc.append("WRITE");       break;
 		}
@@ -280,6 +308,7 @@ void CCU710::TranslateInfo(bool direction, string & printMsg, string & printCmd,
 		}
 		switch(_outwords[0].getWordFunction()){
             case FUNCREAD:   printFnc.append("FUNCREAD");     break;
+            case FUNCWRITE:   printFnc.append("FUNCWRITE");     break;
             case READ:      printFnc.append("READ");        break;
             case WRITE:     printFnc.append("WRITE");       break;
 		}
@@ -371,9 +400,10 @@ int CCU710::DecodeFunction(int WordType){
 	if(WordType== B_WORD) 
     {
 		//   check to see what function is specified
-		if((_messageData[8] & 0x0c) == 0x0c)      {  FunctionType = FUNCREAD;     }     //  Function with acknowledge
-		else if((_messageData[8] & 0x04) == 0x04) {  FunctionType = READ;        }     //  Read
-		else if((_messageData[8] & 0x00) == 0x00) {  FunctionType = WRITE;       }     //  Write
+		if((_messageData[8] & 0x0c) == 0x0c)      {  FunctionType = FUNCREAD;    }     //  Function read
+		if((_messageData[8] & 0x04) == 0x04)      {  FunctionType = READ;        }     //  Read
+		if((_messageData[8] & 0x00) == 0x00)      {  FunctionType = WRITE;       }     //  Write
+        else if((_messageData[8] & 0x08) == 0x08) {  FunctionType = FUNCWRITE;   }     //  FuncWrite
 	}
 		return FunctionType;
 }
@@ -407,6 +437,27 @@ void CCU710::CreateMessage(int MsgType, int WrdFnc, int mctNumber, int ccuNumber
             //_messageData[Ctr++] = Address;   //  slave address
             //Ctr++;  		// btf -2 filled in @ bottom 
             
+            unsigned char ack = makeAck(ccuNumber);
+            _outmessageData[Ctr++] = ack;							
+            _outmessageData[Ctr++] = ack;	
+            _outmessageData[Ctr++] = 0x82;	
+
+            EmetconWord newWord;
+            int Function = 0;
+            Ctr = newWord.InsertWord(D_WORD,  _outmessageData, Function, mctNumber, Ctr);
+            _words[0]=newWord;
+            _outmessageData[Ctr++] = ack; 
+
+
+            //  Output for debugging only
+            /*for(int i=0; i<Ctr; i++) {
+                std::cout<<"_messageData "<<string(CtiNumStr(_messageData[i]).hex().zpad(2))<<std::endl;
+            }*/
+        }
+        else if(WrdFnc==FUNCWRITE) {
+            //_messageData[Ctr++] = Address;   //  slave address
+            //Ctr++;  		// btf -2 filled in @ bottom 
+
             unsigned char ack = makeAck(ccuNumber);
             _outmessageData[Ctr++] = ack;							
             _outmessageData[Ctr++] = ack;	
