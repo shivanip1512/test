@@ -51,7 +51,7 @@ int CCU710::ReceiveMsg(unsigned char Data[], int &setccuNumber)
 	//CreateMessage
     int MsgType = INPUT;
      int WrdFnc = DEFAULT;  
-     int ccuNumber = 0;
+     int mctNumber = 0;
      int Address = 0;
 
     _messageType = MsgType;
@@ -79,7 +79,7 @@ int CCU710::ReceiveMsg(unsigned char Data[], int &setccuNumber)
 
             EmetconWord newWord;
             int Function = 0;
-            Ctr = newWord.InsertWord(D_WORD,  _messageData, Function, ccuNumber, Ctr);
+            Ctr = newWord.InsertWord(D_WORD,  _messageData, Function, mctNumber, Ctr);
             _words[0]=newWord;
             _messageData[Ctr++] = 0xc3; 
 
@@ -147,7 +147,7 @@ int CCU710::ReceiveMore(unsigned char Data[], int &setmctNumber, int counter)
         }
     }
     cout<<endl;
-    return setmctNumber;
+    return 1000321;//setmctNumber;
 }
 
 
@@ -414,6 +414,7 @@ void CCU710::CreateMessage(int MsgType, int WrdFnc, int mctNumber, int ccuNumber
 
             EmetconWord newWord;
             int Function = 0;
+            cout<<'\n'<<"About to call InsertWord "<<endl;
             Ctr = newWord.InsertWord(D_WORD,  _outmessageData, Function, mctNumber, Ctr);
             _words[0]=newWord;
             _outmessageData[Ctr++] = ack; 
