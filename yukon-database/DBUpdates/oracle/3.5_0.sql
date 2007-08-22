@@ -317,6 +317,7 @@ insert into DeviceTypeCommand values (-673, -133, 'Expresscom Group', 3, 'Y', -1
 insert into DeviceTypeCommand values (-674, -134, 'Expresscom Group', 4, 'Y', -1);
 insert into DeviceTypeCommand values (-675, -135, 'Expresscom Group', 5, 'Y', -1);
 
+/* @error ignore-begin */
 drop index INDX_PAOBJECTID
 /
 
@@ -328,7 +329,6 @@ create index INDX_PAOBJECTID on POINT (
 )
 /
 
-/* @error ignore-begin */
 insert into YukonRole values(-212,'Scheduler','Operator','Operator access to Scheduler'); 
 insert into yukonroleproperty values (-100011,-1000, 'Daily/Max Operation Count', 'true', 'is Daily/Max Operation stat displayed');
 insert into yukonroleproperty values (-100012,-1000, 'Substation Last Update Timestamp', 'true', 'is last update timstamp shown for substations');
