@@ -147,7 +147,7 @@ int CCU710::ReceiveMore(unsigned char Data[], int &setmctNumber, int counter)
         }
     }
     cout<<endl;
-    return 1000321;//setmctNumber;
+    return setmctNumber;
 }
 
 
@@ -540,22 +540,10 @@ unsigned char CCU710::makeAck(int ccuSpec)
 int CCU710::DecodeMctAddress()
 {
     int setmctAddress = 0;
-    if(!(_messageData[7] & 0xc0))
-    {
-        setmctAddress = 0;
-    }
-    else if((_messageData[7] & 0x40) == 0x40)
-    {
-        setmctAddress = 1;
-    }
-    if((_messageData[7] & 0x80) == 0x80)
-    {
-        setmctAddress = 2;
-    }
-    if((_messageData[7] & 0xc0) == 0xc0)
-    {
-        setmctAddress = 3;
-    }
+    setmctAddress = ((_messageData[4] & 0x0f) << 20 |
+                     _messageData[5]  << 12 |
+                     _messageData[6]  << 4  |
+                     _messageData[7] >> 4) >> 2;
     return setmctAddress;
 }
 

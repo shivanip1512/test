@@ -367,6 +367,7 @@ void CCU711::CreateMessage(int MsgType, int WrdFnc, unsigned char Data[], int cc
                 if(subCCU710.getWordFunction(0) == FUNCACK)
                 {
                     // Use a 710 to form the content in the message
+                    cout<<'\n'<<"Passing in _mctNumber from 711 code: "<<_mctNumber<<endl;
                     subCCU710.CreateMessage(FEEDEROP, FUNCACK, _mctNumber, ccuNumber);
                     unsigned char SendData[300];
                     subCCU710.SendMsg(SendData);
