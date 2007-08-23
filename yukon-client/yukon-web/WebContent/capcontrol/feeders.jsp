@@ -221,10 +221,10 @@ if( subBus != null ) {
               onclick="checkAll(this, 'cti_chkbxFdrs');" /> Feeder Name</td>
          <td>State</td>
          <td>Target</td>
-         <td>KVAR Load / Est.</td>
+         <td>kVAR Load / Est.</td>
          <td>Date/Time</td>
          <td>PFactor / Est.</td>
-         <td>Watts / Volts</td>
+         <td>kW / Volts</td>
          <td>Daily / Max Ops</td>
          </tr>
        </table>

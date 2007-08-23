@@ -24,11 +24,11 @@ import com.loox.jloox.LxGraph;
 public class FeederUpdatableStats extends LxAbstractView implements
         UpdatableStats, AdjustablePosition {
     public static final String LBL_TIMESTAMP = "Updated: ";
-    public static final String LBL_KVAR_LOAD = "KVAR: ";
+    public static final String LBL_KVAR_LOAD = "kVAR: ";
     public static final String LBL_PFACTOR = "PF: ";
-    public static final String LBL_WATT_VOLT = "Watt/Volt";
+    public static final String LBL_WATT_VOLT = "kW/Volt";
     public static final String LBL_DAILYOPS = "Daily / Max Ops: ";
-    private static final String LBL_WATT = "Watt";
+    private static final String LBL_WATT = "kW";
     private static final String LBL_VOLT = "Volt";
     private static final String LBL_TARGET = "Target: ";
     

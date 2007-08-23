@@ -30,13 +30,13 @@ public class SubUpdatableStats extends LxAbstractView implements
     private static final String TARGET = "Target: ";
     private static final String TIMESTAMP = "Updated: ";
 
-    private static final String VARLOAD = "VarLoad: ";
-    private static final String EST_VARLOAD = "Est VarLoad: ";
+    private static final String VARLOAD = "kVAR: ";
+    private static final String EST_VARLOAD = "Est kVAR: ";
 
     private static final String POWERFACTOR = "PF: ";
     private static final String EST_POWERFACTOR = "Est. PF: ";
 
-    private static final String WATTLOAD = "Watts: ";
+    private static final String WATTLOAD = "kW: ";
     private static final String VOLTLOAD = "Volts: ";
     
     private static final String DAYOP = "Daily Ops: ";

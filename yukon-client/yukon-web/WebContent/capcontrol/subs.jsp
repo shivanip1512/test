@@ -72,10 +72,10 @@
                 <td>Disabled <br/>kVARS</td>
                 <td>Closed <br/>kVARS</td>
                 <td>Tripped <br/>kVARS</td>
-                <td>VAR Load / Est.</td>
+                <td>kVAR Load / Est.</td>
                 <td>Date/Time</td>
                 <td>PFactor / Est.</td>
-                <td>Watts / Volts</td>
+                <td>kW / Volts</td>
                 <td>Daily / Max Ops</td>
               </tr>
 			</table>
