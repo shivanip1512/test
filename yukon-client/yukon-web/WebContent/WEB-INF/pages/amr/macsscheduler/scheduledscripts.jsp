@@ -14,7 +14,7 @@
 
 <script language="JavaScript">
     Event.observe(window, 'load', function() {
-       new Ajax.PeriodicalUpdater('main', '${url}', {
+       new Ajax.PeriodicalUpdater('main', '${url}?sortBy=${sortBy}&descending=${descending}', {
            "method": 'post', "frequency": 5, "decay": 1
        });
     });
