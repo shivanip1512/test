@@ -8,8 +8,8 @@
 *
 * PVCS KEYWORDS:
 * ARCHIVE      :  $Archive:   Z:/SOFTWAREARCHIVES/YUKON/RTDB/dev_mct310.cpp-arc  $
-* REVISION     :  $Revision: 1.100 $
-* DATE         :  $Date: 2007/08/17 17:50:51 $
+* REVISION     :  $Revision: 1.101 $
+* DATE         :  $Date: 2007/08/23 17:26:31 $
 *
 * Copyright (c) 2005 Cannon Technologies Inc. All rights reserved.
 *-----------------------------------------------------------------------------*/
@@ -3496,6 +3496,9 @@ INT CtiDeviceMCT470::decodeGetValueDemand(INMESS *InMessage, CtiTime &TimeNow, l
 
         for( i = 0; i < 8; i++ )
         {
+            pi.value   = (DSt->Message[0] >> i) & 0x01;
+            pi.quality = NormalQuality;
+
             insertPointDataReport(StatusPointType, i + 1,
                                   ReturnMsg, pi);
         }
