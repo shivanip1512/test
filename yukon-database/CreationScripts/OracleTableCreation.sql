@@ -1,7 +1,7 @@
 /*==============================================================*/
 /* Database name:  YukonDatabase                                */
 /* DBMS name:      ORACLE Version 9i                            */
-/* Created on:     8/21/2007 4:03:35 PM                         */
+/* Created on:     8/23/2007 10:04:14 AM                        */
 /*==============================================================*/
 
 
@@ -2806,7 +2806,7 @@ create table DEVICEREADJOBLOG  (
 )
 ;
 
-ALTER TABLE DeviceReadJobLog DROP CONSTRAINT FK_DEVICERE_FK_DRJOBL_MACSCHED;
+ALTER TABLE DeviceReadJobLog DROP CONSTRAINT FK_DEVICERE_FK_DRJOBL_MACSCHED
 
 alter table DEVICEREADJOBLOG
    add constraint PK_DEVICEREADJOBLOG primary key (DeviceReadJobLogID)
@@ -9432,8 +9432,8 @@ GROUP BY op.LogID) OpConf INNER JOIN
         (SELECT EntryID, PAObjectID, Owner, InfoKey, Value, UpdateTime
         FROM DynamicPAOInfo WHERE (InfoKey LIKE '%udp ip%')) 
         p ON p.PAObjectID = cb.CONTROLDEVICEID LEFT OUTER JOIN
-        ccsubareaassignment csa on csa.substationbusid = el.SubID left outer join 
-        YukonPAObject yp4 ON yp4.paobjectid = csa.areaid
+        ccsubareaassignment as csa on csa.substationbusid = el.SubID left outer join 
+        YukonPAObject AS yp4 ON yp4.paobjectid = csa.areaid
 ;
 
 /*==============================================================*/
