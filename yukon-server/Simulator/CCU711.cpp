@@ -12,6 +12,7 @@
 *    
 *    Copyright (C) 2007 Cannon Technologies, Inc.  All rights reserved.
 *****************************************************************************/
+#include "yukon.h"
 #include "CCU711.h"
 #include "ctinexus.h"
 #include "numstr.h"
@@ -52,8 +53,8 @@ CCU711::CCU711(unsigned char addressFound) :
 //Listen for and store an incoming message
 int CCU711::ReceiveMsg(unsigned char ReadBuffer[], int &setccuNumber)
 {
-	//determine the type of message
-	CreateMessage(INPUT, DEFAULT, ReadBuffer, 0, setccuNumber);
+    //determine the type of message
+    CreateMessage(INPUT, DEFAULT, ReadBuffer, 0, setccuNumber);
     return _bytesToFollow;
 }
 
@@ -111,19 +112,19 @@ void CCU711::PrintInput()
 //Build a new message
 void CCU711::CreateMsg(int ccuNumber)
 {
-	unsigned char someData[10];
+    unsigned char someData[10];
     int setccuNumber = 0;
 	if(_messageType== RESETREQ)
 	{
-		//  Reset request
-		unsigned char Address = _messageData[1];
-		CreateMessage(RESETACK, DEFAULT, someData, ccuNumber, setccuNumber, Address);
-	}
+        //  Reset request
+        unsigned char Address = _messageData[1];
+        CreateMessage(RESETACK, DEFAULT, someData, ccuNumber, setccuNumber, Address);
+    }
 	else if(_messageType==GENREQ)
 	{
-		//  General Request
-		unsigned char Frame = getFrame();
-		unsigned char Address = _messageData[1];
+        //  General Request
+        unsigned char Frame = getFrame();
+        unsigned char Address = _messageData[1];
         if(_commandType==DTRAN)
         {
             if(subCCU710.getWordFunction(0)==FUNCREAD) {
@@ -149,9 +150,9 @@ void CCU711::CreateMsg(int ccuNumber)
             LoadQueuedMsg(); 
         }
 		else{ 
-			CreateMessage(GENREP, DEFAULT, someData, ccuNumber, setccuNumber, Address, Frame);
-		}
-	}
+            CreateMessage(GENREP, DEFAULT, someData, ccuNumber, setccuNumber, Address, Frame);
+        }
+    }
 }
 
 //Send the message back to porter
@@ -225,7 +226,7 @@ void CCU711::TranslateInfo(bool direction, string & printMsg, string & printCmd,
             case RESETACK:  printMsg.append("RESETACK");    break;
             case GENREQ:    printMsg.append("GENREQ");      break;
             case GENREP:    printMsg.append("GENREP");      break;
-		}
+        }
 		switch(_commandType){
             case DTRAN:        printCmd.append("DTRAN");       break;
             case LGRPQ:        printCmd.append("LGRPQ");       break;
@@ -234,10 +235,10 @@ void CCU711::TranslateInfo(bool direction, string & printMsg, string & printCmd,
             case WSETS:        printCmd.append("WSETS");       break;
             case XTIME:        printCmd.append("XTIME");       break;
 
-		}
+        }
 		switch(_preamble){
             case FEEDEROP:  printPre.append("FEEDEROP");    break;
-		}
+        }
 		switch(_words[0].getWordType())
         {
             case A_WORD:    printWrd.append("A_WORD");      break;
@@ -245,15 +246,15 @@ void CCU711::TranslateInfo(bool direction, string & printMsg, string & printCmd,
             case C_WORD:    printWrd.append("C_WORD");      break;
             case D_WORD:    printWrd.append("D_WORD");      break;
             case E_WORD:    printWrd.append("E_WORD");      break;
-		}
+        }
 		switch(_words[0].getWordFunction()){
             case FUNCREAD:   printFnc.append("FUNCREAD");     break;
             case FUNC_READ:   printFnc.append("FUNC_READ");     break;
             case FUNC_WRITE:   printFnc.append("FUNC_WRITE");     break;
             case READ:      printFnc.append("READ");        break;
             case WRITE:     printFnc.append("WRITE");       break;
-		}
-	}
+        }
+    }
 	else if(direction == OUTGOING){
         switch(_outmessageType){
             case INPUT:     printMsg.append("INPUT");       break;
@@ -281,75 +282,75 @@ void CCU711::TranslateInfo(bool direction, string & printMsg, string & printCmd,
             case READ:      printFnc.append("READ");        break;
             case WRITE:     printFnc.append("WRITE");       break;
         }
-	}
+    }
 }
 
 //Returns a pointer to the listening socket
 CTINEXUS * CCU711::getListenSocket(){
-	CTINEXUS * ListenSocket = listenSocket;
-	return(ListenSocket);
+    CTINEXUS * ListenSocket = listenSocket;
+    return(ListenSocket);
 }
 
 //Returns a pointer to newSocket
 CTINEXUS * CCU711::getNewSocket(){
-	CTINEXUS * Socket = newSocket;
-	return(Socket);
+    CTINEXUS * Socket = newSocket;
+    return(Socket);
 }
 
 
 void CCU711::CreateMessage(int MsgType, int WrdFnc, unsigned char Data[], int ccuNumber, int &setccuNumber, unsigned char Address, unsigned char Frame)
 {
-	_messageType = MsgType;
+    _messageType = MsgType;
 	if(_messageType == INPUT) 
     {
-		_messageData[0] = Data[0];
-		_messageData[1] = Data[1];
-		_messageData[2] = Data[2];
-		_messageData[3] = Data[3];
-		_indexOfEnd = 4;           //   this may cause a PROBLEM  SINCE 710 should be 3 bytes !!!
-		_bytesToFollow = DecodeIDLC(setccuNumber);
-	}
+        _messageData[0] = Data[0];
+        _messageData[1] = Data[1];
+        _messageData[2] = Data[2];
+        _messageData[3] = Data[3];
+        _indexOfEnd = 4;           //   this may cause a PROBLEM  SINCE 710 should be 3 bytes !!!
+        _bytesToFollow = DecodeIDLC(setccuNumber);
+    }
 	else if(_messageType == RESETACK) 
     {
-		_outmessageData[0] = 0x7e;
-		_outmessageData[1] = _address;   //  slave address
-		_outmessageData[2] = 0x73;
-		unsigned short CRC = NCrcCalc_C ((_outmessageData + 1), 2);
-		_outmessageData[3] = HIBYTE(CRC);   //  insert CRC code
-		_outmessageData[4] = LOBYTE(CRC);   //  insert CRC code
-		_outindexOfEnd = 5;
-	}
+        _outmessageData[0] = 0x7e;
+        _outmessageData[1] = _address;   //  slave address
+        _outmessageData[2] = 0x73;
+        unsigned short CRC = NCrcCalc_C ((_outmessageData + 1), 2);
+        _outmessageData[3] = HIBYTE(CRC);   //  insert CRC code
+        _outmessageData[4] = LOBYTE(CRC);   //  insert CRC code
+        _outindexOfEnd = 5;
+    }
 	else if(_messageType == GENREP) 
     {
         _outmessageType = GENREP;
-		int Ctr = 0;
+        int Ctr = 0;
 		if(WrdFnc==ACKACK) {
-			_outmessageData[Ctr++] = 0x7e;
-			_outmessageData[Ctr++] = _address;   //  slave address
-			_outmessageData[Ctr++] = Frame;     //  control
-			Ctr++;  		// # of bytes to follow minus two filled in at bottom of section
-			_outmessageData[Ctr++] = 0x02;      // SRC/DES
-			_outmessageData[Ctr++] = 0xa6;      // Echo of command received
-			_outmessageData[Ctr++] = 0x00;      // system status items
-			_outmessageData[Ctr++] = 0x00;      //    "   "
-			_outmessageData[Ctr++] = 0x00;      //    "   "
-			_outmessageData[Ctr++] = 0x00;      //    "   "  
-			_outmessageData[Ctr++] = 0x00;     // device status items
-			_outmessageData[Ctr++] = 0x00;     //    "   "
-			_outmessageData[Ctr++] = 0x00;     //    "   "   
-			_outmessageData[Ctr++] = 0x00;     //    "   "
-			_outmessageData[Ctr++] = 0x00;     //    "   "
-			_outmessageData[Ctr++] = 0x00;     //    "   "
-			_outmessageData[Ctr++] = 0x00;     // process status items
-			_outmessageData[Ctr++] = 0x00;     //    "   "		
-			_outmessageData[Ctr++] = 0x42;
-			_outmessageData[Ctr++] = 0x42;
-			_outmessageData[3] = Ctr-4;      // # of bytes to follow minus two (see note above)
+            _outmessageData[Ctr++] = 0x7e;
+            _outmessageData[Ctr++] = _address;   //  slave address
+            _outmessageData[Ctr++] = Frame;     //  control
+            Ctr++;          // # of bytes to follow minus two filled in at bottom of section
+            _outmessageData[Ctr++] = 0x02;      // SRC/DES
+            _outmessageData[Ctr++] = 0xa6;      // Echo of command received
+            _outmessageData[Ctr++] = 0x00;      // system status items
+            _outmessageData[Ctr++] = 0x00;      //    "   "
+            _outmessageData[Ctr++] = 0x00;      //    "   "
+            _outmessageData[Ctr++] = 0x00;      //    "   "  
+            _outmessageData[Ctr++] = 0x00;     // device status items
+            _outmessageData[Ctr++] = 0x00;     //    "   "
+            _outmessageData[Ctr++] = 0x00;     //    "   "   
+            _outmessageData[Ctr++] = 0x00;     //    "   "
+            _outmessageData[Ctr++] = 0x00;     //    "   "
+            _outmessageData[Ctr++] = 0x00;     //    "   "
+            _outmessageData[Ctr++] = 0x00;     // process status items
+            _outmessageData[Ctr++] = 0x00;     //    "   "		
+            _outmessageData[Ctr++] = 0x42;
+            _outmessageData[Ctr++] = 0x42;
+            _outmessageData[3] = Ctr-4;      // # of bytes to follow minus two (see note above)
 										
-			unsigned short CRC = NCrcCalc_C ((_outmessageData + 1), Ctr-1);
-			_outmessageData[Ctr++] = HIBYTE (CRC);
-			_outmessageData[Ctr++] = LOBYTE (CRC);
-		}
+            unsigned short CRC = NCrcCalc_C ((_outmessageData + 1), Ctr-1);
+            _outmessageData[Ctr++] = HIBYTE (CRC);
+            _outmessageData[Ctr++] = LOBYTE (CRC);
+        }
 		else if(_commandType==DTRAN)
         {
                 _outmessageData[Ctr++] = 0x7e;
@@ -474,10 +475,10 @@ void CCU711::CreateMessage(int MsgType, int WrdFnc, unsigned char Data[], int cc
     }
     else if(_messageType == PING) {
         int Ctr = 0;
-        _outmessageData[Ctr++] = 0xc3;							
+        _outmessageData[Ctr++] = 0xc3;                          
         _outmessageData[Ctr++] = 0xc3;
-        _outmessageData[Ctr++] = 0xf5;							
-        _outmessageData[Ctr++] = 0x55;	
+        _outmessageData[Ctr++] = 0xf5;                          
+        _outmessageData[Ctr++] = 0x55;  
         _outindexOfEnd = Ctr;
     }
     else
@@ -486,15 +487,15 @@ void CCU711::CreateMessage(int MsgType, int WrdFnc, unsigned char Data[], int cc
 
 
 void CCU711::DecodeCommand(unsigned char Data[]){
-	_messageData[4]=Data[4];
-	_messageData[5]=Data[5];
-	_messageData[6]=Data[6];
-	_messageData[7]=Data[7];
-	_messageData[8]=Data[8];
-	_messageData[9]=Data[9];
+    _messageData[4]=Data[4];
+    _messageData[5]=Data[5];
+    _messageData[6]=Data[6];
+    _messageData[7]=Data[7];
+    _messageData[8]=Data[8];
+    _messageData[9]=Data[9];
 	if(Data[5] == 0x26) {
-		_commandType = DTRAN;
-	}
+        _commandType = DTRAN;
+    }
     else if(Data[5] == 0x2b) {
         _commandType = LGRPQ;    //  Load request group into queue  CMND=43 in book
     }
@@ -515,15 +516,15 @@ void CCU711::DecodeCommand(unsigned char Data[]){
 
 int CCU711::DecodePreamble(int &setccuNumber)
 {
-	char _bytesToFollow = 0;
+    char _bytesToFollow = 0;
 
     // set the ccu number by checking the preamble for the address
     setccuNumber = 0;
 
-	if( _messageData[2] & 0x04 )
+    if( _messageData[2] & 0x04 )
     {
-		//  Feeder operation specified
-		_preamble = FEEDEROP;
+        //  Feeder operation specified
+        _preamble = FEEDEROP;
 
         //////////////////////////////////////////////////////////////////////////
         // ///////////////////////////////////////////////////////////////////////
@@ -542,10 +543,10 @@ int CCU711::DecodePreamble(int &setccuNumber)
 	else if((_messageData[3]==0x53) && 
             (_messageData[4]==0xf5) && 
             (_messageData[5]==0x55)) {
-		// CCU710 ping in IDLC wrap
-		_messageType = PING;
-		_bytesToFollow = 0;
-	}
+        // CCU710 ping in IDLC wrap
+        _messageType = PING;
+        _bytesToFollow = 0;
+    }
     else if((_messageData[0]==0x53) && 
             (_messageData[1]==0xf5) && 
             (_messageData[2]==0x55)) {
@@ -555,15 +556,15 @@ int CCU711::DecodePreamble(int &setccuNumber)
     }
 
 	else if((_messageData[3]==0x47) && (_messageData[4]==0x30) && (_messageData[5]==0x8e)) {
-		// CCU710 ping
-		_messageType = '1';
-		_bytesToFollow = 14;
-	}
+        // CCU710 ping
+        _messageType = '1';
+        _bytesToFollow = 14;
+    }
 	else if((_messageData[3]==0x47) && (_messageData[4]==0x30) && (_messageData[5]==0x95)) {
-		// CCU710 ping
-		_messageType = '2';
-		_bytesToFollow = 21;
-	}
+        // CCU710 ping
+        _messageType = '2';
+        _bytesToFollow = 21;
+    }
 	if(_messageData[4]== 0x0){
 	}
 	if(_messageData[5]== 0x0){
@@ -594,50 +595,50 @@ void CCU711::InsertWord(int WordType, unsigned char Data[], int counter)
     if(WTF>0) {
         if((Data[7] & 0xc0) == 0xc0) {
             InsertMore = WTF;
-		}
-	}
+        }
+    }
 
-	EmetconWord oneWord;
-	oneWord.InsertWord(WordType, Data, WordFunction, 0);
-	oneWord.setWTF(WTF);
-	_indexOfEnd += oneWord.getWordSize();
-	//_words[_indexOfWords]= oneWord;    //  This line was here to count if there were multiple words: needs to be redone
-	_indexOfWords++;
+    EmetconWord oneWord;
+    oneWord.InsertWord(WordType, Data, WordFunction, 0);
+    oneWord.setWTF(WTF);
+    _indexOfEnd += oneWord.getWordSize();
+    //_words[_indexOfWords]= oneWord;    //  This line was here to count if there were multiple words: needs to be redone
+    _indexOfWords++;
 
-	//  If the first word is a b word, see how many c _words follow it
-	//  and insert them into the incoming message
+    //  If the first word is a b word, see how many c _words follow it
+    //  and insert them into the incoming message
 	if(_words[0].getWordType() == 2) {
 		for(int i=0; i<InsertMore; i++) {
-			EmetconWord anotherWord;
-			anotherWord.InsertWord(3, Data, WordFunction, 0);
-			_indexOfEnd += anotherWord.getWordSize();
-			_words[_indexOfWords]= anotherWord;
-			_indexOfWords++;
-		}
-	}
+            EmetconWord anotherWord;
+            anotherWord.InsertWord(3, Data, WordFunction, 0);
+            _indexOfEnd += anotherWord.getWordSize();
+            _words[_indexOfWords]= anotherWord;
+            _indexOfWords++;
+        }
+    }
 }
 
 
 unsigned char CCU711::getFrame(){
-	unsigned char Frame = 0x00;
-	Frame =	(_messageData[2] & 0xe0);
-	Frame = (Frame >> 4);
-	Frame = (Frame | 0x10);
-	return Frame;
+    unsigned char Frame = 0x00;
+    Frame = (_messageData[2] & 0xe0);
+    Frame = (Frame >> 4);
+    Frame = (Frame | 0x10);
+    return Frame;
 }
 
 
 int CCU711::DecodeIDLC(int & setccuNumber){
-	int _bytesToFollow = 0;
+    int _bytesToFollow = 0;
 	if((_messageData[0] & 0x7e) == 0x7e){
-		//  IDLC LAYER 2 Asynchronous Link Control
+        //  IDLC LAYER 2 Asynchronous Link Control
 			if((_messageData[2] & 0x1f)== 0x1f){
-			//  Reset Request
+            //  Reset Request
 				_messageType = RESETREQ;
 				_bytesToFollow = 1;
 			}
 			else if((_messageData[2] & 0x01) == 0x00){
-			//  General Request
+            //  General Request
 				_messageType = GENREQ;
 				_bytesToFollow = (_messageData[3] + 0x02);  
 			}
@@ -663,19 +664,19 @@ int CCU711::DecodeIDLC(int & setccuNumber){
     else{  //  The message is not an IDLC message.  Probably 710 protocol instead
         return -1;
     }
-	return _bytesToFollow;
+    return _bytesToFollow;
 }
 
 
 int CCU711::DecodeDefinition(){
-	int WordType = 0;
+    int WordType = 0;
    	if(_messageData[11] == 0xaf)    {   WordType = B_WORD;   }    //  IDLC CCU711 
 	else if(_messageData[3] == 0xaf){   WordType = B_WORD;   }    //CCU710
-	else
+    else
     {
             WordType = 999;
     }
-	return WordType;
+    return WordType;
 }
 
 
@@ -683,15 +684,15 @@ int CCU711::DecodeWTF(int WordType, unsigned char Data[]){
 	if((Data[4] & 0x10) == 0x10) {  return 1;   }
 	else if((Data[4] & 0x20) == 0x20) {  return 2;   }
 	else if((Data[4] & 0x30) == 0x30) {  return 3;   }
-	else return 0;
+    else return 0;
 }
 
 
 int CCU711::DecodeFunction(int WordType, unsigned char Data[]){
-	char FunctionType = 0;
+    char FunctionType = 0;
 	if(WordType== B_WORD) 
     {
-		//   check to see what function is specified
+        //   check to see what function is specified
 		if((_messageData[15] & 0xc) == 0x0c)       {  FunctionType = FUNCREAD;     }     //  Function with acknowledge
 		else if((_messageData[15] & 0x04) == 0x04) {  FunctionType = READ;        }     //  Read
 		else if((_messageData[15] & 0x00) == 0x00) {  FunctionType = WRITE;       }     //  Write
@@ -867,7 +868,7 @@ void CCU711::CreateResponse(int command)
     _outmessageData[Ctr++] = 0x7e;
     _outmessageData[Ctr++] = _address;   //  slave address
     _outmessageData[Ctr++] = Frame;     //  control
-    Ctr++;  		// # of bytes to follow minus two filled in at bottom of section
+    Ctr++;          // # of bytes to follow minus two filled in at bottom of section
     _outmessageData[Ctr++] = 0x02;      // SRC/DES
     _outmessageData[Ctr++] = (0xa0 | (0x0f & _messageData[5]));      // Echo of command received and high bit set
     _outmessageData[Ctr++] = 0x00;      // system status items

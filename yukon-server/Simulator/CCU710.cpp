@@ -12,6 +12,7 @@
 *    
 *    Copyright (C) 2007 Cannon Technologies, Inc.  All rights reserved.
 *****************************************************************************/
+#include "yukon.h"
 #include "CCU710.h"
 #include "ctinexus.h"
 #include "numstr.h"
