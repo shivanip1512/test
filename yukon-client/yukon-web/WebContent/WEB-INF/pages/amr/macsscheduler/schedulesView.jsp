@@ -136,27 +136,23 @@
         <c:forEach var="scheduleInfo" items="${list}">
             <c:choose>
                 <c:when test="${scheduleInfo.updatingState}">
-                    <c:set var="color" scope="page">#FFFF33</c:set>
-                </c:when>
-                <c:when test="${scheduleInfo.disabledState}">
-                    <c:set var="color" scope="page">#FF6666</c:set>
+                    <c:set var="color" scope="page">#FFFF99</c:set>
                 </c:when>
                 <c:when test="${scheduleInfo.runningState}">
-                    <c:set var="color" scope="page">#33FF00</c:set>
+                    <c:set var="color" scope="page">#99FF99</c:set>
                 </c:when>
                 <c:otherwise>
                     <c:set var="color" scope="page">white</c:set>
                 </c:otherwise>
             </c:choose>
             <c:choose>
-                <c:when test="${scheduleInfo.updatingState}">
+                <c:when test="${scheduleInfo.showControllable}">
                     <tr
-                        style="background-color: ${color}"
-                        disabled="true">
+                        style="background-color: ${color}">
                 </c:when>
                 <c:otherwise>
                     <tr
-                        style="background-color: ${color}">
+                        style="background-color: ${color}; color: #999999;">
                 </c:otherwise>
             </c:choose>
 
