@@ -103,6 +103,13 @@ all:
         @echo:
         @$(MAKE) -nologo
 
+        @%cd $(COMPILEBASE)\Simulator
+        @echo:
+        @title Building in $(COMPILEBASE)\Simulator
+        @echo Building in $(COMPILEBASE)\Simulator
+        @echo:
+        @$(MAKE) -nologo
+
         @%cd $(COMPILEBASE)\interp
         @echo:
         @title Building in $(COMPILEBASE)\interp
