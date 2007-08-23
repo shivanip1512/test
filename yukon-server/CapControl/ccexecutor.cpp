@@ -827,7 +827,9 @@ void CtiCCCommandExecutor::EnableOvUv()
 
     LONG controlID = 0;
     LONG bankID = _command->getId();
-    BOOL found = FALSE;
+    BOOL found = FALSE;   
+    BOOL cbc702 = FALSE;
+
     CtiMultiMsg* multi = new CtiMultiMsg();
 
     CtiCCSubstationBus_vec& ccSubstationBuses = *store->getCCSubstationBuses(CtiTime().seconds());
@@ -847,6 +849,9 @@ void CtiCCCommandExecutor::EnableOvUv()
                 CtiCCCapBank* currentCapBank = (CtiCCCapBank*)ccCapBanks[k];
                 if( bankID == currentCapBank->getControlDeviceId() )
                 {
+                    if (stringContainsIgnoreCase( currentCapBank->getControlDeviceType(),"CBC 702")) 
+                        cbc702 = TRUE;
+                    
                     controlID = currentCapBank->getControlDeviceId();
 
                     string text = string("Cap Bank OV/UV Enabled");
@@ -876,7 +881,7 @@ void CtiCCCommandExecutor::EnableOvUv()
             if (found)
             {
                 break;
-            }
+            }                      
         }
         if (found)
         {
@@ -884,10 +889,22 @@ void CtiCCCommandExecutor::EnableOvUv()
         }
     }
     if( controlID > 0 )
-    {
-        CtiRequestMsg* reqMsg = new CtiRequestMsg(controlID,"putconfig ovuv enable");
+    {   
+
+        CtiRequestMsg* reqMsg = NULL;
+        if (cbc702) 
+        {
+            reqMsg = new CtiRequestMsg(controlID,"putvalue analog 1 1");
+        }
+        else
+        {
+            reqMsg = new CtiRequestMsg(controlID,"putconfig ovuv enable");
+        }
+      
         reqMsg->setSOE(5);
         CtiCapController::getInstance()->manualCapBankControl( reqMsg, multi );
+
+        
         //CtiCapController::getInstance()->manualCapBankControl( reqMsg );
     }
     else
@@ -910,6 +927,7 @@ void CtiCCCommandExecutor::DisableOvUv()
     LONG controlID = 0;
     LONG bankID = _command->getId();
     BOOL found = FALSE;
+    BOOL cbc702 = FALSE;
     CtiMultiMsg* multi = new CtiMultiMsg();
     //RWOrdered& pointChanges = multi->getData();
 
@@ -930,6 +948,9 @@ void CtiCCCommandExecutor::DisableOvUv()
                 CtiCCCapBank* currentCapBank = (CtiCCCapBank*)ccCapBanks[k];
                 if( bankID == currentCapBank->getControlDeviceId() )
                 {
+                    if (stringContainsIgnoreCase(currentCapBank->getControlDeviceType(),"CBC 702")) 
+                        cbc702 = TRUE;
+
                     controlID = currentCapBank->getControlDeviceId();
 
                     string text = string("Cap Bank OV/UV Disabled");
@@ -968,10 +989,21 @@ void CtiCCCommandExecutor::DisableOvUv()
         }
     }
     if( controlID > 0 )
-    {
-        CtiRequestMsg* reqMsg = new CtiRequestMsg(controlID,"putconfig ovuv disable");
+    {    
+        CtiRequestMsg* reqMsg = NULL;
+        if (cbc702)
+        {
+            reqMsg = new CtiRequestMsg(controlID,"putvalue analog 1 0");
+        }
+        else
+        {
+            reqMsg = new CtiRequestMsg(controlID,"putconfig ovuv disable");
+        }
+
         reqMsg->setSOE(5);
         CtiCapController::getInstance()->manualCapBankControl( reqMsg, multi );
+
+        
         //CtiCapController::getInstance()->manualCapBankControl( reqMsg );
     }
     else
@@ -999,6 +1031,8 @@ void CtiCCCommandExecutor::SendAllCapBankCommands()
     CtiMultiMsg_vec& pilMessages = multiPilMsg->getData();
     CtiMultiMsg_vec& pointChanges = multi->getData();
     CtiMultiMsg_vec& ccEvents = eventMulti->getData();
+    CtiMultiMsg_vec modifiedSubsList;
+    modifiedSubsList.clear();
 
     switch ( _command->getCommand() ) 
     {       
@@ -1052,26 +1086,40 @@ void CtiCCCommandExecutor::SendAllCapBankCommands()
                     currentFeeder->setOvUvDisabledFlag(FALSE);
                 if (_command->getCommand() == CtiCCCommand::SEND_ALL_DISABLE_OVUV) 
                     currentFeeder->setOvUvDisabledFlag(TRUE);
-
-                string text1 = string("Feeder: ");
-                text1 += currentFeeder->getPAOName();
-                text1 += actionText;
-                text1 += string(" All CapBanks");
-                string additional1 = string("Feeder: ");
-                additional1 += currentFeeder->getPAOName();
-
-                pointChanges.push_back(new CtiSignalMsg(SYS_PID_CAPCONTROL,1,text1,additional1,CapControlLogType,SignalEvent,_command->getUser()));
-                currentSubstationBus->setEventSequence(currentSubstationBus->getEventSequence() +1);
-                ccEvents.push_back(new CtiCCEventLogMsg(0, SYS_PID_CAPCONTROL, currentSubstationBus->getPAOId(), 0, capControlManualCommand, currentSubstationBus->getEventSequence(), 0, text1, _command->getUser()));
-
-                CtiCCCapBank_SVector& ccCapBanks = currentFeeder->getCCCapBanks();
-
-                for(LONG k=0;k<ccCapBanks.size();k++)
+                if (((action  == CtiCCCommand::OPEN_CAPBANK || action  == CtiCCCommand::CLOSE_CAPBANK) &&
+                     !currentSubstationBus->getDisableFlag() && !currentArea->getDisableFlag())  ||
+                     (action  == CtiCCCommand::ENABLE_OVUV || action  == CtiCCCommand::DISABLE_OVUV) ) 
                 {
-                    CtiCCCapBankPtr currentCapBank = (CtiCCCapBankPtr)ccCapBanks[k];
-                    actionMulti->insert(new CtiCCCommand(action, currentCapBank->getControlDeviceId()));
+                    string text1 = string("Feeder: ");
+                    text1 += currentFeeder->getPAOName();
+                    text1 += actionText;
+                    text1 += string(" All CapBanks");
+                    string additional1 = string("Feeder: ");
+                    additional1 += currentFeeder->getPAOName();
+                    if (((action  == CtiCCCommand::OPEN_CAPBANK || action  == CtiCCCommand::CLOSE_CAPBANK) &&
+                         !currentFeeder->getDisableFlag())  ||
+                         (action  == CtiCCCommand::ENABLE_OVUV || action  == CtiCCCommand::DISABLE_OVUV) ) 
+                    {
+                        pointChanges.push_back(new CtiSignalMsg(SYS_PID_CAPCONTROL,1,text1,additional1,CapControlLogType,SignalEvent,_command->getUser()));
+                        currentSubstationBus->setEventSequence(currentSubstationBus->getEventSequence() +1);
+                        ccEvents.push_back(new CtiCCEventLogMsg(0, SYS_PID_CAPCONTROL, currentSubstationBus->getPAOId(), 0, capControlManualCommand, currentSubstationBus->getEventSequence(), 0, text1, _command->getUser()));
+                        
+                        CtiCCCapBank_SVector& ccCapBanks = currentFeeder->getCCCapBanks();
+                        
+                        for(LONG k=0;k<ccCapBanks.size();k++)
+                        {
+                            CtiCCCapBankPtr currentCapBank = (CtiCCCapBankPtr)ccCapBanks[k];
+                            if (((action  == CtiCCCommand::OPEN_CAPBANK || action  == CtiCCCommand::CLOSE_CAPBANK) &&
+                                !currentCapBank->getDisableFlag() && 
+                                !stringCompareIgnoreCase(currentCapBank->getOperationalState(),CtiCCCapBank::SwitchedOperationalState) ) ||
+                                (action  == CtiCCCommand::ENABLE_OVUV || action  == CtiCCCommand::DISABLE_OVUV) ) 
+                            {
+                                actionMulti->insert(new CtiCCCommand(action, currentCapBank->getControlDeviceId()));
+                            }
+                        }
+                        modifiedSubsList.push_back(currentSubstationBus);
+                    }
                 }
-
             }
         }
     }
@@ -1094,29 +1142,45 @@ void CtiCCCommandExecutor::SendAllCapBankCommands()
                 text1 += string(" All CapBanks");
                 string additional1 = string("SubBus: ");
                 additional1 += currentSubstationBus->getPAOName();
-
-                pointChanges.push_back(new CtiSignalMsg(SYS_PID_CAPCONTROL,1,text1,additional1,CapControlLogType,SignalEvent,_command->getUser()));
-                currentSubstationBus->setEventSequence(currentSubstationBus->getEventSequence() +1);
-                ccEvents.push_back(new CtiCCEventLogMsg(0, SYS_PID_CAPCONTROL, currentSubstationBus->getPAOId(), 0, capControlManualCommand, currentSubstationBus->getEventSequence(), 0, text1, _command->getUser()));
-
-                CtiFeeder_vec& ccFeeders = currentSubstationBus->getCCFeeders();
-
-                for(LONG j=0;j<ccFeeders.size();j++)
+                if (((action  == CtiCCCommand::OPEN_CAPBANK || action  == CtiCCCommand::CLOSE_CAPBANK) &&
+                      !currentSubstationBus->getDisableFlag() && !currentArea->getDisableFlag())  ||
+                      (action  == CtiCCCommand::ENABLE_OVUV || action  == CtiCCCommand::DISABLE_OVUV) ) 
                 {
-                    CtiCCFeeder* currentFeeder = (CtiCCFeeder*)ccFeeders.at(j);
-
-                    if (_command->getCommand() == CtiCCCommand::SEND_ALL_ENABLE_OVUV) 
-                        currentFeeder->setOvUvDisabledFlag(FALSE);
-                    if (_command->getCommand() == CtiCCCommand::SEND_ALL_DISABLE_OVUV) 
-                        currentFeeder->setOvUvDisabledFlag(TRUE);
-
-                    CtiCCCapBank_SVector& ccCapBanks = currentFeeder->getCCCapBanks();
-
-                    for(LONG k=0;k<ccCapBanks.size();k++)
+                    pointChanges.push_back(new CtiSignalMsg(SYS_PID_CAPCONTROL,1,text1,additional1,CapControlLogType,SignalEvent,_command->getUser()));
+                    currentSubstationBus->setEventSequence(currentSubstationBus->getEventSequence() +1);
+                    ccEvents.push_back(new CtiCCEventLogMsg(0, SYS_PID_CAPCONTROL, currentSubstationBus->getPAOId(), 0, capControlManualCommand, currentSubstationBus->getEventSequence(), 0, text1, _command->getUser()));
+                   
+                    CtiFeeder_vec& ccFeeders = currentSubstationBus->getCCFeeders();
+                   
+                    for(LONG j=0;j<ccFeeders.size();j++)
                     {
-                        CtiCCCapBankPtr currentCapBank = (CtiCCCapBankPtr)ccCapBanks[k];
-                        actionMulti->insert(new CtiCCCommand(action, currentCapBank->getControlDeviceId()));
+                        CtiCCFeeder* currentFeeder = (CtiCCFeeder*)ccFeeders.at(j);
+                   
+                        if (_command->getCommand() == CtiCCCommand::SEND_ALL_ENABLE_OVUV) 
+                            currentFeeder->setOvUvDisabledFlag(FALSE);
+                        if (_command->getCommand() == CtiCCCommand::SEND_ALL_DISABLE_OVUV) 
+                            currentFeeder->setOvUvDisabledFlag(TRUE);
+                        if (((action  == CtiCCCommand::OPEN_CAPBANK || action  == CtiCCCommand::CLOSE_CAPBANK) &&
+                             !currentFeeder->getDisableFlag())  ||
+                             (action  == CtiCCCommand::ENABLE_OVUV || action  == CtiCCCommand::DISABLE_OVUV) ) 
+                        {
+                            CtiCCCapBank_SVector& ccCapBanks = currentFeeder->getCCCapBanks();
+                   
+                            for(LONG k=0;k<ccCapBanks.size();k++)
+                            {
+                                CtiCCCapBankPtr currentCapBank = (CtiCCCapBankPtr)ccCapBanks[k];
+                                if (((action  == CtiCCCommand::OPEN_CAPBANK || action  == CtiCCCommand::CLOSE_CAPBANK) &&
+                                     !currentCapBank->getDisableFlag() && 
+                                     !stringCompareIgnoreCase(currentCapBank->getOperationalState(),CtiCCCapBank::SwitchedOperationalState) ) ||
+                                    (action  == CtiCCCommand::ENABLE_OVUV || action  == CtiCCCommand::DISABLE_OVUV) ) 
+                                {
+                                    actionMulti->insert(new CtiCCCommand(action, currentCapBank->getControlDeviceId()));
+                                }  
+                   
+                            }
+                        }
                     }
+                    modifiedSubsList.push_back(currentSubstationBus);
                 }
             }
         }
@@ -1134,11 +1198,10 @@ void CtiCCCommandExecutor::SendAllCapBankCommands()
             additional1 += currentArea->getPAOName();
 
             pointChanges.push_back(new CtiSignalMsg(SYS_PID_CAPCONTROL,1,text1,additional1,CapControlLogType,SignalEvent,_command->getUser()));
-
-            currentSubstationBus->setEventSequence(currentSubstationBus->getEventSequence() +1);
-            ccEvents.push_back(new CtiCCEventLogMsg(0, SYS_PID_CAPCONTROL, currentSubstationBus->getPAOId(), 0, capControlManualCommand, currentSubstationBus->getEventSequence(), 0, text1, _command->getUser()));
-
-            
+            if (_command->getCommand() == CtiCCCommand::SEND_ALL_ENABLE_OVUV) 
+                currentArea->setOvUvDisabledFlag(FALSE);
+            if (_command->getCommand() == CtiCCCommand::SEND_ALL_DISABLE_OVUV) 
+                currentArea->setOvUvDisabledFlag(TRUE);
             CtiCCSubstationBus_vec& ccSubstationBuses = *store->getCCSubstationBuses(CtiTime().seconds());
             for(LONG i=0;i<ccSubstationBuses.size();i++)
             {
@@ -1150,29 +1213,45 @@ void CtiCCCommandExecutor::SendAllCapBankCommands()
                         currentSubstationBus->setOvUvDisabledFlag(FALSE);
                     if (_command->getCommand() == CtiCCCommand::SEND_ALL_DISABLE_OVUV) 
                         currentSubstationBus->setOvUvDisabledFlag(TRUE);
-
-                    currentSubstationBus->setEventSequence(currentSubstationBus->getEventSequence() +1);
-                    ccEvents.push_back(new CtiCCEventLogMsg(0, SYS_PID_CAPCONTROL, currentSubstationBus->getPAOId(), 0, capControlManualCommand, currentSubstationBus->getEventSequence(), 0, text1, _command->getUser()));
-                   
-                    CtiFeeder_vec& ccFeeders = currentSubstationBus->getCCFeeders();
-                   
-                    for(LONG j=0;j<ccFeeders.size();j++)
+                    if (((action  == CtiCCCommand::SEND_ALL_OPEN || action  == CtiCCCommand::SEND_ALL_CLOSE) &&
+                           !currentSubstationBus->getDisableFlag() && !currentArea->getDisableFlag())  ||
+                           (action  == CtiCCCommand::SEND_ALL_ENABLE_OVUV || action  == CtiCCCommand::SEND_ALL_ENABLE_OVUV) ) 
                     {
-                        CtiCCFeeder* currentFeeder = (CtiCCFeeder*)ccFeeders.at(j);
-
-                        if (_command->getCommand() == CtiCCCommand::SEND_ALL_ENABLE_OVUV) 
-                            currentFeeder->setOvUvDisabledFlag(FALSE);
-                        if (_command->getCommand() == CtiCCCommand::SEND_ALL_DISABLE_OVUV) 
-                            currentFeeder->setOvUvDisabledFlag(TRUE);
-
-                        CtiCCCapBank_SVector& ccCapBanks = currentFeeder->getCCCapBanks();
-                   
-                        for(LONG k=0;k<ccCapBanks.size();k++)
+                        currentSubstationBus->setEventSequence(currentSubstationBus->getEventSequence() +1);
+                        ccEvents.push_back(new CtiCCEventLogMsg(0, SYS_PID_CAPCONTROL, currentSubstationBus->getPAOId(), 0, capControlManualCommand, currentSubstationBus->getEventSequence(), 0, text1, _command->getUser()));
+                       
+                        CtiFeeder_vec& ccFeeders = currentSubstationBus->getCCFeeders();
+                       
+                        for(LONG j=0;j<ccFeeders.size();j++)
                         {
-                            CtiCCCapBankPtr currentCapBank = (CtiCCCapBankPtr)ccCapBanks[k];
-                            actionMulti->insert(new CtiCCCommand(action, currentCapBank->getControlDeviceId())); 
+                            CtiCCFeeder* currentFeeder = (CtiCCFeeder*)ccFeeders.at(j);
+
+                            if (_command->getCommand() == CtiCCCommand::SEND_ALL_ENABLE_OVUV) 
+                                currentFeeder->setOvUvDisabledFlag(FALSE);
+                            if (_command->getCommand() == CtiCCCommand::SEND_ALL_DISABLE_OVUV) 
+                                currentFeeder->setOvUvDisabledFlag(TRUE);
+                            if (((action  == CtiCCCommand::SEND_ALL_OPEN || action  == CtiCCCommand::SEND_ALL_CLOSE) &&
+                               !currentFeeder->getDisableFlag())  ||
+                               (action  == CtiCCCommand::SEND_ALL_ENABLE_OVUV || action  == CtiCCCommand::SEND_ALL_ENABLE_OVUV) ) 
+                            {
+                                CtiCCCapBank_SVector& ccCapBanks = currentFeeder->getCCCapBanks();
                            
+                                for(LONG k=0;k<ccCapBanks.size();k++)
+                                {
+                                    CtiCCCapBankPtr currentCapBank = (CtiCCCapBankPtr)ccCapBanks[k];
+
+                                    if (((action  == CtiCCCommand::SEND_ALL_OPEN || action  == CtiCCCommand::SEND_ALL_CLOSE) &&
+                                        !currentCapBank->getDisableFlag()   && 
+                                     !stringCompareIgnoreCase(currentCapBank->getOperationalState(),CtiCCCapBank::SwitchedOperationalState) ) ||
+                                    (action  == CtiCCCommand::SEND_ALL_ENABLE_OVUV || action  == CtiCCCommand::SEND_ALL_ENABLE_OVUV) ) 
+                                    {
+                                        actionMulti->insert(new CtiCCCommand(action, currentCapBank->getControlDeviceId()));
+                                    }
+                                }
+                            }
                         }
+
+                        modifiedSubsList.push_back(currentSubstationBus);
                     }
                 }
 
@@ -1186,12 +1265,18 @@ void CtiCCCommandExecutor::SendAllCapBankCommands()
        CtiCCExecutorFactory f;
        CtiCCExecutor* executor = f.createExecutor(actionMulti);
        executor->Execute();
-
-
-       executor = f.createExecutor(new CtiCCGeoAreasMsg(ccAreas));
-       executor->Execute();
        delete executor;
     }
+    CtiCCExecutorFactory f;
+    CtiCCExecutor* executor = f.createExecutor(new CtiCCGeoAreasMsg(ccAreas));
+    executor->Execute();
+
+    executor = f.createExecutor(new CtiCCSubstationBusMsg((CtiCCSubstationBus_vec&)modifiedSubsList,CtiCCSubstationBusMsg::SubBusModified ));
+    executor->Execute();
+
+    delete executor;
+
+
 
 
     if (multi->getCount() > 0 || multiPilMsg->getCount() > 0)
@@ -3345,55 +3430,39 @@ void CtiCCCommandExecutor::ReturnCapToOriginalFeeder()
     LONG bankId = _command->getId();
     BOOL found = FALSE;
     LONG tempFeederId = 0;
-    LONG movedCapBankId = 0;
+    LONG movedCapBankId = bankId;
     LONG originalFeederId = 0;
     LONG capSwitchingOrder = 0;
 
     CtiCCSubstationBus_vec& ccSubstationBuses = *store->getCCSubstationBuses(CtiTime().seconds());
 
-    for(LONG i=0;i<ccSubstationBuses.size();i++)
+    CtiCCSubstationBus* currentSubstationBus = NULL;
+    CtiCCFeeder* currentFeeder = NULL;
+
+    CtiCCCapBank* currentCapBank = store->findCapBankByPAObjectID(movedCapBankId);
+    if (currentCapBank != NULL) 
     {
-        CtiCCSubstationBus* currentSubstationBus = (CtiCCSubstationBus*)ccSubstationBuses.at(i);
-        CtiFeeder_vec& ccFeeders = currentSubstationBus->getCCFeeders();
-
-        for(LONG j=0;j<ccFeeders.size();j++)
-        {
-            CtiCCFeeder* currentFeeder = (CtiCCFeeder*)ccFeeders.at(j);
-            CtiCCCapBank_SVector& ccCapBanks = currentFeeder->getCCCapBanks();
-
-            for(LONG k=0;k<ccCapBanks.size();k++)
+        currentFeeder = store->findFeederByPAObjectID(currentCapBank->getParentId());
+        if (currentFeeder != NULL) 
+        { 
+            currentSubstationBus = store->findSubBusByPAObjectID(currentFeeder->getParentId());
+            if (currentSubstationBus != NULL && !currentSubstationBus->getVerificationFlag())
             {
-                CtiCCCapBank* currentCapBank = (CtiCCCapBank*)ccCapBanks[k];
-                if( bankId == currentCapBank->getPAOId() )
-                {
-                    found = TRUE;
-                    if (!currentSubstationBus->getVerificationFlag())
-                    {
-
-                        tempFeederId = currentFeeder->getPAOId();
-                        movedCapBankId = bankId;
-                        originalFeederId = currentCapBank->getOriginalFeederId();
-                        capSwitchingOrder = currentCapBank->getOriginalSwitchingOrder();
-                    }
-                    else
-                    {
-                        CtiLockGuard<CtiLogger> logger_guard(dout);
-                        dout << CtiTime() << " - Cap Bank Verification is ENABLED on Substation Bus: "<< currentSubstationBus->getPAOName() <<" PAOID: "<< currentSubstationBus->getPAOId() 
-                                         <<".  Cannot perform RETURN CAP TO ORIGINAL FEEDER on Cap Bank: " << currentCapBank->getPAOName() << " PAOID: " << currentCapBank->getPAOId() << "."<<endl;
-                    }
-                    break;
-                }
+                tempFeederId = currentFeeder->getPAOId();
+                movedCapBankId = bankId;
+                originalFeederId = currentCapBank->getOriginalFeederId();
+                capSwitchingOrder = currentCapBank->getOriginalSwitchingOrder();
             }
-            if( found )
+            else
             {
-                break;
+                CtiLockGuard<CtiLogger> logger_guard(dout);
+                dout << CtiTime() << " - Cap Bank Verification is ENABLED on Substation Bus: "<< currentSubstationBus->getPAOName() <<" PAOID: "<< currentSubstationBus->getPAOId() 
+                                 <<".  Cannot perform RETURN CAP TO ORIGINAL FEEDER on Cap Bank: " << currentCapBank->getPAOName() << " PAOID: " << currentCapBank->getPAOId() << "."<<endl;
             }
         }
-        if( found )
-        {
-            break;
-        }
+
     }
+
 
     //moveCapBank(TRUE, oldFeederId, movedCapBankId, newFeederId, capSwitchingOrder);
     if( tempFeederId > 0 && movedCapBankId > 0 && originalFeederId > 0 )
@@ -3832,7 +3901,8 @@ void CtiCCExecutor::moveCapBank(INT permanentFlag, LONG oldFeederId, LONG movedC
     CtiCCFeeder* oldFeederPtr = NULL;
     CtiCCFeeder* newFeederPtr = NULL;
     CtiCCCapBank* movedCapBankPtr = NULL;
-    
+    CtiCCSubstationBus* oldFeederParentSub = NULL;
+    CtiCCSubstationBus* newFeederParentSub = NULL;
     CtiCCSubstationBus_vec& ccSubstationBuses = *store->getCCSubstationBuses(CtiTime().seconds());
 
     BOOL found = FALSE;
@@ -3841,7 +3911,7 @@ void CtiCCExecutor::moveCapBank(INT permanentFlag, LONG oldFeederId, LONG movedC
     oldFeederPtr = store->findFeederByPAObjectID(oldFeederId);
    if (oldFeederPtr != NULL) 
    {
-       CtiCCSubstationBus* oldFeederParentSub = store->findSubBusByPAObjectID(oldFeederPtr->getParentId());
+       oldFeederParentSub = store->findSubBusByPAObjectID(oldFeederPtr->getParentId());
        if (oldFeederParentSub != NULL) 
        {
            if (oldFeederParentSub->getVerificationFlag()) 
@@ -3863,7 +3933,7 @@ void CtiCCExecutor::moveCapBank(INT permanentFlag, LONG oldFeederId, LONG movedC
    newFeederPtr = store->findFeederByPAObjectID(newFeederId);
    if (newFeederPtr != NULL) 
    {
-       CtiCCSubstationBus* newFeederParentSub = store->findSubBusByPAObjectID(newFeederPtr->getParentId());
+       newFeederParentSub = store->findSubBusByPAObjectID(newFeederPtr->getParentId());
        if (newFeederParentSub != NULL) 
        {
            if (newFeederParentSub->getVerificationFlag()) 
@@ -3884,7 +3954,7 @@ void CtiCCExecutor::moveCapBank(INT permanentFlag, LONG oldFeederId, LONG movedC
    }
    movedCapBankPtr = store->findCapBankByPAObjectID(movedCapBankId);
 
-    if( oldFeederPtr!=NULL && newFeederPtr!=NULL && movedCapBankPtr!=NULL )
+    if( oldFeederPtr!=NULL && newFeederPtr!=NULL && movedCapBankPtr!=NULL && !verificationFlag)
     {
         {
             CtiCCCapBank_SVector& oldFeederCapBanks = oldFeederPtr->getCCCapBanks();
@@ -3920,22 +3990,28 @@ void CtiCCExecutor::moveCapBank(INT permanentFlag, LONG oldFeederId, LONG movedC
             {
                 //reshuffle the cap bank control orders so they are still in sequence and start at 1
                 LONG shuffledOrder = 1;
-
-                
                 CtiCCCapBank_SVector tempShufflingCapBankList;
-
-
+                tempShufflingCapBankList.clear();
+                for (int a = 0; a < oldFeederCapBanks.size(); a++ ) 
+                {           
+                    ((CtiCCCapBank*)oldFeederCapBanks[a])->setControlOrder(shuffledOrder);
+                    tempShufflingCapBankList.push_back( (CtiCCCapBank*)oldFeederCapBanks[a] );
+                    shuffledOrder++;
+                }
+                /*
                 while(!oldFeederCapBanks.empty())
                 {
                     //have to remove due to change in sorting field in a sorted vector
                     CtiCCCapBank* currentCapBank = *(oldFeederCapBanks.begin());
                     //CtiCCCapBank_SVector::iterator itr = oldFeederCapBanks.begin();
-
                     oldFeederCapBanks.erase(oldFeederCapBanks.begin());
+
                     currentCapBank->setControlOrder(shuffledOrder);
                     tempShufflingCapBankList.push_back(currentCapBank);
+                    
                     shuffledOrder++;
-                }
+                }*/
+                oldFeederCapBanks.clear();
                 while(tempShufflingCapBankList.size()>0)
                 {
 
@@ -3943,6 +4019,7 @@ void CtiCCExecutor::moveCapBank(INT permanentFlag, LONG oldFeederId, LONG movedC
                     oldFeederCapBanks.push_back(currentCapBank);
                     tempShufflingCapBankList.erase(tempShufflingCapBankList.begin());
                 }
+
             }
         }
 
@@ -3953,15 +4030,16 @@ void CtiCCExecutor::moveCapBank(INT permanentFlag, LONG oldFeederId, LONG movedC
             {
                 //search through the list to see if there is a cap bank in the
                 //list that already has the switching order
-                if( capSwitchingOrder >= ((CtiCCCapBank*)newFeederCapBanks[newFeederCapBanks.size()-1])->getControlOrder() )
-                {
-                    movedCapBankPtr->setControlOrder( ((CtiCCCapBank*)newFeederCapBanks[newFeederCapBanks.size()-1])->getControlOrder() + 1 );
+                if( capSwitchingOrder > ((CtiCCCapBank*)newFeederCapBanks[newFeederCapBanks.size()-1])->getControlOrder() )
+                {    
+                    movedCapBankPtr->setControlOrder( ((CtiCCCapBank*)newFeederCapBanks[newFeederCapBanks.size()-1])->getControlOrder() + 1);
+                    //lastCapBankPtr->setControlOrder( ((CtiCCCapBank*)newFeederCapBanks[newFeederCapBanks.size()-1])->getControlOrder() + 1 );
                 }
                 else
                 {
                     BOOL shuffling = FALSE;
                     movedCapBankPtr->setControlOrder(capSwitchingOrder);
-                    for(LONG k=0;k<newFeederCapBanks.size();k++)
+                   /* for(LONG k=0;k<newFeederCapBanks.size();k++)
                     {
                         CtiCCCapBank* currentCapBank = (CtiCCCapBank*)newFeederCapBanks[k];
                         if( capSwitchingOrder == currentCapBank->getControlOrder() )
@@ -3976,19 +4054,22 @@ void CtiCCExecutor::moveCapBank(INT permanentFlag, LONG oldFeederId, LONG movedC
                         {
                             break;
                         }
-                    }
+                    }  */
                     //reshuffle the cap bank control orders so they are still in sequence and start at 1
-                    LONG shuffledOrder = 1;
+                    LONG shuffledOrder = 1; 
+                    BOOL alreadyShuffled = FALSE;
+
                     CtiCCCapBank_SVector tempShufflingCapBankList;
                     while(newFeederCapBanks.size()>0)
                     {
                         //have to remove due to change in sorting field in a sorted vector
                         CtiCCCapBank* currentCapBank = (CtiCCCapBank*)newFeederCapBanks.front();
                         newFeederCapBanks.erase(newFeederCapBanks.begin());
-                        if( capSwitchingOrder == currentCapBank->getControlOrder() )
+                        if( capSwitchingOrder == currentCapBank->getControlOrder() && !alreadyShuffled)
                         {
                             //have to make room for the movedCapBank
                             shuffledOrder++;
+                            alreadyShuffled = TRUE;
                         }
                         currentCapBank->setControlOrder(shuffledOrder);
                         tempShufflingCapBankList.push_back(currentCapBank);
@@ -3998,8 +4079,8 @@ void CtiCCExecutor::moveCapBank(INT permanentFlag, LONG oldFeederId, LONG movedC
                     {
                         CtiCCCapBank* currentCapBank = (CtiCCCapBank*)tempShufflingCapBankList.front();
 
-                        newFeederCapBanks.push_back(currentCapBank);
                         tempShufflingCapBankList.erase(tempShufflingCapBankList.begin());
+                        newFeederCapBanks.push_back(currentCapBank);
                     }
                 }
             }
@@ -4022,7 +4103,7 @@ void CtiCCExecutor::moveCapBank(INT permanentFlag, LONG oldFeederId, LONG movedC
         store->UpdateFeederBankListInDB(newFeederPtr);
 
         {
-            string typeString = (permanentFlag?"Temporary":"Permanent");
+            string typeString = (permanentFlag?"Permanent":"Temporary");
 
             CtiLockGuard<CtiLogger> logger_guard(dout);
             dout << CtiTime() << " - Manual "
@@ -4037,6 +4118,27 @@ void CtiCCExecutor::moveCapBank(INT permanentFlag, LONG oldFeederId, LONG movedC
                  << newFeederPtr->getPAOName() << ", with order: "
                  << movedCapBankPtr->getControlOrder() << endl;
         }
+
+        CtiMultiMsg_vec modifiedSubsList;
+        modifiedSubsList.clear();
+        oldFeederParentSub = store->findSubBusByPAObjectID(oldFeederPtr->getParentId());
+        newFeederParentSub = store->findSubBusByPAObjectID(newFeederPtr->getParentId());
+
+        if (newFeederParentSub != NULL) 
+        {
+            modifiedSubsList.push_back(newFeederParentSub);
+        }
+        if (oldFeederParentSub != NULL) 
+        {
+            modifiedSubsList.push_back(oldFeederParentSub);
+        }
+        CtiCCExecutorFactory f;
+        CtiCCExecutor* executor = f.createExecutor(new CtiCCSubstationBusMsg((CtiCCSubstationBus_vec&)modifiedSubsList,CtiCCSubstationBusMsg::SubBusModified ));
+        executor->Execute();
+
+        delete executor;
+
+
     }
     else
     {
