@@ -139,7 +139,7 @@
                     <c:set var="color" scope="page">#FFFF33</c:set>
                 </c:when>
                 <c:when test="${scheduleInfo.disabledState}">
-                    <c:set var="color" scope="page">#FF3333</c:set>
+                    <c:set var="color" scope="page">#FF6666</c:set>
                 </c:when>
                 <c:when test="${scheduleInfo.runningState}">
                     <c:set var="color" scope="page">#33FF00</c:set>
