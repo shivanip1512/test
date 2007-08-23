@@ -12,8 +12,6 @@
 *    
 *    Copyright (C) 2007 Cannon Technologies, Inc.  All rights reserved.
 *****************************************************************************/
-#ifndef __RWNET_WINSOCK_H__
-#define __RWNET_WINSOCK_H__
 #include "yukon.h"
 #include <windows.h>
 #include <iostream>
@@ -280,8 +278,6 @@ int main(int argc, char *argv[])
 
     return 0;
 }
-
-#endif
 
 
 
