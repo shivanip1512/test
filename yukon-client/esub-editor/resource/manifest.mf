@@ -13,6 +13,8 @@ Class-Path: ./
  classes12.jar 
  jtds.jar 
  SqlServer.jar 
+ foreign.jar 
+ billing.jar 
  ../images 
  ../log/ 
  ../export/ 

@@ -16,5 +16,6 @@ Class-Path: ./
  jtds.jar 
  SqlServer.jar 
  batik.jar 
+ foreign.jar 
  ../log/ 
  ../export/ 
