@@ -5942,9 +5942,9 @@ void CtiCCSubstationBus::dumpDynamicData(RWDBConnection& conn, CtiTime& currentD
             << dynamicCCSubstationBusTable["ivcount"].assign( _iVCount )
             << dynamicCCSubstationBusTable["iwcontroltot"].assign( _iWControlTot )
             << dynamicCCSubstationBusTable["iwcount"].assign( _iWCount )
-            << dynamicCCSubstationBusTable["iwcount"].assign( _phaseAvalue )
-            << dynamicCCSubstationBusTable["iwcount"].assign( _phaseBvalue )
-            << dynamicCCSubstationBusTable["iwcount"].assign( _phaseCvalue );
+            << dynamicCCSubstationBusTable["phaseavalue"].assign( _phaseAvalue )
+            << dynamicCCSubstationBusTable["phasebvalue"].assign( _phaseBvalue )
+            << dynamicCCSubstationBusTable["phasecvalue"].assign( _phaseCvalue );
              
             /*{
                 CtiLockGuard<CtiLogger> logger_guard(dout);
