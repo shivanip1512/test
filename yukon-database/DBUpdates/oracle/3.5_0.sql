@@ -318,16 +318,14 @@ insert into DeviceTypeCommand values (-674, -134, 'Expresscom Group', 4, 'Y', -1
 insert into DeviceTypeCommand values (-675, -135, 'Expresscom Group', 5, 'Y', -1);
 
 /* @error ignore-begin */
-drop index INDX_PAOBJECTID
-/
+drop index INDX_PAOBJECTID;
 
 /*==============================================================*/
 /* Index: INDX_PAOBJECTID                                       */
 /*==============================================================*/
 create index INDX_PAOBJECTID on POINT (
    "PAObjectID" ASC
-)
-/
+);
 
 insert into YukonRole values(-212,'Scheduler','Operator','Operator access to Scheduler'); 
 insert into yukonroleproperty values (-100011,-1000, 'Daily/Max Operation Count', 'true', 'is Daily/Max Operation stat displayed');
@@ -341,7 +339,14 @@ ALTER TABLE DeviceReadJobLog DROP CONSTRAINT FK_DEVICERE_FK_DRJOBL_MACSCHED;
 /* @error ignore-end */
 update yukonroleproperty set DefaultValue = 'false' where rolepropertyid = -100008;
 update yukonroleproperty set DefaultValue = 'false' where rolepropertyid = -100007;
-/
+
+
+delete from LMThermostatSeasonEntry where SeasonID in (select SeasonID from LMThermostatSeason where ScheduleID in (select ScheduleID from LMThermostatSchedule where ThermostatTypeID in (select EntryID from YukonListEntry where YukonDefinitionID = 3100)));
+delete from LMThermostatSeason where ScheduleID in (select ScheduleID from LMThermostatSchedule where ThermostatTypeID in (select EntryID from YukonListEntry where YukonDefinitionID = 3100));
+delete from ECToGenericMapping where MappingCategory = 'LMThermostatSchedule' and ItemID in (select ScheduleID from LMThermostatSchedule where ThermostatTypeID in (select EntryID from YukonListEntry where YukonDefinitionID = 3100));
+delete from LMThermostatSchedule where ThermostatTypeID in (select EntryID from YukonListEntry where YukonDefinitionID = 3100);
+update LMHardwareBase set LMHardwareTypeID = 0 where LMHardwareTypeID in (select EntryID from YukonListEntry where YukonDefinitionID = 3100);
+delete from YukonlistEntry where YukonDefinitionID = 3100;
 
 /******************************************************************************/
 /* Run the Stars Update if needed here */

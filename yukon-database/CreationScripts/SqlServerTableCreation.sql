@@ -7511,7 +7511,6 @@ insert into YukonListEntry values (1053,1005,0,'LCR-3000',1306);
 insert into YukonListEntry values (1054,1005,-1,'LCR-2000',1307);
 insert into YukonListEntry values (1055,1005,-1,'LCR-1000',1308);
 insert into YukonListEntry values (1056,1005,-1,'ExpressStat',1301);
-insert into YukonListEntry values (1057,1005,-1,'EnergyPro',3100);
 insert into YukonListEntry values (1058,1005,-1,'MCT',1303);
 insert into YukonListEntry values (1059,1005,-1,'Commercial ExpressStat',1304);
 insert into YukonListEntry values (1060,1005,-1,'SA-205',1309);
