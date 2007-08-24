@@ -3158,12 +3158,12 @@ public synchronized LiteContact getAContactByContactID(int contactID)
     return specifiedContact;
 }
 
-public List<LiteContact> getAllContactsList() {
-    synchronized (allContacts) {
-        if (allContacts == null) {
-            allContacts = new ArrayList<LiteContact>();
-        }
+public synchronized List<LiteContact> getAllContactsList() {
+
+    if (allContacts == null) {
+        allContacts = new ArrayList<LiteContact>();
     }
+
     return allContacts;
 }
 
