@@ -20,9 +20,10 @@
 	                ${info.address.cityName},
 	        </c:if>
 			${info.address.stateCode} ${info.address.zipCode}
-	        <c:if test='${infoMapURL != null}'>
+<!-- 	        <c:if test='${infoMapURL != null}'>
 	            (<a href="${infoMapURL}" target="_blank">map</a>)
 	        </c:if>
+-->
 	    </c:if>
 	    </tags:nameValue>
 	    </tags:nameValueContainer>
@@ -49,9 +50,10 @@
 	                ${serviceInfo.address.cityName},
 	        </c:if>
 			${serviceInfo.address.stateCode} ${serviceInfo.address.zipCode}
-	        <c:if test='${serviceInfoMapURL != null}'>
+<!-- 	        <c:if test='${serviceInfoMapURL != null}'>
 	            (<a href="${serviceInfoMapURL}" target="_blank">map</a>)
 	        </c:if>
+-->
 	    </c:if>
 	    </tags:nameValue>
         </tags:nameValueContainer>
