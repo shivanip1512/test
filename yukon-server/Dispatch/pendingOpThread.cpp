@@ -7,11 +7,15 @@
 * Author: Corey G. Plender
 *
 * CVS KEYWORDS:
-* REVISION     :  $Revision: 1.33 $
-* DATE         :  $Date: 2007/03/21 21:51:19 $
+* REVISION     :  $Revision: 1.34 $
+* DATE         :  $Date: 2007/08/27 18:27:52 $
 *
 * HISTORY      :
 * $Log: pendingOpThread.cpp,v $
+* Revision 1.34  2007/08/27 18:27:52  jotteson
+* YUK-4279
+* Changed "repeat control" functionality to copy the "control state" to the new control object.
+*
 * Revision 1.33  2007/03/21 21:51:19  mfisher
 * Changed to say "pendingOpThread" instead of "verification thread" on shutdown
 *
@@ -1792,6 +1796,8 @@ void CtiPendingOpThread::processPendableAdd(CtiPendable *&pendable)
                             pendable->_ppo->getControl().setCurrentMonthlyTime(ppo.getControl().getCurrentMonthlyTime());
                             pendable->_ppo->getControl().setCurrentSeasonalTime(ppo.getControl().getCurrentSeasonalTime());
                             pendable->_ppo->getControl().setCurrentAnnualTime(ppo.getControl().getCurrentAnnualTime());
+
+                            pendable->_ppo->setControlState(ppo.getControlState());
 
                             ppo = *pendable->_ppo;    // Copy it to update the control state.
                         }
