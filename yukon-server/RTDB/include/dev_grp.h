@@ -9,8 +9,8 @@
 *
 * PVCS KEYWORDS:
 * ARCHIVE      :  $Archive:   Z:/SOFTWAREARCHIVES/YUKON/DATABASE/INCLUDE/tbl_alm_nloc.h-arc  $
-* REVISION     :  $Revision: 1.21 $
-* DATE         :  $Date: 2006/09/21 21:31:38 $
+* REVISION     :  $Revision: 1.22 $
+* DATE         :  $Date: 2007/08/27 18:26:47 $
 *
 * Copyright (c) 1999 Cannon Technologies Inc. All rights reserved.
 *-----------------------------------------------------------------------------*/
@@ -180,6 +180,34 @@ public:
     {
         _isShed = shed;
         return *this;
+    }
+
+    // Takes in a command string and removes the data from it that can change (countdown, ect..)
+    // Dispatch does a direct comparison of text so it needs to consider these commands to be identical
+    string removeCommandDynamicText(string command)
+    {
+        string match = " count";
+        int begin, end;
+        if( (begin = command.find(match)) != string::npos )
+        {
+            //control xcom cycle 50 count 8 period 30 truecycle
+
+            //We start at the " " after count and look for the number
+            end = command.find_first_not_of(" ", begin + match.length());
+
+            if( end != string::npos )
+            {
+                //Here we start at the number (8) and try to find a " "
+                end = command.find_first_of(" ", end);
+            }
+
+            if( end != string::npos )
+            {
+                command.erase(begin, end - begin);
+            }
+        }
+
+        return command;
     }
 
 };
