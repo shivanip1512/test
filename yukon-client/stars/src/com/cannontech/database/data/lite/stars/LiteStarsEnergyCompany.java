@@ -326,7 +326,7 @@ public class LiteStarsEnergyCompany extends LiteBase {
                 sql += ")";
                 
                 Object[][] serialGroupIDs = com.cannontech.util.ServletUtil.executeSQL(
-                        dbAlias, sql, new Class[] { Integer.class } );
+                        dbAlias, sql, new Class[] { Integer.class, Integer.class } );
                 
                 // get a serial group whose serial number is set to 0, the route id of this group is the default route id
                 if (serialGroupIDs != null && serialGroupIDs.length > 0) {
