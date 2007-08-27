@@ -1,7 +1,7 @@
 /*==============================================================*/
 /* Database name:  YukonDatabase                                */
 /* DBMS name:      Microsoft SQL Server 2000                    */
-/* Created on:     8/24/2007 3:41:34 PM                         */
+/* Created on:     8/27/2007 10:50:10 AM                        */
 /*==============================================================*/
 
 
@@ -6376,7 +6376,17 @@ INSERT INTO State VALUES(-5, 9, 'Priority 9', 10, 6, 0);
 INSERT INTO State VALUES(-5,10, 'Priority 10', 9, 6, 0);
 INSERT INTO State VALUES(-3, 0, 'CalculatedText', 0, 6 , 0);
 INSERT INTO State VALUES(-2, 0, 'AccumulatorText', 0, 6 , 0);
-INSERT INTO State VALUES(-1, 0, 'AnalogText', 0, 6 , 0);
+INSERT INTO State VALUES(-1, 0, 'Normal', 0, 6 , 0);
+INSERT INTO State VALUES(-1, 1, 'Non-update', 1, 6 , 0);
+INSERT INTO State VALUES(-1, 2, 'Rate of Change', 2, 6 , 0);
+INSERT INTO State VALUES(-1, 3, 'Limit Set 1', 3, 6 , 0);
+INSERT INTO State VALUES(-1, 4, 'Limit Set 2', 4, 6 , 0);
+INSERT INTO State VALUES(-1, 5, 'High Reasonability', 5, 6 , 0);
+INSERT INTO State VALUES(-1, 6, 'Low Reasonability', 6, 6 , 0);
+INSERT INTO State VALUES(-1, 7, 'Low Limit 1', 7, 6 , 0);
+INSERT INTO State VALUES(-1, 8, 'Low Limit 2', 8, 6 , 0);
+INSERT INTO State VALUES(-1, 9, 'High Limit 1', 9, 6 , 0);
+INSERT INTO State VALUES(-1, 10, 'High Limit 2', 10, 6 , 0);
 INSERT INTO State VALUES( 0, 0, 'SystemText', 0, 6 , 0);
 INSERT INTO State VALUES( 1,-1, 'Any', 2, 6 , 0);
 INSERT INTO State VALUES( 1, 0, 'Open', 0, 6 , 0);
