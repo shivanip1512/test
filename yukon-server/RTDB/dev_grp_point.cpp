@@ -7,11 +7,15 @@
 * Author: Corey G. Plender
 *
 * CVS KEYWORDS:
-* REVISION     :  $Revision: 1.4 $
-* DATE         :  $Date: 2006/08/29 19:08:31 $
+* REVISION     :  $Revision: 1.5 $
+* DATE         :  $Date: 2007/08/27 18:27:10 $
 *
 * HISTORY      :
 * $Log: dev_grp_point.cpp,v $
+* Revision 1.5  2007/08/27 18:27:10  jotteson
+* YUK-4279
+* Added function to remove the dynamic text from control command strings.
+*
 * Revision 1.4  2006/08/29 19:08:31  mfisher
 * removed blank line in front of comment header so diffs work properly
 *
@@ -151,7 +155,7 @@ INT CtiDeviceGroupPoint::ExecuteRequest(CtiRequestMsg *pReq, CtiCommandParser &p
 
     if(parse.getCommand() == ControlRequest)
     {
-        reportControlStart( parse.getControlled(), parse.getiValue("control_interval"), parse.getiValue("control_reduction", 100), vgList, parse.getCommandStr() );
+        reportControlStart( parse.getControlled(), parse.getiValue("control_interval"), parse.getiValue("control_reduction", 100), vgList, removeCommandDynamicText(parse.getCommandStr()) );
     }
 
     return nRet;

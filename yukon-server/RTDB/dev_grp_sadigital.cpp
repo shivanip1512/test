@@ -7,11 +7,15 @@
 * Author: Corey G. Plender
 *
 * CVS KEYWORDS:
-* REVISION     :  $Revision: 1.18 $
-* DATE         :  $Date: 2006/02/27 23:58:30 $
+* REVISION     :  $Revision: 1.19 $
+* DATE         :  $Date: 2007/08/27 18:27:10 $
 *
 * HISTORY      :
 * $Log: dev_grp_sadigital.cpp,v $
+* Revision 1.19  2007/08/27 18:27:10  jotteson
+* YUK-4279
+* Added function to remove the dynamic text from control command strings.
+*
 * Revision 1.18  2006/02/27 23:58:30  tspar
 * Phase two of RWTPtrSlist replacement.
 *
@@ -265,7 +269,7 @@ INT CtiDeviceGroupSADigital::ExecuteRequest(CtiRequestMsg *pReq, CtiCommandParse
             else
             {
                 if(parse.getCommand() == ControlRequest)
-                    reportControlStart( parse.getControlled(), parse.getiValue("control_interval"), parse.getiValue("control_reduction", 100), vgList, parse.getCommandStr() );
+                    reportControlStart( parse.getControlled(), parse.getiValue("control_interval"), parse.getiValue("control_reduction", 100), vgList, removeCommandDynamicText(parse.getCommandStr()) );
 
                 delete pRet;
             }

@@ -7,11 +7,15 @@
 * Author: Corey G. Plender
 *
 * CVS KEYWORDS:
-* REVISION     :  $Revision: 1.21 $
-* DATE         :  $Date: 2006/04/17 20:12:07 $
+* REVISION     :  $Revision: 1.22 $
+* DATE         :  $Date: 2007/08/27 18:27:10 $
 *
 * HISTORY      :
 * $Log: dev_grp_golay.cpp,v $
+* Revision 1.22  2007/08/27 18:27:10  jotteson
+* YUK-4279
+* Added function to remove the dynamic text from control command strings.
+*
 * Revision 1.21  2006/04/17 20:12:07  cplender
 * Altered the processing of golay operational addresses to fully support F1,2,3 & 4
 *
@@ -269,7 +273,7 @@ INT CtiDeviceGroupGolay::ExecuteRequest(CtiRequestMsg *pReq, CtiCommandParser &p
             else
             {
                 if(parse.getCommand() == ControlRequest)
-                    reportControlStart( parse.getControlled(), parse.getiValue("control_interval"), parse.getiValue("control_reduction", 100), vgList, parse.getCommandStr() );
+                    reportControlStart( parse.getControlled(), parse.getiValue("control_interval"), parse.getiValue("control_reduction", 100), vgList, removeCommandDynamicText(parse.getCommandStr()) );
 
                 delete pRet;
             }
