@@ -239,7 +239,7 @@ public final String processCustomerRecord(String buffer) {
 	//JEFF W.  20060123 - The acct # is located in bytes 15-34.  As we discussed, using the right most 6 digits/chars should do the trick.  
 	customerRecord.accountNumber = null;
 	String actNumTemp = buffer.substring(14, 34).trim();
-	customerRecord.accountNumber = actNumTemp.substring(actNumTemp.length() - 5);  //the rightmost 56digits of the accountnumber field
+	customerRecord.accountNumber = getAccountNumber(actNumTemp);
 	
 	numberCustomers++;
 	return storage.toString();
@@ -506,4 +506,9 @@ public final String processRouteHeaderAndTrailer(String buffer) {
 	{
 		return numberMeters;
 	}
+
+	public String getAccountNumber (String acctNumFromFile) {
+		return acctNumFromFile.substring(acctNumFromFile.length() - 5);  //the rightmost 5digits of the accountnumber field
+	}
+
 }

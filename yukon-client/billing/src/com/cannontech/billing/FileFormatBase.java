@@ -11,6 +11,7 @@ import java.util.Vector;
 import com.cannontech.billing.mainprograms.BillingFileDefaults;
 import com.cannontech.billing.record.BillingRecordBase;
 import com.cannontech.billing.record.MVRSRecord;
+import com.cannontech.billing.record.MVRS_KetchikanRecord;
 import com.cannontech.clientutils.CTILogger;
 import com.cannontech.common.util.CtiUtilities;
 import com.cannontech.database.PoolManager;
@@ -149,11 +150,17 @@ public abstract class FileFormatBase
 		StringBuffer returnBuffer = new StringBuffer();
 		setRecordCount(0);	//reset the count
 		
-		if( getBillingDefaults().getFormatID() == FileFormatTypes.MVRS)//special case!!!
+		if( getBillingDefaults().getFormatID() == FileFormatTypes.MVRS ||
+				getBillingDefaults().getFormatID() == FileFormatTypes.MVRS_KETCHIKAN)//special case!!!
 		{
+			MVRSRecord mvrsRecord;
 			// create an instance of the record and call the dataToString, this reads a file instead
 			// of being a preloaded vector of records from the database.
-			MVRSRecord mvrsRecord = new MVRSRecord();
+			if(getBillingDefaults().getFormatID() == FileFormatTypes.MVRS_KETCHIKAN)
+				mvrsRecord = new MVRS_KetchikanRecord();
+			else 
+				mvrsRecord = new MVRSRecord();
+
 			mvrsRecord.setInputFile(getBillingDefaults().getInputFileDir());
 			returnBuffer.append(mvrsRecord.dataToString());
 			//set the record format's record count, based on the number of meter records in the file

@@ -25,6 +25,7 @@ public final static FileFormatBase createFileFormat(int type)
 			return new NCDC_HandheldFormat();
 			
 		case FileFormatTypes.MVRS:
+		case FileFormatTypes.MVRS_KETCHIKAN:
 			return new MVRSFormat();
 
         default: //this is bad
