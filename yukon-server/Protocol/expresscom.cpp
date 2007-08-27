@@ -7,8 +7,8 @@
 * Author: Corey G. Plender
 *
 * CVS KEYWORDS:
-* REVISION     :  $Revision: 1.44 $
-* DATE         :  $Date: 2007/07/06 16:19:02 $
+* REVISION     :  $Revision: 1.45 $
+* DATE         :  $Date: 2007/08/27 14:57:03 $
 *
 * Copyright (c) 2002 Cannon Technologies Inc. All rights reserved.
 *-----------------------------------------------------------------------------*/
@@ -1734,49 +1734,46 @@ INT CtiProtocolExpresscom::configureLoadAddressing(CtiCommandParser &parse)
     BYTE length = 1;
     BYTE raw[8];
 
-    string progStr       = parse.getsValue("xca_program");
-    string splinterStr   = parse.getsValue("xca_splinter");
-    string tStr;
+    string programStr  = parse.getsValue("xca_program");
+    string splinterStr = parse.getsValue("xca_splinter");
 
-    int prog       = -1;
-    int splinter   = -1;
-    BYTE loadmask   = ((BYTE)parse.getiValue("xca_loadmask", 0) & 0x0f);
+    int program   = -1;
+    int splinter  = -1;
+    BYTE loadmask = ((BYTE)parse.getiValue("xca_loadmask", 0) & 0x0f);
     BYTE load;
 
-
     boost::char_separator<char> sep(",");
-    Boost_char_tokenizer ptok(progStr, sep);
-    Boost_char_tokenizer::iterator pbeg=ptok.begin();
+    Boost_char_tokenizer programs (programStr,  sep);
+    Boost_char_tokenizer splinters(splinterStr, sep);
 
+    Boost_char_tokenizer::iterator current_program  = programs.begin();
+    Boost_char_tokenizer::iterator current_splinter = splinters.begin();
 
-    Boost_char_tokenizer rtok(splinterStr, sep);
-    Boost_char_tokenizer::iterator rbeg=rtok.begin();
-
-
-    if( pbeg != ptok.end() && rbeg != rtok.end() )
+    for( load = 0; load < 15; load++ )
     {
-        for(load = 0; load < 15; load++)
+        if( loadmask & (0x01 << load) )
         {
-            if(loadmask & (0x01 << load))
+            if( current_program  != programs.end() )
             {
-                prog        = ( !(tStr = *pbeg).empty() ? atoi(tStr.c_str()) : prog);           // The last program address in the comma delimited string will PAD out alll loads.  If there is only one, it is assigned to all loads.
-                splinter    = ( !(tStr = *rbeg).empty() ? atoi(tStr.c_str()) : splinter);       // The last splinter address in the comma delimited string will PAD out alll loads.  If there is only one, it is assigned to all loads.
-    
-                length = 1;
-                raw[0] = (prog >= 0 ? 0x20 : 0x00) | (splinter >= 0 ? 0x10 : 0x00) | (load+1);
-    
-                if((raw[0] & 0x30) != 0)
-                {
-                    if(prog >= 0)
-                    {
-                        raw[length++] = (BYTE)prog;
-                    }
-                    if(splinter >= 0)
-                    {
-                        raw[length++] = (BYTE)splinter;
-                    }
-                    status = configuration( 0x07, length, raw );
-                }
+                if( !current_program->empty() )   program  = atoi(current_program->c_str());  // The last program address in the comma delimited string will PAD out alll loads.  If there is only one, it is assigned to all loads.
+                current_program++;
+            }
+
+            if( current_splinter != splinters.end() )
+            {
+                if( !current_splinter->empty() )  splinter = atoi(current_splinter->c_str());  // The last splinter address in the comma delimited string will PAD out alll loads.  If there is only one, it is assigned to all loads.
+                current_splinter++;
+            }
+
+            length = 1;
+            raw[0] = (program >= 0 ? 0x20 : 0x00) | (splinter >= 0 ? 0x10 : 0x00) | (load + 1);
+
+            if( (raw[0] & 0x30) != 0 )
+            {
+                if( program  >= 0 )  raw[length++] = (BYTE)program;
+                if( splinter >= 0 )  raw[length++] = (BYTE)splinter;
+
+                status = configuration( 0x07, length, raw );
             }
         }
     }
