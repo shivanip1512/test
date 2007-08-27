@@ -27,22 +27,21 @@ public class PersistDynamicText extends BasePersistElement {
 	/**
 	 * @see com.cannontech.esub.element.persist.PersistElement#readFromJLX(DrawingElement, InputStream)
 	 */
-	public void readFromJLX(DrawingElement drawingElem, InputStream in, int version)
-		throws IOException {
+	public void readFromJLX(DrawingElement drawingElem, InputStream in, int version) throws IOException {
 			
 			DynamicText elem = (DynamicText) drawingElem;
 			
 			switch(version) {
 				
 				case 1: {
-					elem.setPointID(LxSaveUtils.readInt(in));
+					elem.setPointId(LxSaveUtils.readInt(in));
         			elem.setDisplayAttribs(LxSaveUtils.readInt(in));     
         			elem.setLinkTo(LxSaveUtils.readString(in));   
                 }
 				break;
                 
                 case 2: {
-                    elem.setPointID(LxSaveUtils.readInt(in));
+                    elem.setPointId(LxSaveUtils.readInt(in));
                     elem.setDisplayAttribs(LxSaveUtils.readInt(in));     
                     elem.setLinkTo(LxSaveUtils.readString(in));   
                     elem.setControlEnabled(LxSaveUtils.readBoolean(in));
@@ -50,7 +49,7 @@ public class PersistDynamicText extends BasePersistElement {
                 break;
                 
                 case 3: {
-                    elem.setPointID(LxSaveUtils.readInt(in));
+                    elem.setPointId(LxSaveUtils.readInt(in));
                     elem.setDisplayAttribs(LxSaveUtils.readInt(in));     
                     elem.setLinkTo(LxSaveUtils.readString(in));   
                     elem.setControlEnabled(LxSaveUtils.readBoolean(in));
@@ -65,6 +64,25 @@ public class PersistDynamicText extends BasePersistElement {
                     elem.setCustomBlinkMap(customBlinkMap);
                 }
                 break;
+                
+                case 4: {
+                    elem.setPointId(LxSaveUtils.readInt(in));
+                    elem.setDisplayAttribs(LxSaveUtils.readInt(in));     
+                    elem.setLinkTo(LxSaveUtils.readString(in));   
+                    elem.setControlEnabled(LxSaveUtils.readBoolean(in));
+                    elem.setColorPointID(LxSaveUtils.readInt(in));
+                    elem.setCustomColorMap(PersistUtils.readIntColorMap(in));
+                    elem.setCustomTextMap(PersistUtils.readIntStringMap(in));
+                    int blink = LxSaveUtils.readInt(in);
+                    int blinkPointID = LxSaveUtils.readInt(in);
+                    Map customBlinkMap = PersistUtils.readIntIntMap(in);
+                    int controlPointId = LxSaveUtils.readInt(in);
+                    elem.setTextBlink(blink);
+                    elem.setBlinkPointID(blinkPointID);
+                    elem.setCustomBlinkMap(customBlinkMap);
+                    elem.setControlPointId(controlPointId);
+                }
+                break;
 				
 				default: {
 					throw new IOException("Unknown version: " + version + " in " + elem.getClass().getName());
@@ -75,10 +93,9 @@ public class PersistDynamicText extends BasePersistElement {
 	/**
 	 * @see com.cannontech.esub.element.persist.PersistElement#saveAsJLX(DrawingElement, OutputStream)
 	 */
-	public void saveAsJLX(DrawingElement drawingElem, OutputStream out, int version)
-		throws IOException {
+	public void saveAsJLX(DrawingElement drawingElem, OutputStream out, int version) throws IOException {
 			DynamicText elem = (DynamicText) drawingElem;
-			LxSaveUtils.writeInt(out, elem.getPointID());
+			LxSaveUtils.writeInt(out, elem.getPointId());
   			LxSaveUtils.writeInt(out, elem.getDisplayAttribs());
    			LxSaveUtils.writeString(out, elem.getLinkTo());
             LxSaveUtils.writeBoolean(out, elem.getControlEnabled());
@@ -88,6 +105,7 @@ public class PersistDynamicText extends BasePersistElement {
             LxSaveUtils.writeInt(out, elem.getTextBlink());
             LxSaveUtils.writeInt(out, elem.getBlinkPointID());
             PersistUtils.writeIntIntMap(out, elem.getCustomBlinkMap());
+            LxSaveUtils.writeInt(out, elem.getControlPointId());
 	}
 
 }

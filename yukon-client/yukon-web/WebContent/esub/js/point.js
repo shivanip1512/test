@@ -14,14 +14,14 @@ function showPointDetails(evt, allowControl) {
 	// Figure out the point id that was clicked on
 	var node = evt.getTarget();
     var id = node.getAttribute('id');
-
+    var controlPointId = node.getAttribute('controlPointId');
 
 	// Store the location and the dimensions of the point
 	// so we can position the popup
 	popupx = parseInt(node.getAttribute('x'));
 	popupy = parseInt(node.getAttribute('y'));
 	
-	var url = "/esub/jsp/point_detail.jsp?pointid=" + id + "&allowControl=" + allowControl;
+	var url = "/esub/jsp/point_detail.jsp?pointid=" + id + "&controlPointId=" + controlPointId + "&allowControl=" + allowControl;
 		
 	getURL(url, handleShowPointReq);
 	

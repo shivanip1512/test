@@ -496,6 +496,7 @@ public boolean isInputValid() {
 	return (pt != null && 
 			(pt.getPointType() == PointTypes.STATUS_POINT ||
 		     pt.getPointType() == PointTypes.CALCULATED_STATUS_POINT ||
+             pt.getPointType() == PointTypes.CALCULATED_POINT ||
              pt.getPointType() == PointTypes.ANALOG_POINT));
 }
 /**

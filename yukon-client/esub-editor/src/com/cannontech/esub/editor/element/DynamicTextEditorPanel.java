@@ -1,7 +1,6 @@
 package com.cannontech.esub.editor.element;
 
 import java.awt.Color;
-import java.awt.Container;
 import java.awt.Dimension;
 import java.awt.Font;
 import java.awt.GraphicsEnvironment;
@@ -435,9 +434,9 @@ private javax.swing.JComboBox getFontSizeComboBox() {
 		try {
 			ivjFontSizeComboBox = new javax.swing.JComboBox();
 			ivjFontSizeComboBox.setName("FontSizeComboBox");
-            ivjFontSizeComboBox.setPreferredSize(new Dimension( 40, 25));
-            ivjFontSizeComboBox.setMinimumSize(new Dimension( 40, 25));
-            ivjFontSizeComboBox.setMaximumSize(new Dimension( 40, 25));
+            ivjFontSizeComboBox.setPreferredSize(new Dimension( 60, 25));
+            ivjFontSizeComboBox.setMinimumSize(new Dimension( 60, 25));
+            ivjFontSizeComboBox.setMaximumSize(new Dimension( 60, 25));
 		} catch (java.lang.Throwable ivjExc) {
 			handleException(ivjExc);
 		}
@@ -727,9 +726,9 @@ public Object getValue(Object o) {
             CTILogger.error("No point selected");
             JOptionPane.showMessageDialog(this, "Please select a point for control or uncheck the checkbox.", "Settings not done yet.", JOptionPane.WARNING_MESSAGE);
         }
-        dynamicText.setControlPointID(getEnableControlPointPanel().getPointSelectionPanel().getSelectedPoint().getLiteID());
+        dynamicText.setControlPointId(getEnableControlPointPanel().getPointSelectionPanel().getSelectedPoint().getLiteID());
     }else {
-        dynamicText.setControlPointID(-1);
+        dynamicText.setControlPointId(-1);
     }
     if(getColorPointCheckBox().isSelected()) {
         if(getTextColorPointPanel().getPointSelectionPanel().getSelectedPoint() == null){
@@ -794,6 +793,7 @@ private void initConnections() throws java.lang.Exception {
     getEnableControlPointButton().addActionListener(this);
     getPointSelectionPropertyPanel().getOkButton().addActionListener(this);
     getPointSelectionPropertyPanel().getCancelButton().addActionListener(this);
+    getEnableControlPointPanel().getCancelButton().addActionListener(this);
     getEnableControlPointPanel().getOkButton().addActionListener(this);
     getTextPointPanel().getPointSelectionPanel().getIvjDevicePointTree().addTreeSelectionListener(this);
     getPointSelectionPropertyPanel().getPointSelectionPanel().getIvjDevicePointTree().addTreeSelectionListener(this);
@@ -938,10 +938,11 @@ public void setValue(Object o) {
     if( dynamicText.getControlEnabled() ) {
         getEnableControlPointLabel().setEnabled(true);
         getEnableControlPointButton().setEnabled(true);
-        int pointid = dynamicText.getControlPointID();
-        LitePoint point = DaoFactory.getPointDao().getLitePoint(pointid);
-        getEnableControlPointPanel().getPointSelectionPanel().selectPoint(point);
-        getEnableControlPointLabel().setText(point.getPointName());
+        int controlPointId = dynamicText.getControlPointId();
+        LitePoint controlPoint = DaoFactory.getPointDao().getLitePoint(controlPointId);
+        getEnableControlPointPanel().getPointSelectionPanel().selectPoint(controlPoint);
+        getEnableControlPointLabel().setText(controlPoint.getPointName());
+        getEnableControlPointLabel().setForeground(Color.black);
 
     }else {
         getEnableControlPointLabel().setEnabled(false);
@@ -950,7 +951,7 @@ public void setValue(Object o) {
     
     getPointSelectionPropertyPanel().getPointSelectionPanel().refresh();
     getTextPointPanel().getPointSelectionPanel().refresh();
-    if( dynamicText.getPointID() != DynamicText.INVALID_POINT ) {
+    if( dynamicText.getPointId() != DynamicText.INVALID_POINT ) {
         LitePoint point = dynamicText.getPoint();
         getPointSelectionPropertyPanel().getPointSelectionPanel().selectPoint(point);
         getTextPointPanel().getPointSelectionPanel().selectPoint(point);
@@ -1120,6 +1121,9 @@ public void actionPerformed(ActionEvent e) {
         pointPanelDialog.setVisible(false);
     }
     else if( e.getSource() == getPointSelectionPropertyPanel().getCancelButton()) {
+        pointPanelDialog.setVisible(false);
+    }
+    else if( e.getSource() == getEnableControlPointPanel().getCancelButton()) {
         pointPanelDialog.setVisible(false);
     }
     else if( e.getSource() == getEnableControlPointPanel().getOkButton()) {

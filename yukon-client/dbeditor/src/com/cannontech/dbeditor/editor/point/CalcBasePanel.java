@@ -11,6 +11,7 @@ import com.cannontech.core.dao.DaoFactory;
 import com.cannontech.database.cache.DefaultDatabaseCache;
 import com.cannontech.database.data.lite.LiteStateGroup;
 import com.cannontech.database.data.lite.LiteUnitMeasure;
+import com.cannontech.database.data.point.CalculatedPoint;
 import com.cannontech.database.data.point.PointTypes;
 import com.cannontech.yukon.IDatabaseCache;
 
@@ -44,10 +45,7 @@ public CalcBasePanel() {
  * Method to handle events for the ActionListener interface.
  * @param e java.awt.event.ActionEvent
  */
-/* WARNING: THIS METHOD WILL BE REGENERATED. */
 public void actionPerformed(java.awt.event.ActionEvent e) {
-	// user code begin {1}
-	// user code end
 	if (e.getSource() == getPeriodicRateComboBox()) 
 		connEtoC2(e);
 	if (e.getSource() == getArchiveTypeComboBox()) 
@@ -60,9 +58,10 @@ public void actionPerformed(java.awt.event.ActionEvent e) {
 		connEtoC4(e);
     if (e.getSource() == getJCheckboxCalcQual())
         connEtoC6(e);
-	// user code begin {2}
-	// user code end
+    if (e.getSource() == getStateGroupComboBox())
+        connEtoC6(e);
 }
+
 /**
  * Comment
  */
@@ -651,33 +650,27 @@ private javax.swing.JCheckBox getJCheckboxCalcQual() {
 public Object getValue(Object val)
 {
 	//Assume that commonObject is an instance of com.cannontech.database.data.point.CalculatedPoint
-	int uOfMeasureID =
-		((com.cannontech.database.data.lite.LiteUnitMeasure) getUnitOfMeasureComboBox().getSelectedItem()).getUomID();
-
-	com.cannontech.database.data.point.CalculatedPoint calcPoint = (com.cannontech.database.data.point.CalculatedPoint) val;
-
-	if(getArchiveTypeComboBox().getSelectedItem().toString().compareTo("On Timer Or Update") == 0)
+    CalculatedPoint calcPoint = (CalculatedPoint) val;
+    
+    int uOfMeasureID = ((LiteUnitMeasure) getUnitOfMeasureComboBox().getSelectedItem()).getUomID();
+	if(getArchiveTypeComboBox().getSelectedItem().toString().compareTo("On Timer Or Update") == 0) {
 		calcPoint.getPoint().setArchiveType(PointTypes.ARCHIVE_ON_TIMER_OR_UPDATE);
-	else
+    }else {
 		calcPoint.getPoint().setArchiveType((String) getArchiveTypeComboBox().getSelectedItem());
+    }
 	calcPoint.getPoint().setArchiveInterval(CtiUtilities.getIntervalComboBoxSecondsValue(getArchiveIntervalComboBox()));
-
 	calcPoint.getCalcBase().setUpdateType((String) getUpdateTypeComboBox().getSelectedItem());
 	calcPoint.getCalcBase().setPeriodicRate(CtiUtilities.getIntervalComboBoxSecondsValue(getPeriodicRateComboBox()));
     
-    if( getJCheckboxCalcQual().isSelected() )
-    {
+    if( getJCheckboxCalcQual().isSelected() ) {
         calcPoint.getCalcBase().setCalculateQuality('Y');
-    }else 
-    {
+    }else {
         calcPoint.getCalcBase().setCalculateQuality('N');
     }
 
 	calcPoint.getPointUnit().setDecimalPlaces(new Integer(((Number) getDecimalPlacesSpinner().getValue()).intValue()));
 	calcPoint.getPointUnit().setUomID( new Integer(uOfMeasureID) );
-    
     LiteStateGroup stateGroup = (LiteStateGroup) getStateGroupComboBox().getSelectedItem();
-
     calcPoint.getPoint().setStateGroupID( new Integer(stateGroup.getStateGroupID()) );
 
 	return calcPoint;
@@ -697,17 +690,15 @@ private void handleException(Throwable exception) {
  */
 /* WARNING: THIS METHOD WILL BE REGENERATED. */
 private void initConnections() throws java.lang.Exception {
-	// user code begin {1}
 
 	getDecimalPlacesSpinner().addValueListener( this );
-
-	// user code end
 	getPeriodicRateComboBox().addActionListener(this);
 	getArchiveTypeComboBox().addActionListener(this);
 	getArchiveIntervalComboBox().addActionListener(this);
 	getUpdateTypeComboBox().addActionListener(this);
 	getUnitOfMeasureComboBox().addActionListener(this);
     getJCheckboxCalcQual().addActionListener(this);
+    getStateGroupComboBox().addActionListener(this);
 }
 /**
  * Initialize the class.

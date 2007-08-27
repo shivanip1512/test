@@ -273,7 +273,8 @@ public abstract class BaseSVGGenerator implements ISVGGenerator {
         float opacity = text.getStyle().getTransparency();
     
         Element textElem = doc.createElementNS(svgNS, "text");
-        textElem.setAttributeNS(null, "id", Integer.toString(text.getPointID()));
+        textElem.setAttributeNS(null, "id", Integer.toString(text.getPointId()));
+        textElem.setAttributeNS(null, "controlPointId", Integer.toString(text.getControlPointId()));
         textElem.setAttributeNS(null, "dattrib", Integer.toString(text.getDisplayAttribs()));
         textElem.setAttributeNS(null, "x", Integer.toString(x));
         textElem.setAttributeNS(null, "y", Integer.toString(y));
@@ -528,6 +529,7 @@ public abstract class BaseSVGGenerator implements ISVGGenerator {
         Element imgElem = doc.createElementNS(svgNS, "image");
         String pointId = Integer.toString(img.getPointID());
         imgElem.setAttributeNS(null, "id", pointId);
+        imgElem.setAttributeNS(null, "controlPointId", pointId);
         imgElem.setAttributeNS(xlinkNS, "xlink:href", imgName);
         imgElem.setAttributeNS(null, "x", Integer.toString(x));
         imgElem.setAttributeNS(null, "y", Integer.toString(y));

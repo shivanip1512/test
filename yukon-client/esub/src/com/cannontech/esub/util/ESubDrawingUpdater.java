@@ -342,7 +342,7 @@ public class ESubDrawingUpdater extends TimerTask implements DrawingUpdater {
 
     public boolean updateDynamicText(boolean change, LxComponent lxComponent) {
         DynamicText dt = (DynamicText) lxComponent;
-            int pointID = dt.getPointID();
+            int pointID = dt.getPointId();
             String text = UpdateUtil.getDynamicTextString(pointID,
                                                           dt.getDisplayAttribs());
 

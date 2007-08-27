@@ -26,8 +26,10 @@
 */
 	   
 	int pointID = Integer.parseInt(request.getParameter("pointid"));
+	int controlPointId = Integer.parseInt(request.getParameter("controlPointId"));
 	boolean allowControl = Boolean.parseBoolean(request.getParameter("allowControl"));
 	LitePoint lPoint = DaoFactory.getPointDao().getLitePoint(pointID);	
+	LitePoint liteControlPoint = DaoFactory.getPointDao().getLitePoint(controlPointId);	
 	String pointName = lPoint.getPointName();
 	int pointOffset = lPoint.getPointOffset();
 	DynamicDataSource dds = (DynamicDataSource) YukonSpringHook.getBean("dynamicDataSource");
@@ -54,9 +56,9 @@
 	}
 	
 	LiteYukonUser user = (LiteYukonUser) session.getAttribute(ServletUtil.ATT_YUKON_USER);
-    boolean offerControl = (PointTypes.STATUS_POINT == lPoint.getPointType() &&
-    						DaoFactory.getAuthDao().checkRoleProperty(user, com.cannontech.roles.operator.EsubDrawingsRole.CONTROL) &&
-    						allowControl);
+    boolean offerControl = (PointTypes.STATUS_POINT == liteControlPoint.getPointType() 
+    	&& DaoFactory.getAuthDao().checkRoleProperty(user, com.cannontech.roles.operator.EsubDrawingsRole.CONTROL) 
+    	&& allowControl);
 %>
 <html>
 <table border="1" bgcolor = "#CCCCCC">
@@ -83,7 +85,7 @@
 </td></tr>
 <tr><td align="center">
 <% if(offerControl) { %>
-<a href="" onclick="hidePointDetails(); showControlWindow(<%= pointID %>); return false;">Control/Tags</a>
+<a href="" onclick="hidePointDetails(); showControlWindow(<%= controlPointId %>); return false;">Control/Tags</a>
 <% } %>
 </td></tr>
 </table>

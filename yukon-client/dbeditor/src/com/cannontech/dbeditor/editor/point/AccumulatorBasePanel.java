@@ -8,6 +8,7 @@ import com.cannontech.core.dao.DaoFactory;
 import com.cannontech.database.cache.DefaultDatabaseCache;
 import com.cannontech.database.data.lite.LiteStateGroup;
 import com.cannontech.database.data.lite.LiteUnitMeasure;
+import com.cannontech.database.data.point.AccumulatorPoint;
 import com.cannontech.database.data.point.PointTypes;
 import com.cannontech.yukon.IDatabaseCache;
 import com.klg.jclass.field.JCSpinField;
@@ -47,6 +48,8 @@ public void actionPerformed(java.awt.event.ActionEvent e) {
 		connEtoC3(e);
 	if (e.getSource() == getArchiveIntervalComboBox()) 
 		connEtoC4(e);
+    if (e.getSource() == getStateGroupComboBox()) 
+        connEtoC4(e);
 }
 
 /**
@@ -353,20 +356,22 @@ private javax.swing.JLabel getUnitOfMeasureLabel() {
 public Object getValue(Object val)
 {
 	//Assuming that commonObject is an instance of com.cannontech.database.data.point.AccumulatorPoint
-	com.cannontech.database.data.point.AccumulatorPoint point = (com.cannontech.database.data.point.AccumulatorPoint) val;
+	AccumulatorPoint point = (AccumulatorPoint) val;
 
-	int uOfMeasureID =
-		((com.cannontech.database.data.lite.LiteUnitMeasure) getUnitOfMeasureComboBox().getSelectedItem()).getUomID();
+	int uOfMeasureID = ((LiteUnitMeasure) getUnitOfMeasureComboBox().getSelectedItem()).getUomID();
 
 	point.getPointUnit().setUomID( new Integer(uOfMeasureID) );//setUnit(uOfMeasure);
 	point.getPointUnit().setDecimalPlaces(new Integer(((Number) getDecimalPlacesSpinner().getValue()).intValue()));
     point.getPointUnit().setMeterDials( new Integer(((Number)getMeterDialsSpinner().getValue()).intValue() ) );
     
-	if(getArchiveTypeComboBox().getSelectedItem().toString().compareTo("On Timer Or Update") == 0)
+	if(getArchiveTypeComboBox().getSelectedItem().toString().compareTo("On Timer Or Update") == 0) {
 		point.getPoint().setArchiveType(PointTypes.ARCHIVE_ON_TIMER_OR_UPDATE);
-	else
+    }else {
 		point.getPoint().setArchiveType((String) getArchiveTypeComboBox().getSelectedItem());
+    }
 	point.getPoint().setArchiveInterval(CtiUtilities.getIntervalComboBoxSecondsValue(getArchiveIntervalComboBox()));
+    LiteStateGroup stateGroup = (LiteStateGroup) getStateGroupComboBox().getSelectedItem();
+    point.getPoint().setStateGroupID( new Integer(stateGroup.getStateGroupID()) );
 
 	return point;
 }
@@ -390,6 +395,7 @@ private void initConnections() throws java.lang.Exception {
 	getUnitOfMeasureComboBox().addActionListener(this);
 	getArchiveTypeComboBox().addActionListener(this);
 	getArchiveIntervalComboBox().addActionListener(this);
+    getStateGroupComboBox().addActionListener(this);
 }
 
 /**
@@ -535,13 +541,13 @@ public boolean isInputValid() {
 public void setValue(Object val)
 {
 	//Assuming defaultObject is an instance of com.cannontech.database.data.point.AccumulatorPoint
-	com.cannontech.database.data.point.AccumulatorPoint point = (com.cannontech.database.data.point.AccumulatorPoint) val;
+	AccumulatorPoint point = (AccumulatorPoint) val;
 
 	int uOfMeasureID = point.getPointUnit().getUomID().intValue();
-	String pointType = point.getPoint().getPointType();
 	String archiveType = point.getPoint().getArchiveType();
-	if(archiveType.compareTo(PointTypes.ARCHIVE_ON_TIMER_OR_UPDATE) == 0)
+	if(archiveType.compareTo(PointTypes.ARCHIVE_ON_TIMER_OR_UPDATE) == 0) {
 		archiveType = "On Timer Or Update";
+    }
 	Integer archiveInteger = point.getPoint().getArchiveInterval();
 
 	getDecimalPlacesSpinner().setValue(point.getPointUnit().getDecimalPlaces());
@@ -549,23 +555,19 @@ public void setValue(Object val)
 	getArchiveIntervalLabel().setEnabled(false);
 	getArchiveIntervalComboBox().setEnabled(false);
 
-	for (int i = 0; i < getUnitOfMeasureComboBox().getModel().getSize(); i++)
-	{
-		if( ((com.cannontech.database.data.lite.LiteUnitMeasure) getUnitOfMeasureComboBox().getItemAt(i)).getUomID()
-			 == uOfMeasureID )
-		{
+	for (int i = 0; i < getUnitOfMeasureComboBox().getModel().getSize(); i++) {
+		if( ((LiteUnitMeasure) getUnitOfMeasureComboBox().getItemAt(i)).getUomID() == uOfMeasureID ) {
 			getUnitOfMeasureComboBox().setSelectedIndex(i);
 			break;
 		}
 	}
 
-	for (int i = 0; i < getArchiveTypeComboBox().getModel().getSize(); i++)
-	{
-		if (((String) getArchiveTypeComboBox().getItemAt(i)).equalsIgnoreCase(archiveType))
-		{
+	for (int i = 0; i < getArchiveTypeComboBox().getModel().getSize(); i++) {
+		if (((String) getArchiveTypeComboBox().getItemAt(i)).equalsIgnoreCase(archiveType)) {
 			getArchiveTypeComboBox().setSelectedIndex(i);
-			if (getArchiveIntervalComboBox().isEnabled())
+			if (getArchiveIntervalComboBox().isEnabled()) {
 				CtiUtilities.setIntervalComboBoxSelectedItem(getArchiveIntervalComboBox(), archiveInteger.intValue());
+            }
 			break;
 		}
 	}
@@ -575,17 +577,16 @@ public void setValue(Object val)
     
     //Load all the state groups
     IDatabaseCache cache = DefaultDatabaseCache.getInstance();
-    synchronized(cache)
-    {
+    synchronized(cache) {
         LiteStateGroup[] allStateGroups = DaoFactory.getStateDao().getAllStateGroups();
 
         //Load the state table combo box
-        for(int i=0;i<allStateGroups.length;i++)
-        {
-            LiteStateGroup grp = (LiteStateGroup)allStateGroups[i];
+        for(int i=0;i<allStateGroups.length;i++) {
+            LiteStateGroup grp = allStateGroups[i];
             getStateGroupComboBox().addItem( grp );
-            if( grp.getStateGroupID() == stateGroupID )
+            if( grp.getStateGroupID() == stateGroupID ) {
                 getStateGroupComboBox().setSelectedItem( grp );
+            }
         }
     }
 }

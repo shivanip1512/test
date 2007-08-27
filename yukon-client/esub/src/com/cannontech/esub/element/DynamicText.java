@@ -2,6 +2,7 @@ package com.cannontech.esub.element;
 
 import java.awt.Color;
 import java.awt.Font;
+import java.awt.Paint;
 import java.io.IOException;
 import java.io.InputStream;
 import java.io.OutputStream;
@@ -32,12 +33,13 @@ public class DynamicText extends LxAbstractText implements DrawingElement, Seria
 	private static final String ELEMENT_ID = "dynamicText";
 	public static final int INVALID_POINT = -1;	
 	
-	private static final int CURRENT_VERSION = 3;
+	private static final int CURRENT_VERSION = 4;
 	
 	static final Font DEFAULT_FONT = new java.awt.Font("arial", java.awt.Font.BOLD, 12);
 	static final Color DEFAULT_COLOR = java.awt.Color.white;
 	
-	private com.cannontech.database.data.lite.LitePoint point;	
+	private LitePoint point;
+    private LitePoint controlPoint;
 	private int displayAttribs = 0x00;
     private Color color = DEFAULT_COLOR;
     private String text = "";
@@ -48,7 +50,6 @@ public class DynamicText extends LxAbstractText implements DrawingElement, Seria
 	private int version = CURRENT_VERSION;
     private boolean controlEnabled = false;
     private int colorPointID = -1;
-    private int controlPointID = -1;
     private int blinkPointID = -1;
     private int currentStateID = -1;
     private Map customColorMap = new HashMap(13);
@@ -56,194 +57,225 @@ public class DynamicText extends LxAbstractText implements DrawingElement, Seria
     private Map customBlinkMap = new HashMap(13);
     private LiteState currentColorState;
     private LiteState currentTextState;
-    private HashMap oldColorMap = new HashMap(11);
+    private HashMap<Integer, Color> oldColorMap = new HashMap<Integer, Color>(11);
 	
-/**
- * DynamicText constructor comment.
- */
-public DynamicText() {
-	super();
-	initialize();
-}
-/**
- * DynamicText constructor comment.
- * @param arg1 com.loox.jloox.LxContainer
- */
-public DynamicText(LxContainer arg1) {
-	super(arg1);
-	initialize();
-}
-/**
- * DynamicText constructor comment.
- * @param arg1 com.loox.jloox.LxContainer
- * @param arg2 java.awt.geom.Rectangle2D
- */
-public DynamicText(LxContainer arg1, java.awt.geom.Rectangle2D arg2) {
-	super(arg1, arg2);
-	initialize();
-}
-/**
- * DynamicText constructor comment.
- * @param arg1 com.loox.jloox.LxContainer
- * @param arg2 java.awt.geom.Rectangle2D
- * @param arg3 java.lang.String
- */
-public DynamicText(LxContainer arg1, java.awt.geom.Rectangle2D arg2, String arg3) {
-	super(arg1, arg2, arg3);
-	initialize();
-}
-/**
- * DynamicText constructor comment.
- * @param arg1 com.loox.jloox.LxContainer
- * @param arg2 java.lang.String
- */
-public DynamicText(LxContainer arg1, String arg2) {
-	super(arg1, arg2);
-	initialize();
-}
-/**
- * DynamicText constructor comment.
- * @param arg1 java.lang.String
- */
-public DynamicText(String arg1) {
-	super(arg1);
-	initialize();
-}
+    /**
+     * DynamicText constructor comment.
+     */
+    public DynamicText() {
+    	super();
+    	initialize();
+    }
+    /**
+     * DynamicText constructor comment.
+     * @param arg1 com.loox.jloox.LxContainer
+     */
+    public DynamicText(LxContainer arg1) {
+    	super(arg1);
+    	initialize();
+    }
+    /**
+     * DynamicText constructor comment.
+     * @param arg1 com.loox.jloox.LxContainer
+     * @param arg2 java.awt.geom.Rectangle2D
+     */
+    public DynamicText(LxContainer arg1, java.awt.geom.Rectangle2D arg2) {
+    	super(arg1, arg2);
+    	initialize();
+    }
+    /**
+     * DynamicText constructor comment.
+     * @param arg1 com.loox.jloox.LxContainer
+     * @param arg2 java.awt.geom.Rectangle2D
+     * @param arg3 java.lang.String
+     */
+    public DynamicText(LxContainer arg1, java.awt.geom.Rectangle2D arg2, String arg3) {
+    	super(arg1, arg2, arg3);
+    	initialize();
+    }
+    /**
+     * DynamicText constructor comment.
+     * @param arg1 com.loox.jloox.LxContainer
+     * @param arg2 java.lang.String
+     */
+    public DynamicText(LxContainer arg1, String arg2) {
+    	super(arg1, arg2);
+    	initialize();
+    }
+    /**
+     * DynamicText constructor comment.
+     * @param arg1 java.lang.String
+     */
+    public DynamicText(String arg1) {
+    	super(arg1);
+    	initialize();
+    }
+    
+    public Map getCustomColorMap() {
+        return customColorMap;
+    }
+    
+    public void setCustomColorMap(Map m) {
+        customColorMap = m;
+    }
+    
+    public Map getCustomTextMap() {
+        return customTextMap;
+    }
+    
+    public void setCustomTextMap(Map m) {
+        customTextMap = m;
+    }
+    
+    public Map getCustomBlinkMap() {
+        return customBlinkMap;
+    }
+    
+    public void setCustomBlinkMap(Map m) {
+        customBlinkMap = m;
+    }
+    
+    public int getColorPointID(){
+        return colorPointID;
+    }
+    
+    public void setColorPointID(int pointID) {
+        colorPointID = pointID;
+    }
+    
+    public int getBlinkPointID(){
+        return blinkPointID;
+    }
+    
+    public void setBlinkPointID(int pointID) {
+        blinkPointID = pointID;
+    }
 
-public Map getCustomColorMap() {
-    return customColorMap;
-}
-
-public void setCustomColorMap(Map m) {
-    customColorMap = m;
-}
-
-public Map getCustomTextMap() {
-    return customTextMap;
-}
-
-public void setCustomTextMap(Map m) {
-    customTextMap = m;
-}
-
-public Map getCustomBlinkMap() {
-    return customBlinkMap;
-}
-
-public void setCustomBlinkMap(Map m) {
-    customBlinkMap = m;
-}
-
-public int getColorPointID(){
-    return colorPointID;
-}
-
-public void setColorPointID(int pointID) {
-    colorPointID = pointID;
-}
-
-public int getBlinkPointID(){
-    return blinkPointID;
-}
-
-public void setBlinkPointID(int pointID) {
-    blinkPointID = pointID;
-}
-
-public int getControlPointID(){
-    return controlPointID;
-}
-
-public void setControlPointID(int pointID) {
-    controlPointID = pointID;
-}
-public boolean getControlEnabled()
-{
-    return controlEnabled;
-}
-
-public void setControlEnabled(boolean value)
-{
-    controlEnabled = value;
-}
-
-public int getCurrentStateID(){
-    return currentStateID;
-}
-
-public void setCurrentStateID(int pointID) {
-    currentStateID = pointID;
-}
-
-public int getTextBlink(){
-    return blink;
-}
-
-public void setTextBlink(int b) {
-    blink = b;
-}
-
-/**
- * Creation date: (12/18/2001 4:51:49 PM)
- * @return com.cannontech.database.data.lite.LitePoint
- */
-public com.cannontech.database.data.lite.LitePoint getPoint() {	
-	return point;
-}
-/**
- * Creation date: (12/18/2001 12:47:22 PM)
- * @return int
- */
-public int getPointID() {
-	return point.getPointID();
-}
-/**
- * Creation date: (12/18/2001 4:58:59 PM)
- */
-@SuppressWarnings("unchecked")
-private void initialize() {
-	
-	setFont(DEFAULT_FONT);
-	setPaint(DEFAULT_COLOR);
-	point = new com.cannontech.database.data.lite.LitePoint(INVALID_POINT);
-    oldColorMap.put(0, java.awt.Color.green);
-    oldColorMap.put(1, java.awt.Color.red);
-    oldColorMap.put(2, java.awt.Color.white);
-    oldColorMap.put(3, java.awt.Color.yellow);
-    oldColorMap.put(4, java.awt.Color.blue);
-    oldColorMap.put(5, java.awt.Color.cyan);
-    oldColorMap.put(6, java.awt.Color.black);
-    oldColorMap.put(7, java.awt.Color.orange);
-    oldColorMap.put(8, java.awt.Color.magenta);
-    oldColorMap.put(9, java.awt.Color.gray);
-    oldColorMap.put(10, java.awt.Color.pink);
-}
-
-/**
- * Creation date: (1/14/2002 2:33:29 PM)
- * @param f java.awt.Font
- */
-public void setFont(Font f) {
-	super.setFont(f);
-}
-
-/**
- * Creation date: (12/18/2001 4:51:49 PM)
- * @param newPoint com.cannontech.database.data.lite.LitePoint
- */
-public void setPoint(com.cannontech.database.data.lite.LitePoint newPoint) {
-	point = newPoint;
-}
-/**
- * Creation date: (12/18/2001 12:47:22 PM)
- * @param newPointID int
- */
-public void setPointID(int newPointID)  {
-	LitePoint lp = DaoFactory.getPointDao().getLitePoint( newPointID ); 
-	if(lp != null) {
-		point = lp;
-	}
-}
+    public boolean getControlEnabled()
+    {
+        return controlEnabled;
+    }
+    
+    public void setControlEnabled(boolean value)
+    {
+        controlEnabled = value;
+    }
+    
+    public int getCurrentStateID(){
+        return currentStateID;
+    }
+    
+    public void setCurrentStateID(int pointID) {
+        currentStateID = pointID;
+    }
+    
+    public int getTextBlink(){
+        return blink;
+    }
+    
+    public void setTextBlink(int b) {
+        blink = b;
+    }
+    
+    /**
+     * Creation date: (12/18/2001 4:51:49 PM)
+     * @return com.cannontech.database.data.lite.LitePoint
+     */
+    public LitePoint getPoint() {	
+    	return point;
+    }
+    
+    /**
+     * Creation date: (12/18/2001 12:47:22 PM)
+     * @return int
+     */
+    public int getControlPointId() {
+    	return controlPoint.getPointID();
+    }
+    
+    /**
+     * Creation date: (12/18/2001 4:51:49 PM)
+     * @return com.cannontech.database.data.lite.LitePoint
+     */
+    public LitePoint getControlPoint() { 
+        return controlPoint;
+    }
+    
+    /**
+     * Creation date: (12/18/2001 12:47:22 PM)
+     * @return int
+     */
+    public int getPointId() {
+        return point.getPointID();
+    }
+    
+    /**
+     * Creation date: (12/18/2001 4:58:59 PM)
+     */
+    private void initialize() {
+    	
+    	setFont(DEFAULT_FONT);
+    	setPaint(DEFAULT_COLOR);
+    	point = new LitePoint(INVALID_POINT);
+        controlPoint = new LitePoint(INVALID_POINT);
+        oldColorMap.put(0, java.awt.Color.green);
+        oldColorMap.put(1, java.awt.Color.red);
+        oldColorMap.put(2, java.awt.Color.white);
+        oldColorMap.put(3, java.awt.Color.yellow);
+        oldColorMap.put(4, java.awt.Color.blue);
+        oldColorMap.put(5, java.awt.Color.cyan);
+        oldColorMap.put(6, java.awt.Color.black);
+        oldColorMap.put(7, java.awt.Color.orange);
+        oldColorMap.put(8, java.awt.Color.magenta);
+        oldColorMap.put(9, java.awt.Color.gray);
+        oldColorMap.put(10, java.awt.Color.pink);
+    }
+    
+    /**
+     * Creation date: (1/14/2002 2:33:29 PM)
+     * @param f java.awt.Font
+     */
+    public void setFont(Font f) {
+    	super.setFont(f);
+    }
+    
+    /**
+     * Creation date: (12/18/2001 4:51:49 PM)
+     * @param newPoint com.cannontech.database.data.lite.LitePoint
+     */
+    public void setPoint(LitePoint newPoint) {
+    	point = newPoint;
+    }
+    
+    /**
+     * Creation date: (12/18/2001 12:47:22 PM)
+     * @param newPointID int
+     */
+    public void setPointId(int newPointId)  {
+    	LitePoint lp = DaoFactory.getPointDao().getLitePoint( newPointId ); 
+    	if(lp != null) {
+    		point = lp;
+    	}
+    }
+    
+    /**
+     * Creation date: (12/18/2001 4:51:49 PM)
+     * @param newPoint com.cannontech.database.data.lite.LitePoint
+     */
+    public void setControlPoint(LitePoint newPoint) {
+        controlPoint = newPoint;
+    }
+    
+    /**
+     * Creation date: (12/18/2001 12:47:22 PM)
+     * @param newPointID int
+     */
+    public void setControlPointId(int newPointId)  {
+        LitePoint lp = DaoFactory.getPointDao().getLitePoint( newPointId ); 
+        if(lp != null) {
+            controlPoint = lp;
+        }
+    }
 
 	/**
 	 * @see com.cannontech.esub.editor.element.DrawingElement#getDrawing()
@@ -267,7 +299,6 @@ public void setPointID(int newPointID)  {
 		return v;
 	}
 
-	
 	/**
 	 * Returns the displayAttribs.
 	 * @return int
@@ -313,9 +344,8 @@ public void setPointID(int newPointID)  {
 				displayAttribs == PointAttributes.DATA_OFFSET );		
 	}
     
-    @SuppressWarnings("unchecked")
     public List getColors() {
-        List textColors = new ArrayList(6);
+        List<Paint> textColors = new ArrayList<Paint>(6);
         LitePoint point = DaoFactory.getPointDao().getLitePoint(getColorPointID());
         if(point == null) {
             textColors.add(getPaint());
@@ -331,17 +361,16 @@ public void setPointID(int newPointID)  {
                 color = colorObj;
             } 
             else {
-                color = (Color) oldColorMap.get(((LiteState) states.get(i)).getFgColor());
+                color = oldColorMap.get(((LiteState) states.get(i)).getFgColor());
             }
             textColors.add(color);
         }
         return textColors;
     }
     
-    @SuppressWarnings("unchecked")
     public List getTextStrings() {
-        List textStrings = new ArrayList(6);
-        LitePoint point = DaoFactory.getPointDao().getLitePoint(getControlPointID());
+        List<String> textStrings = new ArrayList<String>(6);
+        LitePoint point = DaoFactory.getPointDao().getLitePoint(getPointId());
         if(point == null) {
             textStrings.add(getText());
             return textStrings;
@@ -391,9 +420,7 @@ public void setPointID(int newPointID)  {
             if(customColor != null) {
                 color = customColor;
             }
-            
         }
-        
         setPaint(color);
         setColor(color);
         setLineColor(color);
@@ -411,9 +438,7 @@ public void setPointID(int newPointID)  {
             if(customString != null) {
                 text = customString;
             }
-            
         }
-        
         setText(text);
     }
     
@@ -435,25 +460,24 @@ public void setPointID(int newPointID)  {
 		this.props = props;
 	}
 	
-/**
- * Creation date: (12/17/2001 3:50:28 PM)
- * @param in java.io.InputStream
- * @param version java.lang.String
- */
-public void readFromJLX(InputStream in, String version) throws IOException
-{  
+    /**
+     * Creation date: (12/17/2001 3:50:28 PM)
+     * @param in java.io.InputStream
+     * @param version java.lang.String
+     */
+    public void readFromJLX(InputStream in, String version) throws IOException {
         super.readFromJLX(in, version);
-		PersistDynamicText.getInstance().readFromJLX(this,in);
-}
-/**
- * Creation date: (12/17/2001 3:49:44 PM)
- * @param out java.io.OutputStream
- */
-public void saveAsJLX(OutputStream out) throws IOException 
-{
+        PersistDynamicText.getInstance().readFromJLX(this,in);
+    }
+    
+    /**
+     * Creation date: (12/17/2001 3:49:44 PM)
+     * @param out java.io.OutputStream
+     */
+    public void saveAsJLX(OutputStream out) throws IOException {
         super.saveAsJLX(out);
- 		PersistDynamicText.getInstance().saveAsJLX(this,out);
-}
+        PersistDynamicText.getInstance().saveAsJLX(this,out);
+    }
 
 	/**
 	 * Returns the linkTo.
@@ -493,9 +517,8 @@ public void saveAsJLX(OutputStream out) throws IOException
 		return ELEMENT_ID;
 	}
     
-    @SuppressWarnings("unchecked")
     public List getBlinks() {
-        List textBlinks = new ArrayList(6);
+        List<Integer> textBlinks = new ArrayList<Integer>(6);
         LitePoint point = DaoFactory.getPointDao().getLitePoint(getBlinkPointID());
         if(point == null) {
             return textBlinks;

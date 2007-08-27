@@ -57,7 +57,7 @@ public class GenJLX {
 		
 		DynamicText dynamicText = new DynamicText();
 		dynamicText.setCenter(400.0,95.0);
-		dynamicText.setPointID(146);
+		dynamicText.setPointId(146);
 		dynamicText.setDisplayAttribs(PointAttributes.VALUE | PointAttributes.UOFM);
 		dynamicText.setFont(DEFAULT_FONT);
 		dynamicText.setPaint(Color.PINK);		
