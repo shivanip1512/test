@@ -204,6 +204,28 @@ update LMHardwareBase set LMHardwareTypeID = 0 where LMHardwareTypeID in (select
 delete from YukonlistEntry where YukonDefinitionID = 3100;
 /* @error ignore-end */
 
+
+update State
+set text = 'Normal'
+where 
+	stategroupid = -1 
+	and text = 'AnalogText';
+-- the following inserts will be in the creation scripts starting with 4.0 but 
+-- still needed for upgrading clients
+/* @error ignore-begin */
+INSERT INTO State VALUES(-1, 1, 'Non-update', 1, 6 , 0);
+INSERT INTO State VALUES(-1, 2, 'Rate of Change', 2, 6 , 0);
+INSERT INTO State VALUES(-1, 3, 'Limit Set 1', 3, 6 , 0);
+INSERT INTO State VALUES(-1, 4, 'Limit Set 2', 4, 6 , 0);
+INSERT INTO State VALUES(-1, 5, 'High Reasonability', 5, 6 , 0);
+INSERT INTO State VALUES(-1, 6, 'Low Reasonability', 6, 6 , 0);
+INSERT INTO State VALUES(-1, 7, 'Low Limit 1', 7, 6 , 0);
+INSERT INTO State VALUES(-1, 8, 'Low Limit 2', 8, 6 , 0);
+INSERT INTO State VALUES(-1, 9, 'High Limit 1', 9, 6 , 0);
+INSERT INTO State VALUES(-1, 10, 'High Limit 2', 10, 6 , 0);
+/* @error ignore-end */
+
+
 /**************************************************************/
 /* VERSION INFO                                               */
 /*   Automatically gets inserted from build script            */
