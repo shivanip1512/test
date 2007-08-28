@@ -30,15 +30,17 @@
 	</table>
 	
 	<br />
+  
+  <ct:widgetContainer deviceId="${deviceId}" identify="false">
 	
 	<div class="widgetColumns">
 		<div class="left">
-			<ct:widget height="75px" bean="meterInformationWidget" identify="false" deviceId="${deviceId}"/>
+			<ct:widget height="75px" bean="meterInformationWidget"/>
 					
-			<ct:widget bean="meterReadingsWidget" identify="false" deviceId="${deviceId}"/>
+			<ct:widget bean="meterReadingsWidget"/>
 
 			<c:if test="${mspSupported}">
-				<ct:widget height="185px" bean="accountInformationWidget" identify="false" deviceId="${deviceId}"/>
+				<ct:widget height="185px" bean="accountInformationWidget"/>
 			</c:if>
 		
 			<cti:titledContainer title="Actions">
@@ -78,18 +80,20 @@
 		</div>
 		<div class="right">
 
-			<ct:widget bean="trendWidget" identify="false" deviceId="${deviceId}"/>
+			<ct:widget bean="trendWidget"/>
 			<c:if test="${disconnectSupported}">
-				<ct:widget bean="disconnectMeterWidget" identify="false" deviceId="${deviceId}"/>
+				<ct:widget bean="disconnectMeterWidget"/>
 			</c:if>
 	
 			<c:if test="${outageSupported}">
-				<ct:widget bean="meterOutagesWidget" identify="false" deviceId="${deviceId}"/>
+				<ct:widget bean="meterOutagesWidget"/>
 			</c:if>
 
 		</div>
 	</div>
+  
+  </ct:widgetContainer>
 	<div style="clear: both"></div>
 	
-	<ct:dataUpdateEnabler/>
+  <ct:dataUpdateEnabler/>
 </cti:standardPage>
