@@ -260,6 +260,10 @@ public class InventoryManager extends HttpServlet {
         else if (action.equalsIgnoreCase("ShipmentSNRangeAdd"))
             addSerialNumbersForShipment( user, req, session );
         
+        //so ugly
+        ArrayList filterList = (ArrayList) session.getAttribute(ServletUtils.FILTER_INVEN_LIST);
+        if( redirect.compareTo("/operator/Hardware/Inventory.jsp") == 0 && (filterList == null || filterList.size() < 1))
+            redirect = "/operator/Hardware/Filter.jsp";
 		resp.sendRedirect( redirect );
 	}
 	
