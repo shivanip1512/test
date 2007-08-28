@@ -82,7 +82,6 @@ public class TextColorPointPanel extends DataInputPanel implements ActionListene
     private JButton[] buttons = new JButton[12];
     private JLabel[] stateLabels = new JLabel[12];
     private HashMap oldColorMap;
-    private JCheckBox controlCheckBox;
     
     
 /**
@@ -103,18 +102,9 @@ private javax.swing.JPanel getPointPanel() {
             pointPanel.setName("PointPanel");
             pointPanel.setLayout(new java.awt.GridBagLayout());
             pointPanel.setBorder(new TitleBorder("Point Selection:"));
-
-            
-            java.awt.GridBagConstraints constraintsControlCheckBox = new java.awt.GridBagConstraints();
-            constraintsControlCheckBox.gridx = 0; constraintsControlCheckBox.gridy = 0;
-            constraintsControlCheckBox.fill = java.awt.GridBagConstraints.HORIZONTAL;
-            constraintsControlCheckBox.gridwidth = 1;
-            constraintsControlCheckBox.anchor = java.awt.GridBagConstraints.WEST;
-            constraintsControlCheckBox.insets = new java.awt.Insets(4, 4, 4, 4);
-            getPointPanel().add(getControlCheckBox(), constraintsControlCheckBox);
              
             java.awt.GridBagConstraints constraintsPointSelectionPanel = new java.awt.GridBagConstraints();
-            constraintsPointSelectionPanel.gridx = 0; constraintsPointSelectionPanel.gridy = 1;
+            constraintsPointSelectionPanel.gridx = 0; constraintsPointSelectionPanel.gridy = 0;
             constraintsPointSelectionPanel.fill = java.awt.GridBagConstraints.BOTH;
             constraintsPointSelectionPanel.weightx = 1.0;
             constraintsPointSelectionPanel.weighty = 1.0;
@@ -310,21 +300,6 @@ public PointSelectionPanel getPointSelectionPanel() {
         }
     }
     return pointSelectionPanel;
-}
-
-private JCheckBox getControlCheckBox()
-{
-    if (controlCheckBox == null) {
-        try {
-            controlCheckBox = new JCheckBox("Enable Control");   
-            controlCheckBox.setName("ControlCheckBox");
-            controlCheckBox.setSelected(true);
-
-        } catch (java.lang.Throwable ivjExc) {
-            handleException(ivjExc);
-        }
-    }
-    return controlCheckBox;
 }
 
 public HashMap getCustomColorMap() {
@@ -1188,7 +1163,7 @@ private JButton getResetButton()
             resetButton = new JButton();
             resetButton.setName("resetButton");
             resetButton.setText("Reset");
-            resetButton.setPreferredSize(new Dimension(60, 30));
+            resetButton.setPreferredSize(new Dimension(80, 30));
         } catch (java.lang.Throwable ivjExc) {
             handleException(ivjExc);
         }

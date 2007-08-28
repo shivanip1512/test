@@ -77,10 +77,12 @@ public class PersistDynamicText extends BasePersistElement {
                     int blinkPointID = LxSaveUtils.readInt(in);
                     Map customBlinkMap = PersistUtils.readIntIntMap(in);
                     int controlPointId = LxSaveUtils.readInt(in);
+                    int currentStateId = LxSaveUtils.readInt(in);
                     elem.setTextBlink(blink);
                     elem.setBlinkPointID(blinkPointID);
                     elem.setCustomBlinkMap(customBlinkMap);
                     elem.setControlPointId(controlPointId);
+                    elem.setCurrentStateID(currentStateId);
                 }
                 break;
 				
@@ -94,18 +96,19 @@ public class PersistDynamicText extends BasePersistElement {
 	 * @see com.cannontech.esub.element.persist.PersistElement#saveAsJLX(DrawingElement, OutputStream)
 	 */
 	public void saveAsJLX(DrawingElement drawingElem, OutputStream out, int version) throws IOException {
-			DynamicText elem = (DynamicText) drawingElem;
-			LxSaveUtils.writeInt(out, elem.getPointId());
-  			LxSaveUtils.writeInt(out, elem.getDisplayAttribs());
-   			LxSaveUtils.writeString(out, elem.getLinkTo());
-            LxSaveUtils.writeBoolean(out, elem.getControlEnabled());
-            LxSaveUtils.writeInt(out, elem.getColorPointID());
-            PersistUtils.writeIntColorMap(out, elem.getCustomColorMap());
-            PersistUtils.writeIntStringMap(out, elem.getCustomTextMap());
-            LxSaveUtils.writeInt(out, elem.getTextBlink());
-            LxSaveUtils.writeInt(out, elem.getBlinkPointID());
-            PersistUtils.writeIntIntMap(out, elem.getCustomBlinkMap());
-            LxSaveUtils.writeInt(out, elem.getControlPointId());
+		DynamicText elem = (DynamicText) drawingElem;
+		LxSaveUtils.writeInt(out, elem.getPointId());
+		LxSaveUtils.writeInt(out, elem.getDisplayAttribs());
+		LxSaveUtils.writeString(out, elem.getLinkTo());
+        LxSaveUtils.writeBoolean(out, elem.getControlEnabled());
+        LxSaveUtils.writeInt(out, elem.getColorPointID());
+        PersistUtils.writeIntColorMap(out, elem.getCustomColorMap());
+        PersistUtils.writeIntStringMap(out, elem.getCustomTextMap());
+        LxSaveUtils.writeInt(out, elem.getTextBlink());
+        LxSaveUtils.writeInt(out, elem.getBlinkPointID());
+        PersistUtils.writeIntIntMap(out, elem.getCustomBlinkMap());
+        LxSaveUtils.writeInt(out, elem.getControlPointId());
+        LxSaveUtils.writeInt(out, elem.getCurrentStateID());
 	}
 
 }

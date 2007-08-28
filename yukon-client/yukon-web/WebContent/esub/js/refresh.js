@@ -92,6 +92,7 @@ function refresh(evt) {
 	}
 	
 	updateAllTables();
+	updateAllBlinkers();
 	
 	setInterval('updateAllPoints()', pointRefreshRate);
 	setInterval('updateAllGraphs()', graphRefreshRate); 
@@ -301,6 +302,7 @@ function updateNode(node) {
     if (node.getAttribute('currentstateid')) {
     	
 	    var currentStatePointID = node.getAttribute('currentstateid');
+	    //alert("csi " + node.getAttribute('currentstateid'));
 	    if(currentStatePointID > 0){
 	        url = '/servlet/DynamicTextServlet' + '?' + 'id=' + currentStatePointID + '&dattrib=4096';
 	        getURL(url, tfn);
@@ -348,7 +350,6 @@ function updateNode(node) {
 function updateImage(node) {
 	var pointId = node.getAttribute('id');
 	if( !isNaN(pointId) ) {
-		// dattrib = 1 is value attribute, TODO: don't hardcode this?
 		url = '/servlet/DynamicTextServlet' + '?' + 'id=' + pointId + '&dattrib=4096';
 		getURL(url, fn);		
 	}
@@ -356,7 +357,9 @@ function updateImage(node) {
 	function fn(obj) {
 		if(obj.content) {
 			var value = obj.content;
+//			alert(value);
 			var imageName = node.getAttribute('image'+trim(value));			
+//			alert(imageName);
 			node.setAttributeNS(xlinkNS, 'xlink:\href', imageName);
 		}
 	}

@@ -493,11 +493,7 @@ private void initialize() {
  */
 public boolean isInputValid() {
 	LitePoint pt = getPointSelectionPanel().getSelectedPoint();
-	return (pt != null && 
-			(pt.getPointType() == PointTypes.STATUS_POINT ||
-		     pt.getPointType() == PointTypes.CALCULATED_STATUS_POINT ||
-             pt.getPointType() == PointTypes.CALCULATED_POINT ||
-             pt.getPointType() == PointTypes.ANALOG_POINT));
+	return (pt != null);
 }
 /**
  * main entrypoint - starts the part when it is run as an application

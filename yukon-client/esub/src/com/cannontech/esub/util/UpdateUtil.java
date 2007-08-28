@@ -37,7 +37,7 @@ public class UpdateUtil {
             
             LitePoint lp = DaoFactory.getPointDao().getLitePoint(pointID);
             
-            if(lp.getPointType() == PointTypes.STATUS_POINT)
+            if(lp.getPointType() == PointTypes.STATUS_POINT || lp.getPointType() == PointTypes.CALCULATED_STATUS_POINT)
             {
                 PointValueHolder pData = dynamicDataSource.getPointValue(pointID);
         
@@ -224,7 +224,7 @@ public class UpdateUtil {
     		if( (displayAttrib & PointAttributes.STATE_TEXT) != 0 ) {
     			LitePoint lp = DaoFactory.getPointDao().getLitePoint(pointID);
                 
-                if(lp.getPointType() == PointTypes.STATUS_POINT){
+                if(lp.getPointType() == PointTypes.STATUS_POINT || lp.getPointType() == PointTypes.CALCULATED_STATUS_POINT){
                 
                     PointValueHolder pData = dynamicDataSource.getPointValue(pointID);
                     
@@ -250,8 +250,7 @@ public class UpdateUtil {
             if( (displayAttrib & PointAttributes.CURRENT_STATE) != 0 ) {
                 LitePoint lp = DaoFactory.getPointDao().getLitePoint(pointID);
                 
-                if(lp.getPointType() == PointTypes.STATUS_POINT)
-                {
+                if(lp.getPointType() == PointTypes.STATUS_POINT  || lp.getPointType() == PointTypes.CALCULATED_STATUS_POINT) {
                     PointValueHolder pData = dynamicDataSource.getPointValue(pointID);
             
                     if (pData != null) {

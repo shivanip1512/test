@@ -983,11 +983,13 @@ public void setValue(Object o) {
     }else {
         getColorPointCheckBox().setSelected(true);
         getColorPointButton().setEnabled(true);
+        getColorPointLabel().setEnabled(true);
         getColorButton().setEnabled(false);
         getColorButton().setBackground(java.awt.Color.LIGHT_GRAY);
         LitePoint litePoint = DaoFactory.getPointDao().getLitePoint(dynamicText.getColorPointID());
         getTextColorPointPanel().getPointSelectionPanel().selectPoint(litePoint);
         getColorPointLabel().setText(litePoint.getPointName());
+        getColorPointLabel().setForeground(Color.black);
     }
     
     if(dynamicText.getBlinkPointID() < 0) {
@@ -996,11 +998,12 @@ public void setValue(Object o) {
     }else {
         getBlinkPointCheckBox().setSelected(true);
         getBlinkPointButton().setEnabled(true);
+        getBlinkPointLabel().setEnabled(true);
         getBlinkCheckBox().setEnabled(false);
         LitePoint litePoint = DaoFactory.getPointDao().getLitePoint(dynamicText.getBlinkPointID());
         getBlinkPointPanel().getPointSelectionPanel().selectPoint(litePoint);
         getBlinkPointLabel().setText(litePoint.getPointName());
-
+        getBlinkPointLabel().setForeground(Color.black);
     }
 }
 

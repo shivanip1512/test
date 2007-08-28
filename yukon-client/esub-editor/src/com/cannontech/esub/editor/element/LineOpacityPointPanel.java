@@ -845,6 +845,7 @@ private JButton getResetButton()
             resetButton = new JButton();
             resetButton.setName("resetButton");
             resetButton.setText("Reset");
+            resetButton.setPreferredSize(new Dimension(60, 30));
 
         } catch (java.lang.Throwable ivjExc) {
             handleException(ivjExc);
