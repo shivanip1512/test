@@ -1,7 +1,7 @@
 <?xml version="1.0" encoding="UTF-8"?>
 <!DOCTYPE beans PUBLIC "-//SPRING//DTD BEAN//EN" "http://www.springframework.org/dtd/spring-beans.dtd">
-<!-- logging-servlet.xml controls the mapping of three urls to controllers: logMenuController, logViewController -->
-<!-- and LogDownloadController. These controllers are resolved to their corresponding jsp view -->
+<!-- logging-servlet.xml controls the mapping of four urls to controllers: logMenuController, logViewController -->
+<!-- LogTailController, and LogDownloadController. These controllers are resolved to their corresponding jsp view -->
 
 <beans>
     <!-- create a bean for LogMenuController.java -->
@@ -13,6 +13,7 @@
     <!-- create a bean for LogViewController.java -->
     <bean id="logViewController" class="com.cannontech.web.logging.LogViewController">
       <property name="authDao" ref="authDao"/>
+      <property name="dateFormattingService" ref="dateFormattingService" />
     </bean>
     
     <!-- create a bean for LogDownloadController.java -->
@@ -20,12 +21,23 @@
       <property name="authDao" ref="authDao"/>
     </bean>
     
+    <!-- create a bean for LogTailController.java -->
+    <bean id="logTailController" class="com.cannontech.web.logging.LogTailController">
+      <property name="authDao" ref="authDao"/>
+      <property name="dateFormattingService" ref="dateFormattingService" />
+    </bean>
+    
+    <!-- create a bean for LogTailUpdaterController.java -->
+    <bean id="logTailUpdaterController" class="com.cannontech.web.logging.LogTailUpdaterController">
+      <property name="authDao" ref="authDao"/>
+      <property name="dateFormattingService" ref="dateFormattingService" />
+    </bean>
+    
     <!-- use jsp page for view -->
     <bean id="viewResolver"
       class="org.springframework.web.servlet.view.UrlBasedViewResolver">
         <property name="viewClass" value="org.springframework.web.servlet.view.JstlView"/>
         <property name="prefix" value="/WEB-INF/pages/logging/"/>
-        <property name="suffix" value=".jsp"/>
     </bean>
    
    	 <!-- create url mappings to controllers: -->
@@ -35,14 +47,22 @@
           <property name="urlMap">
                <map>
                     <entry key="/">
-                         <ref bean="logMenuController" />
+                        <ref bean="logMenuController" />
                     </entry>
                     <entry key="/view/*">
-                         <ref bean="logViewController" />
+                        <ref bean="logViewController" />
                     </entry>  
                     <entry key="/download/*">
-                         <ref bean="logDownloadController" />
+                        <ref bean="logDownloadController" />
+                    </entry>
+                    <entry key="/tail/update/*">
+                    	<ref bean="logTailUpdaterController" />
                     </entry>    
+                    <entry key="/tail/*">
+                        <ref bean="logTailController" />
+                    </entry>
+                    
+                    
                </map>
           </property>
           <property name="interceptors">

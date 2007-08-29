@@ -7,6 +7,7 @@ import javax.servlet.http.HttpServletResponse;
 
 import org.apache.log4j.Logger;
 import org.springframework.util.FileCopyUtils;
+import org.springframework.web.bind.ServletRequestUtils;
 import org.springframework.web.servlet.ModelAndView;
 
 import com.cannontech.clientutils.YukonLogManager;
@@ -37,15 +38,16 @@ public class LogDownloadController extends LogController {
         authDao.verifyRole(ServletUtil.getYukonUser(request), AdministratorRole.ROLEID);
         response.setContentType("text/plain");
         
-        //get the log file from request using 
-        //base class method getLogFile()
-        File logFile = getLogFile(request);
-        
-        //set response header to the log filename
-        response.setHeader("Content-Disposition", "attachment; filename=" + logFile.getName());
+        String root = ServletRequestUtils.getStringParameter(request, "root", "/");
 
-        //Download the file thru the response object
-        FileCopyUtils.copy(logFile.toURL().openStream(), response.getOutputStream());
+        File logFile = getLogFile(request, root);
+        if(logFile != null){
+            //set response header to the log filename
+            response.setHeader("Content-Disposition", "attachment; filename=" + logFile.getName());
+
+            //Download the file thru the response object
+            FileCopyUtils.copy(logFile.toURL().openStream(), response.getOutputStream());
+        }
         
         return null;
     }

@@ -6,11 +6,9 @@ import java.io.IOException;
 import javax.servlet.http.HttpServletRequest;
 
 import org.apache.commons.lang.StringUtils;
-import org.apache.log4j.Logger;
 import org.springframework.web.servlet.mvc.AbstractController;
 import org.springframework.web.util.UrlPathHelper;
 
-import com.cannontech.clientutils.YukonLogManager;
 import com.cannontech.common.util.CtiUtilities;
 import com.cannontech.core.dao.AuthDao;
 
@@ -24,40 +22,51 @@ import com.cannontech.core.dao.AuthDao;
  */
 public abstract class LogController extends AbstractController {
     protected AuthDao authDao;
-    //create a logger for this class
-    private Logger logger = YukonLogManager.getLogger(LogController.class);
+
     //get the local log directory
-    private File localDir = new File(CtiUtilities.getYukonBase(), "Server/Log");
+    protected File localDir = new File(CtiUtilities.getYukonBase(), "Server/Log");
     
     /**
-     * getLogFile returns a log file requested or null if not found.
+     * Gets the correct file obj from the request and returns it.
+     * 
      * @param request
-     * @param response
-     * @return The log file requested
+     * @param root
+     * @return
+     * @throws IOException
      */
-    protected File getLogFile(HttpServletRequest request) throws IOException {
-    
+    protected File getLogFile(HttpServletRequest request, String root) throws IOException {
+        
+        File currentDir = null;
+        if(!root.equals("/")){
+            currentDir = new File(localDir, root);
+        }else{
+            currentDir = new File(localDir, "");
+        }
+        String fileName = this.getFileName(request);
+        File logFile = new File(currentDir, fileName);
+        
+        return logFile;
+    }
+
+    /**
+     * Gets the given file name from the request object
+     * 
+     * @param request
+     * @return
+     * @throws IOException
+     */
+    protected String getFileName(HttpServletRequest request) throws IOException {
+
         //get requested url, convert to a file, get the filename
         UrlPathHelper helper = new UrlPathHelper();
         helper.setUrlDecode(true);
-        String urlString = helper.getRequestUri(request);
-        String logFileName = StringUtils.substringAfterLast(urlString, "/");
-  
-        // get the file by passing directory and filename
-        File localLogFile = new File(getLocalDir(), logFileName);
+        
+        String fileNameAndParams = helper.getPathWithinServletMapping(request);
+        String fileName = StringUtils.substringAfterLast(fileNameAndParams, "/");
+        
+        return fileName;
+    }
     
-        //make sure the file exists before trying to return it
-        if (localLogFile.canRead()) {
-            return localLogFile;        
-        } else {
-            logger.error("The following log file does not exist: " + logFileName);
-            throw new IOException();
-        }
-    }
-
-    public File getLocalDir() {
-        return localDir;
-    }
 
     public void setLocalDir(File localDir) {
         this.localDir = localDir;
