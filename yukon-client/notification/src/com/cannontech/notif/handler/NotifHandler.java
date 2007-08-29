@@ -41,7 +41,7 @@ public abstract class NotifHandler extends MessageHandler {
         try {
             customerId = contactable.getCustomer().getCustomerID();
         } catch (UnknownCustomerException e) {
-            CTILogger.warn("Couldn't find customer for contactable: " + contactable, e);
+            CTILogger.debug("Couldn't find customer for contactable while writing to ActivityLogger: " + contactable);
             customerId = -1;
         }
         ActivityLogger.logEvent(userId, -1, energyCompanyId, customerId, -1, action, description);
@@ -58,7 +58,7 @@ public abstract class NotifHandler extends MessageHandler {
         try {
             customerId = contactable.getCustomer().getCustomerID();
         } catch (UnknownCustomerException e) {
-            CTILogger.warn("Couldn't find customer for contactable: " + contactable, e);
+            CTILogger.debug("Couldn't find customer for contactable while writing to ActivityLogger: " + contactable);
             customerId = -1;
         }
         ActivityLogger.logEvent(userId, -1, energyCompanyId, customerId, -1, action, description);
