@@ -41,5 +41,14 @@
           <ref bean="energyCompanyDao" />
       </property>
   </bean>
+
+  <bean id="dateFormattingService"
+      class="com.cannontech.core.service.impl.DateFormattingServiceImpl" abstract="false"
+      singleton="true" lazy-init="default" autowire="default" dependency-check="default">
+	  <property name="yukonUserDao">
+	  	  <ref bean="yukonUserDao" />
+	  </property>
+
+  </bean>
   
 </beans>

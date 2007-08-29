@@ -306,7 +306,7 @@
     <bean id="formatDateTagPrototype" class="com.cannontech.web.util.FormatDateTag"
     	abstract="false" singleton="false" lazy-init="default" autowire="default"
         dependency-check="default">
-        <property name="yukonUserDao" ref="yukonUserDao"/>
+        <property name="dateFormattingService" ref="dateFormattingService"/>
     </bean>	
     
 </beans>
