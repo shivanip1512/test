@@ -8,6 +8,7 @@ import javax.servlet.jsp.JspException;
 import org.springframework.beans.factory.annotation.Configurable;
 
 import com.cannontech.core.service.DateFormattingService;
+import com.cannontech.core.service.DateFormattingService.DateFormatEnum;
 import com.cannontech.database.data.lite.LiteYukonUser;
 import com.cannontech.web.taglib.YukonTagSupport;
 
@@ -17,13 +18,15 @@ public class FormatDateTag extends YukonTagSupport {
     private DateFormattingService dateFormattingService;
     private Date value;
     private String type;
+    private DateFormatEnum enumValue;
     private String var;
     
     @Override
     public void doTag() throws JspException, IOException {
         final LiteYukonUser user = this.getYukonUser();
       
-        String formattedDate = dateFormattingService.formatDate(value, user, type);
+        enumValue = DateFormattingService.DateFormatEnum.valueOf(type);
+        String formattedDate = dateFormattingService.formatDate(value, enumValue, user);
         
         if(var == null){
            getJspContext().getOut().print(formattedDate);
@@ -35,11 +38,11 @@ public class FormatDateTag extends YukonTagSupport {
     public void setValue(final Date value) {
         this.value = value;
     }
-    
+
     public void setType(final String type) {
         this.type = type;
     }
-    
+   
     public void setVar(final String var) {
         this.var = var;
     }

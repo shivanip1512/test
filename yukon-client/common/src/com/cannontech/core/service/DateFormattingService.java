@@ -6,6 +6,26 @@ import java.util.Date;
 import com.cannontech.database.data.lite.LiteYukonUser;
 
 public interface DateFormattingService {
-    public String formatDate(Date date, LiteYukonUser user, String type);
-    public DateFormat getDateFormatter(LiteYukonUser user, String type);
+    
+    static public enum DateFormatEnum {
+        TIME("HH:mm"), 
+        DATE("MM/dd/yyyy"), 
+        BOTH("MM/dd/yyyy HH:mm:ss z");
+
+        private final String format;
+
+        private DateFormatEnum(String format) {
+            this.format = format;
+        }
+
+        public String getFormat() {
+            return format;
+        }
+    }
+    
+//    public String formatDate(Date date, String type, LiteYukonUser user);
+    public String formatDate(Date date, DateFormatEnum type, LiteYukonUser user);
+    
+    public DateFormat getDateFormatter(DateFormatEnum type, LiteYukonUser user);
+//    public DateFormat getDateFormatter(String type, LiteYukonUser user);
 }
