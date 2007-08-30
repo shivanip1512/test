@@ -6,8 +6,8 @@
 *
 * PVCS KEYWORDS:
 * ARCHIVE      :  $Archive:   Z:/SOFTWAREARCHIVES/YUKON/DISPATCH/ctivangogh.cpp-arc  $
-* REVISION     :  $Revision: 1.169 $
-* DATE         :  $Date: 2007/08/16 20:52:13 $
+* REVISION     :  $Revision: 1.170 $
+* DATE         :  $Date: 2007/08/30 21:37:39 $
 *
 * Copyright (c) 1999, 2000, 2001 Cannon Technologies Inc. All rights reserved.
 *-----------------------------------------------------------------------------*/
@@ -1321,7 +1321,7 @@ int  CtiVanGogh::commandMsgHandler(CtiCommandMsg *Cmd)
 
                 CtiServer::ptr_type sptrCM = mConnectionTable.find((long)Cmd->getConnectionHandle());
 
-                if(sptrCM && pMulti && pMulti->getCount())
+                if(sptrCM && pMulti)
                     sptrCM->WriteConnQue(pMulti, 0, true, payload_status);
                 else delete
                     pMulti;
@@ -1360,7 +1360,7 @@ int  CtiVanGogh::commandMsgHandler(CtiCommandMsg *Cmd)
 
                 CtiServer::ptr_type sptrCM = mConnectionTable.find((long)Cmd->getConnectionHandle());
 
-                if(sptrCM && pMulti && pMulti->getCount())
+                if(sptrCM && pMulti)
                 {
                     sptrCM->WriteConnQue(pMulti, 0, true, payload_status);
                 }
