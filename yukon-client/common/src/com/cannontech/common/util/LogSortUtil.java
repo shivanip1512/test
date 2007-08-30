@@ -16,7 +16,12 @@ import java.util.regex.Pattern;
 
 import org.apache.commons.lang.StringUtils;
 
+import com.cannontech.core.service.DateFormattingService;
+import com.cannontech.core.service.PointFormattingService;
+import com.cannontech.core.service.DateFormattingService.DateFormatEnum;
+
 public final class LogSortUtil {
+
     /**
      * ListUtil constructor comment.
      */
@@ -34,7 +39,7 @@ public final class LogSortUtil {
      * the pattern being pulled out of the String and setting up a map with the String
      * as the key and the snipit acting as the value.
      */
-    public static Map<String, String> returnSearchMap(List<File> fileList, Pattern regexPattern) throws Exception{
+    public static Map<String, String> returnSearchMap(List<File> fileList, Pattern regexPattern){
     	Map<String, String> mapResults = new HashMap<String, String>();
     	for (File file : fileList) {
 
@@ -59,10 +64,7 @@ public final class LogSortUtil {
                 }
             }
     	}
-    	if(mapResults.isEmpty()){
-    		throw new Exception("Invalid Pattern Used for returnSearchMap");
-    	}
-    	
+    	    	
     	return mapResults;
     }
 
@@ -86,7 +88,12 @@ public final class LogSortUtil {
                 long lastModL = file.lastModified();
                 Date lastModDate = new Date(lastModL);
             
-                DateFormat df = new SimpleDateFormat("MM/dd/yyyy");
+                /* DateFormat is the time at the local instance.  Keep in mind no timezones are 
+                 * used since we want the time to be consistent with the time the log files are 
+                 * being writen.
+                 */
+                DateFormat df = new SimpleDateFormat(DateFormattingService.DateFormatEnum.DATE.getFormat());
+         
                 String lastMod = null;
                 if( lastModDate != null) {
                     lastMod = df.format(lastModDate);
@@ -108,8 +115,8 @@ public final class LogSortUtil {
      * 
      * This function takes in a searchMap and returns a sorted list 
      */
-    public static SortedMap<String, List<String>> sortSearchMap(Map<String, String> searchMap, File localDir){
-       return sortSearchMap(searchMap, localDir, 0);
+    public static SortedMap<String, List<String>> sortSearchMap(Map<String, String> searchMap){
+       return sortSearchMap(searchMap, 0);
     }
     
     /**
@@ -120,7 +127,7 @@ public final class LogSortUtil {
      * @param charTruncate
      * @return
      */
-    public static SortedMap<String, List<String>> sortSearchMap(Map<String, String> searchMap, File localDir, int charTruncate){
+    public static SortedMap<String, List<String>> sortSearchMap(Map<String, String> searchMap, int charTruncate){
         SortedMap<String, List<String>> sortResults = new TreeMap<String, List<String>>();
         List<Map.Entry<String, String>> sortedList = new ArrayList<Map.Entry<String, String>>(searchMap.entrySet());
 
@@ -129,7 +136,9 @@ public final class LogSortUtil {
             String key = entry.getValue();
             String logName = entry.getKey();
             if(!(key.equalsIgnoreCase("Directories"))){
-                // Sets up the key that is used for adding and retrieving information from the SortedMap
+                /* Sets up the key that is used for adding and retrieving information from the SortedMap.
+                 * This part of the could is to clean up the header so it can be used right from the map
+                 */
                 key = entry.getValue().substring(0, entry.getValue().length() - charTruncate);
                 if((String.valueOf(key.charAt(key.length()-1))).equals("_")){
                     key = key.substring(0, key.length()-1);

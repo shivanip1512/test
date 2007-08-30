@@ -61,7 +61,7 @@ public class LogViewController extends LogController {
 
             // Sets up the last modified and file length to be shown
             long lastModL = logFile.lastModified();
-            String lastMod = dateFormattingService.formatDate(new Date(lastModL), yukonUser, "both");
+            String lastMod = dateFormattingService.formatDate(new Date(lastModL), DateFormattingService.DateFormatEnum.BOTH, yukonUser);
             long fileLengthL = logFile.length();
             String fileLength = String.valueOf(fileLengthL/1024);
             

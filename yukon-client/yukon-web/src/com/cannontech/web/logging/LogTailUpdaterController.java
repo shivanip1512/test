@@ -54,7 +54,7 @@ public class LogTailUpdaterController extends LogController {
             // Setting up the last modified variable for the JSON
         	long lastModL = logFile.lastModified();
             Date lastMod = new Date(lastModL);
-            String lastModStr = dateFormattingService.formatDate(lastMod, yukonUser, "both");
+            String lastModStr = dateFormattingService.formatDate(lastMod, DateFormattingService.DateFormatEnum.BOTH, yukonUser);
             jsonUpdates.put("fileDateMod", lastModStr);
             
             // Setting up the file length variable for the JSON
