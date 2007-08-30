@@ -90,8 +90,7 @@ public class ESubDrawingUpdater extends TimerTask implements DrawingUpdater {
                         }
 
                         if (isUpdateGraphs() && lxComponent instanceof DynamicGraphElement) {
-                            change = updateDynamicGraphElement(change,
-                                                               lxComponent);
+                            change = updateDynamicGraphElement(change, lxComponent);
                         }
 
                         if (lxComponent instanceof CurrentAlarmsTable) {
@@ -129,8 +128,7 @@ public class ESubDrawingUpdater extends TimerTask implements DrawingUpdater {
         int arrowPoint = le.getArrowPointID();
         int opacityPoint = le.getOpacityPointID();
         if (colorPoint > 0) {
-            LitePoint liteColorPoint = DaoFactory.getPointDao()
-                                                 .getLitePoint(colorPoint);
+            LitePoint liteColorPoint = DaoFactory.getPointDao().getLitePoint(colorPoint);
 
             if (liteColorPoint != null) {
                 if (liteColorPoint.getPointType() == PointTypes.ANALOG_POINT 
@@ -152,9 +150,7 @@ public class ESubDrawingUpdater extends TimerTask implements DrawingUpdater {
                     PointValueHolder pData = dynamicDataSource.getPointValue(liteColorPoint.getLiteID());
 
                     if (pData != null) {
-                        LiteState ls = DaoFactory.getStateDao()
-                                                 .getLiteState(liteColorPoint.getStateGroupID(),
-                                                               (int) pData.getValue());
+                        LiteState ls = DaoFactory.getStateDao().getLiteState(liteColorPoint.getStateGroupID(), (int) pData.getValue());
                         if (ls != null) {
                             le.setCurrentColorState(ls);
                             le.updateColor();
@@ -165,8 +161,7 @@ public class ESubDrawingUpdater extends TimerTask implements DrawingUpdater {
             }
         }
         if (thicknessPoint > 0) {
-            LitePoint liteThicknessPoint = DaoFactory.getPointDao()
-                                                     .getLitePoint(thicknessPoint);
+            LitePoint liteThicknessPoint = DaoFactory.getPointDao().getLitePoint(thicknessPoint);
 
             if (liteThicknessPoint != null) {
                 if (liteThicknessPoint.getPointType() == PointTypes.ANALOG_POINT 
@@ -186,9 +181,7 @@ public class ESubDrawingUpdater extends TimerTask implements DrawingUpdater {
                     PointValueHolder pData = dynamicDataSource.getPointValue(liteThicknessPoint.getLiteID());
 
                     if (pData != null) {
-                        LiteState ls = DaoFactory.getStateDao()
-                                                 .getLiteState(liteThicknessPoint.getStateGroupID(),
-                                                               (int) pData.getValue());
+                        LiteState ls = DaoFactory.getStateDao().getLiteState(liteThicknessPoint.getStateGroupID(), (int) pData.getValue());
                         if (ls != null) {
                             le.setCurrentThicknessState(ls);
                             le.updateThickness();
@@ -199,8 +192,7 @@ public class ESubDrawingUpdater extends TimerTask implements DrawingUpdater {
             }
         }
         if (arrowPoint > 0) {
-            LitePoint liteArrowPoint = DaoFactory.getPointDao()
-                                                 .getLitePoint(arrowPoint);
+            LitePoint liteArrowPoint = DaoFactory.getPointDao().getLitePoint(arrowPoint);
 
             if (liteArrowPoint != null) {
                 if (liteArrowPoint.getPointType() == PointTypes.ANALOG_POINT 
@@ -220,9 +212,7 @@ public class ESubDrawingUpdater extends TimerTask implements DrawingUpdater {
                     PointValueHolder pData = dynamicDataSource.getPointValue(liteArrowPoint.getLiteID());
 
                     if (pData != null) {
-                        LiteState ls = DaoFactory.getStateDao()
-                                                 .getLiteState(liteArrowPoint.getStateGroupID(),
-                                                               (int) pData.getValue());
+                        LiteState ls = DaoFactory.getStateDao().getLiteState(liteArrowPoint.getStateGroupID(), (int) pData.getValue());
                         if (ls != null) {
                             le.setCurrentArrowState(ls);
                             le.updateArrow();
@@ -233,8 +223,7 @@ public class ESubDrawingUpdater extends TimerTask implements DrawingUpdater {
             }
         }
         if (opacityPoint > 0) {
-            LitePoint liteOpacityPoint = DaoFactory.getPointDao()
-                                                   .getLitePoint(opacityPoint);
+            LitePoint liteOpacityPoint = DaoFactory.getPointDao().getLitePoint(opacityPoint);
 
             if (liteOpacityPoint != null) {
                 if (liteOpacityPoint.getPointType() == PointTypes.ANALOG_POINT 
@@ -254,9 +243,7 @@ public class ESubDrawingUpdater extends TimerTask implements DrawingUpdater {
                     PointValueHolder pData = dynamicDataSource.getPointValue(liteOpacityPoint.getLiteID());
 
                     if (pData != null) {
-                        LiteState ls = DaoFactory.getStateDao()
-                                                 .getLiteState(liteOpacityPoint.getStateGroupID(),
-                                                               (int) pData.getValue());
+                        LiteState ls = DaoFactory.getStateDao().getLiteState(liteOpacityPoint.getStateGroupID(), (int) pData.getValue());
                         if (ls != null) {
                             le.setCurrentOpacityState(ls);
                             le.updateOpacity();
@@ -276,8 +263,7 @@ public class ESubDrawingUpdater extends TimerTask implements DrawingUpdater {
 
         int[] deviceIds = te.getDeviceIds();
         for (int j = 0; j < deviceIds.length; j++) {
-            List deviceSignals = DaoFactory.getAlarmDao()
-                                           .getSignalsForPao(deviceIds[j]);
+            List deviceSignals = DaoFactory.getAlarmDao().getSignalsForPao(deviceIds[j]);
             for (Iterator iter = deviceSignals.iterator(); iter.hasNext();) {
                 Signal signal = (Signal) iter.next();
                 if (TagUtils.isAlarmUnacked(signal.getTags())) {
@@ -288,8 +274,7 @@ public class ESubDrawingUpdater extends TimerTask implements DrawingUpdater {
 
         int[] pointIds = te.getPointIds();
         for (int j = 0; !inAlarm && j < pointIds.length; j++) {
-            List pointSignals = DaoFactory.getAlarmDao()
-                                          .getSignalsForPoint(pointIds[j]);
+            List pointSignals = DaoFactory.getAlarmDao().getSignalsForPoint(pointIds[j]);
             for (Iterator iter = pointSignals.iterator(); iter.hasNext();) {
                 Signal signal = (Signal) iter.next();
                 if (TagUtils.isAlarmUnacked(signal.getTags())) {
@@ -299,8 +284,7 @@ public class ESubDrawingUpdater extends TimerTask implements DrawingUpdater {
         }
         int[] alarmCategoryIds = te.getAlarmCategoryIds();
         for (int j = 0; !inAlarm && j < alarmCategoryIds.length; j++) {
-            List alarmCategorySignals = DaoFactory.getAlarmDao()
-                                                  .getSignalsForAlarmCategory(alarmCategoryIds[j]);
+            List alarmCategorySignals = DaoFactory.getAlarmDao().getSignalsForAlarmCategory(alarmCategoryIds[j]);
             for (Iterator iter = alarmCategorySignals.iterator(); iter.hasNext();) {
                 Signal signal = (Signal) iter.next();
                 if (TagUtils.isAlarmUnacked(signal.getTags())) {
@@ -326,8 +310,7 @@ public class ESubDrawingUpdater extends TimerTask implements DrawingUpdater {
         return change;
     }
 
-    public boolean updateDynamicGraphElement(boolean change,
-            LxComponent lxComponent) {
+    public boolean updateDynamicGraphElement(boolean change, LxComponent lxComponent) {
         DynamicGraphElement dge = (DynamicGraphElement) lxComponent;
         if (dge.shouldUpdate()) {
             dge.updateGraph();
@@ -357,9 +340,7 @@ public class ESubDrawingUpdater extends TimerTask implements DrawingUpdater {
             } else {
                 PointValueHolder pData = dynamicDataSource.getPointValue(lp.getLiteID());
                 if (pData != null) {
-                    LiteState ls = DaoFactory.getStateDao()
-                                             .getLiteState(lp.getStateGroupID(),
-                                                           (int) pData.getValue());
+                    LiteState ls = DaoFactory.getStateDao().getLiteState(lp.getStateGroupID(), (int) pData.getValue());
                     if (ls != null) {
                         si.setCurrentState(ls);
                         si.updateImage();
@@ -375,15 +356,6 @@ public class ESubDrawingUpdater extends TimerTask implements DrawingUpdater {
     public boolean updateDynamicText(boolean change, LxComponent lxComponent) {
         DynamicText dt = (DynamicText) lxComponent;
             int pointID = dt.getPointId();
-            String text = UpdateUtil.getDynamicTextString(pointID,
-                                                          dt.getDisplayAttribs());
-
-            // only update if there is something to update
-            if (!text.equals(dt.getText())) {
-                if (!text.equals(dt.getText())) {
-                    dt.setText(text);
-                }
-            }
 
             int colorPoint = dt.getColorPointID();
             int textPoint = -1;
@@ -391,8 +363,7 @@ public class ESubDrawingUpdater extends TimerTask implements DrawingUpdater {
                 textPoint = pointID;
             }
             if (colorPoint > 0) {
-                LitePoint liteColorPoint = DaoFactory.getPointDao()
-                                                     .getLitePoint(colorPoint);
+                LitePoint liteColorPoint = DaoFactory.getPointDao().getLitePoint(colorPoint);
 
                 if (liteColorPoint != null) {
                     if (liteColorPoint.getPointType() == PointTypes.ANALOG_POINT 
@@ -412,9 +383,7 @@ public class ESubDrawingUpdater extends TimerTask implements DrawingUpdater {
                         PointValueHolder pData = dynamicDataSource.getPointValue(liteColorPoint.getLiteID());
 
                         if (pData != null) {
-                            LiteState ls = DaoFactory.getStateDao()
-                                                     .getLiteState(liteColorPoint.getStateGroupID(),
-                                                                   (int) pData.getValue());
+                            LiteState ls = DaoFactory.getStateDao().getLiteState(liteColorPoint.getStateGroupID(), (int) pData.getValue());
                             if (ls != null) {
                                 dt.setCurrentColorState(ls);
                                 dt.updateColor();
@@ -425,8 +394,7 @@ public class ESubDrawingUpdater extends TimerTask implements DrawingUpdater {
                 }
             }
             if (textPoint > 0) {
-                LitePoint liteTextPoint = DaoFactory.getPointDao()
-                                                    .getLitePoint(textPoint);
+                LitePoint liteTextPoint = DaoFactory.getPointDao().getLitePoint(textPoint);
 
                 if (liteTextPoint != null) {
                     if (liteTextPoint.getPointType() == PointTypes.ANALOG_POINT 
@@ -446,15 +414,20 @@ public class ESubDrawingUpdater extends TimerTask implements DrawingUpdater {
                         PointValueHolder pData = dynamicDataSource.getPointValue(liteTextPoint.getLiteID());
 
                         if (pData != null) {
-                            LiteState ls = DaoFactory.getStateDao()
-                                                     .getLiteState(liteTextPoint.getStateGroupID(),
-                                                                   (int) pData.getValue());
+                            LiteState ls = DaoFactory.getStateDao().getLiteState(liteTextPoint.getStateGroupID(), (int) pData.getValue());
                             if (ls != null) {
                                 dt.setCurrentTextState(ls);
                                 dt.updateText();
                                 change = true;
                             }
                         }
+                    }
+                }
+            }else {
+                String text = UpdateUtil.getDynamicTextString(pointID, dt.getDisplayAttribs());
+                if (!text.equals(dt.getText())) {
+                    if (!text.equals(dt.getText())) {
+                        dt.setText(text);
                     }
                 }
             }

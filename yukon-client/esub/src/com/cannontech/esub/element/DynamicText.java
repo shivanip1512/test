@@ -13,7 +13,9 @@ import java.util.List;
 import java.util.Map;
 import java.util.Properties;
 
+import com.cannontech.clientutils.CTILogger;
 import com.cannontech.core.dao.DaoFactory;
+import com.cannontech.core.dao.NotFoundException;
 import com.cannontech.database.data.lite.LitePoint;
 import com.cannontech.database.data.lite.LiteState;
 import com.cannontech.database.data.lite.LiteStateGroup;
@@ -252,10 +254,14 @@ public class DynamicText extends LxAbstractText implements DrawingElement, Seria
      * @param newPointID int
      */
     public void setPointId(int newPointId)  {
-    	LitePoint lp = DaoFactory.getPointDao().getLitePoint( newPointId ); 
-    	if(lp != null) {
-    		point = lp;
-    	}
+        
+    	LitePoint lp;
+        try {
+            lp = DaoFactory.getPointDao().getLitePoint( newPointId );
+            point = lp;
+        } catch (NotFoundException e) {
+            CTILogger.error(e);
+        } 
     }
     
     /**

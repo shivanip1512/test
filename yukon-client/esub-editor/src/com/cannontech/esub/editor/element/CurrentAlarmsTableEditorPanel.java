@@ -671,15 +671,17 @@ public void setValue(Object o) {
         int deviceId = DaoFactory.getPointDao().getLitePoint(pointids[i]).getPaobjectID();
         CheckNode currentDeviceNode = (CheckNode) getDeviceJTreeModel().getDevicebyID(deviceId);
         // Only load children if not already loaded
-        if (currentDeviceNode.getChildCount() == 0) {
-            getDeviceJTreeModel().treePathWillExpand(new TreePath(currentDeviceNode.getPath()));
-        }
-        
-        CheckNode currentPointNode = (CheckNode) getDeviceJTreeModel().getPointbyID(pointids[i]);
-        if(currentPointNode != null)
-        {
-            currentPointNode.setSelected(true);
-            getJTreeDevices().expandPath(new TreePath(((CheckNode)currentPointNode.getParent()).getPath()));
+        if(currentDeviceNode != null) {
+            if (currentDeviceNode.getChildCount() == 0) {
+                getDeviceJTreeModel().treePathWillExpand(new TreePath(currentDeviceNode.getPath()));
+            }
+            
+            CheckNode currentPointNode = (CheckNode) getDeviceJTreeModel().getPointbyID(pointids[i]);
+            if(currentPointNode != null)
+            {
+                currentPointNode.setSelected(true);
+                getJTreeDevices().expandPath(new TreePath(((CheckNode)currentPointNode.getParent()).getPath()));
+            }
         }
         
     }

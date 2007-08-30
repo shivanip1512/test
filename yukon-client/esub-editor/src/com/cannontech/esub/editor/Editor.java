@@ -42,9 +42,17 @@ import com.cannontech.debug.gui.AboutDialog;
 import com.cannontech.esub.Drawing;
 import com.cannontech.esub.editor.element.ElementEditorFactory;
 import com.cannontech.esub.editor.element.LineElementEditor;
+import com.cannontech.esub.element.AlarmTextElement;
+import com.cannontech.esub.element.CurrentAlarmsTable;
 import com.cannontech.esub.element.DrawingElement;
 import com.cannontech.esub.element.DrawingMetaElement;
+import com.cannontech.esub.element.DynamicGraphElement;
+import com.cannontech.esub.element.DynamicText;
+import com.cannontech.esub.element.FunctionElement;
 import com.cannontech.esub.element.LineElement;
+import com.cannontech.esub.element.StateImage;
+import com.cannontech.esub.element.StaticImage;
+import com.cannontech.esub.element.StaticText;
 import com.cannontech.esub.util.ESubDrawingUpdater;
 import com.cannontech.message.dispatch.ClientConnection;
 import com.cannontech.message.util.Command;
@@ -468,6 +476,9 @@ public class Editor extends JPanel {
 
 		LxComponent[] comps = getDrawing().getLxGraph().getComponents();
 		for (int i = 0; i < comps.length; i++) {
+            if(comps[i] instanceof LineElement) {
+                ((LineElement)comps[i]).setIsNew(false);
+            }
 			setBehavior(comps[i]);
 		}
 
@@ -643,21 +654,21 @@ public class Editor extends JPanel {
 	 * @param elem com.loox.jloox.LxElement
 	 */
 	void setBehavior(LxComponent elem) {
-		if (elem instanceof com.cannontech.esub.element.DynamicText
-			|| elem instanceof com.cannontech.esub.element.StateImage
-			|| elem instanceof com.cannontech.esub.element.StaticImage
-			|| elem instanceof com.cannontech.esub.element.StaticText 
-			|| elem instanceof com.cannontech.esub.element.AlarmTextElement
-            || elem instanceof com.cannontech.esub.element.FunctionElement) {
+		if (elem instanceof DynamicText
+			|| elem instanceof StateImage
+			|| elem instanceof StaticImage
+			|| elem instanceof StaticText 
+			|| elem instanceof AlarmTextElement
+            || elem instanceof FunctionElement) {
 			elem.setUserResizable(false);
 			elem.removeDefaultDoubleClickBehavior();
 			elem.removeMouseListener(editElementMouseListener);
 			elem.addMouseListener(editElementMouseListener);
 		}
 		
-		if( elem instanceof com.cannontech.esub.element.DynamicGraphElement 
-            || elem instanceof com.cannontech.esub.element.CurrentAlarmsTable
-            || elem instanceof com.cannontech.esub.element.LineElement) {
+		if( elem instanceof DynamicGraphElement 
+            || elem instanceof CurrentAlarmsTable
+            || elem instanceof LineElement) {
             elem.removeDefaultDoubleClickBehavior();
 			elem.removeMouseListener(editElementMouseListener);	
 			elem.addMouseListener(editElementMouseListener);	

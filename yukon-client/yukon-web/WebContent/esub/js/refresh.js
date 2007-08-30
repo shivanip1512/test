@@ -357,10 +357,16 @@ function updateImage(node) {
 	function fn(obj) {
 		if(obj.content) {
 			var value = obj.content;
-//			alert(value);
-			var imageName = node.getAttribute('image'+trim(value));			
-//			alert(imageName);
-			node.setAttributeNS(xlinkNS, 'xlink:\href', imageName);
+			myString = value.toString();
+			myRE = new RegExp("point", "i");
+			results = myString.match(myRE);
+			if(results == null){
+				var imageName = node.getAttribute('image'+trim(value));			
+				node.setAttributeNS(xlinkNS, 'xlink:\href', imageName);
+			}else{
+				// A point not found error occured.
+				// Don't try to update the image.
+			}
 		}
 	}
 } //end updateImage

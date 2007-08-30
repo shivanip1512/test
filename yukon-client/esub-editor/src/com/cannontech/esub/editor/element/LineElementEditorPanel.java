@@ -592,6 +592,45 @@ public class LineElementEditorPanel extends com.cannontech.common.gui.util.DataI
                 getBlinkCheckBox().setEnabled(false);
                 getBlinkPointPanel().getPointSelectionPanel().selectPoint(DaoFactory.getPointDao().getLitePoint(lineElement.getBlinkPointID()));
             }
+        }else {
+            // this is a newly created line so reset all the point driven components.
+            getColorPointCheckBox().setSelected(false);
+            getColorLabel().setEnabled(true);
+            getColorButton().setEnabled(true);
+            getColorPointButton().setEnabled(false);
+            getColorButton().setBackground(colorChooser.getColor());
+            getColorLabel().setBackground(colorChooser.getColor());
+            lineElement.setLineColor(colorChooser.getColor());
+            
+            getThicknessPointCheckBox().setSelected(false);
+            getThicknessSlider().setEnabled(true);
+            getThicknessPointButton().setEnabled(false);
+            lineElement.setLineThickness(new Float(getThicknessSlider().getValue()).floatValue());
+            
+            getArrowPointCheckBox().setSelected(false);
+            getArrowComboBox().setEnabled(true);
+            getArrowPointButton().setEnabled(false);
+            int arrow = getArrowComboBox().getSelectedIndex();
+            if (arrow == 1 || arrow == 2 || arrow == 3) {
+                arrow = arrow + 4;
+            }else if (arrow ==4) {
+                arrow = 12;
+            }
+            lineElement.setLineArrow(arrow);
+            
+            getOpacityPointButton().setEnabled(false);
+            getOpacityPointCheckBox().setSelected(false);
+            getOpacitySlider().setEnabled(true);
+            lineElement.setTransparency(new Float(getOpacitySlider().getValue()).floatValue() * .01f);
+            
+            getBlinkCheckBox().setEnabled(true);
+            getBlinkPointButton().setEnabled(false);
+            getBlinkPointCheckBox().setSelected(false);
+            if( getBlinkCheckBox().isSelected()) {
+                lineElement.setLineBlink(1);
+            }else {
+                lineElement.setLineBlink(0);
+            }
         }
     }
     

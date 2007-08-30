@@ -992,6 +992,12 @@ public void setValue(Object o) {
         getColorPointLabel().setForeground(Color.black);
     }
     
+    if(dynamicText.getTextBlink() > 0) {
+        getBlinkCheckBox().setSelected(true);
+    }else {
+        getBlinkCheckBox().setSelected(false);
+    }
+    
     if(dynamicText.getBlinkPointID() < 0) {
         getBlinkPointCheckBox().setSelected(false);
         getBlinkPointButton().setEnabled(false);
