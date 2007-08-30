@@ -6,8 +6,8 @@
 *
 *    PVCS KEYWORDS:
 *    ARCHIVE      :  $Archive:   Z:/SOFTWAREARCHIVES/YUKON/FDR/fdrtextimport.cpp-arc  $
-*    REVISION     :  $Revision: 1.23 $
-*    DATE         :  $Date: 2007/08/08 14:10:05 $
+*    REVISION     :  $Revision: 1.24 $
+*    DATE         :  $Date: 2007/08/30 17:03:29 $
 *
 *
 *    AUTHOR: David Sutton
@@ -19,6 +19,24 @@
 *    ---------------------------------------------------
 *    History: 
       $Log: fdrtextimport.cpp,v $
+      Revision 1.24  2007/08/30 17:03:29  tspar
+      YUK-4318
+
+      Fixed the way we read from files to be more efficient, and changed code flow to allow for more unit testing.
+
+      Changed cparms to more show an intuitive difference between them.
+      FDR_TEXTIMPORT_IMPORT_PATH is now
+      FDR_TEXTIMPORT_DEFAULT_POINTIMPORT_PATH
+
+      Changed the processe function that was causing a large memory leak over runtime.
+      -Changed the code so it doesn't leak anymore, worked a long time trying to pin down the actual reason before just re-working the code.
+
+      Changed the delete cparm to no longer default to true since we have two options, delete or rename.
+      How it works now:
+      1)specifying rename and delete will default to rename.
+      2)not specifying either will default to delete.
+      3)specifying one or the other will work as expected.
+
       Revision 1.23  2007/08/08 14:10:05  tspar
       YUK-4192
 
@@ -118,6 +136,8 @@
 #include <fcntl.h>
 #include <io.h>
 #include <time.h>
+#include <string>
+#include <fstream.h>
 
 /** include files **/
 #include "ctitime.h"
@@ -135,6 +155,8 @@
 #include "fdrtextimport.h"
 #include "utility.h"
 
+using std::vector;
+using std::list;
 
 int calcUTCOffset();
 
@@ -142,11 +164,11 @@ CtiFDR_TextImport * textImportInterface;
 
 const CHAR * CtiFDR_TextImport::KEY_INTERVAL = "FDR_TEXTIMPORT_INTERVAL";
 const CHAR * CtiFDR_TextImport::KEY_FILENAME = "FDR_TEXTIMPORT_FILENAME";
-const CHAR * CtiFDR_TextImport::KEY_DRIVE_AND_PATH = "FDR_TEXTIMPORT_DRIVE_AND_PATH";
+const CHAR * CtiFDR_TextImport::KEY_LEGACY_DRIVE_AND_PATH = "FDR_TEXTIMPORT_DRIVE_AND_PATH";
 const CHAR * CtiFDR_TextImport::KEY_DB_RELOAD_RATE = "FDR_TEXTIMPORT_DB_RELOAD_RATE";
 const CHAR * CtiFDR_TextImport::KEY_QUEUE_FLUSH_RATE = "FDR_TEXTIMPORT_QUEUE_FLUSH_RATE";
 const CHAR * CtiFDR_TextImport::KEY_DELETE_FILE = "FDR_TEXTIMPORT_DELETE_FILE";
-const CHAR * CtiFDR_TextImport::KEY_IMPORT_BASE_PATH = "FDR_TEXTIMPORT_IMPORT_BASE_PATH"; 
+const CHAR * CtiFDR_TextImport::KEY_POINTIMPORT_DEFAULT_PATH = "FDR_TEXTIMPORT_DEFAULT_POINTIMPORT_PATH";//changed 
 const CHAR * CtiFDR_TextImport::KEY_RENAME_SAVE_FILE = "FDR_TEXTIMPORT_RENAME_SAVE_FILE"; 
 
 
@@ -154,7 +176,6 @@ const CHAR * CtiFDR_TextImport::KEY_RENAME_SAVE_FILE = "FDR_TEXTIMPORT_RENAME_SA
 CtiFDR_TextImport::CtiFDR_TextImport()
 : CtiFDRTextFileBase(string("TEXTIMPORT"))
 {  
-
 
 }
 
@@ -310,6 +331,7 @@ int calcUTCOffset(){
 
     return (utc->tm_hour - loc->tm_hour);
 }
+
 USHORT CtiFDR_TextImport::ForeignToYukonQuality (string aQuality)
 {
     USHORT Quality = NonUpdatedQuality;
@@ -324,20 +346,15 @@ USHORT CtiFDR_TextImport::ForeignToYukonQuality (string aQuality)
     return(Quality);
 }
 
-bool CtiFDR_TextImport::processFunctionOne (string &aLine, CtiMessage **aRetMsg)
+bool CtiFDR_TextImport::processFunctionOne (Tokenizer& cmdLine, CtiMessage **aRetMsg)
 {
     bool retCode = false;
     bool pointValidFlag=true;
-    CtiString tempString1;                // Will receive each token
-
-    boost::char_separator<char> sep(",", "", boost::keep_empty_tokens);
-    Boost_char_tokenizer cmdLine(aLine, sep);
-    Boost_char_tokenizer::iterator tok_iter = cmdLine.begin();     
-
+         
     CtiFDRPoint         point;
     int fieldNumber=1,quality;
     double value;
-    CHAR   action[60];
+    string action;
     string linetimestamp,translationName,desc;
     CtiTime pointtimestamp;
 
@@ -347,83 +364,66 @@ bool CtiFDR_TextImport::processFunctionOne (string &aLine, CtiMessage **aRetMsg)
     * function,id,value,quality,timestamp,daylight savings flag
     *****************************
     */
-    while ( (tok_iter != cmdLine.end()) && pointValidFlag)
-    {
-        tempString1 = *tok_iter; tok_iter++;
-
-        if( tempString1.empty() ) {
-            pointValidFlag = false;
-            break;
-        }
-
-        switch (fieldNumber)
+    try{
+        Tokenizer::iterator tok_iter = cmdLine.begin();
+        string tempString1 = string(*tok_iter); ++tok_iter;
+        
+        //Param 1 - Function number
+        if( tempString1.empty() )
         {
-        case 1:
-            {
-                // this the function number so we do nothing with this
-                break;
-            }
-        case 2:
-            {
-                // lock the list while we're returning the point
-                {
-                    CtiLockGuard<CtiMutex> receiveGuard(getReceiveFromList().getMutex());  
-                    pointValidFlag = findTranslationNameInList (tempString1, getReceiveFromList(), point);
-                }
-
-                translationName=tempString1;
-
-                if (pointValidFlag != true)
-                {
-                    if (getDebugLevel () & MIN_DETAIL_FDR_DEBUGLEVEL)
-                    {
-                        {
-                            CtiLockGuard<CtiLogger> doubt_guard(dout);
-                            dout << CtiTime() << " Translation for point " << translationName;
-                            dout << " from " << getFileName() << " was not found" << endl;
-                        }
-                        desc = getFileName() + string (" point is not listed in the translation table");
-                        _snprintf(action,60,"%s", translationName.c_str());
-                        logEvent (desc,string (action));
-                    }
-                }
-
-                break;
-            }
-        case 3:
-            {
-                value = atof(tempString1.c_str());
-                break;
-            }
-        case 4:
-            {
-                quality = ForeignToYukonQuality(tempString1);
-                break;
-            }
-
-        case 5:
-            {
-                linetimestamp = tempString1;
-                break;
-            }
-        case 6:
-            {
-                pointtimestamp = ForeignToYukonTime (linetimestamp, tempString1[0]);
-                if (pointtimestamp == PASTDATE)
-                {
-                    pointValidFlag = false;
-                }
-                break;
-            }
-        default:
-            break;
+            pointValidFlag = false;
         }
-        fieldNumber++;
-    }
+        //Param 2 - Point Name
+        tempString1 = string(*tok_iter); ++tok_iter;
+        // lock the list while we're returning the point
+        {
+            CtiLockGuard<CtiMutex> receiveGuard(getReceiveFromList().getMutex());  
+            pointValidFlag = findTranslationNameInList (tempString1, getReceiveFromList(), point);
+        }
+        translationName = tempString1;
+        if (pointValidFlag != true)
+        {
+            if (getDebugLevel () & MIN_DETAIL_FDR_DEBUGLEVEL)
+            {
+                {
+                    CtiLockGuard<CtiLogger> doubt_guard(dout);
+                    dout << CtiTime() << " Translation for point " << translationName;
+                    dout << " from " << getFileName() << " was not found" << endl;
+                }
+                desc = getFileName() + string (" point is not listed in the translation table");
+                action = translationName;
+                logEvent (desc,action);
+            }
+        }
+        
+        //Param 3 - Value
+        tempString1 = string(*tok_iter); ++tok_iter;
+        value = atof(tempString1.c_str());
+        
+        //Param 4 - quality
+        tempString1 = string(*tok_iter); ++tok_iter;
+        quality = ForeignToYukonQuality(tempString1);
+        
+        //Param 5 - Timestamp
+        tempString1 = string(*tok_iter); ++tok_iter;
+        linetimestamp = tempString1;
+        
+        //Param 6 - DST Flag
+        tempString1 = string(*tok_iter);   
+        pointtimestamp = ForeignToYukonTime ( linetimestamp, tempString1[0] );
+        if (pointtimestamp == PASTDATE)
+        {
+            pointValidFlag = false;
+        }
 
-    if (pointValidFlag)
+        if (pointValidFlag)
+        {
+            retCode = buildAndAddPoint (point,value,pointtimestamp,quality,translationName,aRetMsg);
+        }
+    }catch(...)
     {
-        retCode = buildAndAddPoint (point,value,pointtimestamp,quality,translationName,aRetMsg);
+        CtiLockGuard<CtiLogger> doubt_guard(dout);
+        dout << CtiTime() << " Error Parsing data. Likely bad input from the file.\n";
     }
     return retCode;
 }
@@ -569,14 +569,13 @@ bool CtiFDR_TextImport::validateAndDecodeLine (string &aLine, CtiMessage **aRetM
 {
     bool retCode = false;
     bool flag;
+
     std::transform(aLine.begin(), aLine.end(), aLine.begin(), tolower);
-    string tempString1;                // Will receive each token
+    string tempString1;// Will receive each token
 
-    boost::char_separator<char> sep(",\r\n");
-    Boost_char_tokenizer cmdLine(aLine, sep);
-    Boost_char_tokenizer::iterator tok_iter = cmdLine.begin();     
-
-
+    Separator sep(",\r\n", "", boost::keep_empty_tokens);
+    Tokenizer cmdLine(aLine, sep);
+    Tokenizer::iterator tok_iter = cmdLine.begin();     
 
     CtiFDRPoint         point;
     int function;
@@ -597,15 +596,13 @@ bool CtiFDR_TextImport::validateAndDecodeLine (string &aLine, CtiMessage **aRetM
                 * id,value,quality,timestamp,daylight savings flag
                 *****************************
                 */
-                retCode=processFunctionOne (aLine,aRetMsg);
+                retCode=processFunctionOne (cmdLine,aRetMsg);
                 break;
             }
         default:
             break;
-
         }
     }
-
     return retCode;
 }
 
@@ -639,21 +636,24 @@ int CtiFDR_TextImport::readConfig( void )
     {
         setFileName(string ("yukon.txt"));
     }
-    bool _newDrivePath = false; 
-    tempStr = getCparmValueAsString(KEY_IMPORT_BASE_PATH); 
+    tempStr = getCparmValueAsString(KEY_POINTIMPORT_DEFAULT_PATH); 
     if (tempStr.length() > 0)
     {
-        _newDrivePath = true; 
         setFileImportBaseDrivePath(tempStr); 
     } else
     {
         setFileImportBaseDrivePath(CtiString ("c:\\yukon\\server\\import")); 
     } 
 
-    tempStr = getCparmValueAsString(KEY_DRIVE_AND_PATH);
+    tempStr = getCparmValueAsString(KEY_LEGACY_DRIVE_AND_PATH);
     if (tempStr.length() > 0)
     {
         _legacyDrivePath = true;
+        int pos = tempStr.find_last_of("\\");
+        if( pos != tempStr.size()-1 )
+        {
+            tempStr += "\\";
+        }
         setDriveAndPath(tempStr);
     } else
     {
@@ -689,13 +689,13 @@ int CtiFDR_TextImport::readConfig( void )
         }
     }
 
-    setRenameSaveFileAfterImport(true); 
+    setRenameSaveFileAfterImport(false); 
     tempStr = getCparmValueAsString(KEY_RENAME_SAVE_FILE); 
     if (tempStr.length() > 0)
     {
-        if (!stringCompareIgnoreCase(tempStr,"false"))
+        if (!stringCompareIgnoreCase(tempStr,"true"))
         {
-            setRenameSaveFileAfterImport (false); 
+            setRenameSaveFileAfterImport (true); 
         }
     }
 
@@ -703,12 +703,9 @@ int CtiFDR_TextImport::readConfig( void )
     {
         CtiLockGuard<CtiLogger> doubt_guard(dout);
 
-        if ( _legacyDrivePath && !_newDrivePath )
+        if ( _legacyDrivePath )
         {
             dout << CtiTime() << " Legacy method of setting the Drive Path. Please update to the new Method using the Points." << endl; 
-        } else if ( _legacyDrivePath && _newDrivePath )
-        {
-            dout << CtiTime() << " Legacy and Current method of setting the Drive Path used. Defaulting to the new method by reading the Point to locate the file." << endl; 
         }
         dout << CtiTime() << " Text import file name " << getFileName() << endl;          
         dout << CtiTime() << " Text import directory " << getDriveAndPath() << endl;//obsolete? 
@@ -716,17 +713,21 @@ int CtiFDR_TextImport::readConfig( void )
         dout << CtiTime() << " Text import dispatch queue flush rate " << getQueueFlushRate() << endl;
         dout << CtiTime() << " Text import db reload rate " << getReloadRate() << endl;
 
-        if (shouldDeleteFileAfterImport())
+        if( shouldDeleteFileAfterImport() && shouldRenameSaveFileAfterImport() )
+        {
+            dout << CtiTime() << " Configuration Error cannot rename AND delete the input file. Defaulting to rename.\n";
+            setRenameSaveFileAfterImport(true);
+            setDeleteFileAfterImport(false);
+        }else if( !shouldDeleteFileAfterImport() && !shouldRenameSaveFileAfterImport() )
+        {
+            dout << CtiTime() << " Configuration Error please specify what to do with the file after the import. Defaulting to delete.\n";
+            setDeleteFileAfterImport(true); 
+        }
+        if (shouldDeleteFileAfterImport() )
             dout << CtiTime() << " Import file will be deleted after import" << endl;
-        else
-            dout << CtiTime() << " Import file will NOT be deleted after import" << endl;
+        if (shouldRenameSaveFileAfterImport() )
+            dout << CtiTime() << " Import file will be renamed after import" << endl;
 
-    }
-
-
-    if ( _legacyDrivePath && _newDrivePath )
-    {
-        _legacyDrivePath = false; 
     }
 
     return successful;
@@ -872,27 +873,26 @@ bool CtiFDR_TextImport::loadTranslationLists()
                             }
                             CtiFDRTextFileInterfaceParts tempFileInfoList ( translationFilename, translationDrivePath, 0); 
 
-                            _snprintf(fileName, 200, "%s\\%s", translationDrivePath.c_str(), translationFilename.c_str() ); 
-                            
-                            int matchFlag = 0; 
-                            for (int xx = 0; xx < getFileInfoList().size(); xx++)
-                            {
-                                _snprintf(fileName2, 200, "%s\\%s",getFileInfoList()[xx].getDriveAndPath().c_str(),getFileInfoList()[xx].getFileName().c_str()); 
-                                if (!strcmp(fileName,fileName2))
-                                {
-                                    matchFlag = 1; 
-                                }
+                            //check if its already there before putting it in the list.
+                            std::vector<CtiFDRTextFileInterfaceParts> *fInfoList = getFileInfoList();
+                            std::vector<CtiFDRTextFileInterfaceParts>::iterator itr = fInfoList->begin();
+                            string fn = translationDrivePath + translationFilename;
+                            bool found = false;
+                            for( ; itr != fInfoList->end(); itr++ )
+                            {    
+                                string fn2 = itr->getDriveAndPath() + itr->getFileName();
+                                if( fn2.compare(fn) == 0 )
+                                        found = true;
                             }
-                            if (!matchFlag)
-                            {
-                                _fileInfoList.push_back(tempFileInfoList); 
-                            }
+                            if( !found )//unique
+                                fInfoList->push_back(tempFileInfoList);
+
                             if (getDebugLevel() & DATABASE_FDR_DEBUGLEVEL)
                             {
                                 CtiLockGuard<CtiLogger> doubt_guard(dout); 
                                 dout << CtiTime() << " Point ID " << translationPoint->getPointID(); 
                                 dout << " translated: " << translationName << endl; 
-                                dout << " FILE INFO LIST SIZE = " << getFileInfoList().size() << endl; 
+                                dout << " FILE INFO LIST SIZE = " << getFileInfoList()->size() << endl; 
                                 dout << " Translation... = " << translationPoint->getDestinationList()[x].getTranslation() << endl; 
                             }
                         }
@@ -956,26 +956,77 @@ bool CtiFDR_TextImport::loadTranslationLists()
     return successful;
 }
 
+/***
+* Function Name: list<string> GetFileNames()
+* 
+* Depending on which method will determine if there could be more than one file.
+* 
+*/
+
+std::list<string> CtiFDR_TextImport::getFileNames()
+{
+    list<string> lst;
+
+    if( getLegacy() )
+    {
+        string fn = getDriveAndPath() + getFileName();
+        lst.push_back(fn);
+    }
+    else
+    {
+        vector <CtiFDRTextFileInterfaceParts> *fInfoList = getFileInfoList();
+        std::vector <CtiFDRTextFileInterfaceParts>::iterator itr;
+        for( itr = fInfoList->begin(); itr != fInfoList->end(); itr++ )
+        {
+            string fn = itr->getDriveAndPath() + itr->getFileName();
+            lst.push_back(fn);
+        }
+    }
+    
+    return lst;
+}
+
+
+/*
+* Function Name: List<Point> parseFiles
+*
+*/
+std::list<string> CtiFDR_TextImport::parseFiles( std::list<std::iostream*>& istrmList )
+{
+    std::list<string> lst;
+
+    for( std::list<std::iostream*>::iterator itr = istrmList.begin(); itr != istrmList.end(); itr++ )
+    {
+        std::iostream* strm = *itr;
+        string input;
+        while( std::getline( *strm, input ) )
+        {    
+            //Test on input to see if its ok?  >1 : <500 : invalid characters?
+
+            lst.push_back(input);
+        }
+    }
+
+    return lst;
+}
+
 /**************************************************************************
 * Function Name: CtiFDRTextFileBase::threadFunctionReadFromFile (void )
 *
 * Description: thread that waits and then grabs the file for processing
+*
+* This works in two ways, Legacy and Point. Legacy gets the one singular file from
+*       the cparms in master config. Point will read through each point and open the file name
+*       listed on that point and process all points in that file.
+*       Point: Loop through finding all unique file names listed under points.
+*              Process each of those files input. loop back and sleep.
 * 
-***************************************************************************
-*/
+****************************************************************************/
 void CtiFDR_TextImport::threadFunctionReadFromFile( void )
 {
     RWRunnableSelf  pSelf = rwRunnable( );
-    INT retVal=0,tries=0;
     CtiTime         timeNow;
     CtiTime         refreshTime(PASTDATE);
-    string action,desc;
-    CHAR fileName[200];
-    CHAR fileNameAndPath[250]; 
-    WIN32_FIND_DATA* fileData; 
-    FILE* fptr = NULL; 
-    char workBuffer[500];  // not real sure how long each line possibly is
-    int attemptCounter=0;
 
     try
     {
@@ -989,379 +1040,146 @@ void CtiFDR_TextImport::threadFunctionReadFromFile( void )
             // now is the time to get the file
             if (timeNow >= refreshTime)
             {
-                if ( !_legacyDrivePath )
+                std::list<std::iostream*> openedFileList;
+
+                std::list<string> fileList = getFileNames();
+                std::list<string>::iterator itr;
+                for( itr = fileList.begin(); itr != fileList.end(); itr++ )
                 {
-                    for (int fileIndex = 0; fileIndex < _fileInfoList.size(); fileIndex++)
+                    std::fstream* file = new std::fstream();
+                    string fname(*itr);
+                    file->open( fname.c_str(), std::fstream::in );                  
+                    if( (*file).eof() )
                     {
-                        try
-                        {
-                            fptr = NULL; 
-                            attemptCounter = 0; 
-                            HANDLE hSearch; 
-                            fileData = new WIN32_FIND_DATA(); 
-                            _snprintf(fileName, 200, "%s\\%s",getFileInfoList()[fileIndex].getDriveAndPath().c_str(),getFileInfoList()[fileIndex].getFileName().c_str()); 
-                            hSearch = FindFirstFile(fileName, fileData); 
+                        CtiLockGuard<CtiLogger> doubt_guard(dout);
+                        dout << CtiTime() << " Error opening File: " << fname << "\n";
+                    }else
+                    {
+                        openedFileList.push_back((std::iostream*)file);
+                    }
+                }
 
-                            if (getDebugLevel() & DETAIL_FDR_DEBUGLEVEL)
-                            {
-                                CtiLockGuard<CtiLogger> doubt_guard(dout); 
-                                dout << "  ***** fileName  ***** "<< fileName  << endl; 
-                            }
+                //parse files
+                std::list<string> pointUpdates = parseFiles( openedFileList );
 
-                            if (hSearch != INVALID_HANDLE_VALUE)
-                            {//found it. 
-
-                                _snprintf(fileNameAndPath, 250, "%s\\%s", getFileInfoList()[fileIndex].getDriveAndPath().c_str(), fileData->cFileName); 
-                                if (getDebugLevel() & DETAIL_FDR_DEBUGLEVEL)
-                                {
-                                    CtiLockGuard<CtiLogger> doubt_guard(dout); 
-                                    dout << "  ***** fileName  ***** "<< fileNameAndPath  << endl; 
-                                }
-
-
-                                if (getDebugLevel() & DETAIL_FDR_DEBUGLEVEL)
-                                {
-                                    CtiLockGuard<CtiLogger> doubt_guard(dout); 
-                                    dout << "  ***** FILE_"<<fileIndex+1<<"   " << fileData->cFileName << " ***** "  << endl; 
-                                }
-                            } else
-                            {//defaulting cause not found 
-                                _snprintf(fileNameAndPath, 200, "%s\\%s",getFileImportBaseDrivePath().c_str(),getFileName().c_str()); 
-
-                                hSearch = FindFirstFile(fileNameAndPath, fileData); 
-                                if (hSearch != INVALID_HANDLE_VALUE)
-                                {
-                                    _snprintf(fileNameAndPath, 250, "%s\\%s", getFileImportBaseDrivePath().c_str(), fileData->cFileName); 
-                                } else
-                                {
-                                    _snprintf(fileNameAndPath, 250, "%s", fileName); 
-                                } 
-                                if (getDebugLevel() & DETAIL_FDR_DEBUGLEVEL)
-                                {
-                                    CtiLockGuard<CtiLogger> doubt_guard(dout); 
-                                    dout << "  ***** FILE_"<<fileIndex+1<<"   " << fileNameAndPath << " NOT FOUND ***** "  << endl; 
-                                }
-                            } 
-                        } catch (...)
-                        {
-                            CtiLockGuard<CtiLogger> logger_guard(dout); 
-                            dout << CtiTime() << " - Caught '...' in: " << __FILE__ << " at:" << __LINE__ << endl; 
-                        }
-                        try
-                        {
-                            { 
-                                CtiLockGuard<CtiLogger> doubt_guard(dout); 
-                                dout << CtiTime() << " Attempting to open..." << fileNameAndPath<< endl; 
-                            } 
-
-                            fptr = fopen(fileNameAndPath, "r"); 
-
-
-
-                            try
-                            {
-                                while ((fptr == NULL) && (attemptCounter < 10))
-                                {
-                                    attemptCounter++;
-                                    pSelf.sleep(1000);
-                                    pSelf.serviceCancellation( );
-                                }
-                            } catch (...)
-                            {
-                                CtiLockGuard<CtiLogger> logger_guard(dout); 
-                                dout << CtiTime() << " - Caught '...' in: " << __FILE__ << " at:" << __LINE__ << endl; 
-                            }
-                            try
-                            {
-
-                                if ( fptr == NULL )
-                                {
-                                    {
-                                        CtiLockGuard<CtiLogger> doubt_guard(dout);
-                                        dout << CtiTime() << " " << getInterfaceName() << "'s file " << string (fileName) << " was either not found or could not be opened" << endl;
-                                    }
-                                } else
-                                {
-                                    vector<string>     pointVector;
-
-                                    // load list in the command vector
-                                    while ( fgets( (char*) workBuffer, 500, fptr) != NULL )
-                                    {
-                                        string entry (workBuffer);
-                                        pointVector.push_back (entry);
-                                    }
-
-                                    fclose(fptr);
-                                    if ( ferror( fptr ) != 0 )
-                                    {
-                                        pointVector.erase(pointVector.begin(), pointVector.end());
-                                    } else
-                                    {
-                                        // retrieve each line in order
-                                        int totalLines = pointVector.size();
-                                        int lineCnt = 0;
-                                        CtiMessage      *retMsg=NULL;
-                                        while (lineCnt < totalLines )
-                                        {
-                                            if (validateAndDecodeLine( pointVector[lineCnt], &retMsg ))
-                                            {
-                                                queueMessageToDispatch (retMsg);
-                                            }
-                                            lineCnt++;
-                                        }
-                                        pointVector.erase(pointVector.begin(), pointVector.end());
-                                    }
-                                    try
-                                    {
-                                        if ( shouldRenameSaveFileAfterImport() )
-                                        {
-                                            CHAR oldFileName[250]; 
-                                            strcpy(oldFileName,fileNameAndPath); 
-                                            CHAR newFileName[250]; 
-                                            CHAR* periodPtr = strchr(fileNameAndPath,'.');//reverse lookup 
-                                            if ( periodPtr )
-                                            {
-                                                *periodPtr = NULL; 
-                                            } else
-                                            {
-                                                CtiLockGuard<CtiLogger> doubt_guard(dout); 
-                                                dout << "Uh Sir" << endl; 
-                                            } 
-                                            CtiTime timestamp= CtiTime(); 
-                                            string tempTime = timestamp.asString();
-
-                                            bool slashesInString = true;
-                                            while( slashesInString )
-                                            {
-                                                int pos = tempTime.find("/");
-                                                if( pos == string::npos )
-                                                {
-                                                    slashesInString = false;
-                                                    pos = tempTime.find(":");
-                                                    while (pos != string::npos )
-                                                    {
-                                                        tempTime = tempTime.erase(pos,1);
-                                                        pos = tempTime.find(":");
-                                                    }
-                                                }
-                                                else
-                                                {
-                                                    tempTime = tempTime.replace(pos,1,"_"); 
-                                                }
-                                            }
-
-                                            _snprintf(newFileName, 250, "%s%s%s%s", fileNameAndPath, ".", tempTime.c_str(),".txt" ); 
-                                            bool success = MoveFileEx(oldFileName,newFileName, MOVEFILE_REPLACE_EXISTING | MOVEFILE_COPY_ALLOWED); 
-                                            if ( !success )
-                                            {
-                                                DWORD lastError = GetLastError(); 
-                                                CtiLockGuard<CtiLogger> doubt_guard(dout); 
-                                                dout << "Last Error Code: " << lastError << " for MoveFile()" << endl; 
-                                            }
-
-                                        }
-
-                                        if (shouldDeleteFileAfterImport())
-                                        {
-                                            DeleteFile (fileName);
-                                        }
-                                    } catch (...)
-                                    {
-                                        CtiLockGuard<CtiLogger> logger_guard(dout); 
-                                        dout << CtiTime() << " - Caught '...' in: " << __FILE__ << " at:" << __LINE__ << endl; 
-                                    }
-
-                                    refreshTime = CtiTime() - (CtiTime::now().seconds() % getInterval()) + getInterval();
-                                } 
-                            } catch (...)
-                            {
-                                CtiLockGuard<CtiLogger> logger_guard(dout); 
-                                dout << CtiTime() << " - Caught '...' in: " << __FILE__ << " at:" << __LINE__ << endl; 
-                            }
-
-                        } catch (...)
-                        {
-                            CtiLockGuard<CtiLogger> logger_guard(dout); 
-                            dout << CtiTime() << " - Caught '...' in: " << __FILE__ << " at:" << __LINE__ << endl; 
-                        }
-                        delete(fileData); 
-
-                    } 
-                } else
+                //close files
+                for( std::list<std::iostream*>::iterator itr2 = openedFileList.begin(); itr2 != openedFileList.end(); itr2++ )
                 {
-                    try
+                    std::fstream* file = (std::fstream*)*itr2;
+                    file->close();
+                    delete file;
+                }
+                openedFileList.clear();
+                //errorcases?
+                
+                //process data
+                for( std::list<std::string>::iterator itr3 =  pointUpdates.begin(); itr3 != pointUpdates.end(); itr3++ )
+                {
+                    CtiMessage *retMsg = NULL;
+                    //string line = *itr3;
+                    if ( validateAndDecodeLine( *itr3, &retMsg ) )
                     {
-                        fptr = NULL; 
-                        attemptCounter = 0; 
-                        _snprintf(fileNameAndPath, 200, "%s\\%s",getDriveAndPath().c_str(),getFileName().c_str()); 
-
-                    } catch (...)
-                    {
-                        CtiLockGuard<CtiLogger> logger_guard(dout); 
-                        dout << CtiTime() << " - Caught '...' in: " << __FILE__ << " at:" << __LINE__ << endl; 
+                        queueMessageToDispatch( retMsg );
                     }
-                    try
-                    {
-                        { 
-                            CtiLockGuard<CtiLogger> doubt_guard(dout); 
-                            dout << CtiTime() << " Attempting to open..." << fileNameAndPath<< endl; 
-                        } 
-
-                        fptr = fopen(fileNameAndPath, "r"); 
-
-
-                        try
-                        {
-                            while ((fptr == NULL) && (attemptCounter < 10))
-                            {
-                                attemptCounter++; 
-                                pSelf.sleep(1000); 
-                                pSelf.serviceCancellation( ); 
-                            } 
-
-
-                        } catch (...)
-                        {
-                            CtiLockGuard<CtiLogger> logger_guard(dout); 
-                            dout << CtiTime() << " - Caught '...' in: " << __FILE__ << " at:" << __LINE__ << endl; 
-                        }
-
-
-                        try
-                        {
-                            if ( fptr == NULL )
-                            {
-                                { 
-                                    CtiLockGuard<CtiLogger> doubt_guard(dout); 
-                                    dout << CtiTime() << " " << getInterfaceName() << "'s file " << CtiString (fileNameAndPath) << " was either not found or could not be opened" << endl; 
-                                } 
-                            } else
-                            {
-                                vector<CtiString>     pointVector; 
-
-                                // load list in the command vector 
-                                while ( fgets( (char*) workBuffer, 1500, fptr) != NULL )
-                                {
-                                    CtiString entry (workBuffer); 
-                                    pointVector.push_back (entry); 
-                                } 
-
-                                fclose(fptr); 
-                                if ( ferror( fptr ) != 0 )
-                                {
-                                    pointVector.erase(pointVector.begin(), pointVector.end()); 
-                                } else
-                                {
-                                    // retrieve each line in order 
-                                    int totalLines = pointVector.size(); 
-                                    int lineCnt = 0; 
-                                    CtiMessage      *retMsg=NULL; 
-                                    while (lineCnt < totalLines )
-                                    {
-                                        if (validateAndDecodeLine( pointVector[lineCnt], &retMsg ))
-                                        {
-                                            queueMessageToDispatch (retMsg); 
-                                        }
-                                        lineCnt++; 
-                                    } 
-                                    pointVector.erase(pointVector.begin(), pointVector.end()); 
-                                } 
-
-                                try
-                                {
-                                    if ( shouldRenameSaveFileAfterImport() )
-                                    {
-                                        CHAR oldFileName[250]; 
-                                        strcpy(oldFileName,fileNameAndPath); 
-                                        CHAR newFileName[250]; 
-                                        CHAR* periodPtr = strchr(fileNameAndPath,'.');//reverse lookup 
-                                        if ( periodPtr )
-                                        {
-                                            *periodPtr = NULL; 
-                                        }else
-                                        {
-                                            CtiLockGuard<CtiLogger> doubt_guard(dout); 
-                                            dout << "Uh Sir" << endl; 
-                                        }
-                                        CtiTime timestamp= CtiTime(); 
-                                        string tempTime = timestamp.asString();
-
-                                        bool slashesInString = true;
-                                        while( slashesInString )
-                                        {
-                                            int pos = tempTime.find("/");
-                                            if( pos == string::npos )
-                                            {
-                                                slashesInString = false;
-                                                pos = tempTime.find(":");
-                                                while (pos != string::npos )
-                                                {
-                                                    tempTime = tempTime.erase(pos,1);
-                                                    pos = tempTime.find(":");
-                                                }
-                                            }
-                                            else
-                                            {
-                                                tempTime = tempTime.replace(pos,1,"_"); 
-                                            }
-                                        }
-
-                                        _snprintf(newFileName, 250, "%s%s%s%s", fileNameAndPath, ".", tempTime.c_str(),".txt" ); 
-                                        MoveFileEx(oldFileName,newFileName, MOVEFILE_REPLACE_EXISTING | MOVEFILE_COPY_ALLOWED); 
-
-                                        DWORD lastError = GetLastError(); 
-                                        if ( lastError )
-                                        {
-                                            CtiLockGuard<CtiLogger> doubt_guard(dout); 
-                                            dout << "Last Error Code: " << lastError << " for MoveFile()" << endl; 
-                                        }
-                                    }
-
-                                    if ( shouldDeleteFileAfterImport() )
-                                    {
-                                        DeleteFile(fileNameAndPath); 
-                                    }
-                                } catch (...)
-                                {
-                                    CtiLockGuard<CtiLogger> logger_guard(dout); 
-                                    dout << CtiTime() << " - Caught '...' in: " << __FILE__ << " at:" << __LINE__ << endl; 
-                                }
-                            } 
-                        } catch (...)
-                        {
-                            CtiLockGuard<CtiLogger> logger_guard(dout); 
-                            dout << CtiTime() << " - Caught '...' in: " << __FILE__ << " at:" << __LINE__ << endl; 
-                        }
-                    } catch (...)
-                    {
-                        CtiLockGuard<CtiLogger> logger_guard(dout); 
-                        dout << CtiTime() << " - Caught '...' in: " << __FILE__ << " at:" << __LINE__ << endl; 
-                    }
-
-                }//end if else _legacyDrivePath 
+                }
+                //Change to do all files in fileList
+                if ( shouldRenameSaveFileAfterImport() && !shouldDeleteFileAfterImport() )
+                {
+                    moveFiles( fileList );
+                }
+                else if( shouldDeleteFileAfterImport() && !shouldRenameSaveFileAfterImport() )
+                {
+                    deleteFiles( fileList );
+                }
+                else if( shouldDeleteFileAfterImport() && shouldRenameSaveFileAfterImport() )
+                {
+                    //both specified. default to move, and not delete( since they were moved )
+                    moveFiles( fileList );
+                    CtiLockGuard<CtiLogger> doubt_guard(dout);
+                    dout << CtiTime() << " master.cfg configuration error cannot rename AND delete the input file. Defaulting to rename.\n";
+                }
+                pointUpdates.clear();
+                fileList.clear();
                 refreshTime = CtiTime() - (CtiTime::now().seconds() % getInterval()) + getInterval(); 
-
-            }//end if (timeNow >= refreshTime) 
-
-        }//end for 
+            }//end if (timeNow >= refreshTime)
+        }//end for
 
     }
 
     catch ( RWCancellation &cancellationMsg )
     {
         CtiLockGuard<CtiLogger> doubt_guard(dout);
-        dout << "CANCELLATION CtiFDRTextImport::threadFunctionReadFromFile in interface " <<getInterfaceName()<< endl;
+        dout << "CANCELLATION CtiFDRTextImport::threadFunctionReadFromFile in interface " << getInterfaceName() << endl;
     }
-
-    // try and catch the thread death
     catch ( ... )
     {
         CtiLockGuard<CtiLogger> doubt_guard(dout);
-        dout << CtiTime() << " Fatal Error:  CtiFDRTextIMport::threadFunctionReadFromFile  " << getInterfaceName() << " is dead! " << endl;
+        dout << CtiTime() << " Fatal Error: CtiFDRTextIMport::threadFunctionReadFromFile: " << getInterfaceName() << " is offline " << endl;
     }
 }
 
-
+bool CtiFDR_TextImport::moveFiles( std::list<string>& fileNames )
+{
+    bool noErrors = true;
+    for( std::list<string>::iterator itr = fileNames.begin(); itr != fileNames.end(); itr++)
+    {
+        string fileNameAndPath = *itr;
+        int pos = fileNameAndPath.rfind(".");
+        //get just the fileName, no path.
+        string oldFileName( fileNameAndPath,0,pos );
+        string tempTime = CtiTime().asString();
+    
+        //remove slashes and : in the time
+        bool slashesInString = true;
+        while( slashesInString )
+        {
+            int pos = tempTime.find("/");
+            if( pos == string::npos )
+            {
+                slashesInString = false;
+                pos = tempTime.find(":");
+                while (pos != string::npos )
+                {
+                    tempTime = tempTime.erase(pos,1);
+                    pos = tempTime.find(":");
+                }
+            }
+            else
+            {
+                tempTime = tempTime.replace(pos,1,"_"); 
+            }
+        }
+    
+        string newFilename = oldFileName + "." + tempTime + ".txt";
+    
+        bool success = MoveFileEx( fileNameAndPath.c_str(),newFilename.c_str(), MOVEFILE_REPLACE_EXISTING | MOVEFILE_COPY_ALLOWED); 
+        if ( !success )
+        {
+            noErrors = false;
+            DWORD lastError = GetLastError(); 
+            CtiLockGuard<CtiLogger> doubt_guard(dout); 
+            dout << "Error moving file " <<  fileNameAndPath << ". Code: " << lastError << " for MoveFile()" << endl; 
+        }
+    }
+    return noErrors;
+}
+bool CtiFDR_TextImport::deleteFiles( std::list<string>& fileNames )
+{
+    bool noErrors = true;
+    for( std::list<string>::iterator itr = fileNames.begin(); itr != fileNames.end(); itr++)
+    {
+        string fileNameAndPath = *itr;
+        bool success = DeleteFile( fileNameAndPath.c_str() );
+        if ( !success )
+        {
+            noErrors = false;
+            DWORD lastError = GetLastError(); 
+            CtiLockGuard<CtiLogger> doubt_guard(dout); 
+            dout << "Error deleting " <<  fileNameAndPath << ". Code: " << lastError << " for DeleteFile()" << endl; 
+        }
+    }
+    return noErrors;
+}
 CtiString& CtiFDR_TextImport::getFileImportBaseDrivePath() 
 { 
     return _fileImportBaseDrivePath; 
@@ -1373,7 +1191,14 @@ CtiString& CtiFDR_TextImport::setFileImportBaseDrivePath(CtiString importBase)
     return _fileImportBaseDrivePath; 
 } 
 
-
+bool CtiFDR_TextImport::getLegacy()
+{ 
+    return _legacyDrivePath; 
+}
+void CtiFDR_TextImport::setLegacy( bool val )
+{ 
+    _legacyDrivePath = val; 
+}
 
 /****************************************************************************************
 *

@@ -69,7 +69,7 @@ public:
 
 };
 
-    CtiString operator+ (const CtiString &rs1, const CtiString &rs);
+IM_EX_CTIBASE CtiString operator+ (const CtiString &rs1, const CtiString &rs);
 
 
 #endif

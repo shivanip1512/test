@@ -7,8 +7,8 @@
 *
 *    PVCS KEYWORDS:
 *    ARCHIVE      :  $Archive:   Z:/SOFTWAREARCHIVES/YUKON/FDR/fdrtextimport.cpp-arc  $
-*    REVISION     :  $Revision: 1.4 $
-*    DATE         :  $Date: 2006/12/22 19:40:23 $
+*    REVISION     :  $Revision: 1.5 $
+*    DATE         :  $Date: 2007/08/30 17:03:39 $
 *
 *
 *    AUTHOR: David Sutton
@@ -20,6 +20,24 @@
 *    ---------------------------------------------------
 *    History: 
       $Log: fdrtextimport.h,v $
+      Revision 1.5  2007/08/30 17:03:39  tspar
+      YUK-4318
+
+      Fixed the way we read from files to be more efficient, and changed code flow to allow for more unit testing.
+
+      Changed cparms to more show an intuitive difference between them.
+      FDR_TEXTIMPORT_IMPORT_PATH is now
+      FDR_TEXTIMPORT_DEFAULT_POINTIMPORT_PATH
+
+      Changed the processe function that was causing a large memory leak over runtime.
+      -Changed the code so it doesn't leak anymore, worked a long time trying to pin down the actual reason before just re-working the code.
+
+      Changed the delete cparm to no longer default to true since we have two options, delete or rename.
+      How it works now:
+      1)specifying rename and delete will default to rename.
+      2)not specifying either will default to delete.
+      3)specifying one or the other will work as expected.
+
       Revision 1.4  2006/12/22 19:40:23  jrichter
       Bug Id: 716
       -check first character to see if it is digit, + or - sign before calling atof function
@@ -45,11 +63,17 @@
 #define __FDRTEXTIMPORT_H__
 
 
-#include <windows.h>    //  NOTE:  if porting this to non-WIN32, make sure to replace this
+//#include <windows.h>    //  NOTE:  if porting this to non-WIN32, make sure to replace this
 
 #include "dlldefs.h"
 #include "fdrtextfilebase.h"
 #include "textfileinterfaceparts.h"
+#include <iostream.h>
+#include <list>
+#include "ctistring.h"
+#include <boost/tokenizer.hpp>
+
+using std::list;
 
 class IM_EX_FDRTEXTIMPORT CtiFDR_TextImport : public CtiFDRTextFileBase
 {
@@ -74,7 +98,7 @@ public:
     USHORT ForeignToYukonQuality (string aQuality);
     CtiTime ForeignToYukonTime (string aTime, CHAR aDstFlag);
 
-    bool processFunctionOne (string &aLine, CtiMessage **aRetMsg);
+    bool processFunctionOne (Tokenizer& cmdLine, CtiMessage **aRetMsg);
 
     bool shouldDeleteFileAfterImport() const;
     CtiFDR_TextImport &setDeleteFileAfterImport (bool aFlag);
@@ -82,24 +106,32 @@ public:
     bool shouldRenameSaveFileAfterImport() const; 
     CtiFDR_TextImport &setRenameSaveFileAfterImport (bool aFlag); 
     
-    bool validateAndDecodeLine( string &input, CtiMessage **aRetMsg);
-    vector <CtiFDRTextFileInterfaceParts> getFileInfoList() {return _fileInfoList;}; 
+    bool validateAndDecodeLine( string& input, CtiMessage **aRetMsg);
+    vector <CtiFDRTextFileInterfaceParts>* getFileInfoList() {return &_fileInfoList;}; 
     
     CtiString& getFileImportBaseDrivePath(); 
     CtiString& setFileImportBaseDrivePath(CtiString importBase); 
 
+    list<string> parseFiles( list<std::iostream*> &istrmList );
+    list<string> getFileNames();
+
+    bool moveFiles   ( std::list<string> &fileNames );
+    bool deleteFiles ( std::list<string> &fileNames );
 
     void threadFunctionReadFromFile( void );
     virtual bool loadTranslationLists(void);
     // ddefine these for each interface type
     static const CHAR * KEY_INTERVAL;
     static const CHAR * KEY_FILENAME;
-    static const CHAR * KEY_DRIVE_AND_PATH;
+    static const CHAR * KEY_LEGACY_DRIVE_AND_PATH;
     static const CHAR * KEY_DB_RELOAD_RATE;
     static const CHAR * KEY_QUEUE_FLUSH_RATE;
     static const CHAR * KEY_DELETE_FILE;
-    static const CHAR * KEY_IMPORT_BASE_PATH; 
-    static const CHAR * KEY_RENAME_SAVE_FILE; 
+    static const CHAR * KEY_POINTIMPORT_DEFAULT_PATH; 
+    static const CHAR * KEY_RENAME_SAVE_FILE;
+
+    bool getLegacy();
+    void setLegacy( bool val );
 
 
 private:
@@ -108,7 +140,7 @@ private:
     bool _renameSaveFileAfterImportFlag; 
     bool _legacyDrivePath;
     CtiString _fileImportBaseDrivePath; 
-   
+
     vector <CtiFDRTextFileInterfaceParts> _fileInfoList; 
 
 };

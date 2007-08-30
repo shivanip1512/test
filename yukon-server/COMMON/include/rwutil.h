@@ -256,6 +256,8 @@ inline string RW2String( RWCString str ){
 	return string(str.data());
 }
 typedef boost::tokenizer<boost::char_separator<char> > Boost_char_tokenizer;
+typedef boost::tokenizer<boost::char_separator<char> > Tokenizer;
+typedef boost::char_separator<char> Separator;
 
 /*
 * end wraper
