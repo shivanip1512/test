@@ -8,18 +8,16 @@ package com.cannontech.analysis;
 
 import com.cannontech.analysis.controller.CBCInventoryController;
 import com.cannontech.analysis.controller.CapBankOperationsPerformanceController;
-import com.cannontech.analysis.controller.CapControlRetriesController;
 import com.cannontech.analysis.controller.CapControlConfirmationPercentageController;
 import com.cannontech.analysis.controller.CapControlOperationsController;
+import com.cannontech.analysis.controller.CapControlRetriesController;
 import com.cannontech.analysis.controller.CapControlScheduleDetailController;
 import com.cannontech.analysis.controller.CapControlStateComparisonController;
 import com.cannontech.analysis.controller.CurtailmentEventSummaryController;
 import com.cannontech.analysis.controller.CurtailmentInterruptionSummaryController;
 import com.cannontech.analysis.controller.DisconnectCollarController;
-import com.cannontech.analysis.controller.MeterKwhDifferenceController;
 import com.cannontech.analysis.controller.ReportController;
 import com.cannontech.analysis.controller.ReportControllerAdapter;
-import com.cannontech.analysis.report.MeterKwhDifferenceReport;
 import com.cannontech.analysis.tablemodel.ActivityDetailModel;
 import com.cannontech.analysis.tablemodel.ActivityModel;
 import com.cannontech.analysis.tablemodel.CapBankListModel;
@@ -28,7 +26,6 @@ import com.cannontech.analysis.tablemodel.CapControlEventLogModel;
 import com.cannontech.analysis.tablemodel.CapControlNewActivityModel;
 import com.cannontech.analysis.tablemodel.CarrierDBModel;
 import com.cannontech.analysis.tablemodel.DailyPeaksModel;
-import com.cannontech.analysis.tablemodel.DisconnectCollarModel;
 import com.cannontech.analysis.tablemodel.DisconnectModel;
 import com.cannontech.analysis.tablemodel.HECO_CustomerMonthlyBillingSettlementModel;
 import com.cannontech.analysis.tablemodel.HECO_DSMISModel;
@@ -42,6 +39,7 @@ import com.cannontech.analysis.tablemodel.LoadGroupModel;
 import com.cannontech.analysis.tablemodel.MaxDailyOpsModel;
 import com.cannontech.analysis.tablemodel.MeterOutageModel;
 import com.cannontech.analysis.tablemodel.MeterReadModel;
+import com.cannontech.analysis.tablemodel.MeterUsageModel;
 import com.cannontech.analysis.tablemodel.PointDataIntervalModel;
 import com.cannontech.analysis.tablemodel.PointDataSummaryModel;
 import com.cannontech.analysis.tablemodel.PowerFailModel;
@@ -56,7 +54,6 @@ import com.cannontech.analysis.tablemodel.StarsAMRSummaryModel;
 import com.cannontech.analysis.tablemodel.StarsLMDetailModel;
 import com.cannontech.analysis.tablemodel.StarsLMSummaryModel;
 import com.cannontech.analysis.tablemodel.StatisticHistoryDeviceModel;
-import com.cannontech.analysis.tablemodel.StatisticHistoryModel;
 import com.cannontech.analysis.tablemodel.StatisticHistoryPortModel;
 import com.cannontech.analysis.tablemodel.StatisticHistoryTransmitterModel;
 import com.cannontech.analysis.tablemodel.StatisticModel;
@@ -137,7 +134,7 @@ public class ReportTypes
     
     public static final int SCHEDULED_METER_READ_DATA = 43;
     public static final int REPEATER_ROLE_COLLISION = 44;
-    public static final int METER_KWH_DIFFERENCE = 45;
+    public static final int METER_USAGE_DATA = 45;
     public static final int DISCONNECT_COLLAR = 46;
     public static final int STATISTIC_HISTORY_PORT_DATA = 47;
     public static final int STATISTIC_HISTORY_DEVICE_DATA = 48;
@@ -198,7 +195,7 @@ public class ReportTypes
         
         ScheduledMeterReadModel.class,
         RepeaterRoleCollisionModel.class,
-        MeterKwhDifferenceController.class,
+        MeterUsageModel.class,
         DisconnectCollarController.class,
         StatisticHistoryPortModel.class,
         StatisticHistoryDeviceModel.class,
@@ -219,8 +216,8 @@ public class ReportTypes
 	public static final String METER_DATA_STRING = "Meter Reads";
 	public static final String METER_OUTAGE_STRING = "Meter Outages";
 	public static final String CARRIER_DB_DATA_STRING = "Carrier Data";
-	public static final String POWER_FAIL_DATA_STRING = "Power Fail Data";
-	public static final String DISCONNECT_METER_DATA_STRING = "Disconnect Data";
+	public static final String POWER_FAIL_DATA_STRING = "Outage Counts";
+	public static final String DISCONNECT_METER_DATA_STRING = "Disconnect Status";
 	public static final String CARRIER_ROUTE_MACRO_DATA_STRING = "Carrier Route Macro Data";
 	public static final String ROUTE_DATA_STRING = "Route Data";
 //	public static final String LOAD_PROFILE_DATA_STRING = "Load Profile Data";
@@ -267,7 +264,7 @@ public class ReportTypes
     
     public static final String SCHEDULED_METER_READ_STRING = "Scheduled Meter Reads";
     public static final String REPEATER_ROLE_COLLISION_STRING = "Repeater Role Collision Report";
-    public static final String METER_KWH_DIFFERENCE_STRING = "Meter kWh Difference Report";
+    public static final String METER_USAGE_STRING = "Meter Usage Report";
     public static final String DISCONNECT_COLLAR_STRING = "Disconnect Collar Report";
 
     public static final String CAPBANK_DATA_DESCRIPTION = "Detailed report of the capbanks, including information on its location, size, cbc, feeder and substation bus.";
@@ -341,7 +338,7 @@ public class ReportTypes
         
         SCHEDULED_METER_READ_STRING,
         REPEATER_ROLE_COLLISION_STRING,
-        METER_KWH_DIFFERENCE_STRING,
+        METER_USAGE_STRING,
         DISCONNECT_COLLAR_STRING,
         STATISTIC_HISTORY_PORT_STRING,
         STATISTIC_HISTORY_DEVICE_STRING,
@@ -430,7 +427,7 @@ public class ReportTypes
         DISCONNECT_METER_DATA, 
         LP_SETUP_DATA, 
         LP_SUMMARY_DATA,
-        METER_KWH_DIFFERENCE
+        METER_USAGE_DATA
         };
     
 	private static int[] statGroupReportTypes = new int[]{

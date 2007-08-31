@@ -40,6 +40,7 @@ import com.cannontech.analysis.report.LoadControlVerificationReport;
 import com.cannontech.analysis.report.MaxDailyOpsReport;
 import com.cannontech.analysis.report.MeterOutageReport;
 import com.cannontech.analysis.report.MeterReadReport;
+import com.cannontech.analysis.report.MeterUsageReport;
 import com.cannontech.analysis.report.PointDataIntervalReport;
 import com.cannontech.analysis.report.PointDataSummaryReport;
 import com.cannontech.analysis.report.PowerFailReport;
@@ -77,6 +78,7 @@ import com.cannontech.analysis.tablemodel.LoadGroupModel;
 import com.cannontech.analysis.tablemodel.MaxDailyOpsModel;
 import com.cannontech.analysis.tablemodel.MeterOutageModel;
 import com.cannontech.analysis.tablemodel.MeterReadModel;
+import com.cannontech.analysis.tablemodel.MeterUsageModel;
 import com.cannontech.analysis.tablemodel.PointDataIntervalModel;
 import com.cannontech.analysis.tablemodel.PointDataSummaryModel;
 import com.cannontech.analysis.tablemodel.PowerFailModel;
@@ -200,6 +202,8 @@ public class ReportFuncs
             returnVal = new ScheduledMeterReadReport();
         else if( model instanceof RepeaterRoleCollisionModel)
             returnVal = new RepeaterRoleCollisionReport();
+        else if( model instanceof MeterUsageModel)
+            returnVal = new MeterUsageReport();
         else
             return null;
 
