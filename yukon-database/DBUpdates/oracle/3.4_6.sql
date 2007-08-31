@@ -17,6 +17,14 @@ update yukonroleproperty set DefaultValue = 'false' where rolepropertyid = -1000
 
 insert into billingfileformats values(-26, 'SIMPLE_TOU_DeviceName');
 
+create table dynamicccarea ( AreaID numeric not null, additionalflags varchar(20) not null );
+
+alter table dynamicccarea
+   add constraint FK_ccarea_Dynccarea foreign key (areaID)
+      references Capcontrolarea (areaID);
+
+insert into dynamicccarea (areaid, additionalflags) select areaid, 'NNNNNNNNNNNNNNNNNNNN' from capcontrolarea; 
+
 /******************************************************************************/
 /* Run the Stars Update if needed here */
 /* Note: DBUpdate application will ignore this if STARS is not present */
