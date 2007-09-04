@@ -106,8 +106,8 @@ public:
         SEND_ALL_OPEN, //29
         SEND_ALL_CLOSE, //30
         SEND_ALL_ENABLE_OVUV, //31
-        SEND_ALL_DISABLE_OVUV //32
-        
+        SEND_ALL_DISABLE_OVUV, //32
+        SEND_ALL_SCAN_2WAY_DEVICE //33        
     };
 
     CtiCCCommand(LONG command);

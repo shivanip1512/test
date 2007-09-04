@@ -1804,7 +1804,8 @@ CtiCCCapBank* CtiCCFeeder::findCapBankToChangeVars(DOUBLE kvarSolution)
             {
                 //have we went past the max daily ops
                 if( currentCapBank->getMaxDailyOps() > 0 &&
-                    currentCapBank->getCurrentDailyOperations() == currentCapBank->getMaxDailyOps() )//only send once
+                    (currentCapBank->getCurrentDailyOperations() == currentCapBank->getMaxDailyOps()  ||
+                     (!currentCapBank->getMaxDailyOpsHitFlag() && currentCapBank->getCurrentDailyOperations() > currentCapBank->getMaxDailyOps())  ) )//only send once
                 {
                     currentCapBank->setMaxDailyOpsHitFlag(TRUE);
                     string text = string("CapBank Exceeded Max Daily Operations");
@@ -1848,7 +1849,6 @@ CtiCCCapBank* CtiCCFeeder::findCapBankToChangeVars(DOUBLE kvarSolution)
         }
         if (returnCapBank == NULL && _RETRY_FAILED_BANKS) 
         {
-            
             for(i=0;i<closeCaps.size();i++)
             {
                 CtiCCCapBank* currentCapBank = (CtiCCCapBank*)closeCaps[i];
@@ -1864,7 +1864,6 @@ CtiCCCapBank* CtiCCFeeder::findCapBankToChangeVars(DOUBLE kvarSolution)
                 }
             }
         }         
-
     }
     else if( kvarSolution > 0.0 )
     {
@@ -1886,8 +1885,11 @@ CtiCCCapBank* CtiCCFeeder::findCapBankToChangeVars(DOUBLE kvarSolution)
                 //have we went past the max daily ops
                 if( currentCapBank->getMaxDailyOps() > 0 &&
                     (currentCapBank->getCurrentDailyOperations() == currentCapBank->getMaxDailyOps() && !_END_DAY_ON_TRIP) ||
-                     (currentCapBank->getCurrentDailyOperations() == currentCapBank->getMaxDailyOps() + 1 && _END_DAY_ON_TRIP))//only send once
+                    (currentCapBank->getCurrentDailyOperations() == currentCapBank->getMaxDailyOps() + 1 && _END_DAY_ON_TRIP) ||
+                    (!currentCapBank->getMaxDailyOpsHitFlag() && currentCapBank->getCurrentDailyOperations() > currentCapBank->getMaxDailyOps()))//only send once
                 {
+
+                    //currentCapBank->setMaxDailyOpsHitFlag(TRUE);
                     string text("CapBank Exceeded Max Daily Operations");
                     string additional("CapBank: ");
                     additional += getPAOName();
@@ -2475,7 +2477,7 @@ BOOL CtiCCFeeder::checkForAndProvideNeededIndividualControl(const CtiTime& curre
     DOUBLE setpoint = (lagLevel + leadLevel)/2;
     string feederControlUnits = controlUnits;
     //DON'T ADD !... Supposed to be !=none
-    if (stringCompareIgnoreCase(_controlunits,"(none)"))
+    if (stringCompareIgnoreCase(_strategyName,"(none)"))
     {
         feederControlUnits = _controlunits;
     }
@@ -4203,8 +4205,7 @@ CtiCCFeeder& CtiCCFeeder::setIVControl(DOUBLE value)
 {
     _iVControl = value;
     return *this;
-}
-/*---------------------------------------------------------------------------
+}/*---------------------------------------------------------------------------
     setIWControl 
         
     Sets the Integrated Watt Control  of the feeder
@@ -5839,7 +5840,8 @@ BOOL CtiCCFeeder::checkMaxDailyOpCountExceeded()
 {
     BOOL retVal = FALSE;
     if( getMaxDailyOperation() > 0 &&
-        _currentdailyoperations == getMaxDailyOperation() )//only send once
+        (_currentdailyoperations == getMaxDailyOperation()  ||
+         (!getMaxDailyOpsHitFlag() && _currentdailyoperations > getMaxDailyOperation()) ) )//only send once
     {
 
         setMaxDailyOpsHitFlag(TRUE);

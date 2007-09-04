@@ -2389,7 +2389,8 @@ CtiCCSubstationBus& CtiCCSubstationBus::checkForAndProvideNeededControl(const Ct
 
     //have we went past the max daily ops
     if( getMaxDailyOperation() > 0 &&
-        _currentdailyoperations == getMaxDailyOperation() )//only send once
+        (_currentdailyoperations == getMaxDailyOperation()  ||
+         (!getMaxDailyOpsHitFlag() && _currentdailyoperations > getMaxDailyOperation()) ) )//only send once
     {
         setMaxDailyOpsHitFlag(TRUE);
 
@@ -3771,7 +3772,7 @@ BOOL CtiCCSubstationBus::capBankControlStatusUpdate(CtiMultiMsg_vec& pointChange
         for(LONG i=0;i<_ccfeeders.size();i++)
         {
             CtiCCFeeder* currentFeeder = (CtiCCFeeder*)_ccfeeders.at(i);
-            if (stringCompareIgnoreCase(currentFeeder->getControlUnits(),"(none)"))
+            if (stringCompareIgnoreCase(currentFeeder->getStrategyName(),"(none)"))
             {
                 minConfirmPercent = currentFeeder->getMinConfirmPercent();
                 maxConfirmTime = currentFeeder->getMaxConfirmTime();
@@ -3808,7 +3809,7 @@ BOOL CtiCCSubstationBus::capBankControlStatusUpdate(CtiMultiMsg_vec& pointChange
         {
             currentFeeder->setEventSequence(getEventSequence());
 
-            if (stringCompareIgnoreCase(currentFeeder->getControlUnits(),"(none)"))
+            if (stringCompareIgnoreCase(currentFeeder->getStrategyName(),"(none)"))
             {
                 minConfirmPercent = currentFeeder->getMinConfirmPercent();
                 maxConfirmTime = currentFeeder->getMaxConfirmTime();
@@ -3825,7 +3826,7 @@ BOOL CtiCCSubstationBus::capBankControlStatusUpdate(CtiMultiMsg_vec& pointChange
             for(LONG i=0;i<_ccfeeders.size();i++)
             {
                 currentFeeder = (CtiCCFeeder*)_ccfeeders.at(i);
-                if (stringCompareIgnoreCase(currentFeeder->getControlUnits(),"(none)"))
+                if (stringCompareIgnoreCase(currentFeeder->getStrategyName(),"(none)"))
                 {
                     minConfirmPercent = currentFeeder->getMinConfirmPercent();
                     maxConfirmTime = currentFeeder->getMaxConfirmTime();
@@ -3860,7 +3861,7 @@ BOOL CtiCCSubstationBus::capBankControlStatusUpdate(CtiMultiMsg_vec& pointChange
 
             if( currentFeeder->getRecentlyControlledFlag() )
             {
-                if (stringCompareIgnoreCase(currentFeeder->getControlUnits(),"(none)"))
+                if (stringCompareIgnoreCase(currentFeeder->getStrategyName(),"(none)"))
                 {
                     minConfirmPercent = currentFeeder->getMinConfirmPercent();
                     maxConfirmTime = currentFeeder->getMaxConfirmTime();
@@ -3939,7 +3940,7 @@ BOOL CtiCCSubstationBus::capBankVerificationStatusUpdate(CtiMultiMsg_vec& pointC
         CtiCCFeeder* currentFeeder = (CtiCCFeeder*)_ccfeeders.at(i);
         if (currentFeeder->getPAOId() == getCurrentVerificationFeederId())
         {
-            if (stringCompareIgnoreCase(currentFeeder->getControlUnits(),"(none)"))
+            if (stringCompareIgnoreCase(currentFeeder->getStrategyName(),"(none)"))
             {
                 minConfirmPercent = currentFeeder->getMinConfirmPercent();
                 maxConfirmTime = currentFeeder->getMaxConfirmTime();
@@ -4710,7 +4711,7 @@ BOOL CtiCCSubstationBus::isAlreadyControlled()
                     CtiCCFeeder* currentFeeder = (CtiCCFeeder*)_ccfeeders.at(i);
                     if( currentFeeder->getRecentlyControlledFlag() )
                     {
-                        if (stringCompareIgnoreCase(currentFeeder->getControlUnits(),"(none)"))
+                        if (stringCompareIgnoreCase(currentFeeder->getStrategyName(),"(none)"))
                         {
                             minConfirmPercent = currentFeeder->getMinConfirmPercent();
                         }
@@ -4739,7 +4740,7 @@ BOOL CtiCCSubstationBus::isAlreadyControlled()
 
                     if( currentFeeder->getPAOId() == getLastFeederControlledPAOId() )
                     {
-                        if (stringCompareIgnoreCase(currentFeeder->getControlUnits(),"(none)"))
+                        if (stringCompareIgnoreCase(currentFeeder->getStrategyName(),"(none)"))
                         {
                             minConfirmPercent = currentFeeder->getMinConfirmPercent();
                         }
@@ -4790,7 +4791,7 @@ BOOL CtiCCSubstationBus::isAlreadyControlled()
                     {
                         if( currentFeeder->getCurrentVarLoadPointId() > 0 )
                         {
-                            if (stringCompareIgnoreCase(currentFeeder->getControlUnits(),"(none)"))
+                            if (stringCompareIgnoreCase(currentFeeder->getStrategyName(),"(none)"))
                             {
                                 minConfirmPercent = currentFeeder->getMinConfirmPercent();
                             }
@@ -4813,7 +4814,7 @@ BOOL CtiCCSubstationBus::isAlreadyControlled()
 
                                 if( currentFeeder->getPAOId() == getLastFeederControlledPAOId() )
                                 {
-                                    if (stringCompareIgnoreCase(currentFeeder->getControlUnits(),"(none)"))
+                                    if (stringCompareIgnoreCase(currentFeeder->getStrategyName(),"(none)"))
                                     {
                                         minConfirmPercent = currentFeeder->getMinConfirmPercent();
                                     }
@@ -5410,7 +5411,7 @@ BOOL CtiCCSubstationBus::isVerificationAlreadyControlled()
                     CtiCCFeeder* currentFeeder = (CtiCCFeeder*)_ccfeeders.at(i);
                     if( currentFeeder->getPerformingVerificationFlag() )
                     {
-                        if (stringCompareIgnoreCase(currentFeeder->getControlUnits(),"(none)"))
+                        if (stringCompareIgnoreCase(currentFeeder->getStrategyName(),"(none)"))
                         {
                             minConfirmPercent = currentFeeder->getMinConfirmPercent();
                         }
@@ -5456,7 +5457,7 @@ BOOL CtiCCSubstationBus::isVerificationAlreadyControlled()
                         CtiCCCapBank_SVector& ccCapBanks = currentFeeder->getCCCapBanks();
                         for(LONG j=0;j<ccCapBanks.size();j++)
                         {
-                            if (stringCompareIgnoreCase(currentFeeder->getControlUnits(),"(none)"))
+                            if (stringCompareIgnoreCase(currentFeeder->getStrategyName(),"(none)"))
                             {
                                 minConfirmPercent = currentFeeder->getMinConfirmPercent();
                             }

@@ -732,8 +732,6 @@ void CtiCapController::controlLoop()
                     CtiLockGuard<CtiLogger> logger_guard(dout);
                     dout << CtiTime() << " - Caught '...' in: " << __FILE__ << " at:" << __LINE__ << endl;
                 }
-
-
                 try
                 {
                     //send ccEvents to EventLOG!
@@ -1531,6 +1529,7 @@ void CtiCapController::parseMessage(RWCollectable *message, ULONG secondsFrom190
                         {
                             objType = CtiCCSubstationBusStore::Area;
 
+                            CtiCCSubstationBusStore::getInstance()->setValid(false);
                             CtiPAOScheduleManager::getInstance()->setValid(false);  
                         }
                         else if (resolvePAOType(dbChange->getCategory(),dbChange->getObjectType()) == TYPE_CC_SUBSTATION_BUS)
@@ -2310,7 +2309,6 @@ void CtiCapController::pointDataMsg( long pointID, double value, unsigned qualit
                         }
                         else if (stringContainsIgnoreCase(currentCapBank->getControlDeviceType(),"CBC 702") ) 
                         {   
-                            
                             CtiCCTwoWayPoints* twoWayPts = (CtiCCTwoWayPoints*)currentCapBank->getTwoWayPoints();
                             if (twoWayPts->getIgnoredIndicatorId() == pointID) 
                             {
@@ -2334,11 +2332,20 @@ void CtiCapController::pointDataMsg( long pointID, double value, unsigned qualit
                                        currentCapBank->setControlStatus(CtiCCCapBank::CloseFail);
                                        text1 += "CloseFail";
                                    }
-                                   
+                                   if( !stringCompareIgnoreCase(currentSubstationBus->getControlMethod(), CtiCCSubstationBus::IndividualFeederControlMethod) )
+                                   {
+                                       currentFeeder->setRecentlyControlledFlag(FALSE);
+                                   }
+                                   else
+                                   {
+                                       currentSubstationBus->setRecentlyControlledFlag(FALSE);
+                                       currentFeeder->setRecentlyControlledFlag(FALSE);
+                                   }
+
+                                   currentSubstationBus->setBusUpdatedFlag(TRUE);
                                    sendMessageToDispatch(new CtiPointDataMsg(currentCapBank->getStatusPointId(),currentCapBank->getControlStatus(),NormalQuality,StatusPointType, "Forced ccServer Update", TAG_POINT_FORCE_UPDATE));
                                    getCCEventMsgQueueHandle().write(new CtiCCEventLogMsg(0, currentCapBank->getStatusPointId(), currentSubstationBus->getPAOId(), currentFeeder->getPAOId(), capBankStateUpdate, currentSubstationBus->getEventSequence(), currentCapBank->getControlStatus(), text1, "cap control"));
                                    currentCapBank->setLastStatusChangeTime(CtiTime());
-
                                 }
                             }
                             if (twoWayPts->setTwoWayStatusPointValue(pointID, value))
@@ -2358,9 +2365,19 @@ void CtiCapController::pointDataMsg( long pointID, double value, unsigned qualit
                                     CtiLockGuard<CtiLogger> logger_guard(dout);
                                     dout << CtiTime() << " - Set a cbc 2 way status point..."<< endl;
                                 }
-                                if (twoWayPts->getAutoVoltControl() && currentCapBank->getOvUvDisabledFlag()) 
+                                if (twoWayPts->getAutoVoltControl()) 
                                 {
-                                    currentCapBank->setOvUvDisabledFlag(FALSE);
+                                    if (currentCapBank->getOvUvDisabledFlag()) 
+                                    {
+                                        currentCapBank->setOvUvDisabledFlag(FALSE);
+                                    }
+                                }
+                                else 
+                                { 
+                                    if (!currentCapBank->getOvUvDisabledFlag()) 
+                                    {
+                                        currentCapBank->setOvUvDisabledFlag(TRUE);
+                                    }
                                 }
 
                             }
@@ -2587,7 +2604,15 @@ void CtiCapController::porterReturnMsg( long deviceId, const string& _commandStr
                                               << " PAOID: " << currentCapBank->getPAOId() << " doesn't have a status point!" << endl;
                             }
                             currentFeeder->setPorterRetFailFlag(TRUE);
-                            currentFeeder->setRecentlyControlledFlag(FALSE);
+                            if( !stringCompareIgnoreCase(currentSubstationBus->getControlMethod(), CtiCCSubstationBus::IndividualFeederControlMethod) )
+                            {
+                                currentFeeder->setRecentlyControlledFlag(FALSE);
+                            }
+                            else
+                            {
+                                currentSubstationBus->setRecentlyControlledFlag(FALSE);
+                                currentFeeder->setRecentlyControlledFlag(FALSE);
+                            }
                             currentSubstationBus->setBusUpdatedFlag(TRUE);
                         }
                     }

@@ -1061,6 +1061,12 @@ void CtiCCCommandExecutor::SendAllCapBankCommands()
             action = CtiCCCommand::DISABLE_OVUV;
             break;
         }
+        case CtiCCCommand::SEND_ALL_SCAN_2WAY_DEVICE:
+        {
+            actionText = string(" - Integrity Scan");
+            action = CtiCCCommand::SCAN_2WAY_DEVICE;
+            break;
+        }
         default:
         {
             actionText = string(" - ERROR...");
@@ -1088,7 +1094,8 @@ void CtiCCCommandExecutor::SendAllCapBankCommands()
                     currentFeeder->setOvUvDisabledFlag(TRUE);
                 if (((action  == CtiCCCommand::OPEN_CAPBANK || action  == CtiCCCommand::CLOSE_CAPBANK) &&
                      !currentSubstationBus->getDisableFlag() && !currentArea->getDisableFlag())  ||
-                     (action  == CtiCCCommand::ENABLE_OVUV || action  == CtiCCCommand::DISABLE_OVUV) ) 
+                     (action  == CtiCCCommand::ENABLE_OVUV || action  == CtiCCCommand::DISABLE_OVUV ||
+                      action  == CtiCCCommand::SCAN_2WAY_DEVICE) ) 
                 {
                     string text1 = string("Feeder: ");
                     text1 += currentFeeder->getPAOName();
@@ -1098,7 +1105,8 @@ void CtiCCCommandExecutor::SendAllCapBankCommands()
                     additional1 += currentFeeder->getPAOName();
                     if (((action  == CtiCCCommand::OPEN_CAPBANK || action  == CtiCCCommand::CLOSE_CAPBANK) &&
                          !currentFeeder->getDisableFlag())  ||
-                         (action  == CtiCCCommand::ENABLE_OVUV || action  == CtiCCCommand::DISABLE_OVUV) ) 
+                         (action  == CtiCCCommand::ENABLE_OVUV || action  == CtiCCCommand::DISABLE_OVUV ||
+                      action  == CtiCCCommand::SCAN_2WAY_DEVICE) ) 
                     {
                         pointChanges.push_back(new CtiSignalMsg(SYS_PID_CAPCONTROL,1,text1,additional1,CapControlLogType,SignalEvent,_command->getUser()));
                         currentSubstationBus->setEventSequence(currentSubstationBus->getEventSequence() +1);
@@ -1112,7 +1120,8 @@ void CtiCCCommandExecutor::SendAllCapBankCommands()
                             if (((action  == CtiCCCommand::OPEN_CAPBANK || action  == CtiCCCommand::CLOSE_CAPBANK) &&
                                 !currentCapBank->getDisableFlag() && 
                                 !stringCompareIgnoreCase(currentCapBank->getOperationalState(),CtiCCCapBank::SwitchedOperationalState) ) ||
-                                (action  == CtiCCCommand::ENABLE_OVUV || action  == CtiCCCommand::DISABLE_OVUV) ) 
+                                (action  == CtiCCCommand::ENABLE_OVUV || action  == CtiCCCommand::DISABLE_OVUV ||
+                                 action  == CtiCCCommand::SCAN_2WAY_DEVICE) ) 
                             {
                                 actionMulti->insert(new CtiCCCommand(action, currentCapBank->getControlDeviceId()));
                             }
@@ -1144,7 +1153,8 @@ void CtiCCCommandExecutor::SendAllCapBankCommands()
                 additional1 += currentSubstationBus->getPAOName();
                 if (((action  == CtiCCCommand::OPEN_CAPBANK || action  == CtiCCCommand::CLOSE_CAPBANK) &&
                       !currentSubstationBus->getDisableFlag() && !currentArea->getDisableFlag())  ||
-                      (action  == CtiCCCommand::ENABLE_OVUV || action  == CtiCCCommand::DISABLE_OVUV) ) 
+                      (action  == CtiCCCommand::ENABLE_OVUV || action  == CtiCCCommand::DISABLE_OVUV ||
+                      action  == CtiCCCommand::SCAN_2WAY_DEVICE) ) 
                 {
                     pointChanges.push_back(new CtiSignalMsg(SYS_PID_CAPCONTROL,1,text1,additional1,CapControlLogType,SignalEvent,_command->getUser()));
                     currentSubstationBus->setEventSequence(currentSubstationBus->getEventSequence() +1);
@@ -1162,7 +1172,8 @@ void CtiCCCommandExecutor::SendAllCapBankCommands()
                             currentFeeder->setOvUvDisabledFlag(TRUE);
                         if (((action  == CtiCCCommand::OPEN_CAPBANK || action  == CtiCCCommand::CLOSE_CAPBANK) &&
                              !currentFeeder->getDisableFlag())  ||
-                             (action  == CtiCCCommand::ENABLE_OVUV || action  == CtiCCCommand::DISABLE_OVUV) ) 
+                             (action  == CtiCCCommand::ENABLE_OVUV || action  == CtiCCCommand::DISABLE_OVUV ||
+                              action  == CtiCCCommand::SCAN_2WAY_DEVICE) ) 
                         {
                             CtiCCCapBank_SVector& ccCapBanks = currentFeeder->getCCCapBanks();
                    
@@ -1172,7 +1183,8 @@ void CtiCCCommandExecutor::SendAllCapBankCommands()
                                 if (((action  == CtiCCCommand::OPEN_CAPBANK || action  == CtiCCCommand::CLOSE_CAPBANK) &&
                                      !currentCapBank->getDisableFlag() && 
                                      !stringCompareIgnoreCase(currentCapBank->getOperationalState(),CtiCCCapBank::SwitchedOperationalState) ) ||
-                                    (action  == CtiCCCommand::ENABLE_OVUV || action  == CtiCCCommand::DISABLE_OVUV) ) 
+                                    (action  == CtiCCCommand::ENABLE_OVUV || action  == CtiCCCommand::DISABLE_OVUV ||
+                                     action  == CtiCCCommand::SCAN_2WAY_DEVICE) ) 
                                 {
                                     actionMulti->insert(new CtiCCCommand(action, currentCapBank->getControlDeviceId()));
                                 }  
@@ -1213,9 +1225,10 @@ void CtiCCCommandExecutor::SendAllCapBankCommands()
                         currentSubstationBus->setOvUvDisabledFlag(FALSE);
                     if (_command->getCommand() == CtiCCCommand::SEND_ALL_DISABLE_OVUV) 
                         currentSubstationBus->setOvUvDisabledFlag(TRUE);
-                    if (((action  == CtiCCCommand::SEND_ALL_OPEN || action  == CtiCCCommand::SEND_ALL_CLOSE) &&
+                    if (((action  == CtiCCCommand::OPEN_CAPBANK || action  == CtiCCCommand::CLOSE_CAPBANK) &&
                            !currentSubstationBus->getDisableFlag() && !currentArea->getDisableFlag())  ||
-                           (action  == CtiCCCommand::SEND_ALL_ENABLE_OVUV || action  == CtiCCCommand::SEND_ALL_ENABLE_OVUV) ) 
+                           (action  == CtiCCCommand::ENABLE_OVUV || action  == CtiCCCommand::DISABLE_OVUV ||
+                            action  == CtiCCCommand::SCAN_2WAY_DEVICE) ) 
                     {
                         currentSubstationBus->setEventSequence(currentSubstationBus->getEventSequence() +1);
                         ccEvents.push_back(new CtiCCEventLogMsg(0, SYS_PID_CAPCONTROL, currentSubstationBus->getPAOId(), 0, capControlManualCommand, currentSubstationBus->getEventSequence(), 0, text1, _command->getUser()));
@@ -1230,9 +1243,10 @@ void CtiCCCommandExecutor::SendAllCapBankCommands()
                                 currentFeeder->setOvUvDisabledFlag(FALSE);
                             if (_command->getCommand() == CtiCCCommand::SEND_ALL_DISABLE_OVUV) 
                                 currentFeeder->setOvUvDisabledFlag(TRUE);
-                            if (((action  == CtiCCCommand::SEND_ALL_OPEN || action  == CtiCCCommand::SEND_ALL_CLOSE) &&
+                            if (((action  == CtiCCCommand::OPEN_CAPBANK || action  == CtiCCCommand::CLOSE_CAPBANK) &&
                                !currentFeeder->getDisableFlag())  ||
-                               (action  == CtiCCCommand::SEND_ALL_ENABLE_OVUV || action  == CtiCCCommand::SEND_ALL_ENABLE_OVUV) ) 
+                               (action  == CtiCCCommand::ENABLE_OVUV || action  == CtiCCCommand::DISABLE_OVUV ||
+                                action  == CtiCCCommand::SCAN_2WAY_DEVICE) ) 
                             {
                                 CtiCCCapBank_SVector& ccCapBanks = currentFeeder->getCCCapBanks();
                            
@@ -1240,10 +1254,11 @@ void CtiCCCommandExecutor::SendAllCapBankCommands()
                                 {
                                     CtiCCCapBankPtr currentCapBank = (CtiCCCapBankPtr)ccCapBanks[k];
 
-                                    if (((action  == CtiCCCommand::SEND_ALL_OPEN || action  == CtiCCCommand::SEND_ALL_CLOSE) &&
+                                    if (((action  == CtiCCCommand::OPEN_CAPBANK || action  == CtiCCCommand::CLOSE_CAPBANK) &&
                                         !currentCapBank->getDisableFlag()   && 
-                                     !stringCompareIgnoreCase(currentCapBank->getOperationalState(),CtiCCCapBank::SwitchedOperationalState) ) ||
-                                    (action  == CtiCCCommand::SEND_ALL_ENABLE_OVUV || action  == CtiCCCommand::SEND_ALL_ENABLE_OVUV) ) 
+                                        !stringCompareIgnoreCase(currentCapBank->getOperationalState(),CtiCCCapBank::SwitchedOperationalState) ) ||
+                                        (action  == CtiCCCommand::ENABLE_OVUV || action  == CtiCCCommand::DISABLE_OVUV ||
+                                         action  == CtiCCCommand::SCAN_2WAY_DEVICE) ) 
                                     {
                                         actionMulti->insert(new CtiCCCommand(action, currentCapBank->getControlDeviceId()));
                                     }
@@ -1256,7 +1271,6 @@ void CtiCCCommandExecutor::SendAllCapBankCommands()
                 }
 
             }
-
         }
     }
 
@@ -1270,15 +1284,11 @@ void CtiCCCommandExecutor::SendAllCapBankCommands()
     CtiCCExecutorFactory f;
     CtiCCExecutor* executor = f.createExecutor(new CtiCCGeoAreasMsg(ccAreas));
     executor->Execute();
+    delete executor;
 
     executor = f.createExecutor(new CtiCCSubstationBusMsg((CtiCCSubstationBus_vec&)modifiedSubsList,CtiCCSubstationBusMsg::SubBusModified ));
     executor->Execute();
-
     delete executor;
-
-
-
-
     if (multi->getCount() > 0 || multiPilMsg->getCount() > 0)
         CtiCapController::getInstance()->confirmCapBankControl(multiPilMsg, multi);
     if (eventMulti->getCount() > 0)
@@ -1962,10 +1972,10 @@ void CtiCCCommandExecutor::EnableSystem()
     CtiCCExecutorFactory f;
     CtiCCExecutor*executor = f.createExecutor(new CtiCCGeoAreasMsg(ccAreas)); 
     executor->Execute();
+    delete executor;
 
     executor = f.createExecutor(new CtiCCCommand(CtiCCCommand::SYSTEM_STATUS, 1));
     executor->Execute();
-
     delete executor;
 }
 
@@ -2011,6 +2021,7 @@ void CtiCCCommandExecutor::DisableSystem()
     CtiCCExecutorFactory f;
     CtiCCExecutor*executor = f.createExecutor(new CtiCCGeoAreasMsg(ccAreas)); 
     executor->Execute();
+    delete executor;
     executor = f.createExecutor(new CtiCCCommand(CtiCCCommand::SYSTEM_STATUS, 0));
     executor->Execute();
     delete executor;
@@ -2587,7 +2598,7 @@ void CtiCCCommandExecutor::ConfirmArea()
             CtiCCExecutorFactory f;
             CtiCCExecutor* executor = f.createExecutor(confirmMulti);
             executor->Execute();
-
+            delete executor;
 
             executor = f.createExecutor(new CtiCCGeoAreasMsg(ccAreas));
             executor->Execute();
@@ -4135,7 +4146,6 @@ void CtiCCExecutor::moveCapBank(INT permanentFlag, LONG oldFeederId, LONG movedC
         CtiCCExecutorFactory f;
         CtiCCExecutor* executor = f.createExecutor(new CtiCCSubstationBusMsg((CtiCCSubstationBus_vec&)modifiedSubsList,CtiCCSubstationBusMsg::SubBusModified ));
         executor->Execute();
-
         delete executor;
 
 
@@ -4314,7 +4324,8 @@ void CtiCCPointDataMsgExecutor::Execute()
                     }
                     else if( currentCapBank->getOperationAnalogPointId() == pointID )
                     {
-                        if (!currentCapBank->getDisableFlag()) 
+                        /* Commenting this out, to reset disabled bank op counts.  makes sense.*/
+                        //if (!currentCapBank->getDisableFlag()) 
                         {
                             currentSubstationBus->setBusUpdatedFlag(TRUE);
                             currentCapBank->setTotalOperations((LONG) value);
