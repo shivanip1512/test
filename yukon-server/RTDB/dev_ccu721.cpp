@@ -6,8 +6,8 @@
 *
 * PVCS KEYWORDS:
 * ARCHIVE      :  $Archive:     $
-* REVISION     :  $Revision: 1.1 $
-* DATE         :  $Date: 2006/10/05 16:44:50 $
+* REVISION     :  $Revision: 1.2 $
+* DATE         :  $Date: 2007/09/04 17:10:16 $
 *
 * Copyright (c) 2006 Cannon Technologies Inc. All rights reserved.
 *-----------------------------------------------------------------------------*/
@@ -21,6 +21,9 @@
 #include "numstr.h"
 #include "dllyukon.h"
 #include "cparms.h"
+
+
+using Cti::Protocol::Klondike;
 
 
 namespace Cti       {
@@ -42,7 +45,7 @@ Protocol::Interface *CCU721::getProtocol()
 }
 
 
-INT CCU721::ExecuteRequest( CtiRequestMsg *pReq, CtiCommandParser &parse, OUTMESS *&OutMessage, RWTPtrSlist< CtiMessage > &vgList, RWTPtrSlist< CtiMessage > &retList, RWTPtrSlist< OUTMESS > &outList )
+INT CCU721::ExecuteRequest( CtiRequestMsg *pReq, CtiCommandParser &parse, OUTMESS *&OutMessage, list<CtiMessage *> &vgList, list<CtiMessage *> &retList, list<OUTMESS *> &outList )
 {
     INT nRet = NORMAL;
     bool found = false;
@@ -163,7 +166,7 @@ INT CCU721::ExecuteRequest( CtiRequestMsg *pReq, CtiCommandParser &parse, OUTMES
 }
 
 
-INT CCU721::GeneralScan(CtiRequestMsg *pReq, CtiCommandParser &parse, OUTMESS *&OutMessage, RWTPtrSlist< CtiMessage > &vgList, RWTPtrSlist< CtiMessage > &retList, RWTPtrSlist< OUTMESS > &outList, INT ScanPriority )
+INT CCU721::GeneralScan(CtiRequestMsg *pReq, CtiCommandParser &parse, OUTMESS *&OutMessage, list<CtiMessage *> &vgList, list<CtiMessage *> &retList, list<OUTMESS *> &outList, INT ScanPriority )
 {
     INT status = NORMAL;
     CtiCommandParser newParse("scan general");
@@ -188,16 +191,15 @@ INT CCU721::GeneralScan(CtiRequestMsg *pReq, CtiCommandParser &parse, OUTMESS *&
 }
 
 
-INT CCU721::ErrorDecode( INMESS *InMessage, CtiTime &Now, RWTPtrSlist< CtiMessage > &vgList, RWTPtrSlist< CtiMessage > &retList, RWTPtrSlist<OUTMESS> &outList )
+INT CCU721::ErrorDecode( INMESS *InMessage, CtiTime &Now, list<CtiMessage *> &vgList, list<CtiMessage *> &retList, list<OUTMESS *> &outList )
 {
     return 0;
 }
 
 
-INT CCU721::ResultDecode( INMESS *InMessage, CtiTime &Now, RWTPtrSlist< CtiMessage > &vgList, RWTPtrSlist< CtiMessage > &retList, RWTPtrSlist<OUTMESS> &outList )
+INT CCU721::ResultDecode( INMESS *InMessage, CtiTime &Now, list<CtiMessage *> &vgList, list<CtiMessage *> &retList, list<OUTMESS *> &outList )
 {
     INT ErrReturn = InMessage->EventCode & 0x3fff;
-    RWTPtrSlist<CtiPointDataMsg> points;
 
     //CtiString resultString, info;
     CtiReturnMsg *retMsg;
@@ -223,6 +225,14 @@ void CCU721::getSQL(RWDBDatabase &db, RWDBTable &keyTable, RWDBSelector &selecto
     Inherited::getSQL(db, keyTable, selector);
 
     _address.getSQL(db, keyTable, selector);
+
+    selector.where( (keyTable["type"] == "CCU-721") && selector.where() );
+
+    {
+        CtiLockGuard<CtiLogger> doubt_guard(dout);
+        dout << CtiTime() << " **** Checkpoint - \"" << selector.asString() << "\" **** " << __FILE__ << " (" << __LINE__ << ")" << endl;
+    }
+    
 }
 
 
@@ -239,7 +249,7 @@ void CCU721::DecodeDatabaseReader(RWDBReader &rdr)
 
 bool CCU721::hasQueuedWork() const
 {
-    return true;  //  always operates according to exclusion rules - the time exclusion window is what lets us preload
+    return true; //_klondike.get
 }
 
 
@@ -328,6 +338,41 @@ bool CCU721::getOutMessage(CtiOutMessage *&OutMessage)
 }
 
 
-}
+int CCU721::recvCommRequest(OUTMESS *OutMessage)
+{
+    bool error = false;
+
+    if( OutMessage->EventCode & DTRAN )
+    {
+        _klondike.setDirectTransmissionInfo(OutMessage->Buffer.BSt);
+        error = !_klondike.setCommand(Klondike::Command_DirectMessageRequest);
+    }
+    else
+    {
+        error = !_klondike.setCommand(OutMessage->Sequence);
+    }
+
+    return error;
 }
 
+
+int CCU721::recvCommResult(INMESS *InMessage, list<OUTMESS *> &outList)
+{
+    return 0;
+}
+
+
+int CCU721::sendCommRequest(OUTMESS *&OutMessage, list <OUTMESS *> &outList)
+{
+    return 0;
+}
+
+
+int CCU721::sendCommResult(INMESS *InMessage)
+{
+    return 0;
+}
+
+
+}
+}

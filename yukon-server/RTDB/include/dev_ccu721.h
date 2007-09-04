@@ -2,7 +2,7 @@
 *
 * File:   dev_ccu721
 *
-* Namespace:  Cti::Device
+* Namespace:  Cannon::Device
 * Class:      CCU721
 * Date:       2006-aug-08
 *
@@ -10,8 +10,8 @@
 *
 * PVCS KEYWORDS:
 * ARCHIVE      :  $Archive:     $
-* REVISION     :  $Revision: 1.1 $
-* DATE         :  $Date: 2006/10/05 16:44:51 $
+* REVISION     :  $Revision: 1.2 $
+* DATE         :  $Date: 2007/09/04 17:10:16 $
 *
 * Copyright (c) 2006 Cannon Technologies Inc. All rights reserved.
 *-----------------------------------------------------------------------------*/
@@ -44,22 +44,28 @@ public:
     CCU721();
     virtual ~CCU721();
 
-    void getSQL(RWDBDatabase &db, RWDBTable &keyTable, RWDBSelector &selector);
+    virtual void getSQL(RWDBDatabase &db, RWDBTable &keyTable, RWDBSelector &selector);
 
     void DecodeDatabaseReader(RWDBReader &rdr);
 
-    INT ExecuteRequest (CtiRequestMsg *pReq, CtiCommandParser &parse, OUTMESS *&OutMessage, RWTPtrSlist< CtiMessage > &vgList, RWTPtrSlist< CtiMessage > &retList, RWTPtrSlist< OUTMESS > &outList);
+    INT ExecuteRequest (CtiRequestMsg *pReq, CtiCommandParser &parse, OUTMESS *&OutMessage, list<CtiMessage *> &vgList, list<CtiMessage *> &retList, list<OUTMESS *> &outList);
 
-    INT GeneralScan    (CtiRequestMsg *pReq, CtiCommandParser &parse, OUTMESS *&OutMessage, RWTPtrSlist< CtiMessage > &vgList, RWTPtrSlist< CtiMessage > &retList, RWTPtrSlist< OUTMESS > &outList, INT ScanPriority = MAXPRIORITY - 4);
+    INT GeneralScan    (CtiRequestMsg *pReq, CtiCommandParser &parse, OUTMESS *&OutMessage, list<CtiMessage *> &vgList, list<CtiMessage *> &retList, list<OUTMESS *> &outList, INT ScanPriority = MAXPRIORITY - 4);
 
-    INT ErrorDecode (INMESS *InMessage, CtiTime &Now, RWTPtrSlist< CtiMessage > &vgList, RWTPtrSlist< CtiMessage > &retList, RWTPtrSlist<OUTMESS> &outList);
-    INT ResultDecode(INMESS *InMessage, CtiTime &Now, RWTPtrSlist< CtiMessage > &vgList, RWTPtrSlist< CtiMessage > &retList, RWTPtrSlist<OUTMESS> &outList);
+    INT ErrorDecode (INMESS *InMessage, CtiTime &Now, list<CtiMessage *> &vgList, list<CtiMessage *> &retList, list<OUTMESS *> &outList);
+    INT ResultDecode(INMESS *InMessage, CtiTime &Now, list<CtiMessage *> &vgList, list<CtiMessage *> &retList, list<OUTMESS *> &outList);
 
     INT  queuedWorkCount() const;
-    bool hasQueuedWork() const;
+    bool hasQueuedWork()   const;
 
     INT  queueOutMessageToDevice(OUTMESS *&OutMessage, UINT *dqcnt);
     bool getOutMessage(CtiOutMessage *&OutMessage);
+
+    virtual int recvCommRequest(OUTMESS *OutMessage);
+    virtual int sendCommResult (INMESS  *InMessage);
+
+    virtual int sendCommRequest(OUTMESS *&OutMessage, list<OUTMESS *> &outList);
+    virtual int recvCommResult (INMESS   *InMessage,  list<OUTMESS *> &outList);
 };
 
 }
