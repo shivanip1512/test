@@ -22,6 +22,15 @@
 	<ct:widgetActionRefresh method="disconnect" label="Disconnect" labelBusy="Disconnecting"/>
 </c:if>
 </div>
+<BR>
+<c:if test="${configString != ''}">
+<div style="max-height: 240px; overflow: auto">
+    <ct:hideReveal title="Disconnect Configuration Settings" showInitially="false">
+		${configString}
+    </ct:hideReveal><br>
+</div>
+</c:if>
+<br>
 <c:if test="${isRead}">
 	<c:import url="/WEB-INF/pages/widget/common/meterReadingsResult.jsp"/>
 </c:if>

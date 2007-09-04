@@ -64,6 +64,7 @@ public class DisconnectMeterWidget extends WidgetControllerBase {
         }
         
         mav.addObject("isConfigured", isConfigured);
+        mav.addObject("configString", "");
         return mav;
     }
 
@@ -77,9 +78,12 @@ public class DisconnectMeterWidget extends WidgetControllerBase {
         
         mav.addObject("state", getDisconnectedState(result));
         mav.addObject("errorsExist", result.isErrorsExist());
+        String configStr = "";
+        if ( result.getErrors().isEmpty() )
+            configStr = result.getLastResultString().replaceAll("\n", "<BR>");
+        mav.addObject("configString", configStr);
         
         mav.addObject("result", result);
-        
         return mav;
     }
 
@@ -121,6 +125,7 @@ public class DisconnectMeterWidget extends WidgetControllerBase {
         CommandResultHolder result = commandRequestExecutor.execute(meter, command, user);
         
         mav.addObject("state", getDisconnectedState(result));
+        mav.addObject("configString", "");
         
         mav.addObject("errorsExist", result.isErrorsExist());
         mav.addObject("result", result);
