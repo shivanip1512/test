@@ -17,8 +17,8 @@ public class CapControlFeeder extends com.cannontech.database.db.DBPersistent {
 	private Integer currentVoltLoadPointID = new Integer(CtiUtilities.NONE_ZERO_ID);
     private String multiMonitorControl = "N";
     private String usePhaseData = "N";
-    private Double phaseB = new Double(CtiUtilities.NONE_ZERO_ID);
-    private Double phaseC = new Double(CtiUtilities.NONE_ZERO_ID);
+    private Integer phaseB = new Integer(CtiUtilities.NONE_ZERO_ID);
+    private Integer phaseC = new Integer(CtiUtilities.NONE_ZERO_ID);
 
 	public static final String SETTER_COLUMNS[] = { 
 		"CurrentVarLoadPointID", "CurrentWattLoadPointID",
@@ -234,8 +234,8 @@ public class CapControlFeeder extends com.cannontech.database.db.DBPersistent {
 			setCurrentVoltLoadPointID( (Integer) results[3] );
             setMultiMonitorControl((String) results[4]);
             setUsePhaseData((String) results[5]);
-            setPhaseB((Double) results[6]);
-            setPhaseC((Double) results[7]);
+            setPhaseB((Integer) results[6]);
+            setPhaseC((Integer) results[7]);
 		} else {
 			throw new Error(getClass() + " - Incorrect Number of results retrieved");
         }
@@ -314,19 +314,19 @@ public class CapControlFeeder extends com.cannontech.database.db.DBPersistent {
         this.multiMonitorControl = multiMonitorControl;
     }
 
-    public Double getPhaseB() {
+    public Integer getPhaseB() {
         return phaseB;
     }
     
-    public void setPhaseB(Double phaseB) {
+    public void setPhaseB(Integer phaseB) {
         this.phaseB = phaseB;
     }
 
-    public Double getPhaseC() {
+    public Integer getPhaseC() {
         return phaseC;
     }
 
-    public void setPhaseC(Double phaseC) {
+    public void setPhaseC(Integer phaseC) {
         this.phaseC = phaseC;
     }
 
