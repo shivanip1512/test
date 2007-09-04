@@ -9,8 +9,8 @@
 *
 * PVCS KEYWORDS:
 * ARCHIVE      :  $Archive$
-* REVISION     :  $Revision: 1.9 $
-* DATE         :  $Date: 2006/02/24 00:19:10 $
+* REVISION     :  $Revision: 1.10 $
+* DATE         :  $Date: 2007/09/04 16:46:52 $
 *
 * Copyright (c) 2002 Cannon Technologies Inc. All rights reserved.
 *-----------------------------------------------------------------------------*/
@@ -41,9 +41,6 @@ private:
 protected:
 
     string _name;
-
-    virtual int commOut( OUTMESS *&OutMessage );
-    virtual int commIn ( INMESS   *InMessage  );
 
 public:
 
