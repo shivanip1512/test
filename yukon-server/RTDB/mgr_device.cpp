@@ -6,8 +6,8 @@
 *
 * PVCS KEYWORDS:
 * ARCHIVE      :  $Archive:   Z:/SOFTWAREARCHIVES/YUKON/RTDB/mgr_device.cpp-arc  $
-* REVISION     :  $Revision: 1.89 $
-* DATE         :  $Date: 2007/08/09 21:45:19 $
+* REVISION     :  $Revision: 1.90 $
+* DATE         :  $Date: 2007/09/04 17:05:08 $
 *
 * Copyright (c) 1999, 2000, 2001 Cannon Technologies Inc. All rights reserved.
 *-----------------------------------------------------------------------------*/
@@ -28,6 +28,7 @@
 #include "dev_meter.h"
 #include "dev_gridadvisor.h"
 #include "dev_idlc.h"
+#include "dev_ccu721.h"
 #include "dev_carrier.h"
 #include "dev_lmi.h"
 #include "dev_mct.h"
@@ -1074,6 +1075,10 @@ void CtiDeviceManager::refreshList(CtiDeviceBase* (*Factory)(RWDBReader &), bool
                             CtiLockGuard<CtiLogger> doubt_guard(dout); dout << "Looking for IDLC Target Devices" << endl;
                         }
                         CtiDeviceIDLC().getSQL( db, keyTable, selector );
+
+                        //  exclude the CCU 721
+                        selector.where( (keyTable["type"] != RWDBExpr("CCU-721")) && selector.where() );
+
                         if(paoID != 0) selector.where( keyTable["paobjectid"] == RWDBExpr( paoID ) && selector.where() );
 
                         RWDBReader rdr = selector.reader(conn);
@@ -1086,6 +1091,43 @@ void CtiDeviceManager::refreshList(CtiDeviceBase* (*Factory)(RWDBReader &), bool
                         if(DebugLevel & 0x00020000)
                         {
                             CtiLockGuard<CtiLogger> doubt_guard(dout); dout << "Done looking for IDLC Target Devices" << endl;
+                        }
+                    }
+                    stop = stop.now();
+                    if(DebugLevel & 0x80000000 || stop.seconds() - start.seconds() > 5)
+                    {
+                        CtiLockGuard<CtiLogger> doubt_guard(dout);
+                        dout << CtiTime() << " " << stop.seconds() - start.seconds() << " seconds to load  IDLC Target Devices" << endl;
+                    }
+
+
+                    start = start.now();
+                    {
+                        RWDBConnection conn = getConnection();
+                        RWDBDatabase db = getDatabase();
+
+                        RWDBTable   keyTable;
+                        RWDBSelector selector = db.selector();
+
+                        if(DebugLevel & 0x00020000)
+                        {
+                            CtiLockGuard<CtiLogger> doubt_guard(dout); dout << "Looking for CCU-721 Devices" << endl;
+                        }
+                        //  all of these getSQL() calls should be static functions at some point - it's pointless 
+                        //    and costly to nstantiate devices for each block when a static function would do as well
+                        Cti::Device::CCU721().getSQL( db, keyTable, selector );
+                        if(paoID != 0) selector.where( keyTable["paobjectid"] == RWDBExpr( paoID ) && selector.where() );
+
+                        RWDBReader rdr = selector.reader(conn);
+                        if(DebugLevel & 0x00020000 || setErrorCode(selector.status().errorCode()) != RWDBStatus::ok)
+                        {
+                            CtiLockGuard<CtiLogger> doubt_guard(dout); dout << selector.asString() << endl;
+                        }
+                        refreshDevices(rowFound, rdr, Factory);
+
+                        if(DebugLevel & 0x00020000)
+                        {
+                            CtiLockGuard<CtiLogger> doubt_guard(dout); dout << "Done looking for CCU-721 Devices" << endl;
                         }
                     }
                     stop = stop.now();
