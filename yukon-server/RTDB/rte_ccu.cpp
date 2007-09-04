@@ -8,8 +8,8 @@
 *
 * PVCS KEYWORDS:
 * ARCHIVE      :  $Archive:   Z:/SOFTWAREARCHIVES/YUKON/RTDB/rte_ccu.cpp-arc  $
-* REVISION     :  $Revision: 1.40 $
-* DATE         :  $Date: 2007/06/25 19:17:57 $
+* REVISION     :  $Revision: 1.41 $
+* DATE         :  $Date: 2007/09/04 17:03:31 $
 *
 * Copyright (c) 1999, 2000 Cannon Technologies Inc. All rights reserved.
 *-----------------------------------------------------------------------------*/
@@ -43,9 +43,9 @@
 static INT NoQueingVersacom   = gConfigParms.getValueAsInt("VERSACOM_CCU_NOQUEUE",   FALSE);
 static INT NoQueingExpresscom = gConfigParms.getValueAsInt("EXPRESSCOM_CCU_NOQUEUE", FALSE);
 
-INT CtiRouteCCU::ExecuteRequest(CtiRequestMsg                  *pReq,
-                                CtiCommandParser               &parse,
-                                OUTMESS                        *&OutMessage,
+INT CtiRouteCCU::ExecuteRequest(CtiRequestMsg            *pReq,
+                                CtiCommandParser         &parse,
+                                OUTMESS                 *&OutMessage,
                                 list< CtiMessage* >      &vgList,
                                 list< CtiMessage* >      &retList,
                                 list< OUTMESS* >         &outList)
@@ -103,9 +103,9 @@ INT CtiRouteCCU::ExecuteRequest(CtiRequestMsg                  *pReq,
 }
 
 
-INT CtiRouteCCU::assembleVersacomRequest(CtiRequestMsg                  *pReq,
-                                         CtiCommandParser               &parse,
-                                         OUTMESS                        *OutMessage,
+INT CtiRouteCCU::assembleVersacomRequest(CtiRequestMsg            *pReq,
+                                         CtiCommandParser         &parse,
+                                         OUTMESS                  *OutMessage,
                                          list< CtiMessage* >      &vgList,
                                          list< CtiMessage* >      &retList,
                                          list< OUTMESS* >         &outList)
@@ -338,6 +338,9 @@ INT CtiRouteCCU::assembleDLCRequest(CtiCommandParser     &parse,
         OutMessage->Buffer.BSt.DlcRoute.RepFixed   = Carrier.getCCUFixBits();
         OutMessage->Buffer.BSt.DlcRoute.Stages     = getStages();                // How many repeaters on this route?
 
+        //  this was a great idea and all, but it causes the CCU to report that transmission of the message has failed
+        //    since it doesn't hear any transmissions during the "stages" delay.
+        //  This should be replaced by an actual delay on the server side.
         if( OutMessage->MessageFlags & MessageFlag_AddSilence )
         {
             OutMessage->MessageFlags ^= MessageFlag_AddSilence;
@@ -349,10 +352,6 @@ INT CtiRouteCCU::assembleDLCRequest(CtiCommandParser     &parse,
                 OutMessage->Buffer.BSt.DlcRoute.Stages += 2;
             }
         }
-
-        old_bstruct = OutMessage->Buffer.BSt;
-
-        status = prot.buildBWordMessage(OutMessage);
     }
     else if(OutMessage->EventCode & AWORD)
     {
@@ -367,74 +366,67 @@ INT CtiRouteCCU::assembleDLCRequest(CtiCommandParser     &parse,
         // Add these two items to the list for control accounting!
         parse.setValue("control_interval", prot.calculateControlInterval(parse.getiValue("shed", 0)));
         parse.setValue("control_reduction", 100 );
-
-        old_astruct = OutMessage->Buffer.ASt;
-
-        status = prot.buildAWordMessage(OutMessage);
     }
 
-    if( status )
-    {
-        xmore = false;
-        resultString = "Emetcon DLC command failed with error " + CtiNumStr(status) + " on route " + getName();
-    }
-    else
-    {
-        resultString = "Emetcon DLC command sent on route " + getName();
+    resultString = "Emetcon DLC command sent on route " + getName();
 
-        /* Things are now ready to go */
-        switch( _transmitterDevice->getType() )
+    /* Things are now ready to go */
+    switch( _transmitterDevice->getType() )
+    {
+        case TYPE_CCU700:
+        case TYPE_CCU710:
         {
-            case TYPE_CCU700:
-            case TYPE_CCU710:
+            OutMessage->EventCode &= ~QUEUED;
+            OutMessage->EventCode |=  DTRAN;
+
+            /***** FALL THROUGH ** FALL THROUGH *****/
+        }
+        case TYPE_CCU711:
+        {
+            if(OutMessage->EventCode & DTRAN)
+            {
+                if( OutMessage->EventCode & BWORD )  
                 {
-                    OutMessage->EventCode &= ~QUEUED;
-                    OutMessage->EventCode |= (DTRAN | BWORD);
-
-                    /***** FALL THROUGH ** FALL THROUGH *****/
+                    prot.buildBWordMessage(OutMessage);
                 }
-            case TYPE_CCU711:
+                else if( OutMessage->EventCode & AWORD )  
                 {
-                    if(OutMessage->EventCode & DTRAN)
-                    {
-                        /* load the IDLC specific stuff for DTRAN */
-                        OutMessage->Source                = 0;
-                        OutMessage->Destination           = DEST_DLC;
-                        OutMessage->Command               = CMND_DTRAN;
-
-                        if(OutMessage->InLength <= 0)
-                        {
-                            {
-                                CtiLockGuard<CtiLogger> doubt_guard(dout);
-                                dout << CtiTime() << " **** Checkpoint **** " << __FILE__ << " (" << __LINE__ << ")" << endl;
-                                dout << " 062101 CGP CHECK CHECK CHECK " << endl;
-                            }
-
-                            OutMessage->InLength              = 2;
-                        }
-
-                        OutMessage->Buffer.OutMessage[6]  = (UCHAR)OutMessage->InLength;
-                        OutMessage->EventCode             &= ~RCONT;
-                    }
-                    else if( OutMessage->EventCode & BWORD )
-                    {
-                        //  Restore the B word information so the CCU can use it
-                        //  this seems backwards - shouldn't we just not mangle the bstruct if it's queued?
-                        OutMessage->Buffer.BSt = old_bstruct;
-                    }
-                    else if( OutMessage->EventCode & AWORD )
-                    {
-                        //  Restore the A word information so the CCU can use it
-                        //  this seems backwards - shouldn't we just not mangle the astruct if it's queued?
-                        OutMessage->Buffer.ASt = old_astruct;
-                    }
-                    break;
+                    prot.buildAWordMessage(OutMessage);
                 }
+
+                /* load the IDLC specific stuff for DTRAN */
+                OutMessage->Source                = 0;
+                OutMessage->Destination           = DEST_DLC;
+                OutMessage->Command               = CMND_DTRAN;
+
+                if(OutMessage->InLength <= 0)
+                {
+                    {
+                        CtiLockGuard<CtiLogger> doubt_guard(dout);
+                        dout << CtiTime() << " **** Checkpoint **** " << __FILE__ << " (" << __LINE__ << ")" << endl;
+                        dout << " 062101 CGP CHECK CHECK CHECK " << endl;
+                    }
+
+                    OutMessage->InLength = 2;
+                }
+
+                OutMessage->Buffer.OutMessage[6]  = (UCHAR)OutMessage->InLength;
+                OutMessage->EventCode             &= ~RCONT;
+            }
+
+            break;
         }
 
-        outList.push_back(OutMessage);
-        OutMessage = 0;
+        case TYPE_CCU721:
+        {
+            //  message gets built up inside the CCU code directly instead of here in the route
+
+            break;
+        }
     }
+
+    outList.push_back(OutMessage);
+    OutMessage = 0;
 
     if(retReturn)
     {
@@ -453,9 +445,9 @@ INT CtiRouteCCU::assembleDLCRequest(CtiCommandParser     &parse,
     return status;
 }
 
-INT CtiRouteCCU::assembleExpresscomRequest(CtiRequestMsg                  *pReq,
-                                         CtiCommandParser               &parse,
-                                         OUTMESS                        *OutMessage,
+INT CtiRouteCCU::assembleExpresscomRequest(CtiRequestMsg          *pReq,
+                                         CtiCommandParser         &parse,
+                                         OUTMESS                  *OutMessage,
                                          list< CtiMessage* >      &vgList,
                                          list< CtiMessage* >      &retList,
                                          list< OUTMESS* >         &outList)
@@ -831,27 +823,15 @@ void CtiRouteCCU::DumpData()
         RepeaterList[i].DumpData();
 }
 
-CtiRouteCCU::CtiRepeaterList_t&     CtiRouteCCU::getRepeaterList()
+CtiRouteCCU::CtiRepeaterList_t&  CtiRouteCCU::getRepeaterList()
 {
     return RepeaterList;
 }
 
-INT    CtiRouteCCU::getStages() const
-{
-    return RepeaterList.entries();
-}
-INT    CtiRouteCCU::getBus() const
-{
-    return Carrier.getBus();
-}
-INT    CtiRouteCCU::getCCUFixBits() const
-{
-    return Carrier.getCCUFixBits();
-}
-INT    CtiRouteCCU::getCCUVarBits() const
-{
-    return Carrier.getCCUVarBits();
-}
+INT CtiRouteCCU::getStages()     const  {   return RepeaterList.entries();      }
+INT CtiRouteCCU::getBus()        const  {   return Carrier.getBus();            }
+INT CtiRouteCCU::getCCUFixBits() const  {   return Carrier.getCCUFixBits();     }
+INT CtiRouteCCU::getCCUVarBits() const  {   return Carrier.getCCUVarBits();     }
 
 void CtiRouteCCU::getSQL(RWDBDatabase &db,  RWDBTable &keyTable, RWDBSelector &selector)
 {
