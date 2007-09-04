@@ -79,7 +79,7 @@ public class CapControlConfirmationPercentageModel extends BareDatedReportModelB
                         row.TA = rs.getString("TA");
                         row.SubName = rs.getString("SubName");
                         row.FeederName = rs.getString("FeederName");
-                        row.BankName = rs.getString("BankName");
+                        row.BankName = rs.getString("capBankName");
                         row.CBCName = rs.getString("CBCName");
                         row.Attempts = rs.getString("Attempts");
                         row.Success = rs.getString("Success");
@@ -104,7 +104,7 @@ public class CapControlConfirmationPercentageModel extends BareDatedReportModelB
     
     public StringBuffer buildSQLStatement()
     {
-        StringBuffer sql = new StringBuffer ("select rs.Region, rs.OpCenter, rs.TA, rs.SubName, rs.FeederName, rs.BankName, RS.CBCName,  s.Attempts, s. Success, s.Questionable, s.Failure, s.SuccessPcnt, rs.Protocol ");
+        StringBuffer sql = new StringBuffer ("select rs.Region, rs.OpCenter, rs.TA, rs.SubName, rs.FeederName, rs.capbankname, RS.CBCName,  s.Attempts, s. Success, s.Questionable, s.Failure, s.SuccessPcnt, rs.Protocol ");
         sql.append("from (select T.CBCName, T.Attempts, isnull(F.Failure,0)Failure, isnull(q.Questionable,0)Questionable, isnull(SS.Success,0)Success, (T.Attempts - isnull(F.Failure,0)) * 100/ T.Attempts SuccessPcnt ");
         sql.append("from (select CBCName, count(*) Attempts from ccoperations_view where Optime  between ? and ? ");
         sql.append("group by CBCName ) as T ");
@@ -114,9 +114,9 @@ public class CapControlConfirmationPercentageModel extends BareDatedReportModelB
         sql.append("and (ConfStatus like '%OpenQuestionable' or  ConfStatus like '%CloseQuestionable') group by CBCName ) as Q on T.CBCName = Q.CBCName ");
         sql.append("left outer join (select CBCName, count(*) Success from ccoperations_view where Optime  between ? and ? ");
         sql.append("and (ConfStatus like '%Closed' or  ConfStatus like '%Open') group by CBCName ) as SS on T.CBCName = SS.CBCName )S ");
-        sql.append("inner join (Select Region , OpCenter, TA, SubName , subID, FeederName, FdrId, CBCName, cbcId, bankName, bankID, Protocol from ccinventory_view ) rs on S.CBCName = RS.CBCName  ");
+        sql.append("inner join (Select Region , OpCenter, TA, SubName , subID, FeederName, FdrId, CBCName, cbcId, capbankname, bankID, Protocol from ccinventory_view ) rs on S.CBCName = RS.CBCName  ");
         sql.append("left outer join ccsubareaassignment saa on saa.substationbusid = rs.subID ");
-        sql.append("left outer join (select paobjectid from yukonpaobject where type ='ccarea' ) as ca on ca.paobjectid = saa.areaid ");
+ 	 	sql.append("left outer join (select paobjectid from yukonpaobject where type ='ccarea' ) as ca on ca.paobjectid = saa.areaid ");
         
         String result = null;
         

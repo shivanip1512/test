@@ -51,7 +51,7 @@ public class CapControlArea extends CapControlYukonPAOBase implements
                                                                              getDbConnection());
 
         // Delete from all dynamic objects
-        //delete("DynamicCapControlArea ", "AreaID", getAreaID());
+        delete("DynamicCCArea", "AreaID", getAreaID());
 
         // delete(Point.TABLE_NAME, Point.SETTER_COLUMNS[2],
         // getCapControlPAOID());

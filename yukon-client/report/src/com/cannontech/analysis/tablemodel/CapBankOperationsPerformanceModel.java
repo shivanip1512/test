@@ -72,7 +72,7 @@ public class CapBankOperationsPerformanceModel extends BareDatedReportModelBase<
                 
                 CapBankOperationsPerformanceModel.ModelRow row = new CapBankOperationsPerformanceModel.ModelRow();
 
-                row.bankName = rs.getString("bankName");
+                row.bankName = rs.getString("capbankName");
                 row.cbcName = rs.getString("cbcName");
                 row.feederName = rs.getString("feederName");
                 row.subName = rs.getString("subName");
@@ -90,9 +90,9 @@ public class CapBankOperationsPerformanceModel extends BareDatedReportModelBase<
     
     public StringBuffer buildSQLStatement()
     {
-        StringBuffer sql = new StringBuffer ("select d.bankname, cbcname,  feedername, subname, region, '" + queryType+"' as text, qCount, totCount, qPercent from (select tot.bankname, q.qCount, tot.totCount, cast(q.qCount as float) / cast(tot.totCount as float) * 100 as qPercent from ");
-        sql.append("(select bankname, count(*) as totCount from ccoperations_view where operation like '%Sent, %'  and opTime > ? and opTime <= ? group by bankname) as tot ");
-        sql.append("left outer join (select bankname, count(*) as qCount from ccoperations_view where ");
+        StringBuffer sql = new StringBuffer ("select d.capbankname, cbcname,  feedername, subname, region, '" + queryType+"' as text, qCount, totCount, qPercent from (select tot.capbankname, q.qCount, tot.totCount, cast(q.qCount as float) / cast(tot.totCount as float) * 100 as qPercent from ");
+        sql.append("(select capbankname, count(*) as totCount from ccoperations_view where operation like '%Sent, %'  and opTime > ? and opTime <= ? group by capbankname) as tot ");
+        sql.append("left outer join (select capbankname, count(*) as qCount from ccoperations_view where ");
         if(queryType.equalsIgnoreCase("Success")) {
             sql.append("(confstatus like '%, Close' or confstatus like '%, Closed' or confstatus like '%, Open') ");
         }else if (queryType.equalsIgnoreCase("Failed")){
@@ -102,14 +102,14 @@ public class CapBankOperationsPerformanceModel extends BareDatedReportModelBase<
         }else if (queryType.equalsIgnoreCase("Failed-Questionable")) {
             sql.append("(confstatus like '%Questionable%' or confstatus like '%Failed%') ");
         }
-        sql.append("and opTime > ? and opTime <= ? group by bankname) as q on tot.bankname = q.bankname ) as abc ");
+        sql.append("and opTime > ? and opTime <= ? group by capbankname) as q on tot.capbankname = q.capbankname ) as abc ");
         sql.append("left outer join (select yp.paoname, yp.paobjectid, s.text as text from dynamiccccapbank dcb ");
         sql.append("join state s on s.rawstate = dcb.controlstatus and s.stategroupid = 3 ");
-        sql.append("join yukonpaobject yp on yp.paobjectid = dcb.capbankid) as status on status.paoname = abc.bankname ");
-        sql.append("join (select distinct (bankname), cbcname, feedername, feederid, subname, subbusid, region from ccoperations_view ");
-        sql.append("where  operation like '%Sent, %'  and opTime > ? and opTime <= ?) as d on abc.bankname = d.bankname ");
+        sql.append("join yukonpaobject yp on yp.paobjectid = dcb.capbankid) as status on status.paoname = abc.capbankname ");
+        sql.append("join (select distinct (capbankname), cbcname, feedername, feederid, subname, subbusid, region from ccoperations_view ");
+        sql.append("where  operation like '%Sent, %'  and opTime > ? and opTime <= ?) as d on abc.capbankname = d.capbankname ");
         sql.append("left outer join ccsubareaassignment saa on saa.substationbusid = d.subbusid ");
-        sql.append("left outer join (select paobjectid from yukonpaobject where type ='ccarea' ) as ca on ca.paobjectid = saa.areaid ");
+ 	 	sql.append("left outer join (select paobjectid from yukonpaobject where type ='ccarea' ) as ca on ca.paobjectid = saa.areaid ");
         sql.append("where abc.qPercent >= " + queryPercent + " ");
         
         String result = null;

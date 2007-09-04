@@ -15,6 +15,7 @@ public class DeviceCBC extends com.cannontech.database.db.DBPersistent
 	private Integer routeID = new Integer(CtiUtilities.NONE_ZERO_ID);
 
 	public static String TABLE_NAME = "DeviceCBC";
+	public static String DYN_TABLE_NAME = "dynamiccctwowaycbc";
 /**
  * Constructor comment.
  */
@@ -118,6 +119,7 @@ public void add() throws java.sql.SQLException {
  */
 public void delete() throws java.sql.SQLException {
 
+	delete( DYN_TABLE_NAME, "DeviceID", getDeviceID() );
 	delete( TABLE_NAME, "DeviceID", getDeviceID() );
 	
 }

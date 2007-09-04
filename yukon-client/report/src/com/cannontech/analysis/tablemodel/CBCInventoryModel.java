@@ -73,7 +73,7 @@ public class CBCInventoryModel extends BareReportModelBase<CBCInventoryModel.Mod
                 row.region = rs.getString("region");
                 row.subName = rs.getString("subName");
                 row.feederName = rs.getString("feederName");
-                row.bankName = rs.getString("bankName");
+                row.bankName = rs.getString("capbankName");
                 row.bankSize = rs.getInt("bankSize");
                 row.controlType = rs.getString("controlType");
                 row.driveDirections = rs.getString("driveDirections");

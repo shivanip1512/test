@@ -39,14 +39,6 @@
 				</tr>
 				<tr>
 					<td>
-						Driving Directions
-					</td>
-					<td>
-						<%=addtional.getDriveDir()%>
-					</td>
-				</tr>
-				<tr>
-					<td>
 						Latitude
 					</td>
 					<td>
@@ -123,8 +115,7 @@
 						Potential Transformer
 					</td>
 					<td>
-						<%=addtional.getOpCountResetDate()
-                                                .toString()%>
+						<%=addtional.getPotentTransformer()%>
 					</td>
 				</tr>
 				<tr>
@@ -153,13 +144,28 @@
 				</tr>
 				<tr>
 					<td>
-						CBC Battery Install Date
+						CBC Install Date
 					</td>
 					<td>
 						<%=addtional.getCbcBattInstallDate()%>
 					</td>
 				</tr>
-
+				<tr>
+					<td>
+						Cap Bank Map Address
+					</td>
+					<td>
+						<%=lite.getPaoDescription()%>
+					</td>
+				</tr>
+				<tr>
+					<td>
+						Driving Directions
+					</td>
+					<td>
+						<%=addtional.getDriveDir()%>
+					</td>
+				</tr>
 			</table>
 		</c:when>
 	</c:choose>

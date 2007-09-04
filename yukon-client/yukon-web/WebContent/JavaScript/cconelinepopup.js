@@ -430,6 +430,7 @@ function createFeederMenu(paoID) {
 	var closeAllFdr = new Command (paoID, ALL_FDR_CMDS.send_all_close, ALL_CMD_TYPES.feeder);
 	var enableOvUvFdr = new Command (paoID, ALL_FDR_CMDS.send_all_enable_ovuv, ALL_CMD_TYPES.feeder);
 	var disableOvUvFdr = new Command (paoID, ALL_FDR_CMDS.send_all_disable_ovuv, ALL_CMD_TYPES.feeder);
+	var sendAll2WayFdr = new Command (paoID, ALL_FDR_CMDS.send_all_2way_scan, ALL_CMD_TYPES.feeder);
 	
 	var str='';
 	str+='<html>';
@@ -462,6 +463,9 @@ function createFeederMenu(paoID) {
 	str+='							<option  value="';
 	str+=							disableOvUvFdr.createName();
 	str+='" style="color: white"> Disable OvUv<\/option>';
+	str+='							<option  value="';
+	str+=							sendAll2WayFdr.createName();
+	str+='" style="color: white"> Scan All 2way CapBanks<\/option>';
 	str+='						<\/select>';
 	str+='				<\/td>';
 	str+='			<\/tr>';
@@ -486,7 +490,8 @@ function createSubMenu() {
 	var closeAllSub = new Command (paoId, ALL_SUB_CMDS.send_all_close, ALL_CMD_TYPES.sub);
 	var enableOvUvSub = new Command (paoId, ALL_SUB_CMDS.send_all_enable_ovuv, ALL_CMD_TYPES.sub);
 	var disableOvUvSub = new Command (paoId, ALL_SUB_CMDS.send_all_disable_ovuv, ALL_CMD_TYPES.sub);
-	
+	var sendAll2WaySub = new Command (paoId, ALL_SUB_CMDS.send_all_2way_scan, ALL_CMD_TYPES.sub);
+
 	var verifyAll = new Command (paoId, ALL_SUB_CMDS.v_all_banks, ALL_CMD_TYPES.sub);
 	var verifyFQ = new Command (paoId, ALL_SUB_CMDS.v_fq_banks, ALL_CMD_TYPES.sub);
 	var verifyFailed = new Command (paoId, ALL_SUB_CMDS.v_failed_banks, ALL_CMD_TYPES.sub);
@@ -530,6 +535,9 @@ function createSubMenu() {
 	str+='							<option  value="';
 	str+=							disableOvUvSub.createName();
 	str+='" style="color: white"> Disable OvUv<\/option>';
+	str+='							<option  value="';
+	str+=							sendAll2WaySub.createName();
+	str+='" style="color: white"> Scan All 2way CapBanks<\/option>';
 
 	if (isV != "true") {
 		str+='							<option  value="';
@@ -612,7 +620,7 @@ function reset(select, dontCloseCurrentPopup) {
 }
 function submitWithConfirm(obj) {
 	var cmdStr; 
-		if (obj.tagName == "SELECT") 
+	if (obj.tagName == "SELECT") 
 		cmdStr = getCommandVerbal(obj.options[obj.selectedIndex].value);
 	else
 		cmdStr = getCommandVerbal (obj.name);
