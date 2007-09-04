@@ -10,8 +10,8 @@
 *
 * PVCS KEYWORDS:
 * ARCHIVE      :  $Archive$
-* REVISION     :  $Revision: 1.13 $
-* DATE         :  $Date: 2006/10/19 20:15:23 $
+* REVISION     :  $Revision: 1.14 $
+* DATE         :  $Date: 2007/09/04 16:38:13 $
 *
 * Copyright (c) 2002 Cannon Technologies Inc. All rights reserved.
 *-----------------------------------------------------------------------------*/
@@ -171,8 +171,8 @@ public:
     bool isTransactionComplete( void );
     bool errorCondition( void );
 
-    bool getInPayload( unsigned char *buf );
-    int  getInPayloadLength( void );
+    bool getInboundData( unsigned char *buf );
+    int  getInboundDataLength( void );
 
     IM_EX_PROT static unsigned short crc(const unsigned char *buf, const int len);
 

@@ -8,8 +8,8 @@
 *
 * PVCS KEYWORDS:
 * ARCHIVE      :  $Archive$
-* REVISION     :  $Revision: 1.20 $
-* DATE         :  $Date: 2006/10/19 20:15:23 $
+* REVISION     :  $Revision: 1.21 $
+* DATE         :  $Date: 2007/09/04 16:38:13 $
 *
 * Copyright (c) 2002 Cannon Technologies Inc. All rights reserved.
 *-----------------------------------------------------------------------------*/
@@ -1033,13 +1033,13 @@ bool Datalink::isEntirePacket( const datalink_packet &packet, unsigned long in_r
 }
 
 
-int Datalink::getInPayloadLength( void )
+int Datalink::getInboundDataLength( void )
 {
     return _in_data_len;
 }
 
 
-bool Datalink::getInPayload( unsigned char *buf )
+bool Datalink::getInboundData( unsigned char *buf )
 {
     bool retval = false;
 

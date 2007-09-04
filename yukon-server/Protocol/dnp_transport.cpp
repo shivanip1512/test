@@ -8,8 +8,8 @@
 *
 * PVCS KEYWORDS:
 * ARCHIVE      :  $Archive$
-* REVISION     :  $Revision: 1.18 $
-* DATE         :  $Date: 2006/10/04 15:50:54 $
+* REVISION     :  $Revision: 1.19 $
+* DATE         :  $Date: 2007/09/04 16:38:13 $
 *
 * Copyright (c) 2002 Cannon Technologies Inc. All rights reserved.
 *-----------------------------------------------------------------------------*/
@@ -237,10 +237,10 @@ int Transport::decode( CtiXfer &xfer, int status )
                 int dataLen;
 
                 //  copy out the data
-                if( _datalink.getInPayloadLength() >= HeaderLen )
+                if( _datalink.getInboundDataLength() >= HeaderLen )
                 {
-                    dataLen = _datalink.getInPayloadLength() - HeaderLen;
-                    _datalink.getInPayload((unsigned char *)&_in_packet);
+                    dataLen = _datalink.getInboundDataLength() - HeaderLen;
+                    _datalink.getInboundData((unsigned char *)&_in_packet);
 
                     if( _payload_in.received + dataLen < _payload_in.length_max )
                     {
