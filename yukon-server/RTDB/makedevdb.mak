@@ -708,25 +708,22 @@ dev_gridadvisor.obj:	yukon.h precompiled.h ctidbgmem.h porter.h dsm2.h \
 		netports.h dsm2err.h devicetypes.h queues.h types.h \
 		tbl_ptdispatch.h ctibase.h ctinexus.h dllbase.h os2_2w32.h \
 		cticalls.h dbmemobject.h pointdefs.h ctitime.h \
-		dev_gridadvisor.h ctitypes.h dev_meter.h tbl_metergrp.h \
-		vcomdefs.h dbaccess.h sema.h resolvers.h pointtypes.h \
-		db_entry_defines.h dev_ied.h dev_remote.h dev_single.h \
-		dev_base.h cmdparse.h ctitokenizer.h parsevalue.h counter.h \
-		dev_exclusion.h tbl_paoexclusion.h config_device.h logger.h \
-		thread.h CtiPCPtrQueue.h utility.h sorted_vector.h \
-		config_base.h config_resolvers.h rte_base.h message.h \
-		collectable.h rwutil.h boost_time.h tbl_pao.h tbl_rtcomm.h \
+		dev_gridadvisor.h dev_single.h dev_base.h cmdparse.h \
+		ctitokenizer.h parsevalue.h counter.h dev_exclusion.h \
+		tbl_paoexclusion.h config_device.h logger.h thread.h \
+		CtiPCPtrQueue.h utility.h sorted_vector.h config_base.h \
+		config_resolvers.h rte_base.h message.h collectable.h \
+		rwutil.h boost_time.h tbl_pao.h tbl_rtcomm.h dbaccess.h \
+		sema.h resolvers.h pointtypes.h db_entry_defines.h \
 		desolvers.h msg_signal.h tbl_base.h tbl_2way.h tbl_stats.h \
 		tbl_scanrate.h tbl_dyn_paoinfo.h pt_base.h pt_dyn_base.h \
 		tbl_pt_base.h tbl_pt_trigger.h msg_pcrequest.h msg_pcreturn.h \
 		msg_multi.h msg_pdata.h tbl_dv_scandata.h tbl_dv_wnd.h \
 		connection.h exchange.h msg_ptreg.h msg_reg.h queue.h \
 		cparms.h configkey.h configval.h prot_base.h xfer.h dialup.h \
-		tbl_dialup.h tbl_direct.h tbl_dv_ied.h mgr_point.h smartmap.h \
-		hashkey.h hash_functions.h slctpnt.h tbl_dv_address.h \
-		pt_status.h tbl_pt_status.h pt_analog.h pt_numeric.h \
-		tbl_pt_unit.h tbl_unitmeasure.h tbl_pt_limit.h \
-		tbl_pt_analog.h pt_accum.h tbl_pt_accum.h \
+		tbl_dv_address.h tbl_direct.h pt_status.h tbl_pt_status.h \
+		pt_analog.h pt_numeric.h tbl_pt_unit.h tbl_unitmeasure.h \
+		tbl_pt_limit.h tbl_pt_analog.h pt_accum.h tbl_pt_accum.h \
 		tbl_pt_accumhistory.h msg_cmd.h msg_lmcontrolhistory.h \
 		dllyukon.h
 dev_grp_emetcon.obj:	yukon.h precompiled.h ctidbgmem.h dsm2.h mutex.h \
@@ -2543,10 +2540,10 @@ slctdev.obj:	yukon.h precompiled.h ctidbgmem.h dev_710.h dev_idlc.h \
 		prot_welco.h dev_ilex.h dev_seriesv.h dev_ied.h tbl_dv_ied.h \
 		prot_seriesv.h dev_lmi.h tbl_dv_seriesv.h prot_lmi.h \
 		verification_objects.h dev_tcu.h dev_meter.h tbl_metergrp.h \
-		vcomdefs.h dev_modbus.h prot_modbus.h dev_schlum.h \
-		dev_fulcrum.h dev_ion.h prot_ion.h ion_datastream.h \
-		ion_value.h ion_serializable.h ion_value_fixed.h \
-		ion_value_numeric.h ion_value_variable.h \
+		vcomdefs.h dev_gridadvisor.h dev_modbus.h prot_modbus.h \
+		dev_schlum.h dev_fulcrum.h dev_ion.h prot_ion.h \
+		ion_datastream.h ion_value.h ion_serializable.h \
+		ion_value_fixed.h ion_value_numeric.h ion_value_variable.h \
 		ion_value_variable_fixedarray.h \
 		ion_value_variable_fixedarray_element.h \
 		ion_value_fixed_char.h ion_value_variable_boolean.h \
