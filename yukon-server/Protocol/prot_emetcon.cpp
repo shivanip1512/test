@@ -8,8 +8,8 @@
 *
 * PVCS KEYWORDS:
 * ARCHIVE      :  $Archive:   Z:/SOFTWAREARCHIVES/YUKON/PROTOCOL/prot_emetcon.cpp-arc  $
-* REVISION     :  $Revision: 1.16 $
-* DATE         :  $Date: 2006/10/18 19:17:22 $
+* REVISION     :  $Revision: 1.17 $
+* DATE         :  $Date: 2007/09/04 16:45:16 $
 *
 * Copyright (c) 1999, 2000 Cannon Technologies Inc. All rights reserved.
 *-----------------------------------------------------------------------------*/
@@ -70,10 +70,8 @@ bool Emetcon::getDouble() const
 }
 
 
-int Emetcon::buildAWordMessage(OUTMESS *&out_result)
+void Emetcon::buildAWordMessage(OUTMESS *&out_result)
 {
-   INT status = NORMAL;
-
    const OUTMESS out_template = *out_result;
 
    // Use the template's ASt since Buffer.OutMessage & Buffer.ASt are members of a union.
@@ -86,14 +84,10 @@ int Emetcon::buildAWordMessage(OUTMESS *&out_result)
    /* Calculate the message lengths */
    out_result->OutLength = AWORDLEN + PREAMLEN + 3;
    out_result->InLength = 2;
-
-   return status;
 }
 
-int Emetcon::buildBWordMessage(OUTMESS *&out_result, bool double_message)
+void Emetcon::buildBWordMessage(OUTMESS *&out_result, bool double_message)
 {
-   INT status = NORMAL;
-
    const OUTMESS out_template = *out_result;
 
    //  this is both the IO_Read and IO_Function_Read case
@@ -144,8 +138,6 @@ int Emetcon::buildBWordMessage(OUTMESS *&out_result, bool double_message)
     out_result->Command               = CMND_DTRAN;
     out_result->Buffer.OutMessage[6]  = (UCHAR)out_template.InLength;
     out_result->EventCode             &= ~RCONT;
-
-    return status;
 }
 
 
