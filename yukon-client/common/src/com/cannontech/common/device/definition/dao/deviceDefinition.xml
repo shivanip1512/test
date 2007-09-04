@@ -355,12 +355,6 @@
             </point>
             
             <point type="Status">
-            	<attribute name="DISCONNECT_STATUS"/>
-                <name>Disconnect Status</name>
-                <offset value="1"/>
-                <stategroup value="410 Disconnect"/>
-            </point>
-            <point type="Status">
                 <name>Comm Status</name>
                 <offset value="2000"/>
                 <stategroup value="SystemState"/>
@@ -489,11 +483,6 @@
 			<command name="Read Blink Count">
         		<cmd text="getvalue powerfail"/>
         		<pointRef name="Blink Count"/>
-        	</command>
-        	
-			<command name="Read Disconnect Status">
-        		<cmd text="getstatus disconnect"/>
-        		<pointRef name="Disconnect Status"/>
         	</command>
         	
 			<command name="Read Outage Log (6 most recent)">
@@ -1616,7 +1605,7 @@
         		<pointRef name="Blink Count"/>
         	</command>
 			<command name="Read Disconnect Status">
-        		<cmd text="getstatus disconnect"/>
+        		<cmd text="getconfig disconnect"/>
         		<pointRef name="Disconnect Status"/>
         	</command>
 			<command name="Read Outage Log (6 most recent)">
@@ -1930,7 +1919,7 @@
         		<pointRef name="Blink Count"/>
         	</command>
 			<command name="Read Disconnect Status">
-        		<cmd text="getstatus disconnect"/>
+        		<cmd text="getconfig disconnect"/>
         		<pointRef name="Disconnect Status"/>
         	</command>
 			<command name="Read Outage Log (6 most recent)">
@@ -2244,7 +2233,7 @@
         		<pointRef name="Blink Count"/>
         	</command>
 			<command name="Read Disconnect Status">
-        		<cmd text="getstatus disconnect"/>
+        		<cmd text="getconfig disconnect"/>
         		<pointRef name="Disconnect Status"/>
         	</command>
 			<command name="Read Outage Log (6 most recent)">
@@ -2561,7 +2550,7 @@
         		<pointRef name="Blink Count"/>
         	</command>
 			<command name="Read Disconnect Status">
-        		<cmd text="getstatus disconnect"/>
+        		<cmd text="getconfig disconnect"/>
         		<pointRef name="Disconnect Status"/>
         	</command>
 			<command name="Read Outage Log (6 most recent)">
