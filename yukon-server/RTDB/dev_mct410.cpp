@@ -8,8 +8,8 @@
 *
 * PVCS KEYWORDS:
 * ARCHIVE      :  $Archive:   Z:/SOFTWAREARCHIVES/YUKON/RTDB/dev_mct310.cpp-arc  $
-* REVISION     :  $Revision: 1.143 $
-* DATE         :  $Date: 2007/05/31 20:28:32 $
+* REVISION     :  $Revision: 1.144 $
+* DATE         :  $Date: 2007/09/04 19:44:11 $
 *
 * Copyright (c) 1999, 2000 Cannon Technologies Inc. All rights reserved.
 *-----------------------------------------------------------------------------*/
@@ -3167,9 +3167,16 @@ INT CtiDeviceMCT410::decodeGetValueDailyRead(INMESS *InMessage, CtiTime &TimeNow
                     //  adjust for the demand interval
                     peak.value *= 3600 / getDemandInterval();
 
-                    time_peak        = ((DSt->Message[10] & 0xc0) >>  5) | //  2 bits
-                                       ((DSt->Message[9]  & 0xff) <<  2) | //  8 bits
-                                       ((DSt->Message[8]  & 0x01) << 10);  //  1 bit
+                    time_peak        = ((DSt->Message[8]  & 0x01) << 10) |  //  1 bit
+                                       ((DSt->Message[9]  & 0xff) <<  2) |  //  8 bits
+                                       ((DSt->Message[10] & 0xc0) >>  6);   //  2 bits
+                                       
+
+                    time_voltage_max = ((DSt->Message[10] & 0x3f) <<  5) |  //  6 bits
+                                       ((DSt->Message[11] & 0xf8) >>  3);   //  5 bits
+
+                    time_voltage_min = ((DSt->Message[11] & 0x07) <<  8) |  //  3 bits
+                                       ((DSt->Message[12] & 0xff) <<  0);   //  8 bits
 
                     insertPointDataReport(DemandAccumulatorPointType, 1, ReturnMsg,
                                           peak, demand_pointname,  _daily_read_info.single_day + (time_peak * 60));
@@ -3177,12 +3184,6 @@ INT CtiDeviceMCT410::decodeGetValueDailyRead(INMESS *InMessage, CtiTime &TimeNow
                     voltage_min  = DSt->Message[7] | ((DSt->Message[6] & 0x0f) << 8);
 
                     voltage_max  = ((DSt->Message[6] & 0xf0) >> 4) | (DSt->Message[5] << 4);
-
-                    time_voltage_min = ((DSt->Message[12] & 0xff) <<  0) | //  8 bits
-                                       ((DSt->Message[11] & 0x07) <<  8);  //  3 bits
-
-                    time_voltage_max = ((DSt->Message[11] & 0xf8) >>  3) | //  5 bits
-                                       ((DSt->Message[10] & 0x3f) <<  5);  //  6 bits
 
                     if( voltage_min == 0x7fa )
                     {
