@@ -26,8 +26,8 @@
 	    	Outage Log Analog Point is not configured.
 	    </c:if>
 	    <c:if test="${isOutageConfigured}">
-	    	<c:if test="${data.readDate}">
-				<cti:formatDate value="${data.readDate}" type="both" var="formattedReadDate" />
+	    	<c:if test="${data.readDate != null}">
+				<cti:formatDate value="${data.readDate}" type="BOTH" var="formattedReadDate" />
 	        	${formattedReadDate}
 	        </c:if>
 	    </c:if>
