@@ -140,7 +140,7 @@ INT IM_EX_CTIBASE C_Word (PBYTE CWord,                        /* result */
 INT IM_EX_CTIBASE C_Words (PBYTE CWords,             /* results */
                            const PBYTE Message,      /* Message to be converted */
                            USHORT Length,            /* Length of Message */
-                           unsigned *Num)                 /* number of c words generated */
+                           unsigned *cword_count)    /* number of c words generated */
 {
    unsigned i;
 
@@ -155,7 +155,7 @@ INT IM_EX_CTIBASE C_Words (PBYTE CWords,             /* results */
       i++;
    }
 
-   *Num = i;
+   if( cword_count )  *cword_count = i;
 
    return(NORMAL);
 }

@@ -6,8 +6,8 @@
 *
 * PVCS KEYWORDS:
 * ARCHIVE      :  $Archive:   Z:/SOFTWAREARCHIVES/YUKON/common/INCLUDE/DSM2.H-arc  $
-* REVISION     :  $Revision: 1.40 $
-* DATE         :  $Date: 2007/04/13 19:22:08 $
+* REVISION     :  $Revision: 1.41 $
+* DATE         :  $Date: 2007/09/04 16:40:52 $
 *
 * Copyright (c) 1999, 2000, 2001 Cannon Technologies Inc. All rights reserved.
 *-----------------------------------------------------------------------------*/
@@ -1092,16 +1092,16 @@ int   IM_EX_CTIBASE Long2CharFormat (LONG, PCHAR, USHORT);
 int   IM_EX_CTIBASE Short2CharFormat (SHORT, PCHAR, USHORT);
 
 /* Prototypes for WORDS.C */
-int   IM_EX_CTIBASE A_Word (PBYTE, const ASTRUCT &, BOOL Double = FALSE);
-int   IM_EX_CTIBASE B_Word (PBYTE, const BSTRUCT &, unsigned wordCount, BOOL Double = FALSE);
-int   IM_EX_CTIBASE C_Word (PBYTE, const PBYTE, USHORT);
-int   IM_EX_CTIBASE C_Words (PBYTE, const PBYTE, USHORT, unsigned *);
+int   IM_EX_CTIBASE A_Word  (PBYTE, const ASTRUCT &, BOOL Double = FALSE);
+int   IM_EX_CTIBASE B_Word  (PBYTE, const BSTRUCT &, unsigned wordCount, BOOL Double = FALSE);
+int   IM_EX_CTIBASE C_Word  (PBYTE, const PBYTE, USHORT);
+int   IM_EX_CTIBASE C_Words (PBYTE, const PBYTE, USHORT, unsigned *cword_count = 0);
 int   IM_EX_CTIBASE D1_Word (PBYTE, PBYTE, PUSHORT, PULONG, PUSHORT, PUSHORT);
 int   IM_EX_CTIBASE D23_Word(PBYTE, PBYTE, PUSHORT, PUSHORT);
 int   IM_EX_CTIBASE D_Words (PBYTE, USHORT, USHORT, DSTRUCT *);
-int   IM_EX_CTIBASE E_Word (PBYTE, ESTRUCT *);
-int   IM_EX_CTIBASE BCHCheck (PBYTE);
-int   IM_EX_CTIBASE PadTst (PBYTE, USHORT, USHORT);
+int   IM_EX_CTIBASE E_Word  (PBYTE, ESTRUCT *);
+int   IM_EX_CTIBASE BCHCheck(PBYTE);
+int   IM_EX_CTIBASE PadTst  (PBYTE, USHORT, USHORT);
 int   IM_EX_CTIBASE NackTst (BYTE, PUSHORT, USHORT);
 int   IM_EX_CTIBASE APreamble (PBYTE, const ASTRUCT &);
 int   IM_EX_CTIBASE BPreamble (PBYTE, const BSTRUCT &, INT wordsToFollow);
