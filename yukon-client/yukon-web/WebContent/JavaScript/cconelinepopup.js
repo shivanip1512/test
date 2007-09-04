@@ -620,22 +620,28 @@ function reset(select, dontCloseCurrentPopup) {
 }
 function submitWithConfirm(obj) {
 	var cmdStr; 
-	if (obj.tagName == "SELECT") 
+	var name;
+	if (obj.tagName == "SELECT"){
 		cmdStr = getCommandVerbal(obj.options[obj.selectedIndex].value);
-	else
+		name = obj.options[obj.selectedIndex].value;
+	}
+	else{
 		cmdStr = getCommandVerbal (obj.name);
-	
+		name = obj.name;
+	}
 	if (confirm("Are you sure you want to execute " + cmdStr + "?"))
 	{
 		//response = prompt("Reason:", "");
-		var paoID = obj.name.split("_")[1];
-		var tagDesc = obj.name.split("_")[0];
+		
+		var paoID = name.split("_")[1];
+		var tagDesc = name.split("_")[0];
 		executeReasonUpdate(paoID, tagDesc, ""); 
 		submit(obj);
 	}
 	
 	
 }
+
 function closePopupWindow() {
 	closeCurrentPopupWindow();
 }
