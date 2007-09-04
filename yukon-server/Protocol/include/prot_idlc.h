@@ -10,8 +10,8 @@
 *
 * PVCS KEYWORDS:
 * ARCHIVE      :  $Archive$
-* REVISION     :  $Revision: 1.1 $
-* DATE         :  $Date: 2006/10/05 16:44:51 $
+* REVISION     :  $Revision: 1.2 $
+* DATE         :  $Date: 2007/09/04 16:48:22 $
 *
 * Copyright (c) 2006 Cannon Technologies Inc. All rights reserved.
 *-----------------------------------------------------------------------------*/
@@ -23,12 +23,12 @@
 #include "dsm2.h"
 #include "xfer.h"
 
-#include "prot_base.h"
+#include "prot_wrap.h"
 
 namespace Cti       {
 namespace Protocol  {
 
-class IM_EX_PROT IDLC : public Interface
+class IM_EX_PROT IDLC : public Wrap
 {
 private:
 
@@ -41,42 +41,43 @@ private:
         unsigned char code;
         struct
         {
-            unsigned char unsequenced       : 1;
-            unsigned char request_sequence  : 3;
-            unsigned char final_frame       : 1;
-            unsigned char response_sequence : 3;
+            unsigned char unsequenced       : 1;  //  byte 0 bit 0
+            unsigned char request_sequence  : 3;  //  byte 0 bits 1-3
+            unsigned char final_frame       : 1;  //  byte 0 bit 4
+            unsigned char response_sequence : 3;  //  byte 0 bits 5-7
         };
     };
 
+    //  3 bytes
     struct frame_header
     {
-        unsigned char flag;
-        unsigned char direction : 1;
-        unsigned char address   : 7;
-        control_code  control;
+        unsigned char flag;             //  byte 0
+        unsigned char direction : 1;    //  byte 1 bit 0
+        unsigned char address   : 7;    //  byte 1 bits 1-7
+        control_code  control;          //  byte 2
     };
 
     union frame
     {
         struct
         {
-            frame_header  header;
-            unsigned char data[258];
+            frame_header  header;     //  bytes 0-2
+            unsigned char data[258];  //  bytes 3-260
         };
         unsigned char raw[261];
     };
 
 #pragma pack(pop)
 
-    enum IOState
+    enum IOStates
     {
-        State_IO_Output,      //  normal output
-        State_IO_Reset,       //  reset request from master to CCU
-        State_IO_Retransmit,  //  retransmit request from master to CCU
-        State_IO_Input,       //  input
-        State_IO_Complete,    //  transaction complete
-        State_IO_Failed,      //  transaction failed
-        State_IO_Invalid,     //  catch-all error condition for initialization errors
+        IO_State_Output,      //  normal output
+        IO_State_Reset,       //  reset request from master to CCU
+        IO_State_Retransmit,  //  retransmit request from master to CCU
+        IO_State_Input,       //  input
+        IO_State_Complete,    //  transaction complete
+        IO_State_Failed,      //  transaction failed
+        IO_State_Invalid,     //  catch-all error condition for initialization errors
     } _io_state;
 
     enum ControlCodes
@@ -94,15 +95,15 @@ private:
     };
 
     //  outbound-specific
-    unsigned char _out_payload_length;
-    unsigned char _out_payload[255];
+    unsigned char _out_data_length;
+    unsigned char _out_data[255];
     unsigned long _out_sent;
     unsigned char _master_sequence;
     frame _out_frame;
 
     //  inbound-specific
-    unsigned char _in_payload_length;
-    unsigned char _in_payload[255];
+    unsigned char _in_data_length;
+    unsigned char _in_data[255];
     unsigned long _in_expected;
     unsigned long _in_actual;
     unsigned long _in_recv;
@@ -129,10 +130,10 @@ private:
 
     enum IDLCFrameEnum
     {
-        Frame_MaximumPayloadLength      = 255,
+        Frame_MaximumDataLength      = 255,
         Frame_MinimumLength             =   5,
         Frame_ControlPacketLength       =   5,
-        Frame_DataPacket_OverheadLength =   6,
+        Frame_DataPacket_OverheadLength =   6,  //  header is 3, CRC is 2
     };
 
     enum MiscNumeric
@@ -163,10 +164,13 @@ public:
     bool isTransactionComplete( void );
     bool errorCondition( void );
 
-    bool setOutPayload( const unsigned char *payload, unsigned len );
+    bool send( const unsigned char *buf, unsigned len );
+    bool recv( void );
 
-    void getInPayload( unsigned char *buf );
-    int  getInPayloadLength( void );
+    bool setOutData( const unsigned char *buf, unsigned len );
+
+    void getInboundData( unsigned char *buf );
+    int  getInboundDataLength( void );
 
     enum IDLCError
     {

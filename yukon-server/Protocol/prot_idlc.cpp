@@ -8,8 +8,8 @@
 *
 * PVCS KEYWORDS:
 * ARCHIVE      :  $Archive$
-* REVISION     :  $Revision: 1.1 $
-* DATE         :  $Date: 2006/10/05 16:44:51 $
+* REVISION     :  $Revision: 1.2 $
+* DATE         :  $Date: 2007/09/04 16:48:22 $
 *
 * Copyright (c) 2006 Cannon Technologies Inc. All rights reserved.
 *-----------------------------------------------------------------------------*/
@@ -58,6 +58,8 @@ void IDLC::sendFrame( CtiXfer &xfer )
 {
     unsigned short crc;
 
+    unsigned char out_frame_length  = _out_data_length + Frame_DataPacket_OverheadLength;
+
     //  byte 0
     _out_frame.header.flag      = FramingFlag;
 
@@ -71,17 +73,18 @@ void IDLC::sendFrame( CtiXfer &xfer )
     _out_frame.header.control.request_sequence  = _master_sequence;
     _out_frame.header.control.response_sequence = _slave_sequence;
 
-    _out_frame.data[0] = _out_payload_length;
-    memcpy(_out_frame.data + 1, _out_payload, _out_payload_length);
+    _out_frame.data[0] = _out_data_length;
+
+    memcpy(_out_frame.data + 1, _out_data, _out_data_length);
 
     //  the CRC omits the framing byte
-    crc = NCrcCalc_C(_out_frame.raw + 1, _out_payload_length + 3);
+    crc = NCrcCalc_C(_out_frame.raw + 1, out_frame_length - 1 - 2);  //  minus 1 for the framing byte and 2 for the CRC
 
     //  MSB first
-    _out_frame.data[_out_payload_length + 4] = (crc >> 8) & 0xff;
-    _out_frame.data[_out_payload_length + 5] = (crc >> 0) & 0xff;
+    _out_frame.raw[out_frame_length - 2] = (crc >> 8) & 0xff;
+    _out_frame.raw[out_frame_length - 1] = (crc >> 0) & 0xff;
 
-    xfer.setOutCount(_out_payload_length + Frame_DataPacket_OverheadLength);
+    xfer.setOutCount(out_frame_length);
     xfer.setOutBuffer(_out_frame.raw);
 
     xfer.setInCountExpected(0);
@@ -259,17 +262,17 @@ int IDLC::generate( CtiXfer &xfer )
 
     switch( _io_state )
     {
-        case State_IO_Output:       sendFrame(xfer);            break;
+        case IO_State_Output:       sendFrame(xfer);            break;
 
-        case State_IO_Reset:        sendReset(xfer);            break;
+        case IO_State_Reset:        sendReset(xfer);            break;
 
-        case State_IO_Retransmit:   sendRetransmit(xfer);       break;
+        case IO_State_Retransmit:   sendRetransmit(xfer);       break;
 
-        case State_IO_Input:        recvFrame(xfer, _in_recv);  break;
+        case IO_State_Input:        recvFrame(xfer, _in_recv);  break;
 
-        case State_IO_Complete:
-        case State_IO_Invalid:
-        case State_IO_Failed:
+        case IO_State_Complete:
+        case IO_State_Invalid:
+        case IO_State_Failed:
         default:
         {
             {
@@ -298,7 +301,7 @@ int IDLC::decode( CtiXfer &xfer, int status )
     {
         switch( _io_state )
         {
-            case State_IO_Input:
+            case IO_State_Input:
             {
                 if( !_in_recv )
                 {
@@ -318,7 +321,7 @@ int IDLC::decode( CtiXfer &xfer, int status )
                 else if( !isCRCValid(_in_frame) )
                 {
                     //  bad CRC, re-request frame
-                    _io_state = State_IO_Retransmit;
+                    _io_state = IO_State_Retransmit;
                     _protocol_errors++;
                 }
                 else if( _in_frame.header.direction )
@@ -350,7 +353,7 @@ int IDLC::decode( CtiXfer &xfer, int status )
                 }
                 else if( _in_frame.header.control.response_sequence != _slave_sequence )
                 {
-                    _io_state = State_IO_Retransmit;
+                    _io_state = IO_State_Retransmit;
                     _protocol_errors++;
                 }
                 else
@@ -360,28 +363,28 @@ int IDLC::decode( CtiXfer &xfer, int status )
                     _slave_sequence  = (_slave_sequence  + 1) % 8;
 
                     //  and copy the data
-                    _in_payload_length = _in_frame.data[0];
+                    _in_data_length = _in_frame.data[0];
 
-                    memcpy(_in_payload, _in_frame.data + 1, _in_payload_length);
+                    memcpy(_in_data, _in_frame.data + 1, _in_data_length);
 
                     //  we're done
-                    _io_state = State_IO_Complete;
+                    _io_state = IO_State_Complete;
                 }
 
                 break;
             }
 
-            case State_IO_Output:
-            case State_IO_Retransmit:
+            case IO_State_Output:
+            case IO_State_Retransmit:
             {
-                _io_state = State_IO_Input;
+                _io_state = IO_State_Input;
 
                 break;
             }
 
-            case State_IO_Complete:
-            case State_IO_Failed:
-            case State_IO_Invalid:
+            case IO_State_Complete:
+            case IO_State_Failed:
+            case IO_State_Invalid:
             default:
             {
                 {
@@ -390,7 +393,7 @@ int IDLC::decode( CtiXfer &xfer, int status )
                 }
 
                 _protocol_errors++;
-                _io_state = State_IO_Failed;
+                _io_state = IO_State_Failed;
 
                 break;
             }
@@ -404,7 +407,7 @@ int IDLC::decode( CtiXfer &xfer, int status )
     {
         //  this should be a nicer error - this is very generic
         retval = !NORMAL;
-        _io_state = State_IO_Failed;
+        _io_state = IO_State_Failed;
     }
 
     return retval;
@@ -417,15 +420,15 @@ bool IDLC::isTransactionComplete( void )
 
     switch( _io_state )
     {
-        case State_IO_Input:
-        case State_IO_Output:
-        case State_IO_Retransmit:
+        case IO_State_Input:
+        case IO_State_Output:
+        case IO_State_Retransmit:
             break;
 
         //  note the "default" case there - we exit instead of looping forever
-        case State_IO_Complete:
-        case State_IO_Failed:
-        case State_IO_Invalid:
+        case IO_State_Complete:
+        case IO_State_Failed:
+        case IO_State_Invalid:
         default:
             retval = true;
     }
@@ -436,19 +439,31 @@ bool IDLC::isTransactionComplete( void )
 
 bool IDLC::errorCondition( void )
 {
-    return _io_state == State_IO_Failed;
+    return _io_state == IO_State_Failed;
 }
 
 
-bool IDLC::setOutPayload( const unsigned char *payload, unsigned len )
+bool IDLC::send( const unsigned char *buf, unsigned len )
 {
-    if( payload && len && len < Frame_MaximumPayloadLength )
+    return setOutData(buf, len);
+}
+
+
+bool IDLC::recv( void )
+{
+    return _io_state = IO_State_Input;
+}
+
+
+bool IDLC::setOutData( const unsigned char *buf, unsigned len )
+{
+    if( buf && len && len < Frame_MaximumDataLength )
     {
-        _io_state = State_IO_Output;
+        _io_state = IO_State_Output;
 
-        memcpy(_out_payload, payload, len);
+        memcpy(_out_data, buf, len);
 
-        _out_payload_length = len;
+        _out_data_length = len;
 
         //  this is the only place these are reset to 0
         _sanity_counter  = 0;
@@ -457,26 +472,26 @@ bool IDLC::setOutPayload( const unsigned char *payload, unsigned len )
     }
     else
     {
-        _io_state = State_IO_Invalid;
-        _out_payload_length = 0;
+        _io_state = IO_State_Invalid;
+        _out_data_length = 0;
     }
 
-    return _out_payload_length > 0;
+    return _out_data_length > 0;
 }
 
 
-void IDLC::getInPayload( unsigned char *buf )
+void IDLC::getInboundData( unsigned char *buf )
 {
     if( buf )
     {
-        memcpy(buf, _in_payload, _in_payload_length);
+        memcpy(buf, _in_data, _in_data_length);
     }
 }
 
 
-int IDLC::getInPayloadLength( void )
+int IDLC::getInboundDataLength( void )
 {
-    return _in_payload_length;
+    return _in_data_length;
 }
 
 
