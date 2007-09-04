@@ -10,8 +10,8 @@
 *
 * PVCS KEYWORDS:
 * ARCHIVE      :  $Archive$
-* REVISION     :  $Revision: 1.2 $
-* DATE         :  $Date: 2007/08/07 21:05:11 $
+* REVISION     :  $Revision: 1.3 $
+* DATE         :  $Date: 2007/09/04 16:46:18 $
 *
 * Copyright (c) 2006 Cannon Technologies Inc. All rights reserved.
 *-----------------------------------------------------------------------------*/
@@ -25,45 +25,60 @@
 #include "dlldefs.h"
 #include "pointtypes.h"
 
-#include "prot_base.h"
+#include "prot_wrap.h"
 
-#include "dnp_datalink.h"
 #include "prot_idlc.h"
+//#include "dnp_datalink.h"  //  DNP should be reimplemented as a wrapper protocol
+
 
 namespace Cti       {
 namespace Protocol  {
 
+
 class IM_EX_PROT Klondike : public Interface
 {
     enum Command;
-    enum Wrap;
+    enum ProtocolWrap;
 
 private:
-
-    IDLC          _idlc_wrap;
-    DNP::Datalink _dnp_wrap;
 
     unsigned short _masterAddress,
                    _slaveAddress;
 
     Command _command;
 
+    BSTRUCT _dtran_bstruct;  //  the information needed for a direct transmission
+
+    unsigned char _outbound[255];
+
     int _comm_errors;
+    int _sequence;
 
     enum MiscNumeric
     {
         CommErrorMaximum = 2
     };
 
-    Wrap _protocol_wrap;
+    enum IO_State
+    {
+        IO_Invalid,
 
-    int  wrap_generate(CtiXfer &xfer);
-    int  wrap_decode  (CtiXfer &xfer, int status);
+        IO_Output,
+        IO_Input,
 
-    bool wrap_isTransactionComplete();
+        IO_Complete,
+
+    } _io_state;
+
+    void doOutput(void);
 
     Klondike(const Klondike &aRef);
     Klondike &operator=(const Klondike &aRef);
+
+    Wrap *_wrap;
+
+    IDLC          _idlc_wrap;
+    //DNP::Datalink _dnp_wrap;
 
 protected:
 
@@ -73,19 +88,20 @@ public:
     virtual ~Klondike();
 
     void setAddresses(unsigned short slaveAddress, unsigned short masterAddress);
-    void setWrap(Wrap w);
+    void setWrap(ProtocolWrap w);
 
-    bool setCommand(Command command );
+    bool setCommand(int command);
+    void setDirectTransmissionInfo(BSTRUCT &BSt);
 
     int generate(CtiXfer &xfer);
     int decode  (CtiXfer &xfer, int status);
 
     bool isTransactionComplete(void);
 
-    enum Wrap
+    enum ProtocolWrap
     {
-        Wrap_IDLC,
-        Wrap_DNP,
+        ProtocolWrap_IDLC,
+        ProtocolWrap_DNP,
     };
 
     enum Command
@@ -121,6 +137,7 @@ public:
         DefaultSlaveAddress  =    1
     };
 };
+
 
 }
 }
