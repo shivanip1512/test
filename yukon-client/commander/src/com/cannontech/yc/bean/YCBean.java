@@ -307,15 +307,17 @@ public class YCBean extends YC implements MessageListener, HttpSessionBindingLis
 						fakePtData.setTime(returnMsg.getTimeStamp());
 						//The key is deviceID+STRING parsed from return message
 						getReturnNameToRecentPDMap().put(id, fakePtData);
-						CTILogger.info("Put (returnNameToRecentReadMap): " +id + ":"+fakePtData.getId()+"-"+fakePtData.getValue()+"-"+fakePtData.getPointDataTimeStamp());					    
-					}
-					else if ( tempResult.toLowerCase().indexOf("role ") > 0)	//getconfig role # stuff
-					{
+						CTILogger.info("Put (returnNameToRecentReadMap): " +id + ":"+fakePtData.getId()+"-"+fakePtData.getValue()+"-"+fakePtData.getPointDataTimeStamp());
+						
+					} else if ( tempResult.toLowerCase().indexOf("role ") > 0) {	//getconfig role # stuff
 						//do nothing.  No point data information can be retrieved from this command
 						// but since the result string has '=' (equal sign) we need to "if" this out of here.
-					}						
-					else if( tempResult.indexOf('=') > 0)
-					{
+						
+					} else if ( tempResult.toLowerCase().indexOf("disconnect config sent") > 0)	{ //putcofig disconnect stuff
+						//do nothing.  No point data information can be retrieved from this command
+						// but since the result string has 'disconnect' we need to "if" this out of here.
+						
+					} else if( tempResult.indexOf('=') > 0) {
 						int equal = tempResult.indexOf('=');
 						int slash = tempResult.indexOf('/')+1;
 				
