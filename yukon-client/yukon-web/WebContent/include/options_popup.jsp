@@ -134,6 +134,6 @@ function changeMult()
 			</form>
 			</td>
 		</tr>
-	</table 
+	</table> 
 </center>
 </body>
