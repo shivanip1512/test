@@ -1,7 +1,12 @@
 package com.cannontech.core.authentication.service;
 
 public enum AuthType {
-    PLAIN("Normal"), HASH_SHA("Hashed"), RADIUS("Radius"), NONE("No Login");
+    PLAIN("Normal"),
+    HASH_SHA("Hashed"),
+    RADIUS("Radius"),
+    NONE("No Login"),
+    AD("Active Directory"),
+    LDAP("LDAP");
     
     private final String title;
 

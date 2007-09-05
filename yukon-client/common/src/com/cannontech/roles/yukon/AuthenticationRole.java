@@ -27,4 +27,15 @@ public interface AuthenticationRole {
 	public static final int AUTH_TIMEOUT = YukonRoleDefs.AUTHENTICATION_PROPERTYID_BASE - 6;
     public static final int DEFAULT_AUTH_TYPE = YukonRoleDefs.AUTHENTICATION_PROPERTYID_BASE - 7;
 	
+    public static final int LDAP_DN = YukonRoleDefs.AUTHENTICATION_PROPERTYID_BASE - 8;
+    public static final int LDAP_USER_SUFFIX = YukonRoleDefs.AUTHENTICATION_PROPERTYID_BASE - 9;
+    public static final int LDAP_USER_PREFIX = YukonRoleDefs.AUTHENTICATION_PROPERTYID_BASE - 10;
+    public static final int LDAP_SERVER_ADDRESS = YukonRoleDefs.AUTHENTICATION_PROPERTYID_BASE - 11;
+    public static final int LDAP_SERVER_PORT = YukonRoleDefs.AUTHENTICATION_PROPERTYID_BASE - 12;
+    public static final int LDAP_SERVER_TIMEOUT = YukonRoleDefs.AUTHENTICATION_PROPERTYID_BASE - 13;
+    
+    public static final int AD_SERVER_ADDRESS = YukonRoleDefs.AUTHENTICATION_PROPERTYID_BASE - 14;
+    public static final int AD_SERVER_PORT = YukonRoleDefs.AUTHENTICATION_PROPERTYID_BASE - 15;
+    public static final int AD_SERVER_TIMEOUT = YukonRoleDefs.AUTHENTICATION_PROPERTYID_BASE - 16;
+    public static final int AD_NTDOMAIN = YukonRoleDefs.AUTHENTICATION_PROPERTYID_BASE - 17;
 }

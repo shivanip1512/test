@@ -9,6 +9,8 @@
           <entry key="HASH_SHA" value-ref="localShaAuthentication"/>
           <entry key="RADIUS" value-ref="radiusLoginProvider"/>
           <entry key="NONE" value-ref="nullAuthentication"/>
+          <entry key="AD" value-ref="ADAuthentication"/>
+          <entry key="LDAP" value-ref="ldapAuthentication"/>
         </map>
       </property>
       <property name="yukonUserDao" ref="yukonUserDao"/>
@@ -46,5 +48,18 @@
     
     <bean id="nullAuthentication" class="com.cannontech.core.authentication.service.impl.NullAuthenticationService">
     </bean>
+    
+    <bean id="ldapService" class="com.cannontech.common.login.ldap.LDAPService"/>
+    
+    <bean id="ADAuthentication" class="com.cannontech.common.login.ldap.impl.LDAPADLogin">
+    	<property name="roleDao" ref="roleDao"/>
+    	<property name="ldapService" ref="ldapService"/>
+    </bean>
+    
+    <bean id="ldapAuthentication" class="com.cannontech.common.login.ldap.impl.LDAPX500Login">
+    	<property name="roleDao" ref="roleDao"/>
+    	<property name="ldapService" ref="ldapService"/>
+    </bean>
+    
 </beans>
 
