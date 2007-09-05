@@ -1,7 +1,7 @@
 /*==============================================================*/
 /* Database name:  YukonDatabase                                */
 /* DBMS name:      ORACLE Version 9i                            */
-/* Created on:     8/29/2007 1:29:12 PM                         */
+/* Created on:     9/5/2007 11:42:37 AM                         */
 /*==============================================================*/
 
 
@@ -9214,9 +9214,9 @@ alter table YukonWebConfiguration
 /*==============================================================*/
 /* View: CCINVENTORY_VIEW                                       */
 /*==============================================================*/
-create or replace view CCINVENTORY_VIEW as
+create or replace view CCINVENTORY_VIEW(Region, SubName, FeederName, subId, fdrId, CBCName, cbcId, capbankname, bankId, CapBankSize, Sequence, ControlStatus, SWMfgr, SWType, ControlType, Protocol, IPADDRESS, SlaveAddress, LAT, LON, DriveDirection, OpCenter, TA) as
 SELECT yp4.paoname AS Region, yp3.PAOName AS SubName, yp2.PAOName AS FeederName, yp3.PAObjectID AS subId, yp2.PAObjectID AS fdrId, 
-                      yp.PAOName AS CBCName, yp.PAObjectID AS cbcId, yp1.PAOName AS Bankname, yp1.PAObjectID AS bankId, cb.BANKSIZE AS CapBankSize, 
+                      yp.PAOName AS CBCName, yp.PAObjectID AS cbcId, yp1.PAOName AS capbankname, yp1.PAObjectID AS bankId, cb.BANKSIZE AS CapBankSize, 
                       fb.ControlOrder AS Sequence, dcb.ControlStatus, cb.SwitchManufacture AS SWMfgr, cb.TypeOfSwitch AS SWType, 
                       cb.OPERATIONALSTATE AS ControlType, cb.ControllerType AS Protocol, pts.IPADDRESS, da.SlaveAddress, 
 capa.latitude AS LAT, capa.longitude AS LON, capa.drivedirections AS DriveDirection, 
@@ -9242,9 +9242,9 @@ FROM CAPBANK cb INNER JOIN
 /*==============================================================*/
 /* View: CCOPERATIONS_VIEW                                      */
 /*==============================================================*/
-create or replace view CCOPERATIONS_VIEW as
+create or replace view CCOPERATIONS_VIEW(cbcName, capbankname, opTime, operation, confTime, confStatus, feederName, feederId, subName, subBusId, region, BANKSIZE, protocol, ipAddress, serialNum, SlaveAddress, kvarAfter, kvarChange, kvarBefore) as
 SELECT 
-	yp3.PAOName AS cbcName, yp.PAOName AS bankname, el.DateTime AS opTime, el.Text AS operation, 
+	yp3.PAOName AS cbcName, yp.PAOName AS capbankname, el.DateTime AS opTime, el.Text AS operation, 
 	el2.DateTime AS confTime, el2.Text AS confStatus, yp1.PAOName AS feederName, yp1.PAObjectID AS feederId, 
         yp2.PAOName AS subName, yp2.PAObjectID AS subBusId, yp4.paoname AS region, cb.BANKSIZE, 
         cb.ControllerType AS protocol, p.Value AS ipAddress, cbc.SERIALNUMBER AS serialNum, da.SlaveAddress, 
