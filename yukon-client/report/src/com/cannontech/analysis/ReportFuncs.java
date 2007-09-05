@@ -43,7 +43,7 @@ import com.cannontech.analysis.report.MeterReadReport;
 import com.cannontech.analysis.report.MeterUsageReport;
 import com.cannontech.analysis.report.PointDataIntervalReport;
 import com.cannontech.analysis.report.PointDataSummaryReport;
-import com.cannontech.analysis.report.PowerFailReport;
+import com.cannontech.analysis.report.MeterOutageCountReport;
 import com.cannontech.analysis.report.ProgramDetailReport;
 import com.cannontech.analysis.report.RepeaterRoleCollisionReport;
 import com.cannontech.analysis.report.RouteDBReport;
@@ -81,7 +81,7 @@ import com.cannontech.analysis.tablemodel.MeterReadModel;
 import com.cannontech.analysis.tablemodel.MeterUsageModel;
 import com.cannontech.analysis.tablemodel.PointDataIntervalModel;
 import com.cannontech.analysis.tablemodel.PointDataSummaryModel;
-import com.cannontech.analysis.tablemodel.PowerFailModel;
+import com.cannontech.analysis.tablemodel.MeterOutageCountModel;
 import com.cannontech.analysis.tablemodel.ProgramDetailModel;
 import com.cannontech.analysis.tablemodel.RepeaterRoleCollisionModel;
 import com.cannontech.analysis.tablemodel.ReportModelBase;
@@ -146,8 +146,8 @@ public class ReportFuncs
             returnVal = new MeterOutageReport();
         else if( model instanceof CarrierDBModel)
             returnVal = new CarrierDBReport();
-        else if( model instanceof PowerFailModel)
-            returnVal = new PowerFailReport();
+        else if( model instanceof MeterOutageCountModel)
+            returnVal = new MeterOutageCountReport();
         else if( model instanceof DisconnectModel)
             returnVal = new DisconnectReport();
         else if( model instanceof ActivityModel)

@@ -10,12 +10,14 @@ import java.util.ArrayList;
 import java.util.Date;
 import java.util.List;
 import java.util.Map;
+import java.util.Vector;
 
 import org.apache.commons.lang.StringUtils;
 import org.jfree.report.JFreeReport;
 import org.jfree.report.function.FunctionInitializeException;
 import org.jfree.report.util.IntList;
 
+import com.cannontech.analysis.ReportGroup;
 import com.cannontech.analysis.ReportTypes;
 import com.cannontech.analysis.controller.ReportController;
 import com.cannontech.analysis.report.YukonReportBase;
@@ -43,9 +45,9 @@ public class ReportBean
 	 * @deprecated see getter method
 	 */
 	private ReportModelBase model = null;
-	private int type = -1;
-	private int[] availReportTypes = new int[0];
-	private int groupType = -1;
+	private String type = "";
+	private Vector<ReportTypes> availReportTypes = new Vector<ReportTypes>();
+	private String groupType = "";
 	private int userID = UserUtils.USER_YUKON_ID;
 	private int energyCompanyID = EnergyCompany.DEFAULT_ENERGY_COMPANY_ID;
 	
@@ -66,53 +68,30 @@ public class ReportBean
 		CTILogger.info("Report Bean Initialized");
 	}
 
-	public static void main(final String[] args) throws Exception
-	{
-		ReportBean bean = new ReportBean();
-		bean.setType(16);
-		bean.buildOptionsHTML();
+	public void setType(String type) {
+		
+		if( !this.type.equals(type)) {
+			this.type = type;
+			setChanged(true);
+		}
 	}
-	/**
-	 * @return
-	 */
-	public int getType()
-	{
-		return type;
+	public void setType(ReportTypes reportType) {
+		setType(reportType.toString());
 	}
 
-	/**
-	 * @return
-	 */
-	public String getStart()
+	public void setGroupType(String groupType)
 	{
-		return start;
-	}
-
-	/**
-	 * @return
-	 */
-	public String getStop()
-	{
-		return stop;
-	}
-
-	/**
-	 * @param i
-	 */
-	public void setType(int i)
-	{
-		if( i != type)
-		{
-			type = i;
+		if( !this.groupType.equals(groupType)) {
+			this.groupType = groupType;
+			loadReportTypes();
+			final Vector<ReportTypes> reportTypes = getReportTypes();
+			if(!reportTypes.isEmpty())
+				setType(reportTypes.get(0));	//default to the first one
 			setChanged(true);
 		}
 	}
 
-	/**
-	 * @param string
-	 */
-	public void setStart(String startDateString)
-	{
+	public void setStart(String startDateString) {
         if (StringUtils.isBlank(startDateString)) {
             return;
         }
@@ -120,28 +99,8 @@ public class ReportBean
 		startDate = ServletUtil.parseDateStringLiberally(start);
 	}
 
-	public Date getStartDate()
-	{
-	    if (startDate == null) {
-            return ServletUtil.getYesterday();
-        }
-	    
-		return startDate;
-	}
-    
-	public Date getStopDate()
-	{
-	    if (stopDate == null) {
-            return ServletUtil.getTomorrow();
-        }
-		return stopDate;
-	}
-    
-	/**
-	 * @param string
-	 */
-	public void setStop(String stopDateString)
-	{
+	public void setStop(String stopDateString) {
+		
         if (StringUtils.isBlank(stopDateString)) {
             return;
         }
@@ -149,31 +108,65 @@ public class ReportBean
 		stopDate = ServletUtil.parseDateStringLiberally(stop);
 		
 	}
-
+	
 	/**
-	 * Return the report group type
+	 * Returns the EnergyCompanyID for the reportBean's user
 	 * @return
 	 */
-	public int getGroupType()
-	{
-		return groupType;
+	public int getEnergyCompanyID() {
+		return energyCompanyID;
 	}
 
 	/**
-	 * Sets the report group type
+	 * Set the EnergyCompanyID for the reportBean's user
 	 * @param i
 	 */
-	public void setGroupType(int i)
-	{
-		if( i != groupType)
-		{
-			groupType = i;
-			loadReportTypes();
-			int [] reportTypes = getReportTypes();
-			if( reportTypes.length > 0)
-				setType(reportTypes[0]);	//default to the first one
-			setChanged(true);
-		}
+	public void setEnergyCompanyID(int ecID) {
+		energyCompanyID = ecID;
+	}
+
+	/**
+	 * Returns the userID
+	 * @return
+	 */
+	public int getUserID() {
+		return userID;
+	}
+
+	/**
+	 * Set userID
+	 * @param i
+	 */
+	public void setUserID(int i) {
+		userID = i;
+	}
+
+	public Date getStartDate() {
+		
+	    if (startDate == null) {
+            return ServletUtil.getYesterday();
+        }
+	    
+		return startDate;
+	}
+
+	public Date getStopDate() {
+	    if (stopDate == null) {
+            return ServletUtil.getTomorrow();
+        }
+		return stopDate;
+	}
+    
+	public ReportTypes getReportType() {
+		if (type != "")
+			return ReportTypes.valueOf(type);
+		return null;
+	}
+
+	public ReportGroup getReportGroup() {
+		if( groupType != "")
+			return ReportGroup.valueOf(groupType);
+		return null;
 	}
 
 	/**
@@ -233,8 +226,7 @@ public class ReportBean
 	 * Returns true if some other parameter has changed.
 	 * @return
 	 */
-	public boolean isChanged()
-	{
+	public boolean isChanged() {
 		return isChanged;
 	}
 
@@ -242,13 +234,11 @@ public class ReportBean
 	 * Set isChanged value
 	 * @param b
 	 */
-	public void setChanged(boolean b)
-	{
+	public void setChanged(boolean b) {
 		isChanged = b;
 	}
 
-	public String buildOptionsHTML()
-	{
+	public String buildOptionsHTML() {
 		if( getModel() == null)
 			return "";
 
@@ -258,8 +248,7 @@ public class ReportBean
     /**
      * @param model The model to set.
      */
-    public void setModel(ReportModelBase model)
-    {
+    public void setModel(ReportModelBase model) {
         this.model = model;
         if( model != null)
         {
@@ -267,41 +256,7 @@ public class ReportBean
         	model.setUserID(new Integer(getUserID()));
         }
     }
-	/**
-	 * Returns the EnergyCompanyID for the reportBean's user
-	 * @return
-	 */
-	public int getEnergyCompanyID()
-	{
-		return energyCompanyID;
-	}
 
-	/**
-	 * Set the EnergyCompanyID for the reportBean's user
-	 * @param i
-	 */
-	public void setEnergyCompanyID(int ecID)
-	{
-		energyCompanyID = ecID;
-	}
-
-	/**
-	 * Returns the userID
-	 * @return
-	 */
-	public int getUserID()
-	{
-		return userID;
-	}
-
-	/**
-	 * Set userID
-	 * @param i
-	 */
-	public void setUserID(int i)
-	{
-		userID = i;
-	}
 	
 	/**
 	 * Returns an array of reportType ints that are valid for grpType
@@ -309,38 +264,32 @@ public class ReportBean
 	 * @param groupType
 	 * @return
 	 */
-	public int[] getReportTypes()
-	{
+	public Vector<ReportTypes> getReportTypes() {
 		return availReportTypes;
 	}
 	
 	/**
-	 * Load the availReportTypes for getGroupType().
+	 * Load the availReportTypes for getReportGroup().
 	 */
-	private void loadReportTypes()
-	{
-		if (getGroupType() == ReportTypes.SETTLEMENT_REPORTS_GROUP)
+	private void loadReportTypes() {
+		
+		if (getReportGroup() == ReportGroup.SETTLEMENT)
 		{
 			//Need to replace types with the settlement report types based on the energyCompany's Settlement list and yukonListEntries.
 			LiteStarsEnergyCompany liteEC = StarsDatabaseCache.getInstance().getEnergyCompany( getEnergyCompanyID() );
 			YukonSelectionList list = liteEC.getYukonSelectionList(YukonSelectionListDefs.YUK_LIST_NAME_SETTLEMENT_TYPE);
 			ArrayList yukListEntries = list.getYukonListEntries();
-			IntList intList = new IntList(3);
 			//Loop through all list entries, there may be more than one settlement type per energycompany.
 			for (int i = 0; i < yukListEntries.size(); i ++)
 			{
 				YukonListEntry entry = (YukonListEntry)yukListEntries.get(i);
-				int[] addTypes = ReportTypes.getSettlementReportTypes(entry.getYukonDefID());
+				Vector<ReportTypes> settlementTypes = ReportTypes.getSettlementReportTypes(entry.getYukonDefID());
 				//Loop through all reportTypes per yukDefID and add them to intList.
-				for (int j = 0; j < addTypes.length; j++)
-				{
-					intList.add(addTypes[j]);
-				}
+				availReportTypes.addAll(settlementTypes);
 			}
-			availReportTypes = intList.toArray();
 		}
 		else
-			availReportTypes = ReportTypes.getGroupReportTypes(getGroupType());
+			availReportTypes = ReportTypes.getGroupReportTypes(getReportGroup());
 	}
     
     public ReportController getReportController() {
@@ -350,7 +299,9 @@ public class ReportBean
     }
 
     public void createController() {
-        reportController = ReportTypes.create(getType());
+    	if( getReportType() != null)
+    		reportController = ReportTypes.create(getReportType());
+    	
         if (reportController == null) {
             setModel(null);
         } else {
