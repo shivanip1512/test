@@ -307,7 +307,7 @@ public class MeterOutageCountModel extends ReportModelBase
         sb.append("          </td>" + LINE_SEPARATOR);
         sb.append("        </tr>" + LINE_SEPARATOR);
         sb.append("        <tr>" + LINE_SEPARATOR);
-        sb.append("          <td>* Click here for a report of meters having one or less archived reading for specified timeframe.</td>"+ LINE_SEPARATOR);		
+        sb.append("          <td>* Click here for a report of meters with less than two archived readings for the timeframe selected.</td>"+ LINE_SEPARATOR);		
         sb.append("        </tr>" + LINE_SEPARATOR);
         sb.append("      </table>" + LINE_SEPARATOR);
         sb.append("    </td>" + LINE_SEPARATOR);
