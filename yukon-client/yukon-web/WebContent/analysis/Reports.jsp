@@ -1,5 +1,8 @@
+
 <html>
 <%@ page import="com.cannontech.amr.deviceread.model.DeviceReadJobLog" %>
+<%@ page import="java.util.Vector" %>
+<%@ page import="com.cannontech.analysis.tablemodel.ReportModelBase" %>
 <%@ page import="java.util.Map" %>
 <%@ page import="com.cannontech.analysis.*" %>
 <%@ page import="com.cannontech.core.dao.DaoFactory" %>
@@ -33,9 +36,10 @@
 <jsp:setProperty name="REPORT_BEAN" property="start" param="startDate"/>
 <jsp:setProperty name="REPORT_BEAN" property="stop" param="stopDate"/>
 
-<%
+<% 
 	String menuSelection = null;
-	switch(REPORT_BEAN.getGroupType()){
+	/*
+	switch(REPORT_BEAN.getReportGroup().ordinal()){
 		case 0:
 		    menuSelection = "reports|administrator";
 		    break;
@@ -66,7 +70,30 @@
 		default:
 		    menuSelection = "reports";
 		    break;
-	}
+	}*/
+	
+	final ReportGroup reportGroup = REPORT_BEAN.getReportGroup();
+	if( reportGroup == ReportGroup.ADMINISTRATIVE)
+	    menuSelection = "reports|administrator";
+	else if (reportGroup == ReportGroup.METERING)
+	    menuSelection = "reports|metering";
+	else if ( reportGroup == ReportGroup.STATISTICAL)
+	    menuSelection = "reports|statistical";
+	else if (reportGroup == ReportGroup.LOAD_MANAGEMENT)
+	    menuSelection = "reports|management";
+	else if (reportGroup == ReportGroup.CAP_CONTROL)
+	    menuSelection = "reports|capcontrol";
+	else if (reportGroup == ReportGroup.DATABASE)
+	    menuSelection = "reports|database";
+	else if (reportGroup == ReportGroup.STARS)
+	    menuSelection = "reports|stars";
+	else if (reportGroup == ReportGroup.CCURT)
+	    menuSelection = "reports|cni";
+	else if (reportGroup == ReportGroup.SETTLEMENT)
+	    menuSelection = "reports|settlement";
+	else
+	    menuSelection = "reports";
+	    
 %>
 
 
@@ -126,6 +153,8 @@ function enableDates(value)
 	
 	String linkHtml = null;
 	String linkImgExp = null;
+	
+	final ReportModelBase model = REPORT_BEAN.getModel();
 %>
 
 	  <form name="reportForm" method="post" action="<%=request.getContextPath()%>/servlet/ReportGenerator?" onSubmit="loadTarget(document.reportForm)">
@@ -156,13 +185,13 @@ function enableDates(value)
 			  <tr>			  
                 <td class="main" width="25%" valign="top" style="padding-left:5; padding-top:5">
 	              <table width="100%" border="0" cellspacing="0" cellpadding="0">
-	                <%if ( REPORT_BEAN.getGroupType() >= 0)
+	                <%if ( REPORT_BEAN.getReportGroup() != null)
 					  {
-                        int [] rptTypes = REPORT_BEAN.getReportTypes();
-						for (int i = 0; i < rptTypes.length; i++){%>
+                        Vector <ReportTypes> rptTypes = REPORT_BEAN.getReportTypes();
+						for (ReportTypes reportType : rptTypes){%>
 				    	<tr>
 						  <td class="main">
-						  <input type="radio" name="type" value="<%=rptTypes[i]%>" <%=(rptTypes[i]==REPORT_BEAN.getType()?"checked":"")%> onclick='document.reportForm.ACTION.value="LoadParameters";document.reportForm.submit();'><font title="<%= ReportTypes.getReportDescription(rptTypes[i]) %>"><%=ReportTypes.getReportName(rptTypes[i])%></font>
+						  <input type="radio" name="type" value="<%=reportType%>" <%=(reportType==REPORT_BEAN.getReportType()?"checked":"")%> onclick='document.reportForm.ACTION.value="LoadParameters";document.reportForm.submit();'><font title="<%= reportType.getDescription() %>"><%=reportType.getTitle()%></font>
 						  </td>
 						</tr>
 					    <%}
@@ -179,12 +208,12 @@ function enableDates(value)
 				  <table width="100%" border="0" cellspacing="0" cellpadding="0">				
 				    <tr>
 				      <td>
-				   		<input id="startCal" type="text" name="startDate"  <%=(REPORT_BEAN.getModel() != null && REPORT_BEAN.getModel().useStartDate() ? "" : "DISABLED")%> value="<%= datePart.format(REPORT_BEAN.getStartDate()) %>" size="8">
-				  		  <%=(REPORT_BEAN.getModel() != null && REPORT_BEAN.getModel().useStartDate() ? 
+				   		<input id="startCal" type="text" name="startDate"  <%=(model != null && model.useStartDate() ? "" : "DISABLED")%> value="<%= datePart.format(REPORT_BEAN.getStartDate()) %>" size="8">
+				  		  <%=(model != null && model.useStartDate() ? 
 						  "<a id='startCalHref' href='javascript:openCalendar(document.reportForm.startCal)'><img src='"+ request.getContextPath() + "/WebConfig/yukon/Icons/StartCalendar.gif' width='20' height='15' align='ABSMIDDLE' border='0'></a>" : "<img src='"+ request.getContextPath() + "/WebConfig/yukon/Icons/StartCalendar.gif' width='20' height='15' align='ABSMIDDLE' border='0'>")%> 
 					  </td>
-			   		  <% if( (REPORT_BEAN.getModel() != null && REPORT_BEAN.getModel() instanceof com.cannontech.analysis.tablemodel.PointDataIntervalModel || 
-			   		  		  REPORT_BEAN.getModel() instanceof com.cannontech.analysis.tablemodel.LoadControlVerificationModel) ){%>
+			   		  <% if( (model != null && model instanceof com.cannontech.analysis.tablemodel.PointDataIntervalModel || 
+			   		  		  model instanceof com.cannontech.analysis.tablemodel.LoadControlVerificationModel) ){%>
 					  <td width="45" class="columnHeader" align="center">Hour<BR>
 					    <select name="startHour" id="startHourID">
 					    <% for (int i = 0; i < 24; i++) {
@@ -212,12 +241,12 @@ function enableDates(value)
 				  <table width="100%" border="0" cellspacing="0" cellpadding="0">				
 				    <tr>
 					  <td>				
-                        <input id="stopCal" type="text" name="stopDate"  <%=(REPORT_BEAN.getModel() != null && REPORT_BEAN.getModel().useStopDate() ? "" : "DISABLED")%> value="<%= datePart.format(REPORT_BEAN.getStopDate()) %>" size="8">
-						  <%=(REPORT_BEAN.getModel() != null && REPORT_BEAN.getModel().useStopDate() ? 
+                        <input id="stopCal" type="text" name="stopDate"  <%=(model != null && model.useStopDate() ? "" : "DISABLED")%> value="<%= datePart.format(REPORT_BEAN.getStopDate()) %>" size="8">
+						  <%=(model != null && model.useStopDate() ? 
         		          "<a id='stopCalHref' href='javascript:openCalendar(document.reportForm.stopCal)'><img src='"+ request.getContextPath() + "/WebConfig/yukon/Icons/StartCalendar.gif' width='20' height='15' align='ABSMIDDLE' border='0'></a>" : "<img src='"+ request.getContextPath() + "/WebConfig/yukon/Icons/StartCalendar.gif' width='20' height='15' align='ABSMIDDLE' border='0'>")%> 
                 	  </td>
-					  <% if( (REPORT_BEAN.getModel() != null && REPORT_BEAN.getModel() instanceof com.cannontech.analysis.tablemodel.PointDataIntervalModel || 
-			   		  		  REPORT_BEAN.getModel() instanceof com.cannontech.analysis.tablemodel.LoadControlVerificationModel) ){%>
+					  <% if( (model != null && model instanceof com.cannontech.analysis.tablemodel.PointDataIntervalModel || 
+			   		  		  model instanceof com.cannontech.analysis.tablemodel.LoadControlVerificationModel) ){%>
 
 					  <td width="45" class="columnHeader" align="center">Hour<BR>
 					    <select name="stopHour" id="stopHourID">
@@ -250,7 +279,7 @@ function enableDates(value)
   						<input type="radio" name="ext" value="csv">CSV
 					  </td>
 					  <td class="main">
-					    <input type="image" id="Generate" src="<%=request.getContextPath()%>/WebConfig/yukon/Buttons/GoButtonGray.gif" name="Generate" border="0" alt="Generate" align="middle" <%=(REPORT_BEAN.getModel() == null ? "DISABLED style='cursor:default'":"")%> onclick='document.reportForm.ACTION.value="DownloadReport";return true;'>
+					    <input type="image" id="Generate" src="<%=request.getContextPath()%>/WebConfig/yukon/Buttons/GoButtonGray.gif" name="Generate" border="0" alt="Generate" align="middle" <%=(model == null ? "DISABLED style='cursor:default'":"")%> onclick='document.reportForm.ACTION.value="DownloadReport";return true;'>
 					  </td>
 					</tr>
 				  </table>

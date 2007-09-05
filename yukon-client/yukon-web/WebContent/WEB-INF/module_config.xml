@@ -231,39 +231,39 @@
       <option id="reports" name="Reports">
         <sublinks>
           <option id="administrator" property="ReportingRole.ADMIN_REPORTS_GROUP_LABEL">
-            <link>/analysis/Reports.jsp?groupType=0</link>
+            <link>/analysis/Reports.jsp?groupType=ADMINISTRATIVE</link>
             <requireProperty value="ReportingRole.ADMIN_REPORTS_GROUP"/>
           </option>
           <option id="metering" property="ReportingRole.AMR_REPORTS_GROUP_LABEL">
-            <link>/analysis/Reports.jsp?groupType=1</link>
+            <link>/analysis/Reports.jsp?groupType=METERING</link>
             <requireProperty value="ReportingRole.AMR_REPORTS_GROUP"/>
           </option>
           <option id="capcontrol" property="ReportingRole.CAP_CONTROL_REPORTS_GROUP_LABEL">
-            <link>/analysis/Reports.jsp?groupType=4</link>
+            <link>/analysis/Reports.jsp?groupType=CAP_CONTROL</link>
             <requireProperty value="ReportingRole.CAP_CONTROL_REPORTS_GROUP"/>
           </option>
           <option id="statistical" property="ReportingRole.STATISTICAL_REPORTS_GROUP_LABEL">
-            <link>/analysis/Reports.jsp?groupType=2</link>
+            <link>/analysis/Reports.jsp?groupType=STATISTICAL</link>
             <requireProperty value="ReportingRole.STATISTICAL_REPORTS_GROUP"/>
           </option>
           <option id="database" property="ReportingRole.DATABASE_REPORTS_GROUP_LABEL">
-            <link>/analysis/Reports.jsp?groupType=5</link>
+            <link>/analysis/Reports.jsp?groupType=DATABASE</link>
             <requireProperty value="ReportingRole.DATABASE_REPORTS_GROUP"/>
           </option>
           <option id="management" property="ReportingRole.LOAD_MANAGEMENT_REPORTS_GROUP_LABEL">
-            <link>/analysis/Reports.jsp?groupType=3</link>
+            <link>/analysis/Reports.jsp?groupType=LOAD_MANAGEMENT</link>
             <requireProperty value="ReportingRole.LOAD_MANAGEMENT_REPORTS_GROUP"/>
           </option>
           <option id="stars" property="ReportingRole.STARS_REPORTS_GROUP_LABEL">
-            <link>/analysis/Reports.jsp?groupType=6</link>
+            <link>/analysis/Reports.jsp?groupType=STARS</link>
             <requireProperty value="ReportingRole.STARS_REPORTS_GROUP"/>
           </option>
           <option id="settlement" property="ReportingRole.SETTLEMENT_REPORTS_GROUP_LABEL">
-            <link>/analysis/Reports.jsp?groupType=100</link>
+            <link>/analysis/Reports.jsp?groupType=SETTLEMENT</link>
             <requireProperty value="ReportingRole.SETTLEMENT_REPORTS_GROUP"/>
           </option>
           <option id="cni" property="ReportingRole.CI_CURTAILMENT_REPORTS_GROUP_LABEL">
-            <link>/analysis/Reports.jsp?groupType=8</link>
+            <link>/analysis/Reports.jsp?groupType=CCURT</link>
             <requireProperty value="ReportingRole.CI_CURTAILMENT_REPORTS_GROUP"/>
           </option>
         </sublinks>

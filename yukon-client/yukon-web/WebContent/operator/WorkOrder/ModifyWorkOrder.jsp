@@ -201,7 +201,7 @@ function sendWorkOrder() {
             </table>
 			<form name="rptForm" method="post" action="<%= request.getContextPath() %>/servlet/ReportGenerator">
 			  <input type="hidden" name="ACTION" value="DownloadReport">
-			  <input type="hidden" name="type" value="<%= com.cannontech.analysis.ReportTypes.EC_WORK_ORDER_DATA %>">
+			  <input type="hidden" name="type" value="<%= com.cannontech.analysis.ReportTypes.EC_WORK_ORDER%>">
 			  <input type="hidden" name="fileName" value="WorkOrder">
 			  <input type="hidden" name="NoCache">
 			  <input type="hidden" name="OrderID" value="<%= liteOrder.getOrderID() %>">

@@ -100,17 +100,18 @@ function loadTarget(form)
                                       <td> 
                                         <table class="TableCell" align="center" width="33%">
                                           <%
-                                          int [] rptTypes = ReportTypes.getGroupReportTypes(ReportTypes.STARS_REPORTS_GROUP);
-                                  for( int j = 0; j < rptTypes.length; j++ ){%>
+                                                                            Vector<ReportTypes> rptTypes = ReportTypes.getGroupReportTypes(ReportGroup.STARS);
+                                                                            for( int j = 0; j < rptTypes.size(); j++ ){
+                                          %>
                                           <tr> 
                                             <td width="20%"> 
-                                              <input id = "type" type="radio" name="type" value="<%=rptTypes[j]%>"
+                                              <input id = "type" type="radio" name="type" value="<%=rptTypes.get(j)%>"
                                       <% if( j == 0){%>
                                          checked=true
                                       <%}
                                       //Below is the ending tag for radio input%>
                                       >
-                                              <%=ReportTypes.getReportName(rptTypes[j])%> 
+                                              <%=rptTypes.get(j).getTitle()%> 
                                             </td>
                                           </tr>
                                           <%}%>

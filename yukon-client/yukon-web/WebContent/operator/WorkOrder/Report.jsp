@@ -43,7 +43,7 @@
               
 			  <form name="rptForm" method="post" action="<%= request.getContextPath() %>/servlet/WorkOrderManager">
                 <input type="hidden" name="action" value="CreateReport">
-                <input type="hidden" name="type" value="<%= com.cannontech.analysis.ReportTypes.EC_WORK_ORDER_DATA %>">
+                <input type="hidden" name="type" value="<%= com.cannontech.analysis.ReportTypes.EC_WORK_ORDER %>">
                 <input type="hidden" name="fileName" value="WorkOrder">
                 <input type="hidden" name="ext" value="pdf">
                 <input type="hidden" name="NoCache">

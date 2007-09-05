@@ -205,7 +205,7 @@ public class WorkOrderManager extends HttpServlet {
 		LiteStarsEnergyCompany liteStarsEC = StarsDatabaseCache.getInstance().getEnergyCompany( user.getEnergyCompanyID() );
 		
 		ReportBean reportBean = new ReportBean();
-		reportBean.setType(ReportTypes.EC_WORK_ORDER_DATA);
+		reportBean.setType(ReportTypes.EC_WORK_ORDER);
 		reportBean.setUserID(user.getUserID());
 		((WorkOrderModel)reportBean.getModel()).loadData(liteStarsEC, workOrderBean.getWorkOrderList());
 
@@ -537,7 +537,7 @@ public class WorkOrderManager extends HttpServlet {
 		
 		try {
 		    ReportBean reportBean = new ReportBean();
-		    reportBean.setType(ReportTypes.EC_WORK_ORDER_DATA);
+		    reportBean.setType(ReportTypes.EC_WORK_ORDER);
 		    reportBean.getModel().setEnergyCompanyID( energyCompany.getEnergyCompanyID() );
 			((WorkOrderModel)reportBean.getModel()).setOrderID( new Integer(orderID) );
 			

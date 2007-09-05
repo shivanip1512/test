@@ -107,12 +107,12 @@ public class ReportGenerator extends javax.servlet.http.HttpServlet
 			// Uses the type stored in the session if one can't be found, this is needed for PagedReport action
 			param = req.getParameter("type");
 			if( param != null){
-				reportBean.setType(Integer.valueOf(param).intValue());
+				reportBean.setType(ReportTypes.valueOf(param));
 			}
 			//Setting the type will reset the model instance if the type has changed.
-			if( reportBean.getType() >= 0)
+			if( reportBean.getReportType()!= null )
 			{
-				reportKey += String.valueOf(reportBean.getType());
+				reportKey += String.valueOf(reportBean.getReportType());
 			}
 			else
 				isKeyIncomplete = true;
@@ -170,7 +170,7 @@ public class ReportGenerator extends javax.servlet.http.HttpServlet
 			Integer serviceStatus = null;
 			int searchColumn = WorkOrderModel.SEARCH_COL_NONE;
 			
-			if (reportBean.getType() == ReportTypes.EC_WORK_ORDER_DATA) {
+			if (reportBean.getReportType() == ReportTypes.EC_WORK_ORDER) {
 				param = req.getParameter("OrderID");
 				if (param != null) {
 					orderID = Integer.valueOf(param);
@@ -215,7 +215,7 @@ public class ReportGenerator extends javax.servlet.http.HttpServlet
 				if( noCache || report == null )
 				{			
 					/** Set Model specific parameters */
-					if( reportBean.getType() == ReportTypes.EC_WORK_ORDER_DATA) {
+					if( reportBean.getReportType() == ReportTypes.EC_WORK_ORDER) {
 						((WorkOrderModel)reportBean.getModel()).setOrderID( orderID );
 						((WorkOrderModel)reportBean.getModel()).setAccountID( accountID );
 						((WorkOrderModel)reportBean.getModel()).setServiceStatus( serviceStatus );
