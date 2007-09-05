@@ -15,3 +15,31 @@ If an ID is returned, then the mapping failed and the default route is not corre
 There are several questions we need to answer on this issue, so this can stay open for awhile.  
 /*I'm marking this in here for reference until we figure out the best way to deal with this.  Jon*/
 
+/********************** (HEAD only) - nmeverden 9/05/07 **********************/
+update YukonRoleProperty SET Description='Set the default authentication type to use {PLAIN,HASH_SHA,RADIUS,AD,LDAP,NONE}' where RolePropertyID = -1307
+
+insert into YukonRoleProperty (RolePropertyID,RoleID,KeyName,DefaultValue,Description) values(-1308,-4,'LDAP DN','dc=example,dc=com','LDAP Distinguished Name')
+insert into YukonRoleProperty (RolePropertyID,RoleID,KeyName,DefaultValue,Description) values(-1309,-4,'LDAP User Suffix','ou=users','LDAP User Suffix')
+insert into YukonRoleProperty (RolePropertyID,RoleID,KeyName,DefaultValue,Description) values(-1310,-4,'LDAP User Prefix','uid=','LDAP User Prefix')
+insert into YukonRoleProperty (RolePropertyID,RoleID,KeyName,DefaultValue,Description) values(-1311,-4,'LDAP Server Address','127.0.0.1','LDAP Server Address')
+insert into YukonRoleProperty (RolePropertyID,RoleID,KeyName,DefaultValue,Description) values(-1312,-4,'LDAP Server Port','389','LDAP Server Port')
+insert into YukonRoleProperty (RolePropertyID,RoleID,KeyName,DefaultValue,Description) values(-1313,-4,'LDAP Server Timeout','30','LDAP Server Timeout (in seconds)')
+
+insert into YukonRoleProperty (RolePropertyID,RoleID,KeyName,DefaultValue,Description) values(-1314,-4,'Active Directory Server Address','127.0.0.1','Active Directory Server Address')
+insert into YukonRoleProperty (RolePropertyID,RoleID,KeyName,DefaultValue,Description) values(-1315,-4,'Active Directory Server Port','389','Active Directory Server Port')
+insert into YukonRoleProperty (RolePropertyID,RoleID,KeyName,DefaultValue,Description) values(-1316,-4,'Active Directory Server Timeout','30','Active Directory Server Timeout (in seconds)')
+insert into YukonRoleProperty (RolePropertyID,RoleID,KeyName,DefaultValue,Description) values(-1317,-4,'Active Directory NT Domain Name','(none)','Active Directory NT DOMAIN NAME')
+
+insert into YukonGroupRole (GroupRoleID,GroupID,RoleID,RolePropertyID,Value) values(-50,-1,-4,-1308,'(none)')
+insert into YukonGroupRole (GroupRoleID,GroupID,RoleID,RolePropertyID,Value) values(-51,-1,-4,-1309,'(none)')
+insert into YukonGroupRole (GroupRoleID,GroupID,RoleID,RolePropertyID,Value) values(-52,-1,-4,-1310,'(none)')
+insert into YukonGroupRole (GroupRoleID,GroupID,RoleID,RolePropertyID,Value) values(-53,-1,-4,-1311,'(none)')
+insert into YukonGroupRole (GroupRoleID,GroupID,RoleID,RolePropertyID,Value) values(-54,-1,-4,-1312,'(none)')
+insert into YukonGroupRole (GroupRoleID,GroupID,RoleID,RolePropertyID,Value) values(-55,-1,-4,-1313,'(none)')
+
+insert into YukonGroupRole (GroupRoleID,GroupID,RoleID,RolePropertyID,Value) values(-56,-1,-4,-1314,'(none)')
+insert into YukonGroupRole (GroupRoleID,GroupID,RoleID,RolePropertyID,Value) values(-57,-1,-4,-1315,'(none)')
+insert into YukonGroupRole (GroupRoleID,GroupID,RoleID,RolePropertyID,Value) values(-58,-1,-4,-1316,'(none)')
+insert into YukonGroupRole (GroupRoleID,GroupID,RoleID,RolePropertyID,Value) values(-59,-1,-4,-1317,'(none)')
+insert into YukonGroupRole (GroupRoleID,GroupID,RoleID,RolePropertyID,Value) values(-92,-1,-4,-1307,'(none)')
+/*****************************************************************************/
