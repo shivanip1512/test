@@ -191,7 +191,7 @@ public void service(HttpServletRequest req, HttpServletResponse resp) throws jav
 				if( LMCmdMsgFactory.isSyncMsg(cmd) )
 				{					
 					violatResp = sendSyncMsg( msg );
-					CTILogger.info("   Syncrhounous command was sent and responded to " + 
+					CTILogger.info("   Synchronous command was sent and responded to " + 
 						"(ResponseCount= " + (violatResp==null ? 0 : violatResp.length) + ")" );
 				}				
 				else
@@ -296,7 +296,7 @@ private void resendSyncMsgs( HttpServletRequest req, Double[] progIds )
 
 	}
 	else
-		throw new IllegalStateException("Unable to find the LMSession object for resending synchrounous messages");
+		throw new IllegalStateException("Unable to find the LMSession object for resending synchronous messages");
 }
 
 /**

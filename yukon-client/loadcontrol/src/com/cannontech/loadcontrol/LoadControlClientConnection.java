@@ -5,12 +5,12 @@ package com.cannontech.loadcontrol;
  * LoadControl.  Specifically it registers LoadControl specific 'Collectable' messages, otherwise
  * the base class does all the work.
  */
-import java.util.Vector;
+import java.util.HashMap;
 
 import com.cannontech.clientutils.CTILogger;
-import com.cannontech.clientutils.commonutils.ModifiedDate;
 import com.cannontech.loadcontrol.data.LMControlArea;
 import com.cannontech.loadcontrol.data.LMProgramBase;
+import com.cannontech.loadcontrol.dynamic.receive.LMControlAreaChanged;
 import com.cannontech.loadcontrol.events.LCChangeEvent;
 import com.cannontech.loadcontrol.messages.LMCommand;
 import com.cannontech.loadcontrol.messages.LMControlAreaMsg;
@@ -19,298 +19,213 @@ import com.cannontech.message.util.MessageEvent;
 import com.cannontech.message.util.MessageListener;
 import com.roguewave.vsj.CollectableStreamer;
 
-public class LoadControlClientConnection extends com.cannontech.message.util.ClientConnection implements MessageListener
-{
+public class LoadControlClientConnection extends com.cannontech.message.util.ClientConnection implements MessageListener {
 	private static LoadControlClientConnection staticLoadControlClientConnection = null;
 	
-	private java.util.Vector controlAreas = null;
-/**
- * ClientConnection constructor commerent.
- * @param host java.lang.String
- * @param port int
- */
-protected LoadControlClientConnection() {
-	super("LC");
-	initialize();
-} 
-/**
- * Insert the method's description here.
- * Creation date: (7/27/2001 3:10:51 PM)
- * @param obs java.util.Observer
- */
-public void addObserver(java.util.Observer obs) 
-{
-	super.addObserver(obs);
+	private HashMap<Integer, LMControlArea> controlAreas = null;
 
-	//if this is not the first registered client, we must manually ask the server
-	// for all the ControlAreas
-	if( countObservers() >= 2 )
-	{
-		com.cannontech.loadcontrol.messages.LMCommand cmd = new com.cannontech.loadcontrol.messages.LMCommand();
-		cmd.setCommand( com.cannontech.loadcontrol.messages.LMCommand.RETRIEVE_ALL_CONTROL_AREAS );
-		
-		//tell the server we need all the ControlAreas sent to the new registered object
-		LoadControlClientConnection.getInstance().queue( cmd );
-	}
-	
-}
-/**
- * Insert the method's description here.
- * Creation date: (2/23/2001 11:21:10 AM)
- */
-public void clearControlAreas() 
-{
-	getControlAreas().removeAllElements();
+    protected LoadControlClientConnection() {
+    	super("LC");
+    	initialize();
+    } 
 
-	// tell our listeners we need to remove everything
-	setChanged();
-	notifyObservers( new com.cannontech.loadcontrol.events.LCChangeEvent( 
-									this,
-									com.cannontech.loadcontrol.events.LCChangeEvent.DELETE_ALL,
-									"deleteAll") );
-}
-/**
- * Insert the method's description here.
- * Creation date: (4/10/2001 3:43:51 PM)
- */
-public void disconnect()
-{
-	super.disconnect();
-
-	deleteObservers();
-
-	staticLoadControlClientConnection = null;
-}
-
-private void handleDeletedAreas( LMControlAreaMsg msg )
-{
-	Vector deleteAreas = new Vector( getControlAreas().size() );
-	
-	for( int i = 0; i < getControlAreas().size(); i++ )
-	{
-		boolean fnd = false;
-		LMControlArea existingArea = (LMControlArea)getControlAreas().get(i);
-
-		for( int j = 0; j  < msg.getNumberOfLMControlAreas(); j++ )
-		{
-			if( msg.getLMControlArea(j).equals(existingArea) )
-			{
-				fnd = true;
-				break;
-			}
-		}
-				
-		if( !fnd )
-			deleteAreas.add( existingArea );
-	}
-
-	for( int i = (deleteAreas.size()-1); i >=0; i-- )
-	{
-		getControlAreas().remove( deleteAreas.get(i) );
-		setChanged();
-		notifyObservers( new LCChangeEvent(
-								this, 
-								LCChangeEvent.DELETE,
-								deleteAreas.get(i)) );	
-	}
-	
-}
-
-/**
- * This method was created in VisualAge.
- * @return LMControlArea[]
- */
-public LMControlArea[] getAllLMControlAreas()
-{	
-	try
-	{
-		synchronized( getControlAreas() )
-		{
-			LMControlArea[] areas = new LMControlArea[ getControlAreas().size() ];
-			getControlAreas().toArray( areas );
-			return areas;
-		}
-	}
-	catch( ArrayStoreException e )
-	{
-		throw e;
-	}
-	
-}
-/**
- * Insert the method's description here.
- * Creation date: (4/5/2001 3:05:47 PM)
- * @return int
- */
-public int getControlAreaCount() 
-{
-	return getControlAreas().size();
-}
-/**
- * Insert the method's description here.
- * Creation date: (2/21/2001 6:17:59 PM)
- * @return java.util.Vector
- */
-private java.util.Vector getControlAreas() 
-{
-	if( controlAreas == null )
-		controlAreas = new java.util.Vector(10);
-		
-	return controlAreas;
-}
-/**
- * Insert the method's description here.
- * Creation date: (4/5/2001 2:53:44 PM)
- */
-public synchronized static LoadControlClientConnection getInstance() 
-{
-	if( staticLoadControlClientConnection == null )
-		staticLoadControlClientConnection = new LoadControlClientConnection();
-		
-	return staticLoadControlClientConnection;
-}
-/**
- * Insert the method's description here.
- * Creation date: (4/6/2001 9:11:31 AM)
- * @return com.cannontech.loadcontrol.LoadControlProgram[]
- * @param lmControlAreaID int
- */
-public LMProgramBase[] getPrograms(int lmControlAreaID) 
-{
-	synchronized( getControlAreas() )
-	{
-		for( int i = 0; i < getControlAreaCount(); i++ )
-		{
-			if( lmControlAreaID == ((LMControlArea)getControlAreas().get(i)).getYukonID().intValue() )
-				return (LMProgramBase[])( ((LMControlArea)getControlAreas().get(i)).getLmProgramVector().toArray() );
-		}
-
-		return null;
-	}
-}
-/**
- * Insert the method's description here.
- * Creation date: (2/21/2001 6:03:46 PM)
- * @param sched LMControlArea
- */
-private synchronized void handleLMControlArea(LMControlArea controlArea) 
-{
-	CTILogger.debug( new ModifiedDate(new java.util.Date().getTime()).toString() 
-		+ " ---> Received a control area named " + controlArea.getYukonName() );
-
-	synchronized ( getControlAreas() )
-	{
-		boolean found = false;
-		for( int j = 0; j < getControlAreas().size(); j++ )
-		{
-			if( ((LMControlArea)getControlAreas().get(j)).equals(controlArea) )
-			{
-				getControlAreas().set( j, controlArea );
-				found = true;
-				
-				// tell all listeners that we received an updated LMControlArea
-				setChanged();
-				notifyObservers( new LCChangeEvent(
-										this, 
-										LCChangeEvent.UPDATE,
-										controlArea) );				
-				return;
-			}
-		}
-
-		if( !found )
-		{
-			getControlAreas().add( controlArea );
-			
-			// tell all listeners that we received a new LMControlArea
-			setChanged();
-			notifyObservers( new LCChangeEvent( 
-									this, 
-									LCChangeEvent.INSERT, 
-									controlArea) );
-		}
-		
-	}
-
-}
-
-/**
- * Insert the method's description here.
- * Creation date: (2/21/2001 5:56:32 PM)
- */
-private void initialize() 
-{
-	addMessageListener( this );
-    LMCommand cmd = new LMCommand();
-    cmd.setCommand( LMCommand.RETRIEVE_ALL_CONTROL_AREAS );
-    setRegistrationMsg(cmd);
-}
-
-/**
- * Insert the method's description here.
- * Creation date: (7/30/2001 4:05:08 PM)
- * @return boolean
- */
-public boolean needInitConn() 
-{
-	//return true if there hasn't been any Observers set to watch this connection
-	return (countObservers() <= 0);
-}
-
-/**
- * Insert the method's description here.
- * Creation date: (7/27/2001 2:49:33 PM)
- * @param client java.lang.Object
- */
-public synchronized void removeClient(Object client) 
-{
-
-	if( client instanceof java.util.Observer )
-		deleteObserver( (java.util.Observer)client );
-
-	if( countObservers() == 0 )
+    public void addObserver(java.util.Observer obs) 
+    {
+    	super.addObserver(obs);
+    
+    	//if this is not the first registered client, we must manually ask the server
+    	// for all the ControlAreas
+    	if( countObservers() >= 2 )
+    	{
+    		com.cannontech.loadcontrol.messages.LMCommand cmd = new com.cannontech.loadcontrol.messages.LMCommand();
+    		cmd.setCommand( com.cannontech.loadcontrol.messages.LMCommand.RETRIEVE_ALL_CONTROL_AREAS );
+    		
+    		//tell the server we need all the ControlAreas sent to the new registered object
+    		LoadControlClientConnection.getInstance().queue( cmd );
+    	}
+    	
+    }
+    /**
+     * Insert the method's description here.
+     * Creation date: (2/23/2001 11:21:10 AM)
+     */
+    public void clearControlAreas() 
+    {
+    	getControlAreas().clear();
+    
+    	// tell our listeners we need to remove everything
+    	setChanged();
+    	notifyObservers( new com.cannontech.loadcontrol.events.LCChangeEvent( 
+    									this,
+    									com.cannontech.loadcontrol.events.LCChangeEvent.DELETE_ALL,
+    									"deleteAll") );
+    }
+    /**
+     * Insert the method's description here.
+     * Creation date: (4/10/2001 3:43:51 PM)
+     */
+    public void disconnect()
     {
     	super.disconnect();
+    
+    	deleteObservers();
+    
     	staticLoadControlClientConnection = null;
     }
-
-}
-
-public synchronized void messageReceived( MessageEvent e )
-{
-	Object obj = e.getMessage();
-	if( obj instanceof LMControlArea )
-	{
-		handleLMControlArea( (LMControlArea)obj );
-	}
-	else if( obj instanceof LMControlAreaMsg )
-	{
-		LMControlAreaMsg msg = (LMControlAreaMsg)obj;
-		
-		if( msg.isDeletedCntrlArea() ) //we may be deleting an area
-		{
-			//this should not happen much
-			handleDeletedAreas( msg );
+    
+    private void handleDeletedAreas( LMControlAreaMsg msg ) {
+        for( int j = 0; j  < msg.getNumberOfLMControlAreas(); j++ ) {
+            getControlAreas().remove(msg.getLMControlArea(j).getYukonID());
+    		setChanged();
+    		notifyObservers( new LCChangeEvent(this, LCChangeEvent.DELETE, msg.getLMControlArea(j)) );	
+    	}
+    }
+    
+    public LMControlArea[] getAllLMControlAreas() {	
+		synchronized( getControlAreas() ) {
+			LMControlArea[] areas = new LMControlArea[ getControlAreas().size() ];
+			getControlAreas().values().toArray( areas );
+			return areas;
 		}
-		
-
-		for( int i = 0; i < msg.getNumberOfLMControlAreas(); i++ )
-			handleLMControlArea( msg.getLMControlArea(i) );
-	}
-	else if( obj instanceof ServerResponseMsg ) {
-//		CTILogger.debug("Received a ServerResponseMsg, ignoring it since I didn't send a request");
-	}
-
-}
-
-public void registerMappings(CollectableStreamer streamer ) {
-	super.registerMappings( streamer );
-
-	com.roguewave.vsj.DefineCollectable[] mappings = CollectableMappings.getMappings();
-
-	for( int i = 0; i < mappings.length; i++ )
-		streamer.register( mappings[i] );
-}
-
+    }
+    
+    public int getControlAreaCount() {
+    	return getControlAreas().size();
+    }
+    
+    private HashMap<Integer, LMControlArea> getControlAreas() {
+    	if( controlAreas == null )
+    		controlAreas = new HashMap<Integer, LMControlArea>();
+    		
+    	return controlAreas;
+    }
+    
+    public synchronized static LoadControlClientConnection getInstance() {
+    	if( staticLoadControlClientConnection == null )
+    		staticLoadControlClientConnection = new LoadControlClientConnection();
+    		
+    	return staticLoadControlClientConnection;
+    }
+    
+    /**
+     * Insert the method's description here.
+     * Creation date: (4/6/2001 9:11:31 AM)
+     * @return com.cannontech.loadcontrol.LoadControlProgram[]
+     * @param lmControlAreaID int
+     */
+    public LMProgramBase[] getPrograms(int lmControlAreaID) 
+    {
+    	synchronized( getControlAreas() ) {
+    		for( int i = 0; i < getControlAreaCount(); i++ ) {
+    			if( lmControlAreaID == ((LMControlArea)getControlAreas().get(i)).getYukonID().intValue() )
+    				return (LMProgramBase[])( ((LMControlArea)getControlAreas().get(i)).getLmProgramVector().toArray() );
+    		}
+    
+    		return null;
+    	}
+    }
+    
+    private synchronized void handleLMControlArea(LMControlArea controlArea) {
+    	CTILogger.debug( " ---> Received a control area named " + controlArea.getYukonName() );
+    
+        //could use some of the new concurrency code here to be fancy, but for now
+    	synchronized ( getControlAreas() ) {
+    		boolean newInsert = getControlAreas().get(controlArea.getYukonID()) == null;
+            
+            getControlAreas().put( controlArea.getYukonID(), controlArea );
+    				
+    		// tell all listeners that we received an updated LMControlArea
+    		setChanged();
+    		notifyObservers( new LCChangeEvent(	this, (newInsert ? LCChangeEvent.INSERT : LCChangeEvent.UPDATE), controlArea) );				
+    		return;
+    	}
+    }
+    
+    /**
+     * Insert the method's description here.
+     * Creation date: (2/21/2001 5:56:32 PM)
+     */
+    private void initialize() {
+    	addMessageListener( this );
+        LMCommand cmd = new LMCommand();
+        cmd.setCommand( LMCommand.RETRIEVE_ALL_CONTROL_AREAS );
+        setRegistrationMsg(cmd);
+    }
+    
+    /**
+     * Insert the method's description here.
+     * Creation date: (7/30/2001 4:05:08 PM)
+     * @return boolean
+     */
+    public boolean needInitConn() {
+    	//return true if there hasn't been any Observers set to watch this connection
+    	return (countObservers() <= 0);
+    }
+    
+    public synchronized void removeClient(Object client) {
+    	if( client instanceof java.util.Observer )
+    		deleteObserver( (java.util.Observer)client );
+    
+    	if( countObservers() == 0 ) {
+        	super.disconnect();
+        	staticLoadControlClientConnection = null;
+        }
+    }
+    
+    public synchronized void messageReceived( MessageEvent e ) {
+    	Object obj = e.getMessage();
+    	if( obj instanceof LMControlArea ) {
+    		handleLMControlArea( (LMControlArea)obj );
+    	}
+        /**
+         * The server only sends this type of message for minor control area changes
+         * This helps prevent heavy messages constantly flowing on every little change
+         */
+        else if( obj instanceof LMControlAreaChanged ) {
+            handleLMControlAreaChange((LMControlAreaChanged)obj);
+        }
+    	else if( obj instanceof LMControlAreaMsg ) {
+    		LMControlAreaMsg msg = (LMControlAreaMsg)obj;
+    		
+    		if( msg.isDeletedCntrlArea() ) //we may be deleting an area
+    		{
+    			//this should not happen much
+    			handleDeletedAreas( msg );
+    		}
+    		
+    		for( int i = 0; i < msg.getNumberOfLMControlAreas(); i++ )
+    			handleLMControlArea( msg.getLMControlArea(i) );
+    	}
+    	else if( obj instanceof ServerResponseMsg ) {
+    	    //CTILogger.debug("Received a ServerResponseMsg, ignoring it since I didn't send a request");
+    	}
+    
+    }
+    
+    public void registerMappings(CollectableStreamer streamer ) {
+    	super.registerMappings( streamer );
+    
+    	com.roguewave.vsj.DefineCollectable[] mappings = CollectableMappings.getMappings();
+    
+    	for( int i = 0; i < mappings.length; i++ )
+    		streamer.register( mappings[i] );
+    }
+    
+    private synchronized void handleLMControlAreaChange(LMControlAreaChanged changedArea) {
+        synchronized ( getControlAreas() ) {
+            LMControlArea currentArea = getControlAreas().get( changedArea.getPaoID());
+            
+            currentArea.setDisableFlag(changedArea.getDisableFlag());
+            currentArea.setNextCheckTime(changedArea.getNextCheckTime());
+            currentArea.setControlAreaState(changedArea.getControlAreaState());
+            currentArea.setCurrentPriority(changedArea.getCurrentPriority());
+            currentArea.setCurrentDailyStartTime(changedArea.getCurrentDailyStartTime());
+            currentArea.setCurrentDailyStopTime(changedArea.getCurrentDailyStopTime());
+            // tell all listeners that we received an updated LMControlArea
+            setChanged();
+            notifyObservers( new LCChangeEvent( this, LCChangeEvent.UPDATE, currentArea) );                
+            return;
+        }
+    }
 
 }
