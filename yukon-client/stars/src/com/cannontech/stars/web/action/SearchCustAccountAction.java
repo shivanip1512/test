@@ -5,6 +5,7 @@ import java.util.Arrays;
 import java.util.Comparator;
 import java.util.Hashtable;
 import java.util.Iterator;
+import java.util.List;
 import java.util.TreeMap;
 
 import javax.servlet.http.HttpServletRequest;
@@ -158,7 +159,7 @@ public class SearchCustAccountAction implements ActionBase {
            
 			boolean searchMembers = DaoFactory.getAuthDao().checkRoleProperty( user.getYukonUser(), AdministratorRole.ADMIN_MANAGE_MEMBERS )
 					&& (energyCompany.getChildren().size() > 0);
-			ArrayList accountList = null;
+            List<Object> accountList = null;
             
             if (searchByDefID == YukonListEntryTypes.YUK_DEF_ID_SEARCH_TYPE_ACCT_NO) {
             	/* Search by account number */

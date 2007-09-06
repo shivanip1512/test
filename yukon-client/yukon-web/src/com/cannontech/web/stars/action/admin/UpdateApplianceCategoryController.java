@@ -1,0 +1,284 @@
+package com.cannontech.web.stars.action.admin;
+
+import java.util.ArrayList;
+import java.util.Iterator;
+import java.util.List;
+
+import javax.servlet.http.HttpServletRequest;
+import javax.servlet.http.HttpServletResponse;
+import javax.servlet.http.HttpSession;
+
+import org.springframework.web.bind.ServletRequestUtils;
+
+import com.cannontech.clientutils.CTILogger;
+import com.cannontech.core.dao.NotFoundException;
+import com.cannontech.database.Transaction;
+import com.cannontech.database.data.lite.stars.LiteApplianceCategory;
+import com.cannontech.database.data.lite.stars.LiteLMProgramEvent;
+import com.cannontech.database.data.lite.stars.LiteLMProgramWebPublishing;
+import com.cannontech.database.data.lite.stars.LiteStarsAppliance;
+import com.cannontech.database.data.lite.stars.LiteStarsCustAccountInformation;
+import com.cannontech.database.data.lite.stars.LiteStarsEnergyCompany;
+import com.cannontech.database.data.lite.stars.LiteStarsLMProgram;
+import com.cannontech.database.data.lite.stars.LiteWebConfiguration;
+import com.cannontech.database.data.lite.stars.StarsLiteFactory;
+import com.cannontech.stars.util.ECUtils;
+import com.cannontech.stars.util.ServletUtils;
+import com.cannontech.stars.util.StarsUtils;
+import com.cannontech.stars.web.StarsYukonUser;
+import com.cannontech.stars.xml.serialize.StarsCustAccountInformation;
+import com.cannontech.stars.xml.serialize.StarsLMProgram;
+import com.cannontech.web.stars.action.StarsAdminActionController;
+
+public class UpdateApplianceCategoryController extends StarsAdminActionController {
+    private static final String LINE_SEPARATOR = System.getProperty("line.separator");
+    
+    @SuppressWarnings("unchecked")
+    @Override
+    public void doAction(final HttpServletRequest request, final HttpServletResponse response, 
+            final HttpSession session, final StarsYukonUser user,
+                final LiteStarsEnergyCompany energyCompany) throws Exception {
+        
+        List<LiteStarsEnergyCompany> descendants = ECUtils.getAllDescendants( energyCompany );
+
+        try {
+            int appCatID = ServletRequestUtils.getIntParameter(request,"AppCatID");
+            boolean newAppCat = (appCatID == -1);
+
+            com.cannontech.database.db.web.YukonWebConfiguration config =
+                new com.cannontech.database.db.web.YukonWebConfiguration();
+            config.setLogoLocation( request.getParameter("IconName") );
+            if (Boolean.valueOf( request.getParameter("SameAsName") ).booleanValue())
+                config.setAlternateDisplayName( request.getParameter("Name") );
+            else
+                config.setAlternateDisplayName( request.getParameter("DispName") );
+            config.setDescription( request.getParameter("Description").replaceAll(LINE_SEPARATOR, "<br>") );
+            config.setURL( "" );
+
+            com.cannontech.database.data.stars.appliance.ApplianceCategory appCat =
+                new com.cannontech.database.data.stars.appliance.ApplianceCategory();
+            com.cannontech.database.db.stars.appliance.ApplianceCategory appCatDB = appCat.getApplianceCategory();
+            appCatDB.setCategoryID( Integer.valueOf(request.getParameter("Category")) );
+            appCatDB.setDescription( request.getParameter("Name") );
+            appCat.setWebConfiguration( config );
+
+            LiteApplianceCategory liteAppCat = null;
+            if (newAppCat) {
+                appCat.setEnergyCompanyID( energyCompany.getEnergyCompanyID() );
+
+                appCat = (com.cannontech.database.data.stars.appliance.ApplianceCategory)
+                Transaction.createTransaction( Transaction.INSERT, appCat ).execute();
+
+                liteAppCat = (LiteApplianceCategory) StarsLiteFactory.createLite( appCat.getApplianceCategory() );
+                energyCompany.addApplianceCategory( liteAppCat );
+                LiteWebConfiguration liteConfig = (LiteWebConfiguration) StarsLiteFactory.createLite( appCat.getWebConfiguration() );
+                this.starsDatabaseCache.addWebConfiguration( liteConfig );
+            }
+            else {
+                liteAppCat = energyCompany.getApplianceCategory( appCatID );
+                if (!energyCompany.getApplianceCategories().contains(liteAppCat)) {
+                    session.setAttribute( ServletUtils.ATT_ERROR_MESSAGE, "Cannot update an inherited appliance category" );
+                    String redirect = this.getRedirect(request);
+                    response.sendRedirect(redirect);
+                    return;
+                }
+
+                appCat.setApplianceCategoryID( new Integer(appCatID) );
+                appCatDB.setWebConfigurationID( new Integer(liteAppCat.getWebConfigurationID()) );
+
+                appCat = (com.cannontech.database.data.stars.appliance.ApplianceCategory)
+                Transaction.createTransaction( Transaction.UPDATE, appCat ).execute();
+
+                StarsLiteFactory.setLiteApplianceCategory( liteAppCat, appCat.getApplianceCategory() );
+                LiteWebConfiguration liteConfig = this.starsDatabaseCache.getWebConfiguration( appCat.getWebConfiguration().getConfigurationID().intValue() );
+                StarsLiteFactory.setLiteWebConfiguration( liteConfig, appCat.getWebConfiguration() );
+            }
+
+            ArrayList pubProgList = new ArrayList( liteAppCat.getPublishedPrograms() );
+
+            String[] progIDs = request.getParameterValues( "ProgIDs" );
+            String[] deviceIDs = request.getParameterValues( "DeviceIDs" );
+            String[] progDispNames = request.getParameterValues( "ProgDispNames" );
+            String[] progShortNames = request.getParameterValues( "ProgShortNames" );
+            String[] progDescriptions = request.getParameterValues( "ProgDescriptions" );
+            String[] progDescFiles = request.getParameterValues( "ProgDescFiles" );
+            String[] progCtrlOdds = request.getParameterValues( "ProgChanceOfCtrls" );
+            String[] progIconNames = request.getParameterValues( "ProgIconNames" );
+
+            if (progIDs != null) {
+                for (int i = 0; i < progIDs.length; i++) {
+                    int progID = Integer.parseInt( progIDs[i] );
+                    int deviceID = Integer.parseInt( deviceIDs[i] );
+                    LiteLMProgramWebPublishing liteProg = null;
+
+                    for (int j = 0; j < pubProgList.size(); j++) {
+                        LiteLMProgramWebPublishing lProg = (LiteLMProgramWebPublishing) pubProgList.get(j);
+                        if (lProg.getProgramID() == progID || deviceID > 0 && lProg.getDeviceID() == deviceID) {
+                            pubProgList.remove(j);
+                            liteProg = lProg;
+                            break;
+                        }
+                    }
+
+                    String newDispName = progDispNames[i];
+                    if (newDispName.length() == 0 && deviceID > 0)
+                    {
+                        try
+                        {
+                            newDispName = this.paoDao.getYukonPAOName( deviceID );
+                        }
+                        catch(NotFoundException e) {}
+                    }
+                    if (newDispName.length() == 0) 
+                    {
+                        session.setAttribute( ServletUtils.ATT_ERROR_MESSAGE, "The display name of a virtual program cannot be empty" );
+                        String redirect = this.getReferer(request);
+                        response.sendRedirect(redirect);
+                        return;
+                    }
+
+                    com.cannontech.database.data.stars.LMProgramWebPublishing pubProg =
+                        new com.cannontech.database.data.stars.LMProgramWebPublishing();
+                    com.cannontech.database.db.stars.LMProgramWebPublishing pubProgDB = pubProg.getLMProgramWebPublishing();
+                    pubProgDB.setApplianceCategoryID( new Integer(liteAppCat.getApplianceCategoryID()) );
+                    pubProgDB.setDeviceID( new Integer(deviceID) );
+                    pubProgDB.setChanceOfControlID( Integer.valueOf(progCtrlOdds[i]) );
+                    pubProgDB.setProgramOrder( new Integer(i+1) );
+
+                    if (progDispNames[i].indexOf(",") >= 0)
+                        progDispNames[i] = "\"" + progDispNames[i] + "\"";
+                    if (progShortNames[i].indexOf(",") >= 0)
+                        progShortNames[i] = "\"" + progShortNames[i] + "\"";
+
+                    com.cannontech.database.db.web.YukonWebConfiguration cfg =
+                        new com.cannontech.database.db.web.YukonWebConfiguration();
+                    cfg.setLogoLocation( progIconNames[i] );
+                    cfg.setAlternateDisplayName( progDispNames[i] + "," + progShortNames[i] );
+                    cfg.setDescription( progDescriptions[i].replaceAll(LINE_SEPARATOR, "<br>") );
+                    cfg.setURL( progDescFiles[i] );
+                    pubProg.setWebConfiguration( cfg );
+
+                    if (liteProg != null) {
+                        pubProg.setProgramID( new Integer(liteProg.getProgramID()) );
+                        pubProg.getLMProgramWebPublishing().setWebSettingsID( new Integer(liteProg.getWebSettingsID()) );
+                        pubProg = (com.cannontech.database.data.stars.LMProgramWebPublishing)
+                        Transaction.createTransaction( Transaction.UPDATE, pubProg ).execute();
+
+                        liteProg.setChanceOfControlID( pubProg.getLMProgramWebPublishing().getChanceOfControlID().intValue() );
+                        liteProg.setProgramOrder( pubProg.getLMProgramWebPublishing().getProgramOrder().intValue() );
+
+                        String oldDispName = StarsUtils.getPublishedProgramName( liteProg );
+
+                        LiteWebConfiguration liteCfg = this.starsDatabaseCache.getWebConfiguration( liteProg.getWebSettingsID() );
+                        StarsLiteFactory.setLiteWebConfiguration( liteCfg, pubProg.getWebConfiguration() );
+
+                        // If program display name changed, we need to update all the accounts enrolled in this program
+                        if (!newDispName.equals( oldDispName )) {
+                            for (int j = 0; j < descendants.size(); j++) {
+                                LiteStarsEnergyCompany company = descendants.get(j);
+
+                                List<StarsCustAccountInformation> accounts = company.getActiveAccounts();
+                                for (int k = 0; k < accounts.size(); k++) {
+                                    StarsCustAccountInformation starsAcctInfo = accounts.get(k);
+                                    for (int l = 0; l < starsAcctInfo.getStarsLMPrograms().getStarsLMProgramCount(); l++) {
+                                        StarsLMProgram program = starsAcctInfo.getStarsLMPrograms().getStarsLMProgram(l);
+                                        if (program.getProgramID() == liteProg.getProgramID()) {
+                                            program.setProgramName( newDispName );
+                                            break;
+                                        }
+                                    }
+                                }
+                            }
+                        }
+                    }
+                    else {
+                        pubProg = (com.cannontech.database.data.stars.LMProgramWebPublishing)
+                        Transaction.createTransaction( Transaction.INSERT, pubProg ).execute();
+                        liteProg = (LiteLMProgramWebPublishing) StarsLiteFactory.createLite( pubProg.getLMProgramWebPublishing() );
+                        energyCompany.addProgram( liteProg, liteAppCat );
+
+                        LiteWebConfiguration liteCfg = (LiteWebConfiguration) StarsLiteFactory.createLite( pubProg.getWebConfiguration() );
+                        this.starsDatabaseCache.addWebConfiguration( liteCfg );
+                    }
+                }
+            }
+
+            // Delete the rest of published programs
+            for (int i = 0; i < pubProgList.size(); i++) {
+                LiteLMProgramWebPublishing liteProg = (LiteLMProgramWebPublishing) pubProgList.get(i);
+
+                // Delete all events of this program
+                com.cannontech.database.data.stars.event.LMProgramEvent.deleteAllLMProgramEvents( liteProg.getProgramID() );
+
+                // Set ProgramID = 0 for all appliances assigned to this program
+                com.cannontech.database.db.stars.appliance.ApplianceBase.resetAppliancesByProgram( liteProg.getProgramID() );
+
+                for (int j = 0; j < descendants.size(); j++) {
+                    LiteStarsEnergyCompany company = descendants.get(j);
+
+                    List<LiteStarsCustAccountInformation> accounts = company.getAllCustAccountInformation();
+                    for (int k = 0; k < accounts.size(); k++) {
+                        LiteStarsCustAccountInformation liteAcctInfo = accounts.get(k);
+
+                        for (int l = 0; l < liteAcctInfo.getAppliances().size(); l++) {
+                            LiteStarsAppliance liteApp = liteAcctInfo.getAppliances().get(l);
+                            if (liteApp.getProgramID() == liteProg.getProgramID()) {
+                                liteApp.setProgramID( 0 );
+                                liteApp.setInventoryID( 0 );
+                                liteApp.setAddressingGroupID( 0 );
+                                liteApp.setLoadNumber( 0 );
+                            }
+                        }
+
+                        List<LiteStarsLMProgram> programs = liteAcctInfo.getPrograms();
+                        for (int l = 0; l < programs.size(); l++) {
+                            if (programs.get(l).getProgramID() == liteProg.getProgramID()) {
+                                programs.remove(l);
+                                break;
+                            }
+                        }
+
+                        Iterator it = liteAcctInfo.getProgramHistory().iterator();
+                        while (it.hasNext()) {
+                            if (((LiteLMProgramEvent) it.next()).getProgramID() == liteProg.getProgramID())
+                                it.remove();
+                        }
+
+                        company.updateStarsCustAccountInformation( liteAcctInfo );
+                    }
+                }
+
+                com.cannontech.database.data.stars.LMProgramWebPublishing pubProg =
+                    new com.cannontech.database.data.stars.LMProgramWebPublishing();
+                pubProg.setProgramID( new Integer(liteProg.getProgramID()) );
+                pubProg.getLMProgramWebPublishing().setWebSettingsID( new Integer(liteProg.getWebSettingsID()) );
+
+                Transaction.createTransaction( Transaction.DELETE, pubProg ).execute();
+
+                energyCompany.deleteProgram( liteProg.getProgramID() );
+                this.starsDatabaseCache.deleteWebConfiguration( liteProg.getWebSettingsID() );
+            }
+
+            for (int i = 0; i < descendants.size(); i++) {
+                LiteStarsEnergyCompany company = descendants.get(i);
+                company.updateStarsEnrollmentPrograms();
+            }
+
+            if (newAppCat)
+                session.setAttribute(ServletUtils.ATT_CONFIRM_MESSAGE, "Appliance category is created successfully");
+            else
+                session.setAttribute(ServletUtils.ATT_CONFIRM_MESSAGE, "Appliance category information updated successfully");
+        }
+        catch (Exception e) {
+            CTILogger.error( e.getMessage(), e );
+            session.setAttribute(ServletUtils.ATT_ERROR_MESSAGE, "Failed to update appliance category information");
+            String redirect = this.getReferer(request);
+            response.sendRedirect(redirect);
+            return;
+        }
+        
+        String redirect = this.getRedirect(request);
+        response.sendRedirect(redirect);
+    }
+
+}

@@ -19,7 +19,7 @@ public class ManipulationBean
 {
     private LiteStarsEnergyCompany energyCompany = null;
     private LiteYukonUser currentUser = null;
-    private ArrayList availableMembers;
+    private List<LiteStarsEnergyCompany> availableMembers;
     private YukonSelectionList availableDeviceTypes;
     private List<LiteServiceCompany> availableServiceCompanies;
     private YukonSelectionList availableDeviceStates;
@@ -61,7 +61,7 @@ public class ManipulationBean
         return DaoFactory.getAuthDao().checkRoleProperty(currentUser, AdministratorRole.ADMIN_MANAGE_MEMBERS) && (energyCompany.getChildren().size() > 0);
     }
     
-    public ArrayList getAvailableMembers()
+    public List<LiteStarsEnergyCompany> getAvailableMembers()
     {
         if(availableMembers == null)
             availableMembers = ECUtils.getAllDescendants(energyCompany);

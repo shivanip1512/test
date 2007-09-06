@@ -2,6 +2,7 @@ package com.cannontech.database.data.lite.stars;
 
 import java.sql.Connection;
 import java.util.ArrayList;
+import java.util.List;
 import java.util.Vector;
 
 import com.cannontech.clientutils.CTILogger;
@@ -32,13 +33,13 @@ public class LiteStarsCustAccountInformation extends LiteBase {
 	private LiteAccountSite accountSite = null;
 	private LiteSiteInformation siteInformation = null;
 	private LiteCustomerResidence customerResidence = null;
-	private ArrayList<LiteStarsLMProgram> programs = null;		// List of LiteStarsLMProgram
-	private ArrayList<LiteStarsAppliance> appliances = null;	// List of LiteStarsAppliance
-	private ArrayList<Integer> inventories = null;	// List of IDs of LiteInventoryBase
-	private ArrayList<LiteLMProgramEvent> programHistory = null;	// List of LiteLMProgramEvent
-	private ArrayList<StarsCallReport> callReportHistory = null;	// List of StarsCallReport
-	private ArrayList<Integer> serviceRequestHistory = null;	// List of IDs of LiteWorkOrderBase
-	private ArrayList<LiteLMThermostatSchedule> thermostatSchedules = null;	// List of LiteLMThermostatSchedule
+	private List<LiteStarsLMProgram> programs = null;		// List of LiteStarsLMProgram
+	private List<LiteStarsAppliance> appliances = null;	// List of LiteStarsAppliance
+	private List<Integer> inventories = null;	// List of IDs of LiteInventoryBase
+	private List<LiteLMProgramEvent> programHistory = null;	// List of LiteLMProgramEvent
+	private List<StarsCallReport> callReportHistory = null;	// List of StarsCallReport
+	private List<Integer> serviceRequestHistory = null;	// List of IDs of LiteWorkOrderBase
+	private List<LiteLMThermostatSchedule> thermostatSchedules = null;	// List of LiteLMThermostatSchedule
 	
 	private boolean extended = false;
 	
@@ -63,7 +64,7 @@ public class LiteStarsCustAccountInformation extends LiteBase {
 	
 	public boolean hasTwoWayThermostat(LiteStarsEnergyCompany energyCompany) {
 		for (int i = 0; i < getInventories().size(); i++) {
-			int invID = ((Integer) getInventories().get(i)).intValue();
+			int invID = getInventories().get(i).intValue();
 			LiteInventoryBase liteInv = energyCompany.getInventory( invID, true );
 			
 			if (liteInv instanceof LiteStarsLMHardware &&
@@ -83,18 +84,18 @@ public class LiteStarsCustAccountInformation extends LiteBase {
 	 * Returns the appliances.
 	 * @return ArrayList
 	 */
-	public ArrayList<LiteStarsAppliance> getAppliances() {
+	public List<LiteStarsAppliance> getAppliances() {
 		if (appliances == null)
         {
             if( getCustomerAccount() != null)   //Must already have at least the base objects loaded
             {
                 Connection conn = PoolManager.getInstance().getConnection( CtiUtilities.getDatabaseAlias() );
                 try {
-                    Vector applianceIDS = ApplianceBase.getApplianceIDs( new Integer(getAccountID()), conn );
+                    Vector<Integer> applianceIDS = ApplianceBase.getApplianceIDs( new Integer(getAccountID()), conn );
                     appliances = new ArrayList<LiteStarsAppliance>(applianceIDS.size());
                     for (int i = 0; i < applianceIDS.size(); i++)
                     {
-                        LiteStarsAppliance liteStarsApp = new LiteStarsAppliance(((Integer)applianceIDS.get(i)).intValue());
+                        LiteStarsAppliance liteStarsApp = new LiteStarsAppliance(applianceIDS.get(i).intValue());
                         appliances.add(liteStarsApp);
                     }
                 }
@@ -116,7 +117,7 @@ public class LiteStarsCustAccountInformation extends LiteBase {
 	 * Returns the callReportHistory.
 	 * @return ArrayList
 	 */
-	public ArrayList<StarsCallReport> getCallReportHistory() {
+	public List<StarsCallReport> getCallReportHistory() {
 		if (callReportHistory == null)
 			callReportHistory = new ArrayList<StarsCallReport>();
 		return callReportHistory;
@@ -134,17 +135,17 @@ public class LiteStarsCustAccountInformation extends LiteBase {
 	 * Returns the inventorys.
 	 * @return ArrayList
 	 */
-	public ArrayList<Integer> getInventories() {
+	public List<Integer> getInventories() {
 		if (inventories == null)
         {
             if( getCustomerAccount() != null)   //Must already have at least the base objects loaded
             {
                 Connection conn = PoolManager.getInstance().getConnection( CtiUtilities.getDatabaseAlias() );
                 try {
-                    Vector inventoryIDS = InventoryBase.getInventoryIDs(new Integer(getAccountID()), conn);
+                    Vector<Integer> inventoryIDS = InventoryBase.getInventoryIDs(new Integer(getAccountID()), conn);
                     inventories = new ArrayList<Integer>(inventoryIDS.size());
                     for (int i = 0; i < inventoryIDS.size(); i++)
-                        inventories.add((Integer)inventoryIDS.get(i));
+                        inventories.add(inventoryIDS.get(i));
                 }
                 catch( java.sql.SQLException e ) {
                     CTILogger.error( e.getMessage(), e );
@@ -164,7 +165,7 @@ public class LiteStarsCustAccountInformation extends LiteBase {
 	 * Returns the programs.
 	 * @return ArrayList
 	 */
-	public ArrayList<LiteStarsLMProgram> getPrograms() {
+	public List<LiteStarsLMProgram> getPrograms() {
 		if (programs == null)
 			programs = new ArrayList<LiteStarsLMProgram>();
 		return programs;
@@ -174,7 +175,7 @@ public class LiteStarsCustAccountInformation extends LiteBase {
 	 * Returns the serviceRequestHistory.
 	 * @return ArrayList
 	 */
-	public ArrayList<Integer> getServiceRequestHistory() {
+	public List<Integer> getServiceRequestHistory() {
 		if (serviceRequestHistory == null)
 			serviceRequestHistory = new ArrayList<Integer>();
 		return serviceRequestHistory;
@@ -184,7 +185,7 @@ public class LiteStarsCustAccountInformation extends LiteBase {
 	 * Sets the appliances.
 	 * @param appliances The appliances to set
 	 */
-	public void setAppliances(ArrayList<LiteStarsAppliance> appliances) {
+	public void setAppliances(List<LiteStarsAppliance> appliances) {
 		this.appliances = appliances;
 	}
 
@@ -192,7 +193,7 @@ public class LiteStarsCustAccountInformation extends LiteBase {
 	 * Sets the callReportHistory.
 	 * @param callReportHistory The callReportHistory to set
 	 */
-	public void setCallReportHistory(ArrayList<StarsCallReport> callReportHistory) {
+	public void setCallReportHistory(List<StarsCallReport> callReportHistory) {
 		this.callReportHistory = callReportHistory;
 	}
 
@@ -208,7 +209,7 @@ public class LiteStarsCustAccountInformation extends LiteBase {
 	 * Sets the inventorys.
 	 * @param inventorys The inventorys to set
 	 */
-	public void setInventories(ArrayList<Integer> inventories) {
+	public void setInventories(List<Integer> inventories) {
 		this.inventories = inventories;
 	}
 
@@ -216,7 +217,7 @@ public class LiteStarsCustAccountInformation extends LiteBase {
 	 * Sets the programs.
 	 * @param programs The programs to set
 	 */
-	public void setPrograms(ArrayList<LiteStarsLMProgram> programs) {
+	public void setPrograms(List<LiteStarsLMProgram> programs) {
 		this.programs = programs;
 	}
 
@@ -224,7 +225,7 @@ public class LiteStarsCustAccountInformation extends LiteBase {
 	 * Sets the serviceRequestHistory.
 	 * @param serviceRequestHistory The serviceRequestHistory to set
 	 */
-	public void setServiceRequestHistory( ArrayList<Integer> serviceRequestHistory) {
+	public void setServiceRequestHistory(List<Integer> serviceRequestHistory) {
 		this.serviceRequestHistory = serviceRequestHistory;
 	}
 
@@ -311,7 +312,7 @@ public class LiteStarsCustAccountInformation extends LiteBase {
 	/**
 	 * @return
 	 */
-	public ArrayList<LiteLMProgramEvent> getProgramHistory() {
+	public List<LiteLMProgramEvent> getProgramHistory() {
 		if (programHistory == null)
 			programHistory = new ArrayList<LiteLMProgramEvent>();
 		return programHistory;
@@ -320,14 +321,14 @@ public class LiteStarsCustAccountInformation extends LiteBase {
 	/**
 	 * @param list
 	 */
-	public void setProgramHistory(ArrayList<LiteLMProgramEvent> list) {
+	public void setProgramHistory(List<LiteLMProgramEvent> list) {
 		programHistory = list;
 	}
 
 	/**
 	 * @return
 	 */
-	public ArrayList<LiteLMThermostatSchedule> getThermostatSchedules() {
+	public List<LiteLMThermostatSchedule> getThermostatSchedules() {
 		if (thermostatSchedules == null)
 			thermostatSchedules = new ArrayList<LiteLMThermostatSchedule>();
 		return thermostatSchedules;

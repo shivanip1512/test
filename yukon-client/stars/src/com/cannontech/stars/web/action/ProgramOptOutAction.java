@@ -4,6 +4,7 @@ import java.util.ArrayList;
 import java.util.Calendar;
 import java.util.Date;
 import java.util.Iterator;
+import java.util.List;
 import java.util.TimeZone;
 
 import javax.servlet.http.HttpServletRequest;
@@ -352,13 +353,13 @@ public class ProgramOptOutAction implements ActionBase {
         return StarsConstants.FAILURE_CODE_RUNTIME_ERROR;
 	}
 	
-	static void removeProgramFutureActivationEvents(ArrayList progHist, int programID, LiteStarsEnergyCompany energyCompany) {
+	static void removeProgramFutureActivationEvents(List<LiteLMProgramEvent> progHist, int programID, LiteStarsEnergyCompany energyCompany) {
 		int futureActID = energyCompany.getYukonListEntry( YukonListEntryTypes.YUK_DEF_ID_CUST_ACT_FUTURE_ACTIVATION ).getEntryID();
 		int termID = energyCompany.getYukonListEntry( YukonListEntryTypes.YUK_DEF_ID_CUST_ACT_TERMINATION ).getEntryID();
 		
 		try {
 			for (int i = progHist.size() - 1; i >= 0; i--) {
-				LiteLMProgramEvent liteEvent = (LiteLMProgramEvent) progHist.get(i);
+				LiteLMProgramEvent liteEvent = progHist.get(i);
 				if (liteEvent.getProgramID() != programID) continue;
 				
 				if (liteEvent.getActionID() == termID) break;
@@ -392,7 +393,7 @@ public class ProgramOptOutAction implements ActionBase {
 			}
 			
 			for (int i = 0; i < liteAcctInfo.getAppliances().size(); i++) {
-				LiteStarsAppliance liteApp = (LiteStarsAppliance) liteAcctInfo.getAppliances().get(i);
+				LiteStarsAppliance liteApp = liteAcctInfo.getAppliances().get(i);
 				if (liteApp.getInventoryID() == liteHw.getInventoryID() && liteApp.getProgramID() > 0)
 					removeProgramFutureActivationEvents( liteAcctInfo.getProgramHistory(), liteApp.getProgramID(), energyCompany );
 			}

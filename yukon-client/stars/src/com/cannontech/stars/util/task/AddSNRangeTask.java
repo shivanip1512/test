@@ -9,6 +9,7 @@ package com.cannontech.stars.util.task;
 import java.util.ArrayList;
 import java.util.Date;
 import java.util.HashMap;
+import java.util.List;
 
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpSession;
@@ -117,7 +118,7 @@ public class AddSNRangeTask extends TimeConsumingTask {
         iBean.setFilterByList(tempList);
         
         iBean.setShipmentCheck(true);
-        ArrayList found = iBean.getLimitedHardwareList();
+        List<Object> found = iBean.getLimitedHardwareList();
         LiteInventoryBase liteInv = null;
         HashMap foundMap = new HashMap(found.size());
         for(int j = 0; j < found.size(); j++)

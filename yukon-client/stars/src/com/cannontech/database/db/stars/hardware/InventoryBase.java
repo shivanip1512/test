@@ -1,6 +1,7 @@
 package com.cannontech.database.db.stars.hardware;
 
 import java.util.Date;
+import java.util.Vector;
 
 import com.cannontech.clientutils.CTILogger;
 import com.cannontech.common.util.CtiUtilities;
@@ -52,7 +53,7 @@ public class InventoryBase extends DBPersistent {
 		super();
 	}
 
-	public static java.util.Vector getInventoryIDs(Integer accountID, java.sql.Connection conn)
+	public static Vector<Integer> getInventoryIDs(Integer accountID, java.sql.Connection conn)
 	throws java.sql.SQLException {
 		String sql = "SELECT InventoryID FROM " + TABLE_NAME + " WHERE AccountID = ?";
 		java.sql.PreparedStatement pstmt = null;
@@ -63,7 +64,7 @@ public class InventoryBase extends DBPersistent {
 			pstmt.setInt( 1, accountID.intValue() );
 			rset = pstmt.executeQuery();
         	
-			java.util.Vector hwIDVct = new java.util.Vector();
+			Vector<Integer> hwIDVct = new Vector<Integer>();
 			while (rset.next())
 				hwIDVct.add( new Integer(rset.getInt(1)) );
 			return hwIDVct;

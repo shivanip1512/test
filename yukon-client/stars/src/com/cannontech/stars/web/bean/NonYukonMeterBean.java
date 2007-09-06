@@ -24,7 +24,7 @@ public class NonYukonMeterBean
 {
     private LiteStarsEnergyCompany energyCompany = null;
     private LiteYukonUser currentUser = null;
-    private ArrayList availableMembers;
+    private List<LiteStarsEnergyCompany> availableMembers;
     private YukonSelectionList availableMeterTypes;
     private List<LiteServiceCompany> availableServiceCompanies;
     private MeterHardwareBase currentMeter;
@@ -66,7 +66,7 @@ public class NonYukonMeterBean
         return DaoFactory.getAuthDao().checkRoleProperty(currentUser, AdministratorRole.ADMIN_MANAGE_MEMBERS) && (energyCompany.getChildren().size() > 0);
     }
     
-    public ArrayList getAvailableMembers()
+    public List<LiteStarsEnergyCompany> getAvailableMembers()
     {
         if(availableMembers == null)
             availableMembers = ECUtils.getAllDescendants(energyCompany);

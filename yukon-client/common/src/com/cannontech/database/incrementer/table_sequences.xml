@@ -5,6 +5,9 @@
     -->
   <sequencetable name="SequenceNumber" valuecolumn="lastValue" keycolumn="sequenceName">
       <sequence name="general" >
+      	<table name="InventoryBase" identitycolumn="InventoryID"/>
+      	<table name="LMHardwareBase" identitycolumn="InventoryID"/>
+      	<table name="CustomerAccount" identitycolumn="AccountID"/>
       	<table name="Substation" identitycolumn="SubstationID"/>
         <table name="CCurtProgram" identitycolumn="CCurtProgramId"/>
         <table name="CCurtProgramType" identitycolumn="CCurtProgramTypeId"/>

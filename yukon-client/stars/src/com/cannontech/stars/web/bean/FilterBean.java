@@ -27,7 +27,7 @@ public class FilterBean
     private LiteStarsEnergyCompany energyCompany = null;
     private LiteYukonUser currentUser = null;
     private YukonSelectionList availableFilters;
-    private ArrayList availableMembers;
+    private List<LiteStarsEnergyCompany> availableMembers;
     private YukonSelectionList availableDeviceTypes;
     private List<LiteServiceCompany> availableServiceCompanies;
     private List<ServiceCompanyDesignationCode> availableDesignationCodes;
@@ -95,7 +95,7 @@ public class FilterBean
         return availableFilters;
     }
     
-    public ArrayList getAvailableMembers()
+    public List<LiteStarsEnergyCompany> getAvailableMembers()
     {
         if(availableMembers == null)
             availableMembers = ECUtils.getAllDescendants(energyCompany);

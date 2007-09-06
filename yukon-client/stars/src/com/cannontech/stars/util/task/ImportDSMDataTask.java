@@ -19,6 +19,8 @@ import java.util.Date;
 import java.util.HashMap;
 import java.util.Hashtable;
 import java.util.Iterator;
+import java.util.List;
+import java.util.Map;
 import java.util.StringTokenizer;
 import java.util.TreeSet;
 
@@ -220,7 +222,7 @@ public class ImportDSMDataTask extends TimeConsumingTask {
 	 
 	private Hashtable routeMap = null;	// Map from DSM coop_id (Integer) to STARS default route ID (Integer)
 	private Hashtable receiverTypeMap = null;	// Map from DSM receiver type (ReceiverType) to STARS device type ID (Integer)
-	private Hashtable loadTypeMap = null;	// Map from DSM load_id (Integer) to Object[] {DSM load type (String), STARS appliance category ID (Integer)}
+	private Map<Integer,Object[]> loadTypeMap = null;	// Map from DSM load_id (Integer) to Object[] {DSM load type (String), STARS appliance category ID (Integer)}
 	private Hashtable functionTable = null;	// Map from SA205 slot#5 code (Integer) to functions on each relay (String[])
 	private ArrayList programTable = null;	// Array of Object[] {SA205 function (String), STARS appliance category ID (Integer), STARS program ID (Integer)}
 	
@@ -653,11 +655,11 @@ public class ImportDSMDataTask extends TimeConsumingTask {
 		return receiverTypeMap;
 	}
 	
-	private Hashtable getLoadTypeMap() throws Exception {
+	private Map<Integer,Object[]> getLoadTypeMap() throws Exception {
 		if (loadTypeMap == null) {
-			loadTypeMap = new Hashtable();
+			loadTypeMap = new Hashtable<Integer,Object[]>();
 			
-			ArrayList appCats = energyCompany.getApplianceCategories();
+            List<LiteApplianceCategory> appCats = energyCompany.getApplianceCategories();
 			File file = new File(importDir, "$loadtype.map");
 			String[] lines = StarsUtils.readFile( file, false );
 			
@@ -667,7 +669,7 @@ public class ImportDSMDataTask extends TimeConsumingTask {
 				if (fields[2].length() > 0) {
 					Integer appCatID = null;
 					for (int j = 0; j < appCats.size(); j++) {
-						LiteApplianceCategory liteAppCat = (LiteApplianceCategory) appCats.get(j);
+						LiteApplianceCategory liteAppCat = appCats.get(j);
 						if (liteAppCat.getDescription().equalsIgnoreCase( fields[2] )) {
 							appCatID = new Integer(liteAppCat.getApplianceCategoryID());
 							loadTypeMap.put( Integer.valueOf(fields[0]), new Object[] {fields[1], appCatID} );
@@ -705,7 +707,7 @@ public class ImportDSMDataTask extends TimeConsumingTask {
 	private ArrayList getProgramTable() throws Exception {
 		if (programTable == null) {
 			programTable = new ArrayList();
-			ArrayList appCats = energyCompany.getApplianceCategories();
+            List<LiteApplianceCategory> appCats = energyCompany.getApplianceCategories();
 			
 			File file = new File(importDir, "$program.map");
 			if (!file.exists())

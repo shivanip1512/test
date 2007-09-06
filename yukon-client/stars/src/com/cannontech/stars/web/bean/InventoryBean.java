@@ -7,6 +7,7 @@ import java.util.Date;
 import java.util.HashMap;
 import java.util.Iterator;
 import java.util.List;
+import java.util.Set;
 
 import javax.servlet.http.HttpServletRequest;
 
@@ -40,7 +41,6 @@ import com.cannontech.stars.web.StarsYukonUser;
 import com.cannontech.stars.web.util.InventoryManagerUtil;
 import com.cannontech.stars.xml.serialize.StreetAddress;
 import com.cannontech.web.navigation.CtiNavObject;
-import com.roguewave.tools.v2_0.Collection;
 
 /**
  * @author yao
@@ -68,12 +68,9 @@ public class InventoryBean {
     
     private final int MAX_ALLOW_DISPLAY = 500;
 	
-	private static final java.text.SimpleDateFormat dateFormat =
-			new java.text.SimpleDateFormat("MM/dd/yyyy");
-	
 	private static final String LINE_SEPARATOR = System.getProperty("line.separator");
 	
-	private static final Comparator INV_ID_CMPTOR = new Comparator() {
+	private static final Comparator<Object> INV_ID_CMPTOR = new Comparator<Object>() {
 		public int compare(Object o1, Object o2) {
 			LiteInventoryBase inv1 = (LiteInventoryBase)
 					((o1 instanceof Pair)? ((Pair)o1).getFirst() :  o1);
@@ -84,7 +81,6 @@ public class InventoryBean {
 	};
     
     private HttpServletRequest internalRequest;
-    private String filterInventoryHTML;
     private String numberOfRecords = "0";
     private boolean viewResults = false;
     private boolean shipmentCheck = false;
@@ -97,7 +93,7 @@ public class InventoryBean {
 	 * device name. To compare two serial #s, try to convert them into decimal
 	 * values first, compare the decimal values if conversion is successful.
 	 */
-	private static final Comparator SERIAL_NO_CMPTOR = new Comparator() {
+	private static final Comparator<Object> SERIAL_NO_CMPTOR = new Comparator<Object>() {
 		public int compare(Object o1, Object o2) {
 			LiteInventoryBase inv1 = (LiteInventoryBase)
 					((o1 instanceof Pair)? ((Pair)o1).getFirst() :  o1);
@@ -170,7 +166,7 @@ public class InventoryBean {
 		}
 	};
 	
-	private static final Comparator INST_DATE_CMPTOR = new Comparator() {
+	private static final Comparator<Object> INST_DATE_CMPTOR = new Comparator<Object>() {
 		public int compare(Object o1, Object o2) {
 			LiteInventoryBase inv1 = (LiteInventoryBase)
 					((o1 instanceof Pair)? ((Pair)o1).getFirst() :  o1);
@@ -192,16 +188,15 @@ public class InventoryBean {
 	private int energyCompanyID = 0;
 	private int htmlStyle = HTML_STYLE_LIST_INVENTORY;
 	private String referer = null;
-	private ArrayList inventorySet = null;
+	private List<Object> inventorySet = null;
 	private int member = -1;
 	private int searchBy = CtiUtilities.NONE_ZERO_ID;
 	private String searchValue = null;
 	private String action = null;
 	
 	private LiteStarsEnergyCompany energyCompany = null;
-	private ArrayList inventoryList = null;
-    private ArrayList filterByList = null;
-    private boolean showAll = false;
+	private List<Object> inventoryList = null;
+    private List<FilterWrapper> filterByList = null;
 	
 	public InventoryBean() {
 	}
@@ -212,40 +207,41 @@ public class InventoryBean {
 		return energyCompany;
 	}
 	
-    public ArrayList getInventoryList()
+    public List<Object> getInventoryList()
     {
         return inventoryList;
     }
     
-	private ArrayList getHardwareList(boolean showEnergyCompany) throws WebClientException {
+	@SuppressWarnings("unchecked")
+    private List<Object> getHardwareList(boolean showEnergyCompany) throws WebClientException {
 		if (inventoryList != null && !shipmentCheck) return inventoryList;
 		
-		ArrayList hardwares = null;
+		List<Object> hardwares = null;
 		if ((getHtmlStyle() & HTML_STYLE_INVENTORY_SET) != 0 && inventorySet != null) {
 			hardwares = inventorySet;
 		}
 		else if (showEnergyCompany) {
 			if (getMember() >= 0) {
 				LiteStarsEnergyCompany member = StarsDatabaseCache.getInstance().getEnergyCompany( getMember() );
-				ArrayList inventory = null;
+                List<?> inventory = null;
 				if (getSearchBy() == 0)
 					inventory = member.loadAllInventory( true );
 				else
 					inventory = InventoryManagerUtil.searchInventory( member, getSearchBy(), getSearchValue(), false );
 				
-				hardwares = new ArrayList();
+				hardwares = new ArrayList<Object>();
 				for (int i = 0; i < inventory.size(); i++)
-					hardwares.add( new Pair(inventory.get(i), member) );
+					hardwares.add( new Pair<Object,LiteStarsEnergyCompany>(inventory.get(i), member) );
 			}
 			else if (getSearchBy() == 0) {
-				ArrayList members = ECUtils.getAllDescendants( getEnergyCompany() );
-				hardwares = new ArrayList();
+                List<LiteStarsEnergyCompany> members = ECUtils.getAllDescendants( getEnergyCompany() );
+				hardwares = new ArrayList<Object>();
 				
 				for (int i = 0; i < members.size(); i++) {
-					LiteStarsEnergyCompany member = (LiteStarsEnergyCompany) members.get(i);
-					ArrayList inventory = member.loadAllInventory( true );
+					LiteStarsEnergyCompany member = members.get(i);
+                    List<LiteInventoryBase> inventory = member.loadAllInventory( true );
 					for (int j = 0; j < inventory.size(); j++)
-						hardwares.add( new Pair(inventory.get(j), member) );
+						hardwares.add( new Pair<Object,LiteStarsEnergyCompany>(inventory.get(j), member) );
 				}
 			}
 			else {
@@ -254,13 +250,13 @@ public class InventoryBean {
 		}
 		else {
 			if (getSearchBy() == 0)
-				hardwares = getEnergyCompany().loadAllInventory( true );
+				hardwares = (List) getEnergyCompany().loadAllInventory( true );
 			else
 				hardwares = InventoryManagerUtil.searchInventory( getEnergyCompany(), getSearchBy(), getSearchValue(), false );
 		}
 		
 		if ((getHtmlStyle() & HTML_STYLE_SELECT_LM_HARDWARE) != 0) {
-			Iterator it = hardwares.iterator();
+			Iterator<Object> it = hardwares.iterator();
 			while (it.hasNext()) {
 				Object invObj = it.next();
 				if (invObj instanceof Pair)
@@ -276,17 +272,17 @@ public class InventoryBean {
         if(getHtmlStyle() != HTML_STYLE_INVENTORY_SET)
         {
             List<FilterWrapper> slowFilters = new ArrayList<FilterWrapper>();
-            ArrayList previousFilteredHardwareFromSameFilterType = new ArrayList();
+            List<Object> previousFilteredHardwareFromSameFilterType = new ArrayList<Object>();
             for(int x = 0; x < getFilterByList().size(); x++)
             {
-                ArrayList filteredHardware = new ArrayList();
-                Integer filterType = new Integer(((FilterWrapper)getFilterByList().get(x)).getFilterTypeID());
+                List<Object> filteredHardware = new ArrayList<Object>();
+                Integer filterType = Integer.valueOf(getFilterByList().get(x).getFilterTypeID());
                 
                 /*Adding OR logic to the filters instead of AND logic, so we need to track the previous and next filter type*/
-                Integer previousFilterType = (x > 0 ? new Integer(((FilterWrapper)getFilterByList().get(x - 1)).getFilterTypeID()) : null);
-                Integer nextFilterType = (x + 1 < getFilterByList().size() ? new Integer(((FilterWrapper)getFilterByList().get(x + 1)).getFilterTypeID()) : null);
+                Integer previousFilterType = (x > 0 ? Integer.valueOf(getFilterByList().get(x - 1).getFilterTypeID()) : null);
+                Integer nextFilterType = (x + 1 < getFilterByList().size() ? Integer.valueOf(getFilterByList().get(x + 1).getFilterTypeID()) : null);
                 
-                String specificFilterString = ((FilterWrapper)getFilterByList().get(x)).getFilterID(); 
+                String specificFilterString = getFilterByList().get(x).getFilterID(); 
                 Integer specificFilterID = InventoryUtils.returnIntegerIfPossible(specificFilterString);
                 
                 if (filterType.intValue() == YukonListEntryTypes.YUK_DEF_ID_INV_FILTER_BY_DEV_TYPE) 
@@ -324,13 +320,13 @@ public class InventoryBean {
                 else if( filterType.intValue() == YukonListEntryTypes.YUK_DEF_ID_INV_FILTER_BY_POSTAL_CODES)
                 {
                     /*Put away until easier filters have been processed.  This should help performance.*/
-                    slowFilters.add((FilterWrapper)getFilterByList().get(x));
+                    slowFilters.add(getFilterByList().get(x));
                     filteredHardware.addAll( hardwares );
                 }
                 else if (filterType.intValue() == YukonListEntryTypes.YUK_DEF_ID_INV_FILTER_BY_WAREHOUSE) 
                 {
                     /*Put away until easier filters have been processed.  This should help performance.*/
-                    slowFilters.add((FilterWrapper)getFilterByList().get(x));
+                    slowFilters.add(getFilterByList().get(x));
                     filteredHardware.addAll( hardwares );
                 }
                 else if (filterType.intValue() == YukonListEntryTypes.YUK_DEF_ID_INV_FILTER_BY_SERIAL_RANGE_MIN)
@@ -368,13 +364,13 @@ public class InventoryBean {
         		else if (filterType.intValue() == YukonListEntryTypes.YUK_DEF_ID_INV_FILTER_BY_APPLIANCE_TYPE) 
                 {
                     /*Put away until easier filters have been processed.  This should help performance.*/
-                    slowFilters.add((FilterWrapper)getFilterByList().get(x));
+                    slowFilters.add(getFilterByList().get(x));
                     filteredHardware.addAll( hardwares );
         		}
                 else if( filterType.intValue() == YukonListEntryTypes.YUK_DEF_ID_INV_FILTER_BY_CUST_TYPE)
                 {
                     /*Put away until easier filters have been processed.  This should help performance.*/
-                    slowFilters.add((FilterWrapper)getFilterByList().get(x));
+                    slowFilters.add(getFilterByList().get(x));
                     filteredHardware.addAll( hardwares );
                 }
                 /*else if (filterType.intValue() == YukonListEntryTypes.YUK_DEF_ID_INV_FILTER_BY_CONFIG) {
@@ -483,11 +479,11 @@ public class InventoryBean {
                 Integer filterType = new Integer(slowFilters.get(y).getFilterTypeID());
                 String specificFilterString = slowFilters.get(y).getFilterID(); 
                 Integer specificFilterID = InventoryUtils.returnIntegerIfPossible(specificFilterString);
-                ArrayList filteredHardware = new ArrayList();
+                List<Object> filteredHardware = new ArrayList<Object>();
                 
                 /*Adding OR logic to the filters instead of AND logic, so we need to track the previous and next filter type*/
-                Integer previousFilterType = (y > 0 ? new Integer(((FilterWrapper)getFilterByList().get(y - 1)).getFilterTypeID()) : null);
-                Integer nextFilterType = (y + 1 < getFilterByList().size() ? new Integer(((FilterWrapper)getFilterByList().get(y + 1)).getFilterTypeID()) : null);
+                Integer previousFilterType = (y > 0 ? Integer.valueOf(getFilterByList().get(y - 1).getFilterTypeID()) : null);
+                Integer nextFilterType = (y + 1 < getFilterByList().size() ? Integer.valueOf(getFilterByList().get(y + 1).getFilterTypeID()) : null);
                
                 
                 if (filterType.intValue() == YukonListEntryTypes.YUK_DEF_ID_INV_FILTER_BY_APPLIANCE_TYPE) 
@@ -593,25 +589,25 @@ public class InventoryBean {
                 else if(previousFilterType != null && filterType.compareTo(previousFilterType) == 0) {
                     previousFilteredHardwareFromSameFilterType.addAll(filteredHardware);
                     hardwares = previousFilteredHardwareFromSameFilterType;
-                    previousFilteredHardwareFromSameFilterType = new ArrayList();
+                    previousFilteredHardwareFromSameFilterType = new ArrayList<Object>();
                 }
                 else
                     hardwares = filteredHardware;
             }
         }
             
-        java.util.TreeSet sortedInvs = null;
+        Set<Object> sortedInvs = null;
         if (getSortBy() == YukonListEntryTypes.YUK_DEF_ID_INV_SORT_BY_SERIAL_NO)
-            sortedInvs = new java.util.TreeSet( SERIAL_NO_CMPTOR );
+            sortedInvs = new java.util.TreeSet<Object>( SERIAL_NO_CMPTOR );
         else if (getSortBy() == YukonListEntryTypes.YUK_DEF_ID_INV_SORT_BY_INST_DATE)
-            sortedInvs = new java.util.TreeSet( INST_DATE_CMPTOR );
+            sortedInvs = new java.util.TreeSet<Object>( INST_DATE_CMPTOR );
         else
-            sortedInvs = new java.util.TreeSet( INV_ID_CMPTOR );
+            sortedInvs = new java.util.TreeSet<Object>( INV_ID_CMPTOR );
 
         sortedInvs.addAll(hardwares);
         
-		inventoryList = new ArrayList();
-		java.util.Iterator it = sortedInvs.iterator();
+		inventoryList = new ArrayList<Object>();
+		Iterator<Object> it = sortedInvs.iterator();
 		while (it.hasNext()) {
 			if (getSortOrder() == SORT_ORDER_ASCENDING)
 				inventoryList.add( it.next() );
@@ -650,7 +646,7 @@ public class InventoryBean {
 				showEnergyCompany = true;
 		}
 		
-		ArrayList hwList = null;
+		List<Object> hwList = null;
 		String errorMsg = null;
         int numberOfHardware = 0;
 		try {
@@ -1060,18 +1056,18 @@ public class InventoryBean {
 		return sortBy;
 	}
 
-    public ArrayList getFilterByList() 
+    public List<FilterWrapper> getFilterByList() 
     {
         return filterByList;
     }
     
-    public void setFilterByList(ArrayList newFilters)
+    public void setFilterByList(final List<FilterWrapper> newFilters)
     {
         if(newFilters == null)
             return;
         
-        ArrayList oldFilters = filterByList;
-        filterByList = new ArrayList();
+        List<FilterWrapper> oldFilters = filterByList;
+        filterByList = new ArrayList<FilterWrapper>();
         boolean memberSpecified = false;
         
         /**
@@ -1088,8 +1084,8 @@ public class InventoryBean {
         
         for(int j = 0; j < newFilters.size(); j++)
         {
-            Integer filterType = new Integer(((FilterWrapper)newFilters.get(j)).getFilterTypeID());
-            String specificFilterString = ((FilterWrapper)newFilters.get(j)).getFilterID();
+            Integer filterType = Integer.valueOf(newFilters.get(j).getFilterTypeID());
+            String specificFilterString = newFilters.get(j).getFilterID();
             Integer specificFilterID = InventoryUtils.returnIntegerIfPossible(specificFilterString);
             if(filterType.intValue() == YukonListEntryTypes.YUK_DEF_ID_INV_FILTER_BY_MEMBER)
             {
@@ -1102,7 +1098,7 @@ public class InventoryBean {
                 boolean found = false;
                 for(int x = 0; x < oldFilters.size(); x++)
                 {
-                    if(specificFilterID.intValue() == new Integer(((FilterWrapper)oldFilters.get(x)).getFilterID()).intValue())
+                    if(specificFilterID.intValue() == Integer.parseInt(oldFilters.get(x).getFilterID()))
                     {
                         found = true;
                     }    
@@ -1116,7 +1112,7 @@ public class InventoryBean {
         /*In order to add OR logic to the filters instead of AND logic we need to first
          * sort the filters by type
          */
-        Collections.sort(((List<FilterWrapper>)newFilters), FilterWrapper.filterWrapperComparator);
+        Collections.sort(newFilters, FilterWrapper.filterWrapperComparator);
         filterByList = newFilters;
         
         if(!memberSpecified)
@@ -1196,7 +1192,7 @@ public class InventoryBean {
 	/**
 	 * @param list
 	 */
-	public void setInventorySet(ArrayList list) {
+	public void setInventorySet(final List<Object> list) {
 		inventorySet = list;
 		inventoryList = null;
 	}
@@ -1267,11 +1263,12 @@ public class InventoryBean {
         this.member = member;
     }
     
+    @SuppressWarnings("unchecked")
     public String getFilterInventoryHTML()
     {
         setHtmlStyle(HTML_STYLE_FILTERED_INVENTORY_SUMMARY);
         
-        setFilterByList((ArrayList) internalRequest.getSession().getAttribute(ServletUtils.FILTER_INVEN_LIST));
+        setFilterByList((List) internalRequest.getSession().getAttribute(ServletUtils.FILTER_INVEN_LIST));
         String hardwareNum = getHTML(internalRequest);
         setHtmlStyle(HTML_STYLE_LIST_INVENTORY);
         numberOfRecords = hardwareNum;
@@ -1286,10 +1283,6 @@ public class InventoryBean {
     public void setInternalRequest(HttpServletRequest req)
     {
         internalRequest = req;
-    }
-
-    public void setShowAll(boolean showAll) {
-        this.showAll = showAll;
     }
 
     public boolean getViewResults()
@@ -1308,11 +1301,11 @@ public class InventoryBean {
         this.numberOfRecords = numberOfRecords;
     }
 
-    public void setInventoryList(ArrayList inventoryList) {
+    public void setInventoryList(final List<Object> inventoryList) {
         this.inventoryList = inventoryList;
     }
     
-    public ArrayList getLimitedHardwareList()
+    public List<Object> getLimitedHardwareList()
     {
         try
         {

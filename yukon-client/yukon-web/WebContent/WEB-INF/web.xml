@@ -332,6 +332,23 @@
 	</servlet>	
 
 	<servlet>
+		<servlet-name>stars</servlet-name>
+		<servlet-class>
+			com.cannontech.servlet.CannonDispatcherServlet
+		</servlet-class>
+		<init-param>
+			<param-name>contextConfigLocation</param-name>
+			<param-value>/WEB-INF/stars-servlet.xml,
+						 /WEB-INF/stars-service.xml,
+						 /WEB-INF/stars-admin.xml,
+						 /WEB-INF/stars-inventory.xml,
+						 /WEB-INF/stars-importmanager.xml,
+						 /WEB-INF/stars-workorder.xml</param-value>
+		</init-param>
+		<load-on-startup>2</load-on-startup>
+	</servlet>
+
+	<servlet>
 		<servlet-name>widgetDispatcher</servlet-name>
 		<servlet-class>
 			com.cannontech.servlet.CannonDispatcherServlet
@@ -512,59 +529,7 @@
 			com.cannontech.servlet.MultispeakServlet
 		</servlet-class>
 	</servlet>
-	<!-- STARS specific configs -->
-	<servlet>
-		<description>
-			Handles all requests from consumer information module.
-		</description>
-		<servlet-name>SOAPClient</servlet-name>
-		<servlet-class>com.cannontech.servlet.SOAPClient</servlet-class>
-	</servlet>
-	<servlet>
-		<description>Administration functions for STARS.</description>
-		<servlet-name>StarsAdmin</servlet-name>
-		<servlet-class>com.cannontech.servlet.StarsAdmin</servlet-class>
-	</servlet>
-	<servlet>
-		<description>Inventory management</description>
-		<servlet-name>InventoryManager</servlet-name>
-		<servlet-class>
-			com.cannontech.servlet.InventoryManager
-		</servlet-class>
-	</servlet>
-	<servlet>
-		<description>Work order management</description>
-		<servlet-name>WorkOrderManager</servlet-name>
-		<servlet-class>
-			com.cannontech.servlet.WorkOrderManager
-		</servlet-class>
-	</servlet>
-	<servlet>
-		<description>
-			Allows a user to request a password via email.
-		</description>
-		<servlet-name>StarsPWordRequest</servlet-name>
-		<servlet-class>
-			com.cannontech.servlet.StarsPWordRequest
-		</servlet-class>
-	</servlet>
-	<servlet>
-		<description>
-			Customer accounts importing management.
-		</description>
-		<servlet-name>ImportManager</servlet-name>
-		<servlet-class>
-			com.cannontech.servlet.ImportManager
-		</servlet-class>
-	</servlet>
-	<servlet>
-		<description>Redirect to HOME_URL</description>
-		<servlet-name>HomeServlet</servlet-name>
-		<servlet-class>
-			com.cannontech.servlet.HomeServlet
-		</servlet-class>
-	</servlet>
-	<!-- STARS specific configs -->
+
 	<!-- CapControl specific configs -->
 	<servlet>
 		<description>
@@ -710,11 +675,6 @@
 	</servlet-mapping>
 
 	<servlet-mapping>
-		<servlet-name>HomeServlet</servlet-name>
-		<url-pattern>/home</url-pattern>
-	</servlet-mapping>
-
-	<servlet-mapping>
 		<servlet-name>AxisServlet</servlet-name>
 		<url-pattern>/servlet/AxisServlet</url-pattern>
 	</servlet-mapping>
@@ -809,6 +769,46 @@
 	</servlet-mapping>
 
 	<servlet-mapping>
+		<servlet-name>stars</servlet-name>
+		<url-pattern>/spring/stars/*</url-pattern>
+	</servlet-mapping>
+
+	<servlet-mapping>
+		<servlet-name>stars</servlet-name>
+		<url-pattern>/servlet/StarsAdmin</url-pattern>
+	</servlet-mapping>
+	
+	<servlet-mapping>
+		<servlet-name>stars</servlet-name>
+		<url-pattern>/servlet/SOAPClient</url-pattern>
+	</servlet-mapping>
+
+	<servlet-mapping>
+		<servlet-name>stars</servlet-name>
+		<url-pattern>/servlet/ImportManager</url-pattern>
+	</servlet-mapping> 	
+	
+	<servlet-mapping>
+		<servlet-name>stars</servlet-name>
+		<url-pattern>/servlet/InventoryManager</url-pattern>
+	</servlet-mapping>
+	
+	<servlet-mapping>
+		<servlet-name>stars</servlet-name>
+		<url-pattern>/servlet/WorkOrderManager</url-pattern>	
+	</servlet-mapping>
+	
+	<servlet-mapping>
+		<servlet-name>stars</servlet-name>
+		<url-pattern>/servlet/StarsPWordRequest</url-pattern>
+	</servlet-mapping>
+
+	<servlet-mapping>
+		<servlet-name>stars</servlet-name>
+		<url-pattern>/home</url-pattern>
+	</servlet-mapping>
+	
+	<servlet-mapping>
 		<servlet-name>multispeak</servlet-name>
 		<url-pattern>/spring/multispeak/*</url-pattern>
 	</servlet-mapping>
@@ -895,31 +895,6 @@
 	<servlet-mapping>
 		<servlet-name>MultispeakServlet</servlet-name>
 		<url-pattern>/servlet/MultispeakServlet</url-pattern>
-	</servlet-mapping>
-
-	<servlet-mapping>
-		<servlet-name>SOAPClient</servlet-name>
-		<url-pattern>/servlet/SOAPClient</url-pattern>
-	</servlet-mapping>
-	<servlet-mapping>
-		<servlet-name>StarsAdmin</servlet-name>
-		<url-pattern>/servlet/StarsAdmin</url-pattern>
-	</servlet-mapping>
-	<servlet-mapping>
-		<servlet-name>InventoryManager</servlet-name>
-		<url-pattern>/servlet/InventoryManager</url-pattern>
-	</servlet-mapping>
-	<servlet-mapping>
-		<servlet-name>WorkOrderManager</servlet-name>
-		<url-pattern>/servlet/WorkOrderManager</url-pattern>
-	</servlet-mapping>
-	<servlet-mapping>
-		<servlet-name>StarsPWordRequest</servlet-name>
-		<url-pattern>/servlet/StarsPWordRequest</url-pattern>
-	</servlet-mapping>
-	<servlet-mapping>
-		<servlet-name>ImportManager</servlet-name>
-		<url-pattern>/servlet/ImportManager</url-pattern>
 	</servlet-mapping>
 
 	<servlet-mapping>

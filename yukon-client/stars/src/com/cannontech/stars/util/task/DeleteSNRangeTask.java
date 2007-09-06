@@ -7,6 +7,7 @@
 package com.cannontech.stars.util.task;
 
 import java.util.ArrayList;
+import java.util.List;
 
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpSession;
@@ -39,7 +40,7 @@ public class DeleteSNRangeTask extends TimeConsumingTask {
 	Integer devTypeID = null;
 	HttpServletRequest request = null;
 	
-	ArrayList hardwareSet = new ArrayList();
+	List<LiteInventoryBase> hardwareSet = new ArrayList<LiteInventoryBase>();
 	int numSuccess = 0, numFailure = 0;
 	int numToBeDeleted = 0;
 	
@@ -89,12 +90,12 @@ public class DeleteSNRangeTask extends TimeConsumingTask {
 		int categoryID = InventoryUtils.getInventoryCategoryID( devTypeID.intValue(), energyCompany );
 		
 		if (InventoryUtils.isMCT(categoryID)) {
-			ArrayList mctList = new ArrayList();
+			List<LiteInventoryBase> mctList = new ArrayList<LiteInventoryBase>();
 			
-			ArrayList inventory = energyCompany.loadAllInventory( true );
+            List<LiteInventoryBase> inventory = energyCompany.loadAllInventory( true );
 			synchronized (inventory) {
 				for (int i = 0; i < inventory.size(); i++) {
-					LiteInventoryBase liteInv = (LiteInventoryBase) inventory.get(i);
+					LiteInventoryBase liteInv = inventory.get(i);
 					if (InventoryUtils.isMCT( liteInv.getCategoryID() )) {
 						if (liteInv.getAccountID() > 0) {
 							hardwareSet.add( liteInv );
@@ -135,7 +136,7 @@ public class DeleteSNRangeTask extends TimeConsumingTask {
 		}
 		else {
 			int devTypeDefID = DaoFactory.getYukonListDao().getYukonListEntry(devTypeID.intValue()).getYukonDefID();
-			ArrayList hwList = InventoryUtils.getLMHardwareInRange( energyCompany, devTypeDefID, snFrom, snTo );
+            List<LiteStarsLMHardware> hwList = InventoryUtils.getLMHardwareInRange( energyCompany, devTypeDefID, snFrom, snTo );
 			
 			numToBeDeleted = hwList.size();
 			if (numToBeDeleted == 0) {
@@ -145,7 +146,7 @@ public class DeleteSNRangeTask extends TimeConsumingTask {
 			}
 			
 			for (int i = 0; i < hwList.size(); i++) {
-				LiteStarsLMHardware liteHw = (LiteStarsLMHardware) hwList.get(i);
+				LiteStarsLMHardware liteHw = hwList.get(i);
 				
 				if (liteHw.getAccountID() > 0) {
 					hardwareSet.add( liteHw );

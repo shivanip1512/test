@@ -155,9 +155,9 @@ public class AdjustStaticLoadGroupMappingsTask extends TimeConsumingTask {
         /*May have a problem here if inventory isn't loaded yet since the for loop may move on even if the load task hasn't come back
          */
 		else {
-			ArrayList descendants = ECUtils.getAllDescendants( energyCompany );
+            List<LiteStarsEnergyCompany> descendants = ECUtils.getAllDescendants( energyCompany );
 			for (int i = 0; i < descendants.size(); i++) {
-				LiteStarsEnergyCompany company = (LiteStarsEnergyCompany) descendants.get(i);
+				LiteStarsEnergyCompany company = descendants.get(i);
                 List<LiteInventoryBase> hwsFromEC = company.loadAllInventory(true);
                 /*  
                  * If not a full reset, we will want to only look for those with an addressing group ID of zero

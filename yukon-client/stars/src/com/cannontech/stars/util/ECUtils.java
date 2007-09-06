@@ -7,6 +7,7 @@
 package com.cannontech.stars.util;
 
 import java.util.ArrayList;
+import java.util.List;
 
 import com.cannontech.database.cache.StarsDatabaseCache;
 import com.cannontech.database.data.lite.stars.LiteStarsEnergyCompany;
@@ -26,15 +27,14 @@ public class ECUtils {
 	 * Get all the energy companies that belongs to (directly or indirectly)
 	 * this energy company, including itself
 	 */
-	public static ArrayList getAllDescendants(LiteStarsEnergyCompany parent) {
-		ArrayList descendants = new ArrayList();
+	public static List<LiteStarsEnergyCompany> getAllDescendants(final LiteStarsEnergyCompany parent) {
+		List<LiteStarsEnergyCompany> descendants = new ArrayList<LiteStarsEnergyCompany>();
 		descendants.add( parent );
 		
-		for (int i = 0; i < parent.getChildren().size(); i++) {
-			LiteStarsEnergyCompany child = (LiteStarsEnergyCompany) parent.getChildren().get(i);
-			descendants.addAll( getAllDescendants(child) );
-		}
-		
+        for (final LiteStarsEnergyCompany child : parent.getChildren()) {
+            descendants.addAll( getAllDescendants(child) );
+        }
+        
 		return descendants;
 	}
 	
@@ -43,7 +43,7 @@ public class ECUtils {
 	 */
 	public static boolean isDescendantOf(LiteStarsEnergyCompany company1, LiteStarsEnergyCompany company2) {
 		if (company1.equals( company2 )) return false;
-		ArrayList descendants = getAllDescendants( company2 );
+        List<LiteStarsEnergyCompany> descendants = getAllDescendants( company2 );
 		return descendants.contains( company1 );
 	}
 	

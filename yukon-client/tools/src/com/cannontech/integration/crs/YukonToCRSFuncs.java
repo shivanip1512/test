@@ -3,6 +3,7 @@ package com.cannontech.integration.crs;
 import java.util.ArrayList;
 import java.util.Date;
 import java.util.GregorianCalendar;
+import java.util.List;
 
 import com.cannontech.clientutils.CTILogger;
 import com.cannontech.common.constants.YukonListEntry;
@@ -331,10 +332,10 @@ public class YukonToCRSFuncs
     
     public static YukonListEntry getEntryByYukonDefID(YukonSelectionList selectionList, int defID)
     {
-    	ArrayList listEntries = selectionList.getYukonListEntries();
+        List<YukonListEntry> listEntries = selectionList.getYukonListEntries();
     	for( int i = 0; i < listEntries.size(); i++)
     	{
-    		YukonListEntry listEntry = (YukonListEntry) listEntries.get(i);
+    		YukonListEntry listEntry = listEntries.get(i);
     		if( listEntry.getYukonDefID() == defID)
     			return listEntry;
     	}
@@ -733,10 +734,10 @@ public class YukonToCRSFuncs
     	else if( entryText.equalsIgnoreCase(PTJ_TYPE_XCEL_MAINTENANCE_STRING))
     		lookupDefID = YukonListEntryTypes.YUK_DEF_ID_SERV_TYPE_MAINTENANCE;
     	
-    	ArrayList listEntries = selectionList.getYukonListEntries();
+        List<YukonListEntry> listEntries = selectionList.getYukonListEntries();
     	for( int i = 0; i < listEntries.size(); i++)
     	{
-    		YukonListEntry listEntry = (YukonListEntry) listEntries.get(i);
+    		YukonListEntry listEntry = listEntries.get(i);
     		if( listEntry.getYukonDefID() == lookupDefID)
     			return listEntry;
     	}

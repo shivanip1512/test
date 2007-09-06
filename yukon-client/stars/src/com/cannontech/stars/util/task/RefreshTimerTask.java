@@ -2,6 +2,7 @@ package com.cannontech.stars.util.task;
 
 import java.util.ArrayList;
 import java.util.Date;
+import java.util.List;
 
 import com.cannontech.clientutils.CTILogger;
 import com.cannontech.database.cache.StarsDatabaseCache;
@@ -52,29 +53,27 @@ public class RefreshTimerTask extends StarsTimerTask {
 	public void run() {
 		CTILogger.debug( "*** Start Refresh timer task ***" );
 		
-		ArrayList companies = StarsDatabaseCache.getInstance().getAllEnergyCompanies();
+        List<LiteStarsEnergyCompany> companies = StarsDatabaseCache.getInstance().getAllEnergyCompanies();
 
 		for (int i = 0; i < companies.size(); i++) {
-			LiteStarsEnergyCompany company = (LiteStarsEnergyCompany) companies.get(i);
+			LiteStarsEnergyCompany company = companies.get(i);
 			if (ECUtils.isDefaultEnergyCompany( company )) continue;
             int delCount = 0;
 			// Update the real-time data for EnergyPro thermostats
-			ArrayList activeAccounts = company.getActiveAccounts();
-			for (int j = 0; j < activeAccounts.size(); j++) {
-				StarsCustAccountInformation starsAcctInfo = (StarsCustAccountInformation) activeAccounts.get(j);
-				
-				// If account is no longer active, remove it from the active account list
-				if (System.currentTimeMillis() - starsAcctInfo.getLastActiveTime().getTime() > INACTIVE_INTERVAL) {
-					company.deleteStarsCustAccountInformation( starsAcctInfo.getStarsCustomerAccount().getAccountID() );
+            List<StarsCustAccountInformation> activeAccounts = company.getActiveAccounts();
+            for (final StarsCustAccountInformation starsAcctInfo : activeAccounts) {
+                // If account is no longer active, remove it from the active account list
+                if (System.currentTimeMillis() - starsAcctInfo.getLastActiveTime().getTime() > INACTIVE_INTERVAL) {
+                    company.deleteStarsCustAccountInformation( starsAcctInfo.getStarsCustomerAccount().getAccountID() );
                     delCount++;
-					continue;
-				}
-				
-				LiteStarsCustAccountInformation liteAcctInfo = company.getCustAccountInformation(
-						starsAcctInfo.getStarsCustomerAccount().getAccountID(), false );
-				if (liteAcctInfo != null)
-					company.updateThermostatSettings( liteAcctInfo );
-			}
+                    continue;
+                }
+                
+                LiteStarsCustAccountInformation liteAcctInfo = company.getCustAccountInformation(
+                        starsAcctInfo.getStarsCustomerAccount().getAccountID(), false );
+                if (liteAcctInfo != null)
+                    company.updateThermostatSettings( liteAcctInfo );
+            }
             if( delCount > 0)
                 CTILogger.debug("Deleted " + delCount + " Accounts from " + activeAccounts.size() + " Active Accounts for EC:" + company.getName());
 		}

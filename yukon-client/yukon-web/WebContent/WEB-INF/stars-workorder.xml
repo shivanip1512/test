@@ -1,0 +1,59 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE beans PUBLIC "-//SPRING//DTD BEAN//EN" "http://www.springframework.org/dtd/spring-beans.dtd">
+
+<beans>
+
+	<bean id="workorderSearchWorkOrder" class="com.cannontech.web.stars.action.workorder.SearchWorkOrderController">
+		<property name="starsDatabaseCache" ref="starsDatabaseCache"/>
+		<property name="authDao" ref="authDao"/>
+	</bean>
+	
+	<bean id="workorderCreateWorkOrder" class="com.cannontech.web.stars.action.workorder.CreateWorkOrderController">
+		<property name="starsDatabaseCache" ref="starsDatabaseCache"/>
+	</bean>
+	
+	<bean id="workorderSearchCustAccount" class="com.cannontech.web.stars.action.workorder.SearchCustAccountController">
+		<property name="starsDatabaseCache" ref="starsDatabaseCache"/>
+	</bean>
+	
+	<bean id="workorderSendWorkOrder" class="com.cannontech.web.stars.action.workorder.SendWorkOrderController">
+		<property name="starsDatabaseCache" ref="starsDatabaseCache"/>
+		<property name="contactDao" ref="contactDao"/>
+	</bean>
+
+	<bean id="workorderUpdateFilters" class="com.cannontech.web.stars.action.workorder.UpdateFiltersController">
+		<property name="starsDatabaseCache" ref="starsDatabaseCache"/>
+	</bean>
+
+	<bean id="workorderManipulateSelectedResults" class="com.cannontech.web.stars.action.workorder.ManipulateSelectedResultsController">
+		<property name="starsDatabaseCache" ref="starsDatabaseCache"/>
+	</bean>
+	
+	<bean id="workorderManipulateResults" class="com.cannontech.web.stars.action.workorder.ManipulateResultsController">
+		<property name="starsDatabaseCache" ref="starsDatabaseCache"/>
+	</bean>
+	
+	<bean id="workorderApplyActions" class="com.cannontech.web.stars.action.workorder.ApplyActionsController">
+		<property name="starsDatabaseCache" ref="starsDatabaseCache"/>
+	</bean>
+	
+	<bean id="workorderViewAllResults" class="com.cannontech.web.stars.action.workorder.ViewAllResultsController">
+		<property name="viewAll"><value>true</value></property>
+		<property name="starsDatabaseCache" ref="starsDatabaseCache"/>
+	</bean>
+	
+	<bean id="workorderHideAllResults" class="com.cannontech.web.stars.action.workorder.ViewAllResultsController">
+		<property name="viewAll"><value>false</value></property>
+		<property name="starsDatabaseCache" ref="starsDatabaseCache"/>
+	</bean>
+	
+	<bean id="workorderSortWorkOrders" class="com.cannontech.web.stars.action.workorder.SortWorkOrdersController">
+		<property name="starsDatabaseCache" ref="starsDatabaseCache"/>
+	</bean>
+	
+	<bean id="workorderCreateReport" class="com.cannontech.web.stars.action.workorder.CreateReportController">
+		<property name="starsDatabaseCache" ref="starsDatabaseCache"/>
+	</bean>
+	
+
+</beans>

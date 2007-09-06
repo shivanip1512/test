@@ -1,6 +1,7 @@
 package com.cannontech.database.data.lite.stars;
 
 import java.util.ArrayList;
+import java.util.List;
 
 import com.cannontech.database.data.lite.LiteBase;
 
@@ -14,7 +15,7 @@ import com.cannontech.database.data.lite.LiteBase;
  */
 public class LiteStarsLMControlHistory extends LiteBase {
 	
-	private ArrayList lmControlHistory = null;
+	private List<LiteBase> lmControlHistory = null;
 	
 	// Last control history entry of the load group, used for getting control summary.
 	// Notice: the ID of the lite object is not the ID of the corresponding control history entry,
@@ -56,7 +57,7 @@ public class LiteStarsLMControlHistory extends LiteBase {
 	 * Returns the lmControlHistory.
 	 * @return java.util.ArrayList
 	 */
-	public ArrayList getLmControlHistory() {
+	public List<LiteBase> getLmControlHistory() {
 		return lmControlHistory;
 	}
 
@@ -64,7 +65,7 @@ public class LiteStarsLMControlHistory extends LiteBase {
 	 * Sets the lmControlHistory.
 	 * @param lmControlHistory The lmControlHistory to set
 	 */
-	public void setLmControlHistory(ArrayList lmControlHistory) {
+	public void setLmControlHistory(final List<LiteBase> lmControlHistory) {
 		this.lmControlHistory = lmControlHistory;
 	}
 

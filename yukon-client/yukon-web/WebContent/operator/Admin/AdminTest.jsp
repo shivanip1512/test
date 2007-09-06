@@ -17,10 +17,10 @@
     boolean canMembersChangeRoutes = false;
     boolean isMember = false;
     
-	ArrayList members = liteEC.getChildren();
-	ArrayList memberCandidates = new ArrayList();
+	List<LiteStarsEnergyCompany> members = liteEC.getChildren();
+	List<LiteStarsEnergyCompany> memberCandidates = new ArrayList<LiteStarsEnergyCompany>();
 	if (DaoFactory.getAuthDao().checkRoleProperty(lYukonUser, AdministratorRole.ADMIN_MANAGE_MEMBERS)) {
-		ArrayList energyCompanies = StarsDatabaseCache.getInstance().getAllEnergyCompanies();
+		List<LiteStarsEnergyCompany> energyCompanies = StarsDatabaseCache.getInstance().getAllEnergyCompanies();
 		for (int i = 0; i < energyCompanies.size(); i++) {
 			LiteStarsEnergyCompany company = (LiteStarsEnergyCompany) energyCompanies.get(i);
 			if (ECUtils.isDefaultEnergyCompany(company)) continue;	// exclude default energy company
@@ -105,7 +105,7 @@ var memberLoginList = new Array(<%= memberCandidates.size() %>);
 <%
 	for (int i = 0; i < memberCandidates.size(); i++) {
 		LiteStarsEnergyCompany candidate = (LiteStarsEnergyCompany) memberCandidates.get(i);
-		ArrayList loginIDs = candidate.getOperatorLoginIDs();
+		List<Integer> loginIDs = candidate.getOperatorLoginIDs();
 %>
 memberLoginList[<%= i %>] = new Array(<%= loginIDs.size() %>);
 <%
@@ -397,7 +397,7 @@ function confirmDeleteAllWarehouses() {
                             <td> 
                               <table width="100%" border="0" cellspacing="0" cellpadding="0">
                                 <%
-	ArrayList userLists = StarsAdminUtil.getSelectionListsInUse(liteEC, user);
+	List<YukonSelectionList> userLists = StarsAdminUtil.getSelectionListsInUse(liteEC, user);
 	for (int i = 0; i < userLists.size(); i++) {
 		com.cannontech.common.constants.YukonSelectionList cList = (com.cannontech.common.constants.YukonSelectionList) userLists.get(i);
 		if (cList.getUserUpdateAvailable() == null || !cList.getUserUpdateAvailable().equalsIgnoreCase("Y")) continue;
@@ -800,7 +800,7 @@ function confirmDeleteAllWarehouses() {
                                     </td>
                                   </tr>
                                   <%
-	ArrayList operLoginIDs = liteEC.getOperatorLoginIDs();
+	List<Integer> operLoginIDs = liteEC.getOperatorLoginIDs();
 	for (int i = 0; i < operLoginIDs.size(); i++) {
 		int userID = ((Integer) operLoginIDs.get(i)).intValue();
 		if (userID == lYukonUser.getUserID()) continue;
@@ -871,7 +871,7 @@ function confirmDeleteAllWarehouses() {
                                     <td width="15%" class="HeaderCell">&nbsp;</td>
                                   </tr>
                                   <%
-	ArrayList memberLoginIDs = liteEC.getMemberLoginIDs();
+	List<Integer> memberLoginIDs = liteEC.getMemberLoginIDs();
 	for (int i = 0; i < members.size(); i++) {
 		LiteStarsEnergyCompany member = (LiteStarsEnergyCompany) members.get(i);
 %>

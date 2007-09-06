@@ -94,7 +94,7 @@ function init() {
                           <td width="70%">
                             <select name="Member" onChange="changeMember(this.form)">
                               <%
-	ArrayList descendants = ECUtils.getAllDescendants(liteEC);
+	List<LiteStarsEnergyCompany> descendants = ECUtils.getAllDescendants(liteEC);
 	for (int i = 0; i < descendants.size(); i++) {
 		LiteStarsEnergyCompany company = (LiteStarsEnergyCompany) descendants.get(i);
 		String selected = company.equals(member)? "selected" : "";

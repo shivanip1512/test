@@ -30,8 +30,8 @@ public class CustomerAccount extends DBPersistent {
     private com.cannontech.database.data.customer.Customer customer = null;
     private Integer energyCompanyID = null;
 
-    private Vector applianceVector = null;	// Vector of appliance IDs (Integer)
-    private Vector inventoryVector = null;	// Vector of inventory IDs (Integer)
+    private Vector<Integer> applianceVector = null;	// Vector of appliance IDs (Integer)
+    private Vector<Integer> inventoryVector = null;	// Vector of inventory IDs (Integer)
 
     public CustomerAccount() {
         super();
@@ -259,23 +259,23 @@ public class CustomerAccount extends DBPersistent {
         customer = newCustomer;
     }
 
-    public Vector getApplianceVector() {
+    public Vector<Integer> getApplianceVector() {
         if (applianceVector == null)
-            applianceVector = new Vector(3);
+            applianceVector = new Vector<Integer>(3);
         return applianceVector;
     }
 
-    public void setApplianceVector(Vector newApplianceVector) {
+    public void setApplianceVector(Vector<Integer> newApplianceVector) {
         applianceVector = newApplianceVector;
     }
 
-    public Vector getInventoryVector() {
+    public Vector<Integer> getInventoryVector() {
         if (inventoryVector == null)
-            inventoryVector = new Vector(3);
+            inventoryVector = new Vector<Integer>(3);
         return inventoryVector;
     }
 
-    public void setInventoryVector(Vector newInventoryVector) {
+    public void setInventoryVector(Vector<Integer> newInventoryVector) {
         inventoryVector = newInventoryVector;
     }
 

@@ -1,5 +1,8 @@
 package com.cannontech.common.constants;
 
+import java.util.ArrayList;
+import java.util.List;
+
 /**
  * @author yao
  *
@@ -17,7 +20,7 @@ public class YukonSelectionList {
 	private String listName = null;
 	private String userUpdateAvailable = null;
 	
-	private java.util.ArrayList yukonListEntries = null;
+	private List<YukonListEntry> yukonListEntries = null;
 	
 	
 	public static final String TABLE_NAME = "YukonSelectionList";
@@ -137,9 +140,9 @@ public class YukonSelectionList {
 	 * Returns the yukonListEntries.
 	 * @return java.util.ArrayList
 	 */
-	public java.util.ArrayList getYukonListEntries() {
+	public List<YukonListEntry> getYukonListEntries() {
 		if (yukonListEntries == null)
-			yukonListEntries = new java.util.ArrayList();
+			yukonListEntries = new ArrayList<YukonListEntry>();
 		return yukonListEntries;
 	}
 
@@ -147,7 +150,7 @@ public class YukonSelectionList {
 	 * Sets the yukonListEntries.
 	 * @param yukonListEntries The yukonListEntries to set
 	 */
-	public void setYukonListEntries(java.util.ArrayList yukonListEntries) {
+	public void setYukonListEntries(List<YukonListEntry> yukonListEntries) {
 		this.yukonListEntries = yukonListEntries;
 	}
 

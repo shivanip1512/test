@@ -14,6 +14,7 @@ import java.util.Comparator;
 import java.util.Date;
 import java.util.HashMap;
 import java.util.Iterator;
+import java.util.List;
 
 import javax.servlet.http.HttpServletRequest;
 
@@ -498,7 +499,7 @@ public class WorkOrderModel extends ReportModelBase {
 				}
 			}
 			else {
-				ArrayList allWOs = ec.loadAllWorkOrders(true);
+                List<LiteWorkOrderBase> allWOs = ec.loadAllWorkOrders(true);
 				if( allWOs != null)
 					woList.addAll( allWOs );
 			}
@@ -536,7 +537,7 @@ public class WorkOrderModel extends ReportModelBase {
 		Collections.sort( getData(), workOrderCmptor );
 	}
 	
-	public void loadData(LiteStarsEnergyCompany liteStarsEC, ArrayList<LiteWorkOrderBase> woList)
+	public void loadData(LiteStarsEnergyCompany liteStarsEC, List<LiteWorkOrderBase> woList)
 	{
         //Reset all objects, new data being collected!
         setData(null);
@@ -544,7 +545,7 @@ public class WorkOrderModel extends ReportModelBase {
        
         CTILogger.info("Reporting Data Loading for " + woList.size() + " Work Orders.");
 		for (int j = 0; j < woList.size(); j++) {
-			LiteWorkOrderBase liteOrder = (LiteWorkOrderBase) woList.get(j);
+			LiteWorkOrderBase liteOrder = woList.get(j);
 			
 			if (liteOrder.getAccountID() == 0) {
 				WorkOrder wo = new WorkOrder( liteOrder);

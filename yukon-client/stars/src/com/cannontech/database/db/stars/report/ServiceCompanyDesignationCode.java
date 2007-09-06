@@ -1,6 +1,7 @@
 package com.cannontech.database.db.stars.report;
 
 import java.util.ArrayList;
+import java.util.List;
 
 import com.cannontech.common.util.CtiUtilities;
 import com.cannontech.database.SqlStatement;
@@ -118,7 +119,7 @@ public void update() throws java.sql.SQLException
     update( TABLE_NAME, SETTER_COLUMNS, setValues, CONSTRAINT_COLUMNS, constraintValues );
 }
 
-public static ArrayList<ServiceCompanyDesignationCode> getServiceCompanyDesignationCodes(int companyID)
+public static List<ServiceCompanyDesignationCode> getServiceCompanyDesignationCodes(int companyID)
 {
     ArrayList<ServiceCompanyDesignationCode> codes = new ArrayList<ServiceCompanyDesignationCode>();
     

@@ -9,6 +9,7 @@ package com.cannontech.stars.web.util;
 import java.util.ArrayList;
 import java.util.Calendar;
 import java.util.Date;
+import java.util.List;
 
 import com.cannontech.common.constants.YukonListEntry;
 import com.cannontech.common.constants.YukonListEntryTypes;
@@ -494,9 +495,9 @@ public class ImportManagerUtil {
 				// Otherwise, this is the substation name inside ""
 				String subName = fields[IDX_SUBSTATION].substring( 1, fields[IDX_SUBSTATION].length()-1 );
 				
-				ArrayList subList = energyCompany.getAllSubstations();
+                List<LiteSubstation> subList = energyCompany.getAllSubstations();
 				for (int i = 0; i < subList.size(); i++) {
-					LiteSubstation liteSub = (LiteSubstation) subList.get(i);
+					LiteSubstation liteSub = subList.get(i);
 					if (liteSub.getSubstationName().equalsIgnoreCase( subName )) {
 						starsSub.setEntryID( liteSub.getSubstationID() );
 						break;
@@ -756,10 +757,10 @@ public class ImportManagerUtil {
 			catch (NumberFormatException e) {
 				// Otherwise, this is the service company name inside ""
 				String companyName = fields[IDX_SERVICE_COMPANY].substring( 1, fields[IDX_SERVICE_COMPANY].length()-1 );
-				ArrayList companies = energyCompany.getAllServiceCompanies();
+                List<LiteServiceCompany> companies = energyCompany.getAllServiceCompanies();
 				
 				for (int i = 0; i < companies.size(); i++) {
-					LiteServiceCompany entry = (LiteServiceCompany) companies.get(i);
+					LiteServiceCompany entry = companies.get(i);
 					if (entry.getCompanyName().equalsIgnoreCase( companyName )) {
 						company.setEntryID( entry.getCompanyID() );
 						break;
@@ -937,9 +938,9 @@ public class ImportManagerUtil {
 	}
 	
 	public static int getApplianceCategoryID(LiteStarsEnergyCompany energyCompany, String appType) {
-		ArrayList appCats = energyCompany.getAllApplianceCategories();
+        List<LiteApplianceCategory> appCats = energyCompany.getAllApplianceCategories();
 		for (int i = 0; i < appCats.size(); i++) {
-			LiteApplianceCategory appCat = (LiteApplianceCategory) appCats.get(i);
+			LiteApplianceCategory appCat = appCats.get(i);
 			if (appCat.getDescription().equalsIgnoreCase( appType ))
 				return appCat.getApplianceCategoryID();
 		}

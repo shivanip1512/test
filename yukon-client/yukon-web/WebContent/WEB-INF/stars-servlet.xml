@@ -1,0 +1,76 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE beans PUBLIC "-//SPRING//DTD BEAN//EN" "http://www.springframework.org/dtd/spring-beans.dtd">
+
+<beans>
+
+	<bean id="simpleUrlMapping"
+		class="org.springframework.web.servlet.handler.SimpleUrlHandlerMapping">
+		<property name="interceptors">
+			<list>
+				<ref bean="yukonLoginCheckInterceptor" />
+			</list>
+		</property>
+		<property name="mappings">
+			<props>
+				<prop key="/servlet/StarsAdmin">starsAdmin</prop>
+				<prop key="/servlet/SOAPClient">soapClient</prop>
+				<prop key="/servlet/InventoryManager">inventoryManager</prop>
+				<prop key="/servlet/WorkOrderManager">workOrderManager</prop>
+				<prop key="/servlet/StarsPWordRequest">starsPWordRequest</prop>
+				<prop key="/servlet/ImportManager">importManager</prop>
+				<prop key="/home">homeServletController</prop>
+				<prop key="/hardware/thermostatactivation">thermostatActivationController</prop>
+			</props>
+		</property>
+	</bean>
+
+	<bean id="viewResolver"
+		class="org.springframework.web.servlet.view.UrlBasedViewResolver">
+		<property name="viewClass"
+			value="org.springframework.web.servlet.view.JstlView" />
+		<property name="prefix"
+			value="/WEB-INF/pages/stars/" />
+	</bean>
+	
+	<bean id="starsAdmin" class="com.cannontech.web.stars.StarsActionController">
+		<property name="prefix"><value>admin</value></property>
+	</bean>
+
+	<bean id="soapClient" class="com.cannontech.web.stars.SOAPClientController">
+		<property name="switchContextService" ref="switchContextService"/>
+	</bean>
+	
+	<bean id="inventoryManager" class="com.cannontech.web.stars.StarsActionController">
+		<property name="prefix"><value>inventory</value></property>
+		<property name="defaultBeanName"><value>Default</value></property>
+	</bean>
+	
+	<bean id="workOrderManager" class="com.cannontech.web.stars.StarsActionController">
+		<property name="prefix"><value>workorder</value></property>
+		<property name="switchContextService" ref="switchContextService"/>
+	</bean>
+
+	<bean id="starsPWordRequest" class="com.cannontech.web.stars.StarsPWordRequestController"/>
+
+	<bean id="importManager" class="com.cannontech.web.stars.StarsActionController">
+		<property name="prefix"><value>importmanager</value></property>
+	</bean>
+	
+	<bean id="homeServletController" class="com.cannontech.web.stars.HomeServletController"/>
+
+	<bean id="thermostatActivationController" class="com.cannontech.web.stars.dr.hardware.ThermostatActivationController">
+		<property name="thermostatActivationService" ref="thermostatActivationService"/>
+		<property name="methodNameResolver" ref="methodNameResolver" />
+	</bean>
+	
+	<bean id="methodNameResolver"
+		class="org.springframework.web.servlet.mvc.multiaction.ParameterMethodNameResolver">
+		<property name="methodParamNames">
+			<list>
+				<value>view</value>
+				<value>activate</value>
+			</list>
+		</property>
+	</bean>
+
+</beans>

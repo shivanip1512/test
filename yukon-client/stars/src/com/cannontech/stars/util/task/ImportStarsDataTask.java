@@ -18,6 +18,7 @@ import java.util.ArrayList;
 import java.util.Date;
 import java.util.Hashtable;
 import java.util.Iterator;
+import java.util.List;
 import java.util.StringTokenizer;
 import java.util.TreeMap;
 
@@ -1001,32 +1002,29 @@ public class ImportStarsDataTask extends TimeConsumingTask {
 		if (listName.equals("ServiceCompany")) {
 			if (text.equals("")) return null;
 			
-			ArrayList companies = energyCompany.getAllServiceCompanies();
-			for (int i = 0; i < companies.size(); i++) {
-				LiteServiceCompany liteCompany = (LiteServiceCompany) companies.get(i);
-				if (text.equalsIgnoreCase( liteCompany.getCompanyName() ))
-					return new Integer( liteCompany.getCompanyID() );
-			}
+            List<LiteServiceCompany> companies = energyCompany.getAllServiceCompanies();
+            for (final LiteServiceCompany liteCompany : companies) {
+                if (text.equalsIgnoreCase( liteCompany.getCompanyName() ))
+                    return new Integer( liteCompany.getCompanyID() );
+            }
 		}
 		else if (listName.equals("Substation")) {
 			if (text.equals("")) return null;
 			
-			ArrayList substations = energyCompany.getAllSubstations();
-			for (int i = 0; i < substations.size(); i++) {
-				LiteSubstation liteSub = (LiteSubstation) substations.get(i);
-				if (text.equalsIgnoreCase( liteSub.getSubstationName() ))
-					return new Integer( liteSub.getSubstationID() );
-			}
+            List<LiteSubstation> substations = energyCompany.getAllSubstations();
+            for (final LiteSubstation liteSub : substations) {
+                if (text.equalsIgnoreCase( liteSub.getSubstationName() ))
+                    return new Integer( liteSub.getSubstationID() );
+            }
 		}
 		else if (listName.equals("LoadType")) {
 			if (text.equals("")) return null;
 			
-			ArrayList appCats = energyCompany.getAllApplianceCategories();
-			for (int i = 0; i < appCats.size(); i++) {
-				LiteApplianceCategory liteAppCat = (LiteApplianceCategory) appCats.get(i);
-				if (text.equalsIgnoreCase( liteAppCat.getDescription() ))
-					return new Integer( liteAppCat.getApplianceCategoryID() );
-			}
+            List<LiteApplianceCategory> appCats = energyCompany.getAllApplianceCategories();
+            for (final LiteApplianceCategory liteAppCat : appCats) {
+                if (text.equalsIgnoreCase( liteAppCat.getDescription() ))
+                    return new Integer( liteAppCat.getApplianceCategoryID() );
+            }
 		}
 		else if (listName.equals("LoadGroup")) {
 			if (text.equals("")) return null;
@@ -1807,34 +1805,31 @@ public class ImportStarsDataTask extends TimeConsumingTask {
 					String line = value + "=";
 					if (id.intValue() > 0) {
 						if (ImportManagerUtil.LIST_NAMES[i][0].equals("ServiceCompany")) {
-							ArrayList companies = energyCompany.getAllServiceCompanies();
-							for (int j = 0; j < companies.size(); j++) {
-								LiteServiceCompany liteCompany = (LiteServiceCompany) companies.get(j);
-								if (liteCompany.getCompanyID() == id.intValue()) {
-									line += "\"" + liteCompany.getCompanyName() + "\"";
-									break;
-								}
-							}
+                            List<LiteServiceCompany> companies = energyCompany.getAllServiceCompanies();
+                            for (final LiteServiceCompany liteCompany : companies) {
+                                if (liteCompany.getCompanyID() == id.intValue()) {
+                                    line += "\"" + liteCompany.getCompanyName() + "\"";
+                                    break;
+                                }
+                            }
 						}
 						else if (ImportManagerUtil.LIST_NAMES[i][0].equals("Substation")) {
-							ArrayList substations = energyCompany.getAllSubstations();
-							for (int j = 0; j < substations.size(); j++) {
-								LiteSubstation liteSub = (LiteSubstation) substations.get(j);
-								if (liteSub.getSubstationID() == id.intValue()) {
-									line += "\"" + liteSub.getSubstationName() + "\"";
-									break;
-								}
-							}
+                            List<LiteSubstation> substations = energyCompany.getAllSubstations();
+                            for (final LiteSubstation liteSub : substations) {
+                                if (liteSub.getSubstationID() == id.intValue()) {
+                                    line += "\"" + liteSub.getSubstationName() + "\"";
+                                    break;
+                                }
+                            }
 						}
 						else if (ImportManagerUtil.LIST_NAMES[i][0].equals("LoadType")) {
-							ArrayList appCats = energyCompany.getAllApplianceCategories();
-							for (int j = 0; j < appCats.size(); j++) {
-								LiteApplianceCategory liteAppCat = (LiteApplianceCategory) appCats.get(j);
-								if (liteAppCat.getApplianceCategoryID() == id.intValue()) {
-									line += "\"" + liteAppCat.getDescription() + "\"";
-									break;
-								}
-							}
+                            List<LiteApplianceCategory> appCats = energyCompany.getAllApplianceCategories();
+                            for (final LiteApplianceCategory liteAppCat : appCats) {
+                                if (liteAppCat.getApplianceCategoryID() == id.intValue()) {
+                                    line += "\"" + liteAppCat.getDescription() + "\"";
+                                    break;
+                                }
+                            }
 						}
 						else if (ImportManagerUtil.LIST_NAMES[i][0].equals("LoadGroup")) 
                         {
@@ -2809,7 +2804,7 @@ public class ImportStarsDataTask extends TimeConsumingTask {
 					if (cList == null)
 						throw new WebClientException("Cannot update an inherited selection list.");
 					
-					ArrayList entries = cList.getYukonListEntries();
+                    List<YukonListEntry> entries = cList.getYukonListEntries();
 					
 					Object[][] entryData = new Object[entries.size() + entryTexts.length][];
 					for (int i = 0; i < entries.size(); i++) {

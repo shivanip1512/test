@@ -8,6 +8,8 @@ import java.util.ArrayList;
 import java.util.Date;
 import java.util.Hashtable;
 import java.util.Iterator;
+import java.util.List;
+import java.util.Map;
 import java.util.Vector;
 
 import com.cannontech.clientutils.CTILogger;
@@ -65,24 +67,30 @@ public class StarsDatabaseCache implements DBChangeLiteListener {
 	public static final int DEFAULT_ENERGY_COMPANY_ID = EnergyCompany.DEFAULT_ENERGY_COMPANY_ID;
 	
 	private static final int CTRL_HIST_CACHE_INVALID_INTERVAL = 7;	// 7 days
-    
-	// Instance of the SOAPServer object
-	private static StarsDatabaseCache instance = null;
 	
     // Array of all the energy companies (LiteStarsEnergyCompany)
-	private ArrayList energyCompanies = null;
+	private List<LiteStarsEnergyCompany> energyCompanies = null;
     
 	// List of web configurations (LiteWebConfiguration)
-	private ArrayList webConfigList = null;
+	private List<LiteWebConfiguration> webConfigList = null;
 	
 	// Map from user ID (Integer) to stars users (StarsYukonUser)
-	private Hashtable starsYukonUsers = null;
+	private Map<Integer,StarsYukonUser> starsYukonUsers = null;
 	
 	// Map from Integer(GroupID) to LiteStarsLMControlHistory
-	private Hashtable lmCtrlHists = null;
-		
-	private void init() {		
-        AsyncDynamicDataSource dataSource =  (AsyncDynamicDataSource) YukonSpringHook.getBean("asyncDynamicDataSource");
+	private Map<Integer,LiteStarsLMControlHistory> lmCtrlHists = null;
+	
+    private AsyncDynamicDataSource dataSource;
+    
+    public StarsDatabaseCache() {
+        
+    }
+    
+    public void setAsyncDynamicDataSource(final AsyncDynamicDataSource dataSource) {
+        this.dataSource = dataSource;
+    }
+    
+	public void init() {		
         dataSource.addDBChangeLiteListener(this);
 	}
 	
@@ -94,19 +102,16 @@ public class StarsDatabaseCache implements DBChangeLiteListener {
 	}
 	
 	public synchronized static StarsDatabaseCache getInstance() {
-		if (instance == null) {
-			instance = new StarsDatabaseCache();
-			instance.init();
-		}
+		StarsDatabaseCache instance = YukonSpringHook.getBean("starsDatabaseCache", StarsDatabaseCache.class);
 		return instance;
 	}
     
-    public void fireLoadThread(ArrayList energyCompanies) {
-        final ArrayList companies = energyCompanies;
+    public void fireLoadThread(final List<LiteStarsEnergyCompany> energyCompanies) {
+        final List<LiteStarsEnergyCompany> companies = energyCompanies;
         Thread initThrd = new Thread(new Runnable() {
             public void run() {
                 for (int i = 0; i < companies.size(); i++) {
-                    LiteStarsEnergyCompany company = (LiteStarsEnergyCompany) companies.get(i);
+                    LiteStarsEnergyCompany company = companies.get(i);
                     if (!ECUtils.isDefaultEnergyCompany( company )) {
                         // Fire the data loading threads off, and wait for all of them to stop
                         company.loadAllInventory( false );
@@ -129,7 +134,7 @@ public class StarsDatabaseCache implements DBChangeLiteListener {
         // Force all contacts to be loaded (since this can take a long time, and slow down the first time login)
         DefaultDatabaseCache.getInstance().getAllContacts();
         
-        ArrayList allCompanies = getAllEnergyCompanies();
+        List<LiteStarsEnergyCompany> allCompanies = getAllEnergyCompanies();
         final LiteStarsEnergyCompany[] companies = new LiteStarsEnergyCompany[ allCompanies.size() ];
         allCompanies.toArray( companies );
         
@@ -140,7 +145,7 @@ public class StarsDatabaseCache implements DBChangeLiteListener {
 		if (energyCompanies != null) {
 			synchronized (energyCompanies) {
 				for (int i = 0; i < energyCompanies.size(); i++)
-					((LiteStarsEnergyCompany) energyCompanies.get(i)).clear();
+					energyCompanies.get(i).clear();
 			}
 			energyCompanies = null;
 		}
@@ -163,18 +168,17 @@ public class StarsDatabaseCache implements DBChangeLiteListener {
 		DaoFactory.getYukonListDao().releaseAllConstants();
 		
 		// release cache for all descendants of the current company as well
-		final ArrayList descendants = ECUtils.getAllDescendants( energyCompany );
-		for (int i = 0; i < descendants.size(); i++) {
-			LiteStarsEnergyCompany company = (LiteStarsEnergyCompany) descendants.get(i);
-			company.clear();
-			
-			Iterator it = getAllStarsYukonUsers().values().iterator();
-			while (it.hasNext()) {
-				StarsYukonUser user = (StarsYukonUser) it.next();
-				if (user.getEnergyCompanyID() == company.getLiteID())
-					it.remove();
-			}
-		}
+		final List<LiteStarsEnergyCompany> descendants = ECUtils.getAllDescendants( energyCompany );
+        for (final LiteStarsEnergyCompany company : descendants) {
+            company.clear();
+            
+            Iterator<StarsYukonUser> it = getAllStarsYukonUsers().values().iterator();
+            while (it.hasNext()) {
+                StarsYukonUser user = it.next();
+                if (user.getEnergyCompanyID() == company.getLiteID())
+                    it.remove();
+            }
+        }
 		
 		SwitchCommandQueue.getInstance().syncFromFile();
 		OptOutEventQueue.getInstance().syncFromFile();
@@ -192,17 +196,17 @@ public class StarsDatabaseCache implements DBChangeLiteListener {
         if (energyCompanies != null) {
             synchronized (energyCompanies) {
                 for (int i = 0; i < energyCompanies.size(); i++)
-                    ((LiteStarsEnergyCompany) energyCompanies.get(i)).clearInventory();
+                    energyCompanies.get(i).clearInventory();
             }
         }
         
         DefaultDatabaseCache.getInstance().releaseAllCache();
         
-        final ArrayList companies = energyCompanies;
+        final List<LiteStarsEnergyCompany> companies = energyCompanies;
         Thread initThrd = new Thread(new Runnable() {
             public void run() {
                 for (int i = 0; i < companies.size(); i++) {
-                    LiteStarsEnergyCompany company = (LiteStarsEnergyCompany) companies.get(i);
+                    LiteStarsEnergyCompany company = companies.get(i);
                     if (!ECUtils.isDefaultEnergyCompany( company )) {
                         company.loadAllInventory( false );
                         company.loadAllInventory( true );
@@ -216,9 +220,9 @@ public class StarsDatabaseCache implements DBChangeLiteListener {
 	/*
 	 * Start implementation of class functions
 	 */
-	public synchronized ArrayList getAllEnergyCompanies() {
+	public synchronized List<LiteStarsEnergyCompany> getAllEnergyCompanies() {
 		if (energyCompanies == null) {
-			energyCompanies = new ArrayList();
+			energyCompanies = new ArrayList<LiteStarsEnergyCompany>();
 	    	java.sql.Connection conn = null;
 	    	
 			try {
@@ -251,9 +255,9 @@ public class StarsDatabaseCache implements DBChangeLiteListener {
 		return energyCompanies;
 	}
 
-	public synchronized ArrayList getAllWebConfigurations() {
+	public synchronized List<LiteWebConfiguration> getAllWebConfigurations() {
 		if (webConfigList == null) {
-			webConfigList = new ArrayList();
+			webConfigList = new ArrayList<LiteWebConfiguration>();
 			
 			com.cannontech.database.db.web.YukonWebConfiguration[] webConfigs =
 					YukonWebConfiguration.getAllCustomerWebConfigurations();
@@ -266,17 +270,17 @@ public class StarsDatabaseCache implements DBChangeLiteListener {
 		return webConfigList;
 	}
 
-	public synchronized Hashtable getAllStarsYukonUsers() {
+	public synchronized Map<Integer,StarsYukonUser> getAllStarsYukonUsers() {
 		if (starsYukonUsers == null)
-			starsYukonUsers = new Hashtable();
+			starsYukonUsers = new Hashtable<Integer,StarsYukonUser>();
 		return starsYukonUsers;
 	}
 
 	public LiteStarsEnergyCompany getEnergyCompany(int energyCompanyID) {
-		ArrayList companies = getAllEnergyCompanies();
+        List<LiteStarsEnergyCompany> companies = getAllEnergyCompanies();
 		synchronized (companies) {
 			for (int i = 0; i < companies.size(); i++) {
-	    		LiteStarsEnergyCompany company = (LiteStarsEnergyCompany) companies.get(i);
+	    		LiteStarsEnergyCompany company = companies.get(i);
 				if (company.getEnergyCompanyID().intValue() == energyCompanyID) {
 					String preloadData = DaoFactory.getRoleDao().getGlobalPropertyValue( SystemRole.STARS_PRELOAD_DATA );
 					if (CtiUtilities.isFalse(preloadData)) company.init();
@@ -289,15 +293,15 @@ public class StarsDatabaseCache implements DBChangeLiteListener {
 	}
 
 	public void addEnergyCompany(LiteStarsEnergyCompany company) {
-		ArrayList companies = getAllEnergyCompanies();
+        List<LiteStarsEnergyCompany> companies = getAllEnergyCompanies();
 		synchronized (companies) { companies.add(company); }
 	}
 
 	public LiteStarsEnergyCompany deleteEnergyCompany(int energyCompanyID) {
-		ArrayList companies = getAllEnergyCompanies();
+        List<LiteStarsEnergyCompany> companies = getAllEnergyCompanies();
 		synchronized (companies) {
 			for (int i = 0; i < companies.size(); i++) {
-	    		LiteStarsEnergyCompany company = (LiteStarsEnergyCompany) companies.get(i);
+	    		LiteStarsEnergyCompany company = companies.get(i);
 				if (company.getEnergyCompanyID().intValue() == energyCompanyID) {
 					companies.remove( i );
 					return company;
@@ -313,10 +317,10 @@ public class StarsDatabaseCache implements DBChangeLiteListener {
 	}
 
 	public LiteWebConfiguration getWebConfiguration(int configID) {
-		ArrayList webConfigList = getAllWebConfigurations();
+        List<LiteWebConfiguration> webConfigList = getAllWebConfigurations();
 		synchronized (webConfigList) {
 			for (int i = 0; i < webConfigList.size(); i++) {
-				LiteWebConfiguration config = (LiteWebConfiguration) webConfigList.get(i);
+				LiteWebConfiguration config = webConfigList.get(i);
 				if (config.getConfigID() == configID)
 					return config;
 			}
@@ -326,15 +330,15 @@ public class StarsDatabaseCache implements DBChangeLiteListener {
 	}
 
 	public void addWebConfiguration(LiteWebConfiguration config) {
-		ArrayList webConfigList = getAllWebConfigurations();
+        List<LiteWebConfiguration> webConfigList = getAllWebConfigurations();
 		synchronized (webConfigList) { webConfigList.add(config); }
 	}
 
 	public LiteWebConfiguration deleteWebConfiguration(int configID) {
-		ArrayList webConfigList = getAllWebConfigurations();
+        List<LiteWebConfiguration> webConfigList = getAllWebConfigurations();
 		synchronized (webConfigList) {
 			for (int i = 0; i < webConfigList.size(); i++) {
-				LiteWebConfiguration config = (LiteWebConfiguration) webConfigList.get(i);
+				LiteWebConfiguration config = webConfigList.get(i);
 				if (config.getConfigID() == configID) {
 					webConfigList.remove( i );
 					return config;
@@ -346,11 +350,11 @@ public class StarsDatabaseCache implements DBChangeLiteListener {
 	}
 
 	public StarsYukonUser getStarsYukonUser(LiteYukonUser yukonUser) {
-		Hashtable starsUsers = getAllStarsYukonUsers();
+        Map<Integer,StarsYukonUser> starsUsers = getAllStarsYukonUsers();
 		Integer userID = new Integer( yukonUser.getUserID() );
 		
 		synchronized (starsUsers) {
-			StarsYukonUser user = (StarsYukonUser) starsUsers.get( userID );
+			StarsYukonUser user = starsUsers.get( userID );
 			if (user != null) {
 				if (user.getYukonUser() == yukonUser)
 					return user;
@@ -370,7 +374,7 @@ public class StarsDatabaseCache implements DBChangeLiteListener {
 	}
 
 	public void deleteStarsYukonUser(int userID) {
-		Hashtable starsUsers = getAllStarsYukonUsers();
+        Map<Integer,StarsYukonUser> starsUsers = getAllStarsYukonUsers();
 		synchronized (starsUsers) { starsUsers.remove( new Integer(userID) ); }
 	}
     
@@ -378,11 +382,11 @@ public class StarsDatabaseCache implements DBChangeLiteListener {
 	{
 		CTILogger.debug(" ## DBChangeMsg ##\n" + msg);
 		
-		ArrayList companies = getAllEnergyCompanies();
+        List<LiteStarsEnergyCompany> companies = getAllEnergyCompanies();
 		
 		if (msg.getDatabase() == DBChangeMsg.CHANGE_CUSTOMER_ACCOUNT_DB) {
 			for (int i = 0; i < companies.size(); i++) {
-				LiteStarsEnergyCompany energyCompany = (LiteStarsEnergyCompany) companies.get(i);
+				LiteStarsEnergyCompany energyCompany = companies.get(i);
 				if( energyCompany.getEnergyCompanyID().intValue() != EnergyCompany.DEFAULT_ENERGY_COMPANY_ID)
 				{				
 					LiteStarsCustAccountInformation liteAcctInfo = energyCompany.getCustAccountInformation( msg.getId(), false );
@@ -394,27 +398,25 @@ public class StarsDatabaseCache implements DBChangeLiteListener {
 			}
 		}
 		else if (msg.getDatabase() == DBChangeMsg.CHANGE_CONTACT_DB) {
-			LiteContact liteContact = DaoFactory.getContactDao().getContact( msg.getId() );
 			
 			for (int i = 0; i < companies.size(); i++) {
-				LiteStarsEnergyCompany energyCompany = (LiteStarsEnergyCompany) companies.get(i);
+				LiteStarsEnergyCompany energyCompany = companies.get(i);
 				Object contOwner = null;
 				
 				if (energyCompany.getPrimaryContactID() == msg.getId()) {
 					contOwner = energyCompany;
 				}
 				else {
-					ArrayList servCompanies = energyCompany.getServiceCompanies();
-					for (int j = 0; j < servCompanies.size(); j++) {
-						LiteServiceCompany servCompany = (LiteServiceCompany) servCompanies.get(j);
-						if (servCompany.getPrimaryContactID() == msg.getId()) {
-							contOwner = servCompany;
-							break;
-						}
-					}
+                    List<LiteServiceCompany> servCompanies = energyCompany.getServiceCompanies();
+                    for (final LiteServiceCompany servCompany : servCompanies) {
+                        if (servCompany.getPrimaryContactID() == msg.getId()) {
+                            contOwner = servCompany;
+                            break;
+                        }
+                    }
 					
 					if (contOwner == null) {
-						Integer accountID = (Integer) energyCompany.getContactAccountIDMap().get( new Integer(msg.getId()) );
+						Integer accountID = energyCompany.getContactAccountIDMap().get( new Integer(msg.getId()) );
 						if (accountID != null)
 							contOwner = energyCompany.getStarsCustAccountInformation( accountID.intValue() );
 					}
@@ -454,16 +456,16 @@ public class StarsDatabaseCache implements DBChangeLiteListener {
             }
             
     		for (int i = 0; i < companies.size(); i++) {
-    			LiteStarsEnergyCompany energyCompany = (LiteStarsEnergyCompany) companies.get(i);
+    			LiteStarsEnergyCompany energyCompany = companies.get(i);
     			
     			if (litePao.getCategory() == PAOGroups.CAT_ROUTE) {
     				if (!ECUtils.isSingleEnergyCompany( energyCompany ))
     					handleRouteChange( msg, energyCompany );
     			}
     			else if (DeviceTypesFuncs.isLMProgramDirect( litePao.getType() )) {
-    				ArrayList programs = new ArrayList( energyCompany.getPrograms() );
+    				List<LiteLMProgramWebPublishing> programs = new ArrayList<LiteLMProgramWebPublishing>( energyCompany.getPrograms() );
     				for (int j = 0; j < programs.size(); j++) {
-    					LiteLMProgramWebPublishing liteProg = (LiteLMProgramWebPublishing) programs.get(j);
+    					LiteLMProgramWebPublishing liteProg = programs.get(j);
     					if (liteProg.getDeviceID() == msg.getId()) {
     						handleLMProgramChange( msg, energyCompany, liteProg );
     						return;
@@ -471,11 +473,11 @@ public class StarsDatabaseCache implements DBChangeLiteListener {
     				}
     			}
     			else if (DeviceTypesFuncs.isLmGroup( litePao.getType() )) {
-    				ArrayList programs = new ArrayList( energyCompany.getPrograms() );
+    				List<LiteLMProgramWebPublishing> programs = new ArrayList<LiteLMProgramWebPublishing>( energyCompany.getPrograms() );
     				StarsEnrollmentPrograms categories = energyCompany.getStarsEnrollmentPrograms();
     				
     				for (int j = 0; j < programs.size(); j++) {
-    					LiteLMProgramWebPublishing liteProg = (LiteLMProgramWebPublishing) programs.get(j);
+    					LiteLMProgramWebPublishing liteProg = programs.get(j);
     					boolean groupFound = false;
     					
     					for (int k = 0; k < liteProg.getGroupIDs().length; k++) {
@@ -499,14 +501,13 @@ public class StarsDatabaseCache implements DBChangeLiteListener {
     				}
     			}
     			else if (DeviceTypesFuncs.isMCT( litePao.getType() )) {
-    				ArrayList inventory = energyCompany.getAllInventory();
-    				for (int j = 0; j < inventory.size(); j++) {
-    					LiteInventoryBase liteInv = (LiteInventoryBase) inventory.get(j);
-    					if (liteInv.getDeviceID() == msg.getId()) {
-    						handleDeviceChange( msg, energyCompany, liteInv );
-    						return;
-    					}
-    				}
+                    List<LiteInventoryBase> inventory = energyCompany.getAllInventory();
+                    for (final LiteInventoryBase liteInv : inventory) {
+                        if (liteInv.getDeviceID() == msg.getId()) {
+                            handleDeviceChange( msg, energyCompany, liteInv );
+                            return;
+                        }
+                    }
     			}
     		}
     	}
@@ -515,8 +516,8 @@ public class StarsDatabaseCache implements DBChangeLiteListener {
 				LiteContact liteContact = DaoFactory.getYukonUserDao().getLiteContact( msg.getId() );
 				if (liteContact != null) {
 					for (int i = 0; i < companies.size(); i++) {
-						LiteStarsEnergyCompany energyCompany = (LiteStarsEnergyCompany) companies.get(i);
-						Integer accountID = (Integer) energyCompany.getContactAccountIDMap().get( new Integer(liteContact.getContactID()) );
+						LiteStarsEnergyCompany energyCompany = companies.get(i);
+						Integer accountID = energyCompany.getContactAccountIDMap().get( new Integer(liteContact.getContactID()) );
 						if (accountID != null) {
 							StarsCustAccountInformation starsAcctInfo = energyCompany.getStarsCustAccountInformation( accountID.intValue() );
 							if (starsAcctInfo != null && starsAcctInfo.getStarsUser() != null) {
@@ -530,7 +531,7 @@ public class StarsDatabaseCache implements DBChangeLiteListener {
 		}
 		else if( msg.getDatabase() == DBChangeMsg.CHANGE_WORK_ORDER_DB){
 			for (int i = 0; i < companies.size(); i++) {
-				LiteStarsEnergyCompany liteStarsEnergyCompany = (LiteStarsEnergyCompany) companies.get(i);
+				LiteStarsEnergyCompany liteStarsEnergyCompany = companies.get(i);
 				LiteWorkOrderBase liteWorkOrderBase = liteStarsEnergyCompany.getWorkOrderBase( msg.getId(), false );
 				if( liteWorkOrderBase == null)
 				{
@@ -581,9 +582,9 @@ public class StarsDatabaseCache implements DBChangeLiteListener {
 					StarsLiteFactory.setStarsEnergyCompany( starsEC, energyCompany );
 				}
 				else if (contOwner instanceof LiteServiceCompany) {
-					ArrayList descendants = ECUtils.getAllDescendants( energyCompany );
+                    List<LiteStarsEnergyCompany> descendants = ECUtils.getAllDescendants( energyCompany );
 					for (int i = 0; i < descendants.size(); i++) {
-						LiteStarsEnergyCompany company = (LiteStarsEnergyCompany) descendants.get(i);
+						LiteStarsEnergyCompany company = descendants.get(i);
 						for (int j = 0; j < company.getStarsServiceCompanies().getStarsServiceCompanyCount(); j++) {
 							StarsServiceCompany starsSC = company.getStarsServiceCompanies().getStarsServiceCompany(j);
 							if (starsSC.getPrimaryContact().getContactID() == liteContact.getContactID()) {
@@ -617,9 +618,9 @@ public class StarsDatabaseCache implements DBChangeLiteListener {
 					LiteStarsCustAccountInformation liteAcctInfo = energyCompany.getCustAccountInformation(
 							starsAcctInfo.getStarsCustomerAccount().getAccountID(), true );
 					
-					Vector contacts = liteAcctInfo.getCustomer().getAdditionalContacts();
+                    Vector<LiteContact> contacts = liteAcctInfo.getCustomer().getAdditionalContacts();
 					for (int i = 0; i < contacts.size(); i++) {
-						if (((LiteContact)contacts.get(i)).getContactID() == msg.getId()) {
+						if (contacts.get(i).getContactID() == msg.getId()) {
 							contacts.remove(i);
 							break;
 						}
@@ -677,17 +678,16 @@ public class StarsDatabaseCache implements DBChangeLiteListener {
 				
 				String newProgName = StarsUtils.getPublishedProgramName( liteProg );
 				
-				ArrayList accounts = energyCompany.getActiveAccounts();
-				for (int i = 0; i < accounts.size(); i++) {
-					StarsCustAccountInformation starsAcctInfo = (StarsCustAccountInformation) accounts.get(i);
-					for (int j = 0; j < starsAcctInfo.getStarsLMPrograms().getStarsLMProgramCount(); j++) {
-						StarsLMProgram program = starsAcctInfo.getStarsLMPrograms().getStarsLMProgram(j);
-						if (program.getProgramID() == liteProg.getProgramID()) {
-							program.setProgramName( newProgName );
-							break;
-						}
-					}
-				}
+                List<StarsCustAccountInformation> accounts = energyCompany.getActiveAccounts();
+				for (final StarsCustAccountInformation starsAcctInfo : accounts) {
+                    for (int j = 0; j < starsAcctInfo.getStarsLMPrograms().getStarsLMProgramCount(); j++) {
+                        StarsLMProgram program = starsAcctInfo.getStarsLMPrograms().getStarsLMProgram(j);
+                        if (program.getProgramID() == liteProg.getProgramID()) {
+                            program.setProgramName( newProgName );
+                            break;
+                        }
+                    }
+                }
 				
 				break;
 				
@@ -785,7 +785,7 @@ public class StarsDatabaseCache implements DBChangeLiteListener {
             {
                 liteStarsEnergyCompany.deleteWorkOrderBase(liteWorkOrderBase.getOrderID());
 				liteStarsEnergyCompany.addWorkOrderBase(liteWorkOrderBase);
-				liteStarsCustAcctInfo = (LiteStarsCustAccountInformation)liteStarsEnergyCompany.getCustAccountInformation(liteWorkOrderBase.getAccountID(), true);
+				liteStarsCustAcctInfo = liteStarsEnergyCompany.getCustAccountInformation(liteWorkOrderBase.getAccountID(), true);
                 liteStarsCustAcctInfo.getServiceRequestHistory().remove(Integer.valueOf(liteWorkOrderBase.getOrderID()));
                 liteStarsCustAcctInfo.getServiceRequestHistory().add( 0, Integer.valueOf(liteWorkOrderBase.getOrderID()));
                 
@@ -809,7 +809,7 @@ public class StarsDatabaseCache implements DBChangeLiteListener {
 			case DBChangeMsg.CHANGE_TYPE_DELETE:
             {
 				liteStarsEnergyCompany.deleteWorkOrderBase(liteWorkOrderBase.getOrderID());
-				liteStarsCustAcctInfo = (LiteStarsCustAccountInformation)liteStarsEnergyCompany.getCustAccountInformation(liteWorkOrderBase.getAccountID(), true);
+				liteStarsCustAcctInfo = liteStarsEnergyCompany.getCustAccountInformation(liteWorkOrderBase.getAccountID(), true);
 				liteStarsCustAcctInfo.getServiceRequestHistory().remove(Integer.valueOf(liteWorkOrderBase.getOrderID()));
                 
                 StarsCustAccountInformation starsAcctInfo = liteStarsEnergyCompany.getStarsCustAccountInformation(liteWorkOrderBase.getAccountID(), true);
@@ -848,9 +848,9 @@ public class StarsDatabaseCache implements DBChangeLiteListener {
 		}
 	}
 	
-	private synchronized Hashtable getLMCtrlHistMap() {
+	private synchronized Map<Integer,LiteStarsLMControlHistory> getLMCtrlHistMap() {
 		if (lmCtrlHists == null)
-			lmCtrlHists = new Hashtable();
+			lmCtrlHists = new Hashtable<Integer,LiteStarsLMControlHistory>();
 		
 		return lmCtrlHists;
 	}
@@ -867,7 +867,7 @@ public class StarsDatabaseCache implements DBChangeLiteListener {
 		//if (groupID == CtiUtilities.NONE_ZERO_ID) return null;
 		
 		LiteStarsLMControlHistory lmCtrlHist =
-				(LiteStarsLMControlHistory) getLMCtrlHistMap().get( new Integer(groupID) );
+				getLMCtrlHistMap().get( new Integer(groupID));
 		if (lmCtrlHist == null) lmCtrlHist = new LiteStarsLMControlHistory( groupID );
 		
 		if (startDate != null &&
@@ -887,7 +887,7 @@ public class StarsDatabaseCache implements DBChangeLiteListener {
 				com.cannontech.database.db.pao.LMControlHistory[] ctrlHist =
 						LMControlHistoryUtil.getLMControlHistory( groupID, dateFrom, null );
 				
-				ArrayList ctrlHistList = new ArrayList();
+				List<LiteBase> ctrlHistList = new ArrayList<LiteBase>();
 				for (int i = 0; i < ctrlHist.length; i++)
 					ctrlHistList.add( StarsLiteFactory.createLite(ctrlHist[i]) );
 				lmCtrlHist.setLmControlHistory( ctrlHistList );
@@ -906,7 +906,7 @@ public class StarsDatabaseCache implements DBChangeLiteListener {
 		
 		if(lmCtrlHist.getLmControlHistory() == null)
 		{
-			lmCtrlHist.setLmControlHistory(new ArrayList());
+			lmCtrlHist.setLmControlHistory(new ArrayList<LiteBase>());
 		}
 		
 		if (lmCtrlHist.getLmControlHistory().size() > 0) {

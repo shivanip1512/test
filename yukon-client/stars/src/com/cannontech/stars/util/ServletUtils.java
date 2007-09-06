@@ -2,14 +2,23 @@ package com.cannontech.stars.util;
 
 import java.util.ArrayList;
 import java.util.Calendar;
+import java.util.Collections;
 import java.util.Date;
 import java.util.Enumeration;
+import java.util.List;
 import java.util.Properties;
 import java.util.TimeZone;
 
+import javax.servlet.ServletRequest;
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpSession;
 
+import org.apache.commons.fileupload.DiskFileUpload;
+import org.apache.commons.fileupload.FileItem;
+import org.apache.commons.fileupload.FileUploadException;
+
+import com.cannontech.clientutils.CTILogger;
+import com.cannontech.common.exception.NotLoggedInException;
 import com.cannontech.core.dao.DaoFactory;
 import com.cannontech.database.Transaction;
 import com.cannontech.database.data.customer.Customer;
@@ -683,5 +692,56 @@ public class ServletUtils {
             throw new Exception("Invalid temperature unit: " + temperatureUnit);
         }
     }
+    
+    public static StarsYukonUser getStarsYukonUser(final HttpSession session ) {
+        return (StarsYukonUser) session.getAttribute(ServletUtils.ATT_STARS_YUKON_USER);
+    }
 
+    /**
+     * @return the current StarsYukonUser Object found in the request.
+     * @throws NotLoggedInException if no session exists
+     */
+    public static StarsYukonUser getStarsYukonUser(final ServletRequest request) throws NotLoggedInException {
+        HttpServletRequest httpRequest = (HttpServletRequest) request;
+        HttpSession session = httpRequest.getSession(false);
+        if (session == null) {
+            throw new NotLoggedInException();
+        }
+        StarsYukonUser starsYukonUser = getStarsYukonUser(session);
+        if (starsYukonUser == null) {
+            throw new NotLoggedInException();
+        }
+        return starsYukonUser;
+    }
+    
+    public static String getFormField(final List<FileItem> itemList, final String fieldName) {
+    	for (final FileItem item : itemList) {
+    		if (item.isFormField() && item.getFieldName().equals(fieldName)) {
+    			return item.getString();
+    		}
+    	}
+    	return null;
+    }
+	
+	@SuppressWarnings("unchecked")
+	public static List<FileItem> getItemList(final HttpServletRequest request) throws FileUploadException {
+		DiskFileUpload upload = new DiskFileUpload();
+		List<FileItem> items = upload.parseRequest( request );
+		return items;
+	}
+	
+	public static boolean isMultiPartRequest(final HttpServletRequest request) {
+		boolean result = DiskFileUpload.isMultipartContent(request);
+		return result;
+	}
+    
+    public static FileItem getUploadFile(final List<FileItem> itemList, final String fieldName) throws WebClientException {
+        for (final FileItem item : itemList) {
+            if (!item.isFormField() && item.getFieldName().equals(fieldName)) {
+                if (!item.getName().equals("")) return item;
+            }
+        }
+        return null;
+    }
+    
 }

@@ -1,0 +1,38 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE beans PUBLIC "-//SPRING//DTD BEAN//EN" "http://www.springframework.org/dtd/spring-beans.dtd">
+
+<beans>
+
+	<bean id="importmanagerImportCustAccounts" class="com.cannontech.web.stars.action.importmanager.ImportCustAccountsController">
+		<property name="starsDatabaseCache" ref="starsDatabaseCache"/>
+	</bean>
+	
+	<bean id="importmanagerUploadGeneric" class="com.cannontech.web.stars.action.importmanager.UploadGenericController">
+		<property name="starsDatabaseCache" ref="starsDatabaseCache"/>
+	</bean>
+
+	<bean id="importmanagerImportINIData" class="com.cannontech.web.stars.action.importmanager.ImportINIDataController">
+		<property name="starsDatabaseCache" ref="starsDatabaseCache"/>
+	</bean>
+	
+	<bean id="importmanagerPreprocessStarsData" class="com.cannontech.web.stars.action.importmanager.PreprocessStarsDataController">
+		<property name="starsDatabaseCache" ref="starsDatabaseCache"/>	
+	</bean>
+
+	<bean id="importmanagerAssignSelectionList" class="com.cannontech.web.stars.action.importmanager.AssignSelectionListController">
+		<property name="starsDatabaseCache" ref="starsDatabaseCache"/>	
+	</bean>
+	
+	<bean id="importmanagerImportStarsData" class="com.cannontech.web.stars.action.importmanager.ImportStarsDataController">
+		<property name="starsDatabaseCache" ref="starsDatabaseCache"/>	
+	</bean>
+	
+	<bean id="importmanagerGenerateConfigFiles" class="com.cannontech.web.stars.action.importmanager.GenerateConfigFilesController">
+		<property name="starsDatabaseCache" ref="starsDatabaseCache"/>	
+	</bean>
+
+	<bean id="importmanagerImportDSM" class="com.cannontech.web.stars.action.importmanager.ImportDSMController">
+		<property name="starsDatabaseCache" ref="starsDatabaseCache"/>	
+	</bean>
+
+</beans>

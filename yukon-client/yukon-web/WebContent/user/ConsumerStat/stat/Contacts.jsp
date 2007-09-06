@@ -1,7 +1,7 @@
 <%@ include file="include/StarsHeader.jsp" %>
 <% if (accountInfo == null) { response.sendRedirect("General.jsp"); return; } %>
 <%
-	ArrayList contactTypeList = DaoFactory.getYukonListDao().getYukonSelectionList(YukonSelectionListDefs.YUK_LIST_ID_CONTACT_TYPE).getYukonListEntries();
+	List<YukonListEntry> contactTypeList = DaoFactory.getYukonListDao().getYukonSelectionList(YukonSelectionListDefs.YUK_LIST_ID_CONTACT_TYPE).getYukonListEntries();
 
 	StarsUser login = userLogin;
 	if (login == null) {

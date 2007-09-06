@@ -2,6 +2,7 @@ package com.cannontech.database.db.stars.appliance;
 
 import java.util.Date;
 import java.util.HashMap;
+import java.util.Vector;
 
 import com.cannontech.clientutils.CTILogger;
 import com.cannontech.common.util.CtiUtilities;
@@ -62,7 +63,7 @@ public class ApplianceBase extends DBPersistent {
 		super();
 	}
 
-	public static java.util.Vector getApplianceIDs(Integer accountID, java.sql.Connection conn)
+	public static Vector<Integer> getApplianceIDs(Integer accountID, java.sql.Connection conn)
 	throws java.sql.SQLException {
 		String sql = "SELECT ApplianceID FROM " + TABLE_NAME + " WHERE AccountID = ?";
 		java.sql.PreparedStatement stmt = null;
@@ -73,7 +74,7 @@ public class ApplianceBase extends DBPersistent {
 			stmt.setInt( 1, accountID.intValue() );
 			rset = stmt.executeQuery();
         	
-			java.util.Vector appIDVct = new java.util.Vector();
+			Vector<Integer> appIDVct = new Vector<Integer>();
 			while (rset.next())
 				appIDVct.add( new Integer(rset.getInt(1)) );
 			return appIDVct;

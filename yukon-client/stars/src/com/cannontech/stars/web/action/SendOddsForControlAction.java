@@ -1,6 +1,7 @@
 package com.cannontech.stars.web.action;
 
 import java.util.ArrayList;
+import java.util.List;
 
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpSession;
@@ -112,7 +113,7 @@ public class SendOddsForControlAction implements ActionBase {
 			int energyCompanyID = user.getEnergyCompanyID();
 			LiteStarsEnergyCompany energyCompany = StarsDatabaseCache.getInstance().getEnergyCompany( energyCompanyID );
             
-			ArrayList appCatList = energyCompany.getAllApplianceCategories();
+            List<LiteApplianceCategory> appCatList = energyCompany.getAllApplianceCategories();
 			StarsSendOddsForControl sendCtrlOdds = reqOper.getStarsSendOddsForControl();
 			
 			for (int i = 0; i < sendCtrlOdds.getStarsEnrLMProgramCount(); i++) {
@@ -120,9 +121,9 @@ public class SendOddsForControlAction implements ActionBase {
 				boolean enrProgFound = false;
         		
 				for (int j = 0; j < appCatList.size(); j++) {
-					LiteApplianceCategory liteAppCat = (LiteApplianceCategory) appCatList.get(j);
+					LiteApplianceCategory liteAppCat = appCatList.get(j);
 					for (int k = 0; k < liteAppCat.getPublishedPrograms().size(); k++) {
-						LiteLMProgramWebPublishing liteProg = (LiteLMProgramWebPublishing) liteAppCat.getPublishedPrograms().get(k);
+						LiteLMProgramWebPublishing liteProg = liteAppCat.getPublishedPrograms().get(k);
 						if (liteProg.getProgramID() == enrProg.getProgramID()) {
 							com.cannontech.database.db.stars.LMProgramWebPublishing pubProg =
 									new com.cannontech.database.db.stars.LMProgramWebPublishing();

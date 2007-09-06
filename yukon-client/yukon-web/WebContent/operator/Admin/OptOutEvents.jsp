@@ -67,7 +67,7 @@ function selectAccount(accountID, memberID) {
                     <select name="Member" onchange="this.form.submit()">
                       <option value="-1">All</option>
                       <%
-	ArrayList descendants = ECUtils.getAllDescendants(liteEC);
+	List<LiteStarsEnergyCompany> descendants = ECUtils.getAllDescendants(liteEC);
 	for (int i = 0; i < descendants.size(); i++) {
 		LiteStarsEnergyCompany company = (LiteStarsEnergyCompany) descendants.get(i);
 		String selected = (member != null && company.equals(member))? "selected" : "";
@@ -93,7 +93,7 @@ function selectAccount(accountID, memberID) {
 <% } %>
                 </tr>
 <%
-	ArrayList descendants = ECUtils.getAllDescendants(liteEC);
+	List<LiteStarsEnergyCompany> descendants = ECUtils.getAllDescendants(liteEC);
 	for (int i = 0; i < descendants.size(); i++) {
 		LiteStarsEnergyCompany company = (LiteStarsEnergyCompany) descendants.get(i);
 		if (member != null && !company.equals(member)) continue;

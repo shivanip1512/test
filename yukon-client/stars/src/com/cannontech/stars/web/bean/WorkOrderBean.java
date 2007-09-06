@@ -10,6 +10,7 @@ import java.util.ArrayList;
 import java.util.Collections;
 import java.util.Comparator;
 import java.util.Date;
+import java.util.List;
 
 import javax.servlet.http.HttpServletRequest;
 
@@ -194,7 +195,7 @@ public class WorkOrderBean {
 	private boolean sortOrderChanged = false;
 	
 	private LiteStarsEnergyCompany energyCompany = null;
-	private ArrayList<LiteWorkOrderBase> workOrderList = null;
+	private List<LiteWorkOrderBase> workOrderList = null;
 	
 	public WorkOrderBean() {
 	}
@@ -226,7 +227,7 @@ public class WorkOrderBean {
 	/**
 	 * @return
 	 */
-	public ArrayList<LiteWorkOrderBase> getWorkOrderList() {
+	public List<LiteWorkOrderBase> getWorkOrderList() {
 		if (workOrderList != null)
 		{	//Update the order without reloading all of the workOrder objects.
 			if( sortByChanged || sortOrderChanged )
@@ -236,7 +237,7 @@ public class WorkOrderBean {
 			return workOrderList;
 		}
 		
-		ArrayList<LiteWorkOrderBase> workOrders = null;
+		List<LiteWorkOrderBase> workOrders = null;
 		if (getHtmlStyle() == HTML_STYLE_SEARCH_RESULTS)
         {
             workOrders = new ArrayList<LiteWorkOrderBase>();
@@ -410,7 +411,7 @@ public class WorkOrderBean {
 		return workOrderList;
 	}
 
-	private ArrayList<LiteWorkOrderBase> sortList(ArrayList<LiteWorkOrderBase> workOrders)
+	private List<LiteWorkOrderBase> sortList(List<LiteWorkOrderBase> workOrders)
 	{
 		workOrderList = workOrders;
 		if (getSortBy() == YukonListEntryTypes.YUK_DEF_ID_SO_SORT_BY_ORDER_NO)
@@ -443,7 +444,7 @@ public class WorkOrderBean {
                 setManageMembers(true);
 		}*/		
 		
-		ArrayList soList = getWorkOrderList();
+        List<LiteWorkOrderBase> soList = getWorkOrderList();
 		if (soList == null || soList.size() == 0)
 			return "<p class='ErrorMsg'>No service order found.</p>";
 		
@@ -819,7 +820,7 @@ public class WorkOrderBean {
 		this.stopDate = stopDate;
 	}
 
-	public void setWorkOrderList(ArrayList<LiteWorkOrderBase> workOrderList) {
+	public void setWorkOrderList(List<LiteWorkOrderBase> workOrderList) {
 		this.workOrderList = workOrderList;
 	}
 

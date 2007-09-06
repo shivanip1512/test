@@ -9,6 +9,8 @@ package com.cannontech.stars.util.task;
 import java.util.ArrayList;
 import java.util.Date;
 import java.util.Hashtable;
+import java.util.List;
+import java.util.Map;
 
 import com.cannontech.clientutils.ActivityLogger;
 import com.cannontech.clientutils.CTILogger;
@@ -79,12 +81,12 @@ public class DailyTimerTask extends StarsTimerTask {
             // Clear all the *active* control history
     		LMControlHistoryUtil.clearActiveControlHistory();
     		
-    		ArrayList companies = StarsDatabaseCache.getInstance().getAllEnergyCompanies();
+            List<LiteStarsEnergyCompany> companies = StarsDatabaseCache.getInstance().getAllEnergyCompanies();
     		if (companies == null) return;
     		
     		for (int i = 0; i < companies.size(); i++) 
             {
-    			LiteStarsEnergyCompany company = (LiteStarsEnergyCompany) companies.get(i);
+    			LiteStarsEnergyCompany company = companies.get(i);
     			if (ECUtils.isDefaultEnergyCompany( company )) continue;
     			
     			SwitchCommandQueue.SwitchCommand[] commands = SwitchCommandQueue.getInstance().getCommands( company.getLiteID(), false );
@@ -103,7 +105,7 @@ public class DailyTimerTask extends StarsTimerTask {
     				String msg = numCmdSent + " of " + commands.length + " switch commands sent successfully";
     				ActivityLogger.logEvent(-1, -1, company.getLiteID(), -1, ActivityLogActions.HARDWARE_SEND_BATCH_CONFIG_ACTION, msg);
     				
-    				Hashtable batchConfig = InventoryManagerUtil.getBatchConfigSubmission();
+                    Map<Integer,Object[]> batchConfig = InventoryManagerUtil.getBatchConfigSubmission();
     				batchConfig.put( company.getEnergyCompanyID(), new Object[]{new Date(), msg} );
     			}
     			

@@ -1,6 +1,7 @@
 package com.cannontech.database.data.lite.stars;
 
 import java.util.ArrayList;
+import java.util.List;
 import java.util.StringTokenizer;
 
 import com.cannontech.common.constants.YukonListEntryTypes;
@@ -24,7 +25,7 @@ public class LiteStarsThermostatSettings extends LiteBase {
 	private static final String UNKNOWN_STRING = "(UNKNOWN)";
 	
 	private LiteLMThermostatSchedule thermostatSchedule = null;
-	private ArrayList thermostatManualEvents = null;	// List of LMThermostatManualEvent
+	private List<LiteLMThermostatManualEvent> thermostatManualEvents = null;	// List of LMThermostatManualEvent
 	private LiteStarsGatewayEndDevice dynamicData = null;
 	
 	public LiteStarsThermostatSettings() {
@@ -437,9 +438,9 @@ public class LiteStarsThermostatSettings extends LiteBase {
 	 * Returns the thermostatOption.
 	 * @return LiteLMThermostatManualOption
 	 */
-	public ArrayList getThermostatManualEvents() {
+	public List<LiteLMThermostatManualEvent> getThermostatManualEvents() {
 		if (thermostatManualEvents == null)
-			thermostatManualEvents = new ArrayList();
+			thermostatManualEvents = new ArrayList<LiteLMThermostatManualEvent>();
 		return thermostatManualEvents;
 	}
 
@@ -447,7 +448,7 @@ public class LiteStarsThermostatSettings extends LiteBase {
 	 * Sets the thermostatOption.
 	 * @param thermostatOption The thermostatOption to set
 	 */
-	public void setThermostatManualEvents(ArrayList thermostatManualEvents) {
+	public void setThermostatManualEvents(List<LiteLMThermostatManualEvent> thermostatManualEvents) {
 		this.thermostatManualEvents = thermostatManualEvents;
 	}
 

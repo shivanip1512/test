@@ -8,6 +8,7 @@ package com.cannontech.stars.util.task;
 
 import java.util.ArrayList;
 import java.util.Date;
+import java.util.List;
 
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpSession;
@@ -20,7 +21,6 @@ import com.cannontech.database.data.activity.ActivityLogActions;
 import com.cannontech.database.data.lite.stars.LiteStarsEnergyCompany;
 import com.cannontech.database.data.lite.stars.LiteStarsLMHardware;
 import com.cannontech.database.data.lite.stars.StarsLiteFactory;
-import com.cannontech.stars.util.ECUtils;
 import com.cannontech.stars.util.InventoryUtils;
 import com.cannontech.stars.util.ObjectInOtherEnergyCompanyException;
 import com.cannontech.stars.util.ServletUtils;
@@ -48,7 +48,7 @@ public class UpdateSNRangeTask extends TimeConsumingTask {
 	Integer routeID = null;
 	HttpServletRequest request = null;
 	
-	ArrayList hardwareSet = new ArrayList();
+	List<LiteStarsLMHardware> hardwareSet = new ArrayList<LiteStarsLMHardware>();
 	int numSuccess = 0, numFailure = 0;
 	int numToBeUpdated = 0;
 	
@@ -102,13 +102,10 @@ public class UpdateSNRangeTask extends TimeConsumingTask {
 		HttpSession session = request.getSession(false);
 		StarsYukonUser user = (StarsYukonUser) session.getAttribute( ServletUtils.ATT_STARS_YUKON_USER );
 		
-		int categoryID = InventoryUtils.getInventoryCategoryID( devTypeID.intValue(), energyCompany );
-		
-		ArrayList descendants = ECUtils.getAllDescendants( energyCompany );
 		boolean devTypeChanged = newDevTypeID != null && newDevTypeID.intValue() != devTypeID.intValue();
 		
 		int devTypeDefID = DaoFactory.getYukonListDao().getYukonListEntry(devTypeID.intValue()).getYukonDefID();
-		ArrayList hwList = InventoryUtils.getLMHardwareInRange( energyCompany, devTypeDefID, snFrom, snTo );
+        List<LiteStarsLMHardware> hwList = InventoryUtils.getLMHardwareInRange( energyCompany, devTypeDefID, snFrom, snTo );
 		
 		numToBeUpdated = hwList.size();
 		if (numToBeUpdated == 0) {
@@ -118,7 +115,7 @@ public class UpdateSNRangeTask extends TimeConsumingTask {
 		}
 		
 		for (int i = 0; i < hwList.size(); i++) {
-			LiteStarsLMHardware liteHw = (LiteStarsLMHardware) hwList.get(i);
+			LiteStarsLMHardware liteHw = hwList.get(i);
 			
 			if (devTypeChanged) {
 				boolean hwExist = false;

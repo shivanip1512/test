@@ -4,6 +4,7 @@ import java.util.ArrayList;
 import java.util.Date;
 import java.util.Hashtable;
 import java.util.Iterator;
+import java.util.List;
 import java.util.Map;
 import java.util.StringTokenizer;
 import java.util.TreeMap;
@@ -1503,13 +1504,13 @@ public class StarsLiteFactory {
 		return starsProgs;
 	}
 	
-	public static StarsAppliances createStarsAppliances(ArrayList liteApps, LiteStarsEnergyCompany energyCompany) {
+	public static StarsAppliances createStarsAppliances(List<LiteStarsAppliance> liteApps, LiteStarsEnergyCompany energyCompany) {
 		StarsAppliances starsApps = new StarsAppliances();
 		
 		TreeMap appMap = new TreeMap();
 		for (int i = 0; i < liteApps.size(); i++) {
-			LiteStarsAppliance liteApp = (LiteStarsAppliance) liteApps.get(i);
-			StarsAppliance starsApp = (StarsAppliance) createStarsAppliance(liteApp, energyCompany);
+			LiteStarsAppliance liteApp = liteApps.get(i);
+			StarsAppliance starsApp = createStarsAppliance(liteApp, energyCompany);
 			
 			String description = energyCompany.getApplianceCategory( starsApp.getApplianceCategoryID() ).getDescription();
 			ArrayList list = (ArrayList) appMap.get( description );
@@ -1590,7 +1591,7 @@ public class StarsLiteFactory {
 		StarsLMPrograms starsProgs = createStarsLMPrograms( liteAcctInfo, energyCompany );
 		starsAcctInfo.setStarsLMPrograms( starsProgs );
 		
-		ArrayList liteInvs = liteAcctInfo.getInventories();
+        List<Integer> liteInvs = liteAcctInfo.getInventories();
 		StarsInventories starsInvs = new StarsInventories();
 		starsAcctInfo.setStarsInventories( starsInvs );
 		
@@ -1621,33 +1622,33 @@ public class StarsLiteFactory {
 			starsAcctInfo.setStarsUser( createStarsUser(liteUser, energyCompany) );
 		}
 		
-		ArrayList liteSchedules = liteAcctInfo.getThermostatSchedules();
+        List<LiteLMThermostatSchedule> liteSchedules = liteAcctInfo.getThermostatSchedules();
 		StarsSavedThermostatSchedules starsSchedules = new StarsSavedThermostatSchedules();
 		starsAcctInfo.setStarsSavedThermostatSchedules( starsSchedules );
 		
 		for (int i = 0; i < liteSchedules.size(); i++) {
-			LiteLMThermostatSchedule liteSchedule = (LiteLMThermostatSchedule) liteSchedules.get(i);
+			LiteLMThermostatSchedule liteSchedule = liteSchedules.get(i);
 			starsSchedules.addStarsThermostatProgram( createStarsThermostatProgram(liteSchedule, energyCompany) );
 		}
 		
 		if (isOperator) {
 			starsAcctInfo.setStarsAppliances( createStarsAppliances(liteAcctInfo.getAppliances(), energyCompany) );
 			
-			ArrayList liteCalls = liteAcctInfo.getCallReportHistory();
+            List<StarsCallReport> liteCalls = liteAcctInfo.getCallReportHistory();
 			StarsCallReportHistory starsCalls = new StarsCallReportHistory();
 			starsAcctInfo.setStarsCallReportHistory( starsCalls );
 			
 			for (int i = 0; i < liteCalls.size(); i++) {
-				StarsCallReport starsCall = (StarsCallReport) liteCalls.get(i);
+				StarsCallReport starsCall = liteCalls.get(i);
 				starsCalls.addStarsCallReport( starsCall );
 			}
 			
-			ArrayList liteOrders = liteAcctInfo.getServiceRequestHistory();
+            List<Integer> liteOrders = liteAcctInfo.getServiceRequestHistory();
 			StarsServiceRequestHistory starsOrders = new StarsServiceRequestHistory();
 			starsAcctInfo.setStarsServiceRequestHistory( starsOrders );
 			
 			for (int i = 0; i < liteOrders.size(); i++) {
-				LiteWorkOrderBase liteOrder = energyCompany.getWorkOrderBase( ((Integer) liteOrders.get(i)).intValue(), true );
+				LiteWorkOrderBase liteOrder = energyCompany.getWorkOrderBase( liteOrders.get(i).intValue(), true );
 				starsOrders.addStarsServiceRequest( createStarsServiceRequest(liteOrder, energyCompany) );
 			}
 		}
@@ -2591,7 +2592,7 @@ public class StarsLiteFactory {
 		starsList.setListID( yukonList.getListID() );
 		starsList.setListName( yukonList.getListName() );
 		
-		ArrayList entries = yukonList.getYukonListEntries();
+        List<YukonListEntry> entries = yukonList.getYukonListEntries();
 		if (entries.size() == 0) {
 			// Assign the list a "default" entry if the list is empty
 			starsList.addStarsSelectionListEntry( (StarsSelectionListEntry)
@@ -2599,7 +2600,7 @@ public class StarsLiteFactory {
 		}
 		else {
 			for (int i = 0; i < entries.size(); i++) {
-				YukonListEntry yukonEntry = (YukonListEntry) entries.get(i);
+				YukonListEntry yukonEntry = entries.get(i);
 				StarsSelectionListEntry starsEntry = new StarsSelectionListEntry();
 				setStarsCustListEntry( starsEntry, yukonEntry );
 				starsEntry.setYukonDefID( yukonEntry.getYukonDefID() );
@@ -2620,18 +2621,16 @@ public class StarsLiteFactory {
 		return starsCustSelLists;
 	}
 	
-	public static void setStarsEnrollmentPrograms(StarsEnrollmentPrograms starsAppCats, ArrayList liteAppCats, LiteStarsEnergyCompany energyCompany) {
+	public static void setStarsEnrollmentPrograms(StarsEnrollmentPrograms starsAppCats, List<LiteApplianceCategory> liteAppCats, LiteStarsEnergyCompany energyCompany) {
 		starsAppCats.removeAllStarsApplianceCategory();
 		
-		for (int i = 0; i < liteAppCats.size(); i++) {
-			LiteApplianceCategory liteAppCat = (LiteApplianceCategory) liteAppCats.get(i);
-			starsAppCats.addStarsApplianceCategory(
-				StarsLiteFactory.createStarsApplianceCategory(liteAppCat, energyCompany) );
-		}
+        for (final LiteApplianceCategory liteAppCat : liteAppCats) {
+            starsAppCats.addStarsApplianceCategory(StarsLiteFactory.createStarsApplianceCategory(liteAppCat, energyCompany) );
+        }
 	}
 	
 	public static void setStarsCustomerFAQs(StarsCustomerFAQs starsCustFAQs, LiteStarsEnergyCompany energyCompany) {
-		ArrayList liteFAQs = energyCompany.getAllCustomerFAQs();
+        List<LiteCustomerFAQ> liteFAQs = energyCompany.getAllCustomerFAQs();
 		YukonSelectionList subjects = energyCompany.getYukonSelectionList( YukonSelectionListDefs.YUK_LIST_NAME_CUSTOMER_FAQ_GROUP );
 		
 		for (int i = 0; i < subjects.getYukonListEntries().size(); i++) {

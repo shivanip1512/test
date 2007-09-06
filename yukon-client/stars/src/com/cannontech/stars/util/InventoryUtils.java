@@ -7,11 +7,13 @@
 package com.cannontech.stars.util;
 
 import java.util.ArrayList;
+import java.util.List;
 
 import com.cannontech.common.constants.YukonListEntry;
 import com.cannontech.common.constants.YukonListEntryTypes;
 import com.cannontech.common.util.CtiUtilities;
 import com.cannontech.core.dao.DaoFactory;
+import com.cannontech.database.data.lite.stars.LiteInventoryBase;
 import com.cannontech.database.data.lite.stars.LiteLMThermostatSchedule;
 import com.cannontech.database.data.lite.stars.LiteLMThermostatSeason;
 import com.cannontech.database.data.lite.stars.LiteStarsEnergyCompany;
@@ -142,10 +144,10 @@ public class InventoryUtils {
 		return true;
 	}
 	
-	public static ArrayList getLMHardwareInRange(LiteStarsEnergyCompany energyCompany, int devTypeDefID, Integer snFrom, Integer snTo) {
-		ArrayList hwList = new ArrayList();
+	public static List<LiteStarsLMHardware> getLMHardwareInRange(LiteStarsEnergyCompany energyCompany, int devTypeDefID, Integer snFrom, Integer snTo) {
+		List<LiteStarsLMHardware> hwList = new ArrayList<LiteStarsLMHardware>();
 		
-		ArrayList inventory = energyCompany.loadAllInventory( true );
+        List<LiteInventoryBase> inventory = energyCompany.loadAllInventory( true );
 		synchronized (inventory) {
 			for (int i = 0; i < inventory.size(); i++) {
 				if (!(inventory.get(i) instanceof LiteStarsLMHardware)) continue;

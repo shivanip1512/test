@@ -40,6 +40,7 @@ import com.cannontech.database.data.device.lm.MacroGroup;
 import com.cannontech.database.data.lite.LiteContact;
 import com.cannontech.database.data.lite.LiteYukonGroup;
 import com.cannontech.database.data.lite.LiteYukonPAObject;
+import com.cannontech.database.data.lite.LiteYukonRole;
 import com.cannontech.database.data.lite.LiteYukonRoleProperty;
 import com.cannontech.database.data.lite.LiteYukonUser;
 import com.cannontech.database.data.lite.stars.LiteApplianceCategory;
@@ -125,7 +126,7 @@ public class StarsAdminUtil {
 				ServerUtils.handleDBChangeMsg( grpSerial.getDBChangeMsgs(DBChangeMsg.CHANGE_TYPE_ADD)[0] );
                 
                 PaoPermissionService pService = (PaoPermissionService) YukonSpringHook.getBean("paoPermissionService");
-                pService.addPermission(new LiteYukonUser(energyCompany.getUserID()), new LiteYukonPAObject(grpSerial.getPAObjectID()), Permission.LM_VISIBLE);
+                pService.addPermission(new LiteYukonUser(energyCompany.getUserID()), new LiteYukonPAObject(grpSerial.getPAObjectID().intValue()), Permission.LM_VISIBLE);
 			}
 			else if (routeID > 0 || energyCompany.getDefaultRouteID() > 0) {
 				if (routeID < 0) routeID = 0;
@@ -271,7 +272,7 @@ public class StarsAdminUtil {
 		
 		int[] programIDs = new int[ liteAppCat.getPublishedPrograms().size() ];
 		for (int i = 0; i < liteAppCat.getPublishedPrograms().size(); i++)
-			programIDs[i] = ((LiteLMProgramWebPublishing) liteAppCat.getPublishedPrograms().get(i)).getProgramID();
+			programIDs[i] = liteAppCat.getPublishedPrograms().get(i).getProgramID();
 		Arrays.sort( programIDs );
 		
 		// Delete all program events in the category
@@ -281,32 +282,32 @@ public class StarsAdminUtil {
 		// Delete all appliances in the category
 		com.cannontech.database.db.stars.appliance.ApplianceBase.deleteAppliancesByCategory( appCatID );
 		
-		ArrayList descendants = ECUtils.getAllDescendants( energyCompany );
+        List<LiteStarsEnergyCompany> descendants = ECUtils.getAllDescendants( energyCompany );
 		for (int i = 0; i < descendants.size(); i++) {
-			LiteStarsEnergyCompany company = (LiteStarsEnergyCompany) descendants.get(i);
+			LiteStarsEnergyCompany company = descendants.get(i);
 			
-			ArrayList accounts = company.getAllCustAccountInformation();
+            List<LiteStarsCustAccountInformation> accounts = company.getAllCustAccountInformation();
 			for (int j = 0; j < accounts.size(); j++) {
-				LiteStarsCustAccountInformation liteAcctInfo = (LiteStarsCustAccountInformation) accounts.get(j);
+				LiteStarsCustAccountInformation liteAcctInfo = accounts.get(j);
 				
-				Iterator appIt = liteAcctInfo.getAppliances().iterator();
+				Iterator<LiteStarsAppliance> appIt = liteAcctInfo.getAppliances().iterator();
 				while (appIt.hasNext()) {
-					LiteStarsAppliance liteApp = (LiteStarsAppliance) appIt.next();
+					LiteStarsAppliance liteApp = appIt.next();
 					if (liteApp.getApplianceCategoryID() == liteAppCat.getApplianceCategoryID()) {
 						appIt.remove();
 					}
 				}
 				
-				Iterator progIt = liteAcctInfo.getPrograms().iterator();
+				Iterator<LiteStarsLMProgram> progIt = liteAcctInfo.getPrograms().iterator();
 				while (progIt.hasNext()) {
-					int progID = ((LiteStarsLMProgram) progIt.next()).getProgramID();
+					int progID = progIt.next().getProgramID();
 					if (Arrays.binarySearch(programIDs, progID) >= 0)
 						progIt.remove();
 				}
 				
-				Iterator it = liteAcctInfo.getProgramHistory().iterator();
+				Iterator<LiteLMProgramEvent> it = liteAcctInfo.getProgramHistory().iterator();
 				while (it.hasNext()) {
-					int progID = ((LiteLMProgramEvent) it.next()).getProgramID();
+					int progID = it.next().getProgramID();
 					if (Arrays.binarySearch(programIDs, progID) >= 0)
 						it.remove();
 				}
@@ -324,7 +325,7 @@ public class StarsAdminUtil {
 		StarsDatabaseCache.getInstance().deleteWebConfiguration( liteAppCat.getWebConfigurationID() );
 		
 		for (int j = 0; j < liteAppCat.getPublishedPrograms().size(); j++) {
-			LiteLMProgramWebPublishing liteProg = (LiteLMProgramWebPublishing) liteAppCat.getPublishedPrograms().get(j);
+			LiteLMProgramWebPublishing liteProg = liteAppCat.getPublishedPrograms().get(j);
 			
 			com.cannontech.database.db.web.YukonWebConfiguration cfg =
 					new com.cannontech.database.db.web.YukonWebConfiguration();
@@ -335,7 +336,7 @@ public class StarsAdminUtil {
 		}
 		
 		for (int i = 0; i < descendants.size(); i++) {
-			LiteStarsEnergyCompany company = (LiteStarsEnergyCompany) descendants.get(i);
+			LiteStarsEnergyCompany company = descendants.get(i);
 			company.updateStarsEnrollmentPrograms();
 		}
 	}
@@ -343,9 +344,9 @@ public class StarsAdminUtil {
 	public static void deleteAllApplianceCategories(LiteStarsEnergyCompany energyCompany)
 		throws TransactionException
 	{
-		ArrayList appCats = energyCompany.getApplianceCategories();
+        List<LiteApplianceCategory> appCats = energyCompany.getApplianceCategories();
 		for (int i = appCats.size() - 1; i >= 0; i--) {
-			LiteApplianceCategory liteAppCat = (LiteApplianceCategory) appCats.get(i);
+			LiteApplianceCategory liteAppCat = appCats.get(i);
 			deleteApplianceCategory( liteAppCat.getApplianceCategoryID(), energyCompany );
 		}
 	}
@@ -369,9 +370,9 @@ public class StarsAdminUtil {
 		LiteServiceCompany liteCompany = (LiteServiceCompany) StarsLiteFactory.createLite( companyDB );
 		energyCompany.addServiceCompany( liteCompany );
 		
-		ArrayList descendants = ECUtils.getAllDescendants( energyCompany );
+        List<LiteStarsEnergyCompany> descendants = ECUtils.getAllDescendants( energyCompany );
 		for (int i = 0; i < descendants.size(); i++) {
-			LiteStarsEnergyCompany ec = (LiteStarsEnergyCompany) descendants.get(i);
+			LiteStarsEnergyCompany ec = descendants.get(i);
 			ec.updateStarsServiceCompanies();
 		}
 		
@@ -384,13 +385,13 @@ public class StarsAdminUtil {
 		// set InstallationCompanyID = 0 for all inventory assigned to this service company
 		com.cannontech.database.db.stars.hardware.InventoryBase.resetInstallationCompany( companyID );
 		
-		ArrayList descendants = ECUtils.getAllDescendants( energyCompany );
+        List<LiteStarsEnergyCompany> descendants = ECUtils.getAllDescendants( energyCompany );
 		for (int i = 0; i < descendants.size(); i++) {
-			LiteStarsEnergyCompany company = (LiteStarsEnergyCompany) descendants.get(i);
+			LiteStarsEnergyCompany company = descendants.get(i);
 			
-			ArrayList inventory = company.getAllInventory();
+            List<LiteInventoryBase> inventory = company.getAllInventory();
 			for (int j = 0; j < inventory.size(); j++) {
-				LiteInventoryBase liteInv = (LiteInventoryBase) inventory.get(j);
+				LiteInventoryBase liteInv = inventory.get(j);
 				if (liteInv.getInstallationCompanyID() == companyID) {
 					liteInv.setInstallationCompanyID(0);
 					
@@ -412,9 +413,9 @@ public class StarsAdminUtil {
 			// set ServiceCompanyID = 0 for all work orders assigned to this service company
 			com.cannontech.database.db.stars.report.WorkOrderBase.resetServiceCompany( companyID );
 			
-			ArrayList orders = company.getAllWorkOrders();
+			List<LiteWorkOrderBase> orders = company.getAllWorkOrders();
 			for (int j = 0; j < orders.size(); j++) {
-				LiteWorkOrderBase liteOrder = (LiteWorkOrderBase) orders.get(j);
+				LiteWorkOrderBase liteOrder = orders.get(j);
 				if (liteOrder.getServiceCompanyID() == companyID) {
 					liteOrder.setServiceCompanyID(0);
 					
@@ -437,10 +438,10 @@ public class StarsAdminUtil {
         /**
          * Needed to delete any zip codes if they exist
          */
-        ArrayList codes = ServiceCompanyDesignationCode.getServiceCompanyDesignationCodes(companyID);
+        List<ServiceCompanyDesignationCode> codes = ServiceCompanyDesignationCode.getServiceCompanyDesignationCodes(companyID);
         for(int x = 0; x < codes.size(); x++)
         {
-            Transaction.createTransaction(Transaction.DELETE, (ServiceCompanyDesignationCode)codes.get(x)).execute();
+            Transaction.createTransaction(Transaction.DELETE, codes.get(x)).execute();
         }
 		
 		LiteServiceCompany liteCompany = energyCompany.getServiceCompany( companyID );
@@ -458,7 +459,7 @@ public class StarsAdminUtil {
 		ServerUtils.handleDBChange( liteContact, DBChangeMsg.CHANGE_TYPE_DELETE );
 		
 		for (int i = 0; i < descendants.size(); i++) {
-			LiteStarsEnergyCompany company = (LiteStarsEnergyCompany) descendants.get(i);
+			LiteStarsEnergyCompany company = descendants.get(i);
 			company.updateStarsServiceCompanies();
 		}
 	}
@@ -466,9 +467,9 @@ public class StarsAdminUtil {
 	public static void deleteAllServiceCompanies(LiteStarsEnergyCompany energyCompany)
 		throws TransactionException
 	{
-		ArrayList companies = energyCompany.getServiceCompanies();
+        List<LiteServiceCompany> companies = energyCompany.getServiceCompanies();
 		for (int i = companies.size() - 1; i >= 0; i--) {
-			LiteServiceCompany liteCompany = (LiteServiceCompany) companies.get(i);
+			LiteServiceCompany liteCompany = companies.get(i);
 			deleteServiceCompany( liteCompany.getCompanyID(), energyCompany );
 		}
 	}
@@ -489,9 +490,9 @@ public class StarsAdminUtil {
 		LiteSubstation liteSub = (LiteSubstation) StarsLiteFactory.createLite( subDB );
 		energyCompany.addSubstation( liteSub );
 		
-		ArrayList descendants = ECUtils.getAllDescendants( energyCompany );
+        List<LiteStarsEnergyCompany> descendants = ECUtils.getAllDescendants( energyCompany );
 		for (int i = 0; i < descendants.size(); i++) {
-			LiteStarsEnergyCompany ec = (LiteStarsEnergyCompany) descendants.get(i);
+			LiteStarsEnergyCompany ec = descendants.get(i);
 			ec.updateStarsSubstations();
 		}
 		
@@ -504,13 +505,13 @@ public class StarsAdminUtil {
 		// set SubstationID = 0 for all sites using this substation
 		com.cannontech.database.db.stars.customer.SiteInformation.resetSubstation( subID );
 		
-		ArrayList descendants = ECUtils.getAllDescendants( energyCompany );
+        List<LiteStarsEnergyCompany> descendants = ECUtils.getAllDescendants( energyCompany );
 		for (int i = 0; i < descendants.size(); i++) {
-			LiteStarsEnergyCompany company = (LiteStarsEnergyCompany) descendants.get(i);
+			LiteStarsEnergyCompany company = descendants.get(i);
 			
-			ArrayList accounts = company.getAllCustAccountInformation();
+            List<LiteStarsCustAccountInformation> accounts = company.getAllCustAccountInformation();
 			for (int j = 0; j < accounts.size(); j++) {
-				LiteStarsCustAccountInformation liteAcctInfo = (LiteStarsCustAccountInformation) accounts.get(j);
+				LiteStarsCustAccountInformation liteAcctInfo = accounts.get(j);
 				if (liteAcctInfo.getSiteInformation().getSubstationID() == subID) {
 					liteAcctInfo.getSiteInformation().setSubstationID(0);
 					
@@ -532,7 +533,7 @@ public class StarsAdminUtil {
 		energyCompany.deleteSubstation( subID );
 		
 		for (int i = 0; i < descendants.size(); i++) {
-			LiteStarsEnergyCompany company = (LiteStarsEnergyCompany) descendants.get(i);
+			LiteStarsEnergyCompany company = descendants.get(i);
 			company.updateStarsSubstations();
 		}
 	}
@@ -540,9 +541,9 @@ public class StarsAdminUtil {
 	public static void deleteAllSubstations(LiteStarsEnergyCompany energyCompany)
 		throws TransactionException
 	{
-		ArrayList substations = energyCompany.getSubstations();
+        List<LiteSubstation> substations = energyCompany.getSubstations();
 		for (int i = substations.size() - 1; i >= 0; i--) {
-			LiteSubstation liteSub = (LiteSubstation) substations.get(i);
+			LiteSubstation liteSub = substations.get(i);
 			deleteSubstation( liteSub.getSubstationID(), energyCompany );
 		}
 	}
@@ -552,11 +553,11 @@ public class StarsAdminUtil {
 	{
 		com.cannontech.database.db.stars.CustomerFAQ.deleteCustomerFAQs( subjectID );
 		
-		ArrayList liteFAQs = energyCompany.getCustomerFAQs();
+        List<LiteCustomerFAQ> liteFAQs = energyCompany.getCustomerFAQs();
 		synchronized (liteFAQs) {
-			Iterator it = liteFAQs.iterator();
+			Iterator<LiteCustomerFAQ> it = liteFAQs.iterator();
 			while (it.hasNext()) {
-				LiteCustomerFAQ liteFAQ = (LiteCustomerFAQ) it.next();
+				LiteCustomerFAQ liteFAQ = it.next();
 				if (liteFAQ.getSubjectID() == subjectID) it.remove();
 			}
 		}
@@ -569,9 +570,9 @@ public class StarsAdminUtil {
 		cList.getYukonListEntries().remove( cEntry );
 		DaoFactory.getYukonListDao().getYukonListEntries().remove( entry.getEntryID() );
 		
-		ArrayList descendants = ECUtils.getAllDescendants( energyCompany );
+        List<LiteStarsEnergyCompany> descendants = ECUtils.getAllDescendants( energyCompany );
 		for (int i = 0; i < descendants.size(); i++) {
-			LiteStarsEnergyCompany company = (LiteStarsEnergyCompany) descendants.get(i);
+			LiteStarsEnergyCompany company = descendants.get(i);
 			company.updateStarsCustomerFAQs();
 		}
 	}
@@ -609,16 +610,16 @@ public class StarsAdminUtil {
 			java.util.Properties entries = DaoFactory.getYukonListDao().getYukonListEntries();
 			synchronized (entries) {
 				for (int i = 0; i < cList.getYukonListEntries().size(); i++) {
-					YukonListEntry entry = (YukonListEntry) cList.getYukonListEntries().get(i);
+					YukonListEntry entry = cList.getYukonListEntries().get(i);
 					entries.remove( new Integer(entry.getEntryID()) );
 				}
 			}
 			cList.getYukonListEntries().clear();
 		}
 		
-		ArrayList descendants = ECUtils.getAllDescendants( energyCompany );
+        List<LiteStarsEnergyCompany> descendants = ECUtils.getAllDescendants( energyCompany );
 		for (int i = 0; i < descendants.size(); i++) {
-			LiteStarsEnergyCompany company = (LiteStarsEnergyCompany) descendants.get(i);
+			LiteStarsEnergyCompany company = descendants.get(i);
 			company.updateStarsCustomerFAQs();
 		}
 	}
@@ -639,10 +640,10 @@ public class StarsAdminUtil {
 			conn.setAutoCommit( false );
 			
 			// Create a copy of the old entry list, so we won't lose it if something goes wrong
-			ArrayList oldEntries = new ArrayList();
+			List<YukonListEntry> oldEntries = new ArrayList<YukonListEntry>();
 			oldEntries.addAll( cList.getYukonListEntries() );
 			
-			ArrayList newEntries = new ArrayList();
+			List<YukonListEntry> newEntries = new ArrayList<YukonListEntry>();
 			
 			if (entryData != null) {
 				for (int i = 0; i < entryData.length; i++) {
@@ -667,7 +668,7 @@ public class StarsAdminUtil {
 					else {
 						// This is an existing entry, update it
 						for (int j = 0; j < oldEntries.size(); j++) {
-							YukonListEntry cEntry = (YukonListEntry) oldEntries.get(j);
+							YukonListEntry cEntry = oldEntries.get(j);
 							
 							if (cEntry.getEntryID() == entryID) {
 								com.cannontech.database.db.constants.YukonListEntry entry = StarsLiteFactory.createYukonListEntry(cEntry);
@@ -688,7 +689,7 @@ public class StarsAdminUtil {
 			
 			// Delete all the remaining entries
 			for (int i = 0; i < oldEntries.size(); i++) {
-				YukonListEntry cEntry = (YukonListEntry) oldEntries.get(i);
+				YukonListEntry cEntry = oldEntries.get(i);
 				
 				try {
 					com.cannontech.database.db.constants.YukonListEntry entry =
@@ -714,12 +715,12 @@ public class StarsAdminUtil {
 			Properties cListEntries = DaoFactory.getYukonListDao().getYukonListEntries();
 			synchronized (cListEntries) {
 				for (int i = 0; i < cList.getYukonListEntries().size(); i++) {
-					YukonListEntry entry = (YukonListEntry) cList.getYukonListEntries().get(i);
+					YukonListEntry entry = cList.getYukonListEntries().get(i);
 					DaoFactory.getYukonListDao().getYukonListEntries().remove( new Integer(entry.getEntryID()) );
 				}
 				
 				for (int i = 0; i < newEntries.size(); i++) {
-					YukonListEntry entry = (YukonListEntry) newEntries.get(i);
+					YukonListEntry entry = newEntries.get(i);
 					DaoFactory.getYukonListDao().getYukonListEntries().put( new Integer(entry.getEntryID()), entry );
 				}
 			}
@@ -951,12 +952,12 @@ public class StarsAdminUtil {
 		String sql1 = "SELECT DISTINCT " + columnName + " FROM " + tableName + " WHERE " + constraint;
 		String sql2 = "UPDATE " + tableName + " SET " + columnName + " = ? WHERE " + columnName + " = ? AND " + constraint;
 		
-		Hashtable entryIDMap = new Hashtable();
+		Map<Integer,Integer> entryIDMap = new Hashtable<Integer,Integer>();
 		
-		ArrayList descendants = ECUtils.getAllDescendants( energyCompany );
-		ArrayList companies = new ArrayList();
+        List<LiteStarsEnergyCompany> descendants = ECUtils.getAllDescendants( energyCompany );
+		List<LiteStarsEnergyCompany> companies = new ArrayList<LiteStarsEnergyCompany>();
 		for (int i = 0; i < descendants.size(); i++) {
-			LiteStarsEnergyCompany company = (LiteStarsEnergyCompany) descendants.get(i);
+			LiteStarsEnergyCompany company = descendants.get(i);
 			if (company.equals(energyCompany) || company.getYukonSelectionList(newList.getListName(), false, false) == null)
 				companies.add( company );
 		}
@@ -972,7 +973,7 @@ public class StarsAdminUtil {
 			pstmt1 = conn.prepareStatement( sql1 );
 			
 			for (int i = 0; i < companies.size(); i++) {
-				LiteStarsEnergyCompany company = (LiteStarsEnergyCompany) companies.get(i);
+				LiteStarsEnergyCompany company = companies.get(i);
 				
 				pstmt1.setInt( 1, company.getLiteID() );
 				java.sql.ResultSet rset = pstmt1.executeQuery();
@@ -985,7 +986,7 @@ public class StarsAdminUtil {
 					int newEntryID = 0;
 					
 					for (int j = 0; j < newList.getYukonListEntries().size(); j++) {
-						YukonListEntry newEntry = (YukonListEntry) newList.getYukonListEntries().get(j);
+						YukonListEntry newEntry = newList.getYukonListEntries().get(j);
 						if (newEntry.getYukonDefID() == oldEntry.getYukonDefID()
 							&& newEntry.getEntryText().trim().equalsIgnoreCase(oldEntry.getEntryText().trim()))
 						{
@@ -1009,12 +1010,12 @@ public class StarsAdminUtil {
 			
 			try {
 				for (int i = 0; i < companies.size(); i++) {
-					LiteStarsEnergyCompany company = (LiteStarsEnergyCompany) companies.get(i);
+					LiteStarsEnergyCompany company = companies.get(i);
 					
-					Iterator it = entryIDMap.keySet().iterator();
+					Iterator<Integer> it = entryIDMap.keySet().iterator();
 					while (it.hasNext()) {
-						Integer oldEntryID = (Integer) it.next();
-						Integer newEntryID = (Integer) entryIDMap.get( oldEntryID );
+						Integer oldEntryID = it.next();
+						Integer newEntryID = entryIDMap.get( oldEntryID );
 						pstmt2.setInt( 1, newEntryID.intValue() );
 						pstmt2.setInt( 2, oldEntryID.intValue() );
 						pstmt2.setInt( 3, company.getLiteID() );
@@ -1040,15 +1041,15 @@ public class StarsAdminUtil {
 		}
 		
 		for (int i = 0; i < companies.size(); i++) {
-			LiteStarsEnergyCompany company = (LiteStarsEnergyCompany) companies.get(i);
+			LiteStarsEnergyCompany company = companies.get(i);
 			
 			if (newList.getListName().equalsIgnoreCase(YukonSelectionListDefs.YUK_LIST_NAME_DEVICE_TYPE)) {
-				ArrayList inventory = company.getAllInventory();
+                List<LiteInventoryBase> inventory = company.getAllInventory();
 				for (int j = 0; j < inventory.size(); j++) {
 					if (!(inventory.get(j) instanceof LiteStarsLMHardware))
 						continue;
 					LiteStarsLMHardware liteHw = (LiteStarsLMHardware) inventory.get(j);
-					Integer newDevTypeID = (Integer) entryIDMap.get( new Integer(liteHw.getLmHardwareTypeID()) );
+					Integer newDevTypeID = entryIDMap.get( new Integer(liteHw.getLmHardwareTypeID()) );
 					if (newDevTypeID != null) liteHw.setLmHardwareTypeID( newDevTypeID.intValue() );
 				}
 			}
@@ -1060,11 +1061,11 @@ public class StarsAdminUtil {
 	public static void removeRoute(LiteStarsEnergyCompany energyCompany, int routeID)
 		throws TransactionException
 	{
-		ArrayList routeIDs = energyCompany.getRouteIDs();
+        List<Integer> routeIDs = energyCompany.getRouteIDs();
 		Integer rtID = new Integer(routeID);
 		if (!routeIDs.contains( rtID )) return;
 		
-		ArrayList inventory = energyCompany.loadAllInventory( true );
+        List<LiteInventoryBase> inventory = energyCompany.loadAllInventory( true );
 		synchronized (inventory) {
 			for (int i = 0; i < inventory.size(); i++) {
 				if (!(inventory.get(i) instanceof LiteStarsLMHardware)) continue;
@@ -1135,12 +1136,12 @@ public class StarsAdminUtil {
 	}
 	
 	public static void removeMember(LiteStarsEnergyCompany energyCompany, int memberID) throws Exception {
-		ArrayList members = energyCompany.getChildren();
-		ArrayList loginIDs = energyCompany.getMemberLoginIDs();
+        List<LiteStarsEnergyCompany> members = energyCompany.getChildren();
+        List<Integer> loginIDs = energyCompany.getMemberLoginIDs();
 		
-		Iterator it = members.iterator();
+		Iterator<LiteStarsEnergyCompany> it = members.iterator();
 		while (it.hasNext()) {
-			LiteStarsEnergyCompany member = (LiteStarsEnergyCompany) it.next();
+			LiteStarsEnergyCompany member = it.next();
 			if (memberID != -1 && member.getLiteID() != memberID) continue;
 			
 			ECToGenericMapping map = new ECToGenericMapping();
@@ -1152,7 +1153,7 @@ public class StarsAdminUtil {
 			member.clearHierarchy();
 			
 			for (int i = 0; i < loginIDs.size(); i++) {
-				Integer loginID = (Integer) loginIDs.get(i);
+				Integer loginID = loginIDs.get(i);
 				LiteYukonUser liteUser = DaoFactory.getYukonUserDao().getLiteYukonUser( loginID.intValue() );
 				
 				if (DaoFactory.getEnergyCompanyDao().getEnergyCompany( liteUser ).getEnergyCompanyID() == member.getLiteID()) {
@@ -1176,14 +1177,14 @@ public class StarsAdminUtil {
 		groupDB.setGroupName( grpName );
 		groupDB.setGroupDescription( srcGrp.getGroupDescription() );
 		
-		Map roleMap = (Map) DefaultDatabaseCache.getInstance().getYukonGroupRolePropertyMap().get( srcGrp );
-		Iterator roleIt = roleMap.values().iterator();
+        Map<LiteYukonRole, Map<LiteYukonRoleProperty, String>> roleMap = DefaultDatabaseCache.getInstance().getYukonGroupRolePropertyMap().get( srcGrp );
+		Iterator<Map<LiteYukonRoleProperty, String>> roleIt = roleMap.values().iterator();
 		while (roleIt.hasNext()) {
-			Map rolePropMap = (Map) roleIt.next();
-			Iterator rolePropIt = rolePropMap.keySet().iterator();
+            Map<LiteYukonRoleProperty, String> rolePropMap = roleIt.next();
+			Iterator<LiteYukonRoleProperty> rolePropIt = rolePropMap.keySet().iterator();
 			while (rolePropIt.hasNext()) {
-				LiteYukonRoleProperty liteRoleProp = (LiteYukonRoleProperty) rolePropIt.next();
-				String value = (String) rolePropMap.get(liteRoleProp);
+				LiteYukonRoleProperty liteRoleProp = rolePropIt.next();
+				String value = rolePropMap.get(liteRoleProp);
 				
 				com.cannontech.database.db.user.YukonGroupRole groupRole = new com.cannontech.database.db.user.YukonGroupRole();
 				groupRole.setRoleID( new Integer(liteRoleProp.getRoleID()) );
@@ -1202,7 +1203,7 @@ public class StarsAdminUtil {
 		return DaoFactory.getAuthDao().getGroup( liteGroup.getGroupID() );
 	}
 	
-	public static LiteYukonGroup createOperatorAdminGroup(String grpName, Hashtable rolePropMap)
+	public static LiteYukonGroup createOperatorAdminGroup(final String grpName, final Map<Integer,String> rolePropMap)
 		throws TransactionException
 	{
 		com.cannontech.database.data.user.YukonGroup adminGrp = new com.cannontech.database.data.user.YukonGroup();
@@ -1217,7 +1218,7 @@ public class StarsAdminUtil {
 			
 			groupRole.setRoleID( new Integer(EnergyCompanyRole.ROLEID) );
 			groupRole.setRolePropertyID( new Integer(roleProps[i].getRolePropertyID()) );
-			String value = (String) rolePropMap.get( groupRole.getRolePropertyID() );
+			String value = rolePropMap.get( groupRole.getRolePropertyID() );
 			if (value != null)
 				groupRole.setValue( value );
 			else
@@ -1232,7 +1233,7 @@ public class StarsAdminUtil {
 			
 			groupRole.setRoleID( new Integer(AdministratorRole.ROLEID) );
 			groupRole.setRolePropertyID( new Integer(roleProps[i].getRolePropertyID()) );
-			String value = (String) rolePropMap.get( groupRole.getRolePropertyID() );
+			String value = rolePropMap.get( groupRole.getRolePropertyID());
 			if (value != null)
 				groupRole.setValue( value );
 			else
@@ -1330,9 +1331,9 @@ public class StarsAdminUtil {
 			IDatabaseCache cache =
 					com.cannontech.database.cache.DefaultDatabaseCache.getInstance();
 			synchronized (cache) {
-				List userGroups = (List) cache.getYukonUserGroupMap().get( liteUser );
+                List<LiteYukonGroup> userGroups = cache.getYukonUserGroupMap().get( liteUser );
 				for (int i = 0; i < userGroups.size(); i++) {
-					LiteYukonGroup liteGroup = (LiteYukonGroup) userGroups.get(i);
+					LiteYukonGroup liteGroup = userGroups.get(i);
 					if (liteGroup.getGroupID() == YukonGroupRoleDefs.GRP_YUKON)
 						continue;
 					if (liteUser.getUserID() == energyCompany.getUserID() && liteGroup.equals(energyCompany.getOperatorAdminGroup()))
@@ -1364,11 +1365,11 @@ public class StarsAdminUtil {
 		ServerUtils.handleDBChange( liteUser, com.cannontech.message.dispatch.message.DBChangeMsg.CHANGE_TYPE_UPDATE );
 	}
 	
-	public static ArrayList getSelectionListsInUse(LiteStarsEnergyCompany energyCompany, StarsYukonUser user) {
-		ArrayList userLists = new ArrayList();
+	public static List<YukonSelectionList> getSelectionListsInUse(LiteStarsEnergyCompany energyCompany, StarsYukonUser user) {
+		List<YukonSelectionList> userLists = new ArrayList<YukonSelectionList>();
 		
 		if (StarsUtils.isOperator( user )) {
-			TreeMap listMap = new TreeMap();
+			Map<String,YukonSelectionList> listMap = new TreeMap<String,YukonSelectionList>();
 			listMap.put( YukonSelectionListDefs.YUK_LIST_NAME_SEARCH_TYPE,
 				energyCompany.getYukonSelectionList(YukonSelectionListDefs.YUK_LIST_NAME_SEARCH_TYPE) );
 			
@@ -1394,11 +1395,11 @@ public class StarsAdminUtil {
 				listMap.put( YukonSelectionListDefs.YUK_LIST_NAME_APP_LOCATION,
 					energyCompany.getYukonSelectionList(YukonSelectionListDefs.YUK_LIST_NAME_APP_LOCATION) );
 				
-				ArrayList categories = energyCompany.getAllApplianceCategories();
-				ArrayList catDefIDs = new ArrayList();
+                List<LiteApplianceCategory> categories = energyCompany.getAllApplianceCategories();
+				List<Integer> catDefIDs = new ArrayList<Integer>();
 				
 				for (int i = 0; i < categories.size(); i++) {
-					LiteApplianceCategory liteAppCat = (LiteApplianceCategory) categories.get(i);
+					LiteApplianceCategory liteAppCat = categories.get(i);
 					int catDefID = DaoFactory.getYukonListDao().getYukonListEntry( liteAppCat.getCategoryID() ).getYukonDefID();
 					if (catDefIDs.contains( new Integer(catDefID) )) continue;
 					catDefIDs.add( new Integer(catDefID) );
@@ -1551,7 +1552,7 @@ public class StarsAdminUtil {
 					energyCompany.getYukonSelectionList(YukonSelectionListDefs.YUK_LIST_NAME_ANSWER_TYPE) );
 			}
 			
-			Iterator it = listMap.values().iterator();
+			Iterator<YukonSelectionList> it = listMap.values().iterator();
 			while (it.hasNext())
 				userLists.add( it.next() );
 		}

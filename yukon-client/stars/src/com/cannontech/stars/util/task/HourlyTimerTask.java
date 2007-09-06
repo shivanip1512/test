@@ -3,6 +3,7 @@ package com.cannontech.stars.util.task;
 import java.util.ArrayList;
 import java.util.Calendar;
 import java.util.Date;
+import java.util.List;
 
 import com.cannontech.clientutils.CTILogger;
 import com.cannontech.core.dao.DaoFactory;
@@ -60,12 +61,12 @@ public class HourlyTimerTask extends StarsTimerTask {
 		CTILogger.debug( "*** Hourly timer task start ***" );
 		
 		/* Check for opted out programs that should be reactivated */
-		ArrayList companies = StarsDatabaseCache.getInstance().getAllEnergyCompanies();
+        List<LiteStarsEnergyCompany> companies = StarsDatabaseCache.getInstance().getAllEnergyCompanies();
 		if (companies == null) return;
 		
 		Date now = new Date();
 		for (int i = 0; i < companies.size(); i++) {
-			LiteStarsEnergyCompany company = (LiteStarsEnergyCompany) companies.get(i);
+			LiteStarsEnergyCompany company = companies.get(i);
 			if (ECUtils.isDefaultEnergyCompany( company )) continue;
 			
 			OptOutEventQueue.OptOutEvent[] dueEvents = OptOutEventQueue.getInstance().getDueEvents(company.getLiteID(), TIME_LIMIT);

@@ -1,15 +1,16 @@
 package com.cannontech.stars.web.bean;
 
 import java.util.ArrayList;
+import java.util.List;
 
 import com.cannontech.database.db.stars.report.ServiceCompanyDesignationCode;
 
 public class ServiceCompanyBean 
 {
-    private ArrayList designationCodes;    
+    private List<ServiceCompanyDesignationCode> designationCodes;    
     private Integer serviceCompanyID;
     
-    public ArrayList getDesignationCodes()
+    public List<ServiceCompanyDesignationCode> getDesignationCodes()
     {
         if(serviceCompanyID != null)
         {
@@ -17,10 +18,10 @@ public class ServiceCompanyBean
             return designationCodes;
         }
         
-        return new ArrayList(0);
+        return new ArrayList<ServiceCompanyDesignationCode>(0);
     }
     
-    public void setDesignationCodes(ArrayList setCodes)
+    public void setDesignationCodes(final List<ServiceCompanyDesignationCode> setCodes)
     {
         designationCodes = setCodes;
     }

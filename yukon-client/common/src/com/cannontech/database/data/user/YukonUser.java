@@ -22,7 +22,7 @@ import com.cannontech.spring.YukonSpringHook;
 public class YukonUser extends DBPersistent implements com.cannontech.database.db.CTIDbChange, EditorPanel, IYukonRoleContainer
 {	
 	private com.cannontech.database.db.user.YukonUser yukonUser;
-	private Vector yukonGroups; //type = com.cannontech.database.db.user.YukonGroup
+	private Vector<YukonGroup> yukonGroups; //type = com.cannontech.database.db.user.YukonGroup
 	private Vector yukonUserRoles;  //type = com.cannontech.database.db.user.YukonUserRole
 	private NativeIntVector yukonUserOwnedPAOs; //type = com.cannontech.database.db.user.UserPAOwner
 	private EnergyCompanyOperatorLoginList company;
@@ -230,9 +230,9 @@ public class YukonUser extends DBPersistent implements com.cannontech.database.d
 	 * Returns the yukonGroups.
 	 * @return Vector
 	 */
-	public Vector getYukonGroups() {
+	public Vector<YukonGroup> getYukonGroups() {
 		if (yukonGroups == null)
-			yukonGroups = new Vector();
+			yukonGroups = new Vector<YukonGroup>();
 		return yukonGroups;
 	}
 

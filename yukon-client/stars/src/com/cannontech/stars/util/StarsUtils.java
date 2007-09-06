@@ -63,22 +63,18 @@ public class StarsUtils {
 	// Default sender email address from Stars
 	public static final String ADMIN_EMAIL_ADDRESS = "info@cannontech.com";
 	
-	public static final Comparator YUK_LIST_ENTRY_ALPHA_CMPTR = new Comparator() {
-		public int compare(Object o1, Object o2) {
-			YukonListEntry entry1 = (YukonListEntry) o1;
-			YukonListEntry entry2 = (YukonListEntry) o2;
+	public static final Comparator<YukonListEntry> YUK_LIST_ENTRY_ALPHA_CMPTR = new Comparator<YukonListEntry>() {
+		public int compare(YukonListEntry entry1, YukonListEntry entry2) {
 			int res = entry1.getEntryText().compareToIgnoreCase( entry2.getEntryText() );
 			if (res == 0) res = entry1.getEntryID() - entry2.getEntryID();
 			return res;
 		}
 	};
 	
-	public static final Comparator SERVICE_COMPANY_CMPTR = new Comparator() {
-		public int compare(Object o1, Object o2) {
-			LiteServiceCompany company1 = (LiteServiceCompany) o1;
-			LiteServiceCompany company2 = (LiteServiceCompany) o2;
-			int res = company1.getCompanyName().compareToIgnoreCase( company2.getCompanyName() );
-			if (res == 0) res = company1.getCompanyID() - company2.getCompanyID();
+	public static final Comparator<LiteServiceCompany> SERVICE_COMPANY_CMPTR = new Comparator<LiteServiceCompany>() {
+		public int compare(LiteServiceCompany o1, LiteServiceCompany o2) {
+			int res = o1.getCompanyName().compareToIgnoreCase( o2.getCompanyName() );
+			if (res == 0) res = o1.getCompanyID() - o2.getCompanyID();
 			return res;
 		}
 	};

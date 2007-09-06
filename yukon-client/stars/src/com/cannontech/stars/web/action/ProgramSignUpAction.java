@@ -4,6 +4,7 @@ import java.util.ArrayList;
 import java.util.Date;
 import java.util.Hashtable;
 import java.util.Iterator;
+import java.util.List;
 
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpSession;
@@ -17,6 +18,7 @@ import com.cannontech.database.Transaction;
 import com.cannontech.database.TransactionException;
 import com.cannontech.database.cache.StarsDatabaseCache;
 import com.cannontech.database.data.activity.ActivityLogActions;
+import com.cannontech.database.data.lite.stars.LiteApplianceCategory;
 import com.cannontech.database.data.lite.stars.LiteInventoryBase;
 import com.cannontech.database.data.lite.stars.LiteLMProgramEvent;
 import com.cannontech.database.data.lite.stars.LiteLMProgramWebPublishing;
@@ -355,7 +357,7 @@ public class ProgramSignUpAction implements ActionBase {
 		ArrayList hwsToConfig = new ArrayList();
 		
 		try {
-			ArrayList appCats = energyCompany.getAllApplianceCategories();
+            List<LiteApplianceCategory> appCats = energyCompany.getAllApplianceCategories();
 			Integer accountID = new Integer( liteAcctInfo.getCustomerAccount().getAccountID() );
 			
 			Integer dftLocationID = new Integer( energyCompany.getYukonListEntry(YukonListEntryTypes.YUK_DEF_ID_LOC_UNKNOWN).getEntryID() );
@@ -365,7 +367,7 @@ public class ProgramSignUpAction implements ActionBase {
 			Date signupDate = new Date();
 			Date termDate = new Date( signupDate.getTime() - 1000 );
         	
-			ArrayList progList = liteAcctInfo.getPrograms();	// List of old programs
+            List<LiteStarsLMProgram> progList = liteAcctInfo.getPrograms();	// List of old programs
 			ArrayList appList = new ArrayList( liteAcctInfo.getAppliances() );	// List of old appliances
 			ArrayList newAppList = new ArrayList();		// List of new appliances
 			ArrayList newProgList = new ArrayList();	// List of new programs

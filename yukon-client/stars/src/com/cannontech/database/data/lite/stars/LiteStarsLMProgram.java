@@ -1,6 +1,7 @@
 package com.cannontech.database.data.lite.stars;
 
 import java.util.ArrayList;
+import java.util.List;
 
 import com.cannontech.common.constants.YukonListEntry;
 import com.cannontech.common.constants.YukonListEntryTypes;
@@ -77,9 +78,9 @@ public class LiteStarsLMProgram {
 		return inService;
 	}
 	
-	public void updateProgramStatus(ArrayList programHistory) {
+	public void updateProgramStatus(List<LiteLMProgramEvent> programHistory) {
 		for (int i = programHistory.size() - 1; i >= 0 ; i--) {
-			LiteLMProgramEvent liteEvent = (LiteLMProgramEvent) programHistory.get(i);
+			LiteLMProgramEvent liteEvent = programHistory.get(i);
 			if (liteEvent.getProgramID() != getProgramID())
 				continue;
 			

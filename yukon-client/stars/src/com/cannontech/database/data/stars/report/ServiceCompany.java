@@ -1,6 +1,7 @@
 package com.cannontech.database.data.stars.report;
 
 import java.util.ArrayList;
+import java.util.List;
 
 import com.cannontech.clientutils.CTILogger;
 import com.cannontech.common.util.CtiUtilities;
@@ -26,7 +27,7 @@ public class ServiceCompany extends DBPersistent {
     private com.cannontech.database.data.customer.Contact primaryContact = null;
     
     private Integer energyCompanyID = null;
-    private ArrayList<ServiceCompanyDesignationCode> designationCodes = null;
+    private List<ServiceCompanyDesignationCode> designationCodes = null;
 
     public ServiceCompany() {
         super();
@@ -260,13 +261,13 @@ public class ServiceCompany extends DBPersistent {
     	return null;
     }
 
-	public ArrayList<ServiceCompanyDesignationCode> getDesignationCodes() {
+	public List<ServiceCompanyDesignationCode> getDesignationCodes() {
 		if( designationCodes == null)
 			designationCodes = new ArrayList<ServiceCompanyDesignationCode>();
 		return designationCodes;
 	}
 
-	public void setDesignationCodes(ArrayList<ServiceCompanyDesignationCode> designationCodes) {
+	public void setDesignationCodes(final List<ServiceCompanyDesignationCode> designationCodes) {
 		this.designationCodes = designationCodes;
 	}
 }

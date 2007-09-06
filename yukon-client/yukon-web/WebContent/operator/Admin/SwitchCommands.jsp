@@ -5,7 +5,7 @@
 <jsp:useBean id="configBean" class="com.cannontech.stars.web.bean.ConfigBean" scope="page"/>
 <%
 	boolean showEnergyCompany = liteEC.getChildren().size() > 0 && DaoFactory.getAuthDao().checkRoleProperty(lYukonUser, AdministratorRole.ADMIN_MANAGE_MEMBERS);
-	ArrayList descendants = ECUtils.getAllDescendants(liteEC);
+	List<LiteStarsEnergyCompany> descendants = ECUtils.getAllDescendants(liteEC);
 	
 	int memberID = -1;
 	LiteStarsEnergyCompany member = null;
@@ -228,7 +228,7 @@ function validate(form) {
               </form>
             <div align="center"><span class="TitleHeader">Last Batch Submission</span><br>
 <%
-	Hashtable batchConfig = InventoryManagerUtil.getBatchConfigSubmission();
+	Map<Integer,Object[]> batchConfig = InventoryManagerUtil.getBatchConfigSubmission();
 	if (showEnergyCompany) {
 %>
               <table border="0" cellspacing="0" cellpadding="3" class="MainText">

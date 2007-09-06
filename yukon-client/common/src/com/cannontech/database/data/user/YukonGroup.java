@@ -17,7 +17,7 @@ import com.cannontech.spring.YukonSpringHook;
 public class YukonGroup extends DBPersistent implements com.cannontech.database.db.CTIDbChange, EditorPanel, IYukonRoleContainer
 {	
 	private com.cannontech.database.db.user.YukonGroup yukonGroup;
-	private Vector yukonGroupRoles;  //type = com.cannontech.database.db.user.YukonGroupRole
+	private Vector<YukonGroupRole> yukonGroupRoles;  //type = com.cannontech.database.db.user.YukonGroupRole
 	
 	
 	public YukonGroup() 
@@ -199,9 +199,9 @@ public class YukonGroup extends DBPersistent implements com.cannontech.database.
 	 * Returns the yukonUserRoles.
 	 * @return Vector
 	 */
-	public Vector getYukonGroupRoles() {
+	public Vector<YukonGroupRole> getYukonGroupRoles() {
 		if( yukonGroupRoles == null )
-			yukonGroupRoles = new Vector(10);
+			yukonGroupRoles = new Vector<YukonGroupRole>(10);
 
 		return yukonGroupRoles;
 	}

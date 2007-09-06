@@ -9,6 +9,8 @@ package com.cannontech.stars.web.util;
 import java.util.ArrayList;
 import java.util.Date;
 import java.util.Hashtable;
+import java.util.List;
+import java.util.Map;
 
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpSession;
@@ -114,7 +116,7 @@ public class InventoryManagerUtil {
 		PAOGroups.STRING_MCT_210[0],
 	};
 	
-	private static Hashtable batchCfgSubmission = null;
+	private static Map<Integer,Object[]> batchCfgSubmission = null;
 	
 	/**
 	 * Store hardware information entered by user into a StarsLMHw object 
@@ -198,11 +200,11 @@ public class InventoryManagerUtil {
         /*
          * TODO This should be moved elsewhere
          */
-        Integer warehouseID = 0;
+        Integer warehouseID = Integer.valueOf(0);
         if(req.getParameter("Warehouse") != null)
             warehouseID = new Integer(req.getParameter("Warehouse"));
         
-        Warehouse.moveInventoryToAnotherWarehouse(starsInv.getInventoryID(), warehouseID);
+        Warehouse.moveInventoryToAnotherWarehouse(starsInv.getInventoryID(), warehouseID.intValue());
         
 		if (starsInv.getDeviceType() != null) {
 			int categoryID = InventoryUtils.getInventoryCategoryID( starsInv.getDeviceType().getEntryID(), energyCompany );
@@ -239,9 +241,9 @@ public class InventoryManagerUtil {
 	/**
 	 * Search for devices with specified category and device name
 	 */
-	public static ArrayList searchDevice(int categoryID, String deviceName) {
-		ArrayList devList = new ArrayList();
-		java.util.List allDevices = null;
+	public static List<LiteYukonPAObject> searchDevice(int categoryID, String deviceName) {
+        List<LiteYukonPAObject> devList = new ArrayList<LiteYukonPAObject>();
+        List<LiteYukonPAObject> allDevices = null;
 		
 		IDatabaseCache cache = DefaultDatabaseCache.getInstance();
 		
@@ -255,7 +257,7 @@ public class InventoryManagerUtil {
 			else {
 				deviceName = deviceName.toUpperCase();
 				for (int i = 0; i < allDevices.size(); i++) {
-					LiteYukonPAObject litePao = (LiteYukonPAObject) allDevices.get(i);
+					LiteYukonPAObject litePao = allDevices.get(i);
 					if (litePao.getPaoName().toUpperCase().startsWith( deviceName ))
 						devList.add( litePao );
 				}
@@ -502,7 +504,7 @@ public class InventoryManagerUtil {
 	 * @param accounts List of LiteStarsCustAccountInformation, or Pair(LiteStarsCustAccountInformation, LiteStarsEnergyCompany)
 	 * @return List of LiteInventoryBase or Pair(LiteInventoryBase, LiteStarsEnergyCompany), based on the element type of accounts
 	 */
-	private static ArrayList getInventoryByAccounts(ArrayList accounts, LiteStarsEnergyCompany energyCompany) {
+	private static ArrayList getInventoryByAccounts(List<Object> accounts, LiteStarsEnergyCompany energyCompany) {
 		ArrayList invList = new ArrayList();
 		
 		for (int i = 0; i < accounts.size(); i++) {
@@ -533,7 +535,7 @@ public class InventoryManagerUtil {
 	 * If searchMembers is true, returns a list of Pair(LiteInventoryBase, LiteStarsEnergyCompany);
 	 * otherwise, returns a list of LiteInventoryBase
 	 */
-	public static ArrayList searchInventory(LiteStarsEnergyCompany energyCompany, int searchBy, String searchValue, boolean searchMembers)
+	public static List<Object> searchInventory(LiteStarsEnergyCompany energyCompany, int searchBy, String searchValue, boolean searchMembers)
 		throws WebClientException
 	{
 		if (searchBy == YukonListEntryTypes.YUK_DEF_ID_INV_SEARCH_BY_SERIAL_NO) {
@@ -546,25 +548,25 @@ public class InventoryManagerUtil {
 			return energyCompany.searchInventoryByAltTrackNo( searchValue, searchMembers );
 		}
 		else if (searchBy == YukonListEntryTypes.YUK_DEF_ID_INV_SEARCH_BY_ACCT_NO) {
-			ArrayList accounts = energyCompany.searchAccountByAccountNumber( searchValue, searchMembers, true);
+			List<Object> accounts = energyCompany.searchAccountByAccountNumber( searchValue, searchMembers, true);
 			return getInventoryByAccounts( accounts, energyCompany );
 		}
 		else if (searchBy == YukonListEntryTypes.YUK_DEF_ID_INV_SEARCH_BY_PHONE_NO) {
 			String phoneNo = ServletUtils.formatPhoneNumberForSearch( searchValue );
-			ArrayList accounts = energyCompany.searchAccountByPhoneNo( phoneNo, searchMembers );
+			List<Object> accounts = energyCompany.searchAccountByPhoneNo( phoneNo, searchMembers );
 			return getInventoryByAccounts( accounts, energyCompany );
 		}
 		else if (searchBy == YukonListEntryTypes.YUK_DEF_ID_INV_SEARCH_BY_LAST_NAME) {
-			ArrayList accounts = energyCompany.searchAccountByLastName( searchValue, searchMembers, true );
+            List<Object> accounts = energyCompany.searchAccountByLastName( searchValue, searchMembers, true );
 			return getInventoryByAccounts( accounts, energyCompany );
 		}
 		else if (searchBy == YukonListEntryTypes.YUK_DEF_ID_INV_SEARCH_BY_ORDER_NO) {
 			// TODO: The WorkOrderBase table doesn't have InventoryID column, maybe should be added
-			ArrayList accounts = energyCompany.searchAccountByOrderNo( searchValue, searchMembers );
+            List<Object> accounts = energyCompany.searchAccountByOrderNo( searchValue, searchMembers );
 			return getInventoryByAccounts( accounts, energyCompany );
 		}
 		else if (searchBy == YukonListEntryTypes.YUK_DEF_ID_INV_SEARCH_BY_ADDRESS) {
-			ArrayList accounts = energyCompany.searchAccountByAddress( searchValue, searchMembers, true );
+            List<Object> accounts = energyCompany.searchAccountByAddress( searchValue, searchMembers, true );
 			return getInventoryByAccounts( accounts, energyCompany );
 		}
 		else {
@@ -572,9 +574,9 @@ public class InventoryManagerUtil {
 		}
 	}
 	
-	public synchronized static Hashtable getBatchConfigSubmission() {
+	public synchronized static Map<Integer,Object[]> getBatchConfigSubmission() {
 		if (batchCfgSubmission == null) {
-			batchCfgSubmission = new Hashtable();
+			batchCfgSubmission = new Hashtable<Integer,Object[]>();
 			
 			String sql = "SELECT TimeStamp, EnergyCompanyID, Description FROM ActivityLog " +
 				"WHERE TimeStamp > ? AND Action = '" + ActivityLogActions.HARDWARE_SEND_BATCH_CONFIG_ACTION + "'";

@@ -1,6 +1,7 @@
 package com.cannontech.stars.util.task;
 
 import java.util.ArrayList;
+import java.util.List;
 
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpSession;
@@ -34,7 +35,7 @@ public class ManipulateInventoryTask extends TimeConsumingTask {
 	LiteStarsEnergyCompany currentCompany = null;
     Integer newEnergyCompanyID = null;
 	Integer newDevTypeID = null;
-    ArrayList selectedInventory = new ArrayList();
+    List<Object> selectedInventory = new ArrayList<Object>();
     String invenStatus = null;
 	Integer newDevStateID = null;
 	Integer newServiceCompanyID = null;
@@ -53,7 +54,7 @@ public class ManipulateInventoryTask extends TimeConsumingTask {
     
     ArrayList failedSerialNumbers = new ArrayList();
 	
-    public ManipulateInventoryTask(LiteStarsEnergyCompany currentCompany, Integer newEnergyCompanyID, ArrayList selectedInventory, Integer newDevTypeID,
+    public ManipulateInventoryTask(LiteStarsEnergyCompany currentCompany, Integer newEnergyCompanyID, List<Object> selectedInventory, Integer newDevTypeID,
         Integer newDevStateID, Integer newServiceCompanyID, Integer newWarehouseID, HttpServletRequest request)
     {
         this.currentCompany = currentCompany;
@@ -111,8 +112,8 @@ public class ManipulateInventoryTask extends TimeConsumingTask {
 		StarsYukonUser user = (StarsYukonUser) session.getAttribute( ServletUtils.ATT_STARS_YUKON_USER );
         ManipulationBean mBean = (ManipulationBean) session.getAttribute("manipBean"); 
         
-        ArrayList descendants = ECUtils.getAllDescendants( currentCompany );
-        ArrayList hwList = selectedInventory;
+        List<LiteStarsEnergyCompany> descendants = ECUtils.getAllDescendants( currentCompany );
+        List<Object> hwList = selectedInventory;
         /*boolean devTypeChanged = newDevTypeID != null && newDevTypeID.intValue() != devTypeID.intValue();
 		int devTypeDefID = DaoFactory.getYukonListDao().getYukonListEntry(devTypeID.intValue()).getYukonDefID();*/
 		

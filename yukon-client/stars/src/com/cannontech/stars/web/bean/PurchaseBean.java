@@ -357,7 +357,7 @@ public class PurchaseBean
 
     public YukonListEntry getSerialNumberDeviceState() {
         
-        ArrayList deviceStates = energyCompany.getYukonSelectionList(YukonSelectionListDefs.YUK_LIST_NAME_DEVICE_STATUS, true, true).getYukonListEntries();
+        List<YukonListEntry> deviceStates = energyCompany.getYukonSelectionList(YukonSelectionListDefs.YUK_LIST_NAME_DEVICE_STATUS, true, true).getYukonListEntries();
         for(int i = 0; i < deviceStates.size(); i++)
         {
             if(((YukonListEntry)deviceStates.get(i)).getYukonDefID() == YukonListEntryTypes.YUK_DEF_ID_DEV_STAT_ORDERED)
@@ -368,7 +368,7 @@ public class PurchaseBean
     
     public YukonListEntry getSerialNumberDeviceType() {
         
-        ArrayList deviceTypes = getAvailableDeviceTypes().getYukonListEntries();
+        List<YukonListEntry> deviceTypes = getAvailableDeviceTypes().getYukonListEntries();
         for(int i = 0; i < deviceTypes.size(); i++)
         {
             if(((YukonListEntry)deviceTypes.get(i)).getEntryID() == currentSchedule.getModelID())

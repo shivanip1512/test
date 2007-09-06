@@ -7,6 +7,7 @@
 package com.cannontech.stars.util.task;
 
 import java.util.ArrayList;
+import java.util.List;
 
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpSession;
@@ -114,19 +115,19 @@ public class ConfigSNRangeTask extends TimeConsumingTask {
 				int devTypeDefID = DaoFactory.getYukonListDao().getYukonListEntry(snRange[0].intValue()).getYukonDefID();
 				
 				if (!searchMembers) {
-					ArrayList hwsInRange = InventoryUtils.getLMHardwareInRange( energyCompany, devTypeDefID, snRange[1], snRange[2] );
+                    List<LiteStarsLMHardware> hwsInRange = InventoryUtils.getLMHardwareInRange( energyCompany, devTypeDefID, snRange[1], snRange[2] );
 					for (int j = 0; j < hwsInRange.size(); j++) {
 						if (!hwsToConfig.contains( hwsInRange.get(j) ))
 							hwsToConfig.add( hwsInRange.get(j) );
 					}
 				}
 				else {
-					ArrayList descendants = ECUtils.getAllDescendants( energyCompany );
+                    List<LiteStarsEnergyCompany> descendants = ECUtils.getAllDescendants( energyCompany );
 					for (int j = 0; j < descendants.size(); j++) {
-						LiteStarsEnergyCompany company = (LiteStarsEnergyCompany) descendants.get(j);
-						ArrayList hwsInRange = InventoryUtils.getLMHardwareInRange( company, devTypeDefID, snRange[1], snRange[2] );
+						LiteStarsEnergyCompany company = descendants.get(j);
+                        List<LiteStarsLMHardware> hwsInRange = InventoryUtils.getLMHardwareInRange( company, devTypeDefID, snRange[1], snRange[2] );
 						for (int k = 0; k < hwsInRange.size(); k++) {
-							if (!isHardwareContained( hwsToConfig, (LiteStarsLMHardware)hwsInRange.get(k) ))
+							if (!isHardwareContained( hwsToConfig, hwsInRange.get(k) ))
 								hwsToConfig.add( new Pair(hwsInRange.get(k), company) );
 						}
 					}

@@ -6,7 +6,6 @@
  */
 package com.cannontech.analysis.gui;
 
-import java.util.ArrayList;
 import java.util.Date;
 import java.util.List;
 import java.util.Map;
@@ -15,7 +14,6 @@ import java.util.Vector;
 import org.apache.commons.lang.StringUtils;
 import org.jfree.report.JFreeReport;
 import org.jfree.report.function.FunctionInitializeException;
-import org.jfree.report.util.IntList;
 
 import com.cannontech.analysis.ReportGroup;
 import com.cannontech.analysis.ReportTypes;
@@ -278,11 +276,11 @@ public class ReportBean
 			//Need to replace types with the settlement report types based on the energyCompany's Settlement list and yukonListEntries.
 			LiteStarsEnergyCompany liteEC = StarsDatabaseCache.getInstance().getEnergyCompany( getEnergyCompanyID() );
 			YukonSelectionList list = liteEC.getYukonSelectionList(YukonSelectionListDefs.YUK_LIST_NAME_SETTLEMENT_TYPE);
-			ArrayList yukListEntries = list.getYukonListEntries();
+            List<YukonListEntry> yukListEntries = list.getYukonListEntries();
 			//Loop through all list entries, there may be more than one settlement type per energycompany.
 			for (int i = 0; i < yukListEntries.size(); i ++)
 			{
-				YukonListEntry entry = (YukonListEntry)yukListEntries.get(i);
+				YukonListEntry entry = yukListEntries.get(i);
 				Vector<ReportTypes> settlementTypes = ReportTypes.getSettlementReportTypes(entry.getYukonDefID());
 				//Loop through all reportTypes per yukDefID and add them to intList.
 				availReportTypes.addAll(settlementTypes);

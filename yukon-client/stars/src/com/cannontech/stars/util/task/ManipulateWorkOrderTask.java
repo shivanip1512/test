@@ -2,6 +2,7 @@ package com.cannontech.stars.util.task;
 
 import java.util.ArrayList;
 import java.util.Date;
+import java.util.List;
 
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpSession;
@@ -35,7 +36,7 @@ import com.cannontech.stars.web.util.WorkOrderManagerUtil;
 public class ManipulateWorkOrderTask extends TimeConsumingTask {
 	
 	LiteYukonUser liteYukonUser = null;
-    ArrayList selectedWorkOrders = new ArrayList();
+    List<LiteWorkOrderBase> selectedWorkOrders = new ArrayList<LiteWorkOrderBase>();
     Integer changeServiceCompanyID = null;
     Integer changeServiceStatusID = null;
     Integer changeServiceTypeID = null;
@@ -46,7 +47,7 @@ public class ManipulateWorkOrderTask extends TimeConsumingTask {
 	ArrayList<String> failedWorkOrderMessages = new ArrayList<String>();
 	int numSuccess = 0, numFailure = 0;
 
-	public ManipulateWorkOrderTask(LiteYukonUser liteYukonuser, ArrayList<LiteWorkOrderBase> workOrderList, Integer changeServiceCompanyID, Integer changeServiceStatusID, Integer changeServiceTypeID, HttpServletRequest req) {
+	public ManipulateWorkOrderTask(LiteYukonUser liteYukonuser, List<LiteWorkOrderBase> workOrderList, Integer changeServiceCompanyID, Integer changeServiceStatusID, Integer changeServiceTypeID, HttpServletRequest req) {
 		this.liteYukonUser = liteYukonuser;
 		this.selectedWorkOrders = workOrderList;
 		this.changeServiceCompanyID = changeServiceCompanyID;
@@ -84,7 +85,7 @@ public class ManipulateWorkOrderTask extends TimeConsumingTask {
 		HttpSession session = request.getSession(false);
         ManipulationBean mBean = (ManipulationBean) session.getAttribute("woManipulationBean"); 
         WorkOrderBean woBean = (WorkOrderBean) session.getAttribute("workOrderBean");
-        ArrayList<LiteWorkOrderBase> workOrderList = woBean.getWorkOrderList();
+        List<LiteWorkOrderBase> workOrderList = woBean.getWorkOrderList();
 		
 		if (workOrderList.size() == 0) 
         {

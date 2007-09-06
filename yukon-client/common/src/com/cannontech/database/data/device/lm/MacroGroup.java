@@ -1,12 +1,16 @@
 package com.cannontech.database.data.device.lm;
 
+import java.util.Vector;
+
+import com.cannontech.database.db.macro.GenericMacro;
+
 /**
  * This type was created in VisualAge.
  */
 public class MacroGroup extends LMGroup
 {
 	//will contain only instances of com.cannontech.database.db.macro.GenericMacro
-	private java.util.Vector macroGroupVector = null;
+	private Vector<GenericMacro> macroGroupVector = null;
 
 /**
  * MacroRoute constructor comment.
@@ -45,10 +49,10 @@ public void delete() throws java.sql.SQLException
  * This method was created in VisualAge.
  * @return java.util.Vector
  */
-public java.util.Vector getMacroGroupVector() {
+public Vector<GenericMacro> getMacroGroupVector() {
 
 	if( macroGroupVector == null )
-		macroGroupVector = new java.util.Vector();
+		macroGroupVector = new Vector<GenericMacro>();
 	
 	return macroGroupVector;
 }

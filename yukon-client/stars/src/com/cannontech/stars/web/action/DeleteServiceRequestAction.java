@@ -6,6 +6,8 @@
  */
 package com.cannontech.stars.web.action;
 
+import java.util.List;
+
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpSession;
 import javax.xml.soap.SOAPMessage;
@@ -102,13 +104,13 @@ public class DeleteServiceRequestAction implements ActionBase {
 			}
 			
 			if (liteAcctInfo != null) {
-				java.util.ArrayList orderIDs = liteAcctInfo.getServiceRequestHistory();
-				for (int i = 0; i < orderIDs.size(); i++) {
-					if (((Integer) orderIDs.get(i)).intValue() == orderID) {
-						orderIDs.remove(i);
-						break;
-					}
-				}
+                List<Integer> orderIDs = liteAcctInfo.getServiceRequestHistory();
+                for (final Integer id : orderIDs) {
+                    if (id.intValue() == orderID) {
+                        orderIDs.remove(id);
+                        break;
+                    }
+                }
 			}
 			
 			if (fromWorkOrder) {	

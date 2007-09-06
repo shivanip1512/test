@@ -239,7 +239,7 @@ public final class LiteComparators
 	};
 	// this method is used to compare Strings found in ANY lite class
 	//   ADD ALL LIGHT CLASSES YOU WANT TO COMPARE BELOW!!!!!!!!!!!!!
-	public static java.util.Comparator liteStringComparator = new java.util.Comparator()
+	public static java.util.Comparator<Object> liteStringComparator = new java.util.Comparator<Object>()
 	{
 		public int compare(Object o1, Object o2)
 		{

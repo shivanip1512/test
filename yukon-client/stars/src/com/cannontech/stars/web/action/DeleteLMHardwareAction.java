@@ -1,6 +1,7 @@
 package com.cannontech.stars.web.action;
 
 import java.util.ArrayList;
+import java.util.List;
 
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpSession;
@@ -222,16 +223,16 @@ public class DeleteLMHardwareAction implements ActionBase {
     		
 			if (liteAcctInfo != null) {
 				if (InventoryUtils.isLMHardware( liteInv.getCategoryID() )) {
-					ArrayList liteApps = liteAcctInfo.getAppliances();
+                    List<LiteStarsAppliance> liteApps = liteAcctInfo.getAppliances();
 					
 					for (int i = 0; i < liteApps.size(); i++) {
-						LiteStarsAppliance liteApp = (LiteStarsAppliance) liteApps.get(i);
+						LiteStarsAppliance liteApp = liteApps.get(i);
 						
 						if (liteApp.getInventoryID() == liteInv.getInventoryID()) {
 							liteApp.setInventoryID( 0 );
 							
 							for (int j = 0; j < liteAcctInfo.getPrograms().size(); j++) {
-								LiteStarsLMProgram liteProg = (LiteStarsLMProgram) liteAcctInfo.getPrograms().get(j);
+								LiteStarsLMProgram liteProg = liteAcctInfo.getPrograms().get(j);
 								
 								if (liteProg.getProgramID() == liteApp.getProgramID()) {
 									liteProg.setGroupID( 0 );
@@ -249,8 +250,8 @@ public class DeleteLMHardwareAction implements ActionBase {
 			CTILogger.error( e.getMessage(), e );
 			if (e instanceof WebClientException)
 				throw (WebClientException)e;
-			else
-				throw new WebClientException( "Failed to remove the hardware", e );
+
+			throw new WebClientException( "Failed to remove the hardware", e );
 		}
 	}
 	

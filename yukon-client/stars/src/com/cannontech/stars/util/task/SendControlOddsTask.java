@@ -1,6 +1,7 @@
 package com.cannontech.stars.util.task;
 
 import java.util.ArrayList;
+import java.util.List;
 import java.util.StringTokenizer;
 
 import com.cannontech.clientutils.CTILogger;
@@ -55,13 +56,12 @@ public class SendControlOddsTask implements Runnable {
 					  + "http://www.wisewatts.com and login with your username and password. "
 					  + "On the first page (or the \"General\" link), uncheck the notification box and click \"Submit\".";
 		
-		ArrayList progList = new ArrayList();	// Programs that are eligible for notification
-		ArrayList programs = energyCompany.getAllPrograms();
-		for (int i = 0; i < programs.size(); i++) {
-			LiteLMProgramWebPublishing program = (LiteLMProgramWebPublishing) programs.get(i);
-			if (program.getChanceOfControlID() != CtiUtilities.NONE_ZERO_ID)
-				progList.add( program );
-		}
+		List<LiteLMProgramWebPublishing> progList = new ArrayList<LiteLMProgramWebPublishing>();	// Programs that are eligible for notification
+        List<LiteLMProgramWebPublishing> programs = energyCompany.getAllPrograms();
+        for (final LiteLMProgramWebPublishing program : programs) {
+            if (program.getChanceOfControlID() != CtiUtilities.NONE_ZERO_ID)
+                progList.add( program );
+        }
 		
 		if (progList.size() > 0) {
 			StringBuffer sql = new StringBuffer( "SELECT DISTINCT app.AccountID " )
@@ -70,9 +70,9 @@ public class SendControlOddsTask implements Runnable {
 					.append( energyCompanyID )
 					.append( " AND map.AccountID = app.AccountID AND (" )
 					.append( "app.ProgramID = " )
-					.append( ((LiteLMProgramWebPublishing) progList.get(0)).getProgramID() );
+					.append( progList.get(0).getProgramID() );
 			for (int i = 1; i < progList.size(); i++) {
-				LiteLMProgramWebPublishing program = (LiteLMProgramWebPublishing) progList.get(i);
+				LiteLMProgramWebPublishing program = progList.get(i);
 				sql.append(" OR app.ProgramID = ").append(program.getProgramID());
 			}
 			sql.append(")");

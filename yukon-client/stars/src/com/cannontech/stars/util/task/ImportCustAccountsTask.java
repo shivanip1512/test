@@ -1081,11 +1081,11 @@ public class ImportCustAccountsTask extends TimeConsumingTask {
 	}
 	
 	private int[][] getEnrolledProgram(String[] fields, LiteStarsEnergyCompany energyCompany) throws WebClientException {
-		ArrayList programs = energyCompany.getAllPrograms();
+        List<LiteLMProgramWebPublishing> programs = energyCompany.getAllPrograms();
 		
 		synchronized (programs) {
 			for (int i = 0; i < programs.size(); i++) {
-				LiteLMProgramWebPublishing liteProg = (LiteLMProgramWebPublishing) programs.get(i);
+				LiteLMProgramWebPublishing liteProg = programs.get(i);
 				String progName = StarsUtils.getPublishedProgramName( liteProg );
 
 				if (progName.equalsIgnoreCase( fields[ImportManagerUtil.IDX_PROGRAM_NAME] )) {

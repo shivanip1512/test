@@ -19,7 +19,7 @@
 	
 	boolean showEnergyCompany = DaoFactory.getAuthDao().checkRoleProperty(lYukonUser, AdministratorRole.ADMIN_MANAGE_MEMBERS)
 			&& (liteEC.getChildren().size() > 0);
-	ArrayList descendants = null;
+	List<LiteStarsEnergyCompany> descendants = null;
 	if (showEnergyCompany) descendants = com.cannontech.stars.util.ECUtils.getAllDescendants(liteEC);
 %>
 <html>
