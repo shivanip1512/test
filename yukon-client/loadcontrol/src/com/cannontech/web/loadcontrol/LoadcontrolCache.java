@@ -48,7 +48,7 @@ public class LoadcontrolCache implements java.util.Observer {
 	private static int normalRefreshRate = 60 * 5 * 1000; //5 minutes
 	private ScheduledExecutor refreshTimer = YukonSpringHook.getGlobalExecutor();
 	
-	private com.cannontech.loadcontrol.LoadControlClientConnection conn = null;
+	private com.cannontech.loadcontrol.LoadControlClientConnection lcConn = null;
 	 
 	private String dbAlias = "yukon";
 	/* The following data structures contain information from the loadmanagement
@@ -688,13 +688,13 @@ public synchronized void refresh()
 	
 	CTILogger.debug("Refreshing control areas");
 	
-	if( conn != null )
+	if( lcConn != null )
 	{		
 		com.cannontech.loadcontrol.messages.LMCommand c =
 			new com.cannontech.loadcontrol.messages.LMCommand();
 
 		c.setCommand( com.cannontech.loadcontrol.messages.LMCommand.RETRIEVE_ALL_CONTROL_AREAS);
-		conn.write(c);
+		lcConn.write(c);
 
 	}
 	
@@ -756,8 +756,8 @@ public synchronized void update(java.util.Observable o, java.lang.Object arg)
 		// Arg is assumed to be a LCChangeEvent
 		LCChangeEvent e = (LCChangeEvent) arg;
 
-		if( conn == null )		
-			conn = (com.cannontech.loadcontrol.LoadControlClientConnection) e.target;
+		if( lcConn == null )		
+			lcConn = (com.cannontech.loadcontrol.LoadControlClientConnection) e.target;
 
 		// e.arg is assumed to be a LMControlArea
 		if( e.id == LCChangeEvent.DELETE )

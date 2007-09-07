@@ -293,7 +293,7 @@ public abstract class LMDirectGroupBase extends LMGroupBase implements ILMGroup
 							internalState & ~GROUP_RAMPING_OUT);		
 	}
 	
-	void setInternalState(int s) {
+	public void setInternalState(int s) {
 		internalState = s;
 	}
 }

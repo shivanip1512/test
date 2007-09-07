@@ -55,7 +55,10 @@ public class CollectableMappings
 		new com.cannontech.loadcontrol.data.DefColl_LMGroupGolay(),
 	    new com.cannontech.loadcontrol.data.DefColl_LMGroupVersacom(),
         
-        new com.cannontech.loadcontrol.dynamic.receive.CtiLMDynamicControlAreaDataMsg()
+        new com.cannontech.loadcontrol.dynamic.receive.CtiLMDynamicControlAreaDataMsg(),
+        new com.cannontech.loadcontrol.dynamic.receive.CtiLMDynamicGroupMsg(),
+        new com.cannontech.loadcontrol.dynamic.receive.CtiLMDynamicLMTriggerMsg(),
+        new com.cannontech.loadcontrol.dynamic.receive.CtiLMDynamicProgramMsg()
 	};
    
 
