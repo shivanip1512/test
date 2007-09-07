@@ -33,44 +33,50 @@ var REF_LABELS = {
 function batchExecute (cmdStr) {
 	var tags = new Array();
 	var cmds = new Array();
-	all = cmdStr.toString().split(",");
-	question = "The following will be executed: ";
-	//split the command into arrays by command type:
-	//commands and tags
-	//then execute commands first and tags second
-	//NOTE: if command failes tag will still be executed and might change
-		for(var i=0; i < all.length; i++) {
-			var str = all[i];
-			if (str)
-			{
-				if (str.split("_")[0] == "tag")
+	var execute = false;
+	if( cmdStr != "" ){
+		execute = true;
+		all = cmdStr.toString().split(",");
+		question = "The following will be executed: ";
+		//split the command into arrays by command type:
+		//commands and tags
+		//then execute commands first and tags second
+		//NOTE: if command failes tag will still be executed and might change
+			for(var i=0; i < all.length; i++) {
+				var str = all[i];
+				if (str)
 				{
-					if (!isQueued (str, tags))
+					if (str.split("_")[0] == "tag")
 					{
-						tags.push (str);
-						question += "tagged as " + getCommandVerbal (str);
-						question += ".";
+						if (!isQueued (str, tags))
+						{
+							tags.push (str);
+							question += "tagged as " + getCommandVerbal (str);
+							question += ".";
+						}
 					}
+					else
+					{
+						if (!(isQueued (str, cmds)))
+						{
+							cmds.push (str);
+							question += getCommandVerbal (str);
+							question += ",";
+						}
+					}	
+				
 				}
-				else
-				{
-					if (!(isQueued (str, cmds)))
-					{
-						cmds.push (str);
-						question += getCommandVerbal (str);
-						question += ",";
-					}
-				}	
-			
+				
 			}
 			
-		}
-		
-
-	question += ". Is this OK?";
 	
+		question += ". Is this OK?";
+	}else{
+		question = "No Change Was Made.";
+	}
 	if (confirm(question))
 	{
+		if( execute ){
 			for (var i=0; i<cmds.length; i++) {
 				executeCommand (cmds[i]);
 			}	
@@ -78,7 +84,7 @@ function batchExecute (cmdStr) {
 			for (var i=0; i<tags.length; i++) {
 				executeCommand (tags[i]);
 			}	
-					
+		}		
 	}
 
 }
@@ -441,14 +447,14 @@ function disableAllCheckedReasons(spanPrefix, id) {
 //object is a checkbox with a name that has it's id in it
 //ex: tag_paoID_cmdID
 function addCommand(obj) {
+
 	if (obj.name) 
 	{ //this is a checkbox
 		var paoID = paoID = obj.name.split("_")[1];
 		var executeQueue = document.getElementById("executeQueue_" + paoID);
+		executeQueue.value += obj.name;
+		executeQueue.value += ":";
 
-	
-			executeQueue.value += obj.name;
-			executeQueue.value += ":";
 	} else {
 		if (obj) {
 			addStringCommand(obj);
@@ -456,16 +462,58 @@ function addCommand(obj) {
 		
 	}
 }
-
+function findCommand(obj, val)
+{
+	var result = obj.value.split(";");
+	for(i = 0; i < result.length; i= i+1){
+		var res2 = result[i].split(":");
+		if( res2[1] == val )
+		{
+			return true;
+		}
+	}
+	return false;
+}
 
 function addStringCommand(obj) {
 	var paoID = paoID = obj.split("_")[1];
 	var executeQueue = document.getElementById("executeQueue_" + paoID);
-	executeQueue.value += obj;
-	executeQueue.value += ":";
+	var found = false;
+	var newvalue = "";
+	
+	if( executeQueue != null ){
+		found = findCommand(executeQueue, obj);
+	}
+	if( !found ){
+		executeQueue.value += obj;
+		executeQueue.value += ";";
+	}else//remove
+	{
+
+		// remove the instance of this, and the previous entry.
+		var result = executeQueue.value.split(";");
+
+		if( result != null ){
+			newvalue = "";
+			for(i = 0; i < result.length; i= i+1){
+
+				var res2 = result[i].split(":");
+				if( res2.length == 2 ){
+					if( (res2[1] != obj) && (res2[1] != "") )
+					{
+						newvalue += res2[0];
+						newvalue += ":";
+						newvalue += res2[1];
+						newvalue += ";";
+					}
+				}
+			}
+			executeQueue.value = newvalue;
+		}
+	}
 }
 function findTagSpanForCB(name, allIds) {
-	for (var i = 0; i < allIds.length; i++) {
+	for (var i = 0; i < allIds.length; i= i+1) {
 		if ((allIds[i].split("_")[1] == name.split("_")[1]) && (allIds[i].split("_")[0] == ALL_CMD_TYPES.tag)) {
 			return allIds[i] + "ReasonSpan";
 		}
@@ -480,7 +528,9 @@ function executeMultipleCommands(spanPrefix, id) {
 	var span = document.getElementById(spanPrefix + id);
 	//get the executeQueue
 	var executeQueue = document.getElementById("executeQueue_" + id);
-	allIds = executeQueue.value.split(":");
+	allIds = executeQueue.value.split(";");
+	var listofCommands = new Array();
+	var z = 0;
 	executeQueue.value = "";
 	allTags = span.getElementsByTagName("input");
 	var checkedCount = 0;
@@ -493,20 +543,30 @@ function executeMultipleCommands(spanPrefix, id) {
 	//1622 - paoID
 	//capDisable - tag attach
 	//Testing%20Cap%20Bank - reason for attaching this tag
+	if( !((allIds.length == 1) && (allIds[0] == "")) )
+	{
+		for (var j = 0; j < allIds.length; j++) {
+			var allIds2 = allIds[j].split(":");
+			listofCommands[z] = allIds2[0]; z++;
+			listofCommands[z] = allIds2[1]; z++;
+		}
+	}//else means its just a null string, ignore it.
 	for (var i = 0; i < allTags.length; i++) {
 		if (allTags[i].type == "checkbox" && allTags[i].checked) {
-			spanID = findTagSpanForCB(allTags[i].name, allIds);
+			spanID = findTagSpanForCB(allTags[i].name, listofCommands);
 			reasonSpan = document.getElementById(spanID);
+				
 			if (reasonSpan) {
-				for (var j = 0; j < allIds.length; j++) {
-					if ((allIds[j] + "ReasonSpan") == reasonSpan.id) {
-						allIds[j] = allIds[j] + "_" + reasonSpan.getElementsByTagName("input")[0].value;
+				for (var j = 0; j < listofCommands.length; j++) {
+					
+					if ((listofCommands[j] + "ReasonSpan") == reasonSpan.id) {
+						listofCommands[j] = listofCommands[j] + "_" + reasonSpan.getElementsByTagName("input")[0].value;
 					}
 				}
 			}
 		}
 	}
-	batchExecute(allIds);
+	batchExecute(listofCommands);
 				
 }
 

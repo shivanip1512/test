@@ -173,15 +173,14 @@ function createFeederTagMenu(feederID) {
 	
 	str+='				<input type="checkbox" name="'  ;
 	str+= 			disableFeeder.createName() + '"';
-	str+=' 			onclick="addClickCount (' + feederID+ '); '; 
-	str+= ' 				addCommand(this); addCommand(\'' + disFeederTag.createName() +'\'); setReason(\'' + disFeederTag.createName() + '\', \'' + disableReason + '\', this);"';
+	str+= ' 		onclick="addCommand(this); addCommand(\'' + disFeederTag.createName() +'\'); setReason(\'' + disFeederTag.createName() + '\', \'' + disableReason + '\', this);"';
 	if (isDis == "true")
 			str+= ' checked ';
 	str+='> <font color="white">Disable<\/font><\/><\/br>';
 	str+='				<\/span>';
 	str+='			<\/td>';
 	str+='			<td align="right" valign="top" id = "popupplaceholder">';
-	str+='				<a   href="javascript:void(0)" style="color=gray" title="Click To Close" onclick="clearClickCount(' + feederID+ ');closePopupWindow();"> x <\/a>';
+	str+='				<a   href="javascript:void(0)" style="color=gray" title="Click To Close" onclick="closePopupWindow();"> x <\/a>';
 	str+='			<\/td>';
 	str+='		<\/tr>';
 	str+='		<tr>';
@@ -233,15 +232,14 @@ function createSubTagMenu() {
 	str+='				<input type="hidden" id="executeQueue_' + paoId + '" val=""/>';
 	str+='				<input type="checkbox"  name = "'; 
 	str+= 				disableSub.createName() + '" ';
-	str+=' 				onclick=" addClickCount(' + paoId + '); '; 
-	str+=' 				addCommand(this); '; 
+	str+=' 				onclick="addCommand(this); '; 
 	str+= ' 				 	 addCommand(\'' + disSubTag.createName() +'\'); setReason(\'' + disSubTag.createName() + '\', \'' + disableReason + '\', this);"';
 	if (isDis == "true")
 		str+= ' checked ';
 	str+='>'; 
 	str+='				<font color="white">Disable<\/font><\/><\/br>';
 	str+='			<td align="right" valign="top" id = "popupplaceholder">';
-	str+='				<a   href="javascript:void(0)" style="color=gray" title="Click To Close" onclick="clearClickCount(' + paoId + ');closePopupWindow();">  x <\/a>';
+	str+='				<a   href="javascript:void(0)" style="color=gray" title="Click To Close" onclick="closePopupWindow();">  x <\/a>';
 	str+='			<\/td>';
 	str+='		<\/tr>';
 	str+='		<tr>';
@@ -320,7 +318,7 @@ function createCapTagMenu (paoID) {
 	str+='			<tr style="color:#9FBBAC; font-weight: bold; font-size: 16; border-color: black black white black;" >';
 	str+='				<td style="border-color: black black black black;" align="center" colspan="2" > ' + paoName + ' <\/td>';
 	str+='				<td style="border-color: black black black black;" align="right" valign="top" id = "popupplaceholder">';
-	str+='					<a   href="javascript:void(0)" style="color=#9FBBAC" title="Click To Close" onclick="clearClickCount(' +paoID + ',1);clearClickCount(' +paoID + ',2);clearClickCount(' +paoID + ',3);closePopupWindow();"> x <\/a>';
+	str+='					<a   href="javascript:void(0)" style="color=#9FBBAC" title="Click To Close" onclick="closePopupWindow();"> x <\/a>';
 	str+='				<\/td>';
 	str+='			<\/tr>';
 	str += '<\/table>'
@@ -351,7 +349,7 @@ function createCapTagMenu (paoID) {
 	//***********STANDALONE****************//
 	str+='					<input   name="';
 	str+=					aloneCap.createName();
-	str+='" type="checkbox" onclick="addClickCount(' +paoID + ',3 );addCommand(this); setReason(this, \'' + aloneReason + '\')"';
+	str+='" type="checkbox" onclick="addCommand(this);addCommand(\'' + aloneCap.createName() +'\'); setReason(this, \'' + aloneReason + '\')"';
 	if (isStandalone == "true")
 			str+=					' checked';
 	str+='> <font color="white">Standalone<\/font><\/><\/br>';
@@ -817,38 +815,5 @@ function PopupWindow_showPopup (anchorname) {
 		alignHeaders("dataTable", "headerTable");
 		
 	
-}
-
-
-function addClickCount (paoID, itemName) 
-{
-	var key="";
-	if (itemName)
-		key = paoID + "_" + itemName;
-	else
-		key = paoID;	
-
-	if (clkCountQueue[key])
-	{
-		alert('double click detected!');
-		$('executeQueue_' + paoID).value="";
-		clkCountQueue = $H();
-		closePopupWindow();
-	}
-	else 
-	{
-		clkCountQueue[key]= 1;
-	}
-}
-
-function clearClickCount (paoID, itemName) 
-{
-	var key="";
-	if (itemName)
-		key = paoID + "_" + itemName;
-	else
-		key = paoID;	
-
-	clkCountQueue[key] = 0;
 }
 
