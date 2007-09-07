@@ -166,6 +166,7 @@ public static String[] isSerialNumberUnique(long serialnumber_, Integer excluded
 			TABLE_NAME + " d " +
 			"where y.paobjectid=d.deviceid " +
 			"and d.serialnumber= " + serialnumber_ +
+			"and d.serialnumber!=0 " +
 			(excludedPAOId != null 
 					? " and y.paobjectid <> " + excludedPAOId
 					: "");

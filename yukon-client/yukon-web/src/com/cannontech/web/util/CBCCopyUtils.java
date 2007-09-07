@@ -20,6 +20,7 @@ import com.cannontech.database.data.point.PointBase;
 import com.cannontech.database.data.point.PointFactory;
 import com.cannontech.database.data.point.PointTypes;
 import com.cannontech.database.data.point.PointUtil;
+import com.cannontech.database.data.point.StatusPoint;
 import com.cannontech.database.db.DBPersistent;
 import com.cannontech.database.db.point.Point;
 
@@ -79,7 +80,21 @@ public class CBCCopyUtils {
 		// copy the component
 		point.setPointAlarming(base.getPointAlarming());
 		point.setPointFDRVector(base.getPointFDRVector());
-
+		
+		
+		if(point instanceof StatusPoint){
+            StatusPoint status = (StatusPoint)base;
+            ((StatusPoint) point).getPointStatus().setInitialState( status.getPointStatus().getInitialState() );
+            ((StatusPoint) point).getPointStatus().setControlType( (status.getPointStatus().getControlType() ));
+            ((StatusPoint) point).getPointStatus().setControlInhibit( status.getPointStatus().getControlInhibit());
+            ((StatusPoint) point).getPointStatus().setControlOffset( status.getPointStatus().getControlOffset() );
+            ((StatusPoint) point).getPointStatus().setCloseTime1( status.getPointStatus().getCloseTime1()  );
+            ((StatusPoint) point).getPointStatus().setCloseTime2( status.getPointStatus().getCloseTime2());
+            ((StatusPoint) point).getPointStatus().setStateZeroControl( status.getPointStatus().getStateZeroControl() );
+            ((StatusPoint) point).getPointStatus().setStateOneControl( status.getPointStatus().getStateOneControl() );
+            ((StatusPoint) point).getPointStatus().setCommandTimeOut( status.getPointStatus().getCommandTimeOut() );	
+        }
+		
 		return point;
 	}
 
@@ -95,7 +110,7 @@ public class CBCCopyUtils {
 		CapBankController cbc = null;
 		cbc = (CapBankController) DeviceFactory.createDevice(PAOGroups
 				.getDeviceType(controller.getPAOType()));
-		cbc.setAddress(controller.getAddress());
+		cbc.setAddress(0);
 		cbc.setCommID(controller.getCommID());
 		cbc.setSchedules(controller.getSchedules());
 		cbc.setDisabled(controller.isDisabled());
