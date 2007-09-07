@@ -17,6 +17,12 @@
 	</context-param>
 
 	<context-param>
+		<param-name>contextClass</param-name>
+        <!-- A special class is used here to override the default location of the .xml files. -->
+		<param-value>com.cannontech.spring.CannonXmlWebApplicationContext</param-value>
+	</context-param>
+
+	<context-param>
 		<param-name>javax.faces.CONFIG_FILES</param-name>
 		<param-value>
 			/WEB-INF/faces-config.xml, /WEB-INF/faces-custom-config.xml,
@@ -338,12 +344,12 @@
 		</servlet-class>
 		<init-param>
 			<param-name>contextConfigLocation</param-name>
-			<param-value>/WEB-INF/stars-servlet.xml,
-						 /WEB-INF/stars-service.xml,
-						 /WEB-INF/stars-admin.xml,
-						 /WEB-INF/stars-inventory.xml,
-						 /WEB-INF/stars-importmanager.xml,
-						 /WEB-INF/stars-workorder.xml</param-value>
+			<param-value>/WEB-INF/contexts/stars-servlet.xml,
+						 /WEB-INF/contexts/stars-service.xml,
+						 /WEB-INF/contexts/stars-admin.xml,
+						 /WEB-INF/contexts/stars-inventory.xml,
+						 /WEB-INF/contexts/stars-importmanager.xml,
+						 /WEB-INF/contexts/stars-workorder.xml</param-value>
 		</init-param>
 		<load-on-startup>2</load-on-startup>
 	</servlet>

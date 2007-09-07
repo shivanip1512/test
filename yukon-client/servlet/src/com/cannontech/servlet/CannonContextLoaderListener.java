@@ -34,9 +34,8 @@ import com.cannontech.spring.YukonSpringHook;
  * <p>This listener should be registered after Log4jConfigListener in web.xml,
  * if the latter is used.
  *
- * <p>For Servlet 2.2 containers and Servlet 2.3 ones that do not initalize
- * listeners before servlets, use ContextLoaderServlet. See the latter's Javadoc
- * for details.
+ * This class has been modified for "cannon" by integrating it with the YukonSpringHook
+ * so that things are shut down properly.
  *
  * @author Juergen Hoeller
  * @since 17.02.2003
