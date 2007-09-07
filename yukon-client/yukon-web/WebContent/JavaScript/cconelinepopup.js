@@ -173,7 +173,7 @@ function createFeederTagMenu(feederID) {
 	
 	str+='				<input type="checkbox" name="'  ;
 	str+= 			disableFeeder.createName() + '"';
-	str+= ' 		onclick="addCommand(this); addCommand(\'' + disFeederTag.createName() +'\'); setReason(\'' + disFeederTag.createName() + '\', \'' + disableReason + '\', this);"';
+	str+= ' 		        onclick="addCommand(this); addCommand(\'' + disFeederTag.createName() +'\'); setReason(\'' + disFeederTag.createName() + '\', \'' + disableReason + '\', this);"';
 	if (isDis == "true")
 			str+= ' checked ';
 	str+='> <font color="white">Disable<\/font><\/><\/br>';
@@ -331,7 +331,7 @@ function createCapTagMenu (paoID) {
 	//***********DIS/EN CAP***********//
 	str+='					<input name="';
 	str+=					disableCap.createName();
-	str+='" type="checkbox" onclick="addClickCount(' +paoID + ',1 ); '; 
+	str+='" type="checkbox" onclick=" '; 
 	str+=' addCommand (this); addCommand(\'' + disCapTag.createName() +'\'); setReason(\'' + disCapTag.createName() + '\', \'' + disableCapReason + '\', this)"';
 	if (isDis == "true")
 	str+=					' checked ';
@@ -340,7 +340,7 @@ function createCapTagMenu (paoID) {
 	//***********OV/UV***********//
 	str+='					<input name="';
 	str+=					disCapOVUV.createName();
-	str+='" type="checkbox" onclick="addClickCount(' +paoID + ',2 ); ';
+	str+='" type="checkbox" onclick=" ';
 	str+=' addCommand(this); addCommand(\'' + disCapOVUVTag.createName() +'\'); setReason(\'' + disCapOVUVTag.createName() + '\', \'' + disableCapOVUVReason + '\', this)"';
 	if (isOVUVDis == "true")
 	str+=					' checked ';
