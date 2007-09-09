@@ -26,12 +26,20 @@ public class FormatDateTag extends YukonTagSupport {
         final LiteYukonUser user = this.getYukonUser();
       
         enumValue = DateFormattingService.DateFormatEnum.valueOf(type);
-        String formattedDate = dateFormattingService.formatDate(value, enumValue, user);
         
-        if(var == null){
-           getJspContext().getOut().print(formattedDate);
+        String formattedDate ="";
+        if (value != null) {
+            formattedDate = dateFormattingService.formatDate(value,
+                                                             enumValue,
+                                                             user);
         }else{
-           this.getJspContext().setAttribute(var, formattedDate);
+            getJspContext().getOut().print("Date doesn't exist");
+        }
+        
+        if (var == null) {
+            getJspContext().getOut().print(formattedDate);
+        } else {
+            this.getJspContext().setAttribute(var, formattedDate);
         }
     }
 

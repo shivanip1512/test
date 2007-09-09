@@ -23,9 +23,7 @@ public interface DateFormattingService {
         }
     }
     
-//    public String formatDate(Date date, String type, LiteYukonUser user);
     public String formatDate(Date date, DateFormatEnum type, LiteYukonUser user);
     
     public DateFormat getDateFormatter(DateFormatEnum type, LiteYukonUser user);
-//    public DateFormat getDateFormatter(String type, LiteYukonUser user);
 }
