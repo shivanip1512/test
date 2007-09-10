@@ -1664,12 +1664,13 @@ void CtiLMManualControlRequestExecutor::ChangeProgramGear(CtiLMProgramDirectSPtr
     CtiTime startTime = start;
 
     lmProgramDirect->setManualControlReceivedFlag(FALSE);
+    lmProgramDirect->setProgramState(CtiLMProgramBase::ScheduledState);
 
     lmProgramDirect->setDirectStartTime(startTime);
     lmProgramDirect->setStartedControlling(startTime);
 
     // Let any notification groups know if they care
-    lmProgramDirect->scheduleNotification(start, stop);
+    // lmProgramDirect->scheduleNotification(start, stop);
     
     if( stop.seconds() < CtiTime(CtiDate(1,1,1991),0,0,0).seconds() )
     {//saves us from stopping immediately after starting if client is dumb enough to send us a stop time of 1990
