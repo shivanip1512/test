@@ -31,6 +31,7 @@
 using std::transform;
 
 extern ULONG _LM_DEBUG;
+extern set<long> _CHANGED_GROUP_LIST;
 
 /*---------------------------------------------------------------------------
     Constructors
@@ -1412,6 +1413,18 @@ CtiLMGroupBase& CtiLMGroupBase::setIsRampingOut(bool out)
         setDirty(true);
     }
     return *this;
+}
+
+/*-----------------------------------------------------------------------------
+  setDirty
+
+  Sets the dirty flag and notifies LM that this group should be
+  sent to clients
+-----------------------------------------------------------------------------*/
+void CtiLMGroupBase::setDirty(BOOL b)
+{
+    _CHANGED_GROUP_LIST.insert(getPAOId());
+    CtiMemDBObject::setDirty(b);
 }
 
 /*-----------------------------------------------------------------------------

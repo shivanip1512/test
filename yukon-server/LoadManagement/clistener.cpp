@@ -150,7 +150,7 @@ void CtiLMClientListener::BroadcastMessage(CtiMessage* msg)
             if( _connections[0]->isValid())
             {
                 _connections[0]->write(msg);
-                msg = 0;
+                msg = NULL;
             }
         }
     }
@@ -160,7 +160,11 @@ void CtiLMClientListener::BroadcastMessage(CtiMessage* msg)
         dout << CtiTime() << __FILE__ << " (" << __LINE__ <<
              ")  An unknown exception has occurred." << endl;
     }
-    delete msg;
+    if( msg != NULL )
+    {
+        delete msg;
+        msg = NULL;
+    }
 }
 
 /*---------------------------------------------------------------------------

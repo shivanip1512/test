@@ -14,6 +14,9 @@
   -----------------------------------------------------------------------------*/
 #include "yukon.h"
 
+#include <map>
+#include <set>
+
 #include "dbaccess.h"
 #include "connection.h"
 #include "message.h"
@@ -45,8 +48,14 @@
 
 #include <rw/thr/prodcons.h>
 
+using namespace std;
+
 extern ULONG _LM_DEBUG;
 extern BOOL _LM_POINT_EVENT_LOGGING;
+
+set<long> _CHANGED_GROUP_LIST;
+set<long> _CHANGED_CONTROL_AREA_LIST;
+set<long> _CHANGED_PROGRAM_LIST;
 
 /* The singleton instance of CtiLoadManager */
 CtiLoadManager* CtiLoadManager::_instance = NULL;
@@ -333,7 +342,7 @@ void CtiLoadManager::controlLoop()
                                 }                                                                                               
                             }                                    
                             
-                            currentControlArea->setUpdatedFlag(TRUE);
+                            //currentControlArea->setUpdatedFlag(TRUE);
                             }
                             else if( currentControlArea->isThresholdTriggerTripped() )
                             {
@@ -479,10 +488,72 @@ void CtiLoadManager::controlLoop()
         {
             // Only send control area changes so often to avoid overwhelming the system
             // if we just received a client message then do it anyways however for good response
-            time_t now = time(NULL);
+            time_t now = std::time(NULL);
             if(received_message || now > (last_ca_msg_sent + (control_loop_outmsg_delay/1000.0))) /* delay is in millis */
             {
-                for(LONG i=0;i<controlAreas.size();i++)
+                typedef set<long>::iterator ChangeListIter;
+                CtiMultiMsg *multi = CTIDBG_new CtiMultiMsg();
+                
+                for( ChangeListIter changeIter = _CHANGED_GROUP_LIST.begin(); changeIter != _CHANGED_GROUP_LIST.end(); changeIter++ )
+                {
+                    CtiLMGroupPtr tempGroup = store->getLMGroup(*changeIter);
+
+                    if( tempGroup )
+                    {
+                        multi->insert(CTIDBG_new CtiLMDynamicGroupDataMsg(tempGroup));
+                    }
+                    else
+                    {
+                	    CtiLockGuard<CtiLogger> logger_guard(dout); 
+                	    dout << CtiTime() << " No Group Found for group in change list! " << *changeIter << " " << __FILE__ << " at:" << __LINE__ << endl; 
+                    }
+                }
+
+                for( changeIter = _CHANGED_PROGRAM_LIST.begin(); changeIter != _CHANGED_PROGRAM_LIST.end(); changeIter++ )
+                {
+                    CtiLMProgramBaseSPtr tempProgram = store->getLMProgram(*changeIter);
+
+                    if( tempProgram )
+                    {
+                        multi->insert(CTIDBG_new CtiLMDynamicProgramDataMsg(boost::static_pointer_cast<CtiLMProgramDirect>(tempProgram)));
+                    }
+                    else
+                    {
+                	    CtiLockGuard<CtiLogger> logger_guard(dout); 
+                	    dout << CtiTime() << " No Program Found for program in change list with id: " << *changeIter << " " << __FILE__ << " at:" << __LINE__ << endl; 
+                    }
+                }
+
+                for( changeIter = _CHANGED_CONTROL_AREA_LIST.begin(); changeIter != _CHANGED_CONTROL_AREA_LIST.end(); changeIter++ )
+                {
+                    CtiLMControlArea* tempControlArea = store->getLMControlArea(*changeIter);
+
+                    if( tempControlArea != NULL )
+                    {
+                        multi->insert(CTIDBG_new CtiLMDynamicControlAreaDataMsg(tempControlArea));
+                    }
+                    else
+                    {
+                	    CtiLockGuard<CtiLogger> logger_guard(dout); 
+                	    dout << CtiTime() << " No Control Area Found for id in change list ID: " << *changeIter << " " << __FILE__ << " at:" << __LINE__ << endl; 
+                    }
+                }
+
+                if( multi->getCount() > 0 )
+                {
+                    sendMessageToClients(multi);
+                    multi = 0;
+                }
+                else
+                {
+                    delete multi;
+                    multi = 0;
+                }
+
+                _CHANGED_CONTROL_AREA_LIST.clear();
+                _CHANGED_PROGRAM_LIST.clear();
+                _CHANGED_GROUP_LIST.clear();
+                /*for(LONG i=0;i<controlAreas.size();i++)
                 {
                     CtiLMControlArea* currentControlArea = (CtiLMControlArea*)controlAreas[i];
         
@@ -519,7 +590,7 @@ void CtiLoadManager::controlLoop()
                     store->dumpAllDynamicData();
                     last_ca_msg_sent = now;
                     controlAreaChanges.clear();// TS Add Destroy? was not there before
-                }
+                }*/
             }
         }
         catch(...)
@@ -1364,7 +1435,7 @@ void CtiLoadManager::sendMessageToNotification( CtiMessage* message )
 /*---------------------------------------------------------------------------
   sendMessageToClients
 
-  Sends a cti message to all the attached clients.
+  Sends a cti message to all the attached clients. This consumes the message.
   ---------------------------------------------------------------------------*/
 void CtiLoadManager::sendMessageToClients( CtiMessage* message )
 {

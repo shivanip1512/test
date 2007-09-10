@@ -48,6 +48,10 @@
 #define CTILMGROUPSA305_ID                      632
 #define CTILMGROUPSADIGITAL_ID                  633
 #define CTILMGROUPGOLAY_ID                      634
+#define CTILMDYNAMICPROGRAMMSG_ID               635
+#define CTILMDYNAMICGROUPMSG_ID                 636
+#define CTILMDYNAMICCONTROLAREAMSG_ID           637
+#define CTILMDYNAMICLMTRIGGERMSG_ID             638
 
 
 /*

@@ -24,6 +24,7 @@
 #include "clientconn.h"
 #include "message.h"
 #include "lmcontrolarea.h"
+#include "lmprogramdirect.h"
 
 #define HOURS_IN_DAY    24
 
@@ -373,6 +374,108 @@ public:
     
     void restoreGuts( RWvistream& );
     void saveGuts( RWvostream&) const;
+};
+
+class CtiLMDynamicGroupDataMsg : public CtiMessage
+{
+RWDECLARE_COLLECTABLE( CtiLMDynamicGroupDataMsg )
+
+public:
+    CtiLMDynamicGroupDataMsg(CtiLMGroupPtr group);
+
+    void dump();
+    void saveGuts( RWvostream&) const;
+    virtual CtiMessage* replicateMessage() const;
+
+private:
+    CtiLMDynamicGroupDataMsg() {};
+    LONG _paoid;
+    BOOL _disableflag;
+    LONG _groupcontrolstate;
+    LONG _currenthoursdaily;
+    LONG _currenthoursmonthly;
+    LONG _currenthoursseasonal;
+    LONG _currenthoursannually;
+    CtiTime _lastcontrolsent;
+    CtiTime _controlstarttime;
+    CtiTime _controlcompletetime;
+    CtiTime _next_control_time;
+    unsigned _internalState; //What the heck is this???
+    LONG _daily_ops;
+};
+
+class CtiLMDynamicProgramDataMsg : public CtiMessage
+{
+RWDECLARE_COLLECTABLE( CtiLMDynamicProgramDataMsg )
+    friend class CtiLMConnection;
+
+public:
+    CtiLMDynamicProgramDataMsg(CtiLMProgramDirectSPtr program);
+
+    void dump();
+    void saveGuts( RWvostream&) const;
+    virtual CtiMessage* replicateMessage() const;
+
+private:
+    CtiLMDynamicProgramDataMsg() {};
+    LONG _paoid;
+    BOOL _disableflag;
+    LONG _currentgearnumber;//+1
+    LONG _lastgroupcontrolled;
+    LONG _programstate;
+    DOUBLE _reductiontotal;
+    CtiTime _directstarttime;
+    CtiTime _directstoptime;
+    CtiTime _notify_active_time;
+    CtiTime _notify_inactive_time;
+    CtiTime _startedrampingouttime;
+};
+
+class CtiLMDynamicTriggerDataMsg : public CtiMessage
+{
+RWDECLARE_COLLECTABLE( CtiLMDynamicTriggerDataMsg )
+
+public:
+    CtiLMDynamicTriggerDataMsg(CtiLMControlAreaTrigger *trigger);
+
+    void dump();
+    void saveGuts( RWvostream&) const;
+    virtual CtiMessage* replicateMessage() const;
+
+private:
+    CtiLMDynamicTriggerDataMsg() {};
+    LONG _paoid;
+    LONG _triggernumber;
+    DOUBLE _pointvalue;
+    CtiTime _lastpointvaluetimestamp;
+    LONG _normalstate;
+    DOUBLE _threshold;
+    DOUBLE _peakpointvalue;
+    CtiTime _lastpeakpointvaluetimestamp;
+    DOUBLE _projectedpointvalue;
+};
+
+class CtiLMDynamicControlAreaDataMsg : public CtiMessage
+{
+RWDECLARE_COLLECTABLE( CtiLMDynamicControlAreaDataMsg )
+
+public:
+    CtiLMDynamicControlAreaDataMsg(CtiLMControlArea *controlArea);
+
+    void dump();
+    void saveGuts( RWvostream&) const;
+    virtual CtiMessage* replicateMessage() const;
+
+private:
+    CtiLMDynamicControlAreaDataMsg() {};
+    LONG _paoid;
+    BOOL _disableflag;
+    CtiTime _nextchecktime;
+    LONG _controlareastate;
+    LONG _currentpriority;
+    CtiTime _currentdailystarttime;
+    CtiTime _currentdailystoptime;
+    vector<CtiLMDynamicTriggerDataMsg> _triggers;
 };
 
 #endif

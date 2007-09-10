@@ -1293,3 +1293,302 @@ void CtiLMShutdown::saveGuts(RWvostream& strm) const
 {
     CtiLMMessage::saveGuts(strm);
 }
+
+RWDEFINE_COLLECTABLE( CtiLMDynamicGroupDataMsg, CTILMDYNAMICGROUPMSG_ID ) 
+RWDEFINE_COLLECTABLE( CtiLMDynamicProgramDataMsg, CTILMDYNAMICPROGRAMMSG_ID ) 
+RWDEFINE_COLLECTABLE( CtiLMDynamicControlAreaDataMsg, CTILMDYNAMICCONTROLAREAMSG_ID ) 
+RWDEFINE_COLLECTABLE( CtiLMDynamicTriggerDataMsg, CTILMDYNAMICLMTRIGGERMSG_ID ) 
+
+/* ==========================================================================
+   Save Guts
+   ==========================================================================*/
+
+/*---------------------------------------------------------------------------
+    CtiLMDynamicGroupDataMsg::saveGuts
+    
+    Saves the state of self into the given RWvostream
+---------------------------------------------------------------------------*/
+void CtiLMDynamicGroupDataMsg::saveGuts(RWvostream& strm) const
+{
+    strm << _paoid
+         << _disableflag
+         << _groupcontrolstate
+         << _currenthoursdaily
+         << _currenthoursmonthly
+         << _currenthoursseasonal
+         << _currenthoursannually
+         << _lastcontrolsent
+         << _controlstarttime
+         << _controlcompletetime
+         << _next_control_time
+         << _internalState //What the heck is this???
+         << _daily_ops;
+}
+
+/*---------------------------------------------------------------------------
+    CtiLMDynamicProgramDataMsg::saveGuts
+    
+    Saves the state of self into the given RWvostream
+---------------------------------------------------------------------------*/
+void CtiLMDynamicProgramDataMsg::saveGuts(RWvostream& strm) const
+{
+    strm << _paoid
+         << _disableflag
+         << _currentgearnumber + 1
+         << _lastgroupcontrolled
+         << _programstate
+         << _reductiontotal
+         << _directstarttime
+         << _directstoptime
+         << _notify_active_time
+         << _notify_inactive_time
+         << _startedrampingouttime;
+}
+
+/*---------------------------------------------------------------------------
+    CtiLMDynamicControlAreaDataMsg::saveGuts
+    
+    Saves the state of self into the given RWvostream
+---------------------------------------------------------------------------*/
+void CtiLMDynamicControlAreaDataMsg::saveGuts(RWvostream& strm) const
+{
+    strm << _paoid
+         << _disableflag
+         << _nextchecktime
+         << _controlareastate
+         << _currentpriority
+         << _currentdailystarttime
+         << _currentdailystoptime
+         << _triggers;
+}
+
+/*---------------------------------------------------------------------------
+    CtiLMDynamicControlAreaDataMsg::saveGuts
+    
+    Saves the state of self into the given RWvostream
+---------------------------------------------------------------------------*/
+void CtiLMDynamicTriggerDataMsg::saveGuts(RWvostream& strm) const
+{
+    strm << _paoid
+         << _triggernumber
+         << _pointvalue
+         << _lastpointvaluetimestamp
+         << _normalstate
+         << _threshold
+         << _peakpointvalue
+         << _lastpeakpointvaluetimestamp
+         << _projectedpointvalue;
+}
+
+/* ==========================================================================
+   Constructors
+   ==========================================================================*/
+
+CtiLMDynamicGroupDataMsg::CtiLMDynamicGroupDataMsg(CtiLMGroupPtr group)
+{
+    if( group )
+    {
+        _paoid = group->getPAOId();
+        _disableflag = group->getDisableFlag();
+        _groupcontrolstate = group->getGroupControlState();
+        _currenthoursdaily = group->getCurrentHoursDaily();
+        _currenthoursmonthly = group->getCurrentHoursMonthly();
+        _currenthoursseasonal = group->getCurrentHoursSeasonal();
+        _currenthoursannually = group->getCurrentHoursAnnually();
+        _lastcontrolsent = group->getLastControlSent();
+        _controlstarttime = group->getControlStartTime();
+        _controlcompletetime = group->getControlCompleteTime();
+        _next_control_time = group->getNextControlTime();
+        _internalState = group->getIsRampingOut() | group->getIsRampingIn(); //What the heck is this???
+        _daily_ops = group->getDailyOps();
+    }
+}
+
+CtiLMDynamicProgramDataMsg::CtiLMDynamicProgramDataMsg(CtiLMProgramDirectSPtr program)
+{
+    if( program )
+    {
+        _paoid = program->getPAOId();
+        _disableflag = program->getDisableFlag();
+        _currentgearnumber = program->getCurrentGearNumber();
+        _lastgroupcontrolled = program->getLastGroupControlled();
+        _programstate = program->getProgramState();
+        _reductiontotal = program->getReductionTotal();
+        _directstarttime = program->getDirectStartTime();
+        _directstoptime = program->getDirectStopTime();
+        _notify_active_time = program->getNotifyActiveTime();
+        _notify_inactive_time = program->getNotifyInactiveTime();
+        _startedrampingouttime = program->getStartedRampingOutTime();
+    }
+}
+
+CtiLMDynamicControlAreaDataMsg::CtiLMDynamicControlAreaDataMsg(CtiLMControlArea *controlArea)
+{
+    if( controlArea != NULL )
+    {
+        _paoid = controlArea->getPAOId();
+        _disableflag = controlArea->getDisableFlag();
+        _nextchecktime = controlArea->getNextCheckTime();
+        _controlareastate = controlArea->getControlAreaState();
+        _currentpriority = controlArea->getCurrentStartPriority();
+        _currentdailystarttime = controlArea->getCurrentDailyStartTime();
+        _currentdailystoptime = controlArea->getCurrentDailyStopTime();
+    
+        vector<CtiLMControlAreaTrigger*>& triggers = controlArea->getLMControlAreaTriggers();
+        if( triggers.size() > 0 ) //No one else uses iterators. I still feel dirty though.
+        {
+            for( int x = 0; x < triggers.size(); x++ )
+            {
+                _triggers.push_back(CtiLMDynamicTriggerDataMsg((CtiLMControlAreaTrigger*)triggers.at(x)));
+            }
+        }
+    }
+}
+
+CtiLMDynamicTriggerDataMsg::CtiLMDynamicTriggerDataMsg(CtiLMControlAreaTrigger *trigger)
+{
+    _paoid = trigger->getPAOId();
+    _triggernumber = trigger->getTriggerNumber();
+    _pointvalue = trigger->getPointValue();
+    _lastpointvaluetimestamp = trigger->getLastPointValueTimestamp();
+    _normalstate = trigger->getNormalState();
+    _threshold = trigger->getThreshold();
+    _peakpointvalue = trigger->getPeakPointValue();
+    _lastpeakpointvaluetimestamp = trigger->getLastPeakPointValueTimestamp();
+    _projectedpointvalue = trigger->getProjectedPointValue();
+}
+
+
+/* ==========================================================================
+   Dumps
+   ==========================================================================*/
+
+void CtiLMDynamicGroupDataMsg::dump()
+{
+    CtiLockGuard<CtiLogger> doubt_guard(dout);
+
+    dout << " ------- Message -------       LM Dynamic Group Data" << endl;
+    dout << "PAObject ID                    " << _paoid << endl;
+    dout << "Disable Flag                   " << _disableflag << endl;
+    dout << "Group Control State            " << _groupcontrolstate << endl;
+    dout << "Current Hours Daily            " << _currenthoursdaily << endl;
+    dout << "Current Hours Monthly          " << _currenthoursmonthly << endl;
+    dout << "Current Hours Seasonal         " << _currenthoursseasonal << endl;
+    dout << "Current Hours Annually         " << _currenthoursannually << endl;
+    dout << "Last Control Sent Time         " << _lastcontrolsent << endl;
+    dout << "Control Start Time             " << _controlstarttime << endl;
+    dout << "Control Complete Time          " << _controlcompletetime << endl;
+    dout << "Next Control Time              " << _next_control_time << endl;
+    dout << "Internal State                 " << _internalState << endl;
+    dout << "Daily Ops                      " << _daily_ops << endl;
+}
+
+void CtiLMDynamicProgramDataMsg::dump()
+{
+    dout << " ------- Message -------       LM Dynamic Group Data" << endl;
+    dout << "PAObject ID                    " << _paoid << endl;
+    dout << "Disable Flag                   " << _disableflag << endl;
+    dout << "Current Gear Number            " << _currentgearnumber << endl;
+    dout << "Last Group Controlled          " << _lastgroupcontrolled << endl;
+    dout << "Program State                  " << _programstate << endl;
+    dout << "Reduction Total                " << _reductiontotal << endl;
+    dout << "Direct Start Time              " << _directstarttime << endl;
+    dout << "Direct Stop Time               " << _directstoptime << endl;
+    dout << "Notify Active Time             " << _notify_active_time << endl;
+    dout << "Notify Inactive Time           " << _notify_inactive_time << endl;
+    dout << "Started Ramping Out Time       " << _startedrampingouttime << endl;
+}
+
+void CtiLMDynamicControlAreaDataMsg::dump()
+{
+    dout << " ------- Message -------       LM Dynamic Group Data" << endl;
+    dout << "PAObject ID                    " << _paoid << endl;
+    dout << "Disable Flag                   " << _disableflag << endl;
+    dout << "Next Check Time                " << _nextchecktime << endl;
+    dout << "Last Group Controlled          " << _controlareastate << endl;
+    dout << "Program State                  " << _currentpriority << endl;
+    dout << "Reduction Total                " << _currentdailystarttime << endl;
+    dout << "Direct Start Time              " << _currentdailystoptime << endl;
+}
+
+void CtiLMDynamicTriggerDataMsg::dump()
+{
+    dout << " ------- Message -------       LM Dynamic Group Data" << endl;
+    dout << "PAObject ID                    " << _paoid << endl;
+    dout << "Trigger Number                 " << _triggernumber << endl;
+    dout << "Point Value                    " << _pointvalue << endl;
+    dout << "Last Point Value Timestamp     " << _lastpointvaluetimestamp << endl;
+    dout << "Normal State                   " << _normalstate << endl;
+    dout << "Threshold                      " << _threshold << endl;
+    dout << "Peak Point Value               " << _peakpointvalue << endl;
+    dout << "Last Pk Point Value Timestamp  " << _lastpeakpointvaluetimestamp << endl;
+    dout << "Projected Point Value          " << _projectedpointvalue << endl;
+}
+
+/*---------------------------------------------------------------------------
+    replicateMessage
+---------------------------------------------------------------------------*/
+
+CtiMessage* CtiLMDynamicGroupDataMsg::replicateMessage() const
+{
+    CtiLMDynamicGroupDataMsg* msg = CTIDBG_new CtiLMDynamicGroupDataMsg();
+    msg->_paoid = _paoid;
+    msg->_disableflag = _disableflag;
+    msg->_groupcontrolstate = _groupcontrolstate;
+    msg->_currenthoursdaily = _currenthoursdaily;
+    msg->_currenthoursmonthly = _currenthoursmonthly;
+    msg->_currenthoursseasonal = _currenthoursseasonal;
+    msg->_currenthoursannually = _currenthoursannually;
+    msg->_lastcontrolsent = _lastcontrolsent;
+    msg->_controlstarttime = _controlstarttime;
+    msg->_controlcompletetime = _controlcompletetime;
+    msg->_next_control_time = _next_control_time;
+    msg->_internalState = _internalState;
+    msg->_daily_ops = _daily_ops;
+    return msg;
+}
+
+CtiMessage* CtiLMDynamicProgramDataMsg::replicateMessage() const
+{
+    CtiLMDynamicProgramDataMsg* msg = CTIDBG_new CtiLMDynamicProgramDataMsg();
+    msg->_paoid = _paoid;
+    msg->_disableflag = _disableflag;
+    msg->_currentgearnumber = _currentgearnumber;
+    msg->_lastgroupcontrolled = _lastgroupcontrolled;
+    msg->_programstate = _programstate;
+    msg->_reductiontotal = _reductiontotal;
+    msg->_directstarttime = _directstarttime;
+    msg->_directstoptime = _directstoptime;
+    msg->_notify_active_time = _notify_active_time;
+    msg->_notify_inactive_time = _notify_inactive_time;
+    msg->_startedrampingouttime = _startedrampingouttime;
+    return msg;
+}
+
+CtiMessage* CtiLMDynamicControlAreaDataMsg::replicateMessage() const
+{
+    CtiLMDynamicControlAreaDataMsg* msg = CTIDBG_new CtiLMDynamicControlAreaDataMsg();
+    msg->_paoid = _paoid;
+    msg->_disableflag = _disableflag;
+    msg->_nextchecktime = _nextchecktime;
+    msg->_controlareastate = _controlareastate;
+    msg->_currentpriority = _currentpriority;
+    msg->_currentdailystarttime = _currentdailystarttime;
+    msg->_currentdailystoptime = _currentdailystoptime;
+    return msg;
+}
+
+CtiMessage* CtiLMDynamicTriggerDataMsg::replicateMessage() const
+{
+    CtiLMDynamicTriggerDataMsg* msg = CTIDBG_new CtiLMDynamicTriggerDataMsg();
+    msg->_paoid = _paoid;
+    msg->_triggernumber = _triggernumber;
+    msg->_pointvalue = _pointvalue;
+    msg->_lastpointvaluetimestamp = _lastpointvaluetimestamp;
+    msg->_normalstate = _normalstate;
+    msg->_threshold = _threshold;
+    msg->_peakpointvalue = _peakpointvalue;
+    msg->_lastpeakpointvaluetimestamp = _lastpeakpointvaluetimestamp;
+    msg->_projectedpointvalue = _projectedpointvalue;
+    return msg;
+}

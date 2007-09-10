@@ -143,6 +143,8 @@ public:
 
     virtual BOOL doesMasterCycleNeedToBeUpdated(ULONG secondsFrom1901, ULONG groupControlDone, ULONG offTime);
 
+    virtual void setDirty(BOOL b=TRUE);
+
     //Members inherited from RWCollectable
     void restoreGuts(RWvistream& );
     void saveGuts(RWvostream& ) const;

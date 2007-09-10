@@ -117,6 +117,10 @@ public:
     void saveAnyControlStringData();
     void attachControlStringData(CtiLMGroupPtr& group);
 
+    CtiLMGroupPtr getLMGroup(long groupID);
+    CtiLMProgramBaseSPtr getLMProgram(long programID);
+    CtiLMControlArea* getLMControlArea(long controlAreaID);
+
     static const string LOAD_MANAGEMENT_DBCHANGE_MSG_SOURCE;
 
     RWRecursiveLock<RWMutexLock> & getMux() { return mutex(); };
@@ -137,7 +141,9 @@ private:
     vector<CtiLMControlArea*>* _controlAreas;
     map< long, CtiLMGroupPtr > _point_group_map;
     map< long, CtiLMGroupPtr > _all_group_map;
-    
+    map< long, CtiLMProgramBaseSPtr > _all_program_map;
+    map< long, CtiLMControlArea*> _all_control_area_map;
+
     RWThread _resetthr;
 
     bool _isvalid;

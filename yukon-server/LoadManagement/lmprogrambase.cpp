@@ -27,6 +27,7 @@
 #include "utility.h"
 
 extern ULONG _LM_DEBUG;
+extern set<long> _CHANGED_PROGRAM_LIST;
 
 using std::transform;
 
@@ -444,7 +445,11 @@ CtiLMProgramBase& CtiLMProgramBase::setPAODescription(const string& description)
 ---------------------------------------------------------------------------*/
 CtiLMProgramBase& CtiLMProgramBase::setDisableFlag(BOOL disable)
 {
-    _disableflag = disable;
+    if( disable != _disableflag )
+    {
+        _disableflag = disable;
+        setDirty(true);
+    }
     return *this;
 }
 
@@ -1208,6 +1213,18 @@ CtiLMProgramControlWindow* CtiLMProgramBase::getNextControlWindow(LONG secondsFr
         }
     }
     return 0;
+}
+
+/*-----------------------------------------------------------------------------
+  setDirty
+
+  Sets the dirty flag and notifies LM that this program should
+  be sent to clients
+-----------------------------------------------------------------------------*/
+void CtiLMProgramBase::setDirty(BOOL b)
+{
+    _CHANGED_PROGRAM_LIST.insert(getPAOId());
+    CtiMemDBObject::setDirty(b);
 }
 
 

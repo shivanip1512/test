@@ -66,6 +66,9 @@
 using namespace std;
 
 extern ULONG _LM_DEBUG;
+extern set<long> _CHANGED_GROUP_LIST;
+extern set<long> _CHANGED_CONTROL_AREA_LIST;
+extern set<long> _CHANGED_PROGRAM_LIST;
 
 struct id_hash{LONG operator()(LONG x) const { return x; } };
 
@@ -288,6 +291,8 @@ void CtiLMControlAreaStore::reset()
         vector<CtiLMControlArea*> temp_control_areas;
         std::map<long, CtiLMGroupPtr > temp_all_group_map;
         std::map<long, CtiLMGroupPtr > temp_point_group_map;
+        std::map<long, CtiLMProgramBaseSPtr > temp_all_program_map;
+        std::map<long, CtiLMControlArea* > temp_all_control_area_map;
 
         LONG currentAllocations = ResetBreakAlloc();
         if( _LM_DEBUG & LM_DEBUG_EXTENDED )
@@ -897,6 +902,7 @@ void CtiLMControlAreaStore::reset()
 
                                 //Inserting this direct program into hash map
                                 directProgramHashMap.insert( currentLMProgramDirect->getPAOId(), currentLMProgramDirect );
+                                temp_all_program_map.insert(make_pair(currentLMProgramDirect->getPAOId(), currentLMProgramDirect));
                             }
 
                             rdr["pointid"] >> isNull;
@@ -1202,6 +1208,7 @@ void CtiLMControlAreaStore::reset()
                                 }
                                 //Inserting this curtailment program into hash map
                                 curtailmentProgramHashMap.insert( currentLMProgramCurtailment->getPAOId(), currentLMProgramCurtailment );
+                                temp_all_program_map.insert(make_pair(currentLMProgramCurtailment->getPAOId(), currentLMProgramCurtailment));
                             }
 
                             rdr["pointid"] >> isNull;
@@ -1362,6 +1369,7 @@ void CtiLMControlAreaStore::reset()
                                 currentLMProgramEnergyExchange.reset(CTIDBG_new CtiLMProgramEnergyExchange(rdr));
                                 //Inserting this curtailment program into hash map
                                 energyExchangeProgramHashMap.insert( currentLMProgramEnergyExchange->getPAOId(), currentLMProgramEnergyExchange );
+                                temp_all_program_map.insert(make_pair(currentLMProgramEnergyExchange->getPAOId(), currentLMProgramEnergyExchange));
                             }
 
                             rdr["pointid"] >> isNull;
@@ -1749,6 +1757,7 @@ void CtiLMControlAreaStore::reset()
                             {
                                 currentLMControlArea = CTIDBG_new CtiLMControlArea(rdr);
                                 temp_control_areas.push_back(currentLMControlArea);
+                                temp_all_control_area_map.insert(make_pair(currentLMControlArea->getPAOId(), currentLMControlArea));
                             }
 
                             rdr["lmprogramdeviceid"] >> isNull;
@@ -1924,16 +1933,24 @@ void CtiLMControlAreaStore::reset()
         RWRecursiveLock<RWMutexLock>::LockGuard  guard(mutex());
 
         // Clear out our old working objects
+        _all_control_area_map.clear();
         delete_vector(_controlAreas);
         _controlAreas->clear(); //89
         _all_group_map.clear();
+        _all_program_map.clear();
         _point_group_map.clear();
 
         // Lets start using the new objects we just loaded.
         // do a swap, make sure we have the mux
         *_controlAreas = temp_control_areas;
         _all_group_map = temp_all_group_map;
+        _all_program_map = temp_all_program_map;
         _point_group_map = temp_point_group_map;
+        _all_control_area_map = temp_all_control_area_map;
+
+        _CHANGED_GROUP_LIST.clear();
+        _CHANGED_PROGRAM_LIST.clear();
+        _CHANGED_CONTROL_AREA_LIST.clear();
 
         _isvalid = TRUE;
 
@@ -2340,6 +2357,72 @@ bool CtiLMControlAreaStore::UpdateTriggerInDB(CtiLMControlArea* controlArea, Cti
 }
 
 /*---------------------------------------------------------------------------
+    getLMGroup
+
+    Returns the group based on the ID, returns NULL if the group is not
+    in the list.
+---------------------------------------------------------------------------*/
+CtiLMGroupPtr CtiLMControlAreaStore::getLMGroup(long groupID)
+{
+    RWRecursiveLock<RWMutexLock>::LockGuard  guard(mutex());
+    CtiLMGroupPtr retVal;
+
+    typedef map< long, CtiLMGroupPtr >::iterator GroupMapIter;
+    GroupMapIter iter = _all_group_map.find(groupID);
+
+    if( iter != _all_group_map.end() )
+    {
+        retVal = iter->second;
+    }
+
+    return retVal;
+}
+
+/*---------------------------------------------------------------------------
+    getLMProgram
+
+    Returns the program based on the ID, returns NULL if the program is not
+    in the list.
+---------------------------------------------------------------------------*/
+CtiLMProgramBaseSPtr CtiLMControlAreaStore::getLMProgram(long programID)
+{
+    RWRecursiveLock<RWMutexLock>::LockGuard  guard(mutex());
+    CtiLMProgramBaseSPtr retVal;
+
+    typedef map< long, CtiLMProgramBaseSPtr >::iterator ProgramMapIter;
+    ProgramMapIter iter = _all_program_map.find(programID);
+
+    if( iter != _all_program_map.end() )
+    {
+        retVal = iter->second;
+    }
+
+    return retVal;
+}
+
+/*---------------------------------------------------------------------------
+    getLMControlArea
+
+    Returns the control area based on the ID, returns NULL if the control
+    area is not in the list.
+---------------------------------------------------------------------------*/
+CtiLMControlArea* CtiLMControlAreaStore::getLMControlArea(long controlAreaID)
+{
+    RWRecursiveLock<RWMutexLock>::LockGuard  guard(mutex());
+    CtiLMControlArea* retVal = NULL;
+
+    typedef map< long, CtiLMControlArea* >::iterator ControlAreaMapIter;
+    ControlAreaMapIter iter = _all_control_area_map.find(controlAreaID);
+
+    if( iter != _all_control_area_map.end() )
+    {
+        retVal = iter->second;
+    }
+
+    return retVal;
+}
+
+/*---------------------------------------------------------------------------
     checkMidnightDefaultsForReset
 
     Only called at midnight!  Checks each of the control area default
@@ -2684,5 +2767,4 @@ CtiLMSavedControlString& CtiLMSavedControlString::operator=(const CtiLMSavedCont
 
     return *this;
 }
-
 

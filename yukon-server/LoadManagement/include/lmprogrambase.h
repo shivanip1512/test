@@ -132,6 +132,8 @@ public:
     virtual BOOL isPastMinRestartTime(ULONG secondsFrom1901);
     virtual CtiLMProgramControlWindow* getControlWindow(LONG secondsFromBeginningOfDay);
     virtual CtiLMProgramControlWindow* getNextControlWindow(LONG secondsFromBeginningOfDay);
+
+    virtual void setDirty(BOOL b=TRUE);
     
     //Members inherited from RWCollectable
     void restoreGuts(RWvistream& );

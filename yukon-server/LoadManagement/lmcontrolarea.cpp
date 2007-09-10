@@ -1306,7 +1306,7 @@ DOUBLE CtiLMControlArea::reduceControlAreaLoad(DOUBLE loadReductionNeeded, LONG 
         dout << CtiTime() << " - Control cannot go active because no programs are currently available " << endl;
     }
 
-    setUpdatedFlag(TRUE);
+    //setUpdatedFlag(TRUE);
     return expectedLoadReduced;
 }
 

@@ -8,8 +8,8 @@
 *
 * PVCS KEYWORDS:
 * ARCHIVE      :  $Archive:   Z:/SOFTWAREARCHIVES/YUKON/DATABASE/INCLUDE/dbmemobject.h-arc  $
-* REVISION     :  $Revision: 1.4 $
-* DATE         :  $Date: 2005/06/15 19:21:49 $
+* REVISION     :  $Revision: 1.5 $
+* DATE         :  $Date: 2007/09/10 22:26:12 $
 *
 * Copyright (c) 1999, 2000, 2001 Cannon Technologies Inc. All rights reserved.
 *-----------------------------------------------------------------------------*/
@@ -75,7 +75,7 @@ public:
     void resetValid(BOOL i = FALSE)        { _valid = i;}
 
     BOOL isDirty() const                   { return _dirty;}
-    void setDirty(BOOL b = TRUE)           { _dirty = b;}
+    virtual void setDirty(BOOL b = TRUE)   { _dirty = b;}
     void resetDirty(BOOL b = FALSE)        { _dirty = b;}
 
     // MutexType& getMux()  { return mutex();}
