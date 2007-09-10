@@ -951,7 +951,7 @@ bool CtiLMProgramConstraintChecker::checkManualGearChangeConstraints(ULONG propo
         result += _lm_program.getDirectStopTime().asString();
         result += " Requested stop time: ";
         result += CtiTime(proposed_stop_seconds).asString();
-        result += " You cannot override this constraint error."
+        result += " You cannot override this constraint error.";
         _results.push_back(result);
 
         ret_val = false;

@@ -26,6 +26,7 @@ public:
     bool checkManualProgramConstraints(ULONG proposed_start_from_1901, ULONG proposed_stop_from_1901);
     bool checkAutomaticProgramConstraints(ULONG proposed_start_from_1901, ULONG proposed_stop_from_1901);    
     bool checkGroupConstraints(ULONG proposed_gear, ULONG proposed_start_from_1901, ULONG proposed_stop_from_1901);
+    bool checkManualGearChangeConstraints(ULONG proposed_gear, ULONG proposed_stop_seconds);
     
     bool checkSeason(ULONG proposed_start_from_1901, ULONG proposed_stop_from_1901);
     bool checkWeekDays(ULONG proposed_start_from_1901, ULONG proposed_stop_from_1901);
@@ -81,7 +82,6 @@ public:
     bool checkMaxHoursSeasonal(LONG& control_duration, bool adjust_duration = false);
     bool checkMaxHoursAnnually(LONG& control_duration, bool adjust_duration = false);
     bool checkProgramControlWindow(LONG& control_duration, bool adjust_duration = false);
-    bool checkManualGearChangeConstraints(ULONG proposed_gear, ULONG proposed_stop_seconds);
     
 private:
     bool checkDurationConstraint(LONG current_duration, LONG max_duration, LONG& control_duration, bool adjust_duration);

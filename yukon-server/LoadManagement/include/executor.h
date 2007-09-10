@@ -83,6 +83,7 @@ public:
 private:
     void StartProgram(CtiLMProgramBaseSPtr program, CtiLMControlArea* controlArea, const CtiTime& start, const CtiTime& stop);
     void StopProgram(CtiLMProgramBaseSPtr program, CtiLMControlArea* controlArea, const CtiTime& stop);
+    void ChangeProgramGear(CtiLMProgramDirectSPtr lmProgramDirect, CtiLMControlArea* controlArea, const CtiTime& start, const CtiTime& stop, LONG nextGear);
     void StartDirectProgram(CtiLMProgramDirectSPtr lmProgramDirect, CtiLMControlArea* controlArea, const CtiTime& start, const CtiTime& stop);
     void StopDirectProgram(CtiLMProgramDirectSPtr lmProgramDirect, CtiLMControlArea* controlArea, const CtiTime& stop);
     void StartCurtailmentProgram(CtiLMProgramCurtailmentSPtr lmProgramCurtailment, CtiLMControlArea* controlArea, const CtiTime& start, const CtiTime& stop);

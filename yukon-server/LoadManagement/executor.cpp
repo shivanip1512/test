@@ -1358,7 +1358,7 @@ void CtiLMManualControlRequestExecutor::Execute()
                 
             case CtiLMManualControlRequest::OVERRIDE_CONSTRAINTS:
                 (boost::static_pointer_cast< CtiLMProgramDirect >(program))->setConstraintOverride(true);
-                if( checker.checkManualGearChangeConstraints(_controlMsg->getStartGear(), stopTime.seconds() )// I have decided that these do not allow override
+                if( checker.checkManualGearChangeConstraints(_controlMsg->getStartGear(), stopTime.seconds()) )// I have decided that these do not allow override
                 {
                     StartProgram(program, controlArea, startTime, stopTime);
                     if(response != NULL)
