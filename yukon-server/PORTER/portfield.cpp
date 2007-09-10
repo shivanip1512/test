@@ -6,8 +6,8 @@
 *
 * PVCS KEYWORDS:
 * ARCHIVE      :  $Archive$
-* REVISION     :  $Revision: 1.209 $
-* DATE         :  $Date: 2007/07/23 15:36:40 $
+* REVISION     :  $Revision: 1.210 $
+* DATE         :  $Date: 2007/09/10 15:07:14 $
 *
 * Copyright (c) 1999, 2000, 2001 Cannon Technologies Inc. All rights reserved.
 *-----------------------------------------------------------------------------*/
@@ -3065,53 +3065,71 @@ INT DoProcessInMessage(INT CommResult, CtiPortSPtr Port, INMESS *InMessage, OUTM
                 {
                     InMessage->Buffer.DSt.Time     = InMessage->Time;
                     InMessage->Buffer.DSt.DSTFlag  = InMessage->MilliTime & DSTACTIVE;
+
+                    //  NOTE that if we have a comm error, we will break out of the switch statement at this point...  this seems to break stats?
                     break;
                 }
 
-                if( (status = NackTst(InMessage->Buffer.InMessage[0], &nack1, OutMessage->Remote)) ||
-                    (status = NackTst(InMessage->Buffer.InMessage[1], &nack2, OutMessage->Remote)) )
+                //  if this was targeted at an MCT
+                if( OutMessage->TargetID != OutMessage->DeviceID && InMessage->DeviceID != 0 && InMessage->TargetID != 0 )
                 {
-                    nack1 = nack2 = 1;
-                }
-
-
-                if( !nack1 && !nack2 )
-                {
-                    InMessage->InLength = OutMessage->InLength;
-
-                    if( (OutMessage->EventCode     & BWORD) &&
-                        (OutMessage->Buffer.BSt.IO & Cti::Protocol::Emetcon::IO_Read ) )
+                    if( !(status = NackTst(InMessage->Buffer.InMessage[0], &nack1, OutMessage->Remote)) &&
+                        !(status = NackTst(InMessage->Buffer.InMessage[1], &nack2, OutMessage->Remote)) &&
+                        !nack1 && 
+                        !nack2 )
                     {
-                        DSTRUCT        DSt;
-
-                        /* This is I so decode dword(s) for the result */
-                        CommResult = InMessage->EventCode = status = D_Words (InMessage->Buffer.InMessage + 3, (USHORT)((InMessage->InLength - 3) / (DWORDLEN + 1)),  OutMessage->Remote, &DSt);
-                        DSt.Time = InMessage->Time;
-                        DSt.DSTFlag = InMessage->MilliTime & DSTACTIVE;
-                        InMessage->Buffer.DSt = DSt;
+                        InMessage->InLength = OutMessage->InLength;
+    
+                        if( (OutMessage->EventCode & BWORD) &&
+                            (OutMessage->Buffer.BSt.IO & Cti::Protocol::Emetcon::IO_Read ) )
+                        {
+                            DSTRUCT        DSt;
+    
+                            /* This is I so decode dword(s) for the result */
+                            CommResult = InMessage->EventCode = status = D_Words (InMessage->Buffer.InMessage + 3, (USHORT)((InMessage->InLength - 3) / (DWORDLEN + 1)),  OutMessage->Remote, &DSt);
+                            DSt.Time = InMessage->Time;
+                            DSt.DSTFlag = InMessage->MilliTime & DSTACTIVE;
+                            InMessage->Buffer.DSt = DSt;
+                        }
                     }
-                }
-                else
-                {
-                    status = NACK1;
-                }
-
-                CtiDeviceSPtr tempDevice;
-                if( !CommResult && !status && (InMessage->DeviceID != InMessage->TargetID) && InMessage->DeviceID != 0 && InMessage->TargetID != 0 && (tempDevice = DeviceManager.RemoteGetEqual(InMessage->TargetID)) )
-                {
-                    if( InMessage->Buffer.DSt.Length && //  make sure it's not just an ACK
-                        tempDevice->getAddress() != CtiDeviceMCT::TestAddress1 &&  //  also, make sure we're not sending to an FCT-jumpered MCT,
-                        tempDevice->getAddress() != CtiDeviceMCT::TestAddress2 &&  //    since it'll return its native address and not the test address
-                        (tempDevice->getAddress() & 0x1fff) != (InMessage->Buffer.DSt.Address & 0x1fff) )
-                    {
-                        //  Address did not match, so it's a comm error
-                        status = CommResult = WRONGADDRESS;
-                        InMessage->EventCode = WRONGADDRESS;
+					else if( !status && nack1 )
+					{
+						status = NOTNORMAL;
 
                         {
                             CtiLockGuard<CtiLogger> doubt_guard(dout);
-                            dout << CtiTime() << " **** Checkpoint - Wrong DLC Address: \"" << tempDevice->getName() << "\" ";
-                            dout << "(" << tempDevice->getAddress() << ") != (" << InMessage->Buffer.DSt.Address << ") **** " << __FILE__ << " (" << __LINE__ << ")" << endl;
+                            dout << CtiTime() << " **** Checkpoint - NACK received in CCU header from device \"" << Device->getName() << "\" **** " << __FILE__ << " (" << __LINE__ << ")" << endl;
+                        }
+					}
+					else if( !status && nack2 )
+					{
+                        {
+                            CtiLockGuard<CtiLogger> doubt_guard(dout);
+                            dout << CtiTime() << " **** Checkpoint - repeaters expected but not heard **** " << __FILE__ << " (" << __LINE__ << ")" << endl;
+                        }
+					}
+    
+                    CtiDeviceSPtr tempDevice;
+                    if( !CommResult && !status && (tempDevice = DeviceManager.RemoteGetEqual(InMessage->TargetID)) )
+                    {
+                        //  note that if D_Words() had an error, we'll never get here...
+
+                        if( InMessage->Buffer.DSt.Length && //  make sure it's not just an ACK
+                            tempDevice->getAddress() != CtiDeviceMCT::TestAddress1 &&  //  also, make sure we're not sending to an FCT-jumpered MCT,
+                            tempDevice->getAddress() != CtiDeviceMCT::TestAddress2 &&  //    since it'll return its native address and not the test address
+                            (tempDevice->getAddress() & 0x1fff) != (InMessage->Buffer.DSt.Address & 0x1fff) )
+                        {
+                            //  Seems this should percolate to the device level, although setting status here kills the decode
+                            
+                            //  Address did not match, so it's a comm error
+                            status = CommResult = WRONGADDRESS;
+                            InMessage->EventCode = WRONGADDRESS;
+    
+                            {
+                                CtiLockGuard<CtiLogger> doubt_guard(dout);
+                                dout << CtiTime() << " **** Checkpoint - Wrong DLC Address: \"" << tempDevice->getName() << "\" ";
+                                dout << "(" << tempDevice->getAddress() << ") != (" << InMessage->Buffer.DSt.Address << ") **** " << __FILE__ << " (" << __LINE__ << ")" << endl;
+                            }
                         }
                     }
                 }
