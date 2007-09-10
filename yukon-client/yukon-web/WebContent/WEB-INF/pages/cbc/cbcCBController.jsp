@@ -181,7 +181,7 @@
             </f:verbatim>
              </h:column>
             
-            <h:column rendered="#{capControlForm.CBControllerEditor.twoWay}">
+            <h:column>
             <x:panelGroup>                      
                 <f:verbatim>
                     <br />
@@ -192,7 +192,7 @@
                 </f:verbatim>
                 <x:div forceId="true" id="CBCCtlEditorScrollDiv" styleClass="scrollSmall">
 
-                    <x:tree2 binding="#{capControlForm.CBControllerEditor.pointTree}" id="CtlEditPointTree" value="#{capControlForm.CBControllerEditor.pointList}" var="node" showRootNode="false" varNodeToggler="t" preserveToggle="true" clientSideToggle="false">
+                    <x:tree2 binding="#{capControlForm.CBControllerEditor.pointTree}" id="CtlEditPointTree" value="#{capControlForm.CBControllerEditor.pointList}" var="node" showRootNode="false" varNodeToggler="t" preserveToggle="true" clientSideToggle="false" showLines="false">
 
                         <f:facet name="root" >
                             <x:panelGroup>
