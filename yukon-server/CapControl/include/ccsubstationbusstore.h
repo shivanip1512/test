@@ -28,6 +28,7 @@
 
 #include "observe.h"
 #include "ccarea.h"
+#include "ccsparea.h"
 #include "ccid.h"
 #include "ccstate.h"
 #include "ccmessage.h"
@@ -77,6 +78,7 @@ public:
     CtiCCSubstationBus_vec* getCCSubstationBuses(ULONG secondsFrom1901);
     CtiCCState_vec* getCCCapBankStates(ULONG secondsFrom1901);
     CtiCCArea_vec* getCCGeoAreas(ULONG secondsFrom1901);
+    CtiCCSpArea_vec* getCCSpecialAreas(ULONG secondsFrom1901);
 
     static CtiCCSubstationBusStore* getInstance();
     static void deleteInstance();
@@ -114,6 +116,7 @@ public:
     int getNbrOfFeedersWithPointID(long point_id);
     int getNbrOfCapBanksWithPointID(long point_id);
     CtiCCAreaPtr findAreaByPAObjectID(long paobject_id);
+    CtiCCSpecialPtr findSpecialAreaByPAObjectID(long paobject_id);
     CtiCCSubstationBusPtr findSubBusByPAObjectID(long paobject_id);
     CtiCCFeederPtr findFeederByPAObjectID(long paobject_id);
     CtiCCCapBankPtr findCapBankByPAObjectID(long paobject_id);
@@ -134,6 +137,7 @@ public:
     void deleteFeeder(long feederId);
     void deleteSubBus(long subBusId);
     void deleteArea(long areaId);
+    void deleteSpecialArea(long areaId);
     void deleteStrategy(long strategyId);
 
     void reloadCapBankFromDatabase(long capBankId, map< long, CtiCCCapBankPtr > *paobject_capbank_map,
@@ -164,6 +168,10 @@ public:
                                   map< long, CtiCCAreaPtr > *paobject_area_map,
                                   multimap< long, CtiCCAreaPtr > *pointid_area_map,
                                   CtiCCArea_vec *ccGeoAreas);
+    void reloadSpecialAreaFromDatabase(long areaId, map< long, CtiCCStrategyPtr > *strategy_map, 
+                                  map< long, CtiCCSpecialPtr > *paobject_specialarea_map,
+                                  multimap< long, CtiCCSpecialPtr > *pointid_specialarea_map,
+                                  CtiCCSpArea_vec *ccSpecialAreas);
     void reloadStrategyFromDataBase(long strategyId, map< long, CtiCCStrategyPtr > *strategy_map);
     void reloadCapBankStatesFromDatabase();
     void reloadGeoAreasFromDatabase();
@@ -232,6 +240,7 @@ private:
     CtiCCSubstationBus_vec  *_ccSubstationBuses;
     CtiCCState_vec  *_ccCapBankStates;
     CtiCCArea_vec *_ccGeoAreas;
+    CtiCCSpArea_vec *_ccSpecialAreas;
 
     RWThread _resetthr;
     RWThread _amfmthr;
@@ -271,18 +280,21 @@ private:
 
     static const string m3iAMFMNullString;
 
+    map< long, CtiCCSpecialPtr > _paobject_specialarea_map;
     map< long, CtiCCAreaPtr > _paobject_area_map;
     map< long, CtiCCSubstationBusPtr > _paobject_subbus_map;
     map< long, CtiCCFeederPtr > _paobject_feeder_map;
     map< long, CtiCCCapBankPtr > _paobject_capbank_map;
 
     multimap< long, CtiCCAreaPtr > _pointid_area_map;
+    multimap< long, CtiCCSpecialPtr > _pointid_specialarea_map;
     multimap< long, CtiCCSubstationBusPtr > _pointid_subbus_map;
     multimap< long, CtiCCFeederPtr > _pointid_feeder_map;
     multimap< long, CtiCCCapBankPtr > _pointid_capbank_map;
 
     map< long, CtiCCStrategyPtr > _strategyid_strategy_map;
 
+    map< long, long > _subbus_specialarea_map; 
     map< long, long > _subbus_area_map; 
     map< long, long > _feeder_area_map; 
     map< long, long > _feeder_subbus_map; 

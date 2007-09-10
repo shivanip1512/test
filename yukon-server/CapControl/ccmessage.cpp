@@ -921,6 +921,134 @@ void CtiCCGeoAreasMsg::saveGuts(RWvostream& strm) const
 }
 
 
+
+/*===========================================================================
+    CtiCCGeoAreasMsg
+===========================================================================*/
+
+RWDEFINE_COLLECTABLE( CtiCCSpecialAreasMsg, CTICCSPECIALAREAS_MSG_ID )
+
+/*---------------------------------------------------------------------------
+    Constuctors
+---------------------------------------------------------------------------*/
+CtiCCSpecialAreasMsg::CtiCCSpecialAreasMsg(CtiCCSpArea_vec& ccSpecialAreas) : CtiCCMessage("CCSpecialAreas"), _ccSpecialAreas(NULL)
+{
+    _ccSpecialAreas = new CtiCCSpArea_vec;
+    if( _CC_DEBUG & CC_DEBUG_EXTENDED )  
+    {
+        CtiLockGuard<CtiLogger> logger_guard(dout);
+        dout << CtiTime() << " - CtiCCSpecialAreasMsg has "<< ccSpecialAreas.size()<<" entries." << endl;
+    }
+    if( _CC_DEBUG & CC_DEBUG_RIDICULOUS )  
+    {
+        for (int h=0;h < ccSpecialAreas.size(); h++) 
+        {
+            {
+                CtiLockGuard<CtiLogger> logger_guard(dout);
+                dout << CtiTime() << " - Area: "<<((CtiCCSpecial*)ccSpecialAreas[h])->getPAOName()<< endl;
+            }
+        }
+    }
+
+    for(int i=0;i<ccSpecialAreas.size();i++)
+    {
+        CtiCCSpecial* tempAreaPtr = new CtiCCSpecial();
+        CtiCCSpecial* tempAreaPtr2 = (CtiCCSpecial*)(ccSpecialAreas.at(i));
+        *tempAreaPtr = *tempAreaPtr2;
+        _ccSpecialAreas->push_back(tempAreaPtr);
+    }
+}
+
+CtiCCSpecialAreasMsg::CtiCCSpecialAreasMsg(CtiCCSpecial* ccSpecialArea) : CtiCCMessage("CCSpecialAreas"), _ccSpecialAreas(NULL)
+{
+    _ccSpecialAreas = new CtiCCSpArea_vec;
+
+    CtiCCSpecial* tempAreaPtr = new CtiCCSpecial();
+    CtiCCSpecial* tempAreaPtr2 = ccSpecialArea;
+    *tempAreaPtr = *tempAreaPtr2;
+    _ccSpecialAreas->push_back(tempAreaPtr);
+}
+
+CtiCCSpecialAreasMsg::CtiCCSpecialAreasMsg(const CtiCCSpecialAreasMsg& ccSpecialAreasMsg) : CtiCCMessage("CCSpecialAreas"), _ccSpecialAreas(NULL)
+{
+    operator=(ccSpecialAreasMsg);
+}
+
+/*---------------------------------------------------------------------------
+    Destructor
+---------------------------------------------------------------------------*/
+CtiCCSpecialAreasMsg::~CtiCCSpecialAreasMsg()
+{
+    if( _ccSpecialAreas != NULL &&
+            _ccSpecialAreas->size() > 0 )
+        {
+            delete_vector(_ccSpecialAreas);
+            _ccSpecialAreas->clear();
+            delete _ccSpecialAreas;
+        }
+}
+
+/*---------------------------------------------------------------------------
+    replicateMessage
+---------------------------------------------------------------------------*/
+CtiMessage* CtiCCSpecialAreasMsg::replicateMessage() const
+{
+    return new CtiCCSpecialAreasMsg(*this);
+}
+
+/*---------------------------------------------------------------------------
+    operator=
+---------------------------------------------------------------------------*/
+CtiCCSpecialAreasMsg& CtiCCSpecialAreasMsg::operator=(const CtiCCSpecialAreasMsg& right)
+{
+    if( this != &right )
+    {
+        if( _ccSpecialAreas != NULL &&
+            _ccSpecialAreas->size() > 0 )
+        {
+            delete_vector(_ccSpecialAreas);
+            _ccSpecialAreas->clear();
+            delete _ccSpecialAreas;
+        }
+		if ( _ccSpecialAreas == NULL )
+			_ccSpecialAreas = new CtiCCSpArea_vec;
+		for(CtiCCSpArea_vec::iterator itr = right.getCCSpecialAreas()->begin(); 
+		    itr != right.getCCSpecialAreas()->end(); 
+			itr++ )
+        {
+            CtiCCSpecial* tempAreaPtr = new CtiCCSpecial();
+            CtiCCSpecial* tempAreaPtr2 = *itr;
+            *tempAreaPtr = *tempAreaPtr2;
+            _ccSpecialAreas->push_back(tempAreaPtr);
+        }
+    }
+
+    return *this;
+}
+
+/*---------------------------------------------------------------------------
+    restoreGuts
+    
+    Restores the state of self fromt he given RWvistream
+---------------------------------------------------------------------------*/
+void CtiCCSpecialAreasMsg::restoreGuts(RWvistream& strm)
+{
+    CtiCCMessage::restoreGuts(strm);
+	strm >> _ccSpecialAreas;
+}
+
+/*---------------------------------------------------------------------------
+    saveGuts
+    
+    Saves the state of self into the given RWvostream
+---------------------------------------------------------------------------*/
+void CtiCCSpecialAreasMsg::saveGuts(RWvostream& strm) const
+{
+    CtiCCMessage::saveGuts(strm);
+    strm << _ccSpecialAreas;
+}
+
+
 /*===========================================================================
     CtiCCShutdown
 ===========================================================================*/

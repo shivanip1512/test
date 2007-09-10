@@ -140,7 +140,9 @@ RWDECLARE_COLLECTABLE( CtiCCArea )
     string _additionalFlags;
     BOOL _ovUvDisabledFlag;
 
-    std:: vector <CtiCCSubstationBus*> _ccsubs;
+    std::vector <CtiCCSubstationBus*> _ccsubs;
+    BOOL _isSpecial;
+
    //don't stream
     BOOL _insertDynamicDataFlag;
     BOOL _dirty;

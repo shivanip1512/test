@@ -416,7 +416,6 @@ void CtiPAOScheduleManager::runScheduledEvent(CtiPAOEvent *event)
             break;
     }
 
-
     event = NULL;
 }
 int CtiPAOScheduleManager::parseEvent(const string& _command, int &strategy, long &secsSinceLastOperation)

@@ -21,10 +21,12 @@
 
 #include "message.h"
 #include "ccarea.h"
+#include "ccsparea.h"
 #include "ccstate.h"
 //#include "rwutil.h"
 
 typedef std::vector<CtiCCArea*> CtiCCArea_vec;
+typedef std::vector<CtiCCSpecial*> CtiCCSpArea_vec;
 typedef std::vector<CtiCCSubstationBus*> CtiCCSubstationBus_vec;
 //typedef std::vector<RWCollectableString*> CtiCCGeoArea_vec;
 typedef std::vector<CtiCCState*> CtiCCState_vec;
@@ -417,6 +419,33 @@ private:
     
     CtiCCArea_vec* _ccGeoAreas;
 };
+
+class CtiCCSpecialAreasMsg : public CtiCCMessage
+{
+RWDECLARE_COLLECTABLE( CtiCCSpecialAreasMsg )
+
+public:
+
+    CtiCCSpecialAreasMsg(CtiCCSpArea_vec& areaList);
+    CtiCCSpecialAreasMsg(CtiCCSpecial* ccArea);
+    CtiCCSpecialAreasMsg(const CtiCCSpecialAreasMsg& ccSpecialAreas);
+
+    virtual ~CtiCCSpecialAreasMsg();
+
+    CtiCCSpArea_vec* getCCSpecialAreas() const     { return _ccSpecialAreas; }
+
+    virtual CtiMessage* replicateMessage() const;
+
+    void restoreGuts( RWvistream& );
+    void saveGuts( RWvostream&) const;
+
+    CtiCCSpecialAreasMsg& operator=(const CtiCCSpecialAreasMsg& right);
+private:
+    CtiCCSpecialAreasMsg() : CtiCCMessage("CCSpecialAreas"), _ccSpecialAreas(NULL){};
+    
+    CtiCCSpArea_vec* _ccSpecialAreas;
+};
+
 
 class CtiCCShutdown : public CtiCCMessage
 {
