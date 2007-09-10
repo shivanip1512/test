@@ -1321,6 +1321,91 @@ void CtiLMManualControlRequestExecutor::Execute()
         
         break;
 
+    case CtiLMManualControlRequest::CHANGE_GEAR:
+        {
+            stopTime = _controlMsg->getStopTime();
+    
+            switch(_controlMsg->getConstraintCmd())
+            {
+            case CtiLMManualControlRequest::CHECK_CONSTRAINTS:
+                passed_check = checker.checkConstraints(     _controlMsg->getStartGear()-1,
+                                                             startTime.seconds(),
+                                                             stopTime.seconds());
+    
+                passed_check &= checker.checkManualGearChangeConstraints(_controlMsg->getStartGear(), stopTime.seconds());
+    
+    
+                if( controlArea != NULL )
+                {
+                    passed_check &= checker.checkControlAreaControlWindows(*controlArea, startTime.seconds(), stopTime.seconds());
+                }
+    
+                if(response != NULL)
+                {
+                    if(passed_check)
+                    {
+                        response->setStatus(CtiServerResponseMsg::OK);
+                        response->setMessage("Manual Gear Change Request Constraint Check OK");
+                    }
+                    else
+                    {
+                        response->setStatus(CtiServerResponseMsg::ERR);
+                        response->setMessage("Manual Gear Change Request Constraint Check Violations");             
+                    }
+                }
+                //Do not actually start the program
+                break;
+                
+            case CtiLMManualControlRequest::OVERRIDE_CONSTRAINTS:
+                (boost::static_pointer_cast< CtiLMProgramDirect >(program))->setConstraintOverride(true);
+                if( checker.checkManualGearChangeConstraints(_controlMsg->getStartGear(), stopTime.seconds() )// I have decided that these do not allow override
+                {
+                    StartProgram(program, controlArea, startTime, stopTime);
+                    if(response != NULL)
+                    {
+                        response->setStatus(CtiServerResponseMsg::OK);
+                        response->setMessage("Manual Gear Change Request OK, Overriding Constraints");
+                    }
+                }
+                else if(response != NULL)
+                {
+                    response->setStatus(CtiServerResponseMsg::ERR);
+                    response->setMessage("Manual Gear Change Request Violates Gear Change Specific Constraints, Abandoning");
+                }  
+                break;
+                
+            case CtiLMManualControlRequest::USE_CONSTRAINTS:
+                // Fix up program control window if necessary
+                (boost::static_pointer_cast< CtiLMProgramDirect >(program))->setConstraintOverride(false);
+                CoerceStartStopTime(program, startTime, stopTime, controlArea);
+                if( checker.checkConstraints(_controlMsg->getStartGear()-1, startTime.seconds(), stopTime.seconds()) &&
+                    checker.checkControlAreaControlWindows(*controlArea, startTime.seconds(), stopTime.seconds())  )
+                {
+                    StartProgram(program, controlArea, startTime, stopTime);
+    
+                    if(response != NULL)
+                    {
+                        response->setStatus(CtiServerResponseMsg::OK);
+                        response->setMessage("Manual Gear Change Request OK, Using Constraints");
+                    } 
+                }
+                else if(response != NULL)
+                {
+                    response->setStatus(CtiServerResponseMsg::ERR);
+                    response->setMessage("Manual Gear Change Request Violates Constraints, Abandoning");
+                }       
+                break;
+    
+            default:
+                {
+                    CtiLockGuard<CtiLogger> logger_guard(dout);
+                    dout << CtiTime() << " *** Checkpoint *** Received request with improper constraints " << __FILE__ << "(" << __LINE__ << ")" << endl;
+                }
+                break;
+                
+            };
+        }
+        break;
     default:
         {
             CtiLockGuard<CtiLogger> logger_guard(dout);
@@ -1571,6 +1656,40 @@ void CtiLMManualControlRequestExecutor::StopDirectProgram(CtiLMProgramDirectSPtr
         lmProgramDirect->setManualControlReceivedFlag(TRUE);
         controlArea->setUpdatedFlag(TRUE);
     }
+}
+
+void CtiLMManualControlRequestExecutor::ChangeProgramGear(CtiLMProgramDirectSPtr lmProgramDirect, CtiLMControlArea* controlArea,
+                                                           const CtiTime& start, const CtiTime& stop, LONG nextGear)
+{
+    CtiTime startTime = start;
+
+    lmProgramDirect->setManualControlReceivedFlag(FALSE);
+
+    lmProgramDirect->setDirectStartTime(startTime);
+    lmProgramDirect->setStartedControlling(startTime);
+
+    // Let any notification groups know if they care
+    lmProgramDirect->scheduleNotification(start, stop);
+    
+    if( stop.seconds() < CtiTime(CtiDate(1,1,1991),0,0,0).seconds() )
+    {//saves us from stopping immediately after starting if client is dumb enough to send us a stop time of 1990
+        CtiTime pluggedStopTime(lmProgramDirect->getDirectStartTime());
+        pluggedStopTime = pluggedStopTime.addDays(1);
+        lmProgramDirect->setDirectStopTime(pluggedStopTime);
+    }
+    else
+    {
+        lmProgramDirect->setDirectStopTime(stop);
+    }
+    
+    lmProgramDirect->setCurrentGearNumber(_controlMsg->getStartGear()-1);
+    if( _controlMsg->getStartPriority() > controlArea->getCurrentStartPriority() )
+    {
+        controlArea->setCurrentStartPriority(_controlMsg->getStartPriority());
+    }
+    
+    lmProgramDirect->setManualControlReceivedFlag(TRUE);
+    controlArea->setUpdatedFlag(TRUE);
 }
 
 void CtiLMManualControlRequestExecutor::StartCurtailmentProgram(CtiLMProgramCurtailmentSPtr lmProgramCurtailment, CtiLMControlArea* controlArea,

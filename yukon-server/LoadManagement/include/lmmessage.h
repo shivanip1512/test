@@ -118,7 +118,8 @@ public:
         SCHEDULED_START = 0,
         SCHEDULED_STOP,
         START_NOW,
-        STOP_NOW
+        STOP_NOW,
+        CHANGE_GEAR
     } Command;      
     
      enum   

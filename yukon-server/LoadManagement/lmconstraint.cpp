@@ -939,3 +939,48 @@ bool CtiLMGroupConstraintChecker::checkDurationConstraint(LONG current_duration,
     }
     return true;
 }
+
+bool CtiLMProgramConstraintChecker::checkManualGearChangeConstraints(ULONG proposed_gear, ULONG proposed_stop_seconds)
+{
+    bool ret_val = true;
+    CtiLMProgramDirectGear* currentGearObject = _lm_program.getCurrentGearObject();
+
+    if( proposed_stop_seconds > _lm_program.getDirectStopTime().seconds() )
+    {
+        string result = "Gear change does not support extending the stop time. Current stop time: ";
+        result += _lm_program.getDirectStopTime().asString();
+        result += " Requested stop time: ";
+        result += CtiTime(proposed_stop_seconds).asString();
+        result += " You cannot override this constraint error."
+        _results.push_back(result);
+
+        ret_val = false;
+    }
+
+    if( proposed_gear == _lm_program.getCurrentGearNumber() )
+    {
+        string result = "New gear id is identical to the current running gear. You cannot override this constraint error.";
+        _results.push_back(result);
+
+        ret_val = false;
+    }
+
+    if( _lm_program.getProgramState() == CtiLMProgramBase::StoppingState || _lm_program.getProgramState() == CtiLMProgramBase::InactiveState )
+    {
+        string result = "Program state is set to: ";
+        result += _lm_program.getProgramState() == CtiLMProgramBase::StoppingState ? "Stopping" : "Inactive";
+        result += " Gear cannot be changed when program is not active. You cannot override this constraint error.";
+        _results.push_back(result);
+
+        ret_val = false;
+    }
+
+    if( currentGearObject != NULL && !stringCompareIgnoreCase(currentGearObject->getControlMethod(), CtiLMProgramDirectGear::LatchingMethod) )
+    {
+        string result = "Latching method currently in use, you cannot change from latching method.";
+        _results.push_back(result);
+    }
+
+    return ret_val;
+    
+}

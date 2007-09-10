@@ -81,6 +81,7 @@ public:
     bool checkMaxHoursSeasonal(LONG& control_duration, bool adjust_duration = false);
     bool checkMaxHoursAnnually(LONG& control_duration, bool adjust_duration = false);
     bool checkProgramControlWindow(LONG& control_duration, bool adjust_duration = false);
+    bool checkManualGearChangeConstraints(ULONG proposed_gear, ULONG proposed_stop_seconds);
     
 private:
     bool checkDurationConstraint(LONG current_duration, LONG max_duration, LONG& control_duration, bool adjust_duration);
