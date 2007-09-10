@@ -1,5 +1,7 @@
 package com.cannontech.yukon.cbc;
 
+import com.cannontech.message.util.VectorExtract;
+import com.cannontech.message.util.VectorInsert;
 import com.roguewave.vsj.CollectableStreamer;
 import com.roguewave.vsj.DefineCollectable;
 import com.roguewave.vsj.VirtualInputStream;
@@ -8,7 +10,7 @@ import com.roguewave.vsj.streamer.SimpleMappings;
 
 public class DefineCollectableSpecialCBCArea extends DefineCollectableStreamableCapObject {
     // The roguewave class id
-    private static int CTI_CCAREA_ID = 523;
+    private static int CTI_CCSPECIALAREA_ID = 523;
 
     /**
      * DefineCollectableCapBankVector constructor comment.
@@ -30,7 +32,7 @@ public class DefineCollectableSpecialCBCArea extends DefineCollectableStreamable
      * getCxxClassId method comment.
      */
     public int getCxxClassId() {
-        return CTI_CCAREA_ID;
+        return CTI_CCSPECIALAREA_ID;
     }
 
     /**
@@ -61,15 +63,14 @@ public class DefineCollectableSpecialCBCArea extends DefineCollectableStreamable
         area.setPaoType((String) vstr.restoreObject(SimpleMappings.CString));
         area.setPaoDescription((String) vstr.restoreObject(SimpleMappings.CString));
         area.setDisableFlag(((int) vstr.extractUnsignedInt() == 1) ? new Boolean(true) : new Boolean(false));
-        area.setOvUvDisabledFlag(((int) vstr.extractUnsignedInt() == 1) ? new Boolean(true) : new Boolean(false));
-
+        area.setCcSubIds(VectorExtract.extractVector(vstr,polystr));
     }
 
     /**
      * saveGuts method comment.
      */
     public void saveGuts(Object obj, VirtualOutputStream vstr, CollectableStreamer polystr) throws java.io.IOException {
-        CBCArea area = (CBCArea) obj;
+    	CBCSpecialArea area = (CBCSpecialArea) obj;
         
         vstr.insertUnsignedInt(area.getPaoID().intValue());
         vstr.saveObject(area.getPaoCategory(), SimpleMappings.CString);
@@ -78,8 +79,8 @@ public class DefineCollectableSpecialCBCArea extends DefineCollectableStreamable
         vstr.saveObject(area.getPaoType(), SimpleMappings.CString);
         vstr.saveObject(area.getPaoDescription(), SimpleMappings.CString);
         vstr.insertUnsignedInt((area.getDisableFlag().booleanValue()) ? 1 : 0);
-        vstr.insertUnsignedInt((area.getOvUvDisabledFlag().booleanValue()) ? 1 : 0);
-
+        VectorInsert.insertVector(area.getCcSubIds(), vstr, polystr);
+       
     }
 }
 

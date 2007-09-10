@@ -110,6 +110,15 @@ public class SeasonScheduleDaoImpl implements SeasonScheduleDao{
         }
     }
     
+    public void saveDefaultSeasonStrategyAssigment(int paoId) {
+        
+        String sql = "Delete From CCSeasonStrategyAssignment Where PaobjectId = ?";
+        jdbcTemplate.update(sql, paoId);
+        
+        sql = "Insert Into CCSeasonStrategyAssignment Values ( ?,?,?,? )";
+        jdbcTemplate.update( sql, paoId, 0, "Default Season" ,  0);
+    }
+    
     public static Connection getConnection() {
         Connection connection = PoolManager.getInstance().getConnection(CtiUtilities.getDatabaseAlias());
         return connection;

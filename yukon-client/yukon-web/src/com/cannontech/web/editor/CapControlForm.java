@@ -841,7 +841,7 @@ public class CapControlForm extends DBEditorForm implements ICapControlModel{
 		String dualBusCtl = (getEnableDualBus().booleanValue()) ? "Y" : "N";
 		((CapControlSubBus) getDbPersistent()).getCapControlSubstationBus().setDualBusEnabled(dualBusCtl);
 	}
-
+    
 	/**
 	 * Creates extra points or any other supporting object for the given parent
 	 * based on the paoType
@@ -854,6 +854,8 @@ public class CapControlForm extends DBEditorForm implements ICapControlModel{
 		CBCDBObjCreator cbObjCreator = new CBCDBObjCreator(getWizData());
         if (dbObj instanceof CapBank) {
             createCapBankAdditional(dbObj, facesMsg);
+        }else if(dbObj instanceof CapControlSpecialArea || dbObj instanceof CapControlArea) {
+            seasonScheduleDao.saveDefaultSeasonStrategyAssigment(parentID);
         }
         if  (paoType == CapControlTypes.CAP_CONTROL_FEEDER || paoType == CapControlTypes.CAP_CONTROL_SUBBUS) {
             smartMulti = CBCPointFactory.createPointsForPAO(dbObj);

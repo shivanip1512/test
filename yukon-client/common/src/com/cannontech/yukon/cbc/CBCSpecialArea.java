@@ -3,15 +3,25 @@ package com.cannontech.yukon.cbc;
 public class CBCSpecialArea extends StreamableCapObject {
 
     private Boolean disableFlag;
-    private Boolean ovUvDisabledFlag;
     private String paoDescription;
     private String paoType;
     private String paoName;
     private String paoCategory;
     private Integer paoID;
     private String paoClass;
+	//should only contain objects of type integer
+	private java.util.Vector ccSubIds = null;
+    
 
-    public void setPaoID(Integer integer) {
+    public java.util.Vector getCcSubIds() {
+		return ccSubIds;
+	}
+
+	public void setCcSubIds(java.util.Vector ccSubIds) {
+		this.ccSubIds = ccSubIds;
+	}
+
+	public void setPaoID(Integer integer) {
         paoID = integer;
     }
 
@@ -88,13 +98,7 @@ public class CBCSpecialArea extends StreamableCapObject {
         return copy;
     }
 
-    public Boolean getOvUvDisabledFlag() {
-        return ovUvDisabledFlag;
-    }
 
-    public void setOvUvDisabledFlag(Boolean ovUvDisabledFlag) {
-        this.ovUvDisabledFlag = ovUvDisabledFlag;
-    }
 
 }
 

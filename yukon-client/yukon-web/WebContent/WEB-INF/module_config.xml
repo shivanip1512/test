@@ -83,6 +83,9 @@
           <option name="Area">
             <link>/editor/cbcWizBase.jsf?type=4002</link>
           </option>
+          <option name="Special Area">
+            <link>/editor/cbcWizBase.jsf?type=4003</link>
+          </option>
           <option name="Substation">
             <link>/editor/cbcWizBase.jsf?type=4000</link>
           </option>

@@ -47,6 +47,8 @@ public final static int getCapControlType(String typeString)
 		return CAP_CONTROL_FEEDER;
     else if (typeString.equalsIgnoreCase(STRING_CAPCONTROL_AREA))
         return CAP_CONTROL_AREA;
+    else if (typeString.equalsIgnoreCase(STRING_CAPCONTROL_SPECIAL_AREA))
+        return CAP_CONTROL_SPECIAL_AREA;
     else
 		return INVALID;
 }
