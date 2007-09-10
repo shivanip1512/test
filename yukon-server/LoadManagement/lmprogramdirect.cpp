@@ -4402,6 +4402,13 @@ bool CtiLMProgramDirect::updateGroupsRampingOut(CtiMultiMsg* multiPilMsg, CtiMul
 BOOL CtiLMProgramDirect::handleManualControl(ULONG secondsFrom1901, CtiMultiMsg* multiPilMsg, CtiMultiMsg* multiDispatchMsg, CtiMultiMsg* multiNotifMsg)
 {
     BOOL returnBoolean = FALSE;
+    vector<CtiLMControlAreaTrigger *> emptyTriggers;
+
+    if( getProgramState() == CtiLMProgramBase::ManualActiveState && hasGearChanged(_lmprogramdirectgears[_currentgearnumber]->getChangePriority() - 1, emptyTriggers, secondsFrom1901, multiDispatchMsg, false) )
+    {
+        // hasGearChanged here changed the gear for us, we want to do a full manual control now, not a refresh.
+        setProgramState(CtiLMProgramBase::ScheduledState);
+    }
 
     if( getProgramState() == CtiLMProgramBase::ScheduledState )
     {
@@ -5714,7 +5721,6 @@ void CtiLMProgramDirect::scheduleStopNotification(const CtiTime& stop_time)
         }
     }
 }
-
 
 // Static Members
 int CtiLMProgramDirect::defaultLMStartPriority = 13;
