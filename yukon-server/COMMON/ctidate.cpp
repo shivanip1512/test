@@ -202,18 +202,6 @@ CtiDate CtiDate::now()
     return CtiDate();
 }
 
-CtiDate& CtiDate::toUTCdate()
-{
-    struct tm ctime;
-
-    CtiTime ct(*this);
-    ct.toUTCtime();
-    ct.extract(&ctime);
-    bdate = date(ctime.tm_mday, ctime.tm_mon, ctime.tm_year);
-
-    return *this;
-}
-
 CtiDate& CtiDate::operator++()
 {
     bdate = bdate + date_duration(1);

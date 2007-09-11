@@ -63,8 +63,6 @@ public:
     bool operator == (const CtiDate& d2) const;
     bool operator != (const CtiDate& d2) const;
 
-    CtiDate & toUTCdate();
-
     unsigned int day() const;
     unsigned int daysFrom1970() const;
     unsigned int dayOfMonth() const;
