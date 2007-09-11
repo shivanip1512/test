@@ -10,8 +10,8 @@
 * Author: Corey G. Plender
 *
 * CVS KEYWORDS:
-* REVISION     :  $Revision: 1.21 $
-* DATE         :  $Date: 2006/03/23 15:29:16 $
+* REVISION     :  $Revision: 1.22 $
+* DATE         :  $Date: 2007/09/11 18:16:19 $
 *
 * Copyright (c) 2002 Cannon Technologies Inc. All rights reserved.
 *-----------------------------------------------------------------------------*/
@@ -4172,8 +4172,7 @@ bool CtiDeviceGatewayStat::generateTidbitToDatabase( USHORT Type, int day, int p
     {
         try
         {
-            CtiTime _now = now;
-            CtiDate gmtdate( _now.toUTCtime() );
+            CtiDate gmtdate( now.asGMT() );
             // Always record one of these
             tstamp.setSerialNumber(getDeviceSerialNumber());
             tstamp.setHardwareType(TYPE_ENERGYPRO);

@@ -7,8 +7,8 @@
 * Author: Corey G. Plender
 *
 * CVS KEYWORDS:
-* REVISION     :  $Revision: 1.15 $
-* DATE         :  $Date: 2007/04/11 14:37:49 $
+* REVISION     :  $Revision: 1.16 $
+* DATE         :  $Date: 2007/09/11 18:16:19 $
 *
 * Copyright (c) 2002 Cannon Technologies Inc. All rights reserved.
 *-----------------------------------------------------------------------------*/
@@ -113,15 +113,15 @@ void CtiDeviceGateway::sendtm_Clock (BYTE hour, BYTE minute)
     CtiTime now;
     CtiDate today( now );
 
+    //  Unused and incorrectly named... ?
+    //string gmt_str = today.asString() + CtiNumStr(now.hour()).zpad(2) + ":" + CtiNumStr(now.minute()).zpad(2) + ":" + CtiNumStr(now.second()).zpad(2) + " GMT";
 
-    string gmt_str = today.asString() + CtiNumStr(now.hour()).zpad(2) + ":" + CtiNumStr(now.minute()).zpad(2) + ":" + CtiNumStr(now.second()).zpad(2) + " GMT";
-
-    tm_Clock.Type = htons (TYPE_TM_CLOCK);
-    tm_Clock.tm_sec = now.second();
-    tm_Clock.tm_min = now.minute();
+    tm_Clock.Type    = htons (TYPE_TM_CLOCK);
+    tm_Clock.tm_sec  = now.second();
+    tm_Clock.tm_min  = now.minute();
     tm_Clock.tm_hour = now.hour();
     tm_Clock.tm_mday = today.dayOfMonth();
-    tm_Clock.tm_mon = today.month();
+    tm_Clock.tm_mon  = today.month();
     tm_Clock.tm_year = today.year() - 1900;
     tm_Clock.tm_wday = (today.weekDay() % 7);    // Put it in a tm form.
 
@@ -142,17 +142,17 @@ void CtiDeviceGateway::sendGMTClock (BYTE hour, BYTE minute)
     TM_CLOCK tm_Clock;
     struct tm *newtime;
     CtiTime now;
-    CtiTime _now = now;
-    CtiDate today( _now.toUTCtime() );
+    CtiDate today(now.asGMT());
     
-    string gmt_str = today.asString() + CtiNumStr(now.hourGMT()).zpad(2) + ":" + CtiNumStr(now.minuteGMT()).zpad(2) + ":" + CtiNumStr(now.second()).zpad(2) + " GMT";
+    //  Unused... ?  mskf 20070910
+    //  string gmt_str = today.asString() + CtiNumStr(now.hourGMT()).zpad(2) + ":" + CtiNumStr(now.minuteGMT()).zpad(2) + ":" + CtiNumStr(now.second()).zpad(2) + " GMT";
 
-    tm_Clock.Type = htons (TYPE_GMTTM_CLOCK);
-    tm_Clock.tm_sec = now.second();
-    tm_Clock.tm_min = now.minuteGMT();
+    tm_Clock.Type    = htons (TYPE_GMTTM_CLOCK);
+    tm_Clock.tm_sec  = now.second();
+    tm_Clock.tm_min  = now.minuteGMT();
     tm_Clock.tm_hour = now.hourGMT();
     tm_Clock.tm_mday = today.dayOfMonth();
-    tm_Clock.tm_mon = today.month();
+    tm_Clock.tm_mon  = today.month();
     tm_Clock.tm_year = today.year() - 1900;
     tm_Clock.tm_wday = (today.weekDay() % 7);    // Put it in a tm form.
 
