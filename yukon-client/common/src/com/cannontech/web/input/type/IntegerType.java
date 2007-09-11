@@ -11,7 +11,7 @@ import com.cannontech.web.input.validate.InputValidator;
 /**
  * Implementation of input type which represents a string input type
  */
-public class IntegerType {
+public class IntegerType implements InputType<Integer> {
 
     private int minValue = 0;
     private int maxValue = 0;
