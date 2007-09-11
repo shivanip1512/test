@@ -2,6 +2,8 @@ package com.cannontech.common.device;
 
 import org.springframework.core.style.ToStringCreator;
 
+import com.cannontech.amr.meter.model.Meter;
+
 public class YukonDevice {
     private int deviceId;
     private int type;

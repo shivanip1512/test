@@ -45,7 +45,17 @@
         class="com.cannontech.common.device.groups.dao.impl.providers.StaticDeviceGroupProvider">
         <property name="deviceGroupEditorDao" ref="deviceGroupEditorDao"/>
         <property name="deviceGroupMemberEditorDao" ref="deviceGroupMemberEditorDao"/>
+        <property name="jdbcTemplate" ref="simpleJdbcTemplate"/>
+        <property name="paoGroupsWrapper" ref="paoGroupsWrapper"/>
         <property name="mainDelegator" ref="deviceGroupDao"/>
+    </bean>
+    
+    <bean id="rolodexDeviceGroupProvider"
+        class="com.cannontech.common.device.groups.dao.impl.providers.RolodexGroupProvider">
+        <property name="mainDelegator" ref="deviceGroupDao"/>
+        <property name="jdbcTemplate" ref="simpleJdbcTemplate"/>
+        <property name="paoDao" ref="paoDao"/>
+        <property name="paoGroupsWrapper" ref="paoGroupsWrapper"/>
     </bean>
     
     <bean id="deviceGroupEditorDao"
@@ -62,6 +72,7 @@
         <property name="providers">
             <map>
                 <entry key="STATIC" value-ref="staticDeviceGroupProvider"/>
+                <entry key="ROLODEX" value-ref="rolodexDeviceGroupProvider"/>
             </map>
         </property>
         <property name="staticProvider" ref="staticDeviceGroupProvider"/>

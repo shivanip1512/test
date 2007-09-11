@@ -104,7 +104,7 @@ public class FixedDeviceGroupingHack {
      */
     public String getGroupForDevice(FixedDeviceGroups fixedGroup, YukonDevice device) {
         StoredDeviceGroup parentGroup = (StoredDeviceGroup) deviceGroupService.resolveGroupName(fixedGroup.getPrefix());
-        Set<StoredDeviceGroup> groups = deviceGroupMemberEditorDao.getGroups(device);
+        Set<StoredDeviceGroup> groups = deviceGroupMemberEditorDao.getGroups(parentGroup, device);
         for (StoredDeviceGroup aGroup : groups) {
             if (aGroup.isChildOf(parentGroup)) {
                 return aGroup.getName();

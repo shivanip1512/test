@@ -21,4 +21,5 @@ public class StoredDeviceGroup extends DeviceGroup {
     public void setSystemGroup(boolean systemGroup) {
         this.systemGroup = systemGroup;
     }
+    
 }

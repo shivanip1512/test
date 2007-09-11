@@ -1,14 +1,17 @@
 package com.cannontech.common.device.groups.model;
 
+import java.util.Comparator;
+
 import org.apache.commons.lang.Validate;
 import org.springframework.core.style.ToStringCreator;
 
 import com.cannontech.common.device.groups.dao.DeviceGroupType;
 
-public class DeviceGroup {
+public class DeviceGroup implements Comparator<DeviceGroup>{
     private DeviceGroupType type;
     private String name;
     private DeviceGroup parent;
+    private boolean isRemovable;
 
     public void setName(String name) {
         this.name = name;
@@ -18,6 +21,7 @@ public class DeviceGroup {
     }
     public void setType(DeviceGroupType type) {
         this.type = type;
+        this.isRemovable = this.isGroupEditable();
     }
     public String getName() {
         return name;
@@ -31,11 +35,28 @@ public class DeviceGroup {
     
     public String getFullName() {
         if (parent == null) {
-            return getName();
+            return "/";
         } else {
-            return getParent().getFullName() + "/" + getName();
+            return getFullNameInternal();
         }
     }
+    
+    private String getFullNameInternal() {
+        if (parent == null) {
+            return "";
+        } else {
+            return getParent().getFullNameInternal() + "/" + getName();
+        }
+    }
+    
+    public boolean isRemovable() {
+        return isRemovable;
+    }
+
+    public void setRemovable(boolean isRemovable) {
+        this.isRemovable = isRemovable;
+    }
+    
     
     public boolean isDescendantOf(DeviceGroup possibleParent) {
         if (isChildOf(possibleParent)) {
@@ -58,6 +79,7 @@ public class DeviceGroup {
         ToStringCreator tsc = new ToStringCreator(this);
         tsc.append("fullName", getFullName());
         tsc.append("type", getType());
+        tsc.append("isRemovable", isRemovable());
         return tsc.toString();    
     }
     @Override
@@ -68,6 +90,7 @@ public class DeviceGroup {
         result = PRIME * result + ((parent == null) ? 0 : parent.hashCode());
         return result;
     }
+    
     @Override
     public boolean equals(Object obj) {
         if (this == obj)
@@ -90,5 +113,14 @@ public class DeviceGroup {
         return true;
     }
     
+    public boolean isGroupEditable(){
+        return type.equals(DeviceGroupType.STATIC);
+    }
     
+    public int compare(DeviceGroup dg1, DeviceGroup dg2) {
+        String dg1Name = dg1.getFullName();
+        String dg2Name = dg2.getFullName();
+
+        return dg1Name.compareTo(dg2Name);
+    }
 }

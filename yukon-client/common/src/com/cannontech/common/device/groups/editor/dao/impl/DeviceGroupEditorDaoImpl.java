@@ -14,6 +14,7 @@ import com.cannontech.common.device.groups.dao.DeviceGroupType;
 import com.cannontech.common.device.groups.editor.dao.DeviceGroupEditorDao;
 import com.cannontech.common.device.groups.editor.dao.DeviceGroupMemberEditorDao;
 import com.cannontech.common.device.groups.editor.model.StoredDeviceGroup;
+import com.cannontech.common.device.groups.model.DeviceGroup;
 import com.cannontech.common.device.groups.util.YukonDeviceToIdMapper;
 import com.cannontech.common.util.MappingList;
 import com.cannontech.common.util.SqlStatementBuilder;
@@ -112,19 +113,18 @@ public class DeviceGroupEditorDaoImpl implements DeviceGroupEditorDao, DeviceGro
         addDevices(group, devices);
     }
     
-    public Set<StoredDeviceGroup> getGroups(YukonDevice device) {
-        ResolvingDeviceGroupRowMapper mapper = new ResolvingDeviceGroupRowMapper(this);
-        return getGroups(device, mapper);
-    }
-    
     @Transactional(propagation=Propagation.REQUIRED)
-    public Set<StoredDeviceGroup> getGroups(YukonDevice device, ResolvingDeviceGroupRowMapper mapper) {
+    public Set<StoredDeviceGroup> getGroups(StoredDeviceGroup base, YukonDevice device) {
+        ResolvingDeviceGroupRowMapper mapper = new ResolvingDeviceGroupRowMapper(this);
         SqlStatementBuilder sql = new SqlStatementBuilder();
         sql.append("select dg.*");
         sql.append("from DeviceGroupMember dgm");
         sql.append("join DeviceGroup dg on dg.devicegroupid = dgm.devicegroupid");
-        sql.append("where dgm.yukonpaoid = ?");
-        List<StoredDeviceGroup> groups = jdbcTemplate.query(sql.toString(), mapper, device.getDeviceId());
+        sql.append("where dgm.yukonpaoid = ? and dg.parentdevicegroupid = ?");
+        List<StoredDeviceGroup> groups = jdbcTemplate.query(sql.toString(), 
+                                                            mapper, 
+                                                            device.getDeviceId(),
+                                                            base.getId());
         return new HashSet<StoredDeviceGroup>(groups);
     }
     

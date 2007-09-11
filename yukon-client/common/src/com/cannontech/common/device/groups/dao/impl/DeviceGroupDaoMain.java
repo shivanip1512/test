@@ -56,13 +56,15 @@ public class DeviceGroupDaoMain implements DeviceGroupDao {
     }
     
     public Set<? extends DeviceGroup> getGroups(YukonDevice device) {
-        Set<DeviceGroup> result = new HashSet<DeviceGroup>();
+        DeviceGroup rootGroup = getRootGroup();
+        return getGroups(rootGroup, device);
+    }
+    
+    public Set<? extends DeviceGroup> getGroups(DeviceGroup base, YukonDevice device) {
+        DeviceGroupProvider provider = getProvider(base);
+        Set<? extends DeviceGroup> groups = provider.getGroups(base, device);
         
-        for (DeviceGroupProvider provider : providers.values()) {
-            Set<? extends DeviceGroup> groups = provider.getGroups(device);
-            result.addAll(groups);
-        }
-        return result;
+        return groups;
     }
     
     private void collectChildGroups(Collection<DeviceGroup> result, DeviceGroup rootGroup) {
@@ -85,6 +87,10 @@ public class DeviceGroupDaoMain implements DeviceGroupDao {
     @Required
     public void setStaticProvider(StaticDeviceGroupProvider staticProvider) {
         this.staticProvider = staticProvider;
+    }
+
+    public boolean isDeviceInGroup(DeviceGroup group, YukonDevice device) {
+        return getProvider(group).isDeviceInGroup(group,device);
     }
     
 }

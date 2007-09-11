@@ -14,5 +14,6 @@ public interface DeviceGroupProvider {
     public List<? extends DeviceGroup> getChildGroups(DeviceGroup group);
     public List<YukonDevice> getChildDevices(DeviceGroup group);
     public DeviceGroup getGroup(DeviceGroup base, String groupName) throws NotFoundException;
-    public Set<? extends DeviceGroup> getGroups(YukonDevice device);
+    public boolean isDeviceInGroup(DeviceGroup deviceGroup, YukonDevice device);
+    public Set<? extends DeviceGroup> getGroups(DeviceGroup base, YukonDevice device);
 }

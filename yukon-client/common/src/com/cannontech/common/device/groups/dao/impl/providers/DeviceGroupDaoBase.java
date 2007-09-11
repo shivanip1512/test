@@ -59,5 +59,9 @@ public abstract class DeviceGroupDaoBase implements DeviceGroupProvider {
     public void setMainDelegator(DeviceGroupDao mainDelegator) {
         this.mainDelegator = mainDelegator;
     }
+    
+    protected DeviceGroupDao getMainDelegator() {
+        return this.mainDelegator;
+    }
 
 }
