@@ -599,6 +599,17 @@
 	</attribute>
   </tag>
   
+  <tag>
+  	<name>renderInput</name>
+  	<tag-class>com.cannontech.web.taglib.RenderInputTag</tag-class>
+  	<body-content>empty</body-content>
+	<attribute>
+ 		<name>input</name>
+  		<required>true</required>
+  		<rtexprvalue>true</rtexprvalue>	
+	</attribute>
+  </tag>
+  
   <function>
     <name>equalsIgnoreCase</name>
     <function-class>com.cannontech.common.util.StringUtils</function-class>
