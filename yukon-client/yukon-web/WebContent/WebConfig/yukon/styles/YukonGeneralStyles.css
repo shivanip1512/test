@@ -266,6 +266,13 @@ div.widgetInternalSectionHeader {
 	margin-left: 5px;
 }
 
+span.widgetInternalSectionHeader {
+	font-weight: bold;
+	padding-top: 5px; 
+	padding-bottom: 5px; 
+	margin-left: 5px;
+}
+
 div.widgetInternalSection {
     margin-top: 5px;
 	margin-left: 20px;
