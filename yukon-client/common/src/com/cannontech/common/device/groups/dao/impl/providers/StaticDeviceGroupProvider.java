@@ -56,14 +56,6 @@ public class StaticDeviceGroupProvider extends DeviceGroupDaoBase {
             Set<? extends DeviceGroup> tempGroups = getMainDelegator().getGroups(group,
                                                                                 device);
             resultSet.addAll(tempGroups);
-/*            for (YukonDevice yukonDevice : getMainDelegator().getChildDevices(group)) {
-                if (yukonDevice.getDeviceId() == device.getDeviceId()) {
-                    resultSet.add(group);
-                }
-            }
-
-//            resultSet.addAll(tempGroups);
-*/        
         }
 
         return resultSet;
