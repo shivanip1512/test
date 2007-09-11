@@ -38,8 +38,8 @@ class CtiTime;
 #define CTICCAREA_ID                520
 #define CTICCAREA_MSG_ID            521
 
-#define CTICCSPECIALAREA_ID         522
-#define CTICCSPECIALAREAS_MSG_ID    523
+//#define CTICCSPECIALAREA_ID         522
+#define CTICCSPECIALAREAS_MSG_ID    522
 
 
 

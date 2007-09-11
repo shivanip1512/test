@@ -3427,6 +3427,9 @@ void CtiCCCommandExecutor::SendAllData()
     executor = f.createExecutor(new CtiCCCapBankStatesMsg(*store->getCCCapBankStates(CtiTime().seconds())));
     executor->Execute();
     delete executor;
+    executor = f.createExecutor(new CtiCCSpecialAreasMsg(*store->getCCSpecialAreas(CtiTime().seconds())));
+    executor->Execute();
+    delete executor;
 
 }
 
@@ -4481,7 +4484,8 @@ CtiCCExecutor* CtiCCExecutorFactory::createExecutor(const CtiMessage* message)
     {
         case CTICCSUBSTATIONBUS_MSG_ID:
         case CTICCCAPBANKSTATES_MSG_ID:
-        case CTICCGEOAREAS_MSG_ID:
+        case CTICCGEOAREAS_MSG_ID:        
+        case CTICCSPECIALAREAS_MSG_ID:
         //case CTICCITEMDELETE_MSG_ID:
             ret_val = new CtiCCClientMsgExecutor( (CtiMessage*)message );
             break;
