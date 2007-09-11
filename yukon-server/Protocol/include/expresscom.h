@@ -8,8 +8,8 @@
 * Author: Corey G. Plender
 *
 * CVS KEYWORDS:
-* REVISION     :  $Revision: 1.17 $
-* DATE         :  $Date: 2007/06/12 23:03:21 $
+* REVISION     :  $Revision: 1.18 $
+* DATE         :  $Date: 2007/09/11 18:14:59 $
 *
 * Copyright (c) 2002 Cannon Technologies Inc. All rights reserved.
 *-----------------------------------------------------------------------------*/
@@ -141,7 +141,7 @@ private:
     INT schedulePoint(std::vector< BYTE > &schedule);
 
     INT sync();
-    INT timeSync(CtiTime &gmt, bool fullsync = true);
+    INT timeSync(const CtiTime &gmt, bool fullsync = true);
 
     INT signalTest(BYTE test);
     INT timedLoadControl(UINT loadMask, UINT shedtime_seconds, BYTE randin = 0, BYTE randout = 0, USHORT delay = 0 );                 // This is a shed!
