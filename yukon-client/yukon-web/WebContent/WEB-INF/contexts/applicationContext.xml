@@ -51,6 +51,21 @@
     	</property>
     </bean>
 
+	<bean id="deviceGroupWidget"
+    	class="com.cannontech.web.widget.DeviceGroupWidget">
+    	<property name="title" value="Device Groups"/>
+    	<property name="inputs">
+           <set>
+              <ref local="widgetInput.deviceId"/>
+           </set>
+        </property>
+        <property name="deviceGroupDao" ref="deviceGroupDao"/>
+        <property name="deviceGroupEditorDao" ref="deviceGroupEditorDao"/>
+        <property name="deviceGroupMemberEditorDao" ref="deviceGroupMemberEditorDao"/>
+        <property name="meterDao" ref="meterDao"/>
+    </bean>
+
+
     <bean id="readCurrentTimeWidget"
     	class="com.cannontech.web.widget.ReadCurrentTimeWidget">
     	<property name="title" value="Get Current Time"/>
