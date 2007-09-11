@@ -664,6 +664,10 @@ CHAR* CtiDeviceWctpTerminal::buildXMLMessage(const CHAR *recipientId,
         strcat(xmlMsg, "/>");
         strcat(xmlMsg, "<wctp-MessageControl");
         strcat(xmlMsg, " messageID=\"");
+        if( !gConfigParms.isTrue("WCTP_DO_NOT_SEND_MESSAGEID") ) // defaults to false
+        {
+            strcat(xmlMsg, CtiNumStr(getPageCount() & 0x0000FFFF).toString().c_str());
+        }
         strcat(xmlMsg, prefix);
         strcat(xmlMsg, "\"");
         strcat(xmlMsg, " allowResponse=\"false\"");
