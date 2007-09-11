@@ -63,7 +63,7 @@ public:
     CtiTime& operator -= (const int secs);
 
 
-    CtiTime& toUTCtime();
+    CtiTime  asGMT() const;
 
     int day() const;
     int second() const;

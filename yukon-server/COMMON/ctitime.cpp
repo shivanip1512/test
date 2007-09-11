@@ -255,8 +255,6 @@ int CtiTime::hourGMT()  const
         return ctm.tm_hour;
     }
     return -1;
-
-
 }
 
 ctitime_t CtiTime::seconds() const
@@ -264,16 +262,20 @@ ctitime_t CtiTime::seconds() const
     return _seconds;
 }
 
-/*
- * BE careful when you use this method!
- * this will change the seconds of this time
- */
-
-CtiTime& CtiTime::toUTCtime()
+CtiTime CtiTime::asGMT() const
 {
-    getenv( "TZ" );
-    addSeconds(-1*timezone);
-    return *this;
+    CtiTime t(*this);
+
+    //  need to determine if we were in DST or not
+    tm ctm = *localtime(&_seconds);
+
+    _TIME_ZONE_INFORMATION tzinfo;
+    GetTimeZoneInformation(&tzinfo);
+
+    //  Biases are in minutes
+    t.addSeconds((tzinfo.Bias + (ctm.tm_isdst?tzinfo.DaylightBias:tzinfo.StandardBias)) * 60);
+
+    return t;
 }
 
 bool CtiTime::isValid() const
