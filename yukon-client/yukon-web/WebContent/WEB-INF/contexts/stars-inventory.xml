@@ -3,219 +3,184 @@
 
 <beans>
 
-	<bean id="inventoryDefault" class="com.cannontech.web.stars.action.inventory.DefaultController">
-		<property name="starsDatabaseCache" ref="starsDatabaseCache"/>		
-	</bean>
+    <bean id="starsInventoryActionController" class="com.cannontech.web.stars.action.StarsInventoryActionController" abstract="true">
+        <property name="authDao" ref="authDao"/>
+        <property name="contactDao" ref="contactDao"/>
+        <property name="energyCompanyDao" ref="energyCompanyDao"/>
+        <property name="paoDao" ref="paoDao"/>
+        <property name="starsDatabaseCache" ref="starsDatabaseCache"/>
+        <property name="yukonListDao" ref="yukonListDao"/>
+        <property name="yukonUserDao" ref="yukonUserDao"/>
+    </bean>
 
-	<bean id="inventoryInsertInventory" class="com.cannontech.web.stars.action.inventory.InsertInventoryController">
-		<property name="starsDatabaseCache" ref="starsDatabaseCache"/>		
-	</bean>
+	<bean id="inventoryDefault" class="com.cannontech.web.stars.action.inventory.DefaultController"
+          parent="starsInventoryActionController"/>
 
-	<bean id="inventoryInsertDevice" class="com.cannontech.web.stars.action.inventory.InsertDeviceController">
-		<property name="starsDatabaseCache" ref="starsDatabaseCache"/>		
-		<property name="paoDao" ref="paoDao"/>
-	</bean>
+	<bean id="inventoryInsertInventory" class="com.cannontech.web.stars.action.inventory.InsertInventoryController"
+          parent="starsInventoryActionController"/>
 
-	<bean id="inventoryCheckInventory" class="com.cannontech.web.stars.action.inventory.CheckInventoryController">
-		<property name="starsDatabaseCache" ref="starsDatabaseCache"/>
-		<property name="authDao" ref="authDao"/>				
-		<property name="yukonListDao" ref="yukonListDao"/>
-	</bean>
+	<bean id="inventoryInsertDevice" class="com.cannontech.web.stars.action.inventory.InsertDeviceController"
+          parent="starsInventoryActionController"/>
+
+	<bean id="inventoryCheckInventory" class="com.cannontech.web.stars.action.inventory.CheckInventoryController"
+          parent="starsInventoryActionController"/>
 	
-	<bean id="inventoryCreateLMHardware" class="com.cannontech.web.stars.action.inventory.CreateLMHardwareController">
-		<property name="starsDatabaseCache" ref="starsDatabaseCache"/>
+	<bean id="inventoryCreateLMHardware" class="com.cannontech.web.stars.action.inventory.CreateLMHardwareController"
+          parent="starsInventoryActionController">
 		<property name="checkInventory" ref="inventoryCheckInventory"/>
 	</bean>
 	
-	<bean id="inventoryUpdateLMHardware" class="com.cannontech.web.stars.action.inventory.UpdateLMHardwareController">
-		<property name="starsDatabaseCache" ref="starsDatabaseCache"/>
+	<bean id="inventoryUpdateLMHardware" class="com.cannontech.web.stars.action.inventory.UpdateLMHardwareController"
+          parent="starsInventoryActionController">
 		<property name="checkInventory" ref="inventoryCheckInventory"/>
 	</bean>
 
-	<bean id="inventoryUpdateInventory" class="com.cannontech.web.stars.action.inventory.UpdateInventoryController">
-		<property name="starsDatabaseCache" ref="starsDatabaseCache"/>
-	</bean>
+	<bean id="inventoryUpdateInventory" class="com.cannontech.web.stars.action.inventory.UpdateInventoryController"
+          parent="starsInventoryActionController"/>
 	
-	<bean id="inventoryDeleteInventory" class="com.cannontech.web.stars.action.inventory.DeleteInventoryController">
-		<property name="starsDatabaseCache" ref="starsDatabaseCache"/>
-	</bean>
+	<bean id="inventoryDeleteInventory" class="com.cannontech.web.stars.action.inventory.DeleteInventoryController"
+          parent="starsInventoryActionController"/>
 	
-	<bean id="inventoryConfigLMHardware" class="com.cannontech.web.stars.action.inventory.ConfigLMHardwareController">
-		<property name="starsDatabaseCache" ref="starsDatabaseCache"/>
-	</bean>
+	<bean id="inventoryConfigLMHardware" class="com.cannontech.web.stars.action.inventory.ConfigLMHardwareController"
+          parent="starsInventoryActionController"/>
 	
-	<bean id="inventoryConfirmCheck" class="com.cannontech.web.stars.action.inventory.ConfirmCheckController">
-		<property name="starsDatabaseCache" ref="starsDatabaseCache"/>
-	</bean>
+	<bean id="inventoryConfirmCheck" class="com.cannontech.web.stars.action.inventory.ConfirmCheckController"
+          parent="starsInventoryActionController"/>
 
-	<bean id="inventoryAddSNRange" class="com.cannontech.web.stars.action.inventory.AddSNRangeController">
-		<property name="starsDatabaseCache" ref="starsDatabaseCache"/>
+	<bean id="inventoryAddSNRange" class="com.cannontech.web.stars.action.inventory.AddSNRangeController"
+          parent="starsInventoryActionController">
 		<property name="timeConsumingTaskService" ref="timeConsumingTaskService"/>
 	</bean>
 	
-	<bean id="inventoryUpdateSNRange" class="com.cannontech.web.stars.action.inventory.UpdateSNRangeController">
-		<property name="starsDatabaseCache" ref="starsDatabaseCache"/>
+	<bean id="inventoryUpdateSNRange" class="com.cannontech.web.stars.action.inventory.UpdateSNRangeController"
+          parent="starsInventoryActionController">
 		<property name="timeConsumingTaskService" ref="timeConsumingTaskService"/>		
 	</bean>
 	
-	<bean id="inventoryDeleteSNRange" class="com.cannontech.web.stars.action.inventory.DeleteSNRangeController">
-		<property name="starsDatabaseCache" ref="starsDatabaseCache"/>
+	<bean id="inventoryDeleteSNRange" class="com.cannontech.web.stars.action.inventory.DeleteSNRangeController"
+          parent="starsInventoryActionController">
 		<property name="timeConsumingTaskService" ref="timeConsumingTaskService"/>
 	</bean>
 	
-	<bean id="inventoryConfigSNRange" class="com.cannontech.web.stars.action.inventory.ConfigSNRangeController">
-		<property name="starsDatabaseCache" ref="starsDatabaseCache"/>
+	<bean id="inventoryConfigSNRange" class="com.cannontech.web.stars.action.inventory.ConfigSNRangeController"
+          parent="starsInventoryActionController">
 		<property name="timeConsumingTaskService" ref="timeConsumingTaskService"/>
 	</bean>
 	
-	<bean id="inventorySendSwitchCommands" class="com.cannontech.web.stars.action.inventory.SendSwitchCommandsController">
-		<property name="starsDatabaseCache" ref="starsDatabaseCache"/>
-	</bean>
+	<bean id="inventorySendSwitchCommands" class="com.cannontech.web.stars.action.inventory.SendSwitchCommandsController"
+          parent="starsInventoryActionController"/>
 	
-	<bean id="inventoryRemoveSwitchCommands" class="com.cannontech.web.stars.action.inventory.RemoveSwitchCommandsController">
-		<property name="starsDatabaseCache" ref="starsDatabaseCache"/>
-	</bean>
+	<bean id="inventoryRemoveSwitchCommands" class="com.cannontech.web.stars.action.inventory.RemoveSwitchCommandsController"
+          parent="starsInventoryActionController"/>
 	
-	<bean id="inventoryFileWriteSwitchCommands" class="com.cannontech.web.stars.action.inventory.FileWriteSwitchCommandsController">
-		<property name="starsDatabaseCache" ref="starsDatabaseCache"/>
-	</bean>
+	<bean id="inventoryFileWriteSwitchCommands" class="com.cannontech.web.stars.action.inventory.FileWriteSwitchCommandsController"
+          parent="starsInventoryActionController"/>
 	
-	<bean id="inventorySearchInventory" class="com.cannontech.web.stars.action.inventory.SearchInventoryController">
-		<property name="starsDatabaseCache" ref="starsDatabaseCache"/>
-		<property name="authDao" ref="authDao"/>
-	</bean>
+	<bean id="inventorySearchInventory" class="com.cannontech.web.stars.action.inventory.SearchInventoryController"
+          parent="starsInventoryActionController"/>
 
-	<bean id="inventoryCreateMCT" class="com.cannontech.web.stars.action.inventory.CreateMCTController">
-		<property name="starsDatabaseCache" ref="starsDatabaseCache"/>
+	<bean id="inventoryCreateMCT" class="com.cannontech.web.stars.action.inventory.CreateMCTController"
+          parent="starsInventoryActionController">
 		<property name="switchContextService" ref="switchContextService"/>
 	</bean>
 	
-	<bean id="inventorySelectLMHardware" class="com.cannontech.web.stars.action.inventory.SelectLMHardwareController">
-		<property name="starsDatabaseCache" ref="starsDatabaseCache"/>
-	</bean>
+	<bean id="inventorySelectLMHardware" class="com.cannontech.web.stars.action.inventory.SelectLMHardwareController"
+          parent="starsInventoryActionController"/>
 
-	<bean id="inventorySelectDevice" class="com.cannontech.web.stars.action.inventory.SelectDeviceController">
-		<property name="starsDatabaseCache" ref="starsDatabaseCache"/>
-		<property name="paoDao" ref="paoDao"/>
-	</bean>
+	<bean id="inventorySelectDevice" class="com.cannontech.web.stars.action.inventory.SelectDeviceController"
+          parent="starsInventoryActionController"/>
 	
-	<bean id="inventoryMeterProfileSave" class="com.cannontech.web.stars.action.inventory.MeterProfileSaveController">
-		<property name="starsDatabaseCache" ref="starsDatabaseCache"/>
-	</bean>
+	<bean id="inventoryMeterProfileSave" class="com.cannontech.web.stars.action.inventory.MeterProfileSaveController"
+          parent="starsInventoryActionController"/>
 
-	<bean id="inventoryFiltersUpdated" class="com.cannontech.web.stars.action.inventory.UpdateFiltersController">
-		<property name="starsDatabaseCache" ref="starsDatabaseCache"/>
+	<bean id="inventoryFiltersUpdated" class="com.cannontech.web.stars.action.inventory.UpdateFiltersController"
+          parent="starsInventoryActionController">
 		<property name="hwSelection"><value>false</value></property>
 	</bean>
 	
-	<bean id="inventoryFiltersUpdatedForSelection" class="com.cannontech.web.stars.action.inventory.UpdateFiltersController">
-		<property name="starsDatabaseCache" ref="starsDatabaseCache"/>
+	<bean id="inventoryFiltersUpdatedForSelection" class="com.cannontech.web.stars.action.inventory.UpdateFiltersController"
+          parent="starsInventoryActionController">
 		<property name="hwSelection"><value>true</value></property>
 	</bean>
 	
-	<bean id="inventoryApplyActions" class="com.cannontech.web.stars.action.inventory.ApplyActionsController">
-		<property name="starsDatabaseCache" ref="starsDatabaseCache"/>
-	</bean>
+	<bean id="inventoryApplyActions" class="com.cannontech.web.stars.action.inventory.ApplyActionsController"
+          parent="starsInventoryActionController"/>
 
-	<bean id="inventoryViewInventoryResults" class="com.cannontech.web.stars.action.inventory.ViewInventoryResultsController">
-		<property name="starsDatabaseCache" ref="starsDatabaseCache"/>
-	</bean>
+	<bean id="inventoryViewInventoryResults" class="com.cannontech.web.stars.action.inventory.ViewInventoryResultsController"
+          parent="starsInventoryActionController"/>
 	
-	<bean id="inventoryApplyOrdering" class="com.cannontech.web.stars.action.inventory.ApplyOrderingController">
-		<property name="starsDatabaseCache" ref="starsDatabaseCache"/>
-	</bean>
+	<bean id="inventoryApplyOrdering" class="com.cannontech.web.stars.action.inventory.ApplyOrderingController"
+          parent="starsInventoryActionController"/>
 	
-	<bean id="inventoryManipulateInventoryResults" class="com.cannontech.web.stars.action.inventory.ManipulateInventoryResultsController">
-		<property name="starsDatabaseCache" ref="starsDatabaseCache"/>
-	</bean>
+	<bean id="inventoryManipulateInventoryResults" class="com.cannontech.web.stars.action.inventory.ManipulateInventoryResultsController"
+          parent="starsInventoryActionController"/>
 	
-	<bean id="inventoryManipulateSelectedResults" class="com.cannontech.web.stars.action.inventory.ManipulateSelectedResultsController">
-		<property name="starsDatabaseCache" ref="starsDatabaseCache"/>
+	<bean id="inventoryManipulateSelectedResults" class="com.cannontech.web.stars.action.inventory.ManipulateSelectedResultsController"
+          parent="starsInventoryActionController">
 		<property name="manipulateInventoryResults" ref="inventoryManipulateInventoryResults"/>
 	</bean>
 	
-	<bean id="inventoryConfigureInventoryResults" class="com.cannontech.web.stars.action.inventory.ConfigureInventoryResultsController">
-		<property name="starsDatabaseCache" ref="starsDatabaseCache"/>
-	</bean>
+	<bean id="inventoryConfigureInventoryResults" class="com.cannontech.web.stars.action.inventory.ConfigureInventoryResultsController"
+          parent="starsInventoryActionController"/>
 	
-	<bean id="inventoryConfigureResultSet" class="com.cannontech.web.stars.action.inventory.ConfigureResultSetController">
-		<property name="starsDatabaseCache" ref="starsDatabaseCache"/>
-	</bean>
+	<bean id="inventoryConfigureResultSet" class="com.cannontech.web.stars.action.inventory.ConfigureResultSetController"
+          parent="starsInventoryActionController"/>
 	
-	<bean id="inventoryStaticLoadGroupMap" class="com.cannontech.web.stars.action.inventory.StaticLoadGroupMapController">
-		<property name="starsDatabaseCache" ref="starsDatabaseCache"/>
-	</bean>
+	<bean id="inventoryStaticLoadGroupMap" class="com.cannontech.web.stars.action.inventory.StaticLoadGroupMapController"
+          parent="starsInventoryActionController"/>
 	
-	<bean id="inventoryPurchaseChange" class="com.cannontech.web.stars.action.inventory.PurchaseChangeController">
-		<property name="starsDatabaseCache" ref="starsDatabaseCache"/>
-	</bean>
+	<bean id="inventoryPurchaseChange" class="com.cannontech.web.stars.action.inventory.PurchaseChangeController"
+          parent="starsInventoryActionController"/>
 	
-	<bean id="inventoryRequestNewPurchasePlan" class="com.cannontech.web.stars.action.inventory.RequestNewPurchasePlanController">
-		<property name="starsDatabaseCache" ref="starsDatabaseCache"/>
-	</bean>
+	<bean id="inventoryRequestNewPurchasePlan" class="com.cannontech.web.stars.action.inventory.RequestNewPurchasePlanController"
+          parent="starsInventoryActionController"/>
 	
-	<bean id="inventoryLoadPurchasePlan" class="com.cannontech.web.stars.action.inventory.LoadPurchasePlanController">
-		<property name="starsDatabaseCache" ref="starsDatabaseCache"/>
-	</bean>
+	<bean id="inventoryLoadPurchasePlan" class="com.cannontech.web.stars.action.inventory.LoadPurchasePlanController"
+          parent="starsInventoryActionController"/>
 	
-	<bean id="inventoryDeletePurchasePlan" class="com.cannontech.web.stars.action.inventory.DeletePurchasePlanController">
-		<property name="starsDatabaseCache" ref="starsDatabaseCache"/>
-	</bean>
+	<bean id="inventoryDeletePurchasePlan" class="com.cannontech.web.stars.action.inventory.DeletePurchasePlanController"
+          parent="starsInventoryActionController"/>
 	
-	<bean id="inventoryDeletePurchasePlanConfirmed" class="com.cannontech.web.stars.action.inventory.DeletePurchasePlanConfirmedController">
-		<property name="starsDatabaseCache" ref="starsDatabaseCache"/>
-	</bean>
+	<bean id="inventoryDeletePurchasePlanConfirmed" class="com.cannontech.web.stars.action.inventory.DeletePurchasePlanConfirmedController"
+          parent="starsInventoryActionController"/>
 	
-	<bean id="inventoryRequestNewDeliverySchedule" class="com.cannontech.web.stars.action.inventory.RequestNewDeliveryScheduleController">
-		<property name="starsDatabaseCache" ref="starsDatabaseCache"/>
-	</bean>
+	<bean id="inventoryRequestNewDeliverySchedule" class="com.cannontech.web.stars.action.inventory.RequestNewDeliveryScheduleController"
+          parent="starsInventoryActionController"/>
 	
-	<bean id="inventoryLoadDeliverySchedule" class="com.cannontech.web.stars.action.inventory.LoadDeliveryScheduleController">
-		<property name="starsDatabaseCache" ref="starsDatabaseCache"/>
-	</bean>
+	<bean id="inventoryLoadDeliverySchedule" class="com.cannontech.web.stars.action.inventory.LoadDeliveryScheduleController"
+          parent="starsInventoryActionController"/>
 	
-	<bean id="inventoryDeliveryScheduleChange" class="com.cannontech.web.stars.action.inventory.DeliveryScheduleChangeController">
-		<property name="starsDatabaseCache" ref="starsDatabaseCache"/>
-	</bean>
+	<bean id="inventoryDeliveryScheduleChange" class="com.cannontech.web.stars.action.inventory.DeliveryScheduleChangeController"
+          parent="starsInventoryActionController"/>
 	
-	<bean id="inventoryRequestNewTimePeriod" class="com.cannontech.web.stars.action.inventory.RequestNewTimePeriodController">
-		<property name="starsDatabaseCache" ref="starsDatabaseCache"/>
-	</bean>
+	<bean id="inventoryRequestNewTimePeriod" class="com.cannontech.web.stars.action.inventory.RequestNewTimePeriodController"
+          parent="starsInventoryActionController"/>
 	
-	<bean id="inventoryLoadTimePeriod" class="com.cannontech.web.stars.action.inventory.LoadTimePeriodController">
-		<property name="starsDatabaseCache" ref="starsDatabaseCache"/>
-	</bean>
+	<bean id="inventoryLoadTimePeriod" class="com.cannontech.web.stars.action.inventory.LoadTimePeriodController"
+          parent="starsInventoryActionController"/>
 	
-	<bean id="inventoryTimePeriodChange" class="com.cannontech.web.stars.action.inventory.TimePeriodChangeController">
-		<property name="starsDatabaseCache" ref="starsDatabaseCache"/>
-	</bean>
+	<bean id="inventoryTimePeriodChange" class="com.cannontech.web.stars.action.inventory.TimePeriodChangeController"
+          parent="starsInventoryActionController"/>
 	
-	<bean id="inventoryRequestNewShipment" class="com.cannontech.web.stars.action.inventory.RequestNewShipmentController">
-		<property name="starsDatabaseCache" ref="starsDatabaseCache"/>
-	</bean>
+	<bean id="inventoryRequestNewShipment" class="com.cannontech.web.stars.action.inventory.RequestNewShipmentController"
+          parent="starsInventoryActionController"/>
 	
-	<bean id="inventoryLoadShipment" class="com.cannontech.web.stars.action.inventory.LoadShipmentController">
-		<property name="starsDatabaseCache" ref="starsDatabaseCache"/>
-	</bean>
+	<bean id="inventoryLoadShipment" class="com.cannontech.web.stars.action.inventory.LoadShipmentController"
+          parent="starsInventoryActionController"/>
 	
-	<bean id="inventoryShipmentChange" class="com.cannontech.web.stars.action.inventory.ShipmentChangeController">
-		<property name="starsDatabaseCache" ref="starsDatabaseCache"/>
-	</bean>
+	<bean id="inventoryShipmentChange" class="com.cannontech.web.stars.action.inventory.ShipmentChangeController"
+          parent="starsInventoryActionController"/>
 	
-	<bean id="inventoryRequestNewInvoice" class="com.cannontech.web.stars.action.inventory.RequestNewInvoiceController">
-		<property name="starsDatabaseCache" ref="starsDatabaseCache"/>
-	</bean>
+	<bean id="inventoryRequestNewInvoice" class="com.cannontech.web.stars.action.inventory.RequestNewInvoiceController"
+          parent="starsInventoryActionController"/>
 	
-	<bean id="inventoryLoadInvoice" class="com.cannontech.web.stars.action.inventory.LoadInvoiceController">
-		<property name="starsDatabaseCache" ref="starsDatabaseCache"/>
-	</bean>
+	<bean id="inventoryLoadInvoice" class="com.cannontech.web.stars.action.inventory.LoadInvoiceController"
+          parent="starsInventoryActionController"/>
 
-	<bean id="inventoryInvoiceChange" class="com.cannontech.web.stars.action.inventory.InvoiceChangeController">
-		<property name="starsDatabaseCache" ref="starsDatabaseCache"/>
-	</bean>
+	<bean id="inventoryInvoiceChange" class="com.cannontech.web.stars.action.inventory.InvoiceChangeController"
+          parent="starsInventoryActionController"/>
 	
-	<bean id="inventoryShipmentSNRangeAdd" class="com.cannontech.web.stars.action.inventory.ShipmentSNRangeAddController">
-		<property name="starsDatabaseCache" ref="starsDatabaseCache"/>
-	</bean>
+	<bean id="inventoryShipmentSNRangeAdd" class="com.cannontech.web.stars.action.inventory.ShipmentSNRangeAddController"
+          parent="starsInventoryActionController"/>
 
 </beans>

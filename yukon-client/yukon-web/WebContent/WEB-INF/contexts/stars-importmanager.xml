@@ -3,36 +3,38 @@
 
 <beans>
 
-	<bean id="importmanagerImportCustAccounts" class="com.cannontech.web.stars.action.importmanager.ImportCustAccountsController">
-		<property name="starsDatabaseCache" ref="starsDatabaseCache"/>
-	</bean>
-	
-	<bean id="importmanagerUploadGeneric" class="com.cannontech.web.stars.action.importmanager.UploadGenericController">
-		<property name="starsDatabaseCache" ref="starsDatabaseCache"/>
-	</bean>
+    <bean id="starsImportManagerController" class="com.cannontech.web.stars.action.StarsImportManagerActionController" abstract="true">
+        <property name="authDao" ref="authDao"/>
+        <property name="contactDao" ref="contactDao"/>
+        <property name="energyCompanyDao" ref="energyCompanyDao"/>
+        <property name="paoDao" ref="paoDao"/>
+        <property name="starsDatabaseCache" ref="starsDatabaseCache"/>
+        <property name="yukonListDao" ref="yukonListDao"/>
+        <property name="yukonUserDao" ref="yukonUserDao"/>
+    </bean>
 
-	<bean id="importmanagerImportINIData" class="com.cannontech.web.stars.action.importmanager.ImportINIDataController">
-		<property name="starsDatabaseCache" ref="starsDatabaseCache"/>
-	</bean>
+	<bean id="importmanagerImportCustAccounts" class="com.cannontech.web.stars.action.importmanager.ImportCustAccountsController"
+          parent="starsImportManagerController"/>
 	
-	<bean id="importmanagerPreprocessStarsData" class="com.cannontech.web.stars.action.importmanager.PreprocessStarsDataController">
-		<property name="starsDatabaseCache" ref="starsDatabaseCache"/>	
-	</bean>
+	<bean id="importmanagerUploadGeneric" class="com.cannontech.web.stars.action.importmanager.UploadGenericController" 
+          parent="starsImportManagerController"/>
 
-	<bean id="importmanagerAssignSelectionList" class="com.cannontech.web.stars.action.importmanager.AssignSelectionListController">
-		<property name="starsDatabaseCache" ref="starsDatabaseCache"/>	
-	</bean>
+	<bean id="importmanagerImportINIData" class="com.cannontech.web.stars.action.importmanager.ImportINIDataController" 
+          parent="starsImportManagerController"/>
 	
-	<bean id="importmanagerImportStarsData" class="com.cannontech.web.stars.action.importmanager.ImportStarsDataController">
-		<property name="starsDatabaseCache" ref="starsDatabaseCache"/>	
-	</bean>
-	
-	<bean id="importmanagerGenerateConfigFiles" class="com.cannontech.web.stars.action.importmanager.GenerateConfigFilesController">
-		<property name="starsDatabaseCache" ref="starsDatabaseCache"/>	
-	</bean>
+	<bean id="importmanagerPreprocessStarsData" class="com.cannontech.web.stars.action.importmanager.PreprocessStarsDataController" 
+          parent="starsImportManagerController"/>
 
-	<bean id="importmanagerImportDSM" class="com.cannontech.web.stars.action.importmanager.ImportDSMController">
-		<property name="starsDatabaseCache" ref="starsDatabaseCache"/>	
-	</bean>
+	<bean id="importmanagerAssignSelectionList" class="com.cannontech.web.stars.action.importmanager.AssignSelectionListController" 
+          parent="starsImportManagerController"/>
+	
+	<bean id="importmanagerImportStarsData" class="com.cannontech.web.stars.action.importmanager.ImportStarsDataController" 
+          parent="starsImportManagerController"/>
+	
+	<bean id="importmanagerGenerateConfigFiles" class="com.cannontech.web.stars.action.importmanager.GenerateConfigFilesController" 
+          parent="starsImportManagerController"/>
+
+	<bean id="importmanagerImportDSM" class="com.cannontech.web.stars.action.importmanager.ImportDSMController" 
+          parent="starsImportManagerController"/>
 
 </beans>

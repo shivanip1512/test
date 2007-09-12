@@ -3,141 +3,106 @@
 
 <beans>
 
-	<bean id="adminDeleteCustomerAccounts" class="com.cannontech.web.stars.action.admin.DeleteCustomerAccountsController">
-		<property name="starsDatabaseCache" ref="starsDatabaseCache"/>
-	</bean>
+    <bean id="starsAdminActionController" class="com.cannontech.web.stars.action.StarsAdminActionController" abstract="true">
+        <property name="authDao" ref="authDao"/>
+        <property name="contactDao" ref="contactDao"/>
+        <property name="energyCompanyDao" ref="energyCompanyDao"/>
+        <property name="paoDao" ref="paoDao"/>
+        <property name="starsDatabaseCache" ref="starsDatabaseCache"/>
+        <property name="yukonListDao" ref="yukonListDao"/>
+        <property name="yukonUserDao" ref="yukonUserDao"/>
+    </bean>
+
+    <bean id="adminDeleteCustomerAccounts" class="com.cannontech.web.stars.action.admin.DeleteCustomerAccountsController" 
+          parent="starsAdminActionController"/>
 	
-	<bean id="adminUpdateAddress" class="com.cannontech.web.stars.action.admin.UpdateAddressController">
-		<property name="starsDatabaseCache" ref="starsDatabaseCache"/>
-	</bean>
+	<bean id="adminUpdateAddress" class="com.cannontech.web.stars.action.admin.UpdateAddressController" 
+          parent="starsAdminActionController"/>
 	
-	<bean id="adminUpdateEnergyCompany" class="com.cannontech.web.stars.action.admin.UpdateEnergyCompanyController">
-		<property name="starsDatabaseCache" ref="starsDatabaseCache"/>
-	</bean>
+	<bean id="adminUpdateEnergyCompany" class="com.cannontech.web.stars.action.admin.UpdateEnergyCompanyController" 
+          parent="starsAdminActionController"/>
 	
-	<bean id="adminRefreshCache" class="com.cannontech.web.stars.action.admin.RefreshCacheController">
-		<property name="starsDatabaseCache" ref="starsDatabaseCache"/>
-	</bean>
+	<bean id="adminRefreshCache" class="com.cannontech.web.stars.action.admin.RefreshCacheController" 
+          parent="starsAdminActionController"/>
 	
-	<bean id="adminSwitchContext" class="com.cannontech.web.stars.action.admin.SwitchContextController">
-		<property name="starsDatabaseCache" ref="starsDatabaseCache"/>
+	<bean id="adminSwitchContext" class="com.cannontech.web.stars.action.admin.SwitchContextController" 
+          parent="starsAdminActionController">
 		<property name="switchContextService" ref="switchContextService"/>
 	</bean>
 	
-	<bean id="adminUpdateApplianceCategory" class="com.cannontech.web.stars.action.admin.UpdateApplianceCategoryController">
-		<property name="starsDatabaseCache" ref="starsDatabaseCache"/>
-		<property name="paoDao" ref="paoDao"/>
-	</bean>
+	<bean id="adminUpdateApplianceCategory" class="com.cannontech.web.stars.action.admin.UpdateApplianceCategoryController" 
+          parent="starsAdminActionController"/>
 	
-	<bean id="adminDeleteApplianceCategory" class="com.cannontech.web.stars.action.admin.DeleteApplianceCategoryController">
-		<property name="starsDatabaseCache" ref="starsDatabaseCache"/>	
-	</bean>
+	<bean id="adminDeleteApplianceCategory" class="com.cannontech.web.stars.action.admin.DeleteApplianceCategoryController" 
+          parent="starsAdminActionController"/>
 	
-	<bean id="adminUpdateServiceCompany" class="com.cannontech.web.stars.action.admin.UpdateServiceCompanyController">
-		<property name="starsDatabaseCache" ref="starsDatabaseCache"/>	
-		<property name="contactDao" ref="contactDao"/>
-	</bean>
+	<bean id="adminUpdateServiceCompany" class="com.cannontech.web.stars.action.admin.UpdateServiceCompanyController" 
+          parent="starsAdminActionController"/>
 	
-	<bean id="adminDeleteServiceCompany" class="com.cannontech.web.stars.action.admin.DeleteServiceCompanyController">
-		<property name="starsDatabaseCache" ref="starsDatabaseCache"/>	
-	</bean>
+	<bean id="adminDeleteServiceCompany" class="com.cannontech.web.stars.action.admin.DeleteServiceCompanyController" 
+          parent="starsAdminActionController"/>
 	
-	<bean id="adminUpdateSubstation" class="com.cannontech.web.stars.action.admin.UpdateSubstationController">
-		<property name="starsDatabaseCache" ref="starsDatabaseCache"/>	
-	</bean>
+	<bean id="adminUpdateSubstation" class="com.cannontech.web.stars.action.admin.UpdateSubstationController" 
+          parent="starsAdminActionController"/>
 	
-	<bean id="adminDeleteSubstation" class="com.cannontech.web.stars.action.admin.DeleteSubstationController">
-		<property name="starsDatabaseCache" ref="starsDatabaseCache"/>		
-	</bean>
+	<bean id="adminDeleteSubstation" class="com.cannontech.web.stars.action.admin.DeleteSubstationController" 
+          parent="starsAdminActionController"/>
 	
-	<bean id="adminUpdateFAQSource" class="com.cannontech.web.stars.action.admin.UpdateFAQSourceController">
-		<property name="starsDatabaseCache" ref="starsDatabaseCache"/>		
-		<property name="authDao" ref="authDao"/>
-	</bean>
+	<bean id="adminUpdateFAQSource" class="com.cannontech.web.stars.action.admin.UpdateFAQSourceController" 
+          parent="starsAdminActionController"/>
 	
-	<bean id="adminUpdateFAQSubjectList" class="com.cannontech.web.stars.action.admin.UpdateFAQSubjectListController">
-		<property name="starsDatabaseCache" ref="starsDatabaseCache"/>		
-		<property name="yukonListDao" ref="yukonListDao"/>
-	</bean>
+	<bean id="adminUpdateFAQSubjectList" class="com.cannontech.web.stars.action.admin.UpdateFAQSubjectListController" 
+          parent="starsAdminActionController"/>
 	
-	<bean id="adminUpdateFAQSubject" class="com.cannontech.web.stars.action.admin.UpdateFAQSubjectController">
-		<property name="starsDatabaseCache" ref="starsDatabaseCache"/>		
-		<property name="yukonListDao" ref="yukonListDao"/>
-	</bean>
+	<bean id="adminUpdateFAQSubject" class="com.cannontech.web.stars.action.admin.UpdateFAQSubjectController" 
+          parent="starsAdminActionController"/>
 	
-	<bean id="adminDeleteFAQSubject" class="com.cannontech.web.stars.action.admin.DeleteFAQSubjectController">
-		<property name="starsDatabaseCache" ref="starsDatabaseCache"/>		
-	</bean>
+	<bean id="adminDeleteFAQSubject" class="com.cannontech.web.stars.action.admin.DeleteFAQSubjectController" 
+          parent="starsAdminActionController"/>
 	
-	<bean id="adminUpdateInterviewQuestions" class="com.cannontech.web.stars.action.admin.UpdateInterviewQuestionsController">
-		<property name="starsDatabaseCache" ref="starsDatabaseCache"/>		
-	</bean>
+	<bean id="adminUpdateInterviewQuestions" class="com.cannontech.web.stars.action.admin.UpdateInterviewQuestionsController" 
+          parent="starsAdminActionController"/>
 	
-	<bean id="adminUpdateSelectionList" class="com.cannontech.web.stars.action.admin.UpdateSelectionListController">
-		<property name="starsDatabaseCache" ref="starsDatabaseCache"/>		
-		<property name="yukonListDao" ref="yukonListDao"/>
-	</bean>
+	<bean id="adminUpdateSelectionList" class="com.cannontech.web.stars.action.admin.UpdateSelectionListController" 
+          parent="starsAdminActionController"/>
 	
-	<bean id="adminUpdateThermostatSchedule" class="com.cannontech.web.stars.action.admin.UpdateThermostatScheduleController">
-		<property name="starsDatabaseCache" ref="starsDatabaseCache"/>			
-	</bean>
+	<bean id="adminUpdateThermostatSchedule" class="com.cannontech.web.stars.action.admin.UpdateThermostatScheduleController" 
+          parent="starsAdminActionController"/>
 	
-	<bean id="adminNewEnergyCompany" class="com.cannontech.web.stars.action.admin.NewEnergyCompanyController">
-		<property name="starsDatabaseCache" ref="starsDatabaseCache"/>			
-		<property name="authDao" ref="authDao"/>
-		<property name="yukonUserDao" ref="yukonUserDao"/>
-	</bean>
+	<bean id="adminNewEnergyCompany" class="com.cannontech.web.stars.action.admin.NewEnergyCompanyController" 
+          parent="starsAdminActionController"/>
 	
-	<bean id="adminDeleteEnergyCompany" class="com.cannontech.web.stars.action.admin.DeleteEnergyCompanyController">
-		<property name="starsDatabaseCache" ref="starsDatabaseCache"/>			
-	</bean>
+	<bean id="adminDeleteEnergyCompany" class="com.cannontech.web.stars.action.admin.DeleteEnergyCompanyController" 
+          parent="starsAdminActionController"/>
 	
-	<bean id="adminUpdateOperatorLogin" class="com.cannontech.web.stars.action.admin.UpdateOperatorLoginController">
-		<property name="starsDatabaseCache" ref="starsDatabaseCache"/>
-		<property name="authDao" ref="authDao"/>
-		<property name="yukonUserDao" ref="yukonUserDao"/>				
-	</bean>
+	<bean id="adminUpdateOperatorLogin" class="com.cannontech.web.stars.action.admin.UpdateOperatorLoginController" 
+          parent="starsAdminActionController"/>
 	
-	<bean id="adminDeleteOperatorLogin" class="com.cannontech.web.stars.action.admin.DeleteOperatorLoginController">
-		<property name="starsDatabaseCache" ref="starsDatabaseCache"/>
-		<property name="yukonUserDao" ref="yukonUserDao"/>
-	</bean>
+	<bean id="adminDeleteOperatorLogin" class="com.cannontech.web.stars.action.admin.DeleteOperatorLoginController" 
+          parent="starsAdminActionController"/>
 
-	<bean id="adminUpdateRoutes" class="com.cannontech.web.stars.action.admin.UpdateRoutesController">
-		<property name="starsDatabaseCache" ref="starsDatabaseCache"/>
-	</bean>
+	<bean id="adminUpdateRoutes" class="com.cannontech.web.stars.action.admin.UpdateRoutesController" 
+          parent="starsAdminActionController"/>
 
-	<bean id="adminMemberLogin" class="com.cannontech.web.stars.action.admin.MemberLoginController">
-		<property name="starsDatabaseCache" ref="starsDatabaseCache"/>
-		<property name="authDao" ref="authDao"/>
-		<property name="yukonUserDao" ref="yukonUserDao"/>
+	<bean id="adminMemberLogin" class="com.cannontech.web.stars.action.admin.MemberLoginController" 
+          parent="starsAdminActionController"/>
 	
-	</bean>
+	<bean id="adminAddMemberEnergyCompany" class="com.cannontech.web.stars.action.admin.AddMemberEnergyCompanyController" 
+          parent="starsAdminActionController"/>
 	
-	<bean id="adminAddMemberEnergyCompany" class="com.cannontech.web.stars.action.admin.AddMemberEnergyCompanyController">
-		<property name="starsDatabaseCache" ref="starsDatabaseCache"/>	
-	</bean>
+	<bean id="adminUpdateMemberEnergyCompany" class="com.cannontech.web.stars.action.admin.UpdateMemberEnergyCompanyController" 
+          parent="starsAdminActionController"/>
 	
-	<bean id="adminUpdateMemberEnergyCompany" class="com.cannontech.web.stars.action.admin.UpdateMemberEnergyCompanyController">
-		<property name="starsDatabaseCache" ref="starsDatabaseCache"/>
-		<property name="yukonUserDao" ref="yukonUserDao"/>
-		<property name="energyCompanyDao" ref="energyCompanyDao"/>	
-	</bean>
+	<bean id="adminRemoveMemberEnergyCompany" class="com.cannontech.web.stars.action.admin.RemoveMemberEnergyCompanyController" 
+          parent="starsAdminActionController"/>
 	
-	<bean id="adminRemoveMemberEnergyCompany" class="com.cannontech.web.stars.action.admin.RemoveMemberEnergyCompanyController">
-		<property name="starsDatabaseCache" ref="starsDatabaseCache"/>
-	</bean>
-	
-	<bean id="adminAddContractorCodes" class="com.cannontech.web.stars.action.admin.AddContractorCodesController">
-		<property name="starsDatabaseCache" ref="starsDatabaseCache"/>
-	</bean>
+	<bean id="adminAddContractorCodes" class="com.cannontech.web.stars.action.admin.AddContractorCodesController" 
+          parent="starsAdminActionController"/>
 
-	<bean id="adminUpdateWarehouse" class="com.cannontech.web.stars.action.admin.UpdateWarehouseController">
-		<property name="starsDatabaseCache" ref="starsDatabaseCache"/>
-	</bean>
+	<bean id="adminUpdateWarehouse" class="com.cannontech.web.stars.action.admin.UpdateWarehouseController" 
+          parent="starsAdminActionController"/>
 	
-	<bean id="adminUpdateSettlementConfig" class="com.cannontech.web.stars.action.admin.UpdateSettlementConfigController">
-		<property name="starsDatabaseCache" ref="starsDatabaseCache"/>
-	</bean>
+	<bean id="adminUpdateSettlementConfig" class="com.cannontech.web.stars.action.admin.UpdateSettlementConfigController" 
+          parent="starsAdminActionController"/>
 
 </beans>
