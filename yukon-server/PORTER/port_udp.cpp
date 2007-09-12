@@ -7,8 +7,8 @@
 * Author: Matt Fisher
 *
 * CVS KEYWORDS:
-* REVISION     :  $Revision: 1.11 $
-* DATE         :  $Date: 2007/08/15 18:59:55 $
+* REVISION     :  $Revision: 1.12 $
+* DATE         :  $Date: 2007/09/12 20:54:09 $
 *
 * Copyright (c) 2004 Cannon Technologies Inc. All rights reserved.
 *-----------------------------------------------------------------------------*/
@@ -76,9 +76,9 @@ void UDPInterface::run( void )
 
     OUTMESS *om;
 
-    if( !bindSocket() )
+    while( !bindSocket() && !PorterQuit )
     {
-        return;
+        Sleep(10000);
     }
 
     if( !_port )
@@ -124,8 +124,18 @@ void UDPInterface::run( void )
                     //  find the device record, if it exists
                     if( db_msg->getId() && (dr = getDeviceRecordByID(db_msg->getId())) )
                     {
-                        //  mark it for closer inspection later
-                        dr->dirty = true;
+                        if( db_msg->getTypeOfChange() == ChangeTypeDelete )
+                        {
+                            _devices.erase(dr->id);
+                            _addresses.erase(make_pair(dr->master, dr->slave));
+
+                            delete dr;
+                        }
+                        else
+                        {
+                            //  mark it for closer inspection later
+                            dr->dirty = true;
+                        }
                     }
                 }
             }
@@ -535,12 +545,13 @@ bool UDPInterface::getPackets( int wait )
             else if( p->len >= GPUFFHeaderLength && p->data[0] == 0xa5
                                                  && p->data[1] == 0x96 )
             {
-                unsigned len, seq, devt, devr, ser, crc;
+                unsigned len, cid, seq, devt, devr, ser, crc;
                 bool crc_included, ack_required;
 
-                len  = p->data[2] | (p->data[3] & 0x03 << 8);
-                crc_included = p->data[3] & 0x80;
-                ack_required = p->data[3] & 0x40;
+                crc_included = p->data[2] & 0x80;
+                ack_required = p->data[2] & 0x40;
+
+                len  = ((p->data[2] & 0x03) << 8) | p->data[3];
 
                 if( p->len < len + 4 )
                 {
@@ -569,12 +580,13 @@ bool UDPInterface::getPackets( int wait )
                 }
                 else
                 {
-                    seq  = p->data[4] | (p->data[5] << 8);
-                    devt = p->data[6] | (p->data[7] << 8);
-                    devr = p->data[8];
-                    ser  = p->data[9] | (p->data[10] <<  8)
-                                      | (p->data[11] << 16)
-                                      | (p->data[12] << 24);
+                    cid  = (p->data[4] << 8) | p->data[5];
+                    seq  = (p->data[6] << 8) | p->data[7];
+                    devt = (p->data[8] << 8) | p->data[9];
+                    devr = p->data[10];
+                    ser  = (p->data[11] << 24) | 
+                           (p->data[12] << 16) |
+                           (p->data[13] <<  8) |  p->data[14];
 
                     {
                         CtiLockGuard<CtiLogger> doubt_guard(dout);
@@ -587,6 +599,7 @@ bool UDPInterface::getPackets( int wait )
                         dout << "LEN  : " << len << endl;
                         dout << "CRC? : " << crc_included << endl;
                         dout << "ACK? : " << ack_required << endl;
+                        dout << "CID  : " << cid << endl;
                         dout << "SEQ  : " << seq << endl;
                         dout << "DEVT : " << devt << endl;
                         dout << "DEVR : " << devr << endl;
@@ -986,17 +999,18 @@ void UDPInterface::processInbounds( void )
                     {
                         if( p = dr->work.inbound.front() )
                         {
-                            unsigned len, seq, devt, devr, ser, crc;
+                            unsigned len, cid, seq, devt, devr, ser, crc;
                             bool crc_included, ack_required;
         
-                            len  = p->data[2] | (p->data[3] & 0x03 << 8);
-                            crc_included = p->data[3] & 0x80;
-                            ack_required = p->data[3] & 0x40;
-        
-                            devt = p->data[6] | (p->data[7] << 8);
-                            devr = p->data[8];
+                            crc_included = p->data[2] & 0x80;
+                            ack_required = p->data[2] & 0x40;
+                            len  = ((p->data[2] & 0x03) << 8) | p->data[3];
+                            //  cid = 4 + 5
+                            //  seq = 6 + 7
+                            devt = (p->data[8] << 8) | p->data[9];
+                            devr = p->data[10];
 
-                            int pos = 13, usedbytes = 0;
+                            int pos = 15, usedbytes = 0;
             
                             CtiPointSPtr     point;
                             CtiPointDataMsg *pdm;
