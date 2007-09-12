@@ -56,6 +56,7 @@ RWDECLARE_COLLECTABLE( CtiCCSpecial )
     const string& getPAODescription() const;
     BOOL getDisableFlag() const;
     LONG getStrategyId() const;
+    BOOL getOvUvDisabledFlag() const;
 
     CtiCCSpecial& setPAOId(LONG id);
     CtiCCSpecial& setPAOCategory(const string& category);
@@ -65,6 +66,7 @@ RWDECLARE_COLLECTABLE( CtiCCSpecial )
     CtiCCSpecial& setPAODescription(const string& description);
     CtiCCSpecial& setDisableFlag(BOOL disable);
     CtiCCSpecial& setStrategyId(LONG strategyId);
+    CtiCCSpecial& setOvUvDisabledFlag(BOOL flag);
     void setStrategyValues(CtiCCStrategyPtr strategy);
 
     list <LONG>* getSubIds() {return &_subIds;};
@@ -126,6 +128,7 @@ RWDECLARE_COLLECTABLE( CtiCCSpecial )
     LONG _integrateperiod;
 
     string _additionalFlags;
+    BOOL _ovUvDisabledFlag;
 
     std::list <LONG> _subIds;
     BOOL _isSpecial;

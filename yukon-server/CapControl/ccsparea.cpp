@@ -93,6 +93,7 @@ void CtiCCSpecial::restoreGuts(RWvistream& istrm)
         istrm >> tempSubId;
         _subIds.push_back(tempSubId);
     }
+    istrm >> _ovUvDisabledFlag;
 
 }
 
@@ -120,6 +121,8 @@ void CtiCCSpecial::saveGuts(RWvostream& ostrm ) const
         ostrm << (LONG)*iter;
         iter++;
     }
+    ostrm << _ovUvDisabledFlag;
+
 
 }
 
@@ -137,6 +140,8 @@ CtiCCSpecial& CtiCCSpecial::operator=(const CtiCCSpecial& right)
         _paotype = right._paotype;
         _paodescription = right._paodescription;
         _disableflag = right._disableflag;
+        _ovUvDisabledFlag = right._ovUvDisabledFlag;
+
 
         _subIds.clear();
         _subIds.assign(right._subIds.begin(), right._subIds.end());
@@ -189,6 +194,8 @@ void CtiCCSpecial::restore(RWDBReader& rdr)
     rdr["disableflag"] >> tempBoolString;
     std::transform(tempBoolString.begin(), tempBoolString.end(), tempBoolString.begin(), tolower);
     _disableflag = (tempBoolString=="y"?TRUE:FALSE);
+    setOvUvDisabledFlag(FALSE);
+
 }
 
 
@@ -221,7 +228,9 @@ void CtiCCSpecial::dumpDynamicData(RWDBConnection& conn, CtiTime& currentDateTim
 
             
             unsigned char addFlags[] = {'N','N','N','N','N','N','N','N','N','N','N','N','N','N','N','N','N','N','N','N'};
-			_additionalFlags = string("NNNNNNNNNNNNNNNNNNNN");
+            addFlags[0] = (_ovUvDisabledFlag?'Y':'N');
+            _additionalFlags = string(char2string(*addFlags));
+            _additionalFlags.append("NNNNNNNNNNNNNNNNNNN");
 
             updater.clear();
 
@@ -229,7 +238,7 @@ void CtiCCSpecial::dumpDynamicData(RWDBConnection& conn, CtiTime& currentDateTim
 
             updater.execute( conn );
 
-            if(updater.status().errorCode() == RWDBStatus::ok)    // No error occured!
+                        if(updater.status().errorCode() == RWDBStatus::ok)    // No error occured!
             {
                 _dirty = FALSE;
             }
@@ -292,9 +301,11 @@ void CtiCCSpecial::dumpDynamicData(RWDBConnection& conn, CtiTime& currentDateTim
 void CtiCCSpecial::setDynamicData(RWDBReader& rdr)
 {   
     rdr["additionalflags"] >> _additionalFlags;
-    
+    _ovUvDisabledFlag = (_additionalFlags[0]=='y'?TRUE:FALSE);
+
     _insertDynamicDataFlag = FALSE;
     _dirty = false;
+
 
 
 }
@@ -368,6 +379,16 @@ BOOL CtiCCSpecial::getDisableFlag() const
 {
     return _disableflag;
 }
+/*---------------------------------------------------------------------------
+    getOvUvDisabledFlag
+
+    Returns the ovuv disable flag of the area
+---------------------------------------------------------------------------*/
+BOOL CtiCCSpecial::getOvUvDisabledFlag() const
+{
+    return _ovUvDisabledFlag;
+}
+
 /*---------------------------------------------------------------------------
     getStrategyId
 
@@ -499,5 +520,17 @@ CtiCCSpecial& CtiCCSpecial::setStrategyId(LONG strategyId)
     _strategyId = strategyId;
     return *this;
 }
+
+/*---------------------------------------------------------------------------
+    setOvUvDisabledFlag
+
+    Sets the ovuv disable flag of the area
+---------------------------------------------------------------------------*/
+CtiCCSpecial& CtiCCSpecial::setOvUvDisabledFlag(BOOL flag)
+{
+    _ovUvDisabledFlag = flag;
+    return *this;
+}
+
 
 
