@@ -5,7 +5,6 @@ Class-Path:
  jradius-client.jar 
  common.jar 
  yukonappserver.jar 
- tools.jar 
  rwav.jar 
  batik.jar 
  junit.jar 

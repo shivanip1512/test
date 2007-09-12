@@ -1669,38 +1669,44 @@ public static double convertTemperature(double temperature, String fromUnit, Str
         return sw.toString();
     }
     
-    public static Collection<String> getAllJars(File base, String jarName) throws IOException {
-        LinkedHashSet<String> result = new LinkedHashSet<String>();
+    public static Collection<String> getAllJars(File base, String jarName)
+            throws IOException {
+        Collection<String> helper = new LinkedHashSet<String>();
+        collectAllJars(base, jarName, helper);
+        return helper;
+    }
+
+    private static void collectAllJars(File base, String jarName,
+            Collection<String> jarList) throws IOException {
         File mainJarFile = new File(base, jarName);
         JarFile jar = null;
         try {
             jar = new JarFile(mainJarFile);
             Manifest manifest = jar.getManifest();
             if (manifest == null) {
-                return Collections.emptyList();
+                return;
             }
             Attributes mainAttributes = manifest.getMainAttributes();
-            String value = mainAttributes.getValue(Attributes.Name.CLASS_PATH);
-            if (value == null || StringUtils.isBlank(value)) {
-                return Collections.emptyList();
+            String classPath = mainAttributes.getValue(Attributes.Name.CLASS_PATH);
+            if (classPath == null || StringUtils.isBlank(classPath)) {
+                return;
             }
-            String[] strings = value.split("\\s+");
-            for (int i = 0; i < strings.length; i++) {
-                String string = strings[i];
-                if (!string.toLowerCase().endsWith(".jar")) {
+            String[] allJarNames = classPath.split("\\s+");
+            for (int i = 0; i < allJarNames.length; i++) {
+                String string = allJarNames[i];
+                if (!string.toLowerCase().endsWith(".jar") || jarList.contains(string)) {
                     continue;
                 }
                 try {
-                    Collection<String> allJars = getAllJars(base, string);
-                    // if the above fails, we won't add ourself because we probably don't exist
-                    result.add(string);
-                    result.addAll(allJars);
+                    jarList.add(string);
+                    collectAllJars(base, string, jarList);
+
                 } catch (IOException e) {
-                    // the jar must not exist
+                    jarList.remove(string);
                 }
             }
-            
-            return result;
+
+            return;
         } finally {
             if (jar != null) {
                 jar.close();
