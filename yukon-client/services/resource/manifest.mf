@@ -18,6 +18,7 @@ Class-Path: ./
  mx4j-rimpl.jar 
  mx4j-rjmx.jar 
  common.jar 
+ tools.jar 
  rwav.jar 
  acme.jar 
  yukonappserver.jar 
