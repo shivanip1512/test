@@ -1974,9 +1974,41 @@ void CtiCCCommandExecutor::EnableArea()
 
         
         CtiCCExecutorFactory f;
-        CtiCCExecutor*executor = f.createExecutor(new CtiCCGeoAreasMsg(ccAreas)); 
+        CtiCCExecutor *executor = f.createExecutor(new CtiCCGeoAreasMsg(ccAreas)); 
         executor->Execute();
         delete executor;
+    }
+    else
+    {
+        CtiCCSpArea_vec& ccSpAreas = *store->getCCSpecialAreas(CtiTime().seconds());
+
+        CtiCCSpecial* currentSpArea = store->findSpecialAreaByPAObjectID(areaId);
+        if (currentSpArea != NULL)
+        {
+            string text1 = string("Manual Enable Special Area");
+            string additional1 = string("Special Area: ");
+            additional1 += currentSpArea->getPAOName();
+
+            pointChanges.push_back(new CtiSignalMsg(SYS_PID_CAPCONTROL,1,text1,additional1,CapControlLogType,SignalEvent,_command->getUser()));
+            ccEvents.push_back(new CtiCCEventLogMsg(0, SYS_PID_CAPCONTROL, 0, 0, capControlManualCommand, 0, 0, text1, _command->getUser()));
+
+            currentSpArea->setDisableFlag(FALSE);
+            store->UpdateSpecialAreaDisableFlagInDB(currentSpArea);
+
+
+            if (eventMulti->getCount() > 0)
+                CtiCapController::getInstance()->getCCEventMsgQueueHandle().write(eventMulti);
+            if (multi->getCount() > 0)
+                CtiCapController::getInstance()->sendMessageToDispatch(multi);
+
+
+            CtiCCExecutorFactory f;
+            CtiCCExecutor *executor = f.createExecutor(new CtiCCSpecialAreasMsg(*store->getCCSpecialAreas(CtiTime().seconds())));
+            executor->Execute();
+            delete executor;
+
+
+        }
     }
 }
 
@@ -2018,11 +2050,43 @@ void CtiCCCommandExecutor::DisableArea()
             CtiCapController::getInstance()->sendMessageToDispatch(multi);
 
         CtiCCExecutorFactory f;
-        CtiCCExecutor*executor = f.createExecutor(new CtiCCGeoAreasMsg(ccAreas)); 
+        CtiCCExecutor *executor = f.createExecutor(new CtiCCGeoAreasMsg(ccAreas)); 
         executor->Execute();
         delete executor;
 
     }
+    else
+    {
+        CtiCCSpArea_vec& ccSpAreas = *store->getCCSpecialAreas(CtiTime().seconds());
+
+        CtiCCSpecial* currentSpArea = store->findSpecialAreaByPAObjectID(areaId);
+        if (currentSpArea != NULL)
+        {
+            string text1 = string("Manual Disable Special Area");
+            string additional1 = string("Special Area: ");
+            additional1 += currentSpArea->getPAOName();
+
+            pointChanges.push_back(new CtiSignalMsg(SYS_PID_CAPCONTROL,1,text1,additional1,CapControlLogType,SignalEvent,_command->getUser()));
+            ccEvents.push_back(new CtiCCEventLogMsg(0, SYS_PID_CAPCONTROL, 0, 0, capControlManualCommand, 0, 0, text1, _command->getUser()));
+
+            currentSpArea->setDisableFlag(TRUE);
+            store->UpdateSpecialAreaDisableFlagInDB(currentSpArea);
+
+
+            if (eventMulti->getCount() > 0)
+                CtiCapController::getInstance()->getCCEventMsgQueueHandle().write(eventMulti);
+            if (multi->getCount() > 0)
+                CtiCapController::getInstance()->sendMessageToDispatch(multi);
+
+            CtiCCExecutorFactory f;
+            CtiCCExecutor *executor = f.createExecutor(new CtiCCSpecialAreasMsg(*store->getCCSpecialAreas(CtiTime().seconds())));
+            executor->Execute();
+            delete executor;
+
+
+        }
+    }
+
 }
 /*---------------------------------------------------------------------------
     EnableSystem

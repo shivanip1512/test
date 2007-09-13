@@ -99,6 +99,7 @@ public:
     void resetDailyOperations();
 
     bool UpdateAreaDisableFlagInDB(CtiCCArea* bus);
+    bool UpdateSpecialAreaDisableFlagInDB(CtiCCSpecial* area);
     bool UpdateBusDisableFlagInDB(CtiCCSubstationBus* bus);
     bool UpdateBusVerificationFlagsInDB(CtiCCSubstationBus* bus);
     bool UpdateFeederDisableFlagInDB(CtiCCFeeder* feeder);

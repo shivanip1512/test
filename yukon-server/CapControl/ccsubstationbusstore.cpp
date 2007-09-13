@@ -2655,6 +2655,42 @@ bool CtiCCSubstationBusStore::UpdateAreaDisableFlagInDB(CtiCCArea* area)
     Updates a disable flag in the yukonpaobject table in the database for
     the substation bus.
 ---------------------------------------------------------------------------*/
+bool CtiCCSubstationBusStore::UpdateSpecialAreaDisableFlagInDB(CtiCCSpecial* area)
+{
+    RWRecursiveLock<RWMutexLock>::LockGuard  guard(mutex());
+
+    {
+        CtiLockGuard<CtiSemaphore> cg(gDBAccessSema);
+        RWDBConnection conn = getConnection();
+        if (conn.isValid()) 
+        {
+            RWDBTable yukonPAObjectTable = getDatabase().table("yukonpaobject");
+            RWDBUpdater updater = yukonPAObjectTable.updater();
+
+            updater.where( yukonPAObjectTable["paobjectid"] == area->getPAOId() );
+
+            updater << yukonPAObjectTable["disableflag"].assign( (area->getDisableFlag()?"Y":"N") );
+
+            updater.execute( conn );
+
+            CtiDBChangeMsg* dbChange = new CtiDBChangeMsg(area->getPAOId(), ChangePAODb,
+                                                          area->getPAOCategory(), area->getPAOType(),
+                                                          ChangeTypeUpdate);
+            dbChange->setSource(CAP_CONTROL_DBCHANGE_MSG_SOURCE);
+            CtiCapController::getInstance()->sendMessageToDispatch(dbChange);
+
+            return updater.status().isValid();
+        }
+    }
+    return false;
+} 
+
+/*---------------------------------------------------------------------------
+    UpdateBusDisableFlagInDB
+
+    Updates a disable flag in the yukonpaobject table in the database for
+    the substation bus.
+---------------------------------------------------------------------------*/
 bool CtiCCSubstationBusStore::UpdateBusDisableFlagInDB(CtiCCSubstationBus* bus)
 {
     RWRecursiveLock<RWMutexLock>::LockGuard  guard(mutex());
