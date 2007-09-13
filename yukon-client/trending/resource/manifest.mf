@@ -5,6 +5,8 @@ Class-Path: ./
  jradius-client.jar 
  jcommon.jar 
  common.jar 
+ billing.jar 
+ foreign.jar 
  yukonappserver.jar 
  jcpagelayout450K.jar 
  rwav.jar 
