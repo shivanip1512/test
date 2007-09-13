@@ -43,11 +43,19 @@ public class OnelineTags {
     private TagGroup[] feederTagStates = { new TagGroup(TAGGRP_ENABLEMENT,
                                                         new String[] {
                                                                 CapControlFeeder.ENABLE_OPSTATE,
-                                                                CapControlFeeder.DISABLE_OPSTATE }) };
+                                                                CapControlFeeder.DISABLE_OPSTATE}),
+                                           new TagGroup( TAGGRP_OVUV_ENABLEMENT, new String[] {
+                                                   CapControlFeeder.ENABLE_OVUVSTATE,
+                                                   CapControlFeeder.DISABLE_OVUVSTATE} )
+    };
     private TagGroup[] subTagStates = { new TagGroup(TAGGRP_ENABLEMENT,
                                                      new String[] {
                                                              CapControlSubBus.ENABLE_OPSTATE,
-                                                             CapControlSubBus.DISABLE_OPSTATE }) };
+                                                             CapControlSubBus.DISABLE_OPSTATE}),
+                                        new TagGroup(TAGGRP_OVUV_ENABLEMENT, new String[] {
+                                                CapControlSubBus.ENABLE_OVUVSTATE,
+                                                CapControlSubBus.DISABLE_OVUVSTATE} )
+    };
 
     public OnelineTags(String t) {
         type = t;

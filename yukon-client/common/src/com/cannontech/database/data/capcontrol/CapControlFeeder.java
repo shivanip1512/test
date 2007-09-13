@@ -10,7 +10,6 @@ import com.cannontech.database.data.lite.LiteFactory;
 import com.cannontech.database.data.lite.LitePoint;
 import com.cannontech.database.data.pao.PAOGroups;
 import com.cannontech.database.data.point.PointBase;
-import com.cannontech.database.db.point.Point;
 
 /**
  * This type was created in VisualAge.
@@ -20,6 +19,8 @@ public class CapControlFeeder extends CapControlYukonPAOBase implements com.cann
 {
 	public static final String ENABLE_OPSTATE = "feederEnabled";
     public static final String DISABLE_OPSTATE = "feederDisabled";
+    public static final String ENABLE_OVUVSTATE = "feederOVUVEnabled";
+    public static final String DISABLE_OVUVSTATE = "feederOVUVDisabled";
     
     private com.cannontech.database.db.capcontrol.CapControlFeeder capControlFeeder = null;
 	private ArrayList ccBankListVector = null;

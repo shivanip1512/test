@@ -6,4 +6,8 @@
   <bean id="seasonScheduleDao" class="com.cannontech.cbc.dao.impl.SeasonScheduleDaoImpl">
       <property name="jdbcTemplate" ref="simpleJdbcTemplate"/>
   </bean>
+  <bean id="cbcCache" class="com.cannontech.cbc.web.CapControlCache" init-method="initialize" >
+  	  <property name="defCapControlConn" ref="cbcConnection"/>
+  	  <property name="refreshTimer" ref="globalScheduledExecutor"/>
+  </bean>
 </beans>

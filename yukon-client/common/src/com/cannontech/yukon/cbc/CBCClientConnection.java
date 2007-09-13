@@ -8,6 +8,7 @@ package com.cannontech.yukon.cbc;
 import com.cannontech.common.util.MessageEvent;
 import com.cannontech.common.util.MessageEventListener;
 import com.cannontech.core.dao.DaoFactory;
+import com.cannontech.core.dao.RoleDao;
 import com.cannontech.message.util.ClientConnection;
 import com.cannontech.roles.yukon.SystemRole;
 import com.roguewave.vsj.CollectableStreamer;
@@ -45,7 +46,9 @@ public class CBCClientConnection extends ClientConnection
 		new com.cannontech.message.dispatch.message.DefineCollectablePointData(),
 		new DefineCollectableCBCTempMoveCapBank(),
 		new DefineCollectableVerifySub(),
-        new DefineCollectableCBCSubAreas()
+        new DefineCollectableCBCSubAreas(),
+        new DefineCollectableSpecialCBCArea(),
+        new DefineCollectableCBCSpecialSubAreas()
 	};
 	
 	/**
@@ -56,9 +59,8 @@ public class CBCClientConnection extends ClientConnection
 	public CBCClientConnection() 
 	{
 		super("CBC");// "127.0.0.1", 1910 );
-		initialize();
-		getExternalResources();
-		setRegistrationMsg(new CBCCommand ( CBCCommand.REQUEST_ALL_AREAS, 0) );
+        initialize();
+        setRegistrationMsg(new CBCCommand ( CBCCommand.REQUEST_ALL_AREAS, 0) );
 	}
 	
 	/**
@@ -128,19 +130,6 @@ public class CBCClientConnection extends ClientConnection
 	
 	/**
 	 * Insert the method's description here.
-	 * Creation date: (3/21/00 2:26:52 PM)
-	 */
-	private void getExternalResources() 
-	{
-		setHost( DaoFactory.getRoleDao().getGlobalPropertyValue( SystemRole.CAP_CONTROL_MACHINE ) );
-	
-		setPort( Integer.parseInt(
-			DaoFactory.getRoleDao().getGlobalPropertyValue( SystemRole.CAP_CONTROL_PORT ) ) );
-	
-	}
-	
-	/**
-	 * Insert the method's description here.
 	 * Creation date: (5/9/00 3:20:03 PM)
 	 * Version: <version>
 	 * @param exc java.lang.Exception
@@ -157,7 +146,7 @@ public class CBCClientConnection extends ClientConnection
 	 * Insert the method's description here.
 	 * Creation date: (8/18/00 5:11:57 PM)
 	 */
-	private void initialize() 
+	public void initialize() 
 	{	
 		setAutoReconnect( true );
 	}

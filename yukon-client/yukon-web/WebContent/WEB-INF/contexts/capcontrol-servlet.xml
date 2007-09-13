@@ -74,6 +74,7 @@
 			<ref bean="methodNameResolver" />
 		</property>
 		<property name="requireSession" value="true"/>  
+		<property name="cbcCache" ref="cbcCache"/>
 	</bean>
 
 	<bean id="onelineBookmarkController"

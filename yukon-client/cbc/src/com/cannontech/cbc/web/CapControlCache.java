@@ -4,56 +4,33 @@ package com.cannontech.cbc.web;
  * Maintains information from the capcontrol server
  */
 import java.io.IOException;
-import java.util.ArrayList;
-import java.util.Arrays;
-import java.util.Collections;
-import java.util.Date;
-import java.util.HashMap;
-import java.util.Hashtable;
-import java.util.Iterator;
-import java.util.List;
-import java.util.Vector;
+import java.util.*;
 import java.util.concurrent.TimeUnit;
 
 import org.apache.commons.lang.Validate;
 
 import com.cannontech.clientutils.CTILogger;
 import com.cannontech.clientutils.commonutils.ModifiedDate;
-import com.cannontech.common.util.CtiUtilities;
-import com.cannontech.common.util.NativeIntVector;
-import com.cannontech.common.util.ScheduledExecutor;
+import com.cannontech.common.util.*;
 import com.cannontech.core.dao.DaoFactory;
 import com.cannontech.database.data.capcontrol.CapBankController;
 import com.cannontech.database.data.capcontrol.CapControlSubBus;
 import com.cannontech.database.data.lite.LiteComparators;
 import com.cannontech.database.data.lite.LiteState;
-import com.cannontech.database.db.capcontrol.CCSubAreaAssignment;
-import com.cannontech.database.db.capcontrol.CapBank;
-import com.cannontech.database.db.capcontrol.CapControlFeeder;
+import com.cannontech.database.db.capcontrol.*;
 import com.cannontech.database.db.state.StateGroupUtils;
-import com.cannontech.message.util.Message;
+import com.cannontech.message.util.*;
 import com.cannontech.message.util.MessageEvent;
-import com.cannontech.message.util.MessageListener;
 import com.cannontech.spring.YukonSpringHook;
 import com.cannontech.web.lite.LiteWrapper;
-import com.cannontech.yukon.cbc.CBCArea;
-import com.cannontech.yukon.cbc.CBCClientConnection;
-import com.cannontech.yukon.cbc.CBCCommand;
-import com.cannontech.yukon.cbc.CBCSubAreas;
-import com.cannontech.yukon.cbc.CBCSubstationBuses;
-import com.cannontech.yukon.cbc.CBCUtils;
-import com.cannontech.yukon.cbc.CapBankDevice;
-import com.cannontech.yukon.cbc.Feeder;
-import com.cannontech.yukon.cbc.CBCSpecialArea;
-import com.cannontech.yukon.cbc.CBCSubSpecialAreas;
-import com.cannontech.yukon.cbc.StreamableCapObject;
-import com.cannontech.yukon.cbc.SubBus;
+import com.cannontech.yukon.IServerConnection;
+import com.cannontech.yukon.cbc.*;
 import com.cannontech.yukon.conns.ConnPool;
 
 public class CapControlCache implements MessageListener, CapControlDAO {
     private static final int STARTUP_REF_RATE = 15 * 1000;
     private static final int NORMAL_REF_RATE = 30 * 60 * 1000; //5 minutes
-    private ScheduledExecutor refreshTimer = YukonSpringHook.getGlobalExecutor();
+    private ScheduledExecutor refreshTimer;// = YukonSpringHook.getGlobalExecutor();
     private Hashtable subBusMap = new Hashtable();
     private Hashtable feederMap = new Hashtable();
     private Hashtable capBankMap = new Hashtable();
@@ -64,20 +41,23 @@ public class CapControlCache implements MessageListener, CapControlDAO {
     private HashMap areaStateMap = new HashMap();
     private HashMap specialAreaStateMap = new HashMap();
     private Boolean systemStatusOn = Boolean.TRUE;
+    private IServerConnection defCapControlConn;
     
     /**
      * CapControlCache constructor.
      */
     public CapControlCache() {
         super();
-        
+        //defCapControlConn = ConnPool.getInstance().getDefCapControlConn();
+    }
+    
+    public void initialize() {
         Runnable task = new Runnable() {
             public void run() {
                 refresh();
             }
         };
-    
-        ConnPool.getInstance().getDefCapControlConn().addMessageListener( this );   
+        defCapControlConn.addMessageListener( this );   
         refreshTimer.scheduleWithFixedDelay(task, STARTUP_REF_RATE, NORMAL_REF_RATE, TimeUnit.MILLISECONDS);
     }
     
@@ -745,5 +725,13 @@ public class CapControlCache implements MessageListener, CapControlDAO {
     
     public Boolean getSystemStatusOn() {
         return systemStatusOn;
+    }
+
+    public void setRefreshTimer(ScheduledExecutor refreshTimer) {
+        this.refreshTimer = refreshTimer;
+    }
+
+    public void setDefCapControlConn(IServerConnection defCapControlConn) {
+        this.defCapControlConn = defCapControlConn;
     }
 }

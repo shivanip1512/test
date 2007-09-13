@@ -53,7 +53,12 @@ public class SeasonScheduleDaoImpl implements SeasonScheduleDao{
         
         SeasonSchedule schedule = new SeasonSchedule();
         // All we wanted was the scheduleId.
-        schedule.setScheduleID(scheduleIds.get(0));
+        if( scheduleIds.size() > 0 )
+            schedule.setScheduleID(scheduleIds.get(0));
+        else{
+            CTILogger.error("Error: No schedule in database for paoid: " + paoId );
+            schedule.setScheduleID(0);
+        }
         Connection connection = null;
         try {
             if (schedule.getDbConnection() == null) {
@@ -67,6 +72,7 @@ public class SeasonScheduleDaoImpl implements SeasonScheduleDao{
         finally {
             closeConnection(connection);
         }
+
         
         return schedule;
     }

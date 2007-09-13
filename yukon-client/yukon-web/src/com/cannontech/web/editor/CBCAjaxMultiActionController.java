@@ -21,6 +21,7 @@ import com.cannontech.util.ParamUtil;
 import com.cannontech.yukon.cbc.CBCCommand;
 
 public class CBCAjaxMultiActionController extends MultiActionController {
+    private CapControlCache cbcCache;
 
     public CBCAjaxMultiActionController() {
     }
@@ -29,17 +30,14 @@ public class CBCAjaxMultiActionController extends MultiActionController {
      * creates HTML response to the system command menu
      * @param writer
      */
-    // <a href="#" onclick="handleSystemCommand()" id="systemOn"> Disable System
-    // </a>
-    // <br/>
-    // <br/>
+
     public ModelAndView updateSystemCommandMenu(HttpServletRequest req,
             HttpServletResponse resp)
 
     {
-        CapControlCache cbcCache = (CapControlCache) req.getSession(false)
-                                                        .getServletContext()
-                                                        .getAttribute(CBCServlet.CBC_CACHE_STR);
+//        CapControlCache cbcCache = (CapControlCache) req.getSession(false)
+//                                                        .getServletContext()
+//                                                        .getAttribute(CBCServlet.CBC_CACHE_STR);
         StringBuffer buf = generateHtmlLink(cbcCache);
         String commandLink = buf.toString();
         try {
@@ -92,5 +90,9 @@ public class CBCAjaxMultiActionController extends MultiActionController {
                                                              CBCSettingsRole.ALLOW_CONTROLS);
         boolean allowControl = Boolean.valueOf(allowCtlVal);
         return allowControl;
+    }
+    
+    public void setCbcCache(CapControlCache cbcCache) {
+        this.cbcCache = cbcCache;
     }
 }

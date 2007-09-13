@@ -215,9 +215,7 @@ public class ConnPool
             
             try {
                 host = roleDao.getGlobalPropertyValue( SystemRole.MACS_MACHINE );
-    
-                port = Integer.parseInt( 
-                    roleDao.getGlobalPropertyValue( SystemRole.MACS_PORT ) ); 
+                port = Integer.parseInt( roleDao.getGlobalPropertyValue( SystemRole.MACS_PORT ) ); 
             }
             catch( Exception e) {
                 CTILogger.error( e.getMessage(), e );
@@ -268,6 +266,8 @@ public class ConnPool
         if( cbcConn == null )
         {		
         	cbcConn = (CBCClientConnection)createCapControlConn();
+            cbcConn.setHost( roleDao.getGlobalPropertyValue( SystemRole.CAP_CONTROL_MACHINE ) );
+            cbcConn.setPort( Integer.parseInt(roleDao.getGlobalPropertyValue( SystemRole.CAP_CONTROL_PORT ) ) );
 
 			try
 			{
@@ -316,7 +316,6 @@ public class ConnPool
     private IServerConnection createCapControlConn()
     {       
     	CBCClientConnection cbcConn = new CBCClientConnection();
-
         return cbcConn;
     }
     

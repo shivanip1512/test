@@ -195,14 +195,14 @@ function updateHTML(xml) {
 }
 function updateSub(xml) {
 	updateImages(SUB_IMAGES, xml);
-	updateHiddenTextElements("SubState", xml, ["isDisable", "isVerify", "subDisableReason"]);
+	updateHiddenTextElements("SubState", xml, ["isDisable", "isVerify", "subDisableReason", "isOVUVDis", "subDisableOVUVReason"]);
 	updateDynamicLineElements("Sub", xml);
 	updateVisibleText("SubStat", xml);
 	updateVisibleText("SubTag", xml);
 
 }
 function updateFeeders(xml) {
-	updateHiddenTextElements("FeederState", xml, ["isDisable", "disableFdrReason"]);
+	updateHiddenTextElements("FeederState", xml, ["isDisable", "disableFdrReason", "isOVUVDis", "disableOVUVFdrReason"]);
 	updateDynamicLineElements("OnelineFeeder", xml);
 	updateVisibleText("FeederStat", xml);
 	updateVisibleText("FeederTag", xml);

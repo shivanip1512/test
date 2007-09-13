@@ -32,6 +32,7 @@ import com.cannontech.servlet.nav.CBCNavigationUtil;
 import com.cannontech.servlet.nav.DBEditorNav;
 import com.cannontech.servlet.xml.DynamicUpdate;
 import com.cannontech.servlet.xml.ResultXML;
+import com.cannontech.spring.YukonSpringHook;
 import com.cannontech.util.ParamUtil;
 import com.cannontech.yukon.cbc.CBCArea;
 import com.cannontech.yukon.cbc.CBCClientConnection;
@@ -69,20 +70,8 @@ public class CBCServlet extends ErrorAwareInitializingServlet
 public void destroy() 
 {
 	// clean up
-    shutDownCBCCache(); 
     super.destroy();
 }
-
-
-
-private void shutDownCBCCache() {
-    CBCClientConnection defCapControlConn = (CBCClientConnection) ConnPool.getInstance().getDefCapControlConn();
-    defCapControlConn.disconnect();
-    getServletContext().removeAttribute(CBC_CACHE_STR);
-}
-
-
-
 
 /**
  * Creates a cache if one is not alread created
@@ -96,11 +85,11 @@ private CapControlCache getCapControlCache()
 	if( cbcCache == null )
 	{
 		// Add application scope variables to the context
-		cbcCache = new CapControlCache();
+		cbcCache = YukonSpringHook.getBean("cbcCache", CapControlCache.class);
 		getServletContext().setAttribute(CBC_CACHE_STR, cbcCache);
 	}
 	
-	return (CapControlCache)getServletContext().getAttribute(CBC_CACHE_STR);
+	return cbcCache;
 }
 
 /**

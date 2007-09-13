@@ -24,17 +24,24 @@ public class FeederHiddenStates extends LxAbstractView implements HiddenStates {
         String name = "FeederState_" + getCurrentFeederIdFromMessage();
         HiddenTextElement stateInfo = new HiddenTextElement("HiddenTextElement",
                                                             name);
-        stateInfo.addProperty("isDisable", isDisabled()
-                                                          .toString());
+        stateInfo.addProperty("isDisable", isDisabled().toString() );
+        stateInfo.addProperty("isOVUVDis", isOVUVDisabled().toString() );
         String disableReason = CBCTagHandler.getReason(OnelineTags.TAGGRP_ENABLEMENT,
                                                        getCurrentFeederIdFromMessage());
+        String disableOVUVReason = CBCTagHandler.getReason(OnelineTags.TAGGRP_OVUV_ENABLEMENT,
+                                                       getCurrentFeederIdFromMessage());
         stateInfo.addProperty("disableFdrReason", disableReason);
+        stateInfo.addProperty("disableOVUVFdrReason", disableOVUVReason);
         graph.add(stateInfo);
 
     }
 
     public Boolean isDisabled() {
         return getStreamable().getCcDisableFlag();
+    }
+    
+    public Boolean isOVUVDisabled() {
+        return getStreamable().getOvUvDisabledFlag();
     }
 
     private Feeder getStreamable() {

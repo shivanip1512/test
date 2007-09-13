@@ -22,6 +22,8 @@ public class CapControlSubBus extends CapControlYukonPAOBase implements com.cann
 {
 	public static final String ENABLE_OPSTATE = "subEnabled";
     public static final String DISABLE_OPSTATE = "subDisabled";
+    public static final String ENABLE_OVUVSTATE = "subOVUVEnabled";
+    public static final String DISABLE_OVUVSTATE = "subOVUVDisabled";
 
     private com.cannontech.database.db.capcontrol.CapControlSubstationBus capControlSubstationBus = null;
 

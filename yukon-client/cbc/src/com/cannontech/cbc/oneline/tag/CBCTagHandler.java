@@ -14,15 +14,18 @@ import com.cannontech.database.PoolManager;
 import com.cannontech.database.data.capcontrol.CapBank;
 import com.cannontech.database.data.capcontrol.CapControlFeeder;
 import com.cannontech.database.data.capcontrol.CapControlSubBus;
-import com.cannontech.database.data.lite.LitePoint;
-import com.cannontech.database.data.lite.LiteTag;
+import com.cannontech.database.data.lite.*;
 import com.cannontech.database.data.pao.YukonPAObject;
 import com.cannontech.database.db.DBPersistent;
 import com.cannontech.database.db.point.TAGLog;
 import com.cannontech.message.dispatch.ClientConnection;
 import com.cannontech.message.dispatch.message.DBChangeMsg;
+import com.cannontech.spring.YukonSpringHook;
 import com.cannontech.tags.Tag;
 import com.cannontech.tags.TagManager;
+import com.cannontech.yukon.cbc.CapBankDevice;
+import com.cannontech.yukon.cbc.Feeder;
+import com.cannontech.cbc.web.CapControlCache;
 
 public class CBCTagHandler {
 
@@ -101,41 +104,178 @@ public class CBCTagHandler {
             Integer tagID = getTagID();
 
             HashSet<Tag> tags = (HashSet<Tag>) tagManager.getTags(point.getPointID());
-            boolean tagFound = false;
+            boolean tagDisable = false;
+            if( tagDesc.lastIndexOf("Disable") != -1 )
+                tagDisable = true;
+            
             for (Tag tag : tags) {
-                if (tagName.equalsIgnoreCase(tag.getTaggedForStr())) {
-                    tag.setReferenceStr(getReferenceString(tagDesc));
-                    tag.setDescriptionStr("(none)");
-                    tagManager.removeTag(tag, userName);
-                    tagFound = true;
-                }
+                if (tagName.equalsIgnoreCase(tag.getTaggedForStr()))
+                {
+                    removeTag(tag);
+                }                   
             }
-            if (!tagFound)
+            if( tagDisable )
+            {
                 createTag(tagDesc, reason, tagID);
+            }
         } catch (Exception e1) {
             CTILogger.error(e1);
-
         }
         return true;
     }
+    
+    private void removeTag( Tag tag ) throws Exception
+    {
+        CapControlCache cc = (CapControlCache)YukonSpringHook.getBean("cbcCache");
+        Feeder[] fList = null;
+        CapBankDevice[] cList = null;
+        
+        if( tag == null)
+            throw new Exception("Null Pointer, Tag was not removed from dynamictags.");
+        
+        if( tag.getTaggedForStr().lastIndexOf("OVUV") == -1)
+        {
+            tagManager.removeTag(tag, userName);
+        }else
+        {
+            //if this is a OVUV, need to go down the tree removing tags for objects below it.
+            int id = pao.getPAObjectID();
 
-    private void createTag(String tagDesc, String reason, Integer tagID)
-            throws Exception {
+            if(pao instanceof CapControlSubBus )
+            {
+                fList = cc.getFeedersBySub(id);
+               //if substation, remove it and feeders, and capbanks.
+            }else if( pao instanceof CapControlFeeder)
+            {
+                //if feeder, remove it and find all capbanks
+                cList = cc.getCapBanksByFeeder(id);
+            }else if( pao instanceof CapBank)
+            {
+                tagManager.removeTag(tag, userName);
+            }
+        }
+        if( cList != null )
+        {
+            tagManager.removeTag(tag, userName);
+            for( CapBankDevice cd : cList )
+            {
+                HashSet<Tag> temp = (HashSet<Tag>)tagManager.getTags( CBCPointFactory.getTagPoint(cd.getCcId()).getPointID() );
+                for( Tag t : temp )
+                    tagManager.removeTag(t, userName);
+            }
+        }
+        if( fList != null ){
+            tagManager.removeTag(tag, userName);
+            for( Feeder f : fList )
+            {
+                HashSet<Tag> tempC = (HashSet<Tag>)tagManager.getTags( CBCPointFactory.getTagPoint(f.getCcId()).getPointID() );
+                //have a list of feeder tags
+                if( tempC.size() > 0 )
+                {
+                    int id = f.getCcId();
+                    CapBankDevice[] bankList = cc.getCapBanksByFeeder(id);
+                    for( CapBankDevice cd : bankList )
+                    {
+                        HashSet<Tag> temp = (HashSet<Tag>)tagManager.getTags( CBCPointFactory.getTagPoint(cd.getCcId()).getPointID() );
+                        for( Tag t2 : temp )
+                            tagManager.removeTag(t2, userName);
+                    }
+                }
+                for( Tag t : tempC ){
+                    tagManager.removeTag(t, userName);
+                }
 
+                //else No capbanks to search for.
+            }
+        }        
+    }
+    
+    private void createTag(String tagDesc, String reason, Integer tagID) throws Exception 
+    {
+        CapControlCache cc = (CapControlCache)YukonSpringHook.getBean("cbcCache");
+        Feeder[] fList = null;
+        CapBankDevice[] cList = null;
+        
         String refString = getReferenceString(tagDesc);
-        tagManager.createTag(point.getPointID(),
-                             tagID,
-                             userName,
-                             reason,
-                             refString,
-                             tagName);
+        //if this is just a disable/enable  just add it.
+        if( tagDesc.lastIndexOf("OVUV") == -1)
+        {
+            tagManager.createTag(point.getPointID(),tagID,userName,reason,refString,tagName);
+        }else
+        {
+            //if this is a OVUV, need to go down the tree adding tags for objects below it.  
+            //if this is a OVUV, need to go down the tree removing tags for objects below it.
 
+            int id = pao.getPAObjectID();
+
+            if(pao instanceof CapControlSubBus )
+            {
+                fList = cc.getFeedersBySub(id);
+               //if substation, remove it and feeders, and capbanks.
+            }else if( pao instanceof CapControlFeeder)
+            {
+                //if feeder, remove it and find all capbanks
+                cList = cc.getCapBanksByFeeder(id);
+            }else if( pao instanceof CapBank)
+            {
+                tagManager.createTag(point.getPointID(),tagID,userName,reason,refString,tagName);  
+            }
+            if( cList != null )
+            {
+                tagManager.createTag(point.getPointID(),tagID,userName,reason,refString,tagName);                
+                for( CapBankDevice cd : cList )
+                {
+                    LitePoint lp = CBCPointFactory.getTagPoint(cd.getCcId());
+                    tagManager.createTag(lp.getPointID(),tagID,userName,reason,getReferenceString(cd.getCcId(), tagDesc),tagName);
+                }
+            }
+            if( fList != null )
+            {
+                tagManager.createTag(point.getPointID(),tagID,userName,reason,refString,tagName);
+                for( Feeder f : fList )
+                {
+                    LitePoint lp = CBCPointFactory.getTagPoint(f.getCcId());
+                    tagManager.createTag(lp.getPointID(),tagID,userName,reason,getReferenceString(f.getCcId(), tagDesc),tagName);
+                    cList = cc.getCapBanksByFeeder(f.getCcId());
+                    for( CapBankDevice cd : cList )
+                    {
+                        LitePoint lp2 = CBCPointFactory.getTagPoint(cd.getCcId());
+                        tagManager.createTag(lp2.getPointID(),tagID,userName,reason,getReferenceString(cd.getCcId(), tagDesc),tagName);
+                    }
+                }
+                //else No capbanks to search for.
+            }    
+        }
     }
 
     private String getReferenceString(String tagDesc) {
         Integer objectID = pao.getPAObjectID();
         String type = pao.getPAOType();
         String refString = type + ":" + objectID + ":" + tagDesc;
+        return refString;
+    }
+    
+    private String getReferenceString( int paoID, String tagDesc )
+    {
+        LiteYukonPAObject liteYukonPAO = DaoFactory.getPaoDao().getLiteYukonPAO(paoID);
+        DBPersistent dbPers = LiteFactory.convertLiteToDBPers(liteYukonPAO);
+        Connection connection = PoolManager.getInstance().getConnection(CtiUtilities.getDatabaseAlias());
+        dbPers.setDbConnection(connection);
+        try {
+            dbPers.retrieve();
+        } catch (SQLException e) {
+            CTILogger.error(e);
+        } finally {
+            if (connection != null) {
+                try {
+                    connection.close();
+                } catch (SQLException e) {
+                    CTILogger.error(e);
+                }
+            }
+        }
+        YukonPAObject obj = (YukonPAObject) dbPers;
+        String refString = obj.getPAOType() + ":" + obj.getPAObjectID() + ":" + tagDesc;
         return refString;
     }
 

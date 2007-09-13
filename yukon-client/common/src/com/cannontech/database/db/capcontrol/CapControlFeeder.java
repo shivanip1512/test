@@ -338,4 +338,19 @@ public class CapControlFeeder extends com.cannontech.database.db.DBPersistent {
         this.usePhaseData = usePhaseData;
     }
     
+    public boolean getUsePhaseDataBoolean() {
+        if(usePhaseData.equalsIgnoreCase("Y")) {
+            return true;
+        }
+        return false;
+    }
+
+    public void setUsePhaseDataBoolean(boolean bool) {
+        if(bool) {
+            this.usePhaseData = "Y";
+        }else {
+            this.usePhaseData = "N";
+        }
+    }
+    
 }

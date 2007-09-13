@@ -145,13 +145,14 @@ function createFeederTagMenu(feederID) {
 	//state var
 	var isDis = getState("FeederState_" + feederID, "isDisable");
 	var disFeederTag;
-
+	var disableOVUVReason = "";
+	var disableReason = "";
 	if (isDis == "true")
 	{
 
 		disableFeeder = new Command (feederID, ALL_FDR_CMDS.enable_fdr, ALL_CMD_TYPES.feeder);
 		disFeederTag = new Command (feederID, "feederEnabled", ALL_CMD_TYPES.tag);
-		var disableReason = getState("FeederState_" + feederID, "disableFdrReason");
+		disableReason = getState("FeederState_" + feederID, "disableFdrReason");
 
 	}
 	else
@@ -160,6 +161,22 @@ function createFeederTagMenu(feederID) {
 		disFeederTag = new Command (feederID, "feederDisabled", ALL_CMD_TYPES.tag);
 		
 	}
+	//////////////////////////
+	var isOVUVDis = getState("FeederState_" + feederID, "isOVUVDis");
+	var disFeederOVUV;
+	var disFeederOVUVTag;
+	if (isOVUVDis == "true")
+	{
+		disFeederOVUV = new Command (feederID, ALL_FDR_CMDS.send_all_enable_ovuv, ALL_CMD_TYPES.feeder);
+		disFeederOVUVTag = new Command (feederID, ALL_TAG_CMDS.feederOVUVEnabled, ALL_CMD_TYPES.tag);
+		disableOVUVReason = getState("FeederState_" + feederID, "disableOVUVFdrReason");
+	}
+	else 
+	{
+		disFeederOVUV = new Command (feederID, ALL_FDR_CMDS.send_all_disable_ovuv, ALL_CMD_TYPES.feeder);
+		disFeederOVUVTag = new Command (feederID, ALL_TAG_CMDS.feederOVUVDisabled, ALL_CMD_TYPES.tag);	
+	}
+	
 	var str='';
 	str += '<html>';
 	str+='<body style="background-color:black">';
@@ -188,6 +205,25 @@ function createFeederTagMenu(feederID) {
 	str += 				generateReasonSpan ((isDis == "true"), disFeederTag.createName() + 'ReasonSpan', disableReason);
 	str+='			<\/td>';
 	str+='		<\/tr>';
+	
+	str+='		<tr>';
+	str+='			<td>';	
+	str+='				<input type="checkbox"  name = "'; 
+	str+= 				disFeederOVUV.createName() + '" ';
+	str+=' 				onclick="addCommand(this); '; 
+	str+= ' 				 	 addCommand(\'' + disFeederOVUVTag.createName() +'\'); setReason(\'' + disFeederOVUVTag.createName() + '\', \'' + disableReason + '\', this);"';
+	if (isOVUVDis == "true")
+		str+= ' checked ';
+	str+='>'; 	
+	str+='				<font color="white">Disable OVUV<\/font><\/><\/br>';
+	str+='			<\/td>';
+	str+='		<\/tr>';
+	str+='		<tr>';
+	str+= 			'<td>';
+	str += 				generateReasonSpan ((isOVUVDis == "true"), disFeederOVUVTag.createName() + 'ReasonSpan', disableOVUVReason);
+	str+='			<\/td>';
+	str+='		<\/tr>';	
+	
 	str+='		<tr>';
 	str+='			<td>';
 	str+='				<input  type="submit" name="execute" value="Execute" onclick="disableAll(); executeMultipleCommands(\'fdrTagSpan_\','+feederID+'); reset(this); disableAllCheckedReasons(\'fdrTagSpan_\','+feederID+')"\/>';
@@ -220,6 +256,20 @@ function createSubTagMenu() {
 		disSubTag = new Command (paoId, "subDisabled", ALL_CMD_TYPES.tag);
 		
 	}
+	//////////////////////////
+	var isOVUVDis = getState("SubState_" + paoId, "isOVUVDis");
+	var disSubOVUV;
+	var disSubOVUVTag;
+	if (isOVUVDis == "true")
+	{
+		disSubOVUV = new Command (paoId, ALL_SUB_CMDS.send_all_enable_ovuv, ALL_CMD_TYPES.sub);
+		disSubOVUVTag = new Command (paoId, ALL_TAG_CMDS.subOVUVEnabled, ALL_CMD_TYPES.tag);
+	}
+	else 
+	{
+		disSubOVUV = new Command (paoId, ALL_SUB_CMDS.send_all_disable_ovuv, ALL_CMD_TYPES.sub);
+		disSubOVUVTag = new Command (paoId, ALL_TAG_CMDS.subOVUVDisabled, ALL_CMD_TYPES.tag);	
+	}
 	var str='';
 	str += '<html>';
 	str+='<body style="background-color:black">';
@@ -236,7 +286,7 @@ function createSubTagMenu() {
 	str+= ' 				 	 addCommand(\'' + disSubTag.createName() +'\'); setReason(\'' + disSubTag.createName() + '\', \'' + disableReason + '\', this);"';
 	if (isDis == "true")
 		str+= ' checked ';
-	str+='>'; 
+	str+='>'; 	
 	str+='				<font color="white">Disable<\/font><\/><\/br>';
 	str+='			<td align="right" valign="top" id = "popupplaceholder">';
 	str+='				<a   href="javascript:void(0)" style="color=gray" title="Click To Close" onclick="closePopupWindow();">  x <\/a>';
@@ -247,6 +297,26 @@ function createSubTagMenu() {
 	str += 				generateReasonSpan ((isDis == "true"), disSubTag.createName() + 'ReasonSpan', disableReason);
 	str+='			<\/td>';
 	str+='		<\/tr>';
+	
+	str+='		<tr>';
+	str+='			<td>';	
+	str+='				<input type="checkbox"  name = "'; 
+	str+= 				disSubOVUV.createName() + '" ';
+	str+=' 				onclick="addCommand(this); '; 
+	str+= ' 				 	 addCommand(\'' + disSubOVUVTag.createName() +'\'); setReason(\'' + disSubOVUVTag.createName() + '\', \'' + disableReason + '\', this);"';
+	if (isOVUVDis == "true")
+		str+= ' checked ';
+	str+='>'; 	
+	str+='				<font color="white">Disable OVUV<\/font><\/><\/br>';
+	str+='			<\/td>';
+	str+='		<\/tr>';
+	str+='		<tr>';
+	str+= 			'<td>';
+	str += 				generateReasonSpan ((isOVUVDis == "true"), disSubOVUVTag.createName() + 'ReasonSpan', disableReason);
+	str+='			<\/td>';
+	str+='		<\/tr>';
+	
+		
 	str+='		<tr>';
 	str+='			<td>';
 	str+='				<input  type="submit" name="execute" value="Execute" onclick="disableAll(); executeMultipleCommands(\'subTagSpan_\','+paoId+'); reset(this); disableAllCheckedReasons(\'subTagSpan_\','+paoId+')"\/>';

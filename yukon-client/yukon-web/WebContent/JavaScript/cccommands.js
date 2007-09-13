@@ -16,6 +16,8 @@ var ALL_TAG_CMDS = {standalone:"Stand Alone", switched:"Switched",
 					feederEnabled:"feederEnabled", feederDisabled:"feederDisabled",
 					subEnabled:"subEnabled", subDisabled:"subDisabled",
 					capOVUVEnabled:"capOVUVEnabled", capOVUVDisabled:"capOVUVDisabled", 
+					subOVUVEnabled:"subOVUVEnabled", subOVUVDisabled:"subOVUVDisabled",
+					feederOVUVEnabled:"feederOVUVEnabled", feederOVUVDisabled:"feederOVUVDisabled",
 					send_all_open:"SendAllOpen", send_all_close:"SendAllClose", 
 					send_all_enable_ovuv:"SendAllEnableOvUv", send_all_disable_ovuv:"SendAllDisableOvUv"
 					};

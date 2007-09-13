@@ -76,7 +76,11 @@ public class FeederTagView extends LxAbstractView implements TagView {
     public String getTagString() {
         String tagString = "T:";
         if (states.isDisabled().booleanValue())
-            tagString += "D";
+            tagString += "D:";
+        else
+            tagString += ":";
+        if (states.isOVUVDisabled())
+            tagString += "V";
             
         return tagString;
 

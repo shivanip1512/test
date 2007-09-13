@@ -420,25 +420,14 @@ public class DBPersistentBean implements IDBPersistent {
    **/
    public void update( String tableName, String constraintColumnName[], Object constraintColumnValue[]) throws SQLException
    {
-//      for( int i = 0; i < setColumnValue.length; i++ )
-//         setColumnValue[i] = substituteObject( setColumnValue[i] );
-   
       for( int i = 0; i < constraintColumnValue.length; i++ )
          constraintColumnValue[i] = substituteObject( constraintColumnValue[i] );
    
       StringBuffer pSql = new StringBuffer("UPDATE ");
       pSql.append(tableName);
       pSql.append(" SET ");
-//      pSql.append(setColumnName[0]);
       pSql.append(constraintColumnName[0]);
-//      pSql.append("=?");
-   
-//      for( int i = 1; i < setColumnName.length; i++ )
-//      {
-//         pSql.append(",");
-//         pSql.append(setColumnName[i]);
-//         pSql.append("=?");
-//      }
+      pSql.append(" = " + constraintColumnValue[0]);
    
       if( constraintColumnName.length > 0 )
       {
@@ -446,42 +435,22 @@ public class DBPersistentBean implements IDBPersistent {
          pSql.append(constraintColumnName[0]);
          pSql.append("=?");
    
-         for( int i = 1; i < constraintColumnName.length; i++ )
-         {
-            pSql.append(" AND ");
-            pSql.append(constraintColumnName[i]);
-            pSql.append("=?");
-         }
       }
+      
       
       PreparedStatement pstmt = null;
       
       try
       {
          pstmt = getDbConnection().prepareStatement(pSql.toString());
-//         for( int i = 0; i < setColumnValue.length; i++ )
-//         {
-//            /* The Oracle driver does not set the correct object for byte[]
-//             *  when calling the pstmt.setObject() method. If we do a call like
-//             *  pstmt.setObject(byte[]) an SQLException is thrown if the byte[]
-//             *  length > 4k.  */
-//            if( setColumnValue[i] instanceof byte[] )
-//            {
-//               ByteArrayInputStream bs = new ByteArrayInputStream( (byte[])setColumnValue[i] );
-//   
-//               pstmt.setBinaryStream( i+1, bs, ((byte[])setColumnValue[i]).length );
-//            }
-//            else
-//               pstmt.setObject(i+1, setColumnValue[i]);
-//         }
             
-//         for( int i = 0; i < constraintColumnValue.length; i++ )
-//            pstmt.setObject(i+setColumnValue.length+1, constraintColumnValue[i]);
-            
+         for( int i = 0; i < constraintColumnValue.length; i++ ) {
+            pstmt.setObject(i+1, constraintColumnValue[i]);
+         }
          pstmt.executeUpdate();
          //everything went well, print the SQL to a file if desired
          printSQLToFile( pSql.toString(), null, constraintColumnValue, null );
-
+ 
       }
       catch( SQLException e )
       {
@@ -492,6 +461,7 @@ public class DBPersistentBean implements IDBPersistent {
          if( pstmt != null ) pstmt.close();
       }  
    }
+
 
 
    /**

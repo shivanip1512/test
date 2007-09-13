@@ -64,6 +64,7 @@
     <bean id="dispatchConnection" factory-bean="connectionPool" factory-method="getDefDispatchConn" singleton="false" />
     <bean id="porterConnection" factory-bean="connectionPool" factory-method="getDefPorterConn" singleton="false" />
     <bean id="macsConnection" factory-bean="connectionPool" factory-method="getDefMacsConn" singleton="false"/>
+	<bean id="cbcConnection" factory-bean="connectionPool" factory-method="getDefCapControlConn" singleton="false"/>
 
     <bean id="nextValueHelper" class="com.cannontech.database.incrementer.NextValueHelper">
         <property name="sequenceNameLookup" ref="sequenceNameLookup" />

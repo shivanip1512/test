@@ -25,11 +25,15 @@ public class SubHiddenStates extends LxAbstractView implements HiddenStates {
     public void addStateInfo() {
         String name = "SubState_" + subBusMsg.getCcId();
         HiddenTextElement stateInfo = new HiddenTextElement ("HiddenTextElement", name);
-        stateInfo.addProperty("isDisable", isDisabled().toString());
+        stateInfo.addProperty("isOVUVDis", isOVUVDisabled().toString() );
+        stateInfo.addProperty("isDisable", isDisabled().toString() );
         stateInfo.addProperty("isVerify", subBusMsg.getVerificationFlag().toString());
         String disableReason = CBCTagHandler.getReason(OnelineTags.TAGGRP_ENABLEMENT,
                                                                                  subBusMsg.getCcId());
+        String disableOVUVReason = CBCTagHandler.getReason(OnelineTags.TAGGRP_OVUV_ENABLEMENT,
+                                                       subBusMsg.getCcId());
         stateInfo.addProperty("subDisableReason", disableReason);
+        stateInfo.addProperty("subDisableOVUVReason", disableOVUVReason);
 
         graph.add( stateInfo);
 
@@ -37,6 +41,10 @@ public class SubHiddenStates extends LxAbstractView implements HiddenStates {
 
     public Boolean isDisabled() {
         return subBusMsg.getCcDisableFlag();
+    }
+    
+    public Boolean isOVUVDisabled() {
+        return subBusMsg.getOvUvDisabledFlag();
     }
 
     public void draw() {
