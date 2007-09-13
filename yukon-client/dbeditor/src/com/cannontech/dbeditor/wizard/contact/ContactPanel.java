@@ -1132,20 +1132,25 @@ public void jButtonRemove_ActionPerformed(java.awt.event.ActionEvent actionEvent
 {
 	// store the previous selected row
 	int newSelectedRow = getJTableEmail().getSelectedRow() - 1;
+    if( newSelectedRow == -1 )
+        newSelectedRow = 0;
 
 	// delete the row
-	getTableModel().removeRowValue( getJTableEmail().getSelectedRow() );
-	getTableModel().fireTableDataChanged();
+    int row = getJTableEmail().getSelectedRow();
 
-	// if no rows exist, clear the selection
-	if( getTableModel().getRowCount() == 0 )
-		getJTableEmail().getSelectionModel().clearSelection();
-	else
-	{
-		getJTableEmail().getSelectionModel().setSelectionInterval(newSelectedRow, newSelectedRow);
-	}
-	
-	fireInputUpdate();
+    if( row != -1){
+        getTableModel().removeRowValue( row );
+        
+    	// if no rows exist, clear the selection
+    	if( getTableModel().getRowCount() == 0 )
+    		getJTableEmail().getSelectionModel().clearSelection();
+    	else
+    	{
+    		getJTableEmail().getSelectionModel().setSelectionInterval(newSelectedRow, newSelectedRow);
+    	}
+    	
+    	fireInputUpdate();
+    }
 	return;
 }
 
