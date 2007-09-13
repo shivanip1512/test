@@ -11,6 +11,8 @@
 -----------------------------------------------------------------------------*/
 #include "yukon.h"
 
+#include <list>
+using std::list;
 #include "msg_signal.h"
 
 #include "ccclientlistener.h"
@@ -847,7 +849,8 @@ void CtiCCCommandExecutor::EnableOvUv()
             for(LONG k=0;k<ccCapBanks.size();k++)
             {
                 CtiCCCapBank* currentCapBank = (CtiCCCapBank*)ccCapBanks[k];
-                if( bankID == currentCapBank->getControlDeviceId() )
+                if( currentCapBank->getControlDeviceId() > 0 &&
+                    bankID == currentCapBank->getControlDeviceId() )
                 {
                     if (stringContainsIgnoreCase( currentCapBank->getControlDeviceType(),"CBC 702")) 
                         cbc702 = TRUE;
@@ -910,7 +913,7 @@ void CtiCCCommandExecutor::EnableOvUv()
     else
     {
         CtiLockGuard<CtiLogger> logger_guard(dout);
-        dout << CtiTime() << " - Could not create Porter Request Message in: " << __FILE__ << " at: " << __LINE__ << endl;
+        dout << CtiTime() << " - ControlDeviceID: "<<controlID<<" - Could not create Porter Request Message in: " << __FILE__ << " at: " << __LINE__ << endl;
     }
 
 
@@ -946,7 +949,8 @@ void CtiCCCommandExecutor::DisableOvUv()
             for(LONG k=0;k<ccCapBanks.size();k++)
             {
                 CtiCCCapBank* currentCapBank = (CtiCCCapBank*)ccCapBanks[k];
-                if( bankID == currentCapBank->getControlDeviceId() )
+                if( currentCapBank->getControlDeviceId() > 0 &&
+                    bankID == currentCapBank->getControlDeviceId() )
                 {
                     if (stringContainsIgnoreCase(currentCapBank->getControlDeviceType(),"CBC 702")) 
                         cbc702 = TRUE;
@@ -1009,7 +1013,7 @@ void CtiCCCommandExecutor::DisableOvUv()
     else
     {
         CtiLockGuard<CtiLogger> logger_guard(dout);
-        dout << CtiTime() << " - Could not create Porter Request Message in: " << __FILE__ << " at: " << __LINE__ << endl;
+        dout << CtiTime() << " - ControlDeviceID: "<<controlID<<" - Could not create Porter Request Message in: " << __FILE__ << " at: " << __LINE__ << endl;
     }
 
 }
@@ -1076,7 +1080,9 @@ void CtiCCCommandExecutor::SendAllCapBankCommands()
 
 
     CtiCCArea_vec& ccAreas = *store->getCCGeoAreas(CtiTime().seconds());
+    CtiCCSpArea_vec& ccSpAreas = *store->getCCSpecialAreas(CtiTime().seconds());
 
+    CtiCCSpecial* currentSpArea = NULL;
     CtiCCAreaPtr currentArea = NULL;
     CtiCCSubstationBusPtr currentSubstationBus = NULL;
     CtiCCFeederPtr currentFeeder = store->findFeederByPAObjectID(paoId);
@@ -1272,7 +1278,91 @@ void CtiCCCommandExecutor::SendAllCapBankCommands()
 
             }
         }
+        else // didn't find feeder, subbus, or area...so we'll try last resort, special area.
+        {
+            if (currentSpArea == NULL) 
+            {
+                currentSpArea = store->findSpecialAreaByPAObjectID(paoId);
+                if (currentSpArea != NULL) 
+                {
+                    string text1 = string("Special Area: ");
+                    text1 += currentSpArea->getPAOName();
+                    text1 += actionText;
+                    text1 += string(" All CapBanks");
+                    string additional1 = string("Special Area: ");
+                    additional1 += currentSpArea->getPAOName();
+
+                    pointChanges.push_back(new CtiSignalMsg(SYS_PID_CAPCONTROL,1,text1,additional1,CapControlLogType,SignalEvent,_command->getUser()));
+                    if (_command->getCommand() == CtiCCCommand::SEND_ALL_ENABLE_OVUV) 
+                        currentSpArea->setOvUvDisabledFlag(FALSE);
+                    if (_command->getCommand() == CtiCCCommand::SEND_ALL_DISABLE_OVUV) 
+                        currentSpArea->setOvUvDisabledFlag(TRUE);
+
+                    std::list <long>::iterator subIter = currentSpArea->getSubIds()->begin();
+
+                    while (subIter != currentSpArea->getSubIds()->end())
+                    {
+                        currentSubstationBus = store->findSubBusByPAObjectID(*subIter);
+                        subIter++;
+
+                        if (currentSubstationBus->getParentId() == currentArea->getPAOId())
+                        {
+                            if (_command->getCommand() == CtiCCCommand::SEND_ALL_ENABLE_OVUV) 
+                                currentSubstationBus->setOvUvDisabledFlag(FALSE);
+                            if (_command->getCommand() == CtiCCCommand::SEND_ALL_DISABLE_OVUV) 
+                                currentSubstationBus->setOvUvDisabledFlag(TRUE);
+                            if (((action  == CtiCCCommand::OPEN_CAPBANK || action  == CtiCCCommand::CLOSE_CAPBANK) &&
+                                   !currentSubstationBus->getDisableFlag() && !currentSpArea->getDisableFlag())  ||
+                                   (action  == CtiCCCommand::ENABLE_OVUV || action  == CtiCCCommand::DISABLE_OVUV ||
+                                    action  == CtiCCCommand::SCAN_2WAY_DEVICE) ) 
+                            {
+                                currentSubstationBus->setEventSequence(currentSubstationBus->getEventSequence() +1);
+                                ccEvents.push_back(new CtiCCEventLogMsg(0, SYS_PID_CAPCONTROL, currentSubstationBus->getPAOId(), 0, capControlManualCommand, currentSubstationBus->getEventSequence(), 0, text1, _command->getUser()));
+
+                                CtiFeeder_vec& ccFeeders = currentSubstationBus->getCCFeeders();
+
+                                for(LONG j=0;j<ccFeeders.size();j++)
+                                {
+                                    CtiCCFeeder* currentFeeder = (CtiCCFeeder*)ccFeeders.at(j);
+
+                                    if (_command->getCommand() == CtiCCCommand::SEND_ALL_ENABLE_OVUV) 
+                                        currentFeeder->setOvUvDisabledFlag(FALSE);
+                                    if (_command->getCommand() == CtiCCCommand::SEND_ALL_DISABLE_OVUV) 
+                                        currentFeeder->setOvUvDisabledFlag(TRUE);
+                                    if (((action  == CtiCCCommand::OPEN_CAPBANK || action  == CtiCCCommand::CLOSE_CAPBANK) &&
+                                       !currentFeeder->getDisableFlag())  ||
+                                       (action  == CtiCCCommand::ENABLE_OVUV || action  == CtiCCCommand::DISABLE_OVUV ||
+                                        action  == CtiCCCommand::SCAN_2WAY_DEVICE) ) 
+                                    {
+                                        CtiCCCapBank_SVector& ccCapBanks = currentFeeder->getCCCapBanks();
+
+                                        for(LONG k=0;k<ccCapBanks.size();k++)
+                                        {
+                                            CtiCCCapBankPtr currentCapBank = (CtiCCCapBankPtr)ccCapBanks[k];
+
+                                            if (((action  == CtiCCCommand::OPEN_CAPBANK || action  == CtiCCCommand::CLOSE_CAPBANK) &&
+                                                !currentCapBank->getDisableFlag()   && 
+                                                !stringCompareIgnoreCase(currentCapBank->getOperationalState(),CtiCCCapBank::SwitchedOperationalState) ) ||
+                                                (action  == CtiCCCommand::ENABLE_OVUV || action  == CtiCCCommand::DISABLE_OVUV ||
+                                                 action  == CtiCCCommand::SCAN_2WAY_DEVICE) ) 
+                                            {
+                                                actionMulti->insert(new CtiCCCommand(action, currentCapBank->getControlDeviceId()));
+                                            }
+                                        }
+                                    }
+                                }
+
+                                modifiedSubsList.push_back(currentSubstationBus);
+                            }
+                        }
+
+                    }
+                }
+            }
+        }
+
     }
+    
 
     if (actionMulti->getCount() > 0)
     {
@@ -1285,6 +1375,10 @@ void CtiCCCommandExecutor::SendAllCapBankCommands()
     CtiCCExecutor* executor = f.createExecutor(new CtiCCGeoAreasMsg(ccAreas));
     executor->Execute();
     delete executor;
+    executor = f.createExecutor(new CtiCCSpecialAreasMsg(*store->getCCSpecialAreas(CtiTime().seconds())));
+    executor->Execute();
+    delete executor;
+
 
     executor = f.createExecutor(new CtiCCSubstationBusMsg((CtiCCSubstationBus_vec&)modifiedSubsList,CtiCCSubstationBusMsg::SubBusModified ));
     executor->Execute();
@@ -4000,7 +4094,7 @@ void CtiCCExecutor::moveCapBank(INT permanentFlag, LONG oldFeederId, LONG movedC
 
             movedCapBankPtr->setParentId(newFeederId);
 
-            if( oldFeederCapBanks.size() > 0 )
+           /* if( oldFeederCapBanks.size() > 0 )
             {
                 //reshuffle the cap bank control orders so they are still in sequence and start at 1
                 LONG shuffledOrder = 1;
@@ -4012,19 +4106,7 @@ void CtiCCExecutor::moveCapBank(INT permanentFlag, LONG oldFeederId, LONG movedC
                     tempShufflingCapBankList.push_back( (CtiCCCapBank*)oldFeederCapBanks[a] );
                     shuffledOrder++;
                 }
-                /*
-                while(!oldFeederCapBanks.empty())
-                {
-                    //have to remove due to change in sorting field in a sorted vector
-                    CtiCCCapBank* currentCapBank = *(oldFeederCapBanks.begin());
-                    //CtiCCCapBank_SVector::iterator itr = oldFeederCapBanks.begin();
-                    oldFeederCapBanks.erase(oldFeederCapBanks.begin());
-
-                    currentCapBank->setControlOrder(shuffledOrder);
-                    tempShufflingCapBankList.push_back(currentCapBank);
-                    
-                    shuffledOrder++;
-                }*/
+                
                 oldFeederCapBanks.clear();
                 while(tempShufflingCapBankList.size()>0)
                 {
@@ -4034,7 +4116,7 @@ void CtiCCExecutor::moveCapBank(INT permanentFlag, LONG oldFeederId, LONG movedC
                     tempShufflingCapBankList.erase(tempShufflingCapBankList.begin());
                 }
 
-            }
+            } */
         }
 
         {
