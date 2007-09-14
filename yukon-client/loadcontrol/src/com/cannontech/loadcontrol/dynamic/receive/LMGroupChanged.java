@@ -2,13 +2,15 @@ package com.cannontech.loadcontrol.dynamic.receive;
 
 import java.util.GregorianCalendar;
 
+import com.cannontech.message.util.Message;
+
 
 /**
  * Insert the type's description here.
  * Creation date: (9/5/07 3:06:09 PM)
  * @author: jdayton
  */
-public class LMGroupChanged {
+public class LMGroupChanged extends Message {
     
     private Integer paoID = null;
     private Boolean disableFlag = null;

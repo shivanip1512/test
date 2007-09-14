@@ -5,13 +5,14 @@ import java.util.GregorianCalendar;
 import java.util.List;
 
 import com.cannontech.loadcontrol.data.LMControlAreaTrigger;
+import com.cannontech.message.util.Message;
 
 /**
  * Insert the type's description here.
  * Creation date: (9/5/07 3:06:09 PM)
  * @author: jdayton
  */
-public class LMControlAreaChanged {
+public class LMControlAreaChanged extends Message {
     
     private Integer paoID = null;
     private Boolean disableFlag = null;
