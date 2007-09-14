@@ -26,20 +26,18 @@
 
 <% 
 String allowCtlVal = DaoFactory.getAuthDao().getRolePropertyValue(user, CBCSettingsRole.ALLOW_CONTROLS);
-if (allowCtlVal!=null)
-{
+if (allowCtlVal!=null) {
 	boolean allowControl = Boolean.valueOf(allowCtlVal);
 		if (allowControl) {%>
 			<div id="systemCommandLink" align="right" > </div>
 			<%	} 
-
 }
 %>    
     <cti:titledContainer title="Substation Bus Areas" id="last_titled_container">
           
 		<form id="areaForm" action="subs.jsp" method="post">
-			<input type="hidden" name="areaType" value="regular"/>
 			<input type="hidden" name="<%=CBCSessionInfo.STR_CBC_AREA%>" />
+			<input type="hidden" name="<%=CBCSessionInfo.STR_CBC_AREAID%>" />
             <table id="areaHeaderTable" width="100%" border="0" cellspacing="0" cellpadding="0">
               <tr class="columnHeader lAlign">				
 				<td>Area Name</td>
@@ -55,33 +53,24 @@ if (allowCtlVal!=null)
               <div >
 		<table id="areaTable" width="98%" border="0" cellspacing="0" cellpadding="0" >
 <%
-		String css = "tableCell";
-		for( int i = 0; i < userOwner.getCbcAreas().size(); i++ )
-		{
-	css = ("tableCell".equals(css) ? "altTableCell" : "tableCell");
-	CBCArea area = (CBCArea)userOwner.getCbcAreas().get(i);
-	
-	SubBus[] areaBuses = userOwner.getSubsByArea(area.getPaoID());
-	
-	CapBankDevice[] areaCapBanks = userOwner.getCapBanksByArea(area.getPaoID());
-	
-	//new additions for the available and closed vars
-	String varsAvailable = CBCUtils.format( CBCUtils.calcVarsAvailable(Arrays.asList(areaBuses)) );
-	String varsDisabled =  CBCUtils.format (CBCUtils.calcVarsDisabled(Arrays.asList(areaBuses)) );
+	String css = "tableCell";
+	for( int i = 0; i < userOwner.getCbcAreas().size(); i++ ) {
+		css = ("tableCell".equals(css) ? "altTableCell" : "tableCell");
+		CBCArea area = (CBCArea)userOwner.getCbcAreas().get(i);
+		SubBus[] areaBuses = userOwner.getSubsByArea(area.getPaoID());
+		CapBankDevice[] areaCapBanks = userOwner.getCapBanksByArea(area.getPaoID());
 		
-	String closedVars =
-		CBCUtils.format( CBCUtils.calcClosedVARS(areaCapBanks) );
-	String trippedVars =
-		CBCUtils.format( CBCUtils.calcTrippedVARS(areaCapBanks) );
-
-	
-	String currPF = CBCDisplay.getPowerFactorText(
-		CBCUtils.calcAvgPF(areaBuses), true);
-	String estPF = CBCDisplay.getPowerFactorText(
-		CBCUtils.calcAvgEstPF(areaBuses), true);
-            String areaState = ((Boolean)(userOwner.getAreaStateMap().get(area.getPaoName())))?"ENABLED":"DISABLED";
-			if( area.getOvUvDisabledFlag() )
+		//new additions for the available and closed vars
+		String varsAvailable = CBCUtils.format( CBCUtils.calcVarsAvailable(Arrays.asList(areaBuses)) );
+		String varsDisabled =  CBCUtils.format (CBCUtils.calcVarsDisabled(Arrays.asList(areaBuses)) );
+		String closedVars = CBCUtils.format( CBCUtils.calcClosedVARS(areaCapBanks) );
+		String trippedVars = CBCUtils.format( CBCUtils.calcTrippedVARS(areaCapBanks) );
+		String currPF = CBCDisplay.getPowerFactorText(CBCUtils.calcAvgPF(areaBuses), true);
+		String estPF = CBCDisplay.getPowerFactorText(CBCUtils.calcAvgEstPF(areaBuses), true);
+		String areaState = ((Boolean)(userOwner.getAreaStateMap().get(area.getPaoName())))?"ENABLED":"DISABLED";
+		if( area.getOvUvDisabledFlag() ){
 				areaState += "-V";
+		}
 %>
 	        <tr class="<%=css%>">
 				<td>				
@@ -89,7 +78,7 @@ if (allowCtlVal!=null)
 				<input type="image" id="showAreas<%=i%>"
 					src="images/nav-plus.gif"
 					onclick="showRowElems( 'allAreas<%=i%>', 'showAreas<%=i%>'); return false;"/>
-				<a href="#" class="<%=css%>" onclick="postMany('areaForm', '<%=CBCSessionInfo.STR_CBC_AREA%>', '<%=area.getPaoName()%>')">
+				<a href="#" class="<%=css%>" onclick="postMany('areaForm', '<%=CBCSessionInfo.STR_CBC_AREAID%>', '<%=area.getPaoID()%>')">
 				<%=area.getPaoName()%></a>
 				</td>
                 <td>

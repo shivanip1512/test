@@ -21,19 +21,11 @@
 	if (popupEvent == null) popupEvent = "onmouseover"; 
     
 	CapControlUserOwnerDAO userOwner = new CapControlUserOwnerDAO (capControlCache, user);
-
-	String type = ParamUtil.getString(request, "areaType", null );
+	Integer areaId = cbcSession.getLastAreaId();
 	String area = cbcSession.getLastArea();
-	Integer areaId;
-	if(type.equalsIgnoreCase("special")){
-		areaId = CapControlSpecialArea.getSpecialAreaIdByName(area);
-	}else{
-		areaId = CapControlArea.getAreaIdByName (area);
-	}
 	SubBus[] areaSubs = userOwner.getSubsByArea(areaId);
     boolean hasControl = CBCWebUtils.hasControlRights(session);
 %>
-
 
 <cti:standardMenu/>
 <cti:breadCrumbs>

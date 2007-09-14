@@ -24,11 +24,8 @@ function postMany( frmName )
             {           
                 if( !validateData(arguments[i]) )
                     return false;
-    
                 var ev = eval('f.'+arguments[i]);
                 ev.value = arguments[i+1];
-//alert('f.'+arguments[i]+' = ' + arguments[i+1]);
-
             }
         }
     }
