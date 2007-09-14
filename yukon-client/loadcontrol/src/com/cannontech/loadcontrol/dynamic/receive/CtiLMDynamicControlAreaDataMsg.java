@@ -8,7 +8,6 @@ package com.cannontech.loadcontrol.dynamic.receive;
 import java.util.ArrayList;
 import java.util.List;
 
-import com.cannontech.loadcontrol.data.LMControlAreaTrigger;
 import com.roguewave.tools.v2_0.Comparator;
 import com.roguewave.vsj.DefineCollectable;
 import com.roguewave.vsj.streamer.SimpleMappings;
@@ -61,9 +60,9 @@ public class CtiLMDynamicControlAreaDataMsg implements com.roguewave.vsj.DefineC
         
         //deal with triggers
         int totalTriggers = (int) vstr.extractUnsignedInt();
-        List<LMControlAreaTrigger> triggers = new ArrayList<LMControlAreaTrigger>(totalTriggers);
+        List<LMTriggerChanged> triggers = new ArrayList<LMTriggerChanged>(totalTriggers);
         for (int i = 0; i < totalTriggers; i++) {
-            triggers.add((LMControlAreaTrigger)vstr.restoreObject(polystr));
+            triggers.add((LMTriggerChanged)vstr.restoreObject(polystr));
         }
         lmControlAreaChanged.setTriggers(triggers);
     }

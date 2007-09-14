@@ -250,9 +250,6 @@ public class LoadControlClientConnection extends com.cannontech.message.util.Cli
         else if( obj instanceof LMGroupChanged ) {
             handleLMGroupChange((LMGroupChanged)obj);
         }
-        else if( obj instanceof LMTriggerChanged ) {
-            handleLMTriggerChange((LMTriggerChanged)obj);
-        }
     	else if( obj instanceof LMControlAreaMsg ) {
     		LMControlAreaMsg msg = (LMControlAreaMsg)obj;
     		
@@ -289,6 +286,11 @@ public class LoadControlClientConnection extends com.cannontech.message.util.Cli
             currentArea.setCurrentPriority(changedArea.getCurrentPriority());
             currentArea.setCurrentDailyStartTime(changedArea.getCurrentDailyStartTime());
             currentArea.setCurrentDailyStopTime(changedArea.getCurrentDailyStopTime());
+            
+            for(LMTriggerChanged changedTrigger : changedArea.getTriggers()) {
+                handleLMTriggerChange(changedTrigger);
+            }
+            
             // tell all listeners that we received an updated LMControlArea
             setChanged();
             notifyObservers( new LCChangeEvent( this, LCChangeEvent.UPDATE, currentArea) );                
@@ -324,7 +326,7 @@ public class LoadControlClientConnection extends com.cannontech.message.util.Cli
         synchronized ( getGroups() ) {
             LMGroupBase currentGroup = getGroups().get( changedGroup.getPaoID());
             
-            if(currentGroup instanceof LMGroupBase) {
+            if(currentGroup instanceof LMDirectGroupBase) {
                 ((LMDirectGroupBase)currentGroup).setDisableFlag(changedGroup.getDisableFlag());
                 ((LMDirectGroupBase)currentGroup).setGroupControlState(changedGroup.getGroupControlState());
                 ((LMDirectGroupBase)currentGroup).setCurrentHoursDaily(changedGroup.getGroupControlState());

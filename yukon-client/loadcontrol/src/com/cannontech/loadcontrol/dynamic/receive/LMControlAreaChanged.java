@@ -4,7 +4,6 @@ import java.util.ArrayList;
 import java.util.GregorianCalendar;
 import java.util.List;
 
-import com.cannontech.loadcontrol.data.LMControlAreaTrigger;
 import com.cannontech.message.util.Message;
 
 /**
@@ -23,7 +22,7 @@ public class LMControlAreaChanged extends Message {
     private Integer currentDailyStartTime = null;
     private Integer currentDailyStopTime = null;
     
-    private List<LMControlAreaTrigger> triggers = new ArrayList<LMControlAreaTrigger>();
+    private List<LMTriggerChanged> triggers = new ArrayList<LMTriggerChanged>();
     
     public LMControlAreaChanged() {
         super();
@@ -93,11 +92,11 @@ public class LMControlAreaChanged extends Message {
         this.paoID = paoID;
     }
 
-    public List<LMControlAreaTrigger> getTriggers() {
+    public List<LMTriggerChanged> getTriggers() {
         return triggers;
     }
 
-    public void setTriggers(List<LMControlAreaTrigger> triggers) {
+    public void setTriggers(List<LMTriggerChanged> triggers) {
         this.triggers = triggers;
     }
 }
