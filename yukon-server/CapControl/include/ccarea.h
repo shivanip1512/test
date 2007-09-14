@@ -65,6 +65,34 @@ RWDECLARE_COLLECTABLE( CtiCCArea )
     LONG getStrategyId() const;
     BOOL getOvUvDisabledFlag() const;
 
+    const string& getStrategyName() const;
+    const string& getControlMethod() const;
+    LONG getMaxDailyOperation() const;
+    BOOL getMaxOperationDisableFlag() const;
+    DOUBLE getPeakLag() const;
+    DOUBLE getOffPeakLag() const;
+    DOUBLE getPeakLead() const;
+    DOUBLE getOffPeakLead() const;
+    DOUBLE getPeakVARLag() const;
+    DOUBLE getOffPeakVARLag() const;
+    DOUBLE getPeakVARLead() const;
+    DOUBLE getOffPeakVARLead() const;
+    DOUBLE getPeakPFSetPoint() const;
+    DOUBLE getOffPeakPFSetPoint() const;
+    LONG getPeakStartTime() const;
+    LONG getPeakStopTime() const;
+    LONG getControlInterval() const;
+    LONG getMaxConfirmTime() const;
+    LONG getMinConfirmPercent() const;
+    LONG getFailurePercent() const;
+    const string& getDaysOfWeek() const;
+    const string& getControlUnits() const;
+    LONG getControlDelayTime() const;
+    LONG getControlSendRetries() const;
+    BOOL getIntegrateFlag() const;
+    LONG getIntegratePeriod() const;
+
+
     CtiCCSubstationBus_vec& getCCSubs();
     void deleteCCSubs(long subId);
 
@@ -77,6 +105,33 @@ RWDECLARE_COLLECTABLE( CtiCCArea )
     CtiCCArea& setDisableFlag(BOOL disable);
     CtiCCArea& setStrategyId(LONG strategyId);
     CtiCCArea& setOvUvDisabledFlag(BOOL flag);
+
+    CtiCCArea& setStrategyName(const string& strategyname);
+    CtiCCArea& setControlMethod(const string& method);
+    CtiCCArea& setMaxDailyOperation(LONG max);
+    CtiCCArea& setMaxOperationDisableFlag(BOOL maxopdisable);
+    CtiCCArea& setPeakLag(DOUBLE peak);
+    CtiCCArea& setOffPeakLag(DOUBLE offpeak);
+    CtiCCArea& setPeakLead(DOUBLE peak);
+    CtiCCArea& setOffPeakLead(DOUBLE offpeak);
+    CtiCCArea& setPeakVARLag(DOUBLE peak);
+    CtiCCArea& setOffPeakVARLag(DOUBLE offpeak);
+    CtiCCArea& setPeakVARLead(DOUBLE peak);
+    CtiCCArea& setOffPeakVARLead(DOUBLE offpeak);
+    CtiCCArea& setPeakPFSetPoint(DOUBLE peak);
+    CtiCCArea& setOffPeakPFSetPoint(DOUBLE offpeak);
+    CtiCCArea& setPeakStartTime(LONG starttime);
+    CtiCCArea& setPeakStopTime(LONG stoptime);
+    CtiCCArea& setControlInterval(LONG interval);
+    CtiCCArea& setMaxConfirmTime(LONG confirm);
+    CtiCCArea& setMinConfirmPercent(LONG confirm);
+    CtiCCArea& setFailurePercent(LONG failure);
+    CtiCCArea& setDaysOfWeek(const string& days);
+    CtiCCArea& setControlUnits(const string& contunit);
+    CtiCCArea& setControlDelayTime(LONG delay);
+    CtiCCArea& setControlSendRetries(LONG retries);
+    CtiCCArea& setIntegrateFlag(BOOL flag);
+    CtiCCArea& setIntegratePeriod(LONG period);
     void setStrategyValues(CtiCCStrategyPtr strategy);
 
     list <LONG>* getPointIds() {return &_pointIds;};
@@ -141,7 +196,6 @@ RWDECLARE_COLLECTABLE( CtiCCArea )
     BOOL _ovUvDisabledFlag;
 
     std::vector <CtiCCSubstationBus*> _ccsubs;
-    BOOL _isSpecial;
 
    //don't stream
     BOOL _insertDynamicDataFlag;

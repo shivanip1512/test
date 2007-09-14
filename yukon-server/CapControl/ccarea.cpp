@@ -124,15 +124,38 @@ CtiCCArea& CtiCCArea::operator=(const CtiCCArea& right)
         _paotype = right._paotype;
         _paodescription = right._paodescription;
         _disableflag = right._disableflag;
-        _ovUvDisabledFlag = right._ovUvDisabledFlag;
 
-       /* delete_vector(_ccsubs);
-     
-        _ccsubs.clear();
-        for(LONG i=0;i<right._ccsubs.size();i++)
-        {
-            _ccsubs.push_back(((CtiCCSubstationBus*)right._ccsubs.at(i))->replicate());
-        }  */
+        _strategyId = right._strategyId;
+        _strategyName = right._strategyName;
+        _controlmethod = right._controlmethod;
+        _maxdailyoperation = right._maxdailyoperation;
+        _maxoperationdisableflag = right._maxoperationdisableflag;
+        _peakstarttime = right._peakstarttime;
+        _peakstoptime = right._peakstoptime;
+        _controlinterval = right._controlinterval;
+        _maxconfirmtime = right._maxconfirmtime;
+        _minconfirmpercent = right._minconfirmpercent;
+        _failurepercent = right._failurepercent;
+        _daysofweek = right._daysofweek;
+        _controlunits = right._controlunits;
+        _controldelaytime = right._controldelaytime;
+        _controlsendretries = right._controlsendretries;
+        _peaklag = right._peaklag;
+        _offpklag = right._offpklag;
+        _peaklead = right._peaklead;
+        _offpklead = right._offpklead;
+        _peakVARlag = right._peakVARlag;
+        _offpkVARlag = right._offpkVARlag;
+        _peakVARlead = right._peakVARlead;
+        _offpkVARlead = right._offpkVARlead;
+        _peakPFSetPoint =  right._peakPFSetPoint;
+        _offpkPFSetPoint = right._offpkPFSetPoint;
+
+        _integrateflag = right._integrateflag;
+        _integrateperiod = right._integrateperiod;
+
+        _additionalFlags = right._additionalFlags;
+        _ovUvDisabledFlag = right._ovUvDisabledFlag;
     }
     return *this;
 }
@@ -182,6 +205,42 @@ void CtiCCArea::restore(RWDBReader& rdr)
     std::transform(tempBoolString.begin(), tempBoolString.end(), tempBoolString.begin(), tolower);
     _disableflag = (tempBoolString=="y"?TRUE:FALSE);
     setOvUvDisabledFlag(FALSE);
+
+   //initialize strategy members
+    setStrategyId(0);
+    setStrategyName("(none)");
+    setControlMethod("SubstationBus");
+    setMaxDailyOperation(0);
+    setMaxOperationDisableFlag(FALSE);
+    setPeakLag(0);
+    setOffPeakLag(0);
+    setPeakLead(0);
+    setOffPeakLead(0);
+    setPeakVARLag(0);
+    setOffPeakVARLag(0);
+    setPeakVARLead(0);
+    setOffPeakVARLead(0);
+    setPeakStartTime(0);
+    setPeakStopTime(0);
+    setControlInterval(0);
+    setMaxConfirmTime(0);
+    setMinConfirmPercent(0);
+    setFailurePercent(0);
+    setDaysOfWeek("NYYYYYNN");
+    setControlUnits("KVAR");
+    setControlDelayTime(0);
+    setControlSendRetries(0);
+
+    setPeakPFSetPoint(100);
+    setOffPeakPFSetPoint(100);
+    setIntegrateFlag(FALSE);
+    setIntegratePeriod(0);
+
+    _insertDynamicDataFlag = TRUE;
+    _dirty = FALSE;
+
+
+
 }
 
 
@@ -295,6 +354,7 @@ void CtiCCArea::setDynamicData(RWDBReader& rdr)
 
 }
 
+
 /*---------------------------------------------------------------------------
     getPAOId
 
@@ -382,6 +442,135 @@ BOOL CtiCCArea::getOvUvDisabledFlag() const
 LONG CtiCCArea::getStrategyId() const
 {
     return _strategyId;
+}
+
+const string& CtiCCArea::getStrategyName() const
+{
+    return _strategyName;
+}
+const string& CtiCCArea::getControlMethod() const
+{
+    return _controlmethod;
+}
+
+LONG CtiCCArea::getMaxDailyOperation() const
+{
+    return _maxdailyoperation;
+}
+
+BOOL CtiCCArea::getMaxOperationDisableFlag() const
+{
+    return _maxoperationdisableflag;
+}
+
+DOUBLE CtiCCArea::getPeakLag() const
+{
+    return _peaklag;
+}
+
+DOUBLE CtiCCArea::getOffPeakLag() const
+{
+    return _offpklag;
+}
+
+DOUBLE CtiCCArea::getPeakLead() const
+{
+    return _peaklead;
+}
+
+DOUBLE CtiCCArea::getOffPeakLead() const
+{
+    return _offpklead;
+}
+
+DOUBLE CtiCCArea::getPeakVARLag() const
+{
+    return _peakVARlag;
+}
+
+DOUBLE CtiCCArea::getOffPeakVARLag() const
+{
+    return _offpkVARlag;
+}
+
+DOUBLE CtiCCArea::getPeakVARLead() const
+{
+    return _peakVARlead;
+}
+
+DOUBLE CtiCCArea::getOffPeakVARLead() const
+{
+    return _offpkVARlead;
+}
+
+DOUBLE CtiCCArea::getPeakPFSetPoint() const
+{
+    return _peakPFSetPoint;
+}
+
+DOUBLE CtiCCArea::getOffPeakPFSetPoint() const
+{
+    return _offpkPFSetPoint;
+}
+
+LONG CtiCCArea::getPeakStartTime() const
+{
+    return _peakstarttime;
+}
+
+LONG CtiCCArea::getPeakStopTime() const
+{
+    return _peakstoptime;
+}
+
+LONG CtiCCArea::getControlInterval() const
+{
+    return _controlinterval;
+}
+
+LONG CtiCCArea::getMaxConfirmTime() const
+{
+    return _maxconfirmtime;
+}
+
+LONG CtiCCArea::getMinConfirmPercent() const
+{
+    return _minconfirmpercent;
+}
+
+LONG CtiCCArea::getFailurePercent() const
+{
+    return _failurepercent;
+}
+
+const string& CtiCCArea::getDaysOfWeek() const
+{
+    return _daysofweek;
+}
+
+const string& CtiCCArea::getControlUnits() const
+{
+    return _controlunits;
+}
+
+LONG CtiCCArea::getControlDelayTime() const
+{
+    return _controldelaytime;
+}
+
+LONG CtiCCArea::getControlSendRetries() const
+{
+    return _controlsendretries;
+}
+
+BOOL CtiCCArea::getIntegrateFlag() const
+{
+    return _integrateflag;
+}
+
+LONG CtiCCArea::getIntegratePeriod() const
+{
+    return _integrateperiod;
 }
 
 
@@ -506,14 +695,163 @@ CtiCCArea& CtiCCArea::setOvUvDisabledFlag(BOOL flag)
     return *this;
 }
 
-/*---------------------------------------------------------------------------
-    setStrategyId
 
-    Sets the strategyId of the area
----------------------------------------------------------------------------*/
 CtiCCArea& CtiCCArea::setStrategyId(LONG strategyId)
 {
     _strategyId = strategyId;
+    return *this;
+}
+
+CtiCCArea& CtiCCArea::setStrategyName(const string& strategyName)
+{
+    _strategyName = strategyName;
+    return *this;
+}
+
+CtiCCArea& CtiCCArea::setControlMethod(const string& method)
+{
+    _controlmethod = method;
+    return *this;
+}
+
+CtiCCArea& CtiCCArea::setMaxDailyOperation(LONG max)
+{
+    _maxdailyoperation = max;
+    return *this;
+
+}
+
+CtiCCArea& CtiCCArea::setMaxOperationDisableFlag(BOOL maxopdisable)
+{
+    _maxoperationdisableflag = maxopdisable;
+    return *this;
+}
+
+CtiCCArea& CtiCCArea::setPeakLag(DOUBLE peak)
+{
+    _peaklag = peak;
+    return *this;
+}
+
+CtiCCArea& CtiCCArea::setOffPeakLag(DOUBLE offpeak)
+{
+    _offpklag = offpeak;
+    return *this;
+}
+CtiCCArea& CtiCCArea::setPeakLead(DOUBLE peak)
+{
+    _peaklead = peak;
+    return *this;
+}
+
+CtiCCArea& CtiCCArea::setOffPeakLead(DOUBLE offpeak)
+{
+    _offpklead = offpeak;
+    return *this;
+}
+CtiCCArea& CtiCCArea::setPeakVARLag(DOUBLE peak)
+{
+    _peakVARlag = peak;
+    return *this;
+}
+
+CtiCCArea& CtiCCArea::setOffPeakVARLag(DOUBLE offpeak)
+{
+    _offpkVARlag = offpeak;
+    return *this;
+}
+CtiCCArea& CtiCCArea::setPeakVARLead(DOUBLE peak)
+{
+    _peakVARlead = peak;
+    return *this;
+}
+
+CtiCCArea& CtiCCArea::setOffPeakVARLead(DOUBLE offpeak)
+{
+    _offpkVARlead = offpeak;
+    return *this;
+}
+
+CtiCCArea& CtiCCArea::setPeakPFSetPoint(DOUBLE peak)
+{
+    _peakPFSetPoint = peak;
+    return *this;
+}
+
+CtiCCArea& CtiCCArea::setOffPeakPFSetPoint(DOUBLE offpeak)
+{
+    _offpkPFSetPoint = offpeak;
+    return *this;
+}
+
+CtiCCArea& CtiCCArea::setPeakStartTime(LONG starttime)
+{
+    _peakstarttime = starttime;
+    return *this;
+}
+
+CtiCCArea& CtiCCArea::setPeakStopTime(LONG stoptime)
+{
+    _peakstoptime = stoptime;
+    return *this;
+}
+CtiCCArea& CtiCCArea::setControlInterval(LONG interval)
+{
+    _controlinterval = interval;
+    return *this;
+}
+
+CtiCCArea& CtiCCArea::setMaxConfirmTime(LONG confirm)
+{   
+    _maxconfirmtime = confirm;
+    return *this;
+}
+
+CtiCCArea& CtiCCArea::setMinConfirmPercent(LONG confirm)
+{
+    _minconfirmpercent = confirm;
+    return *this;
+}
+
+CtiCCArea& CtiCCArea::setFailurePercent(LONG failure)
+{
+    _failurepercent = failure;
+    return *this;
+}
+
+CtiCCArea& CtiCCArea::setDaysOfWeek(const string& days)
+{
+    _daysofweek = days;
+    return *this;
+}
+
+CtiCCArea& CtiCCArea::setControlUnits(const string& contunit)
+{
+    _controlunits = contunit;
+    return *this;
+}
+
+CtiCCArea& CtiCCArea::setControlDelayTime(LONG delay)
+{
+    _controldelaytime = delay;
+    return *this;
+}
+
+CtiCCArea& CtiCCArea::setControlSendRetries(LONG retries)
+{
+    _controlsendretries = retries;
+    return *this;
+}
+
+CtiCCArea& CtiCCArea::setIntegrateFlag(BOOL flag)
+{
+    _integrateflag = flag;
+    return *this;
+}
+
+CtiCCArea& CtiCCArea::setIntegratePeriod(LONG period)
+{
+    _integrateperiod = period;
     return *this;
 }
 
