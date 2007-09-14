@@ -135,7 +135,7 @@ for( int i = 0; i < areaSubs.length; i++ ) {
                 <td><%=closedVars %> </td>
                 <td><%=trippedVars %> </td>
                 <td><a type="param2" name="cti_dyn" id="<%=subBus.getCcId()%>">
-                <%=CBCUtils.CBC_DISPLAY.getSubBusValueAt(subBus, CBCDisplay.SUB_VAR_LOAD_COLUMN)%> poo</a>
+                <%=CBCUtils.CBC_DISPLAY.getSubBusValueAt(subBus, CBCDisplay.SUB_VAR_LOAD_COLUMN)%></a>
                 </td>
                 <td><a type="param3" name="cti_dyn" id="<%=subBus.getCcId()%>">
                 <%=CBCUtils.CBC_DISPLAY.getSubBusValueAt(subBus, CBCDisplay.SUB_TIME_STAMP_COLUMN)%></a>
