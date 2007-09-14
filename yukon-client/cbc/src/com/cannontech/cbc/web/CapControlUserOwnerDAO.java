@@ -127,12 +127,20 @@ public class CapControlUserOwnerDAO implements CapControlDAO {
 		return _ccDao.isSubBus(id);
 	}
     
+    public boolean isSpecialCBCArea(int id) {
+        return _ccDao.isSpecialCBCArea(id);
+    }
+    
     public HashMap getAreaStateMap() {
         return _ccDao.getAreaStateMap();
     }
     
     public HashMap getSpecialAreaStateMap() {
         return _ccDao.getSpecialAreaStateMap();
+    }
+
+    public boolean isCBCArea(int id) {
+        return _ccDao.isCBCArea(id);
     }
     
 }

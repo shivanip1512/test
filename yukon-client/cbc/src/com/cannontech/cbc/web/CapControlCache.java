@@ -538,7 +538,7 @@ public class CapControlCache implements MessageListener, CapControlDAO {
         }
     }
     
-    private boolean isCBCArea(int deviceID) {
+    public boolean isCBCArea(int deviceID) {
         synchronized (cbcAreas) {
             for (Iterator iter = cbcAreas.iterator(); iter.hasNext();) {
                 CBCArea area = (CBCArea) iter.next();
@@ -550,7 +550,7 @@ public class CapControlCache implements MessageListener, CapControlDAO {
         }
     }
     
-    private boolean isSpecialCBCArea(int deviceID) {
+    public boolean isSpecialCBCArea(int deviceID) {
         synchronized (getSpecialCbcAreas()) {
             for (Iterator iter = getSpecialCbcAreas().iterator(); iter.hasNext();) {
                 CBCSpecialArea area = (CBCSpecialArea) iter.next();

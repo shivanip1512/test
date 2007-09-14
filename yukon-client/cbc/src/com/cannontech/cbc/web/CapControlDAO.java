@@ -52,6 +52,18 @@ public interface CapControlDAO {
 	 * 
 	 */
 	public abstract boolean isSubBus(int id);
+    
+    /**
+     * Instant lookup to check if this paoID is used by a SpecialCBCArea
+     * 
+     */
+    public abstract boolean isSpecialCBCArea(int id);
+    
+    /**
+     * Instant lookup to check if this paoID is used by a CBCArea
+     * 
+     */
+    public abstract boolean isCBCArea(int id);
 
 	/**
 	 * Instant lookup to check if this paoID is used by a Feeder
