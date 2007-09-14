@@ -25,11 +25,16 @@
 	String area = cbcSession.getLastArea();
 	SubBus[] areaSubs = userOwner.getSubsByArea(areaId);
     boolean hasControl = CBCWebUtils.hasControlRights(session);
+    boolean special = userOwner.isSpecialCBCArea(areaId);
 %>
 
 <cti:standardMenu/>
 <cti:breadCrumbs>
+<%if(special){ %>
+  <cti:crumbLink url="specialSubAreas.jsp" title="Special SubBus Areas" />
+  <%} else{ %>
   <cti:crumbLink url="subareas.jsp" title="SubBus Areas" />
+  <%} %>
   <cti:crumbLink url="subs.jsp" title="Substations" />
 </cti:breadCrumbs>
   

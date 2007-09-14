@@ -17,6 +17,7 @@
 <%
 	String nd = "\"return nd();\"";
 	int subid = cbcSession.getLastSubID();
+	Integer areaId = cbcSession.getLastAreaId();
 	LiteYukonUser user = (LiteYukonUser) session.getAttribute(LoginController.YUKON_USER);			
 	String popupEvent = DaoFactory.getAuthDao().getRolePropertyValue(user, WebClientRole.POPUP_APPEAR_STYLE);
     boolean showFlip = Boolean.valueOf(DaoFactory.getAuthDao().getRolePropertyValue(user, CBCSettingsRole.SHOW_FLIP_COMMAND)).booleanValue();
@@ -26,7 +27,7 @@
 	CapBankDevice[] capBanks = capControlCache.getCapBanksBySub( new Integer(subid) );
 
 	boolean hasControl = CBCWebUtils.hasControlRights(session);
-	
+	boolean special = capControlCache.isSpecialCBCArea(areaId);
 %>
 <script type="text/javascript"> 
 	
@@ -39,7 +40,11 @@
 <cti:standardMenu/>
 
 <cti:breadCrumbs>
-    <cti:crumbLink url="subareas.jsp" title="SubBus Areas"  />
+<%if(special){ %>
+  <cti:crumbLink url="specialSubAreas.jsp" title="Special SubBus Areas" />
+<%} else{ %>
+  <cti:crumbLink url="subareas.jsp" title="SubBus Areas" />
+<%} %>
     <cti:crumbLink url="subs.jsp" title="Substations" />
     <cti:crumbLink url="feeders.jsp" title="Feeders" />
 </cti:breadCrumbs>
@@ -380,7 +385,7 @@ for( int i = 0; i < capBanks.length; i++ )
                         
                         <a href="javascript:void(0);"
 						    <%= popupEvent %>= "popupWithHiLite ($F('cmd_cap_<%=capBank.getCcId()%>_field'),
-						    									155,110,15,15,
+						    									155,110,40,15,
 						    									'tr_cap_<%=capBank.getCcId()%>',
 						    									'yellow'); "
 						    onmouseout = "return hidePopupHiLite('tr_cap_<%=capBank.getCcId()%>', '<%=rowColor %>');" >	
@@ -420,7 +425,7 @@ for( int i = 0; i < capBanks.length; i++ )
 							style="color: <%=CBCDisplay.getHTMLFgColor(capBank)%>;"
 							href="javascript:void(0);"
 						    <%= popupEvent %>= "popupWithHiLite ($F('cmd_cap_<%=capBank.getCcId()%>_system'),
-    									155,200,15,15,
+    									155,200,40,15,
     									'tr_cap_<%=capBank.getCcId()%>',
     									'yellow'); "
 						    onmouseout = "return hidePopupHiLite('tr_cap_<%=capBank.getCcId()%>', '<%=rowColor %>');" >		
