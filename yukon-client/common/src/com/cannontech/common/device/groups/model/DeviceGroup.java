@@ -1,13 +1,11 @@
 package com.cannontech.common.device.groups.model;
 
-import java.util.Comparator;
-
 import org.apache.commons.lang.Validate;
 import org.springframework.core.style.ToStringCreator;
 
 import com.cannontech.common.device.groups.dao.DeviceGroupType;
 
-public class DeviceGroup implements Comparator<DeviceGroup>{
+public class DeviceGroup implements Comparable<DeviceGroup> {
     private DeviceGroupType type;
     private String name;
     private DeviceGroup parent;
@@ -116,11 +114,8 @@ public class DeviceGroup implements Comparator<DeviceGroup>{
     public boolean isGroupEditable(){
         return type.equals(DeviceGroupType.STATIC);
     }
-    
-    public int compare(DeviceGroup dg1, DeviceGroup dg2) {
-        String dg1Name = dg1.getFullName();
-        String dg2Name = dg2.getFullName();
 
-        return dg1Name.compareTo(dg2Name);
+    public int compareTo(DeviceGroup dg) {
+        return this.getFullName().compareTo(dg.getFullName());
     }
 }

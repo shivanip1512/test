@@ -53,7 +53,7 @@ public class DeviceGroupWidget extends WidgetControllerBase {
         Set<? extends DeviceGroup> currentGroupsSet = deviceGroupDao.getGroups(meter);
         List<DeviceGroup> currentGroups = new ArrayList<DeviceGroup>(currentGroupsSet);
 
-        Collections.sort(currentGroups, new DeviceGroup());
+        Collections.sort(currentGroups);
 
         // Gets all the available groups that the device can be added to
         List<? extends DeviceGroup> addableGroups = deviceGroupDao.getAllGroups();
