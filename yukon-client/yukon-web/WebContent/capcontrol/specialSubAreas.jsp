@@ -38,6 +38,7 @@ if (allowCtlVal!=null)
     <cti:titledContainer title="Special Substation Bus Areas" id="last_titled_container">
           
 		<form id="areaForm" action="subs.jsp" method="post">
+		   <input type="hidden" name="areaType" value="special"/>
 			<input type="hidden" name="<%=CBCSessionInfo.STR_CBC_AREA%>" />
             <table id="areaHeaderTable" width="100%" border="0" cellspacing="0" cellpadding="0">
               <tr class="columnHeader lAlign">				

@@ -1,6 +1,7 @@
 <%@ page import="com.cannontech.common.constants.LoginController" %>
 <%@ page import="com.cannontech.cbc.web.CapControlUserOwnerDAO" %>
 <jsp:directive.page import="com.cannontech.database.data.capcontrol.CapControlArea"/>
+<jsp:directive.page import="com.cannontech.database.data.capcontrol.CapControlSpecialArea"/>
 <%@ taglib uri="http://cannontech.com/tags/cti" prefix="cti" %>
 <cti:standardPage title="Substations" module="capcontrol">
 <%@include file="cbc_inc.jspf"%>
@@ -20,9 +21,16 @@
 	if (popupEvent == null) popupEvent = "onmouseover"; 
     
 	CapControlUserOwnerDAO userOwner = new CapControlUserOwnerDAO (capControlCache, user);
+
+	String type = ParamUtil.getString(request, "areaType", null );
 	String area = cbcSession.getLastArea();
-	Integer areaID = CapControlArea.getAreaIdByName (area);
-	SubBus[] areaSubs = userOwner.getSubsByArea(areaID);
+	Integer areaId;
+	if(type.equalsIgnoreCase("special")){
+		areaId = CapControlSpecialArea.getSpecialAreaIdByName(area);
+	}else{
+		areaId = CapControlArea.getAreaIdByName (area);
+	}
+	SubBus[] areaSubs = userOwner.getSubsByArea(areaId);
     boolean hasControl = CBCWebUtils.hasControlRights(session);
 %>
 
