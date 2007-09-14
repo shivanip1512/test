@@ -47,7 +47,7 @@ public class CBCSpecialAreaDataModel extends EditorDataModelImpl {
             }
 
             void populateUnassigned() {
-                unassignedSubs = CapControlSubBus.getAllUnassignedBuses();
+                unassignedSubs = CapControlSubBus.getAllSpecialUnassignedBuses(areaPers.getPAObjectID());
             }
         };
     }
@@ -87,14 +87,12 @@ public class CBCSpecialAreaDataModel extends EditorDataModelImpl {
         // create assignment persistent objects (CCSubAreaAssignment) from the
         // assigned list
         // and persist them to DB
-        List<CCSubSpecialAreaAssignment> newAssignments = CCSubSpecialAreaAssignment.asList(assignedIDs,
-                                                                              areaPers.getPAObjectID());
+        List<CCSubSpecialAreaAssignment> newAssignments = CCSubSpecialAreaAssignment.asList(assignedIDs, areaPers.getPAObjectID());
         areaPers.setSpecialAreaSubs((ArrayList) newAssignments);
 
     }
 
-    public void handleUnassignedIDs(List<Integer> unassignedIDs,
-            Connection connection) {
+    public void handleUnassignedIDs(List<Integer> unassignedIDs, Connection connection) {
         // see if it belongs to the current area
         // delete it from sub assignment
 
@@ -105,8 +103,7 @@ public class CBCSpecialAreaDataModel extends EditorDataModelImpl {
         CCSubSpecialAreaAssignment.deleteSubs(idsToRemove, areaID);
     }
 
-    public void handleAssignedIDs(List<Integer> assignedIDs,
-            Connection connection) {
+    public void handleAssignedIDs(List<Integer> assignedIDs, Connection connection) {
         for (Integer id : assignedIDs) {
             // see if it belongs to a different area than current
             // if yes - delete assignment from the old sub

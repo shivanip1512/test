@@ -8,6 +8,8 @@ import com.cannontech.core.dao.DaoFactory;
 import com.cannontech.database.data.lite.LiteState;
 import com.cannontech.database.data.lite.LiteYukonUser;
 import com.cannontech.web.lite.LiteWrapper;
+import com.cannontech.yukon.cbc.CBCArea;
+import com.cannontech.yukon.cbc.CBCSpecialArea;
 import com.cannontech.yukon.cbc.CapBankDevice;
 import com.cannontech.yukon.cbc.Feeder;
 import com.cannontech.yukon.cbc.StreamableCapObject;
@@ -34,13 +36,13 @@ public class CapControlUserOwnerDAO implements CapControlDAO {
 		return _ccDao.getAllSubBuses();
 	}
 
-	public List getCbcAreas() {
-		List names = _ccDao.getCbcAreas();
+	public List<CBCArea> getCbcAreas() {
+		List<CBCArea> names = _ccDao.getCbcAreas();
 		return names;
 	}
     
-    public List getSpecialCbcAreas() {
-        List names = _ccDao.getSpecialCbcAreas();
+    public List<CBCSpecialArea> getSpecialCbcAreas() {
+        List<CBCSpecialArea> names = _ccDao.getSpecialCbcAreas();
         return names;
     }
 
@@ -104,13 +106,13 @@ public class CapControlUserOwnerDAO implements CapControlDAO {
 	public SubBus[] getSubsByArea(Integer areaID) {
 		SubBus[] subs =  _ccDao.getSubsByArea(areaID);
 		SubBus[] retArray = new SubBus[subs.length];
-		List subsAllowedToView = new ArrayList(10);
+		List<SubBus> subsAllowedToView = new ArrayList<SubBus>(10);
 		for (int i=0; i < subs.length; i++) {
 			SubBus sub = subs[i];
 			if (sub != null && DaoFactory.getAuthDao().userHasAccessPAO(_user, sub.getCcId().intValue()))
 				subsAllowedToView.add(sub);
 		}
-		return ((SubBus[])subsAllowedToView.toArray(retArray));
+		return subsAllowedToView.toArray(retArray);
 	}
 
 	public boolean isCapBank(int id) {
@@ -127,6 +129,10 @@ public class CapControlUserOwnerDAO implements CapControlDAO {
     
     public HashMap getAreaStateMap() {
         return _ccDao.getAreaStateMap();
+    }
+    
+    public HashMap getSpecialAreaStateMap() {
+        return _ccDao.getSpecialAreaStateMap();
     }
     
 }

@@ -1,11 +1,13 @@
 package com.cannontech.yukon.cbc;
 
+import java.util.List;
+
 /**
  */
 public class CBCSubSpecialAreas extends com.cannontech.yukon.cbc.CBCMessage
 {   
     //contains Strings
-    private java.util.Vector areas;
+    private List<CBCSpecialArea> areas;
 
 /**
  * SpecialCBCSubAreaNames constructor comment.
@@ -13,21 +15,23 @@ public class CBCSubSpecialAreas extends com.cannontech.yukon.cbc.CBCMessage
 public CBCSubSpecialAreas() {
     super();
 }
+
 /**
  * This method was created in VisualAge.
  */
-public CBCSpecialArea getArea(int index) 
-{
-    return (CBCSpecialArea) getAreas().get(index);
+public CBCSpecialArea getArea(int index) {
+    return getAreas().get(index);
 }
+
 /**
  * Insert the method's description here.
  * Creation date: (2/6/2001 1:17:13 PM)
  * @return java.util.Vector
  */
-public java.util.Vector getAreas() {
+public List<CBCSpecialArea> getAreas() {
     return areas;
 }
+
 /**
  * This method was created in VisualAge.
  * @return int
@@ -35,11 +39,11 @@ public java.util.Vector getAreas() {
 public int getNumberOfAreas() {
     return areas.size();
 }
+
 /**
  * This method was created in VisualAge.
  */
-public void setAreas(java.util.Vector a)
-{
+public void setAreas(List<CBCSpecialArea> a) {
     areas = a;
 }
 

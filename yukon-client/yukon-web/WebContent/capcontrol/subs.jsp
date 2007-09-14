@@ -83,23 +83,16 @@
 <table id="subTable" width="98%" border="0" cellspacing="0" cellpadding="0" >
 <%
 String css = "tableCell";
-for( int i = 0; i < areaSubs.length; i++ )
-{
+for( int i = 0; i < areaSubs.length; i++ ) {
     css = ("tableCell".equals(css) ? "altTableCell" : "tableCell");
     SubBus subBus = areaSubs[i];
 
     String varsAvailable = CBCUtils.format( CBCUtils.calcVarsAvailable(subBus ));
 	String varsDisabled =  CBCUtils.format (CBCUtils.calcVarsDisabled(subBus));
-			
-	String closedVars =
-		CBCUtils.format( CBCUtils.calcClosedVARS(capControlCache.getCapBanksBySub( subBus.getCcId()) ));
-	String trippedVars =
-		CBCUtils.format( CBCUtils.calcTrippedVARS(capControlCache.getCapBanksBySub( subBus.getCcId()) ));
-
-
+	String closedVars = CBCUtils.format( CBCUtils.calcClosedVARS(capControlCache.getCapBanksBySub( subBus.getCcId()) ));
+	String trippedVars = CBCUtils.format( CBCUtils.calcTrippedVARS(capControlCache.getCapBanksBySub( subBus.getCcId()) ));
 
 %>
-
 
 	        <tr class="<%=css%>">
 				<td>
@@ -114,7 +107,6 @@ for( int i = 0; i < areaSubs.length; i++ )
 					(v)</span>
 				<% } %>
 				</td>
-				
 				<td>
 				
 			<% if( hasControl && !CtiUtilities.STRING_NONE.equals(subBus.getControlUnits()) ) { %>

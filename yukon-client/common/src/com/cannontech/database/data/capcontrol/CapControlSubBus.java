@@ -194,4 +194,14 @@ public static List<Integer> getAllUnassignedBuses () {
     return yukonTemplate.queryForList(allSubs.toString(), Integer.class);
 
 }
+
+public static List<Integer> getAllSpecialUnassignedBuses (int areaId) {
+    SqlStatementBuilder allSubs = new SqlStatementBuilder();
+    allSubs.append("select paobjectid from yukonpaobject where type like 'CCSUBBUS' ");
+    allSubs.append("and ");
+    allSubs.append("paobjectid not in (select substationbusid from ccsubspecialareaassignment where areaid = "+ areaId + ")");
+    JdbcOperations yukonTemplate = JdbcTemplateHelper.getYukonTemplate();
+    return yukonTemplate.queryForList(allSubs.toString(), Integer.class);
+
+}
 }

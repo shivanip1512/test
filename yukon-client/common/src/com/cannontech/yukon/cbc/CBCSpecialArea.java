@@ -3,6 +3,7 @@ package com.cannontech.yukon.cbc;
 public class CBCSpecialArea extends StreamableCapObject {
 
     private Boolean disableFlag;
+    private Boolean ovUvDisabledFlag;
     private String paoDescription;
     private String paoType;
     private String paoName;
@@ -79,8 +80,8 @@ public class CBCSpecialArea extends StreamableCapObject {
 
     @Override
     public boolean equals(Object obj) {
-        if (obj instanceof CBCArea) {
-            CBCArea area = (CBCArea) obj;
+        if (obj instanceof CBCSpecialArea) {
+            CBCSpecialArea area = (CBCSpecialArea) obj;
             return area.getPaoID().equals(getPaoID());
         }
         return false;
@@ -98,7 +99,13 @@ public class CBCSpecialArea extends StreamableCapObject {
         return copy;
     }
 
+    public Boolean getOvUvDisabledFlag() {
+        return ovUvDisabledFlag;
+    }
 
+    public void setOvUvDisabledFlag(Boolean ovUvDisabledFlag) {
+        this.ovUvDisabledFlag = ovUvDisabledFlag;
+    }
 
 }
 

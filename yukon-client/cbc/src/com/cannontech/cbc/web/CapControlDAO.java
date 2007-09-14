@@ -5,6 +5,8 @@ import java.util.List;
 
 import com.cannontech.database.data.lite.LiteState;
 import com.cannontech.web.lite.LiteWrapper;
+import com.cannontech.yukon.cbc.CBCArea;
+import com.cannontech.yukon.cbc.CBCSpecialArea;
 import com.cannontech.yukon.cbc.CapBankDevice;
 import com.cannontech.yukon.cbc.Feeder;
 import com.cannontech.yukon.cbc.StreamableCapObject;
@@ -122,14 +124,14 @@ public interface CapControlDAO {
 	 * 
 	 * @return List
 	 */
-	public abstract List getCbcAreas();
+	public abstract List<CBCArea> getCbcAreas();
     
     /**
      * Distinct special area Strings that are used by substations
      * 
      * @return List
      */
-    public abstract List getSpecialCbcAreas();
+    public abstract List<CBCSpecialArea> getSpecialCbcAreas();
 
 	/**
 	 * State group & states to use for CapBanks
@@ -143,8 +145,7 @@ public interface CapControlDAO {
 	 */
 	public abstract int getParentSubBusID(int childID);
 
-
-
+    public HashMap getSpecialAreaStateMap();
 
     public HashMap getAreaStateMap();
 }

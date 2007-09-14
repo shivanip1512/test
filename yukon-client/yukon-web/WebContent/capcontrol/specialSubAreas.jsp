@@ -58,7 +58,7 @@ if (allowCtlVal!=null)
 	for( int i = 0; i < userOwner.getSpecialCbcAreas().size(); i++ ) {
 		css = ("tableCell".equals(css) ? "altTableCell" : "tableCell");
 	
-		CBCSpecialArea area = (CBCSpecialArea)userOwner.getSpecialCbcAreas().get(i);
+		CBCSpecialArea area = userOwner.getSpecialCbcAreas().get(i);
 		SubBus[] areaBuses = userOwner.getSubsByArea(area.getPaoID());
 		CapBankDevice[] areaCapBanks = userOwner.getCapBanksByArea(area.getPaoID());
 	
@@ -69,7 +69,10 @@ if (allowCtlVal!=null)
 		String trippedVars = CBCUtils.format( CBCUtils.calcTrippedVARS(areaCapBanks) );
 		String currPF = CBCDisplay.getPowerFactorText(CBCUtils.calcAvgPF(areaBuses), true);
 		String estPF = CBCDisplay.getPowerFactorText(CBCUtils.calcAvgEstPF(areaBuses), true);
-	    String areaState = ((Boolean)(userOwner.getAreaStateMap().get(area.getPaoName())))?"ENABLED":"DISABLED";
+	    String areaState = ((Boolean)(userOwner.getSpecialAreaStateMap().get(area.getPaoName())))?"ENABLED":"DISABLED";
+	    if( area.getOvUvDisabledFlag() ){
+				areaState += "-V";
+		}
 %>
 	        <tr class="<%=css%>">
 				<td>
@@ -159,7 +162,7 @@ function getServerData() {
 	     new Ajax.PeriodicalUpdater("serverMessage"+i, '/servlet/CBCServlet', {
 	     method:'post', 
 	     asynchronous:true, 
-	     parameters:'areaIndex='+i, 
+	     parameters:'specialAreaIndex='+i, 
 	     frequency:5, 
 	     onSuccess: updateAreaMenu});
 	}

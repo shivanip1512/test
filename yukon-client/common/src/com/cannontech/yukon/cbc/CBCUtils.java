@@ -17,7 +17,6 @@ import org.springframework.jdbc.core.JdbcOperations;
 import org.springframework.jdbc.core.RowMapper;
 
 import com.cannontech.clientutils.CTILogger;
-import com.cannontech.common.util.CtiUtilities;
 import com.cannontech.core.dao.DaoFactory;
 import com.cannontech.core.dao.NotFoundException;
 import com.cannontech.database.JdbcTemplateHelper;
@@ -44,73 +43,69 @@ public final class CBCUtils {
     // responsible for how to render data for CBC displays
     public static final CBCDisplay CBC_DISPLAY = new CBCDisplay();
 
-    public static final Comparator CBC_AREA_COMPARATOR = new Comparator() {
-        public int compare(Object o1, Object o2) {
+    public static final Comparator<CBCArea> CBC_AREA_COMPARATOR = new Comparator<CBCArea>() {
+        public int compare(CBCArea o1, CBCArea o2) {
             try {
-                String thisArea = ((CBCArea) o1).getPaoName();
-                String anotherArea = ((CBCArea) o2).getPaoName();
+                String thisArea = o1.getPaoName();
+                String anotherArea = o2.getPaoName();
 
                 return (thisArea.compareToIgnoreCase(anotherArea));
 
             } catch (Exception e) {
-                CTILogger.error("Something went wrong with sorting, ignoring sorting rules",
-                                e);
+                CTILogger.error("Something went wrong with sorting, ignoring sorting rules", e);
                 return 0;
             }
 
         }
     };
     
-    public static final Comparator CBC_SPECIAL_AREA_COMPARATOR = new Comparator() {
-        public int compare(Object o1, Object o2) {
+    public static final Comparator<CBCSpecialArea> CBC_SPECIAL_AREA_COMPARATOR = new Comparator<CBCSpecialArea>() {
+        public int compare(CBCSpecialArea o1, CBCSpecialArea o2) {
             try {
-                String thisArea = ((CBCSpecialArea) o1).getPaoName();
-                String anotherArea = ((CBCSpecialArea) o2).getPaoName();
+                String thisArea = o1.getPaoName();
+                String anotherArea = o2.getPaoName();
 
                 return (thisArea.compareToIgnoreCase(anotherArea));
 
             } catch (Exception e) {
-                CTILogger.error("Something went wrong with sorting, ignoring sorting rules",
-                                e);
+                CTILogger.error("Something went wrong with sorting, ignoring sorting rules", e);
                 return 0;
             }
 
         }
     };
 
-    public static final Comparator SUB_AREA_COMPARATOR = new Comparator() {
-        public int compare(Object o1, Object o2) {
+    public static final Comparator<SubBus> SUB_AREA_COMPARATOR = new Comparator<SubBus>() {
+        public int compare(SubBus o1, SubBus o2) {
             try {
-                String thisArea = ((SubBus) o1).getCcArea();
-                String anotherArea = ((SubBus) o2).getCcArea();
+                String thisArea = o1.getCcArea();
+                String anotherArea = o2.getCcArea();
 
                 if (!thisArea.equalsIgnoreCase(anotherArea))
                     return (thisArea.compareToIgnoreCase(anotherArea));
 
                 // if the Area Names are equal, we need to sort by SubName
-                String thisName = ((SubBus) o1).getCcName();
-                String anotherName = ((SubBus) o2).getCcName();
+                String thisName = o1.getCcName();
+                String anotherName = o2.getCcName();
 
                 return (thisName.compareToIgnoreCase(anotherName));
             } catch (Exception e) {
-                CTILogger.error("Something went wrong with sorting, ignoring sorting rules",
-                                e);
+                CTILogger.error("Something went wrong with sorting, ignoring sorting rules", e);
                 return 0;
             }
 
         }
     };
 
-    public static final Comparator CCNAME_COMPARATOR = new Comparator() {
-        public int compare(Object o1, Object o2) {
+    public static final Comparator<StreamableCapObject> CCNAME_COMPARATOR = new Comparator<StreamableCapObject>() {
+        public int compare(StreamableCapObject o1, StreamableCapObject o2) {
             try {
-                String strA = ((StreamableCapObject) o1).getCcName();
-                String strB = ((StreamableCapObject) o2).getCcName();
+                String strA = o1.getCcName();
+                String strB = o2.getCcName();
 
                 return strA.compareToIgnoreCase(strB);
             } catch (Exception e) {
-                CTILogger.error("Something went wrong with sorting, ignoring sorting rules",
-                                e);
+                CTILogger.error("Something went wrong with sorting, ignoring sorting rules", e);
                 return 0;
             }
 
@@ -288,42 +283,6 @@ public final class CBCUtils {
         }
         return areaName;
     }
-
-//    /**
-//     * @param paoID
-//     * @return CapControlStrategy for Paobject. If no strategy exists returns a
-//     *         strategy with stratID = 0, stratName = "(none)"
-//     */
-//    public static SubSnapshotParams getSubSnapshot(int subID) {
-//        if (subID >= CtiUtilities.NONE_ZERO_ID) {
-//
-//            String sqlStmt = "SELECT SubstationbusID, ControlUnits, ControlMethod FROM CapControlSubstationBus, " + "CapControlStrategy WHERE CapControlSubstationBus.StrategyID = CapControlStrategy.StrategyID " + "AND SubStationBusID = ?";
-//
-//            JdbcOperations yukonTemplate = JdbcTemplateHelper.getYukonTemplate();
-//            SubSnapshotParams snapshot = null;
-//            try {
-//                snapshot = (SubSnapshotParams) yukonTemplate.queryForObject(sqlStmt,
-//                                                                            new Integer[] { new Integer(subID) },
-//                                                                            new RowMapper() {
-//                                                                                public Object mapRow(
-//                                                                                        ResultSet rs,
-//                                                                                        int rowNum)
-//                                                                                        throws SQLException {
-//                                                                                    SubSnapshotParams snapParam = new SubSnapshotParams();
-//                                                                                    snapParam.setBusID(rs.getInt(1));
-//                                                                                    snapParam.setAlgorithm((rs.getString(2)));
-//                                                                                    snapParam.setControlMethod(rs.getString(3));
-//                                                                                    return snapParam;
-//                                                                                }
-//
-//                                                                            });
-//            } catch (IncorrectResultSizeDataAccessException e) {
-//                snapshot = new SubSnapshotParams();
-//            }
-//            return snapshot;
-//        }
-//        return new SubSnapshotParams();
-//    }
 
     public static Integer getStateGroupIDByGroupName(String groupName) {
         LiteStateGroup[] allStateGroups = DaoFactory.getStateDao()

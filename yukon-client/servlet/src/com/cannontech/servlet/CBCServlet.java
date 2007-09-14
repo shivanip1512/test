@@ -37,6 +37,7 @@ import com.cannontech.util.ParamUtil;
 import com.cannontech.yukon.cbc.CBCArea;
 import com.cannontech.yukon.cbc.CBCClientConnection;
 import com.cannontech.yukon.cbc.CBCDisplay;
+import com.cannontech.yukon.cbc.CBCSpecialArea;
 import com.cannontech.yukon.cbc.CBCUtils;
 import com.cannontech.yukon.cbc.CapBankDevice;
 import com.cannontech.yukon.cbc.Feeder;
@@ -143,6 +144,7 @@ public void doPost(HttpServletRequest req, HttpServletResponse resp) throws java
 
     	//handle any commands that a client may want to send to the CBC server
         Integer areaIndex = ParamUtil.getInteger(req, "areaIndex", -1);
+        Integer specialAreaIndex = ParamUtil.getInteger(req, "specialAreaIndex", -1);
     	//be sure we have a valid user and that user has the rights to control
     	if( user != null && CBCWebUtils.hasControlRights(session) ) {
     		
@@ -151,8 +153,9 @@ public void doPost(HttpServletRequest req, HttpServletResponse resp) throws java
                 Writer writer = resp.getWriter();
                 if (areaIndex != -1) {
                     updateSubAreaMenu(areaIndex, writer);
-                }
-                else
+                } else if(specialAreaIndex != -1) {
+                    updateSubSpecialAreaMenu(specialAreaIndex, writer);
+                } else
                     //send the command with the id, type, paoid
                     executeCommand( req, user.getUsername() );
     		}
@@ -172,13 +175,27 @@ public void doPost(HttpServletRequest req, HttpServletResponse resp) throws java
 }
 
 private void updateSubAreaMenu(Integer areaIndex, Writer writer) throws IOException {
-    CBCArea area = (CBCArea) getCapControlCache().getCbcAreas().get(areaIndex);
+    CBCArea area = getCapControlCache().getCbcAreas().get(areaIndex);
     Boolean state = (Boolean) getCapControlCache().getAreaStateMap().get(area.getPaoName());
     Integer areaID = area.getPaoID();
     String msg = area.getPaoName() + ":" + areaIndex + ":" + areaID + ":";
     msg += (state)?"ENABLED":"DISABLED";
-    if ( area.getOvUvDisabledFlag() )
+    if ( area.getOvUvDisabledFlag() ) {
         msg += "-V";
+    }
+    writer.write (msg);
+    writer.flush();
+}
+
+private void updateSubSpecialAreaMenu(Integer areaIndex, Writer writer) throws IOException {
+    CBCSpecialArea area = getCapControlCache().getSpecialCbcAreas().get(areaIndex);
+    Boolean state = (Boolean) getCapControlCache().getSpecialAreaStateMap().get(area.getPaoName());
+    Integer areaID = area.getPaoID();
+    String msg = area.getPaoName() + ":" + areaIndex + ":" + areaID + ":";
+    msg += (state)?"ENABLED":"DISABLED";
+    if ( area.getOvUvDisabledFlag() ) {
+        msg += "-V";
+    }
     writer.write (msg);
     writer.flush();
 }

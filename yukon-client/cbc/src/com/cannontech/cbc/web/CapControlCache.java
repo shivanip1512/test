@@ -10,7 +10,6 @@ import java.util.concurrent.TimeUnit;
 import org.apache.commons.lang.Validate;
 
 import com.cannontech.clientutils.CTILogger;
-import com.cannontech.clientutils.commonutils.ModifiedDate;
 import com.cannontech.common.util.*;
 import com.cannontech.core.dao.DaoFactory;
 import com.cannontech.database.data.capcontrol.CapBankController;
@@ -30,16 +29,16 @@ import com.cannontech.yukon.conns.ConnPool;
 public class CapControlCache implements MessageListener, CapControlDAO {
     private static final int STARTUP_REF_RATE = 15 * 1000;
     private static final int NORMAL_REF_RATE = 30 * 60 * 1000; //5 minutes
-    private ScheduledExecutor refreshTimer;// = YukonSpringHook.getGlobalExecutor();
-    private Hashtable subBusMap = new Hashtable();
-    private Hashtable feederMap = new Hashtable();
-    private Hashtable capBankMap = new Hashtable();
-    private HashMap subToBankMap = new HashMap();
+    private ScheduledExecutor refreshTimer = YukonSpringHook.getGlobalExecutor();
+    private Hashtable<Integer, SubBus> subBusMap = new Hashtable<Integer, SubBus>();
+    private Hashtable<Integer, Feeder>  feederMap = new Hashtable<Integer, Feeder>();
+    private Hashtable<Integer, CapBankDevice> capBankMap = new Hashtable<Integer, CapBankDevice> ();
+    private HashMap<Integer, int[]> subToBankMap = new HashMap<Integer, int[]>();
     private CBCWebUpdatedObjectMap updatedObjMap = null;
-    private Vector cbcAreas = new Vector();
-    private Vector cbcSpecialAreas = new Vector();
-    private HashMap areaStateMap = new HashMap();
-    private HashMap specialAreaStateMap = new HashMap();
+    private List<CBCArea> cbcAreas = new ArrayList<CBCArea>();
+    private List<CBCSpecialArea> cbcSpecialAreas = new ArrayList<CBCSpecialArea>();
+    private HashMap<String, Boolean> areaStateMap = new HashMap<String, Boolean>();
+    private HashMap<String, Boolean> specialAreaStateMap = new HashMap<String, Boolean>();
     private Boolean systemStatusOn = Boolean.TRUE;
     private IServerConnection defCapControlConn;
     
@@ -48,7 +47,6 @@ public class CapControlCache implements MessageListener, CapControlDAO {
      */
     public CapControlCache() {
         super();
-        //defCapControlConn = ConnPool.getInstance().getDefCapControlConn();
     }
     
     public void initialize() {
@@ -65,7 +63,7 @@ public class CapControlCache implements MessageListener, CapControlDAO {
      * @return SubBus
      */
     public synchronized SubBus  getSubBus( Integer subID ) {
-        return (SubBus)subBusMap.get( subID );
+        return subBusMap.get( subID );
     }
     
     /**
@@ -82,26 +80,25 @@ public class CapControlCache implements MessageListener, CapControlDAO {
     }
     
     public Feeder getFeeder( Integer feederID ) {
-        return (Feeder)feederMap.get( feederID );
+        return feederMap.get( feederID );
     }
     
     /**
      * @return CapBankDevice
      */
     public CapBankDevice getCapBankDevice( Integer capBankDeviceID ) {
-        return (CapBankDevice)capBankMap.get( capBankDeviceID );
+        return capBankMap.get( capBankDeviceID );
     }
     
     /**
      * @return Feeder[]
      */
-    @SuppressWarnings("unchecked")
     public synchronized Feeder[] getFeedersBySub(Integer subBusID) {
         SubBus subBus = getSubBus(subBusID);
         Feeder[] retVal = new Feeder[0];
         
         if( subBus != null ) {
-            retVal = (Feeder[])subBus.getCcFeeders().toArray( retVal );     
+            retVal = subBus.getCcFeeders().toArray( retVal );
         }
         return retVal;
     }
@@ -109,13 +106,12 @@ public class CapControlCache implements MessageListener, CapControlDAO {
     /**
      * @return CapBankDevice[]
      */
-    @SuppressWarnings("unchecked")
     public synchronized CapBankDevice[] getCapBanksByFeeder(Integer feederID) {
         Feeder feeder = getFeeder(feederID);
         CapBankDevice[] retVal = new CapBankDevice[0];
         
         if( feeder != null ) {
-            retVal = (CapBankDevice[])feeder.getCcCapBanks().toArray( retVal );     
+            retVal = feeder.getCcCapBanks().toArray( retVal );     
         }
         return retVal;
     }
@@ -151,7 +147,7 @@ public class CapControlCache implements MessageListener, CapControlDAO {
      */
     public synchronized CapBankDevice[] getCapBanksBySub(Integer subBusID)
     {
-        int[] bankIDs = (int[])subToBankMap.get( subBusID );
+        int[] bankIDs = subToBankMap.get( subBusID );
         if( bankIDs == null ) {
             bankIDs = new int[0];
         }
@@ -163,34 +159,53 @@ public class CapControlCache implements MessageListener, CapControlDAO {
         return retVal;
     }
     
-    @SuppressWarnings("unchecked")
-    public  SubBus[] getSubsByArea(Integer areaID) {
-        List<CCSubAreaAssignment> allAreaSubs = CCSubAreaAssignment.getAllAreaSubs(areaID);
-        List<Integer>intList = CCSubAreaAssignment.getAsIntegerList(allAreaSubs);
-        //SubBus[] subs = new SubBus[intList.size()];
-        List<SubBus> subList = new ArrayList<SubBus>();
-        for (Integer id : intList) {
-            SubBus sub = (SubBus) subBusMap.get(id);
-            if (sub != null) {
-                subList.add(sub);
+    /**
+     * This method will return a list of assigned subs
+     * for Areas or SpecialAreas.
+     * @return SubBus[]
+     * @param areaId Integer
+     */
+    public  SubBus[] getSubsByArea(Integer areaId) {
+        if(getCBCArea(areaId) != null) {
+            List<CCSubAreaAssignment> allAreaSubs = CCSubAreaAssignment.getAllAreaSubs(areaId);
+            List<Integer>intList = CCSubAreaAssignment.getAsIntegerList(allAreaSubs);
+            List<SubBus> subList = new ArrayList<SubBus>();
+            for (Integer id : intList) {
+                SubBus sub = subBusMap.get(id);
+                if (sub != null) {
+                    subList.add(sub);
+                }
             }
+            SubBus[] subs = subList.toArray(new SubBus[]{});
+            Arrays.sort( subs, CBCUtils.CCNAME_COMPARATOR );
+            return subs;
+        }else if(getCBCSpecialArea(areaId) != null) {
+            List<CCSubSpecialAreaAssignment> allAreaSubs = CCSubSpecialAreaAssignment.getAllSpecialAreaSubs(areaId);
+            List<Integer>intList = CCSubSpecialAreaAssignment.getAsIntegerList(allAreaSubs);
+            List<SubBus> subList = new ArrayList<SubBus>();
+            for (Integer id : intList) {
+                SubBus sub = subBusMap.get(id);
+                if (sub != null) {
+                    subList.add(sub);
+                }
+            }
+            SubBus[] subs = subList.toArray(new SubBus[]{});
+            Arrays.sort( subs, CBCUtils.CCNAME_COMPARATOR );
+            return subs;
+        }else {
+            return null;
         }
-        SubBus[] subs = subList.toArray(new SubBus[]{});
-        //before returning, sort our SubBuses based on the name
-        Arrays.sort( subs, CBCUtils.CCNAME_COMPARATOR );
-        return subs;
     }
     
     /**
      * Returns all CapBanks for a given Area
      */
-    @SuppressWarnings("unchecked")
     public synchronized CapBankDevice[] getCapBanksByArea(Integer areaID) {
         SubBus[] subs = getSubsByArea( areaID );
         if( subs == null ) {
             subs = new SubBus[0];
         }
-        Vector allBanks = new Vector(64);
+        Vector<CapBankDevice> allBanks = new Vector<CapBankDevice>(64);
         for( int i = 0; i < subs.length; i++ ) {
             SubBus subBus = subs[i];
             if (subBus != null) {
@@ -200,26 +215,25 @@ public class CapControlCache implements MessageListener, CapControlDAO {
         }
     
         Collections.sort( allBanks, CBCUtils.CCNAME_COMPARATOR );
-        return (CapBankDevice[])allBanks.toArray( new CapBankDevice[allBanks.size()]);
+        return allBanks.toArray( new CapBankDevice[allBanks.size()]);
     }
     
     /**
      * Returns all Feeders for a given Area
      */
-    @SuppressWarnings("unchecked")
     public synchronized Feeder[] getFeedersByArea(Integer areaID) {
         SubBus[] subs = getSubsByArea( areaID);
         if( subs == null ) {
             subs = new SubBus[0];
         }
-        Vector allFeeders = new Vector(64);
+        Vector<Feeder> allFeeders = new Vector<Feeder>(64);
         for( int i = 0; i < subs.length; i++ ) {
             Feeder[] feeders = getFeedersBySub( subs[i].getCcId() );        
             allFeeders.addAll( Arrays.asList(feeders) );
         }
     
         Collections.sort( allFeeders, CBCUtils.CCNAME_COMPARATOR );
-        return (Feeder[])allFeeders.toArray( new Feeder[allFeeders.size()]);
+        return allFeeders.toArray( new Feeder[allFeeders.size()]);
     }
     
     /**
@@ -287,11 +301,10 @@ public class CapControlCache implements MessageListener, CapControlDAO {
      * @return SubBus[]
      * @param
      */
-    @SuppressWarnings("unchecked")
     public synchronized SubBus[] getAllSubBuses() {
         //sort the list base on the names
         SubBus[] subs = new SubBus[ subBusMap.values().size() ];
-        subs = (SubBus[])subBusMap.values().toArray( subs );
+        subs = subBusMap.values().toArray( subs );
         Arrays.sort( subs, CBCUtils.SUB_AREA_COMPARATOR );
     
         return subs;
@@ -301,7 +314,7 @@ public class CapControlCache implements MessageListener, CapControlDAO {
      * Distinct area Strings that are used by substations
      * @return List
      */
-    public List getCbcAreas() {
+    public List<CBCArea> getCbcAreas() {
         return cbcAreas;
     }
     
@@ -309,7 +322,7 @@ public class CapControlCache implements MessageListener, CapControlDAO {
      * Distinct special area Strings that are used by substations
      * @return List
      */
-    public List getSpecialCbcAreas() {
+    public List<CBCSpecialArea> getSpecialCbcAreas() {
         return cbcSpecialAreas;
     }
     
@@ -340,14 +353,13 @@ public class CapControlCache implements MessageListener, CapControlDAO {
     * Stores all areas in memory. 
     * @param CBCSubAreas
     */
-    @SuppressWarnings("unchecked")
     private synchronized void handleSpecialAreaList(CBCSubSpecialAreas areas) {
         //for every area in the currently in cache
         List<CBCSpecialArea> cachedSpecialAreas = getSpecialCbcAreas();
         List<CBCSpecialArea> workCopy = new Vector<CBCSpecialArea>();
         workCopy.addAll(cachedSpecialAreas);
         for (CBCSpecialArea area : cachedSpecialAreas) {
-            Vector allAreas = areas.getAreas();
+            List<CBCSpecialArea> allAreas = areas.getAreas();
             //if current cache has an area and sent object doesn't 
             //discard the cached object
             if (!allAreas.contains(area)) {
@@ -356,21 +368,20 @@ public class CapControlCache implements MessageListener, CapControlDAO {
             //if the object is cached currently - then replace the object
             else if (allAreas.contains(area)) {
                 int idx = workCopy.indexOf(area);
-                workCopy.set(idx, (CBCSpecialArea) allAreas.get( allAreas.indexOf(area)));
+                workCopy.set(idx, allAreas.get(allAreas.indexOf(area)));
             }
-            
         }
         cachedSpecialAreas.clear();
         cachedSpecialAreas.addAll(workCopy);
         //if the object is not in cache add it to cache
-        Vector<CBCSpecialArea> sentAreas = areas.getAreas();
+        List<CBCSpecialArea> sentAreas = areas.getAreas();
         for (CBCSpecialArea area : sentAreas) {
             if (!cachedSpecialAreas.contains(area)) {
                 cachedSpecialAreas.add(area);
             }
         }
     
-        Collections.sort(cbcSpecialAreas, CBCUtils.CBC_SPECIAL_AREA_COMPARATOR);
+        Collections.sort(getSpecialCbcAreas(), CBCUtils.CBC_SPECIAL_AREA_COMPARATOR);
     
         resetSpecialAreaStateMap();
     }
@@ -380,14 +391,13 @@ public class CapControlCache implements MessageListener, CapControlDAO {
     * 
     * @param CBCSubAreas
     */
-    @SuppressWarnings("unchecked")
     private synchronized void handleAreaList(CBCSubAreas areas) {
         //for every area in the currently in cache
         List<CBCArea> cachedAreas = getCbcAreas();
         List<CBCArea> workCopy = new Vector<CBCArea>();
         workCopy.addAll(cachedAreas);
         for (CBCArea area : cachedAreas) {
-            Vector allAreas = areas.getAreas();
+            List<CBCArea> allAreas = areas.getAreas();
             //if current cache has an area and sent object doesn't 
             //discard the cached object
             if (!allAreas.contains(area)) {
@@ -396,14 +406,14 @@ public class CapControlCache implements MessageListener, CapControlDAO {
             //if the object is cached currently - then replace the object
             else if (allAreas.contains(area)) {
                 int idx = workCopy.indexOf(area);
-                workCopy.set(idx, (CBCArea) allAreas.get( allAreas.indexOf(area)));
+                workCopy.set(idx, allAreas.get( allAreas.indexOf(area)));
             }
             
         }
         cachedAreas.clear();
         cachedAreas.addAll(workCopy);
         //if the object is not in cache add it to cache
-        Vector<CBCArea> sentAreas = areas.getAreas();
+        List<CBCArea> sentAreas = areas.getAreas();
         for (CBCArea area : sentAreas) {
             if (!cachedAreas.contains(area)) {
                 cachedAreas.add(area);
@@ -453,7 +463,7 @@ public class CapControlCache implements MessageListener, CapControlDAO {
     @SuppressWarnings("deprecation")
     private void logAllSubs(CBCSubstationBuses busesMsg) {
         for( int i = (busesMsg.getNumberOfBuses()-1); i >= 0; i-- ){
-        	CTILogger.debug( new ModifiedDate(new Date().getTime()).toString()
+        	CTILogger.debug( new Date().toString()
         			+ " : Received SubBus - " + busesMsg.getSubBusAt(i).getCcName() 
         			+ "/" + busesMsg.getSubBusAt(i).getCcArea() );
         }
@@ -483,17 +493,19 @@ public class CapControlCache implements MessageListener, CapControlDAO {
     }
     
     private void handleDeleteItem(int deviceID) {
-        if( isSubBus(deviceID) )
+        if( isSubBus(deviceID) ) {
             handleDeletedSub( deviceID );
-        else if (isFeeder(deviceID))
+        } else if (isFeeder(deviceID)) {
             handleDeletedFeeder(deviceID);
-        else if (isCapBank(deviceID))
+        } else if (isCapBank(deviceID)) {
             handleDeletedCap(deviceID);
-        else if (isCBCArea (deviceID))
+        } else if (isCBCArea (deviceID)) {
             handleDeleteArea (deviceID);
+        } else if (isSpecialCBCArea(deviceID)) {
+            handleDeleteSpecialArea(deviceID);
+        }
     }
     
-    @SuppressWarnings("unchecked")
     private void handleDeleteArea(int deviceID) {
         synchronized (cbcAreas) {
             List<CBCArea> cachedAreas = getCbcAreas();
@@ -510,9 +522,8 @@ public class CapControlCache implements MessageListener, CapControlDAO {
         }
     }
     
-    @SuppressWarnings({ "unchecked", "unused" })
     private void handleDeleteSpecialArea(int deviceID) {
-        synchronized (cbcSpecialAreas) {
+        synchronized (getSpecialCbcAreas()) {
             List<CBCSpecialArea> cachedSpecialAreas = getSpecialCbcAreas();
             List<CBCSpecialArea> workCopy = new Vector<CBCSpecialArea>();
             workCopy.addAll(cachedSpecialAreas);
@@ -539,10 +550,9 @@ public class CapControlCache implements MessageListener, CapControlDAO {
         }
     }
     
-    @SuppressWarnings("unused")
     private boolean isSpecialCBCArea(int deviceID) {
-        synchronized (cbcSpecialAreas) {
-            for (Iterator iter = cbcSpecialAreas.iterator(); iter.hasNext();) {
+        synchronized (getSpecialCbcAreas()) {
+            for (Iterator iter = getSpecialCbcAreas().iterator(); iter.hasNext();) {
                 CBCSpecialArea area = (CBCSpecialArea) iter.next();
                 if (area.getPaoID().intValue() == deviceID) {
                     return true;
@@ -574,7 +584,6 @@ public class CapControlCache implements MessageListener, CapControlDAO {
      * Processes a single SubBus, breaking it up into Feeders and Capbanks
      * @param SubBus
      */
-    @SuppressWarnings("unchecked")
     private synchronized void handleSubBus( SubBus subBus ) {   
         
         Validate.notNull(subBus, "subBus can't be null");
@@ -590,7 +599,7 @@ public class CapControlCache implements MessageListener, CapControlDAO {
             feederMap.put( feeder.getCcId(), feeder );
             
             for( int j = 0; j < feeder.getCcCapBanks().size(); j++ ) {
-                CapBankDevice capBank = (CapBankDevice)feeder.getCcCapBanks().get(j);
+                CapBankDevice capBank = feeder.getCcCapBanks().get(j);
                 capBankMap.remove(capBank.getCcId());
                 capBankMap.put( capBank.getCcId(), capBank );
                 capBankIDs.add( capBank.getCcId().intValue() );
@@ -655,8 +664,8 @@ public class CapControlCache implements MessageListener, CapControlDAO {
     
     
     public CBCArea getCBCArea(int id) {
-        for (Iterator iter = cbcAreas.iterator(); iter.hasNext();) {
-            CBCArea area = (CBCArea) iter.next();
+        for (Iterator<CBCArea> iter = cbcAreas.iterator(); iter.hasNext();) {
+            CBCArea area = iter.next();
             if (area.getPaoID().intValue() == id) {
                 return area;
             }
@@ -665,8 +674,8 @@ public class CapControlCache implements MessageListener, CapControlDAO {
     }
     
     public CBCSpecialArea getCBCSpecialArea(int id) {
-        for (Iterator iter = cbcSpecialAreas.iterator(); iter.hasNext();) {
-            CBCSpecialArea area = (CBCSpecialArea) iter.next();
+        for (Iterator<CBCSpecialArea> iter = getSpecialCbcAreas().iterator(); iter.hasNext();) {
+            CBCSpecialArea area = iter.next();
             if (area.getPaoID().intValue() == id) {
                 return area;
             }
@@ -694,7 +703,6 @@ public class CapControlCache implements MessageListener, CapControlDAO {
         return specialAreaStateMap;
     }
     
-    @SuppressWarnings("unchecked")
     private void initAreaStateMap() {
         List areaNames = getCbcAreas();
         for (Iterator iter = areaNames.iterator(); iter.hasNext();) {
@@ -703,23 +711,21 @@ public class CapControlCache implements MessageListener, CapControlDAO {
         }
     }
     
-    @SuppressWarnings("unchecked")
     private void initSpecialAreaStateMap() {
-        List areaNames = getSpecialCbcAreas();
-        for (Iterator iter = areaNames.iterator(); iter.hasNext();) {
-            CBCSpecialArea area = (CBCSpecialArea) iter.next();
+        List<CBCSpecialArea> areaNames = getSpecialCbcAreas();
+        for (Iterator<CBCSpecialArea> iter = areaNames.iterator(); iter.hasNext();) {
+            CBCSpecialArea area = iter.next();
             specialAreaStateMap.put(area.getPaoName(), !area.getDisableFlag());
         }
     }
     
     private void resetAreaStateMap() {
-        areaStateMap = new HashMap();
+        areaStateMap = new HashMap<String, Boolean>();
         getAreaStateMap();
     }
     
-    @SuppressWarnings("unused")
     private void resetSpecialAreaStateMap() {
-        specialAreaStateMap = new HashMap();
+        specialAreaStateMap = new HashMap<String, Boolean>();
         getSpecialAreaStateMap();
     }
     

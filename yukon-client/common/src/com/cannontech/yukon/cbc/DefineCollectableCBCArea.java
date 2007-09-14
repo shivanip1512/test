@@ -63,10 +63,8 @@ public class DefineCollectableCBCArea extends
         area.setPaoName((String) vstr.restoreObject(SimpleMappings.CString));
         area.setPaoType((String) vstr.restoreObject(SimpleMappings.CString));
         area.setPaoDescription((String) vstr.restoreObject(SimpleMappings.CString));
-        area.setDisableFlag(((int) vstr.extractUnsignedInt() == 1) ? new Boolean(true)
-                : new Boolean(false));
-        area.setOvUvDisabledFlag(((int) vstr.extractUnsignedInt() == 1) ? new Boolean(true)
-        : new Boolean(false));
+        area.setDisableFlag(((int) vstr.extractUnsignedInt() == 1) ? new Boolean(true) : new Boolean(false));
+        area.setOvUvDisabledFlag(((int) vstr.extractUnsignedInt() == 1) ? new Boolean(true) : new Boolean(false));
 
     }
 

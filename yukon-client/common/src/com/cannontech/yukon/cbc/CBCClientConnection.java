@@ -31,6 +31,8 @@ public class CBCClientConnection extends ClientConnection
 		new DefineCollectableFeeder(),
 		new DefineCollectableState(),
 		new DefineCollectableCBCArea(),
+        new DefineCollectableCBCSpecialSubAreas(),
+        new DefineCollectableSpecialCBCArea(),
 		
         //Collectable Mappings
 		com.roguewave.vsj.streamer.CollectableMappings.OrderedVector,

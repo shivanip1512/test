@@ -1,6 +1,7 @@
 package com.cannontech.yukon.cbc;
 
 import java.util.Arrays;
+import java.util.Vector;
 
 import com.cannontech.database.data.point.PointUnits;
 
@@ -8,8 +9,7 @@ import com.cannontech.database.data.point.PointUnits;
  * Insert the type's description here. Creation date: (8/18/00 4:23:32 PM)
  * @author:
  */
-public class SubBus extends StreamableCapObject implements
-        PointQualityCheckable {
+public class SubBus extends StreamableCapObject implements PointQualityCheckable {
     private Integer maxDailyOperation = null;
     private Boolean maxOperationDisableFlag = null;
     private Double currentVarLoadPointValue = null;
@@ -54,8 +54,7 @@ public class SubBus extends StreamableCapObject implements
     private Double targetvarvalue = null;
     private String solution = null;
 
-    // should only contain objects of type Feeder
-    private java.util.Vector ccFeeders = null;
+    private Vector<Feeder>ccFeeders = null;
     private Boolean switchOverStatus = null;
     private Double peakPFSetPoint = new Double(100.0);
     private Double offpeakPFSetPoint = new Double(100.0);
@@ -109,7 +108,7 @@ public class SubBus extends StreamableCapObject implements
      * PM)
      * @return java.util.Vector
      */
-    public java.util.Vector getCcFeeders() {
+    public Vector<Feeder> getCcFeeders() {
         return ccFeeders;
     }
 
@@ -251,7 +250,7 @@ public class SubBus extends StreamableCapObject implements
      * PM)
      * @param newCcFeeders java.util.Vector
      */
-    public void setCcFeeders(java.util.Vector newCcFeeders) {
+    public void setCcFeeders(Vector<Feeder> newCcFeeders) {
         ccFeeders = newCcFeeders;
     }
 

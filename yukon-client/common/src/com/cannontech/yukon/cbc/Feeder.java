@@ -1,6 +1,7 @@
 package com.cannontech.yukon.cbc;
 
 import java.util.Arrays;
+import java.util.Vector;
 
 import com.cannontech.common.util.CtiUtilities;
 import com.cannontech.database.data.point.PointUnits;
@@ -60,9 +61,7 @@ public class Feeder extends StreamableCapObject implements PointQualityCheckable
     private Double phaseA = new Double(0.0);
     private Double phaseB = new Double(0.0);
     private Double phaseC = new Double(0.0);
-    
-	//should only contain objects of type CapBankDevice
-	private java.util.Vector ccCapBanks = null;
+	private Vector<CapBankDevice> ccCapBanks = null;
 	
 	
 /**
@@ -98,7 +97,7 @@ public void setCurrentVarPtQuality( Integer ptQ_ )
  * Creation date: (11/19/2001 1:11:48 PM)
  * @return java.util.Vector
  */
-public java.util.Vector getCcCapBanks() {
+public Vector<CapBankDevice> getCcCapBanks() {
 	return ccCapBanks;
 }
 /**
@@ -226,18 +225,8 @@ public java.lang.Double getVarValueBeforeControl() {
  * Creation date: (11/19/2001 1:11:48 PM)
  * @param newCcCapBanks java.util.Vector
  */
-public void setCcCapBanks(java.util.Vector newCcCapBanks) 
-{
+public void setCcCapBanks(Vector<CapBankDevice> newCcCapBanks) {
 	ccCapBanks = newCcCapBanks;
-
-	//set all the capbanks feeders owner name to this feeders name!
-/*	if( getCcCapBanks() != null )
-		for( int i = 0; i < getCcCapBanks().size(); i++ )
-		{
-			//just let this statement throw a ClassCastException
-			((CapBankDevice)getCcCapBanks().get(i)).setFeederOwner( getCcName() );
-		}
-*/
 }
 /**
  * Insert the method's description here.
