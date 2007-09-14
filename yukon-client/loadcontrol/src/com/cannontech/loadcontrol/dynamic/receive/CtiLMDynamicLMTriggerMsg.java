@@ -52,7 +52,7 @@ public class CtiLMDynamicLMTriggerMsg implements com.roguewave.vsj.DefineCollect
         lmTriggerChanged.setPeakPointValue(vstr.extractDouble());
         GregorianCalendar lastPeakPointValueTimestamp = new GregorianCalendar();
         lastPeakPointValueTimestamp.setTime((java.util.Date)vstr.restoreObject( SimpleMappings.Time ) );
-        lmTriggerChanged.setLastPointValueTimestamp(lastPeakPointValueTimestamp);
+        lmTriggerChanged.setLastPeakPointValueTimestamp(lastPeakPointValueTimestamp);
         lmTriggerChanged.setProjectedPointValue(vstr.extractDouble());
     }
     
