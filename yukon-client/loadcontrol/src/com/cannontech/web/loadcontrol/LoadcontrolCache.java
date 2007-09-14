@@ -27,7 +27,9 @@ import com.cannontech.core.dao.DaoFactory;
 import com.cannontech.database.data.lite.LiteYukonPAObject;
 import com.cannontech.database.data.lite.LiteYukonUser;
 import com.cannontech.loadcontrol.LMComparators;
+import com.cannontech.loadcontrol.LoadControlClientConnection;
 import com.cannontech.loadcontrol.data.LMControlArea;
+import com.cannontech.loadcontrol.data.LMControlAreaTrigger;
 import com.cannontech.loadcontrol.data.LMCurtailCustomer;
 import com.cannontech.loadcontrol.data.LMEnergyExchangeCustomer;
 import com.cannontech.loadcontrol.data.LMGroupBase;
@@ -41,6 +43,11 @@ import com.cannontech.spring.YukonSpringHook;
 
 public class LoadcontrolCache implements java.util.Observer {
 
+    /*TODO: The title of LoadControlCache is now somewhat of a misnomer, since all map management and event handling
+     * is taken care of LoadControlClientConnection since it was doing it anyway.  It was easier to move functionality
+     * from this class to LoadControlClientConnection rather than vice-versa; this needs to be improved a bit so naming
+     * and functionality placement makes more sense.
+     */
 	//SQL to retrive customer base line point data
 	private static String baseLineSql = "SELECT Value FROM RawPointhistory WHERE PointID=? AND Timestamp > ? AND Timestamp <= ?";
 		
@@ -48,22 +55,9 @@ public class LoadcontrolCache implements java.util.Observer {
 	private static int normalRefreshRate = 60 * 5 * 1000; //5 minutes
 	private ScheduledExecutor refreshTimer = YukonSpringHook.getGlobalExecutor();
 	
-	private com.cannontech.loadcontrol.LoadControlClientConnection lcConn = null;
+	private LoadControlClientConnection lcConn = null;
 	 
 	private String dbAlias = "yukon";
-	/* The following data structures contain information from the loadmanagement
-	   server sorted to make it more accessible.  When anew control areas arrives
-	   from the connection it is placed in the appropriate slot(s).  This is known
-	   to have happened when this update(..) method is called, this observes
-	   the loadcontrol connection.
-	*/
-
-	// key = Map<Integer, LMControlArea>
-	private Hashtable controlAreaMap = new Hashtable();
-	//	key = Map<Integer, LMProgramBase>
-	private Hashtable programMap = new Hashtable();
-	//	key = Map<Integer, LMGroupBase>
-	private Hashtable groupMap = new Hashtable();
 
 	// key = (Integer) energy company id, value = (long[]) customer id
 	private HashMap energyCompanyCustomer = new HashMap();
@@ -369,17 +363,17 @@ public LMProgramDirect[] getDirectPrograms() {
  * 
  * @return Iterator
  */
-public Iterator getAllControlAreas( LiteYukonUser yukUser )
+public Iterator getAllControlAreas( LiteYukonUser yukUser, boolean overridePaoRestrictions )
 {
     if( yukUser == null )
-        return controlAreaMap.values().iterator(); //return all areas
+        return lcConn.getControlAreas().values().iterator(); //return all areas
 
-    Iterator iter = controlAreaMap.values().iterator();
+    Iterator iter = lcConn.getControlAreas().values().iterator();
     ArrayList paoList = new ArrayList(32);
     while( iter.hasNext() )
     {
         LMControlArea area = (LMControlArea)iter.next();
-        if( DaoFactory.getAuthDao().userHasAccessPAO(yukUser, area.getYukonID().intValue()) )
+        if( DaoFactory.getAuthDao().userHasAccessPAO(yukUser, area.getYukonID().intValue()) || overridePaoRestrictions )
             paoList.add( area );
     }
 
@@ -394,7 +388,7 @@ public Iterator getAllControlAreas( LiteYukonUser yukUser )
  */
 public LMControlArea getControlArea( Integer areaID )
 {
-	return (LMControlArea)controlAreaMap.get( areaID );
+	return lcConn.getControlAreas().get( areaID );
 }
 
 /**
@@ -403,7 +397,7 @@ public LMControlArea getControlArea( Integer areaID )
  */
 public LMProgramBase getProgram( Integer progID )
 {
-	return (LMProgramBase)programMap.get( progID );
+	return lcConn.getPrograms().get( progID );
 }
 
 /**
@@ -412,7 +406,7 @@ public LMProgramBase getProgram( Integer progID )
  */
 public LMGroupBase getGroup( Integer grpID )
 {
-	return (LMGroupBase)groupMap.get( grpID );
+	return lcConn.getGroups().get( grpID );
 }
 
 /**
@@ -543,92 +537,12 @@ public synchronized LMEnergyExchangeCustomer[] getEnergyExchangeCustomers(long p
 	return retVal;
 }
 
-private void handleGroups( LMProgramBase prog )
-{
-	for( int j = 0; j < prog.getLoadControlGroupVector().size(); j++ )
-	{
-		Object grp = prog.getLoadControlGroupVector().get(j);
-		if( grp instanceof LMGroupBase )
-			groupMap.put( ((LMGroupBase)grp).getYukonID(), grp );
-	}
-
-}
-
-/**
- * Creation date: (6/21/2001 3:47:41 PM)
- * @param controlArea com.cannontech.loadcontrol.data.LMControlArea
- */
-private synchronized void handleControlArea(LMControlArea controlArea) 
-{	
-	controlAreaMap.put( controlArea.getYukonID(), controlArea );
-	
-
-	java.util.Vector programs = controlArea.getLmProgramVector();
-
-	for( int i = 0; i < programs.size(); i++ )
-	{		
-		LMProgramBase prog = (LMProgramBase)programs.elementAt(i);
-		programMap.put( prog.getYukonID(), prog );
-		handleGroups( prog );
-
-		
-		if( prog instanceof LMProgramDirect )
-		{
-			handleDirectProgram( (LMProgramDirect) prog );	
-		}
-		else
-		if( prog instanceof LMProgramCurtailment )
-		{
-			handleCurtailmentProgram( (LMProgramCurtailment) prog );			
-		}
-		else
-		if( prog instanceof LMProgramEnergyExchange )
-		{
-			handleEnergyExchangeProgram( (LMProgramEnergyExchange) prog );
-		}
-		else
-		{
-			CTILogger.info(getClass() + " - Warning, received unhandled program type");
-		}
-	}
-}
-/**
- * Adds or replaces prog in our list of curtailment programs.
- * Note it relies on program implementing .equals() to use the program id
- * Creation date: (6/21/2001 4:31:04 PM)
- * @param prog com.cannontech.loadcontrol.data.LMProgramCurtailment
- */
-private void handleCurtailmentProgram(LMProgramCurtailment prog) 
-{	
-	replaceProgram(prog,curtailmentPrograms);
-}
-/**
- * Creation date: (6/21/2001 4:30:46 PM)
- * @param prog com.cannontech.loadcontrol.data.LMProgramDirect
- */
-private void handleDirectProgram(LMProgramDirect prog) 
-{
-	directPrograms.remove(prog);
-	directPrograms.add(prog);
-	//replaceProgram(prog,directPrograms);
-}
-
-
-/**
- * Creation date: (6/21/2001 4:31:19 PM)
- * @param prog com.cannontech.loadcontrol.data.LMProgramEnergyExchange
- */
-private void handleEnergyExchangeProgram(LMProgramEnergyExchange prog) 
-{
-	replaceProgram(prog, energyExchangePrograms);	
-}
 /**
  * Renew the cache.
  * Creation date: (6/11/2001 3:36:24 PM)
  */
 public synchronized void refresh()
 {
-
 	CTILogger.debug("Refreshing customer-energycompany mappings");
 	
 	// Update energy company - customer mapping from db
@@ -649,42 +563,38 @@ public synchronized void refresh()
 		}
 	}
 
+	CTILogger.debug("Refreshing customer baselines");
 	
-	{
-		CTILogger.debug("Refreshing customer baselines");
-		
-		java.sql.Connection conn = null;
-		java.sql.Statement stmt = null;
-		java.sql.ResultSet rset = null;
-	
-		try
-		{		
-			conn = com.cannontech.database.PoolManager.getInstance().getConnection(dbAlias);
-			stmt = conn.createStatement();
-			rset = stmt.executeQuery("SELECT CustomerID,PointID FROM CustomerBaseLinePoint");
-	
-			while( rset.next() )
-			{
-				int customerID = rset.getInt(1);
-				int pointID = rset.getInt(2);
-				customerBaseLine.put(new Integer(customerID), new Integer(pointID));			
-			}
-		}
-		catch(java.sql.SQLException e)
-		{
-			CTILogger.debug("An error occured refreshing customerbaselines");			
-		}
-		finally
-		{
-			try {
-				if( rset != null ) rset.close();
-				if( stmt != null ) stmt.close();
-				if( conn != null ) conn.close();
-			} catch(java.sql.SQLException e2) {  }
-		}
+	java.sql.Connection conn = null;
+	java.sql.Statement stmt = null;
+	java.sql.ResultSet rset = null;
 
-		CTILogger.debug("Loaded " + customerBaseLine.size() + " customer baselines.");
+	try
+	{		
+		conn = com.cannontech.database.PoolManager.getInstance().getConnection(dbAlias);
+		stmt = conn.createStatement();
+		rset = stmt.executeQuery("SELECT CustomerID,PointID FROM CustomerBaseLinePoint");
+
+		while( rset.next() )
+		{
+			int customerID = rset.getInt(1);
+			int pointID = rset.getInt(2);
+			customerBaseLine.put(new Integer(customerID), new Integer(pointID));			
+		}
 	}
+	catch(java.sql.SQLException e)
+	{
+		CTILogger.debug("An error occured refreshing customerbaselines");			
+	}
+	finally
+	{
+		try {
+			if( rset != null ) rset.close();
+			if( stmt != null ) stmt.close();
+			if( conn != null ) conn.close();
+		} catch(java.sql.SQLException e2) {  }
+	}
+	CTILogger.debug("Loaded " + customerBaseLine.size() + " customer baselines.");
 	
 	CTILogger.debug("Refreshing control areas");
 	
@@ -695,38 +605,9 @@ public synchronized void refresh()
 
 		c.setCommand( com.cannontech.loadcontrol.messages.LMCommand.RETRIEVE_ALL_CONTROL_AREAS);
 		lcConn.write(c);
-
+        lcConn.addObserver( this );
 	}
 	
-}
-/**
- * Replaces a program in l.
- * uses device id to decide sameness.
- * I decided this would be more prudent than
- * relying on the programbase .equals()
- * Creation date: (7/1/2001 6:12:21 PM)
- * @return boolean
- * @param p com.cannontech.loadcontrol.data.LMProgramBase
- * @param l java.util.ArrayList
- */
-private boolean replaceProgram(LMProgramBase p, ArrayList l) {
-	
-	java.util.ListIterator iter = l.listIterator();
-	while( iter.hasNext() )
-	{
-		LMProgramBase cur = (LMProgramBase) iter.next();
-
-		if( cur.getYukonID().equals(p.getYukonID()) )
-		{
-			iter.remove();
-			iter.add(p);
-			return true;
-		}
-	}
-
-	// wasn't already in the list so add it
-	l.add(p);
-	return false;
 }
 
 /**
@@ -744,51 +625,8 @@ public void setDbAlias(java.lang.String newDbAlias) {
  * observers notified of the change.
  *
  * @param   o     the observable object.
- * @param   arg   an argument passed to the <code>notifyObservers</code>
- *                 method.
+ * @param   arg   an argument passed to the <code>notifyObservers</code> method.
  */
-public synchronized void update(java.util.Observable o, java.lang.Object arg) 
-{
-	CTILogger.debug( getClass() + ": received type: " + arg.getClass());
-
-	if( arg instanceof LCChangeEvent )
-	{
-		// Arg is assumed to be a LCChangeEvent
-		LCChangeEvent e = (LCChangeEvent) arg;
-
-		if( lcConn == null )		
-			lcConn = (com.cannontech.loadcontrol.LoadControlClientConnection) e.target;
-
-		// e.arg is assumed to be a LMControlArea
-		if( e.id == LCChangeEvent.DELETE )
-		{
-			LMControlArea lmArea = (LMControlArea)e.arg;
-			controlAreaMap.remove( lmArea.getYukonID() );
-
-			java.util.Vector programs = lmArea.getLmProgramVector();
-			for( int i = 0; i < programs.size(); i++ )
-			{		
-				LMProgramBase prog = (LMProgramBase)programs.elementAt(i);
-				programMap.remove( prog.getYukonID() );
-				
-				for( int j = 0; j < prog.getLoadControlGroupVector().size(); j++ )
-				{
-					Object grp = prog.getLoadControlGroupVector().get(j);
-					if( grp instanceof LMGroupBase )
-						groupMap.remove( ((LMGroupBase)grp).getYukonID() );
-				}
-			}
-		}
-		else if( e.id == LCChangeEvent.DELETE_ALL ) // remove all areas
-		{
-			controlAreaMap.clear();				
-			programMap.clear();
-			groupMap.clear();
-		}		
-		else
-			handleControlArea( (LMControlArea) e.arg );
-		
-	}	
-}
-
+public synchronized void update(java.util.Observable o, java.lang.Object arg) {}
+	/*also, do we need to listen for a LCChangeEvent still and call the local update or something so the browser knows to refresh?*/
 }

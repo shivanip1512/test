@@ -6,10 +6,8 @@ package com.cannontech.loadcontrol;
  * the base class does all the work.
  */
 import java.util.HashMap;
-import java.util.List;
 
 import com.cannontech.clientutils.CTILogger;
-import com.cannontech.loadcontrol.data.ILMGroup;
 import com.cannontech.loadcontrol.data.LMControlArea;
 import com.cannontech.loadcontrol.data.LMControlAreaTrigger;
 import com.cannontech.loadcontrol.data.LMDirectGroupBase;
@@ -33,7 +31,7 @@ public class LoadControlClientConnection extends com.cannontech.message.util.Cli
 	
 	private HashMap<Integer, LMControlArea> controlAreas = null;
     private HashMap<Integer, LMProgramBase> programs = null;
-    private HashMap<Integer, ILMGroup> groups = null;
+    private HashMap<Integer, LMGroupBase> groups = null;
     private HashMap<Integer, LMControlAreaTrigger> triggers = null;
 
     protected LoadControlClientConnection() {
@@ -94,7 +92,7 @@ public class LoadControlClientConnection extends com.cannontech.message.util.Cli
             for(int i = 0; i < msg.getLMControlArea(j).getLmProgramVector().size(); i++) {
                 LMProgramBase currentProgram = (LMProgramBase)msg.getLMControlArea(j).getLmProgramVector().get(i);
                 for(int x = 0; x < currentProgram.getLoadControlGroupVector().size(); x++) { 
-                    getGroups().remove(((ILMGroup)currentProgram.getLoadControlGroupVector().get(x)).getYukonID());
+                    getGroups().remove(((LMGroupBase)currentProgram.getLoadControlGroupVector().get(x)).getYukonID());
                 }
                 getPrograms().remove(currentProgram.getYukonID());
             }
@@ -120,28 +118,28 @@ public class LoadControlClientConnection extends com.cannontech.message.util.Cli
     	return getControlAreas().size();
     }
     
-    private HashMap<Integer, LMControlArea> getControlAreas() {
+    public HashMap<Integer, LMControlArea> getControlAreas() {
     	if( controlAreas == null )
     		controlAreas = new HashMap<Integer, LMControlArea>();
     		
     	return controlAreas;
     }
     
-    private HashMap<Integer, LMProgramBase> getPrograms() {
+    public HashMap<Integer, LMProgramBase> getPrograms() {
         if( programs == null )
             programs = new HashMap<Integer, LMProgramBase>();
             
         return programs;
     }
     
-    private HashMap<Integer, ILMGroup> getGroups() {
+    public HashMap<Integer, LMGroupBase> getGroups() {
         if( groups == null )
-            groups = new HashMap<Integer, ILMGroup>();
+            groups = new HashMap<Integer, LMGroupBase>();
             
         return groups;
     }
     
-    private HashMap<Integer, LMControlAreaTrigger> getTriggers() {
+    public HashMap<Integer, LMControlAreaTrigger> getTriggers() {
         if( triggers == null )
             triggers = new HashMap<Integer, LMControlAreaTrigger>();
             
@@ -176,7 +174,7 @@ public class LoadControlClientConnection extends com.cannontech.message.util.Cli
     private synchronized void handleLMControlArea(LMControlArea controlArea) {
     	CTILogger.debug( " ---> Received a control area named " + controlArea.getYukonName() );
     
-        //could use some of the new concurrency code here to be fancy, but for now
+        //could use some of the new concurrency code here to be fancy, but for now...
     	synchronized ( getControlAreas() ) {
     		boolean newInsert = getControlAreas().get(controlArea.getYukonID()) == null;
             
@@ -187,7 +185,7 @@ public class LoadControlClientConnection extends com.cannontech.message.util.Cli
             for(int i = 0; i < controlArea.getLmProgramVector().size(); i++) {
                 LMProgramBase currentProgram = (LMProgramBase)controlArea.getLmProgramVector().get(i);
                 for(int j = 0; j < currentProgram.getLoadControlGroupVector().size(); j++) { 
-                    getGroups().put(((ILMGroup)currentProgram.getLoadControlGroupVector().get(j)).getYukonID(), (ILMGroup)currentProgram.getLoadControlGroupVector().get(j));
+                    getGroups().put(((LMGroupBase)currentProgram.getLoadControlGroupVector().get(j)).getYukonID(), (LMGroupBase)currentProgram.getLoadControlGroupVector().get(j));
                 }
                 getPrograms().put(currentProgram.getYukonID(), currentProgram);
             }
@@ -270,7 +268,6 @@ public class LoadControlClientConnection extends com.cannontech.message.util.Cli
     	else if( obj instanceof ServerResponseMsg ) {
     	    //CTILogger.debug("Received a ServerResponseMsg, ignoring it since I didn't send a request");
     	}
-    
     }
     
     public void registerMappings(CollectableStreamer streamer ) {
@@ -325,9 +322,9 @@ public class LoadControlClientConnection extends com.cannontech.message.util.Cli
     
     private synchronized void handleLMGroupChange(LMGroupChanged changedGroup) {
         synchronized ( getGroups() ) {
-            ILMGroup currentGroup = getGroups().get( changedGroup.getPaoID());
+            LMGroupBase currentGroup = getGroups().get( changedGroup.getPaoID());
             
-            if(currentGroup instanceof LMDirectGroupBase) {
+            if(currentGroup instanceof LMGroupBase) {
                 ((LMDirectGroupBase)currentGroup).setDisableFlag(changedGroup.getDisableFlag());
                 ((LMDirectGroupBase)currentGroup).setGroupControlState(changedGroup.getGroupControlState());
                 ((LMDirectGroupBase)currentGroup).setCurrentHoursDaily(changedGroup.getGroupControlState());

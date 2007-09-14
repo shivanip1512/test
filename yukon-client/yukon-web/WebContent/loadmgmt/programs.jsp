@@ -136,7 +136,7 @@ else
 
 						  <% 
 							Iterator iterAreas = lcCache.getAllControlAreas(
-										(LiteYukonUser)session.getAttribute(ServletUtil.ATT_YUKON_USER) );
+										(LiteYukonUser)session.getAttribute(ServletUtil.ATT_YUKON_USER), false );
 							
 							while( iterAreas.hasNext() )
 							{
