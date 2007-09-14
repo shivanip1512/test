@@ -16,13 +16,15 @@ import com.cannontech.util.ParamUtil;
 public class CBCSessionInfo
 {
 	private String lastArea = "";
+    private Integer lastAreaId = -1;
 	private int lastSubID = 0;
 	private int lastFeederID = 0;
 	private String lastSearchCriteria = "";
 	
-	private HashMap treeState = new HashMap(100);
+	private HashMap<String, Object> treeState = new HashMap<String, Object>(100);
 
 	public static final String STR_CBC_AREA = "cbc_lastArea";
+    public static final String STR_CBC_AREAID = "cbc_lastAreaId";
 	public static final String STR_SUBID = "cbc_lastSubID";
 	public static final String STR_FEEDERID = "cbc_lastFeederID";
 	public static final String STR_LAST_SEARCH = "cbc_lastSearch";
@@ -36,26 +38,39 @@ public class CBCSessionInfo
 	public void updateState( HttpServletRequest req )
 	{
 		setLastArea( ParamUtil.getString(req, STR_CBC_AREA, getLastArea()) );
+        setLastAreaId( ParamUtil.getInteger(req, STR_CBC_AREAID, getLastAreaId()) );
 		setLastSubID( ParamUtil.getInteger(req, STR_SUBID, getLastSubID()) );
 		setLastFeederID( ParamUtil.getInteger(req, STR_FEEDERID, getLastFeederID()) );
 		setLastSearchCriteria( ParamUtil.getString(req, STR_LAST_SEARCH, getLastSearchCriteria()) );
 	}
 
 	/**
-	 * @return
+	 * @return String
 	 */
-	public String getLastArea()
-	{
+	public String getLastArea() {
 		return lastArea;
 	}
 
 	/**
-	 * @param string
+	 * @param area_
 	 */
-	public void setLastArea(String area_ )
-	{
+	public void setLastArea(String area_ ) {
 		lastArea = area_;
 	}
+    
+    /**
+     * @return Integer
+     */
+    public Integer getLastAreaId() {
+        return lastAreaId;
+    }
+
+    /**
+     * @param Integer
+     */
+    public void setLastAreaId(Integer areaId ) {
+        lastAreaId = areaId;
+    }
 
 	/**
 	 * @return
