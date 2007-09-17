@@ -2460,7 +2460,28 @@ void CtiCCFeeder::updateIntegrationWPoint(const CtiTime &currentDateTime, const 
     }
 }
 
+void CtiCCFeeder::checkForAndReorderFeeder()
+{
+    for(LONG i=0;i<_cccapbanks.size();i++)
+    {
+        CtiCCCapBank* currentCapBank = (CtiCCCapBank*)_cccapbanks[i];
+        float tempIndex = 0;
+        currentCapBank->setControlOrder((LONG)currentCapBank->getControlOrder());
+        for(LONG j=0;j<_cccapbanks.size();j++)
+        {
+            CtiCCCapBank* nextCapBank = (CtiCCCapBank*)_cccapbanks[j];
 
+            if (nextCapBank != currentCapBank)
+            {
+                if (currentCapBank->getControlOrder() == (LONG)nextCapBank->getControlOrder())
+                {
+                    tempIndex += 0.1;
+                    nextCapBank->setControlOrder(currentCapBank->getControlOrder() + tempIndex);
+                }
+            }
+        }
+    }
+}
 /*---------------------------------------------------------------------------
     checkForAndProvideNeededIndividualControl
 

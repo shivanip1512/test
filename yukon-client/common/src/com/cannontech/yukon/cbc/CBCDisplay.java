@@ -130,7 +130,10 @@ public class CBCDisplay {
         String controllerName = (controlDeviceID != 0) ? DaoFactory.getPaoDao().getYukonPAOName(controlDeviceID) : DASH_LINE;
         switch (col) {
         case CB_NAME_COLUMN: {
-            return capBank.getCcName() + " (" + capBank.getControlOrder() + ")";
+            NumberFormat num = NumberFormat.getNumberInstance();
+            num.setMaximumFractionDigits(2);
+            num.setMinimumFractionDigits(0);
+            return capBank.getCcName() + " (" + num.format(capBank.getControlOrder()) + ")";
         }
 
 

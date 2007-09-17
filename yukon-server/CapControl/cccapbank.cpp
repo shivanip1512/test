@@ -360,7 +360,7 @@ LONG CtiCCCapBank::getRecloseDelay() const
 
     Returns the control order of the cap bank in the list of a feeder
 ---------------------------------------------------------------------------*/
-LONG CtiCCCapBank::getControlOrder() const
+FLOAT CtiCCCapBank::getControlOrder() const
 {
     return _controlorder;
 }
@@ -833,7 +833,7 @@ CtiCCCapBank& CtiCCCapBank::setRecloseDelay(LONG reclose)
 
     Sets the control order of the capbank in the list of the parent feeder
 ---------------------------------------------------------------------------*/
-CtiCCCapBank& CtiCCCapBank::setControlOrder(LONG order)
+CtiCCCapBank& CtiCCCapBank::setControlOrder(FLOAT order)
 {
     _controlorder = order;
 

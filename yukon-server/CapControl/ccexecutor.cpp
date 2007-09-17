@@ -2769,7 +2769,52 @@ void CtiCCCommandExecutor::ConfirmArea()
         if (multi->getCount() > 0)
             CtiCapController::getInstance()->sendMessageToDispatch(multi);
 
+    }
+    else 
+    {
+        CtiCCSpArea_vec& ccSpAreas = *store->getCCSpecialAreas(CtiTime().seconds());
 
+        CtiCCSpecial* currentSpArea = store->findSpecialAreaByPAObjectID(areaId);
+        if (currentSpArea != NULL)
+        {
+            string text1 = string("Manual Confirm Special Area");
+            string additional1 = string("Special Area: ");
+            additional1 += currentSpArea->getPAOName();
+            
+            pointChanges.push_back(new CtiSignalMsg(SYS_PID_CAPCONTROL,1,text1,additional1,CapControlLogType,SignalEvent,_command->getUser()));
+            ccEvents.push_back(new CtiCCEventLogMsg(0, SYS_PID_CAPCONTROL, 0, 0, capControlManualCommand, 0, 0, text1, _command->getUser()));
+        
+            CtiCCSubstationBus_vec& ccSubstationBuses = *store->getCCSubstationBuses(CtiTime().seconds());
+            CtiCCSubstationBus* currentSubstationBus = NULL;
+            for(LONG i=0;i<ccSubstationBuses.size();i++)
+            {
+                currentSubstationBus = (CtiCCSubstationBus*)ccSubstationBuses[i];
+        
+                if (currentSubstationBus->getParentId() == areaId)
+                {
+                    if (!currentSubstationBus->getVerificationFlag() && currentSubstationBus->getStrategyId() > 0)
+                    {
+                        confirmMulti->insert(new CtiCCCommand(CtiCCCommand::CONFIRM_SUB, currentSubstationBus->getPAOId()));
+                    }
+                }
+            }
+            if (confirmMulti->getCount() > 0)
+            {
+                CtiCCExecutorFactory f;
+                CtiCCExecutor* executor = f.createExecutor(confirmMulti);
+                executor->Execute();
+                delete executor;
+        
+                executor = f.createExecutor(new CtiCCSpecialAreasMsg(*store->getCCSpecialAreas(CtiTime().seconds())));
+                executor->Execute();
+                delete executor;
+            }
+            if (eventMulti->getCount() > 0)
+                CtiCapController::getInstance()->getCCEventMsgQueueHandle().write(eventMulti);
+            if (multi->getCount() > 0)
+                CtiCapController::getInstance()->sendMessageToDispatch(multi);
+
+        }
 
     }
 }
@@ -4154,33 +4199,12 @@ void CtiCCExecutor::moveCapBank(INT permanentFlag, LONG oldFeederId, LONG movedC
             {
                 movedCapBankPtr->setOriginalFeederId(0);
                 movedCapBankPtr->setOriginalSwitchingOrder(0);
+
+                oldFeederPtr->checkForAndReorderFeeder();
             }
 
             movedCapBankPtr->setParentId(newFeederId);
-
-           /* if( oldFeederCapBanks.size() > 0 )
-            {
-                //reshuffle the cap bank control orders so they are still in sequence and start at 1
-                LONG shuffledOrder = 1;
-                CtiCCCapBank_SVector tempShufflingCapBankList;
-                tempShufflingCapBankList.clear();
-                for (int a = 0; a < oldFeederCapBanks.size(); a++ ) 
-                {           
-                    ((CtiCCCapBank*)oldFeederCapBanks[a])->setControlOrder(shuffledOrder);
-                    tempShufflingCapBankList.push_back( (CtiCCCapBank*)oldFeederCapBanks[a] );
-                    shuffledOrder++;
-                }
-                
-                oldFeederCapBanks.clear();
-                while(tempShufflingCapBankList.size()>0)
-                {
-
-                    CtiCCCapBank* currentCapBank = (CtiCCCapBank*)tempShufflingCapBankList.front();
-                    oldFeederCapBanks.push_back(currentCapBank);
-                    tempShufflingCapBankList.erase(tempShufflingCapBankList.begin());
-                }
-
-            } */
+          
         }
 
         {
@@ -4193,31 +4217,13 @@ void CtiCCExecutor::moveCapBank(INT permanentFlag, LONG oldFeederId, LONG movedC
                 if( capSwitchingOrder > ((CtiCCCapBank*)newFeederCapBanks[newFeederCapBanks.size()-1])->getControlOrder() )
                 {    
                     movedCapBankPtr->setControlOrder( ((CtiCCCapBank*)newFeederCapBanks[newFeederCapBanks.size()-1])->getControlOrder() + 1);
-                    //lastCapBankPtr->setControlOrder( ((CtiCCCapBank*)newFeederCapBanks[newFeederCapBanks.size()-1])->getControlOrder() + 1 );
                 }
-                else
+                else 
                 {
                     BOOL shuffling = FALSE;
                     movedCapBankPtr->setControlOrder(capSwitchingOrder);
-                   /* for(LONG k=0;k<newFeederCapBanks.size();k++)
-                    {
-                        CtiCCCapBank* currentCapBank = (CtiCCCapBank*)newFeederCapBanks[k];
-                        if( capSwitchingOrder == currentCapBank->getControlOrder() )
-                        {
-                            //if the new switching order matches a current control
-                            //order, then we need to shuffle all the current cap banks
-                            //up one in order
-                            shuffling = TRUE;
-                            break;
-                        }
-                        else if( currentCapBank->getControlOrder() > capSwitchingOrder )
-                        {
-                            break;
-                        }
-                    }  */
+
                     //reshuffle the cap bank control orders so they are still in sequence and start at 1
-                    LONG shuffledOrder = 1; 
-                    BOOL alreadyShuffled = FALSE;
 
                     CtiCCCapBank_SVector tempShufflingCapBankList;
                     while(newFeederCapBanks.size()>0)
@@ -4225,15 +4231,12 @@ void CtiCCExecutor::moveCapBank(INT permanentFlag, LONG oldFeederId, LONG movedC
                         //have to remove due to change in sorting field in a sorted vector
                         CtiCCCapBank* currentCapBank = (CtiCCCapBank*)newFeederCapBanks.front();
                         newFeederCapBanks.erase(newFeederCapBanks.begin());
-                        if( capSwitchingOrder == currentCapBank->getControlOrder() && !alreadyShuffled)
+                        if( capSwitchingOrder == (LONG)currentCapBank->getControlOrder() )
                         {
                             //have to make room for the movedCapBank
-                            shuffledOrder++;
-                            alreadyShuffled = TRUE;
+                            currentCapBank->setControlOrder(currentCapBank->getControlOrder() + 0.1);
                         }
-                        currentCapBank->setControlOrder(shuffledOrder);
                         tempShufflingCapBankList.push_back(currentCapBank);
-                        shuffledOrder++;
                     }
                     while(tempShufflingCapBankList.size()>0)
                     {
@@ -4247,7 +4250,7 @@ void CtiCCExecutor::moveCapBank(INT permanentFlag, LONG oldFeederId, LONG movedC
             else
             {
                 movedCapBankPtr->setControlOrder(1);
-            }
+            } 
 
             newFeederCapBanks.push_back(movedCapBankPtr);
             store->insertItemsIntoMap(CtiCCSubstationBusStore::CapBankIdFeederIdMap, &movedCapBankId, &newFeederId);

@@ -29,7 +29,7 @@ public class CapBankDevice extends StreamableCapObject
 	private String typeOfSwitch = null;
 	private String switchManufacture = null;
 	private String mapLocationID = null;
-	private Integer controlOrder = null;
+	private Float controlOrder = null;
 
 	private Integer statusPointID = null;
 	private Integer controlStatus = null;
@@ -126,7 +126,7 @@ public class CapBankDevice extends StreamableCapObject
 	 * Creation date: (11/19/2001 11:45:37 AM)
 	 * @return java.lang.Integer
 	 */
-	public java.lang.Integer getControlOrder() {
+	public java.lang.Float getControlOrder() {
 		return controlOrder;
 	}
 	/**
@@ -304,7 +304,7 @@ public class CapBankDevice extends StreamableCapObject
 	 * Creation date: (11/19/2001 11:45:37 AM)
 	 * @param newControlOrder java.lang.Integer
 	 */
-	public void setControlOrder(java.lang.Integer newControlOrder) {
+	public void setControlOrder(java.lang.Float newControlOrder) {
 		controlOrder = newControlOrder;
 	}
 	/**

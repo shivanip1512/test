@@ -69,7 +69,7 @@ public void restoreGuts(Object obj, com.roguewave.vsj.VirtualInputStream vstr, c
 	capBank.setMapLocationID((String) vstr.restoreObject( SimpleMappings.CString ) );
 	capBank.setRecloseDelay( new Integer( (int)vstr.extractUnsignedInt() ) );
 	
-	capBank.setControlOrder( new Integer( (int)vstr.extractUnsignedInt() ) );
+	capBank.setControlOrder( new Float((float)vstr.extractFloat() ) );
 	
 	capBank.setStatusPointID( new Integer( (int)vstr.extractUnsignedInt() ) );
 	capBank.setControlStatus( new Integer( (int)vstr.extractUnsignedInt() ) );
@@ -110,7 +110,7 @@ public void saveGuts(Object obj, com.roguewave.vsj.VirtualOutputStream vstr, com
 	vstr.saveObject( capBank.getMapLocationID(), SimpleMappings.CString );
 	vstr.insertUnsignedInt( capBank.getRecloseDelay().intValue() );
 	
-	vstr.insertUnsignedInt( capBank.getControlOrder().intValue() );	
+	vstr.insertFloat( capBank.getControlOrder().floatValue() );	
 	vstr.insertUnsignedInt( capBank.getStatusPointID().intValue() );
 	vstr.insertUnsignedInt( capBank.getControlStatus().intValue() );
 	vstr.insertUnsignedInt( capBank.getOperationAnalogPointID().intValue() );

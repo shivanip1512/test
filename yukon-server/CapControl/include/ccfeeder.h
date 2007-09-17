@@ -307,6 +307,7 @@ RWDECLARE_COLLECTABLE( CtiCCFeeder )
     BOOL checkForAndProvideNeededIndividualControl(const CtiTime& currentDateTime, CtiMultiMsg_vec& pointChanges, CtiMultiMsg_vec& ccEvents, CtiMultiMsg_vec& pilMessages, 
                                                    BOOL peakTimeFlag, LONG decimalPlaces, const string& controlUnits,
                                                    BOOL dailyMaxOpsHitFlag);
+    void checkForAndReorderFeeder();
     DOUBLE figureCurrentSetPoint(const CtiTime& currentDateTime);
     BOOL isPeakTime(const CtiTime& currentDateTime);
     BOOL isControlPoint(LONG pointid);

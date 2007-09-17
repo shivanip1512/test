@@ -67,7 +67,7 @@ public:
     const string& getSwitchManufacture() const;
     const string& getMapLocationId() const;
     LONG getRecloseDelay() const;
-    LONG getControlOrder() const;
+    FLOAT getControlOrder() const;
     LONG getTripOrder() const;
     LONG getCloseOrder() const;
     LONG getStatusPointId() const;
@@ -124,7 +124,7 @@ public:
     CtiCCCapBank& setSwitchManufacture(const string& manufacture);
     CtiCCCapBank& setMapLocationId(const string& maplocation);
     CtiCCCapBank& setRecloseDelay(LONG reclose);
-    CtiCCCapBank& setControlOrder(LONG order);
+    CtiCCCapBank& setControlOrder(FLOAT order);
     CtiCCCapBank& setTripOrder(LONG order);
     CtiCCCapBank& setCloseOrder(LONG order);
     CtiCCCapBank& setStatusPointId(LONG statuspoint);
@@ -228,7 +228,7 @@ private:
     string _switchmanufacture;
     string _maplocationid;
     LONG _reclosedelay;
-    LONG _controlorder;
+    FLOAT _controlorder;
     LONG _triporder;
     LONG _closeorder;
     LONG _statuspointid;
