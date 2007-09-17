@@ -748,6 +748,7 @@ const string CtiLMProgramDirectGear::LatchingMethod = "Latching";
 const string CtiLMProgramDirectGear::TrueCycleMethod = "TrueCycle";
 const string CtiLMProgramDirectGear::ThermostatRampingMethod = "ThermostatRamping";
 const string CtiLMProgramDirectGear::TargetCycleMethod = "TargetCycle";
+const string CtiLMProgramDirectGear::MagnitudeCycleMethod = "MagnitudeCycle";
 const string CtiLMProgramDirectGear::NoControlMethod = "NoControl";
 
 //Possible method stop types
