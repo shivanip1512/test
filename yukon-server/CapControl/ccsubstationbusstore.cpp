@@ -129,7 +129,7 @@ CtiCCSubstationBus_vec* CtiCCSubstationBusStore::getCCSubstationBuses(ULONG seco
 {
     RWRecursiveLock<RWMutexLock>::LockGuard  guard(mutex());
 
-    if( !_isvalid && secondsFrom1901 >= _lastdbreloadtime.seconds()+30 )
+    if( (!_isvalid) && (secondsFrom1901 >= _lastdbreloadtime.seconds()+30) )
     {//is not valid and has been at 0.5 minutes from last db reload, so we don't do this a bunch of times in a row on multiple updates
         reset();
         clearDBReloadList();
@@ -585,14 +585,6 @@ void CtiCCSubstationBusStore::reset()
                     
 
                     CtiTime currentDateTime;
-                    /*RWDBDatabase db = getDatabase();
-                    RWDBTable yukonPAObjectTable = db.table("yukonpaobject");
-                    RWDBTable capControlSubstationBusTable = db.table("capcontrolsubstationbus");
-                    RWDBTable pointTable = db.table("point");
-                    RWDBTable pointUnitTable = db.table("pointunit");
-                    RWDBTable dynamicCCSubstationBusTable = db.table("dynamicccsubstationbus");
-                    RWDBTable capControlStrategy = db.table("capcontrolstrategy");
-                    */
                     /************************************************************* 
                     ******  Loading Strategies                              ****** 
                     **************************************************************/ 
@@ -611,9 +603,7 @@ void CtiCCSubstationBusStore::reset()
                     ************************************************************/
                     reloadSpecialAreaFromDatabase(0, &temp_strategyid_strategy_map, &temp_paobject_specialarea_map, &temp_point_specialarea_map, &tempCCSpecialAreas);
 
-
                     reloadAreaFromDatabase(0, &temp_strategyid_strategy_map, &temp_paobject_area_map, &temp_point_area_map, &tempCCGeoAreas);
-
 
                     /***********************************************************
                     *******  Loading SubBuses                            *******
@@ -626,11 +616,6 @@ void CtiCCSubstationBusStore::reset()
                     *******  Loading Feeders                             *******
                     ************************************************************/
 
-                    
-                   /* RWDBTable ccFeederSubAssignmentTable = db.table("ccfeedersubassignment");
-                    RWDBTable capControlFeederTable = db.table("capcontrolfeeder");
-                    RWDBTable dynamicCCFeederTable = db.table("dynamicccfeeder");
-                    */
                     if (tempCCSubstationBuses.size() > 0)
                     {
                         {   
@@ -1003,6 +988,9 @@ void CtiCCSubstationBusStore::reset()
 
             }
         }
+        executor = f.createExecutor(new CtiCCCommand(CtiCCCommand::REQUEST_ALL_DATA));
+        executor->Execute();
+        delete executor;
     }
     catch (...)
     {
@@ -3143,7 +3131,7 @@ void CtiCCSubstationBusStore::reloadAreaFromDatabase(long areaId, map< long, Cti
             {
 
                 if ( conn.isValid() )
-                {   
+                {
 
                     CtiTime currentDateTime;
                     RWDBDatabase db = getDatabase();
@@ -6934,9 +6922,7 @@ void CtiCCSubstationBusStore::clearDBReloadList()
     { 
         _reloadList.clear();
     }
-    
-} 
-
+}
 
 void CtiCCSubstationBusStore::insertItemsIntoMap(int mapType, long* first, long* second)
 {
