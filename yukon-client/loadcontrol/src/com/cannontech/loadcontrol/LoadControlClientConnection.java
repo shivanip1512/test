@@ -329,7 +329,7 @@ public class LoadControlClientConnection extends com.cannontech.message.util.Cli
             if(currentGroup instanceof LMDirectGroupBase) {
                 ((LMDirectGroupBase)currentGroup).setDisableFlag(changedGroup.getDisableFlag());
                 ((LMDirectGroupBase)currentGroup).setGroupControlState(changedGroup.getGroupControlState());
-                ((LMDirectGroupBase)currentGroup).setCurrentHoursDaily(changedGroup.getGroupControlState());
+                ((LMDirectGroupBase)currentGroup).setCurrentHoursDaily(changedGroup.getCurrentHoursDaily());
                 ((LMDirectGroupBase)currentGroup).setCurrentHoursMonthly(changedGroup.getCurrentHoursMonthly());
                 ((LMDirectGroupBase)currentGroup).setCurrentHoursSeasonal(changedGroup.getCurrentHoursSeasonal());
                 ((LMDirectGroupBase)currentGroup).setCurrentHoursAnnually(changedGroup.getCurrentHoursAnnually());
