@@ -2880,7 +2880,7 @@ public void setDatabase(int whichDatabase)
                                              16);
     DatabaseEditor.showDeviceConfiguration = (enableDeviceConfig & ClientRights.ENABLE_DEVICE_CONFIGURATION) > 0; 
 
-    int length = (DatabaseEditor.showDeviceConfiguration || models == LM_MODELS)
+    int length = (DatabaseEditor.showDeviceConfiguration || models == LM_MODELS || models == LM_MODELS_WITH_SA)
                 ? models.length : models.length - 1;
 
     boolean deviceConfigFound = false;
