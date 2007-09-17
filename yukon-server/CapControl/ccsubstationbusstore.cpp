@@ -828,6 +828,8 @@ void CtiCCSubstationBusStore::reset()
                         _paobject_subbus_map = temp_paobject_subbus_map;
                         _paobject_feeder_map = temp_paobject_feeder_map;
                         _paobject_capbank_map = temp_paobject_capbank_map;
+
+                        _strategyid_strategy_map = temp_strategyid_strategy_map;
                      }
                     catch (...)
                     {
@@ -3770,28 +3772,37 @@ void CtiCCSubstationBusStore::reloadSubBusFromDatabase(long subBusId, map< long,
                                      rdr["paobjectid"] >> busId;
                                      rdr["strategyid"] >> stratId;
 
-                                     CtiCCSubstationBusPtr currentCCSubstationBus = findSubBusByPAObjectID(busId);
-                                     if (currentCCSubstationBus != NULL) 
-                                     {
-                                         CtiCCStrategyPtr currentCCStrategy = NULL;
-                                         if (subBusId > 0)
-                                             currentCCStrategy = findStrategyByStrategyID(stratId);
-                                         else
-                                             currentCCStrategy =  strategy_map->find(stratId)->second;
+                                     CtiCCSubstationBusPtr currentCCSubstationBus = NULL; 
 
-
-                                         if (currentCCStrategy == NULL)
-                                         {
-                                             currentCCSubstationBus->setStrategyId(0);
-                                             if (subBusId > 0)
-                                                 currentCCStrategy = findStrategyByStrategyID(0);
-                                             else
-                                                 currentCCStrategy =  strategy_map->find(0)->second;
-                                         }
-                                         currentCCSubstationBus->setStrategyValues(currentCCStrategy);
-
-                                     }
+                                     if (subBusId > 0)
+                                         currentCCSubstationBus = findSubBusByPAObjectID(busId);
+                                      else
+                                      {
+                                          if (paobject_subbus_map->find(busId) != paobject_subbus_map->end())
+                                              currentCCSubstationBus = paobject_subbus_map->find(busId)->second;
+                                      }
+                                      if (currentCCSubstationBus != NULL) 
+                                      {
+                                          CtiCCStrategyPtr currentCCStrategy = NULL;
+                                          if (subBusId > 0)
+                                              currentCCStrategy = findStrategyByStrategyID(stratId);
+                                          else
+                                              currentCCStrategy =  strategy_map->find(stratId)->second;
+                                      
+                                      
+                                          if (currentCCStrategy == NULL)
+                                          {
+                                              currentCCSubstationBus->setStrategyId(0);
+                                              if (subBusId > 0)
+                                                  currentCCStrategy = findStrategyByStrategyID(0);
+                                              else
+                                                  currentCCStrategy =  strategy_map->find(0)->second;
+                                          }
+                                          currentCCSubstationBus->setStrategyValues(currentCCStrategy);
+                                      
+                                      }
                                  }
+
                              }
                         }
 
@@ -4359,10 +4370,25 @@ void CtiCCSubstationBusStore::reloadFeederFromDatabase(long feederId, map< long,
                                  rdr["paobjectid"] >> feedId;
                                  rdr["strategyid"] >> stratId;
 
-                                 CtiCCFeederPtr currentCCFeeder = findFeederByPAObjectID(feedId);
+
+                                 CtiCCFeederPtr currentCCFeeder = NULL;
+                                 if (feederId > 0)
+                                     currentCCFeeder = findFeederByPAObjectID(feedId);
+                                 else
+                                 {
+                                     if (paobject_feeder_map->find(feedId) != paobject_feeder_map->end())
+                                         currentCCFeeder = paobject_feeder_map->find(feedId)->second;
+                                 }
                                  if (currentCCFeeder != NULL) 
                                  {
-                                     CtiCCStrategyPtr currentCCStrategy = findStrategyByStrategyID(stratId);
+                                     CtiCCStrategyPtr currentCCStrategy = NULL;
+                                     if (feederId > 0)
+                                         currentCCStrategy = findStrategyByStrategyID(stratId);
+                                     else
+                                     {
+                                         if (strategy_map->find(feedId) != strategy_map->end())
+                                             currentCCStrategy = strategy_map->find(stratId)->second;
+                                     }
                                      if (currentCCStrategy == NULL)
                                      {
                                          currentCCFeeder->setStrategyId(0);
