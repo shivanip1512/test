@@ -4374,9 +4374,9 @@ void CtiCCSubstationBusStore::reloadFeederFromDatabase(long feederId, map< long,
                                          currentCCStrategy = findStrategyByStrategyID(stratId);
                                      else
                                      {
-                                         if (strategy_map->find(feedId) != strategy_map->end())
-                                             currentCCStrategy = strategy_map->find(stratId)->second;
+                                         currentCCStrategy = strategy_map->find(stratId)->second;
                                      }
+
                                      if (currentCCStrategy == NULL)
                                      {
                                          currentCCFeeder->setStrategyId(0);
@@ -4954,7 +4954,7 @@ void CtiCCSubstationBusStore::reloadCapBankFromDatabase(long capBankId, map< lon
                         {
                             long deviceid;
                             long feederid;
-                            long controlOrder;
+                            FLOAT controlOrder;
                             long tripOrder;
                             long closeOrder;
 
