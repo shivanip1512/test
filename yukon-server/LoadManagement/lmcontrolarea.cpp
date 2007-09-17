@@ -39,6 +39,7 @@
 using std::transform;
 
 extern ULONG _LM_DEBUG;
+extern set<long> _CHANGED_CONTROL_AREA_LIST;
 
 RWDEFINE_COLLECTABLE( CtiLMControlArea, CTILMCONTROLAREA_ID )
 
@@ -1573,7 +1574,8 @@ void CtiLMControlArea::manuallyStartAllProgramsNow(LONG secondsFromBeginningOfDa
                 !stringCompareIgnoreCase(currentLMProgram->getControlType(),"Enabled") )
             {// HACK: == "Enabled" part above should be removed as soon as the editor is fixed
                 CtiLMProgramConstraintChecker con_checker(*((CtiLMProgramDirect*)currentLMProgram.get()), secondsFrom1901);
-                if( con_checker.checkManualProgramConstraints(secondsFrom1901, gEndOfCtiTimeSeconds) )
+                if( con_checker.checkManualProgramConstraints(secondsFrom1901, gEndOfCtiTimeSeconds) &&
+                    con_checker.checkControlAreaControlWindows(*this, secondsFrom1901, gEndOfCtiTimeSeconds) )
                 {
                     if( getControlAreaState() == CtiLMControlArea::InactiveState )
                     {
@@ -2676,6 +2678,18 @@ void CtiLMControlArea::restore(RWDBReader& rdr)
         _insertDynamicDataFlag = TRUE;
         setDirty(true);
     }
+}
+
+/*-----------------------------------------------------------------------------
+  setDirty
+
+  Sets the dirty flag and notifies LM that this Control Area should
+  be sent to clients
+-----------------------------------------------------------------------------*/
+void CtiLMControlArea::setDirty(BOOL b)
+{
+    _CHANGED_CONTROL_AREA_LIST.insert(getPAOId());
+    CtiMemDBObject::setDirty(b);
 }
 
 /*---------------------------------------------------------------------------
