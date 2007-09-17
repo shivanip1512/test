@@ -709,7 +709,8 @@ DOUBLE CtiLMProgramDirect::reduceProgramLoad(DOUBLE loadReductionNeeded, LONG cu
                     }
                 }
                 else if( !stringCompareIgnoreCase(currentGearObject->getControlMethod(), CtiLMProgramDirectGear::SmartCycleMethod) ||
-                         !stringCompareIgnoreCase(currentGearObject->getControlMethod(), CtiLMProgramDirectGear::TrueCycleMethod) )
+                         !stringCompareIgnoreCase(currentGearObject->getControlMethod(), CtiLMProgramDirectGear::TrueCycleMethod) ||
+                         !stringCompareIgnoreCase(currentGearObject->getControlMethod(), CtiLMProgramDirectGear::MagnitudeCycleMethod) )
                 {
                     LONG percent = currentGearObject->getMethodRate();
                     LONG period = currentGearObject->getMethodPeriod();
@@ -723,7 +724,8 @@ DOUBLE CtiLMProgramDirect::reduceProgramLoad(DOUBLE loadReductionNeeded, LONG cu
                         {
                             dout << CtiTime() << " - Smart Cycling all groups, LM Program: " << getPAOName() << endl;
                         }
-                        else if(CtiLMProgramDirectGear::TrueCycleMethod == currentGearObject->getControlMethod())
+                        else if(CtiLMProgramDirectGear::TrueCycleMethod == currentGearObject->getControlMethod() ||
+                                CtiLMProgramDirectGear::MagnitudeCycleMethod == currentGearObject->getControlMethod())
 
                         {
                             dout << CtiTime() << " - True Cycling all groups, LM Program: " << getPAOName() << endl;
@@ -761,7 +763,8 @@ DOUBLE CtiLMProgramDirect::reduceProgramLoad(DOUBLE loadReductionNeeded, LONG cu
                                 CtiRequestMsg* requestMsg = NULL;
                                 bool no_ramp = (currentGearObject->getFrontRampOption() == CtiLMProgramDirectGear::NoRampRandomOptionType);
 
-                                if( !stringCompareIgnoreCase(currentGearObject->getControlMethod(),CtiLMProgramDirectGear::TrueCycleMethod) &&
+                                if( (!stringCompareIgnoreCase(currentGearObject->getControlMethod(),CtiLMProgramDirectGear::TrueCycleMethod) ||
+                                     !stringCompareIgnoreCase(currentGearObject->getControlMethod(),CtiLMProgramDirectGear::MagnitudeCycleMethod)) &&
                                     (currentLMGroup->getPAOType() == TYPE_LMGROUP_EXPRESSCOM ||
                                      currentLMGroup->getPAOType() == TYPE_LMGROUP_SA305) )
                                 {
@@ -770,7 +773,8 @@ DOUBLE CtiLMProgramDirect::reduceProgramLoad(DOUBLE loadReductionNeeded, LONG cu
                                 else
                                 {
                                     requestMsg = currentLMGroup->createSmartCycleRequestMsg(percent, period, cycleCount, no_ramp, defaultLMStartPriority);
-                                    if( !stringCompareIgnoreCase(currentGearObject->getControlMethod(),CtiLMProgramDirectGear::TrueCycleMethod) )
+                                    if( !stringCompareIgnoreCase(currentGearObject->getControlMethod(),CtiLMProgramDirectGear::TrueCycleMethod) ||
+                                        !stringCompareIgnoreCase(currentGearObject->getControlMethod(), CtiLMProgramDirectGear::MagnitudeCycleMethod) )
                                     {
                                         CtiLockGuard<CtiLogger> logger_guard(dout);
                                         dout << CtiTime() << " - Program: " << getPAOName() << ", can not True Cycle a non-Expresscom group: " << currentLMGroup->getPAOName() << ", Smart Cycling instead in: " << __FILE__ << " at:" << __LINE__ << endl;
@@ -860,7 +864,8 @@ DOUBLE CtiLMProgramDirect::reduceProgramLoad(DOUBLE loadReductionNeeded, LONG cu
                                 else
                                 {
                                     requestMsg = currentLMGroup->createSmartCycleRequestMsg(percent, period, cycleCount, no_ramp, defaultLMStartPriority);
-                                    if( !stringCompareIgnoreCase(currentGearObject->getControlMethod(),CtiLMProgramDirectGear ::TrueCycleMethod) )
+                                    if( !stringCompareIgnoreCase(currentGearObject->getControlMethod(),CtiLMProgramDirectGear ::TrueCycleMethod) ||
+                                        !stringCompareIgnoreCase(currentGearObject->getControlMethod(),CtiLMProgramDirectGear::MagnitudeCycleMethod) )
                                     {
                                         CtiLockGuard<CtiLogger> logger_guard(dout);
                                         dout << CtiTime() << " - Program: " << getPAOName() << ", can not Target Cycle a non-Expresscom group: " << currentLMGroup->getPAOName() << ", Smart Cycling instead in: " << __FILE__ << " at:" << __LINE__ << endl;
@@ -1486,7 +1491,8 @@ DOUBLE CtiLMProgramDirect::manualReduceProgramLoad(ULONG secondsFrom1901, CtiMul
                     setProgramState(CtiLMProgramBase::FullyActiveState);
                 }
             }
-            else if( !stringCompareIgnoreCase(currentGearObject->getControlMethod(), CtiLMProgramDirectGear::TrueCycleMethod) )
+            else if( !stringCompareIgnoreCase(currentGearObject->getControlMethod(), CtiLMProgramDirectGear::TrueCycleMethod) ||
+                     !stringCompareIgnoreCase(currentGearObject->getControlMethod(), CtiLMProgramDirectGear::MagnitudeCycleMethod) )
             {
                 LONG percent = currentGearObject->getMethodRate();
                 LONG period = currentGearObject->getMethodPeriod();
@@ -2509,6 +2515,7 @@ DOUBLE CtiLMProgramDirect::updateProgramControlForGearChange(ULONG secondsFrom19
         {
             if( !stringCompareIgnoreCase(previousGearObject->getControlMethod(),CtiLMProgramDirectGear::SmartCycleMethod) ||
                 !stringCompareIgnoreCase(previousGearObject->getControlMethod(),CtiLMProgramDirectGear::TrueCycleMethod) ||
+                !stringCompareIgnoreCase(previousGearObject->getControlMethod(), CtiLMProgramDirectGear::MagnitudeCycleMethod) ||
                 !stringCompareIgnoreCase(previousGearObject->getControlMethod(),CtiLMProgramDirectGear::MasterCycleMethod) ||
                 !stringCompareIgnoreCase(previousGearObject->getControlMethod(),CtiLMProgramDirectGear::RotationMethod) ||
                 !stringCompareIgnoreCase(previousGearObject->getControlMethod(),CtiLMProgramDirectGear::ThermostatRampingMethod) ||
@@ -2860,8 +2867,9 @@ DOUBLE CtiLMProgramDirect::updateProgramControlForGearChange(ULONG secondsFrom19
                     }
                 }
             }
-            else if( !stringCompareIgnoreCase(previousGearObject->getControlMethod(),CtiLMProgramDirectGear::SmartCycleMethod ) ||
-                     !stringCompareIgnoreCase(previousGearObject->getControlMethod(),CtiLMProgramDirectGear::TrueCycleMethod ) )
+            else if( !stringCompareIgnoreCase(previousGearObject->getControlMethod(),CtiLMProgramDirectGear::SmartCycleMethod) ||
+                     !stringCompareIgnoreCase(previousGearObject->getControlMethod(),CtiLMProgramDirectGear::TrueCycleMethod) ||
+                     !stringCompareIgnoreCase(previousGearObject->getControlMethod(), CtiLMProgramDirectGear::MagnitudeCycleMethod) )
             {   // Stop the groups from cycling, before we start doing rotation on them
                 for(CtiLMGroupIter i = _lmprogramdirectgroups.begin(); i != _lmprogramdirectgroups.end(); i++)
                 {
@@ -2876,7 +2884,8 @@ DOUBLE CtiLMProgramDirect::updateProgramControlForGearChange(ULONG secondsFrom19
             if( (!stringCompareIgnoreCase(previousGearObject->getControlMethod(),CtiLMProgramDirectGear::RotationMethod ) &&
                  getCurrentGearNumber() > previousGearNumber ) ||
                 !stringCompareIgnoreCase(previousGearObject->getControlMethod(),CtiLMProgramDirectGear::SmartCycleMethod ) ||
-                !stringCompareIgnoreCase(previousGearObject->getControlMethod(),CtiLMProgramDirectGear::TrueCycleMethod ) )
+                !stringCompareIgnoreCase(previousGearObject->getControlMethod(),CtiLMProgramDirectGear::TrueCycleMethod ) ||
+                !stringCompareIgnoreCase(previousGearObject->getControlMethod(), CtiLMProgramDirectGear::MagnitudeCycleMethod) )
             {
                 // Get standard rotation going
                 LONG sendRate = currentGearObject->getMethodRate();
@@ -2946,7 +2955,8 @@ DOUBLE CtiLMProgramDirect::updateProgramControlForGearChange(ULONG secondsFrom19
             CtiLockGuard<CtiLogger> logger_guard(dout);
             dout << CtiTime() << " - Gear Control Method: " << getPAOName() << " Gear#: " << currentGearObject->getGearNumber() << " control method can't support gear changes.  In: " << __FILE__ << " at:" << __LINE__ << endl;
         }
-        else if( !stringCompareIgnoreCase(currentGearObject->getControlMethod(),CtiLMProgramDirectGear::TrueCycleMethod ) )
+        else if( !stringCompareIgnoreCase(currentGearObject->getControlMethod(),CtiLMProgramDirectGear::TrueCycleMethod) ||
+                 !stringCompareIgnoreCase(currentGearObject->getControlMethod(),CtiLMProgramDirectGear::MagnitudeCycleMethod) )
         {
             LONG percent = currentGearObject->getMethodRate();
             LONG period = currentGearObject->getMethodPeriod();
@@ -3154,7 +3164,8 @@ DOUBLE CtiLMProgramDirect::updateProgramControlForGearChange(ULONG secondsFrom19
                     getManualControlReceivedFlag() )
                 {
                     if( !stringCompareIgnoreCase(tempControlMethod,CtiLMProgramDirectGear::SmartCycleMethod ) ||
-                        !stringCompareIgnoreCase(tempControlMethod,CtiLMProgramDirectGear::TrueCycleMethod ) )
+                        !stringCompareIgnoreCase(tempControlMethod,CtiLMProgramDirectGear::TrueCycleMethod ) ||
+                        !stringCompareIgnoreCase(tempControlMethod,CtiLMProgramDirectGear::MagnitudeCycleMethod) )
                     {
                         if( !stringCompareIgnoreCase(tempMethodStopType,CtiLMProgramDirectGear::RestoreStopType ) )
                         {
@@ -3508,7 +3519,8 @@ BOOL CtiLMProgramDirect::refreshStandardProgramControl(ULONG secondsFrom1901, Ct
             }
         }
         else if( !stringCompareIgnoreCase(currentGearObject->getControlMethod(),CtiLMProgramDirectGear::SmartCycleMethod ) ||
-                 !stringCompareIgnoreCase(currentGearObject->getControlMethod(),CtiLMProgramDirectGear::TrueCycleMethod ) )
+                 !stringCompareIgnoreCase(currentGearObject->getControlMethod(),CtiLMProgramDirectGear::TrueCycleMethod ) ||
+                 !stringCompareIgnoreCase(currentGearObject->getControlMethod(),CtiLMProgramDirectGear::MagnitudeCycleMethod) )
         {
             LONG percent = currentGearObject->getMethodRate();
             LONG period = currentGearObject->getMethodPeriod();
@@ -3641,7 +3653,8 @@ BOOL CtiLMProgramDirect::refreshStandardProgramControl(ULONG secondsFrom1901, Ct
                             {
                                 CtiRequestMsg* requestMsg = NULL;
                                 bool no_ramp = (currentGearObject->getFrontRampOption() == CtiLMProgramDirectGear::NoRampRandomOptionType);
-                                if( !stringCompareIgnoreCase(currentGearObject->getControlMethod(),CtiLMProgramDirectGear::TrueCycleMethod) &&
+                                if( (!stringCompareIgnoreCase(currentGearObject->getControlMethod(),CtiLMProgramDirectGear::TrueCycleMethod) ||
+                                     !stringCompareIgnoreCase(currentGearObject->getControlMethod(),CtiLMProgramDirectGear::MagnitudeCycleMethod)) &&
                                     (currentLMGroup->getPAOType() == TYPE_LMGROUP_EXPRESSCOM ||
                                      currentLMGroup->getPAOType() == TYPE_LMGROUP_SA305) )
                                 {
@@ -3650,7 +3663,8 @@ BOOL CtiLMProgramDirect::refreshStandardProgramControl(ULONG secondsFrom1901, Ct
                                 else
                                 {
                                     requestMsg = currentLMGroup->createSmartCycleRequestMsg(percent, period, cycleCount, no_ramp, defaultLMStartPriority);
-                                    if( !stringCompareIgnoreCase(currentGearObject->getControlMethod(),CtiLMProgramDirectGear::TrueCycleMethod) )
+                                    if( !stringCompareIgnoreCase(currentGearObject->getControlMethod(),CtiLMProgramDirectGear::TrueCycleMethod) ||
+                 !stringCompareIgnoreCase(currentGearObject->getControlMethod(),CtiLMProgramDirectGear::MagnitudeCycleMethod) )
                                     {
                                         CtiLockGuard<CtiLogger> logger_guard(dout);
                                         dout << CtiTime() << " - Program: " << getPAOName() << ", can not True Cycle a non-Expresscom group: " << currentLMGroup->getPAOName() << " : " << __FILE__ << " at:" << __LINE__ << endl;
@@ -4172,7 +4186,8 @@ BOOL CtiLMProgramDirect::stopProgramControl(CtiMultiMsg* multiPilMsg, CtiMultiMs
                 getManualControlReceivedFlag() )
             {
                 if( !stringCompareIgnoreCase(tempControlMethod,CtiLMProgramDirectGear::SmartCycleMethod ) ||
-                    !stringCompareIgnoreCase(tempControlMethod,CtiLMProgramDirectGear::TrueCycleMethod )  ||
+                    !stringCompareIgnoreCase(tempControlMethod,CtiLMProgramDirectGear::TrueCycleMethod ) ||
+                    !stringCompareIgnoreCase(tempControlMethod,CtiLMProgramDirectGear::MagnitudeCycleMethod) ||
                     !stringCompareIgnoreCase(tempControlMethod,CtiLMProgramDirectGear::TargetCycleMethod ) )
                 {
                     if( !stringCompareIgnoreCase(tempMethodStopType,CtiLMProgramDirectGear::RestoreStopType ) )
@@ -5312,6 +5327,7 @@ ULONG CtiLMProgramDirect::estimateOffTime(ULONG proposed_gear, ULONG start, ULON
         return control_time * (double) cur_gear->getMethodRate()/100.0;
     }
     else if(method == CtiLMProgramDirectGear::TrueCycleMethod.c_str() ||
+            method == CtiLMProgramDirectGear::MagnitudeCycleMethod.c_str() ||
             method == CtiLMProgramDirectGear::SmartCycleMethod.c_str())
     {
         return control_time * (double) cur_gear->getMethodRate()/100.0;//       getMethodRateCount()

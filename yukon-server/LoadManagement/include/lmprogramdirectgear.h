@@ -103,6 +103,7 @@ RWDECLARE_COLLECTABLE( CtiLMProgramDirectGear )
     static const string RotationMethod;
     static const string LatchingMethod;
     static const string TrueCycleMethod;
+    static const string MagnitudeCycleMethod;
     static const string ThermostatRampingMethod;
     static const string TargetCycleMethod;
     static const string NoControlMethod;
