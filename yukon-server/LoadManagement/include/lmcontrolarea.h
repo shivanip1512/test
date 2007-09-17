@@ -44,6 +44,7 @@ RWDECLARE_COLLECTABLE( CtiLMControlArea )
     CtiLMControlArea(const CtiLMControlArea& controlarea);
 
     virtual ~CtiLMControlArea();
+    virtual void setDirty(BOOL b = TRUE);
 
     LONG getPAOId() const;
     const string& getPAOCategory() const;

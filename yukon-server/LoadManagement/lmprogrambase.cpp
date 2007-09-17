@@ -35,18 +35,18 @@ using std::transform;
     Constructors
 ---------------------------------------------------------------------------*/
 CtiLMProgramBase::CtiLMProgramBase() :
-_lastsentstate(-1)
+_lastsentstate(-1), _controlArea(NULL)
 {
 }
 
 CtiLMProgramBase::CtiLMProgramBase(RWDBReader& rdr) :
-_lastsentstate(-1)
+_lastsentstate(-1), _controlArea(NULL)
 {
     restore(rdr);
 }
 
 CtiLMProgramBase::CtiLMProgramBase(const CtiLMProgramBase& lmprog) :
-_lastsentstate(-1)
+_lastsentstate(-1), _controlArea(NULL)
 {
     operator=(lmprog);
 }
@@ -1072,6 +1072,26 @@ void CtiLMProgramBase::createControlStatusPointUpdates(CtiMultiMsg* multiDispatc
             _lastsentstate = STATEZERO;
         }
     }
+}
+
+/*---------------------------------------------------------------------------
+    setControlArea
+
+    Stores a pointer to a control area, no null checking.
+---------------------------------------------------------------------------*/
+void CtiLMProgramBase::setControlArea(CtiLMControlArea *controlArea)
+{
+    _controlArea = controlArea;
+}
+
+/*---------------------------------------------------------------------------
+    getControlArea
+
+    Meant to be private! returns the stored bare control area pointer.
+---------------------------------------------------------------------------*/
+CtiLMControlArea* CtiLMProgramBase::getControlArea()
+{
+    return _controlArea;
 }
 
 /*---------------------------------------------------------------------------

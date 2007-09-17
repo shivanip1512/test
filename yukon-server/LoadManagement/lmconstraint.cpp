@@ -498,6 +498,14 @@ bool CtiLMProgramConstraintChecker::checkControlAreaControlWindows(CtiLMControlA
     CtiDate startDate(startTime);
     startTime = CtiTime(startDate);
 
+    // The stop time could be in the infinate future, in that case
+    // I guess we want to ignore the problem ... (auto control reduceprogramload does this)
+    // This _could_ be messing up "run forever" manual control .... checkit
+    if(proposed_stop_from_1901 == gEndOfCtiTimeSeconds)
+    {
+        proposed_stop_from_1901 = proposed_start_from_1901;
+    }
+
     LONG startSecondsFromDayBegin = proposed_start_from_1901 - startTime.seconds();
     LONG stopSecondsFromDayBegin = proposed_stop_from_1901 - startTime.seconds();
 
@@ -850,54 +858,140 @@ bool CtiLMGroupConstraintChecker::checkMaxHoursAnnually(LONG& control_duration, 
     return true;
 }
 
-bool CtiLMGroupConstraintChecker::checkProgramControlWindow(LONG& control_duration, bool adjust_duration)
+/****************************************************************
+* checkControlAreaControlWindow
+
+    Function checks the stop time of the control area ONLY and
+    can adjust the stop time to fit the control window.
+    This is not the same as checkProgramControlWindow
+**/
+bool CtiLMGroupConstraintChecker::checkControlAreaControlWindow(CtiLMControlArea* controlArea, LONG& control_duration, bool adjust_duration)
 {
-    // If there are no control windows then i guess you can't violate any of them
-    if(_lm_program.getLMProgramControlWindows().size() == 0 )
-    {
-        return true;
-    }
-	
-    CtiTime now_t(_seconds_from_1901);
-    CtiTime now_dt(now_t); // move this calc to a util function at least
-    
-    LONG seconds_from_beginning_of_today = (now_dt.hour() * 3600) + (now_dt.minute() * 60) + now_dt.second();
+    bool retVal = false;
 
-    CtiLMProgramControlWindow* control_window = _lm_program.getControlWindow(seconds_from_beginning_of_today);
-    if(control_window == 0)
-    {
-        string result = "Load Group: " + _lm_group->getPAOName() + " not in program control window.";
-        _results.push_back(result);
-        return false;
-    }
+    CtiTime controlStart; // now
+    CtiTime controlEnd(controlStart.seconds() + control_duration);
+    CtiDate today; //only used to create today begin
+    CtiDate yesterday;
+    --yesterday;
+    CtiTime todayBegin(today);
+    CtiTime yesterdayBegin(yesterday);
+    CtiTime controlAreaStart, controlAreaStop;
 
-    int left_in_window = control_window->getAvailableStopTime() - seconds_from_beginning_of_today;
-
-    if(left_in_window > 0)
+    if( controlArea != NULL )
     {
-        if(adjust_duration)
+        if( (controlArea->getCurrentDailyStartTime() == 0 || controlArea->getCurrentDailyStartTime() == -1) &&
+            (controlArea->getCurrentDailyStopTime() == 0 || controlArea->getCurrentDailyStopTime() == -1) )
         {
-            control_duration = std::min((ULONG) control_duration, (ULONG) left_in_window);
-            return true;
+            retVal = true;
         }
-        else
+        else 
         {
-            if(control_duration >= left_in_window)
+            if( controlArea->getCurrentDailyStopTime() < controlArea->getCurrentDailyStartTime() )
             {
-                string result = "Load Group: " + _lm_group->getPAOName() + " not enough control time left in program control window.";
-                _results.push_back(result);
-                return false;
+                //backwords case
+                CtiDate tomorrow;
+                ++tomorrow;
+                controlAreaStart = CtiTime(todayBegin.seconds() + controlArea->getCurrentDailyStartTime());
+                controlAreaStop = CtiTime(CtiTime(tomorrow).seconds() + controlArea->getCurrentDailyStopTime());
+                if( controlAreaStart < controlStart )
+                {
+                    //We are in the wrong 24 hour period, shift back 1 day
+                    controlAreaStart = CtiTime(yesterdayBegin.seconds() + controlArea->getCurrentDailyStartTime());
+                    controlAreaStop = CtiTime(todayBegin.seconds() + controlArea->getCurrentDailyStopTime());
+                }
             }
             else
             {
-                return true;
+                controlAreaStart = CtiTime(todayBegin.seconds() + controlArea->getCurrentDailyStartTime());
+                controlAreaStop = CtiTime(todayBegin.seconds() + controlArea->getCurrentDailyStopTime());
+            }
+    
+            if( controlStart >= controlAreaStart && controlEnd <= controlAreaStop )
+            {//were good to go
+                retVal = true;
+            }
+            else
+            {
+                if(adjust_duration && controlAreaStop > controlStart )
+                {
+                    control_duration = controlAreaStop.seconds() - controlStart.seconds();
+                    retVal = true;
+                }
+                else
+                {
+                    string result = "Load Group: " + _lm_group->getPAOName() + " not able to control in control area window.";
+                    _results.push_back(result);
+                    result = "CA start: " + controlAreaStart.asString() + " CA stop: " + controlAreaStop.asString() + " duration ";
+                    result += CtiNumStr(control_duration).toString() + " adjust: ";
+                    result += adjust_duration ? "Y" : "N";
+                    _results.push_back(result);
+                    retVal = false;
+                }
             }
         }
     }
+        
+
+    return retVal;
+}
+
+bool CtiLMGroupConstraintChecker::checkProgramControlWindow(LONG& control_duration, bool adjust_duration)
+{
+    bool retVal = false;
+    // If there are no control windows then i guess you can't violate any of them
+    if(_lm_program.getLMProgramControlWindows().size() == 0 )
+    {
+        retVal = true;
+    }
     else
     {
-        return false;
+        CtiTime now_t(_seconds_from_1901);
+        CtiTime now_dt(now_t); // move this calc to a util function at least
+        
+        LONG seconds_from_beginning_of_today = (now_dt.hour() * 3600) + (now_dt.minute() * 60) + now_dt.second();
+    
+        CtiLMProgramControlWindow* control_window = _lm_program.getControlWindow(seconds_from_beginning_of_today);
+        if(control_window == 0)
+        {
+            string result = "Load Group: " + _lm_group->getPAOName() + " not in program control window.";
+            _results.push_back(result);
+            retVal = false;
+        }
+        else
+        {
+        
+            int left_in_window = control_window->getAvailableStopTime() - seconds_from_beginning_of_today;
+        
+            if(left_in_window > 0)
+            {
+                if(adjust_duration)
+                {
+                    control_duration = std::min((ULONG) control_duration, (ULONG) left_in_window);
+                    retVal = true;
+                }
+                else
+                {
+                    if(control_duration >= left_in_window)
+                    {
+                        string result = "Load Group: " + _lm_group->getPAOName() + " not enough control time left in program control window.";
+                        _results.push_back(result);
+                        retVal = false;
+                    }
+                    else
+                    {
+                        retVal = true;
+                    }
+                }
+            }
+            else
+            {
+                retVal = false;
+            }
+        }
     }
+
+    return retVal && checkControlAreaControlWindow(_lm_program.getControlArea(), control_duration, adjust_duration);
 }
 
 void CtiLMGroupConstraintChecker::dumpViolations()

@@ -28,6 +28,7 @@
 #include "lmcontrolareatrigger.h"
 
 class CtiLMProgramControlWindow;
+class CtiLMControlArea;
 
 class CtiLMProgramBase;
 #if VSLICK_TAG_WORKAROUND
@@ -112,6 +113,7 @@ public:
     CtiLMProgramBase& setLastControlSent(const CtiTime& lastcontrol);
     CtiLMProgramBase& setReductionTotal(DOUBLE reduction);
     CtiLMProgramBase& setManualControlReceivedFlag(BOOL manualreceived);
+    CtiLMControlArea* getControlArea();
 
     BOOL isAvailableToday();
     BOOL isWithinValidControlWindow(LONG secondsFromBeginningOfDay);
@@ -120,6 +122,7 @@ public:
     virtual void dumpDynamicData(RWDBConnection& conn, CtiTime& currentDateTime);
 
     void createControlStatusPointUpdates(CtiMultiMsg* multiDispatchMsg);
+    void setControlArea(CtiLMControlArea *controlArea);
 
     virtual DOUBLE reduceProgramLoad(DOUBLE loadReductionNeeded, LONG currentPriority, vector<CtiLMControlAreaTrigger*> controlAreaTriggers, LONG secondsFromBeginningOfDay, ULONG secondsFrom1901, CtiMultiMsg* multiPilMsg, CtiMultiMsg* multiDispatchMsg, CtiMultiMsg* multiNotifMsg, BOOL isTriggerCheckNeeded) = 0;
     virtual CtiLMProgramBaseSPtr replicate() const = 0;
@@ -201,6 +204,7 @@ private:
     CtiTime _lastcontrolsent;
     BOOL _manualcontrolreceivedflag;
     LONG _lastsentstate;
+    CtiLMControlArea *_controlArea;
 
     std::vector<CtiLMProgramControlWindow*> _lmprogramcontrolwindows;
 

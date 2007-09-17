@@ -1781,6 +1781,7 @@ void CtiLMControlAreaStore::reset()
                                     {
                                         currentLMProgramBase->setStartPriority(start_priority);
                                         currentLMProgramBase->setStopPriority(stop_priority);
+                                        currentLMProgramBase->setControlArea(currentLMControlArea);
                                         lmControlAreaProgramList.push_back(currentLMProgramBase);
                                         directProgramHashMap.remove(tempProgramId);
                                     }
@@ -1788,6 +1789,7 @@ void CtiLMControlAreaStore::reset()
                                     {
                                         currentLMProgramBase->setStartPriority(start_priority);
                                         currentLMProgramBase->setStopPriority(stop_priority);
+                                        currentLMProgramBase->setControlArea(currentLMControlArea);
                                         lmControlAreaProgramList.push_back(currentLMProgramBase);
                                         curtailmentProgramHashMap.remove(tempProgramId);
                                     }
@@ -1795,6 +1797,7 @@ void CtiLMControlAreaStore::reset()
                                     {
                                         currentLMProgramBase->setStartPriority(start_priority);
                                         currentLMProgramBase->setStopPriority(stop_priority);
+                                        currentLMProgramBase->setControlArea(currentLMControlArea);
                                         lmControlAreaProgramList.push_back(currentLMProgramBase);
                                         energyExchangeProgramHashMap.remove(tempProgramId);
                                     }
