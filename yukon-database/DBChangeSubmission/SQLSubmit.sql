@@ -43,3 +43,10 @@ insert into YukonGroupRole (GroupRoleID,GroupID,RoleID,RolePropertyID,Value) val
 insert into YukonGroupRole (GroupRoleID,GroupID,RoleID,RolePropertyID,Value) values(-59,-1,-4,-1317,'(none)')
 insert into YukonGroupRole (GroupRoleID,GroupID,RoleID,RolePropertyID,Value) values(-92,-1,-4,-1307,'(none)')
 /*****************************************************************************/
+
+
+/** CHANGE CREATION SCRIPTS ONLY FOR THIS IN HEAD AND 3.5  - SN 20070918 
+These insert statements already exist, but the formatType values are being changed, removing the "turtle" text */
+insert into billingfileformats values( 13, 'NISC',1);
+insert into billingfileformats values( -19, ' NISC No Limit kWh ',1);
+/*** */
