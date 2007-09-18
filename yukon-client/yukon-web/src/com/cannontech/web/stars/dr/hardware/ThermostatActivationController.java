@@ -21,7 +21,7 @@ public class ThermostatActivationController extends MultiActionController {
         String accountNumber = ServletRequestUtils.getStringParameter(request, "accountnumber");
         String serialNumber = ServletRequestUtils.getStringParameter(request, "serialnumber");
         
-        mav.setViewName("/hardware/thermostat/Activation.jsp");
+        mav.setViewName("hardware/thermostat/Activation.jsp");
         mav.addObject("accountNumber", accountNumber);
         mav.addObject("serialNumber", serialNumber);
         return mav;
@@ -56,7 +56,7 @@ public class ThermostatActivationController extends MultiActionController {
         mav.addObject("error", error);
         mav.addObject("accountNumber", accountNumber);
         mav.addObject("serialNumber", serialNumber);
-        mav.setViewName("/hardware/thermostat/Status.jsp");
+        mav.setViewName("hardware/thermostat/Status.jsp");
         return mav;
     }
     

@@ -9,7 +9,7 @@ import org.springframework.web.bind.ServletRequestUtils;
 import com.cannontech.clientutils.CTILogger;
 import com.cannontech.database.Transaction;
 import com.cannontech.database.TransactionException;
-import com.cannontech.database.data.lite.stars.LiteAddress;
+import com.cannontech.database.data.lite.LiteAddress;
 import com.cannontech.database.data.lite.stars.LiteStarsEnergyCompany;
 import com.cannontech.database.data.lite.stars.StarsLiteFactory;
 import com.cannontech.stars.util.ServletUtils;

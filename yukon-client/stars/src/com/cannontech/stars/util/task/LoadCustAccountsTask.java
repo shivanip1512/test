@@ -15,7 +15,6 @@ import com.cannontech.database.PoolManager;
 import com.cannontech.database.cache.DefaultDatabaseCache;
 import com.cannontech.database.data.lite.LiteCustomer;
 import com.cannontech.database.data.lite.stars.LiteAccountSite;
-import com.cannontech.database.data.lite.stars.LiteAddress;
 import com.cannontech.database.data.lite.stars.LiteCustomerAccount;
 import com.cannontech.database.data.lite.stars.LiteSiteInformation;
 import com.cannontech.database.data.lite.stars.LiteStarsAppliance;
@@ -218,26 +217,6 @@ public class LoadCustAccountsTask extends TimeConsumingTask {
         if (invIDs != null)
         	liteAcctInfo.setInventories( invIDs );
         
-        LiteAddress liteSAddr = new LiteAddress();
-		liteSAddr.setAddressID( liteAcctSite.getStreetAddressID() );
-		liteSAddr.setLocationAddress1( rset.getString("SAddr1") );
-		liteSAddr.setLocationAddress2( rset.getString("SAddr2") );
-		liteSAddr.setCityName( rset.getString("SCity") );
-		liteSAddr.setStateCode( rset.getString("SState") );
-		liteSAddr.setZipCode( rset.getString("SZip") );
-		liteSAddr.setCounty( rset.getString("SCounty") );
-		energyCompany.addAddress( liteSAddr );
-        
-		LiteAddress liteBAddr = new LiteAddress();
-		liteBAddr.setAddressID( liteAccount.getBillingAddressID() );
-		liteBAddr.setLocationAddress1( rset.getString("BAddr1") );
-		liteBAddr.setLocationAddress2( rset.getString("BAddr2") );
-		liteBAddr.setCityName( rset.getString("BCity") );
-		liteBAddr.setStateCode( rset.getString("BState") );
-		liteBAddr.setZipCode( rset.getString("BZip") );
-		liteBAddr.setCounty( rset.getString("BCounty") );
-		energyCompany.addAddress( liteBAddr );
-		
 		energyCompany.addCustAccountInformation( liteAcctInfo );
 	}
 

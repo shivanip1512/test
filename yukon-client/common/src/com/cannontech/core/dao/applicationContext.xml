@@ -114,7 +114,7 @@
      <property name="databaseCache" ref="databaseCache"/>      
   </bean>
   <bean id="yukonListDao" class="com.cannontech.core.dao.impl.YukonListDaoImpl" >
-     <property name="dataSource" ref="wrappedYukonDataSource"/>
+     <property name="jdbcTemplate" ref="jdbcTemplate"/>
   </bean>
   <bean id="yukonUserDao" class="com.cannontech.core.dao.impl.YukonUserDaoImpl" >
      <property name="databaseCache" ref="databaseCache"/>
@@ -127,4 +127,9 @@
   <bean id="rphDao" class="com.cannontech.core.dao.impl.RawPointHistoryDaoImpl" >
       <property name="jdbcTemplate" ref="simpleJdbcTemplate"/>
   </bean>
+  
+  <bean id="addressDao" class="com.cannontech.core.dao.impl.AddressDaoImpl">
+      <property name="simpleJdbcTemplate" ref="simpleJdbcTemplate" />
+  </bean>
+    
 </beans>

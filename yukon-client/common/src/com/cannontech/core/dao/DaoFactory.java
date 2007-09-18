@@ -4,6 +4,10 @@ import com.cannontech.spring.YukonSpringHook;
 
 public class DaoFactory {
     
+    public static AddressDao getAddressDao() {
+        return YukonSpringHook.getBean("addressDao", AddressDao.class);
+    }
+    
     public static AlarmCatDao getAlarmCatDao() {
         return (AlarmCatDao) YukonSpringHook.getBean("alarmCatDao");
     }
@@ -97,7 +101,7 @@ public class DaoFactory {
     }
     
     public static YukonListDao getYukonListDao() {
-        return (YukonListDao) YukonSpringHook.getBean("yukonListDao");
+        return YukonSpringHook.getBean("yukonListDao", YukonListDao.class);
     }
     
     public static YukonUserDao getYukonUserDao() {

@@ -1,9 +1,5 @@
-package com.cannontech.database.data.lite.stars;
+package com.cannontech.database.data.lite;
 
-import com.cannontech.database.Transaction;
-import com.cannontech.database.data.lite.LiteBase;
-import com.cannontech.database.data.lite.LiteTypes;
-import com.cannontech.database.db.customer.Address;
 
 /**
  * @author yao
@@ -24,13 +20,13 @@ public class LiteAddress extends LiteBase {
 	
 	public LiteAddress() {
 		super();
-		setLiteType( LiteTypes.STARS_ADDRESS );
+		setLiteType( LiteTypes.ADDRESS );
 	}
 	
 	public LiteAddress(int addressID) {
 		super();
 		setAddressID( addressID );
-		setLiteType( LiteTypes.STARS_ADDRESS );
+		setLiteType( LiteTypes.ADDRESS );
 	}
 	
 	public LiteAddress(int addressID, String locationAddr1, String locationAddr2, String city, String state, String zip) {
@@ -41,7 +37,7 @@ public class LiteAddress extends LiteBase {
 		cityName = city;
 		stateCode = state;
 		zipCode = zip;
-		setLiteType( LiteTypes.STARS_ADDRESS );
+		setLiteType( LiteTypes.ADDRESS );
 	}
 	
 	public int getAddressID() {
@@ -50,18 +46,6 @@ public class LiteAddress extends LiteBase {
 	
 	public void setAddressID(int addrID) {
 		setLiteID( addrID );
-	}
-	
-	public void retrieve() {
-		Address addr = new Address();
-		addr.setAddressID( new Integer(getAddressID()) );
-		try {
-			addr = (Address) Transaction.createTransaction(Transaction.RETRIEVE, addr).execute();
-			StarsLiteFactory.setLiteAddress( this, addr );
-		}
-		catch (Exception e) {
-			com.cannontech.clientutils.CTILogger.error( e.getMessage(), e );
-		}
 	}
 	
 	/**

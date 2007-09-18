@@ -13,7 +13,6 @@ import java.util.Hashtable;
 import java.util.Iterator;
 import java.util.List;
 import java.util.Map;
-import java.util.Properties;
 import java.util.Set;
 import java.util.TreeMap;
 
@@ -452,7 +451,6 @@ public class StarsAdminUtil {
 		
 		Transaction.createTransaction( Transaction.DELETE, servCompany ).execute();
 		
-		energyCompany.deleteAddress( liteCompany.getAddressID() );
 		energyCompany.deleteServiceCompany( companyID );
 		
 		LiteContact liteContact = DaoFactory.getContactDao().getContact( liteCompany.getPrimaryContactID() );
@@ -607,7 +605,7 @@ public class StarsAdminUtil {
 				if (conn != null) conn.close();
 			}
 			
-			java.util.Properties entries = DaoFactory.getYukonListDao().getYukonListEntries();
+            Map<Integer,YukonListEntry> entries = DaoFactory.getYukonListDao().getYukonListEntries();
 			synchronized (entries) {
 				for (int i = 0; i < cList.getYukonListEntries().size(); i++) {
 					YukonListEntry entry = cList.getYukonListEntries().get(i);
@@ -712,7 +710,7 @@ public class StarsAdminUtil {
 				Collections.sort( newEntries, StarsUtils.YUK_LIST_ENTRY_ALPHA_CMPTR );
 			
 			// Update the constant objects
-			Properties cListEntries = DaoFactory.getYukonListDao().getYukonListEntries();
+            Map<Integer,YukonListEntry> cListEntries = DaoFactory.getYukonListDao().getYukonListEntries();
 			synchronized (cListEntries) {
 				for (int i = 0; i < cList.getYukonListEntries().size(); i++) {
 					YukonListEntry entry = cList.getYukonListEntries().get(i);

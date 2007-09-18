@@ -26,6 +26,7 @@ import com.cannontech.common.util.CtiUtilities;
 import com.cannontech.common.util.Pair;
 import com.cannontech.core.authorization.service.PaoPermissionService;
 import com.cannontech.core.authorization.support.Permission;
+import com.cannontech.core.dao.AddressDao;
 import com.cannontech.core.dao.DaoFactory;
 import com.cannontech.core.dao.NotFoundException;
 import com.cannontech.database.PoolManager;
@@ -35,6 +36,7 @@ import com.cannontech.database.TransactionException;
 import com.cannontech.database.cache.DefaultDatabaseCache;
 import com.cannontech.database.cache.StarsDatabaseCache;
 import com.cannontech.database.data.customer.CustomerTypes;
+import com.cannontech.database.data.lite.LiteAddress;
 import com.cannontech.database.data.lite.LiteBase;
 import com.cannontech.database.data.lite.LiteCICustomer;
 import com.cannontech.database.data.lite.LiteContact;
@@ -45,7 +47,6 @@ import com.cannontech.database.data.lite.LiteYukonPAObject;
 import com.cannontech.database.data.lite.LiteYukonUser;
 import com.cannontech.database.data.stars.hardware.LMThermostatSchedule;
 import com.cannontech.database.db.contact.Contact;
-import com.cannontech.database.db.customer.Address;
 import com.cannontech.database.db.customer.Customer;
 import com.cannontech.database.db.macro.MacroTypes;
 import com.cannontech.database.db.stars.ECToGenericMapping;
@@ -57,6 +58,7 @@ import com.cannontech.roles.operator.AdministratorRole;
 import com.cannontech.roles.operator.ConsumerInfoRole;
 import com.cannontech.roles.yukon.EnergyCompanyRole;
 import com.cannontech.spring.YukonSpringHook;
+import com.cannontech.stars.core.dao.ECSearchDao;
 import com.cannontech.stars.util.ECUtils;
 import com.cannontech.stars.util.InventoryUtils;
 import com.cannontech.stars.util.ObjectInOtherEnergyCompanyException;
@@ -172,7 +174,6 @@ public class LiteStarsEnergyCompany extends LiteBase {
     private int userID = com.cannontech.user.UserUtils.USER_DEFAULT_ID;
     
     private Map<Integer,LiteStarsCustAccountInformation> custAccountInfos = null;
-    private Map<Integer,LiteAddress> addresses = null;
     private Map<Integer,LiteInventoryBase> inventory = null;
     private Map<Integer,LiteWorkOrderBase> workOrders = null;
     
@@ -227,8 +228,10 @@ public class LiteStarsEnergyCompany extends LiteBase {
     private LiteStarsEnergyCompany parent = null;
     private List<LiteStarsEnergyCompany> children = null;
     private List<Integer> memberLoginIDs = null;
-    
-    
+
+    private static final AddressDao addressDao = YukonSpringHook.getBean("addressDao", AddressDao.class);
+    private static final ECSearchDao ecSearchDao = YukonSpringHook.getBean("ecSearchDao", ECSearchDao.class);
+
     public LiteStarsEnergyCompany() {
         super();
         setLiteType( LiteTypes.ENERGY_COMPANY );
@@ -620,7 +623,6 @@ public class LiteStarsEnergyCompany extends LiteBase {
         workOrdersLoaded = false;
         
         custAccountInfos = null;
-        addresses = null;
         pubPrograms = null;
         inventory = null;
         appCategories = null;
@@ -916,7 +918,7 @@ public class LiteStarsEnergyCompany extends LiteBase {
     public void deleteYukonSelectionList(YukonSelectionList list) {
         getAllSelectionLists().remove( list );
         
-        java.util.Properties entries = DaoFactory.getYukonListDao().getYukonListEntries();
+        Map<Integer,YukonListEntry> entries = DaoFactory.getYukonListDao().getYukonListEntries();
         synchronized (entries) {
             for (int i = 0; i < list.getYukonListEntries().size(); i++) {
                 YukonListEntry entry = list.getYukonListEntries().get(i);
@@ -1371,16 +1373,9 @@ public class LiteStarsEnergyCompany extends LiteBase {
         nextOrderNo = 0;
     }
     
-    private synchronized Map<Integer,LiteAddress> getAddressMap() {
-        if (addresses == null)
-            addresses = new Hashtable<Integer,LiteAddress>();
-        
-        return addresses;
-    }
-    
     public List<LiteAddress> getAllAddresses() {
-        Collection<LiteAddress> values = getAddressMap().values();
-        return new ArrayList<LiteAddress>(values);
+        List<LiteAddress> addressList = addressDao.getAll();
+        return addressList;
     }
     
     private synchronized Map<Integer,LiteInventoryBase> getInventoryMap() {
@@ -1529,38 +1524,9 @@ public class LiteStarsEnergyCompany extends LiteBase {
         return null;
     }
     
-    private LiteAddress getAddress(int addressID, boolean autoLoad) {
-        LiteAddress liteAddr = getAddressMap().get( new Integer(addressID) );
-        if (liteAddr != null) return liteAddr;
-        
-        if (autoLoad) {
-            try {
-                Address addr = new Address();
-                addr.setAddressID( new Integer(addressID) );
-                addr = (Address) Transaction.createTransaction( Transaction.RETRIEVE, addr ).execute();
-                
-                liteAddr = (LiteAddress) StarsLiteFactory.createLite( addr );
-                addAddress( liteAddr );
-                return liteAddr;
-            }
-            catch (Exception e) {
-                CTILogger.error( e.getMessage(), e );
-            }
-        }
-        
-        return null;
-    }
-    
     public LiteAddress getAddress(int addressID) {
-        return getAddress( addressID, true );
-    }
-    
-    public void addAddress(LiteAddress liteAddr) {
-        getAddressMap().put( new Integer(liteAddr.getAddressID()), liteAddr );
-    }
-    
-    public LiteAddress deleteAddress(int addressID) {
-        return getAddressMap().remove( new Integer(addressID) );
+        LiteAddress address = addressDao.getByAddressId(addressID); 
+        return address;
     }
     
     public LiteLMProgramWebPublishing getProgram(int programID) {
@@ -2223,12 +2189,6 @@ public class LiteStarsEnergyCompany extends LiteBase {
             inventories.add( account.getInventoryVector().get(i) );
         liteAcctInfo.setInventories( inventories );
         
-        com.cannontech.database.db.customer.Address streetAddr = site.getStreetAddress();
-        addAddress( (LiteAddress) StarsLiteFactory.createLite(streetAddr) );
-        
-        com.cannontech.database.db.customer.Address billAddr = account.getBillingAddress();
-        addAddress( (LiteAddress) StarsLiteFactory.createLite(billAddr) );
-        
         addCustAccountInformation( liteAcctInfo );
         
         return liteAcctInfo;
@@ -2420,10 +2380,6 @@ public class LiteStarsEnergyCompany extends LiteBase {
                 contAcctIDMap.remove( new Integer(contacts.get(i).getContactID()) );
         }
         
-        // Remove all addresses from the cache
-        deleteAddress( liteAcctInfo.getCustomerAccount().getBillingAddressID() );
-        deleteAddress( liteAcctInfo.getAccountSite().getStreetAddressID() );
-        
         // Refresh all inventory information
         for (int i = 0; i < liteAcctInfo.getInventories().size(); i++) {
             int invID = liteAcctInfo.getInventories().get(i).intValue();
@@ -2444,10 +2400,6 @@ public class LiteStarsEnergyCompany extends LiteBase {
     }
     
     public LiteStarsCustAccountInformation reloadCustAccountInformation(LiteStarsCustAccountInformation liteAcctInfo) {
-        // Remove all addresses from the cache
-        deleteAddress( liteAcctInfo.getCustomerAccount().getBillingAddressID() );
-        deleteAddress( liteAcctInfo.getAccountSite().getStreetAddressID() );
-        
         // Reload the customer account into cache
         Map<Integer,LiteStarsCustAccountInformation> custAcctMap = getCustAccountInfoMap();
         synchronized (custAcctMap) {
@@ -2763,14 +2715,12 @@ public class LiteStarsEnergyCompany extends LiteBase {
         List<Object> accountList = new ArrayList<Object>();
         
         List<LiteStarsCustAccountInformation> custAcctInfoList = getAllCustAccountInformation();
-        for (final LiteStarsCustAccountInformation liteAcctInfo : custAcctInfoList) {
-            LiteAddress servAddr = getAddress( liteAcctInfo.getAccountSite().getStreetAddressID() );
-            if (servAddr != null && servAddr.getLocationAddress1().toUpperCase().startsWith( address.toUpperCase() ))
-            {
-                if (searchMembers)
-                    accountList.add( new Pair<LiteStarsCustAccountInformation,LiteStarsEnergyCompany>(liteAcctInfo, this) );
-                else
-                    accountList.add( liteAcctInfo );
+        List<LiteStarsCustAccountInformation> matchedCustAcctInfoList = ecSearchDao.searchAddressByLocationAddress1(address, custAcctInfoList);
+        for (final LiteStarsCustAccountInformation liteAcctInfo : matchedCustAcctInfoList) {
+            if (searchMembers) {
+                accountList.add( new Pair<LiteStarsCustAccountInformation,LiteStarsEnergyCompany>(liteAcctInfo, this) );
+            } else {
+                accountList.add( liteAcctInfo );
             }
         }
         
@@ -3507,7 +3457,6 @@ public class LiteStarsEnergyCompany extends LiteBase {
                     address.setStateCode( rset.getString(31) );
                     address.setZipCode( rset.getString(32) );
                     address.setCounty( rset.getString(33) );
-                    liteStarsEC.addAddress(address);
                     
                     if( count < 250)//preload only the first SearchResults.jsp page contacts
                         DaoFactory.getContactDao().getContact(customer.getPrimaryContactID());
@@ -3642,7 +3591,6 @@ public class LiteStarsEnergyCompany extends LiteBase {
                     liteAddress.setStateCode( rset.getString(29) );
                     liteAddress.setZipCode( rset.getString(30) );
                     liteAddress.setCounty( rset.getString(31) );
-                    liteStarsEC.addAddress(liteAddress);
                     
                     if( count < 250)//preload only the first SearchResults.jsp page contacts
                         DaoFactory.getContactDao().getContact(customer.getPrimaryContactID());
@@ -3781,7 +3729,6 @@ public class LiteStarsEnergyCompany extends LiteBase {
                     address.setStateCode( rset.getString(29) );
                     address.setZipCode( rset.getString(30) );
                     address.setCounty( rset.getString(31) );
-                    liteStarsEC.addAddress(address);
                     
                     if( count < 250)//preload only the first SearchResults.jsp page contacts
                         DaoFactory.getContactDao().getContact(customer.getPrimaryContactID());

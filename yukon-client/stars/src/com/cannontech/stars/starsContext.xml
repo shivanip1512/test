@@ -3,29 +3,41 @@
 
 <beans>
 
-	<bean id="starsDatabaseCache" class="com.cannontech.database.cache.StarsDatabaseCache" init-method="init">
-		<property name="asyncDynamicDataSource" ref="asyncDynamicDataSource"/>
-	</bean>
-	
-	<bean id="thermostatActivationService" class="com.cannontech.stars.dr.hardware.service.impl.ThermostatActivationServiceImpl">
-		<property name="customerAccountDao" ref="customerAccountDao"/>
-		<property name="inventoryBaseDao" ref="inventoryBaseDao"/>
-		<property name="hardwareBaseDao" ref="hardwareBaseDao"/>
-	</bean>
-	
-	<bean id="customerAccountDao" class="com.cannontech.stars.dr.account.dao.impl.CustomerAccountDaoImpl">
-		<property name="nextValueHelper" ref="nextValueHelper"/>
-		<property name="simpleJdbcTemplate" ref="simpleJdbcTemplate"/>
-	</bean>
-	
-	<bean id="hardwareBaseDao" class="com.cannontech.stars.dr.hardware.dao.impl.LMHardwareBaseDaoImpl">
-		<property name="nextValueHelper" ref="nextValueHelper"/>
-		<property name="simpleJdbcTemplate" ref="simpleJdbcTemplate"/>	
-	</bean>
-	
-	<bean id="inventoryBaseDao" class="com.cannontech.stars.dr.hardware.dao.impl.InventoryBaseDaoImpl">
-		<property name="nextValueHelper" ref="nextValueHelper"/>
-		<property name="simpleJdbcTemplate" ref="simpleJdbcTemplate"/>		
-	</bean>
-	
+    <bean id="starsDatabaseCache"
+        class="com.cannontech.database.cache.StarsDatabaseCache"
+        init-method="init">
+        <property name="asyncDynamicDataSource"
+            ref="asyncDynamicDataSource" />
+    </bean>
+
+    <bean id="thermostatActivationService"
+        class="com.cannontech.stars.dr.hardware.service.impl.ThermostatActivationServiceImpl">
+        <property name="customerAccountDao" ref="customerAccountDao" />
+        <property name="inventoryBaseDao" ref="inventoryBaseDao" />
+        <property name="hardwareBaseDao" ref="hardwareBaseDao" />
+    </bean>
+
+    <bean id="customerAccountDao"
+        class="com.cannontech.stars.dr.account.dao.impl.CustomerAccountDaoImpl">
+        <property name="nextValueHelper" ref="nextValueHelper" />
+        <property name="simpleJdbcTemplate" ref="simpleJdbcTemplate" />
+    </bean>
+
+    <bean id="hardwareBaseDao"
+        class="com.cannontech.stars.dr.hardware.dao.impl.LMHardwareBaseDaoImpl">
+        <property name="nextValueHelper" ref="nextValueHelper" />
+        <property name="simpleJdbcTemplate" ref="simpleJdbcTemplate" />
+    </bean>
+
+    <bean id="inventoryBaseDao"
+        class="com.cannontech.stars.dr.hardware.dao.impl.InventoryBaseDaoImpl">
+        <property name="nextValueHelper" ref="nextValueHelper" />
+        <property name="simpleJdbcTemplate" ref="simpleJdbcTemplate" />
+    </bean>
+
+    <bean id="ecSearchDao"
+        class="com.cannontech.stars.core.dao.impl.ECSearchDaoImpl">
+        <property name="simpleJdbcTemplate" ref="simpleJdbcTemplate" />
+    </bean>
+
 </beans>

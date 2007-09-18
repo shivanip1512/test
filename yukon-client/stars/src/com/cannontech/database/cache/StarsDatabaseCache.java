@@ -17,7 +17,6 @@ import com.cannontech.common.util.CtiUtilities;
 import com.cannontech.core.dao.DaoFactory;
 import com.cannontech.core.dao.NotFoundException;
 import com.cannontech.core.dynamic.AsyncDynamicDataSource;
-import com.cannontech.database.PoolManager;
 import com.cannontech.database.data.device.DeviceTypesFuncs;
 import com.cannontech.database.data.lite.LiteBase;
 import com.cannontech.database.data.lite.LiteContact;
@@ -223,31 +222,16 @@ public class StarsDatabaseCache implements DBChangeLiteListener {
 	public synchronized List<LiteStarsEnergyCompany> getAllEnergyCompanies() {
 		if (energyCompanies == null) {
 			energyCompanies = new ArrayList<LiteStarsEnergyCompany>();
-	    	java.sql.Connection conn = null;
 	    	
-			try {
-	    		conn = PoolManager.getInstance().getConnection(
-	    				CtiUtilities.getDatabaseAlias() );
-		    	com.cannontech.database.db.company.EnergyCompany[] companies =
-		    			com.cannontech.database.db.company.EnergyCompany.getEnergyCompanies( conn );
-		    	if (companies == null) return null;
-		    	
-		    	synchronized (energyCompanies) {
-			    	for (int i = 0; i < companies.length; i++)
-			    		energyCompanies.add( new LiteStarsEnergyCompany(companies[i]) );
-			    }
-			}
-			catch (Exception e) {
-				CTILogger.error( e.getMessage(), e );
-			}
-			finally {
-				try {
-					if (conn != null) conn.close();
-				}
-				catch (Exception e2) {
-					CTILogger.error( e2.getMessage(), e2 );
-				}
-			}
+            com.cannontech.database.db.company.EnergyCompany[] companies =
+                com.cannontech.database.db.company.EnergyCompany.getEnergyCompanies();
+            
+            if (companies == null) return null;
+	    	
+            synchronized (energyCompanies) {
+                for (int i = 0; i < companies.length; i++)
+                    energyCompanies.add( new LiteStarsEnergyCompany(companies[i]) );
+            }
 	    	
 	    	CTILogger.info( "All energy companies loaded" );
 		}

@@ -1,5 +1,6 @@
 <%@ include file="../Consumer/include/StarsHeader.jsp" %>
 <%@ page import="com.cannontech.database.data.lite.LiteContact" %>
+<%@ page import="com.cannontech.database.data.lite.LiteAddress" %>
 <%@ page import="com.cannontech.database.data.lite.stars.*" %>
 <%@ page import="com.cannontech.database.cache.StarsDatabaseCache" %>
 <%@ page import="java.util.ArrayList" %>

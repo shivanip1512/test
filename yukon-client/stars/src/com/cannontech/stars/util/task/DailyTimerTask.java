@@ -6,9 +6,7 @@
  */
 package com.cannontech.stars.util.task;
 
-import java.util.ArrayList;
 import java.util.Date;
-import java.util.Hashtable;
 import java.util.List;
 import java.util.Map;
 
@@ -25,7 +23,6 @@ import com.cannontech.stars.util.StarsUtils;
 import com.cannontech.stars.util.SwitchCommandQueue;
 import com.cannontech.stars.util.WebClientException;
 import com.cannontech.stars.web.util.InventoryManagerUtil;
-import com.cannontech.stars.web.util.TimerTaskUtil;
 import com.cannontech.util.ServletUtil;
 
 /**

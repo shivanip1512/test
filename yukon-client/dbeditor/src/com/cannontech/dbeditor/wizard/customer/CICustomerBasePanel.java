@@ -262,19 +262,11 @@ private javax.swing.JComboBox getJComboBoxEnergyCompany() {
 			
 			getJComboBoxEnergyCompany().addItem( com.cannontech.common.util.CtiUtilities.STRING_NONE );
 
-			try
-			{
-				java.sql.Connection conn = com.cannontech.database.PoolManager.getInstance().getConnection(com.cannontech.common.util.CtiUtilities.getDatabaseAlias());
-				com.cannontech.database.db.company.EnergyCompany[] companies = 
-						com.cannontech.database.db.company.EnergyCompany.getEnergyCompanies( conn );
-				conn.close();
-					
-
-				for( int i = 0; i < companies.length; i++ )
-					getJComboBoxEnergyCompany().addItem( companies[i] );
-			}
-			catch( java.sql.SQLException e )
-			{}
+            com.cannontech.database.db.company.EnergyCompany[] companies = 
+                com.cannontech.database.db.company.EnergyCompany.getEnergyCompanies();
+            
+            for( int i = 0; i < companies.length; i++ )
+                getJComboBoxEnergyCompany().addItem( companies[i] );
 			
 			// user code end
 		} catch (java.lang.Throwable ivjExc) {

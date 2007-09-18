@@ -3,7 +3,7 @@
 <%@ page import="com.cannontech.database.data.lite.LiteContact" %>
 <%@ page import="com.cannontech.database.data.lite.LiteCustomer" %>
 <%@ page import="com.cannontech.database.data.lite.LiteCICustomer" %>
-<%@ page import="com.cannontech.database.data.lite.stars.LiteAddress" %>
+<%@ page import="com.cannontech.database.data.lite.LiteAddress" %>
 <%@ page import="com.cannontech.database.data.lite.stars.LiteStarsCustAccountInformation" %>
 <%@ page import="com.cannontech.database.data.lite.stars.StarsLiteFactory" %>
 <%

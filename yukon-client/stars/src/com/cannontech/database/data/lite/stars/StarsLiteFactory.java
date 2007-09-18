@@ -20,6 +20,7 @@ import com.cannontech.core.dao.NotFoundException;
 import com.cannontech.database.PoolManager;
 import com.cannontech.database.cache.StarsDatabaseCache;
 import com.cannontech.database.data.customer.CustomerTypes;
+import com.cannontech.database.data.lite.LiteAddress;
 import com.cannontech.database.data.lite.LiteBase;
 import com.cannontech.database.data.lite.LiteCICustomer;
 import com.cannontech.database.data.lite.LiteContact;
@@ -757,7 +758,7 @@ public class StarsLiteFactory {
 				db = new com.cannontech.database.data.customer.Contact();
 				setContact( (com.cannontech.database.data.customer.Contact) db, (LiteContact) lite );
 				break;
-			case LiteTypes.STARS_ADDRESS:
+			case LiteTypes.ADDRESS:
 				db = new com.cannontech.database.db.customer.Address();
 				setAddress( (com.cannontech.database.db.customer.Address) db, (LiteAddress) lite );
 				break;

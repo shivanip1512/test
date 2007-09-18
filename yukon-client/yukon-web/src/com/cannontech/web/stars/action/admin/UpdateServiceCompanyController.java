@@ -11,8 +11,8 @@ import org.springframework.web.bind.ServletRequestUtils;
 import com.cannontech.clientutils.CTILogger;
 import com.cannontech.common.constants.YukonListEntryTypes;
 import com.cannontech.database.Transaction;
+import com.cannontech.database.data.lite.LiteAddress;
 import com.cannontech.database.data.lite.LiteContact;
-import com.cannontech.database.data.lite.stars.LiteAddress;
 import com.cannontech.database.data.lite.stars.LiteServiceCompany;
 import com.cannontech.database.data.lite.stars.LiteStarsEnergyCompany;
 import com.cannontech.database.data.lite.stars.StarsLiteFactory;
@@ -108,9 +108,6 @@ public class UpdateServiceCompanyController extends StarsAdminActionController {
                 company.setEnergyCompanyID( energyCompany.getEnergyCompanyID() );
                 company = (com.cannontech.database.data.stars.report.ServiceCompany)
                 Transaction.createTransaction( Transaction.INSERT, company ).execute();
-
-                liteAddr = (LiteAddress) StarsLiteFactory.createLite( company.getAddress() );
-                energyCompany.addAddress( liteAddr );
 
                 liteContact = (LiteContact) StarsLiteFactory.createLite( contact );
                 ServerUtils.handleDBChange( liteContact, DBChangeMsg.CHANGE_TYPE_ADD );

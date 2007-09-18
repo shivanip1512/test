@@ -1,32 +1,46 @@
 package com.cannontech.database.db.company;
 
+import java.sql.ResultSet;
+import java.sql.SQLException;
+import java.util.List;
+
+import org.springframework.dao.DataAccessException;
+import org.springframework.jdbc.core.simple.ParameterizedRowMapper;
+import org.springframework.jdbc.core.simple.SimpleJdbcTemplate;
+
+import com.cannontech.clientutils.CTILogger;
 import com.cannontech.common.util.CtiUtilities;
-import com.cannontech.database.SqlUtils;
+import com.cannontech.spring.YukonSpringHook;
 
 /**
  * Creation date: (10/18/2001 1:20:37 PM)
  */
 public class EnergyCompany extends com.cannontech.database.db.DBPersistent 
 {
-	public static final int DEFAULT_ENERGY_COMPANY_ID = -1;
-	private Integer energyCompanyID = null;
-	private String name = null;
-	private Integer primaryContactID = new Integer(CtiUtilities.NONE_ZERO_ID);
-	private Integer userID = new Integer(CtiUtilities.NONE_ZERO_ID);
-	
-	public static final String[] SETTER_COLUMNS = 
-	{ 
-		"Name", "PrimaryContactID", "UserID"
-	};
+    public static final int DEFAULT_ENERGY_COMPANY_ID = -1;
+    private static final String selectIdSql;
+    private static final String selectEnergyCompanySql;
+    private static final String nextIdSql;
+    private static final SimpleJdbcTemplate simpleJdbcTemplate = YukonSpringHook.getBean("simpleJdbcTemplate", SimpleJdbcTemplate.class);
+    private Integer energyCompanyID;
+    private String name;
+    private Integer primaryContactID = Integer.valueOf(CtiUtilities.NONE_ZERO_ID);
+    private Integer userID = Integer.valueOf(CtiUtilities.NONE_ZERO_ID);
+    
+	public static final String[] SETTER_COLUMNS = { "Name", "PrimaryContactID", "UserID" };
 	
 	public static final String[] CONSTRAINT_COLUMNS = { "EnergyCompanyID" };
 	
 	public static final String TABLE_NAME = "EnergyCompany";
-	
-	
 
-	private static final String allSql =
-	"SELECT EnergyCompanyID FROM EnergyCompany";
+    static {
+        
+        selectIdSql = "SELECT EnergyCompanyID FROM EnergyCompany";
+
+        selectEnergyCompanySql = "SELECT EnergyCompanyID,Name,PrimaryContactID,UserID FROM EnergyCompany";
+        
+        nextIdSql = "SELECT MAX(EnergyCompanyID)+1 FROM EnergyCompany";
+    }
 	
 /**
  * EnergyCompany constructor comment.
@@ -37,6 +51,7 @@ public EnergyCompany() {
 /**
  * @exception java.sql.SQLException The exception description.
  */
+@Override
 public void add() throws java.sql.SQLException 
 {
 	if (getEnergyCompanyID() == null)
@@ -58,6 +73,7 @@ public void add() throws java.sql.SQLException
 }
 /**
  */
+@Override
 public void delete() throws java.sql.SQLException 
 {
 	delete( TABLE_NAME, CONSTRAINT_COLUMNS[0], getEnergyCompanyID() );
@@ -67,6 +83,7 @@ public void delete() throws java.sql.SQLException
  * Creation date: (11/17/00 4:28:38 PM)
  * @return java.lang.String
  */
+@Override
 public boolean equals(Object o)
 {
 	if( o instanceof EnergyCompany )	
@@ -83,59 +100,25 @@ public boolean equals(Object o)
  * @param dbAlias java.lang.String
  */
 public static long[] getAllEnergyCompanyIDs() {
-	return getAllEnergyCompanyIDs("yukon");
-}
-/**
- * Creation date: (6/11/2001 3:38:14 PM)
- * @return com.cannontech.database.db.web.EnergyCompany
- * @param dbAlias java.lang.String
- */
-public static long[] getAllEnergyCompanyIDs(String dbAlias) {
-	
-	java.sql.Connection conn = null;
-	java.sql.Statement stmt = null;
-	java.sql.ResultSet rset = null;
-	
-	try
-	{
-		conn = com.cannontech.database.PoolManager.getInstance().getConnection(dbAlias);
-		stmt = conn.createStatement();
-		rset = stmt.executeQuery(allSql);
-
-		java.util.ArrayList idList = new java.util.ArrayList();	
-		while( rset.next() )
-		{
-			idList.add( new Long(rset.getLong(1)) );
-		}
-
-		long[] retIDs = new long[idList.size()];
-		for( int i = 0; i < idList.size(); i++ )
-		{
-			retIDs[i] = ((Long) idList.get(i)).longValue();
-		}
-		
-		return retIDs;			
-	}
-	catch(java.sql.SQLException e)
-	{
-		com.cannontech.clientutils.CTILogger.error( e.getMessage(), e );
-	}
-	finally
-	{
-		try
-		{
-			if( stmt != null ) stmt.close();
-            if (rset != null) rset.close();
-			if( conn != null ) conn.close();
-		}
-		catch( java.sql.SQLException e2 )
-		{
-			com.cannontech.clientutils.CTILogger.error( e2.getMessage(), e2 );
-		}
-	}
-
-	// An exception must have occured
-	return new long[0];
+    try {
+        final List<Long> list = simpleJdbcTemplate.query(selectIdSql, new ParameterizedRowMapper<Long>() {
+            public Long mapRow(ResultSet rs, int rowNum) throws SQLException {
+                Long id = Long.valueOf(rs.getLong("EnergyCompanyID"));
+                return id;
+            }
+        }, new Object[]{});
+        
+        final long[] idArray = new long[list.size()];
+        for (int x = 0; x < list.size(); x++) {
+            Long id = list.get(x);
+            idArray[x] = id.longValue();
+        }
+        return idArray;
+        
+    } catch (DataAccessException e) {
+        CTILogger.error(e.getMessage(), e);
+    }
+    return new long[0];
 }
 
 /**
@@ -143,59 +126,24 @@ public static long[] getAllEnergyCompanyIDs(String dbAlias) {
  * Creation date: (8/24/2001 12:52:15 PM)
  * @ret int
  */
-public static final EnergyCompany[] getEnergyCompanies(java.sql.Connection conn)
-{
-	java.sql.PreparedStatement pstmt = null;
-	java.sql.ResultSet rset = null;
-	java.util.ArrayList list = new java.util.ArrayList();
-	
-	String sql = "SELECT EnergyCompanyID," + 
-						"Name, PrimaryContactID, UserID" +
-						" FROM " + TABLE_NAME;
-
-	try
-	{		
-		if( conn == null )
-		{
-			throw new IllegalStateException("Database connection should not be (null).");
-		}
-		else
-		{
-			pstmt = conn.prepareStatement(sql.toString());			
-			rset = pstmt.executeQuery();
-	
-			while( rset.next() )
-			{
-				EnergyCompany ex = new EnergyCompany();
-				ex.setEnergyCompanyID( new Integer(rset.getInt(CONSTRAINT_COLUMNS[0])) );
-				ex.setName( rset.getString(SETTER_COLUMNS[0]) );
-				ex.setPrimaryContactID( new Integer(rset.getInt(SETTER_COLUMNS[1])) );
-				ex.setUserID(new Integer(rset.getInt(SETTER_COLUMNS[2])));
-
-				list.add( ex );
-			}
-		}		
+public static final EnergyCompany[] getEnergyCompanies() {
+	try {
+	    List<EnergyCompany> list = simpleJdbcTemplate.query(selectEnergyCompanySql, new ParameterizedRowMapper<EnergyCompany>() {
+	        public EnergyCompany mapRow(ResultSet rs, int rowNum) throws SQLException {
+	            final EnergyCompany company = new EnergyCompany();
+	            company.setEnergyCompanyID(rs.getInt("EnergyCompanyID"));
+	            company.setName(rs.getString("Name"));
+	            company.setPrimaryContactID(rs.getInt("PrimaryContactID"));
+	            company.setUserID(rs.getInt("UserID"));
+	            return company;
+	        }
+	    }, new Object[]{});
+        
+        return list.toArray(new EnergyCompany[list.size()]);
+	} catch (DataAccessException e) {
+	    CTILogger.error(e.getMessage(), e);
 	}
-	catch( java.sql.SQLException e )
-	{
-		com.cannontech.clientutils.CTILogger.error( e.getMessage(), e );
-	}
-	finally
-	{
-		try
-		{
-			if( pstmt != null ) pstmt.close();
-            if (rset != null) rset.close();
-		} 
-		catch( java.sql.SQLException e2 )
-		{
-			com.cannontech.clientutils.CTILogger.error( e2.getMessage(), e2 );//something is up
-		}	
-	}
-
-
-	EnergyCompany[] cmpys = new EnergyCompany[ list.size() ];	
-	return (EnergyCompany[])list.toArray( cmpys );
+    return new EnergyCompany[0];
 }
 
 /**
@@ -218,35 +166,15 @@ public java.lang.String getName() {
  * This method was created in VisualAge.
  * @return java.lang.Integer
  */
-public static final Integer getNextEnergyCompanyID()
-{
-	Integer result = null;
-	java.sql.PreparedStatement pstmt = null;
-	java.sql.ResultSet rset = null;
-	java.sql.Connection conn = null;
-
-	String sql = "SELECT MAX(EnergyCompanyID)+1 FROM " + TABLE_NAME;
-
-	try
-	{
-		conn = com.cannontech.database.PoolManager.getInstance().getConnection( com.cannontech.common.util.CtiUtilities.getDatabaseAlias() );
-
-		pstmt = conn.prepareStatement(sql.toString());		
-		rset = pstmt.executeQuery();							
-
-		while( rset.next() )
-			result = new Integer(rset.getInt(1));
-	}
-	catch( java.sql.SQLException e )
-	{
-		com.cannontech.clientutils.CTILogger.error( e.getMessage(), e );
-	}
-	finally
-	{
-		SqlUtils.close(rset, pstmt, conn );
-	}
-
-	return result;
+public static final Integer getNextEnergyCompanyID() {
+    Integer id = null;
+    try {
+        int nextId = simpleJdbcTemplate.queryForInt(nextIdSql, new Object[]{});
+        return Integer.valueOf(nextId);
+    } catch (DataAccessException e) {
+        CTILogger.error(e.getMessage(), e);
+    }
+    return id;
 }
 /**
  * Insert the method's description here.
