@@ -2,8 +2,8 @@
 *
 * PVCS KEYWORDS:
 * ARCHIVE      :  $Archive:   Z:/SOFTWAREARCHIVES/YUKON/RTDB/INCLUDE/pt_status.h-arc  $
-* REVISION     :  $Revision: 1.11 $
-* DATE         :  $Date: 2007/02/09 20:53:50 $
+* REVISION     :  $Revision: 1.12 $
+* DATE         :  $Date: 2007/09/18 14:31:32 $
 *
 */
 #ifndef __PT_STATUS_H__
@@ -22,6 +22,8 @@ class IM_EX_PNTDB CtiPointStatus : public CtiPointBase
 private:
 
    CtiTablePointStatus  _pointStatus;
+
+   friend class Test_CtiPointStatus;
 
 public:
 
@@ -45,8 +47,18 @@ public:
    virtual double getInitialValue( ) const;
    virtual int getControlExpirationTime() const;
    virtual int getControlOffset() const;
-
 };
+
+
+class IM_EX_PNTDB Test_CtiPointStatus : public CtiPointStatus
+{
+public:
+    void setPointOffset  ( int  offset   )  {  _pointBase.setPointOffset(offset);   }
+    void setControlOffset( int offset    )  {  _pointStatus.setControlOffset(offset);   }
+    void setID           ( long id       )  {  _pointBase.setID(id);                }
+    void setDeviceID     ( long deviceid )  {  _pointBase.setPAObjectID(deviceid);  }
+};
+
 
 typedef CtiPointStatus CtiPointCalculatedStatus;
 

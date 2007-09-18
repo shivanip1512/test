@@ -6,8 +6,8 @@
 *
 * PVCS KEYWORDS:
 * ARCHIVE      :  $Archive:   Z:/SOFTWAREARCHIVES/YUKON/RTDB/INCLUDE/pt_analog.h-arc  $
-* REVISION     :  $Revision: 1.13 $
-* DATE         :  $Date: 2007/02/09 20:54:19 $
+* REVISION     :  $Revision: 1.14 $
+* DATE         :  $Date: 2007/09/18 14:31:32 $
 *
 * Copyright (c) 1999, 2000, 2001 Cannon Technologies Inc. All rights reserved.
 *-----------------------------------------------------------------------------*/
@@ -29,6 +29,8 @@ class IM_EX_PNTDB CtiPointAnalog : public CtiPointNumeric
 private:
 
    CtiTablePointAnalog     _pointAnalog;
+
+   friend class Test_CtiPointAnalog;
 
 public:
 
@@ -93,6 +95,15 @@ public:
    virtual void         setMultiplier(DOUBLE d)       { _pointAnalog.setMultiplier(d); }
    virtual void         setDataOffset(DOUBLE d)       { _pointAnalog.setDataOffset(d); }
 
+};
+
+
+class IM_EX_PNTDB Test_CtiPointAnalog : public CtiPointAnalog
+{
+public:
+    void setPointOffset( int  offset   )  {  _pointBase.setPointOffset(offset);   }
+    void setID         ( long id       )  {  _pointBase.setID(id);                }
+    void setDeviceID   ( long deviceid )  {  _pointBase.setPAObjectID(deviceid);  }
 };
 
 typedef CtiPointAnalog CtiPointAnalogOutput;//Someday CtiPointAnalogOutput may be its own class
