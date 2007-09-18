@@ -36,7 +36,7 @@ public class CBCSelectionLists {
     public static final int CapBankSetup = 6;
 	public static final int CapControlSubBusSetup = 1;
 	public static final int CapControlFeederCapBank = 5;
-    public static final int CapControlStrategyEditor = 13;
+    public static final int CapControlStrategyEditor = 14;
     
     /* MyFaces 1.10 does not seem to show the correct time with h:outPutText, */
 	/* so we only show date for now within our pages */

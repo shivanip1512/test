@@ -101,6 +101,9 @@
           <option name="Schedule">
             <link>/editor/cbcWizBase.jsf?type=100000</link>
           </option>
+          <option name="Strategy">
+            <link>/editor/cbcWizBase.jsf?type=5</link>
+          </option>
         </sublinks>
       </option>
       <option id="modify" name="Modify">
