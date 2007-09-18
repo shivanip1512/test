@@ -12,8 +12,8 @@
 *
 * PVCS KEYWORDS:
 * ARCHIVE      :  $Archive:   Z:/SOFTWAREARCHIVES/YUKON/RTDB/INCLUDE/mgr_point.h-arc  $
-* REVISION     :  $Revision: 1.13 $
-* DATE         :  $Date: 2006/12/06 22:12:51 $
+* REVISION     :  $Revision: 1.14 $
+* DATE         :  $Date: 2007/09/18 14:18:01 $
 *
  * (c) 1999 Cannon Technologies Inc. Wayzata Minnesota
  * All Rights Reserved
@@ -50,14 +50,30 @@ private:
 
     coll_type     _smartMap;
     void refreshPoints(bool &rowFound, RWDBReader& rdr, BOOL (*testFunc)(CtiPointBase*,void*), void *arg);
+    void addPoint(CtiPointBase *point);
 
     // These are properties of already collected points.
     void refreshPointProperties(LONG pntID = 0, LONG paoID = 0);
     void refreshPointLimits(LONG pntID = 0, LONG paoID = 0);
     void refreshAlarming(LONG pntID = 0, LONG paoID = 0);
 
-    map          < long, long > _control_offsets;  //  this map contains all control point offsets
-    std::multimap< long, long > _type_offsets;     //  this map contains all point offsets
+    struct pao_offset_t
+    {
+        long paobjectid;
+        long offset;
+
+        pao_offset_t( long p, long o ) : paobjectid(p), offset(o)  { }
+
+        bool operator<(const pao_offset_t &rhs) const
+        {
+            return (paobjectid == rhs.paobjectid)?(offset < rhs.offset):(paobjectid < rhs.paobjectid);
+        }
+    };
+
+    map< pao_offset_t, long >           _control_offsets;  //  this map contains all control point offsets
+    std::multimap< pao_offset_t, long > _type_offsets;     //  this map contains all point offsets
+
+    friend class Test_CtiPointManager;
 
 public:
 
@@ -85,7 +101,6 @@ public:
     {
         return _smartMap.getMux();
     }
-
 };
 
 struct PointDeviceMapping
@@ -93,6 +108,12 @@ struct PointDeviceMapping
     std::map<long, long> point_device_map;
     typedef CtiLockGuard<CtiMutex>    LockGuard;
     CtiMutex mux;
+};
+
+class Test_CtiPointManager : public CtiPointManager
+{
+public:
+    void addPoint(CtiPointBase *point)  {  ((CtiPointManager *)this)->addPoint(point);  }
 };
 
 #endif                  // #ifndef __MGR_POINT_H__
