@@ -370,10 +370,10 @@ dev_ccu721.obj:	yukon.h precompiled.h ctidbgmem.h dev_ccu721.h \
 		tbl_dv_scandata.h tbl_dv_wnd.h connection.h exchange.h \
 		msg_ptreg.h msg_reg.h queue.h cparms.h configkey.h \
 		configval.h prot_base.h xfer.h dialup.h tbl_dialup.h \
-		tbl_direct.h tbl_dv_address.h prot_klondike.h dnp_datalink.h \
-		dnp_datalink_packet.h prot_idlc.h porter.h dsm2err.h \
-		devicetypes.h pt_numeric.h tbl_pt_unit.h tbl_unitmeasure.h \
-		tbl_pt_limit.h pt_status.h tbl_pt_status.h dllyukon.h
+		tbl_direct.h tbl_dv_address.h prot_klondike.h prot_wrap.h \
+		prot_idlc.h porter.h dsm2err.h devicetypes.h pt_numeric.h \
+		tbl_pt_unit.h tbl_unitmeasure.h tbl_pt_limit.h pt_status.h \
+		tbl_pt_status.h dllyukon.h
 dev_davis.obj:	yukon.h precompiled.h ctidbgmem.h cmdparse.h \
 		ctitokenizer.h dlldefs.h parsevalue.h connection.h exchange.h \
 		dllbase.h os2_2w32.h types.h cticalls.h dsm2.h mutex.h \
@@ -1887,7 +1887,8 @@ mgr_device.obj:	yukon.h precompiled.h ctidbgmem.h rtdb.h dlldefs.h \
 		ion_value_fixed_time.h ion_net_application.h \
 		ion_net_network.h ion_net_datalink.h dev_gridadvisor.h \
 		dev_idlc.h tbl_dv_idlcremote.h trx_info.h porter.h dsm2err.h \
-		devicetypes.h trx_711.h dev_carrier.h dev_dlcbase.h \
+		devicetypes.h trx_711.h dev_ccu721.h prot_klondike.h \
+		prot_wrap.h prot_idlc.h dev_carrier.h dev_dlcbase.h \
 		tbl_route.h tbl_carrier.h prot_emetcon.h tbl_loadprofile.h \
 		tbl_dv_mctiedport.h dev_lmi.h tbl_dv_seriesv.h prot_lmi.h \
 		prot_seriesv.h verification_objects.h dev_mct.h dev_mct410.h \
@@ -2345,12 +2346,12 @@ slctdev.obj:	yukon.h precompiled.h ctidbgmem.h dev_710.h dev_idlc.h \
 		dnp_object_binaryoutput.h tbl_dv_address.h dev_cbc.h \
 		tbl_dv_cbc.h dev_cbc7020.h dev_ccu.h mgr_point.h smartmap.h \
 		hashkey.h hash_functions.h slctpnt.h device_queue_interface.h \
-		dev_ccu721.h prot_klondike.h prot_idlc.h dev_welco.h \
-		prot_welco.h dev_ilex.h dev_seriesv.h dev_ied.h tbl_dv_ied.h \
-		prot_seriesv.h dev_lmi.h tbl_dv_seriesv.h prot_lmi.h \
-		verification_objects.h dev_tcu.h dev_meter.h tbl_metergrp.h \
-		vcomdefs.h dev_gridadvisor.h dev_modbus.h prot_modbus.h \
-		dev_schlum.h dev_fulcrum.h dev_ion.h prot_ion.h \
+		dev_ccu721.h prot_klondike.h prot_wrap.h prot_idlc.h \
+		dev_welco.h prot_welco.h dev_ilex.h dev_seriesv.h dev_ied.h \
+		tbl_dv_ied.h prot_seriesv.h dev_lmi.h tbl_dv_seriesv.h \
+		prot_lmi.h verification_objects.h dev_tcu.h dev_meter.h \
+		tbl_metergrp.h vcomdefs.h dev_gridadvisor.h dev_modbus.h \
+		prot_modbus.h dev_schlum.h dev_fulcrum.h dev_ion.h prot_ion.h \
 		ion_datastream.h ion_value.h ion_serializable.h \
 		ion_value_fixed.h ion_value_numeric.h ion_value_variable.h \
 		ion_value_variable_fixedarray.h \
@@ -2445,4 +2446,33 @@ tcpsup.obj:	yukon.h precompiled.h ctidbgmem.h os2_2w32.h dlldefs.h \
 		pt_base.h pt_dyn_base.h tbl_pt_base.h tbl_pt_trigger.h \
 		tbl_port_base.h xfer.h dialup.h critical_section.h \
 		tbl_port_statistics.h
+test_dev_grp.obj:	dev_grp.h cparms.h rwutil.h yukon.h precompiled.h \
+		ctidbgmem.h ctitime.h dlldefs.h boost_time.h configkey.h \
+		configval.h msg_lmcontrolhistory.h pointdefs.h message.h \
+		collectable.h msg_pcrequest.h msg_signal.h msg_pdata.h \
+		msg_multi.h pt_status.h pt_base.h dbmemobject.h resolvers.h \
+		types.h pointtypes.h db_entry_defines.h pt_dyn_base.h \
+		tbl_pt_base.h dllbase.h os2_2w32.h cticalls.h dsm2.h mutex.h \
+		guard.h numstr.h clrdump.h cticonnect.h netports.h dbaccess.h \
+		sema.h desolvers.h tbl_pt_trigger.h tbl_pt_status.h \
+		pt_analog.h pt_numeric.h tbl_pt_unit.h tbl_unitmeasure.h \
+		tbl_pt_limit.h tbl_pt_analog.h logger.h thread.h \
+		CtiPCPtrQueue.h utility.h queues.h sorted_vector.h dev_base.h \
+		cmdparse.h ctitokenizer.h parsevalue.h counter.h \
+		dev_exclusion.h tbl_paoexclusion.h rte_base.h ctibase.h \
+		ctinexus.h tbl_pao.h tbl_rtcomm.h tbl_base.h tbl_2way.h \
+		tbl_stats.h tbl_scanrate.h tbl_dyn_paoinfo.h \
+		dev_grp_expresscom.h tbl_dv_expresscom.h vcomdefs.h
+test_mgr_point.obj:	mgr_point.h dlldefs.h smartmap.h dllbase.h \
+		os2_2w32.h types.h cticalls.h dsm2.h mutex.h guard.h numstr.h \
+		clrdump.h cticonnect.h yukon.h precompiled.h ctidbgmem.h \
+		netports.h hashkey.h hash_functions.h logger.h thread.h \
+		ctitime.h CtiPCPtrQueue.h utility.h queues.h sorted_vector.h \
+		pt_base.h dbmemobject.h resolvers.h pointtypes.h \
+		db_entry_defines.h pointdefs.h pt_dyn_base.h tbl_pt_base.h \
+		dbaccess.h sema.h desolvers.h tbl_pt_trigger.h slctpnt.h \
+		pt_status.h tbl_pt_status.h pt_analog.h pt_numeric.h \
+		tbl_pt_unit.h tbl_unitmeasure.h tbl_pt_limit.h \
+		tbl_pt_analog.h pt_accum.h tbl_pt_accum.h \
+		tbl_pt_accumhistory.h
 #ENDUPDATE#
