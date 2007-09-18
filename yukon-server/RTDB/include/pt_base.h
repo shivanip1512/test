@@ -6,8 +6,8 @@
 *
 * PVCS KEYWORDS:
 * ARCHIVE      :  $Archive:   Z:/SOFTWAREARCHIVES/YUKON/RTDB/INCLUDE/pt_base.h-arc  $
-* REVISION     :  $Revision: 1.15 $
-* DATE         :  $Date: 2007/02/09 20:54:08 $
+* REVISION     :  $Revision: 1.16 $
+* DATE         :  $Date: 2007/09/18 14:30:50 $
 *
 * Copyright (c) 1999, 2000, 2001 Cannon Technologies Inc. All rights reserved.
 *-----------------------------------------------------------------------------*/
@@ -77,41 +77,40 @@ public:
 
    virtual void DumpData();
 
-   INT               getArchiveInterval() const;
-   INT               getArchiveType() const;
-   INT               getPointOffset() const;
+   INT             getArchiveInterval() const;
+   INT             getArchiveType() const;
+   INT             getPointOffset() const;
 
-   LONG              getPointID() const;
-   LONG              getID() const;
+   LONG            getPointID() const;
+   LONG            getID() const;
 
-   string         getName() const;
-   LONG              getDeviceID() const;
+   string          getName() const;
+   LONG            getDeviceID() const;
 
+   string          getLogicalGroup() const;
+   LONG            getStateGroupID() const;
 
-   string         getLogicalGroup() const;
-   LONG              getStateGroupID() const;
+   BOOL            getDisableTag() const;
+   BOOL            isInService() const;
+   BOOL            isOutOfService() const;
 
-   BOOL              getDisableTag() const;
-   BOOL              isInService() const;
-   BOOL              isOutOfService() const;
+   BOOL            getAlarmDisableTag() const;
+   BOOL            isAlarmDisabled() const;
 
-   BOOL              getAlarmDisableTag() const;
-   BOOL              isAlarmDisabled() const;
+   BOOL            getPseudoTag() const;
+   BOOL            isPseudoPoint() const;
 
-   BOOL              getPseudoTag() const;
-   BOOL              isPseudoPoint() const;
+   BOOL            getArchivePending() const;
+   BOOL            isArchivePending() const;
 
-   BOOL              getArchivePending() const;
-   BOOL              isArchivePending() const;
+   void            setIsTriggerPoint(bool isTrigPoint = true);
+   void            setIsVerificationPoint(bool isTrigPoint = true);
+   bool            isATriggerPoint(); //Only in Dispatch!!
+   bool            isAVerificationPoint(); //Only in Dispatch!!
 
-   void              setIsTriggerPoint(bool isTrigPoint = true);
-   void              setIsVerificationPoint(bool isTrigPoint = true);
-   bool              isATriggerPoint(); //Only in Dispatch!!
-   bool              isAVerificationPoint(); //Only in Dispatch!!
-
-   void              setType(CtiPointType_t type);
-   CtiPointType_t    getType() const;
-   CtiPointType_t    isA() const;
+   void            setType(CtiPointType_t type);
+   CtiPointType_t  getType() const;
+   CtiPointType_t  isA() const;
 
 
    void setArchivePending(BOOL b = 1);
