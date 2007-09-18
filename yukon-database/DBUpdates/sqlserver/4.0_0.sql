@@ -2,15 +2,6 @@
 /**** SQLServer 2000 DBupdates         ****/
 /******************************************/
 
-/* @error ignore-begin */
-create table dynamicccarea ( AreaID numeric not null, additionalflags varchar(20) not null );
-go
-alter table dynamicccarea
-   add constraint FK_ccarea_Dynccarea foreign key (areaID)
-      references Capcontrolarea (areaID);
-go
-insert into dynamicccarea (areaid, additionalflags) select areaid, 'NNNNNNNNNNNNNNNNNNNN' from capcontrolarea; 
-go
 /*==============================================================*/
 /* Table: DYNAMICBILLINGFIELD                                   */
 /*==============================================================*/
@@ -182,15 +173,149 @@ go
 update yukonpaobject set type = 'MCT-430SL' where type = 'MCT-430SN' or type = 'MCT430SN';
 update devicetypecommand set devicetype = 'MCT-430SL' where devicetype = 'MCT-430SN' or devicetype = 'MCT430SN';
 
-create table CAPCONTROLSPECIALAREA ( AreaID numeric not null );
+/************************************* 
+	START CAPCONTROL 4.0 CHANGES 
+*************************************/
+insert into SeasonSchedule values (-1,'No Season');
+insert into DateOfSeason values(-1, 'Default', 1,1,12,31);
 go
-create table CCSUBSPECIALAREAASSIGNMENT (
+
+create table CCSeasonStrategyAssignment (
+	PaobjectId numeric not null,
+	SeasonScheduleId numeric not null,
+	SeasonName varchar(20) not null,
+	StrategyId numeric not null
+);
+go
+
+alter table CapControlArea  drop constraint FK_CAPCONTAREA_CAPCONTRSTRAT;
+alter table CapControlArea drop column StrategyId;
+alter table CapControlSubstationbus  drop constraint FK_CCSUBB_CCSTR;
+alter table CapControlSubstationbus drop column StrategyId;
+alter table CapControlFeeder  drop constraint FK_CCFDR_CCSTR;
+alter table CapControlFeeder drop column StrategyId;
+go
+
+create table CapControlSpecialArea( AreaID numeric not null );
+go
+
+alter table CapControlSpecialArea
+   add constraint PK_CapControlSpecialArea primary key nonclustered (AreaID)
+go
+
+create table CCSubSpecialAreaAssignment (
 
    AreaID numeric not null,
    SubstationBusID numeric not null,
    DisplayOrder numeric not null
 
 );
+
+alter table CCSubSpecialAreaAssignment
+   add constraint PK_CCSubSpecialAreaAssignment primary key nonclustered (AreaId, SubstationBusId)
+go
+
+alter table CCSubSpecialAreaAssignment
+   add constraint FK_CCSubSpecialArea_CapContr foreign key (AreaID)
+      references CapControlSpecialArea (AreaID)
+go
+
+alter table CCSubSpecialAreaAssignment
+   add constraint FK_CCSubSpecialArea_CapSubAreaAssgn foreign key (SubstationBusId)
+      references CapControlSubstationBus (SubstationBusId)
+go
+
+create table DynamicCCSpecialArea (
+   AreaID               numeric              not null,
+   Additionalflags      varchar(20)          not null
+)
+go
+
+alter table DynamicCCSpecialArea
+   add constraint FK_ccspecialarea_Dynccspecialarea foreign key (AreaID)
+      references CapControlSpecialArea (AreaID)
+go
+
+insert into DynamicCCSpecialArea (AreaId, Additionalflags) select areaid, 'NNNNNNNNNNNNNNNNNNNN' from CapControlSpecialArea;
+go
+
+alter table DynamicCCFeeder add PhaseAValue float;
+go
+update DynamicCCFeeder set PhaseAValue = 0;
+go
+alter table DynamicCCFeeder alter column PhaseAValue float not null;
+go
+alter table DynamicCCFeeder add PhaseBValue float;
+go
+update DynamicCCFeeder set PhaseBValue = 0;
+go
+alter table DynamicCCFeeder alter column PhaseBValue float not null;
+go
+alter table DynamicCCFeeder add PhaseCValue float;
+go
+update DynamicCCFeeder set PhaseCValue = 0;
+go
+alter table DynamicCCFeeder alter column PhaseCValue float not null;
+go
+alter table DynamicCCSubstationbus add PhaseAValue float;
+go
+update DynamicCCSubstationbus set PhaseAValue = 0;
+go
+alter table DynamicCCSubstationbus alter column PhaseAValue float not null;
+go
+alter table DynamicCCSubstationbus add PhaseBValue float;
+go
+update DynamicCCSubstationbus set PhaseBValue = 0;
+go
+alter table DynamicCCSubstationbus alter column PhaseBValue float not null;
+go
+alter table DynamicCCSubstationbus add PhaseCValue float;
+go
+update DynamicCCSubstationbus set PhaseCValue = 0;
+go
+alter table DynamicCCSubstationbus alter column PhaseCValue float not null;
+
+
+
+alter table CapControlFeeder add UsePhaseData char(1);
+go
+update CapControlFeeder set UsePhaseData = 'N';
+go
+alter table CapControlFeeder alter column UsePhaseData char(1) not null;
+go
+alter table CapControlFeeder add PhaseB float;
+go
+update CapControlFeeder set PhaseB = 0;
+go
+alter table CapControlFeeder alter column PhaseB float not null;
+go
+alter table CapControlFeeder add PhaseC float;
+go
+update CapControlFeeder set PhaseC = 0;
+go
+alter table CapControlFeeder alter column PhaseC float not null;
+go
+alter table CapControlSubstationbus add UsePhaseData char(1);
+go
+update CapControlSubstationbus set UsePhaseData = 'N';
+go
+alter table CapControlSubstationbus alter column UsePhaseData char(1) not null;
+go
+alter table CapControlSubstationbus add PhaseB float;
+go
+update CapControlSubstationbus set PhaseB = 0;
+go
+alter table CapControlSubstationbus alter column PhaseB float not null;
+go
+alter table CapControlSubstationbus add PhaseC float;
+go
+update CapControlSubstationbus set PhaseC = 0;
+go
+alter table CapControlSubstationbus alter column PhaseC float not null;
+
+/************************************* 
+	END CAPCONTROL 4.0 CHANGES 
+*************************************/
 
 delete from LMThermostatSeasonEntry where SeasonID in (select SeasonID from LMThermostatSeason where ScheduleID in (select ScheduleID from LMThermostatSchedule where ThermostatTypeID in (select EntryID from YukonListEntry where YukonDefinitionID = 3100)));
 go

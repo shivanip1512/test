@@ -776,6 +776,13 @@ go
 
 if exists (select 1
             from  sysobjects
+           where  id = object_id('DYNAMICCCSPECIALAREA')
+            and   type = 'U')
+   drop table DYNAMICCCSPECIALAREA
+go
+
+if exists (select 1
+            from  sysobjects
            where  id = object_id('DYNAMICCCTWOWAYCBC')
             and   type = 'U')
    drop table DYNAMICCCTWOWAYCBC
@@ -1866,6 +1873,13 @@ if exists (select 1
    drop table YukonWebConfiguration
 go
 
+if exists (select 1
+            from  sysobjects
+           where  id = object_id('CCSeasonStrategyAssignment')
+            and   type = 'U')
+   drop table CCSeasonStrategyAssignment
+go
+
 execute sp_revokedbaccess Yukon
 go
 
@@ -2199,8 +2213,7 @@ go
 /* Table: CAPCONTROLAREA                                        */
 /*==============================================================*/
 create table CAPCONTROLAREA (
-   AreaID               numeric              not null,
-   StrategyID           numeric              not null
+   AreaID               numeric              not null
 )
 go
 
@@ -2216,6 +2229,10 @@ create table CAPCONTROLSPECIALAREA (
 )
 go
 
+alter table CAPCONTROLSPECIALAREA
+   add constraint PK_CAPCONTROLSPECIALAREA primary key nonclustered (AreaID)
+go
+
 /*==============================================================*/
 /* Table: CAPCONTROLSUBSTATIONBUS                               */
 /*==============================================================*/
@@ -2224,12 +2241,14 @@ create table CAPCONTROLSUBSTATIONBUS (
    CurrentVarLoadPointID numeric              not null,
    CurrentWattLoadPointID numeric              not null,
    MapLocationID        varchar(64)          not null,
-   StrategyID           numeric              not null,
    CurrentVoltLoadPointID numeric              not null,
    AltSubID             numeric              not null,
    SwitchPointID        numeric              not null,
    DualBusEnabled       char(1)              not null,
-   MultiMonitorControl  char(1)              not null
+   MultiMonitorControl  char(1)              not null,
+   UsePhaseData			char(1)				not null,
+   PhaseB					float					not null,
+   PhaseC					float					not null
 )
 go
 
@@ -2340,6 +2359,10 @@ create table CCSUBSPECIALAREAASSIGNMENT (
    SubstationBusID      numeric              not null,
    DisplayOrder         numeric              not null
 )
+go
+
+alter table CCSUBSPECIALAREAASSIGNMENT
+   add constraint PK_CCSUBSPECIALAREAASSIGNMENT primary key nonclustered (AreaID, SubstationBusID)
 go
 
 /*==============================================================*/
@@ -2836,13 +2859,15 @@ go
 /* Table: CapControlFeeder                                      */
 /*==============================================================*/
 create table CapControlFeeder (
-   FeederID             numeric              not null,
-   CurrentVarLoadPointID numeric              not null,
-   CurrentWattLoadPointID numeric              not null,
-   MapLocationID        varchar(64)          not null,
-   StrategyID           numeric              not null,
-   CurrentVoltLoadPointID numeric              not null,
-   MultiMonitorControl  char(1)              not null
+    FeederID             numeric              not null,
+    CurrentVarLoadPointID numeric              not null,
+    CurrentWattLoadPointID numeric              not null,
+    MapLocationID        varchar(64)          not null,
+    CurrentVoltLoadPointID numeric              not null,
+    MultiMonitorControl  char(1)              not null,
+    UsePhaseData			char(1)				not null,
+    PhaseB					float					not null,
+    PhaseC					float					not null
 )
 go
 
@@ -4297,6 +4322,17 @@ go
 insert into dynamicccarea (areaid, additionalflags) select areaid, 'NNNNNNNNNNNNNNNNNNNN' from capcontrolarea;
 
 /*==============================================================*/
+/* Table: DYNAMICCCSPECIALAREA                                         */
+/*==============================================================*/
+create table DYNAMICCCSPECIALAREA (
+   AreaID               numeric              not null,
+   additionalflags      varchar(20)          not null
+)
+go
+
+insert into dynamicccspecialarea (areaid, additionalflags) select areaid, 'NNNNNNNNNNNNNNNNNNNN' from capcontrolspecialarea;
+
+/*==============================================================*/
 /* Table: DYNAMICCCTWOWAYCBC                                    */
 /*==============================================================*/
 create table DYNAMICCCTWOWAYCBC (
@@ -4430,6 +4466,8 @@ create table DateOfSeason (
    SeasonEndDay         numeric              not null
 )
 go
+
+insert into DateOfSeason values(-1, 'Default', 1,1,12,31);
 
 alter table DateOfSeason
    add constraint PK_DATEOFSEASON primary key nonclustered (SeasonScheduleID, SeasonName)
@@ -5426,7 +5464,10 @@ create table DynamicCCFeeder (
    iVControlTot         float                not null,
    iVCount              numeric              not null,
    iWControlTot         float                not null,
-   iWCount              numeric              not null
+   iWCount              numeric              not null,
+   PhaseAValue		float					not null,
+   PhaseBValue		float					not null,
+   PhaseCValue		float					not null
 )
 go
 
@@ -5505,7 +5546,10 @@ create table DynamicCCSubstationBus (
    iVControlTot         float                not null,
    iVCount              numeric              not null,
    iWControlTot         float                not null,
-   iWCount              numeric              not null
+   iWCount              numeric              not null,
+   PhaseAValue		float					not null,
+   PhaseBValue		float					not null,
+   PhaseCValue		float					not null
 )
 go
 
@@ -7801,6 +7845,7 @@ create table SeasonSchedule (
 )
 go
 
+insert into SeasonSchedule values (-1,'No Season');
 insert into SeasonSchedule values( 0, 'Empty Schedule' );
 
 alter table SeasonSchedule
@@ -10271,6 +10316,14 @@ alter table YukonWebConfiguration
    add constraint PK_YUKONWEBCONFIGURATION primary key nonclustered (ConfigurationID)
 go
 
+create table CCSeasonStrategyAssignment (
+	PaobjectId numeric not null,
+	SeasonScheduleId numeric not null,
+	SeasonName varchar(20) not null,
+	StrategyId numeric not null
+);
+go
+
 /*==============================================================*/
 /* View: CCINVENTORY_VIEW                                       */
 /*==============================================================*/
@@ -10526,11 +10579,6 @@ alter table CAPBANKADDITIONAL
       references CAPBANK (DEVICEID)
 go
 
-alter table CAPCONTROLAREA
-   add constraint FK_CAPCONTAREA_CAPCONTRSTRAT foreign key (StrategyID)
-      references CapControlStrategy (StrategyID)
-go
-
 alter table CAPCONTROLSUBSTATIONBUS
    add constraint FK_CAPCONTR_SWPTID foreign key (SwitchPointID)
       references POINT (POINTID)
@@ -10539,11 +10587,6 @@ go
 alter table CAPCONTROLSUBSTATIONBUS
    add constraint FK_CAPCONTR_CVOLTPTID foreign key (CurrentVoltLoadPointID)
       references POINT (POINTID)
-go
-
-alter table CAPCONTROLSUBSTATIONBUS
-   add constraint FK_CCSUBB_CCSTR foreign key (StrategyID)
-      references CapControlStrategy (StrategyID)
 go
 
 alter table CAPCONTROLSUBSTATIONBUS
@@ -10598,6 +10641,16 @@ go
 
 alter table CCSUBAREAASSIGNMENT
    add constraint FK_CCSUBARE_CAPSUBAREAASSGN foreign key (SubstationBusID)
+      references CAPCONTROLSUBSTATIONBUS (SubstationBusID)
+go
+
+alter table CCSUBSPECIALAREAASSIGNMENT
+   add constraint FK_CCSUBSPECIALAREA_CAPCONTR foreign key (AreaID)
+      references CAPCONTROLSPECIALAREA (AreaID)
+go
+
+alter table CCSUBSPECIALAREAASSIGNMENT
+   add constraint FK_CCSUBSPECIALAREA_CAPSUBAREAASSGN foreign key (SubstationBusID)
       references CAPCONTROLSUBSTATIONBUS (SubstationBusID)
 go
 
@@ -10784,11 +10837,6 @@ go
 alter table CapControlFeeder
    add constraint FK_CAPCONTR_WATTPTID foreign key (CurrentWattLoadPointID)
       references POINT (POINTID)
-go
-
-alter table CapControlFeeder
-   add constraint FK_CCFDR_CCSTR foreign key (StrategyID)
-      references CapControlStrategy (StrategyID)
 go
 
 alter table CapControlFeeder
@@ -11086,6 +11134,11 @@ go
 alter table DYNAMICCCAREA
    add constraint FK_ccarea_Dynccarea foreign key (AreaID)
       references CAPCONTROLAREA (AreaID)
+go
+
+alter table DYNAMICCCSPECIALAREA
+   add constraint FK_ccspecialarea_Dynccspecialarea foreign key (AreaID)
+      references CAPCONTROLSPECIALAREA (AreaID)
 go
 
 alter table DYNAMICCCTWOWAYCBC
