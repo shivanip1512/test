@@ -29,10 +29,12 @@ import com.cannontech.util.ServletUtil;
 
 public class MACSScheduleController extends MultiActionController {
     private static final Comparator<Schedule> sortByName;
+    private static final Comparator<Schedule> sortByCategory;
     private static final Comparator<Schedule> sortByState;
     private static final Comparator<Schedule> sortByStartDate;
     private static final Comparator<Schedule> sortByStopDate;
     private static final Comparator<Schedule> reverseSortByName;
+    private static final Comparator<Schedule> reverseSortByCategory;
     private static final Comparator<Schedule> reverseSortByState;
     private static final Comparator<Schedule> reverseSortByStartDate;
     private static final Comparator<Schedule> reverseSortByStopDate;
@@ -44,6 +46,12 @@ public class MACSScheduleController extends MultiActionController {
         sortByName = new Comparator<Schedule>() {
             public int compare(Schedule o1, Schedule o2) {
                 return o1.getScheduleName().compareTo(o2.getScheduleName());
+            }
+        };
+        
+        sortByCategory = new Comparator<Schedule>() {
+            public int compare(Schedule o1, Schedule o2) {
+                return o1.getCategoryName().compareTo(o2.getCategoryName());
             }
         };
         
@@ -74,6 +82,12 @@ public class MACSScheduleController extends MultiActionController {
         reverseSortByName = new Comparator<Schedule>() {
             public int compare(Schedule o1, Schedule o2) {
                 return o2.getScheduleName().compareTo(o1.getScheduleName());
+            }
+        };
+        
+        reverseSortByCategory = new Comparator<Schedule>() {
+            public int compare(Schedule o1, Schedule o2) {
+                return o2.getCategoryName().compareTo(o1.getCategoryName());
             }
         };
         
@@ -249,6 +263,9 @@ public class MACSScheduleController extends MultiActionController {
         
         if (cleanSortBy.equalsIgnoreCase("Schedule Name")) { 
             c = (descending) ? reverseSortByName : sortByName;
+        }
+        if (cleanSortBy.equalsIgnoreCase("Category Name")) { 
+            c = (descending) ? reverseSortByCategory : sortByCategory;
         }
         if (cleanSortBy.equalsIgnoreCase("Current State")) {
             c = (descending) ? reverseSortByState : sortByState;

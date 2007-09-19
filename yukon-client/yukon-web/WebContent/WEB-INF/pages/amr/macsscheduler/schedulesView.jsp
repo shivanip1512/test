@@ -41,6 +41,36 @@
                         value="Schedule Name" />
                 </form>
             </th>
+            <th id="Category Name">
+                <form id="form_categoryName" action="${viewUrl}" style="margin: 0px; padding: 0px;"
+                    method="POST">
+                    <a
+                        href="javascript:document.getElementById('form_categoryName').submit();">Category
+                        Name</a>
+                    <c:choose>
+                        <c:when test="${sortBy == 'Category Name'}">
+                            <c:choose>
+                                <c:when test="${descending}">
+                                    <span title="Sorted descending">&#9660;</span>
+                                    <input type="hidden"
+                                        name="descending" value="false" />
+                                </c:when>
+                                <c:otherwise>
+                                    <span title="Sorted ascending">&#9650;</span>
+                                    <input type="hidden"
+                                        name="descending" value="true" />
+                                </c:otherwise>
+                            </c:choose>
+                        </c:when>
+                        <c:otherwise>
+                            <input type="hidden" name="descending"
+                                value="false" />
+                        </c:otherwise>
+                    </c:choose>
+                    <input type="hidden" name="sortBy"
+                        value="Category Name" />
+                </form>
+            </th>
             <th id="Current State">
                 <form id="form_currentState" action="${viewUrl}" style="margin: 0px; padding: 0px;"
                     method="POST">
@@ -179,6 +209,9 @@
                 </c:choose>
             </td>
             <td>
+                ${scheduleInfo.schedule.categoryName}
+            </td>
+            <td>
                 <c:choose>
                     <c:when test="${scheduleInfo.updatingState}">
                         Updating...
@@ -203,24 +236,19 @@
                     <form id="toggleform_${scheduleInfo.schedule.id }"
                         action="${toggleUrl}" method="POST"
                         style="margin: 0px; padding: 0px;">
-                        <a
-                            href="javascript:document.getElementById('toggleform_${scheduleInfo.schedule.id}').submit();"
-                            style="text-decoration:  none;"><c:choose>
-                                <c:when
+                        <button
+                        	onclick="javascript:document.getElementById('toggleform_${scheduleInfo.schedule.id}').submit();">
+                        	<c:choose>
+                        		<c:when
                                     test="${scheduleInfo.disabledState}">
-                                    <img
-                                        src="<c:url value='/WebConfig/yukon/Icons/Disabled.gif'/>"
-                                        title="Click to Enable"
-                                        style="border-width:0px;" />
-                                </c:when>
-                                <c:otherwise>
-                                    <img
-                                        src="<c:url value='/WebConfig/yukon/Icons/Enabled.gif'/>"
-                                        title="Click to Disable"
-                                        style="border-width:0px;" />
-                                </c:otherwise>
+                                	Enable
+                            	</c:when>
+                            	<c:otherwise>
+                            		Disable
+                            	</c:otherwise>
                             </c:choose>
-                        </a>
+                        </button>
+                        
                         <input type="hidden" name="id"
                             value="${scheduleInfo.schedule.id}" />
                         <input type="hidden" name="sortBy"
