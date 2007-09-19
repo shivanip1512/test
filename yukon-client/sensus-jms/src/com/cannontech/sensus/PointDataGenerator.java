@@ -35,17 +35,19 @@ public class PointDataGenerator implements PointValueUpdater {
         if (holder == null) {
             return;
         }
-        PointData pointData = new PointData();
-        pointData.setId(holder.point.getPointID());
-        pointData.setQuality(PointQualities.NORMAL_QUALITY);
-        pointData.setType(type);
-        double value = rawValue;
-        value *= holder.multiplier;
-        pointData.setValue(value);
+        if(holder.point.getPointID() != 0) {
+            PointData pointData = new PointData();
+            pointData.setId(holder.point.getPointID());
+            pointData.setQuality(PointQualities.NORMAL_QUALITY);
+            pointData.setType(type);
+            double value = rawValue;
+            value *= holder.multiplier;
+            pointData.setValue(value);
 
-        pointData.setTime(time);
-        log.info("Updating " + lpao.getPaoName() + " point " + holder.point.getPointID() + ": " + holder.point.getPointName() + " with value=" + value);
-        dispatchConnection.write(pointData);
+            pointData.setTime(time);
+            log.info("Updating " + lpao.getPaoName() + " point " + holder.point.getPointID() + ": " + holder.point.getPointName() + " with value=" + value);
+            dispatchConnection.write(pointData);
+        }
     }
 
     public void writePointDataMessage(LiteYukonPAObject lpao, boolean value, Date time) {
