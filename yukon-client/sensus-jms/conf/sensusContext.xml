@@ -27,6 +27,8 @@
     <property name="sensusMessageHandlerSet">
         <set>
         	<ref bean="faultDetectProcessor" />
+        	<ref bean="sensusToGPUFFProcessor" />
+        	<ref bean="cvsFileProcessor" />
 <!--        	<ref bean="setupMessageProcessor" />  -->
 	    </set>
   </property>
@@ -73,11 +75,19 @@
     </property>
   </bean>
   
-  <bean id="faultDetectProcessor" class="com.cannontech.sensus.FaultDetectProcessor" init-method="init">
+  <bean id="appInstanceInfo" class="com.cannontech.sensus.SensusMessageHandlerBase" abstract="true">
       <property name="messageEncoder"><bean class="com.amdswireless.common.MessageEncoder"/></property>
       <property name="yukonDeviceLookup" ref="deviceIdLookup"/>
       <property name="bindingKeyRegEx" value="^CPS.*"/>
       <property name="ignoreEventBit" value="true"/>
+      <property name="nameOfAppInstance" value="AppCode"/>
+      <property name="handlerTimeZone" value="UTC"/>
+      <property name="notificationProxy" ref="notificationProxy"/>
+      <property name="notificationGroup" value="0"/>      
+      <property name="customerId" value="0"/>      
+  </bean>
+  
+  <bean id="faultDetectProcessor" class="com.cannontech.sensus.FaultDetectProcessor" parent="appInstanceInfo">
       <property name="faultGenerator" ref="faultStatusGenerator"/>
       <property name="latGenerator" ref="latitudeGenerator"/>
       <property name="longGenerator" ref="longitudeGenerator"/>
@@ -88,10 +98,22 @@
       <property name="faultLatchGenerator" ref="nullPointDataGenerator"/>
       <property name="tgbIdGenerator" ref="tgbIdGenerator"/>
       <property name="sigStrengthGenerator" ref="sigStrengthGenerator"/>
-      <property name="nameOfAppInstance" value="AppCode"/>
-      <property name="handlerTimeZone" value="UTC"/>
-      <property name="notificationProxy" ref="notificationProxy"/>
-      <property name="notificationGroup" value="0"/>      
+  </bean>
+  
+  
+  <bean id="sensusToGPUFFProcessor" class="com.cannontech.sensus.SensusToGPUFFProcessor" parent="appInstanceInfo">
+      <property name="udpPort" value="10000"/>
+      <property name="udpAddress" value="127.0.0.1"/>
+
+      <property name="udpTargetAddressSet">
+              <set>    
+                  <value>http://127.0.0.1:10000</value>
+                  <value>http://127.0.0.1:10001</value>
+              </set>
+      </property>
+  </bean>
+
+  <bean id="cvsFileProcessor" class="com.cannontech.sensus.CvsFileProcessor" parent="appInstanceInfo">
   </bean>
 
   <bean id="nullPointDataGenerator" class="com.cannontech.sensus.NullPointValueUpdater"/>
