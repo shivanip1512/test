@@ -92,6 +92,30 @@ a.altTableCell:active, a.altTableCell:visited, a.altTableCell:link, a.altTableCe
 	margin-left: 27px;
 }
 
+.llIndent{
+	margin-left: 54px;
+}
+
+.capbankTempMoveLink{
+	margin-left: 54px;
+	color: blue;
+	cursor: hand;
+}
+
+.capbankTempMoveSelected{
+	margin-left: 54px;
+	color: #ffa500;
+	cursor: hand;
+}
+
+.capbankMoved
+{	text-align: center;
+	width: 100%;
+	height: 25px;
+	font-weight: bold;
+	color: black;
+}
+
 .cellImgFill {
 	width: 6px;
 	height: 25px;
