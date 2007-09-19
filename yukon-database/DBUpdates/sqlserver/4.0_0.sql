@@ -283,17 +283,17 @@ update CapControlFeeder set UsePhaseData = 'N';
 go
 alter table CapControlFeeder alter column UsePhaseData char(1) not null;
 go
-alter table CapControlFeeder add PhaseB float;
+alter table CapControlFeeder add PhaseB numeric;
 go
 update CapControlFeeder set PhaseB = 0;
 go
-alter table CapControlFeeder alter column PhaseB float not null;
+alter table CapControlFeeder alter column PhaseB numeric not null;
 go
-alter table CapControlFeeder add PhaseC float;
+alter table CapControlFeeder add PhaseC numeric;
 go
 update CapControlFeeder set PhaseC = 0;
 go
-alter table CapControlFeeder alter column PhaseC float not null;
+alter table CapControlFeeder alter column PhaseC numeric not null;
 go
 alter table CapControlSubstationbus add UsePhaseData char(1);
 go
@@ -301,17 +301,17 @@ update CapControlSubstationbus set UsePhaseData = 'N';
 go
 alter table CapControlSubstationbus alter column UsePhaseData char(1) not null;
 go
-alter table CapControlSubstationbus add PhaseB float;
+alter table CapControlSubstationbus add PhaseB numeric;
 go
 update CapControlSubstationbus set PhaseB = 0;
 go
-alter table CapControlSubstationbus alter column PhaseB float not null;
+alter table CapControlSubstationbus alter column PhaseB numeric not null;
 go
-alter table CapControlSubstationbus add PhaseC float;
+alter table CapControlSubstationbus add PhaseC numeric;
 go
 update CapControlSubstationbus set PhaseC = 0;
 go
-alter table CapControlSubstationbus alter column PhaseC float not null;
+alter table CapControlSubstationbus alter column PhaseC numeric not null;
 
 /************************************* 
 	END CAPCONTROL 4.0 CHANGES 

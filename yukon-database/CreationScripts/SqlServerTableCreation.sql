@@ -2247,8 +2247,8 @@ create table CAPCONTROLSUBSTATIONBUS (
    DualBusEnabled       char(1)              not null,
    MultiMonitorControl  char(1)              not null,
    UsePhaseData			char(1)				not null,
-   PhaseB					float					not null,
-   PhaseC					float					not null
+   PhaseB					numeric					not null,
+   PhaseC					numeric					not null
 )
 go
 
@@ -2866,8 +2866,8 @@ create table CapControlFeeder (
     CurrentVoltLoadPointID numeric              not null,
     MultiMonitorControl  char(1)              not null,
     UsePhaseData			char(1)				not null,
-    PhaseB					float					not null,
-    PhaseC					float					not null
+    PhaseB					numeric					not null,
+    PhaseC					numeric					not null
 )
 go
 
