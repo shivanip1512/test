@@ -78,4 +78,13 @@ public class InputGroup implements Input {
     public String getField() {
         return this.field;
     }
+    
+    public Map<String, ? extends InputSource> getInputMap(String prefix) {
+        Map<String, InputSource> result = new HashMap<String, InputSource>();
+        for (Map.Entry<String, Input> entry : inputMap.entrySet()) {
+            Map<String, ? extends InputSource> temp = entry.getValue().getInputMap(prefix + entry.getKey() + ".");
+            result.putAll(temp);
+        }
+        return result;
+    }
 }

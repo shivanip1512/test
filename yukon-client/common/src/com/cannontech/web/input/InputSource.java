@@ -14,12 +14,6 @@ public interface InputSource extends Input {
     public String getDisplayName();
 
     /**
-     * Method to get the name of the field for this input
-     * @return - Field name
-     */
-    public String getField();
-
-    /**
      * Method to get the description of the field for this input
      * @return - Field description
      */

@@ -1,6 +1,7 @@
 package com.cannontech.web.input;
 
 import java.util.List;
+import java.util.Map;
 
 import org.springframework.validation.BindException;
 import org.springframework.web.bind.ServletRequestDataBinder;
@@ -42,5 +43,7 @@ public interface Input {
      * @return - List of inputs contained in this input
      */
     public List<InputSource> getInputList();
+    
+    public Map<String, ? extends InputSource> getInputMap(String prefix);
 
 }

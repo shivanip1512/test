@@ -2,6 +2,7 @@ package com.cannontech.web.input;
 
 import java.util.Collections;
 import java.util.List;
+import java.util.Map;
 
 import org.apache.commons.lang.StringUtils;
 import org.springframework.beans.BeanWrapper;
@@ -83,6 +84,10 @@ public class InputBase implements InputSource {
 
     public List<InputSource> getInputList() {
         return Collections.singletonList((InputSource) this);
+    }
+    
+    public Map<String, ? extends InputSource> getInputMap(String prefix) {
+        return Collections.singletonMap(prefix + getField(), this);
     }
 
 }
