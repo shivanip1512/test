@@ -21,14 +21,10 @@ import com.cannontech.common.util.CtiUtilities;
 import com.cannontech.database.data.lite.LiteYukonPAObject;
 import com.cannontech.yukon.INotifConnection;
 
-public class FaultDetectProcessor implements SensusMessageHandler {
+public class FaultDetectProcessor extends SensusMessageHandlerBase {
     private Logger log = YukonLogManager.getLogger(FaultDetectProcessor.class);
     private MessageEncoder messageEncoder;
     private YukonDeviceLookup yukonDeviceLookup;
-    private String bindingKeyRegEx = "";
-    private String nameOfAppInstance = "SensusMessage";
-    private String handlerTimeZone = "UTC";  
-    private boolean ignoreEventBit = false;
     private PointValueUpdater faultGenerator = new NullPointValueUpdater();
     private PointValueUpdater no60Generator = new NullPointValueUpdater();
     private PointValueUpdater latGenerator = new NullPointValueUpdater();
@@ -39,8 +35,6 @@ public class FaultDetectProcessor implements SensusMessageHandler {
     private PointValueUpdater faultLatchGenerator = new NullPointValueUpdater();
     private PointValueUpdater tgbIdGenerator = new NullPointValueUpdater();
     private PointValueUpdater sigStrengthGenerator = new NullPointValueUpdater();
-    private INotifConnection notificationProxy;
-    private Integer notificationGroup;
     
     private class tgbStrength {
         int tgbId = 0;
@@ -48,81 +42,6 @@ public class FaultDetectProcessor implements SensusMessageHandler {
     }
 
     private  Map<Integer, tgbStrength> tgbMap = new HashMap<Integer, tgbStrength>();
-   
-
-    private  Map<Integer, String> txMode = new HashMap<Integer, String>();
-    {      
-    	txMode.put(0,	"Normal Mode");
-    	txMode.put(1,	"Message Pass");
-    	txMode.put(2,	"Boost Mode");
-    	txMode.put(3,	"Normal, ½ Baud Rate");
-    	txMode.put(4,	"mPass / Normal Mix (1:1)");
-    	txMode.put(5,	"mPass / Normal Mix (1:2)");
-    	txMode.put(6,	"mPass / Normal Mix (1:3)");
-    	txMode.put(7,	"mPass / Normal Mix (1:4)");
-    	txMode.put(8,	"mPass / Normal Mix (1:5)");
-    	txMode.put(9,	"mPass / Normal Mix (1:8)");
-    	txMode.put(10,	"mPass / Normal Mix (1:16)");
-    	txMode.put(11,	"Boost / Normal Mix (1:1)");
-    	txMode.put(12,	"Boost / Normal Mix (1:2)");
-    	txMode.put(13,	"Boost / Normal Mix (1:4)");
-    	txMode.put(14,	"Boost / Normal Mix (1:8)");
-    	txMode.put(15,  "Tri-Mode (N-N-N-M-B)");
-    }
-       
-    private Map<Integer, String> suprRate = new HashMap<Integer, String>();
-    {      
-    	suprRate.put(0,   "1 minute");
-    	suprRate.put(1,   "5 minutes");
-    	suprRate.put(2,   "15 minutes");
-    	suprRate.put(3,   "30 minutes");
-    	suprRate.put(4,   "45 minutes");
-    	suprRate.put(5,   "1 hour");
-    	suprRate.put(6,   "1.5 hours");
-    	suprRate.put(7,   "2 hours");
-    	suprRate.put(8,   "2.5 hours");
-    	suprRate.put(9,   "3 hours");
-    	suprRate.put(10,  "3.5 hours");
-    	suprRate.put(11,  "4 hours");
-    	suprRate.put(12,  "4.5 hours");
-    	suprRate.put(13,  "5 hours");
-    	suprRate.put(14,  "5.5 hours");
-    	suprRate.put(15,  "6 hours");
-    	suprRate.put(16,  "7 hours");
-    	suprRate.put(17,  "8 hours");
-    	suprRate.put(18,  "9 hours");
-    	suprRate.put(19,  "10 hours");
-    	suprRate.put(20,  "12 hours");
-    	suprRate.put(21,  "18 hours");
-    	suprRate.put(22,  "24 hours (1 day)");
-    	suprRate.put(23,  "36 hours (1.5 days)");
-    	suprRate.put(24,  "48 hours (2 days)");
-    	suprRate.put(25,  "60 hours (2.5 days)");
-    	suprRate.put(26,  "72 hours (3 days)");
-    	suprRate.put(27,  "86 hours (3.5 days)");
-    	suprRate.put(28,  "Factory Sleep");
-    	suprRate.put(29,  "CW Mode");
-    	suprRate.put(30,  "FCC Mode");
-    	suprRate.put(31,  "Fast Mode");
-    }
-    
-    // It might be nice if this were dynamically created, but I'm feeling lazy right now.
-    private Map<Integer, String> fileHeaders = new HashMap<Integer, String>();
-    {      
-    	fileHeaders.put(0x01,   "local toi, repId, tgbId, appCode, repeatLevel, SS, NS, appSeq, freq. slot, " + 
-    			"txMode, suprRate, " +
-    			"raw msg");
-    	fileHeaders.put(0x05,   "local toi, repId, tgbId, appCode, repeatLevel, SS, NS, appSeq, freq. slot, " +
-    			"serial no, lat, long, " +
-    			"raw msg");
-    	fileHeaders.put(0x22,   "local toi, repId, tgbId, appCode, repeatLevel, SS, NS, appSeq, freq. slot, " +
-    			"no60 Hz, Latched Fault, Event, Cur. Temp, Cur Batt. Volts, Last Tx Temp, Last Tx Volts, " +
-    			"populated, restore, no 60 Hz, fault Detected, seconds Since Event, " +
-    			"populated, restore, no 60 Hz, fault Detected, seconds Since Event, " +
-    			"populated, restore, no 60 Hz, fault Detected, seconds Since Event, " +
-    			"populated, restore, no 60 Hz, fault Detected, seconds Since Event, " +
-    			"raw msg");
-    }
     
     public void processMessage(int repId, int appCode, char[] message) {
         if (appCode == 0x22) {
@@ -180,7 +99,7 @@ public class FaultDetectProcessor implements SensusMessageHandler {
         return csvStr;
     }
 
-    private void processStatusMessage(AppMessageType22 message) {
+    protected void processStatusMessage(AppMessageType22 message) {
         int repId = message.getRepId();
         log.debug("Processing message for repId=" + repId + ": " + message);
         
@@ -189,7 +108,7 @@ public class FaultDetectProcessor implements SensusMessageHandler {
         
         String csvStr = processDataMessage(message);
         
-        if ((message.isStatusEventTransBit() || ignoreEventBit) && message.getLastEvent().isPopulated()) {
+        if ((message.isStatusEventTransBit() || isIgnoreEventBit()) && message.getLastEvent().isPopulated()) {
             boolean fault = message.getLastEvent().isFaultDetected();
             long millis = toi.getTime() - message.getLastEvent().getSecondsSinceEvent() * 1000;
             Date eventDate = new Date(millis);
@@ -237,15 +156,11 @@ public class FaultDetectProcessor implements SensusMessageHandler {
             	tgbMap.put(repId, strength);
             }
         }
-                
-        csvStr += ", " + message.toCSV();
-        log.info(csvStr);
-        logMessage("0x22", csvStr, fileHeaders.get(message.getAppCode()));
     }
 
-    private void processBindingMessage(AppMessageType5 message) {
+    protected void processBindingMessage(AppMessageType5 message) {
         String iconSerialNumber = message.getIconSerialNumber();
-        if (!iconSerialNumber.matches(bindingKeyRegEx)) {
+        if (!iconSerialNumber.matches(getBindingKeyRegEx())) {
             log.debug("Ignoring binding message with iconSerialNumber='" + iconSerialNumber + "'");
             return;
         }
@@ -266,41 +181,26 @@ public class FaultDetectProcessor implements SensusMessageHandler {
             latGenerator.writePointDataMessage(device, latitude, message.getTimestampOfIntercept());
             longGenerator.writePointDataMessage(device, longitude, message.getTimestampOfIntercept());
         }
-        
-        String csvStr = processDataMessage(message);
-        csvStr += ", " + iconSerialNumber + ", " + latitude + ", " + longitude +
-    	", " + DataMessage.cleanHex(message.getRawMessage());
-        
-        log.info(csvStr);
-        logMessage("0x05", csvStr, fileHeaders.get(message.getAppCode()));
     }
 
-    private void processSetupMessage(AppMessageType1 message) {
+    @Override
+	protected void processSetupMessage(AppMessageType1 message) {
         int repId = message.getRepId();
-        int deviceType = message.getDeviceType();
-
-        int txOpMode = message.getTransmitOperationalMode();
-        int supTxMult = message.getSupervisoryTransmitMultiple();
-
-        String csvStr = processDataMessage(message) + 
-        ", \"" + txMode.get(txOpMode) + "\"" + 
-      	", \"" + suprRate.get(supTxMult) + "\"" +
-    	", " + DataMessage.cleanHex(message.getRawMessage());
-  
-        LiteYukonPAObject device = yukonDeviceLookup.getDeviceForRepId(repId);
+        LiteYukonPAObject device = getYukonDeviceLookup().getDeviceForRepId(repId);
         if (device != null) {
             log.info("Received setup message for known serial number.  Device=" + device + ", repId=" + repId);
         }
-        if (deviceType == 12) {
-            log.info(csvStr);
-            logMessage("0x01", csvStr, fileHeaders.get(message.getAppCode()));
-            
-            String subject = "Grid Advisor Setup Message: Id = " + repId;
-            String body = "Setup/Commission message received at Yukon server:\n\r\n\r" + csvStr;                        
-            notificationProxy.sendNotification(getNotificationGroup(), subject, body);
-        } else {
-            log.debug(csvStr);
-        }
+
+        if (message.getDeviceType() == 12 && getNotificationGroup() != 0) {
+			String subject = getNameOfAppInstance() + " FCI Setup Message: Id = " + repId;
+			String body = "Setup/Commission message received at Yukon server:\n\r\n\r" + 
+			getFileHeaders(0x01) + "\n\r" + dataMessageToCSVString(message) + 
+	        ", \"" + getTxMode(message.getTransmitOperationalMode()) + "\"" + 
+	      	", \"" + getSuprRate(message.getSupervisoryTransmitMultiple()) + "\"" +
+	    	", " + DataMessage.cleanHex(message.getRawMessage());
+
+			getNotificationProxy().sendNotification(getNotificationGroup(), subject, body);
+		}
     }
 
     public void setMessageEncoder(MessageEncoder messageEncoder) {
@@ -323,10 +223,6 @@ public class FaultDetectProcessor implements SensusMessageHandler {
         this.longGenerator = longGenerator;
     }
 
-    public void setBindingKeyRegEx(String bindingKeyRegEx) {
-        this.bindingKeyRegEx = bindingKeyRegEx;
-    }
-
     public void setBatteryVoltageGenerator(PointValueUpdater batteryVoltageGenerator) {
         this.batteryVoltageGenerator = batteryVoltageGenerator;
     }
@@ -343,57 +239,11 @@ public class FaultDetectProcessor implements SensusMessageHandler {
         this.batteryLowGenerator = batteryLowGenerator;
     }
 
-    public void setIgnoreEventBit(boolean ignoreEventBit) {
-        this.ignoreEventBit = ignoreEventBit;
-    }
-
     public void setFaultLatchGenerator(PointValueUpdater faultLatchGenerator) {
         this.faultLatchGenerator = faultLatchGenerator;
     }
 
-	public String getNameOfAppInstance() {
-		return nameOfAppInstance;
-	}
-
-	public void setNameOfAppInstance(String nameOfAppInstance) {
-		this.nameOfAppInstance = nameOfAppInstance;
-	}
-
-	private void logMessage(String file, String text, String header) {
-        //String fileName = CtiUtilities.getYukonBase() + "/Server/Log/" + nameOfAppInstance + "01.csv";
-        String fileName = CtiUtilities.getYukonBase() + "/Server/Log/" + getNameOfAppInstance() + file + ".log";
-        File tempFile = new File(fileName);
-        
-        if(header != null && !tempFile.exists()) {
-            try {
-                FileWriter fw = new FileWriter(tempFile, true);
-                fw.write(header);
-                fw.write("\r\n");
-                fw.close();
-            } catch (IOException e) {
-            	log.info("Unable to write.",e);
-            }        
-        }
-        
-        try {
-            FileWriter fw = new FileWriter(tempFile, true);
-            fw.write(text);
-            fw.write("\r\n");
-            fw.close();
-        } catch (IOException e) {
-        	log.info("Unable to write.",e);
-        }        
-	}
-
-	public String getHandlerTimeZone() {
-		return handlerTimeZone;
-	}
-
-	public void setHandlerTimeZone(String handlerTimezone) {
-		this.handlerTimeZone = handlerTimezone;
-	}
-
-	public PointValueUpdater getSigStrengthGenerator() {
+    public PointValueUpdater getSigStrengthGenerator() {
 		return sigStrengthGenerator;
 	}
 
@@ -408,22 +258,4 @@ public class FaultDetectProcessor implements SensusMessageHandler {
 	public void setTgbIdGenerator(PointValueUpdater tgbIdGenerator) {
 		this.tgbIdGenerator = tgbIdGenerator;
 	}
-
-	public INotifConnection getNotificationProxy() {
-		return notificationProxy;
-	}
-
-	public void setNotificationProxy(INotifConnection notificationProxy) {
-		this.notificationProxy = notificationProxy;
-	}
-
-	public Integer getNotificationGroup() {
-		return notificationGroup;
-	}
-
-	public void setNotificationGroup(Integer notificationGroup) {
-		this.notificationGroup = notificationGroup;
-	}
-	
-
 }

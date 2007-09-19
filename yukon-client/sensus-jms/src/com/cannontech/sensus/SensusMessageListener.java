@@ -74,11 +74,10 @@ public class SensusMessageListener implements MessageListener, InitializingBean 
     public void afterPropertiesSet() throws Exception {
         Timer timer = new Timer(true);
         timer.schedule(new TimerTask() {
-        	
-            public void run() {
+        	public void run() {
                 log.info("Message count = " + messageCount);
             }
-        }, 5000, 180000);
+        }, 5000, 300000);
         
     }
 }
