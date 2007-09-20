@@ -8,6 +8,8 @@ import java.util.List;
 import org.springframework.dao.DataAccessException;
 import org.springframework.jdbc.core.simple.ParameterizedRowMapper;
 import org.springframework.jdbc.core.simple.SimpleJdbcTemplate;
+import org.springframework.transaction.annotation.Propagation;
+import org.springframework.transaction.annotation.Transactional;
 
 import com.cannontech.database.data.lite.stars.LiteStarsCustAccountInformation;
 import com.cannontech.stars.core.dao.ECSearchDao;
@@ -27,6 +29,7 @@ public class ECSearchDaoImpl implements ECSearchDao {
         
     }
     
+    @Transactional(readOnly = true, propagation = Propagation.SUPPORTS)
     public List<LiteStarsCustAccountInformation> searchAddressByLocationAddress1(final String locationAddress1, final List<LiteStarsCustAccountInformation> accountInfoList) {
         final List<LiteStarsCustAccountInformation> matchedAccountInfoList = new ArrayList<LiteStarsCustAccountInformation>();
         
