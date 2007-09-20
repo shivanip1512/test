@@ -29,6 +29,7 @@
 		<property name="scheduleService"><ref bean="macsScheduleService"/></property>
 		<property name="yukonUserDao"><ref bean="yukonUserDao"/></property>
 		<property name="authDao"><ref bean="authDao"/></property>
+		<property name="dateFormattingService"><ref bean="dateFormattingService"/></property>
 	</bean>
 
 </beans>

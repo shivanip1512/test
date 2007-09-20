@@ -7,7 +7,6 @@ import java.util.Date;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
-import java.util.TimeZone;
 
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
@@ -29,7 +28,7 @@ import com.cannontech.common.device.profilePeak.model.ProfilePeakResult;
 import com.cannontech.common.device.profilePeak.model.ProfilePeakResultType;
 import com.cannontech.common.util.TimeUtil;
 import com.cannontech.core.authorization.exception.PaoAuthorizationException;
-import com.cannontech.core.dao.YukonUserDao;
+import com.cannontech.core.service.DateFormattingService;
 import com.cannontech.database.data.lite.LiteYukonUser;
 import com.cannontech.message.util.ConnectionException;
 import com.cannontech.util.ServletUtil;
@@ -44,15 +43,10 @@ public class ProfilePeakWidget extends WidgetControllerBase {
     private static final SimpleDateFormat COMMAND_FORMAT = new SimpleDateFormat("MM/dd/yyyy");
     private static final SimpleDateFormat DISPLAY_FORMAT = new SimpleDateFormat("MM/dd/yyyy HH:mm:ss");
 
-    private YukonUserDao yukonUserDao = null;
     private ProfilePeakDao profilePeakDao = null;
     private CommandRequestExecutor commandRequestExecutor = null;
     private MeterDao meterDao = null;
-
-    @Required
-    public void setYukonUserDao(YukonUserDao yukonUserDao) {
-        this.yukonUserDao = yukonUserDao;
-    }
+    private DateFormattingService dateFormattingService = null;
 
     @Required
     public void setProfilePeakDao(ProfilePeakDao profilePeakDao) {
@@ -69,14 +63,21 @@ public class ProfilePeakWidget extends WidgetControllerBase {
         this.meterDao = meterDao;
     }
     
-    public ModelAndView render(HttpServletRequest request, HttpServletResponse response)
-            throws Exception {
+    @Required
+    public void setDateFormattingService(DateFormattingService dateFormattingService) {
+        this.dateFormattingService = dateFormattingService;
+    }
+
+    public ModelAndView render(HttpServletRequest request,
+            HttpServletResponse response) throws Exception {
 
         ModelAndView mav = new ModelAndView();
 
         // Add any previous results for the device into the mav
-        int deviceId = WidgetParameterHelper.getRequiredIntParameter(request, "deviceId");
-        ProfilePeakResult preResult = profilePeakDao.getResult(deviceId, ProfilePeakResultType.PRE);
+        int deviceId = WidgetParameterHelper.getRequiredIntParameter(request,
+                                                                     "deviceId");
+        ProfilePeakResult preResult = profilePeakDao.getResult(deviceId,
+                                                               ProfilePeakResultType.PRE);
         mav.addObject("preResult", preResult);
 
         ProfilePeakResult postResult = profilePeakDao.getResult(deviceId,
@@ -107,8 +108,7 @@ public class ProfilePeakWidget extends WidgetControllerBase {
 
             // Get the user's timezone
             LiteYukonUser user = ServletUtil.getYukonUser(request);
-            TimeZone timeZone = yukonUserDao.getUserTimeZone(user);
-
+            
             // Get the report type for the commands
             String reportType = ServletRequestUtils.getRequiredStringParameter(request,
                                                                                "reportType");
@@ -123,9 +123,9 @@ public class ProfilePeakWidget extends WidgetControllerBase {
 
             Date preCommandStartDate = null;
             try {
-                preCommandStartDate = TimeUtil.flexibleDateParser(startDateStr,
-                                                                  TimeUtil.NO_TIME_MODE.START_OF_DAY,
-                                                                  timeZone);
+                preCommandStartDate = dateFormattingService.flexibleDateParser(startDateStr,
+                                                                               DateFormattingService.DateOnlyMode.START_OF_DAY,
+                                                                               user);
             } catch (ParseException e) {
                 mav.addObject("errorMsg",
                               "Start date: " + startDateStr + " is not formatted correctly - example (mm/dd/yyyy).  Please try again.");
@@ -133,9 +133,9 @@ public class ProfilePeakWidget extends WidgetControllerBase {
             }
             Date preCommandStopDate = null;
             try {
-                preCommandStopDate = TimeUtil.flexibleDateParser(stopDateStr,
-                                                                 TimeUtil.NO_TIME_MODE.START_OF_DAY,
-                                                                 timeZone);
+                preCommandStopDate = dateFormattingService.flexibleDateParser(stopDateStr,
+                                                                              DateFormattingService.DateOnlyMode.START_OF_DAY,
+                                                                              user);
             } catch (ParseException e) {
                 mav.addObject("errorMsg",
                               "Stop date: " + stopDateStr + " is not formatted correctly - example (mm/dd/yyyy).  Please try again.");

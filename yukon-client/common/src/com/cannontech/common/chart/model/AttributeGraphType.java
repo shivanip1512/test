@@ -6,6 +6,7 @@ public class AttributeGraphType {
 
     private BuiltInAttribute attribute = null;
     private GraphType graphType = null;
+    private ConverterType converterType = null;
     private String label = null;
     private String description = null;
 
@@ -15,14 +16,6 @@ public class AttributeGraphType {
 
     public void setAttribute(BuiltInAttribute attribute) {
         this.attribute = attribute;
-    }
-
-    public GraphType getGraphType() {
-        return graphType;
-    }
-
-    public void setGraphType(GraphType graphType) {
-        this.graphType = graphType;
     }
 
     public String getLabel() {
@@ -40,7 +33,23 @@ public class AttributeGraphType {
     public void setDescription(String description) {
         this.description = description;
     }
-
+    
+    public void setConverterType(ConverterType converterType) {
+        this.converterType = converterType;
+    }
+    
+    public ConverterType getConverterType() {
+        return converterType;
+    }
+    
+    public void setGraphType(GraphType graphType) {
+        this.graphType = graphType;
+    }
+    
+    public GraphType getGraphType() {
+        return graphType;
+    }
+    
     public String toString() {
         return this.label;
     }

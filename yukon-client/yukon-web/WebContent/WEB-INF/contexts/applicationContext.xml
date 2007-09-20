@@ -169,10 +169,10 @@
               <ref local="widgetInput.deviceId"/>
            </set>
         </property>
-        <property name="yukonUserDao" ref="yukonUserDao" />
         <property name="commandRequestExecutor" ref="commandRequestExecutor" />
         <property name="profilePeakDao" ref="profilePeakDao" />
         <property name="meterDao" ref="meterDao"/>
+        <property name="dateFormattingService" ref="dateFormattingService"/>
     </bean>
     
     <bean id="miniTdcWidget"
@@ -273,11 +273,13 @@
         </property>
         <property name="deviceDao" ref="deviceDao" />
         <property name="attributeService" ref="attributeService" />
+        <property name="dateFormattingService" ref="dateFormattingService" />
         <property name="supportedAttributeGraphSet">
 			<set>
 				<bean class="com.cannontech.common.chart.model.AttributeGraphType">
 					<property name="attribute" value="USAGE"/>
-					<property name="graphType" value="NORMALIZED_DELTA_LINE"/>
+					<property name="graphType" value="COLUMN"/>
+					<property name="converterType" value="NORMALIZED_DELTA"/>
 					<property name="label" value="Usage (Normalized)"/>
 					<property name="description">
 						<value>
@@ -286,10 +288,12 @@
 							previousReading) / (days between readings)]]>
 						</value>
 					</property>
+					
 				</bean>
 				<bean class="com.cannontech.common.chart.model.AttributeGraphType">
 					<property name="attribute" value="DEMAND"/>
-					<property name="graphType" value="RAW_LINE"/>
+					<property name="graphType" value="LINE"/>
+					<property name="converterType" value="RAW"/>
 					<property name="label" value="Demand"/>
 					<property name="description">
 						<value>
@@ -299,7 +303,8 @@
 				</bean>
 				<bean class="com.cannontech.common.chart.model.AttributeGraphType">
 					<property name="attribute" value="LOAD_PROFILE"/>
-					<property name="graphType" value="RAW_LINE"/>
+					<property name="graphType" value="LINE"/>
+					<property name="converterType" value="RAW"/>
 					<property name="label" value="Load Profile"/>
 					<property name="description">
 						<value>

@@ -56,7 +56,7 @@
                                 <div>
                                     <cti:formatDate
                                         value="${stopTime}"
-                                        type="time"
+                                        type="TIME"
                                         var="formattedStopTime" />
                                     <input type="text"
                                         value="${formattedStopTime}"
@@ -78,7 +78,7 @@
                             </td>
                             <td>
                                 <cti:formatDate value="${stopTime}"
-                                    type="date"
+                                    type="DATE"
                                     var="formattedStopDate" />
                                 <input type="text"
                                     value="${formattedStopDate}"

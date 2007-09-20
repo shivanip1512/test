@@ -19,9 +19,9 @@ import org.springframework.web.servlet.mvc.multiaction.MultiActionController;
 import org.springframework.web.servlet.view.RedirectView;
 
 import com.cannontech.amr.macsscheduler.service.MACSScheduleService;
-import com.cannontech.common.util.TimeUtil;
 import com.cannontech.core.dao.AuthDao;
 import com.cannontech.core.dao.YukonUserDao;
+import com.cannontech.core.service.DateFormattingService;
 import com.cannontech.database.data.lite.LiteYukonUser;
 import com.cannontech.message.macs.message.Schedule;
 import com.cannontech.roles.operator.SchedulerRole;
@@ -41,6 +41,7 @@ public class MACSScheduleController extends MultiActionController {
     private MACSScheduleService<Schedule> service;
     private YukonUserDao userDao;
     private AuthDao authDao;
+    private DateFormattingService dateFormattingService;
     
     static {
         sortByName = new Comparator<Schedule>() {
@@ -197,7 +198,7 @@ public class MACSScheduleController extends MultiActionController {
         final String stopDate = ServletRequestUtils.getRequiredStringParameter(request, "stopdate");
         final LiteYukonUser user = ServletUtil.getYukonUser(request);
         final TimeZone zone = userDao.getUserTimeZone(user);
-        Date stop = TimeUtil.flexibleDateParser(stopDate + " " + stopTime, zone);
+        Date stop = dateFormattingService.flexibleDateParser(stopDate + " " + stopTime, user);
         Date start = null;
         
         if (!isEditable(user, SchedulerRole.ROLEID)) return mav;
@@ -209,7 +210,7 @@ public class MACSScheduleController extends MultiActionController {
         if (time.equals("starttime")) {
             String startTime = ServletRequestUtils.getStringParameter(request, "starttime");
             String startDate = ServletRequestUtils.getStringParameter(request, "startdate");
-            start = TimeUtil.flexibleDateParser(startDate + " " + startTime, zone);
+            start = dateFormattingService.flexibleDateParser(startDate + " " + startTime, user);
         }
         
         if (time.equals("stopnow")) stop = Calendar.getInstance(zone).getTime();
@@ -308,6 +309,10 @@ public class MACSScheduleController extends MultiActionController {
     
     public void setYukonUserDao(final YukonUserDao userDao) {
         this.userDao = userDao;
+    }
+
+    public void setDateFormattingService(DateFormattingService dateFormattingService) {
+        this.dateFormattingService = dateFormattingService;
     }
     
 }

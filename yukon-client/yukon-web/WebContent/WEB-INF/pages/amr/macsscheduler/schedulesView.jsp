@@ -223,12 +223,12 @@
             </td>
             <td>
                 <cti:formatDate value="${scheduleInfo.schedule.nextRunTime}"
-                    type="both" var="formattedStartTime" />
+                    type="BOTH" var="formattedStartTime" />
                 ${formattedStartTime}
             </td>
             <td>
                 <cti:formatDate value="${scheduleInfo.schedule.nextStopTime}"
-                    type="both" var="formattedStopTime" />
+                    type="BOTH" var="formattedStopTime" />
                 ${formattedStopTime}
             </td>
             <td style="background-color: white">

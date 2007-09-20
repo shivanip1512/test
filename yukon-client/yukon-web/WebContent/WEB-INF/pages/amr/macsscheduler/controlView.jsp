@@ -55,7 +55,7 @@
                                 <div>
                                     <cti:formatDate
                                         value="${currentTime}"
-                                        type="time"
+                                        type="TIME"
                                         var="formattedCurrentTime" />
                                     <input type="text"
                                         value="${formattedCurrentTime}"
@@ -77,7 +77,7 @@
                             </td>
                             <td>
                                 <cti:formatDate value="${currentTime}"
-                                    type="date"
+                                    type="DATE"
                                     var="formattedCurrentDate" />
                                 <input type="text"
                                     value="${formattedCurrentDate}"
@@ -108,7 +108,7 @@
                             </td>
                             <td>
                                 <cti:formatDate value="${stopTime}"
-                                    type="time" var="formattedStopTime" />
+                                    type="TIME" var="formattedStopTime" />
                                 <input type="text"
                                     value="${formattedStopTime}"
                                     name="stoptime" />
@@ -128,7 +128,7 @@
                             </td>
                             <td>
                                 <cti:formatDate value="${stopTime}"
-                                    type="date" var="formattedStopDate" />
+                                    type="DATE" var="formattedStopDate" />
                                 <input type="text"
                                     value="${formattedStopDate}"
                                     name="stopdate" />

@@ -6,6 +6,7 @@ import java.util.List;
 import com.cannontech.common.chart.model.ChartInterval;
 import com.cannontech.common.chart.model.ChartValue;
 import com.cannontech.common.chart.model.Graph;
+import com.cannontech.common.chart.model.ConverterType;
 import com.cannontech.common.chart.model.GraphType;
 
 /**
@@ -18,11 +19,11 @@ public interface ChartService {
      * @param pointIds - Ids of points to be graphed
      * @param startDate - Start date for graph
      * @param stopDate - End date for graph
-     * @param graphType - Type of graph to be generated
+     * @param converterType - Type of graph to be generated
      * @return A list containing one graph per point
      */
     public List<Graph> getGraphs(int[] pointIds, Date startDate, Date stopDate, ChartInterval unit,
-                                 GraphType graphType);
+                                 GraphType graphType, ConverterType converterType);
 
     /**
      * Method to get the x-axis tick marks for a given time period and interval

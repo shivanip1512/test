@@ -19,7 +19,7 @@ public enum ChartPeriod {
             return new Date(cal.getTimeInMillis());
         }
 
-        public ChartInterval getChartUnit() {
+        public ChartInterval getChartUnit(Date...dates) {
             return ChartInterval.DAY;
         }
     },
@@ -33,7 +33,7 @@ public enum ChartPeriod {
             return new Date(cal.getTimeInMillis());
         }
 
-        public ChartInterval getChartUnit() {
+        public ChartInterval getChartUnit(Date...dates) {
             return ChartInterval.DAY;
         }
     },
@@ -47,7 +47,7 @@ public enum ChartPeriod {
             return new Date(cal.getTimeInMillis());
         }
 
-        public ChartInterval getChartUnit() {
+        public ChartInterval getChartUnit(Date...dates) {
             return ChartInterval.DAY;
         }
     },
@@ -61,7 +61,7 @@ public enum ChartPeriod {
             return new Date(cal.getTimeInMillis());
         }
 
-        public ChartInterval getChartUnit() {
+        public ChartInterval getChartUnit(Date...date) {
             return ChartInterval.HOUR;
         }
     },
@@ -76,9 +76,42 @@ public enum ChartPeriod {
 
         }
 
-        public ChartInterval getChartUnit() {
+        public ChartInterval getChartUnit(Date...date) {
             return ChartInterval.MINUTE;
+        } 
+    },
+    NOPERIOD("NoPeriod") {
+        public Date getStartDate(Date date) {
+
+            Calendar cal = new GregorianCalendar();
+            cal.setTime(date);
+
+            return new Date(cal.getTimeInMillis());
+
         }
+
+        public ChartInterval getChartUnit(Date...dates) {
+            
+            Date startDate = dates[0];
+            Date endDate = dates[1];
+            
+            // choose interval based on how many days apart the two dates are
+            // note: this method doesn't account for day light savings, but its quick and will be good enough to pick an interval
+            long diff = Math.abs( startDate.getTime() - endDate.getTime() );
+            int dayDiff = (int)Math.floor(diff/1000/60/60/24);  
+
+            // week and day are smaller intervals, everything else uses a day interval
+            if(dayDiff > 7){
+                return ChartInterval.DAY;
+            }
+            else if(dayDiff <=7 && dayDiff > 1){
+                return ChartInterval.HOUR;
+            }
+            else{
+                return ChartInterval.MINUTE;
+            }
+            
+        } 
     };
 
     private String label = null;
@@ -94,7 +127,7 @@ public enum ChartPeriod {
      */
     public abstract Date getStartDate(Date date);
 
-    public abstract ChartInterval getChartUnit();
+    public abstract ChartInterval getChartUnit(Date...dates);
 
     public String getPeriodLabel() {
         return label;

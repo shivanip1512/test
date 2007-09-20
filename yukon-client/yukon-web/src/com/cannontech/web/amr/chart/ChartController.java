@@ -12,8 +12,10 @@ import org.springframework.web.servlet.ModelAndView;
 import org.springframework.web.servlet.mvc.multiaction.MultiActionController;
 
 import com.cannontech.common.chart.model.ChartPeriod;
+import com.cannontech.common.chart.model.ChartInterval;
 import com.cannontech.common.chart.model.ChartValue;
 import com.cannontech.common.chart.model.GraphType;
+import com.cannontech.common.chart.model.ConverterType;
 import com.cannontech.common.chart.service.ChartService;
 import com.cannontech.core.dao.PointDao;
 import com.cannontech.core.dao.UnitMeasureDao;
@@ -45,7 +47,11 @@ public class ChartController extends MultiActionController {
     public ModelAndView chart(HttpServletRequest request, HttpServletResponse response)
             throws ServletException {
 
-        ModelAndView mav = new ModelAndView("trendData.jsp");
+        // setup mav with the appropriate jsp, depending on grapth style: LINE
+        // or COLUMN (decided in trend.tag)
+        String amChartsProduct = ServletRequestUtils.getStringParameter(request,
+                                                                        "amChartsProduct");
+        ModelAndView mav = new ModelAndView("trendData_" + amChartsProduct + ".jsp");
 
         // Get point ids from request
         String pointIds = ServletRequestUtils.getRequiredStringParameter(request, "pointIds");
@@ -56,57 +62,109 @@ public class ChartController extends MultiActionController {
         }
 
         // Get period
-        String period = ServletRequestUtils.getRequiredStringParameter(request, "period");
-        ChartPeriod chartPeriod = ChartPeriod.valueOf(period);
+        String period = ServletRequestUtils.getRequiredStringParameter(request,
+                                                                       "period");
 
-        // Get start date from request - startDateParam is really the stop date
-        String startDateParam = ServletRequestUtils.getRequiredStringParameter(request, "startDate");
-        Date stopDate = new Date(Long.valueOf(startDateParam));
-        Date startDate = chartPeriod.getStartDate(stopDate);
+        // startDate, endDate
+        String endDateParam = ServletRequestUtils.getRequiredStringParameter(request,
+                                                                             "endDate");
+        Date endDate = new Date(Long.valueOf(endDateParam));
+
+        String startDateParam = ServletRequestUtils.getRequiredStringParameter(request,
+                                                                               "startDate");
+        Date startDate = new Date(Long.valueOf(startDateParam));
+
+        ChartPeriod chartPeriod = ChartPeriod.valueOf(period);
+        ChartInterval chartInterval = chartPeriod.getChartUnit(startDate,
+                                                               endDate);
 
         // Get graph type from request
         String graphTypeString = ServletRequestUtils.getStringParameter(request,
                                                                         "graphType",
-                                                                        GraphType.RAW_LINE.toString());
+                                                                        GraphType.LINE.toString());
         GraphType graphType = GraphType.valueOf(graphTypeString);
+
+        // Get converter type from request
+        String converterTypeString = ServletRequestUtils.getStringParameter(request,
+                                                                            "converterType",
+                                                                            ConverterType.RAW.toString());
+        ConverterType converterType = ConverterType.valueOf(converterTypeString);
 
         // Generate x-axis data
         List<ChartValue> xAxisData = chartService.getXAxisData(startDate,
-                                                               stopDate,
-                                                               chartPeriod.getChartUnit());
+                                                               endDate,
+                                                               chartInterval);
         mav.addObject("xAxisValues", xAxisData);
 
         // Generate graph data
         mav.addObject("graphList", chartService.getGraphs(ids,
                                                           startDate,
-                                                          stopDate,
-                                                          chartPeriod.getChartUnit(),
-                                                          graphType));
+                                                          endDate,
+                                                          chartInterval,
+                                                          graphType,
+                                                          converterType));
 
         return mav;
     }
 
-    public ModelAndView settings(HttpServletRequest request, HttpServletResponse response)
-            throws ServletException {
+    public ModelAndView settings(HttpServletRequest request,
+            HttpServletResponse response) throws ServletException {
 
-        ModelAndView mav = new ModelAndView("trendSettings.jsp");
+        // setup mav with the appropriate jsp, depending on grapth style: LINE
+        // or COLUMN (decided in trend.tag)
+        String amChartsProduct = ServletRequestUtils.getStringParameter(request,
+                                                                        "amChartsProduct");
+        ModelAndView mav = new ModelAndView("trendSettings_" + amChartsProduct + ".jsp");
 
-        // Get graph type from request
-        String graphTypeString = ServletRequestUtils.getStringParameter(request,
-                                                                        "graphType",
-                                                                        GraphType.RAW_LINE.toString());
-        GraphType graphType = GraphType.valueOf(graphTypeString);
+        // Get converter type from request
+        String converterTypeString = ServletRequestUtils.getStringParameter(request,
+                                                                            "converterType",
+                                                                            ConverterType.RAW.toString());
+
+        ConverterType converterType = ConverterType.valueOf(converterTypeString);
 
         // Get Point's unit of measure and then get the units for the graph
         int pointId = ServletRequestUtils.getIntParameter(request, "pointId");
         LitePoint point = pointDao.getLitePoint(pointId);
         LiteUnitMeasure unitMeasure = unitMeasureDao.getLiteUnitMeasure(point.getUofmID());
-        String units = graphType.getUnits(unitMeasure);
+        String units = converterType.getUnits(unitMeasure);
         mav.addObject("units", units);
 
         // Get graph title from request
         String title = ServletRequestUtils.getStringParameter(request, "title");
         mav.addObject("trendTitle", title);
+
+        // Get period
+        String period = ServletRequestUtils.getRequiredStringParameter(request,
+                                                                       "period");
+
+        // startDate, endDate
+        Date startDate = null;
+        Date endDate = null;
+        ChartInterval chartInterval = null;
+
+        String endDateParam = ServletRequestUtils.getRequiredStringParameter(request,
+                                                                             "endDate");
+        endDate = new Date(Long.valueOf(endDateParam));
+
+        String startDateParam = ServletRequestUtils.getRequiredStringParameter(request,
+                                                                               "startDate");
+        startDate = new Date(Long.valueOf(startDateParam));
+
+        ChartPeriod chartPeriod = ChartPeriod.valueOf(period);
+        chartInterval = chartPeriod.getChartUnit(startDate, endDate);
+
+        // Generate x-axis data
+        List<ChartValue> xAxisData = chartService.getXAxisData(startDate,
+                                                               endDate,
+                                                               chartInterval);
+
+        int gridFrequency = (int) (xAxisData.size() / (float) 4);
+        if (gridFrequency < 1) {
+            gridFrequency = 1;
+        }
+
+        mav.addObject("gridFrequency", gridFrequency);
 
         return mav;
     }

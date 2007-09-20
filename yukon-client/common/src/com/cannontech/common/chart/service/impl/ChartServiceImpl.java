@@ -13,6 +13,7 @@ import com.cannontech.common.chart.model.ChartInterval;
 import com.cannontech.common.chart.model.ChartValue;
 import com.cannontech.common.chart.model.Graph;
 import com.cannontech.common.chart.model.GraphType;
+import com.cannontech.common.chart.model.ConverterType;
 import com.cannontech.common.chart.service.ChartDataConverter;
 import com.cannontech.common.chart.service.ChartService;
 import com.cannontech.core.dao.PointDao;
@@ -46,7 +47,7 @@ public class ChartServiceImpl implements ChartService {
     }
 
     public List<Graph> getGraphs(int[] pointIds, Date startDate, Date stopDate, ChartInterval unit,
-            GraphType graphType) {
+                                 GraphType graphType, ConverterType converterType) {
 
         List<Graph> graphList = new ArrayList<Graph>();
 
@@ -63,7 +64,7 @@ public class ChartServiceImpl implements ChartService {
             pointValueFormat.setGroupingUsed(false);
             
             LiteUnitMeasure unitMeasure = unitMeasureDao.getLiteUnitMeasure(pointUnit.getUomID());
-            String units = graphType.getUnits(unitMeasure);
+            String units = converterType.getUnits(unitMeasure);
 
             // Make a list of each of the data points
             List<ChartValue<Double>> chartData = new ArrayList<ChartValue<Double>>();
@@ -84,7 +85,7 @@ public class ChartServiceImpl implements ChartService {
             List<ChartValue<Double>> axisChartData = this.setXAxisIds(unit, startDate, chartData);
 
             // Convert data to specified graph type
-            ChartDataConverter converter = graphType.getDataConverter();
+            ChartDataConverter converter = converterType.getDataConverter();
             axisChartData = converter.convertValues(axisChartData, unit);
 
             // Get the lite point for the point name
