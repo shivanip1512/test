@@ -4494,7 +4494,7 @@ BOOL CtiLMProgramDirect::handleManualControl(ULONG secondsFrom1901, CtiMultiMsg*
     }
     else if( getProgramState() == CtiLMProgramBase::ManualActiveState )
     {
-        if( secondsFrom1901 >= getDirectStopTime().seconds() && !getIsRampingOut() )
+        if( ( secondsFrom1901 >= getDirectStopTime().seconds() || areAllGroupsStopped() ) && !getIsRampingOut() )
         {
             returnBoolean = TRUE;
             {
@@ -5675,6 +5675,20 @@ double  CtiLMProgramDirect::StartMasterCycle(ULONG secondsFrom1901, CtiLMProgram
 
     }
     return expected_load_reduction;
+}
+
+bool CtiLMProgramDirect::areAllGroupsStopped()
+{
+    bool retVal = true;
+    for(CtiLMGroupIter i = _lmprogramdirectgroups.begin(); i != _lmprogramdirectgroups.end(); i++)
+    {
+        if( (*i)->getGroupControlState() != CtiLMGroupBase::InactiveState )
+        {
+            retVal = false;
+            break;
+        }
+    }
+    return retVal;
 }
 
 bool CtiLMProgramDirect::notifyGroups(int type, CtiMultiMsg* multiNotifMsg)

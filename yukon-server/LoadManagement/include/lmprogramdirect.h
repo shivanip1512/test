@@ -167,6 +167,7 @@ RWDECLARE_COLLECTABLE( CtiLMProgramDirect )
 private:
 
     bool notifyGroups(int type, CtiMultiMsg* multiNotifMsg);
+    bool areAllGroupsStopped();
     
     LONG _notify_active_offset;
     LONG _notify_inactive_offset;
