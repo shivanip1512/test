@@ -90,11 +90,11 @@ CtiRequestMsg* CtiLMGroupExpresscom::createSmartCycleRequestMsg(LONG percent, LO
     controlString += " period ";
     controlString += buildPeriodString(period);
 
-    if(no_ramp)
+    if( no_ramp )
     {
         controlString += " noramp";
     }
-    
+
     if( _LM_DEBUG & LM_DEBUG_STANDARD )
     {
         CtiLockGuard<CtiLogger> logger_guard(dout);
@@ -122,11 +122,11 @@ CtiRequestMsg* CtiLMGroupExpresscom::createTrueCycleRequestMsg(LONG percent, LON
     controlString += buildPeriodString(period);
     controlString += " truecycle";
 
-    if(no_ramp)
+    if( no_ramp )
     {
         controlString += " noramp";
     }
-    
+
     if( _LM_DEBUG & LM_DEBUG_STANDARD )
     {
         CtiLockGuard<CtiLogger> logger_guard(dout);
@@ -158,7 +158,7 @@ CtiRequestMsg* CtiLMGroupExpresscom::createTargetCycleRequestMsg(LONG percent, L
     controlString += " period ";
     controlString += buildPeriodString(period);
 
-    if(no_ramp)
+    if( no_ramp )
     {
         controlString += " noramp";
     }
@@ -185,11 +185,11 @@ CtiRequestMsg* CtiLMGroupExpresscom::createTargetCycleRequestMsg(LONG percent, L
         tempStr += ")+";
         CtiString CmdStr = additionalInfo.c_str();
 
-        if(!(token = CmdStr.match(tempStr)).empty())
+        if( !(token = CmdStr.match(tempStr)).empty() )
         {
             CtiTokenizer cmdtok(token);
             cmdtok(); //go past adjustment
-            
+
             while( !(temp = cmdtok()).empty() )
             {
                 if( count < 8 )
@@ -197,8 +197,8 @@ CtiRequestMsg* CtiLMGroupExpresscom::createTargetCycleRequestMsg(LONG percent, L
                     iValue[count] = atoi(temp.data());
                     count++;
                 }
-                
-                
+
+
             }
         }
 
@@ -211,7 +211,7 @@ CtiRequestMsg* CtiLMGroupExpresscom::createTargetCycleRequestMsg(LONG percent, L
                 incHours ++;
             }
         }
-    
+
         if( count > incHours )
         {
             controlString += " adjustments";
@@ -222,7 +222,7 @@ CtiRequestMsg* CtiLMGroupExpresscom::createTargetCycleRequestMsg(LONG percent, L
             }
         }
     }
-    
+
     if( _LM_DEBUG & LM_DEBUG_STANDARD )
     {
         CtiLockGuard<CtiLogger> logger_guard(dout);
@@ -241,7 +241,7 @@ CtiRequestMsg* CtiLMGroupExpresscom::createRotationRequestMsg(LONG sendRate, LON
 {
     string controlString("control xcom shed ");
     controlString += buildShedString(shedTime);
-    
+
     if( _LM_DEBUG & LM_DEBUG_STANDARD )
     {
         CtiLockGuard<CtiLogger> logger_guard(dout);
@@ -468,7 +468,7 @@ int CtiLMGroupExpresscom::operator!=(const CtiLMGroupExpresscom& right) const
 ---------------------------------------------------------------------------*/
 CtiLMGroupBase* CtiLMGroupExpresscom::replicate() const
 {
-    return (CTIDBG_new CtiLMGroupExpresscom(*this));
+    return(CTIDBG_new CtiLMGroupExpresscom(*this));
 }
 
 /*---------------------------------------------------------------------------

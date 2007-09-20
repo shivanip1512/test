@@ -182,18 +182,18 @@ void CtiLMProgramThermoStatGear::restoreGuts(RWvistream& istrm)
     CtiLMProgramDirectGear::restoreGuts( istrm );
 
     istrm >> _settings
-          >> _minvalue
-          >> _maxvalue
-          >> _valueb
-          >> _valued
-          >> _valuef
-          >> _random
-          >> _valueta
-          >> _valuetb
-          >> _valuetc
-          >> _valuetd
-          >> _valuete
-          >> _valuetf;
+    >> _minvalue
+    >> _maxvalue
+    >> _valueb
+    >> _valued
+    >> _valuef
+    >> _random
+    >> _valueta
+    >> _valuetb
+    >> _valuetc
+    >> _valuetd
+    >> _valuete
+    >> _valuetf;
 }
 
 /*---------------------------------------------------------------------------
@@ -206,18 +206,18 @@ void CtiLMProgramThermoStatGear::saveGuts(RWvostream& ostrm ) const
     CtiLMProgramDirectGear::saveGuts( ostrm );
 
     ostrm << _settings
-          << _minvalue
-          << _maxvalue
-          << _valueb
-          << _valued
-          << _valuef
-          << _random
-          << _valueta
-          << _valuetb
-          << _valuetc
-          << _valuetd
-          << _valuete
-          << _valuetf;
+    << _minvalue
+    << _maxvalue
+    << _valueb
+    << _valued
+    << _valuef
+    << _random
+    << _valueta
+    << _valuetb
+    << _valuetc
+    << _valuetd
+    << _valuete
+    << _valuetf;
 
     return;
 }
@@ -274,7 +274,7 @@ int CtiLMProgramThermoStatGear::operator!=(const CtiLMProgramThermoStatGear& rig
 ---------------------------------------------------------------------------*/
 CtiLMProgramThermoStatGear* CtiLMProgramThermoStatGear::replicate() const
 {
-    return (CTIDBG_new CtiLMProgramThermoStatGear(*this));
+    return(CTIDBG_new CtiLMProgramThermoStatGear(*this));
 }
 
 /*---------------------------------------------------------------------------

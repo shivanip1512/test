@@ -214,7 +214,7 @@ LONG CtiLMControlAreaTrigger::getPeakPointId() const
 {
 
 
-   return _peakpointid;
+    return _peakpointid;
 }
 
 /*---------------------------------------------------------------------------
@@ -493,8 +493,8 @@ void CtiLMControlAreaTrigger::calculateProjectedValue()
                 getProjectionPointEntriesQueue()[getProjectionPoints()-1].getTimestamp().seconds() > (CtiTime::now().seconds() - 60*60) )
             {
                 std::vector<CtiLMProjectionPointEntry>::iterator itr = getProjectionPointEntriesQueue().begin();
-                while( getProjectionPointEntriesQueue().size() > getProjectionPoints() )
-                {//trim excess pointvalues
+                while( getProjectionPointEntriesQueue().size() > getProjectionPoints() )//trim excess pointvalues
+                {
                     getProjectionPointEntriesQueue().erase(itr);
                 }
 
@@ -508,7 +508,7 @@ void CtiLMControlAreaTrigger::calculateProjectedValue()
                 double delta;
                 double sigmaY2;
 
-                for(int i=0;i<getProjectionPointEntriesQueue().size();i++)
+                for( int i=0;i<getProjectionPointEntriesQueue().size();i++ )
                 {
                     x = getProjectionPointEntriesQueue()[i].getTimestamp().seconds() - getProjectionPointEntriesQueue()[0].getTimestamp().seconds();
 
@@ -520,7 +520,7 @@ void CtiLMControlAreaTrigger::calculateProjectedValue()
 
                 delta = (getProjectionPointEntriesQueue().size() * sumXX) - (sumX * sumX);
 
-                if(delta != 0.0)
+                if( delta != 0.0 )
                 {
                     double slope = ( (getProjectionPointEntriesQueue().size() * sumXY) - (sumX * sumY) ) / delta;
                     double intersect = ( (sumXX * sumY) - (sumX * sumXY) ) / delta;
@@ -835,12 +835,12 @@ void CtiLMControlAreaTrigger::dumpDynamicData(RWDBConnection& conn, CtiTime& cur
             RWDBInserter inserter = dynamicLMControlAreaTriggerTable.inserter();
 
             inserter << getPAOId()
-                     << getTriggerNumber()
-                     << getPointValue()
-                     << getLastPointValueTimestamp()
-                     << getPeakPointValue()
-                     << getLastPeakPointValueTimestamp()
-                     << getTriggerId();
+            << getTriggerNumber()
+            << getPointValue()
+            << getLastPointValueTimestamp()
+            << getPeakPointValue()
+            << getLastPeakPointValueTimestamp()
+            << getTriggerId();
 
             if( _LM_DEBUG & LM_DEBUG_DYNAMIC_DB )
             {

@@ -54,84 +54,84 @@ extern ULONG _LM_DEBUG;
 ---------------------------------------------------------------------------*/
 void CtiLMCommandExecutor::Execute()
 {
-    switch ( _command->getCommand() )
+    switch( _command->getCommand() )
     {
-        case CtiLMCommand::CHANGE_THRESHOLD:
-            ChangeThreshold();
-            break;
-    
-        case CtiLMCommand::CHANGE_RESTORE_OFFSET:
-            ChangeRestoreOffset();
-            break;
+    case CtiLMCommand::CHANGE_THRESHOLD:
+        ChangeThreshold();
+        break;
 
-        case CtiLMCommand::CHANGE_CURRENT_START_TIME:
-            ChangeDailyStartTime();
-            break;
+    case CtiLMCommand::CHANGE_RESTORE_OFFSET:
+        ChangeRestoreOffset();
+        break;
 
-        case CtiLMCommand::CHANGE_CURRENT_STOP_TIME:
-            ChangeDailyStopTime();
-            break;
+    case CtiLMCommand::CHANGE_CURRENT_START_TIME:
+        ChangeDailyStartTime();
+        break;
 
-        case CtiLMCommand::CHANGE_CURRENT_OPERATIONAL_STATE:
-            ChangeCurrentOperationalState();
-            break;
+    case CtiLMCommand::CHANGE_CURRENT_STOP_TIME:
+        ChangeDailyStopTime();
+        break;
 
-        case CtiLMCommand::ENABLE_CONTROL_AREA:
-            EnableControlArea();
-            break;
+    case CtiLMCommand::CHANGE_CURRENT_OPERATIONAL_STATE:
+        ChangeCurrentOperationalState();
+        break;
 
-        case CtiLMCommand::DISABLE_CONTROL_AREA:
-            DisableControlArea();
-            break;
+    case CtiLMCommand::ENABLE_CONTROL_AREA:
+        EnableControlArea();
+        break;
 
-        case CtiLMCommand::ENABLE_PROGRAM:
-            EnableProgram();
-            break;
+    case CtiLMCommand::DISABLE_CONTROL_AREA:
+        DisableControlArea();
+        break;
 
-        case CtiLMCommand::DISABLE_PROGRAM:
-            DisableProgram(false);
-            break;
+    case CtiLMCommand::ENABLE_PROGRAM:
+        EnableProgram();
+        break;
 
-        case CtiLMCommand::EMERGENCY_DISABLE_PROGRAM:
-            DisableProgram(true);
-            break;
-        
-        case CtiLMCommand::REQUEST_ALL_CONTROL_AREAS:
-            SendAllControlAreas();
-            break;
+    case CtiLMCommand::DISABLE_PROGRAM:
+        DisableProgram(false);
+        break;
 
-        case CtiLMCommand::SHED_GROUP:
-            ShedGroup();
-            break;
+    case CtiLMCommand::EMERGENCY_DISABLE_PROGRAM:
+        DisableProgram(true);
+        break;
 
-        case CtiLMCommand::SMART_CYCLE_GROUP:
-        case CtiLMCommand::TRUE_CYCLE_GROUP:
-            CycleGroup();
-            break;
+    case CtiLMCommand::REQUEST_ALL_CONTROL_AREAS:
+        SendAllControlAreas();
+        break;
 
-        case CtiLMCommand::RESTORE_GROUP:
-            RestoreGroup();
-            break;
+    case CtiLMCommand::SHED_GROUP:
+        ShedGroup();
+        break;
 
-        case CtiLMCommand::ENABLE_GROUP:
-            EnableGroup();
-            break;
+    case CtiLMCommand::SMART_CYCLE_GROUP:
+    case CtiLMCommand::TRUE_CYCLE_GROUP:
+        CycleGroup();
+        break;
 
-        case CtiLMCommand::DISABLE_GROUP:
-            DisableGroup();
-            break;
+    case CtiLMCommand::RESTORE_GROUP:
+        RestoreGroup();
+        break;
 
-        case CtiLMCommand::CONFIRM_GROUP:
-            ConfirmGroup();
-            break;
-         case CtiLMCommand::RESET_PEAK_POINT_VALUE:
-            ResetPeakPointValue();
-            break;
-        default:
-            {
-                CtiLockGuard<CtiLogger> logger_guard(dout);
-                dout << CtiTime() << " - executor.cpp::Execute - unknown command type" << endl;
-            }
+    case CtiLMCommand::ENABLE_GROUP:
+        EnableGroup();
+        break;
+
+    case CtiLMCommand::DISABLE_GROUP:
+        DisableGroup();
+        break;
+
+    case CtiLMCommand::CONFIRM_GROUP:
+        ConfirmGroup();
+        break;
+    case CtiLMCommand::RESET_PEAK_POINT_VALUE:
+        ResetPeakPointValue();
+        break;
+    default:
+        {
+            CtiLockGuard<CtiLogger> logger_guard(dout);
+            dout << CtiTime() << " - executor.cpp::Execute - unknown command type" << endl;
+        }
     }
 }
 
@@ -146,13 +146,13 @@ void CtiLMCommandExecutor::ChangeThreshold()
     //RWRecursiveLock<RWMutexLock>::LockGuard  guard(store->getMux());
     vector<CtiLMControlArea*>& controlAreas = *(store->getControlAreas(CtiTime().seconds()));
 
-    for(LONG i=0;i<controlAreas.size();i++)
+    for( LONG i=0;i<controlAreas.size();i++ )
     {
         CtiLMControlArea* currentLMControlArea = (CtiLMControlArea*)controlAreas[i];
         if( currentLMControlArea->getPAOId() == commandPAOID )
         {
             vector<CtiLMControlAreaTrigger*>& triggers = currentLMControlArea->getLMControlAreaTriggers();
-            for(LONG j=0;j<triggers.size();j++)
+            for( LONG j=0;j<triggers.size();j++ )
             {
                 CtiLMControlAreaTrigger* currentLMControlAreaTrigger = (CtiLMControlAreaTrigger*)triggers.at(j);
                 if( currentLMControlAreaTrigger->getTriggerNumber() == triggerNumber )
@@ -199,13 +199,13 @@ void CtiLMCommandExecutor::ChangeRestoreOffset()
     //RWRecursiveLock<RWMutexLock>::LockGuard  guard(store->getMux());
     vector<CtiLMControlArea*>& controlAreas = *(store->getControlAreas(CtiTime().seconds()));
 
-    for(LONG i=0;i<controlAreas.size();i++)
+    for( LONG i=0;i<controlAreas.size();i++ )
     {
         CtiLMControlArea* currentLMControlArea = (CtiLMControlArea*)controlAreas[i];
         if( currentLMControlArea->getPAOId() == commandPAOID )
         {
             vector<CtiLMControlAreaTrigger*>& triggers = currentLMControlArea->getLMControlAreaTriggers();
-            for(LONG j=0;j<triggers.size();j++)
+            for( LONG j=0;j<triggers.size();j++ )
             {
                 CtiLMControlAreaTrigger* currentLMControlAreaTrigger = (CtiLMControlAreaTrigger*)triggers.at(j);
                 if( currentLMControlAreaTrigger->getTriggerNumber() == triggerNumber )
@@ -258,7 +258,7 @@ void CtiLMCommandExecutor::EnableControlArea()
     //RWRecursiveLock<RWMutexLock>::LockGuard  guard(store->getMux());
     vector<CtiLMControlArea*>& controlAreas = *(store->getControlAreas(CtiTime().seconds()));
 
-    for(LONG i=0;i<controlAreas.size();i++)
+    for( LONG i=0;i<controlAreas.size();i++ )
     {
         CtiLMControlArea* currentLMControlArea = (CtiLMControlArea*)controlAreas[i];
         if( currentLMControlArea->getPAOId() == commandPAOID )
@@ -295,7 +295,7 @@ void CtiLMCommandExecutor::DisableControlArea()
     //RWRecursiveLock<RWMutexLock>::LockGuard  guard(store->getMux());
     vector<CtiLMControlArea*>& controlAreas = *(store->getControlAreas(CtiTime().seconds()));
 
-    for(LONG i=0;i<controlAreas.size();i++)
+    for( LONG i=0;i<controlAreas.size();i++ )
     {
         CtiLMControlArea* currentLMControlArea = (CtiLMControlArea*)controlAreas[i];
         if( currentLMControlArea->getPAOId() == commandPAOID )
@@ -316,14 +316,14 @@ void CtiLMCommandExecutor::DisableControlArea()
             }
             currentLMControlArea->setDisableFlag(TRUE);
             vector<CtiLMProgramBaseSPtr>& lmPrograms = currentLMControlArea->getLMPrograms();
-            for(LONG j=0;j<lmPrograms.size();j++)
+            for( LONG j=0;j<lmPrograms.size();j++ )
             {
                 CtiLMProgramBaseSPtr currentLMProgramBase = lmPrograms[j];
 
                 if( currentLMProgramBase->getProgramState() != CtiLMProgramBase::InactiveState )
                 {
-                    if( currentLMProgramBase->getPAOType() != TYPE_LMPROGRAM_DIRECT )
-                    { // do curtialment types still need this state?
+                    if( currentLMProgramBase->getPAOType() != TYPE_LMPROGRAM_DIRECT ) // do curtialment types still need this state?
+                    {
                         currentLMProgramBase->setProgramState(CtiLMProgramBase::StoppingState);
                     }
                     currentLMProgramBase->setManualControlReceivedFlag(TRUE);
@@ -362,10 +362,10 @@ void CtiLMCommandExecutor::EnableProgram()
     //RWRecursiveLock<RWMutexLock>::LockGuard  guard(store->getMux());
     vector<CtiLMControlArea*>& controlAreas = *(store->getControlAreas(CtiTime().seconds()));
 
-    for(LONG i=0;i<controlAreas.size();i++)
+    for( LONG i=0;i<controlAreas.size();i++ )
     {
         vector<CtiLMProgramBaseSPtr>& lmPrograms = ((CtiLMControlArea*)controlAreas[i])->getLMPrograms();
-        for(LONG j=0;j<lmPrograms.size();j++)
+        for( LONG j=0;j<lmPrograms.size();j++ )
         {
             CtiLMProgramBaseSPtr currentLMProgramBase = lmPrograms[j];
             if( commandPAOID == currentLMProgramBase->getPAOId() )
@@ -410,10 +410,10 @@ void CtiLMCommandExecutor::DisableProgram(bool emergency)
     //RWRecursiveLock<RWMutexLock>::LockGuard  guard(store->getMux());
     vector<CtiLMControlArea*>& controlAreas = *(store->getControlAreas(CtiTime().seconds()));
 
-    for(LONG i=0;i<controlAreas.size();i++)
+    for( LONG i=0;i<controlAreas.size();i++ )
     {
         vector<CtiLMProgramBaseSPtr>& lmPrograms = ((CtiLMControlArea*)controlAreas[i])->getLMPrograms();
-        for(LONG j=0;j<lmPrograms.size();j++)
+        for( LONG j=0;j<lmPrograms.size();j++ )
         {
             CtiLMProgramBaseSPtr currentLMProgramBase = lmPrograms[j];
             if( commandPAOID == currentLMProgramBase->getPAOId() )
@@ -423,12 +423,12 @@ void CtiLMCommandExecutor::DisableProgram(bool emergency)
                     char tempchar[80];
                     string text = ("Disabling Program: ");
                     text += currentLMProgramBase->getPAOName();
-                    if(emergency)
-                       text += " (emergency)";
+                    if( emergency )
+                        text += " (emergency)";
                     string additional = ("PAO Id: ");
                     _ltoa(currentLMProgramBase->getPAOId(),tempchar,10);
                     additional += tempchar;
-                    
+
 
                     CtiLoadManager::getInstance()->sendMessageToDispatch(CTIDBG_new CtiSignalMsg(SYS_PID_LOADMANAGEMENT,0,text,additional,GeneralLogType,SignalEvent,_command->getUser()));
                     {
@@ -439,19 +439,19 @@ void CtiLMCommandExecutor::DisableProgram(bool emergency)
 
                 if( currentLMProgramBase->getProgramState() != CtiLMProgramBase::InactiveState )
                 {
-                    if( currentLMProgramBase->getPAOType() != TYPE_LMPROGRAM_DIRECT )
-                    { // do curtialment types still need this state?
+                    if( currentLMProgramBase->getPAOType() != TYPE_LMPROGRAM_DIRECT ) // do curtialment types still need this state?
+                    {
                         currentLMProgramBase->setProgramState(CtiLMProgramBase::StoppingState);
                     }
 
-                    if(emergency)
+                    if( emergency )
                     {
                         //No manual stop please, just set the program inactive immediately
                         currentLMProgramBase->setManualControlReceivedFlag(FALSE);
                         currentLMProgramBase->setProgramState(CtiLMProgramBase::InactiveState);
                     }
-                    else
-                    {   // Next main loop we want to do a manual stop
+                    else   // Next main loop we want to do a manual stop
+                    {
                         // I guess the fact that we disabled the program and set the
                         // manual controll received flag means stop the program (!)
                         currentLMProgramBase->setManualControlReceivedFlag(TRUE);
@@ -461,8 +461,8 @@ void CtiLMCommandExecutor::DisableProgram(bool emergency)
                         char tempchar[80];
                         string text = ("Stopping Control Program: ");
                         text += currentLMProgramBase->getPAOName();
-                        if(emergency)
-                            text += " (emergency)";                     
+                        if( emergency )
+                            text += " (emergency)";
                         string additional = ("Reason: Program Disabled");
                         additional += " PAO Id: ";
                         _ltoa(currentLMProgramBase->getPAOId(),tempchar,10);
@@ -499,7 +499,7 @@ void CtiLMCommandExecutor::SendAllControlAreas()
     CtiLMControlAreaMsg* msg = CTIDBG_new CtiLMControlAreaMsg(*store->getControlAreas(CtiTime().seconds()),CtiLMControlAreaMsg::AllControlAreasSent);
 
     CtiLMConnectionPtr connection = _command->getConnection();
-    if(connection)
+    if( connection )
     {
         connection->write(msg);
     }
@@ -522,7 +522,7 @@ void CtiLMCommandExecutor::ChangeDailyStartTime()
 
     if( newStartTime >= 0 )
     {
-        for(LONG i=0;i<controlAreas.size();i++)
+        for( LONG i=0;i<controlAreas.size();i++ )
         {
             CtiLMControlArea* currentLMControlArea = (CtiLMControlArea*)controlAreas[i];
             if( currentLMControlArea->getPAOId() == commandPAOID )
@@ -570,7 +570,7 @@ void CtiLMCommandExecutor::ChangeDailyStopTime()
 
     if( newStopTime >= 0 )
     {
-        for(LONG i=0;i<controlAreas.size();i++)
+        for( LONG i=0;i<controlAreas.size();i++ )
         {
             CtiLMControlArea* currentLMControlArea = (CtiLMControlArea*)controlAreas[i];
             if( currentLMControlArea->getPAOId() == commandPAOID )
@@ -615,16 +615,16 @@ void CtiLMCommandExecutor::ShedGroup()
     //RWRecursiveLock<RWMutexLock>::LockGuard  guard(store->getMux());
     vector<CtiLMControlArea*>& controlAreas = *(store->getControlAreas(CtiTime().seconds()));
 
-    for(LONG i=0;i<controlAreas.size();i++)
+    for( LONG i=0;i<controlAreas.size();i++ )
     {
         vector<CtiLMProgramBaseSPtr>& lmPrograms = ((CtiLMControlArea*)controlAreas[i])->getLMPrograms();
-        for(LONG j=0;j<lmPrograms.size();j++)
+        for( LONG j=0;j<lmPrograms.size();j++ )
         {
             CtiLMProgramBaseSPtr currentLMProgramBase = lmPrograms[j];
             if( currentLMProgramBase->getPAOType() == TYPE_LMPROGRAM_DIRECT )
             {
                 CtiLMGroupVec program_groups  = (boost::static_pointer_cast< CtiLMProgramDirect >(currentLMProgramBase))->getLMProgramDirectGroups();
-                for(CtiLMGroupIter k = program_groups.begin(); k != program_groups.end(); k++)
+                for( CtiLMGroupIter k = program_groups.begin(); k != program_groups.end(); k++ )
                 {
                     CtiLMGroupPtr currentLMGroup  = *k;
 
@@ -694,16 +694,16 @@ void CtiLMCommandExecutor::CycleGroup()
     //RWRecursiveLock<RWMutexLock>::LockGuard  guard(store->getMux());
     vector<CtiLMControlArea*>& controlAreas = *(store->getControlAreas(CtiTime().seconds()));
 
-    for(LONG i=0;i<controlAreas.size();i++)
+    for( LONG i=0;i<controlAreas.size();i++ )
     {
         vector<CtiLMProgramBaseSPtr>& lmPrograms = ((CtiLMControlArea*)controlAreas[i])->getLMPrograms();
-        for(LONG j=0;j<lmPrograms.size();j++)
+        for( LONG j=0;j<lmPrograms.size();j++ )
         {
             CtiLMProgramBaseSPtr currentLMProgramBase = lmPrograms[j];
             if( currentLMProgramBase->getPAOType() == TYPE_LMPROGRAM_DIRECT )
             {
                 CtiLMGroupVec program_groups  = (boost::static_pointer_cast< CtiLMProgramDirect >(currentLMProgramBase))->getLMProgramDirectGroups();
-                for(CtiLMGroupIter k = program_groups.begin(); k != program_groups.end(); k++)
+                for( CtiLMGroupIter k = program_groups.begin(); k != program_groups.end(); k++ )
                 {
                     CtiLMGroupPtr currentLMGroup  = *k;
 
@@ -773,16 +773,16 @@ void CtiLMCommandExecutor::RestoreGroup()
     //RWRecursiveLock<RWMutexLock>::LockGuard  guard(store->getMux());
     vector<CtiLMControlArea*>& controlAreas = *(store->getControlAreas(CtiTime().seconds()));
 
-    for(LONG i=0;i<controlAreas.size();i++)
+    for( LONG i=0;i<controlAreas.size();i++ )
     {
         vector<CtiLMProgramBaseSPtr>& lmPrograms = ((CtiLMControlArea*)controlAreas[i])->getLMPrograms();
-        for(LONG j=0;j<lmPrograms.size();j++)
+        for( LONG j=0;j<lmPrograms.size();j++ )
         {
             CtiLMProgramBaseSPtr currentLMProgramBase = lmPrograms[j];
             if( currentLMProgramBase->getPAOType() == TYPE_LMPROGRAM_DIRECT )
             {
                 CtiLMGroupVec program_groups  = (boost::static_pointer_cast< CtiLMProgramDirect >(currentLMProgramBase))->getLMProgramDirectGroups();
-                for(CtiLMGroupIter k = program_groups.begin(); k != program_groups.end(); k++)
+                for( CtiLMGroupIter k = program_groups.begin(); k != program_groups.end(); k++ )
                 {
                     CtiLMGroupPtr currentLMGroup  = *k;
 
@@ -845,16 +845,16 @@ void CtiLMCommandExecutor::EnableGroup()
     //RWRecursiveLock<RWMutexLock>::LockGuard  guard(store->getMux());
     vector<CtiLMControlArea*>& controlAreas = *(store->getControlAreas(CtiTime().seconds()));
 
-    for(LONG i=0;i<controlAreas.size();i++)
+    for( LONG i=0;i<controlAreas.size();i++ )
     {
         vector<CtiLMProgramBaseSPtr>& lmPrograms = ((CtiLMControlArea*)controlAreas[i])->getLMPrograms();
-        for(LONG j=0;j<lmPrograms.size();j++)
+        for( LONG j=0;j<lmPrograms.size();j++ )
         {
             CtiLMProgramBaseSPtr currentLMProgramBase = lmPrograms[j];
             if( currentLMProgramBase->getPAOType() == TYPE_LMPROGRAM_DIRECT )
             {
                 CtiLMGroupVec groups  = (boost::static_pointer_cast< CtiLMProgramDirect >(currentLMProgramBase))->getLMProgramDirectGroups();
-                for(CtiLMGroupIter k = groups.begin(); k != groups.end(); k++)
+                for( CtiLMGroupIter k = groups.begin(); k != groups.end(); k++ )
                 {
                     CtiLMGroupPtr currentLMGroup  = *k;
 
@@ -900,16 +900,16 @@ void CtiLMCommandExecutor::DisableGroup()
     //RWRecursiveLock<RWMutexLock>::LockGuard  guard(store->getMux());
     vector<CtiLMControlArea*>& controlAreas = *(store->getControlAreas(CtiTime().seconds()));
 
-    for(LONG i=0;i<controlAreas.size();i++)
+    for( LONG i=0;i<controlAreas.size();i++ )
     {
         vector<CtiLMProgramBaseSPtr>& lmPrograms = ((CtiLMControlArea*)controlAreas[i])->getLMPrograms();
-        for(LONG j=0;j<lmPrograms.size();j++)
+        for( LONG j=0;j<lmPrograms.size();j++ )
         {
             CtiLMProgramBaseSPtr currentLMProgramBase = lmPrograms[j];
             if( currentLMProgramBase->getPAOType() == TYPE_LMPROGRAM_DIRECT )
             {
                 CtiLMGroupVec groups  = (boost::static_pointer_cast< CtiLMProgramDirect >(currentLMProgramBase))->getLMProgramDirectGroups();
-                for(CtiLMGroupIter k = groups.begin(); k != groups.end(); k++)
+                for( CtiLMGroupIter k = groups.begin(); k != groups.end(); k++ )
                 {
                     CtiLMGroupPtr currentLMGroup  = *k;
 
@@ -992,19 +992,19 @@ void CtiLMCommandExecutor::ConfirmGroup()
     //RWRecursiveLock<RWMutexLock>::LockGuard  guard(store->getMux());
     vector<CtiLMControlArea*>& controlAreas = *(store->getControlAreas(CtiTime().seconds()));
 
-    for(LONG i=0;i<controlAreas.size();i++)
+    for( LONG i=0;i<controlAreas.size();i++ )
     {
         vector<CtiLMProgramBaseSPtr>& lmPrograms = ((CtiLMControlArea*)controlAreas[i])->getLMPrograms();
-        for(LONG j=0;j<lmPrograms.size();j++)
+        for( LONG j=0;j<lmPrograms.size();j++ )
         {
             CtiLMProgramBaseSPtr currentLMProgramBase = lmPrograms[j];
             if( currentLMProgramBase->getPAOType() == TYPE_LMPROGRAM_DIRECT )
             {
                 CtiLMGroupVec groups  = (boost::static_pointer_cast< CtiLMProgramDirect >(currentLMProgramBase))->getLMProgramDirectGroups();
-                for(CtiLMGroupIter k = groups.begin(); k != groups.end(); k++)
+                for( CtiLMGroupIter k = groups.begin(); k != groups.end(); k++ )
                 {
                     CtiLMGroupPtr currentLMGroup  = *k;
-                    
+
                     if( currentLMGroup->getPAOId() == groupID )
                     {
                         string str;
@@ -1088,13 +1088,13 @@ void CtiLMCommandExecutor::ResetPeakPointValue()
     //RWRecursiveLock<RWMutexLock>::LockGuard  guard(store->getMux());
     vector<CtiLMControlArea*>& controlAreas = *(store->getControlAreas(CtiTime().seconds()));
 
-    for(LONG i=0;i<controlAreas.size();i++)
+    for( LONG i=0;i<controlAreas.size();i++ )
     {
         CtiLMControlArea* currentLMControlArea = (CtiLMControlArea*)controlAreas[i];
         if( currentLMControlArea->getPAOId() == commandPAOID )
         {
             vector<CtiLMControlAreaTrigger*>& triggers = currentLMControlArea->getLMControlAreaTriggers();
-            for(LONG j=0;j<triggers.size();j++)
+            for( LONG j=0;j<triggers.size();j++ )
             {
                 CtiLMControlAreaTrigger* currentLMControlAreaTrigger = (CtiLMControlAreaTrigger*)triggers.at(j);
                 if( currentLMControlAreaTrigger->getTriggerNumber() == triggerNumber )
@@ -1120,7 +1120,7 @@ void CtiLMCommandExecutor::ResetPeakPointValue()
             break;
         }
     }
-    
+
     {
         CtiLockGuard<CtiLogger> dout_guard(dout);
         dout << CtiTime() << " - " << "Received user peak point value reset for control area id: " << commandPAOID << " trigger: " << triggerNumber << endl;
@@ -1142,7 +1142,7 @@ void CtiLMManualControlRequestExecutor::Execute()
     CtiLMControlAreaStore* store = CtiLMControlAreaStore::getInstance();
     //RWRecursiveLock<RWMutexLock>::LockGuard  guard(store->getMux());
 
-    if(!store->findProgram(_controlMsg->getPAOId(), program, &controlArea))
+    if( !store->findProgram(_controlMsg->getPAOId(), program, &controlArea) )
     {
         {
             CtiLockGuard<CtiLogger> dout_guard(dout);
@@ -1152,7 +1152,7 @@ void CtiLMManualControlRequestExecutor::Execute()
         }
     }
 
-    if(!program)
+    if( !program )
     {
         //This would cause very very very bad things (program would die immediatelly due to assertions and exceptions)
         CtiLockGuard<CtiLogger> dout_guard(dout);
@@ -1171,12 +1171,12 @@ void CtiLMManualControlRequestExecutor::Execute()
     // Fill in the response as we figure out what to say to the client
     // and then send it at the end of this function
     CtiServerResponseMsg* response = NULL; 
-    if(_request != NULL)
+    if( _request != NULL )
     {
         response = CTIDBG_new CtiServerResponseMsg();
 
     }
-    
+
     CtiTime startTime;
     CtiTime stopTime;
 
@@ -1186,22 +1186,22 @@ void CtiLMManualControlRequestExecutor::Execute()
     //and the smart pointer will have a life as long as the checker, so we should be ok.
     CtiLMProgramConstraintChecker checker((CtiLMProgramDirect&)*program, CtiTime().seconds());
     bool passed_check = false;
-    
-    switch ( _controlMsg->getCommand() )
-    {
 
+    switch( _controlMsg->getCommand() )
+    {
+    
     case CtiLMManualControlRequest::SCHEDULED_START:
-        if(startTime <= _controlMsg->getStartTime())
+        if( startTime <= _controlMsg->getStartTime() )
         {
             startTime = _controlMsg->getStartTime();
         }
-        
+
     case CtiLMManualControlRequest::START_NOW:
 //      startTime = CtiTime();
         stopTime = _controlMsg->getStopTime();
 
 
-        switch(_controlMsg->getConstraintCmd())
+        switch( _controlMsg->getConstraintCmd() )
         {
         case CtiLMManualControlRequest::CHECK_CONSTRAINTS:
             passed_check = checker.checkConstraints(     _controlMsg->getStartGear()-1,
@@ -1214,9 +1214,9 @@ void CtiLMManualControlRequestExecutor::Execute()
                 passed_check &= checker.checkControlAreaControlWindows(*controlArea, startTime.seconds(), stopTime.seconds());
             }
 
-            if(response != NULL)
+            if( response != NULL )
             {
-                if(passed_check)
+                if( passed_check )
                 {
                     response->setStatus(CtiServerResponseMsg::OK);
                     response->setMessage("Manual Control Request Constraint Check OK");
@@ -1229,37 +1229,37 @@ void CtiLMManualControlRequestExecutor::Execute()
             }
             //Do not actually start the program
             break;
-            
+
         case CtiLMManualControlRequest::OVERRIDE_CONSTRAINTS:
             (boost::static_pointer_cast< CtiLMProgramDirect >(program))->setConstraintOverride(true);
             StartProgram(program, controlArea, startTime, stopTime);
-            if(response != NULL)
+            if( response != NULL )
             {
                 response->setStatus(CtiServerResponseMsg::OK);
                 response->setMessage("Manual Control Request OK, Overriding Constraints");
             }
             break;
-            
+
         case CtiLMManualControlRequest::USE_CONSTRAINTS:
             // Fix up program control window if necessary
             (boost::static_pointer_cast< CtiLMProgramDirect >(program))->setConstraintOverride(false);
             CoerceStartStopTime(program, startTime, stopTime, controlArea);
             if( checker.checkConstraints(_controlMsg->getStartGear()-1, startTime.seconds(), stopTime.seconds()) &&
-                checker.checkControlAreaControlWindows(*controlArea, startTime.seconds(), stopTime.seconds())  )
+                checker.checkControlAreaControlWindows(*controlArea, startTime.seconds(), stopTime.seconds()) )
             {
                 StartProgram(program, controlArea, startTime, stopTime);
 
-                if(response != NULL)
+                if( response != NULL )
                 {
                     response->setStatus(CtiServerResponseMsg::OK);
                     response->setMessage("Manual Control Request OK, Using Constraints");
-                } 
+                }
             }
-            else if(response != NULL)
+            else if( response != NULL )
             {
                 response->setStatus(CtiServerResponseMsg::ERR);
                 response->setMessage("Manual Control Request Violates Constraints, Abandoning");
-            }       
+            }
             break;
 
         default:
@@ -1268,47 +1268,47 @@ void CtiLMManualControlRequestExecutor::Execute()
                 dout << CtiTime() << " *** Checkpoint *** Received request with improper constraints " << __FILE__ << "(" << __LINE__ << ")" << endl;
             }
             break;
-            
+
         };
         break;
-        
+
     case CtiLMManualControlRequest::SCHEDULED_STOP:
     case CtiLMManualControlRequest::STOP_NOW:
         stopTime = _controlMsg->getStopTime();
 
-        switch(_controlMsg->getConstraintCmd())
+        switch( _controlMsg->getConstraintCmd() )
         {
         case CtiLMManualControlRequest::CHECK_CONSTRAINTS:
-            if(response != NULL)
+            if( response != NULL )
             {
                 response->setStatus(CtiServerResponseMsg::OK);
                 response->setMessage("Manual Control Request Constraint Check OK (doesn't do anything on stop)");
-            }               
+            }
             //Do not actually start the program
             break;
-            
+
         case CtiLMManualControlRequest::OVERRIDE_CONSTRAINTS:
             (boost::static_pointer_cast< CtiLMProgramDirect >(program))->setConstraintOverride(true);
             StopProgram(program, controlArea, stopTime);
-            if(response != NULL)
+            if( response != NULL )
             {
                 response->setStatus(CtiServerResponseMsg::OK);
                 response->setMessage("Manual Control Request OK, Overriding Constraints");
-            }                       
+            }
 
             break;
-            
+
         case CtiLMManualControlRequest::USE_CONSTRAINTS:
             (boost::static_pointer_cast< CtiLMProgramDirect >(program))->setConstraintOverride(false);           
             // Fix up program control window if necessary
             startTime = (boost::static_pointer_cast< CtiLMProgramDirect >(program))->getDirectStartTime();        
             CoerceStartStopTime(program, startTime, stopTime, controlArea);
             StopProgram(program, controlArea, stopTime);
-            if(response != NULL)
+            if( response != NULL )
             {
                 response->setStatus(CtiServerResponseMsg::OK);
                 response->setMessage("Manual Control Request OK, Using Constraints");
-            }                               
+            }
             break;
 
         default:
@@ -1318,31 +1318,31 @@ void CtiLMManualControlRequestExecutor::Execute()
             }
             break;
         };
-        
+
         break;
 
     case CtiLMManualControlRequest::CHANGE_GEAR:
         {
             stopTime = _controlMsg->getStopTime();
-    
-            switch(_controlMsg->getConstraintCmd())
+
+            switch( _controlMsg->getConstraintCmd() )
             {
             case CtiLMManualControlRequest::CHECK_CONSTRAINTS:
                 passed_check = checker.checkConstraints(     _controlMsg->getStartGear()-1,
                                                              startTime.seconds(),
                                                              stopTime.seconds());
-    
+
                 passed_check &= checker.checkManualGearChangeConstraints(_controlMsg->getStartGear(), stopTime.seconds());
-    
-    
+
+
                 if( controlArea != NULL )
                 {
                     passed_check &= checker.checkControlAreaControlWindows(*controlArea, startTime.seconds(), stopTime.seconds());
                 }
-    
-                if(response != NULL)
+
+                if( response != NULL )
                 {
-                    if(passed_check)
+                    if( passed_check )
                     {
                         response->setStatus(CtiServerResponseMsg::OK);
                         response->setMessage("Manual Gear Change Request Constraint Check OK");
@@ -1355,54 +1355,54 @@ void CtiLMManualControlRequestExecutor::Execute()
                 }
                 //Do not actually start the program
                 break;
-                
+
             case CtiLMManualControlRequest::OVERRIDE_CONSTRAINTS:
                 (boost::static_pointer_cast< CtiLMProgramDirect >(program))->setConstraintOverride(true);
                 if( checker.checkManualGearChangeConstraints(_controlMsg->getStartGear(), stopTime.seconds()) )// I have decided that these do not allow override
                 {
                     StartProgram(program, controlArea, startTime, stopTime);
-                    if(response != NULL)
+                    if( response != NULL )
                     {
                         response->setStatus(CtiServerResponseMsg::OK);
                         response->setMessage("Manual Gear Change Request OK, Overriding Constraints");
                     }
                 }
-                else if(response != NULL)
+                else if( response != NULL )
                 {
                     response->setStatus(CtiServerResponseMsg::ERR);
                     response->setMessage("Manual Gear Change Request Violates Gear Change Specific Constraints, Abandoning");
-                }  
+                }
                 break;
-                
+
             case CtiLMManualControlRequest::USE_CONSTRAINTS:
                 // Fix up program control window if necessary
                 (boost::static_pointer_cast< CtiLMProgramDirect >(program))->setConstraintOverride(false);
                 CoerceStartStopTime(program, startTime, stopTime, controlArea);
                 if( checker.checkConstraints(_controlMsg->getStartGear()-1, startTime.seconds(), stopTime.seconds()) &&
-                    checker.checkControlAreaControlWindows(*controlArea, startTime.seconds(), stopTime.seconds())  )
+                    checker.checkControlAreaControlWindows(*controlArea, startTime.seconds(), stopTime.seconds()) )
                 {
                     StartProgram(program, controlArea, startTime, stopTime);
-    
-                    if(response != NULL)
+
+                    if( response != NULL )
                     {
                         response->setStatus(CtiServerResponseMsg::OK);
                         response->setMessage("Manual Gear Change Request OK, Using Constraints");
-                    } 
+                    }
                 }
-                else if(response != NULL)
+                else if( response != NULL )
                 {
                     response->setStatus(CtiServerResponseMsg::ERR);
                     response->setMessage("Manual Gear Change Request Violates Constraints, Abandoning");
-                }       
+                }
                 break;
-    
+
             default:
                 {
                     CtiLockGuard<CtiLogger> logger_guard(dout);
                     dout << CtiTime() << " *** Checkpoint *** Received request with improper constraints " << __FILE__ << "(" << __LINE__ << ")" << endl;
                 }
                 break;
-                
+
             };
         }
         break;
@@ -1415,7 +1415,7 @@ void CtiLMManualControlRequestExecutor::Execute()
 
     }
     //Only send a response if we received a request
-    if(response != NULL)
+    if( response != NULL )
     {
         response->setMessagePriority(1);
         CtiLMManualControlResponse* lmResp = CTIDBG_new CtiLMManualControlResponse();
@@ -1430,7 +1430,7 @@ void CtiLMManualControlRequestExecutor::Execute()
         }
         //Send the response to all the clients
         CtiLMConnectionPtr connection = _controlMsg->getConnection();
-        if(connection)
+        if( connection )
         {
             connection->write(response);
         }
@@ -1446,8 +1446,8 @@ void CtiLMManualControlRequestExecutor::StartProgram(CtiLMProgramBaseSPtr progra
 {
     if( program->getPAOType() == TYPE_LMPROGRAM_DIRECT )
     {
-        if( _LM_DEBUG & LM_DEBUG_STANDARD )
-        { //TODO: pull this out into an operator
+        if( _LM_DEBUG & LM_DEBUG_STANDARD ) //TODO: pull this out into an operator
+        {
             CtiLockGuard<CtiLogger> logger_guard(dout);
             char tempchar[64];
             dout << CtiTime() << " - Manual direct control scheduled start received." << endl;
@@ -1472,12 +1472,12 @@ void CtiLMManualControlRequestExecutor::StartProgram(CtiLMProgramBaseSPtr progra
         additional += ", Stop: ";
         additional += directProgram->getDirectStopTime().asString();
         CtiLoadManager::getInstance()->sendMessageToDispatch( CTIDBG_new CtiSignalMsg(SYS_PID_LOADMANAGEMENT,0,text,additional,GeneralLogType,SignalEvent,_controlMsg->getUser()) );
-    {
-        CtiLockGuard<CtiLogger> logger_guard(dout);
-        dout << CtiTime() << " - " << text << ", " << additional << endl;
-    }
+        {
+            CtiLockGuard<CtiLogger> logger_guard(dout);
+            dout << CtiTime() << " - " << text << ", " << additional << endl;
+        }
     } // end program->getPAOType() == TYPE_LMPROGRAM_DIRECT 
-    else if(program->getPAOType() == TYPE_LMPROGRAM_CURTAILMENT)
+    else if( program->getPAOType() == TYPE_LMPROGRAM_CURTAILMENT )
     {
         if( _LM_DEBUG & LM_DEBUG_STANDARD )
         {
@@ -1494,7 +1494,7 @@ void CtiLMManualControlRequestExecutor::StartProgram(CtiLMProgramBaseSPtr progra
 
         CtiLMProgramCurtailmentSPtr lmProgramCurtailment = boost::static_pointer_cast< CtiLMProgramCurtailment >(program);
         StartCurtailmentProgram(lmProgramCurtailment, controlArea, start, stop);
-            
+
         lmProgramCurtailment->setManualControlReceivedFlag(FALSE);
         lmProgramCurtailment->setProgramState(CtiLMProgramBase::ScheduledState);
         lmProgramCurtailment->setCurtailReferenceId(0);// This forces the program to create a new ref id
@@ -1518,18 +1518,18 @@ void CtiLMManualControlRequestExecutor::StartProgram(CtiLMProgramBaseSPtr progra
     }
     else
     {
-    {
-        CtiLockGuard<CtiLogger> dout_guard(dout);
-        dout << CtiTime() << " **Checkpoint** " << __FILE__ << "(" << __LINE__ << ")" << endl;
-        dout << CtiTime() << " send a response message here" << __FILE__ << "(" << __LINE__ << ")" << endl;
-    }
+        {
+            CtiLockGuard<CtiLogger> dout_guard(dout);
+            dout << CtiTime() << " **Checkpoint** " << __FILE__ << "(" << __LINE__ << ")" << endl;
+            dout << CtiTime() << " send a response message here" << __FILE__ << "(" << __LINE__ << ")" << endl;
+        }
     }
 
 }
 
 void CtiLMManualControlRequestExecutor::StopProgram(CtiLMProgramBaseSPtr program, CtiLMControlArea* controlArea, const CtiTime& stop)
 {
-    if(program->getPAOType() == TYPE_LMPROGRAM_DIRECT)
+    if( program->getPAOType() == TYPE_LMPROGRAM_DIRECT )
     {
         if( _LM_DEBUG & LM_DEBUG_STANDARD )
         {
@@ -1550,15 +1550,15 @@ void CtiLMManualControlRequestExecutor::StopProgram(CtiLMProgramBaseSPtr program
         string additional = ("Stop: ");
         additional += lmProgramDirect->getDirectStopTime().asString();
         CtiLoadManager::getInstance()->sendMessageToDispatch( CTIDBG_new CtiSignalMsg(SYS_PID_LOADMANAGEMENT,0,text,additional,GeneralLogType,SignalEvent,_controlMsg->getUser()) );
-    {
-        CtiLockGuard<CtiLogger> logger_guard(dout);
-        dout << CtiTime() << " - " << text << ", " << additional << endl;
-    }
+        {
+            CtiLockGuard<CtiLogger> logger_guard(dout);
+            dout << CtiTime() << " - " << text << ", " << additional << endl;
+        }
 
     }
-    else if(program->getPAOType() == TYPE_LMPROGRAM_CURTAILMENT)
+    else if( program->getPAOType() == TYPE_LMPROGRAM_CURTAILMENT )
     {
-        
+
         if( _LM_DEBUG & LM_DEBUG_STANDARD )
         {
             CtiLockGuard<CtiLogger> logger_guard(dout);
@@ -1572,15 +1572,15 @@ void CtiLMManualControlRequestExecutor::StopProgram(CtiLMProgramBaseSPtr program
         }
         CtiLMProgramCurtailmentSPtr lmProgramCurtailment = boost::static_pointer_cast< CtiLMProgramCurtailment >(program);
         StopCurtailmentProgram(lmProgramCurtailment, controlArea, stop);
-        
+
     }
     else
     {
-    {
-        CtiLockGuard<CtiLogger> dout_guard(dout);
-        dout << CtiTime() << " **Checkpoint** " <<  __FILE__ << "(" << __LINE__ << ")" << endl;
-        dout << CtiTime() << " send a response message here" << __FILE__ << "(" << __LINE__ << ")" << endl;
-    }
+        {
+            CtiLockGuard<CtiLogger> dout_guard(dout);
+            dout << CtiTime() << " **Checkpoint** " <<  __FILE__ << "(" << __LINE__ << ")" << endl;
+            dout << CtiTime() << " send a response message here" << __FILE__ << "(" << __LINE__ << ")" << endl;
+        }
     }
 }
 
@@ -1597,9 +1597,9 @@ void CtiLMManualControlRequestExecutor::StartDirectProgram(CtiLMProgramDirectSPt
 
     // Let any notification groups know if they care
     lmProgramDirect->scheduleNotification(start, stop);
-    
-    if( stop.seconds() < CtiTime(CtiDate(1,1,1991),0,0,0).seconds() )
-    {//saves us from stopping immediately after starting if client is dumb enough to send us a stop time of 1990
+
+    if( stop.seconds() < CtiTime(CtiDate(1,1,1991),0,0,0).seconds() )//saves us from stopping immediately after starting if client is dumb enough to send us a stop time of 1990
+    {
         CtiTime pluggedStopTime(lmProgramDirect->getDirectStartTime());
         pluggedStopTime = pluggedStopTime.addDays(1);
         lmProgramDirect->setDirectStopTime(pluggedStopTime);
@@ -1608,13 +1608,13 @@ void CtiLMManualControlRequestExecutor::StartDirectProgram(CtiLMProgramDirectSPt
     {
         lmProgramDirect->setDirectStopTime(stop);
     }
-    
+
     lmProgramDirect->setCurrentGearNumber(_controlMsg->getStartGear()-1);
     if( _controlMsg->getStartPriority() > controlArea->getCurrentStartPriority() )
     {
         controlArea->setCurrentStartPriority(_controlMsg->getStartPriority());
     }
-    
+
     lmProgramDirect->setManualControlReceivedFlag(TRUE);
     controlArea->setUpdatedFlag(TRUE);
 }
@@ -1622,16 +1622,16 @@ void CtiLMManualControlRequestExecutor::StartDirectProgram(CtiLMProgramDirectSPt
 void CtiLMManualControlRequestExecutor::StopDirectProgram(CtiLMProgramDirectSPtr lmProgramDirect, CtiLMControlArea* controlArea, const CtiTime& stop)
 {
     CtiTime stopTime;
-    if(_controlMsg->getCommand() == CtiLMManualControlRequest::SCHEDULED_STOP)
+    if( _controlMsg->getCommand() == CtiLMManualControlRequest::SCHEDULED_STOP )
     {
         stopTime = stop;
     }
 
     // Check the stop time to see if it is before the start time
-    if(stopTime.seconds() < lmProgramDirect->getDirectStartTime().seconds())
+    if( stopTime.seconds() < lmProgramDirect->getDirectStartTime().seconds() )
     {
         // If we have already notified of start then we need to notify of stop.
-        if( (lmProgramDirect->getDirectStartTime().seconds() - lmProgramDirect->getNotifyActiveOffset()) < CtiTime::now().seconds())
+        if( (lmProgramDirect->getDirectStartTime().seconds() - lmProgramDirect->getNotifyActiveOffset()) < CtiTime::now().seconds() )
         {
             lmProgramDirect->scheduleStopNotification(stopTime);
         }
@@ -1652,14 +1652,14 @@ void CtiLMManualControlRequestExecutor::StopDirectProgram(CtiLMProgramDirectSPtr
         lmProgramDirect->setDirectStopTime(stopTime);
 
         lmProgramDirect->scheduleStopNotification(stopTime);
-        
+
         lmProgramDirect->setManualControlReceivedFlag(TRUE);
         controlArea->setUpdatedFlag(TRUE);
     }
 }
 
 void CtiLMManualControlRequestExecutor::ChangeProgramGear(CtiLMProgramDirectSPtr lmProgramDirect, CtiLMControlArea* controlArea,
-                                                           const CtiTime& start, const CtiTime& stop, LONG nextGear)
+                                                          const CtiTime& start, const CtiTime& stop, LONG nextGear)
 {
     CtiTime startTime = start;
 
@@ -1671,9 +1671,9 @@ void CtiLMManualControlRequestExecutor::ChangeProgramGear(CtiLMProgramDirectSPtr
 
     // Let any notification groups know if they care
     // lmProgramDirect->scheduleNotification(start, stop);
-    
-    if( stop.seconds() < CtiTime(CtiDate(1,1,1991),0,0,0).seconds() )
-    {//saves us from stopping immediately after starting if client is dumb enough to send us a stop time of 1990
+
+    if( stop.seconds() < CtiTime(CtiDate(1,1,1991),0,0,0).seconds() )//saves us from stopping immediately after starting if client is dumb enough to send us a stop time of 1990
+    {
         CtiTime pluggedStopTime(lmProgramDirect->getDirectStartTime());
         pluggedStopTime = pluggedStopTime.addDays(1);
         lmProgramDirect->setDirectStopTime(pluggedStopTime);
@@ -1682,13 +1682,13 @@ void CtiLMManualControlRequestExecutor::ChangeProgramGear(CtiLMProgramDirectSPtr
     {
         lmProgramDirect->setDirectStopTime(stop);
     }
-    
+
     lmProgramDirect->setCurrentGearNumber(_controlMsg->getStartGear()-1);
     if( _controlMsg->getStartPriority() > controlArea->getCurrentStartPriority() )
     {
         controlArea->setCurrentStartPriority(_controlMsg->getStartPriority());
     }
-    
+
     lmProgramDirect->setManualControlReceivedFlag(TRUE);
     controlArea->setUpdatedFlag(TRUE);
 }
@@ -1698,7 +1698,7 @@ void CtiLMManualControlRequestExecutor::StartCurtailmentProgram(CtiLMProgramCurt
 {
     CtiTime startTime = start;
     CtiTime notificationTime;
-    if(_controlMsg->getCommand() == CtiLMManualControlRequest::SCHEDULED_START)
+    if( _controlMsg->getCommand() == CtiLMManualControlRequest::SCHEDULED_START )
     {
         notificationTime = _controlMsg->getNotifyTime();
     }
@@ -1728,7 +1728,7 @@ void CtiLMManualControlRequestExecutor::StopCurtailmentProgram(CtiLMProgramCurta
                                                                const CtiTime& stop)
 {
     CtiTime stopTime;
-    if(_controlMsg->getCommand() == CtiLMManualControlRequest::SCHEDULED_STOP)
+    if( _controlMsg->getCommand() == CtiLMManualControlRequest::SCHEDULED_STOP )
     {
         stopTime = stop;
     }
@@ -1760,31 +1760,31 @@ void CtiLMManualControlRequestExecutor::CoerceStartStopTime(CtiLMProgramBaseSPtr
     }
     LONG startSecondsFromBeginningOfDay = start.seconds() - beginningOfDay.seconds();
     LONG stopSecondsFromBeginningOfDay = stop.seconds() - beginningOfDay.seconds();
-    
+
     std::vector<CtiLMProgramControlWindow*>& control_windows = program->getLMProgramControlWindows();
 
     bool found_cw = false;
-    for(int i = 0; i < control_windows.size() && !found_cw; i++)
+    for( int i = 0; i < control_windows.size() && !found_cw; i++ )
     {
         // Do the start, stop times fit into this control window?  if not maybe the next one 
         CtiLMProgramControlWindow* cw = (CtiLMProgramControlWindow*) control_windows[i];
-        if(startSecondsFromBeginningOfDay <= cw->getAvailableStopTime())
+        if( startSecondsFromBeginningOfDay <= cw->getAvailableStopTime() )
         {
             //Lets pick this control window, figure out the start and stop
-            if(startSecondsFromBeginningOfDay <= cw->getAvailableStartTime())
-            {   // start is before beginning of control window, set the start time to the
+            if( startSecondsFromBeginningOfDay <= cw->getAvailableStartTime() )   // start is before beginning of control window, set the start time to the
+            {
                 // beginning of this control window
                 start += (cw->getAvailableStartTime() - startSecondsFromBeginningOfDay);
                 found_cw = true;
             }
             else
-            {  
+            {
                 // start is inside this control window, no need to change it
                 found_cw = true;                
             }
 
-            if(stopSecondsFromBeginningOfDay >= cw->getAvailableStopTime())
-            {  // stop time is outside this control window, shorten it up
+            if( stopSecondsFromBeginningOfDay >= cw->getAvailableStopTime() )  // stop time is outside this control window, shorten it up
+            {
                 stop += (-1*(stopSecondsFromBeginningOfDay - cw->getAvailableStopTime()));
             }
             else
@@ -1834,7 +1834,7 @@ void CoerceStopTime(CtiLMProgramBaseSPtr program, CtiTime& stop)
 ---------------------------------------------------------------------------*/
 void CtiLMEnergyExchangeControlMsgExecutor::Execute()
 {
-    switch ( _energyExchangeMsg->getCommand() )
+    switch( _energyExchangeMsg->getCommand() )
     {
     case CtiLMEnergyExchangeControlMsg::NEW_OFFER:
         NewOffer();
@@ -1889,11 +1889,11 @@ void CtiLMEnergyExchangeControlMsgExecutor::NewOffer()
     //RWRecursiveLock<RWMutexLock>::LockGuard  guard(store->getMux());
     vector<CtiLMControlArea*>& controlAreas = *store->getControlAreas(CtiTime().seconds());
 
-    for(LONG i=0;i<controlAreas.size();i++)
+    for( LONG i=0;i<controlAreas.size();i++ )
     {
         CtiLMControlArea* currentControlArea = (CtiLMControlArea*)controlAreas[i];
         vector<CtiLMProgramBaseSPtr>& lmPrograms = currentControlArea->getLMPrograms();
-        for(LONG j=0;j<lmPrograms.size();j++)
+        for( LONG j=0;j<lmPrograms.size();j++ )
         {
             CtiLMProgramBaseSPtr currentLMProgramBase = lmPrograms[j];
             if( energyExchangeProgramID == currentLMProgramBase->getPAOId() )
@@ -1932,7 +1932,7 @@ void CtiLMEnergyExchangeControlMsgExecutor::NewOffer()
                         offerRevisions.push_back(newRevision);
 
                         vector<CtiLMEnergyExchangeHourlyOffer*>& hourlyOffers = newRevision->getLMEnergyExchangeHourlyOffers();
-                        for(LONG k=0;k<HOURS_IN_DAY;k++)
+                        for( LONG k=0;k<HOURS_IN_DAY;k++ )
                         {
                             CtiLMEnergyExchangeHourlyOffer* newHourlyOffer = CTIDBG_new CtiLMEnergyExchangeHourlyOffer();
                             newHourlyOffer->setOfferId(newRevision->getOfferId());
@@ -1956,7 +1956,7 @@ void CtiLMEnergyExchangeControlMsgExecutor::NewOffer()
                 break;
             }
         }
-    
+
         if( found )
         {
             break;
@@ -1990,12 +1990,12 @@ void CtiLMEnergyExchangeControlMsgExecutor::OfferUpdate()
     //RWRecursiveLock<RWMutexLock>::LockGuard  guard(store->getMux());
     vector<CtiLMControlArea*>& controlAreas = *store->getControlAreas(CtiTime().seconds());
 
-    for(LONG i=0;i<controlAreas.size();i++)
+    for( LONG i=0;i<controlAreas.size();i++ )
     {
         CtiLMControlArea* currentControlArea = (CtiLMControlArea*)controlAreas[i];
         vector<CtiLMProgramBaseSPtr>& lmPrograms = currentControlArea->getLMPrograms();
 
-        for(LONG j=0;j<lmPrograms.size();j++)
+        for( LONG j=0;j<lmPrograms.size();j++ )
         {
             CtiLMProgramBaseSPtr currentLMProgramBase = lmPrograms[j];
             if( energyExchangeProgramID == currentLMProgramBase->getPAOId() )
@@ -2034,7 +2034,7 @@ void CtiLMEnergyExchangeControlMsgExecutor::OfferUpdate()
                             updateRevision->updateLMEnergyExchangeOfferRevisionTable();
 
                             vector<CtiLMEnergyExchangeHourlyOffer*>& hourlyOffers = updateRevision->getLMEnergyExchangeHourlyOffers();
-                            for(LONG k=0;k<HOURS_IN_DAY;k++)
+                            for( LONG k=0;k<HOURS_IN_DAY;k++ )
                             {
                                 CtiLMEnergyExchangeHourlyOffer* updateHourlyOffer = (CtiLMEnergyExchangeHourlyOffer*)hourlyOffers[k];
                                 //updateHourlyOffer->setOfferId(0);
@@ -2068,7 +2068,7 @@ void CtiLMEnergyExchangeControlMsgExecutor::OfferUpdate()
                 break;
             }
         }
-       
+
         if( found )
         {
             break;
@@ -2102,11 +2102,11 @@ void CtiLMEnergyExchangeControlMsgExecutor::OfferRevision()
     //RWRecursiveLock<RWMutexLock>::LockGuard  guard(store->getMux());
     vector<CtiLMControlArea*>& controlAreas = *store->getControlAreas(CtiTime().seconds());
 
-    for(LONG i=0;i<controlAreas.size();i++)
+    for( LONG i=0;i<controlAreas.size();i++ )
     {
         CtiLMControlArea* currentControlArea = (CtiLMControlArea*)controlAreas[i];
         vector<CtiLMProgramBaseSPtr>& lmPrograms = currentControlArea->getLMPrograms();
-        for(LONG j=0;j<lmPrograms.size();j++)
+        for( LONG j=0;j<lmPrograms.size();j++ )
         {
             CtiLMProgramBaseSPtr currentLMProgramBase = lmPrograms[j];
             if( energyExchangeProgramID == currentLMProgramBase->getPAOId() )
@@ -2151,7 +2151,7 @@ void CtiLMEnergyExchangeControlMsgExecutor::OfferRevision()
                             offerRevisions.push_back(newRevision);
 
                             vector<CtiLMEnergyExchangeHourlyOffer*>& hourlyOffers = newRevision->getLMEnergyExchangeHourlyOffers();
-                            for(LONG k=0;k<HOURS_IN_DAY;k++)
+                            for( LONG k=0;k<HOURS_IN_DAY;k++ )
                             {
                                 CtiLMEnergyExchangeHourlyOffer* newHourlyOffer = CTIDBG_new CtiLMEnergyExchangeHourlyOffer();
                                 newHourlyOffer->setOfferId(newRevision->getOfferId());
@@ -2190,7 +2190,7 @@ void CtiLMEnergyExchangeControlMsgExecutor::OfferRevision()
                 break;
             }
         }
-    
+
         if( found )
         {
             break;
@@ -2224,11 +2224,11 @@ void CtiLMEnergyExchangeControlMsgExecutor::CloseOffer()
     //RWRecursiveLock<RWMutexLock>::LockGuard  guard(store->getMux());
     vector<CtiLMControlArea*>& controlAreas = *store->getControlAreas(CtiTime().seconds());
 
-    for(LONG i=0;i<controlAreas.size();i++)
+    for( LONG i=0;i<controlAreas.size();i++ )
     {
         CtiLMControlArea* currentControlArea = (CtiLMControlArea*)controlAreas[i];
         vector<CtiLMProgramBaseSPtr>& lmPrograms = currentControlArea->getLMPrograms();
-        for(LONG j=0;j<lmPrograms.size();j++)
+        for( LONG j=0;j<lmPrograms.size();j++ )
         {
             CtiLMProgramBaseSPtr currentLMProgramBase = lmPrograms[j];
             if( energyExchangeProgramID == currentLMProgramBase->getPAOId() )
@@ -2288,7 +2288,7 @@ void CtiLMEnergyExchangeControlMsgExecutor::CloseOffer()
                 break;
             }
         }
-    
+
         if( found )
         {
             break;
@@ -2322,11 +2322,11 @@ void CtiLMEnergyExchangeControlMsgExecutor::CancelOffer()
     //RWRecursiveLock<RWMutexLock>::LockGuard  guard(store->getMux());
     vector<CtiLMControlArea*>& controlAreas = *store->getControlAreas(CtiTime().seconds());
 
-    for(LONG i=0;i<controlAreas.size();i++)
+    for( LONG i=0;i<controlAreas.size();i++ )
     {
         CtiLMControlArea* currentControlArea = (CtiLMControlArea*)controlAreas[i];
         vector<CtiLMProgramBaseSPtr>& lmPrograms = currentControlArea->getLMPrograms();
-        for(LONG j=0;j<lmPrograms.size();j++)
+        for( LONG j=0;j<lmPrograms.size();j++ )
         {
             CtiLMProgramBaseSPtr currentLMProgramBase = lmPrograms[j];
             if( energyExchangeProgramID == currentLMProgramBase->getPAOId() )
@@ -2389,7 +2389,7 @@ void CtiLMEnergyExchangeControlMsgExecutor::CancelOffer()
                 break;
             }
         }
-    
+
         if( found )
         {
             break;
@@ -2445,12 +2445,12 @@ void CtiLMCurtailmentAcknowledgeMsgExecutor::Execute()
     vector<CtiLMControlArea*>& controlAreas = *store->getControlAreas(CtiTime().seconds());
 
     BOOL found = FALSE;
-    for(LONG i=0;i<controlAreas.size();i++)
+    for( LONG i=0;i<controlAreas.size();i++ )
     {
         CtiLMControlArea* currentControlArea = (CtiLMControlArea*)controlAreas[i];
         vector<CtiLMProgramBaseSPtr>& lmPrograms = currentControlArea->getLMPrograms();
 
-        for(LONG j=0;j<lmPrograms.size();j++)
+        for( LONG j=0;j<lmPrograms.size();j++ )
         {
             CtiLMProgramBaseSPtr currentLMProgramBase = lmPrograms[j];
             if( currentLMProgramBase->getPAOType() == TYPE_LMPROGRAM_CURTAILMENT )
@@ -2458,7 +2458,7 @@ void CtiLMCurtailmentAcknowledgeMsgExecutor::Execute()
                 CtiLMProgramCurtailmentSPtr lmProgramCurtailment = boost::static_pointer_cast< CtiLMProgramCurtailment >(currentLMProgramBase);
                 vector<CtiLMCurtailCustomer*>& lmCurtailmentCustomers = lmProgramCurtailment->getLMProgramCurtailmentCustomers();
 
-                for(LONG k=0;k<lmCurtailmentCustomers.size();k++)
+                for( LONG k=0;k<lmCurtailmentCustomers.size();k++ )
                 {
                     CtiLMCurtailCustomer* currentLMCurtailCustomer = (CtiLMCurtailCustomer*)lmCurtailmentCustomers[k];
 
@@ -2487,21 +2487,21 @@ void CtiLMCurtailmentAcknowledgeMsgExecutor::Execute()
                         break;
                     }
                 }
-            
-                if(found)
+
+                if( found )
                 {
                     break;
                 }
             }
         }
-    
-        if(found)
+
+        if( found )
         {
             break;
         }
     }
 #if 0  // Pointless?
-    if(found)
+    if( found )
     {
         //store->dumpAllDynamicData();
     }
@@ -2511,11 +2511,11 @@ void CtiLMCurtailmentAcknowledgeMsgExecutor::Execute()
 
 void figureHourlyCommittedForOfferId(LONG offerId, const std::vector<CtiLMEnergyExchangeCustomer*>& lmEnergyExchangeCustomers, DOUBLE committedArray[ ])
 {
-    for(LONG i=0;i<lmEnergyExchangeCustomers.size();i++)
+    for( LONG i=0;i<lmEnergyExchangeCustomers.size();i++ )
     {
         CtiLMEnergyExchangeCustomer* currentEECustomer = (CtiLMEnergyExchangeCustomer*)lmEnergyExchangeCustomers[i];
         vector<CtiLMEnergyExchangeCustomerReply*>& customerReplies = currentEECustomer->getLMEnergyExchangeCustomerReplies();
-        for(LONG j=0;j<customerReplies.size();j++)
+        for( LONG j=0;j<customerReplies.size();j++ )
         {
             CtiLMEnergyExchangeCustomerReply* currentLMEECustomerReply = (CtiLMEnergyExchangeCustomerReply*)customerReplies[j];
             if( currentLMEECustomerReply->getOfferId() == offerId &&
@@ -2523,7 +2523,7 @@ void figureHourlyCommittedForOfferId(LONG offerId, const std::vector<CtiLMEnergy
             {
                 vector<CtiLMEnergyExchangeHourlyCustomer*>& hourlyCustomers = currentLMEECustomerReply->getLMEnergyExchangeHourlyCustomers();
 
-                for(LONG k=0;k<hourlyCustomers.size();k++)
+                for( LONG k=0;k<hourlyCustomers.size();k++ )
                 {
                     committedArray[k] += ((CtiLMEnergyExchangeHourlyCustomer*)hourlyCustomers[k])->getAmountCommitted();
                 }
@@ -2574,20 +2574,20 @@ void CtiLMEnergyExchangeAcceptMsgExecutor::Execute()
     LONG overCommittedArray[HOURS_IN_DAY];
 
     BOOL found = FALSE;
-    for(LONG i=0;i<controlAreas.size();i++)
+    for( LONG i=0;i<controlAreas.size();i++ )
     {
         CtiLMControlArea* currentControlArea = (CtiLMControlArea*)controlAreas[i];
         vector<CtiLMProgramBaseSPtr>& lmPrograms = currentControlArea->getLMPrograms();
 
-        for(LONG j=0;j<lmPrograms.size();j++)
+        for( LONG j=0;j<lmPrograms.size();j++ )
         {
             CtiLMProgramBaseSPtr currentLMProgramBase = lmPrograms[j];
             if( currentLMProgramBase->getPAOType() == TYPE_LMPROGRAM_ENERGYEXCHANGE )
             {
                 CtiLMProgramEnergyExchangeSPtr lmProgramEnergyExchange = boost::static_pointer_cast< CtiLMProgramEnergyExchange >(currentLMProgramBase);
                 std::vector<CtiLMEnergyExchangeCustomer*>& lmEnergyExchangeCustomers = lmProgramEnergyExchange->getLMEnergyExchangeCustomers();
-               
-                for(LONG k=0;k<lmEnergyExchangeCustomers.size();k++)
+
+                for( LONG k=0;k<lmEnergyExchangeCustomers.size();k++ )
                 {
                     CtiLMEnergyExchangeCustomer* currentLMEnergyExchangeCustomer = (CtiLMEnergyExchangeCustomer*)lmEnergyExchangeCustomers[k];
 
@@ -2597,7 +2597,7 @@ void CtiLMEnergyExchangeAcceptMsgExecutor::Execute()
                         figureHourlyCommittedForOfferId(offerID, lmEnergyExchangeCustomers, committedArray);
 
                         vector<CtiLMEnergyExchangeCustomerReply*>& lmEnergyExchangeCustomerReplies = currentLMEnergyExchangeCustomer->getLMEnergyExchangeCustomerReplies();
-                        for(long l=lmEnergyExchangeCustomerReplies.size()-1;l>=0;l--)
+                        for( long l=lmEnergyExchangeCustomerReplies.size()-1;l>=0;l-- )
                         {
                             CtiLMEnergyExchangeCustomerReply* currentLMEnergyExchangeCustomerReply = (CtiLMEnergyExchangeCustomerReply*)lmEnergyExchangeCustomerReplies[l];
 
@@ -2631,7 +2631,7 @@ void CtiLMEnergyExchangeAcceptMsgExecutor::Execute()
                                         if( lmHourlyCustomers.size() == 0 )
                                         {
                                             currentLMEnergyExchangeCustomerReply->updateLMEnergyExchangeCustomerReplyTable();
-                                            for(LONG m=0;m<HOURS_IN_DAY;m++)
+                                            for( LONG m=0;m<HOURS_IN_DAY;m++ )
                                             {
                                                 CtiLMEnergyExchangeHourlyCustomer* newHourlyCustomer = CTIDBG_new CtiLMEnergyExchangeHourlyCustomer();
                                                 newHourlyCustomer->setCustomerId(customerID);
@@ -2661,8 +2661,8 @@ void CtiLMEnergyExchangeAcceptMsgExecutor::Execute()
                                     }
                                     //currentLMCurtailCustomer->dumpDynamicData();
 
-                                    if( numberOfHoursOverCommitted > 0 )
-                                    {//this block is to close overcommitted hours if there are any
+                                    if( numberOfHoursOverCommitted > 0 )//this block is to close overcommitted hours if there are any
+                                    {
                                         //create a new revision
                                         lmProgramEnergyExchange->setManualControlReceivedFlag(FALSE);
 
@@ -2686,15 +2686,15 @@ void CtiLMEnergyExchangeAcceptMsgExecutor::Execute()
 
                                         vector<CtiLMEnergyExchangeHourlyOffer*>& newHourlyOffers = newRevision->getLMEnergyExchangeHourlyOffers();
                                         LONG currentOverCommittedHourPosition = 0;
-                                        for(LONG y=0;y<HOURS_IN_DAY;y++)
+                                        for( LONG y=0;y<HOURS_IN_DAY;y++ )
                                         {
                                             CtiLMEnergyExchangeHourlyOffer* newHourlyOffer = CTIDBG_new CtiLMEnergyExchangeHourlyOffer();
                                             newHourlyOffer->setOfferId(newRevision->getOfferId());
                                             newHourlyOffer->setRevisionNumber(newRevision->getRevisionNumber());
                                             newHourlyOffer->setHour(y);
                                             if( currentOverCommittedHourPosition < numberOfHoursOverCommitted &&
-                                                overCommittedArray[currentOverCommittedHourPosition] == y )
-                                            {//zero out over committed hour
+                                                overCommittedArray[currentOverCommittedHourPosition] == y )//zero out over committed hour
+                                            {
                                                 newHourlyOffer->setPrice(0.0);
                                                 newHourlyOffer->setAmountRequested(0.0);
                                                 currentOverCommittedHourPosition++;
@@ -2724,27 +2724,27 @@ void CtiLMEnergyExchangeAcceptMsgExecutor::Execute()
                                 break;
                             }
                         }
-                        if(found)
+                        if( found )
                         {
                             break;
                         }
                     }
                 }
-                
-                if(found)
+
+                if( found )
                 {
                     break;
                 }
             }
         }
-    
-        if(found)
+
+        if( found )
         {
             break;
         }
     }
 #if 0 // TS
-    if(found)
+    if( found )
     {
         //store->dumpAllDynamicData();
     }
@@ -2767,7 +2767,7 @@ void CtiLMMultiMsgExecutor::Execute()
 {
     CtiLMExecutorFactory f;
     CtiMultiMsg_vec& messages = _multiMsg->getData();
-    while(messages.size( )>0)
+    while( messages.size( )>0 )
     {
         CtiMessage* message = (CtiMessage*)(messages.back());
         messages.pop_back();
@@ -2828,12 +2828,12 @@ void CtiLMShutdownExecutor::Execute()
             dout << CtiTime() << " - Client listener thread shutdown." << endl;
         }
     }
-    catch(...)
+    catch( ... )
     {
         CtiLockGuard<CtiLogger> logger_guard(dout);
         dout << CtiTime() << " - Caught '...' in: " << __FILE__ << " at:" << __LINE__ << endl;
     }
-    
+
     try
     {
         if( _LM_DEBUG & LM_DEBUG_STANDARD )
@@ -2841,7 +2841,7 @@ void CtiLMShutdownExecutor::Execute()
             CtiLockGuard<CtiLogger> logger_guard(dout);
             dout << CtiTime() << " - Shutting down load manager thread..." << endl;
         }
-    
+
         CtiLoadManager::getInstance()->stop();
 
         if( _LM_DEBUG & LM_DEBUG_STANDARD )
@@ -2850,7 +2850,7 @@ void CtiLMShutdownExecutor::Execute()
             dout << CtiTime() << " - Load manager thread shutdown." << endl;
         }
     }
-    catch(...)
+    catch( ... )
     {
         CtiLockGuard<CtiLogger> logger_guard(dout);
         dout << CtiTime() << " - Caught '...' in: " << __FILE__ << " at:" << __LINE__ << endl;
@@ -2863,7 +2863,7 @@ void CtiLMShutdownExecutor::Execute()
             CtiLockGuard<CtiLogger> logger_guard(dout);
             dout << CtiTime() << " - Shutting down control area store..." << endl;
         }
-    
+
         CtiLMControlAreaStore::deleteInstance();
 
         if( _LM_DEBUG & LM_DEBUG_STANDARD )
@@ -2872,7 +2872,7 @@ void CtiLMShutdownExecutor::Execute()
             dout << CtiTime() << " - Control area store shutdown." << endl;
         }
     }
-    catch(...)
+    catch( ... )
     {
         CtiLockGuard<CtiLogger> logger_guard(dout);
         dout << CtiTime() << " - Caught '...' in: " << __FILE__ << " at:" << __LINE__ << endl;
@@ -2907,50 +2907,50 @@ CtiLMExecutor* CtiLMExecutorFactory::createExecutor(const CtiMessage* message)
         message->dump();
     }
 
-    switch ( classId )
+    switch( classId )
     {
-        case CTILMCOMMAND_ID:
-            ret_val = CTIDBG_new CtiLMCommandExecutor( (CtiLMCommand*)message );
-            break;
-    
-        case CTILMCONTROLAREA_MSG_ID:
-            ret_val = CTIDBG_new CtiLMControlAreaMsgExecutor( (CtiLMControlAreaMsg*)message );
-            break;
-    
-        case CTILMMANUALCONTROLREQUEST_ID:
-            ret_val = CTIDBG_new CtiLMManualControlRequestExecutor( (CtiLMManualControlRequest*)message, request );
-            break;
+    case CTILMCOMMAND_ID:
+        ret_val = CTIDBG_new CtiLMCommandExecutor( (CtiLMCommand*)message );
+        break;
 
-        case CTILMENERGYEXCHANGECONTROLMSG_ID:
-            ret_val = CTIDBG_new CtiLMEnergyExchangeControlMsgExecutor( (CtiLMEnergyExchangeControlMsg*)message );
-            break;
-    
-        case CTILMCURTAILMENTACK_MSG_ID:
-            ret_val = CTIDBG_new CtiLMCurtailmentAcknowledgeMsgExecutor( (CtiLMCurtailmentAcknowledgeMsg*)message );
-            break;
-    
-        case CTILMENERGYEXCHANGEACCEPTMSG_ID:
-            ret_val = CTIDBG_new CtiLMEnergyExchangeAcceptMsgExecutor( (CtiLMEnergyExchangeAcceptMsg*)message );
-            break;
-    
-        case MSG_POINTDATA:
-        case MSG_COMMAND:
-            ret_val = CTIDBG_new CtiLMForwardMsgToDispatchExecutor( (CtiMessage*)message );
-            break;
-    
-        case MSG_MULTI:
-            ret_val = CTIDBG_new CtiLMMultiMsgExecutor( (CtiMultiMsg*)message );
-            break;
-        
-        case CTILMSHUTDOWN_ID:
-            ret_val = CTIDBG_new CtiLMShutdownExecutor();
-            break;
-    
-        default:
-            {
-                CtiLockGuard<CtiLogger> logger_guard(dout);
-                dout << CtiTime() << " - CtiLMExecutorFactory::createExecutor - Warning unknown classId: " << classId << endl;
-            }
+    case CTILMCONTROLAREA_MSG_ID:
+        ret_val = CTIDBG_new CtiLMControlAreaMsgExecutor( (CtiLMControlAreaMsg*)message );
+        break;
+
+    case CTILMMANUALCONTROLREQUEST_ID:
+        ret_val = CTIDBG_new CtiLMManualControlRequestExecutor( (CtiLMManualControlRequest*)message, request );
+        break;
+
+    case CTILMENERGYEXCHANGECONTROLMSG_ID:
+        ret_val = CTIDBG_new CtiLMEnergyExchangeControlMsgExecutor( (CtiLMEnergyExchangeControlMsg*)message );
+        break;
+
+    case CTILMCURTAILMENTACK_MSG_ID:
+        ret_val = CTIDBG_new CtiLMCurtailmentAcknowledgeMsgExecutor( (CtiLMCurtailmentAcknowledgeMsg*)message );
+        break;
+
+    case CTILMENERGYEXCHANGEACCEPTMSG_ID:
+        ret_val = CTIDBG_new CtiLMEnergyExchangeAcceptMsgExecutor( (CtiLMEnergyExchangeAcceptMsg*)message );
+        break;
+
+    case MSG_POINTDATA:
+    case MSG_COMMAND:
+        ret_val = CTIDBG_new CtiLMForwardMsgToDispatchExecutor( (CtiMessage*)message );
+        break;
+
+    case MSG_MULTI:
+        ret_val = CTIDBG_new CtiLMMultiMsgExecutor( (CtiMultiMsg*)message );
+        break;
+
+    case CTILMSHUTDOWN_ID:
+        ret_val = CTIDBG_new CtiLMShutdownExecutor();
+        break;
+
+    default:
+        {
+            CtiLockGuard<CtiLogger> logger_guard(dout);
+            dout << CtiTime() << " - CtiLMExecutorFactory::createExecutor - Warning unknown classId: " << classId << endl;
+        }
     }
 
     return ret_val;

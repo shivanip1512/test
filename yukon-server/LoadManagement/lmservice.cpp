@@ -29,11 +29,11 @@ bool load_management_do_quit = false;
    run in a console */
 bool CtrlHandler(DWORD fdwCtrlType)
 {
-    switch (fdwCtrlType)
+    switch( fdwCtrlType )
     {
 
     /* Handle the CTRL+C signal. */
-
+    
     case CTRL_C_EVENT:
     case CTRL_SHUTDOWN_EVENT:
     case CTRL_CLOSE_EVENT:
@@ -70,7 +70,7 @@ void CtiLMService::RunInConsole(DWORD argc, LPTSTR* argv)
     CService::RunInConsole(argc, argv);
 
     //We need to catch ctrl-c so we can stop
-    if (!SetConsoleCtrlHandler((PHANDLER_ROUTINE) CtrlHandler,  TRUE))
+    if( !SetConsoleCtrlHandler((PHANDLER_ROUTINE) CtrlHandler,  TRUE) )
         std::cerr << "Could not install console control handler" << endl;
 
     Init();
@@ -162,7 +162,7 @@ void CtiLMService::Init()
     }
 
     SET_CRT_OUTPUT_MODES;
-    if(gConfigParms.isOpt("DEBUG_MEMORY") && !stringCompareIgnoreCase(gConfigParms.getValueAsString("DEBUG_MEMORY"),"true") )
+    if( gConfigParms.isOpt("DEBUG_MEMORY") && !stringCompareIgnoreCase(gConfigParms.getValueAsString("DEBUG_MEMORY"),"true") )
         ENABLE_CRT_SHUTDOWN_CHECK;
 
     _quit = false;
@@ -224,28 +224,28 @@ void CtiLMService::Run()
 
         do
         {
-            if ( trouble )
+            if( trouble )
                 Sleep(5000);
 
             CtiLMControlAreaStore* store = CtiLMControlAreaStore::getInstance();
-        {
-            //RWRecursiveLock<RWMutexLock>::LockGuard  guard(store->getMux());
-            vector<CtiLMControlArea*>* controlAreas = store->getControlAreas(CtiTime().seconds());
+            {
+                //RWRecursiveLock<RWMutexLock>::LockGuard  guard(store->getMux());
+                vector<CtiLMControlArea*>* controlAreas = store->getControlAreas(CtiTime().seconds());
 
 
-            if ( controlAreas == NULL || controlAreas->empty() )
-            {
-                store->setValid(false);
-                trouble = true;
-                CtiLockGuard<CtiLogger> logger_guard(dout);
-                dout << CtiTime() << " - Unable to obtain a connection to the database or no control areas exist...will keep trying." << endl;
+                if( controlAreas == NULL || controlAreas->empty() )
+                {
+                    store->setValid(false);
+                    trouble = true;
+                    CtiLockGuard<CtiLogger> logger_guard(dout);
+                    dout << CtiTime() << " - Unable to obtain a connection to the database or no control areas exist...will keep trying." << endl;
+                }
+                else
+                {
+                    trouble = false;
+                }
             }
-            else
-            {
-                trouble = false;
-            }
-        }
-        } while ( trouble && !_quit && !load_management_do_quit ); //!quit and !load_management_do_quit added to make this not lock us up.
+        } while( trouble && !_quit && !load_management_do_quit ); //!quit and !load_management_do_quit added to make this not lock us up.
 
         if( _LM_DEBUG & LM_DEBUG_STANDARD )
         {
@@ -268,12 +268,12 @@ void CtiLMService::Run()
             dout << CtiTime().asString() << " - Load management started." << endl;
         }*/
 
-        while ( !_quit && !load_management_do_quit)
+        while( !_quit && !load_management_do_quit )
         {
             Sleep(500);
         }
     }
-    catch(...)
+    catch( ... )
     {
         CtiLockGuard<CtiLogger> logger_guard(dout);
         dout << CtiTime() << " - Caught '...' in: " << __FILE__ << " at:" << __LINE__ << endl;
@@ -283,7 +283,7 @@ void CtiLMService::Run()
 void CtiLMService::ParseArgs(DWORD argc, LPTSTR* argv)
 {
     //Read the config file name if it is available
-    if ( argc > 1 )
+    if( argc > 1 )
     {
         _config_file = argv[1];
     }

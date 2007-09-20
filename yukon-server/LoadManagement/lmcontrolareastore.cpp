@@ -70,7 +70,10 @@ extern set<long> _CHANGED_GROUP_LIST;
 extern set<long> _CHANGED_CONTROL_AREA_LIST;
 extern set<long> _CHANGED_PROGRAM_LIST;
 
-struct id_hash{LONG operator()(LONG x) const { return x; } };
+struct id_hash
+{
+    LONG operator()(LONG x) const { return x;}
+};
 
 void lmprogram_delete(const LONG& program_id, CtiLMProgramBase*const& lm_program, void* d)
 {
@@ -120,8 +123,8 @@ CtiLMControlAreaStore::~CtiLMControlAreaStore()
 ---------------------------------------------------------------------------*/
 vector<CtiLMControlArea*>* CtiLMControlAreaStore::getControlAreas(ULONG secondsFrom1901)
 {
-    if( !_isvalid && secondsFrom1901 >= _lastdbreloadtime.seconds()+ 90 )
-    {//is not valid and has been at 1 1/2 minutes from last db reload, so we don't do this a bunch of times in a row on multiple updates
+    if( !_isvalid && secondsFrom1901 >= _lastdbreloadtime.seconds()+ 90 )//is not valid and has been at 1 1/2 minutes from last db reload, so we don't do this a bunch of times in a row on multiple updates
+    {
         reset();
     }
 
@@ -143,16 +146,16 @@ bool CtiLMControlAreaStore::findProgram(LONG programID, CtiLMProgramBaseSPtr& pr
 {
     //RWRecursiveLock<RWMutexLock>::LockGuard  guard(mutex());
     vector<CtiLMControlArea*>* controlAreas = getControlAreas(CtiTime().seconds());
-    for(LONG i=0; i < controlAreas->size(); i++)
+    for( LONG i=0; i < controlAreas->size(); i++ )
     {
         CtiLMControlArea* currentControlArea = (CtiLMControlArea*) (*controlAreas)[i];
         vector<CtiLMProgramBaseSPtr>& lmPrograms = currentControlArea->getLMPrograms();
-        for(LONG j=0; j < lmPrograms.size(); j++)
+        for( LONG j=0; j < lmPrograms.size(); j++ )
         {
             CtiLMProgramBaseSPtr currentLMProgram = (CtiLMProgramBaseSPtr) lmPrograms[j];
-            if(programID == currentLMProgram->getPAOId())
+            if( programID == currentLMProgram->getPAOId() )
             {
-                if(controlArea != NULL)
+                if( controlArea != NULL )
                 {
                     *controlArea = currentControlArea;
                 }
@@ -179,7 +182,7 @@ bool CtiLMControlAreaStore::findProgram(LONG programID, CtiLMProgramBaseSPtr& pr
 CtiLMGroupPtr CtiLMControlAreaStore::findGroupByPointID(long point_id)
 {
     std::map< long, CtiLMGroupPtr >::iterator iter = _point_group_map.find(point_id);
-    return (iter == _point_group_map.end() ? CtiLMGroupPtr() : iter->second);
+    return(iter == _point_group_map.end() ? CtiLMGroupPtr() : iter->second);
 }
 
 /*---------------------------------------------------------------------------
@@ -204,7 +207,7 @@ void CtiLMControlAreaStore::dumpAllDynamicData()
 
         conn.beginTransaction(dynamicLoadManagement.c_str());
 
-        for(LONG i=0;i<_controlAreas->size();i++)
+        for( LONG i=0;i<_controlAreas->size();i++ )
         {
             CtiLMControlArea* currentLMControlArea = (CtiLMControlArea*)(*_controlAreas)[i];
             currentLMControlArea->dumpDynamicData(conn,currentDateTime);
@@ -212,7 +215,7 @@ void CtiLMControlAreaStore::dumpAllDynamicData()
             vector<CtiLMControlAreaTrigger*>& lmControlAreaTriggers = currentLMControlArea->getLMControlAreaTriggers();
             if( lmControlAreaTriggers.size() > 0 )
             {
-                for(LONG x=0;x<lmControlAreaTriggers.size();x++)
+                for( LONG x=0;x<lmControlAreaTriggers.size();x++ )
                 {
                     CtiLMControlAreaTrigger* currentLMControlAreaTrigger = (CtiLMControlAreaTrigger*)lmControlAreaTriggers.at(x);
                     currentLMControlAreaTrigger->dumpDynamicData(conn,currentDateTime);
@@ -222,7 +225,7 @@ void CtiLMControlAreaStore::dumpAllDynamicData()
             vector<CtiLMProgramBaseSPtr>& lmPrograms = currentLMControlArea->getLMPrograms();
             if( lmPrograms.size() > 0 )
             {
-                for(LONG j=0;j<lmPrograms.size();j++)
+                for( LONG j=0;j<lmPrograms.size();j++ )
                 {
                     CtiLMProgramBaseSPtr currentLMProgramBase = (CtiLMProgramBaseSPtr)lmPrograms[j];
                     currentLMProgramBase->dumpDynamicData(conn,currentDateTime);
@@ -233,7 +236,7 @@ void CtiLMControlAreaStore::dumpAllDynamicData()
                         currentLMProgramDirect->dumpDynamicData(conn,currentDateTime);
 
                         CtiLMGroupVec groups  = currentLMProgramDirect->getLMProgramDirectGroups();
-                        for(CtiLMGroupIter k = groups.begin(); k != groups.end(); k++)
+                        for( CtiLMGroupIter k = groups.begin(); k != groups.end(); k++ )
                         {
                             CtiLMGroupPtr currentLMGroup  = *k;
                             currentLMGroup->dumpDynamicData(conn,currentDateTime);
@@ -249,12 +252,12 @@ void CtiLMControlAreaStore::dumpAllDynamicData()
 
                             vector<CtiLMCurtailCustomer*>& lmCurtailCustomers = currentLMProgramCurtailment->getLMProgramCurtailmentCustomers();
 
-                            for(LONG k=0;k<lmCurtailCustomers.size();k++)
+                            for( LONG k=0;k<lmCurtailCustomers.size();k++ )
                             {
                                 CtiLMCurtailCustomer* currentLMCurtailCustomer = (CtiLMCurtailCustomer*)lmCurtailCustomers[k];
                                 currentLMCurtailCustomer->dumpDynamicData(conn,currentDateTime);
                             }
-                        
+
                         }
                     }
                     else
@@ -312,15 +315,15 @@ void CtiLMControlAreaStore::reset()
             {
                 if( conn.isValid() )
                 {
-                {
-                    //RWRecursiveLock<RWMutexLock>::LockGuard  guard(mutex());
-                    if( _controlAreas->size() > 0 )
-                    {   //Save off current data to database so that if can be loaded by new objects on reload
-                        dumpAllDynamicData();
-                        saveAnyProjectionData();
-                        saveAnyControlStringData();
+                    {
+                        //RWRecursiveLock<RWMutexLock>::LockGuard  guard(mutex());
+                        if( _controlAreas->size() > 0 )   //Save off current data to database so that if can be loaded by new objects on reload
+                        {
+                            dumpAllDynamicData();
+                            saveAnyProjectionData();
+                            saveAnyControlStringData();
+                        }
                     }
-                }
                     CtiTime currentDateTime;
                     RWDBDatabase db = getDatabase();
 
@@ -345,7 +348,7 @@ void CtiLMControlAreaStore::reset()
                         RWDBReader rdr = selector.reader(conn);
 
                         RWDBNullIndicator isNull;
-                        while ( rdr() )
+                        while( rdr() )
                         {
                             LONG tempPointId = 0;
                             rdr["pointid"] >> tempPointId;
@@ -361,435 +364,435 @@ void CtiLMControlAreaStore::reset()
                     std::map< long, CtiLMGroupPtr > all_assigned_group_map; //remember which groups we have assigned
                     std::map< long, vector<CtiLMGroupPtr> > all_program_group_map;
 
-                {
-                    RWDBTable paObjectTable = db.table("yukonpaobject");
-                    RWDBTable deviceTable = db.table("device");
-                    RWDBTable lmGroupTable = db.table("lmgroup");
+                    {
+                        RWDBTable paObjectTable = db.table("yukonpaobject");
+                        RWDBTable deviceTable = db.table("device");
+                        RWDBTable lmGroupTable = db.table("lmgroup");
 
 
-                    RWDBSelector selector = db.selector();
-                    selector << rwdbName("groupid", paObjectTable["paobjectid"])
-                             << paObjectTable["category"]
-                             << paObjectTable["paoclass"]
-                             << paObjectTable["paoname"]
-                             << paObjectTable["type"]
-                             << paObjectTable["description"]
-                             << paObjectTable["disableflag"]
-                             << deviceTable["alarminhibit"]
-                             << deviceTable["controlinhibit"]
-                             << lmGroupTable["kwcapacity"];
-                    selector.from(paObjectTable);
-                    selector.from(deviceTable);
-                    selector.from(lmGroupTable);
+                        RWDBSelector selector = db.selector();
+                        selector << rwdbName("groupid", paObjectTable["paobjectid"])
+                        << paObjectTable["category"]
+                        << paObjectTable["paoclass"]
+                        << paObjectTable["paoname"]
+                        << paObjectTable["type"]
+                        << paObjectTable["description"]
+                        << paObjectTable["disableflag"]
+                        << deviceTable["alarminhibit"]
+                        << deviceTable["controlinhibit"]
+                        << lmGroupTable["kwcapacity"];
+                        selector.from(paObjectTable);
+                        selector.from(deviceTable);
+                        selector.from(lmGroupTable);
 
-                    selector.where( paObjectTable["paobjectid"] == lmGroupTable["deviceid"] &&
-                                    paObjectTable["paobjectid"] == deviceTable["deviceid"] &&
-                                    paObjectTable["paobjectid"] > 0 ); // Stars gives meaning to an lmgroup with an id of 0, we don't care about it though
+                        selector.where( paObjectTable["paobjectid"] == lmGroupTable["deviceid"] &&
+                                        paObjectTable["paobjectid"] == deviceTable["deviceid"] &&
+                                        paObjectTable["paobjectid"] > 0 ); // Stars gives meaning to an lmgroup with an id of 0, we don't care about it though
 
+
+                        if( _LM_DEBUG & LM_DEBUG_DATABASE )
+                        {
+                            CtiLockGuard<CtiLogger> logger_guard(dout);
+                            dout << CtiTime() << " - " << selector.asString().data() << endl;
+                        }
+
+                        CtiLMGroupFactory lm_group_factory;
+                        RWDBReader rdr = selector.reader(conn);
+                        while( rdr() )
+                        {
+                            string category;
+                            string type;
+                            rdr["category"] >> category;
+                            rdr["type"] >> type;
+                            CtiLMGroupPtr lm_group = lm_group_factory.createLMGroup(rdr);
+                            temp_all_group_map.insert(make_pair(lm_group->getPAOId(), lm_group));
+                            attachControlStringData(lm_group);
+                        }
+
+                    } //end main group loading
+
+                    { /* Load up any group point specific information */
+                        RWDBTable lmGroupPointTable = db.table("lmgrouppoint");
+                        RWDBSelector selector = db.selector();
+                        selector << rwdbName("groupid", lmGroupPointTable["deviceid"])
+                        << rwdbName("deviceid", lmGroupPointTable["deviceidusage"])
+                        << rwdbName("pointid", lmGroupPointTable["pointidusage"])
+                        << lmGroupPointTable["startcontrolrawstate"];
+                        selector.from(lmGroupPointTable);
+                        RWDBReader rdr = selector.reader(conn);
+                        while( rdr() )
+                        {
+                            int group_id;
+                            int device_id;
+                            int point_id;
+                            int start_control_raw_state;
+
+                            rdr >> group_id;
+                            rdr >> device_id;
+                            rdr >> point_id;
+                            rdr >> start_control_raw_state;
+
+                            std::map< long, CtiLMGroupPtr >::iterator iter = temp_all_group_map.find(group_id);
+                            if( iter != temp_all_group_map.end() )
+                            {
+                                CtiLMGroupPoint* lm_group = (CtiLMGroupPoint*) iter->second.get();
+                                lm_group->setDeviceIdUsage(device_id);
+                                lm_group->setPointIdUsage(point_id);
+                                lm_group->setStartControlRawState(start_control_raw_state);
+                            }
+                            else
+                            {
+                                CtiLockGuard<CtiLogger> dout_guard(dout);
+                                dout << CtiTime() << " **Checkpoint** " <<  " Rows exist in the LMGroupPoint table exist but do not correspond with any lm groups already loaded.  Either groups didn't get loaded correctly or the LMGroupPoint table has missing constraints?" << __FILE__ << "(" << __LINE__ << ")" << endl;
+                            }
+                        }
+                    }// end loading group point specific info
+
+                    { /* Start loading ripple group specific info */
+                        RWDBTable lmGroupRippleTable = db.table("lmgroupripple");
+                        RWDBSelector selector = db.selector();
+
+                        selector << rwdbName("groupid", lmGroupRippleTable["deviceid"])
+                        << lmGroupRippleTable["shedtime"];
+
+                        selector.from(lmGroupRippleTable);
+
+                        RWDBReader rdr = selector.reader(conn);
+                        while( rdr() )
+                        {
+                            int group_id;
+                            int shed_time;
+
+                            rdr >> group_id;
+                            rdr >> shed_time;
+
+                            std::map< long, CtiLMGroupPtr >::iterator iter = temp_all_group_map.find(group_id);
+                            if( iter != temp_all_group_map.end() )
+                            {
+                                CtiLMGroupRipple* lm_group = (CtiLMGroupRipple*) iter->second.get();
+                                lm_group->setShedTime(shed_time);
+                            }
+                            else
+                            {
+                                CtiLockGuard<CtiLogger> dout_guard(dout);
+                                dout << CtiTime() << " **Checkpoint** " <<  " Rows exist in the LMGroupRipple table exist but do not correspond with any lm groups already loaded.  Either groups didn't get loaded correctly or the LMGroupRipple table has missing constraints?" << __FILE__ << "(" << __LINE__ << ")" << endl;
+                            }
+                        }
+                    } // end loading ripple group specific info */
+
+                    { /* Start loading sa dumb group specific info */
+                        /* We would load the nominal timeout here, I don't think it is used yet,
+                           so add it if necessary */
+                    } // end loading sa dumb group specific info */
+
+                    /* Attach any points necessary to groups */
+                    {
+                        temp_point_group_map.clear();
+
+                        RWDBTable pointTable = db.table("point");
+                        RWDBTable lmGroupTable = db.table("lmgroup");
+
+                        RWDBSelector selector = db.selector();
+                        selector << pointTable["paobjectid"]
+                        << pointTable["pointid"]
+                        << pointTable["pointoffset"]
+                        << pointTable["pointtype"];
+
+                        selector.from(pointTable);
+                        selector.from(lmGroupTable);
+
+                        selector.where( pointTable["paobjectid"] == lmGroupTable["deviceid"] );
+
+                        if( _LM_DEBUG & LM_DEBUG_DATABASE )
+                        {
+                            CtiLockGuard<CtiLogger> logger_guard(dout);
+                            dout << CtiTime() << " - " << selector.asString().data() << endl;
+                        }
+
+                        RWDBReader rdr = selector.reader(conn);
+
+                        while( rdr() )
+                        {
+                            long group_id;
+                            int point_id;
+                            string point_type;
+                            int point_offset;
+
+                            rdr["paobjectid"] >> group_id;
+                            rdr["pointid"] >> point_id;
+                            rdr["pointtype"] >> point_type;
+                            rdr["pointoffset"] >> point_offset;
+
+                            if( group_id <= 0 ) //we don't deal with groups with 0 or negative ids
+                            {
+                                continue;
+                            }
+
+                            std::map< long, CtiLMGroupPtr >::iterator iter = temp_all_group_map.find(group_id);
+                            CtiLMGroupPtr lm_group = iter->second;
+
+                            switch( resolvePointType(point_type.c_str()) )
+                            {
+                            case AnalogPointType:
+                                switch( point_offset )
+                                {
+                                case DAILYCONTROLHISTOFFSET:
+                                    lm_group->setHoursDailyPointId(point_id);
+                                    temp_point_group_map.insert(make_pair(point_id,lm_group));
+                                    break;
+                                case MONTHLYCONTROLHISTOFFSET:
+                                    lm_group->setHoursMonthlyPointId(point_id);
+                                    temp_point_group_map.insert(make_pair(point_id,lm_group));
+                                    break;
+                                case SEASONALCONTROLHISTOFFSET:
+                                    lm_group->setHoursSeasonalPointId(point_id);
+                                    temp_point_group_map.insert(make_pair(point_id,lm_group));
+                                    break;
+                                case ANNUALCONTROLHISTOFFSET:
+                                    lm_group->setHoursAnnuallyPointId(point_id);
+                                    temp_point_group_map.insert(make_pair(point_id,lm_group));
+                                    break;
+                                default:
+                                    /*{
+                                        CtiLockGuard<CtiLogger> dout_guard(dout);
+                                        dout << CtiTime() << " **Checkpoint** " <<  " Unknown point offset: " << point_offset
+                                             << "  Expected daily, monthly, seasonal, or annual control history point offset" << __FILE__ << "(" << __LINE__ << ")" << endl;
+                                    }*/
+                                    break;
+                                }
+                                break;
+                            case StatusPointType:
+                                if( point_offset == 0 )
+                                {
+                                    long control_status_point_id;
+                                    if( controlPointHashMap.findValue(point_id, control_status_point_id) )
+                                    {
+                                        lm_group->setControlStatusPointId(control_status_point_id);
+                                        temp_point_group_map.insert(make_pair(point_id,lm_group));
+                                    }
+                                }
+                                break;
+                            default:
+                                {
+                                    CtiLockGuard<CtiLogger> dout_guard(dout);
+                                    dout << CtiTime() << " **Checkpoint** " <<  " Unknown point type:  " << resolvePointType(point_type.c_str()) << __FILE__ << "(" << __LINE__ << ")" << endl;
+                                }
+                            }
+                        }
+                    }
+
+                    /* Load dynamic group information */
+                    {
+                        RWDBTable dynamicLMGroupTable = db.table("dynamiclmgroup");
+                        RWDBSelector selector = db.selector();
+                        selector << rwdbName("groupid", dynamicLMGroupTable["deviceid"])
+                        << dynamicLMGroupTable["groupcontrolstate"]
+                        << dynamicLMGroupTable["currenthoursdaily"]
+                        << dynamicLMGroupTable["currenthoursmonthly"]
+                        << dynamicLMGroupTable["currenthoursseasonal"]
+                        << dynamicLMGroupTable["currenthoursannually"]
+                        << dynamicLMGroupTable["lastcontrolsent"]
+                        << dynamicLMGroupTable["timestamp"]
+                        << dynamicLMGroupTable["controlstarttime"]
+                        << dynamicLMGroupTable["controlcompletetime"]
+                        << dynamicLMGroupTable["nextcontroltime"]
+                        << dynamicLMGroupTable["internalstate"]
+                        << dynamicLMGroupTable["dailyops"];
+
+                        selector.from(dynamicLMGroupTable);
+
+                        RWDBReader rdr = selector.reader(conn);
+                        while( rdr() )
+                        {
+                            long group_id;
+                            long group_control_state;
+                            long cur_hours_daily;
+                            long cur_hours_monthly;
+                            long cur_hours_seasonal;
+                            long cur_hours_annually;
+                            CtiTime last_control_sent;
+                            CtiTime timestamp;
+                            CtiTime control_start_time;
+                            CtiTime control_complete_time;
+                            CtiTime next_control_time;
+                            long internal_state;
+                            long daily_ops;
+                            bool constraint_override;
+
+                            string tempBoolString;
+                            rdr["groupid"] >> group_id;
+                            rdr["groupcontrolstate"] >> group_control_state;
+                            rdr["currenthoursdaily"] >> cur_hours_daily;
+                            rdr["currenthoursmonthly"] >> cur_hours_monthly;
+                            rdr["currenthoursseasonal"] >> cur_hours_seasonal;
+                            rdr["currenthoursannually"] >> cur_hours_annually;
+                            rdr["lastcontrolsent"] >> last_control_sent;
+                            rdr["timestamp"] >> timestamp;
+                            rdr["controlstarttime"] >> control_start_time;
+                            rdr["controlcompletetime"] >> control_complete_time;
+                            rdr["nextcontroltime"] >> next_control_time;
+                            rdr["internalstate"] >> internal_state;
+                            rdr["dailyops"] >> daily_ops;
+
+
+                            CtiLMGroupPtr& lm_group = temp_all_group_map.find(group_id)->second;
+                            lm_group->setGroupControlState(group_control_state);
+                            lm_group->setCurrentHoursDaily(cur_hours_daily);
+                            lm_group->setCurrentHoursMonthly(cur_hours_monthly);
+                            lm_group->setCurrentHoursSeasonal(cur_hours_seasonal);
+                            lm_group->setCurrentHoursAnnually(cur_hours_annually);
+                            lm_group->setLastControlSent(last_control_sent);
+                            lm_group->setDynamicTimestamp(timestamp);
+                            lm_group->setControlStartTime(control_start_time);
+                            lm_group->setControlCompleteTime(control_complete_time);
+                            lm_group->setNextControlTime(next_control_time);
+                            lm_group->setInternalState(internal_state);
+                            lm_group->resetDailyOps(daily_ops);
+
+                            lm_group->setDirty(false);
+                            lm_group->_insertDynamicDataFlag = FALSE;
+                        }
+                    }
+                    /* Now lets load up info about macro groups */
+                    std::map< long, vector<long> > group_macro_map;  //ownerid, <childid>
+                    {
+                        RWDBTable genericMacroTable = db.table("genericmacro");
+                        RWDBTable lmGroupTable = db.table("lmgroup");
+
+                        RWDBSelector selector = db.selector();
+                        selector << genericMacroTable["ownerid"]
+                        << genericMacroTable["childid"];
+
+                        selector.from(genericMacroTable);
+                        selector.from(lmGroupTable);
+
+                        selector.where(genericMacroTable["ownerid"] == lmGroupTable["deviceid"]);
+                        selector.orderBy(genericMacroTable["ownerid"]);
+                        selector.orderBy(genericMacroTable["childorder"]);
+
+                        if( _LM_DEBUG & LM_DEBUG_DATABASE )
+                        {
+                            CtiLockGuard<CtiLogger> logger_guard(dout);
+                            dout << CtiTime() << " - " << selector.asString().data() << endl;
+                        }
+
+                        RWDBReader rdr = selector.reader(conn);
+                        std::map<long, vector<long> >::iterator iter;
+                        while( rdr() )
+                        {
+                            long owner_id;
+                            long child_id;
+
+                            rdr["ownerid"] >> owner_id;
+                            rdr["childid"] >> child_id;
+
+                            iter = group_macro_map.find(owner_id);
+                            if( iter == group_macro_map.end() )
+                            {
+                                vector<long> child_vec;
+                                child_vec.push_back(child_id);
+                                group_macro_map.insert(make_pair(owner_id, child_vec));
+                            }
+                            else
+                            {
+                                iter->second.push_back(child_id);
+                            }
+                        }
+                    }
+
+                    /* now lets load info about how groups attach to programs */
+                    {
+                        RWDBTable lmProgramDirectGroupTable = db.table("lmprogramdirectgroup");
+
+                        RWDBSelector selector = db.selector();
+                        selector << rwdbName("programid", lmProgramDirectGroupTable["deviceid"])
+                        << rwdbName("groupid", lmProgramDirectGroupTable["lmgroupdeviceid"]);
+
+                        selector.from(lmProgramDirectGroupTable);
+                        selector.orderBy(lmProgramDirectGroupTable["grouporder"]);
+
+                        if( _LM_DEBUG & LM_DEBUG_DATABASE )
+                        {
+                            CtiLockGuard<CtiLogger> logger_guard(dout);
+                            dout << CtiTime() << " - " << selector.asString().data() << endl;
+                        }
+
+                        RWDBReader rdr = selector.reader(conn);
+                        std::map<long, vector<CtiLMGroupPtr> >::iterator cur_iter;
+                        long cur_program = -1;
+                        while( rdr() )
+                        {
+                            long program_id;
+                            long group_id;
+                            rdr["programid"] >> program_id;
+                            rdr["groupid"] >> group_id;
+
+                            cur_iter = all_program_group_map.find(program_id);
+                            if( cur_iter == all_program_group_map.end() )
+                            {
+                                vector<CtiLMGroupPtr> group_vec;
+                                CtiLMGroupPtr lm_group = temp_all_group_map.find(group_id)->second;
+
+                                std::map<long, vector<long> >::iterator macro_iter = group_macro_map.find(lm_group->getPAOId());
+                                if( macro_iter != group_macro_map.end() ) //must be a macro group
+                                {
+                                    vector<long> macro_vec = macro_iter->second;
+                                    for( vector<long>::iterator iter = macro_vec.begin();
+                                       iter != macro_vec.end();
+                                       iter++ ) //iterate over all the children in this macro group and insert them in place of the owner (macrogroup)
+                                    {
+                                        CtiLMGroupPtr child_group = temp_all_group_map.find(*iter)->second;
+                                        group_vec.push_back(child_group);
+                                        child_group->setGroupOrder(group_vec.size());
+                                        all_assigned_group_map.insert(make_pair(child_group->getPAOId(), child_group));
+                                    }
+                                }
+                                else //not a macro group, assign it to the program
+                                {
+                                    group_vec.push_back(lm_group);
+                                    lm_group->setGroupOrder(group_vec.size());
+//                            all_program_group_map.insert(make_pair(program_id, group_vec));
+                                    all_assigned_group_map.insert(make_pair(lm_group->getPAOId(), lm_group));
+                                }
+                                all_program_group_map.insert(make_pair(program_id, group_vec));
+                            }
+                            else
+                            {
+                                CtiLMGroupPtr& lm_group = temp_all_group_map.find(group_id)->second;
+
+                                std::map<long, vector<long> >::iterator macro_iter = group_macro_map.find(lm_group->getPAOId());
+                                if( macro_iter != group_macro_map.end() ) //must be a macro group
+                                {
+                                    vector<long> macro_vec = macro_iter->second;
+                                    for( vector<long>::iterator iter = macro_vec.begin();
+                                       iter != macro_vec.end();
+                                       iter++ ) //iterate over all the children in this macro group and insert them in place of the owner (macrogroup)
+                                    {
+                                        CtiLMGroupPtr& child_group = temp_all_group_map.find(*iter)->second;
+                                        cur_iter->second.push_back(child_group);
+                                        child_group->setGroupOrder(cur_iter->second.size());
+                                        all_assigned_group_map.insert(make_pair(child_group->getPAOId(), child_group));
+                                    }
+                                }
+                                else
+                                {
+                                    cur_iter->second.push_back(lm_group);
+                                    lm_group->setGroupOrder(cur_iter->second.size());
+                                    all_assigned_group_map.insert(make_pair(lm_group->getPAOId(), lm_group));
+                                }
+
+                            }
+                        }
+                    }
 
                     if( _LM_DEBUG & LM_DEBUG_DATABASE )
                     {
                         CtiLockGuard<CtiLogger> logger_guard(dout);
-                        dout << CtiTime() << " - " << selector.asString().data() << endl;
+                        dout << "DB Load Timer for All Groups is: " << allGroupTimer.elapsedTime() << endl;
+                        dout << "Loaded a total of " << temp_all_group_map.size() << " groups, " << group_macro_map.size() << " of them are in macro groups" << endl;
+                        dout << all_program_group_map.size() << "==" << all_assigned_group_map.size() << " groups are assigned to programs" << endl;
+                        allGroupTimer.reset();
                     }
-
-                    CtiLMGroupFactory lm_group_factory;
-                    RWDBReader rdr = selector.reader(conn);
-                    while(rdr())
-                    {
-                        string category;
-                        string type;
-                        rdr["category"] >> category;
-                        rdr["type"] >> type;
-                        CtiLMGroupPtr lm_group = lm_group_factory.createLMGroup(rdr);
-                        temp_all_group_map.insert(make_pair(lm_group->getPAOId(), lm_group));
-                        attachControlStringData(lm_group);
-                    }
-
-                } //end main group loading
-
-            { /* Load up any group point specific information */
-                RWDBTable lmGroupPointTable = db.table("lmgrouppoint");
-                RWDBSelector selector = db.selector();
-                selector << rwdbName("groupid", lmGroupPointTable["deviceid"])
-                         << rwdbName("deviceid", lmGroupPointTable["deviceidusage"])
-                         << rwdbName("pointid", lmGroupPointTable["pointidusage"])
-                         << lmGroupPointTable["startcontrolrawstate"];
-                selector.from(lmGroupPointTable);
-                RWDBReader rdr = selector.reader(conn);
-                while(rdr())
-                {
-                    int group_id;
-                    int device_id;
-                    int point_id;
-                    int start_control_raw_state;
-
-                    rdr >> group_id;
-                    rdr >> device_id;
-                    rdr >> point_id;
-                    rdr >> start_control_raw_state;
-
-                    std::map< long, CtiLMGroupPtr >::iterator iter = temp_all_group_map.find(group_id);
-                    if(iter != temp_all_group_map.end())
-                    {
-                        CtiLMGroupPoint* lm_group = (CtiLMGroupPoint*) iter->second.get();
-                        lm_group->setDeviceIdUsage(device_id);
-                        lm_group->setPointIdUsage(point_id);
-                        lm_group->setStartControlRawState(start_control_raw_state);
-                    }
-                    else
-                    {
-                        CtiLockGuard<CtiLogger> dout_guard(dout);
-                        dout << CtiTime() << " **Checkpoint** " <<  " Rows exist in the LMGroupPoint table exist but do not correspond with any lm groups already loaded.  Either groups didn't get loaded correctly or the LMGroupPoint table has missing constraints?" << __FILE__ << "(" << __LINE__ << ")" << endl;
-                    }
-                }
-            }// end loading group point specific info
-
-            { /* Start loading ripple group specific info */
-                RWDBTable lmGroupRippleTable = db.table("lmgroupripple");
-                RWDBSelector selector = db.selector();
-
-                selector << rwdbName("groupid", lmGroupRippleTable["deviceid"])
-                         << lmGroupRippleTable["shedtime"];
-
-                selector.from(lmGroupRippleTable);
-
-                RWDBReader rdr = selector.reader(conn);
-                while(rdr())
-                {
-                    int group_id;
-                    int shed_time;
-
-                    rdr >> group_id;
-                    rdr >> shed_time;
-
-                    std::map< long, CtiLMGroupPtr >::iterator iter = temp_all_group_map.find(group_id);
-                    if(iter != temp_all_group_map.end())
-                    {
-                        CtiLMGroupRipple* lm_group = (CtiLMGroupRipple*) iter->second.get();
-                        lm_group->setShedTime(shed_time);
-                    }
-                    else
-                    {
-                        CtiLockGuard<CtiLogger> dout_guard(dout);
-                        dout << CtiTime() << " **Checkpoint** " <<  " Rows exist in the LMGroupRipple table exist but do not correspond with any lm groups already loaded.  Either groups didn't get loaded correctly or the LMGroupRipple table has missing constraints?" << __FILE__ << "(" << __LINE__ << ")" << endl;
-                    }
-                }
-            } // end loading ripple group specific info */
-
-        { /* Start loading sa dumb group specific info */
-            /* We would load the nominal timeout here, I don't think it is used yet,
-               so add it if necessary */
-        } // end loading sa dumb group specific info */
-
-            /* Attach any points necessary to groups */
-            {
-                temp_point_group_map.clear();
-
-                RWDBTable pointTable = db.table("point");
-                RWDBTable lmGroupTable = db.table("lmgroup");
-
-                RWDBSelector selector = db.selector();
-                selector << pointTable["paobjectid"]
-                         << pointTable["pointid"]
-                         << pointTable["pointoffset"]
-                         << pointTable["pointtype"];
-
-                selector.from(pointTable);
-                selector.from(lmGroupTable);
-
-                selector.where( pointTable["paobjectid"] == lmGroupTable["deviceid"] );
-
-                if( _LM_DEBUG & LM_DEBUG_DATABASE )
-                {
-                    CtiLockGuard<CtiLogger> logger_guard(dout);
-                    dout << CtiTime() << " - " << selector.asString().data() << endl;
-                }
-
-                RWDBReader rdr = selector.reader(conn);
-
-                while( rdr() )
-                {
-                    long group_id;
-                    int point_id;
-                    string point_type;
-                    int point_offset;
-
-                    rdr["paobjectid"] >> group_id;
-                    rdr["pointid"] >> point_id;
-                    rdr["pointtype"] >> point_type;
-                    rdr["pointoffset"] >> point_offset;
-
-                    if(group_id <= 0) //we don't deal with groups with 0 or negative ids
-                    {
-                        continue;
-                    }
-
-                    std::map< long, CtiLMGroupPtr >::iterator iter = temp_all_group_map.find(group_id);
-                    CtiLMGroupPtr lm_group = iter->second;
-
-                    switch(resolvePointType(point_type.c_str()))
-                    {
-                    case AnalogPointType:
-                        switch(point_offset)
-                        {
-                        case DAILYCONTROLHISTOFFSET:
-                            lm_group->setHoursDailyPointId(point_id);
-                            temp_point_group_map.insert(make_pair(point_id,lm_group));
-                            break;
-                        case MONTHLYCONTROLHISTOFFSET:
-                            lm_group->setHoursMonthlyPointId(point_id);
-                            temp_point_group_map.insert(make_pair(point_id,lm_group));
-                            break;
-                        case SEASONALCONTROLHISTOFFSET:
-                            lm_group->setHoursSeasonalPointId(point_id);
-                            temp_point_group_map.insert(make_pair(point_id,lm_group));
-                            break;
-                        case ANNUALCONTROLHISTOFFSET:
-                            lm_group->setHoursAnnuallyPointId(point_id);
-                            temp_point_group_map.insert(make_pair(point_id,lm_group));
-                            break;
-                        default:
-                        /*{
-                            CtiLockGuard<CtiLogger> dout_guard(dout);
-                            dout << CtiTime() << " **Checkpoint** " <<  " Unknown point offset: " << point_offset
-                                 << "  Expected daily, monthly, seasonal, or annual control history point offset" << __FILE__ << "(" << __LINE__ << ")" << endl;
-                        }*/
-                        break;
-                        }
-                        break;
-                    case StatusPointType:
-                        if(point_offset == 0)
-                        {
-                            long control_status_point_id;
-                            if(controlPointHashMap.findValue(point_id, control_status_point_id))
-                            {
-                                lm_group->setControlStatusPointId(control_status_point_id);
-                                temp_point_group_map.insert(make_pair(point_id,lm_group));
-                            }
-                        }
-                        break;
-                    default:
-                    {
-                        CtiLockGuard<CtiLogger> dout_guard(dout);
-                        dout << CtiTime() << " **Checkpoint** " <<  " Unknown point type:  " << resolvePointType(point_type.c_str()) << __FILE__ << "(" << __LINE__ << ")" << endl;
-                    }
-                    }
-                }
-            }
-
-                /* Load dynamic group information */
-            {
-                RWDBTable dynamicLMGroupTable = db.table("dynamiclmgroup");
-                RWDBSelector selector = db.selector();
-                selector << rwdbName("groupid", dynamicLMGroupTable["deviceid"])
-                         << dynamicLMGroupTable["groupcontrolstate"]
-                         << dynamicLMGroupTable["currenthoursdaily"]
-                         << dynamicLMGroupTable["currenthoursmonthly"]
-                         << dynamicLMGroupTable["currenthoursseasonal"]
-                         << dynamicLMGroupTable["currenthoursannually"]
-                         << dynamicLMGroupTable["lastcontrolsent"]
-                         << dynamicLMGroupTable["timestamp"]
-                         << dynamicLMGroupTable["controlstarttime"]
-                         << dynamicLMGroupTable["controlcompletetime"]
-                         << dynamicLMGroupTable["nextcontroltime"]
-                         << dynamicLMGroupTable["internalstate"]
-                         << dynamicLMGroupTable["dailyops"];
-
-                selector.from(dynamicLMGroupTable);
-
-                RWDBReader rdr = selector.reader(conn);
-                while(rdr())
-                {
-                    long group_id;
-                    long group_control_state;
-                    long cur_hours_daily;
-                    long cur_hours_monthly;
-                    long cur_hours_seasonal;
-                    long cur_hours_annually;
-                    CtiTime last_control_sent;
-                    CtiTime timestamp;
-                    CtiTime control_start_time;
-                    CtiTime control_complete_time;
-                    CtiTime next_control_time;
-                    long internal_state;
-                    long daily_ops;
-                    bool constraint_override;
-
-                    string tempBoolString;
-                    rdr["groupid"] >> group_id;
-                    rdr["groupcontrolstate"] >> group_control_state;
-                    rdr["currenthoursdaily"] >> cur_hours_daily;
-                    rdr["currenthoursmonthly"] >> cur_hours_monthly;
-                    rdr["currenthoursseasonal"] >> cur_hours_seasonal;
-                    rdr["currenthoursannually"] >> cur_hours_annually;
-                    rdr["lastcontrolsent"] >> last_control_sent;
-                    rdr["timestamp"] >> timestamp;
-                    rdr["controlstarttime"] >> control_start_time;
-                    rdr["controlcompletetime"] >> control_complete_time;
-                    rdr["nextcontroltime"] >> next_control_time;
-                    rdr["internalstate"] >> internal_state;
-                    rdr["dailyops"] >> daily_ops;
-
-
-                    CtiLMGroupPtr& lm_group = temp_all_group_map.find(group_id)->second;
-                    lm_group->setGroupControlState(group_control_state);
-                    lm_group->setCurrentHoursDaily(cur_hours_daily);
-                    lm_group->setCurrentHoursMonthly(cur_hours_monthly);
-                    lm_group->setCurrentHoursSeasonal(cur_hours_seasonal);
-                    lm_group->setCurrentHoursAnnually(cur_hours_annually);
-                    lm_group->setLastControlSent(last_control_sent);
-                    lm_group->setDynamicTimestamp(timestamp);
-                    lm_group->setControlStartTime(control_start_time);
-                    lm_group->setControlCompleteTime(control_complete_time);
-                    lm_group->setNextControlTime(next_control_time);
-                    lm_group->setInternalState(internal_state);
-                    lm_group->resetDailyOps(daily_ops);
-
-                    lm_group->setDirty(false);
-                    lm_group->_insertDynamicDataFlag = FALSE;
-                }
-            }
-                /* Now lets load up info about macro groups */
-                std::map< long, vector<long> > group_macro_map;  //ownerid, <childid>
-            {
-                RWDBTable genericMacroTable = db.table("genericmacro");
-                RWDBTable lmGroupTable = db.table("lmgroup");
-
-                RWDBSelector selector = db.selector();
-                selector << genericMacroTable["ownerid"]
-                         << genericMacroTable["childid"];
-
-                selector.from(genericMacroTable);
-                selector.from(lmGroupTable);
-
-                selector.where(genericMacroTable["ownerid"] == lmGroupTable["deviceid"]);
-                selector.orderBy(genericMacroTable["ownerid"]);
-                selector.orderBy(genericMacroTable["childorder"]);
-
-                if( _LM_DEBUG & LM_DEBUG_DATABASE )
-                {
-                    CtiLockGuard<CtiLogger> logger_guard(dout);
-                    dout << CtiTime() << " - " << selector.asString().data() << endl;
-                }
-
-                RWDBReader rdr = selector.reader(conn);
-                std::map<long, vector<long> >::iterator iter;
-                while(rdr())
-                {
-                    long owner_id;
-                    long child_id;
-
-                    rdr["ownerid"] >> owner_id;
-                    rdr["childid"] >> child_id;
-
-                    iter = group_macro_map.find(owner_id);
-                    if(iter == group_macro_map.end())
-                    {
-                        vector<long> child_vec;
-                        child_vec.push_back(child_id);
-                        group_macro_map.insert(make_pair(owner_id, child_vec));
-                    }
-                    else
-                    {
-                        iter->second.push_back(child_id);
-                    }
-                }
-            }
-
-            /* now lets load info about how groups attach to programs */
-            {
-                RWDBTable lmProgramDirectGroupTable = db.table("lmprogramdirectgroup");
-
-                RWDBSelector selector = db.selector();
-                selector << rwdbName("programid", lmProgramDirectGroupTable["deviceid"])
-                         << rwdbName("groupid", lmProgramDirectGroupTable["lmgroupdeviceid"]);
-
-                selector.from(lmProgramDirectGroupTable);
-                selector.orderBy(lmProgramDirectGroupTable["grouporder"]);
-
-                if( _LM_DEBUG & LM_DEBUG_DATABASE )
-                {
-                    CtiLockGuard<CtiLogger> logger_guard(dout);
-                    dout << CtiTime() << " - " << selector.asString().data() << endl;
-                }
-
-                RWDBReader rdr = selector.reader(conn);
-                std::map<long, vector<CtiLMGroupPtr> >::iterator cur_iter;
-                long cur_program = -1;
-                while(rdr())
-                {
-                    long program_id;
-                    long group_id;
-                    rdr["programid"] >> program_id;
-                    rdr["groupid"] >> group_id;
-
-                    cur_iter = all_program_group_map.find(program_id);
-                    if(cur_iter == all_program_group_map.end())
-                    {
-                        vector<CtiLMGroupPtr> group_vec;
-                        CtiLMGroupPtr lm_group = temp_all_group_map.find(group_id)->second;
-
-                        std::map<long, vector<long> >::iterator macro_iter = group_macro_map.find(lm_group->getPAOId());
-                        if(macro_iter != group_macro_map.end())
-                        { //must be a macro group
-                            vector<long> macro_vec = macro_iter->second;
-                            for(vector<long>::iterator iter = macro_vec.begin();
-                                iter != macro_vec.end();
-                                iter++)
-                            { //iterate over all the children in this macro group and insert them in place of the owner (macrogroup)
-                                CtiLMGroupPtr child_group = temp_all_group_map.find(*iter)->second;
-                                group_vec.push_back(child_group);
-                                child_group->setGroupOrder(group_vec.size());
-                                all_assigned_group_map.insert(make_pair(child_group->getPAOId(), child_group));
-                            }
-                        }
-                        else
-                        { //not a macro group, assign it to the program
-                            group_vec.push_back(lm_group);
-                            lm_group->setGroupOrder(group_vec.size());
-//                            all_program_group_map.insert(make_pair(program_id, group_vec));
-                            all_assigned_group_map.insert(make_pair(lm_group->getPAOId(), lm_group));
-                        }
-                        all_program_group_map.insert(make_pair(program_id, group_vec));
-                    }
-                    else
-                    {
-                        CtiLMGroupPtr& lm_group = temp_all_group_map.find(group_id)->second;
-
-                        std::map<long, vector<long> >::iterator macro_iter = group_macro_map.find(lm_group->getPAOId());
-                        if(macro_iter != group_macro_map.end())
-                        { //must be a macro group
-                            vector<long> macro_vec = macro_iter->second;
-                            for(vector<long>::iterator iter = macro_vec.begin();
-                                iter != macro_vec.end();
-                                iter++)
-                            { //iterate over all the children in this macro group and insert them in place of the owner (macrogroup)
-                                CtiLMGroupPtr& child_group = temp_all_group_map.find(*iter)->second;
-                                cur_iter->second.push_back(child_group);
-                                child_group->setGroupOrder(cur_iter->second.size());
-                                all_assigned_group_map.insert(make_pair(child_group->getPAOId(), child_group));
-                            }
-                        }
-                        else
-                        {
-                            cur_iter->second.push_back(lm_group);
-                            lm_group->setGroupOrder(cur_iter->second.size());
-                            all_assigned_group_map.insert(make_pair(lm_group->getPAOId(), lm_group));
-                        }
-
-                    }
-                }
-            }
-
-            if( _LM_DEBUG & LM_DEBUG_DATABASE )
-            {
-                CtiLockGuard<CtiLogger> logger_guard(dout);
-                dout << "DB Load Timer for All Groups is: " << allGroupTimer.elapsedTime() << endl;
-                dout << "Loaded a total of " << temp_all_group_map.size() << " groups, " << group_macro_map.size() << " of them are in macro groups" << endl;
-                dout << all_program_group_map.size() << "==" << all_assigned_group_map.size() << " groups are assigned to programs" << endl;
-                allGroupTimer.reset();
-            }
 
                     RWTValHashMap<LONG,CtiLMProgramBaseSPtr,id_hash,equal_to<LONG> > directProgramHashMap;
 
@@ -806,51 +809,51 @@ void CtiLMControlAreaStore::reset()
 
                         RWDBSelector selector = db.selector();
                         selector << yukonPAObjectTable["paobjectid"]
-                                 << yukonPAObjectTable["category"]
-                                 << yukonPAObjectTable["paoclass"]
-                                 << yukonPAObjectTable["paoname"]
-                                 << yukonPAObjectTable["type"]
-                                 << yukonPAObjectTable["description"]
-                                 << yukonPAObjectTable["disableflag"]
-                                 << lmProgramTable["controltype"]
-                                 << lmProgramTable["constraintid"]
-                                 << lmProgramTable["constraintname"]
-                                 << lmProgramTable["availableweekdays"]
-                                 << lmProgramTable["maxhoursdaily"]
-                                 << lmProgramTable["maxhoursmonthly"]
-                                 << lmProgramTable["maxhoursseasonal"]
-                                 << lmProgramTable["maxhoursannually"]
-                                 << lmProgramTable["minactivatetime"]
-                                 << lmProgramTable["minrestarttime"]
-                                 << lmProgramTable["maxdailyops"]
-                                 << lmProgramTable["maxactivatetime"]
-                                 << lmProgramTable["holidayscheduleid"]
-                                 << lmProgramTable["seasonscheduleid"]
-                                 << lmProgramDirectTable["heading"]
-                                 << lmProgramDirectTable["messageheader"]
-                                 << lmProgramDirectTable["messagefooter"]
-                                 << lmProgramDirectTable["notifyactiveoffset"]
-                                 << lmProgramDirectTable["notifyinactiveoffset"]
-                                 << lmProgramDirectTable["triggeroffset"]
-                                 << lmProgramDirectTable["restoreoffset"]
-                                 << dynamicLMProgramTable["programstate"]
-                                 << dynamicLMProgramTable["reductiontotal"]
-                                 << dynamicLMProgramTable["startedcontrolling"]
-                                 << dynamicLMProgramTable["lastcontrolsent"]
-                                 << dynamicLMProgramTable["manualcontrolreceivedflag"]
-                                 << dynamicLMProgramDirectTable["currentgearnumber"]
-                                 << dynamicLMProgramDirectTable["lastgroupcontrolled"]
-                                 << dynamicLMProgramDirectTable["starttime"]
-                                 << dynamicLMProgramDirectTable["stoptime"]
-                                 << dynamicLMProgramDirectTable["timestamp"]
-                                 << dynamicLMProgramDirectTable["notifyactivetime"]
-                                 << dynamicLMProgramDirectTable["notifyinactivetime"]
-                                 << dynamicLMProgramDirectTable["startedrampingout"]
-                                 << dynamicLMProgramDirectTable["constraintoverride"]
-                                 << dynamicLMProgramDirectTable["additionalinfo"]
-                                 << pointTable["pointid"]
-                                 << pointTable["pointoffset"]
-                                 << pointTable["pointtype"];
+                        << yukonPAObjectTable["category"]
+                        << yukonPAObjectTable["paoclass"]
+                        << yukonPAObjectTable["paoname"]
+                        << yukonPAObjectTable["type"]
+                        << yukonPAObjectTable["description"]
+                        << yukonPAObjectTable["disableflag"]
+                        << lmProgramTable["controltype"]
+                        << lmProgramTable["constraintid"]
+                        << lmProgramTable["constraintname"]
+                        << lmProgramTable["availableweekdays"]
+                        << lmProgramTable["maxhoursdaily"]
+                        << lmProgramTable["maxhoursmonthly"]
+                        << lmProgramTable["maxhoursseasonal"]
+                        << lmProgramTable["maxhoursannually"]
+                        << lmProgramTable["minactivatetime"]
+                        << lmProgramTable["minrestarttime"]
+                        << lmProgramTable["maxdailyops"]
+                        << lmProgramTable["maxactivatetime"]
+                        << lmProgramTable["holidayscheduleid"]
+                        << lmProgramTable["seasonscheduleid"]
+                        << lmProgramDirectTable["heading"]
+                        << lmProgramDirectTable["messageheader"]
+                        << lmProgramDirectTable["messagefooter"]
+                        << lmProgramDirectTable["notifyactiveoffset"]
+                        << lmProgramDirectTable["notifyinactiveoffset"]
+                        << lmProgramDirectTable["triggeroffset"]
+                        << lmProgramDirectTable["restoreoffset"]
+                        << dynamicLMProgramTable["programstate"]
+                        << dynamicLMProgramTable["reductiontotal"]
+                        << dynamicLMProgramTable["startedcontrolling"]
+                        << dynamicLMProgramTable["lastcontrolsent"]
+                        << dynamicLMProgramTable["manualcontrolreceivedflag"]
+                        << dynamicLMProgramDirectTable["currentgearnumber"]
+                        << dynamicLMProgramDirectTable["lastgroupcontrolled"]
+                        << dynamicLMProgramDirectTable["starttime"]
+                        << dynamicLMProgramDirectTable["stoptime"]
+                        << dynamicLMProgramDirectTable["timestamp"]
+                        << dynamicLMProgramDirectTable["notifyactivetime"]
+                        << dynamicLMProgramDirectTable["notifyinactivetime"]
+                        << dynamicLMProgramDirectTable["startedrampingout"]
+                        << dynamicLMProgramDirectTable["constraintoverride"]
+                        << dynamicLMProgramDirectTable["additionalinfo"]
+                        << pointTable["pointid"]
+                        << pointTable["pointoffset"]
+                        << pointTable["pointtype"];
 
                         selector.from(yukonPAObjectTable);
                         selector.from(lmProgramTable);
@@ -890,9 +893,9 @@ void CtiLMControlAreaStore::reset()
 
                                 //Inserting this program's groups
                                 CtiLMGroupVec group_vec = all_program_group_map.find(tempProgramId)->second;
-                                for(CtiLMGroupIter iter = group_vec.begin();
-                                    iter != group_vec.end();
-                                    iter++)
+                                for( CtiLMGroupIter iter = group_vec.begin();
+                                   iter != group_vec.end();
+                                   iter++ )
                                 {
                                     directGroups.push_back(*iter);
                                     total_groups_assigned++;
@@ -931,57 +934,57 @@ void CtiLMControlAreaStore::reset()
                     RWTimer masterSubordinateTimer;
                     masterSubordinateTimer.start();
 
-                { // loading master - subordinate direct program relationships
-                    RWDBTable paoExclusionTable = db.table("paoexclusion");
-                    RWDBSelector selector = db.selector();
-                    selector << paoExclusionTable["paoid"]
-                             << paoExclusionTable["excludedpaoid"];
-                    selector.from(paoExclusionTable);
-                    selector.where(paoExclusionTable["functionid"] == CtiTablePaoExclusion::ExFunctionLMSubordination);
+                    { // loading master - subordinate direct program relationships
+                        RWDBTable paoExclusionTable = db.table("paoexclusion");
+                        RWDBSelector selector = db.selector();
+                        selector << paoExclusionTable["paoid"]
+                        << paoExclusionTable["excludedpaoid"];
+                        selector.from(paoExclusionTable);
+                        selector.where(paoExclusionTable["functionid"] == CtiTablePaoExclusion::ExFunctionLMSubordination);
+
+                        if( _LM_DEBUG & LM_DEBUG_DATABASE )
+                        {
+                            CtiLockGuard<CtiLogger> logger_guard(dout);
+                            dout << CtiTime() << " - " << selector.asString().data() << endl;
+                        }
+
+                        RWDBReader rdr = selector.reader(conn);
+                        while( rdr() )
+                        {
+                            long master_program_id;
+                            long subordinate_program_id;
+                            rdr["paoid"] >> master_program_id;
+                            rdr["excludedpaoid"] >> subordinate_program_id;
+
+                            CtiLMProgramBaseSPtr master_program;
+                            CtiLMProgramBaseSPtr subordinate_program;
+
+                            if( directProgramHashMap.findValue(master_program_id, master_program) &&
+                                directProgramHashMap.findValue(subordinate_program_id, subordinate_program) )
+                            {
+                                (boost::static_pointer_cast< CtiLMProgramDirect >(master_program))->getSubordinatePrograms().insert(boost::static_pointer_cast< CtiLMProgramDirect >(subordinate_program));
+                                (boost::static_pointer_cast< CtiLMProgramDirect >(subordinate_program))->getMasterPrograms().insert(boost::static_pointer_cast< CtiLMProgramDirect >(master_program));
+                            }
+                            else
+                            {
+                                CtiLockGuard<CtiLogger> dout_guard(dout);
+                                dout << CtiTime() << " **Checkpoint** " <<  "Unable to find either master program with id: " <<
+                                master_program_id << " or subordinate program with id: " << subordinate_program_id <<
+                                " -- This suggests that database constraints on table PAOExclusion aren't correct or that we failed to load one or both of the programs."  <<
+                                __FILE__ << "(" << __LINE__ << ")" << endl;
+                            }
+
+                        }
+                    }
 
                     if( _LM_DEBUG & LM_DEBUG_DATABASE )
                     {
                         CtiLockGuard<CtiLogger> logger_guard(dout);
-                        dout << CtiTime() << " - " << selector.asString().data() << endl;
+                        dout << "DB Load Timer for associating master/subordinate programs is: " << dirProgsTimer.elapsedTime() << endl;
+                        dirProgsTimer.reset();
                     }
 
-                    RWDBReader rdr = selector.reader(conn);
-                    while( rdr() )
-                    {
-                        long master_program_id;
-                        long subordinate_program_id;
-                        rdr["paoid"] >> master_program_id;
-                        rdr["excludedpaoid"] >> subordinate_program_id;
-
-                        CtiLMProgramBaseSPtr master_program;
-                        CtiLMProgramBaseSPtr subordinate_program;
-
-                        if(directProgramHashMap.findValue(master_program_id, master_program) &&
-                           directProgramHashMap.findValue(subordinate_program_id, subordinate_program))
-                        {
-                            (boost::static_pointer_cast< CtiLMProgramDirect >(master_program))->getSubordinatePrograms().insert(boost::static_pointer_cast< CtiLMProgramDirect >(subordinate_program));
-                            (boost::static_pointer_cast< CtiLMProgramDirect >(subordinate_program))->getMasterPrograms().insert(boost::static_pointer_cast< CtiLMProgramDirect >(master_program));
-                        }
-                        else
-                        {
-                            CtiLockGuard<CtiLogger> dout_guard(dout);
-                            dout << CtiTime() << " **Checkpoint** " <<  "Unable to find either master program with id: " <<
-                                master_program_id << " or subordinate program with id: " << subordinate_program_id <<
-                                " -- This suggests that database constraints on table PAOExclusion aren't correct or that we failed to load one or both of the programs."  <<
-                                __FILE__ << "(" << __LINE__ << ")" << endl;
-                        }
-
-                    }
-                }
-
-                if( _LM_DEBUG & LM_DEBUG_DATABASE )
-                {
-                    CtiLockGuard<CtiLogger> logger_guard(dout);
-                    dout << "DB Load Timer for associating master/subordinate programs is: " << dirProgsTimer.elapsedTime() << endl;
-                    dirProgsTimer.reset();
-                }
-
-                RWTimer gearsTimer;
+                    RWTimer gearsTimer;
                     gearsTimer.start();
                     {//loading direct gears start
                         RWDBTable lmProgramDirectGearTable = db.table("lmprogramdirectgear");
@@ -989,45 +992,45 @@ void CtiLMControlAreaStore::reset()
 
                         RWDBSelector selector = db.selector();
                         selector << lmProgramDirectGearTable["deviceid"]//will be paobjectid
-                                 << lmProgramDirectGearTable["gearname"]
-                                 << lmProgramDirectGearTable["gearnumber"]
-                                 << lmProgramDirectGearTable["controlmethod"]
-                                 << lmProgramDirectGearTable["methodrate"]
-                                 << lmProgramDirectGearTable["methodperiod"]
-                                 << lmProgramDirectGearTable["methodratecount"]
-                                 << lmProgramDirectGearTable["cyclerefreshrate"]
-                                 << lmProgramDirectGearTable["methodstoptype"]
-                                 << lmProgramDirectGearTable["changecondition"]
-                                 << lmProgramDirectGearTable["changeduration"]
-                                 << lmProgramDirectGearTable["changepriority"]
-                                 << lmProgramDirectGearTable["changetriggernumber"]
-                                 << lmProgramDirectGearTable["changetriggeroffset"]
-                                 << lmProgramDirectGearTable["percentreduction"]
-                                 << lmProgramDirectGearTable["groupselectionmethod"]
-                                 << lmProgramDirectGearTable["methodoptiontype"]
-                                 << lmProgramDirectGearTable["methodoptionmax"]
-                                 << lmProgramDirectGearTable["rampininterval"]
-                                 << lmProgramDirectGearTable["rampinpercent"]
-                                 << lmProgramDirectGearTable["rampoutinterval"]
-                                 << lmProgramDirectGearTable["rampoutpercent"]
-                                 << lmProgramDirectGearTable["kwreduction"]
-				 << lmProgramDirectGearTable["frontrampoption"]
-				 << lmProgramDirectGearTable["frontramptime"]
-				 << lmProgramDirectGearTable["backrampoption"]
-				 << lmProgramDirectGearTable["backramptime"]
-                                 << lmThermoStatGearTable["settings"]
-                                 << lmThermoStatGearTable["minvalue"]
-                                 << lmThermoStatGearTable["maxvalue"]
-                                 << lmThermoStatGearTable["valueb"]
-                                 << lmThermoStatGearTable["valued"]
-                                 << lmThermoStatGearTable["valuef"]
-                                 << lmThermoStatGearTable["random"]
-                                 << lmThermoStatGearTable["valueta"]
-                                 << lmThermoStatGearTable["valuetb"]
-                                 << lmThermoStatGearTable["valuetc"]
-                                 << lmThermoStatGearTable["valuetd"]
-                                 << lmThermoStatGearTable["valuete"]
-                                 << lmThermoStatGearTable["valuetf"];
+                        << lmProgramDirectGearTable["gearname"]
+                        << lmProgramDirectGearTable["gearnumber"]
+                        << lmProgramDirectGearTable["controlmethod"]
+                        << lmProgramDirectGearTable["methodrate"]
+                        << lmProgramDirectGearTable["methodperiod"]
+                        << lmProgramDirectGearTable["methodratecount"]
+                        << lmProgramDirectGearTable["cyclerefreshrate"]
+                        << lmProgramDirectGearTable["methodstoptype"]
+                        << lmProgramDirectGearTable["changecondition"]
+                        << lmProgramDirectGearTable["changeduration"]
+                        << lmProgramDirectGearTable["changepriority"]
+                        << lmProgramDirectGearTable["changetriggernumber"]
+                        << lmProgramDirectGearTable["changetriggeroffset"]
+                        << lmProgramDirectGearTable["percentreduction"]
+                        << lmProgramDirectGearTable["groupselectionmethod"]
+                        << lmProgramDirectGearTable["methodoptiontype"]
+                        << lmProgramDirectGearTable["methodoptionmax"]
+                        << lmProgramDirectGearTable["rampininterval"]
+                        << lmProgramDirectGearTable["rampinpercent"]
+                        << lmProgramDirectGearTable["rampoutinterval"]
+                        << lmProgramDirectGearTable["rampoutpercent"]
+                        << lmProgramDirectGearTable["kwreduction"]
+                        << lmProgramDirectGearTable["frontrampoption"]
+                        << lmProgramDirectGearTable["frontramptime"]
+                        << lmProgramDirectGearTable["backrampoption"]
+                        << lmProgramDirectGearTable["backramptime"]
+                        << lmThermoStatGearTable["settings"]
+                        << lmThermoStatGearTable["minvalue"]
+                        << lmThermoStatGearTable["maxvalue"]
+                        << lmThermoStatGearTable["valueb"]
+                        << lmThermoStatGearTable["valued"]
+                        << lmThermoStatGearTable["valuef"]
+                        << lmThermoStatGearTable["random"]
+                        << lmThermoStatGearTable["valueta"]
+                        << lmThermoStatGearTable["valuetb"]
+                        << lmThermoStatGearTable["valuetc"]
+                        << lmThermoStatGearTable["valuetd"]
+                        << lmThermoStatGearTable["valuete"]
+                        << lmThermoStatGearTable["valuetf"];
 
                         selector.from(lmProgramDirectGearTable);
                         selector.from(lmThermoStatGearTable);
@@ -1078,48 +1081,48 @@ void CtiLMControlAreaStore::reset()
                     RWTimer notificationGroupTimer;
                     notificationGroupTimer.start();
 
-                { //loading notification groups start
-                    RWDBTable lmProgramDirectNotifGrpListTable = db.table("lmdirectnotifgrplist");
-                    RWDBSelector selector = db.selector();
+                    { //loading notification groups start
+                        RWDBTable lmProgramDirectNotifGrpListTable = db.table("lmdirectnotifgrplist");
+                        RWDBSelector selector = db.selector();
 
-                    selector << lmProgramDirectNotifGrpListTable["programid"]
-                             << lmProgramDirectNotifGrpListTable["notificationgrpid"];
+                        selector << lmProgramDirectNotifGrpListTable["programid"]
+                        << lmProgramDirectNotifGrpListTable["notificationgrpid"];
 
-                    selector.from(lmProgramDirectNotifGrpListTable);
+                        selector.from(lmProgramDirectNotifGrpListTable);
+
+                        if( _LM_DEBUG & LM_DEBUG_DATABASE )
+                        {
+                            CtiLockGuard<CtiLogger> logger_guard(dout);
+                            dout << CtiTime() << " - " << selector.asString().data() << endl;
+                        }
+
+                        RWDBReader rdr = selector.reader(conn);
+                        while( rdr() )
+                        {
+                            int program_id;
+                            int notif_grp_id;
+                            rdr["programid"] >> program_id;
+                            rdr["notificationgrpid"] >> notif_grp_id;
+
+                            CtiLMProgramBaseSPtr program;
+                            if( directProgramHashMap.findValue(program_id, program ) )
+                            {
+                                boost::static_pointer_cast< CtiLMProgramDirect >(program)->getNotificationGroupIDs().push_back(notif_grp_id);
+                            }
+                            else
+                            {
+                                CtiLockGuard<CtiLogger> dout_guard(dout);
+                                dout << CtiTime() << " **Checkpoint** No program found. " << __FILE__ << "(" << __LINE__ << ")" << endl;
+                            }
+                        }
+                    } //loading notification groups end
 
                     if( _LM_DEBUG & LM_DEBUG_DATABASE )
                     {
                         CtiLockGuard<CtiLogger> logger_guard(dout);
-                        dout << CtiTime() << " - " << selector.asString().data() << endl;
+                        dout << "DB Load Timer for Direct Program Notification Groups is: " << notificationGroupTimer.elapsedTime() << endl;
+                        notificationGroupTimer.reset();
                     }
-
-                    RWDBReader rdr = selector.reader(conn);
-                    while(rdr())
-                    {
-                        int program_id;
-                        int notif_grp_id;
-                        rdr["programid"] >> program_id;
-                        rdr["notificationgrpid"] >> notif_grp_id;
-
-                        CtiLMProgramBaseSPtr program;
-                        if( directProgramHashMap.findValue(program_id, program ) )
-                        {
-                            boost::static_pointer_cast< CtiLMProgramDirect >(program)->getNotificationGroupIDs().push_back(notif_grp_id);
-                        }
-                        else
-                        {
-                            CtiLockGuard<CtiLogger> dout_guard(dout);
-                            dout << CtiTime() << " **Checkpoint** No program found. " << __FILE__ << "(" << __LINE__ << ")" << endl;
-                        }
-                    }
-                } //loading notification groups end
-
-                if( _LM_DEBUG & LM_DEBUG_DATABASE )
-                {
-                    CtiLockGuard<CtiLogger> logger_guard(dout);
-                    dout << "DB Load Timer for Direct Program Notification Groups is: " << notificationGroupTimer.elapsedTime() << endl;
-                    notificationGroupTimer.reset();
-                }
 
                     RWTValHashMap<LONG,CtiLMProgramBaseSPtr,id_hash,equal_to<LONG> > curtailmentProgramHashMap;
 
@@ -1132,42 +1135,42 @@ void CtiLMControlAreaStore::reset()
 
                         RWDBSelector selector = db.selector();
                         selector << yukonPAObjectTable["paobjectid"]
-                                 << yukonPAObjectTable["category"]
-                                 << yukonPAObjectTable["paoclass"]
-                                 << yukonPAObjectTable["paoname"]
-                                 << yukonPAObjectTable["type"]
-                                 << yukonPAObjectTable["description"]
-                                 << yukonPAObjectTable["disableflag"]
-                                 << lmProgramTable["controltype"]
-                                 << lmProgramTable["constraintid"]
-                                 << lmProgramTable["constraintname"]
-                                 << lmProgramTable["availableweekdays"]
-                                 << lmProgramTable["maxhoursdaily"]
-                                 << lmProgramTable["maxhoursmonthly"]
-                                 << lmProgramTable["maxhoursseasonal"]
-                                 << lmProgramTable["maxhoursannually"]
-                                 << lmProgramTable["minactivatetime"]
-                                 << lmProgramTable["minrestarttime"]
-                                 << lmProgramTable["maxdailyops"]
-                                 << lmProgramTable["maxactivatetime"]
-                                 << lmProgramTable["holidayscheduleid"]
-                                 << lmProgramTable["seasonscheduleid"]
-                                 << lmProgramCurtailmentTable["minnotifytime"]
-                                 << lmProgramCurtailmentTable["heading"]
-                                 << lmProgramCurtailmentTable["messageheader"]
-                                 << lmProgramCurtailmentTable["messagefooter"]
-                                 << lmProgramCurtailmentTable["acktimelimit"]
-                                 << lmProgramCurtailmentTable["canceledmsg"]
-                                 << lmProgramCurtailmentTable["stoppedearlymsg"]
-                                 << dynamicLMProgramTable["programstate"]
-                                 << dynamicLMProgramTable["reductiontotal"]
-                                 << dynamicLMProgramTable["startedcontrolling"]
-                                 << dynamicLMProgramTable["lastcontrolsent"]
-                                 << dynamicLMProgramTable["manualcontrolreceivedflag"]
-                                 << dynamicLMProgramTable["timestamp"]
-                                 << pointTable["pointid"]
-                                 << pointTable["pointoffset"]
-                                 << pointTable["pointtype"];
+                        << yukonPAObjectTable["category"]
+                        << yukonPAObjectTable["paoclass"]
+                        << yukonPAObjectTable["paoname"]
+                        << yukonPAObjectTable["type"]
+                        << yukonPAObjectTable["description"]
+                        << yukonPAObjectTable["disableflag"]
+                        << lmProgramTable["controltype"]
+                        << lmProgramTable["constraintid"]
+                        << lmProgramTable["constraintname"]
+                        << lmProgramTable["availableweekdays"]
+                        << lmProgramTable["maxhoursdaily"]
+                        << lmProgramTable["maxhoursmonthly"]
+                        << lmProgramTable["maxhoursseasonal"]
+                        << lmProgramTable["maxhoursannually"]
+                        << lmProgramTable["minactivatetime"]
+                        << lmProgramTable["minrestarttime"]
+                        << lmProgramTable["maxdailyops"]
+                        << lmProgramTable["maxactivatetime"]
+                        << lmProgramTable["holidayscheduleid"]
+                        << lmProgramTable["seasonscheduleid"]
+                        << lmProgramCurtailmentTable["minnotifytime"]
+                        << lmProgramCurtailmentTable["heading"]
+                        << lmProgramCurtailmentTable["messageheader"]
+                        << lmProgramCurtailmentTable["messagefooter"]
+                        << lmProgramCurtailmentTable["acktimelimit"]
+                        << lmProgramCurtailmentTable["canceledmsg"]
+                        << lmProgramCurtailmentTable["stoppedearlymsg"]
+                        << dynamicLMProgramTable["programstate"]
+                        << dynamicLMProgramTable["reductiontotal"]
+                        << dynamicLMProgramTable["startedcontrolling"]
+                        << dynamicLMProgramTable["lastcontrolsent"]
+                        << dynamicLMProgramTable["manualcontrolreceivedflag"]
+                        << dynamicLMProgramTable["timestamp"]
+                        << pointTable["pointid"]
+                        << pointTable["pointoffset"]
+                        << pointTable["pointtype"];
 
                         selector.from(yukonPAObjectTable);
                         selector.from(lmProgramTable);
@@ -1229,7 +1232,7 @@ void CtiLMControlAreaStore::reset()
 
                         RWTValHashMapIterator<LONG,CtiLMProgramBaseSPtr,id_hash,equal_to<LONG> > itr(curtailmentProgramHashMap);
 
-                        for(;itr();)
+                        for( ;itr(); )
                         {
                             CtiLMProgramCurtailmentSPtr currentLMProgramCurtailment = boost::static_pointer_cast< CtiLMProgramCurtailment >(itr.value());
 
@@ -1239,13 +1242,13 @@ void CtiLMControlAreaStore::reset()
 
                             RWDBSelector selector = db.selector();
                             selector << ciCustomerBaseTable["customerid"]
-                                     << ciCustomerBaseTable["companyname"]
-                                     << ciCustomerBaseTable["customerdemandlevel"]
-                                     << ciCustomerBaseTable["curtailamount"]
-                                     << ciCustomerBaseTable["curtailmentagreement"]
-                                     << customerTable["timezone"]
-                                     << lmProgramCurtailCustomerListTable["customerorder"]
-                                     << lmProgramCurtailCustomerListTable["requireack"];
+                            << ciCustomerBaseTable["companyname"]
+                            << ciCustomerBaseTable["customerdemandlevel"]
+                            << ciCustomerBaseTable["curtailamount"]
+                            << ciCustomerBaseTable["curtailmentagreement"]
+                            << customerTable["timezone"]
+                            << lmProgramCurtailCustomerListTable["customerorder"]
+                            << lmProgramCurtailCustomerListTable["requireack"];
 
                             selector.from(ciCustomerBaseTable);
                             selector.from(customerTable);
@@ -1272,7 +1275,7 @@ void CtiLMControlAreaStore::reset()
 
                             if( currentLMProgramCurtailment->getManualControlReceivedFlag() && lmProgramCurtailmentCustomers.size() > 0 )
                             {
-                                for(LONG temp=0;temp<lmProgramCurtailmentCustomers.size();temp++)
+                                for( LONG temp=0;temp<lmProgramCurtailmentCustomers.size();temp++ )
                                 {
                                     ((CtiLMCurtailCustomer*)lmProgramCurtailmentCustomers[temp])->restoreDynamicData(rdr);
                                 }
@@ -1298,41 +1301,41 @@ void CtiLMControlAreaStore::reset()
 
                         RWDBSelector selector = db.selector();
                         selector << yukonPAObjectTable["paobjectid"]
-                                 << yukonPAObjectTable["category"]
-                                 << yukonPAObjectTable["paoclass"]
-                                 << yukonPAObjectTable["paoname"]
-                                 << yukonPAObjectTable["type"]
-                                 << yukonPAObjectTable["description"]
-                                 << yukonPAObjectTable["disableflag"]
-                                 << lmProgramTable["controltype"]
-                                 << lmProgramTable["constraintid"]
-                                 << lmProgramTable["constraintname"]
-                                 << lmProgramTable["availableweekdays"]
-                                 << lmProgramTable["maxhoursdaily"]
-                                 << lmProgramTable["maxhoursmonthly"]
-                                 << lmProgramTable["maxhoursseasonal"]
-                                 << lmProgramTable["maxhoursannually"]
-                                 << lmProgramTable["minactivatetime"]
-                                 << lmProgramTable["minrestarttime"]
-                                 << lmProgramTable["maxdailyops"]
-                                 << lmProgramTable["maxactivatetime"]
-                                 << lmProgramTable["holidayscheduleid"]
-                                 << lmProgramTable["seasonscheduleid"]
-                                 << lmProgramEnergyExchangeTable["minnotifytime"]
-                                 << lmProgramEnergyExchangeTable["heading"]
-                                 << lmProgramEnergyExchangeTable["messageheader"]
-                                 << lmProgramEnergyExchangeTable["messagefooter"]
-                                 << lmProgramEnergyExchangeTable["canceledmsg"]
-                                 << lmProgramEnergyExchangeTable["stoppedearlymsg"]
-                                 << dynamicLMProgramTable["programstate"]
-                                 << dynamicLMProgramTable["reductiontotal"]
-                                 << dynamicLMProgramTable["startedcontrolling"]
-                                 << dynamicLMProgramTable["lastcontrolsent"]
-                                 << dynamicLMProgramTable["manualcontrolreceivedflag"]
-                                 << dynamicLMProgramTable["timestamp"]
-                                 << pointTable["pointid"]
-                                 << pointTable["pointoffset"]
-                                 << pointTable["pointtype"];
+                        << yukonPAObjectTable["category"]
+                        << yukonPAObjectTable["paoclass"]
+                        << yukonPAObjectTable["paoname"]
+                        << yukonPAObjectTable["type"]
+                        << yukonPAObjectTable["description"]
+                        << yukonPAObjectTable["disableflag"]
+                        << lmProgramTable["controltype"]
+                        << lmProgramTable["constraintid"]
+                        << lmProgramTable["constraintname"]
+                        << lmProgramTable["availableweekdays"]
+                        << lmProgramTable["maxhoursdaily"]
+                        << lmProgramTable["maxhoursmonthly"]
+                        << lmProgramTable["maxhoursseasonal"]
+                        << lmProgramTable["maxhoursannually"]
+                        << lmProgramTable["minactivatetime"]
+                        << lmProgramTable["minrestarttime"]
+                        << lmProgramTable["maxdailyops"]
+                        << lmProgramTable["maxactivatetime"]
+                        << lmProgramTable["holidayscheduleid"]
+                        << lmProgramTable["seasonscheduleid"]
+                        << lmProgramEnergyExchangeTable["minnotifytime"]
+                        << lmProgramEnergyExchangeTable["heading"]
+                        << lmProgramEnergyExchangeTable["messageheader"]
+                        << lmProgramEnergyExchangeTable["messagefooter"]
+                        << lmProgramEnergyExchangeTable["canceledmsg"]
+                        << lmProgramEnergyExchangeTable["stoppedearlymsg"]
+                        << dynamicLMProgramTable["programstate"]
+                        << dynamicLMProgramTable["reductiontotal"]
+                        << dynamicLMProgramTable["startedcontrolling"]
+                        << dynamicLMProgramTable["lastcontrolsent"]
+                        << dynamicLMProgramTable["manualcontrolreceivedflag"]
+                        << dynamicLMProgramTable["timestamp"]
+                        << pointTable["pointid"]
+                        << pointTable["pointoffset"]
+                        << pointTable["pointtype"];
 
                         selector.from(yukonPAObjectTable);
                         selector.from(lmProgramTable);
@@ -1390,7 +1393,7 @@ void CtiLMControlAreaStore::reset()
 
                         RWTValHashMapIterator<LONG,CtiLMProgramBaseSPtr,id_hash,equal_to<LONG> > itr(energyExchangeProgramHashMap);
 
-                        for(;itr();)
+                        for( ;itr(); )
                         {
                             CtiLMProgramEnergyExchangeSPtr currentLMProgramEnergyExchange = boost::static_pointer_cast< CtiLMProgramEnergyExchange >(itr.value());
 
@@ -1403,9 +1406,9 @@ void CtiLMControlAreaStore::reset()
 
                                 RWDBSelector selector = db.selector();
                                 selector << lmEnergyExchangeProgramOfferTable["deviceid"]
-                                         << lmEnergyExchangeProgramOfferTable["offerid"]
-                                         << lmEnergyExchangeProgramOfferTable["runstatus"]
-                                         << lmEnergyExchangeProgramOfferTable["offerdate"];
+                                << lmEnergyExchangeProgramOfferTable["offerid"]
+                                << lmEnergyExchangeProgramOfferTable["runstatus"]
+                                << lmEnergyExchangeProgramOfferTable["offerdate"];
 
                                 selector.from(lmEnergyExchangeProgramOfferTable);
 
@@ -1428,18 +1431,18 @@ void CtiLMControlAreaStore::reset()
                                     offers.push_back(CTIDBG_new CtiLMEnergyExchangeOffer(rdr));
                                 }
 
-                                for(LONG r=0;r<offers.size();r++)
+                                for( LONG r=0;r<offers.size();r++ )
                                 {
                                     CtiLMEnergyExchangeOffer* currentLMEnergyExchangeOffer = (CtiLMEnergyExchangeOffer*)offers[r];
                                     RWDBTable lmEnergyExchangeOfferRevisionTable = db.table("lmenergyexchangeofferrevision");
 
                                     RWDBSelector selector = db.selector();
                                     selector << lmEnergyExchangeOfferRevisionTable["offerid"]
-                                             << lmEnergyExchangeOfferRevisionTable["revisionnumber"]
-                                             << lmEnergyExchangeOfferRevisionTable["actiondatetime"]
-                                             << lmEnergyExchangeOfferRevisionTable["notificationdatetime"]
-                                             << lmEnergyExchangeOfferRevisionTable["offerexpirationdatetime"]
-                                             << lmEnergyExchangeOfferRevisionTable["additionalinfo"];
+                                    << lmEnergyExchangeOfferRevisionTable["revisionnumber"]
+                                    << lmEnergyExchangeOfferRevisionTable["actiondatetime"]
+                                    << lmEnergyExchangeOfferRevisionTable["notificationdatetime"]
+                                    << lmEnergyExchangeOfferRevisionTable["offerexpirationdatetime"]
+                                    << lmEnergyExchangeOfferRevisionTable["additionalinfo"];
 
                                     selector.from(lmEnergyExchangeOfferRevisionTable);
 
@@ -1460,17 +1463,17 @@ void CtiLMControlAreaStore::reset()
                                         offerRevisions.push_back(CTIDBG_new CtiLMEnergyExchangeOfferRevision(rdr));
                                     }
 
-                                    for(LONG s=0;s<offerRevisions.size();s++)
+                                    for( LONG s=0;s<offerRevisions.size();s++ )
                                     {
                                         CtiLMEnergyExchangeOfferRevision* currentLMEnergyExchangeOfferRevision = (CtiLMEnergyExchangeOfferRevision*)offerRevisions[s];
                                         RWDBTable lmEnergyExchangeHourlyOfferTable = db.table("lmenergyexchangehourlyoffer");
 
                                         RWDBSelector selector = db.selector();
                                         selector << lmEnergyExchangeHourlyOfferTable["offerid"]
-                                                 << lmEnergyExchangeHourlyOfferTable["revisionnumber"]
-                                                 << lmEnergyExchangeHourlyOfferTable["hour"]
-                                                 << lmEnergyExchangeHourlyOfferTable["price"]
-                                                 << lmEnergyExchangeHourlyOfferTable["amountrequested"];
+                                        << lmEnergyExchangeHourlyOfferTable["revisionnumber"]
+                                        << lmEnergyExchangeHourlyOfferTable["hour"]
+                                        << lmEnergyExchangeHourlyOfferTable["price"]
+                                        << lmEnergyExchangeHourlyOfferTable["amountrequested"];
 
                                         selector.from(lmEnergyExchangeHourlyOfferTable);
 
@@ -1502,12 +1505,12 @@ void CtiLMControlAreaStore::reset()
 
                                 RWDBSelector selector = db.selector();
                                 selector << ciCustomerBaseTable["customerid"]
-                                         << ciCustomerBaseTable["companyname"]
-                                         << ciCustomerBaseTable["customerdemandlevel"]
-                                         << ciCustomerBaseTable["curtailamount"]
-                                         << ciCustomerBaseTable["curtailmentagreement"]
-                                         << customerTable["timezone"]
-                                         << lmEnergyExchangeCustomerListTable["customerorder"];
+                                << ciCustomerBaseTable["companyname"]
+                                << ciCustomerBaseTable["customerdemandlevel"]
+                                << ciCustomerBaseTable["curtailamount"]
+                                << ciCustomerBaseTable["curtailmentagreement"]
+                                << customerTable["timezone"]
+                                << lmEnergyExchangeCustomerListTable["customerorder"];
 
                                 selector.from(ciCustomerBaseTable);
                                 selector.from(customerTable);
@@ -1534,7 +1537,7 @@ void CtiLMControlAreaStore::reset()
 
                                 if( currentLMProgramEnergyExchange->getManualControlReceivedFlag() && lmEnergyExchangeCustomers.size() > 0 )
                                 {
-                                    for(LONG a=0;a<lmEnergyExchangeCustomers.size();a++)
+                                    for( LONG a=0;a<lmEnergyExchangeCustomers.size();a++ )
                                     {
                                         CtiLMEnergyExchangeCustomer* currentLMEnergyExchangeCustomer = (CtiLMEnergyExchangeCustomer*)lmEnergyExchangeCustomers[a];
                                         CtiTime currentDateTime;
@@ -1545,14 +1548,14 @@ void CtiLMControlAreaStore::reset()
 
                                         RWDBSelector selector = db.selector();
                                         selector << lmEnergyExchangeCustomerReplyTable["customerid"]
-                                                 << lmEnergyExchangeCustomerReplyTable["offerid"]
-                                                 << lmEnergyExchangeCustomerReplyTable["acceptstatus"]
-                                                 << lmEnergyExchangeCustomerReplyTable["acceptdatetime"]
-                                                 << lmEnergyExchangeCustomerReplyTable["revisionnumber"]
-                                                 << lmEnergyExchangeCustomerReplyTable["ipaddressofacceptuser"]
-                                                 << lmEnergyExchangeCustomerReplyTable["useridname"]
-                                                 << lmEnergyExchangeCustomerReplyTable["nameofacceptperson"]
-                                                 << lmEnergyExchangeCustomerReplyTable["energyexchangenotes"];
+                                        << lmEnergyExchangeCustomerReplyTable["offerid"]
+                                        << lmEnergyExchangeCustomerReplyTable["acceptstatus"]
+                                        << lmEnergyExchangeCustomerReplyTable["acceptdatetime"]
+                                        << lmEnergyExchangeCustomerReplyTable["revisionnumber"]
+                                        << lmEnergyExchangeCustomerReplyTable["ipaddressofacceptuser"]
+                                        << lmEnergyExchangeCustomerReplyTable["useridname"]
+                                        << lmEnergyExchangeCustomerReplyTable["nameofacceptperson"]
+                                        << lmEnergyExchangeCustomerReplyTable["energyexchangenotes"];
 
                                         selector.from(lmEnergyExchangeCustomerReplyTable);
                                         selector.from(lmEnergyExchangeProgramOfferTable);
@@ -1577,7 +1580,7 @@ void CtiLMControlAreaStore::reset()
                                             lmEnergyExchangeCustomerReplies.push_back(CTIDBG_new CtiLMEnergyExchangeCustomerReply(rdr));
                                         }
 
-                                        for(LONG b=0;b<lmEnergyExchangeCustomerReplies.size();b++)
+                                        for( LONG b=0;b<lmEnergyExchangeCustomerReplies.size();b++ )
                                         {
                                             CtiLMEnergyExchangeCustomerReply* currentCustomerReply = (CtiLMEnergyExchangeCustomerReply*)lmEnergyExchangeCustomerReplies[b];
                                             CtiTime currentDateTime;
@@ -1588,10 +1591,10 @@ void CtiLMControlAreaStore::reset()
 
                                             RWDBSelector selector = db.selector();
                                             selector << lmEnergyExchangeHourlyCustomerTable["customerid"]
-                                                     << lmEnergyExchangeHourlyCustomerTable["offerid"]
-                                                     << lmEnergyExchangeHourlyCustomerTable["revisionnumber"]
-                                                     << lmEnergyExchangeHourlyCustomerTable["hour"]
-                                                     << lmEnergyExchangeHourlyCustomerTable["amountcommitted"];
+                                            << lmEnergyExchangeHourlyCustomerTable["offerid"]
+                                            << lmEnergyExchangeHourlyCustomerTable["revisionnumber"]
+                                            << lmEnergyExchangeHourlyCustomerTable["hour"]
+                                            << lmEnergyExchangeHourlyCustomerTable["amountcommitted"];
 
                                             selector.from(lmEnergyExchangeHourlyCustomerTable);
                                             selector.from(lmEnergyExchangeProgramOfferTable);
@@ -1639,9 +1642,9 @@ void CtiLMControlAreaStore::reset()
 
                         RWDBSelector selector = db.selector();
                         selector << lmProgramControlWindow["deviceid"]
-                                 << lmProgramControlWindow["windownumber"]
-                                 << lmProgramControlWindow["availablestarttime"]
-                                 << lmProgramControlWindow["availablestoptime"];
+                        << lmProgramControlWindow["windownumber"]
+                        << lmProgramControlWindow["availablestarttime"]
+                        << lmProgramControlWindow["availablestoptime"];
 
                         selector.from(lmProgramControlWindow);
 
@@ -1693,32 +1696,32 @@ void CtiLMControlAreaStore::reset()
 
                         RWDBSelector selector = db.selector();
                         selector << yukonPAObjectTable["paobjectid"]
-                                 << yukonPAObjectTable["category"]
-                                 << yukonPAObjectTable["paoclass"]
-                                 << yukonPAObjectTable["paoname"]
-                                 << yukonPAObjectTable["type"]
-                                 << yukonPAObjectTable["description"]
-                                 << yukonPAObjectTable["disableflag"]
-                                 << lmControlAreaTable["defoperationalstate"]
-                                 << lmControlAreaTable["controlinterval"]
-                                 << lmControlAreaTable["minresponsetime"]
-                                 << lmControlAreaTable["defdailystarttime"]
-                                 << lmControlAreaTable["defdailystoptime"]
-                                 << lmControlAreaTable["requirealltriggersactiveflag"]
-                                 << lmControlAreaProgramTable["lmprogramdeviceid"]
-                                 << lmControlAreaProgramTable["startpriority"]
-                                 << lmControlAreaProgramTable["stoppriority"]
-                                 << dynamicLMControlAreaTable["nextchecktime"]
-                                 << dynamicLMControlAreaTable["newpointdatareceivedflag"]
-                                 << dynamicLMControlAreaTable["updatedflag"]
-                                 << dynamicLMControlAreaTable["controlareastate"]
-                                 << dynamicLMControlAreaTable["currentpriority"]
-                                 << dynamicLMControlAreaTable["currentdailystarttime"]
-                                 << dynamicLMControlAreaTable["currentdailystoptime"]
-                                 << dynamicLMControlAreaTable["timestamp"]
-                                 << pointTable["pointid"]
-                                 << pointTable["pointoffset"]
-                                 << pointTable["pointtype"];
+                        << yukonPAObjectTable["category"]
+                        << yukonPAObjectTable["paoclass"]
+                        << yukonPAObjectTable["paoname"]
+                        << yukonPAObjectTable["type"]
+                        << yukonPAObjectTable["description"]
+                        << yukonPAObjectTable["disableflag"]
+                        << lmControlAreaTable["defoperationalstate"]
+                        << lmControlAreaTable["controlinterval"]
+                        << lmControlAreaTable["minresponsetime"]
+                        << lmControlAreaTable["defdailystarttime"]
+                        << lmControlAreaTable["defdailystoptime"]
+                        << lmControlAreaTable["requirealltriggersactiveflag"]
+                        << lmControlAreaProgramTable["lmprogramdeviceid"]
+                        << lmControlAreaProgramTable["startpriority"]
+                        << lmControlAreaProgramTable["stoppriority"]
+                        << dynamicLMControlAreaTable["nextchecktime"]
+                        << dynamicLMControlAreaTable["newpointdatareceivedflag"]
+                        << dynamicLMControlAreaTable["updatedflag"]
+                        << dynamicLMControlAreaTable["controlareastate"]
+                        << dynamicLMControlAreaTable["currentpriority"]
+                        << dynamicLMControlAreaTable["currentdailystarttime"]
+                        << dynamicLMControlAreaTable["currentdailystoptime"]
+                        << dynamicLMControlAreaTable["timestamp"]
+                        << pointTable["pointid"]
+                        << pointTable["pointoffset"]
+                        << pointTable["pointtype"];
 
                         selector.from(yukonPAObjectTable);
                         selector.from(lmControlAreaTable);
@@ -1853,22 +1856,22 @@ void CtiLMControlAreaStore::reset()
 
                         RWDBSelector selector = db.selector();
                         selector << lmControlAreaTriggerTable["triggerid"]
-                                 << lmControlAreaTriggerTable["deviceid"]
-                                 << lmControlAreaTriggerTable["triggernumber"]
-                                 << lmControlAreaTriggerTable["triggertype"]
-                                 << lmControlAreaTriggerTable["pointid"]
-                                 << lmControlAreaTriggerTable["normalstate"]
-                                 << lmControlAreaTriggerTable["threshold"]
-                                 << lmControlAreaTriggerTable["projectiontype"]
-                                 << lmControlAreaTriggerTable["projectionpoints"]
-                                 << lmControlAreaTriggerTable["projectaheadduration"]
-                                 << lmControlAreaTriggerTable["thresholdkickpercent"]
-                                 << lmControlAreaTriggerTable["minrestoreoffset"]
-                                 << lmControlAreaTriggerTable["peakpointid"]
-                                 << dynamicLMControlAreaTriggerTable["pointvalue"]
-                                 << dynamicLMControlAreaTriggerTable["lastpointvaluetimestamp"]
-                                 << dynamicLMControlAreaTriggerTable["peakpointvalue"]
-                                 << dynamicLMControlAreaTriggerTable["lastpeakpointvaluetimestamp"];
+                        << lmControlAreaTriggerTable["deviceid"]
+                        << lmControlAreaTriggerTable["triggernumber"]
+                        << lmControlAreaTriggerTable["triggertype"]
+                        << lmControlAreaTriggerTable["pointid"]
+                        << lmControlAreaTriggerTable["normalstate"]
+                        << lmControlAreaTriggerTable["threshold"]
+                        << lmControlAreaTriggerTable["projectiontype"]
+                        << lmControlAreaTriggerTable["projectionpoints"]
+                        << lmControlAreaTriggerTable["projectaheadduration"]
+                        << lmControlAreaTriggerTable["thresholdkickpercent"]
+                        << lmControlAreaTriggerTable["minrestoreoffset"]
+                        << lmControlAreaTriggerTable["peakpointid"]
+                        << dynamicLMControlAreaTriggerTable["pointvalue"]
+                        << dynamicLMControlAreaTriggerTable["lastpointvaluetimestamp"]
+                        << dynamicLMControlAreaTriggerTable["peakpointvalue"]
+                        << dynamicLMControlAreaTriggerTable["lastpeakpointvaluetimestamp"];
 
                         selector.from(lmControlAreaTriggerTable);
                         selector.from(dynamicLMControlAreaTriggerTable);
@@ -1890,14 +1893,14 @@ void CtiLMControlAreaStore::reset()
                         {
                             CtiLMControlAreaTrigger* newTrigger = CTIDBG_new CtiLMControlAreaTrigger(rdr);
                             attachProjectionData(newTrigger);
-			    newTrigger->calculateProjectedValue();
+                            newTrigger->calculateProjectedValue();
 
                             /****************************************************************
                             *******  Inserting Trigger into the correct Control Area  *******
                             ****************************************************************/
                             LONG tempControlAreaId = 0;
                             rdr["deviceid"] >> tempControlAreaId;
-                            for(LONG i=0;i<temp_control_areas.size();i++)
+                            for( LONG i=0;i<temp_control_areas.size();i++ )
                             {
                                 CtiLMControlArea* currentLMControlArea = (CtiLMControlArea*)(temp_control_areas[i]);
                                 if( currentLMControlArea->getPAOId() == tempControlAreaId )
@@ -1915,7 +1918,7 @@ void CtiLMControlAreaStore::reset()
                         trigTimer.reset();
                     }
 
-                        //Make sure holidays and season schedules are refreshed
+                    //Make sure holidays and season schedules are refreshed
                     CtiHolidayManager::getInstance().refresh();
                     CtiSeasonManager::getInstance().refresh();
 
@@ -1930,46 +1933,46 @@ void CtiLMControlAreaStore::reset()
             }
         }
 
-    {
-        //RWRecursiveLock<RWMutexLock>::LockGuard  guard(mutex());
+        {
+            //RWRecursiveLock<RWMutexLock>::LockGuard  guard(mutex());
 
-        // Clear out our old working objects
-        _all_control_area_map.clear();
-        delete_vector(_controlAreas);
-        _controlAreas->clear(); //89
-        _all_group_map.clear();
-        _all_program_map.clear();
-        _point_group_map.clear();
+            // Clear out our old working objects
+            _all_control_area_map.clear();
+            delete_vector(_controlAreas);
+            _controlAreas->clear(); //89
+            _all_group_map.clear();
+            _all_program_map.clear();
+            _point_group_map.clear();
 
-        // Lets start using the new objects we just loaded.
-        // do a swap, make sure we have the mux
-        *_controlAreas = temp_control_areas;
-        _all_group_map = temp_all_group_map;
-        _all_program_map = temp_all_program_map;
-        _point_group_map = temp_point_group_map;
-        _all_control_area_map = temp_all_control_area_map;
+            // Lets start using the new objects we just loaded.
+            // do a swap, make sure we have the mux
+            *_controlAreas = temp_control_areas;
+            _all_group_map = temp_all_group_map;
+            _all_program_map = temp_all_program_map;
+            _point_group_map = temp_point_group_map;
+            _all_control_area_map = temp_all_control_area_map;
 
-        _CHANGED_GROUP_LIST.clear();
-        _CHANGED_PROGRAM_LIST.clear();
-        _CHANGED_CONTROL_AREA_LIST.clear();
+            _CHANGED_GROUP_LIST.clear();
+            _CHANGED_PROGRAM_LIST.clear();
+            _CHANGED_CONTROL_AREA_LIST.clear();
 
-        _isvalid = TRUE;
+            _isvalid = TRUE;
 
-    {
-        CtiLockGuard<CtiLogger> logger_guard(dout);
-        dout << CtiTime() << " - Control areas reset" << endl;
+            {
+                CtiLockGuard<CtiLogger> logger_guard(dout);
+                dout << CtiTime() << " - Control areas reset" << endl;
+            }
+
+            if( _LM_DEBUG & LM_DEBUG_DATABASE )
+            {
+                CtiLockGuard<CtiLogger> logger_guard(dout);
+                dout << "DB Load Timer for entire LM DB: " << overallTimer.elapsedTime() << endl;
+                overallTimer.reset();
+            }
+
+        }
     }
-
-    if( _LM_DEBUG & LM_DEBUG_DATABASE )
-    {
-        CtiLockGuard<CtiLogger> logger_guard(dout);
-        dout << "DB Load Timer for entire LM DB: " << overallTimer.elapsedTime() << endl;
-        overallTimer.reset();
-    }
-
-    }
-    }
-    catch(...)
+    catch( ... )
     {
         CtiLockGuard<CtiLogger> logger_guard(dout);
         dout << CtiTime() << " - Caught '...' in: " << __FILE__ << " at:" << __LINE__ << endl;
@@ -1990,7 +1993,7 @@ void CtiLMControlAreaStore::reset()
         // Make sure all the clients get the new control areas, let the main thread do it
         CtiLoadManager::getInstance()->handleMessage(CTIDBG_new CtiLMControlAreaMsg(*_controlAreas,msgBitMask));
     }
-    catch(...)
+    catch( ... )
     {
         CtiLockGuard<CtiLogger> logger_guard(dout);
         dout << CtiTime() << " - Caught '...' in: " << __FILE__ << " at:" << __LINE__ << endl;
@@ -2064,14 +2067,14 @@ void CtiLMControlAreaStore::doResetThr()
         CtiTime lastPeriodicDatabaseRefresh;
         CtiTime lastCheck;
 
-        while(TRUE)
+        while( TRUE )
         {
             rwRunnable().serviceCancellation();
             CtiTime now;
 
             // When we cross midnight these dates won't match and we can do our daily midnight maintenance
-            if( now.day() != lastCheck.day() )
-            {//check to see if it is midnight
+            if( now.day() != lastCheck.day() )//check to see if it is midnight
+            {
                 if( _LM_DEBUG & LM_DEBUG_STANDARD )
                 {
                     CtiLockGuard<CtiLogger> logger_guard(dout);
@@ -2099,11 +2102,11 @@ void CtiLMControlAreaStore::doResetThr()
             }
         }
     }
-    catch(RWCancellation& )
+    catch( RWCancellation& )
     {
         throw;
     }
-    catch(...)
+    catch( ... )
     {
         CtiLockGuard<CtiLogger> logger_guard(dout);
         dout << CtiTime() << " - Caught '...' in: " << __FILE__ << " at:" << __LINE__ << endl;
@@ -2229,8 +2232,8 @@ bool CtiLMControlAreaStore::UpdateControlAreaDisableFlagInDB(CtiLMControlArea* c
         updater.execute( conn );
 
         CtiDBChangeMsg* dbChange = CTIDBG_new CtiDBChangeMsg(controlArea->getPAOId(), ChangePAODb,
-                                                      controlArea->getPAOCategory(), desolveLoadManagementType(controlArea->getPAOType()),
-                                                      ChangeTypeUpdate);
+                                                             controlArea->getPAOCategory(), desolveLoadManagementType(controlArea->getPAOType()),
+                                                             ChangeTypeUpdate);
         dbChange->setSource(LOAD_MANAGEMENT_DBCHANGE_MSG_SOURCE);
         CtiLoadManager::getInstance()->sendMessageToDispatch(dbChange);
 
@@ -2268,8 +2271,8 @@ bool CtiLMControlAreaStore::UpdateProgramDisableFlagInDB(CtiLMProgramBaseSPtr pr
         updater.execute( conn );
 
         CtiDBChangeMsg* dbChange = CTIDBG_new CtiDBChangeMsg(program->getPAOId(), ChangePAODb,
-                                                      program->getPAOCategory(), desolveLoadManagementType(program->getPAOType()),
-                                                      ChangeTypeUpdate);
+                                                             program->getPAOCategory(), desolveLoadManagementType(program->getPAOType()),
+                                                             ChangeTypeUpdate);
         dbChange->setSource(LOAD_MANAGEMENT_DBCHANGE_MSG_SOURCE);
         CtiLoadManager::getInstance()->sendMessageToDispatch(dbChange);
 
@@ -2307,8 +2310,8 @@ bool CtiLMControlAreaStore::UpdateGroupDisableFlagInDB(CtiLMGroupPtr& group)
         updater.execute( conn );
 
         CtiDBChangeMsg* dbChange = CTIDBG_new CtiDBChangeMsg(group->getPAOId(), ChangePAODb,
-                                                      group->getPAOCategory(), desolveDeviceType(group->getPAOType()),
-                                                      ChangeTypeUpdate);
+                                                             group->getPAOCategory(), desolveDeviceType(group->getPAOType()),
+                                                             ChangeTypeUpdate);
         dbChange->setSource(LOAD_MANAGEMENT_DBCHANGE_MSG_SOURCE);
         CtiLoadManager::getInstance()->sendMessageToDispatch(dbChange);
 
@@ -2348,8 +2351,8 @@ bool CtiLMControlAreaStore::UpdateTriggerInDB(CtiLMControlArea* controlArea, Cti
         updater.execute( conn );
 
         CtiDBChangeMsg* dbChange = CTIDBG_new CtiDBChangeMsg(controlArea->getPAOId(), ChangePAODb,
-                                                      controlArea->getPAOCategory(), desolveLoadManagementType(controlArea->getPAOType()),
-                                                      ChangeTypeUpdate);
+                                                             controlArea->getPAOCategory(), desolveLoadManagementType(controlArea->getPAOType()),
+                                                             ChangeTypeUpdate);
         dbChange->setSource(LOAD_MANAGEMENT_DBCHANGE_MSG_SOURCE);
         CtiLoadManager::getInstance()->sendMessageToDispatch(dbChange);
 
@@ -2436,12 +2439,12 @@ bool CtiLMControlAreaStore::checkMidnightDefaultsForReset()
 
     bool returnBool = false;
     vector<CtiLMControlArea*>& controlAreas = *getControlAreas(CtiTime().seconds());
-    for(long i=0;i<controlAreas.size();i++)
+    for( long i=0;i<controlAreas.size();i++ )
     {
         CtiLMControlArea* currentControlArea = (CtiLMControlArea*)controlAreas[i];
         // not equal, so no "!" on the compareTo()
-        if( stringCompareIgnoreCase(currentControlArea->getDefOperationalState(),CtiLMControlArea::DefOpStateNone ) )
-        {//check default operational state
+        if( stringCompareIgnoreCase(currentControlArea->getDefOperationalState(),CtiLMControlArea::DefOpStateNone ) )//check default operational state
+        {
             if( ( !stringCompareIgnoreCase(currentControlArea->getDefOperationalState(),CtiLMControlArea::DefOpStateEnabled ) &&
                   currentControlArea->getDisableFlag() ) ||
                 ( !stringCompareIgnoreCase(currentControlArea->getDefOperationalState(),CtiLMControlArea::DefOpStateDisabled ) &&
@@ -2466,8 +2469,8 @@ bool CtiLMControlAreaStore::checkMidnightDefaultsForReset()
             }
         }
         if( currentControlArea->getCurrentDailyStartTime() != currentControlArea->getDefDailyStartTime() ||
-            currentControlArea->getCurrentDailyStopTime() != currentControlArea->getDefDailyStopTime() )
-        {//check default daily start and stop times
+            currentControlArea->getCurrentDailyStopTime() != currentControlArea->getDefDailyStopTime() )//check default daily start and stop times
+        {
             if( currentControlArea->getCurrentDailyStartTime() != currentControlArea->getDefDailyStartTime() )
             {
                 char tempchar[80] = "";
@@ -2547,19 +2550,19 @@ void CtiLMControlAreaStore::saveAnyProjectionData()
     if( _projectionQueues.size() > 0 )
         _projectionQueues.clear();
 
-    for(LONG i=0;i<_controlAreas->size();i++)
+    for( LONG i=0;i<_controlAreas->size();i++ )
     {
         CtiLMControlArea* currentLMControlArea = (CtiLMControlArea*)(*_controlAreas)[i];
 
         vector<CtiLMControlAreaTrigger*>& lmControlAreaTriggers = currentLMControlArea->getLMControlAreaTriggers();
         if( lmControlAreaTriggers.size() > 0 )
         {
-            for(LONG j=0;j<lmControlAreaTriggers.size();j++)
+            for( LONG j=0;j<lmControlAreaTriggers.size();j++ )
             {
                 CtiLMControlAreaTrigger* currentLMControlAreaTrigger = (CtiLMControlAreaTrigger*)lmControlAreaTriggers.at(j);
                 if( !stringCompareIgnoreCase(currentLMControlAreaTrigger->getProjectionType(),CtiLMControlAreaTrigger::LSFProjectionType ) &&
-                    stringCompareIgnoreCase(currentLMControlAreaTrigger->getTriggerType(),CtiLMControlAreaTrigger::StatusTriggerType ) )
-                {// don't need "!" on compareTo() because supposed to be !=
+                    stringCompareIgnoreCase(currentLMControlAreaTrigger->getTriggerType(),CtiLMControlAreaTrigger::StatusTriggerType ) )// don't need "!" on compareTo() because supposed to be !=
+                {
                     /*{
                         CtiLockGuard<CtiLogger> logger_guard(dout);
                         dout << " - Saved Projection Point Entries Queue entries for Point Id: " << currentLMControlAreaTrigger->getPointId() << endl;
@@ -2582,7 +2585,7 @@ void CtiLMControlAreaStore::saveAnyProjectionData()
 ---------------------------------------------------------------------------*/
 void CtiLMControlAreaStore::attachProjectionData(CtiLMControlAreaTrigger* trigger)
 {
-    for(LONG i=0;i<_projectionQueues.size();i++)
+    for( LONG i=0;i<_projectionQueues.size();i++ )
     {
         CtiLMSavedProjectionQueue currentSavedQueue =  _projectionQueues[i];
         if( trigger->getPointId() == currentSavedQueue.getPointId() )
@@ -2598,7 +2601,7 @@ void CtiLMControlAreaStore::attachProjectionData(CtiLMControlAreaTrigger* trigge
                 }
             }*/
             std::vector<CtiLMProjectionPointEntry>::iterator itr = queueToCopyFrom.begin();
-            for( ; itr != queueToCopyFrom.end(); ++itr)
+            for( ; itr != queueToCopyFrom.end(); ++itr )
             {
                 queueToFillUp.push_back( *itr );
             }
@@ -2617,20 +2620,20 @@ void CtiLMControlAreaStore::saveAnyControlStringData()
     if( _controlStrings.size() > 0 )
         _controlStrings.clear();
 
-    for(LONG i=0;i<_controlAreas->size();i++)
+    for( LONG i=0;i<_controlAreas->size();i++ )
     {
         CtiLMControlArea* currentLMControlArea = (CtiLMControlArea*)(*_controlAreas)[i];
 
         vector<CtiLMProgramBaseSPtr>& lmPrograms = currentLMControlArea->getLMPrograms();
         if( lmPrograms.size() > 0 )
         {
-            for(LONG j=0;j<lmPrograms.size();j++)
+            for( LONG j=0;j<lmPrograms.size();j++ )
             {
                 CtiLMProgramBaseSPtr currentLMProgram = (CtiLMProgramBaseSPtr)lmPrograms[j];
                 if( currentLMProgram->getPAOType() == TYPE_LMPROGRAM_DIRECT )
                 {
                     CtiLMGroupVec groups  = boost::static_pointer_cast< CtiLMProgramDirect >(currentLMProgram)->getLMProgramDirectGroups();
-                    for(CtiLMGroupIter k = groups.begin(); k != groups.end(); k++)
+                    for( CtiLMGroupIter k = groups.begin(); k != groups.end(); k++ )
                     {
                         CtiLMGroupPtr currentLMGroup  = *k;
                         if( currentLMGroup->getLastControlString().length() > 0 )
@@ -2651,7 +2654,7 @@ void CtiLMControlAreaStore::saveAnyControlStringData()
 ---------------------------------------------------------------------------*/
 void CtiLMControlAreaStore::attachControlStringData(CtiLMGroupPtr& group)
 {
-    for(LONG i=0;i<_controlStrings.size();i++)
+    for( LONG i=0;i<_controlStrings.size();i++ )
     {
         CtiLMSavedControlString currentSavedString =  _controlStrings[i];
         if( group->getPAOId() == currentSavedString.getPAOId() )

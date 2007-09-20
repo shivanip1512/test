@@ -49,7 +49,7 @@ CtiLMConnectionPtr CtiLMMessage::getConnection()
 {
     return _connection.lock();
 }
-    
+
 /*---------------------------------------------------------------------------
     restoreGuts
     
@@ -120,7 +120,7 @@ LONG CtiLMCommand::getPAOId() const
 {
     return _paoid;
 }
-    
+
 /*---------------------------------------------------------------------------
     getNumber
     
@@ -130,7 +130,7 @@ LONG CtiLMCommand::getNumber() const
 {
     return _number;
 }
-    
+
 /*---------------------------------------------------------------------------
     getValue
     
@@ -140,7 +140,7 @@ DOUBLE CtiLMCommand::getValue() const
 {
     return _value;
 }
-    
+
 /*---------------------------------------------------------------------------
     getCount
 
@@ -150,7 +150,7 @@ LONG CtiLMCommand::getCount() const
 {
     return _count;
 }
-    
+
 /*---------------------------------------------------------------------------
     getAuxId
 
@@ -170,12 +170,12 @@ void CtiLMCommand::restoreGuts(RWvistream& strm)
 {
     CtiLMMessage::restoreGuts(strm);
     strm >> _command
-         >> _paoid
-         >> _number
-         >> _value
-         >> _count
-         >> _auxid;
- 
+    >> _paoid
+    >> _number
+    >> _value
+    >> _count
+    >> _auxid;
+
     return;
 }
 
@@ -189,11 +189,11 @@ void CtiLMCommand::saveGuts(RWvostream& strm) const
     CtiLMMessage::saveGuts(strm);
 
     strm << _command
-         << _paoid
-         << _number
-         << _value
-         << _count
-         << _auxid;
+    << _paoid
+    << _number
+    << _value
+    << _count
+    << _auxid;
 
     return;
 }
@@ -227,23 +227,23 @@ CtiLMCommand& CtiLMCommand::operator=(const CtiLMCommand& right)
 RWDEFINE_COLLECTABLE( CtiLMManualControlRequest, CTILMMANUALCONTROLREQUEST_ID ) 
 
 CtiLMManualControlRequest::CtiLMManualControlRequest(LONG cmd,
-						     LONG pao_id,
-						     const CtiTime& notify_time,
-						     const CtiTime& start_time,
-						     const CtiTime& stop_time,
-						     LONG start_gear,
-						     LONG start_priority,
-						     const string& addl_info,
-						     LONG constraint_cmd) :
-    _command(cmd),
-    _paoid(pao_id),
-    _notifytime(notify_time),
-    _starttime(start_time),
-    _stoptime(stop_time),
-    _startgear(start_gear),
-    _startpriority(start_priority),
-    _additionalinfo(addl_info),
-    _constraint_cmd(constraint_cmd)
+                                                     LONG pao_id,
+                                                     const CtiTime& notify_time,
+                                                     const CtiTime& start_time,
+                                                     const CtiTime& stop_time,
+                                                     LONG start_gear,
+                                                     LONG start_priority,
+                                                     const string& addl_info,
+                                                     LONG constraint_cmd) :
+_command(cmd),
+_paoid(pao_id),
+_notifytime(notify_time),
+_starttime(start_time),
+_stoptime(stop_time),
+_startgear(start_gear),
+_startpriority(start_priority),
+_additionalinfo(addl_info),
+_constraint_cmd(constraint_cmd)
 {
 }
 
@@ -251,7 +251,7 @@ CtiLMManualControlRequest::CtiLMManualControlRequest(const CtiLMManualControlReq
 {
     operator=( req );
 }
-    
+
 /*---------------------------------------------------------------------------
     Destructor
 ---------------------------------------------------------------------------*/
@@ -404,14 +404,14 @@ void CtiLMManualControlRequest::restoreGuts(RWvistream& strm)
     CtiTime tempTime3;
 
     strm >> _command
-         >> _paoid
-         >> tempTime1
-         >> tempTime2
-         >> tempTime3
-         >> _startgear
-         >> _startpriority
-         >> _additionalinfo
-	 >>_constraint_cmd;
+    >> _paoid
+    >> tempTime1
+    >> tempTime2
+    >> tempTime3
+    >> _startgear
+    >> _startpriority
+    >> _additionalinfo
+    >>_constraint_cmd;
 
     _notifytime = CtiTime(tempTime1);
     _starttime = CtiTime(tempTime2);
@@ -427,16 +427,16 @@ void CtiLMManualControlRequest::restoreGuts(RWvistream& strm)
 void CtiLMManualControlRequest::saveGuts(RWvostream& strm) const
 {
     CtiLMMessage::saveGuts(strm);
-    
+
     strm << _command
-         << _paoid
-         << _notifytime
-         << _starttime
-         << _stoptime
-         << _startgear
-         << _startpriority
-         << _additionalinfo
-	 << _constraint_cmd;
+    << _paoid
+    << _notifytime
+    << _starttime
+    << _stoptime
+    << _startgear
+    << _startpriority
+    << _additionalinfo
+    << _constraint_cmd;
 
     return;
 }
@@ -456,7 +456,7 @@ CtiLMManualControlRequest& CtiLMManualControlRequest::operator=(const CtiLMManua
         _startgear = right._startgear;
         _startpriority = right._startpriority;
         _additionalinfo = right._additionalinfo;
-	_constraint_cmd = right._constraint_cmd;
+        _constraint_cmd = right._constraint_cmd;
     }
 
     return *this;
@@ -498,8 +498,8 @@ void CtiLMManualControlResponse::restoreGuts(RWvistream& strm)
     strm >> _paoid;
     strm >> rw_ordered;
     strm >> _best_fit_action;
-    
-    for(int i = 0; i < rw_ordered->size(); i++)
+
+    for( int i = 0; i < rw_ordered->size(); i++ )
     {
         _constraintViolations.push_back(  ((RWCollectableString*) (*rw_ordered)[i])->data());
     }
@@ -515,13 +515,13 @@ void CtiLMManualControlResponse::saveGuts(RWvostream& strm) const
 {
 
 /* NEW */
-   CtiLMMessage::saveGuts(strm);
+    CtiLMMessage::saveGuts(strm);
     vector<RWCollectableString*>* vect = CTIDBG_new vector<RWCollectableString*>;
-    for(std::vector< std::string >::const_iterator iter = _constraintViolations.begin();
-	iter != _constraintViolations.end();
-	iter++)
+    for( std::vector< std::string >::const_iterator iter = _constraintViolations.begin();
+       iter != _constraintViolations.end();
+       iter++ )
     {
-	vect->push_back(CTIDBG_new RWCollectableString(iter->c_str()));
+        vect->push_back(CTIDBG_new RWCollectableString(iter->c_str()));
     }
     strm << _paoid;
     strm << vect;
@@ -537,7 +537,7 @@ CtiLMManualControlResponse& CtiLMManualControlResponse::operator=(const CtiLMMan
 {//super?
     if( this != &right )
     {
-	_constraintViolations = right.getConstraintViolations();
+        _constraintViolations = right.getConstraintViolations();
     }
 
     return *this;
@@ -742,19 +742,19 @@ void CtiLMEnergyExchangeControlMsg::restoreGuts(RWvistream& strm)
     CtiTime tempTime3;
 
     strm >> _command
-         >> _paoid
-         >> _offerid
-         >> tempTime1
-         >> tempTime2
-         >> tempTime3
-         >> _additionalinfo;
+    >> _paoid
+    >> _offerid
+    >> tempTime1
+    >> tempTime2
+    >> tempTime3
+    >> _additionalinfo;
 
-    for(LONG i=0;i<HOURS_IN_DAY;i++)
+    for( LONG i=0;i<HOURS_IN_DAY;i++ )
     {
         strm >> _amountsrequested[i];
     }
-    
-    for(LONG j=0;j<HOURS_IN_DAY;j++)
+
+    for( LONG j=0;j<HOURS_IN_DAY;j++ )
     {
         strm >> _pricesoffered[j];
     }
@@ -775,19 +775,19 @@ void CtiLMEnergyExchangeControlMsg::saveGuts(RWvostream& strm) const
     CtiLMMessage::saveGuts(strm);
 
     strm << _command
-         << _paoid
-         << _offerid
-         << _offerdate
-         << _notificationdatetime
-         << _expirationdatetime
-         << _additionalinfo;
-        
-    for(LONG i=0;i<HOURS_IN_DAY;i++)
+    << _paoid
+    << _offerid
+    << _offerdate
+    << _notificationdatetime
+    << _expirationdatetime
+    << _additionalinfo;
+
+    for( LONG i=0;i<HOURS_IN_DAY;i++ )
     {
         strm << _amountsrequested[i];
     }
 
-    for(LONG j=0;j<HOURS_IN_DAY;j++)
+    for( LONG j=0;j<HOURS_IN_DAY;j++ )
     {
         strm << _pricesoffered[j];
     }
@@ -810,12 +810,12 @@ CtiLMEnergyExchangeControlMsg& CtiLMEnergyExchangeControlMsg::operator=(const Ct
         _expirationdatetime = right._expirationdatetime;
         _additionalinfo = right._additionalinfo;
 
-        for(LONG i=0;i<HOURS_IN_DAY;i++)
+        for( LONG i=0;i<HOURS_IN_DAY;i++ )
         {
             _amountsrequested[i] = right.getAmountRequested(i);
         }
 
-        for(LONG j=0;j<HOURS_IN_DAY;j++)
+        for( LONG j=0;j<HOURS_IN_DAY;j++ )
         {
             _pricesoffered[j] = right.getPriceOffered(j);
         }
@@ -954,19 +954,19 @@ void CtiLMEnergyExchangeAcceptMsg::restoreGuts(RWvistream& strm)
     //CtiTime tempTime1;
 
     strm >> _paoid
-         >> _offerid
-         >> _revisionnumber
-         >> _acceptstatus
-         >> _ipaddressofacceptuser
-         >> _useridname
-         >> _nameofacceptperson
-         >> _energyexchangenotes;
+    >> _offerid
+    >> _revisionnumber
+    >> _acceptstatus
+    >> _ipaddressofacceptuser
+    >> _useridname
+    >> _nameofacceptperson
+    >> _energyexchangenotes;
 
-    for(LONG i=0;i<HOURS_IN_DAY;i++)
+    for( LONG i=0;i<HOURS_IN_DAY;i++ )
     {
         strm >> _amountscommitted[i];
     }
-    
+
     //_offerdate = CtiTime(tempTime1);
     return;
 }
@@ -981,15 +981,15 @@ void CtiLMEnergyExchangeAcceptMsg::saveGuts(RWvostream& strm) const
     CtiLMMessage::saveGuts(strm);
 
     strm << _paoid
-         << _offerid
-         << _revisionnumber
-         << _acceptstatus
-         << _ipaddressofacceptuser
-         << _useridname
-         << _nameofacceptperson
-         << _energyexchangenotes;
-        
-    for(LONG i=0;i<HOURS_IN_DAY;i++)
+    << _offerid
+    << _revisionnumber
+    << _acceptstatus
+    << _ipaddressofacceptuser
+    << _useridname
+    << _nameofacceptperson
+    << _energyexchangenotes;
+
+    for( LONG i=0;i<HOURS_IN_DAY;i++ )
     {
         strm << _amountscommitted[i];
     }
@@ -1013,7 +1013,7 @@ CtiLMEnergyExchangeAcceptMsg& CtiLMEnergyExchangeAcceptMsg::operator=(const CtiL
         _nameofacceptperson = right._nameofacceptperson;
         _energyexchangenotes = right._energyexchangenotes;
 
-        for(LONG i=0;i<HOURS_IN_DAY;i++)
+        for( LONG i=0;i<HOURS_IN_DAY;i++ )
         {
             _amountscommitted[i] = right.getAmountCommitted(i);
         }
@@ -1035,7 +1035,7 @@ RWDEFINE_COLLECTABLE( CtiLMControlAreaMsg, CTILMCONTROLAREA_MSG_ID )
 CtiLMControlAreaMsg::CtiLMControlAreaMsg(vector<CtiLMControlArea*>& contAreas, ULONG bitMask) : CtiLMMessage("ControlArea"), _controlAreas(NULL), _msgInfoBitMask(bitMask)
 {
     _controlAreas = CTIDBG_new vector<CtiLMControlArea*>;
-    for(int i=0;i<contAreas.size();i++)
+    for( int i=0;i<contAreas.size();i++ )
     {
         _controlAreas->push_back(((CtiLMControlArea*)contAreas[i])->replicate());
     }
@@ -1080,7 +1080,7 @@ CtiLMControlAreaMsg& CtiLMControlAreaMsg::operator=(const CtiLMControlAreaMsg& r
             delete _controlAreas;
         }
         _controlAreas = CTIDBG_new vector<CtiLMControlArea*>;
-        for(int i=0;i<(right.getControlAreas())->size();i++)
+        for( int i=0;i<(right.getControlAreas())->size();i++ )
         {
             _controlAreas->push_back(((CtiLMControlArea*)(*right.getControlAreas())[i])->replicate());
         }
@@ -1097,8 +1097,8 @@ CtiLMControlAreaMsg& CtiLMControlAreaMsg::operator=(const CtiLMControlAreaMsg& r
 void CtiLMControlAreaMsg::restoreGuts(RWvistream& strm)
 {
     CtiLMMessage::restoreGuts(strm);
-	strm >> _msgInfoBitMask
-         >> _controlAreas;
+    strm >> _msgInfoBitMask
+    >> _controlAreas;
 }
 
 /*---------------------------------------------------------------------------
@@ -1110,7 +1110,7 @@ void CtiLMControlAreaMsg::saveGuts(RWvostream& strm) const
 {
     CtiLMMessage::saveGuts(strm);
     strm << _msgInfoBitMask
-         << _controlAreas;
+    << _controlAreas;
 }
 
 // Static Members
@@ -1142,7 +1142,7 @@ LONG CtiLMCurtailmentAcknowledgeMsg::getPAOId() const
 {
     return _paoid;
 }
-    
+
 /*---------------------------------------------------------------------------
     getCurtailReferenceId
 
@@ -1152,7 +1152,7 @@ LONG CtiLMCurtailmentAcknowledgeMsg::getCurtailReferenceId() const
 {
     return _curtailreferenceid;
 }
-    
+
 /*---------------------------------------------------------------------------
     getAcknowledgeStatus
     
@@ -1217,13 +1217,13 @@ void CtiLMCurtailmentAcknowledgeMsg::restoreGuts(RWvistream& strm)
 {
     CtiLMMessage::restoreGuts(strm);
     strm >> _paoid
-         >> _curtailreferenceid
-         >> _acknowledgestatus
-         >> _ipaddressofackuser
-         >> _useridname
-         >> _nameofackperson
-         >> _curtailmentnotes;
- 
+    >> _curtailreferenceid
+    >> _acknowledgestatus
+    >> _ipaddressofackuser
+    >> _useridname
+    >> _nameofackperson
+    >> _curtailmentnotes;
+
     return;
 }
 
@@ -1237,12 +1237,12 @@ void CtiLMCurtailmentAcknowledgeMsg::saveGuts(RWvostream& strm) const
     CtiLMMessage::saveGuts(strm);
 
     strm << _paoid
-         << _curtailreferenceid
-         << _acknowledgestatus
-         << _ipaddressofackuser
-         << _useridname
-         << _nameofackperson
-         << _curtailmentnotes;
+    << _curtailreferenceid
+    << _acknowledgestatus
+    << _ipaddressofackuser
+    << _useridname
+    << _nameofackperson
+    << _curtailmentnotes;
 
     return;
 }
@@ -1311,18 +1311,18 @@ RWDEFINE_COLLECTABLE( CtiLMDynamicTriggerDataMsg, CTILMDYNAMICLMTRIGGERMSG_ID )
 void CtiLMDynamicGroupDataMsg::saveGuts(RWvostream& strm) const
 {
     strm << _paoid
-         << _disableflag
-         << _groupcontrolstate
-         << _currenthoursdaily
-         << _currenthoursmonthly
-         << _currenthoursseasonal
-         << _currenthoursannually
-         << _lastcontrolsent
-         << _controlstarttime
-         << _controlcompletetime
-         << _next_control_time
-         << _internalState //What the heck is this???
-         << _daily_ops;
+    << _disableflag
+    << _groupcontrolstate
+    << _currenthoursdaily
+    << _currenthoursmonthly
+    << _currenthoursseasonal
+    << _currenthoursannually
+    << _lastcontrolsent
+    << _controlstarttime
+    << _controlcompletetime
+    << _next_control_time
+    << _internalState //What the heck is this???
+    << _daily_ops;
 }
 
 /*---------------------------------------------------------------------------
@@ -1333,16 +1333,16 @@ void CtiLMDynamicGroupDataMsg::saveGuts(RWvostream& strm) const
 void CtiLMDynamicProgramDataMsg::saveGuts(RWvostream& strm) const
 {
     strm << _paoid
-         << _disableflag
-         << _currentgearnumber + 1
-         << _lastgroupcontrolled
-         << _programstate
-         << _reductiontotal
-         << _directstarttime
-         << _directstoptime
-         << _notify_active_time
-         << _notify_inactive_time
-         << _startedrampingouttime;
+    << _disableflag
+    << _currentgearnumber + 1
+    << _lastgroupcontrolled
+    << _programstate
+    << _reductiontotal
+    << _directstarttime
+    << _directstoptime
+    << _notify_active_time
+    << _notify_inactive_time
+    << _startedrampingouttime;
 }
 
 /*---------------------------------------------------------------------------
@@ -1353,13 +1353,13 @@ void CtiLMDynamicProgramDataMsg::saveGuts(RWvostream& strm) const
 void CtiLMDynamicControlAreaDataMsg::saveGuts(RWvostream& strm) const
 {
     strm << _paoid
-         << _disableflag
-         << _nextchecktime
-         << _controlareastate
-         << _currentpriority
-         << _currentdailystarttime
-         << _currentdailystoptime
-         << _triggers;
+    << _disableflag
+    << _nextchecktime
+    << _controlareastate
+    << _currentpriority
+    << _currentdailystarttime
+    << _currentdailystoptime
+    << _triggers;
 }
 
 /*---------------------------------------------------------------------------
@@ -1370,14 +1370,14 @@ void CtiLMDynamicControlAreaDataMsg::saveGuts(RWvostream& strm) const
 void CtiLMDynamicTriggerDataMsg::saveGuts(RWvostream& strm) const
 {
     strm << _paoid
-         << _triggernumber
-         << _pointvalue
-         << _lastpointvaluetimestamp
-         << _normalstate
-         << _threshold
-         << _peakpointvalue
-         << _lastpeakpointvaluetimestamp
-         << _projectedpointvalue;
+    << _triggernumber
+    << _pointvalue
+    << _lastpointvaluetimestamp
+    << _normalstate
+    << _threshold
+    << _peakpointvalue
+    << _lastpeakpointvaluetimestamp
+    << _projectedpointvalue;
 }
 
 /* ==========================================================================
@@ -1433,7 +1433,7 @@ CtiLMDynamicControlAreaDataMsg::CtiLMDynamicControlAreaDataMsg(CtiLMControlArea 
         _currentpriority = controlArea->getCurrentStartPriority();
         _currentdailystarttime = controlArea->getCurrentDailyStartTime();
         _currentdailystoptime = controlArea->getCurrentDailyStopTime();
-    
+
         vector<CtiLMControlAreaTrigger*>& triggers = controlArea->getLMControlAreaTriggers();
         if( triggers.size() > 0 ) //No one else uses iterators. I still feel dirty though.
         {

@@ -31,7 +31,7 @@ int CtiLMServer::_defaultport = 1920;
 ---------------------------------------------------------------------------*/
 CtiLMServer* CtiLMServer::getInstance()
 {
-    if ( _instance == NULL )
+    if( _instance == NULL )
         _instance = CTIDBG_new CtiLMServer();
 
     return _instance;
@@ -101,7 +101,7 @@ void CtiLMServer::start()
         dout << CtiTime() << " - Unable to load cparms.dll" << endl;
     }*/
 
-    if ( !_running && !_dostop )
+    if( !_running && !_dostop )
     {
         _running = TRUE;
 
@@ -110,7 +110,7 @@ void CtiLMServer::start()
 
         func.start();
 
-        if ( _listener == NULL )
+        if( _listener == NULL )
             _listener = CTIDBG_new CtiLMClientListener( _defaultport );
 
         _listener->start();
@@ -126,7 +126,7 @@ void CtiLMServer::stop()
 {
     // _dostop = TRUE;
 
-    if ( _checkthr.isValid() )
+    if( _checkthr.isValid() )
     {
         _checkthr.requestCancellation();
         _checkthr.join();
@@ -186,15 +186,15 @@ void CtiLMServer::_checkstatus()
 {
     try
     {
-        for ( ; ; )
+        for( ; ; )
         {
             rwRunnable().serviceCancellation();
             rwRunnable().sleep( 500 );
         }
     }
-    catch ( RWxmsg& msg )
+    catch( RWxmsg& msg )
     {
-        if ( _listener != NULL )
+        if( _listener != NULL )
         {
             _listener->stop();
             delete _listener;
@@ -208,6 +208,6 @@ void CtiLMServer::_checkstatus()
 
         _running = FALSE;
         _dostop = FALSE;
-    }                                                            
+    }
 }
-    
+

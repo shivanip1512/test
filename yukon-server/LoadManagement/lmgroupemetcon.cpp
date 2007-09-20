@@ -56,8 +56,8 @@ CtiLMGroupEmetcon::~CtiLMGroupEmetcon()
 ----------------------------------------------------------------------------*/
 CtiLMGroupBase& CtiLMGroupEmetcon::setGroupControlState(LONG controlstate)
 {
-    if(getGroupControlState() == CtiLMGroupBase::InactiveState &&
-       CtiLMGroupBase::ActiveState == controlstate)	
+    if( getGroupControlState() == CtiLMGroupBase::InactiveState &&
+        CtiLMGroupBase::ActiveState == controlstate )
     {
         _refreshsent = FALSE;
     }
@@ -135,7 +135,7 @@ CtiRequestMsg* CtiLMGroupEmetcon::createMasterCycleRequestMsg(LONG offTime, LONG
         DOUBLE realizedPercentage = 570.0 / (DOUBLE)period;
         CtiLockGuard<CtiLogger> logger_guard(dout);
         dout << CtiTime() << " - Master Cycle Warning: cannot send a shed of less than 9.5 minutes (including random time-in) to Emetcon groups, LM Group: " << getPAOName()
-             << ", given the 9.5 minute minimum shed time and the cycle period specified the group will give a realized control percentage of:" << realizedPercentage << endl;
+        << ", given the 9.5 minute minimum shed time and the cycle period specified the group will give a realized control percentage of:" << realizedPercentage << endl;
     }
     //CASE 8.5 TO 10.5: 7.5 min shed is ok and no over lap
     else if( offTime >= 510 && offTime <= 630 )
@@ -263,7 +263,7 @@ int CtiLMGroupEmetcon::operator!=(const CtiLMGroupEmetcon& right) const
 ---------------------------------------------------------------------------*/
 CtiLMGroupBase* CtiLMGroupEmetcon::replicate() const
 {
-    return (CTIDBG_new CtiLMGroupEmetcon(*this));
+    return(CTIDBG_new CtiLMGroupEmetcon(*this));
 }
 
 /*---------------------------------------------------------------------------

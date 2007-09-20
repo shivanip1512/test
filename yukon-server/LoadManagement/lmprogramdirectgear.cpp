@@ -31,10 +31,10 @@ RWDEFINE_COLLECTABLE( CtiLMProgramDirectGear, CTILMPROGRAMDIRECTGEAR_ID )
     Constructors
 ---------------------------------------------------------------------------*/
 CtiLMProgramDirectGear::CtiLMProgramDirectGear()
-    : _front_ramp_option(NoneRandomOptionType),
-      _front_ramp_time(0),
-      _back_ramp_option(NoneRandomOptionType),
-      _back_ramp_time(0)
+: _front_ramp_option(NoneRandomOptionType),
+_front_ramp_time(0),
+_back_ramp_option(NoneRandomOptionType),
+_back_ramp_time(0)
 {   
 }
 
@@ -612,28 +612,28 @@ void CtiLMProgramDirectGear::restoreGuts(RWvistream& istrm)
     RWCollectable::restoreGuts( istrm );
 
     istrm >> _paoid
-          >> _gearname
-          >> _gearnumber
-          >> _controlmethod
-          >> _methodrate
-          >> _methodperiod
-          >> _methodratecount
-          >> _cyclerefreshrate
-          >> _methodstoptype
-          >> _changecondition
-          >> _changeduration
-          >> _changepriority
-          >> _changetriggernumber
-          >> _changetriggeroffset
-          >> _percentreduction
-          >> _groupselectionmethod
-          >> _methodoptiontype
-          >> _methodoptionmax
-          >> _rampininterval
-          >> _rampinpercent
-          >> _rampoutinterval
-          >> _rampoutpercent
-          >> _kw_reduction;
+    >> _gearname
+    >> _gearnumber
+    >> _controlmethod
+    >> _methodrate
+    >> _methodperiod
+    >> _methodratecount
+    >> _cyclerefreshrate
+    >> _methodstoptype
+    >> _changecondition
+    >> _changeduration
+    >> _changepriority
+    >> _changetriggernumber
+    >> _changetriggeroffset
+    >> _percentreduction
+    >> _groupselectionmethod
+    >> _methodoptiontype
+    >> _methodoptionmax
+    >> _rampininterval
+    >> _rampinpercent
+    >> _rampoutinterval
+    >> _rampoutpercent
+    >> _kw_reduction;
 }
 
 /*---------------------------------------------------------------------------
@@ -646,29 +646,29 @@ void CtiLMProgramDirectGear::saveGuts(RWvostream& ostrm ) const
     RWCollectable::saveGuts( ostrm );
 
     ostrm << _paoid
-          << _gearname
-          << _gearnumber
-          << _controlmethod
-          << _methodrate
-          << _methodperiod
-          << _methodratecount
-          << _cyclerefreshrate
-          << _methodstoptype
-          << _changecondition
-          << _changeduration
-          << _changepriority
-          << _changetriggernumber
-          << _changetriggeroffset
-          << _percentreduction
-          << _groupselectionmethod
-          << _methodoptiontype
-          << _methodoptionmax
-          << _rampininterval
-          << _rampinpercent
-          << _rampoutinterval
-          << _rampoutpercent
-          << _kw_reduction;
-   
+    << _gearname
+    << _gearnumber
+    << _controlmethod
+    << _methodrate
+    << _methodperiod
+    << _methodratecount
+    << _cyclerefreshrate
+    << _methodstoptype
+    << _changecondition
+    << _changeduration
+    << _changepriority
+    << _changetriggernumber
+    << _changetriggeroffset
+    << _percentreduction
+    << _groupselectionmethod
+    << _methodoptiontype
+    << _methodoptionmax
+    << _rampininterval
+    << _rampinpercent
+    << _rampoutinterval
+    << _rampoutpercent
+    << _kw_reduction;
+
 
     return;
 }
@@ -698,7 +698,7 @@ int CtiLMProgramDirectGear::operator!=(const CtiLMProgramDirectGear& right) cons
 ---------------------------------------------------------------------------*/
 CtiLMProgramDirectGear* CtiLMProgramDirectGear::replicate() const
 {
-    return (CTIDBG_new CtiLMProgramDirectGear(*this));
+    return(CTIDBG_new CtiLMProgramDirectGear(*this));
 }
 
 /*---------------------------------------------------------------------------

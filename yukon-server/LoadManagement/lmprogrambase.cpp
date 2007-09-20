@@ -647,7 +647,7 @@ CtiLMProgramBase& CtiLMProgramBase::setProgramStatusPointId(LONG statuspointid)
 ---------------------------------------------------------------------------*/
 CtiLMProgramBase& CtiLMProgramBase::setProgramState(LONG progstate)
 {
-    if(_programstate != progstate)
+    if( _programstate != progstate )
     {
         _programstate = progstate;
         setDirty(true);
@@ -674,7 +674,7 @@ CtiLMProgramBase& CtiLMProgramBase::setReductionAnalogPointId(LONG reductionpoin
 ---------------------------------------------------------------------------*/
 CtiLMProgramBase& CtiLMProgramBase::setReductionTotal(DOUBLE reduction)
 {
-    if(_reductiontotal != reduction)
+    if( _reductiontotal != reduction )
     {
         _reductiontotal = reduction;
         setDirty(true);
@@ -689,7 +689,7 @@ CtiLMProgramBase& CtiLMProgramBase::setReductionTotal(DOUBLE reduction)
 ---------------------------------------------------------------------------*/
 CtiLMProgramBase& CtiLMProgramBase::setStartedControlling(const CtiTime& startcont)
 {
-    if(_startedcontrolling != startcont)
+    if( _startedcontrolling != startcont )
     {
         _startedcontrolling = startcont;
         setDirty(true);
@@ -704,7 +704,7 @@ CtiLMProgramBase& CtiLMProgramBase::setStartedControlling(const CtiTime& startco
 ---------------------------------------------------------------------------*/
 CtiLMProgramBase& CtiLMProgramBase::setLastControlSent(const CtiTime& lastcontrol)
 {
-    if(_lastcontrolsent != lastcontrol)
+    if( _lastcontrolsent != lastcontrol )
     {
         _lastcontrolsent = lastcontrol;
         setDirty(true);
@@ -719,7 +719,7 @@ CtiLMProgramBase& CtiLMProgramBase::setLastControlSent(const CtiTime& lastcontro
 ---------------------------------------------------------------------------*/
 CtiLMProgramBase& CtiLMProgramBase::setManualControlReceivedFlag(BOOL manualreceived)
 {
-    if(_manualcontrolreceivedflag != manualreceived)
+    if( _manualcontrolreceivedflag != manualreceived )
     {
         _manualcontrolreceivedflag = manualreceived;
         setDirty(true);
@@ -737,7 +737,7 @@ BOOL CtiLMProgramBase::isAvailableToday()
 {
     BOOL returnBool = TRUE;
 
-   CtiTime now;
+    CtiTime now;
     struct tm start_tm;
 
     now.extract(&start_tm);
@@ -767,7 +767,7 @@ BOOL CtiLMProgramBase::isWithinValidControlWindow(LONG secondsFromBeginningOfDay
 
     // Try to find the control window we are in
     CtiLMProgramControlWindow* currentControlWindow = getControlWindow(secondsFromBeginningOfDay);
-    return (currentControlWindow != NULL);
+    return(currentControlWindow != NULL);
 }
 
 
@@ -825,32 +825,32 @@ void CtiLMProgramBase::restoreGuts(RWvistream& istrm)
     CtiTime tempTime1;
     CtiTime tempTime2;
     istrm >> _paoid
-          >> _paocategory
-          >> _paoclass
-          >> _paoname
-          >> _paotype
-          >> _paodescription
-          >> _disableflag
-          >> _start_priority
-          >> _stop_priority
-          >> _controltype
-          >> _availableweekdays
-          >> _maxhoursdaily
-          >> _maxhoursmonthly
-          >> _maxhoursseasonal
-          >> _maxhoursannually
-          >> _minactivatetime
-          >> _minrestarttime/*
-                              >> _holidayscheduleid
-                              >> _seasonscheduleid*/
-          >> _programstatuspointid
-          >> _programstate
-          >> _reductionanalogpointid
-          >> _reductiontotal
-          >> tempTime1
-          >> tempTime2
-          >> _manualcontrolreceivedflag
-          >> _lmprogramcontrolwindows;
+    >> _paocategory
+    >> _paoclass
+    >> _paoname
+    >> _paotype
+    >> _paodescription
+    >> _disableflag
+    >> _start_priority
+    >> _stop_priority
+    >> _controltype
+    >> _availableweekdays
+    >> _maxhoursdaily
+    >> _maxhoursmonthly
+    >> _maxhoursseasonal
+    >> _maxhoursannually
+    >> _minactivatetime
+    >> _minrestarttime/*
+                        >> _holidayscheduleid
+                        >> _seasonscheduleid*/
+    >> _programstatuspointid
+    >> _programstate
+    >> _reductionanalogpointid
+    >> _reductiontotal
+    >> tempTime1
+    >> tempTime2
+    >> _manualcontrolreceivedflag
+    >> _lmprogramcontrolwindows;
 
     _startedcontrolling = CtiTime(tempTime1);
     _lastcontrolsent = CtiTime(tempTime2);
@@ -866,32 +866,32 @@ void CtiLMProgramBase::saveGuts(RWvostream& ostrm ) const
     RWCollectable::saveGuts( ostrm );
 
     ostrm << _paoid
-          << _paocategory
-          << _paoclass
-          << _paoname
-          << _paotype
-          << _paodescription
-          << _disableflag
-          << _start_priority
-          << _stop_priority
-          << _controltype
-          << _availableweekdays
-          << _maxhoursdaily
-          << _maxhoursmonthly
-          << _maxhoursseasonal
-          << _maxhoursannually
-          << _minactivatetime
-          << _minrestarttime/*
-                              << _holidayscheduleid
-                              << _seasonscheduleid*/
-          << _programstatuspointid
-          << _programstate
-          << _reductionanalogpointid
-          << _reductiontotal
-          << _startedcontrolling
-          << _lastcontrolsent
-          << _manualcontrolreceivedflag
-          << _lmprogramcontrolwindows;
+    << _paocategory
+    << _paoclass
+    << _paoname
+    << _paotype
+    << _paodescription
+    << _disableflag
+    << _start_priority
+    << _stop_priority
+    << _controltype
+    << _availableweekdays
+    << _maxhoursdaily
+    << _maxhoursmonthly
+    << _maxhoursseasonal
+    << _maxhoursannually
+    << _minactivatetime
+    << _minrestarttime/*
+                        << _holidayscheduleid
+                        << _seasonscheduleid*/
+    << _programstatuspointid
+    << _programstate
+    << _reductionanalogpointid
+    << _reductiontotal
+    << _startedcontrolling
+    << _lastcontrolsent
+    << _manualcontrolreceivedflag
+    << _lmprogramcontrolwindows;
 
     return;
 }
@@ -934,7 +934,7 @@ CtiLMProgramBase& CtiLMProgramBase::operator=(const CtiLMProgramBase& right)
 
         delete_vector(_lmprogramcontrolwindows);
         _lmprogramcontrolwindows.clear();
-        for(LONG i=0;i<right._lmprogramcontrolwindows.size();i++)
+        for( LONG i=0;i<right._lmprogramcontrolwindows.size();i++ )
         {
             _lmprogramcontrolwindows.push_back(((CtiLMProgramControlWindow*)right._lmprogramcontrolwindows[i])->replicate());
         }
@@ -978,7 +978,7 @@ void CtiLMProgramBase::dumpDynamicData()
 ---------------------------------------------------------------------------*/
 void CtiLMProgramBase::dumpDynamicData(RWDBConnection& conn, CtiTime& currentDateTime)
 {
-    if(!isDirty())
+    if( !isDirty() )
     {
         return;
     }
@@ -1023,7 +1023,7 @@ void CtiLMProgramBase::dumpDynamicData(RWDBConnection& conn, CtiTime& currentDat
                 << getStartedControlling()
                 << getLastControlSent()
                 << ( ( getManualControlReceivedFlag() ? "Y": "N" ) )
-                 << currentDateTime;
+                << currentDateTime;
 
 
                 if( _LM_DEBUG & LM_DEBUG_DYNAMIC_DB )
@@ -1058,16 +1058,16 @@ void CtiLMProgramBase::createControlStatusPointUpdates(CtiMultiMsg* multiDispatc
     {
         if( getProgramState() == CtiLMProgramBase::ActiveState ||
             getProgramState() == CtiLMProgramBase::FullyActiveState ||
-            getProgramState() == CtiLMProgramBase::ManualActiveState )
-        {//controlling
+            getProgramState() == CtiLMProgramBase::ManualActiveState )//controlling
+        {
             if( _lastsentstate != STATEONE )
             {
                 multiDispatchMsg->insert(CTIDBG_new CtiPointDataMsg(getProgramStatusPointId(),STATEONE,NormalQuality,StatusPointType));
                 _lastsentstate = STATEONE;
             }
         }
-        else if( _lastsentstate != STATEZERO )
-        {//not controlling
+        else if( _lastsentstate != STATEZERO )//not controlling
+        {
             multiDispatchMsg->insert(CTIDBG_new CtiPointDataMsg(getProgramStatusPointId(),STATEZERO,NormalQuality,StatusPointType));
             _lastsentstate = STATEZERO;
         }
@@ -1182,7 +1182,7 @@ CtiLMProgramControlWindow* CtiLMProgramBase::getControlWindow(LONG secondsFromBe
     //So add 24 hours worth of seconds and do an additional test
     LONG secondsFromBeginningOfYesterday = secondsFromBeginningOfDay + 24 * 60 * 60;
 
-    for(LONG i=0;i<_lmprogramcontrolwindows.size();i++)
+    for( LONG i=0;i<_lmprogramcontrolwindows.size();i++ )
     {
         CtiLMProgramControlWindow* currentControlWindow = (CtiLMProgramControlWindow*)_lmprogramcontrolwindows[i];
 
@@ -1203,33 +1203,33 @@ CtiLMProgramControlWindow* CtiLMProgramBase::getControlWindow(LONG secondsFromBe
 ----------------------------------------------------------------------------*/
 CtiLMProgramControlWindow* CtiLMProgramBase::getNextControlWindow(LONG secondsFromBeginningOfDay)
 {
-    if(_lmprogramcontrolwindows.size() == 0)
+    if( _lmprogramcontrolwindows.size() == 0 )
     {
         return 0;
     }
-    if(_lmprogramcontrolwindows.size() == 1)
-    {  //only 1 control window, it must always be the next one
-        return (CtiLMProgramControlWindow*)  _lmprogramcontrolwindows[0];
+    if( _lmprogramcontrolwindows.size() == 1 )  //only 1 control window, it must always be the next one
+    {
+        return(CtiLMProgramControlWindow*)  _lmprogramcontrolwindows[0];
     }
     CtiLMProgramControlWindow* cw = getControlWindow(secondsFromBeginningOfDay);
-    if(cw != 0)
-    {  // we are in a control window now, return the next one
-        return (CtiLMProgramControlWindow*)  _lmprogramcontrolwindows[cw->getWindowNumber()+1 % _lmprogramcontrolwindows.size()];
+    if( cw != 0 )  // we are in a control window now, return the next one
+    {
+        return(CtiLMProgramControlWindow*)  _lmprogramcontrolwindows[cw->getWindowNumber()+1 % _lmprogramcontrolwindows.size()];
     }
     else
     {
         //not in a control window now, figure which is the next one
-        for(LONG i=0;i<_lmprogramcontrolwindows.size();i++)
+        for( LONG i=0;i<_lmprogramcontrolwindows.size();i++ )
         {
             cw = (CtiLMProgramControlWindow*)_lmprogramcontrolwindows[i];
-            if(cw->getAvailableStartTime() > secondsFromBeginningOfDay)
+            if( cw->getAvailableStartTime() > secondsFromBeginningOfDay )
             {
                 return cw;
             }
         }
-        if(cw == 0)
-        { //all the control windows were earlier today, return the first one for tomorrow
-            return (CtiLMProgramControlWindow*) _lmprogramcontrolwindows[0];
+        if( cw == 0 ) //all the control windows were earlier today, return the first one for tomorrow
+        {
+            return(CtiLMProgramControlWindow*) _lmprogramcontrolwindows[0];
         }
     }
     return 0;
