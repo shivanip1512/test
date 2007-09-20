@@ -196,7 +196,7 @@ void CtiLoadManager::controlLoop()
     {
         CtiLMControlAreaStore* store = CtiLMControlAreaStore::getInstance();
     {
-        RWRecursiveLock<RWMutexLock>::LockGuard  guard(store->getMux());
+        //RWRecursiveLock<RWMutexLock>::LockGuard  guard(store->getMux());
         registerForPoints(*store->getControlAreas(CtiTime().seconds()));
         store->setReregisterForPoints(false);
     }
@@ -242,7 +242,7 @@ void CtiLoadManager::controlLoop()
         received_message = true;
         }
     {
-        RWRecursiveLock<RWMutexLock>::LockGuard  guard(store->getMux());
+        //RWRecursiveLock<RWMutexLock>::LockGuard  guard(store->getMux());
 
         CtiTime prevDateTime = currentDateTime;
         currentDateTime = CtiTime();

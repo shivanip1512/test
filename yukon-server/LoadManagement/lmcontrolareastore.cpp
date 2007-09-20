@@ -82,7 +82,7 @@ void lmprogram_delete(const LONG& program_id, CtiLMProgramBase*const& lm_program
 ---------------------------------------------------------------------------*/
 CtiLMControlAreaStore::CtiLMControlAreaStore() : _isvalid(false), _reregisterforpoints(true), _lastdbreloadtime(gInvalidCtiTime), _wascontrolareadeletedflag(false)
 {
-    RWRecursiveLock<RWMutexLock>::LockGuard  guard(mutex());
+    //RWRecursiveLock<RWMutexLock>::LockGuard  guard(mutex());
     _controlAreas = CTIDBG_new vector<CtiLMControlArea*>;
     //Start the reset thread
     RWThreadFunction func = rwMakeThreadFunction( *this, &CtiLMControlAreaStore::doResetThr );
@@ -95,7 +95,7 @@ CtiLMControlAreaStore::CtiLMControlAreaStore() : _isvalid(false), _reregisterfor
 -----------------------------------------------------------------------------*/
 CtiLMControlAreaStore::~CtiLMControlAreaStore()
 {
-    RWRecursiveLock<RWMutexLock>::LockGuard  guard(mutex());
+    //RWRecursiveLock<RWMutexLock>::LockGuard  guard(mutex());
     /*{
         CtiLockGuard<CtiLogger> logger_guard(dout);
         dout << CtiTime() << " - CtiLMControlAreaStore destructor called..." << endl;
@@ -116,12 +116,10 @@ CtiLMControlAreaStore::~CtiLMControlAreaStore()
 /*---------------------------------------------------------------------------
     getControlAreas
 
-    Returns a RWOrdered of CtiLMControlAreas
+    Returns a Vector of CtiLMControlAreas
 ---------------------------------------------------------------------------*/
 vector<CtiLMControlArea*>* CtiLMControlAreaStore::getControlAreas(ULONG secondsFrom1901)
 {
-    RWRecursiveLock<RWMutexLock>::LockGuard  guard(mutex());
-
     if( !_isvalid && secondsFrom1901 >= _lastdbreloadtime.seconds()+ 90 )
     {//is not valid and has been at 1 1/2 minutes from last db reload, so we don't do this a bunch of times in a row on multiple updates
         reset();
@@ -143,7 +141,7 @@ vector<CtiLMControlArea*>* CtiLMControlAreaStore::getControlAreas(ULONG secondsF
 ---------------------------------------------------------------------------*/
 bool CtiLMControlAreaStore::findProgram(LONG programID, CtiLMProgramBaseSPtr& program, CtiLMControlArea** controlArea)
 {
-    RWRecursiveLock<RWMutexLock>::LockGuard  guard(mutex());
+    //RWRecursiveLock<RWMutexLock>::LockGuard  guard(mutex());
     vector<CtiLMControlArea*>* controlAreas = getControlAreas(CtiTime().seconds());
     for(LONG i=0; i < controlAreas->size(); i++)
     {
@@ -191,7 +189,7 @@ CtiLMGroupPtr CtiLMControlAreaStore::findGroupByPointID(long point_id)
 ---------------------------------------------------------------------------*/
 void CtiLMControlAreaStore::dumpAllDynamicData()
 {
-    RWRecursiveLock<RWMutexLock>::LockGuard  guard(mutex());
+    //RWRecursiveLock<RWMutexLock>::LockGuard  guard(mutex());
 
     /*{
         CtiLockGuard<CtiLogger> logger_guard(dout);
@@ -315,7 +313,7 @@ void CtiLMControlAreaStore::reset()
                 if( conn.isValid() )
                 {
                 {
-                    RWRecursiveLock<RWMutexLock>::LockGuard  guard(mutex());
+                    //RWRecursiveLock<RWMutexLock>::LockGuard  guard(mutex());
                     if( _controlAreas->size() > 0 )
                     {   //Save off current data to database so that if can be loaded by new objects on reload
                         dumpAllDynamicData();
@@ -1933,7 +1931,7 @@ void CtiLMControlAreaStore::reset()
         }
 
     {
-        RWRecursiveLock<RWMutexLock>::LockGuard  guard(mutex());
+        //RWRecursiveLock<RWMutexLock>::LockGuard  guard(mutex());
 
         // Clear out our old working objects
         _all_control_area_map.clear();
@@ -2006,7 +2004,7 @@ void CtiLMControlAreaStore::reset()
 ---------------------------------------------------------------------------*/
 void CtiLMControlAreaStore::shutdown()
 {
-    RWRecursiveLock<RWMutexLock>::LockGuard  guard(mutex());
+    //RWRecursiveLock<RWMutexLock>::LockGuard  guard(mutex());
 
     /*{
         CtiLockGuard<CtiLogger> logger_guard(dout);
@@ -2084,7 +2082,7 @@ void CtiLMControlAreaStore::doResetThr()
 
             if( now.seconds() >= lastPeriodicDatabaseRefresh.seconds()+refreshrate )
             {
-                RWRecursiveLock<RWMutexLock>::LockGuard  guard(mutex());
+                //RWRecursiveLock<RWMutexLock>::LockGuard  guard(mutex());
                 if( _LM_DEBUG & LM_DEBUG_STANDARD )
                 {
                     CtiLockGuard<CtiLogger> logger_guard(dout);
@@ -2152,7 +2150,7 @@ void CtiLMControlAreaStore::deleteInstance()
 ---------------------------------------------------------------------------*/
 bool CtiLMControlAreaStore::isValid()
 {
-    RWRecursiveLock<RWMutexLock>::LockGuard  guard(mutex());
+    //RWRecursiveLock<RWMutexLock>::LockGuard  guard(mutex());
     return _isvalid;
 }
 
@@ -2163,7 +2161,7 @@ bool CtiLMControlAreaStore::isValid()
 ---------------------------------------------------------------------------*/
 void CtiLMControlAreaStore::setValid(bool valid)
 {
-    RWRecursiveLock<RWMutexLock>::LockGuard  guard(mutex());
+    //RWRecursiveLock<RWMutexLock>::LockGuard  guard(mutex());
     _isvalid = valid;
 }
 
@@ -2174,7 +2172,7 @@ void CtiLMControlAreaStore::setValid(bool valid)
 ---------------------------------------------------------------------------*/
 bool CtiLMControlAreaStore::getReregisterForPoints()
 {
-    RWRecursiveLock<RWMutexLock>::LockGuard  guard(mutex());
+    //RWRecursiveLock<RWMutexLock>::LockGuard  guard(mutex());
     return _reregisterforpoints;
 }
 
@@ -2185,19 +2183,19 @@ bool CtiLMControlAreaStore::getReregisterForPoints()
 ---------------------------------------------------------------------------*/
 void CtiLMControlAreaStore::setReregisterForPoints(bool reregister)
 {
-    RWRecursiveLock<RWMutexLock>::LockGuard  guard(mutex());
+    //RWRecursiveLock<RWMutexLock>::LockGuard  guard(mutex());
     _reregisterforpoints = reregister;
 }
 
 bool CtiLMControlAreaStore::getWasControlAreaDeletedFlag()
 {
-    RWRecursiveLock<RWMutexLock>::LockGuard  guard(mutex());
+    //RWRecursiveLock<RWMutexLock>::LockGuard  guard(mutex());
     return _wascontrolareadeletedflag;
 }
 
 void CtiLMControlAreaStore::setWasControlAreaDeletedFlag(bool wasDeleted)
 {
-    RWRecursiveLock<RWMutexLock>::LockGuard  guard(mutex());
+    //RWRecursiveLock<RWMutexLock>::LockGuard  guard(mutex());
     _wascontrolareadeletedflag = wasDeleted;
 }
 
@@ -2209,7 +2207,7 @@ void CtiLMControlAreaStore::setWasControlAreaDeletedFlag(bool wasDeleted)
 ---------------------------------------------------------------------------*/
 bool CtiLMControlAreaStore::UpdateControlAreaDisableFlagInDB(CtiLMControlArea* controlArea)
 {
-    RWRecursiveLock<RWMutexLock>::LockGuard  guard(mutex());
+    //RWRecursiveLock<RWMutexLock>::LockGuard  guard(mutex());
 
     CtiLockGuard<CtiSemaphore> cg(gDBAccessSema);
     RWDBConnection conn = getConnection();
@@ -2248,7 +2246,7 @@ bool CtiLMControlAreaStore::UpdateControlAreaDisableFlagInDB(CtiLMControlArea* c
 ---------------------------------------------------------------------------*/
 bool CtiLMControlAreaStore::UpdateProgramDisableFlagInDB(CtiLMProgramBaseSPtr program)
 {
-    RWRecursiveLock<RWMutexLock>::LockGuard  guard(mutex());
+    //RWRecursiveLock<RWMutexLock>::LockGuard  guard(mutex());
 
     CtiLockGuard<CtiSemaphore> cg(gDBAccessSema);
     RWDBConnection conn = getConnection();
@@ -2287,7 +2285,7 @@ bool CtiLMControlAreaStore::UpdateProgramDisableFlagInDB(CtiLMProgramBaseSPtr pr
 ---------------------------------------------------------------------------*/
 bool CtiLMControlAreaStore::UpdateGroupDisableFlagInDB(CtiLMGroupPtr& group)
 {
-    RWRecursiveLock<RWMutexLock>::LockGuard  guard(mutex());
+    //RWRecursiveLock<RWMutexLock>::LockGuard  guard(mutex());
 
     CtiLockGuard<CtiSemaphore> cg(gDBAccessSema);
     RWDBConnection conn = getConnection();
@@ -2326,7 +2324,7 @@ bool CtiLMControlAreaStore::UpdateGroupDisableFlagInDB(CtiLMGroupPtr& group)
 ---------------------------------------------------------------------------*/
 bool CtiLMControlAreaStore::UpdateTriggerInDB(CtiLMControlArea* controlArea, CtiLMControlAreaTrigger* trigger)
 {
-    RWRecursiveLock<RWMutexLock>::LockGuard  guard(mutex());
+    //RWRecursiveLock<RWMutexLock>::LockGuard  guard(mutex());
 
     CtiLockGuard<CtiSemaphore> cg(gDBAccessSema);
     RWDBConnection conn = getConnection();
@@ -2367,7 +2365,7 @@ bool CtiLMControlAreaStore::UpdateTriggerInDB(CtiLMControlArea* controlArea, Cti
 ---------------------------------------------------------------------------*/
 CtiLMGroupPtr CtiLMControlAreaStore::getLMGroup(long groupID)
 {
-    RWRecursiveLock<RWMutexLock>::LockGuard  guard(mutex());
+    //RWRecursiveLock<RWMutexLock>::LockGuard  guard(mutex());
     CtiLMGroupPtr retVal;
 
     typedef map< long, CtiLMGroupPtr >::iterator GroupMapIter;
@@ -2389,7 +2387,7 @@ CtiLMGroupPtr CtiLMControlAreaStore::getLMGroup(long groupID)
 ---------------------------------------------------------------------------*/
 CtiLMProgramBaseSPtr CtiLMControlAreaStore::getLMProgram(long programID)
 {
-    RWRecursiveLock<RWMutexLock>::LockGuard  guard(mutex());
+    //RWRecursiveLock<RWMutexLock>::LockGuard  guard(mutex());
     CtiLMProgramBaseSPtr retVal;
 
     typedef map< long, CtiLMProgramBaseSPtr >::iterator ProgramMapIter;
@@ -2411,7 +2409,7 @@ CtiLMProgramBaseSPtr CtiLMControlAreaStore::getLMProgram(long programID)
 ---------------------------------------------------------------------------*/
 CtiLMControlArea* CtiLMControlAreaStore::getLMControlArea(long controlAreaID)
 {
-    RWRecursiveLock<RWMutexLock>::LockGuard  guard(mutex());
+    //RWRecursiveLock<RWMutexLock>::LockGuard  guard(mutex());
     CtiLMControlArea* retVal = NULL;
 
     typedef map< long, CtiLMControlArea* >::iterator ControlAreaMapIter;
@@ -2434,7 +2432,7 @@ CtiLMControlArea* CtiLMControlAreaStore::getLMControlArea(long controlAreaID)
 ---------------------------------------------------------------------------*/
 bool CtiLMControlAreaStore::checkMidnightDefaultsForReset()
 {
-    RWRecursiveLock<RWMutexLock>::LockGuard  guard(mutex());
+    //RWRecursiveLock<RWMutexLock>::LockGuard  guard(mutex());
 
     bool returnBool = false;
     vector<CtiLMControlArea*>& controlAreas = *getControlAreas(CtiTime().seconds());

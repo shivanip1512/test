@@ -229,7 +229,7 @@ void CtiLMService::Run()
 
             CtiLMControlAreaStore* store = CtiLMControlAreaStore::getInstance();
         {
-            RWRecursiveLock<RWMutexLock>::LockGuard  guard(store->getMux());
+            //RWRecursiveLock<RWMutexLock>::LockGuard  guard(store->getMux());
             vector<CtiLMControlArea*>* controlAreas = store->getControlAreas(CtiTime().seconds());
 
 
