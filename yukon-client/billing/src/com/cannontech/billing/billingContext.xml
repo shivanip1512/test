@@ -5,9 +5,6 @@
 	xsi:schemaLocation="
 http://www.springframework.org/schema/beans http://www.springframework.org/schema/beans/spring-beans-2.0.xsd
 http://www.springframework.org/schema/util http://www.springframework.org/schema/util/spring-util-2.0.xsd">
-
-<beans>
-<description>This file defines beans that live under the com.cannontech.billing package.</description>
   
   <bean id="dynamicBillingFormatter" class="com.cannontech.billing.format.dynamic.DynamicBillingFormatter">
   	<property name="dynamicBillingFileDao" ref="dynamicBillingFileDao" />
