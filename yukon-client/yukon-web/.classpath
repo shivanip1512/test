@@ -12,7 +12,6 @@
 	<classpathentry kind="src" path="/tdc"/>
 	<classpathentry kind="src" path="/multispeak"/>
 	<classpathentry kind="src" path="/tools"/>
-	<classpathentry combineaccessrules="false" kind="src" path="/foreign"/>
 	<classpathentry combineaccessrules="false" kind="src" path="/billing"/>
 	<classpathentry kind="con" path="org.eclipse.jdt.launching.JRE_CONTAINER"/>
 	<classpathentry kind="con" path="org.eclipse.jdt.junit.JUNIT_CONTAINER/3.8.1"/>

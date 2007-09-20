@@ -19,7 +19,7 @@
 	<classpathentry path="/third-party/mx4j.jar" kind="lib"/>
 	<classpathentry path="/third-party/commons-lang-2.3.jar" exported="true" kind="lib"/>
 	<classpathentry path="/third-party/ecs-1.4.2.jar" kind="lib"/>
-	<classpathentry sourcepath="Z:/java/Third-Party Sources/jdom-1.0.zip" path="/third-party/jdom.jar" kind="lib"/>
+	<classpathentry path="/third-party/jdom.jar" kind="lib" sourcepath="Z:/java/Third-Party Sources/jdom-1.0.zip" exported="true"/>
 	<classpathentry path="/third-party/mx4j-tools.jar" kind="lib"/>
 	<classpathentry path="/third-party/ejb3-persistence.jar" kind="lib"/>
 	<classpathentry sourcepath="Z:/java/Third-Party Sources/hibernate-3.2.1.ga.zip" path="/third-party/hibernate3.jar" kind="lib"/>

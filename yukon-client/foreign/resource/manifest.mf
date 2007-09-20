@@ -1,26 +1,4 @@
 Manifest-Version: 1.0
 Main-Class: 
 Class-Path:  
- ./ 
- jradius-client.jar 
- common.jar 
- yukonappserver.jar 
- rwav.jar 
- batik.jar 
- junit.jar 
- jtds.jar 
- SqlServer.jar 
- classes12.jar 
- axis.jar 
- activation.jar 
- commons-discovery.jar 
- commons-httpclient.jar 
- jaxrpc.jar 
- wsdl4j.jar 
- commons-fileupload.jar 
- mail.jar 
- jaxm-api.jar 
- saaj.jar 
- ../log/ 
- ../export/ 
 

@@ -1058,6 +1058,7 @@ private void initialize() {
 	{
 		System.setProperty("cti.app.name", "Billing");		
         CTILogger.info("Billing starting...");
+        YukonSpringHook.setDefaultContext("com.cannontech.context.billing");
 		javax.swing.UIManager.setLookAndFeel( javax.swing.UIManager.getSystemLookAndFeelClassName());	
 		final javax.swing.JFrame frame = new javax.swing.JFrame();
 		

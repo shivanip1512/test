@@ -2208,6 +2208,7 @@ public static void main(String[] args) {
 		javax.swing.UIManager.setLookAndFeel(javax.swing.UIManager.getSystemLookAndFeelClassName());
         System.setProperty("cti.app.name", "DBEditor");
         CTILogger.info("DBEditor starting...");
+        YukonSpringHook.setDefaultContext("com.cannontech.context.dbeditor");
 
 		final javax.swing.JFrame f = new javax.swing.JFrame("Yukon Database Editor [Not Connected to Dispatch]");
 		f.setDefaultCloseOperation( WindowConstants.DO_NOTHING_ON_CLOSE );

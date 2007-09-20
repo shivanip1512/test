@@ -1,4 +1,4 @@
-package com.cannontech.foreign.itron.client;
+package com.cannontech.billing.format.itron;
 
 import java.net.URL;
 

@@ -1,4 +1,4 @@
-package com.cannontech.foreign.itron.client;
+package com.cannontech.billing.format.itron;
 
 import java.io.IOException;
 import java.io.OutputStream;
@@ -8,8 +8,6 @@ import org.jdom.Document;
 
 import com.cannontech.billing.device.base.BillableDevice;
 import com.cannontech.billing.format.BillingFormatterBase;
-import com.cannontech.foreign.itron.util.ItronXmlBuilder;
-import com.cannontech.foreign.itron.util.ItronXmlBuilderImpl;
 
 public class ItronClientHandler extends BillingFormatterBase {
 	private ItronClient client;

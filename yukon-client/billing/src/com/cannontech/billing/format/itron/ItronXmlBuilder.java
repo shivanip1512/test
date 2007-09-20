@@ -1,4 +1,4 @@
-package com.cannontech.foreign.itron.util;
+package com.cannontech.billing.format.itron;
 
 import java.util.List;
 

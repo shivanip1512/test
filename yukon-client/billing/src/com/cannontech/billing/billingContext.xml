@@ -1,5 +1,10 @@
 <?xml version="1.0" encoding="UTF-8"?>
-<!DOCTYPE beans PUBLIC "-//SPRING//DTD BEAN//EN" "http://www.springframework.org/dtd/spring-beans.dtd">
+<beans xmlns="http://www.springframework.org/schema/beans"
+	xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+	xmlns:util="http://www.springframework.org/schema/util"
+	xsi:schemaLocation="
+http://www.springframework.org/schema/beans http://www.springframework.org/schema/beans/spring-beans-2.0.xsd
+http://www.springframework.org/schema/util http://www.springframework.org/schema/util/spring-util-2.0.xsd">
 
 <beans>
 <description>This file defines beans that live under the com.cannontech.billing package.</description>
@@ -7,5 +12,22 @@
   <bean id="dynamicBillingFormatter" class="com.cannontech.billing.format.dynamic.DynamicBillingFormatter">
   	<property name="dynamicBillingFileDao" ref="dynamicBillingFileDao" />
   </bean>
+
+	<bean id="itronClient"
+		class="com.cannontech.billing.format.itron.ItronClientImpl">
+		<property name="endPoint">
+			<value>http://itron.com/webservices/</value>
+		</property>
+		<property name="operationName">
+			<value>Import</value>
+		</property>
+		<property name="service">
+			<bean class="org.apache.axis.client.Service" />
+		</property>
+	</bean>
+	
+	<bean id="itronClientHandler" class="com.cannontech.billing.format.itron.ItronClientHandler">
+		<property name="itronClient"><ref bean="itronClient"/></property>
+	</bean>
   
 </beans>

@@ -1,0 +1,18 @@
+<?xml version="1.0" encoding="UTF-8"?>
+ <!DOCTYPE beans PUBLIC "-//SPRING//DTD BEAN//EN" "http://www.springframework.org/dtd/spring-beans.dtd">
+ 
+ <beans>
+   <bean id="com.cannontech.context.tools" 
+        class="com.cannontech.spring.CannonClassPathXmlApplicationContext"
+        lazy-init="true">
+     <constructor-arg>
+       <list>
+         <value>com/cannontech/tools/toolsContext.xml</value>
+       </list>
+     </constructor-arg>
+     <constructor-arg>
+       <ref bean="com.cannontech.context.common"/>
+     </constructor-arg>
+   </bean>    
+   
+ </beans>

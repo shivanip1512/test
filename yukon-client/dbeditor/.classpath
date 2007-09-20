@@ -4,7 +4,6 @@
 	<classpathentry exported="true" kind="src" path="/common"/>
 	<classpathentry kind="src" path="/yukonappserver"/>
 	<classpathentry kind="src" path="/billing"/>
-	<classpathentry combineaccessrules="false" kind="src" path="/foreign"/>
 	<classpathentry kind="con" path="org.eclipse.jdt.launching.JRE_CONTAINER"/>
 	<classpathentry kind="lib" path="/third-party/SqlServer.jar"/>
 	<classpathentry kind="lib" path="/third-party/acme.jar"/>

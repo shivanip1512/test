@@ -3,86 +3,39 @@
  
  <beans>
 <!-- The application context files that are loaded by tomcat -->
-   <bean id="com.cannontech.context.web" 
+   <bean id="com.cannontech.context.common" 
         class="com.cannontech.spring.CannonClassPathXmlApplicationContext"
         lazy-init="true">
      <constructor-arg>
        <list>
-         <value>com/cannontech/mainContext.xml</value>
-         <value>com/cannontech/billing/billingContext.xml</value>
-         <value>com/cannontech/core/dao/applicationContext.xml</value>
-         <value>com/cannontech/core/dynamic/applicationContext.xml</value>
-         <value>com/cannontech/core/service/applicationContext.xml</value>
-         <value>com/cannontech/core/authorization/applicationContext.xml</value>
-         <value>com/cannontech/hibernate/hibernateContext.xml</value>
-         <value>com/cannontech/cc/applicationContext.xml</value>
-         <value>com/cannontech/multispeak/client/applicationContext.xml</value>
-         <value>com/cannontech/loadcontrol/applicationContext.xml</value>
-         <value>com/cannontech/common/search/searchContext.xml</value>
-         <value>com/cannontech/common/device/deviceContext.xml</value>
-         <value>com/cannontech/common/device/deviceContext-server.xml</value>
-         <value>com/cannontech/common/chart/chartContext.xml</value>
-         <value>com/cannontech/core/authentication/authContext.xml</value>
-         <value>com/cannontech/amr/amrContext.xml</value>
-         <value>com/cannontech/amr/amrContext-client.xml</value>
-         <value>com/cannontech/foreign/itron/applicationContext.xml</value>
-         <value>com/cannontech/cbc/cbcContext.xml</value>
-         <value>com/cannontech/stars/starsContext.xml</value>
+			<value>com/cannontech/mainContext.xml</value>
+			<value>com/cannontech/amr/amrContext-client.xml</value>
+			<value>com/cannontech/amr/amrContext.xml</value>
+			<value>com/cannontech/common/device/deviceContext.xml</value>
+			<value>com/cannontech/core/authentication/authContext.xml</value>
+			<value>com/cannontech/core/authorization/applicationContext.xml</value>
+			<value>com/cannontech/core/dao/applicationContext.xml</value>
+			<value>com/cannontech/core/dynamic/applicationContext.xml</value>
        </list>
      </constructor-arg>
    </bean>
     
-<!-- These are loaded by the standalone swing clients -->
-    <bean id="com.cannontech.context.client" 
-        class="com.cannontech.spring.CannonClassPathXmlApplicationContext"
-        lazy-init="true">
-     <constructor-arg>
-       <list>
-         <value>com/cannontech/amr/amrContext-client.xml</value>
-         <value>com/cannontech/mainContext.xml</value>
-         <value>com/cannontech/billing/billingContext.xml</value>
-		 <value>com/cannontech/core/authorization/applicationContext.xml</value>
-         <value>com/cannontech/core/authentication/authContext.xml</value>
-         <value>com/cannontech/core/dao/applicationContext.xml</value>
-         <value>com/cannontech/core/dynamic/applicationContext.xml</value>
-         <value>com/cannontech/common/device/deviceContext.xml</value>
-         <value>com/cannontech/amr/amrContext.xml</value>
-         <value>com/cannontech/common/device/deviceContext-server.xml</value>
-         <value>com/cannontech/foreign/itron/applicationContext.xml</value>
-       </list>
-     </constructor-arg>
-   </bean>
+   <alias alias="com.cannontech.context.client" name="com.cannontech.context.common"/>
    
    <bean id="com.cannontech.context.services" 
         class="com.cannontech.spring.CannonClassPathXmlApplicationContext"
         lazy-init="true">
      <constructor-arg>
        <list>
-         <value>com/cannontech/mainContext.xml</value>
-         <value>com/cannontech/core/dao/applicationContext.xml</value>
-         <value>com/cannontech/core/dynamic/applicationContext.xml</value>
          <value>com/cannontech/hibernate/hibernateContext.xml</value>
          <value>com/cannontech/cc/applicationContext.xml</value>
          <value>com/cannontech/notif/applicationContext.xml</value>
          <value>com/cannontech/loadcontrol/applicationContext.xml</value>
-         <value>com/cannontech/common/device/deviceContext.xml</value>
-         <value>com/cannontech/core/authentication/authContext.xml</value>
        </list>
      </constructor-arg>
-   </bean>
-   
-   <bean id="com.cannontech.context.tools" 
-        class="com.cannontech.spring.CannonClassPathXmlApplicationContext"
-        lazy-init="true">
      <constructor-arg>
-       <list>
-         <value>com/cannontech/mainContext.xml</value>
-         <value>com/cannontech/core/dao/applicationContext.xml</value>
-         <value>com/cannontech/core/dynamic/applicationContext.xml</value>
-         <value>com/cannontech/core/authentication/authContext.xml</value>
-         <value>com/cannontech/tools/toolsContext.xml</value>
-       </list>
+       <ref bean="com.cannontech.context.common"/> <!-- this is the parent -->
      </constructor-arg>
-   </bean>    
+   </bean> 
    
  </beans>

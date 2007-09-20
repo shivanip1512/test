@@ -27,6 +27,9 @@
             <attribute name="Yukon-Version" value="${yukon.build.version}"/>
             <attribute name="Yukon-Details" value="${yukon.build.details}"/>
         </manifest>
+	    <fileset dir="src">
+			<include name="**/*.xml"/>
+		</fileset>   	
 	    <fileset dir="resource">
 			<include name="**/*.gif"/>
 	 		<include name="**/*.ico"/>       	

@@ -1,0 +1,19 @@
+<?xml version="1.0" encoding="UTF-8"?>
+ <!DOCTYPE beans PUBLIC "-//SPRING//DTD BEAN//EN" "http://www.springframework.org/dtd/spring-beans.dtd">
+ 
+ <beans>
+<!-- The application context files that are loaded by tomcat -->
+   <bean id="com.cannontech.context.billing" 
+        class="com.cannontech.spring.CannonClassPathXmlApplicationContext"
+        lazy-init="true">
+     <constructor-arg>
+       <list>
+			<value>com/cannontech/billing/billingContext.xml</value>
+       </list>
+     </constructor-arg>
+     <constructor-arg>
+       <ref bean="com.cannontech.context.common"/> <!-- this is the parent -->
+     </constructor-arg>
+   </bean>
+    
+ </beans>

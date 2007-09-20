@@ -19,6 +19,7 @@ import com.cannontech.billing.format.BillingFormatterFactory;
 import com.cannontech.clientutils.CTILogger;
 import com.cannontech.common.device.groups.service.FixedDeviceGroups;
 import com.cannontech.common.util.CtiUtilities;
+import com.cannontech.spring.YukonSpringHook;
 import com.cannontech.util.ServletUtil;
 
 public class BillingFile extends java.util.Observable implements Runnable
@@ -44,6 +45,10 @@ public class BillingFile extends java.util.Observable implements Runnable
 	{
 		try
 		{
+            System.setProperty("cti.app.name", "BillingFile"); 
+            CTILogger.info("BillingFile starting...");
+            YukonSpringHook.setDefaultContext("com.cannontech.context.billing");
+
 			char argDel = '=';
 			BillingFile billingFile = new BillingFile();
 			

@@ -1,0 +1,27 @@
+<?xml version="1.0" encoding="UTF-8"?>
+ <!DOCTYPE beans PUBLIC "-//SPRING//DTD BEAN//EN" "http://www.springframework.org/dtd/spring-beans.dtd">
+ 
+ <beans>
+<!-- The application context files that are loaded by tomcat -->
+   <bean id="com.cannontech.context.web" 
+        class="com.cannontech.spring.CannonClassPathXmlApplicationContext"
+        lazy-init="true">
+     <constructor-arg>
+       <list>
+			<value>com/cannontech/cc/applicationContext.xml</value>
+			<value>com/cannontech/common/chart/chartContext.xml</value>
+			<value>com/cannontech/common/search/searchContext.xml</value>
+			<value>com/cannontech/core/service/applicationContext.xml</value>
+			<value>com/cannontech/hibernate/hibernateContext.xml</value>
+			<value>com/cannontech/loadcontrol/applicationContext.xml</value>
+			<value>com/cannontech/multispeak/client/applicationContext.xml</value>
+			<value>com/cannontech/common/device/deviceContext-server.xml</value>
+			<value>com/cannontech/billing/billingContext.xml</value>
+       </list>
+     </constructor-arg>
+     <constructor-arg>
+       <ref bean="com.cannontech.context.common"/> <!-- this is the parent -->
+     </constructor-arg>
+   </bean>
+    
+ </beans>

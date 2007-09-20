@@ -1,11 +1,10 @@
-package com.cannontech.foreign.itron.util;
+package com.cannontech.billing.format.itron;
 
+import java.sql.Timestamp;
 import java.text.DateFormat;
 import java.text.SimpleDateFormat;
 import java.util.List;
 import java.util.Locale;
-
-import java.sql.Timestamp;
 
 import org.jdom.Document;
 import org.jdom.Element;

@@ -19,7 +19,6 @@
         <webClassPathEntry>/dbeditor/bin</webClassPathEntry>
         <webClassPathEntry>/dbeditor/resource</webClassPathEntry>
         <webClassPathEntry>/esub/bin</webClassPathEntry>
-        <webClassPathEntry>/foreign/bin</webClassPathEntry>
         <webClassPathEntry>/loadcontrol/bin</webClassPathEntry>
         <webClassPathEntry>/macs/bin</webClassPathEntry>
         <webClassPathEntry>/multispeak/bin</webClassPathEntry>

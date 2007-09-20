@@ -2,12 +2,25 @@ Manifest-Version: 1.0
 Main-Class: com.cannontech.billing.mainprograms.BillingFileFormatPanel
 Class-Path: ./ 
  common.jar 
- rwav.jar 
  yukonappserver.jar 
- jcpagelayout450K.jar 
- jcfield401K.jar 
- classes12.jar 
- jtds.jar 
  SqlServer.jar 
- ../log/ 
+ activation.jar 
+ axis.jar 
+ batik.jar 
+ classes12.jar 
+ commons-discovery.jar 
+ commons-fileupload.jar 
+ commons-httpclient.jar 
+ jaxm-api.jar 
+ jaxrpc.jar 
+ jcfield401K.jar 
+ jcpagelayout450K.jar 
+ jradius-client.jar 
+ jtds.jar 
+ junit.jar 
+ mail.jar 
+ rwav.jar 
+ saaj.jar 
+ wsdl4j.jar 
  ../export/ 
+ ../log/ 
