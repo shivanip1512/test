@@ -113,7 +113,7 @@ public void doInit(ServletConfig config) throws ServletException
 	conn.connectWithoutWait();
 
 	// Create a load control cache
-	cache = new LoadcontrolCache();
+	cache = new LoadcontrolCache(conn);
 	conn.addObserver(cache);
 
 	// Add this to the context so other servlets can access the connection

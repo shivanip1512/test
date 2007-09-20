@@ -55,7 +55,7 @@ public class LoadcontrolCache implements java.util.Observer {
 	private static int normalRefreshRate = 60 * 5 * 1000; //5 minutes
 	private ScheduledExecutor refreshTimer = YukonSpringHook.getGlobalExecutor();
 	
-	private LoadControlClientConnection lcConn = null;
+	private final LoadControlClientConnection lcConn;
 	 
 	private String dbAlias = "yukon";
 
@@ -77,9 +77,10 @@ public class LoadcontrolCache implements java.util.Observer {
 /**
  * LoadcontrolCache constructor comment.
  */
-public LoadcontrolCache() {
-	super();
-	Runnable timerTask = new Runnable() {
+public LoadcontrolCache(final LoadControlClientConnection lcConn) {
+    this.lcConn = lcConn;
+    
+    Runnable timerTask = new Runnable() {
 	    public void run() {
 	        refresh();
 	    }
