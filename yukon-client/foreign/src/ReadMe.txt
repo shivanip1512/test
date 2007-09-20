@@ -1,0 +1,1 @@
+To prevent the src folder from being deleted.
