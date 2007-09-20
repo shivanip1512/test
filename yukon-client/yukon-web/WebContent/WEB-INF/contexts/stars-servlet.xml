@@ -47,6 +47,7 @@
 	
 	<bean id="workOrderManager" class="com.cannontech.web.stars.StarsWorkOrderActionController">
 		<property name="prefix"><value>workorder</value></property>
+        <property name="defaultBeanName"><value>Default</value></property>
 		<property name="switchContextService" ref="switchContextService"/>
 	</bean>
 

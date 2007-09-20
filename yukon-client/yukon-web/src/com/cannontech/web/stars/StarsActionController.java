@@ -23,7 +23,7 @@ public class StarsActionController implements Controller,BeanFactoryAware {
         final String action = (isMultiPart) ?
                 ServletUtils.getFormField(ServletUtils.getItemList(request), "action") : ServletRequestUtils.getStringParameter(request, "action");
         
-        final String beanName = (action != null) ? prefix + action : prefix + defaultBeanName;
+        final String beanName = (isEmpty(action)) ? prefix + defaultBeanName : prefix + action;
 
         Controller actionController = (Controller) beanFactory.getBean(beanName, Controller.class);
         actionController.handleRequest(request, response);
@@ -40,6 +40,11 @@ public class StarsActionController implements Controller,BeanFactoryAware {
     
     public void setDefaultBeanName(String defaultBeanName) {
         this.defaultBeanName = defaultBeanName;
+    }
+    
+    private boolean isEmpty(final String action) {
+        boolean result = (action == null || action.equals("") || action.equalsIgnoreCase("null"));
+        return result;
     }
     
 }
