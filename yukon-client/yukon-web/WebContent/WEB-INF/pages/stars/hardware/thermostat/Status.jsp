@@ -9,7 +9,7 @@
 
 <center>
 	<div id="main">
-		<form id="statusform" method="POST" action="${url}?view">
+		<form id="statusform" method="POST" action="${url}">
 			<table cellspacing="10">
 				<tr>
 					<td valign="top">
@@ -29,7 +29,7 @@
 								<input type="hidden" name="serialnumber" value="${serialNumber}"/>
 							</c:when>
 							<c:otherwise>
-								<input type="submit" name="ok" value="Ok"/>
+								<input type="submit" name="view" value="Ok"/>
 							</c:otherwise>
 						</c:choose>
 					</td>

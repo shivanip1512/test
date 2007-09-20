@@ -1,3 +1,4 @@
+<%@ taglib uri="http://java.sun.com/jsp/jstl/core" prefix="c"%>
 <c:url var="url" value="/spring/stars/hardware/thermostatactivation" />
 
 <html>
@@ -11,7 +12,7 @@
 			<h2>
 				Thermostat Activation
 			</h2>
-			<form id="activateform" method="POST" action="${url}?activate"
+			<form id="activateform" method="POST" action="${url}"
 				style="margin: 0px; padding: 0px;">
 				<table cellspacing="5">
 					<tr align="center">
@@ -32,7 +33,7 @@
 					<tr>
 						<td />
 						<td align="right">
-							<input type="submit" name="Activate" value="Activate" />
+							<input type="submit" name="activate" value="Activate" />
 						</td>
 					</tr>
 				</table>

@@ -66,9 +66,10 @@
 	
 	<bean id="methodNameResolver"
 		class="org.springframework.web.servlet.mvc.multiaction.ParameterMethodNameResolver">
+        <property name="defaultMethodName" value="view"/>
 		<property name="methodParamNames">
 			<list>
-				<value>view</value>
+                <value>view</value>
 				<value>activate</value>
 			</list>
 		</property>
