@@ -493,6 +493,7 @@ void CtiLoadManager::controlLoop()
             {
                 typedef set<long>::iterator ChangeListIter;
                 CtiMultiMsg *multi = CTIDBG_new CtiMultiMsg();
+                int tempCount = 0;
                 
                 for( ChangeListIter changeIter = _CHANGED_GROUP_LIST.begin(); changeIter != _CHANGED_GROUP_LIST.end(); changeIter++ )
                 {
@@ -501,6 +502,7 @@ void CtiLoadManager::controlLoop()
                     if( tempGroup )
                     {
                         multi->insert(CTIDBG_new CtiLMDynamicGroupDataMsg(tempGroup));
+                        tempCount++;
                     }
                     else
                     {
@@ -509,6 +511,13 @@ void CtiLoadManager::controlLoop()
                     }
                 }
 
+                if( _LM_DEBUG & LM_DEBUG_CLIENT && tempCount > 0 )
+                {
+                    CtiLockGuard<CtiLogger> dout_guard(dout);
+                    dout << CtiTime() << "Found " << tempCount << " dirty dynamic groups to send to clients" << endl;
+                }
+                tempCount = 0;
+
                 for( changeIter = _CHANGED_PROGRAM_LIST.begin(); changeIter != _CHANGED_PROGRAM_LIST.end(); changeIter++ )
                 {
                     CtiLMProgramBaseSPtr tempProgram = store->getLMProgram(*changeIter);
@@ -516,6 +525,7 @@ void CtiLoadManager::controlLoop()
                     if( tempProgram )
                     {
                         multi->insert(CTIDBG_new CtiLMDynamicProgramDataMsg(boost::static_pointer_cast<CtiLMProgramDirect>(tempProgram)));
+                        tempCount++;
                     }
                     else
                     {
@@ -523,6 +533,12 @@ void CtiLoadManager::controlLoop()
                 	    dout << CtiTime() << " No Program Found for program in change list with id: " << *changeIter << " " << __FILE__ << " at:" << __LINE__ << endl; 
                     }
                 }
+                if( _LM_DEBUG & LM_DEBUG_CLIENT && tempCount > 0 )
+                {
+                    CtiLockGuard<CtiLogger> dout_guard(dout);
+                    dout << CtiTime() << "Found " << tempCount << " dirty programs to send to clients" << endl;
+                }
+                tempCount = 0;
 
                 for( changeIter = _CHANGED_CONTROL_AREA_LIST.begin(); changeIter != _CHANGED_CONTROL_AREA_LIST.end(); changeIter++ )
                 {
@@ -531,12 +547,18 @@ void CtiLoadManager::controlLoop()
                     if( tempControlArea != NULL )
                     {
                         multi->insert(CTIDBG_new CtiLMDynamicControlAreaDataMsg(tempControlArea));
+                        tempCount++;
                     }
                     else
                     {
                 	    CtiLockGuard<CtiLogger> logger_guard(dout); 
                 	    dout << CtiTime() << " No Control Area Found for id in change list ID: " << *changeIter << " " << __FILE__ << " at:" << __LINE__ << endl; 
                     }
+                }
+                if( _LM_DEBUG & LM_DEBUG_CLIENT && tempCount > 0 )
+                {
+                    CtiLockGuard<CtiLogger> dout_guard(dout);
+                    dout << CtiTime() << "Found " << tempCount << " dirty control areas to send to clients" << endl;
                 }
 
                 if( multi->getCount() > 0 )
@@ -553,44 +575,6 @@ void CtiLoadManager::controlLoop()
                 _CHANGED_CONTROL_AREA_LIST.clear();
                 _CHANGED_PROGRAM_LIST.clear();
                 _CHANGED_GROUP_LIST.clear();
-                /*for(LONG i=0;i<controlAreas.size();i++)
-                {
-                    CtiLMControlArea* currentControlArea = (CtiLMControlArea*)controlAreas[i];
-        
-                    if( currentControlArea->getUpdatedFlag() )
-                    {
-                        currentControlArea->createControlStatusPointUpdates(multiDispatchMsg);
-                        controlAreaChanges.push_back(currentControlArea);
-                        currentControlArea->setUpdatedFlag(FALSE);
-                    }
-                }
-
-                if( _LM_DEBUG & LM_DEBUG_CLIENT )
-                {
-                    CtiLockGuard<CtiLogger> dout_guard(dout);
-                    dout << CtiTime() << "Found " << controlAreaChanges.size() << " dirty control areas to send to clients" << endl;
-                }
-        
-                if(controlAreaChanges.size() > 0)
-                {
-                    CtiLMExecutorFactory f;
-                    CtiLMExecutor* executor = f.createExecutor(CTIDBG_new CtiLMControlAreaMsg(controlAreaChanges));
-
-                    try
-                    {
-                        executor->Execute();
-                    }
-                    catch(...)
-                    {
-                        CtiLockGuard<CtiLogger> logger_guard(dout);
-                        dout << CtiTime() << " - Caught '...' in: " << __FILE__ << " at:" << __LINE__ << endl;
-                    }
-                    delete executor;
-                
-                    store->dumpAllDynamicData();
-                    last_ca_msg_sent = now;
-                    controlAreaChanges.clear();// TS Add Destroy? was not there before
-                }*/
             }
         }
         catch(...)
