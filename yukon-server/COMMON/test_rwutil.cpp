@@ -79,13 +79,13 @@ BOOST_AUTO_UNIT_TEST(test_to_boost_ptime)
     typedef boost::date_time::c_local_adjustor<ptime> local_adj;
     RWDBDateTime rw_date_time;
     ptime boost_time = to_boost_ptime(rw_date_time);
+    boost_time = local_adj::utc_to_local(boost_time);
 
     date d = boost_time.date();
     BOOST_CHECK_EQUAL( rw_date_time.dayOfMonth(), d.day() );
     BOOST_CHECK_EQUAL( rw_date_time.month(), d.month() );
     BOOST_CHECK_EQUAL( rw_date_time.year(), d.year() );
 
-    boost_time = local_adj::utc_to_local(boost_time);
     time_duration td = boost_time.time_of_day();
     std::cout << "Boost, rwdate times: " <<  to_simple_string(boost_time) << ", " << rw_date_time.asString() << std::endl;
     BOOST_CHECK_EQUAL( rw_date_time.hour(), td.hours() );
