@@ -50,3 +50,9 @@ These insert statements already exist, but the formatType values are being chang
 insert into billingfileformats values( 13, 'NISC',1);
 insert into billingfileformats values( -19, ' NISC No Limit kWh ',1);
 /*** */
+
+
+/** Head only capcontrol changes  -Thain 20070921 */
+alter table ccfeederbanklist alter column controlorder float;
+alter table ccfeederbanklist alter column closeorder float;
+alter table ccfeederbanklist alter column triporder float;
