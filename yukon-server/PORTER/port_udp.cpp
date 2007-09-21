@@ -7,8 +7,8 @@
 * Author: Matt Fisher
 *
 * CVS KEYWORDS:
-* REVISION     :  $Revision: 1.12 $
-* DATE         :  $Date: 2007/09/12 20:54:09 $
+* REVISION     :  $Revision: 1.13 $
+* DATE         :  $Date: 2007/09/21 02:03:52 $
 *
 * Copyright (c) 2004 Cannon Technologies Inc. All rights reserved.
 *-----------------------------------------------------------------------------*/
@@ -990,6 +990,8 @@ void UDPInterface::processInbounds( void )
                             _devices_idle &= dr->device->isTransactionComplete() & dr->work.outbound.empty() & dr->work.inbound.empty();
                         }
                     }
+
+                    break;
                 }
     
                 case TYPE_FCI:
@@ -1406,6 +1408,8 @@ void UDPInterface::processInbounds( void )
 
                         dr->work.inbound.pop();
                     }
+
+                    break;
                 }
     
             }
