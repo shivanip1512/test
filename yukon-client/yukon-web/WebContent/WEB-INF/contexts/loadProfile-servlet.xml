@@ -33,5 +33,6 @@
         <property name="yukonUserDao" ref="yukonUserDao"/>
         <property name="contactDao" ref="contactDao"/>
         <property name="deviceDao" ref="deviceDao"/>
+        <property name="dateFormattingService" ref="dateFormattingService"/>
     </bean>
 </beans>

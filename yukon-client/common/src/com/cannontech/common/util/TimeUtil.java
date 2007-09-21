@@ -1,17 +1,10 @@
 package com.cannontech.common.util;
 
-import java.text.DateFormat;
-import java.text.DateFormatSymbols;
 import java.text.DecimalFormat;
-import java.text.ParseException;
-import java.text.SimpleDateFormat;
 import java.util.Calendar;
 import java.util.Date;
-import java.util.TimeZone;
 
-import org.apache.commons.lang.StringUtils;
 import org.apache.commons.lang.Validate;
-import org.apache.commons.lang.time.DateUtils;
 
 /**
  * This type really needs to be looked at before it is used
@@ -229,110 +222,6 @@ public static int differenceMinutes(Date from, Date to) {
     int millisPerMinute = (60 * 1000);
     return (int) (diffMillis / millisPerMinute);
 }
-
-    static DateFormatSymbols apSymbols;
-    static {
-        apSymbols = new DateFormatSymbols();
-        apSymbols.setAmPmStrings(new String[] {"A","P"});
-    }
-    private static DateFormat dateTimeFormat[] = {
-        new SimpleDateFormat("MM/dd/yy hh:mma", apSymbols),
-        new SimpleDateFormat("MM/dd/yyyy hh:mma", apSymbols),
-        new SimpleDateFormat("MM/dd/yy hh:mma"),
-        new SimpleDateFormat("MM/dd/yyyy hh:mma"),
-        new SimpleDateFormat("MM/dd/yy hh:mm a", apSymbols),
-        new SimpleDateFormat("MM/dd/yyyy hh:mm a", apSymbols),
-        new SimpleDateFormat("MM/dd/yy hh:mm a"),
-        new SimpleDateFormat("MM/dd/yyyy hh:mm a"),
-        new SimpleDateFormat("MM/dd/yy HH:mm"),
-        new SimpleDateFormat("MM/dd/yyyy HH:mm"),
-    };
-    
-    private static DateFormat dateFormat[] = {
-        new SimpleDateFormat("MM/dd/yy"),
-        new SimpleDateFormat("MM/dd/yyyy"),
-    };
-    
-    static {
-        for (DateFormat format : dateTimeFormat) {
-            format.setLenient(false);
-        }
-        for (DateFormat format : dateFormat) {
-            format.setLenient(false);
-        }
-    }
-    
-    public static enum NO_TIME_MODE {START_OF_DAY,END_OF_DAY};
-
-    /**
-     * Parses a String into a Date. This code tries several build in date formats
-     * to try and parse the the string into a date. In general, the dateStr must
-     * have a pattern similar to "date [time]" where date is in "m/d/y" form 
-     * and time is is in "h:m" form with an optional am/pm designator.
-     * 
-     * The following inputs are all valid:
-     *   12/12/2007 5:15 AM
-     *   12/12/2007 5:15 A
-     *   12/12/2007 5:15 am
-     *   12/12/2007 5:15a
-     *   12/12/2007 5:15AM
-     *   12/12/2007 5:15 (assumes AM)
-     *   12/12/2007 15:15 (assumes 24-hour clock)
-     *   12/12/07 15:15p
-     *   12/12/07
-     *   
-     * The mode argument can be used to control what time is associated with a 
-     * date for which no time was entered. If START_OF_DAY is specified, the date 
-     * will correspond to midnight on the morning of the specified date. If 
-     * END_OF_DAY is specified, the date will correspond to midnight on the morning 
-     * after the specified date. The mode makes no difference when the time is included
-     * in the dateStr.
-     * 
-     * If the date does not match any of the built-in formats, a ParseException
-     * is thrown.
-     *   
-     * @param dateStr the string to parse
-     * @param mode controls how dates without times are treated
-     * @param timeZone Time zone to use to parse the date
-     * @return
-     * @throws ParseException if the dateStr cannot be parsed into a Java date
-     */
-    
-    @Deprecated
-    public synchronized static Date flexibleDateParser(String dateStr, NO_TIME_MODE mode, TimeZone timeZone) 
-        throws ParseException {
-        if (StringUtils.isBlank(dateStr)) return null;
-        for (DateFormat format : dateTimeFormat) {
-            try {
-                format.setTimeZone(timeZone);
-                Date date = format.parse(dateStr);
-                return date;
-            } catch (ParseException e) {
-            }
-        }
-        for (DateFormat format : dateFormat) {
-            try {
-                format.setTimeZone(timeZone);
-                Date date = format.parse(dateStr);
-                if (mode == NO_TIME_MODE.END_OF_DAY) {
-                    return DateUtils.addDays(date, 1);
-                }
-                return date;
-            } catch (ParseException e) {
-            }
-        }
-        throw new ParseException(dateStr, 0);
-    }
-    
-    /**
-     * Calls flexibleDateParser(dateStr, NO_TIME_MODE.START_OF_DAY)
-     * @param dateStr
-     * @return
-     * @throws ParseException
-     */
-    public static Date flexibleDateParser(String dateStr, TimeZone timeZone) throws ParseException {
-        return flexibleDateParser(dateStr, NO_TIME_MODE.START_OF_DAY, timeZone);
-    }
 
     /**
      * Convert seconds of time into hh:mm:ss string.

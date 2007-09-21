@@ -9,7 +9,6 @@ import java.util.Date;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
-import java.util.TimeZone;
 
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
@@ -25,12 +24,11 @@ import org.springframework.web.servlet.mvc.multiaction.MultiActionController;
 
 import com.cannontech.common.util.SimpleTemplateProcessor;
 import com.cannontech.common.util.TemplateProcessor;
-import com.cannontech.common.util.TimeUtil;
 import com.cannontech.core.dao.ContactDao;
 import com.cannontech.core.dao.DeviceDao;
 import com.cannontech.core.dao.PaoDao;
-import com.cannontech.core.dao.PointDao;
 import com.cannontech.core.dao.YukonUserDao;
+import com.cannontech.core.service.DateFormattingService;
 import com.cannontech.core.service.LongLoadProfileService;
 import com.cannontech.core.service.LongLoadProfileService.ProfileRequestInfo;
 import com.cannontech.database.data.lite.LiteContact;
@@ -49,6 +47,7 @@ public class LoadProfileController extends MultiActionController {
     private DeviceDao deviceDao;
     private YukonUserDao yukonUserDao;
     private ContactDao contactDao;
+    private DateFormattingService dateFormattingService;
     private static DateFormat dateFormat = new SimpleDateFormat("MM/dd/yy hh:mma");
     /*
      * Long load profile email message format
@@ -76,15 +75,14 @@ public class LoadProfileController extends MultiActionController {
         try {
             
             LiteYukonUser user = ServletUtil.getYukonUser(request);
-            TimeZone timeZone = yukonUserDao.getUserTimeZone(user);
             TemplateProcessor tp = new SimpleTemplateProcessor();
             
             String email = ServletRequestUtils.getRequiredStringParameter(request, "email");
             int deviceId = ServletRequestUtils.getRequiredIntParameter(request, "deviceId");
             String startDateStr = ServletRequestUtils.getStringParameter(request, "startDate", "");
-            Date startDate = TimeUtil.flexibleDateParser(startDateStr, TimeUtil.NO_TIME_MODE.START_OF_DAY, timeZone);
+            Date startDate = dateFormattingService.flexibleDateParser(startDateStr, DateFormattingService.DateOnlyMode.START_OF_DAY, user);
             String stopDateStr = ServletRequestUtils.getStringParameter(request, "stopDate", "");
-            Date stopDate = TimeUtil.flexibleDateParser(stopDateStr, TimeUtil.NO_TIME_MODE.END_OF_DAY, timeZone);
+            Date stopDate = dateFormattingService.flexibleDateParser(stopDateStr, DateFormattingService.DateOnlyMode.END_OF_DAY, user);
             
             Validate.isTrue(startDate == null || stopDate == null || startDate.before(stopDate), 
                             "Start Date must be before Stop Date");
@@ -155,12 +153,10 @@ public class LoadProfileController extends MultiActionController {
         String stopDateStr = ServletRequestUtils.getStringParameter(request, "stopDate", "");
         
         if(StringUtils.isNotBlank(startDateStr) && StringUtils.isNotBlank(stopDateStr)){
-            LiteYukonUser user = ServletUtil.getYukonUser(request);
-            TimeZone timeZone = yukonUserDao.getUserTimeZone(user);
             
             try {
-                Date startDate = TimeUtil.flexibleDateParser(startDateStr, TimeUtil.NO_TIME_MODE.START_OF_DAY, timeZone);
-                Date stopDate = TimeUtil.flexibleDateParser(stopDateStr, TimeUtil.NO_TIME_MODE.START_OF_DAY, timeZone);
+                Date startDate = dateFormattingService.flexibleDateParser(startDateStr, DateFormattingService.DateOnlyMode.START_OF_DAY, yukonUser);
+                Date stopDate = dateFormattingService.flexibleDateParser(stopDateStr, DateFormattingService.DateOnlyMode.START_OF_DAY, yukonUser);
             
                 SimpleDateFormat format = new SimpleDateFormat("MM/dd/yy");
                 
@@ -232,6 +228,12 @@ public class LoadProfileController extends MultiActionController {
     @Required
     public void setDeviceDao(DeviceDao deviceDao) {
         this.deviceDao = deviceDao;
+    }
+    
+    @Required
+    public void setDateFormattingService(
+            DateFormattingService dateFormattingService) {
+        this.dateFormattingService = dateFormattingService;
     }
 
 }
