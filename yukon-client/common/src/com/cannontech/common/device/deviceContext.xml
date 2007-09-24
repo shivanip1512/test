@@ -35,6 +35,7 @@
     
 	<bean id="deviceDefinitionDao" class="com.cannontech.common.device.definition.dao.DeviceDefinitionDaoImpl" singleton="true" init-method="initialize">
         <property name="inputFile" value="classpath:com/cannontech/common/device/definition/dao/deviceDefinition.xml" />
+        <property name="pointLegendFile" value="classpath:com/cannontech/common/device/definition/dao/pointOffset.xsl" />
         <property name="javaConstantClassName" value="com.cannontech.database.data.pao.DeviceTypes" />
         <property name="paoGroupsWrapper" ref="paoGroupsWrapper" />
         <property name="unitMeasureDao" ref="unitMeasureDao" />

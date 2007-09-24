@@ -50,24 +50,28 @@
                 <unitofmeasure value="Counts"/>
             </point>
             <point type="PulseAccumulator">
+                <attribute name="TOU_RATE_A_USAGE"/>
                 <name>TOU Rate A (Channel 1)</name>
                 <offset value="101"/>
                 <multiplier value="1.0"/>
                 <unitofmeasure value="kWH"/>
             </point>
             <point type="PulseAccumulator">
+                <attribute name="TOU_RATE_B_USAGE"/>
                 <name>TOU Rate B (Channel 1)</name>
                 <offset value="121"/>
                 <multiplier value="1.0"/>
                 <unitofmeasure value="kWH"/>
             </point>
             <point type="PulseAccumulator">
+                <attribute name="TOU_RATE_C_USAGE"/>
                 <name>TOU Rate C (Channel 1)</name>
                 <offset value="141"/>
                 <multiplier value="1.0"/>
                 <unitofmeasure value="kWH"/>
             </point>
             <point type="PulseAccumulator">
+                <attribute name="TOU_RATE_D_USAGE"/>
                 <name>TOU Rate D (Channel 1)</name>
                 <offset value="161"/>
                 <multiplier value="1.0"/>
@@ -174,6 +178,7 @@
             </point>
             
             <point type="DemandAccumulator">
+                <attribute name="TOU_RATE_A_PEAK"/>
                 <name>TOU Rate A - Peak kW (Channel 1)</name>
                 <offset value="111"/>
                 <multiplier value="1.0"/>
@@ -186,6 +191,7 @@
                 <unitofmeasure value="kW"/>
             </point>
             <point type="DemandAccumulator">
+                <attribute name="TOU_RATE_B_PEAK"/>
                 <name>TOU Rate B - Peak kW (Channel 1)</name>
                 <offset value="131"/>
                 <multiplier value="1.0"/>
@@ -198,6 +204,7 @@
                 <unitofmeasure value="kW"/>
             </point>
             <point type="DemandAccumulator">
+                <attribute name="TOU_RATE_C_PEAK"/>
                 <name>TOU Rate C - Peak kW (Channel 1)</name>
                 <offset value="151"/>
                 <multiplier value="1.0"/>
@@ -210,6 +217,7 @@
                 <unitofmeasure value="kW"/>
             </point>
             <point type="DemandAccumulator">
+                <attribute name="TOU_RATE_D_PEAK"/>
                 <name>TOU Rate D - Peak kW (Channel 1)</name>
                 <offset value="171"/>
                 <multiplier value="1.0"/>
@@ -579,36 +587,42 @@
                 <unitofmeasure value="kWH"/>
             </point>
             <point type="Analog">
+                <attribute name="TOU_RATE_B_PEAK"/>
                 <name>Peak kW (Rate B kW)</name>
                 <offset value="4"/>
                 <multiplier value="0.01"/>
                 <unitofmeasure value="kW"/>
             </point>
             <point type="Analog">
+                <attribute name="TOU_RATE_B_USAGE"/>
                 <name>Rate B kWh</name>
                 <offset value="5"/>
                 <multiplier value="0.0001"/>
                 <unitofmeasure value="kWH"/>
             </point>
             <point type="Analog">
+                <attribute name="TOU_RATE_C_PEAK"/>
                 <name>Peak kW (Rate C kW)</name>
                 <offset value="6"/>
                 <multiplier value="0.01"/>
                 <unitofmeasure value="kW"/>
             </point>
             <point type="Analog">
+                <attribute name="TOU_RATE_C_USAGE"/>
                 <name>Rate C kWh</name>
                 <offset value="7"/>
                 <multiplier value="0.0001"/>
                 <unitofmeasure value="kWH"/>
             </point>
             <point type="Analog">
+                <attribute name="TOU_RATE_D_PEAK"/>
                 <name>Peak kW (Rate D kW)</name>
                 <offset value="8"/>
                 <multiplier value="0.01"/>
                 <unitofmeasure value="kW"/>
             </point>
             <point type="Analog">
+                <attribute name="TOU_RATE_D_USAGE"/>
                 <name>Rate D kWh</name>
                 <offset value="9"/>
                 <multiplier value="0.0001"/>
@@ -839,36 +853,42 @@
                 <unitofmeasure value="kWH"/>
             </point>
             <point type="Analog">
+                <attribute name="TOU_RATE_B_PEAK"/>
                 <name>Peak kW (Rate B kW)</name>
                 <offset value="4"/>
                 <multiplier value="0.01"/>
                 <unitofmeasure value="kW"/>
             </point>
             <point type="Analog">
+                <attribute name="TOU_RATE_B_USAGE"/>
                 <name>Rate B kWh</name>
                 <offset value="5"/>
                 <multiplier value="0.0001"/>
                 <unitofmeasure value="kWH"/>
             </point>
             <point type="Analog">
+                <attribute name="TOU_RATE_C_PEAK"/>
                 <name>Peak kW (Rate C kW)</name>
                 <offset value="6"/>
                 <multiplier value="0.01"/>
                 <unitofmeasure value="kW"/>
             </point>
             <point type="Analog">
+                <attribute name="TOU_RATE_C_USAGE"/>
                 <name>Rate C kWh</name>
                 <offset value="7"/>
                 <multiplier value="0.0001"/>
                 <unitofmeasure value="kWH"/>
             </point>
             <point type="Analog">
+                <attribute name="TOU_RATE_D_PEAK"/>
                 <name>Peak kW (Rate D kW)</name>
                 <offset value="8"/>
                 <multiplier value="0.01"/>
                 <unitofmeasure value="kW"/>
             </point>
             <point type="Analog">
+                <attribute name="TOU_RATE_D_USAGE"/>
                 <name>Rate D kWh</name>
                 <offset value="9"/>
                 <multiplier value="0.0001"/>
@@ -1117,36 +1137,42 @@
                 <unitofmeasure value="kWH"/>
             </point>
             <point type="Analog">
+                <attribute name="TOU_RATE_B_PEAK"/>
                 <name>Peak kW (Rate B kW)</name>
                 <offset value="4"/>
                 <multiplier value="0.01"/>
                 <unitofmeasure value="kW"/>
             </point>
             <point type="Analog">
+                <attribute name="TOU_RATE_B_USAGE"/>
                 <name>Rate B kWh</name>
                 <offset value="5"/>
                 <multiplier value="0.0001"/>
                 <unitofmeasure value="kWH"/>
             </point>
             <point type="Analog">
+                <attribute name="TOU_RATE_C_PEAK"/>
                 <name>Peak kW (Rate C kW)</name>
                 <offset value="6"/>
                 <multiplier value="0.01"/>
                 <unitofmeasure value="kW"/>
             </point>
             <point type="Analog">
+                <attribute name="TOU_RATE_C_USAGE"/>
                 <name>Rate C kWh</name>
                 <offset value="7"/>
                 <multiplier value="0.0001"/>
                 <unitofmeasure value="kWH"/>
             </point>
             <point type="Analog">
+                <attribute name="TOU_RATE_D_PEAK"/>
                 <name>Peak kW (Rate D kW)</name>
                 <offset value="8"/>
                 <multiplier value="0.01"/>
                 <unitofmeasure value="kW"/>
             </point>
             <point type="Analog">
+                <attribute name="TOU_RATE_D_USAGE"/>
                 <name>Rate D kWh</name>
                 <offset value="9"/>
                 <multiplier value="0.0001"/>
@@ -1402,24 +1428,28 @@
                 <unitofmeasure value="Counts"/>
             </point>
             <point type="PulseAccumulator">
+                <attribute name="TOU_RATE_A_USAGE"/>
                 <name>Rate A kWh</name>
                 <offset value="101"/>
                 <multiplier value="0.1"/>
                 <unitofmeasure value="kWH"/>
             </point>
             <point type="PulseAccumulator">
+                <attribute name="TOU_RATE_B_USAGE"/>
                 <name>Rate B kWh</name>
                 <offset value="121"/>
                 <multiplier value="0.1"/>
                 <unitofmeasure value="kWH"/>
             </point>
             <point type="PulseAccumulator">
+                <attribute name="TOU_RATE_C_USAGE"/>
                 <name>Rate C kWh</name>
                 <offset value="141"/>
                 <multiplier value="0.1"/>
                 <unitofmeasure value="kWH"/>
             </point>
             <point type="PulseAccumulator">
+                <attribute name="TOU_RATE_D_USAGE"/>
                 <name>Rate D kWh</name>
                 <offset value="161"/>
                 <multiplier value="0.1"/>
@@ -1516,24 +1546,28 @@
                 <unitofmeasure value="Volts"/>
             </point>
             <point type="DemandAccumulator">
+            	<attribute name="TOU_RATE_A_PEAK"/>
                 <name>Peak kW (Rate A kW)</name>
                 <offset value="111"/>
                 <multiplier value="0.1"/>
                 <unitofmeasure value="kW"/>
             </point>
             <point type="DemandAccumulator">
+            	<attribute name="TOU_RATE_B_PEAK"/>
                 <name>Peak kW (Rate B kW)</name>
                 <offset value="131"/>
                 <multiplier value="0.1"/>
                 <unitofmeasure value="kW"/>
             </point>
             <point type="DemandAccumulator">
+            	<attribute name="TOU_RATE_C_PEAK"/>
                 <name>Peak kW (Rate C kW)</name>
                 <offset value="151"/>
                 <multiplier value="0.1"/>
                 <unitofmeasure value="kW"/>
             </point>
             <point type="DemandAccumulator">
+            	<attribute name="TOU_RATE_D_PEAK"/>
                 <name>Peak kW (Rate D kW)</name>
                 <offset value="171"/>
                 <multiplier value="0.1"/>
@@ -1716,24 +1750,28 @@
                 <unitofmeasure value="Counts"/>
             </point>
             <point type="PulseAccumulator">
+                <attribute name="TOU_RATE_A_USAGE"/>
                 <name>Rate A kWh</name>
                 <offset value="101"/>
                 <multiplier value="0.1"/>
                 <unitofmeasure value="kWH"/>
             </point>
             <point type="PulseAccumulator">
+                <attribute name="TOU_RATE_B_USAGE"/>
                 <name>Rate B kWh</name>
                 <offset value="121"/>
                 <multiplier value="0.1"/>
                 <unitofmeasure value="kWH"/>
             </point>
             <point type="PulseAccumulator">
+                <attribute name="TOU_RATE_C_USAGE"/>
                 <name>Rate C kWh</name>
                 <offset value="141"/>
                 <multiplier value="0.1"/>
                 <unitofmeasure value="kWH"/>
             </point>
             <point type="PulseAccumulator">
+                <attribute name="TOU_RATE_D_USAGE"/>
                 <name>Rate D kWh</name>
                 <offset value="161"/>
                 <multiplier value="0.1"/>
@@ -1830,24 +1868,28 @@
                 <unitofmeasure value="Volts"/>
             </point>
             <point type="DemandAccumulator">
+            	<attribute name="TOU_RATE_A_PEAK"/>
                 <name>Peak kW (Rate A kW)</name>
                 <offset value="111"/>
                 <multiplier value="0.1"/>
                 <unitofmeasure value="kW"/>
             </point>
             <point type="DemandAccumulator">
+                <attribute name="TOU_RATE_B_PEAK"/>
                 <name>Peak kW (Rate B kW)</name>
                 <offset value="131"/>
                 <multiplier value="0.1"/>
                 <unitofmeasure value="kW"/>
             </point>
             <point type="DemandAccumulator">
+                <attribute name="TOU_RATE_C_PEAK"/>
                 <name>Peak kW (Rate C kW)</name>
                 <offset value="151"/>
                 <multiplier value="0.1"/>
                 <unitofmeasure value="kW"/>
             </point>
             <point type="DemandAccumulator">
+                <attribute name="TOU_RATE_D_PEAK"/>
                 <name>Peak kW (Rate D kW)</name>
                 <offset value="171"/>
                 <multiplier value="0.1"/>
@@ -2030,24 +2072,28 @@
                 <unitofmeasure value="Counts"/>
             </point>
             <point type="PulseAccumulator">
+                <attribute name="TOU_RATE_A_USAGE"/>
                 <name>Rate A kWh</name>
                 <offset value="101"/>
                 <multiplier value="0.1"/>
                 <unitofmeasure value="kWH"/>
             </point>
             <point type="PulseAccumulator">
+                <attribute name="TOU_RATE_B_USAGE"/>
                 <name>Rate B kWh</name>
                 <offset value="121"/>
                 <multiplier value="0.1"/>
                 <unitofmeasure value="kWH"/>
             </point>
             <point type="PulseAccumulator">
+                <attribute name="TOU_RATE_C_USAGE"/>
                 <name>Rate C kWh</name>
                 <offset value="141"/>
                 <multiplier value="0.1"/>
                 <unitofmeasure value="kWH"/>
             </point>
             <point type="PulseAccumulator">
+                <attribute name="TOU_RATE_D_USAGE"/>
                 <name>Rate D kWh</name>
                 <offset value="161"/>
                 <multiplier value="0.1"/>
@@ -2144,24 +2190,28 @@
                 <unitofmeasure value="Volts"/>
             </point>
             <point type="DemandAccumulator">
+            	<attribute name="TOU_RATE_A_PEAK"/>
                 <name>Peak kW (Rate A kW)</name>
                 <offset value="111"/>
                 <multiplier value="0.1"/>
                 <unitofmeasure value="kW"/>
             </point>
             <point type="DemandAccumulator">
+            	<attribute name="TOU_RATE_B_PEAK"/>
                 <name>Peak kW (Rate B kW)</name>
                 <offset value="131"/>
                 <multiplier value="0.1"/>
                 <unitofmeasure value="kW"/>
             </point>
             <point type="DemandAccumulator">
+            	<attribute name="TOU_RATE_C_PEAK"/>
                 <name>Peak kW (Rate C kW)</name>
                 <offset value="151"/>
                 <multiplier value="0.1"/>
                 <unitofmeasure value="kW"/>
             </point>
             <point type="DemandAccumulator">
+            	<attribute name="TOU_RATE_D_PEAK"/>
                 <name>Peak kW (Rate D kW)</name>
                 <offset value="171"/>
                 <multiplier value="0.1"/>

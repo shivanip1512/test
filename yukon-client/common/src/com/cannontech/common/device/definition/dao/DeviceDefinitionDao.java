@@ -98,5 +98,7 @@ public interface DeviceDefinitionDao {
      * @return The set of commands affecting one or more of the points
      */
     public Set<CommandDefinition> getAffected(YukonDevice device, Set<? extends DevicePointIdentifier> pointSet);
+    
+    public String getPointLegendHtml(String displayGroup);
 
 }

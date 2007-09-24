@@ -3,6 +3,10 @@ package com.cannontech.common.device.definition.dao;
 import java.io.IOException;
 import java.io.InputStream;
 import java.io.InputStreamReader;
+import java.io.OutputStream;
+import java.io.OutputStreamWriter;
+import java.io.StringWriter;
+import java.io.Writer;
 import java.util.ArrayList;
 import java.util.Collections;
 import java.util.HashMap;
@@ -12,9 +16,24 @@ import java.util.List;
 import java.util.Map;
 import java.util.Set;
 
+import javax.xml.transform.Result;
+import javax.xml.transform.Source;
+import javax.xml.transform.Transformer;
+import javax.xml.transform.TransformerFactory;
+import javax.xml.transform.stream.StreamResult;
+import javax.xml.transform.stream.StreamSource;
+
+import org.apache.log4j.Logger;
 import org.exolab.castor.xml.Unmarshaller;
+import org.jdom.Document;
+import org.jdom.input.SAXBuilder;
+import org.jdom.output.Format;
+import org.jdom.output.XMLOutputter;
+import org.jdom.transform.XSLTransformer;
+import org.springframework.core.io.Resource;
 import org.springframework.dao.DataAccessException;
 
+import com.cannontech.clientutils.YukonLogManager;
 import com.cannontech.common.device.YukonDevice;
 import com.cannontech.common.device.attribute.model.Attribute;
 import com.cannontech.common.device.attribute.model.BuiltInAttribute;
@@ -45,11 +64,13 @@ import com.cannontech.util.ReflectivePropertySearcher;
  */
 public class DeviceDefinitionDaoImpl implements DeviceDefinitionDao {
 
-    private InputStream inputFile = null;
+    private Resource inputFile = null;
+    private Resource pointLegendFile = null;
     private PaoGroupsWrapper paoGroupsWrapper = null;
     private String javaConstantClassName = null;
     private UnitMeasureDao unitMeasureDao = null;
     private StateDao stateDao = null;
+    private Logger log = YukonLogManager.getLogger(DeviceDefinitionDaoImpl.class);
 
     // Maps containing all of the data in the deviceDefinition.xml file
 
@@ -71,7 +92,7 @@ public class DeviceDefinitionDaoImpl implements DeviceDefinitionDao {
     // Map<DeviceType, Set<CommandDefinition>
     private Map<Integer, Set<CommandDefinition>> deviceCommandMap = null;
 
-    public void setInputFile(InputStream inputFile) {
+    public void setInputFile(Resource inputFile) {
         this.inputFile = inputFile;
     }
 
@@ -89,6 +110,9 @@ public class DeviceDefinitionDaoImpl implements DeviceDefinitionDao {
 
     public void setUnitMeasureDao(UnitMeasureDao unitMeasureDao) {
         this.unitMeasureDao = unitMeasureDao;
+    }
+    public void setPointLegendFile(Resource pointLegendFile) {
+        this.pointLegendFile = pointLegendFile;
     }
 
     public Set<Attribute> getAvailableAttributes(YukonDevice device) {
@@ -210,7 +234,7 @@ public class DeviceDefinitionDaoImpl implements DeviceDefinitionDao {
         InputStreamReader reader = null;
         try {
 
-            reader = new InputStreamReader(inputFile);
+            reader = new InputStreamReader(inputFile.getInputStream());
 
             // Use castor to parse the xml file
             DeviceDefinitions definition = (DeviceDefinitions) Unmarshaller.unmarshal(DeviceDefinitions.class,
@@ -462,5 +486,25 @@ public class DeviceDefinitionDaoImpl implements DeviceDefinitionDao {
         template.setStateGroupId(stateGroupId);
 
         return template;
+    }
+    
+    public String getPointLegendHtml(String displayGroup) {
+        try {
+            log.debug("Transforming notification");
+            log.debug("javax.xml: " + System.getProperty("javax.xml.transform.TransformerFactory"));
+            Writer resultWriter = new StringWriter();
+            Result result = new StreamResult(resultWriter);
+            Source inputSource = new StreamSource(inputFile.getInputStream());
+            Source xslSource = new StreamSource(pointLegendFile.getInputStream());
+            TransformerFactory tf = TransformerFactory.newInstance();
+            Transformer transformer = tf.newTransformer(xslSource);
+            transformer.setParameter("group", displayGroup);
+            transformer.transform(inputSource, result);
+            String resultString = resultWriter.toString();
+            return resultString;
+        } catch (Exception e) {
+            log.warn("Unable to translate deviceDefinition.xml file for displayGroup=" + displayGroup, e);
+            return "Error rendering point legends: " + e.toString();
+        }
     }
 }
