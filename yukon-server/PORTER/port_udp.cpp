@@ -7,8 +7,8 @@
 * Author: Matt Fisher
 *
 * CVS KEYWORDS:
-* REVISION     :  $Revision: 1.13 $
-* DATE         :  $Date: 2007/09/21 02:03:52 $
+* REVISION     :  $Revision: 1.14 $
+* DATE         :  $Date: 2007/09/24 18:56:18 $
 *
 * Copyright (c) 2004 Cannon Technologies Inc. All rights reserved.
 *-----------------------------------------------------------------------------*/
@@ -112,11 +112,11 @@ void UDPInterface::run( void )
     {
         try
         {
-            if( MessageQueue.size() > 0 )
+            if( _message_queue.size() > 0 )
             {
                 CtiMessage *msg;
 
-                if( (msg = MessageQueue.getQueue()) && (msg->isA() == MSG_DBCHANGE) )
+                if( (msg = _message_queue.getQueue()) && (msg->isA() == MSG_DBCHANGE) )
                 {
                     CtiDBChangeMsg *db_msg = (CtiDBChangeMsg *)msg;
                     device_record *dr;

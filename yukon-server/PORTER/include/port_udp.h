@@ -9,8 +9,8 @@
 *
 * PVCS KEYWORDS:
 * ARCHIVE      :  $Archive:   Z:/SOFTWAREARCHIVES/YUKON/RTDB/INCLUDE/port_base.h-arc  $
-* REVISION     :  $Revision: 1.6 $
-* DATE         :  $Date: 2007/08/09 21:46:17 $
+* REVISION     :  $Revision: 1.7 $
+* DATE         :  $Date: 2007/09/24 18:56:18 $
 *
 * Copyright (c) 2006 Cannon Technologies Inc. All rights reserved.
 *-----------------------------------------------------------------------------*/
@@ -157,9 +157,6 @@ protected:
     device_record *getDeviceRecordByDNPAddress           ( unsigned short master, unsigned short slave );
     device_record *getDeviceRecordByGPUFFDeviceTypeSerial( unsigned short device_type, unsigned short serial );
     device_record *getDeviceRecordByID                   ( long device_id );
-
-    CtiQueue< CtiOutMessage, less<CtiOutMessage> > OutMessageQueue;
-    CtiFIFOQueue< CtiMessage > MessageQueue;
 
     CtiLogger _portLog;
 
