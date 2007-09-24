@@ -1208,13 +1208,13 @@ private javax.swing.JTextField getPhysicalAddressTextField() {
 			ivjPhysicalAddressTextField = new javax.swing.JTextField();
 			ivjPhysicalAddressTextField.setName("PhysicalAddressTextField");
 			ivjPhysicalAddressTextField.setMaximumSize(new java.awt.Dimension(200, 23));
-			ivjPhysicalAddressTextField.setColumns(10);
+			//ivjPhysicalAddressTextField.setColumns(15);
 			ivjPhysicalAddressTextField.setPreferredSize(new java.awt.Dimension(200, 23));
 			ivjPhysicalAddressTextField.setFont(new java.awt.Font("sansserif", 0, 14));
 			ivjPhysicalAddressTextField.setMinimumSize(new java.awt.Dimension(200, 23));
 			// user code begin {1}
 
-			ivjPhysicalAddressTextField.setDocument( new com.cannontech.common.gui.unchanging.LongRangeDocument(-9999999999L, 9999999999L) );
+			ivjPhysicalAddressTextField.setDocument( new com.cannontech.common.gui.unchanging.LongRangeDocument() );
 			
 			// user code end
 		} catch (java.lang.Throwable ivjExc) {
@@ -2703,8 +2703,6 @@ public void setValue(Object val)
 	{
 		getPhysicalAddressTextField().setDocument( new com.cannontech.common.gui.unchanging.LongRangeDocument(0L, 128L) );
 	}
-	else
-		getPhysicalAddressTextField().setDocument( new com.cannontech.common.gui.unchanging.LongRangeDocument(-9999999999L, 9999999999L) );
 
 
 	//This is a bit ugly
