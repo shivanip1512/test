@@ -426,12 +426,15 @@ private javax.swing.JTextField getJTextFieldCapBankOrder() {
 		
 		try
 		{
-			int order = 1;
+			float order = 1;
 			if( getJTextFieldCapBankOrder().getText() != null 
 			    && getJTextFieldCapBankOrder().getText().length() > 0 )
 			{
 				order = new Integer(getJTextFieldCapBankOrder().getText()).intValue();
 			}
+            float closeOrder = (float)0.0;
+            float tripOrder = (float)0.0;
+            
 			    
 			// Build up  the move message here
 			CBCTempMoveCapBank msg = new CBCTempMoveCapBank(
@@ -439,6 +442,8 @@ private javax.swing.JTextField getJTextFieldCapBankOrder() {
 				feeder.getLiteID(),
 				getCapBankDevice().getCcId().intValue(),
 				order,
+                closeOrder,
+                tripOrder,
 				false );
 
 			if( getConnectionWrapper() != null )
