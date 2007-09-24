@@ -9,8 +9,8 @@
 *
 * PVCS KEYWORDS:
 * ARCHIVE      :  $Archive:   Z:/SOFTWAREARCHIVES/YUKON/RTDB/INCLUDE/dev_cbc.h-arc  $
-* REVISION     :  $Revision: 1.3 $
-* DATE         :  $Date: 2006/09/21 21:31:37 $
+* REVISION     :  $Revision: 1.4 $
+* DATE         :  $Date: 2007/09/24 19:59:43 $
 *
 * Copyright (c) 2002 Cannon Technologies Inc. All rights reserved.
 *-----------------------------------------------------------------------------*/
@@ -23,7 +23,7 @@
 #include "config_base.h"
 #include "config_device.h"
 #include "config_parts.h"
-using namespace std;
+
 namespace Cti       {
 namespace Device    {
 
