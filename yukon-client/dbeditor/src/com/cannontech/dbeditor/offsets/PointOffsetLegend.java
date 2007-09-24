@@ -1,6 +1,7 @@
 package com.cannontech.dbeditor.offsets;
 
 import java.util.ArrayList;
+import java.util.Collections;
 import java.util.List;
 import java.util.Map;
 
@@ -131,20 +132,10 @@ private javax.swing.JPanel newPanel(String panelName, JScrollPane scrollPane) {
 
 private List<JScrollPane> getScrollPanes(){
     List<JScrollPane> scrollPaneList = new ArrayList<JScrollPane>();
-    List<String> groupTypes = getData();
-    List<String> uniqueGroupTypes = new ArrayList<String>();
-    
-    groupTypes.retainAll(groupTypes);
+    List<String> groupTypes = getGroupTypesSet();
     DeviceDefinitionDao definitionDao = YukonSpringHook.getBean("deviceDefinitionDao",DeviceDefinitionDao.class);
     
-    // Gets rid of all duplicate groupTypes
     for (String groupType : groupTypes) {
-        if(!uniqueGroupTypes.contains(groupType)){
-            uniqueGroupTypes.add(groupType);
-        }
-    }
-    
-    for (String groupType : uniqueGroupTypes) {
         JTextPane textPane = newTextPane(groupType);
         
         String htmlSnippet = definitionDao.getPointLegendHtml(groupType);
@@ -186,6 +177,7 @@ private void handleException(java.lang.Throwable exception) {
  */
 /* WARNING: THIS METHOD WILL BE REGENERATED. */
 private void initialize() {
+    List<JScrollPane> scrollPanes = null;
     try {
         // user code begin {1}
         // user code end
@@ -193,7 +185,8 @@ private void initialize() {
         setLayout(new java.awt.GridBagLayout());
         setSize(593, 473);
         
-        List<JPanel> panelList = getPanes(getScrollPanes());
+        scrollPanes = getScrollPanes();
+        List<JPanel> panelList = getPanes(scrollPanes);
 
         java.awt.GridBagConstraints constraintsJTabbedPaneOffsets = new java.awt.GridBagConstraints();
         constraintsJTabbedPaneOffsets.gridx = 1; constraintsJTabbedPaneOffsets.gridy = 2;
@@ -219,7 +212,7 @@ private void initialize() {
     }
     // user code begin {2}
     
-    initPages();
+    initPages(scrollPanes);
     
     // user code end
 }
@@ -229,34 +222,28 @@ private void initialize() {
  * 
  * @return
  */
-private List<String> getData(){
+private List<String> getGroupTypesSet(){
     
     DeviceDefinitionDao definitionDao = YukonSpringHook.getBean("deviceDefinitionDao",DeviceDefinitionDao.class);
 
-    List<String> groupTypes = new ArrayList<String>();
     Map<String, List<DeviceDefinition>> deviceDefinitionsMap = definitionDao.getDeviceDisplayGroupMap();
-
-    for (String key : deviceDefinitionsMap.keySet()) {
-        List<DeviceDefinition> definitionList = deviceDefinitionsMap.get(key);
-        for (DeviceDefinition deviceDefinition : definitionList) {
-            groupTypes.add(deviceDefinition.getDisplayGroup());
-        }
-    }
+    List<String> groupTypes = new ArrayList<String>(deviceDefinitionsMap.keySet());
+    Collections.sort(groupTypes);
+    Collections.reverse(groupTypes);
 
     return groupTypes;
 }
 
-private void initPages()
+private void initPages(final List<JScrollPane> scrollPanes)
 {
-    final List<JScrollPane> finalScrollPanes = getScrollPanes();
     
     //we need to scroll up the scrollbars in a different Thread
     SwingUtilities.invokeLater( new Runnable()
     {
         public void run()
         {
-            for (JScrollPane panel : finalScrollPanes) {
-                panel.getVerticalScrollBar().setValue( 
+            for (JScrollPane panel : scrollPanes){
+                panel.getVerticalScrollBar().setValue(
                      panel.getVerticalScrollBar().getMinimum() );
             }
         }
