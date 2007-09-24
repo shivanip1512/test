@@ -8,8 +8,8 @@
 *
 * PVCS KEYWORDS:
 * ARCHIVE      :  $Archive:   Z:/SOFTWAREARCHIVES/YUKON/RTDB/dev_mct.cpp-arc  $
-* REVISION     :  $Revision: 1.120 $
-* DATE         :  $Date: 2007/08/15 21:00:38 $
+* REVISION     :  $Revision: 1.121 $
+* DATE         :  $Date: 2007/09/24 19:58:52 $
 *
 * Copyright (c) 1999, 2000 Cannon Technologies Inc. All rights reserved.
 *-----------------------------------------------------------------------------*/
@@ -844,6 +844,13 @@ INT CtiDeviceMCT::ModelDecode(INMESS *InMessage, CtiTime &TimeNow, list< CtiMess
         {
             break;
         }
+
+        case Emetcon::Control_Connect:
+        case Emetcon::Control_Disconnect:
+        {
+            break;
+        }
+
 
         case Emetcon::GetConfig_Time:
         case Emetcon::GetConfig_TSync:
