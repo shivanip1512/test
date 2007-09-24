@@ -8,8 +8,8 @@
 *
 * PVCS KEYWORDS:
 * ARCHIVE      :  $Archive:   Z:/SOFTWAREARCHIVES/YUKON/RTDB/dev_mct4xx-arc  $
-* REVISION     :  $Revision: 1.67 $
-* DATE         :  $Date: 2007/09/24 19:50:23 $
+* REVISION     :  $Revision: 1.68 $
+* DATE         :  $Date: 2007/09/24 19:51:41 $
 *
 * Copyright (c) 2005 Cannon Technologies Inc. All rights reserved.
 *-----------------------------------------------------------------------------*/
@@ -171,7 +171,7 @@ CtiDeviceMCT4xx::CommandSet CtiDeviceMCT4xx::initCommandStore()
 }
 
 
-string CtiDeviceMCT4xx::printable_time(unsigned long seconds) const
+string CtiDeviceMCT4xx::printable_time(unsigned long seconds)
 {
     string retval;
 
@@ -188,7 +188,7 @@ string CtiDeviceMCT4xx::printable_time(unsigned long seconds) const
 }
 
 
-string CtiDeviceMCT4xx::printable_date(unsigned long seconds) const
+string CtiDeviceMCT4xx::printable_date(unsigned long seconds)
 {
     string retval;
 
