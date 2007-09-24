@@ -9,10 +9,13 @@
 * Author: Julie Richter
 *
 * CVS KEYWORDS:
-* REVISION     :  $Revision: 1.4 $
-* DATE         :  $Date: 2007/08/07 21:05:12 $
+* REVISION     :  $Revision: 1.5 $
+* DATE         :  $Date: 2007/09/24 19:48:36 $
 * HISTORY      :
 * $Log: dev_fmu.h,v $
+* Revision 1.5  2007/09/24 19:48:36  mfisher
+* changed DawnOfTime to an enum to prevent tagging difficulties
+*
 * Revision 1.4  2007/08/07 21:05:12  mfisher
 * removed "using namespace std;" from header files
 *
@@ -108,6 +111,11 @@ private:
         LoCommResponse      = 0x0D,
         ExternalDevCommand  = 0x0E,
         ExternalDevResponse = 0x0F
+    };
+
+    enum
+    {
+        DawnOfTime = 0x386d4380,  //  jan 1, 2000, in UTC seconds
     };
 
     unsigned short _error_count;

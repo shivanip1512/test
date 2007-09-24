@@ -7,11 +7,14 @@
 * Author: Julie Richter
 *
 * CVS KEYWORDS:
-* REVISION     :  $Revision: 1.5 $
-* DATE         :  $Date: 2007/04/27 16:49:18 $
+* REVISION     :  $Revision: 1.6 $
+* DATE         :  $Date: 2007/09/24 19:48:36 $
 *
 * HISTORY      :
 * $Log: dev_fmu.cpp,v $
+* Revision 1.6  2007/09/24 19:48:36  mfisher
+* changed DawnOfTime to an enum to prevent tagging difficulties
+*
 * Revision 1.5  2007/04/27 16:49:18  mfisher
 * moved CVS header to top so Slick's diff would ignore it
 *
@@ -44,8 +47,6 @@
 #include "ctistring.h"
 
 #define StartByte 0xE7
-
-#define DawnOfTime 0x386d4380  //  jan 1, 2000, in UTC seconds
 
 CtiDeviceFMU::CtiDeviceFMU() :
     _state(State_Uninit),
