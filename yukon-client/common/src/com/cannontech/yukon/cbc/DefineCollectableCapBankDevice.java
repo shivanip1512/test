@@ -83,6 +83,8 @@ public void restoreGuts(Object obj, com.roguewave.vsj.VirtualInputStream vstr, c
 	capBank.setIgnoreFlag(new Boolean( (int)vstr.extractUnsignedInt() == 1) ? new Boolean(true) : new Boolean(false) );
 	capBank.setIgnoreReason(new Integer( (int) vstr.extractUnsignedInt() ) );
 	capBank.setOvUVDisabled(new Boolean ((int)vstr.extractUnsignedInt() == 1) ? new Boolean(true) : new Boolean(false) );
+    capBank.setTripOrder( new Float((float)vstr.extractFloat() ) );
+    capBank.setCloseOrder( new Float((float)vstr.extractFloat() ) );
 }
 /**
  * saveGuts method comment.
@@ -127,6 +129,8 @@ public void saveGuts(Object obj, com.roguewave.vsj.VirtualOutputStream vstr, com
     vstr.insertUnsignedInt( 
                         (capBank.getOvUVDisabled().booleanValue() == true)
                         ? 1 : 0 );
+    vstr.insertFloat( capBank.getTripOrder().floatValue() ); 
+    vstr.insertFloat( capBank.getCloseOrder().floatValue() ); 
 
 }
 }

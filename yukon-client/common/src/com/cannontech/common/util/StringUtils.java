@@ -77,7 +77,26 @@ public final class StringUtils {
 
         return intArr;
     }
-    
+    /**
+     * Takes an array of strings and try to convert and put each element into an
+     * array of float. If anything goes wrong, a zero length float array is
+     * returned.
+     */
+    public static float[] toFloatArray(String[] str) {
+        float[] intArr = new float[0];
+        if (str != null) {
+            try {
+                intArr = new float[str.length];
+                for (int i = 0; i < str.length; i++) {
+                    intArr[i] = Float.parseFloat(str[i]);
+                }
+            } catch (NumberFormatException nfe) {
+                intArr = new float[0];
+            }
+        }
+
+        return intArr;
+    }
     /**
 	 * Parase a comma separated string into an int[]
 	 * @param s

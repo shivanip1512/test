@@ -8,9 +8,11 @@ public class CBCTempMoveCapBank extends com.cannontech.yukon.cbc.CBCMessage
 	private boolean permanentMove = false;
 	private int newFeedID = -1;
 	private int capBankID = -1;
-	private int order = -1;
+	private float displayOrder = -1;
+    private float closeOrder = -1;
+    private float tripOrder = -1;
 
-	/**
+    /**
 	 * comment.
 	 */
 	public CBCTempMoveCapBank() 
@@ -18,15 +20,17 @@ public class CBCTempMoveCapBank extends com.cannontech.yukon.cbc.CBCMessage
 		super();
 	}
 
-	public CBCTempMoveCapBank( int oldFeedID_, int newFeedID_, int capBankID_, int order_, boolean permMove_ ) 
+	public CBCTempMoveCapBank( int oldFeedID_, int newFeedID_, int capBankID_, float order_, float cO, float tO, boolean permMove_ ) 
 	{
 		super();
 
 		oldFeedID = oldFeedID_;
 		newFeedID = newFeedID_;
 		capBankID = capBankID_;
-		order = order_; 
+		displayOrder = order_; 
 		permanentMove = permMove_;
+        closeOrder = cO;
+        tripOrder = tO;
 	}
 
 
@@ -66,8 +70,15 @@ public class CBCTempMoveCapBank extends com.cannontech.yukon.cbc.CBCMessage
 	 * Returns the order.
 	 * @return int
 	 */
-	public int getOrder() {
-		return order;
+	public float getOrder() {
+		return displayOrder;
 	}
+    
+    public float getCloseOrder() {
+        return closeOrder;
+    }
 
+    public float getTripOrder() {
+        return tripOrder;
+    }
 }

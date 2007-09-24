@@ -1,4 +1,6 @@
 <%@ taglib uri="http://cannontech.com/tags/cti" prefix="cti" %>
+<%@ taglib uri="http://java.sun.com/jsp/jstl/core" prefix="c"%>
+<c:url var="ControlOrderPage" value="/capcontrol/feederBankInfo.jsp"/>
 <cti:standardPage title="Temp CapBank Move" module="capcontrol_internal">
 <%@include file="cbc_inc.jspf"%>
 
@@ -20,13 +22,18 @@
 	else
 	{
 		oldfdrid = capBank.getParentID();
-	}	
+	}
 
 	
 %>
 
 <script type="text/javascript"> 
-
+function updateFeederBankInfo()
+{
+	var feederbankurl = "?FeederID=";
+	feederbankurl += getSelectedFeeder();
+    new Ajax.Updater({ success: 'ControlOrders', failure: 'ControlOrders' }, '${ControlOrderPage}' + feederbankurl, { parameters: {method: 'post'} });
+}
 function showDiv( v ){
 	$(v).toggle();
 }
@@ -35,10 +42,11 @@ function getSelectedFeeder()
 	var selectedFeeder = $("selectedFeeder");
 	return selectedFeeder.value;
 }
-function getControlOrder()
+function getOrder( str )
 {
-	var asd = $("txtCntrlOrder");
-	return asd.value;
+	var str = "txt" + str + "Order";
+	var Obj = $(str);
+	return Obj.value;
 }
 
 function setFeederIDinRedirectURL( id )
@@ -47,25 +55,15 @@ function setFeederIDinRedirectURL( id )
 }
 
 function selectFeeder( fid ){
-	var selectedFeeder = $("selectedFeeder");
-	if( selectedFeeder.value != 0 )
-	{
-		showDiv(selectedFeeder.value+"_unselected");
-		showDiv(selectedFeeder.value+"_selected");	
-		selectedFeeder.value = fid;
-		showDiv(fid+"_unselected");
-		showDiv(fid+"_selected");
-	}
-	else
-	{
-		selectedFeeder.value = fid;
-		showDiv(fid+"_unselected");
-		showDiv(fid+"_selected");
-	}
+	$("selectedFeeder").value = fid;
+	updateFeederBankInfo();
 }
 
 </script>
 
+<script language="JavaScript">
+    Event.observe(window, 'load', updateFeederBankInfo );
+</script>
 
 <div >
  <!--sort of a hack on REDIRECTURL input for now, but I can not figure out how to get around the use of the proxy in XmlHTTP calls-->
@@ -76,22 +74,36 @@ function selectFeeder( fid ){
 	<input type="hidden" name="cmdID" value="<%=CBCCommand.CMD_BANK_TEMP_MOVE%>">
 	<input type="hidden" name="opt" value="<%=oldfdrid%>">  <!--Old Feeder ID-->
 	<input type="hidden" name="opt"> <!--New Feeder ID-->
-	<input type="hidden" name="opt"> <!--Control Order-->
-	<input type="hidden" name="selectedFeeder" value=0 id="selectedFeeder">
+	<input type="hidden" name="opt"> <!--Display Order-->
+	<input type="hidden" name="opt"> <!--Close Order-->
+	<input type="hidden" name="opt"> <!--Trip Order-->
+	<input type="hidden" name="selectedFeeder" value=<%=oldfdrid%> id="selectedFeeder">
 
    <table id="innerTable" width="95%" border="0" cellspacing="0" cellpadding="0">
 <tr class="columnHeader lAlign">
 	<td>Select Feeder Below</td>
 	<td></td>
-	<td class="rAlign">New Control Order:
-	<input type="text" id="txtCntrlOrder" class="tableCell" size="1" maxlength="3" value="1">
+	<td class="rAlign">Display Order:
+	<input type="text" id="txtDisplayOrder" class="tableCell" size="1" maxlength="3" value="1.5">
 	</td>
-	<td><input id="submitOne" type="button" value="Submit" onclick="setFeederIDinRedirectURL(getSelectedFeeder());postMany('frmCapBankMove', 'opt[1]', getSelectedFeeder(), 'opt[2]', getControlOrder() );" >
+	<td class="rAlign">Close Order:
+	<input type="text" id="txtCloseOrder" class="tableCell" size="1" maxlength="3" value="1.5">
+	</td>
+	<td class="rAlign">Trip Order:
+	<input type="text" id="txtTripOrder" class="tableCell" size="1" maxlength="3" value="1.5">
+	</td>
+	<td class="rAlign"><input id="submitOne" type="button" value="Submit" onclick="setFeederIDinRedirectURL(getSelectedFeeder());postMany('frmCapBankMove', 'opt[1]', getSelectedFeeder(), 'opt[2]', getOrder('Display'), 'opt[3]', getOrder('Close'), 'opt[4]', getOrder('Trip') );" >
 	</td>
 </tr>
-</table>   
-      <div class="scrollHuge">
 
+</table>   
+
+<div id="ControlOrders" style="margin-left: 10%; margin-right: 10%;height:25%;max-height:25%;margin-bottom:2%;margin-top:2%;">
+    <jsp:include page=""/>
+</div>
+
+      <div style="margin-left: 10%; margin-right: 10%;" >
+<cti:titledContainer title="Feeders Eligible for the Move" >
 <%
 String css = "tableCell";
 int z = 0;
@@ -138,21 +150,21 @@ for( CBCArea area : allAreas )
 			Feeder feeder = feeders[j];
 			if( feeder.getCcId().intValue() == oldfdrid )
 				continue;
-	%> <!--  -->
-			<div class="capbankTempMoveLink" style="display:visible" id="<%=feeder.getCcId()%>_unselected"
-					onclick="selectFeeder(<%=feeder.getCcId()%>);">
-				<%=CBCUtils.CBC_DISPLAY.getFeederValueAt(feeder, CBCDisplay.FDR_NAME_COLUMN) %></div>
-			<div class="capbankTempMoveSelected" style="display:none" id="<%=feeder.getCcId()%>_selected"
-					onclick="selectFeeder(<%=feeder.getCcId()%>);">
-				<%=CBCUtils.CBC_DISPLAY.getFeederValueAt(feeder, CBCDisplay.FDR_NAME_COLUMN) %></div>
-			
+	%>
+			<div>
+			<input class="capbankTempMoveLink" type="radio" name="feeder" id="<%=feeder.getCcId()%>" onclick="selectFeeder(<%=feeder.getCcId()%>);" >
+			<%=CBCUtils.CBC_DISPLAY.getFeederValueAt(feeder, CBCDisplay.FDR_NAME_COLUMN) %>
+			</input>
+			</div>			
 	<%	} %>
 		</div></div>
 	<% } %>
 	</div></div>
 <% z++;
 	} %>
+	    </cti:titledContainer>
     </div>
+
 </form>
 </div>
 

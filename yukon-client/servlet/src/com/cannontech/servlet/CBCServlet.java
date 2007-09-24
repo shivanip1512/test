@@ -495,9 +495,7 @@ private synchronized void executeCommand( HttpServletRequest req, String userNam
 	int cmdID = ParamUtil.getInteger( req, "cmdID" );
 	int paoID = ParamUtil.getInteger( req, "paoID" );
 	String controlType = ParamUtil.getString( req, "controlType" );
-	int[] optParams =
-		StringUtils.toIntArray( ParamUtil.getStrings(req, "opt") );
-
+	float[] optParams = StringUtils.toFloatArray( ParamUtil.getStrings(req, "opt") );
 
 	CTILogger.debug(req.getServletPath() +
 		"	  cmdID = " + cmdID +

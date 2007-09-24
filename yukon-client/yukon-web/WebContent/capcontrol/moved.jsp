@@ -8,10 +8,15 @@
 
 <%
 	String feederID = request.getParameter("FeederID");
-	Feeder feederobj = capControlCache.getFeeder(Integer.valueOf(feederID));
-	String feederName = feederobj.getCcName();
-	SubBus sub = capControlCache.getSubBus(feederobj.getParentID());
-	String subName = sub.getCcName();
+	String feederName = "null";
+	String subName = "null";
+	if( feederID != null){
+		Integer fid = Integer.valueOf(feederID);
+		Feeder feederobj = capControlCache.getFeeder(fid);
+		feederName = feederobj.getCcName();
+		SubBus sub = capControlCache.getSubBus(feederobj.getParentID());
+		subName = sub.getCcName();
+	}
 %>
 
 <div >

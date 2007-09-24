@@ -30,7 +30,9 @@ public class CapBankDevice extends StreamableCapObject
 	private String switchManufacture = null;
 	private String mapLocationID = null;
 	private Float controlOrder = null;
-
+	private Float tripOrder = null;
+    private Float closeOrder = null;
+    
 	private Integer statusPointID = null;
 	private Integer controlStatus = null;
 	private Integer operationAnalogPointID = null;
@@ -469,6 +471,18 @@ public class CapBankDevice extends StreamableCapObject
     
     public static String getIgnoreReason (int idx) {
         return IGNORE_REASON[idx];
+    }
+    public Float getTripOrder() {
+        return tripOrder;
+    }
+    public void setTripOrder(Float tripOrder) {
+        this.tripOrder = tripOrder;
+    }
+    public Float getCloseOrder() {
+        return closeOrder;
+    }
+    public void setCloseOrder(Float closeOrder) {
+        this.closeOrder = closeOrder;
     }
 
 }

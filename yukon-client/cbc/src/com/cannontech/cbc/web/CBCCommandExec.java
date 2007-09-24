@@ -83,7 +83,7 @@ public class CBCCommandExec
 	}
 
 
-	public boolean execute_CapBankCmd( int _cmdID, int _paoID, int[] _optionalParams )
+	public boolean execute_CapBankCmd( int _cmdID, int _paoID, float[] _optionalParams )
 	{
 		if( _cmdID == CBCCommand.CONFIRM_CLOSE 
 			 || _cmdID == CBCCommand.CONFIRM_OPEN )
@@ -156,17 +156,19 @@ public class CBCCommandExec
             cbcCache.getConnection().write( pt );
         }        
 		else if( _cmdID == CBCCommand.CMD_BANK_TEMP_MOVE
-				 && _optionalParams.length >= 3 )
+				 && _optionalParams.length >= 5 )
 		{
 			// Build up  the move message here
 			//   params[0] = original feeder ID
 			//   params[1] = new feeder ID
 			//   params[2] = order of control
 			CBCTempMoveCapBank msg = new CBCTempMoveCapBank(
-				_optionalParams[0],
-				_optionalParams[1],
+				(int)_optionalParams[0],
+				(int)_optionalParams[1],
 				_paoID,
 				_optionalParams[2],
+                _optionalParams[3],
+                _optionalParams[4],
 				false );
 			
 			cbcCache.getConnection().write( msg );

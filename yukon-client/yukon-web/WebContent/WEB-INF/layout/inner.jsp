@@ -6,10 +6,11 @@
     <head>
         <title></title>           
 
-        <link rel="stylesheet" type="text/css" href="/WebConfig/yukon/CannonStyle.css" >
-        <link rel="stylesheet" type="text/css" href="/WebConfig/yukon/styles/StandardStyles.css" >
-        <link rel="stylesheet" type="text/css" href="/WebConfig/yukon/styles/InnerStyles.css" >
         <cti:outputHeadContent>
+          <cti:includeCss link="/WebConfig/yukon/CannonStyle.css" />
+          <cti:includeCss link="/WebConfig/yukon/styles/StandardStyles.css" />
+          <cti:includeCss link="/WebConfig/yukon/styles/YukonGeneralStyles.css"/>
+          <cti:includeCss link="/WebConfig/yukon/styles/InnerStyles.css" />
           <cti:includeScript link="/JavaScript/prototype.js"/>
           <cti:includeScript link="/JavaScript/CtiMenu.js"/>
         </cti:outputHeadContent>

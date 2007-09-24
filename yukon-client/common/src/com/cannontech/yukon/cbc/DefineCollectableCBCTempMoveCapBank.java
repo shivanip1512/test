@@ -83,5 +83,7 @@ public class DefineCollectableCBCTempMoveCapBank extends DefineCollectableCBCMes
 		vstr.insertUnsignedInt( (long) tmpMove.getCapBankID() );
 		vstr.insertUnsignedInt( (long) tmpMove.getNewFeedID() );
 		vstr.insertUnsignedInt( (long) tmpMove.getOrder() );
+        vstr.insertUnsignedInt( (long) tmpMove.getCloseOrder());
+        vstr.insertUnsignedInt( (long) tmpMove.getTripOrder());
 	}
 }
