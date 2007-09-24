@@ -8,8 +8,8 @@
 *
 * PVCS KEYWORDS:
 * ARCHIVE      :  $Archive:   Z:/SOFTWAREARCHIVES/YUKON/RTDB/dev_mct310.cpp-arc  $
-* REVISION     :  $Revision: 1.144 $
-* DATE         :  $Date: 2007/09/04 19:44:11 $
+* REVISION     :  $Revision: 1.145 $
+* DATE         :  $Date: 2007/09/24 19:56:22 $
 *
 * Copyright (c) 1999, 2000 Cannon Technologies Inc. All rights reserved.
 *-----------------------------------------------------------------------------*/
@@ -2655,7 +2655,7 @@ INT CtiDeviceMCT410::decodeGetValueOutage( INMESS *InMessage, CtiTime &TimeNow, 
 
                 outageTime = CtiTime(timestamp);
 
-                if( timestamp > DawnOfTime )
+                if( is_valid_time(timestamp) )
                 {
                     timeString = outageTime.asString();
                 }
@@ -2670,32 +2670,31 @@ INT CtiDeviceMCT410::decodeGetValueOutage( INMESS *InMessage, CtiTime &TimeNow, 
                     getDynamicInfo(Keys::Key_MCT_SSpecRevision) >= SspecRev_NewOutage_Min &&
                     getDynamicInfo(Keys::Key_MCT_SSpecRevision) <= SspecRev_NewOutage_Max )
                 {
-                    if( duration == 0x8000 )
+                    /*
+                    Units of outage:
+                    Bits 0-1 Units of outage (-2) 0=cycles, 1=seconds; 2=minutes; 3=waiting time sync
+                    Bits 2-3 Unused
+                    Bits 4-5 Units of outage (-1) 0=cycles, 1=seconds; 2=minutes; 3=waiting time sync
+                    Bits 6-7 Unused
+                    */
+
+                    cycles = duration;
+
+                    if( i == 0 )
                     {
-                        pointString += "(unknown duration)";
-                        cycles = -1;
+                        multiplier = (msgbuf[12] >> 4) & 0x03;
                     }
                     else
                     {
-                        /*
-                        Units of outage:
-                        Bits 0-1 Units of outage (-2) 0=cycles, 1=seconds; 2=minutes; 3=waiting time sync
-                        Bits 2-3 Unused
-                        Bits 4-5 Units of outage (-1) 0=cycles, 1=seconds; 2=minutes; 3=waiting time sync
-                        Bits 6-7 Unused
-                        */
+                        multiplier =  msgbuf[12] & 0x03;
+                    }
 
-                        cycles = duration;
-
-                        if( i == 0 )
-                        {
-                            multiplier = (msgbuf[12] >> 4) & 0x03;
-                        }
-                        else
-                        {
-                            multiplier =  msgbuf[12] & 0x03;
-                        }
-
+                    if( multiplier == 2 && cycles == 0xffff )
+                    {
+                        pointString += "(outage greater than 45 days)";
+                    }
+                    else
+                    {
                         switch( multiplier )
                         {
                             case 2: cycles *= 60;  //  minutes falls through to...
@@ -2755,12 +2754,14 @@ INT CtiDeviceMCT410::decodeGetValueOutage( INMESS *InMessage, CtiTime &TimeNow, 
                         pointString += "." + CtiNumStr(millis).zpad(3);
                     }
 
-                    if( pPoint = getDevicePointOffsetTypeEqual(PointOffset_Analog_Outage, AnalogPointType) )
+                    if( (pPoint = getDevicePointOffsetTypeEqual(PointOffset_Analog_Outage, AnalogPointType)) 
+                        && is_valid_time(outageTime) )
                     {
                         value  = cycles;
                         value /= 60.0;
                         value  = boost::static_pointer_cast<CtiPointNumeric>(pPoint)->computeValueForUOM(value);
 
+                        //  need to do this the old way so that we can set the point data message manually
                         if( pData = CTIDBG_new CtiPointDataMsg(pPoint->getPointID(), value, NormalQuality, AnalogPointType, pointString) )
                         {
                             pData->setTime( outageTime );
