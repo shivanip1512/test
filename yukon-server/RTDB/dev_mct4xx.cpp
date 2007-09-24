@@ -8,8 +8,8 @@
 *
 * PVCS KEYWORDS:
 * ARCHIVE      :  $Archive:   Z:/SOFTWAREARCHIVES/YUKON/RTDB/dev_mct4xx-arc  $
-* REVISION     :  $Revision: 1.66 $
-* DATE         :  $Date: 2007/08/17 15:34:23 $
+* REVISION     :  $Revision: 1.67 $
+* DATE         :  $Date: 2007/09/24 19:50:23 $
 *
 * Copyright (c) 2005 Cannon Technologies Inc. All rights reserved.
 *-----------------------------------------------------------------------------*/
@@ -215,6 +215,18 @@ string CtiDeviceMCT4xx::printable_date(unsigned long seconds) const
 }
 
 
+bool CtiDeviceMCT4xx::is_valid_time( const CtiTime time )
+{
+    bool retval = false;
+
+    //  between 2000-jan-01 and tomorrow
+    retval = (time > DawnOfTime) && 
+             (time < (CtiTime::now() + 86400));
+
+    return retval;
+}
+
+
 bool CtiDeviceMCT4xx::getOperation( const UINT &cmd, BSTRUCT &bst ) const
 {
     bool found = false;
@@ -366,9 +378,14 @@ bool CtiDeviceMCT4xx::insertPointDataReport(CtiPointType_t type, int offset, Cti
         {
             pdm = CTIDBG_new CtiPointDataMsg(p->getID(), pi.value, pi.quality, p->getType(), valueReport(p, pi, timestamp).c_str());
 
-            if( timestamp > DawnOfTime && timestamp < YUKONEOT )
+            if( is_valid_time(timestamp) )
             {
                 pdm->setTime(timestamp);
+            }
+            else if( getMCTDebugLevel(DebugLevel_Info) )
+            {
+                CtiLockGuard<CtiLogger> doubt_guard(dout);
+                dout << CtiTime() << " **** Checkpoint - invalid time " << timestamp << " for point " << pointname << " in CtiDeviceMCT4xx::insertPointDataReport() **** " << __FILE__ << " (" << __LINE__ << ")" << endl;
             }
 
             pdm->setTags(tags);
@@ -550,7 +567,7 @@ INT CtiDeviceMCT4xx::executeGetValue( CtiRequestMsg        *pReq,
                     lp_status_string += "Last request failed at interval: " + printable_time(_llpInterest.time + _llpInterest.offset + interval_len) + "\n";
                 }
 
-                if( _llpInterest.time_end > (DawnOfTime) )
+                if( is_valid_time(_llpInterest.time_end) )
                 {
                     lp_status_string += "Last request end time: " + printable_time(_llpInterest.time_end) + "\n";
                 }

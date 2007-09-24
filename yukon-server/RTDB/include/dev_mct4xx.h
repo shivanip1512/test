@@ -9,8 +9,8 @@
 *
 * PVCS KEYWORDS:
 * ARCHIVE      :  $Archive:   Z:/SOFTWAREARCHIVES/YUKON/RTDB/INCLUDE/dev_mct4xx.h-arc  $
-* REVISION     :  $Revision: 1.31 $
-* DATE         :  $Date: 2007/08/15 21:04:13 $
+* REVISION     :  $Revision: 1.32 $
+* DATE         :  $Date: 2007/09/24 19:50:23 $
 *
 * Copyright (c) 2005 Cannon Technologies Inc. All rights reserved.
 *-----------------------------------------------------------------------------*/
@@ -47,8 +47,10 @@ private:
 
 protected:
 
-    string printable_time(unsigned long seconds) const;
-    string printable_date(unsigned long seconds) const;
+    static string printable_time(unsigned long seconds);
+    static string printable_date(unsigned long seconds);
+
+    static bool is_valid_time(const CtiTime);
 
     bool getOperation( const UINT &cmd, BSTRUCT &bst ) const;
 
