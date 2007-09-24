@@ -4955,8 +4955,8 @@ void CtiCCSubstationBusStore::reloadCapBankFromDatabase(long capBankId, map< lon
                             long deviceid;
                             long feederid;
                             FLOAT controlOrder;
-                            long tripOrder;
-                            long closeOrder;
+                            FLOAT tripOrder;
+                            FLOAT closeOrder;
 
                             rdr["deviceid"] >> deviceid;
                             rdr["feederid"] >> feederid;

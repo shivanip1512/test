@@ -68,8 +68,8 @@ public:
     const string& getMapLocationId() const;
     LONG getRecloseDelay() const;
     FLOAT getControlOrder() const;
-    LONG getTripOrder() const;
-    LONG getCloseOrder() const;
+    FLOAT getTripOrder() const;
+    FLOAT getCloseOrder() const;
     LONG getStatusPointId() const;
     LONG getControlStatus() const;
     LONG getOperationAnalogPointId() const;
@@ -77,7 +77,11 @@ public:
     const CtiTime& getLastStatusChangeTime() const;
     LONG getTagsControlStatus() const;
     LONG getOriginalFeederId() const;
-    LONG getOriginalSwitchingOrder() const;
+
+    float getOriginalSwitchingOrder() const;
+    float getOriginalCloseOrder() const;
+    float getOriginalTripOrder() const;
+
     BOOL getVerificationFlag() const;
     BOOL getPerformingVerificationFlag() const;
     BOOL getVerificationDoneFlag() const;
@@ -125,8 +129,8 @@ public:
     CtiCCCapBank& setMapLocationId(const string& maplocation);
     CtiCCCapBank& setRecloseDelay(LONG reclose);
     CtiCCCapBank& setControlOrder(FLOAT order);
-    CtiCCCapBank& setTripOrder(LONG order);
-    CtiCCCapBank& setCloseOrder(LONG order);
+    CtiCCCapBank& setTripOrder(FLOAT order);
+    CtiCCCapBank& setCloseOrder(FLOAT order);
     CtiCCCapBank& setStatusPointId(LONG statuspoint);
     CtiCCCapBank& setControlStatus(LONG status);
     CtiCCCapBank& setOperationAnalogPointId(LONG operationpoint);
@@ -134,7 +138,9 @@ public:
     CtiCCCapBank& setLastStatusChangeTime(const CtiTime& laststatuschangetime);
     CtiCCCapBank& setTagsControlStatus(LONG tags);
     CtiCCCapBank& setOriginalFeederId(LONG origfeeder);
-    CtiCCCapBank& setOriginalSwitchingOrder(LONG origorder);
+    CtiCCCapBank& setOriginalSwitchingOrder(float origorder);
+    CtiCCCapBank& setOriginalCloseOrder(float origorder);
+    CtiCCCapBank& setOriginalTripOrder(float origorder);
 
     CtiCCCapBank& setVerificationFlag(BOOL verificationFlag);
     CtiCCCapBank& setPerformingVerificationFlag(BOOL performingVerificationFlag);
@@ -229,8 +235,8 @@ private:
     string _maplocationid;
     LONG _reclosedelay;
     FLOAT _controlorder;
-    LONG _triporder;
-    LONG _closeorder;
+    FLOAT _triporder;
+    FLOAT _closeorder;
     LONG _statuspointid;
     LONG _controlstatus;
     LONG _operationanalogpointid;
@@ -238,8 +244,9 @@ private:
     CtiTime _laststatuschangetime;
     LONG _tagscontrolstatus;
     LONG _originalfeederid;
-    LONG _originalswitchingorder;
-
+    float _originalswitchingorder;
+    float _originalcloseorder;
+    float _originaltriporder;
 
     //verification info
     string _additionalFlags;

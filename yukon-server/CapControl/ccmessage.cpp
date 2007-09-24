@@ -209,11 +209,18 @@ LONG CtiCCCapBankMoveMsg::getNewFeederId() const
 {
     return _newfeederid;
 }
-LONG CtiCCCapBankMoveMsg::getCapSwitchingOrder() const
+float CtiCCCapBankMoveMsg::getCapSwitchingOrder() const
 {
     return _capswitchingorder;
 }
-    
+float CtiCCCapBankMoveMsg::getCloseOrder() const
+{
+    return _closeOrder;
+}
+float CtiCCCapBankMoveMsg::getTripOrder() const
+{
+    return _tripOrder;
+}   
 /*-------------------------------------------------------------------------
     restoreGuts
     
@@ -226,7 +233,9 @@ void CtiCCCapBankMoveMsg::restoreGuts(RWvistream& strm)
          >> _oldfeederid
          >> _capbankid
          >> _newfeederid
-         >> _capswitchingorder;
+         >> _capswitchingorder
+         >> _closeOrder
+         >> _tripOrder;
  
     return;
 }
@@ -244,7 +253,9 @@ void CtiCCCapBankMoveMsg::saveGuts(RWvostream& strm) const
          << _oldfeederid
          << _capbankid
          << _newfeederid
-         << _capswitchingorder;
+         << _capswitchingorder
+         << _closeOrder
+         << _tripOrder;
 
     return;
 }
@@ -261,6 +272,8 @@ CtiCCCapBankMoveMsg& CtiCCCapBankMoveMsg::operator=(const CtiCCCapBankMoveMsg& r
         _capbankid        = right._capbankid        ;
         _newfeederid      = right._newfeederid      ;
         _capswitchingorder= right._capswitchingorder;
+        _closeOrder       = right._closeOrder;
+        _tripOrder        = right._tripOrder;
     }
 
     return *this;

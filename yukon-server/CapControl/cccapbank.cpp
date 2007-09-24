@@ -370,7 +370,7 @@ FLOAT CtiCCCapBank::getControlOrder() const
 
     Returns the trip order of the cap bank in the list of a feeder
 ---------------------------------------------------------------------------*/
-LONG CtiCCCapBank::getTripOrder() const
+FLOAT CtiCCCapBank::getTripOrder() const
 {
     return _triporder;
 }
@@ -380,7 +380,7 @@ LONG CtiCCCapBank::getTripOrder() const
 
     Returns the close order of the cap bank in the list of a feeder
 ---------------------------------------------------------------------------*/
-LONG CtiCCCapBank::getCloseOrder() const
+FLOAT CtiCCCapBank::getCloseOrder() const
 {
     return _closeorder;
 }
@@ -540,11 +540,20 @@ LONG CtiCCCapBank::getOriginalFeederId() const
 
     Returns the original switching order on the cap bank used for temp cap bank moves 
 ---------------------------------------------------------------------------*/
-LONG CtiCCCapBank::getOriginalSwitchingOrder() const
+float CtiCCCapBank::getOriginalSwitchingOrder() const
 {
     return _originalswitchingorder;
 }
 
+float CtiCCCapBank::getOriginalCloseOrder() const
+{
+    return _originalcloseorder;
+}
+
+float CtiCCCapBank::getOriginalTripOrder() const
+{
+    return _originaltriporder;
+}
 /*---------------------------------------------------------------------------
     setPAOId
 
@@ -845,7 +854,7 @@ CtiCCCapBank& CtiCCCapBank::setControlOrder(FLOAT order)
 
     Sets the trip order of the capbank in the list of the parent feeder
 ---------------------------------------------------------------------------*/
-CtiCCCapBank& CtiCCCapBank::setTripOrder(LONG order)
+CtiCCCapBank& CtiCCCapBank::setTripOrder(FLOAT order)
 {
     _triporder = order;
 
@@ -857,7 +866,7 @@ CtiCCCapBank& CtiCCCapBank::setTripOrder(LONG order)
 
     Sets the close order of the capbank in the list of the parent feeder
 ---------------------------------------------------------------------------*/
-CtiCCCapBank& CtiCCCapBank::setCloseOrder(LONG order)
+CtiCCCapBank& CtiCCCapBank::setCloseOrder(FLOAT order)
 {
     _closeorder = order;
 
@@ -1420,7 +1429,7 @@ CtiCCCapBank& CtiCCCapBank::setOriginalFeederId(LONG origfeeder)
 
     Sets the switching order on the capbank for temp cap bank moves
 ---------------------------------------------------------------------------*/
-CtiCCCapBank& CtiCCCapBank::setOriginalSwitchingOrder(LONG origorder)
+CtiCCCapBank& CtiCCCapBank::setOriginalSwitchingOrder(float origorder)
 {
     if( _originalswitchingorder != origorder )
     {
@@ -1433,7 +1442,32 @@ CtiCCCapBank& CtiCCCapBank::setOriginalSwitchingOrder(LONG origorder)
     _originalswitchingorder = origorder;
     return *this;
 }
-
+CtiCCCapBank& CtiCCCapBank::setOriginalCloseOrder(float origorder)
+{
+    if( _originalcloseorder != origorder )
+    {
+        /*{
+            CtiLockGuard<CtiLogger> doubt_guard(dout);
+            dout << CtiTime() << " - _dirty = TRUE  " << __FILE__ << " (" << __LINE__ << ")" << endl;
+        }*/
+        _dirty = TRUE;
+    }
+    _originalcloseorder = origorder;
+    return *this;
+}
+CtiCCCapBank& CtiCCCapBank::setOriginalTripOrder(float origorder)
+{
+    if( _originaltriporder != origorder )
+    {
+        /*{
+            CtiLockGuard<CtiLogger> doubt_guard(dout);
+            dout << CtiTime() << " - _dirty = TRUE  " << __FILE__ << " (" << __LINE__ << ")" << endl;
+        }*/
+        _dirty = TRUE;
+    }
+    _originaltriporder = origorder;
+    return *this;
+}
 
 CtiCCCapBank& CtiCCCapBank::addAllCapBankPointsToMsg(CtiCommandMsg *pointAddMsg)
 {
@@ -1507,8 +1541,9 @@ void CtiCCCapBank::restoreGuts(RWvistream& istrm)
     >> _currentdailyoperations
     >> _ignoreFlag
     >> _ignoreReason
-    >> _ovUvDisabledFlag;
-
+    >> _ovUvDisabledFlag
+    >> _triporder
+    >> _closeorder;
     _laststatuschangetime = CtiTime(tempTime1);
 }
 
@@ -1553,6 +1588,8 @@ void CtiCCCapBank::saveGuts(RWvostream& ostrm ) const
     << _ignoreFlag   
     << _ignoreReason
     << _ovUvDisabledFlag;
+    ostrm << _triporder;
+    ostrm << _closeorder;
 }
 
 /*---------------------------------------------------------------------------
@@ -1586,6 +1623,8 @@ CtiCCCapBank& CtiCCCapBank::operator=(const CtiCCCapBank& right)
         _maplocationid = right._maplocationid;
         _reclosedelay = right._reclosedelay;
         _controlorder = right._controlorder;
+        _triporder = right._triporder;
+        _closeorder = right._closeorder;
         _statuspointid = right._statuspointid;
         _controlstatus = right._controlstatus;
         _operationanalogpointid = right._operationanalogpointid;
@@ -1682,7 +1721,9 @@ void CtiCCCapBank::restore(RWDBReader& rdr)
     setControlStatus(CtiCCCapBank::Open);
     setTagsControlStatus(0);
     setOriginalFeederId(0);
-    setOriginalSwitchingOrder(0);
+    setOriginalSwitchingOrder(0.0);
+    setOriginalCloseOrder(0.0);
+    setOriginalTripOrder(0.0);
     setAssumedOrigVerificationState(CtiCCCapBank::Open);
     setPreviousVerificationControlStatus(CtiCCCapBank::Open);
     setVCtrlIndex(-1);

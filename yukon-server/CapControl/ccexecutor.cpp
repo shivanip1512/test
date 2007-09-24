@@ -3649,7 +3649,9 @@ void CtiCCCommandExecutor::ReturnCapToOriginalFeeder()
     LONG tempFeederId = 0;
     LONG movedCapBankId = bankId;
     LONG originalFeederId = 0;
-    LONG capSwitchingOrder = 0;
+    float capSwitchingOrder = 0.0;
+    float closeOrder = 0.0;
+    float tripOrder = 0.0;
 
     CtiCCSubstationBus_vec& ccSubstationBuses = *store->getCCSubstationBuses(CtiTime().seconds());
 
@@ -3669,6 +3671,8 @@ void CtiCCCommandExecutor::ReturnCapToOriginalFeeder()
                 movedCapBankId = bankId;
                 originalFeederId = currentCapBank->getOriginalFeederId();
                 capSwitchingOrder = currentCapBank->getOriginalSwitchingOrder();
+                closeOrder = currentCapBank->getOriginalCloseOrder();
+                tripOrder = currentCapBank->getOriginalTripOrder();
             }
             else
             {
@@ -3688,7 +3692,7 @@ void CtiCCCommandExecutor::ReturnCapToOriginalFeeder()
             CtiLockGuard<CtiLogger> logger_guard(dout);
             dout << CtiTime() << " - Move Cap Bank to original feeder PAO Id: " << movedCapBankId << endl;
         }
-        moveCapBank(1, tempFeederId, movedCapBankId, originalFeederId, capSwitchingOrder);
+        moveCapBank(1, tempFeederId, movedCapBankId, originalFeederId, capSwitchingOrder, closeOrder, tripOrder);
     }
     else
     {
@@ -4102,15 +4106,17 @@ void CtiCCCapBankMoveExecutor::Execute()
     LONG oldFeederId = _capMoveMsg->getOldFeederId();
     LONG movedCapBankId = _capMoveMsg->getCapBankId();
     LONG newFeederId = _capMoveMsg->getNewFeederId();
-    LONG capSwitchingOrder = _capMoveMsg->getCapSwitchingOrder();
+    float capSwitchingOrder = _capMoveMsg->getCapSwitchingOrder();
+    float capCloseOrder = _capMoveMsg->getCloseOrder();
+    float capTripOrder = _capMoveMsg->getTripOrder();
 
-    moveCapBank(permanentFlag, oldFeederId, movedCapBankId, newFeederId, capSwitchingOrder);
+    moveCapBank(permanentFlag, oldFeederId, movedCapBankId, newFeederId, capSwitchingOrder, capCloseOrder, capTripOrder);
 }
 
 /*---------------------------------------------------------------------------
     moveCapBank
 ---------------------------------------------------------------------------*/    
-void CtiCCExecutor::moveCapBank(INT permanentFlag, LONG oldFeederId, LONG movedCapBankId, LONG newFeederId, LONG capSwitchingOrder)
+void CtiCCExecutor::moveCapBank(INT permanentFlag, LONG oldFeederId, LONG movedCapBankId, LONG newFeederId, float capSwitchingOrder, float closeOrder, float tripOrder)
 {
     CtiCCSubstationBusStore* store = CtiCCSubstationBusStore::getInstance();
     RWRecursiveLock<RWMutexLock>::LockGuard  guard(store->getMux());
@@ -4194,11 +4200,15 @@ void CtiCCExecutor::moveCapBank(INT permanentFlag, LONG oldFeederId, LONG movedC
             {
                 movedCapBankPtr->setOriginalFeederId(oldFeederPtr->getPAOId());
                 movedCapBankPtr->setOriginalSwitchingOrder(movedCapBankPtr->getControlOrder());
+                movedCapBankPtr->setOriginalCloseOrder(movedCapBankPtr->getCloseOrder());
+                movedCapBankPtr->setOriginalTripOrder(movedCapBankPtr->getTripOrder());
             }
             else
             {
                 movedCapBankPtr->setOriginalFeederId(0);
-                movedCapBankPtr->setOriginalSwitchingOrder(0);
+                movedCapBankPtr->setOriginalSwitchingOrder(0.0);
+                movedCapBankPtr->setOriginalCloseOrder(0.0);
+                movedCapBankPtr->setOriginalTripOrder(0.0);
 
                 oldFeederPtr->checkForAndReorderFeeder();
             }
@@ -4231,7 +4241,7 @@ void CtiCCExecutor::moveCapBank(INT permanentFlag, LONG oldFeederId, LONG movedC
                         //have to remove due to change in sorting field in a sorted vector
                         CtiCCCapBank* currentCapBank = (CtiCCCapBank*)newFeederCapBanks.front();
                         newFeederCapBanks.erase(newFeederCapBanks.begin());
-                        if( capSwitchingOrder == (LONG)currentCapBank->getControlOrder() )
+                        if( capSwitchingOrder == currentCapBank->getControlOrder() )
                         {
                             //have to make room for the movedCapBank
                             currentCapBank->setControlOrder(currentCapBank->getControlOrder() + 0.1);
@@ -4251,6 +4261,8 @@ void CtiCCExecutor::moveCapBank(INT permanentFlag, LONG oldFeederId, LONG movedC
             {
                 movedCapBankPtr->setControlOrder(1);
             } 
+            movedCapBankPtr->setCloseOrder(closeOrder);
+            movedCapBankPtr->setTripOrder(tripOrder);
 
             newFeederCapBanks.push_back(movedCapBankPtr);
             store->insertItemsIntoMap(CtiCCSubstationBusStore::CapBankIdFeederIdMap, &movedCapBankId, &newFeederId);

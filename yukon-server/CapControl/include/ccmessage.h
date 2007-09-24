@@ -139,17 +139,16 @@ class CtiCCCapBankMoveMsg : public CtiCCMessage
 RWDECLARE_COLLECTABLE( CtiCCCapBankMoveMsg )
 
 public:
-    /*CtiCCCapBankMoveMsg(LONG command);
-    CtiCCCapBankMoveMsg(LONG command, LONG id);
-    CtiCCCapBankMoveMsg(const CtiCCCommand& commandMsg);*/
-    
+   
     virtual ~CtiCCCapBankMoveMsg();
 
     INT getPermanentFlag() const;
     LONG getOldFeederId() const;
     LONG getCapBankId() const;
     LONG getNewFeederId() const;
-    LONG getCapSwitchingOrder() const;
+    float getCapSwitchingOrder() const;
+    float getCloseOrder() const;
+    float getTripOrder() const;
 
     void restoreGuts(RWvistream&);
     void saveGuts(RWvostream&) const;
@@ -162,7 +161,9 @@ private:
     LONG _oldfeederid;
     LONG _capbankid;
     LONG _newfeederid;
-    LONG _capswitchingorder;
+    float _capswitchingorder;
+    float _closeOrder;
+    float _tripOrder;
 };
 
 
