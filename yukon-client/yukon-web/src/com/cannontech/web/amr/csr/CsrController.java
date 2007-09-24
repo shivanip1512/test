@@ -28,6 +28,7 @@ import com.cannontech.core.dao.DeviceDao;
 import com.cannontech.core.dao.RoleDao;
 import com.cannontech.database.data.device.DeviceTypesFuncs;
 import com.cannontech.roles.yukon.MultispeakRole;
+import com.cannontech.roles.operator.MeteringRole;
 
 /**
  * Spring controller class for csr
@@ -152,6 +153,13 @@ public class CsrController extends MultiActionController {
         boolean disconnectSupported = DeviceTypesFuncs.isDisconnectEnabled(device);
         mav.addObject("disconnectSupported", disconnectSupported);
 
+        boolean deviceGroupEnabled = Boolean.parseBoolean(roleDao.getGlobalPropertyValue(MeteringRole.DEVICE_GROUP_ENABLED));
+        mav.addObject("deviceGroupsSupported", deviceGroupEnabled);
+        
+        boolean touSupported = DeviceTypesFuncs.isTouEnabled(device);
+        boolean touEnabled = Boolean.parseBoolean(roleDao.getGlobalPropertyValue(MeteringRole.TOU_ENABLED));
+        mav.addObject("touSupported", (touSupported && touEnabled));
+        
         return mav;
     }
 

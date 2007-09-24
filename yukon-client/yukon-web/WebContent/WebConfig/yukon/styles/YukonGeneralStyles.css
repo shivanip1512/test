@@ -131,7 +131,7 @@ table.nameValueTable td.value {
 }
 
 tr.altRow {
-	background-color: #f6f6f6;
+	background-color: #f6f6f6; 
 }
 
 /* Titled Container styles */
@@ -317,4 +317,14 @@ div.widgetPopup {
 	left:50px;
 	width: 50%;
 	background-color:#FFFFCC;
+}
+
+th.widgetInternalSectionSubHeader {
+	background: #F0F0F0 ! important;
+	font-weight: lighter ! important; 
+	font-size: 12px ! important;
+	padding-top: 5px; 
+	padding-bottom: 5px; 
+	margin-left: 5px;
+	
 }

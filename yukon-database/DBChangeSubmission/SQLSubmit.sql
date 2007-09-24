@@ -56,3 +56,45 @@ insert into billingfileformats values( -19, ' NISC No Limit kWh ',1);
 alter table ccfeederbanklist alter column controlorder float;
 alter table ccfeederbanklist alter column closeorder float;
 alter table ccfeederbanklist alter column triporder float;
+
+/** Head only TOU Widget db updates */
+USE [sw_cart40]
+GO
+/****** Object:  Table [dbo].[TouAttributeMapping]    Script Date: 09/24/2007 10:54:13 ******/
+SET ANSI_NULLS ON
+GO
+SET QUOTED_IDENTIFIER ON
+GO
+SET ANSI_PADDING ON
+GO
+CREATE TABLE [dbo].[TouAttributeMapping](
+	[touId] [int] IDENTITY(1,1) NOT NULL,
+	[displayName] [varchar](50) COLLATE SQL_Latin1_General_CP1_CI_AS NOT NULL,
+	[peakAttribute] [varchar](50) COLLATE SQL_Latin1_General_CP1_CI_AS NOT NULL,
+	[usageAttribute] [varchar](50) COLLATE SQL_Latin1_General_CP1_CI_AS NOT NULL,
+ CONSTRAINT [PK_TouAttributeMapping] PRIMARY KEY CLUSTERED 
+(
+	[touId] ASC
+)WITH (IGNORE_DUP_KEY = OFF) ON [PRIMARY]
+) ON [PRIMARY]
+
+GO
+SET ANSI_PADDING OFF
+
+INSERT INTO [sw_cart40].[dbo].[TouAttributeMapping]
+           ([displayName], [peakAttribute], [usageAttribute])
+     VALUES ('Normal', 'PEAK_DEMAND', 'USAGE');
+
+INSERT INTO [sw_cart40].[dbo].[TouAttributeMapping]
+           ([displayName], [peakAttribute], [usageAttribute])
+     VALUES ('B', 'TOU_RATE_B_PEAK', 'TOU_RATE_B_USAGE');
+
+INSERT INTO [sw_cart40].[dbo].[TouAttributeMapping]
+           ([displayName], [peakAttribute], [usageAttribute])
+     VALUES ('C', 'TOU_RATE_C_PEAK', 'TOU_RATE_C_USAGE');
+
+INSERT INTO [sw_cart40].[dbo].[TouAttributeMapping]
+           ([displayName], [peakAttribute], [usageAttribute])
+     VALUES ('D', 'TOU_RATE_D_PEAK', 'TOU_RATE_D_USAGE');
+
+

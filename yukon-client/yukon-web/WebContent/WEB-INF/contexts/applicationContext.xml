@@ -65,6 +65,19 @@
         <property name="meterDao" ref="meterDao"/>
     </bean>
 
+	<bean id="touWidget"
+    	class="com.cannontech.web.widget.TouWidget">
+    	<property name="title" value="TOU"/>
+    	<property name="inputs">
+           <set>
+              <ref local="widgetInput.deviceId"/>
+           </set>
+        </property>
+        <property name="attributeService" ref="attributeService"/>
+        <property name="meterDao" ref="meterDao"/>
+        <property name="meterReadService" ref="meterReadService"/>
+        <property name="touDao" ref="touDao"/>
+    </bean>
 
     <bean id="readCurrentTimeWidget"
     	class="com.cannontech.web.widget.ReadCurrentTimeWidget">

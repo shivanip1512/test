@@ -23,6 +23,7 @@ import com.cannontech.database.db.DBPersistent;
 import com.cannontech.database.db.capcontrol.DeviceCBC;
 import com.cannontech.database.db.device.DeviceAddress;
 import com.cannontech.database.db.device.DeviceMCT400Series;
+import com.cannontech.roles.operator.MeteringRole;
 
 /**
  * This type was created in VisualAge.
@@ -735,6 +736,26 @@ public static boolean isDisconnectMCT( int type)
 			return false;
 	}
 }
+
+public final static boolean isTouCapable(int deviceType) 
+{
+    switch(deviceType)
+    {
+        case MCT410IL:
+        case MCT410CL:
+        case MCT410FL:
+        case MCT410GL:
+        case MCT430A:
+        case MCT430S4:
+        case MCT430SL:
+        case MCT470:
+            return true;
+    
+        default:
+            return false;
+    }
+}
+
 /**
  * Insert the method's description here.
  * Creation date: (1/15/2001 1:46:22 PM)
@@ -1430,6 +1451,17 @@ public static Object changeType (String newType,
             return true;
         if( isMCT410(yukonDevice.getType()) )
             return DeviceMCT400Series.hasExistingDisconnectAddress(yukonDevice.getDeviceId());
+        return false;
+    }
+    
+    /**
+     * Returns true if the device can use time of use
+     * @param yukonDevice
+     * @return
+     */
+    public static boolean isTouEnabled(YukonDevice yukonDevice) {
+        if (isTouCapable(yukonDevice.getType()))
+            return true;
         return false;
     }
 }

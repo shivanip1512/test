@@ -39,5 +39,9 @@
         <property name="commandExecutor" ref="commandRequestExecutor"/>
     </bean>
     
+    <bean id="touDao" class="com.cannontech.amr.tou.dao.impl.TouDaoImpl">
+	  	<property name="simpleJdbcTemplate" ref="simpleJdbcTemplate"/>
+	</bean>
+
 </beans>
 
