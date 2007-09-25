@@ -7,6 +7,11 @@ import java.util.List;
 import java.util.Map;
 import java.util.Set;
 
+import org.springframework.core.io.FileSystemResource;
+import org.springframework.core.io.InputStreamResource;
+import org.springframework.core.io.Resource;
+import org.springframework.core.io.UrlResource;
+
 import junit.framework.TestCase;
 
 import com.cannontech.common.device.YukonDevice;
@@ -39,9 +44,14 @@ public class DeviceDefinitionDaoImplTest extends TestCase {
         DeviceDefinitionDaoImpl dao = new DeviceDefinitionDaoImpl();
 
         // Use testDeviceDefinition.xml for testing
-        ((DeviceDefinitionDaoImpl) dao).setInputFile(dao.getClass()
-                                                        .getClassLoader()
-                                                        .getResourceAsStream("com/cannontech/common/device/definition/dao/testDeviceDefinition.xml"));
+/*        ((DeviceDefinitionDaoImpl) dao).setInputFile(dao.getClass()
+                                                        .getClassLoader().
+                                                        .getResource("com/cannontech/common/device/definition/dao/testDeviceDefinition.xml"));
+*/
+        ((DeviceDefinitionDaoImpl) dao).setInputFile(new InputStreamResource(dao.getClass()
+                                                                             .getClassLoader()
+                                                                             .getResourceAsStream("com/cannontech/common/device/definition/dao/testDeviceDefinition.xml")));
+
         ((DeviceDefinitionDaoImpl) dao).setPaoGroupsWrapper(new DeviceDefinitionDaoImplTest().new MockPaoGroups());
         ((DeviceDefinitionDaoImpl) dao).setJavaConstantClassName(DeviceTypes.class.getName());
         ((DeviceDefinitionDaoImpl) dao).setStateDao(new DeviceDefinitionDaoImplTest().new MockStateDao());
