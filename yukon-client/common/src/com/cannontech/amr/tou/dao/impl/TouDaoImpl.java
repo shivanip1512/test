@@ -6,7 +6,7 @@ import org.springframework.beans.factory.annotation.Required;
 import org.springframework.jdbc.core.simple.SimpleJdbcOperations;
 
 import com.cannontech.amr.tou.dao.TouDao;
-import com.cannontech.amr.tou.model.TouAttributeMapper;
+import com.cannontech.amr.tou.model.TouAttributeMapping;
 
 public class TouDaoImpl implements TouDao {
     private SimpleJdbcOperations simpleJdbcTemplate;
@@ -16,8 +16,8 @@ public class TouDaoImpl implements TouDao {
 
     String getAllTouMappingsSql = retrieveTouSql + "order by TAM.touID asc ";
 
-    public List<TouAttributeMapper> getTouMappings() {
-        List<TouAttributeMapper> results = simpleJdbcTemplate.query(getAllTouMappingsSql,
+    public List<TouAttributeMapping> getTouMappings() {
+        List<TouAttributeMapping> results = simpleJdbcTemplate.query(getAllTouMappingsSql,
                                                      touRowMapper);
 
         return results;

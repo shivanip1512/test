@@ -15,7 +15,7 @@ import com.cannontech.amr.deviceread.dao.MeterReadService;
 import com.cannontech.amr.meter.dao.MeterDao;
 import com.cannontech.amr.meter.model.Meter;
 import com.cannontech.amr.tou.dao.TouDao;
-import com.cannontech.amr.tou.model.TouAttributeMapper;
+import com.cannontech.amr.tou.model.TouAttributeMapping;
 import com.cannontech.common.device.YukonDevice;
 import com.cannontech.common.device.attribute.model.Attribute;
 import com.cannontech.common.device.attribute.service.AttributeService;
@@ -50,7 +50,7 @@ public class TouWidget extends WidgetControllerBase {
         Meter meter = getMeter(request);
         
         // Gets all the attributes that are needed to show time of use.
-        List<TouAttributeMapper> touRatesList = touDao.getTouMappings();
+        List<TouAttributeMapping> touRatesList = touDao.getTouMappings();
         Set<Attribute> existingAttributes = getExistingAttributes(meter, touRatesList);
         touRatesList = validateTouAttributes(existingAttributes, touRatesList);
         
@@ -79,7 +79,7 @@ public class TouWidget extends WidgetControllerBase {
         Meter meter = getMeter(request);
         LiteYukonUser user = ServletUtil.getYukonUser(request);
         
-        List<TouAttributeMapper> touRatesList = touDao.getTouMappings();
+        List<TouAttributeMapping> touRatesList = touDao.getTouMappings();
         Set<Attribute> existingAttributes = getExistingAttributes(meter, touRatesList);
         touRatesList = validateTouAttributes(existingAttributes, touRatesList);
 
@@ -109,13 +109,12 @@ public class TouWidget extends WidgetControllerBase {
      * @param touList
      * @return
      */
-    private Set<Attribute> getExistingAttributes(YukonDevice device,  List<TouAttributeMapper> touList){
+    private Set<Attribute> getExistingAttributes(YukonDevice device,  List<TouAttributeMapping> touList){
         List<Attribute> neededAttributes = new ArrayList<Attribute>();;
         Set<Attribute> allExistingAttributes = attributeService.getAllExistingAtributes(device);
 
-        for (TouAttributeMapper touRate : touList) {
-            neededAttributes.add(touRate.getUsage());
-            neededAttributes.add(touRate.getPeak());
+        for (TouAttributeMapping touRate : touList) {
+            neededAttributes.addAll(touRate.getAllAttributes());
         }
         
         allExistingAttributes.retainAll(neededAttributes);
@@ -131,24 +130,26 @@ public class TouWidget extends WidgetControllerBase {
      * @param touList
      * @return
      */
-    public static List<TouAttributeMapper> validateTouAttributes(
-            Set<Attribute> existingAttributes, List<TouAttributeMapper> touList) {
-        int nullCounter = 0;
+    public static List<TouAttributeMapping> validateTouAttributes(
+            Set<Attribute> existingAttributes, List<TouAttributeMapping> touList) {
+
+        List<TouAttributeMapping> resultList = new ArrayList<TouAttributeMapping>();
+        
         for (int i = 0; i < touList.size(); i++) {
-            TouAttributeMapper tou = touList.get(i);
-            if (!existingAttributes.contains(tou.getUsage())) {
-                tou.setUsage(null);
-                nullCounter++;
-            }
-            if (!existingAttributes.contains(tou.getPeak())) {
-                tou.setPeak(null);
-                nullCounter++;
+            TouAttributeMapping tou = touList.get(i);
+            if (existingAttributes.contains(tou.getUsage()) || existingAttributes.contains(tou.getPeak())) {
+               TouAttributeMapping temp = new TouAttributeMapping();
+               temp.setDisplayName(tou.getDisplayName());
+               if (existingAttributes.contains(tou.getUsage())) {
+                   temp.setUsage(tou.getUsage());
+               }
+               if (existingAttributes.contains(tou.getPeak())) {
+                   temp.setPeak(tou.getPeak());
+               }
+               resultList.add(temp); 
             }
         }
-        if ((nullCounter / 2) >= touList.size()) {
-            return null;
-        }
-        return touList;
+        return resultList;
     }
     
     @Required

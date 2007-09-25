@@ -5,14 +5,14 @@ import java.sql.SQLException;
 
 import org.springframework.jdbc.core.simple.ParameterizedRowMapper;
 
-import com.cannontech.amr.tou.model.TouAttributeMapper;
+import com.cannontech.amr.tou.model.TouAttributeMapping;
 import com.cannontech.common.device.attribute.model.Attribute;
 import com.cannontech.common.device.attribute.model.BuiltInAttribute;
 
-public class TouRowMapper implements ParameterizedRowMapper<TouAttributeMapper> {
+public class TouRowMapper implements ParameterizedRowMapper<TouAttributeMapping> {
 
-    public TouAttributeMapper mapRow(ResultSet rs, int rowNum) throws SQLException {
-        TouAttributeMapper tou = new TouAttributeMapper();
+    public TouAttributeMapping mapRow(ResultSet rs, int rowNum) throws SQLException {
+        TouAttributeMapping tou = new TouAttributeMapping();
 
         int touId = rs.getInt("touId");
         tou.setTouId(touId);
@@ -21,21 +21,13 @@ public class TouRowMapper implements ParameterizedRowMapper<TouAttributeMapper> 
         tou.setDisplayName(displayName);
 
         String usageAttribute = rs.getString("usageAttribute");
-        try {
-            Attribute usage = BuiltInAttribute.valueOf(usageAttribute);
-            tou.setUsage(usage);
-        } catch (Exception e) {
-            tou.setUsage(null);
-        }
-
+        Attribute usage = BuiltInAttribute.valueOf(usageAttribute);
+        tou.setUsage(usage);
+        
         String peakAttribute = rs.getString("peakAttribute");
-        try {
-            Attribute peak = BuiltInAttribute.valueOf(peakAttribute);
-            tou.setPeak(peak);
-        } catch (Exception e) {
-            tou.setPeak(null);
-        }
-
+        Attribute peak = BuiltInAttribute.valueOf(peakAttribute);
+        tou.setPeak(peak);
+        
         return tou;
     }
 

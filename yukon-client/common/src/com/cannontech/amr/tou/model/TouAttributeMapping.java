@@ -1,8 +1,11 @@
 package com.cannontech.amr.tou.model;
 
+import java.util.HashSet;
+import java.util.Set;
+
 import com.cannontech.common.device.attribute.model.Attribute;
 
-public class TouAttributeMapper {
+public class TouAttributeMapping {
     private int touId;
     private String displayName;
     private Attribute usage;
@@ -40,5 +43,11 @@ public class TouAttributeMapper {
         this.touId = touId;
     }
 
+    public Set<Attribute> getAllAttributes() {
+        HashSet<Attribute> name = new HashSet<Attribute>();
+        name.add(getPeak());
+        name.add(getUsage());
+        return name;
+    }
 
 }

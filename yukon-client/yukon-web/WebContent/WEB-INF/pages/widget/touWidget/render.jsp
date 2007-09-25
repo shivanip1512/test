@@ -5,11 +5,10 @@
 <div id="touTable">
 	<div class="widgetInternalSection">
 		<c:choose>
-			<c:when test="${rateTypes != null}">
+			<c:when test="${not empty rateTypes}">
 
 				<table class="miniResultsTable">
 					<c:forEach var="rateType" items="${rateTypes}">
-						<c:if test="${(rateType.peak != null || rateType.usage != null)}">
 							<tr class="">
 								<th class="tableHeaders" colspan=3>
 									${rateType.displayName}
@@ -61,7 +60,6 @@
 								</c:choose>
 							</tr>
 
-						</c:if>
 					</c:forEach>
 				</table>
 			</c:when>
@@ -73,7 +71,7 @@
 </div>
 <br />
 
-<c:if test="${rateTypes != null}">
+<c:if test="${not empty rateTypes}">
 	<div id="${widgetParameters.widgetId}_results"></div>
 	<div style="text-align: right">
 		<ct:widgetActionUpdate method="read" label="Read Now"
