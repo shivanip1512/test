@@ -7,8 +7,8 @@
 * Author: Matt Fisher
 *
 * CVS KEYWORDS:
-* REVISION     :  $Revision: 1.14 $
-* DATE         :  $Date: 2007/09/24 18:56:18 $
+* REVISION     :  $Revision: 1.15 $
+* DATE         :  $Date: 2007/09/25 22:00:13 $
 *
 * Copyright (c) 2004 Cannon Technologies Inc. All rights reserved.
 *-----------------------------------------------------------------------------*/
@@ -140,15 +140,25 @@ void UDPInterface::run( void )
                 }
             }
 
-            if( !getOutMessages(100) && _devices_idle )
+            try
             {
-                //  if we haven't gotten any new OMs and the devices aren't doing anything at the moment, we can take some time to wait for new packets
-                getPackets(2500);
+                if( !getOutMessages(100) && _devices_idle )
+                {
+                    //  if we haven't gotten any new OMs and the devices aren't doing anything at the moment, we can take some time to wait for new packets
+                    getPackets(2500);
+                }
+                else
+                {
+                    //  otherwise, we'll just peek quick-like
+                    getPackets(100);
+                }
             }
-            else
+            catch(...)
             {
-                //  otherwise, we'll just peek quick-like
-                getPackets(100);
+                {
+                    CtiLockGuard<CtiLogger> doubt_guard(dout);
+                    dout << CtiTime() << " **** EXCEPTION Checkpoint **** " << __FILE__ << " (" << __LINE__ << ")" << endl;
+                }
             }
 
             //  this will be cleared by any active devices in processInbound
@@ -408,6 +418,18 @@ bool UDPInterface::getOutMessages( unsigned wait )
     return om_ready;
 }
 
+/* Notice that the passed by reference variable "position" is incremented. */
+unsigned int UDPInterface::convertBytes( unsigned char *buf, int &position, int bytes_to_combine )
+{
+    unsigned int temp = 0;
+
+    for(int i = 0; i < bytes_to_combine; i++) {
+        temp = temp << 8;
+        temp |= buf[position++];
+    }
+
+    return temp;
+}
 
 bool UDPInterface::getPackets( int wait )
 {
@@ -444,258 +466,672 @@ bool UDPInterface::getPackets( int wait )
 
     packet_read = !local_queue.empty();
 
-    while( !local_queue.empty() )
+    try
     {
-        packet *p;
 
-        p = local_queue.front();
-        local_queue.pop();
-
-        if( p )
+        while( !local_queue.empty() )
         {
-            const int DNPHeaderLength   = 10,
-                      GPUFFHeaderLength = 13;
+            packet *p;
 
-            if( p->len >= DNPHeaderLength && p->data[0] == 0x05
-                                          && p->data[1] == 0x64 )
+            p = local_queue.front();
+            local_queue.pop();
+
+            if( p )
             {
-                unsigned short header_crc = p->data[8] | (p->data[9] << 8);
-                unsigned short crc = Protocol::DNP::Datalink::crc(p->data, DNPHeaderLength - 2);
+                const int DNPHeaderLength   = 10,
+                          GPUFFHeaderLength = 13;
 
-                //  check the framing bytes
-                if( crc == header_crc )
+                if( p->len >= DNPHeaderLength && p->data[0] == 0x05
+                    && p->data[1] == 0x64 )
                 {
-                    unsigned short slave_address  = p->data[6] | (p->data[7] << 8);
-                    unsigned short master_address = p->data[4] | (p->data[5] << 8);
+                    unsigned short header_crc = p->data[8] | (p->data[9] << 8);
+                    unsigned short crc = Protocol::DNP::Datalink::crc(p->data, DNPHeaderLength - 2);
 
-                    device_record *dr = getDeviceRecordByDNPAddress(master_address, slave_address);
-
-                    if( !dr )
+                    //  check the framing bytes
+                    if( crc == header_crc )
                     {
-                        //  we have no record of this device, we'll try to look it up
-                        boost::shared_ptr<CtiDeviceBase> dev_base;
+                        unsigned short slave_address  = p->data[6] | (p->data[7] << 8);
+                        unsigned short master_address = p->data[4] | (p->data[5] << 8);
 
-                        //  we didn't have this device in the mapping table, so look it up
-                        if( (dev_base = DeviceManager.RemoteGetPortMasterSlaveTypeEqual(_port->getPortID(), master_address, slave_address, TYPE_DNPRTU)) ||
-                            (dev_base = DeviceManager.RemoteGetPortMasterSlaveTypeEqual(_port->getPortID(), master_address, slave_address, TYPECBC7020)) )
+                        device_record *dr = getDeviceRecordByDNPAddress(master_address, slave_address);
+
+                        if( !dr )
                         {
-                            if( gConfigParms.getValueAsULong("PORTER_UDP_DEBUGLEVEL", 0, 16) & 0x00000001 )
+                            //  we have no record of this device, we'll try to look it up
+                            boost::shared_ptr<CtiDeviceBase> dev_base;
+
+                            //  we didn't have this device in the mapping table, so look it up
+                            if( (dev_base = DeviceManager.RemoteGetPortMasterSlaveTypeEqual(_port->getPortID(), master_address, slave_address, TYPE_DNPRTU)) ||
+                                (dev_base = DeviceManager.RemoteGetPortMasterSlaveTypeEqual(_port->getPortID(), master_address, slave_address, TYPECBC7020)) ||
+                                (dev_base = DeviceManager.RemoteGetPortMasterSlaveTypeEqual(_port->getPortID(), master_address, slave_address, TYPE_FCI)) )
+                            {
+                                if( gConfigParms.getValueAsULong("PORTER_UDP_DEBUGLEVEL", 0, 16) & 0x00000001 )
+                                {
+                                    CtiLockGuard<CtiLogger> doubt_guard(dout);
+                                    dout << CtiTime() << " Cti::Porter::UDPInterface::getPackets - inserting device \"" << dev_base->getName() << "\" in list " << __FILE__ << " (" << __LINE__ << ")" << endl;
+                                }
+
+                                //  we found it, insert the new record and packet
+                                dr = CTIDBG_new device_record;
+
+                                //  assignment - we're just grabbing a reference, so when this reference goes away, so will
+                                //    our hold on this pointer...  no need to delete it
+                                dr->device = boost::static_pointer_cast<CtiDeviceSingle>(dev_base);
+
+                                dr->id     = dr->device->getID();
+                                dr->dirty  = dr->device->isDirty();
+
+                                dr->master = dr->device->getMasterAddress();
+                                dr->slave  = dr->device->getAddress();
+
+                                _devices.insert(make_pair(dr->id, dr));
+                                _addresses.insert(make_pair(make_pair(dr->master, dr->slave), dr));
+
+                                dr->work.timeout = CtiTime(YUKONEOT).seconds();
+                            }
+                            else if( gConfigParms.getValueAsULong("PORTER_UDP_DEBUGLEVEL", 0, 16) & 0x00000001 )
                             {
                                 CtiLockGuard<CtiLogger> doubt_guard(dout);
-                                dout << CtiTime() << " Cti::Porter::UDPInterface::getPackets - inserting device \"" << dev_base->getName() << "\" in list " << __FILE__ << " (" << __LINE__ << ")" << endl;
+                                dout << CtiTime() << " Cti::Porter::UDPInterface::getPackets - can't find DNP master/slave (" << master_address << "/" << slave_address << ") " << __FILE__ << " (" << __LINE__ << ")" << endl;
+                            }
+                        }
+
+                        //  do we have a device yet?
+                        if( dr && dr->device )
+                        {
+                            if( dr->ip   != p->ip ||
+                                dr->port != p->port )
+                            {
+                                if( gConfigParms.getValueAsULong("PORTER_UDP_DEBUGLEVEL", 0, 16) & 0x00000001 )
+                                {
+                                    CtiLockGuard<CtiLogger> doubt_guard(dout);
+                                    dout << CtiTime() << " Cti::Porter::UDPInterface::getPackets - IP or port mismatch for device \"" << dr->device->getName() << "\", updating (" << dr->ip << " != " << p->ip << " || " << dr->port << " != " << p->port << ") " << __FILE__ << " (" << __LINE__ << ")" << endl;
+                                }
+
+                                dr->ip   = p->ip;
+                                dr->port = p->port;
+
+                                dr->device->setDynamicInfo(CtiTableDynamicPaoInfo::Key_UDP_IP,   dr->ip);
+                                dr->device->setDynamicInfo(CtiTableDynamicPaoInfo::Key_UDP_Port, dr->port);
                             }
 
-                            //  we found it, insert the new record and packet
-                            dr = CTIDBG_new device_record;
+                            //  sends IP and port as pointdata messages
+                            sendDeviceInfo(dr);
 
-                            //  assignment - we're just grabbing a reference, so when this reference goes away, so will
-                            //    our hold on this pointer...  no need to delete it
-                            dr->device = boost::static_pointer_cast<CtiDeviceSingle>(dev_base);
+                            dr->work.inbound.push(p);
 
-                            dr->id     = dr->device->getID();
-
-                            dr->master = dr->device->getMasterAddress();
-                            dr->slave  = dr->device->getAddress();
-
-                            _devices.insert(make_pair(dr->id, dr));
-                            _addresses.insert(make_pair(make_pair(dr->master, dr->slave), dr));
-
-                            dr->work.timeout = CtiTime(YUKONEOT).seconds();
-                        }
-                        else if( gConfigParms.getValueAsULong("PORTER_UDP_DEBUGLEVEL", 0, 16) & 0x00000001 )
-                        {
-                            CtiLockGuard<CtiLogger> doubt_guard(dout);
-                            dout << CtiTime() << " Cti::Porter::UDPInterface::getPackets - can't find DNP master/slave (" << master_address << "/" << slave_address << ") " << __FILE__ << " (" << __LINE__ << ")" << endl;
+                            p = 0;
                         }
                     }
-
-                    //  do we have a device yet?
-                    if( dr && dr->device )
+                    else if( gConfigParms.getValueAsULong("PORTER_UDP_DEBUGLEVEL", 0, 16) & 0x00000001 )
                     {
-                        if( dr->ip   != p->ip ||
-                            dr->port != p->port )
+                        CtiLockGuard<CtiLogger> doubt_guard(dout);
+                        dout << CtiTime() << " Cti::Porter::UDPInterface::getPackets - bad CRC or header on inbound DNP message, cannot assign " << __FILE__ << " (" << __LINE__ << ")" << endl;
+                    }
+                }
+                else if( p->len >= GPUFFHeaderLength && p->data[0] == 0xa5
+                                                     && p->data[1] == 0x96 )
+                {
+                    unsigned len, cid, seq, devt, devr, ser, crc;
+                    bool crc_included, ack_required;
+
+                    traceInbound(p->ip, p->port, 0, p->data, p->len, _traceList);   // I want this out always!
+
+                    crc_included = p->data[2] & 0x80;
+                    ack_required = p->data[2] & 0x40;
+
+                    len  = ((p->data[2] & 0x03) << 8) | p->data[3];
+
+                    if( p->len < len + 4 )
+                    {
                         {
-                            if( gConfigParms.getValueAsULong("PORTER_UDP_DEBUGLEVEL", 0, 16) & 0x00000001 )
-                            {
-                                CtiLockGuard<CtiLogger> doubt_guard(dout);
-                                dout << CtiTime() << " Cti::Porter::UDPInterface::getPackets - IP or port mismatch for device \"" << dr->device->getName() << "\", updating (" << dr->ip << " != " << p->ip << " || " << dr->port << " != " << p->port << ") " << __FILE__ << " (" << __LINE__ << ")" << endl;
-                            }
+                            CtiLockGuard<CtiLogger> doubt_guard(dout);
+                            dout << CtiTime() << " **** Checkpoint - incoming packet from "
+                                 << ((p->ip >> 24) & 0xff) << "."
+                                 << ((p->ip >> 16) & 0xff) << "."
+                                 << ((p->ip >>  8) & 0xff) << "."
+                                 << ((p->ip >>  0) & 0xff) << ":" << p->port
+                                 << " is too small (" << p->len << " < " << len << " + 4) **** " << __FILE__ << " (" << __LINE__ << ")" << endl;
+                        }
+                    }
+                    else if( crc_included && CheckCCITT16CRC(-1, p->data, len + 4) )
+                    {
+                        //  CRC failed.
+                        {
+                            CtiLockGuard<CtiLogger> doubt_guard(dout);
+                            dout << CtiTime() << " **** Checkpoint - incoming packet from "
+                                 << ((p->ip >> 24) & 0xff) << "."
+                                 << ((p->ip >> 16) & 0xff) << "."
+                                 << ((p->ip >>  8) & 0xff) << "."
+                                 << ((p->ip >>  0) & 0xff) << ":" << p->port
+                                 << " failed its CRC check **** " << __FILE__ << " (" << __LINE__ << ")" << endl;
+                        }
+                    }
+                    else
+                    {
+                        cid  = (p->data[4] << 8) | p->data[5];
+                        seq  = (p->data[6] << 8) | p->data[7];
+                        devt = (p->data[8] << 8) | p->data[9];
+                        devr = p->data[10];
+                        ser  = (p->data[11] << 24) |
+                               (p->data[12] << 16) |
+                               (p->data[13] <<  8) |  p->data[14];
 
-                            dr->ip   = p->ip;
-                            dr->port = p->port;
 
-                            dr->device->setDynamicInfo(CtiTableDynamicPaoInfo::Key_UDP_IP,   dr->ip);
-                            dr->device->setDynamicInfo(CtiTableDynamicPaoInfo::Key_UDP_Port, dr->port);
+                        {
+                            CtiLockGuard<CtiLogger> doubt_guard(dout);
+                            dout << CtiTime() << " **** Checkpoint - incoming packet from "
+                                 << ((p->ip >> 24) & 0xff) << "."
+                                 << ((p->ip >> 16) & 0xff) << "."
+                                 << ((p->ip >>  8) & 0xff) << "."
+                                 << ((p->ip >>  0) & 0xff) << ":" << p->port << ": " << endl;
+    
+                            dout << "LEN  : " << len << endl;
+                            dout << "CRC? : " << crc_included << endl;
+                            dout << "ACK? : " << ack_required << endl;
+                            dout << "CID  : " << cid << endl;
+                            dout << "SEQ  : " << seq << endl;
+                            dout << "DEVT : " << devt << endl;
+                            dout << "DEVR : " << devr << endl;
+                            dout << "SER  : " << ser << endl;
+
+                            dout << endl;
                         }
 
-                        //  sends IP and port as pointdata messages
-                        sendDeviceInfo(dr);
+                        int pos = 15, usedbytes = 0;
 
-                        dr->work.inbound.push(p);
+                        switch( devt )
+                        {
+                            case 3:  //  Faulted Circuit Indicator
+                            case 1:  //  Faulted Circuit Indicator
+                            {
+                                while( pos < (len - (crc_included * 2)) )
+                                {
+                                    switch( p->data[pos++] )
+                                    {
+                                        case 0x00:
+                                        {
+                                            bool request_ack    =  p->data[pos] & 0x80;
+                                            int  udp_repeats    = (p->data[pos] & 0x70) >> 4;
+                                            int  phase          = (p->data[pos] & 0x0c) >> 2;
+                                            bool current_survey =  p->data[pos] & 0x02;
 
-                        p = 0;
+                                            pos++;
+
+                                            float latitude, longitude;
+
+                                            latitude = convertBytes( p->data, pos, 4);
+                                            latitude  /= 10000.0;
+
+                                            longitude = convertBytes( p->data, pos, 4);
+                                            longitude /= 10000.0;
+
+                                            string device_name;
+
+                                            device_name.assign((char *)p->data + pos, 128);
+                                            device_name.erase(device_name.find_first_of('\0'));
+
+                                            {
+                                                CtiLockGuard<CtiLogger> doubt_guard(dout);
+                                                dout << CtiTime() << " **** Checkpoint - FCI device has reported in **** " << __FILE__ << " (" << __LINE__ << ")" << endl;
+                                                dout << CtiTime() << " name: \"" << device_name << "\"" << endl;
+                                                dout << CtiTime() << " latitude:    " << string(CtiNumStr(latitude))  << endl;
+                                                dout << CtiTime() << " longitude:   " << string(CtiNumStr(longitude)) << endl;
+                                                dout << CtiTime() << " request ack: " << request_ack << endl;
+                                                dout << CtiTime() << " udp repeats: " << udp_repeats << endl;
+                                                dout << CtiTime() << " phase:       " << phase << endl;
+                                                dout << CtiTime() << " current survey: " << current_survey << endl;
+                                            }
+
+                                            break;
+                                        }
+                                        case 0x01:
+                                        {
+                                            unsigned char items_included = p->data[pos++];
+                                            bool fault = p->data[pos] & 0x80;
+                                            bool noPower = p->data[pos] & 0x20;
+
+                                            pos++;
+
+                                            unsigned long time = 0;
+                                            float battery_voltage, temperature, amps_nominal, amps_peak;
+
+                                            {
+                                                CtiLockGuard<CtiLogger> doubt_guard(dout);
+                                                dout << CtiTime() << " **** Checkpoint - FCI device values **** " << __FILE__ << " (" << __LINE__ << ")" << endl;
+                                                dout << CtiTime() << " fault: " << fault << endl;
+                                                dout << CtiTime() << " no power: " << noPower << endl;
+                                            }
+
+                                            if( items_included & 0x20 )
+                                            {
+                                                time = convertBytes( p->data, pos, 4);
+
+                                                if( items_included & 0x40 )
+                                                {
+                                                    time = CtiTime::now().seconds() - time;
+                                                }
+
+                                                {
+                                                    CtiLockGuard<CtiLogger> doubt_guard(dout);
+                                                    dout << CtiTime() << " time: " << CtiTime(time) << endl;
+                                                }
+                                            }
+
+                                            if( items_included & 0x10 )
+                                            {
+                                                battery_voltage = convertBytes( p->data, pos, 2);
+
+                                                battery_voltage /= 1000.0;
+
+                                                {
+                                                    CtiLockGuard<CtiLogger> doubt_guard(dout);
+                                                    dout << CtiTime() << " battery voltage: " << battery_voltage << endl;
+                                                }
+                                            }
+                                            if( items_included & 0x08 )
+                                            {
+                                                temperature = convertBytes( p->data, pos, 2);
+
+                                                temperature /= 100.0;
+
+                                                {
+                                                    CtiLockGuard<CtiLogger> doubt_guard(dout);
+                                                    dout << CtiTime() << " temperature: " << temperature << endl;
+                                                }
+                                            }
+                                            if( items_included & 0x04 )
+                                            {
+                                                amps_nominal = convertBytes( p->data, pos, 2);
+
+                                                {
+                                                    CtiLockGuard<CtiLogger> doubt_guard(dout);
+                                                    dout << CtiTime() << " amps nominal: " << amps_nominal << endl;
+                                                }
+                                            }
+                                            if( items_included & 0x02 )
+                                            {
+                                                amps_peak = convertBytes( p->data, pos, 2);
+
+                                                {
+                                                    CtiLockGuard<CtiLogger> doubt_guard(dout);
+                                                    dout << CtiTime() << " amps peak: " << amps_peak << endl;
+                                                }
+                                            }
+
+                                            break;
+                                        }
+                                        case 0x02:
+                                        {
+                                            unsigned char flags = p->data[pos++];
+
+                                            unsigned long time = 0;
+                                            unsigned long duration = 0;
+
+                                            bool current_fault_status = flags & 0x40;
+                                            bool event_report_status = false;
+
+                                            time = convertBytes( p->data, pos, 4);
+
+                                            if( flags & 0x40 )
+                                            {
+                                                time = CtiTime::now().seconds() - time;
+                                            }
+
+                                            if( flags & 0x20 )
+                                            {
+                                                //  it's an event report
+                                                event_report_status = flags & 0x01;
+                                            }
+                                            else
+                                            {
+                                                //  if it's not an event report, it has duration
+                                                duration = convertBytes( p->data, pos, 4);
+                                            }
+
+                                            break;
+                                        }
+                                        case 0x03:
+                                        {
+                                            unsigned char flags = p->data[pos++];
+
+                                            unsigned long time = 0;
+                                            int   rate,
+                                                  count;
+                                            float reading;
+
+                                            time = convertBytes( p->data, pos, 4);
+
+                                            if( flags & 0x80 && time )
+                                            {
+                                                time = CtiTime::now().seconds() - time;
+                                            }
+
+                                            rate  =  (p->data[pos  ] & 0xf8) >> 3;
+                                            count = (((int)(p->data[pos++]) & 0x07) << 8) | (int)(p->data[pos++]);
+
+                                            for( int i = 0; i < count; i++ )
+                                            {
+                                                reading = convertBytes( p->data, pos, 4);
+
+                                                reading /= 1000.0;
+
+                                                time -= rate;
+                                            }
+
+                                            break;
+                                        }
+                                        case 0x04:
+                                        {
+                                            int index, port, len;
+
+                                            string hostname;
+
+                                            index = p->data[pos++];
+                                            port = convertBytes( p->data, pos, 2);
+                                            len = convertBytes( p->data, pos, 2);
+
+                                            hostname.assign((char *)p->data + pos, len);
+
+                                            break;
+                                        }
+                                    case 0x05:
+                                        {
+                                            unsigned char items_included = p->data[pos++];
+
+                                            unsigned long time = 0;
+                                            float amps_nominal, amps_peak;
+
+                                            if( items_included & 0x20 )
+                                            {
+                                                time = convertBytes( p->data, pos, 4);
+
+                                                if( items_included & 0x40 )
+                                                {
+                                                    time = CtiTime::now().seconds() - time;
+                                                }
+
+                                            }
+
+                                            unsigned short momCount = 0;
+
+                                            momCount  = convertBytes( p->data, pos, 2);
+
+                                            {
+                                                CtiLockGuard<CtiLogger> doubt_guard(dout);
+                                                dout << CtiTime() << " momentary count: " << momCount << endl;
+                                            }
+
+                                            if( items_included & 0x04 )
+                                            {
+                                                amps_nominal = convertBytes( p->data, pos, 2);
+
+                                                {
+                                                    CtiLockGuard<CtiLogger> doubt_guard(dout);
+                                                    dout << CtiTime() << " amps nominal: " << amps_nominal << endl;
+                                                }
+                                            }
+                                            if( items_included & 0x02 )
+                                            {
+                                                amps_peak = convertBytes( p->data, pos, 2);
+
+                                                {
+                                                    CtiLockGuard<CtiLogger> doubt_guard(dout);
+                                                    dout << CtiTime() << " amps peak: " << amps_peak << endl;
+                                                }
+                                            }
+
+                                            // TODO: Add duration here (items_included & 0x01)
+                                            if( items_included & 0x01 )
+                                            {
+                                                unsigned short duration = 0;
+                                                duration = convertBytes( p->data, pos, 2);
+                                                {
+                                                    CtiLockGuard<CtiLogger> doubt_guard(dout);
+                                                    dout << CtiTime() << " Duration decode unimplemented. Duration is: " << duration << ". " << __FILE__ << " (" << __LINE__ << ")" << endl;
+                                                }
+                                            }
+
+                                            break;
+                                        }
+                                    }
+                                }
+
+                                break;
+                            }
+
+                            case 2:  //  Neutral Current Sensor
+                            {
+                                while( pos < (len - (crc_included * 2)) )
+                                {
+                                    switch( p->data[pos++] )
+                                    {
+                                        case 0x00:
+                                        {
+                                            bool request_ack    =  p->data[pos] & 0x80;
+                                            int  udp_repeats    = (p->data[pos] & 0x70) >> 4;
+                                            bool current_survey =  p->data[pos] & 0x02;
+
+                                            pos++;
+
+                                            float latitude, longitude, amp_threshold;
+
+                                            latitude = convertBytes( p->data, pos, 4);
+                                            latitude  /= 10000.0;
+
+                                            longitude = convertBytes( p->data, pos, 4);
+                                            longitude /= 10000.0;
+
+                                            amp_threshold = convertBytes( p->data, pos, 2);
+
+                                            amp_threshold /= 10000.0;
+
+                                            string device_name;
+
+                                            device_name.assign((char *)p->data + pos, 128);
+                                            device_name.erase(device_name.find_first_of('\0'));
+
+                                            {
+                                                CtiLockGuard<CtiLogger> doubt_guard(dout);
+                                                dout << CtiTime() << " **** Checkpoint - Neutral Monitor device has reported in **** " << __FILE__ << " (" << __LINE__ << ")" << endl;
+                                                dout << CtiTime() << " name: \"" << device_name << "\"" << endl;
+                                                dout << CtiTime() << " latitude:      " << string(CtiNumStr(latitude))      << endl;
+                                                dout << CtiTime() << " longitude:     " << string(CtiNumStr(longitude))     << endl;
+                                                dout << CtiTime() << " amp threshold: " << string(CtiNumStr(amp_threshold)) << endl;
+                                            }
+
+                                            break;
+                                        }
+                                        case 0x01:
+                                        {
+                                            unsigned char items_included = p->data[pos++];
+                                            bool fault = p->data[pos++] & 0x80;
+
+                                            unsigned long time = 0;
+                                            float battery_voltage, temperature;
+
+                                            if( items_included & 0x20 )
+                                            {
+                                                time = convertBytes( p->data, pos, 4);
+
+                                                if( items_included & 0x80 )
+                                                {
+                                                    time = CtiTime::now().seconds() - time;
+                                                }
+                                            }
+                                            if( items_included & 0x10 )
+                                            {
+                                                battery_voltage = convertBytes( p->data, pos, 2);
+
+                                                battery_voltage /= 1000.0;
+                                            }
+                                            if( items_included & 0x08 )
+                                            {
+                                                temperature = convertBytes( p->data, pos, 2);
+                                                temperature /= 100.0;
+                                            }
+
+                                            break;
+                                        }
+                                        case 0x02:
+                                        {
+                                            unsigned char flags = p->data[pos++];
+
+                                            unsigned long time = 0;
+                                            int rate, count, reading;
+
+                                            time = convertBytes( p->data, pos, 4);
+
+                                            if( flags & 0x80 && time )
+                                            {
+                                                time = CtiTime::now().seconds() - time;
+                                            }
+
+                                            rate  = (p->data[pos  ] & 0xc0) >> 6;
+                                            count = ((int)(p->data[pos++] & 0x3f)) << 8 | (int)(p->data[pos++]);
+
+                                            for( int i = 0; i < count; i++ )
+                                            {
+                                                reading = convertBytes( p->data, pos, 2);
+                                                time -= rate;
+                                            }
+
+                                            break;
+                                        }
+                                    }
+                                }
+
+                                break;
+                            }
+
+                            default:
+                            {
+                                {
+                                    CtiLockGuard<CtiLogger> doubt_guard(dout);
+                                    dout << CtiTime() << " **** Checkpoint - unknown GPUFF device type " << devt << " **** " << __FILE__ << " (" << __LINE__ << ")" << endl;
+                                }
+                            }
+                        }
+
+                        device_record *dr = getDeviceRecordByGPUFFDeviceTypeSerial(devt, ser);
+
+                        try
+                        {
+                            if( !dr )
+                            {
+                                //  we have no record of this device, we'll try to look it up
+                                boost::shared_ptr<CtiDeviceBase> dev_base;
+
+                                int type = -1;
+
+                                switch( devt )
+                                {
+                                    case 3:
+                                    case 1:     type = TYPE_FCI;                break;
+                                    case 2:     type = TYPE_NEUTRAL_MONITOR;    break;
+                                }
+
+                                //  we didn't have this device in the mapping table, so look it up
+                                if( dev_base = DeviceManager.RemoteGetPortRemoteTypeEqual(_port->getPortID(), ser, type) )
+                                {
+                                    //  we found it, insert the new record and packet
+                                    dr = CTIDBG_new device_record;
+
+                                    //  assignment - we're just grabbing a reference, so when this reference goes away, so will
+                                    //    our hold on this pointer...  no need to delete it
+                                    dr->device = boost::static_pointer_cast<CtiDeviceSingle>(dev_base);
+
+                                    dr->id     = dr->device->getID();
+                                    dr->dirty  = dr->device->isDirty();
+
+                                    dr->master = 0;
+                                    dr->slave  = dr->device->getAddress();
+
+                                    _devices.insert(make_pair(dr->id, dr));
+                                    _types_serials.insert(make_pair(make_pair(devt, dr->slave), dr));
+
+                                    dr->work.timeout = CtiTime(YUKONEOT).seconds();
+                                }
+                            }
+                        }
+                        catch(...)
+                        {
+                            {
+                                CtiLockGuard<CtiLogger> doubt_guard(dout);
+                                dout << CtiTime() << " **** EXCEPTION Checkpoint **** " << __FILE__ << " (" << __LINE__ << ")" << endl;
+                            }
+                        }
+
+                        //  do we have a device yet?
+                        try
+                        {
+                            if( dr && dr->device )
+                            {
+                                if( dr->ip   != p->ip ||
+                                    dr->port != p->port )
+                                {
+                                    if( gConfigParms.getValueAsULong("PORTER_UDP_DEBUGLEVEL", 0, 16) & 0x00000001 )
+                                    {
+                                        CtiLockGuard<CtiLogger> doubt_guard(dout);
+                                        dout << CtiTime() << " Cti::Porter::UDPInterface::getPackets - IP or port mismatch for device \"" << dr->device->getName() << "\", updating (" << dr->ip << " != " << p->ip << " || " << dr->port << " != " << p->port << ") " << __FILE__ << " (" << __LINE__ << ")" << endl;
+                                    }
+
+                                    dr->ip   = p->ip;
+                                    dr->port = p->port;
+
+                                    dr->device->setDynamicInfo(CtiTableDynamicPaoInfo::Key_UDP_IP,   dr->ip);
+                                    dr->device->setDynamicInfo(CtiTableDynamicPaoInfo::Key_UDP_Port, dr->port);
+                                }
+
+                                //  sends IP and port as pointdata messages
+                                sendDeviceInfo(dr);
+
+                                dr->work.inbound.push(p);
+
+                                p = 0;
+                            }
+                            else
+                            {
+                                {
+                                    CtiLockGuard<CtiLogger> doubt_guard(dout);
+                                    dout << CtiTime() << " **** Checkpoint - no device found for GPUFF serial (" << ser << ") **** " << __FILE__ << " (" << __LINE__ << ")" << endl;
+                                }
+                            }
+                        }
+                        catch(...)
+                        {
+                            {
+                                CtiLockGuard<CtiLogger> doubt_guard(dout);
+                                dout << CtiTime() << " **** EXCEPTION Checkpoint **** " << __FILE__ << " (" << __LINE__ << ")" << endl;
+                            }
+                        }
                     }
                 }
                 else if( gConfigParms.getValueAsULong("PORTER_UDP_DEBUGLEVEL", 0, 16) & 0x00000001 )
                 {
                     CtiLockGuard<CtiLogger> doubt_guard(dout);
-                    dout << CtiTime() << " Cti::Porter::UDPInterface::getPackets - bad CRC or header on inbound DNP message, cannot assign " << __FILE__ << " (" << __LINE__ << ")" << endl;
+                    dout << CtiTime() << " Cti::Porter::UDPInterface::getPackets() - packet doesn't match any known protocol - discarding " << __FILE__ << " (" << __LINE__ << ")" << endl;
                 }
             }
-            else if( p->len >= GPUFFHeaderLength && p->data[0] == 0xa5
-                                                 && p->data[1] == 0x96 )
+
+            if( p )
             {
-                unsigned len, cid, seq, devt, devr, ser, crc;
-                bool crc_included, ack_required;
+                //  this packet was unhandled, so we trace it
+                traceInbound(p->ip, p->port, 0, p->data, p->len, _traceList);
 
-                crc_included = p->data[2] & 0x80;
-                ack_required = p->data[2] & 0x40;
-
-                len  = ((p->data[2] & 0x03) << 8) | p->data[3];
-
-                if( p->len < len + 4 )
-                {
-                    {
-                        CtiLockGuard<CtiLogger> doubt_guard(dout);
-                        dout << CtiTime() << " **** Checkpoint - incoming packet from "
-                             << ((p->ip >> 24) & 0xff) << "."
-                             << ((p->ip >> 16) & 0xff) << "."
-                             << ((p->ip >>  8) & 0xff) << "."
-                             << ((p->ip >>  0) & 0xff) << ":" << p->port
-                             << " is too small (" << p->len << " < " << len << " + 4) **** " << __FILE__ << " (" << __LINE__ << ")" << endl;
-                    }
-                }
-                else if( crc_included && CheckCCITT16CRC(-1, p->data, len + 4) )
-                {
-                    //  CRC failed.
-                    {
-                        CtiLockGuard<CtiLogger> doubt_guard(dout);
-                        dout << CtiTime() << " **** Checkpoint - incoming packet from "
-                             << ((p->ip >> 24) & 0xff) << "."
-                             << ((p->ip >> 16) & 0xff) << "."
-                             << ((p->ip >>  8) & 0xff) << "."
-                             << ((p->ip >>  0) & 0xff) << ":" << p->port
-                             << " failed its CRC check **** " << __FILE__ << " (" << __LINE__ << ")" << endl;
-                    }
-                }
-                else
-                {
-                    cid  = (p->data[4] << 8) | p->data[5];
-                    seq  = (p->data[6] << 8) | p->data[7];
-                    devt = (p->data[8] << 8) | p->data[9];
-                    devr = p->data[10];
-                    ser  = (p->data[11] << 24) | 
-                           (p->data[12] << 16) |
-                           (p->data[13] <<  8) |  p->data[14];
-
-                    {
-                        CtiLockGuard<CtiLogger> doubt_guard(dout);
-                        dout << CtiTime() << " **** Checkpoint - incoming packet from "
-                             << ((p->ip >> 24) & 0xff) << "."
-                             << ((p->ip >> 16) & 0xff) << "."
-                             << ((p->ip >>  8) & 0xff) << "."
-                             << ((p->ip >>  0) & 0xff) << ":" << p->port << ": " << endl;
-
-                        dout << "LEN  : " << len << endl;
-                        dout << "CRC? : " << crc_included << endl;
-                        dout << "ACK? : " << ack_required << endl;
-                        dout << "CID  : " << cid << endl;
-                        dout << "SEQ  : " << seq << endl;
-                        dout << "DEVT : " << devt << endl;
-                        dout << "DEVR : " << devr << endl;
-                        dout << "SER  : " << ser << endl;
-
-                        dout << endl;
-                    }
-
-                    device_record *dr = getDeviceRecordByGPUFFDeviceTypeSerial(devt, ser);
-
-                    if( !dr )
-                    {
-                        //  we have no record of this device, we'll try to look it up
-                        boost::shared_ptr<CtiDeviceBase> dev_base;
-
-                        int type = -1;
-
-                        switch( devt )
-                        {
-                            case 1:     type = TYPE_FCI;                break;
-                            case 2:     type = TYPE_NEUTRAL_MONITOR;    break;
-                        }
-
-                        //  we didn't have this device in the mapping table, so look it up
-                        if( dev_base = DeviceManager.RemoteGetPortRemoteTypeEqual(_port->getPortID(), ser, type) )
-                        {
-                            //  we found it, insert the new record and packet
-                            dr = CTIDBG_new device_record;
-    
-                            //  assignment - we're just grabbing a reference, so when this reference goes away, so will
-                            //    our hold on this pointer...  no need to delete it
-                            dr->device = boost::static_pointer_cast<CtiDeviceSingle>(dev_base);
-    
-                            dr->id     = dr->device->getID();
-    
-                            dr->master = 0;
-                            dr->slave  = dr->device->getAddress();
-    
-                            _devices.insert(make_pair(dr->id, dr));
-                            _types_serials.insert(make_pair(make_pair(devt, dr->slave), dr));
-    
-                            dr->work.timeout = CtiTime(YUKONEOT).seconds();
-                        }
-                    }
-
-                    //  do we have a device yet?
-                    if( dr && dr->device )
-                    {
-                        if( dr->ip   != p->ip ||
-                            dr->port != p->port )
-                        {
-                            if( gConfigParms.getValueAsULong("PORTER_UDP_DEBUGLEVEL", 0, 16) & 0x00000001 )
-                            {
-                                CtiLockGuard<CtiLogger> doubt_guard(dout);
-                                dout << CtiTime() << " Cti::Porter::UDPInterface::getPackets - IP or port mismatch for device \"" << dr->device->getName() << "\", updating (" << dr->ip << " != " << p->ip << " || " << dr->port << " != " << p->port << ") " << __FILE__ << " (" << __LINE__ << ")" << endl;
-                            }
-
-                            dr->ip   = p->ip;
-                            dr->port = p->port;
-
-                            dr->device->setDynamicInfo(CtiTableDynamicPaoInfo::Key_UDP_IP,   dr->ip);
-                            dr->device->setDynamicInfo(CtiTableDynamicPaoInfo::Key_UDP_Port, dr->port);
-                        }
-
-                        //  sends IP and port as pointdata messages
-                        sendDeviceInfo(dr);
-
-                        dr->work.inbound.push(p);
-
-                        p = 0;
-                    }
-                    else
-                    {
-                        {
-                            CtiLockGuard<CtiLogger> doubt_guard(dout);
-                            dout << CtiTime() << " **** Checkpoint - no device found for GPUFF serial (" << ser << ") **** " << __FILE__ << " (" << __LINE__ << ")" << endl;
-                        }
-                    }
-                }
+                delete p->data;
+                delete p;
             }
-            else if( gConfigParms.getValueAsULong("PORTER_UDP_DEBUGLEVEL", 0, 16) & 0x00000001 )
-            {
-                CtiLockGuard<CtiLogger> doubt_guard(dout);
-                dout << CtiTime() << " Cti::Porter::UDPInterface::getPackets() - packet doesn't match any known protocol - discarding " << __FILE__ << " (" << __LINE__ << ")" << endl;
-            }
-        }
-
-        if( p )
-        {
-            //  this packet was unhandled, so we trace it
-            traceInbound(p->ip, p->port, 0, p->data, p->len, _traceList);
-
-            delete p->data;
-            delete p;
         }
     }
+    catch(...)
+    {
+        {
+            CtiLockGuard<CtiLogger> doubt_guard(dout);
+            dout << CtiTime() << " **** EXCEPTION Checkpoint **** " << __FILE__ << " (" << __LINE__ << ")" << endl;
+        }
+    }
+
 
     return packet_read;
 }
@@ -711,13 +1147,13 @@ void UDPInterface::sendDeviceInfo( device_record *dr ) const
     {
         if( point = dr->device->getDevicePointOffsetTypeEqual(CtiDeviceSingle::PointOffset_Analog_IPAddress, AnalogPointType) )
         {
-            pdm = CTIDBG_new CtiPointDataMsg(point->getID(), dr->ip);
+            pdm = CTIDBG_new CtiPointDataMsg(point->getID(), dr->ip, NormalQuality, AnalogPointType);
             vgMsg->PointData().push_back(pdm);
         }
 
         if( point = dr->device->getDevicePointOffsetTypeEqual(CtiDeviceSingle::PointOffset_Analog_Port, AnalogPointType) )
         {
-            pdm = CTIDBG_new CtiPointDataMsg(point->getID(), dr->port);
+            pdm = CTIDBG_new CtiPointDataMsg(point->getID(), dr->port, NormalQuality, AnalogPointType);
             vgMsg->PointData().push_back(pdm);
         }
 
@@ -928,9 +1364,9 @@ void UDPInterface::processInbounds( void )
                                     CtiLockGuard<CtiLogger> doubt_guard(dout);
                                     dout << CtiTime() << " Cti::Porter::UDPInterface::processInbound - status = READTIMEOUT (" << dr->work.timeout << " < " << CtiTime::now().seconds() << ") " << __FILE__ << " (" << __LINE__ << ")" << endl;
                                 }
-        
+
                                 status = READTIMEOUT;
-        
+
                                 dr->work.xfer.setInCountActual(0UL);
                             }
                             else if( !dr->work.inbound.empty() )
@@ -944,18 +1380,18 @@ void UDPInterface::processInbounds( void )
                                             CtiLockGuard<CtiLogger> doubt_guard(dout);
                                             dout << CtiTime() << " Cti::Porter::UDPInterface::processInbound - status = READTIMEOUT (" << (p->len - p->used) << " < " << dr->work.xfer.getInCountExpected() << ") " << __FILE__ << " (" << __LINE__ << ")" << endl;
                                         }
-        
+
                                         status = READTIMEOUT;
-        
+
                                         dr->work.xfer.setInCountActual(p->len - p->used);
                                     }
                                     else
                                     {
                                         dr->work.xfer.setInCountActual(dr->work.xfer.getInCountExpected());
                                     }
-        
+
                                     memcpy(dr->work.xfer.getInBuffer(), p->data + p->used, dr->work.xfer.getInCountActual());
-        
+
                                     p->used += dr->work.xfer.getInCountActual();
                                 }
                                 else
@@ -967,33 +1403,31 @@ void UDPInterface::processInbounds( void )
                             {
                                 dr->work.xfer.setInCountActual(0UL);
                             }
-        
+
                             dr->work.status = dr->device->decode(dr->work.xfer, status);
-        
+
                             dr->work.pending_decode = false;
-        
+
                             if( status || dr->work.xfer.getInCountActual() )
                             {
                                 traceInbound(dr->ip, dr->port, dr->work.status, dr->work.xfer.getInBuffer(), dr->work.xfer.getInCountActual(), _traceList, dr->device);
                             }
-        
+
                             if( p && (p->used >= p->len) )
                             {
                                 //  we've used the packet up
                                 delete p->data;
                                 delete p;
-        
+
                                 dr->work.inbound.pop();
                             }
-        
+
                             //  if we're done, we're not waiting for anything
                             _devices_idle &= dr->device->isTransactionComplete() & dr->work.outbound.empty() & dr->work.inbound.empty();
                         }
                     }
-
-                    break;
                 }
-    
+
                 case TYPE_FCI:
                 case TYPE_NEUTRAL_MONITOR:
                 {
@@ -1001,9 +1435,10 @@ void UDPInterface::processInbounds( void )
                     {
                         if( p = dr->work.inbound.front() )
                         {
+
                             unsigned len, cid, seq, devt, devr, ser, crc;
                             bool crc_included, ack_required;
-        
+
                             crc_included = p->data[2] & 0x80;
                             ack_required = p->data[2] & 0x40;
                             len  = ((p->data[2] & 0x03) << 8) | p->data[3];
@@ -1013,7 +1448,7 @@ void UDPInterface::processInbounds( void )
                             devr = p->data[10];
 
                             int pos = 15, usedbytes = 0;
-            
+
                             CtiPointSPtr     point;
                             CtiPointDataMsg *pdm;
 
@@ -1022,6 +1457,7 @@ void UDPInterface::processInbounds( void )
                             switch( devt )
                             {
                                 case 1:  //  Faulted Circuit Indicator
+                                case 3:
                                 {
                                     while( pos < (len - (crc_included * 2)) )
                                     {
@@ -1033,40 +1469,32 @@ void UDPInterface::processInbounds( void )
                                                 int  udp_repeats    = (p->data[pos] & 0x70) >> 4;
                                                 int  phase          = (p->data[pos] & 0x0c) >> 2;
                                                 bool current_survey =  p->data[pos] & 0x02;
-            
+
                                                 pos++;
-            
+
                                                 float latitude, longitude;
-            
-                                                latitude   = p->data[pos++] << 24 |
-                                                             p->data[pos++] << 16 |
-                                                             p->data[pos++] <<  8 |
-                                                             p->data[pos++];
-            
-                                                latitude  /= 1000.0;
-                                                          
-                                                longitude  = p->data[pos++] << 24 |
-                                                             p->data[pos++] << 16 |
-                                                             p->data[pos++] <<  8 |
-                                                             p->data[pos++];
-            
-                                                longitude /= 1000.0;
-            
+
+                                                latitude = convertBytes( p->data, pos, 4);
+                                                latitude  /= 10000.0;
+
+                                                longitude = convertBytes( p->data, pos, 4);
+                                                longitude /= 10000.0;
+
                                                 if( point = dr->device->getDevicePointOffsetTypeEqual(CtiDeviceGridAdvisor::FCI_Analog_Latitude, AnalogPointType) )
                                                 {
-                                                    m->insert(CTIDBG_new CtiPointDataMsg(point->getID(), latitude));
+                                                    m->insert(CTIDBG_new CtiPointDataMsg(point->getID(), latitude, NormalQuality, AnalogPointType));
                                                 }
 
                                                 if( point = dr->device->getDevicePointOffsetTypeEqual(CtiDeviceGridAdvisor::FCI_Analog_Longitude, AnalogPointType) )
                                                 {
-                                                    m->insert(CTIDBG_new CtiPointDataMsg(point->getID(), longitude));
+                                                    m->insert(CTIDBG_new CtiPointDataMsg(point->getID(), longitude, NormalQuality, AnalogPointType));
                                                 }
 
                                                 string device_name;
-            
+
                                                 device_name.assign((char *)p->data + pos, 128);
                                                 device_name.erase(device_name.find_first_of('\0'));
-            
+
                                                 {
                                                     CtiLockGuard<CtiLogger> doubt_guard(dout);
                                                     dout << CtiTime() << " **** Checkpoint - FCI device has reported in **** " << __FILE__ << " (" << __LINE__ << ")" << endl;
@@ -1074,24 +1502,24 @@ void UDPInterface::processInbounds( void )
                                                     dout << CtiTime() << " latitude:  " << string(CtiNumStr(latitude))  << endl;
                                                     dout << CtiTime() << " longitude: " << string(CtiNumStr(longitude)) << endl;
                                                 }
-            
+
                                                 break;
                                             }
                                             case 0x01:
                                             {
                                                 unsigned char items_included = p->data[pos++];
-                                                bool fault = p->data[pos++] & 0x80;
-            
+                                                bool fault = p->data[pos] & 0x80;
+                                                bool noPower = p->data[pos] & 0x20;
+
+                                                pos++;
+
                                                 unsigned long time = 0;
                                                 float battery_voltage, temperature, amps_nominal, amps_peak;
-            
+
                                                 if( items_included & 0x20 )
                                                 {
-                                                    time  = p->data[pos++] << 24;
-                                                    time |= p->data[pos++] << 16;
-                                                    time |= p->data[pos++] <<  8;
-                                                    time |= p->data[pos++];
-            
+                                                    time = convertBytes( p->data, pos, 4);
+
                                                     if( items_included & 0x40 )
                                                     {
                                                         time = CtiTime::now().seconds() - time;
@@ -1101,7 +1529,19 @@ void UDPInterface::processInbounds( void )
 
                                                 if( point = dr->device->getDevicePointOffsetTypeEqual(CtiDeviceGridAdvisor::FCI_Status_Fault, StatusPointType) )
                                                 {
-                                                    pdm = CTIDBG_new CtiPointDataMsg(point->getID(), fault);
+                                                    pdm = CTIDBG_new CtiPointDataMsg(point->getID(), fault, NormalQuality, StatusPointType);
+
+                                                    if( items_included & 0x20 )
+                                                    {
+                                                        pdm->setTime(time);
+                                                    }
+
+                                                    m->insert(pdm);
+                                                }
+
+                                                if( point = dr->device->getDevicePointOffsetTypeEqual(CtiDeviceGridAdvisor::FCI_Status_NoPower, StatusPointType) )
+                                                {
+                                                    pdm = CTIDBG_new CtiPointDataMsg(point->getID(), noPower, NormalQuality, StatusPointType);
 
                                                     if( items_included & 0x20 )
                                                     {
@@ -1113,75 +1553,64 @@ void UDPInterface::processInbounds( void )
 
                                                 if( items_included & 0x10 )
                                                 {
-                                                    battery_voltage = p->data[pos++] << 8 |
-                                                                      p->data[pos++];
-            
+                                                    battery_voltage = convertBytes( p->data, pos, 2);
+
                                                     battery_voltage /= 1000.0;
 
                                                     if( point = dr->device->getDevicePointOffsetTypeEqual(CtiDeviceGridAdvisor::FCI_Analog_BatteryVoltage, AnalogPointType) )
                                                     {
-                                                        m->insert(CTIDBG_new CtiPointDataMsg(point->getID(), battery_voltage));
+                                                        m->insert(CTIDBG_new CtiPointDataMsg(point->getID(), battery_voltage, NormalQuality, AnalogPointType));
                                                     }
                                                 }
                                                 if( items_included & 0x08 )
                                                 {
-                                                    temperature = p->data[pos++] << 8 |
-                                                                  p->data[pos++];
-            
+                                                    temperature = convertBytes( p->data, pos, 2);
+
                                                     temperature /= 100.0;
 
                                                     if( point = dr->device->getDevicePointOffsetTypeEqual(CtiDeviceGridAdvisor::FCI_Analog_Temperature, AnalogPointType) )
                                                     {
-                                                        m->insert(CTIDBG_new CtiPointDataMsg(point->getID(), temperature));
+                                                        m->insert(CTIDBG_new CtiPointDataMsg(point->getID(), temperature, NormalQuality, AnalogPointType));
                                                     }
                                                 }
                                                 if( items_included & 0x04 )
                                                 {
-                                                    amps_nominal = p->data[pos++] << 8 |
-                                                                   p->data[pos++];
-            
-                                                    amps_nominal /= 1000.0;
+                                                    amps_nominal = convertBytes( p->data, pos, 2);
 
                                                     if( point = dr->device->getDevicePointOffsetTypeEqual(CtiDeviceGridAdvisor::FCI_Analog_NominalAmps, AnalogPointType) )
                                                     {
-                                                        m->insert(CTIDBG_new CtiPointDataMsg(point->getID(), amps_nominal));
+                                                        m->insert(CTIDBG_new CtiPointDataMsg(point->getID(), amps_nominal, NormalQuality, AnalogPointType));
                                                     }
                                                 }
                                                 if( items_included & 0x02 )
                                                 {
-                                                    amps_peak = p->data[pos++] << 8 |
-                                                                p->data[pos++];
-            
-                                                    amps_peak /= 1000.0;
+                                                    amps_peak = convertBytes( p->data, pos, 2);
 
                                                     if( point = dr->device->getDevicePointOffsetTypeEqual(CtiDeviceGridAdvisor::FCI_Analog_PeakAmps, AnalogPointType) )
                                                     {
-                                                        m->insert(CTIDBG_new CtiPointDataMsg(point->getID(), amps_peak));
+                                                        m->insert(CTIDBG_new CtiPointDataMsg(point->getID(), amps_peak, NormalQuality, AnalogPointType));
                                                     }
                                                 }
-            
+
                                                 break;
                                             }
                                             case 0x02:
                                             {
                                                 unsigned char flags = p->data[pos++];
-            
+
                                                 unsigned long time = 0;
                                                 unsigned long duration = 0;
-            
+
                                                 bool current_fault_status = flags & 0x40;
                                                 bool event_report_status = false;
-            
-                                                time  = p->data[pos++] << 24;
-                                                time |= p->data[pos++] << 16;
-                                                time |= p->data[pos++] <<  8;
-                                                time |= p->data[pos++];
-            
+
+                                                time = convertBytes( p->data, pos, 4);
+
                                                 if( flags & 0x40 )
                                                 {
                                                     time = CtiTime::now().seconds() - time;
                                                 }
-            
+
                                                 if( flags & 0x20 )
                                                 {
                                                     //  it's an event report
@@ -1190,76 +1619,149 @@ void UDPInterface::processInbounds( void )
                                                 else
                                                 {
                                                     //  if it's not an event report, it has duration
-                                                    duration  = p->data[pos++] << 24;
-                                                    duration |= p->data[pos++] << 16;
-                                                    duration |= p->data[pos++] <<  8;
-                                                    duration |= p->data[pos++];
+                                                    duration = convertBytes( p->data, pos, 4);
                                                 }
-            
+
                                                 break;
                                             }
                                             case 0x03:
                                             {
                                                 unsigned char flags = p->data[pos++];
-            
+
                                                 unsigned long time = 0;
-                                                int   rate, 
+                                                int   rate,
                                                       count;
                                                 float reading;
-            
-                                                time  = p->data[pos++] << 24;
-                                                time |= p->data[pos++] << 16;
-                                                time |= p->data[pos++] <<  8;
-                                                time |= p->data[pos++];
-            
+
+                                                time = convertBytes( p->data, pos, 4);
+
                                                 if( flags & 0x80 && time )
                                                 {
                                                     time = CtiTime::now().seconds() - time;
                                                 }
-            
+
                                                 rate  = (p->data[pos  ] & 0xf8) >> 3;
-                                                count = (p->data[pos++] & 0x07) << 8 | 
-                                                         p->data[pos++];
-            
+                                                count = (int)(p->data[pos++] & 0x07) << 8 | (int)(p->data[pos++]);
+
                                                 for( int i = 0; i < count; i++ )
                                                 {
-                                                    reading = p->data[pos++] << 8 | 
-                                                              p->data[pos++];
-            
+                                                    reading = convertBytes( p->data, pos, 2);
+
                                                     reading /= 1000.0;
-            
+
                                                     time -= rate;
                                                 }
-            
+
                                                 break;
                                             }
                                             case 0x04:
                                             {
                                                 int index, port, len;
-            
+
                                                 string hostname;
-            
+
                                                 index = p->data[pos++];
-            
-                                                port = p->data[pos++] << 8 | p->data[pos++];
-            
-                                                len = p->data[pos++] << 8 | p->data[pos++];
-            
+
+                                                port = convertBytes( p->data, pos, 2);
+
+                                                len = convertBytes( p->data, pos, 2);
+
                                                 hostname.assign((char *)p->data + pos, len);
-            
+
                                                 {
                                                     CtiLockGuard<CtiLogger> doubt_guard(dout);
                                                     dout << CtiTime() << " **** Checkpoint - device \"" << dr->device->getName() << "\" host config report - index " << index << " : " << hostname << ":" << port << " **** " << __FILE__ << " (" << __LINE__ << ")" << endl;
                                                 }
-            
+
+                                                break;
+                                            }
+                                            case 0x05:
+                                            {
+                                                unsigned char items_included = p->data[pos++];
+
+                                                unsigned long time = 0;
+                                                float battery_voltage, temperature, amps_nominal, amps_peak;
+
+                                                if( items_included & 0x20 )
+                                                {
+                                                    time = convertBytes( p->data, pos, 4);
+
+                                                    if( items_included & 0x40 )
+                                                    {
+                                                        time = CtiTime::now().seconds() - time;
+                                                    }
+
+                                                }
+
+                                                unsigned short momCount = 0;
+                                                momCount = convertBytes( p->data, pos, 2);
+
+
+                                                if( point = dr->device->getDevicePointOffsetTypeEqual(CtiDeviceGridAdvisor::FCI_Accum_MomentaryCount, PulseAccumulatorPointType) )
+                                                {
+                                                    pdm = CTIDBG_new CtiPointDataMsg(point->getID(), momCount, NormalQuality, PulseAccumulatorPointType);
+
+                                                    if( items_included & 0x20 )
+                                                    {
+                                                        pdm->setTime(time);
+                                                    }
+
+                                                    m->insert(pdm);
+                                                }
+
+                                                // Toggle the momentary point true then false to allow an alarm to be recorded.
+                                                if( point = dr->device->getDevicePointOffsetTypeEqual(CtiDeviceGridAdvisor::FCI_Status_Momentary, StatusPointType) )
+                                                {
+                                                    pdm = CTIDBG_new CtiPointDataMsg(point->getID(), true, NormalQuality, StatusPointType);
+
+                                                    if( items_included & 0x20 ) {
+                                                        pdm->setTime(time);
+                                                    }
+
+                                                    m->insert(pdm->replicateMessage());
+                                                    pdm->setMillis(10); // We pulse the false value "at time now + 1ms ".
+                                                    pdm->setValue(false);
+                                                    m->insert(pdm);
+                                                }
+
+                                                if( items_included & 0x04 )
+                                                {
+                                                    amps_nominal = convertBytes( p->data, pos, 2);
+
+                                                    if( point = dr->device->getDevicePointOffsetTypeEqual(CtiDeviceGridAdvisor::FCI_Analog_NominalAmps, AnalogPointType) )
+                                                    {
+                                                        m->insert(CTIDBG_new CtiPointDataMsg(point->getID(), amps_nominal, NormalQuality, AnalogPointType));
+                                                    }
+                                                }
+                                                if( items_included & 0x02 )
+                                                {
+                                                    amps_peak = convertBytes( p->data, pos, 2);
+
+                                                    if( point = dr->device->getDevicePointOffsetTypeEqual(CtiDeviceGridAdvisor::FCI_Analog_PeakAmps, AnalogPointType) )
+                                                    {
+                                                        m->insert(CTIDBG_new CtiPointDataMsg(point->getID(), amps_peak, NormalQuality, AnalogPointType));
+                                                    }
+                                                }
+
+                                                // TODO: Add duration here (items_included & 0x01)
+                                                if( items_included & 0x01 )
+                                                {
+                                                    unsigned short duration = 0;
+                                                    duration = convertBytes( p->data, pos, 2);
+                                                    {
+                                                        CtiLockGuard<CtiLogger> doubt_guard(dout);
+                                                        dout << CtiTime() << " Duration decode unimplemented. Duration is: " << duration << ". " << __FILE__ << " (" << __LINE__ << ")" << endl;
+                                                    }
+                                                }
+
                                                 break;
                                             }
                                         }
                                     }
-            
+
                                     break;
                                 }
-            
+
                                 case 2:  //  Neutral Current Sensor
                                 {
                                     while( pos < (len - (crc_included * 2)) )
@@ -1271,35 +1773,25 @@ void UDPInterface::processInbounds( void )
                                                 bool request_ack    =  p->data[pos] & 0x80;
                                                 int  udp_repeats    = (p->data[pos] & 0x70) >> 4;
                                                 bool current_survey =  p->data[pos] & 0x02;
-            
+
                                                 pos++;
-            
+
                                                 float latitude, longitude, amp_threshold;
-            
-                                                latitude   = p->data[pos++] << 24 |
-                                                             p->data[pos++] << 16 |
-                                                             p->data[pos++] <<  8 |
-                                                             p->data[pos++];
-            
-                                                latitude  /= 1000.0;
-            
-                                                longitude  = p->data[pos++] << 24 |
-                                                             p->data[pos++] << 16 |
-                                                             p->data[pos++] <<  8 |
-                                                             p->data[pos++];      
-            
-                                                longitude /= 1000.0;
-            
-                                                amp_threshold  = p->data[pos++] << 8 |
-                                                                 p->data[pos++];
-            
+
+                                                latitude = convertBytes( p->data, pos, 4);
+                                                latitude  /= 10000.0;
+
+                                                longitude = convertBytes( p->data, pos, 4);
+                                                longitude /= 10000.0;
+
+                                                amp_threshold = convertBytes( p->data, pos, 2);
                                                 amp_threshold /= 1000.0;
-            
+
                                                 string device_name;
-            
+
                                                 device_name.assign((char *)p->data + pos, 128);
                                                 device_name.erase(device_name.find_first_of('\0'));
-            
+
                                                 {
                                                     CtiLockGuard<CtiLogger> doubt_guard(dout);
                                                     dout << CtiTime() << " **** Checkpoint - Neutral Monitor device has reported in **** " << __FILE__ << " (" << __LINE__ << ")" << endl;
@@ -1308,24 +1800,21 @@ void UDPInterface::processInbounds( void )
                                                     dout << CtiTime() << " longitude:     " << string(CtiNumStr(longitude))     << endl;
                                                     dout << CtiTime() << " amp threshold: " << string(CtiNumStr(amp_threshold)) << endl;
                                                 }
-            
+
                                                 break;
                                             }
                                             case 0x01:
                                             {
                                                 unsigned char items_included = p->data[pos++];
                                                 bool fault = p->data[pos++] & 0x80;
-            
+
                                                 unsigned long time = 0;
                                                 float battery_voltage, temperature;
-            
+
                                                 if( items_included & 0x20 )
                                                 {
-                                                    time  = p->data[pos++] << 24;
-                                                    time |= p->data[pos++] << 16;
-                                                    time |= p->data[pos++] <<  8;
-                                                    time |= p->data[pos++];
-            
+                                                    time = convertBytes( p->data, pos, 4);
+
                                                     if( items_included & 0x80 )
                                                     {
                                                         time = CtiTime::now().seconds() - time;
@@ -1333,57 +1822,49 @@ void UDPInterface::processInbounds( void )
                                                 }
                                                 if( items_included & 0x10 )
                                                 {
-                                                    battery_voltage = p->data[pos++] << 8 |
-                                                                      p->data[pos++];
-            
+                                                    battery_voltage = convertBytes( p->data, pos, 2);
                                                     battery_voltage /= 1000.0;
                                                 }
                                                 if( items_included & 0x08 )
                                                 {
-                                                    temperature = p->data[pos++] << 8 |
-                                                                  p->data[pos++];
-            
+                                                    temperature = convertBytes( p->data, pos, 2);
                                                     temperature /= 100.0;
                                                 }
-            
+
                                                 break;
                                             }
                                             case 0x02:
                                             {
                                                 unsigned char flags = p->data[pos++];
-            
+
                                                 unsigned long time = 0;
                                                 int rate, count, reading;
-            
-                                                time  = p->data[pos++] << 24;
-                                                time |= p->data[pos++] << 16;
-                                                time |= p->data[pos++] <<  8;
-                                                time |= p->data[pos++];
-            
+
+                                                time = convertBytes( p->data, pos, 4);
+
                                                 if( flags & 0x80 && time )
                                                 {
                                                     time = CtiTime::now().seconds() - time;
                                                 }
-            
+
                                                 rate  = (p->data[pos  ] & 0xc0) >> 6;
-                                                count = (p->data[pos++] & 0x3f) << 8 | p->data[pos++];
-            
+                                                count = (int)(p->data[pos++] & 0x3f) << 8 | (int)(p->data[pos++]);
+
                                                 for( int i = 0; i < count; i++ )
                                                 {
-                                                    reading = p->data[pos++] << 8 | 
-                                                              p->data[pos++];
-            
+                                                    reading = convertBytes( p->data, pos, 2);
+
                                                     time -= rate;
                                                 }
-            
+
                                                 break;
                                             }
                                         }
                                     }
-            
+
                                     break;
                                 }
-            
+
                                 default:
                                 {
                                     {
@@ -1408,10 +1889,8 @@ void UDPInterface::processInbounds( void )
 
                         dr->work.inbound.pop();
                     }
-
-                    break;
                 }
-    
+
             }
         }
         else if( gConfigParms.getValueAsULong("PORTER_UDP_DEBUGLEVEL", 0, 16) & 0x00000001 )
@@ -1740,24 +2219,66 @@ void UDPInterface::Inbound::run()
 
 UDPInterface::device_record *UDPInterface::validateDeviceRecord( device_record *dr )
 {
-    //  should we reload the device?
-    if( dr && dr->device && dr->dirty && !dr->device->isDirty() )
+    try
     {
-        //  have the addresses changed?
-        if( dr->master != dr->device->getMasterAddress() ||
-            dr->slave  != dr->device->getAddress() )
+        //  should we reload the device?
+        if( dr && dr->device && dr->dirty && !dr->device->isDirty() )
         {
-            //  if so, remove it from the collections
-            _devices.erase(dr->id);
-            _addresses.erase(make_pair(dr->master, dr->slave));
+            //  have the addresses changed?
+            if( dr->master != dr->device->getMasterAddress() ||
+                dr->slave  != dr->device->getAddress() )
+            {
+                //  if so, remove it from the collections
 
-            delete dr;
-            dr = 0;
+                try
+                {
+                    _devices.erase(dr->id);
+                }
+                catch(...)
+                {
+                    {
+                        CtiLockGuard<CtiLogger> doubt_guard(dout);
+                        dout << CtiTime() << " **** EXCEPTION Checkpoint **** " << __FILE__ << " (" << __LINE__ << ")" << endl;
+                    }
+                }
+
+                try
+                {
+                    _addresses.erase(make_pair(dr->master, dr->slave));
+                }
+                catch(...)
+                {
+                    {
+                        CtiLockGuard<CtiLogger> doubt_guard(dout);
+                        dout << CtiTime() << " **** EXCEPTION Checkpoint **** " << __FILE__ << " (" << __LINE__ << ")" << endl;
+                    }
+                }
+
+                try
+                {
+                    delete dr;
+                    dr = 0;
+                }
+                catch(...)
+                {
+                    {
+                        CtiLockGuard<CtiLogger> doubt_guard(dout);
+                        dout << CtiTime() << " **** EXCEPTION Checkpoint **** " << __FILE__ << " (" << __LINE__ << ")" << endl;
+                    }
+                }
+            }
+            else
+            {
+                //  not dirty any more - we can reset our own dirty flag
+                dr->dirty = false;
+            }
         }
-        else
+    }
+    catch(...)
+    {
         {
-            //  not dirty any more - we can reset our own dirty flag
-            dr->dirty = false;
+            CtiLockGuard<CtiLogger> doubt_guard(dout);
+            dout << CtiTime() << " **** EXCEPTION Checkpoint **** " << __FILE__ << " (" << __LINE__ << ")" << endl;
         }
     }
 
@@ -1799,11 +2320,21 @@ UDPInterface::device_record *UDPInterface::getDeviceRecordByGPUFFDeviceTypeSeria
 {
     device_record *retval = 0;
 
-    dr_type_serial_map::iterator drtsm_itr = _types_serials.find(make_pair(device_type, serial));
-
-    if( drtsm_itr != _types_serials.end() )
+    try
     {
-        retval = validateDeviceRecord(drtsm_itr->second);
+        dr_type_serial_map::iterator drtsm_itr = _types_serials.find(make_pair(device_type, serial));
+
+        if( drtsm_itr != _types_serials.end() )
+        {
+            retval = validateDeviceRecord(drtsm_itr->second);
+        }
+    }
+    catch(...)
+    {
+        {
+            CtiLockGuard<CtiLogger> doubt_guard(dout);
+            dout << CtiTime() << " **** EXCEPTION Checkpoint **** " << __FILE__ << " (" << __LINE__ << ")" << endl;
+        }
     }
 
     return retval;
@@ -1824,6 +2355,7 @@ void UDPInterface::applyGetUDPInfo(const long unusedid, CtiDeviceSPtr RemoteDevi
             dr->device = boost::static_pointer_cast<CtiDeviceSingle>(RemoteDevice);
 
             dr->id     = dr->device->getID();
+            dr->dirty  = dr->device->isDirty();
 
             dr->master = dr->device->getMasterAddress();
             dr->slave  = dr->device->getAddress();
