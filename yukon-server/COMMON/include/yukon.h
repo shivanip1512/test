@@ -6,8 +6,8 @@
 *
 * PVCS KEYWORDS:
 * ARCHIVE      :  $Archive:   Z:/SOFTWAREARCHIVES/YUKON/common/INCLUDE/yukon.h-arc  $
-* REVISION     :  $Revision: 1.60 $
-* DATE         :  $Date: 2007/01/25 21:05:29 $
+* REVISION     :  $Revision: 1.61 $
+* DATE         :  $Date: 2007/09/25 22:02:12 $
 *
 * Copyright (c) 1999, 2000, 2001 Cannon Technologies Inc. All rights reserved.
 *-----------------------------------------------------------------------------*/
@@ -122,6 +122,7 @@ enum CtiPAOClass_t
     PAOClassRTU,
     PAOClassIED,
     PAOClassMeter,
+    PAOClassGridAdvisor,
     PAOClassCarrier,
     PAOClassGroup,
     PAOClassCapControl,
