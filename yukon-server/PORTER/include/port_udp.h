@@ -9,8 +9,8 @@
 *
 * PVCS KEYWORDS:
 * ARCHIVE      :  $Archive:   Z:/SOFTWAREARCHIVES/YUKON/RTDB/INCLUDE/port_base.h-arc  $
-* REVISION     :  $Revision: 1.7 $
-* DATE         :  $Date: 2007/09/24 18:56:18 $
+* REVISION     :  $Revision: 1.8 $
+* DATE         :  $Date: 2007/09/25 21:58:47 $
 *
 * Copyright (c) 2006 Cannon Technologies Inc. All rights reserved.
 *-----------------------------------------------------------------------------*/
@@ -116,6 +116,7 @@ protected:
     void haltLog ( void );
     bool bindSocket( void );
 
+    unsigned int convertBytes( unsigned char *buf, int &position, int bytes_to_combine );
     bool getOutMessages( unsigned wait );
     bool getPackets    ( int wait );
 
