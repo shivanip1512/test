@@ -6,8 +6,8 @@
 *
 * PVCS KEYWORDS:
 * ARCHIVE      :  $Archive:   Z:/SOFTWAREARCHIVES/YUKON/MCCMD/mccmd.cpp-arc  $
-* REVISION     :  $Revision: 1.68 $
-* DATE         :  $Date: 2007/04/11 15:34:48 $
+* REVISION     :  $Revision: 1.69 $
+* DATE         :  $Date: 2007/09/25 19:15:02 $
 *
 * Copyright (c) 1999, 2000, 2001 Cannon Technologies Inc. All rights reserved.
 *-----------------------------------------------------------------------------*/
@@ -57,6 +57,7 @@
 
 unsigned gMccmdDebugLevel = 0x00000000;
 bool gDoNotSendCancel = false;
+bool gIgnoreQueueCount = false;
 
 const boost::regex   re_num("[0-9]+");
 const boost::regex   re_timeout("timeout[= ]+[0-9]+");
@@ -95,15 +96,14 @@ void _MessageThrFunc()
 
             if( in != 0 )
             {
-                // update global message received timestamp
-                gLastReturnMessageReceived = gLastReturnMessageReceived.now();              
-
                 boost::shared_ptr< CtiCountedPCPtrQueue<RWCollectable> > counted_ptr;
 
                 unsigned int msgid = 0;
 
                 if( in->isA() == MSG_PCRETURN )
                 {
+                    // update global message received timestamp, this is not used at the moment
+                    gLastReturnMessageReceived = gLastReturnMessageReceived.now();
                     msgid =((CtiReturnMsg *)in)->UserMessageId();
                 }
                 else if( in->isA() == MSG_QUEUEDATA )
@@ -553,6 +553,7 @@ int Mccmd_Init(Tcl_Interp* interp)
 
     gMccmdDebugLevel = gConfigParms.getValueAsULong(MCCMD_DEBUG_LEVEL, 0x00000000);
     gDoNotSendCancel = gConfigParms.isTrue(MACS_DISABLE_CANCEL);
+    gIgnoreQueueCount = gConfigParms.isTrue(MACS_IGNORE_QUEUES);
 
     if( gMccmdDebugLevel > 0 )
     {
@@ -1620,7 +1621,10 @@ static int DoRequest(Tcl_Interp* interp, string& cmd_line, long timeout, bool tw
     bool interrupted = false;
     bool timed_out = false;
     UINT jobId = 0;
+    UINT const PORT_COUNT_REQUEST_SECONDS = 5*60;
     long requestLogId = 0;
+    unsigned long porterCount = 0;
+    CtiTime lastReturnMessageReceived;
 
     RWSet req_set;
 
@@ -1680,6 +1684,8 @@ static int DoRequest(Tcl_Interp* interp, string& cmd_line, long timeout, bool tw
 
     CtiTime start;
     CtiTime lastPorterCountTime;
+    //We will poll this in 60 seconds
+    lastPorterCountTime = lastPorterCountTime - PORT_COUNT_REQUEST_SECONDS + 60;
     
     // Some structures to sort the responses
     PILReturnMap device_map;
@@ -1699,12 +1705,13 @@ static int DoRequest(Tcl_Interp* interp, string& cmd_line, long timeout, bool tw
             if( msg->isA() == MSG_PCRETURN )
             {
                 CtiReturnMsg* ret_msg = (CtiReturnMsg*) msg;
-                bool isInhibited = (ret_msg->Status() == DEVICEINHIBITED);
+                bool preventBreak = (ret_msg->Status() == DEVICEINHIBITED) | (ret_msg->Status() == NoMethod);
                 DumpReturnMessage(*ret_msg);
                 HandleReturnMessage(ret_msg, good_map, bad_map, device_map, resultQueue);
+                lastReturnMessageReceived = lastReturnMessageReceived.now();
 
                 // have we received everything expected?
-                if( device_map.size() == 0 && !isInhibited )
+                if( device_map.size() == 0 && !preventBreak )
                     break;
             }
             else if( msg->isA() == MSG_QUEUEDATA )
@@ -1712,13 +1719,13 @@ static int DoRequest(Tcl_Interp* interp, string& cmd_line, long timeout, bool tw
                 CtiQueueDataMsg *queueMessage = (CtiQueueDataMsg *)msg;
                 if( queueMessage->getRequestId() == msgid )
                 {
-                    ULONG count = queueMessage->getRequestIdCount();
+                    porterCount = queueMessage->getRequestIdCount();
                     string output("Queue Data Received, there are ");
-                    output += CtiNumStr(count);
+                    output += CtiNumStr(porterCount);
                     output += " objects for this script in porter.";
                     WriteOutput(output.c_str());
 
-                    if( count == 0 )
+                    if( porterCount == 0 )
                     {
                         output = "Porter has reported a count of 0 messages for this script. ";
                         output += "MACS reports " + CtiNumStr(device_map.size());
@@ -1753,15 +1760,15 @@ static int DoRequest(Tcl_Interp* interp, string& cmd_line, long timeout, bool tw
         // will potentially never time anything out - this should be considered a short
         // term fix.
         CtiTime now;
-        if( (now > gLastReturnMessageReceived + timeout) &&
-            (now > start + timeout) )
+        if( (now > lastReturnMessageReceived + timeout) &&
+            (now > start + timeout) && (gIgnoreQueueCount || porterCount <= 0) )
         {
             string info = "The following command timed out: \r\n";
             info += cmd_line;
             info += "\r\n command was originally submitted at: ";
             info += CtiTime(start).asString();
             info += "\r\n nothing was received from porter in the last ";
-            info += CtiNumStr(timeout);
+            info += CtiNumStr(now.seconds() - lastReturnMessageReceived.seconds());
             info += " seconds.";
             if( gDoNotSendCancel == false )
             {
@@ -1774,7 +1781,7 @@ static int DoRequest(Tcl_Interp* interp, string& cmd_line, long timeout, bool tw
             break;
         }
 
-        if( now > lastPorterCountTime + 5*60 ) //Hard coded 5 minutes for now. This should be changed.
+        if( now > lastPorterCountTime + PORT_COUNT_REQUEST_SECONDS )
         {
             lastPorterCountTime = now;
             PILConnection->WriteConnQue(CTIDBG_new CtiRequestMsg(0, "system message request count", msgid, 0, 0, 0, 0, msgid));

@@ -6,8 +6,8 @@
 *
 * PVCS KEYWORDS:
 * ARCHIVE      :  $Archive:   Z:/SOFTWAREARCHIVES/YUKON/PIL/pilserver.cpp-arc  $
-* REVISION     :  $Revision: 1.96 $
-* DATE         :  $Date: 2007/07/12 20:23:19 $
+* REVISION     :  $Revision: 1.97 $
+* DATE         :  $Date: 2007/09/25 19:15:02 $
 *
 * Copyright (c) 1999, 2000, 2001 Cannon Technologies Inc. All rights reserved.
 *-----------------------------------------------------------------------------*/
@@ -1125,10 +1125,10 @@ int CtiPILServer::executeRequest(CtiRequestMsg *pReq)
     {
         pcRet = (CtiReturnMsg*)retList.front();retList.pop_front();
 
-        if( i > 1 )
+        /*if( i > 1 ) //This is causing problems when we return "no method" but dont want expectmore = 1
         {
             pcRet->setExpectMore(TRUE);    // Let the client know more messages are coming
-        }
+        }*/
 
         CtiServer::ptr_type ptr = findConnectionManager((long)pReq->getConnectionHandle());
 
