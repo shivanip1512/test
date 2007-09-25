@@ -237,6 +237,10 @@ INT CtiDeviceGridAdvisor::IntegrityScan( CtiRequestMsg *pReq, CtiCommandParser &
     return status;
 }
 
+LONG CtiDeviceGridAdvisor::getPortID() const
+{
+    return _commport.getPortID();
+}
 
 INT CtiDeviceGridAdvisor::AccumulatorScan( CtiRequestMsg *pReq, CtiCommandParser &parse, OUTMESS *&OutMessage, list< CtiMessage* > &vgList, list< CtiMessage* > &retList, list< OUTMESS* > &outList, INT ScanPriority )
 {
@@ -288,3 +292,12 @@ void CtiDeviceGridAdvisor::DecodeDatabaseReader(RWDBReader &rdr)
    }
 }
 
+LONG CtiDeviceGridAdvisor::getAddress() const
+{
+    return _address.getMasterAddress();
+}
+
+LONG CtiDeviceGridAdvisor::getMasterAddress() const
+{
+    return _address.getMasterAddress();
+}

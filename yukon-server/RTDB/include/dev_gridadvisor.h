@@ -14,11 +14,12 @@
 #pragma warning( disable : 4786 )
 
 #include <windows.h>
-#include "dev_single.h"
+#include "dev_dnp.h"
 #include "tbl_dv_address.h"
 #include "tbl_direct.h"
 
-class IM_EX_DEVDB CtiDeviceGridAdvisor : public CtiDeviceSingle
+// THIS DEVICE SHOULD INHERIT FROM CTIDEVICEREMOTE
+class IM_EX_DEVDB CtiDeviceGridAdvisor : public Cti::Device::DNP
 {
 private:
 
@@ -33,7 +34,10 @@ public:
 
     enum FCIPoints
     {
-        FCI_Status_Fault = 1,
+        FCI_Status_Fault      = 1,
+        FCI_Status_NoPower    = 2,
+        FCI_Status_BatteryLow = 3,      // per YUK-4101
+        FCI_Status_Momentary  = 4,      //
         FCI_Status_CurrentSurveyEnabled = 101,
         FCI_Status_UDPAck               = 102,
 
@@ -47,6 +51,8 @@ public:
         FCI_Analog_FaultHistory   =  21,
         FCI_Analog_CurrentSurvey  =  31,
         FCI_Analog_UDPRepeats     = 101,
+
+        FCI_Accum_MomentaryCount =   1,
     };
 
     CtiDeviceGridAdvisor();
@@ -65,6 +71,10 @@ public:
     virtual INT AccumulatorScan(CtiRequestMsg *pReq, CtiCommandParser &parse, OUTMESS *&OutMessage, list< CtiMessage* > &vgList, list< CtiMessage* > &retList, list< OUTMESS* > &outList, INT ScanPriority = MAXPRIORITY - 4);
     virtual INT IntegrityScan  (CtiRequestMsg *pReq, CtiCommandParser &parse, OUTMESS *&OutMessage, list< CtiMessage* > &vgList, list< CtiMessage* > &retList, list< OUTMESS* > &outList, INT ScanPriority = MAXPRIORITY - 4);
     virtual INT GeneralScan    (CtiRequestMsg *pReq, CtiCommandParser &parse, OUTMESS *&OutMessage, list< CtiMessage* > &vgList, list< CtiMessage* > &retList, list< OUTMESS* > &outList, INT ScanPriority = MAXPRIORITY - 4);
+
+    virtual LONG getPortID() const;
+    virtual LONG getAddress() const;
+    virtual LONG getMasterAddress() const;
 };
 
 #endif //  #ifndef __DEV_GRIDADVISOR_H__
