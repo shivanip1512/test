@@ -5,6 +5,7 @@ package com.cannontech.loadcontrol.popup;
  * Creation date: (1/21/2001 4:40:03 PM)
  * @author: 
  */
+import javax.swing.JMenuItem;
 import javax.swing.JOptionPane;
 
 import com.cannontech.loadcontrol.LCUtils;
@@ -22,9 +23,10 @@ public class ProgramPopUpMenu extends javax.swing.JPopupMenu implements java.awt
 	private LMProgramBase loadControlProgram = null;
 
 	
-	private javax.swing.JMenuItem jMenuItemDisable = null;
-	private javax.swing.JMenuItem jMenuItemStartStop = null;
-
+	private JMenuItem jMenuItemDisable = null;
+	private JMenuItem jMenuItemStartStop = null;
+    private JMenuItem jMenuItemChangeGear = null;
+    
 /**
  * ProgramPopUpMenu constructor comment.
  */
@@ -53,6 +55,9 @@ public void actionPerformed(java.awt.event.ActionEvent e)
 
 	if( e.getSource() == getJMenuItemDisable() )
 		jMenuItemDisableEnable_ActionPerformed(e);
+    
+    if( e.getSource() == getJMenuItemChangeGear() ) 
+        jMenuItemChangeGear_ActionPerformed(e);
 }
 
 /**
@@ -60,13 +65,13 @@ public void actionPerformed(java.awt.event.ActionEvent e)
  * Creation date: (1/15/2001 9:20:50 AM)
  * @return javax.swing.JMenuItem
  */
-private javax.swing.JMenuItem getJMenuItemDisable() 
+private JMenuItem getJMenuItemDisable() 
 {
 	if (jMenuItemDisable == null) 
 	{
 		try 
 		{
-			jMenuItemDisable = new javax.swing.JMenuItem();
+			jMenuItemDisable = new JMenuItem();
 			jMenuItemDisable.setName("JMenuItemDisable");
 			jMenuItemDisable.setMnemonic('b');
 			jMenuItemDisable.setText("Disable");
@@ -80,18 +85,35 @@ private javax.swing.JMenuItem getJMenuItemDisable()
 	
 	return jMenuItemDisable;
 }
+
+private JMenuItem getJMenuItemChangeGear() {
+    if (jMenuItemChangeGear == null) {
+        try {
+            jMenuItemChangeGear = new JMenuItem();
+            jMenuItemChangeGear.setName("JMenuItemChangeGear");
+            jMenuItemChangeGear.setMnemonic('g');
+            jMenuItemChangeGear.setText("Change Gear");
+            jMenuItemChangeGear.setActionCommand("jMenuItemChangeGear");
+        } 
+        catch (java.lang.Throwable ivjExc) {
+            handleException(ivjExc);
+        }
+    }
+    
+    return jMenuItemChangeGear;
+}
 /**
  * Insert the method's description here.
  * Creation date: (1/15/2001 9:20:50 AM)
- * @return javax.swing.JMenuItem
+ * @return JMenuItem
  */
-private javax.swing.JMenuItem getJMenuItemStartStop() 
+private JMenuItem getJMenuItemStartStop() 
 {
 	if (jMenuItemStartStop == null) 
 	{
 		try 
 		{
-			jMenuItemStartStop = new javax.swing.JMenuItem();
+			jMenuItemStartStop = new JMenuItem();
 			jMenuItemStartStop.setName("JMenuItemStartStop");
 			jMenuItemStartStop.setMnemonic('s');
 			jMenuItemStartStop.setText("Start...");
@@ -131,6 +153,7 @@ private void initConnections() throws java.lang.Exception
 {
 	getJMenuItemDisable().addActionListener(this);
 	getJMenuItemStartStop().addActionListener(this);
+    getJMenuItemChangeGear().addActionListener(this);
 }
 /**
  * Initialize the class.
@@ -144,8 +167,8 @@ private void initialize()
 		setBorderPainted( true );
 
 		add(getJMenuItemStartStop(), getJMenuItemStartStop().getName());
+        add(getJMenuItemChangeGear(), getJMenuItemChangeGear().getName());
 		add(getJMenuItemDisable(), getJMenuItemDisable().getName());
-
 
 		initConnections();
 	} 
@@ -153,7 +176,6 @@ private void initialize()
 	{
 		handleException(ivjExc);
 	}
-	
 }
 /**
  * Comment
@@ -189,29 +211,34 @@ private void jMenuItemDisableEnable_ActionPerformed(java.awt.event.ActionEvent a
 
 	return;
 }
-/**
- * Comment
- */
-private void jMenuItemStartStop_ActionPerformed(java.awt.event.ActionEvent actionEvent) 
-{
 
-	if( getLoadControlProgram() instanceof LMProgramDirect )
-	{
-		showDirectManualEntry(
-			"Start...".equalsIgnoreCase(getJMenuItemStartStop().getText())
-			? DirectControlJPanel.MODE_START_STOP
-			: DirectControlJPanel.MODE_STOP  );
+private void jMenuItemChangeGear_ActionPerformed(java.awt.event.ActionEvent actionEvent) {
+	if( getLoadControlProgram() instanceof LMProgramDirect ) {
+        PopUpPanel p = new PopUpPanel( this );
+        p.showChangeGearOptions( (LMProgramDirect)getLoadControlProgram());
 	}
 
-	if( getLoadControlProgram() instanceof LMProgramCurtailment )
-	{
-		showCurtailManualEntry();
-	}
-		
-	
 	return;
 }
 
+private void jMenuItemStartStop_ActionPerformed(java.awt.event.ActionEvent actionEvent) {
+
+    if( getLoadControlProgram() instanceof LMProgramDirect )
+    {
+        showDirectManualEntry(
+            "Start...".equalsIgnoreCase(getJMenuItemStartStop().getText())
+            ? DirectControlJPanel.MODE_START_STOP
+            : DirectControlJPanel.MODE_STOP  );
+    }
+
+    if( getLoadControlProgram() instanceof LMProgramCurtailment )
+    {
+        showCurtailManualEntry();
+    }
+        
+    
+    return;
+}
 
 
 /**
@@ -245,6 +272,7 @@ public void setLoadControlProgram(LMProgramBase newLoadControlProgram)
 		if( getLoadControlProgram().getDisableFlag().booleanValue() )
 		{
 			getJMenuItemStartStop().setEnabled(false);
+            getJMenuItemChangeGear().setEnabled(false);
 			getJMenuItemDisable().setText("Enable");
 		}
 		else
@@ -256,6 +284,7 @@ public void setLoadControlProgram(LMProgramBase newLoadControlProgram)
 	{
 		getJMenuItemStartStop().setEnabled(false);
 		getJMenuItemDisable().setEnabled(false);
+        getJMenuItemChangeGear().setEnabled(false);
 	}
 
 }
@@ -341,15 +370,22 @@ private void syncButtons()
 			break;
 		
 		case LMProgramBase.STATUS_MANUAL_ACTIVE:
+            getJMenuItemStartStop().setEnabled(true);
+            getJMenuItemDisable().setEnabled(true);
+            getJMenuItemChangeGear().setEnabled(true);
+            break;
+            
 		case LMProgramBase.STATUS_FULL_ACTIVE:
 			getJMenuItemStartStop().setEnabled(true);
 			getJMenuItemDisable().setEnabled(true);
+            getJMenuItemChangeGear().setEnabled(false);
 			break;
 		
 		case LMProgramBase.STATUS_INACTIVE:
 		case LMProgramBase.STATUS_NON_CNTRL:
 			getJMenuItemStartStop().setEnabled(true);
 			getJMenuItemDisable().setEnabled(true);
+            getJMenuItemChangeGear().setEnabled(false);
 			break;
 			
 		case LMProgramBase.STATUS_NOTIFIED:
@@ -357,11 +393,13 @@ private void syncButtons()
 		case LMProgramBase.STATUS_CNTRL_ATTEMPT:
 			getJMenuItemStartStop().setEnabled(true);
 			getJMenuItemDisable().setEnabled(true);
+            getJMenuItemChangeGear().setEnabled(false);
 			break;
 
 		case LMProgramBase.STATUS_STOPPING: /*only used by the server*/
 			getJMenuItemStartStop().setEnabled(false);
 			getJMenuItemDisable().setEnabled(false);
+            getJMenuItemChangeGear().setEnabled(false);
 			break;
 
 		default:

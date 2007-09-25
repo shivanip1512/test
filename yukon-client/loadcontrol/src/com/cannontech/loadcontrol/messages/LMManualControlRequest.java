@@ -29,13 +29,15 @@ public class LMManualControlRequest extends LMMessage
 	public static final int SCHEDULED_STOP = 1;
 	public static final int START_NOW = 2;
 	public static final int STOP_NOW = 3;
+    public static final int CHANGE_GEAR = 4;
 
 	public static final String[] COMMAND_STRINGS =
 	{
 		"SCHEDULED START",
 		"SCHEDULED STOP",
 		"START NOW",
-		"STOP NOW"
+		"STOP NOW",
+        "CHANGE GEAR"
 	};
 
 	//LMProgram constraint flags

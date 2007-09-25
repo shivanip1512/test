@@ -1,5 +1,6 @@
 package com.cannontech.loadcontrol.popup;
 
+import javax.swing.JDialog;
 import javax.swing.JOptionPane;
 import javax.swing.JPopupMenu;
 
@@ -7,8 +8,11 @@ import com.cannontech.common.gui.panel.ManualChangeJPanel;
 import com.cannontech.common.gui.util.OkCancelDialog;
 import com.cannontech.common.util.CtiUtilities;
 import com.cannontech.loadcontrol.LCUtils;
+import com.cannontech.loadcontrol.data.IGearProgram;
 import com.cannontech.loadcontrol.data.LMProgramBase;
+import com.cannontech.loadcontrol.data.LMProgramDirect;
 import com.cannontech.loadcontrol.gui.manualentry.ConstraintResponsePanel;
+import com.cannontech.loadcontrol.gui.manualentry.DirectChangeGearJPanel;
 import com.cannontech.loadcontrol.gui.manualentry.DirectControlJPanel;
 import com.cannontech.loadcontrol.gui.manualentry.MultiSelectProg;
 import com.cannontech.loadcontrol.gui.manualentry.ResponseProg;
@@ -159,12 +163,8 @@ public class PopUpPanel {
 
 					}
 					
-					
 				}
-		
-		
 			}
-		
 		}
 		else
 		{
@@ -178,4 +178,74 @@ public class PopUpPanel {
 		
 	}
 
+    public void showChangeGearOptions( LMProgramDirect currentProgram ) {
+        final JDialog d = new JDialog(CtiUtilities.getParentFrame(thisPopup.getInvoker()) );
+
+        DirectChangeGearJPanel panel = new DirectChangeGearJPanel() {
+            public void exit() {
+                d.dispose();
+            }
+            public void setParentWidth( int x ) {
+                d.setSize( d.getWidth() + x, d.getHeight() );
+            }
+        };
+        panel.setGearList(((IGearProgram)currentProgram).getDirectGearVector());
+        d.setTitle("Choose Next Gear");
+        d.setModal(true);
+        d.setContentPane(panel);
+        d.setSize( 250, 200 );
+        d.setLocationRelativeTo(thisPopup);
+        d.show();
+    
+        //destroy the JDialog
+        d.dispose();
+        if( panel.getChoice() == ManualChangeJPanel.OK_CHOICE ) {
+            Integer newCurrentGearNumber = panel.getSelectedGearNumber();
+    
+            if( newCurrentGearNumber != null ) {
+                LMManualControlRequest lmCntrlMsg = panel.createMessage(currentProgram, newCurrentGearNumber);
+                lmCntrlMsg.setConstraintFlag(LMManualControlRequest.CONSTRAINTS_FLAG_CHECK);
+                ResponseProg currentResponseProg = new ResponseProg(lmCntrlMsg, currentProgram );
+                ResponseProg[] responseWrapper = { currentResponseProg };
+                
+                boolean success = LCUtils.executeSyncMessage( responseWrapper );
+
+                if( !success )
+                {
+                    final ConstraintResponsePanel constrPanel = new ConstraintResponsePanel();
+                    OkCancelDialog diag = new OkCancelDialog(
+                        CtiUtilities.getParentFrame(thisPopup.getInvoker()),
+                        "Program Constraint Violation",
+                        true,
+                        constrPanel );
+
+                    //add a "Successful check" output if there are not
+                    // any constraints violated
+                    if( currentResponseProg.getViolations().size() <= 0 ) {
+                        currentResponseProg.setAction( ResponseProg.NO_VILOATION_ACTION );
+                        currentResponseProg.getViolations().add("No Constraints Violated");
+                    }
+
+                    //set our responses
+                    constrPanel.setValue( responseWrapper );
+                    
+                    diag.setOkButtonText( "Resubmit" );
+                    diag.setResizable( true );
+                    diag.setSize( 800, 350 );
+                    diag.setLocationRelativeTo( thisPopup );
+
+                    diag.show();
+
+                    ResponseProg[] respArr = (ResponseProg[])constrPanel.getValue( null );
+                        
+                    if( diag.getButtonPressed() == OkCancelDialog.OK_PRESSED
+                            && respArr.length > 0 ) {
+                        LCUtils.executeSyncMessage( respArr );
+                    }
+
+                    diag.dispose();
+                }
+            }
+        }
+    }
 }
