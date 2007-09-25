@@ -6,8 +6,8 @@
 *
 * PVCS KEYWORDS:
 * ARCHIVE      :  $Archive:   Z:/SOFTWAREARCHIVES/YUKON/COMMON/resolvers.cpp-arc  $
-* REVISION     :  $Revision: 1.80 $
-* DATE         :  $Date: 2007/08/17 18:47:40 $
+* REVISION     :  $Revision: 1.81 $
+* DATE         :  $Date: 2007/09/25 22:01:34 $
 *
 * Copyright (c) 1999, 2000, 2001 Cannon Technologies Inc. All rights reserved.
 *-----------------------------------------------------------------------------*/
@@ -688,6 +688,14 @@ INT resolveDeviceType(const string& _rwsTemp)
     {
         nRet = TYPE_FMU;
     }
+    else if(rwsTemp == "faulted circuit indicator")
+    {
+        nRet = TYPE_FCI;
+    }
+    else if(rwsTemp == "capacitor bank neutral monitor")
+    {
+        nRet = TYPE_NEUTRAL_MONITOR;
+    }
     else
     {
         {
@@ -869,6 +877,10 @@ INT resolvePAOClass(const string& _rwsTemp)
     else if(rwsTemp == "meter")
     {
         nRet = PAOClassMeter;
+    }
+    else if(rwsTemp == "gridadvisor")
+    {
+        nRet = PAOClassGridAdvisor;
     }
     else if(rwsTemp == "group")
     {
@@ -1169,6 +1181,8 @@ bool resolveIsDeviceTypeSingle(INT Type)
         case TYPE_FMU:
         case TYPE_PAGING_RECEIVER:
         case TYPE_FOREIGNPORTER:
+        case TYPE_FCI:
+        case TYPE_NEUTRAL_MONITOR:
         {
             bRet = true;
             break;
