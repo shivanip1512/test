@@ -514,7 +514,15 @@ public final class LMCmdMsgFactory
 			}
 
 		}
-
+        else if( ILCCmds.PROG_CHANGE_GEAR.equals(cmdMsg.getCmd()) && prg.getProgramStatus() == LMProgramBase.STATUS_MANUAL_ACTIVE) {
+            if( optionalProps != null ) {
+                int constID = LMManualControlRequest.getConstraintID( constraint );
+                LMManualControlRequest changeGearRequest = prg.createStartStopNowMsg( prg.getStopTime().getTime(), gearnum.intValue(), null, true, constID) ;
+                changeGearRequest.setCommand(LMManualControlRequest.CHANGE_GEAR);
+                changeGearRequest.setStartTime(prg.getStartTime());
+                cmdMsg.setGenLCMsg(changeGearRequest);
+            }
+        }
 	}
 
     private static void createSchedStartForTargetCycle(final WebCmdMsg cmdMsg, LMProgramBase prg, int constID) {

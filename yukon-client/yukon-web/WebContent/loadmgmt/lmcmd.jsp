@@ -245,6 +245,107 @@ function setStopAble( radioChk )
 <%	
 	}
 	
+	if( ILCCmds.PROG_CHANGE_GEAR.equals(cmd) ) {
+		LMProgramBase prg = null;
+%>
+	<div class="TableCell"> 
+	  <div align="center">Select the gear you wish to change to:</div>
+	</div>
+
+    <table width="350" border="1" cellspacing="0" cellpadding="6" align="center" valign="top" bgcolor="#FFFFFF">
+      <tr> 
+        <td> 
+          <table width="349" border="0" cellspacing="0" cellpadding="3" align="center">
+<%
+            prg = (LMProgramBase)lcCache.getProgram( new Integer(itemid) );
+            if(prg.getProgramStatus() == LMProgramBase.STATUS_MANUAL_ACTIVE) {
+				String gearName = "";
+	            Integer gearPeriod = new Integer (0);
+	            prg = (LMProgramBase)lcCache.getProgram( new Integer(itemid) );
+	            java.util.List gearList = ( prg instanceof IGearProgram
+	                            ? ((IGearProgram)prg).getDirectGearVector()
+	                            : new java.util.Vector() );
+	%>	  
+	            <tr valign="top"> 
+	              <td width="85" class="TableCell"> 
+	                <div align="right"><b>Start gear: </b></div>
+	              </td>
+	              <td width="25">&nbsp;</td>
+	              <td width="36">&nbsp;</td>
+	              <td width="179">
+	                  <select name="gearnum" onchange="showtgconfig (this.options[this.selectedIndex].value);" >
+					<%
+	
+						if( gearList.size() <= 0 )
+							gearList = java.util.Arrays.asList(
+								new String[]{"Gear 1","Gear 2","Gear 3","Gear 4"} );
+	
+						for( int i = 0; i < gearList.size(); i++ )
+						{
+					%>
+							<option value=<%= i+1 %> <%= (i == 0 ? "selected" : "") %>  >
+								<%= gearList.get(i).toString() %>
+							</option>
+					<%	}
+	               %>
+	         
+	              
+	              </select>
+				  
+				  </td>
+	            </tr>
+	          </table>
+	        </td>
+	      </tr>
+	    </table>
+		<br/>
+		
+		<div class="TableCell">
+			Constraint Handling:
+	       <select name="constraint">
+	        <%
+	        	java.util.List constraints = lmSession.getConstraintOptions(
+	        		(LiteYukonUser)session.getAttribute(ServletUtil.ATT_YUKON_USER) );
+	
+	        	String defConstraint = lmSession.getConstraintDefault(
+	        		(LiteYukonUser)session.getAttribute(ServletUtil.ATT_YUKON_USER) );
+	
+				for( int j = 0; j < constraints.size(); j++ )
+				{
+					String curr = (String)constraints.get(j);
+			%>
+	          <option value="<%= curr %>"
+	          		<%= (curr.equals(defConstraint) ? "selected" : "") %> >
+	              <%= curr %>
+			  </option>
+	        <%
+				}
+			%>
+	        </select>
+		</div>
+		<br/>
+<%	
+			}
+			else { 
+	%>
+				<tr valign="top"> 
+		              <td width="200" class="TableCell"> 
+		                <div align="center"><b>Gear Change Unavailable </b></div>
+		              </td>
+		            </tr>
+		            
+		         	<tr valign="top"> 
+		              <td width="200" class="TableCell"> 
+		                <div align="center">Program must be in a Manually Active state.</div>
+		              </td>
+		            </tr>
+		          </table>
+		        </td>
+		      </tr>
+		    </table>
+			<br/>
+<% 			}
+	}
 	if( ILCCmds.PROG_START.equals(cmd) || ILCCmds.PROG_STOP.equals(cmd) 
 		|| ILCCmds.AREA_START_PROGS.equals(cmd) || ILCCmds.AREA_STOP_PROGS.equals(cmd) 
 		|| ILCCmds.SC_START.equals(cmd) || ILCCmds.SC_STOP.equals(cmd) )

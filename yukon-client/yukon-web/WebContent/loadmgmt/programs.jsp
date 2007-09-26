@@ -419,6 +419,8 @@ else
 			onclick = "showConfirmWin(this)">Stop</div>
 		<div id = "EnableProgID" name = "p_disable" onmouseover = "changeOptionStyle(this)" class = "optmenu1"
 			onclick = "showConfirmWin(this)">Enable/Disable</div>
+		<div id = "ChangeGearID" name = "p_change_gear" onmouseover = "changeOptionStyle(this)" class = "optmenu1"
+			onclick = "showConfirmWin(this)">Change Gear</div>
 	</div>
 	
 	<div id="groupMenu" class = "bgmenu">

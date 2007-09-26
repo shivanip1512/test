@@ -20,6 +20,7 @@ public interface ILCCmds
 	public static final String PROG_START = "p_start_prog";
 	public static final String PROG_STOP = "p_stop_prog";
 	public static final String PROG_DISABLE = "p_disable";
+    public static final String PROG_CHANGE_GEAR = "p_change_gear";
 	
 	//Group Commands
 	public static final String GRP_SHED = "g_shed";
@@ -40,7 +41,8 @@ public interface ILCCmds
 	{
 		AREA_START_PROGS,
 		PROG_START,
-		SC_START
+		SC_START,
+        PROG_CHANGE_GEAR
 	};
 
 }
