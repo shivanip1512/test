@@ -68,6 +68,8 @@ public enum ReportTypes {
     		"Detailed report showing capbank operational information for combinations of failed, questionable, and successful outcomes based on a user entered percentage level."),
     CAP_CONTROL_SCHEDULE_DETAIL("Cap Control Schedule Detail", CapControlScheduleDetailController.class, ReportGroup.CAP_CONTROL,
     		"Detailed report showing all capcontrol schedules and thier specifics."),
+    CAP_CONTROL_DISABLED_DEVICES("Cap Control Disabled Devices", CapControlDisabledDevicesController.class, ReportGroup.CAP_CONTROL,
+            "Report showing disabled capcontrol devices."),
     
     COMM_STATISTICS("Communication Statistics", StatisticModel.class, ReportGroup.STATISTICAL),
 	STATISTIC_HISTORY_PORT_DATA("Historical Daily Port Statistics", StatisticHistoryPortModel.class, ReportGroup.STATISTICAL),
