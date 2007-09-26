@@ -285,8 +285,10 @@ public class ScriptScheduleSetupPanel extends DataInputPanel implements JCValueL
     public void focusLost(FocusEvent e) {
         if (e.getSource() == getScriptTextArea()) {
             setScriptText(getScriptTextArea().getText());
-            getScriptTemplate().loadParamsFromScript(ScriptTemplate.getScriptSection(getScriptText(), ScriptTemplate.PARAMETER_LIST));
-            initSwingCompValues();
+            if( ! ScriptTemplateTypes.isNoTemplate(getTemplateType())) {
+                getScriptTemplate().loadParamsFromScript(ScriptTemplate.getScriptSection(getScriptText(), ScriptTemplate.PARAMETER_LIST));
+                initSwingCompValues();
+            }
         }
     }
     
