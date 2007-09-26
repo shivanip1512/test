@@ -7,7 +7,6 @@ import com.cannontech.common.util.ScheduledExecutor;
 import com.cannontech.stars.util.task.DailyTimerTask;
 import com.cannontech.stars.util.task.HourlyTimerTask;
 import com.cannontech.stars.util.task.LMCtrlHistTimerTask;
-import com.cannontech.stars.util.task.RefreshTimerTask;
 import com.cannontech.stars.util.task.StarsTimerTask;
 
 /**
@@ -51,7 +50,6 @@ public class TimerTaskUtil {
 		
 		runTimerTask( new HourlyTimerTask());
         runTimerTask( new LMCtrlHistTimerTask());
-        runTimerTask( new RefreshTimerTask());
         
 		CTILogger.info("Stars timer tasks started");
 	}
