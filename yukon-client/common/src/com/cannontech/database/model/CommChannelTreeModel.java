@@ -174,7 +174,7 @@ public boolean isDeviceValid( int category_, int deviceClass, int type_ )
 			|| deviceClass == com.cannontech.database.data.pao.DeviceClasses.RTU
 			|| deviceClass == com.cannontech.database.data.pao.DeviceClasses.TRANSMITTER
 			|| deviceClass == com.cannontech.database.data.pao.DeviceClasses.VIRTUAL
-			|| deviceClass == com.cannontech.database.data.pao.DeviceClasses.RTU
+			|| deviceClass == com.cannontech.database.data.pao.DeviceClasses.GRID
 			|| deviceClass == com.cannontech.database.data.pao.DeviceClasses.SYSTEM );
 
 }
