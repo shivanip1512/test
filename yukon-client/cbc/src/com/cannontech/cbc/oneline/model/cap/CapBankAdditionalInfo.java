@@ -8,7 +8,9 @@ import com.cannontech.cbc.oneline.model.HiddenStates;
 import com.cannontech.cbc.oneline.model.OnelineObject;
 import com.cannontech.clientutils.CTILogger;
 import com.cannontech.common.util.CtiUtilities;
+import com.cannontech.core.dao.DaoFactory;
 import com.cannontech.database.PoolManager;
+import com.cannontech.database.data.lite.LiteYukonPAObject;
 import com.cannontech.database.db.capcontrol.CapBankAdditional;
 import com.loox.jloox.LxGraph;
 
@@ -45,11 +47,11 @@ public class CapBankAdditionalInfo implements HiddenStates {
         CapBankAdditional info = new CapBankAdditional();
         info.setDeviceID(getCurrentCapIdFromMessage());
         populateInfo(info);
+        LiteYukonPAObject lite = DaoFactory.getPaoDao().getLiteYukonPAO(getCurrentCapIdFromMessage());
         //all these property names should be kept in synch with
         //cc.js REF_LABELS global var
         stateInfo.addProperty("maintArea", info.getMaintAreaID().toString());
         stateInfo.addProperty("poleNum", info.getPoleNumber().toString());
-        stateInfo.addProperty("dir",  info.getDriveDir()); 
         stateInfo.addProperty("latit",  info.getLatit().toString());        
         stateInfo.addProperty("longit", info.getLongtit().toString());
         stateInfo.addProperty("config",info.getCapBankConfig().toString());
@@ -65,6 +67,9 @@ public class CapBankAdditionalInfo implements HiddenStates {
         stateInfo.addProperty("otrCmnts", info.getOtherComments());
         stateInfo.addProperty("opTmCmnts", info.getOpTeamComments());
         stateInfo.addProperty("cbcInsDt", info.getCbcBattInstallDate().toString());
+        stateInfo.addProperty("address",  lite.getPaoDescription()); 
+        stateInfo.addProperty("dir",  info.getDriveDir()); 
+        
         graph.add(stateInfo);
 
     }
