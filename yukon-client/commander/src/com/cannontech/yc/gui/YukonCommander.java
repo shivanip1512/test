@@ -151,12 +151,15 @@ public class YukonCommander extends JFrame implements DBChangeLiteListener, Acti
                 HTMLEditorKit kit = (HTMLEditorKit)textPane.getEditorKit();
                 StringReader reader = new StringReader(message.getText());
                 kit.read(reader, doc, doc.getLength());
+                int endOffset = doc.getLength();
                 reader.close();
                 // Set text in the range [5, 7) red
-                doc.setCharacterAttributes(beginOffset, message.getText().length(), textPane.getStyle("Font"), true);
+                doc.setCharacterAttributes(beginOffset, endOffset - beginOffset, textPane.getStyle("Font"), true);
                 String style = getStyle();
                 if( style != null)
-                    doc.setCharacterAttributes(beginOffset, message.getText().length(), textPane.getStyle(style), false);
+                {
+                    doc.setCharacterAttributes(beginOffset, endOffset - beginOffset, textPane.getStyle(style), false);
+                }
 
                 
 				textPane.setCaretPosition(doc.getLength());
