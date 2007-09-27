@@ -1,6 +1,5 @@
 <%@ taglib uri="http://cannontech.com/tags/cti" prefix="cti" %>
 <%@ taglib uri="http://java.sun.com/jsp/jstl/core" prefix="c"%>
-<c:url var="ControlOrderPage" value="/capcontrol/feederBankInfo.jsp"/>
 <cti:standardPage title="Temp CapBank Move" module="capcontrol_internal">
 <%@include file="cbc_inc.jspf"%>
 
@@ -23,16 +22,14 @@
 	{
 		oldfdrid = capBank.getParentID();
 	}
-
-	
 %>
 
+<c:url var="controlOrderPage" value="/capcontrol/feederBankInfo.jsp"/>
 <script type="text/javascript"> 
 function updateFeederBankInfo()
 {
-	var feederbankurl = "?FeederID=";
-	feederbankurl += getSelectedFeeder();
-    new Ajax.Updater({ success: 'ControlOrders', failure: 'ControlOrders' }, '${ControlOrderPage}' + feederbankurl, { parameters: {method: 'post'} });
+	var params = {'FeederID': getSelectedFeeder()};
+    new Ajax.Updater('ControlOrders', '${controlOrderPage}', {method: 'post', parameters: params});
 }
 function showDiv( v ){
 	$(v).toggle();
@@ -97,7 +94,7 @@ Event.observe(window, 'load', updateFeederBankInfo );
 </table>   
 
 <div id="ControlOrders" style="margin-left: 10%; margin-right: 10%;height:25%;max-height:25%;margin-bottom:2%;margin-top:2%;">
-    <jsp:include page=""/>
+content before hand
 </div>
 
       <div style="margin-left: 10%; margin-right: 10%;" >

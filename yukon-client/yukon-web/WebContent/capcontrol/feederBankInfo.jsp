@@ -1,6 +1,17 @@
-<%@ taglib uri="http://cannontech.com/tags/cti" prefix="cti" %>
-<cti:standardPage title="Feeder's CapBank Info" module="capcontrol_internal">
-<%@include file="cbc_inc.jspf"%>
+<%@page import="java.util.*" %>
+<%@page import="com.cannontech.roles.capcontrol.CBCSettingsRole" %>
+<%@page import="com.cannontech.roles.application.WebClientRole" %>
+<%@page import="com.cannontech.roles.application.CommanderRole" %>
+<%@page import="com.cannontech.yukon.cbc.*" %>
+<%@page import="com.cannontech.util.*" %>
+<%@page import="com.cannontech.cbc.web.*" %>
+<%@page import="com.cannontech.servlet.CBCServlet" %>
+<%@page import="com.cannontech.database.data.lite.*" %>
+<%@page import="com.cannontech.web.lite.*" %>
+<%@page import="com.cannontech.core.dao.*" %>
+
+<%@page import="com.cannontech.common.util.CtiUtilities" %>
+<%@page import="com.cannontech.database.data.point.SystemLogData" %><%@ taglib uri="http://cannontech.com/tags/cti" prefix="cti" %>
 
 <jsp:useBean id="capControlCache"
 	class="com.cannontech.cbc.web.CapControlCache"
@@ -14,7 +25,6 @@
 	CapBankDevice[] capArray = capControlCache.getCapBanksByFeeder(id);
 %>
 	
-<form id="feederInfo" action="">
 <cti:titledContainer title="Feeder CapBank Information">
 	<div>
    		<table id="Table" width="95%" border="0" cellspacing="1" cellpadding="1" class="main">
@@ -42,7 +52,5 @@ for( CapBankDevice cap : capArray )
 		</table>   
 	</div>
 	</cti:titledContainer >
-</form>
 
 
-</cti:standardPage>
