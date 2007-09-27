@@ -52,12 +52,12 @@ public class TouWidget extends WidgetControllerBase {
         // Gets all the attributes that are needed to show time of use.
         List<TouAttributeMapping> touRatesList = touDao.getTouMappings();
         Set<Attribute> existingAttributes = getExistingAttributes(meter, touRatesList);
-        touRatesList = validateTouAttributes(existingAttributes, touRatesList);
+        List<KeyValuePair> touRates = touAttributesToHash(existingAttributes, touRatesList);
         
         // Adds the group to the mav object
         mav.addObject("meter", meter);
         mav.addObject("isRead", false);
-        mav.addObject("rateTypes", touRatesList);
+        mav.addObject("rateTypes", touRates);
         
         return mav;
     }
@@ -81,7 +81,6 @@ public class TouWidget extends WidgetControllerBase {
         
         List<TouAttributeMapping> touRatesList = touDao.getTouMappings();
         Set<Attribute> existingAttributes = getExistingAttributes(meter, touRatesList);
-        touRatesList = validateTouAttributes(existingAttributes, touRatesList);
 
         CommandResultHolder result = meterReadService.readMeter(meter, existingAttributes, user);
 
@@ -130,23 +129,28 @@ public class TouWidget extends WidgetControllerBase {
      * @param touList
      * @return
      */
-    public static List<TouAttributeMapping> validateTouAttributes(
+    public List<KeyValuePair> touAttributesToHash(
             Set<Attribute> existingAttributes, List<TouAttributeMapping> touList) {
 
-        List<TouAttributeMapping> resultList = new ArrayList<TouAttributeMapping>();
+        List<KeyValuePair> resultList = new ArrayList<KeyValuePair>();
         
         for (int i = 0; i < touList.size(); i++) {
             TouAttributeMapping tou = touList.get(i);
             if (existingAttributes.contains(tou.getUsage()) || existingAttributes.contains(tou.getPeak())) {
-               TouAttributeMapping temp = new TouAttributeMapping();
-               temp.setDisplayName(tou.getDisplayName());
-               if (existingAttributes.contains(tou.getUsage())) {
-                   temp.setUsage(tou.getUsage());
-               }
-               if (existingAttributes.contains(tou.getPeak())) {
-                   temp.setPeak(tou.getPeak());
-               }
-               resultList.add(temp); 
+                List<AttributeValuePair> attributeList = new ArrayList<AttributeValuePair>();
+                KeyValuePair keyValuePair = new KeyValuePair(tou.getDisplayName(), attributeList);
+                
+                resultList.add(keyValuePair);
+                
+                if (existingAttributes.contains(tou.getUsage())) {
+                    AttributeValuePair tempValuePair = new AttributeValuePair("Usage", tou.getUsage());
+                    attributeList.add(tempValuePair);
+                }
+                if (existingAttributes.contains(tou.getPeak())) {
+                    AttributeValuePair tempValuePair = new AttributeValuePair("Peak Demand", tou.getPeak());
+                    attributeList.add(tempValuePair);
+                }
+                
             }
         }
         return resultList;
@@ -172,4 +176,53 @@ public class TouWidget extends WidgetControllerBase {
         this.touDao = touDao;
     }
 
+    public class AttributeValuePair{
+        String label;
+        Attribute attribute;
+        
+        public AttributeValuePair(String label, Attribute attribute){
+            this.label = label;
+            this.attribute = attribute;
+        }
+        
+        public Attribute getAttribute() {
+            return attribute;
+        }
+        public void setAttribute(Attribute attribute) {
+            this.attribute = attribute;
+        }
+        public String getLabel() {
+            return label;
+        }
+        public void setLabel(String label) {
+            this.label = label;
+        }
+    }
+    
+    public class KeyValuePair{
+        String key;
+        List attributeValuePairList;
+        
+        public KeyValuePair(String key, List attributeValuePairList){
+            this.key = key;
+            this.attributeValuePairList = attributeValuePairList;
+        }
+        
+        public String getKey() {
+            return key;
+        }
+
+        public void setKey(String key) {
+            this.key = key;
+        }
+
+        public List getAttributeValuePairList() {
+            return attributeValuePairList;
+        }
+
+        public void setAttributeValuePairList(List attributeValuePairList) {
+            this.attributeValuePairList = attributeValuePairList;
+        }
+    }
 }
+

@@ -9,57 +9,28 @@
 
 				<table class="miniResultsTable">
 					<c:forEach var="rateType" items="${rateTypes}">
-							<tr class="">
-								<th class="tableHeaders" colspan=3>
-									${rateType.displayName}
-								</th>
-							</tr>
+						<tr class="">
+							<th class="tableHeaders" colspan=3>
+								${rateType.key}
+							</th>
+						</tr>
+
+						<c:forEach var="attributeValuePair"	items="${rateType.attributeValuePairList}">
 							<tr>
 								<td>
-									Usage
+									<c:out value="${attributeValuePair.label}" />
 								</td>
-								<c:choose>
-									<c:when test="${rateType.usage != null}">
-										<cti:attributeResolver device="${meter}"
-											attribute="${rateType.usage}" var="pointId" />
-										<td>
-											<cti:pointValue pointId="${pointId}" format="SHORT" />
-										</td>
-										<td>
-											<cti:pointValue pointId="${pointId}" format="DATE" />
-										</td>
-									</c:when>
-									<c:otherwise>
-										<td colspan="2">
-											Rate is not configured.
-										</td>
-									</c:otherwise>
-								</c:choose>
 
-							</tr>
-							<tr>
+								<cti:attributeResolver device="${meter}"
+									attribute="${attributeValuePair.attribute}" var="pointId" />
 								<td>
-									Peak Demand
+									<cti:pointValue pointId="${pointId}" format="SHORT" />
 								</td>
-								<c:choose>
-									<c:when test="${rateType.peak != null}">
-										<cti:attributeResolver device="${meter}"
-											attribute="${rateType.peak}" var="pointId" />
-										<td>
-											<cti:pointValue pointId="${pointId}" format="SHORT" />
-										</td>
-										<td>
-											<cti:pointValue pointId="${pointId}" format="DATE" />
-										</td>
-									</c:when>
-									<c:otherwise>
-										<td colspan="2">
-											Rate is not configured.
-										</td>
-									</c:otherwise>
-								</c:choose>
+								<td>
+									<cti:pointValue pointId="${pointId}" format="DATE" />
+								</td>
 							</tr>
-
+						</c:forEach>
 					</c:forEach>
 				</table>
 			</c:when>
