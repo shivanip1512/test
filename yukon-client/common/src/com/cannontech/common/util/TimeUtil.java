@@ -13,6 +13,7 @@ public class TimeUtil
 {
 	private static java.util.GregorianCalendar c1 = new java.util.GregorianCalendar();
 	private static java.util.GregorianCalendar c2 = new java.util.GregorianCalendar();
+    
 /**
  * This method was created in VisualAge.
  * @return boolean
@@ -36,7 +37,10 @@ public static boolean compareDate( java.util.Date d1, java.util.Date d2 )
 
 }
 /**
- * This method was created in VisualAge.
+ * This method bases its result on 24 hour blocks and does not take into 
+ * account for Calendar.DAY_OF_YEAR.  If two Date Objects are within 24 hours 
+ * but across Calendar dates the result will be 0.
+ * 
  * @return int
  * @param d1 java.util.Date
  * @param d2 java.util.Date
@@ -70,6 +74,48 @@ public static int differenceInDays(java.util.Date d1, java.util.Date d2 )
 */
 	return count;
 }
+    /**
+     * This method assumes that both Calendar Objects already have time zones set.
+     * When two Calendar Objects are within 24 hours of one another but across calendar 
+     * dates the result will be 1 day.
+     *    
+     *  NOTE: - Calendars with different time zones but within the same calendar date 
+     *          could lead to a result of 1 day. 
+     *        - This method does take into account for Leap Years.
+     *        - This method does *NOT* take into account for DST.
+     *        
+     * @param cal1 java.util.Calendar
+     * @param cal2 java.util.Calendar
+     * @return int Difference in Days between cal1 and cal2
+     */
+    public static int differenceInDays(final Calendar cal1, final Calendar cal2) {
+        Calendar cal1Temp = Calendar.getInstance();
+        cal1Temp.setTimeInMillis(cal1.getTimeInMillis());
+        
+        Calendar cal2Temp = Calendar.getInstance();
+        cal2Temp.setTimeInMillis(cal2.getTimeInMillis());
+        
+        if (cal1Temp.after(cal2Temp)) {
+            Calendar swap = cal1Temp;
+            cal1Temp = cal2Temp;
+            cal2Temp = swap;
+        }
+
+        int days = cal2Temp.get(Calendar.DAY_OF_YEAR) - cal1Temp.get(Calendar.DAY_OF_YEAR);
+        int y2 = cal2Temp.get(Calendar.YEAR);
+        
+        if (cal1Temp.get(Calendar.YEAR) != y2) {
+            cal1Temp = (Calendar) cal1Temp.clone();
+            
+            do {
+                days += cal1Temp.getActualMaximum(Calendar.DAY_OF_YEAR);
+                cal1Temp.add(Calendar.YEAR, 1);
+            } while (cal1Temp.get(Calendar.YEAR) != y2);
+            
+        }
+        
+        return days;    
+    }
 
 /**
  * This method was created in VisualAge.

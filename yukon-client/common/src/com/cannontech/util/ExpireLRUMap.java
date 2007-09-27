@@ -10,7 +10,8 @@ import java.util.Map;
 import java.util.Set;
 
 import org.apache.commons.collections.map.LRUMap;
-import org.apache.commons.lang.time.DateUtils;
+
+import com.cannontech.common.util.TimeUtil;
 
 @SuppressWarnings("unchecked")
 public class ExpireLRUMap<K, V extends ExpireLRUMap.ReadDate> {
@@ -79,12 +80,12 @@ public class ExpireLRUMap<K, V extends ExpireLRUMap.ReadDate> {
     
     public boolean isExpired(final V t, final int days) {
         final Calendar now = Calendar.getInstance();
-        final Calendar readDate = Calendar.getInstance();
+        final Calendar readDate = (Calendar) now.clone();
+        readDate.setTime(t.getReadDate());
+
+        int diff = TimeUtil.differenceInDays(readDate, now);
         
-        readDate.setTime(DateUtils.truncate(t.getReadDate(), Calendar.HOUR));
-        readDate.add(Calendar.DAY_OF_YEAR, days);
-        
-        boolean result = readDate.before(now);
+        boolean result = diff >= days;
         return result;
     }
     
