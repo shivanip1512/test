@@ -144,6 +144,8 @@ public class ReportFuncs
             returnVal = new MeterReadReport();
         else if( model instanceof MeterOutageModel)
             returnVal = new MeterOutageReport();
+        else if(model instanceof RouteDBModel)  //extends CarrierDBModel, so check this first.
+            returnVal = new RouteDBReport();        
         else if( model instanceof CarrierDBModel)
             returnVal = new CarrierDBReport();
         else if( model instanceof MeterOutageCountModel)
@@ -154,8 +156,6 @@ public class ReportFuncs
             returnVal = new ECActivityLogReport();
         else if( model instanceof RouteMacroModel)
             returnVal = new RouteMacroReport();
-        else if(model instanceof RouteDBModel)
-            returnVal = new RouteDBReport();
         else if( model instanceof LPSetupDBModel)
             returnVal = new LPSetupDBReport();
         else if( model instanceof LPDataSummaryModel)
