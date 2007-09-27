@@ -87,7 +87,10 @@
 			</div>
 			<div class="right">
 
+				<ct:widget bean="profileWidget" />
+				
 				<ct:widget bean="trendWidget" />
+				
 				<c:if test="${disconnectSupported}">
 					<ct:widget bean="disconnectMeterWidget" />
 				</c:if>

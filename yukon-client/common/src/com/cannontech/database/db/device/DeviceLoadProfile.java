@@ -72,6 +72,32 @@ public Integer getLastIntervalDemandRate() {
 public String getLoadProfileCollection() {
 	return loadProfileCollection;
 }
+
+public boolean loadProfileIsOnForChannel(int channel){
+    
+    boolean isOn = false;
+    
+    if(channel >=1 && channel <=4){
+        
+        String lpValue = String.valueOf(loadProfileCollection.charAt(channel - 1));
+        if(lpValue.equalsIgnoreCase("Y")){
+            isOn = true;
+        }
+    }
+
+    return isOn;
+}
+
+public void setLoadProfileIsOnForChannel(int channel, boolean isOn){
+    
+    char[] loadProfileCollectionArray = loadProfileCollection.toCharArray();
+    
+    loadProfileCollectionArray[channel - 1] = isOn ? 'Y':'N';
+    
+    setLoadProfileCollection(new String(loadProfileCollectionArray));
+    
+}
+
 /**
  * This method was created in VisualAge.
  * @return java.lang.Integer

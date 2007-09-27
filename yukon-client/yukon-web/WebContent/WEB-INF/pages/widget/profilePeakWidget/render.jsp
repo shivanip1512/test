@@ -93,7 +93,7 @@
 										<br/>
 										<c:choose>
 											<c:when test="${preResult.days <= 90}">
-												<tags:longLoadProfile styleClass="Link1" deviceId="${widgetParameters.deviceId}" lpStartDate="${preResult.startDate}" lpStopDate="${preResult.stopDate}">Profile</tags:longLoadProfile>
+												<tags:longLoadProfile styleClass="Link1" deviceId="${widgetParameters.deviceId}" lpStartDate="${preResult.startDate}" lpStopDate="${preResult.stopDate}" profileRequestOrigin="${widgetParameters.loadProfileRequestOrigin}">Profile</tags:longLoadProfile>
 											</c:when>
 											<c:otherwise>
 												<span onmouseover="javascript:toggleLP($('lpDiv'))" onmouseout="javascript:toggleLP($('lpDiv'))">Profile N/A</span>
@@ -141,7 +141,7 @@
 										<br/>
 										<c:choose>
 											<c:when test="${postResult.days <= 90}">
-												<tags:longLoadProfile styleClass="Link1" deviceId="${widgetParameters.deviceId}" lpStartDate="${postResult.startDate}" lpStopDate="${postResult.stopDate}">Profile</tags:longLoadProfile>
+												<tags:longLoadProfile styleClass="Link1" deviceId="${widgetParameters.deviceId}" lpStartDate="${postResult.startDate}" lpStopDate="${postResult.stopDate}" profileRequestOrigin="${widgetParameters.loadProfileRequestOrigin}">Profile</tags:longLoadProfile>
 											</c:when>
 											<c:otherwise>
 												<span onmouseover="javascript:toggleLP($('lpDiv2'))" onmouseout="javascript:toggleLP($('lpDiv2'))">Profile N/A</span>

@@ -34,5 +34,7 @@
         <property name="contactDao" ref="contactDao"/>
         <property name="deviceDao" ref="deviceDao"/>
         <property name="dateFormattingService" ref="dateFormattingService"/>
+        <property name="meterDao" ref="meterDao"/>
+        <property name="deviceErrorTranslatorDao" ref="deviceErrorTranslator"/>
     </bean>
 </beans>

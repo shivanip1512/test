@@ -23,6 +23,7 @@ import com.cannontech.common.device.groups.model.DeviceGroup;
 import com.cannontech.common.device.groups.service.DeviceGroupService;
 import com.cannontech.core.authorization.exception.PaoAuthorizationException;
 import com.cannontech.core.dao.CommandDao;
+import com.cannontech.database.data.lite.LiteCommand;
 import com.cannontech.database.data.lite.LiteYukonUser;
 import com.cannontech.database.data.pao.DeviceTypes;
 import com.cannontech.util.ServletUtil;
@@ -62,6 +63,13 @@ public class CommandController extends MultiActionController {
 
         List<? extends DeviceGroup> groups = deviceGroupDao.getAllGroups();
         mav.addObject("groups", groups);
+        
+        String defaultEmailSubject = "Group Processing completed";
+        if(!groups.isEmpty()){
+            defaultEmailSubject = "Group Processing for " + groups.get(0).getFullName() + " completed. (" + ((LiteCommand)commands.get(0)).getCommand() + ")";
+        }
+        String emailSubject = ServletRequestUtils.getStringParameter(request, "emailSubject", defaultEmailSubject);
+        mav.addObject("emailSubject", emailSubject);
 
         return mav;
     }
@@ -83,7 +91,10 @@ public class CommandController extends MultiActionController {
 
         String emailAddresses = ServletRequestUtils.getStringParameter(request, "emailAddresses");
         mav.addObject("emailAddresses", emailAddresses);
-
+        
+        String emailSubject = ServletRequestUtils.getStringParameter(request, "emailSubject", "Group Processing for " + group.getFullName() + " completed. (" + command + ")");
+        mav.addObject("emailSubject", emailSubject);
+        
         boolean error = false;
         if (StringUtils.isBlank(emailAddresses)) {
             error = true;
@@ -112,7 +123,7 @@ public class CommandController extends MultiActionController {
             mav.setViewName("redirect:/spring/command/commandExecuted");
 
             try {
-                groupCommandExecutor.execute(deviceIds, command, emailAddresses, user);
+                groupCommandExecutor.execute(deviceIds, command, emailAddresses, emailSubject, user);
             } catch (MessagingException e) {
                 log.warn("Unable to execute, putting error in model", e);
                 mav.addObject("error", "Unable to send email");

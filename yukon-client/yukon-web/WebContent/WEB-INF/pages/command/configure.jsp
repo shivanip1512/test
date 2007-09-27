@@ -17,6 +17,10 @@
 		$('commandString').value = $F('commandSelect');
 	}
 	
+	function selectEmailSubject() {
+		$('emailSubject').value = 'Group Processing for ' + $F('groupSelect') + ' completed. (' + $F('commandString') + ')';
+	}
+	
 	Event.observe (window, 'load', selectCommand);
 	
 </script>
@@ -36,7 +40,7 @@
 				</td>
 				<td>
 					<c:set var="selected" value="" scope="page"></c:set>
-					<select id="groupSelect" name="groupSelect">
+					<select id="groupSelect" name="groupSelect" onchange="selectEmailSubject()">
 						<c:forEach var="groupOption" items="${groups}">
 						
 							<c:if test="${groupOption.fullName == group}">
@@ -59,7 +63,7 @@
 					Select command: 
 				</td>
 				<td>
-					<select id="commandSelect" name="commandSelect" onchange="selectCommand()">
+					<select id="commandSelect" name="commandSelect" onchange="selectCommand();selectEmailSubject()">
 						<c:forEach var="commandOption" items="${commands}">
 						
 							<c:if test="${commandOption.command == command}">
@@ -95,6 +99,14 @@
 				<td>&nbsp;</td>		
 				<td>
 					ex: support@cannontech.com,help@cannontech.com
+				</td>
+			</tr>
+			<tr>	
+				<td>	
+					Email subject: 
+				</td>
+				<td>
+					<input type="text" id="emailSubject" name="emailSubject" value="${emailSubject}" size="80" />
 				</td>
 			</tr>
 		</table>

@@ -29,7 +29,7 @@
 			</div>	
 			<br/><br/>
 			<div style="width: 700px">
-				<tags:widget bean="profilePeakWidget" identify="false" deviceId="${deviceId}" collectLPVisible="true" highlight="usage,averageUsage"/>
+				<tags:widget bean="profilePeakWidget" identify="false" deviceId="${deviceId}" collectLPVisible="true" highlight="usage,averageUsage" loadProfileRequestOrigin="HBC"/>
 			</div>	
 			<br/><br/><br/>
 		

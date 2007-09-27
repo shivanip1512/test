@@ -207,6 +207,26 @@
         <property name="paoDao" ref="paoDao"/>
     </bean>
     
+    <bean id="profileWidget"
+    	class="com.cannontech.web.widget.ProfileWidget">
+    	<property name="title" value="Profile"/>
+        <property name="identityPath" value="common/deviceIdentity.jsp" />
+        <property name="inputs">
+           <set>
+              <ref local="widgetInput.deviceId"/>
+           </set>
+        </property>
+        <property name="loadProfileService" ref="longLoadProfileService" />
+        <property name="emailService" ref="emailService"/>
+        <property name="paoDao" ref="paoDao"/>
+        <property name="deviceDao" ref="deviceDao"/>
+        <property name="meterDao" ref="meterDao"/>
+        <property name="dbPersistentDao" ref="dbPersistentDao"/>
+        <property name="dateFormattingService" ref="dateFormattingService"/>
+        <property name="deviceErrorTranslatorDao" ref="deviceErrorTranslator"/>
+        
+    </bean>
+    
     <!-- Update Service -->
         
     <bean id="dataUpdaterService" class="com.cannontech.web.updater.DefaultDataUpdaterService"

@@ -9,7 +9,7 @@ import com.cannontech.database.data.lite.LiteYukonUser;
 
 public interface GroupCommandExecutor {
 
-    public void execute(Set<Integer> deviceIds, String command, String emailAddresses, LiteYukonUser user)
+    public void execute(Set<Integer> deviceIds, String command, String emailAddresses, String emailSubject, LiteYukonUser user)
             throws MessagingException, PaoAuthorizationException;
 
 }

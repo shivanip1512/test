@@ -5,6 +5,8 @@
 <%@ attribute name="lpStartDate" required="false" type="java.lang.String"%>
 <%@ attribute name="lpStopDate" required="false" type="java.lang.String"%>
 
+<%@ attribute name="profileRequestOrigin" required="true" type="java.lang.String"%>
+
 <%@ taglib prefix="tags" tagdir="/WEB-INF/tags" %>
 <%@ taglib uri="http://cannontech.com/tags/cti" prefix="cti" %>
 <%@ taglib uri="http://java.sun.com/jsp/jstl/core" prefix="c" %>
@@ -12,7 +14,7 @@
 <cti:uniqueIdentifier prefix="llp_" var="thisId"/>
 
 <cti:includeScript link="/JavaScript/longLoadProfile.js"/>
-<a style="position:relative;" class="${styleClass}" href="javascript:longLoadProfile_display('${thisId}')"><jsp:doBody/></a>
+<a style="position:relative;" class="${styleClass}" href="javascript:longLoadProfile_display('${thisId}','${profileRequestOrigin}')"><jsp:doBody/></a>
 <div style="position:relative;z-index:2;">
 <span id="${thisId}_indicator" style="visibility:hidden"><img src="<c:url value="/WebConfig/yukon/Icons/indicator_arrows.gif"/>"></span>
 <div id="${thisId}_holder" style="display:none; position:absolute; right: 0px; top: 5px; background-color: white; padding: .5em; border: 1px #888 solid;" class="longLoadProfileHolder">
@@ -22,7 +24,7 @@
   <table> 	
 	<tr>
   		<th colspan="3">Collect Long Load Profile </th>
-  		<th> <a class="${styleClass}" href="javascript:longLoadProfile_display('${thisId}')">close</a> </th>
+  		<th> <a class="${styleClass}" href="javascript:longLoadProfile_display('${thisId}','${profileRequestOrigin}')">close</a> </th>
   	</tr>
     <tr>
     	<td>
@@ -57,7 +59,7 @@
 			<input id="${thisId}_email" type="text" size="40">
 		</td>
 	    <td>
-			<button id="${thisId}_startButton" type="button" onclick="longLoadProfile_start('${thisId}')">Start</button>
+			<button id="${thisId}_startButton" type="button" onclick="longLoadProfile_start('${thisId}','${profileRequestOrigin}')">Start</button>
 		</td>
     </tr>
     <tr>

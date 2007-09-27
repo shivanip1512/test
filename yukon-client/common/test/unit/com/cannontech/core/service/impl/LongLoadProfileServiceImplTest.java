@@ -15,11 +15,11 @@ import junit.framework.Assert;
 import org.junit.Before;
 import org.junit.Test;
 
-import com.cannontech.common.util.CompletionCallback;
 import com.cannontech.common.util.ScheduledExecutorMock;
 import com.cannontech.core.service.LongLoadProfileService;
 import com.cannontech.core.service.PorterQueueDataService;
 import com.cannontech.database.data.lite.LiteYukonPAObject;
+import com.cannontech.database.data.lite.LiteYukonUser;
 import com.cannontech.database.data.pao.DeviceTypes;
 import com.cannontech.message.porter.message.Request;
 import com.cannontech.message.porter.message.Return;
@@ -82,13 +82,18 @@ public class LongLoadProfileServiceImplTest {
     private PorterConnection porterConnection;
     private int successRan = 0;
     private int failureRan = 0;
-    private CompletionCallback incrementingRunner = new CompletionCallback() {
-        public void onFailure() {
+    private int cancelRan = 0;
+    private LongLoadProfileService.CompletionCallback incrementingRunner = new LongLoadProfileServiceEmailCompletionCallbackImpl(null, null, null) {
+        public void onFailure(int returnStatus, String resultString) {
             failureRan++;
         }
 
-        public void onSuccess() {
+        public void onSuccess(String successInfo) {
             successRan++;
+        }
+        
+        public void onCancel(LiteYukonUser cancelUser) {
+            cancelRan++;
         }
     };
     private ScheduledExecutorMock scheduledExecutorMock;
@@ -106,6 +111,7 @@ public class LongLoadProfileServiceImplTest {
         serviceDebug.initialize();
         successRan = 0;
         failureRan = 0;
+        cancelRan = 0;
         this.service = serviceDebug;
     }
     
@@ -310,6 +316,7 @@ public class LongLoadProfileServiceImplTest {
         Assert.assertEquals("messages weren't queued", 2, service.getPendingLongLoadProfileRequests(myDevice2).size());
         Assert.assertEquals("runner should not have run", 0, successRan);
         Assert.assertEquals("runner should not have run", 0, failureRan);
+        Assert.assertEquals("runner should not have run", 0, cancelRan);
         
         // eat the two requests
         Request temp1 = (Request) porterConnection.writtenOut.remove(); 

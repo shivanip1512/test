@@ -60,7 +60,7 @@ public class GroupCommandExecutorImpl implements GroupCommandExecutor {
     }
 
     public void execute(final Set<Integer> deviceIds, final String command, 
-                        final String emailAddresses, LiteYukonUser user)
+                        final String emailAddresses, final String emailSubject, LiteYukonUser user)
             throws MessagingException, PaoAuthorizationException {
 
         final Date startTime = new Date();
@@ -151,6 +151,7 @@ public class GroupCommandExecutorImpl implements GroupCommandExecutor {
                                             successBuffer.toString(),
                                             missedList,
                                             emailAddresses,
+                                            emailSubject,
                                             startTime,
                                             deviceIds.size());
                         }
@@ -168,14 +169,14 @@ public class GroupCommandExecutorImpl implements GroupCommandExecutor {
     }
 
     private void sendResultEmail(final String command, final String results, final String success, 
-            final List<Integer> missedList, final String emailAddresses, final Date startTime, 
+            final List<Integer> missedList, final String emailAddresses, final String emailSubject, final Date startTime, 
             final int numberOfDevices) {
         
         executor.execute(new Runnable() {
             public void run() {
         
                 DefaultEmailMessage emailMessage = new DefaultEmailMessage();
-                emailMessage.setSubject("Group Request completed");
+                emailMessage.setSubject(emailSubject);
         
                 StringBuffer body = new StringBuffer();
         

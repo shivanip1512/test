@@ -22,8 +22,8 @@ import org.springframework.web.bind.ServletRequestUtils;
 import org.springframework.web.servlet.ModelAndView;
 import org.springframework.web.servlet.mvc.multiaction.MultiActionController;
 
-import com.cannontech.common.util.SimpleTemplateProcessor;
-import com.cannontech.common.util.TemplateProcessor;
+import com.cannontech.amr.errors.dao.DeviceErrorTranslatorDao;
+import com.cannontech.amr.meter.dao.MeterDao;
 import com.cannontech.core.dao.ContactDao;
 import com.cannontech.core.dao.DeviceDao;
 import com.cannontech.core.dao.PaoDao;
@@ -31,12 +31,11 @@ import com.cannontech.core.dao.YukonUserDao;
 import com.cannontech.core.service.DateFormattingService;
 import com.cannontech.core.service.LongLoadProfileService;
 import com.cannontech.core.service.LongLoadProfileService.ProfileRequestInfo;
+import com.cannontech.core.service.impl.LongLoadProfileServiceEmailCompletionCallbackImpl;
 import com.cannontech.database.data.lite.LiteContact;
 import com.cannontech.database.data.lite.LiteDeviceMeterNumber;
 import com.cannontech.database.data.lite.LiteYukonPAObject;
 import com.cannontech.database.data.lite.LiteYukonUser;
-import com.cannontech.tools.email.DefaultEmailMessage;
-import com.cannontech.tools.email.EmailCompletionCallback;
 import com.cannontech.tools.email.EmailService;
 import com.cannontech.util.ServletUtil;
 
@@ -48,6 +47,8 @@ public class LoadProfileController extends MultiActionController {
     private YukonUserDao yukonUserDao;
     private ContactDao contactDao;
     private DateFormattingService dateFormattingService;
+    private MeterDao meterDao;
+    private DeviceErrorTranslatorDao deviceErrorTranslatorDao;
     private static DateFormat dateFormat = new SimpleDateFormat("MM/dd/yy hh:mma");
     /*
      * Long load profile email message format
@@ -55,14 +56,6 @@ public class LoadProfileController extends MultiActionController {
      * reason putting extra spaces in front of the line breaks seems to prevent this.  
      * Not sure about other email clients.
      */
-    private final String lpNotificationFormat = "{statusMsg}\n\n" +
-            "Device Summary\n" +
-            "Device Name: {deviceName}    \n" +
-            "Meter Number: {meterNumber}    \n" +
-            "Physical Address: {physAddress}\n\n" +
-            "Request Range: {startDate} to {stopDate}    \n" +
-            "Total Requested Days: {totalDays}\n\n" +
-            "Data is now available online." ;
     
     final long MS_IN_A_DAY = 1000*60*60*24;
     /*    String template = "{name} is {age|####.000#}";
@@ -75,7 +68,6 @@ public class LoadProfileController extends MultiActionController {
         try {
             
             LiteYukonUser user = ServletUtil.getYukonUser(request);
-            TemplateProcessor tp = new SimpleTemplateProcessor();
             
             String email = ServletRequestUtils.getRequiredStringParameter(request, "email");
             int deviceId = ServletRequestUtils.getRequiredIntParameter(request, "deviceId");
@@ -83,6 +75,7 @@ public class LoadProfileController extends MultiActionController {
             Date startDate = dateFormattingService.flexibleDateParser(startDateStr, DateFormattingService.DateOnlyMode.START_OF_DAY, user);
             String stopDateStr = ServletRequestUtils.getStringParameter(request, "stopDate", "");
             Date stopDate = dateFormattingService.flexibleDateParser(stopDateStr, DateFormattingService.DateOnlyMode.END_OF_DAY, user);
+            String profileRequestOrigin = ServletRequestUtils.getRequiredStringParameter(request, "profileRequestOrigin");
             
             Validate.isTrue(startDate == null || stopDate == null || startDate.before(stopDate), 
                             "Start Date must be before Stop Date");
@@ -90,32 +83,34 @@ public class LoadProfileController extends MultiActionController {
             LiteYukonPAObject device = paoDao.getLiteYukonPAO(deviceId);
             LiteDeviceMeterNumber meterNum = deviceDao.getLiteDeviceMeterNumber(deviceId);
             
-            DefaultEmailMessage successEmailer = new DefaultEmailMessage();
-            successEmailer.setRecipient(email);
-            String subject = "Data collection for " + device.getPaoName() + " completed";
-            successEmailer.setSubject(subject);
+            String baseSubject = "";
+            if(profileRequestOrigin.equalsIgnoreCase("HBC")){
+                baseSubject += "High Bill profile ";
+            }
+            else{
+                baseSubject += "Profile ";
+            }
+            baseSubject += "data collection for " + meterDao.getFormattedDeviceName(meterDao.getForId(device.getLiteID())) 
+                                + " from " + startDateStr + " - " + stopDateStr;
             
+            // general body
             Map<String, Object> msgData = new HashMap<String, Object>();
-            msgData.put("statusMsg", "Your long load profile request has completed.");
+            msgData.put("email", email);
+            msgData.put("formattedDeviceName", meterDao.getFormattedDeviceName(meterDao.getForId(device.getLiteID())));
             msgData.put("deviceName", device.getPaoName());
             msgData.put("meterNumber", meterNum.getMeterNumber());
             msgData.put("physAddress", device.getAddress());
             msgData.put("startDate", dateFormat.format(startDate));
             msgData.put("stopDate", dateFormat.format(stopDate));
-            long numDays = (stopDate.getTime() - startDate.getTime())/MS_IN_A_DAY;
+            long numDays = (stopDate.getTime() - startDate.getTime()) / MS_IN_A_DAY;
             msgData.put("totalDays", Long.toString(numDays));
-            successEmailer.setBody(tp.process(lpNotificationFormat, msgData));
             
-            DefaultEmailMessage failureEmailer = new DefaultEmailMessage();
-            failureEmailer.setRecipient(email);
-            subject = "Data collection for " + device.getPaoName() + " failed";
-            failureEmailer.setSubject(subject);
-            msgData.put("statusMsg", "Your long load profile request has encountered an unknown error.");
-            failureEmailer.setBody(tp.process(lpNotificationFormat, msgData));
+            LongLoadProfileServiceEmailCompletionCallbackImpl callback = 
+                new LongLoadProfileServiceEmailCompletionCallbackImpl(emailService, dateFormattingService, deviceErrorTranslatorDao);
             
-            EmailCompletionCallback callback = new EmailCompletionCallback(emailService);
-            callback.setSuccessMessage(successEmailer);
-            callback.setFailureMessage(failureEmailer);
+            callback.setSuccessMessage(msgData);
+            callback.setFailureMessage(msgData);
+            callback.setCancelMessage(msgData);
             
             loadProfileService.initiateLongLoadProfile(device, 1, startDate, stopDate, callback);
             
@@ -180,21 +175,61 @@ public class LoadProfileController extends MultiActionController {
         }
         
         LiteYukonPAObject device = paoDao.getLiteYukonPAO(deviceId);
-        List<Map<String,String>> requestData = new ArrayList<Map<String, String>>();
+        // re-get pending
+        List<Map<String, String>> pendingRequests = getPendingRequests(device, yukonUser);
+        mav.addObject("pendingRequests", pendingRequests);
+        
+        return mav;
+    }
+    
+    public ModelAndView cancelLoadProfile(HttpServletRequest request, HttpServletResponse response) {
+        ModelAndView mav = new ModelAndView("json");
+        
+        try{
+            
+
+            LiteYukonUser user = ServletUtil.getYukonUser(request);
+
+            long requestId = ServletRequestUtils.getRequiredLongParameter(request, "requestId");
+            int deviceId = ServletRequestUtils.getRequiredIntParameter(request, "deviceId");
+            LiteYukonPAObject device = paoDao.getLiteYukonPAO(deviceId);
+
+            // remove
+            loadProfileService.removePendingLongLoadProfileRequest(device, requestId, user);
+            
+            // re-get pending
+            List<Map<String, String>> pendingRequests = getPendingRequests(device, user);
+            mav.addObject("pendingRequests", pendingRequests);
+            
+            
+        } catch (ServletRequestBindingException e) {
+            mav.addObject("success", false);
+            mav.addObject("errString", "Missing parameter: " + e.getMessage());
+        }
+        
+        return mav;
+    }
+    
+    private List<Map<String, String>> getPendingRequests(LiteYukonPAObject device,  LiteYukonUser user){
+        
+        List<Map<String,String>> pendingRequests = new ArrayList<Map<String, String>>();
         Collection<ProfileRequestInfo> loadProfileRequests = loadProfileService.getPendingLongLoadProfileRequests(device);
         for (ProfileRequestInfo info : loadProfileRequests) {
             HashMap<String, String> data = new HashMap<String, String>();
+            
             data.put("email", info.runner.toString());
             data.put("from", dateFormat.format(info.from));
             data.put("to", dateFormat.format(info.to));
             data.put("command", info.request.getCommandString());
             data.put("requestId", Long.toString(info.request.getUserMessageID()));
-            requestData.add(data);
+            pendingRequests.add(data);
         }
-        mav.addObject("pendingRequests", requestData);
-        return mav;
+        
+        return pendingRequests;
+        
     }
-    
+        
+        
     @Required
     public void setEmailService(EmailService emailService) {
         this.emailService = emailService;
@@ -234,6 +269,17 @@ public class LoadProfileController extends MultiActionController {
     public void setDateFormattingService(
             DateFormattingService dateFormattingService) {
         this.dateFormattingService = dateFormattingService;
+    }
+
+    @Required
+    public void setMeterDao(MeterDao meterDao) {
+        this.meterDao = meterDao;
+    }
+
+    @Required
+    public void setDeviceErrorTranslatorDao(
+            DeviceErrorTranslatorDao deviceErrorTranslatorDao) {
+        this.deviceErrorTranslatorDao = deviceErrorTranslatorDao;
     }
 
 }

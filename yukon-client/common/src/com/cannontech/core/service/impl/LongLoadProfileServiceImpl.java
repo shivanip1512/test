@@ -3,7 +3,6 @@ package com.cannontech.core.service.impl;
 import java.text.DateFormat;
 import java.text.SimpleDateFormat;
 import java.util.ArrayList;
-import java.util.Collections;
 import java.util.Date;
 import java.util.HashMap;
 import java.util.HashSet;
@@ -18,13 +17,13 @@ import org.apache.log4j.Logger;
 import org.springframework.beans.factory.annotation.Required;
 
 import com.cannontech.clientutils.YukonLogManager;
-import com.cannontech.common.util.CompletionCallback;
 import com.cannontech.common.util.MapQueue;
 import com.cannontech.common.util.ScheduledExecutor;
 import com.cannontech.core.service.LongLoadProfileService;
 import com.cannontech.core.service.PorterQueueDataService;
 import com.cannontech.database.data.device.DeviceTypesFuncs;
 import com.cannontech.database.data.lite.LiteYukonPAObject;
+import com.cannontech.database.data.lite.LiteYukonUser;
 import com.cannontech.message.porter.message.Request;
 import com.cannontech.message.porter.message.Return;
 import com.cannontech.message.util.Message;
@@ -37,13 +36,30 @@ public class LongLoadProfileServiceImpl implements LongLoadProfileService {
     private PorterQueueDataService queueDataService;
     Logger log = YukonLogManager.getLogger(LongLoadProfileServiceImpl.class);
     private ScheduledExecutor executor;
+    
+    private Map<Long, Integer> outstandingCancelRequestIds = new HashMap<Long, Integer>();
+    private Map<Long, Long> recentlyCanceledRequestIds = new HashMap<Long, Long>();
+    private Set<Long> receivedCancelRequestIds = new HashSet<Long>();
+    
     private Set<Long> recentlyReceivedRequestIds = new HashSet<Long>();
-    private Map<Long, CompletionCallback> currentRequestIds = new HashMap<Long, CompletionCallback>();
+    private Map<Long, LongLoadProfileService.CompletionCallback> currentRequestIds = new HashMap<Long, LongLoadProfileService.CompletionCallback>();
     private MapQueue<Integer,ProfileRequestInfo> pendingDeviceRequests = new MapQueue<Integer,ProfileRequestInfo>();
     private Map<Integer,ProfileRequestInfo> currentDeviceRequests = new HashMap<Integer,ProfileRequestInfo>();
     private DateFormat cmdDateFormatter = new SimpleDateFormat("MM/dd/yyyy HH:mm");
 
-    public synchronized void initiateLongLoadProfile(LiteYukonPAObject device, int channel, Date start, Date stop, CompletionCallback runner) {
+    public void initialize() {
+        porterConnection.addMessageListener(new MessageListener() {
+            public void messageReceived(MessageEvent e) {
+                Message message = e.getMessage();
+                if (message instanceof Return) {
+                    Return returnMsg = (Return) message;
+                    handleReturnMessage(returnMsg);
+                }
+            }
+        });
+    }
+    
+    public synchronized void initiateLongLoadProfile(LiteYukonPAObject device, int channel, Date start, Date stop, LongLoadProfileService.CompletionCallback runner) {
         Validate.isTrue(channel <= 4, "channel must be less than or equal to 4");
         Validate.isTrue(channel > 0, "channel must be greater than 0");
         Validate.isTrue(DeviceTypesFuncs.isLoadProfile4Channel(device.getType()), "Device must support 4 channel load profile (DeviceTypesFuncs.isLoadProfile4Channel)");
@@ -72,6 +88,8 @@ public class LongLoadProfileServiceImpl implements LongLoadProfileService {
         info.to = stop;
         info.request = req;
         info.runner = runner;
+        info.requestId = requestId;
+        info.channel = channel;
         handleOutgoingMessage(info);
         // if write fails, we don't want this to happen
         currentRequestIds.put(requestId, runner);
@@ -149,16 +167,13 @@ public class LongLoadProfileServiceImpl implements LongLoadProfileService {
                 currentDeviceRequests.remove(deviceId);
                 executor.execute(new Runnable() {
                     public void run() {
-                        info.runner.onFailure();
+                        info.runner.onFailure(-1, "Unknown Error");
                     }
                 });
                 
                 // see if we have a pending command to send
-                ProfileRequestInfo foundInfo = pendingDeviceRequests.poll(deviceId);
-                if (foundInfo != null) {
-                    log.info("sending queued request for device id " + deviceId);
-                    queueRequest(deviceId, foundInfo, true);
-                }
+                queueNextPendingRequest(deviceId);
+                
                 return;
             }
         }
@@ -171,70 +186,212 @@ public class LongLoadProfileServiceImpl implements LongLoadProfileService {
 
     }
 
-    public void initialize() {
-        porterConnection.addMessageListener(new MessageListener() {
-            public void messageReceived(MessageEvent e) {
-                Message message = e.getMessage();
-                if (message instanceof Return) {
-                    Return returnMsg = (Return) message;
-                    handleReturnMessage(returnMsg);
-                }
-            }
-        });
-    }
+    
 
     private synchronized void handleReturnMessage(Return returnMsg) {
-        // see if we're interested
+        
+        // unique requestId of the request this return is for
         long requestId = returnMsg.getUserMessageID();
-        if (currentRequestIds.containsKey(requestId)) {
+        
+        // was this request recently canceled?
+        if(recentlyCanceledRequestIds.containsKey(requestId)){
+            
+            long  requestIdOfCancelCommand = recentlyCanceledRequestIds.get(requestId);
+            
+            // have we heard back fromt he cancel command yet? 
+            // if so, this is the last we'll hear from this request, ok to request the next pending
+            if(receivedCancelRequestIds.contains(requestIdOfCancelCommand)){
+             
+                recentlyCanceledRequestIds.remove(requestId);
+                receivedCancelRequestIds.remove(requestIdOfCancelCommand);
+                
+                queueNextPendingRequest(outstandingCancelRequestIds.remove(requestIdOfCancelCommand));
+                
+            }
+            
+        // this return is for one of our currently executing requests, check if it is finished yet
+        }
+        else if (currentRequestIds.containsKey(requestId)) {
             log.debug("received return message for request id " + requestId);
+            
             //TODO restore 
             recentlyReceivedRequestIds.add(requestId);
             // check for expect more
-            boolean expectMore = returnMsg.getExpectMore() == 1;
-            if (!expectMore) {
-                int deviceId = returnMsg.getDeviceID();
+            boolean finished = returnMsg.getExpectMore() == 0;
+            if (finished) {
+                final int deviceId = returnMsg.getDeviceID();
                 recentlyReceivedRequestIds.remove(requestId);
                 currentDeviceRequests.remove(deviceId);
                 // get runner and execute it on the global thread pool
-                final CompletionCallback runnable = currentRequestIds.remove(requestId);
+                final LongLoadProfileService.CompletionCallback runnable = currentRequestIds.remove(requestId);
+                final int returnStatus = returnMsg.getStatus();
+                final String resultString = returnMsg.getResultString();
+                final long requestIdToRemove = requestId;
                 executor.execute(new Runnable() {
                     public void run() {
-                        runnable.onSuccess();
+
+                        // success
+                        if(returnStatus == 0){
+                            runnable.onSuccess("");
+                        }
+
+                        // failure - onFailure will take status and resultString and come up with a message for the email
+                        else{
+                            runnable.onFailure(returnStatus, resultString);
+                        }
                     }
                 });
 
-                // see if we have a pending command to send
-                ProfileRequestInfo foundInfo = pendingDeviceRequests.poll(deviceId);
-                if (foundInfo != null) {
-                    log.info("sending queued request for device id " + deviceId);
-                    queueRequest(deviceId, foundInfo, true);
+                // if finished and ok see if we have a pending command to send, otherwise let cancel handle it
+                if(returnStatus == 0){
+                    queueNextPendingRequest(deviceId);
+                }
+                else{
+                    // send it through the cancel process to be sure it has been cleaned up
+                    sendCancelCommand(requestIdToRemove, deviceId);
+                }
+                   
+
+            }
+            
+        // this return is for a cancel command that we sent out
+        }
+        else if(outstandingCancelRequestIds.containsKey(requestId)){
+            
+            receivedCancelRequestIds.add(requestId);
+            
+        }
+    }
+    
+
+    
+    public synchronized boolean removePendingLongLoadProfileRequest(LiteYukonPAObject device, long requestId, LiteYukonUser user) {
+        
+        boolean removed = false;
+        int deviceId = device.getLiteID();
+        final LiteYukonUser cancelUser = user;
+        
+        // first place to to look is the currect device request, if it is there we will have to send kill command to porter and clean up
+        final ProfileRequestInfo info = currentDeviceRequests.get(deviceId);
+        if(info != null){
+
+            if(info.requestId == requestId){
+                
+                // cleanup
+                recentlyReceivedRequestIds.remove(requestId);
+                currentDeviceRequests.remove(deviceId);
+                // get runner and execute it on the global thread pool
+                final LongLoadProfileService.CompletionCallback runnable = currentRequestIds.remove(requestId);
+                executor.execute(new Runnable() {
+                    public void run() {
+                        runnable.onCancel(cancelUser);
+                    }
+                });
+                
+                // send command to porter
+                sendCancelCommand(requestId, deviceId);
+
+                removed = true;
+            }
+        }
+        
+        // our device was not in current request, look for it in the pending requests and remove it if found
+        if(!removed){
+            
+            List<ProfileRequestInfo> pendingRequestsForDevice = pendingDeviceRequests.get(deviceId);
+            
+            for(ProfileRequestInfo pendingInfo :  pendingRequestsForDevice){
+                
+                if(pendingInfo.requestId == requestId){
+                    
+                    pendingDeviceRequests.removeValue(deviceId,pendingInfo);
+                    // get runner and execute it on the global thread pool
+                    final LongLoadProfileService.CompletionCallback runnable = currentRequestIds.remove(requestId);
+                    executor.execute(new Runnable() {
+                        public void run() {
+                            runnable.onCancel(cancelUser);
+                        }
+                    });
+                    
+                    removed = true;
+                    break;
                 }
             }
         }
+
+        return removed;
     }
+    
+    
+    
+    public synchronized void sendCancelCommand(long requestIdToBeCanceled, int deviceId){
+        
+        Request req = new Request();
+        StringBuilder formatString = new StringBuilder("getvalue lp cancel update noqueue");
+        req.setCommandString(formatString.toString());
+        
+        req.setDeviceID(deviceId);
+        long requestIdOfCancelCommand = RandomUtils.nextInt();
+        req.setUserMessageID(requestIdOfCancelCommand);
+        
+        // run cancel command
+        porterConnection.write(req);
+        
+        // save requestId and callback to map
+        int deviceIdForWhomToGrabNextPendingWhenFinishedCanceling = deviceId;
+        outstandingCancelRequestIds.put(requestIdOfCancelCommand, deviceIdForWhomToGrabNextPendingWhenFinishedCanceling);
+        recentlyCanceledRequestIds.put(requestIdToBeCanceled, requestIdOfCancelCommand);
+        
+    }
+    
+    
+    private synchronized boolean queueNextPendingRequest(int deviceId) {
+        // see if we have a pending command to send
+        boolean queuedRequest = false;
+        
+        ProfileRequestInfo foundInfo = pendingDeviceRequests.poll(deviceId);
+        if (foundInfo != null) {
+            log.info("sending queued request for device id " + deviceId);
+            queueRequest(deviceId, foundInfo, true);
+            queuedRequest = true;
+        }
+        
+        return queuedRequest;
+    }
+
     
     public synchronized List<ProfileRequestInfo> getPendingLongLoadProfileRequests(LiteYukonPAObject device) {
         int deviceId = device.getLiteID();
         ProfileRequestInfo info = currentDeviceRequests.get(deviceId);
-        if (info == null) {
-            return Collections.emptyList();
-        }
-        
         List<ProfileRequestInfo> result = new ArrayList<ProfileRequestInfo>();
         
-        result.add(info);
+        if(info != null){
+            result.add(info);
+        }
         
         List<ProfileRequestInfo> pending = pendingDeviceRequests.get(deviceId);
         result.addAll(pending);
+        
         return result;
+        
     }
-
+        
     int debugSizeOfCollections() {
         return recentlyReceivedRequestIds.size()
             + currentRequestIds.size()
             + pendingDeviceRequests.size()
             + currentDeviceRequests.size();
+    }
+    
+    public void printSizeOfCollections(int deviceId) {
+        System.out.println("recentlyReceivedRequestIds = " + recentlyReceivedRequestIds.size());
+        System.out.println("currentRequestIds = " + currentRequestIds.size());
+        System.out.println("- " + currentRequestIds.toString());
+        System.out.println("pendingDeviceRequests = " +pendingDeviceRequests.size(deviceId));
+        System.out.println("- " + pendingDeviceRequests.get(deviceId).toString());
+        System.out.println("currentDeviceRequests = " +currentDeviceRequests.size());
+        System.out.println("- " + currentDeviceRequests.toString());
+        
     }
     
     @Required
@@ -246,9 +403,9 @@ public class LongLoadProfileServiceImpl implements LongLoadProfileService {
     public void setPorterConnection(BasicServerConnection porterConnection) {
         this.porterConnection = porterConnection;
     }
-
+    
+    @Required
     public void setQueueDataService(PorterQueueDataService queueDataService) {
         this.queueDataService = queueDataService;
     }
-
 }

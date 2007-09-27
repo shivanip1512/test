@@ -113,6 +113,28 @@ table.miniResultsTable td {
   border: 1px solid #ccc;
 }
 
+/* Data results table styles */
+table.miniResultsTableLeft {
+	width: 95%;	
+  	border: 1px solid #ccc;
+	border-collapse: collapse;
+}
+
+table.miniResultsTableLeft td.label {
+    background: #E5E5E5;
+	padding: .2em .5em;
+  	border: 1px solid #ccc;
+	color: 	#06C;
+	font-size: 12px;
+	font-weight: bold;
+}
+
+table.miniResultsTableLeft td {
+    text-align: left;
+    padding: .3em .5em;
+    border: 1px solid #ccc;
+}
+
 /* Name value pair styles */
 table.nameValueTable {
 	border: none;
