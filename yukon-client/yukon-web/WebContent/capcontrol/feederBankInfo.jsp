@@ -14,15 +14,15 @@
 	CapBankDevice[] capArray = capControlCache.getCapBanksByFeeder(id);
 %>
 	
-<form>
+<form id="feederInfo" action="">
 <cti:titledContainer title="Feeder CapBank Information">
 	<div>
    		<table id="Table" width="95%" border="0" cellspacing="1" cellpadding="1" class="main">
 			<tr class="columnHeader lAlign ">
-				<td border="1">CapBank Name</td>
-				<td border="1">Display Order</td>
-				<td border="1">Close Order</td>
-				<td border="1">Trip Order</td>
+				<td>CapBank Name</td>
+				<td>Display Order</td>
+				<td>Close Order</td>
+				<td>Trip Order</td>
 			</tr>
 <%
 String css = "tableCell";
@@ -31,10 +31,10 @@ for( CapBankDevice cap : capArray )
 	css = ("tableCell".equals(css) ? "altTableCell" : "tableCell");
 %>
 	<tr class=<%=css %>>
-		<td border="1"><%=cap.getCcName() %></td>
-		<td border="1"><%=cap.getControlOrder() %></td>
-		<td border="1"><%=cap.getCloseOrder() %></td>
-		<td border="1"><%=cap.getTripOrder() %></td>
+		<td><%=cap.getCcName() %></td>
+		<td ><%=cap.getControlOrder() %></td>
+		<td ><%=cap.getCloseOrder() %></td>
+		<td ><%=cap.getTripOrder() %></td>
 	</tr>	
 <%
 }

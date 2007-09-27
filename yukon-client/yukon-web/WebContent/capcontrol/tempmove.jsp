@@ -59,10 +59,8 @@ function selectFeeder( fid ){
 	updateFeederBankInfo();
 }
 
-</script>
+Event.observe(window, 'load', updateFeederBankInfo );
 
-<script language="JavaScript">
-    Event.observe(window, 'load', updateFeederBankInfo );
 </script>
 
 <div >
@@ -92,7 +90,7 @@ function selectFeeder( fid ){
 	<td class="rAlign">Trip Order:
 	<input type="text" id="txtTripOrder" class="tableCell" size="1" maxlength="3" value="1.5">
 	</td>
-	<td class="rAlign"><input id="submitOne" type="button" value="Submit" onclick="setFeederIDinRedirectURL(getSelectedFeeder());postMany('frmCapBankMove', 'opt[1]', getSelectedFeeder(), 'opt[2]', getOrder('Display'), 'opt[3]', getOrder('Close'), 'opt[4]', getOrder('Trip') );" >
+	<td class="rAlign"><input id="submitOne" type="button" value="Submit" onclick="setFeederIDinRedirectURL(getSelectedFeeder());postMany('frmCapBankMove', 'opt[1]', getSelectedFeeder(), 'opt[2]', getOrder('Display'), 'opt[3]', getOrder('Close'), 'opt[4]', getOrder('Trip') );" />
 	</td>
 </tr>
 
@@ -122,7 +120,7 @@ for( CBCArea area : allAreas )
 		<input type="image" id="chkBxArea<%=z%>"
 			src="images/nav-plus.gif"
 			onclick="showDiv( 'areaId<%=z %>' );toggleImg( 'chkBxArea<%=z%>'); return false;">
-		<%=area.getPaoName() %></input>
+		<%=area.getPaoName() %>
 
 	
 		<div class="<%=css%>" style="display:none" id="areaId<%=z %>">
@@ -142,7 +140,7 @@ for( CBCArea area : allAreas )
 			src="images/nav-plus.gif"
 			onclick="showDiv( 'subId<%=i + "_" + z%>' );toggleImg('chkBxSub<%=i + "_" + z%>'); return false;">
 			<%=CBCUtils.CBC_DISPLAY.getSubBusValueAt(subBus, CBCDisplay.SUB_NAME_COLUMN) %>
-		</input>
+		
 		<div class="<%=css%>" style="display:none" id="subId<%=i + "_" + z%>" >
 	<%
 		for( int j = 0; j < feeders.length; j++ )
@@ -152,9 +150,9 @@ for( CBCArea area : allAreas )
 				continue;
 	%>
 			<div>
-			<input class="capbankTempMoveLink" type="radio" name="feeder" id="<%=feeder.getCcId()%>" onclick="selectFeeder(<%=feeder.getCcId()%>);" >
+			<input class="capbankTempMoveLink" type="radio" name="feeder" id="feederId<%=feeder.getCcId()%>" onclick="selectFeeder(<%=feeder.getCcId()%>);" >
 			<%=CBCUtils.CBC_DISPLAY.getFeederValueAt(feeder, CBCDisplay.FDR_NAME_COLUMN) %>
-			</input>
+			
 			</div>			
 	<%	} %>
 		</div></div>
