@@ -4,6 +4,7 @@ import java.util.List;
 import java.util.Map;
 
 import com.cannontech.common.util.CtiUtilities;
+import com.cannontech.database.SqlUtils;
 import com.cannontech.database.data.lite.LiteContact;
 import com.cannontech.database.data.lite.LiteContactNotification;
 import com.cannontech.database.db.contact.Contact;
@@ -104,6 +105,7 @@ public class ContactLoader implements Runnable
             // fact that the ContactNotifications are ordered by ContactID
 			LiteContact lastContact = null;
 
+            SqlUtils.close(rset);
             rset = stmt.executeQuery(sqlString);
 			while( rset.next() )
 			{
@@ -132,19 +134,7 @@ public class ContactLoader implements Runnable
 		}
 		finally
 		{
-			try
-			{
-				if( stmt != null )
-					stmt.close();
-                if (rset != null)
-                    rset.close();
-				if( conn != null )
-					conn.close();
-			}
-			catch( java.sql.SQLException e )
-			{
-				com.cannontech.clientutils.CTILogger.error( e.getMessage(), e );
-			}
+            SqlUtils.close(rset, stmt, conn);
         	//temp code
         	timerStop = new java.util.Date();
         	com.cannontech.clientutils.CTILogger.info( 

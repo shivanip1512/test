@@ -4,6 +4,7 @@ import java.util.Map;
 
 import com.cannontech.clientutils.CTILogger;
 import com.cannontech.common.util.CtiUtilities;
+import com.cannontech.database.SqlUtils;
 import com.cannontech.database.data.lite.LiteState;
 import com.cannontech.database.data.lite.LiteStateGroup;
 import com.cannontech.database.db.state.State;
@@ -69,6 +70,7 @@ timerStart = new java.util.Date();
 			"FROM " + State.TABLE_NAME + " WHERE " + 
 			"RAWSTATE >= 0 ORDER BY STATEGROUPID,RAWSTATE";
 		
+        SqlUtils.close(rset);
 		rset = stmt.executeQuery(sqlString);
 		while (rset.next())
 		{
@@ -93,19 +95,7 @@ timerStart = new java.util.Date();
 	}
 	finally
 	{
-		try
-		{
-			if( stmt != null )
-				stmt.close();
-            if (rset != null)
-                rset.close();
-			if( conn != null )
-				conn.close();
-		}
-		catch( java.sql.SQLException e )
-		{
-			CTILogger.error( e.getMessage(), e );
-		}
+        SqlUtils.close(rset, stmt, conn);
 //temp code
 timerStop = new java.util.Date();
 CTILogger.info( 

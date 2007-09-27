@@ -11,6 +11,7 @@ import java.util.Map;
 
 import com.cannontech.clientutils.CTILogger;
 import com.cannontech.common.util.CtiUtilities;
+import com.cannontech.database.SqlUtils;
 import com.cannontech.database.data.lite.LiteYukonGroup;
 import com.cannontech.database.data.lite.LiteYukonRole;
 import com.cannontech.database.data.lite.LiteYukonRoleProperty;
@@ -116,21 +117,11 @@ public final class YukonGroupRoleLoader implements Runnable
          	com.cannontech.clientutils.CTILogger.error( e.getMessage(), e );
       	}
       	finally {
-         	try {
-            	if( stmt != null )
-               		stmt.close();
-                if (rset != null)
-                    rset.close();
-            	if( conn != null )
-               	conn.close();
-         	}
-         	catch( java.sql.SQLException e ) {
-            	com.cannontech.clientutils.CTILogger.error( e.getMessage(), e );
-         	}
-   
-   		CTILogger.info( 
-       (System.currentTimeMillis() - timerStart)*.001 + 
-       " Secs for YukonGroupRoleLoader (" + propertyCount + " loaded)" );   
+            SqlUtils.close(rset, stmt, conn);
+
+            CTILogger.info( 
+                           (System.currentTimeMillis() - timerStart)*.001 + 
+                           " Secs for YukonGroupRoleLoader (" + propertyCount + " loaded)" );   
       }
    
    }

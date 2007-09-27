@@ -23,11 +23,16 @@ public final class SqlUtils {
         super();
     }
     
+    /**
+     * 
+     * @param args Parameter order should be java.sql.ResultSet, java.sql.Statement, java.sql.Connection.
+     */
     public static final void close(final Object... args) {
-        for (final Object o : args) {
+        for (int x = 0; x < args.length; x++) {
+            Object o = args[x];
             if (o != null) {
-                if (o instanceof Statement) JdbcUtils.closeStatement((Statement) o);
                 if (o instanceof ResultSet) JdbcUtils.closeResultSet((ResultSet) o);
+                if (o instanceof Statement) JdbcUtils.closeStatement((Statement) o);
                 if (o instanceof Connection) JdbcUtils.closeConnection((Connection) o);
             }
         }

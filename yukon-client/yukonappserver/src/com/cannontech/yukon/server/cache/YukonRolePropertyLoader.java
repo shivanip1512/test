@@ -7,6 +7,7 @@ import java.sql.Statement;
 import java.util.List;
 
 import com.cannontech.clientutils.CTILogger;
+import com.cannontech.database.SqlUtils;
 import com.cannontech.database.data.lite.LiteYukonRoleProperty;
 
 /**
@@ -56,21 +57,11 @@ public final class YukonRolePropertyLoader implements Runnable
          	com.cannontech.clientutils.CTILogger.error( e.getMessage(), e );
       	}
       	finally {
-         	try {
-            	if( stmt != null )
-               		stmt.close();
-                if (rset != null)
-                    rset.close();
-            	if( conn != null )
-               	conn.close();
-         	}
-         	catch( java.sql.SQLException e ) {
-            	com.cannontech.clientutils.CTILogger.error( e.getMessage(), e );
-         	}
-   
-   		CTILogger.info( 
-       (System.currentTimeMillis() - timerStart)*.001 + 
-       " Secs for YukonRolePropertyLoader (" + allRoleProperties.size() + " loaded)" );   
+            SqlUtils.close(rset, stmt, conn);
+
+            CTILogger.info( 
+                           (System.currentTimeMillis() - timerStart)*.001 + 
+                           " Secs for YukonRolePropertyLoader (" + allRoleProperties.size() + " loaded)" );   
       }
    
    }

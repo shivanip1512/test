@@ -7,6 +7,7 @@ import java.sql.Statement;
 import java.util.List;
 
 import com.cannontech.clientutils.CTILogger;
+import com.cannontech.database.SqlUtils;
 import com.cannontech.database.data.lite.LiteEnergyCompany;
 import com.cannontech.database.db.company.EnergyCompany;
 import com.cannontech.database.db.web.EnergyCompanyCustomerList;
@@ -55,8 +56,7 @@ public class EnergyCompanyLoader implements Runnable
       			allCompanies.add(company);                                   		
          	}
 
-      		if(stmt != null) 
-      			stmt.close();
+            SqlUtils.close(rset, stmt);
          	
          	//assign all the customers that belong to each Energycompany
          	// NOTE: 1 customer may belong to several EnergyCompanies 
@@ -88,21 +88,11 @@ public class EnergyCompanyLoader implements Runnable
          	com.cannontech.clientutils.CTILogger.error( e.getMessage(), e );
       	}
       	finally {
-         	try {
-            	if( stmt != null )
-               		stmt.close();
-                if (rset != null)
-                    rset.close();
-            	if( conn != null )
-               	conn.close();
-         	}
-         	catch( java.sql.SQLException e ) {
-            	com.cannontech.clientutils.CTILogger.error( e.getMessage(), e );
-         	}
-   
-   		CTILogger.info( 
-       (System.currentTimeMillis() - timerStart)*.001 + 
-       " Secs for EnergyCompanyLoader (" + allCompanies.size() + " loaded)" );   
+      	    SqlUtils.close(rset, stmt, conn);
+            
+      	    CTILogger.info( 
+      	                   (System.currentTimeMillis() - timerStart)*.001 + 
+      	                   " Secs for EnergyCompanyLoader (" + allCompanies.size() + " loaded)" );   
       }
    
    }
