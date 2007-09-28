@@ -6,8 +6,8 @@
 *
 * PVCS KEYWORDS:
 * ARCHIVE      :  $Archive:   Z:/SOFTWAREARCHIVES/YUKON/DISPATCH/mgr_ptclients.cpp-arc  $
-* REVISION     :  $Revision: 1.23 $
-* DATE         :  $Date: 2007/08/16 20:52:13 $
+* REVISION     :  $Revision: 1.24 $
+* DATE         :  $Date: 2007/09/28 15:40:08 $
 *
 * Copyright (c) 1999, 2000, 2001 Cannon Technologies Inc. All rights reserved.
 *-----------------------------------------------------------------------------*/
@@ -491,6 +491,7 @@ void CtiPointClientManager::RefreshDynamicData(LONG id)
     RWDBDatabase db = getDatabase();
     RWDBTable   keyTable;
     RWDBSelector selector = db.selector();
+    CtiTime start, stop;
 
     if(DebugLevel & 0x00000001)
     {
@@ -510,6 +511,7 @@ void CtiPointClientManager::RefreshDynamicData(LONG id)
         CtiLockGuard<CtiLogger> doubt_guard(dout); dout << selector.asString() << endl;
     }
 
+    start = start.now();
     while( (rdr.status().errorCode() == RWDBStatus::ok) && rdr() )
     {
         rdr["pointid"] >> lTemp;                        // get the point id
@@ -539,6 +541,12 @@ void CtiPointClientManager::RefreshDynamicData(LONG id)
             dout << CtiTime() << " **** WARNING **** " << __FILE__ << " (" << __LINE__ << ")" << endl;
             dout << "  Point id " << lTemp << " found in "  << CtiTablePointDispatch::getTableName() << ", no other point info available" << endl;
         }
+    }
+
+    if((stop = stop.now()).seconds() - start.seconds() > 5 )
+    {
+        CtiLockGuard<CtiLogger> doubt_guard(dout);
+        dout << CtiTime() << " " << stop.seconds() - start.seconds() << " seconds for Dynamic Data " << endl;
     }
 
     if(DebugLevel & 0x00000001)

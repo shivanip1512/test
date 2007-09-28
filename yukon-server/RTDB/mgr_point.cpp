@@ -6,8 +6,8 @@
 *
 * PVCS KEYWORDS:
 * ARCHIVE      :  $Archive:   Z:/SOFTWAREARCHIVES/YUKON/RTDB/mgr_point.cpp-arc  $
-* REVISION     :  $Revision: 1.34 $
-* DATE         :  $Date: 2007/09/18 14:18:01 $
+* REVISION     :  $Revision: 1.35 $
+* DATE         :  $Date: 2007/09/28 15:40:08 $
 *
 * Copyright (c) 1999, 2000, 2001 Cannon Technologies Inc. All rights reserved.
 *-----------------------------------------------------------------------------*/
@@ -33,6 +33,8 @@
 #include "utility.h"
 
 #include "rwutil.h"
+
+#define PERF_TO_MS(b,a,p) ((UINT)((b).QuadPart - (a).QuadPart) / ((UINT)(p).QuadPart / 1000L))
 
 bool findHasAlarming(CtiPointSPtr &pTP, void* d)
 {
@@ -294,7 +296,7 @@ void CtiPointManager::refreshList(BOOL (*testFunc)(CtiPointBase*,void*), void *a
             {
                 CtiLockGuard<CtiLogger> doubt_guard(dout);
                 dout << CtiTime() << " " << stop.seconds() - start.seconds() << " seconds for Calc points " << endl;
-            }
+            }           
 
             // Now I need to check for any Point removals based upon the
             // Updated Flag being NOT set
@@ -393,6 +395,9 @@ void CtiPointManager::DumpList(void)
 
 CtiPointBase* PointFactory(RWDBReader &rdr)
 {
+    static const RWCString pointtype = "pointtype";
+    static const RWCString pseudoflag = "pseudoflag";
+
     INT       PtType;
     INT       PseudoPt = FALSE;
     string rwsType;
@@ -400,8 +405,8 @@ CtiPointBase* PointFactory(RWDBReader &rdr)
 
     CtiPointBase *Point = NULL;
 
-    rdr["pointtype"]  >> rwsType;
-    rdr["pseudoflag"] >> rwsPseudo;
+    rdr[pointtype]  >> rwsType;
+    rdr[pseudoflag] >> rwsPseudo;
 
     if(getDebugLevel() & DEBUGLEVEL_FACTORY)
     {
@@ -694,8 +699,9 @@ void CtiPointManager::refreshAlarming(LONG pntID, LONG paoID)
     RWDBSelector   selector = conn.database().selector();
     RWDBTable      keyTable;
     RWDBReader     rdr;
+    CtiTime start, stop;
 
-
+    start = start.now();
     CtiTablePointAlarming::getSQL( db, keyTable, selector );
 
     if(pntID) selector.where( keyTable["pointid"] == pntID && selector.where() );
@@ -723,6 +729,12 @@ void CtiPointManager::refreshAlarming(LONG pntID, LONG paoID)
         {
             pPt->DecodeAlarmingDatabaseReader(rdr);
         }
+    }
+
+    if((stop = stop.now()).seconds() - start.seconds() > 5 )
+    {
+        CtiLockGuard<CtiLogger> doubt_guard(dout);
+        dout << CtiTime() << " " << stop.seconds() - start.seconds() << " seconds for Alarming " << endl;
     }
 }
 
