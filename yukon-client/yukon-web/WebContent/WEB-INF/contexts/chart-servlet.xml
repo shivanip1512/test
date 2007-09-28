@@ -39,7 +39,7 @@
             <value type="boolean">true</value>
         </property>
         <property name="synchronizeOnSession">
-            <value type="boolean">true</value>
+            <value type="boolean">false</value>
         </property>
         
         <property name="chartService" ref="chartService" />
