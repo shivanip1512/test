@@ -29,6 +29,8 @@
 			</td>
 			<td>
 				Start Date:
+			</td>
+			<td>
 				<input type="text" id="startDate" name="startDate" value="${startDate}" size="10" />
 				<a href="javascript:showCalendarControl($('startDate'))"> 
 					<img src="<c:url value="/WebConfig/yukon/Icons/StartCalendar.gif"/>" width="20" height="15" align="ABSMIDDLE" border="0">
@@ -36,6 +38,8 @@
 			</td>
 			<td>
 				End Date:
+			</td>
+			<td>
 				<input type="text" id="stopDate" name="stopDate" value="${stopDate}" size="10" />
 				<a href="javascript:showCalendarControl($('stopDate'))"> 
 					<img src="<c:url value="/WebConfig/yukon/Icons/StartCalendar.gif"/>" width="20" height="15" align="ABSMIDDLE" border="0">
