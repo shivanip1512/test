@@ -32,9 +32,11 @@
 <script type="text/javascript"> 
 	
 	function togglePopup( v ){
-		$(v).toggle();
+		if( document.getElementById(v) != null )
+			$(v).toggle();
+		else if( document.getElementById(v +  "_true") != null )
+        	$(v + c).toggle();
 	}
-
 </script>
 
 <cti:standardMenu/>
