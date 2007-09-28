@@ -22,11 +22,124 @@
 #include "CCU711.h"
 #include "color.h"
 #include "ctiTime.h"
+#include "dbaccess.h"
+#include <boost/thread/thread.hpp>
+#include <boost/thread/mutex.hpp>
+#include <vector>
 
 using namespace std;
 
-int main(int argc, char *argv[])
-{	
+boost::mutex io_mutex;
+
+typedef void (*WorkerFunPtr)(const int&);
+
+
+template<typename FunT,
+         typename ParamT>
+struct Adapter {
+    Adapter(FunT f, ParamT& p) :
+        f_(f), p_(&p) {}
+
+    void operator()(){
+        f_(*p_);
+    }
+ private:
+     FunT f_;
+     ParamT* p_;
+};
+
+void worker(const int& s) 
+{
+    {
+        boost::mutex::scoped_lock lock(io_mutex);
+        cout<<"Port: "<<s<<endl;
+    }
+
+    CTISleep(s);
+
+//////////////////////////////////////////////////////////
+//   ADDING CODE TO READ AND STORE GETKWH VALUES
+// ///////////////////////////////////////////////////////
+
+
+
+
+
+/////////////////////////////////////////////
+//CHANGE THIS TO getConnection(0) !!!
+/////////////////////////////////////////////
+
+	//RWDBConnection conn = getConnection(0);
+	//RWDBDatabase myDbase   = conn.database();
+
+/////////////////////////////////////////////
+//CHECK TO SEE IF DB ALREADY EXISTS
+/////////////////////////////////////////////
+	
+
+	//if (!myDbase.isValid()) {
+    //    cout << "Could not connect.  Creating a new database..."<<endl;//myDbase.status().message() << endl;
+/////////////////////////////////////////////
+//CREATE A NEW DB IF NONE EXISTS
+/////////////////////////////////////////////
+
+
+// get the T-SQL script for the Pubs database
+//Dim pubsDB As SQLDMO.Database
+//Set pubsDB = SQLServer.Databases("pubs")
+//Print pubsDB.Script
+
+
+	//}
+
+    
+  //	if (!myDbase.isValid()) {
+   //     cout << "Still cannot connect to database.  Skipping database..."<<endl;//myDbase.status().message() << endl;
+	//}
+   // else{
+    
+    
+    
+    
+    /////////////////////////////////////////////
+    //CREATE A SELECTOR AND A TABLE
+    /////////////////////////////////////////////
+    
+    //    RWDBSelector select1 = myDbase.selector();
+    
+    //    RWDBTable GETKWH = myDbase.table("GETKWH");
+    
+    
+    /////////////////////////////////////////////
+    //SELECT THE DATA THAT YOU WANT
+    /////////////////////////////////////////////
+    
+     //   select1.orderByDescending(GETKWH["KWH"]);
+    
+     //   select1 << GETKWH["KWH"];
+    
+    
+    /////////////////////////////////////////////
+    //CREATE A READER
+    /////////////////////////////////////////////
+    
+     //   RWDBReader rdr1 = select1.reader();
+    
+        //RWDBDateTime HIST_TIMESTAMP;
+    
+     //   double newKwh = 0;
+    
+    /////////////////////////////////////////////
+    //PUT THE DATA INTO THE READER
+    /////////////////////////////////////////////
+    
+     //   rdr1();
+     //   rdr1 >> newKwh;
+   // }
+
+//**************************************DONE***************************************
+
+    
     WSADATA wsaData;
 
     int portNumber = 0;
@@ -35,16 +148,6 @@ int main(int argc, char *argv[])
 
     std::map <int, CCU711 *> ccuList;
 
-    if(argc>1)
-        {   // Specify port number
-        cout<<"Port set to "<<argv[1]<<endl;
-        portNumber = atoi(argv[1]);
-    }
-    else
-        {
-        cout<<"No command line argument found specifying port!"<<endl;
-        return 0;
-    }
 
     WSAStartup(MAKEWORD (1,1), &wsaData);
 
@@ -58,7 +161,10 @@ int main(int argc, char *argv[])
     for(int i = 0; i<1000000 && !(newSocket->CTINexusValid()); i++) {
         listenSocket->CTINexusConnect(newSocket, NULL, 1000, CTINEXUS_FLAG_READEXACTLY);
         CtiTime Listening;
+        {
+        boost::mutex::scoped_lock lock(io_mutex);
         std::cout<<Listening.asString()<<" Listening..."<<std::endl;
+        }
     }
 
     CCU710 aCCU710;
@@ -273,67 +379,84 @@ int main(int argc, char *argv[])
         }
 
     }
-
-    CTISleep(5000);
-
-    return 0;
+    
+    CTISleep(1000);
+    cout<<"Program closing..."<<endl;
+    return;
 }
 
 
+///////  DO THIS TO STORE MULTIPLE THREADS //////////////////////////
+//vector<RWThreadFunction> threads;
+
+
+    //int num_threads = number of args;
+  //  for(num+threads) {
+    //    RWThreadFunction tf = makethread();
+     //   threads.push_bach(tf);
+   // }
+
+   // thrd.join();
+
+   // return (0);
+//}
 
 
 
-////////////////////////////////////////
-// 
+
+
+int main(int argc, char *argv[]) {
+
+    std::vector<boost::thread *> threadVector;
+
+    if(argc>1)
+    {   // Specify port number
+        cout<<argc-1<<" ports found."<<endl;
+    }
+    else
+        {
+        cout<<"No command line argument found specifying port!"<<endl;
+        return 0;
+    }
+
+    int numThreads = argc - 1;
+    for(int i=0; i<numThreads; i++) {
+        int portNum = atoi(argv[i+1]);
+        boost::thread *thr1 = new boost::thread(Adapter<WorkerFunPtr, int>(worker, portNum));
+        
+        threadVector.push_back(thr1);
+    }
+
+    int arg1 = atoi(argv[1]);
+
+    boost::thread * thr1 = *threadVector.begin();
+    thr1->join();
+
+    return 0;
+}
+    
+
+
+
+////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
+////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
 //       CODE BELOW ALLOWS FOR PORT CONTROL
 //       USING SELECT()
-
+///////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
 /*
 
-#include <winsock2.h>
-#include <windows.h>
-#include <stdio.h>
-#include <iostream>
-#include <numstr.h>
-#include "CCU710.h"
-
-#define PORT 11234
-#define PORT2 12345
-
-#define BUFFERSIZE 10
+#include <winsock2.h>#include <windows.h>#include <stdio.h>#include <iostream>#include <numstr.h>#include "CCU710.h"#define PORT 11234#define PORT2 12345#define BUFFERSIZE 10
 
 typedef struct _MYSOCKET_INFORMATION {
-   CHAR Buffer[BUFFERSIZE];
-   WSABUF DataBuf;
-   SOCKET Socket;
-   OVERLAPPED Overlapped;
-   DWORD SendBytes;
-   DWORD RecvBytes;
+   CHAR Buffer[BUFFERSIZE];WSABUF DataBuf;SOCKET Socket;OVERLAPPED Overlapped;DWORD SendBytes;DWORD RecvBytes;
 } SOCKET_INFORMATION, * LPSOCKET_INFORMATION;
 
-BOOL CreateSocketInformation(SOCKET s);
-void FreeSocketInformation(DWORD Index);
-
-DWORD TotalSockets = 0;
-LPSOCKET_INFORMATION SocketList[FD_SETSIZE];
+BOOL CreateSocketInformation(SOCKET s);void FreeSocketInformation(DWORD Index);DWORD TotalSockets = 0;LPSOCKET_INFORMATION SocketList[FD_SETSIZE];
 
 void main(void)
 {
-   SOCKET ListenSocket;
-   SOCKET AcceptSocket;
-   SOCKET ListenSocket2;
-   SOCKET AcceptSocket2;
-   SOCKADDR_IN InternetAddr;
-   WSADATA wsaData;
-   INT Ret;
-   FD_SET Writer;
-   FD_SET Reader;
-   DWORD i;
-   DWORD Total;
-   ULONG NonBlock;
-   DWORD Flags;
-   DWORD SendBytes;
-   DWORD RecvBytes;
+   SOCKET ListenSocket;SOCKET AcceptSocket;SOCKET ListenSocket2;SOCKET AcceptSocket2;SOCKADDR_IN InternetAddr;WSADATA wsaData;
+   INT Ret;FD_SET Writer;FD_SET Reader;DWORD i;DWORD Total;ULONG NonBlock;DWORD Flags;DWORD SendBytes;DWORD RecvBytes;
 
 
    if ((Ret = WSAStartup(MAKEWORD(2,0),&wsaData)) != 0)
@@ -352,9 +475,7 @@ void main(void)
       return;
    }
 
-   InternetAddr.sin_family = AF_INET;
-   InternetAddr.sin_addr.s_addr = htonl(INADDR_ANY);
-   InternetAddr.sin_port = htons(PORT);
+   InternetAddr.sin_family = AF_INET;InternetAddr.sin_addr.s_addr = htonl(INADDR_ANY);InternetAddr.sin_port = htons(PORT);
 
    if (bind(ListenSocket, (SOCKADDR *) &InternetAddr, sizeof(InternetAddr))
       == SOCKET_ERROR)
@@ -594,12 +715,7 @@ void main(void)
                {
                   SocketInfo->SendBytes = 0;
                   SocketInfo->RecvBytes = 0;
-               }
-            }
-         }
-      }
-   }
-}
+               }}}}}}
 
 BOOL CreateSocketInformation(SOCKET s)
 {
