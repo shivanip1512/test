@@ -6,8 +6,8 @@
 *
 * PVCS KEYWORDS:
 * ARCHIVE      :  $Archive:   Z:/SOFTWAREARCHIVES/YUKON/COMMON/resolvers.cpp-arc  $
-* REVISION     :  $Revision: 1.81 $
-* DATE         :  $Date: 2007/09/25 22:01:34 $
+* REVISION     :  $Revision: 1.82 $
+* DATE         :  $Date: 2007/09/28 15:38:59 $
 *
 * Copyright (c) 1999, 2000, 2001 Cannon Technologies Inc. All rights reserved.
 *-----------------------------------------------------------------------------*/
@@ -141,47 +141,61 @@ INT resolveAmpUseType(const string& _rwsTemp)
 
 INT resolvePointType(const string& _rwsTemp)
 {
+    static const string analog = "analog";
+    static const string status = "status";
+    static const string pulseaccumulator = "pulseaccumulator";
+    static const string pulse_accumulator = "pulse accumulator";
+    static const string accumulator = "accumulator";
+    static const string demandaccumulator = "demandaccumulator";
+    static const string demand_accumulator = "demand accumulator";
+    static const string calculated = "calculated";
+    static const string calcanalog = "calcanalog";
+    static const string calcstatus = "calcstatus";
+    static const string system = "system";
+    static const string statusoutput = "statusoutput";
+    static const string analogoutput = "analogoutput";
+
     INT Ret;
     string rwsTemp = _rwsTemp;
     CtiToLower(rwsTemp);
     trim(rwsTemp);
 
-    if(rwsTemp == "analog")
+    if(rwsTemp == analog)
     {
         Ret = AnalogPointType;
     }
-    else if(rwsTemp == "status")
+    else if(rwsTemp == status)
     {
         Ret = StatusPointType;
     }
-    else if(rwsTemp == "pulseaccumulator" ||
-            rwsTemp == "pulse accumulator" ||    // This WILL go away over time I hope!
-            rwsTemp == "accumulator")            // This WILL go away over time I hope!
+    else if(rwsTemp == pulseaccumulator ||
+            rwsTemp == pulse_accumulator ||    // This WILL go away over time I hope!
+            rwsTemp == accumulator)            // This WILL go away over time I hope!
     {
         Ret = PulseAccumulatorPointType;
     }
-    else if(rwsTemp == "demandaccumulator" ||
-            rwsTemp == "demand accumulator")     // This WILL go away over time I hope!
+    else if(rwsTemp == demandaccumulator ||
+            rwsTemp == demand_accumulator)     // This WILL go away over time I hope!
     {
         Ret = DemandAccumulatorPointType;
     }
-    else if(rwsTemp == "calculated" || rwsTemp == "calcanalog")
+    else if(rwsTemp == calculated || rwsTemp == calcanalog)
     {
         Ret = CalculatedPointType;
     }
-    else if(rwsTemp == "calcstatus")
+    else if(rwsTemp == calcstatus)
     {
         Ret = CalculatedStatusPointType;
     }
-    else if(rwsTemp == "system")
+    else if(rwsTemp == system)
     {
         Ret = SystemPointType;
     }
-    else if(rwsTemp == "statusoutput")
+    else if(rwsTemp == statusoutput)
     {
         Ret = StatusOutputPointType;
     }
-    else if(rwsTemp == "analogoutput")
+    else if(rwsTemp == analogoutput)
     {
         Ret = AnalogOutputPointType;
     }
