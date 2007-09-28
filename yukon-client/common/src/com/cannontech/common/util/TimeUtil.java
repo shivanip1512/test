@@ -90,9 +90,11 @@ public static int differenceInDays(java.util.Date d1, java.util.Date d2 )
      */
     public static int differenceInDays(final Calendar cal1, final Calendar cal2) {
         Calendar cal1Temp = Calendar.getInstance();
+        cal1Temp.setTimeZone(cal1.getTimeZone());
         cal1Temp.setTimeInMillis(cal1.getTimeInMillis());
         
         Calendar cal2Temp = Calendar.getInstance();
+        cal2Temp.setTimeZone(cal2.getTimeZone());
         cal2Temp.setTimeInMillis(cal2.getTimeInMillis());
         
         if (cal1Temp.after(cal2Temp)) {
