@@ -248,11 +248,11 @@ inline RWvistream&  operator>>(RWvistream& strm, std::string& s)
 }
 
 //Conversion
-inline RWCString string2RWCString(std::string str){
+inline RWCString string2RWCString(const std::string &str){
     return RWCString(str.c_str());
 }
 
-inline string RW2String( RWCString str ){
+inline string RW2String( const RWCString &str ){
 	return string(str.data());
 }
 typedef boost::tokenizer<boost::char_separator<char> > Boost_char_tokenizer;
