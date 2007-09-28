@@ -55,8 +55,6 @@ void worker(const int& s)
         cout<<"Port: "<<s<<endl;
     }
 
-    CTISleep(s);
-
 //////////////////////////////////////////////////////////
 //   ADDING CODE TO READ AND STORE GETKWH VALUES
 // ///////////////////////////////////////////////////////
@@ -142,7 +140,7 @@ void worker(const int& s)
     
     WSADATA wsaData;
 
-    int portNumber = 0;
+    int portNumber = s;
     int ccuNumber = 0;
     int mctNumber = 0;
 
@@ -162,7 +160,7 @@ void worker(const int& s)
         listenSocket->CTINexusConnect(newSocket, NULL, 1000, CTINEXUS_FLAG_READEXACTLY);
         CtiTime Listening;
         {
-        boost::mutex::scoped_lock lock(io_mutex);
+       boost::mutex::scoped_lock lock(io_mutex);
         std::cout<<Listening.asString()<<" Listening..."<<std::endl;
         }
     }
@@ -419,18 +417,18 @@ int main(int argc, char *argv[]) {
         return 0;
     }
 
+    int portNum = 0;
     int numThreads = argc - 1;
     for(int i=0; i<numThreads; i++) {
-        int portNum = atoi(argv[i+1]);
-        boost::thread *thr1 = new boost::thread(Adapter<WorkerFunPtr, int>(worker, portNum));
-        
-        threadVector.push_back(thr1);
+        portNum = atoi(argv[i+1]);
+        boost::thread *thr = new boost::thread(Adapter<WorkerFunPtr, int>(worker, portNum));
+        threadVector.push_back(thr);
     }
-
-    int arg1 = atoi(argv[1]);
 
     boost::thread * thr1 = *threadVector.begin();
     thr1->join();
+    boost::thread * thr2 = *threadVector.end();
+    thr2->join();
 
     return 0;
 }
