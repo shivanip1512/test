@@ -69,6 +69,10 @@ bool CtiMutex::acquire(unsigned long millis)
         _threadID[0] = GetCurrentThreadId();
     }
 #endif
+    if( result == WAIT_FAILED )
+    {
+        std::cerr << " mutex wait failed, last error: " << GetLastError() << std::endl;
+    }
     return( result == WAIT_OBJECT_0 );
 #endif
 }
