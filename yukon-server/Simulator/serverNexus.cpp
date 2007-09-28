@@ -50,10 +50,12 @@ struct Adapter {
 
 void worker(const int& s) 
 {
-    {
-        boost::mutex::scoped_lock lock(io_mutex);
-        cout<<"Port: "<<s<<endl;
-    }
+        {
+            boost::mutex::scoped_lock lock(io_mutex);
+            cout<<"Port: "<<s<<endl;
+        }
+
+    
 
 //////////////////////////////////////////////////////////
 //   ADDING CODE TO READ AND STORE GETKWH VALUES
@@ -405,7 +407,7 @@ void worker(const int& s)
 
 int main(int argc, char *argv[]) {
 
-    std::vector<boost::thread *> threadVector;
+    vector<boost::thread *> threadVector;
 
     if(argc>1)
     {   // Specify port number
@@ -417,18 +419,23 @@ int main(int argc, char *argv[]) {
         return 0;
     }
 
+
     int portNum = 0;
+    int portCount = 1;
     int numThreads = argc - 1;
+    boost::thread *thr1;
     for(int i=0; i<numThreads; i++) {
-        portNum = atoi(argv[i+1]);
-        boost::thread *thr = new boost::thread(Adapter<WorkerFunPtr, int>(worker, portNum));
-        threadVector.push_back(thr);
+        portNum = atoi(argv[portCount]);
+        thr1 = new boost::thread(Adapter<WorkerFunPtr, int>(worker, portNum));
+        threadVector.push_back(thr1);
+        portCount++;
+        CTISleep(750);
     }
 
-    boost::thread * thr1 = *threadVector.begin();
-    thr1->join();
-    boost::thread * thr2 = *threadVector.end();
-    thr2->join();
+    
+    vector<boost::thread *>::iterator itr = threadVector.begin();
+
+    (*itr)->join();
 
     return 0;
 }
