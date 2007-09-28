@@ -6,8 +6,8 @@
 *
 * PVCS KEYWORDS:
 * ARCHIVE      :  $Archive:   Z:/SOFTWAREARCHIVES/YUKON/DATABASE/tbl_pt_status.cpp-arc  $
-* REVISION     :  $Revision: 1.10 $
-* DATE         :  $Date: 2005/12/20 17:16:07 $
+* REVISION     :  $Revision: 1.11 $
+* DATE         :  $Date: 2007/09/28 15:43:05 $
 *
 * Copyright (c) 1999, 2000, 2001 Cannon Technologies Inc. All rights reserved.
 *-----------------------------------------------------------------------------*/
@@ -19,6 +19,9 @@
 #include "logger.h"
 
 #include "rwutil.h"
+
+static const string zeroControl = "control open";
+static const string oneControl = "control close";
 
 void CtiTablePointStatus::getSQL(RWDBDatabase &db,  RWDBTable &keyTable, RWDBSelector &selector)
 {
@@ -50,21 +53,22 @@ void CtiTablePointStatus::DecodeDatabaseReader(RWDBReader &rdr)
         dout << "Decoding " << __FILE__ << " (" << __LINE__ << ")" << endl;
     }
 
-    rdr["initialstate"]  >> _initialState;
-
-    rdr["controlinhibit"]   >> rwsTemp;
+    rdr >> _initialState;
+    rdr >> rwsTemp;
     std::transform(rwsTemp.begin(), rwsTemp.end(), rwsTemp.begin(), tolower);
     _controlInhibit = ((rwsTemp == "y") ? TRUE : FALSE);
 
-    rdr["controltype"]   >> rwsTemp;
+    rdr >> rwsTemp;
     _controlType = resolveControlType(rwsTemp);
 
-    rdr["controloffset"] >> _controlOffset;
-    rdr["closetime1"] >> _closeTime1;
-    rdr["closetime2"] >> _closeTime2;
-    rdr["statezerocontrol"] >> _stateZeroControl;
-    rdr["stateonecontrol"] >> _stateOneControl;
-    rdr["commandtimeout"] >> _commandTimeout;
+    rdr >> _controlOffset;
+    rdr >> _closeTime1;
+    rdr >> _closeTime2;
+    rdr >> rwsTemp;
+    setStateZeroControl(rwsTemp);
+    rdr >> rwsTemp;
+    setStateOneControl(rwsTemp);
+    rdr >> _commandTimeout;
 }
 
 
@@ -78,8 +82,8 @@ CtiTablePointStatus& CtiTablePointStatus::operator=(const CtiTablePointStatus& a
         _controlOffset    = aRef.getControlOffset();
         _closeTime1       = aRef.getCloseTime1();
         _closeTime2       = aRef.getCloseTime2();
-        _stateZeroControl = aRef.getStateZeroControl();
-        _stateOneControl  = aRef.getStateOneControl();
+        setStateZeroControl(aRef.getStateZeroControl());
+        setStateOneControl(aRef.getStateOneControl());
         _commandTimeout   = aRef.getCommandTimeout();
     }
     return *this;
@@ -135,16 +139,26 @@ INT CtiTablePointStatus::getCloseTime2() const
 
 const string& CtiTablePointStatus::getStateZeroControl() const
 {
-
-
-    return _stateZeroControl;
+    if( _stateZeroControl != NULL )
+    {
+        return *_stateZeroControl;
+    }
+    else
+    {
+        return zeroControl;
+    }
 }
 
 const string& CtiTablePointStatus::getStateOneControl() const
 {
-
-
-    return _stateOneControl;
+    if( _stateOneControl != NULL )
+    {
+        return *_stateOneControl;
+    }
+    else
+    {
+        return oneControl;
+    }
 }
 
 
@@ -214,20 +228,53 @@ CtiTablePointStatus& CtiTablePointStatus::setCloseTime2(INT i)
 
 CtiTablePointStatus& CtiTablePointStatus::setStateZeroControl(const string& zero)
 {
+    if( zero == zeroControl )
+    {
+        if( _stateZeroControl != NULL )
+        {
+            delete _stateZeroControl;
+            _stateZeroControl = NULL;
+        }
+    }
+    else if( _stateZeroControl == NULL || *_stateZeroControl != zero  )
+    {
+        if( _stateZeroControl != NULL )
+        {
+            *_stateZeroControl = zero;;
+        }
+        else
+        {
+            _stateZeroControl = CTIDBG_new string(zero);
+        }
+    }
 
-
-    _stateZeroControl = zero;
     return *this;
 }
 
 CtiTablePointStatus& CtiTablePointStatus::setStateOneControl(const string& one)
 {
+    if( one == oneControl )
+    {
+        if( _stateOneControl != NULL )
+        {
+            delete _stateOneControl;
+            _stateOneControl = NULL;
+        }
+    }
+    else if( _stateOneControl == NULL || *_stateOneControl != one  )
+    {
+        if( _stateOneControl != NULL )
+        {
+            *_stateOneControl = one;
+        }
+        else 
+        {
+            _stateOneControl = CTIDBG_new string(one);
+        }
+    }
 
-
-    _stateOneControl = one;
     return *this;
 }
-
 
 void CtiTablePointStatus::dump() const
 {
@@ -283,7 +330,7 @@ UINT CtiTablePointStatus::getStaticTags() const
 }
 
 CtiTablePointStatus::CtiTablePointStatus() :
-_controlInhibit(TRUE)
+_controlInhibit(TRUE), _stateZeroControl(NULL), _stateOneControl(NULL)
 {}
 
 CtiTablePointStatus::CtiTablePointStatus(const CtiTablePointStatus& aRef)
@@ -293,6 +340,16 @@ CtiTablePointStatus::CtiTablePointStatus(const CtiTablePointStatus& aRef)
 
 CtiTablePointStatus::~CtiTablePointStatus()
 {
+    if( _stateZeroControl != NULL )
+    {
+        delete _stateZeroControl;
+        _stateZeroControl = NULL;
+    }
+    if( _stateOneControl != NULL )
+    {
+        delete _stateOneControl;
+        _stateOneControl = NULL;
+    }
 }
 
 string CtiTablePointStatus::getTableName()

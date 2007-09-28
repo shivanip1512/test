@@ -13,8 +13,8 @@
 *
 * PVCS KEYWORDS:
 * ARCHIVE      :  $Archive:   Z:/SOFTWAREARCHIVES/YUKON/DATABASE/INCLUDE/tbl_pt_analog.h-arc  $
-* REVISION     :  $Revision: 1.2 $
-* DATE         :  $Date: 2005/12/20 17:16:09 $
+* REVISION     :  $Revision: 1.3 $
+* DATE         :  $Date: 2007/09/28 15:43:05 $
 *
 * Copyright (c) 2002 Cannon Technologies Inc. All rights reserved.
 *-----------------------------------------------------------------------------*/
@@ -43,10 +43,10 @@ class IM_EX_CTIYUKONDB CtiTableUnitMeasure : public CtiMemDBObject
 {
 protected:
 
-   string   _uomName;
+   //string   _uomName;
    int         _calcType;
-   string   _longName;
-   string   _formula;
+   //string   _longName;
+   //string   _formula;
 
 private:
 
@@ -62,9 +62,9 @@ public:
    void DecodeDatabaseReader(RWDBReader &rdr);
    void dump() const;
 
-   string getUOMName() const;
+   //string getUOMName() const;
    int       getCalcType() const;
-   string getLongName() const;
-   string getFormula() const;
+   //string getLongName() const;
+   //string getFormula() const;
 };
 #endif // #ifndef __TBL_UNITMEASURE_H__

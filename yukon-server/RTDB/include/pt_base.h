@@ -6,8 +6,8 @@
 *
 * PVCS KEYWORDS:
 * ARCHIVE      :  $Archive:   Z:/SOFTWAREARCHIVES/YUKON/RTDB/INCLUDE/pt_base.h-arc  $
-* REVISION     :  $Revision: 1.16 $
-* DATE         :  $Date: 2007/09/18 14:30:50 $
+* REVISION     :  $Revision: 1.17 $
+* DATE         :  $Date: 2007/09/28 15:43:05 $
 *
 * Copyright (c) 1999, 2000, 2001 Cannon Technologies Inc. All rights reserved.
 *-----------------------------------------------------------------------------*/
@@ -87,7 +87,7 @@ public:
    string          getName() const;
    LONG            getDeviceID() const;
 
-   string          getLogicalGroup() const;
+   //string          getLogicalGroup() const;
    LONG            getStateGroupID() const;
 
    BOOL            getDisableTag() const;

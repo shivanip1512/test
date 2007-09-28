@@ -14,8 +14,8 @@
 *
 * PVCS KEYWORDS:
 * ARCHIVE      :  $Archive:   Z:/SOFTWAREARCHIVES/YUKON/DATABASE/INCLUDE/tbl_pt_base.h-arc  $
-* REVISION     :  $Revision: 1.5 $
-* DATE         :  $Date: 2007/08/16 20:52:13 $
+* REVISION     :  $Revision: 1.6 $
+* DATE         :  $Date: 2007/09/28 15:43:05 $
 *
 * Copyright (c) 1999, 2000 Cannon Technologies Inc. All rights reserved.
 *-----------------------------------------------------------------------------*/
@@ -49,7 +49,7 @@ protected:
    string         _name;             // _name of the point
    CtiPointType_t    _type;             // Point _type
    LONG              _paObjectID;         // 9/14/2001
-   string         _logicalGroup;     // Used primarily for reporting.
+   //string         _logicalGroup;     // Used primarily for reporting.
    LONG              _stateGroupID;      // ID of the State _name entry which applies to this point
    INT               _pointOffset;
    INT               _archiveType;      // What type of archival do I use?
@@ -122,8 +122,8 @@ public:
    string getName() const;
    CtiTablePointBase& setName(string str);
 
-   string getLogicalGroup() const;
-   CtiTablePointBase& setLogicalGroup(string str);
+   //string getLogicalGroup() const;
+   //CtiTablePointBase& setLogicalGroup(string str);
 
    CtiPointType_t getType() const;
    CtiTablePointBase& setType(CtiPointType_t t);

@@ -9,8 +9,8 @@
 *
 * PVCS KEYWORDS:
 * ARCHIVE      :  $Archive:   Z:/SOFTWAREARCHIVES/YUKON/DATABASE/INCLUDE/tbl_pt_trigger.h-arc  $
-* REVISION     :  $Revision: 1.2 $
-* DATE         :  $Date: 2006/06/16 20:09:20 $
+* REVISION     :  $Revision: 1.3 $
+* DATE         :  $Date: 2007/09/28 15:43:05 $
 *
 * Copyright (c) 2006 Cannon Technologies Inc. All rights reserved.
 *-----------------------------------------------------------------------------*/
@@ -40,7 +40,7 @@ protected:
     long      _verificationID;
     DOUBLE    _verificationDeadband;
     int       _commandTimeOut;
-    string    _parameters;
+    //string    _parameters;
 
 private:
 
@@ -62,7 +62,7 @@ private:
     long             getVerificationID()         const;
     DOUBLE           getVerificationDeadband()   const;
     int              getCommandTimeOut()         const;
-    const string&    getParameters()             const;
+    //const string&    getParameters()             const;
 };
 
 #endif // #ifndef __TBL_PT_TRIGGER_H__

@@ -6,8 +6,8 @@
 *
 * PVCS KEYWORDS:
 * ARCHIVE      :  $Archive:   Z:/SOFTWAREARCHIVES/YUKON/DATABASE/tbl_pt_trigger.cpp-arc  $
-* REVISION     :  $Revision: 1.2 $
-* DATE         :  $Date: 2006/06/16 20:09:20 $
+* REVISION     :  $Revision: 1.3 $
+* DATE         :  $Date: 2007/09/28 15:43:05 $
 *
 * Copyright (c) 2006 Cannon Technologies Inc. All rights reserved.
 *-----------------------------------------------------------------------------*/
@@ -37,7 +37,7 @@ CtiTablePointTrigger& CtiTablePointTrigger::operator=(const CtiTablePointTrigger
         _verificationID          = aRef.getVerificationID();
         _verificationDeadband    = aRef.getVerificationDeadband();
         _commandTimeOut          = aRef.getCommandTimeOut();
-        _parameters              = aRef.getParameters();
+        //_parameters              = aRef.getParameters();
     }
     return *this;
 }
@@ -65,13 +65,14 @@ void CtiTablePointTrigger::getSQL(RWDBDatabase &db,  RWDBTable &keyTable, RWDBSe
 
 void CtiTablePointTrigger::DecodeDatabaseReader(RWDBReader &rdr)
 {
-    rdr["pointid"]              >> _pointID;
-    rdr["triggerid"]            >> _triggerID;
-    rdr["triggerdeadband"]      >> _triggerDeadband;
-    rdr["verificationid"]       >> _verificationID;
-    rdr["verificationdeadband"] >> _verificationDeadband;
-    rdr["commandtimeout"]       >> _commandTimeOut;
-    rdr["parameters"]           >> _parameters;
+    static const RWCString pointid = "pointid";
+    rdr[pointid] >> _pointID;
+    rdr >> _triggerID;
+    rdr >> _triggerDeadband;
+    rdr >> _verificationID;
+    rdr >> _verificationDeadband;
+    rdr >> _commandTimeOut;
+    //rdr >> _parameters;
 }
 
 void CtiTablePointTrigger::dump() const
@@ -83,7 +84,7 @@ void CtiTablePointTrigger::dump() const
     dout << " Verification ID                          : " << _verificationID << endl;
     dout << " Verification Deadband                    : " << _verificationDeadband << endl;
     dout << " Command Timeout                          : " << _commandTimeOut << endl;
-    dout << " Parameters                               : " << _parameters << endl;
+    //dout << " Parameters                               : " << _parameters << endl;
 }
 
 long CtiTablePointTrigger::getPointID() const
@@ -116,8 +117,8 @@ int CtiTablePointTrigger::getCommandTimeOut()  const
     return _commandTimeOut;
 }
 
-const string& CtiTablePointTrigger::getParameters() const
+/*const string& CtiTablePointTrigger::getParameters() const
 {
     return _parameters;
-}
+}*/
 

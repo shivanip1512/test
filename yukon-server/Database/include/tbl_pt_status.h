@@ -14,8 +14,8 @@
 *
 * PVCS KEYWORDS:
 * ARCHIVE      :  $Archive:   Z:/SOFTWAREARCHIVES/YUKON/DATABASE/INCLUDE/tbl_pt_status.h-arc  $
-* REVISION     :  $Revision: 1.4 $
-* DATE         :  $Date: 2005/12/20 17:16:08 $
+* REVISION     :  $Revision: 1.5 $
+* DATE         :  $Date: 2007/09/28 15:43:05 $
 *
 * Copyright (c) 1999, 2000 Cannon Technologies Inc. All rights reserved.
 *-----------------------------------------------------------------------------*/
@@ -53,8 +53,8 @@ protected:
    INT               _controlOffset;
    INT               _closeTime1;
    INT               _closeTime2;
-   string         _stateZeroControl;
-   string         _stateOneControl;
+   string            *_stateZeroControl;
+   string            *_stateOneControl;
    INT               _commandTimeout;
 
 private:

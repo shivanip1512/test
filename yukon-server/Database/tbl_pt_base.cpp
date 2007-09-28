@@ -6,8 +6,8 @@
 *
 * PVCS KEYWORDS:
 * ARCHIVE      :  $Archive:   Z:/SOFTWAREARCHIVES/YUKON/DATABASE/tbl_pt_base.cpp-arc  $
-* REVISION     :  $Revision: 1.9 $
-* DATE         :  $Date: 2007/08/16 20:52:13 $
+* REVISION     :  $Revision: 1.10 $
+* DATE         :  $Date: 2007/09/28 15:43:05 $
 *
 * Copyright (c) 1999, 2000, 2001 Cannon Technologies Inc. All rights reserved.
 *-----------------------------------------------------------------------------*/
@@ -33,7 +33,7 @@ CtiTablePointBase& CtiTablePointBase::operator=(const CtiTablePointBase& aRef)
       _type              = aRef.getType();
       _pointOffset       = aRef.getPointOffset();
       _paObjectID        = aRef.getPAObjectID();
-      _logicalGroup      = aRef.getLogicalGroup();
+      //_logicalGroup      = aRef.getLogicalGroup();
       _stateGroupID      = aRef.getStateGroupID();
       _archiveInterval   = aRef.getArchiveInterval();
       _archiveType       = aRef.getArchiveType();
@@ -54,7 +54,7 @@ void CtiTablePointBase::getSQL(RWDBDatabase &db,  RWDBTable &keyTable, RWDBSelec
       keyTable["pointname"] <<
       keyTable["pointtype"] <<
       keyTable["paobjectid"] <<
-      keyTable["logicalgroup"] <<
+      //keyTable["logicalgroup"] <<
       keyTable["stategroupid"] <<
       keyTable["pointoffset"] <<
       keyTable["serviceflag"] <<
@@ -68,6 +68,7 @@ void CtiTablePointBase::getSQL(RWDBDatabase &db,  RWDBTable &keyTable, RWDBSelec
 
 void CtiTablePointBase::DecodeDatabaseReader(RWDBReader &rdr)
 {
+   static const RWCString pointid = "pointid";
    string   rwsTemp;
 
    if(getDebugLevel() & DEBUGLEVEL_DATABASE) 
@@ -76,14 +77,14 @@ void CtiTablePointBase::DecodeDatabaseReader(RWDBReader &rdr)
       dout << "Decoding " << __FILE__ << " (" << __LINE__ << ")" << endl;
    }
 
-   rdr["pointid"]       >> _pointID;
+   rdr[pointid]         >> _pointID;
    rdr                  >> _name;
 
    rdr                  >> rwsTemp;
    _type = (CtiPointType_t) resolvePointType(rwsTemp);
 
    rdr                  >> _paObjectID;
-   rdr                  >> _logicalGroup;
+   //rdr                  >> _logicalGroup;
    rdr                  >> _stateGroupID;
    rdr                  >> _pointOffset;
 
@@ -127,7 +128,7 @@ void CtiTablePointBase::dump()
    dout << " PointType                                : " << _type << endl;
    dout << " Point Offset                             : " << _pointOffset << endl;
    dout << " PAObjectID                               : " << _paObjectID << endl;
-   dout << " Logical Group ID                         : " << _logicalGroup << endl;
+   //dout << " Logical Group ID                         : " << _logicalGroup << endl;
    dout << " State Name ID                            : " << _stateGroupID << endl;
    dout << " Out of Service                           : " << getDisableTag() << endl;
    dout << " Alarm Inhibit                            : " << getAlarmDisableTag() << endl;
@@ -169,10 +170,10 @@ INT CtiTablePointBase::getPointOffset() const
    return _pointOffset;
 }
 
-string CtiTablePointBase::getLogicalGroup() const
+/*string CtiTablePointBase::getLogicalGroup() const
 {
    return _logicalGroup;
-}
+}*/
 
 LONG CtiTablePointBase::getStateGroupID() const
 {
@@ -265,11 +266,11 @@ CtiTablePointBase& CtiTablePointBase::setPAObjectID(LONG id)
    return *this;
 }
 
-CtiTablePointBase& CtiTablePointBase::setLogicalGroup(string str)
+/*CtiTablePointBase& CtiTablePointBase::setLogicalGroup(string str)
 {
    _logicalGroup = str;
    return *this;
-}
+}*/
 
 CtiTablePointBase& CtiTablePointBase::setStateGroupID(LONG id)
 {

@@ -6,8 +6,8 @@
 *
 * PVCS KEYWORDS:
 * ARCHIVE      :  $Archive:   Z:/SOFTWAREARCHIVES/YUKON/RTDB/pt_base.cpp-arc  $
-* REVISION     :  $Revision: 1.15 $
-* DATE         :  $Date: 2006/09/26 14:27:52 $
+* REVISION     :  $Revision: 1.16 $
+* DATE         :  $Date: 2007/09/28 15:43:05 $
 *
 * Copyright (c) 1999, 2000, 2001 Cannon Technologies Inc. All rights reserved.
 *-----------------------------------------------------------------------------*/
@@ -252,7 +252,7 @@ string            CtiPointBase::getName() const                  { return _point
 LONG              CtiPointBase::getDeviceID() const              { return _pointBase.getPAObjectID();}
 
 
-string            CtiPointBase::getLogicalGroup() const          { return _pointBase.getLogicalGroup();}
+//string            CtiPointBase::getLogicalGroup() const          { return _pointBase.getLogicalGroup();}
 LONG              CtiPointBase::getStateGroupID() const          { return _pointBase.getStateGroupID();}
 
 BOOL              CtiPointBase::getDisableTag() const            { return _pointBase.getDisableTag();}
