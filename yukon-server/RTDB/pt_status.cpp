@@ -6,8 +6,8 @@
 *
 * PVCS KEYWORDS:
 * ARCHIVE      :  $Archive:   Z:/SOFTWAREARCHIVES/YUKON/RTDB/pt_status.cpp-arc  $
-* REVISION     :  $Revision: 1.13 $
-* DATE         :  $Date: 2006/09/26 14:26:46 $
+* REVISION     :  $Revision: 1.14 $
+* DATE         :  $Date: 2007/09/28 15:38:00 $
 *
 * Copyright (c) 1999, 2000, 2001 Cannon Technologies Inc. All rights reserved.
 *-----------------------------------------------------------------------------*/
@@ -82,7 +82,7 @@ void CtiPointStatus::getSQL(RWDBDatabase &db,  RWDBTable &keyTable, RWDBSelector
 
 void CtiPointStatus::DecodeDatabaseReader(RWDBReader &rdr)
 {
-    if(isA(rdr))
+    //if(isA(rdr))
     {
         Inherited::DecodeDatabaseReader(rdr);          // get the base class data out!
         //  this needs to be turned into a dout, if possible
@@ -93,13 +93,13 @@ void CtiPointStatus::DecodeDatabaseReader(RWDBReader &rdr)
         }
         _pointStatus.DecodeDatabaseReader(rdr);
     }
-    else
+    /*else
     {
         {
             CtiLockGuard<CtiLogger> doubt_guard(dout);
             dout << CtiTime() << " " << getName() << " cannot decode this rdr " << __FILE__ << " (" << __LINE__ << ")" << endl;
         }
-    }
+    }*/
 }
 
 void CtiPointStatus::DumpData()

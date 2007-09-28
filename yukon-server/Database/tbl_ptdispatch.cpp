@@ -6,8 +6,8 @@
 *
 * PVCS KEYWORDS:
 * ARCHIVE      :  $Archive:   Z:/SOFTWAREARCHIVES/YUKON/DATABASE/tbl_ptdispatch.cpp-arc  $
-* REVISION     :  $Revision: 1.13 $
-* DATE         :  $Date: 2006/06/16 20:07:47 $
+* REVISION     :  $Revision: 1.14 $
+* DATE         :  $Date: 2007/09/28 15:38:00 $
 *
 * Copyright (c) 1999, 2000, 2001 Cannon Technologies Inc. All rights reserved.
 *-----------------------------------------------------------------------------*/
@@ -262,17 +262,18 @@ RWDBStatus CtiTablePointDispatch::Delete()
 
 void CtiTablePointDispatch::DecodeDatabaseReader(RWDBReader& rdr )
 {
+    static const RWCString pointid = "pointid";
     INT millis;
 
-    rdr["pointid"]        >> _pointID;
-    rdr["timestamp"]      >> _timeStamp;
-    rdr["quality"]        >> _quality;
-    rdr["value"]          >> _value;
-    rdr["tags"]           >> _tags;
-    rdr["nextarchive"]    >> _nextArchiveTime;
-    rdr["stalecount"]     >> _staleCount;
-    rdr["lastalarmlogid"] >> _lastAlarmLogID;
-    rdr["millis"]         >> millis;
+    rdr[pointid] >> _pointID;
+    rdr >> _timeStamp;
+    rdr >> _quality;
+    rdr >> _value;
+    rdr >> _tags;
+    rdr >> _nextArchiveTime;
+    rdr >> _staleCount;
+    rdr >> _lastAlarmLogID;
+    rdr >> millis;
 
     setTimeStampMillis(millis);
 

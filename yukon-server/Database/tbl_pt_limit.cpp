@@ -9,8 +9,8 @@
 *
 * PVCS KEYWORDS:
 * ARCHIVE      :  $Archive:   Z:/SOFTWAREARCHIVES/YUKON/DATABASE/tbl_pt_limit.cpp-arc  $
-* REVISION     :  $Revision: 1.5 $
-* DATE         :  $Date: 2005/12/20 17:16:07 $
+* REVISION     :  $Revision: 1.6 $
+* DATE         :  $Date: 2007/09/28 15:38:00 $
 *
 * Copyright (c) 1999, 2000, 2001 Cannon Technologies Inc. All rights reserved.
 *-----------------------------------------------------------------------------*/
@@ -111,13 +111,14 @@ void CtiTablePointLimit::getSQL(RWDBDatabase &db,  RWDBTable &keyTable, RWDBSele
 
 void CtiTablePointLimit::DecodeDatabaseReader(RWDBReader &rdr)
 {
+   static const RWCString pointid = "pointid";
    INT iTemp;
-   string tStr;
 
-   rdr["limitnumber"] >> _limitNumber;
-   rdr["highlimit"] >> _highLimit;
-   rdr["lowlimit"] >> _lowLimit;
-   rdr["limitduration"]   >> _limitDuration;
+   rdr[pointid] >> _pointID;
+   rdr >> _limitNumber;
+   rdr >> _highLimit;
+   rdr >> _lowLimit;
+   rdr >> _limitDuration;
 }
 
 void CtiTablePointLimit::dump() const

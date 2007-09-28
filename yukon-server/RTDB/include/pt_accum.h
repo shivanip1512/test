@@ -6,8 +6,8 @@
 *
 * PVCS KEYWORDS:
 * ARCHIVE      :  $Archive:   Z:/SOFTWAREARCHIVES/YUKON/RTDB/INCLUDE/pt_accum.h-arc  $
-* REVISION     :  $Revision: 1.14 $
-* DATE         :  $Date: 2007/02/09 20:54:30 $
+* REVISION     :  $Revision: 1.15 $
+* DATE         :  $Date: 2007/09/28 15:38:00 $
 *
 * Copyright (c) 1999, 2000, 2001 Cannon Technologies Inc. All rights reserved.
 *-----------------------------------------------------------------------------*/
@@ -113,7 +113,7 @@ public:
 
    virtual void DecodeDatabaseReader(RWDBReader &rdr)
    {
-       if(isA(rdr))
+       //if(isA(rdr))
        {
           Inherited::DecodeDatabaseReader(rdr);       // get the base class handled
           if(getDebugLevel() & DEBUGLEVEL_DATABASE)
@@ -124,13 +124,13 @@ public:
 
           _pointAccumulator.DecodeDatabaseReader(rdr);
        }
-       else
+       /*else
        {
             {
                 CtiLockGuard<CtiLogger> doubt_guard(dout);
                 dout << CtiTime() << " " << getName() << " cannot decode this rdr " << __FILE__ << " (" << __LINE__ << ")" << endl;
             }
-       }
+       }*/
    }
 
    virtual void DumpData()

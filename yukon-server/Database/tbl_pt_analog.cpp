@@ -9,8 +9,8 @@
 *
 * PVCS KEYWORDS:
 * ARCHIVE      :  $Archive:   Z:/SOFTWAREARCHIVES/YUKON/DATABASE/tbl_pt_analog.cpp-arc  $
-* REVISION     :  $Revision: 1.5 $
-* DATE         :  $Date: 2005/12/20 17:16:07 $
+* REVISION     :  $Revision: 1.6 $
+* DATE         :  $Date: 2007/09/28 15:38:00 $
 *
 * Copyright (c) 1999, 2000, 2001 Cannon Technologies Inc. All rights reserved.
 *-----------------------------------------------------------------------------*/
@@ -51,10 +51,11 @@ void CtiTablePointAnalog::getSQL(RWDBDatabase &db,  RWDBTable &keyTable, RWDBSel
 
 void CtiTablePointAnalog::DecodeDatabaseReader(RWDBReader &rdr)
 {
-   rdr["multiplier"]       >> _multiplier;
-   rdr["dataoffset"]       >> _dataOffset;
-   rdr["deadband"]         >> _deadband;
-   rdr["transducertype"]   >> _transducerType;
+
+   rdr >> _multiplier;
+   rdr >> _dataOffset;
+   rdr >> _deadband;
+   rdr >> _transducerType;
 }
 
 void CtiTablePointAnalog::dump() const

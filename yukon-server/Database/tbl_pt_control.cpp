@@ -6,8 +6,8 @@
 *
 * PVCS KEYWORDS:
 * ARCHIVE      :  $Archive:   Z:/SOFTWAREARCHIVES/YUKON/DATABASE/tbl_pt_control.cpp-arc  $
-* REVISION     :  $Revision: 1.7 $
-* DATE         :  $Date: 2005/12/20 17:16:07 $
+* REVISION     :  $Revision: 1.8 $
+* DATE         :  $Date: 2007/09/28 15:38:00 $
 *
 * Copyright (c) 1999, 2000, 2001 Cannon Technologies Inc. All rights reserved.
 *-----------------------------------------------------------------------------*/
@@ -111,11 +111,11 @@ void CtiTablePointControl::DecodeDatabaseReader(RWDBReader &rdr)
       CtiLockGuard<CtiLogger> doubt_guard(dout);
       dout << "Decoding " << __FILE__ << " (" << __LINE__ << ")" << endl;
    }
-   rdr["controloffset"]    >> _controlOffset;
-   rdr["closetime1"]       >> _closeTime1;
-   rdr["closetime2"]       >> _closeTime2;
-   rdr["statezerocontrol"] >> _stateZeroControl;
-   rdr["stateonecontrol"]  >> _stateOneControl;
+   rdr >> _controlOffset;
+   rdr >> _closeTime1;
+   rdr >> _closeTime2;
+   rdr >> _stateZeroControl;
+   rdr >> _stateOneControl;
 }
 
 UINT CtiTablePointControl::getStaticTags() const

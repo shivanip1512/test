@@ -10,8 +10,8 @@
 *
 * PVCS KEYWORDS:
 * ARCHIVE      :  $Archive:   Z:/SOFTWAREARCHIVES/YUKON/DATABASE/tbl_pt_alarm.cpp-arc  $
-* REVISION     :  $Revision: 1.11 $
-* DATE         :  $Date: 2005/12/20 17:16:07 $
+* REVISION     :  $Revision: 1.12 $
+* DATE         :  $Date: 2007/09/28 15:38:00 $
 *
 * Copyright (c) 1999, 2000, 2001 Cannon Technologies Inc. All rights reserved.
 *-----------------------------------------------------------------------------*/
@@ -344,22 +344,24 @@ void CtiTablePointAlarming::getSQL(RWDBDatabase &db,  RWDBTable &keyTable, RWDBS
 
 void CtiTablePointAlarming::DecodeDatabaseReader(RWDBReader& rdr)
 {
+    static const RWCString pointid = "pointid";
     string temp;
-
-    rdr["alarmstates"]            >> temp;
+    
+    rdr[pointid] >> _pointID;
+    rdr >> temp;
     setAlarmCategory( temp );
 
-    rdr["excludenotifystates"]    >> temp;
+    rdr >> temp;
     setExcludeNotifyStates( resolveExcludeStates( temp ) );
     setAutoAckStates( resolveAutoAcknowledgeStates( temp ) );
 
-    rdr["notifyonacknowledge"]    >> temp;
+    rdr >> temp;
     std::transform(temp.begin(), temp.end(), temp.begin(), tolower);
     setNotifyOnAcknowledge( temp[0] == 'a' || temp[0] == 'b' || temp[0] == 'y' );
     setNotifyOnClear( temp[0] == 'c' || temp[0] == 'b' );
 
-    rdr["recipientid"]            >> _recipientID;
-    rdr["notificationgroupid"]    >> _notificationGroupID;
+    rdr >> _recipientID;
+    rdr >> _notificationGroupID;
 }
 
 
