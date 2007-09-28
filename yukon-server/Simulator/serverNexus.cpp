@@ -217,7 +217,7 @@ void worker(const int& s)
                 SET_FOREGROUND_BRIGHT_YELLOW;
                 cout <<'\n'<< AboutToRead.asString();
                 SET_FOREGROUND_BRIGHT_CYAN;
-                cout << " IN:" << endl;
+                cout << " IN:  Port: "<<portNumber<< endl;
             }
             SET_FOREGROUND_BRIGHT_GREEN;
             for( int byteitr = 0; byteitr < (bytesRead); byteitr++ )
