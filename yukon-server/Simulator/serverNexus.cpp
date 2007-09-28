@@ -377,6 +377,7 @@ void worker(const int& s)
                 }
             }
         }
+    CTISleep(250);
 
     }
     
