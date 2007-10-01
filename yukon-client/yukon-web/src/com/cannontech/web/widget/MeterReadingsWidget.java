@@ -1,6 +1,6 @@
 package com.cannontech.web.widget;
 
-import java.util.Collections;
+import java.util.ArrayList;
 import java.util.Date;
 import java.util.HashMap;
 import java.util.List;
@@ -17,16 +17,18 @@ import org.springframework.web.servlet.ModelAndView;
 import com.cannontech.amr.deviceread.dao.MeterReadService;
 import com.cannontech.amr.meter.dao.MeterDao;
 import com.cannontech.amr.meter.model.Meter;
+import com.cannontech.common.chart.model.ChartInterval;
 import com.cannontech.common.device.attribute.model.Attribute;
 import com.cannontech.common.device.attribute.model.BuiltInAttribute;
 import com.cannontech.common.device.attribute.service.AttributeService;
 import com.cannontech.common.device.commands.CommandResultHolder;
-import com.cannontech.database.data.lite.LiteYukonUser;
-import com.cannontech.util.ServletUtil;
+import com.cannontech.common.util.ReverseList;
 import com.cannontech.common.util.TimeUtil;
 import com.cannontech.core.dao.RawPointHistoryDao;
 import com.cannontech.core.dynamic.PointValueHolder;
 import com.cannontech.database.data.lite.LitePoint;
+import com.cannontech.database.data.lite.LiteYukonUser;
+import com.cannontech.util.ServletUtil;
 import com.cannontech.web.widget.support.WidgetControllerBase;
 import com.cannontech.web.widget.support.WidgetParameterHelper;
 
@@ -40,7 +42,6 @@ public class MeterReadingsWidget extends WidgetControllerBase {
     private AttributeService attributeService;
     private RawPointHistoryDao rphDao;
     private List<? extends Attribute> attributesToShow;
-    private int defaultStartDaysOffset;
 
     public void setMeterReadService(MeterReadService meterReadService) {
         this.meterReadService = meterReadService;
@@ -51,10 +52,6 @@ public class MeterReadingsWidget extends WidgetControllerBase {
         this.attributesToShow = attributesToShow;
     }
     
-    public void setDefaultStartDaysOffset(int startDate) {
-        this.defaultStartDaysOffset = startDate;
-    }
-
     public ModelAndView render(HttpServletRequest request, HttpServletResponse response)
             throws Exception {
 
@@ -69,14 +66,34 @@ public class MeterReadingsWidget extends WidgetControllerBase {
         Map<Attribute, Boolean> existingAttributes = convertSetToMap(allExistingAtributes);
         mav.addObject("existingAttributes", existingAttributes);
         LitePoint lp = attributeService.getPointForAttribute(meter, BuiltInAttribute.USAGE);
-        Date endDate = new Date();
-        int startOffset = -WidgetParameterHelper.getIntParameter(request, "startOffset", defaultStartDaysOffset);
-        Date startingDate = TimeUtil.addDays(endDate, startOffset);
-        List<PointValueHolder> previousReadings = rphDao.getPointData(lp.getPointID(), startingDate, endDate);
-        Collections.reverse(previousReadings);
+        
+        List<PointValueHolder> previousReadings = getPreviousForDropdown(lp);
         mav.addObject("previousReadings", previousReadings);
         
         return mav;
+    }
+
+    private List<PointValueHolder> getPreviousForDropdown(LitePoint lp) {
+        List<PointValueHolder> allReadings = new ArrayList<PointValueHolder>();
+        Date today = new Date();
+        
+        // get one week of daily readings
+        Date oneWeekAgo = TimeUtil.addDays(today, -7);
+        List<PointValueHolder> dailyReadings = 
+            rphDao.getIntervalPointData(lp.getPointID(), oneWeekAgo, today, 
+                                        ChartInterval.DAY, RawPointHistoryDao.Mode.HIGHEST);
+        allReadings.addAll(dailyReadings);
+        
+        // get an additional (93 - 7) days of weekly readings
+        Date threeMonthsAgo = TimeUtil.addDays(oneWeekAgo, -(93 - 7));
+        List<PointValueHolder> weeklyReadings = 
+            rphDao.getIntervalPointData(lp.getPointID(), threeMonthsAgo, oneWeekAgo,
+                                        ChartInterval.WEEK, RawPointHistoryDao.Mode.HIGHEST);
+        allReadings.addAll(weeklyReadings);
+        
+        // create a read only delegating list
+        ReverseList<PointValueHolder> reversedResult = new ReverseList<PointValueHolder>(allReadings);
+        return reversedResult;
     }
 
     public ModelAndView read(HttpServletRequest request, HttpServletResponse response)

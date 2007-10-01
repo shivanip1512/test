@@ -130,6 +130,32 @@ public enum ChartInterval {
             return new Date(cal.getTimeInMillis());
         }
 
+    }, 
+    WEEK {
+        public Date increment(Date date) {
+
+            Calendar cal = new GregorianCalendar();
+            cal.setTime(date);
+            cal.add(Calendar.DATE, 7);
+
+            return cal.getTime();
+
+        }
+
+        public Date roundDownToIntervalUnit(Date date) {
+
+            Calendar cal = new GregorianCalendar();
+            cal.setTime(date);
+
+            cal.set(Calendar.DAY_OF_WEEK, Calendar.SUNDAY);
+            cal.set(Calendar.HOUR_OF_DAY, 0);
+            cal.set(Calendar.MINUTE, 0);
+            cal.set(Calendar.SECOND, 0);
+            cal.set(Calendar.MILLISECOND, 0);
+
+            return cal.getTime();
+        }
+
     };
 
     /**

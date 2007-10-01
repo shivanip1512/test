@@ -169,9 +169,6 @@
             <value>VOLTAGE</value>
           </list>
         </property>
-        <property name="defaultStartDaysOffset">
-        	<value>93</value>
-        </property>
     </bean>
     
     <bean id="profilePeakWidget"
