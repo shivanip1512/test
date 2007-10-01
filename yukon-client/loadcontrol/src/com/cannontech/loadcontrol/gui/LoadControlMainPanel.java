@@ -132,10 +132,6 @@ public void setCurrentDisplay( LCDisplayItem display_ )
 
 	getCompSplitPane().getJSplitPaneInner().getBottomComponent().setVisible(
 			getJTableGroup().getModel() != EMPTY_TABLE_MODEL );
-
-
-	//tell the server we need all the ControlAreas sent to us
-	executeRefreshButton();
 }
 
 
@@ -556,7 +552,10 @@ public void destroy()
  */
 public void executeRefreshButton() 
 {
-    LoadControlClientConnection.getInstance();
+    
+    LMCommand command = new LMCommand();
+    command.setCommand(LMCommand.RETRIEVE_ALL_CONTROL_AREAS);
+    LoadControlClientConnection.getInstance().write(command);
 }
 
 /**
