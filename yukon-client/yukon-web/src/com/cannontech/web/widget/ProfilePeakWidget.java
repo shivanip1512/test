@@ -146,6 +146,13 @@ public class ProfilePeakWidget extends WidgetControllerBase {
                 mav.addObject("errorMsg", "Start date must be before stop date.  Please try again.");
                 return mav;
             }
+            
+            Date today = new Date();
+            if (preCommandStartDate.after(today)) {
+                mav.addObject("errorMsg", "Start date must be before today.  Please try again.");
+                return mav;
+            }
+            
 
             // Post command is from today back to the pre command stop date
             Date postCommandStopDate = new Date();
