@@ -1,5 +1,12 @@
 package com.cannontech.common.device.profilePeak.model;
 
+import java.text.ParseException;
+import java.text.SimpleDateFormat;
+import java.util.Calendar;
+import java.util.Date;
+
+import com.cannontech.common.util.TimeUtil;
+
 public class ProfilePeakResult {
 
     private int deviceId = -1;
@@ -19,6 +26,7 @@ public class ProfilePeakResult {
     private ProfilePeakResultType resultType = null;
 
     private String error = null;
+	private String actualStopDate = null;
 
     public int getDeviceId() {
         return deviceId;
@@ -104,9 +112,29 @@ public class ProfilePeakResult {
         return stopDate;
     }
 
-    public void setStopDate(String stopDate) {
-        this.stopDate = stopDate;
-    }
+	public void setStopDate(String stopDate) {
+		this.stopDate = stopDate;
+
+		this.setActualStopDate(stopDate);
+	}
+
+	public String getActualStopDate() {
+		return actualStopDate ;
+	}
+	
+	public void setActualStopDate(String stopDate) {
+		
+		SimpleDateFormat format = new SimpleDateFormat("MM/dd/yyyy HH:mm:ss");
+		Date actualStopDate = null;
+		try {
+			Date date = format.parse(stopDate);
+			actualStopDate = TimeUtil.addUnit(date, Calendar.DAY_OF_MONTH, -1);
+		} catch (ParseException e) {
+			// do nothing - tried date parse
+		}
+		
+		this.actualStopDate = format.format(actualStopDate);
+	}
 
     public ProfilePeakResultType getResultType() {
         return resultType;

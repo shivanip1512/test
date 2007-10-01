@@ -97,7 +97,7 @@
 										<br/>
 										<c:choose>
 											<c:when test="${preResult.days <= 90}">
-												<tags:longLoadProfile styleClass="Link1" deviceId="${widgetParameters.deviceId}" lpStartDate="${preResult.startDate}" lpStopDate="${preResult.stopDate}" profileRequestOrigin="${widgetParameters.loadProfileRequestOrigin}">Profile</tags:longLoadProfile>
+												<tags:longLoadProfile styleClass="Link1" deviceId="${widgetParameters.deviceId}" lpStartDate="${preResult.startDate}" lpStopDate="${preResult.actualStopDate}" profileRequestOrigin="${widgetParameters.loadProfileRequestOrigin}">Profile</tags:longLoadProfile>
 											</c:when>
 											<c:otherwise>
 												<span onmouseover="javascript:toggleLP($('lpDiv'))" onmouseout="javascript:toggleLP($('lpDiv'))">Profile N/A</span>
