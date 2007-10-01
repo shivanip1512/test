@@ -222,4 +222,13 @@ public abstract class BillingFormatterBase implements BillingFormatter {
         
         return this.readingCount;
     }
+    
+    public int getReadingCount() {
+        return readingCount;
+    }
+
+    public void setReadingCount(int readingCount) {
+        this.readingCount = readingCount;
+    }
+    
 }

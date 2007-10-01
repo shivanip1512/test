@@ -52,6 +52,10 @@ public class ItronClientHandler extends BillingFormatterBase {
             ItronXmlBuilder builder = new ItronXmlBuilderImpl();
             Document doc = builder.buildDocument(deviceList);
             String docToString = builder.documentToString(doc);
+            
+            int readingCount = doc.getRootElement().getChild("Channels").getChildren().size();
+            this.setReadingCount(readingCount);
+            
             return new StringBuffer(docToString);
         } catch (Exception e) {
             return new StringBuffer();
