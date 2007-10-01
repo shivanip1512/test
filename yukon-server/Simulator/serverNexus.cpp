@@ -159,11 +159,11 @@ void worker(const int& s)
     newSocket = new CTINEXUS();
 
     for(int i = 0; i<1000000 && !(newSocket->CTINexusValid()); i++) {
-        listenSocket->CTINexusConnect(newSocket, NULL, 1000, CTINEXUS_FLAG_READEXACTLY);
+        listenSocket->CTINexusConnect(newSocket, NULL, 10000, CTINEXUS_FLAG_READEXACTLY);
         CtiTime Listening;
         {
        boost::mutex::scoped_lock lock(io_mutex);
-        std::cout<<Listening.asString()<<" Listening..."<<std::endl;
+        std::cout<<Listening.asString()<<" Listening... " << portNumber << std::endl;
         }
     }
 
@@ -177,7 +177,7 @@ void worker(const int& s)
         int totalBytesRead = 0;
 
         //  Peek at first byte
-        newSocket->CTINexusPeek(TempBuffer,2, &bytesRead);
+        newSocket->CTINexusRead(TempBuffer,2, &bytesRead, 1000);
         addressFound = TempBuffer[1];
 
         if(TempBuffer[0]==0x7e)
