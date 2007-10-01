@@ -89,9 +89,9 @@ boolean isOverrideAllowed = lmSession.isOverrideAllowed(
                     <tr valign="top" class="HeaderCell"> 
 					  <td width="168">
 					  	<div align="left">
-						<input type="checkbox" name="allChks" value="true"
+						<input id="allChksId" type="checkbox" name="allChks" value="true"
 							<%=isOverrideAllowed ? "" : "DISABLED"%>
-							onClick="checkAll(cmdForm.allChks, cmdForm.dblarray1)">
+							onClick='checkAll(allChksId, document.getElementsByName("dblarray1"));'>
 						Override All
 						</div>
   					  </td>
