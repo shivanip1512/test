@@ -177,7 +177,8 @@ void worker(const int& s)
         int totalBytesRead = 0;
 
         //  Peek at first byte
-        newSocket->CTINexusRead(TempBuffer,2, &bytesRead, 1000);
+        Sleep(50);
+        newSocket->CTINexusPeek(TempBuffer,2, &bytesRead);
         addressFound = TempBuffer[1];
 
         if(TempBuffer[0]==0x7e)
