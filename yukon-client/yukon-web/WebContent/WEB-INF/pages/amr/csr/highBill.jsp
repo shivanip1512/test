@@ -25,11 +25,11 @@
 		<c:when test="${lmPointExists}">
 			
 			<div style="width: 400px">
-				<tags:widget height="65px" bean="meterInformationWidget" identify="false" deviceId="${deviceId}"/>
+				<tags:widget height="65px" bean="meterInformationWidget" identify="false" deviceId="${deviceId}" hideEnabled="false" />
 			</div>	
 			<br/><br/>
 			<div style="width: 700px">
-				<tags:widget bean="profilePeakWidget" identify="false" deviceId="${deviceId}" collectLPVisible="true" highlight="usage,averageUsage" loadProfileRequestOrigin="HBC"/>
+				<tags:widget bean="profilePeakWidget" identify="false" deviceId="${deviceId}" collectLPVisible="true" highlight="usage,averageUsage" loadProfileRequestOrigin="HBC"  hideEnabled="false"/>
 			</div>	
 			<br/><br/><br/>
 		

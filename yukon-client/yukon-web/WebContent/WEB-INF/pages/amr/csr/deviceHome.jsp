@@ -46,7 +46,7 @@
 					<ct:widget height="185px" bean="accountInformationWidget" />
 				</c:if>
 
-				<cti:titledContainer title="Actions">
+				<ct:boxContainer title="Actions">
 					<c:choose>
 						<c:when test="${highBillSupported}">
 							<c:url var="highBillUrl" value="/spring/csr/highBill">
@@ -82,7 +82,7 @@
 						<a href="${commanderUrl}">Manual Commander</a>
 						<br>
 					</cti:checkRole>
-				</cti:titledContainer>
+				</ct:boxContainer>
 
 			</div>
 			<div class="right">

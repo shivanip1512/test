@@ -1,6 +1,8 @@
 <%@ tag  dynamic-attributes="widgetAttributes" %>
 <%@ attribute name="bean" required="true" type="java.lang.String"%>
 <%@ attribute name="paramMap" required="false" type="java.util.Map"%>
+<%@ attribute name="hideEnabled" required="false" type="java.lang.Boolean"%>
+
 <%@ taglib uri="http://cannontech.com/tags/cti" prefix="cti" %>
 <%@ taglib uri="http://java.sun.com/jsp/jstl/core" prefix="c" %>
 <%@ taglib prefix="ct" tagdir="/WEB-INF/tags" %>
@@ -35,7 +37,7 @@ Event.observe(window,'load', function() {${widgetParameters.jsWidget}.render()})
 <c:set var="containerTitle" value="${beanInst.title}"/>
 </c:if>
 
-<cti:titledContainer title="${containerTitle}" id="widgetTitledContainer_${widgetParameters.widgetId}" styleClass="widgetContainer">
+<ct:boxContainer title="${containerTitle}" id="widgetTitledContainer_${widgetParameters.widgetId}" styleClass="widgetContainer" hideEnabled="${empty hideEnabled ? true : hideEnabled}">
 
 <div id="widgetContainer_${widgetParameters.widgetId}" style="height: ${widgetParameters.height}; width: ${widgetParameters.width - 10}px;">
 <c:choose>
@@ -50,6 +52,6 @@ Event.observe(window,'load', function() {${widgetParameters.jsWidget}.render()})
 </c:choose>
 </div>
 
-</cti:titledContainer>
+</ct:boxContainer>
 
 </div>

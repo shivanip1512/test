@@ -281,6 +281,11 @@ div.styledContainer .content
 	font-size: .75em;
 }
 
+.widgetColumns div.boxContainer {
+	margin-bottom: 16px;
+	font-size: .75em;
+}
+
 div.widgetInternalSectionHeader {
 	font-weight: bold;
 	padding-top: 5px; 
@@ -349,4 +354,45 @@ th.widgetInternalSectionSubHeader {
 	padding-bottom: 5px; 
 	margin-left: 5px;
 	
+}
+
+div.boxContainer{ 
+	position: relative;
+	margin-bottom: 10px;
+}
+
+div.boxContainer .titleBar { 
+	background-color: #F0F0F0;
+	border: 1px solid #BBBBBB;
+	height: 1.5em;
+	padding: .25em .5em; 
+}
+
+div.boxContainer .titleBar .title { 
+	float: left;
+	line-height: 1.5em;
+	font-weight: bold;
+    font-size: 12px;
+    height: 100%;
+}
+
+div.boxContainer .titleBar .controls { 
+	float: right; 
+	text-align: center;
+	cursor: pointer;
+}
+
+div.boxContainer .titleBar .controls .minMax { 
+	background-color: #BBBBBB;
+  	border: none;
+	height: 16px;
+	width: 16px;
+  	background-repeat: no-repeat;
+  	background-image: url(../Icons/clearbits/bg_rounded.gif);
+	cursor: pointer;
+}
+
+div.boxContainer .content { 
+	padding: 1em;
+	border: 1px solid #BBBBBB;
 }

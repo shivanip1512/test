@@ -4,7 +4,7 @@ function hideRevealSectionSetup(id, section, showInitially, persistId) {
     $(id + '_plusImg').hide();
     $(id + '_minusImg').show();
     if (persistId != '') {
-      createCookie('hideReveal' + persistId,'show');
+      YukonClientPersistance.persistState('hideReveal', persistId, 'show');
     }
   };
   var doHide = function() {
@@ -12,13 +12,13 @@ function hideRevealSectionSetup(id, section, showInitially, persistId) {
     $(id + '_minusImg').hide();
     $(id + '_plusImg').show();
     if (persistId != '') {
-      createCookie('hideReveal' + persistId,'hide');
+      YukonClientPersistance.persistState('hideReveal', persistId, 'hide');
     }
   };
   
   var lastState = null;
   if (persistId != '') {
-    lastState = readCookie('hideReveal' + persistId);
+    lastState = YukonClientPersistance.getState('hideReveal', persistId);
   }
   
   if (lastState) {

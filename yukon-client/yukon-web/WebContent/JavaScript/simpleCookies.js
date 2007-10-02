@@ -15,3 +15,40 @@ function readCookie(name) {
   }
   return null;
 }
+
+YukonClientPersistance = {}
+
+// Method to persist state into a cookie
+YukonClientPersistance.persistState = function(scope, persistId, value){
+	    
+	var clientPersistance = readCookie('yukonClientPersistance');
+	
+	if(clientPersistance){
+		// Object.evalJSON(clientPersistance);
+		clientPersistance = clientPersistance.evalJSON();
+	} else {
+		clientPersistance = $H();
+	}
+	
+	clientPersistance[scope + persistId] = value;
+	
+	var jsonString = Object.toJSON(clientPersistance);
+	
+	createCookie('yukonClientPersistance', jsonString);
+
+}
+
+// Method to get state from a cookie
+YukonClientPersistance.getState = function(scope, persistId){
+	    
+	var clientPersistance = readCookie('yukonClientPersistance');
+	if(clientPersistance){
+		clientPersistance = clientPersistance.evalJSON();
+	} else {
+		return null;
+	}
+	var value = clientPersistance[scope + persistId];
+
+	return value;
+
+}
