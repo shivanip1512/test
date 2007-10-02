@@ -5,6 +5,7 @@
     -->
   <sequencetable name="SequenceNumber" valuecolumn="lastValue" keycolumn="sequenceName">
       <sequence name="general" >
+        <table name="Warehouse" identitycolumn="WarehouseID"/>
       	<table name="InventoryBase" identitycolumn="InventoryID"/>
       	<table name="LMHardwareBase" identitycolumn="InventoryID"/>
       	<table name="CustomerAccount" identitycolumn="AccountID"/>

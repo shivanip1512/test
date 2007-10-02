@@ -6,9 +6,11 @@ import java.util.List;
 import com.cannontech.common.util.CtiUtilities;
 import com.cannontech.database.SqlStatement;
 import com.cannontech.database.db.DBPersistent;
+import com.cannontech.database.incrementer.NextValueHelper;
+import com.cannontech.spring.YukonSpringHook;
 
 public class Warehouse extends DBPersistent {
-
+    private static final NextValueHelper nextValueHelper = YukonSpringHook.getNextValueHelper();
     private Integer warehouseID;
     private String warehouseName;
     private Integer addressID;
@@ -29,25 +31,9 @@ public Warehouse() {
     super();
 }
 
-public static Integer getNextWarehouseID() 
-{
-    SqlStatement stmt = new SqlStatement("SELECT MAX(WAREHOUSEID) + 1 FROM " + TABLE_NAME, CtiUtilities.getDatabaseAlias());
-    
-    try
-    {
-        stmt.execute();
-        
-        if( stmt.getRowCount() > 0 )
-        {
-            return (new Integer(stmt.getRow(0)[0].toString()));
-        }
-    }
-    catch( Exception e )
-    {
-        e.printStackTrace();
-    }
-    
-    return null;
+public static Integer getNextWarehouseID() {
+    int nextValueId = nextValueHelper.getNextValue(TABLE_NAME);
+    return nextValueId;
 }
 
 public void add() throws java.sql.SQLException 
