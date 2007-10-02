@@ -702,9 +702,10 @@ private javax.swing.JTable getJTableEmail() {
 			TableColumn typeColumn = getJTableEmail().getColumnModel().getColumn(ContactNotificationTableModel.COLUMN_TYPE);
 			TableColumn disabledColumn = getJTableEmail().getColumnModel().getColumn(ContactNotificationTableModel.COLUMN_DISABLED);
 				
-			notifColumn.setPreferredWidth(120);
+			notifColumn.setPreferredWidth(110);
 			typeColumn.setPreferredWidth(60);
-			disabledColumn.setPreferredWidth(50);disabledColumn.setMaxWidth(50);
+			disabledColumn.setPreferredWidth(60);
+			disabledColumn.setMaxWidth(60);
 
 			//set up the renderer and editor for the notifcation column
 			JTextField txtFieldEditor = new JTextField();
