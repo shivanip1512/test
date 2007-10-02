@@ -61,7 +61,7 @@ class CtiPCPtrQueue{
             struct boost::xtime xt;
             boost::xtime_get(&xt, boost::TIME_UTC); 
             xt.sec  += milli/1000;
-            xt.nsec += (milli%1000)*1000;
+            xt.nsec += (milli%1000)*1000000;
 
             if ( !(q.size() > 0) ) {
                 success = wait.timed_wait( scoped_lock, xt );

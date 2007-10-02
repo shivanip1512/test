@@ -58,8 +58,35 @@ BOOST_AUTO_UNIT_TEST(test_writeread)
     BOOST_CHECK_EQUAL( temp2, itemTwo );
 
     //Test reading off an empty queue
-    q->read(garbage, 20);
+    struct boost::xtime startTime, endTime;
+    boost::xtime_get(&startTime, boost::TIME_UTC);
+    q->read(garbage, 1000);
+    boost::xtime_get(&endTime, boost::TIME_UTC);
+
+    //For the purposes of this test, the stop time is not so important.
+    //The stop time is set a way out because we wont want busy system false positives.
     BOOST_CHECK_EQUAL(garbage == NULL, true);
+    BOOST_CHECK( (unsigned int)startTime.sec < (unsigned int)endTime.sec );
+    BOOST_CHECK( (unsigned int)startTime.sec + 2 > (unsigned int)endTime.sec );
+
+    boost::xtime_get(&startTime, boost::TIME_UTC);
+    q->read(garbage, 100);
+    boost::xtime_get(&endTime, boost::TIME_UTC);
+
+    if( (unsigned int)startTime.sec == (unsigned int)endTime.sec )
+    {
+        unsigned int startMS = startTime.nsec/1000000;
+        unsigned int stopMS = endTime.nsec/1000000;
+        BOOST_CHECK( startMS + 75 < stopMS );
+        BOOST_CHECK( startMS + 300 > stopMS );
+    }
+    else
+    {
+        unsigned int startMS = startTime.nsec/1000000;
+        unsigned int stopMS = endTime.nsec/1000000 + 1000;
+        BOOST_CHECK( startMS + 75 < stopMS );
+        BOOST_CHECK( startMS + 300 > stopMS ); 
+    }
 
     //Test reading off a closed empty queue
     q->close();

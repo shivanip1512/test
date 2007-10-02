@@ -148,7 +148,7 @@ public:
             struct boost::xtime xt;
             boost::xtime_get(&xt, boost::TIME_UTC);
             xt.sec  += (time/1000);
-            xt.nsec += (time%1000)*1000;
+            xt.nsec += (time%1000)*1000000;
             boost::timed_mutex::scoped_timed_lock scoped_lock(mux,xt);
 
             if(scoped_lock.locked())
@@ -456,7 +456,7 @@ public:
             struct boost::xtime xt;
             boost::xtime_get(&xt, boost::TIME_UTC);
             xt.sec  += (time/1000);
-            xt.nsec += (time%1000)*1000;
+            xt.nsec += (time%1000)*1000000;
 
             boost::timed_mutex::scoped_timed_lock scoped_lock(mux,xt);
 
