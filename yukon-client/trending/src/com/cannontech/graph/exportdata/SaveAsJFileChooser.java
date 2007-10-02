@@ -3,6 +3,7 @@ package com.cannontech.graph.exportdata;
 import java.awt.EventQueue;
 
 import javax.swing.JFileChooser;
+import javax.swing.JOptionPane;
 import javax.swing.filechooser.FileFilter;
 import javax.swing.plaf.basic.BasicFileChooserUI;
 
@@ -47,7 +48,12 @@ public class SaveAsJFileChooser extends javax.swing.JFileChooser implements com.
 	
 	private String getCurrentPathAndFilename()
 	{
-		String pathName = getCurrentDirectory().getPath() + "/" + eDataFile.getFileNameAndExtension();
+        String pathName;
+        if (getSelectedFile() != null) {
+            pathName = getCurrentDirectory().getPath() + "/" + getSelectedFile().getName();
+        } else {
+            pathName = getCurrentDirectory().getPath() + "/" + eDataFile.getFileNameAndExtension();
+        }
 		return pathName;
 	}
 	public void initialize()
@@ -78,13 +84,22 @@ public class SaveAsJFileChooser extends javax.swing.JFileChooser implements com.
 		addPropertyChangeListener(this);
 			
 		int status = showSaveDialog(this);
-		if( status == APPROVE_OPTION )
-		{
-			//Set the selectedFile one more time in case the extension has been removed from the filename
-			setSelectedFile(new java.io.File(getCurrentPathAndFilename()));
-			file = getSelectedFile();
-			eDataFile.writeFile(file);
-		}
+        if (status == APPROVE_OPTION) {
+            // Set the selectedFile one more time in case the extension has been
+            // removed from the filename
+            setSelectedFile(new java.io.File(getCurrentPathAndFilename()));
+            
+            file = getSelectedFile();
+            if (file.exists()) {
+                int exitStatus = JOptionPane.showConfirmDialog(this,
+                                                               file.toString() + "\n Do you want to overwrite this file?");
+                if (exitStatus == APPROVE_OPTION) {
+                    eDataFile.writeFile(file);
+                 }
+            } else {
+                eDataFile.writeFile(file);
+            }
+        }
 		return;
 	
 	}
