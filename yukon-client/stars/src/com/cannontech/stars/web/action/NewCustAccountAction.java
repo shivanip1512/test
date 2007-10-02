@@ -204,49 +204,49 @@ public class NewCustAccountAction implements ActionBase {
 			
 			newAccount.setStarsCustomerAccount( account );
 			//ConsumerInfoRole.CREATE_LOGIN_FOR_ACCOUNT needs to be true for this to happen
-            if(DaoFactory.getAuthDao().checkRoleProperty(user.getUserID(), ConsumerInfoRole.CREATE_LOGIN_FOR_ACCOUNT))
-            {
-                String username = req.getParameter( "Username" );
-    			String password = req.getParameter( "Password" );
-    			StarsUpdateLogin login = new StarsUpdateLogin();
-    			if (username != null && username.trim().length() > 0) {
-    				login.setUsername( username );
-    				login.setPassword( password );
-    				login.setGroupID( Integer.parseInt(req.getParameter("CustomerGroup")) );
-    			}
-    			else
-    			{
-    				String lastName = primContact.getLastName();
-    				String firstName = primContact.getFirstName();
-    				String firstInitial = "";
-                    String time = new Long(java.util.Calendar.getInstance().getTimeInMillis()).toString();
-                    
-    				if(firstName != null && firstName.length() > 0)
-    					firstInitial = firstName.toLowerCase().substring(0,1);
-    					
-    				if(lastName == null)
-    				{
-    					lastName = account.getAccountNumber();
-    					firstInitial = "#";
-    				}
-    				if(DaoFactory.getYukonUserDao().getLiteYukonUser( firstInitial + lastName ) != null)
-    					login.setUsername(lastName.toLowerCase() + time.substring(time.length() - 2));
-    				else
-    					login.setUsername(firstInitial + lastName.toLowerCase());
-    				login.setPassword(time);
-    				/*String groupIDs = DaoFactory.getEnergyCompanyDao().getEnergyCompanyProperty(user.getYukonUser(), EnergyCompanyRole.CUSTOMER_GROUP_IDS);
-    				Integer defaultGroupID = new Integer(0);
-    				if(groupIDs != null)
-    					groupIDs.*/
-    				login.setGroupID(custGroups[0].getGroupID());
-    				//login.setStatus(UserUtils.STATUS_ENABLED);
-    				//how do I set energy company id for this type of login?????
-    				//login.setStatus(UserUtils.STATUS_ENABLED);
-    
-    			}
-    			
-    			newAccount.setStarsUpdateLogin(login);
-            }
+            String username = req.getParameter( "Username" );
+			String password = req.getParameter( "Password" );
+			StarsUpdateLogin login = null;
+			if (username != null && username.trim().length() > 0) {
+                login = new StarsUpdateLogin();
+				login.setUsername( username );
+				login.setPassword( password );
+				login.setGroupID( Integer.parseInt(req.getParameter("CustomerGroup")) );
+			}
+			else if(DaoFactory.getAuthDao().checkRoleProperty(user.getUserID(), ConsumerInfoRole.CREATE_LOGIN_FOR_ACCOUNT))
+			{
+                login = new StarsUpdateLogin();
+				String lastName = primContact.getLastName();
+				String firstName = primContact.getFirstName();
+				String firstInitial = "";
+                String time = new Long(java.util.Calendar.getInstance().getTimeInMillis()).toString();
+                
+				if(firstName != null && firstName.length() > 0)
+					firstInitial = firstName.toLowerCase().substring(0,1);
+					
+				if(lastName == null)
+				{
+					lastName = account.getAccountNumber();
+					firstInitial = "#";
+				}
+				if(DaoFactory.getYukonUserDao().getLiteYukonUser( firstInitial + lastName ) != null)
+					login.setUsername(lastName.toLowerCase() + time.substring(time.length() - 2));
+				else
+					login.setUsername(firstInitial + lastName.toLowerCase());
+				login.setPassword(time);
+				/*String groupIDs = DaoFactory.getEnergyCompanyDao().getEnergyCompanyProperty(user.getYukonUser(), EnergyCompanyRole.CUSTOMER_GROUP_IDS);
+				Integer defaultGroupID = new Integer(0);
+				if(groupIDs != null)
+					groupIDs.*/
+				login.setGroupID(custGroups[0].getGroupID());
+				//login.setStatus(UserUtils.STATUS_ENABLED);
+				//how do I set energy company id for this type of login?????
+				//login.setStatus(UserUtils.STATUS_ENABLED);
+
+			}
+			
+			if(login != null)
+			    newAccount.setStarsUpdateLogin(login);
             
 			session.setAttribute( ServletUtils.ATT_NEW_CUSTOMER_ACCOUNT, newAccount );
 			
