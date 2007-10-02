@@ -1,6 +1,6 @@
 /*==============================================================*/
 /* DBMS name:      Microsoft SQL Server 2000                    */
-/* Created on:     5/11/2007 10:53:25 AM                        */
+/* Created on:     10/2/2007 4:01:19 PM                         */
 /*==============================================================*/
 
 
@@ -1186,7 +1186,8 @@ create table Invoice (
    AuthorizedBy         varchar(30)          not null,
    HasPaid              varchar(1)           not null,
    DatePaid             datetime             not null,
-   TotalQuantity        numeric              not null
+   TotalQuantity        numeric              not null,
+   AuthorizedNumber     varchar(60)          not null
 )
 go
 

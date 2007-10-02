@@ -1,6 +1,6 @@
 /*==============================================================*/
 /* DBMS name:      ORACLE Version 9i                            */
-/* Created on:     8/31/2007 11:37:15 AM                        */
+/* Created on:     10/2/2007 3:58:34 PM                         */
 /*==============================================================*/
 
 
@@ -736,7 +736,8 @@ create table Invoice  (
    AuthorizedBy         VARCHAR2(30)                    not null,
    HasPaid              VARCHAR2(1)                     not null,
    DatePaid             DATE                            not null,
-   TotalQuantity        NUMBER                          not null
+   TotalQuantity        NUMBER                          not null,
+   AuthorizedNumber     varchar(60)                     not null
 );
 
 alter table Invoice
