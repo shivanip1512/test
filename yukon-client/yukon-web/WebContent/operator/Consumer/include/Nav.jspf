@@ -8,7 +8,6 @@
 						  {"CreateCalls.jsp", DaoFactory.getAuthDao().getRolePropertyValue(lYukonUser, ConsumerInfoRole.WEB_LABEL_CREATE_CALL)},
 						  {"Metering.jsp", DaoFactory.getAuthDao().getRolePropertyValue(lYukonUser, ConsumerInfoRole.WEB_LABEL_INTERVAL_DATA)},
 					 	  {"CreateTrend.jsp", "New"},
-						  {"Usage.jsp", "Usage"},
 						  {"ProgramHist.jsp", DaoFactory.getAuthDao().getRolePropertyValue(lYukonUser, ConsumerInfoRole.WEB_LABEL_CONTROL_HISTORY)},
 						  {"Programs.jsp", DaoFactory.getAuthDao().getRolePropertyValue(lYukonUser, ConsumerInfoRole.WEB_LABEL_ENROLLMENT)},
 						  {"OptOut.jsp", DaoFactory.getAuthDao().getRolePropertyValue(lYukonUser, ConsumerInfoRole.WEB_LABEL_OPT_OUT)},
@@ -98,12 +97,6 @@
       <div align="left">
 	    <span class="NavHeader"><cti:getProperty propertyid="<%= ConsumerInfoRole.WEB_HEADING_METERING %>" defaultvalue="Metering"/></span><br>
         <table width="100%" border="0" cellspacing="0" cellpadding="0">
-	      <cti:checkProperty propertyid="<%= ConsumerInfoRole.CONSUMER_INFO_METERING_USAGE %>"> 
-          <tr>
-            <td width="10"><%= ((String[]) links.get("Usage.jsp"))[0] %></td>
-            <td style="padding:1"><%= ((String[]) links.get("Usage.jsp"))[1] %></td>
-          </tr>
-		  </cti:checkProperty>        
           <cti:checkProperty propertyid="<%= ConsumerInfoRole.CONSUMER_INFO_METERING_INTERVAL_DATA %>"> 
           <tr>
             <td width="10">&nbsp;</td>
