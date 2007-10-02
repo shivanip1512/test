@@ -362,6 +362,7 @@ public class PointDataSummaryModel extends ReportModelBase
 			sql.append(") ");
 		}
 		
+         sql.append(" ORDER BY PAO.PAOBJECTID, P.POINTNAME, TIMESTAMP ");
 		//Ordering will be done by the comparator
 		return sql;
 	}
