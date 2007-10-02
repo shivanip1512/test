@@ -613,7 +613,7 @@ public class WorkOrderBean {
 			htmlBuf.append("<table width='200' border='0' cellspacing='0' cellpadding='3'>").append(LINE_SEPARATOR);
 			htmlBuf.append("  <tr>").append(LINE_SEPARATOR);
 			htmlBuf.append("    <td align='center'>").append(LINE_SEPARATOR);
-			if (referer != null)
+			if (referer != null && !referer.equals("") && !referer.equals(req.getRequestURL().toString()))
 				htmlBuf.append("      <input type='button' name='Back' value='Back' onclick='location.href=\"").append(referer).append("\"'>").append(LINE_SEPARATOR);
 			else
 				htmlBuf.append("      <input type='button' name='Back' value='Back' onclick='history.back()'>").append(LINE_SEPARATOR);
