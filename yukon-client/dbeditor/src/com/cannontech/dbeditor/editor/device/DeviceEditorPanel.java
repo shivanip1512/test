@@ -67,7 +67,7 @@ public class DeviceEditorPanel extends com.cannontech.common.editor.PropertyPane
          	PAOGroups.ION_7700, PAOGroups.ION_7330, PAOGroups.ION_8300, PAOGroups.RTU_DART,
          	PAOGroups.MCT310IDL, PAOGroups.TRANSDATA_MARKV, PAOGroups.SERIES_5_LMI, PAOGroups.RTU_MODBUS,
          	PAOGroups.RTC,  PAOGroups.KV, PAOGroups.KVII, PAOGroups.RTM, PAOGroups.MCT410IL, PAOGroups.MCT410CL,
-            PAOGroups.MCT410FL, PAOGroups.MCT410GL, PAOGroups.MCT470, PAOGroups.MCT430A, PAOGroups.MCT430S4, 
+            PAOGroups.MCT410FL, PAOGroups.MCT410GL, PAOGroups.MCT470, PAOGroups.MCT430A, PAOGroups.MCT430S4, PAOGroups.MCT430SL,
             PAOGroups.SENTINEL, PAOGroups.ALPHA_A3
 		},
 
