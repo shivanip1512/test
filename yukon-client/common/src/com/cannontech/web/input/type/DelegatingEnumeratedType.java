@@ -43,12 +43,14 @@ public class DelegatingEnumeratedType<T> extends BaseEnumeratedType<T> {
 
             public void validate(String path, InputSource field, T value, Errors errors) {
 
-                String valueString = value.toString();
-
-                if (!optionList.contains(valueString)) {
-                    errors.rejectValue(path,
-                                       "error.invalidOption",
-                                       "The value was not a valid option.");
+                if(value != null) {
+                    String valueString = value.toString();
+    
+                    if (!optionList.contains(valueString)) {
+                        errors.rejectValue(path,
+                                           "error.invalidOption",
+                                           "The value was not a valid option.");
+                    }
                 }
 
             }

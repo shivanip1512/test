@@ -5,15 +5,12 @@ import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 
-import org.apache.commons.lang.StringUtils;
-import org.springframework.validation.BindException;
-import org.springframework.web.bind.ServletRequestDataBinder;
-
 public class InputGroup implements Input {
 
     private String field = null;
     private String renderer = null;
     private Map<String, Input> inputMap = new HashMap<String, Input>();
+    private InputSecurity security = new SimpleInputSecurity();
 
     public List<InputSource> getInputList() {
 
@@ -41,48 +38,29 @@ public class InputGroup implements Input {
         this.renderer = renderer;
     }
 
-    public void doRegisterEditor(ServletRequestDataBinder binder) {
-        for (InputSource input : getInputList()) {
-            input.doRegisterEditor(binder);
-        }
+    public InputSecurity getSecurity() {
+        return security;
     }
 
-    public void doValidate(String path, Object command, BindException errors) {
-
-        if (!StringUtils.isEmpty(field)) {
-            path += field;
-        }
-
-        for (Map.Entry<String, Input> entry : inputMap.entrySet()) {
-
-            String currentPath = path;
-            String field = entry.getKey();
-            Input input = entry.getValue();
-
-            if(input instanceof InputGroup){
-                if (!StringUtils.isEmpty(currentPath)) {
-                    currentPath += ".";
-                }
-                currentPath += field;
-            }
-
-            input.doValidate(currentPath, command, errors);
-
-        }
+    public void setSecurity(InputSecurity security) {
+        this.security = security;
     }
 
-    public void setField(String field){
+    public void setField(String field) {
         this.field = field;
     }
-    
+
     public String getField() {
         return this.field;
     }
-    
+
     public Map<String, ? extends InputSource> getInputMap(String prefix) {
+        prefix += ".";
+
         Map<String, InputSource> result = new HashMap<String, InputSource>();
         for (Map.Entry<String, Input> entry : inputMap.entrySet()) {
-            Map<String, ? extends InputSource> temp = entry.getValue().getInputMap(prefix + entry.getKey() + ".");
+            Map<String, ? extends InputSource> temp = entry.getValue()
+                                                           .getInputMap(prefix + entry.getKey());
             result.putAll(temp);
         }
         return result;

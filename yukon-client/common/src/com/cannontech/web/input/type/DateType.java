@@ -15,6 +15,7 @@ import com.cannontech.web.input.validate.NullValidator;
 public class DateType implements InputType<Date> {
 
     private String renderer = "dateType.jsp";
+    private String format = "MM/dd/yyyy";
 
     public String getRenderer() {
         return renderer;
@@ -22,6 +23,14 @@ public class DateType implements InputType<Date> {
 
     public void setRenderer(String renderer) {
         this.renderer = renderer;
+    }
+
+    public String getFormat() {
+        return format;
+    }
+
+    public void setFormat(String format) {
+        this.format = format;
     }
 
     public Class<Date> getTypeClass() {
@@ -33,7 +42,8 @@ public class DateType implements InputType<Date> {
     }
 
     public PropertyEditor getPropertyEditor() {
-        return new CustomDateEditor(new SimpleDateFormat("mm/dd/yyyy"), true);
+        SimpleDateFormat simpleDateFormat = new SimpleDateFormat(format);
+        return new CustomDateEditor(simpleDateFormat, true);
     }
 
 }

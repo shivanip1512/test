@@ -4,14 +4,7 @@ import java.util.Collections;
 import java.util.List;
 import java.util.Map;
 
-import org.apache.commons.lang.StringUtils;
-import org.springframework.beans.BeanWrapper;
-import org.springframework.beans.BeanWrapperImpl;
-import org.springframework.validation.BindException;
-import org.springframework.web.bind.ServletRequestDataBinder;
-
 import com.cannontech.web.input.type.InputType;
-import com.cannontech.web.input.validate.InputValidator;
 
 /**
  * Base implementation of InputSource
@@ -22,6 +15,7 @@ public class InputBase implements InputSource {
     private String field = null;
     private String description = null;
     private InputType type = null;
+    private InputSecurity security = new SimpleInputSecurity();
 
     public String getDisplayName() {
         return displayName;
@@ -59,35 +53,20 @@ public class InputBase implements InputSource {
         return this.type.getRenderer();
     }
 
-    public void doRegisterEditor(ServletRequestDataBinder binder) {
-        binder.registerCustomEditor(getType().getTypeClass(), field, getType().getPropertyEditor());
+    public InputSecurity getSecurity() {
+        return security;
     }
 
-    @SuppressWarnings("unchecked")
-    public void doValidate(String path, Object command, BindException errors) {
-
-        // Get typed field value
-        BeanWrapper beanWrapper = new BeanWrapperImpl(command);
-
-        if (!StringUtils.isEmpty(path)) {
-            path += "." + field;
-        } else {
-            path = field;
-        }
-        Object value = beanWrapper.getPropertyValue(path);
-
-        // Validate value
-        InputValidator validator = type.getValidator();
-        validator.validate(path, this, value, errors);
-
+    public void setSecurity(InputSecurity security) {
+        this.security = security;
     }
 
     public List<InputSource> getInputList() {
         return Collections.singletonList((InputSource) this);
     }
-    
+
     public Map<String, ? extends InputSource> getInputMap(String prefix) {
-        return Collections.singletonMap(prefix + getField(), this);
+        return Collections.singletonMap(prefix, this);
     }
 
 }

@@ -8,7 +8,10 @@ import javax.servlet.jsp.JspException;
 import javax.servlet.jsp.PageContext;
 import javax.servlet.jsp.tagext.SimpleTagSupport;
 
+import com.cannontech.database.data.lite.LiteYukonUser;
+import com.cannontech.util.ServletUtil;
 import com.cannontech.web.input.Input;
+import com.cannontech.web.input.InputSecurity;
 
 /**
  * Tag used to render an Input. This tag gets the rendering jsp from the input
@@ -26,22 +29,33 @@ public class RenderInputTag extends SimpleTagSupport {
         PageContext pageContext = (PageContext) getJspContext();
 
         ServletRequest request = pageContext.getRequest();
-        Object oldValue = null;
+
+        Object oldInput = null;
         if (input != null) {
-            oldValue = request.getAttribute("input");
+            oldInput = request.getAttribute("input");
             request.setAttribute("input", input);
         }
 
         String renderer = input.getRenderer();
 
         try {
-            pageContext.include("/WEB-INF/pages/input/" + renderer);
+
+            LiteYukonUser user = ServletUtil.getYukonUser(request);
+            InputSecurity security = input.getSecurity();
+
+            // Include the input's renderer jsp if editable other wise include
+            // the plain text renderer jsp
+            if (security.isEditable(user)) {
+                pageContext.include("/WEB-INF/pages/input/" + renderer);
+            } else {
+                pageContext.include("/WEB-INF/pages/input/plainTextType.jsp");
+            }
         } catch (ServletException e) {
             throw new JspException("Couldn't include renderer: " + renderer);
         }
 
-        if (oldValue != null) {
-            request.setAttribute("input", oldValue);
+        if (oldInput != null) {
+            request.setAttribute("input", oldInput);
         }
     }
 
