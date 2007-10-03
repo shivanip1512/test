@@ -1,6 +1,7 @@
 package com.cannontech.stars.web.action;
 
 import java.util.Date;
+import java.util.List;
 import java.util.TimeZone;
 
 import javax.servlet.http.HttpServletRequest;
@@ -26,6 +27,7 @@ import com.cannontech.stars.util.EventUtils;
 import com.cannontech.stars.util.ServletUtils;
 import com.cannontech.stars.util.WebClientException;
 import com.cannontech.stars.web.StarsYukonUser;
+import com.cannontech.stars.web.bean.WorkOrderBean;
 import com.cannontech.stars.web.util.WorkOrderManagerUtil;
 import com.cannontech.stars.xml.StarsFactory;
 import com.cannontech.stars.xml.serialize.StarsCreateServiceRequest;
@@ -108,6 +110,11 @@ public class CreateServiceRequestAction implements ActionBase {
             LiteWorkOrderBase liteOrder = null;
             try {
             	liteOrder = createServiceRequest( createOrder, liteAcctInfo, energyCompany, user.getUserID());
+                
+                WorkOrderBean workOrderBean = (WorkOrderBean) session.getAttribute("workOrderBean");
+                if (workOrderBean != null) {
+                    this.addWorkOrderToBean(workOrderBean, liteOrder);
+                }
             }
             catch (WebClientException e) {
 				respOper.setStarsFailure( StarsFactory.newStarsFailure(
@@ -259,5 +266,12 @@ public class CreateServiceRequestAction implements ActionBase {
 	{
 		return createServiceRequest(createOrder, liteAcctInfo, energyCompany, userID, true);
 	}
+    
+    private void addWorkOrderToBean(final WorkOrderBean workOrderBean, final LiteWorkOrderBase liteWorkOrderBase) {
+        final List<LiteWorkOrderBase> workOrderList = workOrderBean.getWorkOrderList();
+        synchronized (workOrderList) {
+            workOrderList.add(liteWorkOrderBase);
+        }    
+    }
 
 }
