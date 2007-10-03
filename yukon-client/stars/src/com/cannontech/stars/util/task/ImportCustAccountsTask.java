@@ -1198,6 +1198,8 @@ public class ImportCustAccountsTask extends TimeConsumingTask {
         int relay = 0;
         boolean relayNotFound = true;
         ArrayList currentProgramIDs = new ArrayList(liteAcctInfo.getAppliances().size());
+        if(appFields == null)
+            appFields = ImportManagerUtil.prepareFields( ImportManagerUtil.NUM_APP_FIELDS );
         if(appFields[ImportManagerUtil.IDX_RELAY_NUM].trim().length() > 0)
         {
             relay = Integer.parseInt(appFields[ImportManagerUtil.IDX_RELAY_NUM]);
