@@ -104,5 +104,8 @@
 	
 	<bean id="adminUpdateSettlementConfig" class="com.cannontech.web.stars.action.admin.UpdateSettlementConfigController" 
           parent="starsAdminActionController"/>
+          
+    <bean id="adminDeleteWarehouse" class="com.cannontech.web.stars.action.admin.DeleteWarehouseController"
+          parent="starsAdminActionController"/>            
 
 </beans>

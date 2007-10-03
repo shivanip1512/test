@@ -180,6 +180,19 @@ function confirmDeleteWarehouse() {
 function confirmDeleteAllWarehouses() {
 	return confirm("Are you sure you want to delete all warehouses?");
 }
+
+function deleteWarehouse(form, warehouseId) {
+    var confirmResult = (warehouseId == -1) ? confirmDeleteAllWarehouses() : confirmDeleteWarehouse();
+    if (confirmResult) {
+        var wareHouseInput = document.createElement('input');
+        wareHouseInput.setAttribute("name", "WarehouseID");
+        wareHouseInput.setAttribute("type", "hidden");
+        wareHouseInput.value = warehouseId;
+        form.appendChild(wareHouseInput);
+        form.submit();    
+    }
+}
+
 </script>
 </head>
 
@@ -727,7 +740,7 @@ function confirmDeleteAllWarehouses() {
 	                                      <input type="button" name="Edit" value="Edit" onclick="editWarehouse(this.form, <c:out value="${thisHouse.warehouseID}"/> )">
 	                                    </td>
 	                                    <td width="15%" class="TableCell"> 
-	                                      <input type="submit" name="Delete" value="Delete" onclick="this.form.WarehouseID.value='<c:out value="${thisHouse.warehouseID}"/>'" return confirmDeleteWarehouse();">
+	                                      <input type="button" name="Delete" value="Delete" onclick='javascript:deleteWarehouse(this.form, ${thisHouse.warehouseID});'>
 	                                    </td>
 	                                  </tr>
                                   	</c:forEach>
@@ -739,7 +752,7 @@ function confirmDeleteAllWarehouses() {
                           <table width="100%" border="0" cellspacing="0" cellpadding="0" align="center">
                             <tr> 
                               <td width="20%"> 
-                                <input type="submit" name="DeleteAll" value="Delete All" onclick="this.form.WarehouseID.value=-1; return confirmDeleteAllWarehouses();">
+                                <input type="button" name="DeleteAll" value="Delete All" onclick="javascript:deleteWarehouse(this.form, -1);">
                               </td>
                               <td width="80%"> 
                                 <input type="button" name="New" value="New" onclick="editWarehouse(this.form, 0)">
