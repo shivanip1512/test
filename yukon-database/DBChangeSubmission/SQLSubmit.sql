@@ -474,3 +474,8 @@ update cceventlog set actionId = -1;
 go
 alter table cceventlog alter column actionId numeric not null;
 /***********************************************************************************/
+
+/*****JULIE: updating capcontrol strategy to reflect minus values that the operator must enter. *****************/
+update capcontrolstrategy set peaklead = -peaklead where peaklead > 0 and  controlunits = 'kVar';
+update capcontrolstrategy set offpklead = -offpklead where offpklead > 0 and  controlunits = 'kVar';
+/***********************************************************************************/
