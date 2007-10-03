@@ -468,7 +468,7 @@ insert into YukonRoleProperty values(-20205,-202,'Enable Device Group','true','A
 >>>>>>> 1.130
 
 /*****JULIE: YUK-4372 Revice ccevent table to allow easier joining...*****************/
-alter table cceventlog add column actionId numeric;
+alter table cceventlog add actionId numeric;
 go
 update cceventlog set actionId = -1;
 go
