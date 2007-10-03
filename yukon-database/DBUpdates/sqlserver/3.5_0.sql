@@ -420,6 +420,11 @@ go
 delete from YukonlistEntry where YukonDefinitionID = 3100;
 go
 
+alter table DEVICEGROUP
+   add constraint AK_DEVICEGR_PDG_GN unique (GroupName, ParentDeviceGroupId)
+go
+
+
 /******************************************************************************/
 /* Run the Stars Update if needed here */
 /* Note: DBUpdate application will ignore this if STARS is not present */

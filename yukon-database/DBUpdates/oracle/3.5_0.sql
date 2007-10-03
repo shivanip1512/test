@@ -347,6 +347,11 @@ delete from LMThermostatSchedule where ThermostatTypeID in (select EntryID from 
 update LMHardwareBase set LMHardwareTypeID = 0 where LMHardwareTypeID in (select EntryID from YukonListEntry where YukonDefinitionID = 3100);
 delete from YukonlistEntry where YukonDefinitionID = 3100;
 
+-- DeviceGroup needs a unique constraint on (ParentDeviceGroupId,GroupName)
+alter table DEVICEGROUP
+   add constraint AK_DEVICEGR_PDG_GN unique (GroupName, ParentDeviceGroupId)
+;
+
 /******************************************************************************/
 /* Run the Stars Update if needed here */
 /* Note: DBUpdate application will ignore this if STARS is not present */
