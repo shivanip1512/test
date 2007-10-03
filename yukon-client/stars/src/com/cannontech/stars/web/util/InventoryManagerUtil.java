@@ -99,7 +99,11 @@ public class InventoryManagerUtil {
 	public static final String[] MCT_TYPES = {
 		PAOGroups.STRING_MCT_410IL[0],
 		PAOGroups.STRING_MCT_410CL[0],
-		PAOGroups.STRING_MCT_370[0],
+		PAOGroups.STRING_MCT_430A[0],
+        PAOGroups.STRING_MCT_430S4[0],
+        PAOGroups.STRING_MCT_430SL[0],
+        PAOGroups.STRING_MCT_470[0],
+        PAOGroups.STRING_MCT_370[0],
 		PAOGroups.STRING_MCT_360[0],
 		PAOGroups.STRING_MCT_318L[0],
 		PAOGroups.STRING_MCT_318[0],
