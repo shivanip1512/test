@@ -29,6 +29,7 @@ import com.cannontech.core.authorization.support.Permission;
 import com.cannontech.core.dao.DaoFactory;
 import com.cannontech.database.PoolManager;
 import com.cannontech.database.SqlStatement;
+import com.cannontech.database.SqlUtils;
 import com.cannontech.database.Transaction;
 import com.cannontech.database.TransactionException;
 import com.cannontech.database.cache.DefaultDatabaseCache;
@@ -964,7 +965,8 @@ public class StarsAdminUtil {
 		boolean autoCommit = true;
 		java.sql.PreparedStatement pstmt1 = null;
 		java.sql.PreparedStatement pstmt2 = null;
-		
+        java.sql.ResultSet rset = null;
+        
 		try {
 			conn = PoolManager.getInstance().getConnection( CtiUtilities.getDatabaseAlias() );
 			
@@ -974,7 +976,7 @@ public class StarsAdminUtil {
 				LiteStarsEnergyCompany company = companies.get(i);
 				
 				pstmt1.setInt( 1, company.getLiteID() );
-				java.sql.ResultSet rset = pstmt1.executeQuery();
+				rset = pstmt1.executeQuery();
 				
 				while (rset.next()) {
 					int oldEntryID = rset.getInt(1);
@@ -998,8 +1000,6 @@ public class StarsAdminUtil {
 					
 					entryIDMap.put( new Integer(oldEntryID), new Integer(newEntryID) );
 				}
-				
-				rset.close();
 			}
 			
 			autoCommit = conn.getAutoCommit();
@@ -1030,6 +1030,7 @@ public class StarsAdminUtil {
 			conn.commit();
 		}
 		finally {
+            SqlUtils.close(rset);
 			if (pstmt1 != null) pstmt1.close();
 			if (pstmt2 != null) pstmt2.close();
 			if (conn != null) {

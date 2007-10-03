@@ -6,6 +6,9 @@
  */
 package com.cannontech.stars.web.util;
 
+import java.sql.Connection;
+import java.sql.PreparedStatement;
+import java.sql.ResultSet;
 import java.util.ArrayList;
 import java.util.Date;
 import java.util.Hashtable;
@@ -24,6 +27,7 @@ import com.cannontech.core.dao.DBDeleteResult;
 import com.cannontech.core.dao.DaoFactory;
 import com.cannontech.core.dao.PaoDao;
 import com.cannontech.database.PoolManager;
+import com.cannontech.database.SqlUtils;
 import com.cannontech.database.Transaction;
 import com.cannontech.database.TransactionException;
 import com.cannontech.database.cache.DefaultDatabaseCache;
@@ -584,14 +588,17 @@ public class InventoryManagerUtil {
 			
 			String sql = "SELECT TimeStamp, EnergyCompanyID, Description FROM ActivityLog " +
 				"WHERE TimeStamp > ? AND Action = '" + ActivityLogActions.HARDWARE_SEND_BATCH_CONFIG_ACTION + "'";
-			java.sql.Connection conn = null;
 			
+            Connection conn = null;
+            PreparedStatement stmt = null;
+            ResultSet rset = null;
+            
 			try {
 				conn = PoolManager.getInstance().getConnection( CtiUtilities.getDatabaseAlias() );
 				
-				java.sql.PreparedStatement stmt = conn.prepareStatement( sql );
+				stmt = conn.prepareStatement( sql );
 				stmt.setDate( 1, new java.sql.Date(ServletUtil.getToday().getTime() - 600 * 1000) );	// set the time to be a bit earlier than midnight today
-				java.sql.ResultSet rset = stmt.executeQuery();
+				rset = stmt.executeQuery();
 				
 				while (rset.next()) {
 					long timeStamp = rset.getTimestamp(1).getTime();
@@ -604,10 +611,7 @@ public class InventoryManagerUtil {
 				CTILogger.error( e.getMessage(), e );
 			}
 			finally {
-				try {
-					if (conn != null) conn.close();
-				}
-				catch (java.sql.SQLException e) {}
+				SqlUtils.close(rset, stmt, conn);
 			}
 		}
 		
