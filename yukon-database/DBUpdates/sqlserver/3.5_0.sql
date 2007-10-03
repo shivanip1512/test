@@ -392,7 +392,6 @@ PAObjectID ASC
 )
 go
 
-/* @error ignore-begin */
 insert into YukonRole values(-212,'Scheduler','Operator','Operator access to Scheduler'); 
 insert into yukonroleproperty values (-100011,-1000, 'Daily/Max Operation Count', 'true', 'is Daily/Max Operation stat displayed');
 insert into yukonroleproperty values (-100012,-1000, 'Substation Last Update Timestamp', 'true', 'is last update timstamp shown for substations');
@@ -403,7 +402,7 @@ insert into YukonRoleProperty values(-21200,-212,'Enable/Disable Schedule','true
 insert into YukonRoleProperty values(-10815, -108,'Data Updater Delay (milliseconds)', '4000', 'The number of milliseconds between requests for the latest point values on pages that support the data updater.');
 ALTER TABLE DeviceReadJobLog DROP CONSTRAINT FK_DEVICERE_FK_DRJOBL_MACSCHED
 go
-/* @error ignore-end */
+
 update yukonroleproperty set DefaultValue = 'false' where rolepropertyid = -100008;
 update yukonroleproperty set DefaultValue = 'false' where rolepropertyid = -100007;
 go
@@ -432,4 +431,4 @@ go
 /* VERSION INFO                                               */
 /*   Automatically gets inserted from build script            */
 /**************************************************************/
-/* __YUKON_VERSION__ */
+insert into CTIDatabase values('3.5', 'David', '03-Oct-2007', 'Latest Update', 0 );
