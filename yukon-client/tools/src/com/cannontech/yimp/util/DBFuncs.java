@@ -242,7 +242,7 @@ public class DBFuncs {
 	public static List<Integer> getRouteIDsFromSubstationName(String name) {
         String stmt = "SELECT ROUTEID FROM SUBSTATIONTOROUTEMAPPING WHERE SUBSTATIONID IN " +
                 "(SELECT SUBSTATIONID FROM SUBSTATION WHERE SUBSTATIONNAME  = '" 
-            + name + "')";
+            + name + "' ORDER BY ORDERING)";
         
         JdbcOperations jdbcOps = JdbcTemplateHelper.getYukonTemplate();
         List<Integer> routeIDs = 
