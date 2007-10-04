@@ -2,6 +2,8 @@ package com.cannontech.core.dynamic.impl;
 
 import java.util.Date;
 
+import org.springframework.core.style.ToStringCreator;
+
 import com.cannontech.core.dynamic.PointValueHolder;
 
 public class SimplePointValue implements PointValueHolder {
@@ -33,6 +35,16 @@ public class SimplePointValue implements PointValueHolder {
 
     public double getValue() {
         return value;
+    }
+    
+    @Override
+    public String toString() {
+        ToStringCreator tsc = new ToStringCreator(this);
+        tsc.append("id", getId());
+        tsc.append("timestamp", getPointDataTimeStamp());
+        tsc.append("type", getType());
+        tsc.append("value", getValue());
+        return tsc.toString(); 
     }
 
 }
