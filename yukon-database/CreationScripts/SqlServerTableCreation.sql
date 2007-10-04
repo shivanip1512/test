@@ -7600,7 +7600,7 @@ create table RAWPOINTHISTORY (
 go
 
 alter table RAWPOINTHISTORY
-   add constraint SYS_C0013322 primary key nonclustered (CHANGEID)
+   add constraint SYS_C0013322 primary key (CHANGEID)
 go
 
 /*==============================================================*/
