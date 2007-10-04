@@ -258,6 +258,8 @@
             <fileset file="${module.name}/yukon-client/tdc/resource/tdcIcon.ico"/>
             <fileset file="${module.name}/yukon-client/commander/resource/CommanderIcon.ico"/>
             <fileset file="${module.name}/yukon-client/esub-editor/resource/esubEditorIcon.ico"/>
+            <fileset file="${module.name}/yukon-install/resources/shortcut_icons/YukonSetup.ico"/>
+            <fileset file="${module.name}/yukon-install/resources/shortcut_icons/YukonLogin.ico"/>       	
         </copy>
        	    
         <!-- Yukon Base Component (Server) -->      
