@@ -86,7 +86,10 @@ public void actionPerformed(java.awt.event.ActionEvent e) {
 	    e.getSource() == getLoadProfileDemandRateComboBox() || 
 	    e.getSource() == getJComboBoxBillingGroup() || 
 	    e.getSource() == getJComboBoxlVoltInterval() || 
-	    e.getSource() == getJComboBoxlVoltRate()) {
+	    e.getSource() == getJComboBoxlVoltRate() ||
+	    e.getSource() == getCustomGroup1ComboBox() ||
+	    e.getSource() == getCustomGroup2ComboBox() ||
+	    e.getSource() == getCustomGroup3ComboBox()) {
 	    fireInputUpdate();
     }
 }
@@ -122,7 +125,8 @@ public void keyTyped(java.awt.event.KeyEvent e) {
             e.getSource() == getJComboBoxBillingGroup().getEditor().getEditorComponent() ||
             e.getSource() == getCustomGroup1ComboBox().getEditor().getEditorComponent() ||
             e.getSource() == getCustomGroup2ComboBox().getEditor().getEditorComponent() ||
-            e.getSource() == getCustomGroup3ComboBox().getEditor().getEditorComponent()) {
+            e.getSource() == getCustomGroup3ComboBox().getEditor().getEditorComponent() ||
+            e.getSource() == getMeterNumberTextField()){
       fireInputUpdate();
     }
 }
@@ -151,6 +155,13 @@ private void initConnections() throws java.lang.Exception {
     getChannel4CheckBox().addActionListener(this);
     getLoadProfileDemandRateComboBox().addActionListener(this);
     
+    getCycleGroupComboBox().addActionListener(this);
+    getAlternateGroupComboBox().addActionListener(this);
+    getJComboBoxBillingGroup().addActionListener(this);
+    getCustomGroup1ComboBox().addActionListener(this);
+    getCustomGroup2ComboBox().addActionListener(this);
+    getCustomGroup3ComboBox().addActionListener(this);
+
     getCycleGroupComboBox().getEditor().getEditorComponent().addKeyListener(this);
     getAlternateGroupComboBox().getEditor().getEditorComponent().addKeyListener(this);
     getJComboBoxBillingGroup().getEditor().getEditorComponent().addKeyListener(this);
