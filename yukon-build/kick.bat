@@ -15,8 +15,9 @@ if NOT exist "yukon-client\build\ant" (
 	echo: checking out ant...
 	echo:
 	cvs -Q checkout yukon-client/build/ant
-	SET ANT_HOME=yukon-client\build\ant
 )
+
+SET ANT_HOME=yukon-client\build\ant
 
 if "%1" == "tag" (
 	echo:
