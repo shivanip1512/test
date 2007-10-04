@@ -8,8 +8,8 @@
 *
 * PVCS KEYWORDS:
 * ARCHIVE      :  $Archive:   Z:/SOFTWAREARCHIVES/YUKON/PORTER/port_shr_ip.cpp-arc  $
-* REVISION     :  $Revision: 1.25 $
-* DATE         :  $Date: 2007/06/25 20:48:49 $
+* REVISION     :  $Revision: 1.26 $
+* DATE         :  $Date: 2007/10/04 20:31:47 $
 *
 * Copyright (c) 1999, 2000 Cannon Technologies Inc. All rights reserved.
 *-----------------------------------------------------------------------------*/
@@ -269,7 +269,7 @@ void CtiPortShareIP::inThread()
 
                                 OutMessage->Port = getPort()->getPortID();
                                 OutMessage->Remote = Buffer[1] >> 1;
-                                OutMessage->TimeOut = 1;
+                                OutMessage->TimeOut = determineTimeout(Buffer, bytesRead);  //  this will create the appropriate timeout if we're talking DTRAN
                                 OutMessage->Retry = 0;
                                 OutMessage->Source = 0;
                                 OutMessage->Destination = 0;
@@ -422,6 +422,30 @@ void CtiPortShareIP::inThread()
         }
     }
     scadaListenNexus.CTINexusClose();
+}
+
+
+int CtiPortShareIP::determineTimeout(unsigned char *message, unsigned int len)
+{
+    int timeout;
+
+    //  is it a sequenced IDLC DTRAN message?
+    if(  (message[0] == 0x7e) && //  HDLC/IDLC
+         (message[1]  & 0x01) && //  IDLC
+        !(message[2]  & 0x01) && //  sequenced
+         (message[5] == CMND_DTRAN) )
+    {
+        int stages    =  message[PREIDLEN + 1] & 0x0f,
+            wordcount = (message[PREIDLEN + PREAMLEN + 4] & 0x30) >> 4;
+
+        timeout = TIMEOUT + stages * (wordcount + 1);
+    }
+    else
+    {
+        timeout = 1;
+    }
+
+    return timeout;
 }
 
 

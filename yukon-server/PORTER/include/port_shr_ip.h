@@ -9,8 +9,8 @@
 *
 * PVCS KEYWORDS:
 * ARCHIVE      :  $Archive:   Z:/SOFTWAREARCHIVES/YUKON/PORTER/INCLUDE/port_shr_ip.h-arc  $
-* REVISION     :  $Revision: 1.8 $
-* DATE         :  $Date: 2006/04/13 19:36:41 $
+* REVISION     :  $Revision: 1.9 $
+* DATE         :  $Date: 2007/10/04 20:31:48 $
 *
 * Copyright (c) 1999, 2000 Cannon Technologies Inc. All rights reserved.
 *-----------------------------------------------------------------------------*/
@@ -45,6 +45,8 @@ private:
    RWThreadFunction _inThread;
 
    void shutDown();
+
+   int determineTimeout(unsigned char *buffer, unsigned int len);
 
 public:
 
