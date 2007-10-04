@@ -72,9 +72,9 @@ public enum ReportTypes {
             "Report showing disabled capcontrol devices."),
     
     COMM_STATISTICS("Communication Statistics", StatisticModel.class, ReportGroup.STATISTICAL),
-	STATISTIC_HISTORY_PORT_DATA("Historical Daily Port Statistics", StatisticHistoryPortModel.class, ReportGroup.STATISTICAL),
-    STATISTIC_HISTORY_DEVICE_DATA("Historical Daily Device Statistics", StatisticHistoryDeviceModel.class, ReportGroup.STATISTICAL),
-    STATISTIC_HISTORY_TRANSMITTER_DATA("Historical Daily Transmitter Statistics", StatisticHistoryTransmitterModel.class, ReportGroup.STATISTICAL),
+	//STATISTIC_HISTORY_PORT_DATA("Historical Daily Port Statistics", StatisticHistoryPortModel.class, ReportGroup.STATISTICAL),
+    //STATISTIC_HISTORY_DEVICE_DATA("Historical Daily Device Statistics", StatisticHistoryDeviceModel.class, ReportGroup.STATISTICAL),
+    //STATISTIC_HISTORY_TRANSMITTER_DATA("Historical Daily Transmitter Statistics", StatisticHistoryTransmitterModel.class, ReportGroup.STATISTICAL),
     
     EC_ACTIVITY_LOG_SUMMARY("Energy Company Activity Log Summary", ActivityModel.class, ReportGroup.STARS),
 	EC_ACTIVITY_LOG_DETAIL("Energy Company Activity Log Detail", ActivityDetailModel.class, ReportGroup.STARS),
