@@ -82,15 +82,16 @@ public class MeterReadingsWidget extends WidgetControllerBase {
         List<PointValueHolder> dailyReadings = 
             rphDao.getIntervalPointData(lp.getPointID(), oneWeekAgo, today, 
                                         ChartInterval.DAY, RawPointHistoryDao.Mode.HIGHEST);
-        allReadings.addAll(dailyReadings);
         
-        // get an additional (93 - 7) days of weekly readings
+        // get an additional (93 - 7) days of weekly readings 
+        oneWeekAgo = TimeUtil.addDays(oneWeekAgo, -1); // so we don't repeat 7 days ago
         Date threeMonthsAgo = TimeUtil.addDays(oneWeekAgo, -(93 - 7));
         List<PointValueHolder> weeklyReadings = 
             rphDao.getIntervalPointData(lp.getPointID(), threeMonthsAgo, oneWeekAgo,
                                         ChartInterval.WEEK, RawPointHistoryDao.Mode.HIGHEST);
-        allReadings.addAll(weeklyReadings);
         
+        allReadings.addAll(weeklyReadings); // add oldeset first
+        allReadings.addAll(dailyReadings); // then more recent
         // create a read only delegating list
         ReverseList<PointValueHolder> reversedResult = new ReverseList<PointValueHolder>(allReadings);
         return reversedResult;
