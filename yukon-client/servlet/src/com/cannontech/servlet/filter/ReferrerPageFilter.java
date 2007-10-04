@@ -51,7 +51,10 @@ public class ReferrerPageFilter implements Filter {
 			if(navigator == null)
 				navigator = new CtiNavObject();
 			
-			navigator.setNavigation(request.getRequestURL().toString());
+            String url = request.getRequestURL().toString();
+            String urlParams = request.getQueryString();
+            String navUrl = url + ((urlParams != null) ? "?" + urlParams : "");
+			navigator.setNavigation(navUrl);
 			
 			session.setAttribute(ServletUtil.NAVIGATE, navigator);
 		}
@@ -59,7 +62,6 @@ public class ReferrerPageFilter implements Filter {
 		chain.doFilter(req,resp);
     }
 	
-
 	/**
 	 * @see javax.servlet.Filter#destroy()
 	 */
