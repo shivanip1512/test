@@ -1187,26 +1187,45 @@ public void setValue(Object val)
 		
 		if(deviceType == PAOGroups.MCT410IL
 			|| deviceType == PAOGroups.MCT410CL
-            || deviceType == PAOGroups.MCT430A
-            || deviceType == PAOGroups.MCT430S4
-			|| deviceType == PAOGroups.MCT470)
+			|| deviceType == PAOGroups.MCT470
+			|| DeviceTypesFuncs.isMCT430(deviceType)
+			)
 		{
 			getChannel2CheckBox().setEnabled(true);
 			getChannel3CheckBox().setEnabled(true);
 			
-            if(deviceType == PAOGroups.MCT470)
-            {
-                getLoadProfileDemandRateLabel().setText("Load Profile Rate #1: ");
-                getJLabelVoltDmdRate().setText("Load Profile Rate #2: ");
-                getJLabelVoltIntervalDmdRate().setEnabled(false);
+			if(deviceType == PAOGroups.MCT470 || DeviceTypesFuncs.isMCT430(deviceType)){
+				
+				getJLabelVoltDmdRate().setEnabled(false);
+				getJLabelVoltDmdRate().setVisible(false);
+				getJComboBoxlVoltRate().setEnabled(false);
+				getJComboBoxlVoltRate().setVisible(false);
+				
+				getJLabelVoltIntervalDmdRate().setEnabled(false);
                 getJLabelVoltIntervalDmdRate().setVisible(false);
                 getJComboBoxlVoltInterval().setEnabled(false);
                 getJComboBoxlVoltInterval().setVisible(false);
-                
-            }else
-            {
-                getJLabelVoltDmdRate().setText("Voltage Profile Demand Rate: ");
-            }
+			}
+			else{
+				getJLabelVoltDmdRate().setText("Voltage Profile Demand Rate: ");
+			}
+			
+/**
+ * May need to be added back at some point, see YUK-4226 comments
+ */
+//            if(deviceType == PAOGroups.MCT470)
+//            {
+//                getLoadProfileDemandRateLabel().setText("Load Profile Rate #1: ");
+//                getJLabelVoltDmdRate().setText("Load Profile Rate #2: ");
+//                getJLabelVoltIntervalDmdRate().setEnabled(false);
+//                getJLabelVoltIntervalDmdRate().setVisible(false);
+//                getJComboBoxlVoltInterval().setEnabled(false);
+//                getJComboBoxlVoltInterval().setVisible(false);
+//                
+//            }else
+//            {
+//                getJLabelVoltDmdRate().setText("Voltage Profile Demand Rate: ");
+//            }
 			
 			getJComboBoxlVoltRate().removeAllItems();
 			getJComboBoxlVoltRate().addItem("5 minute");
