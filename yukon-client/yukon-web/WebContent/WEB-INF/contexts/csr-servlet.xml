@@ -15,10 +15,6 @@
         </property>
     </bean>    
     
-    <bean id="jsonViewResolver"
-      class="com.cannontech.web.util.JsonViewResolver">
-    </bean>
-    
     <bean id="viewResolver"
       class="org.springframework.web.servlet.view.UrlBasedViewResolver">
         <property name="viewClass" value="org.springframework.web.servlet.view.JstlView"/>

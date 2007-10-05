@@ -38,6 +38,7 @@ import com.cannontech.database.data.lite.LiteYukonPAObject;
 import com.cannontech.database.data.lite.LiteYukonUser;
 import com.cannontech.tools.email.EmailService;
 import com.cannontech.util.ServletUtil;
+import com.cannontech.web.util.JsonView;
 
 public class LoadProfileController extends MultiActionController {
     private LongLoadProfileService loadProfileService;
@@ -63,7 +64,7 @@ public class LoadProfileController extends MultiActionController {
     FULL("{default} {status||{unit}} {time|MM/dd/yyyy HH:mm:ss z}"),*/
         
     public ModelAndView initiateLoadProfile(HttpServletRequest request, HttpServletResponse response) {
-        ModelAndView mav = new ModelAndView("json");
+        ModelAndView mav = new ModelAndView(new JsonView());
         
         try {
             
@@ -128,7 +129,7 @@ public class LoadProfileController extends MultiActionController {
     }
     
     public ModelAndView defaults(HttpServletRequest request, HttpServletResponse response) throws ServletRequestBindingException {
-        ModelAndView mav = new ModelAndView("json");
+        ModelAndView mav = new ModelAndView(new JsonView());
 
         int deviceId = ServletRequestUtils.getRequiredIntParameter(request, "deviceId");
         
@@ -183,7 +184,7 @@ public class LoadProfileController extends MultiActionController {
     }
     
     public ModelAndView cancelLoadProfile(HttpServletRequest request, HttpServletResponse response) {
-        ModelAndView mav = new ModelAndView("json");
+        ModelAndView mav = new ModelAndView(new JsonView());
         
         try{
             

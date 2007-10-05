@@ -16,6 +16,7 @@ import com.cannontech.common.search.YukonObjectCriteria;
 import com.cannontech.common.search.SearchResult;
 import com.cannontech.database.data.pao.DeviceTypes;
 import com.cannontech.web.picker.YukonObjectPickerController;
+import com.cannontech.web.util.JsonView;
 
 public class PaoPickerController extends YukonObjectPickerController {
     private PaoTypeSearcher paoTypeSearcher;
@@ -25,7 +26,7 @@ public class PaoPickerController extends YukonObjectPickerController {
     }
     
     public ModelAndView sameType(HttpServletRequest request, HttpServletResponse response) {
-        ModelAndView mav = new ModelAndView("json");
+        ModelAndView mav = new ModelAndView(new JsonView());
         int currentPaoId = RequestUtils.getIntParameter(request, "currentPaoId", 0);
         YukonObjectCriteria criteria = getCriteria(request);
         int start = getStartParameter(request);
@@ -38,7 +39,7 @@ public class PaoPickerController extends YukonObjectPickerController {
     }
 
     public ModelAndView showAll(HttpServletRequest request, HttpServletResponse response) {
-        ModelAndView mav = new ModelAndView("json");
+        ModelAndView mav = new ModelAndView(new JsonView());
         int start = getStartParameter(request);
         int count = getCountParameter(request);
         YukonObjectCriteria criteria = getCriteria(request);
@@ -50,7 +51,7 @@ public class PaoPickerController extends YukonObjectPickerController {
     }
     
     public ModelAndView search(HttpServletRequest request, HttpServletResponse response) throws ServletException {
-        ModelAndView mav = new ModelAndView("json");
+        ModelAndView mav = new ModelAndView(new JsonView());
         String queryString = RequestUtils.getStringParameter(request, "ss", "");
         int start = getStartParameter(request);
         int count = getCountParameter(request);

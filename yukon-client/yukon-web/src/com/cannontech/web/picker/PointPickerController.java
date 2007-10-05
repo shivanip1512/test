@@ -15,6 +15,7 @@ import com.cannontech.common.search.SearchResult;
 import com.cannontech.common.search.UltraLightPoint;
 import com.cannontech.common.search.YukonObjectCriteria;
 import com.cannontech.database.data.point.PointTypes;
+import com.cannontech.web.util.JsonView;
 
 public class PointPickerController extends YukonObjectPickerController {
     private PointDeviceSearcher pointDeviceSearcher;
@@ -24,7 +25,7 @@ public class PointPickerController extends YukonObjectPickerController {
     }
     
     public ModelAndView sameDevice(HttpServletRequest request, HttpServletResponse response) {
-        ModelAndView mav = new ModelAndView("json");
+        ModelAndView mav = new ModelAndView(new JsonView());
         int currentPointId = ServletRequestUtils.getIntParameter(request, "currentPointId", PointTypes.INVALID_POINT);
         YukonObjectCriteria criteria = getCriteria(request);
         int start = getStartParameter(request);
@@ -37,7 +38,7 @@ public class PointPickerController extends YukonObjectPickerController {
     }
 
     public ModelAndView search(HttpServletRequest request, HttpServletResponse response) throws ServletException {
-        ModelAndView mav = new ModelAndView("json");
+        ModelAndView mav = new ModelAndView(new JsonView());
         String queryString = ServletRequestUtils.getStringParameter(request, "ss", "");
         int start = getStartParameter(request);
         int count = getCountParameter(request);

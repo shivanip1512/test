@@ -8,6 +8,7 @@ import org.springframework.web.servlet.mvc.multiaction.MultiActionController;
 
 import com.cannontech.common.search.index.IndexBuilder;
 import com.cannontech.common.search.index.IndexManager;
+import com.cannontech.web.util.JsonView;
 
 public class LuceneIndexController extends MultiActionController {
 
@@ -37,7 +38,7 @@ public class LuceneIndexController extends MultiActionController {
 
     public ModelAndView percentDone(HttpServletRequest request, HttpServletResponse response) {
 
-        ModelAndView mav = new ModelAndView("json");
+        ModelAndView mav = new ModelAndView(new JsonView());
 
         final String index = request.getParameter("index");
 

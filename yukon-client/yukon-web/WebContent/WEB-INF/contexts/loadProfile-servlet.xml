@@ -15,10 +15,6 @@
         </property>
     </bean>
     
-    <bean id="jsonViewResolver"
-      class="com.cannontech.web.util.JsonViewResolver">
-    </bean>
-    
     <bean id="testpage" class="org.springframework.web.servlet.mvc.ParameterizableViewController">
       <property name="viewName" value="test"/>
     </bean>
