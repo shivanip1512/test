@@ -1054,7 +1054,7 @@ unsigned char CCU711::getFrame(int frameCount)
 
 void CCU711::getData(long int mctAddress, int function, int ioType, int bytesToReturn)
 {
-    _data[1]=mctAddress; //>> 16;
+    _data[1]= mctAddress; //>> 16;
 }
 
 /***************************************************************************************

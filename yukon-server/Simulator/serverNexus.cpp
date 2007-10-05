@@ -388,24 +388,6 @@ void worker(const int& s)
 }
 
 
-///////  DO THIS TO STORE MULTIPLE THREADS //////////////////////////
-//vector<RWThreadFunction> threads;
-
-
-    //int num_threads = number of args;
-  //  for(num+threads) {
-    //    RWThreadFunction tf = makethread();
-     //   threads.push_bach(tf);
-   // }
-
-   // thrd.join();
-
-   // return (0);
-//}
-
-
-
-
 
 int main(int argc, char *argv[]) {
 
