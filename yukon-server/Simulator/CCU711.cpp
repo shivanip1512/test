@@ -998,18 +998,18 @@ void CCU711::LoadQueuedMsg()
         ctr++;                 //length set below
         _outmessageData[ctr++] = 0x00;
         _outmessageData[ctr++] = 0xa7;
-        _outmessageData[ctr++] = 0x01; //Stats
+        _outmessageData[ctr++] = 0x00; //Stats
         _outmessageData[ctr++] = 0x00; // "  "
         _outmessageData[ctr++] = 0x18; // "  "
         _outmessageData[ctr++] = 0x50; // "  "
         _outmessageData[ctr++] = 0x00; //StatD
         _outmessageData[ctr++] = 0x00; // "  "
         _outmessageData[ctr++] = 0x20-_messageQueue.size(); // "  "
-        _outmessageData[ctr++] = 0x01;     // NCSETS
-        _outmessageData[ctr++] = 0x01;                       // NCOCTS
-        _outmessageData[ctr++] = 0x01;  // "    "
-        _outmessageData[ctr++] = 0x01;    //StatP
-        _outmessageData[ctr++] = 0x01;    // "  "
+        _outmessageData[ctr++] = 0x00;     // NCSETS
+        _outmessageData[ctr++] = 0x00;                       // NCOCTS
+        _outmessageData[ctr++] = 0x00;  // "    "
+        _outmessageData[ctr++] = 0x00;    //StatP
+        _outmessageData[ctr++] = 0x00;    // "  "
         
         _outmessageData[ctr++] = 0x00;  //  SETL = 0
         _outmessageData[3] = ctr-4;
