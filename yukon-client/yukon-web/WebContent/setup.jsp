@@ -96,7 +96,7 @@
 
 	if( (temp = request.getParameter("yukprop")) != null) {
 		if( Boolean.valueOf(temp).booleanValue() )
-			retMsg += "<span class=\"MainText\">* Saved SERVER properties successfully</span><br>";
+			retMsg += "<span class=\"MainText\">* Saved SERVER properties successfully</span><br><span class=\"redMsg\">(Webserver must be restarted for changes to take effect!)</span><br>";
 		else
 			retMsg += "<span class=\"ErrorMsg\">* Unable to save SERVER properties changes</span><br>";
 	}
