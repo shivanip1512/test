@@ -426,8 +426,8 @@ int main(int argc, char *argv[]) {
     while(portNum != (portMax+1)) {
         thr1 = new boost::thread(Adapter<WorkerFunPtr, int>(worker, portNum));
         threadVector.push_back(thr1);
-        portNum++;
         CTISleep(750);
+        portNum++;
     }
 
     
