@@ -980,7 +980,45 @@ void CCU711::LoadQueuedMsg()
         SET_FOREGROUND_BRIGHT_RED;
         cout<<'\n'<<"Error: Message queue is empty"<<endl;
         SET_FOREGROUND_WHITE;
-        _outindexOfEnd = 0;
+
+        int ncocts = _qmessagesReady * 3;
+        deque <_queueMessage> ::iterator itr;
+        for(itr=_messageQueue.begin(); itr!=_messageQueue.end(); itr++)
+        {
+             _queueMessage temp = *itr;
+             ncocts += temp.getbytesToReturn();
+             _qmessagesReady += temp.isReady();
+        }
+        int ctr = 0;
+        unsigned char preData[300];
+ 
+        _outmessageData[ctr++] = 0x7e;
+        _outmessageData[ctr++] = _address; //  Stored in 711 on startup  
+        _outmessageData[ctr++] = getFrame(1);
+        ctr++;                 //length set below
+        _outmessageData[ctr++] = 0x00;
+        _outmessageData[ctr++] = 0xa7;
+        _outmessageData[ctr++] = 0x01; //Stats
+        _outmessageData[ctr++] = 0x00; // "  "
+        _outmessageData[ctr++] = 0x18; // "  "
+        _outmessageData[ctr++] = 0x50; // "  "
+        _outmessageData[ctr++] = 0x00; //StatD
+        _outmessageData[ctr++] = 0x00; // "  "
+        _outmessageData[ctr++] = 0x20-_messageQueue.size(); // "  "
+        _outmessageData[ctr++] = 0x01;     // NCSETS
+        _outmessageData[ctr++] = 0x01;                       // NCOCTS
+        _outmessageData[ctr++] = 0x01;  // "    "
+        _outmessageData[ctr++] = 0x01;    //StatP
+        _outmessageData[ctr++] = 0x01;    // "  "
+        
+        _outmessageData[ctr++] = 0x00;  //  SETL = 0
+        _outmessageData[3] = ctr-4;
+        unsigned short CRC = NCrcCalc_C ((_outmessageData + 1), ctr-1);
+        _outmessageData[ctr++] = HIBYTE (CRC);
+        _outmessageData[ctr++] = LOBYTE (CRC);
+
+        _outindexOfEnd = ctr;
+
     }
 }
 
