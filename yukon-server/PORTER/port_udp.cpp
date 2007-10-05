@@ -7,8 +7,8 @@
 * Author: Matt Fisher
 *
 * CVS KEYWORDS:
-* REVISION     :  $Revision: 1.15 $
-* DATE         :  $Date: 2007/09/25 22:00:13 $
+* REVISION     :  $Revision: 1.16 $
+* DATE         :  $Date: 2007/10/05 13:42:42 $
 *
 * Copyright (c) 2004 Cannon Technologies Inc. All rights reserved.
 *-----------------------------------------------------------------------------*/
@@ -575,12 +575,19 @@ bool UDPInterface::getPackets( int wait )
                     unsigned len, cid, seq, devt, devr, ser, crc;
                     bool crc_included, ack_required;
 
+                    string keys, values;
+
                     traceInbound(p->ip, p->port, 0, p->data, p->len, _traceList);   // I want this out always!
 
                     crc_included = p->data[2] & 0x80;
                     ack_required = p->data[2] & 0x40;
 
+                    add_to_csv_summary(keys, values, "CRC included", crc_included);
+                    add_to_csv_summary(keys, values, "ACK required", ack_required);
+
                     len  = ((p->data[2] & 0x03) << 8) | p->data[3];
+
+                    add_to_csv_summary(keys, values, "length", len);
 
                     if( p->len < len + 4 )
                     {
@@ -617,6 +624,12 @@ bool UDPInterface::getPackets( int wait )
                                (p->data[12] << 16) |
                                (p->data[13] <<  8) |  p->data[14];
 
+
+                        add_to_csv_summary(keys, values, "CID",  cid);
+                        add_to_csv_summary(keys, values, "SEQ",  seq);
+                        add_to_csv_summary(keys, values, "DEVT", devt);
+                        add_to_csv_summary(keys, values, "DEVR", devr);
+                        add_to_csv_summary(keys, values, "SER",  ser);
 
                         {
                             CtiLockGuard<CtiLogger> doubt_guard(dout);
@@ -656,6 +669,11 @@ bool UDPInterface::getPackets( int wait )
                                             int  phase          = (p->data[pos] & 0x0c) >> 2;
                                             bool current_survey =  p->data[pos] & 0x02;
 
+                                            add_to_csv_summary(keys, values, "ACK requested",  request_ack);
+                                            add_to_csv_summary(keys, values, "UDP repeats",    udp_repeats);
+                                            add_to_csv_summary(keys, values, "phase",          phase);
+                                            add_to_csv_summary(keys, values, "current survey", current_survey);
+
                                             pos++;
 
                                             float latitude, longitude;
@@ -666,10 +684,15 @@ bool UDPInterface::getPackets( int wait )
                                             longitude = convertBytes( p->data, pos, 4);
                                             longitude /= 10000.0;
 
+                                            add_to_csv_summary(keys, values, "latitude",  latitude);
+                                            add_to_csv_summary(keys, values, "longitude", longitude);
+
                                             string device_name;
 
                                             device_name.assign((char *)p->data + pos, 128);
                                             device_name.erase(device_name.find_first_of('\0'));
+
+                                            add_to_csv_summary(keys, values, "device name", device_name);
 
                                             {
                                                 CtiLockGuard<CtiLogger> doubt_guard(dout);
@@ -691,6 +714,9 @@ bool UDPInterface::getPackets( int wait )
                                             bool fault = p->data[pos] & 0x80;
                                             bool noPower = p->data[pos] & 0x20;
 
+                                            add_to_csv_summary(keys, values, "fault", fault);
+                                            add_to_csv_summary(keys, values, "no power", noPower);
+
                                             pos++;
 
                                             unsigned long time = 0;
@@ -702,6 +728,10 @@ bool UDPInterface::getPackets( int wait )
                                                 dout << CtiTime() << " fault: " << fault << endl;
                                                 dout << CtiTime() << " no power: " << noPower << endl;
                                             }
+
+                                            add_to_csv_summary(keys, values, "includes time", items_included & 0x20);
+                                            add_to_csv_summary(keys, values, "TSO",           items_included & 0x40);
+                                            add_to_csv_summary(keys, values, "GMT",         !(items_included & 0x40));
 
                                             if( items_included & 0x20 )
                                             {
@@ -716,7 +746,11 @@ bool UDPInterface::getPackets( int wait )
                                                     CtiLockGuard<CtiLogger> doubt_guard(dout);
                                                     dout << CtiTime() << " time: " << CtiTime(time) << endl;
                                                 }
+
+                                                add_to_csv_summary(keys, values, "time", CtiTime(time).asString());
                                             }
+
+                                            add_to_csv_summary(keys, values, "includes battery voltage", items_included & 0x10);
 
                                             if( items_included & 0x10 )
                                             {
@@ -729,6 +763,9 @@ bool UDPInterface::getPackets( int wait )
                                                     dout << CtiTime() << " battery voltage: " << battery_voltage << endl;
                                                 }
                                             }
+
+                                            add_to_csv_summary(keys, values, "includes temperature", items_included & 0x08);
+
                                             if( items_included & 0x08 )
                                             {
                                                 temperature = convertBytes( p->data, pos, 2);
@@ -739,7 +776,12 @@ bool UDPInterface::getPackets( int wait )
                                                     CtiLockGuard<CtiLogger> doubt_guard(dout);
                                                     dout << CtiTime() << " temperature: " << temperature << endl;
                                                 }
+
+                                                add_to_csv_summary(keys, values, "temperature", temperature);
                                             }
+
+                                            add_to_csv_summary(keys, values, "includes nominal amps", items_included & 0x04);
+
                                             if( items_included & 0x04 )
                                             {
                                                 amps_nominal = convertBytes( p->data, pos, 2);
@@ -748,7 +790,12 @@ bool UDPInterface::getPackets( int wait )
                                                     CtiLockGuard<CtiLogger> doubt_guard(dout);
                                                     dout << CtiTime() << " amps nominal: " << amps_nominal << endl;
                                                 }
+
+                                                add_to_csv_summary(keys, values, "nominal amps", amps_nominal);
                                             }
+
+                                            add_to_csv_summary(keys, values, "includes peak amps", items_included & 0x02);
+
                                             if( items_included & 0x02 )
                                             {
                                                 amps_peak = convertBytes( p->data, pos, 2);
@@ -757,6 +804,8 @@ bool UDPInterface::getPackets( int wait )
                                                     CtiLockGuard<CtiLogger> doubt_guard(dout);
                                                     dout << CtiTime() << " amps peak: " << amps_peak << endl;
                                                 }
+
+                                                add_to_csv_summary(keys, values, "peak amps", amps_peak);
                                             }
 
                                             break;
@@ -835,12 +884,16 @@ bool UDPInterface::getPackets( int wait )
 
                                             break;
                                         }
-                                    case 0x05:
+                                        case 0x05:
                                         {
                                             unsigned char items_included = p->data[pos++];
 
                                             unsigned long time = 0;
                                             float amps_nominal, amps_peak;
+
+                                            add_to_csv_summary(keys, values, "includes time", items_included & 0x20);
+                                            add_to_csv_summary(keys, values, "TSO",           items_included & 0x40);
+                                            add_to_csv_summary(keys, values, "GMT",         !(items_included & 0x40));
 
                                             if( items_included & 0x20 )
                                             {
@@ -851,16 +904,26 @@ bool UDPInterface::getPackets( int wait )
                                                     time = CtiTime::now().seconds() - time;
                                                 }
 
+                                                {
+                                                    CtiLockGuard<CtiLogger> doubt_guard(dout);
+                                                    dout << CtiTime() << " time: " << CtiTime(time) << endl;
+                                                }
+
+                                                add_to_csv_summary(keys, values, "time", CtiTime(time).asString());
                                             }
 
                                             unsigned short momCount = 0;
 
                                             momCount  = convertBytes( p->data, pos, 2);
 
+                                            add_to_csv_summary(keys, values, "momentary count", momCount);
+
                                             {
                                                 CtiLockGuard<CtiLogger> doubt_guard(dout);
                                                 dout << CtiTime() << " momentary count: " << momCount << endl;
                                             }
+
+                                            add_to_csv_summary(keys, values, "includes nominal amps", items_included & 0x04);
 
                                             if( items_included & 0x04 )
                                             {
@@ -870,7 +933,12 @@ bool UDPInterface::getPackets( int wait )
                                                     CtiLockGuard<CtiLogger> doubt_guard(dout);
                                                     dout << CtiTime() << " amps nominal: " << amps_nominal << endl;
                                                 }
+
+                                                add_to_csv_summary(keys, values, "nominal amps", amps_nominal);
                                             }
+
+                                            add_to_csv_summary(keys, values, "includes peak amps", items_included & 0x02);
+
                                             if( items_included & 0x02 )
                                             {
                                                 amps_peak = convertBytes( p->data, pos, 2);
@@ -879,6 +947,8 @@ bool UDPInterface::getPackets( int wait )
                                                     CtiLockGuard<CtiLogger> doubt_guard(dout);
                                                     dout << CtiTime() << " amps peak: " << amps_peak << endl;
                                                 }
+
+                                                add_to_csv_summary(keys, values, "nominal amps", amps_peak);
                                             }
 
                                             // TODO: Add duration here (items_included & 0x01)
@@ -896,6 +966,15 @@ bool UDPInterface::getPackets( int wait )
                                         }
                                     }
                                 }
+
+                                if( gConfigParms.getValueAsInt("FCI_CSV_SUMMARY") )
+                                {
+                                    CtiLockGuard<CtiLogger> doubt_guard(dout);
+                                    dout << CtiTime() << " **** FCI CSV summary **** " << __FILE__ << " (" << __LINE__ << ")" << endl;
+                                    dout << keys   << endl;
+                                    dout << values << endl;
+                                }
+                                
 
                                 break;
                             }
@@ -1134,6 +1213,41 @@ bool UDPInterface::getPackets( int wait )
 
 
     return packet_read;
+}
+
+
+void UDPInterface::add_to_csv_summary( string &keys, string &values, string key, bool value )
+{
+    keys += key + ",";
+    values += value?"Y,":"N,";
+}
+
+
+void UDPInterface::add_to_csv_summary( string &keys, string &values, string key, int value )
+{
+    keys += key + ",";
+    values += CtiNumStr(value) + ",";
+}
+
+
+void UDPInterface::add_to_csv_summary( string &keys, string &values, string key, unsigned value )
+{
+    keys += key + ",";
+    values += CtiNumStr(value) + ",";
+}
+
+
+void UDPInterface::add_to_csv_summary( string &keys, string &values, string key, float value )
+{
+    keys += key + ",";
+    values += CtiNumStr(value) + ",";
+}
+
+
+void UDPInterface::add_to_csv_summary( string &keys, string &values, string key, string value )
+{
+    keys += key + ",";
+    values += value + ",";  //  to make this robust, it should escape commas
 }
 
 
@@ -1435,7 +1549,6 @@ void UDPInterface::processInbounds( void )
                     {
                         if( p = dr->work.inbound.front() )
                         {
-
                             unsigned len, cid, seq, devt, devr, ser, crc;
                             bool crc_included, ack_required;
 
