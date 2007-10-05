@@ -69,12 +69,8 @@
 								</c:forEach>
 	                      	</select>
 	                    </div>
-	                    <div id='<c:out value="${filterDesignationCodes}"/>' style="display:none" > 
-	                    	<select id='<c:out value="${filterDesignationCodes}"/>1' name='<c:out value="${filterDesignationCodes}"/>1' size="1" style="width: 200px" onChange="selectFilter(this.value)">
-	                            <c:forEach var="designationCode" items="${filterBean.availableDesignationCodes}">
-									<option value='<c:out value="${designationCode.designationCodeID}"/>'> <c:out value="${designationCode.designationCodeValue}"/> </option>
-								</c:forEach>
-	                      	</select>
+	                    <div id='<c:out value="${filterDesignationCodes}"/>' style="display:none" >
+                            <input id='<c:out value="${filterDesignationCodes}"/>1' type="text" name="${filterDesignationCodes}" style="width: 200px;" onChange="selectFilter('<c:out value="${filterDesignationCodes}"/>1');"/>
 	                    </div>
 	                    <div id='<c:out value="${filterServiceType}"/>' style="display:none"> 
 	                    	<select id='<c:out value="${filterServiceType}"/>1' name='<c:out value="${filterServiceType}"/>1' size="1" style="width: 200px" onChange="selectFilter(this.value)">
@@ -214,8 +210,18 @@
 			filterBy += 1;
 			selectedFilter = type.options[type.selectedIndex].text;  
 			selectedFilter += ": ";
-			selectedFilter += document.getElementById(filterBy).options[0].text;
-			selectedFilterID = document.getElementById(filterBy).options[0].value;			
+            
+            var filterByElement = document.getElementById(filterBy);
+            var tagName = filterByElement.tagName.toLowerCase();
+
+            if (tagName == 'select') {
+    			selectedFilter += filterByElement.options[0].text;
+	       		selectedFilterID = filterByElement.options[0].value;
+            }
+            
+            if (tagName == 'input') {
+                selectedFilterID = filterByElement.name;
+            }    
 		}
 		
 		
@@ -226,9 +232,18 @@
 			var filterBy = selectedFilterType;
 			filterBy += 1;
 			var filter = document.getElementById(filterBy);
+            var tagName = filter.tagName.toLowerCase();
+            
 			selectedFilter = type.options[type.selectedIndex].text;  
 			selectedFilter += ": ";
-			selectedFilter += filter.options[filter.selectedIndex].text;
+            
+            if (tagName == 'select') {
+    			selectedFilter += filter.options[filter.selectedIndex].text;
+            }
+            
+            if (tagName == 'input') {
+                selectedFilter += filter.value;
+            }    
 		}
 		
 		function saveEntry(form) 
