@@ -479,3 +479,23 @@ alter table cceventlog alter column actionId numeric not null;
 update capcontrolstrategy set peaklead = -peaklead where peaklead > 0 and  controlunits = 'kVar';
 update capcontrolstrategy set offpklead = -offpklead where offpklead > 0 and  controlunits = 'kVar';
 /***********************************************************************************/
+
+
+/********************* Device Configuration Additions (Head only) -Jason ******************************/
+create table DeviceConfiguration (
+	DeviceConfigurationId           numeric              not null,
+	Name        varchar(30)          not null,
+	Type		varchar(30) not null
+)
+
+create table DeviceConfigurationItem (
+	DeviceConfigurationItemId	numeric             not null,
+	DeviceConfigurationId		numeric             not null,
+	FieldName					varchar(30)			not null,
+	Value						varchar(30)         not null
+)
+
+insert into YukonRoleProperty values(-20013,-200,'Edit Device Config','false','Controls the ability to edit and create device configurations');
+insert into YukonRoleProperty values(-20014,-200,'View Device Config','true','Controls the ability to view existing device configurations');
+
+/*****************************************************************************/

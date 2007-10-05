@@ -1,0 +1,1675 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE beans PUBLIC "-//SPRING//DTD BEAN//EN" "http://www.springframework.org/dtd/spring-beans.dtd">
+
+<beans>
+
+	<bean id="deviceConfigurationDao" class="com.cannontech.common.device.config.dao.DeviceConfigurationDaoImpl">
+		<property name="simpleJdbcTemplate" ref="simpleJdbcTemplate" />
+		<property name="nextValueHelper" ref="nextValueHelper" />
+		<property name="configurationTemplateList">
+			<list>
+				<ref bean="mct470Config"/>
+				<ref bean="mct410Config"/>
+			</list>
+		</property>
+	</bean>
+	
+	<!-- Configuration templates -->
+	<bean id="mct470Config" class="com.cannontech.common.device.config.model.ConfigurationTemplate">
+		<property name="name" value="MCT 470 Configuration" />
+		<property name="view" value="470Config" />
+		<property name="description" value="MCT 470 Configuration" />
+		<property name="supportedDeviceSet">
+			<set>
+				<value>MCT-470</value>
+			</set>
+		</property>
+		<property name="categoryList">
+			<list>
+				<ref bean="addressingCategory"/>
+				<ref bean="dstCategory"/>
+				<ref bean="optionsCategory"/>
+				<ref bean="demandLPCategory"/>
+				<ref bean="voltageThresholdCategory"/>
+				<ref bean="longLPCategory"/>
+				<ref bean="holidaysCategory"/>
+				<ref bean="lpChannelsCategory"/>
+				<ref bean="relaysCategory"/>
+				<ref bean="precannedTableCategory"/>
+				<ref bean="systemOptionsCategory"/>
+				<ref bean="touCategory"/>
+				<ref bean="dnpCategory"/>
+			</list>
+		</property>
+		
+		<!-- Config field name to database item mapping -->
+		<property name="dbNameMapping">
+			<props>
+				<prop key="Bronze Address">bronzeAddress</prop>
+				<prop key="Lead Address">leadAddress</prop>
+				<prop key="Service Provider ID">serviceProviderId</prop>
+				<prop key="Collection Address">collectionAddress</prop>
+				<prop key="DST Begin">dstBegin</prop>
+				<prop key="DST End">dstEnd</prop>
+				<prop key="Time Zone Offset">timeZoneOffset</prop>
+				<prop key="Alarm Mask Meter">alarmMaskMeter</prop>
+				<prop key="Alarm Mask Event 1">alarmMaskEvent1</prop>
+				<prop key="Alarm Mask Event 2">alarmMaskEvent2</prop>
+				<prop key="Time Adjust Tolerance">timeAdjustTolerance</prop>
+				<prop key="Configuration">configuration</prop>
+				<prop key="Options">options</prop>
+				<prop key="Outage Cycles">outageCycles</prop>
+				<prop key="Demand Interval">demandInterval</prop>
+				<prop key="Load Profile Interval">loadProfileInterval</prop>
+				<prop key="Voltage LP Interval">voltageLpInterval</prop>
+				<prop key="Demand V Interval">demandVInterval</prop>
+				<prop key="Load Profile Interval 2">loadProfileInterval2</prop>
+				<prop key="Under VThreshold">underVThreshold</prop>
+				<prop key="Over VThreshold">overVThreshold</prop>
+				<prop key="Channel 1 Length">channel1Length</prop>
+				<prop key="Channel 2 Length">channel2Length</prop>
+				<prop key="Channel 3 Length">channel3Length</prop>
+				<prop key="Channel 4 Length">channel4Length</prop>
+				<prop key="Holiday Date 1">holidayDate1</prop>
+				<prop key="Holiday Date 2">holidayDate2</prop>
+				<prop key="Holiday Date 3">holidayDate3</prop>
+				<prop key="Channel Config 1">channelConfig1</prop>
+				<prop key="Channel Config 2">channelConfig2</prop>
+				<prop key="Channel Config 3">channelConfig3</prop>
+				<prop key="Channel Config 4">channelConfig4</prop>
+				<prop key="Relay A Timer">relayATimer</prop>
+				<prop key="Relay B Timer">relayBTimer</prop>
+				<prop key="Table Read Interval">tableReadInterval</prop>
+				<prop key="Meter Number">meterNumber</prop>
+				<prop key="Table Type">tableType</prop>
+				<prop key="Demand Meters to Scan">demandMetersToScan</prop>
+				<prop key="Default Rate">tou.defaultRate</prop>
+				<prop key="Monday">tou.monday</prop>
+				<prop key="Tuesday">tou.tuesday</prop>
+				<prop key="Wednesday">tou.wednesday</prop>
+				<prop key="Thursday">tou.thursday</prop>
+				<prop key="Friday">tou.friday</prop>
+				<prop key="Saturday">tou.saturday</prop>
+				<prop key="sunday">tou.sunday</prop>
+				<prop key="holiday">tou.holiday</prop>
+				<prop key="Schedule1Time0">tou.scheduleList[0].timeRateList[0].time</prop>
+				<prop key="Schedule1Rate0">tou.scheduleList[0].timeRateList[0].rate</prop>
+				<prop key="Schedule1Time1">tou.scheduleList[0].timeRateList[1].time</prop>
+				<prop key="Schedule1Rate1">tou.scheduleList[0].timeRateList[1].rate</prop>
+				<prop key="Schedule1Time2">tou.scheduleList[0].timeRateList[2].time</prop>
+				<prop key="Schedule1Rate2">tou.scheduleList[0].timeRateList[2].rate</prop>
+				<prop key="Schedule1Time3">tou.scheduleList[0].timeRateList[3].time</prop>
+				<prop key="Schedule1Rate3">tou.scheduleList[0].timeRateList[3].rate</prop>
+				<prop key="Schedule1Time4">tou.scheduleList[0].timeRateList[4].time</prop>
+				<prop key="Schedule1Rate4">tou.scheduleList[0].timeRateList[4].rate</prop>
+				<prop key="Schedule1Time5">tou.scheduleList[0].timeRateList[4].time</prop>
+				<prop key="Schedule1Rate5">tou.scheduleList[0].timeRateList[4].rate</prop>
+				<prop key="Schedule2Time0">tou.scheduleList[1].timeRateList[0].time</prop>
+				<prop key="Schedule2Rate0">tou.scheduleList[1].timeRateList[0].rate</prop>
+				<prop key="Schedule2Time1">tou.scheduleList[1].timeRateList[1].time</prop>
+				<prop key="Schedule2Rate1">tou.scheduleList[1].timeRateList[1].rate</prop>
+				<prop key="Schedule2Time2">tou.scheduleList[1].timeRateList[2].time</prop>
+				<prop key="Schedule2Rate2">tou.scheduleList[1].timeRateList[2].rate</prop>
+				<prop key="Schedule2Time3">tou.scheduleList[1].timeRateList[3].time</prop>
+				<prop key="Schedule2Rate3">tou.scheduleList[1].timeRateList[3].rate</prop>
+				<prop key="Schedule2Time4">tou.scheduleList[1].timeRateList[4].time</prop>
+				<prop key="Schedule2Rate4">tou.scheduleList[1].timeRateList[4].rate</prop>
+				<prop key="Schedule2Time5">tou.scheduleList[1].timeRateList[4].time</prop>
+				<prop key="Schedule2Rate5">tou.scheduleList[1].timeRateList[4].rate</prop>
+				<prop key="Schedule3Time0">tou.scheduleList[2].timeRateList[0].time</prop>
+				<prop key="Schedule3Rate0">tou.scheduleList[2].timeRateList[0].rate</prop>
+				<prop key="Schedule3Time1">tou.scheduleList[2].timeRateList[1].time</prop>
+				<prop key="Schedule3Rate1">tou.scheduleList[2].timeRateList[1].rate</prop>
+				<prop key="Schedule3Time2">tou.scheduleList[2].timeRateList[2].time</prop>
+				<prop key="Schedule3Rate2">tou.scheduleList[2].timeRateList[2].rate</prop>
+				<prop key="Schedule3Time3">tou.scheduleList[2].timeRateList[3].time</prop>
+				<prop key="Schedule3Rate3">tou.scheduleList[2].timeRateList[3].rate</prop>
+				<prop key="Schedule3Time4">tou.scheduleList[2].timeRateList[4].time</prop>
+				<prop key="Schedule3Rate4">tou.scheduleList[2].timeRateList[4].rate</prop>
+				<prop key="Schedule3Time5">tou.scheduleList[2].timeRateList[4].time</prop>
+				<prop key="Schedule3Rate5">tou.scheduleList[2].timeRateList[4].rate</prop>
+				<prop key="Schedule4Time0">tou.scheduleList[3].timeRateList[0].time</prop>
+				<prop key="Schedule4Rate0">tou.scheduleList[3].timeRateList[0].rate</prop>
+				<prop key="Schedule4Time1">tou.scheduleList[3].timeRateList[1].time</prop>
+				<prop key="Schedule4Rate1">tou.scheduleList[3].timeRateList[1].rate</prop>
+				<prop key="Schedule4Time2">tou.scheduleList[3].timeRateList[2].time</prop>
+				<prop key="Schedule4Rate2">tou.scheduleList[3].timeRateList[2].rate</prop>
+				<prop key="Schedule4Time3">tou.scheduleList[3].timeRateList[3].time</prop>
+				<prop key="Schedule4Rate3">tou.scheduleList[3].timeRateList[3].rate</prop>
+				<prop key="Schedule4Time4">tou.scheduleList[3].timeRateList[4].time</prop>
+				<prop key="Schedule4Rate4">tou.scheduleList[3].timeRateList[4].rate</prop>
+				<prop key="Schedule4Time5">tou.scheduleList[3].timeRateList[4].time</prop>
+				<prop key="Schedule4Rate5">tou.scheduleList[3].timeRateList[4].rate</prop>
+				<prop key="collection 1 binary a">collection1BinaryA</prop>
+				<prop key="collection 1 binary b">collection1BinaryB</prop>
+				<prop key="collection 2 binary a">collection2BinaryA</prop>
+				<prop key="collection 2 binary b">collection2BinaryB</prop>
+				<prop key="collection 1 analog">collection1Analog</prop>
+				<prop key="collection 2 analog">collection2Analog</prop>
+				<prop key="collection 1 accumulator">collection1Accumulator</prop>
+				<prop key="collection 2 accumulator">collection2Accumulator</prop>
+				<prop key="analog 1">analog1</prop>
+				<prop key="analog 2">analog2</prop>
+				<prop key="analog 3">analog3</prop>
+				<prop key="analog 4">analog4</prop>
+				<prop key="analog 5">analog5</prop>
+				<prop key="analog 6">analog6</prop>
+				<prop key="analog 7">analog7</prop>
+				<prop key="analog 8">analog8</prop>
+				<prop key="analog 9">analog9</prop>
+				<prop key="analog 10">analog10</prop>
+				<prop key="accumulator 1">accumulator1</prop>
+				<prop key="accumulator 2">accumulator2</prop>
+				<prop key="accumulator 3">accumulator3</prop>
+				<prop key="accumulator 4">accumulator4</prop>
+				<prop key="accumulator 5">accumulator5</prop>
+				<prop key="accumulator 6">accumulator6</prop>
+				<prop key="accumulator 7">accumulator7</prop>
+				<prop key="accumulator 8">accumulator8</prop>
+				<prop key="binary byte 1a">binaryByte1a</prop>
+				<prop key="binary byte 1b">binaryByte1b</prop>
+			</props>
+		</property>
+	</bean>
+
+	<bean id="mct410Config" class="com.cannontech.common.device.config.model.ConfigurationTemplate">
+		<property name="name" value="MCT 410 Configuration" />
+		<property name="view" value="410Config" />
+		<property name="description" value="MCT 410 Configuration" />
+		<property name="supportedDeviceSet">
+			<set>
+				<value>MCT-410IL</value>
+			</set>
+		</property>
+		<property name="categoryList">
+			<list>
+				<ref bean="centronCategory"/>
+				<ref bean="addressingCategory"/>
+				<ref bean="dstCategory"/>
+				<ref bean="optionsCategory"/>
+				<ref bean="demandLPCategory"/>
+				<ref bean="voltageThresholdCategory"/>
+				<ref bean="disconnectCategory"/>
+				<ref bean="longLPCategory"/>
+				<ref bean="holidaysCategory"/>
+				<ref bean="touCategory"/>
+			</list>
+		</property>
+		
+		<!-- Config field name to database item mapping -->
+		<property name="dbNameMapping">
+			<props>
+				<prop key="Parameters">parameters</prop>
+				<prop key="Transformer Ratio">transformerRatio</prop>
+				<prop key="Bronze Address">bronzeAddress</prop>
+				<prop key="Lead Address">leadAddress</prop>
+				<prop key="Service Provider ID">serviceProviderId</prop>
+				<prop key="Collection Address">collectionAddress</prop>
+				<prop key="DST Begin">dstBegin</prop>
+				<prop key="DST End">dstEnd</prop>
+				<prop key="Time Zone Offset">timeZoneOffset</prop>
+				<prop key="Alarm Mask Meter">alarmMaskMeter</prop>
+				<prop key="Alarm Mask Event 1">alarmMaskEvent1</prop>
+				<prop key="Alarm Mask Event 2">alarmMaskEvent2</prop>
+				<prop key="Time Adjust Tolerance">timeAdjustTolerance</prop>
+				<prop key="Configuration">configuration</prop>
+				<prop key="Options">options</prop>
+				<prop key="Outage Cycles">outageCycles</prop>
+				<prop key="Demand Interval">demandInterval</prop>
+				<prop key="Load Profile Interval">loadProfileInterval</prop>
+				<prop key="Voltage LP Interval">voltageLpInterval</prop>
+				<prop key="Demand V Interval">demandVInterval</prop>
+				<prop key="Load Profile Interval 2">loadProfileInterval2</prop>
+				<prop key="Under VThreshold">underVThreshold</prop>
+				<prop key="Over VThreshold">overVThreshold</prop>
+				<prop key="Demand Threshold">demandThreshold</prop>
+				<prop key="Connect Delay">connectDelay</prop>
+				<prop key="Cycling Connect Minutes">cyclingConnectMinutes</prop>
+				<prop key="Cycling Disconnect Minutes">cyclingDisconnectMinutes</prop>
+				<prop key="Channel 1 Length">channel1Length</prop>
+				<prop key="Channel 2 Length">channel2Length</prop>
+				<prop key="Channel 3 Length">channel3Length</prop>
+				<prop key="Channel 4 Length">channel4Length</prop>
+				<prop key="Holiday Date 1">holidayDate1</prop>
+				<prop key="Holiday Date 2">holidayDate2</prop>
+				<prop key="Holiday Date 3">holidayDate3</prop>
+				<prop key="Default Rate">tou.defaultRate</prop>
+				<prop key="Monday">tou.monday</prop>
+				<prop key="Tuesday">tou.tuesday</prop>
+				<prop key="Wednesday">tou.wednesday</prop>
+				<prop key="Thursday">tou.thursday</prop>
+				<prop key="Friday">tou.friday</prop>
+				<prop key="Saturday">tou.saturday</prop>
+				<prop key="sunday">tou.sunday</prop>
+				<prop key="holiday">tou.holiday</prop>
+				<prop key="Schedule1Time0">tou.scheduleList[0].timeRateList[0].time</prop>
+				<prop key="Schedule1Rate0">tou.scheduleList[0].timeRateList[0].rate</prop>
+				<prop key="Schedule1Time1">tou.scheduleList[0].timeRateList[1].time</prop>
+				<prop key="Schedule1Rate1">tou.scheduleList[0].timeRateList[1].rate</prop>
+				<prop key="Schedule1Time2">tou.scheduleList[0].timeRateList[2].time</prop>
+				<prop key="Schedule1Rate2">tou.scheduleList[0].timeRateList[2].rate</prop>
+				<prop key="Schedule1Time3">tou.scheduleList[0].timeRateList[3].time</prop>
+				<prop key="Schedule1Rate3">tou.scheduleList[0].timeRateList[3].rate</prop>
+				<prop key="Schedule1Time4">tou.scheduleList[0].timeRateList[4].time</prop>
+				<prop key="Schedule1Rate4">tou.scheduleList[0].timeRateList[4].rate</prop>
+				<prop key="Schedule1Time5">tou.scheduleList[0].timeRateList[4].time</prop>
+				<prop key="Schedule1Rate5">tou.scheduleList[0].timeRateList[4].rate</prop>
+				<prop key="Schedule2Time0">tou.scheduleList[1].timeRateList[0].time</prop>
+				<prop key="Schedule2Rate0">tou.scheduleList[1].timeRateList[0].rate</prop>
+				<prop key="Schedule2Time1">tou.scheduleList[1].timeRateList[1].time</prop>
+				<prop key="Schedule2Rate1">tou.scheduleList[1].timeRateList[1].rate</prop>
+				<prop key="Schedule2Time2">tou.scheduleList[1].timeRateList[2].time</prop>
+				<prop key="Schedule2Rate2">tou.scheduleList[1].timeRateList[2].rate</prop>
+				<prop key="Schedule2Time3">tou.scheduleList[1].timeRateList[3].time</prop>
+				<prop key="Schedule2Rate3">tou.scheduleList[1].timeRateList[3].rate</prop>
+				<prop key="Schedule2Time4">tou.scheduleList[1].timeRateList[4].time</prop>
+				<prop key="Schedule2Rate4">tou.scheduleList[1].timeRateList[4].rate</prop>
+				<prop key="Schedule2Time5">tou.scheduleList[1].timeRateList[4].time</prop>
+				<prop key="Schedule2Rate5">tou.scheduleList[1].timeRateList[4].rate</prop>
+				<prop key="Schedule3Time0">tou.scheduleList[2].timeRateList[0].time</prop>
+				<prop key="Schedule3Rate0">tou.scheduleList[2].timeRateList[0].rate</prop>
+				<prop key="Schedule3Time1">tou.scheduleList[2].timeRateList[1].time</prop>
+				<prop key="Schedule3Rate1">tou.scheduleList[2].timeRateList[1].rate</prop>
+				<prop key="Schedule3Time2">tou.scheduleList[2].timeRateList[2].time</prop>
+				<prop key="Schedule3Rate2">tou.scheduleList[2].timeRateList[2].rate</prop>
+				<prop key="Schedule3Time3">tou.scheduleList[2].timeRateList[3].time</prop>
+				<prop key="Schedule3Rate3">tou.scheduleList[2].timeRateList[3].rate</prop>
+				<prop key="Schedule3Time4">tou.scheduleList[2].timeRateList[4].time</prop>
+				<prop key="Schedule3Rate4">tou.scheduleList[2].timeRateList[4].rate</prop>
+				<prop key="Schedule3Time5">tou.scheduleList[2].timeRateList[4].time</prop>
+				<prop key="Schedule3Rate5">tou.scheduleList[2].timeRateList[4].rate</prop>
+				<prop key="Schedule4Time0">tou.scheduleList[3].timeRateList[0].time</prop>
+				<prop key="Schedule4Rate0">tou.scheduleList[3].timeRateList[0].rate</prop>
+				<prop key="Schedule4Time1">tou.scheduleList[3].timeRateList[1].time</prop>
+				<prop key="Schedule4Rate1">tou.scheduleList[3].timeRateList[1].rate</prop>
+				<prop key="Schedule4Time2">tou.scheduleList[3].timeRateList[2].time</prop>
+				<prop key="Schedule4Rate2">tou.scheduleList[3].timeRateList[2].rate</prop>
+				<prop key="Schedule4Time3">tou.scheduleList[3].timeRateList[3].time</prop>
+				<prop key="Schedule4Rate3">tou.scheduleList[3].timeRateList[3].rate</prop>
+				<prop key="Schedule4Time4">tou.scheduleList[3].timeRateList[4].time</prop>
+				<prop key="Schedule4Rate4">tou.scheduleList[3].timeRateList[4].rate</prop>
+				<prop key="Schedule4Time5">tou.scheduleList[3].timeRateList[4].time</prop>
+				<prop key="Schedule4Rate5">tou.scheduleList[3].timeRateList[4].rate</prop>
+			</props>
+		</property>
+	</bean>
+
+	<!-- Configuration categories -->
+	
+	<bean id="addressingCategory" class="com.cannontech.common.device.config.model.CategoryTemplate">
+		<property name="name" value="MCT Addressing" />
+		<property name="inputList">
+			<list>
+				<bean class="com.cannontech.web.input.InputBase">
+					<property name="displayName" value="Bronze Address" />
+					<property name="field" value="bronzeAddress" />
+					<property name="type" ref="inputIntegerType" />
+					<property name="validatorList">
+						<list>
+							<bean class="com.cannontech.web.input.validate.IntegerRangeValidator">
+								<property name="minValue" value="0" />
+								<property name="maxValue" value="255" />
+							</bean>
+						</list>
+					</property>
+					<property name="security" ref="configEditSecurity" />
+				</bean>
+				<bean class="com.cannontech.web.input.InputBase">
+					<property name="displayName" value="Lead Address" />
+					<property name="field" value="leadAddress" />
+					<property name="type" ref="inputIntegerType" />
+					<property name="validatorList">
+						<list>
+							<bean class="com.cannontech.web.input.validate.IntegerRangeValidator">
+								<property name="minValue" value="0" />
+								<property name="maxValue" value="4095" />
+							</bean>
+							<ref bean="requiredInputValidator"/>
+						</list>
+					</property>
+					<property name="security" ref="configEditSecurity" />
+				</bean>
+				<bean class="com.cannontech.web.input.InputBase">
+					<property name="displayName" value="Service Provider Id" />
+					<property name="field" value="serviceProviderId" />
+					<property name="type" ref="inputIntegerType" />
+					<property name="validatorList">
+						<list>
+							<bean class="com.cannontech.web.input.validate.IntegerRangeValidator">
+								<property name="minValue" value="0" />
+								<property name="maxValue" value="255" />
+							</bean>
+						</list>
+					</property>
+					<property name="security" ref="configEditSecurity" />
+				</bean>
+				<bean class="com.cannontech.web.input.InputBase">
+					<property name="displayName" value="Collection Address" />
+					<property name="field" value="collectionAddress" />
+					<property name="type" ref="inputIntegerType" />
+					<property name="validatorList">
+						<list>
+							<bean class="com.cannontech.web.input.validate.IntegerRangeValidator">
+								<property name="minValue" value="0" />
+								<property name="maxValue" value="4095" />
+							</bean>
+						</list>
+					</property>
+					<property name="security" ref="configEditSecurity" />
+				</bean>
+			</list>
+		</property>
+	</bean>
+				
+	<bean id="dstCategory" class="com.cannontech.common.device.config.model.CategoryTemplate">
+		<property name="name" value="MCT Daylight Savings Time" />
+		<property name="inputList">
+			<list>
+				<bean class="com.cannontech.web.input.InputBase">
+					<property name="displayName" value="DST Begin" />
+					<property name="field" value="dstBegin" />
+					<property name="description">
+						<value>
+							The time which DST begins
+						</value>
+					</property>
+					<property name="type" ref="inputDateType" />
+					<property name="security" ref="configEditSecurity" />
+				</bean>
+				<bean class="com.cannontech.web.input.InputBase">
+					<property name="displayName" value="DST End" />
+					<property name="field" value="dstEnd" />
+					<property name="description">
+						<value>
+							The time which DST ends
+						</value>
+					</property>
+					<property name="type" ref="inputDateType" />
+					<property name="security" ref="configEditSecurity" />
+				</bean>
+				<bean class="com.cannontech.web.input.InputBase">
+					<property name="displayName" value="Time Zone Offset" />
+					<property name="field" value="timeZoneOffset" />
+					<property name="description">
+						<value>
+							Signed offset from UTC presented in 15-minute increments.  EST = -20, CST = -24 etc.
+						</value>
+					</property>
+					<property name="type" ref="inputIntegerType" />
+					<property name="security" ref="configEditSecurity" />
+				</bean>
+			</list>
+		</property>
+	</bean>
+				
+	<bean id="optionsCategory" class="com.cannontech.common.device.config.model.CategoryTemplate">
+		<property name="name" value="MCT Options" />
+		<property name="inputList">
+			<list>
+				<bean class="com.cannontech.web.input.InputBase">
+					<property name="displayName" value="Alarm Mask Meter" />
+					<property name="field" value="alarmMaskMeter" />
+					<property name="description">
+						<value>
+							Bit aligned with alarms in iCon meter
+						</value>
+					</property>
+					<property name="type" ref="inputBooleanType" />
+					<property name="security" ref="configEditSecurity" />
+				</bean>
+				<bean class="com.cannontech.web.input.InputBase">
+					<property name="displayName" value="Alarm Mask Event 1" />
+					<property name="field" value="alarmMaskEvent1" />
+					<property name="description">
+						<value>
+							Bit field, bits ordered 76543210, defined as: 7 NegativeTimeSync 6 DST Change 5 Holiday Flag 4 RTC Adjusted 3 Power Fail Carryover 2 Stack Overflow 1 Electronic Meter Communication Error 0 Power Fail Event
+						</value>
+					</property>
+					<property name="type" ref="inputBooleanType" />
+					<property name="security" ref="configEditSecurity" />
+				</bean>
+				<bean class="com.cannontech.web.input.InputBase">
+					<property name="displayName" value="Alarm Mask Event 2" />
+					<property name="field" value="alarmMaskEvent2" />
+					<property name="description">
+						<value>
+							Bit field, bits ordered 76543210, defined as: 7,6,5 Unused. 4: Address Corruption, 3: Zero Usage Channel 4, 2: Zero Usage Channel 3, 1: Zero Usage Channel 2. 0: Zero Usage Channel 1
+						</value>
+					</property>
+					<property name="type" ref="inputBooleanType" />
+					<property name="security" ref="configEditSecurity" />
+				</bean>
+				<bean class="com.cannontech.web.input.InputBase">
+					<property name="displayName" value="Time Adjust Tolerance" />
+					<property name="field" value="timeAdjustTolerance" />
+					<property name="description">
+						<value>
+							Update the RTC if it is this far away from the incoming time sync
+						</value>
+					</property>
+					<property name="type" ref="inputIntegerType" />
+					<property name="security" ref="configEditSecurity" />
+				</bean>
+				<bean class="com.cannontech.web.input.InputBase">
+					<property name="displayName" value="Configuration" />
+					<property name="field" value="configuration" />
+					<property name="description">
+						<value>
+							For MCT 470, bit field use caution.
+						</value>
+					</property>
+					<property name="type" ref="inputBooleanType" />
+					<property name="security" ref="configEditSecurity" />
+				</bean>
+				<bean class="com.cannontech.web.input.InputBase">
+					<property name="displayName" value="Options" />
+					<property name="field" value="options" />
+					<property name="description">
+						<value>
+							For MCT 470, bit field use caution.
+						</value>
+					</property>
+					<property name="type" ref="inputBooleanType" />
+					<property name="security" ref="configEditSecurity" />
+				</bean>
+				<bean class="com.cannontech.web.input.InputBase">
+					<property name="displayName" value="Outage Cycles" />
+					<property name="field" value="outageCycles" />
+					<property name="type" ref="inputIntegerType" />
+					<property name="security" ref="configEditSecurity" />
+				</bean>
+			</list>
+		</property>
+	</bean>
+					
+	<bean id="demandLPCategory" class="com.cannontech.common.device.config.model.CategoryTemplate">
+		<property name="name" value="MCT Demand and Load Profile" />
+		<property name="inputList">
+			<list>
+				<bean class="com.cannontech.web.input.InputBase">
+					<property name="displayName" value="Demand Interval" />
+					<property name="field" value="demandInterval" />
+					<property name="description">
+						<value>
+							Interval in minutes over which most recent demand is calculatd
+						</value>
+					</property>
+					<property name="type" ref="inputIntegerType" />
+					<property name="validatorList">
+						<list>
+							<bean class="com.cannontech.web.input.validate.IntegerRangeValidator">
+								<property name="minValue" value="1" />
+								<property name="maxValue" value="60" />
+							</bean>
+						</list>
+					</property>
+					<property name="security" ref="configEditSecurity" />
+				</bean>
+				<bean class="com.cannontech.web.input.InputBase">
+					<property name="displayName" value="Load Profile Interval" />
+					<property name="field" value="loadProfileInterval" />
+					<property name="description">
+						<value>
+							Interval in minutes over which load profile values are kept. Valid values are 5, 15, 30, and 0
+						</value>
+					</property>
+					<property name="type">
+						<bean class="com.cannontech.web.input.type.DelegatingEnumeratedType">
+							<property name="enumeratedType" ref="inputIntegerType" />
+							<property name="optionList">
+								<list>
+									<value>5</value>
+									<value>15</value>
+									<value>30</value>
+									<value>60</value>
+								</list>
+							</property>
+						</bean>
+					</property>
+					<property name="security" ref="configEditSecurity" />
+				</bean>
+				<bean class="com.cannontech.web.input.InputBase">
+					<property name="displayName" value="Voltage LP Interval" />
+					<property name="field" value="voltageLpInterval" />
+					<property name="description">
+						<value>
+							Interval in minutes over which voltage load profile values are kept. Valid values are 5, 15, 30, and 0
+						</value>
+					</property>
+					<property name="type">
+						<bean class="com.cannontech.web.input.type.DelegatingEnumeratedType">
+							<property name="enumeratedType" ref="inputIntegerType" />
+							<property name="optionList">
+								<list>
+									<value>5</value>
+									<value>15</value>
+									<value>30</value>
+									<value>60</value>
+								</list>
+							</property>
+						</bean>
+					</property>
+					<property name="security" ref="configEditSecurity" />
+				</bean>
+				<bean class="com.cannontech.web.input.InputBase">
+					<property name="displayName" value="Demand V Interval" />
+					<property name="field" value="demandVInterval" />
+					<property name="description">
+						<value>
+							Interval over which demand is averaged over, in 15 second increments. 0 = disabled, 1 = 15 seconds, 2 = 30 seconds, ect.
+						</value>
+					</property>
+					<property name="type" ref="inputIntegerType" />
+					<property name="validatorList">
+						<list>
+							<bean class="com.cannontech.web.input.validate.IntegerRangeValidator">
+								<property name="minValue" value="1" />
+								<property name="maxValue" value="60" />
+							</bean>
+						</list>
+					</property>
+					<property name="security" ref="configEditSecurity" />
+				</bean>
+				<bean class="com.cannontech.web.input.InputBase">
+					<property name="displayName" value="Load Profile Interval 2" />
+					<property name="field" value="loadProfileInterval2" />
+					<property name="description">
+						<value>
+							Interval in minutes over which load profile values are kept. Valid values are 5, 15, 30, and 0
+						</value>
+					</property>
+					<property name="type">
+						<bean class="com.cannontech.web.input.type.DelegatingEnumeratedType">
+							<property name="enumeratedType" ref="inputIntegerType" />
+							<property name="optionList">
+								<list>
+									<value>5</value>
+									<value>15</value>
+									<value>30</value>
+									<value>60</value>
+								</list>
+							</property>
+						</bean>
+					</property>
+					<property name="security" ref="configEditSecurity" />
+				</bean>
+			</list>
+		</property>
+	</bean>
+
+	<bean id="voltageThresholdCategory" class="com.cannontech.common.device.config.model.CategoryTemplate">
+		<property name="name" value="MCT Voltage Threshold" />
+		<property name="inputList">
+			<list>
+				<bean class="com.cannontech.web.input.InputBase">
+					<property name="displayName" value="Under VThreshold" />
+					<property name="field" value="underVThreshold" />
+					<property name="description">
+						<value>
+							Under Voltage Threshold, stored as a multiple of .1 volts. For example, 2200 = 220 volt.
+						</value>
+					</property>
+					<property name="type" ref="inputIntegerType" />
+					<property name="validatorList">
+						<list>
+							<bean class="com.cannontech.web.input.validate.IntegerRangeValidator">
+								<property name="minValue" value="0" />
+								<property name="maxValue" value="65535" />
+							</bean>
+						</list>
+					</property>
+					<property name="security" ref="configEditSecurity" />
+				</bean>
+				<bean class="com.cannontech.web.input.InputBase">
+					<property name="displayName" value="Over VThreshold" />
+					<property name="field" value="overVThreshold" />
+					<property name="description">
+						<value>
+							Over Voltage Threshold, stored as a multiple of .1 volts. For example, 2200 = 220 volt.
+						</value>
+					</property>
+					<property name="type" ref="inputIntegerType" />
+					<property name="validatorList">
+						<list>
+							<bean class="com.cannontech.web.input.validate.IntegerRangeValidator">
+								<property name="minValue" value="0" />
+								<property name="maxValue" value="65535" />
+							</bean>
+						</list>
+					</property>
+					<property name="security" ref="configEditSecurity" />
+				</bean>
+			</list>
+		</property>
+	</bean>							
+
+	<bean id="longLPCategory" class="com.cannontech.common.device.config.model.CategoryTemplate">
+		<property name="name" value="MCT Long Load Profile" />
+		<property name="inputList">
+			<list>
+				<bean class="com.cannontech.web.input.InputBase">
+					<property name="displayName" value="Channel 1 Length" />
+					<property name="field" value="channel1Length" />
+					<property name="description">
+						<value>
+							Number of days at 15 minute intervl
+						</value>
+					</property>
+					<property name="type" ref="inputIntegerType" />
+					<property name="validatorList">
+						<list>
+							<bean class="com.cannontech.web.input.validate.IntegerRangeValidator">
+								<property name="minValue" value="0" />
+								<property name="maxValue" value="255" />
+							</bean>
+						</list>
+					</property>
+					<property name="security" ref="configEditSecurity" />
+				</bean>
+				<bean class="com.cannontech.web.input.InputBase">
+					<property name="displayName" value="Channel 2 Length" />
+					<property name="field" value="channel2Length" />
+					<property name="description">
+						<value>
+							Number of days at 15 minute intervl
+						</value>
+					</property>
+					<property name="type" ref="inputIntegerType" />
+					<property name="validatorList">
+						<list>
+							<bean class="com.cannontech.web.input.validate.IntegerRangeValidator">
+								<property name="minValue" value="0" />
+								<property name="maxValue" value="255" />
+							</bean>
+						</list>
+					</property>
+					<property name="security" ref="configEditSecurity" />
+				</bean>
+				<bean class="com.cannontech.web.input.InputBase">
+					<property name="displayName" value="Channel 3 Length" />
+					<property name="field" value="channel3Length" />
+					<property name="description">
+						<value>
+							Number of days at 15 minute intervl
+						</value>
+					</property>
+					<property name="type" ref="inputIntegerType" />
+					<property name="validatorList">
+						<list>
+							<bean class="com.cannontech.web.input.validate.IntegerRangeValidator">
+								<property name="minValue" value="0" />
+								<property name="maxValue" value="255" />
+							</bean>
+						</list>
+					</property>
+					<property name="security" ref="configEditSecurity" />
+				</bean>
+				<bean class="com.cannontech.web.input.InputBase">
+					<property name="displayName" value="Channel 4 Length" />
+					<property name="field" value="channel4Length" />
+					<property name="description">
+						<value>
+							Number of days at 15 minute intervl
+						</value>
+					</property>
+					<property name="type" ref="inputIntegerType" />
+					<property name="validatorList">
+						<list>
+							<bean class="com.cannontech.web.input.validate.IntegerRangeValidator">
+								<property name="minValue" value="0" />
+								<property name="maxValue" value="255" />
+							</bean>
+						</list>
+					</property>
+					<property name="security" ref="configEditSecurity" />
+				</bean>
+			</list>
+		</property>
+	</bean>
+	
+	<bean id="holidaysCategory" class="com.cannontech.common.device.config.model.CategoryTemplate">
+		<property name="name" value="MCT Holidays" />
+		<property name="inputList">
+			<list>
+				<bean class="com.cannontech.web.input.InputBase">
+					<property name="displayName" value="Holiday Date 1" />
+					<property name="field" value="holidayDate1" />
+					<property name="description">
+						<value>
+							Date of holiday1, begins and ends at midnight local time
+						</value>
+					</property>
+					<property name="type" ref="inputDateType" />
+					<property name="security" ref="configEditSecurity" />
+				</bean>
+				<bean class="com.cannontech.web.input.InputBase">
+					<property name="displayName" value="Holiday Date 2" />
+					<property name="field" value="holidayDate2" />
+					<property name="description">
+						<value>
+							Date of holiday2, begins and ends at midnight local time
+						</value>
+					</property>
+					<property name="type" ref="inputDateType" />
+					<property name="security" ref="configEditSecurity" />
+				</bean>
+				<bean class="com.cannontech.web.input.InputBase">
+					<property name="displayName" value="Holiday Date 3" />
+					<property name="field" value="holidayDate3" />
+					<property name="description">
+						<value>
+							Date of holiday3, begins and ends at midnight local time
+						</value>
+					</property>
+					<property name="type" ref="inputDateType" />
+					<property name="security" ref="configEditSecurity" />
+				</bean>
+			</list>
+		</property>
+	</bean>
+	
+	<bean id="lpChannelsCategory" class="com.cannontech.common.device.config.model.CategoryTemplate">
+		<property name="name" value="MCT Load Profile Channels" />
+		<property name="inputList">
+			<list>
+				<bean class="com.cannontech.web.input.InputBase">
+					<property name="displayName" value="Channel Config 1" />
+					<property name="field" value="channelConfig1" />
+					<property name="description">
+						<value>
+							Bit Field
+						</value>
+					</property>
+					<property name="type" ref="inputIntegerType" />
+					<property name="validatorList">
+						<list>
+							<bean class="com.cannontech.web.input.validate.IntegerRangeValidator">
+								<property name="minValue" value="0" />
+								<property name="maxValue" value="50" />
+							</bean>
+						</list>
+					</property>
+					<property name="security" ref="configEditSecurity" />
+				</bean>
+				<bean class="com.cannontech.web.input.InputBase">
+					<property name="displayName" value="Channel Config 2" />
+					<property name="field" value="channelConfig2" />
+					<property name="description">
+						<value>
+							Bit Field
+						</value>
+					</property>
+					<property name="type" ref="inputIntegerType" />
+					<property name="validatorList">
+						<list>
+							<bean class="com.cannontech.web.input.validate.IntegerRangeValidator">
+								<property name="minValue" value="0" />
+								<property name="maxValue" value="50" />
+							</bean>
+						</list>
+					</property>
+					<property name="security" ref="configEditSecurity" />
+				</bean>
+				<bean class="com.cannontech.web.input.InputBase">
+					<property name="displayName" value="Channel Config 3" />
+					<property name="field" value="channelConfig3" />
+					<property name="description">
+						<value>
+							Bit Field
+						</value>
+					</property>
+					<property name="type" ref="inputIntegerType" />
+					<property name="validatorList">
+						<list>
+							<bean class="com.cannontech.web.input.validate.IntegerRangeValidator">
+								<property name="minValue" value="0" />
+								<property name="maxValue" value="50" />
+							</bean>
+						</list>
+					</property>
+					<property name="security" ref="configEditSecurity" />
+				</bean>
+				<bean class="com.cannontech.web.input.InputBase">
+					<property name="displayName" value="Channel Config 4" />
+					<property name="field" value="channelConfig4" />
+					<property name="description">
+						<value>
+							Bit Field
+						</value>
+					</property>
+					<property name="type" ref="inputIntegerType" />
+					<property name="validatorList">
+						<list>
+							<bean class="com.cannontech.web.input.validate.IntegerRangeValidator">
+								<property name="minValue" value="0" />
+								<property name="maxValue" value="50" />
+							</bean>
+						</list>
+					</property>
+					<property name="security" ref="configEditSecurity" />
+				</bean>
+			</list>
+		</property>
+	</bean>
+	
+	<bean id="relaysCategory" class="com.cannontech.common.device.config.model.CategoryTemplate">
+		<property name="name" value="MCT Relays" />
+		<property name="inputList">
+			<list>
+				<bean class="com.cannontech.web.input.InputBase">
+					<property name="displayName" value="Relay A Timer" />
+					<property name="field" value="relayATimer" />
+					<property name="description">
+						<value>
+							Time the relay will remain closed in 250ms increments
+						</value>
+					</property>
+					<property name="type" ref="inputIntegerType" />
+					<property name="validatorList">
+						<list>
+							<bean class="com.cannontech.web.input.validate.IntegerRangeValidator">
+								<property name="minValue" value="0" />
+								<property name="maxValue" value="50" />
+							</bean>
+						</list>
+					</property>
+					<property name="security" ref="configEditSecurity" />
+				</bean>
+				<bean class="com.cannontech.web.input.InputBase">
+					<property name="displayName" value="Relay B Timer" />
+					<property name="field" value="relayBTimer" />
+					<property name="description">
+						<value>
+							Time the relay will remain closed in 250ms increments
+						</value>
+					</property>
+					<property name="type" ref="inputIntegerType" />
+					<property name="validatorList">
+						<list>
+							<bean class="com.cannontech.web.input.validate.IntegerRangeValidator">
+								<property name="minValue" value="0" />
+								<property name="maxValue" value="50" />
+							</bean>
+						</list>
+					</property>
+					<property name="security" ref="configEditSecurity" />
+				</bean>
+			</list>
+		</property>
+	</bean>							
+	
+	<bean id="precannedTableCategory" class="com.cannontech.common.device.config.model.CategoryTemplate">
+		<property name="name" value="MCT Precanned Table" />
+		<property name="inputList">
+			<list>
+				<bean class="com.cannontech.web.input.InputBase">
+					<property name="displayName" value="Table Read Interval" />
+					<property name="field" value="tableReadInterval" />
+					<property name="description">
+						<value>
+							Seconds between each read of the attached IED. In 15 second increments.
+						</value>
+					</property>
+					<property name="type" ref="inputIntegerType" />
+					<property name="validatorList">
+						<list>
+							<bean class="com.cannontech.web.input.validate.IntegerRangeValidator">
+								<property name="minValue" value="0" />
+								<property name="maxValue" value="50" />
+							</bean>
+						</list>
+					</property>
+					<property name="security" ref="configEditSecurity" />
+				</bean>
+				<bean class="com.cannontech.web.input.InputBase">
+					<property name="displayName" value="Meter Number" />
+					<property name="field" value="meterNumber" />
+					<property name="description">
+						<value>
+							Meter number to be read
+						</value>
+					</property>
+					<property name="type" ref="inputIntegerType" />
+					<property name="validatorList">
+						<list>
+							<bean class="com.cannontech.web.input.validate.IntegerRangeValidator">
+								<property name="minValue" value="0" />
+								<property name="maxValue" value="50" />
+							</bean>
+						</list>
+					</property>
+					<property name="security" ref="configEditSecurity" />
+				</bean>
+				<bean class="com.cannontech.web.input.InputBase">
+					<property name="displayName" value="Table Type" />
+					<property name="field" value="tableType" />
+					<property name="description">
+						<value>
+							Table to use. Use caution when changing.
+						</value>
+					</property>
+					<property name="type" ref="inputIntegerType" />
+					<property name="validatorList">
+						<list>
+							<bean class="com.cannontech.web.input.validate.IntegerRangeValidator">
+								<property name="minValue" value="0" />
+								<property name="maxValue" value="50" />
+							</bean>
+						</list>
+					</property>
+					<property name="security" ref="configEditSecurity" />
+				</bean>
+			</list>
+		</property>
+	</bean>							
+	
+	<bean id="systemOptionsCategory" class="com.cannontech.common.device.config.model.CategoryTemplate">
+		<property name="name" value="MCT System Options" />
+		<property name="inputList">
+			<list>
+				<bean class="com.cannontech.web.input.InputBase">
+					<property name="displayName" value="Demand Meters to Scan" />
+					<property name="field" value="demandMetersToScan" />
+					<property name="description">
+						<value>
+							May be "All", "IED", or "Pulse"
+						</value>
+					</property>
+					<property name="type">
+						<bean class="com.cannontech.web.input.type.DelegatingEnumeratedType">
+							<property name="enumeratedType" ref="inputStringType" />
+							<property name="optionList">
+								<list>
+									<value>All</value>
+									<value>IED</value>
+									<value>Pulse</value>
+								</list>
+							</property>
+						</bean>
+					</property>
+					<property name="security" ref="configEditSecurity" />
+				</bean>
+			</list>
+		</property>
+	</bean>							
+	
+	<bean id="dnpCategory" class="com.cannontech.common.device.config.model.CategoryTemplate">
+		<property name="name" value="MCT DNP" />
+		<property name="inputList">
+			<list>
+				<bean class="com.cannontech.web.input.InputBase">
+					<property name="displayName" value="collection 1 binary a" />
+					<property name="field" value="collection1BinaryA" />
+					<property name="description">
+						<value>
+							Set up DNP points for collection 1 read. DNP points are offset by 1, 0 is disabled. Values must be seperated by a space. For example: 1 2 3 4, or 0x01 0x02 3 4. There are 15 possible dnp points between Collection Binary A and Collection Binary B.
+						</value>
+					</property>
+					<property name="type" ref="inputIntegerType" />
+					<property name="security" ref="configEditSecurity" />
+				</bean>
+				<bean class="com.cannontech.web.input.InputBase">
+					<property name="displayName" value="collection 1 binary b" />
+					<property name="field" value="collection1BinaryB" />
+					<property name="description">
+						<value>
+							See Collection 1 Binary A
+						</value>
+					</property>
+					<property name="type" ref="inputIntegerType" />
+					<property name="security" ref="configEditSecurity" />
+				</bean>
+				<bean class="com.cannontech.web.input.InputBase">
+					<property name="displayName" value="collection 2 binary a" />
+					<property name="field" value="collection2BinaryA" />
+					<property name="description">
+						<value>
+							Set up DNP points for collection 2 read. DNP points are offset by 1, 0 is disabled. Values must be seperated by a space. For example: 1 2 3 4, or 0x01 0x02 3 4. There are 15 possible dnp points between Collection Binary A and Collection Binary B.
+						</value>
+					</property>
+					<property name="type" ref="inputIntegerType" />
+					<property name="security" ref="configEditSecurity" />
+				</bean>
+				<bean class="com.cannontech.web.input.InputBase">
+					<property name="displayName" value="collection 2 binary b" />
+					<property name="field" value="collection2BinaryB" />
+					<property name="description">
+						<value>
+							See Collection 2 Binary A
+						</value>
+					</property>
+					<property name="type" ref="inputIntegerType" />
+					<property name="security" ref="configEditSecurity" />
+				</bean>
+
+				<bean class="com.cannontech.web.input.InputBase">
+					<property name="displayName" value="collection 1 analog" />
+					<property name="field" value="collection1Analog" />
+					<property name="description">
+						<value>
+							Set up DNP points for collection 1 read. DNP points are offset by 1, 0 is disabled. Values must be seperated by a space. For example: 1 2 3 4, or 0x01 0x02 3 4. There are 3 possible DNP points
+						</value>
+					</property>
+					<property name="type" ref="inputIntegerType" />
+					<property name="security" ref="configEditSecurity" />
+				</bean>
+				<bean class="com.cannontech.web.input.InputBase">
+					<property name="displayName" value="collection 2 analog" />
+					<property name="field" value="collection2Analog" />
+					<property name="description">
+						<value>
+							Set up DNP points for collection 2 read. DNP points are offset by 1, 0 is disabled. Values must be seperated by a space. For example: 1 2 3 4, or 0x01 0x02 3 4. There are 3 possible DNP points
+						</value>
+					</property>
+					<property name="type" ref="inputIntegerType" />
+					<property name="security" ref="configEditSecurity" />
+				</bean>
+
+				<bean class="com.cannontech.web.input.InputBase">
+					<property name="displayName" value="collection 1 accumulator" />
+					<property name="field" value="collection1Accumulator" />
+					<property name="description">
+						<value>
+							Set up DNP points for collection 1 read. DNP points are offset by 1, 0 is disabled. Values must be seperated by a space. There are 2 possible DNP points
+						</value>
+					</property>
+					<property name="type" ref="inputIntegerType" />
+					<property name="security" ref="configEditSecurity" />
+				</bean>
+				<bean class="com.cannontech.web.input.InputBase">
+					<property name="displayName" value="collection 2 accumulator" />
+					<property name="field" value="collection2Accumulator" />
+					<property name="description">
+						<value>
+							Set up DNP points for collection 2 read. DNP points are offset by 1, 0 is disabled. Values must be seperated by a space. There are 2 possible DNP points
+						</value>
+					</property>
+					<property name="type" ref="inputIntegerType" />
+					<property name="security" ref="configEditSecurity" />
+				</bean>
+
+				<bean class="com.cannontech.web.input.InputBase">
+					<property name="displayName" value="analog 1" />
+					<property name="field" value="analog1" />
+					<property name="description">
+						<value>
+							Set up DNP points for analog 1 read. DNP points are offset by 1, 0 is disabled. Values must be seperated by a space. There are 6 possible DNP points
+						</value>
+					</property>
+					<property name="type" ref="inputIntegerType" />
+					<property name="security" ref="configEditSecurity" />
+				</bean>
+				<bean class="com.cannontech.web.input.InputBase">
+					<property name="displayName" value="analog 2" />
+					<property name="field" value="analog2" />
+					<property name="description">
+						<value>
+							Set up DNP points for analog 2 read. DNP points are offset by 1, 0 is disabled. Values must be seperated by a space. There are 6 possible DNP points
+						</value>
+					</property>
+					<property name="type" ref="inputIntegerType" />
+					<property name="security" ref="configEditSecurity" />
+				</bean>
+				<bean class="com.cannontech.web.input.InputBase">
+					<property name="displayName" value="analog 3" />
+					<property name="field" value="analog3" />
+					<property name="description">
+						<value>
+							Set up DNP points for analog 3 read. DNP points are offset by 1, 0 is disabled. Values must be seperated by a space. There are 6 possible DNP points
+						</value>
+					</property>
+					<property name="type" ref="inputIntegerType" />
+					<property name="security" ref="configEditSecurity" />
+				</bean>
+				<bean class="com.cannontech.web.input.InputBase">
+					<property name="displayName" value="analog 4" />
+					<property name="field" value="analog4" />
+					<property name="description">
+						<value>
+							Set up DNP points for analog 4 read. DNP points are offset by 1, 0 is disabled. Values must be seperated by a space. There are 6 possible DNP points
+						</value>
+					</property>
+					<property name="type" ref="inputIntegerType" />
+					<property name="security" ref="configEditSecurity" />
+				</bean>
+				<bean class="com.cannontech.web.input.InputBase">
+					<property name="displayName" value="analog 5" />
+					<property name="field" value="analog5" />
+					<property name="description">
+						<value>
+							Set up DNP points for analog 5 read. DNP points are offset by 1, 0 is disabled. Values must be seperated by a space. There are 6 possible DNP points
+						</value>
+					</property>
+					<property name="type" ref="inputIntegerType" />
+					<property name="security" ref="configEditSecurity" />
+				</bean>
+				<bean class="com.cannontech.web.input.InputBase">
+					<property name="displayName" value="analog 6" />
+					<property name="field" value="analog6" />
+					<property name="description">
+						<value>
+							Set up DNP points for analog 6 read. DNP points are offset by 1, 0 is disabled. Values must be seperated by a space. There are 6 possible DNP points
+						</value>
+					</property>
+					<property name="type" ref="inputIntegerType" />
+					<property name="security" ref="configEditSecurity" />
+				</bean>
+				<bean class="com.cannontech.web.input.InputBase">
+					<property name="displayName" value="analog 7" />
+					<property name="field" value="analog7" />
+					<property name="description">
+						<value>
+							Set up DNP points for analog 7 read. DNP points are offset by 1, 0 is disabled. Values must be seperated by a space. There are 6 possible DNP points
+						</value>
+					</property>
+					<property name="type" ref="inputIntegerType" />
+					<property name="security" ref="configEditSecurity" />
+				</bean>
+				<bean class="com.cannontech.web.input.InputBase">
+					<property name="displayName" value="analog 8" />
+					<property name="field" value="analog8" />
+					<property name="description">
+						<value>
+							Set up DNP points for analog 8 read. DNP points are offset by 1, 0 is disabled. Values must be seperated by a space. There are 6 possible DNP points
+						</value>
+					</property>
+					<property name="type" ref="inputIntegerType" />
+					<property name="security" ref="configEditSecurity" />
+				</bean>
+				<bean class="com.cannontech.web.input.InputBase">
+					<property name="displayName" value="analog 9" />
+					<property name="field" value="analog9" />
+					<property name="description">
+						<value>
+							Set up DNP points for analog 9 read. DNP points are offset by 1, 0 is disabled. Values must be seperated by a space. There are 6 possible DNP points
+						</value>
+					</property>
+					<property name="type" ref="inputIntegerType" />
+					<property name="security" ref="configEditSecurity" />
+				</bean>
+				<bean class="com.cannontech.web.input.InputBase">
+					<property name="displayName" value="analog 10" />
+					<property name="field" value="analog10" />
+					<property name="description">
+						<value>
+							Set up DNP points for analog 10 read. DNP points are offset by 1, 0 is disabled. Values must be seperated by a space. There are 6 possible DNP points
+						</value>
+					</property>
+					<property name="type" ref="inputIntegerType" />
+					<property name="security" ref="configEditSecurity" />
+				</bean>
+
+				<bean class="com.cannontech.web.input.InputBase">
+					<property name="displayName" value="accumulator 1" />
+					<property name="field" value="accumulator1" />
+					<property name="description">
+						<value>
+							Set up DNP points for accumulator 1 read. DNP points are offset by 1, 0 is disabled. Values must be seperated by a space. There are 6 possible DNP points
+						</value>
+					</property>
+					<property name="type" ref="inputIntegerType" />
+					<property name="security" ref="configEditSecurity" />
+				</bean>
+				<bean class="com.cannontech.web.input.InputBase">
+					<property name="displayName" value="accumulator 2" />
+					<property name="field" value="accumulator2" />
+					<property name="description">
+						<value>
+							Set up DNP points for accumulator 2 read. DNP points are offset by 1, 0 is disabled. Values must be seperated by a space. There are 6 possible DNP points
+						</value>
+					</property>
+					<property name="type" ref="inputIntegerType" />
+					<property name="security" ref="configEditSecurity" />
+				</bean>
+				<bean class="com.cannontech.web.input.InputBase">
+					<property name="displayName" value="accumulator 3" />
+					<property name="field" value="accumulator3" />
+					<property name="description">
+						<value>
+							Set up DNP points for accumulator 3 read. DNP points are offset by 1, 0 is disabled. Values must be seperated by a space. There are 6 possible DNP points
+						</value>
+					</property>
+					<property name="type" ref="inputIntegerType" />
+					<property name="security" ref="configEditSecurity" />
+				</bean>
+				<bean class="com.cannontech.web.input.InputBase">
+					<property name="displayName" value="accumulator 4" />
+					<property name="field" value="accumulator4" />
+					<property name="description">
+						<value>
+							Set up DNP points for accumulator 4 read. DNP points are offset by 1, 0 is disabled. Values must be seperated by a space. There are 6 possible DNP points
+						</value>
+					</property>
+					<property name="type" ref="inputIntegerType" />
+					<property name="security" ref="configEditSecurity" />
+				</bean>
+				<bean class="com.cannontech.web.input.InputBase">
+					<property name="displayName" value="accumulator 5" />
+					<property name="field" value="accumulator5" />
+					<property name="description">
+						<value>
+							Set up DNP points for accumulator 5 read. DNP points are offset by 1, 0 is disabled. Values must be seperated by a space. There are 6 possible DNP points
+						</value>
+					</property>
+					<property name="type" ref="inputIntegerType" />
+					<property name="security" ref="configEditSecurity" />
+				</bean>
+				<bean class="com.cannontech.web.input.InputBase">
+					<property name="displayName" value="accumulator 6" />
+					<property name="field" value="accumulator6" />
+					<property name="description">
+						<value>
+							Set up DNP points for accumulator 6 read. DNP points are offset by 1, 0 is disabled. Values must be seperated by a space. There are 6 possible DNP points
+						</value>
+					</property>
+					<property name="type" ref="inputIntegerType" />
+					<property name="security" ref="configEditSecurity" />
+				</bean>
+				<bean class="com.cannontech.web.input.InputBase">
+					<property name="displayName" value="accumulator 7" />
+					<property name="field" value="accumulator7" />
+					<property name="description">
+						<value>
+							Set up DNP points for accumulator 7 read. DNP points are offset by 1, 0 is disabled. Values must be seperated by a space. There are 6 possible DNP points
+						</value>
+					</property>
+					<property name="type" ref="inputIntegerType" />
+					<property name="security" ref="configEditSecurity" />
+				</bean>
+				<bean class="com.cannontech.web.input.InputBase">
+					<property name="displayName" value="accumulator 8" />
+					<property name="field" value="accumulator8" />
+					<property name="description">
+						<value>
+							Set up DNP points for accumulator 8 read. DNP points are offset by 1, 0 is disabled. Values must be seperated by a space. There are 6 possible DNP points
+						</value>
+					</property>
+					<property name="type" ref="inputIntegerType" />
+					<property name="security" ref="configEditSecurity" />
+				</bean>
+
+				<bean class="com.cannontech.web.input.InputBase">
+					<property name="displayName" value="binary byte 1a" />
+					<property name="field" value="binaryByte1a" />
+					<property name="description">
+						<value>
+							Set up DNP points for binary read. DNP points are offset by 1, 0 is disabled. Values must be seperated by a space. There are 12 possible DNP points betweein binary 1a and binary 1b
+						</value>
+					</property>
+					<property name="type" ref="inputIntegerType" />
+					<property name="security" ref="configEditSecurity" />
+				</bean>
+				<bean class="com.cannontech.web.input.InputBase">
+					<property name="displayName" value="binary byte 1b" />
+					<property name="field" value="binaryByte1b" />
+					<property name="description">
+						<value>
+							Second half of binary bytes, see binary byte 1a.
+						</value>
+					</property>
+					<property name="type" ref="inputIntegerType" />
+					<property name="security" ref="configEditSecurity" />
+				</bean>
+				
+			</list>
+		</property>
+	</bean>	
+	
+	<bean id="touCategory" class="com.cannontech.common.device.config.model.CategoryTemplate">
+		<property name="name" value="Time of Use" />
+		<property name="inputList">
+			<list>
+				<bean class="com.cannontech.web.input.InputGroup">
+					<property name="field" value="tou" />
+					<property name="renderer" value="touType.jsp" />
+					<property name="inputMap">
+						<map>
+							<entry key="scheduleList[0]" value-ref="schedule" />
+							<entry key="scheduleList[1]" value-ref="schedule" />
+							<entry key="scheduleList[2]" value-ref="schedule" />
+							<entry key="scheduleList[3]" value-ref="schedule" />
+							
+							<entry key="defaultRate">
+								<bean class="com.cannontech.web.input.InputBase">
+									<property name="displayName" value="Default Rate" />
+									<property name="field" value="defaultRate" />
+									<property name="type">
+										<bean class="com.cannontech.web.input.type.DelegatingEnumeratedType">
+											<property name="enumeratedType" ref="inputStringType" />
+											<property name="optionList">
+												<list>
+													<value>A</value>
+													<value>B</value>
+													<value>C</value>
+													<value>D</value>
+												</list>
+											</property>
+										</bean>
+									</property>
+									<property name="security" ref="configEditSecurity" />
+								</bean>
+							</entry>
+							<entry key="holiday">
+								<bean class="com.cannontech.web.input.InputBase">
+									<property name="displayName" value="Holiday" />
+									<property name="field" value="holiday" />
+									<property name="type" ref="scheduleList" />
+									<property name="security" ref="configEditSecurity" />
+								</bean>
+							</entry>
+							<entry key="monday">
+								<bean class="com.cannontech.web.input.InputBase">
+									<property name="displayName" value="Monday" />
+									<property name="field" value="monday" />
+									<property name="type" ref="scheduleList" />
+									<property name="security" ref="configEditSecurity" />
+								</bean>
+							</entry>
+							<entry key="tuesday">
+								<bean class="com.cannontech.web.input.InputBase">
+									<property name="displayName" value="Tuesday" />
+									<property name="field" value="tuesday" />
+									<property name="type" ref="scheduleList" />
+									<property name="security" ref="configEditSecurity" />
+								</bean>
+							</entry>
+							<entry key="wednesday">
+								<bean class="com.cannontech.web.input.InputBase">
+									<property name="displayName" value="Wednesday" />
+									<property name="field" value="wednesday" />
+									<property name="type" ref="scheduleList" />
+									<property name="security" ref="configEditSecurity" />
+								</bean>
+							</entry>
+							<entry key="thursday">
+								<bean class="com.cannontech.web.input.InputBase">
+									<property name="displayName" value="Thursday" />
+									<property name="field" value="thursday" />
+									<property name="type" ref="scheduleList" />
+									<property name="security" ref="configEditSecurity" />
+								</bean>
+							</entry>
+							<entry key="friday">
+								<bean class="com.cannontech.web.input.InputBase">
+									<property name="displayName" value="Friday" />
+									<property name="field" value="friday" />
+									<property name="type" ref="scheduleList" />
+									<property name="security" ref="configEditSecurity" />
+								</bean>
+							</entry>
+							<entry key="saturday">
+								<bean class="com.cannontech.web.input.InputBase">
+									<property name="displayName" value="Saturday" />
+									<property name="field" value="saturday" />
+									<property name="type" ref="scheduleList" />
+									<property name="security" ref="configEditSecurity" />
+								</bean>
+							</entry>
+							<entry key="sunday">
+								<bean class="com.cannontech.web.input.InputBase">
+									<property name="displayName" value="Sunday" />
+									<property name="field" value="sunday" />
+									<property name="type" ref="scheduleList" />
+									<property name="security" ref="configEditSecurity" />
+								</bean>
+							</entry>
+						</map>
+					</property>
+				</bean>
+			</list>
+		</property>
+	</bean>
+	
+	
+	<bean id="schedule" class="com.cannontech.web.input.InputGroup">
+		<property name="renderer" value="scheduleType.jsp" />
+		<property name="inputMap">
+			<map>
+				<!-- The first time is locked at midnight -->
+				<entry key="timeRateList[0]">
+					<bean class="com.cannontech.web.input.InputGroup">
+						<property name="renderer" value="timeRateType.jsp" />
+						<property name="inputMap">
+							<map>
+								<entry key="time">
+									<bean class="com.cannontech.web.input.InputBase">
+										<property name="displayName" value="Midnight" />
+										<property name="field" value="time" />
+										<property name="type">
+											<bean class="com.cannontech.web.input.type.DateType">
+												<property name="format" value="hh:mm" />
+												<property name="renderer" value="plainTextType.jsp" />
+											</bean>
+										</property>
+										<property name="security" ref="configEditSecurity" />
+									</bean>
+								</entry>
+								<entry key="rate">
+									<bean class="com.cannontech.web.input.InputBase">
+										<property name="displayName" value="Rate" />
+										<property name="field" value="rate" />
+										<property name="type">
+											<bean class="com.cannontech.web.input.type.DelegatingEnumeratedType">
+												<property name="enumeratedType" ref="inputStringType" />
+												<property name="optionList">
+													<list>
+														<value>A</value>
+														<value>B</value>
+														<value>C</value>
+														<value>D</value>
+													</list>
+												</property>
+											</bean>
+										</property>
+										<property name="security" ref="configEditSecurity" />
+									</bean>
+								</entry>
+							</map>
+						</property>
+					</bean>
+				</entry>
+				<entry key="timeRateList[1]" value-ref="timeRate" />
+				<entry key="timeRateList[2]" value-ref="timeRate" />
+				<entry key="timeRateList[3]" value-ref="timeRate" />
+				<entry key="timeRateList[4]" value-ref="timeRate" />
+				<entry key="timeRateList[5]" value-ref="timeRate" />
+			</map>
+		</property>
+	</bean>
+
+	<bean id="timeRate" class="com.cannontech.web.input.InputGroup">
+		<property name="renderer" value="timeRateType.jsp" />
+		<property name="inputMap">
+			<map>
+				<entry key="time">
+					<bean class="com.cannontech.web.input.InputBase">
+						<property name="displayName" value="Time" />
+						<property name="field" value="time" />
+						<property name="type">
+							<bean class="com.cannontech.web.input.type.DateType">
+								<property name="format" value="hh:mm" />
+								<property name="renderer" value="timeType.jsp" />
+							</bean>
+						</property>
+						<property name="security" ref="configEditSecurity" />
+					</bean>
+				</entry>
+				<entry key="rate">
+					<bean class="com.cannontech.web.input.InputBase">
+						<property name="displayName" value="Rate" />
+						<property name="field" value="rate" />
+						<property name="type">
+							<bean class="com.cannontech.web.input.type.DelegatingEnumeratedType">
+								<property name="enumeratedType" ref="inputStringType" />
+								<property name="optionList">
+									<list>
+										<value>A</value>
+										<value>B</value>
+										<value>C</value>
+										<value>D</value>
+									</list>
+								</property>
+							</bean>
+						</property>
+						<property name="security" ref="configEditSecurity" />
+					</bean>
+				</entry>
+			</map>
+		</property>
+	</bean>
+	
+	<bean id="scheduleList" class="com.cannontech.web.input.type.DelegatingEnumeratedType">
+		<property name="enumeratedType" ref="inputStringType" />
+		<property name="optionList">
+			<list>
+				<value>Schedule 1</value>
+				<value>Schedule 2</value>
+				<value>Schedule 3</value>
+				<value>Schedule 4</value>
+			</list>
+		</property>
+	</bean>
+	
+	<bean id="centronCategory" class="com.cannontech.common.device.config.model.CategoryTemplate">
+		<property name="name" value="MCT Centron" />
+		<property name="inputList">
+			<list>
+				<bean class="com.cannontech.web.input.InputBase">
+					<property name="displayName" value="Paramteters" />
+					<property name="field" value="parameters" />
+					<property name="description">
+						<value>
+							Use great caution. Is a bitfield.
+						</value>
+					</property>
+					<property name="type" ref="inputIntegerType" />
+					<property name="validatorList">
+						<list>
+							<bean class="com.cannontech.web.input.validate.IntegerRangeValidator">
+								<property name="minValue" value="0" />
+								<property name="maxValue" value="50" />
+							</bean>
+						</list>
+					</property>
+					<property name="security" ref="configEditSecurity" />
+				</bean>
+				<bean class="com.cannontech.web.input.InputBase">
+					<property name="displayName" value="Transformer Ratio" />
+					<property name="field" value="transformerRatio" />
+					<property name="description">
+						<value>
+							Watt Hours per pulse
+						</value>
+					</property>
+					<property name="type" ref="inputIntegerType" />
+					<property name="validatorList">
+						<list>
+							<bean class="com.cannontech.web.input.validate.IntegerRangeValidator">
+								<property name="minValue" value="1" />
+								<property name="maxValue" value="255" />
+							</bean>
+						</list>
+					</property>
+					<property name="security" ref="configEditSecurity" />
+				</bean>
+			</list>
+		</property>
+	</bean>	
+	
+	<bean id="disconnectCategory" class="com.cannontech.common.device.config.model.CategoryTemplate">
+		<property name="name" value="MCT Disconnect" />
+		<property name="inputList">
+			<list>
+				<bean class="com.cannontech.web.input.InputBase">
+					<property name="displayName" value="Demand Threshold" />
+					<property name="field" value="demandThreshold" />
+					<property name="description">
+						<value>
+							Threshold measured in WHr per demand interval
+						</value>
+					</property>
+					<property name="type" ref="inputIntegerType" />
+					<property name="validatorList">
+						<list>
+							<bean class="com.cannontech.web.input.validate.IntegerRangeValidator">
+								<property name="minValue" value="0" />
+								<property name="maxValue" value="400000" />
+							</bean>
+						</list>
+					</property>
+					<property name="security" ref="configEditSecurity" />
+				</bean>
+				<bean class="com.cannontech.web.input.InputBase">
+					<property name="displayName" value="Connect Delay" />
+					<property name="field" value="connectDelay" />
+					<property name="description">
+						<value>
+							Time in minutes for a reconnect
+						</value>
+					</property>
+					<property name="type" ref="inputIntegerType" />
+					<property name="validatorList">
+						<list>
+							<bean class="com.cannontech.web.input.validate.IntegerRangeValidator">
+								<property name="minValue" value="0" />
+								<property name="maxValue" value="10" />
+							</bean>
+						</list>
+					</property>
+					<property name="security" ref="configEditSecurity" />
+				</bean>
+				<bean class="com.cannontech.web.input.InputBase">
+					<property name="displayName" value="Cycling Disconnect Minutes" />
+					<property name="field" value="cyclingDisconnectMinutes" />
+					<property name="description">
+						<value>
+							Time in disconnected state per cycle (5 minute increments)
+						</value>
+					</property>
+					<property name="type" ref="inputIntegerType" />
+					<property name="validatorList">
+						<list>
+							<bean class="com.cannontech.web.input.validate.IntegerRangeValidator">
+								<property name="minValue" value="5" />
+								<property name="maxValue" value="60" />
+							</bean>
+						</list>
+					</property>
+					<property name="security" ref="configEditSecurity" />
+				</bean>
+				<bean class="com.cannontech.web.input.InputBase">
+					<property name="displayName" value="Cycling Connect Minutes" />
+					<property name="field" value="cyclingConnectMinutes" />
+					<property name="description">
+						<value>
+							Time in connected state per cycle (5 minute increments)
+						</value>
+					</property>
+					<property name="type" ref="inputIntegerType" />
+					<property name="validatorList">
+						<list>
+							<bean class="com.cannontech.web.input.validate.IntegerRangeValidator">
+								<property name="minValue" value="5" />
+								<property name="maxValue" value="60" />
+							</bean>
+						</list>
+					</property>
+					<property name="security" ref="configEditSecurity" />
+				</bean>
+			</list>
+		</property>
+	</bean>	
+	
+	<bean id="requiredInputValidator" class="com.cannontech.web.input.validate.RequiredValidator" />
+	
+	<bean id="inputStringType" class="com.cannontech.web.input.type.StringType" />
+	<bean id="inputIntegerType" class="com.cannontech.web.input.type.IntegerType" />
+	<bean id="inputDateType" class="com.cannontech.web.input.type.DateType" />
+	<bean id="inputBooleanType" class="com.cannontech.web.input.type.BooleanType" />
+	
+	<bean id="configEditSecurity" class="com.cannontech.web.input.RolePropertyInputSecurity">
+		<property name="roleProperty" value="AdministratorRole.ADMIN_EDIT_CONFIG" />
+		<property name="authDao" ref="authDao" />
+	</bean>
+	
+</beans>

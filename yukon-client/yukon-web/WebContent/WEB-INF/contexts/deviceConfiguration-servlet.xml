@@ -1,0 +1,109 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE beans PUBLIC "-//SPRING//DTD BEAN//EN" "http://www.springframework.org/dtd/spring-beans.dtd">
+
+<beans>
+    <bean id="viewResolver"
+      class="org.springframework.web.servlet.view.UrlBasedViewResolver">
+        <property name="viewClass" value="org.springframework.web.servlet.view.JstlView"/>
+        <property name="prefix" value="/WEB-INF/pages/amr/device/configuration/"/>
+        <property name="suffix" value=".jsp"/>
+    </bean>
+    
+    <bean name="/success" class="org.springframework.web.servlet.mvc.UrlFilenameViewController" />
+    
+    <bean name="/*" class="com.cannontech.web.amr.device.configuration.DeviceConfigurationController">
+        <property name="cacheSeconds">
+            <value type="int">0</value>
+        </property>
+        <property name="methodNameResolver">
+	        <bean id="methodNameResolver" class="org.springframework.web.servlet.mvc.multiaction.ParameterMethodNameResolver">
+				<property name="methodParamNames">
+					<list>
+						<value>home</value>
+						<value>createConfig</value>
+						<value>editConfig</value>
+						<value>removeConfig</value>
+						<value>cloneConfig</value>
+					</list>
+				</property>
+			</bean>
+        </property>
+        <property name="requireSession">
+            <value type="boolean">true</value>
+        </property>
+        <property name="synchronizeOnSession">
+            <value type="boolean">true</value>
+        </property>
+        
+		<property name="deviceConfigurationDao" ref="deviceConfigurationDao"/>
+    </bean>
+    
+    <bean name="/470Config" class="com.cannontech.web.amr.device.configuration.DeviceConfigurationFormController" init-method="init">
+    	
+        <property name="cacheSeconds">
+            <value type="int">0</value>
+        </property>
+        <property name="requireSession">
+            <value type="boolean">true</value>
+        </property>
+        <property name="synchronizeOnSession">
+            <value type="boolean">true</value>
+        </property>
+        <property name="commandName" value="deviceConfiguration" />
+        <property name="commandClass" value="com.cannontech.common.device.config.model.MCT470Configuration" />
+        <property name="formView" value="edit" />
+        <property name="successView" value="redirect:/spring/deviceConfiguration?home" />
+        
+        <property name="configurationTemplate" ref="mct470Config" />
+		<property name="deviceConfigurationDao" ref="deviceConfigurationDao"/>
+		<property name="inputRoot" ref="deviceConfigInputRoot" />
+    </bean>
+    
+    <bean name="/410Config" class="com.cannontech.web.amr.device.configuration.DeviceConfigurationFormController" init-method="init">
+    	
+        <property name="cacheSeconds">
+            <value type="int">0</value>
+        </property>
+        <property name="requireSession">
+            <value type="boolean">true</value>
+        </property>
+        <property name="synchronizeOnSession">
+            <value type="boolean">true</value>
+        </property>
+        <property name="commandName" value="deviceConfiguration" />
+        <property name="commandClass" value="com.cannontech.common.device.config.model.MCT410Configuration" />
+        <property name="formView" value="edit" />
+        <property name="successView" value="redirect:/spring/deviceConfiguration?home" />
+
+        <property name="configurationTemplate" ref="mct410Config" />        
+		<property name="deviceConfigurationDao" ref="deviceConfigurationDao"/>
+		<property name="inputRoot" ref="deviceConfigInputRoot" />
+    </bean>
+    
+    <bean id="deviceConfigInputRoot" class="com.cannontech.web.input.InputRoot" singleton="false">
+		<property name="inputList">
+			<list>
+				<bean class="com.cannontech.web.input.InputBase">
+					<property name="displayName" value="Configuration Name" />
+					<property name="field" value="name" />
+					<property name="type" ref="inputStringType" />
+					<property name="validatorList">
+						<list>
+							<ref bean="requiredInputValidator"/>
+						</list>
+					</property>
+					<property name="security" ref="configEditSecurity" />
+				</bean>
+			</list>
+		</property>
+	</bean>
+    
+    <bean id="messageSource" class="org.springframework.context.support.ResourceBundleMessageSource">
+		<property name="basenames">
+			<list>
+				<value>com.cannontech.web.messages</value>
+			</list>
+		</property>
+	</bean>
+    
+</beans>

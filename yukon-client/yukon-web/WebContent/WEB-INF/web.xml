@@ -227,6 +227,14 @@
 	</servlet>
 
 	<servlet>
+		<servlet-name>deviceConfiguration</servlet-name>
+		<servlet-class>
+			com.cannontech.servlet.CannonDispatcherServlet
+		</servlet-class>
+		<load-on-startup>1</load-on-startup>
+	</servlet>
+
+	<servlet>
 		<servlet-name>picker</servlet-name>
 		<servlet-class>
 			com.cannontech.servlet.CannonDispatcherServlet
@@ -712,6 +720,11 @@
 	<servlet-mapping>
 		<servlet-name>Faces Servlet</servlet-name>
 		<url-pattern>*.jsf</url-pattern>
+	</servlet-mapping>
+
+	<servlet-mapping>
+		<servlet-name>deviceConfiguration</servlet-name>
+		<url-pattern>/spring/deviceConfiguration/*</url-pattern>
 	</servlet-mapping>
 
 	<servlet-mapping>

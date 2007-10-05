@@ -87,5 +87,11 @@
       <sequence name="DynamicBillingField">
         <table name="DynamicBillingField" identitycolumn="id" initsequence="true"/>
       </sequence>
+      <sequence name="DeviceConfiguration">
+        <table name="DeviceConfiguration" identitycolumn="DeviceConfigurationId" initsequence="true"/>
+      </sequence>
+      <sequence name="DeviceConfigItem">
+        <table name="DeviceConfigurationItem" identitycolumn="DeviceConfigurationItemId" initsequence="true"/>
+      </sequence>
   </sequencetable>
 </sequencetables>

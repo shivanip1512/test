@@ -374,6 +374,11 @@
             <tags:sectionLink>
             	<a href="/index/manage">Manage Indexes</a>
             </tags:sectionLink>
+            <cti:checkProperty property="AdministratorRole.ADMIN_VIEW_CONFIG"> 
+	            <tags:sectionLink>
+		   	    	<a href="<c:url value="/spring/deviceConfiguration?home"/>">Device Configuration</a>
+		        </tags:sectionLink>
+	        </cti:checkProperty>
 	</tags:operationSection>
 	
 </cti:checkRole>
