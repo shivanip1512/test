@@ -50,9 +50,10 @@ struct Adapter {
 
 void worker(const int& s) 
 {
+    int portNumber = s;
         {
             boost::mutex::scoped_lock lock(io_mutex);
-            cout<<"Port: "<<s<<endl;
+            cout<<"Port: "<<portNumber<<endl;
         }
 
     
@@ -141,8 +142,6 @@ void worker(const int& s)
 
     
     WSADATA wsaData;
-
-    int portNumber = s;
     int ccuNumber = 0;
     int mctNumber = 0;
 
@@ -163,7 +162,7 @@ void worker(const int& s)
         CtiTime Listening;
         {
        boost::mutex::scoped_lock lock(io_mutex);
-        std::cout<<Listening.asString()<<" Listening... " << portNumber << std::endl;
+        std::cout<<Listening.asString()<<" Listening on " << portNumber << std::endl;
         }
     }
 
@@ -393,9 +392,9 @@ int main(int argc, char *argv[]) {
 
     vector<boost::thread *> threadVector;
 
-    if(argc>1)
+    if(argc==3)
     {   // Specify port number
-        cout<<argc-1<<" ports found."<<endl;
+        cout<<"Port range "<<argv[1]<<" - "<<argv[2]<<endl;
     }
     else
         {
@@ -404,15 +403,13 @@ int main(int argc, char *argv[]) {
     }
 
 
-    int portNum = 0;
-    int portCount = 1;
-    int numThreads = argc - 1;
+    int portNum = atoi(argv[1]);
+    int portMax = atoi(argv[2]);
     boost::thread *thr1;
-    for(int i=0; i<numThreads; i++) {
-        portNum = atoi(argv[portCount]);
+    while(portNum != (portMax+1)) {
         thr1 = new boost::thread(Adapter<WorkerFunPtr, int>(worker, portNum));
         threadVector.push_back(thr1);
-        portCount++;
+        portNum++;
         CTISleep(750);
     }
 
