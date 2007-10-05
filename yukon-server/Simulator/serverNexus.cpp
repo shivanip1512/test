@@ -186,14 +186,16 @@ void worker(const int& s)
             CCU711 *aCCU711;
             if(ccuList.find(addressFound) == ccuList.end())
             {
+                boost::mutex::scoped_lock lock(io_mutex);
                 std::cout<<'\n'<<addressFound<<" is not in the map!";
                 aCCU711 = new CCU711(addressFound);
                 ccuList[addressFound] = aCCU711;
             }
             else
             {
-                  std::cout<<addressFound<<" is in the map";
-                  aCCU711 = ccuList[addressFound];
+                boost::mutex::scoped_lock lock(io_mutex);
+                std::cout<<addressFound<<" is in the map";
+                aCCU711 = ccuList[addressFound];
             }
 
             
@@ -213,7 +215,8 @@ void worker(const int& s)
             totalBytesRead = bytesRead;
 
             if(ReadBuffer[0]==0x7e )
-                {
+            {
+                boost::mutex::scoped_lock lock(io_mutex);
                 SET_FOREGROUND_BRIGHT_YELLOW;
                 cout <<'\n'<< AboutToRead.asString();
                 SET_FOREGROUND_BRIGHT_CYAN;
@@ -223,6 +226,7 @@ void worker(const int& s)
             for( int byteitr = 0; byteitr < (bytesRead); byteitr++ )
             {
                 CTISleep((8.0/1200.0)*1000.0); //  Delay at 1200 baud 
+                boost::mutex::scoped_lock lock(io_mutex);
                 cout << string(CtiNumStr(ReadBuffer[byteitr]).hex().zpad(2)) << ' ';
             }
 
@@ -244,7 +248,8 @@ void worker(const int& s)
                     {
                         CTISleep((8.0/1200.0)*1000.0);  //  Delay at 1200 baud
                         if(byteitr == 1)
-                            {
+                        {
+                            boost::mutex::scoped_lock lock(io_mutex);
                             SET_FOREGROUND_BRIGHT_RED;
                             cout << string(CtiNumStr(ReadBuffer[byteitr+4]).hex().zpad(2)) << ' ';
                             SET_FOREGROUND_BRIGHT_GREEN;
@@ -271,14 +276,18 @@ void worker(const int& s)
                     newSocket->CTINexusWrite(&SendData, MsgSize, &bytesWritten, 15); 
 
                     CtiTime DateSent;
-                    SET_FOREGROUND_BRIGHT_YELLOW;
-                    cout<<DateSent.asString();
-                    SET_FOREGROUND_BRIGHT_CYAN;
-                    cout<<" OUT:"<<endl;
+                    {
+                        boost::mutex::scoped_lock lock(io_mutex);
+                        SET_FOREGROUND_BRIGHT_YELLOW;
+                        cout<<DateSent.asString();
+                        SET_FOREGROUND_BRIGHT_CYAN;
+                        cout<<" OUT:"<<endl;
+                    }
                     SET_FOREGROUND_BRIGHT_MAGNETA;
 
-                    for(byteitr = 0; byteitr < bytesWritten; byteitr++ )
-                        {
+                    for(int byteitr = 0; byteitr < bytesWritten; byteitr++ )
+                    {
+                        boost::mutex::scoped_lock lock(io_mutex);
                         cout <<string(CtiNumStr(SendData[byteitr]).hex().zpad(2))<<' ';
                     }
 
@@ -313,14 +322,17 @@ void worker(const int& s)
                 counter ++;
             }
 
-            SET_FOREGROUND_BRIGHT_YELLOW;
-            cout << AboutToRead.asString();
-            SET_FOREGROUND_BRIGHT_CYAN;
-            cout << " IN:" << endl;
-            SET_FOREGROUND_BRIGHT_GREEN;
-            for( int byteitr = 0; byteitr < (bytesRead); byteitr++ )
-                {
-                cout << string(CtiNumStr(ReadBuffer[byteitr]).hex().zpad(2)) << ' ';
+            {
+                boost::mutex::scoped_lock lock(io_mutex);
+                SET_FOREGROUND_BRIGHT_YELLOW;
+                cout << AboutToRead.asString();
+                SET_FOREGROUND_BRIGHT_CYAN;
+                cout << " IN:" << endl;
+                SET_FOREGROUND_BRIGHT_GREEN;
+                for( int byteitr = 0; byteitr < (bytesRead); byteitr++ )
+                    {
+                    cout << string(CtiNumStr(ReadBuffer[byteitr]).hex().zpad(2)) << ' ';
+                }
             }
 
 
@@ -334,8 +346,9 @@ void worker(const int& s)
                     newSocket->CTINexusRead(ReadBuffer + counter, 1, &bytesRead, 15);
                     counter++;
                 }
-                for( byteitr = 0; byteitr < BytesToFollow; byteitr++ )
-                    {
+                for(int byteitr = 0; byteitr < BytesToFollow; byteitr++ )
+                {
+                    boost::mutex::scoped_lock lock(io_mutex);
                     cout<<string(CtiNumStr(ReadBuffer[byteitr+3]).hex().zpad(2))<<' ';
                 }
 
@@ -361,14 +374,18 @@ void worker(const int& s)
                     newSocket->CTINexusWrite(&SendData, MsgSize, &bytesWritten, 15); 
 
                     CtiTime DateSent;
-                    SET_FOREGROUND_BRIGHT_YELLOW;
-                    cout<<DateSent.asString();
-                    SET_FOREGROUND_BRIGHT_CYAN;
-                    cout<<" OUT:"<<endl;
+                    {
+                        boost::mutex::scoped_lock lock(io_mutex);
+                        SET_FOREGROUND_BRIGHT_YELLOW;
+                        cout<<DateSent.asString();
+                        SET_FOREGROUND_BRIGHT_CYAN;
+                        cout<<" OUT:"<<endl;
+                    }
                     SET_FOREGROUND_BRIGHT_MAGNETA;
 
-                    for(byteitr = 0; byteitr < bytesWritten; byteitr++ )
-                        {
+                    for(int byteitr = 0; byteitr < bytesWritten; byteitr++ )
+                    {
+                        boost::mutex::scoped_lock lock(io_mutex);
                         cout <<string(CtiNumStr(SendData[byteitr]).hex().zpad(2))<<' ';
                     }
 
@@ -398,7 +415,7 @@ int main(int argc, char *argv[]) {
     }
     else
         {
-        cout<<"No command line argument found specifying port!"<<endl;
+        cout<<"Invalid port range entry.  Format is:  ccu_simulator 00001 99999"<<endl;
         return 0;
     }
 
