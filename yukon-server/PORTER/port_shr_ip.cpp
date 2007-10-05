@@ -8,8 +8,8 @@
 *
 * PVCS KEYWORDS:
 * ARCHIVE      :  $Archive:   Z:/SOFTWAREARCHIVES/YUKON/PORTER/port_shr_ip.cpp-arc  $
-* REVISION     :  $Revision: 1.26 $
-* DATE         :  $Date: 2007/10/04 20:31:47 $
+* REVISION     :  $Revision: 1.27 $
+* DATE         :  $Date: 2007/10/05 14:13:05 $
 *
 * Copyright (c) 1999, 2000 Cannon Technologies Inc. All rights reserved.
 *-----------------------------------------------------------------------------*/
@@ -429,16 +429,21 @@ int CtiPortShareIP::determineTimeout(unsigned char *message, unsigned int len)
 {
     int timeout;
 
-    //  is it a sequenced IDLC DTRAN message?
-    if(  (message[0] == 0x7e) && //  HDLC/IDLC
-         (message[1]  & 0x01) && //  IDLC
-        !(message[2]  & 0x01) && //  sequenced
-         (message[5] == CMND_DTRAN) )
+    //  is it a sequenced IDLC message?
+    if( (message[0] == 0x7e)        //  HDLC/IDLC
+        &&  (message[1]  & 0x01)    //  is it for the CCU?
+        && !(message[2]  & 0x01) )  //  sequenced
     {
-        int stages    =  message[PREIDLEN + 1] & 0x0f,
-            wordcount = (message[PREIDLEN + PREAMLEN + 4] & 0x30) >> 4;
+        timeout = TIMEOUT;
 
-        timeout = TIMEOUT + stages * (wordcount + 1);
+        //  Is it DTRAN?
+        if( message[5] == CMND_DTRAN )
+        {
+            int stages    =  message[PREIDLEN + 1] & 0x0f,
+                wordcount = (message[PREIDLEN + PREAMLEN + 4] & 0x30) >> 4;
+             
+            timeout += stages * (wordcount + 1);
+        }
     }
     else
     {
