@@ -19,6 +19,7 @@
 #include "cticalls.h"
 #include "cti_asmc.h"
 #include "color.h"
+#include "time.h"
 #include <queue>
 
 using namespace std;
@@ -1054,7 +1055,9 @@ unsigned char CCU711::getFrame(int frameCount)
 
 void CCU711::getData(long int mctAddress, int function, int ioType, int bytesToReturn)
 {
-    _data[1]= mctAddress; //>> 16;
+    srand ( time(NULL) );
+    int random = rand() % 10 + 1;
+    _data[1]= (mctAddress >> 6) + random;
 }
 
 /***************************************************************************************
