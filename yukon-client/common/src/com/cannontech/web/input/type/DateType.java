@@ -6,8 +6,8 @@ import java.util.Date;
 
 import org.springframework.beans.propertyeditors.CustomDateEditor;
 
+import com.cannontech.web.input.validate.DefaultValidator;
 import com.cannontech.web.input.validate.InputValidator;
-import com.cannontech.web.input.validate.NullValidator;
 
 /**
  * Implementation of input type which represents a date input type.
@@ -37,8 +37,8 @@ public class DateType implements InputType<Date> {
         return Date.class;
     }
 
-    public InputValidator<Date> getValidator() {
-        return NullValidator.getInstance();
+    public InputValidator getValidator() {
+        return DefaultValidator.getInstance();
     }
 
     public PropertyEditor getPropertyEditor() {

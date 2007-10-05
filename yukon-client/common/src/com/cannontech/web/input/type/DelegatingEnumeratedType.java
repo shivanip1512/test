@@ -4,11 +4,6 @@ import java.beans.PropertyEditor;
 import java.util.ArrayList;
 import java.util.List;
 
-import org.springframework.validation.Errors;
-
-import com.cannontech.web.input.InputSource;
-import com.cannontech.web.input.validate.InputValidator;
-
 /**
  * Implementation of input type which represents a list input type. This class
  * gets it's property editor and type class from the input type member.
@@ -36,25 +31,6 @@ public class DelegatingEnumeratedType<T> extends BaseEnumeratedType<T> {
 
     public Class<T> getTypeClass() {
         return enumeratedType.getTypeClass();
-    }
-
-    public InputValidator<T> getValidator() {
-        return new InputValidator<T>() {
-
-            public void validate(String path, InputSource field, T value, Errors errors) {
-
-                if(value != null) {
-                    String valueString = value.toString();
-    
-                    if (!optionList.contains(valueString)) {
-                        errors.rejectValue(path,
-                                           "error.invalidOption",
-                                           "The value was not a valid option.");
-                    }
-                }
-
-            }
-        };
     }
 
     public PropertyEditor getPropertyEditor() {

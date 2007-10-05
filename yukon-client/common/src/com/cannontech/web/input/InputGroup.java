@@ -5,12 +5,16 @@ import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 
+import com.cannontech.web.input.validate.InputValidator;
+
 public class InputGroup implements Input {
 
     private String field = null;
+    private String displayName = null;
     private String renderer = null;
     private Map<String, Input> inputMap = new HashMap<String, Input>();
     private InputSecurity security = new SimpleInputSecurity();
+    private List<InputValidator> validatorList = new ArrayList<InputValidator>();
 
     public List<InputSource> getInputList() {
 
@@ -54,6 +58,22 @@ public class InputGroup implements Input {
         return this.field;
     }
 
+    public String getDisplayName() {
+        return displayName;
+    }
+
+    public void setDisplayName(String displayName) {
+        this.displayName = displayName;
+    }
+
+    public List<InputValidator> getValidatorList() {
+        return validatorList;
+    }
+
+    public void setValidatorList(List<InputValidator> validatorList) {
+        this.validatorList = validatorList;
+    }
+
     public Map<String, ? extends InputSource> getInputMap(String prefix) {
         prefix += ".";
 
@@ -65,4 +85,5 @@ public class InputGroup implements Input {
         }
         return result;
     }
+
 }

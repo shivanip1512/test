@@ -4,8 +4,8 @@ import java.beans.PropertyEditor;
 
 import sun.beans.editors.StringEditor;
 
+import com.cannontech.web.input.validate.DefaultValidator;
 import com.cannontech.web.input.validate.InputValidator;
-import com.cannontech.web.input.validate.NullValidator;
 
 /**
  * Implementation of input type which represents a string input type
@@ -26,8 +26,8 @@ public class StringType implements InputType<String> {
         return String.class;
     }
 
-    public InputValidator<String> getValidator() {
-        return NullValidator.getInstance();
+    public InputValidator getValidator() {
+        return DefaultValidator.getInstance();
     }
 
     public PropertyEditor getPropertyEditor() {

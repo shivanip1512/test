@@ -18,10 +18,10 @@ public interface InputType<T> {
     public String getRenderer();
 
     /**
-     * Method used to get the validator that will be used to validate this input
+     * Method used to get the validator that will do type-specific validation
      * @return - Validator
      */
-    public InputValidator<T> getValidator();
+    public InputValidator getValidator();
 
     /**
      * Method used to get the property editor that will be used to change a

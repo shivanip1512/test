@@ -8,12 +8,6 @@ import com.cannontech.web.input.type.InputType;
 public interface InputSource extends Input {
 
     /**
-     * Method to get the display name for this input
-     * @return - Display name
-     */
-    public String getDisplayName();
-
-    /**
      * Method to get the description of the field for this input
      * @return - Field description
      */

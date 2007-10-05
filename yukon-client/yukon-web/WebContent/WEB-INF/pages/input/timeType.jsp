@@ -3,6 +3,7 @@
 
 <%@ taglib uri="http://cannontech.com/tags/cti" prefix="cti" %>
 <%@ taglib uri="http://www.springframework.org/tags" prefix="spring" %>
+<%@ taglib prefix="ct" tagdir="/WEB-INF/tags"%>
 
 
 <script type="text/javascript">
@@ -24,9 +25,7 @@
 		<c:set var="minuteSplit" value="${timeSplit[1]}" />
 	</c:if>
 	
-	<span <c:if test="${status.error}">style="color: red"</c:if>>
-		${input.displayName} 
-	</span>
+	<ct:inputName input="${input}" error="${status.error}" />
 		
 	<input type="hidden" size="5" id="${status.expression}" name="${status.expression}" value="${status.value}" />
 

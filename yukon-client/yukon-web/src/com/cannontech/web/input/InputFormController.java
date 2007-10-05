@@ -74,27 +74,44 @@ public abstract class InputFormController extends SimpleFormController {
             BindException errors) throws Exception {
 
         Map<String, ? extends InputSource> inputMap = getInputRoot().getInputMap();
+        List<Input> inputList = getInputRoot().getInputList();
+
         BeanWrapper beanWrapper = new BeanWrapperImpl(command);
-
-        // Validate each of the input values
-
-        InputSource input = null;
-        InputType inputType = null;
         Object value = null;
+        
+
+        // Validate each of the input values individually
         for (String fieldPath : inputMap.keySet()) {
 
-            input = inputMap.get(fieldPath);
-            inputType = input.getType();
+            Input input = inputMap.get(fieldPath);
 
             // Get the submitted value
             value = beanWrapper.getPropertyValue(fieldPath);
 
-            // Validate the value
-            InputValidator validator = inputType.getValidator();
-            validator.validate(fieldPath, input, value, errors);
-
+            for (InputValidator validator : input.getValidatorList()) {
+                // Validate the value
+                validator.validate(fieldPath, input.getDisplayName(), value, errors);
+            }
         }
 
+        // Validate each of the input groups
+        for (Input input : inputList) {
+
+            if (input instanceof InputGroup) {
+
+                for (InputValidator validator : input.getValidatorList()) {
+                    
+                    if(input.getField() != null){
+                        value = beanWrapper.getPropertyValue(input.getField());
+                    } else {
+                        value = command;
+                    }
+                    
+                    // Validate the group
+                    validator.validate(null, input.getDisplayName(), value, errors);
+                }
+            }
+        }
     }
 
 }

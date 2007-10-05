@@ -3,13 +3,12 @@ package com.cannontech.web.input.type;
 import java.beans.PropertyEditor;
 
 import org.springframework.beans.propertyeditors.CustomNumberEditor;
-import org.springframework.validation.Errors;
 
-import com.cannontech.web.input.InputSource;
+import com.cannontech.web.input.validate.DefaultValidator;
 import com.cannontech.web.input.validate.InputValidator;
 
 /**
- * Implementation of input type which represents a string input type
+ * Implementation of input type which represents an integer input type
  */
 public class IntegerType implements InputType<Integer> {
 
@@ -50,31 +49,8 @@ public class IntegerType implements InputType<Integer> {
         return Integer.class;
     }
 
-    public InputValidator<Integer> getValidator() {
-
-        return new InputValidator<Integer>() {
-
-            public void validate(String path, InputSource field, Integer value, Errors errors) {
-
-                if (value == null || minValue == maxValue) {
-                    return;
-                }
-
-                if (value < minValue) {
-                    errors.rejectValue(path,
-                                       "error.belowMin",
-                                       new Object[] { field.getDisplayName(), minValue },
-                                       "The input value must be greater than or equal to " + minValue);
-                }
-                if (value > maxValue) {
-                    errors.rejectValue(path,
-                                       "error.aboveMax",
-                                       new Object[] { field.getDisplayName(), maxValue },
-                                       "The input value must be less than or equal to " + maxValue);
-                }
-
-            }
-        };
+    public InputValidator getValidator() {
+        return DefaultValidator.getInstance();
     }
 
     public PropertyEditor getPropertyEditor() {

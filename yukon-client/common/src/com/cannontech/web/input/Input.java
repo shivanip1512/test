@@ -3,6 +3,8 @@ package com.cannontech.web.input;
 import java.util.List;
 import java.util.Map;
 
+import com.cannontech.web.input.validate.InputValidator;
+
 /**
  * Interface which represents an input to be used to populate a field
  */
@@ -13,6 +15,12 @@ public interface Input {
      * @return - Field name
      */
     public String getField();
+
+    /**
+     * Method to get the display name for this input
+     * @return - Display name
+     */
+    public String getDisplayName();
 
     /**
      * Method used to get the renderer that will be used to render this input
@@ -40,5 +48,11 @@ public interface Input {
      * @return Input security for this input
      */
     public InputSecurity getSecurity();
+
+    /**
+     * Method to get a list of validators for this input
+     * @return - A list of validators
+     */
+    public List<InputValidator> getValidatorList();
 
 }
