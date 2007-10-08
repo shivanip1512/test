@@ -255,6 +255,14 @@ INT IM_EX_CTIBASE D_Words (PBYTE DWords,     /* D words to decode */
       return(DLENGTH);
    }
 
+   /* if it's not a D word, and it's not a NACK, we got garbage */
+   if( ((DWords[0] & 0xf0) != 0xd0) && 
+       ((DWords[0] & 0xf0) != 0xe0) && 
+       !PadTst(DWords, 1, CCU) )
+   {
+       return BADTYPE;
+   }
+
    /* check for a nacked */
    if((Code = NackTst (DWords[7], &Nack, CCU)) != NORMAL)
    {
@@ -264,12 +272,15 @@ INT IM_EX_CTIBASE D_Words (PBYTE DWords,     /* D words to decode */
    /* if it is nacked is it padded? */
    if(Nack)
    {
-      if(PadTst (DWords, 3, CCU))
-      {
-         return(NACKPAD1);
-      }
-      else
-         return(NACK1);
+       //  This is only checking the first 3 bytes of the first D word... ?
+       if(PadTst (DWords, 3, CCU))
+       {
+           return(NACKPAD1);
+       }
+       else
+       {
+           return(NACK1);
+       }
    }
 
    /* decode the first word and get the data from it */
