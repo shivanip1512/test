@@ -6,8 +6,8 @@
 *
 * PVCS KEYWORDS:
 * ARCHIVE      :  $Archive:   Z:/SOFTWAREARCHIVES/YUKON/COMMON/INCLUDE/test_queue.cpp-arc  $
-* REVISION     :  $Revision: 1.2 $
-* DATE         :  $Date: 2007/10/09 15:45:26 $
+* REVISION     :  $Revision: 1.3 $
+* DATE         :  $Date: 2007/10/09 15:54:49 $
 *
 * Copyright (c) 2007 Cannon Technologies Inc. All rights reserved.
 *-----------------------------------------------------------------------------*/
@@ -46,9 +46,9 @@ BOOST_AUTO_UNIT_TEST(test_cti_queue_timing)
     start_seconds = xtime_to_double(start_xtime);
     end_seconds   = xtime_to_double(end_xtime);
 
-    //  The end time must be between 1.00 and 1.01 seconds past the start time
-    BOOST_CHECK( (start_seconds + 1.00) <= end_seconds );
-    BOOST_CHECK( (start_seconds + 1.01) >  end_seconds );
+    //  The end time must be between 1.0 and 1.2 seconds past the start time
+    BOOST_CHECK( (start_seconds + 1.0) <= end_seconds );
+    BOOST_CHECK( (start_seconds + 1.2) >  end_seconds );
 
     boost::xtime_get(&start_xtime, boost::TIME_UTC);
     testQueue.getQueue(100);
@@ -57,9 +57,9 @@ BOOST_AUTO_UNIT_TEST(test_cti_queue_timing)
     start_seconds = xtime_to_double(start_xtime);
     end_seconds   = xtime_to_double(end_xtime);
 
-    //  The end time must be between 0.10 and 0.11 seconds past the start time
+    //  The end time must be between 0.10 and 0.15 seconds past the start time
     BOOST_CHECK( (start_seconds + 0.10) <= end_seconds );
-    BOOST_CHECK( (start_seconds + 0.11) >  end_seconds );
+    BOOST_CHECK( (start_seconds + 0.15) >  end_seconds );
 }
 
 BOOST_AUTO_UNIT_TEST(test_fifo_queue_timing)
@@ -80,9 +80,9 @@ BOOST_AUTO_UNIT_TEST(test_fifo_queue_timing)
     start_seconds = xtime_to_double(start_xtime);
     end_seconds   = xtime_to_double(end_xtime);
 
-    //  The end time must be between 1.00 and 1.01 seconds past the start time
-    BOOST_CHECK( (start_seconds + 1.00) <= end_seconds );
-    BOOST_CHECK( (start_seconds + 1.01) >  end_seconds );
+    //  The end time must be between 1.0 and 1.2 seconds past the start time
+    BOOST_CHECK( (start_seconds + 1.0) <= end_seconds );
+    BOOST_CHECK( (start_seconds + 1.2) >  end_seconds );
 
     boost::xtime_get(&start_xtime, boost::TIME_UTC);
     testQueue.getQueue(100);
@@ -91,7 +91,7 @@ BOOST_AUTO_UNIT_TEST(test_fifo_queue_timing)
     start_seconds = xtime_to_double(start_xtime);
     end_seconds   = xtime_to_double(end_xtime);
 
-    //  The end time must be between 0.10 and 0.11 seconds past the start time
+    //  The end time must be between 0.10 and 0.15 seconds past the start time
     BOOST_CHECK( (start_seconds + 0.10) <= end_seconds );
-    BOOST_CHECK( (start_seconds + 0.11) >  end_seconds );
+    BOOST_CHECK( (start_seconds + 0.15) >  end_seconds );
 }
