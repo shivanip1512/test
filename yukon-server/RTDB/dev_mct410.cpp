@@ -8,8 +8,8 @@
 *
 * PVCS KEYWORDS:
 * ARCHIVE      :  $Archive:   Z:/SOFTWAREARCHIVES/YUKON/RTDB/dev_mct310.cpp-arc  $
-* REVISION     :  $Revision: 1.145 $
-* DATE         :  $Date: 2007/09/24 19:56:22 $
+* REVISION     :  $Revision: 1.146 $
+* DATE         :  $Date: 2007/10/09 18:51:40 $
 *
 * Copyright (c) 1999, 2000 Cannon Technologies Inc. All rights reserved.
 *-----------------------------------------------------------------------------*/
@@ -2724,34 +2724,37 @@ INT CtiDeviceMCT410::decodeGetValueOutage( INMESS *InMessage, CtiTime &TimeNow, 
 
                 if( cycles >= 0 )
                 {
-                    seconds = cycles  / 60;
-                    minutes = seconds / 60;
-                    hours   = minutes / 60;
-                    days    = hours   / 24;
-
-                    seconds %= 60;
-                    minutes %= 60;
-                    hours   %= 24;
-
-                    if( days == 1 )
+                    if( multiplier != 2 || cycles != 0xffff )
                     {
-                        pointString += CtiNumStr(days) + " day, ";
-                    }
-                    else if( days > 1 )
-                    {
-                        pointString += CtiNumStr(days) + " days, ";
-                    }
-
-                    pointString += CtiNumStr(hours).zpad(2) + string(":") +
-                                   CtiNumStr(minutes).zpad(2) + ":" +
-                                   CtiNumStr(seconds).zpad(2);
-
-                    if( cycles % 60 )
-                    {
-                        int millis = (cycles % 60) * 1000;
-                        millis /= 60;
-
-                        pointString += "." + CtiNumStr(millis).zpad(3);
+                        seconds = cycles  / 60;
+                        minutes = seconds / 60;
+                        hours   = minutes / 60;
+                        days    = hours   / 24;
+    
+                        seconds %= 60;
+                        minutes %= 60;
+                        hours   %= 24;
+    
+                        if( days == 1 )
+                        {
+                            pointString += CtiNumStr(days) + " day, ";
+                        }
+                        else if( days > 1 )
+                        {
+                            pointString += CtiNumStr(days) + " days, ";
+                        }
+    
+                        pointString += CtiNumStr(hours).zpad(2) + string(":") +
+                                       CtiNumStr(minutes).zpad(2) + ":" +
+                                       CtiNumStr(seconds).zpad(2);
+    
+                        if( cycles % 60 )
+                        {
+                            int millis = (cycles % 60) * 1000;
+                            millis /= 60;
+    
+                            pointString += "." + CtiNumStr(millis).zpad(3);
+                        }
                     }
 
                     if( (pPoint = getDevicePointOffsetTypeEqual(PointOffset_Analog_Outage, AnalogPointType)) 
