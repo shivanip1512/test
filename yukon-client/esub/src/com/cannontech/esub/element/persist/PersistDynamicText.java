@@ -37,6 +37,7 @@ public class PersistDynamicText extends BasePersistElement {
 					elem.setPointId(LxSaveUtils.readInt(in));
         			elem.setDisplayAttribs(LxSaveUtils.readInt(in));     
         			elem.setLinkTo(LxSaveUtils.readString(in));   
+                    elem.setControlPointId(elem.getPointId());
                 }
 				break;
                 
@@ -45,6 +46,7 @@ public class PersistDynamicText extends BasePersistElement {
                     elem.setDisplayAttribs(LxSaveUtils.readInt(in));     
                     elem.setLinkTo(LxSaveUtils.readString(in));   
                     elem.setControlEnabled(LxSaveUtils.readBoolean(in));
+                    elem.setControlPointId(elem.getPointId());
                 }
                 break;
                 
@@ -62,6 +64,7 @@ public class PersistDynamicText extends BasePersistElement {
                     elem.setTextBlink(blink);
                     elem.setBlinkPointID(blinkPointID);
                     elem.setCustomBlinkMap(customBlinkMap);
+                    elem.setControlPointId(elem.getPointId());
                 }
                 break;
                 
