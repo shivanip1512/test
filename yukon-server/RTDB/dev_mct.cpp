@@ -8,8 +8,8 @@
 *
 * PVCS KEYWORDS:
 * ARCHIVE      :  $Archive:   Z:/SOFTWAREARCHIVES/YUKON/RTDB/dev_mct.cpp-arc  $
-* REVISION     :  $Revision: 1.121 $
-* DATE         :  $Date: 2007/09/24 19:58:52 $
+* REVISION     :  $Revision: 1.122 $
+* DATE         :  $Date: 2007/10/09 19:24:00 $
 *
 * Copyright (c) 1999, 2000 Cannon Technologies Inc. All rights reserved.
 *-----------------------------------------------------------------------------*/
@@ -182,42 +182,24 @@ string CtiDeviceMCT::sspecIsFrom( int sspec )
 
     switch( sspec )
     {
-        case 36:
-            whois = "LMT-2";
-            break;
+        case 36:    whois = "LMT-2";    break;
 
-        case 95:
-            whois = "MCT 21x";
-            break;
+        case 95:    whois = "MCT 21x";  break;
 
-        case 74:
-            whois = "MCT 22x";
-            break;
+        case 74:    whois = "MCT 22x";  break;
 
         case 93:
-        case 121:
-            whois = "MCT 24x";
-            break;
+        case 121:   whois = "MCT 24x";  break;
 
-        case 111:
-            whois = "MCT 250";
-            break;
+        case 111:   whois = "MCT 250";  break;
 
-        case 153:
-            whois = "MCT 310";
-            break;
+        case 153:   whois = "MCT 310";  break;
 
-        case 1007:
-            whois = "MCT 3xx/3xxL";
-            break;
+        case 1007:  whois = "MCT 3xx/3xxL";     break;
 
-        case 218:
-            whois = "MCT 318/360/370";
-            break;
+        case 218:   whois = "MCT 318/360/370";  break;
 
-        default:
-            whois = "Unknown";
-            break;
+        default:    whois = "Unknown";  break;
     }
 
     return whois;
@@ -836,18 +818,19 @@ INT CtiDeviceMCT::ModelDecode(INMESS *InMessage, CtiTime &TimeNow, list< CtiMess
 
     switch( InMessage->Sequence )
     {
-        case Emetcon::Control_Latch:
-        case Emetcon::Control_Shed:
-        case Emetcon::Control_Restore:
         case Emetcon::PutConfig_ARMC:
         case Emetcon::PutConfig_ARML:
         {
             break;
         }
 
+        case Emetcon::Control_Latch:
+        case Emetcon::Control_Shed:
+        case Emetcon::Control_Restore:
         case Emetcon::Control_Connect:
         case Emetcon::Control_Disconnect:
         {
+            status = decodeControl(InMessage, TimeNow, vgList, retList, outList);
             break;
         }
 
@@ -3468,6 +3451,40 @@ INT CtiDeviceMCT::decodeGetStatusDisconnect(INMESS *InMessage, CtiTime &TimeNow,
     return status;
 }
 
+
+
+INT CtiDeviceMCT::decodeControl(INMESS *InMessage, CtiTime &TimeNow, list< CtiMessage* > &vgList, list< CtiMessage* > &retList, list< OUTMESS* > &outList)
+{
+    INT   status = NORMAL,
+          j;
+    ULONG pfCount = 0;
+    string resultString;
+
+    CtiReturnMsg *ReturnMsg = NULL;    // Message sent to VanGogh, inherits from Multi
+
+    INT ErrReturn  = InMessage->EventCode & 0x3fff;
+
+
+    if(!(status = decodeCheckErrorReturn(InMessage, retList, outList)))
+    {
+        if((ReturnMsg = CTIDBG_new CtiReturnMsg(getID(), InMessage->Return.CommandStr)) == NULL)
+        {
+            CtiLockGuard<CtiLogger> doubt_guard(dout);
+            dout << CtiTime() << " Could NOT allocate memory " << __FILE__ << " (" << __LINE__ << ") " << endl;
+
+            return MEMORY;
+        }
+
+        ReturnMsg->setUserMessageId(InMessage->Return.UserID);
+
+        resultString = getName( ) + " / control sent";
+        ReturnMsg->setResultString( resultString );
+
+        retMsgHandler( InMessage->Return.CommandStr, status, ReturnMsg, vgList, retList );
+    }
+
+    return status;
+}
 
 
 INT CtiDeviceMCT::decodePutValue(INMESS *InMessage, CtiTime &TimeNow, list< CtiMessage* > &vgList, list< CtiMessage* > &retList, list< OUTMESS* > &outList)
