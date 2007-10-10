@@ -333,4 +333,33 @@ public class CapControlSubstationBus extends com.cannontech.database.db.DBPersis
             this.usePhaseData = "N";
         }
     }
+    
+    public static int[] getUnassignedSubBusIDs() {
+		NativeIntVector intVect = new NativeIntVector(16);
+		java.sql.Connection conn = null;
+		java.sql.PreparedStatement pstmt = null;
+		java.sql.ResultSet rset = null;
+
+		String sql = "SELECT substationBusID FROM " + TABLE_NAME + " where " +
+						 " substationBusID not in (select substationBusID from " + CCSubstationSubBusList.TABLE_NAME +
+						 ") ORDER BY substationBusID";
+
+		try {		
+			conn = PoolManager.getInstance().getConnection(CtiUtilities.getDatabaseAlias());
+			if( conn == null ) {
+				throw new IllegalStateException("Error getting database connection.");
+			} else {
+				pstmt = conn.prepareStatement(sql.toString());
+				rset = pstmt.executeQuery();
+				while( rset.next() ) {				
+					intVect.add( rset.getInt(1) );
+				}
+			}		
+		} catch( java.sql.SQLException e ) {
+			CTILogger.error( e.getMessage(), e );
+		} finally {
+			SqlUtils.close(rset, pstmt, conn );
+		}
+		return intVect.toArray();
+	}
 }

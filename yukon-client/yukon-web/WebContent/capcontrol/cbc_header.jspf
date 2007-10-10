@@ -83,7 +83,7 @@
 			<form id="subMenuFrm" action="results.jsp" method="post">
 			<input type="hidden" name="<%=CBCSessionInfo.STR_LAST_SEARCH%>">
 				  <div class="subMenuPopup">
-					<a href="#" class="submenuLink" onclick="post('<%=DBEditorNav.getWizardURL(PAOGroups.CAP_CONTROL_SUBBUS)%>');">Substation</a>
+					<a href="#" class="submenuLink" onclick="post('<%=DBEditorNav.getWizardURL(PAOGroups.CAP_CONTROL_SUBBUS)%>');">SubstationBus</a>
 					<a href="#" class="submenuLink" onclick="post('<%=DBEditorNav.getWizardURL(PAOGroups.CAP_CONTROL_FEEDER)%>');">Feeder</a> 
 					<a href="#" class="submenuLink" onclick="post('<%=DBEditorNav.getWizardURL(PAOGroups.CAPBANK)%>');">CapBank</a> 
 					<a href="#" class="submenuLink" onclick="post('<%=DBEditorNav.getWizardURL(PAOGroups.CAPBANKCONTROLLER)%>');">CBC</a> 

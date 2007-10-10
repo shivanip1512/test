@@ -93,18 +93,22 @@ public class CapBankListModel extends ReportModelBase
 	public StringBuffer buildSQLStatement()
 	{
 		StringBuffer sql = new StringBuffer	(
-			"select y.paoname, y.description, c.banksize, cbcy.paoname, cbcy.type, cbcd.serialnumber, yfdr.paoname, ysub.paoname " +
+			
+			"select y.paoname, y.description, c.banksize, cbcy.paoname, cbcy.type, cbcd.serialnumber, yfdr.paoname, ysubbus.paoname " + 
 			"from " +
-			"(((capbank c join yukonpaobject y on c.deviceid = y.paobjectid) left outer join " +
+			"(((capbank c join yukonpaobject y on c.deviceid = y.paobjectid) left outer join  " +
 			"(yukonpaobject yfdr join ccfeederbanklist fdrl on yfdr.paobjectid = fdrl.feederid) on c.deviceid = fdrl.deviceid) " +
 			"left outer join " +
 			"(devicecbc cbcd join yukonpaobject cbcy on cbcd.deviceid = cbcy.paobjectid) on c.controldeviceid =cbcd.deviceid) " +
 			"left outer join " +
-			"(yukonpaobject ysub join ccfeedersubassignment subl on ysub.paobjectid = subl.substationbusid) " +
-			"on subl.feederid = fdrl.feederid " +
+			"(yukonpaobject ysubbus join ccfeedersubassignment subbusl on ysubbus.paobjectid = subbusl.substationbusid) " +
+			"on subbusl.feederid = fdrl.feederid " +
 			"left outer join " +
-			"(yukonpaobject ca join ccsubareaassignment saa on ca.paobjectid = saa.areaid) on saa.substationbusid = subl.substationbusid ");
-						
+			"(yukonpaobject ysubstation join ccsubstationsubbuslist ssb on ysubstation.paobjectid = ssb.substationid) " +
+			"on ssb.substationbusid = subbusl.substationbusid " +
+			"left outer join " +
+			"(yukonpaobject ca join ccsubareaassignment saa on ca.paobjectid = saa.areaid) on saa.substationbusid = ssb.substationid ");
+			
         if (getPaoIDs() != null && getPaoIDs().length > 0)
         {
 			if (getFilterModelType().equals(ReportFilter.AREA)) {
@@ -129,7 +133,7 @@ public class CapBankListModel extends ReportModelBase
 				sql.append(")");
 			} else if (getFilterModelType().equals(
 					ReportFilter.CAPCONTROLSUBBUS)) {
-				sql.append(" WHERE subl.substationbusid IN ( " + getPaoIDs()[0]
+				sql.append(" WHERE subbusl.substationbusid IN ( " + getPaoIDs()[0]
 						+ " ");
 				for (int i = 1; i < getPaoIDs().length; i++)
 					sql.append(" , " + getPaoIDs()[i]);

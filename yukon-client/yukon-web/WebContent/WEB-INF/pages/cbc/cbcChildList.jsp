@@ -3,9 +3,145 @@
 <%@ taglib uri="http://myfaces.apache.org/tomahawk" prefix="x" %>
 
 
-<f:subview id="childList" rendered="#{capControlForm.visibleTabs['CBCArea'] || capControlForm.visibleTabs['CBCSubstation'] || capControlForm.visibleTabs['CBCFeeder']}" >
+<f:subview id="childList" rendered="#{capControlForm.visibleTabs['CBCArea'] || capControlForm.visibleTabs['CBCSubstation'] || capControlForm.visibleTabs['CBCSubstationBus'] || capControlForm.visibleTabs['CBCFeeder']}" >
 
-    <f:subview id="paoSubBus" rendered="#{capControlForm.visibleTabs['CBCSubstation']}" >
+       <f:subview id="paoSubstation" rendered="#{capControlForm.visibleTabs['CBCSubstation']}" >
+	    <f:verbatim><br/><br/><fieldset><legend>Substation Bus Assignment</legend></f:verbatim>
+	    <f:verbatim><br/></f:verbatim>
+
+	    <h:panelGrid id="subBody" columns="2" styleClass="gridLayout"
+	    		rowClasses="gridCell" columnClasses="gridCell">
+			<x:panelGroup>
+	            <h:dataTable id="subBusAvailData" var="subBus" 
+	                    styleClass="scrollerTable" headerClass="scrollerTableHeader"
+	                    footerClass="scrollerTableHeader"
+	                    rowClasses="tableRow,altTableRow"
+	            		value="#{capControlForm.unassignedSubBuses}"
+						columnClasses="scrollerLeft,scrollerLeft,scrollerCentered"
+	            		rows="25" >
+	               <h:column>
+	                   <f:facet name="header">
+	                   </f:facet>
+	                   <h:outputText value="#{subBus.liteID}" />
+	               </h:column>
+	
+	               <h:column>
+	                   <f:facet name="header">
+	                      <x:outputText value="Available Substation Buses" />
+	                   </f:facet>
+	                   <x:outputText value="#{subBus.paoName}" title="#{subBus.paoDescription}"/>
+	               </h:column>
+	
+	               <h:column>
+	                   <f:facet name="header">
+	                   </f:facet>
+	                   <x:commandLink value="Add >>" action="#{capControlForm.treeSwapAddAction}">
+							<f:param name="swapType" value="SubstationBus"/>
+							<f:param name="id" value="#{subBus.liteID}"/>
+	                   </x:commandLink>
+	               </h:column>
+	
+	            </h:dataTable>
+	
+	            <h:panelGrid columns="1" columnClasses="scrollerCentered">
+	                <x:dataScroller id="scrollButtons" for="subBusAvailData" fastStep="25"
+	                        pageCountVar="pageCount" pageIndexVar="pageIndex"
+	                        styleClass="scroller" paginator="true"
+	                        paginatorMaxPages="9" paginatorTableClass="paginator"
+	                        paginatorActiveColumnStyle="font-weight:bold;">
+	                    <f:facet name="first" >
+	                        <x:graphicImage url="/editor/images/arrow-first.gif" border="1" title="First page"/>
+	                    </f:facet>
+	                    <f:facet name="last">
+	                        <x:graphicImage url="/editor/images/arrow-last.gif" border="1" title="Last page"/>
+	                    </f:facet>
+	                    <f:facet name="previous">
+	                        <x:graphicImage url="/editor/images/arrow-previous.gif" border="1" title="Previous page"/>
+	                    </f:facet>
+	                    <f:facet name="next">
+	                        <x:graphicImage url="/editor/images/arrow-next.gif" border="1" title="Next page"/>
+	                    </f:facet>
+	                    <f:facet name="fastforward">
+	                        <x:graphicImage url="/editor/images/arrow-ff.gif" border="1" title="Next set of pages"/>
+	                    </f:facet>
+	                    <f:facet name="fastrewind">
+	                        <x:graphicImage url="/editor/images/arrow-fr.gif" border="1" title="Previous set of pages"/>
+	                    </f:facet>
+	                </x:dataScroller>
+	
+	                <x:dataScroller id="scrollDisplay" for="subBusAvailData" rowsCountVar="rowsCount"
+	                		styleClass="scroller"
+	                        displayedRowsCountVar="displayedRowsCountVar"
+	                        firstRowIndexVar="firstRowIndex" lastRowIndexVar="lastRowIndex"
+	                        pageCountVar="pageCount" pageIndexVar="pageIndex">
+	                    <h:outputFormat value="{0} Substation Buses found" >
+	                        <f:param value="#{rowsCount}" />
+	                    </h:outputFormat>
+						<f:verbatim><br/></f:verbatim>
+	                    <h:outputFormat value="Page {0} / {1}" >
+	                        <f:param value="#{pageIndex}" />
+	                        <f:param value="#{pageCount}" />
+	                    </h:outputFormat>
+	                </x:dataScroller>
+	            </h:panelGrid>
+			</x:panelGroup>
+
+			<x:panelGroup>
+	            <h:dataTable id="subBusAssignData" var="subBus"
+	                    styleClass="scrollerTable" headerClass="scrollerTableHeader"
+	                    footerClass="scrollerTableHeader"
+	                    rowClasses="tableRow,altTableRow"
+	                    rendered="#{capControlForm.visibleTabs['CBCSubstation']}"	                    
+	            		value="#{capControlForm.PAOBase.childList}"
+						columnClasses="scrollerLeft,scrollerLeft,scrollerCentered" >
+	               <h:column>
+	                   <f:facet name="header">
+	                   </f:facet>
+	                   <x:commandLink value="<< Remove" action="#{capControlForm.treeSwapRemoveAction}">
+							<f:param name="swapType" value="Substation Bus"/>
+							<f:param name="id" value="#{subBus.subBusID}"/>
+	                   </x:commandLink>
+	               </h:column>
+	
+	               <h:column>
+	                   <f:facet name="header">
+	                      <x:outputText value="Assigned Substation Buses"/>
+	                   </f:facet>
+	                   <x:outputText value="#{databaseCache.allPAOsMap[subBus.subBusID]}" />
+	               </h:column>
+	
+	               <h:column>
+	                   <f:facet name="header">
+							<x:outputText value="Order" title="Order used for control (Range: 1 to 1000 )" />
+	                   </f:facet>
+	                   <x:inputText value="#{subBus.displayOrder}" styleClass="char4Label" required="true" >
+	                   		<f:validateLongRange minimum="1" maximum="1000" />
+	                   </x:inputText>
+	                   
+	               </h:column>
+	
+	            </h:dataTable>
+							<f:verbatim><br/><br/>
+	    			<fieldset>
+	    				<legend>Links</legend>
+	    			</f:verbatim>
+	    				<f:verbatim><br/></f:verbatim>
+					<x:commandLink action="#{capControlForm.dataModel.createWizardLink}" 
+								   value="Create Substation Bus" 
+								   title="Click here to create a Substation Bus. Return after creation to assign the Substation Bus.">
+								   		<f:param  name="type" id="type" value="#{selLists.substationBusType}"/>
+								   </x:commandLink>
+					<f:verbatim>
+	    				</fieldset>
+	    			</f:verbatim>
+			
+			</x:panelGroup>
+	
+	    </h:panelGrid>
+	
+		<f:verbatim></fieldset></f:verbatim>
+    </f:subview>
+    <f:subview id="paoSubBus" rendered="#{capControlForm.visibleTabs['CBCSubstationBus']}" >
 	    <f:verbatim><br/><br/><fieldset><legend>Feeder Assignment</legend></f:verbatim>
 	    <f:verbatim><br/></f:verbatim>
 
@@ -91,7 +227,7 @@
 	                    styleClass="scrollerTable" headerClass="scrollerTableHeader"
 	                    footerClass="scrollerTableHeader"
 	                    rowClasses="tableRow,altTableRow"
-	                    rendered="#{capControlForm.visibleTabs['CBCSubstation']}"	                    
+	                    rendered="#{capControlForm.visibleTabs['CBCSubstationBus']}"	                    
 	            		value="#{capControlForm.PAOBase.childList}"
 						columnClasses="scrollerLeft,scrollerLeft,scrollerCentered" >
 	               <h:column>

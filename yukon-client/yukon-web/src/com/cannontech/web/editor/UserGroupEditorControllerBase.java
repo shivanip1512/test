@@ -52,48 +52,74 @@ public abstract class UserGroupEditorControllerBase<T> extends MultiActionContro
     }
 
     protected abstract String getPickerId();
+    protected abstract String getCbcPickerId();
 
     protected abstract T getAffected(HttpServletRequest request);
 
     public ModelAndView removePao(HttpServletRequest request, HttpServletResponse response) {
-
+    	Integer paoId;
+    	List<Integer> idList;
+    	List<Integer> cbcIdList;
+    	
         String paoIdList = request.getParameter("paoIdList");
-        Integer paoId = Integer.valueOf(request.getParameter("paoId"));
-
-        List<Integer> idList = this.getPaoIdList(paoIdList);
-
-        // Remove pao
-        idList.remove(paoId);
-
-        return this.getPaoTableMav(idList);
-
-    }
-
-    public ModelAndView addPao(HttpServletRequest request, HttpServletResponse response) {
-
-        String paoIdList = request.getParameter("paoIdList");
-        Integer paoId = Integer.valueOf(request.getParameter("paoId"));
-
-        List<Integer> idList = this.getPaoIdList(paoIdList);
-
-        // Add pao
-        if (!idList.contains(paoId)) {
-            idList.add(paoId);
+        String paoIdString = request.getParameter("paoId");
+        String cbcPaoIdList = request.getParameter("cbcPaoIdList"); 
+        
+        idList = this.getPaoIdList(paoIdList);
+        cbcIdList = this.getPaoIdList(cbcPaoIdList);
+        
+        if( paoIdString.compareTo("") != 0 )
+        {
+        	paoId = Integer.valueOf(paoIdString);
+        	if(!idList.remove(paoId))
+        		cbcIdList.remove(paoId);
         }
 
-        return this.getPaoTableMav(idList);
+
+    	return this.getPaoTableMav(idList, cbcIdList );
+   }
+
+    public ModelAndView addPao(HttpServletRequest request, HttpServletResponse response) {
+    	Integer paoId;
+    	List<Integer> idList;
+    	List<Integer> cbcIdList;
+    	
+        String paoIdList = request.getParameter("paoIdList");
+        String paoIdString = request.getParameter("paoId");
+        String cbcPaoIdList = request.getParameter("cbcPaoIdList");
+        String cbcPaoIdString = request.getParameter("cbcPaoId");
+            
+        idList = this.getPaoIdList(paoIdList);
+        cbcIdList = this.getPaoIdList(cbcPaoIdList);
+        
+        if( paoIdString.compareTo("") != 0 )
+        {
+        	paoId = Integer.valueOf(paoIdString);
+            if (!idList.contains(paoId)) {
+                idList.add(paoId);
+            }        	
+        }
+        else
+        {
+        	paoId = Integer.valueOf(cbcPaoIdString);
+            if (!cbcIdList.contains(paoId)) {
+            	cbcIdList.add(paoId);
+            }
+        }
+
+    	return this.getPaoTableMav(idList, cbcIdList );
+
 
     }
 
     public ModelAndView save(HttpServletRequest request, HttpServletResponse response) {
 
         String paoIdList = request.getParameter("paoIdList");
-
+        String cbcPaoIdList = request.getParameter("cbcPaoIdList");
         T group = getAffected(request);
-
-        if (editorService.savePermissions(group,
-                                          this.getPaoIdList(paoIdList),
-                                          Permission.LM_VISIBLE)) {
+        boolean lm = editorService.savePermissions(group, this.getPaoIdList(paoIdList),Permission.LM_VISIBLE);
+        boolean cbc = editorService.addPermissions(group, this.getPaoIdList(cbcPaoIdList),Permission.PAO_VISIBLE);
+        if ( lm && cbc) {
             return new ModelAndView(new TextView("Save Successful"));
         }
 
@@ -102,8 +128,10 @@ public abstract class UserGroupEditorControllerBase<T> extends MultiActionContro
 
     protected void putPaosInModel(ModelAndView mav, T it) {
         List<LiteYukonPAObject> paoList = editorService.getPaos(it, Permission.LM_VISIBLE);
+        List<LiteYukonPAObject> cbcPaoList = editorService.getPaos(it, Permission.PAO_VISIBLE);
         mav.addObject("paoList", getUltraLitePaoList(paoList));
-
+        mav.addObject("cbcPaoList", getUltraLitePaoList(cbcPaoList));
+        
         StringBuffer sb = new StringBuffer();
         for (LiteYukonPAObject pao : paoList) {
             if (sb.length() > 0) {
@@ -112,7 +140,16 @@ public abstract class UserGroupEditorControllerBase<T> extends MultiActionContro
             sb.append(pao.getYukonID());
         }
         mav.addObject("paoIds", sb.toString());
+        sb = new StringBuffer();
+        for (LiteYukonPAObject pao : cbcPaoList) {
+            if (sb.length() > 0) {
+                sb.append(",");
+            }
+            sb.append(pao.getYukonID());
+        }
+        mav.addObject("cbcPaoIds", sb.toString());
         mav.addObject("pickerId", getPickerId());
+        mav.addObject("cbcPickerId",getCbcPickerId());
     }
 
     /**
@@ -137,9 +174,10 @@ public abstract class UserGroupEditorControllerBase<T> extends MultiActionContro
     /**
      * Helper method to get and populate the paoTable MAV
      * @param idList - List of paoIds to add to the view
+     * @param cbcIdList - List of paoIds to add to the view
      * @return Populated paoTable MAV
      */
-    protected ModelAndView getPaoTableMav(List<Integer> idList) {
+    protected ModelAndView getPaoTableMav(List<Integer> idList,List<Integer> cbcIdList ) {
         ModelAndView mav = new ModelAndView("paoTable.jsp");
 
         List<LiteYukonPAObject> paoList = new ArrayList<LiteYukonPAObject>();
@@ -157,6 +195,21 @@ public abstract class UserGroupEditorControllerBase<T> extends MultiActionContro
         mav.addObject("paoList", getUltraLitePaoList(paoList));
         mav.addObject("paoIds", idBuffer.toString());
 
+        paoList = new ArrayList<LiteYukonPAObject>();
+        idBuffer = new StringBuffer();
+        for (Integer id : cbcIdList) {
+            paoList.add(paoDao.getLiteYukonPAO(id));
+
+            if (idBuffer.length() > 0) {
+                idBuffer.append(",");
+            }
+            idBuffer.append(id);
+        }        
+        
+        mav.addObject("cbcPickerId", getCbcPickerId());
+        mav.addObject("cbcPaoList", getUltraLitePaoList(paoList));
+        mav.addObject("cbcPaoIds", idBuffer.toString());        
+        
         return mav;
     }
 

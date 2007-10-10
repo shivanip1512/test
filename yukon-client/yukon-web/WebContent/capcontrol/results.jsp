@@ -29,9 +29,13 @@
 
 	LiteWrapper[] items = new LiteWrapper[0];
 
-	if( CBCWebUtils.TYPE_ORPH_SUBS.equals(srchCriteria) ) {
+	if( CBCWebUtils.TYPE_ORPH_SUBSTATIONS.equals(srchCriteria) ) {
 		items = capControlCache.getOrphanedSubstations();
 		label = "Orphaned Substations";
+	}
+	else if( CBCWebUtils.TYPE_ORPH_SUBS.equals(srchCriteria) ) {
+		items = capControlCache.getOrphanedSubBuses();
+		label = "Orphaned Substation Buses";
 	}
 	else if( CBCWebUtils.TYPE_ORPH_FEEDERS.equals(srchCriteria) ) {
 		items = capControlCache.getOrphanedFeeders();

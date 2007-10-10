@@ -17,6 +17,8 @@ import javax.servlet.http.HttpServletResponse;
 import javax.servlet.http.HttpSession;
 
 import com.cannontech.cbc.oneline.OnelineCBCBroker;
+import com.cannontech.cbc.util.CBCDisplay;
+import com.cannontech.cbc.util.CBCUtils;
 import com.cannontech.cbc.web.CBCCommandExec;
 import com.cannontech.cbc.web.CBCWebUtils;
 import com.cannontech.cbc.web.CapControlCache;
@@ -36,12 +38,11 @@ import com.cannontech.spring.YukonSpringHook;
 import com.cannontech.util.ParamUtil;
 import com.cannontech.yukon.cbc.CBCArea;
 import com.cannontech.yukon.cbc.CBCClientConnection;
-import com.cannontech.yukon.cbc.CBCDisplay;
 import com.cannontech.yukon.cbc.CBCSpecialArea;
-import com.cannontech.yukon.cbc.CBCUtils;
 import com.cannontech.yukon.cbc.CapBankDevice;
 import com.cannontech.yukon.cbc.Feeder;
 import com.cannontech.yukon.cbc.SubBus;
+import com.cannontech.yukon.cbc.SubStation;
 import com.cannontech.yukon.conns.ConnPool;
 
 @SuppressWarnings("serial")
@@ -275,6 +276,10 @@ private String createXMLResponse(HttpServletRequest req, HttpServletResponse res
 				
 		for( int i = 0; i < updatedIds.length; i++) {
 			//go get the XML data for the specific type of element
+            if(handleSubstationGET(updatedIds[i], xmlMsgs, i)){
+                continue;
+            }
+            
 			if(handleSubGET(updatedIds[i], xmlMsgs, i)) {
 				continue;
 			}
@@ -306,6 +311,33 @@ private String createXMLResponse(HttpServletRequest req, HttpServletResponse res
 	return "Unable to form response";
 }
 
+/**
+ * Sets the XML data for the given SubBus id. Return true if the given
+ * id is a SubBus id, else returns false.
+ *  
+ */
+private boolean handleSubstationGET( String ids, ResultXML[] xmlMsgs, int indx )
+{
+    SubStation sub = getCapControlCache().getSubstation( new Integer(ids) );
+
+    if( sub == null ) {
+        return false;
+    }
+
+    String[] optParams = {
+        /*param0*/CBCDisplay.getHTMLFgColor(sub),
+        /*param1*/CBCUtils.CBC_DISPLAY.getSubstationValueAt (sub, CBCDisplay.SUB_NAME_COLUMN).toString(),
+
+    };
+
+    xmlMsgs[indx] = new ResultXML(
+        sub.getCcId().toString(),
+        CBCUtils.CBC_DISPLAY.getSubstationValueAt(sub, CBCDisplay.SUB_CURRENT_STATE_COLUMN).toString(),     
+        optParams );
+
+
+    return true;
+}
 
 /**
  * Sets the XML data for the given SubBus id. Return true if the given
@@ -334,7 +366,7 @@ private boolean handleSubGET( String ids, ResultXML[] xmlMsgs, int indx )
 		/*param7*/(sub.getVerificationFlag().booleanValue())? "true" : "false",
 		/*param8*/CBCUtils.CBC_DISPLAY.getSubBusValueAt (sub, CBCDisplay.SUB_NAME_COLUMN).toString(),
         /*param9*/CBCUtils.CBC_DISPLAY.getSubBusValueAt(sub, CBCDisplay.SUB_TARGET_POPUP).toString(),
-        /*param10*/CBCUtils.CBC_DISPLAY.getSubBusValueAt(sub, CBCDisplay.SUB_VAR_LOAD_POPUP).toString(),
+        /*param10*/CBCUtils.CBC_DISPLAY.getSubBusValueAt(sub, CBCDisplay.SUB_VAR_LOAD_POPUP).toString(),    
 
 	};
 

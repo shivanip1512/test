@@ -11,6 +11,7 @@ import com.cannontech.yukon.cbc.CapBankDevice;
 import com.cannontech.yukon.cbc.Feeder;
 import com.cannontech.yukon.cbc.StreamableCapObject;
 import com.cannontech.yukon.cbc.SubBus;
+import com.cannontech.yukon.cbc.SubStation;
 
 public interface CapControlDAO {
 
@@ -40,7 +41,12 @@ public interface CapControlDAO {
 	/**
 	 * @return Feeder[]
 	 */
-	public abstract Feeder[] getFeedersBySub(Integer subBusID);
+	public abstract Feeder[] getFeedersBySubBus(Integer subBusID);
+    
+    /**
+     * @return List<Feeder>
+     */
+    public abstract List<Feeder> getFeedersBySubStation(SubStation sub);
 
 	/**
 	 * @return CapBankDevice[]
@@ -82,12 +88,24 @@ public interface CapControlDAO {
 	 * @param subBusID long
 	 */
 	public abstract CapBankDevice[] getCapBanksBySub(Integer subBusID);
+    
+    /**
+     * @return List<CapBankDevice>
+     * @param sub SubStation
+     */
+    public abstract List<CapBankDevice> getCapBanksBySubStation(SubStation sub);
 
 	/**
-	 * Returns all SubBuses for a given Area
+	 * Returns all Substations for a given Area
 	 * 
 	 */
-	public abstract SubBus[] getSubsByArea(Integer areaID);
+	public abstract SubStation[] getSubstationsByArea(Integer areaID);
+    
+    /**
+     * Returns all SubBuses for a given Area
+     * 
+     */
+    public abstract SubBus[] getSubBusesByArea(Integer areaID);
 
 	/**
 	 * Returns all CapBanks for a given Area

@@ -1,7 +1,7 @@
 package com.cannontech.cbc.oneline.states;
 
 import com.cannontech.cbc.oneline.util.OnelineUtil;
-import com.cannontech.yukon.cbc.CBCDisplay;
+import com.cannontech.cbc.util.CBCDisplay;
 import com.cannontech.yukon.cbc.StreamableCapObject;
 import com.cannontech.yukon.cbc.SubBus;
 

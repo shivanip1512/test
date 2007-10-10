@@ -2,9 +2,6 @@ package com.cannontech.database.data.point;
 
 import java.util.Date;
 
-import com.cannontech.yukon.cbc.CBCUtils;
-
-
 public class CBCPointTimestampParams {
 private Integer pointId = new Integer (0);
 private String pointName = "";

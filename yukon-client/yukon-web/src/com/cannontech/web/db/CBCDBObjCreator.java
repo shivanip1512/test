@@ -2,6 +2,7 @@ package com.cannontech.web.db;
 
 
 import com.cannontech.cbc.model.EditorDataModel;
+import com.cannontech.cbc.util.CBCUtils;
 import com.cannontech.core.dao.DaoFactory;
 import com.cannontech.core.dao.PaoDao;
 import com.cannontech.database.TransactionException;
@@ -17,7 +18,6 @@ import com.cannontech.database.data.point.PointBase;
 import com.cannontech.database.data.point.PointFactory;
 import com.cannontech.database.db.DBPersistent;
 import com.cannontech.web.wizard.CBCWizardModel;
-import com.cannontech.yukon.cbc.CBCUtils;
 
 /**
  * @author ryan

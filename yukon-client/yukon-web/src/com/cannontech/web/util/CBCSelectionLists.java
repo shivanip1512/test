@@ -469,8 +469,11 @@ public class CBCSelectionLists {
         new SelectItem(new Integer (900), "15 minutes")
         
     };
-    
+ 
     public Integer getSubstationType () {
+        return PAOGroups.CAP_CONTROL_SUBSTATION;
+    }
+    public Integer getSubstationBusType () {
         return PAOGroups.CAP_CONTROL_SUBBUS;
     }
     

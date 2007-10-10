@@ -7,6 +7,7 @@ import com.cannontech.clientutils.WebUpdatedPAObjectMap;
 import com.cannontech.yukon.cbc.CapBankDevice;
 import com.cannontech.yukon.cbc.Feeder;
 import com.cannontech.yukon.cbc.SubBus;
+import com.cannontech.yukon.cbc.SubStation;
 
 public class CBCWebUpdatedObjectMap extends WebUpdatedPAObjectMap{
 
@@ -27,6 +28,10 @@ public class CBCWebUpdatedObjectMap extends WebUpdatedPAObjectMap{
 			}
 		}
 		updateMap(subBus.getCcId(), d);
+	}
+	public void handleCBCChangeEvent (SubStation sub, Date d)
+	{
+		updateMap(sub.getCcId(), d);
 	}
 }
 

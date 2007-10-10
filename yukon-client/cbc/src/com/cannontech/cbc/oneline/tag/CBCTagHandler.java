@@ -143,7 +143,7 @@ public class CBCTagHandler {
 
             if(pao instanceof CapControlSubBus )
             {
-                fList = cc.getFeedersBySub(id);
+                fList = cc.getFeedersBySubBus(id);
                //if substation, remove it and feeders, and capbanks.
             }else if( pao instanceof CapControlFeeder)
             {
@@ -210,7 +210,7 @@ public class CBCTagHandler {
 
             if(pao instanceof CapControlSubBus )
             {
-                fList = cc.getFeedersBySub(id);
+                fList = cc.getFeedersBySubBus(id);
                //if substation, remove it and feeders, and capbanks.
             }else if( pao instanceof CapControlFeeder)
             {

@@ -59,7 +59,6 @@ public void restoreGuts(Object obj, com.roguewave.vsj.VirtualInputStream vstr, c
 	CBCSubstationBuses cbcSubBuses = (CBCSubstationBuses) obj;
 
 	cbcSubBuses.setMsgInfoBitMask( new Integer( (int)vstr.extractUnsignedInt() ) );
-	//java.util.Vector strategyStore = (java.util.Vector)vstr.restoreObject( polystr );
     
     Vector strategyStore = VectorExtract.extractVector(vstr,polystr);
 

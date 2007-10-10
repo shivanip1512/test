@@ -3,6 +3,7 @@ package com.cannontech.common.search.criteria;
 import org.apache.lucene.search.BooleanClause;
 
 import com.cannontech.database.data.pao.PAOGroups;
+import com.cannontech.database.data.point.PointTypes;
 
 public class CBCControlPointCriteria extends YukonObjectCriteriaHelper {
 
@@ -39,6 +40,7 @@ public class CBCControlPointCriteria extends YukonObjectCriteriaHelper {
         
         //point should only be a status point
         addCriteria("pointtype", "Status", BooleanClause.Occur.MUST);
+        //addCriteria("pointoffset", 1, BooleanClause.Occur.MUST);
     }
 
 }

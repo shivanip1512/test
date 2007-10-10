@@ -12,7 +12,7 @@
 
 <cti:breadCrumbs>
     <cti:crumbLink url="subareas.jsp" title="SubBus Areas" />
-    <cti:crumbLink url="subs.jsp" title="Substations" />
+    <cti:crumbLink url="substations.jsp" title="Substations" />
     <cti:crumbLink url="feeders.jsp" title="Feeders" />
     <cti:crumbLink url="<%=ServletUtil.getFullURL(request)%>" title="Events" />
 </cti:breadCrumbs>

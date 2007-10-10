@@ -1,6 +1,6 @@
 package com.cannontech.cbc.gui;
 
-import com.cannontech.yukon.cbc.CBCDisplay;
+import com.cannontech.cbc.util.CBCDisplay;
 
 /**
  * This type was created in VisualAge.

@@ -10,7 +10,6 @@ function initCC() {
 var REF_LABELS = {
 				 	maintArea: "Maintenance Area ID:",
 				 	poleNum:"Pole Number:",
-				 	dir:"Driving Directions:",
 				 	latit:"Latitude:",
 				 	longit:"Longitude:",
 					config:"Cap Bank Config:",
@@ -25,7 +24,9 @@ var REF_LABELS = {
 					maintReqPend:"Maintenance Request Pending:",
 					otrCmnts:"Other Comments:",
 					opTmCmnts:"Op Team Comments:",
-					cbcInsDt:"CBC Install Date:"		
+					cbcInsDt:"CBC Install Date:",
+					address:"Cab Bank Map Address",
+					dir:"Driving Directions:"
 				};
 
 

@@ -49,6 +49,8 @@ public final static int getCapControlType(String typeString)
         return CAP_CONTROL_AREA;
     else if (typeString.equalsIgnoreCase(STRING_CAPCONTROL_SPECIAL_AREA))
         return CAP_CONTROL_SPECIAL_AREA;
+    else if (typeString.equalsIgnoreCase(STRING_CAPCONTROL_SUBSTATION))
+        return CAP_CONTROL_SUBSTATION;
     else
 		return INVALID;
 }
@@ -369,6 +371,8 @@ public final static String getPAOTypeString(int type)
 			return STRING_CAPCONTROL_SUBBUS;
 		case CAP_CONTROL_FEEDER:
 			return STRING_CAPCONTROL_FEEDER;
+		case CAP_CONTROL_AREA:
+			return STRING_CAPCONTROL_AREA;
 
 		//ports
 		case LOCAL_DIRECT:

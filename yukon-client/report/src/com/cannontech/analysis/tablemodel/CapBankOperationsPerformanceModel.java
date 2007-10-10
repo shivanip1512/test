@@ -108,7 +108,8 @@ public class CapBankOperationsPerformanceModel extends BareDatedReportModelBase<
         sql.append("join yukonpaobject yp on yp.paobjectid = dcb.capbankid) as status on status.paoname = abc.capbankname ");
         sql.append("join (select distinct (capbankname), cbcname, feedername, feederid, subname, subbusid, region from ccoperations_view ");
         sql.append("where  operation like '%Sent, %'  and opTime > ? and opTime <= ?) as d on abc.capbankname = d.capbankname ");
-        sql.append("left outer join ccsubareaassignment saa on saa.substationbusid = d.subbusid ");
+        sql.append("left outer join ccsubstationsubbuslist ssb on ssb.substationbusid = d.subbusid ");
+ 	 	sql.append("left outer join ccsubareaassignment saa on saa.substationbusid = ssb.substationid ");
  	 	sql.append("left outer join (select paobjectid from yukonpaobject where type ='ccarea' ) as ca on ca.paobjectid = saa.areaid ");
         sql.append("where abc.qPercent >= " + queryPercent + " ");
         

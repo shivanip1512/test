@@ -14,6 +14,7 @@ import com.cannontech.yukon.cbc.CapBankDevice;
 import com.cannontech.yukon.cbc.Feeder;
 import com.cannontech.yukon.cbc.StreamableCapObject;
 import com.cannontech.yukon.cbc.SubBus;
+import com.cannontech.yukon.cbc.SubStation;
 
 public class CapControlUserOwnerDAO implements CapControlDAO {
 
@@ -61,6 +62,10 @@ public class CapControlUserOwnerDAO implements CapControlDAO {
 	public CapBankDevice[] getCapBanksBySub(Integer subBusID) {
 		return _ccDao.getCapBanksBySub(subBusID);
 	}
+    
+    public List<CapBankDevice> getCapBanksBySubStation(SubStation sub) {
+        return _ccDao.getCapBanksBySubStation(sub);
+    }
 
 	public LiteState getCapBankState(int rawState) {
 		return _ccDao.getCapBankState(rawState);
@@ -78,9 +83,13 @@ public class CapControlUserOwnerDAO implements CapControlDAO {
 		return _ccDao.getFeedersByArea(area);
 	}
 
-	public Feeder[] getFeedersBySub(Integer subBusID) {
-		return _ccDao.getFeedersBySub(subBusID);
+	public Feeder[] getFeedersBySubBus(Integer subBusID) {
+		return _ccDao.getFeedersBySubBus(subBusID);
 	}
+    
+    public List<Feeder> getFeedersBySubStation(SubStation sub) {
+        return _ccDao.getFeedersBySubStation(sub);
+    }
 
 	public LiteWrapper[] getOrphanedCapBanks() {
 		return _ccDao.getOrphanedCapBanks();
@@ -103,8 +112,8 @@ public class CapControlUserOwnerDAO implements CapControlDAO {
 		return _ccDao.getSubBus(subID);
 	}
 
-	public SubBus[] getSubsByArea(Integer areaID) {
-		SubBus[] subs =  _ccDao.getSubsByArea(areaID);
+	public SubBus[] getSubBusesByArea(Integer areaID) {
+		SubBus[] subs =  _ccDao.getSubBusesByArea(areaID);
 		SubBus[] retArray = new SubBus[subs.length];
 		List<SubBus> subsAllowedToView = new ArrayList<SubBus>(10);
 		for (int i=0; i < subs.length; i++) {
@@ -114,6 +123,18 @@ public class CapControlUserOwnerDAO implements CapControlDAO {
 		}
 		return subsAllowedToView.toArray(retArray);
 	}
+    
+    public SubStation[] getSubstationsByArea(Integer areaID) {
+        SubStation[] subs =  _ccDao.getSubstationsByArea(areaID);
+        SubStation[] retArray = new SubStation[subs.length];
+        List<SubStation> subsAllowedToView = new ArrayList<SubStation>(10);
+        for (int i=0; i < subs.length; i++) {
+            SubStation sub = subs[i];
+            if (sub != null && DaoFactory.getAuthDao().userHasAccessPAO(_user, sub.getCcId().intValue()))
+                subsAllowedToView.add(sub);
+        }
+        return subsAllowedToView.toArray(retArray);
+    }
 
 	public boolean isCapBank(int id) {
 		return _ccDao.isCapBank(id);
@@ -142,5 +163,5 @@ public class CapControlUserOwnerDAO implements CapControlDAO {
     public boolean isCBCArea(int id) {
         return _ccDao.isCBCArea(id);
     }
-    
+
 }

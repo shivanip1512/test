@@ -115,7 +115,8 @@ public class CapControlConfirmationPercentageModel extends BareDatedReportModelB
         sql.append("left outer join (select CBCName, count(*) Success from ccoperations_view where Optime  between ? and ? ");
         sql.append("and (ConfStatus like '%Closed' or  ConfStatus like '%Open') group by CBCName ) as SS on T.CBCName = SS.CBCName )S ");
         sql.append("inner join (Select Region , OpCenter, TA, SubName , subID, FeederName, FdrId, CBCName, cbcId, capbankname, bankID, Protocol from ccinventory_view ) rs on S.CBCName = RS.CBCName  ");
-        sql.append("left outer join ccsubareaassignment saa on saa.substationbusid = rs.subID ");
+        sql.append("left outer join ccsubstationsubbuslist ssb on ssb.substationbusid = rs.subID ");
+        sql.append("left outer join ccsubareaassignment saa on saa.substationbusid = ssb.substationid ");
  	 	sql.append("left outer join (select paobjectid from yukonpaobject where type ='ccarea' ) as ca on ca.paobjectid = saa.areaid ");
         
         String result = null;

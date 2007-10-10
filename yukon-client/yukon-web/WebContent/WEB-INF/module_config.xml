@@ -87,6 +87,9 @@
             <link>/editor/cbcWizBase.jsf?type=4003</link>
           </option>
           <option name="Substation">
+            <link>/editor/cbcWizBase.jsf?type=4004</link>
+          </option>
+          <option name="Substation Bus">
             <link>/editor/cbcWizBase.jsf?type=4000</link>
           </option>
           <option name="Feeder">
@@ -143,8 +146,11 @@
       </option>
       <option id="view" name="View">
         <sublinks>
-         <option name="Orphaned Substations">
-            <script>results('cbc_lastSearch=__cti_oSubs__')</script>
+        <option name="Orphaned Substations">
+            <script>results('cbc_lastSearch=__cti_oSubstations__')</script>
+          </option>
+         <option name="Orphaned Substation Buses">
+            <script>results('cbc_lastSearch=__cti_oSubBuses__')</script>
           </option>
           <option name="Orphaned Feeders">
             <script>results('cbc_lastSearch=__cti_oFeeders__')</script>

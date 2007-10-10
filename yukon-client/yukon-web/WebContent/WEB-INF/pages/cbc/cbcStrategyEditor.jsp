@@ -45,7 +45,7 @@
 
 </f:verbatim>
 <f:subview id="cbcStrategy" rendered="#{capControlForm.visibleTabs['CBCArea'] 
-||capControlForm.visibleTabs['CBCSubstation'] || capControlForm.visibleTabs['CBCFeeder'] || capControlForm.visibleTabs['CBCStrategy']}" >
+||capControlForm.visibleTabs['CBCSubstationBus'] || capControlForm.visibleTabs['CBCFeeder'] || capControlForm.visibleTabs['CBCStrategy']}" >
 
     <f:subview id="paoArea" rendered="#{capControlForm.visibleTabs['CBCArea']}" >
 		<f:verbatim><br/></f:verbatim>
@@ -60,7 +60,7 @@
     </f:subview>
 
 
-    <f:subview id="paoSubBus" rendered="#{capControlForm.visibleTabs['CBCSubstation']}" >
+    <f:subview id="paoSubBus" rendered="#{capControlForm.visibleTabs['CBCSubstationBus']}" >
 		<f:verbatim><br/></f:verbatim>
 		
 		<x:outputLabel for="Sub_Strategy_Selection" value="Selected Strategy: " title="The current control strategy we are using"/>

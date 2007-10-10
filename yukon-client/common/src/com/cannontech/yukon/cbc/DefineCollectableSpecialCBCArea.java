@@ -65,6 +65,8 @@ public class DefineCollectableSpecialCBCArea extends DefineCollectableStreamable
         area.setDisableFlag(((int) vstr.extractUnsignedInt() == 1) ? new Boolean(true) : new Boolean(false));
         area.setCcSubIds(VectorExtract.extractVector(vstr,polystr));
         area.setOvUvDisabledFlag(((int) vstr.extractUnsignedInt() == 1) ? new Boolean(true) : new Boolean(false));
+        area.setPowerFactorValue( new Double( vstr.extractDouble() ) );
+        area.setEstimatedPFValue( new Double( vstr.extractDouble() ) );
     }
 
     /**
@@ -82,6 +84,8 @@ public class DefineCollectableSpecialCBCArea extends DefineCollectableStreamable
         vstr.insertUnsignedInt((area.getDisableFlag().booleanValue()) ? 1 : 0);
         VectorInsert.insertVector(area.getCcSubIds(), vstr, polystr);
         vstr.insertUnsignedInt((area.getOvUvDisabledFlag().booleanValue()) ? 1 : 0);
+        vstr.insertDouble( area.getPowerFactorValue().doubleValue() );
+        vstr.insertDouble( area.getEstimatedPFValue().doubleValue() );
     }
 }
 

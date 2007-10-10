@@ -52,4 +52,9 @@ public class GroupEditorController extends UserGroupEditorControllerBase<LiteYuk
     protected String getPickerId() {
         return "newGroupPaoPicker";
     }
+
+	@Override
+	protected String getCbcPickerId() {
+		return "newGroupCbcPaoPicker";
+	}
 }

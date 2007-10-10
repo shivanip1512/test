@@ -20,6 +20,7 @@ import com.cannontech.cbc.exceptions.PortDoesntExistException;
 import com.cannontech.cbc.exceptions.SameMasterSlaveCombinationException;
 import com.cannontech.cbc.exceptions.SerialNumberExistsException;
 import com.cannontech.cbc.model.ICBControllerModel;
+import com.cannontech.cbc.util.CBCUtils;
 import com.cannontech.cbc.web.CBCSessionInfo;
 import com.cannontech.clientutils.CTILogger;
 import com.cannontech.core.dao.DaoFactory;
@@ -44,7 +45,6 @@ import com.cannontech.database.db.device.DeviceScanRate;
 import com.cannontech.servlet.nav.CBCNavigationUtil;
 import com.cannontech.web.util.JSFParamUtil;
 import com.cannontech.web.util.JSFTreeUtils;
-import com.cannontech.yukon.cbc.CBCUtils;
 
 /** 
  * @author ryan

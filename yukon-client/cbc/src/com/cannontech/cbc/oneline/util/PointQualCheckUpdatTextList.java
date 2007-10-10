@@ -1,7 +1,7 @@
 package com.cannontech.cbc.oneline.util;
 
 import com.cannontech.cbc.oneline.model.UpdatableStats;
-import com.cannontech.yukon.cbc.CBCUtils;
+import com.cannontech.cbc.util.CBCUtils;
 import com.cannontech.yukon.cbc.PointQualityCheckable;
 
 public class PointQualCheckUpdatTextList extends UpdatableTextList implements

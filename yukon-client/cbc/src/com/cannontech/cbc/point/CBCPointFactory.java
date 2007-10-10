@@ -3,6 +3,7 @@ package com.cannontech.cbc.point;
 import java.util.ArrayList;
 import java.util.List;
 
+import com.cannontech.cbc.util.CBCUtils;
 import com.cannontech.core.dao.DaoFactory;
 import com.cannontech.core.dao.PointDao;
 import com.cannontech.database.data.capcontrol.CapControlFeeder;
@@ -28,7 +29,6 @@ import com.cannontech.database.db.point.Point;
 import com.cannontech.database.db.point.PointStatus;
 import com.cannontech.database.db.point.PointUnit;
 import com.cannontech.database.db.state.StateGroupUtils;
-import com.cannontech.yukon.cbc.CBCUtils;
 
 public class CBCPointFactory {
     public static final String GRP_TRUE_FALSE = "TrueFalse";

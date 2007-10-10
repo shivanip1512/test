@@ -169,8 +169,10 @@ public class CapControlCurrentStatusModel extends ReportModelBase
 	{
 		StringBuffer sql = new StringBuffer	("SELECT DCC.CAPBANKID, CCF.SUBSTATIONBUSID, CCFBL.FEEDERID, " + 
                 "DCC.CONTROLSTATUS, DCC.LASTSTATUSCHANGETIME, cb.operationalstate, CCFBL.CONTROLORDER " +
-				"FROM DYNAMICCCCAPBANK DCC, CCFEEDERSUBASSIGNMENT CCF, CCFEEDERBANKLIST CCFBL, ccsubareaassignment saa, capcontrolarea ca, capbank cb  " +
-				"WHERE saa.substationbusid = CCF.substationbusid and saa.areaid = ca.areaid and CCF.FEEDERID = CCFBL.FEEDERID " +
+				"FROM DYNAMICCCCAPBANK DCC, CCFEEDERSUBASSIGNMENT CCF, CCFEEDERBANKLIST CCFBL, " +
+				"ccsubstationsubbuslist ssb, ccsubareaassignment saa, capcontrolarea ca, capbank cb  " +
+				"WHERE saa.substationbusid = ssb.substationid and ssb.substationbusid = CCF.substationbusid " +
+				"and saa.areaid = ca.areaid and CCF.FEEDERID = CCFBL.FEEDERID " +
 				"AND DCC.CAPBANKID = CCFBL.DEVICEID and cb.deviceid = ccfbl.deviceid");
                 
                 if (getPaoIDs() != null && getPaoIDs().length > 0) {

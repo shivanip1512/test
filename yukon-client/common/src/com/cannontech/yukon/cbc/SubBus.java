@@ -640,12 +640,13 @@ public class SubBus extends StreamableCapObject implements PointQualityCheckable
 
     public Integer getCurrentPtQuality(int pointType) {        
         if (Arrays.asList(PointUnits.CAP_CONTROL_VAR_UOMIDS).contains(pointType))
-        return getCurrentVarPtQuality();
-    if (Arrays.asList(PointUnits.CAP_CONTROL_WATTS_UOMIDS).contains(pointType))
-        return getCurrentwattpointquality();
-    if (Arrays.asList(PointUnits.CAP_CONTROL_VOLTS_UOMIDS).contains(pointType))
-        return getCurrentvoltpointquality();
-    return null;}
+        	return getCurrentVarPtQuality();
+	    if (Arrays.asList(PointUnits.CAP_CONTROL_WATTS_UOMIDS).contains(pointType))
+	        return getCurrentwattpointquality();
+	    if (Arrays.asList(PointUnits.CAP_CONTROL_VOLTS_UOMIDS).contains(pointType))
+	        return getCurrentvoltpointquality();
+    	return null;
+    }
 
     public Integer getCurrentvoltpointquality() {
         return currentvoltpointquality;

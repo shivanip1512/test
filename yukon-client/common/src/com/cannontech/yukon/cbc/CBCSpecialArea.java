@@ -12,6 +12,8 @@ public class CBCSpecialArea extends StreamableCapObject {
     private String paoClass;
 	//should only contain objects of type integer
 	private java.util.Vector ccSubIds = null;
+    private Double powerFactorValue = null;
+    private Double estimatedPFValue = null;
     
 
     public java.util.Vector getCcSubIds() {
@@ -105,6 +107,38 @@ public class CBCSpecialArea extends StreamableCapObject {
 
     public void setOvUvDisabledFlag(Boolean ovUvDisabledFlag) {
         this.ovUvDisabledFlag = ovUvDisabledFlag;
+    }
+    
+    /**
+     * Returns the powerFactorValue.
+     * @return Double
+     */
+    public Double getPowerFactorValue() {
+        return powerFactorValue;
+    }
+
+    /**
+     * Sets the powerFactorValue.
+     * @param powerFactorValue The powerFactorValue to set
+     */
+    public void setPowerFactorValue(Double powerFactorValue) {
+        this.powerFactorValue = powerFactorValue;
+    }
+
+    /**
+     * Returns the estimatedPFValue.
+     * @return Double
+     */
+    public Double getEstimatedPFValue() {
+        return estimatedPFValue;
+    }
+
+    /**
+     * Sets the estimatedPFValue.
+     * @param estimatedPFValue The estimatedPFValue to set
+     */
+    public void setEstimatedPFValue(Double estimatedPFValue) {
+        this.estimatedPFValue = estimatedPFValue;
     }
 
 }

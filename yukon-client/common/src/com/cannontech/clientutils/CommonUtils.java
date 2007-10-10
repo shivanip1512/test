@@ -1,5 +1,9 @@
 package com.cannontech.clientutils;
 
+import java.util.Calendar;
+import java.util.Date;
+import java.util.GregorianCalendar;
+
 /**
  * Insert the type's description here.
  * Creation date: (2/11/00 1:18:48 PM)
@@ -273,5 +277,11 @@ public static void swap( java.util.Vector vector, int source, int dest) {
 		vector.setElementAt( temp, dest );
 	}
 	
+}
+
+//default date for DB is 1990-01-01 00:00:00.000
+public static Date getDefaultStartTime() {
+    Calendar cal = new GregorianCalendar(1990, Calendar.JANUARY, 1, 0, 0, 0);
+    return cal.getTime();
 }
 }

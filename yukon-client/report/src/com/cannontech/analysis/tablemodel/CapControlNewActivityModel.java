@@ -111,14 +111,14 @@ public class CapControlNewActivityModel extends ReportModelBase
 	public StringBuffer buildSQLStatement()
 	{
 		StringBuffer sql = new StringBuffer	("SELECT SUB.SUBSTATIONBUSID, FEED.FEEDERID, CB.DEVICEID, CB.CONTROLDEVICEID, BANKSIZE, ACTION, SL.DESCRIPTION, SL.DATETIME " +
-		    " FROM ccsubareaassignment saa, capcontrolarea ca, YUKONPAOBJECT CBPAO, CAPBANK CB, CAPCONTROLFEEDER FEED, CCFEEDERBANKLIST BANK, CCFEEDERSUBASSIGNMENT SUB, SYSTEMLOG SL " +
+		    " FROM ccsubareaassignment saa, capcontrolarea ca, ccsubstationsubbuslist ssb, YUKONPAOBJECT CBPAO, CAPBANK CB, CAPCONTROLFEEDER FEED, CCFEEDERBANKLIST BANK, CCFEEDERSUBASSIGNMENT SUB, SYSTEMLOG SL " +
 		    " WHERE SL.POINTID IN (" + 
 			    " SELECT DISTINCT POINTID FROM POINT P " +
 			    " WHERE P.PAOBJECTID = CB.DEVICEID " + 
 			    " OR P.PAOBJECTID = FEED.FEEDERID " + 
 			    " OR P.PAOBJECTID = SUB.SUBSTATIONBUSID " + 
 			    " OR P.PAOBJECTID = CB.CONTROLDEVICEID) " +
-            " and  saa.substationbusid = SUB.substationbusid and saa.areaid = ca.areaid" +
+            " and  saa.substationbusid = ssb.substationid and ssb.substationbusid = SUB.substationbusid and saa.areaid = ca.areaid" +
 		    " AND CBPAO.PAOCLASS = '" + PAOGroups.STRING_CAT_CAPCONTROL + "' " +
 		    " AND CB.DEVICEID = CBPAO.PAOBJECTID " +
 		    " AND FEED.FEEDERID = BANK.FEEDERID " +

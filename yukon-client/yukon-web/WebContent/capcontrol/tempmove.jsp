@@ -121,35 +121,33 @@ for( CBCArea area : allAreas )
 
 	
 		<div class="<%=css%>" style="display:none" id="areaId<%=z %>">
-	<%	
-	for( int i = 0; i < subsOnArea.length; i++ )
-	{
-		SubBus subBus = subsOnArea[i];	
-		Feeder[] feeders = capControlCache.getFeedersBySub(subBus.getCcId());
-		css = "tableCell";
-		if( feeders.length <= 0 ) continue;
-		
-		
+	<%
+		for( int i = 0; i < subsOnArea.length; i++ )
+		{
+			SubBus subBus = subsOnArea[i];	
+			Feeder[] feeders = capControlCache.getFeedersBySubBus(subBus.getCcId());
+			css = "tableCell";
+			if( feeders.length <= 0 ) continue;
 	%>
 
 		<div>
 		<input class="lIndent" type="image" id="chkBxSub<%=i + "_" + z%>"
 			src="images/nav-plus.gif"
 			onclick="showDiv( 'subId<%=i + "_" + z%>' );toggleImg('chkBxSub<%=i + "_" + z%>'); return false;">
-			<%=CBCUtils.CBC_DISPLAY.getSubBusValueAt(subBus, CBCDisplay.SUB_NAME_COLUMN) %>
-		
+			<%=CBCUtils.CBC_DISPLAY.getSubBusValueAt(subBus, CBCDisplay.SUB_NAME_COLUMN)%>
+		</input>
 		<div class="<%=css%>" style="display:none" id="subId<%=i + "_" + z%>" >
 	<%
 		for( int j = 0; j < feeders.length; j++ )
 		{
 			Feeder feeder = feeders[j];
 			if( feeder.getCcId().intValue() == oldfdrid )
-				continue;
+		continue;
 	%>
 			<div>
 			<input class="capbankTempMoveLink" type="radio" name="feeder" id="feederId<%=feeder.getCcId()%>" onclick="selectFeeder(<%=feeder.getCcId()%>);" >
-			<%=CBCUtils.CBC_DISPLAY.getFeederValueAt(feeder, CBCDisplay.FDR_NAME_COLUMN) %>
-			
+			<%=CBCUtils.CBC_DISPLAY.getFeederValueAt(feeder, CBCDisplay.FDR_NAME_COLUMN)%>
+			</input>
 			</div>			
 	<%	} %>
 		</div></div>

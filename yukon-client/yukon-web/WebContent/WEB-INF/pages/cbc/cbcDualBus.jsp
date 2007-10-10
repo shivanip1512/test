@@ -11,8 +11,8 @@ var switchPointPicker = new PointPicker('switch_point','com.cannontech.common.se
 
 </script>
 </f:verbatim>
-<f:subview id="altDualBusSetup" rendered="#{capControlForm.visibleTabs['CBCSubstation']}">
-	<f:subview id="altDualBus" rendered="#{capControlForm.visibleTabs['CBCSubstation']}">
+<f:subview id="altDualBusSetup" rendered="#{capControlForm.visibleTabs['CBCSubstationBus']}">
+	<f:subview id="altDualBus" rendered="#{capControlForm.visibleTabs['CBCSubstationBus']}">
 		<f:verbatim>
 			<br />
 			<fieldset>

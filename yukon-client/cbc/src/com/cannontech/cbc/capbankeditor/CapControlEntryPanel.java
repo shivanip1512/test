@@ -6,6 +6,7 @@ package com.cannontech.cbc.capbankeditor;
  */
 import java.awt.Dimension;
 
+import com.cannontech.cbc.util.CBCDisplay;
 import com.cannontech.clientutils.CTILogger;
 import com.cannontech.common.gui.unchanging.LongRangeDocument;
 import com.cannontech.common.util.MessageEvent;
@@ -14,7 +15,6 @@ import com.cannontech.database.data.point.PointTypes;
 import com.cannontech.message.dispatch.message.PointData;
 import com.cannontech.message.util.Message;
 import com.cannontech.yukon.cbc.CBCClientConnection;
-import com.cannontech.yukon.cbc.CBCDisplay;
 import com.cannontech.yukon.cbc.CapBankDevice;
 import com.cannontech.yukon.cbc.StreamableCapObject;
 import com.cannontech.yukon.cbc.SubBus;

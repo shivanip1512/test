@@ -17,8 +17,8 @@
     </script>
 </f:verbatim>
 
-<f:subview id="subSetup" rendered="#{capControlForm.visibleTabs['CBCSubstation']}">
-	<f:subview id="paoSubBus" rendered="#{capControlForm.visibleTabs['CBCSubstation']}">
+<f:subview id="subSetup" rendered="#{capControlForm.visibleTabs['CBCSubstationBus']}">
+	<f:subview id="paoSubBus" rendered="#{capControlForm.visibleTabs['CBCSubstationBus']}">
 	<x:panelGrid id="subBody" columns="2" styleClass="gridLayout" columnClasses="gridColumn">
 	<h:column>
 	<f:verbatim>

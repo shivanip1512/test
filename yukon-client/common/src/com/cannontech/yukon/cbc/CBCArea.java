@@ -1,5 +1,6 @@
 package com.cannontech.yukon.cbc;
 
+
 public class CBCArea extends StreamableCapObject {
 
     private Boolean disableFlag;
@@ -10,8 +11,19 @@ public class CBCArea extends StreamableCapObject {
     private String paoCategory;
     private Integer paoID;
     private String paoClass;
+    int[] stations = null;
+    private Double powerFactorValue = null;
+    private Double estimatedPFValue = null;
 
-    public void setPaoID(Integer integer) {
+    public int[] getStations() {
+		return stations;
+	}
+
+	public void setStations(int[] stations) {
+		this.stations = stations;
+	}
+
+	public void setPaoID(Integer integer) {
         paoID = integer;
     }
 
@@ -95,5 +107,37 @@ public class CBCArea extends StreamableCapObject {
 	public void setOvUvDisabledFlag(Boolean ovUvDisabledFlag) {
 		this.ovUvDisabledFlag = ovUvDisabledFlag;
 	}
+    
+    /**
+     * Returns the powerFactorValue.
+     * @return Double
+     */
+    public Double getPowerFactorValue() {
+        return powerFactorValue;
+    }
+
+    /**
+     * Sets the powerFactorValue.
+     * @param powerFactorValue The powerFactorValue to set
+     */
+    public void setPowerFactorValue(Double powerFactorValue) {
+        this.powerFactorValue = powerFactorValue;
+    }
+
+    /**
+     * Returns the estimatedPFValue.
+     * @return Double
+     */
+    public Double getEstimatedPFValue() {
+        return estimatedPFValue;
+    }
+
+    /**
+     * Sets the estimatedPFValue.
+     * @param estimatedPFValue The estimatedPFValue to set
+     */
+    public void setEstimatedPFValue(Double estimatedPFValue) {
+        this.estimatedPFValue = estimatedPFValue;
+    }
 
 }

@@ -78,11 +78,11 @@
                         <jsp:include page="/WEB-INF/pages/cbc/cbcGeneralEditor.jsp"/>
                     </x:panelTab>
 
-                    <x:panelTab id="tabSubSetup" label="Setup" rendered="#{capControlForm.visibleTabs['CBCSubstation']}">
+                    <x:panelTab id="tabSubSetup" label="Setup" rendered="#{capControlForm.visibleTabs['CBCSubstationBus']}">
                         <jsp:include page="/WEB-INF/pages/cbc/cbcSubSetup.jsp"/>
                     </x:panelTab>
 
-                    <x:panelTab id="tabSubSchedSetup" label="Schedule" rendered="#{capControlForm.visibleTabs['CBCSubstation']}">
+                    <x:panelTab id="tabSubSchedSetup" label="Schedule" rendered="#{capControlForm.visibleTabs['CBCSubstationBus']}">
                         <jsp:include page="/WEB-INF/pages/cbc/cbcSubSchedule.jsp"/>
                     </x:panelTab>
 
@@ -90,11 +90,11 @@
                         <jsp:include page="/WEB-INF/pages/cbc/cbcFeederSetup.jsp"/>
                     </x:panelTab>
 
-                    <x:panelTab id="tabStrategySetup" label="Control Strategy Setup" rendered="#{capControlForm.visibleTabs['CBCArea'] || capControlForm.visibleTabs['CBCSpecialArea'] || capControlForm.visibleTabs['CBCSubstation'] || capControlForm.visibleTabs['CBCFeeder']}">
+                    <x:panelTab id="tabStrategySetup" label="Control Strategy Setup" rendered="#{capControlForm.visibleTabs['CBCArea'] || capControlForm.visibleTabs['CBCSpecialArea'] || capControlForm.visibleTabs['CBCSubstationBus'] || capControlForm.visibleTabs['CBCFeeder']}">
                         <jsp:include page="/WEB-INF/pages/cbc/cbcStrategySetup.jsp"/>
                     </x:panelTab>
                     
-                    <x:panelTab id="tabChild" label="#{capControlForm.childLabel}" rendered="#{capControlForm.visibleTabs['CBCSubstation'] || capControlForm.visibleTabs['CBCFeeder']}">
+                    <x:panelTab id="tabChild" label="#{capControlForm.childLabel}" rendered="#{capControlForm.visibleTabs['CBCSubstation'] || capControlForm.visibleTabs['CBCSubstationBus'] || capControlForm.visibleTabs['CBCFeeder']}">
                         <jsp:include page="/WEB-INF/pages/cbc/cbcChildList.jsp"/>
                     </x:panelTab>
 
@@ -110,7 +110,7 @@
                         <jsp:include page="/WEB-INF/pages/cbc/cbcSchedule.jsp"/>
                     </x:panelTab>
                     
-                    <x:panelTab id="tabDualBus" label="Advanced" rendered="#{capControlForm.visibleTabs['CBCSubstation']}">
+                    <x:panelTab id="tabDualBus" label="Advanced" rendered="#{capControlForm.visibleTabs['CBCSubstationBus']}">
                     	<jsp:include page="/WEB-INF/pages/cbc/cbcDualBus.jsp"/>
                     </x:panelTab>		
 		

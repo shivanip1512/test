@@ -94,7 +94,8 @@ public class CapControlStateComparisonModel extends BareReportModelBase<CapContr
         sql.append("join dynamiccccapbank dcb on dcb.capbankid = cb.deviceid ");
         sql.append("join state s on s.stategroupid = 3 and dcb.controlstatus = s.rawstate ");
         sql.append("left outer join state s1 on s1.stategroupid = 3 and dcb.twowaycbcstate = s1.rawstate ");
-        sql.append("left outer join ccsubareaassignment saa on saa.substationbusid = sf.substationbusid ");
+        sql.append("left outer join ccsubstationsubbuslist ssb on ssb.substationbusid = sf.substationbusid ");
+        sql.append("left outer join ccsubareaassignment saa on saa.substationbusid = ssb.substationid ");
  	 	sql.append("left outer join (select paobjectid, paoname from yukonpaobject where type ='ccarea' ) as ca on ca.paobjectid = saa.areaid ");
         
         String result = null;

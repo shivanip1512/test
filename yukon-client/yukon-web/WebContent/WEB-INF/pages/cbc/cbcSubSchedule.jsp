@@ -5,7 +5,7 @@
 
 
 
-<f:subview id="subSchedSetup" rendered="#{capControlForm.visibleTabs['CBCSubstation']}" >
+<f:subview id="subSchedSetup" rendered="#{capControlForm.visibleTabs['CBCSubstationBus']}" >
 
 
     <h:panelGrid id="subBody" columns="1" styleClass="gridLayout" 

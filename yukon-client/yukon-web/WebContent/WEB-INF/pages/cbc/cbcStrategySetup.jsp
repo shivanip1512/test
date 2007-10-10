@@ -22,7 +22,7 @@ CapControlForm capControlForm = (CapControlForm)JSFParamUtil.getJSFVar( "capCont
 	<f:verbatim><br/></f:verbatim>
 	<f:subview id="seasonalStrategies" rendered="#{capControlForm.seasonalStratFlag}" >
 		<f:verbatim><br/></f:verbatim>
-		<f:subview id="paoSubBus" rendered="#{capControlForm.visibleTabs['CBCSubstation']}" >
+		<f:subview id="paoSubBus" rendered="#{capControlForm.visibleTabs['CBCSubstationBus']}" >
 			<f:verbatim><table></f:verbatim>
 			<f:verbatim><tr></f:verbatim>
 			<f:verbatim><td></f:verbatim>

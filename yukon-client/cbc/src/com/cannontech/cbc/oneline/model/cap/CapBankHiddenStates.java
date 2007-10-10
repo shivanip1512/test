@@ -5,9 +5,9 @@ import com.cannontech.cbc.oneline.model.HiddenStates;
 import com.cannontech.cbc.oneline.model.OnelineObject;
 import com.cannontech.cbc.oneline.tag.CBCTagHandler;
 import com.cannontech.cbc.oneline.tag.OnelineTags;
+import com.cannontech.cbc.util.CBCUtils;
 import com.cannontech.core.dao.DaoFactory;
 import com.cannontech.database.data.lite.LiteYukonPAObject;
-import com.cannontech.yukon.cbc.CBCUtils;
 import com.loox.jloox.LxAbstractView;
 import com.loox.jloox.LxGraph;
 

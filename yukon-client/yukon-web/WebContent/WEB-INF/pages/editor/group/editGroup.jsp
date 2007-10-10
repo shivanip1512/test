@@ -21,17 +21,17 @@
 
 	function save(){
 		$('saveConfirm').innerHTML = '';
-		new Ajax.Updater('saveConfirm', '/spring/editor/group/save', {method: 'get', parameters: {groupId: ${group.liteID}, paoIdList: $('paoIdList').value}});
+		new Ajax.Updater('saveConfirm', '/spring/editor/group/save', {method: 'get', parameters: {groupId: ${group.liteID}, paoIdList: $('paoIdList').value, cbcPaoIdList: $('cbcPaoIdList').value}});
 	}
 	
 	function addPao(paoId){
 		$('saveConfirm').innerHTML = '';
-		new Ajax.Updater('paoTable', '/spring/editor/group/addPao', {method: 'get', parameters: {paoId: $('newPaoId').value, paoIdList: $('paoIdList').value}});
+		new Ajax.Updater('paoTable', '/spring/editor/group/addPao', {method: 'get', parameters: {paoId: $('newPaoId').value, paoIdList: $('paoIdList').value, cbcPaoId: $('newCbcPaoId').value, cbcPaoIdList: $('cbcPaoIdList').value}});
 	}
 	
 	function removePao(paoId){
 		$('saveConfirm').innerHTML = '';
-		new Ajax.Updater('paoTable', '/spring/editor/group/removePao', {method: 'get', parameters: {paoId: paoId, paoIdList: $('paoIdList').value}});
+		new Ajax.Updater('paoTable', '/spring/editor/group/removePao', {method: 'get', parameters: {paoId: paoId, paoIdList: $('paoIdList').value, cbcPaoIdList: $('cbcPaoIdList').value}});
 	}
 	
 </script>

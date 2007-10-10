@@ -5,10 +5,10 @@ import java.io.IOException;
 import java.io.Writer;
 
 import com.cannontech.cbc.oneline.util.OnelineUtil;
+import com.cannontech.cbc.util.CBCUtils;
 import com.cannontech.clientutils.CTILogger;
 import com.cannontech.esub.Drawing;
 import com.cannontech.esub.util.HTMLGenerator;
-import com.cannontech.yukon.cbc.CBCUtils;
 
 public class OnelineHTMLGenerator extends HTMLGenerator {
 

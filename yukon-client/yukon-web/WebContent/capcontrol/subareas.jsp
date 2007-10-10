@@ -3,12 +3,13 @@
 <cti:standardPage title="Substation Bus Areas" module="capcontrol">
 <%@include file="cbc_inc.jspf"%>
 
-<jsp:useBean id="capControlCache"
-	class="com.cannontech.cbc.web.CapControlCache"
-	type="com.cannontech.cbc.web.CapControlCache" scope="application"></jsp:useBean>
+<jsp:useBean id="filterCapControlCache"
+	class="com.cannontech.cbc.web.FilterCapControlCacheImpl"
+	type="com.cannontech.cbc.web.FilterCapControlCacheImpl" scope="application"></jsp:useBean>
 	<%
+
 	LiteYukonUser user = (LiteYukonUser) session.getAttribute(LoginController.YUKON_USER);	
-	CapControlUserOwnerDAO userOwner = new CapControlUserOwnerDAO (capControlCache, user);
+	filterCapControlCache.setFilter(new CacheFilterUserAccessFilter(user));
     String nd = "\"return nd();\"";
     String popupEvent = DaoFactory.getAuthDao().getRolePropertyValue(user, WebClientRole.POPUP_APPEAR_STYLE);
     if (popupEvent == null) popupEvent = "onmouseover"; 
@@ -35,7 +36,7 @@ if (allowCtlVal!=null) {
 %>    
     <cti:titledContainer title="Substation Bus Areas" id="last_titled_container">
           
-		<form id="areaForm" action="subs.jsp" method="post">
+		<form id="areaForm" action="substations.jsp" method="post">
 			<input type="hidden" name="<%=CBCSessionInfo.STR_CBC_AREA%>" />
 			<input type="hidden" name="<%=CBCSessionInfo.STR_CBC_AREAID%>" />
             <table id="areaHeaderTable" width="100%" border="0" cellspacing="0" cellpadding="0">
@@ -54,22 +55,22 @@ if (allowCtlVal!=null) {
 		<table id="areaTable" width="98%" border="0" cellspacing="0" cellpadding="0" >
 <%
 	String css = "tableCell";
-	for( int i = 0; i < userOwner.getCbcAreas().size(); i++ ) {
+	for( int i = 0; i < filterCapControlCache.getCbcAreas().size(); i++ ) {
 		css = ("tableCell".equals(css) ? "altTableCell" : "tableCell");
-		CBCArea area = (CBCArea)userOwner.getCbcAreas().get(i);
-		SubBus[] areaBuses = userOwner.getSubsByArea(area.getPaoID());
-		CapBankDevice[] areaCapBanks = userOwner.getCapBanksByArea(area.getPaoID());
+		CBCArea area = (CBCArea)filterCapControlCache.getCbcAreas().get(i);
+		SubStation[] areaStations = filterCapControlCache.getSubstationsByArea(area.getPaoID());
+		CapBankDevice[] areaCapBanks = filterCapControlCache.getCapBanksByArea(area.getPaoID());
 		
 		//new additions for the available and closed vars
-		String varsAvailable = CBCUtils.format( CBCUtils.calcVarsAvailable(Arrays.asList(areaBuses)) );
-		String varsDisabled =  CBCUtils.format (CBCUtils.calcVarsDisabled(Arrays.asList(areaBuses)) );
+		String varsAvailable = CBCUtils.format( CBCUtils.calcVarsAvailableForSubStations(Arrays.asList(areaStations)) );
+		String varsDisabled =  CBCUtils.format (CBCUtils.calcVarsDisabledForSubStations(Arrays.asList(areaStations)) );
 		String closedVars = CBCUtils.format( CBCUtils.calcClosedVARS(areaCapBanks) );
 		String trippedVars = CBCUtils.format( CBCUtils.calcTrippedVARS(areaCapBanks) );
-		String currPF = CBCDisplay.getPowerFactorText(CBCUtils.calcAvgPF(areaBuses), true);
-		String estPF = CBCDisplay.getPowerFactorText(CBCUtils.calcAvgEstPF(areaBuses), true);
-		String areaState = ((Boolean)(userOwner.getAreaStateMap().get(area.getPaoName())))?"ENABLED":"DISABLED";
+		String currPF = CBCDisplay.getPowerFactorText(CBCUtils.calcAvgPF(Arrays.asList(areaStations)), true);
+		String estPF = CBCDisplay.getPowerFactorText(CBCUtils.calcAvgEstPF(Arrays.asList(areaStations)), true);
+		String areaState = ((Boolean)(filterCapControlCache.getAreaStateMap().get(area.getPaoName())))?"ENABLED":"DISABLED";
 		if( area.getOvUvDisabledFlag() ){
-				areaState += "-V";
+			areaState += "-V";
 		}
 %>
 	        <tr class="<%=css%>">
@@ -89,7 +90,7 @@ if (allowCtlVal!=null) {
                 <a id="area_state_<%=i%>" name="area_state" 
                     style="<%=css%>"
                     href="javascript:void(0);"
-                    <%= popupEvent %> ="return overlib(
+                    <%=popupEvent%> ="return overlib(
                         $F('cmd_area_<%=area.getPaoID()%>'),
                         STICKY, WIDTH,210, HEIGHT,170, OFFSETX,-15,OFFSETY,-15,
                         MOUSEOFF, FULLHTML);"
@@ -97,27 +98,29 @@ if (allowCtlVal!=null) {
                 <%=areaState%>
                 </a>
                 </td>
-				<td><%=areaBuses.length%> Substation(s)</td>
+				<td><%=areaStations.length%> Substation(s)</td>
 				<td><%=varsAvailable%></td>
 				<td><%=varsDisabled%></td>
 				<td><%=closedVars%></td>
 				<td><%=trippedVars%></td>
-				<td><%=currPF%> / <%=estPF%></td>
+				<td><a type="param1" name="cti_dyn" id="<%=area.getCcId()%>">
+                <%=CBCUtils.CBC_DISPLAY.getAreaValueAt(area, CBCDisplay.AREA_POWER_FACTOR_COLUMN)%></a>
+                </td>
 			</tr>
 
 
 			<a id="allAreas<%=i%>">
 <%
-if (areaBuses.length > 0) {		
-	for( int j = 0; j < areaBuses.length; j++ )
+	if (areaStations.length > 0) {		
+	for( int j = 0; j < areaStations.length; j++ )
 		{
-			SubBus subBus = areaBuses[j];
-			Feeder[] subFeeders = userOwner.getFeedersBySub(subBus.getCcId());
-			CapBankDevice[] subCapBanks = userOwner.getCapBanksBySub(subBus.getCcId());
+	SubStation substation = areaStations[j];
+	List<Feeder> subFeeders = filterCapControlCache.getFeedersBySubStation(substation);
+	List<CapBankDevice> subCapBanks = filterCapControlCache.getCapBanksBySubStation(substation);
 %>
 		        <tr class="<%=css%>" style="display: none;">
-					<td><font class="lIndent"><%=CBCUtils.CBC_DISPLAY.getSubBusValueAt(subBus, CBCDisplay.SUB_NAME_COLUMN)%></font></td>
-					<td><%=subFeeders.length%> Feeder(s), <%=subCapBanks.length%> Bank(s)</td>
+					<td><font class="lIndent"><%=CBCUtils.CBC_DISPLAY.getSubstationValueAt(substation, CBCDisplay.SUB_NAME_COLUMN)%></font></td>
+					<td><%=subFeeders.size()%> Feeder(s), <%=subCapBanks.size()%> Bank(s)</td>
 					<td></td>
 					<td></td>
 					<td></td>

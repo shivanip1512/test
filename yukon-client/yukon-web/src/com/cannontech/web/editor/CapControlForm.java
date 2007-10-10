@@ -29,6 +29,7 @@ import org.apache.myfaces.custom.tree2.TreeNodeBase;
 import org.apache.myfaces.custom.tree2.TreeStateBase;
 
 import com.cannontech.cbc.dao.SeasonScheduleDao;
+import com.cannontech.cbc.db.DBPersistentUtils;
 import com.cannontech.cbc.exceptions.CBCExceptionMessages;
 import com.cannontech.cbc.exceptions.FormWarningException;
 import com.cannontech.cbc.exceptions.MultipleDevicesOnPortException;
@@ -42,6 +43,7 @@ import com.cannontech.cbc.model.ICBControllerModel;
 import com.cannontech.cbc.model.ICapControlModel;
 import com.cannontech.cbc.model.Season;
 import com.cannontech.cbc.point.CBCPointFactory;
+import com.cannontech.cbc.util.CBCUtils;
 import com.cannontech.clientutils.CTILogger;
 import com.cannontech.common.util.CtiUtilities;
 import com.cannontech.common.util.StringUtils;
@@ -77,6 +79,7 @@ import com.cannontech.database.data.point.StatusPoint;
 import com.cannontech.database.db.DBPersistent;
 import com.cannontech.database.db.capcontrol.CCFeederBankList;
 import com.cannontech.database.db.capcontrol.CCFeederSubAssignment;
+import com.cannontech.database.db.capcontrol.CCSubstationSubBusList;
 import com.cannontech.database.db.capcontrol.CapBankAdditional;
 import com.cannontech.database.db.capcontrol.CapControlStrategy;
 import com.cannontech.database.db.capcontrol.CapControlSubstationBus;
@@ -85,6 +88,7 @@ import com.cannontech.database.db.pao.PAOSchedule;
 import com.cannontech.database.db.pao.PAOScheduleAssign;
 import com.cannontech.database.db.point.calculation.CalcComponentTypes;
 import com.cannontech.database.db.season.SeasonSchedule;
+import com.cannontech.message.dispatch.message.DBChangeMsg;
 import com.cannontech.servlet.nav.CBCNavigationUtil;
 import com.cannontech.web.db.CBCDBObjCreator;
 import com.cannontech.web.editor.model.CapControlStrategyModel;
@@ -97,7 +101,6 @@ import com.cannontech.web.util.JSFParamUtil;
 import com.cannontech.web.util.JSFTreeUtils;
 import com.cannontech.web.util.JSFUtil;
 import com.cannontech.web.wizard.CBCWizardModel;
-import com.cannontech.yukon.cbc.CBCUtils;
 
 public class CapControlForm extends DBEditorForm implements ICapControlModel{
     private String paoDescLabel = "Description";
@@ -111,6 +114,7 @@ public class CapControlForm extends DBEditorForm implements ICapControlModel{
 	private List unassignedBanks = null;
 	// contains LiteYukonPAObject
 	private List unassignedFeeders = null;
+	private List unassignedSubBuses = null;
 	// possible selection types for every wizard panel
 	private CBCCreationModel wizData = null;
 	// possible editor for the CBC a CapBank belongs to
@@ -559,6 +563,7 @@ public class CapControlForm extends DBEditorForm implements ICapControlModel{
 		editingCBCStrategy = false;
 		unassignedBanks = null;
 		unassignedFeeders = null;
+		unassignedSubBuses = null;
 		unusedCCPAOs = null;
 		kwkvarPaos = null;
 		kwkvarPoints = null;
@@ -621,6 +626,7 @@ public class CapControlForm extends DBEditorForm implements ICapControlModel{
         getVisibleTabs().put("CBCSpecialArea", Boolean.FALSE);
 		getVisibleTabs().put("BaseCapControl", Boolean.FALSE);
 		getVisibleTabs().put("CBCSubstation", Boolean.FALSE);
+		getVisibleTabs().put("CBCSubstationBus", Boolean.FALSE);
 		getVisibleTabs().put("CBCFeeder", Boolean.FALSE);
 		getVisibleTabs().put("CBCCapBank", Boolean.FALSE);
 		getVisibleTabs().put("CBCType", Boolean.FALSE);
@@ -650,12 +656,19 @@ public class CapControlForm extends DBEditorForm implements ICapControlModel{
                 setChildLabel("Substations");
                 getVisibleTabs().put("CBCSpecialArea", Boolean.TRUE);
                 break;
-    
+
+            case PAOGroups.CAP_CONTROL_SUBSTATION:
+    			setEditorTitle("Substation");
+    			setPaoDescLabel("Geographical Name");
+    			setChildLabel("Substation Buses");
+    			getVisibleTabs().put("CBCSubstation", Boolean.TRUE);
+                break;
+                
             case PAOGroups.CAP_CONTROL_SUBBUS:
     			setEditorTitle("Substation Bus");
     			setPaoDescLabel("Geographical Name");
     			setChildLabel("Feeders");
-    			getVisibleTabs().put("CBCSubstation", Boolean.TRUE);
+    			getVisibleTabs().put("CBCSubstationBus", Boolean.TRUE);
                 break;
     
     		case PAOGroups.CAP_CONTROL_FEEDER:
@@ -957,6 +970,8 @@ public class CapControlForm extends DBEditorForm implements ICapControlModel{
                 DBPersistent pointVector = CBCPointFactory.createPointsForCBCDevice((YukonPAObject)dbObj);
                 CBControllerEditor.insertPointsIntoDB(pointVector);  
             }
+            DBPersistentUtils.generateDBChangeMsg(dbObj, DBChangeMsg.CHANGE_TYPE_UPDATE);
+            
             // redirect to this form as the editor for this new DB object
             if (facesContext != null){
                 HttpSession session = (HttpSession) facesContext.getExternalContext().getSession(false);
@@ -1276,6 +1291,13 @@ public class CapControlForm extends DBEditorForm implements ICapControlModel{
 			unassignedFeeders.add(DaoFactory.getPaoDao().getLiteYukonPAO(unassignedFeederIDs[i]));
 		}
 		Collections.sort(unassignedFeeders, LiteComparators.liteStringComparator);
+		
+		unassignedSubBuses = new Vector(16);
+		int[] unassignedSubBusIDs = com.cannontech.database.db.capcontrol.CapControlSubstationBus.getUnassignedSubBusIDs();
+		for (int i = 0; i < unassignedSubBusIDs.length; i++) {
+			unassignedSubBuses.add(DaoFactory.getPaoDao().getLiteYukonPAO(unassignedSubBusIDs[i]));
+		}
+		Collections.sort(unassignedSubBuses, LiteComparators.liteStringComparator);
 	}
 
 	public void setPaoDescLabel(String string) {
@@ -1804,5 +1826,13 @@ public class CapControlForm extends DBEditorForm implements ICapControlModel{
     public void setSeasonScheduleDao(SeasonScheduleDao seasonScheduleDao) {
         this.seasonScheduleDao = seasonScheduleDao;
     }
+
+	public List getUnassignedSubBuses() {
+		return unassignedSubBuses;
+	}
+
+	public void setUnassignedSubBuses(List unassignedSubBuses) {
+		this.unassignedSubBuses = unassignedSubBuses;
+	}
 
 }

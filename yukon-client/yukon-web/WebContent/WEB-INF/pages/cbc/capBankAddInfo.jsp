@@ -31,11 +31,7 @@
 		
 		<f:verbatim><br/></f:verbatim>
 			
-		<x:outputLabel for="CapBank_DriveDir" value="Driving Directions " title="" />
-		<x:inputText id="CapBank_DriveDir" value="#{capBankEditor.additionalInfo.driveDir}" required="true" maxlength="120" size="50">
-			<f:validateLength minimum="1" maximum="120"/>
-		</x:inputText>
-		<f:verbatim><br/></f:verbatim>
+		
 
 		<x:outputLabel for="SelectConfig" value="Config " title="Select Cap Bank Configuration" />
 		<x:selectOneMenu id="SelectConfig" value="#{capBankEditor.additionalInfo.capBankConfig}" onchange="submit();">
@@ -148,6 +144,12 @@
 		<x:outputLabel for="CapBank_CBCInstallDate" value="CBC Install Date " title="" />
 	     <x:inputDate id="CapBank_CBCInstallDate" value="#{capBankEditor.additionalInfo.cbcBattInstallDate}"
             	type="both" popupCalendar="true" />
+		<f:verbatim><br/></f:verbatim>
+		
+		<x:outputLabel for="CapBank_DriveDir" value="Driving Directions " title="" />
+		<x:inputText id="CapBank_DriveDir" value="#{capBankEditor.additionalInfo.driveDir}" required="true" maxlength="120" size="50">
+			<f:validateLength minimum="1" maximum="120"/>
+		</x:inputText>
 		<f:verbatim><br/></f:verbatim>			            	
 
 <f:verbatim>

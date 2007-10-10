@@ -127,7 +127,8 @@ public class CapControlOperationsModel extends BareDatedReportModelBase<CapContr
         sql.append("left join devicecbc cbc on cbc.deviceid = cb.controldeviceid ");
         sql.append("left outer join (select * from dynamicpaoinfo where infokey like '%udp ip%') as p ");
         sql.append("on p.paobjectid = cb.controldeviceid ");
-        sql.append("left outer join ccsubareaassignment saa on saa.substationbusid = yp2.paobjectid ");
+        sql.append("left outer join ccsubstationsubbuslist sbb on sbb.substationbusid = yp2.paobjectid ");
+        sql.append("left outer join ccsubareaassignment saa on saa.substationbusid = sbb.substationid  ");
  	 	sql.append("join yukonpaobject ca on ca.paobjectid = saa.areaid ");
         
         String result = null;

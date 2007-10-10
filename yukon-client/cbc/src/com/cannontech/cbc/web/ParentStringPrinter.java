@@ -1,8 +1,8 @@
 package com.cannontech.cbc.web;
 
+import com.cannontech.cbc.util.CBCUtils;
 import com.cannontech.core.dao.DaoFactory;
 import com.cannontech.yukon.cbc.CBCArea;
-import com.cannontech.yukon.cbc.CBCUtils;
 import com.cannontech.yukon.cbc.StreamableCapObject;
 
 public class ParentStringPrinter {

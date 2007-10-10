@@ -133,8 +133,8 @@ public class UserPaoPermissionDaoImpl implements PaoPermissionDao<LiteYukonUser>
 
         String sql = "insert into UserPaoPermission values (?,?,?,?)";
         jdbcTemplate.update(sql, new Object[] { id, userId, paoId, permission.toString() });
-
     }
+    
 
     private void removePermission(int userId, int paoId, Permission permission) {
 

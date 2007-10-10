@@ -99,7 +99,8 @@ public class CapControlRetriesModel extends BareDatedReportModelBase<CapControlR
         sql.append("join yukonpaobject yp2 on yp2.paobjectid = fb.feederid ");
         sql.append("join ccfeedersubassignment fs on fs.feederid = fb.feederid ");
         sql.append("join yukonpaobject yp1 on yp1.paobjectid = fs.substationbusid ");
-        sql.append("join ccsubareaassignment sa on sa.substationbusid = fs.substationbusid ");
+        sql.append("join ccsubstationsubbus ssb on ssb.substationbusid = fs.substationbusid ");
+        sql.append("join ccsubareaassignment sa on sa.substationbusid = ssb.substationid ");
         sql.append("join  yukonpaobject yp on yp.paobjectid = sa.areaid ");
         sql.append("left outer join (select paobjectid from yukonpaobject where type ='ccarea' ) as ca on ca.paobjectid = sa.areaid ");
         

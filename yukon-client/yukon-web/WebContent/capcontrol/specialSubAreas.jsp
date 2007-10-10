@@ -35,7 +35,7 @@ if (allowCtlVal!=null) {
 %>    
     <cti:titledContainer title="Special Substation Bus Areas" id="last_titled_container">
           
-		<form id="areaForm" action="subs.jsp" method="post">
+		<form id="areaForm" action="substations.jsp" method="post">
 			<input type="hidden" name="<%=CBCSessionInfo.STR_CBC_AREA%>" />
 			<input type="hidden" name="<%=CBCSessionInfo.STR_CBC_AREAID%>" />
             <table id="areaHeaderTable" width="100%" border="0" cellspacing="0" cellpadding="0">
@@ -70,7 +70,7 @@ if (allowCtlVal!=null) {
 		String estPF = CBCDisplay.getPowerFactorText(CBCUtils.calcAvgEstPF(areaBuses), true);
 	    String areaState = ((Boolean)(userOwner.getSpecialAreaStateMap().get(area.getPaoName())))?"ENABLED":"DISABLED";
 	    if( area.getOvUvDisabledFlag() ){
-				areaState += "-V";
+		areaState += "-V";
 		}
 %>
 	        <tr class="<%=css%>">
@@ -90,7 +90,7 @@ if (allowCtlVal!=null) {
                 <a id="area_state_<%=i%>" name="area_state" 
                     style="<%=css%>"
                     href="javascript:void(0);"
-                    <%= popupEvent %> ="return overlib(
+                    <%=popupEvent%> ="return overlib(
                         $F('cmd_area_<%=area.getPaoID()%>'),
                         STICKY, WIDTH,210, HEIGHT,170, OFFSETX,-15,OFFSETY,-15,
                         MOUSEOFF, FULLHTML);"
@@ -107,11 +107,11 @@ if (allowCtlVal!=null) {
 			</tr>
 			<a id="allAreas<%=i%>">
 <%
-		if (areaBuses.length > 0) {		
-			for( int j = 0; j < areaBuses.length; j++ ) {
-				SubBus subBus = areaBuses[j];
-				Feeder[] subFeeders = userOwner.getFeedersBySub(subBus.getCcId());
-				CapBankDevice[] subCapBanks = userOwner.getCapBanksBySub(subBus.getCcId());
+	if (areaBuses.length > 0) {		
+	for( int j = 0; j < areaBuses.length; j++ ) {
+		SubBus subBus = areaBuses[j];
+		Feeder[] subFeeders = userOwner.getFeedersBySubBus(subBus.getCcId());
+		CapBankDevice[] subCapBanks = userOwner.getCapBanksBySub(subBus.getCcId());
 %>
 		        <tr class="<%=css%>" style="display: none;">
 					<td><font class="lIndent"><%=CBCUtils.CBC_DISPLAY.getSubBusValueAt(subBus, CBCDisplay.SUB_NAME_COLUMN)%></font></td>

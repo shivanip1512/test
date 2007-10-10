@@ -6,6 +6,7 @@ import com.cannontech.cbc.exceptions.CapControlCreatedObjectRetrievalException;
 import com.cannontech.cbc.exceptions.PAODoesntHaveNameException;
 import com.cannontech.cbc.model.CBCCreationModel;
 import com.cannontech.cbc.point.CBCPointFactory;
+import com.cannontech.cbc.util.CBCUtils;
 import com.cannontech.clientutils.CTILogger;
 import com.cannontech.core.dao.DaoFactory;
 import com.cannontech.core.dao.PaoDao;
@@ -31,7 +32,6 @@ import com.cannontech.database.data.point.StatusPoint;
 import com.cannontech.database.db.DBPersistent;
 import com.cannontech.database.db.capcontrol.CapBankAdditional;
 import com.cannontech.database.db.pao.PAOSchedule;
-import com.cannontech.yukon.cbc.CBCUtils;
 
 public class CapControlFactory {
 

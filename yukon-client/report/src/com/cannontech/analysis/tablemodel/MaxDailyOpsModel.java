@@ -108,7 +108,8 @@ public class MaxDailyOpsModel extends ReportModelBase {
         sql.append( "join yukonpaobject yp2 on yp2.paobjectid = fb.feederid ");
         sql.append( "left outer join ccfeedersubassignment fs on fs.feederid = fb.feederid ");
         sql.append( "join yukonpaobject yp3 on yp3.paobjectid = fs.substationbusid ");
-        sql.append( "left outer join ccsubareaassignment sa on sa.substationbusid = fs.substationbusid ");
+        sql.append( "left outer join ccsubstationsubbuslist ssb on ssb.substationbusid = fs.substationbusid ");
+        sql.append( "left outer join ccsubareaassignment sa on sa.substationbusid = ssb.substationid ");
         sql.append( "join yukonpaobject ca on ca.paobjectid = sa.areaid ");
         sql.append( "and (slTemp6.prevWeek6Count > 0 or slTemp5.prevWeek5Count > 0 or "); 
         sql.append( "slTemp4.prevWeek4Count > 0 or slTemp3.prevWeek3Count > 0 or ");

@@ -49,10 +49,17 @@ public class PaoPermissionEditorServiceImpl<T> implements PaoPermissionEditorSer
         // Add new pao permissions
         for (Integer id : idList) {
             permissionDao.addPermission(group, new LiteYukonPAObject(id), permission);
-
         }
 
         return true;
     }
+    public boolean addPermissions(T group, List<Integer> idList, Permission permission) {
 
+        // Add new pao permissions
+        for (Integer id : idList) {
+            permissionDao.addPermission(group, new LiteYukonPAObject(id), permission);
+        }
+
+        return true;
+    }
 }
