@@ -228,9 +228,9 @@ public Object getValue(Object val)
 		com.cannontech.database.db.capcontrol.CCFeederBankList ccFeederBankLIst = new com.cannontech.database.db.capcontrol.CCFeederBankList(
 																		  ccFeeder.getCapControlPAOID(),
 																		  deviceID,
-																		  new Integer(i+1),
-                                                                          new Integer (i+1),
-                                                                          new Integer (i+1));
+																		  new Float(i+1),
+                                                                          new Float (i+1),
+                                                                          new Float (i+1));
 		
 		ccBankList.add(ccFeederBankLIst);
 	}

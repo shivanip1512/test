@@ -391,7 +391,7 @@
 							<x:outputText value="Display Order" title="Order used for control (Range: 1 to 1000 )" />
 	                   </f:facet>
 	                   <x:inputText value="#{capBank.controlOrder}" styleClass="char4Label" required="true" >
-	                   		<f:validateLongRange minimum="1" maximum="1000" />
+	                   		<!-- f:validateLongRange minimum="1" maximum="1000" /-->
 	                   </x:inputText>
 	                   
 	               </h:column>
@@ -400,7 +400,7 @@
 							<x:outputText value="Close Order" title="Order used for control (Range: 1 to 1000 )" />
 	                   </f:facet>
 	                   <x:inputText value="#{capBank.closeOrder}" styleClass="char4Label" required="true" >
-	                   		<f:validateLongRange minimum="1" maximum="1000" />
+	                   		<!-- f:validateLongRange minimum="1" maximum="1000" / -->
 	                   </x:inputText>
 	                   
 	               </h:column>
@@ -409,7 +409,7 @@
 							<x:outputText value="Trip Order" title="Order used for control (Range: 1 to 1000 )" />
 	                   </f:facet>
 	                   <x:inputText value="#{capBank.tripOrder}" styleClass="char4Label" required="true" >
-	                   		<f:validateLongRange minimum="1" maximum="1000" />
+	                   		<!-- f:validateLongRange minimum="1" maximum="1000" /-->
 	                   </x:inputText>
 	                   
 	               </h:column>

@@ -9,9 +9,9 @@ public class CCFeederBankList extends com.cannontech.database.db.DBPersistent
 {
 	private Integer feederID = null;
 	private Integer deviceID = null;
-	private Integer controlOrder = null;
-    private Integer closeOrder = null;
-    private Integer tripOrder = null;
+	private Float controlOrder = null;
+    private Float closeOrder = null;
+    private Float tripOrder = null;
 
 
 	public static final String SETTER_COLUMNS[] = 
@@ -24,7 +24,7 @@ public class CCFeederBankList extends com.cannontech.database.db.DBPersistent
 	public static final String TABLE_NAME= "CCFeederBankList";
 /**
  */
-public CCFeederBankList(Integer feedID, Integer devID, Integer order, Integer clsOrd, Integer trpOrd) 
+public CCFeederBankList(Integer feedID, Integer devID, Float order, Float clsOrd, Float trpOrd) 
 {
 	super();
 	
@@ -138,9 +138,9 @@ public static java.util.ArrayList getCapBanksOnFeederList(Integer feederId, java
 						new CCFeederBankList(
 							feederId, 
 							new Integer( rset.getInt("DeviceID") ),
-							new Integer( rset.getInt("ControlOrder")) ,
-                            new Integer (rset.getInt("CloseOrder")),
-                            new Integer (rset.getInt("TripOrder")))
+							new Float( rset.getFloat("ControlOrder")) ,
+                            new Float (rset.getInt("CloseOrder")),
+                            new Float (rset.getInt("TripOrder")))
                         );
                             
                         
@@ -164,7 +164,7 @@ public static java.util.ArrayList getCapBanksOnFeederList(Integer feederId, java
  * This method was created in VisualAge.
  * @return java.lang.Integer
  */
-public Integer getControlOrder() {
+public Float getControlOrder() {
 	return controlOrder;
 }
 /**
@@ -194,7 +194,7 @@ public void retrieve() throws java.sql.SQLException
  * This method was created in VisualAge.
  * @param newValue java.lang.Integer
  */
-public void setControlOrder(Integer newValue) {
+public void setControlOrder(Float newValue) {
 	this.controlOrder = newValue;
 }
 /**
@@ -229,16 +229,16 @@ public void update() throws java.sql.SQLException
 	update( this.tableName, setColumns, setValues, constraintColumns, constraintValues );
 */
 }
-public Integer getCloseOrder() {
+public Float getCloseOrder() {
     return closeOrder;
 }
-public void setCloseOrder(Integer closeOrder) {
+public void setCloseOrder(Float closeOrder) {
     this.closeOrder = closeOrder;
 }
-public Integer getTripOrder() {
+public Float getTripOrder() {
     return tripOrder;
 }
-public void setTripOrder(Integer tripOrder) {
+public void setTripOrder(Float tripOrder) {
     this.tripOrder = tripOrder;
 }
 }

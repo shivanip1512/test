@@ -1140,7 +1140,7 @@ public class CapControlForm extends DBEditorForm implements ICapControlModel{
 					if (elemID == ((LiteYukonPAObject) unassignedBanks.get(i)).getLiteID()) {
 						// Add the mapping for the given CapBank id to this Feeder
 						CapControlFeeder currFdr = (CapControlFeeder) getDbPersistent();
-                        int order = maxDispOrderOnList (currFdr.getChildList()) + 1;
+                        float order = maxDispOrderOnList (currFdr.getChildList()) + 1;
                         CCFeederBankList bankList = new CCFeederBankList(itemID,elemID,order,order,order);
                         currFdr.getChildList().add(bankList);
                         updateTripOrder (currFdr);
@@ -1156,7 +1156,8 @@ public class CapControlForm extends DBEditorForm implements ICapControlModel{
 					if (elemID == ((LiteYukonPAObject) unassignedFeeders.get(i)).getLiteID()) {
 						// Add the mapping for the given Feeders id to this Sub
 						CapControlSubBus currSub = (CapControlSubBus) getDbPersistent();
-                        CCFeederSubAssignment sa = new CCFeederSubAssignment(elemID,itemID,maxDispOrderOnList (currSub.getChildList())+ 1); 
+                        //NOTE: casting maxDispOrderOnList. if we change this to float later need to remove cast.
+                        CCFeederSubAssignment sa = new CCFeederSubAssignment(elemID,itemID,(int)maxDispOrderOnList (currSub.getChildList())+ 1); 
 						currSub.getChildList().add(sa);
 						unassignedFeeders.remove(i);
 						break;
@@ -1186,17 +1187,18 @@ public class CapControlForm extends DBEditorForm implements ICapControlModel{
 				feeder.setDisplayOrder(new Integer ( i + 1));
 			} else if (element instanceof CCFeederBankList) {
 				CCFeederBankList capBank = (CCFeederBankList) element;
-				capBank.setControlOrder(new Integer ( i  + 1));
-                capBank.setCloseOrder(new Integer ( i + 1));
-                capBank.setTripOrder(new Integer ( i + 1));
+				capBank.setControlOrder(new Float ( i  + 1));
+                capBank.setCloseOrder(new Float ( i + 1));
+                capBank.setTripOrder(new Float ( i + 1));
 			} else {
 				return;
             }
 		}		
 	}
 
-	private int maxDispOrderOnList(ArrayList childList) {
-		int max = 0;
+    //Warning: instanceof CCFeederSubAssignment is putting an int into a float.
+	private float maxDispOrderOnList(ArrayList childList) {
+		float max = 0;
 		for (Iterator iter = childList.iterator(); iter.hasNext();) {
 			Object element = iter.next();
 			if (element instanceof CCFeederSubAssignment) {
@@ -1206,8 +1208,8 @@ public class CapControlForm extends DBEditorForm implements ICapControlModel{
 				}
 			} else if (element instanceof CCFeederBankList) {
 				CCFeederBankList capBank = (CCFeederBankList) element;
-				if (capBank.getControlOrder().intValue() > max) {
-					max = capBank.getControlOrder().intValue();
+				if (capBank.getControlOrder().floatValue() > max) {
+					max = capBank.getControlOrder().floatValue();
 				}
 			} else {
 				return 0;

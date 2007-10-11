@@ -162,7 +162,7 @@ public class DataTools
 					ccBankList.add( new CCFeederBankList(
    							new Integer(feederIDs[j]),
    							new Integer(bankIDs[x]),
-							new Integer(x+1),new Integer(x+1),new Integer(x+1)) );
+							new Float(x+1),new Float(x+1),new Float(x+1)) );
 
    	   			CapControlFeeder f = createCBCFeeder( feederIDs[j] );
    	   			f.setCcBankList( ccBankList );

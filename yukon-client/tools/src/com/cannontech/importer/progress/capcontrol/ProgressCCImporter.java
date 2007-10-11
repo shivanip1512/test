@@ -216,7 +216,7 @@ public class ProgressCCImporter {
         //counters
         int subDisplayOrder = 1;
         int feederDisplayOrder = 1;
-        int capBankDisplayOrder = 1;
+        float capBankDisplayOrder = 1;
         SimpleJdbcOperations jdbcOps = (SimpleJdbcOperations) YukonSpringHook.getBean("simpleJdbcTemplate");
         
         //make Eliots objects and add them into the database

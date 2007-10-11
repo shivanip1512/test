@@ -37,6 +37,7 @@ import com.cannontech.servlet.xml.ResultXML;
 import com.cannontech.spring.YukonSpringHook;
 import com.cannontech.util.ParamUtil;
 import com.cannontech.yukon.cbc.CBCArea;
+import com.cannontech.cbc.util.CBCDisplay;
 import com.cannontech.yukon.cbc.CBCClientConnection;
 import com.cannontech.yukon.cbc.CBCSpecialArea;
 import com.cannontech.yukon.cbc.CapBankDevice;
