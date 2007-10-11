@@ -23,7 +23,7 @@
     <bean id="simpleDeviceService" class="com.cannontech.common.device.definition.service.SimpleDeviceDefinitionServiceImpl" singleton="true">
         <property name="deviceDefinitionDao" ref="deviceDefinitionDao" />
         <property name="pointService" ref="devicePointService" />
-        <property name="attributeService" ref="attributeService" />
+        <property name="pointDao" ref="pointDao" />
     </bean>
     
     <bean id="deviceService" class="com.cannontech.common.device.definition.service.DeviceDefinitionServiceImpl" singleton="true">
