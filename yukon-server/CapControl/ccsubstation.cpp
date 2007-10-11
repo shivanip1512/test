@@ -1,11 +1,12 @@
 
+
 /*---------------------------------------------------------------------------
-        Filename:  ccsubstationbus.cpp
+        Filename:  ccsubstation.cpp
 
         Programmer:  Josh Wolberg
 
-        Description:    Source file for CtiCCArea.
-                        CtiCCArea maintains the state and handles
+        Description:    Source file for CtiCCSubstation.
+                        CtiCCSubstation maintains the state and handles
                         the persistence of substation buses for Cap Control.
 
         Initial Date:  8/28/2001
@@ -19,7 +20,7 @@
 #include "dbaccess.h"
 #include "msg_signal.h"
 
-#include "ccarea.h"
+#include "ccsubstation.h"
 #include "ccid.h"
 #include "cccapbank.h"
 #include "pointdefs.h"
@@ -31,42 +32,51 @@
 
 extern ULONG _CC_DEBUG;
 
-RWDEFINE_COLLECTABLE( CtiCCArea, CTICCAREA_ID )
+RWDEFINE_COLLECTABLE( CtiCCSubstation, CTICCSUBSTATION_ID )
 
 /*---------------------------------------------------------------------------
     Constructors
 ---------------------------------------------------------------------------*/
-CtiCCArea::CtiCCArea()
+CtiCCSubstation::CtiCCSubstation()
 {
 }
 
-CtiCCArea::CtiCCArea(RWDBReader& rdr)
+CtiCCSubstation::CtiCCSubstation(RWDBReader& rdr)
 {
     restore(rdr);
 }
 
-CtiCCArea::CtiCCArea(const CtiCCArea& area)
+CtiCCSubstation::CtiCCSubstation(const CtiCCSubstation& substation)
 {
-    operator=(area);
+    operator=(substation);
 }
 
 /*---------------------------------------------------------------------------
     Destructor
 ---------------------------------------------------------------------------*/
-CtiCCArea::~CtiCCArea()
+CtiCCSubstation::~CtiCCSubstation()
 {  
-    
+    try
+    {  
+        _subBusIds.clear();   
+    }
+    catch (...)
+    {
+        CtiLockGuard<CtiLogger> logger_guard(dout);
+        dout << CtiTime() << " - Caught '...' in: " << __FILE__ << " at:" << __LINE__ << endl;
+    }
 }
+
 
 /*-------------------------------------------------------------------------
     restoreGuts
 
     Restore self's state from the given stream
 --------------------------------------------------------------------------*/
-void CtiCCArea::restoreGuts(RWvistream& istrm)
+void CtiCCSubstation::restoreGuts(RWvistream& istrm)
 {
-    long tempSubBusId;
-    long numOfSubBusIds;
+    LONG tempSubBusId;
+    LONG numOfSubBusIds;
 
     RWCollectable::restoreGuts( istrm );
 
@@ -77,18 +87,20 @@ void CtiCCArea::restoreGuts(RWvistream& istrm)
     >> _paotype
     >> _paodescription
     >> _disableflag
+    >> _parentId
     >> _ovUvDisabledFlag;
 
     istrm >> numOfSubBusIds;
-    _subStationIds.clear();
+    _subBusIds.clear();
     for(LONG i=0;i<numOfSubBusIds;i++)
     {
         istrm >> tempSubBusId;
-        _subStationIds.push_back(tempSubBusId);
+        _subBusIds.push_back(tempSubBusId);
     }
-
     istrm >> _pfactor
         >> _estPfactor;
+    
+
 }
 
 /*---------------------------------------------------------------------------
@@ -96,7 +108,7 @@ void CtiCCArea::restoreGuts(RWvistream& istrm)
 
     Save self's state onto the given stream
 ---------------------------------------------------------------------------*/
-void CtiCCArea::saveGuts(RWvostream& ostrm ) const
+void CtiCCSubstation::saveGuts(RWvostream& ostrm ) const
 {
     RWCollectable::saveGuts( ostrm );
 
@@ -107,22 +119,27 @@ void CtiCCArea::saveGuts(RWvostream& ostrm ) const
     << _paotype
     << _paodescription
     << _disableflag
+    << _parentId
     << _ovUvDisabledFlag;
-    ostrm << _subStationIds.size();
 
-    std::list<long>::const_iterator iter = _subStationIds.begin();
-    for( ; iter != _subStationIds.end();iter++)
+    ostrm << _subBusIds.size();
+    std::list<LONG>::const_iterator iter = _subBusIds.begin();
+
+    for( ; iter != _subBusIds.end(); iter++)
     {
-        ostrm << (long)*iter;
+        ostrm << (LONG)*iter;
     }
+
     ostrm << _pfactor
-       << _estPfactor;
+        << _estPfactor;
+
+
 }
 
 /*---------------------------------------------------------------------------
     operator=
 ---------------------------------------------------------------------------*/
-CtiCCArea& CtiCCArea::operator=(const CtiCCArea& right)
+CtiCCSubstation& CtiCCSubstation::operator=(const CtiCCSubstation& right)
 {
     if( this != &right )
     {
@@ -133,41 +150,19 @@ CtiCCArea& CtiCCArea::operator=(const CtiCCArea& right)
         _paotype = right._paotype;
         _paodescription = right._paodescription;
         _disableflag = right._disableflag;
-
-        _strategyId = right._strategyId;
-        _strategyName = right._strategyName;
-        _controlmethod = right._controlmethod;
-        _maxdailyoperation = right._maxdailyoperation;
-        _maxoperationdisableflag = right._maxoperationdisableflag;
-        _peakstarttime = right._peakstarttime;
-        _peakstoptime = right._peakstoptime;
-        _controlinterval = right._controlinterval;
-        _maxconfirmtime = right._maxconfirmtime;
-        _minconfirmpercent = right._minconfirmpercent;
-        _failurepercent = right._failurepercent;
-        _daysofweek = right._daysofweek;
-        _controlunits = right._controlunits;
-        _controldelaytime = right._controldelaytime;
-        _controlsendretries = right._controlsendretries;
-        _peaklag = right._peaklag;
-        _offpklag = right._offpklag;
-        _peaklead = right._peaklead;
-        _offpklead = right._offpklead;
-        _peakVARlag = right._peakVARlag;
-        _offpkVARlag = right._offpkVARlag;
-        _peakVARlead = right._peakVARlead;
-        _offpkVARlead = right._offpkVARlead;
-        _peakPFSetPoint =  right._peakPFSetPoint;
-        _offpkPFSetPoint = right._offpkPFSetPoint;
-
-        _integrateflag = right._integrateflag;
-        _integrateperiod = right._integrateperiod;
-
-        _pfactor = right._pfactor;     
-        _estPfactor = right._estPfactor;  
+        _parentName = right._parentName;
+        _parentId = right._parentId;
+        _displayOrder = right._displayOrder;
 
         _additionalFlags = right._additionalFlags;
         _ovUvDisabledFlag = right._ovUvDisabledFlag;
+
+        _pfactor = right._pfactor;
+        _estPfactor = right._estPfactor;
+
+        _subBusIds.clear();
+        _subBusIds.assign(right._subBusIds.begin(), right._subBusIds.end());
+
     }
     return *this;
 }
@@ -175,7 +170,7 @@ CtiCCArea& CtiCCArea::operator=(const CtiCCArea& right)
 /*---------------------------------------------------------------------------
     operator==
 ---------------------------------------------------------------------------*/
-int CtiCCArea::operator==(const CtiCCArea& right) const
+int CtiCCSubstation::operator==(const CtiCCSubstation& right) const
 {
     return getPAOId() == right.getPAOId();
 }
@@ -183,7 +178,7 @@ int CtiCCArea::operator==(const CtiCCArea& right) const
 /*---------------------------------------------------------------------------
     operator!=
 ---------------------------------------------------------------------------*/
-int CtiCCArea::operator!=(const CtiCCArea& right) const
+int CtiCCSubstation::operator!=(const CtiCCSubstation& right) const
 {
     return getPAOId() != right.getPAOId();
 }
@@ -193,9 +188,9 @@ int CtiCCArea::operator!=(const CtiCCArea& right) const
 
     Restores self's operation fields
 ---------------------------------------------------------------------------*/
-CtiCCArea* CtiCCArea::replicate() const
+CtiCCSubstation* CtiCCSubstation::replicate() const
 {
-    return(new CtiCCArea(*this));
+    return(new CtiCCSubstation(*this));
 }
 
 /*---------------------------------------------------------------------------
@@ -203,7 +198,7 @@ CtiCCArea* CtiCCArea::replicate() const
 
     Restores given a RWDBReader
 ---------------------------------------------------------------------------*/
-void CtiCCArea::restore(RWDBReader& rdr)
+void CtiCCSubstation::restore(RWDBReader& rdr)
 {
     string tempBoolString;
 
@@ -217,44 +212,11 @@ void CtiCCArea::restore(RWDBReader& rdr)
     std::transform(tempBoolString.begin(), tempBoolString.end(), tempBoolString.begin(), tolower);
     _disableflag = (tempBoolString=="y"?TRUE:FALSE);
     setOvUvDisabledFlag(FALSE);
-
-   //initialize strategy members
-    setStrategyId(0);
-    setStrategyName("(none)");
-    setControlMethod("SubstationBus");
-    setMaxDailyOperation(0);
-    setMaxOperationDisableFlag(FALSE);
-    setPeakLag(0);
-    setOffPeakLag(0);
-    setPeakLead(0);
-    setOffPeakLead(0);
-    setPeakVARLag(0);
-    setOffPeakVARLag(0);
-    setPeakVARLead(0);
-    setOffPeakVARLead(0);
-    setPeakStartTime(0);
-    setPeakStopTime(0);
-    setControlInterval(0);
-    setMaxConfirmTime(0);
-    setMinConfirmPercent(0);
-    setFailurePercent(0);
-    setDaysOfWeek("NYYYYYNN");
-    setControlUnits("KVAR");
-    setControlDelayTime(0);
-    setControlSendRetries(0);
-
-    setPeakPFSetPoint(100);
-    setOffPeakPFSetPoint(100);
-    setIntegrateFlag(FALSE);
-    setIntegratePeriod(0);
-
     setPFactor(0);
     setEstPFactor(0);
 
     _insertDynamicDataFlag = TRUE;
     _dirty = FALSE;
-
-
 
 }
 
@@ -264,7 +226,7 @@ void CtiCCArea::restore(RWDBReader& rdr)
 
     Writes out the dynamic information for this cc feeder.
 ---------------------------------------------------------------------------*/
-void CtiCCArea::dumpDynamicData()
+void CtiCCSubstation::dumpDynamicData()
 {
     CtiLockGuard<CtiSemaphore> cg(gDBAccessSema);
     RWDBConnection conn = getConnection();
@@ -277,14 +239,14 @@ void CtiCCArea::dumpDynamicData()
 
     Writes out the dynamic information for this substation bus.
 ---------------------------------------------------------------------------*/
-void CtiCCArea::dumpDynamicData(RWDBConnection& conn, CtiTime& currentDateTime)
+void CtiCCSubstation::dumpDynamicData(RWDBConnection& conn, CtiTime& currentDateTime)
 {
     {
-        RWDBTable dynamicCCAreaTable = getDatabase().table( "dynamicccarea" );
+        RWDBTable dynamicCCSubstationTable = getDatabase().table( "dynamicccsubstation" );
 
         if( !_insertDynamicDataFlag )
         {
-            RWDBUpdater updater = dynamicCCAreaTable.updater();
+            RWDBUpdater updater = dynamicCCSubstationTable.updater();
 
             
             unsigned char addFlags[] = {'N','N','N','N','N','N','N','N','N','N','N','N','N','N','N','N','N','N','N','N'};
@@ -294,7 +256,7 @@ void CtiCCArea::dumpDynamicData(RWDBConnection& conn, CtiTime& currentDateTime)
 
             updater.clear();
 
-            updater.where(dynamicCCAreaTable["areaid"]==_paoid);
+            updater.where(dynamicCCSubstationTable["substationid"]==_paoid);
 
             updater.execute( conn );
 
@@ -320,11 +282,11 @@ void CtiCCArea::dumpDynamicData(RWDBConnection& conn, CtiTime& currentDateTime)
         {
             {
                 CtiLockGuard<CtiLogger> logger_guard(dout);
-                dout << CtiTime() << " - Inserted area into dynamicCCArea: " << getPAOName() << endl;
+                dout << CtiTime() << " - Inserted area into dynamicCCSubstation: " << getPAOName() << endl;
             }
             string addFlags ="NNNNNNNNNNNNNNNNNNNN";
 
-            RWDBInserter inserter = dynamicCCAreaTable.inserter();
+            RWDBInserter inserter = dynamicCCSubstationTable.inserter();
             //TS FLAG
             inserter << _paoid
             << addFlags;
@@ -358,7 +320,7 @@ void CtiCCArea::dumpDynamicData(RWDBConnection& conn, CtiTime& currentDateTime)
         }
     }
 }
-void CtiCCArea::setDynamicData(RWDBReader& rdr)
+void CtiCCSubstation::setDynamicData(RWDBReader& rdr)
 {   
     rdr["additionalflags"] >> _additionalFlags;
     _ovUvDisabledFlag = (_additionalFlags[0]=='y'?TRUE:FALSE);
@@ -375,7 +337,7 @@ void CtiCCArea::setDynamicData(RWDBReader& rdr)
 
     Returns the unique id of the area
 ---------------------------------------------------------------------------*/
-LONG CtiCCArea::getPAOId() const
+LONG CtiCCSubstation::getPAOId() const
 {
     return _paoid;
 }
@@ -385,7 +347,7 @@ LONG CtiCCArea::getPAOId() const
 
     Returns the pao category of the area
 ---------------------------------------------------------------------------*/
-const string& CtiCCArea::getPAOCategory() const
+const string& CtiCCSubstation::getPAOCategory() const
 {
     return _paocategory;
 }
@@ -395,7 +357,7 @@ const string& CtiCCArea::getPAOCategory() const
 
     Returns the pao class of the area
 ---------------------------------------------------------------------------*/
-const string& CtiCCArea::getPAOClass() const
+const string& CtiCCSubstation::getPAOClass() const
 {
     return _paoclass;
 }
@@ -405,7 +367,7 @@ const string& CtiCCArea::getPAOClass() const
 
     Returns the pao name of the area
 ---------------------------------------------------------------------------*/
-const string& CtiCCArea::getPAOName() const
+const string& CtiCCSubstation::getPAOName() const
 {
     return _paoname;
 }
@@ -415,7 +377,7 @@ const string& CtiCCArea::getPAOName() const
 
     Returns the pao type of the area
 ---------------------------------------------------------------------------*/
-const string& CtiCCArea::getPAOType() const
+const string& CtiCCSubstation::getPAOType() const
 {
     return _paotype;
 }
@@ -425,7 +387,7 @@ const string& CtiCCArea::getPAOType() const
 
     Returns the pao description of the area
 ---------------------------------------------------------------------------*/
-const string& CtiCCArea::getPAODescription() const
+const string& CtiCCSubstation::getPAODescription() const
 {
     return _paodescription;
 }
@@ -435,7 +397,7 @@ const string& CtiCCArea::getPAODescription() const
 
     Returns the disable flag of the area
 ---------------------------------------------------------------------------*/
-BOOL CtiCCArea::getDisableFlag() const
+BOOL CtiCCSubstation::getDisableFlag() const
 {
     return _disableflag;
 }
@@ -444,9 +406,57 @@ BOOL CtiCCArea::getDisableFlag() const
 
     Returns the ovuv disable flag of the area
 ---------------------------------------------------------------------------*/
-BOOL CtiCCArea::getOvUvDisabledFlag() const
+BOOL CtiCCSubstation::getOvUvDisabledFlag() const
 {
     return _ovUvDisabledFlag;
+}
+
+/*---------------------------------------------------------------------------
+    getParentId
+
+    Returns the parentID (AreaId) of the substation
+---------------------------------------------------------------------------*/
+LONG CtiCCSubstation::getParentId() const
+{
+    return _parentId;
+}
+
+/*---------------------------------------------------------------------------
+    getParentName
+
+    Returns the ParentName of the substation bus
+---------------------------------------------------------------------------*/
+const string& CtiCCSubstation::getParentName() const
+{
+    return _parentName;
+}
+/*---------------------------------------------------------------------------
+    getDisplayOrder
+
+    Returns the displayOrder (AreaId) of the substation
+---------------------------------------------------------------------------*/
+LONG CtiCCSubstation::getDisplayOrder() const
+{
+    return _displayOrder;
+}
+/*---------------------------------------------------------------------------
+    getPFactor
+
+    Returns the pfactor  of the substation
+---------------------------------------------------------------------------*/
+DOUBLE CtiCCSubstation::getPFactor() const
+{
+    return _pfactor;
+}
+
+/*---------------------------------------------------------------------------
+    getEstPFactor
+
+    Returns the estpfactor  of the substation
+---------------------------------------------------------------------------*/
+DOUBLE CtiCCSubstation::getEstPFactor() const
+{
+    return _estPfactor;
 }
 
 /*---------------------------------------------------------------------------
@@ -454,189 +464,9 @@ BOOL CtiCCArea::getOvUvDisabledFlag() const
     
     Returns the dirty flag of the area
 ---------------------------------------------------------------------------*/
-BOOL CtiCCArea::isDirty() const
+BOOL CtiCCSubstation::isDirty() const
 {
     return _dirty;
-}
-
-/*---------------------------------------------------------------------------
-    getStrategyId
-
-    Returns the strategy id of the area
----------------------------------------------------------------------------*/
-LONG CtiCCArea::getStrategyId() const
-{
-    return _strategyId;
-}
-
-const string& CtiCCArea::getStrategyName() const
-{
-    return _strategyName;
-}
-const string& CtiCCArea::getControlMethod() const
-{
-    return _controlmethod;
-}
-
-LONG CtiCCArea::getMaxDailyOperation() const
-{
-    return _maxdailyoperation;
-}
-
-BOOL CtiCCArea::getMaxOperationDisableFlag() const
-{
-    return _maxoperationdisableflag;
-}
-
-DOUBLE CtiCCArea::getPeakLag() const
-{
-    return _peaklag;
-}
-
-DOUBLE CtiCCArea::getOffPeakLag() const
-{
-    return _offpklag;
-}
-
-DOUBLE CtiCCArea::getPeakLead() const
-{
-    return _peaklead;
-}
-
-DOUBLE CtiCCArea::getOffPeakLead() const
-{
-    return _offpklead;
-}
-
-DOUBLE CtiCCArea::getPeakVARLag() const
-{
-    return _peakVARlag;
-}
-
-DOUBLE CtiCCArea::getOffPeakVARLag() const
-{
-    return _offpkVARlag;
-}
-
-DOUBLE CtiCCArea::getPeakVARLead() const
-{
-    return _peakVARlead;
-}
-
-DOUBLE CtiCCArea::getOffPeakVARLead() const
-{
-    return _offpkVARlead;
-}
-
-DOUBLE CtiCCArea::getPeakPFSetPoint() const
-{
-    return _peakPFSetPoint;
-}
-
-DOUBLE CtiCCArea::getOffPeakPFSetPoint() const
-{
-    return _offpkPFSetPoint;
-}
-
-LONG CtiCCArea::getPeakStartTime() const
-{
-    return _peakstarttime;
-}
-
-LONG CtiCCArea::getPeakStopTime() const
-{
-    return _peakstoptime;
-}
-
-LONG CtiCCArea::getControlInterval() const
-{
-    return _controlinterval;
-}
-
-LONG CtiCCArea::getMaxConfirmTime() const
-{
-    return _maxconfirmtime;
-}
-
-LONG CtiCCArea::getMinConfirmPercent() const
-{
-    return _minconfirmpercent;
-}
-
-LONG CtiCCArea::getFailurePercent() const
-{
-    return _failurepercent;
-}
-
-const string& CtiCCArea::getDaysOfWeek() const
-{
-    return _daysofweek;
-}
-
-const string& CtiCCArea::getControlUnits() const
-{
-    return _controlunits;
-}
-
-LONG CtiCCArea::getControlDelayTime() const
-{
-    return _controldelaytime;
-}
-
-LONG CtiCCArea::getControlSendRetries() const
-{
-    return _controlsendretries;
-}
-
-BOOL CtiCCArea::getIntegrateFlag() const
-{
-    return _integrateflag;
-}
-
-LONG CtiCCArea::getIntegratePeriod() const
-{
-    return _integrateperiod;
-}
-
-DOUBLE CtiCCArea::getPFactor() const
-{
-    return _pfactor;
-}
-
-DOUBLE CtiCCArea::getEstPFactor() const
-{
-    return _estPfactor;
-}
-
-void CtiCCArea::setStrategyValues(CtiCCStrategyPtr strategy)
-{
-    string tempBoolString;
-
-    _strategyName = strategy->getStrategyName();                      
-    _controlmethod = strategy->getControlMethod();                    
-    _maxdailyoperation = strategy->getMaxDailyOperation();            
-    _maxoperationdisableflag = strategy->getMaxOperationDisableFlag();
-    _peaklag = strategy->getPeakLag();                      
-    _offpklag = strategy->getOffPeakLag();                
-    _peaklead = strategy->getPeakLead();                      
-    _offpklead = strategy->getOffPeakLead();                
-    _peakVARlag = strategy->getPeakVARLag();                      
-    _offpkVARlag = strategy->getOffPeakVARLag();                
-    _peakVARlead = strategy->getPeakVARLead();                      
-    _offpkVARlead = strategy->getOffPeakVARLead();                
-    _peakstarttime = strategy->getPeakStartTime();                    
-    _peakstoptime = strategy->getPeakStopTime();                      
-    _controlinterval = strategy->getControlInterval();                
-    _maxconfirmtime = strategy->getMaxConfirmTime();                  
-    _minconfirmpercent = strategy->getMinConfirmPercent();            
-    _failurepercent = strategy->getFailurePercent();                  
-    _daysofweek = strategy->getDaysOfWeek();                          
-    _controlunits = strategy->getControlUnits();                      
-    _controldelaytime = strategy->getControlDelayTime();              
-    _controlsendretries = strategy->getControlSendRetries();  
-    _integrateflag = strategy->getIntegrateFlag();
-    _integrateperiod = strategy->getIntegratePeriod();
-
 }
 
 
@@ -645,7 +475,7 @@ void CtiCCArea::setStrategyValues(CtiCCStrategyPtr strategy)
 
     Sets the unique id of the area - use with caution
 ---------------------------------------------------------------------------*/
-CtiCCArea& CtiCCArea::setPAOId(LONG id)
+CtiCCSubstation& CtiCCSubstation::setPAOId(LONG id)
 {
     _paoid = id;
     //do not notify observers of this!
@@ -657,7 +487,7 @@ CtiCCArea& CtiCCArea::setPAOId(LONG id)
 
     Sets the pao category of the area
 ---------------------------------------------------------------------------*/
-CtiCCArea& CtiCCArea::setPAOCategory(const string& category)
+CtiCCSubstation& CtiCCSubstation::setPAOCategory(const string& category)
 {
     _paocategory = category;
     return *this;
@@ -668,7 +498,7 @@ CtiCCArea& CtiCCArea::setPAOCategory(const string& category)
 
     Sets the pao class of the area
 ---------------------------------------------------------------------------*/
-CtiCCArea& CtiCCArea::setPAOClass(const string& pclass)
+CtiCCSubstation& CtiCCSubstation::setPAOClass(const string& pclass)
 {
     _paoclass = pclass;
     return *this;
@@ -679,7 +509,7 @@ CtiCCArea& CtiCCArea::setPAOClass(const string& pclass)
 
     Sets the pao name of the area
 ---------------------------------------------------------------------------*/
-CtiCCArea& CtiCCArea::setPAOName(const string& name)
+CtiCCSubstation& CtiCCSubstation::setPAOName(const string& name)
 {
     _paoname = name;
     return *this;
@@ -690,7 +520,7 @@ CtiCCArea& CtiCCArea::setPAOName(const string& name)
 
     Sets the pao type of the area
 ---------------------------------------------------------------------------*/
-CtiCCArea& CtiCCArea::setPAOType(const string& _type)
+CtiCCSubstation& CtiCCSubstation::setPAOType(const string& _type)
 {
     _paotype = _type;
     return *this;
@@ -701,7 +531,7 @@ CtiCCArea& CtiCCArea::setPAOType(const string& _type)
 
     Sets the pao description of the area
 ---------------------------------------------------------------------------*/
-CtiCCArea& CtiCCArea::setPAODescription(const string& description)
+CtiCCSubstation& CtiCCSubstation::setPAODescription(const string& description)
 {
     _paodescription = description;
     return *this;
@@ -712,7 +542,7 @@ CtiCCArea& CtiCCArea::setPAODescription(const string& description)
 
     Sets the disable flag of the area
 ---------------------------------------------------------------------------*/
-CtiCCArea& CtiCCArea::setDisableFlag(BOOL disable)
+CtiCCSubstation& CtiCCSubstation::setDisableFlag(BOOL disable)
 {
     _disableflag = disable;
     return *this;
@@ -723,185 +553,95 @@ CtiCCArea& CtiCCArea::setDisableFlag(BOOL disable)
 
     Sets the ovuv disable flag of the area
 ---------------------------------------------------------------------------*/
-CtiCCArea& CtiCCArea::setOvUvDisabledFlag(BOOL flag)
+CtiCCSubstation& CtiCCSubstation::setOvUvDisabledFlag(BOOL flag)
 {
     _ovUvDisabledFlag = flag;
     return *this;
 }
+/*---------------------------------------------------------------------------
+    setParentId
 
-
-CtiCCArea& CtiCCArea::setStrategyId(LONG strategyId)
+    Sets the parentID (AreaID) of the substation
+---------------------------------------------------------------------------*/
+CtiCCSubstation& CtiCCSubstation::setParentId(LONG parentId)
 {
-    _strategyId = strategyId;
-    return *this;
-}
-
-CtiCCArea& CtiCCArea::setStrategyName(const string& strategyName)
-{
-    _strategyName = strategyName;
+    _parentId = parentId;
     return *this;
 }
 
-CtiCCArea& CtiCCArea::setControlMethod(const string& method)
+
+/*---------------------------------------------------------------------------
+    setParentName
+
+    Sets the ParentName in the substation bus
+---------------------------------------------------------------------------*/
+CtiCCSubstation& CtiCCSubstation::setParentName(const string& parentName)
 {
-    _controlmethod = method;
+    if (_parentName != parentName)
+    {
+        _dirty = TRUE;
+    }
+    _parentName = parentName;
     return *this;
 }
 
-CtiCCArea& CtiCCArea::setMaxDailyOperation(LONG max)
-{
-    _maxdailyoperation = max;
-    return *this;
+/*---------------------------------------------------------------------------
+    setDisplayOrder
 
+    Sets the DisplayOrder (AreaID) of the substation
+---------------------------------------------------------------------------*/
+CtiCCSubstation& CtiCCSubstation::setDisplayOrder(LONG displayOrder)
+{
+    _displayOrder = displayOrder;
+    return *this;
 }
+/*---------------------------------------------------------------------------
+    setPFactor
 
-CtiCCArea& CtiCCArea::setMaxOperationDisableFlag(BOOL maxopdisable)
-{
-    _maxoperationdisableflag = maxopdisable;
-    return *this;
-}
-
-CtiCCArea& CtiCCArea::setPeakLag(DOUBLE peak)
-{
-    _peaklag = peak;
-    return *this;
-}
-
-CtiCCArea& CtiCCArea::setOffPeakLag(DOUBLE offpeak)
-{
-    _offpklag = offpeak;
-    return *this;
-}
-CtiCCArea& CtiCCArea::setPeakLead(DOUBLE peak)
-{
-    _peaklead = peak;
-    return *this;
-}
-
-CtiCCArea& CtiCCArea::setOffPeakLead(DOUBLE offpeak)
-{
-    _offpklead = offpeak;
-    return *this;
-}
-CtiCCArea& CtiCCArea::setPeakVARLag(DOUBLE peak)
-{
-    _peakVARlag = peak;
-    return *this;
-}
-
-CtiCCArea& CtiCCArea::setOffPeakVARLag(DOUBLE offpeak)
-{
-    _offpkVARlag = offpeak;
-    return *this;
-}
-CtiCCArea& CtiCCArea::setPeakVARLead(DOUBLE peak)
-{
-    _peakVARlead = peak;
-    return *this;
-}
-
-CtiCCArea& CtiCCArea::setOffPeakVARLead(DOUBLE offpeak)
-{
-    _offpkVARlead = offpeak;
-    return *this;
-}
-
-CtiCCArea& CtiCCArea::setPeakPFSetPoint(DOUBLE peak)
-{
-    _peakPFSetPoint = peak;
-    return *this;
-}
-
-CtiCCArea& CtiCCArea::setOffPeakPFSetPoint(DOUBLE offpeak)
-{
-    _offpkPFSetPoint = offpeak;
-    return *this;
-}
-
-CtiCCArea& CtiCCArea::setPeakStartTime(LONG starttime)
-{
-    _peakstarttime = starttime;
-    return *this;
-}
-
-CtiCCArea& CtiCCArea::setPeakStopTime(LONG stoptime)
-{
-    _peakstoptime = stoptime;
-    return *this;
-}
-CtiCCArea& CtiCCArea::setControlInterval(LONG interval)
-{
-    _controlinterval = interval;
-    return *this;
-}
-
-CtiCCArea& CtiCCArea::setMaxConfirmTime(LONG confirm)
-{   
-    _maxconfirmtime = confirm;
-    return *this;
-}
-
-CtiCCArea& CtiCCArea::setMinConfirmPercent(LONG confirm)
-{
-    _minconfirmpercent = confirm;
-    return *this;
-}
-
-CtiCCArea& CtiCCArea::setFailurePercent(LONG failure)
-{
-    _failurepercent = failure;
-    return *this;
-}
-
-CtiCCArea& CtiCCArea::setDaysOfWeek(const string& days)
-{
-    _daysofweek = days;
-    return *this;
-}
-
-CtiCCArea& CtiCCArea::setControlUnits(const string& contunit)
-{
-    _controlunits = contunit;
-    return *this;
-}
-
-CtiCCArea& CtiCCArea::setControlDelayTime(LONG delay)
-{
-    _controldelaytime = delay;
-    return *this;
-}
-
-CtiCCArea& CtiCCArea::setControlSendRetries(LONG retries)
-{
-    _controlsendretries = retries;
-    return *this;
-}
-
-CtiCCArea& CtiCCArea::setIntegrateFlag(BOOL flag)
-{
-    _integrateflag = flag;
-    return *this;
-}
-
-CtiCCArea& CtiCCArea::setIntegratePeriod(LONG period)
-{
-    _integrateperiod = period;
-    return *this;
-}
-
-CtiCCArea& CtiCCArea::setPFactor(DOUBLE pfactor)
+    Sets the pfactor (calculated) of the substation
+---------------------------------------------------------------------------*/
+CtiCCSubstation& CtiCCSubstation::setPFactor(DOUBLE pfactor)
 {
     _pfactor = pfactor;
     return *this;
 }
 
-CtiCCArea& CtiCCArea::setEstPFactor(DOUBLE estPfactor)
+/*---------------------------------------------------------------------------
+    setEstPFactor
+
+    Sets the estpfactor (calculated) of the substation
+---------------------------------------------------------------------------*/
+CtiCCSubstation& CtiCCSubstation::setEstPFactor(DOUBLE estpfactor)
 {
-    _estPfactor = estPfactor;
+    _estPfactor = estpfactor;
     return *this;
 }
 
+/*-------------------------------------------------------------------------
+    calculatePowerFactor
 
 
+--------------------------------------------------------------------------*/
+DOUBLE CtiCCSubstation::calculatePowerFactor(DOUBLE kvar, DOUBLE kw)
+{
+    DOUBLE newPowerFactorValue = 1.0;
+    DOUBLE kva = 0.0;
 
+    kva = sqrt((kw*kw)+(kvar*kvar));
 
+    if( kva != 0.0 )
+    {
+        if( kw < 0 )
+        {
+            kw = -kw;
+        }
+        newPowerFactorValue = kw / kva;
+        //check if this is leading
+        if( kvar < 0.0 && newPowerFactorValue != 1.0 )
+        {
+            newPowerFactorValue = 2.0-newPowerFactorValue;
+        }
+    }
+
+    return newPowerFactorValue;
+}

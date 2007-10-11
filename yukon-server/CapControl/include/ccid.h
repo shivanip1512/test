@@ -41,6 +41,9 @@ class CtiTime;
 #define CTICCSPECIALAREA_ID         523
 #define CTICCSPECIALAREAS_MSG_ID    522
 
+#define CTICCSUBSTATION_ID          524
+#define CTICCSUBSTATION_MSG_ID      525
+
 
 
 /*#define CTICCSTRATEGYLIST_ID     501

@@ -370,11 +370,6 @@ CtiCCEventLogMsg::~CtiCCEventLogMsg()
 {
 }
 
-/*LONG CtiCCEventLogMsg::getStrategy() const
-{
-    return _strategy;
-} */
-   
 /*-------------------------------------------------------------------------
     restoreGuts
     
@@ -396,7 +391,8 @@ void CtiCCEventLogMsg::restoreGuts(RWvistream& strm)
          >> _kvarBefore
          >> _kvarAfter
          >> _kvarChange
-         >> _ipAddress;
+         >> _ipAddress
+         >> _actionId;
 
       return;
 }
@@ -423,7 +419,8 @@ void CtiCCEventLogMsg::saveGuts(RWvostream& strm) const
          << _kvarBefore
          << _kvarAfter 
          << _kvarChange
-         << _ipAddress;
+         << _ipAddress
+         << _actionId;
 
     return;
 }
@@ -448,7 +445,8 @@ CtiCCEventLogMsg& CtiCCEventLogMsg::operator=(const CtiCCEventLogMsg& right)
         _kvarBefore = right._kvarBefore;
         _kvarAfter  = right._kvarAfter; 
         _kvarChange = right._kvarChange;
-        _ipAddress  = right._ipAddress; 
+        _ipAddress  = right._ipAddress;
+        _actionId   = right._actionId;
 
     }
 
@@ -746,9 +744,7 @@ CtiCCCapBankStatesMsg::~CtiCCCapBankStatesMsg()
 CtiMessage* CtiCCCapBankStatesMsg::replicateMessage() const
 {
     return new CtiCCCapBankStatesMsg(*this);
-    /*CtiLockGuard<CtiLogger> logger_guard(dout);
-    dout << CtiTime() << " - Do not call me!!! " << __FILE__ << __LINE__ << endl;
-    return NULL;*/
+
 }
 
 /*---------------------------------------------------------------------------
@@ -833,22 +829,10 @@ CtiCCGeoAreasMsg::CtiCCGeoAreasMsg(CtiCCArea_vec& ccGeoAreas) : CtiCCMessage("CC
 
     for(int i=0;i<ccGeoAreas.size();i++)
     {
-        CtiCCArea* tempAreaPtr = new CtiCCArea();
-        CtiCCArea* tempAreaPtr2 = (CtiCCArea*)(ccGeoAreas.at(i));
-        *tempAreaPtr = *tempAreaPtr2;
-        _ccGeoAreas->push_back(tempAreaPtr);
+        _ccGeoAreas->push_back(((CtiCCArea*)ccGeoAreas.at(i))->replicate());
     }
 }
 
-CtiCCGeoAreasMsg::CtiCCGeoAreasMsg(CtiCCArea* ccArea) : CtiCCMessage("CCGeoAreas"), _ccGeoAreas(NULL)
-{
-    _ccGeoAreas = new CtiCCArea_vec;
-
-    CtiCCArea* tempAreaPtr = new CtiCCArea();
-    CtiCCArea* tempAreaPtr2 = ccArea;
-    *tempAreaPtr = *tempAreaPtr2;
-    _ccGeoAreas->push_back(tempAreaPtr);
-}
 
 CtiCCGeoAreasMsg::CtiCCGeoAreasMsg(const CtiCCGeoAreasMsg& ccGeoAreasMsg) : CtiCCMessage("CCGeoAreas"), _ccGeoAreas(NULL)
 {
@@ -875,9 +859,6 @@ CtiCCGeoAreasMsg::~CtiCCGeoAreasMsg()
 CtiMessage* CtiCCGeoAreasMsg::replicateMessage() const
 {
     return new CtiCCGeoAreasMsg(*this);
-    /*CtiLockGuard<CtiLogger> logger_guard(dout);
-    dout << CtiTime() << " - Do not call me!!! " << __FILE__ << __LINE__ << endl;
-    return NULL;*/
 }
 
 /*---------------------------------------------------------------------------
@@ -894,17 +875,12 @@ CtiCCGeoAreasMsg& CtiCCGeoAreasMsg::operator=(const CtiCCGeoAreasMsg& right)
             _ccGeoAreas->clear();
             delete _ccGeoAreas;
         }
+        
 		if ( _ccGeoAreas == NULL )
 			_ccGeoAreas = new CtiCCArea_vec;
-        //for(int i=0;i<(right.getCCGeoAreas())->size();i++)
-		for(CtiCCArea_vec::iterator itr = right.getCCGeoAreas()->begin(); 
-		    itr != right.getCCGeoAreas()->end(); 
-			itr++ )
+		for(int i=0;i<(right.getCCGeoAreas())->size();i++)
         {
-            CtiCCArea* tempAreaPtr = new CtiCCArea();
-            CtiCCArea* tempAreaPtr2 = *itr;
-            *tempAreaPtr = *tempAreaPtr2;
-            _ccGeoAreas->push_back(tempAreaPtr);
+            _ccGeoAreas->push_back(((CtiCCArea*)(*right.getCCGeoAreas()).at(i))->replicate());
         }
     }
 
@@ -965,21 +941,8 @@ CtiCCSpecialAreasMsg::CtiCCSpecialAreasMsg(CtiCCSpArea_vec& ccSpecialAreas) : Ct
 
     for(int i=0;i<ccSpecialAreas.size();i++)
     {
-        CtiCCSpecial* tempAreaPtr = new CtiCCSpecial();
-        CtiCCSpecial* tempAreaPtr2 = (CtiCCSpecial*)(ccSpecialAreas.at(i));
-        *tempAreaPtr = *tempAreaPtr2;
-        _ccSpecialAreas->push_back(tempAreaPtr);
+        _ccSpecialAreas->push_back((CtiCCSpecial*)(ccSpecialAreas.at(i))->replicate());
     }
-}
-
-CtiCCSpecialAreasMsg::CtiCCSpecialAreasMsg(CtiCCSpecial* ccSpecialArea) : CtiCCMessage("CCSpecialAreas"), _ccSpecialAreas(NULL)
-{
-    _ccSpecialAreas = new CtiCCSpArea_vec;
-
-    CtiCCSpecial* tempAreaPtr = new CtiCCSpecial();
-    CtiCCSpecial* tempAreaPtr2 = ccSpecialArea;
-    *tempAreaPtr = *tempAreaPtr2;
-    _ccSpecialAreas->push_back(tempAreaPtr);
 }
 
 CtiCCSpecialAreasMsg::CtiCCSpecialAreasMsg(const CtiCCSpecialAreasMsg& ccSpecialAreasMsg) : CtiCCMessage("CCSpecialAreas"), _ccSpecialAreas(NULL)
@@ -1025,14 +988,10 @@ CtiCCSpecialAreasMsg& CtiCCSpecialAreasMsg::operator=(const CtiCCSpecialAreasMsg
         }
 		if ( _ccSpecialAreas == NULL )
 			_ccSpecialAreas = new CtiCCSpArea_vec;
-		for(CtiCCSpArea_vec::iterator itr = right.getCCSpecialAreas()->begin(); 
-		    itr != right.getCCSpecialAreas()->end(); 
-			itr++ )
+        for(int i=0;i<(right.getCCSpecialAreas())->size();i++)
         {
-            CtiCCSpecial* tempAreaPtr = new CtiCCSpecial();
-            CtiCCSpecial* tempAreaPtr2 = *itr;
-            *tempAreaPtr = *tempAreaPtr2;
-            _ccSpecialAreas->push_back(tempAreaPtr);
+
+            _ccSpecialAreas->push_back(((CtiCCSpecial*)(*right.getCCSpecialAreas()).at(i))->replicate());
         }
     }
 
@@ -1059,6 +1018,118 @@ void CtiCCSpecialAreasMsg::saveGuts(RWvostream& strm) const
 {
     CtiCCMessage::saveGuts(strm);
     strm << _ccSpecialAreas;
+}
+
+
+
+/*===========================================================================
+    CtiCCGeoAreasMsg
+===========================================================================*/
+
+RWDEFINE_COLLECTABLE( CtiCCSubstationsMsg, CTICCSUBSTATION_MSG_ID )
+
+/*---------------------------------------------------------------------------
+    Constuctors
+---------------------------------------------------------------------------*/
+CtiCCSubstationsMsg::CtiCCSubstationsMsg(CtiCCSubstation_vec& ccSubstations) : CtiCCMessage("CCSubstations"), _ccSubstations(NULL)
+{
+    _ccSubstations = new CtiCCSubstation_vec;
+    if( _CC_DEBUG & CC_DEBUG_EXTENDED )  
+    {
+        CtiLockGuard<CtiLogger> logger_guard(dout);
+        dout << CtiTime() << " - CtiCCSubstationsMsg has "<< ccSubstations.size()<<" entries." << endl;
+    }
+    if( _CC_DEBUG & CC_DEBUG_RIDICULOUS )  
+    {
+        for (int h=0;h < ccSubstations.size(); h++) 
+        {
+            {
+                CtiLockGuard<CtiLogger> logger_guard(dout);
+                dout << CtiTime() << " - Substation: "<<((CtiCCSubstation*)ccSubstations[h])->getPAOName()<< endl;
+            }
+        }
+    }
+
+    for(int i=0;i<ccSubstations.size();i++)
+    {
+        _ccSubstations->push_back((CtiCCSubstation*)(ccSubstations.at(i))->replicate());
+    }
+    
+}
+
+
+CtiCCSubstationsMsg::CtiCCSubstationsMsg(const CtiCCSubstationsMsg& ccSubstationsMsg) : CtiCCMessage("CCSubstations"), _ccSubstations(NULL)
+{
+    operator=(ccSubstationsMsg);
+}
+
+/*---------------------------------------------------------------------------
+    Destructor
+---------------------------------------------------------------------------*/
+CtiCCSubstationsMsg::~CtiCCSubstationsMsg()
+{
+    if( _ccSubstations != NULL &&
+            _ccSubstations->size() > 0 )
+        {
+            delete_vector(_ccSubstations);
+            _ccSubstations->clear();
+            delete _ccSubstations;
+        }
+}
+
+/*---------------------------------------------------------------------------
+    replicateMessage
+---------------------------------------------------------------------------*/
+CtiMessage* CtiCCSubstationsMsg::replicateMessage() const
+{
+    return new CtiCCSubstationsMsg(*this);
+}
+
+/*---------------------------------------------------------------------------
+    operator=
+---------------------------------------------------------------------------*/
+CtiCCSubstationsMsg& CtiCCSubstationsMsg::operator=(const CtiCCSubstationsMsg& right)
+{
+    if( this != &right )
+    {
+        if( _ccSubstations != NULL &&
+            _ccSubstations->size() > 0 )
+        {
+            delete_vector(_ccSubstations);
+            _ccSubstations->clear();
+            delete _ccSubstations;
+        }
+		if ( _ccSubstations == NULL )
+			_ccSubstations = new CtiCCSubstation_vec;
+        for(int i=0;i<(right.getCCSubstations())->size();i++)
+        {
+            _ccSubstations->push_back(((CtiCCSubstation*)(*right.getCCSubstations()).at(i))->replicate());
+        }
+    }
+
+    return *this;
+}
+
+/*---------------------------------------------------------------------------
+    restoreGuts
+    
+    Restores the state of self fromt he given RWvistream
+---------------------------------------------------------------------------*/
+void CtiCCSubstationsMsg::restoreGuts(RWvistream& strm)
+{
+    CtiCCMessage::restoreGuts(strm);
+	strm >> _ccSubstations;
+}
+
+/*---------------------------------------------------------------------------
+    saveGuts
+    
+    Saves the state of self into the given RWvostream
+---------------------------------------------------------------------------*/
+void CtiCCSubstationsMsg::saveGuts(RWvostream& strm) const
+{
+    CtiCCMessage::saveGuts(strm);
+    strm << _ccSubstations;
 }
 
 

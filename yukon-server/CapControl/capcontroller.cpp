@@ -1801,6 +1801,7 @@ void CtiCapController::pointDataMsg( long pointID, double value, unsigned qualit
                                 }
                                 currentSubstationBus->setPowerFactorValue(currentSubstationBus->calculatePowerFactor(currentSubstationBus->getCurrentVarLoadPointValue(),currentSubstationBus->getCurrentWattLoadPointValue()));
                                 currentSubstationBus->setEstimatedPowerFactorValue(currentSubstationBus->calculatePowerFactor(currentSubstationBus->getEstimatedVarLoadPointValue(),currentSubstationBus->getCurrentWattLoadPointValue()));
+                                store->calculateParentPowerFactor(currentSubstationBus->getPAOId());
                                 if( currentSubstationBus->getPowerFactorPointId() > 0 )
                                 {
                                     sendMessageToDispatch(new CtiPointDataMsg(currentSubstationBus->getPowerFactorPointId(),convertPowerFactorToSend(currentSubstationBus->getPowerFactorValue()),NormalQuality,AnalogPointType));
@@ -1847,6 +1848,8 @@ void CtiCapController::pointDataMsg( long pointID, double value, unsigned qualit
                         {
                             currentSubstationBus->setPowerFactorValue(currentSubstationBus->calculatePowerFactor(currentSubstationBus->getCurrentVarLoadPointValue(),currentSubstationBus->getCurrentWattLoadPointValue()));
                             currentSubstationBus->setEstimatedPowerFactorValue(currentSubstationBus->calculatePowerFactor(currentSubstationBus->getEstimatedVarLoadPointValue(),currentSubstationBus->getCurrentWattLoadPointValue()));
+                            store->calculateParentPowerFactor(currentSubstationBus->getPAOId());
+
                             if( currentSubstationBus->getPowerFactorPointId() > 0 )
                             {
                                 sendMessageToDispatch(new CtiPointDataMsg(currentSubstationBus->getPowerFactorPointId(),convertPowerFactorToSend(currentSubstationBus->getPowerFactorValue()),NormalQuality,AnalogPointType));
@@ -2344,7 +2347,9 @@ void CtiCapController::pointDataMsg( long pointID, double value, unsigned qualit
 
                                    currentSubstationBus->setBusUpdatedFlag(TRUE);
                                    sendMessageToDispatch(new CtiPointDataMsg(currentCapBank->getStatusPointId(),currentCapBank->getControlStatus(),NormalQuality,StatusPointType, "Forced ccServer Update", TAG_POINT_FORCE_UPDATE));
-                                   getCCEventMsgQueueHandle().write(new CtiCCEventLogMsg(0, currentCapBank->getStatusPointId(), currentSubstationBus->getPAOId(), currentFeeder->getPAOId(), capBankStateUpdate, currentSubstationBus->getEventSequence(), currentCapBank->getControlStatus(), text1, "cap control"));
+                                   CtiCCEventLogMsg* eventMsg = new CtiCCEventLogMsg(0, currentCapBank->getStatusPointId(), currentSubstationBus->getPAOId(), currentFeeder->getPAOId(), capBankStateUpdate, currentSubstationBus->getEventSequence(), currentCapBank->getControlStatus(), text1, "cap control");
+                                   eventMsg->setActionId(CCEventActionIdGen(currentCapBank->getStatusPointId()));
+                                   getCCEventMsgQueueHandle().write(eventMsg);
                                    currentCapBank->setLastStatusChangeTime(CtiTime());
                                 }
                             }
@@ -2594,7 +2599,9 @@ void CtiCapController::porterReturnMsg( long deviceId, const string& _commandStr
                                     text1 += "OpenFail";
                                 sendMessageToDispatch(new CtiSignalMsg(currentCapBank->getStatusPointId(),1,text,additional,CapControlLogType,SignalEvent,"cap control"));
                                 sendMessageToDispatch(new CtiPointDataMsg(currentCapBank->getStatusPointId(),currentCapBank->getControlStatus(),NormalQuality,StatusPointType, "Forced ccServer Update", TAG_POINT_FORCE_UPDATE));
-                                getCCEventMsgQueueHandle().write(new CtiCCEventLogMsg(0, currentCapBank->getStatusPointId(), currentSubstationBus->getPAOId(), currentFeeder->getPAOId(), capBankStateUpdate, currentSubstationBus->getEventSequence(), currentCapBank->getControlStatus(), text1, "cap control"));
+                                CtiCCEventLogMsg* eventMsg = new CtiCCEventLogMsg(0, currentCapBank->getStatusPointId(), currentSubstationBus->getPAOId(), currentFeeder->getPAOId(), capBankStateUpdate, currentSubstationBus->getEventSequence(), currentCapBank->getControlStatus(), text1, "cap control");
+                                eventMsg->setActionId(CCEventActionIdGen(currentCapBank->getStatusPointId()));
+                                getCCEventMsgQueueHandle().write(eventMsg);
                                 currentCapBank->setLastStatusChangeTime(CtiTime());
                             }
                             else
@@ -2803,7 +2810,6 @@ void CtiCapController::refreshCParmGlobals(bool force)
 {
     string str;
     char var[128];
-
 
     try
     {

@@ -76,6 +76,7 @@ public:
 
 
     CtiCCSubstationBus_vec* getCCSubstationBuses(ULONG secondsFrom1901);
+    CtiCCSubstation_vec* getCCSubstations(ULONG secondsFrom1901);
     CtiCCState_vec* getCCCapBankStates(ULONG secondsFrom1901);
     CtiCCArea_vec* getCCGeoAreas(ULONG secondsFrom1901);
     CtiCCSpArea_vec* getCCSpecialAreas(ULONG secondsFrom1901);
@@ -97,6 +98,7 @@ public:
 
     void verifySubBusAndFeedersStates();
     void resetDailyOperations();
+    void calculateParentPowerFactor(LONG subBusId);
 
     bool UpdateAreaDisableFlagInDB(CtiCCArea* bus);
     bool UpdateSpecialAreaDisableFlagInDB(CtiCCSpecial* area);
@@ -116,6 +118,7 @@ public:
     int getNbrOfSubsWithAltSubID(long altSubId);
     int getNbrOfFeedersWithPointID(long point_id);
     int getNbrOfCapBanksWithPointID(long point_id);
+    CtiCCSubstationPtr findSubstationByPAObjectID(long paobject_id);
     CtiCCAreaPtr findAreaByPAObjectID(long paobject_id);
     CtiCCSpecialPtr findSpecialAreaByPAObjectID(long paobject_id);
     CtiCCSubstationBusPtr findSubBusByPAObjectID(long paobject_id);
@@ -123,6 +126,9 @@ public:
     CtiCCCapBankPtr findCapBankByPAObjectID(long paobject_id);
     CtiCCStrategyPtr findStrategyByStrategyID(long strategy_id);
 
+    long findAreaIDbySubstationID(long substationId);
+    long findSpecialAreaIDbySubstationID(long substationId);
+    long findSubstationIDbySubBusID(long subBusId);
     long findSubBusIDbyFeederID(long feederId);
     long findSubBusIDbyCapBankID(long capBankId);
     long findFeederIDbyCapBankID(long capBankId);
@@ -137,6 +143,7 @@ public:
     void deleteCapBank(long capBankId);
     void deleteFeeder(long feederId);
     void deleteSubBus(long subBusId);
+    void deleteSubstation(long substationId);
     void deleteArea(long areaId);
     void deleteSpecialArea(long areaId);
     void deleteStrategy(long strategyId);
@@ -160,11 +167,15 @@ public:
                                   map< long, long> *feeder_subbus_map);
     void reloadSubBusFromDatabase(long subBusId, map< long, CtiCCStrategyPtr > *strategy_map, 
                                   map< long, CtiCCSubstationBusPtr > *paobject_subbus_map,
-                                  map< long, CtiCCAreaPtr > *paobject_area_map,
+                                  map< long, CtiCCSubstationPtr > *paobject_substation_map,
                                   multimap< long, CtiCCSubstationBusPtr > *pointid_subbus_map, 
                                   multimap<long, long> *altsub_sub_idmap,
-                                  map< long, long> *subbus_area_map,
+                                  map< long, long> *subbus_substation_map,
                                   CtiCCSubstationBus_vec *cCSubstationBuses );
+    void reloadSubstationFromDatabase(long substationId, map< long, CtiCCSubstationPtr > *paobject_substation_map,
+                                      map <long, CtiCCAreaPtr> *paobject_area_map,
+                                      map< long, long> *substation_area_map,
+                                      CtiCCSubstation_vec *ccSubstations);
     void reloadAreaFromDatabase(long areaId, map< long, CtiCCStrategyPtr > *strategy_map, 
                                   map< long, CtiCCAreaPtr > *paobject_area_map,
                                   multimap< long, CtiCCAreaPtr > *pointid_area_map,
@@ -240,6 +251,7 @@ private:
 
     CtiCCSubstationBus_vec  *_ccSubstationBuses;
     CtiCCState_vec  *_ccCapBankStates;
+    CtiCCSubstation_vec *_ccSubstations;
     CtiCCArea_vec *_ccGeoAreas;
     CtiCCSpArea_vec *_ccSpecialAreas;
 
@@ -283,6 +295,7 @@ private:
 
     map< long, CtiCCSpecialPtr > _paobject_specialarea_map;
     map< long, CtiCCAreaPtr > _paobject_area_map;
+    map< long, CtiCCSubstationPtr > _paobject_substation_map;
     map< long, CtiCCSubstationBusPtr > _paobject_subbus_map;
     map< long, CtiCCFeederPtr > _paobject_feeder_map;
     map< long, CtiCCCapBankPtr > _paobject_capbank_map;
@@ -295,8 +308,9 @@ private:
 
     map< long, CtiCCStrategyPtr > _strategyid_strategy_map;
 
-    map< long, long > _subbus_specialarea_map; 
-    map< long, long > _subbus_area_map; 
+    map< long, long > _substation_specialarea_map; 
+    map< long, long > _substation_area_map; 
+    map< long, long > _subbus_substation_map; 
     map< long, long > _feeder_area_map; 
     map< long, long > _feeder_subbus_map; 
     map< long, long > _capbank_area_map;

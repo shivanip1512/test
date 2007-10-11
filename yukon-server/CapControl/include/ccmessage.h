@@ -20,31 +20,32 @@
 #include "ctitime.h"
 
 #include "message.h"
+#include "ccsubstation.h"
 #include "ccarea.h"
 #include "ccsparea.h"
 #include "ccstate.h"
 //#include "rwutil.h"
 
+typedef std::vector<CtiCCSubstation*> CtiCCSubstation_vec;
 typedef std::vector<CtiCCArea*> CtiCCArea_vec;
 typedef std::vector<CtiCCSpecial*> CtiCCSpArea_vec;
 typedef std::vector<CtiCCSubstationBus*> CtiCCSubstationBus_vec;
-//typedef std::vector<RWCollectableString*> CtiCCGeoArea_vec;
 typedef std::vector<CtiCCState*> CtiCCState_vec;
 enum CtiCCEventType_t
 {
     capBankStateUpdate = 0,
-    capControlCommandSent,
-    capControlManualCommand,
-    capControlPointOutsideOperatingLimits,
-    capControlSetOperationCount,
-    capControlEnable,
-    capControlDisable,
-    capControlEnableVerification,
-    capControlDisableVerification,
-    capControlVerificationCommandSent,
-    capControlSwitchOverUpdate,
-    capControlEnableOvUv,
-    capControlDisableOvUv
+    capControlCommandSent = 1,
+    capControlManualCommand = 2,
+    capControlPointOutsideOperatingLimits = 3,
+    capControlSetOperationCount = 4,
+    capControlEnable = 5,
+    capControlDisable = 6,
+    capControlEnableVerification = 7,
+    capControlDisableVerification = 8,
+    capControlVerificationCommandSent = 9,
+    capControlSwitchOverUpdate = 10,
+    capControlEnableOvUv = 11,
+    capControlDisableOvUv = 12
 };
 
 
@@ -218,10 +219,10 @@ public:
 
     CtiCCEventLogMsg(LONG logId, LONG pointId, LONG subId, LONG feederId, LONG eventType, LONG seqId, LONG value, 
                      string text, string userName, DOUBLE kvarBefore= 0, DOUBLE kvarAfter = 0, DOUBLE kvarChange = 0, 
-                     string ipAddress = string("(N/A)") ) : 
+                     string ipAddress = string("(N/A)"), LONG actionId = -1 ) : 
         _logId(logId), _timeStamp(CtiTime()), _pointId(pointId), _subId(subId),
         _feederId(feederId), _eventType(eventType), _seqId(seqId), _value(value), _text(text), _userName(userName),
-        _kvarBefore(kvarBefore), _kvarAfter(kvarAfter), _kvarChange(kvarChange), _ipAddress(ipAddress) { }; //provided for polymorphic persitence only
+        _kvarBefore(kvarBefore), _kvarAfter(kvarAfter), _kvarChange(kvarChange), _ipAddress(ipAddress), _actionId(actionId) { }; //provided for polymorphic persitence only
 
     LONG getLogId() const { return _logId; };
     CtiTime getTimeStamp() const { return _timeStamp; };
@@ -237,9 +238,12 @@ public:
     DOUBLE getKvarAfter() const { return _kvarAfter; };
     DOUBLE getKvarChange() const { return _kvarChange; };
     string getIpAddress() const { return _ipAddress; };
+    LONG getActionId() const { return _actionId; };
 
 
     void setLogId(LONG id) { _logId = id; return;};
+    void setActionId(LONG id) { _actionId = id; return;};
+
 
     void restoreGuts(RWvistream&);
     void saveGuts(RWvostream&) const;
@@ -265,6 +269,7 @@ private:
     DOUBLE _kvarAfter;
     DOUBLE _kvarChange;
     string _ipAddress;
+    LONG _actionId;
     
 };
     
@@ -446,6 +451,33 @@ private:
     
     CtiCCSpArea_vec* _ccSpecialAreas;
 };
+
+class CtiCCSubstationsMsg : public CtiCCMessage
+{
+RWDECLARE_COLLECTABLE( CtiCCSubstationsMsg )
+
+public:
+
+    CtiCCSubstationsMsg(CtiCCSubstation_vec& substationList);
+    CtiCCSubstationsMsg(CtiCCSubstation* ccSubstations);
+    CtiCCSubstationsMsg(const CtiCCSubstationsMsg& ccSubstations);
+
+    virtual ~CtiCCSubstationsMsg();
+
+    CtiCCSubstation_vec* getCCSubstations() const     { return _ccSubstations; }
+
+    virtual CtiMessage* replicateMessage() const;
+
+    void restoreGuts( RWvistream& );
+    void saveGuts( RWvostream&) const;
+
+    CtiCCSubstationsMsg& operator=(const CtiCCSubstationsMsg& right);
+private:
+    CtiCCSubstationsMsg() : CtiCCMessage("CCSubstations"), _ccSubstations(NULL){};
+    
+    CtiCCSubstation_vec* _ccSubstations;
+};
+
 
 
 class CtiCCShutdown : public CtiCCMessage

@@ -1884,12 +1884,12 @@ CtiCCCapBank* CtiCCFeeder::findCapBankToChangeVars(DOUBLE kvarSolution)
             {
                 //have we went past the max daily ops
                 if( currentCapBank->getMaxDailyOps() > 0 &&
-                    (currentCapBank->getCurrentDailyOperations() == currentCapBank->getMaxDailyOps() && !_END_DAY_ON_TRIP) ||
+                    ((currentCapBank->getCurrentDailyOperations() == currentCapBank->getMaxDailyOps() && !_END_DAY_ON_TRIP) ||
                     (currentCapBank->getCurrentDailyOperations() == currentCapBank->getMaxDailyOps() + 1 && _END_DAY_ON_TRIP) ||
-                    (!currentCapBank->getMaxDailyOpsHitFlag() && currentCapBank->getCurrentDailyOperations() > currentCapBank->getMaxDailyOps()))//only send once
+                    (!currentCapBank->getMaxDailyOpsHitFlag() && currentCapBank->getCurrentDailyOperations() > currentCapBank->getMaxDailyOps()) ) )//only send once
                 {
+                    currentCapBank->setMaxDailyOpsHitFlag(TRUE);
 
-                    //currentCapBank->setMaxDailyOpsHitFlag(TRUE);
                     string text("CapBank Exceeded Max Daily Operations");
                     string additional("CapBank: ");
                     additional += getPAOName();
@@ -1994,7 +1994,8 @@ CtiRequestMsg* CtiCCFeeder::createIncreaseVarRequest(CtiCCCapBank* capBank, CtiM
             capBank->setLastStatusChangeTime(CtiTime());
 
             //setEventSequence(getEventSequence() + 1);
-            ccEvents.push_back(new CtiCCEventLogMsg(0, capBank->getStatusPointId(), getParentId(), getPAOId(), capBankStateUpdate, getEventSequence(), capBank->getControlStatus(), textInfo, "cap control", kvarBefore, kvarBefore, 0, capBank->getIpAddress()));
+            INT actionId = CCEventActionIdGen(capBank->getStatusPointId()) + 1;
+            ccEvents.push_back(new CtiCCEventLogMsg(0, capBank->getStatusPointId(), getParentId(), getPAOId(), capBankStateUpdate, getEventSequence(), capBank->getControlStatus(), textInfo, "cap control", kvarBefore, kvarBefore, 0, capBank->getIpAddress(), actionId));
         }
         else
         {
@@ -2210,7 +2211,8 @@ CtiRequestMsg* CtiCCFeeder::createDecreaseVarRequest(CtiCCCapBank* capBank, CtiM
             capBank->setLastStatusChangeTime(CtiTime());
 
             //setEventSequence(getEventSequence() + 1);
-            ccEvents.push_back(new CtiCCEventLogMsg(0, capBank->getStatusPointId(), getParentId(), getPAOId(), capBankStateUpdate, getEventSequence(), capBank->getControlStatus(), textInfo, "cap control", kvarBefore, kvarBefore, 0, capBank->getIpAddress()));
+            INT actionId = CCEventActionIdGen(capBank->getStatusPointId()) + 1;
+            ccEvents.push_back(new CtiCCEventLogMsg(0, capBank->getStatusPointId(), getParentId(), getPAOId(), capBankStateUpdate, getEventSequence(), capBank->getControlStatus(), textInfo, "cap control", kvarBefore, kvarBefore, 0, capBank->getIpAddress(), actionId));
         }
         else
         {
@@ -2995,7 +2997,8 @@ BOOL CtiCCFeeder::capBankControlStatusUpdate(CtiMultiMsg_vec& pointChanges, CtiM
                 ((CtiPointDataMsg*)pointChanges[pointChanges.size()-1])->setSOE(2);
                 currentCapBank->setLastStatusChangeTime(CtiTime());
 
-                ccEvents.push_back(new CtiCCEventLogMsg(0, currentCapBank->getStatusPointId(), getParentId(), getPAOId(), capBankStateUpdate, getEventSequence(), currentCapBank->getControlStatus(), text, "cap control", varValueBeforeControl, currentVarLoadPointValue, change, currentCapBank->getIpAddress()));
+                INT actionId = CCEventActionIdGen(currentCapBank->getStatusPointId());
+                ccEvents.push_back(new CtiCCEventLogMsg(0, currentCapBank->getStatusPointId(), getParentId(), getPAOId(), capBankStateUpdate, getEventSequence(), currentCapBank->getControlStatus(), text, "cap control", varValueBeforeControl, currentVarLoadPointValue, change, currentCapBank->getIpAddress(), actionId));
                 
             }
             else

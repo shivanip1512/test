@@ -91,9 +91,10 @@ RWDECLARE_COLLECTABLE( CtiCCArea )
     LONG getControlSendRetries() const;
     BOOL getIntegrateFlag() const;
     LONG getIntegratePeriod() const;
+    DOUBLE getPFactor() const;
+    DOUBLE getEstPFactor() const;
+    std::list<long>* getSubStationList(){return &_subStationIds;};
 
-
-    CtiCCSubstationBus_vec& getCCSubs();
     void deleteCCSubs(long subId);
 
     CtiCCArea& setPAOId(LONG id);
@@ -132,10 +133,10 @@ RWDECLARE_COLLECTABLE( CtiCCArea )
     CtiCCArea& setControlSendRetries(LONG retries);
     CtiCCArea& setIntegrateFlag(BOOL flag);
     CtiCCArea& setIntegratePeriod(LONG period);
+    CtiCCArea& setPFactor(DOUBLE pfactor);
+    CtiCCArea& setEstPFactor(DOUBLE estPfactor);
+
     void setStrategyValues(CtiCCStrategyPtr strategy);
-
-    list <LONG>* getPointIds() {return &_pointIds;};
-
 
     BOOL isDirty() const;
     void dumpDynamicData();
@@ -192,20 +193,21 @@ RWDECLARE_COLLECTABLE( CtiCCArea )
     BOOL _integrateflag;
     LONG _integrateperiod;
 
+    DOUBLE _pfactor;
+    DOUBLE _estPfactor;
+
     string _additionalFlags;
     BOOL _ovUvDisabledFlag;
 
-    std::vector <CtiCCSubstationBus*> _ccsubs;
+    std::list<long> _subStationIds;
 
-   //don't stream
+       //don't stream
     BOOL _insertDynamicDataFlag;
     BOOL _dirty;
 
     void restore(RWDBReader& rdr);
 
-
-    std::list <long> _pointIds;
-    
+   
 };
 
 

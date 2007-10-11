@@ -189,14 +189,7 @@ void CtiCCClientConnection::_sendthr()
 
             
             CtiCCExecutorFactory f;
-            //CtiCCExecutor* executor = f.createExecutor(new CtiCCAreaMsg(*store->getCCAreas(CtiTime().seconds()),msgBitMask));
-            CtiCCExecutor* executor = f.createExecutor(new CtiCCSubstationBusMsg(*store->getCCSubstationBuses(CtiTime().seconds()),msgBitMask));
-            executor->Execute();
-            delete executor;
-            executor = f.createExecutor(new CtiCCCapBankStatesMsg(*store->getCCCapBankStates(CtiTime().seconds())));
-            executor->Execute();
-            delete executor;
-            executor = f.createExecutor(new CtiCCGeoAreasMsg(*store->getCCGeoAreas(CtiTime().seconds())) );
+            CtiCCExecutor* executor = f.createExecutor(new CtiCCCommand(CtiCCCommand::REQUEST_ALL_DATA));
             executor->Execute();
             delete executor;
         }

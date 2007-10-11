@@ -57,6 +57,8 @@ RWDECLARE_COLLECTABLE( CtiCCSpecial )
     BOOL getDisableFlag() const;
     LONG getStrategyId() const;
     BOOL getOvUvDisabledFlag() const;
+    DOUBLE getPFactor() const;
+    DOUBLE getEstPFactor() const;
 
     CtiCCSpecial& setPAOId(LONG id);
     CtiCCSpecial& setPAOCategory(const string& category);
@@ -67,9 +69,11 @@ RWDECLARE_COLLECTABLE( CtiCCSpecial )
     CtiCCSpecial& setDisableFlag(BOOL disable);
     CtiCCSpecial& setStrategyId(LONG strategyId);
     CtiCCSpecial& setOvUvDisabledFlag(BOOL flag);
+    CtiCCSpecial& setPFactor(DOUBLE pfactor);
+    CtiCCSpecial& setEstPFactor(DOUBLE estpfactor);
     void setStrategyValues(CtiCCStrategyPtr strategy);
 
-    list <LONG>* getSubIds() {return &_subIds;};
+    list <LONG>* getSubstationIds() {return &_substationIds;};
 
 
     BOOL isDirty() const;
@@ -127,10 +131,13 @@ RWDECLARE_COLLECTABLE( CtiCCSpecial )
     BOOL _integrateflag;
     LONG _integrateperiod;
 
+    DOUBLE _pfactor;
+    DOUBLE _estPfactor;
+
     string _additionalFlags;
     BOOL _ovUvDisabledFlag;
 
-    std::list <LONG> _subIds;
+    std::list <LONG> _substationIds;
     BOOL _isSpecial;
 
    //don't stream

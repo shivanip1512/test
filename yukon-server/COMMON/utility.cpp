@@ -387,6 +387,31 @@ INT PAOIdGen()
     return SynchronizedIdGen("paobjectid", 1);
 }
 
+INT CCEventActionIdGen(LONG capBankPointId)
+{
+
+    string sql;
+    INT id = 0;
+
+    sql = string(("SELECT MAX(ACTIONID) FROM CCEVENTLOG WHERE POINTID  = ")) + CtiNumStr(capBankPointId);
+
+            CtiLockGuard<CtiSemaphore> cg(gDBAccessSema);
+    RWDBConnection conn = getConnection();
+
+    RWDBReader  rdr = ExecuteQuery( conn, sql.c_str() );
+
+    if(rdr() && rdr.isValid())
+    {
+        rdr >> id;
+    }
+    else
+    {
+        RWMutexLock::LockGuard  guard(coutMux);
+        cout << "**** Checkpoint: Invalid Reader **** " << __FILE__ << " (" << __LINE__ << ")" << endl;
+    }
+
+    return id;
+}
 
 INT CCEventLogIdGen()
 {

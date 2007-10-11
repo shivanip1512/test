@@ -7,8 +7,8 @@
 *
 * PVCS KEYWORDS:
 * ARCHIVE      :  $Archive:   Z:/SOFTWAREARCHIVES/YUKON/common/INCLUDE/utility.h-arc  $
-* REVISION     :  $Revision: 1.43 $
-* DATE         :  $Date: 2007/07/10 20:51:09 $
+* REVISION     :  $Revision: 1.44 $
+* DATE         :  $Date: 2007/10/11 14:29:39 $
 *
 * Copyright (c) 1999, 2000, 2001 Cannon Technologies Inc. All rights reserved.
 *-----------------------------------------------------------------------------*/
@@ -43,6 +43,7 @@ IM_EX_CTIBASE LONG CommErrorHistoryIdGen(bool force = false);
 IM_EX_CTIBASE LONG VerificationSequenceGen(bool force = false, int force_value = 0);
 IM_EX_CTIBASE INT  ChangeIdGen(bool force = false);
 IM_EX_CTIBASE INT  SystemLogIdGen();
+IM_EX_CTIBASE INT  CCEventActionIdGen(LONG capBankPointId);
 IM_EX_CTIBASE INT  CCEventLogIdGen();
 IM_EX_CTIBASE INT  CCEventSeqIdGen();
 IM_EX_CTIBASE INT  PAOIdGen();

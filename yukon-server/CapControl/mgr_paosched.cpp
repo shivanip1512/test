@@ -224,7 +224,7 @@ void CtiPAOScheduleManager::mainLoop()
                                             dout << CtiTime() << " -- EventID "<<currentEvent->getEventId()<<" about to run on SubBus "<<currentEvent->getPAOId()<<"."<<endl;
                                         }
                                         runScheduledEvent(currentEvent);
-                                        //delete currentEvent;
+                                        delete currentEvent;
                                     }
                                 }
                                 updateRunTimes(currentSched);
@@ -415,8 +415,7 @@ void CtiPAOScheduleManager::runScheduledEvent(CtiPAOEvent *event)
         default:
             break;
     }
-
-    event = NULL;
+ 
 }
 int CtiPAOScheduleManager::parseEvent(const string& _command, int &strategy, long &secsSinceLastOperation)
 {
@@ -729,7 +728,17 @@ void CtiPAOScheduleManager::refreshSchedulesFromDB()
             dout << CtiTime() << " - Caught '...' in: " << __FILE__ << " at:" << __LINE__ << endl;
         }
         try
-        {
+        {             
+
+            while (!_schedules.empty())
+            {
+                CtiPAOSchedule *schedToDelete = _schedules.front();
+                _schedules.pop_front();
+                if (schedToDelete != NULL)
+                {
+                    delete schedToDelete;
+                }
+            }
             _schedules.clear();
             _schedules.assign(tempSchedules.begin(), tempSchedules.end());
             setValid(true);
@@ -823,6 +832,15 @@ void CtiPAOScheduleManager::refreshEventsFromDB()
         }
         try
         {
+            while (!_events.empty())
+            {
+                CtiPAOEvent *evtToDelete = _events.front();
+                _events.pop_front();
+                if (evtToDelete != NULL)
+                {
+                    delete evtToDelete;
+                }
+            }
             _events.clear();
             _events.assign(tempEvents.begin(), tempEvents.end());
             setValid(true);
@@ -905,6 +923,7 @@ void CtiPAOScheduleManager::updateDataBaseSchedules(std::list<CtiPAOSchedule*> &
                         dout << CtiTime() << " - Caught '...' in: " << __FILE__ << " at:" << __LINE__ << endl;
                     }
                 }
+                //delete currentSchedule;
             }while(!schedules.empty());
 
             conn.commitTransaction(string2RWCString(schedulerPAO));

@@ -57,7 +57,7 @@ CtiCCSpecial::~CtiCCSpecial()
 {  
     try
     {  
-        _subIds.clear();   
+        _substationIds.clear();   
     }
     catch (...)
     {
@@ -87,13 +87,15 @@ void CtiCCSpecial::restoreGuts(RWvistream& istrm)
     >> _disableflag;
     
     istrm >> numOfSubIds;
-    _subIds.clear();
+    _substationIds.clear();
     for(LONG i=0;i<numOfSubIds;i++)
     {
         istrm >> tempSubId;
-        _subIds.push_back(tempSubId);
+        _substationIds.push_back(tempSubId);
     }
-    istrm >> _ovUvDisabledFlag;
+    istrm >> _ovUvDisabledFlag
+        >> _pfactor
+        >> _estPfactor;
 
 }
 
@@ -113,15 +115,17 @@ void CtiCCSpecial::saveGuts(RWvostream& ostrm ) const
     << _paotype
     << _paodescription
     << _disableflag;
-    ostrm << _subIds.size();
-    std::list<LONG>::const_iterator iter = _subIds.begin();
+    ostrm << _substationIds.size();
+    std::list<LONG>::const_iterator iter = _substationIds.begin();
 
-    for(LONG i=0;i<_subIds.size();i++)
+    for(LONG i=0;i<_substationIds.size();i++)
     {
         ostrm << (LONG)*iter;
         iter++;
     }
-    ostrm << _ovUvDisabledFlag;
+    ostrm << _ovUvDisabledFlag
+        << _pfactor
+        << _estPfactor;
 
 
 }
@@ -141,10 +145,11 @@ CtiCCSpecial& CtiCCSpecial::operator=(const CtiCCSpecial& right)
         _paodescription = right._paodescription;
         _disableflag = right._disableflag;
         _ovUvDisabledFlag = right._ovUvDisabledFlag;
+        _pfactor = right._pfactor;
+        _estPfactor = right._estPfactor;
 
-
-        _subIds.clear();
-        _subIds.assign(right._subIds.begin(), right._subIds.end());
+        _substationIds.clear();
+        _substationIds.assign(right._substationIds.begin(), right._substationIds.end());
           
     }
     return *this;
@@ -195,6 +200,8 @@ void CtiCCSpecial::restore(RWDBReader& rdr)
     std::transform(tempBoolString.begin(), tempBoolString.end(), tempBoolString.begin(), tolower);
     _disableflag = (tempBoolString=="y"?TRUE:FALSE);
     setOvUvDisabledFlag(FALSE);
+    setPFactor(0);
+    setEstPFactor(0);
 
 }
 
@@ -390,6 +397,27 @@ BOOL CtiCCSpecial::getOvUvDisabledFlag() const
 }
 
 /*---------------------------------------------------------------------------
+    getPFactor
+
+    Returns the getPFactor of the area
+---------------------------------------------------------------------------*/
+DOUBLE CtiCCSpecial::getPFactor() const
+{
+    return _pfactor;
+}
+/*---------------------------------------------------------------------------
+    getEstPFactor
+
+    Returns the getEstPFactor of the area
+---------------------------------------------------------------------------*/
+DOUBLE CtiCCSpecial::getEstPFactor() const
+{
+    return _estPfactor;
+}
+
+
+
+/*---------------------------------------------------------------------------
     getStrategyId
 
     Returns the strategy id of the area
@@ -531,6 +559,28 @@ CtiCCSpecial& CtiCCSpecial::setOvUvDisabledFlag(BOOL flag)
     _ovUvDisabledFlag = flag;
     return *this;
 }
+
+/*---------------------------------------------------------------------------
+    setPFactor
+    
+    Sets the PFactor of the area
+---------------------------------------------------------------------------*/
+CtiCCSpecial& CtiCCSpecial::setPFactor(DOUBLE pfactor)
+{
+    _pfactor = pfactor;
+    return *this;
+}
+/*---------------------------------------------------------------------------
+    setEstPFactor
+    
+    Sets the estPFactor of the area
+---------------------------------------------------------------------------*/
+CtiCCSpecial& CtiCCSpecial::setEstPFactor(DOUBLE estpfactor)
+{
+    _estPfactor = estpfactor;
+    return *this;
+}
+
 
 
 
