@@ -462,14 +462,6 @@ are present in page, session, etc. as an attribute. -->
                       </tr>
                       <tr> 
                         <td width="90" class="TableCell"> 
-                          <div align="right"><cti:getProperty propertyid="<%=ConsumerInfoRole.ADDRESS_COUNTY_LABEL %>"/>:</div>
-                        </td>
-                        <td width="210"> 
-                          <input type="text" name="SCounty" maxlength="30" size="24" value="<%= account.getStreetAddress().getCounty() %>" onchange="setContentChanged(true)">
-                        </td>
-                      </tr>
-                      <tr> 
-                        <td width="90" class="TableCell"> 
                           <div align="right"><cti:getProperty propertyid="<%=ConsumerInfoRole.ADDRESS_STATE_LABEL %>"/>:</div>
                         </td>
                         <td width="210"> 
@@ -482,6 +474,14 @@ are present in page, session, etc. as an attribute. -->
                         </td>
                         <td width="210"> 
                           <input type="text" name="SZip" maxlength="12" size="14" value="<%= account.getStreetAddress().getZip() %>" onchange="setContentChanged(true)">
+                        </td>
+                      </tr>
+                      <tr> 
+                        <td width="90" class="TableCell"> 
+                          <div align="right"><cti:getProperty propertyid="<%=ConsumerInfoRole.ADDRESS_COUNTY_LABEL %>"/>:</div>
+                        </td>
+                        <td width="210"> 
+                          <input type="text" name="SCounty" maxlength="30" size="24" value="<%= account.getStreetAddress().getCounty() %>" onchange="setContentChanged(true)">
                         </td>
                       </tr>
                       <tr> 
