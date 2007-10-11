@@ -9,6 +9,7 @@ import org.springframework.dao.DataAccessException;
 import org.springframework.jdbc.core.JdbcTemplate;
 
 import com.cannontech.clientutils.CTILogger;
+import com.cannontech.clientutils.CommonUtils;
 import com.cannontech.core.dao.AuthDao;
 import com.cannontech.core.dao.CBCDao;
 import com.cannontech.core.dao.PaoDao;
@@ -27,7 +28,6 @@ import com.cannontech.database.data.point.CBCPointTimestampParams;
 import com.cannontech.database.data.point.PointTypes;
 import com.cannontech.database.data.point.ScalarPoint;
 import com.cannontech.message.dispatch.message.PointData;
-import com.cannontech.yukon.cbc.CBCUtils;
 
 public class CBCDaoImpl  implements CBCDao{
 
@@ -96,7 +96,7 @@ public class CBCDaoImpl  implements CBCDao{
                 pointTimestamp.setValue(format);
             }
             
-            if (!pointData.getPointDataTimeStamp().equals( CBCUtils.getDefaultStartTime()) )
+            if (!pointData.getPointDataTimeStamp().equals( CommonUtils.getDefaultStartTime()) )
                 pointTimestamp.setTimestamp(pointData.getPointDataTimeStamp());     
             pointList.add(pointTimestamp);
         }
@@ -106,8 +106,8 @@ public class CBCDaoImpl  implements CBCDao{
     /* (non-Javadoc)
      * @see com.cannontech.cbc.daoimpl.CBCDao#getAllSubsForUser(com.cannontech.database.data.lite.LiteYukonUser)
      */
-    public List getAllSubsForUser(LiteYukonUser user) {
-        List subList = new ArrayList(10);
+    public List<LiteYukonPAObject> getAllSubsForUser(LiteYukonUser user) {
+        List<LiteYukonPAObject> subList = new ArrayList<LiteYukonPAObject>(10);
         
         List temp = paoDao.getAllCapControlSubBuses();
         for (Iterator iter = temp.iterator(); iter.hasNext();) {
