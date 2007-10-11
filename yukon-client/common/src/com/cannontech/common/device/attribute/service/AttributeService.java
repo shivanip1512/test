@@ -30,7 +30,7 @@ public interface AttributeService {
      * @return A set of attributes (returns a new copy each time the method is
      *         called)
      */
-    public Set<Attribute> getAllExistingAtributes(YukonDevice device);
+    public Set<Attribute> getAllExistingAttributes(YukonDevice device);
     
     public Attribute resolveAttributeName(String name);
     

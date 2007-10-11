@@ -48,7 +48,7 @@ public class AttributeServiceImpl implements AttributeService {
         return deviceDefinitionDao.getAvailableAttributes(device);
     }
 
-    public Set<Attribute> getAllExistingAtributes(YukonDevice device) {
+    public Set<Attribute> getAllExistingAttributes(YukonDevice device) {
 
         Set<Attribute> attributes = new HashSet<Attribute>();
         Set<Attribute> availableAttribute = this.getAvailableAttributes(device);
