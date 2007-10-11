@@ -72,6 +72,8 @@ public class PointDeviceIndexManager extends AbstractIndexManager {
         int stateGrpID = rs.getInt("stategroupid");
         String pointType = rs.getString("pointtype");
         String paoType = rs.getString("type");
+        int pointOffset = rs.getInt("pointoffset");
+        
         if (rs.wasNull()) {
             uomidInt = PointUnits.UOMID_INVALID;
         }
@@ -92,6 +94,7 @@ public class PointDeviceIndexManager extends AbstractIndexManager {
         doc.add(new Field("stategroupid", stateGroupID, Field.Store.YES, Field.Index.UN_TOKENIZED));
         doc.add(new Field("paotype", paoType, Field.Store.YES, Field.Index.UN_TOKENIZED));
         doc.add(new Field("pointName", pointName, Field.Store.NO, Field.Index.UN_TOKENIZED));
+        doc.add(new Field("pointoffset", Integer.toString(pointOffset), Field.Store.YES, Field.Index.UN_TOKENIZED));
 
         return doc;
     }
