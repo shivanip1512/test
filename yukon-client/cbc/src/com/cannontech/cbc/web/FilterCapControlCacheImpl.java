@@ -226,7 +226,7 @@ public class FilterCapControlCacheImpl implements FilterCapControlCache, CapCont
 			return null;
 	}
 
-	public SubBus[] getSubBusesByArea(Integer areaId) {
+	public List<SubBus> getSubBusesByArea(Integer areaId) {
 		CBCArea area = cache.getCBCArea(areaId);
 		if ( filter.valid(area) )
 			return cache.getSubBusesByArea(areaId);
@@ -253,7 +253,7 @@ public class FilterCapControlCacheImpl implements FilterCapControlCache, CapCont
 		
 	}
 
-	public SubStation[] getSubstationsByArea(Integer areaId) {
+	public List<SubStation> getSubstationsByArea(Integer areaId) {
 		CBCArea area = cache.getCBCArea(areaId);
 		if ( filter.valid(area) )
 			return cache.getSubstationsByArea(areaId);

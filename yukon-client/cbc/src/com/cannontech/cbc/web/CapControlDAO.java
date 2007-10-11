@@ -99,13 +99,13 @@ public interface CapControlDAO {
 	 * Returns all Substations for a given Area
 	 * 
 	 */
-	public abstract SubStation[] getSubstationsByArea(Integer areaID);
+	public abstract List<SubStation> getSubstationsByArea(Integer areaID);
     
     /**
      * Returns all SubBuses for a given Area
      * 
      */
-    public abstract SubBus[] getSubBusesByArea(Integer areaID);
+    public abstract List<SubBus> getSubBusesByArea(Integer areaID);
 
 	/**
 	 * Returns all CapBanks for a given Area

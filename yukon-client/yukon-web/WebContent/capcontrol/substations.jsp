@@ -6,26 +6,28 @@
 <cti:standardPage title="Substations" module="capcontrol">
 <%@include file="cbc_inc.jspf"%>
 
-<jsp:useBean id="capControlCache"
-    class="com.cannontech.cbc.web.CapControlCache"
-    type="com.cannontech.cbc.web.CapControlCache" scope="application"></jsp:useBean>
+<jsp:useBean id="filterCapControlCache"
+	class="com.cannontech.cbc.web.FilterCapControlCacheImpl"
+	type="com.cannontech.cbc.web.FilterCapControlCacheImpl" scope="application"></jsp:useBean>
+
 <jsp:setProperty name="CtiNavObject" property="moduleExitPage" value="<%=request.getRequestURL().toString()%>"/>
 
 <!-- necessary DIV element for the OverLIB popup library -->
 <div id="overDiv" style="position:absolute; visibility:hidden; z-index:1000;"></div>
 
 <%
+
     String nd = "\"return nd();\"";
     LiteYukonUser user = (LiteYukonUser) session.getAttribute(LoginController.YUKON_USER);			
-	String popupEvent = DaoFactory.getAuthDao().getRolePropertyValue(user, WebClientRole.POPUP_APPEAR_STYLE);
+	filterCapControlCache.setFilter(new CacheFilterUserAccessFilter(user));
+    String popupEvent = DaoFactory.getAuthDao().getRolePropertyValue(user, WebClientRole.POPUP_APPEAR_STYLE);
 	if (popupEvent == null) popupEvent = "onmouseover"; 
     
-	CapControlUserOwnerDAO userOwner = new CapControlUserOwnerDAO (capControlCache, user);
 	Integer areaId = cbcSession.getLastAreaId();
 	String area = cbcSession.getLastArea();
-	SubStation[] areaSubs = userOwner.getSubstationsByArea(areaId);
+	List<SubStation> areaSubs = filterCapControlCache.getSubstationsByArea(areaId);
     boolean hasControl = CBCWebUtils.hasControlRights(session);
-    boolean special = userOwner.isSpecialCBCArea(areaId);
+    boolean special = filterCapControlCache.isSpecialCBCArea(areaId);
 %>
 
 <cti:standardMenu/>
@@ -47,7 +49,7 @@
 
 <cti:titledContainer title="<%="Substation In Area:  " + cbcSession.getLastArea()%>" id="last_titled_container">
           
-		<%if (areaSubs.length == 0) {%>
+		<%if (areaSubs.size() == 0) {%>
 		<!-- 
 		<form id="subForm" action="redirect.jsp" method="post">
 		<input type="hidden" name="reason" value="No subs were found. "/>
@@ -83,14 +85,14 @@
 <table id="subTable" width="98%" border="0" cellspacing="0" cellpadding="0" >
 <%
 String css = "tableCell";
-for( int i = 0; i < areaSubs.length; i++ ) {
+for( int i = 0; i < areaSubs.size(); i++ ) {
     css = ("tableCell".equals(css) ? "altTableCell" : "tableCell");
-    SubStation substation = areaSubs[i];
+    SubStation substation = areaSubs.get(i);
     
 	String varsAvailable = CBCUtils.format( CBCUtils.calcVarsAvailable(substation));
 	String varsDisabled =  CBCUtils.format (CBCUtils.calcVarsDisabled(substation));
-	String closedVars = CBCUtils.format( CBCUtils.calcClosedVARS(capControlCache.getCapBanksBySubStation(substation)));
-	String trippedVars = CBCUtils.format( CBCUtils.calcTrippedVARS(capControlCache.getCapBanksBySubStation(substation)));
+	String closedVars = CBCUtils.format( CBCUtils.calcClosedVARS(filterCapControlCache.getCapBanksBySubStation(substation)));
+	String trippedVars = CBCUtils.format( CBCUtils.calcTrippedVARS(filterCapControlCache.getCapBanksBySubStation(substation)));
 
 %>
 

@@ -10,8 +10,8 @@
 <%@ page import="java.util.List" %>
 <%@ page import="java.util.Iterator" %>
 <%@ page import="com.cannontech.util.ServletUtil" %>
-<%@ page import="com.cannontech.yukon.cbc.CBCDisplay" %>
-<%@ page import="com.cannontech.yukon.cbc.CBCUtils" %>
+<%@ page import="com.cannontech.cbc.util.CBCDisplay" %>
+<%@ page import="com.cannontech.cbc.util.CBCUtils" %>
 
 
 <jsp:useBean id="capControlCache"

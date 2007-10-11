@@ -58,16 +58,16 @@ if (allowCtlVal!=null) {
 	for( int i = 0; i < filterCapControlCache.getCbcAreas().size(); i++ ) {
 		css = ("tableCell".equals(css) ? "altTableCell" : "tableCell");
 		CBCArea area = (CBCArea)filterCapControlCache.getCbcAreas().get(i);
-		SubStation[] areaStations = filterCapControlCache.getSubstationsByArea(area.getPaoID());
+		List<SubStation> areaStations = filterCapControlCache.getSubstationsByArea(area.getPaoID());
 		CapBankDevice[] areaCapBanks = filterCapControlCache.getCapBanksByArea(area.getPaoID());
 		
 		//new additions for the available and closed vars
-		String varsAvailable = CBCUtils.format( CBCUtils.calcVarsAvailableForSubStations(Arrays.asList(areaStations)) );
-		String varsDisabled =  CBCUtils.format (CBCUtils.calcVarsDisabledForSubStations(Arrays.asList(areaStations)) );
+		String varsAvailable = CBCUtils.format( CBCUtils.calcVarsAvailableForSubStations(areaStations) );
+		String varsDisabled =  CBCUtils.format (CBCUtils.calcVarsDisabledForSubStations(areaStations) );
 		String closedVars = CBCUtils.format( CBCUtils.calcClosedVARS(areaCapBanks) );
 		String trippedVars = CBCUtils.format( CBCUtils.calcTrippedVARS(areaCapBanks) );
-		String currPF = CBCDisplay.getPowerFactorText(CBCUtils.calcAvgPF(Arrays.asList(areaStations)), true);
-		String estPF = CBCDisplay.getPowerFactorText(CBCUtils.calcAvgEstPF(Arrays.asList(areaStations)), true);
+		String currPF = CBCDisplay.getPowerFactorText(CBCUtils.calcAvgPF(areaStations), true);
+		String estPF = CBCDisplay.getPowerFactorText(CBCUtils.calcAvgEstPF(areaStations), true);
 		String areaState = ((Boolean)(filterCapControlCache.getAreaStateMap().get(area.getPaoName())))?"ENABLED":"DISABLED";
 		if( area.getOvUvDisabledFlag() ){
 			areaState += "-V";
@@ -98,7 +98,7 @@ if (allowCtlVal!=null) {
                 <%=areaState%>
                 </a>
                 </td>
-				<td><%=areaStations.length%> Substation(s)</td>
+				<td><%=areaStations.size()%> Substation(s)</td>
 				<td><%=varsAvailable%></td>
 				<td><%=varsDisabled%></td>
 				<td><%=closedVars%></td>
@@ -111,10 +111,10 @@ if (allowCtlVal!=null) {
 
 			<a id="allAreas<%=i%>">
 <%
-	if (areaStations.length > 0) {		
-	for( int j = 0; j < areaStations.length; j++ )
+	if (areaStations.size() > 0) {		
+	for( int j = 0; j < areaStations.size(); j++ )
 		{
-	SubStation substation = areaStations[j];
+	SubStation substation = areaStations.get(j);
 	List<Feeder> subFeeders = filterCapControlCache.getFeedersBySubStation(substation);
 	List<CapBankDevice> subCapBanks = filterCapControlCache.getCapBanksBySubStation(substation);
 %>

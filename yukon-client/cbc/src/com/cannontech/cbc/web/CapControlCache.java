@@ -238,7 +238,7 @@ public class CapControlCache implements MessageListener, CapControlDAO {
      * @return SubBus[]
      * @param areaId Integer
      */
-    public  SubBus[] getSubBusesByArea(Integer areaId) {
+    public  List<SubBus> getSubBusesByArea(Integer areaId) {
         if(getCBCArea(areaId) != null) {
             List<CCSubAreaAssignment> allAreaSubs = CCSubAreaAssignment.getAllAreaSubs(areaId);
             List<Integer>intList = CCSubAreaAssignment.getAsIntegerList(allAreaSubs);
@@ -249,9 +249,8 @@ public class CapControlCache implements MessageListener, CapControlDAO {
                     subList.add(sub);
                 }
             }
-            SubBus[] subs = subList.toArray(new SubBus[]{});
-            Arrays.sort( subs, CBCUtils.CCNAME_COMPARATOR );
-            return subs;
+            Collections.sort(subList,CBCUtils.CCNAME_COMPARATOR );
+            return subList;
         }else if(getCBCSpecialArea(areaId) != null) {
             List<CCSubSpecialAreaAssignment> allAreaSubs = CCSubSpecialAreaAssignment.getAllSpecialAreaSubs(areaId);
             List<Integer>intList = CCSubSpecialAreaAssignment.getAsIntegerList(allAreaSubs);
@@ -262,9 +261,8 @@ public class CapControlCache implements MessageListener, CapControlDAO {
                     subList.add(sub);
                 }
             }
-            SubBus[] subs = subList.toArray(new SubBus[]{});
-            Arrays.sort( subs, CBCUtils.CCNAME_COMPARATOR );
-            return subs;
+            Collections.sort(subList,CBCUtils.CCNAME_COMPARATOR );
+            return subList;
         }else {
             return null;
         }
@@ -283,13 +281,13 @@ public class CapControlCache implements MessageListener, CapControlDAO {
      * Returns all CapBanks for a given Area
      */
     public synchronized CapBankDevice[] getCapBanksByArea(Integer areaID) {
-        SubBus[] subs = getSubBusesByArea( areaID );
+        List<SubBus> subs = getSubBusesByArea( areaID );
         if( subs == null ) {
-            subs = new SubBus[0];
+            subs = new ArrayList<SubBus>();
         }
         Vector<CapBankDevice> allBanks = new Vector<CapBankDevice>(64);
-        for( int i = 0; i < subs.length; i++ ) {
-            SubBus subBus = subs[i];
+        for( int i = 0; i < subs.size(); i++ ) {
+            SubBus subBus = subs.get(i);
             if (subBus != null) {
                 CapBankDevice[] capBanks = getCapBanksBySub( subBus.getCcId() );        
                 allBanks.addAll( Arrays.asList(capBanks) );
@@ -304,13 +302,13 @@ public class CapControlCache implements MessageListener, CapControlDAO {
      * Returns all Feeders for a given Area
      */
     public synchronized Feeder[] getFeedersByArea(Integer areaID) {
-        SubBus[] subs = getSubBusesByArea( areaID);
+        List<SubBus> subs = getSubBusesByArea( areaID);
         if( subs == null ) {
-            subs = new SubBus[0];
+            subs = new ArrayList<SubBus>();
         }
         Vector<Feeder> allFeeders = new Vector<Feeder>(64);
-        for( int i = 0; i < subs.length; i++ ) {
-            Feeder[] feeders = getFeedersBySubBus( subs[i].getCcId() );        
+        for( int i = 0; i < subs.size(); i++ ) {
+            Feeder[] feeders = getFeedersBySubBus( subs.get(i).getCcId() );        
             allFeeders.addAll( Arrays.asList(feeders) );
         }
     
@@ -917,7 +915,7 @@ public class CapControlCache implements MessageListener, CapControlDAO {
         this.defCapControlConn = defCapControlConn;
     }
 
-    public SubStation[] getSubstationsByArea(Integer areaId) {
+    public List<SubStation> getSubstationsByArea(Integer areaId) {
         if(getCBCArea(areaId) != null) {
             List<CCSubAreaAssignment> allAreaSubs = CCSubAreaAssignment.getAllAreaSubs(areaId);
             List<Integer>intList = CCSubAreaAssignment.getAsIntegerList(allAreaSubs);
@@ -928,9 +926,8 @@ public class CapControlCache implements MessageListener, CapControlDAO {
                     subList.add(sub);
                 }
             }
-            SubStation[] subs = subList.toArray(new SubStation[]{});
-            Arrays.sort( subs, CBCUtils.CCNAME_COMPARATOR );
-            return subs;
+            Collections.sort(subList,CBCUtils.CCNAME_COMPARATOR );
+            return subList;//sort( subs, CBCUtils.CCNAME_COMPARATOR );
         }else if(getCBCSpecialArea(areaId) != null) {
             List<CCSubSpecialAreaAssignment> allAreaSubs = CCSubSpecialAreaAssignment.getAllSpecialAreaSubs(areaId);
             List<Integer>intList = CCSubSpecialAreaAssignment.getAsIntegerList(allAreaSubs);
@@ -941,9 +938,8 @@ public class CapControlCache implements MessageListener, CapControlDAO {
                     subList.add(sub);
                 }
             }
-            SubStation[] subs = subList.toArray(new SubStation[]{});
-            Arrays.sort( subs, CBCUtils.CCNAME_COMPARATOR );
-            return subs;
+            Collections.sort(subList,CBCUtils.CCNAME_COMPARATOR );
+            return subList;
         }else {
             return null;
         }

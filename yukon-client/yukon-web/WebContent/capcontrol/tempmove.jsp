@@ -1,27 +1,27 @@
+<%@ page import="com.cannontech.common.constants.LoginController" %>
 <%@ taglib uri="http://cannontech.com/tags/cti" prefix="cti" %>
 <%@ taglib uri="http://java.sun.com/jsp/jstl/core" prefix="c"%>
 <cti:standardPage title="Temp CapBank Move" module="capcontrol_internal">
 <%@include file="cbc_inc.jspf"%>
 
-<jsp:useBean id="capControlCache"
-	class="com.cannontech.cbc.web.CapControlCache"
-	type="com.cannontech.cbc.web.CapControlCache" scope="application"></jsp:useBean>
+<jsp:useBean id="filterCapControlCache"
+	class="com.cannontech.cbc.web.FilterCapControlCacheImpl"
+	type="com.cannontech.cbc.web.FilterCapControlCacheImpl" scope="application"></jsp:useBean>
 
 <%
+	LiteYukonUser user = (LiteYukonUser) session.getAttribute(LoginController.YUKON_USER);	
+	filterCapControlCache.setFilter(new CacheFilterUserAccessFilter(user));
+
 	int bankid = ParamUtil.getInteger(request, "bankid");
-	List<CBCArea> allAreas = capControlCache.getCbcAreas();
-	SubBus[] allSubs = capControlCache.getAllSubBuses();		
-	CapBankDevice capBank = capControlCache.getCapBankDevice( new Integer(bankid) );
+	List<CBCArea> allAreas = filterCapControlCache.getCbcAreas();	
+	CapBankDevice capBank = filterCapControlCache.getCapBankDevice( new Integer(bankid) );
 	int oldfdrid = 0;
 	
-	if( capBank == null )
-	{
-		allSubs = new SubBus[0];
-	}
-	else
+	if( capBank != null )
 	{
 		oldfdrid = capBank.getParentID();
 	}
+
 %>
 
 <c:url var="controlOrderPage" value="/capcontrol/feederBankInfo.jsp"/>
@@ -104,12 +104,8 @@ String css = "tableCell";
 int z = 0;
 String indent = "\t";
 for( CBCArea area : allAreas )
-{
+{	
 
-	SubBus[] subsOnArea = capControlCache.getSubsByArea( area.getPaoID() );
-
-	if( subsOnArea.length <= 0 ) continue;
-	
 	css = "altTableCell";
 	%>
 	
@@ -122,39 +118,64 @@ for( CBCArea area : allAreas )
 	
 		<div class="<%=css%>" style="display:none" id="areaId<%=z %>">
 	<%
-		for( int i = 0; i < subsOnArea.length; i++ )
-		{
-			SubBus subBus = subsOnArea[i];	
-			Feeder[] feeders = capControlCache.getFeedersBySubBus(subBus.getCcId());
-			css = "tableCell";
-			if( feeders.length <= 0 ) continue;
-	%>
+	List<SubStation> areaStations = filterCapControlCache.getSubstationsByArea(area.getPaoID());
+	if( areaStations.size() <= 0 ) continue;
+	for( SubStation s : areaStations )
+	{
 
-		<div>
-		<input class="lIndent" type="image" id="chkBxSub<%=i + "_" + z%>"
-			src="images/nav-plus.gif"
-			onclick="showDiv( 'subId<%=i + "_" + z%>' );toggleImg('chkBxSub<%=i + "_" + z%>'); return false;">
-			<%=CBCUtils.CBC_DISPLAY.getSubBusValueAt(subBus, CBCDisplay.SUB_NAME_COLUMN)%>
-		</input>
-		<div class="<%=css%>" style="display:none" id="subId<%=i + "_" + z%>" >
-	<%
-		for( int j = 0; j < feeders.length; j++ )
-		{
-			Feeder feeder = feeders[j];
-			if( feeder.getCcId().intValue() == oldfdrid )
-		continue;
-	%>
+		List<SubBus> subsOnStation = filterCapControlCache.getSubBusesBySubStation( s );
+	
+		if( subsOnStation.size() <= 0 ) continue;
+		
+		css = "tableCell";
+		%>
+		
+			<div>		
+			<input type="image" id="chkBxStation<%=z%>"
+				src="images/nav-plus.gif"
+				onclick="showDiv( 'stationId<%=z %>' );toggleImg( 'chkBxStation<%=z%>'); return false;">
+			<%=s.getPaoName() %>
+	
+		
+			<div class="<%=css%>" style="display:none" id="stationId<%=z %>">
+		<%
+			for( int i = 0; i < subsOnStation.size(); i++ )
+			{
+				SubBus subBus = subsOnStation.get(i);	
+				Feeder[] feeders = filterCapControlCache.getFeedersBySubBus(subBus.getCcId());
+				css = "altTableCell";
+				if( feeders.length <= 0 ) continue;
+		%>
+	
 			<div>
-			<input class="capbankTempMoveLink" type="radio" name="feeder" id="feederId<%=feeder.getCcId()%>" onclick="selectFeeder(<%=feeder.getCcId()%>);" >
-			<%=CBCUtils.CBC_DISPLAY.getFeederValueAt(feeder, CBCDisplay.FDR_NAME_COLUMN)%>
+			<input class="lIndent" type="image" id="chkBxSub<%=i + "_" + z%>"
+				src="images/nav-plus.gif"
+				onclick="showDiv( 'subId<%=i + "_" + z%>' );toggleImg('chkBxSub<%=i + "_" + z%>'); return false;">
+				<%=CBCUtils.CBC_DISPLAY.getSubBusValueAt(subBus, CBCDisplay.SUB_NAME_COLUMN)%>
 			</input>
-			</div>			
-	<%	} %>
-		</div></div>
-	<% } %>
+			<div class="<%=css%>" style="display:none" id="subId<%=i + "_" + z%>" >
+		<%
+			for( int j = 0; j < feeders.length; j++ )
+			{
+				Feeder feeder = feeders[j];
+				if( feeder.getCcId().intValue() == oldfdrid )
+			continue;
+		%>
+				<div>
+				<input class="capbankTempMoveLink" type="radio" name="feeder" id="feederId<%=feeder.getCcId()%>" onclick="selectFeeder(<%=feeder.getCcId()%>);" >
+				<%=CBCUtils.CBC_DISPLAY.getFeederValueAt(feeder, CBCDisplay.FDR_NAME_COLUMN)%>
+				</input>
+				</div>			
+		<%	} %>
+			</div></div>
+		<% } %>
 	</div></div>
-<% z++;
-	} %>
+	<% } %>
+	</div>
+<% 
+z++;
+} 
+%>
 	    </cti:titledContainer>
     </div>
 
