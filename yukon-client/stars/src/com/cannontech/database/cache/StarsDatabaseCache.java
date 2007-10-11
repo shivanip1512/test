@@ -571,7 +571,7 @@ public class StarsDatabaseCache implements DBChangeLiteListener {
 						LiteStarsEnergyCompany company = descendants.get(i);
 						for (int j = 0; j < company.getStarsServiceCompanies().getStarsServiceCompanyCount(); j++) {
 							StarsServiceCompany starsSC = company.getStarsServiceCompanies().getStarsServiceCompany(j);
-							if (starsSC.getPrimaryContact().getContactID() == liteContact.getContactID()) {
+							if (starsSC.getPrimaryContact() != null && starsSC.getPrimaryContact().getContactID() == liteContact.getContactID()) {
 								StarsLiteFactory.setStarsCustomerContact( starsSC.getPrimaryContact(), liteContact );
 								break;
 							}
