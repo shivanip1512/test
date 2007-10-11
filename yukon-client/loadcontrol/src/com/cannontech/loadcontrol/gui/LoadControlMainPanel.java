@@ -552,10 +552,9 @@ public void destroy()
  */
 public void executeRefreshButton() 
 {
-    
     LMCommand command = new LMCommand();
     command.setCommand(LMCommand.RETRIEVE_ALL_CONTROL_AREAS);
-    LoadControlClientConnection.getInstance().write(command);
+    LoadControlClientConnection.getInstance().queue(command);
 }
 
 /**
