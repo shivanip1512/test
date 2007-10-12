@@ -21,7 +21,7 @@ import com.cannontech.cbc.exceptions.SameMasterSlaveCombinationException;
 import com.cannontech.cbc.exceptions.SerialNumberExistsException;
 import com.cannontech.cbc.model.ICBControllerModel;
 import com.cannontech.cbc.util.CBCUtils;
-import com.cannontech.cbc.web.CBCSessionInfo;
+import com.cannontech.cbc.web.CCSessionInfo;
 import com.cannontech.clientutils.CTILogger;
 import com.cannontech.core.dao.DaoFactory;
 import com.cannontech.database.Transaction;
@@ -656,14 +656,14 @@ public class CBControllerEditor implements ICBControllerModel {
         if (tree != null)
         {
             Object treeState = tree.saveState(FacesContext.getCurrentInstance());
-            CBCSessionInfo cbcSession = (CBCSessionInfo) JSFParamUtil.getJSFVar("cbcSession");
+            CCSessionInfo cbcSession = (CCSessionInfo) JSFParamUtil.getJSFVar("cbcSession");
     		cbcSession.setTreeState(pointTreeName, treeState);
         }
     }
 
 	private void restoreState (HtmlTree tree) {
         if (tree != null) {
-    		CBCSessionInfo cbcSession = (CBCSessionInfo) JSFParamUtil.getJSFVar("cbcSession");    		
+    		CCSessionInfo cbcSession = (CCSessionInfo) JSFParamUtil.getJSFVar("cbcSession");    		
 			if (cbcSession.getTreeState(pointTreeName) != null )
 				this.pointTree.restoreState(FacesContext.getCurrentInstance(), cbcSession.getTreeState(pointTreeName));
         }
