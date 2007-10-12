@@ -6,8 +6,8 @@
 *
 * PVCS KEYWORDS:
 * ARCHIVE      :  $Archive:   Z:/SOFTWAREARCHIVES/YUKON/COMMON/resolvers.cpp-arc  $
-* REVISION     :  $Revision: 1.82 $
-* DATE         :  $Date: 2007/09/28 15:38:59 $
+* REVISION     :  $Revision: 1.83 $
+* DATE         :  $Date: 2007/10/12 21:14:17 $
 *
 * Copyright (c) 1999, 2000, 2001 Cannon Technologies Inc. All rights reserved.
 *-----------------------------------------------------------------------------*/
@@ -710,6 +710,10 @@ INT resolveDeviceType(const string& _rwsTemp)
     {
         nRet = TYPE_NEUTRAL_MONITOR;
     }
+    else if(rwsTemp == "virtual system")
+    {
+        nRet = TYPE_VIRTUAL_SYSTEM;
+    }
     else
     {
         {
@@ -1202,6 +1206,7 @@ bool resolveIsDeviceTypeSingle(INT Type)
             break;
         }
         case TYPE_SYSTEM:
+        case TYPE_VIRTUAL_SYSTEM:
         case TYPEVERSACOMCBC:
         case TYPECBC7010:
         case TYPEEXPRESSCOMCBC:

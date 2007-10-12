@@ -1525,6 +1525,14 @@ void CtiCapController::parseMessage(RWCollectable *message, ULONG secondsFrom190
                             }
                             objType = CtiCCSubstationBusStore::CapBank;
                         }
+                        else if (resolvePAOType(dbChange->getCategory(),dbChange->getObjectType()) == TYPE_VIRTUAL_SYSTEM)
+                        {
+                            if( _CC_DEBUG & CC_DEBUG_EXTENDED )
+                            {
+                                 CtiLockGuard<CtiLogger> logger_guard(dout);
+                                 dout << CtiTime() << " VIRTUAL SYSTEM Device Change "<<dbChange->getId() << endl;
+                            }
+                        }
                         else if (resolvePAOType(dbChange->getCategory(),dbChange->getObjectType()) == TYPE_CC_AREA)
                         {
                             objType = CtiCCSubstationBusStore::Area;

@@ -8,8 +8,8 @@
 *
 * PVCS KEYWORDS:
 * ARCHIVE      :  $Archive:   Z:/SOFTWAREARCHIVES/YUKON/COMMON/desolvers.cpp-arc  $
-* REVISION     :  $Revision: 1.46 $
-* DATE         :  $Date: 2007/08/09 21:41:44 $
+* REVISION     :  $Revision: 1.47 $
+* DATE         :  $Date: 2007/10/12 21:14:17 $
 *
 * Copyright (c) 1999, 2000, 2001 Cannon Technologies Inc. All rights reserved.
 *-----------------------------------------------------------------------------*/
@@ -244,7 +244,8 @@ string desolveDeviceType( INT aType )
         case TYPE_LMPROGRAM_ENERGYEXCHANGE: Ret = "lm energy exchange"; break;
         case TYPE_LM_CONTROL_AREA:          Ret = "lm control area";    break;
         case TYPE_CI_CUSTOMER:              Ret = "ci customer";        break;
-
+        case TYPE_VIRTUAL_SYSTEM:           Ret = "virtual system";         break;
+        
         default:
         {
             {

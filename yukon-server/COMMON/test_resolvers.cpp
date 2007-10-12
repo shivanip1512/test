@@ -7,8 +7,8 @@
 *
 * PVCS KEYWORDS:
 * ARCHIVE      :  $Archive:   Z:/SOFTWAREARCHIVES/YUKON/COMMON/resolvers.cpp-arc  $
-* REVISION     :  $Revision: 1.4 $
-* DATE         :  $Date: 2007/08/17 18:47:40 $
+* REVISION     :  $Revision: 1.5 $
+* DATE         :  $Date: 2007/10/12 21:14:17 $
 *
 * Copyright (c) 2007 Cannon Technologies. All rights reserved.
 *-----------------------------------------------------------------------------*/
@@ -480,6 +480,9 @@ BOOST_AUTO_UNIT_TEST(test_resolveDeviceType)
     BOOST_CHECK_EQUAL(resolveDeviceType(tempName), devType);
     tempName = "fmu";
     devType = TYPE_FMU;
+    BOOST_CHECK_EQUAL(resolveDeviceType(tempName), devType);
+    tempName = "virtual system";
+    devType = TYPE_VIRTUAL_SYSTEM;
     BOOST_CHECK_EQUAL(resolveDeviceType(tempName), devType);
 
 }

@@ -6,8 +6,8 @@
 *
 * PVCS KEYWORDS:
 * ARCHIVE      :  $Archive:   Z:/SOFTWAREARCHIVES/YUKON/common/INCLUDE/devicetypes.h-arc  $
-* REVISION     :  $Revision: 1.34 $
-* DATE         :  $Date: 2007/08/09 20:55:22 $
+* REVISION     :  $Revision: 1.35 $
+* DATE         :  $Date: 2007/10/12 21:14:17 $
 *
 * Copyright (c) 1999, 2000, 2001 Cannon Technologies Inc. All rights reserved.
 *-----------------------------------------------------------------------------*/
@@ -159,6 +159,7 @@
 #define TYPE_MACRO                           2900
 // A system defined pseudo device. CGP 022300
 #define TYPE_SYSTEM                          3000
+#define TYPE_VIRTUAL_SYSTEM                  3001
 #define TYPE_ENERGYPRO                       3100
 #define TYPE_FOREIGNPORTER                   3200
 
