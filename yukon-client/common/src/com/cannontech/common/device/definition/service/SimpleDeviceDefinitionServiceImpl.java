@@ -7,12 +7,12 @@ import java.util.Map;
 import java.util.Set;
 
 import com.cannontech.common.device.YukonDevice;
-import com.cannontech.common.device.attribute.model.Attribute;
-import com.cannontech.common.device.attribute.service.AttributeService;
 import com.cannontech.common.device.definition.dao.DeviceDefinitionDao;
 import com.cannontech.common.device.definition.model.DeviceDefinition;
 import com.cannontech.common.device.definition.model.PointTemplate;
 import com.cannontech.common.device.service.PointService;
+import com.cannontech.core.dao.PointDao;
+import com.cannontech.database.data.lite.LitePoint;
 import com.cannontech.database.data.point.PointBase;
 
 /**
@@ -22,7 +22,7 @@ public class SimpleDeviceDefinitionServiceImpl implements SimpleDeviceDefinition
 
     private DeviceDefinitionDao deviceDefinitionDao = null;
     private PointService pointService = null;
-    private AttributeService attributeService = null;
+    private PointDao pointDao = null;
 
     public void setDeviceDefinitionDao(DeviceDefinitionDao deviceDefinitionDao) {
         this.deviceDefinitionDao = deviceDefinitionDao;
@@ -32,9 +32,9 @@ public class SimpleDeviceDefinitionServiceImpl implements SimpleDeviceDefinition
         this.pointService = pointService;
     }
 
-    public void setAttributeService(AttributeService attributeService) {
-        this.attributeService = attributeService;
-    }
+    public void setPointDao(PointDao pointDao) {
+		this.pointDao = pointDao;
+	}
 
     public List<PointBase> createDefaultPointsForDevice(YukonDevice device) {
 
@@ -95,7 +95,7 @@ public class SimpleDeviceDefinitionServiceImpl implements SimpleDeviceDefinition
         // Get the set of point templates that exist on the device and are
         // supported by the new device definition - these points will be
         // transferred
-        return this.getTemplatesWithSameTypeAndAttribute(supportedTemplates, existingTemplates);
+        return this.getCommonTemplates(supportedTemplates, existingTemplates);
     }
 
     public Set<PointTemplate> getPointTemplatesToAdd(YukonDevice meter,
@@ -108,8 +108,7 @@ public class SimpleDeviceDefinitionServiceImpl implements SimpleDeviceDefinition
 
         // Get the set of templates for the new device definition that do not
         // already exist on the current device
-        Set<PointTemplate> tempRemoveTemplates = this.getTemplatesWithSameTypeAndAttribute(newTemplates,
-                                                                                           existingTemplates);
+		Set<PointTemplate> tempRemoveTemplates = this.getCommonTemplates(newTemplates, existingTemplates);
 
         // Remove the existing supported points from the set of all new points -
         // all other new points will be added
@@ -140,8 +139,7 @@ public class SimpleDeviceDefinitionServiceImpl implements SimpleDeviceDefinition
         // Get the set of point templates that exist on the device and are
         // supported by the new device definition - these points will not be
         // removed
-        Set<PointTemplate> templatesToKeep = this.getTemplatesWithSameTypeAndAttribute(existingTemplates,
-                                                                                       supportedTemplates);
+		Set<PointTemplate> templatesToKeep = this.getCommonTemplates(existingTemplates, supportedTemplates);
 
         // Remove the set of supported existing point templates from the list of
         // existing points - all other existing points will be removed
@@ -161,7 +159,7 @@ public class SimpleDeviceDefinitionServiceImpl implements SimpleDeviceDefinition
         // Get the set of point templates that exist on the device and are
         // supported by the new device definition - these points will be
         // transferred
-        return this.getTemplatesWithSameTypeAndAttribute(existingTemplates, supportedTemplates);
+		return this.getCommonTemplates(existingTemplates, supportedTemplates);
     }
 
 
@@ -186,22 +184,20 @@ public class SimpleDeviceDefinitionServiceImpl implements SimpleDeviceDefinition
     }
 
     /**
-     * Helper method to get a set of point templates from set1 that have an
-     * attribute that is the same as an attribute for a point temlplate in set2
+     * Helper method to get a set of point templates 
+     * from set1 that equal a point temlplate in set2
      * @param set1 - Set of point templates to start with
      * @param set2 - Set of point templates to compare to
-     * @return The set of point templates with attributes found in both sets
+     * @return The set of point templates with pointTemplates found in both sets
      *         (returns a new copy each time the method is called)
      */
-    private Set<PointTemplate> getTemplatesWithSameTypeAndAttribute(Set<PointTemplate> set1,
+    private Set<PointTemplate> getCommonTemplates(Set<PointTemplate> set1,
             Set<PointTemplate> set2) {
 
-        Set<PointTemplate> templates = new HashSet<PointTemplate>();
+    	Set<PointTemplate> templates = new HashSet<PointTemplate>();
         for (PointTemplate template1 : set1) {
             for (PointTemplate template2 : set2) {
-                if (template1.getAttribute() != null
-                        && template1.getAttribute().equals(template2.getAttribute())
-                        && template1.getType() == template2.getType()) {
+                if (template1.compareTo(template2) == 0) {
                     templates.add(template1);
                 }
             }
@@ -211,21 +207,25 @@ public class SimpleDeviceDefinitionServiceImpl implements SimpleDeviceDefinition
 
     /**
      * Helper method to get the list of point templates that correspond to
-     * attribute points that exist for the given device
+     * litePoints that exist for the given device
      * @param device - Device to get pointTemplates for
      * @return A set of existing point templates (returns a new copy each time
      *         the method is called)
      */
     private Set<PointTemplate> getExistingPointTemplates(YukonDevice device) {
 
-        Set<Attribute> atributes = attributeService.getAllExistingAtributes(device);
         Set<PointTemplate> templates = new HashSet<PointTemplate>();
-        for (Attribute attribute : atributes) {
-            templates.add(deviceDefinitionDao.getPointTemplateForAttribute(device, attribute));
-        }
-
+    	List<LitePoint> existingPoints = pointDao.getLitePointsByPaObjectId(device.getDeviceId());
+    	Set<PointTemplate> existingTemplates = deviceDefinitionDao.getAllPointTemplates(device);
+    	
+    	for (LitePoint litePoint : existingPoints) {
+			for (PointTemplate template : existingTemplates) {
+				if (litePoint.getPointName().equals(template.getName()) &&
+						litePoint.getPointOffset() == template.getOffset() &&
+						litePoint.getPointType() == template.getType())
+					templates.add(template);
+			}
+		}
         return templates;
     }
-
-    
 }

@@ -8,7 +8,6 @@ import org.springframework.beans.factory.annotation.Required;
 
 import com.cannontech.clientutils.CTILogger;
 import com.cannontech.common.device.YukonDevice;
-import com.cannontech.common.device.attribute.model.Attribute;
 import com.cannontech.common.device.attribute.model.BuiltInAttribute;
 import com.cannontech.common.device.attribute.service.AttributeService;
 import com.cannontech.common.device.definition.model.DeviceDefinition;
@@ -296,7 +295,7 @@ public class DeviceDefinitionServiceImpl implements DeviceDefinitionService {
             Transaction t = Transaction.createTransaction(Transaction.RETRIEVE, point);
             t.execute();
 
-            PointTemplate newTemplate = this.getTemplateForAttribute(template.getAttribute(),
+            PointTemplate newTemplate = this.getTemplateForLitePoint(litePoint,
                                                                      newTemplates);
 
             // Update the offset
@@ -319,21 +318,22 @@ public class DeviceDefinitionServiceImpl implements DeviceDefinitionService {
     }
 
     /**
-     * Helper method to get a point template for a given attribute from a set
-     * @param attribute - Attribute to get template for
+     * Helper method to get a point template for a given litePoint from a set
+     * @param litePoint - LitePiont to get template for
      * @param templates - Set of templates
-     * @return PointTemplate that matches the attribute
+     * @return PointTemplate that matches the litePoint
      */
-    private PointTemplate getTemplateForAttribute(Attribute attribute, Set<PointTemplate> templates) {
+    private PointTemplate getTemplateForLitePoint(LitePoint litePoint, Set<PointTemplate> templates) {
 
         for (PointTemplate template : templates) {
-            if (attribute.equals(template.getAttribute())) {
-                return template;
-            }
-        }
+			if (litePoint.getPointName().equals(template.getName()) &&
+					litePoint.getPointOffset() == template.getOffset() &&
+					litePoint.getPointType() == template.getType())
+				return template;
+		}
 
-        throw new NotFoundException("The set of templates does not contain a template with attribute: "
-                                    + attribute.getKey());
+        throw new NotFoundException("The set of templates does not contain a template with LitePoint: "
+                                    + litePoint.toString());
     }
 
     private YukonDevice getYukonDeviceForDevice(DeviceBase oldDevice) {

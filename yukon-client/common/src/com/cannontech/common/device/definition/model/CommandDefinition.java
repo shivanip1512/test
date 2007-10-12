@@ -11,10 +11,16 @@ import org.springframework.core.style.ToStringCreator;
 
 public class CommandDefinition {
 
+	String name = null;
     List<String> commandStringList = new ArrayList<String>();
     Set<DevicePointIdentifier> affectedPointList = new HashSet<DevicePointIdentifier>();
 
-    public Set<DevicePointIdentifier> getAffectedPointList() {
+    public CommandDefinition(String name) {
+		super();
+		this.name = name;
+	}
+
+	public Set<DevicePointIdentifier> getAffectedPointList() {
         return affectedPointList;
     }
 
@@ -38,9 +44,21 @@ public class CommandDefinition {
         this.affectedPointList.add(pointReference);
     }
 
-    public boolean affectsPoint(DevicePointIdentifier pointTemplate) {
-        boolean affected = this.affectedPointList.contains(pointTemplate);
-        return affected;
+    public String getName() {
+		return name;
+	}
+
+	public void setName(String name) {
+		this.name = name;
+	}
+
+	public boolean affectsPoint(DevicePointIdentifier pointTemplate) {
+
+		for(DevicePointIdentifier identifier: affectedPointList) {
+			if( identifier.isComparableTo(pointTemplate))
+				return true;
+		}
+		return false;
     }
 
     public boolean equals(Object obj) {
@@ -51,7 +69,8 @@ public class CommandDefinition {
             return true;
         }
         CommandDefinition commandDefinition = (CommandDefinition) obj;
-        return new EqualsBuilder().append(commandStringList,
+        return new EqualsBuilder().append(name, commandDefinition.getName())
+        						  .append(commandStringList,
                                           commandDefinition.getCommandStringList())
                                   .append(affectedPointList,
                                           commandDefinition.getAffectedPointList())
@@ -59,7 +78,8 @@ public class CommandDefinition {
     }
 
     public int hashCode() {
-        return new HashCodeBuilder(89, 99).append(commandStringList)
+        return new HashCodeBuilder(89, 99).append(name)
+        								  .append(commandStringList)
                                           .append(affectedPointList)
                                           .toHashCode();
     }
@@ -67,9 +87,9 @@ public class CommandDefinition {
     @Override
     public String toString() {
         ToStringCreator tsc = new ToStringCreator(this);
+        tsc.append("name", getName());
         tsc.append("commandStringList", getCommandStringList());
         tsc.append("affectedPointList", getAffectedPointList());
         return tsc.toString();
     }
-
 }

@@ -28,7 +28,7 @@ public interface DeviceDefinitionDao {
      * Method to get the point template for a given device and attribute
      * @param device - Device to get point template for
      * @param attribute - Attribute to get point template for
-     * @return
+     * @return The PointTemplate for the device and Attribute
      */
     public abstract PointTemplate getPointTemplateForAttribute(YukonDevice device,
             Attribute attribute);

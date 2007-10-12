@@ -11,15 +11,8 @@ package com.cannontech.common.device.definition.model.castor;
  //- Imported classes and packages -/
 //---------------------------------/
 
-import java.io.IOException;
-import java.io.Reader;
-import java.io.Serializable;
-import java.io.Writer;
-import org.exolab.castor.xml.MarshalException;
 import org.exolab.castor.xml.Marshaller;
 import org.exolab.castor.xml.Unmarshaller;
-import org.exolab.castor.xml.ValidationException;
-import org.xml.sax.ContentHandler;
 
 /**
  * Class Attribute.
@@ -38,6 +31,26 @@ public class Attribute implements java.io.Serializable {
      */
     private java.lang.String _name;
 
+    /**
+     * Internal choice value storage
+     */
+    private java.lang.Object _choiceValue;
+
+    /**
+     * Field _basicLookup
+     */
+    private com.cannontech.common.device.definition.model.castor.BasicLookup _basicLookup;
+
+    /**
+     * Field _mctIedTouLookup
+     */
+    private com.cannontech.common.device.definition.model.castor.MctIedTouLookup _mctIedTouLookup;
+
+    /**
+     * Field _mct4xxLookup
+     */
+    private com.cannontech.common.device.definition.model.castor.Mct4xxLookup _mct4xxLookup;
+
 
       //----------------/
      //- Constructors -/
@@ -52,6 +65,52 @@ public class Attribute implements java.io.Serializable {
       //-----------/
      //- Methods -/
     //-----------/
+
+    /**
+     * Returns the value of field 'basicLookup'.
+     * 
+     * @return BasicLookup
+     * @return the value of field 'basicLookup'.
+     */
+    public com.cannontech.common.device.definition.model.castor.BasicLookup getBasicLookup()
+    {
+        return this._basicLookup;
+    } //-- com.cannontech.common.device.definition.model.castor.BasicLookup getBasicLookup() 
+
+    /**
+     * Returns the value of field 'choiceValue'. The field
+     * 'choiceValue' has the following description: Internal choice
+     * value storage
+     * 
+     * @return Object
+     * @return the value of field 'choiceValue'.
+     */
+    public java.lang.Object getChoiceValue()
+    {
+        return this._choiceValue;
+    } //-- java.lang.Object getChoiceValue() 
+
+    /**
+     * Returns the value of field 'mct4xxLookup'.
+     * 
+     * @return Mct4xxLookup
+     * @return the value of field 'mct4xxLookup'.
+     */
+    public com.cannontech.common.device.definition.model.castor.Mct4xxLookup getMct4xxLookup()
+    {
+        return this._mct4xxLookup;
+    } //-- com.cannontech.common.device.definition.model.castor.Mct4xxLookup getMct4xxLookup() 
+
+    /**
+     * Returns the value of field 'mctIedTouLookup'.
+     * 
+     * @return MctIedTouLookup
+     * @return the value of field 'mctIedTouLookup'.
+     */
+    public com.cannontech.common.device.definition.model.castor.MctIedTouLookup getMctIedTouLookup()
+    {
+        return this._mctIedTouLookup;
+    } //-- com.cannontech.common.device.definition.model.castor.MctIedTouLookup getMctIedTouLookup() 
 
     /**
      * Returns the value of field 'name'.
@@ -109,6 +168,39 @@ public class Attribute implements java.io.Serializable {
         
         Marshaller.marshal(this, handler);
     } //-- void marshal(org.xml.sax.ContentHandler) 
+
+    /**
+     * Sets the value of field 'basicLookup'.
+     * 
+     * @param basicLookup the value of field 'basicLookup'.
+     */
+    public void setBasicLookup(com.cannontech.common.device.definition.model.castor.BasicLookup basicLookup)
+    {
+        this._basicLookup = basicLookup;
+        this._choiceValue = basicLookup;
+    } //-- void setBasicLookup(com.cannontech.common.device.definition.model.castor.BasicLookup) 
+
+    /**
+     * Sets the value of field 'mct4xxLookup'.
+     * 
+     * @param mct4xxLookup the value of field 'mct4xxLookup'.
+     */
+    public void setMct4xxLookup(com.cannontech.common.device.definition.model.castor.Mct4xxLookup mct4xxLookup)
+    {
+        this._mct4xxLookup = mct4xxLookup;
+        this._choiceValue = mct4xxLookup;
+    } //-- void setMct4xxLookup(com.cannontech.common.device.definition.model.castor.Mct4xxLookup) 
+
+    /**
+     * Sets the value of field 'mctIedTouLookup'.
+     * 
+     * @param mctIedTouLookup the value of field 'mctIedTouLookup'.
+     */
+    public void setMctIedTouLookup(com.cannontech.common.device.definition.model.castor.MctIedTouLookup mctIedTouLookup)
+    {
+        this._mctIedTouLookup = mctIedTouLookup;
+        this._choiceValue = mctIedTouLookup;
+    } //-- void setMctIedTouLookup(com.cannontech.common.device.definition.model.castor.MctIedTouLookup) 
 
     /**
      * Sets the value of field 'name'.

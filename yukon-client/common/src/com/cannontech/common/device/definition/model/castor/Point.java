@@ -11,15 +11,8 @@ package com.cannontech.common.device.definition.model.castor;
  //- Imported classes and packages -/
 //---------------------------------/
 
-import java.io.IOException;
-import java.io.Reader;
-import java.io.Serializable;
-import java.io.Writer;
-import org.exolab.castor.xml.MarshalException;
 import org.exolab.castor.xml.Marshaller;
 import org.exolab.castor.xml.Unmarshaller;
-import org.exolab.castor.xml.ValidationException;
-import org.xml.sax.ContentHandler;
 
 /**
  * Class Point.
@@ -47,11 +40,6 @@ public class Point implements java.io.Serializable {
      * keeps track of state for field: _init
      */
     private boolean _has_init;
-
-    /**
-     * Field _attribute
-     */
-    private com.cannontech.common.device.definition.model.castor.Attribute _attribute;
 
     /**
      * Field _name
@@ -96,17 +84,6 @@ public class Point implements java.io.Serializable {
     {
         this._has_init= false;
     } //-- void deleteInit() 
-
-    /**
-     * Returns the value of field 'attribute'.
-     * 
-     * @return Attribute
-     * @return the value of field 'attribute'.
-     */
-    public com.cannontech.common.device.definition.model.castor.Attribute getAttribute()
-    {
-        return this._attribute;
-    } //-- com.cannontech.common.device.definition.model.castor.Attribute getAttribute() 
 
     /**
      * Returns the value of field 'description'.
@@ -231,16 +208,6 @@ public class Point implements java.io.Serializable {
         
         Marshaller.marshal(this, handler);
     } //-- void marshal(org.xml.sax.ContentHandler) 
-
-    /**
-     * Sets the value of field 'attribute'.
-     * 
-     * @param attribute the value of field 'attribute'.
-     */
-    public void setAttribute(com.cannontech.common.device.definition.model.castor.Attribute attribute)
-    {
-        this._attribute = attribute;
-    } //-- void setAttribute(com.cannontech.common.device.definition.model.castor.Attribute) 
 
     /**
      * Sets the value of field 'description'.

@@ -7,12 +7,9 @@ import java.util.List;
 import java.util.Map;
 import java.util.Set;
 
-import org.springframework.core.io.FileSystemResource;
-import org.springframework.core.io.InputStreamResource;
-import org.springframework.core.io.Resource;
-import org.springframework.core.io.UrlResource;
-
 import junit.framework.TestCase;
+
+import org.springframework.core.io.InputStreamResource;
 
 import com.cannontech.common.device.YukonDevice;
 import com.cannontech.common.device.attribute.model.Attribute;
@@ -44,14 +41,9 @@ public class DeviceDefinitionDaoImplTest extends TestCase {
         DeviceDefinitionDaoImpl dao = new DeviceDefinitionDaoImpl();
 
         // Use testDeviceDefinition.xml for testing
-/*        ((DeviceDefinitionDaoImpl) dao).setInputFile(dao.getClass()
-                                                        .getClassLoader().
-                                                        .getResource("com/cannontech/common/device/definition/dao/testDeviceDefinition.xml"));
-*/
         ((DeviceDefinitionDaoImpl) dao).setInputFile(new InputStreamResource(dao.getClass()
-                                                                             .getClassLoader()
-                                                                             .getResourceAsStream("com/cannontech/common/device/definition/dao/testDeviceDefinition.xml")));
-
+                                                        .getClassLoader()
+                                                        .getResourceAsStream("com/cannontech/common/device/definition/dao/testDeviceDefinition.xml")));
         ((DeviceDefinitionDaoImpl) dao).setPaoGroupsWrapper(new DeviceDefinitionDaoImplTest().new MockPaoGroups());
         ((DeviceDefinitionDaoImpl) dao).setJavaConstantClassName(DeviceTypes.class.getName());
         ((DeviceDefinitionDaoImpl) dao).setStateDao(new DeviceDefinitionDaoImplTest().new MockStateDao());
@@ -105,8 +97,7 @@ public class DeviceDefinitionDaoImplTest extends TestCase {
                                                                1.0,
                                                                1,
                                                                0,
-                                                               true,
-                                                               BuiltInAttribute.USAGE);
+                                                               true);
 
         PointTemplate actualTemplate = dao.getPointTemplateForAttribute(device, BuiltInAttribute.USAGE);
 
@@ -312,11 +303,11 @@ public class DeviceDefinitionDaoImplTest extends TestCase {
         DevicePointIdentifier pulse2 = new DevicePointIdentifier(2, 4);
 
         // Define expected command definitions
-        CommandDefinition command1 = new CommandDefinition();
+        CommandDefinition command1 = new CommandDefinition("command1");
         command1.addCommandString("do command1");
         command1.addAffectedPoint(pulse1);
 
-        CommandDefinition command2 = new CommandDefinition();
+        CommandDefinition command2 = new CommandDefinition("command2");
         command2.addCommandString("do command2");
         command2.addCommandString("continue command2");
         command2.addAffectedPoint(pulse1);
@@ -360,8 +351,7 @@ public class DeviceDefinitionDaoImplTest extends TestCase {
                                                     1.0,
                                                     1,
                                                     0,
-                                                    true,
-                                                    BuiltInAttribute.USAGE));
+                                                    true));
 
         // Demand Accumulators
         expectedTemplates.add(new PointTemplate("demand1",
@@ -370,8 +360,7 @@ public class DeviceDefinitionDaoImplTest extends TestCase {
                                                     1.0,
                                                     0,
                                                     0,
-                                                    true,
-                                                    BuiltInAttribute.DEMAND));
+                                                    true));
 
         // Analog
         expectedTemplates.add(new PointTemplate("analog1",
@@ -380,8 +369,7 @@ public class DeviceDefinitionDaoImplTest extends TestCase {
                                                     1.0,
                                                     1,
                                                     0,
-                                                    true,
-                                                    null));
+                                                    true));
 
         return expectedTemplates;
 
@@ -405,11 +393,10 @@ public class DeviceDefinitionDaoImplTest extends TestCase {
                                                     1.0,
                                                     1,
                                                     0,
-                                                    false,
-                                                    null));
+                                                    false));
 
         // Status
-        expectedTemplates.add(new PointTemplate("status1", 0, 1, 1.0, -1, 0, false, null));
+        expectedTemplates.add(new PointTemplate("status1", 0, 1, 1.0, -1, 0, false));
 
         return expectedTemplates;
     }

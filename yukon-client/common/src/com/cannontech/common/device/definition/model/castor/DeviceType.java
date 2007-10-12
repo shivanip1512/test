@@ -11,15 +11,8 @@ package com.cannontech.common.device.definition.model.castor;
  //- Imported classes and packages -/
 //---------------------------------/
 
-import java.io.IOException;
-import java.io.Reader;
-import java.io.Serializable;
-import java.io.Writer;
-import org.exolab.castor.xml.MarshalException;
 import org.exolab.castor.xml.Marshaller;
 import org.exolab.castor.xml.Unmarshaller;
-import org.exolab.castor.xml.ValidationException;
-import org.xml.sax.ContentHandler;
 
 /**
  * Class DeviceType.
@@ -69,6 +62,11 @@ public class DeviceType implements java.io.Serializable {
     private com.cannontech.common.device.definition.model.castor.Points _points;
 
     /**
+     * Field _attributes
+     */
+    private com.cannontech.common.device.definition.model.castor.Attributes _attributes;
+
+    /**
      * Field _commands
      */
     private com.cannontech.common.device.definition.model.castor.Commands _commands;
@@ -87,6 +85,17 @@ public class DeviceType implements java.io.Serializable {
       //-----------/
      //- Methods -/
     //-----------/
+
+    /**
+     * Returns the value of field 'attributes'.
+     * 
+     * @return Attributes
+     * @return the value of field 'attributes'.
+     */
+    public com.cannontech.common.device.definition.model.castor.Attributes getAttributes()
+    {
+        return this._attributes;
+    } //-- com.cannontech.common.device.definition.model.castor.Attributes getAttributes() 
 
     /**
      * Returns the value of field 'commands'.
@@ -221,6 +230,16 @@ public class DeviceType implements java.io.Serializable {
         
         Marshaller.marshal(this, handler);
     } //-- void marshal(org.xml.sax.ContentHandler) 
+
+    /**
+     * Sets the value of field 'attributes'.
+     * 
+     * @param attributes the value of field 'attributes'.
+     */
+    public void setAttributes(com.cannontech.common.device.definition.model.castor.Attributes attributes)
+    {
+        this._attributes = attributes;
+    } //-- void setAttributes(com.cannontech.common.device.definition.model.castor.Attributes) 
 
     /**
      * Sets the value of field 'commands'.

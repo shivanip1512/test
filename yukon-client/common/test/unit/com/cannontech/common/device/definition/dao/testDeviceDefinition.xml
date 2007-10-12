@@ -14,7 +14,6 @@ This file contains default device and point information for all of the devices i
         <displayGroup value="display1"/>
         <points>
             <point init="true" type="PulseAccumulator">
-                <attribute name="USAGE"/>
                 <name>pulse1</name>
                 <offset value="2"/>
                 <multiplier value="1.0"/>
@@ -22,7 +21,6 @@ This file contains default device and point information for all of the devices i
             </point>
 
             <point type="PulseAccumulator">
-                <attribute name="LOAD_PROFILE"/>
                 <name>pulse2</name>
                 <offset value="4"/>
                 <multiplier value="1.0"/>
@@ -30,7 +28,6 @@ This file contains default device and point information for all of the devices i
             </point>
             
             <point init="true" type="DemandAccumulator">
-                <attribute name="DEMAND"/>
                 <name>demand1</name>
                 <offset value="1"/>
                 <multiplier value="1.0"/>
@@ -63,6 +60,17 @@ This file contains default device and point information for all of the devices i
         		<pointRef name="pulse2"/>
         	</command>
         </commands>
+		<attributes>
+        	<attribute name="USAGE">
+        		<basicLookup point="pulse1" />
+        	</attribute>
+        	<attribute name="LOAD_PROFILE">
+        		<basicLookup point="pulse2" />
+        	</attribute>
+        	<attribute name="DEMAND">
+        		<basicLookup point="demand1" />
+        	</attribute>
+        </attributes>      
     </device>
     <device>
         <type value="1022" javaConstant="MCT370" changeGroup="change1" />
@@ -70,20 +78,26 @@ This file contains default device and point information for all of the devices i
         <displayGroup value="display1"/>
         <points>
             <point type="PulseAccumulator">
-                <attribute name="LOAD_PROFILE"/>
                 <name>pulse2</name>
                 <offset value="3"/>
                 <multiplier value="0.1"/>
                 <unitofmeasure value="measure1"/>
             </point>
             <point init="true" type="Analog">
-            	<attribute name="DEMAND"/>
                 <name>analog1</name>
                 <offset value="1"/>
                 <multiplier value=".0001"/>
                 <unitofmeasure value="measure1"/>
             </point>
         </points>
+		<attributes>
+        	<attribute name="LOAD_PROFILE">
+        		<basicLookup point="pulse2" />
+        	</attribute>
+        	<attribute name="DEMAND">
+        		<basicLookup point="analog1" />
+        	</attribute>
+        </attributes>          
     </device>
     
     

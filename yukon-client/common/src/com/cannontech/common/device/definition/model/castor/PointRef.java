@@ -2,7 +2,7 @@
  * This class was automatically generated with 
  * <a href="http://www.castor.org">Castor 0.9.7</a>, using an XML
  * Schema.
- * $Id: PointRef.java,v 1.2 2007/05/15 15:11:10 jkoponen Exp $
+ * $Id: PointRef.java,v 1.3 2007/10/12 14:44:59 stacey Exp $
  */
 
 package com.cannontech.common.device.definition.model.castor;
@@ -11,20 +11,13 @@ package com.cannontech.common.device.definition.model.castor;
  //- Imported classes and packages -/
 //---------------------------------/
 
-import java.io.IOException;
-import java.io.Reader;
-import java.io.Serializable;
-import java.io.Writer;
-import org.exolab.castor.xml.MarshalException;
 import org.exolab.castor.xml.Marshaller;
 import org.exolab.castor.xml.Unmarshaller;
-import org.exolab.castor.xml.ValidationException;
-import org.xml.sax.ContentHandler;
 
 /**
  * Class PointRef.
  * 
- * @version $Revision: 1.2 $ $Date: 2007/05/15 15:11:10 $
+ * @version $Revision: 1.3 $ $Date: 2007/10/12 14:44:59 $
  */
 public class PointRef implements java.io.Serializable {
 

@@ -11,10 +11,7 @@ package com.cannontech.common.device.definition.model.castor;
  //- Imported classes and packages -/
 //---------------------------------/
 
-import org.exolab.castor.mapping.AccessMode;
-import org.exolab.castor.xml.TypeValidator;
-import org.exolab.castor.xml.XMLFieldDescriptor;
-import org.exolab.castor.xml.validators.*;
+import org.exolab.castor.xml.validators.StringValidator;
 
 /**
  * Class AttributeDescriptor.
@@ -57,6 +54,9 @@ public class AttributeDescriptor extends org.exolab.castor.xml.util.XMLClassDesc
      {
         super();
         xmlName = "attribute";
+        
+        //-- set grouping compositor
+        setCompositorAsChoice();
         org.exolab.castor.xml.util.XMLFieldDescriptorImpl  desc           = null;
         org.exolab.castor.mapping.FieldHandler             handler        = null;
         org.exolab.castor.xml.FieldValidator               fieldValidator = null;
@@ -101,6 +101,111 @@ public class AttributeDescriptor extends org.exolab.castor.xml.util.XMLClassDesc
         desc.setValidator(fieldValidator);
         //-- initialize element descriptors
         
+        //-- _basicLookup
+        desc = new org.exolab.castor.xml.util.XMLFieldDescriptorImpl(com.cannontech.common.device.definition.model.castor.BasicLookup.class, "_basicLookup", "basicLookup", org.exolab.castor.xml.NodeType.Element);
+        handler = new org.exolab.castor.xml.XMLFieldHandler() {
+            public java.lang.Object getValue( java.lang.Object object ) 
+                throws IllegalStateException
+            {
+                Attribute target = (Attribute) object;
+                return target.getBasicLookup();
+            }
+            public void setValue( java.lang.Object object, java.lang.Object value) 
+                throws IllegalStateException, IllegalArgumentException
+            {
+                try {
+                    Attribute target = (Attribute) object;
+                    target.setBasicLookup( (com.cannontech.common.device.definition.model.castor.BasicLookup) value);
+                }
+                catch (java.lang.Exception ex) {
+                    throw new IllegalStateException(ex.toString());
+                }
+            }
+            public java.lang.Object newInstance( java.lang.Object parent ) {
+                return new com.cannontech.common.device.definition.model.castor.BasicLookup();
+            }
+        };
+        desc.setHandler(handler);
+        desc.setRequired(true);
+        desc.setMultivalued(false);
+        addFieldDescriptor(desc);
+        
+        //-- validation code for: _basicLookup
+        fieldValidator = new org.exolab.castor.xml.FieldValidator();
+        fieldValidator.setMinOccurs(1);
+        { //-- local scope
+        }
+        desc.setValidator(fieldValidator);
+        //-- _mctIedTouLookup
+        desc = new org.exolab.castor.xml.util.XMLFieldDescriptorImpl(com.cannontech.common.device.definition.model.castor.MctIedTouLookup.class, "_mctIedTouLookup", "mctIedTouLookup", org.exolab.castor.xml.NodeType.Element);
+        handler = new org.exolab.castor.xml.XMLFieldHandler() {
+            public java.lang.Object getValue( java.lang.Object object ) 
+                throws IllegalStateException
+            {
+                Attribute target = (Attribute) object;
+                return target.getMctIedTouLookup();
+            }
+            public void setValue( java.lang.Object object, java.lang.Object value) 
+                throws IllegalStateException, IllegalArgumentException
+            {
+                try {
+                    Attribute target = (Attribute) object;
+                    target.setMctIedTouLookup( (com.cannontech.common.device.definition.model.castor.MctIedTouLookup) value);
+                }
+                catch (java.lang.Exception ex) {
+                    throw new IllegalStateException(ex.toString());
+                }
+            }
+            public java.lang.Object newInstance( java.lang.Object parent ) {
+                return new com.cannontech.common.device.definition.model.castor.MctIedTouLookup();
+            }
+        };
+        desc.setHandler(handler);
+        desc.setRequired(true);
+        desc.setMultivalued(false);
+        addFieldDescriptor(desc);
+        
+        //-- validation code for: _mctIedTouLookup
+        fieldValidator = new org.exolab.castor.xml.FieldValidator();
+        fieldValidator.setMinOccurs(1);
+        { //-- local scope
+        }
+        desc.setValidator(fieldValidator);
+        //-- _mct4xxLookup
+        desc = new org.exolab.castor.xml.util.XMLFieldDescriptorImpl(com.cannontech.common.device.definition.model.castor.Mct4xxLookup.class, "_mct4xxLookup", "mct4xxLookup", org.exolab.castor.xml.NodeType.Element);
+        handler = new org.exolab.castor.xml.XMLFieldHandler() {
+            public java.lang.Object getValue( java.lang.Object object ) 
+                throws IllegalStateException
+            {
+                Attribute target = (Attribute) object;
+                return target.getMct4xxLookup();
+            }
+            public void setValue( java.lang.Object object, java.lang.Object value) 
+                throws IllegalStateException, IllegalArgumentException
+            {
+                try {
+                    Attribute target = (Attribute) object;
+                    target.setMct4xxLookup( (com.cannontech.common.device.definition.model.castor.Mct4xxLookup) value);
+                }
+                catch (java.lang.Exception ex) {
+                    throw new IllegalStateException(ex.toString());
+                }
+            }
+            public java.lang.Object newInstance( java.lang.Object parent ) {
+                return new com.cannontech.common.device.definition.model.castor.Mct4xxLookup();
+            }
+        };
+        desc.setHandler(handler);
+        desc.setRequired(true);
+        desc.setMultivalued(false);
+        addFieldDescriptor(desc);
+        
+        //-- validation code for: _mct4xxLookup
+        fieldValidator = new org.exolab.castor.xml.FieldValidator();
+        fieldValidator.setMinOccurs(1);
+        { //-- local scope
+        }
+        desc.setValidator(fieldValidator);
     } //-- com.cannontech.common.device.definition.model.castor.AttributeDescriptor()
 
 

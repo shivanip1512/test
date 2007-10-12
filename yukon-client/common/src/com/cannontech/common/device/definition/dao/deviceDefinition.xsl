@@ -103,6 +103,62 @@
               </xsl:if>
               
               <h4>
+                <xsl:value-of select="./displayName/@value" /> - Attributes
+              </h4>
+			  <xsl:if test="count(./attributes/attribute) > 0">
+                <table class="pointTable">
+                  <tr>
+                    <th>Name</th>
+                    <th>Lookup</th>
+                    <th>Lookup Attributes</th>
+                  </tr>
+                  <xsl:for-each select="./attributes/attribute">
+                    <tr>
+                      <td>
+                        <xsl:value-of select="@name" />
+                      </td>
+                      <td>
+                      	<xsl:if test="basicLookup">basicLookup</xsl:if>
+                      	<xsl:if test="mct4xxLookup">mct4xxLookup</xsl:if>
+                      	<xsl:if test="mctIedTouLookup">mctIedTouLookup</xsl:if>
+                      </td>
+                      <td>
+                      	<xsl:if test="basicLookup">
+                      		Point=<xsl:value-of select="basicLookup/@point"/>
+                      	</xsl:if>
+                      	<xsl:if test="mct4xxLookup">
+		                  <xsl:for-each select="mct4xxLookup/mapping">
+							Type=<xsl:value-of select="@type"/>
+							<xsl:text> -> </xsl:text>
+							Point=<xsl:value-of select="@point"/>
+	                        <xsl:if test="@default = 'true'">
+	                          <xsl:text>*</xsl:text>
+	                        </xsl:if>
+							<br/>
+						  </xsl:for-each>
+                      	</xsl:if>
+                      	<xsl:if test="mctIedTouLookup">
+		                  <xsl:for-each select="mctIedTouLookup/touMapping">
+							Type=<xsl:value-of select="@type"/>
+							<xsl:text> -> </xsl:text>
+							Point=<xsl:value-of select="@point"/>
+	                        <xsl:if test="@default = 'true'">
+	                          <xsl:text>*</xsl:text>
+	                        </xsl:if>
+							<br/>
+						  </xsl:for-each>
+						</xsl:if>
+                      </td>                      
+                    </tr>
+                  </xsl:for-each>
+                </table>
+                <xsl:if test="count(./attributes/attribute/mct4xxLookup) > 0 or count(./attributes/attribute/mctIedTouLookup) > 0">
+                  *=Default value
+                </xsl:if>
+                
+              </xsl:if>
+              
+              <h4>
                 <xsl:value-of select="./displayName/@value" /> - Commands
               </h4>
 			  <xsl:if test="count(./commands/command) > 0">

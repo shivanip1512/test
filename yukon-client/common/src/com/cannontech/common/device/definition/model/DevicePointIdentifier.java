@@ -49,5 +49,12 @@ public class DevicePointIdentifier {
         tsc.append("offset", getOffset());
         return tsc.toString();
     }
-
+    
+    public boolean isComparableTo(DevicePointIdentifier identifier) {
+    	if( offset != identifier.getOffset())
+    		return false;
+    	if( type != identifier.getType())
+    		return false;
+    	return true;
+    }
 }

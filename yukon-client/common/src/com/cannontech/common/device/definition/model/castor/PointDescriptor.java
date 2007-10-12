@@ -11,10 +11,8 @@ package com.cannontech.common.device.definition.model.castor;
  //- Imported classes and packages -/
 //---------------------------------/
 
-import org.exolab.castor.mapping.AccessMode;
-import org.exolab.castor.xml.TypeValidator;
-import org.exolab.castor.xml.XMLFieldDescriptor;
-import org.exolab.castor.xml.validators.*;
+import org.exolab.castor.xml.validators.BooleanValidator;
+import org.exolab.castor.xml.validators.StringValidator;
 
 /**
  * Class PointDescriptor.
@@ -146,39 +144,6 @@ public class PointDescriptor extends org.exolab.castor.xml.util.XMLClassDescript
         desc.setValidator(fieldValidator);
         //-- initialize element descriptors
         
-        //-- _attribute
-        desc = new org.exolab.castor.xml.util.XMLFieldDescriptorImpl(com.cannontech.common.device.definition.model.castor.Attribute.class, "_attribute", "attribute", org.exolab.castor.xml.NodeType.Element);
-        handler = new org.exolab.castor.xml.XMLFieldHandler() {
-            public java.lang.Object getValue( java.lang.Object object ) 
-                throws IllegalStateException
-            {
-                Point target = (Point) object;
-                return target.getAttribute();
-            }
-            public void setValue( java.lang.Object object, java.lang.Object value) 
-                throws IllegalStateException, IllegalArgumentException
-            {
-                try {
-                    Point target = (Point) object;
-                    target.setAttribute( (com.cannontech.common.device.definition.model.castor.Attribute) value);
-                }
-                catch (java.lang.Exception ex) {
-                    throw new IllegalStateException(ex.toString());
-                }
-            }
-            public java.lang.Object newInstance( java.lang.Object parent ) {
-                return new com.cannontech.common.device.definition.model.castor.Attribute();
-            }
-        };
-        desc.setHandler(handler);
-        desc.setMultivalued(false);
-        addFieldDescriptor(desc);
-        
-        //-- validation code for: _attribute
-        fieldValidator = new org.exolab.castor.xml.FieldValidator();
-        { //-- local scope
-        }
-        desc.setValidator(fieldValidator);
         //-- _name
         desc = new org.exolab.castor.xml.util.XMLFieldDescriptorImpl(java.lang.String.class, "_name", "name", org.exolab.castor.xml.NodeType.Element);
         desc.setImmutable(true);

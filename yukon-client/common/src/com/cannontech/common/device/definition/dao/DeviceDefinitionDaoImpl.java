@@ -1,10 +1,7 @@
 package com.cannontech.common.device.definition.dao;
 
 import java.io.IOException;
-import java.io.InputStream;
 import java.io.InputStreamReader;
-import java.io.OutputStream;
-import java.io.OutputStreamWriter;
 import java.io.StringWriter;
 import java.io.Writer;
 import java.util.ArrayList;
@@ -25,11 +22,6 @@ import javax.xml.transform.stream.StreamSource;
 
 import org.apache.log4j.Logger;
 import org.exolab.castor.xml.Unmarshaller;
-import org.jdom.Document;
-import org.jdom.input.SAXBuilder;
-import org.jdom.output.Format;
-import org.jdom.output.XMLOutputter;
-import org.jdom.transform.XSLTransformer;
 import org.springframework.core.io.Resource;
 import org.springframework.dao.DataAccessException;
 
@@ -37,17 +29,26 @@ import com.cannontech.clientutils.YukonLogManager;
 import com.cannontech.common.device.YukonDevice;
 import com.cannontech.common.device.attribute.model.Attribute;
 import com.cannontech.common.device.attribute.model.BuiltInAttribute;
+import com.cannontech.common.device.definition.attribute.lookup.AttributeLookup;
+import com.cannontech.common.device.definition.attribute.lookup.BasicLookupAttrDef;
+import com.cannontech.common.device.definition.attribute.lookup.Mct4xxLookupAttrDef;
+import com.cannontech.common.device.definition.attribute.lookup.MctIedTouLookupAttrDef;
 import com.cannontech.common.device.definition.model.CommandDefinition;
 import com.cannontech.common.device.definition.model.DeviceDefinition;
 import com.cannontech.common.device.definition.model.DeviceDefinitionImpl;
 import com.cannontech.common.device.definition.model.DevicePointIdentifier;
 import com.cannontech.common.device.definition.model.PointTemplate;
+import com.cannontech.common.device.definition.model.castor.BasicLookup;
 import com.cannontech.common.device.definition.model.castor.Cmd;
 import com.cannontech.common.device.definition.model.castor.Command;
 import com.cannontech.common.device.definition.model.castor.Device;
 import com.cannontech.common.device.definition.model.castor.DeviceDefinitions;
+import com.cannontech.common.device.definition.model.castor.Mapping;
+import com.cannontech.common.device.definition.model.castor.Mct4xxLookup;
+import com.cannontech.common.device.definition.model.castor.MctIedTouLookup;
 import com.cannontech.common.device.definition.model.castor.Point;
 import com.cannontech.common.device.definition.model.castor.PointRef;
+import com.cannontech.common.device.definition.model.castor.TouMapping;
 import com.cannontech.core.dao.NotFoundException;
 import com.cannontech.core.dao.StateDao;
 import com.cannontech.core.dao.UnitMeasureDao;
@@ -74,8 +75,8 @@ public class DeviceDefinitionDaoImpl implements DeviceDefinitionDao {
 
     // Maps containing all of the data in the deviceDefinition.xml file
 
-    // Map<DeviceType, Map<Attribute, PointTemplate>>
-    private Map<Integer, Map<Attribute, PointTemplate>> deviceAttributePointTemplateMap = null;
+    // Map<DeviceType, Map<Attribute, AttributeDefinition>>
+    private Map<Integer, Map<Attribute, AttributeLookup>> deviceAttributeAttrDefinitionMap = null;
 
     // Map<DeviceType, List<PointTemplate>>
     private Map<Integer, Set<PointTemplate>> deviceAllPointTemplateMap = null;
@@ -114,27 +115,27 @@ public class DeviceDefinitionDaoImpl implements DeviceDefinitionDao {
     public void setPointLegendFile(Resource pointLegendFile) {
         this.pointLegendFile = pointLegendFile;
     }
-
+    
     public Set<Attribute> getAvailableAttributes(YukonDevice device) {
-
         int deviceType = device.getType();
-        if (this.deviceAttributePointTemplateMap.containsKey(deviceType)) {
-            Map<Attribute, PointTemplate> attributeMap = this.deviceAttributePointTemplateMap.get(deviceType);
+
+        if (this.deviceAttributeAttrDefinitionMap.containsKey(deviceType)) {
+            Map<Attribute, AttributeLookup> attributeMap = this.deviceAttributeAttrDefinitionMap.get(deviceType);
             return Collections.unmodifiableSet(attributeMap.keySet());
         } else {
             throw new IllegalArgumentException("Device type '" + deviceType
                     + "' is not supported.");
         }
-
     }
 
     public PointTemplate getPointTemplateForAttribute(YukonDevice device, Attribute attribute) {
-
         int deviceType = device.getType();
-        if (this.deviceAttributePointTemplateMap.containsKey(deviceType)) {
-            Map<Attribute, PointTemplate> attributeMap = this.deviceAttributePointTemplateMap.get(deviceType);
+        if (this.deviceAttributeAttrDefinitionMap.containsKey(deviceType)) {
+            Map<Attribute, AttributeLookup> attributeMap = this.deviceAttributeAttrDefinitionMap.get(deviceType);
             if (attributeMap.containsKey(attribute)) {
-                return attributeMap.get(attribute);
+            	AttributeLookup attributeDefinition = attributeMap.get(attribute);
+            	String pointName = attributeDefinition.getPointRefName(device);
+            	return getPointTemplate(deviceType, pointName);
             } else {
                 throw new IllegalArgumentException("Attribute " + attribute.getKey()
                         + " is not supported for Device type '" + deviceType + "'");
@@ -228,7 +229,7 @@ public class DeviceDefinitionDaoImpl implements DeviceDefinitionDao {
         this.deviceAllPointTemplateMap = new HashMap<Integer, Set<PointTemplate>>();
         this.deviceDisplayGroupMap = new LinkedHashMap<String, List<DeviceDefinition>>();
         this.changeGroupDevicesMap = new HashMap<String, Set<DeviceDefinition>>();
-        this.deviceAttributePointTemplateMap = new HashMap<Integer, Map<Attribute, PointTemplate>>();
+        this.deviceAttributeAttrDefinitionMap = new HashMap<Integer, Map<Attribute, AttributeLookup>>();
         this.deviceCommandMap = new HashMap<Integer, Set<CommandDefinition>>();
 
         InputStreamReader reader = null;
@@ -256,6 +257,22 @@ public class DeviceDefinitionDaoImpl implements DeviceDefinitionDao {
         }
     }
 
+    private PointTemplate getPointTemplate(Integer deviceType, String pointName) {
+    	if (this.deviceAllPointTemplateMap.containsKey(deviceType)) {
+        	Set<PointTemplate> templates = this.deviceAllPointTemplateMap.get(deviceType);
+
+        	for (PointTemplate template : templates) {
+            	if( template.getName().equals(pointName))
+            		return template;
+            }
+            throw new NotFoundException("Device type '"
+                    + paoGroupsWrapper.getPAOTypeString(deviceType) + "' does not support point " + pointName + ".");
+        } else {
+            throw new IllegalArgumentException("Device type '"
+                    + paoGroupsWrapper.getPAOTypeString(deviceType) + "' is not supported.");
+        }
+    }
+    
     private Set<PointTemplate> getAllPointTemplates(Integer deviceType) {
         if (this.deviceAllPointTemplateMap.containsKey(deviceType)) {
             Set<PointTemplate> templates = this.deviceAllPointTemplateMap.get(deviceType);
@@ -356,7 +373,6 @@ public class DeviceDefinitionDaoImpl implements DeviceDefinitionDao {
         }
 
         // Add device points
-        Map<Attribute, PointTemplate> pointMap = new HashMap<Attribute, PointTemplate>();
         Set<PointTemplate> pointSet = new HashSet<PointTemplate>();
 
         Map<String, PointTemplate> pointNameTemplateMap = new HashMap<String, PointTemplate>();
@@ -365,9 +381,6 @@ public class DeviceDefinitionDaoImpl implements DeviceDefinitionDao {
             Point[] points = device.getPoints().getPoint();
             for (Point point : points) {
                 PointTemplate template = this.createPointTemplate(point);
-                if (template.getAttribute() != null) {
-                    pointMap.put(template.getAttribute(), template);
-                }
                 pointSet.add(template);
 
                 if (pointNameTemplateMap.containsKey(template.getName())) {
@@ -377,7 +390,23 @@ public class DeviceDefinitionDaoImpl implements DeviceDefinitionDao {
             }
         }
         this.deviceAllPointTemplateMap.put(deviceType, pointSet);
-        this.deviceAttributePointTemplateMap.put(deviceType, pointMap);
+        
+        Map<Attribute, AttributeLookup> attributeMap = new HashMap<Attribute, AttributeLookup>();
+        if (device.getAttributes() != null) {
+            com.cannontech.common.device.definition.model.castor.Attribute[] attributes = device.getAttributes().getAttribute();
+            for (com.cannontech.common.device.definition.model.castor.Attribute attribute : attributes) {
+            	
+            	AttributeLookup attributeDefinition = 
+            		createAttributeDefinition(attribute.getName(), attribute.getChoiceValue());
+            	Attribute pointAttribute = BuiltInAttribute.valueOf(attribute.getName());
+            	
+                if (attributeMap.containsKey(pointAttribute)) {
+                    throw new RuntimeException("Attribute: " + attribute.getName() + " is used twice for device type: " + javaConstant + " in the deviceDefinition.xml file - attribute names must be unique within a device type");
+                }
+            	attributeMap.put(pointAttribute, attributeDefinition);
+            }
+        }        
+        this.deviceAttributeAttrDefinitionMap.put(deviceType, attributeMap);
 
         // Add device commands
         Set<CommandDefinition> commandSet = new HashSet<CommandDefinition>();
@@ -394,6 +423,67 @@ public class DeviceDefinitionDaoImpl implements DeviceDefinitionDao {
     }
 
     /**
+     * Helper method to convert a castor AttributeLookup CHOICE object to a AttributeLookup definition
+     * @param choiceLookup - The choice object from the attribute lookup
+     * @return The AttributeLookup definition representing the castor CHOICE lookup
+     */
+	private AttributeLookup createAttributeDefinition(String attributeName, Object choiceLookup) {
+	    
+		AttributeLookup attributeDefinition = null;
+		Attribute attribute = BuiltInAttribute.valueOf(attributeName);
+		
+		if ( choiceLookup instanceof Mct4xxLookup) {
+			Mct4xxLookup lookup = (Mct4xxLookup)choiceLookup;
+			attributeDefinition = new Mct4xxLookupAttrDef(attribute);
+			
+	    	List<Mct4xxLookupAttrDef.Mapping> mappingList = new ArrayList<Mct4xxLookupAttrDef.Mapping>();
+			
+	    	Mapping[] mappings = lookup.getMapping();
+			for (Mapping mapping : mappings) {
+				Mct4xxLookupAttrDef.Mapping lookupMapping = 
+					((Mct4xxLookupAttrDef)attributeDefinition).new Mapping(
+																	mapping.getType(),
+																	mapping.getPoint(),
+																	mapping.getDefault());
+				
+				mappingList.add(lookupMapping);
+			}
+			
+			((Mct4xxLookupAttrDef)attributeDefinition).setMapping(mappingList);
+		
+		} else if ( choiceLookup instanceof MctIedTouLookup) {
+			MctIedTouLookup lookup = (MctIedTouLookup)choiceLookup;
+			attributeDefinition = new MctIedTouLookupAttrDef(attribute);
+			
+	    	List<MctIedTouLookupAttrDef.Mapping> mappingList = new ArrayList<MctIedTouLookupAttrDef.Mapping>();
+			
+	    	TouMapping[] mappings = lookup.getTouMapping();
+			for (TouMapping mapping : mappings) {
+				MctIedTouLookupAttrDef.Mapping lookupMapping = 
+					((MctIedTouLookupAttrDef)attributeDefinition).new Mapping(
+																	mapping.getType(),
+																	mapping.getPoint(),
+																	mapping.getDefault());
+				mappingList.add(lookupMapping);
+			}
+			
+			((MctIedTouLookupAttrDef)attributeDefinition).setMapping(mappingList);
+
+		}else if ( choiceLookup instanceof BasicLookup) {
+			BasicLookup lookup = (BasicLookup)choiceLookup;
+			attributeDefinition = new BasicLookupAttrDef(attribute);
+			((BasicLookupAttrDef)attributeDefinition).setPointName(lookup.getPoint());
+		}
+		
+		if( attributeDefinition != null)
+			return attributeDefinition;
+		
+		throw new IllegalArgumentException("Attribute Choice '" + choiceLookup.toString() + 
+											"' is not supported.");
+                
+	}
+	
+    /**
      * Helper method to convert a castor command to a command definition
      * @param deviceName - Name of device for commands
      * @param command - Command to convert
@@ -403,7 +493,7 @@ public class DeviceDefinitionDaoImpl implements DeviceDefinitionDao {
     private CommandDefinition createCommandDefinition(String deviceName, Command command,
             Map<String, PointTemplate> pointNameTemplateMap) {
 
-        CommandDefinition definition = new CommandDefinition();
+        CommandDefinition definition = new CommandDefinition(command.getName());
 
         // Add command text
         Cmd[] cmds = command.getCmd();
@@ -433,11 +523,6 @@ public class DeviceDefinitionDaoImpl implements DeviceDefinitionDao {
     private PointTemplate createPointTemplate(Point point) {
 
         PointTemplate template = new PointTemplate(PointTypes.getType(point.getType()), point.getOffset().getValue());
-
-        if (point.getAttribute() != null) {
-            String attributeName = point.getAttribute().getName();
-            template.setAttribute(BuiltInAttribute.valueOf(attributeName));
-        }
 
         template.setName(point.getName());
         template.setShouldInitialize(point.getInit());

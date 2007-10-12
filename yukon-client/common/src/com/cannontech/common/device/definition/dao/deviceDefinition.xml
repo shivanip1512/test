@@ -43,35 +43,30 @@
                 <unitofmeasure value="kWH"/>
             </point>
             <point init="true" type="PulseAccumulator">
-            	<attribute name="BLINK_COUNT"/>
                 <name>Blink Count</name>
                 <offset value="20"/>
                 <multiplier value="1.0"/>
                 <unitofmeasure value="Counts"/>
             </point>
             <point type="PulseAccumulator">
-                <attribute name="TOU_RATE_A_USAGE"/>
                 <name>TOU Rate A (Channel 1)</name>
                 <offset value="101"/>
                 <multiplier value="1.0"/>
                 <unitofmeasure value="kWH"/>
             </point>
             <point type="PulseAccumulator">
-                <attribute name="TOU_RATE_B_USAGE"/>
                 <name>TOU Rate B (Channel 1)</name>
                 <offset value="121"/>
                 <multiplier value="1.0"/>
                 <unitofmeasure value="kWH"/>
             </point>
             <point type="PulseAccumulator">
-                <attribute name="TOU_RATE_C_USAGE"/>
                 <name>TOU Rate C (Channel 1)</name>
                 <offset value="141"/>
                 <multiplier value="1.0"/>
                 <unitofmeasure value="kWH"/>
             </point>
             <point type="PulseAccumulator">
-                <attribute name="TOU_RATE_D_USAGE"/>
                 <name>TOU Rate D (Channel 1)</name>
                 <offset value="161"/>
                 <multiplier value="1.0"/>
@@ -152,7 +147,6 @@
             </point>
             
             <point init="true" type="DemandAccumulator">
-            	<attribute name="LOAD_PROFILE" />            	
                 <name>kW-LP</name>
                 <offset value="101"/>
                 <multiplier value="1.0"/>
@@ -178,7 +172,6 @@
             </point>
             
             <point type="DemandAccumulator">
-                <attribute name="TOU_RATE_A_PEAK"/>
                 <name>TOU Rate A - Peak kW (Channel 1)</name>
                 <offset value="111"/>
                 <multiplier value="1.0"/>
@@ -191,7 +184,6 @@
                 <unitofmeasure value="kW"/>
             </point>
             <point type="DemandAccumulator">
-                <attribute name="TOU_RATE_B_PEAK"/>
                 <name>TOU Rate B - Peak kW (Channel 1)</name>
                 <offset value="131"/>
                 <multiplier value="1.0"/>
@@ -204,7 +196,6 @@
                 <unitofmeasure value="kW"/>
             </point>
             <point type="DemandAccumulator">
-                <attribute name="TOU_RATE_C_PEAK"/>
                 <name>TOU Rate C - Peak kW (Channel 1)</name>
                 <offset value="151"/>
                 <multiplier value="1.0"/>
@@ -217,7 +208,6 @@
                 <unitofmeasure value="kW"/>
             </point>
             <point type="DemandAccumulator">
-                <attribute name="TOU_RATE_D_PEAK"/>
                 <name>TOU Rate D - Peak kW (Channel 1)</name>
                 <offset value="171"/>
                 <multiplier value="1.0"/>
@@ -236,14 +226,12 @@
                 <unitofmeasure value="kWH"/>
             </point>
             <point init="true" type="Analog">
-            	<attribute name="PEAK_DEMAND"/>
                 <name>Peak kW (Rate A kW)</name>
                 <offset value="2"/>
                 <multiplier value="0.01"/>
                 <unitofmeasure value="kW"/>
             </point>
             <point init="true" type="Analog">
-            	<attribute name="USAGE"/>
                 <name>Rate A kWh</name>
                 <offset value="3"/>
                 <multiplier value="0.0001"/>
@@ -286,7 +274,6 @@
                 <unitofmeasure value="kWH"/>
             </point>
             <point init="true" type="Analog">
-            	<attribute name="DEMAND"/>
                 <name>Last Interval kW</name>
                 <offset value="10"/>
                 <multiplier value="0.01"/>
@@ -299,14 +286,12 @@
                 <unitofmeasure value="kVArh"/>
             </point>
             <point init="true" type="Analog">
-            	<attribute name="KVAR"/>
                 <name>Peak kVAr (Rate A kVAr)</name>
                 <offset value="12"/>
                 <multiplier value="0.01"/>
                 <unitofmeasure value="kVAr"/>
             </point>
             <point init="true" type="Analog">
-            	<attribute name="KVARH"/>
                 <name>Rate A kVArh</name>
                 <offset value="13"/>
                 <multiplier value="0.0001"/>
@@ -355,7 +340,6 @@
                 <unitofmeasure value="kVAr"/>
             </point>
 			<point init="true" type="Analog">
-            	<attribute name="OUTAGE_LOG"/>
                 <name>Outages</name>
                 <offset value="100"/>
                 <multiplier value="1.0"/>
@@ -560,6 +544,93 @@
         		<cmd text="getconfig intervals"/>
         	</command>
         </commands>
+		<attributes>
+        	<attribute name="USAGE">
+        		<mct4xxLookup>
+        			<!-- When connect to an IED -->
+        			<mapping type="T" point="Total kWh"/>
+        			<mapping type="A" point="Rate A kWh" default="true"/>
+        			<mapping type="B" point="Rate B kWh"/>
+        			<mapping type="C" point="Rate C kWh"/>
+        			<mapping type="D" point="Rate D kWh"/>
+				</mct4xxLookup>
+        	</attribute>
+        	<attribute name="PEAK_DEMAND">
+         		<mct4xxLookup>
+<!--        			<mapping type="T" point="Peak kW (Rate A kW)"/>-->
+        			<mapping type="A" point="Peak kW (Rate A kW)" default="true"/>
+        			<mapping type="B" point="Peak kW (Rate B kW)"/>
+        			<mapping type="C" point="Peak kW (Rate C kW)"/>
+        			<mapping type="D" point="Peak kW (Rate D kW)"/>
+				</mct4xxLookup>
+        	</attribute>
+        	<attribute name="DEMAND">
+        		<basicLookup point="Last Interval kW" />
+        	</attribute>
+        	<attribute name="KVAR">
+        		<basicLookup point="Peak kVAr (Rate A kVAr)" />
+        	</attribute>
+        	<attribute name="KVARH">
+        		<basicLookup point="Rate A kVArh" />
+        	</attribute>
+        	<attribute name="OUTAGE_LOG">
+        		<basicLookup point="Outages" />
+        	</attribute>
+        	<attribute name="LOAD_PROFILE">
+        		<basicLookup point="kW-LP" />
+        	</attribute>
+        	<attribute name="BLINK_COUNT">
+        		<basicLookup point="Blink Count" />
+        	</attribute>
+        	<attribute name="TOU_RATE_A_USAGE">
+        		<mctIedTouLookup>
+        			<touMapping type="ied" point="Rate A kWh" default="true"/>
+        			<touMapping type="mct" point="TOU Rate A (Channel 1)" />
+        		</mctIedTouLookup>
+        	</attribute>
+        	<attribute name="TOU_RATE_B_USAGE">
+        		<mctIedTouLookup>
+        			<touMapping type="ied" point="Rate B kWh" default="true"/>
+        			<touMapping type="mct" point="TOU Rate B (Channel 1)" />
+        		</mctIedTouLookup>
+        	</attribute>
+        	<attribute name="TOU_RATE_C_USAGE">
+        		<mctIedTouLookup>
+        			<touMapping type="ied" point="Rate C kWh" default="true"/>
+        			<touMapping type="mct" point="TOU Rate C (Channel 1)" />
+        		</mctIedTouLookup>
+        	</attribute>
+        	<attribute name="TOU_RATE_D_USAGE">
+        		<mctIedTouLookup>
+        			<touMapping type="ied" point="Rate D kWh" default="true"/>
+        			<touMapping type="mct" point="TOU Rate D (Channel 1)" />
+        		</mctIedTouLookup>
+        	</attribute>
+        	<attribute name="TOU_RATE_A_PEAK_DEMAND">
+        		<mctIedTouLookup>
+        			<touMapping type="ied" point="Peak kW (Rate A kW)" default="true"/>
+        			<touMapping type="mct" point="TOU Rate A - Peak kW (Channel 1)" />
+        		</mctIedTouLookup>
+        	</attribute>
+        	<attribute name="TOU_RATE_B_PEAK_DEMAND">
+        		<mctIedTouLookup>
+        			<touMapping type="ied" point="Peak kW (Rate B kW)" default="true"/>
+        			<touMapping type="mct" point="TOU Rate B - Peak kW (Channel 1)" />
+        		</mctIedTouLookup>
+        	</attribute>
+        	<attribute name="TOU_RATE_C_PEAK_DEMAND">
+        		<mctIedTouLookup>
+        			<touMapping type="ied" point="Peak kW (Rate C kW)" default="true"/>
+        			<touMapping type="mct" point="TOU Rate C - Peak kW (Channel 1)" />
+        		</mctIedTouLookup>
+        	</attribute>
+        	<attribute name="TOU_RATE_D_PEAK_DEMAND">
+        		<mctIedTouLookup>
+        			<touMapping type="ied" point="Peak kW (Rate D kW)" default="true"/>
+        			<touMapping type="mct" point="TOU Rate D - Peak kW (Channel 1)" />
+        		</mctIedTouLookup>
+        	</attribute>
+        </attributes>        
     </device>
     <device>
         <type value="1086" javaConstant="MCT430A"/>
@@ -573,63 +644,54 @@
                 <unitofmeasure value="kWH"/>
             </point>
             <point init="true" type="Analog">
-                <attribute name="PEAK_DEMAND"/>
                 <name>Peak kW (Rate A kW)</name>
                 <offset value="2"/>
                 <multiplier value="0.01"/>
                 <unitofmeasure value="kW"/>
             </point>
             <point init="true" type="Analog">
-                <attribute name="USAGE"/>
                 <name>Rate A kWh</name>
                 <offset value="3"/>
                 <multiplier value="0.0001"/>
                 <unitofmeasure value="kWH"/>
             </point>
             <point type="Analog">
-                <attribute name="TOU_RATE_B_PEAK"/>
                 <name>Peak kW (Rate B kW)</name>
                 <offset value="4"/>
                 <multiplier value="0.01"/>
                 <unitofmeasure value="kW"/>
             </point>
             <point type="Analog">
-                <attribute name="TOU_RATE_B_USAGE"/>
                 <name>Rate B kWh</name>
                 <offset value="5"/>
                 <multiplier value="0.0001"/>
                 <unitofmeasure value="kWH"/>
             </point>
             <point type="Analog">
-                <attribute name="TOU_RATE_C_PEAK"/>
                 <name>Peak kW (Rate C kW)</name>
                 <offset value="6"/>
                 <multiplier value="0.01"/>
                 <unitofmeasure value="kW"/>
             </point>
             <point type="Analog">
-                <attribute name="TOU_RATE_C_USAGE"/>
                 <name>Rate C kWh</name>
                 <offset value="7"/>
                 <multiplier value="0.0001"/>
                 <unitofmeasure value="kWH"/>
             </point>
             <point type="Analog">
-                <attribute name="TOU_RATE_D_PEAK"/>
                 <name>Peak kW (Rate D kW)</name>
                 <offset value="8"/>
                 <multiplier value="0.01"/>
                 <unitofmeasure value="kW"/>
             </point>
             <point type="Analog">
-                <attribute name="TOU_RATE_D_USAGE"/>
                 <name>Rate D kWh</name>
                 <offset value="9"/>
                 <multiplier value="0.0001"/>
                 <unitofmeasure value="kWH"/>
             </point>
             <point init="true" type="Analog">
-                <attribute name="DEMAND"/>
                 <name>Last Interval kW</name>
                 <offset value="10"/>
                 <multiplier value="0.01"/>
@@ -642,14 +704,12 @@
                 <unitofmeasure value="kVArh"/>
             </point>
             <point init="true" type="Analog">
-            	<attribute name="KVAR"/>
                 <name>Peak kVAr (Rate A kVAr)</name>
                 <offset value="12"/>
                 <multiplier value="0.01"/>
                 <unitofmeasure value="kVAr"/>
             </point>
             <point init="true" type="Analog">
-            	<attribute name="KVARH"/>
                 <name>Rate A kVArh</name>
                 <offset value="13"/>
                 <multiplier value="0.0001"/>
@@ -698,14 +758,12 @@
                 <unitofmeasure value="kVAr"/>
             </point>
             <point init="true" type="Analog">
-             	<attribute name="OUTAGE_LOG"/>
                 <name>Outages</name>
                 <offset value="100"/>
                 <multiplier value="1.0"/>
                 <unitofmeasure value="Seconds"/>
             </point>
             <point init="true" type="DemandAccumulator">
-            	<attribute name="LOAD_PROFILE" />            	
                 <name>kW-LP</name>
                 <offset value="101"/>
                 <multiplier value="0.01"/>
@@ -730,7 +788,6 @@
                 <unitofmeasure value="Volts"/>
             </point>
             <point init="true" type="PulseAccumulator">
-            	<attribute name="BLINK_COUNT"/>
                 <name>Blink Count</name>
                 <offset value="20"/>
                 <multiplier value="1.0"/>
@@ -826,6 +883,68 @@
         		<cmd text="getconfig intervals"/>
         	</command>
         </commands>
+		<attributes>
+        	<attribute name="USAGE">
+        		<mct4xxLookup>
+        			<mapping type="T" point="Total kWh"/>
+        			<mapping type="A" point="Rate A kWh" default="true"/>
+        			<mapping type="B" point="Rate B kWh"/>
+        			<mapping type="C" point="Rate C kWh"/>
+        			<mapping type="D" point="Rate D kWh"/>
+				</mct4xxLookup>
+        	</attribute>
+        	<attribute name="PEAK_DEMAND">
+         		<mct4xxLookup>
+<!--        			<mapping type="T" point="Peak kW (Rate A kW)"/>-->
+        			<mapping type="A" point="Peak kW (Rate A kW)" default="true"/>
+        			<mapping type="B" point="Peak kW (Rate B kW)"/>
+        			<mapping type="C" point="Peak kW (Rate C kW)"/>
+        			<mapping type="D" point="Peak kW (Rate D kW)"/>
+				</mct4xxLookup>
+        	</attribute>
+        	<attribute name="DEMAND">
+        		<basicLookup point="Last Interval kW" />
+        	</attribute>
+        	<attribute name="KVAR">
+        		<basicLookup point="Peak kVAr (Rate A kVAr)" />
+        	</attribute>
+        	<attribute name="KVARH">
+        		<basicLookup point="Rate A kVArh" />
+        	</attribute>
+        	<attribute name="OUTAGE_LOG">
+        		<basicLookup point="Outages" />
+        	</attribute>
+        	<attribute name="LOAD_PROFILE">
+        		<basicLookup point="kW-LP" />
+        	</attribute>
+        	<attribute name="BLINK_COUNT">
+        		<basicLookup point="Blink Count" />
+        	</attribute>
+			<attribute name="TOU_RATE_A_USAGE">
+        		<basicLookup point="Rate A kWh" />
+        	</attribute>
+        	<attribute name="TOU_RATE_B_USAGE">
+        		<basicLookup point="Rate B kWh" />
+        	</attribute>
+        	<attribute name="TOU_RATE_C_USAGE">
+        		<basicLookup point="Rate C kWh" />
+        	</attribute>
+        	<attribute name="TOU_RATE_D_USAGE">
+        		<basicLookup point="Rate D kWh" />
+        	</attribute>
+        	<attribute name="TOU_RATE_A_PEAK_DEMAND">
+        		<basicLookup point="Peak kW (Rate A kW)" />
+        	</attribute>
+        	<attribute name="TOU_RATE_B_PEAK_DEMAND">
+        		<basicLookup point="Peak kW (Rate B kW)" />
+        	</attribute>
+        	<attribute name="TOU_RATE_C_PEAK_DEMAND">
+        		<basicLookup point="Peak kW (Rate C kW)" />
+        	</attribute>
+        	<attribute name="TOU_RATE_D_PEAK_DEMAND">
+        		<basicLookup point="Peak kW (Rate D kW)" />
+        	</attribute>
+        </attributes>
     </device>
     <device>
         <type value="1087" javaConstant="MCT430S4"/>
@@ -839,63 +958,54 @@
                 <unitofmeasure value="kWH"/>
             </point>
             <point init="true" type="Analog">
-                <attribute name="PEAK_DEMAND"/>
                 <name>Peak kW (Rate A kW)</name>
                 <offset value="2"/>
                 <multiplier value="0.01"/>
                 <unitofmeasure value="kW"/>
             </point>
             <point init="true" type="Analog">
-                <attribute name="USAGE"/>
                 <name>Rate A kWh</name>
                 <offset value="3"/>
                 <multiplier value="0.0001"/>
                 <unitofmeasure value="kWH"/>
             </point>
             <point type="Analog">
-                <attribute name="TOU_RATE_B_PEAK"/>
                 <name>Peak kW (Rate B kW)</name>
                 <offset value="4"/>
                 <multiplier value="0.01"/>
                 <unitofmeasure value="kW"/>
             </point>
             <point type="Analog">
-                <attribute name="TOU_RATE_B_USAGE"/>
                 <name>Rate B kWh</name>
                 <offset value="5"/>
                 <multiplier value="0.0001"/>
                 <unitofmeasure value="kWH"/>
             </point>
             <point type="Analog">
-                <attribute name="TOU_RATE_C_PEAK"/>
                 <name>Peak kW (Rate C kW)</name>
                 <offset value="6"/>
                 <multiplier value="0.01"/>
                 <unitofmeasure value="kW"/>
             </point>
             <point type="Analog">
-                <attribute name="TOU_RATE_C_USAGE"/>
                 <name>Rate C kWh</name>
                 <offset value="7"/>
                 <multiplier value="0.0001"/>
                 <unitofmeasure value="kWH"/>
             </point>
             <point type="Analog">
-                <attribute name="TOU_RATE_D_PEAK"/>
                 <name>Peak kW (Rate D kW)</name>
                 <offset value="8"/>
                 <multiplier value="0.01"/>
                 <unitofmeasure value="kW"/>
             </point>
             <point type="Analog">
-                <attribute name="TOU_RATE_D_USAGE"/>
                 <name>Rate D kWh</name>
                 <offset value="9"/>
                 <multiplier value="0.0001"/>
                 <unitofmeasure value="kWH"/>
             </point>
             <point init="true" type="Analog">
-                <attribute name="DEMAND"/>
                 <name>Last Interval kW</name>
                 <offset value="10"/>
                 <multiplier value="0.01"/>
@@ -908,14 +1018,12 @@
                 <unitofmeasure value="kVArh"/>
             </point>
             <point init="true" type="Analog">
-            	<attribute name="KVAR"/>
                 <name>Peak kVAr (Rate A kVAr)</name>
                 <offset value="12"/>
                 <multiplier value="0.01"/>
                 <unitofmeasure value="kVAr"/>
             </point>
             <point init="true" type="Analog">
-            	<attribute name="KVARH"/>
                 <name>Rate A kVArh</name>
                 <offset value="13"/>
                 <multiplier value="0.0001"/>
@@ -982,14 +1090,12 @@
                 <unitofmeasure value="Volts"/>
             </point>
             <point init="true" type="Analog">
-            	<attribute name="OUTAGE_LOG"/>
                 <name>Outages</name>
                 <offset value="100"/>
                 <multiplier value="1.0"/>
                 <unitofmeasure value="Seconds"/>
             </point>
             <point init="true" type="DemandAccumulator">
-            	<attribute name="LOAD_PROFILE" />            	
                 <name>kW-LP</name>
                 <offset value="101"/>
                 <multiplier value="0.01"/>
@@ -1014,7 +1120,6 @@
                 <unitofmeasure value="Volts"/>
             </point>
             <point init="true" type="PulseAccumulator">
-            	<attribute name="BLINK_COUNT"/>
                 <name>Blink Count</name>
                 <offset value="20"/>
                 <multiplier value="1.0"/>
@@ -1110,6 +1215,68 @@
         		<cmd text="getconfig intervals"/>
         	</command>
         </commands>
+		<attributes>
+        	<attribute name="USAGE">
+        		<mct4xxLookup>
+        			<mapping type="T" point="Total kWh"/>
+        			<mapping type="A" point="Rate A kWh" default="true"/>
+        			<mapping type="B" point="Rate B kWh"/>
+        			<mapping type="C" point="Rate C kWh"/>
+        			<mapping type="D" point="Rate D kWh"/>
+				</mct4xxLookup>
+        	</attribute>
+        	<attribute name="PEAK_DEMAND">
+         		<mct4xxLookup>
+<!--        			<mapping type="T" point="Peak kW (Rate A kW)"/>-->
+        			<mapping type="A" point="Peak kW (Rate A kW)" default="true"/>
+        			<mapping type="B" point="Peak kW (Rate B kW)"/>
+        			<mapping type="C" point="Peak kW (Rate C kW)"/>
+        			<mapping type="D" point="Peak kW (Rate D kW)"/>
+				</mct4xxLookup>
+        	</attribute>
+        	<attribute name="DEMAND">
+        		<basicLookup point="Last Interval kW" />
+        	</attribute>
+        	<attribute name="KVAR">
+        		<basicLookup point="Peak kVAr (Rate A kVAr)" />
+        	</attribute>
+        	<attribute name="KVARH">
+        		<basicLookup point="Rate A kVArh" />
+        	</attribute>
+        	<attribute name="OUTAGE_LOG">
+        		<basicLookup point="Outages" />
+        	</attribute>
+        	<attribute name="LOAD_PROFILE">
+        		<basicLookup point="kW-LP" />
+        	</attribute>
+        	<attribute name="BLINK_COUNT">
+        		<basicLookup point="Blink Count" />
+        	</attribute>
+        	<attribute name="TOU_RATE_A_USAGE">
+        		<basicLookup point="Rate A kWh" />
+        	</attribute>
+        	<attribute name="TOU_RATE_B_USAGE">
+        		<basicLookup point="Rate B kWh" />
+        	</attribute>
+        	<attribute name="TOU_RATE_C_USAGE">
+        		<basicLookup point="Rate C kWh" />
+        	</attribute>
+        	<attribute name="TOU_RATE_D_USAGE">
+        		<basicLookup point="Rate D kWh" />
+        	</attribute>
+        	<attribute name="TOU_RATE_A_PEAK_DEMAND">
+        		<basicLookup point="Peak kW (Rate A kW)" />
+        	</attribute>
+        	<attribute name="TOU_RATE_B_PEAK_DEMAND">
+        		<basicLookup point="Peak kW (Rate B kW)" />
+        	</attribute>
+        	<attribute name="TOU_RATE_C_PEAK_DEMAND">
+        		<basicLookup point="Peak kW (Rate C kW)" />
+        	</attribute>
+        	<attribute name="TOU_RATE_D_PEAK_DEMAND">
+        		<basicLookup point="Peak kW (Rate D kW)" />
+        	</attribute>
+        </attributes>
     </device>
         <device>
         <type value="1097" javaConstant="MCT430SL"/>
@@ -1123,63 +1290,54 @@
                 <unitofmeasure value="kWH"/>
             </point>
             <point init="true" type="Analog">
-                <attribute name="PEAK_DEMAND"/>
                 <name>Peak kW (Rate A kW)</name>
                 <offset value="2"/>
                 <multiplier value="0.01"/>
                 <unitofmeasure value="kW"/>
             </point>
             <point init="true" type="Analog">
-                <attribute name="USAGE"/>
                 <name>Rate A kWh</name>
                 <offset value="3"/>
                 <multiplier value="0.0001"/>
                 <unitofmeasure value="kWH"/>
             </point>
             <point type="Analog">
-                <attribute name="TOU_RATE_B_PEAK"/>
                 <name>Peak kW (Rate B kW)</name>
                 <offset value="4"/>
                 <multiplier value="0.01"/>
                 <unitofmeasure value="kW"/>
             </point>
             <point type="Analog">
-                <attribute name="TOU_RATE_B_USAGE"/>
                 <name>Rate B kWh</name>
                 <offset value="5"/>
                 <multiplier value="0.0001"/>
                 <unitofmeasure value="kWH"/>
             </point>
             <point type="Analog">
-                <attribute name="TOU_RATE_C_PEAK"/>
                 <name>Peak kW (Rate C kW)</name>
                 <offset value="6"/>
                 <multiplier value="0.01"/>
                 <unitofmeasure value="kW"/>
             </point>
             <point type="Analog">
-                <attribute name="TOU_RATE_C_USAGE"/>
                 <name>Rate C kWh</name>
                 <offset value="7"/>
                 <multiplier value="0.0001"/>
                 <unitofmeasure value="kWH"/>
             </point>
             <point type="Analog">
-                <attribute name="TOU_RATE_D_PEAK"/>
                 <name>Peak kW (Rate D kW)</name>
                 <offset value="8"/>
                 <multiplier value="0.01"/>
                 <unitofmeasure value="kW"/>
             </point>
             <point type="Analog">
-                <attribute name="TOU_RATE_D_USAGE"/>
                 <name>Rate D kWh</name>
                 <offset value="9"/>
                 <multiplier value="0.0001"/>
                 <unitofmeasure value="kWH"/>
             </point>
             <point init="true" type="Analog">
-                <attribute name="DEMAND"/>
                 <name>Last Interval kW</name>
                 <offset value="10"/>
                 <multiplier value="0.01"/>
@@ -1192,14 +1350,12 @@
                 <unitofmeasure value="kVArh"/>
             </point>
             <point init="true" type="Analog">
-            	<attribute name="KVAR"/>
                 <name>Peak kVAr (Rate A kVAr)</name>
                 <offset value="12"/>
                 <multiplier value="0.01"/>
                 <unitofmeasure value="kVAr"/>
             </point>
             <point init="true" type="Analog">
-            	<attribute name="KVARH"/>
                 <name>Rate A kVArh</name>
                 <offset value="13"/>
                 <multiplier value="0.0001"/>
@@ -1266,14 +1422,12 @@
                 <unitofmeasure value="Volts"/>
             </point>
             <point init="true" type="Analog">
-            	<attribute name="OUTAGE_LOG"/>
                 <name>Outages</name>
                 <offset value="100"/>
                 <multiplier value="1.0"/>
                 <unitofmeasure value="Seconds"/>
             </point>
             <point init="true" type="DemandAccumulator">
-            	<attribute name="LOAD_PROFILE" />            	
                 <name>kW-LP</name>
                 <offset value="101"/>
                 <multiplier value="0.01"/>
@@ -1298,7 +1452,6 @@
                 <unitofmeasure value="Volts"/>
             </point>
             <point init="true" type="PulseAccumulator">
-            	<attribute name="BLINK_COUNT"/>
                 <name>Blink Count</name>
                 <offset value="20"/>
                 <multiplier value="1.0"/>
@@ -1394,6 +1547,68 @@
         		<cmd text="getconfig intervals"/>
         	</command>
         </commands>
+		<attributes>
+        	<attribute name="USAGE">
+        		<mct4xxLookup>
+        			<mapping type="T" point="Total kWh"/>
+        			<mapping type="A" point="Rate A kWh" default="true"/>
+        			<mapping type="B" point="Rate B kWh"/>
+        			<mapping type="C" point="Rate C kWh"/>
+        			<mapping type="D" point="Rate D kWh"/>
+				</mct4xxLookup>
+        	</attribute>
+        	<attribute name="PEAK_DEMAND">
+         		<mct4xxLookup>
+<!--        			<mapping type="T" point="Peak kW (Rate A kW)"/>-->
+        			<mapping type="A" point="Peak kW (Rate A kW)" default="true"/>
+        			<mapping type="B" point="Peak kW (Rate B kW)"/>
+        			<mapping type="C" point="Peak kW (Rate C kW)"/>
+        			<mapping type="D" point="Peak kW (Rate D kW)"/>
+				</mct4xxLookup>
+        	</attribute>
+        	<attribute name="DEMAND">
+        		<basicLookup point="Last Interval kW" />
+        	</attribute>
+        	<attribute name="KVAR">
+        		<basicLookup point="Peak kVAr (Rate A kVAr)" />
+        	</attribute>
+        	<attribute name="KVARH">
+        		<basicLookup point="Rate A kVArh" />
+        	</attribute>
+        	<attribute name="OUTAGE_LOG">
+        		<basicLookup point="Outages" />
+        	</attribute>
+        	<attribute name="LOAD_PROFILE">
+        		<basicLookup point="kW-LP" />
+        	</attribute>
+        	<attribute name="BLINK_COUNT">
+        		<basicLookup point="Blink Count" />
+        	</attribute>
+        	<attribute name="TOU_RATE_A_USAGE">
+        		<basicLookup point="Rate A kWh" />
+        	</attribute>
+        	<attribute name="TOU_RATE_B_USAGE">
+        		<basicLookup point="Rate B kWh" />
+        	</attribute>
+        	<attribute name="TOU_RATE_C_USAGE">
+        		<basicLookup point="Rate C kWh" />
+        	</attribute>
+        	<attribute name="TOU_RATE_D_USAGE">
+        		<basicLookup point="Rate D kWh" />
+        	</attribute>
+        	<attribute name="TOU_RATE_A_PEAK_DEMAND">
+        		<basicLookup point="Peak kW (Rate A kW)" />
+        	</attribute>
+        	<attribute name="TOU_RATE_B_PEAK_DEMAND">
+        		<basicLookup point="Peak kW (Rate B kW)" />
+        	</attribute>
+        	<attribute name="TOU_RATE_C_PEAK_DEMAND">
+        		<basicLookup point="Peak kW (Rate C kW)" />
+        	</attribute>
+        	<attribute name="TOU_RATE_D_PEAK_DEMAND">
+        		<basicLookup point="Peak kW (Rate D kW)" />
+        	</attribute>
+        </attributes>
     </device>
     <device>
         <type value="1065" javaConstant="MCT410IL" changeGroup="mct"/>
@@ -1401,7 +1616,6 @@
         <displayGroup value="MCT"/>
         <points>
             <point init="true" type="PulseAccumulator">
-                <attribute name="USAGE"/>
                 <name>kWh</name>
                 <offset value="1"/>
                 <multiplier value="0.1"/>
@@ -1421,35 +1635,30 @@
             </point>
 
             <point init="true" type="PulseAccumulator">
-            	<attribute name="BLINK_COUNT"/>
                 <name>Blink Count</name>
                 <offset value="20"/>
                 <multiplier value="1.0"/>
                 <unitofmeasure value="Counts"/>
             </point>
             <point type="PulseAccumulator">
-                <attribute name="TOU_RATE_A_USAGE"/>
                 <name>Rate A kWh</name>
                 <offset value="101"/>
                 <multiplier value="0.1"/>
                 <unitofmeasure value="kWH"/>
             </point>
             <point type="PulseAccumulator">
-                <attribute name="TOU_RATE_B_USAGE"/>
                 <name>Rate B kWh</name>
                 <offset value="121"/>
                 <multiplier value="0.1"/>
                 <unitofmeasure value="kWH"/>
             </point>
             <point type="PulseAccumulator">
-                <attribute name="TOU_RATE_C_USAGE"/>
                 <name>Rate C kWh</name>
                 <offset value="141"/>
                 <multiplier value="0.1"/>
                 <unitofmeasure value="kWH"/>
             </point>
             <point type="PulseAccumulator">
-                <attribute name="TOU_RATE_D_USAGE"/>
                 <name>Rate D kWh</name>
                 <offset value="161"/>
                 <multiplier value="0.1"/>
@@ -1457,7 +1666,6 @@
             </point>
             
             <point init="true" type="DemandAccumulator">
-                <attribute name="DEMAND"/>
                 <name>kW</name>
                 <offset value="1"/>
                 <multiplier value="0.1"/>
@@ -1476,14 +1684,12 @@
                 <unitofmeasure value="kW"/>
             </point>
             <point init="true" type="DemandAccumulator">
-            	<attribute name="VOLTAGE"/>
                 <name>Voltage</name>
                 <offset value="4"/>
                 <multiplier value="0.1"/>
                 <unitofmeasure value="Volts"/>
             </point>
             <point init="true" type="DemandAccumulator">
-                <attribute name="PEAK_DEMAND"/>
                 <name>Peak kW</name>
                 <offset value="11"/>
                 <multiplier value="0.1"/>
@@ -1520,7 +1726,6 @@
                 <unitofmeasure value="Volts"/>
             </point>
             <point init="true" type="DemandAccumulator">
-            	<attribute name="LOAD_PROFILE" />
                 <name>kW-LP</name>
                 <offset value="101"/>
                 <multiplier value="0.1"/>
@@ -1539,42 +1744,36 @@
                 <unitofmeasure value="kW"/>
             </point>
             <point init="true" type="DemandAccumulator">
-            	<attribute name="VOLTAGE_PROFILE"/>
                 <name>Voltage Profile</name>
                 <offset value="104"/>
                 <multiplier value="0.1"/>
                 <unitofmeasure value="Volts"/>
             </point>
             <point type="DemandAccumulator">
-            	<attribute name="TOU_RATE_A_PEAK"/>
                 <name>Peak kW (Rate A kW)</name>
                 <offset value="111"/>
                 <multiplier value="0.1"/>
                 <unitofmeasure value="kW"/>
             </point>
             <point type="DemandAccumulator">
-            	<attribute name="TOU_RATE_B_PEAK"/>
                 <name>Peak kW (Rate B kW)</name>
                 <offset value="131"/>
                 <multiplier value="0.1"/>
                 <unitofmeasure value="kW"/>
             </point>
             <point type="DemandAccumulator">
-            	<attribute name="TOU_RATE_C_PEAK"/>
                 <name>Peak kW (Rate C kW)</name>
                 <offset value="151"/>
                 <multiplier value="0.1"/>
                 <unitofmeasure value="kW"/>
             </point>
             <point type="DemandAccumulator">
-            	<attribute name="TOU_RATE_D_PEAK"/>
                 <name>Peak kW (Rate D kW)</name>
                 <offset value="171"/>
                 <multiplier value="0.1"/>
                 <unitofmeasure value="kW"/>
             </point>
             <point init="true" type="Analog">
-            	<attribute name="OUTAGE_LOG"/>
                 <name>Outages</name>
                 <offset value="100"/>
                 <multiplier value="1.0"/>
@@ -1582,7 +1781,6 @@
             </point>
             
             <point type="Status">
-            	<attribute name="DISCONNECT_STATUS"/>
                 <name>Disconnect Status</name>
                 <offset value="1"/>
                 <stategroup value="410 Disconnect"/>
@@ -1717,6 +1915,59 @@
         		<cmd text="getconfig intervals"/>
         	</command>
         </commands>
+		<attributes>
+        	<attribute name="USAGE">
+        		<basicLookup point="kWh" />
+        	</attribute>
+        	<attribute name="PEAK_DEMAND">
+        		<basicLookup point="Peak kW" />
+        	</attribute>
+        	<attribute name="DEMAND">
+        		<basicLookup point="kW" />
+        	</attribute>
+        	<attribute name="VOLTAGE">
+        		<basicLookup point="Voltage" />
+        	</attribute>        	
+        	<attribute name="OUTAGE_LOG">
+        		<basicLookup point="Outages" />
+        	</attribute>
+        	<attribute name="LOAD_PROFILE">
+        		<basicLookup point="kW-LP" />
+        	</attribute>
+        	<attribute name="VOLTAGE_PROFILE">
+        		<basicLookup point="Voltage Profile" />
+        	</attribute>
+        	<attribute name="BLINK_COUNT">
+        		<basicLookup point="Blink Count" />
+        	</attribute>
+        	<attribute name="DISCONNECT_STATUS">
+        		<basicLookup point="Disconnect Status" />
+        	</attribute>
+			<attribute name="TOU_RATE_A_USAGE">
+        		<basicLookup point="Rate A kWh" />
+        	</attribute>
+        	<attribute name="TOU_RATE_B_USAGE">
+        		<basicLookup point="Rate B kWh" />
+        	</attribute>
+        	<attribute name="TOU_RATE_C_USAGE">
+        		<basicLookup point="Rate C kWh" />
+        	</attribute>
+        	<attribute name="TOU_RATE_D_USAGE">
+        		<basicLookup point="Rate D kWh" />
+        	</attribute>
+        	<attribute name="TOU_RATE_A_PEAK_DEMAND">
+        		<basicLookup point="Peak kW (Rate A kW)" />
+        	</attribute>
+        	<attribute name="TOU_RATE_B_PEAK_DEMAND">
+        		<basicLookup point="Peak kW (Rate B kW)" />
+        	</attribute>
+        	<attribute name="TOU_RATE_C_PEAK_DEMAND">
+        		<basicLookup point="Peak kW (Rate C kW)" />
+        	</attribute>
+        	<attribute name="TOU_RATE_D_PEAK_DEMAND">
+        		<basicLookup point="Peak kW (Rate D kW)" />
+        	</attribute>
+        </attributes>
     </device>
     <device>
         <type value="1081" javaConstant="MCT410CL" changeGroup="mct"/>
@@ -1724,7 +1975,6 @@
         <displayGroup value="MCT"/>
         <points>
             <point init="true" type="PulseAccumulator">
-                <attribute name="USAGE"/>
                 <name>kWh</name>
                 <offset value="1"/>
                 <multiplier value="0.1"/>
@@ -1743,35 +1993,30 @@
                 <unitofmeasure value="kWH"/>
             </point>
             <point init="true" type="PulseAccumulator">
-            	<attribute name="BLINK_COUNT"/>
                 <name>Blink Count</name>
                 <offset value="20"/>
                 <multiplier value="1.0"/>
                 <unitofmeasure value="Counts"/>
             </point>
             <point type="PulseAccumulator">
-                <attribute name="TOU_RATE_A_USAGE"/>
                 <name>Rate A kWh</name>
                 <offset value="101"/>
                 <multiplier value="0.1"/>
                 <unitofmeasure value="kWH"/>
             </point>
             <point type="PulseAccumulator">
-                <attribute name="TOU_RATE_B_USAGE"/>
                 <name>Rate B kWh</name>
                 <offset value="121"/>
                 <multiplier value="0.1"/>
                 <unitofmeasure value="kWH"/>
             </point>
             <point type="PulseAccumulator">
-                <attribute name="TOU_RATE_C_USAGE"/>
                 <name>Rate C kWh</name>
                 <offset value="141"/>
                 <multiplier value="0.1"/>
                 <unitofmeasure value="kWH"/>
             </point>
             <point type="PulseAccumulator">
-                <attribute name="TOU_RATE_D_USAGE"/>
                 <name>Rate D kWh</name>
                 <offset value="161"/>
                 <multiplier value="0.1"/>
@@ -1779,7 +2024,6 @@
             </point>
             
             <point init="true" type="DemandAccumulator">
-                <attribute name="DEMAND"/>            
                 <name>kW</name>
                 <offset value="1"/>
                 <multiplier value="0.1"/>
@@ -1798,14 +2042,12 @@
                 <unitofmeasure value="kW"/>
             </point>
             <point init="true" type="DemandAccumulator">
-            	<attribute name="VOLTAGE"/>
                 <name>Voltage</name>
                 <offset value="4"/>
                 <multiplier value="0.1"/>
                 <unitofmeasure value="Volts"/>
             </point>
             <point init="true" type="DemandAccumulator">
-                <attribute name="PEAK_DEMAND"/>
                 <name>Peak kW</name>
                 <offset value="11"/>
                 <multiplier value="0.1"/>
@@ -1842,7 +2084,6 @@
                 <unitofmeasure value="Volts"/>
             </point>
             <point init="true" type="DemandAccumulator">
-            	<attribute name="LOAD_PROFILE" />
                 <name>kW-LP</name>
                 <offset value="101"/>
                 <multiplier value="0.1"/>
@@ -1861,42 +2102,36 @@
                 <unitofmeasure value="kW"/>
             </point>
             <point init="true" type="DemandAccumulator">
-            	<attribute name="VOLTAGE_PROFILE"/>
                 <name>Voltage Profile</name>
                 <offset value="104"/>
                 <multiplier value="0.1"/>
                 <unitofmeasure value="Volts"/>
             </point>
             <point type="DemandAccumulator">
-            	<attribute name="TOU_RATE_A_PEAK"/>
                 <name>Peak kW (Rate A kW)</name>
                 <offset value="111"/>
                 <multiplier value="0.1"/>
                 <unitofmeasure value="kW"/>
             </point>
             <point type="DemandAccumulator">
-                <attribute name="TOU_RATE_B_PEAK"/>
                 <name>Peak kW (Rate B kW)</name>
                 <offset value="131"/>
                 <multiplier value="0.1"/>
                 <unitofmeasure value="kW"/>
             </point>
             <point type="DemandAccumulator">
-                <attribute name="TOU_RATE_C_PEAK"/>
                 <name>Peak kW (Rate C kW)</name>
                 <offset value="151"/>
                 <multiplier value="0.1"/>
                 <unitofmeasure value="kW"/>
             </point>
             <point type="DemandAccumulator">
-                <attribute name="TOU_RATE_D_PEAK"/>
                 <name>Peak kW (Rate D kW)</name>
                 <offset value="171"/>
                 <multiplier value="0.1"/>
                 <unitofmeasure value="kW"/>
             </point>
             <point init="true" type="Analog">
-            	<attribute name="OUTAGE_LOG"/>
                 <name>Outages</name>
                 <offset value="100"/>
                 <multiplier value="1.0"/>
@@ -1904,7 +2139,6 @@
             </point>
             
             <point type="Status">
-            	<attribute name="DISCONNECT_STATUS"/>
                 <name>Disconnect Status</name>
                 <offset value="1"/>
                 <stategroup value="410 Disconnect"/>
@@ -2039,6 +2273,59 @@
         		<cmd text="getconfig intervals"/>
         	</command>
         </commands>
+		<attributes>
+        	<attribute name="USAGE">
+        		<basicLookup point="kWh" />
+        	</attribute>
+        	<attribute name="PEAK_DEMAND">
+        		<basicLookup point="Peak kW" />
+        	</attribute>
+        	<attribute name="DEMAND">
+        		<basicLookup point="kW" />
+        	</attribute>
+        	<attribute name="VOLTAGE">
+        		<basicLookup point="Voltage" />
+        	</attribute>        	
+        	<attribute name="OUTAGE_LOG">
+        		<basicLookup point="Outages" />
+        	</attribute>
+        	<attribute name="LOAD_PROFILE">
+        		<basicLookup point="kW-LP" />
+        	</attribute>
+        	<attribute name="VOLTAGE_PROFILE">
+        		<basicLookup point="Voltage Profile" />
+        	</attribute>
+        	<attribute name="BLINK_COUNT">
+        		<basicLookup point="Blink Count" />
+        	</attribute>
+        	<attribute name="DISCONNECT_STATUS">
+        		<basicLookup point="Disconnect Status" />
+        	</attribute>
+			<attribute name="TOU_RATE_A_USAGE">
+        		<basicLookup point="Rate A kWh" />
+        	</attribute>
+        	<attribute name="TOU_RATE_B_USAGE">
+        		<basicLookup point="Rate B kWh" />
+        	</attribute>
+        	<attribute name="TOU_RATE_C_USAGE">
+        		<basicLookup point="Rate C kWh" />
+        	</attribute>
+        	<attribute name="TOU_RATE_D_USAGE">
+        		<basicLookup point="Rate D kWh" />
+        	</attribute>
+        	<attribute name="TOU_RATE_A_PEAK_DEMAND">
+        		<basicLookup point="Peak kW (Rate A kW)" />
+        	</attribute>
+        	<attribute name="TOU_RATE_B_PEAK_DEMAND">
+        		<basicLookup point="Peak kW (Rate B kW)" />
+        	</attribute>
+        	<attribute name="TOU_RATE_C_PEAK_DEMAND">
+        		<basicLookup point="Peak kW (Rate C kW)" />
+        	</attribute>
+        	<attribute name="TOU_RATE_D_PEAK_DEMAND">
+        		<basicLookup point="Peak kW (Rate D kW)" />
+        	</attribute>
+        </attributes>
     </device>
         <device>
         <type value="1095" javaConstant="MCT410FL" changeGroup="mct"/>
@@ -2046,7 +2333,6 @@
         <displayGroup value="MCT"/>
         <points>
             <point init="true" type="PulseAccumulator">
-                <attribute name="USAGE"/>
                 <name>kWh</name>
                 <offset value="1"/>
                 <multiplier value="0.1"/>
@@ -2065,35 +2351,30 @@
                 <unitofmeasure value="kWH"/>
             </point>
             <point init="true" type="PulseAccumulator">
-            	<attribute name="BLINK_COUNT"/>
                 <name>Blink Count</name>
                 <offset value="20"/>
                 <multiplier value="1.0"/>
                 <unitofmeasure value="Counts"/>
             </point>
             <point type="PulseAccumulator">
-                <attribute name="TOU_RATE_A_USAGE"/>
                 <name>Rate A kWh</name>
                 <offset value="101"/>
                 <multiplier value="0.1"/>
                 <unitofmeasure value="kWH"/>
             </point>
             <point type="PulseAccumulator">
-                <attribute name="TOU_RATE_B_USAGE"/>
                 <name>Rate B kWh</name>
                 <offset value="121"/>
                 <multiplier value="0.1"/>
                 <unitofmeasure value="kWH"/>
             </point>
             <point type="PulseAccumulator">
-                <attribute name="TOU_RATE_C_USAGE"/>
                 <name>Rate C kWh</name>
                 <offset value="141"/>
                 <multiplier value="0.1"/>
                 <unitofmeasure value="kWH"/>
             </point>
             <point type="PulseAccumulator">
-                <attribute name="TOU_RATE_D_USAGE"/>
                 <name>Rate D kWh</name>
                 <offset value="161"/>
                 <multiplier value="0.1"/>
@@ -2101,7 +2382,6 @@
             </point>
             
             <point init="true" type="DemandAccumulator">
-                <attribute name="DEMAND"/>
                 <name>kW</name>
                 <offset value="1"/>
                 <multiplier value="0.1"/>
@@ -2120,14 +2400,12 @@
                 <unitofmeasure value="kW"/>
             </point>
             <point init="true" type="DemandAccumulator">
-            	<attribute name="VOLTAGE"/>
                 <name>Voltage</name>
                 <offset value="4"/>
                 <multiplier value="0.1"/>
                 <unitofmeasure value="Volts"/>
             </point>
             <point init="true" type="DemandAccumulator">
-                <attribute name="PEAK_DEMAND"/>
                 <name>Peak kW</name>
                 <offset value="11"/>
                 <multiplier value="0.1"/>
@@ -2164,7 +2442,6 @@
                 <unitofmeasure value="Volts"/>
             </point>
             <point init="true" type="DemandAccumulator">
-            	<attribute name="LOAD_PROFILE" />
                 <name>kW-LP</name>
                 <offset value="101"/>
                 <multiplier value="0.1"/>
@@ -2183,42 +2460,36 @@
                 <unitofmeasure value="kW"/>
             </point>
             <point init="true" type="DemandAccumulator">
-            	<attribute name="VOLTAGE_PROFILE"/>
                 <name>Voltage Profile</name>
                 <offset value="104"/>
                 <multiplier value="0.1"/>
                 <unitofmeasure value="Volts"/>
             </point>
             <point type="DemandAccumulator">
-            	<attribute name="TOU_RATE_A_PEAK"/>
                 <name>Peak kW (Rate A kW)</name>
                 <offset value="111"/>
                 <multiplier value="0.1"/>
                 <unitofmeasure value="kW"/>
             </point>
             <point type="DemandAccumulator">
-            	<attribute name="TOU_RATE_B_PEAK"/>
                 <name>Peak kW (Rate B kW)</name>
                 <offset value="131"/>
                 <multiplier value="0.1"/>
                 <unitofmeasure value="kW"/>
             </point>
             <point type="DemandAccumulator">
-            	<attribute name="TOU_RATE_C_PEAK"/>
                 <name>Peak kW (Rate C kW)</name>
                 <offset value="151"/>
                 <multiplier value="0.1"/>
                 <unitofmeasure value="kW"/>
             </point>
             <point type="DemandAccumulator">
-            	<attribute name="TOU_RATE_D_PEAK"/>
                 <name>Peak kW (Rate D kW)</name>
                 <offset value="171"/>
                 <multiplier value="0.1"/>
                 <unitofmeasure value="kW"/>
             </point>
             <point init="true" type="Analog">
-            	<attribute name="OUTAGE_LOG"/>
                 <name>Outages</name>
                 <offset value="100"/>
                 <multiplier value="1.0"/>
@@ -2226,7 +2497,6 @@
             </point>
             
             <point type="Status">
-            	<attribute name="DISCONNECT_STATUS"/>
                 <name>Disconnect Status</name>
                 <offset value="1"/>
                 <stategroup value="410 Disconnect"/>
@@ -2361,6 +2631,59 @@
         		<cmd text="getconfig intervals"/>
         	</command>
         </commands>
+        <attributes>
+        	<attribute name="USAGE">
+        		<basicLookup point="kWh" />
+        	</attribute>
+        	<attribute name="PEAK_DEMAND">
+        		<basicLookup point="Peak kW" />
+        	</attribute>
+        	<attribute name="DEMAND">
+        		<basicLookup point="kW" />
+        	</attribute>
+        	<attribute name="VOLTAGE">
+        		<basicLookup point="Voltage" />
+        	</attribute>        	
+        	<attribute name="OUTAGE_LOG">
+        		<basicLookup point="Outages" />
+        	</attribute>
+        	<attribute name="LOAD_PROFILE">
+        		<basicLookup point="kW-LP" />
+        	</attribute>
+        	<attribute name="VOLTAGE_PROFILE">
+        		<basicLookup point="Voltage Profile" />
+        	</attribute>
+        	<attribute name="BLINK_COUNT">
+        		<basicLookup point="Blink Count" />
+        	</attribute>
+        	<attribute name="DISCONNECT_STATUS">
+        		<basicLookup point="Disconnect Status" />
+        	</attribute>
+			<attribute name="TOU_RATE_A_USAGE">
+        		<basicLookup point="Rate A kWh" />
+        	</attribute>
+        	<attribute name="TOU_RATE_B_USAGE">
+        		<basicLookup point="Rate B kWh" />
+        	</attribute>
+        	<attribute name="TOU_RATE_C_USAGE">
+        		<basicLookup point="Rate C kWh" />
+        	</attribute>
+        	<attribute name="TOU_RATE_D_USAGE">
+        		<basicLookup point="Rate D kWh" />
+        	</attribute>
+        	<attribute name="TOU_RATE_A_PEAK_DEMAND">
+        		<basicLookup point="Peak kW (Rate A kW)" />
+        	</attribute>
+        	<attribute name="TOU_RATE_B_PEAK_DEMAND">
+        		<basicLookup point="Peak kW (Rate B kW)" />
+        	</attribute>
+        	<attribute name="TOU_RATE_C_PEAK_DEMAND">
+        		<basicLookup point="Peak kW (Rate C kW)" />
+        	</attribute>
+        	<attribute name="TOU_RATE_D_PEAK_DEMAND">
+        		<basicLookup point="Peak kW (Rate D kW)" />
+        	</attribute>
+        </attributes>
      </device>
 <!--
         <device>
@@ -2369,7 +2692,6 @@
         <displayGroup value="MCT"/>
         <points>
             <point init="true" type="PulseAccumulator">
-                <attribute name="USAGE"/>
                 <name>kWh</name>
                 <offset value="1"/>
                 <multiplier value="0.1"/>
@@ -2388,7 +2710,6 @@
                 <unitofmeasure value="kWH"/>
             </point>
            <point init="true" type="PulseAccumulator">
-            	<attribute name="BLINK_COUNT"/>
                 <name>Blink Count</name>
                 <offset value="20"/>
                 <multiplier value="1.0"/>
@@ -2420,7 +2741,6 @@
             </point>
             
             <point init="true" type="DemandAccumulator">
-                <attribute name="DEMAND"/>
                 <name>kW</name>
                 <offset value="1"/>
                 <multiplier value="0.1"/>
@@ -2439,14 +2759,12 @@
                 <unitofmeasure value="kW"/>
             </point>
             <point init="true" type="DemandAccumulator">
-            	<attribute name="VOLTAGE"/>
                 <name>Voltage</name>
                 <offset value="4"/>
                 <multiplier value="0.1"/>
                 <unitofmeasure value="Volts"/>
             </point>
             <point init="true" type="DemandAccumulator">
-                <attribute name="PEAK_DEMAND"/>
                 <name>Peak kW</name>
                 <offset value="11"/>
                 <multiplier value="0.1"/>
@@ -2483,7 +2801,6 @@
                 <unitofmeasure value="Volts"/>
             </point>
             <point init="true" type="DemandAccumulator">
-            	<attribute name="LOAD_PROFILE" />
                 <name>kW-LP</name>
                 <offset value="101"/>
                 <multiplier value="0.1"/>
@@ -2502,7 +2819,6 @@
                 <unitofmeasure value="kW"/>
             </point>
             <point init="true" type="DemandAccumulator">
-            	<attribute name="VOLTAGE_PROFILE"/>
                 <name>Voltage Profile</name>
                 <offset value="104"/>
                 <multiplier value="0.1"/>
@@ -2533,7 +2849,6 @@
                 <unitofmeasure value="kW"/>
             </point>
             <point init="true" type="Analog">
-            	<attribute name="OUTAGE_LOG"/>
                 <name>Outages</name>
                 <offset value="100"/>
                 <multiplier value="1.0"/>
@@ -2541,7 +2856,6 @@
             </point>
             
             <point type="Status">
-            	<attribute name="DISCONNECT_STATUS"/>
                 <name>Disconnect Status</name>
                 <offset value="1"/>
                 <stategroup value="410 Disconnect"/>
@@ -2678,6 +2992,59 @@
         		<cmd text="getconfig intervals"/>
         	</command>
         </commands>
+        <attributes>
+        	<attribute name="USAGE">
+        		<basicLookup point="kWh" />
+        	</attribute>
+        	<attribute name="PEAK_DEMAND">
+        		<basicLookup point="Peak kW" />
+        	</attribute>
+        	<attribute name="DEMAND">
+        		<basicLookup point="kW" />
+        	</attribute>
+        	<attribute name="VOLTAGE">
+        		<basicLookup point="Voltage" />
+        	</attribute>        	
+        	<attribute name="OUTAGE_LOG">
+        		<basicLookup point="Outages" />
+        	</attribute>
+        	<attribute name="LOAD_PROFILE">
+        		<basicLookup point="kW-LP" />
+        	</attribute>
+        	<attribute name="VOLTAGE_PROFILE">
+        		<basicLookup point="Voltage Profile" />
+        	</attribute>
+        	<attribute name="BLINK_COUNT">
+        		<basicLookup point="Blink Count" />
+        	</attribute>
+        	<attribute name="DISCONNECT_STATUS">
+        		<basicLookup point="Disconnect Status" />
+        	</attribute>
+			<attribute name="TOU_RATE_A_USAGE">
+        		<basicLookup point="Rate A kWh" />
+        	</attribute>
+        	<attribute name="TOU_RATE_B_USAGE">
+        		<basicLookup point="Rate B kWh" />
+        	</attribute>
+        	<attribute name="TOU_RATE_C_USAGE">
+        		<basicLookup point="Rate C kWh" />
+        	</attribute>
+        	<attribute name="TOU_RATE_D_USAGE">
+        		<basicLookup point="Rate D kWh" />
+        	</attribute>
+        	<attribute name="TOU_RATE_A_PEAK_DEMAND">
+        		<basicLookup point="Peak kW (Rate A kW)" />
+        	</attribute>
+        	<attribute name="TOU_RATE_B_PEAK_DEMAND">
+        		<basicLookup point="Peak kW (Rate B kW)" />
+        	</attribute>
+        	<attribute name="TOU_RATE_C_PEAK_DEMAND">
+        		<basicLookup point="Peak kW (Rate C kW)" />
+        	</attribute>
+        	<attribute name="TOU_RATE_D_PEAK_DEMAND">
+        		<basicLookup point="Peak kW (Rate D kW)" />
+        	</attribute>
+        </attributes>
     </device>
  -->
  
@@ -2723,7 +3090,6 @@
                 <unitofmeasure value="Undefined"/>
             </point>
             <point init="true" type="PulseAccumulator">
-            	<attribute name="BLINK_COUNT"/>
                 <name>Power Fail Count</name>
                 <offset value="20"/>
                 <multiplier value="1.0"/>
@@ -2792,14 +3158,12 @@
                 <unitofmeasure value="kWH"/>
             </point>
             <point init="true" type="Analog">
-            	<attribute name="PEAK_DEMAND"/>
                 <name>Peak kW (Rate A kW)</name>
                 <offset value="2"/>
                 <multiplier value="1.0"/>
                 <unitofmeasure value="kW"/>
             </point>
             <point init="true" type="Analog">
-            	<attribute name="USAGE"/>
                 <name>Rate A kWh</name>
                 <offset value="3"/>
                 <multiplier value="1.0"/>
@@ -2842,7 +3206,6 @@
                 <unitofmeasure value="kWH"/>
             </point>
             <point init="true" type="Analog">
-            	<attribute name="DEMAND"/>
                 <name>Last Interval kW</name>
                 <offset value="10"/>
                 <multiplier value="1.0"/>
@@ -3050,6 +3413,20 @@
         		<pointRef name="Last Interval kW"/>
         	</command>
        	</commands>
+       	<attributes>
+        	<attribute name="USAGE">
+        		<basicLookup point="Rate A kWh" />
+        	</attribute>
+        	<attribute name="PEAK_DEMAND">
+        		<basicLookup point="Peak kW (Rate A kW)" />
+        	</attribute>
+        	<attribute name="DEMAND">
+        		<basicLookup point="Last Interval kW" />
+        	</attribute>
+        	<attribute name="BLINK_COUNT">
+        		<basicLookup point="Power Fail Count" />
+        	</attribute>
+        </attributes>
     </device>
     <device>
         <type value="1021" javaConstant="MCT360" changeGroup="mct"/>
@@ -3075,14 +3452,14 @@
                 <unitofmeasure value="kWH"/>
             </point>
             <point init="true" type="Analog">
-            	<attribute name="PEAK_DEMAND"/>
+            	<!--<attribute name="PEAK_DEMAND"/>-->
                 <name>Peak kW (Rate A kW)</name>
                 <offset value="2"/>
                 <multiplier value="1.0"/>
                 <unitofmeasure value="kW"/>
             </point>
             <point init="true" type="Analog">
-            	<attribute name="USAGE"/>
+            	<!--<attribute name="USAGE"/>-->
                 <name>Rate A kWh</name>
                 <offset value="3"/>
                 <multiplier value="1.0"/>
@@ -3125,7 +3502,6 @@
                 <unitofmeasure value="kWH"/>
             </point>
             <point type="Analog">
-            	<attribute name="DEMAND"/>
                 <name>Last Interval kW</name>
                 <offset value="10"/>
                 <multiplier value="1.0"/>
@@ -3317,6 +3693,18 @@
         		<pointRef name="kW"/>
         	</command>
        	</commands>
+       	<attributes>
+        	<attribute name="USAGE">
+        		<basicLookup point="Rate A kWh" />
+        	</attribute>
+        	<attribute name="PEAK_DEMAND">
+        		<basicLookup point="Peak kW (Rate A kW)" />
+        	</attribute>
+        	<attribute name="DEMAND">
+        		<basicLookup point="Last Interval kW" />
+        	</attribute>
+        </attributes>
+       	
     </device>
     <device>
         <type value="1036" javaConstant="MCT318L" changeGroup="mct"/>
@@ -3324,7 +3712,6 @@
         <displayGroup value="MCT"/>
         <points>
             <point init="true" type="PulseAccumulator">
-                <attribute name="USAGE"/>
                 <name>kWh</name>
                 <offset value="1"/>
                 <multiplier value="0.01"/>
@@ -3361,7 +3748,6 @@
                 <unitofmeasure value="kWH"/>
             </point>
             <point init="true" type="PulseAccumulator">
-            	<attribute name="BLINK_COUNT"/>
                 <name>Power Fail Count</name>
                 <offset value="20"/>
                 <multiplier value="1.0"/>
@@ -3369,7 +3755,6 @@
             </point>
             
             <point init="true" type="DemandAccumulator">
-                <attribute name="DEMAND"/>
                 <name>kW</name>
                 <offset value="1"/>
                 <multiplier value="1.0"/>
@@ -3388,7 +3773,6 @@
                 <unitofmeasure value="Undefined"/>
             </point>
             <point type="DemandAccumulator">
-                <attribute name="PEAK_DEMAND"/>
                 <name>Max OR Off Peak Demand (Pulse Input 1)</name>
                 <offset value="10"/>
                 <multiplier value="1.0"/>
@@ -3500,6 +3884,20 @@
         		<pointRef name="kW"/>
         	</command>
        	</commands>
+       	<attributes>
+	        <attribute name="USAGE">
+        		<basicLookup point="kWh" />
+        	</attribute>
+        	<attribute name="DEMAND">
+        		<basicLookup point="kW" />
+        	</attribute>
+        	<attribute name="BLINK_COUNT">
+        		<basicLookup point="Power Fail Count" />
+        	</attribute>
+        	<attribute name="PEAK_DEMAND">
+        		<basicLookup point="Max OR Off Peak Demand (Pulse Input 1)" />
+        	</attribute>
+      	</attributes>
     </device>
     <device>
         <type value="1020" javaConstant="MCT318" changeGroup="mct"/>
@@ -3507,7 +3905,6 @@
         <displayGroup value="MCT"/>
         <points>
             <point init="true" type="PulseAccumulator">
-                <attribute name="USAGE"/>
                 <name>kWh</name>
                 <offset value="1"/>
                 <multiplier value="0.01"/>
@@ -3544,7 +3941,6 @@
                 <unitofmeasure value="kWH"/>
             </point>
             <point init="true" type="PulseAccumulator">
-            	<attribute name="BLINK_COUNT"/>
                 <name>Power Fail Count</name>
                 <offset value="20"/>
                 <multiplier value="1.0"/>
@@ -3552,7 +3948,6 @@
             </point>
             
             <point init="true" type="DemandAccumulator">
-                <attribute name="DEMAND"/>
                 <name>kW</name>
                 <offset value="1"/>
                 <multiplier value="1.0"/>
@@ -3571,7 +3966,6 @@
                 <unitofmeasure value="kW"/>
             </point>
             <point type="DemandAccumulator">
-                <attribute name="PEAK_DEMAND"/>
                 <name>Max OR Off Peak Demand (Pulse Input 1)</name>
                 <offset value="10"/>
                 <multiplier value="1.0"/>
@@ -3683,6 +4077,20 @@
         		<pointRef name="kW"/>
         	</command>
        	</commands>
+       	<attributes>
+	        <attribute name="USAGE">
+        		<basicLookup point="kWh" />
+        	</attribute>
+        	<attribute name="DEMAND">
+        		<basicLookup point="kW" />
+        	</attribute>
+        	<attribute name="BLINK_COUNT">
+        		<basicLookup point="Power Fail Count" />
+        	</attribute>
+        	<attribute name="PEAK_DEMAND">
+        		<basicLookup point="Max OR Off Peak Demand (Pulse Input 1)" />
+        	</attribute>
+       	</attributes>
     </device>
     <device>
         <type value="1039" javaConstant="MCT310CT" changeGroup="mct"/>
@@ -3690,21 +4098,18 @@
         <displayGroup value="MCT"/>
         <points>
             <point init="true" type="PulseAccumulator">
-                <attribute name="USAGE"/>
                 <name>kWh</name>
                 <offset value="1"/>
                 <multiplier value="0.01"/>
                 <unitofmeasure value="kWH"/>
             </point>
             <point init="true" type="PulseAccumulator">
-            	<attribute name="BLINK_COUNT"/>
                 <name>Blink Count</name>
                 <offset value="20"/>
                 <multiplier value="1.0"/>
                 <unitofmeasure value="Counts"/>
             </point>
             <point init="true" type="DemandAccumulator">
-            	<attribute name="DEMAND"/>
                 <name>kW</name>
                 <offset value="1"/>
                 <multiplier value="1.0"/>
@@ -3745,6 +4150,17 @@
         		<pointRef name="kW"/>
         	</command>
        	</commands>
+        <attributes>
+	        <attribute name="USAGE">
+        		<basicLookup point="kWh" />
+        	</attribute>
+        	<attribute name="DEMAND">
+        		<basicLookup point="kW" />
+        	</attribute>
+        	<attribute name="BLINK_COUNT">
+        		<basicLookup point="Blink Count" />
+        	</attribute>
+       	</attributes>
     </device>
     <device>
         <type value="1034" javaConstant="MCT310ID" changeGroup="mct"/>
@@ -3752,20 +4168,17 @@
         <displayGroup value="MCT"/>
         <points>
             <point init="true" type="Status">
-            	<attribute name="DISCONNECT_STATUS"/>
                 <name>Disconnect Status</name>
                 <offset value="1"/>
                 <stategroup value="ThreeStateStatus"/>
             </point>
 			<point init="true" type="PulseAccumulator">
-                <attribute name="USAGE"/>
                 <name>kWh</name>
                 <offset value="1"/>
                 <multiplier value="0.01"/>
                 <unitofmeasure value="kWH"/>
             </point>
             <point init="true" type="PulseAccumulator">
-            	<attribute name="BLINK_COUNT"/>
                 <name>Blink Count</name>
                 <offset value="20"/>
                 <multiplier value="1.0"/>
@@ -3773,7 +4186,6 @@
             </point>
             
             <point init="true" type="DemandAccumulator">
-            	<attribute name="DEMAND"/>
                 <name>kW</name>
                 <offset value="1"/>
                 <multiplier value="1.0"/>
@@ -3814,6 +4226,20 @@
         		<pointRef name="kW"/>
         	</command>
        	</commands>
+       	<attributes>
+	        <attribute name="USAGE">
+        		<basicLookup point="kWh" />
+        	</attribute>
+        	<attribute name="DEMAND">
+        		<basicLookup point="kW" />
+        	</attribute>
+        	<attribute name="BLINK_COUNT">
+        		<basicLookup point="Blink Count" />
+        	</attribute>
+        	<attribute name="DISCONNECT_STATUS">
+        		<basicLookup point="Disconnect Status" />
+        	</attribute>
+       	</attributes>
     </device>
     <device>
         <type value="1063" javaConstant="MCT310IDL" changeGroup="mct"/>
@@ -3821,27 +4247,23 @@
         <displayGroup value="MCT"/>
         <points>
             <point init="true" type="PulseAccumulator">
-                <attribute name="USAGE"/>
                 <name>kWh</name>
                 <offset value="1"/>
                 <multiplier value="0.01"/>
                 <unitofmeasure value="kWH"/>
             </point>
             <point init="true" type="DemandAccumulator">
-            	<attribute name="LOAD_PROFILE" />
                 <name>kW-LP</name>
                 <offset value="101"/>
                 <multiplier value="0.01"/>
                 <unitofmeasure value="kW"/>
             </point>
             <point init="true" type="Status">
-            	<attribute name="DISCONNECT_STATUS"/>
                 <name>Disconnect Status</name>
                 <offset value="1"/>
                 <stategroup value="ThreeStateStatus"/>
             </point>
             <point init="true" type="PulseAccumulator">
-            	<attribute name="BLINK_COUNT"/>
                 <name>Blink Count</name>
                 <offset value="20"/>
                 <multiplier value="1.0"/>
@@ -3849,7 +4271,6 @@
             </point>
             
             <point init="true" type="DemandAccumulator">
-            	<attribute name="DEMAND"/>
                 <name>kW</name>
                 <offset value="1"/>
                 <multiplier value="1.0"/>
@@ -3890,6 +4311,23 @@
         		<pointRef name="kW"/>
         	</command>
        	</commands>
+       	<attributes>
+	        <attribute name="USAGE">
+        		<basicLookup point="kWh" />
+        	</attribute>
+        	<attribute name="DEMAND">
+        		<basicLookup point="kW" />
+        	</attribute>
+        	<attribute name="BLINK_COUNT">
+        		<basicLookup point="Blink Count" />
+        	</attribute>
+        	<attribute name="DISCONNECT_STATUS">
+        		<basicLookup point="Disconnect Status" />
+        	</attribute>
+        	<attribute name="LOAD_PROFILE">
+        		<basicLookup point="kW-LP" />
+        	</attribute>
+       	</attributes>
     </device>
     <device>
         <type value="1035" javaConstant="MCT310IL" changeGroup="mct"/>
@@ -3897,14 +4335,12 @@
         <displayGroup value="MCT"/>
         <points>
             <point init="true" type="DemandAccumulator">
-            	<attribute name="LOAD_PROFILE" />
                 <name>kW-LP</name>
                 <offset value="101"/>
                 <multiplier value="0.01"/>
                 <unitofmeasure value="kW"/>
             </point>
-<point init="true" type="PulseAccumulator">
-                <attribute name="USAGE"/>
+			<point init="true" type="PulseAccumulator">
                 <name>kWh</name>
                 <offset value="1"/>
                 <multiplier value="0.01"/>
@@ -3941,7 +4377,6 @@
                 <unitofmeasure value="kWH"/>
             </point>
             <point init="true" type="PulseAccumulator">
-            	<attribute name="BLINK_COUNT"/>
                 <name>Blink Count</name>
                 <offset value="20"/>
                 <multiplier value="1.0"/>
@@ -3949,7 +4384,6 @@
             </point>
             
             <point type="DemandAccumulator">
-            	<attribute name="DEMAND"/>
                 <name>kW</name>
                 <offset value="1"/>
                 <multiplier value="1.0"/>
@@ -4013,6 +4447,20 @@
         		<pointRef name="kW"/>
         	</command>
        	</commands>
+       	<attributes>
+	        <attribute name="USAGE">
+        		<basicLookup point="kWh" />
+        	</attribute>
+        	<attribute name="DEMAND">
+        		<basicLookup point="kW" />
+        	</attribute>
+        	<attribute name="BLINK_COUNT">
+        		<basicLookup point="Blink Count" />
+        	</attribute>
+        	<attribute name="LOAD_PROFILE">
+        		<basicLookup point="kW-LP" />
+        	</attribute>
+       	</attributes>
     </device>
     <device>
         <type value="1040" javaConstant="MCT310IM" changeGroup="mct"/>
@@ -4020,7 +4468,6 @@
         <displayGroup value="MCT"/>
         <points>
 			<point init="true" type="PulseAccumulator">
-                <attribute name="USAGE"/>
                 <name>kWh</name>
                 <offset value="1"/>
                 <multiplier value="0.01"/>
@@ -4057,7 +4504,6 @@
                 <unitofmeasure value="kWH"/>
             </point>
             <point init="true" type="PulseAccumulator">
-            	<attribute name="BLINK_COUNT"/>
                 <name>Blink Count</name>
                 <offset value="20"/>
                 <multiplier value="1.0"/>
@@ -4065,7 +4511,6 @@
             </point>
             
             <point init="true" type="DemandAccumulator">
-            	<attribute name="DEMAND"/>
                 <name>kW</name>
                 <offset value="1"/>
                 <multiplier value="1.0"/>
@@ -4118,6 +4563,17 @@
         		<pointRef name="kW"/>
         	</command>
        	</commands>
+       	<attributes>
+	        <attribute name="USAGE">
+        		<basicLookup point="kWh" />
+        	</attribute>
+        	<attribute name="DEMAND">
+        		<basicLookup point="kW" />
+        	</attribute>
+        	<attribute name="BLINK_COUNT">
+        		<basicLookup point="Blink Count" />
+        	</attribute>
+       	</attributes>
     </device>
     <device>
         <type value="1019" javaConstant="MCT310" changeGroup="mct"/>
@@ -4125,14 +4581,12 @@
         <displayGroup value="MCT"/>
         <points>
             <point init="true" type="PulseAccumulator">
-                <attribute name="USAGE"/>
                 <name>kWh</name>
                 <offset value="1"/>
                 <multiplier value="0.01"/>
                 <unitofmeasure value="kWH"/>
             </point>
             <point init="true" type="PulseAccumulator">
-            	<attribute name="BLINK_COUNT"/>
                 <name>Blink Count</name>
                 <offset value="20"/>
                 <multiplier value="1.0"/>
@@ -4169,6 +4623,14 @@
         		<pointRef name="kWh"/>
         	</command>
        	</commands>
+        <attributes>
+	        <attribute name="USAGE">
+        		<basicLookup point="kWh" />
+        	</attribute>
+        	<attribute name="BLINK_COUNT">
+        		<basicLookup point="Blink Count" />
+        	</attribute>
+       	</attributes>
     </device>
     <device>
         <type value="1025" javaConstant="MCT250" changeGroup="mct"/>
@@ -4176,28 +4638,24 @@
         <displayGroup value="MCT"/>
         <points>
             <point init="true" type="PulseAccumulator">
-            	<attribute name="USAGE"/>
                 <name>kWh</name>
                 <offset value="1"/>
                 <multiplier value="1.0"/>
                 <unitofmeasure value="kWH"/>
             </point>
             <point init="true" type="PulseAccumulator">
-            	<attribute name="BLINK_COUNT"/>
                 <name>Power Fail Count</name>
                 <offset value="20"/>
                 <multiplier value="1.0"/>
                 <unitofmeasure value="Undefined"/>
             </point>
             <point init="true" type="DemandAccumulator">
-            	<attribute name="DEMAND"/>
                 <name>kW</name>
                 <offset value="1"/>
                 <multiplier value="0.01"/>
                 <unitofmeasure value="kW"/>
             </point>
             <point init="true" type="DemandAccumulator">
-            	<attribute name="LOAD_PROFILE"/>
                 <name>kW-LP</name>
                 <offset value="101"/>
                 <multiplier value="1.0"/>
@@ -4274,6 +4732,20 @@
         		<pointRef name="kW"/>
         	</command>
        	</commands>
+        <attributes>
+	        <attribute name="USAGE">
+        		<basicLookup point="kWh" />
+        	</attribute>
+        	<attribute name="DEMAND">
+        		<basicLookup point="kW" />
+        	</attribute>
+        	<attribute name="BLINK_COUNT">
+        		<basicLookup point="Power Fail Count" />
+        	</attribute>
+        	<attribute name="LOAD_PROFILE">
+        		<basicLookup point="kW-LP" />
+        	</attribute>
+       	</attributes>
     </device>
     <device>
         <type value="1024" javaConstant="MCT248" changeGroup="mct"/>
@@ -4281,14 +4753,12 @@
         <displayGroup value="MCT"/>
         <points>
             <point init="true" type="PulseAccumulator">
-            	<attribute name="USAGE"/>
                 <name>kWh</name>
                 <offset value="1"/>
                 <multiplier value="1.0"/>
                 <unitofmeasure value="kWH"/>
             </point>
             <point init="true" type="PulseAccumulator">
-            	<attribute name="BLINK_COUNT"/>
                 <name>Power Fail Count</name>
                 <offset value="20"/>
                 <multiplier value="1.0"/>
@@ -4296,14 +4766,12 @@
             </point>
             
             <point init="true" type="DemandAccumulator">
-            	<attribute name="DEMAND"/>
                 <name>kW</name>
                 <offset value="1"/>
                 <multiplier value="0.01"/>
                 <unitofmeasure value="kW"/>
             </point>
             <point init="true" type="DemandAccumulator">
-            	<attribute name="LOAD_PROFILE"/>
                 <name>kW-LP</name>
                 <offset value="101"/>
                 <multiplier value="1.0"/>
@@ -4365,6 +4833,20 @@
         		<pointRef name="kW"/>
         	</command>
        	</commands>
+        <attributes>
+	        <attribute name="USAGE">
+        		<basicLookup point="kWh" />
+        	</attribute>
+        	<attribute name="DEMAND">
+        		<basicLookup point="kW" />
+        	</attribute>
+        	<attribute name="BLINK_COUNT">
+        		<basicLookup point="Power Fail Count" />
+        	</attribute>
+        	<attribute name="LOAD_PROFILE">
+        		<basicLookup point="kW-LP" />
+        	</attribute>
+       	</attributes>
     </device>
     <device>
         <type value="1023" javaConstant="MCT240" changeGroup="mct"/>
@@ -4372,14 +4854,12 @@
         <displayGroup value="MCT"/>
         <points>
             <point init="true" type="PulseAccumulator">
-            	<attribute name="USAGE"/>
                 <name>kWh</name>
                 <offset value="1"/>
                 <multiplier value="1.0"/>
                 <unitofmeasure value="kWH"/>
             </point>
             <point init="true" type="PulseAccumulator">
-            	<attribute name="BLINK_COUNT"/>
                 <name>Power Fail Count</name>
                 <offset value="20"/>
                 <multiplier value="1.0"/>
@@ -4387,14 +4867,12 @@
             </point>
             
             <point init="true" type="DemandAccumulator">
-            	<attribute name="DEMAND"/>
                 <name>kW</name>
                 <offset value="1"/>
                 <multiplier value="0.01"/>
                 <unitofmeasure value="kW"/>
             </point>
             <point init="true" type="DemandAccumulator">
-            	<attribute name="LOAD_PROFILE"/>
                 <name>kW-LP</name>
                 <offset value="101"/>
                 <multiplier value="1.0"/>
@@ -4451,6 +4929,20 @@
         		<pointRef name="kW"/>
         	</command>
        	</commands>
+        <attributes>
+	        <attribute name="USAGE">
+        		<basicLookup point="kWh" />
+        	</attribute>
+        	<attribute name="DEMAND">
+        		<basicLookup point="kW" />
+        	</attribute>
+        	<attribute name="BLINK_COUNT">
+        		<basicLookup point="Power Fail Count" />
+        	</attribute>
+        	<attribute name="LOAD_PROFILE">
+        		<basicLookup point="kW-LP" />
+        	</attribute>
+       	</attributes>
     </device>
     <device>
         <type value="1037" javaConstant="MCT213" changeGroup="mct"/>
@@ -4458,21 +4950,18 @@
         <displayGroup value="MCT"/>
         <points>
             <point init="true" type="PulseAccumulator">
-            	<attribute name="USAGE"/>
                 <name>kWh</name>
                 <offset value="1"/>
                 <multiplier value="1.0"/>
                 <unitofmeasure value="kWH"/>
             </point>
             <point init="true" type="PulseAccumulator">
-            	<attribute name="BLINK_COUNT"/>
                 <name>Power Fail Count</name>
                 <offset value="20"/>
                 <multiplier value="1.0"/>
                 <unitofmeasure value="Counts"/>
             </point>
             <point init="true" type="DemandAccumulator">
-            	<attribute name="DEMAND"/>
                 <name>kW</name>
                 <offset value="1"/>
                 <multiplier value="0.01"/>
@@ -4480,7 +4969,6 @@
             </point>
             
             <point init="true" type="Status">
-            	<attribute name="DISCONNECT_STATUS"/>
                 <name>Disconnect Status</name>
                 <offset value="1"/>
                 <stategroup value="SystemState"/>
@@ -4520,6 +5008,20 @@
         		<pointRef name="kW"/>
         	</command>
        	</commands>
+        <attributes>
+	        <attribute name="USAGE">
+        		<basicLookup point="kWh" />
+        	</attribute>
+        	<attribute name="DEMAND">
+        		<basicLookup point="kW" />
+        	</attribute>
+        	<attribute name="BLINK_COUNT">
+        		<basicLookup point="Power Fail Count" />
+        	</attribute>
+        	<attribute name="DISCONNECT_STATUS">
+        		<basicLookup point="Disconnect Status" />
+        	</attribute>
+       	</attributes>
     </device>
     <device>
         <type value="1026" javaConstant="MCT210" changeGroup="mct"/>
@@ -4527,14 +5029,12 @@
         <displayGroup value="MCT"/>
         <points>
             <point init="true" type="PulseAccumulator">
-            	<attribute name="USAGE"/>
                 <name>kWh</name>
                 <offset value="1"/>
                 <multiplier value="1.0"/>
                 <unitofmeasure value="kWH"/>
             </point>
             <point init="true" type="PulseAccumulator">
-            	<attribute name="BLINK_COUNT"/>
                 <name>Power Fail Count</name>
                 <offset value="20"/>
                 <multiplier value="1.0"/>
@@ -4542,7 +5042,6 @@
             </point>
             
             <point init="true" type="DemandAccumulator">
-            	<attribute name="DEMAND"/>
                 <name>kW</name>
                 <offset value="1"/>
                 <multiplier value="0.01"/>
@@ -4579,6 +5078,17 @@
         		<pointRef name="kW"/>
         	</command>
        	</commands>
+        <attributes>
+	        <attribute name="USAGE">
+        		<basicLookup point="kWh" />
+        	</attribute>
+        	<attribute name="DEMAND">
+        		<basicLookup point="kW" />
+        	</attribute>
+        	<attribute name="BLINK_COUNT">
+        		<basicLookup point="Power Fail Count" />
+        	</attribute>
+       	</attributes>
     </device>
     <device>
         <type value="1058" javaConstant="MCTBROADCAST"/>
@@ -5206,14 +5716,12 @@
         <displayGroup value="Electronic Meters"/>
         <points>
             <point init="true" type="Analog">
-            	<attribute name="USAGE"/>
                 <name>Total kWh</name>
                 <offset value="1"/>
                 <multiplier value="1.0"/>
                 <unitofmeasure value="kWH"/>
             </point>
             <point type="Analog">
-            	<attribute name="PEAK_DEMAND"/>
                 <name>Peak kW (Rate A kW)</name>
                 <offset value="2"/>
                 <multiplier value="1.0"/>
@@ -5275,14 +5783,12 @@
             </point>
             
             <point type="Analog">
-            	<attribute name="DEMAND"/>
                 <name>Last Interval kW</name>
                 <offset value="14"/>
                 <multiplier value="1.0"/>
                 <unitofmeasure value="kW"/>
             </point>
             <point init="true" type="Analog">
-            	<attribute name="LOAD_PROFILE"/>
                 <name>Load Profile kW</name>
                 <offset value="15"/>
                 <multiplier value="1.0"/>
@@ -5533,6 +6039,20 @@
                 <unitofmeasure value="Undefined"/>
             </point>
         </points>
+        <attributes>
+	        <attribute name="USAGE">
+        		<basicLookup point="Total kWh" />
+        	</attribute>
+        	<attribute name="PEAK_DEMAND">
+        		<basicLookup point="Peak kW (Rate A kW)" />
+        	</attribute>
+        	<attribute name="DEMAND">
+        		<basicLookup point="Last Interval kW" />
+        	</attribute>
+        	<attribute name="LOAD_PROFILE">
+        		<basicLookup point="Load Profile kW" />
+        	</attribute>
+       	</attributes>
     </device>
     <device>
         <type value="1014" javaConstant="ALPHA_A1" changeGroup="electronic"/>
@@ -5540,14 +6060,12 @@
         <displayGroup value="Electronic Meters"/>
         <points>
             <point init="true" type="Analog">
-            	<attribute name="USAGE"/>
                 <name>Total kWh</name>
                 <offset value="1"/>
                 <multiplier value="1.0"/>
                 <unitofmeasure value="kWH"/>
             </point>
             <point type="Analog">
-            	<attribute name="PEAK_DEMAND"/>            
                 <name>Peak kW (Rate A kW)</name>
                 <offset value="2"/>
                 <multiplier value="1.0"/>
@@ -5609,14 +6127,12 @@
             </point>
             
             <point type="Analog">
-            	<attribute name="DEMAND"/>
                 <name>Last Interval kW</name>
                 <offset value="14"/>
                 <multiplier value="1.0"/>
                 <unitofmeasure value="kW"/>
             </point>
             <point init="true" type="Analog">
-            	<attribute name="LOAD_PROFILE"/>
                 <name>Load Profile kW</name>
                 <offset value="15"/>
                 <multiplier value="1.0"/>
@@ -5867,6 +6383,20 @@
                 <unitofmeasure value="Undefined"/>
             </point>
         </points>
+        <attributes>
+	        <attribute name="USAGE">
+        		<basicLookup point="Total kWh" />
+        	</attribute>
+        	<attribute name="PEAK_DEMAND">
+        		<basicLookup point="Peak kW (Rate A kW)" />
+        	</attribute>
+        	<attribute name="DEMAND">
+        		<basicLookup point="Last Interval kW" />
+        	</attribute>
+        	<attribute name="LOAD_PROFILE">
+        		<basicLookup point="Load Profile kW" />
+        	</attribute>
+       	</attributes>
     </device>
     <device>
         <type value="1079" javaConstant="ALPHA_A3"/>
@@ -5874,14 +6404,12 @@
         <displayGroup value="Electronic Meters"/>
         <points>
             <point init="true" type="Analog">
-            	<attribute name="USAGE"/>
                 <name>Total kWh</name>
                 <offset value="1"/>
                 <multiplier value="1.0"/>
                 <unitofmeasure value="kWH"/>
             </point>
             <point type="Analog">
-            	<attribute name="PEAK_DEMAND"/>
                 <name>Peak kW (Rate A kW)</name>
                 <offset value="2"/>
                 <multiplier value="1.0"/>
@@ -5949,7 +6477,6 @@
                 <unitofmeasure value="kW"/>
             </point>
             <point init="true" type="Analog">
-            	<attribute name="DEMAND"/>
                 <name>Load Profile kW</name>
                 <offset value="15"/>
                 <multiplier value="1.0"/>
@@ -5957,7 +6484,6 @@
             </point>
             
             <point init="true" type="Analog">
-            	<attribute name="LOAD_PROFILE"/>
                 <name>Total kVArh</name>
                 <offset value="21"/>
                 <multiplier value="1.0"/>
@@ -6201,6 +6727,20 @@
                 <unitofmeasure value="Undefined"/>
             </point>
         </points>
+        <attributes>
+	        <attribute name="USAGE">
+        		<basicLookup point="Total kWh" />
+        	</attribute>
+        	<attribute name="PEAK_DEMAND">
+        		<basicLookup point="Peak kW (Rate A kW)" />
+        	</attribute>
+        	<attribute name="DEMAND">
+        		<basicLookup point="Last Interval kW" />
+        	</attribute>
+        	<attribute name="LOAD_PROFILE">
+        		<basicLookup point="Load Profile kW" />
+        	</attribute>
+       	</attributes>        
     </device>
     <device>
         <type value="1015" javaConstant="DR_87" changeGroup="electronic"/>
@@ -6208,14 +6748,12 @@
         <displayGroup value="Electronic Meters"/>
         <points>
 			<point type="Analog">
-            	<attribute name="USAGE"/>
                 <name>Total kWh</name>
                 <offset value="1"/>
                 <multiplier value="1.0"/>
                 <unitofmeasure value="kWH"/>
             </point>
             <point type="Analog">
-            	<attribute name="PEAK_DEMAND"/>
                 <name>Peak kW (Rate A kW)</name>
                 <offset value="2"/>
                 <multiplier value="1.0"/>
@@ -6283,7 +6821,6 @@
                 <unitofmeasure value="kW"/>
             </point>
             <point type="Analog">
-            	<attribute name="DEMAND"/>
                 <name>Load Profile kW</name>
                 <offset value="15"/>
                 <multiplier value="1.0"/>
@@ -6291,7 +6828,6 @@
             </point>
             
             <point type="Analog">
-            	<attribute name="LOAD_PROFILE"/>
                 <name>Total kVArh</name>
                 <offset value="21"/>
                 <multiplier value="1.0"/>
@@ -6583,6 +7119,20 @@
                 <unitofmeasure value="Undefined"/>
             </point>
         </points>
+        <attributes>
+	        <attribute name="USAGE">
+        		<basicLookup point="Total kWh" />
+        	</attribute>
+        	<attribute name="PEAK_DEMAND">
+        		<basicLookup point="Peak kW (Rate A kW)" />
+        	</attribute>
+        	<attribute name="DEMAND">
+        		<basicLookup point="Last Interval kW" />
+        	</attribute>
+        	<attribute name="LOAD_PROFILE">
+        		<basicLookup point="Load Profile kW" />
+        	</attribute>
+       	</attributes>
     </device>
     <device>
         <type value="1010" javaConstant="FULCRUM" changeGroup="electronic"/>
@@ -6590,14 +7140,12 @@
         <displayGroup value="Electronic Meters"/>
         <points>
             <point init="true" type="Analog">
-            	<attribute name="USAGE"/>
                 <name>Total kWh</name>
                 <offset value="1"/>
                 <multiplier value="1.0"/>
                 <unitofmeasure value="kWH"/>
             </point>
             <point type="Analog">
-            	<attribute name="PEAK_DEMAND"/>
                 <name>Peak kW (Rate A kW)</name>
                 <offset value="2"/>
                 <multiplier value="1.0"/>
@@ -6659,14 +7207,12 @@
             </point>
             
             <point type="Analog">
-            	<attribute name="DEMAND"/>
                 <name>Last Interval kW</name>
                 <offset value="14"/>
                 <multiplier value="1.0"/>
                 <unitofmeasure value="kW"/>
             </point>
             <point init="true" type="Analog">
-            	<attribute name="LOAD_PROFILE"/>
                 <name>Load Profile kW</name>
                 <offset value="15"/>
                 <multiplier value="1.0"/>
@@ -6917,6 +7463,20 @@
                 <unitofmeasure value="Undefined"/>
             </point>
         </points>
+        <attributes>
+	        <attribute name="USAGE">
+        		<basicLookup point="Total kWh" />
+        	</attribute>
+        	<attribute name="PEAK_DEMAND">
+        		<basicLookup point="Peak kW (Rate A kW)" />
+        	</attribute>
+        	<attribute name="DEMAND">
+        		<basicLookup point="Last Interval kW" />
+        	</attribute>
+        	<attribute name="LOAD_PROFILE">
+        		<basicLookup point="Load Profile kW" />
+        	</attribute>
+       	</attributes>
     </device>
     <device>
         <type value="1061" javaConstant="ION_7330"/>
@@ -6953,14 +7513,12 @@
         <displayGroup value="Electronic Meters"/>
         <points>
             <point init="true" type="Analog">
-            	<attribute name="USAGE"/>
                 <name>Total kWh</name>
                 <offset value="1"/>
                 <multiplier value="1.0"/>
                 <unitofmeasure value="kWH"/>
             </point>
             <point type="Analog">
-            	<attribute name="PEAK_DEMAND"/>
                 <name>Peak kW (Rate A kW)</name>
                 <offset value="2"/>
                 <multiplier value="1.0"/>
@@ -7022,14 +7580,12 @@
             </point>
             
             <point type="Analog">
-            	<attribute name="DEMAND"/>
                 <name>Last Interval kW</name>
                 <offset value="14"/>
                 <multiplier value="1.0"/>
                 <unitofmeasure value="kW"/>
             </point>
             <point init="true" type="Analog">
-            	<attribute name="LOAD_PROFILE"/>
                 <name>Load Profile kW</name>
                 <offset value="15"/>
                 <multiplier value="1.0"/>
@@ -7280,6 +7836,20 @@
                 <unitofmeasure value="Undefined"/>
             </point>
         </points>
+        <attributes>
+	        <attribute name="USAGE">
+        		<basicLookup point="Total kWh" />
+        	</attribute>
+        	<attribute name="PEAK_DEMAND">
+        		<basicLookup point="Peak kW (Rate A kW)" />
+        	</attribute>
+        	<attribute name="DEMAND">
+        		<basicLookup point="Last Interval kW" />
+        	</attribute>
+        	<attribute name="LOAD_PROFILE">
+        		<basicLookup point="Load Profile kW" />
+        	</attribute>
+       	</attributes>
     </device>
     <device>
         <type value="1075" javaConstant="KVII"/>
@@ -7287,14 +7857,12 @@
         <displayGroup value="Electronic Meters"/>
         <points>
             <point init="true" type="Analog">
-            	<attribute name="USAGE"/>
                 <name>Total kWh</name>
                 <offset value="1"/>
                 <multiplier value="1.0"/>
                 <unitofmeasure value="kWH"/>
             </point>
             <point type="Analog">
-            	<attribute name="PEAK_DEMAND"/>
                 <name>Peak kW (Rate A kW)</name>
                 <offset value="2"/>
                 <multiplier value="1.0"/>
@@ -7356,14 +7924,12 @@
             </point>
             
             <point type="Analog">
-            	<attribute name="DEMAND"/>
                 <name>Last Interval kW</name>
                 <offset value="14"/>
                 <multiplier value="1.0"/>
                 <unitofmeasure value="kW"/>
             </point>
             <point init="true" type="Analog">
-            	<attribute name="LOAD_PROFILE"/>
                 <name>Load Profile kW</name>
                 <offset value="15"/>
                 <multiplier value="1.0"/>
@@ -7614,6 +8180,20 @@
                 <unitofmeasure value="Undefined"/>
             </point>
         </points>
+        <attributes>
+	        <attribute name="USAGE">
+        		<basicLookup point="Total kWh" />
+        	</attribute>
+        	<attribute name="PEAK_DEMAND">
+        		<basicLookup point="Peak kW (Rate A kW)" />
+        	</attribute>
+        	<attribute name="DEMAND">
+        		<basicLookup point="Last Interval kW" />
+        	</attribute>
+        	<attribute name="LOAD_PROFILE">
+        		<basicLookup point="Load Profile kW" />
+        	</attribute>
+       	</attributes>
     </device>
     <device>
         <type value="1012" javaConstant="LANDISGYRS4" changeGroup="electronic"/>
@@ -7621,14 +8201,12 @@
         <displayGroup value="Electronic Meters"/>
         <points>
             <point init="true" type="Analog">
-            	<attribute name="USAGE"/>
                 <name>Total kWh</name>
                 <offset value="1"/>
                 <multiplier value="1.0"/>
                 <unitofmeasure value="kWH"/>
             </point>
             <point type="Analog">
-            	<attribute name="PEAK_DEMAND"/>
                 <name>Peak kW (Rate A kW)</name>
                 <offset value="2"/>
                 <multiplier value="1.0"/>
@@ -7690,14 +8268,12 @@
             </point>
             
             <point type="Analog">
-            	<attribute name="DEMAND"/>
                 <name>Last Interval kW</name>
                 <offset value="14"/>
                 <multiplier value="1.0"/>
                 <unitofmeasure value="kW"/>
             </point>
             <point init="true" type="Analog">
-            	<attribute name="LOAD_PROFILE"/>
                 <name>Load Profile kW</name>
                 <offset value="15"/>
                 <multiplier value="1.0"/>
@@ -7948,6 +8524,20 @@
                 <unitofmeasure value="Undefined"/>
             </point>
         </points>
+        <attributes>
+	        <attribute name="USAGE">
+        		<basicLookup point="Total kWh" />
+        	</attribute>
+        	<attribute name="PEAK_DEMAND">
+        		<basicLookup point="Peak kW (Rate A kW)" />
+        	</attribute>
+        	<attribute name="DEMAND">
+        		<basicLookup point="Last Interval kW" />
+        	</attribute>
+        	<attribute name="LOAD_PROFILE">
+        		<basicLookup point="Load Profile kW" />
+        	</attribute>
+       	</attributes>
     </device>
     <device>
         <type value="1016" javaConstant="QUANTUM" changeGroup="electronic"/>
@@ -7955,14 +8545,12 @@
         <displayGroup value="Electronic Meters"/>
         <points>
             <point init="true" type="Analog">
-            	<attribute name="USAGE"/>
                 <name>Total kWh</name>
                 <offset value="1"/>
                 <multiplier value="1.0"/>
                 <unitofmeasure value="kWH"/>
             </point>
             <point type="Analog">
-            	<attribute name="PEAK_DEMAND"/>
                 <name>Peak kW (Rate A kW)</name>
                 <offset value="2"/>
                 <multiplier value="1.0"/>
@@ -8024,14 +8612,12 @@
             </point>
             
             <point type="Analog">
-            	<attribute name="DEMAND"/>
                 <name>Last Interval kW</name>
                 <offset value="14"/>
                 <multiplier value="1.0"/>
                 <unitofmeasure value="kW"/>
             </point>
             <point init="true" type="Analog">
-            	<attribute name="LOAD_PROFILE"/>
                 <name>Load Profile kW</name>
                 <offset value="15"/>
                 <multiplier value="1.0"/>
@@ -8282,6 +8868,20 @@
                 <unitofmeasure value="Undefined"/>
             </point>
         </points>
+        <attributes>
+	        <attribute name="USAGE">
+        		<basicLookup point="Total kWh" />
+        	</attribute>
+        	<attribute name="PEAK_DEMAND">
+        		<basicLookup point="Peak kW (Rate A kW)" />
+        	</attribute>
+        	<attribute name="DEMAND">
+        		<basicLookup point="Last Interval kW" />
+        	</attribute>
+        	<attribute name="LOAD_PROFILE">
+        		<basicLookup point="Load Profile kW" />
+        	</attribute>
+       	</attributes>
     </device>
     <device>
         <type value="1078" javaConstant="SENTINEL"/>
@@ -8289,14 +8889,12 @@
         <displayGroup value="Electronic Meters"/>
         <points>
             <point init="true" type="Analog">
-            	<attribute name="USAGE"/>
                 <name>Total kWh</name>
                 <offset value="1"/>
                 <multiplier value="1.0"/>
                 <unitofmeasure value="kWH"/>
             </point>
             <point type="Analog">
-            	<attribute name="PEAK_DEMAND"/>
                 <name>Peak kW (Rate A kW)</name>
                 <offset value="2"/>
                 <multiplier value="1.0"/>
@@ -8358,14 +8956,12 @@
             </point>
             
             <point type="Analog">
-            	<attribute name="DEMAND"/>
                 <name>Last Interval kW</name>
                 <offset value="14"/>
                 <multiplier value="1.0"/>
                 <unitofmeasure value="kW"/>
             </point>
             <point init="true" type="Analog">
-            	<attribute name="LOAD_PROFILE"/>
                 <name>Load Profile kW</name>
                 <offset value="15"/>
                 <multiplier value="1.0"/>
@@ -8616,6 +9212,20 @@
                 <unitofmeasure value="Undefined"/>
             </point>
         </points>
+        <attributes>
+	        <attribute name="USAGE">
+        		<basicLookup point="Total kWh" />
+        	</attribute>
+        	<attribute name="PEAK_DEMAND">
+        		<basicLookup point="Peak kW (Rate A kW)" />
+        	</attribute>
+        	<attribute name="DEMAND">
+        		<basicLookup point="Last Interval kW" />
+        	</attribute>
+        	<attribute name="LOAD_PROFILE">
+        		<basicLookup point="Load Profile kW" />
+        	</attribute>
+       	</attributes>
     </device>
     <device>
         <type value="1017" javaConstant="SIXNET"/>
@@ -8623,14 +9233,12 @@
         <displayGroup value="Electronic Meters"/>
         <points>
             <point init="true" type="Analog">
-            	<attribute name="USAGE"/>
                 <name>Total kWh</name>
                 <offset value="1"/>
                 <multiplier value="1.0"/>
                 <unitofmeasure value="kWH"/>
             </point>
             <point type="Analog">
-            	<attribute name="PEAK_DEMAND"/>
                 <name>Peak kW (Rate A kW)</name>
                 <offset value="2"/>
                 <multiplier value="1.0"/>
@@ -8692,14 +9300,12 @@
             </point>
             
             <point type="Analog">
-            	<attribute name="DEMAND"/>
                 <name>Last Interval kW</name>
                 <offset value="14"/>
                 <multiplier value="1.0"/>
                 <unitofmeasure value="kW"/>
             </point>
             <point init="true" type="Analog">
-            	<attribute name="LOAD_PROFILE"/>
                 <name>Load Profile kW</name>
                 <offset value="15"/>
                 <multiplier value="1.0"/>
@@ -8950,6 +9556,20 @@
                 <unitofmeasure value="Undefined"/>
             </point>
         </points>
+        <attributes>
+	        <attribute name="USAGE">
+        		<basicLookup point="Total kWh" />
+        	</attribute>
+        	<attribute name="PEAK_DEMAND">
+        		<basicLookup point="Peak kW (Rate A kW)" />
+        	</attribute>
+        	<attribute name="DEMAND">
+        		<basicLookup point="Last Interval kW" />
+        	</attribute>
+        	<attribute name="LOAD_PROFILE">
+        		<basicLookup point="Load Profile kW" />
+        	</attribute>
+       	</attributes>
     </device>
     <device>
         <type value="1066" javaConstant="TRANSDATA_MARKV"
@@ -8958,20 +9578,26 @@
         <displayGroup value="Electronic Meters"/>
 		<points>
             <point init="true" type="Analog">
-            	<attribute name="USAGE"/>
                 <name>Total kWh</name>
                 <offset value="1"/>
                 <multiplier value="1.0"/>
                 <unitofmeasure value="kWH"/>
             </point>
             <point init="true" type="Analog">
-            	<attribute name="PEAK_DEMAND"/>
                 <name>Peak kW (Rate A kW)</name>
                 <offset value="2"/>
                 <multiplier value="1.0"/>
                 <unitofmeasure value="kW"/>
             </point>
         </points>
+        <attributes>
+	        <attribute name="USAGE">
+        		<basicLookup point="Total kWh" />
+        	</attribute>
+        	<attribute name="PEAK_DEMAND">
+        		<basicLookup point="Peak kW (Rate A kW)" />
+        	</attribute>
+       	</attributes>
     </device>
     <device>
         <type value="1011" javaConstant="VECTRON" changeGroup="electronic"/>
@@ -8979,14 +9605,12 @@
         <displayGroup value="Electronic Meters"/>
         <points>
             <point init="true" type="Analog">
-            	<attribute name="USAGE"/>
                 <name>Total kWh</name>
                 <offset value="1"/>
                 <multiplier value="1.0"/>
                 <unitofmeasure value="kWH"/>
             </point>
             <point type="Analog">
-            	<attribute name="PEAK_DEMAND"/>
                 <name>Peak kW (Rate A kW)</name>
                 <offset value="2"/>
                 <multiplier value="1.0"/>
@@ -9048,14 +9672,12 @@
             </point>
             
             <point type="Analog">
-            	<attribute name="DEMAND"/>
                 <name>Last Interval kW</name>
                 <offset value="14"/>
                 <multiplier value="1.0"/>
                 <unitofmeasure value="kW"/>
             </point>
             <point init="true" type="Analog">
-            	<attribute name="LOAD_PROFILE"/>
                 <name>Load Profile kW</name>
                 <offset value="15"/>
                 <multiplier value="1.0"/>
@@ -9306,6 +9928,20 @@
                 <unitofmeasure value="Undefined"/>
             </point>
         </points>
+        <attributes>
+	        <attribute name="USAGE">
+        		<basicLookup point="Total kWh" />
+        	</attribute>
+        	<attribute name="PEAK_DEMAND">
+        		<basicLookup point="Peak kW (Rate A kW)" />
+        	</attribute>
+        	<attribute name="DEMAND">
+        		<basicLookup point="Last Interval kW" />
+        	</attribute>
+        	<attribute name="LOAD_PROFILE">
+        		<basicLookup point="Load Profile kW" />
+        	</attribute>
+       	</attributes>
     </device>
     
     <!-- RTUs -->

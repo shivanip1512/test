@@ -91,7 +91,7 @@ public class AttributeServiceImplTest extends TestCase {
         expectedAtributes.add(BuiltInAttribute.DEMAND);
         expectedAtributes.add(BuiltInAttribute.LOAD_PROFILE);
 
-        Set<Attribute> actualAtributes = service.getAllExistingAtributes(device);
+        Set<Attribute> actualAtributes = service.getAllExistingAttributes(device);
 
         assertEquals("Existing attributes aren't as expected", expectedAtributes, actualAtributes);
 
@@ -99,14 +99,14 @@ public class AttributeServiceImplTest extends TestCase {
         expectedAtributes = new HashSet<Attribute>();
 
         device.setType(1036);
-        actualAtributes = service.getAllExistingAtributes(device);
+        actualAtributes = service.getAllExistingAttributes(device);
 
         assertEquals("There shouldn't be any attributes", expectedAtributes, actualAtributes);
 
         // Test with invalid device
         try {
             device.setType(-1);
-            actualAtributes = service.getAllExistingAtributes(device);
+            actualAtributes = service.getAllExistingAttributes(device);
         } catch (IllegalArgumentException e) {
             // expected exception
         } catch (Exception e) {

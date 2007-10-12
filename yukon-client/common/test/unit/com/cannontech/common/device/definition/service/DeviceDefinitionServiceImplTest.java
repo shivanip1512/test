@@ -13,7 +13,6 @@ import org.junit.Before;
 import org.junit.Test;
 
 import com.cannontech.common.device.YukonDevice;
-import com.cannontech.common.device.attribute.model.UserDefinedAttribute;
 import com.cannontech.common.device.attribute.service.AttributeServiceImpl;
 import com.cannontech.common.device.definition.dao.DeviceDefinitionDao;
 import com.cannontech.common.device.definition.dao.DeviceDefinitionDaoImplTest;
@@ -57,13 +56,13 @@ public class DeviceDefinitionServiceImplTest {
             }
         });
         service.setPointService(pointService);
+        service.setPointDao(pointDao);
 
         // Create the attribute service for testing
         attributeService = new AttributeServiceImpl();
         attributeService.setDeviceDefinitionDao(deviceDefinitionDao);
         attributeService.setPointService(pointService);
         attributeService.setPointDao(pointDao);
-        service.setAttributeService(attributeService);
 
         device = new YukonDevice(1, DeviceTypes.MCT310);
 
@@ -202,8 +201,27 @@ public class DeviceDefinitionServiceImplTest {
 
         // Test add points from type 'device2' to type 'device1'
         device.setType(DeviceTypes.MCT370);
-        Set<PointTemplate> expectedTemplates = DeviceDefinitionDaoImplTest.getExpectedInitTemplates();
+        Set<PointTemplate> expectedTemplates = new HashSet<PointTemplate>();
 
+        // Pulse Accumulators
+        expectedTemplates.add(new PointTemplate("pulse1",
+                                                    2,
+                                                    2,
+                                                    1.0,
+                                                    1,
+                                                    0,
+                                                    true));
+
+        // Demand Accumulators
+        expectedTemplates.add(new PointTemplate("demand1",
+                                                    3,
+                                                    1,
+                                                    1.0,
+                                                    0,
+                                                    0,
+                                                    true));
+
+        
         Set<PointTemplate> actualTemplates = service.getPointTemplatesToAdd(device,
                                                                             new DeviceDefinitionImpl(1019,
                                                                                                      "Device1",
@@ -238,7 +256,33 @@ public class DeviceDefinitionServiceImplTest {
     public void testGetPointTemplatesToRemove() {
 
         // Test remove points from type 'device1' to type 'device2'
-        Set<PointTemplate> expectedTemplates = DeviceDefinitionDaoImplTest.getExpectedInitTemplates();
+        Set<PointTemplate> expectedTemplates = new HashSet<PointTemplate>();
+
+        // Pulse Accumulators
+        expectedTemplates.add(new PointTemplate("pulse1",
+                                                    2,
+                                                    2,
+                                                    1.0,
+                                                    1,
+                                                    0,
+                                                    true));
+
+        expectedTemplates.add(new PointTemplate("pulse2",
+									                2,
+									                4,
+									                1.0,
+									                1,
+									                0,
+									                true));
+
+        // Demand Accumulators
+        expectedTemplates.add(new PointTemplate("demand1",
+                                                    3,
+                                                    1,
+                                                    1.0,
+                                                    0,
+                                                    0,
+                                                    true));
 
         Set<PointTemplate> actualTemplates = service.getPointTemplatesToRemove(device,
                                                                                new DeviceDefinitionImpl(1022,
@@ -276,14 +320,15 @@ public class DeviceDefinitionServiceImplTest {
 
         // Test remove points from type 'device1' to type 'device2'
         Set<PointTemplate> expectedTemplates = new HashSet<PointTemplate>();
-        expectedTemplates.add(new PointTemplate("pulse2",
-                                                    2,
-                                                    4,
+
+        // Analog
+        expectedTemplates.add(new PointTemplate("analog1",
+                                                    1,
+                                                    1,
                                                     1.0,
                                                     1,
                                                     0,
-                                                    false,
-                                                    new UserDefinedAttribute("pulse2")));
+                                                    true));
 
         Set<PointTemplate> actualTemplates = service.getPointTemplatesToTransfer(device,
                                                                                  new DeviceDefinitionImpl(1022,
@@ -321,14 +366,13 @@ public class DeviceDefinitionServiceImplTest {
 
         // Test remove points from type 'device1' to type 'device2'
         Set<PointTemplate> expectedTemplates = new HashSet<PointTemplate>();
-        expectedTemplates.add(new PointTemplate("pulse2",
-                                                    2,
-                                                    3,
-                                                    0.1,
-                                                    1,
-                                                    0,
-                                                    false,
-                                                    new UserDefinedAttribute("pulse2")));
+        expectedTemplates.add(new PointTemplate("analog1",
+											        1,
+											        1,
+											        1.0,
+											        1,
+											        0,
+											        false));
 
         Set<PointTemplate> actualTemplates = service.getNewPointTemplatesForTransfer(device,
                                                                                      new DeviceDefinitionImpl(DeviceTypes.MCT370,
