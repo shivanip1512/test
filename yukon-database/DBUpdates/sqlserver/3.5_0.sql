@@ -116,6 +116,8 @@ insert into YukonRoleProperty values(-10814, -108,'Suppress Error Page Details',
 go
 
 insert into BillingFileFormats values(-25,'Itron Register Readings Export');
+insert into billingfileformats values( 13, 'NISC',1);
+insert into billingfileformats values( -19, ' NISC No Limit kWh ',1);
 go
 
 /* @error ignore-begin */

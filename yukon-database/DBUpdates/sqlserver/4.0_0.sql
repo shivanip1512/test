@@ -352,6 +352,10 @@ INSERT INTO State VALUES(-1, 9, 'High Limit 1', 9, 6 , 0);
 INSERT INTO State VALUES(-1, 10, 'High Limit 2', 10, 6 , 0);
 /* @error ignore-end */
 
+alter table ccfeederbanklist alter column controlorder float;
+alter table ccfeederbanklist alter column closeorder float;
+alter table ccfeederbanklist alter column triporder float;
+
 /**************************************************************/
 /* VERSION INFO                                               */
 /*   Automatically gets inserted from build script            */
