@@ -209,7 +209,7 @@ public class MeterOutagesWidget extends WidgetControllerBase {
         Set<Attribute> attributesToShow = new HashSet<Attribute>();
         attributesToShow.add(BuiltInAttribute.BLINK_COUNT);
         attributesToShow.add(BuiltInAttribute.OUTAGE_LOG);
-        Set<Attribute> allExistingAtributes = attributeService.getAllExistingAtributes(meter);
+        Set<Attribute> allExistingAtributes = attributeService.getAllExistingAttributes(meter);
         
         // allExisting is a copy...
         allExistingAtributes.retainAll(attributesToShow);

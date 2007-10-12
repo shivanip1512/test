@@ -59,11 +59,11 @@ public class MeterReadingsWidget extends WidgetControllerBase {
         ModelAndView mav = new ModelAndView("meterReadingsWidget/render.jsp");
         mav.addObject("device", meter);
         mav.addObject("attributes", attributesToShow);
-        Set<Attribute> allSupportedAtributes = attributeService.getAvailableAttributes(meter);
-        Map<Attribute, Boolean> supportedAttributes = convertSetToMap(allSupportedAtributes);
+        Set<Attribute> allSupportedAttributes = attributeService.getAvailableAttributes(meter);
+        Map<Attribute, Boolean> supportedAttributes = convertSetToMap(allSupportedAttributes);
         mav.addObject("supportedAttributes", supportedAttributes);
-        Set<Attribute> allExistingAtributes = attributeService.getAllExistingAtributes(meter);
-        Map<Attribute, Boolean> existingAttributes = convertSetToMap(allExistingAtributes);
+        Set<Attribute> allExistingAttributes = attributeService.getAllExistingAttributes(meter);
+        Map<Attribute, Boolean> existingAttributes = convertSetToMap(allExistingAttributes);
         mav.addObject("existingAttributes", existingAttributes);
         LitePoint lp = attributeService.getPointForAttribute(meter, BuiltInAttribute.USAGE);
         
@@ -102,12 +102,12 @@ public class MeterReadingsWidget extends WidgetControllerBase {
         Meter meter = getMeter(request);
         ModelAndView mav = new ModelAndView("common/meterReadingsResult.jsp");
         
-        Set<Attribute> allExistingAtributes = attributeService.getAllExistingAtributes(meter);
+        Set<Attribute> allExistingAttributes = attributeService.getAllExistingAttributes(meter);
         
         // allExisting is a copy...
-        allExistingAtributes.retainAll(attributesToShow);
+        allExistingAttributes.retainAll(attributesToShow);
         LiteYukonUser user = ServletUtil.getYukonUser(request);
-        CommandResultHolder result = meterReadService.readMeter(meter, allExistingAtributes, user);
+        CommandResultHolder result = meterReadService.readMeter(meter, allExistingAttributes, user);
         
         mav.addObject("errorsExist", result.isErrorsExist());
         
@@ -122,11 +122,11 @@ public class MeterReadingsWidget extends WidgetControllerBase {
         return meter;
     }
     
-    private Map<Attribute, Boolean> convertSetToMap(Set<Attribute> allExistingAtributes) {
+    private Map<Attribute, Boolean> convertSetToMap(Set<Attribute> allExistingAttributes) {
         Map<Attribute, Boolean> existingMap = new HashMap<Attribute, Boolean>();
         
         // convert to a map of true's because JSP EL can use this to check "contains"
-        for (Attribute attribute : allExistingAtributes) {
+        for (Attribute attribute : allExistingAttributes) {
             existingMap.put(attribute, Boolean.TRUE);
         }
         

@@ -110,7 +110,7 @@ public class TouWidget extends WidgetControllerBase {
      */
     private Set<Attribute> getExistingAttributes(YukonDevice device,  List<TouAttributeMapping> touList){
         List<Attribute> neededAttributes = new ArrayList<Attribute>();;
-        Set<Attribute> allExistingAttributes = attributeService.getAllExistingAtributes(device);
+        Set<Attribute> allExistingAttributes = attributeService.getAllExistingAttributes(device);
 
         for (TouAttributeMapping touRate : touList) {
             neededAttributes.addAll(touRate.getAllAttributes());

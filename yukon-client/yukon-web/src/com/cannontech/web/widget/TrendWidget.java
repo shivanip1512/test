@@ -81,12 +81,12 @@ public class TrendWidget extends WidgetControllerBase {
 
         // Get the set of attributes that the trend supports and that exist for
         // the device
-        Set<Attribute> existingAtributes = attributeService.getAllExistingAtributes(device);
+        Set<Attribute> existingAttributes = attributeService.getAllExistingAttributes(device);
 
         boolean graphSelected = selectedAttributeGraph != null;
         Set<AttributeGraphType> availableAttributeGraphs = new HashSet<AttributeGraphType>();
         for (AttributeGraphType agt : supportedAttributeGraphMap.values()) {
-            if (existingAtributes.contains(agt.getAttribute())) {
+            if (existingAttributes.contains(agt.getAttribute())) {
                 availableAttributeGraphs.add(agt);
 
                 if (selectedAttributeGraph == null || (!graphSelected && agt.getAttribute() == BuiltInAttribute.USAGE)) {
