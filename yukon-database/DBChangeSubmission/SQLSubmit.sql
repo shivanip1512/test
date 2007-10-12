@@ -446,21 +446,10 @@ CREATE TABLE [dbo].[TouAttributeMapping](
 GO
 SET ANSI_PADDING OFF
 
-INSERT INTO [sw_cart40].[dbo].[TouAttributeMapping]
-           ([displayName], [peakAttribute], [usageAttribute])
-     VALUES ('Normal', 'PEAK_DEMAND', 'USAGE');
-
-INSERT INTO [sw_cart40].[dbo].[TouAttributeMapping]
-           ([displayName], [peakAttribute], [usageAttribute])
-     VALUES ('B', 'TOU_RATE_B_PEAK', 'TOU_RATE_B_USAGE');
-
-INSERT INTO [sw_cart40].[dbo].[TouAttributeMapping]
-           ([displayName], [peakAttribute], [usageAttribute])
-     VALUES ('C', 'TOU_RATE_C_PEAK', 'TOU_RATE_C_USAGE');
-
-INSERT INTO [sw_cart40].[dbo].[TouAttributeMapping]
-           ([displayName], [peakAttribute], [usageAttribute])
-     VALUES ('D', 'TOU_RATE_D_PEAK', 'TOU_RATE_D_USAGE');
+INSERT INTO TouAttributeMapping VALUES ('Normal', 'PEAK_DEMAND', 'USAGE');
+INSERT INTO TouAttributeMapping VALUES ('B', 'TOU_RATE_B_PEAK_DEMAND', 'TOU_RATE_B_USAGE');
+INSERT INTO TouAttributeMapping VALUES ('C', 'TOU_RATE_C_PEAK_DEMAND', 'TOU_RATE_C_USAGE');
+INSERT INTO TouAttributeMapping VALUES ('D', 'TOU_RATE_D_PEAK_DEMAND', 'TOU_RATE_D_USAGE');
 
 insert into YukonRoleProperty values(-20204,-202,'Enable Tou','true','Allows access to Tou(Time of use) data');  
 insert into YukonRoleProperty values(-20205,-202,'Enable Device Group','true','Allows access to change device groups for a device');  
