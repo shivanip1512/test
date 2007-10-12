@@ -22,8 +22,8 @@
     String popupEvent = DaoFactory.getAuthDao().getRolePropertyValue(user, WebClientRole.POPUP_APPEAR_STYLE);
 	if (popupEvent == null) popupEvent = "onmouseover"; 
     
-	Integer areaId = cbcSession.getLastAreaId();
-	String area = cbcSession.getLastArea();
+	Integer areaId = ccSession.getLastAreaId();
+	String area = ccSession.getLastArea();
 	List<SubStation> areaSubs = filterCapControlCache.getSubstationsByArea(areaId);
     boolean hasControl = CBCWebUtils.hasControlRights(session);
     boolean special = filterCapControlCache.isSpecialCBCArea(areaId);
@@ -52,7 +52,7 @@ if(special){
  								});
 </script>
 
-<cti:titledContainer title="<%="Substation In Area:  " + cbcSession.getLastArea()%>" id="last_titled_container">
+<cti:titledContainer title="<%="Substation In Area:  " + ccSession.getLastArea()%>" id="last_titled_container">
           
 		<%
           		if (areaSubs.size() == 0) {

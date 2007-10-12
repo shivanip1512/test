@@ -16,8 +16,8 @@
 
 <%
 	String nd = "\"return nd();\"";
-	int subid = cbcSession.getLastSubID();
-	Integer areaId = cbcSession.getLastAreaId();
+	int subid = ccSession.getLastSubID();
+	Integer areaId = ccSession.getLastAreaId();
 	LiteYukonUser user = (LiteYukonUser) session.getAttribute(LoginController.YUKON_USER);	
 	String popupEvent = DaoFactory.getAuthDao().getRolePropertyValue(user, WebClientRole.POPUP_APPEAR_STYLE);
     boolean showFlip = Boolean.valueOf(DaoFactory.getAuthDao().getRolePropertyValue(user, CBCSettingsRole.SHOW_FLIP_COMMAND)).booleanValue();

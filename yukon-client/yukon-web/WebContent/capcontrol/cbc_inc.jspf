@@ -42,15 +42,15 @@
 <script type="text/javascript" src="../JavaScript/GreyBox/greybox.js"></script>
 
 
-<jsp:useBean id="cbcSession"
-	class="com.cannontech.cbc.web.CBCSessionInfo"
-	type="com.cannontech.cbc.web.CBCSessionInfo" scope="session">
+<jsp:useBean id="ccSession"
+	class="com.cannontech.cbc.web.CCSessionInfo"
+	type="com.cannontech.cbc.web.CCSessionInfo" scope="session">
 </jsp:useBean>
 
 
 <%
-	if(cbcSession != null)
-		cbcSession.updateState( request );
+	if(ccSession != null)
+		ccSession.updateState( request );
 
 %>
 

@@ -81,7 +81,7 @@
                 <td class="secondBGColor">
             <div id="subMenu" style="height: 20px">
 			<form id="subMenuFrm" action="results.jsp" method="post">
-			<input type="hidden" name="<%=CBCSessionInfo.STR_LAST_SEARCH%>">
+			<input type="hidden" name="<%=CCSessionInfo.STR_LAST_SEARCH%>">
 				  <div class="subMenuPopup">
 					<a href="#" class="submenuLink" onclick="post('<%=DBEditorNav.getWizardURL(PAOGroups.CAP_CONTROL_SUBBUS)%>');">SubstationBus</a>
 					<a href="#" class="submenuLink" onclick="post('<%=DBEditorNav.getWizardURL(PAOGroups.CAP_CONTROL_FEEDER)%>');">Feeder</a> 
@@ -110,9 +110,9 @@
 				  </div>
 
 				  <div class="subMenuPopup">
-					<a href="#" class="submenuLink" onclick="postMany('subMenuFrm', '<%=CBCSessionInfo.STR_LAST_SEARCH%>', '<%=CBCWebUtils.TYPE_ORPH_FEEDERS%>')">Orphaned Feeders</a> 
-					<a href="#" class="submenuLink" onclick="postMany('subMenuFrm', '<%=CBCSessionInfo.STR_LAST_SEARCH%>', '<%=CBCWebUtils.TYPE_ORPH_BANKS%>')">Orphaned CapBanks</a> 
-					<a href="#" class="submenuLink" onclick="postMany('subMenuFrm', '<%=CBCSessionInfo.STR_LAST_SEARCH%>', '<%=CBCWebUtils.TYPE_ORPH_CBCS%>')">Orphaned CBCs</a> 
+					<a href="#" class="submenuLink" onclick="postMany('subMenuFrm', '<%=CCSessionInfo.STR_LAST_SEARCH%>', '<%=CBCWebUtils.TYPE_ORPH_FEEDERS%>')">Orphaned Feeders</a> 
+					<a href="#" class="submenuLink" onclick="postMany('subMenuFrm', '<%=CCSessionInfo.STR_LAST_SEARCH%>', '<%=CBCWebUtils.TYPE_ORPH_BANKS%>')">Orphaned CapBanks</a> 
+					<a href="#" class="submenuLink" onclick="postMany('subMenuFrm', '<%=CCSessionInfo.STR_LAST_SEARCH%>', '<%=CBCWebUtils.TYPE_ORPH_CBCS%>')">Orphaned CBCs</a> 
 					<a href="#" class="submenuLink" onclick="post('<%=DBEditorNav.getEditorURL(DBEditorNav.EDTYPE_LIST_SCHEDULE)%>');">Schedules</a> 
 
 					<cti:isPropertyFalse propertyid="<%= CBCSettingsRole.HIDE_ONELINE %>">

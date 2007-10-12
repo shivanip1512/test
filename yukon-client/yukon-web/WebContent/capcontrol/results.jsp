@@ -23,7 +23,7 @@
 	ParentStringPrinter psp = new ParentStringPrinter (capControlCache);
 	psp.setLinkedToEditors(true);
 	if( srchCriteria == null )
-		srchCriteria = cbcSession.getLastSearchCriteria();
+		srchCriteria = ccSession.getLastSearchCriteria();
 
 	String label = srchCriteria;
 
