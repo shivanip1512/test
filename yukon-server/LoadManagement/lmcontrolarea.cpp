@@ -1576,7 +1576,11 @@ void CtiLMControlArea::manuallyStartAllProgramsNow(LONG secondsFromBeginningOfDa
                 !stringCompareIgnoreCase(currentLMProgram->getControlType(),"Enabled") )// HACK: == "Enabled" part above should be removed as soon as the editor is fixed
             {
                 CtiLMProgramConstraintChecker con_checker(*((CtiLMProgramDirect*)currentLMProgram.get()), secondsFrom1901);
-                if( con_checker.checkManualProgramConstraints(secondsFrom1901, gEndOfCtiTimeSeconds) &&
+                //Check manual but not notification time
+                if( con_checker.checkSeason(secondsFrom1901, gEndOfCtiTimeSeconds) &&
+                    con_checker.checkWeekDays(secondsFrom1901, gEndOfCtiTimeSeconds) && 
+                    con_checker.checkMasterActive() &&
+                    con_checker.checkControlWindows(secondsFrom1901, gEndOfCtiTimeSeconds) &&
                     con_checker.checkControlAreaControlWindows(*this, secondsFrom1901, gEndOfCtiTimeSeconds) )
                 {
                     if( getControlAreaState() == CtiLMControlArea::InactiveState )

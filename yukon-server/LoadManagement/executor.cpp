@@ -1794,6 +1794,20 @@ void CtiLMManualControlRequestExecutor::CoerceStartStopTime(CtiLMProgramBaseSPtr
         }
     }
 
+    if( program->getPAOType() == TYPE_LMPROGRAM_DIRECT )
+    {
+        CtiLMProgramDirectSPtr lmProgramDirect = boost::static_pointer_cast< CtiLMProgramDirect >(program);
+
+        if( lmProgramDirect->getNotifyActiveOffset() != CtiLMProgramDirect::invalidNotifyOffset )   // there is no notify active offset
+        {
+            if( (start.seconds() - start.now().seconds()) < lmProgramDirect->getNotifyActiveOffset() )
+            {
+                //we add (time we must go to)-(current start time) seconds to get to (time we must go to);
+                start += start.now().seconds() - start.seconds() + lmProgramDirect->getNotifyActiveOffset();
+            }
+        }
+    }
+
     if( controlArea != NULL )
     {
         startSecondsFromBeginningOfDay = start.seconds() - beginningOfDay.seconds();
