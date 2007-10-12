@@ -1,5 +1,4 @@
 <%@ page import="com.cannontech.common.constants.LoginController" %>
-<%@ page import="com.cannontech.cbc.web.CapControlUserOwnerDAO" %>
 <jsp:directive.page import="com.cannontech.database.data.capcontrol.CapControlArea"/>
 <jsp:directive.page import="com.cannontech.database.data.capcontrol.CapControlSpecialArea"/>
 <%@ taglib uri="http://cannontech.com/tags/cti" prefix="cti" %>
