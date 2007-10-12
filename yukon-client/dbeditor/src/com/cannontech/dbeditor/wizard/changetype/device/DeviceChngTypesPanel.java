@@ -22,7 +22,6 @@ import javax.swing.event.ListSelectionListener;
 
 import com.cannontech.clientutils.CTILogger;
 import com.cannontech.common.device.YukonDevice;
-import com.cannontech.common.device.attribute.service.AttributeService;
 import com.cannontech.common.device.definition.model.DeviceDefinition;
 import com.cannontech.common.device.definition.model.PointTemplate;
 import com.cannontech.common.device.definition.service.DeviceDefinitionService;
@@ -33,7 +32,6 @@ import com.cannontech.database.data.device.DeviceBase;
 import com.cannontech.database.data.device.MCT310ID;
 import com.cannontech.database.data.lite.LiteFactory;
 import com.cannontech.database.data.lite.LitePoint;
-import com.cannontech.database.data.lite.LiteYukonPAObject;
 import com.cannontech.database.data.pao.DeviceTypes;
 import com.cannontech.database.data.pao.PAOGroups;
 import com.cannontech.database.data.point.AccumulatorPoint;
@@ -46,7 +44,6 @@ public class DeviceChngTypesPanel extends DataInputPanel implements ListSelectio
     private DeviceBase currentDevice = null;
 
     private DeviceDefinitionService deviceDefinitionService = (DeviceDefinitionService) YukonSpringHook.getBean("deviceService");
-    private AttributeService attributeService = (AttributeService) YukonSpringHook.getBean("attributeService");
     private PointService pointService = (PointService) YukonSpringHook.getBean("devicePointService");
 
     private JList deviceJList = null;
@@ -318,10 +315,10 @@ public class DeviceChngTypesPanel extends DataInputPanel implements ListSelectio
 
         StringBuffer buffer = new StringBuffer();
 
+        YukonDevice device = getYukonDeviceForDevice(getCurrentDevice());
+        
         for (PointTemplate template : transferTemplates) {
-
-            LitePoint litePoint = attributeService.getPointForAttribute(getYukonDeviceForDevice(getCurrentDevice()),
-                                                                        template.getAttribute());
+        	LitePoint litePoint = pointService.getPointForDevice(device, template);
             PointBase point = (PointBase) LiteFactory.createDBPersistent(litePoint);
 
             buffer.append("-- #" + litePoint.getPointOffset() + " " + litePoint.getPointName()
