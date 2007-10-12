@@ -10,19 +10,15 @@ import com.cannontech.database.data.capcontrol.CapBankController702x;
 import com.cannontech.database.data.capcontrol.ICapBankController;
 import com.cannontech.database.data.device.DeviceFactory;
 import com.cannontech.database.data.lite.LiteBase;
-import com.cannontech.database.data.lite.LiteFactory;
 import com.cannontech.database.data.lite.LitePoint;
-import com.cannontech.database.data.lite.LiteYukonPAObject;
 import com.cannontech.database.data.multi.MultiDBPersistent;
 import com.cannontech.database.data.pao.PAOGroups;
-import com.cannontech.database.data.pao.YukonPAObject;
 import com.cannontech.database.data.point.PointBase;
 import com.cannontech.database.data.point.PointFactory;
 import com.cannontech.database.data.point.PointTypes;
 import com.cannontech.database.data.point.PointUtil;
-import com.cannontech.database.data.point.StatusPoint;
 import com.cannontech.database.db.DBPersistent;
-import com.cannontech.database.db.point.Point;
+
 
 public class CBCCopyUtils {
 
@@ -62,38 +58,14 @@ public class CBCCopyUtils {
 	}
 
 	private static DBPersistent copyPoint(PointBase base) {
-		PointBase point = PointFactory.createPoint(PointTypes.getType(base
+		PointBase point = base;
+			
+		PointBase point1 = PointFactory.createPoint(PointTypes.getType(base
 				.getPoint().getPointType()));
-		Point pointComposite = point.getPoint();
-		// copy the composite
-		pointComposite.setAlarmInhibit(base.getPoint().getAlarmInhibit());
-		pointComposite.setAlarmsDisabled(base.getPoint().isAlarmsDisabled());
-		pointComposite.setArchiveInterval(base.getPoint().getArchiveInterval());
-		pointComposite.setArchiveType(base.getPoint().getArchiveType());
-		pointComposite.setLogicalGroup(base.getPoint().getLogicalGroup());
-		pointComposite.setOutOfService(base.getPoint().isOutOfService());
-		pointComposite.setPaoID(base.getPoint().getPaoID());
-		pointComposite.setPointName(base.getPoint().getPointName());
-		pointComposite.setPointOffset(base.getPoint().getPointOffset());
-		pointComposite.setServiceFlag(base.getPoint().getServiceFlag());
-		pointComposite.setStateGroupID(base.getPoint().getStateGroupID());
-		// copy the component
-		point.setPointAlarming(base.getPointAlarming());
-		point.setPointFDRVector(base.getPointFDRVector());
+		point.setPointID(point1.getPoint().getPointID());
 		
-		
-		if(point instanceof StatusPoint){
-            StatusPoint status = (StatusPoint)base;
-            ((StatusPoint) point).getPointStatus().setInitialState( status.getPointStatus().getInitialState() );
-            ((StatusPoint) point).getPointStatus().setControlType( (status.getPointStatus().getControlType() ));
-            ((StatusPoint) point).getPointStatus().setControlInhibit( status.getPointStatus().getControlInhibit());
-            ((StatusPoint) point).getPointStatus().setControlOffset( status.getPointStatus().getControlOffset() );
-            ((StatusPoint) point).getPointStatus().setCloseTime1( status.getPointStatus().getCloseTime1()  );
-            ((StatusPoint) point).getPointStatus().setCloseTime2( status.getPointStatus().getCloseTime2());
-            ((StatusPoint) point).getPointStatus().setStateZeroControl( status.getPointStatus().getStateZeroControl() );
-            ((StatusPoint) point).getPointStatus().setStateOneControl( status.getPointStatus().getStateOneControl() );
-            ((StatusPoint) point).getPointStatus().setCommandTimeOut( status.getPointStatus().getCommandTimeOut() );	
-        }
+        //REMOVED seperate point value settings.  Replaced with above reference copying.  
+		//Watch out.  This is no longer the original point.  Use as such.  
 		
 		return point;
 	}

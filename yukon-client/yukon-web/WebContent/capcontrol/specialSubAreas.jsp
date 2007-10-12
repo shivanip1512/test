@@ -38,8 +38,8 @@ if (allowCtlVal!=null) {
     <cti:titledContainer title="Special Substation Bus Areas" id="last_titled_container">
           
 		<form id="areaForm" action="substations.jsp" method="post">
-			<input type="hidden" name="<%=CCSessionInfo%>" />
-			<input type="hidden" name="<%=CCSessionInfo%>" />
+			<input type="hidden" name="<%=CCSessionInfo.STR_CC_AREA%>" />
+			<input type="hidden" name="<%=CCSessionInfo.STR_CC_AREAID%>" />
             <table id="areaHeaderTable" width="100%" border="0" cellspacing="0" cellpadding="0">
               <tr class="columnHeader lAlign">				
 				<td>Area Name</td>
@@ -81,7 +81,7 @@ if (allowCtlVal!=null) {
 				<input type="image" id="showAreas<%=i%>"
 					src="images/nav-plus.gif"
 					onclick="showRowElems( 'allAreas<%=i%>', 'showAreas<%=i%>'); return false;"/>
-				<a href="#" class="<%=css%>" onclick="postMany('areaForm', '<%=CCSessionInfo%>', '<%=area.getPaoID()%>')">
+				<a href="#" class="<%=css%>" onclick="postMany('areaForm', '<%=CCSessionInfo.STR_CC_AREAID%>', '<%=area.getPaoID()%>')">
 				<%=area.getPaoName()%></a>
 				</td>
                 <td>
