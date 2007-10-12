@@ -1,8 +1,57 @@
 /*==============================================================*/
 /* Database name:  YukonDatabase                                */
 /* DBMS name:      ORACLE Version 9i                            */
-/* Created on:     10/3/2007 4:28:49 PM                         */
+/* Created on:     10/12/2007 3:14:48 PM                        */
 /*==============================================================*/
+
+
+
+-- Integrity package declaration
+create or replace package IntegrityPackage AS
+ procedure InitNestLevel;
+ function GetNestLevel return number;
+ procedure NextNestLevel;
+ procedure PreviousNestLevel;
+ end IntegrityPackage;
+/
+
+-- Integrity package definition
+create or replace package body IntegrityPackage AS
+ NestLevel number;
+
+-- Procedure to initialize the trigger nest level
+ procedure InitNestLevel is
+ begin
+ NestLevel := 0;
+ end;
+
+
+-- Function to return the trigger nest level
+ function GetNestLevel return number is
+ begin
+ if NestLevel is null then
+     NestLevel := 0;
+ end if;
+ return(NestLevel);
+ end;
+
+-- Procedure to increase the trigger nest level
+ procedure NextNestLevel is
+ begin
+ if NestLevel is null then
+     NestLevel := 0;
+ end if;
+ NestLevel := NestLevel + 1;
+ end;
+
+-- Procedure to decrease the trigger nest level
+ procedure PreviousNestLevel is
+ begin
+ NestLevel := NestLevel - 1;
+ end;
+
+ end IntegrityPackage;
+/
 
 
 /* @error ignore-begin */
@@ -10,6 +59,9 @@ set define off;
 /* @error ignore-end */
 
 
+
+drop trigger TRIGGER_1
+;
 
 drop procedure RenCol
 ;
@@ -89,9 +141,6 @@ drop table CAPBANK cascade constraints
 drop table CAPBANKADDITIONAL cascade constraints
 ;
 
-drop table CAPCONTROLAREA cascade constraints
-;
-
 drop table CAPCONTROLSPECIALAREA cascade constraints
 ;
 
@@ -108,6 +157,9 @@ drop table CCFeederSubAssignment cascade constraints
 ;
 
 drop table CCMONITORBANKLIST cascade constraints
+;
+
+drop table CCSEASONSTRATEGYASSIGNMENT cascade constraints
 ;
 
 drop table CCSUBAREAASSIGNMENT cascade constraints
@@ -336,6 +388,9 @@ drop table DYNAMICBILLINGFORMAT cascade constraints
 ;
 
 drop table DYNAMICCCAREA cascade constraints
+;
+
+drop table DYNAMICCCSPECIALAREA cascade constraints
 ;
 
 drop table DYNAMICCCTWOWAYCBC cascade constraints
@@ -737,6 +792,9 @@ drop table TEMPLATE cascade constraints
 drop table TEMPLATECOLUMNS cascade constraints
 ;
 
+drop table TOUATTRIBUTEMAPPING cascade constraints
+;
+
 drop table TOUDay cascade constraints
 ;
 
@@ -827,12 +885,9 @@ create table ActivityLog  (
    CustomerID           NUMBER,
    PaoID                NUMBER,
    Action               VARCHAR2(80)                    not null,
-   Description          VARCHAR2(240)                   not null
+   Description          VARCHAR2(240)                   not null,
+   constraint PK_ACTIVITYLOG primary key (ActivityLogID)
 )
-;
-
-alter table ActivityLog
-   add constraint PK_ACTIVITYLOG primary key (ActivityLogID)
 ;
 
 /*==============================================================*/
@@ -845,15 +900,12 @@ create table Address  (
    CityName             VARCHAR2(32)                    not null,
    StateCode            CHAR(2)                         not null,
    ZipCode              VARCHAR2(12)                    not null,
-   County               VARCHAR2(30)                    not null
+   County               VARCHAR2(30)                    not null,
+   constraint PK_ADDRESS primary key (AddressID)
 )
 ;
 
 insert into address values ( 0, '(none)', '(none)', '(none)', 'MN', '(none)', '(none)' );
-
-alter table Address
-   add constraint PK_ADDRESS primary key (AddressID)
-;
 
 /*==============================================================*/
 /* Table: AlarmCategory                                         */
@@ -861,7 +913,8 @@ alter table Address
 create table AlarmCategory  (
    AlarmCategoryID      NUMBER                          not null,
    CategoryName         VARCHAR2(40)                    not null,
-   NotificationGroupID  NUMBER                          not null
+   NotificationGroupID  NUMBER                          not null,
+   constraint PK_ALARMCATEGORYID primary key (AlarmCategoryID)
 )
 ;
 
@@ -968,10 +1021,6 @@ insert into AlarmCategory values(98,'Category 98',1);
 insert into AlarmCategory values(99,'Category 99',1);
 insert into AlarmCategory values(100,'Category 100',1);
 
-alter table AlarmCategory
-   add constraint PK_ALARMCATEGORYID primary key (AlarmCategoryID)
-;
-
 /*==============================================================*/
 /* Table: BaseLine                                              */
 /*==============================================================*/
@@ -982,15 +1031,12 @@ create table BaseLine  (
    PercentWindow        NUMBER                          not null,
    CalcDays             NUMBER                          not null,
    ExcludedWeekDays     CHAR(7)                         not null,
-   HolidaysUsed         NUMBER                          not null
+   HolidaysUsed         NUMBER                          not null,
+   constraint PK_BASELINE primary key (BaselineID)
 )
 ;
 
 insert into baseline values (1, 'Default Baseline', 30, 75, 5, 'YNNNNNY', 0);
-
-alter table BaseLine
-   add constraint PK_BASELINE primary key (BaselineID)
-;
 
 /*==============================================================*/
 /* Table: BillingFileFormats                                    */
@@ -998,7 +1044,8 @@ alter table BaseLine
 create table BillingFileFormats  (
    FormatID             NUMBER                          not null,
    FormatType           VARCHAR2(100)                   not null,
-   SystemFormat         SMALLINT                       default 1
+   SystemFormat         SMALLINT                       default 1,
+   constraint PK_BILLINGFILEFORMATS primary key (FormatID)
 )
 ;
 
@@ -1014,13 +1061,13 @@ insert into BillingFileFormats values( 6,'DAFRON',1);
 insert into BillingFileFormats values( 7,'NCDC',1);
 insert into billingFileformats values( 9, 'CTI2',1);
 insert into billingfileformats values( 12, 'SEDC 5.4',1);
-insert into billingfileformats values( 13, 'NISC-Turtle',1);
+insert into billingfileformats values( 13, 'NISC',1);
 insert into billingfileformats values( 14, 'NISC-NCDC',1);
 insert into billingfileformats values( 15, 'NCDC-Handheld',1);
 insert into billingfileformats values( 16, 'NISC TOU (kVarH)',1);
 insert into billingfileformats values( -17, 'SEDC (yyyyMMdd)',1);
 insert into billingfileformats values( -18, 'ATS',1);
-insert into billingfileformats values( -19, ' NISC-Turtle No Limit kWh ',1);
+insert into billingfileformats values( -19, ' NISC No Limit kWh ',1);
 insert into billingfileformats values(-20, 'IVUE_BI_T65',1);
 insert into billingfileformats values(21, 'SIMPLE_TOU',1);
 insert into billingfileformats values(22, 'EXTENDED_TOU',1);
@@ -1029,10 +1076,6 @@ insert into billingfileformats values(-24, 'INCODE (Extended TOU)',1);
 insert into BillingFileFormats values(-25,'Itron Register Readings Export',1);
 insert into billingfileformats values(-26, 'SIMPLE_TOU_DeviceName',1);
 
-alter table BillingFileFormats
-   add constraint PK_BILLINGFILEFORMATS primary key (FormatID)
-;
-
 /*==============================================================*/
 /* Table: CALCBASE                                              */
 /*==============================================================*/
@@ -1040,12 +1083,9 @@ create table CALCBASE  (
    POINTID              NUMBER                          not null,
    UPDATETYPE           VARCHAR2(16)                    not null,
    PERIODICRATE         NUMBER                          not null,
-   QualityFlag          CHAR(1)                         not null
+   QualityFlag          CHAR(1)                         not null,
+   constraint PK_CALCBASE primary key (POINTID)
 )
-;
-
-alter table CALCBASE
-   add constraint PK_CALCBASE primary key (POINTID)
 ;
 
 /*==============================================================*/
@@ -1066,12 +1106,9 @@ create table CALCCOMPONENT  (
    COMPONENTPOINTID     NUMBER                          not null,
    OPERATION            VARCHAR2(10),
    CONSTANT             FLOAT                           not null,
-   FUNCTIONNAME         VARCHAR2(20)
+   FUNCTIONNAME         VARCHAR2(20),
+   constraint PK_CALCCOMPONENT primary key (PointID, COMPONENTORDER)
 )
-;
-
-alter table CALCCOMPONENT
-   add constraint PK_CALCCOMPONENT primary key (PointID, COMPONENTORDER)
 ;
 
 /*==============================================================*/
@@ -1097,12 +1134,9 @@ create table CAPBANK  (
    MapLocationID        VARCHAR2(64)                    not null,
    RecloseDelay         NUMBER                          not null,
    MaxDailyOps          NUMBER                          not null,
-   MaxOpDisable         CHAR(1)                         not null
+   MaxOpDisable         CHAR(1)                         not null,
+   constraint PK_CAPBANK primary key (DEVICEID)
 )
-;
-
-alter table CAPBANK
-   add constraint PK_CAPBANK primary key (DEVICEID)
 ;
 
 /*==============================================================*/
@@ -1127,25 +1161,9 @@ create table CAPBANKADDITIONAL  (
    MaintenanceReqPend   CHAR(1)                         not null,
    OtherComments        VARCHAR2(150)                   not null,
    OpTeamComments       VARCHAR2(150)                   not null,
-   CBCBattInstallDate   DATE                            not null
+   CBCBattInstallDate   DATE                            not null,
+   constraint PK_CAPBANKADDITIONAL primary key (DeviceID)
 )
-;
-
-alter table CAPBANKADDITIONAL
-   add constraint PK_CAPBANKADDITIONAL primary key (DeviceID)
-;
-
-/*==============================================================*/
-/* Table: CAPCONTROLAREA                                        */
-/*==============================================================*/
-create table CAPCONTROLAREA  (
-   AreaID               NUMBER                          not null,
-   StrategyID           NUMBER                          not null
-)
-;
-
-alter table CAPCONTROLAREA
-   add constraint PK_CAPCONTROLAREA primary key (AreaID)
 ;
 
 /*==============================================================*/
@@ -1164,17 +1182,16 @@ create table CAPCONTROLSUBSTATIONBUS  (
    CurrentVarLoadPointID NUMBER                          not null,
    CurrentWattLoadPointID NUMBER                          not null,
    MapLocationID        VARCHAR2(64)                    not null,
-   StrategyID           NUMBER                          not null,
    CurrentVoltLoadPointID NUMBER                          not null,
    AltSubID             NUMBER                          not null,
    SwitchPointID        NUMBER                          not null,
    DualBusEnabled       CHAR(1)                         not null,
-   MultiMonitorControl  CHAR(1)                         not null
+   MultiMonitorControl  CHAR(1)                         not null,
+   usephasedata         CHAR(1)                        default '0' not null,
+   phaseb               NUMBER                         default 0 not null,
+   phasec               NUMBER                         default 0 not null,
+   constraint SYS_C0013476 primary key (SubstationBusID)
 )
-;
-
-alter table CAPCONTROLSUBSTATIONBUS
-   add constraint SYS_C0013476 primary key (SubstationBusID)
 ;
 
 /*==============================================================*/
@@ -1202,12 +1219,10 @@ create table CCEventLog  (
    KVARBefore           FLOAT                           not null,
    KVARAfter            FLOAT                           not null,
    KVARChange           FLOAT                           not null,
-   AdditionalInfo       VARCHAR2(20)                    not null
+   AdditionalInfo       VARCHAR2(20)                    not null,
+   actionId             NUMBER                         default -1 not null,
+   constraint PK_CCEventLog primary key (LogID)
 )
-;
-
-alter table CCEventLog
-   add constraint PK_CCEventLog primary key (LogID)
 ;
 
 /*==============================================================*/
@@ -1216,14 +1231,11 @@ alter table CCEventLog
 create table CCFeederBankList  (
    FeederID             NUMBER                          not null,
    DeviceID             NUMBER                          not null,
-   ControlOrder         NUMBER                          not null,
-   CloseOrder           NUMBER                          not null,
-   TripOrder            NUMBER                          not null
+   ControlOrder         FLOAT                           not null,
+   CloseOrder           FLOAT                           not null,
+   TripOrder            FLOAT                           not null,
+   constraint PK_CCFEEDERBANKLIST primary key (FeederID, DeviceID)
 )
-;
-
-alter table CCFeederBankList
-   add constraint PK_CCFEEDERBANKLIST primary key (FeederID, DeviceID)
 ;
 
 /*==============================================================*/
@@ -1232,12 +1244,9 @@ alter table CCFeederBankList
 create table CCFeederSubAssignment  (
    SubStationBusID      NUMBER                          not null,
    FeederID             NUMBER                          not null,
-   DisplayOrder         NUMBER                          not null
+   DisplayOrder         NUMBER                          not null,
+   constraint PK_CCFEEDERSUBASSIGNMENT primary key (SubStationBusID, FeederID)
 )
-;
-
-alter table CCFeederSubAssignment
-   add constraint PK_CCFEEDERSUBASSIGNMENT primary key (SubStationBusID, FeederID)
 ;
 
 /*==============================================================*/
@@ -1250,13 +1259,47 @@ create table CCMONITORBANKLIST  (
    Scannable            CHAR(1)                         not null,
    NINAvg               NUMBER                          not null,
    UpperBandwidth       FLOAT                           not null,
-   LowerBandwidth       FLOAT                           not null
+   LowerBandwidth       FLOAT                           not null,
+   constraint PK_CCMONITORBANKLIST primary key (BankID, PointID)
 )
 ;
 
-alter table CCMONITORBANKLIST
-   add constraint PK_CCMONITORBANKLIST primary key (BankID, PointID)
+/*==============================================================*/
+/* Table: CCSEASONSTRATEGYASSIGNMENT                            */
+/*==============================================================*/
+insert into ccseasonstrategyassignment 
+(paobjectid, seasonscheduleid, seasonname, strategyid)
+select substationbusid, -1,'Default',strategyid from capcontrolsubstationbus;
+go
+insert into ccseasonstrategyassignment 
+(paobjectid, seasonscheduleid, seasonname, strategyid)
+select feederid, -1, 'Default',strategyid from capcontrolfeeder;
+go
+insert into ccseasonstrategyassignment 
+(paobjectid, seasonscheduleid, seasonname, strategyid)
+select areaid, -1, 'Default',strategyid from capcontrolarea;
+go
+create table CCSEASONSTRATEGYASSIGNMENT  (
+   paobjectid           NUMBER                          not null,
+   seasonscheduleid     NUMBER                          not null,
+   seasonname           VARCHAR2(20)                    not null,
+   strategyid           NUMBER                          not null,
+   constraint PK_CCSEASONSTRATEGYASSIGNMENT primary key (paobjectid)
+)
 ;
+
+insert into ccseasonstrategyassignment 
+(paobjectid, seasonscheduleid, seasonname, strategyid)
+select substationbusid, -1,'Default',strategyid from capcontrolsubstationbus;
+go
+insert into ccseasonstrategyassignment 
+(paobjectid, seasonscheduleid, seasonname, strategyid)
+select feederid, -1, 'Default',strategyid from capcontrolfeeder;
+go
+insert into ccseasonstrategyassignment 
+(paobjectid, seasonscheduleid, seasonname, strategyid)
+select areaid, -1, 'Default',strategyid from capcontrolarea;
+go
 
 /*==============================================================*/
 /* Table: CCSUBAREAASSIGNMENT                                   */
@@ -1264,12 +1307,9 @@ alter table CCMONITORBANKLIST
 create table CCSUBAREAASSIGNMENT  (
    AreaID               NUMBER                          not null,
    SubstationBusID      NUMBER                          not null,
-   DisplayOrder         NUMBER                          not null
+   DisplayOrder         NUMBER                          not null,
+   constraint PK_CCSUBAREAASSIGNMENT primary key (AreaID, SubstationBusID)
 )
-;
-
-alter table CCSUBAREAASSIGNMENT
-   add constraint PK_CCSUBAREAASSIGNMENT primary key (AreaID, SubstationBusID)
 ;
 
 /*==============================================================*/
@@ -1291,12 +1331,9 @@ create table CCURTACCTEVENT  (
    Duration             NUMBER                          not null,
    Reason               VARCHAR2(255)                   not null,
    StartTime            DATE                            not null,
-   Identifier           NUMBER                          not null
+   Identifier           NUMBER                          not null,
+   constraint PK_CCURTACCTEVENT primary key (CCurtAcctEventID)
 )
-;
-
-alter table CCURTACCTEVENT
-   add constraint PK_CCURTACCTEVENT primary key (CCurtAcctEventID)
 ;
 
 /*==============================================================*/
@@ -1305,12 +1342,9 @@ alter table CCURTACCTEVENT
 create table CCURTACCTEVENTPARTICIPANT  (
    CCurtAcctEventParticipantID NUMBER                          not null,
    CustomerID           NUMBER                          not null,
-   CCurtAcctEventID     NUMBER                          not null
+   CCurtAcctEventID     NUMBER                          not null,
+   constraint PK_CCURTACCTEVENTPARTICIPANT primary key (CCurtAcctEventParticipantID)
 )
-;
-
-alter table CCURTACCTEVENTPARTICIPANT
-   add constraint PK_CCURTACCTEVENTPARTICIPANT primary key (CCurtAcctEventParticipantID)
 ;
 
 /*==============================================================*/
@@ -1322,12 +1356,9 @@ create table CCurtCENotif  (
    NotifTypeID          NUMBER                          not null,
    State                VARCHAR2(10)                    not null,
    Reason               VARCHAR2(10)                    not null,
-   CCurtCEParticipantID NUMBER                          not null
+   CCurtCEParticipantID NUMBER                          not null,
+   constraint PK_CCURTCENOTIF primary key (CCurtCENotifID)
 )
-;
-
-alter table CCurtCENotif
-   add constraint PK_CCURTCENOTIF primary key (CCurtCENotifID)
 ;
 
 /*==============================================================*/
@@ -1337,12 +1368,9 @@ create table CCurtCEParticipant  (
    CCurtCEParticipantID NUMBER                          not null,
    NotifAttribs         VARCHAR2(256)                   not null,
    CustomerID           NUMBER                          not null,
-   CCurtCurtailmentEventID NUMBER                          not null
+   CCurtCurtailmentEventID NUMBER                          not null,
+   constraint PK_CCURTCEPARTICIPANT primary key (CCurtCEParticipantID)
 )
-;
-
-alter table CCurtCEParticipant
-   add constraint PK_CCURTCEPARTICIPANT primary key (CCurtCEParticipantID)
 ;
 
 /*==============================================================*/
@@ -1366,12 +1394,9 @@ create table CCurtCurtailmentEvent  (
    State                VARCHAR2(10)                    not null,
    StartTime            DATE                            not null,
    CCurtProgramTypeID   NUMBER                          not null,
-   Identifier           NUMBER                          not null
+   Identifier           NUMBER                          not null,
+   constraint PK_CCURTCURTAILMENTEVENT primary key (CCurtCurtailmentEventID)
 )
-;
-
-alter table CCurtCurtailmentEvent
-   add constraint PK_CCURTCURTAILMENTEVENT primary key (CCurtCurtailmentEventID)
 ;
 
 /*==============================================================*/
@@ -1381,12 +1406,9 @@ create table CCurtEEParticipant  (
    CCurtEEParticipantID NUMBER                          not null,
    NotifAttribs         VARCHAR2(255)                   not null,
    CustomerID           NUMBER                          not null,
-   CCurtEconomicEventID NUMBER                          not null
+   CCurtEconomicEventID NUMBER                          not null,
+   constraint PK_CCURTEEPARTICIPANT primary key (CCurtEEParticipantID)
 )
-;
-
-alter table CCurtEEParticipant
-   add constraint PK_CCURTEEPARTICIPANT primary key (CCurtEEParticipantID)
 ;
 
 /*==============================================================*/
@@ -1398,12 +1420,9 @@ create table CCurtEEParticipantSelection  (
    SubmitTime           DATE                            not null,
    State                VARCHAR2(255)                   not null,
    CCurtEEParticipantID NUMBER                          not null,
-   CCurtEEPricingID     NUMBER                          not null
+   CCurtEEPricingID     NUMBER                          not null,
+   constraint PK_CCURTEEPARTICIPANTSELECTION primary key (CCurtEEParticipantSelectionID)
 )
-;
-
-alter table CCurtEEParticipantSelection
-   add constraint PK_CCURTEEPARTICIPANTSELECTION primary key (CCurtEEParticipantSelectionID)
 ;
 
 /*==============================================================*/
@@ -1422,12 +1441,9 @@ create table CCurtEEParticipantWindow  (
    CCurtEEParticipantWindowID NUMBER                          not null,
    EnergyToBuy          NUMBER(19,2)                    not null,
    CCurtEEPricingWindowID NUMBER                          not null,
-   CCurtEEParticipantSelectionID NUMBER                          not null
+   CCurtEEParticipantSelectionID NUMBER                          not null,
+   constraint PK_CCURTEEPARTICIPANTWINDOW primary key (CCurtEEParticipantWindowID)
 )
-;
-
-alter table CCurtEEParticipantWindow
-   add constraint PK_CCURTEEPARTICIPANTWINDOW primary key (CCurtEEParticipantWindowID)
 ;
 
 /*==============================================================*/
@@ -1446,12 +1462,9 @@ create table CCurtEEPricing  (
    CCurtEEPricingID     NUMBER                          not null,
    Revision             NUMBER                          not null,
    CreationTime         DATE                            not null,
-   CCurtEconomicEventID NUMBER                          not null
+   CCurtEconomicEventID NUMBER                          not null,
+   constraint PK_CCURTEEPRICING primary key (CCurtEEPricingID)
 )
-;
-
-alter table CCurtEEPricing
-   add constraint PK_CCURTEEPRICING primary key (CCurtEEPricingID)
 ;
 
 /*==============================================================*/
@@ -1470,12 +1483,9 @@ create table CCurtEEPricingWindow  (
    CCurtEEPricingWindowID NUMBER                          not null,
    EnergyPrice          NUMBER(19,2)                    not null,
    Offset               NUMBER                          not null,
-   CCurtEEPricingID     NUMBER                          not null
+   CCurtEEPricingID     NUMBER                          not null,
+   constraint PK_CCURTEEPRICINGWINDOW primary key (CCurtEEPricingWindowID)
 )
-;
-
-alter table CCurtEEPricingWindow
-   add constraint PK_CCURTEEPRICINGWINDOW primary key (CCurtEEPricingWindowID)
 ;
 
 /*==============================================================*/
@@ -1498,12 +1508,9 @@ create table CCurtEconomicEvent  (
    StartTime            DATE                            not null,
    CCurtProgramID       NUMBER                          not null,
    InitialEventID       NUMBER,
-   Identifier           NUMBER                          not null
+   Identifier           NUMBER                          not null,
+   constraint PK_CCURTECONOMICEVENT primary key (CCurtEconomicEventID)
 )
-;
-
-alter table CCurtEconomicEvent
-   add constraint PK_CCURTECONOMICEVENT primary key (CCurtEconomicEventID)
 ;
 
 /*==============================================================*/
@@ -1516,12 +1523,9 @@ create table CCurtEconomicEventNotif  (
    State                VARCHAR2(10)                    not null,
    Reason               VARCHAR2(10)                    not null,
    CCurtEEPricingID     NUMBER                          not null,
-   CCurtEconomicParticipantID NUMBER                          not null
+   CCurtEconomicParticipantID NUMBER                          not null,
+   constraint PK_CCURTECONOMICEVENTNOTIF primary key (CCurtEconomicEventNotifID)
 )
-;
-
-alter table CCurtEconomicEventNotif
-   add constraint PK_CCURTECONOMICEVENTNOTIF primary key (CCurtEconomicEventNotifID)
 ;
 
 /*==============================================================*/
@@ -1530,12 +1534,9 @@ alter table CCurtEconomicEventNotif
 create table CCurtGroup  (
    CCurtGroupID         NUMBER                          not null,
    EnergyCompanyID      NUMBER                          not null,
-   CCurtGroupName       VARCHAR2(255)                   not null
+   CCurtGroupName       VARCHAR2(255)                   not null,
+   constraint PK_CCURTGROUP primary key (CCurtGroupID)
 )
-;
-
-alter table CCurtGroup
-   add constraint PK_CCURTGROUP primary key (CCurtGroupID)
 ;
 
 /*==============================================================*/
@@ -1554,12 +1555,9 @@ create table CCurtGroupCustomerNotif  (
    CCurtGroupCustomerNotifID NUMBER                          not null,
    Attribs              VARCHAR2(255)                   not null,
    CustomerID           NUMBER                          not null,
-   CCurtGroupID         NUMBER                          not null
+   CCurtGroupID         NUMBER                          not null,
+   constraint PK_CCURTGROUPCUSTOMERNOTIF primary key (CCurtGroupCustomerNotifID)
 )
-;
-
-alter table CCurtGroupCustomerNotif
-   add constraint PK_CCURTGROUPCUSTOMERNOTIF primary key (CCurtGroupCustomerNotifID)
 ;
 
 /*==============================================================*/
@@ -1579,12 +1577,9 @@ create table CCurtProgram  (
    CCurtProgramName     VARCHAR2(255)                   not null,
    CCurtProgramTypeID   NUMBER,
    LastIdentifier       NUMBER                          not null,
-   IdentifierPrefix     VARCHAR2(32)                    not null
+   IdentifierPrefix     VARCHAR2(32)                    not null,
+   constraint PK_CCURTPROGRAM primary key (CCurtProgramID)
 )
-;
-
-alter table CCurtProgram
-   add constraint PK_CCURTPROGRAM primary key (CCurtProgramID)
 ;
 
 /*==============================================================*/
@@ -1602,12 +1597,9 @@ create index INDX_CCURTPGM_PRGNM_PRGTYPEID on CCurtProgram (
 create table CCurtProgramGroup  (
    CCurtProgramGroupID  NUMBER                          not null,
    CCurtProgramID       NUMBER                          not null,
-   CCurtGroupID         NUMBER                          not null
+   CCurtGroupID         NUMBER                          not null,
+   constraint PK_CCURTPROGRAMGROUP primary key (CCurtProgramGroupID)
 )
-;
-
-alter table CCurtProgramGroup
-   add constraint PK_CCURTPROGRAMGROUP primary key (CCurtProgramGroupID)
 ;
 
 /*==============================================================*/
@@ -1624,12 +1616,9 @@ create unique index INDX_CCURTPRGGRP_GRPID_PRGID on CCurtProgramGroup (
 /*==============================================================*/
 create table CCurtProgramNotifGroup  (
    CCurtProgramID       NUMBER                          not null,
-   NotificationGroupID  NUMBER                          not null
+   NotificationGroupID  NUMBER                          not null,
+   constraint PK_CCURTPROGRAMNOTIFGROUP primary key (CCurtProgramID, NotificationGroupID)
 )
-;
-
-alter table CCurtProgramNotifGroup
-   add constraint PK_CCURTPROGRAMNOTIFGROUP primary key (CCurtProgramID, NotificationGroupID)
 ;
 
 /*==============================================================*/
@@ -1647,12 +1636,9 @@ create table CCurtProgramParameter  (
    CCurtProgramParameterID NUMBER                          not null,
    ParameterValue       VARCHAR2(255)                   not null,
    ParameterKey         VARCHAR2(255)                   not null,
-   CCurtProgramID       NUMBER
+   CCurtProgramID       NUMBER,
+   constraint PK_CCURTPROGRAMPARAMETER primary key (CCurtProgramParameterID)
 )
-;
-
-alter table CCurtProgramParameter
-   add constraint PK_CCURTPROGRAMPARAMETER primary key (CCurtProgramParameterID)
 ;
 
 /*==============================================================*/
@@ -1671,12 +1657,9 @@ create table CCurtProgramType  (
    CCurtProgramTypeID   NUMBER                          not null,
    EnergyCompanyID      NUMBER,
    CCurtProgramTypeStrategy VARCHAR2(255),
-   CCurtProgramTypeName VARCHAR2(255)
+   CCurtProgramTypeName VARCHAR2(255),
+   constraint PK_CCURTPROGRAMTYPE primary key (CCurtProgramTypeID)
 )
-;
-
-alter table CCurtProgramType
-   add constraint PK_CCURTPROGRAMTYPE primary key (CCurtProgramTypeID)
 ;
 
 /*==============================================================*/
@@ -1686,12 +1669,9 @@ create table CICUSTOMERPOINTDATA  (
    CustomerID           NUMBER                          not null,
    PointID              NUMBER                          not null,
    Type                 VARCHAR2(16)                    not null,
-   OptionalLabel        VARCHAR2(32)                    not null
+   OptionalLabel        VARCHAR2(32)                    not null,
+   constraint PK_CICUSTOMERPOINTDATA primary key (CustomerID, Type)
 )
-;
-
-alter table CICUSTOMERPOINTDATA
-   add constraint PK_CICUSTOMERPOINTDATA primary key (CustomerID, Type)
 ;
 
 /*==============================================================*/
@@ -1704,12 +1684,9 @@ create table CICustomerBase  (
    CurtailmentAgreement VARCHAR2(100)                   not null,
    CurtailAmount        FLOAT                           not null,
    CompanyName          VARCHAR2(80)                    not null,
-   CiCustType           NUMBER                          not null
+   CiCustType           NUMBER                          not null,
+   constraint PK_CICUSTOMERBASE primary key (CustomerID)
 )
-;
-
-alter table CICustomerBase
-   add constraint PK_CICUSTOMERBASE primary key (CustomerID)
 ;
 
 /*==============================================================*/
@@ -1717,7 +1694,8 @@ alter table CICustomerBase
 /*==============================================================*/
 create table COLUMNTYPE  (
    TYPENUM              NUMBER                          not null,
-   NAME                 VARCHAR2(20)                    not null
+   NAME                 VARCHAR2(20)                    not null,
+   constraint SYS_C0013414 primary key (TYPENUM)
 )
 ;
 
@@ -1737,10 +1715,6 @@ insert into columntype values (13, 'State');
 insert into columntype values (14, 'PointImage' );
 insert into columntype values (15, 'QualityCount' );
 
-alter table COLUMNTYPE
-   add constraint SYS_C0013414 primary key (TYPENUM)
-;
-
 /*==============================================================*/
 /* Table: CTIDatabase                                           */
 /*==============================================================*/
@@ -1749,27 +1723,21 @@ create table CTIDatabase  (
    CTIEmployeeName      VARCHAR2(30)                    not null,
    DateApplied          DATE,
    Notes                VARCHAR2(300),
-   Build                NUMBER                          not null
+   Build                NUMBER                          not null,
+   constraint PK_CTIDATABASE primary key (Version, Build)
 )
 ;
 
 /* __YUKON_VERSION__ */
-
-alter table CTIDatabase
-   add constraint PK_CTIDATABASE primary key (Version, Build)
-;
 
 /*==============================================================*/
 /* Table: CalcPointBaseline                                     */
 /*==============================================================*/
 create table CalcPointBaseline  (
    PointID              NUMBER                          not null,
-   BaselineID           NUMBER                          not null
+   BaselineID           NUMBER                          not null,
+   constraint PK_CalcBsPt primary key (PointID)
 )
-;
-
-alter table CalcPointBaseline
-   add constraint PK_CalcBsPt primary key (PointID)
 ;
 
 /*==============================================================*/
@@ -1780,14 +1748,13 @@ create table CapControlFeeder  (
    CurrentVarLoadPointID NUMBER                          not null,
    CurrentWattLoadPointID NUMBER                          not null,
    MapLocationID        VARCHAR2(64)                    not null,
-   StrategyID           NUMBER                          not null,
    CurrentVoltLoadPointID NUMBER                          not null,
-   MultiMonitorControl  CHAR(1)                         not null
+   MultiMonitorControl  CHAR(1)                         not null,
+   usephasedata         CHAR(1)                        default '0' not null,
+   phaseb               NUMBER                         default 0 not null,
+   phasec               NUMBER                         default 0 not null,
+   constraint PK_CAPCONTROLFEEDER primary key (FeederID)
 )
-;
-
-alter table CapControlFeeder
-   add constraint PK_CAPCONTROLFEEDER primary key (FeederID)
 ;
 
 /*==============================================================*/
@@ -1828,15 +1795,12 @@ create table CapControlStrategy  (
    PeakPFSetPoint       FLOAT                           not null,
    OffPkPFSetPoint      FLOAT                           not null,
    IntegrateFlag        CHAR(1)                         not null,
-   IntegratePeriod      NUMBER                          not null
+   IntegratePeriod      NUMBER                          not null,
+   constraint PK_CAPCONTROLSTRAT primary key (StrategyID)
 )
 ;
 
 insert into CapControlStrategy values (0, '(none)', '(none)', 0, 'N', 0, 0, 0, 0, 0, 0, 'NYYYYYNN', '(none)', 0, 0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 100.0, 100.0, 'N', 0);
-
-alter table CapControlStrategy
-   add constraint PK_CAPCONTROLSTRAT primary key (StrategyID)
-;
 
 /*==============================================================*/
 /* Index: Indx_CapCntrlStrat_name_UNQ                           */
@@ -1855,12 +1819,9 @@ create table CarrierRoute  (
    CCUFIXBITS           NUMBER                          not null,
    CCUVARIABLEBITS      NUMBER                          not null,
    UserLocked           CHAR(1)                         not null,
-   ResetRptSettings     CHAR(1)                         not null
+   ResetRptSettings     CHAR(1)                         not null,
+   constraint PK_CARRIERROUTE primary key (ROUTEID)
 )
-;
-
-alter table CarrierRoute
-   add constraint PK_CARRIERROUTE primary key (ROUTEID)
 ;
 
 /*==============================================================*/
@@ -1875,12 +1836,9 @@ create table CommErrorHistory  (
    ErrorNumber          NUMBER                          not null,
    Command              VARCHAR2(50)                    not null,
    OutMessage           VARCHAR2(160)                   not null,
-   InMessage            VARCHAR2(160)                   not null
+   InMessage            VARCHAR2(160)                   not null,
+   constraint PK_COMMERRORHISTORY primary key (CommErrorID)
 )
-;
-
-alter table CommErrorHistory
-   add constraint PK_COMMERRORHISTORY primary key (CommErrorID)
 ;
 
 /*==============================================================*/
@@ -1893,12 +1851,9 @@ create table CommPort  (
    PERFORMTHRESHOLD     NUMBER                          not null,
    PERFORMANCEALARM     VARCHAR2(1)                     not null,
    SharedPortType       VARCHAR2(20)                    not null,
-   SharedSocketNumber   NUMBER                          not null
+   SharedSocketNumber   NUMBER                          not null,
+   constraint SYS_C0013112 primary key (PORTID)
 )
-;
-
-alter table CommPort
-   add constraint SYS_C0013112 primary key (PORTID)
 ;
 
 /*==============================================================*/
@@ -1908,7 +1863,8 @@ create table Command  (
    CommandID            NUMBER                          not null,
    Command              VARCHAR2(256)                   not null,
    Label                VARCHAR2(256)                   not null,
-   Category             VARCHAR2(32)                    not null
+   Category             VARCHAR2(32)                    not null,
+   constraint PK_COMMAND primary key (CommandID)
 )
 ;
 
@@ -2078,24 +2034,17 @@ insert into command values(-133, 'putconfig xcom utility usage ?''Channel'':?''V
 insert into command values(-134, 'putconfig xcom data ''?''Text Message'''' port ?''Port (0 is default)'' deletable priority 7 timeout 30 hour clear', 'Thermostat Text Message', 'ExpresscomSerial');
 insert into command values(-135, 'control xcom backlight cycles 20 duty 30 bperiod 10', 'Thermostat Display Blink', 'ExpresscomSerial');
 
-alter table Command
-   add constraint PK_COMMAND primary key (CommandID)
-;
-
 /*==============================================================*/
 /* Table: CommandGroup                                          */
 /*==============================================================*/
 create table CommandGroup  (
    CommandGroupID       NUMBER                          not null,
-   CommandGroupName     VARCHAR2(60)                    not null
+   CommandGroupName     VARCHAR2(60)                    not null,
+   constraint PK_COMMANDGROUP primary key (CommandGroupID)
 )
 ;
 
 insert into CommandGroup values (-1, 'Default Commands');
-
-alter table CommandGroup
-   add constraint PK_COMMANDGROUP primary key (CommandGroupID)
-;
 
 /*==============================================================*/
 /* Index: AK_KEY_CmdGrp_Name                                    */
@@ -2113,15 +2062,12 @@ create table Contact  (
    ContFirstName        VARCHAR2(20)                    not null,
    ContLastName         VARCHAR2(32)                    not null,
    LogInID              NUMBER                          not null,
-   AddressID            NUMBER                          not null
+   AddressID            NUMBER                          not null,
+   constraint PK_CONTACT primary key (ContactID)
 )
 ;
 
 insert into contact values ( 0, '(none)', '(none)', -9999, 0 );
-
-alter table Contact
-   add constraint PK_CONTACT primary key (ContactID)
-;
 
 /*==============================================================*/
 /* Index: Indx_ContLstName                                      */
@@ -2156,12 +2102,9 @@ create index INDX_CONTID_LNAME_FNAME on Contact (
 create table ContactNotifGroupMap  (
    ContactID            NUMBER                          not null,
    NotificationGroupID  NUMBER                          not null,
-   Attribs              CHAR(16)                        not null
+   Attribs              CHAR(16)                        not null,
+   constraint PK_CONTACTNOTIFGROUPMAP primary key (ContactID, NotificationGroupID)
 )
-;
-
-alter table ContactNotifGroupMap
-   add constraint PK_CONTACTNOTIFGROUPMAP primary key (ContactID, NotificationGroupID)
 ;
 
 /*==============================================================*/
@@ -2173,15 +2116,12 @@ create table ContactNotification  (
    NotificationCategoryID NUMBER                          not null,
    DisableFlag          CHAR(1)                         not null,
    Notification         VARCHAR2(130)                   not null,
-   Ordering             NUMBER                          not null
+   Ordering             NUMBER                          not null,
+   constraint PK_CONTACTNOTIFICATION primary key (ContactNotifID)
 )
 ;
 
 insert into ContactNotification values( 0, 0, 0, 'N', '(none)', 0 );
-
-alter table ContactNotification
-   add constraint PK_CONTACTNOTIFICATION primary key (ContactNotifID)
-;
 
 /*==============================================================*/
 /* Index: Indx_CntNotif_CntId                                   */
@@ -2202,15 +2142,12 @@ create table Customer  (
    CustomerNumber       VARCHAR2(64)                    not null,
    RateScheduleID       NUMBER                          not null,
    AltTrackNum          VARCHAR2(64)                    not null,
-   TemperatureUnit      CHAR(1)                         not null
+   TemperatureUnit      CHAR(1)                         not null,
+   constraint PK_CUSTOMER primary key (CustomerID)
 )
 ;
 
 INSERT INTO Customer VALUES ( -1, 0, 0, '(none)', '(none)', 0, '(none)', 'F');
-
-alter table Customer
-   add constraint PK_CUSTOMER primary key (CustomerID)
-;
 
 /*==============================================================*/
 /* Index: Indx_Cstmr_PcId                                       */
@@ -2235,12 +2172,9 @@ create index INDX_CUSTID_PCONTID on Customer (
 create table CustomerAdditionalContact  (
    CustomerID           NUMBER                          not null,
    ContactID            NUMBER                          not null,
-   Ordering             NUMBER                          not null
+   Ordering             NUMBER                          not null,
+   constraint PK_CUSTOMERADDITIONALCONTACT primary key (ContactID, CustomerID)
 )
-;
-
-alter table CustomerAdditionalContact
-   add constraint PK_CUSTOMERADDITIONALCONTACT primary key (ContactID, CustomerID)
 ;
 
 /*==============================================================*/
@@ -2248,12 +2182,9 @@ alter table CustomerAdditionalContact
 /*==============================================================*/
 create table CustomerBaseLinePoint  (
    CustomerID           NUMBER                          not null,
-   PointID              NUMBER                          not null
+   PointID              NUMBER                          not null,
+   constraint PK_CUSTOMERBASELINEPOINT primary key (CustomerID, PointID)
 )
-;
-
-alter table CustomerBaseLinePoint
-   add constraint PK_CUSTOMERBASELINEPOINT primary key (CustomerID, PointID)
 ;
 
 /*==============================================================*/
@@ -2261,12 +2192,9 @@ alter table CustomerBaseLinePoint
 /*==============================================================*/
 create table CustomerLoginSerialGroup  (
    LoginID              NUMBER                          not null,
-   LMGroupID            NUMBER                          not null
+   LMGroupID            NUMBER                          not null,
+   constraint PK_CUSTOMERLOGINSERIALGROUP primary key (LoginID, LMGroupID)
 )
-;
-
-alter table CustomerLoginSerialGroup
-   add constraint PK_CUSTOMERLOGINSERIALGROUP primary key (LoginID, LMGroupID)
 ;
 
 /*==============================================================*/
@@ -2275,12 +2203,9 @@ alter table CustomerLoginSerialGroup
 create table CustomerNotifGroupMap  (
    CustomerID           NUMBER                          not null,
    NotificationGroupID  NUMBER                          not null,
-   Attribs              CHAR(16)                        not null
+   Attribs              CHAR(16)                        not null,
+   constraint PK_CUSTOMERNOTIFGROUPMAP primary key (CustomerID, NotificationGroupID)
 )
-;
-
-alter table CustomerNotifGroupMap
-   add constraint PK_CUSTOMERNOTIFGROUPMAP primary key (CustomerID, NotificationGroupID)
 ;
 
 /*==============================================================*/
@@ -2289,12 +2214,9 @@ alter table CustomerNotifGroupMap
 create table DCCategory  (
    CategoryID           NUMBER                          not null,
    CategoryTypeID       NUMBER                          not null,
-   Name                 VARCHAR2(40)                    not null
+   Name                 VARCHAR2(40)                    not null,
+   constraint PK_DCCATEGORY primary key (CategoryID)
 )
-;
-
-alter table DCCategory
-   add constraint PK_DCCATEGORY primary key (CategoryID)
 ;
 
 /*==============================================================*/
@@ -2303,12 +2225,9 @@ alter table DCCategory
 create table DCCategoryItem  (
    CategoryID           NUMBER                          not null,
    ItemTypeID           NUMBER                          not null,
-   Value                VARCHAR2(40)                    not null
+   Value                VARCHAR2(40)                    not null,
+   constraint PK_DCCATEGORYITEM primary key (CategoryID, ItemTypeID)
 )
-;
-
-alter table DCCategoryItem
-   add constraint PK_DCCATEGORYITEM primary key (CategoryID, ItemTypeID)
 ;
 
 /*==============================================================*/
@@ -2316,12 +2235,9 @@ alter table DCCategoryItem
 /*==============================================================*/
 create table DCCategoryItemType  (
    CategoryTypeID       NUMBER                          not null,
-   ItemTypeID           NUMBER                          not null
+   ItemTypeID           NUMBER                          not null,
+   constraint PK_DCCATEGORYITEMTYPE primary key (CategoryTypeID, ItemTypeID)
 )
-;
-
-alter table DCCategoryItemType
-   add constraint PK_DCCATEGORYITEMTYPE primary key (CategoryTypeID, ItemTypeID)
 ;
 
 /*==============================================================*/
@@ -2333,12 +2249,9 @@ create table DCCategoryType  (
    DisplayName          VARCHAR2(40)                    not null,
    CategoryGroup        VARCHAR2(40),
    CategoryTypeLevel    VARCHAR2(40)                    not null,
-   Description          VARCHAR2(320)
+   Description          VARCHAR2(320),
+   constraint PK_DCCATEGORYTYPE primary key (CategoryTypeID)
 )
-;
-
-alter table DCCategoryType
-   add constraint PK_DCCATEGORYTYPE primary key (CategoryTypeID)
 ;
 
 /*==============================================================*/
@@ -2347,12 +2260,9 @@ alter table DCCategoryType
 create table DCConfiguration  (
    ConfigID             NUMBER                          not null,
    ConfigTypeID         NUMBER                          not null,
-   Name                 VARCHAR2(40)                    not null
+   Name                 VARCHAR2(40)                    not null,
+   constraint PK_DCCONFIGURATION primary key (ConfigID)
 )
-;
-
-alter table DCConfiguration
-   add constraint PK_DCCONFIGURATION primary key (ConfigID)
 ;
 
 /*==============================================================*/
@@ -2360,12 +2270,9 @@ alter table DCConfiguration
 /*==============================================================*/
 create table DCConfigurationCategory  (
    ConfigID             NUMBER                          not null,
-   CategoryID           NUMBER                          not null
+   CategoryID           NUMBER                          not null,
+   constraint PK_DCCONFIGURATIONCATEGORY primary key (ConfigID, CategoryID)
 )
-;
-
-alter table DCConfigurationCategory
-   add constraint PK_DCCONFIGURATIONCATEGORY primary key (ConfigID, CategoryID)
 ;
 
 /*==============================================================*/
@@ -2373,12 +2280,9 @@ alter table DCConfigurationCategory
 /*==============================================================*/
 create table DCConfigurationCategoryType  (
    ConfigTypeID         NUMBER                          not null,
-   CategoryTypeID       NUMBER                          not null
+   CategoryTypeID       NUMBER                          not null,
+   constraint PK_DCCONFIGURATIONCATEGORYTYPE primary key (ConfigTypeID, CategoryTypeID)
 )
-;
-
-alter table DCConfigurationCategoryType
-   add constraint PK_DCCONFIGURATIONCATEGORYTYPE primary key (ConfigTypeID, CategoryTypeID)
 ;
 
 /*==============================================================*/
@@ -2388,12 +2292,9 @@ create table DCConfigurationType  (
    ConfigTypeID         NUMBER                          not null,
    Name                 VARCHAR2(40)                    not null,
    DisplayName          VARCHAR2(40)                    not null,
-   Description          VARCHAR2(320)
+   Description          VARCHAR2(320),
+   constraint PK_DCCONFIGURATIONTYPE primary key (ConfigTypeID)
 )
-;
-
-alter table DCConfigurationType
-   add constraint PK_DCCONFIGURATIONTYPE primary key (ConfigTypeID)
 ;
 
 /*==============================================================*/
@@ -2401,12 +2302,9 @@ alter table DCConfigurationType
 /*==============================================================*/
 create table DCDeviceConfiguration  (
    DeviceID             NUMBER                          not null,
-   ConfigID             NUMBER                          not null
+   ConfigID             NUMBER                          not null,
+   constraint PK_DCDEVICECONFIGURATION primary key (DeviceID, ConfigID)
 )
-;
-
-alter table DCDeviceConfiguration
-   add constraint PK_DCDEVICECONFIGURATION primary key (DeviceID, ConfigID)
 ;
 
 /*==============================================================*/
@@ -2414,12 +2312,9 @@ alter table DCDeviceConfiguration
 /*==============================================================*/
 create table DCDeviceConfigurationType  (
    ConfigTypeID         NUMBER                          not null,
-   DeviceType           VARCHAR2(30)                    not null
+   DeviceType           VARCHAR2(30)                    not null,
+   constraint PK_DCDEVICECONFIGURATIONTYPE primary key (ConfigTypeID, DeviceType)
 )
-;
-
-alter table DCDeviceConfigurationType
-   add constraint PK_DCDEVICECONFIGURATIONTYPE primary key (ConfigTypeID, DeviceType)
 ;
 
 /*==============================================================*/
@@ -2434,12 +2329,9 @@ create table DCItemType  (
    MinValue             NUMBER                          not null,
    MaxValue             NUMBER                          not null,
    DefaultValue         VARCHAR2(40),
-   Description          VARCHAR2(320)
+   Description          VARCHAR2(320),
+   constraint PK_DCITEMTYPE primary key (ItemTypeID)
 )
-;
-
-alter table DCItemType
-   add constraint PK_DCITEMTYPE primary key (ItemTypeID)
 ;
 
 /*==============================================================*/
@@ -2448,12 +2340,9 @@ alter table DCItemType
 create table DCItemValue  (
    ItemTypeID           NUMBER                          not null,
    Value                VARCHAR2(40)                    not null,
-   ValueOrder           NUMBER                          not null
+   ValueOrder           NUMBER                          not null,
+   constraint PK_DCITEMVALUE primary key (ItemTypeID, ValueOrder)
 )
-;
-
-alter table DCItemValue
-   add constraint PK_DCITEMVALUE primary key (ItemTypeID, ValueOrder)
 ;
 
 /*==============================================================*/
@@ -2462,15 +2351,12 @@ alter table DCItemValue
 create table DEVICE  (
    DEVICEID             NUMBER                          not null,
    ALARMINHIBIT         VARCHAR2(1)                     not null,
-   CONTROLINHIBIT       VARCHAR2(1)                     not null
+   CONTROLINHIBIT       VARCHAR2(1)                     not null,
+   constraint PK_DEV_DEVICEID2 primary key (DEVICEID)
 )
 ;
 
 INSERT into device values (0, 'N', 'N');
-
-alter table DEVICE
-   add constraint PK_DEV_DEVICEID2 primary key (DEVICEID)
-;
 
 /*==============================================================*/
 /* Table: DEVICE2WAYFLAGS                                       */
@@ -2483,12 +2369,9 @@ create table DEVICE2WAYFLAGS  (
    FAILUREALARM         VARCHAR2(1)                     not null,
    PERFORMANCETHRESHOLD NUMBER                          not null,
    PERFORMANCEALARM     VARCHAR2(1)                     not null,
-   PERFORMANCETWENTYFOURALARM VARCHAR2(1)                     not null
+   PERFORMANCETWENTYFOURALARM VARCHAR2(1)                     not null,
+   constraint PK_DEVICE2WAYFLAGS primary key (DEVICEID)
 )
-;
-
-alter table DEVICE2WAYFLAGS
-   add constraint PK_DEVICE2WAYFLAGS primary key (DEVICEID)
 ;
 
 /*==============================================================*/
@@ -2496,12 +2379,9 @@ alter table DEVICE2WAYFLAGS
 /*==============================================================*/
 create table DEVICECARRIERSETTINGS  (
    DEVICEID             NUMBER                          not null,
-   ADDRESS              NUMBER                          not null
+   ADDRESS              NUMBER                          not null,
+   constraint PK_DEVICECARRIERSETTINGS primary key (DEVICEID)
 )
-;
-
-alter table DEVICECARRIERSETTINGS
-   add constraint PK_DEVICECARRIERSETTINGS primary key (DEVICEID)
 ;
 
 /*==============================================================*/
@@ -2513,12 +2393,9 @@ create table DEVICEDIALUPSETTINGS  (
    MINCONNECTTIME       NUMBER                          not null,
    MAXCONNECTTIME       NUMBER                          not null,
    LINESETTINGS         VARCHAR2(8)                     not null,
-   BaudRate             NUMBER                          not null
+   BaudRate             NUMBER                          not null,
+   constraint PK_DEVICEDIALUPSETTINGS primary key (DEVICEID)
 )
-;
-
-alter table DEVICEDIALUPSETTINGS
-   add constraint PK_DEVICEDIALUPSETTINGS primary key (DEVICEID)
 ;
 
 /*==============================================================*/
@@ -2529,7 +2406,8 @@ create table DEVICEGROUP  (
    GroupName            VARCHAR2(255),
    ParentDeviceGroupId  NUMBER(18,0),
    SystemGroup          CHAR(1)                         not null,
-   Type                 VARCHAR2(255)                   not null
+   Type                 VARCHAR2(255)                   not null,
+   constraint PK_DEVICEGROUP primary key (DeviceGroupId)
 )
 ;
 
@@ -2546,13 +2424,8 @@ insert into DeviceGroup values (9,'Inventory',8,'Y','STATIC');
 insert into DeviceGroup values (10,'DisconnectedStatus',8,'Y','STATIC');
 insert into DeviceGroup values (11,'UsageMonitoring',8,'Y','STATIC');
 
-
 alter table DEVICEGROUP
    add constraint AK_DEVICEGR_PDG_GN unique (GroupName, ParentDeviceGroupId)
-;
-
-alter table DEVICEGROUP
-   add constraint PK_DEVICEGROUP primary key (DeviceGroupId)
 ;
 
 /*==============================================================*/
@@ -2560,12 +2433,9 @@ alter table DEVICEGROUP
 /*==============================================================*/
 create table DEVICEGROUPMEMBER  (
    DeviceGroupID        NUMBER(18,0)                    not null,
-   YukonPaoId           NUMBER(18,0)                    not null
+   YukonPaoId           NUMBER(18,0)                    not null,
+   constraint PK_DEVICEGROUPMEMBER primary key (DeviceGroupID, YukonPaoId)
 )
-;
-
-alter table DEVICEGROUPMEMBER
-   add constraint PK_DEVICEGROUPMEMBER primary key (DeviceGroupID, YukonPaoId)
 ;
 
 /*==============================================================*/
@@ -2575,12 +2445,9 @@ create table DEVICEIDLCREMOTE  (
    DEVICEID             NUMBER                          not null,
    ADDRESS              NUMBER                          not null,
    POSTCOMMWAIT         NUMBER                          not null,
-   CCUAmpUseType        VARCHAR2(20)                    not null
+   CCUAmpUseType        VARCHAR2(20)                    not null,
+   constraint PK_DEVICEIDLCREMOTE primary key (DEVICEID)
 )
-;
-
-alter table DEVICEIDLCREMOTE
-   add constraint PK_DEVICEIDLCREMOTE primary key (DEVICEID)
 ;
 
 /*==============================================================*/
@@ -2589,12 +2456,9 @@ alter table DEVICEIDLCREMOTE
 create table DEVICEIED  (
    DEVICEID             NUMBER                          not null,
    PASSWORD             VARCHAR2(20)                    not null,
-   SLAVEADDRESS         VARCHAR2(20)                    not null
+   SLAVEADDRESS         VARCHAR2(20)                    not null,
+   constraint PK_DEVICEIED primary key (DEVICEID)
 )
-;
-
-alter table DEVICEIED
-   add constraint PK_DEVICEIED primary key (DEVICEID)
 ;
 
 /*==============================================================*/
@@ -2606,12 +2470,9 @@ create table DEVICELOADPROFILE  (
    LOADPROFILEDEMANDRATE NUMBER                          not null,
    LOADPROFILECOLLECTION VARCHAR2(4)                     not null,
    VoltageDmdInterval   NUMBER                          not null,
-   VoltageDmdRate       NUMBER                          not null
+   VoltageDmdRate       NUMBER                          not null,
+   constraint PK_DEVICELOADPROFILE primary key (DEVICEID)
 )
-;
-
-alter table DEVICELOADPROFILE
-   add constraint PK_DEVICELOADPROFILE primary key (DEVICEID)
 ;
 
 /*==============================================================*/
@@ -2624,12 +2485,9 @@ create table DEVICEMCTIEDPORT  (
    DEFAULTDATACLASS     NUMBER                          not null,
    DEFAULTDATAOFFSET    NUMBER                          not null,
    PASSWORD             VARCHAR2(6)                     not null,
-   REALTIMESCAN         VARCHAR2(1)                     not null
+   REALTIMESCAN         VARCHAR2(1)                     not null,
+   constraint PK_DEVICEMCTIEDPORT primary key (DEVICEID)
 )
-;
-
-alter table DEVICEMCTIEDPORT
-   add constraint PK_DEVICEMCTIEDPORT primary key (DEVICEID)
 ;
 
 /*==============================================================*/
@@ -2637,12 +2495,9 @@ alter table DEVICEMCTIEDPORT
 /*==============================================================*/
 create table DEVICEMETERGROUP  (
    DEVICEID             NUMBER                          not null,
-   METERNUMBER          VARCHAR2(50)                    not null
+   METERNUMBER          VARCHAR2(50)                    not null,
+   constraint PK_DEVICEMETERGROUP primary key (DEVICEID)
 )
-;
-
-alter table DEVICEMETERGROUP
-   add constraint PK_DEVICEMETERGROUP primary key (DEVICEID)
 ;
 
 /*==============================================================*/
@@ -2652,15 +2507,12 @@ create table DEVICEREADJOBLOG  (
    DeviceReadJobLogID   NUMBER                          not null,
    ScheduleID           NUMBER                          not null,
    StartTime            DATE                            not null,
-   StopTime             DATE                            not null
+   StopTime             DATE                            not null,
+   constraint PK_DEVICEREADJOBLOG primary key (DeviceReadJobLogID)
 )
 ;
 
 ALTER TABLE DeviceReadJobLog DROP CONSTRAINT FK_DEVICERE_FK_DRJOBL_MACSCHED
-
-alter table DEVICEREADJOBLOG
-   add constraint PK_DEVICEREADJOBLOG primary key (DeviceReadJobLogID)
-;
 
 /*==============================================================*/
 /* Table: DEVICEREADLOG                                         */
@@ -2670,12 +2522,9 @@ create table DEVICEREADLOG  (
    DeviceID             NUMBER                          not null,
    Timestamp            DATE                            not null,
    StatusCode           SMALLINT                        not null,
-   DeviceReadRequestLogID NUMBER                          not null
+   DeviceReadRequestLogID NUMBER                          not null,
+   constraint PK_DEVICEREADLOG primary key (DeviceReadLogID)
 )
-;
-
-alter table DEVICEREADLOG
-   add constraint PK_DEVICEREADLOG primary key (DeviceReadLogID)
 ;
 
 /*==============================================================*/
@@ -2687,12 +2536,9 @@ create table DEVICEREADREQUESTLOG  (
    Command              VARCHAR2(128)                   not null,
    StartTime            DATE                            not null,
    StopTime             DATE                            not null,
-   DeviceReadJobLogID   NUMBER                          not null
+   DeviceReadJobLogID   NUMBER                          not null,
+   constraint PK_DEVICEREADREQUESTLOG primary key (DeviceReadRequestLogID)
 )
-;
-
-alter table DEVICEREADREQUESTLOG
-   add constraint PK_DEVICEREADREQUESTLOG primary key (DeviceReadRequestLogID)
 ;
 
 /*==============================================================*/
@@ -2703,12 +2549,9 @@ create table DEVICESCANRATE  (
    SCANTYPE             VARCHAR2(20)                    not null,
    INTERVALRATE         NUMBER                          not null,
    SCANGROUP            NUMBER                          not null,
-   AlternateRate        NUMBER                          not null
+   AlternateRate        NUMBER                          not null,
+   constraint PK_DEVICESCANRATE primary key (DEVICEID, SCANTYPE)
 )
-;
-
-alter table DEVICESCANRATE
-   add constraint PK_DEVICESCANRATE primary key (DEVICEID, SCANTYPE)
 ;
 
 /*==============================================================*/
@@ -2719,12 +2562,9 @@ create table DEVICETAPPAGINGSETTINGS  (
    PAGERNUMBER          VARCHAR2(20)                    not null,
    Sender               VARCHAR2(64)                    not null,
    SecurityCode         VARCHAR2(64)                    not null,
-   POSTPath             VARCHAR2(64)                    not null
+   POSTPath             VARCHAR2(64)                    not null,
+   constraint PK_DEVICETAPPAGINGSETTINGS primary key (DEVICEID)
 )
-;
-
-alter table DEVICETAPPAGINGSETTINGS
-   add constraint PK_DEVICETAPPAGINGSETTINGS primary key (DEVICEID)
 ;
 
 /*==============================================================*/
@@ -2735,7 +2575,8 @@ create table DISPLAY  (
    NAME                 VARCHAR2(40)                    not null,
    TYPE                 VARCHAR2(40)                    not null,
    TITLE                VARCHAR2(30),
-   DESCRIPTION          VARCHAR2(200)
+   DESCRIPTION          VARCHAR2(200),
+   constraint SYS_C0013412 primary key (DISPLAYNUM)
 )
 ;
 
@@ -2786,10 +2627,6 @@ insert into display values(51, 'TAG Log', 'Alarms and Events', 'TAG Log Viewer',
 
 insert into display values(99, 'Your Custom Display', 'Custom Displays', 'Edit This Display', 'This display is is used to show what a user created display looks like. You may edit this display to fit your own needs.');
 
-alter table DISPLAY
-   add constraint SYS_C0013412 primary key (DISPLAYNUM)
-;
-
 /*==============================================================*/
 /* Index: Indx_DISPLAYNAME                                      */
 /*==============================================================*/
@@ -2804,12 +2641,9 @@ create unique index Indx_DISPLAYNAME on DISPLAY (
 create table DISPLAY2WAYDATA  (
    DISPLAYNUM           NUMBER                          not null,
    ORDERING             NUMBER                          not null,
-   POINTID              NUMBER                          not null
+   POINTID              NUMBER                          not null,
+   constraint PK_DISPLAY2WAYDATA primary key (DISPLAYNUM, ORDERING)
 )
-;
-
-alter table DISPLAY2WAYDATA
-   add constraint PK_DISPLAY2WAYDATA primary key (DISPLAYNUM, ORDERING)
 ;
 
 /*==============================================================*/
@@ -2820,7 +2654,8 @@ create table DISPLAYCOLUMNS  (
    TITLE                VARCHAR2(50)                    not null,
    TYPENUM              NUMBER                          not null,
    ORDERING             NUMBER                          not null,
-   WIDTH                NUMBER                          not null
+   WIDTH                NUMBER                          not null,
+   constraint PK_DISPLAYCOLUMNS primary key (DISPLAYNUM, TITLE)
 )
 ;
 
@@ -3051,22 +2886,15 @@ insert into displaycolumns values(51, 'Additional Info', 7, 5, 180 );
 insert into displaycolumns values(51, 'User Name', 8, 6, 40 );
 insert into displaycolumns values(51, 'Tag', 13, 7, 60 );
 
-alter table DISPLAYCOLUMNS
-   add constraint PK_DISPLAYCOLUMNS primary key (DISPLAYNUM, TITLE)
-;
-
 /*==============================================================*/
 /* Table: DYNAMICACCUMULATOR                                    */
 /*==============================================================*/
 create table DYNAMICACCUMULATOR  (
    POINTID              NUMBER                          not null,
    PREVIOUSPULSES       NUMBER                          not null,
-   PRESENTPULSES        NUMBER                          not null
+   PRESENTPULSES        NUMBER                          not null,
+   constraint PK_DYNAMICACCUMULATOR primary key (POINTID)
 )
-;
-
-alter table DYNAMICACCUMULATOR
-   add constraint PK_DYNAMICACCUMULATOR primary key (POINTID)
 ;
 
 /*==============================================================*/
@@ -3077,7 +2905,8 @@ create table DYNAMICBILLINGFIELD  (
    FormatID             NUMBER                          not null,
    FieldName            VARCHAR2(50)                    not null,
    FieldOrder           NUMBER                          not null,
-   FieldFormat          VARCHAR2(50)
+   FieldFormat          VARCHAR2(50),
+   constraint PK_DYNAMICBILLINGFIELD primary key (id)
 )
 ;
 
@@ -3204,10 +3033,6 @@ insert into DynamicBillingField values(101,21,'rateBDemand- reading',12,'##0.000
 insert into DynamicBillingField values(102,21,'rateBDemand- timestamp',13,'HH:mm');
 insert into DynamicBillingField values(103,21,'rateBDemand- timestamp',14,'MM/dd/yyyy');
 
-alter table DYNAMICBILLINGFIELD
-   add constraint PK_DYNAMICBILLINGFIELD primary key (id)
-;
-
 /*==============================================================*/
 /* Table: DYNAMICBILLINGFORMAT                                  */
 /*==============================================================*/
@@ -3215,7 +3040,8 @@ create table DYNAMICBILLINGFORMAT  (
    FormatID             NUMBER                          not null,
    Delimiter            VARCHAR2(20),
    Header               VARCHAR2(255),
-   Footer               VARCHAR2(255)
+   Footer               VARCHAR2(255),
+   constraint PK_DYNAMICBILLINGFORMAT primary key (FormatID)
 )
 ;
 
@@ -3230,10 +3056,6 @@ insert into DynamicBillingFormat values(12,',', 'H    Meter    kWh   Time   Date
 insert into DynamicBillingFormat values(0,',', 'H    Meter    kWh   Time   Date    Peak   PeakT   PeakD  Stat Sig  Freq Phase','');
 insert into DynamicBillingFormat values(21,',','','');
 
-alter table DYNAMICBILLINGFORMAT
-   add constraint PK_DYNAMICBILLINGFORMAT primary key (FormatID)
-;
-
 /*==============================================================*/
 /* Table: DYNAMICCCAREA                                         */
 /*==============================================================*/
@@ -3244,6 +3066,15 @@ create table DYNAMICCCAREA  (
 ;
 
 insert into dynamicccarea (areaid, additionalflags) select areaid, 'NNNNNNNNNNNNNNNNNNNN' from capcontrolarea;
+
+/*==============================================================*/
+/* Table: DYNAMICCCSPECIALAREA                                  */
+/*==============================================================*/
+create table DYNAMICCCSPECIALAREA  (
+   AreaID               NUMBER                          not null,
+   additionalflags      VARCHAR2(20)                    not null
+)
+;
 
 /*==============================================================*/
 /* Table: DYNAMICCCTWOWAYCBC                                    */
@@ -3283,12 +3114,9 @@ create table DYNAMICCCTWOWAYCBC  (
    NeutralCurrentSensor NUMBER                          not null,
    NeutralCurrentAlarmSetPoint NUMBER                          not null,
    IPAddress            NUMBER                          not null,
-   UDPPort              NUMBER                          not null
+   UDPPort              NUMBER                          not null,
+   constraint PK_DYNAMICCCTWOWAYCBC primary key (DeviceID)
 )
-;
-
-alter table DYNAMICCCTWOWAYCBC
-   add constraint PK_DYNAMICCCTWOWAYCBC primary key (DeviceID)
 ;
 
 /*==============================================================*/
@@ -3304,12 +3132,9 @@ create table DYNAMICDEVICESCANDATA  (
    NEXTSCAN0            DATE                            not null,
    NEXTSCAN1            DATE                            not null,
    NEXTSCAN2            DATE                            not null,
-   NEXTSCAN3            DATE                            not null
+   NEXTSCAN3            DATE                            not null,
+   constraint PK_DYNAMICDEVICESCANDATA primary key (DEVICEID)
 )
-;
-
-alter table DYNAMICDEVICESCANDATA
-   add constraint PK_DYNAMICDEVICESCANDATA primary key (DEVICEID)
 ;
 
 /*==============================================================*/
@@ -3323,12 +3148,9 @@ create table DYNAMICPAOSTATISTICSHISTORY  (
    Attempts             NUMBER(18,0)                    not null,
    CommErrors           NUMBER(18,0)                    not null,
    ProtocolErrors       NUMBER(18,0)                    not null,
-   SystemErrors         NUMBER(18,0)                    not null
+   SystemErrors         NUMBER(18,0)                    not null,
+   constraint PK_DYNAMICPAOSTATISTICSHISTORY primary key (PAObjectID, DateOffset)
 )
-;
-
-alter table DYNAMICPAOSTATISTICSHISTORY
-   add constraint PK_DYNAMICPAOSTATISTICSHISTORY primary key (PAObjectID, DateOffset)
 ;
 
 /*==============================================================*/
@@ -3343,12 +3165,9 @@ create table DYNAMICPOINTDISPATCH  (
    NEXTARCHIVE          DATE                            not null,
    STALECOUNT           NUMBER                          not null,
    LastAlarmLogID       NUMBER                          not null,
-   millis               SMALLINT                        not null
+   millis               SMALLINT                        not null,
+   constraint PK_DYNAMICPOINTDISPATCH primary key (POINTID)
 )
-;
-
-alter table DYNAMICPOINTDISPATCH
-   add constraint PK_DYNAMICPOINTDISPATCH primary key (POINTID)
 ;
 
 /*==============================================================*/
@@ -3359,12 +3178,9 @@ create table DateOfHoliday  (
    HolidayName          VARCHAR2(20)                    not null,
    HolidayMonth         NUMBER                          not null,
    HolidayDay           NUMBER                          not null,
-   HolidayYear          NUMBER                          not null
+   HolidayYear          NUMBER                          not null,
+   constraint PK_DATEOFHOLIDAY primary key (HolidayScheduleID, HolidayName)
 )
-;
-
-alter table DateOfHoliday
-   add constraint PK_DATEOFHOLIDAY primary key (HolidayScheduleID, HolidayName)
 ;
 
 /*==============================================================*/
@@ -3376,13 +3192,12 @@ create table DateOfSeason  (
    SeasonStartMonth     NUMBER                          not null,
    SeasonStartDay       NUMBER                          not null,
    SeasonEndMonth       NUMBER                          not null,
-   SeasonEndDay         NUMBER                          not null
+   SeasonEndDay         NUMBER                          not null,
+   constraint PK_DATEOFSEASON primary key (SeasonScheduleID, SeasonName)
 )
 ;
 
-alter table DateOfSeason
-   add constraint PK_DATEOFSEASON primary key (SeasonScheduleID, SeasonName)
-;
+insert into dateOfSeason values(-1, 'Default', 1,1,12,31);
 
 /*==============================================================*/
 /* Table: DeviceAddress                                         */
@@ -3391,12 +3206,9 @@ create table DeviceAddress  (
    DeviceID             NUMBER                          not null,
    MasterAddress        NUMBER                          not null,
    SlaveAddress         NUMBER                          not null,
-   PostCommWait         NUMBER                          not null
+   PostCommWait         NUMBER                          not null,
+   constraint PK_DEVICEADDRESS primary key (DeviceID)
 )
-;
-
-alter table DeviceAddress
-   add constraint PK_DEVICEADDRESS primary key (DeviceID)
 ;
 
 /*==============================================================*/
@@ -3405,12 +3217,9 @@ alter table DeviceAddress
 create table DeviceCBC  (
    DEVICEID             NUMBER                          not null,
    SERIALNUMBER         NUMBER                          not null,
-   ROUTEID              NUMBER                          not null
+   ROUTEID              NUMBER                          not null,
+   constraint PK_DEVICECBC primary key (DEVICEID)
 )
-;
-
-alter table DeviceCBC
-   add constraint PK_DEVICECBC primary key (DEVICEID)
 ;
 
 /*==============================================================*/
@@ -3418,12 +3227,9 @@ alter table DeviceCBC
 /*==============================================================*/
 create table DeviceCustomerList  (
    CustomerID           NUMBER                          not null,
-   DeviceID             NUMBER                          not null
+   DeviceID             NUMBER                          not null,
+   constraint PK_DEVICECUSTOMERLIST primary key (DeviceID, CustomerID)
 )
-;
-
-alter table DeviceCustomerList
-   add constraint PK_DEVICECUSTOMERLIST primary key (DeviceID, CustomerID)
 ;
 
 /*==============================================================*/
@@ -3431,12 +3237,9 @@ alter table DeviceCustomerList
 /*==============================================================*/
 create table DeviceDirectCommSettings  (
    DEVICEID             NUMBER                          not null,
-   PORTID               NUMBER                          not null
+   PORTID               NUMBER                          not null,
+   constraint PK_DEVICEDIRECTCOMMSETTINGS primary key (DEVICEID)
 )
-;
-
-alter table DeviceDirectCommSettings
-   add constraint PK_DEVICEDIRECTCOMMSETTINGS primary key (DEVICEID)
 ;
 
 /*==============================================================*/
@@ -3445,12 +3248,9 @@ alter table DeviceDirectCommSettings
 create table DeviceMCT400Series  (
    DeviceID             NUMBER                          not null,
    DisconnectAddress    NUMBER                          not null,
-   TOUScheduleID        NUMBER                          not null
+   TOUScheduleID        NUMBER                          not null,
+   constraint PK_DEV400S primary key (DeviceID)
 )
-;
-
-alter table DeviceMCT400Series
-   add constraint PK_DEV400S primary key (DeviceID)
 ;
 
 /*==============================================================*/
@@ -3474,12 +3274,9 @@ create table DevicePagingReceiverSettings  (
    CapCode14            NUMBER                          not null,
    CapCode15            NUMBER                          not null,
    CapCode16            NUMBER                          not null,
-   Frequency            FLOAT                           not null
+   Frequency            FLOAT                           not null,
+   constraint PK_DEVICEPAGINGRECEIVERSETTING primary key (DeviceID)
 )
-;
-
-alter table DevicePagingReceiverSettings
-   add constraint PK_DEVICEPAGINGRECEIVERSETTING primary key (DeviceID)
 ;
 
 /*==============================================================*/
@@ -3490,12 +3287,9 @@ create table DeviceRTC  (
    RTCAddress           NUMBER                          not null,
    Response             VARCHAR2(1)                     not null,
    LBTMode              NUMBER                          not null,
-   DisableVerifies      VARCHAR2(1)                     not null
+   DisableVerifies      VARCHAR2(1)                     not null,
+   constraint PK_DEVICERTC primary key (DeviceID)
 )
-;
-
-alter table DeviceRTC
-   add constraint PK_DEVICERTC primary key (DeviceID)
 ;
 
 /*==============================================================*/
@@ -3503,12 +3297,9 @@ alter table DeviceRTC
 /*==============================================================*/
 create table DeviceRoutes  (
    DEVICEID             NUMBER                          not null,
-   ROUTEID              NUMBER                          not null
+   ROUTEID              NUMBER                          not null,
+   constraint PK_DEVICEROUTES primary key (DEVICEID, ROUTEID)
 )
-;
-
-alter table DeviceRoutes
-   add constraint PK_DEVICEROUTES primary key (DEVICEID, ROUTEID)
 ;
 
 /*==============================================================*/
@@ -3525,12 +3316,9 @@ create table DeviceSeries5RTU  (
    PowerValueOffset     FLOAT                           not null,
    StartCode            NUMBER                          not null,
    StopCode             NUMBER                          not null,
-   Retries              NUMBER                          not null
+   Retries              NUMBER                          not null,
+   constraint PK_DEVICESERIES5RTU primary key (DeviceID)
 )
-;
-
-alter table DeviceSeries5RTU
-   add constraint PK_DEVICESERIES5RTU primary key (DeviceID)
 ;
 
 /*==============================================================*/
@@ -3547,12 +3335,9 @@ create table DeviceTNPPSettings  (
    Channel              CHAR(1)                         not null,
    Zone                 CHAR(1)                         not null,
    FunctionCode         CHAR(1)                         not null,
-   PagerID              NUMBER                          not null
+   PagerID              NUMBER                          not null,
+   constraint PK_DEVICETNPPSETTINGS primary key (DeviceID)
 )
-;
-
-alter table DeviceTNPPSettings
-   add constraint PK_DEVICETNPPSETTINGS primary key (DeviceID)
 ;
 
 /*==============================================================*/
@@ -3564,7 +3349,8 @@ create table DeviceTypeCommand  (
    DeviceType           VARCHAR2(32)                    not null,
    DisplayOrder         NUMBER                          not null,
    VisibleFlag          CHAR(1)                         not null,
-   CommandGroupID       NUMBER                          not null
+   CommandGroupID       NUMBER                          not null,
+   constraint PK_DEVICETYPECOMMAND primary key (DeviceCommandID, CommandGroupID)
 )
 ;
 
@@ -4123,19 +3909,19 @@ INSERT INTO DEVICETYPECOMMAND VALUES (-552, -112, 'All MCT-4xx Series', 23, 'Y',
 INSERT INTO DEVICETYPECOMMAND VALUES (-553, -113, 'All MCT-4xx Series', 24, 'Y', -1);
 INSERT INTO DEVICETYPECOMMAND VALUES (-554, -114, 'MCT-410GL', 25, 'Y', -1);
 
-INSERT INTO DEVICETYPECOMMAND VALUES (-555, -3, 'MCT-430SN', 1, 'Y', -1);
-INSERT INTO DEVICETYPECOMMAND VALUES (-556, -20, 'MCT-430SN', 2, 'Y', -1);
-INSERT INTO DEVICETYPECOMMAND VALUES (-557, -21, 'MCT-430SN', 3, 'Y', -1);
-INSERT INTO DEVICETYPECOMMAND VALUES (-558, -22, 'MCT-430SN', 4, 'Y', -1);
-INSERT INTO DEVICETYPECOMMAND VALUES (-559, -115, 'MCT-430SN', 5, 'Y', -1);
-INSERT INTO DEVICETYPECOMMAND VALUES (-560, -116, 'MCT-430SN', 6, 'N', -1);
-INSERT INTO DEVICETYPECOMMAND VALUES (-561, -117, 'MCT-430SN', 7, 'N', -1);
-INSERT INTO DEVICETYPECOMMAND VALUES (-562, -118, 'MCT-430SN', 8, 'N', -1);
-INSERT INTO DEVICETYPECOMMAND VALUES (-563, -119, 'MCT-430SN', 9, 'Y', -1);
-INSERT INTO DEVICETYPECOMMAND VALUES (-564, -120, 'MCT-430SN', 10, 'N', -1);
-INSERT INTO DEVICETYPECOMMAND VALUES (-565, -121, 'MCT-430SN', 11, 'N', -1);
-INSERT INTO DEVICETYPECOMMAND VALUES (-566, -122, 'MCT-430SN', 12, 'N', -1);
-INSERT INTO DEVICETYPECOMMAND VALUES (-567, -123, 'MCT-430SN', 13, 'Y', -1);
+INSERT INTO DEVICETYPECOMMAND VALUES (-555, -3, 'MCT-430SL', 1, 'Y', -1);
+INSERT INTO DEVICETYPECOMMAND VALUES (-556, -20, 'MCT-430SL', 2, 'Y', -1);
+INSERT INTO DEVICETYPECOMMAND VALUES (-557, -21, 'MCT-430SL', 3, 'Y', -1);
+INSERT INTO DEVICETYPECOMMAND VALUES (-558, -22, 'MCT-430SL', 4, 'Y', -1);
+INSERT INTO DEVICETYPECOMMAND VALUES (-559, -115, 'MCT-430SL', 5, 'Y', -1);
+INSERT INTO DEVICETYPECOMMAND VALUES (-560, -116, 'MCT-430SL', 6, 'N', -1);
+INSERT INTO DEVICETYPECOMMAND VALUES (-561, -117, 'MCT-430SL', 7, 'N', -1);
+INSERT INTO DEVICETYPECOMMAND VALUES (-562, -118, 'MCT-430SL', 8, 'N', -1);
+INSERT INTO DEVICETYPECOMMAND VALUES (-563, -119, 'MCT-430SL', 9, 'Y', -1);
+INSERT INTO DEVICETYPECOMMAND VALUES (-564, -120, 'MCT-430SL', 10, 'N', -1);
+INSERT INTO DEVICETYPECOMMAND VALUES (-565, -121, 'MCT-430SL', 11, 'N', -1);
+INSERT INTO DEVICETYPECOMMAND VALUES (-566, -122, 'MCT-430SL', 12, 'N', -1);
+INSERT INTO DEVICETYPECOMMAND VALUES (-567, -123, 'MCT-430SL', 13, 'Y', -1);
 
 INSERT INTO DEVICETYPECOMMAND VALUES (-568, -52, 'Repeater 801', 1, 'Y', -1);
 INSERT INTO DEVICETYPECOMMAND VALUES (-569, -3, 'Repeater 801', 2, 'Y', -1);
@@ -4191,9 +3977,9 @@ insert into devicetypecommand values (-606, -15, 'MCT-430A', 14, 'Y', -1);
 insert into devicetypecommand values (-607, -18, 'MCT-430A', 15, 'Y', -1);
 insert into devicetypecommand values (-608, -19, 'MCT-430A', 16, 'Y', -1);
 
-insert into devicetypecommand values (-609, -15, 'MCT-430SN', 14, 'Y', -1);
-insert into devicetypecommand values (-610, -18, 'MCT-430SN', 15, 'Y', -1);
-insert into devicetypecommand values (-611, -19, 'MCT-430SN', 16, 'Y', -1);
+insert into devicetypecommand values (-609, -15, 'MCT-430SL', 14, 'Y', -1);
+insert into devicetypecommand values (-610, -18, 'MCT-430SL', 15, 'Y', -1);
+insert into devicetypecommand values (-611, -19, 'MCT-430SL', 16, 'Y', -1);
 
 insert into devicetypecommand values (-612, -15, 'MCT-430S4', 14, 'Y', -1);
 insert into devicetypecommand values (-613, -18, 'MCT-430S4', 15, 'Y', -1);
@@ -4206,8 +3992,8 @@ insert into devicetypecommand values (-617, -19, 'MCT-470', 23, 'Y', -1);
 insert into devicetypecommand values (-618, -6, 'MCT-430A', 17, 'Y', -1);
 insert into devicetypecommand values (-619, -34, 'MCT-430A', 18, 'Y', -1);
 
-insert into devicetypecommand values (-620, -6, 'MCT-430SN', 17, 'Y', -1);
-insert into devicetypecommand values (-621, -34, 'MCT-430SN', 18, 'Y', -1);
+insert into devicetypecommand values (-620, -6, 'MCT-430SL', 17, 'Y', -1);
+insert into devicetypecommand values (-621, -34, 'MCT-430SL', 18, 'Y', -1);
 
 insert into devicetypecommand values (-622, -6, 'MCT-430S4', 17, 'Y', -1);
 insert into devicetypecommand values (-623, -34, 'MCT-430S4', 18, 'Y', -1);
@@ -4217,10 +4003,10 @@ insert into devicetypecommand values (-625, -109, 'MCT-430A', 20, 'Y', -1);
 insert into devicetypecommand values (-626, -112, 'MCT-430A', 21, 'Y', -1);
 insert into devicetypecommand values (-627, -113, 'MCT-430A', 22, 'Y', -1);
 
-insert into devicetypecommand values (-628, -105, 'MCT-430SN', 19, 'Y', -1);
-insert into devicetypecommand values (-629, -109, 'MCT-430SN', 20, 'Y', -1);
-insert into devicetypecommand values (-630, -112, 'MCT-430SN', 21, 'Y', -1);
-insert into devicetypecommand values (-631, -113, 'MCT-430SN', 22, 'Y', -1);
+insert into devicetypecommand values (-628, -105, 'MCT-430SL', 19, 'Y', -1);
+insert into devicetypecommand values (-629, -109, 'MCT-430SL', 20, 'Y', -1);
+insert into devicetypecommand values (-630, -112, 'MCT-430SL', 21, 'Y', -1);
+insert into devicetypecommand values (-631, -113, 'MCT-430SL', 22, 'Y', -1);
 
 insert into devicetypecommand values (-632, -105, 'MCT-430S4', 19, 'Y', -1);
 insert into devicetypecommand values (-633, -109, 'MCT-430S4', 20, 'Y', -1);
@@ -4240,7 +4026,7 @@ insert into devicetypecommand values(-644, -130, 'MCT-410IL', 27, 'N', -1);
 insert into devicetypecommand values(-645, -130, 'MCT-410iLE', 21, 'N', -1);
 insert into devicetypecommand values(-646, -130, 'MCT-430A', 23, 'N', -1);
 insert into devicetypecommand values(-647, -130, 'MCT-430S4', 23, 'N', -1);
-insert into devicetypecommand values(-648, -130, 'MCT-430SN', 23, 'N', -1);
+insert into devicetypecommand values(-648, -130, 'MCT-430SL', 23, 'N', -1);
 insert into devicetypecommand values(-649, -130, 'MCT-470', 29, 'N', -1);
 
 insert into devicetypecommand values(-650, -131, 'MCT-410 kWh Only', 22, 'N', -1);
@@ -4251,7 +4037,7 @@ insert into devicetypecommand values(-654, -131, 'MCT-410IL', 28, 'N', -1);
 insert into devicetypecommand values(-655, -131, 'MCT-410iLE', 22, 'N', -1);
 insert into devicetypecommand values(-656, -131, 'MCT-430A', 24, 'N', -1);
 insert into devicetypecommand values(-657, -131, 'MCT-430S4', 24, 'N', -1);
-insert into devicetypecommand values(-658, -131, 'MCT-430SN', 24, 'N', -1);
+insert into devicetypecommand values(-658, -131, 'MCT-430SL', 24, 'N', -1);
 insert into devicetypecommand values(-659, -131, 'MCT-470', 30, 'N', -1);
 
 insert into devicetypecommand values(-660, -132, 'MCT-410 kWh Only', 23, 'N', -1);
@@ -4262,7 +4048,7 @@ insert into devicetypecommand values(-664, -132, 'MCT-410IL', 29, 'N', -1);
 insert into devicetypecommand values(-665, -132, 'MCT-410iLE', 23, 'N', -1);
 insert into devicetypecommand values(-666, -132, 'MCT-430A', 25, 'N', -1);
 insert into devicetypecommand values(-667, -132, 'MCT-430S4', 25, 'N', -1);
-insert into devicetypecommand values(-668, -132, 'MCT-430SN', 25, 'N', -1);
+insert into devicetypecommand values(-668, -132, 'MCT-430SL', 25, 'N', -1);
 insert into devicetypecommand values(-669, -132, 'MCT-470', 31, 'N', -1);
 
 insert into DeviceTypeCommand values (-670, -133, 'ExpresscomSerial', 21, 'Y', -1);
@@ -4271,10 +4057,6 @@ insert into DeviceTypeCommand values (-672, -135, 'ExpresscomSerial', 23, 'Y', -
 insert into DeviceTypeCommand values (-673, -133, 'Expresscom Group', 3, 'Y', -1);
 insert into DeviceTypeCommand values (-674, -134, 'Expresscom Group', 4, 'Y', -1);
 insert into DeviceTypeCommand values (-675, -135, 'Expresscom Group', 5, 'Y', -1);
-
-alter table DeviceTypeCommand
-   add constraint PK_DEVICETYPECOMMAND primary key (DeviceCommandID, CommandGroupID)
-;
 
 /*==============================================================*/
 /* Index: Indx_DevTypeCmd_GroupID                               */
@@ -4291,12 +4073,9 @@ create table DeviceVerification  (
    ReceiverID           NUMBER                          not null,
    TransmitterID        NUMBER                          not null,
    ResendOnFail         CHAR(1)                         not null,
-   Disable              CHAR(1)                         not null
+   Disable              CHAR(1)                         not null,
+   constraint PK_DEVICEVERIFICATION primary key (ReceiverID, TransmitterID)
 )
-;
-
-alter table DeviceVerification
-   add constraint PK_DEVICEVERIFICATION primary key (ReceiverID, TransmitterID)
 ;
 
 /*==============================================================*/
@@ -4308,12 +4087,9 @@ create table DeviceWindow  (
    WinOpen              NUMBER                          not null,
    WinClose             NUMBER                          not null,
    AlternateOpen        NUMBER                          not null,
-   AlternateClose       NUMBER                          not null
+   AlternateClose       NUMBER                          not null,
+   constraint PK_DEVICEWINDOW primary key (DeviceID, Type)
 )
-;
-
-alter table DeviceWindow
-   add constraint PK_DEVICEWINDOW primary key (DeviceID, Type)
 ;
 
 /*==============================================================*/
@@ -4334,12 +4110,9 @@ create table DynamicCCCapBank  (
    AdditionalFlags      VARCHAR2(32)                    not null,
    CurrentDailyOperations NUMBER                          not null,
    TwoWayCBCState       NUMBER                          not null,
-   TwoWayCBCStateTime   DATE                            not null
+   TwoWayCBCStateTime   DATE                            not null,
+   constraint PK_DYNAMICCCCAPBANK primary key (CapBankID)
 )
-;
-
-alter table DynamicCCCapBank
-   add constraint PK_DYNAMICCCCAPBANK primary key (CapBankID)
 ;
 
 /*==============================================================*/
@@ -4375,12 +4148,12 @@ create table DynamicCCFeeder  (
    iVControlTot         FLOAT                           not null,
    iVCount              NUMBER                          not null,
    iWControlTot         FLOAT                           not null,
-   iWCount              NUMBER                          not null
+   iWCount              NUMBER                          not null,
+   phaseavalue          FLOAT                          default 0 not null,
+   phasebvalue          FLOAT                          default 0 not null,
+   phasecvalue          FLOAT                          default 0 not null,
+   constraint PK_DYNAMICCCFEEDER primary key (FeederID)
 )
-;
-
-alter table DynamicCCFeeder
-   add constraint PK_DYNAMICCCFEEDER primary key (FeederID)
 ;
 
 /*==============================================================*/
@@ -4391,12 +4164,9 @@ create table DynamicCCMonitorBankHistory  (
    PointID              NUMBER                          not null,
    Value                FLOAT                           not null,
    DateTime             DATE                            not null,
-   ScanInProgress       CHAR(1)                         not null
+   ScanInProgress       CHAR(1)                         not null,
+   constraint PK_DYNAMICCCMONITORBANKHISTORY primary key (BankID, PointID)
 )
-;
-
-alter table DynamicCCMonitorBankHistory
-   add constraint PK_DYNAMICCCMONITORBANKHISTORY primary key (BankID, PointID)
 ;
 
 /*==============================================================*/
@@ -4406,12 +4176,9 @@ create table DynamicCCMonitorPointResponse  (
    BankID               NUMBER                          not null,
    PointID              NUMBER                          not null,
    PreOpValue           FLOAT                           not null,
-   Delta                FLOAT                           not null
+   Delta                FLOAT                           not null,
+   constraint PK_DYNAMICCCMONITORPOINTRESPON primary key (BankID, PointID)
 )
-;
-
-alter table DynamicCCMonitorPointResponse
-   add constraint PK_DYNAMICCCMONITORPOINTRESPON primary key (BankID, PointID)
 ;
 
 /*==============================================================*/
@@ -4454,12 +4221,12 @@ create table DynamicCCSubstationBus  (
    iVControlTot         FLOAT                           not null,
    iVCount              NUMBER                          not null,
    iWControlTot         FLOAT                           not null,
-   iWCount              NUMBER                          not null
+   iWCount              NUMBER                          not null,
+   phaseavalue          FLOAT                          default 0 not null,
+   phasebvalue          FLOAT                          default 0 not null,
+   phasecvalue          FLOAT                          default 0 not null,
+   constraint PK_DYNAMICCCSUBSTATIONBUS primary key (SubstationBusID)
 )
-;
-
-alter table DynamicCCSubstationBus
-   add constraint PK_DYNAMICCCSUBSTATIONBUS primary key (SubstationBusID)
 ;
 
 /*==============================================================*/
@@ -4467,12 +4234,9 @@ alter table DynamicCCSubstationBus
 /*==============================================================*/
 create table DynamicCalcHistorical  (
    PointID              NUMBER                          not null,
-   LastUpdate           DATE                            not null
+   LastUpdate           DATE                            not null,
+   constraint PK_DYNAMICCALCHISTORICAL primary key (PointID)
 )
-;
-
-alter table DynamicCalcHistorical
-   add constraint PK_DYNAMICCALCHISTORICAL primary key (PointID)
 ;
 
 /*==============================================================*/
@@ -4484,15 +4248,12 @@ create table DynamicImportStatus  (
    NextImportTime       VARCHAR2(64)                    not null,
    TotalSuccesses       VARCHAR2(32)                    not null,
    TotalAttempts        VARCHAR2(32)                    not null,
-   ForceImport          CHAR(1)                         not null
+   ForceImport          CHAR(1)                         not null,
+   constraint PK_DYNAMICIMPORTSTATUS primary key (Entry)
 )
 ;
 
 insert into DynamicImportStatus values('SYSTEMVALUE', '------', '------', '--', '--', 'N');
-
-alter table DynamicImportStatus
-   add constraint PK_DYNAMICIMPORTSTATUS primary key (Entry)
-;
 
 /*==============================================================*/
 /* Table: DynamicLMControlArea                                  */
@@ -4506,12 +4267,9 @@ create table DynamicLMControlArea  (
    CurrentPriority      NUMBER                          not null,
    TimeStamp            DATE                            not null,
    CurrentDailyStartTime NUMBER                          not null,
-   CurrentDailyStopTime NUMBER                          not null
+   CurrentDailyStopTime NUMBER                          not null,
+   constraint PK_DYNAMICLMCONTROLAREA primary key (DeviceID)
 )
-;
-
-alter table DynamicLMControlArea
-   add constraint PK_DYNAMICLMCONTROLAREA primary key (DeviceID)
 ;
 
 /*==============================================================*/
@@ -4524,12 +4282,9 @@ create table DynamicLMControlAreaTrigger  (
    LastPointValueTimeStamp DATE                            not null,
    PeakPointValue       FLOAT                           not null,
    LastPeakPointValueTimeStamp DATE                            not null,
-   TriggerID            NUMBER                          not null
+   TriggerID            NUMBER                          not null,
+   constraint PK_DYNAMICLMCONTROLAREATRIGGER primary key (DeviceID, TriggerNumber)
 )
-;
-
-alter table DynamicLMControlAreaTrigger
-   add constraint PK_DYNAMICLMCONTROLAREATRIGGER primary key (DeviceID, TriggerNumber)
 ;
 
 /*==============================================================*/
@@ -4548,12 +4303,9 @@ create table DynamicLMControlHistory  (
    CurrentAnnualTime    NUMBER                          not null,
    ActiveRestore        CHAR(1)                         not null,
    ReductionValue       FLOAT                           not null,
-   StopDateTime         DATE                            not null
+   StopDateTime         DATE                            not null,
+   constraint PK_DYNLMCONTROLHISTORY primary key (PAObjectID)
 )
-;
-
-alter table DynamicLMControlHistory
-   add constraint PK_DYNLMCONTROLHISTORY primary key (PAObjectID)
 ;
 
 /*==============================================================*/
@@ -4572,12 +4324,9 @@ create table DynamicLMGroup  (
    ControlCompleteTime  DATE                            not null,
    NextControlTime      DATE                            not null,
    InternalState        NUMBER                          not null,
-   dailyops             SMALLINT                        not null
+   dailyops             SMALLINT                        not null,
+   constraint PK_DYNAMICLMGROUP primary key (DeviceID)
 )
-;
-
-alter table DynamicLMGroup
-   add constraint PK_DYNAMICLMGROUP primary key (DeviceID)
 ;
 
 /*==============================================================*/
@@ -4590,12 +4339,9 @@ create table DynamicLMProgram  (
    StartedControlling   DATE                            not null,
    LastControlSent      DATE                            not null,
    ManualControlReceivedFlag CHAR(1)                         not null,
-   TimeStamp            DATE                            not null
+   TimeStamp            DATE                            not null,
+   constraint PK_DYNAMICLMPROGRAM primary key (DeviceID)
 )
-;
-
-alter table DynamicLMProgram
-   add constraint PK_DYNAMICLMPROGRAM primary key (DeviceID)
 ;
 
 /*==============================================================*/
@@ -4612,12 +4358,9 @@ create table DynamicLMProgramDirect  (
    StartedRampingOut    DATE                            not null,
    NotifyInactiveTime   DATE                            not null,
    ConstraintOverride   CHAR(1)                         not null,
-   AdditionalInfo       VARCHAR2(80)                    not null
+   AdditionalInfo       VARCHAR2(80)                    not null,
+   constraint PK_DYNAMICLMPROGRAMDIRECT primary key (DeviceID)
 )
-;
-
-alter table DynamicLMProgramDirect
-   add constraint PK_DYNAMICLMPROGRAMDIRECT primary key (DeviceID)
 ;
 
 /*==============================================================*/
@@ -4629,12 +4372,9 @@ create table DynamicPAOInfo  (
    Owner                VARCHAR2(64)                    not null,
    InfoKey              VARCHAR2(128)                   not null,
    Value                VARCHAR2(128)                   not null,
-   UpdateTime           DATE                            not null
+   UpdateTime           DATE                            not null,
+   constraint PK_DYNPAOINFO primary key (EntryID)
 )
-;
-
-alter table DynamicPAOInfo
-   add constraint PK_DYNPAOINFO primary key (EntryID)
 ;
 
 alter table DynamicPAOInfo
@@ -4654,12 +4394,9 @@ create table DynamicPAOStatistics  (
    ProtocolErrors       NUMBER                          not null,
    SystemErrors         NUMBER                          not null,
    StartDateTime        DATE                            not null,
-   StopDateTime         DATE                            not null
+   StopDateTime         DATE                            not null,
+   constraint PK_DYNAMICPAOSTATISTICS primary key (PAOBjectID, StatisticType)
 )
-;
-
-alter table DynamicPAOStatistics
-   add constraint PK_DYNAMICPAOSTATISTICS primary key (PAOBjectID, StatisticType)
 ;
 
 /*==============================================================*/
@@ -4676,12 +4413,9 @@ create table DynamicPointAlarming  (
    LogID                NUMBER                          not null,
    SOE_TAG              NUMBER                          not null,
    Type                 NUMBER                          not null,
-   UserName             VARCHAR2(64)                    not null
+   UserName             VARCHAR2(64)                    not null,
+   constraint PK_DYNAMICPOINTALARMING primary key (PointID, AlarmCondition)
 )
-;
-
-alter table DynamicPointAlarming
-   add constraint PK_DYNAMICPOINTALARMING primary key (PointID, AlarmCondition)
 ;
 
 /*==============================================================*/
@@ -4696,12 +4430,9 @@ create table DynamicTags  (
    Description          VARCHAR2(120)                   not null,
    TagTime              DATE                            not null,
    RefStr               VARCHAR2(60)                    not null,
-   ForStr               VARCHAR2(60)                    not null
+   ForStr               VARCHAR2(60)                    not null,
+   constraint PK_DYNAMICTAGS primary key (InstanceID)
 )
-;
-
-alter table DynamicTags
-   add constraint PK_DYNAMICTAGS primary key (InstanceID)
 ;
 
 /*==============================================================*/
@@ -4716,12 +4447,9 @@ create table DynamicVerification  (
    Code                 VARCHAR2(128)                   not null,
    CodeSequence         NUMBER                          not null,
    Received             CHAR(1)                         not null,
-   CodeStatus           VARCHAR2(32)                    not null
+   CodeStatus           VARCHAR2(32)                    not null,
+   constraint PK_DYNAMICVERIFICATION primary key (LogID)
 )
-;
-
-alter table DynamicVerification
-   add constraint PK_DYNAMICVERIFICATION primary key (LogID)
 ;
 
 /*==============================================================*/
@@ -4747,15 +4475,12 @@ create table EnergyCompany  (
    EnergyCompanyID      NUMBER                          not null,
    Name                 VARCHAR2(60)                    not null,
    PrimaryContactID     NUMBER                          not null,
-   UserID               NUMBER                          not null
+   UserID               NUMBER                          not null,
+   constraint PK_ENERGYCOMPANY primary key (EnergyCompanyID)
 )
 ;
 
 insert into EnergyCompany VALUES (-1,'Default Energy Company',0,-100);
-
-alter table EnergyCompany
-   add constraint PK_ENERGYCOMPANY primary key (EnergyCompanyID)
-;
 
 /*==============================================================*/
 /* Index: Indx_EnCmpName                                        */
@@ -4770,12 +4495,9 @@ create unique index Indx_EnCmpName on EnergyCompany (
 /*==============================================================*/
 create table EnergyCompanyCustomerList  (
    EnergyCompanyID      NUMBER                          not null,
-   CustomerID           NUMBER                          not null
+   CustomerID           NUMBER                          not null,
+   constraint PK_ENERGYCOMPANYCUSTOMERLIST primary key (EnergyCompanyID, CustomerID)
 )
-;
-
-alter table EnergyCompanyCustomerList
-   add constraint PK_ENERGYCOMPANYCUSTOMERLIST primary key (EnergyCompanyID, CustomerID)
 ;
 
 /*==============================================================*/
@@ -4783,27 +4505,21 @@ alter table EnergyCompanyCustomerList
 /*==============================================================*/
 create table EnergyCompanyOperatorLoginList  (
    EnergyCompanyID      NUMBER                          not null,
-   OperatorLoginID      NUMBER                          not null
+   OperatorLoginID      NUMBER                          not null,
+   constraint PK_ENERGYCOMPANYOPERATORLOGINL primary key (EnergyCompanyID, OperatorLoginID)
 )
 ;
 
 INSERT INTO EnergyCompanyOperatorLoginList VALUES (-1,-100);
-
-alter table EnergyCompanyOperatorLoginList
-   add constraint PK_ENERGYCOMPANYOPERATORLOGINL primary key (EnergyCompanyID, OperatorLoginID)
-;
 
 /*==============================================================*/
 /* Table: EsubDisplayIndex                                      */
 /*==============================================================*/
 create table EsubDisplayIndex  (
    SearchKey            VARCHAR2(500)                   not null,
-   DisplayUrl           VARCHAR2(500)                   not null
+   DisplayUrl           VARCHAR2(500)                   not null,
+   constraint PK_ESUBDISPLAYINDEX primary key (SearchKey)
 )
-;
-
-alter table EsubDisplayIndex
-   add constraint PK_ESUBDISPLAYINDEX primary key (SearchKey)
 ;
 
 /*==============================================================*/
@@ -4813,7 +4529,8 @@ create table FDRInterface  (
    InterfaceID          NUMBER                          not null,
    InterfaceName        VARCHAR2(30)                    not null,
    PossibleDirections   VARCHAR2(100)                   not null,
-   hasDestination       CHAR(1)                         not null
+   hasDestination       CHAR(1)                         not null,
+   constraint PK_FDRINTERFACE primary key (InterfaceID)
 )
 ;
 
@@ -4842,10 +4559,6 @@ insert into FDRInterface values (23, 'ACSMULTI', 'Send,Send for control,Receive,
 insert into FDRInterface values (24, 'WABASH', 'Send', 'f' );
 insert into FDRInterface values (25, 'TRISTATESUB', 'Receive', 'f' );
 
-alter table FDRInterface
-   add constraint PK_FDRINTERFACE primary key (InterfaceID)
-;
-
 /*==============================================================*/
 /* Table: FDRInterfaceOption                                    */
 /*==============================================================*/
@@ -4854,7 +4567,8 @@ create table FDRInterfaceOption  (
    OptionLabel          VARCHAR2(20)                    not null,
    Ordering             NUMBER                          not null,
    OptionType           VARCHAR2(8)                     not null,
-   OptionValues         VARCHAR2(256)                   not null
+   OptionValues         VARCHAR2(256)                   not null,
+   constraint PK_FDRINTERFACEOPTION primary key (InterfaceID, Ordering)
 )
 ;
 
@@ -4907,10 +4621,6 @@ insert into FDRInterfaceOption values(24, 'Path', 2, 'Text', 'c:\yukon\server\ex
 insert into FDRInterfaceOption values(24, 'Filename', 3, 'Text', 'control.txt' );
 insert into FDRInterfaceOption values(25, 'Point', 1, 'Combo', 'Nucla 115/69 Xfmr.,Happy Canyon 661Idarado,Cascade 115/69 (T2),Ames Generation,Dallas Creek MW,Dallas Creek MV' );
 
-alter table FDRInterfaceOption
-   add constraint PK_FDRINTERFACEOPTION primary key (InterfaceID, Ordering)
-;
-
 /*==============================================================*/
 /* Table: FDRTRANSLATION                                        */
 /*==============================================================*/
@@ -4919,12 +4629,9 @@ create table FDRTRANSLATION  (
    DIRECTIONTYPE        VARCHAR2(20)                    not null,
    InterfaceType        VARCHAR2(20)                    not null,
    DESTINATION          VARCHAR2(20)                    not null,
-   TRANSLATION          VARCHAR2(200)                   not null
+   TRANSLATION          VARCHAR2(200)                   not null,
+   constraint PK_FDRTrans primary key (POINTID, DIRECTIONTYPE, InterfaceType, TRANSLATION)
 )
-;
-
-alter table FDRTRANSLATION
-   add constraint PK_FDRTrans primary key (POINTID, DIRECTIONTYPE, InterfaceType, TRANSLATION)
 ;
 
 /*==============================================================*/
@@ -4957,12 +4664,9 @@ create table GRAPHDATASERIES  (
    Type                 NUMBER                          not null,
    Multiplier           FLOAT                           not null,
    Renderer             SMALLINT                        not null,
-   MoreData             VARCHAR2(100)                   not null
+   MoreData             VARCHAR2(100)                   not null,
+   constraint SYS_GrphDserID primary key (GRAPHDATASERIESID)
 )
-;
-
-alter table GRAPHDATASERIES
-   add constraint SYS_GrphDserID primary key (GRAPHDATASERIESID)
 ;
 
 /*==============================================================*/
@@ -4988,12 +4692,9 @@ create table GRAPHDEFINITION  (
    LeftMax              FLOAT                           not null,
    RightMin             FLOAT                           not null,
    RightMax             FLOAT                           not null,
-   Type                 CHAR(1)                         not null
+   Type                 CHAR(1)                         not null,
+   constraint SYS_C0015109 primary key (GRAPHDEFINITIONID)
 )
-;
-
-alter table GRAPHDEFINITION
-   add constraint SYS_C0015109 primary key (GRAPHDEFINITIONID)
 ;
 
 alter table GRAPHDEFINITION
@@ -5007,12 +4708,9 @@ create table GatewayEndDevice  (
    SerialNumber         VARCHAR2(30)                    not null,
    HardwareType         NUMBER                          not null,
    DataType             NUMBER                          not null,
-   DataValue            VARCHAR2(100)
+   DataValue            VARCHAR2(100),
+   constraint PK_GATEWAYENDDEVICE primary key (SerialNumber, HardwareType, DataType)
 )
-;
-
-alter table GatewayEndDevice
-   add constraint PK_GATEWAYENDDEVICE primary key (SerialNumber, HardwareType, DataType)
 ;
 
 /*==============================================================*/
@@ -5022,12 +4720,9 @@ create table GenericMacro  (
    OwnerID              NUMBER                          not null,
    ChildID              NUMBER                          not null,
    ChildOrder           NUMBER                          not null,
-   MacroType            VARCHAR2(20)                    not null
+   MacroType            VARCHAR2(20)                    not null,
+   constraint PK_GENERICMACRO primary key (OwnerID, ChildOrder, MacroType)
 )
-;
-
-alter table GenericMacro
-   add constraint PK_GENERICMACRO primary key (OwnerID, ChildOrder, MacroType)
 ;
 
 /*==============================================================*/
@@ -5036,12 +4731,9 @@ alter table GenericMacro
 create table GraphCustomerList  (
    GraphDefinitionID    NUMBER                          not null,
    CustomerID           NUMBER                          not null,
-   CustomerOrder        NUMBER                          not null
+   CustomerOrder        NUMBER                          not null,
+   constraint PK_GRAPHCUSTOMERLIST primary key (GraphDefinitionID, CustomerID)
 )
-;
-
-alter table GraphCustomerList
-   add constraint PK_GRAPHCUSTOMERLIST primary key (GraphDefinitionID, CustomerID)
 ;
 
 /*==============================================================*/
@@ -5051,12 +4743,9 @@ create table GroupPaoPermission  (
    GroupPaoPermissionID NUMBER                          not null,
    GroupID              NUMBER                          not null,
    PaoID                NUMBER                          not null,
-   Permission           VARCHAR2(50)                    not null
+   Permission           VARCHAR2(50)                    not null,
+   constraint PK_GROUPPAOPERMISSION primary key (GroupPaoPermissionID)
 )
-;
-
-alter table GroupPaoPermission
-   add constraint PK_GROUPPAOPERMISSION primary key (GroupPaoPermissionID)
 ;
 
 alter table GroupPaoPermission
@@ -5068,15 +4757,12 @@ alter table GroupPaoPermission
 /*==============================================================*/
 create table HolidaySchedule  (
    HolidayScheduleID    NUMBER                          not null,
-   HolidayScheduleName  VARCHAR2(40)                    not null
+   HolidayScheduleName  VARCHAR2(40)                    not null,
+   constraint PK_HOLIDAYSCHEDULE primary key (HolidayScheduleID)
 )
 ;
 
 insert into HolidaySchedule values( 0, 'Empty Holiday Schedule' );
-
-alter table HolidaySchedule
-   add constraint PK_HOLIDAYSCHEDULE primary key (HolidayScheduleID)
-;
 
 /*==============================================================*/
 /* Index: Indx_HolSchName                                       */
@@ -5098,12 +4784,9 @@ create table ImportData  (
    AltGrp               VARCHAR2(64)                    not null,
    TemplateName         VARCHAR2(64)                    not null,
    BillGrp              VARCHAR2(64)                    not null,
-   SubstationName       VARCHAR2(64)                    not null
+   SubstationName       VARCHAR2(64)                    not null,
+   constraint PK_IMPORTDATA primary key (Address)
 )
-;
-
-alter table ImportData
-   add constraint PK_IMPORTDATA primary key (Address)
 ;
 
 /*==============================================================*/
@@ -5121,12 +4804,9 @@ create table ImportFail  (
    DateTime             DATE,
    BillGrp              VARCHAR2(64)                    not null,
    SubstationName       VARCHAR2(64)                    not null,
-   FailType             VARCHAR2(64)                    not null
+   FailType             VARCHAR2(64)                    not null,
+   constraint PK_IMPORTFAIL primary key (Address)
 )
-;
-
-alter table ImportFail
-   add constraint PK_IMPORTFAIL primary key (Address)
 ;
 
 /*==============================================================*/
@@ -5142,12 +4822,9 @@ create table ImportPendingComm  (
    AltGrp               VARCHAR2(64)                    not null,
    TemplateName         VARCHAR2(64)                    not null,
    BillGrp              VARCHAR2(64)                    not null,
-   SubstationName       VARCHAR2(64)                    not null
+   SubstationName       VARCHAR2(64)                    not null,
+   constraint PK_IMPORTPENDINGCOMM primary key (DeviceID)
 )
-;
-
-alter table ImportPendingComm
-   add constraint PK_IMPORTPENDINGCOMM primary key (DeviceID)
 ;
 
 /*==============================================================*/
@@ -5157,12 +4834,9 @@ create table LMCONTROLAREAPROGRAM  (
    DEVICEID             NUMBER                          not null,
    LMPROGRAMDEVICEID    NUMBER                          not null,
    StartPriority        NUMBER                          not null,
-   StopPriority         NUMBER                          not null
+   StopPriority         NUMBER                          not null,
+   constraint PK_LMCONTROLAREAPROGRAM primary key (DEVICEID, LMPROGRAMDEVICEID)
 )
-;
-
-alter table LMCONTROLAREAPROGRAM
-   add constraint PK_LMCONTROLAREAPROGRAM primary key (DEVICEID, LMPROGRAMDEVICEID)
 ;
 
 /*==============================================================*/
@@ -5181,12 +4855,9 @@ create table LMCONTROLAREATRIGGER  (
    THRESHOLDKICKPERCENT NUMBER                          not null,
    MINRESTOREOFFSET     FLOAT                           not null,
    PEAKPOINTID          NUMBER                          not null,
-   TriggerID            NUMBER                          not null
+   TriggerID            NUMBER                          not null,
+   constraint PK_LMCONTROLAREATRIGGER primary key (DEVICEID, TRIGGERNUMBER)
 )
-;
-
-alter table LMCONTROLAREATRIGGER
-   add constraint PK_LMCONTROLAREATRIGGER primary key (DEVICEID, TRIGGERNUMBER)
 ;
 
 /*==============================================================*/
@@ -5207,12 +4878,9 @@ create table LMControlArea  (
    MINRESPONSETIME      NUMBER                          not null,
    DEFDAILYSTARTTIME    NUMBER                          not null,
    DEFDAILYSTOPTIME     NUMBER                          not null,
-   REQUIREALLTRIGGERSACTIVEFLAG VARCHAR2(1)                     not null
+   REQUIREALLTRIGGERSACTIVEFLAG VARCHAR2(1)                     not null,
+   constraint PK_LMCONTROLAREA primary key (DEVICEID)
 )
-;
-
-alter table LMControlArea
-   add constraint PK_LMCONTROLAREA primary key (DEVICEID)
 ;
 
 /*==============================================================*/
@@ -5231,12 +4899,9 @@ create table LMControlHistory  (
    CurrentAnnualTime    NUMBER                          not null,
    ActiveRestore        CHAR(1)                         not null,
    ReductionValue       FLOAT                           not null,
-   StopDateTime         DATE                            not null
+   StopDateTime         DATE                            not null,
+   constraint PK_LMCONTROLHISTORY primary key (LMCtrlHistID)
 )
-;
-
-alter table LMControlHistory
-   add constraint PK_LMCONTROLHISTORY primary key (LMCtrlHistID)
 ;
 
 /*==============================================================*/
@@ -5255,12 +4920,9 @@ create table LMControlScenarioProgram  (
    ProgramID            NUMBER                          not null,
    StartOffset          NUMBER                          not null,
    StopOffset           NUMBER                          not null,
-   StartGear            NUMBER                          not null
+   StartGear            NUMBER                          not null,
+   constraint PK_LMCONTROLSCENARIOPROGRAM primary key (ScenarioID, ProgramID)
 )
-;
-
-alter table LMControlScenarioProgram
-   add constraint PK_LMCONTROLSCENARIOPROGRAM primary key (ScenarioID, ProgramID)
 ;
 
 /*==============================================================*/
@@ -5276,12 +4938,9 @@ create table LMCurtailCustomerActivity  (
    NameOfAckPerson      VARCHAR2(40)                    not null,
    CurtailmentNotes     VARCHAR2(120)                   not null,
    CurrentPDL           FLOAT                           not null,
-   AckLateFlag          CHAR(1)                         not null
+   AckLateFlag          CHAR(1)                         not null,
+   constraint PK_LMCURTAILCUSTOMERACTIVITY primary key (CustomerID, CurtailReferenceID)
 )
-;
-
-alter table LMCurtailCustomerActivity
-   add constraint PK_LMCURTAILCUSTOMERACTIVITY primary key (CustomerID, CurtailReferenceID)
 ;
 
 /*==============================================================*/
@@ -5311,12 +4970,9 @@ create table LMCurtailProgramActivity  (
    CurtailmentStartTime DATE                            not null,
    CurtailmentStopTime  DATE                            not null,
    RunStatus            VARCHAR2(20)                    not null,
-   AdditionalInfo       VARCHAR2(100)                   not null
+   AdditionalInfo       VARCHAR2(100)                   not null,
+   constraint PK_LMCURTAILPROGRAMACTIVITY primary key (CurtailReferenceID)
 )
-;
-
-alter table LMCurtailProgramActivity
-   add constraint PK_LMCURTAILPROGRAMACTIVITY primary key (CurtailReferenceID)
 ;
 
 /*==============================================================*/
@@ -5332,12 +4988,9 @@ create index Indx_LMCrtPrgActStTime on LMCurtailProgramActivity (
 /*==============================================================*/
 create table LMDirectCustomerList  (
    ProgramID            NUMBER                          not null,
-   CustomerID           NUMBER                          not null
+   CustomerID           NUMBER                          not null,
+   constraint PK_LMDIRECTCUSTOMERLIST primary key (ProgramID, CustomerID)
 )
-;
-
-alter table LMDirectCustomerList
-   add constraint PK_LMDIRECTCUSTOMERLIST primary key (ProgramID, CustomerID)
 ;
 
 /*==============================================================*/
@@ -5345,12 +4998,9 @@ alter table LMDirectCustomerList
 /*==============================================================*/
 create table LMDirectNotifGrpList  (
    ProgramID            NUMBER                          not null,
-   NotificationGrpID    NUMBER                          not null
+   NotificationGrpID    NUMBER                          not null,
+   constraint PK_LMDIRECTNOTIFGRPLIST primary key (ProgramID, NotificationGrpID)
 )
-;
-
-alter table LMDirectNotifGrpList
-   add constraint PK_LMDIRECTNOTIFGRPLIST primary key (ProgramID, NotificationGrpID)
 ;
 
 /*==============================================================*/
@@ -5359,12 +5009,9 @@ alter table LMDirectNotifGrpList
 create table LMEnergyExchangeCustomerList  (
    ProgramID            NUMBER                          not null,
    CustomerID           NUMBER                          not null,
-   CustomerOrder        NUMBER                          not null
+   CustomerOrder        NUMBER                          not null,
+   constraint PK_LMENERGYEXCHANGECUSTOMERLIS primary key (ProgramID, CustomerID)
 )
-;
-
-alter table LMEnergyExchangeCustomerList
-   add constraint PK_LMENERGYEXCHANGECUSTOMERLIS primary key (ProgramID, CustomerID)
 ;
 
 /*==============================================================*/
@@ -5379,12 +5026,9 @@ create table LMEnergyExchangeCustomerReply  (
    IPAddressOfAcceptUser VARCHAR2(15)                    not null,
    UserIDName           VARCHAR2(40)                    not null,
    NameOfAcceptPerson   VARCHAR2(40)                    not null,
-   EnergyExchangeNotes  VARCHAR2(120)                   not null
+   EnergyExchangeNotes  VARCHAR2(120)                   not null,
+   constraint PK_LMENERGYEXCHANGECUSTOMERREP primary key (CustomerID, OfferID, RevisionNumber)
 )
-;
-
-alter table LMEnergyExchangeCustomerReply
-   add constraint PK_LMENERGYEXCHANGECUSTOMERREP primary key (CustomerID, OfferID, RevisionNumber)
 ;
 
 /*==============================================================*/
@@ -5395,12 +5039,9 @@ create table LMEnergyExchangeHourlyCustomer  (
    OfferID              NUMBER                          not null,
    RevisionNumber       NUMBER                          not null,
    Hour                 NUMBER                          not null,
-   AmountCommitted      FLOAT                           not null
+   AmountCommitted      FLOAT                           not null,
+   constraint PK_LMENERGYEXCHANGEHOURLYCUSTO primary key (CustomerID, OfferID, RevisionNumber, Hour)
 )
-;
-
-alter table LMEnergyExchangeHourlyCustomer
-   add constraint PK_LMENERGYEXCHANGEHOURLYCUSTO primary key (CustomerID, OfferID, RevisionNumber, Hour)
 ;
 
 /*==============================================================*/
@@ -5411,12 +5052,9 @@ create table LMEnergyExchangeHourlyOffer  (
    RevisionNumber       NUMBER                          not null,
    Hour                 NUMBER                          not null,
    Price                NUMBER                          not null,
-   AmountRequested      FLOAT                           not null
+   AmountRequested      FLOAT                           not null,
+   constraint PK_LMENERGYEXCHANGEHOURLYOFFER primary key (OfferID, RevisionNumber, Hour)
 )
-;
-
-alter table LMEnergyExchangeHourlyOffer
-   add constraint PK_LMENERGYEXCHANGEHOURLYOFFER primary key (OfferID, RevisionNumber, Hour)
 ;
 
 /*==============================================================*/
@@ -5428,12 +5066,9 @@ create table LMEnergyExchangeOfferRevision  (
    ActionDateTime       DATE                            not null,
    NotificationDateTime DATE                            not null,
    OfferExpirationDateTime DATE                            not null,
-   AdditionalInfo       VARCHAR2(100)                   not null
+   AdditionalInfo       VARCHAR2(100)                   not null,
+   constraint PK_LMENERGYEXCHANGEOFFERREVISI primary key (OfferID, RevisionNumber)
 )
-;
-
-alter table LMEnergyExchangeOfferRevision
-   add constraint PK_LMENERGYEXCHANGEOFFERREVISI primary key (OfferID, RevisionNumber)
 ;
 
 /*==============================================================*/
@@ -5443,12 +5078,9 @@ create table LMEnergyExchangeProgramOffer  (
    DeviceID             NUMBER                          not null,
    OfferID              NUMBER                          not null,
    RunStatus            VARCHAR2(20)                    not null,
-   OfferDate            DATE                            not null
+   OfferDate            DATE                            not null,
+   constraint PK_LMENERGYEXCHANGEPROGRAMOFFE primary key (OfferID)
 )
-;
-
-alter table LMEnergyExchangeProgramOffer
-   add constraint PK_LMENERGYEXCHANGEPROGRAMOFFE primary key (OfferID)
 ;
 
 /*==============================================================*/
@@ -5456,15 +5088,12 @@ alter table LMEnergyExchangeProgramOffer
 /*==============================================================*/
 create table LMGroup  (
    DeviceID             NUMBER                          not null,
-   KWCapacity           FLOAT                           not null
+   KWCapacity           FLOAT                           not null,
+   constraint PK_LMGROUP primary key (DeviceID)
 )
 ;
 
 insert into lmgroup values( 0, 0 );
-
-alter table LMGroup
-   add constraint PK_LMGROUP primary key (DeviceID)
-;
 
 /*==============================================================*/
 /* Table: LMGroupEmetcon                                        */
@@ -5475,12 +5104,9 @@ create table LMGroupEmetcon  (
    SILVERADDRESS        NUMBER                          not null,
    ADDRESSUSAGE         CHAR(1)                         not null,
    RELAYUSAGE           CHAR(1)                         not null,
-   ROUTEID              NUMBER                          not null
+   ROUTEID              NUMBER                          not null,
+   constraint PK_LMGROUPEMETCON primary key (DEVICEID)
 )
-;
-
-alter table LMGroupEmetcon
-   add constraint PK_LMGROUPEMETCON primary key (DEVICEID)
 ;
 
 /*==============================================================*/
@@ -5499,12 +5125,9 @@ create table LMGroupExpressCom  (
    ProgramID            NUMBER                          not null,
    SplinterID           NUMBER                          not null,
    AddressUsage         VARCHAR2(10)                    not null,
-   RelayUsage           CHAR(15)                        not null
+   RelayUsage           CHAR(15)                        not null,
+   constraint PK_LMGROUPEXPRESSCOM primary key (LMGroupID)
 )
-;
-
-alter table LMGroupExpressCom
-   add constraint PK_LMGROUPEXPRESSCOM primary key (LMGroupID)
 ;
 
 /*==============================================================*/
@@ -5514,15 +5137,12 @@ create table LMGroupExpressComAddress  (
    AddressID            NUMBER                          not null,
    AddressType          VARCHAR2(20)                    not null,
    Address              NUMBER                          not null,
-   AddressName          VARCHAR2(30)                    not null
+   AddressName          VARCHAR2(30)                    not null,
+   constraint PK_LMGROUPEXPRESSCOMADDRESS primary key (AddressID)
 )
 ;
 
 insert into LMGroupExpressComAddress values( 0, '(none)', 0, '(none)' );
-
-alter table LMGroupExpressComAddress
-   add constraint PK_LMGROUPEXPRESSCOMADDRESS primary key (AddressID)
-;
 
 /*==============================================================*/
 /* Table: LMGroupMCT                                            */
@@ -5533,12 +5153,9 @@ create table LMGroupMCT  (
    MCTLevel             CHAR(1)                         not null,
    RelayUsage           CHAR(7)                         not null,
    RouteID              NUMBER                          not null,
-   MCTDeviceID          NUMBER                          not null
+   MCTDeviceID          NUMBER                          not null,
+   constraint PK_LMGrpMCTPK primary key (DeviceID)
 )
-;
-
-alter table LMGroupMCT
-   add constraint PK_LMGrpMCTPK primary key (DeviceID)
 ;
 
 /*==============================================================*/
@@ -5548,12 +5165,9 @@ create table LMGroupPoint  (
    DEVICEID             NUMBER                          not null,
    DeviceIDUsage        NUMBER                          not null,
    PointIDUsage         NUMBER                          not null,
-   StartControlRawState NUMBER                          not null
+   StartControlRawState NUMBER                          not null,
+   constraint PK_LMGROUPPOINT primary key (DEVICEID)
 )
-;
-
-alter table LMGroupPoint
-   add constraint PK_LMGROUPPOINT primary key (DEVICEID)
 ;
 
 /*==============================================================*/
@@ -5564,12 +5178,9 @@ create table LMGroupRipple  (
    RouteID              NUMBER                          not null,
    ShedTime             NUMBER                          not null,
    ControlValue         CHAR(50)                        not null,
-   RestoreValue         CHAR(50)                        not null
+   RestoreValue         CHAR(50)                        not null,
+   constraint PK_LMGROUPRIPPLE primary key (DeviceID)
 )
-;
-
-alter table LMGroupRipple
-   add constraint PK_LMGROUPRIPPLE primary key (DeviceID)
 ;
 
 /*==============================================================*/
@@ -5579,12 +5190,9 @@ create table LMGroupSA205105  (
    GroupID              NUMBER                          not null,
    RouteID              NUMBER                          not null,
    OperationalAddress   NUMBER                          not null,
-   LoadNumber           VARCHAR2(64)                    not null
+   LoadNumber           VARCHAR2(64)                    not null,
+   constraint PK_LMGROUPSA205105 primary key (GroupID)
 )
-;
-
-alter table LMGroupSA205105
-   add constraint PK_LMGROUPSA205105 primary key (GroupID)
 ;
 
 /*==============================================================*/
@@ -5602,12 +5210,9 @@ create table LMGroupSA305  (
    RateFamily           NUMBER                          not null,
    RateMember           NUMBER                          not null,
    RateHierarchy        NUMBER                          not null,
-   LoadNumber           VARCHAR2(8)                     not null
+   LoadNumber           VARCHAR2(8)                     not null,
+   constraint PK_LMGROUPSA305 primary key (GroupID)
 )
-;
-
-alter table LMGroupSA305
-   add constraint PK_LMGROUPSA305 primary key (GroupID)
 ;
 
 /*==============================================================*/
@@ -5619,12 +5224,9 @@ create table LMGroupSASimple  (
    OperationalAddress   VARCHAR2(8)                     not null,
    NominalTimeout       NUMBER                          not null,
    MarkIndex            NUMBER                          not null,
-   SpaceIndex           NUMBER                          not null
+   SpaceIndex           NUMBER                          not null,
+   constraint PK_LMGROUPSASIMPLE primary key (GroupID)
 )
-;
-
-alter table LMGroupSASimple
-   add constraint PK_LMGROUPSASIMPLE primary key (GroupID)
 ;
 
 /*==============================================================*/
@@ -5639,12 +5241,9 @@ create table LMGroupVersacom  (
    DIVISIONADDRESS      NUMBER                          not null,
    ADDRESSUSAGE         CHAR(4)                         not null,
    RELAYUSAGE           CHAR(7)                         not null,
-   SerialAddress        VARCHAR2(15)                    not null
+   SerialAddress        VARCHAR2(15)                    not null,
+   constraint PK_LMGROUPVERSACOM primary key (DEVICEID)
 )
-;
-
-alter table LMGroupVersacom
-   add constraint PK_LMGROUPVERSACOM primary key (DEVICEID)
 ;
 
 /*==============================================================*/
@@ -5653,12 +5252,9 @@ alter table LMGroupVersacom
 create table LMMacsScheduleCustomerList  (
    ScheduleID           NUMBER                          not null,
    LMCustomerDeviceID   NUMBER                          not null,
-   CustomerOrder        NUMBER                          not null
+   CustomerOrder        NUMBER                          not null,
+   constraint PK_LMMACSSCHEDULECUSTOMERLIST primary key (ScheduleID, LMCustomerDeviceID)
 )
-;
-
-alter table LMMacsScheduleCustomerList
-   add constraint PK_LMMACSSCHEDULECUSTOMERLIST primary key (ScheduleID, LMCustomerDeviceID)
 ;
 
 /*==============================================================*/
@@ -5667,15 +5263,12 @@ alter table LMMacsScheduleCustomerList
 create table LMPROGRAM  (
    DeviceID             NUMBER                          not null,
    ControlType          VARCHAR2(20)                    not null,
-   ConstraintID         NUMBER                          not null
+   ConstraintID         NUMBER                          not null,
+   constraint PK_LMPROGRAM primary key (DeviceID)
 )
 ;
 
 insert into LMProgram values(0, 'Automatic', 0);
-
-alter table LMPROGRAM
-   add constraint PK_LMPROGRAM primary key (DeviceID)
-;
 
 /*==============================================================*/
 /* Table: LMProgramConstraints                                  */
@@ -5693,15 +5286,12 @@ create table LMProgramConstraints  (
    MaxDailyOps          NUMBER                          not null,
    MaxActivateTime      NUMBER                          not null,
    HolidayScheduleID    NUMBER                          not null,
-   SeasonScheduleID     NUMBER                          not null
+   SeasonScheduleID     NUMBER                          not null,
+   constraint PK_PRGCONSTR primary key (ConstraintID)
 )
 ;
 
 insert into LMProgramConstraints values (0, 'Default Constraint', 'YYYYYYYN', 0, 0, 0, 0, 0, 0, 0, 0, 0, 0);
-
-alter table LMProgramConstraints
-   add constraint PK_PRGCONSTR primary key (ConstraintID)
-;
 
 /*==============================================================*/
 /* Table: LMProgramControlWindow                                */
@@ -5710,12 +5300,9 @@ create table LMProgramControlWindow  (
    DeviceID             NUMBER                          not null,
    WindowNumber         NUMBER                          not null,
    AvailableStartTime   NUMBER                          not null,
-   AvailableStopTime    NUMBER                          not null
+   AvailableStopTime    NUMBER                          not null,
+   constraint PK_LMPROGRAMCONTROLWINDOW primary key (DeviceID, WindowNumber)
 )
-;
-
-alter table LMProgramControlWindow
-   add constraint PK_LMPROGRAMCONTROLWINDOW primary key (DeviceID, WindowNumber)
 ;
 
 /*==============================================================*/
@@ -5725,12 +5312,9 @@ create table LMProgramCurtailCustomerList  (
    ProgramID            NUMBER                          not null,
    CustomerID           NUMBER                          not null,
    CustomerOrder        NUMBER                          not null,
-   RequireAck           CHAR(1)                         not null
+   RequireAck           CHAR(1)                         not null,
+   constraint PK_LMPROGRAMCURTAILCUSTOMERLIS primary key (CustomerID, ProgramID)
 )
-;
-
-alter table LMProgramCurtailCustomerList
-   add constraint PK_LMPROGRAMCURTAILCUSTOMERLIS primary key (CustomerID, ProgramID)
 ;
 
 /*==============================================================*/
@@ -5744,12 +5328,9 @@ create table LMProgramCurtailment  (
    MessageFooter        VARCHAR2(160)                   not null,
    AckTimeLimit         NUMBER                          not null,
    CanceledMsg          VARCHAR2(80)                    not null,
-   StoppedEarlyMsg      VARCHAR2(80)                    not null
+   StoppedEarlyMsg      VARCHAR2(80)                    not null,
+   constraint PK_LMPROGRAMCURTAILMENT primary key (DeviceID)
 )
-;
-
-alter table LMProgramCurtailment
-   add constraint PK_LMPROGRAMCURTAILMENT primary key (DeviceID)
 ;
 
 /*==============================================================*/
@@ -5763,12 +5344,9 @@ create table LMProgramDirect  (
    MessageFooter        VARCHAR2(160)                   not null,
    TriggerOffset        FLOAT                           not null,
    RestoreOffset        FLOAT                           not null,
-   NotifyInactiveOffset NUMBER                          not null
+   NotifyInactiveOffset NUMBER                          not null,
+   constraint PK_LMPROGRAMDIRECT primary key (DeviceID)
 )
-;
-
-alter table LMProgramDirect
-   add constraint PK_LMPROGRAMDIRECT primary key (DeviceID)
 ;
 
 /*==============================================================*/
@@ -5802,12 +5380,9 @@ create table LMProgramDirectGear  (
    FrontRampTime        NUMBER                          not null,
    BackRampOption       VARCHAR2(80)                    not null,
    BackRampTime         NUMBER                          not null,
-   KWReduction          FLOAT                           not null
+   KWReduction          FLOAT                           not null,
+   constraint PK_LMPROGRAMDIRECTGEAR primary key (GearID)
 )
-;
-
-alter table LMProgramDirectGear
-   add constraint PK_LMPROGRAMDIRECTGEAR primary key (GearID)
 ;
 
 alter table LMProgramDirectGear
@@ -5820,12 +5395,9 @@ alter table LMProgramDirectGear
 create table LMProgramDirectGroup  (
    DeviceID             NUMBER                          not null,
    LMGroupDeviceID      NUMBER                          not null,
-   GroupOrder           NUMBER                          not null
+   GroupOrder           NUMBER                          not null,
+   constraint PK_LMPROGRAMDIRECTGROUP primary key (DeviceID, GroupOrder)
 )
-;
-
-alter table LMProgramDirectGroup
-   add constraint PK_LMPROGRAMDIRECTGROUP primary key (DeviceID, GroupOrder)
 ;
 
 /*==============================================================*/
@@ -5838,12 +5410,9 @@ create table LMProgramEnergyExchange  (
    MessageHeader        VARCHAR2(160)                   not null,
    MessageFooter        VARCHAR2(160)                   not null,
    CanceledMsg          VARCHAR2(80)                    not null,
-   StoppedEarlyMsg      VARCHAR2(80)                    not null
+   StoppedEarlyMsg      VARCHAR2(80)                    not null,
+   constraint PK_LMPROGRAMENERGYEXCHANGE primary key (DeviceID)
 )
-;
-
-alter table LMProgramEnergyExchange
-   add constraint PK_LMPROGRAMENERGYEXCHANGE primary key (DeviceID)
 ;
 
 /*==============================================================*/
@@ -5863,12 +5432,9 @@ create table LMThermoStatGear  (
    ValueTc              NUMBER                          not null,
    ValueTd              NUMBER                          not null,
    ValueTe              NUMBER                          not null,
-   ValueTf              NUMBER                          not null
+   ValueTf              NUMBER                          not null,
+   constraint PK_LMTHERMOSTATGEAR primary key (GearID)
 )
-;
-
-alter table LMThermoStatGear
-   add constraint PK_LMTHERMOSTATGEAR primary key (GearID)
 ;
 
 /*==============================================================*/
@@ -5879,12 +5445,9 @@ create table LOGIC  (
    LOGICNAME            VARCHAR2(20)                    not null,
    PERIODICRATE         NUMBER                          not null,
    STATEFLAG            VARCHAR2(10)                    not null,
-   SCRIPTNAME           VARCHAR2(20)                    not null
+   SCRIPTNAME           VARCHAR2(20)                    not null,
+   constraint SYS_C0013445 primary key (LOGICID)
 )
-;
-
-alter table LOGIC
-   add constraint SYS_C0013445 primary key (LOGICID)
 ;
 
 /*==============================================================*/
@@ -5893,12 +5456,9 @@ alter table LOGIC
 create table MACROROUTE  (
    ROUTEID              NUMBER                          not null,
    SINGLEROUTEID        NUMBER                          not null,
-   ROUTEORDER           NUMBER                          not null
+   ROUTEORDER           NUMBER                          not null,
+   constraint PK_MACROROUTE primary key (ROUTEID, ROUTEORDER)
 )
-;
-
-alter table MACROROUTE
-   add constraint PK_MACROROUTE primary key (ROUTEID, ROUTEORDER)
 ;
 
 /*==============================================================*/
@@ -5923,12 +5483,9 @@ create table MACSchedule  (
    Duration             NUMBER,
    ManualStartTime      DATE,
    ManualStopTime       DATE,
-   Template             NUMBER
+   Template             NUMBER,
+   constraint PK_MACSCHEDULE primary key (ScheduleID)
 )
-;
-
-alter table MACSchedule
-   add constraint PK_MACSCHEDULE primary key (ScheduleID)
 ;
 
 /*==============================================================*/
@@ -5939,12 +5496,9 @@ create table MACSimpleSchedule  (
    TargetSelect         VARCHAR2(40),
    StartCommand         VARCHAR2(120),
    StopCommand          VARCHAR2(120),
-   RepeatInterval       NUMBER
+   RepeatInterval       NUMBER,
+   constraint PK_MACSIMPLESCHEDULE primary key (ScheduleID)
 )
-;
-
-alter table MACSimpleSchedule
-   add constraint PK_MACSIMPLESCHEDULE primary key (ScheduleID)
 ;
 
 /*==============================================================*/
@@ -5953,12 +5507,9 @@ alter table MACSimpleSchedule
 create table MCTBroadCastMapping  (
    MCTBroadCastID       NUMBER                          not null,
    MctID                NUMBER                          not null,
-   Ordering             NUMBER                          not null
+   Ordering             NUMBER                          not null,
+   constraint PK_MCTBROADCASTMAPPING primary key (MCTBroadCastID, MctID)
 )
-;
-
-alter table MCTBroadCastMapping
-   add constraint PK_MCTBROADCASTMAPPING primary key (MCTBroadCastID, MctID)
 ;
 
 /*==============================================================*/
@@ -5975,12 +5526,9 @@ create table MCTConfig  (
    Ke2                  FLOAT                           not null,
    MCTWire3             NUMBER                          not null,
    Ke3                  FLOAT                           not null,
-   DisplayDigits        NUMBER                          not null
+   DisplayDigits        NUMBER                          not null,
+   constraint PK_MCTCONFIG primary key (ConfigID)
 )
-;
-
-alter table MCTConfig
-   add constraint PK_MCTCONFIG primary key (ConfigID)
 ;
 
 /*==============================================================*/
@@ -5988,12 +5536,9 @@ alter table MCTConfig
 /*==============================================================*/
 create table MCTConfigMapping  (
    MctID                NUMBER                          not null,
-   ConfigID             NUMBER                          not null
+   ConfigID             NUMBER                          not null,
+   constraint PK_MCTCONFIGMAPPING primary key (MctID, ConfigID)
 )
-;
-
-alter table MCTConfigMapping
-   add constraint PK_MCTCONFIGMAPPING primary key (MctID, ConfigID)
 ;
 
 /*==============================================================*/
@@ -6002,7 +5547,8 @@ alter table MCTConfigMapping
 create table MSPInterface  (
    VendorID             NUMBER                          not null,
    Interface            VARCHAR2(12)                    not null,
-   Endpoint             VARCHAR2(32)                    not null
+   Endpoint             VARCHAR2(32)                    not null,
+   constraint PK_MSPINTERFACE primary key (VendorID, Interface, Endpoint)
 )
 ;
 
@@ -6012,10 +5558,6 @@ insert into MSPInterface values (1, 'MR_EA', 'MR_EASoap');
 insert into MSPInterface values (1, 'OD_OA', 'OD_OASoap');
 insert into MSPInterface values (1, 'CD_CB', 'CD_CBSoap');
 
-
-alter table MSPInterface
-   add constraint PK_MSPINTERFACE primary key (VendorID, Interface, Endpoint)
-;
 
 /*==============================================================*/
 /* Table: MSPVendor                                             */
@@ -6030,15 +5572,12 @@ create table MSPVendor  (
    URL                  VARCHAR2(120)                   not null,
    AppName              VARCHAR2(64)                    not null,
    OutUserName          VARCHAR2(64)                    not null,
-   OutPassword          VARCHAR2(64)                    not null
+   OutPassword          VARCHAR2(64)                    not null,
+   constraint PK_MSPVENDOR primary key (VendorID)
 )
 ;
 
 insert into MSPVendor values (1, 'Cannon', '(none)', '(none)', 'meterNumber', 0, 'http://127.0.0.1:8080/soap/', 'Yukon', '(none)', '(none)');
-
-alter table MSPVendor
-   add constraint PK_MSPVENDOR primary key (VendorID)
-;
 
 /*==============================================================*/
 /* Table: NotificationDestination                               */
@@ -6046,12 +5585,9 @@ alter table MSPVendor
 create table NotificationDestination  (
    NotificationGroupID  NUMBER                          not null,
    RecipientID          NUMBER                          not null,
-   Attribs              CHAR(16)                        not null
+   Attribs              CHAR(16)                        not null,
+   constraint PKey_NotDestID primary key (NotificationGroupID, RecipientID)
 )
-;
-
-alter table NotificationDestination
-   add constraint PKey_NotDestID primary key (NotificationGroupID, RecipientID)
 ;
 
 /*==============================================================*/
@@ -6060,15 +5596,12 @@ alter table NotificationDestination
 create table NotificationGroup  (
    NotificationGroupID  NUMBER                          not null,
    GroupName            VARCHAR2(40)                    not null,
-   DisableFlag          CHAR(1)                         not null
+   DisableFlag          CHAR(1)                         not null,
+   constraint PK_NOTIFICATIONGROUP primary key (NotificationGroupID)
 )
 ;
 
 insert into notificationgroup values( 1, '(none)', 'N' );
-
-alter table NotificationGroup
-   add constraint PK_NOTIFICATIONGROUP primary key (NotificationGroupID)
-;
 
 /*==============================================================*/
 /* Index: Indx_NOTIFGRPNme                                      */
@@ -6083,12 +5616,9 @@ create unique index Indx_NOTIFGRPNme on NotificationGroup (
 /*==============================================================*/
 create table OperatorLoginGraphList  (
    OperatorLoginID      NUMBER                          not null,
-   GraphDefinitionID    NUMBER                          not null
+   GraphDefinitionID    NUMBER                          not null,
+   constraint PK_OPERATORLOGINGRAPHLIST primary key (OperatorLoginID, GraphDefinitionID)
 )
-;
-
-alter table OperatorLoginGraphList
-   add constraint PK_OPERATORLOGINGRAPHLIST primary key (OperatorLoginID, GraphDefinitionID)
 ;
 
 /*==============================================================*/
@@ -6103,12 +5633,9 @@ create table PAOExclusion  (
    FunctionID           NUMBER                          not null,
    FuncName             VARCHAR2(100)                   not null,
    FuncRequeue          NUMBER                          not null,
-   FuncParams           VARCHAR2(200)                   not null
+   FuncParams           VARCHAR2(200)                   not null,
+   constraint PK_PAOEXCLUSION primary key (ExclusionID)
 )
-;
-
-alter table PAOExclusion
-   add constraint PK_PAOEXCLUSION primary key (ExclusionID)
 ;
 
 /*==============================================================*/
@@ -6129,12 +5656,9 @@ create table PAOSchedule  (
    LastRunTime          DATE                            not null,
    IntervalRate         NUMBER                          not null,
    ScheduleName         VARCHAR2(64)                    not null,
-   Disabled             CHAR(1)                         not null
+   Disabled             CHAR(1)                         not null,
+   constraint PK_PAOSCHEDULE primary key (ScheduleID)
 )
-;
-
-alter table PAOSchedule
-   add constraint PK_PAOSCHEDULE primary key (ScheduleID)
 ;
 
 /*==============================================================*/
@@ -6152,12 +5676,9 @@ create table PAOScheduleAssignment  (
    EventID              NUMBER                          not null,
    ScheduleID           NUMBER                          not null,
    PaoID                NUMBER                          not null,
-   Command              VARCHAR2(128)                   not null
+   Command              VARCHAR2(128)                   not null,
+   constraint PK_PAOSCHEDULEASSIGNMENT primary key (EventID)
 )
-;
-
-alter table PAOScheduleAssignment
-   add constraint PK_PAOSCHEDULEASSIGNMENT primary key (EventID)
 ;
 
 /*==============================================================*/
@@ -6165,12 +5686,9 @@ alter table PAOScheduleAssignment
 /*==============================================================*/
 create table PAOowner  (
    OwnerID              NUMBER                          not null,
-   ChildID              NUMBER                          not null
+   ChildID              NUMBER                          not null,
+   constraint PK_PAOOWNER primary key (OwnerID, ChildID)
 )
-;
-
-alter table PAOowner
-   add constraint PK_PAOOWNER primary key (OwnerID, ChildID)
 ;
 
 /*==============================================================*/
@@ -6188,7 +5706,8 @@ create table POINT  (
    PSEUDOFLAG           VARCHAR2(1)                     not null,
    POINTOFFSET          NUMBER                          not null,
    ARCHIVETYPE          VARCHAR2(12)                    not null,
-   ARCHIVEINTERVAL      NUMBER                          not null
+   ARCHIVEINTERVAL      NUMBER                          not null,
+   constraint Key_PT_PTID primary key (POINTID)
 )
 ;
 
@@ -6210,10 +5729,6 @@ INSERT into point values( -10, 'System', 'Load Management' , 0, 'Default', 0, 'N
 INSERT into point values( -100, 'System', 'Threshold' , 0, 'Default', 0, 'N', 'N', 'S', 10 ,'None', 0);
 insert into point values( 100,'Analog','Porter Work Count',0,'Default',0,'N','N','R',1500,'None',0);
 INSERT into point values( -110, 'System', 'Multispeak' , 0, 'Default', 0, 'N', 'N', 'S', 110 ,'None', 0);
-
-alter table POINT
-   add constraint Key_PT_PTID primary key (POINTID)
-;
 
 alter table POINT
    add constraint AK_KEY_PTNM_YUKPAOID unique (POINTNAME, PAObjectID)
@@ -6241,12 +5756,9 @@ create index INDX_PAOBJECTID on POINT (
 create table POINTACCUMULATOR  (
    POINTID              NUMBER                          not null,
    MULTIPLIER           FLOAT                           not null,
-   DATAOFFSET           FLOAT                           not null
+   DATAOFFSET           FLOAT                           not null,
+   constraint PK_POINTACCUMULATOR primary key (POINTID)
 )
-;
-
-alter table POINTACCUMULATOR
-   add constraint PK_POINTACCUMULATOR primary key (POINTID)
 ;
 
 /*==============================================================*/
@@ -6257,15 +5769,12 @@ create table POINTANALOG  (
    DEADBAND             FLOAT                           not null,
    TRANSDUCERTYPE       VARCHAR2(14)                    not null,
    MULTIPLIER           FLOAT                           not null,
-   DATAOFFSET           FLOAT                           not null
+   DATAOFFSET           FLOAT                           not null,
+   constraint PK_POINTANALOG primary key (POINTID)
 )
 ;
 
 insert into pointanalog values( 100, 0, 'None', 1, 0 );
-
-alter table POINTANALOG
-   add constraint PK_POINTANALOG primary key (POINTID)
-;
 
 /*==============================================================*/
 /* Table: POINTLIMITS                                           */
@@ -6275,12 +5784,9 @@ create table POINTLIMITS  (
    LIMITNUMBER          NUMBER                          not null,
    HIGHLIMIT            FLOAT                           not null,
    LOWLIMIT             FLOAT                           not null,
-   LIMITDURATION        NUMBER                          not null
+   LIMITDURATION        NUMBER                          not null,
+   constraint PK_POINTLIMITS primary key (POINTID, LIMITNUMBER)
 )
-;
-
-alter table POINTLIMITS
-   add constraint PK_POINTLIMITS primary key (POINTID, LIMITNUMBER)
 ;
 
 /*==============================================================*/
@@ -6296,7 +5802,8 @@ create table POINTSTATUS  (
    CloseTime2           NUMBER                          not null,
    StateZeroControl     VARCHAR2(100)                   not null,
    StateOneControl      VARCHAR2(100)                   not null,
-   CommandTimeOut       NUMBER                          not null
+   CommandTimeOut       NUMBER                          not null,
+   constraint PK_PtStatus primary key (POINTID)
 )
 ;
 
@@ -6308,10 +5815,6 @@ insert into pointstatus values( 3, 0, 'none', 'N', 0, 0, 0, 'none','none',0 );
 insert into pointstatus values( 2, 0, 'none', 'N', 0, 0, 0, 'none','none',0 );
 insert into pointstatus values( 1, 0, 'none', 'N', 0, 0, 0, 'none','none',0 );
 
-alter table POINTSTATUS
-   add constraint PK_PtStatus primary key (POINTID)
-;
-
 /*==============================================================*/
 /* Table: POINTTRIGGER                                          */
 /*==============================================================*/
@@ -6322,12 +5825,9 @@ create table POINTTRIGGER  (
    VerificationID       NUMBER                          not null,
    VerificationDeadband FLOAT                           not null,
    CommandTimeout       NUMBER                          not null,
-   Parameters           VARCHAR2(40)                    not null
+   Parameters           VARCHAR2(40)                    not null,
+   constraint PK_POINTTRIGGER primary key (PointID)
 )
-;
-
-alter table POINTTRIGGER
-   add constraint PK_POINTTRIGGER primary key (PointID)
 ;
 
 /*==============================================================*/
@@ -6339,15 +5839,12 @@ create table POINTUNIT  (
    DECIMALPLACES        NUMBER                          not null,
    HighReasonabilityLimit FLOAT                           not null,
    LowReasonabilityLimit FLOAT                           not null,
-   DecimalDigits        NUMBER                          not null
+   DecimalDigits        NUMBER                          not null,
+   constraint PK_POINTUNITID primary key (POINTID)
 )
 ;
 
 insert into pointunit values( 100, 9, 1, 1.0E+30, -1.0E+30, 0);
-
-alter table POINTUNIT
-   add constraint PK_POINTUNITID primary key (POINTID)
-;
 
 /*==============================================================*/
 /* Table: PORTDIALUPMODEM                                       */
@@ -6357,12 +5854,9 @@ create table PORTDIALUPMODEM  (
    MODEMTYPE            VARCHAR2(30)                    not null,
    INITIALIZATIONSTRING VARCHAR2(50)                    not null,
    PREFIXNUMBER         VARCHAR2(10)                    not null,
-   SUFFIXNUMBER         VARCHAR2(10)                    not null
+   SUFFIXNUMBER         VARCHAR2(10)                    not null,
+   constraint PK_PORTDIALUPMODEM primary key (PORTID)
 )
-;
-
-alter table PORTDIALUPMODEM
-   add constraint PK_PORTDIALUPMODEM primary key (PORTID)
 ;
 
 /*==============================================================*/
@@ -6370,12 +5864,9 @@ alter table PORTDIALUPMODEM
 /*==============================================================*/
 create table PORTLOCALSERIAL  (
    PORTID               NUMBER                          not null,
-   PHYSICALPORT         VARCHAR2(8)                     not null
+   PHYSICALPORT         VARCHAR2(8)                     not null,
+   constraint PK_PORTLOCALSERIAL primary key (PORTID)
 )
-;
-
-alter table PORTLOCALSERIAL
-   add constraint PK_PORTLOCALSERIAL primary key (PORTID)
 ;
 
 /*==============================================================*/
@@ -6386,12 +5877,9 @@ create table PORTRADIOSETTINGS  (
    RTSTOTXWAITSAMED     NUMBER                          not null,
    RTSTOTXWAITDIFFD     NUMBER                          not null,
    RADIOMASTERTAIL      NUMBER                          not null,
-   REVERSERTS           NUMBER                          not null
+   REVERSERTS           NUMBER                          not null,
+   constraint PK_PORTRADIOSETTINGS primary key (PORTID)
 )
-;
-
-alter table PORTRADIOSETTINGS
-   add constraint PK_PORTRADIOSETTINGS primary key (PORTID)
 ;
 
 /*==============================================================*/
@@ -6401,12 +5889,9 @@ create table PORTSETTINGS  (
    PORTID               NUMBER                          not null,
    BAUDRATE             NUMBER                          not null,
    CDWAIT               NUMBER                          not null,
-   LINESETTINGS         VARCHAR2(8)                     not null
+   LINESETTINGS         VARCHAR2(8)                     not null,
+   constraint PK_PORTSETTINGS primary key (PORTID)
 )
-;
-
-alter table PORTSETTINGS
-   add constraint PK_PORTSETTINGS primary key (PORTID)
 ;
 
 /*==============================================================*/
@@ -6415,12 +5900,9 @@ alter table PORTSETTINGS
 create table PORTTERMINALSERVER  (
    PORTID               NUMBER                          not null,
    IPADDRESS            VARCHAR2(64)                    not null,
-   SOCKETPORTNUMBER     NUMBER                          not null
+   SOCKETPORTNUMBER     NUMBER                          not null,
+   constraint PK_PORTTERMINALSERVER primary key (PORTID)
 )
-;
-
-alter table PORTTERMINALSERVER
-   add constraint PK_PORTTERMINALSERVER primary key (PORTID)
 ;
 
 /*==============================================================*/
@@ -6438,12 +5920,9 @@ create table PROFILEPEAKRESULT  (
    AverageDailyUsage    VARCHAR2(25)                    not null,
    TotalUsage           VARCHAR2(25)                    not null,
    ResultType           VARCHAR2(5)                     not null,
-   Days                 NUMBER                          not null
+   Days                 NUMBER                          not null,
+   constraint PK_PROFILEPEAKRESULT primary key (ResultId)
 )
-;
-
-alter table PROFILEPEAKRESULT
-   add constraint PK_PROFILEPEAKRESULT primary key (ResultId)
 ;
 
 /*==============================================================*/
@@ -6455,7 +5934,8 @@ create table PointAlarming  (
    ExcludeNotifyStates  VARCHAR2(32)                    not null,
    NotifyOnAcknowledge  CHAR(1)                         not null,
    NotificationGroupID  NUMBER                          not null,
-   RecipientID          NUMBER                          not null
+   RecipientID          NUMBER                          not null,
+   constraint PK_POINTALARMING primary key (PointID)
 )
 ;
 
@@ -6466,10 +5946,6 @@ insert into pointalarming(pointid, alarmstates, excludenotifystates, notifyonack
 	'N',
 	1, 0  from point;
 
-alter table PointAlarming
-   add constraint PK_POINTALARMING primary key (PointID)
-;
-
 /*==============================================================*/
 /* Table: PortTiming                                            */
 /*==============================================================*/
@@ -6479,12 +5955,9 @@ create table PortTiming  (
    RTSTOTXWAIT          NUMBER                          not null,
    POSTTXWAIT           NUMBER                          not null,
    RECEIVEDATAWAIT      NUMBER                          not null,
-   EXTRATIMEOUT         NUMBER                          not null
+   EXTRATIMEOUT         NUMBER                          not null,
+   constraint PK_PORTTIMING primary key (PORTID)
 )
-;
-
-alter table PortTiming
-   add constraint PK_PORTTIMING primary key (PORTID)
 ;
 
 /*==============================================================*/
@@ -6496,12 +5969,9 @@ create table RAWPOINTHISTORY  (
    TIMESTAMP            DATE                            not null,
    QUALITY              NUMBER                          not null,
    VALUE                FLOAT                           not null,
-   millis               SMALLINT                        not null
+   millis               SMALLINT                        not null,
+   constraint SYS_C0013322 primary key (CHANGEID)
 )
-;
-
-alter table RAWPOINTHISTORY
-   add constraint SYS_C0013322 primary key (CHANGEID)
 ;
 
 /*==============================================================*/
@@ -6536,12 +6006,9 @@ create table RepeaterRoute  (
    ROUTEID              NUMBER                          not null,
    DEVICEID             NUMBER                          not null,
    VARIABLEBITS         NUMBER                          not null,
-   REPEATERORDER        NUMBER                          not null
+   REPEATERORDER        NUMBER                          not null,
+   constraint PK_REPEATERROUTE primary key (ROUTEID, DEVICEID)
 )
-;
-
-alter table RepeaterRoute
-   add constraint PK_REPEATERROUTE primary key (ROUTEID, DEVICEID)
 ;
 
 /*==============================================================*/
@@ -6550,15 +6017,12 @@ alter table RepeaterRoute
 create table Route  (
    RouteID              NUMBER                          not null,
    DeviceID             NUMBER                          not null,
-   DefaultRoute         CHAR(1)                         not null
+   DefaultRoute         CHAR(1)                         not null,
+   constraint SYS_RoutePK primary key (RouteID)
 )
 ;
 
 INSERT INTO Route VALUES (0,0,'N');
-
-alter table Route
-   add constraint SYS_RoutePK primary key (RouteID)
-;
 
 /*==============================================================*/
 /* Index: Indx_RouteDevID                                       */
@@ -6578,7 +6042,8 @@ create table STATE  (
    TEXT                 VARCHAR2(32)                    not null,
    FOREGROUNDCOLOR      NUMBER                          not null,
    BACKGROUNDCOLOR      NUMBER                          not null,
-   ImageID              NUMBER                          not null
+   ImageID              NUMBER                          not null,
+   constraint PK_STATE primary key (STATEGROUPID, RAWSTATE)
 )
 ;
 
@@ -6644,10 +6109,6 @@ INSERT INTO State VALUES( 7, 1, 'Verify Stop', 6, 6 , 0);
 INSERT INTO State VALUES(-8, 0, 'Inactive', 0, 6, 0);
 INSERT INTO State VALUES(-8, 1, 'Active', 2, 6, 0);
 
-alter table STATE
-   add constraint PK_STATE primary key (STATEGROUPID, RAWSTATE)
-;
-
 /*==============================================================*/
 /* Index: Indx_StateRaw                                         */
 /*==============================================================*/
@@ -6662,7 +6123,8 @@ create index Indx_StateRaw on STATE (
 create table STATEGROUP  (
    STATEGROUPID         NUMBER                          not null,
    NAME                 VARCHAR2(20)                    not null,
-   GroupType            VARCHAR2(20)                    not null
+   GroupType            VARCHAR2(20)                    not null,
+   constraint SYS_C0013128 primary key (STATEGROUPID)
 )
 ;
 
@@ -6681,10 +6143,6 @@ INSERT INTO stategroup VALUES( 5, 'RemoteLocal', 'Status' );
 INSERT INTO StateGroup VALUES( 6, '1LNSUBSTATE', 'Status' );
 INSERT INTO StateGroup VALUES( 7, '1LNVERIFY', 'Status' );
 insert into StateGroup values (-8, 'TwoStateActive', 'Status')
-
-alter table STATEGROUP
-   add constraint SYS_C0013128 primary key (STATEGROUPID)
-;
 
 /*==============================================================*/
 /* Index: Indx_STATEGRP_Nme                                     */
@@ -6707,12 +6165,9 @@ create table SYSTEMLOG  (
    ACTION               VARCHAR2(60),
    DESCRIPTION          VARCHAR2(120),
    USERNAME             VARCHAR2(64),
-   millis               SMALLINT                        not null
+   millis               SMALLINT                        not null,
+   constraint SYS_C0013407 primary key (LOGID)
 )
-;
-
-alter table SYSTEMLOG
-   add constraint SYS_C0013407 primary key (LOGID)
 ;
 
 /*==============================================================*/
@@ -6746,22 +6201,21 @@ create unique index INDX_SYSLG_PTID_TS on SYSTEMLOG (
 /*==============================================================*/
 create table SeasonSchedule  (
    ScheduleID           NUMBER                          not null,
-   ScheduleName         VARCHAR2(40)                    not null
+   ScheduleName         VARCHAR2(40)                    not null,
+   constraint PK_SEASONSCHEDULE primary key (ScheduleID)
 )
 ;
 
 insert into SeasonSchedule values( 0, 'Empty Schedule' );
-
-alter table SeasonSchedule
-   add constraint PK_SEASONSCHEDULE primary key (ScheduleID)
-;
+insert into seasonSchedule values (-1,'No Season');
 
 /*==============================================================*/
 /* Table: SequenceNumber                                        */
 /*==============================================================*/
 create table SequenceNumber  (
    LastValue            NUMBER                          not null,
-   SequenceName         VARCHAR2(20)                    not null
+   SequenceName         VARCHAR2(20)                    not null,
+   constraint PK_SEQUENCENUMBER primary key (SequenceName)
 )
 ;
 
@@ -6769,10 +6223,6 @@ insert into SequenceNumber values (1,'DeviceReadLog');
 insert into SequenceNumber values (1,'DeviceReadRequestLog');
 insert into SequenceNumber values (1,'DeviceReadJobLog');
 insert into sequenceNumber values (100, 'BillingFileFormats');
-
-alter table SequenceNumber
-   add constraint PK_SEQUENCENUMBER primary key (SequenceName)
-;
 
 /*==============================================================*/
 /* Table: SettlementConfig                                      */
@@ -6785,7 +6235,8 @@ create table SettlementConfig  (
    YukonDefID           NUMBER                          not null,
    Description          VARCHAR2(128)                   not null,
    EntryID              NUMBER                          not null,
-   RefEntryID           NUMBER                          not null
+   RefEntryID           NUMBER                          not null,
+   constraint PK_SETTLEMENTCONFIG primary key (ConfigID)
 )
 ;
 
@@ -6798,27 +6249,20 @@ insert into SettlementConfig values (-6, 'Allowed Violations', '0', 'HECO', '365
 insert into SettlementConfig values (-7, 'Restore Duration', '0', 'HECO', '3651', 'Duration for event restoration to occur, in minutes.', 0, 0);
 insert into SettlementConfig values (-8, 'Demand Charge', '0', 'HECO', '3651', 'Rate Schedule billing demand charge', 0, 0);
 
-alter table SettlementConfig
-   add constraint PK_SETTLEMENTCONFIG primary key (ConfigID)
-;
-
 /*==============================================================*/
 /* Table: TEMPLATE                                              */
 /*==============================================================*/
 create table TEMPLATE  (
    TEMPLATENUM          NUMBER                          not null,
    NAME                 VARCHAR2(40)                    not null,
-   DESCRIPTION          VARCHAR2(200)
+   DESCRIPTION          VARCHAR2(200),
+   constraint SYS_C0013425 primary key (TEMPLATENUM)
 )
 ;
 
 insert into template values( 1, 'Standard', 'First Standard Cannon Template');
 insert into template values( 2, 'Standard - No PtName', 'Second Standard Cannon  Template');
 insert into template values( 3, 'Standard - No DevName', 'Third Standard Cannon  Template');
-
-alter table TEMPLATE
-   add constraint SYS_C0013425 primary key (TEMPLATENUM)
-;
 
 /*==============================================================*/
 /* Table: TEMPLATECOLUMNS                                       */
@@ -6828,7 +6272,8 @@ create table TEMPLATECOLUMNS  (
    TITLE                VARCHAR2(50)                    not null,
    TYPENUM              NUMBER                          not null,
    ORDERING             NUMBER                          not null,
-   WIDTH                NUMBER                          not null
+   WIDTH                NUMBER                          not null,
+   constraint PK_TEMPLATECOLUMNS primary key (TEMPLATENUM, TITLE)
 )
 ;
 
@@ -6851,21 +6296,51 @@ insert into templatecolumns values( 3, 'Quality', 10, 3, 80 );
 insert into templatecolumns values( 3, 'Time', 11, 4, 135 );
 insert into templatecolumns values( 3, 'State', 13, 5, 80 );
 
-alter table TEMPLATECOLUMNS
-   add constraint PK_TEMPLATECOLUMNS primary key (TEMPLATENUM, TITLE)
+/*==============================================================*/
+/* Table: TOUATTRIBUTEMAPPING                                   */
+/*==============================================================*/
+create table TOUATTRIBUTEMAPPING  (
+   touid                NUMBER(6)                       not null,
+   displayname          VARCHAR2(50)                    not null,
+   peakAttribute        VARCHAR2(50)                    not null,
+   usageAttribute       VARCHAR2(50)                    not null,
+   constraint PK_TOUATTRIBUTEMAPPING primary key (touid)
+)
 ;
+
+/*
+For Oracle only
+The next bit of code is only needed on Oracle databases and can be removed from MS SQL scripts.
+It will fail if run on MS SQL servers but nothing bad will happen, just an error message.
+*/
+CREATE SEQUENCE TouAttributeMapping_sequence;
+
+CREATE OR REPLACE TRIGGER TouAttributeMapping_trigger
+BEFORE INSERT
+ON TouAttributeMapping
+REFERENCING NEW AS NEW
+FOR EACH ROW
+BEGIN
+SELECT TouAttributeMapping_sequence.nextval INTO :NEW.touid FROM dual;
+END;
+/
+/*
+End Oracle only
+*/
+
+INSERT INTO TouAttributeMapping (displayname, peakattribute, usageattribute) VALUES ('A', 'TOU_RATE_A_PEAK_DEMAND', 'TOU_RATE_A_USAGE');
+INSERT INTO TouAttributeMapping (displayname, peakattribute, usageattribute) VALUES ('B', 'TOU_RATE_B_PEAK_DEMAND', 'TOU_RATE_B_USAGE');
+INSERT INTO TouAttributeMapping (displayname, peakattribute, usageattribute) VALUES ('C', 'TOU_RATE_C_PEAK_DEMAND', 'TOU_RATE_C_USAGE');
+INSERT INTO TouAttributeMapping (displayname, peakattribute, usageattribute) VALUES ('D', 'TOU_RATE_D_PEAK_DEMAND', 'TOU_RATE_D_USAGE');
 
 /*==============================================================*/
 /* Table: TOUDay                                                */
 /*==============================================================*/
 create table TOUDay  (
    TOUDayID             NUMBER                          not null,
-   TOUDayName           VARCHAR2(32)                    not null
+   TOUDayName           VARCHAR2(32)                    not null,
+   constraint PK_TOUDAY primary key (TOUDayID)
 )
-;
-
-alter table TOUDay
-   add constraint PK_TOUDAY primary key (TOUDayID)
 ;
 
 /*==============================================================*/
@@ -6874,12 +6349,9 @@ alter table TOUDay
 create table TOUDayMapping  (
    TOUScheduleID        NUMBER                          not null,
    TOUDayID             NUMBER                          not null,
-   TOUDayOffset         NUMBER                          not null
+   TOUDayOffset         NUMBER                          not null,
+   constraint PK_TOUDAYMAPPING primary key (TOUScheduleID, TOUDayOffset)
 )
-;
-
-alter table TOUDayMapping
-   add constraint PK_TOUDAYMAPPING primary key (TOUScheduleID, TOUDayOffset)
 ;
 
 /*==============================================================*/
@@ -6889,12 +6361,9 @@ create table TOUDayRateSwitches  (
    TOURateSwitchID      NUMBER                          not null,
    SwitchRate           VARCHAR2(4)                     not null,
    SwitchOffset         NUMBER                          not null,
-   TOUDayID             NUMBER                          not null
+   TOUDayID             NUMBER                          not null,
+   constraint PK_TOURATESWITCH primary key (TOURateSwitchID)
 )
-;
-
-alter table TOUDayRateSwitches
-   add constraint PK_TOURATESWITCH primary key (TOURateSwitchID)
 ;
 
 /*==============================================================*/
@@ -6912,15 +6381,12 @@ create unique index Indx_todsw_idoff on TOUDayRateSwitches (
 create table TOUSchedule  (
    TOUScheduleID        NUMBER                          not null,
    TOUScheduleName      VARCHAR2(32)                    not null,
-   TOUDefaultRate       VARCHAR2(4)                     not null
+   TOUDefaultRate       VARCHAR2(4)                     not null,
+   constraint PK_TOUSCHEDULE primary key (TOUScheduleID)
 )
 ;
 
 insert into TOUSchedule values (0, '(none)', 0);
-
-alter table TOUSchedule
-   add constraint PK_TOUSCHEDULE primary key (TOUScheduleID)
-;
 
 /*==============================================================*/
 /* Table: TagLog                                                */
@@ -6935,12 +6401,9 @@ create table TagLog  (
    Description          VARCHAR2(120)                   not null,
    TagTime              DATE                            not null,
    RefStr               VARCHAR2(60)                    not null,
-   ForStr               VARCHAR2(60)                    not null
+   ForStr               VARCHAR2(60)                    not null,
+   constraint PK_TAGLOG primary key (LogID)
 )
-;
-
-alter table TagLog
-   add constraint PK_TAGLOG primary key (LogID)
 ;
 
 /*==============================================================*/
@@ -6952,7 +6415,8 @@ create table Tags  (
    TagLevel             NUMBER                          not null,
    Inhibit              CHAR(1)                         not null,
    ColorID              NUMBER                          not null,
-   ImageID              NUMBER                          not null
+   ImageID              NUMBER                          not null,
+   constraint PK_TAGS primary key (TagID)
 )
 ;
 
@@ -6962,21 +6426,14 @@ insert into tags values (-3, 'Cap Bank Operational State', 1, 'N', 0, 0);
 insert into tags values (-4, 'Enablement State', 1, 'N', 0, 0);
 insert into tags values (-5, 'OVUV Enablement State', 1, 'N', 0, 0); 
 
-alter table Tags
-   add constraint PK_TAGS primary key (TagID)
-;
-
 /*==============================================================*/
 /* Table: TemplateDisplay                                       */
 /*==============================================================*/
 create table TemplateDisplay  (
    DisplayNum           NUMBER                          not null,
-   TemplateNum          NUMBER                          not null
+   TemplateNum          NUMBER                          not null,
+   constraint PK_TEMPLATEDISPLAY primary key (DisplayNum)
 )
-;
-
-alter table TemplateDisplay
-   add constraint PK_TEMPLATEDISPLAY primary key (DisplayNum)
 ;
 
 /*==============================================================*/
@@ -6987,7 +6444,8 @@ create table UNITMEASURE  (
    UOMName              VARCHAR2(8)                     not null,
    CalcType             NUMBER                          not null,
    LongName             VARCHAR2(40)                    not null,
-   Formula              VARCHAR2(80)                    not null
+   Formula              VARCHAR2(80)                    not null,
+   constraint SYS_C0013344 primary key (UOMID)
 )
 ;
 
@@ -7049,10 +6507,6 @@ INSERT INTO UnitMeasure VALUES( 54,'UNDEF', 0,'Undefined','(none)' );
 INSERT INTO UnitMeasure VALUES( 55,'A', 0,'Amps (A)','(none)' );
 
 
-alter table UNITMEASURE
-   add constraint SYS_C0013344 primary key (UOMID)
-;
-
 /*==============================================================*/
 /* Table: UserPaoPermission                                     */
 /*==============================================================*/
@@ -7060,12 +6514,9 @@ create table UserPaoPermission  (
    UserPaoPermissionID  NUMBER                          not null,
    UserID               NUMBER                          not null,
    PaoID                NUMBER                          not null,
-   Permission           VARCHAR2(50)                    not null
+   Permission           VARCHAR2(50)                    not null,
+   constraint PK_USERPAOPERMISSION primary key (UserPaoPermissionID)
 )
-;
-
-alter table UserPaoPermission
-   add constraint PK_USERPAOPERMISSION primary key (UserPaoPermissionID)
 ;
 
 alter table UserPaoPermission
@@ -7082,12 +6533,9 @@ create table VersacomRoute  (
    CLASSADDRESS         NUMBER                          not null,
    DIVISIONADDRESS      NUMBER                          not null,
    BUSNUMBER            NUMBER                          not null,
-   AMPCARDSET           NUMBER                          not null
+   AMPCARDSET           NUMBER                          not null,
+   constraint PK_VERSACOMROUTE primary key (ROUTEID)
 )
-;
-
-alter table VersacomRoute
-   add constraint PK_VERSACOMROUTE primary key (ROUTEID)
 ;
 
 /*==============================================================*/
@@ -7096,7 +6544,8 @@ alter table VersacomRoute
 create table YukonGroup  (
    GroupID              NUMBER                          not null,
    GroupName            VARCHAR2(120)                   not null,
-   GroupDescription     VARCHAR2(200)                   not null
+   GroupDescription     VARCHAR2(200)                   not null,
+   constraint PK_YUKONGROUP primary key (GroupID)
 )
 ;
 
@@ -7111,10 +6560,6 @@ insert into yukongroup values (-302, 'Web Client Customers Grp', 'The default gr
 insert into yukongroup values (-303,'STARS Operators Grp','The default group for STARS operators');
 insert into yukongroup values (-304,'STARS Residential Customers Grp','The default group for STARS residential customers');
 
-alter table YukonGroup
-   add constraint PK_YUKONGROUP primary key (GroupID)
-;
-
 /*==============================================================*/
 /* Table: YukonGroupRole                                        */
 /*==============================================================*/
@@ -7123,7 +6568,8 @@ create table YukonGroupRole  (
    GroupID              NUMBER                          not null,
    RoleID               NUMBER                          not null,
    RolePropertyID       NUMBER                          not null,
-   Value                VARCHAR2(1000)                  not null
+   Value                VARCHAR2(1000)                  not null,
+   constraint PK_YUKONGRPROLE primary key (GroupRoleID)
 )
 ;
 
@@ -7150,6 +6596,17 @@ insert into YukonGroupRole values(-19,-1,-1,-1018,'(none)');
 insert into YukonGroupRole values(-20,-1,-1,-1019,'(none)');
 insert into YukonGroupRole values(-21,-1,-1,-1020,'(none)');
 
+insert into YukonGroupRole values(-50,-1,-4,-1308,'(none)');
+insert into YukonGroupRole values(-51,-1,-4,-1309,'(none)');
+insert into YukonGroupRole values(-52,-1,-4,-1310,'(none)');
+insert into YukonGroupRole values(-53,-1,-4,-1311,'(none)');
+insert into YukonGroupRole values(-54,-1,-4,-1312,'(none)');
+insert into YukonGroupRole values(-55,-1,-4,-1313,'(none)');
+insert into YukonGroupRole values(-56,-1,-4,-1314,'(none)');
+insert into YukonGroupRole values(-57,-1,-4,-1315,'(none)');
+insert into YukonGroupRole values(-58,-1,-4,-1316,'(none)');
+insert into YukonGroupRole values(-59,-1,-4,-1317,'(none)');
+
 insert into YukonGroupRole values(-70,-1,-5,-1400,'(none)');
 insert into YukonGroupRole values(-71,-1,-5,-1401,'(none)');
 insert into YukonGroupRole values(-72,-1,-5,-1402,'(none)');
@@ -7161,6 +6618,7 @@ insert into YukonGroupRole values(-88,-1,-4,-1303,'(none)');
 insert into YukonGroupRole values(-89,-1,-4,-1304,'(none)');
 insert into YukonGroupRole values(-90,-1,-4,-1305,'(none)');
 insert into YukonGroupRole values(-91,-1,-4,-1306,'(none)');
+insert into YukonGroupRole values(-92,-1,-4,-1307,'(none)');
 
 /* Assign roles to the default operator group to allow them to use all the main rich Yukon applications */
 /* Database Editor */
@@ -7770,10 +7228,6 @@ insert into yukongrouprole values (-2394,-304,-400,-40194,'(none)');
 insert into yukongrouprole values (-2395,-304,-400,-40195,'(none)');
 insert into yukongrouprole values (-2396,-304,-400,-40196,'(none)');
 
-alter table YukonGroupRole
-   add constraint PK_YUKONGRPROLE primary key (GroupRoleID)
-;
-
 /*==============================================================*/
 /* Table: YukonImage                                            */
 /*==============================================================*/
@@ -7781,15 +7235,12 @@ create table YukonImage  (
    ImageID              NUMBER                          not null,
    ImageCategory        VARCHAR2(20)                    not null,
    ImageName            VARCHAR2(80)                    not null,
-   ImageValue           BLOB
+   ImageValue           BLOB,
+   constraint PK_YUKONIMAGE primary key (ImageID)
 )
 ;
 
 insert into YukonImage values( 0, '(none)', '(none)', null );
-
-alter table YukonImage
-   add constraint PK_YUKONIMAGE primary key (ImageID)
-;
 
 /*==============================================================*/
 /* Table: YukonListEntry                                        */
@@ -7799,7 +7250,8 @@ create table YukonListEntry  (
    ListID               NUMBER                          not null,
    EntryOrder           NUMBER                          not null,
    EntryText            VARCHAR2(50)                    not null,
-   YukonDefinitionID    NUMBER                          not null
+   YukonDefinitionID    NUMBER                          not null,
+   constraint PK_YUKONLISTENTRY primary key (EntryID)
 )
 ;
 
@@ -8284,10 +7736,6 @@ insert into YukonListEntry values (10431,1053,0,'Consumption Type',2911);
 insert into YukonListEntry values (20000,0,0,'Customer List Entry Base 2',0);
 
 
-alter table YukonListEntry
-   add constraint PK_YUKONLISTENTRY primary key (EntryID)
-;
-
 /*==============================================================*/
 /* Index: Indx_YkLstDefID                                       */
 /*==============================================================*/
@@ -8307,15 +7755,13 @@ create table YukonPAObject  (
    Type                 VARCHAR2(30)                    not null,
    Description          VARCHAR2(60)                    not null,
    DisableFlag          CHAR(1)                         not null,
-   PAOStatistics        VARCHAR2(10)                    not null
+   PAOStatistics        VARCHAR2(10)                    not null,
+   constraint PK_YUKONPAOBJECT primary key (PAObjectID)
 )
 ;
 
 INSERT into YukonPAObject values (0, 'DEVICE', 'System', 'System Device', 'System', 'Reserved System Device', 'N', '-----');
-
-alter table YukonPAObject
-   add constraint PK_YUKONPAOBJECT primary key (PAObjectID)
-;
+update yukonpaobject set type = 'MCT-430SL' where type = 'MCT-430SN' or type = 'MCT430SN'
 
 /*==============================================================*/
 /* Index: Indx_PAO                                              */
@@ -8334,7 +7780,8 @@ create table YukonRole  (
    RoleID               NUMBER                          not null,
    RoleName             VARCHAR2(120)                   not null,
    Category             VARCHAR2(60)                    not null,
-   RoleDescription      VARCHAR2(200)                   not null
+   RoleDescription      VARCHAR2(200)                   not null,
+   constraint PK_YUKONROLE primary key (RoleID)
 )
 ;
 
@@ -8404,10 +7851,6 @@ insert into YukonRole values (-1000,'Substation Display','Capacitor Control','Ch
 insert into YukonRole values (-1001,'Feeder Display','Capacitor Control','Change display settings for feeder details.');
 insert into YukonRole values (-1002,'Cap Bank Display','Capacitor Control','Change display settings for cap bank details.');
 
-alter table YukonRole
-   add constraint PK_YUKONROLE primary key (RoleID)
-;
-
 /*==============================================================*/
 /* Index: Indx_YukRol_Nm                                        */
 /*==============================================================*/
@@ -8424,7 +7867,8 @@ create table YukonRoleProperty  (
    RoleID               NUMBER                          not null,
    KeyName              VARCHAR2(100)                   not null,
    DefaultValue         VARCHAR2(1000)                  not null,
-   Description          VARCHAR2(1000)                  not null
+   Description          VARCHAR2(1000)                  not null,
+   constraint PK_YUKONROLEPROPERTY primary key (RolePropertyID)
 )
 ;
 
@@ -8473,7 +7917,18 @@ insert into YukonRoleProperty values(-1303,-4,'secret_key','cti','Client machine
 insert into YukonRoleProperty values(-1304,-4,'auth_method','(none)','Authentication method. Possible values are (none) | PAP, [chap, others to follow soon]');
 insert into YukonRoleProperty values(-1305,-4,'authentication_mode','Yukon','Authentication mode to use.  Valid values are:   Yukon | Radius');
 insert into YukonRoleProperty values(-1306,-4,'auth_timeout','30','Number of seconds before the authentication process times out');
-insert into yukonroleproperty values(-1307,-4,'Default Authentication Type', 'PLAIN', 'Set the default authentication type to use {PLAIN,HASH_SHA,RADIUS,NONE');
+insert into yukonroleproperty values(-1307,-4,'Default Authentication Type', 'PLAIN', 'Set the default authentication type to use {PLAIN,HASH_SHA,RADIUS,AD,LDAP,NONE}');
+insert into YukonRoleProperty values(-1308,-4,'LDAP DN','dc=example,dc=com','LDAP Distinguished Name')
+insert into YukonRoleProperty values(-1309,-4,'LDAP User Suffix','ou=users','LDAP User Suffix')
+insert into YukonRoleProperty values(-1310,-4,'LDAP User Prefix','uid=','LDAP User Prefix')
+insert into YukonRoleProperty values(-1311,-4,'LDAP Server Address','127.0.0.1','LDAP Server Address')
+insert into YukonRoleProperty values(-1312,-4,'LDAP Server Port','389','LDAP Server Port')
+insert into YukonRoleProperty values(-1313,-4,'LDAP Server Timeout','30','LDAP Server Timeout (in seconds)')
+insert into YukonRoleProperty values(-1314,-4,'Active Directory Server Address','127.0.0.1','Active Directory Server Address')
+insert into YukonRoleProperty values(-1315,-4,'Active Directory Server Port','389','Active Directory Server Port')
+insert into YukonRoleProperty values(-1316,-4,'Active Directory Server Timeout','30','Active Directory Server Timeout (in seconds)')
+insert into YukonRoleProperty values(-1317,-4,'Active Directory NT Domain Name','(none)','Active Directory NT DOMAIN NAME')
+
 
 insert into YukonRoleProperty values(-1401,-5,'call_timeout','30','The time-out in seconds given to each outbound call');
 insert into YukonRoleProperty values(-1402,-5,'call_response_timeout','240','The time-out in seconds given to each outbound call response');
@@ -8671,6 +8126,9 @@ insert into YukonRoleProperty values(-20012,-200,'LM User Assignment','false','C
 
 /* Operator Metering Role Properties*/
 insert into YukonRoleProperty values(-20203,-202,'Enable Bulk Importer','true','Allows access to the Bulk Importer');
+insert into YukonRoleProperty values(-20204,-202,'Enable Tou','true','Allows access to Tou(Time of use) data');  
+insert into YukonRoleProperty values(-20205,-202,'Enable Device Group','true','Allows access to change device groups for a device');  
+
 
 /* Operator Esubstation Drawings Role Properties */
 insert into YukonRoleProperty values(-20600,-206,'View Drawings','true','Controls viewing of Esubstations drawings');
@@ -8905,14 +8363,9 @@ insert into YukonRoleProperty values(-100201, -1002, 'Bank Size', 'true', 'displ
 insert into YukonRoleProperty values(-100202, -1002, 'CBC Name', 'true', 'display CBC Name');
 
 insert into yukonroleproperty values (-100011,-1000, 'Daily/Max Operation Count', 'true', 'is Daily/Max Operation stat displayed');
-insert into yukonroleproperty values (-100012,-1000, 'Substation Last Update Timestamp', 'true', 'is last update timstamp shown for substations');
-insert into yukonroleproperty values (-100106,-1001, 'Feeder Last Update Timestamp', 'true', 'is last update timstamp shown for feeders');
-insert into yukonroleproperty values (-100203,-1002, 'CapBank Last Update Timestamp', 'true', 'is last update timstamp shown for capbanks');
-
-
-alter table YukonRoleProperty
-   add constraint PK_YUKONROLEPROPERTY primary key (RolePropertyID)
-;
+insert into yukonroleproperty values (-100012,-1000, 'Substation Last Update Timestamp', 'true', 'is last update timestamp shown for substations');
+insert into yukonroleproperty values (-100106,-1001, 'Feeder Last Update Timestamp', 'true', 'is last update timestamp shown for feeders');
+insert into yukonroleproperty values (-100203,-1002, 'CapBank Last Update Timestamp', 'true', 'is last update timestamp shown for capbanks');
 
 /*==============================================================*/
 /* Table: YukonSelectionList                                    */
@@ -8923,7 +8376,8 @@ create table YukonSelectionList  (
    SelectionLabel       VARCHAR2(30)                    not null,
    WhereIsList          VARCHAR2(100)                   not null,
    ListName             VARCHAR2(40)                    not null,
-   UserUpdateAvailable  VARCHAR2(1)                     not null
+   UserUpdateAvailable  VARCHAR2(1)                     not null,
+   constraint PK_YUKONSELECTIONLIST primary key (ListID)
 )
 ;
 
@@ -9004,10 +8458,6 @@ insert into YukonSelectionList values (1071,'A','(none)','Commercial Customer Ty
 
 insert into YukonSelectionList values (2000,'N','(none)','Customer Selection Base','(none)','N');
 
-alter table YukonSelectionList
-   add constraint PK_YUKONSELECTIONLIST primary key (ListID)
-;
-
 /*==============================================================*/
 /* Table: YukonServices                                         */
 /*==============================================================*/
@@ -9016,7 +8466,8 @@ create table YukonServices  (
    ServiceName          VARCHAR2(60)                    not null,
    ServiceClass         VARCHAR2(100)                   not null,
    ParamNames           VARCHAR2(300)                   not null,
-   ParamValues          VARCHAR2(300)                   not null
+   ParamValues          VARCHAR2(300)                   not null,
+   constraint PK_YUKSER primary key (ServiceID)
 )
 ;
 
@@ -9026,10 +8477,6 @@ insert into YukonServices values( -4, 'CBC_OneLine_Gen', 'com.cannontech.jmx.ser
 insert into YukonServices values( -5, 'MCT410_BulkImporter', 'com.cannontech.jmx.services.DynamicImp', '(none)', '(none)' );
 insert into YukonServices values( -6, 'Price_Server', 'com.cannontech.jmx.services.DynamicPriceServer', '(none)', '(none)' );
 
-alter table YukonServices
-   add constraint PK_YUKSER primary key (ServiceID)
-;
-
 /*==============================================================*/
 /* Table: YukonUser                                             */
 /*==============================================================*/
@@ -9038,7 +8485,8 @@ create table YukonUser  (
    UserName             VARCHAR2(64)                    not null,
    Password             VARCHAR2(64)                    not null,
    Status               VARCHAR2(20)                    not null,
-   AuthType             VARCHAR2(16)                    not null
+   AuthType             VARCHAR2(16)                    not null,
+   constraint PK_YUKONUSER primary key (UserID)
 )
 ;
 
@@ -9046,10 +8494,6 @@ insert into yukonuser values ( -9999, '(none)', '(none)', 'Disabled', 'PLAIN' );
 insert into yukonuser values ( -100, 'DefaultCTI', '$cti_default', 'Enabled', 'PLAIN' );
 insert into yukonuser values ( -2, 'yukon', 'yukon', 'Enabled', 'PLAIN' );
 insert into yukonuser values ( -1, 'admin', 'admin', 'Enabled', 'PLAIN' );
-
-alter table YukonUser
-   add constraint PK_YUKONUSER primary key (UserID)
-;
 
 /*==============================================================*/
 /* Index: Indx_YkUsIDNm                                         */
@@ -9064,17 +8508,14 @@ create unique index Indx_YkUsIDNm on YukonUser (
 /*==============================================================*/
 create table YukonUserGroup  (
    UserID               NUMBER                          not null,
-   GroupID              NUMBER                          not null
+   GroupID              NUMBER                          not null,
+   constraint PK_YUKONUSERGROUP primary key (UserID, GroupID)
 )
 ;
 
 insert into YukonUserGroup values(-1,-1);
 insert into YukonUserGroup values(-2,-1);
 insert into YukonUserGroup values(-2,-2);
-
-alter table YukonUserGroup
-   add constraint PK_YUKONUSERGROUP primary key (UserID, GroupID)
-;
 
 /*==============================================================*/
 /* Table: YukonUserRole                                         */
@@ -9084,7 +8525,8 @@ create table YukonUserRole  (
    UserID               NUMBER                          not null,
    RoleID               NUMBER                          not null,
    RolePropertyID       NUMBER                          not null,
-   Value                VARCHAR2(1000)                  not null
+   Value                VARCHAR2(1000)                  not null,
+   constraint PK_YKONUSRROLE primary key (UserRoleID)
 )
 ;
 
@@ -9196,10 +8638,6 @@ insert into YukonUserRole values (-1019, -100, -200, -20009, '(none)');
 
 
 
-alter table YukonUserRole
-   add constraint PK_YKONUSRROLE primary key (UserRoleID)
-;
-
 /*==============================================================*/
 /* Table: YukonWebConfiguration                                 */
 /*==============================================================*/
@@ -9208,17 +8646,14 @@ create table YukonWebConfiguration  (
    LogoLocation         VARCHAR2(100),
    Description          VARCHAR2(500),
    AlternateDisplayName VARCHAR2(100),
-   URL                  VARCHAR2(100)
+   URL                  VARCHAR2(100),
+   constraint PK_YUKONWEBCONFIGURATION primary key (ConfigurationID)
 )
 ;
 
 INSERT INTO YukonWebConfiguration VALUES (-1,'Summer.gif','Default Summer Settings','Cooling','Cool');
 INSERT INTO YukonWebConfiguration VALUES (-2,'Winter.gif','Default Winter Settings','Heating','Heat');
 insert into YukonWebConfiguration values(0,'(none)','(none)','(none)','(none)');
-
-alter table YukonWebConfiguration
-   add constraint PK_YUKONWEBCONFIGURATION primary key (ConfigurationID)
-;
 
 /*==============================================================*/
 /* View: CCINVENTORY_VIEW                                       */
@@ -9475,11 +8910,6 @@ alter table CAPBANKADDITIONAL
       references CAPBANK (DEVICEID)
 ;
 
-alter table CAPCONTROLAREA
-   add constraint FK_CAPCONTAREA_CAPCONTRSTRAT foreign key (StrategyID)
-      references CapControlStrategy (StrategyID)
-;
-
 alter table CAPCONTROLSUBSTATIONBUS
    add constraint FK_CAPCONTR_SWPTID foreign key (SwitchPointID)
       references POINT (POINTID)
@@ -9488,11 +8918,6 @@ alter table CAPCONTROLSUBSTATIONBUS
 alter table CAPCONTROLSUBSTATIONBUS
    add constraint FK_CAPCONTR_CVOLTPTID foreign key (CurrentVoltLoadPointID)
       references POINT (POINTID)
-;
-
-alter table CAPCONTROLSUBSTATIONBUS
-   add constraint FK_CCSUBB_CCSTR foreign key (StrategyID)
-      references CapControlStrategy (StrategyID)
 ;
 
 alter table CAPCONTROLSUBSTATIONBUS
@@ -9540,9 +8965,19 @@ alter table CCMONITORBANKLIST
       references POINT (POINTID)
 ;
 
-alter table CCSUBAREAASSIGNMENT
-   add constraint FK_CCSUBARE_CAPCONTR foreign key (AreaID)
-      references CAPCONTROLAREA (AreaID)
+alter table CCSEASONSTRATEGYASSIGNMENT
+   add constraint FK_CCSSA_PAOID foreign key (paobjectid)
+      references YukonPAObject (PAObjectID)
+;
+
+alter table CCSEASONSTRATEGYASSIGNMENT
+   add constraint FK_CCSSA_SCHEDID foreign key (seasonscheduleid)
+      references SeasonSchedule (ScheduleID)
+;
+
+alter table CCSEASONSTRATEGYASSIGNMENT
+   add constraint FK_ccssa_season foreign key (seasonscheduleid, seasonname)
+      references DateOfSeason (SeasonScheduleID, SeasonName)
 ;
 
 alter table CCSUBAREAASSIGNMENT
@@ -9736,13 +9171,13 @@ alter table CapControlFeeder
 ;
 
 alter table CapControlFeeder
-   add constraint FK_CCFDR_CCSTR foreign key (StrategyID)
-      references CapControlStrategy (StrategyID)
-;
-
-alter table CapControlFeeder
    add constraint FK_PAObj_CCFeed foreign key (FeederID)
       references YukonPAObject (PAObjectID)
+;
+
+alter table CapControlStrategy
+   add constraint FK_ccssa_strat foreign key (StrategyID)
+      references CCSEASONSTRATEGYASSIGNMENT (strategyid)
 ;
 
 alter table CarrierRoute
@@ -9971,11 +9406,6 @@ alter table DEVICEMETERGROUP
       references DEVICE (DEVICEID)
 ;
 
-alter table DEVICEREADJOBLOG
-   add constraint FK_DEVICERE_FK_DRJOBL_MACSCHED foreign key (ScheduleID)
-      references MACSchedule (ScheduleID)
-;
-
 alter table DEVICEREADLOG
    add constraint FK_DEVICERE_FK_DRLOGR_DEVICERE foreign key (DeviceReadRequestLogID)
       references DEVICEREADREQUESTLOG (DeviceReadRequestLogID)
@@ -10034,7 +9464,7 @@ alter table DYNAMICBILLINGFORMAT
 
 alter table DYNAMICCCAREA
    add constraint FK_ccarea_Dynccarea foreign key (AreaID)
-      references CAPCONTROLAREA (AreaID)
+      references CCSUBAREAASSIGNMENT (AreaID)
 ;
 
 alter table DYNAMICCCTWOWAYCBC
