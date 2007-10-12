@@ -1,5 +1,6 @@
 package com.cannontech.stars.web.action;
 
+import java.util.Arrays;
 import java.util.Date;
 import java.util.List;
 import java.util.TimeZone;
@@ -23,9 +24,12 @@ import com.cannontech.database.data.lite.stars.StarsLiteFactory;
 import com.cannontech.database.data.stars.event.EventWorkOrder;
 import com.cannontech.database.db.stars.integration.SAMToCRS_PTJ;
 import com.cannontech.database.db.stars.report.WorkOrderBase;
+import com.cannontech.stars.util.AbstractFilter;
 import com.cannontech.stars.util.EventUtils;
+import com.cannontech.stars.util.FilterWrapper;
 import com.cannontech.stars.util.ServletUtils;
 import com.cannontech.stars.util.WebClientException;
+import com.cannontech.stars.util.WorkOrderFilter;
 import com.cannontech.stars.web.StarsYukonUser;
 import com.cannontech.stars.web.bean.WorkOrderBean;
 import com.cannontech.stars.web.util.WorkOrderManagerUtil;
@@ -268,9 +272,14 @@ public class CreateServiceRequestAction implements ActionBase {
 	}
     
     private void addWorkOrderToBean(final WorkOrderBean workOrderBean, final LiteWorkOrderBase liteWorkOrderBase) {
-        final List<LiteWorkOrderBase> workOrderList = workOrderBean.getWorkOrderList();
-        synchronized (workOrderList) {
-            workOrderList.add(liteWorkOrderBase);
+        final List<FilterWrapper> filterList = workOrderBean.getFilters();
+        final AbstractFilter<LiteWorkOrderBase> filter = new WorkOrderFilter();
+        final List<LiteWorkOrderBase> filteredWorkOrderList = filter.filter(Arrays.asList(liteWorkOrderBase), filterList); 
+        if (filteredWorkOrderList.size() > 0) {
+            List<LiteWorkOrderBase> workOrderList = workOrderBean.getWorkOrderList();
+            synchronized (workOrderList) {
+                workOrderList.addAll(filteredWorkOrderList);
+            }
         }    
     }
 
