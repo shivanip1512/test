@@ -21,6 +21,7 @@
 //  Delete these next two lines if not using rand()
 #include "stdlib.h"
 #include "time.h"
+#include "numstr.h"
 
 #include <iostream>
 
@@ -43,11 +44,9 @@ EmetconWord::EmetconWord()
 // build a new word
 int EmetconWord::InsertWord(int Type, unsigned char * pMessageData, int WordFunc, int mctNumber, int Ctr)
 {
+    //printf("\n REPEATERS: %d", repeaters);
 	_wordType = Type;
 	_wordFunction = WordFunc;
-    unsigned char mctNum1 = 0x00; //0x0f & (mctNumber >> 12);
-    unsigned char mctNum2 = mctNumber >> 4;
-    unsigned char mctNum3 = 0xf0 & mctNumber << 4;
 
 	//  Temporary code to randomly send back e words instead of d words
 	/*if(_wordType == D_WORD) {
@@ -59,9 +58,10 @@ int EmetconWord::InsertWord(int Type, unsigned char * pMessageData, int WordFunc
 	{
 		_wordSize = 7;
 
-		pMessageData[Ctr++] = 0xd0 | mctNum1;   //beginning of d word
-		pMessageData[Ctr++] = mctNum2;
-		pMessageData[Ctr++] = mctNum3;   //data begins in second half of this byte
+        
+		pMessageData[Ctr++] = ((mctNumber >> 12) & 0x01) | 0xd0;   //beginning of d word
+		pMessageData[Ctr++] = (mctNumber >> 4) & 0xff;
+		pMessageData[Ctr++] = (mctNumber << 4) & 0xf0;   //data begins in second half of this byte
         pMessageData[Ctr++] = 0x0f;   // data
 		pMessageData[Ctr++] = 0x00;   // data
 		pMessageData[Ctr++] = 0x00;   // data ends first half of this byte
@@ -180,6 +180,8 @@ int EmetconWord::InsertWord(int Type, unsigned char * pMessageData, int WordFunc
         return Ctr;
     }
 }
+
+
 
 // copy and decode an existing word
 void EmetconWord::DecodeWord(unsigned char ReadBuffer[], CTINEXUS * newSocket){

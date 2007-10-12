@@ -600,7 +600,7 @@ void CCU711::InsertWord(int WordType, unsigned char Data[], int counter)
     }
 
     EmetconWord oneWord;
-    oneWord.InsertWord(WordType, Data, WordFunction, 0);
+    oneWord.InsertWord(WordType, Data, WordFunction, 0, 0);
     oneWord.setWTF(WTF);
     _indexOfEnd += oneWord.getWordSize();
     //_words[_indexOfWords]= oneWord;    //  This line was here to count if there were multiple words: needs to be redone
@@ -611,7 +611,7 @@ void CCU711::InsertWord(int WordType, unsigned char Data[], int counter)
 	if(_words[0].getWordType() == 2) {
 		for(int i=0; i<InsertMore; i++) {
             EmetconWord anotherWord;
-            anotherWord.InsertWord(3, Data, WordFunction, 0);
+            anotherWord.InsertWord(3, Data, WordFunction, 0, 0);
             _indexOfEnd += anotherWord.getWordSize();
             _words[_indexOfWords]= anotherWord;
             _indexOfWords++;
