@@ -2257,7 +2257,8 @@ BOOL CtiLMProgramDirect::hasGearChanged(LONG currentPriority, vector<CtiLMContro
         else if( !stringCompareIgnoreCase(currentGearObject->getChangeCondition(),CtiLMProgramDirectGear::TriggerOffsetChangeCondition) )
         {
             if( currentGearObject->getChangeTriggerNumber() > 0 &&
-                currentGearObject->getChangeTriggerNumber() <= controlAreaTriggers.size() )
+                currentGearObject->getChangeTriggerNumber() <= controlAreaTriggers.size() &&
+                !getManualControlReceivedFlag() )
             {
                 CtiLMControlAreaTrigger* trigger = (CtiLMControlAreaTrigger*)controlAreaTriggers[currentGearObject->getChangeTriggerNumber()-1];
 
@@ -2311,7 +2312,7 @@ BOOL CtiLMProgramDirect::hasGearChanged(LONG currentPriority, vector<CtiLMContro
                         returnBoolean = TRUE;
                     }
             }
-            else
+            else if( !getManualControlReceivedFlag() )
             {
                 CtiLockGuard<CtiLogger> logger_guard(dout);
                 dout << CtiTime() << " - Invalid ChangeTriggerNumber: " << currentGearObject->getChangeTriggerNumber() << ", trigger numbers start at 1 in program: " << getPAOName() << endl;
@@ -2380,7 +2381,8 @@ BOOL CtiLMProgramDirect::hasGearChanged(LONG currentPriority, vector<CtiLMContro
             else if( !stringCompareIgnoreCase(previousGearObject->getChangeCondition(),CtiLMProgramDirectGear::TriggerOffsetChangeCondition) )
             {
                 if( previousGearObject->getChangeTriggerNumber() > 0 &&
-                    previousGearObject->getChangeTriggerNumber() <= controlAreaTriggers.size() )
+                    previousGearObject->getChangeTriggerNumber() <= controlAreaTriggers.size() &&
+                    !getManualControlReceivedFlag() )
                 {
                     CtiLMControlAreaTrigger* trigger = (CtiLMControlAreaTrigger*)controlAreaTriggers[previousGearObject->getChangeTriggerNumber()-1];
                     if( isTriggerCheckNeeded &&
@@ -2408,7 +2410,7 @@ BOOL CtiLMProgramDirect::hasGearChanged(LONG currentPriority, vector<CtiLMContro
                         returnBoolean = TRUE;
                     }
                 }
-                else
+                else if( !getManualControlReceivedFlag() )
                 {
                     CtiLockGuard<CtiLogger> logger_guard(dout);
                     dout << CtiTime() << " - Invalid ChangeTriggerNumber: " << previousGearObject->getChangeTriggerNumber() << ", trigger numbers start at 1 in program: " << getPAOName() << endl;
