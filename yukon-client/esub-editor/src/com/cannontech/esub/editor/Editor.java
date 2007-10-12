@@ -75,6 +75,7 @@ public class Editor extends JPanel {
 	private static final String APPLICATION_NAME = "Esubstation Editor";
 	private static final Dimension defaultSize = new Dimension(800, 600);
     public static final URL ESUBEDITOR_GIF = Editor.class.getResource("/esubEditorIcon.gif");
+    private static JFrame frame;
     final PropertyPanel lineEditor;
 	// the drawing to edit
 	// Synchronize on the drawing to stop any updates
@@ -371,7 +372,6 @@ public class Editor extends JPanel {
 		editorActions = new EditorActions(this);
 		EditorMenus editorMenus = new EditorMenus(editorActions);
 		EditorToolBar editorToolBar = new EditorToolBar(editorActions);
-		EditorKeys editorKeys = new EditorKeys(editorActions);
 		
 		final JMenuBar menuBar = editorMenus.getMenuBar();
 		final JPopupMenu popupMenu = editorMenus.getPopupMenu();
@@ -509,7 +509,7 @@ public class Editor extends JPanel {
 		System.setProperty("cti.app.name", APPLICATION_NAME);
         CTILogger.info(APPLICATION_NAME + " starting...");
 		CtiUtilities.setLaF();
-		final JFrame frame = new JFrame();
+		frame = new JFrame();
 
 		frame.addWindowListener(new java.awt.event.WindowAdapter() {
 			public void windowClosing(java.awt.event.WindowEvent e) {
@@ -816,4 +816,13 @@ public class Editor extends JPanel {
 	public UndoManager getUndoManager() {
 		return undoManager;
 	}
+    
+    /**
+     * Starts the dialog that deals with changing
+     * the device on one to many elements.
+     */
+    public void changeDevice() {
+        ChangeDeviceDialog cd = new ChangeDeviceDialog(frame ,drawing.getLxGraph().getSelectedObjects());
+        cd.show();
+    }
 }

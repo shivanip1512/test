@@ -90,7 +90,7 @@ class EditorActions {
 	public static final String MOVE_SELECTED_DOWN_1 = "MOVE SELECTED D1";
 	public static final String MOVE_SELECTED_LEFT_1 = "MOVE SELECTED L1";	
 	public static final String EDIT_ELEMENT = "EDIT ELEMENT";
-
+	public static final String CHANGE_DEVICE = "CHANGE DEVICE";
 	public static final String ABOUT_ESUB_EDITOR = "ABOUT ESUB EDITOR";	
 
 	public static final String SET_DYNAMIC_TEXT_COLOR =
@@ -538,6 +538,18 @@ class EditorActions {
 			editor.getDrawing().getLxGraph().lowerSelection();
 		}
 	};
+    
+    private final LxAbstractAction changeDeviceAction =
+        new LxAbstractAction(
+            CHANGE_DEVICE,
+            "Change Device",
+            "Change Device",
+            null,
+            true) {
+        public void processAction(ActionEvent e) {
+            editor.changeDevice();
+        }
+    };
 
 	private final LxAbstractAction moveSelectedElementUpAction = 
 		new LxAbstractAction(
@@ -929,6 +941,8 @@ class EditorActions {
 		
 		actionMap.put(TO_FRONT_LAYER, toFrontLayerAction);
 		actionMap.put(TO_BACK_LAYER, toBackLayerAction);
+        
+        actionMap.put( CHANGE_DEVICE, changeDeviceAction);
 
 		actionMap.put(MOVE_SELECTED_UP_1, moveSelectedElementUpAction);
 		actionMap.put(MOVE_SELECTED_RIGHT_1, moveSelectedElementRightAction);

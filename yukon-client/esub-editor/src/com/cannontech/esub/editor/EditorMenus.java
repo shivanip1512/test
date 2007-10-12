@@ -196,6 +196,10 @@ private void initialize(EditorActions actions) {
 	action = actions.getAction(EditorActions.TO_BACK_LAYER);
 	JMenuItem toBackItem = createMenuItem(action.getLabel(), action);
 	JMenuItem toBackPopupItem = createMenuItem(action.getLabel(), action);
+    
+    action = actions.getAction(EditorActions.CHANGE_DEVICE);
+    JMenuItem changeDeviceItem = createMenuItem(action.getLabel(), action);
+    JMenuItem changeDevicePopupItem = createMenuItem(action.getLabel(), action);
 
 	rotateSubMenu.add(rotateNinetyItem);
 	rotateSubMenu.add(rotateOneEightyItem);
@@ -216,6 +220,7 @@ private void initialize(EditorActions actions) {
 //	editMenu.add(new JSeparator());	
 	editMenu.add(toFrontItem);
 	editMenu.add(toBackItem);
+    editMenu.add(changeDeviceItem);
 	
 	popupMenu.add(undoPopupItem);
 	popupMenu.add(redoPopupItem);
