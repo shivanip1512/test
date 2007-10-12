@@ -16,7 +16,7 @@
 
 <%
 	// String type = ParamUtil.getString(request, "type", "");
-	String srchCriteria = ParamUtil.getString(request, CBCSessionInfo.STR_LAST_SEARCH, null);
+	String srchCriteria = ParamUtil.getString(request, CCSessionInfo.STR_LAST_SEARCH, null);
 	String returnURL = request.getParameter("returnURL");
 	if( returnURL == null )
 		returnURL = "subareas.jsp";
@@ -54,8 +54,6 @@
 		lbr.searchLiteObjects( srchCriteria );
 		items = lbr.getFoundItems();
 	}
-	
-
 %>
 
 <cti:standardMenu/>
@@ -68,8 +66,8 @@
 <cti:titledContainer title='<%="Search Results For: " + label + "   (" + items.length + " found)"%>'>
 
 <form id="parentForm" action="feeders.jsp" method="post">
-	<input type="hidden" name="<%=CBCSessionInfo.STR_CBC_AREA%>" />
-	<input type="hidden" name="<%=CBCSessionInfo.STR_SUBID%>" />
+	<input type="hidden" name="<%=CCSessionInfo.STR_CC_AREA%>" />
+	<input type="hidden" name="<%=CCSessionInfo.STR_SUBID%>" />
 
    <table id="headerTable" width="100%" border="0" cellspacing="0" cellpadding="0">
  	 <tr class="columnHeader lAlign">

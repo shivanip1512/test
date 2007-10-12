@@ -16,9 +16,8 @@
 <div id="overDiv" style="position:absolute; visibility:hidden; z-index:1000;"></div>
 
 <%
-
     String nd = "\"return nd();\"";
-    LiteYukonUser user = (LiteYukonUser) session.getAttribute(LoginController.YUKON_USER);			
+    LiteYukonUser user = (LiteYukonUser) session.getAttribute(LoginController.YUKON_USER);	
 	filterCapControlCache.setFilter(new CacheFilterUserAccessFilter(user));
     String popupEvent = DaoFactory.getAuthDao().getRolePropertyValue(user, WebClientRole.POPUP_APPEAR_STYLE);
 	if (popupEvent == null) popupEvent = "onmouseover"; 
@@ -32,11 +31,17 @@
 
 <cti:standardMenu/>
 <cti:breadCrumbs>
-<%if(special){ %>
+<%
+if(special){
+%>
   <cti:crumbLink url="specialSubAreas.jsp" title="Special Substation Areas" />
-  <%} else{ %>
+  <%
+  } else{
+  %>
   <cti:crumbLink url="subareas.jsp" title="Substation Areas" />
-  <%} %>
+  <%
+  }
+  %>
   <cti:crumbLink url="substations.jsp" title="Substations" />
 </cti:breadCrumbs>
   
@@ -49,7 +54,9 @@
 
 <cti:titledContainer title="<%="Substation In Area:  " + cbcSession.getLastArea()%>" id="last_titled_container">
           
-		<%if (areaSubs.size() == 0) {%>
+		<%
+          		if (areaSubs.size() == 0) {
+          		%>
 		<!-- 
 		<form id="subForm" action="redirect.jsp" method="post">
 		<input type="hidden" name="reason" value="No subs were found. "/>
@@ -60,13 +67,13 @@
 		</script>
 		</form>
 		-->
-		<%} else  {
-		
+		<%
+		} else  {
 		%> 
 		
 	          
             <form id="subForm" action="feeders.jsp" method="post">
-            <input type="hidden" name="<%=CBCSessionInfo.STR_SUBID%>" />
+            <input type="hidden" name="<%=CCSessionInfo.STR_SUBID%>" />
           
             <table id="subHeaderTable" width="98%" border="0" cellspacing="0" cellpadding="0" >
               <tr class="columnHeader lAlign">              
@@ -93,13 +100,12 @@ for( int i = 0; i < areaSubs.size(); i++ ) {
 	String varsDisabled =  CBCUtils.format (CBCUtils.calcVarsDisabled(substation));
 	String closedVars = CBCUtils.format( CBCUtils.calcClosedVARS(filterCapControlCache.getCapBanksBySubStation(substation)));
 	String trippedVars = CBCUtils.format( CBCUtils.calcTrippedVARS(filterCapControlCache.getCapBanksBySubStation(substation)));
-
 %>
 
 	        <tr class="<%=css%>">
 				<td>
 				<input type="checkbox" name="cti_chkbxSubs" value="<%=substation.getCcId()%>" />
-				<a href="#" class="<%=css%>" onclick="postMany('subForm', '<%=CBCSessionInfo.STR_SUBID%>', <%=substation.getCcId()%>)" id="anc_<%=substation.getCcId()%>">
+				<a href="#" class="<%=css%>" onclick="postMany('subForm', '<%=CCSessionInfo.STR_SUBID%>', <%=substation.getCcId()%>)" id="anc_<%=substation.getCcId()%>">
 				<%=CBCUtils.CBC_DISPLAY.getSubstationValueAt(substation, CBCDisplay.SUB_NAME_COLUMN)%>
 				</a>
 				

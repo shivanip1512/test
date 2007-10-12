@@ -7,11 +7,11 @@
 	class="com.cannontech.cbc.web.FilterCapControlCacheImpl"
 	type="com.cannontech.cbc.web.FilterCapControlCacheImpl" scope="application"></jsp:useBean>
 	<%
-	LiteYukonUser user = (LiteYukonUser) session.getAttribute(LoginController.YUKON_USER);	
-	filterCapControlCache.setFilter(new CacheFilterUserAccessFilter(user));
-    String nd = "\"return nd();\"";
-    String popupEvent = DaoFactory.getAuthDao().getRolePropertyValue(user, WebClientRole.POPUP_APPEAR_STYLE);
-    if (popupEvent == null) popupEvent = "onmouseover"; 
+		LiteYukonUser user = (LiteYukonUser) session.getAttribute(LoginController.YUKON_USER);	
+		filterCapControlCache.setFilter(new CacheFilterUserAccessFilter(user));
+	    String nd = "\"return nd();\"";
+	    String popupEvent = DaoFactory.getAuthDao().getRolePropertyValue(user, WebClientRole.POPUP_APPEAR_STYLE);
+	    if (popupEvent == null) popupEvent = "onmouseover";
 	%>
 <jsp:setProperty name="CtiNavObject" property="moduleExitPage" value="<%=request.getRequestURL().toString()%>"/>
 
@@ -24,20 +24,22 @@
     <cti:crumbLink url="specialSubAreas.jsp" title="Special SubBus Areas"/>
 </cti:breadCrumbs>
 
-<% 
+<%
 String allowCtlVal = DaoFactory.getAuthDao().getRolePropertyValue(user, CBCSettingsRole.ALLOW_CONTROLS);
 if (allowCtlVal!=null) {
 	boolean allowControl = Boolean.valueOf(allowCtlVal);
-		if (allowControl) {%>
+		if (allowControl) {
+%>
 			<div id="systemCommandLink" align="right" > </div>
-	<%	} 
-}
-%>    
+	<%
+	} 
+	}
+	%>    
     <cti:titledContainer title="Special Substation Bus Areas" id="last_titled_container">
           
 		<form id="areaForm" action="substations.jsp" method="post">
-			<input type="hidden" name="<%=CBCSessionInfo.STR_CBC_AREA%>" />
-			<input type="hidden" name="<%=CBCSessionInfo.STR_CBC_AREAID%>" />
+			<input type="hidden" name="<%=CCSessionInfo%>" />
+			<input type="hidden" name="<%=CCSessionInfo%>" />
             <table id="areaHeaderTable" width="100%" border="0" cellspacing="0" cellpadding="0">
               <tr class="columnHeader lAlign">				
 				<td>Area Name</td>
@@ -79,7 +81,7 @@ if (allowCtlVal!=null) {
 				<input type="image" id="showAreas<%=i%>"
 					src="images/nav-plus.gif"
 					onclick="showRowElems( 'allAreas<%=i%>', 'showAreas<%=i%>'); return false;"/>
-				<a href="#" class="<%=css%>" onclick="postMany('areaForm', '<%=CBCSessionInfo.STR_CBC_AREAID%>', '<%=area.getPaoID()%>')">
+				<a href="#" class="<%=css%>" onclick="postMany('areaForm', '<%=CCSessionInfo%>', '<%=area.getPaoID()%>')">
 				<%=area.getPaoName()%></a>
 				</td>
                 <td>

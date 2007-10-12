@@ -13,7 +13,7 @@ import com.cannontech.util.ParamUtil;
  * Represents a data structure used to store session info about a CBC connection.
  * One of these will exist per user.
  */
-public class CBCSessionInfo
+public class CCSessionInfo
 {
 	private String lastArea = "";
     private Integer lastAreaId = -1;
@@ -23,22 +23,22 @@ public class CBCSessionInfo
 	
 	private HashMap<String, Object> treeState = new HashMap<String, Object>(100);
 
-	public static final String STR_CBC_AREA = "cbc_lastArea";
-    public static final String STR_CBC_AREAID = "cbc_lastAreaId";
+	public static final String STR_CC_AREA = "cbc_lastArea";
+    public static final String STR_CC_AREAID = "cbc_lastAreaId";
 	public static final String STR_SUBID = "cbc_lastSubID";
 	public static final String STR_FEEDERID = "cbc_lastFeederID";
 	public static final String STR_LAST_SEARCH = "cbc_lastSearch";
 	
 	public static final String POPUP_EVENT = "pop_up_event";
-	public CBCSessionInfo()
+	public CCSessionInfo()
 	{
 		super();
 	}
 	
 	public void updateState( HttpServletRequest req )
 	{
-		setLastArea( ParamUtil.getString(req, STR_CBC_AREA, getLastArea()) );
-        setLastAreaId( ParamUtil.getInteger(req, STR_CBC_AREAID, getLastAreaId()) );
+		setLastArea( ParamUtil.getString(req, STR_CC_AREA, getLastArea()) );
+        setLastAreaId( ParamUtil.getInteger(req, STR_CC_AREAID, getLastAreaId()) );
 		setLastSubID( ParamUtil.getInteger(req, STR_SUBID, getLastSubID()) );
 		setLastFeederID( ParamUtil.getInteger(req, STR_FEEDERID, getLastFeederID()) );
 		setLastSearchCriteria( ParamUtil.getString(req, STR_LAST_SEARCH, getLastSearchCriteria()) );
