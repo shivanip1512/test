@@ -980,7 +980,7 @@ public class CapControlForm extends DBEditorForm implements ICapControlModel{
             if (facesContext != null){
                 HttpSession session = (HttpSession) facesContext.getExternalContext().getSession(false);
                 String url = "/editor/cbcBase.jsf?type="+editorType+"&itemid="+itemID;
-                CBCNavigationUtil.bookmarkLocationAndRedirect(url, session);
+                CBCNavigationUtil.redirect(url, session);
             }
             return "cbcEditor";
 		} 

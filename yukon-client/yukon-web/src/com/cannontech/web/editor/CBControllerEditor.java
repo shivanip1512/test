@@ -656,16 +656,16 @@ public class CBControllerEditor implements ICBControllerModel {
         if (tree != null)
         {
             Object treeState = tree.saveState(FacesContext.getCurrentInstance());
-            CCSessionInfo cbcSession = (CCSessionInfo) JSFParamUtil.getJSFVar("cbcSession");
-    		cbcSession.setTreeState(pointTreeName, treeState);
+            CCSessionInfo ccSession = (CCSessionInfo) JSFParamUtil.getJSFVar("ccSession");
+    		ccSession.setTreeState(pointTreeName, treeState);
         }
     }
 
 	private void restoreState (HtmlTree tree) {
         if (tree != null) {
-    		CCSessionInfo cbcSession = (CCSessionInfo) JSFParamUtil.getJSFVar("cbcSession");    		
-			if (cbcSession.getTreeState(pointTreeName) != null )
-				this.pointTree.restoreState(FacesContext.getCurrentInstance(), cbcSession.getTreeState(pointTreeName));
+    		CCSessionInfo ccSession = (CCSessionInfo) JSFParamUtil.getJSFVar("ccSession");    		
+			if (ccSession.getTreeState(pointTreeName) != null )
+				this.pointTree.restoreState(FacesContext.getCurrentInstance(), ccSession.getTreeState(pointTreeName));
         }
 	}
 

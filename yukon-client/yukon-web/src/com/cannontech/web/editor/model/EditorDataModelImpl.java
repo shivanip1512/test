@@ -48,6 +48,8 @@ public class EditorDataModelImpl implements EditorDataModel {
     }
     
     public void createWizardLink () {
+        HttpSession session = (HttpSession) FacesContext.getCurrentInstance().getExternalContext().getSession(false);
+        CBCNavigationUtil.bookmarkThisLocation(session);
         String id = JSFParamUtil.getJSFReqParam("type");
         JSFUtil.redirect("/editor/cbcWizBase.jsf?type=" + id);
     }

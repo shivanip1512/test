@@ -24,7 +24,7 @@ public class CtiNavObject
 	private boolean memberECAdmin;
     private boolean internalLogin = false;
     
-    private Stack history;
+    private Stack<String> history;
 	
 	public CtiNavObject()
 	{
@@ -115,9 +115,9 @@ public class CtiNavObject
 		moduleLabel = string;
 	}
 
-    public Stack getHistory() { 
+    public Stack<String> getHistory() { 
         if (history == null)
-            history = new Stack();
+            history = new Stack<String>();
         return history;
     }
 
