@@ -23,7 +23,6 @@ import com.cannontech.database.db.DBPersistent;
 import com.cannontech.database.db.capcontrol.DeviceCBC;
 import com.cannontech.database.db.device.DeviceAddress;
 import com.cannontech.database.db.device.DeviceMCT400Series;
-import com.cannontech.roles.operator.MeteringRole;
 
 /**
  * This type was created in VisualAge.
