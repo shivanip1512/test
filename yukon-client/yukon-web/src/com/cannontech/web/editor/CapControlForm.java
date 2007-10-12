@@ -57,6 +57,7 @@ import com.cannontech.database.data.capcontrol.CapControlArea;
 import com.cannontech.database.data.capcontrol.CapControlFeeder;
 import com.cannontech.database.data.capcontrol.CapControlSpecialArea;
 import com.cannontech.database.data.capcontrol.CapControlSubBus;
+import com.cannontech.database.data.capcontrol.CapControlSubstation;
 import com.cannontech.database.data.capcontrol.ICapBankController;
 import com.cannontech.database.data.device.DeviceBase;
 import com.cannontech.database.data.device.DeviceTypesFuncs;
@@ -79,7 +80,6 @@ import com.cannontech.database.data.point.StatusPoint;
 import com.cannontech.database.db.DBPersistent;
 import com.cannontech.database.db.capcontrol.CCFeederBankList;
 import com.cannontech.database.db.capcontrol.CCFeederSubAssignment;
-import com.cannontech.database.db.capcontrol.CCSubstationSubBusList;
 import com.cannontech.database.db.capcontrol.CapBankAdditional;
 import com.cannontech.database.db.capcontrol.CapControlStrategy;
 import com.cannontech.database.db.capcontrol.CapControlSubstationBus;
@@ -547,7 +547,11 @@ public class CapControlForm extends DBEditorForm implements ICapControlModel{
 
     //initiatiates data model for our specific object
 	private void initDataModel(DBPersistent dbPersistent) {
-        if ((dbPersistent instanceof CapControlArea) || (dbPersistent instanceof CapControlSpecialArea) || (dbPersistent instanceof CapControlSubBus) || (dbPersistent instanceof CapControlFeeder)) {
+        if ((dbPersistent instanceof CapControlArea) 
+                || (dbPersistent instanceof CapControlSpecialArea) 
+                || (dbPersistent instanceof CapControlSubBus)
+                || (dbPersistent instanceof CapControlSubstation)
+                || (dbPersistent instanceof CapControlFeeder)) {
             dataModel = DataModelFactory.createModel(dbPersistent);
         }
     }
@@ -1569,7 +1573,7 @@ public class CapControlForm extends DBEditorForm implements ICapControlModel{
         } else if (getDbPersistent() instanceof CapControlSubBus) {
             return CBCSelectionLists.CapControlSubBusSetup;
         } else if (getDbPersistent() instanceof CapControlFeeder) {
-           	return CBCSelectionLists.CapControlFeederCapBank;
+           	return CBCSelectionLists.CapControlFeederSetup;
         }else if (getDbPersistent() instanceof CapControlStrategy) {
             return CBCSelectionLists.CapControlStrategyEditor;
         }
