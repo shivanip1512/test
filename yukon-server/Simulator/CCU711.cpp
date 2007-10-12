@@ -904,13 +904,15 @@ void CCU711::LoadQueuedMsg()
 
     if(!_messageQueue.empty())
     {
-        int ncocts = _qmessagesReady * 3;
+        int ncocts = 0;//_qmessagesReady * 3;  MADE A CHANGE HERE
         deque <_queueMessage> ::iterator itr;
         for(itr=_messageQueue.begin(); itr!=_messageQueue.end(); itr++)
         {
              _queueMessage temp = *itr;
-             ncocts += temp.getbytesToReturn();
              _qmessagesReady += temp.isReady();
+             if(temp.isReady()) {
+                 ncocts += temp.getbytesToReturn();
+             }
         }
         int ctr = 0;
         unsigned char preData[300];
