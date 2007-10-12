@@ -52,7 +52,7 @@
           <td width="1" bgcolor="#000000"><img src="../../WebConfig/yukon/Icons/VerticalRule.gif" width="1"></td>
           <td width="657" valign="top" bgcolor="#FFFFFF"> 
             <div class = "MainText" align="center"> 
-              <% String header = "NEW SIGNUP WIZARD"; %>
+              <% String header = "CREATE NEW ACCOUNT"; %>
               <%@ include file="include/InfoSearchBar2.jspf" %>
               <% if (errorMsg != null) out.write("<span class=\"ErrorMsg\">* " + errorMsg + "</span><br>"); %>
 			  
@@ -60,6 +60,25 @@
               would you like to:</span><br>
               <br>
               <table width="300" border="0" cellspacing="0" cellpadding="2">
+                <tr> 
+                  <td> 
+                    <table width="300" border="1" cellspacing="0" cellpadding="2" bgcolor="#CCCCCC" height="40">
+                      <tr> 
+                        <td height="30"> 
+                          <div align="center"><span class="MainText">Add hardware to the 
+                            account you just created</span><br>
+                            <input type="button" name="AddHardware" value="Add Hardware" onclick="location.href='SerialNumber.jsp?action=New'">
+                          </div>
+                        </td>
+                      </tr>
+                    </table>
+                  </td>
+                </tr>
+                <tr> 
+                  <td> 
+                    <div align="center" class="MainText">or</div>
+                  </td>
+                </tr>
                 <tr> 
                   <td> 
                     <table width="300" border="1" cellspacing="0" cellpadding="2" bgcolor="#CCCCCC" height="40">

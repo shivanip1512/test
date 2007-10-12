@@ -160,7 +160,7 @@ function selectMCT(form) {
 }
 
 function confirmCancel() {
-	if (confirm("Are you sure you want to quit from this wizard and discard all changes you've been made?"))
+	if (confirm("Are you sure you want to quit and discard all changes you've been made?"))
 		location.href = "../Operations.jsp";
 }
 

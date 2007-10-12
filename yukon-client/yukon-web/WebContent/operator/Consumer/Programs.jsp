@@ -8,31 +8,6 @@
 	
 	boolean hasPrevStep = false;
 	
-	if (inWizard) {
-		programs = new StarsLMPrograms();
-		
-		MultiAction actions = (MultiAction) session.getAttribute(ServletUtils.ATT_NEW_ACCOUNT_WIZARD);
-		if (actions != null) {
-			SOAPMessage reqMsg = actions.getRequestMessage( ProgramSignUpAction.class );
-			if (reqMsg != null) {
-				StarsOperation reqOper = SOAPUtil.parseSOAPMsgForOperation(reqMsg);
-				StarsProgramSignUp progSignUp = reqOper.getStarsProgramSignUp();
-				if (progSignUp != null) {
-					for (int i = 0; i < progSignUp.getStarsSULMPrograms().getSULMProgramCount(); i++) {
-						SULMProgram suProg = progSignUp.getStarsSULMPrograms().getSULMProgram(i);
-						StarsLMProgram program = new StarsLMProgram();
-						program.setProgramID( suProg.getProgramID() );
-						program.setApplianceCategoryID( suProg.getApplianceCategoryID() );
-						program.setStatus("Not Enrolled");
-						programs.addStarsLMProgram( program );
-					}
-				}
-			}
-			
-			hasPrevStep = actions.getRequestMessage( CreateLMHardwareAction.class ) != null;
-		}
-	}
-	
 	if (programs == null) programs = new StarsLMPrograms();
 	
 	boolean autoConfig = DaoFactory.getAuthDao().checkRoleProperty(lYukonUser, ConsumerInfoRole.AUTOMATIC_CONFIGURATION);
@@ -41,17 +16,13 @@
 	boolean useHardwareAddressing = (trackHwAddr != null) && Boolean.valueOf(trackHwAddr).booleanValue();
 	
 	boolean needMoreInfo = false;
-	if (inWizard) {
-		needMoreInfo = autoConfig && !useHardwareAddressing;
+	
+	int hardwareCnt = 0;
+	for (int i = 0; i < inventories.getStarsInventoryCount(); i++) {
+		if (inventories.getStarsInventory(i).getLMHardware() != null)
+			hardwareCnt++;
 	}
-	else {
-		int hardwareCnt = 0;
-		for (int i = 0; i < inventories.getStarsInventoryCount(); i++) {
-			if (inventories.getStarsInventory(i).getLMHardware() != null)
-				hardwareCnt++;
-		}
-		needMoreInfo = hardwareCnt > 1 || autoConfig && !useHardwareAddressing && hardwareCnt > 0;
-	}
+	needMoreInfo = hardwareCnt > 1 || autoConfig && !useHardwareAddressing && hardwareCnt > 0;
 %>
 <html>
 <head>
@@ -98,7 +69,6 @@
               <% if (errorMsg != null) out.write("<span class=\"ErrorMsg\">* " + errorMsg + "</span><br>"); %>
               <% if (confirmMsg != null) out.write("<span class=\"ConfirmMsg\">* " + confirmMsg + "</span><br>"); %>
               <%@ include file="../../include/program_enrollment.jspf" %>
-<% if (request.getParameter("Wizard") == null) { %>
               <div align="center" class="SubtitleHeader">Program History</div>
               <table width="366" border="1" cellspacing="0" align="center" cellpadding="3">
                 <tr> 
@@ -156,7 +126,6 @@
               </table>
 <%
 	}
- }
 %>
               <p>&nbsp;</p>
             </div>

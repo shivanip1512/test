@@ -16,22 +16,6 @@
 		}
 	}
 	
-	if (inWizard) {
-		MultiAction actions = (MultiAction) session.getAttribute(ServletUtils.ATT_NEW_ACCOUNT_WIZARD);
-		if (actions != null) {
-			SOAPMessage reqMsg = actions.getRequestMessage( CreateLMHardwareAction.class );
-			if (reqMsg != null) {
-				StarsOperation reqOper = SOAPUtil.parseSOAPMsgForOperation(reqMsg);
-				StarsCreateLMHardware createHw = reqOper.getStarsCreateLMHardware();
-				if (createHw != null) {
-					StarsInventory inventory = (StarsInventory) StarsFactory.newStarsInv(createHw, StarsInventory.class);
-					hardwares = new ArrayList();
-					hardwares.add(inventory);
-				}
-			}
-		}
-	}
-	
 	StarsSULMPrograms suPrograms = null;
 	MultiAction actions = (inWizard)?
 			(MultiAction) session.getAttribute(ServletUtils.ATT_NEW_ACCOUNT_WIZARD) :
@@ -160,12 +144,10 @@ function prepareSubmit(form) {
 		StarsApplianceCategory category = null;
 		StarsEnrLMProgram enrProg = null;
 		
-		if (!inWizard) {
-			for (int j = 0; j < programs.getStarsLMProgramCount(); j++) {
-				if (programs.getStarsLMProgram(j).getProgramID() == suProg.getProgramID()) {
-					program = programs.getStarsLMProgram(j);
-					break;
-				}
+		for (int j = 0; j < programs.getStarsLMProgramCount(); j++) {
+			if (programs.getStarsLMProgram(j).getProgramID() == suProg.getProgramID()) {
+				program = programs.getStarsLMProgram(j);
+				break;
 			}
 		}
 		

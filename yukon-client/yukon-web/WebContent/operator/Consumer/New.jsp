@@ -2,7 +2,6 @@
 <%@ include file="include/StarsHeader.jsp" %>
 <jsp:useBean id="accountBean" class="com.cannontech.stars.web.bean.AccountBean" scope="page"/>
 <%
-	boolean inWizard = request.getParameter("Wizard") != null;
 	StarsNewCustomerAccount newAccount = null;
 	
 	if (request.getParameter("Init") != null) {
@@ -10,17 +9,6 @@
 		session.removeAttribute(ServletUtils.ATT_NEW_ACCOUNT_WIZARD);
 		session.removeAttribute(ServletUtils.ATT_NEW_CUSTOMER_ACCOUNT);
 		session.removeAttribute(InventoryManagerUtil.STARS_INVENTORY_TEMP);
-	}
-	
-	if (inWizard) {
-		MultiAction actions = (MultiAction) session.getAttribute(ServletUtils.ATT_NEW_ACCOUNT_WIZARD);
-		if (actions != null) {
-			SOAPMessage reqMsg = actions.getRequestMessage( NewCustAccountAction.class );
-			if (reqMsg != null) {
-				StarsOperation reqOper = SOAPUtil.parseSOAPMsgForOperation(reqMsg);
-				newAccount = reqOper.getStarsNewCustomerAccount();
-			}
-		}
 	}
 	
 	if (newAccount == null)
@@ -116,7 +104,7 @@ function clearPage() {
 }
 
 function confirmCancel() {
-	if (confirm("Are you sure you want to quit from this wizard and discard all changes you've been made?"))
+	if (confirm("Are you sure you want to quit adding this account and discard all changes you've been made?"))
 		location.href = "../Operations.jsp";
 }
 
@@ -176,10 +164,6 @@ are present in page, session, etc. as an attribute. -->
               <input type="hidden" name="action" value="NewCustAccount">
 			  <input type="hidden" name="REDIRECT" value="<%= request.getContextPath() %>/operator/Consumer/NewFinal.jsp">
 			  <input type="hidden" name="REFERRER" value="<%= request.getRequestURI() %>">
-<% if (inWizard) { %>
-			  <input type="hidden" name="REDIRECT2" value="<%= request.getContextPath() %>/operator/Consumer/CreateHardware.jsp?Wizard=true">
-			  <input type="hidden" name="Wizard" value="true">
-<% } %>
               <table width="610" border="0" cellspacing="0" cellpadding="0" align="center">
                 <tr> 
                   <td width="300" valign="top"><span class="SubtitleHeader">CUSTOMER CONTACT</span> 
@@ -704,33 +688,17 @@ are present in page, session, etc. as an attribute. -->
 	}
 %>
 </cti:checkProperty>
-<% if (inWizard) { %>
-              <table width="400" border="0" cellspacing="0" cellpadding="5" align="center">
-                <tr> 
-                  <td width="40%" align="right"> 
-                    <input type="submit" name="Submit" value="Next">
-                  </td>
-                  <td width="20%" align="center"> 
-                    <input type="submit" name="Submit" value="Done">
-                  </td>
-                  <td width="40%" align="left"> 
-                    <input type="button" name="Cancel" value="Cancel" onclick="confirmCancel()">
-                  </td>
-                </tr>
-              </table>
-<% } else { %>
-              <table width="400" border="0" cellspacing="0" cellpadding="5" align="center">
-                <tr> 
-                  <td width="50%" align="right"> 
-                    <input type="submit" name="Submit" value="Save">
-                  </td>
-                  <td width="50%" align="left"> 
-                    <input type="button" name="Cancel" value="Cancel" onclick="if (warnUnsavedChanges()) location.href='../Operations.jsp'">
-                  </td>
-                </tr>
-              </table>
-<% } %>
-            </form>
+            <table width="200" border="0" cellspacing="0" cellpadding="5" align="center">
+              <tr> 
+                <td width="50%" align="center"> 
+                  <input type="submit" name="Submit" value="Done">
+                </td>
+                <td width="50%" align="center"> 
+                  <input type="button" name="Cancel" value="Cancel" onclick="confirmCancel()">
+                </td>
+              </tr>
+            </table>
+          </form>
             <p>&nbsp;</p>
           </td>
           <td width="1" bgcolor="#000000"><img src="../../WebConfig/yukon/Icons/VerticalRule.gif" width="1"></td>
