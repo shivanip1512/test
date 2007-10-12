@@ -10,7 +10,6 @@
  	<%pageContext.setAttribute("filterServiceCompany", new Integer(YukonListEntryTypes.YUK_DEF_ID_INV_FILTER_BY_SRV_COMPANY).toString());%>
  	<%pageContext.setAttribute("filterDeviceStatus", new Integer(YukonListEntryTypes.YUK_DEF_ID_INV_FILTER_BY_DEV_STATUS).toString());%>
  	<%pageContext.setAttribute("filterApplianceType", new Integer(YukonListEntryTypes.YUK_DEF_ID_INV_FILTER_BY_APPLIANCE_TYPE).toString());%>
- 	<%pageContext.setAttribute("filterDeviceConfig", new Integer(YukonListEntryTypes.YUK_DEF_ID_INV_FILTER_BY_CONFIG).toString());%>
  	<%pageContext.setAttribute("filterDeviceMember", new Integer(YukonListEntryTypes.YUK_DEF_ID_INV_FILTER_BY_MEMBER).toString());%>
  	<%pageContext.setAttribute("filterDeviceWarehouse", new Integer(YukonListEntryTypes.YUK_DEF_ID_INV_FILTER_BY_WAREHOUSE).toString());%>
  	<%pageContext.setAttribute("filterDeviceSerialRangeMin", new Integer(YukonListEntryTypes.YUK_DEF_ID_INV_FILTER_BY_SERIAL_RANGE_MIN).toString());%>
@@ -88,11 +87,6 @@
 	                            <c:forEach var="appliance" items="${filterBean.availableApplianceCategories}">
 									<option value='<c:out value="${appliance.liteID}"/>'> <c:out value="${appliance.description}"/> </option>
 								</c:forEach>
-							</select>
-	                    </div>
-	                    <div id='<c:out value="${filterDeviceConfig}"/>' style="display:none"> 
-	                    	<select id='<c:out value="${filterDeviceConfig}"/>1' name='<c:out value="${filterDeviceConfig}"/>1' size="1" style="width: 200px" onChange="selectFilter(this.value)">
-	                            <option value="0"> <c:out value="(none)"/> </option>
 							</select>
 	                    </div>
 	                    <div id='<c:out value="${filterDeviceMember}"/>' style="display:none"> 
@@ -206,7 +200,6 @@
 			document.getElementById('<c:out value="${filterServiceCompany}"/>').style.display = "none";
 			document.getElementById('<c:out value="${filterDeviceStatus}"/>').style.display = "none";
 			document.getElementById('<c:out value="${filterApplianceType}"/>').style.display = "none";
-			document.getElementById('<c:out value="${filterDeviceConfig}"/>').style.display = "none";
  			document.getElementById('<c:out value="${filterDeviceMember}"/>').style.display = "none";
  			document.getElementById('<c:out value="${filterDeviceWarehouse}"/>').style.display = "none";
  			document.getElementById('<c:out value="${filterDeviceSerialRangeMin}"/>').style.display = "none";

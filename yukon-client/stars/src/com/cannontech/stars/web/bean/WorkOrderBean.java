@@ -31,9 +31,11 @@ import com.cannontech.database.data.lite.stars.LiteWorkOrderBase;
 import com.cannontech.database.data.lite.stars.StarsLiteFactory;
 import com.cannontech.database.data.stars.event.EventWorkOrder;
 import com.cannontech.database.data.stars.report.WorkOrderBase;
+import com.cannontech.stars.util.AbstractFilter;
 import com.cannontech.stars.util.FilterWrapper;
 import com.cannontech.stars.util.ServletUtils;
 import com.cannontech.stars.util.StarsUtils;
+import com.cannontech.stars.util.WorkOrderFilter;
 import com.cannontech.stars.web.StarsYukonUser;
 import com.cannontech.stars.xml.serialize.StarsServiceRequest;
 import com.cannontech.util.ServletUtil;
@@ -224,111 +226,6 @@ public class WorkOrderBean {
 			energyCompany = StarsDatabaseCache.getInstance().getEnergyCompany( energyCompanyID );
 		return energyCompany;
 	}
-
-
-    private List<LiteWorkOrderBase> filterByServiceCompany(final List<LiteWorkOrderBase> list, final int specificFilterId) {
-        final List<LiteWorkOrderBase> filteredWorkOrders = new ArrayList<LiteWorkOrderBase>();
-        for (final LiteWorkOrderBase liteWorkOrder : list) {
-            if (liteWorkOrder.getServiceCompanyID() == specificFilterId) {
-                filteredWorkOrders.add(liteWorkOrder);
-            }
-        }
-        return filteredWorkOrders;
-    }
-    
-    private List<LiteWorkOrderBase> filterByServiceType(final List<LiteWorkOrderBase> list, final int specificFilterId) {
-        final List<LiteWorkOrderBase> filteredWorkOrders = new ArrayList<LiteWorkOrderBase>();
-        for (final LiteWorkOrderBase liteWorkOrder : list) {
-            if (liteWorkOrder.getWorkTypeID() == specificFilterId) {
-                filteredWorkOrders.add(liteWorkOrder);
-            }
-        }
-        return filteredWorkOrders;
-    }
-    
-    private List<LiteWorkOrderBase> filterByServiceCompanyCodes(final List<LiteWorkOrderBase> list, final int specificFilterId, final FilterWrapper filter) {
-        final List<LiteWorkOrderBase> filteredWorkOrders = new ArrayList<LiteWorkOrderBase>();
-        for (final LiteWorkOrderBase liteWorkOrder : list) {
-            LiteStarsCustAccountInformation liteCustAcctInfo = this.energyCompany.getBriefCustAccountInfo(liteWorkOrder.getAccountID(), true);
-            LiteAddress liteAddr = this.energyCompany.getAddress(liteCustAcctInfo.getAccountSite().getStreetAddressID());
-            
-            //The filterText is formatted "Label: value".  By parsing for the last space char we can get just the value.
-            String tempCode = filter.getFilterText().substring(filter.getFilterText().lastIndexOf(" ")+1);
-            if (liteAddr.getZipCode().startsWith(tempCode)) {
-                filteredWorkOrders.add(liteWorkOrder);    
-            }    
-        }
-        return filteredWorkOrders;
-    }
-    
-    private List<LiteWorkOrderBase> filterByCustomerType(final List<LiteWorkOrderBase> list, final int specificFilterId) {
-        final List<LiteWorkOrderBase> filteredWorkOrders = new ArrayList<LiteWorkOrderBase>();
-        for (final LiteWorkOrderBase liteWorkOrder : list) {    
-            LiteStarsCustAccountInformation liteCustAcctInfo = this.energyCompany.getBriefCustAccountInfo(liteWorkOrder.getAccountID(), true);
-            LiteCustomer customer = liteCustAcctInfo.getCustomer();
-
-            switch (specificFilterId) {
-                case -1 : { //RESIDENTIAL CUSTOMER
-                    if (customer.getCustomerTypeID() == CustomerTypes.CUSTOMER_RESIDENTIAL) {
-                        filteredWorkOrders.add(liteWorkOrder);
-                    }
-                    break;
-                }
-                case YukonListEntryTypes.CUSTOMER_TYPE_COMMERCIAL : {
-                    if (customer instanceof LiteCICustomer) {
-                        int customerTypeId = ((LiteCICustomer) customer).getCICustType();
-                        if (customerTypeId == specificFilterId) {
-                            filteredWorkOrders.add(liteWorkOrder);
-                        }
-                    } else {
-                        int customerTypeId = customer.getCustomerTypeID();
-                        if (customerTypeId == CustomerTypes.CUSTOMER_CI) {
-                            filteredWorkOrders.add(liteWorkOrder);
-                        }
-                    }
-                    break;
-                }
-            }
-        }
-        return filteredWorkOrders;
-    }
-    
-    private List<LiteWorkOrderBase> filterByStatus(final List<LiteWorkOrderBase> list, final int specificFilterId) {
-        final ArrayList<LiteWorkOrderBase> filteredWorkOrders = new ArrayList<LiteWorkOrderBase>();
-        for (final LiteWorkOrderBase liteWorkOrder : list) {
-            //no dates are specified, just check current state ID
-            if (getStartDate() == null && getStopDate() == null) {
-                if (liteWorkOrder.getCurrentStateID() == specificFilterId) { 
-                    filteredWorkOrders.add(liteWorkOrder);
-                }    
-            } else {
-                //Dates were specified so we look at the event type to see if it matches the status filter
-                final WorkOrderBase workOrderBase = (WorkOrderBase) StarsLiteFactory.createDBPersistent(liteWorkOrder);
-                final ArrayList<EventWorkOrder> eventWorkOrderList = workOrderBase.getEventWorkOrders();
-                for (final EventWorkOrder eventWorkOrder : eventWorkOrderList) {
-                    boolean addWorkOrder = false;
-                    if (eventWorkOrder.getEventBase().getActionID().intValue() == specificFilterId) {
-                        if (getStartDate() != null && getStopDate() == null) {
-                            if (eventWorkOrder.getEventBase().getEventTimestamp().compareTo(getStartDate()) >= 0)
-                                addWorkOrder = true;
-                        } else if (getStopDate() != null && getStartDate() == null) {
-                            if (eventWorkOrder.getEventBase().getEventTimestamp().compareTo(getStopDate()) <= 0)
-                                addWorkOrder = true;
-                        } else {
-                            if ((eventWorkOrder.getEventBase().getEventTimestamp().compareTo(getStartDate()) >= 0) &&
-                                    (eventWorkOrder.getEventBase().getEventTimestamp().compareTo(getStopDate()) <= 0))
-                                addWorkOrder = true;
-                        }
-                        if (addWorkOrder) {
-                            filteredWorkOrders.add(liteWorkOrder);
-                            break;
-                        }
-                    }
-                }
-            }
-        }
-        return filteredWorkOrders;
-    }
     
 	public List<LiteWorkOrderBase> getWorkOrderList() {
 		if (workOrderList != null)
@@ -359,43 +256,12 @@ public class WorkOrderBean {
 		
         final List<FilterWrapper> filterList = getFilters();
 		if (filterList != null  && filterList.size() > 0) {
-            
-			for (final FilterWrapper filter : filterList) {
-                final int filterTypeID = Integer.parseInt(filter.getFilterTypeID());
-	            final int specificFilterID = Integer.parseInt(filter.getFilterID());			
-			
-                switch (filterTypeID) {
-                    case YukonListEntryTypes.YUK_DEF_ID_SO_FILTER_BY_SRV_COMPANY : 
-                        workOrders = this.filterByServiceCompany(workOrders, specificFilterID);
-                        break;
-                        
-                    case YukonListEntryTypes.YUK_DEF_ID_SO_FILTER_BY_SRV_TYPE :
-                        workOrders = this.filterByServiceType(workOrders, specificFilterID);
-                        break;
-                        
-                    case YukonListEntryTypes.YUK_DEF_ID_SO_FILTER_BY_SRV_COMP_CODES :
-                        workOrders = this.filterByServiceCompanyCodes(workOrders, specificFilterID, filter);
-                        break;
-                    
-                    case YukonListEntryTypes.YUK_DEF_ID_SO_FILTER_BY_CUST_TYPE :
-                        workOrders = this.filterByCustomerType(workOrders, specificFilterID);
-                        break;
-                        
-                    case YukonListEntryTypes.YUK_DEF_ID_SO_FILTER_BY_STATUS :
-                        //Do nothing, skip this filter until all the other filters are done.  See the next iteration below.
-                        break;
-                }
-			}
-
-			//Do just the status filter, since we already handled the other filters.
-            for (final FilterWrapper filter : filterList) {	
-				final int filterTypeID = Integer.parseInt(filter.getFilterTypeID());
-	            final int specificFilterID = Integer.parseInt(filter.getFilterID());			
-					
-				if (filterTypeID == YukonListEntryTypes.YUK_DEF_ID_SO_FILTER_BY_STATUS) {
-                    workOrders = this.filterByStatus(workOrders, specificFilterID);
-                }
-			}
+            final AbstractFilter<LiteWorkOrderBase> workOrderFilter = new WorkOrderFilter();
+            workOrderFilter.setEnergyCompany(energyCompany);
+            workOrderFilter.setStartDate(getStartDate());
+            workOrderFilter.setStopDate(getStopDate());
+            List<LiteWorkOrderBase> filteredWorkOrderList = workOrderFilter.filter(workOrders, filterList);
+            workOrders = filteredWorkOrderList;
 		} else {
 			workOrders = Collections.emptyList();	
 		}

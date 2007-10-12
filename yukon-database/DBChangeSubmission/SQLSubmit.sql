@@ -499,3 +499,8 @@ insert into YukonRoleProperty values(-20013,-200,'Edit Device Config','false','C
 insert into YukonRoleProperty values(-20014,-200,'View Device Config','true','Controls the ability to view existing device configurations');
 
 /*****************************************************************************/
+/* nmeverden - YUK-4438 */
+
+delete from YukonListEntry where EntryText = 'Configuration'
+
+/*****************************************************************************/

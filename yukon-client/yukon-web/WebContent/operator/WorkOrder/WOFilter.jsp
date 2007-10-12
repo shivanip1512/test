@@ -154,7 +154,7 @@
         	<table width="600" border="0" cellspacing="0" cellpadding="5" align="center">
             	<tr>
                 	<td width="290" align="right"> 
-                    	<input type="submit" name="Submit" value="Query Work Orders">
+                    	<input id="submitbutton" type="submit" name="Submit" value="Query Work Orders">
                   	</td>
                   	<td width="205"> 
                     	<input type="reset" name="Reset" value="Reset" onclick="location.reload()">
@@ -361,6 +361,10 @@
 					html = '<input type="hidden" name="YukonDefIDs" value="' + yukonDefIDs[idx] + '">';
 					form.insertAdjacentHTML("beforeEnd", html);
 				}
+                
+                $("submitbutton").toggle();
+                document.body.style.cursor = "wait";
+                
 				form.submit();
 			}
 		}
