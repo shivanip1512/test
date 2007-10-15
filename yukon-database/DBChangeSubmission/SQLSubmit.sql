@@ -24,3 +24,20 @@ create table DYNAMICBILLINGFIELD (
    FieldFormat          varchar(50)          null,
    MaxLength            numeric              not null
 )
+
+
+/************************************************************************************/
+/*  YUK-4529 "Reset CopCount" Expresscom Serial common command needs to be renamed  */
+/*  Matt Fisher 10/15/2007                                                          */
+/*  Please update the 3.5 and head update and creation scripts to use these lines:  */
+
+insert into command values(-65, 'putconfig xcom raw 0x05 0x00', 'Turn Off Test Light', 'ExpresscomSerial');
+insert into command values(-67, 'putconfig xcom main 0x01 0x80', 'Clear Comm Loss Counter', 'ExpresscomSerial');
+
+/*  instead of these:  */
+
+insert into command values(-65, 'putconfig xcom raw 0x05 0x00', 'Reset CopCount', 'ExpresscomSerial');
+insert into command values(-67, 'putconfig xcom main 0x01 0x80', 'Clear Comm Loss COunter', 'ExpresscomSerial');
+
+/************************************************************************************/
+
