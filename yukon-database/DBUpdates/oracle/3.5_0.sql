@@ -354,6 +354,9 @@ alter table DEVICEGROUP
    add constraint AK_DEVICEGR_PDG_GN unique (GroupName, ParentDeviceGroupId)
 ;
 
+/* YUK-4438 */
+delete from YukonListEntry where EntryText = 'Configuration';
+
 /******************************************************************************/
 /* Run the Stars Update if needed here */
 /* Note: DBUpdate application will ignore this if STARS is not present */
