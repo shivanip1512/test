@@ -36,7 +36,7 @@ BOOST_AUTO_UNIT_TEST(test_ctidate_methods)
     BOOST_CHECK_EQUAL( rw_date.month(), d.month() );
     BOOST_CHECK_EQUAL( rw_date.year(), d.year() );
     BOOST_CHECK_EQUAL( rw_date.weekDayName().data(), d.weekDayName() );
-    BOOST_CHECK_EQUAL( rw_date.weekDay(), d.weekDay() );
+    BOOST_CHECK_EQUAL( rw_date.weekDay() % 7, d.weekDay() );  //  CtiDate is 0-6 Sun-Sat, RWDate is 1-7 Mon-Sun
     BOOST_CHECK_EQUAL( rw_date.day(), d.day() );
 
     
