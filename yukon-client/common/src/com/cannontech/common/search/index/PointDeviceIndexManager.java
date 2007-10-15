@@ -24,7 +24,7 @@ public class PointDeviceIndexManager extends AbstractIndexManager {
     }
 
     protected int getIndexVersion() {
-        return 1;
+        return 2;
     }
 
     protected Analyzer getAnalyzer() {
