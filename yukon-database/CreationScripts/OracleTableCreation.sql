@@ -1,7 +1,7 @@
 /*==============================================================*/
 /* Database name:  YukonDatabase                                */
 /* DBMS name:      ORACLE Version 9i                            */
-/* Created on:     10/12/2007 3:14:48 PM                        */
+/* Created on:     10/15/2007 10:33:11 AM                       */
 /*==============================================================*/
 
 
@@ -1267,18 +1267,6 @@ create table CCMONITORBANKLIST  (
 /*==============================================================*/
 /* Table: CCSEASONSTRATEGYASSIGNMENT                            */
 /*==============================================================*/
-insert into ccseasonstrategyassignment 
-(paobjectid, seasonscheduleid, seasonname, strategyid)
-select substationbusid, -1,'Default',strategyid from capcontrolsubstationbus;
-go
-insert into ccseasonstrategyassignment 
-(paobjectid, seasonscheduleid, seasonname, strategyid)
-select feederid, -1, 'Default',strategyid from capcontrolfeeder;
-go
-insert into ccseasonstrategyassignment 
-(paobjectid, seasonscheduleid, seasonname, strategyid)
-select areaid, -1, 'Default',strategyid from capcontrolarea;
-go
 create table CCSEASONSTRATEGYASSIGNMENT  (
    paobjectid           NUMBER                          not null,
    seasonscheduleid     NUMBER                          not null,

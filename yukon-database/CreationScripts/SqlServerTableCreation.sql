@@ -1,7 +1,7 @@
 /*==============================================================*/
 /* Database name:  YukonDatabase                                */
 /* DBMS name:      Microsoft SQL Server 2000                    */
-/* Created on:     10/12/2007 3:25:21 PM                        */
+/* Created on:     10/15/2007 10:32:20 AM                       */
 /*==============================================================*/
 
 
@@ -2290,18 +2290,6 @@ go
 /*==============================================================*/
 /* Table: CCSEASONSTRATEGYASSIGNMENT                            */
 /*==============================================================*/
-insert into ccseasonstrategyassignment 
-(paobjectid, seasonscheduleid, seasonname, strategyid)
-select substationbusid, -1,'Default',strategyid from capcontrolsubstationbus;
-go
-insert into ccseasonstrategyassignment 
-(paobjectid, seasonscheduleid, seasonname, strategyid)
-select feederid, -1, 'Default',strategyid from capcontrolfeeder;
-go
-insert into ccseasonstrategyassignment 
-(paobjectid, seasonscheduleid, seasonname, strategyid)
-select areaid, -1, 'Default',strategyid from capcontrolarea;
-go
 create table CCSEASONSTRATEGYASSIGNMENT (
    paobjectid           numeric              not null,
    seasonscheduleid     numeric              not null,
