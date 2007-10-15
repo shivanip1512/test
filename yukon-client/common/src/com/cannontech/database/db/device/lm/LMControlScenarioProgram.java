@@ -70,7 +70,11 @@ public class LMControlScenarioProgram extends com.cannontech.database.db.NestedD
 
 	public void delete() throws java.sql.SQLException
 	{
-		delete( TABLE_NAME, CONSTRAINT_COLUMNS[0], getScenarioID());
+		Object deleteValues[] = 
+		{ 
+			getScenarioID(), getProgramID()
+		};
+		delete(TABLE_NAME, CONSTRAINT_COLUMNS, deleteValues);
 	}
 
 
