@@ -7,7 +7,7 @@ import java.util.List;
  */
 public class DynamicFormat {
 	private int formatId;
-	private String formatType = null;
+	private String name = null;
 	private String delim = null; 
 	private String header = null;
 	private String footer = null;
@@ -47,11 +47,11 @@ public class DynamicFormat {
 	public void addField(DynamicBillingField field){
 		fieldList.add(field);
 	}
-	public String getFormatType() {
-		return formatType;
+	public String getName() {
+		return name;
 	}
-	public void setFormatType(String formatType) {
-		this.formatType = formatType;
+	public void setName(String name) {
+		this.name = name;
 	}
 	public boolean getIsSystem() {
 		return isSystem;

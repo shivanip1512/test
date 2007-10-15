@@ -98,11 +98,13 @@ public class DynamicBillingFormatter extends BillingFormatterBase {
 							if (formatString.startsWith(".")) {
 								formatString = "0" + formatString;
 							}
-							int noInt = getNoInt(formatString);
-							int noDec = getNoDec(formatString);
+							int maxLength = field.getMaxLength();
+							int decimals = getNoDec(formatString);
 
-							((DecimalFormat) format).setMaximumIntegerDigits(noInt);
-							val = val.setScale(noDec, BigDecimal.ROUND_DOWN);
+                            if(maxLength > 0) {
+    							((DecimalFormat) format).setMaximumIntegerDigits(maxLength);
+                            }
+							val = val.setScale(decimals, BigDecimal.ROUND_DOWN);
 							
 							valueString = format.format(val);
 
@@ -180,28 +182,6 @@ public class DynamicBillingFormatter extends BillingFormatterBase {
 		} catch (EmptyResultDataAccessException er) {
 			throw new RuntimeException("WARNING: Format is not found in database");
 		}
-	}
-
-	/**
-	 * Helper method to get the number of integer part of the format
-	 * 
-	 * @param format - the string pattern 
-	 */
-	private static int getNoInt(String format) {
-		int digits = 0;
-		StringTokenizer st = new StringTokenizer(format, ".");
-		if (st.hasMoreTokens()) {
-			format = st.nextToken();
-		} else {
-			return 0;
-		}
-
-		for (int i = 0; i < format.length(); i++) {
-			if (format.charAt(i) == '#' || format.charAt(i) == '0') {
-				digits++;
-			}
-		}
-		return digits;
 	}
 
 	/**

@@ -15,3 +15,12 @@ If an ID is returned, then the mapping failed and the default route is not corre
 There are several questions we need to answer on this issue, so this can stay open for awhile.  
 /*I'm marking this in here for reference until we figure out the best way to deal with this.  Jon*/
 
+/** Please update the 4.0 update and creation scripts with this new version of DYNAMICBILLINGFIELD -Jason **/
+create table DYNAMICBILLINGFIELD (
+   id                   numeric              not null,
+   FormatID             numeric              not null,
+   FieldName            varchar(50)          not null,
+   FieldOrder           numeric              not null,
+   FieldFormat          varchar(50)          null,
+   MaxLength            numeric              not null
+)

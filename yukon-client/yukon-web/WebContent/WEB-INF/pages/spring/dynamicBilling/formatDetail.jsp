@@ -13,114 +13,92 @@
 <h2>${title}</h2> <br> 
 <br />
 	<form id="begin" name="begin" action="" method="post" autocomplete="off">
-	<label id="nameWordsDiv" style="color:black;" >Name of format: </label><input type="text" name="formatType" style="width:300px" id="formatType" value="<c:out value="${format.formatType}"/>" >
-	<input type="button" value = "Save" onclick = "saveButton();" /> 
-	<input type="button" value = "Cancel" onclick = "cancelButton();" />
-	<input type="button" value = "Delete" onclick = "deleteButton();" />
-	<br /> 
-	<font size="1">Remember to save the changes before leaving or refreshing the page</font>
-	<br />
-	<div id="errorMsg" style="color:red;">&nbsp;</div>
-	
-	<strong>Field Format Settings </strong><br/> <br/>
-		Delimiter: 
-		
-		<c:if test="${format.delim == ',' || format.delim == ';' || format.delim ==':'}">
-			<select  name="delimiterChoice" id="delimiterChoice" onchange="unfreezeDelim();">
-			<c:choose>
-				<c:when test="${format.delim == ','}">
-					<option value="," selected="selected"> Comma </option>
-					<option value=";"> Semicolon </option>
-					<option value=":"> Colon </option>
-					<option value="Custom"> Custom </option>
-				</c:when>
-				<c:when test="${format.delim == ';'}">
-					<option value=","> Comma </option>
-					<option value=";" selected="selected"> Semicolon </option>
-					<option value=":"> Colon </option>
-					<option value="Custom"> Custom </option>
-				</c:when>
-				<c:when test="${format.delim == ':'}">
-					<option value=","> Comma </option>
-					<option value=";"> Semicolon </option>
-					<option value=":" selected="selected"> Colon </option>
-					<option value="Custom"> Custom </option>
-				</c:when>
-			</c:choose>
-			</select> or create your own: 
-			<input type="text" style="width:50px;" name="delimiterMade" id="delimiterMade" value= "${format.delim}"
-			disabled="disabled" onkeyup="updatePreviewDiv($('preview'));"/>
-		</c:if>
-		
-		<c:if test="${format.delim != ',' && format.delim != ';' && format.delim !=':'}">
-			<select name="delimiterChoice" id="delimiterChoice" onchange="unfreezeDelim();">
-				<option value=","> Comma </option>
-				<option value=";"> Semicolon </option>
-				<option value=":"> Colon </option>
-				<option value="Custom" selected="selected"> Custom </option>
-			</select> or create your own: 
-			<input type="text" style="width:50px;" name="delimiterMade" id="delimiterMade" maxlength="20" value="<c:out value="${format.delim}"/>" onkeyup="updatePreviewDiv($('preview'));" /> 
-		</c:if>
-		
-		<br/>
+		Name of format:
+		<input type="text" name="formatName" style="width:300px" id="formatName" value="<c:out value="${format.name}"/>" >
+		<input type="button" value="Save" onclick="saveButton();" /> 
+		<input type="button" value="Cancel" onclick="cancelButton();" />
+		<input type="button" value="Delete" onclick="deleteButton();" />
+		<br /> 
+		<font size="1">Remember to save the changes before leaving or refreshing the page</font>
 		<br />
-		<input type="hidden" id="delimiter" name="delimiter" value="" />
+		<div id="errorMsg" style="color:red;">&nbsp;</div>
+	
+		<h3>Field Format Settings</h3>
+		Delimiter: 
+		<select  name="delimiterChoice" id="delimiterChoice" onchange="updateDelimiter();">
+			<option value="," <c:if test="${format.delim == ','}">selected="selected" </c:if>>Comma</option>
+			<option value=";" <c:if test="${format.delim == ';'}">selected="selected" </c:if>> Semicolon </option>
+			<option value=":" <c:if test="${format.delim == ':'}">selected="selected" </c:if>> Colon </option>
+			<option value="Custom" <c:if test="${format.delim != ',' && format.delim != ';' && format.delim !=':'}">selected="selected" </c:if>> Custom </option>
+		</select>
+		<input 
+			type="text" 
+			id="delimiter" 
+			name="delimiter" 
+			style="width:50px;" 
+			value="<c:out value="${format.delim}"/>" 
+			<c:if test="${format.delim == ',' || format.delim == ';' || format.delim ==':'}">readOnly="readonly" </c:if>
+			onkeyup="updatePreview();" /> 
 		
-		Header: <input style="width:500px" type="text" name="header" id="headerField" maxlength="255" 
-			value="<c:out value="${format.header}" />" onchange="updatePreviewDiv($('preview'));" /> <br/> <br />
-		Footer: <input style="width:500px" type="text" name="footer" id="footerField" maxlength="255"
-			value="<c:out value="${format.footer}" />" onchange="updatePreviewDiv($('preview'));" /> <br/> <br/>
+		<br/><br/>
+		
+		Header:
+		<input style="width:500px" type="text" name="header" id="headerField" maxlength="255" value="<c:out value="${format.header}" />" onKeyUp="updatePreview();" />
+		
+		<br/><br/>
+		
+		Footer:
+		<input style="width:500px" type="text" name="footer" id="footerField" maxlength="255" value="<c:out value="${format.footer}" />" onKeyUp="updatePreview();" />
+		
+		<br/><br/>
 			
-		<input type="hidden" id="availableFormat" name="availableFormat" value="${initiallySelected}" >
+		<input type="hidden" id="formatId" name="formatId" value="${initiallySelected}" >
 		<input type="hidden" id="fieldArray" name="fieldArray" value="">
 		<table width="870" height="223" border="0" cellpadding="0" cellspacing="0">
 			<tr>
-	    		<td width="260"><div align="center"><strong>Available Fields </strong><br />
-	      			<select id="Available" name="available" style="width:260px; height:200px;" 
-	      			multiple="multiple" onchange="unfreeze();" >
-						
+	    		<td width="260" align="center">
+    				<h4 style="display: inline;">Available Fields</h4>
+	      			<select id="availableFields" name="availableFields" style="width:260px; height:200px;" multiple="multiple" onchange="availableFieldsChanged();" >
 						<c:forEach var="field" items="${availableFields}">
-							<option> ${field} </option>
+							<option>${field}</option>
 						</c:forEach>
-						
 	      			</select> 
-	      			</div>
 	    		</td>
 	    		<td width="75px" align="center" valign="middle">
-		   			<input type="button" id="right" onclick="moveLeftRight($('Available'),$('Selected') );unfreeze();updatePreviewDiv($('preview'));" value="&rarr;" disabled="disabled"/><br />
-		    		<input type="button" id="left" onclick="moveLeftRight($('Selected'), $('Available'));unfreeze();updatePreviewDiv($('preview'));" value="&larr;" disabled="disabled"/>
-	    		<td width="260"><div id="selectedWordsDiv" style="color:black" align="center"><strong>Selected Fields </strong>
-	        		<select id="Selected" name="selected" style="width:260px; height:200px;"
-	        		 multiple="multiple" onchange="unfreeze();" >
-	        		 
-	        		 	<c:set var="i" value="0"/>
+		   			<input type="button" id="rightArrowButton" onclick="addToSelected();" value="&rarr;" disabled="disabled"/><br />
+		    		<input type="button" id="leftArrowButton" onclick="removeFromSelected();" value="&larr;" disabled="disabled"/>
+		    	</td>
+	    		<td width="260" align="center">
+    				<h4 style="display: inline;">Selected Fields</h4>
+	        		<select id="selectedFields" name="selectedFields" style="width:260px; height:200px;" multiple="multiple" onchange="selectedFieldsChanged()" >
 						<c:forEach var="field" items="${selectedFields}">
-							<option format="<c:out value="${field.format}" />" > ${field.name} </option>
-							<c:set var="i" value="${i+1}"/>
+							<option format="<c:out value="${field.format}" />" maxLength="<c:out value="${field.maxLength}" />" >${field.name}</option>
 						</c:forEach>
-						
-					</select> </div>
+					</select>
 	    		</td>
 	    		<td width="75px" align="center" valign="middle">
-	    			<input type="button" id="up" onclick="yukonGeneral_moveOptionPositionInSelect(Selected, -1);unfreeze();updatePreviewDiv($('preview'));" value="&uarr;" disabled="disabled"/><br/>
-	    			<input type="button" id="down" onclick="yukonGeneral_moveOptionPositionInSelect(Selected, 1);unfreeze();updatePreviewDiv($('preview'));" value="&darr;" disabled="disabled"/>
+	    			<input type="button" id="upArrowButton" onclick="yukonGeneral_moveOptionPositionInSelect(selectedFields, -1);selectedFieldsChanged();" value="&uarr;" disabled="disabled"/><br/>
+	    			<input type="button" id="downArrowButton" onclick="yukonGeneral_moveOptionPositionInSelect(selectedFields, 1);selectedFieldsChanged();" value="&darr;" disabled="disabled"/>
 	    		</td>
+	    		
 	    		<td align="center" valign="top" width="200px">
-	    			<div id="valueDiv" style="display:none"> 
+	    			<div id="valueFormatDiv" style="display:none"> 
 	    				<div id="valueWords"> </div>
-	    				<select id="valueReccomended" onchange="defaultFormatInitiater($('valueReccomended'), $('valueFormat'));">
+	    				<select id="valueFormatSelect" onchange="updateFormat(this, 'format');">
 	    					<option selected="selected">No Format</option>
 	    					<option>Custom</option>
 	    					<option>###.###</option>
 	    					<option>####.##</option>
 	    				</select> <br /> 
 	    				reading pattern: <br />
-	    				<input type="text" id="valueFormat" maxlength="30" value="" onkeyup="fieldFormatSaver($('valueFormat'));updatePreviewDiv($('preview'));" /> <br/>
+	    				<input type="text" id="valueFormat" maxlength="30" value="" onkeyup="updateFormat(this, 'format');" /> <br/>
+						max length (0 for no max): <br/>
+	    				<input type="text" id="maxLength" maxlength="30" value="" onkeyup="updateFormat(this, 'maxLength');" /> <br/>
 	    				<a href="javascript:displayHelper($('valueHelper'));">Help with pattern</a>  <br />
 	    			</div> 
-	    			<div id="timestampDiv" style="display:none"> 
+	    			<div id="timestampFormatDiv" style="display:none"> 
 	    				<div id="timestampWords"> </div>
-	    				<select id="timestampReccomended" onchange="defaultFormatInitiater($(timestampReccomended), $('timestampFormat'));">
+	    				<select id="timestampFormatSelect" onchange="updateFormat(this, 'format');">
 	    					<option selected="selected">No Format</option>
 	    					<option>Custom</option>
 	    					<option>dd/MM/yyyy</option>
@@ -129,12 +107,12 @@
 	    					<option>HH:mm:ss</option>
 	    				</select> <br /> 
 	    				timestamp pattern: <br/>
-	    				<input type="text" id="timestampFormat" maxlength="30" value="" onkeyup="fieldFormatSaver($('timestampFormat'));updatePreviewDiv($('preview'));"/> <br/> 
+	    				<input type="text" id="timestampFormat" maxlength="30" value="" onkeyup="updateFormat(this, 'format');"/> <br/> 
 	    				<a href="javascript:displayHelper($('timestampHelper'));" >Help with pattern</a> <br/>
 	    			</div>
 	    			<div id="plainTextDiv" style="display:none">
 	    				Plain Text Input:<br />
-	    				<input type="text" id="plainTextFormat" maxlength="30" value="" onkeyup="fieldFormatSaver($('plainTextFormat'));updatePreviewDiv($('preview'));">
+	    				<input type="text" id="plainTextFormat" maxlength="30" value="" onkeyup="updateFormat(this, 'format');">
 	    			</div>
 	    		</td>
 	  		</tr>
@@ -261,12 +239,10 @@
 			</div>
 		</div>
 		<hr>
-		<br />Preview Here:<br />
-		<br />
-		<div id="preview"><br/> <br/><br/></div>
-		<br />
+		<h3>Format Preview:</h3>
+		<div id="preview"></div>
 		<script type="text/javascript"> 
-			updatePreviewDiv($('preview'));
+			updatePreview();
 		</script>
 		
 	</form>

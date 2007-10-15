@@ -112,7 +112,7 @@ public final class DynamicBillingFileDaoImpl implements DynamicBillingFileDao {
 		}
 
 		// Execute the format update or insert
-		simpleJdbcTemplate.update(bffSql, format.getFormatType(), format.getFormatId());
+		simpleJdbcTemplate.update(bffSql, format.getName(), format.getFormatId());
 		simpleJdbcTemplate.update(dbfSql, format.getDelim(),
 				format.getHeader(), format.getFooter(), format.getFormatId());
 
@@ -120,13 +120,14 @@ public final class DynamicBillingFileDaoImpl implements DynamicBillingFileDao {
 		for (DynamicBillingField field : format.getFieldList()) {
 			int currentId = nextValueHelper.getNextValue("DynamicBillingField");
 			simpleJdbcTemplate.update(
-					"INSERT INTO DynamicBillingField (id, FormatID, FieldName, FieldOrder, FieldFormat) "
-						+ "VALUES(?,?,?,?,?)", 
+					"INSERT INTO DynamicBillingField (id, FormatID, FieldName, FieldOrder, FieldFormat, MaxLength) "
+						+ "VALUES(?,?,?,?,?,?)", 
 					currentId, 
 					format.getFormatId(),
 					field.getName(), 
 					field.getOrder(), 
-					field.getFormat());
+					field.getFormat(),
+                    field.getMaxLength());
 		}
 	}
 
@@ -164,7 +165,7 @@ public final class DynamicBillingFileDaoImpl implements DynamicBillingFileDao {
 			format.setDelim(rs.getString("Delimiter"));
 			format.setHeader(rs.getString("Header"));
 			format.setFooter(rs.getString("Footer"));
-			format.setFormatType(rs.getString("FormatType"));
+			format.setName(rs.getString("FormatType"));
 			format.setIsSystem(rs.getBoolean("SystemFormat"));
 			return format;
 		}
@@ -185,6 +186,7 @@ public final class DynamicBillingFileDaoImpl implements DynamicBillingFileDao {
 			field.setName(rs.getString("FieldName"));
 			field.setOrder(rs.getInt("FieldOrder"));
 			field.setFormat(rs.getString("FieldFormat"));
+			field.setMaxLength(rs.getInt("MaxLength"));
 			return field;
 		}
 

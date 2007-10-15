@@ -61,8 +61,8 @@ function unfreeze(){ //used to enable or disable buttons
 		     name="availableFormat" onchange="unfreeze();"  >
 		
 				<c:forEach var="elem" items="${allRows}">
-					<option value=${elem.formatId} isSystem=${elem.isSystem}> 
-						<c:out value="${elem.formatType}" /> 
+					<option value="${elem.formatId}" isSystem="${elem.isSystem}"> 
+						<c:out value="${elem.name}" /> 
 					</option>
 				</c:forEach>
 		

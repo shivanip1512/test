@@ -3,108 +3,155 @@ var canBeSaved = 0; //this indicate whether the format can be saved or not
 var prevHighlight = new Date(); //this is to indicate when is the last preview highlighting done
 var errorHighlight = new Date(); //this is to indicate when is the last error highlighting done
 
+// Method to add fields to the selected fields select input
+function addToSelected(){
+	
+	var fields = $F('availableFields');
+	var selectedFields = $('selectedFields');
+	
+	for(var i = 0;i < fields.length; i++){
+		var tempOption = document.createElement('option');
+		tempOption.text = fields[i];
+		tempOption.setAttribute("format","");
+		tempOption.setAttribute("maxLength","0");
+		
+		// IE hack
+		try {
+			selectedFields.add(tempOption, null);
+		}
+		catch(ex){
+			selectedFields.add(tempOption);
+		}
+	}
+	
+	availableFieldsChanged();
+}
 
-/* This function is to allow options in the select tags to move from
-*  start to target field
-*/
-function moveLeftRight(start, target){ 
-	var index = new Array();
-	var chosen = new Array();
-	index[0] = -1;
-	indexNo = 0;
-	var arSelected = new Array();
+// Method to remove fields from the selected fields select input
+function removeFromSelected(){
 	
-	// to remember all the selection of the user in the start select
-	for (var i = 0; i < start.options.length; i++){	
-		if (start.options[ i ].selected){
-			index[indexNo] = i;
-			indexNo ++;
+	var selectedFields = $('selectedFields');
+	
+	for(var i = selectedFields.options.length - 1;i>=0; i--){
+		if(selectedFields.options[i].selected){
+			selectedFields.remove(i);
 		}
 	}
-	indexNo = 0;
 	
-	//if no field is selected, the index returned is -1. exit function
-	if (index[0] == -1){
-		return;
+	selectedFieldsChanged();
+}
+
+function availableFieldsChanged() {
+
+	var availableFields = $('availableFields');
+
+	// Enable/Disable right arrow
+	var selectedAvailableFields = $F(availableFields);
+	if(selectedAvailableFields.length > 0) {
+		$('rightArrowButton').disabled = false;
+	} else {
+		$('rightArrowButton').disabled = true;
 	}
 	
-	//all the text selected by the user from the start table
-	for (var i = 0; i <index.length; i++){   
-		chosen[i] = start.options[index[i]].text;
-	}
-	
-	//initial array of the target fields
-	for (var i = 0; i < target.options.length; i++){   
-			arSelected.push(target.options[ i ].text);
-	}
-	
-	//make sure available fields don't get removed, but add it to the selected
-	if (target != $("Available")){ 
-	
-		//add to the available fields from selected fields
-		for (i = 0; i < chosen.length; i++){   
-			var tempOption = document.createElement('option');
-			tempOption.text = chosen[i];
-			tempOption.setAttribute("format","");
-			try{
-				target.add(tempOption, null);
+	updatePreview();
+} 
+
+function selectedFieldsChanged(){
+
+	var selectedFields = $('selectedFields');
+
+	// Enable/Disable left arrow
+	var selectedSelectedFields = $F(selectedFields);
+	if(selectedSelectedFields.length > 0) {
+		$('leftArrowButton').disabled = false;
+		
+		// Enable/Disable up arrow
+		if(selectedFields.selectedIndex == 0) {
+			$('upArrowButton').disabled = true;
+		} else {
+			$('upArrowButton').disabled = false;
+		}
+
+		// Enable/Disable down arrow
+		if(selectedFields[selectedFields.options.length - 1].selected) {
+			$('downArrowButton').disabled = true;
+		} else {
+			$('downArrowButton').disabled = false;
+		}
+
+		// Show format ui if applicable
+		if(selectedSelectedFields.length == 1) {
+			
+			var option = selectedFields.options[selectedFields.selectedIndex];
+			
+			var valueDiv = $("valueFormatDiv");
+			var timestampDiv = $("timestampFormatDiv");
+			var plainTextDiv = $("plainTextDiv");
+			
+			if(option.text.include('reading')) {
+				valueDiv.style.display = "block";
+				
+				var format = getAttributeValue(option, 'format');
+				var maxLength = getAttributeValue(option, 'maxLength');
+				$('valueFormat').value = format;
+				$('maxLength').value = maxLength;
+
+				selectFormatOption($('valueFormatSelect'), format)
+			} else {
+				valueDiv.style.display = "none";
 			}
-			catch(ex){
-				target.add(tempOption);
+
+			if(option.text.include('timestamp')) {
+				timestampDiv.style.display = "block";
+				var format = getAttributeValue(option, 'format');
+				$('timestampFormat').value = format;
+				selectFormatOption($('timestampFormatSelect'), format)
+			} else {
+				timestampDiv.style.display = "none";
+			}
+
+			if(option.text == 'Plain Text') {
+				plainTextDiv.style.display = "block";
+				var format = getAttributeValue(option, 'format');
+				$('plainTextFormat').value = format;
+			} else {
+				plainTextDiv.style.display = "none";
 			}
 		}
+		
+	} else {
+		$('leftArrowButton').disabled = true;
 	}
-	
-	//if it is from selected, remove them
-	else{
-		for( i = 0; i<index.length ; i++){
-			index[i] = index[i] - i;
-			start.remove(index[i]);
-		}
-	}
+
+	updatePreview();
 }
 
 function saveButton(){
 	$("begin").action = "save";
 	save();
-	var name="";
-	var error = 0;
-	var msg1 = "";
-	var msg2 = "";
-	var msg3 = "";
+	var errorMsg = "";
 	
-	$('nameWordsDiv').style.color = "black";
-	$('selectedWordsDiv').style.color = "black";
-	
-	name = $("formatType").value;
+	var name = $("formatName").value;
 	$('errorMsg').innerHTML = "&nbsp;";
 	
 	//name and fields cannot be empty;
-	if ($("Selected").length == 0){
-		msg1 = "Must select at least 1 field in Selected Fields <br/>";
-		$('selectedWordsDiv').style.color = "red";
-		error = 1;
+	if ($("selectedFields").length == 0){
+		errorMsg += "Must select at least 1 field in Selected Fields <br/>";
 	}
-	if (name.blank() == true){
-		msg2 = "Name cannot be empty <br/>";
-		$("formatType").value = "";
-		$('nameWordsDiv').style.color = "red";
-		error = 1;
+	if (name.blank()){
+		errorMsg += "Name cannot be empty <br/>";
+		$("formatName").value = "";
 	}
 	if (name.length > 100){
-		msg2 = "Name cannot be longer than 100 characters <br/>";
-		$('nameWordsDiv').style.color = "red";
-		error = 1;
+		errorMsg += "Name cannot be longer than 100 characters <br/>";
 	}
 	//see whether fields + patterns can be saved or not
 	if ( canBeSaved == 0 ){
-		msg3 = "invalid pattern detected. please check the pattern <br/>";
-		$('selectedWordsDiv').style.color = "red";
-		error = 1;
+		errorMsg += "invalid pattern detected. please check the pattern <br/>";
 	}
 	
-	if (error == 1){
-		$('errorMsg').innerHTML = "Error in saving: <br />" + msg2 + msg1 + msg3 +"<br/>";
+	if (errorMsg.length > 0){
+		$('errorMsg').innerHTML = "Error saving format: <br />" + errorMsg + "<br/>";
 		var currTime = new Date();
 		//check if it's less than 2 sec = 2000 ms
 		if ( currTime - errorHighlight < 2000){
@@ -122,46 +169,47 @@ function saveButton(){
 	}
 }
 
-//making sure everything that needs to be submitted are saved and ready
-//save everything field and it's associated format into our array
 function save(){
 	
-	//see prototype documentation - this basically initialises an object array
-	var ourArray = $A(); 
-	
+	var fieldArray = $A(); 
+	var selectedFields = $("selectedFields");
 	//save all options in the selected select tag into array
-	for( i = 0; i < $("Selected").length; i++){
-		var oneEntry = $H(); //this initialises a hash
-		oneEntry.field = $("Selected").options[i].text;
-		if ($($("Selected").options[i]).readAttribute('format') == null){
-			oneEntry.format = "";
-		}
-		else{
-			oneEntry.format = $($("Selected").options[i]).readAttribute('format');
-		}
-		ourArray.push(oneEntry);
+	for( i = 0; i < selectedFields.length; i++){
+		
+		var currentField = $H();
+		var currentOption = $(selectedFields.options[i]);
+		
+		currentField.field = currentOption.text;
+		
+		currentField.format = getAttributeValue(currentOption, 'format');
+		currentField.maxLength = getAttributeValue(currentOption, 'maxLength');
+		
+		fieldArray.push(currentField);
 	}
 	
-	//turn our array into JSON string format
-	$("fieldArray").value = ourArray.toJSON();
+	// Set value of fieldArray to be submitted with form on save
+	$("fieldArray").value = fieldArray.toJSON();
+
+}
+
+function getAttributeValue(option, attribute){
 	
-	//save the delimiter. if a choice is made, use it, if not, then whatever the user puts
-	if ( $("delimiterChoice").options[$("delimiterChoice").selectedIndex].text.include("Custom") == true){
-		$("delimiter").value = $("delimiterMade").value;
+	var value = option.readAttribute(attribute);
+	
+	if(value == null){
+		return "";
 	}
-	else{
-		$("delimiter").value = $("delimiterChoice").options[$("delimiterChoice").selectedIndex].value;
-	}
+	
+	return value;
+	
 }
 
 function cancelButton() {
-	$("begin").action = "overview";
-	
-	document.begin.submit();
+	window.location = "/spring/dynamicBilling/overview";
 }
 
 function deleteButton(){
-	formatId = $("availableFormat").value;
+	formatId = $("formatId").value;
 	
 	//if no format, just return to overview. otherwise, delete the format
 	if (formatId == -1){
@@ -174,206 +222,55 @@ function deleteButton(){
 	document.begin.submit();
 }
 
-//used to enable or disable selection arrows
-function unfreeze(){ 
-	var sel = "";
-	var index = new Array();
-	index[0] = -1;
-	indexNo = 0;
-	
-	//used to determine how many are selected in the select tag
-	for (var i = 0; i < $("Selected").options.length; i++){	
-		if ($("Selected").options[ i ].selected){
-			index[indexNo] = i;
-			indexNo ++;
-		}
-	}
-	
-	//if nothing is selected in available, disable right arrow button.
-	if ($("Available").selectedIndex >=0) {
-		$("right").disabled = false;
-	}else{
-		$("right").disabled = true;
-	}
-	
-	//if nothing is selected in selected tag, disable left arrow button
-	if( $("Selected").selectedIndex >=0 ){
-		$("left").disabled = false;
-		
-		//to enable or disable up and down arrow button for reordering fields
-		if ( $("Selected").selectedIndex == 0 || index.last() == $("Selected").options.length - 1){
-			
-			//combined selection is at the top
-			if ( $("Selected").selectedIndex == 0){ 
-				$("up").disabled = true;
-				$("down").disabled = false;
-			}
-			
-			//combined selection is at the bottom
-			if ( index.last() == $("Selected").options.length - 1) { 
-				$("down").disabled = true;
-				$("up").disabled = false;
-			}
-			
-			//either all are selected or top and bottom are both selected
-			if ($("Selected").selectedIndex == 0 && index.last() == $("Selected").options.length - 1 ){ 
-				$("up").disabled = true;
-				$("down").disabled = true;
-			}
-		}
-		
-		//anywhere else in Selected is selected
-		if ( $("Selected").selectedIndex > 0 && index.last() < ($("Selected").length - 1)  ){ 
-			$("up").disabled = false;
-			$("down").disabled = false;
-		}
-		
-		//only 1 selection has been made, let them view the field format text input
-		//if there is reading or timestamp format associated with the field
-		if (indexNo == 1){ 
-			sel = $("Selected").options[$("Selected").selectedIndex].text;
-			
-			//a field with reading has been selected
-			if (sel.include('reading') == true){ 
-				$("valueDiv").style.display = "block";
-				$("timestampDiv").style.display = "none";
-				$("plainTextDiv").style.display = "none";
-				seeFieldFormat($("valueFormat"), $("valueReccomended"));
-				$("valueWords").innerHTML = "Reading Pattern for: " + sel;
-			}
-			
-			//a field with timestamp has been selected
-			if (sel.include('timestamp') == true){ 
-				$("timestampDiv").style.display = "block";
-				$("valueDiv").style.display = "none";
-				$("plainTextDiv").style.display = "none";
-				seeFieldFormat($("timestampFormat"), $("timestampReccomended"));
-				$("timestampWords").innerHTML = "Timestamp Pattern for: " + sel;
-			}
-			
-			//plain text input has been selected
-			if (sel.include('Plain Text') == true){
-				$("plainTextDiv").style.display = "block";
-				$("valueDiv").style.display = "none";
-				$("timestampDiv").style.display = "none";
-				seeFieldFormat($("plainTextFormat"), "");
-			}
-			
-			//no formatting found.
-			if (sel.include('timestamp') == false && sel.include('reading') == false 
-				&& sel.include('Plain Text') == false) {
-				$("valueDiv").style.display = "none";
-				$("plainTextDiv").style.display = "none";
-				$("timestampDiv").style.display = "none";
-			}
-		}
-		
-		//more than 1 selection has been made, don't display the format editor
-		else{
-			$("valueDiv").style.display = "none";
-			$("plainTextDiv").style.display = "none";
-			$("timestampDiv").style.display = "none";
-		}
-		
-	//nothing is selected, disable all buttons
-	}else{
-		$("left").disabled = true;
-		$("up").disabled = true;
-		$("down").disabled = true;
-		$("valueDiv").style.display = "none";
-		$("timestampDiv").style.display = "none";
-		$("plainTextDiv").style.display = "none";
-	}
-}
-
 //to disable or enable delimiter input textbox
-function unfreezeDelim(){
-	var dChoice = "";
-	dChoice = $("delimiterChoice").options[$("delimiterChoice").selectedIndex].text;
-	if ( dChoice.include("Custom") == true){
-		$("delimiterMade").disabled = false;
-		$("delimiterMade").value = "";
-		$("delimiter").value = "";
-		$("delimiterMade").focus();
+function updateDelimiter(){
+
+	var selection = $F("delimiterChoice");
+	var delimiter = $("delimiter");
+	
+	if (selection == 'Custom'){
+		delimiter.readOnly = false;
+		delimiter.value = "";
+		delimiter.focus();
+	} else {
+		delimiter.readOnly = 'readOnly';
+		delimiter.value = $F("delimiterChoice");
 	}
-	else{
-		$("delimiterMade").disabled = true;
-		$("delimiterMade").value = $("delimiterChoice").options[$("delimiterChoice").selectedIndex].value;
-	}
-	updatePreviewDiv($('preview'));
+	updatePreview();
 }
 
+function updateFormat(input, attribute){ 
 
-
-//save the format into the correct selected fields option
-function fieldFormatSaver(input){ 
-	if ($("Selected").selectedIndex == -1){
-		return;
-	}
-	else{
-		$("Selected").options[$("Selected").selectedIndex].setAttribute("format",input.value);
+	var selectedFields = $("selectedFields");
+	var index = selectedFields.selectedIndex;
+	if (index != -1){
+		selectedFields.options[index].setAttribute(attribute, input.value);
 	}
 	
 	//make sure to save to the array 
 	save(); 
+	
+	updatePreview();
 }
 
-
-//to initialise the default format as well as to update whenever a user choose
-//from a dropdown list
-function defaultFormatInitiater( select, inputText){
-	if (select.options[select.selectedIndex].text == "No Format") {
-		inputText.value = "";
-	}
-	else if(select.options[select.selectedIndex].text.include("Custom") == true){
-		inputText.value = "";
-		inputText.focus();
-	}
-	else{
-		inputText.value = select.options[select.selectedIndex].text;
-	}
-	//save the input text as the format
-	fieldFormatSaver(inputText);
-
-	//update the ajax request
-	updatePreviewDiv($('preview'));
-}
-
-// function to display format associated with the field in input textbox
-function seeFieldFormat(inputTag, selectionTag){ 
-	var selFormat = "";
-	var test = $("Selected").options;
-	selFormat = $($("Selected").options[$("Selected").selectedIndex]).readAttribute('format');
+function selectFormatOption(select, value) { 
 	
-	//if no format yet, give it nothing .
-	if (selFormat == "" || selFormat == null){
-		inputTag.value = "";
-		selectionTag.selectedIndex = 0;
-		return;
+	if(value == '') {
+		value = 'No Format';
 	}
-
-	//display the tag if there is a format associated
-	else {
-	
-		inputTag.value = selFormat;
-		
-		//assume it is custom format until proven otherwise
-		selectionTag.selectedIndex = 1;
-		
-		//check if the format is the same as any of the selection
-		//if it is the same, make the selection same like the input
-		for (i = 0; i<selectionTag.length; i++){
-			if (selectionTag.options[i].text == inputTag.value){
-				selectionTag.selectedIndex = i;
-				break;
-			}
+	for (var i = 0; i < select.options.length; i++){
+		if (select.options[i].text == value){
+			select.selectedIndex = i;
+			return;
 		}
 	}
+	select.selectedIndex = 1;
 }
 
-//preview in this case is the container for the ajax output. 
-//the result is displayed in the parameter passed to this function
-function updatePreviewDiv(theDiv){
+function updatePreview(){
+	
+	var theDiv = $('preview');
+
 	var stringOutput = "";
 	
 	//save everything first so that everything that can be submitted is up to date 
@@ -407,21 +304,19 @@ function updatePreviewDiv(theDiv){
 				fieldArray : $("fieldArray").value, 
 				
 				//this is format id, -1 if new format creation
-				availableFormat: $("availableFormat").value, 
-				formatType: $("formatType").value
+				formatId: $("formatId").value, 
+				formatName: $("formatName").value
 			}
 		}
 	);
 	var currTime = new Date();
 	if ( currTime - prevHighlight < 1000){
-			//do nothing
-		}
-		else{
-		
-			//do highlighting and set new date 
-			new Effect.Highlight(theDiv, {'duration': 1, 'startcolor': '#FFE900'});
-			prevHighlight = new Date();
-		}
+		//do nothing
+	} else {
+		//do highlighting and set new date 
+		new Effect.Highlight(theDiv, {'duration': 1, 'startcolor': '#FFE900'});
+		prevHighlight = new Date();
+	}
 }
 
 //Helper function to make a html element display appear or disappear

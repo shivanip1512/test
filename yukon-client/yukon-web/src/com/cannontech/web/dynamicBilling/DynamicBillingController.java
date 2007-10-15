@@ -11,9 +11,11 @@ import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
 
 import net.sf.json.JSONArray;
+import net.sf.json.JSONObject;
 
 import org.apache.commons.lang.NotImplementedException;
 import org.apache.commons.lang.StringEscapeUtils;
+import org.apache.commons.lang.StringUtils;
 import org.springframework.web.bind.ServletRequestBindingException;
 import org.springframework.web.bind.ServletRequestUtils;
 import org.springframework.web.servlet.ModelAndView;
@@ -71,9 +73,8 @@ public class DynamicBillingController extends MultiActionController {
 		ModelAndView mav = new ModelAndView("redirect:overview.jsp");
 
 		// delete the selected format
-		int fID = ServletRequestUtils.getIntParameter(request,
-				"availableFormat");
-		dynamicBillingFileDao.delete(fID);
+		int formatId = ServletRequestUtils.getIntParameter(request, "formatId");
+		dynamicBillingFileDao.delete(formatId);
 
 		// retrieve the new list of format names after deletion
 		List<DynamicFormat> allRows = dynamicBillingFileDao.retrieveAll();
@@ -139,7 +140,7 @@ public class DynamicBillingController extends MultiActionController {
 		// retrieve the format information, 
 		// assert that this is a clone into the name
 		DynamicFormat formatSelected = dynamicBillingFileDao.retrieve(fID);
-		formatSelected.setFormatType(formatSelected.getFormatType()
+		formatSelected.setName(formatSelected.getName()
 				+ " (copy)");
 
 		// to give it new format id, give it -1
@@ -272,25 +273,15 @@ public class DynamicBillingController extends MultiActionController {
 		DynamicFormat format = new DynamicFormat();
 		List<DynamicBillingField> fieldList = new ArrayList<DynamicBillingField>();
 
-		format.setFormatId(ServletRequestUtils.getIntParameter(request,
-				"availableFormat"));
-
-		format.setFormatType(ServletRequestUtils.getStringParameter(
-				request, "formatType"));
-
-		format.setFooter(ServletRequestUtils.getStringParameter(request,
-				"footer"));
-
-		format.setHeader(ServletRequestUtils.getStringParameter(request,
-				"header"));
-
-		format.setDelim(ServletRequestUtils.getStringParameter(request,
-				"delimiter"));
+		format.setFormatId(ServletRequestUtils.getIntParameter(request, "formatId"));
+		format.setName(ServletRequestUtils.getStringParameter( request, "formatName"));
+		format.setFooter(ServletRequestUtils.getStringParameter(request, "footer"));
+		format.setHeader(ServletRequestUtils.getStringParameter(request, "header"));
+		format.setDelim(ServletRequestUtils.getStringParameter(request, "delimiter"));
 
 		// selectedFields is an JSON String representation containing the fields
 		// that customer chooses
-		String selectedFields = ServletRequestUtils.getStringParameter(request,
-				"fieldArray");
+		String selectedFields = ServletRequestUtils.getStringParameter(request, "fieldArray");
 		JSONArray myJSONArray = new JSONArray(selectedFields);
 
 		// for loop for temporarily saving the selected fields, as well as the
@@ -300,8 +291,16 @@ public class DynamicBillingController extends MultiActionController {
 			field.setFormat("");
 			field.setFormatId(format.getFormatId());
 			field.setOrder(i);
-			field.setName(myJSONArray.getJSONObject(i).getString("field"));
-			field.setFormat(myJSONArray.getJSONObject(i).getString("format"));
+			
+            JSONObject object = myJSONArray.getJSONObject(i);
+            
+            field.setName(object.getString("field"));
+			field.setFormat(object.getString("format"));
+            
+            String maxLength = object.getString("maxLength");
+            if(!StringUtils.isEmpty(maxLength)) {
+                field.setMaxLength(Integer.valueOf(maxLength));
+            }
 			fieldList.add(i, field);
 		}
 		format.setFieldList(fieldList);
@@ -346,7 +345,7 @@ public class DynamicBillingController extends MultiActionController {
 		// Add total consumption
 		BillingData data = new BillingData();
 		data.setData("total kWh");
-		data.setValue(12345.0123);
+		data.setValue(123456789.0123);
 		data.setUnitOfMeasure(1);
 		data.setTimestamp(new Timestamp(new Date().getTime()));
 
@@ -355,7 +354,7 @@ public class DynamicBillingController extends MultiActionController {
 		// Add rate A consumption
 		data = new BillingData();
 		data.setData("rate A kWh");
-		data.setValue(12345.12345);
+		data.setValue(123456789.12345);
 		data.setUnitOfMeasure(1);
 		data.setTimestamp(new Timestamp(new Date().getTime()));
 
@@ -364,7 +363,7 @@ public class DynamicBillingController extends MultiActionController {
 		// Add rate B consumption
 		data = new BillingData();
 		data.setData("rate B kWh");
-		data.setValue(12345.54321);
+		data.setValue(123456789.54321);
 		data.setUnitOfMeasure(1);
 		data.setTimestamp(new Timestamp(new Date().getTime()));
 
@@ -373,7 +372,7 @@ public class DynamicBillingController extends MultiActionController {
 		// Add rate C consumption
 		data = new BillingData();
 		data.setData("rate C kWh");
-		data.setValue(0.01234);
+		data.setValue(123456789.01234);
 		data.setUnitOfMeasure(1);
 		data.setTimestamp(new Timestamp(new Date().getTime()));
 
@@ -382,7 +381,7 @@ public class DynamicBillingController extends MultiActionController {
 		// Add rate D consumption
 		data = new BillingData();
 		data.setData("rate D kWh");
-		data.setValue(12345.0);
+		data.setValue(123456789.0);
 		data.setUnitOfMeasure(1);
 		data.setTimestamp(new Timestamp(new Date().getTime()));
 
