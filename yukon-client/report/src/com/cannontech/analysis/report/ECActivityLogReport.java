@@ -287,8 +287,8 @@ public class ECActivityLogReport extends YukonReportBase
 			Map.Entry entry = ((Map.Entry)iter.next());
 
 			factory = ReportFactory.createGroupLabelElementDefault(entry.getKey().toString(), 
-				getModel().getColumnProperties(ActivityModel.ACTION_COLUMN).getPositionX(), 
-				offset, getModel().getColumnProperties(ActivityModel.ACTION_COLUMN).getWidth());
+				180, offset, 300);
+            factory.setHorizontalAlignment(ElementAlignment.RIGHT);
 			footer.addElement(factory.createElement());
 			
 			factory = ReportFactory.createGroupLabelElementDefault(entry.getValue().toString(), 
