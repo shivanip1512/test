@@ -6,8 +6,8 @@
 *
 * PVCS KEYWORDS:
 * ARCHIVE      :  $Archive$
-* REVISION     :  $Revision: 1.210 $
-* DATE         :  $Date: 2007/09/10 15:07:14 $
+* REVISION     :  $Revision: 1.211 $
+* DATE         :  $Date: 2007/10/15 22:24:11 $
 *
 * Copyright (c) 1999, 2000, 2001 Cannon Technologies Inc. All rights reserved.
 *-----------------------------------------------------------------------------*/
@@ -1782,6 +1782,7 @@ INT CommunicateDevice(CtiPortSPtr Port, INMESS *InMessage, OUTMESS *OutMessage, 
 
                         if( (status = InitializeHandshake (Port, Device, traceList)) == NORMAL )
                         {
+                            IED->resetHandshakesRemaining();
                             if(!Port->isDialup())
                             {
                                 DeviceManager.apply( ApplyTapLoggedOn, (void*)(Port->getPortID()) );
@@ -1823,6 +1824,19 @@ INT CommunicateDevice(CtiPortSPtr Port, INMESS *InMessage, OUTMESS *OutMessage, 
 
                             if(status == NORMAL)
                                 status = dcstat;
+                        }
+                        else
+                        {
+                            if( IED->getHandshakesRemaining() <= 0 )
+                            {
+                                IED->setLogOnNeeded(TRUE);      // We did not come through it cleanly, let's kill this connection.
+                                Port->setConnectedDevice(0);
+                                IED->resetHandshakesRemaining();
+                            }
+                            else
+                            {
+                                IED->decreaseHandshakesRemaining();
+                            }
                         }
 
                         IED->freeDataBins();

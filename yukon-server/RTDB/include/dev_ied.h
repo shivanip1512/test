@@ -9,8 +9,8 @@
 *
 * PVCS KEYWORDS:
 * ARCHIVE      :  $Archive:   Z:/SOFTWAREARCHIVES/YUKON/DATABASE/INCLUDE/tbl_alm_nloc.h-arc  $
-* REVISION     :  $Revision: 1.11 $
-* DATE         :  $Date: 2006/09/26 14:24:04 $
+* REVISION     :  $Revision: 1.12 $
+* DATE         :  $Date: 2007/10/15 22:24:11 $
 *
 * Copyright (c) 1999 Cannon Technologies Inc. All rights reserved.
 *-----------------------------------------------------------------------------*/
@@ -31,6 +31,7 @@
 
 class CtiPort;
 class CtiDeviceBase;
+static const string TAP_HANDSHAKE_CPARM = "TAP_HANDSHAKE_FAIL_COUNT";
 
 class CtiDeviceIED : public CtiDeviceRemote
 {
@@ -175,6 +176,7 @@ private:
 
     // number of attempts to communicate to device
     INT                        _attemptsRemaining;
+    INT                        _handshakesRemaining;
 
     //  current command
     CtiMeterCmdStates_t        _currentCommand;
@@ -374,6 +376,10 @@ public:
     }
 
     virtual string getPassword() const       { return getIED().getPassword(); }
+
+    int getHandshakesRemaining() const { return _handshakesRemaining; }
+    void resetHandshakesRemaining() { _handshakesRemaining = gConfigParms.getValueAsInt(TAP_HANDSHAKE_CPARM, 4); }
+    void decreaseHandshakesRemaining() { _handshakesRemaining--; }
 
 };
 #endif // #ifndef __DEV_IED_H__
