@@ -13,7 +13,7 @@ import org.springframework.web.servlet.ModelAndView;
 
 import com.cannontech.amr.meter.dao.MeterDao;
 import com.cannontech.amr.meter.model.Meter;
-import com.cannontech.common.device.groups.dao.DeviceGroupDao;
+import com.cannontech.common.device.groups.dao.DeviceGroupProviderDao;
 import com.cannontech.common.device.groups.editor.dao.DeviceGroupEditorDao;
 import com.cannontech.common.device.groups.editor.dao.DeviceGroupMemberEditorDao;
 import com.cannontech.common.device.groups.editor.model.StoredDeviceGroup;
@@ -26,7 +26,7 @@ import com.cannontech.web.widget.support.WidgetParameterHelper;
  */
 public class DeviceGroupWidget extends WidgetControllerBase {
 
-    private DeviceGroupDao deviceGroupDao;
+    private DeviceGroupProviderDao deviceGroupDao;
     private DeviceGroupEditorDao deviceGroupEditorDao;
     private DeviceGroupMemberEditorDao deviceGroupMemberEditorDao;
     private MeterDao meterDao;
@@ -145,7 +145,7 @@ public class DeviceGroupWidget extends WidgetControllerBase {
     }
 
     @Required
-    public void setDeviceGroupDao(DeviceGroupDao deviceGroupDao) {
+    public void setDeviceGroupDao(DeviceGroupProviderDao deviceGroupDao) {
         this.deviceGroupDao = deviceGroupDao;
     }
 
