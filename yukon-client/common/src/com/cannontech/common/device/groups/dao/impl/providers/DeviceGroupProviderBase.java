@@ -1,23 +1,39 @@
 package com.cannontech.common.device.groups.dao.impl.providers;
 
+import java.util.ArrayList;
 import java.util.List;
 
+import org.apache.commons.lang.StringUtils;
 import org.springframework.beans.factory.annotation.Required;
 
 import com.cannontech.common.device.YukonDevice;
-import com.cannontech.common.device.groups.dao.DeviceGroupDao;
+import com.cannontech.common.device.groups.dao.DeviceGroupProviderDao;
 import com.cannontech.common.device.groups.model.DeviceGroup;
 import com.cannontech.common.util.MappingList;
 import com.cannontech.common.util.ObjectMapper;
-import com.cannontech.common.util.SqlStatementBuilder;
 import com.cannontech.core.dao.NotFoundException;
 
-public abstract class DeviceGroupDaoBase implements DeviceGroupProvider {
-    private DeviceGroupDao mainDelegator;
+public abstract class DeviceGroupProviderBase implements DeviceGroupProvider {
+    
+    private DeviceGroupProviderDao mainDelegator;
 
     public abstract List<YukonDevice> getChildDevices(DeviceGroup group);
+    
+    public abstract String getChildDeviceGroupSqlWhereClause(DeviceGroup group, String identifier);
 
     public abstract List<? extends DeviceGroup> getChildGroups(DeviceGroup group);
+    
+    public String getDeviceGroupSqlWhereClause(DeviceGroup group, String identifier) {
+        List<String> whereClauseList = new ArrayList<String>();
+        whereClauseList.add(getChildDeviceGroupSqlWhereClause(group, identifier));
+        
+        List<? extends DeviceGroup> childGroups = getChildGroups(group);
+        for (DeviceGroup childGroup : childGroups) {
+            whereClauseList.add(mainDelegator.getDeviceGroupSqlWhereClause(childGroup, identifier));
+        }
+        String whereClause = StringUtils.join(whereClauseList, " OR ");
+        return whereClause;
+    }
     
     public DeviceGroup getGroup(DeviceGroup base, String groupName) {
         List<? extends DeviceGroup> childGroups = getChildGroups(base);
@@ -27,12 +43,6 @@ public abstract class DeviceGroupDaoBase implements DeviceGroupProvider {
             }
         }
         throw new NotFoundException("Group " + groupName + " wasn't found under " + base);
-    }
-
-    public String getDeviceGroupSqlInClause(DeviceGroup group) {
-        List<Integer> devices = getDeviceIds(group);
-        String idString = SqlStatementBuilder.convertToSqlLikeList(devices);
-        return idString;
     }
 
     public List<Integer> getDeviceIds(DeviceGroup group) {
@@ -56,12 +66,11 @@ public abstract class DeviceGroupDaoBase implements DeviceGroupProvider {
     }
     
     @Required
-    public void setMainDelegator(DeviceGroupDao mainDelegator) {
+    public void setMainDelegator(DeviceGroupProviderDao mainDelegator) {
         this.mainDelegator = mainDelegator;
     }
-    
-    protected DeviceGroupDao getMainDelegator() {
-        return this.mainDelegator;
-    }
 
+	public DeviceGroupProviderDao getMainDelegator() {
+		return mainDelegator;
+	}
 }

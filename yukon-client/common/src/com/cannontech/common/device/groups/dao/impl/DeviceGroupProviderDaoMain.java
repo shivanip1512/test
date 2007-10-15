@@ -2,7 +2,6 @@ package com.cannontech.common.device.groups.dao.impl;
 
 import java.util.ArrayList;
 import java.util.Collection;
-import java.util.HashSet;
 import java.util.List;
 import java.util.Map;
 import java.util.Set;
@@ -10,13 +9,13 @@ import java.util.Set;
 import org.springframework.beans.factory.annotation.Required;
 
 import com.cannontech.common.device.YukonDevice;
-import com.cannontech.common.device.groups.dao.DeviceGroupDao;
+import com.cannontech.common.device.groups.dao.DeviceGroupProviderDao;
 import com.cannontech.common.device.groups.dao.DeviceGroupType;
 import com.cannontech.common.device.groups.dao.impl.providers.DeviceGroupProvider;
 import com.cannontech.common.device.groups.dao.impl.providers.StaticDeviceGroupProvider;
 import com.cannontech.common.device.groups.model.DeviceGroup;
 
-public class DeviceGroupDaoMain implements DeviceGroupDao {
+public class DeviceGroupProviderDaoMain implements DeviceGroupProviderDao {
     private Map<DeviceGroupType, DeviceGroupProvider> providers;
     private StaticDeviceGroupProvider staticProvider;
 
@@ -28,8 +27,12 @@ public class DeviceGroupDaoMain implements DeviceGroupDao {
         return getProvider(group).getChildGroups(group);
     }
 
-    public String getDeviceGroupSqlInClause(DeviceGroup group) {
-        return getProvider(group).getDeviceGroupSqlInClause(group);
+    public String getDeviceGroupSqlWhereClause(DeviceGroup group, String identifier) {
+        return getProvider(group).getDeviceGroupSqlWhereClause(group, identifier);
+    }
+
+    public String getChildDeviceGroupSqlWhereClause(DeviceGroup group, String identifier) {
+        return getProvider(group).getChildDeviceGroupSqlWhereClause(group, identifier);
     }
 
     public List<Integer> getDeviceIds(DeviceGroup group) {

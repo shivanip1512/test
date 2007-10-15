@@ -3,12 +3,9 @@ package com.cannontech.analysis.tablemodel;
 import java.sql.ResultSet;
 import java.sql.Timestamp;
 import java.text.SimpleDateFormat;
-import java.util.Arrays;
 import java.util.Calendar;
 import java.util.Date;
 import java.util.GregorianCalendar;
-import java.util.List;
-import java.util.Set;
 
 import javax.servlet.http.HttpServletRequest;
 
@@ -16,7 +13,6 @@ import com.cannontech.amr.meter.model.Meter;
 import com.cannontech.analysis.ColumnProperties;
 import com.cannontech.analysis.data.device.MeterAndPointData;
 import com.cannontech.clientutils.CTILogger;
-import com.cannontech.common.device.groups.model.DeviceGroup;
 import com.cannontech.common.device.groups.service.DeviceGroupService;
 import com.cannontech.common.util.CtiUtilities;
 import com.cannontech.database.PoolManager;
@@ -185,14 +181,10 @@ public class PointDataIntervalModel extends ReportModelBase
             final String[] groups = getBillingGroups();
             
 			if (groups != null && groups.length > 0) {
-			    sql.append(" AND PAO.PAOBJECTID = DMG.DEVICEID AND PAO.PAOBJECTID IN (");
-				
-                List<String> deviceGroupNames = Arrays.asList(groups);
-                Set<? extends DeviceGroup> deviceGroups = deviceGroupService.resolveGroupNames(deviceGroupNames);
-                String deviceGroupSqlInClause = deviceGroupService.getDeviceGroupSqlInClause(deviceGroups);
-                sql.append(deviceGroupSqlInClause);
+			    sql.append(" AND PAO.PAOBJECTID = DMG.DEVICEID ");
 
-                sql.append(") ");
+                String deviceGroupSqlWhereClause = getGroupSqlWhereClause("PAO.PAOBJECTID");
+                sql.append(" AND " + deviceGroupSqlWhereClause);
 			}
 			//Use paoIDs in query if they exist			
 			if( getPaoIDs() != null && getPaoIDs().length > 0)

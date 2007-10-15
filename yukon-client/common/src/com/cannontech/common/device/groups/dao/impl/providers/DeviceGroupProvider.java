@@ -10,7 +10,8 @@ import com.cannontech.core.dao.NotFoundException;
 public interface DeviceGroupProvider {
     public List<Integer> getDeviceIds(DeviceGroup group);
     public List<YukonDevice> getDevices(DeviceGroup group);
-    public String getDeviceGroupSqlInClause(DeviceGroup group);
+    public String getChildDeviceGroupSqlWhereClause(DeviceGroup group, String identifier);    
+    public String getDeviceGroupSqlWhereClause(DeviceGroup group, String identifier);
     public List<? extends DeviceGroup> getChildGroups(DeviceGroup group);
     public List<YukonDevice> getChildDevices(DeviceGroup group);
     public DeviceGroup getGroup(DeviceGroup base, String groupName) throws NotFoundException;

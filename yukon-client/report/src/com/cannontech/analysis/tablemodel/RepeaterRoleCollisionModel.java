@@ -4,8 +4,6 @@ import java.sql.SQLException;
 import java.util.Enumeration;
 import java.util.Vector;
 
-import org.springframework.jdbc.support.JdbcUtils;
-
 import com.cannontech.analysis.ColumnProperties;
 import com.cannontech.analysis.data.device.RepeaterRoleCollisionData;
 import com.cannontech.clientutils.CTILogger;

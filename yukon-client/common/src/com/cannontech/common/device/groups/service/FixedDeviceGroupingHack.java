@@ -8,7 +8,7 @@ import org.springframework.beans.factory.annotation.Required;
 import org.springframework.jdbc.core.simple.SimpleJdbcOperations;
 
 import com.cannontech.common.device.YukonDevice;
-import com.cannontech.common.device.groups.dao.DeviceGroupDao;
+import com.cannontech.common.device.groups.dao.DeviceGroupProviderDao;
 import com.cannontech.common.device.groups.dao.DeviceGroupType;
 import com.cannontech.common.device.groups.editor.dao.DeviceGroupEditorDao;
 import com.cannontech.common.device.groups.editor.dao.DeviceGroupMemberEditorDao;
@@ -25,7 +25,7 @@ import com.cannontech.core.dao.NotFoundException;
 @Deprecated
 public class FixedDeviceGroupingHack {
     private DeviceGroupService deviceGroupService;
-    private DeviceGroupDao deviceGroupDao;
+    private DeviceGroupProviderDao deviceGroupDao;
     private DeviceGroupEditorDao deviceGroupEditorDao;
     private DeviceGroupMemberEditorDao deviceGroupMemberEditorDao;
     private SimpleJdbcOperations jdbcTemplate;
@@ -122,7 +122,7 @@ public class FixedDeviceGroupingHack {
     }
     
     @Required
-    public void setDeviceGroupDao(DeviceGroupDao deviceGroupDao) {
+    public void setDeviceGroupDao(DeviceGroupProviderDao deviceGroupDao) {
         this.deviceGroupDao = deviceGroupDao;
     }
     

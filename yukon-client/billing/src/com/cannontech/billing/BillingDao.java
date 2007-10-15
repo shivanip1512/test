@@ -335,17 +335,14 @@ public class BillingDao {
     private static String getDeviceMeterGroupWhereClause(BillingFileDefaults defaults) {
         DeviceGroupService deviceGroupService = YukonSpringHook.getBean("deviceGroupService", DeviceGroupService.class);
 
-        StringBuffer where = new StringBuffer(" AND ypo.paobjectid IN (");
+        StringBuffer where = new StringBuffer(" AND ");
         
         List<String> deviceGroupNames = defaults.getDeviceGroups();
         Set<? extends DeviceGroup> deviceGroups = deviceGroupService.resolveGroupNames(deviceGroupNames);
-        String deviceGroupSqlInClause = deviceGroupService.getDeviceGroupSqlInClause(deviceGroups);
-        where.append(deviceGroupSqlInClause);
-
-        where.append(")");
+        String deviceGroupSqlWhereClause = deviceGroupService.getDeviceGroupSqlWhereClause(deviceGroups, "YPO.PAOBJECTID");
+        where.append(deviceGroupSqlWhereClause);
 
         return where.toString();
-
     }
 
     /**

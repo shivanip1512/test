@@ -18,7 +18,7 @@ import org.springframework.web.servlet.mvc.multiaction.MultiActionController;
 
 import com.cannontech.clientutils.YukonLogManager;
 import com.cannontech.common.device.commands.GroupCommandExecutor;
-import com.cannontech.common.device.groups.dao.DeviceGroupDao;
+import com.cannontech.common.device.groups.dao.DeviceGroupProviderDao;
 import com.cannontech.common.device.groups.model.DeviceGroup;
 import com.cannontech.common.device.groups.service.DeviceGroupService;
 import com.cannontech.core.authorization.exception.PaoAuthorizationException;
@@ -32,7 +32,7 @@ public class CommandController extends MultiActionController {
 
     Logger log = YukonLogManager.getLogger(CommandController.class);
     private CommandDao commandDao = null;
-    private DeviceGroupDao deviceGroupDao = null;
+    private DeviceGroupProviderDao deviceGroupDao = null;
     private DeviceGroupService deviceGroupService = null;
 
     private GroupCommandExecutor groupCommandExecutor = null;
@@ -41,7 +41,7 @@ public class CommandController extends MultiActionController {
         this.commandDao = commandDao;
     }
 
-    public void setDeviceGroupDao(DeviceGroupDao deviceGroupDao) {
+    public void setDeviceGroupDao(DeviceGroupProviderDao deviceGroupDao) {
         this.deviceGroupDao = deviceGroupDao;
     }
 

@@ -165,14 +165,11 @@ public class SQLStringBuilder
 		}
 		if( groupVector.size() > 0)
 		{
-			String inCollectionGroup = new String("YUKONPAOBJECT.PAOBJECTID IN (");
             DeviceGroupService deviceGroupService = YukonSpringHook.getBean("deviceGroupService", DeviceGroupService.class);
 
             Set<? extends DeviceGroup> deviceGroups = deviceGroupService.resolveGroupNames(groupVector);
-            String deviceGroupSqlInClause = deviceGroupService.getDeviceGroupSqlInClause(deviceGroups);
-            inCollectionGroup += deviceGroupSqlInClause;
-			inCollectionGroup += ")";
-				
+            String deviceGroupSqlWhereClause = deviceGroupService.getDeviceGroupSqlWhereClause(deviceGroups, "YPO.PAOBJECTID");
+  			String inCollectionGroup = deviceGroupSqlWhereClause;
 			whereClauses.add(inCollectionGroup);
 		}
 		if( point_from )

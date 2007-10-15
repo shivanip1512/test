@@ -76,7 +76,7 @@
     <alias alias="deviceGroupMemberEditorDao" name="deviceGroupEditorDao"/>
     
     <bean id="deviceGroupDao"
-        class="com.cannontech.common.device.groups.dao.impl.DeviceGroupDaoMain">
+        class="com.cannontech.common.device.groups.dao.impl.DeviceGroupProviderDaoMain">
         <property name="providers">
             <map>
                 <entry key="STATIC" value-ref="staticDeviceGroupProvider"/>

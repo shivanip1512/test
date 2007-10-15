@@ -7,21 +7,18 @@ import java.util.Collections;
 import java.util.List;
 import java.util.Set;
 
-import org.springframework.jdbc.core.ColumnMapRowMapper;
-import org.springframework.jdbc.core.RowMapper;
 import org.springframework.jdbc.core.simple.ParameterizedRowMapper;
 import org.springframework.jdbc.core.simple.SimpleJdbcOperations;
 
 import com.cannontech.common.device.YukonDevice;
 import com.cannontech.common.device.groups.editor.dao.impl.YukonDeviceRowMapper;
 import com.cannontech.common.device.groups.model.DeviceGroup;
-import com.cannontech.common.util.ObjectMapper;
 import com.cannontech.common.util.SqlStatementBuilder;
 import com.cannontech.core.dao.PaoDao;
 import com.cannontech.database.data.lite.LiteYukonPAObject;
 import com.cannontech.database.data.pao.PaoGroupsWrapper;
 
-public class RolodexGroupProvider extends DeviceGroupDaoBase {
+public class RolodexGroupProvider extends DeviceGroupProviderBase {
     private SimpleJdbcOperations jdbcTemplate;
     private PaoGroupsWrapper paoGroupsWrapper;
     private PaoDao paoDao;
@@ -31,7 +28,7 @@ public class RolodexGroupProvider extends DeviceGroupDaoBase {
         if (group instanceof RolodexLetterDeviceGroup) {
             RolodexLetterDeviceGroup rolodexGroup = (RolodexLetterDeviceGroup) group;
             // return devices that start with some leter
-            String matcher = rolodexGroup.firstLetter + "%";
+            String matcher = Character.toUpperCase(rolodexGroup.firstLetter) + "%";
             SqlStatementBuilder sql = new SqlStatementBuilder();
             sql.append("select ypo.paobjectid, ypo.type");
             sql.append("from Device d");
@@ -117,4 +114,16 @@ public class RolodexGroupProvider extends DeviceGroupDaoBase {
             return false;
         }
     }
+
+	@Override
+	public String getChildDeviceGroupSqlWhereClause(DeviceGroup group, String identifier) {
+
+		RolodexLetterDeviceGroup rolodexGroup = (RolodexLetterDeviceGroup) group;
+        // return devices that start with some leter
+        String matcher = Character.toUpperCase(rolodexGroup.firstLetter) + "%";
+        String whereString = identifier + " IN ( " +
+        					" SELECT DISTINCT PAO.PAOBJECTID FROM YUKONPAOBJECT PAO " + 
+        					" WHERE UPPER(PAO.PAONAME) like '" + matcher + "') "; 
+        return whereString;
+	}
 }

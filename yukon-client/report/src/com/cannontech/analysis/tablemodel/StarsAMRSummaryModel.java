@@ -3,12 +3,9 @@ package com.cannontech.analysis.tablemodel;
 import java.sql.Connection;
 import java.sql.PreparedStatement;
 import java.sql.ResultSet;
-import java.util.Arrays;
 import java.util.Collections;
 import java.util.Comparator;
 import java.util.Date;
-import java.util.List;
-import java.util.Set;
 
 import javax.servlet.http.HttpServletRequest;
 
@@ -17,7 +14,6 @@ import com.cannontech.analysis.ColumnProperties;
 import com.cannontech.analysis.data.device.MeterAndPointData;
 import com.cannontech.analysis.data.stars.StarsAMRDetail;
 import com.cannontech.clientutils.CTILogger;
-import com.cannontech.common.device.groups.model.DeviceGroup;
 import com.cannontech.common.device.groups.service.DeviceGroupService;
 import com.cannontech.common.util.CtiUtilities;
 import com.cannontech.database.PoolManager;
@@ -181,14 +177,8 @@ public class StarsAMRSummaryModel extends ReportModelBase<StarsAMRDetail> implem
         final String[] groups = getBillingGroups();                
                 
 		if (groups != null && groups.length > 0) {
-			sql.append(" AND PAO.PAOBJECTID IN (");
-            
-            List<String> deviceGroupNames = Arrays.asList(groups);
-            Set<? extends DeviceGroup> deviceGroups = deviceGroupService.resolveGroupNames(deviceGroupNames);
-            String deviceGroupSqlInClause = deviceGroupService.getDeviceGroupSqlInClause(deviceGroups);
-            sql.append(deviceGroupSqlInClause);
-            
-            sql.append(") ");
+            String deviceGroupSqlWhereClause = getGroupSqlWhereClause("PAO.PAOBJECTID");
+            sql.append(" AND " + deviceGroupSqlWhereClause);
         }
         
 		return sql;

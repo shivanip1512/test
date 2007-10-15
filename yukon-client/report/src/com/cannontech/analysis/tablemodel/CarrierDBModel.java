@@ -1,18 +1,12 @@
 package com.cannontech.analysis.tablemodel;
 
-import java.util.Arrays;
-import java.util.Set;
-
 import com.cannontech.amr.meter.model.Meter;
 import com.cannontech.analysis.ColumnProperties;
 import com.cannontech.clientutils.CTILogger;
-import com.cannontech.common.device.groups.model.DeviceGroup;
-import com.cannontech.common.device.groups.service.DeviceGroupService;
 import com.cannontech.common.util.CtiUtilities;
 import com.cannontech.database.PoolManager;
 import com.cannontech.database.SqlUtils;
 import com.cannontech.database.data.pao.PAOGroups;
-import com.cannontech.spring.YukonSpringHook;
 
 /**
  * Created on Dec 15, 2003
@@ -75,12 +69,8 @@ public class CarrierDBModel extends ReportModelBase
 			
             // Use paoIDs from group if they exist
 			if( getBillingGroups() != null && getBillingGroups().length > 0) {
-                sql.append(" AND PAO.PAOBJECTID IN (");
-                DeviceGroupService deviceGroupService = YukonSpringHook.getBean("deviceGroupService", DeviceGroupService.class);
-                Set<? extends DeviceGroup> deviceGroups = deviceGroupService.resolveGroupNames(Arrays.asList(getBillingGroups()));
-                String deviceGroupSqlInClause = deviceGroupService.getDeviceGroupSqlInClause(deviceGroups);
-                sql.append(deviceGroupSqlInClause);
-                sql.append(")");
+                String deviceGroupSqlWhereClause = getGroupSqlWhereClause("PAO.PAOBJECTID");
+                sql.append(" AND " + deviceGroupSqlWhereClause);
 			}
 			
 			//Use paoIDs in query if they exist

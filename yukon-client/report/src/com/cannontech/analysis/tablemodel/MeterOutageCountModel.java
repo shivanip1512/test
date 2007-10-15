@@ -7,7 +7,6 @@ import java.util.Date;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
-import java.util.Set;
 import java.util.Vector;
 
 import javax.servlet.http.HttpServletRequest;
@@ -361,14 +360,8 @@ public class MeterOutageCountModel extends ReportModelBase
         final String[] groups = getBillingGroups();
         
 		if (groups != null && groups.length > 0) {
-			sql.append(" AND PAO.PAOBJECTID IN (");
-            
-            List<String> deviceGroupNames = Arrays.asList(groups);
-            Set<? extends DeviceGroup> deviceGroups = deviceGroupService.resolveGroupNames(deviceGroupNames);
-            String deviceGroupSqlInClause = deviceGroupService.getDeviceGroupSqlInClause(deviceGroups);
-            sql.append(deviceGroupSqlInClause);
-            
-            sql.append(") ");
+            String deviceGroupSqlWhereClause = getGroupSqlWhereClause("PAO.PAOBJECTID");
+            sql.append(" AND " + deviceGroupSqlWhereClause);
 		}
 
 			 

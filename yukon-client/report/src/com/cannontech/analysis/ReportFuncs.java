@@ -38,12 +38,12 @@ import com.cannontech.analysis.report.LPDataSummaryReport;
 import com.cannontech.analysis.report.LPSetupDBReport;
 import com.cannontech.analysis.report.LoadControlVerificationReport;
 import com.cannontech.analysis.report.MaxDailyOpsReport;
+import com.cannontech.analysis.report.MeterOutageCountReport;
 import com.cannontech.analysis.report.MeterOutageReport;
 import com.cannontech.analysis.report.MeterReadReport;
 import com.cannontech.analysis.report.MeterUsageReport;
 import com.cannontech.analysis.report.PointDataIntervalReport;
 import com.cannontech.analysis.report.PointDataSummaryReport;
-import com.cannontech.analysis.report.MeterOutageCountReport;
 import com.cannontech.analysis.report.ProgramDetailReport;
 import com.cannontech.analysis.report.RepeaterRoleCollisionReport;
 import com.cannontech.analysis.report.RouteDBReport;
@@ -76,12 +76,12 @@ import com.cannontech.analysis.tablemodel.LPSetupDBModel;
 import com.cannontech.analysis.tablemodel.LoadControlVerificationModel;
 import com.cannontech.analysis.tablemodel.LoadGroupModel;
 import com.cannontech.analysis.tablemodel.MaxDailyOpsModel;
+import com.cannontech.analysis.tablemodel.MeterOutageCountModel;
 import com.cannontech.analysis.tablemodel.MeterOutageModel;
 import com.cannontech.analysis.tablemodel.MeterReadModel;
 import com.cannontech.analysis.tablemodel.MeterUsageModel;
 import com.cannontech.analysis.tablemodel.PointDataIntervalModel;
 import com.cannontech.analysis.tablemodel.PointDataSummaryModel;
-import com.cannontech.analysis.tablemodel.MeterOutageCountModel;
 import com.cannontech.analysis.tablemodel.ProgramDetailModel;
 import com.cannontech.analysis.tablemodel.RepeaterRoleCollisionModel;
 import com.cannontech.analysis.tablemodel.ReportModelBase;
@@ -99,7 +99,7 @@ import com.cannontech.analysis.tablemodel.StatisticModel;
 import com.cannontech.analysis.tablemodel.SystemLogModel;
 import com.cannontech.analysis.tablemodel.WorkOrderModel;
 import com.cannontech.analysis.tablemodel.ReportModelBase.ReportFilter;
-import com.cannontech.common.device.groups.dao.DeviceGroupDao;
+import com.cannontech.common.device.groups.dao.DeviceGroupProviderDao;
 import com.cannontech.common.device.groups.model.DeviceGroup;
 import com.cannontech.common.util.MappingList;
 import com.cannontech.common.util.ObjectMapper;
@@ -276,7 +276,7 @@ public class ReportFuncs
             return cache.getAllPorts();
 
         } else if( filter.equals(ReportFilter.GROUPS)){
-            List<? extends DeviceGroup> allGroups = ((DeviceGroupDao)YukonSpringHook.getBean("deviceGroupDao")).getAllGroups();
+            List<? extends DeviceGroup> allGroups = ((DeviceGroupProviderDao)YukonSpringHook.getBean("deviceGroupDao")).getAllGroups();
             List<String> mappingList = new MappingList<DeviceGroup, String>(allGroups, new ObjectMapper<DeviceGroup, String>() {
                 public String map(DeviceGroup from) {
                     return from.getFullName();

@@ -7,7 +7,7 @@ import com.cannontech.common.device.YukonDevice;
 import com.cannontech.common.device.groups.dao.impl.providers.DeviceGroupProvider;
 import com.cannontech.common.device.groups.model.DeviceGroup;
 
-public interface DeviceGroupDao extends DeviceGroupProvider {
+public interface DeviceGroupProviderDao extends DeviceGroupProvider {
     public DeviceGroup getRootGroup();
     public List<? extends DeviceGroup> getAllGroups();
     public Set<? extends DeviceGroup> getGroups(YukonDevice device);

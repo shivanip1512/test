@@ -10,31 +10,36 @@ import java.util.LinkedList;
 import java.util.List;
 import java.util.Set;
 
+import org.apache.commons.lang.StringUtils;
 import org.apache.commons.lang.Validate;
 import org.springframework.beans.factory.annotation.Required;
 
 import com.cannontech.common.device.YukonDevice;
-import com.cannontech.common.device.groups.dao.DeviceGroupDao;
+import com.cannontech.common.device.groups.dao.DeviceGroupProviderDao;
 import com.cannontech.common.device.groups.model.DeviceGroup;
 import com.cannontech.common.device.groups.service.DeviceGroupService;
-import com.cannontech.common.util.SqlStatementBuilder;
 import com.cannontech.core.dao.NotFoundException;
 
 public class DeviceGroupServiceImpl implements DeviceGroupService {
-    private DeviceGroupDao deviceGroupDao;
+    private DeviceGroupProviderDao deviceGroupDao;
 
-    public String getDeviceGroupSqlInClause(Collection<? extends DeviceGroup> groups) {
+    public String getDeviceGroupSqlWhereClause(Collection<? extends DeviceGroup> groups, String identifier) {
+
         if (groups.isEmpty()) {
-            return "NULL";
-        } else if (groups.size() == 1) {
-            return deviceGroupDao.getDeviceGroupSqlInClause(groups.iterator().next());
+            return "1=0";
         } else {
-            Set<Integer> deviceIds = getDeviceIds(groups);
-            String inClause = SqlStatementBuilder.convertToSqlLikeList(deviceIds);
-            return inClause;
+            String whereClause = "(";
+            List<String> whereClauseList = new ArrayList<String>();
+            groups = removeDuplicates(groups);
+            for (DeviceGroup group : groups) {
+                whereClauseList.add(deviceGroupDao.getDeviceGroupSqlWhereClause(group, identifier));
+            }
+            whereClause += StringUtils.join(whereClauseList, " OR ");
+            whereClause += ")";
+            return whereClause;
         }
     }
-
+    
     private Set<? extends DeviceGroup> removeDuplicates(Collection<? extends DeviceGroup> groups) {
         Set<DeviceGroup> result = new HashSet<DeviceGroup>(groups);
         Iterator<DeviceGroup> iter = result.iterator();
@@ -116,7 +121,7 @@ public class DeviceGroupServiceImpl implements DeviceGroupService {
     }
 
     @Required
-    public void setDeviceGroupDao(DeviceGroupDao deviceGroupDao) {
+    public void setDeviceGroupDao(DeviceGroupProviderDao deviceGroupDao) {
         this.deviceGroupDao = deviceGroupDao;
     }
     

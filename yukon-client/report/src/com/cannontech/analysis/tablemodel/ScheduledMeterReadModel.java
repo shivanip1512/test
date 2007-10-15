@@ -2,11 +2,8 @@ package com.cannontech.analysis.tablemodel;
 
 import java.sql.ResultSet;
 import java.sql.Timestamp;
-import java.util.Arrays;
 import java.util.Date;
 import java.util.HashMap;
-import java.util.List;
-import java.util.Set;
 
 import javax.servlet.http.HttpServletRequest;
 
@@ -14,7 +11,6 @@ import org.apache.commons.lang.StringUtils;
 
 import com.cannontech.analysis.ColumnProperties;
 import com.cannontech.clientutils.CTILogger;
-import com.cannontech.common.device.groups.model.DeviceGroup;
 import com.cannontech.common.device.groups.service.DeviceGroupService;
 import com.cannontech.common.util.CtiUtilities;
 import com.cannontech.database.PoolManager;
@@ -240,14 +236,8 @@ public class ScheduledMeterReadModel extends ReportModelBase<ScheduledMeterReadM
         final String[] groups = getBillingGroups();
         
         if (groups != null && groups.length > 0) {
-            sql.append(" AND PAO.PAOBJECTID IN (");
-            
-            List<String> deviceGroupNames = Arrays.asList(groups);
-            Set<? extends DeviceGroup> deviceGroups = deviceGroupService.resolveGroupNames(deviceGroupNames);
-            String deviceGroupSqlInClause = deviceGroupService.getDeviceGroupSqlInClause(deviceGroups);
-            sql.append(deviceGroupSqlInClause);
-            
-            sql.append(")");
+            String deviceGroupSqlWhereClause = getGroupSqlWhereClause("PAO.PAOBJECTID");
+            sql.append(" AND " + deviceGroupSqlWhereClause);
         }
         
 		if( getStatusCodeType() == StatusCodeType.ERROR_METER_READ_TYPE)

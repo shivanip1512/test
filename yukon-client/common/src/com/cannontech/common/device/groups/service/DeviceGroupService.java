@@ -56,9 +56,12 @@ public interface DeviceGroupService {
     public Set<YukonDevice> getDevices(Collection<? extends DeviceGroup> group);
     
     /**
-     * Returns a String that can be placed in an SQL 'in' clause.
+     * Returns a String that can be placed in an SQL WHERE clause
+     * for the identifier field. 
+     * The identifier field MUST BE of type PaobjectID or an extension of.
      * The whole SQL statement might look something like:
-     *   select * from device where deviceid in (<in clause>)
+     *   select * from device where <identifier> in (select distinct paobjectid from yukonpaobject)
+     * In the above sql, "<identifier> in (select distinct paobjectid from yukonpaobject)" may be the returned string.
      * By default, all groups are able to return a comma-separated
      * list of integers. Some group types may override this and 
      * return a nested select clause.
@@ -70,6 +73,5 @@ public interface DeviceGroupService {
      * @param group
      * @return
      */
-    public String getDeviceGroupSqlInClause(Collection<? extends DeviceGroup> group);
-
+    public String getDeviceGroupSqlWhereClause(Collection<? extends DeviceGroup> group, String identifier);
 }

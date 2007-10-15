@@ -13,7 +13,7 @@ import javax.swing.tree.TreePath;
 import org.springframework.beans.factory.annotation.Required;
 
 import com.cannontech.common.device.YukonDevice;
-import com.cannontech.common.device.groups.dao.DeviceGroupDao;
+import com.cannontech.common.device.groups.dao.DeviceGroupProviderDao;
 import com.cannontech.common.device.groups.model.DeviceGroup;
 import com.cannontech.core.dao.NotFoundException;
 import com.cannontech.database.model.DBTreeModel;
@@ -50,7 +50,7 @@ public class DeviceGroupTreeFactory {
         }
     }
 
-    private DeviceGroupDao deviceGroupDao;
+    private DeviceGroupProviderDao deviceGroupDao;
     
     public TreeNode getRootNode(boolean includeDevices) {
         DeviceGroup rootGroup = deviceGroupDao.getRootGroup();
@@ -113,7 +113,7 @@ public class DeviceGroupTreeFactory {
     }
     
     @Required
-    public void setDeviceGroupDao(DeviceGroupDao deviceGroupDao) {
+    public void setDeviceGroupDao(DeviceGroupProviderDao deviceGroupDao) {
         this.deviceGroupDao = deviceGroupDao;
     }
     

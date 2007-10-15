@@ -13,7 +13,7 @@ import com.cannontech.billing.FileFormatBase;
 import com.cannontech.billing.FileFormatTypes;
 import com.cannontech.billing.format.BillingFormatter;
 import com.cannontech.clientutils.CTILogger;
-import com.cannontech.common.device.groups.dao.DeviceGroupDao;
+import com.cannontech.common.device.groups.dao.DeviceGroupProviderDao;
 import com.cannontech.common.device.groups.model.DeviceGroup;
 import com.cannontech.common.util.MappingList;
 import com.cannontech.common.util.ObjectMapper;
@@ -26,7 +26,7 @@ import com.cannontech.spring.YukonSpringHook;
 public class BillingBean implements java.util.Observer
 {
 	public static java.text.SimpleDateFormat dateFormat = new java.text.SimpleDateFormat("MM/dd/yyyy");
-    private DeviceGroupDao deviceGroupDao = YukonSpringHook.getBean("deviceGroupDao", DeviceGroupDao.class);
+    private DeviceGroupProviderDao deviceGroupDao = YukonSpringHook.getBean("deviceGroupDao", DeviceGroupProviderDao.class);
 		
 	public static final String BILLING_VERSION = VersionTools.getYUKON_VERSION();
 	private BillingFile billingFile = null;

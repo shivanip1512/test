@@ -18,7 +18,7 @@ import com.cannontech.common.device.groups.model.DeviceGroup;
 import com.cannontech.common.util.SqlStatementBuilder;
 import com.cannontech.database.data.pao.PaoGroupsWrapper;
 
-public class StaticDeviceGroupProvider extends DeviceGroupDaoBase {
+public class StaticDeviceGroupProvider extends DeviceGroupProviderBase {
     private DeviceGroupEditorDao deviceGroupEditorDao;
     private DeviceGroupMemberEditorDao deviceGroupMemberEditorDao;
     private SimpleJdbcOperations jdbcTemplate;
@@ -36,6 +36,16 @@ public class StaticDeviceGroupProvider extends DeviceGroupDaoBase {
         StoredDeviceGroup sdg = getStoredGroup(group);
         List<StoredDeviceGroup> childGroups = deviceGroupEditorDao.getChildGroups(sdg);
         return childGroups;
+    }
+    
+    @Override
+    public String getChildDeviceGroupSqlWhereClause(DeviceGroup group, String identifier) {
+        StoredDeviceGroup sdg = getStoredGroup(group);
+        String whereString = identifier + " IN ( " +
+                            " SELECT DISTINCT YUKONPAOID FROM DEVICEGROUPMEMBER " + 
+                            " WHERE DEVICEGROUPID = " + 
+                            sdg.getId() + ") ";
+        return whereString;
     }
 
     private StoredDeviceGroup getStoredGroup(DeviceGroup group) {
