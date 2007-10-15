@@ -1,7 +1,7 @@
 /*==============================================================*/
 /* Database name:  YukonDatabase                                */
 /* DBMS name:      ORACLE Version 9i                            */
-/* Created on:     10/15/2007 10:33:11 AM                       */
+/* Created on:     10/15/2007 3:04:05 PM                        */
 /*==============================================================*/
 
 
@@ -328,6 +328,12 @@ drop table DEVICE2WAYFLAGS cascade constraints
 ;
 
 drop table DEVICECARRIERSETTINGS cascade constraints
+;
+
+drop table DEVICECONFIGURATION cascade constraints
+;
+
+drop table DEVICECONFIGURATIONITEM cascade constraints
 ;
 
 drop table DEVICEDIALUPSETTINGS cascade constraints
@@ -1941,9 +1947,9 @@ insert into command values(-62, 'putconfig emetcon ied class 0 1', 'Set Previous
 /* ExpresscomSerial */
 insert into command values(-63, 'putconfig xcom raw 0x30 0x00 0x02 0x58', 'Cold Load Pickup (load, time x 0.5sec)', 'ExpresscomSerial');
 insert into command values(-64, 'putstatus xcom prop inc', 'Increment Prop Counter', 'ExpresscomSerial');
-insert into command values(-65, 'putconfig xcom raw 0x05 0x00', 'Reset CopCount', 'ExpresscomSerial');
+insert into command values(-65, 'putconfig xcom raw 0x05 0x00', 'Turn Off Test Light', 'ExpresscomSerial');
 insert into command values(-66, 'putconfig xcom main 0x01 0x40', 'Clear Prop Counter', 'ExpresscomSerial');
-insert into command values(-67, 'putconfig xcom main 0x01 0x80', 'Clear Comm Loss COunter', 'ExpresscomSerial');
+insert into command values(-67, 'putconfig xcom main 0x01 0x80', 'Clear Comm Loss Counter', 'ExpresscomSerial');
 insert into command values(-68, 'putconfig xcom service out temp offhours 24', 'Temp Out-Of-Service (hours)', 'ExpresscomSerial');
 insert into command values(-69, 'putconfig xcom service in', 'In-Service', 'ExpresscomSerial');
 
@@ -2369,6 +2375,27 @@ create table DEVICECARRIERSETTINGS  (
    DEVICEID             NUMBER                          not null,
    ADDRESS              NUMBER                          not null,
    constraint PK_DEVICECARRIERSETTINGS primary key (DEVICEID)
+)
+;
+
+/*==============================================================*/
+/* Table: DEVICECONFIGURATION                                   */
+/*==============================================================*/
+create table DEVICECONFIGURATION  (
+   DeviceConfigurationID numeric                         not null,
+   Name                 varchar(30)                     not null,
+   Type                 varchar(30)                     not null
+)
+;
+
+/*==============================================================*/
+/* Table: DEVICECONFIGURATIONITEM                               */
+/*==============================================================*/
+create table DEVICECONFIGURATIONITEM  (
+   DEVICECONFIGURATIONITEMID numeric                         not null,
+   DeviceConfigurationID numeric                         not null,
+   FieldName            varchar(30)                     not null,
+   Value                varchar(30)                     not null
 )
 ;
 
@@ -2894,6 +2921,7 @@ create table DYNAMICBILLINGFIELD  (
    FieldName            VARCHAR2(50)                    not null,
    FieldOrder           NUMBER                          not null,
    FieldFormat          VARCHAR2(50),
+   MaxLength            numeric                         not null,
    constraint PK_DYNAMICBILLINGFIELD primary key (id)
 )
 ;
@@ -7453,7 +7481,6 @@ insert into YukonListEntry values (1312,1052,0,'Install date',2802);
 insert into YukonListEntry values (1321,1053,0,'Device type',2901);
 insert into YukonListEntry values (1322,1053,0,'Service company',2902);
 insert into YukonListEntry values (1323,1053,0,'Appliance Type',2903);
-insert into YukonListEntry values (1324,1053,0,'Configuration',2904);
 insert into YukonListEntry values (1325,1053,0,'Device status',2905);
 insert into YukonListEntry values (1326,1053,0,'Member',2906);
 insert into YukonListEntry values (1327,1053,0,'Warehouse',2907);
@@ -8111,6 +8138,8 @@ insert into YukonRoleProperty values(-20008,-200,'Allow Designation Codes','fals
 insert into YukonRoleProperty values(-20009,-200,'Multiple Warehouses','false','Allows for multiple user-created warehouses instead of a single generic warehouse.');
 insert into YukonRoleProperty values(-20011,-200,'MultiSpeak Setup','false','Controls access to configure the MultiSpeak Interfaces.');
 insert into YukonRoleProperty values(-20012,-200,'LM User Assignment','false','Controls visibility of LM objects for 3-tier and direct control, based off assignment of users.');
+insert into YukonRoleProperty values(-20013,-200,'Edit Device Config','false','Controls the ability to edit and create device configurations');
+insert into YukonRoleProperty values(-20014,-200,'View Device Config','true','Controls the ability to view existing device configurations');
 
 /* Operator Metering Role Properties*/
 insert into YukonRoleProperty values(-20203,-202,'Enable Bulk Importer','true','Allows access to the Bulk Importer');

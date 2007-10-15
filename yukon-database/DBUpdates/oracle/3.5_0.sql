@@ -357,6 +357,12 @@ alter table DEVICEGROUP
 /* YUK-4438 */
 delete from YukonListEntry where EntryText = 'Configuration';
 
+update capcontrolstrategy set peaklead = -peaklead where peaklead > 0 and  controlunits = 'kVar';
+update capcontrolstrategy set offpklead = -offpklead where offpklead > 0 and  controlunits = 'kVar';
+
+UPDATE Command SET Label = 'Turn Off Test Light' WHERE commandid = -65;
+UPDATE Command SET Label = 'Clear Comm Loss Counter' WHERE commandid = -67;
+
 /******************************************************************************/
 /* Run the Stars Update if needed here */
 /* Note: DBUpdate application will ignore this if STARS is not present */
