@@ -9,7 +9,7 @@ import javax.faces.context.FacesContext;
 
 import com.cannontech.clientutils.CTILogger;
 import com.cannontech.database.data.capcontrol.CapControlArea;
-import com.cannontech.database.data.capcontrol.CapControlSubBus;
+import com.cannontech.database.data.capcontrol.CapControlSubstation;
 import com.cannontech.database.db.capcontrol.CCSubAreaAssignment;
 import com.cannontech.web.editor.data.CBCAreaData;
 import com.cannontech.web.util.CBCDBUtil;
@@ -47,7 +47,7 @@ public class CBCAreaDataModel extends EditorDataModelImpl {
             }
 
             void populateUnassigned() {
-                unassignedSubs = CapControlSubBus.getAllUnassignedBuses();
+                unassignedSubs = CapControlSubstation.getAllUnassignedSubstations();
             }
         };
     }
