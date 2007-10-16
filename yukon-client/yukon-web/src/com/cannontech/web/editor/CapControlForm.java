@@ -80,6 +80,7 @@ import com.cannontech.database.data.point.StatusPoint;
 import com.cannontech.database.db.DBPersistent;
 import com.cannontech.database.db.capcontrol.CCFeederBankList;
 import com.cannontech.database.db.capcontrol.CCFeederSubAssignment;
+import com.cannontech.database.db.capcontrol.CCSubstationSubBusList;
 import com.cannontech.database.db.capcontrol.CapBankAdditional;
 import com.cannontech.database.db.capcontrol.CapControlStrategy;
 import com.cannontech.database.db.capcontrol.CapControlSubstationBus;
@@ -1183,7 +1184,19 @@ public class CapControlForm extends DBEditorForm implements ICapControlModel{
 					}
 				}
 			}
-		}
+		} else if ( "SubstationBus".equalsIgnoreCase(swapType)) {
+            if (unassignedSubBuses != null) {
+                for (int i = 0; i < unassignedSubBuses.size(); i++) {
+                    if (elemID == ((LiteYukonPAObject) unassignedSubBuses.get(i)).getLiteID()) {
+                        CapControlSubstation currSub = (CapControlSubstation) getDbPersistent();
+                        CCSubstationSubBusList sa = new CCSubstationSubBusList(itemID,elemID,(int)maxDispOrderOnList (currSub.getChildList())+ 1); 
+                        currSub.getChildList().add(sa);
+                        unassignedSubBuses.remove(i);
+                        break;
+                    }
+                }
+            }
+        }
 	}
 
     /**
@@ -1230,7 +1243,12 @@ public class CapControlForm extends DBEditorForm implements ICapControlModel{
 				if (capBank.getControlOrder().floatValue() > max) {
 					max = capBank.getControlOrder().floatValue();
 				}
-			} else {
+			} else if (element instanceof CCSubstationSubBusList) {
+                CCSubstationSubBusList subBus = (CCSubstationSubBusList) element;
+                if (subBus.getDisplayOrder().floatValue() > max) {
+                    max = subBus.getDisplayOrder().floatValue();
+                }
+            } else {
 				return 0;
             }
 		}	
