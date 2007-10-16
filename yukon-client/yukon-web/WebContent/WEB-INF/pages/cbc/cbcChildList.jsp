@@ -99,7 +99,7 @@
 	                   </f:facet>
 	                   <x:commandLink value="<< Remove" action="#{capControlForm.treeSwapRemoveAction}">
 							<f:param name="swapType" value="Substation Bus"/>
-							<f:param name="id" value="#{subBus.subBusID}"/>
+							<f:param name="id" value="#{subBus.substationBusID}"/>
 	                   </x:commandLink>
 	               </h:column>
 	
@@ -107,7 +107,7 @@
 	                   <f:facet name="header">
 	                      <x:outputText value="Assigned Substation Buses"/>
 	                   </f:facet>
-	                   <x:outputText value="#{databaseCache.allPAOsMap[subBus.subBusID]}" />
+	                   <x:outputText value="#{databaseCache.allPAOsMap[subBus.substationBusID]}" />
 	               </h:column>
 	
 	               <h:column>
