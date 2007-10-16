@@ -537,11 +537,8 @@ public class CapControlStrategy extends com.cannontech.database.db.DBPersistent 
 
 	   //Get all the data from the database                
 	   String sql = 
-			"select s.subStationBusID from " + CapControlSubstationBus.TABLE_NAME +
-			" s where s.strategyid = " + stratID + " and s.subStationBusID <> " + excludedPAOID +
-	   		" union " +
-	   		"select f.feederID from " + CapControlFeeder.TABLE_NAME +
-			" f where f.strategyid = " + stratID + " and f.feederID <> " + excludedPAOID;
+			"select s.paobjectid from CCSeasonStrategyAssignment" +
+			" s where s.strategyid = " + stratID + " and s.paobjectid <> " + excludedPAOID;
 
 		try {		
 			conn = PoolManager.getInstance().getConnection(CtiUtilities.getDatabaseAlias());

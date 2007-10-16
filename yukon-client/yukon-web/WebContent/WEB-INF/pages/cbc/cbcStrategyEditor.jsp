@@ -96,11 +96,13 @@
 		rendered="#{capControlForm.editingCBCStrategy}" value="  (WARNING: Modifying this strategy will affect all feeders or subs that use this strategy)"/>
 	<f:verbatim><br/></f:verbatim>
 	<x:panelGroup id="Strategy_Buttons" forceId="true">
-	<x:commandButton id="Create_Strategy" value="New Strategy" title="Create a new strategy"
-			action="#{capControlForm.createStrategy}" styleClass="stdButton" />
-	<x:commandButton id="Delete_Strategy" value="Delete Strategy" title="Delete the selected strategy" styleClass="stdButton"
-			action="#{capControlForm.deleteStrategy}" onclick="return window.confirm('Are you sure you want to delete this strategy?\r\nNote: Deleting this strategy will force all data to be saved and the current strategy will be set to (none).');"
-			disabled="#{capControlForm.currentStrategyID == 0}" />
+		<x:commandButton id="Create_Strategy" value="New Strategy" title="Create a new strategy"
+				action="#{capControlForm.createStrategy}" styleClass="stdButton" />
+		<x:commandButton id="Delete_Strategy" value="Delete Strategy" title="Delete the selected strategy" styleClass="stdButton"
+				action="#{capControlForm.deleteStrategy}" onclick="return window.confirm('Are you sure you want to delete this strategy?\r\nNote: Deleting this strategy will force all data to be saved and the current strategy will be set to (none).');"
+				disabled="#{capControlForm.currentStrategyID == 0}">
+				<f:actionListener type="com.cannontech.web.editor.CtiNavActionListener" />
+		</x:commandButton>
 	</x:panelGroup>
 	
 	<h:panelGrid id="body" columns="2" styleClass="gridLayout" columnClasses="gridColumn" >

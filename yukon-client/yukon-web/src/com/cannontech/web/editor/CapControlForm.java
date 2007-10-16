@@ -829,8 +829,10 @@ public class CapControlForm extends DBEditorForm implements ICapControlModel{
                 setEditingCBCStrategy(false);
             }
             updateDBObject(dbPers, facesMsg);
-            int paoId = ((YukonPAObject)getDbPersistent()).getPAObjectID();
-            seasonScheduleDao.saveSeasonStrategyAssigment(paoId, getAssignedStratMap(), getScheduleId());
+            if(!(getDbPersistent() instanceof CapControlStrategy)) {
+                int paoId = ((YukonPAObject)getDbPersistent()).getPAObjectID();
+                seasonScheduleDao.saveSeasonStrategyAssigment(paoId, getAssignedStratMap(), getScheduleId());
+            }
 		} catch (TransactionException te) {
             String errorString = te.getMessage();
             facesMsg.setDetail(errorString);
@@ -940,6 +942,7 @@ public class CapControlForm extends DBEditorForm implements ICapControlModel{
 			// if there is a secondaryType set, use that value to creat the PAO
 			int paoType = ((CBCWizardModel) getWizData()).getSelectedType();
 			DBPersistent dbObj = null;
+            CapControlStrategy strategy = null;
 			int editorType = PAOGroups.INVALID;
 			// todo: do this in a better way later
 			if (paoType == DBEditorTypes.PAO_SCHEDULE) {
@@ -949,7 +952,15 @@ public class CapControlForm extends DBEditorForm implements ICapControlModel{
 				addDBObject(dbObj, facesMsg);
 				itemID = ((PAOSchedule) dbObj).getScheduleID().intValue();
 				editorType = DBEditorTypes.EDITOR_SCHEDULE;
-			} else {
+			} else if(paoType == DBEditorTypes.EDITOR_STRATEGY) {
+                strategy = CCYukonPAOFactory.createCapControlStrategy();
+                Integer newID = CapControlStrategy.getNextStrategyID();
+                strategy.setStrategyID(newID);
+                strategy.setStrategyName(((CBCWizardModel) getWizData()).getName());
+                addDBObject(strategy, facesMsg);
+                itemID = strategy.getStrategyID();
+                editorType = DBEditorTypes.EDITOR_STRATEGY;
+            }else {
 				dbObj = CCYukonPAOFactory.createCapControlPAO(paoType);
 				((YukonPAObject) dbObj).setDisabled(((CBCWizardModel) getWizData()).getDisabled().booleanValue());
 				// for CBCs that have a portID with it
@@ -974,7 +985,11 @@ public class CapControlForm extends DBEditorForm implements ICapControlModel{
                 DBPersistent pointVector = CBCPointFactory.createPointsForCBCDevice((YukonPAObject)dbObj);
                 CBControllerEditor.insertPointsIntoDB(pointVector);  
             }
-            DBPersistentUtils.generateDBChangeMsg(dbObj, DBChangeMsg.CHANGE_TYPE_UPDATE);
+            if(!(paoType == DBEditorTypes.EDITOR_STRATEGY)) {
+                DBPersistentUtils.generateDBChangeMsg(dbObj, DBChangeMsg.CHANGE_TYPE_UPDATE);
+            }else {
+                DBPersistentUtils.generateDBChangeMsg(strategy, DBChangeMsg.CHANGE_TYPE_UPDATE);
+            }
             
             // redirect to this form as the editor for this new DB object
             if (facesContext != null){
