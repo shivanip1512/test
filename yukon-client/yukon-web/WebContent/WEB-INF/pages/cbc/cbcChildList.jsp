@@ -98,7 +98,7 @@
 	                   <f:facet name="header">
 	                   </f:facet>
 	                   <x:commandLink value="<< Remove" action="#{capControlForm.treeSwapRemoveAction}">
-							<f:param name="swapType" value="Substation Bus"/>
+							<f:param name="swapType" value="SubstationBus"/>
 							<f:param name="id" value="#{subBus.substationBusID}"/>
 	                   </x:commandLink>
 	               </h:column>

@@ -1262,7 +1262,6 @@ public class CapControlForm extends DBEditorForm implements ICapControlModel{
 		String swapType = (String) paramMap.get("swapType");
 		int elemID = new Integer((String) paramMap.get("id")).intValue();
 		if ("CapBank".equalsIgnoreCase(swapType)) {
-			// a table that swaps CapBanks, must be for a Feeder object
 			CapControlFeeder currFdr = (CapControlFeeder) getDbPersistent();
 			for (int i = 0; i < currFdr.getChildList().size(); i++) {
 				CCFeederBankList listItem = (CCFeederBankList) currFdr.getChildList().get(i);
@@ -1277,7 +1276,6 @@ public class CapControlForm extends DBEditorForm implements ICapControlModel{
 				}
 			}
 		} else if ("Feeder".equalsIgnoreCase(swapType)) {
-			// a table that swaps Feeders, must be for a SubBus object
 			CapControlSubBus currSub = (CapControlSubBus) getDbPersistent();
 			for (int i = 0; i < currSub.getChildList().size(); i++) {
 				CCFeederSubAssignment listItem = (CCFeederSubAssignment) currSub.getChildList().get(i);
@@ -1291,7 +1289,21 @@ public class CapControlForm extends DBEditorForm implements ICapControlModel{
 					break;
 				}
 			}
-		}
+		} else if ("SubstationBus".equalsIgnoreCase(swapType)) {
+            CapControlSubstation currSub = (CapControlSubstation) getDbPersistent();
+            for (int i = 0; i < currSub.getChildList().size(); i++) {
+                CCSubstationSubBusList listItem = (CCSubstationSubBusList) currSub.getChildList().get(i);
+                if (elemID == listItem.getSubstationBusID().intValue()) {
+                    // remove the mapping for the given Feeder id to this SubBus
+                    currSub.getChildList().remove(i);
+                    unassignedSubBuses.add(DaoFactory.getPaoDao().getLiteYukonPAO(elemID));
+                    // keep our order
+                    Collections.sort(unassignedSubBuses, LiteComparators.liteStringComparator);
+                    reorderList (currSub.getChildList());
+                    break;
+                }
+            }
+        }
 	}
 
 	@SuppressWarnings("unchecked")
