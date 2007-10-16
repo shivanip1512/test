@@ -33,6 +33,7 @@
     <fieldset>
     <legend>
     Feeder Points
+    </legend>
     <br/>
 	</f:verbatim>
 	<x:dataList id="subPoints"
@@ -64,6 +65,19 @@
     </f:verbatim>
 	
 	<x:div id="feeder_Var_Div" forceId="true">
+	<h:selectBooleanCheckbox id="Use_Phase_Data_Checkbox" 
+	   	onclick="submit();"
+		valueChangeListener="#{capControlForm.usePhaseDataClicked}"
+		value="#{capControlForm.PAOBase.capControlFeeder.usePhaseDataBoolean}"/>
+	<x:outputLabel for="Use_Phase_Data_Checkbox" 
+		value="Use Per Phase Var Data" 
+        title="Check this box to use 3 phase var data." 
+        styleClass="smallStaticLabel"/>
+                 	
+    <f:verbatim>
+    <br/>
+    <br/>
+    </f:verbatim>
     <x:inputHidden id="var_point" forceId="true" value="#{capControlForm.PAOBase.capControlFeeder.currentVarLoadPointID }" />      
     <x:outputLabel for="feeder_Var_Device" value="Selected Point: " title="Data Point used for the current VAR value" styleClass="medStaticLabel"/>
     <x:outputText id="feeder_Var_Device" forceId="true" value="#{capControlForm.paoNameMap[capControlForm.PAOBase.capControlFeeder.currentVarLoadPointID]}"/> 

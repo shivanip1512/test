@@ -1699,9 +1699,15 @@ public class CapControlForm extends DBEditorForm implements ICapControlModel{
                 CapControlSubBus sub = (CapControlSubBus) getDbPersistent();
                 CapControlSubstationBus subBus = sub.getCapControlSubstationBus();
                 switchPointID = subBus.getSwitchPointID();
-                
                 int phaseBPoint = subBus.getPhaseB();
                 int phaseCPoint = subBus.getPhaseC();
+                pointNameMap.put(phaseBPoint, DaoFactory.getPointDao().getPointName(phaseBPoint));
+                pointNameMap.put(phaseCPoint, DaoFactory.getPointDao().getPointName(phaseCPoint));
+            }else if(getDbPersistent() instanceof CapControlFeeder) {
+                CapControlFeeder feeder = (CapControlFeeder) getDbPersistent();
+                com.cannontech.database.db.capcontrol.CapControlFeeder feederthinger = feeder.getCapControlFeeder();
+                int phaseBPoint = feederthinger.getPhaseB();
+                int phaseCPoint = feederthinger.getPhaseC();
                 pointNameMap.put(phaseBPoint, DaoFactory.getPointDao().getPointName(phaseBPoint));
                 pointNameMap.put(phaseCPoint, DaoFactory.getPointDao().getPointName(phaseCPoint));
             }
