@@ -7,8 +7,8 @@
 * Author: Corey G. Plender
 *
 * CVS KEYWORDS:
-* REVISION     :  $Revision: 1.27 $
-* DATE         :  $Date: 2007/08/27 18:27:10 $
+* REVISION     :  $Revision: 1.28 $
+* DATE         :  $Date: 2007/10/16 18:40:42 $
 *
 * Copyright (c) 2002 Cannon Technologies Inc. All rights reserved.
 *-----------------------------------------------------------------------------*/
@@ -217,6 +217,11 @@ INT CtiDeviceGroupExpresscom::ExecuteRequest(CtiRequestMsg *pReq, CtiCommandPars
             {
                 parse.setValue("relaymask", 0);
             }
+        }
+
+        if( parse.getCommand() == ControlRequest )
+        {
+            OutMessage->ExpirationTime = CtiTime().seconds() + gConfigParms.getValueAsInt(GROUP_CONTROL_EXPIRATION, 1200);
         }
 
         reportActionItemsToDispatch(pReq, parse, vgList);

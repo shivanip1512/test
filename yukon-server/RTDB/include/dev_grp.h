@@ -9,8 +9,8 @@
 *
 * PVCS KEYWORDS:
 * ARCHIVE      :  $Archive:   Z:/SOFTWAREARCHIVES/YUKON/DATABASE/INCLUDE/tbl_alm_nloc.h-arc  $
-* REVISION     :  $Revision: 1.22 $
-* DATE         :  $Date: 2007/08/27 18:26:47 $
+* REVISION     :  $Revision: 1.23 $
+* DATE         :  $Date: 2007/10/16 18:40:42 $
 *
 * Copyright (c) 1999 Cannon Technologies Inc. All rights reserved.
 *-----------------------------------------------------------------------------*/
@@ -31,6 +31,7 @@
 #include "pt_analog.h"
 
 #include "dev_base.h"
+static const string GROUP_CONTROL_EXPIRATION = "STANDARD_CONTROL_EXPIRATION";
 
 class CtiDeviceGroupBase : public CtiDeviceBase
 {
