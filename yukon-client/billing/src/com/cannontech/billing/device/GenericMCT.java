@@ -6,6 +6,7 @@ import com.cannontech.billing.device.base.BillingData;
 import com.cannontech.billing.device.base.BillingDeviceBase;
 import com.cannontech.billing.device.base.DeviceData;
 import com.cannontech.common.dynamicBilling.Channel;
+import com.cannontech.common.dynamicBilling.ReadingType;
 import com.cannontech.common.dynamicBilling.model.BillableField;
 import com.cannontech.database.data.point.PointTypes;
 
@@ -25,6 +26,7 @@ public class GenericMCT extends BillingDeviceBase {
         data.setUnitOfMeasure(unitOfMeasure);
         data.setTimestamp(timestamp);
 
+        ReadingType readingType = getReadingType(unitOfMeasure);
         int type = PointTypes.getType(ptType);
 
         switch (type) {
@@ -34,7 +36,7 @@ public class GenericMCT extends BillingDeviceBase {
             switch (offSet) {
 
             case 1: // KWh
-                addData(BillableField.totalConsumption, data);
+                addData(Channel.ONE, readingType, BillableField.totalConsumption, data);
                 break;
 
             }

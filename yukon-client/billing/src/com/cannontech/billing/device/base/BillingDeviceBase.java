@@ -31,8 +31,19 @@ public abstract class BillingDeviceBase implements BillableDevice {
         return (data != null) ? data.getValue() : null;
     }
 
+    /**
+     * Helper method to return a Calculated Value on channel 1, 2, or 3 (in that order) 
+     * for ReadingType.Electric
+     */
     public Double getCalculatedValue(BillableField field) {
-        return this.getCalculatedValue(Channel.ONE, ReadingType.ELECTRIC, field);
+    	
+    	Double calcValue = this.getCalculatedValue(Channel.ONE, ReadingType.ELECTRIC, field);
+    	if( calcValue == null) 
+    		calcValue = this.getCalculatedValue(Channel.TWO, ReadingType.ELECTRIC, field);
+    	if( calcValue == null)
+    		calcValue = this.getCalculatedValue(Channel.THREE, ReadingType.ELECTRIC, field);
+
+        return calcValue;
     }
 
     public Double getCalculatedValue(Channel channel, ReadingType type, BillableField field) {
@@ -55,10 +66,18 @@ public abstract class BillingDeviceBase implements BillableDevice {
         return (data != null) ? data.getValue() : null;
     }
 
+    /**
+     * Helper method to return a timestamp on channel 1, 2, or 3 (in that order) 
+     * for ReadingType.Electric
+     */
     public Timestamp getTimestamp(BillableField field) {
-
-        return this.getTimestamp(Channel.ONE, ReadingType.ELECTRIC, field);
-    };
+    	Timestamp returnTS = this.getTimestamp(Channel.ONE, ReadingType.ELECTRIC, field);
+    	if( returnTS == null) 
+    		returnTS = this.getTimestamp(Channel.TWO, ReadingType.ELECTRIC, field);
+    	if( returnTS == null)
+    		returnTS = this.getTimestamp(Channel.THREE, ReadingType.ELECTRIC, field);
+        return returnTS; 
+    }
 
     public Timestamp getTimestamp(Channel channel, ReadingType type, BillableField field) {
 

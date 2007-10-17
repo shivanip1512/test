@@ -48,14 +48,18 @@ public class ExtendedTOURecordFormatter extends BillingFormatterBase {
         }
         if (device.getData(Channel.TWO, ReadingType.ELECTRIC, BillableField.totalConsumption) != null) {
 
-            addFormattedLine(writeToFile, device, ELECTRIC_CODE, Channel.TWO, ReadingType.ELECTRIC);
+            addFormattedLine(writeToFile,
+            				 device, 
+            				 ELECTRIC_CODE + String.valueOf(Channel.TWO.getNumeric()), 
+            				 Channel.TWO, 
+            				 ReadingType.ELECTRIC);
 
         }
         if (device.getData(Channel.THREE, ReadingType.ELECTRIC, BillableField.totalConsumption) != null) {
 
             addFormattedLine(writeToFile,
                              device,
-                             ELECTRIC_CODE,
+                             ELECTRIC_CODE+ String.valueOf(Channel.THREE.getNumeric()),
                              Channel.THREE,
                              ReadingType.ELECTRIC);
 
