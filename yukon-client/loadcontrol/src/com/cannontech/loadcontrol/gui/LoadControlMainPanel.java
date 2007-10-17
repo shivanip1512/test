@@ -390,13 +390,11 @@ private void showContScenWindow( final int panelMode )
                      */
                     boolean checkedButNoConstraintsViolated = false;
                     for(ResponseProg response : programResp) {
-                        if(response.getViolations().size() > 0 
+                        if(response.getViolations().size() == 0 
                                 && response.getLmRequest().getConstraintFlag() == LMManualControlRequest.CONSTRAINTS_FLAG_CHECK) {
-                            checkedButNoConstraintsViolated = false;
+                            checkedButNoConstraintsViolated = response.getLmRequest().getCommand() == LMManualControlRequest.SCHEDULED_START || response.getLmRequest().getCommand() == LMManualControlRequest.START_NOW;
                             break;
                         }
-                        if(response.getLmRequest().getCommand() == LMManualControlRequest.SCHEDULED_START || response.getLmRequest().getCommand() == LMManualControlRequest.START_NOW)
-                            checkedButNoConstraintsViolated = true;
                     }
                     
                     if(checkedButNoConstraintsViolated) {
