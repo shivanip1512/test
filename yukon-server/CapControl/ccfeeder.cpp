@@ -2893,7 +2893,7 @@ BOOL CtiCCFeeder::capBankControlStatusUpdate(CtiMultiMsg_vec& pointChanges, CtiM
                         {
                             currentCapBank->setControlStatus(CtiCCCapBank::OpenFail);
                             text = string("Var: ");
-                            text += CtiNumStr(getCurrentVarLoadPointValue(), getDecimalPlaces()).toString();
+                            text += CtiNumStr(currentVarLoadPointValue, getDecimalPlaces()).toString();
                             text += " ( ";
                             text += CtiNumStr(ratio*100.0,getDecimalPlaces()).toString();
                             text += "% change), OpenFail";
@@ -2902,7 +2902,7 @@ BOOL CtiCCFeeder::capBankControlStatusUpdate(CtiMultiMsg_vec& pointChanges, CtiM
                         {
                             currentCapBank->setControlStatus(CtiCCCapBank::OpenQuestionable);
                             text = string("Var: ");
-                            text += CtiNumStr(getCurrentVarLoadPointValue(), getDecimalPlaces()).toString();
+                            text += CtiNumStr(currentVarLoadPointValue, getDecimalPlaces()).toString();
                             text += " ( ";
                             text += CtiNumStr(ratio*100.0,getDecimalPlaces()).toString();
                             text += "% change), OpenQuestionable";
@@ -2911,7 +2911,7 @@ BOOL CtiCCFeeder::capBankControlStatusUpdate(CtiMultiMsg_vec& pointChanges, CtiM
                         {
                             currentCapBank->setControlStatus(CtiCCCapBank::Open);
                             text = string("Var: ");
-                            text += CtiNumStr(getCurrentVarLoadPointValue(), getDecimalPlaces()).toString();
+                            text += CtiNumStr(currentVarLoadPointValue, getDecimalPlaces()).toString();
                             text += " ( ";
                             text += CtiNumStr(ratio*100.0,getDecimalPlaces()).toString();
                             text += "% change), Open";
@@ -2921,7 +2921,7 @@ BOOL CtiCCFeeder::capBankControlStatusUpdate(CtiMultiMsg_vec& pointChanges, CtiM
                     {
                         currentCapBank->setControlStatus(CtiCCCapBank::Open);
                         text = string("Var: ");
-                        text += CtiNumStr(getCurrentVarLoadPointValue(), getDecimalPlaces()).toString();
+                        text += CtiNumStr(currentVarLoadPointValue, getDecimalPlaces()).toString();
                         text += " ( ";
                         text += CtiNumStr(ratio*100.0,getDecimalPlaces()).toString();
                         text += "% change), Open";
@@ -2935,7 +2935,7 @@ BOOL CtiCCFeeder::capBankControlStatusUpdate(CtiMultiMsg_vec& pointChanges, CtiM
                     _ltoa(currentVarPointQuality,tempchar,10);
                     text += tempchar;
                     text += " Var: ";
-                    text += CtiNumStr(getCurrentVarLoadPointValue(), getDecimalPlaces()).toString();
+                    text += CtiNumStr(currentVarLoadPointValue, getDecimalPlaces()).toString();
                     text += ", OpenQuestionable";
                 }
             }
@@ -2957,7 +2957,7 @@ BOOL CtiCCFeeder::capBankControlStatusUpdate(CtiMultiMsg_vec& pointChanges, CtiM
                         {
                             currentCapBank->setControlStatus(CtiCCCapBank::CloseFail);
                             text = string("Var: ");
-                            text += CtiNumStr(getCurrentVarLoadPointValue(), getDecimalPlaces()).toString();
+                            text += CtiNumStr(currentVarLoadPointValue, getDecimalPlaces()).toString();
                             text += " ( ";
                             text += CtiNumStr(ratio*100.0,getDecimalPlaces()).toString();
                             text += "% change), CloseFail";
@@ -2966,7 +2966,7 @@ BOOL CtiCCFeeder::capBankControlStatusUpdate(CtiMultiMsg_vec& pointChanges, CtiM
                         {
                             currentCapBank->setControlStatus(CtiCCCapBank::CloseQuestionable);
                             text = string("Var: ");
-                            text += CtiNumStr(getCurrentVarLoadPointValue(), getDecimalPlaces()).toString();
+                            text += CtiNumStr(currentVarLoadPointValue, getDecimalPlaces()).toString();
                             text += " ( ";
                             text += CtiNumStr(ratio*100.0,getDecimalPlaces()).toString();
                             text += "% change), CloseQuestionable";
@@ -2975,7 +2975,7 @@ BOOL CtiCCFeeder::capBankControlStatusUpdate(CtiMultiMsg_vec& pointChanges, CtiM
                         {
                             currentCapBank->setControlStatus(CtiCCCapBank::Close);
                             text = string("Var: ");
-                            text += CtiNumStr(getCurrentVarLoadPointValue(), getDecimalPlaces()).toString();
+                            text += CtiNumStr(currentVarLoadPointValue, getDecimalPlaces()).toString();
                             text += " ( ";
                             text += CtiNumStr(ratio*100.0,getDecimalPlaces()).toString();
                             text += "% change), Closed";
@@ -2985,7 +2985,7 @@ BOOL CtiCCFeeder::capBankControlStatusUpdate(CtiMultiMsg_vec& pointChanges, CtiM
                     {
                         currentCapBank->setControlStatus(CtiCCCapBank::Close);
                         text = string("Var: ");
-                        text += CtiNumStr(getCurrentVarLoadPointValue(), getDecimalPlaces()).toString();
+                        text += CtiNumStr(currentVarLoadPointValue, getDecimalPlaces()).toString();
                         text += " ( ";
                         text += CtiNumStr(ratio*100.0,getDecimalPlaces()).toString();
                         text += "% change), Closed";
@@ -2999,7 +2999,7 @@ BOOL CtiCCFeeder::capBankControlStatusUpdate(CtiMultiMsg_vec& pointChanges, CtiM
                     _ltoa(currentVarPointQuality,tempchar,10);
                     text += tempchar;
                     text += " Var: ";
-                    text += CtiNumStr(getCurrentVarLoadPointValue(), getDecimalPlaces()).toString();
+                    text += CtiNumStr(currentVarLoadPointValue, getDecimalPlaces()).toString();
                     text += ", CloseQuestionable";
                 }
             }
