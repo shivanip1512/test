@@ -2,7 +2,6 @@
 /**** Oracle DBupdates   		       ****/
 /******************************************/
 
-/* @error ignore-begin */
 create table dynamicccarea ( AreaID numeric not null, additionalflags varchar(20) not null );
 
 alter table dynamicccarea
@@ -38,6 +37,15 @@ create table DYNAMICBILLINGFIELD  (
 )
 ;
 
+alter table BillingFileFormats ALTER COLUMN FormatType varchar(100);
+go
+
+alter table BillingFileFormats ADD SystemFormat bit;
+go
+
+update BillingFileFormats SET SystemFormat=1;
+
+insert into sequenceNumber values (100, 'BillingFileFormats');
 
 /* ATS */
 insert into DynamicBillingFormat VALUES( '-18',',','H    Meter    kWh   Time   Date    Peak   PeakT   PeakD  Stat Sig  Freq Phase','');
@@ -179,6 +187,112 @@ insert into sequenceNumber values (100, 'BillingFileFormats');
 update yukonpaobject set type = 'MCT-430SL' where type = 'MCT-430SN' or type = 'MCT430SN';
 update devicetypecommand set devicetype = 'MCT-430SL' where devicetype = 'MCT-430SN' or devicetype = 'MCT430SN';
 
+/************************************* 
+	START CAPCONTROL 4.0 CHANGES 
+*************************************/
+insert into SeasonSchedule values (-1,'No Season');
+insert into DateOfSeason values(-1, 'Default', 1,1,12,31);
+
+create table CCSeasonStrategyAssignment (
+	PaobjectId numeric not null,
+	SeasonScheduleId numeric not null,
+	SeasonName varchar(20) not null,
+	StrategyId numeric not null
+);
+
+alter table CapControlArea  drop constraint FK_CAPCONTAREA_CAPCONTRSTRAT;
+alter table CapControlArea drop column StrategyId;
+alter table CapControlSubstationbus  drop constraint FK_CCSUBB_CCSTR;
+alter table CapControlSubstationbus drop column StrategyId;
+alter table CapControlFeeder  drop constraint FK_CCFDR_CCSTR;
+alter table CapControlFeeder drop column StrategyId;
+
+create table CapControlSpecialArea( AreaID numeric not null );
+
+alter table CapControlSpecialArea
+   add constraint PK_CapControlSpecialArea primary key nonclustered (AreaID);
+
+create table CCSubSpecialAreaAssignment (
+
+   AreaID numeric not null,
+   SubstationBusID numeric not null,
+   DisplayOrder numeric not null
+);
+
+alter table CCSubSpecialAreaAssignment
+   add constraint PK_CCSubSpecialAreaAssignment primary key nonclustered (AreaId, SubstationBusId);
+
+alter table CCSubSpecialAreaAssignment
+   add constraint FK_CCSubSpecialArea_CapContr foreign key (AreaID)
+      references CapControlSpecialArea (AreaID);
+
+alter table CCSubSpecialAreaAssignment
+   add constraint FK_CCSubSpecialArea_CapSubAreaAssgn foreign key (SubstationBusId)
+      references CapControlSubstationBus (SubstationBusId);
+
+create table DynamicCCSpecialArea (
+   AreaID               numeric              not null,
+   Additionalflags      varchar(20)          not null
+);
+
+alter table DynamicCCSpecialArea
+   add constraint FK_ccspecialarea_Dynccspecialarea foreign key (AreaID)
+      references CapControlSpecialArea (AreaID);
+
+insert into DynamicCCSpecialArea (AreaId, Additionalflags) select areaid, 'NNNNNNNNNNNNNNNNNNNN' from CapControlSpecialArea;
+
+alter table DynamicCCFeeder add PhaseAValue float;
+update DynamicCCFeeder set PhaseAValue = 0;
+alter table DynamicCCFeeder alter column PhaseAValue float not null;
+
+alter table DynamicCCFeeder add PhaseBValue float;
+update DynamicCCFeeder set PhaseBValue = 0;
+alter table DynamicCCFeeder alter column PhaseBValue float not null;
+
+alter table DynamicCCFeeder add PhaseCValue float;
+update DynamicCCFeeder set PhaseCValue = 0;
+alter table DynamicCCFeeder alter column PhaseCValue float not null;
+
+alter table DynamicCCSubstationbus add PhaseAValue float;
+update DynamicCCSubstationbus set PhaseAValue = 0;
+alter table DynamicCCSubstationbus alter column PhaseAValue float not null;
+
+alter table DynamicCCSubstationbus add PhaseBValue float;
+update DynamicCCSubstationbus set PhaseBValue = 0;
+alter table DynamicCCSubstationbus alter column PhaseBValue float not null;
+
+alter table DynamicCCSubstationbus add PhaseCValue float;
+update DynamicCCSubstationbus set PhaseCValue = 0;
+alter table DynamicCCSubstationbus alter column PhaseCValue float not null;
+
+alter table CapControlFeeder add UsePhaseData char(1);
+update CapControlFeeder set UsePhaseData = 'N';
+alter table CapControlFeeder alter column UsePhaseData char(1) not null;
+
+alter table CapControlFeeder add PhaseB numeric;
+update CapControlFeeder set PhaseB = 0;
+alter table CapControlFeeder alter column PhaseB numeric not null;
+
+alter table CapControlFeeder add PhaseC numeric;
+update CapControlFeeder set PhaseC = 0;
+alter table CapControlFeeder alter column PhaseC numeric not null;
+
+alter table CapControlSubstationbus add UsePhaseData char(1);
+update CapControlSubstationbus set UsePhaseData = 'N';
+alter table CapControlSubstationbus alter column UsePhaseData char(1) not null;
+
+alter table CapControlSubstationbus add PhaseB numeric;
+update CapControlSubstationbus set PhaseB = 0;
+alter table CapControlSubstationbus alter column PhaseB numeric not null;
+
+alter table CapControlSubstationbus add PhaseC numeric;
+update CapControlSubstationbus set PhaseC = 0;
+alter table CapControlSubstationbus alter column PhaseC numeric not null;
+
+/************************************* 
+	END CAPCONTROL 4.0 CHANGES 
+*************************************/
+
 /*==============================================================*/
 /* Table: CAPCONTROLSPECIALAREA                                 */
 /*==============================================================*/
@@ -202,7 +316,7 @@ delete from ECToGenericMapping where MappingCategory = 'LMThermostatSchedule' an
 delete from LMThermostatSchedule where ThermostatTypeID in (select EntryID from YukonListEntry where YukonDefinitionID = 3100);
 update LMHardwareBase set LMHardwareTypeID = 0 where LMHardwareTypeID in (select EntryID from YukonListEntry where YukonDefinitionID = 3100);
 delete from YukonlistEntry where YukonDefinitionID = 3100;
-/* @error ignore-end */
+
 
 
 update State
@@ -228,6 +342,100 @@ INSERT INTO State VALUES(-1, 10, 'High Limit 2', 10, 6 , 0);
 alter table ccfeederbanklist alter column controlorder float;
 alter table ccfeederbanklist alter column closeorder float;
 alter table ccfeederbanklist alter column triporder float;
+
+update command set label = 'Turn Off Test Light' where commandid = -65;
+update command set label = 'Clear Comm Loss Counter' where commandid = -67;
+
+insert into seasonSchedule values (-1,'No Season');
+insert into dateOfSeason values(-1, 'Default', 1,1,12,31);
+
+insert into yukonroleproperty values (-100011,-1000, 'Daily/Max Operation Count', 'true', 'is Daily/Max Operation stat displayed');
+insert into yukonroleproperty values (-100012,-1000, 'Substation Last Update Timestamp', 'true', 'is last update timstamp shown for substations');
+insert into yukonroleproperty values (-100106,-1001, 'Feeder Last Update Timestamp', 'true', 'is last update timstamp shown for feeders');
+insert into yukonroleproperty values (-100203,-1002, 'CapBank Last Update Timestamp', 'true', 'is last update timstamp shown for capbanks');
+update yukonroleproperty set DefaultValue = 'false' where rolepropertyid = -100008;
+update yukonroleproperty set DefaultValue = 'false' where rolepropertyid = -100007;
+insert into yukonroleproperty values (-100105,-1001, 'Target', 'true', 'is target stat displayed');
+
+insert into YukonRoleProperty values(-1308,-4,'LDAP DN','dc=example,dc=com','LDAP Distinguished Name')
+insert into YukonRoleProperty values(-1309,-4,'LDAP User Suffix','ou=users','LDAP User Suffix')
+insert into YukonRoleProperty values(-1310,-4,'LDAP User Prefix','uid=','LDAP User Prefix')
+insert into YukonRoleProperty values(-1311,-4,'LDAP Server Address','127.0.0.1','LDAP Server Address')
+insert into YukonRoleProperty values(-1312,-4,'LDAP Server Port','389','LDAP Server Port')
+insert into YukonRoleProperty values(-1313,-4,'LDAP Server Timeout','30','LDAP Server Timeout (in seconds)')
+
+insert into YukonRoleProperty values(-1314,-4,'Active Directory Server Address','127.0.0.1','Active Directory Server Address')
+insert into YukonRoleProperty values(-1315,-4,'Active Directory Server Port','389','Active Directory Server Port')
+insert into YukonRoleProperty values(-1316,-4,'Active Directory Server Timeout','30','Active Directory Server Timeout (in seconds)')
+insert into YukonRoleProperty values(-1317,-4,'Active Directory NT Domain Name','(none)','Active Directory NT DOMAIN NAME')
+
+insert into YukonGroupRole values(-50,-1,-4,-1308,'(none)');
+insert into YukonGroupRole values(-51,-1,-4,-1309,'(none)');
+insert into YukonGroupRole values(-52,-1,-4,-1310,'(none)');
+insert into YukonGroupRole values(-53,-1,-4,-1311,'(none)');
+insert into YukonGroupRole values(-54,-1,-4,-1312,'(none)');
+insert into YukonGroupRole values(-55,-1,-4,-1313,'(none)');
+
+insert into YukonGroupRole values(-56,-1,-4,-1314,'(none)');
+insert into YukonGroupRole values(-57,-1,-4,-1315,'(none)');
+insert into YukonGroupRole values(-58,-1,-4,-1316,'(none)');
+insert into YukonGroupRole values(-59,-1,-4,-1317,'(none)');
+insert into YukonGroupRole values(-92,-1,-4,-1307,'(none)');
+
+drop table TOUATTRIBUTEMAPPING cascade constraints;
+
+/*==============================================================*/
+/* Table: TOUATTRIBUTEMAPPING                                   */
+/*==============================================================*/
+create table TOUATTRIBUTEMAPPING  (
+   touID                NUMBER(6)                       not null,
+   displayname          VARCHAR2(50)                    not null,
+   peakAttribute        VARCHAR2(50)                    not null,
+   usageAttribute       VARCHAR2(50)                    not null
+);
+
+INSERT INTO TouAttributeMapping (displayname, peakattribute, usageattribute) VALUES ('A', 'TOU_RATE_A_PEAK_DEMAND', 'TOU_RATE_A_USAGE');
+INSERT INTO TouAttributeMapping (displayname, peakattribute, usageattribute) VALUES ('B', 'TOU_RATE_B_PEAK_DEMAND', 'TOU_RATE_B_USAGE');
+INSERT INTO TouAttributeMapping (displayname, peakattribute, usageattribute) VALUES ('C', 'TOU_RATE_C_PEAK_DEMAND', 'TOU_RATE_C_USAGE');
+INSERT INTO TouAttributeMapping (displayname, peakattribute, usageattribute) VALUES ('D', 'TOU_RATE_D_PEAK_DEMAND', 'TOU_RATE_D_USAGE');
+
+alter table TOUATTRIBUTEMAPPING
+   add constraint PK_TOUATTRIBUTEMAPPING primary key (touID);
+
+alter table cceventlog add actionId numeric;
+go
+update cceventlog set actionId = -1;
+go
+alter table cceventlog alter column actionId numeric not null;
+
+drop table DEVICECONFIGURATION cascade constraints;
+
+/*==============================================================*/
+/* Table: DEVICECONFIGURATION                                   */
+/*==============================================================*/
+create table DEVICECONFIGURATION  (
+   DeviceConfigurationID NUMBER                          not null,
+   Name                 VARCHAR2(30)                    not null,
+   Type                 VARCHAR2(30)                    not null
+);
+
+alter table DEVICECONFIGURATION
+   add constraint PK_DEVICECONFIGURATION primary key ();
+
+drop table DEVICECONFIGURATIONITEM cascade constraints;
+
+/*==============================================================*/
+/* Table: DEVICECONFIGURATIONITEM                               */
+/*==============================================================*/
+create table DEVICECONFIGURATIONITEM  (
+   DeviceConfigurationItemId NUMBER                          not null,
+   DeviceConfigurationID NUMBER                          not null,
+   FieldName            VARCHAR2(30)                    not null,
+   Value                VARCHAR2(30)                    not null
+);
+
+insert into YukonRoleProperty values(-20013,-200,'Edit Device Config','false','Controls the ability to edit and create device configurations');
+insert into YukonRoleProperty values(-20014,-200,'View Device Config','true','Controls the ability to view existing device configurations');
 
 /**************************************************************/
 /* VERSION INFO                                               */

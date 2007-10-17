@@ -1,7 +1,7 @@
 /*==============================================================*/
 /* Database name:  YukonDatabase                                */
 /* DBMS name:      Microsoft SQL Server 2000                    */
-/* Created on:     10/15/2007 3:05:40 PM                        */
+/* Created on:     10/17/2007 3:58:07 PM                        */
 /*==============================================================*/
 
 
@@ -6798,6 +6798,33 @@ PAObjectID ASC
 go
 
 /*==============================================================*/
+/* Index: INDX_PAOBJECTID_POFFSET                               */
+/*==============================================================*/
+create index INDX_PAOBJECTID_POFFSET on POINT (
+PAObjectID ASC,
+POINTOFFSET ASC
+)
+go
+
+/*==============================================================*/
+/* Index: INDX_PAOBJECTID_POINTID                               */
+/*==============================================================*/
+create index INDX_PAOBJECTID_POINTID on POINT (
+PAObjectID ASC,
+POINTID ASC
+)
+go
+
+/*==============================================================*/
+/* Index: INDX_POFFSET_POINTTYPE                                */
+/*==============================================================*/
+create index INDX_POFFSET_POINTTYPE on POINT (
+POINTOFFSET ASC,
+POINTTYPE ASC
+)
+go
+
+/*==============================================================*/
 /* Table: POINTACCUMULATOR                                      */
 /*==============================================================*/
 create table POINTACCUMULATOR (
@@ -6892,6 +6919,15 @@ create table POINTUNIT (
 go
 
 insert into pointunit values( 100, 9, 1, 1.0E+30, -1.0E+30, 0);
+
+/*==============================================================*/
+/* Index: INDX_UOMID_POINTID                                    */
+/*==============================================================*/
+create index INDX_UOMID_POINTID on POINTUNIT (
+UOMID ASC,
+POINTID ASC
+)
+go
 
 /*==============================================================*/
 /* Table: PORTDIALUPMODEM                                       */

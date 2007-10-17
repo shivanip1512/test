@@ -1,7 +1,7 @@
 /*==============================================================*/
 /* Database name:  YukonDatabase                                */
 /* DBMS name:      ORACLE Version 9i                            */
-/* Created on:     10/15/2007 3:04:05 PM                        */
+/* Created on:     10/17/2007 3:56:52 PM                        */
 /*==============================================================*/
 
 
@@ -2382,9 +2382,9 @@ create table DEVICECARRIERSETTINGS  (
 /* Table: DEVICECONFIGURATION                                   */
 /*==============================================================*/
 create table DEVICECONFIGURATION  (
-   DeviceConfigurationID numeric                         not null,
-   Name                 varchar(30)                     not null,
-   Type                 varchar(30)                     not null
+   DeviceConfigurationID NUMBER                          not null,
+   Name                 VARCHAR2(30)                    not null,
+   Type                 VARCHAR2(30)                    not null
 )
 ;
 
@@ -2392,10 +2392,10 @@ create table DEVICECONFIGURATION  (
 /* Table: DEVICECONFIGURATIONITEM                               */
 /*==============================================================*/
 create table DEVICECONFIGURATIONITEM  (
-   DEVICECONFIGURATIONITEMID numeric                         not null,
-   DeviceConfigurationID numeric                         not null,
-   FieldName            varchar(30)                     not null,
-   Value                varchar(30)                     not null
+   DEVICECONFIGURATIONITEMID NUMBER                          not null,
+   DeviceConfigurationID NUMBER                          not null,
+   FieldName            VARCHAR2(30)                    not null,
+   Value                VARCHAR2(30)                    not null
 )
 ;
 
@@ -2921,7 +2921,7 @@ create table DYNAMICBILLINGFIELD  (
    FieldName            VARCHAR2(50)                    not null,
    FieldOrder           NUMBER                          not null,
    FieldFormat          VARCHAR2(50),
-   MaxLength            numeric                         not null,
+   MaxLength            NUMBER                          not null,
    constraint PK_DYNAMICBILLINGFIELD primary key (id)
 )
 ;
@@ -5767,6 +5767,33 @@ create index INDX_PAOBJECTID on POINT (
 ;
 
 /*==============================================================*/
+/* Index: INDX_PAOBJECTID_POFFSET                               */
+/*==============================================================*/
+create index INDX_PAOBJECTID_POFFSET on POINT (
+   PAObjectID ASC,
+   POINTOFFSET ASC
+)
+;
+
+/*==============================================================*/
+/* Index: INDX_PAOBJECTID_POINTID                               */
+/*==============================================================*/
+create index INDX_PAOBJECTID_POINTID on POINT (
+   PAObjectID ASC,
+   POINTID ASC
+)
+;
+
+/*==============================================================*/
+/* Index: INDX_POFFSET_POINTTYPE                                */
+/*==============================================================*/
+create index INDX_POFFSET_POINTTYPE on POINT (
+   POINTOFFSET ASC,
+   POINTTYPE ASC
+)
+;
+
+/*==============================================================*/
 /* Table: POINTACCUMULATOR                                      */
 /*==============================================================*/
 create table POINTACCUMULATOR  (
@@ -5861,6 +5888,15 @@ create table POINTUNIT  (
 ;
 
 insert into pointunit values( 100, 9, 1, 1.0E+30, -1.0E+30, 0);
+
+/*==============================================================*/
+/* Index: INDX_UOMID_POINTID                                    */
+/*==============================================================*/
+create index INDX_UOMID_POINTID on POINTUNIT (
+   UOMID ASC,
+   POINTID ASC
+)
+;
 
 /*==============================================================*/
 /* Table: PORTDIALUPMODEM                                       */

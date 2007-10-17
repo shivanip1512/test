@@ -2,6 +2,14 @@
 /**** SQLServer 2000 DBupdates         ****/
 /******************************************/
 
+create table dynamicccarea ( AreaID numeric not null, additionalflags varchar(20) not null );
+
+alter table dynamicccarea
+   add constraint FK_ccarea_Dynccarea foreign key (areaID)
+      references Capcontrolarea (areaID);
+
+insert into dynamicccarea (areaid, additionalflags) select areaid, 'NNNNNNNNNNNNNNNNNNNN' from capcontrolarea; 
+
 /*==============================================================*/
 /* Table: DYNAMICBILLINGFIELD                                   */
 /*==============================================================*/
@@ -355,6 +363,111 @@ INSERT INTO State VALUES(-1, 10, 'High Limit 2', 10, 6 , 0);
 alter table ccfeederbanklist alter column controlorder float;
 alter table ccfeederbanklist alter column closeorder float;
 alter table ccfeederbanklist alter column triporder float;
+
+update command set label = 'Turn Off Test Light' where commandid = -65;
+update command set label = 'Clear Comm Loss Counter' where commandid = -67;
+
+/*==============================================================*/
+/* Table: CAPCONTROLSPECIALAREA                                 */
+/*==============================================================*/
+create table CAPCONTROLSPECIALAREA  (
+   AreaID               NUMBER                          not null
+)
+;
+/*==============================================================*/
+/* Table: CCSUBSPECIALAREAASSIGNMENT                            */
+/*==============================================================*/
+create table CCSUBSPECIALAREAASSIGNMENT  (
+   AreaID               NUMBER                          not null,
+   SubstationBusID      NUMBER                          not null,
+   DisplayOrder         NUMBER                          not null
+)
+;
+
+insert into seasonSchedule values (-1,'No Season');
+insert into dateOfSeason values(-1, 'Default', 1,1,12,31);
+
+insert into yukonroleproperty values (-100011,-1000, 'Daily/Max Operation Count', 'true', 'is Daily/Max Operation stat displayed');
+insert into yukonroleproperty values (-100012,-1000, 'Substation Last Update Timestamp', 'true', 'is last update timstamp shown for substations');
+insert into yukonroleproperty values (-100106,-1001, 'Feeder Last Update Timestamp', 'true', 'is last update timstamp shown for feeders');
+insert into yukonroleproperty values (-100203,-1002, 'CapBank Last Update Timestamp', 'true', 'is last update timstamp shown for capbanks');
+update yukonroleproperty set DefaultValue = 'false' where rolepropertyid = -100008;
+update yukonroleproperty set DefaultValue = 'false' where rolepropertyid = -100007;
+insert into yukonroleproperty values (-100105,-1001, 'Target', 'true', 'is target stat displayed');
+
+insert into YukonRoleProperty values(-1308,-4,'LDAP DN','dc=example,dc=com','LDAP Distinguished Name')
+insert into YukonRoleProperty values(-1309,-4,'LDAP User Suffix','ou=users','LDAP User Suffix')
+insert into YukonRoleProperty values(-1310,-4,'LDAP User Prefix','uid=','LDAP User Prefix')
+insert into YukonRoleProperty values(-1311,-4,'LDAP Server Address','127.0.0.1','LDAP Server Address')
+insert into YukonRoleProperty values(-1312,-4,'LDAP Server Port','389','LDAP Server Port')
+insert into YukonRoleProperty values(-1313,-4,'LDAP Server Timeout','30','LDAP Server Timeout (in seconds)')
+
+insert into YukonRoleProperty values(-1314,-4,'Active Directory Server Address','127.0.0.1','Active Directory Server Address')
+insert into YukonRoleProperty values(-1315,-4,'Active Directory Server Port','389','Active Directory Server Port')
+insert into YukonRoleProperty values(-1316,-4,'Active Directory Server Timeout','30','Active Directory Server Timeout (in seconds)')
+insert into YukonRoleProperty values(-1317,-4,'Active Directory NT Domain Name','(none)','Active Directory NT DOMAIN NAME')
+
+insert into YukonGroupRole values(-50,-1,-4,-1308,'(none)');
+insert into YukonGroupRole values(-51,-1,-4,-1309,'(none)');
+insert into YukonGroupRole values(-52,-1,-4,-1310,'(none)');
+insert into YukonGroupRole values(-53,-1,-4,-1311,'(none)');
+insert into YukonGroupRole values(-54,-1,-4,-1312,'(none)');
+insert into YukonGroupRole values(-55,-1,-4,-1313,'(none)');
+
+insert into YukonGroupRole values(-56,-1,-4,-1314,'(none)');
+insert into YukonGroupRole values(-57,-1,-4,-1315,'(none)');
+insert into YukonGroupRole values(-58,-1,-4,-1316,'(none)');
+insert into YukonGroupRole values(-59,-1,-4,-1317,'(none)');
+insert into YukonGroupRole values(-92,-1,-4,-1307,'(none)');
+
+if exists (select 1
+            from  sysobjects
+           where  id = object_id('TOUATTRIBUTEMAPPING')
+            and   type = 'U')
+   drop table TOUATTRIBUTEMAPPING
+go
+
+/*==============================================================*/
+/* Table: TOUATTRIBUTEMAPPING                                   */
+/*==============================================================*/
+create table TOUATTRIBUTEMAPPING (
+   touID                numeric(6)           identity(1,1),
+   displayname          varchar(50)          not null,
+   peakAttribute        varchar(50)          not null,
+   usageAttribute       varchar(50)          not null
+)
+go
+
+INSERT INTO TouAttributeMapping (displayname, peakattribute, usageattribute) VALUES ('A', 'TOU_RATE_A_PEAK_DEMAND', 'TOU_RATE_A_USAGE');
+INSERT INTO TouAttributeMapping (displayname, peakattribute, usageattribute) VALUES ('B', 'TOU_RATE_B_PEAK_DEMAND', 'TOU_RATE_B_USAGE');
+INSERT INTO TouAttributeMapping (displayname, peakattribute, usageattribute) VALUES ('C', 'TOU_RATE_C_PEAK_DEMAND', 'TOU_RATE_C_USAGE');
+INSERT INTO TouAttributeMapping (displayname, peakattribute, usageattribute) VALUES ('D', 'TOU_RATE_D_PEAK_DEMAND', 'TOU_RATE_D_USAGE');
+
+alter table TOUATTRIBUTEMAPPING
+   add constraint PK_TOUATTRIBUTEMAPPING primary key (touID)
+go
+
+alter table cceventlog add actionId numeric;
+go
+update cceventlog set actionId = -1;
+go
+alter table cceventlog alter column actionId numeric not null;
+
+create table DeviceConfiguration (
+	DeviceConfigurationId           numeric              not null,
+	Name        varchar(30)          not null,
+	Type		varchar(30) not null
+)
+
+create table DeviceConfigurationItem (
+	DeviceConfigurationItemId	numeric             not null,
+	DeviceConfigurationId		numeric             not null,
+	FieldName					varchar(30)			not null,
+	Value						varchar(30)         not null
+)
+
+insert into YukonRoleProperty values(-20013,-200,'Edit Device Config','false','Controls the ability to edit and create device configurations');
+insert into YukonRoleProperty values(-20014,-200,'View Device Config','true','Controls the ability to view existing device configurations');
 
 /**************************************************************/
 /* VERSION INFO                                               */
