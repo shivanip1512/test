@@ -57,8 +57,7 @@ public class ControlAreaActionListener implements java.awt.event.ActionListener
 				
 				for( int i = 0; i < listeners.getListenerCount(IControlAreaListener.class); i++ )
 				{
-					IControlAreaListener lst = 
-						(IControlAreaListener)listeners.getListeners(IControlAreaListener.class)[i];
+					IControlAreaListener lst = listeners.getListeners(IControlAreaListener.class)[i];
 						
 					lst.setCurrentDisplay( dispItem );
 				}

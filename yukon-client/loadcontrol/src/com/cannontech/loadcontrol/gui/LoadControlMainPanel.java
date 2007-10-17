@@ -61,7 +61,7 @@ public class LoadControlMainPanel extends javax.swing.JPanel implements ButtonBa
 //	private ProgramTableModel programTableModel = null;
 	private GroupTableModel groupTableModel = null;
 	
-	private javax.swing.JComboBox comboBox = null;
+	private javax.swing.JComboBox viewComboBox = null;
 	private ControlAreaActionListener controlAreaActionListener = null;
 	private ControlAreaPopUpMenu controlAreaPopUpMenu = null;
 	private GroupPopUpMenu groupPopUpMenu = null;
@@ -133,7 +133,7 @@ public void setCurrentDisplay( LCDisplayItem display_ )
 	getCompSplitPane().getJSplitPaneInner().getBottomComponent().setVisible(
 			getJTableGroup().getModel() != EMPTY_TABLE_MODEL );
     
-    executeRefreshButton();
+    lmDisplayRefresh();
 }
 
 
@@ -145,8 +145,8 @@ public void addActionListenerToJComponent( javax.swing.JComponent component )
 {
 	if( component instanceof javax.swing.JComboBox )
 	{
-		comboBox = (javax.swing.JComboBox)component;
-		getComboBox().removeAllItems();
+		viewComboBox = (javax.swing.JComboBox)component;
+		getViewComboBox().removeAllItems();
 
 		// ALL getter for TableModels return the initial table model
 				
@@ -191,12 +191,12 @@ public void addActionListenerToJComponent( javax.swing.JComponent component )
 					new ControlHistoryTableModel(),
 					EMPTY_TABLE_MODEL } );
 
-		getComboBox().addItem( d1 );		
-		getComboBox().addItem( d2 );
-		getComboBox().addItem( d3 );
-		getComboBox().addItem( d4 );
+		getViewComboBox().addItem( d1 );		
+		getViewComboBox().addItem( d2 );
+		getViewComboBox().addItem( d3 );
+		getViewComboBox().addItem( d4 );
 
-		getComboBox().addActionListener( getControlAreaActionListener() );
+		getViewComboBox().addActionListener( getControlAreaActionListener() );
 	}
 	
 }
@@ -442,8 +442,6 @@ private void showContScenWindow( final int panelMode )
 			"Control Scenario unavailable",
 			JOptionPane.WARNING_MESSAGE );
 	}
-
-
 }
 
 /**
@@ -559,9 +557,31 @@ public void destroy()
  * Insert the method's description here.
  * Creation date: (4/19/2001 10:18:56 AM)
  */
-public void executeRefreshButton() 
-{
-    LoadControlClientConnection.getInstance();
+
+private void retrieveAllControlAreasFromServer() {
+    LMCommand command = new LMCommand();
+    command.setCommand(LMCommand.RETRIEVE_ALL_CONTROL_AREAS);
+    LoadControlClientConnection.getInstance().queue(command);
+}
+
+public void lmDisplayRefresh() {
+    LMControlArea[] currentAreas = LoadControlClientConnection.getInstance().getAllLMControlAreas();
+    if(currentAreas != null && currentAreas.length > 0) {
+        getGroupTableModel().clear();
+        getProgramTableModel().clear();
+        getControlAreaTableModel().clear();
+        for(LMControlArea controlArea : currentAreas) {
+            updateControlAreaTableModel( controlArea, getControlAreaTableModel());
+            LoadControlClientConnection.getInstance().notifyObservers( new LCChangeEvent( 
+                                 LoadControlClientConnection.getInstance(), 
+                                 LCChangeEvent.UPDATE, 
+                                 controlArea ) );
+        }
+    }
+}
+
+public void executeRefreshButton() {
+    lmDisplayRefresh();
 }
 
 /**
@@ -624,8 +644,8 @@ private ButtonBarPanel getButtonBarPanel() {
  * Creation date: (4/6/2001 9:40:02 AM)
  * @return javax.swing.JComboBox
  */
-public javax.swing.JComboBox getComboBox() {
-	return comboBox;
+public javax.swing.JComboBox getViewComboBox() {
+	return viewComboBox;
 }
 /**
  * Insert the method's description here.
@@ -1188,8 +1208,8 @@ private void initConnections() throws java.lang.Exception
 	//Observe the Connection to the Client
 	LoadControlClientConnection.getInstance().addObserver( this );
     
-    //do I need this?
-    //LoadControlClientConnection.getInstance().addObserver( getLmCache() );
+    //Make sure we request all control areas from the server
+    retrieveAllControlAreasFromServer();
 
 	//do this so we can tell the connection what Models to change to
 	getControlAreaActionListener().addControlAreaListener( this );
@@ -1467,8 +1487,8 @@ public void removeActionListenerFromJComponent( javax.swing.JComponent component
 {
 	if( component instanceof javax.swing.JComboBox )
 	{
-		getComboBox().removeActionListener( getControlAreaActionListener()  );
-		comboBox = null;
+		getViewComboBox().removeActionListener( getControlAreaActionListener()  );
+		viewComboBox = null;
 	}
 }
 /**
@@ -1601,8 +1621,6 @@ public void tableChanged(javax.swing.event.TableModelEvent event )
 				getSelectedControlArea(), getSelectedProgram() );
 	}
 
-	
-
 	if( event instanceof com.cannontech.loadcontrol.events.LCGenericTableModelEvent
 		 && ( ((com.cannontech.loadcontrol.events.LCGenericTableModelEvent)event).getType() 
 			   == com.cannontech.loadcontrol.events.LCGenericTableModelEvent.TYPE_CLEAR) )
@@ -1614,7 +1632,6 @@ public void tableChanged(javax.swing.event.TableModelEvent event )
 		getGroupTableModel().clear();
 		getProgramTableModel().clear();
 	}
-
 
 	revalidate();
 }
@@ -1678,7 +1695,6 @@ public void valueChanged(javax.swing.event.ListSelectionEvent event)
 			getSelectedControlArea(), getSelectedProgram() );
 }
 
-// Seems to cause a memory leak, the final object never gets GC'd
 private void updateProgramTableModel()
 {
 	getProgramTableModel().setCurrentControlArea( getSelectedControlArea() );
@@ -1701,6 +1717,27 @@ private int getInsertionIndx( LMControlArea area, IControlAreaTableModel cntrlAr
     }
 
     return i;
+}
+
+private synchronized void updateControlAreaTableModel(LMControlArea changedArea, IControlAreaTableModel cntrlAreaTbModel) {
+    boolean found = false;
+    for( int i = 0; i < cntrlAreaTbModel.getRowCount(); i++ ) {
+        LMControlArea areaRow = cntrlAreaTbModel.getRowAt(i);
+            
+        if( areaRow.equals(changedArea) ) {
+            //update all the the control area's
+            cntrlAreaTbModel.setControlAreaAt(
+                    changedArea, i );
+
+            found = true;
+            break;
+        }
+    }
+
+    if( !found )
+        cntrlAreaTbModel.addControlAreaAt( 
+            changedArea,
+            getInsertionIndx(changedArea, cntrlAreaTbModel) );
 }
 
 private synchronized void handleChange( LCChangeEvent msg ) {

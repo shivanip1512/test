@@ -439,7 +439,7 @@ private void executeAlarm_ActionPerformed( boolean muted )
 
 
 	if( getMainPanel().isClientDisplay() )
-		getMainPanel().getCurrentSpecailChild().setAlarmMute( muted );
+		getMainPanel().getCurrentSpecialChild().setAlarmMute( muted );
 	
 	//Always set the MainTableModel sound toggle flag	
 	getMainPanel().getTableDataModel().setAlarmMute( muted );
@@ -1148,8 +1148,8 @@ public void destroySingularities()
 		com.cannontech.tdc.roweditor.SendData.getInstance().destroyConnection();
 
 	// nuke any special clients that may be opened
-	if( getMainPanel().getCurrentSpecailChild() != null )
-		getMainPanel().getCurrentSpecailChild().destroy();
+	if( getMainPanel().getCurrentSpecialChild() != null )
+		getMainPanel().getCurrentSpecialChild().destroy();
 }/**
  * Insert the method's description here.
  * Creation date: (1/25/2001 10:11:44 AM)
@@ -3146,7 +3146,7 @@ public void jCheckBoxMenuItemVGridLines_ItemStateChanged(java.awt.event.ItemEven
 
 	if( getMainPanel().isClientDisplay() )
 	{
-		getMainPanel().getCurrentSpecailChild().setGridLines( getJCheckBoxMenuItemHGridLines().getState(), 
+		getMainPanel().getCurrentSpecialChild().setGridLines( getJCheckBoxMenuItemHGridLines().getState(), 
 													   getJCheckBoxMenuItemVGridLines().getState() );
 	}
 
@@ -3429,7 +3429,7 @@ public void jMenuItemExportDataSet_ActionPerformed(java.awt.event.ActionEvent ac
 {
 	if( getMainPanel().isClientDisplay() )
 	{		
-		getMainPanel().getCurrentSpecailChild().exportDataSet();
+		getMainPanel().getCurrentSpecialChild().exportDataSet();
 		return;
 	}
 
@@ -3487,7 +3487,7 @@ public void jMenuItemFont_ActionPerformed(java.awt.event.ActionEvent actionEvent
 	java.awt.Font prevFont = null;
 
 	if( getMainPanel().isClientDisplay() )
-		prevFont = getMainPanel().getCurrentSpecailChild().getFont();
+		prevFont = getMainPanel().getCurrentSpecialChild().getFont();
 	else
 		prevFont = getMainPanel().getDisplayTable().getFont();
 	
@@ -3507,7 +3507,7 @@ public void jMenuItemFont_ActionPerformed(java.awt.event.ActionEvent actionEvent
 			getMainPanel().setTableFont( display.getSelectedFont() );
 
 			if( getMainPanel().isClientDisplay() )
-				getMainPanel().getCurrentSpecailChild().setTableFont( display.getSelectedFont() );
+				getMainPanel().getCurrentSpecialChild().setTableFont( display.getSelectedFont() );
 		}
 		
 		
@@ -3987,7 +3987,7 @@ public void jMenuItemSearch_ActionPerformed(java.awt.event.ActionEvent actionEve
 		javax.swing.JTable[] tables = null;
 		
 		if( getMainPanel().isClientDisplay() )
-			tables = getMainPanel().getCurrentSpecailChild().getJTables();
+			tables = getMainPanel().getCurrentSpecialChild().getJTables();
 		else
 			tables = new javax.swing.JTable[] { getMainPanel().getDisplayTable() };
 
@@ -4106,7 +4106,7 @@ public void JToolBarButtonSilenceAlarmsAction_actionPerformed(java.util.EventObj
 	if( newEvent.getSource() == getAlarmToolBar() )
 	{
 		if( getMainPanel().isClientDisplay() )
-			getMainPanel().getCurrentSpecailChild().silenceAlarms();
+			getMainPanel().getCurrentSpecialChild().silenceAlarms();
 	
 		//Always set the MainTableModel sound toggle flag	
 		getMainPanel().getTableDataModel().silenceAlarms();
@@ -4320,15 +4320,15 @@ public void otherTDCMainFrameActionPerformed(SpawnTDCMainFrameEvent e)
 
 private void printClientDisplay( JCFlow flow, JCDocument document ) 
 {
-	if( getMainPanel().getCurrentSpecailChild().getJTables().length <= 0 )
+	if( getMainPanel().getCurrentSpecialChild().getJTables().length <= 0 )
 		return;
 
-	for( int i = 0; i < getMainPanel().getCurrentSpecailChild().getJTables().length; i++ )
+	for( int i = 0; i < getMainPanel().getCurrentSpecialChild().getJTables().length; i++ )
 	{
-		JCPageTable table = new JCPageTable( document, getMainPanel().getCurrentSpecailChild().getJTables()[i].getModel().getColumnCount() );
+		JCPageTable table = new JCPageTable( document, getMainPanel().getCurrentSpecialChild().getJTables()[i].getModel().getColumnCount() );
 		JCPageTableFromJTable convertTable = new JCPageTableFromJTable();
-		flow.print( getMainPanel().getCurrentSpecailChild().getJTables()[i].getName() );
-		convertTable.populateTable( table, getMainPanel().getCurrentSpecailChild().getJTables()[i].getModel() );
+		flow.print( getMainPanel().getCurrentSpecialChild().getJTables()[i].getName() );
+		convertTable.populateTable( table, getMainPanel().getCurrentSpecialChild().getJTables()[i].getModel() );
 		java.awt.Font oldFont = flow.getCurrentTextStyle().getFont();
 		
 		// Set the font
