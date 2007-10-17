@@ -15,3 +15,11 @@ If an ID is returned, then the mapping failed and the default route is not corre
 There are several questions we need to answer on this issue, so this can stay open for awhile.  
 /*I'm marking this in here for reference until we figure out the best way to deal with this.  Jon*/
 
+
+
+/* Role Prop changes for 3.5fc4 and HEAD -- tmack */
+/* I'm okay with not "moving" the old value */
+delete from YukonRoleProperty where RolePropertyId = -1113;
+insert into YukonRoleProperty values(-10816, -108,'Standard Page Style Sheet',' ','A comma separated list of URLs for CSS files that will be included on every Standard Page');
+
+/*end*/

@@ -25,7 +25,6 @@ public interface EnergyCompanyRole {
     public static final int DEFAULT_TEMPERATURE_UNIT = YukonRoleDefs.ENERGY_COMPANY_PROPERTYID_BASE - 10;
     public static final int METER_MCT_BASE_DESIGNATION = YukonRoleDefs.ENERGY_COMPANY_PROPERTYID_BASE - 11;
     public static final int APPLICABLE_POINT_TYPE_KEY = YukonRoleDefs.ENERGY_COMPANY_PROPERTYID_BASE - 12;
-    public static final int STD_PAGE_STYLE_SHEET = YukonRoleDefs.ENERGY_COMPANY_PROPERTYID_BASE - 13;  // Standard Page CSS
 	public static final int INHERIT_PARENT_APP_CATS = YukonRoleDefs.ENERGY_COMPANY_PROPERTYID_BASE - 14;
 }
 

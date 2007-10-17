@@ -26,4 +26,5 @@ public interface WebClientRole {
 	public static final int JAVA_WEB_START_LAUNCHER_ENABLED = ApplicationRoleDefs.WEB_CLIENT_PROPERTYID_BASE - 12;
 	public static final int SUPPRESS_ERROR_PAGE_DETAILS = ApplicationRoleDefs.WEB_CLIENT_PROPERTYID_BASE - 14;
 	public static final int DATA_UPDATER_DELAY_MS = ApplicationRoleDefs.WEB_CLIENT_PROPERTYID_BASE - 15;
+    public static final int STD_PAGE_STYLE_SHEET = ApplicationRoleDefs.WEB_CLIENT_PROPERTYID_BASE - 16;  // Standard Page CSS
 }

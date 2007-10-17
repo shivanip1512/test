@@ -17,7 +17,7 @@ import org.apache.commons.lang.StringUtils;
 
 import com.cannontech.core.dao.DaoFactory;
 import com.cannontech.database.data.lite.LiteYukonUser;
-import com.cannontech.roles.yukon.EnergyCompanyRole;
+import com.cannontech.roles.application.WebClientRole;
 import com.cannontech.util.ServletUtil;
 import com.cannontech.web.menu.ModuleBase;
 
@@ -103,27 +103,31 @@ public class OutputHeadContentTag extends BodyTagSupport {
                                                        PageContext.REQUEST_SCOPE);
         outputCssFiles(cssList);
         
-        pageContext.getOut().write("\n<!-- Energy Company specific style sheets (EnergyCompanyRole)-->\n");
+        pageContext.getOut().write("\n<!-- Login Group specific style sheets (WebClientRole.STD_PAGE_STYLE_SHEET)-->\n");
         LiteYukonUser user = 
             (LiteYukonUser) pageContext.getSession().getAttribute(ServletUtil.ATT_YUKON_USER);
-        String cssLocations = DaoFactory.getEnergyCompanyDao().getEnergyCompanyProperty(user, EnergyCompanyRole.STD_PAGE_STYLE_SHEET);
-        if (StringUtils.isNotBlank(cssLocations)) {
+        String cssLocations = DaoFactory.getAuthDao().getRolePropertyValue(user, WebClientRole.STD_PAGE_STYLE_SHEET);
             String[] cssLocationArray = cssLocations.split("\\s*,\\s*");
             outputCssFiles(Arrays.asList(cssLocationArray));
-        }
     }
     
     private void outputCssFiles(List cssList) throws IOException {
-        if (cssList.isEmpty()) {
-            pageContext.getOut().write("<!--  (none)  -->\n");
-        }
+        boolean foundNone = true;
         for (Iterator iter = cssList.iterator(); iter.hasNext();) {
             String cssFile = (String) iter.next();
-            cssFile = ServletUtil.createSafeUrl(pageContext.getRequest(), cssFile);
-            pageContext.getOut()
-                       .write("<link rel=\"stylesheet\" type=\"text/css\" href=\"");
-            pageContext.getOut().write(cssFile.trim());
-            pageContext.getOut().write("\" >\n");
+            cssFile = StringUtils.strip(cssFile);
+
+            if (StringUtils.isNotBlank(cssFile)) {
+                cssFile = ServletUtil.createSafeUrl(pageContext.getRequest(), cssFile);
+                pageContext.getOut()
+                    .write("<link rel=\"stylesheet\" type=\"text/css\" href=\"");
+                pageContext.getOut().write(cssFile.trim());
+                pageContext.getOut().write("\" >\n");
+                foundNone = false;
+            }
+        }
+        if (foundNone) {
+            pageContext.getOut().write("<!--  (none)  -->\n");
         }
     }
     
