@@ -56,7 +56,7 @@ public abstract class AbstractIndexManager implements IndexManager {
     // building speed. 1000 was initially determined to be a 'sweet'
     // spot for speed. This number can and may have to be changed in the
     // future because of memory restrictions and/or speed requirements.
-    private static final int MAX_BUFFERED_DOCS = 1000;
+    private static final int MAX_BUFFERED_DOCS = 200;
 
     protected JdbcOperations jdbcTemplate = null;
 

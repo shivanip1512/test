@@ -24,7 +24,7 @@ public class PointDeviceIndexManager extends AbstractIndexManager {
     }
 
     protected int getIndexVersion() {
-        return 2;
+        return 3;
     }
 
     protected Analyzer getAnalyzer() {
@@ -84,17 +84,17 @@ public class PointDeviceIndexManager extends AbstractIndexManager {
         String all = pointName + " " + paoName + " " + pointid + " " + deviceid;
         doc.add(new Field("point", pointName, Field.Store.YES, Field.Index.TOKENIZED));
         doc.add(new Field("device", paoName, Field.Store.YES, Field.Index.TOKENIZED));
-        doc.add(new Field("all", all, Field.Store.YES, Field.Index.TOKENIZED));
+        doc.add(new Field("all", all, Field.Store.NO, Field.Index.TOKENIZED));
 
-        doc.add(new Field("uomid", uomid, Field.Store.YES, Field.Index.UN_TOKENIZED));
+        doc.add(new Field("uomid", uomid, Field.Store.NO, Field.Index.UN_TOKENIZED));
         doc.add(new Field("pointid", pointid, Field.Store.YES, Field.Index.UN_TOKENIZED));
         doc.add(new Field("deviceid", deviceid, Field.Store.YES, Field.Index.UN_TOKENIZED));
 
-        doc.add(new Field("pointtype", pointType, Field.Store.YES, Field.Index.UN_TOKENIZED));
-        doc.add(new Field("stategroupid", stateGroupID, Field.Store.YES, Field.Index.UN_TOKENIZED));
-        doc.add(new Field("paotype", paoType, Field.Store.YES, Field.Index.UN_TOKENIZED));
-        doc.add(new Field("pointName", pointName, Field.Store.NO, Field.Index.UN_TOKENIZED));
-        doc.add(new Field("pointoffset", Integer.toString(pointOffset), Field.Store.YES, Field.Index.UN_TOKENIZED));
+        doc.add(new Field("pointtype", pointType, Field.Store.NO, Field.Index.UN_TOKENIZED));
+        doc.add(new Field("stategroupid", stateGroupID, Field.Store.NO, Field.Index.UN_TOKENIZED));
+        doc.add(new Field("paotype", paoType, Field.Store.NO, Field.Index.UN_TOKENIZED));
+        doc.add(new Field("pointName", pointName, Field.Store.NO, Field.Index.UN_TOKENIZED)); // an untokenized version
+        doc.add(new Field("pointoffset", Integer.toString(pointOffset), Field.Store.NO, Field.Index.UN_TOKENIZED));
 
         return doc;
     }
