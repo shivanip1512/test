@@ -6,8 +6,8 @@
 *
 * PVCS KEYWORDS:
 * ARCHIVE      :  $Archive:   Z:/SOFTWAREARCHIVES/YUKON/COMMON/resolvers.cpp-arc  $
-* REVISION     :  $Revision: 1.83 $
-* DATE         :  $Date: 2007/10/12 21:14:17 $
+* REVISION     :  $Revision: 1.84 $
+* DATE         :  $Date: 2007/10/17 21:54:42 $
 *
 * Copyright (c) 1999, 2000, 2001 Cannon Technologies Inc. All rights reserved.
 *-----------------------------------------------------------------------------*/
@@ -736,6 +736,10 @@ INT resolveCapControlType(const string& _rwsTemp)
     if(rwsTemp == "ccarea")
     {
         nRet = TYPE_CC_AREA;
+    }
+    else if(rwsTemp == "ccsubstation")
+    {
+        nRet = TYPE_CC_SUBSTATION;
     }
     else if(rwsTemp == "ccsubbus")
     {
