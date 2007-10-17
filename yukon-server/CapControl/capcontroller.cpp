@@ -1505,6 +1505,7 @@ void CtiCapController::parseMessage(RWCollectable *message, ULONG secondsFrom190
 
                         if( dbChange->getTypeOfChange() == ChangeTypeDelete &&
                             ( resolvePAOType(dbChange->getCategory(),dbChange->getObjectType()) == TYPE_CC_SUBSTATION_BUS ||
+                              resolvePAOType(dbChange->getCategory(),dbChange->getObjectType()) == TYPE_CC_SUBSTATION ||
                               resolvePAOType(dbChange->getCategory(),dbChange->getObjectType()) == TYPE_CC_AREA ) )
                         {
                             CtiCCSubstationBusStore::getInstance()->setWasSubBusDeletedFlag(TRUE);
@@ -1538,6 +1539,12 @@ void CtiCapController::parseMessage(RWCollectable *message, ULONG secondsFrom190
                             objType = CtiCCSubstationBusStore::Area;
 
                             CtiCCSubstationBusStore::getInstance()->setValid(false);
+                            CtiPAOScheduleManager::getInstance()->setValid(false);  
+                        }
+                        else if (resolvePAOType(dbChange->getCategory(),dbChange->getObjectType()) == TYPE_CC_SUBSTATION)
+                        {
+                            objType = CtiCCSubstationBusStore::Substation;
+
                             CtiPAOScheduleManager::getInstance()->setValid(false);  
                         }
                         else if (resolvePAOType(dbChange->getCategory(),dbChange->getObjectType()) == TYPE_CC_SUBSTATION_BUS)

@@ -54,6 +54,7 @@ public:
         CapBank,
         Feeder,
         SubBus,
+        Substation,
         Area,
         Strategy,
         Schedule
