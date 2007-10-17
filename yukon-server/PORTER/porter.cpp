@@ -6,8 +6,8 @@
 *
 * PVCS KEYWORDS:
 * ARCHIVE      :  $Archive:   Z:/SOFTWAREARCHIVES/YUKON/PORTER/porter.cpp-arc  $
-* REVISION     :  $Revision: 1.111 $
-* DATE         :  $Date: 2007/08/16 21:32:57 $
+* REVISION     :  $Revision: 1.112 $
+* DATE         :  $Date: 2007/10/17 20:54:32 $
 *
 * Copyright (c) 1999, 2000, 2001 Cannon Technologies Inc. All rights reserved.
 *-----------------------------------------------------------------------------*/
@@ -1096,11 +1096,11 @@ INT PorterMainFunction (INT argc, CHAR **argv)
             }
         }
 
-        if( last_print + 3600 <= ::time(0) )
+        /*if( last_print + 3600 <= ::time(0) )
         {
             last_print = ::time(0);
             processInputFunction(0x79);  //  do an alt-y every 60 seconds
-        }
+        }*/
 
         if( last_flush + 60 <= ::time(0) )
         {
