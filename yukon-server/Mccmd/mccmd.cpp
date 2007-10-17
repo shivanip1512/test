@@ -6,8 +6,8 @@
 *
 * PVCS KEYWORDS:
 * ARCHIVE      :  $Archive:   Z:/SOFTWAREARCHIVES/YUKON/MCCMD/mccmd.cpp-arc  $
-* REVISION     :  $Revision: 1.69 $
-* DATE         :  $Date: 2007/09/25 19:15:02 $
+* REVISION     :  $Revision: 1.70 $
+* DATE         :  $Date: 2007/10/17 19:53:49 $
 *
 * Copyright (c) 1999, 2000, 2001 Cannon Technologies Inc. All rights reserved.
 *-----------------------------------------------------------------------------*/
@@ -160,6 +160,11 @@ void _MessageThrFunc()
     {
         //anything to do here?
         throw;
+    }
+    catch( ... )
+    {
+        CtiLockGuard< CtiLogger > guard(dout);
+        dout << " **** EXCEPTION **** in porter in thread, this is bad."  << endl;
     }
 }
 
