@@ -31,6 +31,7 @@ import com.cannontech.stars.xml.serialize.StarsOperation;
 import com.cannontech.stars.xml.serialize.StarsSuccess;
 import com.cannontech.stars.xml.util.SOAPUtil;
 import com.cannontech.stars.xml.util.StarsConstants;
+import com.cannontech.user.UserUtils;
 
 /**
  * @author yao
@@ -196,8 +197,9 @@ public class DeleteCustAccountAction implements ActionBase {
 		
 		// Delete login
 		int userID = primContact.getLoginID();
-		if (userID != com.cannontech.user.UserUtils.USER_DEFAULT_ID &&
-			userID != com.cannontech.user.UserUtils.USER_ADMIN_ID)
+		if (userID != UserUtils.USER_DEFAULT_ID &&
+			userID != UserUtils.USER_ADMIN_ID &&
+            userID != UserUtils.USER_YUKON_ID)
 			UpdateLoginAction.deleteLogin( userID );
 		
 		// Delete lite and stars objects
