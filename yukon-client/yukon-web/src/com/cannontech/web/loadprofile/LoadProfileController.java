@@ -113,7 +113,7 @@ public class LoadProfileController extends MultiActionController {
             callback.setFailureMessage(msgData);
             callback.setCancelMessage(msgData);
             
-            loadProfileService.initiateLongLoadProfile(device, 1, startDate, stopDate, callback);
+            loadProfileService.initiateLongLoadProfile(device, 1, startDate, stopDate, callback, user);
             
             mav.addObject("success", true);
             

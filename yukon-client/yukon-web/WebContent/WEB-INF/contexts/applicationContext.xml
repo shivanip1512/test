@@ -220,6 +220,9 @@
         <property name="dbPersistentDao" ref="dbPersistentDao"/>
         <property name="dateFormattingService" ref="dateFormattingService"/>
         <property name="deviceErrorTranslatorDao" ref="deviceErrorTranslator"/>
+        <property name="attributeService" ref="attributeService"/>
+        <property name="yukonUserDao" ref="yukonUserDao"/>
+        <property name="contactDao" ref="contactDao"/>
         
     </bean>
     

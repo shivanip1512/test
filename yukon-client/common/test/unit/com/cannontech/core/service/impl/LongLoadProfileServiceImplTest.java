@@ -5,6 +5,7 @@ import static org.junit.Assert.fail;
 import java.text.DateFormat;
 import java.text.ParseException;
 import java.util.Date;
+import java.util.GregorianCalendar;
 import java.util.HashSet;
 import java.util.Set;
 import java.util.concurrent.BlockingQueue;
@@ -16,11 +17,18 @@ import org.junit.Before;
 import org.junit.Test;
 
 import com.cannontech.common.util.ScheduledExecutorMock;
+import com.cannontech.core.dao.DBPersistentDao;
 import com.cannontech.core.service.LongLoadProfileService;
 import com.cannontech.core.service.PorterQueueDataService;
+import com.cannontech.database.data.activity.ActivityLogActions;
+import com.cannontech.database.data.device.MCTBase;
+import com.cannontech.database.data.lite.LiteBase;
 import com.cannontech.database.data.lite.LiteYukonPAObject;
 import com.cannontech.database.data.lite.LiteYukonUser;
 import com.cannontech.database.data.pao.DeviceTypes;
+import com.cannontech.database.data.pao.PAOGroups;
+import com.cannontech.database.db.DBPersistent;
+import com.cannontech.database.db.device.DeviceLoadProfile;
 import com.cannontech.message.porter.message.Request;
 import com.cannontech.message.porter.message.Return;
 import com.cannontech.message.util.ConnectionException;
@@ -109,6 +117,50 @@ public class LongLoadProfileServiceImplTest {
         porterConnection = new PorterConnection();
         serviceDebug.setPorterConnection(porterConnection);
         serviceDebug.initialize();
+        
+        serviceDebug.setDbPersistentDao(new DBPersistentDao(){
+
+            public void performDBChange(DBPersistent item, int transactionType) {
+                // TODO Auto-generated method stub
+                
+            }
+
+            public DBPersistent retrieveDBPersistent(LiteBase liteObject) {
+                
+
+                    return new MCTBase(){
+                        
+                        @Override
+                        public DeviceLoadProfile getDeviceLoadProfile() {
+                           
+                            DeviceLoadProfile dlp = new DeviceLoadProfile();
+                            
+                            dlp.setLoadProfileCollection("YYYY");
+                            dlp.setLoadProfileDemandRate(900);
+                            dlp.setVoltageDmdRate(900);
+                            return dlp;
+                        }
+                    
+                    };
+            }
+        });
+        
+        serviceDebug.setDateFormattingService(new DateFormattingServiceImpl(){
+            
+            public GregorianCalendar getGregorianCalendar(LiteYukonUser user){
+                return new GregorianCalendar();
+            }
+            
+        });
+        
+        serviceDebug.setActivityLoggerService(new ActivityLoggerServiceImpl(){
+            
+            public void logEvent(int userID, String action, String description){
+                // do nothing
+            }
+            
+        });
+        
         successRan = 0;
         failureRan = 0;
         cancelRan = 0;
@@ -128,7 +180,7 @@ public class LongLoadProfileServiceImplTest {
         DateFormat dateTimeInstance = DateFormat.getDateTimeInstance(DateFormat.SHORT, DateFormat.SHORT);
         Date start = dateTimeInstance.parse("5/5/05 4:30 pm");
         Date stop = dateTimeInstance.parse("10/9/06 1:50 am");
-        service.initiateLongLoadProfile(myDevice, channel, start, stop, incrementingRunner);
+        service.initiateLongLoadProfile(myDevice, channel, start, stop, incrementingRunner, new LiteYukonUser());
         
         // get message that was written
         Message message = porterConnection.writtenOut.remove();
@@ -145,11 +197,12 @@ public class LongLoadProfileServiceImplTest {
         Assert.assertEquals("out queue should be empty", 0, porterConnection.writtenOut.size());
         LiteYukonPAObject myDevice = new LiteYukonPAObject(5); // five is arbitrary
         myDevice.setType(DeviceTypes.MCT410IL);
+        myDevice.setCategory(PAOGroups.CAT_DEVICE);
         int channel = 1;
-        Date start = null;
         DateFormat dateTimeInstance = DateFormat.getDateTimeInstance(DateFormat.SHORT, DateFormat.SHORT);
+        Date start = dateTimeInstance.parse("10/13/06 1:50 pm");
         Date stop = dateTimeInstance.parse("12/13/06 1:50 pm");
-        service.initiateLongLoadProfile(myDevice, channel, start, stop, incrementingRunner);
+        service.initiateLongLoadProfile(myDevice, channel, start, stop, incrementingRunner, new LiteYukonUser());
         
         // check that outQueue has one message
         Assert.assertEquals("out queue should have one message", 1, porterConnection.writtenOut.size());
@@ -162,7 +215,7 @@ public class LongLoadProfileServiceImplTest {
         Request reqMsg = (Request)message; // implicit instanceof check
         
         // check command string
-        String expectedCmd = "getvalue lp channel 1 12/13/2006 13:50";
+        String expectedCmd = "getvalue lp channel 1 10/13/2006 13:50 12/13/2006 13:50";
         Assert.assertEquals("command is different than expected", expectedCmd, reqMsg.getCommandString());
         
         // send expect more response
@@ -192,13 +245,15 @@ public class LongLoadProfileServiceImplTest {
     public void testInitiateLongLoadProfileMultiple() throws ParseException {
         LiteYukonPAObject myDevice1 = new LiteYukonPAObject(5); // five is arbitrary
         myDevice1.setType(DeviceTypes.MCT410IL);
+        myDevice1.setCategory(PAOGroups.CAT_DEVICE);
         LiteYukonPAObject myDevice2 = new LiteYukonPAObject(8); // eight is arbitrary
         myDevice2.setType(DeviceTypes.MCT410IL);
+        myDevice2.setCategory(PAOGroups.CAT_DEVICE);
         int channel = 1;
-        Date start = null;
         DateFormat dateTimeInstance = DateFormat.getDateTimeInstance(DateFormat.SHORT, DateFormat.SHORT);
+        Date start = dateTimeInstance.parse("12/13/06 1:50 pm");
         Date stop = dateTimeInstance.parse("12/13/06 1:50 pm");
-        service.initiateLongLoadProfile(myDevice1, channel, start, stop, incrementingRunner);
+        service.initiateLongLoadProfile(myDevice1, channel, start, stop, incrementingRunner, new LiteYukonUser());
         
         // check that outQueue has one message
         Assert.assertEquals("out queue should have one message", 1, porterConnection.writtenOut.size());
@@ -207,18 +262,18 @@ public class LongLoadProfileServiceImplTest {
         Assert.assertEquals("runner should not have run", 0, successRan);
         
         // attempt to request again
-        service.initiateLongLoadProfile(myDevice1, channel, start, stop, incrementingRunner);
+        service.initiateLongLoadProfile(myDevice1, channel, start, stop, incrementingRunner, new LiteYukonUser());
         
         // check that outQueue still has one message
         Assert.assertEquals("out queue should have one message", 1, porterConnection.writtenOut.size());
         
         // attempt to request for device 2
-        service.initiateLongLoadProfile(myDevice2, channel, start, stop, incrementingRunner);
+        service.initiateLongLoadProfile(myDevice2, channel, start, stop, incrementingRunner, new LiteYukonUser());
         
         Assert.assertEquals("out queue should have two messages", 2, porterConnection.writtenOut.size());
         
         // attempt to request again for device 1
-        service.initiateLongLoadProfile(myDevice1, channel, start, stop, incrementingRunner);
+        service.initiateLongLoadProfile(myDevice1, channel, start, stop, incrementingRunner, new LiteYukonUser());
         
         // check that outQueue still has two messages
         Assert.assertEquals("out queue should have two messages", 2, porterConnection.writtenOut.size());
@@ -260,18 +315,20 @@ public class LongLoadProfileServiceImplTest {
     public void testWriteError() throws ParseException {
         LiteYukonPAObject myDevice1 = new LiteYukonPAObject(5); // five is arbitrary
         myDevice1.setType(DeviceTypes.MCT410IL);
+        myDevice1.setCategory(PAOGroups.CAT_DEVICE);
         LiteYukonPAObject myDevice2 = new LiteYukonPAObject(8); // eight is arbitrary
         myDevice2.setType(DeviceTypes.MCT410IL);
+        myDevice2.setCategory(PAOGroups.CAT_DEVICE);
         int channel = 1;
-        Date start = null;
         DateFormat dateTimeInstance = DateFormat.getDateTimeInstance(DateFormat.SHORT, DateFormat.SHORT);
+        Date start = dateTimeInstance.parse("12/13/06 1:50 pm");
         Date stop = dateTimeInstance.parse("12/13/06 1:50 pm");
         
         // turn connection failure on
         porterConnection.failMode = true;
         
         try {
-            service.initiateLongLoadProfile(myDevice1, channel, start, stop, incrementingRunner);
+            service.initiateLongLoadProfile(myDevice1, channel, start, stop, incrementingRunner, new LiteYukonUser());
             fail("should have thrown an exception");
         } catch (RuntimeException e) {
             // expected
@@ -283,7 +340,7 @@ public class LongLoadProfileServiceImplTest {
         // this should not fail and it shouldn't cause the service to hold the message
         // because its deviceId is the same as the previous
         try {
-            service.initiateLongLoadProfile(myDevice1, channel, start, stop, incrementingRunner);
+            service.initiateLongLoadProfile(myDevice1, channel, start, stop, incrementingRunner, new LiteYukonUser());
         } catch (RuntimeException e) {
             fail("should have not thrown an exception");
         }
@@ -299,18 +356,20 @@ public class LongLoadProfileServiceImplTest {
     public void testPorterTimeout() throws ParseException, Exception {
         LiteYukonPAObject myDevice1 = new LiteYukonPAObject(5); // five is arbitrary
         myDevice1.setType(DeviceTypes.MCT410IL);
+        myDevice1.setCategory(PAOGroups.CAT_DEVICE);
         LiteYukonPAObject myDevice2 = new LiteYukonPAObject(8); // eight is arbitrary
         myDevice2.setType(DeviceTypes.MCT410IL);
+        myDevice2.setCategory(PAOGroups.CAT_DEVICE);
         int channel = 1;
-        Date start = null;
         DateFormat dateTimeInstance = DateFormat.getDateTimeInstance(DateFormat.SHORT, DateFormat.SHORT);
+        Date start = dateTimeInstance.parse("12/13/06 1:50 pm");
         Date stop = dateTimeInstance.parse("12/13/06 1:50 pm");
 
 
-        service.initiateLongLoadProfile(myDevice1, channel, start, stop, incrementingRunner);
-        service.initiateLongLoadProfile(myDevice2, channel, start, stop, incrementingRunner);
-        service.initiateLongLoadProfile(myDevice1, channel, start, stop, incrementingRunner);
-        service.initiateLongLoadProfile(myDevice2, channel, start, stop, incrementingRunner);
+        service.initiateLongLoadProfile(myDevice1, channel, start, stop, incrementingRunner, new LiteYukonUser());
+        service.initiateLongLoadProfile(myDevice2, channel, start, stop, incrementingRunner, new LiteYukonUser());
+        service.initiateLongLoadProfile(myDevice1, channel, start, stop, incrementingRunner, new LiteYukonUser());
+        service.initiateLongLoadProfile(myDevice2, channel, start, stop, incrementingRunner, new LiteYukonUser());
         Assert.assertEquals("wrong number of messages reached out queue", 2, porterConnection.writtenOut.size());
         Assert.assertEquals("messages weren't queued", 2, service.getPendingLongLoadProfileRequests(myDevice1).size());
         Assert.assertEquals("messages weren't queued", 2, service.getPendingLongLoadProfileRequests(myDevice2).size());

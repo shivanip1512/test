@@ -1,10 +1,12 @@
 package com.cannontech.web.widget;
 
 import java.text.DateFormat;
+import java.text.DecimalFormat;
 import java.text.ParseException;
 import java.text.SimpleDateFormat;
 import java.util.ArrayList;
 import java.util.Collection;
+import java.util.Collections;
 import java.util.Date;
 import java.util.HashMap;
 import java.util.List;
@@ -20,14 +22,21 @@ import org.springframework.web.servlet.ModelAndView;
 
 import com.cannontech.amr.errors.dao.DeviceErrorTranslatorDao;
 import com.cannontech.amr.meter.dao.MeterDao;
+import com.cannontech.amr.meter.model.Meter;
+import com.cannontech.common.device.attribute.model.Attribute;
+import com.cannontech.common.device.attribute.model.BuiltInAttribute;
+import com.cannontech.common.device.attribute.service.AttributeService;
+import com.cannontech.core.dao.ContactDao;
 import com.cannontech.core.dao.DBPersistentDao;
 import com.cannontech.core.dao.DeviceDao;
 import com.cannontech.core.dao.PaoDao;
+import com.cannontech.core.dao.YukonUserDao;
 import com.cannontech.core.service.DateFormattingService;
 import com.cannontech.core.service.LongLoadProfileService;
 import com.cannontech.core.service.LongLoadProfileService.ProfileRequestInfo;
 import com.cannontech.core.service.impl.LongLoadProfileServiceEmailCompletionCallbackImpl;
 import com.cannontech.database.data.device.MCTBase;
+import com.cannontech.database.data.lite.LiteContact;
 import com.cannontech.database.data.lite.LiteDeviceMeterNumber;
 import com.cannontech.database.data.lite.LiteYukonPAObject;
 import com.cannontech.database.data.lite.LiteYukonUser;
@@ -53,6 +62,10 @@ public class ProfileWidget extends WidgetControllerBase {
     private DBPersistentDao dbPersistentDao = null;
     private DateFormattingService dateFormattingService = null;
     private DeviceErrorTranslatorDao deviceErrorTranslatorDao = null;
+    private AttributeService attributeService = null;
+    private YukonUserDao yukonUserDao = null;
+    private ContactDao contactDao = null;
+    
     private static DateFormat dateFormat = new SimpleDateFormat("MM/dd/yy hh:mma");
     /*
      * Long load profile email message format NOTE: Outlook will sometimes strip
@@ -84,6 +97,7 @@ public class ProfileWidget extends WidgetControllerBase {
        
         // get lite device, set name
         LiteYukonPAObject device = paoDao.getLiteYukonPAO(deviceId);
+        Meter meter = meterDao.getForId(deviceId);
         
         // get heavy device
         YukonPAObject yukonPaobject = (YukonPAObject)dbPersistentDao.retrieveDBPersistent(device);
@@ -94,10 +108,10 @@ public class ProfileWidget extends WidgetControllerBase {
         
         // set profile intervals
         int loadProfileDemandRate = deviceLoadProfile.getLoadProfileDemandRate();
-        int vaoltageDemandRate = deviceLoadProfile.getVoltageDmdRate();
+        int voltageDemandRate = deviceLoadProfile.getVoltageDmdRate();
         
         mav.addObject("chan1Interval", loadProfileDemandRate / 60);
-        mav.addObject("chan4Interval", vaoltageDemandRate / 60);
+        mav.addObject("chan4Interval", voltageDemandRate / 60);
 
         // set collection on flags
         boolean chan1CollectionOn = deviceLoadProfile.loadProfileIsOnForChannel(1);
@@ -122,6 +136,42 @@ public class ProfileWidget extends WidgetControllerBase {
         
         
         
+        // available channels
+        Map<Integer, Attribute> channelAttributes = new HashMap<Integer, Attribute>();
+        channelAttributes.put(1,BuiltInAttribute.LOAD_PROFILE);
+        channelAttributes.put(4,BuiltInAttribute.VOLTAGE_PROFILE);
+        
+        Map<Integer, String> channelDisplayNames = new HashMap<Integer, String>();
+        channelDisplayNames.put(1,"Channel 1 (Usage)");
+        channelDisplayNames.put(4,"Channel 4 (Voltage)");
+        
+        List<Integer> channelsNumbers = new ArrayList<Integer>(channelDisplayNames.keySet());
+        Collections.sort(channelsNumbers);
+        List<Map<String, String>> availableChannels = new ArrayList<Map<String, String>>();
+        for(Integer channel : channelsNumbers){
+            
+            if(attributeService.isAttributeSupported(meter, channelAttributes.get(channel))){
+                
+                Map<String, String> channelInfo = new HashMap<String, String>();
+                channelInfo.put("channelNumber",channel.toString());
+                channelInfo.put("channelDescription",channelDisplayNames.get(channel));
+                availableChannels.add(channelInfo);
+            }
+        }
+        mav.addObject("availableChannels", availableChannels);
+        
+        // user email address
+        LiteContact contact = yukonUserDao.getLiteContact(user.getUserID());
+        String email = "";
+        if (contact != null) {
+            String[] allEmailAddresses = contactDao.getAllEmailAddresses(contact.getContactID());
+            if (allEmailAddresses.length > 0) {
+                email = allEmailAddresses[0];
+            }
+        }
+        mav.addObject("email", email);
+        
+        // pending requests
         List<Map<String, String>> pendingRequests = getPendingRequests(device, user);
         mav.addObject("pendingRequests", pendingRequests);
 
@@ -258,7 +308,8 @@ public class ProfileWidget extends WidgetControllerBase {
                                                            channel,
                                                            startDate,
                                                            stopDate,
-                                                           callback);
+                                                           callback,
+                                                           user);
 
                 success = true;
                 initiateMessage = "";
@@ -346,6 +397,8 @@ public class ProfileWidget extends WidgetControllerBase {
             data.put("command", info.request.getCommandString());
             data.put("requestId", Long.toString(info.request.getUserMessageID()));
             data.put("channel", ((Integer) info.channel).toString());
+            data.put("userName", info.userName);
+            data.put("percentDone", info.percentDone.toString());
             pendingRequests.add(data);
         }
 
@@ -354,7 +407,32 @@ public class ProfileWidget extends WidgetControllerBase {
         return pendingRequests;
         
     }
+    
+    
+    public ModelAndView percentDoneProgressBarHTML(HttpServletRequest request, HttpServletResponse response) {
 
+        ModelAndView mav = new ModelAndView("profileWidget/progressBar.jsp");
+        
+        long requestId = WidgetParameterHelper.getLongParameter(request, "requestId", 0);
+        Double percentDone = loadProfileService.calculatePercentDone(requestId);
+        
+        mav.addObject("percentDone", percentDone);
+        
+        if(percentDone != null){
+            DecimalFormat df = new DecimalFormat("#.#");
+            mav.addObject("requestId", requestId);
+            mav.addObject("percentDone", df.format(percentDone));
+        }
+        else{
+            mav.addObject("requestId", requestId);
+            mav.addObject("percentDone", percentDone);
+            mav.addObject("lastReturnMsg", loadProfileService.getLastReturnMsg(requestId));
+        }
+        
+        return mav;
+    }
+
+    
     @Required
     public void setEmailService(EmailService emailService) {
         this.emailService = emailService;
@@ -400,5 +478,20 @@ public class ProfileWidget extends WidgetControllerBase {
     public void setDeviceErrorTranslatorDao(
             DeviceErrorTranslatorDao deviceErrorTranslatorDao) {
         this.deviceErrorTranslatorDao = deviceErrorTranslatorDao;
+    }
+
+    @Required
+    public void setAttributeService(AttributeService attributeService) {
+        this.attributeService = attributeService;
+    }
+
+    @Required
+    public void setYukonUserDao(YukonUserDao yukonUserDao) {
+        this.yukonUserDao = yukonUserDao;
+    }
+
+    @Required
+    public void setContactDao(ContactDao contactDao) {
+        this.contactDao = contactDao;
     }
 }

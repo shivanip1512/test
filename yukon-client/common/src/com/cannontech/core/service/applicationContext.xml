@@ -11,6 +11,9 @@
     <property name="queueDataService" ref="porterQueueDataService"/>
     <property name="executor" ref="globalScheduledExecutor"/>
     <property name="porterConnection" ref="porterConnection"/>
+    <property name="dbPersistentDao" ref="dbPersistentDao"/>
+    <property name="dateFormattingService" ref="dateFormattingService"/>
+    <property name="activityLoggerService" ref="activityLoggerService"/>
     <!-- <property name="porterConnection">
       <bean class="com.cannontech.core.service.MockPorterConnection"/>
     </property>
@@ -49,6 +52,11 @@
 	  	  <ref bean="yukonUserDao" />
 	  </property>
 
+  </bean>
+  
+  <bean id="activityLoggerService"
+      class="com.cannontech.core.service.impl.ActivityLoggerServiceImpl" abstract="false"
+      singleton="true" lazy-init="default" autowire="default" dependency-check="default">
   </bean>
   
 </beans>

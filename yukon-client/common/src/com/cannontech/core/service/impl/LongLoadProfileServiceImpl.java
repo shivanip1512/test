@@ -4,6 +4,7 @@ import java.text.DateFormat;
 import java.text.SimpleDateFormat;
 import java.util.ArrayList;
 import java.util.Date;
+import java.util.GregorianCalendar;
 import java.util.HashMap;
 import java.util.HashSet;
 import java.util.List;
@@ -19,11 +20,18 @@ import org.springframework.beans.factory.annotation.Required;
 import com.cannontech.clientutils.YukonLogManager;
 import com.cannontech.common.util.MapQueue;
 import com.cannontech.common.util.ScheduledExecutor;
+import com.cannontech.core.dao.DBPersistentDao;
+import com.cannontech.core.service.ActivityLoggerService;
+import com.cannontech.core.service.DateFormattingService;
 import com.cannontech.core.service.LongLoadProfileService;
 import com.cannontech.core.service.PorterQueueDataService;
+import com.cannontech.database.data.activity.ActivityLogActions;
 import com.cannontech.database.data.device.DeviceTypesFuncs;
+import com.cannontech.database.data.device.MCTBase;
 import com.cannontech.database.data.lite.LiteYukonPAObject;
 import com.cannontech.database.data.lite.LiteYukonUser;
+import com.cannontech.database.data.pao.YukonPAObject;
+import com.cannontech.database.db.device.DeviceLoadProfile;
 import com.cannontech.message.porter.message.Request;
 import com.cannontech.message.porter.message.Return;
 import com.cannontech.message.util.Message;
@@ -34,12 +42,20 @@ import com.cannontech.yukon.BasicServerConnection;
 public class LongLoadProfileServiceImpl implements LongLoadProfileService {
     private BasicServerConnection porterConnection;
     private PorterQueueDataService queueDataService;
+    private DBPersistentDao dbPersistentDao;
+    private DateFormattingService dateFormattingService = null;
+    private ActivityLoggerService activityLoggerService = null;
     Logger log = YukonLogManager.getLogger(LongLoadProfileServiceImpl.class);
     private ScheduledExecutor executor;
     
     private Map<Long, Integer> outstandingCancelRequestIds = new HashMap<Long, Integer>();
     private Map<Long, Long> recentlyCanceledRequestIds = new HashMap<Long, Long>();
     private Set<Long> receivedCancelRequestIds = new HashSet<Long>();
+    
+    private Map<Long, Long> expectedReturnCount = new HashMap<Long, Long>();
+    private Map<Long, Long> receivedReturnsCount = new HashMap<Long, Long>();
+    private Set<Long> completedRequestIds = new HashSet<Long>();
+    private Map<Long, String> lastReturnMsgs = new HashMap<Long, String>();
     
     private Set<Long> recentlyReceivedRequestIds = new HashSet<Long>();
     private Map<Long, LongLoadProfileService.CompletionCallback> currentRequestIds = new HashMap<Long, LongLoadProfileService.CompletionCallback>();
@@ -59,11 +75,12 @@ public class LongLoadProfileServiceImpl implements LongLoadProfileService {
         });
     }
     
-    public synchronized void initiateLongLoadProfile(LiteYukonPAObject device, int channel, Date start, Date stop, LongLoadProfileService.CompletionCallback runner) {
+    public synchronized void initiateLongLoadProfile(LiteYukonPAObject device, int channel, Date start, Date stop, LongLoadProfileService.CompletionCallback runner, LiteYukonUser user) {
         Validate.isTrue(channel <= 4, "channel must be less than or equal to 4");
         Validate.isTrue(channel > 0, "channel must be greater than 0");
         Validate.isTrue(DeviceTypesFuncs.isLoadProfile4Channel(device.getType()), "Device must support 4 channel load profile (DeviceTypesFuncs.isLoadProfile4Channel)");
 
+        // build command
         Request req = new Request();
         StringBuilder formatString = new StringBuilder("getvalue lp channel ");
         formatString.append(channel);
@@ -79,10 +96,42 @@ public class LongLoadProfileServiceImpl implements LongLoadProfileService {
         if (runner == null) {
             formatString.append(" background");
         }
+        
+        // setup reuqest
         req.setCommandString(formatString.toString());
         req.setDeviceID(device.getLiteID());
         long requestId = RandomUtils.nextInt();
         req.setUserMessageID(requestId);
+        
+        // get interval
+        YukonPAObject yukonPaobject = (YukonPAObject)dbPersistentDao.retrieveDBPersistent(device);
+        DeviceLoadProfile deviceLoadProfile = ((MCTBase)yukonPaobject).getDeviceLoadProfile();
+        int loadProfileDemandRate = deviceLoadProfile.getLoadProfileDemandRate();
+        int voltageDemandRate = deviceLoadProfile.getVoltageDmdRate();
+        
+        int minutesPerInterval = 1;
+        if(channel == 1){
+            minutesPerInterval = loadProfileDemandRate / 60;
+        }
+        else if (channel == 4){
+            minutesPerInterval = voltageDemandRate / 60;
+        }
+        
+        GregorianCalendar startCal = dateFormattingService.getGregorianCalendar(user);
+        startCal.setTime(start);
+        
+        GregorianCalendar stopCal = dateFormattingService.getGregorianCalendar(user);
+        stopCal.setTime(stop);
+        
+        long minutesBetween = (stopCal.getTimeInMillis() - startCal.getTimeInMillis()) / 60000;
+
+        long expectedIntervals = minutesBetween / minutesPerInterval;
+        long expectedPorterReturns = expectedIntervals / 6; //porter gets 6 per request by definition
+        
+        expectedReturnCount.put(requestId, expectedPorterReturns);
+        receivedReturnsCount.put(requestId, 0L);
+        
+        // setup profile request info
         ProfileRequestInfo info = new ProfileRequestInfo();
         info.from = start;
         info.to = stop;
@@ -90,6 +139,13 @@ public class LongLoadProfileServiceImpl implements LongLoadProfileService {
         info.runner = runner;
         info.requestId = requestId;
         info.channel = channel;
+        info.userName = user.getUsername();
+        info.percentDone = 0.00;
+        
+        // activity log
+        activityLoggerService.logEvent(user.getUserID(), ActivityLogActions.INITIATE_PROFILE_REQUEST_ACTION, req.getCommandString());
+        
+        // pass off to handleOutgoingMessage
         handleOutgoingMessage(info);
         // if write fails, we don't want this to happen
         currentRequestIds.put(requestId, runner);
@@ -136,7 +192,9 @@ public class LongLoadProfileServiceImpl implements LongLoadProfileService {
             }, 5 * 60, TimeUnit.SECONDS);
         } catch (RuntimeException e) {
             // clear out pending requests
-            currentRequestIds.remove(info.request.getUserMessageID());
+            currentRequestIds.remove(info.requestId);
+            expectedReturnCount.remove(info.requestId);
+            receivedReturnsCount.remove(info.requestId);
             throw e;
         }        
     }
@@ -165,6 +223,8 @@ public class LongLoadProfileServiceImpl implements LongLoadProfileService {
                 currentRequestIds.remove(requestId);
                 int deviceId = info.request.getDeviceID();
                 currentDeviceRequests.remove(deviceId);
+                expectedReturnCount.remove(info.requestId);
+                receivedReturnsCount.remove(info.requestId);
                 executor.execute(new Runnable() {
                     public void run() {
                         info.runner.onFailure(-1, "Unknown Error");
@@ -216,17 +276,33 @@ public class LongLoadProfileServiceImpl implements LongLoadProfileService {
             
             //TODO restore 
             recentlyReceivedRequestIds.add(requestId);
+            
+            
+            if(returnMsg.getVector().size() != 0){
+                receivedReturnsCount.put(requestId, receivedReturnsCount.get(requestId) + 1);
+            }
+            
             // check for expect more
             boolean finished = returnMsg.getExpectMore() == 0;
             if (finished) {
-                final int deviceId = returnMsg.getDeviceID();
-                recentlyReceivedRequestIds.remove(requestId);
-                currentDeviceRequests.remove(deviceId);
-                // get runner and execute it on the global thread pool
+                
+                int deviceId = returnMsg.getDeviceID();
+                
                 final LongLoadProfileService.CompletionCallback runnable = currentRequestIds.remove(requestId);
                 final int returnStatus = returnMsg.getStatus();
                 final String resultString = returnMsg.getResultString();
-                final long requestIdToRemove = requestId;
+                
+                recentlyReceivedRequestIds.remove(requestId);
+                currentDeviceRequests.remove(deviceId);
+                
+                if(returnStatus == 0){
+                    completedRequestIds.add(requestId);
+                }
+                expectedReturnCount.remove(requestId);
+                receivedReturnsCount.remove(requestId);
+                lastReturnMsgs.put(requestId, resultString);
+                
+                // get runner and execute it on the global thread pool
                 executor.execute(new Runnable() {
                     public void run() {
 
@@ -248,7 +324,7 @@ public class LongLoadProfileServiceImpl implements LongLoadProfileService {
                 }
                 else{
                     // send it through the cancel process to be sure it has been cleaned up
-                    sendCancelCommand(requestIdToRemove, deviceId);
+                    sendCancelCommand(requestId, deviceId);
                 }
                    
 
@@ -280,6 +356,8 @@ public class LongLoadProfileServiceImpl implements LongLoadProfileService {
                 // cleanup
                 recentlyReceivedRequestIds.remove(requestId);
                 currentDeviceRequests.remove(deviceId);
+                expectedReturnCount.remove(requestId);
+                receivedReturnsCount.remove(requestId);
                 // get runner and execute it on the global thread pool
                 final LongLoadProfileService.CompletionCallback runnable = currentRequestIds.remove(requestId);
                 executor.execute(new Runnable() {
@@ -305,6 +383,8 @@ public class LongLoadProfileServiceImpl implements LongLoadProfileService {
                 if(pendingInfo.requestId == requestId){
                     
                     pendingDeviceRequests.removeValue(deviceId,pendingInfo);
+                    expectedReturnCount.remove(requestId);
+                    receivedReturnsCount.remove(requestId);
                     // get runner and execute it on the global thread pool
                     final LongLoadProfileService.CompletionCallback runnable = currentRequestIds.remove(requestId);
                     executor.execute(new Runnable() {
@@ -360,22 +440,52 @@ public class LongLoadProfileServiceImpl implements LongLoadProfileService {
     }
 
     
+    
+    
     public synchronized List<ProfileRequestInfo> getPendingLongLoadProfileRequests(LiteYukonPAObject device) {
         int deviceId = device.getLiteID();
         ProfileRequestInfo info = currentDeviceRequests.get(deviceId);
         List<ProfileRequestInfo> result = new ArrayList<ProfileRequestInfo>();
         
         if(info != null){
+            
+            info.percentDone =  calculatePercentDone(info.requestId);
             result.add(info);
         }
         
         List<ProfileRequestInfo> pending = pendingDeviceRequests.get(deviceId);
-        result.addAll(pending);
+        
+        for(ProfileRequestInfo pendinginfo : pending){
+            
+            pendinginfo.percentDone =  calculatePercentDone(pendinginfo.requestId);
+            result.add(pendinginfo);
+        }
         
         return result;
         
     }
         
+    public Double calculatePercentDone(Long requestId){
+        
+        Double percentDone = 0.0;
+        
+        if(completedRequestIds.contains(requestId)){
+            return 100.0;
+        }
+        else if (!currentRequestIds.containsKey(requestId)) {
+            return null;
+        }
+        else if(receivedReturnsCount.containsKey(requestId) && expectedReturnCount.containsKey(requestId)){
+            percentDone =  ((double)receivedReturnsCount.get(requestId) / (double)expectedReturnCount.get(requestId)) * 100.0;    
+        }
+
+        return percentDone;
+    }
+
+    public String getLastReturnMsg(long requestId){
+        return lastReturnMsgs.get(requestId);
+    }
+    
     int debugSizeOfCollections() {
         return recentlyReceivedRequestIds.size()
             + currentRequestIds.size()
@@ -407,5 +517,20 @@ public class LongLoadProfileServiceImpl implements LongLoadProfileService {
     @Required
     public void setQueueDataService(PorterQueueDataService queueDataService) {
         this.queueDataService = queueDataService;
+    }
+
+    @Required
+    public void setDbPersistentDao(DBPersistentDao dbPersistentDao) {
+        this.dbPersistentDao = dbPersistentDao;
+    }
+
+    @Required
+    public void setDateFormattingService(DateFormattingService dateFormattingService) {
+        this.dateFormattingService = dateFormattingService;
+    }
+    
+    @Required
+    public void setActivityLoggerService(ActivityLoggerService activityLoggerService) {
+        this.activityLoggerService = activityLoggerService;
     }
 }

@@ -12,13 +12,17 @@
 	function toggleWhatsThis(){
 		$('whatsThisText').toggle();
 	}
+	
+	var progressUpdaters = new Array();
 
 </script>
 <%--CHANNLES PROFILING--%>
 <br/>
-<b>Start/Stop Profiling:</b>
+<span class="compactResultTableDescription">Start/Stop Profiling:</span>
 <br/>
-<table class="miniResultsTable">
+<div style="height:5px;"></div>
+
+<table class="compactResultsTable">
 
 	<tr>
 	  <th>Channel (Type)</th>
@@ -33,26 +37,26 @@
 		<c:choose>
 			<c:when test="${chan1CollectionOn}">
 				<td style="font-weight:bold;color:#339900">On</td>
-				<td><tags:widgetActionRefresh method="toggleProfiling" label="Stop" labelBusy="Stopping" toggleChannel1ProfilingOn="false" /></td>
+				<td><tags:widgetActionRefresh method="toggleProfiling" label="Stop" labelBusy="Stop" toggleChannel1ProfilingOn="false" /></td>
 			</c:when>
 			<c:otherwise>
 				<td style="font-weight:bold;color:#BB0000">Off</td>
-				<td><tags:widgetActionRefresh method="toggleProfiling" label="Start" labelBusy="Starting" toggleChannel1ProfilingOn="true" /></td>
+				<td><tags:widgetActionRefresh method="toggleProfiling" label="Start" labelBusy="Start" toggleChannel1ProfilingOn="true" /></td>
 			</c:otherwise>
 		</c:choose>
 	</tr>
 	
-	<tr>
+	<tr class="last">
 		<td>Channel 4 (Voltage)</td>
 		<td>${chan4Interval}</td>
 		<c:choose>
 			<c:when test="${chan4CollectionOn}">
 				<td style="font-weight:bold;color:#339900">On</td>
-				<td><tags:widgetActionRefresh method="toggleProfiling" label="Stop" labelBusy="Stopping" toggleChannel4ProfilingOn="false" /></td>
+				<td><tags:widgetActionRefresh method="toggleProfiling" label="Stop" labelBusy="Stop" toggleChannel4ProfilingOn="false" /></td>
 			</c:when>
 			<c:otherwise>
 				<td style="font-weight:bold;color:#BB0000">Off</td>
-				<td><tags:widgetActionRefresh method="toggleProfiling" label="Start" labelBusy="Starting" toggleChannel4ProfilingOn="true" /></td>
+				<td><tags:widgetActionRefresh method="toggleProfiling" label="Start" labelBusy="Start" toggleChannel4ProfilingOn="true" /></td>
 			</c:otherwise>
 		</c:choose>
 	</tr>
@@ -63,37 +67,68 @@
 <br/>
 	
 <%--PAST PROFILES--%>
-<%--<tags:hideReveal title="Past Profiles" showInitially="true" identifier="pastProfiles">--%>
-<b>Request Past Profile:</b> <span style="color:#CC0000;font-weight:bold;">${initiateMessage}</span>
+<span class="compactResultTableDescription">Request Past Profile:</span> <span class="compactResultTableDescription" style="color:#CC0000;">${initiateMessage}</span>
 <br/>
+<div style="height:5px;"></div>
 
 
-<table class="miniResultsTableLeft">
+<%--<tags:nameValueContainer altRowOn="true">--%>
+<%--	<tags:nameValue name="Channel">--%>
+<%--		<select name="channel" style="height:20px;">--%>
+<%--				<c:forEach var="channel" items="${availableChannels}">--%>
+<%--	   				<option value="${channel.channelNumber}">${channel.channelDescription}</option>--%>
+<%--	   			</c:forEach>--%>
+<%--	   		</select>--%>
+<%--	</tags:nameValue>--%>
+<%--	--%>
+<%--	<tags:nameValue name="Start Date">--%>
+<%--		<tags:dateInputCalendar fieldName="startDateStr" fieldValue="${startDateStr}"></tags:dateInputCalendar>--%>
+<%--	</tags:nameValue>--%>
+<%--	--%>
+<%--	<tags:nameValue name="Stop Date">--%>
+<%--		<tags:dateInputCalendar fieldName="stopDateStr" fieldValue="${stopDateStr}"></tags:dateInputCalendar>--%>
+<%--	</tags:nameValue>--%>
+<%--	--%>
+<%--	<tags:nameValue name="Email">--%>
+<%--		<input id="email" name="email" type="text" value="${email}" size="25" style="height:16px;">--%>
+<%--		<tags:widgetActionRefresh method="initiateLoadProfile" label="Start" labelBusy="Start"/>--%>
+<%--	</tags:nameValue>--%>
+<%--	--%>
+<%--</tags:nameValueContainer>--%>
+
+<table class="compactResultsTableLeft">
 	<tr>
-		<td class="label">Channel:</td>
-		<td>
+		<td class="label_first">Channel:</td>
+		<td colspan="2">
 			<select name="channel" style="height:20px;">
-	   			<option value="1">Channel 1 (Load)</option>
-	   			<option value="4">Channel 4 (Voltage)</option>
+				<c:forEach var="channel" items="${availableChannels}">
+	   				<option value="${channel.channelNumber}">${channel.channelDescription}</option>
+	   			</c:forEach>
 	   		</select>
 	   	</td>
 	</tr>
 	
 	<tr>
 		<td class="label">Start Date:</td>
-		<td><tags:dateInputCalendar fieldName="startDateStr" fieldValue="${startDateStr}"></tags:dateInputCalendar></td>
+		<td colspan="2">
+			<tags:dateInputCalendar fieldName="startDateStr" fieldValue="${startDateStr}"></tags:dateInputCalendar>
+		</td>
 	</tr>
 	
 	<tr>
 		<td class="label">Stop Date:</td>
-		<td><tags:dateInputCalendar fieldName="stopDateStr" fieldValue="${stopDateStr}"></tags:dateInputCalendar></td>
+		<td colspan="2">
+			<tags:dateInputCalendar fieldName="stopDateStr" fieldValue="${stopDateStr}"></tags:dateInputCalendar>
+		</td>
 	</tr>
 	
 	<tr>
-		<td class="label">Email:</td>
-		<td>
-			<input id="email" name="email" type="text" size="25" style="height:16px;">
-			&nbsp;<tags:widgetActionRefresh method="initiateLoadProfile" label="Start" labelBusy="Starting"/>
+		<td class="label_last">Email:</td>
+		<td class="last">
+			<input id="email" name="email" type="text" value="${email}" size="25" style="height:16px;">
+		</td>
+		<td class="last" align="right">
+			<tags:widgetActionRefresh method="initiateLoadProfile" label="Start" labelBusy="Start"/>
 		</td>
 	</tr>
 	
@@ -103,61 +138,72 @@
 
 
 <%--ONGOING PROFILES--%>
-<%--<tags:hideReveal title="Ongoing Profiles" showInitially="true" identifier="ongoingProfiles">--%>
-<b>Ongoing Profiles: </b>
+<span class="compactResultTableDescription">Pending Requests:</span>
 
 
 <c:choose>
 
-	<c:when test="${empty pendingRequests}">
-		None
-	</c:when>
+<c:when test="${empty pendingRequests}">
+	<span class="compactResultTableDescription" style="font-weight:normal">None</span>
+</c:when>
 
-	<c:when test="${not empty pendingRequests}">
+
+
+<c:when test="${not empty pendingRequests}">
 	
-		<br/>
-		<table class="miniResultsTable">
-			<tr>
-				<th>Requested By</th>
-				<th>Channel</th>
-				<th>Date Range</th>
-				<th>Cancel</th>
-			</tr>
+	<br/>
+	<div style="height:5px;"></div>
 
-			<c:forEach var="pendingRequest" items="${pendingRequests}">
-
-				<tr>
-
-					<td>${pendingRequest.email}</td>
-					<td>${pendingRequest.channel}</td>
-					<td>
-						${pendingRequest.from}
-						<br>
-						${pendingRequest.to}
-					</td>
-
-					<td>
-						<tags:widgetActionRefreshImage method="cancelLoadProfile"
-							requestId="${pendingRequest.requestId}" title="Cancel"
-							imgSrc="/WebConfig/yukon/Icons/cancel.gif"
-							imgSrcHover="/WebConfig/yukon/Icons/cancel.gif" />
-					</td>
-
-				</tr>
-
-			</c:forEach>
-
-		</table>
+	<table>
+	<c:forEach var="pendingRequest" items="${pendingRequests}">
+	
+		<tr valign="top" class="<tags:alternateRow odd="" even="altRow"/>">
 		
-	</c:when>
+		<td>
 	
+		<tags:hideReveal title="${pendingRequest.from} - ${pendingRequest.to}" showInitially="false" identifier="pendingContainer${pendingRequest.requestId}">
+	
+			<table style="margin-left:20px">
+				<tr>
+					<td><b>Channel:</b></td>
+					<td>${pendingRequest.channel}</td>
+				</tr>
+				<tr>
+					<td><b>Requested By:</b></td>
+					<td>${pendingRequest.userName}</td>
+				</tr>
+				<tr>
+					<td colspan="2">${pendingRequest.email}</td>
+				</tr>
+				<tr>
+					<td colspan="2">&nbsp;</td>
+				</tr>
+			</table>
+	
+		</tags:hideReveal>
+		
+		</td>
+		
+		<td>
+			<div id="profileStatusBar${pendingRequest.requestId}" style="vertical-align: top"></div> 
+		
+			<script language="JavaScript">
+	    		progressUpdaters[${pendingRequest.requestId}] = new Ajax.PeriodicalUpdater('profileStatusBar${pendingRequest.requestId}', '/spring/widget/profileWidget/percentDoneProgressBarHTML?requestId=${pendingRequest.requestId}', {method: 'post', frequency: 2});
+			</script>
+			
+		</td>
+		
+		<td onClick="javascript:progressUpdaters[${pendingRequest.requestId}].stop();"><tags:widgetActionRefreshImage method="cancelLoadProfile"
+								requestId="${pendingRequest.requestId}" title="Cancel"
+								imgSrc="/WebConfig/yukon/Icons/action_stop.gif"
+								imgSrcHover="/WebConfig/yukon/Icons/action_stop.gif" /></td>
+		
+		</tr>
+		<tr><td colspan="3"><div style="height:5px;"></div></td></tr>
+		
+	</c:forEach>
+	</table>
+	
+</c:when>
 </c:choose>
-	
-	
-	
-	
-	
-	
-	
-	
-	
+

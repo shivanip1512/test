@@ -51,6 +51,7 @@ public interface ActivityLogActions
 	public static final String THERMOSTAT_SCHEDULE_ACTION = "Thermostat Schedule";
 	
 	public static final String SCAN_DATA_NOW_ACTION = "Scan Meter Data Now";
+    public static final String INITIATE_PROFILE_REQUEST_ACTION = "Initiate Profile Request";
 	
     public static final String IMPORT_CUSTOMER_ACCOUNT_ACTION = "Import: Customer Accounts";
     
@@ -77,7 +78,7 @@ public interface ActivityLogActions
 		THERMOSTAT_MANUAL_ACTION, THERMOSTAT_SCHEDULE_ACTION
 	};
 	public static final String[] OTHER_ACTION_GROUP = new String[]{
-		SCAN_DATA_NOW_ACTION
+		SCAN_DATA_NOW_ACTION, INITIATE_PROFILE_REQUEST_ACTION
 	};
     public static final String[] IMPORT_ACTION_GROUP = new String[]{
         IMPORT_CUSTOMER_ACCOUNT_ACTION

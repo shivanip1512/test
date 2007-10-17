@@ -12,12 +12,17 @@ public interface LongLoadProfileService {
                                         int channel, 
                                         Date start, 
                                         Date stop, 
-                                        CompletionCallback runner);
+                                        CompletionCallback runner,
+                                        LiteYukonUser user);
     public Collection<ProfileRequestInfo> getPendingLongLoadProfileRequests(LiteYukonPAObject device);
     
     public boolean removePendingLongLoadProfileRequest(LiteYukonPAObject device, long requestId, LiteYukonUser user);
     
     public void printSizeOfCollections(int deviceId);
+    
+    public Double calculatePercentDone(Long requestId); 
+    
+    public String getLastReturnMsg(long requestId); 
     
     public class ProfileRequestInfo {
         public CompletionCallback runner;
@@ -26,6 +31,8 @@ public interface LongLoadProfileService {
         public Request request;
         public long requestId;
         public int channel;
+        public String userName;
+        public Double percentDone;
        
     }
     
