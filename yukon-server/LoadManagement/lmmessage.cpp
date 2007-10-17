@@ -1463,7 +1463,7 @@ CtiLMDynamicTriggerDataMsg::CtiLMDynamicTriggerDataMsg(CtiLMControlAreaTrigger *
    Dumps
    ==========================================================================*/
 
-void CtiLMDynamicGroupDataMsg::dump()
+void CtiLMDynamicGroupDataMsg::dump() const
 {
     CtiLockGuard<CtiLogger> doubt_guard(dout);
 
@@ -1483,9 +1483,9 @@ void CtiLMDynamicGroupDataMsg::dump()
     dout << "Daily Ops                      " << _daily_ops << endl;
 }
 
-void CtiLMDynamicProgramDataMsg::dump()
+void CtiLMDynamicProgramDataMsg::dump() const
 {
-    dout << " ------- Message -------       LM Dynamic Group Data" << endl;
+    dout << " ------- Message -------       LM Dynamic Program Data" << endl;
     dout << "PAObject ID                    " << _paoid << endl;
     dout << "Disable Flag                   " << _disableflag << endl;
     dout << "Current Gear Number            " << _currentgearnumber << endl;
@@ -1499,21 +1499,21 @@ void CtiLMDynamicProgramDataMsg::dump()
     dout << "Started Ramping Out Time       " << _startedrampingouttime << endl;
 }
 
-void CtiLMDynamicControlAreaDataMsg::dump()
+void CtiLMDynamicControlAreaDataMsg::dump() const
 {
-    dout << " ------- Message -------       LM Dynamic Group Data" << endl;
+    dout << " ------- Message -------       LM Dynamic Control Area Data" << endl;
     dout << "PAObject ID                    " << _paoid << endl;
     dout << "Disable Flag                   " << _disableflag << endl;
     dout << "Next Check Time                " << _nextchecktime << endl;
     dout << "Last Group Controlled          " << _controlareastate << endl;
-    dout << "Program State                  " << _currentpriority << endl;
-    dout << "Reduction Total                " << _currentdailystarttime << endl;
-    dout << "Direct Start Time              " << _currentdailystoptime << endl;
+    dout << "Current Priority               " << _currentpriority << endl;
+    dout << "Current Start Time             " << _currentdailystarttime << endl;
+    dout << "Current Stop Time              " << _currentdailystoptime << endl;
 }
 
-void CtiLMDynamicTriggerDataMsg::dump()
+void CtiLMDynamicTriggerDataMsg::dump() const
 {
-    dout << " ------- Message -------       LM Dynamic Group Data" << endl;
+    dout << " ------- Message -------       LM Dynamic Trigger Data" << endl;
     dout << "PAObject ID                    " << _paoid << endl;
     dout << "Trigger Number                 " << _triggernumber << endl;
     dout << "Point Value                    " << _pointvalue << endl;

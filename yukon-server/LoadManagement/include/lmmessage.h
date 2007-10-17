@@ -383,7 +383,7 @@ RWDECLARE_COLLECTABLE( CtiLMDynamicGroupDataMsg )
 public:
     CtiLMDynamicGroupDataMsg(CtiLMGroupPtr group);
 
-    void dump();
+    void dump() const;
     void saveGuts( RWvostream&) const;
     virtual CtiMessage* replicateMessage() const;
 
@@ -412,7 +412,7 @@ RWDECLARE_COLLECTABLE( CtiLMDynamicProgramDataMsg )
 public:
     CtiLMDynamicProgramDataMsg(CtiLMProgramDirectSPtr program);
 
-    void dump();
+    void dump() const;
     void saveGuts( RWvostream&) const;
     virtual CtiMessage* replicateMessage() const;
 
@@ -438,7 +438,7 @@ RWDECLARE_COLLECTABLE( CtiLMDynamicTriggerDataMsg )
 public:
     CtiLMDynamicTriggerDataMsg(CtiLMControlAreaTrigger *trigger);
 
-    void dump();
+    void dump() const;
     void saveGuts( RWvostream&) const;
     virtual CtiMessage* replicateMessage() const;
 
@@ -462,7 +462,7 @@ RWDECLARE_COLLECTABLE( CtiLMDynamicControlAreaDataMsg )
 public:
     CtiLMDynamicControlAreaDataMsg(CtiLMControlArea *controlArea);
 
-    void dump();
+    void dump() const;
     void saveGuts( RWvostream&) const;
     virtual CtiMessage* replicateMessage() const;
 

@@ -564,6 +564,10 @@ void CtiLoadManager::controlLoop()
 
                         if( multi->getCount() > 0 )
                         {
+                            if( _LM_DEBUG & LM_DEBUG_OUT_MESSAGES )
+                            {
+                                multi->dump();
+                            }
                             sendMessageToClients(multi);
                             multi = 0;
                         }
