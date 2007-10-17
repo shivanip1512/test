@@ -110,7 +110,7 @@ void  CtiCommandParser::parse()
 
     if(CmdStr.contains(" serial"))
     {
-        boost::regex regexp("serial[= ]+" + str_anynum);
+        static const boost::regex regexp("serial[= ]+" + str_anynum);
 
         if(!(token = CmdStr.match(regexp)).empty())
         {
@@ -149,15 +149,15 @@ void  CtiCommandParser::parse()
 
     if(CmdStr.contains(" select"))
     {
-        boost::regex re_name   ("select name "        + str_quoted_token);
-        boost::regex re_id     ("select (device)?id " + str_num);
-        boost::regex re_grp    ("select group "       + str_quoted_token);
-        boost::regex re_altg   ("select altgroup "    + str_quoted_token);
-        boost::regex re_billg  ("select billgroup "   + str_quoted_token);
-        boost::regex re_rtename("select route *name " + str_quoted_token);
-        boost::regex re_rteid  ("select route *id "   + str_num);
-        boost::regex re_ptname ("select point *name " + str_quoted_token);
-        boost::regex re_ptid   ("select point *id "   + str_num);
+        static const boost::regex re_name   ("select name "        + str_quoted_token);
+        static const boost::regex re_id     ("select (device)?id " + str_num);
+        static const boost::regex re_grp    ("select group "       + str_quoted_token);
+        static const boost::regex re_altg   ("select altgroup "    + str_quoted_token);
+        static const boost::regex re_billg  ("select billgroup "   + str_quoted_token);
+        static const boost::regex re_rtename("select route *name " + str_quoted_token);
+        static const boost::regex re_rteid  ("select route *id "   + str_num);
+        static const boost::regex re_ptname ("select point *name " + str_quoted_token);
+        static const boost::regex re_ptid   ("select point *id "   + str_num);
 
         if(!(token = CmdStr.match(re_name)).empty())
         {
@@ -391,37 +391,37 @@ void  CtiCommandParser::doParseGetValue(const string &_CmdStr)
     CtiString   temp;
     CtiString   token;
 
-    boost::regex   re_kxx  ("(kwh|kvah|kvarh)[abcdt]?");  //  Match on kwh, kwha,b,c,d,t
-    boost::regex   re_hrate("h[abcdt]?");                 //  Match on h,ha,hb,hc,hd,ht
-    boost::regex   re_rate ("rate *[abcdt]");
+    static const boost::regex   re_kxx  ("(kwh|kvah|kvarh)[abcdt]?");  //  Match on kwh, kwha,b,c,d,t
+    static const boost::regex   re_hrate("h[abcdt]?");                 //  Match on h,ha,hb,hc,hd,ht
+    static const boost::regex   re_rate ("rate *[abcdt]");
 
-    boost::regex   re_demand(" dema|( kw| kvar| kva)( |$)");  //  match "dema"nd, but also match "kw", "kvar", or "kva"
+    static const boost::regex   re_demand(" dema|( kw| kvar| kva)( |$)");  //  match "dema"nd, but also match "kw", "kvar", or "kva"
 
     //  getvalue lp channel 1 12/14/04 12:00         //  reads a block of 6 readings, starting from the specified time and date
     //
     //  getvalue lp channel 2 12/13/2005             //  grabs the whole day
     //  getvalue lp channel 2 12/13/2005 12/15/2005  //  this wil do range of entire days
     //  getvalue lp channel 2 12/13/2005 12:00 12/15/2005  //  this grabs the second half of 13th, and all of the 14th and 15th
-    boost::regex  re_lp("lp channel " + str_num + " " + str_date + "( " + str_time + ")?( " + str_date + "( " + str_time + ")?)?");
+    static const boost::regex  re_lp("lp channel " + str_num + " " + str_date + "( " + str_time + ")?( " + str_date + "( " + str_time + ")?)?");
 
     //  getvalue lp peak daily channel 2 9/30/04 30
     //  getvalue lp peak hour channel 3 10-15-2003 15
-    boost::regex  re_lp_peak("lp peak (day|hour|interval) channel " + str_num + " " + str_date + " " + str_num);
+    static const boost::regex  re_lp_peak("lp peak (day|hour|interval) channel " + str_num + " " + str_date + " " + str_num);
 
     //  getvalue daily read 12/12/2007 12/27/2007
     //  getvalue daily read channel n 12/12/2007
-    boost::regex  re_dailyread("daily read (channel " + str_num + " )?" + str_daterange);
+    static const boost::regex  re_dailyread("daily read (channel " + str_num + " )?" + str_daterange);
 
-    boost::regex  re_outage("outage " + str_num);
+    static const boost::regex  re_outage("outage " + str_num);
 
-    boost::regex  re_offset("off(set)? *" + str_num);
-    boost::regex  re_channel("channel " + str_num);
+    static const boost::regex  re_offset("off(set)? *" + str_num);
+    static const boost::regex  re_channel("channel " + str_num);
 
 
-    boost::regex   re_dnp_collection("dnp collection " + str_num);
-    boost::regex   re_dnp_analog("dnp analog " + str_num);
-    boost::regex   re_dnp_status("dnp status");
-    boost::regex   re_dnp_accumulator("dnp accumulator " + str_num);
+    static const boost::regex   re_dnp_collection("dnp collection " + str_num);
+    static const boost::regex   re_dnp_analog("dnp analog " + str_num);
+    static const boost::regex   re_dnp_status("dnp status");
+    static const boost::regex   re_dnp_accumulator("dnp accumulator " + str_num);
 
     CtiTokenizer   tok(CmdStr);
 
@@ -734,12 +734,12 @@ void  CtiCommandParser::doParseGetStatus(const string &_CmdStr)
     CtiString   temp2;
     CtiString   token;
 
-    boost::regex   re_lp("lp( channel " + str_num + ")?");
-    boost::regex   re_eventlog("eventlog(s)?");
+    static const boost::regex   re_lp("lp( channel " + str_num + ")?");
+    static const boost::regex   re_eventlog("eventlog(s)?");
 
-    boost::regex   re_offset("off(set)? *" + str_num);
+    static const boost::regex   re_offset("off(set)? *" + str_num);
 
-    boost::regex   re_sele("select");
+    static const boost::regex   re_sele("select");
 
     CtiTokenizer   tok(CmdStr);
 
@@ -1235,9 +1235,9 @@ void  CtiCommandParser::doParsePutValue(const string &_CmdStr)
 
     char *p;
 
-    boost::regex   re_reading("reading " + str_floatnum);
-    boost::regex   re_kyzoffset("kyz *" + str_num);   //  if there's a kyz offset specified
-    boost::regex   re_analog("analog " + str_num + " -?" + str_num);
+    static const boost::regex   re_reading("reading " + str_floatnum);
+    static const boost::regex   re_kyzoffset("kyz *" + str_num);   //  if there's a kyz offset specified
+    static const boost::regex   re_analog("analog " + str_num + " -?" + str_num);
 
 
     CtiTokenizer   tok(CmdStr);
@@ -1318,7 +1318,7 @@ void  CtiCommandParser::doParsePutStatus(const string &_CmdStr)
     CtiString   temp2;
     CtiString   token;
     unsigned int flag = 0;
-    boost::regex   re_offsetvalue("offset " + str_num + " value -?" + str_num);
+    static const boost::regex   re_offsetvalue("offset " + str_num + " value -?" + str_num);
 
     CtiTokenizer   tok(CmdStr);
 
@@ -1412,16 +1412,16 @@ void  CtiCommandParser::doParseGetConfig(const string &_CmdStr)
     CtiString   temp2;
     CtiString   token;
     UINT        flag   = 0;
-    boost::regex    re_rolenum("role *" + str_num);
-    boost::regex    re_rawcmd("raw (func(tion)? )?start ?= ?" + str_hexnum + "( " + str_num + ")?");
-    boost::regex    re_interval("interval(s| lp| li)");  //  match "intervals", "interval lp", and "interval li"
-    boost::regex    re_time("time( |$)");  //  only match "time" as a single word
-    boost::regex    re_multiplier("mult(iplier)?( kyz *" + str_num + ")?");
-    boost::regex    re_address("address (group|uniq)");
-    boost::regex    re_lp_channel(" lp channel " + str_num);
-    boost::regex    re_centron("centron (ratio|parameters)");
-    boost::regex    re_tou_schedule("tou schedule [0-9]");
-    boost::regex    re_dnp("dnp " + str_num);
+    static const boost::regex    re_rolenum("role *" + str_num);
+    static const boost::regex    re_rawcmd("raw (func(tion)? )?start ?= ?" + str_hexnum + "( " + str_num + ")?");
+    static const boost::regex    re_interval("interval(s| lp| li)");  //  match "intervals", "interval lp", and "interval li"
+    static const boost::regex    re_time("time( |$)");  //  only match "time" as a single word
+    static const boost::regex    re_multiplier("mult(iplier)?( kyz *" + str_num + ")?");
+    static const boost::regex    re_address("address (group|uniq)");
+    static const boost::regex    re_lp_channel(" lp channel " + str_num);
+    static const boost::regex    re_centron("centron (ratio|parameters)");
+    static const boost::regex    re_tou_schedule("tou schedule [0-9]");
+    static const boost::regex    re_dnp("dnp " + str_num);
 
     char *p;
 
@@ -1637,7 +1637,7 @@ void  CtiCommandParser::doParseGetConfig(const string &_CmdStr)
 
 void  CtiCommandParser::doParsePutConfig(const string &_CmdStr)
 {
-    boost::regex  re_tou("tou [0-9]+( schedule [0-9]+( [a-z]/[0-9]+:[0-9]+)*)* default [a-z]");
+    static const boost::regex  re_tou("tou [0-9]+( schedule [0-9]+( [a-z]/[0-9]+:[0-9]+)*)* default [a-z]");
 
     CtiString CmdStr(_CmdStr);
     CtiString   temp2;
@@ -1856,7 +1856,7 @@ void  CtiCommandParser::doParseScan(const string &_CmdStr)
     CtiString CmdStr(_CmdStr);
     CtiString   token;
     UINT        flag   = 0;
-    boost::regex    re_loadprofile("loadprofile( +channel +[1-4])?( +block +[0-9]+)?");
+    static const boost::regex    re_loadprofile("loadprofile( +channel +[1-4])?( +block +[0-9]+)?");
 
     CtiTokenizer   tok(CmdStr);
 
@@ -2022,31 +2022,31 @@ void  CtiCommandParser::doParsePutConfigEmetcon(const string &_CmdStr)
     CtiString CmdStr(_CmdStr);
     CtiString temp2;
     CtiString token;
-    boost::regex  re_rawcmd("raw (func(tion)? )?start ?= ?0x[0-9a-f]+( 0x[0-9a-f]+)*");
-    boost::regex  re_rolecmd("role [0-9]+" \
+    static const boost::regex  re_rawcmd("raw (func(tion)? )?start ?= ?0x[0-9a-f]+( 0x[0-9a-f]+)*");
+    static const boost::regex  re_rolecmd("role [0-9]+" \
                              " [0-9]+" \
                              " [0-9]+" \
                              " [0-9]+" \
                              " [0-9]+");
-    boost::regex  re_interval("interval(s| lp| li)");  //  match "intervals", "interval lp" and "interval li"
-    boost::regex  re_multiplier("mult(iplier)? kyz *[0-9]+ [0-9]+(\\.[0-9]+)?");  //  match "mult kyz # #(.###)
-    boost::regex  re_ied_class("ied class [0-9]+ [0-9]+");
-    boost::regex  re_ied_scan ("ied scan [0-9]+ [0-9]+");
-    boost::regex  re_ied_config ("ied configure( +[a-zA-Z0-9]+)+");
-    boost::regex  re_ied_mask (" alarmmask " + str_anynum + " " + str_anynum);
-    boost::regex  re_group_address("group (enable|disable)");
-    boost::regex  re_address("address ((uniq(ue)? [0-9]+)|(gold [0-9]+ silver [0-9]+)|(bronze [0-9]+)|(lead meter [0-9]+ load [0-9]+))");
-    boost::regex  re_centron_config("centron( ratio [0-9]+)?( display ([0-9]x[0-9]+)?( test [0-9]+s?)?( errors)?)?");
-    boost::regex  re_centron_reading("centron reading [0-9]+( [0-9]+)?");
+    static const boost::regex  re_interval("interval(s| lp| li)");  //  match "intervals", "interval lp" and "interval li"
+    static const boost::regex  re_multiplier("mult(iplier)? kyz *[0-9]+ [0-9]+(\\.[0-9]+)?");  //  match "mult kyz # #(.###)
+    static const boost::regex  re_ied_class("ied class [0-9]+ [0-9]+");
+    static const boost::regex  re_ied_scan ("ied scan [0-9]+ [0-9]+");
+    static const boost::regex  re_ied_config ("ied configure( +[a-zA-Z0-9]+)+");
+    static const boost::regex  re_ied_mask (" alarmmask " + str_anynum + " " + str_anynum);
+    static const boost::regex  re_group_address("group (enable|disable)");
+    static const boost::regex  re_address("address ((uniq(ue)? [0-9]+)|(gold [0-9]+ silver [0-9]+)|(bronze [0-9]+)|(lead meter [0-9]+ load [0-9]+))");
+    static const boost::regex  re_centron_config("centron( ratio [0-9]+)?( display ([0-9]x[0-9]+)?( test [0-9]+s?)?( errors)?)?");
+    static const boost::regex  re_centron_reading("centron reading [0-9]+( [0-9]+)?");
 
-    boost::regex  re_loadlimit("load limit " + str_floatnum + " " + str_num);
-    boost::regex  re_cycle("cycle " + str_num + " " + str_num);
+    static const boost::regex  re_loadlimit("load limit " + str_floatnum + " " + str_num);
+    static const boost::regex  re_cycle("cycle " + str_num + " " + str_num);
 
-    boost::regex  re_holiday("holiday " + str_num + "( " + str_date + ")+");
-    boost::regex  re_channel("channel " + str_num + " (ied|2-wire|3-wire|none)( input " + str_num + ")?( multiplier " + str_floatnum + ")?");
+    static const boost::regex  re_holiday("holiday " + str_num + "( " + str_date + ")+");
+    static const boost::regex  re_channel("channel " + str_num + " (ied|2-wire|3-wire|none)( input " + str_num + ")?( multiplier " + str_floatnum + ")?");
 
     //  matches any of AKT, HT, PT, MT, CT, ET, the standard/daylight versions of each, and whole/fractional hour offsets
-    boost::regex  re_timezone("timezone (((ak|h|p|m|c|e)[ds]?t)|(-?" + str_floatnum + "))");
+    static const boost::regex  re_timezone("timezone (((ak|h|p|m|c|e)[ds]?t)|(-?" + str_floatnum + "))");
 
     char *p;
 
@@ -3850,15 +3850,15 @@ void CtiCommandParser::doParseExpresscomAddressing(const string &_CmdStr)
 {
     CtiString CmdStr(_CmdStr);
 
-    boost::regex re_serial  ("serial "   + str_num);
-    boost::regex re_spid    ("spid "     + str_num);
-    boost::regex re_geo     ("geo "      + str_num);
-    boost::regex re_sub     ("sub "      + str_num);
-    boost::regex re_feeder  ("feeder "   + str_num);
-    boost::regex re_zip     ("zip "      + str_num);
-    boost::regex re_uda     ("uda "      + str_num);
-    boost::regex re_program ("program "  + str_num);
-    boost::regex re_splinter("splinter " + str_num);
+    static const boost::regex re_serial  ("serial "   + str_num);
+    static const boost::regex re_spid    ("spid "     + str_num);
+    static const boost::regex re_geo     ("geo "      + str_num);
+    static const boost::regex re_sub     ("sub "      + str_num);
+    static const boost::regex re_feeder  ("feeder "   + str_num);
+    static const boost::regex re_zip     ("zip "      + str_num);
+    static const boost::regex re_uda     ("uda "      + str_num);
+    static const boost::regex re_program ("program "  + str_num);
+    static const boost::regex re_splinter("splinter " + str_num);
 
     CtiString temp;
 
@@ -3885,7 +3885,7 @@ INT CtiCommandParser::convertTimeInputToSeconds(const string& _inStr) const
     INT val  = -1;
     INT mult = 60; //assume minutes for fun ok.
 
-    boost::regex   re_scale("[hms]");
+    static const boost::regex   re_scale("[hms]");
     CtiString   temp2;
 
 

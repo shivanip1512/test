@@ -45,7 +45,7 @@ string CtiString::match(const char* re, size_t start) const{
 }
 
 
-string& CtiString::replace(boost::regex& re, char* s, scopeType scope){
+string& CtiString::replace(const boost::regex& re, char* s, scopeType scope){
     string s1 = c_str();
     if(scope == CtiString::one){
         s1 = boost::regex_replace(s1, re, s, boost::match_default | boost::format_all | boost::format_first_only);
@@ -56,7 +56,7 @@ string& CtiString::replace(boost::regex& re, char* s, scopeType scope){
     append(s1);
     return *this;
 }
-string& CtiString::replace(boost::regex& re, string str, scopeType scope){
+string& CtiString::replace(const boost::regex& re, string str, scopeType scope){
     string s1 = c_str();
 
     char *s;
