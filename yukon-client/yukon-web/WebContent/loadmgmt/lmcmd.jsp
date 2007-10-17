@@ -56,7 +56,7 @@ function validateInput()
 	}
 
 	opener.setTimeout("window.location.reload(true)", 2000);
-
+	self.close();
    	return true;
 }
 
@@ -103,7 +103,6 @@ function setStopAble( radioChk )
 	<form name="cmdForm" method="post" action="<%=request.getContextPath()%>/servlet/LCConnectionServlet" onsubmit="isCancel();validateInput();">
 		<input type="hidden" name="cmd" value="<%= cmd %>" >
 		<input type="hidden" name="itemid" value="<%= itemid %>" >
-		<input type="hidden" name="redirectURL" value="/close.jsp" >
         <input type="hidden" name="adjustments" id="h_adjustments" value=""/>                       
         <input type="hidden" name="cancelPrev" id="cancelPrev" value=""/>                       
     

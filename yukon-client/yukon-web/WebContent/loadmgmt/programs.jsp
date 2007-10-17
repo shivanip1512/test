@@ -12,16 +12,6 @@
 		return;
 	}
    
-if( lmSession.getResponseProgs() != null )
-{
-	CTILogger.warn( 
-		"Found some program violations, " +
-		"redirecting request to: progviolation.jsp" ); 
-  
-	response.sendRedirect( "progviolation.jsp" );
-	return;
-}
-  
 String strID = request.getParameter("areaID");
 if( strID == null )
 {

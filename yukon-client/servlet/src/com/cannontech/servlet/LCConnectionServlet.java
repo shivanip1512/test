@@ -213,8 +213,9 @@ public void service(HttpServletRequest req, HttpServletResponse resp) throws jav
 	getLMSession(req).setResponseProgs( violatResp );
 
 	//always forward the client to the specified URL
-	if( redirectURL != null )
-		resp.sendRedirect( resp.encodeRedirectURL(req.getContextPath() + redirectURL) );
+	if( redirectURL != null ) {
+        resp.sendRedirect( resp.encodeRedirectURL(req.getContextPath() + redirectURL) );
+    }
 }
 private void setAdditionalInfoForProgram(String additionalInfo, String programID) 
 {
