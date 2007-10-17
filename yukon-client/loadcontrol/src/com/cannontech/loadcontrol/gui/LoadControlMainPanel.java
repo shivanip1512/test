@@ -38,8 +38,10 @@ import com.cannontech.loadcontrol.events.LCChangeEvent;
 import com.cannontech.loadcontrol.gui.manualentry.ConstraintResponsePanel;
 import com.cannontech.loadcontrol.gui.manualentry.DirectControlJPanel;
 import com.cannontech.loadcontrol.gui.manualentry.MultiSelectProg;
+import com.cannontech.loadcontrol.gui.manualentry.NoViolationResponsePanel;
 import com.cannontech.loadcontrol.gui.manualentry.ResponseProg;
 import com.cannontech.loadcontrol.messages.LMCommand;
+import com.cannontech.loadcontrol.messages.LMManualControlRequest;
 import com.cannontech.loadcontrol.popup.ControlAreaPopUpMenu;
 import com.cannontech.loadcontrol.popup.GroupPopUpMenu;
 import com.cannontech.loadcontrol.popup.ProgramPopUpMenu;
@@ -100,8 +102,6 @@ public class LoadControlMainPanel extends javax.swing.JPanel implements ButtonBa
 		public void removeTableModelListener(TableModelListener l) {}		
 	}
 
-
-
 /**
  * LoadControlMainPanel constructor comment.
  */
@@ -132,6 +132,8 @@ public void setCurrentDisplay( LCDisplayItem display_ )
 
 	getCompSplitPane().getJSplitPaneInner().getBottomComponent().setVisible(
 			getJTableGroup().getModel() != EMPTY_TABLE_MODEL );
+    
+    executeRefreshButton();
 }
 
 
@@ -189,27 +191,10 @@ public void addActionListenerToJComponent( javax.swing.JComponent component )
 					new ControlHistoryTableModel(),
 					EMPTY_TABLE_MODEL } );
 
-
-//NO SUCH THING AS A SCHEDULED AREA!!
-/* 
-		LCDisplayItem d5 = 
-			new LCDisplayItem( ControlAreaActionListener.SEL_SCHEDULED_AREAS );
-		d5.setLocalTableModels(
-			new TableModel[] { 
-					new FilteredControlAreaTableModel(
-						new int[] {LMControlArea.STATE_SCHEDULED,
-										LMControlArea.STATE_CNTRL_ATTEMPT},
-						getControlAreaTableModel().getTableModelListeners()),
-					getProgramTableModel(),
-					getGroupTableModel() } );
-*/
-
-
 		getComboBox().addItem( d1 );		
 		getComboBox().addItem( d2 );
 		getComboBox().addItem( d3 );
 		getComboBox().addItem( d4 );
-
 
 		getComboBox().addActionListener( getControlAreaActionListener() );
 	}
@@ -372,10 +357,8 @@ private void showContScenWindow( final int panelMode )
 							selected[i].getBaseProgram() );
 				}
 
-				
 				boolean success = LCUtils.executeSyncMessage( programResp );
-
-				
+                
 				if( !success )
 				{
 					final ConstraintResponsePanel constrPanel = new ConstraintResponsePanel();
@@ -405,15 +388,51 @@ private void showContScenWindow( final int panelMode )
 					}
 
 					diag.dispose();
-
 				}
-				
-				
+                else  {
+                    /*Both an Observe and a Check with no constraints violated will return a success of true
+                     *Let's check to see if it was a Check that didn't run into any constraints. 
+                     */
+                    boolean checkedButNoConstraintsViolated = false;
+                    for(ResponseProg response : programResp) {
+                        if(response.getViolations().size() > 0 
+                                && response.getLmRequest().getConstraintFlag() == LMManualControlRequest.CONSTRAINTS_FLAG_CHECK) {
+                            checkedButNoConstraintsViolated = false;
+                            break;
+                        }
+                        if(response.getLmRequest().getCommand() == LMManualControlRequest.SCHEDULED_START || response.getLmRequest().getCommand() == LMManualControlRequest.START_NOW)
+                            checkedButNoConstraintsViolated = true;
+                    }
+                    
+                    if(checkedButNoConstraintsViolated) {
+                        final NoViolationResponsePanel noViolationsPanel = new NoViolationResponsePanel();
+                        OkCancelDialog diag = new OkCancelDialog(
+                            CtiUtilities.getParentFrame(this),
+                            "No Program Constraints Currently Violated",
+                            true,
+                            noViolationsPanel );
+    
+                        //set our responses
+                        noViolationsPanel.setValue( programResp );
+                        diag.setOkButtonText( "Resubmit" );
+                        diag.setResizable( true );
+                        diag.setSize( 800, 350 );
+                        diag.setLocationRelativeTo( this );
+                        diag.show();
+    
+                        ResponseProg[] respArr = 
+                            (ResponseProg[])noViolationsPanel.getValue( null );
+                            
+                        if( diag.getButtonPressed() == OkCancelDialog.OK_PRESSED
+                            && respArr.length > 0 ) {
+                            LCUtils.executeSyncMessage( respArr );
+                        }
+    
+                        diag.dispose();
+                    }
+                }
 			}
-	
-	
 		}
-	
 	}
 	else
 	{
@@ -422,7 +441,6 @@ private void showContScenWindow( final int panelMode )
 			"There are no programs in the system, unable to use Control Scenarios",
 			"Control Scenario unavailable",
 			JOptionPane.WARNING_MESSAGE );
-		
 	}
 
 
@@ -517,10 +535,7 @@ private String[] createPrintableText()
 	{
 		for( int k = 0; k < columnCount; k++ )
 		{
-			/*if( getJTableBottom().getModel().getValueAt( i, k ).equals("") )
-				break;  // blank row
-			else*/
-				tableData[ j++ ] = getProgramTableModel().getValueAt( i, k ).toString();
+		    tableData[ j++ ] = getProgramTableModel().getValueAt( i, k ).toString();
 		}
 	}
 	
@@ -536,12 +551,6 @@ public void destroy()
 {
 	ivjButtonBarPanel = null;
 
-	//if( getComboBox() != null )
-	//{
-		//getComboBox().removeActionListener( getControlAreaActionListener() );
-		//getComboBox().removeAllItems();
-	//}
-	
 	LoadControlClientConnection.getInstance().removeClient(this);
 
 	System.gc();	
@@ -552,9 +561,7 @@ public void destroy()
  */
 public void executeRefreshButton() 
 {
-    LMCommand command = new LMCommand();
-    command.setCommand(LMCommand.RETRIEVE_ALL_CONTROL_AREAS);
-    LoadControlClientConnection.getInstance().queue(command);
+    LoadControlClientConnection.getInstance();
 }
 
 /**
@@ -698,7 +705,8 @@ private com.cannontech.loadcontrol.popup.ControlAreaPopUpMenu getControlAreaPopU
  * Insert the method's description here.
  * Creation date: (9/29/00 1:46:27 PM)
  * @return ControlAreaTableModel
- *
+ */
+/*
 private ControlAreaTableModel getControlAreaTableModel() 
 {
 	return (ControlAreaTableModel)getJTableControlArea().getModel();
@@ -714,7 +722,8 @@ private IControlAreaTableModel getControlAreaTableModel()
  * Insert the method's description here.
  * Creation date: (4/19/2001 12:56:35 PM)
  * @return com.cannontech.loadcontrol.popup.CurtailPopUpMenu
- *
+ */
+/*
 private com.cannontech.loadcontrol.popup.CurtailPopUpMenu getCurtailCustomerPopUpMenu() 
 {
 	if( curtailCustomerPopUpMenu == null )
@@ -1210,14 +1219,6 @@ private void initConnections() throws java.lang.Exception
 				//determines what popupBox is shown
 				if( row instanceof LMGroupBase )
 					getGroupPopUpMenu().show( e.getComponent(), e.getX(), e.getY() );
-
-//				else if( row instanceof LMProgramBase )
-//					getProgramPopUpMenu().show( e.getComponent(), e.getX(), e.getY() );
-//				else if( row instanceof OfferRowData )
-//					getOfferPopUpMenu().show( e.getComponent(), e.getX(), e.getY() );
-//				else if( row instanceof EExchangeRowData )
-//					getCustomerReplyPopUpMenu().show( e.getComponent(), e.getX(), e.getY() );
-
 			}
 		}
 	};
@@ -1248,26 +1249,19 @@ private void initConnections() throws java.lang.Exception
  */
 private void initialize() 
 {
-	
 	try 
 	{
 		setName("LoadControlMainPanel");
 		setLayout( new java.awt.BorderLayout() );
-
 		add( getCompSplitPane(), java.awt.BorderLayout.CENTER );
-
 		add( getButtonBarPanel(), java.awt.BorderLayout.NORTH );
-
 		add( getMessagePanel(), java.awt.BorderLayout.SOUTH );
-		
 		initConnections();
-
 	}
 	catch (java.lang.Throwable ivjExc) 
 	{
 		handleException(ivjExc);
 	}
-
 }
 
 /**
@@ -1431,7 +1425,6 @@ public void popupMenuWillBecomeVisible(javax.swing.event.PopupMenuEvent e)
 			(com.cannontech.loadcontrol.data.LMGroupBase)getSelectedBottomRow() );
 */
 
-
 	if( e.getSource() == LoadControlMainPanel.this.getProgramPopUpMenu() )
 	{
 		getProgramPopUpMenu().setLoadControlProgram( getSelectedProgram() );
@@ -1477,7 +1470,6 @@ public void removeActionListenerFromJComponent( javax.swing.JComponent component
 		getComboBox().removeActionListener( getControlAreaActionListener()  );
 		comboBox = null;
 	}
-	
 }
 /**
  * Insert the method's description here.
@@ -1496,16 +1488,15 @@ public void setTableFont( java.awt.Font font )
 {
    for( int i = 0; i < getJTables().length; i++ )
    {
-   	getJTables()[i].setFont( font );
-   	getJTables()[i].setRowHeight( font.getSize() + 2 );
-
-   	// set the table headers font
-   	getJTables()[i].getTableHeader().setFont( font );
-   
-   	getJTables()[i].revalidate();
-      getJTables()[i].revalidate();
+       getJTables()[i].setFont( font );
+       getJTables()[i].setRowHeight( font.getSize() + 2 );
+    
+       // set the table headers font
+       getJTables()[i].getTableHeader().setFont( font );
+       
+       getJTables()[i].revalidate();
+       getJTables()[i].revalidate();
    }
-
 }
 /**
  * Insert the method's description here.
@@ -1529,13 +1520,10 @@ public void setGridLines(boolean hGridLines, boolean vGridLines )
 	getJTableProgram().setShowHorizontalLines( hGridLines );
 	getJTableProgram().setShowVerticalLines( vGridLines );
 
-
 	// Set the Group Table accordingly
 	getJTableGroup().setIntercellSpacing(new java.awt.Dimension(vLines, hLines));
 	getJTableGroup().setShowHorizontalLines( hGridLines );
 	getJTableGroup().setShowVerticalLines( vGridLines );
-
-
 		
 	getJTableControlArea().repaint();
 	getJTableProgram().repaint();
@@ -1694,29 +1682,6 @@ public void valueChanged(javax.swing.event.ListSelectionEvent event)
 private void updateProgramTableModel()
 {
 	getProgramTableModel().setCurrentControlArea( getSelectedControlArea() );
-
-/*	
-	final JDialogWait d = new JDialogWait( CtiUtilities.getParentFrame(this) );
-	
-	if( getProgramTableModel().showWaiting(getSelectedControlArea()) )
-	{
-		d.setLocationRelativeTo( this );
-		d.show();
-	}
-
-	//this must be done in its own thread since it would block the GUI thread
-	new Thread( new Runnable()
-	{
-		public void run()
-		{ 
-			getProgramTableModel().setCurrentControlArea( getSelectedControlArea() );
-
-			if( d.isShowing() )
-				d.dispose();
-
-		}
-	}, "CtrlHstThread").start();
-*/
 }
 
 private int getInsertionIndx( LMControlArea area, IControlAreaTableModel cntrlAreaTbModel )
