@@ -2,14 +2,7 @@ package com.cannontech.loadcontrol.displays;
 
 import javax.swing.event.EventListenerList;
 
-
-/**
- * Insert the type's description here.
- * Creation date: (2/2/2001 12:04:22 PM)
- * @author: 
- */
-
-public class ControlAreaActionListener implements java.awt.event.ActionListener
+public class ControlAreaActionListener implements java.awt.event.ActionListener 
 {
 	//contains IControlAreaListener
 	private EventListenerList listeners = new EventListenerList();
@@ -40,11 +33,6 @@ public class ControlAreaActionListener implements java.awt.event.ActionListener
 		
 	}
 	
-	/**
-	 * Insert the method's description here.
-	 * Creation date: (2/2/2001 3:06:02 PM)
-	 * @param e java.awt.event.ActionEvent
-	 */
 	private void jComboBox_ActionPerformed(java.awt.event.ActionEvent e) 
 	{
 		javax.swing.JComboBox comboBox = (javax.swing.JComboBox)e.getSource();
@@ -70,11 +58,6 @@ public class ControlAreaActionListener implements java.awt.event.ActionListener
 			
 	}
 	
-	/**
-	 * Insert the method's description here.
-	 * Creation date: (7/31/2001 12:08:25 PM)
-	 * @param newModelListener com.cannontech.loadcontrol.gui.ControlAreaListener[]
-	 */
 	public void addControlAreaListener(IControlAreaListener newModelListener) 
 	{
 		listeners.add( IControlAreaListener.class, newModelListener );

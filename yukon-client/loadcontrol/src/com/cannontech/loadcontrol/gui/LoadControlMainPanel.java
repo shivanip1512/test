@@ -1,10 +1,5 @@
 package com.cannontech.loadcontrol.gui;
 
-/**
- * Insert the type's description here.
- * Creation date: (9/19/00 10:13:05 AM)
- * @author: 
- */
 import java.util.Hashtable;
 
 import javax.swing.JOptionPane;

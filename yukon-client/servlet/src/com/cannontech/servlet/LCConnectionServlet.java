@@ -81,8 +81,7 @@ public LoadControlClientConnection getConnection() {
  * @param config javax.servlet.ServletConfig
  * @exception javax.servlet.ServletException The exception description.
  */
-public void doInit(ServletConfig config) throws ServletException
-{
+public void doInit(ServletConfig config) throws ServletException {
 	String lcHost = "127.0.0.1";
 	int lcPort = 1920;
 
@@ -91,7 +90,6 @@ public void doInit(ServletConfig config) throws ServletException
 
 		lcPort = Integer.parseInt(
 			DaoFactory.getRoleDao().getGlobalPropertyValue( SystemRole.LOADCONTROL_PORT ) );
-
 
 	} catch (Exception e) {
 		com.cannontech.clientutils.CTILogger.error(e.getMessage(), e);
@@ -119,16 +117,8 @@ public void doInit(ServletConfig config) throws ServletException
 	// Add this to the context so other servlets can access the connection
 	getServletContext().setAttribute(SERVLET_CONTEXT_ID, this);		
 }
-/**
- * This is registered with the MACS Connection to receive updates
- * on the connection state.
- * Creation date: (3/21/2001 11:43:09 AM)
- * @param conn java.util.Observable
- * @param o java.lang.Object
- */
-public void update(java.util.Observable obs, Object o) 
-{
-}
+
+public void update(java.util.Observable obs, Object o) {}
 
 /**
  * Allows commands to be executed through a URL interface.
@@ -218,11 +208,9 @@ public void service(HttpServletRequest req, HttpServletResponse resp) throws jav
 	}
 	else
 		CTILogger.warn( "LC Command servlet was hit, but NO command was sent" );
-	
 
 	//sets any responses we got back from the server
 	getLMSession(req).setResponseProgs( violatResp );
-
 
 	//always forward the client to the specified URL
 	if( redirectURL != null )
@@ -244,14 +232,6 @@ private void setAdditionalInfoForProgram(String additionalInfo, String programID
     }
 }
 
-
-
-/**
- * Resends response messages withe the override flag set for the specified progIds.
- * 
- * @param req
- * @param progIds
- */
 private void resendSyncMsgs( HttpServletRequest req, Double[] progIds )
 {
 	HttpSession session = req.getSession( false );
@@ -260,7 +240,6 @@ private void resendSyncMsgs( HttpServletRequest req, Double[] progIds )
 		LMSession lmSess = (LMSession)session.getAttribute("lmSession");
         String buttonPressed = req.getParameter("submitChoice");
 
-        
 		try
 		{
 			if( !"Resubmit".equalsIgnoreCase(buttonPressed) )
@@ -373,6 +352,7 @@ private ResponseProg[] sendSyncMsg( final WebCmdMsg cmdMsg )
     else
         return null;
 }
+
 private void handleTargetCycleAjustments(LMManualControlRequest lmReq, LMProgramBase progBase) {
     if (progBase instanceof LMProgramDirect) 
     {
@@ -404,7 +384,6 @@ private LMSession getLMSession( HttpServletRequest req )
 		
 	return lmSession;
 }
-
 
 private Hashtable getOptionalParams( HttpServletRequest req )
 {
@@ -516,7 +495,6 @@ private Hashtable getOptionalParams( HttpServletRequest req )
 				new Integer( CtiUtilities.decodeStringToSeconds( req.getParameter("stopTime1") )) );
 		}
 	}
-
 	
 	return optionalProps;
 }
