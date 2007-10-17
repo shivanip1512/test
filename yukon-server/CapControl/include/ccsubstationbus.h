@@ -170,6 +170,9 @@ RWDECLARE_COLLECTABLE( CtiCCSubstationBus )
     DOUBLE getPhaseAValue() const;
     DOUBLE getPhaseBValue() const;
     DOUBLE getPhaseCValue() const;
+    DOUBLE getPhaseAValueBeforeControl() const;
+    DOUBLE getPhaseBValueBeforeControl() const;
+    DOUBLE getPhaseCValueBeforeControl() const;
 
     CtiFeeder_vec& getCCFeeders();
     void deleteCCFeeder(long feederId);
@@ -275,6 +278,10 @@ RWDECLARE_COLLECTABLE( CtiCCSubstationBus )
     CtiCCSubstationBus& setPhaseAValue(DOUBLE value);
     CtiCCSubstationBus& setPhaseBValue(DOUBLE value);
     CtiCCSubstationBus& setPhaseCValue(DOUBLE value);
+    CtiCCSubstationBus& setPhaseAValueBeforeControl(DOUBLE value);
+    CtiCCSubstationBus& setPhaseBValueBeforeControl(DOUBLE value);
+    CtiCCSubstationBus& setPhaseCValueBeforeControl(DOUBLE value);
+
 
     BOOL isPastMaxConfirmTime(const CtiTime& currentDateTime);
     LONG getLastFeederControlledSendRetries() const;
@@ -518,6 +525,10 @@ RWDECLARE_COLLECTABLE( CtiCCSubstationBus )
     DOUBLE _phaseAvalue;
     DOUBLE _phaseBvalue;
     DOUBLE _phaseCvalue;
+    DOUBLE _phaseAvalueBeforeControl;
+    DOUBLE _phaseBvalueBeforeControl;
+    DOUBLE _phaseCvalueBeforeControl;
+
 
     //don't stream
     BOOL _insertDynamicDataFlag;

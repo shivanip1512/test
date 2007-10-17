@@ -1776,23 +1776,49 @@ void CtiCapController::pointDataMsg( long pointID, double value, unsigned qualit
                     {
                         if( timestamp > currentSubstationBus->getLastCurrentVarPointUpdateTime() )
                         {
+                              
                             currentSubstationBus->setLastCurrentVarPointUpdateTime(timestamp);
                             currentSubstationBus->setNewPointDataReceivedFlag(TRUE);
-                            if (currentSubstationBus->getCurrentVarLoadPointValue() != value) 
+                            if (!currentSubstationBus->getUsePhaseData())
                             {
-                                currentSubstationBus->setCurrentVarLoadPointValue(value);
-                                currentSubstationBus->setBusUpdatedFlag(TRUE);
-                                if (currentSubstationBus->isControlPoint(pointID) && currentSubstationBus->getIntegrateFlag()) 
+                            
+                                if (currentSubstationBus->getCurrentVarLoadPointValue() != value) 
                                 {
-                                    currentSubstationBus->updateIntegrationVPoint(CtiTime());
+                                    currentSubstationBus->setCurrentVarLoadPointValue(value);
+                                    currentSubstationBus->setBusUpdatedFlag(TRUE);
+                                    if (currentSubstationBus->isControlPoint(pointID) && currentSubstationBus->getIntegrateFlag()) 
+                                    {
+                                        currentSubstationBus->updateIntegrationVPoint(CtiTime());
+                                    }
+                                }
+                                
+                                if (currentSubstationBus->getAltDualSubId() == currentSubstationBus->getPAOId() &&
+                                    !stringCompareIgnoreCase(currentSubstationBus->getControlUnits(), CtiCCSubstationBus::KVARControlUnits) )
+                                {
+                                    currentSubstationBus->setAltSubControlValue(value);
+                                    currentSubstationBus->setBusUpdatedFlag(TRUE);
                                 }
                             }
-                            
-                            if (currentSubstationBus->getAltDualSubId() == currentSubstationBus->getPAOId() &&
-                                !stringCompareIgnoreCase(currentSubstationBus->getControlUnits(), CtiCCSubstationBus::KVARControlUnits) )
+                            else //phase A point id
                             {
-                                currentSubstationBus->setAltSubControlValue(value);
-                                currentSubstationBus->setBusUpdatedFlag(TRUE);
+                                if (currentSubstationBus->getPhaseAValue() != value) 
+                                {
+                                    currentSubstationBus->setPhaseAValue(value);
+                                    currentSubstationBus->setBusUpdatedFlag(TRUE);
+                                     currentSubstationBus->setCurrentVarLoadPointValue(currentSubstationBus->getPhaseAValue() + currentSubstationBus->getPhaseBValue() + currentSubstationBus->getPhaseCValue());
+                                    if (currentSubstationBus->isControlPoint(pointID) && currentSubstationBus->getIntegrateFlag()) 
+                                    {
+                                        currentSubstationBus->updateIntegrationVPoint(CtiTime());
+                                    }
+                                }
+                                
+                                
+                                if (currentSubstationBus->getAltDualSubId() == currentSubstationBus->getPAOId() &&
+                                    !stringCompareIgnoreCase(currentSubstationBus->getControlUnits(), CtiCCSubstationBus::KVARControlUnits) )
+                                {
+                                    currentSubstationBus->setAltSubControlValue(currentSubstationBus->getCurrentVarLoadPointValue());
+                                    currentSubstationBus->setBusUpdatedFlag(TRUE);
+                                }
                             }
                             currentSubstationBus->figureEstimatedVarLoadPointValue();
                             currentSubstationBus->setCurrentVarPointQuality(quality);
@@ -1800,7 +1826,7 @@ void CtiCapController::pointDataMsg( long pointID, double value, unsigned qualit
                             {
                                 sendMessageToDispatch(new CtiPointDataMsg(currentSubstationBus->getEstimatedVarLoadPointId(),currentSubstationBus->getEstimatedVarLoadPointValue(),NormalQuality,AnalogPointType));
                             }
-                          
+                            
                             if( currentSubstationBus->getCurrentWattLoadPointId() > 0 )
                             {
                                 if( !stringCompareIgnoreCase(currentSubstationBus->getControlUnits(),CtiCCSubstationBus::PF_BY_KQControlUnits) )
@@ -1826,7 +1852,7 @@ void CtiCapController::pointDataMsg( long pointID, double value, unsigned qualit
                                 CtiLockGuard<CtiLogger> logger_guard(dout);
                                 dout << CtiTime() << " - No Watt Point, cannot calculate power factor, in: " << __FILE__ << " at:" << __LINE__ << endl;
                             }
-
+                            
                         }
                         
                         found = TRUE;
@@ -2024,11 +2050,28 @@ void CtiCapController::pointDataMsg( long pointID, double value, unsigned qualit
                         }
                         if (currentSubstationBus->getPhaseBId() == pointID) 
                         {
-                            currentSubstationBus->setPhaseBValue(value);
+                            if (currentSubstationBus->getPhaseBValue() != value) 
+                            {
+                                currentSubstationBus->setPhaseBValue(value);
+                                currentSubstationBus->setBusUpdatedFlag(TRUE);
+                                currentSubstationBus->setCurrentVarLoadPointValue(currentSubstationBus->getPhaseAValue() + currentSubstationBus->getPhaseBValue() + currentSubstationBus->getPhaseCValue());
+                            }
                         }
                         if (currentSubstationBus->getPhaseCId() == pointID) 
                         {
-                            currentSubstationBus->setPhaseCValue(value);
+                            if (currentSubstationBus->getPhaseCValue() != value) 
+                            {
+                                currentSubstationBus->setPhaseCValue(value);
+                                currentSubstationBus->setBusUpdatedFlag(TRUE);
+                                currentSubstationBus->setCurrentVarLoadPointValue(currentSubstationBus->getPhaseAValue() + currentSubstationBus->getPhaseBValue() + currentSubstationBus->getPhaseCValue());
+                            }
+                        }
+                        
+                        if (currentSubstationBus->getAltDualSubId() == currentSubstationBus->getPAOId() &&
+                            !stringCompareIgnoreCase(currentSubstationBus->getControlUnits(), CtiCCSubstationBus::KVARControlUnits) )
+                        {
+                            currentSubstationBus->setAltSubControlValue(currentSubstationBus->getCurrentVarLoadPointValue());
+                            currentSubstationBus->setBusUpdatedFlag(TRUE);
                         }
                     }
                     else if (currentSubstationBus->getEstimatedPowerFactorPointId()  == pointID|| 
@@ -2104,14 +2147,34 @@ void CtiCapController::pointDataMsg( long pointID, double value, unsigned qualit
                             {
                                 currentFeeder->setLastCurrentVarPointUpdateTime(timestamp);
                                 currentFeeder->setNewPointDataReceivedFlag(TRUE);
-                                if (currentFeeder->getCurrentVarLoadPointValue() != value) 
+                                if (!currentFeeder->getUsePhaseData())
                                 {
-                                    currentFeeder->setCurrentVarLoadPointValue(value);
-                                    currentSubstationBus->setBusUpdatedFlag(TRUE);
-                                    if (currentFeeder->isControlPoint(pointID) && currentFeeder->getIntegrateFlag()) 
+                                    if (currentFeeder->getCurrentVarLoadPointValue() != value) 
                                     {
-                                        currentFeeder->updateIntegrationVPoint(CtiTime(), currentSubstationBus->getNextCheckTime());
+                                        currentFeeder->setCurrentVarLoadPointValue(value);
+                                        currentSubstationBus->setBusUpdatedFlag(TRUE);
+                                        if (currentFeeder->isControlPoint(pointID) && currentFeeder->getIntegrateFlag()) 
+                                        {
+                                            currentFeeder->updateIntegrationVPoint(CtiTime(), currentSubstationBus->getNextCheckTime());
+                                        }
                                     }
+                                } 
+                                else //phase A point id
+                                {
+                                    if (currentFeeder->getPhaseAValue() != value) 
+                                    {
+                                        if (currentFeeder->getPhaseAValue() != value) 
+                                        {
+                                            currentFeeder->setPhaseAValue(value);
+                                            currentSubstationBus->setBusUpdatedFlag(TRUE);
+                                            currentFeeder->setCurrentVarLoadPointValue(currentFeeder->getPhaseAValue() + currentFeeder->getPhaseBValue() + currentFeeder->getPhaseCValue());
+                                            if (currentFeeder->isControlPoint(pointID) && currentFeeder->getIntegrateFlag()) 
+                                            {
+                                                currentFeeder->updateIntegrationVPoint(CtiTime(), currentSubstationBus->getNextCheckTime());
+                                            }
+                                        }
+                                    }
+
                                 }
                                 
                                 currentFeeder->figureEstimatedVarLoadPointValue();
@@ -2202,25 +2265,36 @@ void CtiCapController::pointDataMsg( long pointID, double value, unsigned qualit
                             found = TRUE;
                            // break;
                         }
+                        
                         else if ((currentFeeder->getPhaseBId() == pointID ||
-                                 currentFeeder->getPhaseCId() == pointID ) &&
-                                 currentFeeder->getUsePhaseData())
+                             currentFeeder->getPhaseCId() == pointID ) &&
+                             currentFeeder->getUsePhaseData())
                         {
                             if( _CC_DEBUG & CC_DEBUG_RIDICULOUS )
                             {
                                 CtiLockGuard<CtiLogger> logger_guard(dout);
                                 dout << CtiTime() << " - 3-Phase DEVELOPMENT NEEDED! " << pointID << " on FEEDER: " << currentFeeder->getPAOName() << endl;
+
                             }
                             if (currentFeeder->getPhaseBId() == pointID) 
                             {
-                                currentFeeder->setPhaseBValue(value);
+                                if (currentFeeder->getPhaseBValue() != value) 
+                                {
+                                    currentFeeder->setPhaseBValue(value);
+                                    currentSubstationBus->setBusUpdatedFlag(TRUE);
+                                    currentFeeder->setCurrentVarLoadPointValue(currentFeeder->getPhaseAValue() + currentFeeder->getPhaseBValue() + currentFeeder->getPhaseCValue());
+                                }
                             }
                             if (currentFeeder->getPhaseCId() == pointID) 
                             {
-                                currentFeeder->setPhaseCValue(value);
+                                if (currentFeeder->getPhaseCValue() != value) 
+                                {
+                                    currentFeeder->setPhaseCValue(value);
+                                    currentSubstationBus->setBusUpdatedFlag(TRUE);
+                                    currentFeeder->setCurrentVarLoadPointValue(currentFeeder->getPhaseAValue() + currentFeeder->getPhaseBValue() + currentFeeder->getPhaseCValue());
+                                }
                             }
                         }
-
                     }
                 }
             }

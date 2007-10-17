@@ -193,6 +193,9 @@ RWDECLARE_COLLECTABLE( CtiCCFeeder )
     DOUBLE getPhaseAValue() const;
     DOUBLE getPhaseBValue() const;
     DOUBLE getPhaseCValue() const;
+    DOUBLE getPhaseAValueBeforeControl() const;
+    DOUBLE getPhaseBValueBeforeControl() const;
+    DOUBLE getPhaseCValueBeforeControl() const;
 
     CtiCCCapBank_SVector& getCCCapBanks();
     void deleteCCCapBank(long capBankId);
@@ -296,7 +299,10 @@ RWDECLARE_COLLECTABLE( CtiCCFeeder )
     CtiCCFeeder& setPhaseCId(LONG pointid);
     CtiCCFeeder& setPhaseAValue(DOUBLE value);
     CtiCCFeeder& setPhaseBValue(DOUBLE value);
-    CtiCCFeeder& setPhaseCValue(DOUBLE value);
+    CtiCCFeeder& setPhaseCValue(DOUBLE value);    
+    CtiCCFeeder& setPhaseAValueBeforeControl(DOUBLE value);
+    CtiCCFeeder& setPhaseBValueBeforeControl(DOUBLE value);
+    CtiCCFeeder& setPhaseCValueBeforeControl(DOUBLE value);
 
     CtiCCCapBank* findCapBankToChangeVars(DOUBLE kvarSolution);
     CtiRequestMsg* createIncreaseVarRequest(CtiCCCapBank* capBank, CtiMultiMsg_vec& pointChanges, CtiMultiMsg_vec& ccEvents, string textInfo, DOUBLE kvarBefore);
@@ -491,7 +497,10 @@ private:
     DOUBLE _phaseAvalue;
     DOUBLE _phaseBvalue;
     DOUBLE _phaseCvalue;
-    
+    DOUBLE _phaseAvalueBeforeControl;
+    DOUBLE _phaseBvalueBeforeControl;
+    DOUBLE _phaseCvalueBeforeControl;
+
     //don't stream
     BOOL _insertDynamicDataFlag;
     BOOL _dirty;

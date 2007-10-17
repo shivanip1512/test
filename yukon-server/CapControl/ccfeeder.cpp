@@ -613,7 +613,33 @@ DOUBLE CtiCCFeeder::getPhaseCValue() const
 {
     return _phaseCvalue;
 }
+/*---------------------------------------------------------------------------
+    getPhaseAValue
 
+    Returns the PhaseAValue VAr of the feeder
+---------------------------------------------------------------------------*/
+DOUBLE CtiCCFeeder::getPhaseAValueBeforeControl() const
+{
+    return _phaseAvalueBeforeControl;
+}
+/*---------------------------------------------------------------------------
+    getPhaseBValue
+
+    Returns the PhaseBValue VAr of the feeder
+---------------------------------------------------------------------------*/
+DOUBLE CtiCCFeeder::getPhaseBValueBeforeControl() const
+{
+    return _phaseBvalueBeforeControl;
+}
+/*---------------------------------------------------------------------------
+    getPhaseCValue
+
+    Returns the PhaseCValue VAr of the feeder
+---------------------------------------------------------------------------*/
+DOUBLE CtiCCFeeder::getPhaseCValueBeforeControl() const
+{
+    return _phaseCvalueBeforeControl;
+}
 
 /*---------------------------------------------------------------------------
     getNewPointDataReceivedFlag
@@ -1528,6 +1554,11 @@ CtiCCFeeder& CtiCCFeeder::setVarValueBeforeControl(DOUBLE oldvarval)
         _dirty = TRUE;
     }
     _varvaluebeforecontrol = oldvarval;
+
+    setPhaseAValueBeforeControl(getPhaseAValue());
+    setPhaseBValueBeforeControl(getPhaseBValue());
+    setPhaseCValueBeforeControl(getPhaseCValue());
+
     return *this;
 }
 
@@ -1970,8 +2001,9 @@ CtiRequestMsg* CtiCCFeeder::createIncreaseVarRequest(CtiCCCapBank* capBank, CtiM
         capBank->setTotalOperations(capBank->getTotalOperations() + 1);
         capBank->setCurrentDailyOperations(capBank->getCurrentDailyOperations() + 1);
         setRecentlyControlledFlag(TRUE);
-        //setVarValueBeforeControl(getCurrentVarLoadPointValue());
+
         setVarValueBeforeControl(kvarBefore);
+        
         if( capBank->getStatusPointId() > 0 )
         {
             string additional;
@@ -2049,6 +2081,7 @@ CtiRequestMsg* CtiCCFeeder::createIncreaseVarVerificationRequest(CtiCCCapBank* c
         capBank->setCurrentDailyOperations(capBank->getCurrentDailyOperations() + 1);
         //setRecentlyControlledFlag(TRUE);
         setVarValueBeforeControl(getCurrentVarLoadPointValue());
+
         if( capBank->getStatusPointId() > 0 )
         {
             string additional("Sub: ");
@@ -4303,7 +4336,36 @@ CtiCCFeeder& CtiCCFeeder::setPhaseCValue(DOUBLE value)
     return *this;
 }
 
-
+/*---------------------------------------------------------------------------
+    setPhaseAValue 
+        
+    Sets the PhaseAValue VAr  of the feeder
+---------------------------------------------------------------------------*/
+CtiCCFeeder& CtiCCFeeder::setPhaseAValueBeforeControl(DOUBLE value)
+{
+    _phaseAvalueBeforeControl = value;
+    return *this;
+}
+/*---------------------------------------------------------------------------
+    setPhaseBValue 
+        
+    Sets the PhaseBValue VAr  of the feeder
+---------------------------------------------------------------------------*/
+CtiCCFeeder& CtiCCFeeder::setPhaseBValueBeforeControl(DOUBLE value)
+{
+    _phaseBvalueBeforeControl = value;
+    return *this;
+}
+/*---------------------------------------------------------------------------
+    setPhaseCValue 
+        
+    Sets the PhaseCValue VAr  of the feeder
+---------------------------------------------------------------------------*/
+CtiCCFeeder& CtiCCFeeder::setPhaseCValueBeforeControl(DOUBLE value)
+{
+    _phaseCvalueBeforeControl = value;
+    return *this;
+}
 
 BOOL CtiCCFeeder::getVerificationFlag() const
 {
@@ -5556,6 +5618,9 @@ CtiCCFeeder& CtiCCFeeder::operator=(const CtiCCFeeder& right)
         _phaseAvalue = right._phaseAvalue;
         _phaseBvalue = right._phaseBvalue;
         _phaseCvalue = right._phaseCvalue;
+        _phaseAvalueBeforeControl = right._phaseAvalueBeforeControl;
+        _phaseBvalueBeforeControl = right._phaseBvalueBeforeControl;
+        _phaseCvalueBeforeControl = right._phaseCvalueBeforeControl;
 
         _cccapbanks.clear();
         for(LONG i=0;i<right._cccapbanks.size();i++)
@@ -5728,7 +5793,9 @@ void CtiCCFeeder::restore(RWDBReader& rdr)
     setPhaseAValue(0);
     setPhaseBValue(0);
     setPhaseCValue(0);
-
+    setPhaseAValueBeforeControl(0);
+    setPhaseBValueBeforeControl(0);
+    setPhaseCValueBeforeControl(0);
 }
 
 void CtiCCFeeder::setStrategyValues(CtiCCStrategyPtr strategy)

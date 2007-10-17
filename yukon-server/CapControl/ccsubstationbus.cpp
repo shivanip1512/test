@@ -325,6 +325,35 @@ DOUBLE CtiCCSubstationBus::getPhaseCValue() const
 {
     return _phaseCvalue;
 }
+/*---------------------------------------------------------------------------
+    getPhaseAValue
+
+    Returns the getPhaseAValue VAR of the substation
+---------------------------------------------------------------------------*/
+DOUBLE CtiCCSubstationBus::getPhaseAValueBeforeControl() const
+{
+    return _phaseAvalueBeforeControl;
+}
+
+/*---------------------------------------------------------------------------
+    getPhaseBValue
+
+    Returns the getPhaseBValue VAR of the substation
+---------------------------------------------------------------------------*/
+DOUBLE CtiCCSubstationBus::getPhaseBValueBeforeControl() const
+{
+    return _phaseBvalueBeforeControl;
+}
+
+/*---------------------------------------------------------------------------
+    getPhaseCValue
+
+    Returns the getPhaseCValue VAR of the substation
+---------------------------------------------------------------------------*/
+DOUBLE CtiCCSubstationBus::getPhaseCValueBeforeControl() const
+{
+    return _phaseCvalueBeforeControl;
+}
 
 /*---------------------------------------------------------------------------
     getStrategyId
@@ -1362,6 +1391,40 @@ CtiCCSubstationBus& CtiCCSubstationBus::setPhaseCValue(DOUBLE value)
     return *this;
 }
 
+/*---------------------------------------------------------------------------
+    setPhaseAValue 
+        
+    Sets the setPhaseAValue Var of the substation
+---------------------------------------------------------------------------*/
+CtiCCSubstationBus& CtiCCSubstationBus::setPhaseAValueBeforeControl(DOUBLE value)
+{
+    _phaseAvalueBeforeControl = value;
+    return *this;
+}
+
+/*---------------------------------------------------------------------------
+    setPhaseBValue 
+        
+    Sets the setPhaseBValue Var of the substation
+---------------------------------------------------------------------------*/
+CtiCCSubstationBus& CtiCCSubstationBus::setPhaseBValueBeforeControl(DOUBLE value)
+{
+    _phaseBvalueBeforeControl = value;
+    return *this;
+}
+
+
+
+/*---------------------------------------------------------------------------
+    setPhaseCValue 
+        
+    Sets the setPhaseCValue Var of the substation
+---------------------------------------------------------------------------*/
+CtiCCSubstationBus& CtiCCSubstationBus::setPhaseCValueBeforeControl(DOUBLE value)
+{
+    _phaseCvalueBeforeControl = value;
+    return *this;
+}
 
 
 
@@ -2070,6 +2133,11 @@ CtiCCSubstationBus& CtiCCSubstationBus::setVarValueBeforeControl(DOUBLE oldvarva
         _dirty = TRUE;
     }
     _varvaluebeforecontrol = oldvarval;
+
+    setPhaseAValueBeforeControl(getPhaseAValue());
+    setPhaseBValueBeforeControl(getPhaseBValue());
+    setPhaseCValueBeforeControl(getPhaseCValue());
+
     return *this;
 }
 
@@ -8330,6 +8398,9 @@ CtiCCSubstationBus& CtiCCSubstationBus::operator=(const CtiCCSubstationBus& righ
         _phaseAvalue = right._phaseAvalue;
         _phaseBvalue = right._phaseBvalue;
         _phaseCvalue = right._phaseCvalue;
+        _phaseAvalueBeforeControl = right._phaseAvalueBeforeControl;
+        _phaseBvalueBeforeControl = right._phaseBvalueBeforeControl;
+        _phaseCvalueBeforeControl = right._phaseCvalueBeforeControl;
 
         _ccfeeders.clear();
         for(LONG i=0;i<right._ccfeeders.size();i++)
@@ -8519,6 +8590,9 @@ void CtiCCSubstationBus::restore(RWDBReader& rdr)
     setPhaseAValue(0);
     setPhaseBValue(0);
     setPhaseCValue(0);
+    setPhaseAValueBeforeControl(0);
+    setPhaseBValueBeforeControl(0);
+    setPhaseCValueBeforeControl(0);
 
 }
 
