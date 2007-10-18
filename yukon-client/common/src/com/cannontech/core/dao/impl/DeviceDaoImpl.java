@@ -1,5 +1,6 @@
 package com.cannontech.core.dao.impl;
 
+import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
@@ -90,6 +91,27 @@ public LiteYukonPAObject getLiteYukonPaobjectByMeterNumber(String meterNumber)
 }
 
 /* (non-Javadoc)
+ * @see com.cannontech.core.dao.DeviceDao#getLiteYukonPaobjectByMeterNumber(java.lang.String)
+ */
+public List<LiteYukonPAObject> getLiteYukonPaobjectListByMeterNumber(String meterNumber)
+{
+    List allDevMtrGrps = databaseCache.getAllDeviceMeterGroups();
+    List<LiteYukonPAObject> liteYukonPAObjects = new ArrayList<LiteYukonPAObject>();
+    LiteDeviceMeterNumber ldmn = null;
+
+    for (int i = 0; i < allDevMtrGrps.size(); i++)
+    {
+        ldmn = (LiteDeviceMeterNumber)allDevMtrGrps.get(i);
+        if (ldmn.getMeterNumber().equals(meterNumber))
+        {
+            liteYukonPAObjects.add((LiteYukonPAObject)databaseCache.getAllPAOsMap().get(new Integer(ldmn.getDeviceID())));
+        }
+    }
+    return liteYukonPAObjects;
+}
+
+
+/* (non-Javadoc)
  * @see com.cannontech.core.dao.DeviceDao#getLiteYukonPaobjectByDeviceName(java.lang.String)
  */
 public LiteYukonPAObject getLiteYukonPaobjectByDeviceName(String deviceName)
@@ -165,4 +187,5 @@ public void setPaoDao(PaoDao paoDao) {
 public void setRoleDao(RoleDao roleDao) {
     this.roleDao = roleDao;
 }
+
 }

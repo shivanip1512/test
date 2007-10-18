@@ -106,8 +106,10 @@ public void add() throws java.sql.SQLException
 public void delete() throws java.sql.SQLException 
 {
 
-	//dont allow deletes, may get ugly!!
-	com.cannontech.clientutils.CTILogger.info("Delete not allowed int " + this.getClass().getName() );
+    for(int i = 0; i < getDBPersistentVector().size(); i++){           
+        ((DBPersistent)getDBPersistentVector().elementAt(i)).delete();
+    }
+
 }
 /**
  * Insert the method's description here.

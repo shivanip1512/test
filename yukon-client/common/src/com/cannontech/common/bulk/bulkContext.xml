@@ -1,0 +1,10 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE beans PUBLIC "-//SPRING//DTD BEAN//EN" "http://www.springframework.org/dtd/spring-beans.dtd">
+
+<beans>
+	<bean id="bulkMeterDeleterService" class="com.cannontech.common.bulk.service.impl.BulkMeterDeleterServiceImpl">
+		<property name="deviceDao" ref="deviceDao" />
+		<property name="paoDao" ref="paoDao" />
+		<property name="dbPersistentDao" ref="dbPersistentDao" />
+    </bean>
+</beans>

@@ -59,7 +59,10 @@ public class DBChangeMsg extends com.cannontech.message.util.Message
 	public static final int CHANGE_WORK_ORDER_DB = 30;
     public static final int CHANGE_CBC_ADDINFO_DB = 31;
 
-
+    /*Possible values for the Categories field
+     *NOTE: If you are using the CHANGE_PAO_DB database field you will
+     *find the needed fields in PAOGRoups.java
+     */
 	public static final String CAT_POINT = "Point";
 	public static final String CAT_STATEGROUP ="StateGroup";
 	public static final String CAT_NOTIFCATIONGROUP = "NotificationGroup";

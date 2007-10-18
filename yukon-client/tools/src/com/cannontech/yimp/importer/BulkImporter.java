@@ -272,21 +272,21 @@ public void runImport(List<ImportData> imps) {
             template400SeriesBase = DBFuncs.get410FromTemplateName(templateName);
             if(template400SeriesBase.getDevice().getDeviceID().intValue() == -12)
             {
-                log.info("Import entry with name " + name + " specifies a template MCT not in the Yukon database.");
+                log.info("Import entry with name " + name + " specifies a template MCT ("+templateName+") not in the Yukon database.");
                 badEntry = true;
-                errorMsg.append("has an unknown MCT template; ");
+                errorMsg.append("has an unknown MCT template; --templateName:"+templateName);
             }
         }
         
 		if(StringUtils.isBlank(name) || name.length() > 60) {
 			log.info("Import entry with address " + address + " has a name with an improper length.");
 			badEntry = true;
-			errorMsg.append("improper name length; ");			
+			errorMsg.append("improper name length; --address:"+ address);			
 		}
 		else if(name.indexOf(',') != -1) {
 			log.error("Import entry with address " + address + " has a name that uses invalid characters.");
 			badEntry = true;
-			errorMsg.append("invalid name chars; ");			
+			errorMsg.append("invalid name chars; --address:"+ address);			
 		}
 		else {
 			if( updateDeviceID != null) {
@@ -297,50 +297,50 @@ public void runImport(List<ImportData> imps) {
 			if(isDuplicate && notUpdate) {
 				log.error("Name " + name + " is already used by a 400 series MCT in the Yukon database.");
 				badEntry = true;
-				errorMsg.append("is using an existing MCT name; ");
+				errorMsg.append("is using an existing MCT name; --name:"+name);
 			}
 		}
         
         /*Address range check for 400 series*/
 		if(template400SeriesBase instanceof MCT410IL && !DeviceAddressRange.isValidRange(DeviceTypes.MCT410IL, Long.parseLong(address))) {
-			log.error("Import entry with name " + name + " has an incorrect MCT410IL address.");
+			log.error("Import entry with name " + name + " has an incorrect MCT410IL address ("+address+").");
 			badEntry = true;
-			errorMsg.append("address out of MCT410IL range; ");	
+			errorMsg.append("address out of MCT410IL range; --name:"+name);	
 		}
         else if(template400SeriesBase instanceof MCT410CL && !DeviceAddressRange.isValidRange(DeviceTypes.MCT410CL, Long.parseLong(address))) {
-            log.error("Import entry with name " + name + " has an incorrect MCT410CL address.");
+            log.error("Import entry with name " + name + " has an incorrect MCT410CL address ("+address+").");
             badEntry = true;
-            errorMsg.append("address out of MCT410CL range; "); 
+            errorMsg.append("address out of MCT410CL range; --name:"+name); 
         }
         else if(template400SeriesBase instanceof MCT410FL && !DeviceAddressRange.isValidRange(DeviceTypes.MCT410FL, Long.parseLong(address))) {
-            log.error("Import entry with name " + name + " has an incorrect MCT410FL address.");
+            log.error("Import entry with name " + name + " has an incorrect MCT410FL address ("+address+").");
             badEntry = true;
-            errorMsg.append("address out of MCT410FL range; "); 
+            errorMsg.append("address out of MCT410FL range; --name:"+name); 
         }
         else if(template400SeriesBase instanceof MCT410GL && !DeviceAddressRange.isValidRange(DeviceTypes.MCT410GL, Long.parseLong(address))) {
-            log.error("Import entry with name " + name + " has an incorrect MCT410GL address.");
+            log.error("Import entry with name " + name + " has an incorrect MCT410GL address ("+address+").");
             badEntry = true;
-            errorMsg.append("address out of MCT410GL range; "); 
+            errorMsg.append("address out of MCT410GL range; --name:"+name); 
         }
         else if(template400SeriesBase instanceof MCT430S4 && !DeviceAddressRange.isValidRange(DeviceTypes.MCT430S4, Long.parseLong(address))) {
-            log.error("Import entry with name " + name + " has an incorrect MCT430LG address.");
+            log.error("Import entry with name " + name + " has an incorrect MCT430LG address ("+address+").");
             badEntry = true;
-            errorMsg.append("address out of MCT430LG range; "); 
+            errorMsg.append("address out of MCT430LG range; --name:"+name); 
         }
         else if(template400SeriesBase instanceof MCT430A && !DeviceAddressRange.isValidRange(DeviceTypes.MCT430A, Long.parseLong(address))) {
-            log.error("Import entry with name " + name + " has an incorrect MCT430EL address.");
+            log.error("Import entry with name " + name + " has an incorrect MCT430EL address ("+address+").");
             badEntry = true;
-            errorMsg.append("address out of MCT430EL range; "); 
+            errorMsg.append("address out of MCT430EL range; --name:"+name); 
         }
         else if(template400SeriesBase instanceof MCT430SL && !DeviceAddressRange.isValidRange(DeviceTypes.MCT430SL, Long.parseLong(address))) {
-            log.error("Import entry with name " + name + " has an incorrect MCT430IN address.");
+            log.error("Import entry with name " + name + " has an incorrect MCT430IN address ("+address+").");
             badEntry = true;
-            errorMsg.append("address out of MCT430IN range; "); 
+            errorMsg.append("address out of MCT430IN range; --name:"+name); 
         }
         else if(template400SeriesBase instanceof MCT470 && !DeviceAddressRange.isValidRange(DeviceTypes.MCT470, Long.parseLong(address))) {
-            log.error("Import entry with name " + name + " has an incorrect MCT470 address.");
+            log.error("Import entry with name " + name + " has an incorrect MCT470 address ("+address+").");
             badEntry = true;
-            errorMsg.append("address out of MCT470 range; "); 
+            errorMsg.append("address out of MCT470 range; --name:"+name); 
         }
         
         /*New 400 series MCTs will each need a clause added above if address range
@@ -349,17 +349,17 @@ public void runImport(List<ImportData> imps) {
 		if(StringUtils.isBlank(meterNumber) && notUpdate) {
 			log.error("Import entry with name " + name + " has no meter number.");
 			badEntry = true;
-			errorMsg.append("has no meter number specified; ");	
+			errorMsg.append("has no meter number specified; --name:"+name);	
 		}
 		if(StringUtils.isBlank(collectionGrp) && notUpdate) {
 			log.error("Import entry with name " + name + " has no collection group.");
 			badEntry = true;
-			errorMsg.append("has no collection group specified; ");	
+			errorMsg.append("has no collection group specified; --name:"+name);	
 		}
 		if(StringUtils.isBlank(altGrp) && notUpdate) {
 			log.error("Import entry with name " + name + " has no alternate group.");
 			badEntry = true;
-			errorMsg.append("has no alternate group specified; ");	
+			errorMsg.append("has no alternate group specified; --name:"+name);	
 		}
         if(StringUtils.isBlank(billGrp) && notUpdate) {
             log.error("Import entry with name " + name + " has no billing group.");
@@ -376,15 +376,15 @@ public void runImport(List<ImportData> imps) {
             else if(!StringUtils.isBlank(substationName)) {
                 routeIDsFromSub = DBFuncs.getRouteIDsFromSubstationName(substationName);
                 if(routeIDsFromSub.size() < 1) {
-                    log.error("Import entry with name " + name + " specifies a substation with routes not in the Yukon database.");
+                    log.error("Import entry with name " + name + " specifies a substation ("+substationName+")with routes not in the Yukon database.");
                     badEntry = true;
-                    errorMsg.append("has an unknown substation or a substation with no routes; ");
+                    errorMsg.append("has an unknown substation or a substation with no routes; --substationName:"+ substationName);
                 }
             }
             else if(!notUpdate) {
-                log.error("Import entry with name " + name + " has no specified route.");
+                log.error("Import entry with name " + name + " has no specified route ("+routeName+").");
     			badEntry = true;
-    			errorMsg.append("has no route specified; ");	
+    			errorMsg.append("has no route specified; --routeName:"+routeName);	
             }
             else
                 routeID = new Integer(-12);
@@ -392,9 +392,9 @@ public void runImport(List<ImportData> imps) {
 		else {
 			routeID = DBFuncs.getRouteFromName(routeName);
 			if(routeID.intValue() == -12) {
-				log.error("Import entry with name " + name + " specifies a route not in the Yukon database.");
+				log.error("Import entry with name " + name + " specifies a route ("+routeName+") not in the Yukon database.");
 				badEntry = true;
-				errorMsg.append("has an unknown route; ");
+				errorMsg.append("has an unknown route; --routeName:"+routeName);
 			}
 		}
 		

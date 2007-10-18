@@ -34,6 +34,14 @@ public interface DeviceDao {
             String meterNumber);
 
     /**
+     * 
+     * @param meterNumber
+     * @return
+     */
+    
+    public List<LiteYukonPAObject> getLiteYukonPaobjectListByMeterNumber(String meterNumber);
+    
+    /**
      * This returns a LiteYukonPaobject for the PaoName.
      * WARNING: This is a "BEST GUESS" (or the first one in the DEVICE cache) as
      *  PaoName is NOT necessarily distinct for all general purposes, but may be a utilities distinct field.

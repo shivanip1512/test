@@ -75,7 +75,8 @@ public void delete() throws java.sql.SQLException
 	delete( DeviceCustomerList.TABLE_NAME, 
 		DeviceCustomerList.CONSTRAINT_COLUMNS[0], 
 		getDevice().getDeviceID() );
-         
+
+    delete( "ImportPendingComm", "DeviceId", getPAObjectID() );
 
 	if (!isPartialDelete)
 	{
