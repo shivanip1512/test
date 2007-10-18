@@ -23,3 +23,12 @@ delete from YukonRoleProperty where RolePropertyId = -1113;
 insert into YukonRoleProperty values(-10816, -108,'Standard Page Style Sheet',' ','A comma separated list of URLs for CSS files that will be included on every Standard Page');
 
 /*end*/
+
+
+/*start ************  Change misspelled vendor name SN 22071018 **********/
+/*****  change for 3.5 update script */
+update BillingFileFormats, set FormatType = 'DAFFRON' where formatType = 'DAFRON';
+
+/* Please make sure to change the insert statements for the creation scripts in 3.5 and head  
+   To be 'DAFFRON' instead of 'DAFRON'  */
+/*end ************  Change misspelled vendor name SN 22071018 **********/
