@@ -6,8 +6,8 @@
 *
 * PVCS KEYWORDS:
 * ARCHIVE      :  $Archive:   Z:/SOFTWAREARCHIVES/YUKON/DISPATCH/ctivangogh.cpp-arc  $
-* REVISION     :  $Revision: 1.170 $
-* DATE         :  $Date: 2007/08/30 21:37:39 $
+* REVISION     :  $Revision: 1.171 $
+* DATE         :  $Date: 2007/10/18 21:12:18 $
 *
 * Copyright (c) 1999, 2000, 2001 Cannon Technologies Inc. All rights reserved.
 *-----------------------------------------------------------------------------*/
@@ -99,7 +99,7 @@ using namespace std;
 #define UPDATERTDB_RATE          3600           // Save all dirty point records once per n seconds
 #define SANITY_RATE              300
 
-#define PERF_TO_MS(b,a,p) ((UINT)((b).QuadPart - (a).QuadPart) / ((UINT)(p).QuadPart / 1000L))
+#define PERF_TO_MS(b,a,p) (UINT)(((b).QuadPart - (a).QuadPart) / ((p).QuadPart / 1000L))
 
   //removed for Boost compat
 DLLIMPORT extern CtiLogger   dout;              // From proclog.dll

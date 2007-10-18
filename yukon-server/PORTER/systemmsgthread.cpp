@@ -7,11 +7,14 @@
 * Author: Jess Otteson
 *
 * CVS KEYWORDS:
-* REVISION     :  $Revision: 1.3 $
-* DATE         :  $Date: 2007/06/25 18:59:53 $
+* REVISION     :  $Revision: 1.4 $
+* DATE         :  $Date: 2007/10/18 21:12:18 $
 *
 * HISTORY      :
 * $Log: systemmsgthread.cpp,v $
+* Revision 1.4  2007/10/18 21:12:18  jotteson
+* Fix for bug in timing code that makes debugging Dispatch difficult.
+*
 * Revision 1.3  2007/06/25 18:59:53  mfisher
 * added thread names
 *
@@ -47,7 +50,7 @@ static LARGE_INTEGER perfFrequency;
 using namespace std;
 
 #ifndef PERF_TO_MS
-    #define PERF_TO_MS(b,a,p) ((UINT)((b).QuadPart - (a).QuadPart) / ((UINT)(p).QuadPart / 1000L))
+    #define PERF_TO_MS(b,a,p) (UINT)(((b).QuadPart - (a).QuadPart) / ((p).QuadPart / 1000L))
 #endif
 
 namespace Cti {
