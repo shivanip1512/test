@@ -54,7 +54,7 @@
 		<table width="100%" class="titleTable">
 			<tr>
 				<td>
-					Assigned CBC Objects
+					Restricted CBC Objects
 				</td>
 				<td align="right">
 					<span class="pickerLink">

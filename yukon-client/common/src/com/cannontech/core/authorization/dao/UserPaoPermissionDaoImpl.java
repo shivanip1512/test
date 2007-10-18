@@ -9,6 +9,7 @@ import org.springframework.jdbc.core.RowMapper;
 
 import com.cannontech.core.authorization.model.PaoPermission;
 import com.cannontech.core.authorization.model.UserPaoPermission;
+import com.cannontech.core.authorization.support.AuthorizationResponse;
 import com.cannontech.core.authorization.support.Permission;
 import com.cannontech.database.data.lite.LiteYukonPAObject;
 import com.cannontech.database.data.lite.LiteYukonUser;
@@ -38,7 +39,7 @@ public class UserPaoPermissionDaoImpl implements PaoPermissionDao<LiteYukonUser>
         return this.getPermissionsForPao(user.getUserID(), pao.getYukonID());
     }
 
-    public boolean hasPermissionForPao(LiteYukonUser user, LiteYukonPAObject pao,
+    public AuthorizationResponse hasPermissionForPao(LiteYukonUser user, LiteYukonPAObject pao,
             Permission permission) {
         return this.isHasPermissionForPao(user.getUserID(), pao.getYukonID(), permission);
     }
@@ -89,26 +90,31 @@ public class UserPaoPermissionDaoImpl implements PaoPermissionDao<LiteYukonUser>
         throw new UnsupportedOperationException("Not implemented for users");
     }
 
-    public boolean hasPermissionForPao(List<LiteYukonUser> itList, LiteYukonPAObject pao,
+    public AuthorizationResponse hasPermissionForPao(List<LiteYukonUser> itList, LiteYukonPAObject pao,
             Permission permission) {
         throw new UnsupportedOperationException("Not implemented for users");
     }
 
-    private boolean isHasPermissionForPao(int userId, int paoId, Permission permission) {
+    private AuthorizationResponse isHasPermissionForPao(int userId, int paoId, Permission permission) {
+        String sql;
+        sql = "select allow from UserPaoPermission where userid = ? and paoid = ? " + "and permission = ?";
 
-        String sql = "select count(*) from UserPaoPermission where userid = ? and paoid = ? "
-                + "and permission = ?";
-
-        int count = jdbcTemplate.queryForInt(sql, new Object[] { userId, paoId,
-                permission.toString() });
-
-        return count > 0;
+        List count = jdbcTemplate.queryForList(sql, new Object[] { userId, paoId,
+                permission.toString() }, String.class);
+        
+        if ( count.size() == 0 )
+            return AuthorizationResponse.UNKNOWN;
+        
+        if( count.contains( new String("true")) )
+            return AuthorizationResponse.AUTHORIZED;
+        else
+            return AuthorizationResponse.UNAUTHORIZED;
     }
 
     @SuppressWarnings("unchecked")
     private List<PaoPermission> getPermissions(int userId) {
 
-        String sql = "select userPaoPermissionId, userid, paoid, permission from UserPaoPermission "
+        String sql = "select userPaoPermissionId, userid, paoid, permission, allow from UserPaoPermission "
                 + "where userid = ?";
         List<PaoPermission> uppList = jdbcTemplate.query(sql,
                                                          new Object[] { userId },
@@ -119,7 +125,7 @@ public class UserPaoPermissionDaoImpl implements PaoPermissionDao<LiteYukonUser>
     @SuppressWarnings("unchecked")
     private List<PaoPermission> getPermissionsForPao(int userId, int paoId) {
 
-        String sql = "select userPaoPermissionId, userid, paoid, permission from UserPaoPermission "
+        String sql = "select userPaoPermissionId, userid, paoid, permission, allow from UserPaoPermission "
                 + "where userid = ? and paoid = ?";
         List<PaoPermission> uppList = jdbcTemplate.query(sql,
                                                          new Object[] { userId, paoId },
@@ -131,8 +137,8 @@ public class UserPaoPermissionDaoImpl implements PaoPermissionDao<LiteYukonUser>
 
         int id = nextValueHelper.getNextValue("userpaopermission");
 
-        String sql = "insert into UserPaoPermission values (?,?,?,?)";
-        jdbcTemplate.update(sql, new Object[] { id, userId, paoId, permission.toString() });
+        String sql = "insert into UserPaoPermission values (?,?,?,?,?)";
+        jdbcTemplate.update(sql, new Object[] { id, userId, paoId, permission.toString(), new Boolean( !permission.getNotInTableResponse() ).toString() });
     }
     
 
@@ -156,6 +162,7 @@ public class UserPaoPermissionDaoImpl implements PaoPermissionDao<LiteYukonUser>
             upp.setUserId(rs.getInt("userId"));
             upp.setPaoId(rs.getInt("paoId"));
             upp.setPermission(Permission.valueOf(rs.getString("permission")));
+            upp.setAllow(rs.getString("allow"));
 
             return upp;
         }

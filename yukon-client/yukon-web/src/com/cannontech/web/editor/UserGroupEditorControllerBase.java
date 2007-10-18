@@ -118,7 +118,7 @@ public abstract class UserGroupEditorControllerBase<T> extends MultiActionContro
         String cbcPaoIdList = request.getParameter("cbcPaoIdList");
         T group = getAffected(request);
         boolean lm = editorService.savePermissions(group, this.getPaoIdList(paoIdList),Permission.LM_VISIBLE);
-        boolean cbc = editorService.addPermissions(group, this.getPaoIdList(cbcPaoIdList),Permission.PAO_VISIBLE);
+        boolean cbc = editorService.addPermissions(group, this.getPaoIdList(cbcPaoIdList),Permission.PAO_DENY_VISIBLE);
         if ( lm && cbc) {
             return new ModelAndView(new TextView("Save Successful"));
         }
@@ -128,7 +128,7 @@ public abstract class UserGroupEditorControllerBase<T> extends MultiActionContro
 
     protected void putPaosInModel(ModelAndView mav, T it) {
         List<LiteYukonPAObject> paoList = editorService.getPaos(it, Permission.LM_VISIBLE);
-        List<LiteYukonPAObject> cbcPaoList = editorService.getPaos(it, Permission.PAO_VISIBLE);
+        List<LiteYukonPAObject> cbcPaoList = editorService.getPaos(it, Permission.PAO_DENY_VISIBLE);
         mav.addObject("paoList", getUltraLitePaoList(paoList));
         mav.addObject("cbcPaoList", getUltraLitePaoList(cbcPaoList));
         

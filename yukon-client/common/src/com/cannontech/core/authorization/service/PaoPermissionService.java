@@ -5,6 +5,7 @@ import java.util.Set;
 
 import com.cannontech.core.authorization.model.PaoPermission;
 import com.cannontech.core.authorization.model.UserGroupPermissionList;
+import com.cannontech.core.authorization.support.AuthorizationResponse;
 import com.cannontech.core.authorization.support.Permission;
 import com.cannontech.database.data.lite.LiteYukonGroup;
 import com.cannontech.database.data.lite.LiteYukonPAObject;
@@ -61,28 +62,28 @@ public interface PaoPermissionService {
      * @param user - User for the permission
      * @param pao - Pao for the permission
      * @param permission - Permission in question
-     * @return True if the user OR any of the groups the user is in have the
+     * @return AuthorizationResponse if the user OR any of the groups the user is in have the
      *         permission for the pao
      */
-    public boolean hasPermission(LiteYukonUser user, LiteYukonPAObject pao, Permission permission);
+    public AuthorizationResponse hasPermission(LiteYukonUser user, LiteYukonPAObject pao, Permission permission);
 
     /**
      * Method to determine if a group has a permission for a pao
      * @param group - Group to determine permission for
      * @param pao - Pao to determine permission for
      * @param permission - Permission in question
-     * @return True if the group has the permission for the pao
+     * @return AuthorizationResponse for the permission for the pao
      */
-    public boolean hasPermission(LiteYukonGroup group, LiteYukonPAObject pao, Permission permission);
+    public AuthorizationResponse hasPermission(LiteYukonGroup group, LiteYukonPAObject pao, Permission permission);
 
     /**
      * Method to determine if any group in the list has a permission for a pao
      * @param groupList - List of groups to determine permission for
      * @param pao - Pao to determine permission for
      * @param permission - Permission in question
-     * @return True if any group in the list has the permission for the pao
+     * @return AuthorizationResponse for the permission for the pao
      */
-    public boolean hasPermission(List<LiteYukonGroup> groupList, LiteYukonPAObject pao,
+    public AuthorizationResponse hasPermission(List<LiteYukonGroup> groupList, LiteYukonPAObject pao,
             Permission permission);
 
     /**
@@ -140,6 +141,14 @@ public interface PaoPermissionService {
      */
     public Set<Integer> getPaoIdsForUserPermission(LiteYukonUser user, Permission permission);
 
+    /**
+     * Method to get a list of pao ids for a given user and permission
+     * @param user - User to get pao ids for
+     * @param permission - Permission in question
+     * @return All pao ids with the given permission for the user and not the groups they are in.
+     */
+    public Set<Integer> getPaoIdsForUserPermissionNoGroup(LiteYukonUser user, Permission permission);    
+    
     /**
      * Method to get a list of pao ids for a given login group and permission
      * @param group - Group to get pao ids for

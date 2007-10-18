@@ -12,6 +12,7 @@ import org.springframework.jdbc.core.RowMapper;
 import com.cannontech.common.util.SqlStatementBuilder;
 import com.cannontech.core.authorization.model.GroupPaoPermission;
 import com.cannontech.core.authorization.model.PaoPermission;
+import com.cannontech.core.authorization.support.AuthorizationResponse;
 import com.cannontech.core.authorization.support.Permission;
 import com.cannontech.database.data.lite.LiteYukonGroup;
 import com.cannontech.database.data.lite.LiteYukonPAObject;
@@ -53,24 +54,25 @@ public class GroupPaoPermissionDaoImpl implements PaoPermissionDao<LiteYukonGrou
         return this.getPermissionsForPao(group.getGroupID(), pao.getYukonID());
     }
 
-    public boolean hasPermissionForPao(LiteYukonGroup group, LiteYukonPAObject pao,
+    public AuthorizationResponse hasPermissionForPao(LiteYukonGroup group, LiteYukonPAObject pao,
             Permission permission) {
-        return this.isHasPermissionForPao(String.valueOf(group.getGroupID()),
+        List<Integer> idList = new ArrayList<Integer>();
+        idList.add(new Integer(group.getGroupID()));
+        return this.isHasPermissionForPao(idList,
                                           pao.getYukonID(),
                                           permission);
     }
 
-    public boolean hasPermissionForPao(List<LiteYukonGroup> groupList, LiteYukonPAObject pao,
+    public AuthorizationResponse hasPermissionForPao(List<LiteYukonGroup> groupList, LiteYukonPAObject pao,
             Permission permission) {
-
+        //TODO
         List<Integer> idList = new ArrayList<Integer>();
         for (LiteYukonGroup group : groupList) {
+            
             idList.add(group.getGroupID());
         }
 
-        String groupIds = SqlStatementBuilder.convertToSqlLikeList(idList);
-
-        return this.isHasPermissionForPao(groupIds, pao.getYukonID(), permission);
+        return this.isHasPermissionForPao(idList, pao.getYukonID(), permission);
     }
 
     public void addPermission(LiteYukonGroup group, LiteYukonPAObject pao, Permission permission) {
@@ -128,7 +130,7 @@ public class GroupPaoPermissionDaoImpl implements PaoPermissionDao<LiteYukonGrou
     @SuppressWarnings("unchecked")
     private List<PaoPermission> getPermissions(String groupIds) {
 
-        String sql = "select groupPaoPermissionId, groupid, paoid, permission from GroupPaoPermission "
+        String sql = "select groupPaoPermissionId, groupid, paoid, permission, allow from GroupPaoPermission "
                 + "where groupid in (" + groupIds + ")";
         List<PaoPermission> gppList = jdbcTemplate.query(sql, new GroupPaoPermissionMapper());
         return gppList;
@@ -137,7 +139,7 @@ public class GroupPaoPermissionDaoImpl implements PaoPermissionDao<LiteYukonGrou
     @SuppressWarnings("unchecked")
     private List<PaoPermission> getPermissionsForPao(int groupId, int paoId) {
 
-        String sql = "select groupPaoPermissionId, groupid, paoid, permission from GroupPaoPermission "
+        String sql = "select groupPaoPermissionId, groupid, paoid, permission, allow from GroupPaoPermission "
                 + "where groupid = ? and paoid = ?";
         List<PaoPermission> gppList = jdbcTemplate.query(sql,
                                                          new Object[] { groupId, paoId },
@@ -145,22 +147,35 @@ public class GroupPaoPermissionDaoImpl implements PaoPermissionDao<LiteYukonGrou
         return gppList;
     }
 
-    private boolean isHasPermissionForPao(String groupIds, int paoId, Permission permission) {
+    private AuthorizationResponse isHasPermissionForPao(List<Integer> groupIdList, int paoId, Permission permission) {
 
-        String sql = "select count(*) from GroupPaoPermission where groupid in ( " + groupIds
+        String groupIds = SqlStatementBuilder.convertToSqlLikeList(groupIdList);
+        
+        String sql = "select allow from GroupPaoPermission where groupid in ( " + groupIds
                 + ") and paoid = ? " + "and permission = ?";
-
-        int count = jdbcTemplate.queryForInt(sql, new Object[] { paoId, permission.toString() });
-
-        return count > 0;
+       
+        List<String> count = jdbcTemplate.queryForList(sql, new Object[] { paoId, permission.toString() }, String.class);
+        
+        if ( count.size() == 0 )
+            return AuthorizationResponse.UNKNOWN;
+        //TODO
+        if( count.contains( new String("false")) )
+            return AuthorizationResponse.UNAUTHORIZED;
+        else{ 
+            for( String s : count )
+            {   //Not tested, need LM test
+                if( s.compareTo("true") != 0 )
+                    return AuthorizationResponse.UNKNOWN;
+            }
+            return AuthorizationResponse.AUTHORIZED;
+        }
     }
 
     private void addPermission(int groupId, int paoId, Permission permission) {
 
         int id = nextValueHelper.getNextValue("grouppaopermission");
-
-        String sql = "insert into GroupPaoPermission values (?,?,?,?)";
-        jdbcTemplate.update(sql, new Object[] { id, groupId, paoId, permission.toString() });
+        String sql = "insert into GroupPaoPermission values (?,?,?,?,?)";
+        jdbcTemplate.update(sql, new Object[] { id, groupId, paoId, permission.toString(), new Boolean( !permission.getNotInTableResponse() ).toString() });
 
     }
 
@@ -184,7 +199,7 @@ public class GroupPaoPermissionDaoImpl implements PaoPermissionDao<LiteYukonGrou
             gpp.setGroupId(rs.getInt("groupId"));
             gpp.setPaoId(rs.getInt("paoId"));
             gpp.setPermission(Permission.valueOf(rs.getString("permission")));
-
+            gpp.setAllow( rs.getString("allow"));
             return gpp;
         }
     }

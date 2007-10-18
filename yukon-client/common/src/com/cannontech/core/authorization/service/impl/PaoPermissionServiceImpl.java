@@ -9,6 +9,7 @@ import com.cannontech.core.authorization.dao.PaoPermissionDao;
 import com.cannontech.core.authorization.model.PaoPermission;
 import com.cannontech.core.authorization.model.UserGroupPermissionList;
 import com.cannontech.core.authorization.service.PaoPermissionService;
+import com.cannontech.core.authorization.support.AuthorizationResponse;
 import com.cannontech.core.authorization.support.Permission;
 import com.cannontech.core.dao.YukonGroupDao;
 import com.cannontech.database.data.lite.LiteYukonGroup;
@@ -77,18 +78,23 @@ public class PaoPermissionServiceImpl implements PaoPermissionService {
         userPaoPermissionDao.removeAllPermissions(userId);
     }
 
-    public boolean hasPermission(LiteYukonUser user, LiteYukonPAObject pao, Permission permission) {
-
+    public AuthorizationResponse hasPermission(LiteYukonUser user, LiteYukonPAObject pao, Permission permission) {
+//      TODO
     	if(permission.equals(Permission.ALLOWED_COMMAND)) {
     		// ALLOWED_COMMAND permission are always allowed
-    		return true;
+    		return AuthorizationResponse.AUTHORIZED;
     	}
     	
+
+        AuthorizationResponse ret = userPaoPermissionDao.hasPermissionForPao(user, pao, permission);        
+        if( ret != AuthorizationResponse.UNKNOWN)
+            return ret;
+
         // Get all groups that the user is in
         List<LiteYukonGroup> userGroups = groupDao.getGroupsForUser(user);
-
-        return userPaoPermissionDao.hasPermissionForPao(user, pao, permission)
-                || groupPaoPermissionDao.hasPermissionForPao(userGroups, pao, permission);
+        ret = groupPaoPermissionDao.hasPermissionForPao(userGroups, pao, permission);
+        
+        return ret;
     }
 
     public void addGroupPermission(LiteYukonGroup group, LiteYukonPAObject pao,
@@ -108,22 +114,22 @@ public class PaoPermissionServiceImpl implements PaoPermissionService {
         return groupPaoPermissionDao.getPermissionsForPao(group, pao);
     }
 
-    public boolean hasPermission(LiteYukonGroup group, LiteYukonPAObject pao, Permission permission) {
-    	
+    public AuthorizationResponse hasPermission(LiteYukonGroup group, LiteYukonPAObject pao, Permission permission) {
+    	//TODO
     	if(permission.equals(Permission.ALLOWED_COMMAND)) {
     		// ALLOWED_COMMAND permission are always allowed
-    		return true;
+    		return AuthorizationResponse.AUTHORIZED;
     	}
     	
     	return groupPaoPermissionDao.hasPermissionForPao(group, pao, permission);
     }
 
-    public boolean hasPermission(List<LiteYukonGroup> groupList, LiteYukonPAObject pao,
+    public AuthorizationResponse hasPermission(List<LiteYukonGroup> groupList, LiteYukonPAObject pao,
             Permission permission) {
-    	
+//      TODO
     	if(permission.equals(Permission.ALLOWED_COMMAND)) {
     		// ALLOWED_COMMAND permission are always allowed
-    		return true;
+    		return AuthorizationResponse.AUTHORIZED;
     	}
     	
         return groupPaoPermissionDao.hasPermissionForPao(groupList, pao, permission);
@@ -154,7 +160,16 @@ public class PaoPermissionServiceImpl implements PaoPermissionService {
 
         return paoIdSet;
     }
+    
+    public Set<Integer> getPaoIdsForUserPermissionNoGroup(LiteYukonUser user, Permission permission) {
 
+        // Get paos for user
+        List<Integer> userPaoIdList = userPaoPermissionDao.getPaosForPermission(user, permission);
+        Set<Integer> paoIdSet = new HashSet<Integer>(userPaoIdList);
+
+        return paoIdSet;
+    }
+    
     public Set<Integer> getPaoIdsForGroupPermission(LiteYukonGroup group, Permission permission) {
 
         // Get paos for group

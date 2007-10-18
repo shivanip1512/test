@@ -5,23 +5,29 @@ package com.cannontech.core.authorization.support;
  */
 public enum Permission {
 
-    READ_COMMAND("read command"), 
-    WRITE_COMMAND("write command"), 
-    CONTROL_COMMAND("control command"), 
-    READ_DISCONNECT_COMMAND("read disconnect command"), 
-    WRITE_DISCONNECT_COMMAND("write disconnect command"), 
-    OTHER_COMMAND("Unrecognized device command"), 
-    LM_VISIBLE("allow LM visibility"), 
-    ALLOWED_COMMAND("Allowed Command"),
-    PAO_VISIBLE("allow pao visibility");
+    READ_COMMAND("read command", false), 
+    WRITE_COMMAND("write command", false), 
+    CONTROL_COMMAND("control command", false), 
+    READ_DISCONNECT_COMMAND("read disconnect command", false), 
+    WRITE_DISCONNECT_COMMAND("write disconnect command", false), 
+    OTHER_COMMAND("Unrecognized device command", false), 
+    LM_VISIBLE("allow LM visibility", false), 
+    ALLOWED_COMMAND("Allowed Command", false),
+    PAO_DENY_VISIBLE("Disallow pao visibility", true);
 
     private final String description;
-
-    private Permission(String description) {
+    private final Boolean defaultAuth;
+    
+    private Permission(String description, Boolean defaultAuth) {
         this.description = description;
+        this.defaultAuth = defaultAuth;
     }
 
     public String getDescription() {
         return this.description;
+    }
+    
+    public Boolean getNotInTableResponse() {
+        return this.defaultAuth;
     }
 }

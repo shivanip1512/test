@@ -7,7 +7,8 @@ public class GroupPaoPermission implements PaoPermission {
     private int groupId;
     private int paoId;
     private Permission permission = null;
-
+    private boolean allow;
+    
     public int getId() {
         return groupId;
     }
@@ -41,6 +42,13 @@ public class GroupPaoPermission implements PaoPermission {
     }
 
     public String toString() {
-        return groupId + ", " + paoId + ", " + permission;
+        return groupId + ", " + paoId + ", " + permission + ", " + allow;
+    }
+    public boolean getAllow(){
+        return allow;
+    }
+    public void setAllow( String allow )
+    {
+        this.allow = Boolean.valueOf(allow);
     }
 }

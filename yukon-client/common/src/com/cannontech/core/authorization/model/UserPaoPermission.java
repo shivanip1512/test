@@ -7,6 +7,7 @@ public class UserPaoPermission implements PaoPermission {
     private int userId;
     private int paoId;
     private Permission permission = null;
+    private boolean allow;
 
     public int getId() {
         return userId;
@@ -41,6 +42,14 @@ public class UserPaoPermission implements PaoPermission {
     }
 
     public String toString() {
-        return userId + ", " + paoId + ", " + permission;
+        return userId + ", " + paoId + ", " + permission + ", " + allow;
+    }
+    public boolean getAllow()
+    {
+        return allow;
+    }
+    public void setAllow( String allow )
+    {
+        this.allow = Boolean.valueOf(allow);
     }
 }

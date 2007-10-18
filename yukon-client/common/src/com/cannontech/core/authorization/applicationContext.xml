@@ -213,16 +213,9 @@ http://www.springframework.org/schema/util http://www.springframework.org/schema
 			    </bean>
 			    
 			    
-			    <!-- Catch all - checks a given role property to determine authorization -->
-			    <bean class="com.cannontech.core.authorization.support.string.StringPermissionRoleAuthorization">
-			    	<property name="roleChecker">
-			    		<bean factory-bean="rolePropertyUserCheckerFactory" factory-method="createPropertyChecker">
-			    			<constructor-arg>
-			    				<util:constant static-field="com.cannontech.roles.application.CommanderRole.EXECUTE_MANUAL_COMMAND"/>
-			    			</constructor-arg>
-			    		</bean>
-			    	</property>
-			    </bean>
+			    <!-- Catch all - checks permissions default value -->			    
+			    <bean class="com.cannontech.core.authorization.support.pao.PaoDefaultAuthorization" />
+			    
         	</list>
         </property>
     </bean>
@@ -397,17 +390,9 @@ http://www.springframework.org/schema/util http://www.springframework.org/schema
 			    	<property name="permission" value="OTHER_COMMAND"/>
 			    </bean>
 			    
-			    
-			    <!-- Catch all - checks a given role property to determine authorization -->
-			    <bean class="com.cannontech.core.authorization.support.pao.PaoRoleAuthorization">
-			    	<property name="roleChecker">
-			    		<bean factory-bean="rolePropertyUserCheckerFactory" factory-method="createPropertyChecker">
-			    			<constructor-arg>
-			    				<util:constant static-field="com.cannontech.roles.application.CommanderRole.EXECUTE_MANUAL_COMMAND"/>
-			    			</constructor-arg>
-			    		</bean>
-			    	</property>
-			    </bean>
+			    <!-- Catch all - checks permissions default value -->	
+			    <bean class="com.cannontech.core.authorization.support.pao.PaoDefaultAuthorization" />
+			    			    
 		    </list>
 	    </property>
 	</bean>

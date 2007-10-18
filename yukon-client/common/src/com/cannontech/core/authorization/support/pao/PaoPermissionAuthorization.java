@@ -16,11 +16,8 @@ public class PaoPermissionAuthorization implements PaoAuthorization {
 
     public AuthorizationResponse isAuthorized(LiteYukonUser user, Permission permission,
             LiteYukonPAObject pao) {
-        if (paoPermissionService.hasPermission(user, pao, permission)) {
-            return AuthorizationResponse.AUTHORIZED;
-        } else {
-            return AuthorizationResponse.UNKNOWN;
-        }
+        return paoPermissionService.hasPermission(user, pao, permission);
+
     }
 
 }

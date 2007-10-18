@@ -3,6 +3,7 @@ package com.cannontech.core.authorization.dao;
 import java.util.List;
 
 import com.cannontech.core.authorization.model.PaoPermission;
+import com.cannontech.core.authorization.support.AuthorizationResponse;
 import com.cannontech.core.authorization.support.Permission;
 import com.cannontech.database.data.lite.LiteYukonPAObject;
 
@@ -57,7 +58,7 @@ public interface PaoPermissionDao<T> {
      * @param permission - Permission in question
      * @return True if the thing has the permission for the pao
      */
-    public boolean hasPermissionForPao(T it, LiteYukonPAObject pao, Permission permission);
+    public AuthorizationResponse hasPermissionForPao(T it, LiteYukonPAObject pao, Permission permission);
 
     /**
      * Method to determine if any of the things in the list have a given
@@ -68,7 +69,7 @@ public interface PaoPermissionDao<T> {
      * @return True if any of the things in the list have the permission for the
      *         pao
      */
-    public boolean hasPermissionForPao(List<T> itList, LiteYukonPAObject pao, Permission permission);
+    public AuthorizationResponse hasPermissionForPao(List<T> itList, LiteYukonPAObject pao, Permission permission);
 
     /**
      * Method to add a pao permission for a thing
