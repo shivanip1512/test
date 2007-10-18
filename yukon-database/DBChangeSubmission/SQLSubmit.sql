@@ -32,3 +32,11 @@ update BillingFileFormats, set FormatType = 'DAFFRON' where formatType = 'DAFRON
 /* Please make sure to change the insert statements for the creation scripts in 3.5 and head  
    To be 'DAFFRON' instead of 'DAFRON'  */
 /*end ************  Change misspelled vendor name SN 22071018 **********/
+
+
+/*start: Add to Head only -Thain*/
+
+alter table userPaoPermission add Allow varchar(5);
+alter table groupPaoPermission add Allow varchar(5);
+
+/*end*/
