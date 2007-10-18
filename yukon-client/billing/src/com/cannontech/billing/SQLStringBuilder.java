@@ -165,12 +165,24 @@ public class SQLStringBuilder
 		}
 		if( groupVector.size() > 0)
 		{
-            DeviceGroupService deviceGroupService = YukonSpringHook.getBean("deviceGroupService", DeviceGroupService.class);
-
-            Set<? extends DeviceGroup> deviceGroups = deviceGroupService.resolveGroupNames(groupVector);
-            String deviceGroupSqlWhereClause = deviceGroupService.getDeviceGroupSqlWhereClause(deviceGroups, "YPO.PAOBJECTID");
-  			String inCollectionGroup = deviceGroupSqlWhereClause;
-			whereClauses.add(inCollectionGroup);
+            String deviceGroupIdentity = null;
+            if( yukonPAObjectTable_from)
+                deviceGroupIdentity = "YUKONPAOBJECT.PAOBJECTID";
+            else if( deviceMeterGroup_from)
+                deviceGroupIdentity = "DEVICEMETERGROUP.DEVICEID";
+            else if ( device_from )
+                deviceGroupIdentity = "DEVICE.DEVICEID";
+            else if (deviceCarrierSettings_from )
+                deviceGroupIdentity = "DEVICECARRIERSETTINGS.DEVICEID";
+            
+            if( deviceGroupIdentity != null) {
+                DeviceGroupService deviceGroupService = YukonSpringHook.getBean("deviceGroupService", DeviceGroupService.class);
+        
+                Set<? extends DeviceGroup> deviceGroups = deviceGroupService.resolveGroupNames(groupVector);
+                String deviceGroupSqlWhereClause = deviceGroupService.getDeviceGroupSqlWhereClause(deviceGroups, deviceGroupIdentity);
+        		String inCollectionGroup = deviceGroupSqlWhereClause;
+        		whereClauses.add(inCollectionGroup);
+            }
 		}
 		if( point_from )
 		{
