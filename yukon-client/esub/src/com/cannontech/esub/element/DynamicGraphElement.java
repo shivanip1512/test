@@ -39,7 +39,7 @@ public class DynamicGraphElement extends LxAbstractRectangle implements DrawingE
 	
 	private static final String ELEMENT_ID = "dynamicGraph";
 		
-	private static final int CURRENT_VERSION = 1;
+	private static final int CURRENT_VERSION = 2;
 	private static final int INVALID_GRAPH_DEFINITION = -1;
 	private static final Dimension DEFAULT_SIZE = new Dimension(640,480);
 	private static final Color DEFAULT_COLOR = Color.white;

@@ -191,7 +191,7 @@ public class Editor extends JPanel {
     	
     					editElement(elem);
     				} catch (Exception e) {
-    					e.printStackTrace();
+    					CTILogger.error("Caught an exception in configureObject", e);
     				} finally { //make to always get back into not placing mode
     					elementPlacer.setIsPlacing(false);
     					getDrawing().getLxView().setCursor(Cursor.getPredefinedCursor(Cursor.DEFAULT_CURSOR));

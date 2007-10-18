@@ -91,7 +91,7 @@ public class TrendModel implements com.cannontech.graph.GraphDefines
 	//Dataset will be/should be the same size as trendSeries[]
 	// Left and Right (Primary and Secondary respectively) yAxis datasets.	 N/A
 //	private AbstractDataset [] dataset = null;
-	private TrendSerie trendSeries[] = null;
+	private TrendSerie trendSeries[] = new TrendSerie[0];
 	private java.util.Date startDate = null;
 	private java.util.Date	stopDate = null;
     

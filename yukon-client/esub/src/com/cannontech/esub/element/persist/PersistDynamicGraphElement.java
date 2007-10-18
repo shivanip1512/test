@@ -4,6 +4,7 @@ import java.io.IOException;
 import java.io.InputStream;
 import java.io.OutputStream;
 
+import com.cannontech.clientutils.CTILogger;
 import com.cannontech.esub.element.DrawingElement;
 import com.cannontech.esub.element.DynamicGraphElement;
 import com.loox.jloox.LxSaveUtils;
@@ -36,12 +37,16 @@ public class PersistDynamicGraphElement extends BasePersistElement  {
 					elem.setGraphDefinitionID(LxSaveUtils.readInt(in));
                 	elem.setTrendType(LxSaveUtils.readInt(in));
                 	elem.setDisplayPeriod(LxSaveUtils.readString(in));
-                    try {
-                        int events = LxSaveUtils.readInt(in);
-                        elem.setNumberOfEvents(events);
-                    } catch (Exception e){
-                        // ok if events doesn't exist - for backwards compatability
-                    }
+
+				}
+				break;
+				
+				case 2: {
+					elem.setGraphDefinitionID(LxSaveUtils.readInt(in));
+                	elem.setTrendType(LxSaveUtils.readInt(in));
+                	elem.setDisplayPeriod(LxSaveUtils.readString(in));
+                	elem.setNumberOfEvents(0);
+                	elem.setNumberOfEvents(LxSaveUtils.readInt(in));
 				}
 				break;
 				
