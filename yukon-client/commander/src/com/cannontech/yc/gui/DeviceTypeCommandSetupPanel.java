@@ -411,7 +411,7 @@ private javax.swing.JScrollPane getCategoryListScrollPane() {
 
 	protected BasicServerConnection getClientConnection()
 	{
-		return ConnPool.getInstance().getDefPorterConn();        
+		return ConnPool.getInstance().getDefDispatchConn();        
 	}
 
 /**

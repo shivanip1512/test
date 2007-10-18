@@ -465,6 +465,15 @@ constraintsCommandSetupPanel.gridheight = 6;
 		constraintsCommandSetupPanel.weighty = 1.0;
 		constraintsCommandSetupPanel.insets = new java.awt.Insets(5, 5, 5, 5);
 		add(getCommandSetupPanel(), constraintsCommandSetupPanel);
+        
+        // Make sure that when its time to display this panel, the focus starts
+        // in the top component
+        javax.swing.SwingUtilities.invokeLater(new Runnable() {
+            public void run() {
+                getLabelTextField().requestFocus();
+            }
+        });
+        
 	} catch (java.lang.Throwable ivjExc) {
 		handleException(ivjExc);
 	}
