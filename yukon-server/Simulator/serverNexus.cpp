@@ -27,6 +27,8 @@
 #include <boost/thread/mutex.hpp>
 #include <vector>
 
+
+
 using namespace std;
 
 boost::mutex io_mutex;
@@ -62,81 +64,95 @@ void worker(const int& s)
 //   ADDING CODE TO READ AND STORE GETKWH VALUES
 // ///////////////////////////////////////////////////////
 
+        //InitYukonBaseGlobals();                            // Load up the config file.
 
-
+        // Set default database connection params
+        setDatabaseParams(0, "msq15d.dll", "mn1db02\\server2005", "erooney", "erooney");
 
 
 /////////////////////////////////////////////
 //CHANGE THIS TO getConnection(0) !!!
 /////////////////////////////////////////////
 
-	//RWDBConnection conn = getConnection(0);
-	//RWDBDatabase myDbase   = conn.database();
+    
+	RWDBConnection conn = getConnection(0);
+	RWDBDatabase myDbase = conn.database();
 
 /////////////////////////////////////////////
 //CHECK TO SEE IF DB ALREADY EXISTS
 /////////////////////////////////////////////
 	
 
-	//if (!myDbase.isValid()) {
-    //    cout << "Could not connect.  Creating a new database..."<<endl;//myDbase.status().message() << endl;
 /////////////////////////////////////////////
 //CREATE A NEW DB IF NONE EXISTS
 /////////////////////////////////////////////
 
-
-// get the T-SQL script for the Pubs database
-//Dim pubsDB As SQLDMO.Database
-//Set pubsDB = SQLServer.Databases("pubs")
-//Print pubsDB.Script
-
-
-	//}
+	
 
     
-  //	if (!myDbase.isValid()) {
-   //     cout << "Still cannot connect to database.  Skipping database..."<<endl;//myDbase.status().message() << endl;
-	//}
-   // else{
-    
-    
+  	if (!myDbase.isValid()) {
+        cout << "Still cannot connect to database.  Skipping database..."<<endl;//myDbase.status().message() << endl;
+	}
+    else{
+
+        cout << "Connected to database."<<endl;
     
     
     /////////////////////////////////////////////
     //CREATE A SELECTOR AND A TABLE
     /////////////////////////////////////////////
     
-    //    RWDBSelector select1 = myDbase.selector();
+        RWDBSelector select1 = myDbase.selector();
     
-    //    RWDBTable GETKWH = myDbase.table("GETKWH");
+        RWDBTable GETKWH = myDbase.table("GETKWH");
     
     
     /////////////////////////////////////////////
     //SELECT THE DATA THAT YOU WANT
     /////////////////////////////////////////////
-    
-     //   select1.orderByDescending(GETKWH["KWH"]);
-    
-     //   select1 << GETKWH["KWH"];
+
+    RWDBInserter inserter = GETKWH.inserter();
+
+    inserter << "steering wheel" << 1001;
+    inserter.execute(conn);
+
+
+
+
+        if(select1.isValid()) {
+            cout<<"Selector is valid"<<endl;
+            select1.orderByDescending(GETKWH["KWH"]);
+        
+            select1 << GETKWH["KWH"];
+        }
+        else
+            cout<<"Selector is invalid"<<endl;
     
     
     /////////////////////////////////////////////
     //CREATE A READER
     /////////////////////////////////////////////
     
-     //   RWDBReader rdr1 = select1.reader();
+        RWDBReader rdr1 = select1.reader();
+
+        if (!rdr1()) //advance to first row and check for valid id
+            cout<<"RDR(): No such entry!"<<endl;
+
     
         //RWDBDateTime HIST_TIMESTAMP;
     
-     //   double newKwh = 0;
+        double newKwh = 0;
+
+        
     
     /////////////////////////////////////////////
     //PUT THE DATA INTO THE READER
     /////////////////////////////////////////////
     
-     //   rdr1();
-     //   rdr1 >> newKwh;
-   // }
+        rdr1();
+        rdr1 >> newKwh;
+        cout<<"FOUND KWH VALUE FROM DB OF: "<<newKwh<<endl;
+   }
 
 //**************************************DONE***************************************
 
