@@ -2,10 +2,11 @@ package com.cannontech.cbc.web;
 
 
 import com.cannontech.core.authorization.service.impl.PaoAuthorizationServiceImpl;
+
 import com.cannontech.core.authorization.support.Permission;
 import com.cannontech.database.data.lite.*;
 import com.cannontech.spring.YukonSpringHook;
-import com.cannontech.yukon.cbc.CBCArea;
+import com.cannontech.yukon.cbc.*;
 
 public class CacheFilterUserAccessFilter implements CacheFilter
 {
@@ -22,9 +23,27 @@ public class CacheFilterUserAccessFilter implements CacheFilter
      */
 	public boolean valid( Object o )
 	{
-		CBCArea a = (CBCArea)o;
-		LiteYukonPAObject obj = new LiteYukonPAObject(a.getPaoID(), a.getPaoName());
-        boolean ret = paoPermissionService.isAuthorized(user, Permission.PAO_DENY_VISIBLE, obj );
+        int id;
+        String name;
+        
+        //It is this way until StreamableCapObject is fixed. In the cache right now, the values in the parent are null.
+        if( o instanceof CBCArea)
+        {
+            id = ((CBCArea)o).getPaoID();
+            name = ((CBCArea)o).getPaoName();
+        }
+        else if( o instanceof CBCSpecialArea )
+        {
+            id = ((CBCSpecialArea)o).getPaoID();
+            name = ((CBCSpecialArea)o).getPaoName();           
+        }
+        else
+        {
+            return false;
+        }
+            
+        LiteYukonPAObject obj = new LiteYukonPAObject(id, name);
+        boolean ret = paoPermissionService.isAuthorized(user, Permission.PAO_VISIBLE, obj );
         return ret;
 	}
 	
