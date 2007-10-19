@@ -80,7 +80,7 @@ int CCU710::ReceiveMsg(unsigned char Data[], int &setccuNumber)
 
             EmetconWord newWord;
             int Function = 0;
-            Ctr = newWord.InsertWord(D_WORD,  _messageData, Function, mctNumber, Ctr);
+            Ctr = newWord.InsertWord(D_WORD,  _messageData, Function, mctNumber, Ctr, (getRepeaters()));
             _words[0]=newWord;
             _messageData[Ctr++] = 0xc3; 
 
@@ -103,7 +103,7 @@ int CCU710::ReceiveMsg(unsigned char Data[], int &setccuNumber)
 
             EmetconWord newWord;
             int Function = 0;
-            Ctr = newWord.InsertWord(D_WORD,  _messageData, Function, mctNumber, Ctr);
+            Ctr = newWord.InsertWord(D_WORD,  _messageData, Function, mctNumber, Ctr, (getRepeaters()));
             _words[0]=newWord;
             _messageData[Ctr++] = 0xc3; 
 
@@ -155,7 +155,7 @@ int CCU710::ReceiveMore(unsigned char Data[], int &setmctNumber, int counter)
     }
 
     EmetconWord oneWord;
-    oneWord.InsertWord(WordType, Data, WordFunction, 0, 0);
+    oneWord.InsertWord(WordType, Data, WordFunction, 0, 0, (getRepeaters()));
     oneWord.setWTF(WTF);
     _indexOfEnd += oneWord.getWordSize();
     _words[0]= oneWord;
@@ -165,7 +165,7 @@ int CCU710::ReceiveMore(unsigned char Data[], int &setmctNumber, int counter)
     if(_words[0].getWordType() == 2) {
         for(int i=0; i<InsertMore; i++) {
             EmetconWord anotherWord;
-            anotherWord.InsertWord(3, Data, WordFunction, 0, 0);
+            anotherWord.InsertWord(3, Data, WordFunction, 0, 0, (getRepeaters()));
             _indexOfEnd += anotherWord.getWordSize();
             _words[_indexOfWords]= anotherWord;
             _indexOfWords++;
@@ -445,7 +445,7 @@ void CCU710::CreateMessage(int MsgType, int WrdFnc, int mctNumber, int ccuNumber
 
             EmetconWord newWord;
             int Function = 0;
-            Ctr = newWord.InsertWord(D_WORD,  _outmessageData, Function, mctNumber, Ctr);
+            Ctr = newWord.InsertWord(D_WORD,  _outmessageData, Function, mctNumber, Ctr, (getRepeaters()));
             _words[0]=newWord;
             _outmessageData[Ctr++] = ack; 
 
@@ -466,7 +466,7 @@ void CCU710::CreateMessage(int MsgType, int WrdFnc, int mctNumber, int ccuNumber
 
             EmetconWord newWord;
             int Function = 0;
-            Ctr = newWord.InsertWord(D_WORD,  _outmessageData, Function, mctNumber, Ctr);
+            Ctr = newWord.InsertWord(D_WORD,  _outmessageData, Function, mctNumber, Ctr, (getRepeaters()));
             _words[0]=newWord;
             _outmessageData[Ctr++] = ack; 
 
@@ -484,7 +484,7 @@ void CCU710::CreateMessage(int MsgType, int WrdFnc, int mctNumber, int ccuNumber
 
             EmetconWord newWord;
             int Function = 0;
-            Ctr = newWord.InsertWord(D_WORD,  _outmessageData, Function, mctNumber, Ctr);
+            Ctr = newWord.InsertWord(D_WORD,  _outmessageData, Function, mctNumber, Ctr, (getRepeaters()));
             _words[0]=newWord;
             _outmessageData[Ctr++] = ack; 
         }
@@ -496,7 +496,7 @@ void CCU710::CreateMessage(int MsgType, int WrdFnc, int mctNumber, int ccuNumber
 
             EmetconWord newWord;
             int Function = 0;
-            Ctr = newWord.InsertWord(D_WORD,  _outmessageData, Function, mctNumber, Ctr);
+            Ctr = newWord.InsertWord(D_WORD,  _outmessageData, Function, mctNumber, Ctr, (getRepeaters()));
             _words[0]=newWord;
             _outmessageData[Ctr++] = ack; 
         }
@@ -508,7 +508,7 @@ void CCU710::CreateMessage(int MsgType, int WrdFnc, int mctNumber, int ccuNumber
 
             EmetconWord newWord;
             int Function = 0;
-            Ctr = newWord.InsertWord(D_WORD,  _outmessageData, Function, mctNumber, Ctr);
+            Ctr = newWord.InsertWord(D_WORD,  _outmessageData, Function, mctNumber, Ctr, (getRepeaters()));
             _words[0]=newWord;
             _outmessageData[Ctr++] = ack; 
         }
@@ -520,13 +520,13 @@ void CCU710::CreateMessage(int MsgType, int WrdFnc, int mctNumber, int ccuNumber
 
             EmetconWord newWord;
             int Function = 0;
-            Ctr = newWord.InsertWord(D_WORD,  _outmessageData, Function, mctNumber, Ctr);
+            Ctr = newWord.InsertWord(D_WORD,  _outmessageData, Function, mctNumber, Ctr, (getRepeaters()));
             _words[0]=newWord;
             _outmessageData[Ctr++] = ack;
 
             EmetconWord newWord2;
             Function = 0;
-            Ctr = newWord.InsertWord(D_WORD,  _outmessageData, Function, mctNumber, Ctr);
+            Ctr = newWord.InsertWord(D_WORD,  _outmessageData, Function, mctNumber, Ctr, (getRepeaters()));
             _words[1]=newWord;
             _outmessageData[Ctr++] = ack; 
         }
@@ -538,19 +538,19 @@ void CCU710::CreateMessage(int MsgType, int WrdFnc, int mctNumber, int ccuNumber
 
             EmetconWord newWord;
             int Function = 0;
-            Ctr = newWord.InsertWord(D_WORD,  _outmessageData, Function, mctNumber, Ctr);
+            Ctr = newWord.InsertWord(D_WORD,  _outmessageData, Function, mctNumber, Ctr, (getRepeaters()));
             _words[0]=newWord;
             _outmessageData[Ctr++] = ack;
 
             EmetconWord newWord2;
             Function = 0;
-            Ctr = newWord.InsertWord(D_WORD,  _outmessageData, Function, mctNumber, Ctr);
+            Ctr = newWord.InsertWord(D_WORD,  _outmessageData, Function, mctNumber, Ctr, (getRepeaters()));
             _words[1]=newWord;
             _outmessageData[Ctr++] = ack; 
 
             EmetconWord newWord3;
             Function = 0;
-            Ctr = newWord.InsertWord(D_WORD,  _outmessageData, Function, mctNumber, Ctr);
+            Ctr = newWord.InsertWord(D_WORD,  _outmessageData, Function, mctNumber, Ctr, (getRepeaters()));
             _words[2]=newWord;
             _outmessageData[Ctr++] = ack;
         }

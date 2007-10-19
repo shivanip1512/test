@@ -42,9 +42,9 @@ EmetconWord::EmetconWord()
 }
 
 // build a new word
-int EmetconWord::InsertWord(int Type, unsigned char * pMessageData, int WordFunc, int mctNumber, int Ctr)
+int EmetconWord::InsertWord(int Type, unsigned char * pMessageData, int WordFunc, int mctNumber, int Ctr, int Repeaters)
 {
-    //printf("\n REPEATERS: %d", repeaters);
+    //printf("\n REPEATERS VAR: %d \n", Repeaters);
 	_wordType = Type;
 	_wordFunction = WordFunc;
 
@@ -57,9 +57,8 @@ int EmetconWord::InsertWord(int Type, unsigned char * pMessageData, int WordFunc
 	if( _wordType == D_WORD ) 
 	{
 		_wordSize = 7;
-
         
-		pMessageData[Ctr++] = ((mctNumber >> 12) & 0x01) | 0xd0;   //beginning of d word
+		pMessageData[Ctr++] = ((mctNumber >> 12) & 0x01) | (Repeaters << 1) | 0xd0;   //beginning of d word
 		pMessageData[Ctr++] = (mctNumber >> 4) & 0xff;
 		pMessageData[Ctr++] = (mctNumber << 4) & 0xf0;   //data begins in second half of this byte
         pMessageData[Ctr++] = 0x0f;   // data
