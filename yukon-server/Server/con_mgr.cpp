@@ -6,8 +6,8 @@
 *
 * PVCS KEYWORDS:
 * ARCHIVE      :  $Archive:   Z:/SOFTWAREARCHIVES/YUKON/SERVER/con_mgr.cpp-arc  $
-* REVISION     :  $Revision: 1.9 $
-* DATE         :  $Date: 2006/07/18 21:19:18 $
+* REVISION     :  $Revision: 1.10 $
+* DATE         :  $Date: 2007/10/19 21:08:31 $
 *
 * Copyright (c) 1999, 2000, 2001 Cannon Technologies Inc. All rights reserved.
 *-----------------------------------------------------------------------------*/
@@ -24,6 +24,7 @@ using namespace std;  // get the STL into our namespace for use.  Do NOT use ios
 #include "collectable.h"
 #include "con_mgr.h"
 #include "msg_server_resp.h"
+#include "msg_cmd.h"
 
 
 
@@ -115,3 +116,17 @@ int CtiConnectionManager::WriteConnQue(CtiMessage *pMsg, unsigned millitimeout, 
     return Inherited::WriteConnQue(pWrite, millitimeout, cleaniftimedout);
 }
 
+void CtiConnectionManager::writeIncomingMessageToQueue(CtiMessage *msgPtr)
+{
+    if( msgPtr != NULL && msgPtr->isA() == MSG_COMMAND )
+    {
+        CtiCommandMsg *cmdMsg = (CtiCommandMsg *)msgPtr;
+
+        if( cmdMsg->getOperation() == CtiCommandMsg::AreYouThere )
+        {
+            setClientQuestionable(FALSE);
+        }
+    }
+
+    Inherited::writeIncomingMessageToQueue(msgPtr);
+}

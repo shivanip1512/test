@@ -8,8 +8,8 @@
 *
 * PVCS KEYWORDS:
 * ARCHIVE      :  $Archive:   Z:/SOFTWAREARCHIVES/YUKON/MESSAGE/INCLUDE/connection.h-arc  $
-* REVISION     :  $Revision: 1.15 $
-* DATE         :  $Date: 2006/02/10 16:18:44 $
+* REVISION     :  $Revision: 1.16 $
+* DATE         :  $Date: 2007/10/19 21:08:31 $
 *
 * Copyright (c) 1999, 2000, 2001 Cannon Technologies Inc. All rights reserved.
 *-----------------------------------------------------------------------------*/
@@ -91,6 +91,8 @@ protected:
          UINT     _localQueueAlloc        : 1;
       };
    };
+
+   virtual void writeIncomingMessageToQueue(CtiMessage *msgPtr);
 
 private:
     void cleanConnection();

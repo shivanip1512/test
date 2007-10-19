@@ -6,8 +6,8 @@
 *
 * PVCS KEYWORDS:
 * ARCHIVE      :  $Archive:   Z:/SOFTWAREARCHIVES/YUKON/SERVER/INCLUDE/con_mgr.h-arc  $
-* REVISION     :  $Revision: 1.9 $
-* DATE         :  $Date: 2006/09/26 14:14:26 $
+* REVISION     :  $Revision: 1.10 $
+* DATE         :  $Date: 2007/10/19 21:08:31 $
 *
 * Copyright (c) 1999, 2000, 2001 Cannon Technologies Inc. All rights reserved.
 *-----------------------------------------------------------------------------*/
@@ -51,6 +51,7 @@ protected:
       std::cout << "**** Connection Manager!!! *****" << endl;
    }
 
+   virtual void writeIncomingMessageToQueue(CtiMessage *msgPtr);
 public:
 
    typedef CtiConnection Inherited;
@@ -84,7 +85,6 @@ public:
    void setRequestId(int rid);
 
    int WriteConnQue(CtiMessage*, unsigned millitimeout = 0, bool cleaniftimedout = true, int payload_status = 0, string payload_string = string() );
-
 };
 
 #endif      // #ifndef __CON_MGR_H__

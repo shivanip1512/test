@@ -6,8 +6,8 @@
 *
 * PVCS KEYWORDS:
 * ARCHIVE      :  $Archive:   Z:/SOFTWAREARCHIVES/YUKON/DISPATCH/ctivangogh.cpp-arc  $
-* REVISION     :  $Revision: 1.171 $
-* DATE         :  $Date: 2007/10/18 21:12:18 $
+* REVISION     :  $Revision: 1.172 $
+* DATE         :  $Date: 2007/10/19 21:08:31 $
 *
 * Copyright (c) 1999, 2000, 2001 Cannon Technologies Inc. All rights reserved.
 *-----------------------------------------------------------------------------*/
@@ -1652,6 +1652,7 @@ void CtiVanGogh::VGTimedOperationThread()
 
             rwSleep(1000);
 
+            CtiTime start;
             purifyClientConnectionList();
             updateRuntimeDispatchTable();
             if( NULL != (pMulti = resetControlHours()) )
@@ -1661,6 +1662,13 @@ void CtiVanGogh::VGTimedOperationThread()
             }
 
             loadRTDB(false);                 // Refresh (if time says so) the memory objects
+            CtiTime stop;
+
+            if( stop.seconds() - start.seconds() > 5 )
+            {
+                CtiLockGuard<CtiLogger> doubt_guard(dout);
+                dout << "Timed operations took " << stop.seconds() - start.seconds() << " seconds to run." << endl;
+            }
         }
     }
     catch(RWxmsg& msg )

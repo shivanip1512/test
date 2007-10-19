@@ -6,8 +6,8 @@
 *
 * PVCS KEYWORDS:
 * ARCHIVE      :  $Archive:   Z:/SOFTWAREARCHIVES/YUKON/MESSAGE/connection.cpp-arc  $
-* REVISION     :  $Revision: 1.42 $
-* DATE         :  $Date: 2007/07/26 19:01:51 $
+* REVISION     :  $Revision: 1.43 $
+* DATE         :  $Date: 2007/10/19 21:08:31 $
 *
 * Copyright (c) 1999, 2000, 2001 Cannon Technologies Inc. All rights reserved.
 *-----------------------------------------------------------------------------*/
@@ -374,7 +374,8 @@ void CtiConnection::InThread()
 
                             _lastInQueueWrite = _lastInQueueWrite.now();    // Refresh the time...
 
-                            inQueue->putQueue(MsgPtr);
+                            writeIncomingMessageToQueue(MsgPtr);
+                            //inQueue->putQueue(MsgPtr);
                         }
                         else
                         {
@@ -609,7 +610,13 @@ void CtiConnection::OutThread()
     }
 }
 
-
+void CtiConnection::writeIncomingMessageToQueue(CtiMessage *msgPtr)
+{
+    if( msgPtr != NULL && inQueue != NULL )
+    {
+        inQueue->putQueue(msgPtr);
+    }
+}
 
 INT CtiConnection::ManageSocketError( RWSockErr& msg )
 {
