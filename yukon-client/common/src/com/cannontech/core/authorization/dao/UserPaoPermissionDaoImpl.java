@@ -44,8 +44,8 @@ public class UserPaoPermissionDaoImpl implements PaoPermissionDao<LiteYukonUser>
         return this.isHasPermissionForPao(user.getUserID(), pao.getYukonID(), permission);
     }
 
-    public void addPermission(LiteYukonUser user, LiteYukonPAObject pao, Permission permission) {
-        this.addPermission(user.getUserID(), pao.getYukonID(), permission);
+    public void addPermission(LiteYukonUser user, LiteYukonPAObject pao, Permission permission, boolean allow) {
+        this.addPermission(user.getUserID(), pao.getYukonID(), permission, allow);
     }
 
     public void removePermission(LiteYukonUser user, LiteYukonPAObject pao, Permission permission) {
@@ -133,12 +133,12 @@ public class UserPaoPermissionDaoImpl implements PaoPermissionDao<LiteYukonUser>
         return uppList;
     }
 
-    private void addPermission(int userId, int paoId, Permission permission) {
+    private void addPermission(int userId, int paoId, Permission permission, boolean allow) {
 
         int id = nextValueHelper.getNextValue("userpaopermission");
 
         String sql = "insert into UserPaoPermission values (?,?,?,?,?)";
-        jdbcTemplate.update(sql, new Object[] { id, userId, paoId, permission.toString(), new Boolean( !permission.getNotInTableResponse() ).toString() });
+        jdbcTemplate.update(sql, new Object[] { id, userId, paoId, permission.toString(), Boolean.toString(allow) });
     }
     
 

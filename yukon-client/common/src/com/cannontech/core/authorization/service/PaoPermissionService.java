@@ -41,7 +41,7 @@ public interface PaoPermissionService {
      * @param pao - Pao for the permission
      * @param permission - Permission to add
      */
-    public void addPermission(LiteYukonUser user, LiteYukonPAObject pao, Permission permission);
+    public void addPermission(LiteYukonUser user, LiteYukonPAObject pao, Permission permission, boolean allow);
 
     /**
      * Method to remove a user pao permission
@@ -114,8 +114,7 @@ public interface PaoPermissionService {
      * @param pao - Pao for the permission
      * @param permission - Permission to add
      */
-    public void addGroupPermission(LiteYukonGroup group, LiteYukonPAObject pao,
-            Permission permission);
+    public void addGroupPermission(LiteYukonGroup group, LiteYukonPAObject pao, Permission permission, boolean allow);
 
     /**
      * Method to remove a group pao permission

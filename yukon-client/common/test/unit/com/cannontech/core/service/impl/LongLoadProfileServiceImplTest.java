@@ -21,7 +21,6 @@ import com.cannontech.common.util.ScheduledExecutorMock;
 import com.cannontech.core.dao.DBPersistentDao;
 import com.cannontech.core.service.LongLoadProfileService;
 import com.cannontech.core.service.PorterQueueDataService;
-import com.cannontech.database.data.activity.ActivityLogActions;
 import com.cannontech.database.data.device.MCTBase;
 import com.cannontech.database.data.lite.LiteBase;
 import com.cannontech.database.data.lite.LiteYukonPAObject;

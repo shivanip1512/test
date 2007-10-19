@@ -24,7 +24,7 @@ public interface PaoPermissionEditorService<T> {
      * @param permission - Permission to save for each pao
      * @return True if save successful
      */
-    public boolean savePermissions(T it, List<Integer> idList, Permission permission);
+    public boolean savePermissions(T it, List<Integer> idList, Permission permission, boolean allow);
     
     /**
      * Method used to add the permission for each of the paos whose id is in
@@ -34,6 +34,6 @@ public interface PaoPermissionEditorService<T> {
      * @param permission - Permission to save for each pao
      * @return True if save successful
      */
-    public boolean addPermissions(T it, List<Integer> idList, Permission permission);
+    public boolean addPermissions(T it, List<Integer> idList, Permission permission, boolean allow);
 
 }

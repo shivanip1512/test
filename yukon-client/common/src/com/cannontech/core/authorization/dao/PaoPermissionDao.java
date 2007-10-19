@@ -77,7 +77,7 @@ public interface PaoPermissionDao<T> {
      * @param pao - Pao for the permission
      * @param permission - Permission to add
      */
-    public void addPermission(T it, LiteYukonPAObject pao, Permission permission);
+    public void addPermission(T it, LiteYukonPAObject pao, Permission permission, boolean allow);
 
     /**
      * Method to remove a pao permission for a thing

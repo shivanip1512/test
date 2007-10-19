@@ -3,7 +3,7 @@
 <%@ taglib prefix="form" uri="http://www.springframework.org/tags/form" %>
 <%@ taglib prefix="tags" tagdir="/WEB-INF/tags" %>
 
-<cti:standardPage title="User Assignment for Load Management Visibility" module="userlm">
+<cti:standardPage title="User Assignment for Yukon Visibility" module="userlm">
 <cti:standardMenu/>
 <cti:breadCrumbs>
     <cti:crumbLink url="/operator/Operations.jsp" title="Operations Home"  />

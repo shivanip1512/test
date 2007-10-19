@@ -56,10 +56,11 @@ if (allowCtlVal!=null) {
 		<table id="areaTable" width="98%" border="0" cellspacing="0" cellpadding="0" >
 <%
 	String css = "tableCell";
-	for( int i = 0; i < filterCapControlCache.getSpecialCbcAreas().size(); i++ ) {
+	List<CBCSpecialArea> areas = filterCapControlCache.getSpecialCbcAreas();
+	for( int i = 0; i < areas.size(); i++ ) {
 		css = ("tableCell".equals(css) ? "altTableCell" : "tableCell");
 	
-		CBCSpecialArea area = filterCapControlCache.getSpecialCbcAreas().get(i);
+		CBCSpecialArea area = areas.get(i);
 		List<SubStation> areaStations = filterCapControlCache.getSubstationsByArea(area.getPaoID());
 		CapBankDevice[] areaCapBanks = filterCapControlCache.getCapBanksByArea(area.getPaoID());
 	
@@ -70,9 +71,15 @@ if (allowCtlVal!=null) {
 		String trippedVars = CBCUtils.format( CBCUtils.calcTrippedVARS(areaCapBanks) );
 		String currPF = CBCDisplay.getPowerFactorText(CBCUtils.calcAvgPF(areaStations), true);
 		String estPF = CBCDisplay.getPowerFactorText(CBCUtils.calcAvgEstPF(areaStations), true);
-		String areaState = ((Boolean)(filterCapControlCache.getAreaStateMap().get(area.getPaoName())))?"ENABLED":"DISABLED";
-		if( area.getOvUvDisabledFlag() ){
-		areaState += "-V";
+		Boolean b = (Boolean)(filterCapControlCache.getAreaStateMap().get(area.getPaoName()));
+		String areaState;
+		if( b == null )// was here, this shouldn't ever appear
+			areaState = "UNKNOWN";
+		else
+			areaState = (b.booleanValue()?"ENABLED":"DISABLED");
+		if( area.getOvUvDisabledFlag() )
+		{
+			areaState += "-V";
 		}
 %>
 	        <tr class="<%=css%>">

@@ -97,7 +97,7 @@ public abstract class UserGroupEditorControllerBase<T> extends MultiActionContro
         	paoId = Integer.valueOf(paoIdString);
             if (!idList.contains(paoId)) {
                 idList.add(paoId);
-            }        	
+            }
         }
         else
         {
@@ -117,8 +117,8 @@ public abstract class UserGroupEditorControllerBase<T> extends MultiActionContro
         String paoIdList = request.getParameter("paoIdList");
         String cbcPaoIdList = request.getParameter("cbcPaoIdList");
         T group = getAffected(request);
-        boolean lm = editorService.savePermissions(group, this.getPaoIdList(paoIdList),Permission.LM_VISIBLE);
-        boolean cbc = editorService.addPermissions(group, this.getPaoIdList(cbcPaoIdList),Permission.PAO_DENY_VISIBLE);
+        boolean lm = editorService.savePermissions(group, this.getPaoIdList(paoIdList),Permission.LM_VISIBLE, true);
+        boolean cbc = editorService.addPermissions(group, this.getPaoIdList(cbcPaoIdList),Permission.PAO_VISIBLE, false);
         if ( lm && cbc) {
             return new ModelAndView(new TextView("Save Successful"));
         }
@@ -128,7 +128,7 @@ public abstract class UserGroupEditorControllerBase<T> extends MultiActionContro
 
     protected void putPaosInModel(ModelAndView mav, T it) {
         List<LiteYukonPAObject> paoList = editorService.getPaos(it, Permission.LM_VISIBLE);
-        List<LiteYukonPAObject> cbcPaoList = editorService.getPaos(it, Permission.PAO_DENY_VISIBLE);
+        List<LiteYukonPAObject> cbcPaoList = editorService.getPaos(it, Permission.PAO_VISIBLE);
         mav.addObject("paoList", getUltraLitePaoList(paoList));
         mav.addObject("cbcPaoList", getUltraLitePaoList(cbcPaoList));
         
@@ -177,7 +177,7 @@ public abstract class UserGroupEditorControllerBase<T> extends MultiActionContro
      * @param cbcIdList - List of paoIds to add to the view
      * @return Populated paoTable MAV
      */
-    protected ModelAndView getPaoTableMav(List<Integer> idList,List<Integer> cbcIdList ) {
+    protected ModelAndView getPaoTableMav(List<Integer> idList, List<Integer> cbcIdList ) {
         ModelAndView mav = new ModelAndView("paoTable.jsp");
 
         List<LiteYukonPAObject> paoList = new ArrayList<LiteYukonPAObject>();

@@ -65,7 +65,6 @@ public class GroupPaoPermissionDaoImpl implements PaoPermissionDao<LiteYukonGrou
 
     public AuthorizationResponse hasPermissionForPao(List<LiteYukonGroup> groupList, LiteYukonPAObject pao,
             Permission permission) {
-        //TODO
         List<Integer> idList = new ArrayList<Integer>();
         for (LiteYukonGroup group : groupList) {
             
@@ -75,8 +74,8 @@ public class GroupPaoPermissionDaoImpl implements PaoPermissionDao<LiteYukonGrou
         return this.isHasPermissionForPao(idList, pao.getYukonID(), permission);
     }
 
-    public void addPermission(LiteYukonGroup group, LiteYukonPAObject pao, Permission permission) {
-        this.addPermission(group.getGroupID(), pao.getYukonID(), permission);
+    public void addPermission(LiteYukonGroup group, LiteYukonPAObject pao, Permission permission, boolean allow) {
+        this.addPermission(group.getGroupID(), pao.getYukonID(), permission, allow);
     }
 
     public void removePermission(LiteYukonGroup group, LiteYukonPAObject pao, Permission permission) {
@@ -158,7 +157,7 @@ public class GroupPaoPermissionDaoImpl implements PaoPermissionDao<LiteYukonGrou
         
         if ( count.size() == 0 )
             return AuthorizationResponse.UNKNOWN;
-        //TODO
+        //TODO  test LM
         if( count.contains( new String("false")) )
             return AuthorizationResponse.UNAUTHORIZED;
         else{ 
@@ -171,11 +170,11 @@ public class GroupPaoPermissionDaoImpl implements PaoPermissionDao<LiteYukonGrou
         }
     }
 
-    private void addPermission(int groupId, int paoId, Permission permission) {
+    private void addPermission(int groupId, int paoId, Permission permission, boolean allow) {
 
         int id = nextValueHelper.getNextValue("grouppaopermission");
         String sql = "insert into GroupPaoPermission values (?,?,?,?,?)";
-        jdbcTemplate.update(sql, new Object[] { id, groupId, paoId, permission.toString(), new Boolean( !permission.getNotInTableResponse() ).toString() });
+        jdbcTemplate.update(sql, new Object[] { id, groupId, paoId, permission.toString(), Boolean.toString(allow) });
 
     }
 

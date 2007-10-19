@@ -66,8 +66,8 @@ public class PaoPermissionServiceImpl implements PaoPermissionService {
         return permissionList;
     }
 
-    public void addPermission(LiteYukonUser user, LiteYukonPAObject pao, Permission permission) {
-        userPaoPermissionDao.addPermission(user, pao, permission);
+    public void addPermission(LiteYukonUser user, LiteYukonPAObject pao, Permission permission, boolean allow) {
+        userPaoPermissionDao.addPermission(user, pao, permission, allow);
     }
 
     public void removePermission(LiteYukonUser user, LiteYukonPAObject pao, Permission permission) {
@@ -98,8 +98,8 @@ public class PaoPermissionServiceImpl implements PaoPermissionService {
     }
 
     public void addGroupPermission(LiteYukonGroup group, LiteYukonPAObject pao,
-            Permission permission) {
-        groupPaoPermissionDao.addPermission(group, pao, permission);
+            Permission permission, boolean allow) {
+        groupPaoPermissionDao.addPermission(group, pao, permission, allow);
     }
 
     public List<PaoPermission> getGroupPermissions(LiteYukonGroup group) {
@@ -115,7 +115,6 @@ public class PaoPermissionServiceImpl implements PaoPermissionService {
     }
 
     public AuthorizationResponse hasPermission(LiteYukonGroup group, LiteYukonPAObject pao, Permission permission) {
-    	//TODO
     	if(permission.equals(Permission.ALLOWED_COMMAND)) {
     		// ALLOWED_COMMAND permission are always allowed
     		return AuthorizationResponse.AUTHORIZED;
@@ -126,7 +125,6 @@ public class PaoPermissionServiceImpl implements PaoPermissionService {
 
     public AuthorizationResponse hasPermission(List<LiteYukonGroup> groupList, LiteYukonPAObject pao,
             Permission permission) {
-//      TODO
     	if(permission.equals(Permission.ALLOWED_COMMAND)) {
     		// ALLOWED_COMMAND permission are always allowed
     		return AuthorizationResponse.AUTHORIZED;

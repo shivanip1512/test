@@ -126,7 +126,7 @@ public class StarsAdminUtil {
 				ServerUtils.handleDBChangeMsg( grpSerial.getDBChangeMsgs(DBChangeMsg.CHANGE_TYPE_ADD)[0] );
                 
                 PaoPermissionService pService = (PaoPermissionService) YukonSpringHook.getBean("paoPermissionService");
-                pService.addPermission(new LiteYukonUser(energyCompany.getUserID()), new LiteYukonPAObject(grpSerial.getPAObjectID().intValue()), Permission.LM_VISIBLE);
+                pService.addPermission(new LiteYukonUser(energyCompany.getUserID()), new LiteYukonPAObject(grpSerial.getPAObjectID().intValue()), Permission.LM_VISIBLE, true);
 			}
 			else if (routeID > 0 || energyCompany.getDefaultRouteID() > 0) {
 				if (routeID < 0) routeID = 0;

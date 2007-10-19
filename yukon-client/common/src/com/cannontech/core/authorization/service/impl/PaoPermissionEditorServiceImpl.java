@@ -41,23 +41,23 @@ public class PaoPermissionEditorServiceImpl<T> implements PaoPermissionEditorSer
         return paos;
     }
 
-    public boolean savePermissions(T group, List<Integer> idList, Permission permission) {
+    public boolean savePermissions(T group, List<Integer> idList, Permission permission, boolean allow) {
 
         // Remove existing pao permissions
         permissionDao.removeAllPermissions(group);
 
         // Add new pao permissions
         for (Integer id : idList) {
-            permissionDao.addPermission(group, new LiteYukonPAObject(id), permission);
+            permissionDao.addPermission(group, new LiteYukonPAObject(id), permission, allow);
         }
 
         return true;
     }
-    public boolean addPermissions(T group, List<Integer> idList, Permission permission) {
+    public boolean addPermissions(T group, List<Integer> idList, Permission permission, boolean allow) {
 
         // Add new pao permissions
         for (Integer id : idList) {
-            permissionDao.addPermission(group, new LiteYukonPAObject(id), permission);
+            permissionDao.addPermission(group, new LiteYukonPAObject(id), permission, allow);
         }
 
         return true;

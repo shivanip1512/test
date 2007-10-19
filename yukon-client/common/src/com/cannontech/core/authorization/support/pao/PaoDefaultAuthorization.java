@@ -9,7 +9,7 @@ public class PaoDefaultAuthorization implements PaoAuthorization {
 
     public AuthorizationResponse isAuthorized(LiteYukonUser user,
             Permission permission, LiteYukonPAObject object) {
-        if( permission.getNotInTableResponse() )
+        if( permission.getDefault() )
             return AuthorizationResponse.AUTHORIZED;
         else
             return AuthorizationResponse.UNAUTHORIZED;

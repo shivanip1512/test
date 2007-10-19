@@ -13,7 +13,7 @@ public enum Permission {
     OTHER_COMMAND("Unrecognized device command", false), 
     LM_VISIBLE("allow LM visibility", false), 
     ALLOWED_COMMAND("Allowed Command", false),
-    PAO_DENY_VISIBLE("Disallow pao visibility", true);
+    PAO_VISIBLE("Disallow pao visibility", true);
 
     private final String description;
     private final Boolean defaultAuth;
@@ -27,7 +27,7 @@ public enum Permission {
         return this.description;
     }
     
-    public Boolean getNotInTableResponse() {
+    public Boolean getDefault() {
         return this.defaultAuth;
     }
 }
