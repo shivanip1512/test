@@ -119,7 +119,7 @@ public class FilterCapControlCacheImpl implements FilterCapControlCache, CapCont
 		if ( filter.valid(area) )
 			return cache.getCapBanksBySubStation(sub);
 		else
-			return null;
+			return new ArrayList<CapBankDevice>();
 	}
 
 	public StreamableCapObject getCapControlPAO(Integer paoID) {
@@ -129,7 +129,7 @@ public class FilterCapControlCacheImpl implements FilterCapControlCache, CapCont
 
 	public List<CBCArea> getCbcAreas() {
 		List<CBCArea> aList = cache.getCbcAreas();
-		List<CBCArea> retList = new ArrayList<CBCArea>();
+		List<CBCArea> retList = new ArrayList<CBCArea>(aList.size());
 		
 		for( CBCArea a : aList ){
 			if ( filter.valid(a) )
@@ -147,21 +147,21 @@ public class FilterCapControlCacheImpl implements FilterCapControlCache, CapCont
 			return null;
 	}
 
-	public Feeder[] getFeedersByArea(Integer areaID) {
+	public List<Feeder> getFeedersByArea(Integer areaID) {
 		CBCArea area = cache.getCBCArea(areaID);
 		if ( filter.valid(area) )
 			return cache.getFeedersByArea(areaID);
 		else
-			return null;
+			return new ArrayList<Feeder>();
 	}
 
-	public Feeder[] getFeedersBySubBus(Integer subBusID) {
+	public List<Feeder> getFeedersBySubBus(Integer subBusID) {
 		int id = cache.getParentAreaID(subBusID);
 		CBCArea area = cache.getCBCArea(id);
 		if ( filter.valid(area) )
 			return cache.getFeedersBySubBus(subBusID);
 		else
-			return null;
+			return new ArrayList<Feeder>();
 	}
 
 	public List<Feeder> getFeedersBySubStation(SubStation sub) {
@@ -170,7 +170,7 @@ public class FilterCapControlCacheImpl implements FilterCapControlCache, CapCont
 		if ( filter.valid(area) )
 			return cache.getFeedersBySubStation(sub);
 		else
-			return null;
+			return new ArrayList<Feeder>();
 	}
 
 	public LiteWrapper[] getOrphanedCBCs() {
@@ -208,7 +208,7 @@ public class FilterCapControlCacheImpl implements FilterCapControlCache, CapCont
 
 	public List<CBCSpecialArea> getSpecialCbcAreas() {
 		List<CBCSpecialArea> aList = cache.getSpecialCbcAreas();
-		List<CBCSpecialArea> retList = new ArrayList<CBCSpecialArea>();
+		List<CBCSpecialArea> retList = new ArrayList<CBCSpecialArea>(aList.size());
 		
 		for( CBCSpecialArea a : aList ){
 			if ( filter.valid(a) )
@@ -231,7 +231,7 @@ public class FilterCapControlCacheImpl implements FilterCapControlCache, CapCont
 		if ( filter.valid(area) )
 			return cache.getSubBusesByArea(areaId);
 		else
-			return null;
+			return new ArrayList<SubBus>();
 	}
 
 	public List<SubBus> getSubBusesBySubStation(SubStation sub) {
@@ -240,7 +240,7 @@ public class FilterCapControlCacheImpl implements FilterCapControlCache, CapCont
 		if ( filter.valid(area) )
 			return cache.getSubBusesBySubStation(sub);
 		else
-			return null;	
+			return new ArrayList<SubBus>();	
 	}
 
 	public SubStation getSubstation(Integer subId) {
@@ -258,7 +258,7 @@ public class FilterCapControlCacheImpl implements FilterCapControlCache, CapCont
 		if ( filter.valid(area) )
 			return cache.getSubstationsByArea(areaId);
 		else
-			return null;
+			return new ArrayList<SubStation>();
 	}
 
 	public boolean isCBCArea(int id) {

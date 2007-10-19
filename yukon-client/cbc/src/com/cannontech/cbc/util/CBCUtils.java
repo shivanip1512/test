@@ -462,9 +462,10 @@ public final class CBCUtils {
      */
     public static double calcVarsAvailableForSubStations(List<SubStation> subs) {
         double returnVal = 0.0;
-        for (SubStation sub : subs) {
-            returnVal += calcVarsAvailable(sub);
-        }
+        if( subs != null )
+            for (SubStation sub : subs) {
+                returnVal += calcVarsAvailable(sub);
+            }
         return returnVal;
     }
     
@@ -490,9 +491,10 @@ public final class CBCUtils {
     
     public static double calcVarsDisabledForSubStations(List<SubStation> subs) {
         double returnVal = 0.0;
-        for (SubStation bus : subs) {
-            returnVal+= calcVarsDisabled(bus);
-        }
+        if( subs != null)
+            for (SubStation bus : subs) {
+                returnVal+= calcVarsDisabled(bus);
+            }
         return returnVal;
     }
     

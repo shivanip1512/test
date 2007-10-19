@@ -39,9 +39,9 @@ public interface CapControlDAO {
 	public abstract CapBankDevice getCapBankDevice(Integer capBankDeviceID);
 
 	/**
-	 * @return Feeder[]
+	 * @return List<Feeder>
 	 */
-	public abstract Feeder[] getFeedersBySubBus(Integer subBusID);
+	public abstract List<Feeder> getFeedersBySubBus(Integer subBusID);
     
     /**
      * @return List<Feeder>
@@ -117,7 +117,7 @@ public interface CapControlDAO {
 	 * Returns all Feeders for a given Area
 	 * 
 	 */
-	public abstract Feeder[] getFeedersByArea(Integer areaID);
+	public abstract List<Feeder> getFeedersByArea(Integer areaID);
 
 	/**
 	 * Find all the orphaned CBC's in the system. This requires a database hit since

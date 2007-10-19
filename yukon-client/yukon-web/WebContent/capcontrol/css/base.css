@@ -97,14 +97,8 @@ a.altTableCell:active, a.altTableCell:visited, a.altTableCell:link, a.altTableCe
 }
 
 .capbankTempMoveLink{
-	margin-left: 54px;
+	margin-left: 65px;
 	color: blue;
-	cursor: hand;
-}
-
-.capbankTempMoveSelected{
-	margin-left: 54px;
-	color: #ffa500;
 	cursor: hand;
 }
 

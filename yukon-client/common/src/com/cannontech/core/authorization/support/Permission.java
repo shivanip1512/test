@@ -13,7 +13,7 @@ public enum Permission {
     OTHER_COMMAND("Unrecognized device command", false), 
     LM_VISIBLE("allow LM visibility", false), 
     ALLOWED_COMMAND("Allowed Command", false),
-    PAO_VISIBLE("Disallow pao visibility", true);
+    PAO_VISIBLE("Pao visibility", true);
 
     private final String description;
     private final Boolean defaultAuth;

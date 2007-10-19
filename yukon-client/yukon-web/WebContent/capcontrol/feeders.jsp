@@ -6,10 +6,10 @@
 <%@ page import="com.cannontech.database.data.lite.LiteYukonPAObject" %>
 <%@ page import="com.cannontech.cbc.util.CBCUtils" %>
 
-<jsp:useBean id="capControlCache"
-    class="com.cannontech.cbc.web.CapControlCache"
-    type="com.cannontech.cbc.web.CapControlCache" scope="application"></jsp:useBean>
-
+<jsp:useBean id="filterCapControlCache"
+	class="com.cannontech.cbc.web.FilterCapControlCacheImpl"
+	type="com.cannontech.cbc.web.FilterCapControlCacheImpl" scope="application"></jsp:useBean>
+	
 <jsp:setProperty name="CtiNavObject" property="moduleExitPage" value="<%=request.getRequestURL().toString()%>"/>
 <!-- necessary DIV element for the OverLIB popup library -->
 <div id="overDiv" style="position:absolute; visibility:hidden; z-index:1000;"></div>
@@ -22,13 +22,13 @@
 	String popupEvent = DaoFactory.getAuthDao().getRolePropertyValue(user, WebClientRole.POPUP_APPEAR_STYLE);
     boolean showFlip = Boolean.valueOf(DaoFactory.getAuthDao().getRolePropertyValue(user, CBCSettingsRole.SHOW_FLIP_COMMAND)).booleanValue();
     if (popupEvent == null) popupEvent = "onmouseover";
-	SubStation substation = capControlCache.getSubstation( new Integer(subid) );
-	List<SubBus> subBuses = capControlCache.getSubBusesBySubStation(substation);
-	List<Feeder> feeders = capControlCache.getFeedersBySubStation(substation);
-	List<CapBankDevice> capBanks = capControlCache.getCapBanksBySubStation(substation);
+	SubStation substation = filterCapControlCache.getSubstation( new Integer(subid) );
+	List<SubBus> subBuses = filterCapControlCache.getSubBusesBySubStation(substation);
+	List<Feeder> feeders = filterCapControlCache.getFeedersBySubStation(substation);
+	List<CapBankDevice> capBanks = filterCapControlCache.getCapBanksBySubStation(substation);
 
 	boolean hasControl = CBCWebUtils.hasControlRights(session);
-	boolean special = capControlCache.isSpecialCBCArea(areaId);
+	boolean special = filterCapControlCache.isSpecialCBCArea(areaId);
 %>
 <script type="text/javascript"> 
 	function togglePopup( v ){

@@ -99,83 +99,77 @@ content before hand
 
       <div style="margin-left: 10%; margin-right: 10%;" >
 <cti:titledContainer title="Feeders Eligible for the Move" >
+
+
 <%
-String css = "tableCell";
+String css = "altTableCell";
 int z = 0;
 String indent = "\t";
 for( CBCArea area : allAreas )
-{	
+{
 
-	css = "altTableCell";
+	List<SubStation> stationsOnArea = filterCapControlCache.getSubstationsByArea( area.getPaoID() );
+
+	
+	css = (css.compareTo("tableCell") == 0)?"altTableCell":"tableCell";
 	%>
 	
+	<div>		
+	<input type="image" id="chkBxArea<%=z%>"
+		src="images/nav-plus.gif"
+		onclick="showDiv( 'areaId<%=z %>' );toggleImg( 'chkBxArea<%=z%>'); return false;">
+	<%=area.getPaoName() %></input>
+
+
+	<div class="<%=css%>" style="display:none" id="areaId<%=z %>">
+	
+	<% for( SubStation station : stationsOnArea ){
+		List<SubBus> subsOnStation = filterCapControlCache.getSubBusesBySubStation(station);
+		css = (css.compareTo("tableCell") == 0)?"altTableCell":"tableCell";
+	%>
 		<div>		
-		<input type="image" id="chkBxArea<%=z%>"
+		<input class="lIndent" type="image" id="chkBxStation<%=station.getCcId()%>"
 			src="images/nav-plus.gif"
-			onclick="showDiv( 'areaId<%=z %>' );toggleImg( 'chkBxArea<%=z%>'); return false;">
-		<%=area.getPaoName() %>
-
+			onclick="showDiv( 'stationId<%=station.getCcId() %>' );toggleImg( 'chkBxStation<%=station.getCcId()%>'); return false;">
+		<%=station.getCcName() %></input>
 	
-		<div class="<%=css%>" style="display:none" id="areaId<%=z %>">
-	<%
-	List<SubStation> areaStations = filterCapControlCache.getSubstationsByArea(area.getPaoID());
-	if( areaStations.size() <= 0 ) continue;
-	for( SubStation s : areaStations )
-	{
-
-		List<SubBus> subsOnStation = filterCapControlCache.getSubBusesBySubStation( s );
 	
-		if( subsOnStation.size() <= 0 ) continue;
-		
-		css = "tableCell";
-		%>
-		
-			<div>		
-			<input type="image" id="chkBxStation<%=z%>"
-				src="images/nav-plus.gif"
-				onclick="showDiv( 'stationId<%=z %>' );toggleImg( 'chkBxStation<%=z%>'); return false;">
-			<%=s.getPaoName() %>
-	
-		
-			<div class="<%=css%>" style="display:none" id="stationId<%=z %>">
-		<%
-			for( int i = 0; i < subsOnStation.size(); i++ )
+		<div class="<%=css%>" style="display:none" id="stationId<%=station.getCcId() %>">
+			<%	
+			for( SubBus subBus : subsOnStation )
 			{
-				SubBus subBus = subsOnStation.get(i);	
-				Feeder[] feeders = filterCapControlCache.getFeedersBySubBus(subBus.getCcId());
-				css = "altTableCell";
-				if( feeders.length <= 0 ) continue;
-		%>
-	
-			<div>
-			<input class="lIndent" type="image" id="chkBxSub<%=i + "_" + z%>"
-				src="images/nav-plus.gif"
-				onclick="showDiv( 'subId<%=i + "_" + z%>' );toggleImg('chkBxSub<%=i + "_" + z%>'); return false;">
-				<%=CBCUtils.CBC_DISPLAY.getSubBusValueAt(subBus, CBCDisplay.SUB_NAME_COLUMN)%>
-			</input>
-			<div class="<%=css%>" style="display:none" id="subId<%=i + "_" + z%>" >
-		<%
-			for( int j = 0; j < feeders.length; j++ )
-			{
-				Feeder feeder = feeders[j];
-				if( feeder.getCcId().intValue() == oldfdrid )
-			continue;
-		%>
+				List<Feeder> feeders = filterCapControlCache.getFeedersBySubBus(subBus.getCcId());
+				css = (css.compareTo("tableCell") == 0)?"altTableCell":"tableCell";
+				
+			%>
+		
 				<div>
-				<input class="capbankTempMoveLink" type="radio" name="feeder" id="feederId<%=feeder.getCcId()%>" onclick="selectFeeder(<%=feeder.getCcId()%>);" >
-				<%=CBCUtils.CBC_DISPLAY.getFeederValueAt(feeder, CBCDisplay.FDR_NAME_COLUMN)%>
-				</input>
-				</div>			
-		<%	} %>
+				<input class="llIndent" type="image" id="chkBxSub<%=subBus.getCcId()%>"
+					src="images/nav-plus.gif"
+					onclick="showDiv( 'subId<%=subBus.getCcId()%>' );toggleImg('chkBxSub<%=subBus.getCcId()%>'); return false;">
+					<%=CBCUtils.CBC_DISPLAY.getSubBusValueAt(subBus, CBCDisplay.SUB_NAME_COLUMN) %></input>
+				
+				<div class="<%=css%>" style="display:none" id="subId<%=subBus.getCcId()%>" >
+			<%
+				for( Feeder feeder : feeders )
+				{
+					if( feeder.getCcId().intValue() == oldfdrid )
+						continue;
+			%>
+					<div>
+					<input class="capbankTempMoveLink" type="radio" name="feeder" id="feederId<%=feeder.getCcId()%>" onclick="selectFeeder(<%=feeder.getCcId()%>);" >
+					<%=CBCUtils.CBC_DISPLAY.getFeederValueAt(feeder, CBCDisplay.FDR_NAME_COLUMN) %></input>
+					</div>			
+			<%	} %>
+				</div></div>
+			<% } %>
 			</div></div>
 		<% } %>
 	</div></div>
-	<% } %>
-	</div>
-<% 
-z++;
-} 
-%>
+<% z++;
+	} %>
+	
+	
 	    </cti:titledContainer>
     </div>
 

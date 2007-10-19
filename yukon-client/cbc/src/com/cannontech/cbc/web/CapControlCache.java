@@ -22,7 +22,6 @@ import com.cannontech.database.db.capcontrol.*;
 import com.cannontech.database.db.state.StateGroupUtils;
 import com.cannontech.message.util.*;
 import com.cannontech.message.util.MessageEvent;
-import com.cannontech.spring.YukonSpringHook;
 import com.cannontech.web.lite.LiteWrapper;
 import com.cannontech.yukon.IServerConnection;
 import com.cannontech.yukon.cbc.*;
@@ -117,14 +116,13 @@ public class CapControlCache implements MessageListener, CapControlDAO {
     /**
      * @return Feeder[]
      */
-    public synchronized Feeder[] getFeedersBySubBus(Integer subBusID) {
+    public synchronized List<Feeder> getFeedersBySubBus(Integer subBusID) {
         SubBus subBus = getSubBus(subBusID);
-        Feeder[] retVal = new Feeder[0];
         
-        if( subBus != null ) {
-            retVal = subBus.getCcFeeders().toArray( retVal );
-        }
-        return retVal;
+        if( subBus != null )
+            return new ArrayList<Feeder>( subBus.getCcFeeders() );
+        else
+            return new ArrayList<Feeder>();
     }
     
     /**
@@ -301,19 +299,19 @@ public class CapControlCache implements MessageListener, CapControlDAO {
     /**
      * Returns all Feeders for a given Area
      */
-    public synchronized Feeder[] getFeedersByArea(Integer areaID) {
+    public synchronized List<Feeder> getFeedersByArea(Integer areaID) {
         List<SubBus> subs = getSubBusesByArea( areaID);
         if( subs == null ) {
             subs = new ArrayList<SubBus>();
         }
-        Vector<Feeder> allFeeders = new Vector<Feeder>(64);
+        List<Feeder> allFeeders = new ArrayList<Feeder>(64);
         for( int i = 0; i < subs.size(); i++ ) {
-            Feeder[] feeders = getFeedersBySubBus( subs.get(i).getCcId() );        
-            allFeeders.addAll( Arrays.asList(feeders) );
+            List<Feeder> feeders = getFeedersBySubBus( subs.get(i).getCcId() );        
+            allFeeders.addAll( feeders );
         }
     
         Collections.sort( allFeeders, CBCUtils.CCNAME_COMPARATOR );
-        return allFeeders.toArray( new Feeder[allFeeders.size()]);
+        return allFeeders;
     }
     
     /**

@@ -127,7 +127,7 @@ public class CBCTagHandler {
     private void removeTag( Tag tag ) throws Exception
     {
         CapControlCache cc = (CapControlCache)YukonSpringHook.getBean("cbcCache");
-        Feeder[] fList = null;
+        List<Feeder> fList = null;
         CapBankDevice[] cList = null;
         
         if( tag == null)
@@ -164,7 +164,7 @@ public class CBCTagHandler {
                     tagManager.removeTag(t, userName);
             }
         }
-        if( fList != null ){
+        if( fList.size() > 0 ){
             tagManager.removeTag(tag, userName);
             for( Feeder f : fList )
             {
@@ -193,7 +193,7 @@ public class CBCTagHandler {
     private void createTag(String tagDesc, String reason, Integer tagID) throws Exception 
     {
         CapControlCache cc = (CapControlCache)YukonSpringHook.getBean("cbcCache");
-        Feeder[] fList = null;
+        List<Feeder> fList = null;
         CapBankDevice[] cList = null;
         
         String refString = getReferenceString(tagDesc);
@@ -229,7 +229,7 @@ public class CBCTagHandler {
                     tagManager.createTag(lp.getPointID(),tagID,userName,reason,getReferenceString(cd.getCcId(), tagDesc),tagName);
                 }
             }
-            if( fList != null )
+            if( fList.size() > 0 )
             {
                 tagManager.createTag(point.getPointID(),tagID,userName,reason,refString,tagName);
                 for( Feeder f : fList )
