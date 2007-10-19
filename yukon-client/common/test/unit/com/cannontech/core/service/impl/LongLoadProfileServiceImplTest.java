@@ -7,6 +7,7 @@ import java.text.ParseException;
 import java.util.Date;
 import java.util.GregorianCalendar;
 import java.util.HashSet;
+import java.util.List;
 import java.util.Set;
 import java.util.concurrent.BlockingQueue;
 import java.util.concurrent.LinkedBlockingQueue;
@@ -142,6 +143,11 @@ public class LongLoadProfileServiceImplTest {
                         }
                     
                     };
+            }
+
+            public void performDBChangeBulk(List<DBPersistent> items, int transactionType) {
+                // TODO Auto-generated method stub
+                
             }
         });
         
