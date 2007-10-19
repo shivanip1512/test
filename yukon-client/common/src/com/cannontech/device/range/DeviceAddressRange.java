@@ -20,8 +20,8 @@ public class DeviceAddressRange
         new RangeBase( 100000, 2796201, "Valid range for MCT430A addresses is 100000 to 2796201");
         // and can not be 1398101" );
     
-    private static final RangeBase RANGE_MCT430S = 
-        new RangeBase( 100000, 2796201, "Valid range for MCT430S addresses is 100000 to 2796201");
+    private static final RangeBase RANGE_MCT430S4 = 
+        new RangeBase( 100000, 2796201, "Valid range for MCT430S4 addresses is 100000 to 2796201");
         // and can not be 1398101" );
 
     private static final RangeBase RANGE_MCT430SL = 
@@ -105,7 +105,7 @@ public class DeviceAddressRange
         
         if(deviceType_ == DeviceTypesFuncs.MCT430S4)
         {
-            return RANGE_MCT430S;    
+            return RANGE_MCT430S4;    
         }
         
         if(deviceType_ == DeviceTypesFuncs.MCT430SL)
