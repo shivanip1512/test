@@ -347,7 +347,7 @@ private javax.swing.JLabel getJLabelPhoneNumber() {
 	         cpg.anchor = java.awt.GridBagConstraints.WEST;
 	         cpg.fill = java.awt.GridBagConstraints.HORIZONTAL;
 	         cpg.gridwidth = 2;
-	         cpg.insets = new java.awt.Insets(10, 15, 10, 15);
+	         cpg.insets = new java.awt.Insets(26, 48, 10, 15);
 	         getJPanelCopyDevice().add(getJLabelRange(), cpg);
 				
 			// user code end
