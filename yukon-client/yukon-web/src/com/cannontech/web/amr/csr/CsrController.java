@@ -27,8 +27,10 @@ import com.cannontech.common.search.SearchResult;
 import com.cannontech.core.dao.DeviceDao;
 import com.cannontech.core.dao.RoleDao;
 import com.cannontech.database.data.device.DeviceTypesFuncs;
+import com.cannontech.database.data.lite.LiteYukonUser;
 import com.cannontech.roles.yukon.MultispeakRole;
 import com.cannontech.roles.operator.MeteringRole;
+import com.cannontech.util.ServletUtil;
 
 /**
  * Spring controller class for csr
@@ -152,13 +154,16 @@ public class CsrController extends MultiActionController {
 
         boolean disconnectSupported = DeviceTypesFuncs.isDisconnectEnabled(device);
         mav.addObject("disconnectSupported", disconnectSupported);
-
-        boolean deviceGroupEnabled = Boolean.parseBoolean(roleDao.getGlobalPropertyValue(MeteringRole.DEVICE_GROUP_ENABLED));
-        mav.addObject("deviceGroupsSupported", deviceGroupEnabled);
         
+        LiteYukonUser user = ServletUtil.getYukonUser(request);
+        
+        boolean deviceGroupEnabled = Boolean.parseBoolean(roleDao.getRolePropertyValue(user.getUserID(), MeteringRole.DEVICE_GROUP_ENABLED, "true"));
+        mav.addObject("deviceGroupsSupported", deviceGroupEnabled);
+
         boolean touSupported = DeviceTypesFuncs.isTouEnabled(device);
-        boolean touEnabled = Boolean.parseBoolean(roleDao.getGlobalPropertyValue(MeteringRole.TOU_ENABLED));
+        boolean touEnabled = Boolean.parseBoolean(roleDao.getRolePropertyValue(user.getUserID(), MeteringRole.TOU_ENABLED, "true"));
         mav.addObject("touSupported", (touSupported && touEnabled));
+
         
         return mav;
     }
