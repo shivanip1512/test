@@ -185,6 +185,7 @@ com.cannontech.clientutils.CTILogger.info("*** UPDATE Took " +
 
 	if( node != null )
 	{
+        node.setUserObject(lb);
 		nodeChanged( node );
 		return true;			
 	}
