@@ -1,10 +1,13 @@
 package com.cannontech.datagenerator.point;
 
+import java.util.Hashtable;
 import java.util.List;
+import java.util.Vector;
 
 import com.cannontech.clientutils.CTILogger;
 import com.cannontech.core.dao.DaoFactory;
 import com.cannontech.core.dao.PointDao;
+import com.cannontech.database.cache.DefaultDatabaseCache;
 import com.cannontech.database.data.device.DeviceTypesFuncs;
 import com.cannontech.database.data.lite.LitePoint;
 import com.cannontech.database.data.lite.LiteYukonPAObject;
@@ -26,7 +29,7 @@ import com.cannontech.yukon.IDatabaseCache;
  */
 public class LoadGroup_ControlPointCreate extends PointCreate
 {
-	java.util.Hashtable createPointHashtable = null;
+	Hashtable<Integer, CreatePointList> createPointHashtable = null;
 	private class CreatePointList
 	{
 		boolean dailyhistory = true;
@@ -37,25 +40,14 @@ public class LoadGroup_ControlPointCreate extends PointCreate
 		boolean controlCountdown = true;
 	}
 
-
-	/**
-	 * Constructor for LoadGroup_ControlPointCreate.
-	 */
-	public LoadGroup_ControlPointCreate()
-	{
-		super();
-	}
-
 	/**
 	 * @see com.cannontech.datagenerator.point.PointCreate#create()
 	 */
-	public boolean create()
-	{
+	public boolean create() {
 		//Points are going to be added to every load group.
 		CTILogger.info("Starting Load Group Point creation process...");
 
-		java.util.Vector devicesVector = new java.util.Vector(20);
-		getLoadGroupVector(devicesVector);
+		Vector<LiteYukonPAObject> devicesVector = getLoadGroupVector();
 
 		//create an object to hold all of our DBPersistant objects
 		SmartMultiDBPersistent multi = new SmartMultiDBPersistent();
@@ -65,11 +57,11 @@ public class LoadGroup_ControlPointCreate extends PointCreate
 	
 		int addCount = 0;
 		PointDao pointDao = DaoFactory.getPointDao();
-		for( int i = 0; i < devicesVector.size(); i++)
-		{
-			LiteYukonPAObject litePaobject = (LiteYukonPAObject)devicesVector.get(i);
+		
+		for (LiteYukonPAObject litePaobject: devicesVector) {
+	
 			int paobjectID = litePaobject.getLiteID();
-			CreatePointList createPoint = (CreatePointList)createPointHashtable.get(new Integer(paobjectID));
+			CreatePointList createPoint = createPointHashtable.get(new Integer(paobjectID));
 			
 			if( createPoint.dailyhistory)
 			{
@@ -141,11 +133,11 @@ public class LoadGroup_ControlPointCreate extends PointCreate
 			{
 			    int pointID = pointDao.getNextPointId();
 				multi.addDBPersistent(PointFactory.createAnalogPoint("CONTROL COUNTDOWN", 
-						new Integer(((LiteYukonPAObject)devicesVector.get(i)).getLiteID()),
+						new Integer(litePaobject.getLiteID()),
 						new Integer(pointID),
 						PointTypes.PT_OFFSET_CONTROL_COUNTDOWN,
 						PointUnits.UOMID_COUNTS));
-				CTILogger.info("Adding CONTROL_COUNTDOWN PointId " + pointID + " to Device ID" + devicesVector.get(i));
+				CTILogger.info("Adding CONTROL_COUNTDOWN PointId " + pointID + " to Device ID" + litePaobject.getYukonID());
 				addCount++;
 			}
 		}
@@ -187,17 +179,17 @@ public class LoadGroup_ControlPointCreate extends PointCreate
 	public boolean isPointCreated( com.cannontech.database.data.lite.LitePoint lp)
 	{
 		if( lp.getPointOffset() == PointTypes.PT_OFFSET_DAILY_HISTORY && lp.getPointType() == PointTypes.ANALOG_POINT)
-			((CreatePointList)createPointHashtable.get(new Integer(lp.getPaobjectID()))).dailyhistory = false;
+			createPointHashtable.get(new Integer(lp.getPaobjectID())).dailyhistory = false;
 		else if( lp.getPointOffset() == PointTypes.PT_OFFSET_MONTHLY_HISTORY && lp.getPointType() == PointTypes.ANALOG_POINT)
-			((CreatePointList)createPointHashtable.get(new Integer(lp.getPaobjectID()))).monthlyHistory = false;
+			createPointHashtable.get(new Integer(lp.getPaobjectID())).monthlyHistory = false;
 		else if( lp.getPointOffset() == PointTypes.PT_OFFSET_SEASONAL_HISTORY && lp.getPointType() == PointTypes.ANALOG_POINT)
-			((CreatePointList)createPointHashtable.get(new Integer(lp.getPaobjectID()))).seasonalHistory = false;
+			createPointHashtable.get(new Integer(lp.getPaobjectID())).seasonalHistory = false;
 		else if( lp.getPointOffset() == PointTypes.PT_OFFSET_ANNUAL_HISTORY && lp.getPointType() == PointTypes.ANALOG_POINT)
-			((CreatePointList)createPointHashtable.get(new Integer(lp.getPaobjectID()))).annualHistory = false;
+			createPointHashtable.get(new Integer(lp.getPaobjectID())).annualHistory = false;
 		else if( lp.getPointOffset() == 0 && lp.getPointType() == PointTypes.STATUS_POINT)
-			((CreatePointList)createPointHashtable.get(new Integer(lp.getPaobjectID()))).controlStatus = false;
+			createPointHashtable.get(new Integer(lp.getPaobjectID())).controlStatus = false;
 		else if( lp.getPointOffset() == PointTypes.PT_OFFSET_CONTROL_COUNTDOWN && lp.getPointType() == PointTypes.ANALOG_POINT)
-			((CreatePointList)createPointHashtable.get(new Integer(lp.getPaobjectID()))).controlCountdown = false;
+			createPointHashtable.get(new Integer(lp.getPaobjectID())).controlCountdown = false;
 			
 		return false;
 	}	
@@ -207,24 +199,21 @@ public class LoadGroup_ControlPointCreate extends PointCreate
 	 * Creation date: (4/22/2002 4:11:23 PM)
 	 * @return java.util.Vector
 	 */
-	protected void getLoadGroupVector(java.util.Vector deviceVector)
+	protected Vector<LiteYukonPAObject> getLoadGroupVector()
 	{
-		IDatabaseCache cache =
-			com.cannontech.database.cache.DefaultDatabaseCache.getInstance();
+		Vector<LiteYukonPAObject> loadGroups = new Vector<LiteYukonPAObject>();
+		IDatabaseCache cache = DefaultDatabaseCache.getInstance();
 	
 		synchronized (cache)
 		{
-			java.util.List groups = cache.getAllLoadManagement();
-			java.util.Collections.sort(groups, com.cannontech.database.data.lite.LiteComparators.liteYukonPAObjectIDComparator);
+			List<LiteYukonPAObject> groups = cache.getAllLoadManagement();
             PointDao pointDao = DaoFactory.getPointDao();
 
-			createPointHashtable = new java.util.Hashtable(groups.size());
+			createPointHashtable = new Hashtable<Integer, CreatePointList>(groups.size());
 			
-			for (int i = 0; i < groups.size(); i++)
-			{
-				LiteYukonPAObject litePaobject = ((LiteYukonPAObject)groups.get(i));
-				if( isDeviceValid( litePaobject ) )
-				{
+			for (LiteYukonPAObject litePaobject: groups) {
+
+				if( isDeviceValid( litePaobject ) ) {
 					int paobjectID = litePaobject.getLiteID();
 										
 					CreatePointList item = new CreatePointList();
@@ -239,11 +228,12 @@ public class LoadGroup_ControlPointCreate extends PointCreate
                     }
                     //makes a list of points devices to add control history points to
                     if(!foundPoint) {
-                        deviceVector.add(litePaobject);
+                        loadGroups.add(litePaobject);
                     }
 				}
 			}
-			CTILogger.info(deviceVector.size() + " Total Devices needing points added.");
+			CTILogger.info(loadGroups.size() + " Total Devices needing points added.");
 		}
+		return loadGroups;
 	}
 }

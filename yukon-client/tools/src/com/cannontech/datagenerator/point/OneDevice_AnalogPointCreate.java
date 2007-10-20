@@ -4,22 +4,21 @@ package com.cannontech.datagenerator.point;
  * Creation date: (1/10/2001 11:18:45 PM)
  * @author: 
  */
+import com.cannontech.clientutils.CTILogger;
 import com.cannontech.core.dao.DaoFactory;
 import com.cannontech.core.dao.PointDao;
+import com.cannontech.database.data.lite.LitePoint;
+import com.cannontech.database.data.lite.LiteYukonPAObject;
+import com.cannontech.database.data.multi.SmartMultiDBPersistent;
+import com.cannontech.database.data.point.AnalogPoint;
+import com.cannontech.database.data.point.PointUnits;
+import com.cannontech.database.db.point.PointAlarming;
 public class OneDevice_AnalogPointCreate extends PointCreate
 {
 	int deviceID = -1;
 	int createCount = 0;
-	/**
-	 * PowerFailPointCreate constructor comment.
-	 */
-	public OneDevice_AnalogPointCreate() 
-	{
-		super();
-	}
 
-	public OneDevice_AnalogPointCreate(int devID, int count) 
-	{
+	public OneDevice_AnalogPointCreate(int devID, int count) {
 		super();
 		deviceID = devID;
 		createCount = count;
@@ -31,14 +30,13 @@ public class OneDevice_AnalogPointCreate extends PointCreate
 	 * Creation date: (5/29/2001 9:13:14 AM)
 	 * @return boolean
 	 */
-	public boolean create() 
-	{
-		com.cannontech.clientutils.CTILogger.info("Starting One Device Analog Point creation process...");
+	public boolean create()  {
+		CTILogger.info("Starting One Device Analog Point creation process...");
 
-		com.cannontech.database.data.lite.LiteYukonPAObject litePaobject = DaoFactory.getPaoDao().getLiteYukonPAO(deviceID);
+		LiteYukonPAObject litePaobject = DaoFactory.getPaoDao().getLiteYukonPAO(deviceID);
 	
 		//create an object to hold all of our DBPersistant objects
-		com.cannontech.database.data.multi.SmartMultiDBPersistent multi = new com.cannontech.database.data.multi.SmartMultiDBPersistent();
+		SmartMultiDBPersistent multi = new SmartMultiDBPersistent();
 		
 		// if this is not set to false it will create its own PointIDs
 		multi.setCreateNewPAOIDs( false );
@@ -48,10 +46,10 @@ public class OneDevice_AnalogPointCreate extends PointCreate
 		for (int i = 1; i < createCount+1; i++)
 		{
 		    int pointID = pointDao.getNextPointId();
-			com.cannontech.clientutils.CTILogger.info("Adding PointId " + pointID + " to Device " + litePaobject.getPaoName());
+			CTILogger.info("Adding PointId " + pointID + " to Device " + litePaobject.getPaoName());
 			String pointType = "Analog";
 			
-			com.cannontech.database.data.point.AnalogPoint analogPoint = new com.cannontech.database.data.point.AnalogPoint();
+			AnalogPoint analogPoint = new AnalogPoint();
 			analogPoint.setPointID(new Integer(pointID));
 			analogPoint.getPoint().setPointType(pointType);
 			analogPoint.getPoint().setPointName( pointType + i);
@@ -66,16 +64,16 @@ public class OneDevice_AnalogPointCreate extends PointCreate
 			
 			// set POINTALARMING defaults
 			analogPoint.getPointAlarming().setPointID(new Integer(pointID));
-			analogPoint.getPointAlarming().setAlarmStates( analogPoint.getPointAlarming().DEFAULT_ALARM_STATES );
-			analogPoint.getPointAlarming().setExcludeNotifyStates( analogPoint.getPointAlarming().DEFAULT_EXCLUDE_NOTIFY );
+			analogPoint.getPointAlarming().setAlarmStates( PointAlarming.DEFAULT_ALARM_STATES );
+			analogPoint.getPointAlarming().setExcludeNotifyStates( PointAlarming.DEFAULT_EXCLUDE_NOTIFY );
 			analogPoint.getPointAlarming().setNotifyOnAcknowledge( new String("N") );
-			analogPoint.getPointAlarming().setNotificationGroupID(  new Integer(analogPoint.getPointAlarming().NONE_NOTIFICATIONID) );
-			analogPoint.getPointAlarming().setRecipientID(new Integer(analogPoint.getPointAlarming().NONE_NOTIFICATIONID));
+			analogPoint.getPointAlarming().setNotificationGroupID(  new Integer(PointAlarming.NONE_NOTIFICATIONID) );
+			analogPoint.getPointAlarming().setRecipientID(new Integer(PointAlarming.NONE_NOTIFICATIONID));
 			
 	
 			// set POINTUNIT defaults
 			analogPoint.getPointUnit().setPointID(new Integer(pointID));
-			analogPoint.getPointUnit().setUomID(new Integer(com.cannontech.database.data.point.PointUnits.UOMID_KW));
+			analogPoint.getPointUnit().setUomID(new Integer(PointUnits.UOMID_KW));
 			analogPoint.getPointUnit().setDecimalPlaces(new Integer(2));
 	
 			// set POINTANALOG defuaults
@@ -89,14 +87,22 @@ public class OneDevice_AnalogPointCreate extends PointCreate
 		boolean success = writeToSQLDatabase(multi);
 	
 		if( success )
-		{
-			com.cannontech.clientutils.CTILogger.info(addCount + " One Device Analog Points were processed and inserted Successfully");
-		}
+			CTILogger.info(addCount + " One Device Analog Points were processed and inserted Successfully");
 		else
-			com.cannontech.clientutils.CTILogger.info("One Device Analog Points failed insertion");
+			CTILogger.info("One Device Analog Points failed insertion");
 			
 		return success;
 	}
-	
-	
+
+	@Override
+	boolean isDeviceValid(LiteYukonPAObject litePaobject_) {
+		// this method is only implemented for completeness
+		return true;
+	}
+
+	@Override
+	boolean isPointCreated(LitePoint lp) {
+		// this method is only implemented for completeness
+		return false;
+	}
 }

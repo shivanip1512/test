@@ -1,11 +1,13 @@
 package com.cannontech.datagenerator.point;
 
+import java.util.List;
+import java.util.Vector;
+
 import com.cannontech.clientutils.CTILogger;
 import com.cannontech.core.dao.DaoFactory;
 import com.cannontech.core.dao.PointDao;
 import com.cannontech.database.cache.DefaultDatabaseCache;
 import com.cannontech.database.data.device.DeviceTypesFuncs;
-import com.cannontech.database.data.lite.LiteComparators;
 import com.cannontech.database.data.lite.LitePoint;
 import com.cannontech.database.data.lite.LiteYukonPAObject;
 import com.cannontech.database.data.multi.SmartMultiDBPersistent;
@@ -23,7 +25,7 @@ import com.cannontech.yukon.IDatabaseCache;
  */
 public class MCT410AllPointCreate extends PointCreate
 {
-	java.util.Hashtable createPointHashtable = null;
+	java.util.Hashtable<Integer, CreatePointList> createPointHashtable = null;
 	private class CreatePointList
 	{
 		boolean voltageLP = true;
@@ -34,9 +36,6 @@ public class MCT410AllPointCreate extends PointCreate
 		boolean voltage = true;
 		boolean kWLP= true;
 		boolean kWh = true;
-		boolean frozenPeakDemand = true;	//offset 21 (demandAcc)
-		boolean frozenMaxVolts = true;	//offset 24 (demandAcc)
-		boolean frozenMinVolts = true;	//offset 25 (demandAcc)
 		boolean blinkCount = true;		//offset 20 (pulseAcc)
 		boolean outageLog = true;		//offset 100 (analog)
 	}
@@ -58,8 +57,7 @@ public class MCT410AllPointCreate extends PointCreate
 		//Points are going to be added to every MCT410.
 		CTILogger.info("Starting MCT410 Point creation process...");
 
-		java.util.Vector devicesVector = new java.util.Vector(20);
-		getMCT410DeviceVector(devicesVector);
+		Vector<LiteYukonPAObject> devicesVector = getMCT410DeviceVector();
 
 		//create an object to hold all of our DBPersistant objects
 		SmartMultiDBPersistent multi = new SmartMultiDBPersistent();
@@ -70,18 +68,18 @@ public class MCT410AllPointCreate extends PointCreate
 		double multiplier = 0.1;
 		int addCount = 0;
 		PointDao pointDao = DaoFactory.getPointDao();
-		for( int i = 0; i < devicesVector.size(); i++)
-		{
-			LiteYukonPAObject litePaobject = (LiteYukonPAObject)devicesVector.get(i);
+		
+		for (LiteYukonPAObject litePaobject : devicesVector) {
+
 			int paobjectID = litePaobject.getLiteID();
-			CreatePointList createPoint = (CreatePointList)createPointHashtable.get(new Integer(paobjectID));
+			CreatePointList createPoint = createPointHashtable.get(new Integer(paobjectID));
 			
 			if( createPoint.voltageLP)
 			{
 			    int pointID = pointDao.getNextPointId();
 				multi.addDBPersistent(
 				    PointFactory.createDmdAccumPoint(
-						"Voltage-LP",
+						"Voltage Profile",
 						new Integer(paobjectID),
 						new Integer(pointID),
 						PointTypes.PT_OFFSET_LPROFILE_VOLTAGE_DEMAND,
@@ -195,48 +193,7 @@ public class MCT410AllPointCreate extends PointCreate
 			    CTILogger.info("Adding kWh: PointId " + pointID + " to Device ID" + litePaobject.getPaoName());
 				addCount++;
 			}
-			if( createPoint.frozenPeakDemand)
-			{
-			    int pointID = pointDao.getNextPointId();
-				multi.addDBPersistent(
-				        PointFactory.createDmdAccumPoint(
-						   "Frozen Peak Demand",
-						   new Integer(paobjectID),
-						   new Integer(pointID),
-						   PointTypes.PT_OFFSET_FROZEN_PEAK_DEMAND,
-						   PointUnits.UOMID_KW,
-						   multiplier) );
-				    CTILogger.info("Adding Frozen Peak Demand: PointId " + pointID + " to Device ID" + litePaobject.getPaoName());
-					addCount++;
-			}
-			if( createPoint.frozenMaxVolts)
-			{
-			    int pointID = pointDao.getNextPointId();
-				multi.addDBPersistent(
-				        PointFactory.createDmdAccumPoint(
-						   "Frozen Max Volts",
-						   new Integer(paobjectID),
-						   new Integer(pointID),
-						   PointTypes.PT_OFFSET_FROZEN_MAX_VOLT,
-						   PointUnits.UOMID_VOLTS,
-						   multiplier) );
-				    CTILogger.info("Adding Frozen Max Volts: PointId " + pointID + " to Device ID" + litePaobject.getPaoName());
-					addCount++;
-			}
-			if( createPoint.frozenMinVolts)
-			{
-			    int pointID = pointDao.getNextPointId();
-				multi.addDBPersistent(
-				        PointFactory.createDmdAccumPoint(
-						   "Frozen Min Volts",
-						   new Integer(paobjectID),
-						   new Integer(pointID),
-						   PointTypes.PT_OFFSET_FROZEN_MIN_VOLT,
-						   PointUnits.UOMID_VOLTS,
-						   multiplier) );
-				    CTILogger.info("Adding Frozen Min Volts: PointId " + pointID + " to Device ID" + litePaobject.getPaoName());
-					addCount++;
-			}
+
 			if( createPoint.blinkCount)
 			{
 			    int pointID = pointDao.getNextPointId();
@@ -269,9 +226,7 @@ public class MCT410AllPointCreate extends PointCreate
 		boolean success = writeToSQLDatabase(multi);
 	
 		if( success )
-		{
 			CTILogger.info(addCount + " MCT410 Points were processed and inserted Successfully");
-		}
 		else
 			CTILogger.info("MCT410 Points failed insertion");
 			
@@ -301,31 +256,25 @@ public class MCT410AllPointCreate extends PointCreate
 	public boolean isPointCreated( LitePoint lp)
 	{
 		if( lp.getPointOffset() == PointTypes.PT_OFFSET_LPROFILE_VOLTAGE_DEMAND && lp.getPointType() == PointTypes.DEMAND_ACCUMULATOR_POINT )
-			((CreatePointList)createPointHashtable.get(new Integer(lp.getPaobjectID()))).voltageLP = false;
+			createPointHashtable.get(new Integer(lp.getPaobjectID())).voltageLP = false;
 		else if( lp.getPointOffset() == PointTypes.PT_OFFSET_PEAK_KW_DEMAND && lp.getPointType() == PointTypes.DEMAND_ACCUMULATOR_POINT)
-			((CreatePointList)createPointHashtable.get(new Integer(lp.getPaobjectID()))).peakKw = false;
+			createPointHashtable.get(new Integer(lp.getPaobjectID())).peakKw = false;
 		else if( lp.getPointOffset() == PointTypes.PT_OFFSET_MAX_VOLT_DEMAND && lp.getPointType() == PointTypes.DEMAND_ACCUMULATOR_POINT)
-			((CreatePointList)createPointHashtable.get(new Integer(lp.getPaobjectID()))).maxVolts = false;
+			createPointHashtable.get(new Integer(lp.getPaobjectID())).maxVolts = false;
 		else if( lp.getPointOffset() == PointTypes.PT_OFFSET_MIN_VOLT_DEMAND && lp.getPointType() == PointTypes.DEMAND_ACCUMULATOR_POINT)
-			((CreatePointList)createPointHashtable.get(new Integer(lp.getPaobjectID()))).minVolts = false;
+			createPointHashtable.get(new Integer(lp.getPaobjectID())).minVolts = false;
 		else if( lp.getPointOffset() == PointTypes.PT_OFFSET_KW_DEMAND && lp.getPointType() == PointTypes.DEMAND_ACCUMULATOR_POINT)
-			((CreatePointList)createPointHashtable.get(new Integer(lp.getPaobjectID()))).kw = false;
+			createPointHashtable.get(new Integer(lp.getPaobjectID())).kw = false;
 		else if( lp.getPointOffset() == PointTypes.PT_OFFSET_VOLTAGE_DEMAND && lp.getPointType() == PointTypes.DEMAND_ACCUMULATOR_POINT)
-			((CreatePointList)createPointHashtable.get(new Integer(lp.getPaobjectID()))).voltage = false;
+			createPointHashtable.get(new Integer(lp.getPaobjectID())).voltage = false;
 		else if( lp.getPointOffset() == PointTypes.PT_OFFSET_LPROFILE_KW_DEMAND && lp.getPointType() == PointTypes.DEMAND_ACCUMULATOR_POINT)
-			((CreatePointList)createPointHashtable.get(new Integer(lp.getPaobjectID()))).kWLP = false;
+			createPointHashtable.get(new Integer(lp.getPaobjectID())).kWLP = false;
 		else if( lp.getPointOffset() == PointTypes.PT_OFFSET_TOTAL_KWH && lp.getPointType() == PointTypes.PULSE_ACCUMULATOR_POINT)
-			((CreatePointList)createPointHashtable.get(new Integer(lp.getPaobjectID()))).kWh = false;
-		else if( lp.getPointOffset() == PointTypes.PT_OFFSET_FROZEN_PEAK_DEMAND && lp.getPointType() == PointTypes.DEMAND_ACCUMULATOR_POINT)
-			((CreatePointList)createPointHashtable.get(new Integer(lp.getPaobjectID()))).frozenPeakDemand = false;
-		else if( lp.getPointOffset() == PointTypes.PT_OFFSET_FROZEN_MAX_VOLT && lp.getPointType() == PointTypes.DEMAND_ACCUMULATOR_POINT)
-			((CreatePointList)createPointHashtable.get(new Integer(lp.getPaobjectID()))).frozenMaxVolts = false;
-		else if( lp.getPointOffset() == PointTypes.PT_OFFSET_FROZEN_MIN_VOLT && lp.getPointType() == PointTypes.DEMAND_ACCUMULATOR_POINT)
-			((CreatePointList)createPointHashtable.get(new Integer(lp.getPaobjectID()))).frozenMinVolts = false;
+			createPointHashtable.get(new Integer(lp.getPaobjectID())).kWh = false;
 		else if( lp.getPointOffset() == PointTypes.PT_OFFSET_BLINK_COUNT && lp.getPointType() == PointTypes.PULSE_ACCUMULATOR_POINT)
-			((CreatePointList)createPointHashtable.get(new Integer(lp.getPaobjectID()))).blinkCount = false;
+			createPointHashtable.get(new Integer(lp.getPaobjectID())).blinkCount = false;
 		else if( lp.getPointOffset() == PointTypes.PT_OFFSET_OUTAGE && lp.getPointType() == PointTypes.ANALOG_POINT)
-			((CreatePointList)createPointHashtable.get(new Integer(lp.getPaobjectID()))).outageLog = false;
+			createPointHashtable.get(new Integer(lp.getPaobjectID())).outageLog = false;
 		
 		return false;
 	}	
@@ -335,21 +284,21 @@ public class MCT410AllPointCreate extends PointCreate
 	 * Creation date: (4/22/2002 4:11:23 PM)
 	 * @return java.util.Vector
 	 */
-	protected void getMCT410DeviceVector(java.util.Vector deviceVector)
+	protected Vector<LiteYukonPAObject> getMCT410DeviceVector()
 	{
+		Vector<LiteYukonPAObject> paobjects = new Vector<LiteYukonPAObject>();
+		
 		IDatabaseCache cache = DefaultDatabaseCache.getInstance();
 	
 		synchronized (cache)
 		{
-			java.util.List mcts = cache.getAllMCTs();
-			java.util.Collections.sort(mcts, LiteComparators.liteYukonPAObjectIDComparator);
+			List<LiteYukonPAObject> mcts = cache.getAllMCTs();
             PointDao pointDao = DaoFactory.getPointDao();
 
-			createPointHashtable = new java.util.Hashtable(mcts.size());
-			
-			for (int i = 0; i < mcts.size(); i++)
-			{
-				LiteYukonPAObject litePaobject = ((LiteYukonPAObject)mcts.get(i));
+			createPointHashtable = new java.util.Hashtable<Integer, CreatePointList>(mcts.size());
+
+			for (LiteYukonPAObject litePaobject: mcts) {
+
 				if( isDeviceValid( litePaobject ) )
 				{
 					int paobjectID = litePaobject.getLiteID();
@@ -357,12 +306,21 @@ public class MCT410AllPointCreate extends PointCreate
 					CreatePointList item = new CreatePointList();
 					createPointHashtable.put(new Integer(paobjectID), item);
 					
-                    if(pointDao.getLitePointsByPaObjectId(paobjectID).size() == 0) {
-                        deviceVector.addElement(litePaobject);
+                    boolean foundPoint = false;
+                    List<LitePoint> devicePoints = pointDao.getLitePointsByPaObjectId(paobjectID);
+                    for (LitePoint point : devicePoints) {
+                        if(isPointCreated(point)) {
+                            foundPoint = true;
+                        }
+                    }
+                    //makes a list of points devices to add control history points to
+                    if(!foundPoint) {
+                        paobjects.add(litePaobject);
                     }
 				}
 			}
-			CTILogger.info(deviceVector.size() + " Total Devices needing points added.");
+			CTILogger.info(paobjects.size() + " Total Devices needing points added.");
 		}
+		return paobjects;
 	}
 }

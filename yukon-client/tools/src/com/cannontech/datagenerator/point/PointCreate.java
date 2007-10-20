@@ -5,30 +5,26 @@ package com.cannontech.datagenerator.point;
  * @author: 
  */
 import java.util.List;
+import java.util.Vector;
 
 import com.cannontech.clientutils.CTILogger;
-import com.cannontech.common.util.CtiUtilities;
 import com.cannontech.core.dao.DaoFactory;
 import com.cannontech.database.Transaction;
 import com.cannontech.database.TransactionException;
 import com.cannontech.database.cache.DefaultDatabaseCache;
-import com.cannontech.database.data.lite.LiteComparators;
 import com.cannontech.database.data.lite.LitePoint;
 import com.cannontech.database.data.lite.LiteYukonPAObject;
 import com.cannontech.database.data.multi.SmartMultiDBPersistent;
 import com.cannontech.yukon.IDatabaseCache;
 abstract class PointCreate 
 {
-	//a mutable lite point used for comparisons
-	private static final LitePoint DUMMY_LITE_POINT = 
-					new LitePoint(Integer.MIN_VALUE, "**DUMMY**", 0, 0, 0, 0 );
-					
 	private static boolean disconnectCreate = false;
 	private static boolean powerFailCreate = false;
 	private static boolean oneDeviceAnalogPointCreate = false;
 	private static boolean loadGroupPointCreate = false;
 	private static boolean mct410PointCreate = false;
 	private static boolean capBankOpCntPointCreate = false;
+	private static boolean outageLogCreate = false;
 	/**
 	 * PowerFailPointCreate constructor comment.
 	 */
@@ -61,7 +57,7 @@ abstract class PointCreate
 			{
 				disconnectCreate = true;
 			}
-			else if( args[i].toLowerCase().startsWith("p"))
+			else if( args[i].toLowerCase().startsWith("p") || args[i].toLowerCase().startsWith("b"))
 			{
 				powerFailCreate = true;	//Power Fail Points Will Be Created
 			}
@@ -76,6 +72,10 @@ abstract class PointCreate
 			else if( args[i].toLowerCase().startsWith("cbop"))
 			{
 				capBankOpCntPointCreate = true;    //Cap Bank missing Operations Count points will be created
+			}
+			else if( args[i].toLowerCase().startsWith("o"))
+			{
+				outageLogCreate = true;    //MCT 410 missing OutageLog points will be created
 			}
 		}
 			
@@ -131,52 +131,26 @@ abstract class PointCreate
 			timerStop = new java.util.Date();
 			CTILogger.info( (timerStop.getTime() - timerStart.getTime())*.001 + " Secs for CapBankOpCntPointCreate to complete" );
 		}	
+		if( outageLogCreate)
+		{
+			timerStart = new java.util.Date();
+			OutageLogPointCreate outageLogPointCreator = new OutageLogPointCreate();
+			outageLogPointCreator.create();
+			timerStop = new java.util.Date();
+			CTILogger.info( (timerStop.getTime() - timerStart.getTime())*.001 + " Secs for OutageLogPointCreate to complete" );
+		}
 
 		System.exit(0);
 	}
 
-	/**
-	 * Returns true when the deviceDevID does not already have 
-	 * a point attached to it.  
-	 * The list points contains all points to search through.
-	 * Creation date: (2/27/2002 10:37:56 AM)
-	 * @param points java.util.List
-	 * @param deviceDevID int
-	 * @return boolean
-	 */
-	protected boolean addPointToDevice(java.util.List points, int deviceDevID )
-	{
-		java.util.List pointTempList = new java.util.Vector(10);
-		
-		DUMMY_LITE_POINT.setPaobjectID(deviceDevID);	//needed for binarySearchRepetition
-		
-		//searches and sorts the list!
-		CtiUtilities.binarySearchRepetition( 
-			points,
-			DUMMY_LITE_POINT, //must have the needed DeviceID set!!
-			LiteComparators.litePointDeviceIDComparator,
-			pointTempList );
-					
-		for (int i = 0; i < pointTempList.size(); i++)
-		{
-			LitePoint lp = (LitePoint)pointTempList.get(i);
-			if( isPointCreated(lp))
-				return false;
-		}
-		return true;
-	}
-	
 	/**
 	 * Returns true if the Device is a valid container of the point.
 	 * Creation date: (4/22/2002 4:11:23 PM)
 	 * @param _type int
 	 * @return boolean
 	 */
-	protected boolean isDeviceValid(LiteYukonPAObject litePaobject_)
-	{
-		return true;
-	}
-
+	abstract boolean isDeviceValid(LiteYukonPAObject litePaobject_);
+	
 	/**
 	 * Returns true if the Point already exists for the Device
 	 * Creation date: (4/22/2002 4:11:23 PM)
@@ -184,45 +158,42 @@ abstract class PointCreate
 	 * @param pointType_ int
 	 * @return boolean
 	 */
-	protected boolean isPointCreated(LitePoint lp)
-	{
-		return false;
-	}
+	abstract boolean isPointCreated(LitePoint lp);
+	
 	/**
 	 * Returns a Vector of LiteYukonPaobjects that need a point added to them.
 	 * Creation date: (4/22/2002 4:11:23 PM)
 	 * @return java.util.Vector
 	 */
-	protected void getDeviceVector(java.util.Vector deviceVector)
-	{
+	protected Vector<LiteYukonPAObject> getDeviceVector() {
+		Vector<LiteYukonPAObject> paobjects = new Vector<LiteYukonPAObject>();
 		IDatabaseCache cache = DefaultDatabaseCache.getInstance();
 	
 		synchronized (cache)
 		{
-			java.util.List devices = cache.getAllDevices();
-			java.util.Collections.sort(devices, LiteComparators.liteYukonPAObjectIDComparator);
+			List<LiteYukonPAObject> devices = cache.getAllDevices();
 			
-			for (int i = 0; i < devices.size(); i++)
-			{
-				LiteYukonPAObject litePaobject = ((LiteYukonPAObject)devices.get(i));
-				if( isDeviceValid(litePaobject) )
-				{
+			for (LiteYukonPAObject litePaobject: devices) {
+
+				if( isDeviceValid(litePaobject) ) {
+					
 					int deviceDevID = litePaobject.getLiteID();
                     boolean foundPoint = false;
 					List<LitePoint> points = DaoFactory.getPointDao().getLitePointsByPaObjectId(deviceDevID);
                     for (LitePoint point : points) {
                         if(isPointCreated(point)) {
-                           foundPoint = true; 
+                           foundPoint = true;
                         }
                     }
-//                  makes a list of points devices to add power fail points to
-                    if(foundPoint) {
-                        deviceVector.add(litePaobject);
+                    // make a list of devices to add points to
+                    if(!foundPoint) {
+                        paobjects.add(litePaobject);
                     }
 				}
 			}
-			CTILogger.info(deviceVector.size() + " Total Devices needing points added.");
+			CTILogger.info(paobjects.size() + " Total Devices needing points added.");
 		} //synch
+		return paobjects;
 	}
 	
 	protected boolean writeToSQLDatabase(SmartMultiDBPersistent multi) 
