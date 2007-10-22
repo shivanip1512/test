@@ -104,6 +104,15 @@ public class FilterCapControlCacheImpl implements FilterCapControlCache, CapCont
 			return null;
 	}
 
+    public String getSubBusNameForFeeder(Feeder fdr){
+        int id = cache.getParentAreaID(fdr.getCcId());
+        CBCArea area = cache.getCBCArea(id);
+        if ( filter.valid(area) )
+            return cache.getSubBusNameForFeeder(fdr);
+        else
+            return "";
+
+    }
 	public CapBankDevice[] getCapBanksBySub(Integer subBusID) {
 		int id = cache.getParentAreaID(subBusID);
 		CBCArea area = cache.getCBCArea(id);

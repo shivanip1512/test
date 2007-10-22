@@ -351,7 +351,7 @@ if( hasControl ) {
 					<td><a type="param6" name="cti_dyn" id="<%=feeder.getCcId()%>">
 					<%=CBCUtils.CBC_DISPLAY.getFeederValueAt(feeder, CBCDisplay.FDR_DAILY_OPERATIONS_COLUMN)%></a>
 					</td>
-					<td id="hiddenSubName" style="display:none"><%=capControlCache.getSubBusNameForFeeder(feeder)%></td>
+					<td id="hiddenSubName" style="display:none"><%=filterCapControlCache.getSubBusNameForFeeder(feeder)%></td>
 				</tr>
 <%
 }

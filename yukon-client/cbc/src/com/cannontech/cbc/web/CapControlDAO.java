@@ -48,6 +48,7 @@ public interface CapControlDAO {
      */
     public abstract List<Feeder> getFeedersBySubStation(SubStation sub);
 
+    public abstract String getSubBusNameForFeeder(Feeder fdr);
 	/**
 	 * @return CapBankDevice[]
 	 */
