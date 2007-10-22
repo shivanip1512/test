@@ -25,10 +25,13 @@ import org.apache.log4j.Level;
 import org.apache.log4j.Logger;
 import org.apache.log4j.MDC;
 import org.springframework.web.HttpSessionRequiredException;
+import org.springframework.web.context.WebApplicationContext;
+import org.springframework.web.context.support.WebApplicationContextUtils;
 
 import com.cannontech.clientutils.CTILogger;
 import com.cannontech.clientutils.YukonLogManager;
 import com.cannontech.common.util.CtiUtilities;
+import com.cannontech.common.util.FriendlyExceptionResolver;
 import com.cannontech.database.data.lite.LiteYukonUser;
 import com.cannontech.util.ServletUtil;
 
@@ -38,7 +41,7 @@ public class ErrorHelperFilter  implements Filter {
 	private static final String SERVLET_STARTUP_ERROR = "comcannontechSERVLET_STARTUP_ERROR";
     private static final String SERVLET_STARTUP_ERROR_ROOT_MESSAGE = "comcannontechSERVLET_STARTUP_ERROR_ROOT_MESSAGE";
     public static final String LOG_KEY = "comcannontechSERVLET_ERROR_LOG_KEY";
-    private ServletContext servletContext;
+    private static ServletContext servletContext;
     
     private Set<Class<? extends Throwable>> exceptionToIgnore = new HashSet<Class<? extends Throwable>>();
     {
@@ -178,6 +181,16 @@ public class ErrorHelperFilter  implements Filter {
 
     public static boolean doesStartupErrorExist(ServletContext servletContext) {
         return servletContext.getAttribute(SERVLET_STARTUP_ERROR) != null;
+    }
+    
+    public static String getFriendlyExceptionMessage(Throwable throwable){
+        
+        WebApplicationContext webContext = WebApplicationContextUtils.getRequiredWebApplicationContext(servletContext);
+        FriendlyExceptionResolver friendlyExceptionResolver = (FriendlyExceptionResolver)webContext.getBean("friendlyExceptionResolver");
+        
+        String friendlyExceptionMessage = friendlyExceptionResolver.getFriendlyExceptionMessage(throwable);
+        
+        return friendlyExceptionMessage;
     }
     
 }

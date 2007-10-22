@@ -41,6 +41,7 @@ try {
 } finally {
 }
 
+String friendlyExceptionMessage = ErrorHelperFilter.getFriendlyExceptionMessage(throwable);
 %>
 
 <html>
@@ -69,6 +70,12 @@ try {
     font-size: 150%;
   }
   
+  #errorFriendly {
+    font-weight: bold;
+    font-size: 130%;
+    color: #CC0000;
+  }
+  
   #stackTrace {
     text-align: left;
     font-size: 11px;
@@ -91,7 +98,13 @@ function showStack( chkBox ) {
 <body>
 <div id="error">
 <div id="errorImg"><img src="<%=request.getContextPath()%><%= logo %>"></div>
+<% if (friendlyExceptionMessage != null) { %>
+<br/>
+<div id="errorFriendly"><%=friendlyExceptionMessage %></div>
+<br/>
+<% } else{%>
 <div id="errorMain">An error occured while processing your request</div>
+<% }%>
 <% if (errorKey == null) { %>
 <div id="errorSub">Try to execute your request again.</div>
 <% } else { %>

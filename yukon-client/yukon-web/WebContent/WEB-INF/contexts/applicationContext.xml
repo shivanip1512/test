@@ -360,6 +360,31 @@
     	abstract="false" singleton="false" lazy-init="default" autowire="default"
         dependency-check="default">
         <property name="dateFormattingService" ref="dateFormattingService"/>
+    </bean>
+    
+    
+    <bean id="friendlyExceptionResolver" class="com.cannontech.common.util.FriendlyExceptionResolver"
+    	abstract="false" singleton="false" lazy-init="default" autowire="default"
+        dependency-check="default">
+        
+        <property name="exceptionStrings" ref="friendlyExceptionsProperties" />
+        
+        <property name="knownExceptions">
+            <set>
+                <bean class="com.cannontech.common.util.KnownExceptionType">
+                	<property name="exceptionClass" value="com.cannontech.core.dynamic.exception.DynamicDataAccessException" />
+                	<property name="friendlyExceptionPropertyKey" value="DispatchInvalid" />
+                </bean>
+            </set>
+        </property>
+    
     </bean>	
+    
+    <bean id="friendlyExceptionsProperties" class="org.springframework.beans.factory.config.PropertiesFactoryBean">
+    	<property name="location">
+    		<value>/WEB-INF/friendlyExceptions.properties</value>
+    	</property>
+    </bean>
+    
     
 </beans>
