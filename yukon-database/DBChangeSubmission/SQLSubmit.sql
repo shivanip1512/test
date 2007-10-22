@@ -40,3 +40,9 @@ alter table userPaoPermission add Allow varchar(5);
 alter table groupPaoPermission add Allow varchar(5);
 
 /*end*/
+
+/* start: YUK-4191 Long Load Profile Widget -- mike p*/
+/* New metering role property to give access to the Profile Widget */
+insert into YukonRoleProperty values(-20206, -202,'Enable Profile Request','true','Access to perform profile data request');
+/* end */
+

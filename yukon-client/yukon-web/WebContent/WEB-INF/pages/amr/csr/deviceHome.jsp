@@ -87,7 +87,9 @@
 			</div>
 			<div class="right">
 
-				<ct:widget bean="profileWidget" />
+				<c:if test="${lpSupported && lpEnabled}">
+					<ct:widget bean="profileWidget" />
+				</c:if>
 				
 				<ct:widget bean="trendWidget" />
 				

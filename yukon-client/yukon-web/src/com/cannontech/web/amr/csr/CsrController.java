@@ -164,6 +164,11 @@ public class CsrController extends MultiActionController {
         boolean touEnabled = Boolean.parseBoolean(roleDao.getRolePropertyValue(user.getUserID(), MeteringRole.TOU_ENABLED, "true"));
         mav.addObject("touSupported", (touSupported && touEnabled));
 
+        boolean lpSupported = DeviceTypesFuncs.isMCT4XX(device.getType());
+        mav.addObject("lpSupported", lpSupported);
+        
+        boolean lpEnabled = Boolean.parseBoolean(roleDao.getRolePropertyValue(user.getUserID(), MeteringRole.PROFILE_REQUEST_ENABLED, "true"));
+        mav.addObject("lpEnabled", lpEnabled);
         
         return mav;
     }
