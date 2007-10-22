@@ -9,6 +9,7 @@ import com.cannontech.database.data.lite.LitePointLimit;
 import com.cannontech.database.data.lite.LitePointUnit;
 import com.cannontech.database.data.lite.LiteRawPointHistory;
 import com.cannontech.database.data.lite.LiteStateGroup;
+import com.cannontech.database.data.lite.LiteYukonPAObject;
 
 public interface PointDao {
 
@@ -140,4 +141,6 @@ public interface PointDao {
      * @return
      */
     public double getPointMultiplier(int pointId);
+    
+    public List<LitePoint> searchByName(String name, String paoClass);
 }

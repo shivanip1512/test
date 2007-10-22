@@ -314,6 +314,15 @@ public final class PointDaoImpl implements PointDao {
 			return monitorPointList;
 	}
     
+    public List<LitePoint> searchByName(final String name, final String paoClass) {
+        String sql = this.litePointPaoSql + " WHERE YPO.PAOClass = ? AND POINTNAME LIKE ?";
+        List<LitePoint> pointList = this.jdbcOps.query(
+                                                       sql,
+                                                       new Object[]{paoClass, "%" + name + "%"},
+                                                       this.litePointRowMapper);
+        return pointList;
+    }
+    
     public int getPointDataOffset(int pointId) {
         String sql = "select dataoffset from pointanalog where pointid=?";
         return (Integer)jdbcOps.queryForObject(sql, new Object[] {pointId}, Integer.class);

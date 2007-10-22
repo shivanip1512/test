@@ -138,4 +138,9 @@ public class MockPointDao implements PointDao {
         return 0;
     }
 
+	public List<LitePoint> searchByName(String name, String paoClass) {
+		// TODO Auto-generated method stub
+		return null;
+	}
+
 }

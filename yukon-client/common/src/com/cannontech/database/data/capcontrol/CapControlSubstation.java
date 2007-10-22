@@ -142,7 +142,7 @@ public class CapControlSubstation extends CapControlYukonPAOBase implements
         SqlStatementBuilder allSubstations = new SqlStatementBuilder();
         allSubstations.append("select paobjectid from yukonpaobject where type like 'CCSUBSTATION' ");
         allSubstations.append("and ");
-        allSubstations.append("paobjectid not in (select substationid from ccsubstationsubbuslist)");
+        allSubstations.append("paobjectid not in (select substationbusid from ccsubareaassignment)");
         JdbcOperations yukonTemplate = JdbcTemplateHelper.getYukonTemplate();
         return yukonTemplate.queryForList(allSubstations.toString(), Integer.class);
 

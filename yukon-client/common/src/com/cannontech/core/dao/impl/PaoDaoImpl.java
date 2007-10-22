@@ -288,6 +288,16 @@ public final class PaoDaoImpl implements PaoDao {
         }
         return liteYukonPaobects;
     }
+    
+    @SuppressWarnings("unchecked")
+    public List<LiteYukonPAObject> searchByName(final String name, final String paoClass) {
+        String sql = this.litePaoSql + " WHERE y.PAOClass = ? AND y.PAOName LIKE ?";
+        List<LiteYukonPAObject> paoList = this.jdbcOps.query(
+                                                             sql,
+                                                             new Object[]{paoClass, "%" + name + "%"},
+                                                             this.litePaoRowMapper);
+        return paoList;
+    }
 
     public void setDatabaseCache(IDatabaseCache databaseCache) {
         this.databaseCache = databaseCache;
