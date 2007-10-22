@@ -4243,7 +4243,6 @@ void CtiCCExecutor::moveCapBank(INT permanentFlag, LONG oldFeederId, LONG movedC
                 movedCapBankPtr->setOriginalCloseOrder(0.0);
                 movedCapBankPtr->setOriginalTripOrder(0.0);
 
-                oldFeederPtr->checkForAndReorderFeeder();
             }
 
             movedCapBankPtr->setParentId(newFeederId);
@@ -4253,47 +4252,7 @@ void CtiCCExecutor::moveCapBank(INT permanentFlag, LONG oldFeederId, LONG movedC
         {
             CtiCCCapBank_SVector& newFeederCapBanks = newFeederPtr->getCCCapBanks();
 
-            if( newFeederCapBanks.size() > 0 )
-            {
-                //search through the list to see if there is a cap bank in the
-                //list that already has the switching order
-                if( capSwitchingOrder > ((CtiCCCapBank*)newFeederCapBanks[newFeederCapBanks.size()-1])->getControlOrder() )
-                {    
-                    movedCapBankPtr->setControlOrder( ((CtiCCCapBank*)newFeederCapBanks[newFeederCapBanks.size()-1])->getControlOrder() + 1);
-                }
-                else 
-                {
-                    BOOL shuffling = FALSE;
-                    movedCapBankPtr->setControlOrder(capSwitchingOrder);
-
-                    //reshuffle the cap bank control orders so they are still in sequence and start at 1
-
-                    CtiCCCapBank_SVector tempShufflingCapBankList;
-                    while(newFeederCapBanks.size()>0)
-                    {
-                        //have to remove due to change in sorting field in a sorted vector
-                        CtiCCCapBank* currentCapBank = (CtiCCCapBank*)newFeederCapBanks.front();
-                        newFeederCapBanks.erase(newFeederCapBanks.begin());
-                        if( capSwitchingOrder == currentCapBank->getControlOrder() )
-                        {
-                            //have to make room for the movedCapBank
-                            currentCapBank->setControlOrder(currentCapBank->getControlOrder() + 0.1);
-                        }
-                        tempShufflingCapBankList.push_back(currentCapBank);
-                    }
-                    while(tempShufflingCapBankList.size()>0)
-                    {
-                        CtiCCCapBank* currentCapBank = (CtiCCCapBank*)tempShufflingCapBankList.front();
-
-                        tempShufflingCapBankList.erase(tempShufflingCapBankList.begin());
-                        newFeederCapBanks.push_back(currentCapBank);
-                    }
-                }
-            }
-            else
-            {
-                movedCapBankPtr->setControlOrder(1);
-            } 
+            movedCapBankPtr->setControlOrder(capSwitchingOrder);
             movedCapBankPtr->setCloseOrder(closeOrder);
             movedCapBankPtr->setTripOrder(tripOrder);
 
