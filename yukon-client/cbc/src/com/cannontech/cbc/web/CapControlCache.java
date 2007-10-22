@@ -89,6 +89,15 @@ public class CapControlCache implements MessageListener, CapControlDAO {
     	}
     	return null;
     }
+    
+    public String getSubBusNameForFeeder(Feeder fdr) {
+        Integer parentId = fdr.getParentID();
+        if(parentId > 0) {
+            return subBusMap.get(parentId).getCcName();
+        }
+        return null;
+    }
+    
     /**
      * Returs the base object type for a SubBus, Feeder or CapBankDevice
      */
@@ -732,7 +741,6 @@ public class CapControlCache implements MessageListener, CapControlDAO {
     private synchronized void handleSubBus( SubBus subBus ) {   
         
         Validate.notNull(subBus, "subBus can't be null");
-        //remove the old subBus from the area hashmap just in case the area changed
         subBusMap.remove(subBus.getCcId());
         subBusMap.put( subBus.getCcId(), subBus );
         Vector feeders = subBus.getCcFeeders();
@@ -752,10 +760,7 @@ public class CapControlCache implements MessageListener, CapControlDAO {
         }
         
         subToBankMap.remove(subBus.getCcId());
-        //map all capbanks to their parent SubBus
         subToBankMap.put( subBus.getCcId(), capBankIDs.toArray() );
-    
-        //server side update to the objMap
         getUpdatedObjMap().handleCBCChangeEvent(subBus, new Date());
     }
     

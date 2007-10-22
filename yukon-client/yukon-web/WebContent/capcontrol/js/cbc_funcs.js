@@ -729,8 +729,82 @@ function pause(numberMillis) {
                 row.style.display = 'none';
         }   
     }
+    
+    function applySubBusFilter(select){
+		var rows = $$('#subTable tr.altTableCell', '#subTable tr.tableCell');
+        var subBusNames = new Array();
+        if(select.options[select.selectedIndex].text == 'All SubBuses'){
+        	selectedSubBus = 'All SubBuses';
+        	for (var i=0; i < rows.length; i++) {
+	            var row = rows[i];
+            	row.setStyle({'display' : ''});
+            	var cells = row.getElementsByTagName('td');
+	            var sub = cells[1];
+	            var spans = sub.getElementsByTagName('span');
+	            var subName = new String (spans[0].innerHTML);
+	            subBusNames.push(trim(subName));
+       		}
+       		applyFeederFilter(subBusNames);
+        }else{
+	        for (var i=0; i < rows.length; i++) {
+	            var row = rows[i];
+	            var cells = row.getElementsByTagName('td');
+	            var sub = cells[1];
+	            var spans = sub.getElementsByTagName('span');
+	            var subName = new String (spans[0].innerHTML);
+	            var selectedSubBus = new String (select.options[select.selectedIndex].text);
+	            //displayed name always contains a white space at the end
+	            if (trim(subName) == trim (selectedSubBus)){
+	                row.setStyle({'display' : ''});
+	                subBusNames.push(trim(subName));
+	            }else{
+	            	row.style.display = 'none';
+	            }
+	        }
+	        applyFeederFilter(subBusNames);
+        }
+    }
+    
+    function applyFeederFilter(subBusNames){
+    	var rows = $$('#fdrTable tr.altTableCell', '#fdrTable tr.tableCell');
+        var feederNames = new Array();
+        for (var i=0; i < rows.length; i++) {
+            var row = rows[i];
+            var cells = row.getElementsByTagName('td');
+            var sub = cells[8];
+            var subBusName = new String (sub.innerHTML);
+			var index = subBusNames.indexOf(subBusName);
+			if(index > -1){
+				row.setStyle({'display' : ''});
+				var fdr = cells[0];
+				var spans = fdr.getElementsByTagName('span');
+				var fdrName = spans[0].innerHTML;
+				feederNames.push(trim(fdrName));
+			}else{
+				row.setStyle({'display' : 'none'});
+			}
+        }
+        applyCapBankFilter(feederNames);
+    }
+    
+    function applyCapBankFilter(feederNames){
+	    var rows = $$('#capBankTable tr.altTableCell', '#capBankTable tr.tableCell');
+    	for (var i=0; i < rows.length; i++) {
+            var row = rows[i];
+            var cells = row.getElementsByTagName('td');
+            var fdr = cells[7];
+            var spans = fdr.getElementsByTagName('span');
+	        var fdrName = new String (spans[0].innerHTML);
+    		var index = feederNames.indexOf(trim(fdrName));
+    		if(index > -1){
+				row.setStyle({'display' : ''});
+			}else{
+				row.setStyle({'display' : 'none'});
+			}
+		}
+    }
 
-function initFilter(parent_td, parent_table, column_filter_index) {
+	function initFilter(parent_td, parent_table, column_filter_index) {
         var unique_options_list = new Array;
         var rows = parent_table.getElementsByTagName ('tr');     
         var html = "<select id='parent_fdr_slct' onchange='applyFilter(this, capBankTable, "+column_filter_index+");'>";
