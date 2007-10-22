@@ -8,10 +8,16 @@ import java.io.IOException;
 import java.io.InputStreamReader;
 import java.util.ArrayList;
 import java.util.List;
+import java.util.Map;
 
+import com.cannontech.common.bulk.BulkDataContainer;
 import com.cannontech.common.bulk.service.BulkMeterDeleterService;
 import com.cannontech.database.data.lite.LiteYukonPAObject;
+import com.cannontech.database.data.pao.PAOGroups;
+import com.cannontech.message.dispatch.message.DBChangeMsg;
 import com.cannontech.spring.YukonSpringHook;
+import com.cannontech.yukon.IServerConnection;
+import com.cannontech.yukon.conns.ConnPool;
 
 public class BulkMeterDeleter {
 
@@ -74,9 +80,17 @@ public class BulkMeterDeleter {
         System.out.println(" -Number of elements to be deleted = "+yukonPAList.size()+"\n");
     }
     
-    private List<LiteYukonPAObject> runArgs(String[] args, BulkMeterDeleterService bulkMeterDeleterService){
+    private void sendDBChangeMsg(){
+        IServerConnection connToDispatch = ConnPool.getInstance().getDefDispatchConn();
+        DBChangeMsg changeMsgPao = new DBChangeMsg(0, DBChangeMsg.CHANGE_PAO_DB, PAOGroups.STRING_CAT_DEVICE, DBChangeMsg.CHANGE_TYPE_DELETE);
+        DBChangeMsg changeMsgPoints = new DBChangeMsg(0, DBChangeMsg.CHANGE_POINT_DB, DBChangeMsg.CAT_POINT, DBChangeMsg.CHANGE_TYPE_DELETE);
+        connToDispatch.write(changeMsgPao);
+        connToDispatch.write(changeMsgPoints);
+    }
+    
+    private BulkDataContainer runArgs(String[] args, BulkMeterDeleterService bulkMeterDeleterService){
         
-        List<LiteYukonPAObject> liteYukonPAOBjects = new ArrayList<LiteYukonPAObject>();
+        BulkDataContainer bulkDataContainer = new BulkDataContainer();
         for (int i = 0; i < args.length; i += 2) {
 
             // Takes care of the address bulk delete case
@@ -86,9 +100,9 @@ public class BulkMeterDeleter {
                     if (args[i + 1].equalsIgnoreCase("-range")) {
                         int addressValueA = Integer.parseInt(args[i + 2]);
                         int addressValueB = Integer.parseInt(args[i + 3]);
-                        liteYukonPAOBjects.addAll(bulkMeterDeleterService.showPAObjectsAddress(addressValueA,
-                                                                            addressValueB));
-
+                        bulkDataContainer = bulkMeterDeleterService.getPAObjectsByAddress(addressValueA,
+                                                                                          addressValueB,
+                                                                                          bulkDataContainer);
                         i += 2;
 
                     } else if (args[i + 1].equalsIgnoreCase("-inputFile")) {
@@ -96,11 +110,13 @@ public class BulkMeterDeleter {
 
                         for (String line : fileLines) {
                             int address = Integer.parseInt(line);
-                            liteYukonPAOBjects.addAll(bulkMeterDeleterService.showPAObjectsAddress(address));
+                            bulkDataContainer = bulkMeterDeleterService.getPAObjectsByAddress(address,
+                                                                                              bulkDataContainer);
                         }
 
                     } else {
-                        liteYukonPAOBjects.addAll(bulkMeterDeleterService.showPAObjectsAddress(Integer.parseInt(args[i + 1])));
+                        bulkDataContainer = bulkMeterDeleterService.getPAObjectsByAddress(Integer.parseInt(args[i + 1]),
+                                                                                          bulkDataContainer);
                     }
 
                 } catch (NumberFormatException e) {
@@ -115,10 +131,12 @@ public class BulkMeterDeleter {
                     List<String> fileLines = getFileLines(args[i + 2]);
 
                     for (String line : fileLines) {
-                        liteYukonPAOBjects.addAll(bulkMeterDeleterService.showPAObjectsPaoName(line));
+                        bulkDataContainer = bulkMeterDeleterService.getPAObjectsByPaoName(line,
+                                                                                          bulkDataContainer);
                     }
                 } else {
-                    liteYukonPAOBjects.addAll(bulkMeterDeleterService.showPAObjectsPaoName(args[i + 1]));
+                    bulkDataContainer = bulkMeterDeleterService.getPAObjectsByPaoName(args[i + 1],
+                                                                                      bulkDataContainer);
                 }
             }
 
@@ -128,18 +146,20 @@ public class BulkMeterDeleter {
                     List<String> fileLines = getFileLines(args[i + 2]);
 
                     for (String line : fileLines) {
-                        liteYukonPAOBjects.addAll(bulkMeterDeleterService.showPAObjectsMeterNumber(line));
+                        bulkDataContainer = bulkMeterDeleterService.getPAObjectsByMeterNumber(line,
+                                                                                              bulkDataContainer);
                     }
 
                     i++;
 
                 } else {
-                    liteYukonPAOBjects.addAll(bulkMeterDeleterService.showPAObjectsMeterNumber(args[i + 1]));
+                    bulkDataContainer = bulkMeterDeleterService.getPAObjectsByMeterNumber(args[i + 1],
+                                                                                          bulkDataContainer);
                 }
             }
         }
         
-        return liteYukonPAOBjects;
+        return bulkDataContainer;
     }
         
     public static void main(String[] args) {
@@ -161,20 +181,25 @@ public class BulkMeterDeleter {
         
         
         if (args.length > 1) {
-            List<LiteYukonPAObject> liteYukonPAOBjects = new ArrayList<LiteYukonPAObject>();
+            BulkDataContainer bulkDataContainer = deleter.runArgs(args, bulkMeterDeleterService);
             
-            liteYukonPAOBjects = deleter.runArgs(args, bulkMeterDeleterService);
-            
-            deleter.displayRemovableItems(liteYukonPAOBjects);
+            deleter.displayRemovableItems(bulkDataContainer.getYukonPAObjects());
 
-            if (bulkMeterDeleterService.getErrors().length() > 0) {
+            if (!bulkDataContainer.getFails().isEmpty()) {
                 System.out.println("** Errors were found during your scan.  Please resolve these errors and try again. **");
-                System.out.println(bulkMeterDeleterService.getErrors());
+                Map<String, List<String>> failsMap = bulkDataContainer.getFails();
+                for (String key : failsMap.keySet()) {
+                    List<String> temp = failsMap.get(key);
+                    for (String string : temp) {
+                        System.out.println("  Error found with the "+key+" = "+string);
+                    }
+                }
             }else{
-            // Removes all the yukonPAObjects after confirmed by the user
-            if (deleter.confirmationCommandLine()) {
-                bulkMeterDeleterService.remove(liteYukonPAOBjects);
-            }
+                // Removes all the yukonPAObjects after confirmed by the user
+                if (deleter.confirmationCommandLine()) {
+                    bulkMeterDeleterService.remove(bulkDataContainer);
+                    deleter.sendDBChangeMsg();
+                }
             
                 System.out.println("-- Process Complete --");
             }

@@ -22,6 +22,6 @@ public interface DBPersistentDao {
      * Write a DBChangeMsg for database CHANGE_TYPE_UPDATE
      * @param item
      */
-    public void performDBChangeBulk(List<DBPersistent> items, int transactionType);
+    public void performDBChangeWithNoMsg(List<DBPersistent> items, int transactionType);
     
 }

@@ -2,9 +2,11 @@ package com.cannontech.common.bulk.service.impl;
 
 import java.util.ArrayList;
 import java.util.List;
+import java.util.Map;
 
 import org.springframework.beans.factory.annotation.Required;
 
+import com.cannontech.common.bulk.BulkDataContainer;
 import com.cannontech.common.bulk.service.BulkMeterDeleterService;
 import com.cannontech.core.dao.DBPersistentDao;
 import com.cannontech.core.dao.DeviceDao;
@@ -15,83 +17,104 @@ import com.cannontech.database.db.DBPersistent;
 
 public class BulkMeterDeleterServiceImpl implements BulkMeterDeleterService {
 
-    private String errors = "";
     private DeviceDao deviceDao = null;
     private PaoDao paoDao = null;
     private DBPersistentDao dbPersistentDao = null;
 
-    public List<LiteYukonPAObject> showPAObjectsAddress(int address) {
-        List<LiteYukonPAObject> liteYukonPAObjects = new ArrayList<LiteYukonPAObject>();
-        liteYukonPAObjects.addAll(paoDao.getLiteYukonPaobjectsByAddress(address));
+    public BulkDataContainer getPAObjectsByAddress(int address, BulkDataContainer bulkDataContainer) {
+        List<LiteYukonPAObject> liteYukonPAObjects = bulkDataContainer.getYukonPAObjects();
+        List<LiteYukonPAObject> temp = paoDao.getLiteYukonPaobjectsByAddress(address);
+        boolean noYukonPAObjects = temp.isEmpty();
+        liteYukonPAObjects.addAll(temp);
+        bulkDataContainer.setYukonPAObjects(liteYukonPAObjects);
 
-        if (liteYukonPAObjects.isEmpty()) {
-            errors += "  Address does not exist -- " + address + "\n";
+        if (noYukonPAObjects) {
+            addError("address", address, bulkDataContainer);
         }
+        
 
-        return liteYukonPAObjects;
+        return bulkDataContainer;
     }
 
-    public List<LiteYukonPAObject> showPAObjectsAddress(int minRange,int maxRange) {
-        List<LiteYukonPAObject> liteYukonPAObjects = new ArrayList<LiteYukonPAObject>();
-
+    public BulkDataContainer getPAObjectsByAddress(int minRange,int maxRange, BulkDataContainer bulkDataContainer) {
+        List<LiteYukonPAObject> liteYukonPAObjects = bulkDataContainer.getYukonPAObjects();
         for (int address = minRange; address <= maxRange; address++) {
 
-            if (paoDao.getLiteYukonPaobjectsByAddress(address).isEmpty()) {
-                errors += "  Meter does not exist -- " + address + "\n";
+            List<LiteYukonPAObject> temp = paoDao.getLiteYukonPaobjectsByAddress(address);
+            boolean noYukonPAObjects = temp.isEmpty();
+            
+            if (noYukonPAObjects) {
+                addError("address", address, bulkDataContainer);
             } else {
-                liteYukonPAObjects.addAll(paoDao.getLiteYukonPaobjectsByAddress(address));
+                liteYukonPAObjects.addAll(temp);
             }
         }
+        bulkDataContainer.setYukonPAObjects(liteYukonPAObjects);
 
-        return liteYukonPAObjects;
+        return bulkDataContainer;
     }
 
-    public List<LiteYukonPAObject> showPAObjectsMeterNumber(String meterNumber) {
-        List<LiteYukonPAObject> liteYukonObjects = deviceDao.getLiteYukonPaobjectListByMeterNumber(meterNumber);
+    public BulkDataContainer getPAObjectsByMeterNumber(String meterNumber, BulkDataContainer bulkDataContainer) {
+        List<LiteYukonPAObject> liteYukonPAObjects = bulkDataContainer.getYukonPAObjects();
+        List<LiteYukonPAObject> temp = deviceDao.getLiteYukonPaobjectListByMeterNumber(meterNumber);
+        boolean noYukonPAObjects = temp.isEmpty();
+        liteYukonPAObjects.addAll(temp);
+        bulkDataContainer.setYukonPAObjects(liteYukonPAObjects);
 
-        if (liteYukonObjects.isEmpty()) {
-            errors += "  Meter does not exist -- " + meterNumber + "\n";
+        if (noYukonPAObjects) {
+            addError("meterNumber", meterNumber, bulkDataContainer);
         }
 
-        return liteYukonObjects;
+        return bulkDataContainer;
     }
 
     /*
      * public List<LiteYukonPAObject> showPAObjectsMeterNumber(int minRange,
      * int maxRange) { }
      */
-    public List<LiteYukonPAObject> showPAObjectsPaoName(String paoName) {
-        List<LiteYukonPAObject> liteYukonObjects = paoDao.getLiteYukonPaoByName(paoName,
-                                                                                false);
+    public BulkDataContainer getPAObjectsByPaoName(String paoName, BulkDataContainer bulkDataContainer) {
+        List<LiteYukonPAObject> liteYukonPAObjects = bulkDataContainer.getYukonPAObjects();
+        List<LiteYukonPAObject> temp = paoDao.getLiteYukonPaoByName(paoName, false);
+        boolean noYukonPAObjects = temp.isEmpty();
+        liteYukonPAObjects.addAll(temp);
+        bulkDataContainer.setYukonPAObjects(liteYukonPAObjects);
 
-        if (liteYukonObjects.isEmpty()) {
-            errors += "  Name does not exist -- " + paoName + "\n";
+        if (noYukonPAObjects) {
+            addError("paoName", paoName, bulkDataContainer);
         }
 
-        return liteYukonObjects;
+        return bulkDataContainer;
     }
     
-    public void remove(List<LiteYukonPAObject> liteYukonObjects) {
-        if (!(errors.length() > 0)) {
+    public void remove(BulkDataContainer bulkDataContainer) {
+        if (bulkDataContainer.getFails().isEmpty()) {
 
+            List<LiteYukonPAObject> liteYukonObjects = bulkDataContainer.getYukonPAObjects();
             List<DBPersistent> liteYukonPersistentItems = new ArrayList<DBPersistent>();
             for (LiteYukonPAObject liteYukonObject : liteYukonObjects) {
                 DBPersistent liteYukonPersistentItem = dbPersistentDao.retrieveDBPersistent(liteYukonObject);
                 liteYukonPersistentItems.add(liteYukonPersistentItem);
             }
-            dbPersistentDao.performDBChangeBulk(liteYukonPersistentItems,
-                                                Transaction.DELETE);
+            dbPersistentDao.performDBChangeWithNoMsg(liteYukonPersistentItems,
+                                                     Transaction.DELETE);
         }
     }
 
-    /**
-     * This method returns any errors that may have happened during removal
-     * @return
-     */
-    public String getErrors() {
-        return errors;
+    private void addError(String key, Object obj, BulkDataContainer bulkDataContainer){
+        Map<String, List<String>> fails = bulkDataContainer.getFails();
+        List<String> failsList = null;
+        if(fails.containsKey(key)){
+            failsList = fails.get(key);
+            
+        }else{
+            failsList = new ArrayList<String>(); 
+        }
+                
+        failsList.add(obj.toString());
+        fails.put(key, failsList);
+        bulkDataContainer.setFails(fails);
     }
-
+    
     @Required
     public void setDeviceDao(DeviceDao deviceDao) {
         this.deviceDao = deviceDao;

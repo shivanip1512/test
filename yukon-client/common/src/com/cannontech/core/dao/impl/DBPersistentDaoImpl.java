@@ -16,7 +16,6 @@ import com.cannontech.database.cache.CacheDBChangeListener;
 import com.cannontech.database.data.lite.LiteBase;
 import com.cannontech.database.data.lite.LiteFactory;
 import com.cannontech.database.data.multi.MultiDBPersistent;
-import com.cannontech.database.data.pao.PAOGroups;
 import com.cannontech.database.db.CTIDbChange;
 import com.cannontech.database.db.DBPersistent;
 import com.cannontech.message.dispatch.message.DBChangeMsg;
@@ -113,25 +112,8 @@ public class DBPersistentDaoImpl implements DBPersistentDao
     /* (non-Javadoc)
      * @see com.cannontech.core.dao.DBPersistentDao#performDBChange(com.cannontech.database.db.DBPersistent, com.cannontech.yukon.IServerConnection, int)
      */
-    public void performDBChangeBulk(List<DBPersistent> items, IServerConnection connToDispatch, int transactionType)
+    public void performDBChangeWithNoMsg(List<DBPersistent> items, int transactionType)
     {
-        int dbChangeType = -1;
-        
-        switch(transactionType)
-        {
-            case Transaction.INSERT:
-                dbChangeType = DBChangeMsg.CHANGE_TYPE_ADD;
-                break;
-            case Transaction.DELETE:
-                dbChangeType = DBChangeMsg.CHANGE_TYPE_DELETE;
-                break;
-            case Transaction.UPDATE:
-                dbChangeType = DBChangeMsg.CHANGE_TYPE_UPDATE;
-                break;
-            default:
-                dbChangeType = DBChangeMsg.CHANGE_TYPE_NONE;
-        }
-
         try
         {
             MultiDBPersistent objectsToDelete = new MultiDBPersistent();
@@ -143,14 +125,7 @@ public class DBPersistentDaoImpl implements DBPersistentDao
             Transaction t = Transaction.createTransaction( transactionType, objectsToDelete);
             t.execute();
 
-            //write the DBChangeMessage out to Dispatch since it was a Successfull UPDATE
-            if (dbChangeType != DBChangeMsg.CHANGE_TYPE_NONE)
-            {
-                DBChangeMsg changeMsgPao = new DBChangeMsg(0, DBChangeMsg.CHANGE_PAO_DB, PAOGroups.STRING_CAT_DEVICE, DBChangeMsg.CHANGE_TYPE_DELETE);
-                DBChangeMsg changeMsgPoints = new DBChangeMsg(0, DBChangeMsg.CHANGE_POINT_DB, DBChangeMsg.CAT_POINT, DBChangeMsg.CHANGE_TYPE_DELETE);
-                connToDispatch.write(changeMsgPao);
-                connToDispatch.write(changeMsgPoints);
-            }
+            
         }
         catch( TransactionException e )
         {
@@ -159,14 +134,6 @@ public class DBPersistentDaoImpl implements DBPersistentDao
         }
     }
 
-    /* (non-Javadoc)
-     * @see com.cannontech.core.dao.DBPersistentDao#performDBChange(com.cannontech.database.db.DBPersistent, int)
-     */
-    public void performDBChangeBulk(List<DBPersistent> items, int transactionType) {
-        IServerConnection dispatchConn = ConnPool.getInstance().getDefDispatchConn();
-        performDBChangeBulk(items, dispatchConn, transactionType);
-    }
-    
     public void setDatabaseCache(IDatabaseCache databaseCache) {
         this.databaseCache = databaseCache;
     }

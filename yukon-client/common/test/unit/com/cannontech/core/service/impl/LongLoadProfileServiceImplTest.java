@@ -144,10 +144,11 @@ public class LongLoadProfileServiceImplTest {
                     };
             }
 
-            public void performDBChangeBulk(List<DBPersistent> items, int transactionType) {
-                // TODO Auto-generated method stub
-                
-            }
+			public void performDBChangeWithNoMsg(List<DBPersistent> items, int transactionType) {
+				// TODO Auto-generated method stub
+				
+			}
+
         });
         
         serviceDebug.setDateFormattingService(new DateFormattingServiceImpl(){

@@ -1,8 +1,6 @@
 package com.cannontech.common.bulk.service;
 
-import java.util.List;
-
-import com.cannontech.database.data.lite.LiteYukonPAObject;
+import com.cannontech.common.bulk.BulkDataContainer;
 
 public interface BulkMeterDeleterService {
 
@@ -10,12 +8,11 @@ public interface BulkMeterDeleterService {
      * Returns a list of all the PAObjects that will be effected by a remove command
      * 
      */
-    public List<LiteYukonPAObject> showPAObjectsAddress(int address);
-    public List<LiteYukonPAObject> showPAObjectsAddress(int minRange, int maxRange);
-    public List<LiteYukonPAObject> showPAObjectsMeterNumber(String meterNumber);
-    public List<LiteYukonPAObject> showPAObjectsPaoName(String paoName);
+    public BulkDataContainer getPAObjectsByAddress(int address, BulkDataContainer bulkDataContainer);
+    public BulkDataContainer getPAObjectsByAddress(int minRange, int maxRange, BulkDataContainer bulkDataContainer);
+    public BulkDataContainer getPAObjectsByMeterNumber(String meterNumber, BulkDataContainer bulkDataContainer);
+    public BulkDataContainer getPAObjectsByPaoName(String paoName, BulkDataContainer bulkDataContainer);
     
-    public void remove(List<LiteYukonPAObject> liteYukonPAObjects);
-    public String getErrors();
-
+    public void remove(BulkDataContainer bulkDataContainer);
+    
 }
