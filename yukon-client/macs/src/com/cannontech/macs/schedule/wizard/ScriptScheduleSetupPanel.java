@@ -160,10 +160,20 @@ public class ScriptScheduleSetupPanel extends DataInputPanel implements JCValueL
      * Constructor
      */
     public ScriptScheduleSetupPanel() {
+        this(false);
+    }
+
+    /**
+     * Constructor
+     */
+    public ScriptScheduleSetupPanel(boolean editMode) {
         super();
     	initialize();
+    	
+    	if( !editMode )
+    		//Don't init the connections during edit Mode, they are inited in the setValues call instead
+    		initializeConnections();
     }
-    
     /**
      * Method to handle events for the ActionListener interface.
      * @param e java.awt.event.ActionEvent

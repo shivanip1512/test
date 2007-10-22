@@ -62,7 +62,7 @@ public Object[] createNewPanel(int panelIndex)
 			break;
 
 		case 1:
-			objs[0] = new ScriptScheduleSetupPanel();
+			objs[0] = new ScriptScheduleSetupPanel(true);
 			objs[1] = "Script";
 			break;
 
