@@ -438,11 +438,18 @@ function editorPost()
 // -------------------------------------------
 function copyPost()
 {
+	var elemAreas = document.getElementsByName('cti_chkbxAreas');
     var elemSubs = document.getElementsByName('cti_chkbxSubs');
     var elemFdrs = document.getElementsByName('cti_chkbxFdrs');
     var elemBanks = document.getElementsByName('cti_chkbxBanks');
     var elemPoints = document.getElementsByName('cti_chkbxPoints');
 
+    if ( elemAreas.length > 0 ){
+		//Cannot Copy area's forwarding to the creation wizard.
+    	window.location = '/editor/cbcWizBase.jsf?type=4002';
+    	return;
+    }
+    
     var validElems = new Array();
     var isPoint = 0;
     var isCap = 0;
