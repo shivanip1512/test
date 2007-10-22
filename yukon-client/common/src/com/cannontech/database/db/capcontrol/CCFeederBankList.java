@@ -139,8 +139,8 @@ public static java.util.ArrayList getCapBanksOnFeederList(Integer feederId, java
 							feederId, 
 							new Integer( rset.getInt("DeviceID") ),
 							new Float( rset.getFloat("ControlOrder")) ,
-                            new Float (rset.getInt("CloseOrder")),
-                            new Float (rset.getInt("TripOrder")))
+                            new Float (rset.getFloat("CloseOrder")),
+                            new Float (rset.getFloat("TripOrder")))
                         );
                             
                         
