@@ -7,7 +7,10 @@ public class KnownExceptionType {
         private String friendlyExceptionPropertyKey = null;
         
         public boolean matchesException(Throwable exception) {
-            return this.exceptionClass.isInstance(exception);
+            
+            Throwable rootException = CtiUtilities.getRootCause(exception);
+            
+            return this.exceptionClass.isInstance(rootException);
         }
         
         public Class<? extends Throwable> getExceptionClass() {

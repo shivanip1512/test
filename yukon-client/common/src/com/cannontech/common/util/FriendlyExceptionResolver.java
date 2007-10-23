@@ -5,20 +5,18 @@ import java.util.Locale;
 import java.util.Properties;
 import java.util.Set;
 
-import org.apache.commons.lang.exception.ExceptionUtils;
-
 public class FriendlyExceptionResolver {
 
-        Set<KnownExceptionType> knownExceptions = new HashSet<KnownExceptionType>();
-        Properties exceptionStrings;
-        
-        // getFriendlyExceptionMessage - default to US locale
-        public String getFriendlyExceptionMessage(Throwable exception){
-            return getFriendlyExceptionMessage(exception, Locale.US);
-        }
-        
-        // getFriendlyExceptionMessage
-        public String getFriendlyExceptionMessage(Throwable exception, Locale locale) {
+    Set<KnownExceptionType> knownExceptions = new HashSet<KnownExceptionType>();
+    Properties exceptionStrings;
+
+    // getFriendlyExceptionMessage - default to US locale
+    public String getFriendlyExceptionMessage(Throwable exception){
+        return getFriendlyExceptionMessage(exception, Locale.US);
+    }
+
+    // getFriendlyExceptionMessage
+    public String getFriendlyExceptionMessage(Throwable exception, Locale locale) {
 
         String friendlyExceptionMessage = null;
 
@@ -36,55 +34,38 @@ public class FriendlyExceptionResolver {
 
         return friendlyExceptionMessage;
     }
-        
-        // find matching KnownExceptionType
-        private KnownExceptionType getKnownExceptionType(Throwable exception){
-            
-            Throwable rootException = getRootException(exception);
-            
-            KnownExceptionType matchingKnownExceptionType = null;
-            
-            for(KnownExceptionType k : knownExceptions){
-                if(k.matchesException(rootException)){
-                    matchingKnownExceptionType = k;
-                    break;
-                }
+
+    // find matching KnownExceptionType
+    private KnownExceptionType getKnownExceptionType(Throwable exception){
+
+        KnownExceptionType matchingKnownExceptionType = null;
+
+        for(KnownExceptionType k : knownExceptions){
+            if(k.matchesException(exception)){
+                matchingKnownExceptionType = k;
+                break;
             }
-            
-            return matchingKnownExceptionType;
-        }
-        
-        // helper to get root exception
-        private Throwable getRootException(Throwable exception) {
-           
-            Throwable t = exception;
-            while(t != null){
-                
-                Throwable cause = ExceptionUtils.getCause(t);
-                if (cause == null) {
-                    break;
-                }
-                t = cause;
-            }
-            return t;
-        }
-      
-
-        // setter/getters
-        public Set<KnownExceptionType> getKnownExceptions() {
-            return knownExceptions;
         }
 
-        public void setKnownExceptions(Set<KnownExceptionType> knownExceptions) {
-            this.knownExceptions = knownExceptions;
-        }
+        return matchingKnownExceptionType;
+    }
 
-        public Properties getExceptionStrings() {
-            return exceptionStrings;
-        }
 
-        public void setExceptionStrings(Properties exceptionStrings) {
-            this.exceptionStrings = exceptionStrings;
-        }
-    
+    // setter/getters
+    public Set<KnownExceptionType> getKnownExceptions() {
+        return knownExceptions;
+    }
+
+    public void setKnownExceptions(Set<KnownExceptionType> knownExceptions) {
+        this.knownExceptions = knownExceptions;
+    }
+
+    public Properties getExceptionStrings() {
+        return exceptionStrings;
+    }
+
+    public void setExceptionStrings(Properties exceptionStrings) {
+        this.exceptionStrings = exceptionStrings;
+    }
+
 }
