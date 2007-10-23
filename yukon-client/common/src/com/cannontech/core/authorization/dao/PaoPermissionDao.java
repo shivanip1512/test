@@ -93,6 +93,12 @@ public interface PaoPermissionDao<T> {
      * @param it - Thing to remove permissions for
      */
     public void removeAllPermissions(T it);
+    
+    /**
+     * Method to remove all matching permissions for a given thing.
+     * @param it - Thing to remove permissions for
+     */
+    public void removeAllPermissions(T it, Permission permission);
 
     /**
      * Method to remove all permissions for a given thing. (Can be used when

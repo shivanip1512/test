@@ -421,7 +421,7 @@
     <body-content>scriptless</body-content>
     <attribute>
       <name>pickerId</name>
-      <required>true</required>
+      <required>false</required>
       <rtexprvalue>true</rtexprvalue>
     </attribute>
     <attribute>
@@ -432,7 +432,7 @@
    <attribute>
       <name>constraint</name>
       <required>false</required>
-      <rtexprvalue>false</rtexprvalue>
+      <rtexprvalue>true</rtexprvalue>
     </attribute>
    <attribute>
       <name>paoNameElement</name>
@@ -447,7 +447,7 @@
     <attribute>
       <name>finalTriggerAction</name>
       <required>false</required>
-      <rtexprvalue>false</rtexprvalue>
+      <rtexprvalue>true</rtexprvalue>
     </attribute>
   </tag>
   
@@ -662,7 +662,15 @@
     <name>jsonString</name>
     <function-class>com.cannontech.web.widget.support.WidgetUtils</function-class>
     <function-signature>
-        java.lang.String generateJsonString(java.util.Map)
+        java.lang.String generateJsonString(java.lang.Object)
+    </function-signature>
+  </function>
+    
+  <function>
+    <name>jsSafe</name>
+    <function-class>com.cannontech.web.widget.support.WidgetUtils</function-class>
+    <function-signature>
+        java.lang.String generateSafeJsString(java.lang.Object)
     </function-signature>
   </function>
     

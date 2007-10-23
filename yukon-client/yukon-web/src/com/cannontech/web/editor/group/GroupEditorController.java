@@ -4,19 +4,16 @@ import javax.servlet.ServletException;
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
 
+import org.springframework.web.bind.ServletRequestUtils;
 import org.springframework.web.servlet.ModelAndView;
+import org.springframework.web.servlet.mvc.multiaction.MultiActionController;
 
 import com.cannontech.core.dao.YukonGroupDao;
 import com.cannontech.database.data.lite.LiteYukonGroup;
-import com.cannontech.web.editor.UserGroupEditorControllerBase;
 
-public class GroupEditorController extends UserGroupEditorControllerBase<LiteYukonGroup> {
+public class GroupEditorController extends MultiActionController {
 
     private YukonGroupDao yukonGroupDao;
-
-    public GroupEditorController() {
-        super();
-    }
 
     public YukonGroupDao getYukonGroupDao() {
         return yukonGroupDao;
@@ -31,30 +28,11 @@ public class GroupEditorController extends UserGroupEditorControllerBase<LiteYuk
 
         ModelAndView mav = new ModelAndView("group/editGroup.jsp");
 
-        LiteYukonGroup group = getAffected(request);
+        int groupId = ServletRequestUtils.getRequiredIntParameter(request, "groupId");
+        LiteYukonGroup group = yukonGroupDao.getLiteYukonGroup(groupId);
         mav.addObject("group", group);
-
-        putPaosInModel(mav, group);
 
         return mav;
     }
 
-    @Override
-    protected LiteYukonGroup getAffected(HttpServletRequest request) {
-        String groupId = request.getParameter("groupId");
-
-        LiteYukonGroup group = yukonGroupDao.getLiteYukonGroup(Integer.valueOf(groupId));
-
-        return group;
-    }
-
-    @Override
-    protected String getPickerId() {
-        return "newGroupPaoPicker";
-    }
-
-	@Override
-	protected String getCbcPickerId() {
-		return "newGroupCbcPaoPicker";
-	}
 }

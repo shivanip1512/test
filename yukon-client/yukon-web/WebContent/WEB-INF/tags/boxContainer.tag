@@ -23,11 +23,13 @@
 				<img 
 					class="minMax" 
 					id="${thisId}_minusImg" 
-					src="<c:url value="/WebConfig/yukon/Icons/clearbits/subtract.gif"/>"></img> 	
+                    alt="hide"
+					src="<c:url value="/WebConfig/yukon/Icons/clearbits/subtract.gif"/>">	
 				<img 
 					class="minMax" 
 					id="${thisId}_plusImg" 
-					src="<c:url value="/WebConfig/yukon/Icons/clearbits/add.gif"/>"></img>
+                    alt="show"
+					src="<c:url value="/WebConfig/yukon/Icons/clearbits/add.gif"/>">
 			</c:if>
 		</div>
 	</div>
@@ -37,9 +39,12 @@
 	</div>    
 	            
 </div>
+<c:if test="${empty showInitially}">
+  <c:set var="showInitially" value="${true}"/> <%-- show by default --%>
+</c:if>
 
 <c:if test="${(hideEnabled == null) || hideEnabled}">
 	<script type="text/javascript">
-		boxContainerSetup('${thisId}', ${showInitially ? true : false}, '${title}');
+		boxContainerSetup('${thisId}', ${showInitially ? 'true' : 'false'}, '${cti:jsSafe(title)}');
 	</script>
 </c:if>

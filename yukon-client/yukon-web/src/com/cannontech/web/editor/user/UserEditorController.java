@@ -4,13 +4,14 @@ import javax.servlet.ServletException;
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
 
+import org.springframework.web.bind.ServletRequestUtils;
 import org.springframework.web.servlet.ModelAndView;
+import org.springframework.web.servlet.mvc.multiaction.MultiActionController;
 
 import com.cannontech.core.dao.YukonUserDao;
 import com.cannontech.database.data.lite.LiteYukonUser;
-import com.cannontech.web.editor.UserGroupEditorControllerBase;
 
-public class UserEditorController extends UserGroupEditorControllerBase<LiteYukonUser> {
+public class UserEditorController extends MultiActionController {
 
     private YukonUserDao yukonUserDao;
 
@@ -31,30 +32,11 @@ public class UserEditorController extends UserGroupEditorControllerBase<LiteYuko
 
         ModelAndView mav = new ModelAndView("user/editUser.jsp");
 
-        LiteYukonUser user = getAffected(request);
+        int userId = ServletRequestUtils.getRequiredIntParameter(request, "userId");
+        LiteYukonUser user = yukonUserDao.getLiteYukonUser(userId);
         mav.addObject("user", user);
-
-        putPaosInModel(mav, user);
 
         return mav;
     }
     
-    @Override
-    protected LiteYukonUser getAffected(HttpServletRequest request) {
-        String userId = request.getParameter("userId");
-
-        LiteYukonUser user = yukonUserDao.getLiteYukonUser(Integer.valueOf(userId));
-        
-        return user;
-    }
-
-    @Override
-    protected String getPickerId() {
-        return "newUserPaoPicker";
-    }
-    
-    @Override
-    protected String getCbcPickerId() {
-        return "newCbcUserPaoPicker";
-    }
 }

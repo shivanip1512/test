@@ -36,6 +36,36 @@
         <property name="required" value="true"/>
     </bean>
 
+    <bean id="widgetInput.constraint" class="com.cannontech.web.widget.support.SimpleWidgetInput">
+        <property name="name" value="constraint"/>
+        <property name="description" value="a FQN for a lucene searcher constaint"/>
+        <property name="required" value="true"/>
+    </bean>
+
+    <bean id="widgetInput.permission" class="com.cannontech.web.widget.support.SimpleWidgetInput">
+        <property name="name" value="permission"/>
+        <property name="description" value="the name of one of the Permission enums"/>
+        <property name="required" value="true"/>
+    </bean>
+
+    <bean id="widgetInput.permissionAllow" class="com.cannontech.web.widget.support.SimpleWidgetInput">
+        <property name="name" value="allow"/>
+        <property name="description" value="whether this permission is being allowed or denied"/>
+        <property name="required" value="true"/>
+    </bean>
+
+    <bean id="widgetInput.groupId" class="com.cannontech.web.widget.support.SimpleWidgetInput">
+        <property name="name" value="groupId"/>
+        <property name="description" value="the id of ta Yukon user group"/>
+        <property name="required" value="true"/>
+    </bean>
+
+    <bean id="widgetInput.userId" class="com.cannontech.web.widget.support.SimpleWidgetInput">
+        <property name="name" value="userId"/>
+        <property name="description" value="the id of a Yukon user"/>
+        <property name="required" value="true"/>
+    </bean>
+
     <bean id="accountInformationWidget"
     	class="com.cannontech.web.widget.AccountInformationWidget">
     	<property name="identityPath" value="common/deviceIdentity.jsp" />
@@ -224,6 +254,42 @@
         <property name="yukonUserDao" ref="yukonUserDao"/>
         <property name="contactDao" ref="contactDao"/>
         
+    </bean>
+    
+    <bean id="userPermissionEditorWidget"
+    	class="com.cannontech.web.widget.UserPermissionEditorWidget">
+    	<property name="title" value="User Permission Editor"/>
+        <property name="identityPath" value="common/userPermissionIdentity.jsp" />
+        <property name="inputs">
+           <set>
+              <ref local="widgetInput.constraint"/>
+              <ref local="widgetInput.permission"/>
+              <ref local="widgetInput.permissionAllow"/>
+              <ref local="widgetInput.userId"/>
+           </set>
+        </property>
+        <property name="yukonUserDao" ref="yukonUserDao"/>
+        <property name="paoDao" ref="paoDao"/>
+        <property name="paoGroups" ref="paoGroupsWrapper"/>
+        <property name="editorService" ref="userEditorService"/>
+    </bean>
+    
+    <bean id="groupPermissionEditorWidget"
+    	class="com.cannontech.web.widget.GroupPermissionEditorWidget">
+    	<property name="title" value="Group Permission Editor"/>
+        <property name="identityPath" value="common/groupPermissionIdentity.jsp" />
+        <property name="inputs">
+           <set>
+              <ref local="widgetInput.constraint"/>
+              <ref local="widgetInput.permission"/>
+              <ref local="widgetInput.permissionAllow"/>
+              <ref local="widgetInput.groupId"/>
+           </set>
+        </property>
+        <property name="yukonGroupDao" ref="yukonGroupDao"/>
+        <property name="paoDao" ref="paoDao"/>
+        <property name="paoGroups" ref="paoGroupsWrapper"/>
+        <property name="editorService" ref="groupEditorService"/>
     </bean>
     
     <!-- Update Service -->

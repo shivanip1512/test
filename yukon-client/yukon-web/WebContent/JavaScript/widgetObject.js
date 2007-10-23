@@ -57,6 +57,10 @@ JsWidgetObject.prototype = {
     new Ajax.Updater(theContainer, url, {'parameters': oldParams, 'evalScripts': true, 'onSuccess': localSuccess});
   },
   
+  setParameter: function(name, value){
+  	this.parameters[name] = value;
+  },
+
   setupLink: function(key, jsonData){
   	this.linkInfo[key] = jsonData;
   },

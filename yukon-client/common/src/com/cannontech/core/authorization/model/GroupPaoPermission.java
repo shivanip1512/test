@@ -47,8 +47,8 @@ public class GroupPaoPermission implements PaoPermission {
     public boolean getAllow(){
         return allow;
     }
-    public void setAllow( String allow )
+    public void setAllow( boolean allow )
     {
-        this.allow = Boolean.valueOf(allow);
+        this.allow = allow;
     }
 }

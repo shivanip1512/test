@@ -6,7 +6,7 @@ import javax.servlet.jsp.JspException;
 import javax.servlet.jsp.tagext.SimpleTagSupport;
 
 public class ItemPickerTag extends SimpleTagSupport {
-    protected String pickerId; 
+    protected String pickerId = null; 
     protected String itemIdField;
     protected String constraint;
     protected String itemNameElement;
@@ -25,6 +25,11 @@ public class ItemPickerTag extends SimpleTagSupport {
             spTag.addScriptFile(newPickerJsFile);
             spTag.addScriptFile("/JavaScript/tableCreation.js");
             spTag.addCSSFile("/WebConfig/yukon/styles/itemPicker.css");
+        }
+        
+        // if pickerId is null, pick random
+        if (pickerId == null) {
+            pickerId = UniqueIdentifierTag.generateIdentifier(getJspContext(), "picker_");
         }
     }
     

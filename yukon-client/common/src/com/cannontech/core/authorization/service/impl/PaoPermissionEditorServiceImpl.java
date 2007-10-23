@@ -44,7 +44,7 @@ public class PaoPermissionEditorServiceImpl<T> implements PaoPermissionEditorSer
     public boolean savePermissions(T group, List<Integer> idList, Permission permission, boolean allow) {
 
         // Remove existing pao permissions
-        permissionDao.removeAllPermissions(group);
+        permissionDao.removeAllPermissions(group, permission);
 
         // Add new pao permissions
         for (Integer id : idList) {

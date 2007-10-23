@@ -44,12 +44,14 @@ public class UserPaoPermission implements PaoPermission {
     public String toString() {
         return userId + ", " + paoId + ", " + permission + ", " + allow;
     }
+    
     public boolean getAllow()
     {
         return allow;
     }
-    public void setAllow( String allow )
+    
+    public void setAllow(boolean allow)
     {
-        this.allow = Boolean.valueOf(allow);
+        this.allow = allow;
     }
 }

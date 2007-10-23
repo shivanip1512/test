@@ -26,7 +26,11 @@ Event.observe(window,'load', function() {${widgetParameters.jsWidget}.render()})
 </c:if>
 </script>
 
-<div id="widgetWrapper_${widgetParameters.widgetId}" style="width: ${widgetParameters.width}px;">
+<c:if test="${empty widgetParameters.width}">
+  <c:set target="${widgetParameters}" property="width" value="100%"/>
+</c:if>
+
+<div id="widgetWrapper_${widgetParameters.widgetId}" style="width: ${widgetParameters.width};">
 
 <c:set var="showIdentity" value="${widgetParameters.identify and beanInst.hasIdentity}"/>
 <c:if test="${showIdentity}">
@@ -39,7 +43,7 @@ Event.observe(window,'load', function() {${widgetParameters.jsWidget}.render()})
 
 <ct:boxContainer title="${containerTitle}" id="widgetTitledContainer_${widgetParameters.widgetId}" styleClass="widgetContainer" hideEnabled="${empty hideEnabled ? true : hideEnabled}">
 
-<div id="widgetContainer_${widgetParameters.widgetId}" style="height: ${widgetParameters.height}; width: ${widgetParameters.width - 10}px;">
+<div id="widgetContainer_${widgetParameters.widgetId}" style="height: ${widgetParameters.height};">
 <c:choose>
 <c:when test="${beanInst.lazyLoad}">
 <img src="<c:url value="/WebConfig/yukon/Icons/indicator_arrows.gif"/>">
