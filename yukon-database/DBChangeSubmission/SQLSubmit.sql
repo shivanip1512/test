@@ -37,8 +37,14 @@ update BillingFileFormats, set FormatType = 'DAFFRON' where formatType = 'DAFRON
 /*start: Add to Head only -Thain*/
 
 alter table userPaoPermission add Allow varchar(5);
+update UserPaoPermission set Allow = 'ALLOW';
 alter table groupPaoPermission add Allow varchar(5);
+update GroupPaoPermission set Allow = 'ALLOW';
 
+/* 
+   UserPaoPermission needs a unique constraint on (userId, paoId, permission)
+   GroupPaoPermission needs a unique constraint on (groupId, paoId, permission)
+*/
 /*end*/
 
 /* start: YUK-4191 Long Load Profile Widget -- mike p*/
