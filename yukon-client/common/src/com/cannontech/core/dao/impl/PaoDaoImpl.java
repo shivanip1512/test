@@ -34,11 +34,7 @@ import com.cannontech.yukon.IDatabaseCache;
 public final class PaoDaoImpl implements PaoDao {
     private static final String litePaoSql = "SELECT y.PAObjectID, y.Category, y.PAOName, " + "y.Type, y.PAOClass, y.Description, y.DisableFlag, d.PORTID, dcs.ADDRESS, dr.routeid " + "FROM yukonpaobject y left outer join devicedirectcommsettings d " + "on y.paobjectid = d.deviceid " + "left outer join devicecarriersettings DCS ON Y.PAOBJECTID = DCS.DEVICEID " + "left outer join deviceroutes dr on y.paobjectid = dr.deviceid ";
 
-    private static final RowMapper litePaoRowMapper = new RowMapper() {
-        public Object mapRow(ResultSet rs, int rowNum) throws SQLException {
-            return createLiteYukonPAObject(rs);
-        };
-    };
+    private final RowMapper litePaoRowMapper = new LitePaoRowMapper();
 
     private JdbcOperations jdbcOps;
     private IDatabaseCache databaseCache;
@@ -313,45 +309,6 @@ public final class PaoDaoImpl implements PaoDao {
 
     public void setAuthDao(AuthDao authDao) {
         this.authDao = authDao;
-    }
-
-    private static LiteYukonPAObject createLiteYukonPAObject(
-            java.sql.ResultSet rset) throws SQLException {
-        int paoID = rset.getInt(1);
-        String paoCategory = rset.getString(2).trim();
-        String paoName = rset.getString(3).trim();
-        String paoType = rset.getString(4).trim();
-        String paoClass = rset.getString(5).trim();
-        String paoDescription = rset.getString(6).trim();
-        String paoDisableFlag = rset.getString(7).trim();
-
-        LiteYukonPAObject pao = new LiteYukonPAObject(paoID,
-                                                      paoName,
-                                                      PAOGroups.getCategory(paoCategory),
-                                                      PAOGroups.getPAOType(paoCategory,
-                                                                           paoType),
-                                                      PAOGroups.getPAOClass(paoCategory,
-                                                                            paoClass),
-                                                      paoDescription,
-                                                      paoDisableFlag);
-
-        int portId = rset.getInt(8);
-        if (!rset.wasNull()) {
-            pao.setPortID(portId);
-        }
-
-        int address = rset.getInt(9);
-        if (!rset.wasNull()) {
-            pao.setAddress(address);
-        }
-
-        int routeId = rset.getInt(10);
-        if (!rset.wasNull()) {
-            pao.setRouteID(routeId);
-        }
-
-        return pao;
-
     }
 
     public List getAllSubsForUser(LiteYukonUser user) {

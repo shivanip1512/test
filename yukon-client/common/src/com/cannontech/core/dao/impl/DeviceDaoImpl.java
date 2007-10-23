@@ -34,13 +34,9 @@ public final class DeviceDaoImpl implements DeviceDao {
     "on y.paobjectid = d.deviceid " + 
     "left outer join devicecarriersettings DCS ON Y.PAOBJECTID = DCS.DEVICEID " + 
     "left outer join deviceroutes dr on y.paobjectid = dr.deviceid ";
-    
-    private static final RowMapper litePaoRowMapper = new RowMapper() {
-        public Object mapRow(ResultSet rs, int rowNum) throws SQLException {
-            return createLiteYukonPAObject(rs);
-        };
-    };
 
+    private final RowMapper litePaoRowMapper = new LitePaoRowMapper();
+    
     private JdbcOperations jdbcOps;
     private PaoDao paoDao;
     private IDatabaseCache databaseCache;
@@ -167,8 +163,6 @@ public LiteYukonPAObject getLiteYukonPAObject(String deviceName, String category
     return getLiteYukonPAObject(deviceName, categoryInt, paoClassInt, typeInt);
 }
 
-
-
 /* (non-Javadoc)
  * @see com.cannontech.core.dao.DeviceDao#getDevicesByPort(int)
  */
@@ -183,44 +177,6 @@ public List getDevicesByPort(int portId)
 public List getDevicesByDeviceAddress(Integer masterAddress, Integer slaveAddress) {
     List devicesByAddress = databaseCache.getDevicesByDeviceAddress(masterAddress, slaveAddress);
     return devicesByAddress;
-}
-
-private static LiteYukonPAObject createLiteYukonPAObject(java.sql.ResultSet rset) throws SQLException {
-
-    int paoID = rset.getInt(1);
-    String paoCategory = rset.getString(2).trim();
-    String paoName = rset.getString(3).trim();
-    String paoType = rset.getString(4).trim();
-    String paoClass = rset.getString(5).trim();
-    String paoDescription = rset.getString(6).trim();
-    String paoDisableFlag = rset.getString(7).trim();
-
-    LiteYukonPAObject pao = new LiteYukonPAObject(paoID,
-                                                  paoName,
-                                                  PAOGroups.getCategory(paoCategory),
-                                                  PAOGroups.getPAOType(paoCategory,
-                                                                       paoType),
-                                                  PAOGroups.getPAOClass(paoCategory,
-                                                                        paoClass),
-                                                  paoDescription,
-                                                  paoDisableFlag);
-
-    int portId = rset.getInt(8);
-    if (!rset.wasNull()) {
-        pao.setPortID(portId);
-    }
-
-    int address = rset.getInt(9);
-    if (!rset.wasNull()) {
-        pao.setAddress(address);
-    }
-
-    int routeId = rset.getInt(10);
-    if (!rset.wasNull()) {
-        pao.setRouteID(routeId);
-    }
-
-    return pao;
 }
 
 public void setDatabaseCache(IDatabaseCache databaseCache) {
