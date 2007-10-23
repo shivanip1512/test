@@ -8,8 +8,8 @@
 *
 * PVCS KEYWORDS:
 * ARCHIVE      :  $Archive:   Z:/SOFTWAREARCHIVES/YUKON/MESSAGE/INCLUDE/connection.h-arc  $
-* REVISION     :  $Revision: 1.16 $
-* DATE         :  $Date: 2007/10/19 21:08:31 $
+* REVISION     :  $Revision: 1.17 $
+* DATE         :  $Date: 2007/10/23 17:03:07 $
 *
 * Copyright (c) 1999, 2000, 2001 Cannon Technologies Inc. All rights reserved.
 *-----------------------------------------------------------------------------*/
@@ -48,21 +48,22 @@ public:
 
 protected:
 
-   string               _name;
+   string                   _name;
+   CtiTime                  _birth;
 
-   INT                     _termTime;
+   INT                      _termTime;
    CtiTime                  _lastInQueueWrite;
 
    CtiRegistrationMsg      *_regMsg;
    CtiPointRegistrationMsg *_ptRegMsg;
 
-   string               _host;
-   INT                     _port;
+   string                   _host;
+   INT                      _port;
 
    CtiExchange             *_exchange;                     // Pointer so I can kill it dead at will...
 
-   RWThreadFunction        outthread_;
-   RWThreadFunction        inthread_;
+   RWThreadFunction         outthread_;
+   RWThreadFunction         inthread_;
 
     Que_t outQueue;        // outthread_ pops out of here
     Que_t *inQueue;        // inthread_ dumps into here
@@ -115,9 +116,9 @@ public:
    CtiMessage*    ReadConnQue(UINT Timeout = UINT_MAX);
    int            WriteConnQue(CtiMessage*, unsigned millitimeout = 0, bool cleaniftimedout = true);
 
-   void        Shutdown();
+   void   Shutdown();
 
-   RWInetHost  getPeer() const;
+   string getPeer() const;
 
    INT ConnectPortal();
    INT ManageSocketError( RWSockErr& msg );

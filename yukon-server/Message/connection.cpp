@@ -6,8 +6,8 @@
 *
 * PVCS KEYWORDS:
 * ARCHIVE      :  $Archive:   Z:/SOFTWAREARCHIVES/YUKON/MESSAGE/connection.cpp-arc  $
-* REVISION     :  $Revision: 1.43 $
-* DATE         :  $Date: 2007/10/19 21:08:31 $
+* REVISION     :  $Revision: 1.44 $
+* DATE         :  $Date: 2007/10/23 17:03:07 $
 *
 * Copyright (c) 1999, 2000, 2001 Cannon Technologies Inc. All rights reserved.
 *-----------------------------------------------------------------------------*/
@@ -1162,7 +1162,7 @@ string CtiConnection::who()
 
     if(_port == -2 && guard.isAcquired() && _exchange != NULL)
     {
-        connectedto += (_name.empty() ? "" : " / " ) + getPeer().id();
+        connectedto += (_name.empty() ? "" : " / " ) + getPeer();
     }
     else
     {
@@ -1288,13 +1288,19 @@ unsigned CtiConnection::hash(const CtiConnection& aRef)
     return(unsigned)&aRef;            // The address of the Object?
 }
 
-RWInetHost  CtiConnection::getPeer() const
+string CtiConnection::getPeer() const
 {
-    RWInetHost host;
-    if(_exchange)
-        host = _exchange->getPeer();
+    string peer;
 
-    return host;
+    if(_exchange)
+    {
+        peer  = _exchange->getPeerHost().id().data();
+        peer += ":";
+        peer += _exchange->getPeerPort().id().data();
+        peer += " (" + _birth.asString() + ")";
+    }
+
+    return peer;
 }
 
 void CtiConnection::ThreadTerminate()

@@ -6,8 +6,8 @@
 *
 * PVCS KEYWORDS:
 * ARCHIVE      :  $Archive:   Z:/SOFTWAREARCHIVES/YUKON/common/INCLUDE/exchange.h-arc  $
-* REVISION     :  $Revision: 1.9 $
-* DATE         :  $Date: 2005/12/20 17:25:49 $
+* REVISION     :  $Revision: 1.10 $
+* DATE         :  $Date: 2007/10/23 17:03:07 $
 *
 * Copyright (c) 1999, 2000, 2001 Cannon Technologies Inc. All rights reserved.
 *-----------------------------------------------------------------------------*/
@@ -129,7 +129,7 @@ public:
         return *oStream;
     }
 
-    RWInetHost getPeer() const
+    RWInetHost getPeerHost() const
     {
         LockGuard grd(monitor());
         /*
@@ -139,9 +139,40 @@ public:
 
         if(Portal_)
         {
-            iHost = RWInetAddr::as(Portal_->socket().getpeername()).host();
+            try
+            {
+                iHost = RWInetAddr::as(Portal_->socket().getpeername()).host();
+            }
+            catch ( RWxmsg& msg )
+            {
+                CtiLockGuard< CtiLogger > guard(dout);
+                dout << "CtiExchange::getPeer() - " << msg.why() << endl;
+            }
         }
         return iHost;
+    }
+
+    RWInetPort getPeerPort() const
+    {
+        LockGuard grd(monitor());
+        /*
+         *  get the port from the RWSockAddr via a conversion to RWInetAddr
+         */
+        RWInetPort iPort;
+
+        if(Portal_)
+        {
+            try
+            {
+                iPort = RWInetAddr::as(Portal_->socket().getpeername()).port();
+            }
+            catch ( RWxmsg& msg )
+            {
+                CtiLockGuard< CtiLogger > guard(dout);
+                dout << "CtiExchange::getPeerPort() - " << msg.why() << endl;
+            }
+        }
+        return iPort;
     }
 
 };
