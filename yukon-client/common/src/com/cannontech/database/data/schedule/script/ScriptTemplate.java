@@ -169,7 +169,7 @@ public class ScriptTemplate {
                                         "main_send_log.tcl", 
                                         "main_read_group_2.tcl", 
                                         "main_end.tcl");
-        case ScriptTemplateTypes.IED_METER_READ_SCRIPT:
+        case ScriptTemplateTypes.IED_360_370_METER_READ_SCRIPT:
             return buildScriptFromFiles("main_quit_by.tcl", 
                                         "main_set_demand.tcl", 
                                         "main_read_group_1_ied.tcl", 
@@ -180,7 +180,7 @@ public class ScriptTemplate {
             return buildScriptFromFiles("retry_start.tcl", 
                                         "retry_read.tcl", 
                                         "retry_end.tcl");
-        case ScriptTemplateTypes.IED_METER_READ_RETRY_SCRIPT:
+        case ScriptTemplateTypes.IED_360_370_METER_READ_RETRY_SCRIPT:
             return buildScriptFromFiles("retry_start.tcl", 
                                         "retry_read_ied.tcl", 
                                         "retry_end.tcl");
