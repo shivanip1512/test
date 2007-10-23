@@ -744,6 +744,7 @@ function pause(numberMillis) {
 	            var subName = new String (spans[0].innerHTML);
 	            subBusNames.push(trim(subName));
        		}
+       		$('feederFilter').selectedIndex = 0;
        		applyFeederFilter(subBusNames);
         }else{
 	        for (var i=0; i < rows.length; i++) {
@@ -762,6 +763,39 @@ function pause(numberMillis) {
 	            }
 	        }
 	        applyFeederFilter(subBusNames);
+        }
+    }
+    
+    function applyFeederSelectFilter(select){
+		var rows = $$('#fdrTable tr.altTableCell', '#fdrTable tr.tableCell');
+        var feederNames = new Array();
+        var selectedFeeder = new String (select.options[select.selectedIndex].text);
+        if(selectedFeeder == 'All Feeders'){
+        	for (var i=0; i < rows.length; i++) {
+	            var row = rows[i];
+            	row.setStyle({'display' : ''});
+            	var cells = row.getElementsByTagName('td');
+	            var fdr = cells[0];
+	            var spans = fdr.getElementsByTagName('span');
+	            var fdrName = new String (spans[0].innerHTML);
+	            feederNames.push(trim(fdrName));
+       		}
+       		applyCapBankFilter(feederNames);
+        }else{
+	        for (var i=0; i < rows.length; i++) {
+	            var row = rows[i];
+	            var cells = row.getElementsByTagName('td');
+	            var fdr = cells[0];
+	            var spans = fdr.getElementsByTagName('span');
+	            var fdrName = new String (spans[0].innerHTML);
+	            if (trim(fdrName) == trim (selectedFeeder)){
+	                row.setStyle({'display' : ''});
+	                feederNames.push(trim(fdrName));
+	            }else{
+	            	row.style.display = 'none';
+	            }
+	        }
+	        applyCapBankFilter(feederNames);
         }
     }
     

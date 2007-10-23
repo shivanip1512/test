@@ -135,6 +135,7 @@ String css = "tableCell";
 		<table id="subTable" width="98%" border="0" cellspacing="0"
 			cellpadding="0">
 			<tr class="columnHeader lAlign">
+				<td><input type="checkbox" name="chkAllSubBusesBx" onclick="checkAll(this, 'cti_chkbxSubBuses');" /></td>
 				<td id="subSelect">
 				<select id='subBusFilter' onchange='applySubBusFilter(this);'>
 				<option>All SubBuses</option>
@@ -143,7 +144,6 @@ String css = "tableCell";
 				<%}%>
 				</select>
 				</td>
-				<td>Sub Name</td>
 				<td>State</td>
 				<td>Target</td>
 				<td>KVAR Load / Est.</td>
@@ -275,22 +275,29 @@ for( SubBus subBus: subBuses ) {
 	<cti:titledContainer title="Feeders">
 
     <!--form id="fdrForm" action="feeders.jsp" method="post"-->
-       <table id=fdrHeaderTable width="100%" border="0" cellspacing="0" cellpadding="0">
-         <tr class="columnHeader lAlign">
-         <td><input type="checkbox" name="chkAllFdrsBx"
-              onclick="checkAll(this, 'cti_chkbxFdrs');" /> Feeder Name</td>
-         <td>State</td>
-         <td>Target</td>
-         <td>kVAR Load / Est.</td>
-         <td>Date/Time</td>
-         <td>PFactor / Est.</td>
-         <td>kW / Volts</td>
-         <td>Daily / Max Ops</td>
-         </tr>
-       </table>
+		<table id=fdrHeaderTable width="100%" border="0" cellspacing="0" cellpadding="0">
+        	<tr class="columnHeader lAlign">
+         		<td><input type="checkbox" name="chkAllFdrsBx" onclick="checkAll(this, 'cti_chkbxFdrs');" />
+         			<select id='feederFilter' onchange='applyFeederSelectFilter(this);'>
+						<option>All Feeders</option>
+						<% for( Feeder feeder: feeders) {%>
+						<option><%=feeder.getCcName()%></option>
+						<%}%>
+					</select>
+				</td>
+         		<td>State</td>
+         		<td>Target</td>
+         		<td>kVAR Load / Est.</td>
+         		<td>Date/Time</td>
+         		<td>PFactor / Est.</td>
+         		<td>kW / Volts</td>
+         		<td>Daily/Max Ops</td>
+         		<td style="display:none"/>
+         	</tr>
+       	</table>
 
-			<div>
-			<table id="fdrTable" width="98%" border="0" cellspacing="0" cellpadding="0">
+		<div>
+		<table id="fdrTable" width="98%" border="0" cellspacing="0" cellpadding="0">
 <%
 css = "tableCell";
 for( int i = 0; i < feeders.size(); i++ )
