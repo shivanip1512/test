@@ -23,7 +23,7 @@
 	   		</select>
 	   	</td>
 	   	<td colspan="2" align="right">
-	   		<tags:widgetActionRefresh method="requestReport" label="Get Report" labelBusy="Reading.."/>
+	   		<tags:widgetActionRefresh method="requestReport" label="Get Report" labelBusy="Reading"/>
 	   	</td>
 	</tr>
 	
