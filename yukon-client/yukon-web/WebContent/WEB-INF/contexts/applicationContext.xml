@@ -210,7 +210,8 @@
            </set>
         </property>
         <property name="commandRequestExecutor" ref="commandRequestExecutor" />
-        <property name="profilePeakDao" ref="profilePeakDao" />
+        <property name="peakReportService" ref="peakReportService" />
+        <property name="peakReportDao" ref="peakReportDao" />
         <property name="meterDao" ref="meterDao"/>
         <property name="dateFormattingService" ref="dateFormattingService"/>
     </bean>
@@ -291,6 +292,23 @@
         <property name="paoGroups" ref="paoGroupsWrapper"/>
         <property name="editorService" ref="groupEditorService"/>
     </bean>
+
+    <bean id="peakReportWidget"
+    	class="com.cannontech.web.widget.PeakReportWidget">
+    	<property name="title" value="Peak Summary Report"/>
+        <property name="identityPath" value="common/deviceIdentity.jsp" />
+        <property name="inputs">
+           <set>
+              <ref local="widgetInput.deviceId"/>
+           </set>
+        </property>
+        <property name="peakReportService" ref="peakReportService" />
+        <property name="peakReportDao" ref="peakReportDao" />
+        <property name="commandRequestExecutor" ref="commandRequestExecutor" />
+        <property name="meterDao" ref="meterDao"/>
+        <property name="dateFormattingService" ref="dateFormattingService"/>
+        <property name="attributeService" ref="attributeService"/>
+    </bean>
     
     <!-- Update Service -->
         
@@ -327,6 +345,13 @@
         <property name="maxOverSize">
             <value type="int">100</value>
         </property>
+    </bean>
+    
+    <bean id="peakReportService"
+      class="com.cannontech.common.device.peakReport.service.impl.PeakReportServiceImpl">
+	  <property name="dateFormattingService" ref="dateFormattingService"/>
+	  <property name="dbPersistentDao" ref="dbPersistentDao"/>
+	  <property name="paoDao" ref="paoDao"/>
     </bean>
     
     <bean id="pointDataUpdateRegistrationService"

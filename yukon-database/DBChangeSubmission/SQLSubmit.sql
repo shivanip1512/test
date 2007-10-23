@@ -52,3 +52,15 @@ update GroupPaoPermission set Allow = 'ALLOW';
 insert into YukonRoleProperty values(-20206, -202,'Enable Profile Request','true','Access to perform profile data request');
 /* end */
 
+/* start: YUK-3820 Profile peak summary report Widget -- mike p*/
+/****** Object:  Table [dbo].[PeakReport]    Script Date: 10/22/2007 11:30:11 ******/
+CREATE TABLE [dbo].[PeakReport](
+	[resultId] [numeric](18, 0) NULL,
+	[deviceId] [numeric](18, 0) NULL,
+	[channel] [int] NULL,
+	[peakType] [varchar](50) COLLATE SQL_Latin1_General_CP1_CI_AS NULL,
+	[runType] [varchar](50) COLLATE SQL_Latin1_General_CP1_CI_AS NULL,
+	[runDate] [datetime] NULL,
+	[resultString] [varchar](1500) COLLATE SQL_Latin1_General_CP1_CI_AS NULL
+) ON [PRIMARY]
+/* end */

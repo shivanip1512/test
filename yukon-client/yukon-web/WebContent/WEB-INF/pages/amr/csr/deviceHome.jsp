@@ -87,6 +87,10 @@
 			</div>
 			<div class="right">
 
+				<c:if test="${peakReportSupported}">
+					<ct:widget bean="peakReportWidget" />
+				</c:if>
+				
 				<c:if test="${lpSupported && lpEnabled}">
 					<ct:widget bean="profileWidget" />
 				</c:if>

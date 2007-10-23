@@ -78,6 +78,9 @@
       <sequence name="ProfilePeakResult">
         <table name="ProfilePeakResult" identitycolumn="resultId" initsequence="true"/>
       </sequence>
+      <sequence name="PeakReport">
+        <table name="PeakReport" identitycolumn="resultId" initsequence="true"/>
+      </sequence>
       <sequence name="BillingFileFormats">
         <table name="BillingFileFormats" identitycolumn="FormatID" initsequence="false" />
       </sequence>

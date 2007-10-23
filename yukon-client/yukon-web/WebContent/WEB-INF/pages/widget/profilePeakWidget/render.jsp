@@ -53,7 +53,7 @@
 	
 	<!-- Profile peak results section -->
 	<c:if test="${!empty preResult || !empty postResult}">
-		<br><b>Previous Profile Reports:</b><br>
+		<br><b>Previous Profile Reports:</b>
 	</c:if>
 	
 	<br/><br/>
@@ -68,7 +68,7 @@
 					Avg Daily / <br /> Total Usage
 				</th>
 				<th>
-					Peak Day
+					Peak ${preResult.peakTypeDisplayName}
 				</th>
 				<th width="200px">
 					Peak Day Total Usage
@@ -77,16 +77,17 @@
 			</tr>
 				<c:if test="${! empty preResult}">
 					<c:choose>
-						<c:when test="${!preResult.noData}">
+						<c:when test="${!preResult.noData && preResult.deviceError == ''}">
 							<tr>
 								<td width="150px">
-									${preResult.startDate} - ${preResult.stopDate}
+									${preResult.periodStartDateDisplay} -<br/>
+									${preResult.periodStopDateDisplay}
 								</td>
 								<td>
-									${preResult.averageDailyUsage} / ${preResult.totalUsage}
+									${preResult.averageDailyUsage} kWH / ${preResult.totalUsage} kWH
 								</td>
 								<td width="150px">
-									${preResult.peakDate}
+									${preResult.peakValue}
 								</td>
 								<td>
 									${preResult.usage}
@@ -96,8 +97,8 @@
 									<c:if test="${widgetParameters.collectLPVisible}">
 										<br/>
 										<c:choose>
-											<c:when test="${preResult.days <= 90}">
-												<tags:longLoadProfile styleClass="Link1" deviceId="${widgetParameters.deviceId}" lpStartDate="${preResult.startDate}" lpStopDate="${preResult.actualStopDate}" profileRequestOrigin="${widgetParameters.loadProfileRequestOrigin}">Profile</tags:longLoadProfile>
+											<c:when test="${preCommandDays <= 90}">
+												<tags:longLoadProfile styleClass="Link1" deviceId="${widgetParameters.deviceId}" lpStartDate="${preResult.periodStartDateDisplay}" lpStopDate="${preResult.periodStopDateDisplay}" profileRequestOrigin="${widgetParameters.loadProfileRequestOrigin}">Profile</tags:longLoadProfile>
 											</c:when>
 											<c:otherwise>
 												<span onmouseover="javascript:toggleLP($('lpDiv'))" onmouseout="javascript:toggleLP($('lpDiv'))">Profile N/A</span>
@@ -113,10 +114,11 @@
 						<c:otherwise>
 							<tr>
 								<td>
-									${preResult.startDate} - ${preResult.stopDate}
+									${preResult.periodStartDateDisplay} -<br/>
+									${preResult.periodStopDateDisplay}
 								</td>					
 								<td colspan="4">
-									${preResult.error}
+									${preResult.deviceError}
 								</td>
 							</tr>
 						</c:otherwise>
@@ -125,16 +127,16 @@
 
 				<c:if test="${!empty postResult}">
 					<c:choose>
-						<c:when test="${!postResult.noData}">
+						<c:when test="${!postResult.noData && postResult.deviceError == ''}">
 							<tr>
 								<td width="150px">
-									${postResult.startDate} - ${postResult.stopDate}
+									${postResult.periodStartDateDisplay} - ${postResult.periodStopDateDisplay}
 								</td>
 								<td>
-									${postResult.averageDailyUsage} / ${postResult.totalUsage}
+									${postResult.averageDailyUsage} kWH / ${postResult.totalUsage} kWH
 								</td>
 								<td width="150px">
-									${postResult.peakDate}
+									${postResult.peakValue}
 								</td>
 								<td>
 									${postResult.usage}
@@ -144,8 +146,8 @@
 									<c:if test="${widgetParameters.collectLPVisible}">
 										<br/>
 										<c:choose>
-											<c:when test="${postResult.days <= 90}">
-												<tags:longLoadProfile styleClass="Link1" deviceId="${widgetParameters.deviceId}" lpStartDate="${postResult.startDate}" lpStopDate="${postResult.stopDate}" profileRequestOrigin="${widgetParameters.loadProfileRequestOrigin}">Profile</tags:longLoadProfile>
+											<c:when test="${postCommandDays <= 90}">
+												<tags:longLoadProfile styleClass="Link1" deviceId="${widgetParameters.deviceId}" lpStartDate="${postResult.periodStartDateDisplay}" lpStopDate="${postResult.periodStopDateDisplay}" profileRequestOrigin="${widgetParameters.loadProfileRequestOrigin}">Profile</tags:longLoadProfile>
 											</c:when>
 											<c:otherwise>
 												<span onmouseover="javascript:toggleLP($('lpDiv2'))" onmouseout="javascript:toggleLP($('lpDiv2'))">Profile N/A</span>
@@ -161,10 +163,10 @@
 						<c:otherwise>
 							<tr>
 								<td>
-									${postResult.startDate} - ${postResult.stopDate}
+									${postResult.periodStartDateDisplay} - ${postResult.periodStopDateDisplay}
 								</td>					
 								<td colspan="4">
-									${postResult.error}
+									${postResult.deviceError}
 								</td>
 							</tr>
 						</c:otherwise>

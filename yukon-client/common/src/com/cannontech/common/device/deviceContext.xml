@@ -105,7 +105,13 @@
         <property name="jdbcTemplate" ref="simpleJdbcTemplate"/>
         <property name="nextValueHelper" ref="nextValueHelper"></property>
     </bean>
-
+    
+    <bean id="peakReportDao"
+        class="com.cannontech.common.device.peakReport.dao.impl.PeakReportDaoImpl">
+        <property name="jdbcTemplate" ref="simpleJdbcTemplate"/>
+        <property name="nextValueHelper" ref="nextValueHelper"></property>
+    </bean>
+    
     <bean id="deviceGroupTreeFactory"
         class="com.cannontech.common.device.groups.service.DeviceGroupTreeFactory">
         <property name="deviceGroupDao" ref="deviceGroupDao"/>

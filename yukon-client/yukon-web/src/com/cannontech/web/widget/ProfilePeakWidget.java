@@ -2,7 +2,6 @@ package com.cannontech.web.widget;
 
 import java.text.ParseException;
 import java.text.SimpleDateFormat;
-import java.util.ArrayList;
 import java.util.Date;
 import java.util.HashMap;
 import java.util.List;
@@ -23,11 +22,11 @@ import com.cannontech.amr.meter.model.Meter;
 import com.cannontech.common.device.commands.CommandRequestExecutor;
 import com.cannontech.common.device.commands.CommandResultHolder;
 import com.cannontech.common.device.commands.impl.CommandCompletionException;
-import com.cannontech.common.device.profilePeak.dao.ProfilePeakDao;
-import com.cannontech.common.device.profilePeak.model.ProfilePeakResult;
-import com.cannontech.common.device.profilePeak.model.ProfilePeakResultType;
+import com.cannontech.common.device.peakReport.dao.PeakReportDao;
+import com.cannontech.common.device.peakReport.model.PeakReportResult;
+import com.cannontech.common.device.peakReport.model.PeakReportRunType;
+import com.cannontech.common.device.peakReport.service.PeakReportService;
 import com.cannontech.common.util.TimeUtil;
-import com.cannontech.core.authorization.exception.PaoAuthorizationException;
 import com.cannontech.core.service.DateFormattingService;
 import com.cannontech.database.data.lite.LiteYukonUser;
 import com.cannontech.message.util.ConnectionException;
@@ -41,16 +40,17 @@ import com.cannontech.web.widget.support.WidgetParameterHelper;
 public class ProfilePeakWidget extends WidgetControllerBase {
 
     private static final SimpleDateFormat COMMAND_FORMAT = new SimpleDateFormat("MM/dd/yyyy");
-    private static final SimpleDateFormat DISPLAY_FORMAT = new SimpleDateFormat("MM/dd/yyyy HH:mm:ss");
+//    private static final SimpleDateFormat DISPLAY_FORMAT = new SimpleDateFormat("MM/dd/yyyy HH:mm:ss");
 
-    private ProfilePeakDao profilePeakDao = null;
+    private PeakReportDao peakReportDao = null;
+    private PeakReportService peakReportService = null;
     private CommandRequestExecutor commandRequestExecutor = null;
     private MeterDao meterDao = null;
     private DateFormattingService dateFormattingService = null;
 
     @Required
-    public void setProfilePeakDao(ProfilePeakDao profilePeakDao) {
-        this.profilePeakDao = profilePeakDao;
+    public void setPeakReportDao(PeakReportDao peakReportDao) {
+        this.peakReportDao = peakReportDao;
     }
 
     @Required
@@ -67,21 +67,41 @@ public class ProfilePeakWidget extends WidgetControllerBase {
     public void setDateFormattingService(DateFormattingService dateFormattingService) {
         this.dateFormattingService = dateFormattingService;
     }
+    
+    @Required
+    public void setPeakReportService(PeakReportService peakReportService) {
+        this.peakReportService = peakReportService;
+    }
 
     public ModelAndView render(HttpServletRequest request,
             HttpServletResponse response) throws Exception {
 
         ModelAndView mav = new ModelAndView();
-
+        
+        // user
+        LiteYukonUser user = ServletUtil.getYukonUser(request);
+        
         // Add any previous results for the device into the mav
         int deviceId = WidgetParameterHelper.getRequiredIntParameter(request,
                                                                      "deviceId");
-        ProfilePeakResult preResult = profilePeakDao.getResult(deviceId,
-                                                               ProfilePeakResultType.PRE);
+        // pre
+        PeakReportResult preResult = peakReportDao.getResult(deviceId, PeakReportRunType.PRE);
+        if(preResult != null){
+            int channel = preResult.getChannel();
+            int interval = peakReportService.getChannelIntervalForDevice(deviceId, channel);
+            String resultString = preResult.getResultString();
+            preResult = peakReportService.parseResultString(preResult, resultString, interval, user);
+        }
         mav.addObject("preResult", preResult);
-
-        ProfilePeakResult postResult = profilePeakDao.getResult(deviceId,
-                                                                ProfilePeakResultType.POST);
+        
+        // post
+        PeakReportResult postResult = peakReportDao.getResult(deviceId, PeakReportRunType.POST);
+        if(postResult != null){
+            int channel = postResult.getChannel();
+            int interval = peakReportService.getChannelIntervalForDevice(deviceId, channel);
+            String resultString = postResult.getResultString();
+            postResult = peakReportService.parseResultString(postResult, resultString, interval, user);
+        }
         mav.addObject("postResult", postResult);
 
         addHighlightedFields(request, mav);
@@ -102,8 +122,12 @@ public class ProfilePeakWidget extends WidgetControllerBase {
 
         addHighlightedFields(request, mav);
 
-        ProfilePeakResult preResult = null;
-        ProfilePeakResult postResult = null;
+        PeakReportResult prePeakResult = null;
+        PeakReportResult postPeakResult = null;
+        
+        long preCommandDays = 0;
+        long postCommandDays = 0;
+        
         try {
 
             // Get the user's timezone
@@ -163,12 +187,12 @@ public class ProfilePeakWidget extends WidgetControllerBase {
             preCommand.append(" " + reportType);
             preCommand.append(" channel 1");
             preCommand.append(" " + COMMAND_FORMAT.format(preCommandStopDate));
-            long preCommandDays = (getDaysBetween(preCommandStopDate, preCommandStartDate) + 1);
+            preCommandDays = (getDaysBetween(preCommandStopDate, preCommandStartDate) + 1);
             preCommand.append(" " + preCommandDays);
 
             StringBuffer postCommand = new StringBuffer();
             // Build post command only if days are 1 or more
-            long postCommandDays = getDaysBetween(postCommandStopDate, preCommandStopDate);
+            postCommandDays = getDaysBetween(postCommandStopDate, preCommandStopDate);
             if (postCommandDays > 0) {
                 postCommand.append("getvalue lp peak");
                 postCommand.append(" " + reportType);
@@ -179,39 +203,96 @@ public class ProfilePeakWidget extends WidgetControllerBase {
 
             int deviceId = WidgetParameterHelper.getRequiredIntParameter(request, "deviceId");
 
-            // Execute pre command to get profile peak summary results for user
-            // request
-            preResult = executeCommand(preCommand.toString(), deviceId, ProfilePeakResultType.PRE, user);
-            preResult.setStartDate(DISPLAY_FORMAT.format(preCommandStartDate));
-
-            // Stop date is actually 1 day later - stop date is inclusive
-            preResult.setStopDate(DISPLAY_FORMAT.format(TimeUtil.addDays(preCommandStopDate, 1)));
-            preResult.setDays(preCommandDays);
-
-            // Execute post command to get profile peak summary results for
-            // user request end date to now
+            int interval = peakReportService.getChannelIntervalForDevice(deviceId, 1);
+            
+            Meter meter = meterDao.getForId(deviceId);
+            
+            
+            
+            // PRE
+            //----------------------------------------------------------------------------------------
+            
+            // execute command to get profile peak summary results for user request
+            CommandResultHolder preCommandResultHolder = commandRequestExecutor.execute(meter, preCommand.toString(), user);
+            
+            // setup basics of PeakReportResult
+            prePeakResult = new PeakReportResult();
+            prePeakResult.setDeviceId(deviceId);
+            prePeakResult.setChannel(1);
+            prePeakResult.setPeakType(reportType.toUpperCase());
+            prePeakResult.setRunType(PeakReportRunType.PRE);
+            prePeakResult.setRunDate(new Date());
+            
+            // get result string from command, set result string
+            String preResultString = preCommandResultHolder.getLastResultString();
+            prePeakResult.setResultString(preResultString);
+            
+            // device errors!
+            if (preCommandResultHolder.isErrorsExist()) {
+                
+                StringBuffer sb = new StringBuffer();
+                List<DeviceErrorDescription> errors = preCommandResultHolder.getErrors();
+                for (DeviceErrorDescription ded : errors) {
+                    sb.append(ded.toString() + "\n");
+                }
+                prePeakResult.setDeviceError(sb.toString());
+                prePeakResult.setNoData(true);
+                
+            // results exist, parse result string into peakResult
+            } else {
+                prePeakResult = peakReportService.parseResultString(prePeakResult, preResultString, interval, user);
+                
+            }
+            
+            // persist the results
+            if(!prePeakResult.isNoData()){
+                peakReportDao.saveResult(prePeakResult);
+            }
+            
+            
+            // POST
+            //----------------------------------------------------------------------------------------
             if (!StringUtils.isBlank(postCommand.toString())) {
-                postResult = executeCommand(postCommand.toString(),
-                                            deviceId,
-                                            ProfilePeakResultType.POST, user);
-                postResult.setStartDate(DISPLAY_FORMAT.format(TimeUtil.addDays(preCommandStopDate, 1)));
-
-                // Stop date is actually 1 day later - stop date is inclusive
-                postResult.setStopDate(DISPLAY_FORMAT.format(TimeUtil.addDays(postCommandStopDate,
-                                                                              1)));
-                postResult.setDays(postCommandDays);
+                
+               
+                // execute command to get profile peak summary results for user request
+                CommandResultHolder postCommandResultHolder = commandRequestExecutor.execute(meter, postCommand.toString(), user);
+                
+                // setup basics of PeakReportResult
+                postPeakResult = new PeakReportResult();
+                postPeakResult.setDeviceId(deviceId);
+                postPeakResult.setChannel(1);
+                postPeakResult.setPeakType(reportType.toUpperCase());
+                postPeakResult.setRunType(PeakReportRunType.POST);
+                postPeakResult.setRunDate(new Date());
+                
+                // get result string from command, set result string
+                String postResultString = postCommandResultHolder.getLastResultString();
+                postPeakResult.setResultString(postResultString);
+                
+                // device errors!
+                if (postCommandResultHolder.isErrorsExist()) {
+                    
+                    StringBuffer sb = new StringBuffer();
+                    List<DeviceErrorDescription> errors = postCommandResultHolder.getErrors();
+                    for (DeviceErrorDescription ded : errors) {
+                        sb.append(ded.toString() + "\n");
+                    }
+                    postPeakResult.setDeviceError(sb.toString());
+                    postPeakResult.setNoData(true);
+                    
+                // results exist, parse result string into peakResult
+                } else {
+                    postPeakResult = peakReportService.parseResultString(postPeakResult, postResultString, interval, user);
+                    
+                }
+                
+                // persist the results
+                if(!postPeakResult.isNoData()){
+                    peakReportDao.saveResult(postPeakResult);
+                }
+                
             }
-
-            // Persist the results
-            List<ProfilePeakResult> results = new ArrayList<ProfilePeakResult>();
-            if (!preResult.isNoData()) {
-                results.add(preResult);
-            }
-            if (postResult != null && !postResult.isNoData()) {
-                results.add(postResult);
-            }
-
-            profilePeakDao.saveResults(deviceId, results);
 
         } catch (CommandCompletionException e) {
             mav.addObject("errorMsg", e.getMessage());
@@ -219,8 +300,11 @@ public class ProfilePeakWidget extends WidgetControllerBase {
             mav.addObject("errorMsg", e.getMessage());
         }
 
-        mav.addObject("preResult", preResult);
-        mav.addObject("postResult", postResult);
+        mav.addObject("preCommandDays", preCommandDays);
+        mav.addObject("postCommandDays", postCommandDays);
+        
+        mav.addObject("preResult", prePeakResult);
+        mav.addObject("postResult", postPeakResult);
 
         return mav;
     }
@@ -244,77 +328,6 @@ public class ProfilePeakWidget extends WidgetControllerBase {
         }
 
         mav.addObject("highlight", highlightDataMap);
-    }
-
-    /**
-     * Helper method to execute a profile peak result command and return the
-     * resulting profile peak result
-     * @param command - Command to execute
-     * @param deviceId - Id of device to execute command for
-     * @param type - Type of results
-     * @param user 
-     * @return Results
-     * @throws CommandCompletionException
-     * @throws PaoAuthorizationException 
-     */
-    private ProfilePeakResult executeCommand(String command, int deviceId,
-            ProfilePeakResultType type, LiteYukonUser user) throws Exception, PaoAuthorizationException {
-
-        Meter meter = meterDao.getForId(deviceId);
-        CommandResultHolder resultHolder = commandRequestExecutor.execute(meter, command, user);
-
-        ProfilePeakResult result = parseResults(resultHolder);
-        result.setRunDate(DISPLAY_FORMAT.format(new Date()));
-        result.setDeviceId(deviceId);
-        result.setResultType(type);
-
-        return result;
-    }
-
-    /**
-     * Helper method to parse a result string into a ProfilePeakResult
-     * @param resultHolder - Object containing result string
-     * @return - ProfilePeakResult containing the result
-     */
-    private ProfilePeakResult parseResults(CommandResultHolder resultHolder) {
-
-        ProfilePeakResult result = new ProfilePeakResult();
-
-        String resultString = resultHolder.getLastResultString();
-
-        if (resultHolder.isErrorsExist()) {
-            StringBuffer sb = new StringBuffer();
-            List<DeviceErrorDescription> errors = resultHolder.getErrors();
-            for (DeviceErrorDescription ded : errors) {
-                sb.append(ded.toString() + "\n");
-            }
-
-            result.setError(sb.toString());
-            result.setNoData(true);
-        } else {
-            // Results exist
-
-            String[] strings = resultString.split("\n");
-            for (String string : strings) {
-
-                if (string.startsWith("Report range: ")) {
-                    result.setRange(string.replaceFirst("Report range: ", ""));
-                } else if (string.startsWith("Peak day: ")) {
-                    result.setPeakDate(string.replaceFirst("Peak day: ", ""));
-                } else if (string.startsWith("Usage:  ")) {
-                    result.setUsage(string.replaceFirst("Usage:  ", ""));
-                } else if (string.startsWith("Demand: ")) {
-                    result.setDemand(string.replaceFirst("Demand: ", ""));
-                } else if (string.startsWith("Average daily usage over range: ")) {
-                    result.setAverageDailyUsage(string.replaceFirst("Average daily usage over range: ",
-                                                                    ""));
-                } else if (string.startsWith("Total usage over range: ")) {
-                    result.setTotalUsage(string.replaceFirst("Total usage over range: ", ""));
-                }
-            }
-        }
-
-        return result;
     }
 
     private long getDaysBetween(Date date1, Date date2) {

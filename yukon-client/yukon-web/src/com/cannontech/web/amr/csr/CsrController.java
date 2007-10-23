@@ -170,6 +170,9 @@ public class CsrController extends MultiActionController {
         boolean lpEnabled = Boolean.parseBoolean(roleDao.getRolePropertyValue(user.getUserID(), MeteringRole.PROFILE_REQUEST_ENABLED, "true"));
         mav.addObject("lpEnabled", lpEnabled);
         
+        boolean peakReportSupported = DeviceTypesFuncs.isMCT410(device.getType());
+        mav.addObject("peakReportSupported", peakReportSupported);
+        
         return mav;
     }
 
