@@ -314,12 +314,13 @@ public final class PointDaoImpl implements PointDao {
 			return monitorPointList;
 	}
     
-    public List<LitePoint> searchByName(final String name, final String paoClass) {
-        String sql = this.litePointPaoSql + " WHERE YPO.PAOClass = ? AND POINTNAME LIKE ?";
+    @SuppressWarnings("unchecked")
+	public List<LitePoint> searchByName(final String name, final String paoClass) {
+        String sql = litePointPaoSql + " WHERE YPO.PAOClass = ? AND UPPER(POINTNAME) LIKE ?";
         List<LitePoint> pointList = this.jdbcOps.query(
                                                        sql,
-                                                       new Object[]{paoClass, "%" + name + "%"},
-                                                       this.litePointRowMapper);
+                                                       new Object[]{paoClass, "%" + name.toUpperCase() + "%"},
+                                                       litePointRowMapper);
         return pointList;
     }
     

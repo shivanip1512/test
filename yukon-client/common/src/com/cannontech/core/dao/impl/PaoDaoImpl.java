@@ -291,11 +291,11 @@ public final class PaoDaoImpl implements PaoDao {
     
     @SuppressWarnings("unchecked")
     public List<LiteYukonPAObject> searchByName(final String name, final String paoClass) {
-        String sql = this.litePaoSql + " WHERE y.PAOClass = ? AND y.PAOName LIKE ?";
+        String sql = litePaoSql + " WHERE y.PAOClass = ? AND UPPER(y.PAOName) LIKE ?";
         List<LiteYukonPAObject> paoList = this.jdbcOps.query(
                                                              sql,
-                                                             new Object[]{paoClass, "%" + name + "%"},
-                                                             this.litePaoRowMapper);
+                                                             new Object[]{paoClass, "%" + name.toUpperCase() + "%"},
+                                                             litePaoRowMapper);
         return paoList;
     }
 
