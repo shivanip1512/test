@@ -200,6 +200,42 @@ private int addColumnDefinedRow( Signal signal )
 		
 	} // end of SYNCH
 }
+
+/**
+ * Insert the method's description here.
+ * Creation date: (3/22/00 1:56:48 PM)
+ * @param point com.cannontech.message.dispatch.message.Signal
+ */
+private int addColumnDefinedRow( Signal signal, int pageNumber )
+{
+	synchronized( getAlarmingRowVector() )
+	{		
+		int columnCount = getColumnCount();
+		
+		int rowsAdded = 0;
+		
+		if( columnCount != 0 )
+		{
+            // This if filters any signals from updating the page
+            // unless its the first page.
+            if(pageNumber == 1){
+                createRowForEventViewer( signal );
+            }
+
+			// put a psuedo value in row location 0
+			createPsuedoPointValue( 0, signal );
+			
+			rowsAdded++;
+				
+			if( addBlankRowIfNeeded() )
+				rowsAdded++;
+
+		}
+
+		return rowsAdded;
+		
+	} // end of SYNCH
+}
 /**
  * This method was created in VisualAge.
  */
@@ -1570,7 +1606,7 @@ private boolean checkFilter( Signal signal )
  * This method was created in VisualAge.
  *    ONLY SIGNALS SHOULD BE ALLOWED IN HERE
  */
-public synchronized void processSignalReceived( Signal signal )
+public synchronized void processSignalReceived( Signal signal, int pageNumber )
 {
 	// make sure we have a point and we are not a LOG display
 	if( (!checkFilter(signal) && !signalInTable(signal))
@@ -1583,7 +1619,7 @@ public synchronized void processSignalReceived( Signal signal )
 	if( Display.isReadOnlyDisplay(getCurrentDisplay().getDisplayNumber()) )  
 	{
 		//just add the raw columns to the display
-		addColumnDefinedRow( signal );
+		addColumnDefinedRow( signal, pageNumber );
 	}
 	else if( signal.getCondition() >= IAlarmDefs.MIN_CONDITION_ID )
 	{

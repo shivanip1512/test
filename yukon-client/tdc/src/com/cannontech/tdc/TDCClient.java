@@ -165,7 +165,7 @@ public void receivedSignal( Signal signal )
 		",Condition=" + signal.getCondition() +
 		",Display=" + display );
 	
-	callerModel.processSignalReceived( signal );
+	callerModel.processSignalReceived( signal, caller.getPageNumber() );
 }
 
 /**
