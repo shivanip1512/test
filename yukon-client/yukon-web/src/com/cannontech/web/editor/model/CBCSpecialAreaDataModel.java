@@ -9,7 +9,7 @@ import javax.faces.context.FacesContext;
 
 import com.cannontech.clientutils.CTILogger;
 import com.cannontech.database.data.capcontrol.CapControlSpecialArea;
-import com.cannontech.database.data.capcontrol.CapControlSubBus;
+import com.cannontech.database.data.capcontrol.CapControlSubstation;
 import com.cannontech.database.db.capcontrol.CCSubSpecialAreaAssignment;
 import com.cannontech.web.editor.data.CBCSpecialAreaData;
 import com.cannontech.web.util.CBCDBUtil;
@@ -47,7 +47,7 @@ public class CBCSpecialAreaDataModel extends EditorDataModelImpl {
             }
 
             void populateUnassigned() {
-                unassignedSubs = CapControlSubBus.getAllSpecialUnassignedBuses(areaPers.getPAObjectID());
+                unassignedSubs = CapControlSubstation.getAllUnassignedSubstations();
             }
         };
     }
