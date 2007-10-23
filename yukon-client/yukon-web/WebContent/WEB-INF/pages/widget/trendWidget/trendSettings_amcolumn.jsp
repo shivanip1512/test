@@ -24,7 +24,7 @@
   <reload_data_interval>0</reload_data_interval>              <!-- [0] (Number) how often data should be reloaded (time in seconds) -->
   <add_time_stamp>false</add_time_stamp>                      <!-- [false] (true / false) if true, a unique number will be added every time flash loads data. Mainly this feature is useful if you set reload _data_interval -->
   <precision>2</precision>                                    <!-- [2] (Number) shows how many numbers should be shown after comma for calculated values (percents) -->
-  <depth>20</depth>                                            <!-- [0] (Number) the depth of chart and columns (for 3D effect) -->
+  <depth>10</depth>                                            <!-- [0] (Number) the depth of chart and columns (for 3D effect) -->
   <angle>35</angle>                                            <!-- [30] (0 - 90) angle of chart area and columns (for 3D effect) -->
   <export_image_file></export_image_file>                     <!-- [] (filename) If you set filename here context menu (then user right clicks on flash movie) "Export as image" will appear. This will allow user to export chart as an image -->  
                                                               <!-- Note, that this works only on a web server -->
