@@ -47,7 +47,7 @@ public class CapBankDevice extends StreamableCapObject
 	private Integer ignoreReason = null;
     
     private Boolean ovUVDisabled = Boolean.TRUE;
-
+    private String controlDeviceType = null;
 
 
 	public Boolean getOvUVDisabled() {
@@ -483,6 +483,12 @@ public class CapBankDevice extends StreamableCapObject
     }
     public void setCloseOrder(Float closeOrder) {
         this.closeOrder = closeOrder;
+    }
+    public String getControlDeviceType() {
+        return controlDeviceType;
+    }
+    public void setControlDeviceType(String controlDeviceType) {
+        this.controlDeviceType = controlDeviceType;
     }
 
 }

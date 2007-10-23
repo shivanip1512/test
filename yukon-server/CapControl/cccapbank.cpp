@@ -1543,7 +1543,8 @@ void CtiCCCapBank::restoreGuts(RWvistream& istrm)
     >> _ignoreReason
     >> _ovUvDisabledFlag
     >> _triporder
-    >> _closeorder;
+    >> _closeorder
+    >> _controlDeviceType;
     _laststatuschangetime = CtiTime(tempTime1);
 }
 
@@ -1568,9 +1569,11 @@ void CtiCCCapBank::saveGuts(RWvostream& ostrm ) const
     << _maxopsdisableflag
     << _alarminhibitflag
     << _controlinhibitflag
-    << _operationalstate
-    << _controllertype
-    << _controldeviceid
+    << _operationalstate;
+
+    ostrm << _controllertype;
+
+    ostrm << _controldeviceid
     << _banksize
     << _typeofswitch
     << _switchmanufacture
@@ -1590,6 +1593,7 @@ void CtiCCCapBank::saveGuts(RWvostream& ostrm ) const
     << _ovUvDisabledFlag;
     ostrm << _triporder;
     ostrm << _closeorder;
+    ostrm << _controlDeviceType;
 }
 
 /*---------------------------------------------------------------------------
