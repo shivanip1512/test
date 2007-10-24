@@ -6,8 +6,8 @@
 *
 * PVCS KEYWORDS:
 * ARCHIVE      :  $Archive:   Z:/SOFTWAREARCHIVES/YUKON/PORTER/PORTTIME.cpp-arc  $
-* REVISION     :  $Revision: 1.47 $
-* DATE         :  $Date: 2007/07/23 15:36:40 $
+* REVISION     :  $Revision: 1.48 $
+* DATE         :  $Date: 2007/10/24 14:08:51 $
 *
 * Copyright (c) 1999, 2000, 2001 Cannon Technologies Inc. All rights reserved.
 *-----------------------------------------------------------------------------*/
@@ -905,7 +905,7 @@ RefreshMCTTimeSync(OUTMESS *OutMessage)
         CtiTime now;
         unsigned long time = now.seconds();
 
-        timesync_message[0] = 0xff;  //  global SPID
+        timesync_message[0] = gMCT400SeriesSPID;  //  global SPID
         timesync_message[1] = (time >> 24) & 0x000000ff;
         timesync_message[2] = (time >> 16) & 0x000000ff;
         timesync_message[3] = (time >>  8) & 0x000000ff;
