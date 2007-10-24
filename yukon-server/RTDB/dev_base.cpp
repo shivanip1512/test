@@ -6,8 +6,8 @@
 *
 * PVCS KEYWORDS:
 * ARCHIVE      :  $Archive:   Z:/SOFTWAREARCHIVES/YUKON/RTDB/dev_base.cpp-arc  $
-* REVISION     :  $Revision: 1.66 $
-* DATE         :  $Date: 2007/08/07 19:56:17 $
+* REVISION     :  $Revision: 1.67 $
+* DATE         :  $Date: 2007/10/24 15:18:42 $
 *
 * Copyright (c) 1999, 2000, 2001 Cannon Technologies Inc. All rights reserved.
 *-----------------------------------------------------------------------------*/
@@ -873,8 +873,10 @@ bool CtiDeviceBase::isTAP() const
 }
 
 
+using CtiTableDynamicPaoInfo::Keys;
+
 //  this dynamic stuff might need to move to tbl_pao - it is dynamicpaoinfo, after all
-bool CtiDeviceBase::hasDynamicInfo(CtiTableDynamicPaoInfo::Keys k) const
+bool CtiDeviceBase::hasDynamicInfo(Keys k) const
 {
     return (_paoInfo.find(CtiTableDynamicPaoInfo(getID(), k)) != _paoInfo.end());
 }
@@ -903,7 +905,7 @@ bool CtiDeviceBase::setDynamicInfo(const CtiTableDynamicPaoInfo &info)
 
 //  helper function for overloads
 template <class T>
-bool setInfo(set<CtiTableDynamicPaoInfo> &s, long paoid, CtiTableDynamicPaoInfo::Keys k, const T &value)
+bool setInfo(set<CtiTableDynamicPaoInfo> &s, long paoid, Keys k, const T &value)
 {
     std::pair<std::set<CtiTableDynamicPaoInfo>::iterator, bool> set_result;
     bool record_added = false;
@@ -915,34 +917,34 @@ bool setInfo(set<CtiTableDynamicPaoInfo> &s, long paoid, CtiTableDynamicPaoInfo:
     return set_result.second;
 }
 
-bool CtiDeviceBase::setDynamicInfo(CtiTableDynamicPaoInfo::Keys k, const string &value)
+bool CtiDeviceBase::setDynamicInfo(Keys k, const string &value)
 {
     return setInfo(_paoInfo, getID(), k, value);
 }
-bool CtiDeviceBase::setDynamicInfo(CtiTableDynamicPaoInfo::Keys k, const int &value)
+bool CtiDeviceBase::setDynamicInfo(Keys k, const int &value)
 {
     return setInfo(_paoInfo, getID(), k, value);
 }
-bool CtiDeviceBase::setDynamicInfo(CtiTableDynamicPaoInfo::Keys k, const unsigned int &value)
+bool CtiDeviceBase::setDynamicInfo(Keys k, const unsigned int &value)
 {
     return setInfo(_paoInfo, getID(), k, value);
 }
-bool CtiDeviceBase::setDynamicInfo(CtiTableDynamicPaoInfo::Keys k, const long &value)
+bool CtiDeviceBase::setDynamicInfo(Keys k, const long &value)
 {
     return setInfo(_paoInfo, getID(), k, value);
 }
-bool CtiDeviceBase::setDynamicInfo(CtiTableDynamicPaoInfo::Keys k, const unsigned long &value)
+bool CtiDeviceBase::setDynamicInfo(Keys k, const unsigned long &value)
 {
     return setInfo(_paoInfo, getID(), k, value);
 }
-bool CtiDeviceBase::setDynamicInfo(CtiTableDynamicPaoInfo::Keys k, const double &value)
+bool CtiDeviceBase::setDynamicInfo(Keys k, const double &value)
 {
     return setInfo(_paoInfo, getID(), k, value);
 }
 
 //  helper function for overloads
 template <class T>
-bool getInfo(const set<CtiTableDynamicPaoInfo> &s, long paoid, CtiTableDynamicPaoInfo::Keys k, T &destination)
+bool getInfo(const set<CtiTableDynamicPaoInfo> &s, long paoid, Keys k, T &destination)
 {
     bool success = false;
 
@@ -957,27 +959,13 @@ bool getInfo(const set<CtiTableDynamicPaoInfo> &s, long paoid, CtiTableDynamicPa
     return success;
 }
 
-bool CtiDeviceBase::getDynamicInfo(CtiTableDynamicPaoInfo::Keys k, string &destination) const
-{
-    return getInfo(_paoInfo, getID(), k, destination);
-}
-bool CtiDeviceBase::getDynamicInfo(CtiTableDynamicPaoInfo::Keys k, int &destination) const
-{
-    return getInfo(_paoInfo, getID(), k, destination);
-}
-bool CtiDeviceBase::getDynamicInfo(CtiTableDynamicPaoInfo::Keys k, long &destination) const
-{
-    return getInfo(_paoInfo, getID(), k, destination);
-}
-bool CtiDeviceBase::getDynamicInfo(CtiTableDynamicPaoInfo::Keys k, unsigned long &destination) const
-{
-    return getInfo(_paoInfo, getID(), k, destination);
-}
-bool CtiDeviceBase::getDynamicInfo(CtiTableDynamicPaoInfo::Keys k, double &destination) const
-{
-    return getInfo(_paoInfo, getID(), k, destination);
-}
-long CtiDeviceBase::getDynamicInfo(CtiTableDynamicPaoInfo::Keys k) const
+bool CtiDeviceBase::getDynamicInfo(Keys k,        string &destination) const    {   return getInfo(_paoInfo, getID(), k, destination);  }
+bool CtiDeviceBase::getDynamicInfo(Keys k,           int &destination) const    {   return getInfo(_paoInfo, getID(), k, destination);  }
+bool CtiDeviceBase::getDynamicInfo(Keys k,          long &destination) const    {   return getInfo(_paoInfo, getID(), k, destination);  }
+bool CtiDeviceBase::getDynamicInfo(Keys k, unsigned long &destination) const    {   return getInfo(_paoInfo, getID(), k, destination);  }
+bool CtiDeviceBase::getDynamicInfo(Keys k,        double &destination) const    {   return getInfo(_paoInfo, getID(), k, destination);  }
+
+long CtiDeviceBase::getDynamicInfo(Keys k) const
 {
     long l = std::numeric_limits<long>::min();
 
