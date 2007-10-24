@@ -1,6 +1,7 @@
 <%@ page import="com.cannontech.common.constants.LoginController" %>
 <jsp:directive.page import="com.cannontech.database.data.capcontrol.CapControlArea"/>
 <jsp:directive.page import="com.cannontech.database.data.capcontrol.CapControlSpecialArea"/>
+<jsp:directive.page import="com.cannontech.database.db.capcontrol.CCSubSpecialAreaAssignment"/>
 <%@ taglib uri="http://cannontech.com/tags/cti" prefix="cti" %>
 <cti:standardPage title="Substations" module="capcontrol">
 <%@include file="cbc_inc.jspf"%>
@@ -23,9 +24,15 @@
     
 	Integer areaId = ccSession.getLastAreaId();
 	String area = ccSession.getLastArea();
-	List<SubStation> areaSubs = filterCapControlCache.getSubstationsByArea(areaId);
+	List<SubStation> areaSubs;
+	boolean special = filterCapControlCache.isSpecialCBCArea(areaId);
+	if(special){
+		areaSubs = filterCapControlCache.getSubstationsBySpecialArea(areaId);
+	}else{
+		areaSubs = filterCapControlCache.getSubstationsByArea(areaId);
+	}
     boolean hasControl = CBCWebUtils.hasControlRights(session);
-    boolean special = filterCapControlCache.isSpecialCBCArea(areaId);
+    
 %>
 
 <cti:standardMenu/>
@@ -109,7 +116,14 @@ for( int i = 0; i < areaSubs.size(); i++ ) {
 				<a href="#" class="<%=css%>" onclick="postMany('subForm', '<%=CCSessionInfo.STR_SUBID%>', <%=substation.getCcId()%>)" id="anc_<%=substation.getCcId()%>">
 				<%=CBCUtils.CBC_DISPLAY.getSubstationValueAt(substation, CBCDisplay.SUB_NAME_COLUMN)%>
 				</a>
-				
+				<% Integer spcAreaId = CCSubSpecialAreaAssignment.getAreaIDForSub(substation.getCcId());
+				if(spcAreaId != null){
+				 	CBCSpecialArea spcArea= filterCapControlCache.getCBCSpecialArea(spcAreaId);
+				 	if(!spcArea.getDisableFlag()){
+				 %>
+					 <font color="red">SA</font>
+				<%}
+				} %>
 				</td>
 				<td>
 				

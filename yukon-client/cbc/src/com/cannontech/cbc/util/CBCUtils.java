@@ -585,6 +585,11 @@ public final class CBCUtils {
        Integer areaID = CCSubAreaAssignment.getAreaIDForSub(subID);
        return DaoFactory.getPaoDao().getYukonPAOName(areaID);
     }
+    
+    public static String getPAOName(Integer paoId) {
+        String paoName = DaoFactory.getPaoDao().getYukonPAOName(paoId);
+        return paoName;
+    }
 
     public static boolean signalQualityNormal(PointQualityCheckable checkable, Integer type) {
         boolean pointQualNormal = isPointQualNormal(checkable, type);

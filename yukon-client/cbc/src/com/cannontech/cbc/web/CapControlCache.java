@@ -90,6 +90,21 @@ public class CapControlCache implements MessageListener, CapControlDAO {
     	return null;
     }
     
+    /**
+     * @return Area
+     */
+    public synchronized CBCSpecialArea getSpecialArea( Integer areaId )
+    {
+        for ( CBCSpecialArea a : cbcSpecialAreas )
+        {
+            if( a.getCcId() == areaId )
+            {
+                return a;
+            }
+        }
+        return null;
+    }
+    
     public String getSubBusNameForFeeder(Feeder fdr) {
         Integer parentId = fdr.getParentID();
         if(parentId > 0) {
