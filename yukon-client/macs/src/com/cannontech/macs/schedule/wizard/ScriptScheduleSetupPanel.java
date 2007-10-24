@@ -26,6 +26,7 @@ import static com.cannontech.database.data.schedule.script.ScriptParameters.SCRI
 import static com.cannontech.database.data.schedule.script.ScriptParameters.SCRIPT_FILE_NAME_PARAM;
 import static com.cannontech.database.data.schedule.script.ScriptParameters.SUCCESS_FILE_NAME_PARAM;
 import static com.cannontech.database.data.schedule.script.ScriptParameters.TOU_RATE_PARAM;
+import static com.cannontech.database.data.schedule.script.ScriptParameters.IED_TYPE_PARAM;
 
 import java.awt.Component;
 import java.awt.Container;
@@ -155,6 +156,10 @@ public class ScriptScheduleSetupPanel extends DataInputPanel implements JCValueL
 	private JCheckBox ivjS4FrozenRegisterCheckBox = null;
 	private JSeparator ivjSeparatorFrozenRegister = null;
 	private ButtonGroup frozenRegisterGroup  = null;
+    private JLabel ivjIED400TypeLabel = null;
+	private JComboBox ivjIED400TypeComboBox = null;
+    private JSeparator ivjSeparatorResetDemand = null;
+	private JCheckBox ivjResetDemandEnabledCheckBox = null;
     
     /**
      * Constructor
@@ -231,13 +236,10 @@ public class ScriptScheduleSetupPanel extends DataInputPanel implements JCValueL
     	text += getScriptTemplate().buildParameterScript();
     	
     	//Get main code
-    	String tempText = ScriptTemplate.getScriptSection(getScriptText(), ScriptTemplate.MAIN_CODE);
-    	if (tempText == null) {
-    	    tempText = ScriptTemplate.getScriptCode(getTemplateType());
-        }
-    	text += tempText;
+        text += ScriptTemplate.getScriptCode(getTemplateType());
     	
     	//Get email notification code
+    	String tempText = "";
     	if(getSendEmailCheckBox().isSelected()) {
     	    tempText = ScriptTemplate.getScriptSection(getScriptText(), ScriptTemplate.NOTIFICATION);
     	    if( tempText == null) {
@@ -888,63 +890,106 @@ public class ScriptScheduleSetupPanel extends DataInputPanel implements JCValueL
     			ivjIEDPanel.setBorder(ivjLocalBorder);
     			ivjIEDPanel.setLayout(new java.awt.GridBagLayout());
     
+                // TOU Rate
     			java.awt.GridBagConstraints constraintsTOURateLabel = new java.awt.GridBagConstraints();
     			constraintsTOURateLabel.gridx = 0; constraintsTOURateLabel.gridy = 0;
     			constraintsTOURateLabel.anchor = java.awt.GridBagConstraints.WEST;
     			constraintsTOURateLabel.insets = new java.awt.Insets(4, 4, 4, 4);
     			getIEDPanel().add(getTOURateLabel(), constraintsTOURateLabel);
-    
+    			
+                java.awt.GridBagConstraints constraintsTOURateComboBox = new java.awt.GridBagConstraints();
+                constraintsTOURateComboBox.gridx = 1; constraintsTOURateComboBox.gridy = 0;
+                constraintsTOURateComboBox.gridwidth = 2;
+                constraintsTOURateComboBox.fill = java.awt.GridBagConstraints.HORIZONTAL;
+                constraintsTOURateComboBox.weightx = 1.0;
+                constraintsTOURateComboBox.insets = new java.awt.Insets(4, 4, 4, 4);
+                getIEDPanel().add(getTOURateComboBox(), constraintsTOURateComboBox);
+                
+                // Reset Demand Count
+                //-----------------------------------------------------
+                java.awt.GridBagConstraints constraintsSeparatorResetDemand = new java.awt.GridBagConstraints();
+                constraintsSeparatorResetDemand.gridx = 0; constraintsSeparatorResetDemand.gridy = 1;
+                constraintsSeparatorResetDemand.gridwidth = 3;
+                constraintsSeparatorResetDemand.fill = java.awt.GridBagConstraints.HORIZONTAL;
+                constraintsSeparatorResetDemand.insets = new java.awt.Insets(4, 4, 4, 4);
+                getIEDPanel().add(getSeparatorResetDemand(), constraintsSeparatorResetDemand);
+                
+                java.awt.GridBagConstraints constraintsResetDemandCheckBox = new java.awt.GridBagConstraints();
+                constraintsResetDemandCheckBox.gridx = 0; constraintsResetDemandCheckBox.gridy = 2;
+                constraintsResetDemandCheckBox.gridwidth = 3;
+                constraintsResetDemandCheckBox.anchor = java.awt.GridBagConstraints.WEST;
+                constraintsResetDemandCheckBox.insets = new java.awt.Insets(0, 4, 4, 4);
+                getIEDPanel().add(getResetDemandEnabledCheckBox(), constraintsResetDemandCheckBox);
+                
     			java.awt.GridBagConstraints constraintsResetCountLabel = new java.awt.GridBagConstraints();
-    			constraintsResetCountLabel.gridx = 0; constraintsResetCountLabel.gridy = 1;
+    			constraintsResetCountLabel.gridx = 0; constraintsResetCountLabel.gridy = 3;
     			constraintsResetCountLabel.gridwidth = 2;
     			constraintsResetCountLabel.anchor = java.awt.GridBagConstraints.WEST;
     			constraintsResetCountLabel.insets = new java.awt.Insets(4, 4, 4, 4);
     			getIEDPanel().add(getResetCountLabel(), constraintsResetCountLabel);
-    
-    			java.awt.GridBagConstraints constraintsS4FrozenRegisterCheckBox = new java.awt.GridBagConstraints();
-    			constraintsS4FrozenRegisterCheckBox.gridx = 0; constraintsS4FrozenRegisterCheckBox.gridy = 4;
-    			constraintsS4FrozenRegisterCheckBox.gridwidth = 3;
-    			constraintsS4FrozenRegisterCheckBox.fill = java.awt.GridBagConstraints.BOTH;
-    			constraintsS4FrozenRegisterCheckBox.anchor = java.awt.GridBagConstraints.WEST;
-    			constraintsS4FrozenRegisterCheckBox.weightx = 1.0;
-    			constraintsS4FrozenRegisterCheckBox.insets = new java.awt.Insets(4, 4, 0, 4);
-    			getIEDPanel().add(getS4FrozenRegisterCheckBox(), constraintsS4FrozenRegisterCheckBox);
-    
-    			java.awt.GridBagConstraints constraintsTOURateComboBox = new java.awt.GridBagConstraints();
-    			constraintsTOURateComboBox.gridx = 1; constraintsTOURateComboBox.gridy = 0;
-    			constraintsTOURateComboBox.gridwidth = 2;
-    			constraintsTOURateComboBox.fill = java.awt.GridBagConstraints.HORIZONTAL;
-    			constraintsTOURateComboBox.weightx = 1.0;
-    			constraintsTOURateComboBox.insets = new java.awt.Insets(4, 4, 4, 4);
-    			getIEDPanel().add(getTOURateComboBox(), constraintsTOURateComboBox);
-    
-    			java.awt.GridBagConstraints constraintsDemandResetSpinBox = new java.awt.GridBagConstraints();
-    			constraintsDemandResetSpinBox.gridx = 2; constraintsDemandResetSpinBox.gridy = 1;
-    			constraintsDemandResetSpinBox.fill = java.awt.GridBagConstraints.BOTH;
-    			constraintsDemandResetSpinBox.weightx = 1.0;
-    			constraintsDemandResetSpinBox.insets = new java.awt.Insets(4, 4, 4, 4);
-    			getIEDPanel().add(getDemandResetSpinBox(), constraintsDemandResetSpinBox);
-    
-    			java.awt.GridBagConstraints constraintsReadFrozenDemandRegister = new java.awt.GridBagConstraints();
-    			constraintsReadFrozenDemandRegister.gridx = 0; constraintsReadFrozenDemandRegister.gridy = 3;
-    			constraintsReadFrozenDemandRegister.gridwidth = 3;
-    			constraintsReadFrozenDemandRegister.anchor = java.awt.GridBagConstraints.SOUTHWEST;
-    			constraintsReadFrozenDemandRegister.insets = new java.awt.Insets(0, 4, 0, 4);
-    			getIEDPanel().add(getReadFrozenDemandRegister(), constraintsReadFrozenDemandRegister);
-    
-    			java.awt.GridBagConstraints constraintsAlphaFrozenRegisterCheckBox = new java.awt.GridBagConstraints();
-    			constraintsAlphaFrozenRegisterCheckBox.gridx = 0; constraintsAlphaFrozenRegisterCheckBox.gridy = 5;
-    			constraintsAlphaFrozenRegisterCheckBox.gridwidth = 3;
-    			constraintsAlphaFrozenRegisterCheckBox.anchor = java.awt.GridBagConstraints.WEST;
-    			constraintsAlphaFrozenRegisterCheckBox.insets = new java.awt.Insets(0, 4, 4, 4);
-    			getIEDPanel().add(getAlphaFrozenRegisterCheckBox(), constraintsAlphaFrozenRegisterCheckBox);
-    
-    			java.awt.GridBagConstraints constraintsSeparatorFrozenRegister = new java.awt.GridBagConstraints();
-    			constraintsSeparatorFrozenRegister.gridx = 0; constraintsSeparatorFrozenRegister.gridy = 2;
-    			constraintsSeparatorFrozenRegister.gridwidth = 3;
-    			constraintsSeparatorFrozenRegister.fill = java.awt.GridBagConstraints.HORIZONTAL;
-    			constraintsSeparatorFrozenRegister.insets = new java.awt.Insets(4, 4, 4, 4);
-    			getIEDPanel().add(getSeparatorFrozenRegister(), constraintsSeparatorFrozenRegister);
+    			
+                java.awt.GridBagConstraints constraintsDemandResetSpinBox = new java.awt.GridBagConstraints();
+                constraintsDemandResetSpinBox.gridx = 2; constraintsDemandResetSpinBox.gridy = 3;
+                constraintsDemandResetSpinBox.fill = java.awt.GridBagConstraints.BOTH;
+                constraintsDemandResetSpinBox.weightx = 1.0;
+                constraintsDemandResetSpinBox.insets = new java.awt.Insets(4, 4, 4, 4);
+                getIEDPanel().add(getDemandResetSpinBox(), constraintsDemandResetSpinBox);
+                
+                // Seperator for frozen
+                //-----------------------------------------------------
+//                java.awt.GridBagConstraints constraintsSeparatorFrozenRegister = new java.awt.GridBagConstraints();
+//                constraintsSeparatorFrozenRegister.gridx = 0; constraintsSeparatorFrozenRegister.gridy = 4;
+//                constraintsSeparatorFrozenRegister.gridwidth = 3;
+//                constraintsSeparatorFrozenRegister.fill = java.awt.GridBagConstraints.HORIZONTAL;
+//                constraintsSeparatorFrozenRegister.insets = new java.awt.Insets(4, 4, 4, 4);
+//                getIEDPanel().add(getSeparatorFrozenRegister(), constraintsSeparatorFrozenRegister);
+                
+                // Read Frozen Demand Register label
+                java.awt.GridBagConstraints constraintsReadFrozenDemandRegister = new java.awt.GridBagConstraints();
+                constraintsReadFrozenDemandRegister.gridx = 0; constraintsReadFrozenDemandRegister.gridy = 5;
+                constraintsReadFrozenDemandRegister.gridwidth = 3;
+                constraintsReadFrozenDemandRegister.anchor = java.awt.GridBagConstraints.SOUTHWEST;
+                constraintsReadFrozenDemandRegister.insets = new java.awt.Insets(0, 4, 0, 4);
+                getIEDPanel().add(getReadFrozenDemandRegister(), constraintsReadFrozenDemandRegister);
+                
+                // 360/370 types
+                //-----------------------------------------------------
+                // S4
+                java.awt.GridBagConstraints constraintsS4FrozenRegisterCheckBox = new java.awt.GridBagConstraints();
+                constraintsS4FrozenRegisterCheckBox.gridx = 0; constraintsS4FrozenRegisterCheckBox.gridy = 6;
+                constraintsS4FrozenRegisterCheckBox.gridwidth = 3;
+                constraintsS4FrozenRegisterCheckBox.fill = java.awt.GridBagConstraints.BOTH;
+                constraintsS4FrozenRegisterCheckBox.anchor = java.awt.GridBagConstraints.WEST;
+                constraintsS4FrozenRegisterCheckBox.weightx = 1.0;
+                constraintsS4FrozenRegisterCheckBox.insets = new java.awt.Insets(4, 4, 0, 4);
+                getIEDPanel().add(getS4FrozenRegisterCheckBox(), constraintsS4FrozenRegisterCheckBox);
+
+                // Alpha
+                java.awt.GridBagConstraints constraintsAlphaFrozenRegisterCheckBox = new java.awt.GridBagConstraints();
+                constraintsAlphaFrozenRegisterCheckBox.gridx = 0; constraintsAlphaFrozenRegisterCheckBox.gridy = 7;
+                constraintsAlphaFrozenRegisterCheckBox.gridwidth = 3;
+                constraintsAlphaFrozenRegisterCheckBox.anchor = java.awt.GridBagConstraints.WEST;
+                constraintsAlphaFrozenRegisterCheckBox.insets = new java.awt.Insets(0, 4, 4, 4);
+                getIEDPanel().add(getAlphaFrozenRegisterCheckBox(), constraintsAlphaFrozenRegisterCheckBox);
+
+                // 400 Series
+                //-----------------------------------------------------
+                // alpha/s4/kV/kV2/sentinel drop down
+                java.awt.GridBagConstraints constraintsIED400TypeLabel = new java.awt.GridBagConstraints();
+                constraintsIED400TypeLabel.gridx = 0; constraintsResetCountLabel.gridy = 4;
+                constraintsIED400TypeLabel.gridwidth = 2;
+                constraintsIED400TypeLabel.anchor = java.awt.GridBagConstraints.WEST;
+                constraintsIED400TypeLabel.insets = new java.awt.Insets(4, 4, 4, 4);
+                getIEDPanel().add(getIED400TypeLabel(), constraintsIED400TypeLabel);
+                
+                java.awt.GridBagConstraints constraintsIED400TypeComboBox = new java.awt.GridBagConstraints();
+                constraintsIED400TypeComboBox.gridx = 2; constraintsIED400TypeComboBox.gridy = 4;
+                constraintsIED400TypeComboBox.gridwidth = 2;
+                constraintsIED400TypeComboBox.fill = java.awt.GridBagConstraints.HORIZONTAL;
+                constraintsIED400TypeComboBox.weightx = 1.0;
+                constraintsIED400TypeComboBox.insets = new java.awt.Insets(4, 4, 4, 4);
+                getIEDPanel().add(getIED400TypeComboBox(), constraintsIED400TypeComboBox);
+                
     			
     		} catch (java.lang.Throwable ivjExc) {
     			handleException(ivjExc);
@@ -1423,6 +1468,22 @@ public class ScriptScheduleSetupPanel extends DataInputPanel implements JCValueL
     	return ivjReadFrozenDemandRegister;
     }
     
+    private javax.swing.JCheckBox getResetDemandEnabledCheckBox() {
+        if (ivjResetDemandEnabledCheckBox == null) {
+            try {
+                ivjResetDemandEnabledCheckBox = new javax.swing.JCheckBox();
+                ivjResetDemandEnabledCheckBox.setName("ResetDemandCheckBox");
+                ivjResetDemandEnabledCheckBox.setFont(new java.awt.Font("dialog", 0, 14));
+                ivjResetDemandEnabledCheckBox.setText("Reset Demand");
+                ivjResetDemandEnabledCheckBox.setToolTipText(getScriptTemplate().getParamaterDescription(READ_FROZEN_PARAM));
+                ivjResetDemandEnabledCheckBox.setSelected(false);
+            } catch (java.lang.Throwable ivjExc) {
+                handleException(ivjExc);
+            }
+        }
+        return ivjResetDemandEnabledCheckBox;
+    }
+    
     /**
      * Return the ResetCountLabel property value.
      * @return javax.swing.JLabel
@@ -1433,7 +1494,7 @@ public class ScriptScheduleSetupPanel extends DataInputPanel implements JCValueL
     			ivjResetCountLabel = new javax.swing.JLabel();
     			ivjResetCountLabel.setName("ResetCountLabel");
     			ivjResetCountLabel.setFont(new java.awt.Font("dialog", 0, 14));
-    			ivjResetCountLabel.setText("Reset Demand Count:");
+    			ivjResetCountLabel.setText("Reset Retry Count:");
                 ivjResetCountLabel.setToolTipText(getScriptTemplate().getParamaterDescription(RESET_COUNT_PARAM));
     		} catch (java.lang.Throwable ivjExc) {
     			handleException(ivjExc);
@@ -1745,6 +1806,18 @@ public class ScriptScheduleSetupPanel extends DataInputPanel implements JCValueL
     	return ivjSeparatorFrozenRegister;
     }
     
+    private javax.swing.JSeparator getSeparatorResetDemand() {
+        if (ivjSeparatorResetDemand == null) {
+            try {
+                ivjSeparatorResetDemand = new javax.swing.JSeparator();
+                ivjSeparatorResetDemand.setName("SeparatorResetDemand");
+            } catch (java.lang.Throwable ivjExc) {
+                handleException(ivjExc);
+            }
+        }
+        return ivjSeparatorResetDemand;
+    }
+    
     /**
      * Return the SuccessFileNameLabel property value.
      * @return javax.swing.JLabel
@@ -1816,10 +1889,11 @@ public class ScriptScheduleSetupPanel extends DataInputPanel implements JCValueL
     		try {
     			ivjTOURateComboBox = new javax.swing.JComboBox();
     			ivjTOURateComboBox.setName("TOURateComboBox");
+                ivjTOURateComboBox.addItem("rate T");
     			ivjTOURateComboBox.addItem("rate A");
     			ivjTOURateComboBox.addItem("rate B");
     			ivjTOURateComboBox.addItem("rate C");
-                ivjTOURateComboBox.addItem("rate T");
+                ivjTOURateComboBox.addItem("rate D");
                 ivjTOURateComboBox.setToolTipText(getScriptTemplate().getParamaterDescription(TOU_RATE_PARAM));
     		} catch (java.lang.Throwable ivjExc) {
     			handleException(ivjExc);
@@ -1845,6 +1919,40 @@ public class ScriptScheduleSetupPanel extends DataInputPanel implements JCValueL
     		}
     	}
     	return ivjTOURateLabel;
+    }
+    
+    
+    private javax.swing.JLabel getIED400TypeLabel() {
+        if (ivjIED400TypeLabel == null) {
+            try {
+                ivjIED400TypeLabel = new javax.swing.JLabel();
+                ivjIED400TypeLabel.setName("IED400TypeLabel");
+                ivjIED400TypeLabel.setFont(new java.awt.Font("dialog", 0, 14));
+                ivjIED400TypeLabel.setText("IED Type:");
+                ivjIED400TypeLabel.setToolTipText(getScriptTemplate().getParamaterDescription(IED_TYPE_PARAM));
+            } catch (java.lang.Throwable ivjExc) {
+                handleException(ivjExc);
+            }
+        }
+        return ivjIED400TypeLabel;
+    }
+    
+    private javax.swing.JComboBox getIED400TypeComboBox() {
+        if (ivjIED400TypeComboBox == null) {
+            try {
+                ivjIED400TypeComboBox = new javax.swing.JComboBox();
+                ivjIED400TypeComboBox.setName("IED400TypeComboBox");
+                ivjIED400TypeComboBox.addItem("s4");
+                ivjIED400TypeComboBox.addItem("alpha");
+                ivjIED400TypeComboBox.addItem("kv");
+                ivjIED400TypeComboBox.addItem("kv2");
+                ivjIED400TypeComboBox.addItem("sentinel");
+                ivjIED400TypeComboBox.setToolTipText(getScriptTemplate().getParamaterDescription(IED_TYPE_PARAM));
+            } catch (java.lang.Throwable ivjExc) {
+                handleException(ivjExc);
+            }
+        }
+        return ivjIED400TypeComboBox;
     }
     
     /**
@@ -1935,11 +2043,12 @@ public class ScriptScheduleSetupPanel extends DataInputPanel implements JCValueL
         getBrowseButton().addActionListener(this);
         
         getTOURateComboBox().addActionListener(this);
-        getDemandResetSpinBox().addValueListener(this);
+        getResetDemandEnabledCheckBox().addItemListener(this);
         getFrozenRegisterGroup().add(getS4FrozenRegisterCheckBox());
         getFrozenRegisterGroup().add(getAlphaFrozenRegisterCheckBox());
         getS4FrozenRegisterCheckBox().addItemListener(this);
         getAlphaFrozenRegisterCheckBox().addItemListener(this);
+        getIED400TypeComboBox().addActionListener(this);
         
         getRetryCountTextField().addKeyListener(this);
         getQueueOffCountTextField().addKeyListener(this);
@@ -2035,8 +2144,18 @@ public class ScriptScheduleSetupPanel extends DataInputPanel implements JCValueL
     		else	//default rest to this one?
     			getS4FrozenRegisterCheckBox().setSelected(true);
     	}
-        getDemandResetSpinBox().setValue(Integer.valueOf(getScriptTemplate().getParameterValue(RESET_COUNT_PARAM)));
+        Integer resetCountParamValue = Integer.valueOf(getScriptTemplate().getParameterValue(RESET_COUNT_PARAM));
+        if(resetCountParamValue > 0) {
+            getResetDemandEnabledCheckBox().setSelected(true);
+            setResetDemandFieldsEnabled(true);
+        }
+        else {
+            getResetDemandEnabledCheckBox().setSelected(false);
+            setResetDemandFieldsEnabled(false);
+        }
+        getDemandResetSpinBox().setValue(resetCountParamValue);
         getTOURateComboBox().setSelectedItem(getScriptTemplate().getParameterValue(TOU_RATE_PARAM));
+        getIED400TypeComboBox().setSelectedItem(getScriptTemplate().getParameterValue(IED_TYPE_PARAM));
         
         CTILogger.info("Set swing component values");
     }
@@ -2084,7 +2203,16 @@ public class ScriptScheduleSetupPanel extends DataInputPanel implements JCValueL
             } else {
                 getScriptTemplate().setParameterValue(READ_FROZEN_PARAM, "");
             }
-    	}	
+    	} else if (e.getSource() == getResetDemandEnabledCheckBox()) {
+            if( e.getStateChange() == ItemEvent.SELECTED) {
+                setResetDemandFieldsEnabled(true);
+                getDemandResetSpinBox().setValue(2);
+            } else {
+                getDemandResetSpinBox().setValue(0);
+                setResetDemandFieldsEnabled(false);
+            }
+        }
+        
     	fireInputUpdate();	
     }
     
@@ -2160,14 +2288,36 @@ public class ScriptScheduleSetupPanel extends DataInputPanel implements JCValueL
         getScriptTemplate().setParameterValue(EMAIL_SUBJECT_PARAM, getMessageSubjectTextField().getText());
         //Multiple reads script (one with retries)
         getScriptTemplate().setParameterValue(READ_WITH_RETRY_FLAG_PARAM, String.valueOf(!ScriptTemplateTypes.isRetryTemplate(getTemplateType())).toString());
-        getScriptTemplate().setParameterValue(RETRY_COUNT_PARAM, getRetryCountTextField().getText());
+        
+        if (getResetDemandEnabledCheckBox().isSelected()){
+            getScriptTemplate().setParameterValue(RETRY_COUNT_PARAM, getRetryCountTextField().getText());
+        } else {
+            getScriptTemplate().setParameterValue(RETRY_COUNT_PARAM, "0");
+        }
         getScriptTemplate().setParameterValue(QUEUE_OFF_COUNT_PARAM, getQueueOffCountTextField().getText());
         getScriptTemplate().setParameterValue(MAX_RETRY_HOURS_PARAM, getMaxRetryHoursTextField().getText());
         //IED read script
         getScriptTemplate().setParameterValue(IED_FLAG_PARAM, String.valueOf(ScriptTemplateTypes.isIEDTemplate(getTemplateType())).toString());
         getScriptTemplate().setParameterValue(TOU_RATE_PARAM, getTOURateComboBox().getSelectedItem().toString());
-        getScriptTemplate().setParameterValue(RESET_COUNT_PARAM, getDemandResetSpinBox().getValue().toString());
         
+        if (getResetDemandEnabledCheckBox().isSelected()) {
+            getScriptTemplate().setParameterValue(RESET_COUNT_PARAM, getDemandResetSpinBox().getValue().toString());
+        } else {
+            getScriptTemplate().setParameterValue(RESET_COUNT_PARAM, "0");
+        }
+        
+        if (ScriptTemplateTypes.isIED300Template(templateType)) {
+            if (getS4FrozenRegisterCheckBox().isSelected()) {
+                getScriptTemplate().setParameterValue(IED_TYPE_PARAM, "s4");
+            }
+            else if (getAlphaFrozenRegisterCheckBox().isSelected()) {
+                getScriptTemplate().setParameterValue(IED_TYPE_PARAM, "alpha");
+            }
+        }
+        else if (ScriptTemplateTypes.isIED400Template(templateType)) {
+            getScriptTemplate().setParameterValue(IED_TYPE_PARAM, getIED400TypeComboBox().getSelectedItem().toString());
+        }
+
         CTILogger.info("Loaded parameter map based on swing components.");
     }
     
@@ -2292,12 +2442,55 @@ public class ScriptScheduleSetupPanel extends DataInputPanel implements JCValueL
         //Show text editor for all types of scripts, TODO - make this an admin role/property?
         getTabbedPane().insertTab("Text Editor", null, getScriptScrollPane(), null, tabCount++);
     
+        if (ScriptTemplateTypes.isIED300Template(templateType)) {
+            setIED300AreaVisible(true);
+            setIED400AreaVisible(false);
+        }
+        else if (ScriptTemplateTypes.isIED400Template(templateType)) {
+            setIED300AreaVisible(false);
+            setIED400AreaVisible(true);
+        }
+            
     	getIEDPanel().setVisible(ScriptTemplateTypes.isIEDTemplate(templateType));
         //The read_with..._param is for showing options to retry during a multiple read schedule, 
     	//so we NOT the result which is from a retry script, one that is a read once type script 
         getRetryPanel().setVisible(!ScriptTemplateTypes.isRetryTemplate(templateType));
     
         CTILogger.info("Set TemplateType, component visiblity updated.");
+    }
+    
+    private void setIED300AreaVisible(boolean visible){
+        for (int compIdx = 1; compIdx <= getIEDPanel().getComponentCount(); compIdx += 1) {
+            Component IEDComponent = getIEDPanel().getComponent(compIdx - 1);
+            if (IEDComponent.equals(getS4FrozenRegisterCheckBox()) || IEDComponent.equals(getAlphaFrozenRegisterCheckBox()) || IEDComponent.equals(getReadFrozenDemandRegister())) {
+                IEDComponent.setVisible(visible);
+            }
+        }
+        getReadFrozenDemandRegister().setVisible(visible);
+        getSeparatorFrozenRegister().setVisible(visible);
+    }
+    
+    private void setIED400AreaVisible(boolean visible){
+        for (int compIdx = 1; compIdx <= getIEDPanel().getComponentCount(); compIdx += 1) {
+            Component IEDComponent = getIEDPanel().getComponent(compIdx - 1);
+            if (IEDComponent.equals(getIED400TypeLabel()) || IEDComponent.equals(getIED400TypeComboBox())) {
+                IEDComponent.setVisible(visible);
+            }
+        }
+        getReadFrozenDemandRegister().setVisible(!visible);
+        getSeparatorFrozenRegister().setVisible(!visible);
+    }
+    
+    private void setResetDemandFieldsEnabled(boolean value)
+    {
+        getResetCountLabel().setEnabled(value);
+        getDemandResetSpinBox().setEnabled(value);
+        getIED400TypeLabel().setEnabled(value);
+        getIED400TypeComboBox().setEnabled(value);
+        getReadFrozenDemandRegister().setEnabled(value);
+        getS4FrozenRegisterCheckBox().setEnabled(value);
+        getAlphaFrozenRegisterCheckBox().setEnabled(value);
+        
     }
     
     /**

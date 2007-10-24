@@ -34,6 +34,7 @@ import static com.cannontech.database.data.schedule.script.ScriptParameters.SCRI
 import static com.cannontech.database.data.schedule.script.ScriptParameters.SCRIPT_FILE_NAME_PARAM;
 import static com.cannontech.database.data.schedule.script.ScriptParameters.SUCCESS_FILE_NAME_PARAM;
 import static com.cannontech.database.data.schedule.script.ScriptParameters.TOU_RATE_PARAM;
+import static com.cannontech.database.data.schedule.script.ScriptParameters.IED_TYPE_PARAM;
 
 import java.io.IOException;
 import java.io.InputStream;
@@ -113,8 +114,9 @@ public class ScriptTemplate {
         //IED parameters
         paramToValueMap.put(IED_FLAG_PARAM, "false");
         paramToValueMap.put(TOU_RATE_PARAM, "rate C"); 
-        paramToValueMap.put(RESET_COUNT_PARAM, "2");
+        paramToValueMap.put(RESET_COUNT_PARAM, "0");
         paramToValueMap.put(READ_FROZEN_PARAM, "");
+        paramToValueMap.put(IED_TYPE_PARAM, "");
     }
 
     {
@@ -152,6 +154,7 @@ public class ScriptTemplate {
         paramToDescMap.put(TOU_RATE_PARAM, "The Alpha/S4/KV TOU Rate to use."); 
         paramToDescMap.put(RESET_COUNT_PARAM, "The number of times to resend the demand reset command.");
         paramToDescMap.put(READ_FROZEN_PARAM, "MCTs with Alpha or S4 will move to read frozen register.");
+        paramToDescMap.put(IED_TYPE_PARAM, "The IED type of meter (Alpha/S4/kV/kV2/Sentinel)");
     }
     
 
@@ -171,7 +174,14 @@ public class ScriptTemplate {
                                         "main_end.tcl");
         case ScriptTemplateTypes.IED_360_370_METER_READ_SCRIPT:
             return buildScriptFromFiles("main_quit_by.tcl", 
-                                        "main_set_demand.tcl", 
+                                        "main_set_demand_360_370.tcl", 
+                                        "main_read_group_1_ied.tcl", 
+                                        "main_send_log.tcl", 
+                                        "main_read_group_2_ied.tcl", 
+                                        "main_end.tcl");
+        case ScriptTemplateTypes.IED_400_METER_READ_SCRIPT:
+            return buildScriptFromFiles("main_quit_by.tcl", 
+                                        "main_set_demand_400.tcl", 
                                         "main_read_group_1_ied.tcl", 
                                         "main_send_log.tcl", 
                                         "main_read_group_2_ied.tcl", 
@@ -181,6 +191,10 @@ public class ScriptTemplate {
                                         "retry_read.tcl", 
                                         "retry_end.tcl");
         case ScriptTemplateTypes.IED_360_370_METER_READ_RETRY_SCRIPT:
+            return buildScriptFromFiles("retry_start.tcl", 
+                                        "retry_read_ied.tcl", 
+                                        "retry_end.tcl");
+        case ScriptTemplateTypes.IED_400_METER_READ_RETRY_SCRIPT:
             return buildScriptFromFiles("retry_start.tcl", 
                                         "retry_read_ied.tcl", 
                                         "retry_end.tcl");
@@ -393,7 +407,7 @@ public class ScriptTemplate {
 	    	paramList += buildDisplayOnlyParameter(IED_FLAG_PARAM);
 		    paramList += buildSetParameter(TOU_RATE_PARAM);
 		    paramList += buildSetParameter(RESET_COUNT_PARAM);
-		    paramList += buildSetParameter(READ_FROZEN_PARAM);
+            paramList += buildSetParameter(IED_TYPE_PARAM);
 	    }
 	    paramList += COMMENT + ScriptTemplate.END + ScriptTemplate.PARAMETER_LIST + ENDLINE;
 	    return paramList;

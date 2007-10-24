@@ -18,6 +18,8 @@ public class ScriptTemplateTypes
 	public static final String METER_READ_RETRY_SCRIPT_STRING = "Meter Read Retry";
 	public static final String IED_360_370_METER_READ_SCRIPT_STRING = "360/370 IED Meter Read";
 	public static final String IED_360_370_METER_READ_RETRY_SCRIPT_STRING = "360/370 IED Meter Read Retry";
+    public static final String IED_400_METER_READ_SCRIPT_STRING = "400 Series IED Meter Read";
+    public static final String IED_400_METER_READ_RETRY_SCRIPT_STRING = "400 Series IED Meter Read Retry";
 	public static final String OUTAGE_METER_READ_STRING = "Outages Meter Read";
 	public static final String VOLTAGE_METER_READ_STRING = "Voltage Meter Read";
 	public static final String NO_TEMPLATE_SCRIPT_STRING = "No Template";
@@ -29,6 +31,8 @@ public class ScriptTemplateTypes
 	public static final int IED_360_370_METER_READ_RETRY_SCRIPT = 4;
 	public static final int OUTAGE_METER_READ_SCRIPT = 5;
 	public static final int VOLTAGE_METER_READ_SCRIPT = 6;
+	public static final int IED_400_METER_READ_SCRIPT = 7;
+    public static final int IED_400_METER_READ_RETRY_SCRIPT = 8;
 		
 	public static final String[] SCRIPT_TEMPLATES = new String[]{
         NO_TEMPLATE_SCRIPT_STRING,
@@ -36,6 +40,8 @@ public class ScriptTemplateTypes
 		METER_READ_RETRY_SCRIPT_STRING,
         IED_360_370_METER_READ_SCRIPT_STRING,
         IED_360_370_METER_READ_RETRY_SCRIPT_STRING,
+        IED_400_METER_READ_SCRIPT_STRING,
+        IED_400_METER_READ_RETRY_SCRIPT_STRING,
 		OUTAGE_METER_READ_STRING,
 		VOLTAGE_METER_READ_STRING,
 	};
@@ -54,6 +60,10 @@ public class ScriptTemplateTypes
 		    return OUTAGE_METER_READ_SCRIPT;
 		else if( string.equalsIgnoreCase(VOLTAGE_METER_READ_STRING))
 		    return VOLTAGE_METER_READ_SCRIPT;
+        else if( string.equalsIgnoreCase(IED_400_METER_READ_SCRIPT_STRING))
+            return IED_400_METER_READ_SCRIPT;
+        else if( string.equalsIgnoreCase(IED_400_METER_READ_RETRY_SCRIPT_STRING))
+            return IED_400_METER_READ_RETRY_SCRIPT;
 		else if( string.equalsIgnoreCase(NO_TEMPLATE_SCRIPT_STRING))
 		    return NO_TEMPLATE_SCRIPT;
 		else
@@ -82,20 +92,34 @@ public class ScriptTemplateTypes
 				|| template == IED_360_370_METER_READ_RETRY_SCRIPT
 				|| template == OUTAGE_METER_READ_SCRIPT
 				|| template == VOLTAGE_METER_READ_SCRIPT
+                || template == IED_400_METER_READ_SCRIPT
+                || template == IED_400_METER_READ_RETRY_SCRIPT
                 );	    
 	}	
 	public static boolean isRetryTemplate(int template)
 	{
 		return (template == METER_READ_RETRY_SCRIPT
-				|| template == IED_360_370_METER_READ_RETRY_SCRIPT);
+				|| template == IED_360_370_METER_READ_RETRY_SCRIPT
+                || template == IED_400_METER_READ_RETRY_SCRIPT);
 	}
 	
 	public static boolean isIEDTemplate(int template)
 	{
 		return (template == IED_360_370_METER_READ_RETRY_SCRIPT
-				|| template == IED_360_370_METER_READ_SCRIPT ); 
+				|| template == IED_360_370_METER_READ_SCRIPT
+                || template == IED_400_METER_READ_RETRY_SCRIPT
+                || template == IED_400_METER_READ_SCRIPT); 
 	}
-	
+    public static boolean isIED300Template(int template)
+    {
+        return (template == IED_360_370_METER_READ_RETRY_SCRIPT
+                || template == IED_360_370_METER_READ_SCRIPT); 
+    }
+    public static boolean isIED400Template(int template)
+    {
+        return (template == IED_400_METER_READ_RETRY_SCRIPT
+                || template == IED_400_METER_READ_SCRIPT); 
+    }
 	public static boolean hasBilling(int template)
 	{
 		return (template == METER_READ_SCRIPT 
@@ -104,6 +128,8 @@ public class ScriptTemplateTypes
 				|| template == IED_360_370_METER_READ_RETRY_SCRIPT
 				|| template == OUTAGE_METER_READ_SCRIPT
 				|| template == VOLTAGE_METER_READ_SCRIPT
+                || template == IED_400_METER_READ_SCRIPT
+                || template == IED_400_METER_READ_RETRY_SCRIPT
                 );
 	}
 	public static boolean hasNotification(int template)
@@ -114,6 +140,8 @@ public class ScriptTemplateTypes
 				|| template == IED_360_370_METER_READ_RETRY_SCRIPT
 				|| template == OUTAGE_METER_READ_SCRIPT
 				|| template == VOLTAGE_METER_READ_SCRIPT
+                || template == IED_400_METER_READ_SCRIPT
+                || template == IED_400_METER_READ_RETRY_SCRIPT
                 );
 	}
 }

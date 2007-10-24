@@ -52,6 +52,7 @@ public enum ScriptParameters
     TOU_RATE_PARAM("TOURate"),
     RESET_COUNT_PARAM("ResetCount"),
     READ_FROZEN_PARAM("ReadFrozen"),    
+    IED_TYPE_PARAM("IEDType"),
     ;
     
     private final String value;
