@@ -242,7 +242,7 @@ for( SubBus subBus: subBuses ) {
 			        <tr class="tableCellSnapShot" style="display: none;">
 			        <td><font  class="lIndent">Area:<%=areaName%></font>
 			        <% if(substation.getSpecialAreaEnabled()){
-					 	String spcAreaName = CBCUtils.getPAOName(spcAreaId);
+					 	String spcAreaName = CBCUtils.getPAOName(substation.getSpecialAreaId());
 					 %>
 						 <font color="red"><%=spcAreaName%> IS ENABLED</font>
 					<%}%>
