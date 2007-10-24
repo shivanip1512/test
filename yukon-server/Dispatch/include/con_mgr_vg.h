@@ -6,8 +6,8 @@
 *
 * PVCS KEYWORDS:
 * ARCHIVE      :  $Archive:   Z:/SOFTWAREARCHIVES/YUKON/DISPATCH/INCLUDE/con_mgr_vg.h-arc  $
-* REVISION     :  $Revision: 1.7 $
-* DATE         :  $Date: 2006/10/17 19:42:18 $
+* REVISION     :  $Revision: 1.8 $
+* DATE         :  $Date: 2007/10/24 14:51:29 $
 *
 * Copyright (c) 1999, 2000, 2001 Cannon Technologies Inc. All rights reserved.
 *-----------------------------------------------------------------------------*/
@@ -97,6 +97,7 @@ public:
    CtiVanGoghConnectionManager& setLoadProfile( const UINT a_lp );
 
    bool  isRegForAll() const;
+   bool  isRegForAnyType() const;
    BOOL  isRegForChangeType(int type) const;
 
    void  reportRegistration() const;

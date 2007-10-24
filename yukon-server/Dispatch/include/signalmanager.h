@@ -8,8 +8,8 @@
 * Author: Corey G. Plender
 *
 * CVS KEYWORDS:
-* REVISION     :  $Revision: 1.9 $
-* DATE         :  $Date: 2007/08/16 20:52:13 $
+* REVISION     :  $Revision: 1.10 $
+* DATE         :  $Date: 2007/10/24 14:51:29 $
 *
 * Copyright (c) 2002 Cannon Technologies Inc. All rights reserved.
 *-----------------------------------------------------------------------------*/
@@ -69,6 +69,7 @@ public:
 
     CtiSignalMsg* getAlarm(long pointid, int alarm_condition) const;        // Returns a copy of the alarm for this pointid and alarmcondition.  Could return NULL
     CtiMultiMsg* getPointSignals(long pointid) const;
+    CtiMultiMsg* getAllAlarmSignals() const;
     CtiMultiMsg* getCategorySignals(unsigned category) const;
 
     size_t entries() const;

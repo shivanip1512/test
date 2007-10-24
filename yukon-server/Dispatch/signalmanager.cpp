@@ -7,8 +7,8 @@
 * Author: Corey G. Plender
 *
 * CVS KEYWORDS:
-* REVISION     :  $Revision: 1.19 $
-* DATE         :  $Date: 2007/08/16 20:52:13 $
+* REVISION     :  $Revision: 1.20 $
+* DATE         :  $Date: 2007/10/24 14:51:29 $
 *
 * Copyright (c) 2002 Cannon Technologies Inc. All rights reserved.
 *-----------------------------------------------------------------------------*/
@@ -564,6 +564,60 @@ CtiMultiMsg* CtiSignalManager::getPointSignals(long pointid) const
             {
                 pSig = (CtiSignalMsg*)(pOriginalSig->replicateMessage());
                 pSig->setText( TrimAlarmTagText((string &)pSig->getText())+ AlarmTagsToString(pSig->getTags()) );
+
+                if(pMulti)
+                {
+                    pMulti->insert(pSig);
+                }
+            }
+        }
+    }
+    catch(...)
+    {
+        delete pSig;
+        pSig = 0;
+        {
+            CtiLockGuard<CtiLogger> doubt_guard(dout);
+            dout << CtiTime() << " **** EXCEPTION **** " << __FILE__ << " (" << __LINE__ << ")" << endl;
+        }
+    }
+
+    return pMulti;
+}
+
+CtiMultiMsg* CtiSignalManager::getAllAlarmSignals() const
+{
+    CtiLockGuard< CtiMutex > tlg(_mux, 5000);
+    while(!tlg.isAcquired())
+    {
+        {
+            CtiLockGuard<CtiLogger> doubt_guard(dout);
+            dout << CtiTime() << " **** Checkpoint **** " << __FILE__ << " (" << __LINE__ << ")" << endl;
+        }
+        tlg.tryAcquire(5000);
+    }
+
+    CtiMultiMsg *pMulti = 0;
+    CtiSignalMsg *pSig = 0;
+    SigMgrMap_t::const_iterator itr;
+
+    try
+    {
+        for(itr = _map.begin(); itr != _map.end(); itr++)
+        {
+            SigMgrMap_t::value_type vt = *itr;
+            SigMgrMap_t::key_type   key = vt.first;
+            CtiSignalMsg *pOriginalSig = vt.second;
+
+            if(pOriginalSig && (pOriginalSig->getTags() & MASK_ANY_ALARM))
+            {
+                pSig = (CtiSignalMsg*)(pOriginalSig->replicateMessage());
+                pSig->setText( TrimAlarmTagText((string &)pSig->getText())+ AlarmTagsToString(pSig->getTags()) );
+
+                if(!pMulti)
+          	 	{
+          	 	    pMulti = new CtiMultiMsg;
+          	 	}
 
                 if(pMulti)
                 {

@@ -9,8 +9,8 @@
 *
 * PVCS KEYWORDS:
 * ARCHIVE      :  $Archive:   Z:/SOFTWAREARCHIVES/YUKON/DISPATCH/INCLUDE/mgr_ptclients.h-arc  $
-* REVISION     :  $Revision: 1.11 $
-* DATE         :  $Date: 2006/06/15 20:41:55 $
+* REVISION     :  $Revision: 1.12 $
+* DATE         :  $Date: 2007/10/24 14:51:29 $
 *
 * Copyright (c) 1999, 2000, 2001 Cannon Technologies Inc. All rights reserved.
 *-----------------------------------------------------------------------------*/
@@ -44,8 +44,12 @@ class CtiPointRegistrationMsg;
 class IM_EX_CTIVANGOGH CtiPointClientManager : public CtiPointManager
 {
 private:
+   typedef map<LONG, CtiPointWPtr>     PointMap;
+   typedef map< LONG, PointMap >       ConfigMgrPointMap;
+   typedef ConfigMgrPointMap::iterator ConMgrPtMapIter;
+   typedef PointMap::iterator          PtMapIter;
 
-   // Inherit Point "List" from Parent
+   ConfigMgrPointMap _conMgrPointMap;
 
 public:
 
@@ -57,7 +61,9 @@ public:
    virtual void refreshList(BOOL (*fn)(CtiPoint *,void*) = isPoint, void *d = NULL, LONG pntID = 0, LONG paoID = 0);
 
    void DumpList(void);
-   void DeleteList(void);
+   virtual void DeleteList(void);
+   virtual void removeSinglePoint(Inherited::ptr_type pTempCtiPoint);
+
    int InsertConnectionManager(CtiServer::ptr_type CM, const CtiPointRegistrationMsg &aReg, bool debugprint = false);
    int RemoveConnectionManager(CtiServer::ptr_type CM);
 
@@ -67,6 +73,8 @@ public:
    void validateConnections();
    void storeDirtyRecords();
    void RefreshDynamicData(LONG id = 0);
+
+   PointMap getRegistrationMap(LONG mgrID);
 
 };
 

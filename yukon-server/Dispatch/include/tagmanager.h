@@ -9,8 +9,8 @@
 * Author: Corey G. Plender
 *
 * CVS KEYWORDS:
-* REVISION     :  $Revision: 1.5 $
-* DATE         :  $Date: 2006/01/05 21:05:14 $
+* REVISION     :  $Revision: 1.6 $
+* DATE         :  $Date: 2007/10/24 14:51:29 $
 *
 * Copyright (c) 2002 Cannon Technologies Inc. All rights reserved.
 *-----------------------------------------------------------------------------*/
@@ -99,6 +99,7 @@ public:
 
     CtiTagMsg* getTagMsg(long instanceid) const;
     CtiMultiMsg* getPointTags(long pointid) const;
+    CtiMultiMsg* getAllPointTags() const;
 
     bool verifyTagMsg(CtiTagMsg &pTag);
     int loadStaticTags();

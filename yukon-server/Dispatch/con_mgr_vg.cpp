@@ -6,8 +6,8 @@
 *
 * PVCS KEYWORDS:
 * ARCHIVE      :  $Archive:   Z:/SOFTWAREARCHIVES/YUKON/DISPATCH/con_mgr_vg.cpp-arc  $
-* REVISION     :  $Revision: 1.8 $
-* DATE         :  $Date: 2006/05/22 18:44:12 $
+* REVISION     :  $Revision: 1.9 $
+* DATE         :  $Date: 2007/10/24 14:51:29 $
 *
 * Copyright (c) 1999, 2000, 2001 Cannon Technologies Inc. All rights reserved.
 *-----------------------------------------------------------------------------*/
@@ -99,6 +99,11 @@ CtiVanGoghConnectionManager& CtiVanGoghConnectionManager::setAlarm( const UINT a
 bool CtiVanGoghConnectionManager::isRegForAll() const
 {
     return (getStatus() && getAnalog() && getAccumulator() && getCalculated());
+}
+
+bool CtiVanGoghConnectionManager::isRegForAnyType() const
+{
+    return (getStatus() || getAnalog() || getAccumulator() || getCalculated());
 }
 
 BOOL  CtiVanGoghConnectionManager::isRegForChangeType(int type) const

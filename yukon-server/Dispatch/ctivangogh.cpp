@@ -6,8 +6,8 @@
 *
 * PVCS KEYWORDS:
 * ARCHIVE      :  $Archive:   Z:/SOFTWAREARCHIVES/YUKON/DISPATCH/ctivangogh.cpp-arc  $
-* REVISION     :  $Revision: 1.172 $
-* DATE         :  $Date: 2007/10/19 21:08:31 $
+* REVISION     :  $Revision: 1.173 $
+* DATE         :  $Date: 2007/10/24 14:51:29 $
 *
 * Copyright (c) 1999, 2000, 2001 Cannon Technologies Inc. All rights reserved.
 *-----------------------------------------------------------------------------*/
@@ -2798,7 +2798,7 @@ INT CtiVanGogh::postMOAUploadToConnection(CtiServer::ptr_type &CM, int flags)
             }
         }
     }
-    else if(pMulti != NULL)
+    else if(pMulti != NULL && ((const CtiVanGoghConnectionManager *)CM.get())->isRegForAnyType())
     {
         pMulti->setMessagePriority(15);
 
@@ -2838,28 +2838,6 @@ INT CtiVanGogh::postMOAUploadToConnection(CtiServer::ptr_type &CM, int flags)
                                 pMulti->getData().push_back(pDat);
                             }
                         }
-
-                        // This could be replaced by an object/method which returns a multi message
-                        // full of all alarms active/unacknowledged on this point.
-                        if( (pDyn->getDispatch().getTags() & SIGNAL_MANAGER_MASK) && ((const CtiVanGoghConnectionManager *)CM.get())->getAlarm() )
-                        {
-                            CtiMultiMsg *pSigMulti = _signalManager.getPointSignals(TempPoint->getID());
-
-                            if(pSigMulti)
-                            {
-                                pMulti->getData().push_back(pSigMulti);
-                            }
-                        }
-
-                        // We add all the assigned tags into the multi as well.
-                        {
-                            CtiMultiMsg *pTagMulti = _tagManager.getPointTags(TempPoint->getID());
-                            if(pTagMulti)
-                            {
-                                pMulti->getData().push_back(pTagMulti);
-                            }
-                        }
-
                     }
                 }
             }
@@ -2897,6 +2875,27 @@ INT CtiVanGogh::postMOAUploadToConnection(CtiServer::ptr_type &CM, int flags)
                 }
 
                 pMulti  = CTIDBG_new CtiMultiMsg;
+            }
+        }
+
+        //This now gets all alarms in the known universe.
+        // full of all alarms active/unacknowledged on all points
+        if( ((const CtiVanGoghConnectionManager *)CM.get())->getAlarm() )
+        {
+            CtiMultiMsg *pSigMulti = _signalManager.getAllAlarmSignals();
+
+            if(pSigMulti)
+            {
+                pMulti->getData().push_back(pSigMulti);
+            }
+        }
+
+        // We add all the assigned tags into the multi as well.
+        {
+            CtiMultiMsg *pTagMulti = _tagManager.getAllPointTags();
+            if(pTagMulti)
+            {
+                pMulti->getData().push_back(pTagMulti);
             }
         }
 
@@ -2943,6 +2942,138 @@ INT CtiVanGogh::postMOAUploadToConnection(CtiServer::ptr_type &CM, int flags)
             dout << CtiTime() << " NORMAL MOA " << PERF_TO_MS(completeTime, startTime, perfFrequency) << endl;
         }
         #endif
+    }
+    else if( pMulti != NULL )
+    {
+        pMulti->setMessagePriority(15);
+        map<LONG, CtiPointWPtr> pointMap = PointMgr.getRegistrationMap(CM->hash(*CM.get()));
+        CtiPointSPtr TempPoint;
+        
+        for( map<LONG, CtiPointWPtr>::iterator iter = pointMap.begin(); iter != pointMap.end(); iter++ )
+        {
+            TempPoint = iter->second.lock();
+        
+            if( TempPoint )
+            {
+                CtiDynamicPointDispatch *pDyn = (CtiDynamicPointDispatch*)TempPoint->getDynamic();
+        
+                if(pDyn != NULL)
+                {
+                    CtiPointConnection *pPC = (CtiPointConnection*)(pDyn->getAttachment());
+                    if(pPC != NULL)
+                    {
+                        CtiPointDataMsg *pDat = CTIDBG_new CtiPointDataMsg(TempPoint->getID(),
+                                                                               pDyn->getValue(),
+                                                                               pDyn->getQuality(),
+                                                                               TempPoint->getType(),
+                                                                               string(),
+                                                                               pDyn->getDispatch().getTags());
+
+                        if(pDat != NULL)
+                        {
+                            if(flags & REG_TAG_MARKMOA)
+                            {
+                                pDat->setTags(TAG_POINT_MOA_REPORT);
+                            }
+
+                            // Make the time match the entered time
+                            pDat->setTime( pDyn->getTimeStamp() );
+                            pMulti->getData().push_back(pDat);
+                        }
+                    }
+                }
+            }
+        
+            /*
+             *  Block the MOA into 1000 element multis.
+             */
+            if( pMulti->getCount() >= gConfigParms.getValueAsULong("DISPATCH_MAX_MULTI_MOA", 1000) )
+            {
+                if(gDispatchDebugLevel & DISPATCH_DEBUG_MSGSTOCLIENT)
+                {
+                    {
+                        CtiTime Now;
+                        CtiLockGuard<CtiLogger> doubt_guard(dout);
+                        dout << Now << " **** MOA UPLOAD **** " << __FILE__ << " (" << __LINE__ << ")" << endl;
+                        dout << Now << " Client Connection " << CM->getClientName() << " on " << CM->getPeer() << endl;
+                    }
+                    pMulti->dump();
+                    {
+                        CtiLockGuard<CtiLogger> doubt_guard(dout);
+                        dout << CtiTime() << " **** MOA UPLOAD **** " << __FILE__ << " (" << __LINE__ << ")" << endl;
+                    }
+                }
+
+                if(isFullBoat && isFullBoatAged && pFullBoat)
+                {
+                    // We need to store a copy of this since we are building up our message
+                    pFullBoat->insert(pMulti->replicateMessage());
+                }
+
+                if(CM->WriteConnQue(pMulti, 5000))
+                {
+                    CtiLockGuard<CtiLogger> doubt_guard(dout);
+                    dout << CtiTime() << "**** Checkpoint **** " << __FILE__ << " (" << __LINE__ << ")" << " Connection is having issues : " << CM->getClientName() << " / " << CM->getClientAppId() << endl;
+                }
+
+                pMulti  = CTIDBG_new CtiMultiMsg;
+            }
+        }
+
+        //This now gets all alarms in the known universe.
+        // full of all alarms active/unacknowledged on all points
+        if( ((const CtiVanGoghConnectionManager *)CM.get())->getAlarm() )
+        {
+            CtiMultiMsg *pSigMulti = _signalManager.getAllAlarmSignals();
+
+            if(pSigMulti)
+            {
+                pMulti->getData().push_back(pSigMulti);
+            }
+        }
+
+        // We add all the assigned tags into the multi as well.
+        {
+            CtiMultiMsg *pTagMulti = _tagManager.getAllPointTags();
+            if(pTagMulti)
+            {
+                pMulti->getData().push_back(pTagMulti);
+            }
+        }
+
+        if(pMulti->getCount() > 0)
+        {
+            if(gDispatchDebugLevel & DISPATCH_DEBUG_MSGSTOCLIENT)    // Temp debug
+            {
+                {
+                    CtiTime Now;
+                    CtiLockGuard<CtiLogger> doubt_guard(dout);
+                    dout << Now << " **** MOA UPLOAD **** " << __FILE__ << " (" << __LINE__ << ")" << endl;
+                    dout << Now << " Client Connection " << CM->getClientName() << " on " << CM->getPeer() << endl;
+                }
+                pMulti->dump();
+                {
+                    CtiLockGuard<CtiLogger> doubt_guard(dout);
+                    dout << CtiTime() << " **** MOA UPLOAD **** " << __FILE__ << " (" << __LINE__ << ")" << endl;
+                }
+            }
+
+            if(isFullBoat && isFullBoatAged && pFullBoat)
+            {
+                // We need to store a copy of this since we are building up our message
+                pFullBoat->insert(pMulti->replicateMessage());
+            }
+
+            if(CM->WriteConnQue(pMulti, 5000))
+            {
+                CtiLockGuard<CtiLogger> doubt_guard(dout);
+                dout << CtiTime() << "**** Checkpoint **** " << __FILE__ << " (" << __LINE__ << ")" << " Connection is having issues : " << CM->getClientName() << " / " << CM->getClientAppId() << endl;
+            }
+        }
+        else
+        {
+            delete pMulti;
+        }
     }
 
     return status;

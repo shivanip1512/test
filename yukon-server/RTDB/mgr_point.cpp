@@ -6,8 +6,8 @@
 *
 * PVCS KEYWORDS:
 * ARCHIVE      :  $Archive:   Z:/SOFTWAREARCHIVES/YUKON/RTDB/mgr_point.cpp-arc  $
-* REVISION     :  $Revision: 1.36 $
-* DATE         :  $Date: 2007/10/18 21:12:18 $
+* REVISION     :  $Revision: 1.37 $
+* DATE         :  $Date: 2007/10/24 14:51:29 $
 *
 * Copyright (c) 1999, 2000, 2001 Cannon Technologies Inc. All rights reserved.
 *-----------------------------------------------------------------------------*/
@@ -314,25 +314,7 @@ void CtiPointManager::refreshList(BOOL (*testFunc)(CtiPointBase*,void*), void *a
                     }
 
                     //  Remove the point from the type/offset lookup map
-                    std::multimap<pao_offset_t, long>::iterator type_itr;
-                    for( type_itr  = _type_offsets.lower_bound(pao_offset_t(pTempCtiPoint->getDeviceID(), pTempCtiPoint->getPointOffset()));
-                         type_itr != _type_offsets.upper_bound(pao_offset_t(pTempCtiPoint->getDeviceID(), pTempCtiPoint->getPointOffset()));
-                         type_itr++ )
-                    {
-                         if( pTempCtiPoint->getType() == type_itr->second )
-                         {
-                             _type_offsets.erase(type_itr);
-
-                             break;
-                         }
-                    }
-
-                    //  If it's a status point with control, remove it from the control point lookup as well
-                    if( pTempCtiPoint->getType() == StatusPointType &&
-                        pTempCtiPoint->getControlOffset() )
-                    {
-                        _control_offsets.erase(pao_offset_t(pTempCtiPoint->getDeviceID(), pTempCtiPoint->getControlOffset()));
-                    }
+                    removeSinglePoint(pTempCtiPoint);
                 }
             }
         }   // Temporary results are destroyed to free the connection
@@ -345,9 +327,8 @@ void CtiPointManager::refreshList(BOOL (*testFunc)(CtiPointBase*,void*), void *a
     {
         //Make sure the list is cleared
         { CtiLockGuard<CtiLogger> doubt_guard(dout); dout << "Attempting to clear point list..." << endl;}
-        _smartMap.removeAll(NULL, 0);
-        _type_offsets.erase(_type_offsets.begin(), _type_offsets.end());
-        _control_offsets.erase(_control_offsets.begin(), _control_offsets.end());
+
+        DeleteList();
 
         { CtiLockGuard<CtiLogger> doubt_guard(dout); dout << "getPoints:  " << e.why() << endl;}
         RWTHROW(e);
@@ -382,9 +363,7 @@ void CtiPointManager::DumpList(void)
         //Make sure the list is cleared
         { CtiLockGuard<CtiLogger> doubt_guard(dout); dout << "Attempting to clear device list..." << endl;}
 
-        _smartMap.removeAll(NULL, 0);
-        _type_offsets.erase(_type_offsets.begin(), _type_offsets.end());
-        _control_offsets.erase(_control_offsets.begin(), _control_offsets.end());
+        DeleteList();
 
         { CtiLockGuard<CtiLogger> doubt_guard(dout); dout << "DumpPoints:  " << e.why() << endl;}
         RWTHROW(e);
@@ -675,6 +654,32 @@ void CtiPointManager::DeleteList(void)
     //  do these need to be muxed?
     _type_offsets.erase(_type_offsets.begin(), _type_offsets.end());
     _control_offsets.erase(_control_offsets.begin(), _control_offsets.end());
+}
+
+void CtiPointManager::removeSinglePoint(ptr_type pTempCtiPoint)
+{
+    if( pTempCtiPoint )
+    {
+        std::multimap<pao_offset_t, long>::iterator type_itr;
+        for( type_itr  = _type_offsets.lower_bound(pao_offset_t(pTempCtiPoint->getDeviceID(), pTempCtiPoint->getPointOffset()));
+             type_itr != _type_offsets.upper_bound(pao_offset_t(pTempCtiPoint->getDeviceID(), pTempCtiPoint->getPointOffset()));
+             type_itr++ )
+        {
+             if( pTempCtiPoint->getType() == type_itr->second )
+             {
+                 _type_offsets.erase(type_itr);
+    
+                 break;
+             }
+        }
+    
+        //  If it's a status point with control, remove it from the control point lookup as well
+        if( pTempCtiPoint->getType() == StatusPointType &&
+            pTempCtiPoint->getControlOffset() )
+        {
+            _control_offsets.erase(pao_offset_t(pTempCtiPoint->getDeviceID(), pTempCtiPoint->getControlOffset()));
+        }
+    }
 }
 
 bool CtiPointManager::orphan(long pid)

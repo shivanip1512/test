@@ -12,8 +12,8 @@
 *
 * PVCS KEYWORDS:
 * ARCHIVE      :  $Archive:   Z:/SOFTWAREARCHIVES/YUKON/RTDB/INCLUDE/mgr_point.h-arc  $
-* REVISION     :  $Revision: 1.14 $
-* DATE         :  $Date: 2007/09/18 14:18:01 $
+* REVISION     :  $Revision: 1.15 $
+* DATE         :  $Date: 2007/10/24 14:51:29 $
 *
  * (c) 1999 Cannon Technologies Inc. Wayzata Minnesota
  * All Rights Reserved
@@ -80,6 +80,9 @@ public:
     CtiPointManager();
     virtual ~CtiPointManager();
     virtual void refreshList(BOOL (*fn)(CtiPointBase*,void*) = isPoint, void *d = NULL, LONG pntID = 0, LONG paoID = 0);
+
+    virtual void removeSinglePoint(ptr_type pTempCtiPoint);
+
     virtual void DumpList(void);
     virtual void DeleteList(void);
 

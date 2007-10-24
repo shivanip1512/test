@@ -10,8 +10,8 @@
 * Author: Corey G. Plender
 *
 * CVS KEYWORDS:
-* REVISION     :  $Revision: 1.7 $
-* DATE         :  $Date: 2005/12/20 17:16:58 $
+* REVISION     :  $Revision: 1.8 $
+* DATE         :  $Date: 2007/10/24 14:51:29 $
 *
 * Copyright (c) 2002 Cannon Technologies Inc. All rights reserved.
 *-----------------------------------------------------------------------------*/
@@ -699,6 +699,58 @@ CtiMultiMsg* CtiTagManager::getPointTags(long pointid) const
             CtiTagMsg *pOriginalTag = vt.second;
 
             if(pOriginalTag && pOriginalTag->getPointID() == pointid)
+            {
+                pTag = (CtiTagMsg*)(pOriginalTag->replicateMessage());
+
+                if(!pMulti)
+                {
+                    pMulti = new CtiMultiMsg;
+                }
+                if(pMulti)
+                {
+                    pMulti->insert(pTag);
+                }
+            }
+        }
+    }
+    catch(...)
+    {
+        delete pTag;
+        pTag = 0;
+        {
+            CtiLockGuard<CtiLogger> doubt_guard(dout);
+            dout << CtiTime() << " **** EXCEPTION **** " << __FILE__ << " (" << __LINE__ << ")" << endl;
+        }
+    }
+
+    return pMulti;
+}
+
+CtiMultiMsg* CtiTagManager::getAllPointTags() const
+{
+    CtiLockGuard< CtiMutex > tlg(_mux, 5000);
+    while(!tlg.isAcquired())
+    {
+        {
+            CtiLockGuard<CtiLogger> doubt_guard(dout);
+            dout << CtiTime() << " **** Checkpoint **** " << __FILE__ << " (" << __LINE__ << ")" << endl;
+        }
+        tlg.tryAcquire(5000);
+    }
+
+    CtiMultiMsg *pMulti = 0;
+    CtiTagMsg *pTag = 0;
+    TagMgrMap_t::const_iterator itr;
+
+    try
+    {
+        for(itr = _dynamicTagMsgMap.begin(); itr != _dynamicTagMsgMap.end(); itr++)
+        {
+            TagMgrMap_t::value_type vt = *itr;
+            TagMgrMap_t::key_type   key = vt.first;
+            CtiTagMsg *pOriginalTag = vt.second;
+
+            if(pOriginalTag)
             {
                 pTag = (CtiTagMsg*)(pOriginalTag->replicateMessage());
 
