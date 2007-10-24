@@ -2024,6 +2024,20 @@ void CtiCCCommandExecutor::EnableArea()
             currentSpArea->setDisableFlag(FALSE);
             store->UpdateSpecialAreaDisableFlagInDB(currentSpArea);
 
+            std::list <long>::iterator subIter = currentSpArea->getSubstationIds()->begin();
+            
+            while (subIter != currentSpArea->getSubstationIds()->end())
+            {
+                CtiCCSubstationPtr currentSubstation = NULL;
+                currentSubstation = store->findSubstationByPAObjectID(*subIter);
+                subIter++;            
+                if (currentSubstation != NULL)
+                {
+                    currentSubstation->setSaEnabledFlag(TRUE);
+                    currentSubstation->setSaEnabledId(areaId);
+                }
+            }
+            store->setValid(false);
 
             if (eventMulti->getCount() > 0)
                 CtiCapController::getInstance()->getCCEventMsgQueueHandle().write(eventMulti);
@@ -2101,7 +2115,20 @@ void CtiCCCommandExecutor::DisableArea()
             currentSpArea->setDisableFlag(TRUE);
             store->UpdateSpecialAreaDisableFlagInDB(currentSpArea);
 
+            std::list <long>::iterator subIter = currentSpArea->getSubstationIds()->begin();
 
+            while (subIter != currentSpArea->getSubstationIds()->end())
+            {
+                CtiCCSubstationPtr currentSubstation = NULL;
+                currentSubstation = store->findSubstationByPAObjectID(*subIter);
+                subIter++;            
+                if (currentSubstation != NULL)
+                {
+                    currentSubstation->setSaEnabledFlag(FALSE);
+                    currentSubstation->setSaEnabledId(0);
+                }
+            }
+            store->setValid(false);
             if (eventMulti->getCount() > 0)
                 CtiCapController::getInstance()->getCCEventMsgQueueHandle().write(eventMulti);
             if (multi->getCount() > 0)
