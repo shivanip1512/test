@@ -9,6 +9,8 @@ public class SubStation extends StreamableCapObject //implements PointQualityChe
 	int[] subBusIds = null;
     private Double powerFactorValue = null;
     private Double estimatedPFValue = null;
+    private Boolean specialAreaEnabled;
+    private Integer specialAreaId;
 	
 	public SubStation(){
 		super();
@@ -63,4 +65,19 @@ public class SubStation extends StreamableCapObject //implements PointQualityChe
         this.estimatedPFValue = estimatedPFValue;
     }
     
+    public Boolean getSpecialAreaEnabled() {
+        return specialAreaEnabled;
+    }
+
+    public void setSpecialAreaEnabled(Boolean specialAreaEnabled) {
+        this.specialAreaEnabled = specialAreaEnabled;
+    }
+    
+    public Integer getSpecialAreaId() {
+        return specialAreaId;
+    }
+    
+    public void setSpecialAreaId(Integer specialAreaId) {
+        this.specialAreaId = specialAreaId;
+    }
 }
