@@ -98,7 +98,9 @@ void CtiCCSubstation::restoreGuts(RWvistream& istrm)
         _subBusIds.push_back(tempSubBusId);
     }
     istrm >> _pfactor
-        >> _estPfactor;
+        >> _estPfactor
+        >> _saEnabledFlag
+        >> _saEnabledId;
     
 
 }
@@ -131,7 +133,9 @@ void CtiCCSubstation::saveGuts(RWvostream& ostrm ) const
     }
 
     ostrm << _pfactor
-        << _estPfactor;
+        << _estPfactor
+        << _saEnabledFlag
+        << _saEnabledId;
 
 
 }
@@ -159,6 +163,8 @@ CtiCCSubstation& CtiCCSubstation::operator=(const CtiCCSubstation& right)
 
         _pfactor = right._pfactor;
         _estPfactor = right._estPfactor;
+        _saEnabledFlag = right._saEnabledFlag;
+        _saEnabledId = right._saEnabledId;
 
         _subBusIds.clear();
         _subBusIds.assign(right._subBusIds.begin(), right._subBusIds.end());
@@ -214,6 +220,8 @@ void CtiCCSubstation::restore(RWDBReader& rdr)
     setOvUvDisabledFlag(FALSE);
     setPFactor(0);
     setEstPFactor(0);
+    setSaEnabledFlag(FALSE);
+    setSaEnabledId(0);
 
     _insertDynamicDataFlag = TRUE;
     _dirty = FALSE;
@@ -459,6 +467,15 @@ DOUBLE CtiCCSubstation::getEstPFactor() const
     return _estPfactor;
 }
 
+BOOL CtiCCSubstation::getSaEnabledFlag() const
+{
+    return _saEnabledFlag;
+}
+
+LONG CtiCCSubstation::getSaEnabledId() const
+{
+    return _saEnabledId;
+}
 /*---------------------------------------------------------------------------
     isDirty()
     
@@ -614,6 +631,28 @@ CtiCCSubstation& CtiCCSubstation::setPFactor(DOUBLE pfactor)
 CtiCCSubstation& CtiCCSubstation::setEstPFactor(DOUBLE estpfactor)
 {
     _estPfactor = estpfactor;
+    return *this;
+}
+
+/*---------------------------------------------------------------------------
+    setSaEnabledFlag
+
+    Sets the Special Area Enabled Flag of the substation
+---------------------------------------------------------------------------*/
+CtiCCSubstation& CtiCCSubstation::setSaEnabledFlag(BOOL flag)
+{
+    _saEnabledFlag = flag;
+    return *this;
+}
+
+/*---------------------------------------------------------------------------
+    setSaEnabledId
+
+    Sets the Special Area Enabled Id of the substation
+---------------------------------------------------------------------------*/
+CtiCCSubstation& CtiCCSubstation::setSaEnabledId(LONG saId)
+{
+    _saEnabledId = saId;
     return *this;
 }
 

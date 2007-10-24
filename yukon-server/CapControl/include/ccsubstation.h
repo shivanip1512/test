@@ -68,7 +68,9 @@ RWDECLARE_COLLECTABLE( CtiCCSubstation )
     LONG getDisplayOrder() const;
     DOUBLE getPFactor() const;
     DOUBLE getEstPFactor() const;
-
+    BOOL getSaEnabledFlag() const;
+    LONG getSaEnabledId() const;
+    
     list <LONG>* getCCSubIds(){return &_subBusIds;};
 
     CtiCCSubstation& setPAOId(LONG id);
@@ -84,8 +86,9 @@ RWDECLARE_COLLECTABLE( CtiCCSubstation )
     CtiCCSubstation& setDisplayOrder(LONG displayOrder);
     CtiCCSubstation& setPFactor(DOUBLE pfactor);
     CtiCCSubstation& setEstPFactor(DOUBLE estpfactor);
-
-
+    CtiCCSubstation& setSaEnabledFlag(BOOL flag);
+    CtiCCSubstation& setSaEnabledId(LONG saId);
+    
     DOUBLE calculatePowerFactor(DOUBLE kvar, DOUBLE kw);
     BOOL isDirty() const;
     void dumpDynamicData();
@@ -122,6 +125,8 @@ RWDECLARE_COLLECTABLE( CtiCCSubstation )
 
     DOUBLE _pfactor;
     DOUBLE _estPfactor;
+    BOOL _saEnabledFlag;
+    LONG _saEnabledId;
 
     //don't stream
     BOOL _insertDynamicDataFlag;
