@@ -7,8 +7,8 @@
 * Author: Matt Fisher
 *
 * CVS KEYWORDS:
-* REVISION     :  $Revision: 1.23 $
-* DATE         :  $Date: 2007/04/30 21:17:19 $
+* REVISION     :  $Revision: 1.24 $
+* DATE         :  $Date: 2007/10/24 15:27:44 $
 *
 * Copyright (c) 2002 Cannon Technologies Inc. All rights reserved.
 *-----------------------------------------------------------------------------*/
@@ -352,7 +352,9 @@ RWDBStatus CtiTableDynamicPaoInfo::Update()
     CtiLockGuard<CtiSemaphore> cg(gDBAccessSema);
     RWDBConnection conn = getConnection();
 
-    return Update(conn);
+    long rowsAffected = 0;
+
+    return Update(conn, rowsAffected);
 }
 
 RWDBStatus CtiTableDynamicPaoInfo::Insert(RWDBConnection &conn)
@@ -427,13 +429,10 @@ RWDBStatus CtiTableDynamicPaoInfo::Insert(RWDBConnection &conn)
     return retval;
 }
 
-RWDBStatus CtiTableDynamicPaoInfo::Update(RWDBConnection &conn)
+RWDBStatus CtiTableDynamicPaoInfo::Update(RWDBConnection &conn, long &rowsAffected)
 {
-    RWDBTable table = getDatabase().table( getTableName().c_str() );
-    RWDBUpdater updater = table.updater();
     RWDBStatus  stat(RWDBStatus::ok);
-
-    updater.where( table["entryid"] == getEntryID() );
+    RWDBTable   table = getDatabase().table( getTableName().c_str() );
 
     const string *tmp_owner = 0, *tmp_key = 0;
     string tmp_value;
@@ -448,6 +447,7 @@ RWDBStatus CtiTableDynamicPaoInfo::Update(RWDBConnection &conn)
         tmp_key = (_key_map.find(getKey()))->second;
     }
 
+
     getValue(tmp_value);
     if( tmp_value.empty() )
     {
@@ -456,23 +456,26 @@ RWDBStatus CtiTableDynamicPaoInfo::Update(RWDBConnection &conn)
 
     if( getEntryID() && tmp_owner && tmp_key )
     {
-        updater << table["paobjectid"].assign(getPaoID())
-                << table["owner"].assign(tmp_owner->data())
-                << table["infokey"].assign(tmp_key->data())
-                << table["value"].assign(tmp_value.c_str())
+        RWDBUpdater updater = table.updater();
+
+        updater.where(table["paobjectid"] == getPaoID() && 
+                      table["owner"]      == tmp_owner->data() &&
+                      table["infokey"]    == tmp_key->data());
+
+        updater << table["value"].assign(tmp_value.c_str())
                 << table["updatetime"].assign(toRWDBDT(CtiTime::now()));
 
-        long rowsAffected;
-        stat = ExecuteUpdater(conn,updater,__FILE__,__LINE__,&rowsAffected);
+        stat = ExecuteUpdater(conn, updater, __FILE__, __LINE__, &rowsAffected);
 
         if( stat.errorCode() == RWDBStatus::ok && rowsAffected > 0)
         {
             setDirty(false);
         }
-        else
+        //  we'll be doing this in mgr_device, because we need to assign a new entryid on insert
+/*        else
         {
             stat = Insert(conn);        // Try a vanilla insert if the update failed!
-        }
+        }*/
     }
 
     return stat;

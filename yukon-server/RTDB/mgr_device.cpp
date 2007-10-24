@@ -6,8 +6,8 @@
 *
 * PVCS KEYWORDS:
 * ARCHIVE      :  $Archive:   Z:/SOFTWAREARCHIVES/YUKON/RTDB/mgr_device.cpp-arc  $
-* REVISION     :  $Revision: 1.90 $
-* DATE         :  $Date: 2007/09/04 17:05:08 $
+* REVISION     :  $Revision: 1.91 $
+* DATE         :  $Date: 2007/10/24 15:27:43 $
 *
 * Copyright (c) 1999, 2000, 2001 Cannon Technologies Inc. All rights reserved.
 *-----------------------------------------------------------------------------*/
@@ -2774,13 +2774,15 @@ void CtiDeviceManager::writeDynamicPaoInfo( void )
             vector<CtiTableDynamicPaoInfo *>::iterator itr;
             for( itr = dirty_info.begin(); conn.isValid() && itr != dirty_info.end(); itr++ )
             {
+                long rowsAffected = 0;
+
                 (*itr)->setOwner(_app_id);
 
-                if( (*itr)->hasRow() )
-                {
-                    status = (*itr)->Update(conn);
-                }
-                else
+                status = (*itr)->Update(conn, rowsAffected);
+
+                //  update didn't work, so we have to assign a new entry ID
+                //    this is clunky - entry ID is useless, since we key on Owner, PAO, and Key anyway
+                if( status.errorCode() != RWDBStatus::ok || !rowsAffected )
                 {
                     (*itr)->setEntryID(max_entryid + 1);
 
@@ -2802,7 +2804,7 @@ void CtiDeviceManager::writeDynamicPaoInfo( void )
                     (*itr)->dump();
                 }
 
-                //  if the insert fails, this needs to keep the records around so it can write them in the future
+                //  TODO:  if the insert fails, this needs to keep the records around so it can write them in the future
                 delete *itr;
             }
 

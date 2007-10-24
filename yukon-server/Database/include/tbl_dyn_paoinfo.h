@@ -8,8 +8,8 @@
 * Author: Corey G. Plender
 *
 * CVS KEYWORDS:
-* REVISION     :  $Revision: 1.17 $
-* DATE         :  $Date: 2007/04/30 21:17:20 $
+* REVISION     :  $Revision: 1.18 $
+* DATE         :  $Date: 2007/10/24 15:27:44 $
 *
 * Copyright (c) 2002 Cannon Technologies Inc. All rights reserved.
 *-----------------------------------------------------------------------------*/
@@ -335,7 +335,7 @@ public:
     bool hasRow() const;
 
     RWDBStatus Insert(RWDBConnection &conn);
-    RWDBStatus Update(RWDBConnection &conn);
+    RWDBStatus Update(RWDBConnection &conn, long &rowsAffected);
 
     virtual RWDBStatus Insert();
     virtual RWDBStatus Update();
