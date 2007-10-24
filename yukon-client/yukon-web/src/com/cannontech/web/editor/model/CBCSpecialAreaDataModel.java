@@ -47,7 +47,7 @@ public class CBCSpecialAreaDataModel extends EditorDataModelImpl {
             }
 
             void populateUnassigned() {
-                unassignedSubs = CapControlSubstation.getAllUnassignedSubstations();
+                unassignedSubs = CapControlSubstation.getAllSpecialAreaUnassignedSubstations(areaPers.getPAObjectID());
             }
         };
     }

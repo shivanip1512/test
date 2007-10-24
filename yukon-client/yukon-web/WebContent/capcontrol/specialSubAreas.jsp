@@ -61,8 +61,8 @@ if (allowCtlVal!=null) {
 		css = ("tableCell".equals(css) ? "altTableCell" : "tableCell");
 	
 		CBCSpecialArea area = areas.get(i);
-		List<SubStation> areaStations = filterCapControlCache.getSubstationsByArea(area.getPaoID());
-		CapBankDevice[] areaCapBanks = filterCapControlCache.getCapBanksByArea(area.getPaoID());
+		List<SubStation> areaStations = filterCapControlCache.getSubstationsBySpecialArea(area.getPaoID());
+		CapBankDevice[] areaCapBanks = filterCapControlCache.getCapBanksBySpecialArea(area.getPaoID());
 	
 		//new additions for the available and closed vars
 		String varsAvailable = CBCUtils.format( CBCUtils.calcVarsAvailableForSubStations(areaStations) );

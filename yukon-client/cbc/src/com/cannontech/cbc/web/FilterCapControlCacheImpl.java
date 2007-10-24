@@ -94,6 +94,14 @@ public class FilterCapControlCacheImpl implements FilterCapControlCache, CapCont
 		else
 			return null;
 	}
+    
+    public CapBankDevice[] getCapBanksBySpecialArea(Integer areaID) {
+        CBCSpecialArea area = cache.getCBCSpecialArea(areaID);
+        if ( filter.valid(area) )
+            return cache.getCapBanksByArea(areaID);
+        else
+            return null;
+    }
 
 	public CapBankDevice[] getCapBanksByFeeder(Integer feederID) {
 		int id = cache.getParentAreaID(feederID);
@@ -269,6 +277,14 @@ public class FilterCapControlCacheImpl implements FilterCapControlCache, CapCont
 		else
 			return new ArrayList<SubStation>();
 	}
+    
+    public List<SubStation> getSubstationsBySpecialArea(Integer areaId) {
+        CBCSpecialArea area = cache.getCBCSpecialArea(areaId);
+        if ( filter.valid(area) )
+            return cache.getSubstationsByArea(areaId);
+        else
+            return new ArrayList<SubStation>();
+    }
 
 	public boolean isCBCArea(int id) {
 		return cache.isCBCArea(id);

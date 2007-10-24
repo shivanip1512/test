@@ -138,6 +138,7 @@ public class CapControlSubstation extends CapControlYukonPAOBase implements
         }
         connection.close();
     }
+    
     public static List<Integer> getAllUnassignedSubstations () {
         SqlStatementBuilder allSubstations = new SqlStatementBuilder();
         allSubstations.append("select paobjectid from yukonpaobject where type like 'CCSUBSTATION' ");
@@ -147,68 +148,16 @@ public class CapControlSubstation extends CapControlYukonPAOBase implements
         return yukonTemplate.queryForList(allSubstations.toString(), Integer.class);
 
     }
-   /* public static CapControlSubstation getDefaultArea() {
-        Connection connection = PoolManager.getInstance()
-                                           .getConnection(CtiUtilities.getDatabaseAlias());
-        CapControlSubstation noneArea = new CapControlSubstation();
-        synchronized (noneArea) {
-            try {
-                noneArea = retrieveArea(connection);
-            } catch (EmptyResultDataAccessException erda) {
-                addArea(connection);
-                close(connection);
-                getDefaultArea();
-
-            }
-
-        }
-        close(connection);
-        return noneArea;
-    }*/
-
-/*    private static void close(Connection connection) {
-        if (connection == null) {
-            try {
-                connection.close();
-            } catch (SQLException e) {
-                CTILogger.error(e);
-            }
-        }
-    }*/
-
-/*    private static CapControlSubstation retrieveArea(Connection connection) {
-        Integer substationID;
-        SqlStatementBuilder builder = new SqlStatementBuilder();
-        builder.append("select areaid from CapControlSubstation as c, yukonpaobject as y where");
-        builder.append("c.areaid = y.paobjectid");
-        builder.append("and");
-        builder.append("y.paoname like '(none)'");
+    
+    public static List<Integer> getAllSpecialAreaUnassignedSubstations (Integer areaId) {
+        SqlStatementBuilder allSubstations = new SqlStatementBuilder();
+        allSubstations.append("select paobjectid from yukonpaobject where type like 'CCSUBSTATION' ");
+        allSubstations.append("and ");
+        allSubstations.append("paobjectid not in (select substationbusid from ccsubspecialareaassignment where areaid = "+areaId+ " )");
         JdbcOperations yukonTemplate = JdbcTemplateHelper.getYukonTemplate();
-        CapControlSubstation noneArea = new CapControlSubstation();
-        substationID = yukonTemplate.queryForInt(builder.toString());
-        noneArea.setCapControlPAOID(substationID);
-        noneArea.setDbConnection(connection);
-        try {
-            noneArea.retrieve();
-            return noneArea;
-        } catch (SQLException e) {
-            noneArea = null;
-            CTILogger.error(e);
-        }
-        return noneArea;
-    }*/
+        return yukonTemplate.queryForList(allSubstations.toString(), Integer.class);
 
-/*    private static void addArea(Connection connection) {
-        CapControlSubstation area = new CapControlSubstation();
-        area.setPAOName("(none)");
-        area.getCapControlSubstation().setStrategyID(0);
-        area.setDbConnection(connection);
-        try {
-            area.add();
-        } catch (SQLException e) {
-            CTILogger.error(e);
-        }
-    }*/
+    }
 
     public static List<Integer> getAllSubstationIDs() {
         SqlStatementBuilder builder = new SqlStatementBuilder();
