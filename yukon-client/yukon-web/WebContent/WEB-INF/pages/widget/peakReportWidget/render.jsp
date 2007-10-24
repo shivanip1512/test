@@ -11,12 +11,12 @@
 	<br/>
 </c:if>
 
-<table class="compactResultsTableLeft">
+<table class="compactResultsTable">
 
 	<tr>
-		<td class="label_first" nowrap="nowrap">Channel:</td>
+		<td class="label" nowrap="nowrap">Channel:</td>
 		<td>
-			<select name="channel" style="height:20px;width:145px;">
+			<select name="channel" style="width:145px;">
 				<c:forEach var="channelInfo" items="${availableChannels}">
 	   				<option value="${channelInfo.channelNumber}" ${channelInfo.selected}>${channelInfo.channelDescription}</option>
 	   			</c:forEach>
@@ -28,7 +28,7 @@
 	</tr>
 	
 	<tr>
-		<td class="label" nowrap="nowrap">Report Type:</td>
+		<td class="label">Report Type:</td>
 		<td colspan="3">
 			<select name="peakType" style="height:20px;width:145px;">
 				<c:forEach var="peakTypeInfo" items="${availablePeakTypes}">
@@ -39,12 +39,11 @@
 	</tr>
 </table> 
 
-<table class="compactResultsTableLeft">
+<table class="compactResultsTable">
 	<tr>
-		<td class="label">Start Date:</td>
+		<td class="label">Start:</td>
 		<td><tags:dateInputCalendar fieldName="startDateStr" fieldValue="${startDateStr}"></tags:dateInputCalendar></td>
-		<td width="14px">&nbsp;</td>
-		<td class="label_last">Stop Date: </td>
+		<td class="label">Stop: </td>
 		<td><tags:dateInputCalendar fieldName="stopDateStr" fieldValue="${stopDateStr}"></tags:dateInputCalendar></td>
 	</tr>
 </table>
@@ -53,24 +52,19 @@
 
 <%--RESULTS--%>
 <c:if test="${! empty peakResult}">
-<br/>
-<table class="compactResultTableDescription" width="95%" cellpadding="0" cellspacing="0">
-	<tr>
-		<td>
-			Report: ${peakResult.peakTypeReportDisplayName}
-		</td>
-		<td align="right" style="color:#666666;font-weight:normal;">
-			${peakResult.runDateDisplay}
-		</td>
-	</tr>
-</table>
-<div style="height:5px;"></div>
+	<br/>
+	
 	<c:choose>
 	
 		<c:when test="${!peakResult.noData && peakResult.deviceError == ''}">
 		
-			<table class="compactResultsTableLeft">
-			
+			<table class="compactResultsTable">
+				
+				<tr>
+					<th>Report: <div style="font-weight:normal;display:inline;">${peakResult.peakTypeReportDisplayName}</div></th>
+					<th align="right" style="font-weight:normal;color:#666666;">${peakResult.runDateDisplay}</th>
+				</tr>
+		
 				<tr>
 					<td class="label">Period:</td>
 					<td>${peakResult.periodStartDateDisplay} - ${peakResult.periodStopDateDisplay}</td>

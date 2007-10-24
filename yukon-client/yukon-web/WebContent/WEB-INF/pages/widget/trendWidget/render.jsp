@@ -30,11 +30,11 @@
 			<tags:trend title="${title}" pointIds="${pointIds}" startDate="${startDate}" endDate="${endDate}" period="${period}" converterType="${selectedAttributeGraph.converterType}" graphType="${graphType}"></tags:trend>
 		</div>
 		
-		<table class="compactResultsTableLeft">
+		<table class="compactResultsTable">
 		
 		<!-- Available attribute graphs -->
 		<tr>
-		<td class="label_first">Graph Type:</td>
+		<td class="label">Graph Type:</td>
 		
 		<td>
 		<c:set var="notFirst" value="false" scope="page"></c:set>
@@ -103,7 +103,7 @@
 		
 		<!-- Charting Style (line/bar) -->
 		<tr>
-			<td class="label_last"><b>Chart Style:</b></td>
+			<td class="label"><b>Chart Style:</b></td>
 		
 			<td class="last">
 				<tags:widgetLink method="render" title="Line Graph" labelBusy="Line" selected="${graphType == 'LINE'}" graphType="LINE">Line</tags:widgetLink>

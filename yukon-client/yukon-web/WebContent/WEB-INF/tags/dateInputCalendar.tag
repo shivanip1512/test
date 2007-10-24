@@ -6,7 +6,7 @@
 
 <cti:uniqueIdentifier var="uniqueId" prefix="dateInputCalendarId_"/>
 
-<input id="${uniqueId}" name="${fieldName}" type="text" size="10" maxlength="10" value="${fieldValue}" style="width:64px;height:14px;">&nbsp;
+<input id="${uniqueId}" name="${fieldName}" type="text" size="10" maxlength="10" value="${fieldValue}" style="width:64px;">&nbsp;
 
 <span onclick="javascript:showCalendarControl($('${uniqueId}'));">
 	<img src="<c:url value="/WebConfig/yukon/Icons/StartCalendar.gif"/>" width="20" height="15" border="0" />

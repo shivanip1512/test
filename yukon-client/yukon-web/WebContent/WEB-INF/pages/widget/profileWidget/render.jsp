@@ -17,10 +17,6 @@
 
 </script>
 <%--CHANNLES PROFILING--%>
-<br/>
-<span class="compactResultTableDescription">Start/Stop Profiling:</span>
-<br/>
-<div style="height:5px;"></div>
 
 <table class="compactResultsTable">
 
@@ -67,38 +63,13 @@
 <br/>
 	
 <%--PAST PROFILES--%>
-<span class="compactResultTableDescription">Request Past Profile:</span> <span class="compactResultTableDescription" style="color:#CC0000;">${initiateMessage}</span>
-<br/>
-<div style="height:5px;"></div>
-
-
-<%--<tags:nameValueContainer altRowOn="true">--%>
-<%--	<tags:nameValue name="Channel">--%>
-<%--		<select name="channel" style="height:20px;">--%>
-<%--				<c:forEach var="channel" items="${availableChannels}">--%>
-<%--	   				<option value="${channel.channelNumber}">${channel.channelDescription}</option>--%>
-<%--	   			</c:forEach>--%>
-<%--	   		</select>--%>
-<%--	</tags:nameValue>--%>
-<%--	--%>
-<%--	<tags:nameValue name="Start Date">--%>
-<%--		<tags:dateInputCalendar fieldName="startDateStr" fieldValue="${startDateStr}"></tags:dateInputCalendar>--%>
-<%--	</tags:nameValue>--%>
-<%--	--%>
-<%--	<tags:nameValue name="Stop Date">--%>
-<%--		<tags:dateInputCalendar fieldName="stopDateStr" fieldValue="${stopDateStr}"></tags:dateInputCalendar>--%>
-<%--	</tags:nameValue>--%>
-<%--	--%>
-<%--	<tags:nameValue name="Email">--%>
-<%--		<input id="email" name="email" type="text" value="${email}" size="25" style="height:16px;">--%>
-<%--		<tags:widgetActionRefresh method="initiateLoadProfile" label="Start" labelBusy="Start"/>--%>
-<%--	</tags:nameValue>--%>
-<%--	--%>
-<%--</tags:nameValueContainer>--%>
-
-<table class="compactResultsTableLeft">
+<table class="compactResultsTable">
 	<tr>
-		<td class="label_first">Channel:</td>
+		<th colspan="3">Request Past Profile:</th>
+	</tr>
+
+	<tr>
+		<td class="label">Channel:</td>
 		<td colspan="2">
 			<select name="channel" style="height:20px;">
 				<c:forEach var="channel" items="${availableChannels}">
@@ -123,7 +94,7 @@
 	</tr>
 	
 	<tr>
-		<td class="label_last">Email:</td>
+		<td class="label">Email:</td>
 		<td class="last">
 			<input id="email" name="email" type="text" value="${email}" size="25" style="height:16px;">
 		</td>
@@ -138,72 +109,77 @@
 
 
 <%--ONGOING PROFILES--%>
-<span class="compactResultTableDescription">Pending Requests:</span>
-
-
 <c:choose>
 
-<c:when test="${empty pendingRequests}">
-	<span class="compactResultTableDescription" style="font-weight:normal">None</span>
-</c:when>
+	<c:when test="${empty pendingRequests}">
+		<div class="compactResultTableDescription">Pending Requests: </div>None
+	</c:when>
 
-
-
-<c:when test="${not empty pendingRequests}">
+	<c:when test="${not empty pendingRequests}">
 	
-	<br/>
-	<div style="height:5px;"></div>
-
-	<table>
-	<c:forEach var="pendingRequest" items="${pendingRequests}">
-	
-		<tr valign="top" class="<tags:alternateRow odd="" even="altRow"/>">
+		<table class="compactResultsTable">
 		
-		<td>
-	
-		<tags:hideReveal title="${pendingRequest.from} - ${pendingRequest.to}" showInitially="false" identifier="pendingContainer${pendingRequest.requestId}">
-	
-			<table style="margin-left:20px">
-				<tr>
-					<td><b>Channel:</b></td>
-					<td>${pendingRequest.channel}</td>
-				</tr>
-				<tr>
-					<td><b>Requested By:</b></td>
-					<td>${pendingRequest.userName}</td>
-				</tr>
-				<tr>
-					<td colspan="2">${pendingRequest.email}</td>
-				</tr>
-				<tr>
-					<td colspan="2">&nbsp;</td>
-				</tr>
-			</table>
-	
-		</tags:hideReveal>
-		
-		</td>
-		
-		<td>
-			<div id="profileStatusBar${pendingRequest.requestId}" style="vertical-align: top"></div> 
-		
-			<script language="JavaScript">
-	    		progressUpdaters[${pendingRequest.requestId}] = new Ajax.PeriodicalUpdater('profileStatusBar${pendingRequest.requestId}', '/spring/widget/profileWidget/percentDoneProgressBarHTML?requestId=${pendingRequest.requestId}', {method: 'post', frequency: 2});
-			</script>
+			<tr><th>Pending Requests:</th></tr>
 			
-		</td>
-		
-		<td onClick="javascript:progressUpdaters[${pendingRequest.requestId}].stop();"><tags:widgetActionRefreshImage method="cancelLoadProfile"
-								requestId="${pendingRequest.requestId}" title="Cancel"
-								imgSrc="/WebConfig/yukon/Icons/action_stop.gif"
-								imgSrcHover="/WebConfig/yukon/Icons/action_stop.gif" /></td>
-		
-		</tr>
-		<tr><td colspan="3"><div style="height:5px;"></div></td></tr>
-		
-	</c:forEach>
-	</table>
-	
-</c:when>
+			<tr>
+				<td>
+					<table>
+						<c:forEach var="pendingRequest" items="${pendingRequests}">
+
+							<tr valign="top" class="<tags:alternateRow odd="" even="altRow"/>">
+								
+								<!-- MORE INFO HIDE REVEAL --------------------------------------------->
+								<td>
+									<tags:hideReveal
+										title="${pendingRequest.from} - ${pendingRequest.to}"
+										showInitially="false"
+										identifier="pendingContainer${pendingRequest.requestId}">
+
+										<table class="compactResultsTable" style="margin-left:20px">
+											<tr>
+												<td class="label">Channel:</td>
+												<td>${pendingRequest.channel}</td>
+											</tr>
+											<tr>
+												<td class="label">Requested By:</td>
+												<td>${pendingRequest.userName}</td>
+											</tr>
+											<tr>
+												<td colspan="2">${pendingRequest.email}</td>
+											</tr>
+										</table>
+									</tags:hideReveal>
+								</td>
+								
+								<!-- STATUS BAR --------------------------------------------------------->
+								<td>
+									<div id="profileStatusBar${pendingRequest.requestId}" style="vertical-align: top"></div>
+
+									<script language="JavaScript">
+										progressUpdaters[${pendingRequest.requestId}] = new Ajax.PeriodicalUpdater('profileStatusBar${pendingRequest.requestId}', '/spring/widget/profileWidget/percentDoneProgressBarHTML?requestId=${pendingRequest.requestId}', {method: 'post', frequency: 2});
+									</script>
+
+								</td>
+								
+								<!-- CANCEL ICON ------------------------------------------------------->
+								<td
+									onClick="javascript:progressUpdaters[${pendingRequest.requestId}].stop();">
+									<tags:widgetActionRefreshImage method="cancelLoadProfile"
+										requestId="${pendingRequest.requestId}" title="Cancel"
+										imgSrc="/WebConfig/yukon/Icons/action_stop.gif"
+										imgSrcHover="/WebConfig/yukon/Icons/action_stop.gif" />
+								</td>
+
+							</tr>
+
+						</c:forEach>
+					</table>
+				</td>
+			</tr>
+		</table>
+	</c:when>
 </c:choose>
+
+
+
 

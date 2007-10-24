@@ -138,11 +138,6 @@ table.miniResultsTableLeft td {
 
 
 
-
-
-
-
-
 /* Compact Result Table - TOP*/
 table.compactResultsTable {
 	width: 95%;
@@ -151,137 +146,27 @@ table.compactResultsTable {
 
 table.compactResultsTable th {
 	border-bottom: 1px solid #CCCCCC;
-	/* border-top:0px solid #CCCCCC;
-    border-bottom: 1px solid #CCCCCC;
-    border-left: 0px solid #CCCCCC;
-    border-right: 0px solid #CCCCCC;
-    background: #E8E8E8; */
-	color: 	#003366;
+	color: 	#000000;
 	font-size: 11px;
 	font-weight: 600;
 }
 
 table.compactResultsTable td {
-    /* border-top: 0px solid #CCCCCC;
-    border-bottom: 1px solid #CCCCCC;
-    border-left: 0px solid #CCCCCC;
-    border-right: 0px solid #CCCCCC; */
     padding: 2px 2px;
-    font-size: 10px;
+    font-size: 11px;
 }
 
-table.compactResultsTable td.last {
-    /* border: 0px; */
+table.compactResultsTable td.label {
     padding: 2px 2px;
-    font-size: 10px;
+    font-size: 11px;
+    font-weight: 600;
 }
-
-table.compactResultsTable td input text{
-	font-size: 15px;
-	height: 21px;
-}
-
-table.compactResultsTable td input button{
-	font-size: 14px;
-	height: 26px;
-}
-
-table.compactResultsTable td select{
-	font-size: 13px;
-	height: 15px;
-}
-
-
 
 .compactResultTableDescription{
 	font-size: 11px;
 	font-weight: bold;
+	display:inline;
 }
-
-
-
-
-
-
-/* Compact Result Table - LEFT*/
-table.compactResultsTableLeft {
-	width: 95%;
-	/* border-collapse: collapse; */
-}
-
-table.compactResultsTableLeft td.label {
-	/* border-top: 0px solid #CCCCCC;
-    border-bottom: 1px solid #CCCCCC;
-    border-left: 1px solid #CCCCCC;
-    border-right: 0px solid #CCCCCC;
-    background: #E8E8E8; */
-	color: 	#003366;
-	font-size: 11px;
-	font-weight: 600;
-}
-
-table.compactResultsTableLeft td.label_first {
-	/* border-top: 0px solid #CCCCCC;
-    border-bottom: 1px solid #CCCCCC;
-    border-left: 1px solid #CCCCCC;
-    border-right: 0px solid #CCCCCC;
-    background: #E8E8E8; */
-	color: 	#003366;
-	font-size: 11px;
-	font-weight: 600;
-}
-
-table.compactResultsTableLeft td.label_last {
-	/* border-top: 0px solid #CCCCCC;
-    border-bottom: 0px solid #CCCCCC;
-    border-left: 1px solid #CCCCCC;
-    border-right: 0px solid #CCCCCC;
-    background: #E8E8E8; */
-	color: 	#003366;
-	font-size: 11px;
-	font-weight: 600;
-}
-
-table.compactResultsTableLeft td {
-    /* border-top: 0px solid #CCCCCC;
-    border-bottom: 1px solid #CCCCCC;
-    border-left: 0px solid #CCCCCC;
-    border-right: 0px solid #CCCCCC; */
-    padding: 2px 2px;
-    font-size: 10px;
-}
-
-table.compactResultsTableLeft td.last {
-    /* border-top: 0px solid #CCCCCC;
-    border-bottom: 0px solid #CCCCCC;
-    border-left: 0px solid #CCCCCC;
-    border-right: 0px solid #CCCCCC; */
-    padding: 2px 2px;
-    font-size: 10px;
-}
-
-table.compactResultsTableLeft td input text{
-	font-size: 15px;
-	height: 21px;
-}
-
-table.compactResultsTableLeft td input button{
-	font-size: 14px;
-	height: 26px;
-}
-
-table.compactResultsTableLeft td select{
-	font-size: 13px;
-	height: 15px;
-}
-
-
-
-
-
-
-
-
 
 
 
