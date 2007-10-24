@@ -507,9 +507,6 @@ for( int i = 0; i < capBanks.size(); i++ ) {
 		</div>
 		<input type="hidden" id="lastUpdate" value="">
 	</cti:titledContainer>
-<script type="text/javascript"> 
-	<!--Event.observe(window, 'load', function() {  initFilter($('parent_fdr_td'), $('capBankTable'), 7); new CtiNonScrollTable('capBankTable','capBankHeaderTable'); });-->
-</script>
     <div style = "display:none" id = "outerDiv">
         <cti:titledContainer title="Current Status">
             <div id="cmd_msg_div" />

@@ -35,13 +35,12 @@ if (allowCtlVal!=null) {
 	} 
 	}
 	%>    
-    <cti:titledContainer title="Special Substation Bus Areas" id="last_titled_container">
-          
-		<form id="areaForm" action="substations.jsp" method="post">
-			<input type="hidden" name="<%=CCSessionInfo.STR_CC_AREA%>" />
-			<input type="hidden" name="<%=CCSessionInfo.STR_CC_AREAID%>" />
-            <table id="areaHeaderTable" width="100%" border="0" cellspacing="0" cellpadding="0">
-              <tr class="columnHeader lAlign">				
+<cti:titledContainer title="Special Substation Bus Areas" id="last_titled_container">
+	<form id="areaForm" action="substations.jsp" method="post">
+		<input type="hidden" name="<%=CCSessionInfo.STR_CC_AREA%>" />
+		<input type="hidden" name="<%=CCSessionInfo.STR_CC_AREAID%>" />
+        <table id="areaHeaderTable" width="100%" border="0" cellspacing="0" cellpadding="0">
+	        <tr class="columnHeader lAlign">				
 				<td>Area Name</td>
                 <td>State</td>
                 <td>Setup</td>
@@ -50,9 +49,9 @@ if (allowCtlVal!=null) {
                 <td>Closed <br/>kVARS</td>
                 <td>Tripped <br/>kVARS</td>
                 <td>PFactor/Est.</td>
-              </tr>
-              </table>
-              <div >
+			</tr>
+        </table>
+        <div >
 		<table id="areaTable" width="98%" border="0" cellspacing="0" cellpadding="0" >
 <%
 	String css = "tableCell";
@@ -114,7 +113,9 @@ if (allowCtlVal!=null) {
 				<td><%=trippedVars%></td>
 				<td><%=currPF%> / <%=estPF%></td>
 			</tr>
-			<a id="allAreas<%=i%>">
+			<tr>
+				<td>
+					<table id="allAreas<%=i%>">
 <%
 	if (areaStations.size() > 0) {		
 	for( int j = 0; j < areaStations.size(); j++ ) {
@@ -122,21 +123,23 @@ if (allowCtlVal!=null) {
 		List<Feeder> subFeeders = filterCapControlCache.getFeedersBySubStation(substation);
 		List<CapBankDevice> subCapBanks = filterCapControlCache.getCapBanksBySubStation(substation);
 %>
-		        <tr class="<%=css%>" style="display: none;">
-					<td><font class="lIndent"><%=CBCUtils.CBC_DISPLAY.getSubstationValueAt(substation, CBCDisplay.SUB_NAME_COLUMN)%></font></td>
-					<td><%=subFeeders.size()%> Feeder(s), <%=subCapBanks.size()%> Bank(s)</td>
-					<td></td>
-					<td></td>
-					<td></td>
-				</tr>
+				        <tr class="<%=css%>" style="display: none;">
+							<td><font class="lIndent"><%=CBCUtils.CBC_DISPLAY.getSubstationValueAt(substation, CBCDisplay.SUB_NAME_COLUMN)%></font></td>
+							<td><%=subFeeders.size()%> Feeder(s), <%=subCapBanks.size()%> Bank(s)</td>
+							<td></td>
+							<td></td>
+							<td></td>
+						</tr>
 		<%}%>
 	<%}%>
-  </a>
+  					</table>
+  				</td>
+  			</tr>
 <%}%>
 
-            </table>
-			</div>
-			</form>
+		</table>
+	</div>
+</form>
 			
 <script type="text/javascript">
 Event.observe(window, 'load', function() { new CtiNonScrollTable('areaTable','areaHeaderTable');});

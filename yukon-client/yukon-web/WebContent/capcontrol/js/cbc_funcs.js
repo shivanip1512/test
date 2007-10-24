@@ -135,13 +135,11 @@ function showRowElems( elemName, toggleName)
 
 {
     visible = toggleImg(toggleName) ;
-
     var elem = document.getElementById(elemName);
     var rows = elem.getElementsByTagName('tr');
-    //var currentMenus = elem.childNodes;
     for( i = 0; i < rows.length; i++ ) {
-        rows[i].style.display = 
-            (visible ? '' : 'none');
+    	var row = rows[i];
+        row.style.display = (visible ? '' : 'none');
     }
 }
 
@@ -837,26 +835,6 @@ function pause(numberMillis) {
 			}
 		}
     }
-
-	function initFilter(parent_td, parent_table, column_filter_index) {
-        var unique_options_list = new Array;
-        var rows = parent_table.getElementsByTagName ('tr');     
-        var html = "<select id='parent_fdr_slct' onchange='applyFilter(this, capBankTable, "+column_filter_index+");'>";
-        html +=    "<option> All Feeders </option>"; 
-        parent_td.innerText = "Parent Feeder";
-        parent_td.innerHTML = "";
-        for (var i=0; i < rows.length; i++) {
-            var row = rows[i];
-            var cells = row.getElementsByTagName('td');
-            var displayed_name = cells[column_filter_index].innerText;
-            if (!isOnTheList (unique_options_list, displayed_name)) {
-                unique_options_list[unique_options_list.length ++] =  displayed_name;
-                html += "<option>" + displayed_name + "</option>";
-            }
-        }
-    html += "</select>";        
-    parent_td.innerHTML = html;                     
-}
 
 function isOnTheList (list, string) {
     for(var i=0; i < list.length; i++) {
