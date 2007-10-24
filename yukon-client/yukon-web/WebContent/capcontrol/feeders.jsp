@@ -101,14 +101,11 @@ String css = "tableCell";
 				<td id="anc_<%=substation.getCcId()%>">
 					<input type="checkbox" name="cti_chkbxSubs" value="<%=substation.getCcId()%>"/>
 					<%=CBCUtils.CBC_DISPLAY.getSubstationValueAt(substation, CBCDisplay.SUB_NAME_COLUMN)%> 
-					<% Integer spcAreaId = CCSubSpecialAreaAssignment.getAreaIDForSub(substation.getCcId());
-					if(spcAreaId != null){
-					 	CBCSpecialArea spcArea= filterCapControlCache.getCBCSpecialArea(spcAreaId);
-					 	if(!spcArea.getDisableFlag()){
+					<% if(substation.getSpecialAreaEnabled()){
+					 	String spcAreaName = CBCUtils.getPAOName(substation.getSpecialAreaId());
 					 %>
-						 <font color="red">SA</font>
-					<%}
-					} %>
+						 <font color="red">SA <%=spcAreaName%></font>
+					<%}%>
 				</td>
 				
 				<td >
@@ -244,15 +241,11 @@ for( SubBus subBus: subBuses ) {
 			        </tr>
 			        <tr class="tableCellSnapShot" style="display: none;">
 			        <td><font  class="lIndent">Area:<%=areaName%></font>
-			        <% Integer spcAreaId = CCSubSpecialAreaAssignment.getAreaIDForSub(substation.getCcId());
-					if(spcAreaId != null){
-					 	CBCSpecialArea spcArea= filterCapControlCache.getCBCSpecialArea(spcAreaId);
-					 	if(!spcArea.getDisableFlag()){
+			        <% if(substation.getSpecialAreaEnabled()){
 					 	String spcAreaName = CBCUtils.getPAOName(spcAreaId);
 					 %>
 						 <font color="red"><%=spcAreaName%> IS ENABLED</font>
-					<%}
-					} %>
+					<%}%>
 			        </td>
 					</tr>
 			        <tr class="tableCellSnapShot" style="display: none;">

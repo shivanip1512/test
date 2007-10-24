@@ -116,14 +116,10 @@ for( int i = 0; i < areaSubs.size(); i++ ) {
 				<a href="#" class="<%=css%>" onclick="postMany('subForm', '<%=CCSessionInfo.STR_SUBID%>', <%=substation.getCcId()%>)" id="anc_<%=substation.getCcId()%>">
 				<%=CBCUtils.CBC_DISPLAY.getSubstationValueAt(substation, CBCDisplay.SUB_NAME_COLUMN)%>
 				</a>
-				<% Integer spcAreaId = CCSubSpecialAreaAssignment.getAreaIDForSub(substation.getCcId());
-				if(spcAreaId != null){
-				 	CBCSpecialArea spcArea= filterCapControlCache.getCBCSpecialArea(spcAreaId);
-				 	if(!spcArea.getDisableFlag()){
-				 %>
-					 <font color="red">SA</font>
-				<%}
-				} %>
+				<% if(substation.getSpecialAreaEnabled()){
+					String spcAreaName = CBCUtils.getPAOName(substation.getSpecialAreaId()); %>
+					 <font color="red">SA <%=spcAreaName%></font>
+				<%}%>
 				</td>
 				<td>
 				
