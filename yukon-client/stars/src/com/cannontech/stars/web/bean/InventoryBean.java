@@ -321,7 +321,8 @@ public class InventoryBean {
 		}
 		else if ((getHtmlStyle() & HTML_STYLE_LIST_INVENTORY) != 0 || 
                 (getHtmlStyle() & HTML_STYLE_SELECT_LM_HARDWARE) != 0 ||
-                (getHtmlStyle() & HTML_STYLE_FILTERED_INVENTORY_SUMMARY) != 0 ) 
+                (getHtmlStyle() & HTML_STYLE_FILTERED_INVENTORY_SUMMARY) != 0 ||
+                (getHtmlStyle() & HTML_STYLE_SELECT_INVENTORY) != 0) 
         {
 			if (DaoFactory.getAuthDao().checkRoleProperty( user.getYukonUser(), AdministratorRole.ADMIN_MANAGE_MEMBERS )
 				&& (getEnergyCompany().getChildren().size() > 0))
