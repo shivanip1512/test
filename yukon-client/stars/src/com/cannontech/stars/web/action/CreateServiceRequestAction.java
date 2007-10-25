@@ -130,9 +130,20 @@ public class CreateServiceRequestAction implements ActionBase {
             	// Request from CreateOrder.jsp
 				// The request parameter REDIRECT doesn't know the order ID,
 				// so we append it to the end of the parameter value
-				String redirect = (String) session.getAttribute(ServletUtils.ATT_REDIRECT);
-				redirect += liteOrder.getOrderID();
-				session.setAttribute(ServletUtils.ATT_REDIRECT, redirect);
+                String redirect = (String) session.getAttribute(ServletUtils.ATT_REDIRECT);
+                WorkOrderBean workOrderBean = (WorkOrderBean) session.getAttribute("workOrderBean");
+                /*
+                 * No filters defined so we need to make sure we don't directly navigate to WorkOrder.jsp
+                 */
+                if (workOrderBean != null && workOrderBean.getFilters() == null) {
+                    redirect = redirect.substring(0, redirect.indexOf("WorkOrder"));
+                    redirect += "WorkOrder/WOFilter.jsp";
+                }
+                else {
+                    
+    				redirect += liteOrder.getOrderID();
+                }
+                session.setAttribute(ServletUtils.ATT_REDIRECT, redirect);
 				
 				StarsCustAccountInformation starsAcctInfo = energyCompany.getStarsCustAccountInformation( createOrder.getAccountID() );
 				if (starsAcctInfo != null) {
@@ -273,14 +284,16 @@ public class CreateServiceRequestAction implements ActionBase {
     
     private void addWorkOrderToBean(final WorkOrderBean workOrderBean, final LiteWorkOrderBase liteWorkOrderBase) {
         final List<FilterWrapper> filterList = workOrderBean.getFilters();
-        final AbstractFilter<LiteWorkOrderBase> filter = new WorkOrderFilter();
-        final List<LiteWorkOrderBase> filteredWorkOrderList = filter.filter(Arrays.asList(liteWorkOrderBase), filterList); 
-        if (filteredWorkOrderList.size() > 0) {
-            List<LiteWorkOrderBase> workOrderList = workOrderBean.getWorkOrderList();
-            synchronized (workOrderList) {
-                workOrderList.addAll(filteredWorkOrderList);
-            }
-        }    
+        if(filterList != null) {
+            final AbstractFilter<LiteWorkOrderBase> filter = new WorkOrderFilter();
+            final List<LiteWorkOrderBase> filteredWorkOrderList = filter.filter(Arrays.asList(liteWorkOrderBase), filterList); 
+            if (filteredWorkOrderList.size() > 0) {
+                List<LiteWorkOrderBase> workOrderList = workOrderBean.getWorkOrderList();
+                synchronized (workOrderList) {
+                    workOrderList.addAll(filteredWorkOrderList);
+                }
+            }    
+        }
     }
 
 }
