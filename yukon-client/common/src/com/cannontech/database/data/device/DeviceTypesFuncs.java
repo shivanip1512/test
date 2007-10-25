@@ -503,9 +503,6 @@ public final static boolean isLoadProfileVoltage(int deviceType)
 		case MCT410CL:
 		case MCT410FL:
 		case MCT410GL:
-        case MCT430A:
-        case MCT430S4:
-        case MCT430SL:
 		case MCT470:
 			return true;
 		default:
