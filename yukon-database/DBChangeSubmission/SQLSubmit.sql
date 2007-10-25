@@ -64,3 +64,12 @@ CREATE TABLE [dbo].[PeakReport](
 	[resultString] [varchar](1500) COLLATE SQL_Latin1_General_CP1_CI_AS NULL
 ) ON [PRIMARY]
 /* end */
+
+
+/* start: YUK-4591 Add indicator to Substation object, when parent Special Area is enabled */
+alter table dynamicccsubstation add saenabledid numeric;
+go
+update dynamicccsubstation set saenabledid = 0;
+go
+alter table dynamicccsubstation alter column saenabledid not null;
+/* end YUK-4591 */

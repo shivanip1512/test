@@ -259,8 +259,9 @@ void CtiCCSubstation::dumpDynamicData(RWDBConnection& conn, CtiTime& currentDate
             
             unsigned char addFlags[] = {'N','N','N','N','N','N','N','N','N','N','N','N','N','N','N','N','N','N','N','N'};
             addFlags[0] = (_ovUvDisabledFlag?'Y':'N');
-			_additionalFlags = string(char2string(*addFlags));
-            _additionalFlags.append("NNNNNNNNNNNNNNNNNNN");
+            addFlags[1] = (_saEnabledFlag?'Y':'N');
+            _additionalFlags = string(char2string(*addFlags) + char2string(*addFlags+1));
+            _additionalFlags.append("NNNNNNNNNNNNNNNNNN");
 
             updater.clear();
 
@@ -332,11 +333,10 @@ void CtiCCSubstation::setDynamicData(RWDBReader& rdr)
 {   
     rdr["additionalflags"] >> _additionalFlags;
     _ovUvDisabledFlag = (_additionalFlags[0]=='y'?TRUE:FALSE);
-    
+    _saEnabledFlag = (_additionalFlags[1]=='y'?TRUE:FALSE);
+    rdr["saenabledid"] >> _saEnabledId;
     _insertDynamicDataFlag = FALSE;
     _dirty = false;
-
-
 }
 
 

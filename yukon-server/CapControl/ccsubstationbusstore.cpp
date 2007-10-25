@@ -3320,7 +3320,8 @@ void CtiCCSubstationBusStore::reloadSubstationFromDatabase(long substationId,
                     {
                         RWDBSelector selector = db.selector();
                         selector << dynamicCCSubstationTable["substationid"]
-                        << dynamicCCSubstationTable["additionalflags"];
+                        << dynamicCCSubstationTable["additionalflags"]
+                        << dynamicCCSubstationTable["saenabledid"];
 
                         selector.from(capControlSubstationTable);
                         selector.from(dynamicCCSubstationTable);
