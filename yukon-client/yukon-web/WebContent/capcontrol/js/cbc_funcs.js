@@ -945,8 +945,6 @@ String.prototype.removeLeadTrailSpace = function () {
 }
 
 function results (param) {
-	prevLocation = window.location;
-	redirect  = 'results.jsp?returnURL='+ escape(prevLocation);
-	redirect += '&'+param;
+	redirect = 'results.jsp?'+param;
 	post(redirect);
 }

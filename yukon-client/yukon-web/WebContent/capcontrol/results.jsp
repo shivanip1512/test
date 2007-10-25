@@ -18,9 +18,6 @@
     CapControlCache capControlCache = YukonSpringHook.getBean("cbcCache", CapControlCache.class);
 	// String type = ParamUtil.getString(request, "type", "");
 	String srchCriteria = ParamUtil.getString(request, CCSessionInfo.STR_LAST_SEARCH, null);
-	String returnURL = request.getParameter("returnURL");
-	if( returnURL == null )
-		returnURL = "subareas.jsp";
 	ParentStringPrinter psp = new ParentStringPrinter (capControlCache);
 	psp.setLinkedToEditors(true);
 	if( srchCriteria == null )
@@ -111,7 +108,7 @@ for( int i = 0; i < items.length; i++ )
             </table>
         </div>
 <br/>        
-<input type="button" value="Back" onclick="post( unescape('<%=returnURL %>') )">
+<input type="button" value="Back" onclick="history.back()">
 </form>
 <script type="text/javascript">
 Event.observe(window, 'load', function() { new CtiNonScrollTable('resTable','headerTable');    }, false);
