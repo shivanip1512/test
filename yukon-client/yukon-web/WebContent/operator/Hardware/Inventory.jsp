@@ -39,7 +39,6 @@ function viewAll(form)
 
 function viewDisabled(form)
 {
-    if (!confirm("Displaying this many results could temporarily decrease system performance.  Do you wish to continue?")) return;
     viewAll(form);    
 }
         
