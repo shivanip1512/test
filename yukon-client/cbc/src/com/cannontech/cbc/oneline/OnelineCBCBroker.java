@@ -5,6 +5,8 @@ import java.io.FileWriter;
 import java.io.IOException;
 import java.util.ArrayList;
 import java.util.List;
+import java.util.Map;
+import java.util.concurrent.Executor;
 
 import com.cannontech.cbc.oneline.util.OnelineUtil;
 import com.cannontech.cbc.oneline.view.CapControlOnelineCanvas;
@@ -12,24 +14,21 @@ import com.cannontech.cbc.oneline.view.OneLineDrawing;
 import com.cannontech.cbc.web.CBCWebUtils;
 import com.cannontech.clientutils.CTILogger;
 import com.cannontech.common.util.CtiUtilities;
-import com.cannontech.core.dao.DaoFactory;
-import com.cannontech.core.dao.StateDao;
-import com.cannontech.database.data.lite.LiteState;
-import com.cannontech.database.data.lite.LiteStateGroup;
-import com.cannontech.database.data.lite.LiteYukonImage;
-import com.cannontech.database.db.state.StateGroupUtils;
+import com.cannontech.common.util.Pair;
+import com.cannontech.core.dao.PointDao;
+import com.cannontech.database.data.lite.LitePoint;
 import com.cannontech.esub.Drawing;
-import com.cannontech.esub.element.YukonImageElement;
 import com.cannontech.esub.svg.SVGOptions;
-import com.cannontech.esub.util.HTMLGenerator;
 import com.cannontech.esub.util.HTMLOptions;
 import com.cannontech.esub.util.ImageExporter;
-import com.cannontech.esub.util.Util;
 import com.cannontech.message.util.MessageEvent;
 import com.cannontech.message.util.MessageListener;
+import com.cannontech.spring.YukonSpringHook;
 import com.cannontech.yukon.cbc.CBCClientConnection;
 import com.cannontech.yukon.cbc.CBCCommand;
 import com.cannontech.yukon.cbc.CBCSubstationBuses;
+import com.cannontech.yukon.cbc.CapBankDevice;
+import com.cannontech.yukon.cbc.Feeder;
 import com.cannontech.yukon.cbc.SubBus;
 import com.cannontech.yukon.conns.ConnPool;
 
@@ -49,6 +48,8 @@ import com.cannontech.yukon.conns.ConnPool;
  *         deleting an object)
  */
 public class OnelineCBCBroker implements MessageListener {
+    private static final Executor service = YukonSpringHook.getGlobalExecutor();
+    private static final PointDao pointDao = YukonSpringHook.getBean("pointDao", PointDao.class);
     private static final String CAPCONTROL_ONELINE = CBCWebUtils.ONE_LINE_DIR;
     private String dirBase = null;
     // exists to start the generation in static mode - or generate all the
@@ -71,25 +72,45 @@ public class OnelineCBCBroker implements MessageListener {
 
     private void handleMessage(com.cannontech.message.util.Message msg) {
         if (msg instanceof CBCSubstationBuses) {
-            CBCSubstationBuses subBusMsg = (CBCSubstationBuses) msg;
+            final CBCSubstationBuses subBusMsg = (CBCSubstationBuses) msg;
             if (subBusMsg.isAllSubs()) {
-                for (int i = 0; i < subBusMsg.getNumberOfBuses(); i++) {
-
-                    SubBus subBusAt = subBusMsg.getSubBusAt(i);
-
-                    String subName = subBusAt.getCcName();
-                    CTILogger.info("Generating SubBus: " + getDirBase() + "/" + subName);
-
-                    String dirAndFileExt = createFileName(subName);
-                    CapControlOnelineCanvas emptyCanvas = new CapControlOnelineCanvas(800,
-                                                                                      1200);
-                    emptyCanvas.createDrawing(subBusAt,
-                                              CAPCONTROL_ONELINE + subName.trim() + ".html");
-
-                    createHTMLFile(dirAndFileExt, emptyCanvas);
-                    CTILogger.debug("...generation complete for " + subName);
-
+                final List<Integer> paObjectIdList = new ArrayList<Integer>();
+                final List<SubBus> subBusMsgList = new ArrayList<SubBus>(subBusMsg.getSubBuses());
+                
+                for (final SubBus subBusAt : subBusMsgList) {
+                    paObjectIdList.add(subBusAt.getCcId());
+                    List<Feeder> feeders = subBusAt.getCcFeeders();
+                    for (final Feeder feeder : feeders) {
+                        paObjectIdList.add(feeder.getCcId());
+                        List<CapBankDevice> banks = feeder.getCcCapBanks();
+                        for (final CapBankDevice device : banks) {
+                            paObjectIdList.add(device.getCcId());
+                        }
+                    }
                 }
+                
+                final Map<Integer,List<LitePoint>> pointCache = pointDao.getLitePointsByPaObject(paObjectIdList);
+                
+                final List<Pair<String,CapControlOnelineCanvas>> canvasList = new ArrayList<Pair<String,CapControlOnelineCanvas>>(subBusMsg.getNumberOfBuses());
+
+                for (final SubBus subBus : subBusMsgList) {
+                    canvasList.add(createDrawing(subBus, pointCache));
+                }
+                
+                service.execute(new Runnable() {
+                    public void run() {
+                        try {
+                            for (final Pair<String,CapControlOnelineCanvas> pair : canvasList) {
+                                String dirAndFileExt = (String) pair.getFirst();
+                                CapControlOnelineCanvas canvas = (CapControlOnelineCanvas) pair.getSecond();
+                                createHTMLFile(dirAndFileExt, canvas);
+                                CTILogger.debug("...generation complete for " + canvas.getDrawing().getFileName());
+                            }
+                        } finally {
+                            pointCache.clear();
+                        }
+                    }
+                });
             }
             // generate only once if running in static mode
             if (isStaticMode())
@@ -97,6 +118,19 @@ public class OnelineCBCBroker implements MessageListener {
         }
     }
 
+    private Pair<String,CapControlOnelineCanvas> createDrawing(final SubBus subBusAt, final Map<Integer,List<LitePoint>> pointCache) {
+        final String subName = subBusAt.getCcName();
+        CTILogger.info("Generating SubBus: " + getDirBase() + "/" + subName);
+
+        final String dirAndFileExt = createFileName(subName);
+        final CapControlOnelineCanvas emptyCanvas = new CapControlOnelineCanvas(800,
+                                                                                1200);
+        emptyCanvas.createDrawing(subBusAt,
+                                  CAPCONTROL_ONELINE + subName.trim() + ".html", pointCache);
+
+        return new Pair<String,CapControlOnelineCanvas>(dirAndFileExt,emptyCanvas);
+    }
+    
     public String createFileName(String subName) {
         String dirAndFileExt = getDirBase() + "/" + subName.trim() + ".jlx";
         return dirAndFileExt;

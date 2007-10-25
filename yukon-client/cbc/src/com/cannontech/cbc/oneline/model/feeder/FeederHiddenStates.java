@@ -27,9 +27,9 @@ public class FeederHiddenStates extends LxAbstractView implements HiddenStates {
         stateInfo.addProperty("isDisable", isDisabled().toString() );
         stateInfo.addProperty("isOVUVDis", isOVUVDisabled().toString() );
         String disableReason = CBCTagHandler.getReason(OnelineTags.TAGGRP_ENABLEMENT,
-                                                       getCurrentFeederIdFromMessage());
+                                                       getCurrentFeederIdFromMessage(), parent.getPointCache());
         String disableOVUVReason = CBCTagHandler.getReason(OnelineTags.TAGGRP_OVUV_ENABLEMENT,
-                                                       getCurrentFeederIdFromMessage());
+                                                       getCurrentFeederIdFromMessage(), parent.getPointCache());
         stateInfo.addProperty("disableFdrReason", disableReason);
         stateInfo.addProperty("disableOVUVFdrReason", disableOVUVReason);
         graph.add(stateInfo);

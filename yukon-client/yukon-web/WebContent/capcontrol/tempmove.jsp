@@ -1,16 +1,18 @@
-<%@ page import="com.cannontech.common.constants.LoginController" %>
 <%@ taglib uri="http://cannontech.com/tags/cti" prefix="cti" %>
 <%@ taglib uri="http://java.sun.com/jsp/jstl/core" prefix="c"%>
+
+<%@ page import="com.cannontech.common.constants.LoginController" %>
+<%@ page import="com.cannontech.spring.YukonSpringHook" %>
+<%@ page import="com.cannontech.cbc.cache.CapControlCache" %>
+<%@ page import="com.cannontech.cbc.cache.FilterCacheFactory" %>
+
 <cti:standardPage title="Temp CapBank Move" module="capcontrol_internal">
 <%@include file="cbc_inc.jspf"%>
 
-<jsp:useBean id="filterCapControlCache"
-	class="com.cannontech.cbc.web.FilterCapControlCacheImpl"
-	type="com.cannontech.cbc.web.FilterCapControlCacheImpl" scope="application"></jsp:useBean>
-
 <%
+    FilterCacheFactory cacheFactory = YukonSpringHook.getBean("filterCacheFactory", FilterCacheFactory.class);
 	LiteYukonUser user = (LiteYukonUser) session.getAttribute(LoginController.YUKON_USER);	
-	filterCapControlCache.setFilter(new CacheFilterUserAccessFilter(user));
+	CapControlCache filterCapControlCache = cacheFactory.createUserAccessFilteredCache(user);
 
 	int bankid = ParamUtil.getInteger(request, "bankid");
 	List<CBCArea> allAreas = filterCapControlCache.getCbcAreas();	
@@ -21,7 +23,6 @@
 	{
 		oldfdrid = capBank.getParentID();
 	}
-
 %>
 
 <c:url var="controlOrderPage" value="/capcontrol/feederBankInfo.jsp"/>

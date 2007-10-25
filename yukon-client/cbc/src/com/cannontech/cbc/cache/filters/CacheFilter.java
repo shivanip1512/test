@@ -1,4 +1,4 @@
-package com.cannontech.cbc.web;
+package com.cannontech.cbc.cache.filters;
 
 public interface CacheFilter
 {

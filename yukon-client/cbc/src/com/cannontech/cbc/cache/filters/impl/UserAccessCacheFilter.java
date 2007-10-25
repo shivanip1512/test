@@ -1,6 +1,7 @@
-package com.cannontech.cbc.web;
+package com.cannontech.cbc.cache.filters.impl;
 
 
+import com.cannontech.cbc.cache.filters.CacheFilter;
 import com.cannontech.core.authorization.service.impl.PaoAuthorizationServiceImpl;
 
 import com.cannontech.core.authorization.support.Permission;
@@ -8,10 +9,18 @@ import com.cannontech.database.data.lite.*;
 import com.cannontech.spring.YukonSpringHook;
 import com.cannontech.yukon.cbc.*;
 
-public class CacheFilterUserAccessFilter implements CacheFilter
+public class UserAccessCacheFilter implements CacheFilter
 {
     PaoAuthorizationServiceImpl paoPermissionService = YukonSpringHook.getBean("paoAuthorizationService",PaoAuthorizationServiceImpl.class);   
-    LiteYukonUser user;    
+    LiteYukonUser user;
+    
+    public UserAccessCacheFilter(LiteYukonUser user) {
+        setUser(user);
+    }
+    
+    public void setUser( LiteYukonUser user ) {
+        this.user = user;
+    }
 
     /**
      *  This is a little backwards from what you would think. The permission table is being used as a deny table
@@ -47,13 +56,4 @@ public class CacheFilterUserAccessFilter implements CacheFilter
         return ret;
 	}
 	
-	public CacheFilterUserAccessFilter(LiteYukonUser user)
-	{
-        setUser(user);
-	}
-	
-	public void setUser( LiteYukonUser user )
-	{
-		this.user = user;
-	}
 }

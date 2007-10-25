@@ -1,24 +1,28 @@
+<%@ page import="com.cannontech.spring.YukonSpringHook" %>
+<%@ page import="com.cannontech.cbc.cache.CapControlCache" %>
+<%@ page import="com.cannontech.cbc.cache.FilterCacheFactory" %>
 <%@ taglib uri="http://cannontech.com/tags/cti" prefix="cti" %>
 <cti:standardPage title="Feeders" module="capcontrol">
 <%@include file="cbc_inc.jspf"%>
 <%@ page import="com.cannontech.common.constants.LoginController" %>
 <%@ page import="com.cannontech.core.dao.DaoFactory" %>
+<%@ page import="com.cannontech.core.dao.PaoDao" %>
 <%@ page import="com.cannontech.database.data.lite.LiteYukonPAObject" %>
 <%@ page import="com.cannontech.cbc.util.CBCUtils" %>
-<%@ page import="com.cannontech.database.db.capcontrol.CCSubSpecialAreaAssignment" %>
-<jsp:useBean id="filterCapControlCache"
-	class="com.cannontech.cbc.web.FilterCapControlCacheImpl"
-	type="com.cannontech.cbc.web.FilterCapControlCacheImpl" scope="application"></jsp:useBean>
+
 	
 <jsp:setProperty name="CtiNavObject" property="moduleExitPage" value="<%=request.getRequestURL().toString()%>"/>
 <!-- necessary DIV element for the OverLIB popup library -->
 <div id="overDiv" style="position:absolute; visibility:hidden; z-index:1000;"></div>
 
 <%
+    PaoDao paoDao = YukonSpringHook.getBean("paoDao", PaoDao.class);
+    FilterCacheFactory cacheFactory = YukonSpringHook.getBean("filterCacheFactory", FilterCacheFactory.class);
+	LiteYukonUser user = (LiteYukonUser) session.getAttribute(LoginController.YUKON_USER);	
+    CapControlCache filterCapControlCache = cacheFactory.createUserAccessFilteredCache(user);
 	String nd = "\"return nd();\"";
 	int subid = ccSession.getLastSubID();
 	Integer areaId = ccSession.getLastAreaId();
-	LiteYukonUser user = (LiteYukonUser) session.getAttribute(LoginController.YUKON_USER);	
 	String popupEvent = DaoFactory.getAuthDao().getRolePropertyValue(user, WebClientRole.POPUP_APPEAR_STYLE);
     boolean showFlip = Boolean.valueOf(DaoFactory.getAuthDao().getRolePropertyValue(user, CBCSettingsRole.SHOW_FLIP_COMMAND)).booleanValue();
     if (popupEvent == null) popupEvent = "onmouseover";
@@ -102,7 +106,7 @@ String css = "tableCell";
 					<input type="checkbox" name="cti_chkbxSubs" value="<%=substation.getCcId()%>"/>
 					<%=CBCUtils.CBC_DISPLAY.getSubstationValueAt(substation, CBCDisplay.SUB_NAME_COLUMN)%> 
 					<% if(substation.getSpecialAreaEnabled()){
-					 	String spcAreaName = CBCUtils.getPAOName(substation.getSpecialAreaId());
+					 	String spcAreaName = paoDao.getYukonPAOName(substation.getSpecialAreaId());
 					 %>
 						 <font color="red">SA <%=spcAreaName%></font>
 					<%}%>
@@ -242,7 +246,7 @@ for( SubBus subBus: subBuses ) {
 			        <tr class="tableCellSnapShot" style="display: none;">
 			        <td><font  class="lIndent">Area:<%=areaName%></font>
 			        <% if(substation.getSpecialAreaEnabled()){
-					 	String spcAreaName = CBCUtils.getPAOName(substation.getSpecialAreaId());
+					 	String spcAreaName = paoDao.getYukonPAOName(substation.getSpecialAreaId());
 					 %>
 						 <font color="red"><%=spcAreaName%> IS ENABLED</font>
 					<%}%>

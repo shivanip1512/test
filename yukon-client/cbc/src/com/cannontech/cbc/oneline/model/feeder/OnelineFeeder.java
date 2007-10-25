@@ -2,6 +2,8 @@ package com.cannontech.cbc.oneline.model.feeder;
 
 import java.awt.Color;
 import java.awt.Font;
+import java.util.List;
+import java.util.Map;
 
 import com.cannontech.cbc.oneline.elements.DynamicLineElement;
 import com.cannontech.cbc.oneline.model.HiddenStates;
@@ -12,6 +14,7 @@ import com.cannontech.cbc.oneline.states.DynamicLineState;
 import com.cannontech.cbc.oneline.util.OnelineUtil;
 import com.cannontech.cbc.oneline.util.UpdatableTextList;
 import com.cannontech.cbc.oneline.view.OneLineDrawing;
+import com.cannontech.database.data.lite.LitePoint;
 import com.cannontech.esub.element.LineElement;
 import com.cannontech.esub.element.StaticImage;
 import com.cannontech.esub.element.StaticText;
@@ -39,6 +42,7 @@ public class OnelineFeeder implements OnelineObject {
     private int currFdrIdx;
     private DynamicLineElement feederLn;
     private StaticText feederName;
+    private Map<Integer,List<LitePoint>> pointCache;
 
     UpdatableTextList tag = new UpdatableTextList();
     private StaticImage editorImage;
@@ -198,6 +202,14 @@ public class OnelineFeeder implements OnelineObject {
 
     public UpdatableTextList getTag() {
         return tag;
+    }
+
+    public Map<Integer, List<LitePoint>> getPointCache() {
+        return pointCache;
+    }
+
+    public void setPointCache(Map<Integer, List<LitePoint>> pointCache) {
+        this.pointCache = pointCache;
     }
 
 }

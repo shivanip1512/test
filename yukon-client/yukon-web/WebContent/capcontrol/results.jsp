@@ -1,20 +1,21 @@
 <%@ taglib uri="http://cannontech.com/tags/cti" prefix="cti" %>
 
-<cti:standardPage title="Search Results" module="capcontrol">
 <%@ page import="com.cannontech.web.editor.*" %>
 <%@ page import="com.cannontech.database.data.lite.LiteTypes" %>
 <%@ page import="com.cannontech.web.util.*" %>
+<%@ page import="com.cannontech.spring.YukonSpringHook" %>
+<%@ page import="com.cannontech.cbc.cache.CapControlCache" %>
+
+<cti:standardPage title="Search Results" module="capcontrol">
 <%@include file="cbc_inc.jspf"%>
 
-<jsp:useBean id="capControlCache"
-	class="com.cannontech.cbc.web.CapControlCache" type="com.cannontech.cbc.web.CapControlCache"
-	scope="application"></jsp:useBean>
 <jsp:setProperty name="CtiNavObject" property="moduleExitPage" value="<%=request.getRequestURL().toString()%>"/>
 
 <!-- necessary DIV element for the OverLIB popup library -->
 <div id="overDiv" style="position:absolute; visibility:hidden; z-index:1000;"></div>
 
 <%
+    CapControlCache capControlCache = YukonSpringHook.getBean("cbcCache", CapControlCache.class);
 	// String type = ParamUtil.getString(request, "type", "");
 	String srchCriteria = ParamUtil.getString(request, CCSessionInfo.STR_LAST_SEARCH, null);
 	String returnURL = request.getParameter("returnURL");

@@ -16,12 +16,12 @@ import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
 import javax.servlet.http.HttpSession;
 
+import com.cannontech.cbc.cache.CapControlCache;
 import com.cannontech.cbc.oneline.OnelineCBCBroker;
 import com.cannontech.cbc.util.CBCDisplay;
 import com.cannontech.cbc.util.CBCUtils;
 import com.cannontech.cbc.web.CBCCommandExec;
 import com.cannontech.cbc.web.CBCWebUtils;
-import com.cannontech.cbc.web.CapControlCache;
 import com.cannontech.clientutils.CTILogger;
 import com.cannontech.clientutils.WebUpdatedDAO;
 import com.cannontech.common.constants.LoginController;
@@ -37,14 +37,11 @@ import com.cannontech.servlet.xml.ResultXML;
 import com.cannontech.spring.YukonSpringHook;
 import com.cannontech.util.ParamUtil;
 import com.cannontech.yukon.cbc.CBCArea;
-import com.cannontech.cbc.util.CBCDisplay;
-import com.cannontech.yukon.cbc.CBCClientConnection;
 import com.cannontech.yukon.cbc.CBCSpecialArea;
 import com.cannontech.yukon.cbc.CapBankDevice;
 import com.cannontech.yukon.cbc.Feeder;
 import com.cannontech.yukon.cbc.SubBus;
 import com.cannontech.yukon.cbc.SubStation;
-import com.cannontech.yukon.conns.ConnPool;
 
 @SuppressWarnings("serial")
 public class CBCServlet extends ErrorAwareInitializingServlet 

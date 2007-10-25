@@ -1,11 +1,13 @@
-package com.cannontech.cbc.web;
+package com.cannontech.cbc.cache;
 
 import java.util.HashMap;
 import java.util.List;
 
+import com.cannontech.cbc.web.CBCWebUpdatedObjectMap;
 import com.cannontech.database.data.lite.LiteState;
 import com.cannontech.web.lite.LiteWrapper;
 import com.cannontech.yukon.cbc.CBCArea;
+import com.cannontech.yukon.cbc.CBCClientConnection;
 import com.cannontech.yukon.cbc.CBCSpecialArea;
 import com.cannontech.yukon.cbc.CapBankDevice;
 import com.cannontech.yukon.cbc.Feeder;
@@ -13,46 +15,74 @@ import com.cannontech.yukon.cbc.StreamableCapObject;
 import com.cannontech.yukon.cbc.SubBus;
 import com.cannontech.yukon.cbc.SubStation;
 
-public interface CapControlDAO {
+public interface CapControlCache {
 
+    public CapBankDevice[] getCapBanksBySpecialArea(Integer areaID);
+    
+    public List<SubStation> getSubstationsBySpecialArea(Integer areaId);
+    
+    public CBCSpecialArea getSpecialArea(Integer areaId);
+    
+    public int getParentAreaID( int childID );
+    
+    public CBCArea getArea( Integer areaId);
+    
+    public CBCArea getCBCArea(int id);
+    
+    public CBCSpecialArea getCBCSpecialArea(int id);
+    
+    public LiteWrapper[] getOrphanedSubBuses();
+    
+    public LiteWrapper[] getOrphanedSubstations();
+    
+    public List<SubBus> getSubBusesBySubStation(SubStation sub);
+    
+    public SubStation getSubstation( Integer subId);
+    
+    public CBCClientConnection getConnection();
+    
+    public Boolean getSystemStatusOn();
+    
+    public CBCWebUpdatedObjectMap getUpdatedObjMap();
+    
 	/**
 	 * 
 	 * @return SubBus
 	 */
-	public abstract SubBus getSubBus(Integer subID);
+	public SubBus getSubBus(Integer subID);
 
 	/**
-	 * Returs the base object type for a SubBus, Feeder or CapBankDevice
+	 * Returns the base object type for a SubBus, Feeder or CapBankDevice
 	 * 
 	 */
-	public abstract StreamableCapObject getCapControlPAO(Integer paoID);
+	public StreamableCapObject getCapControlPAO(Integer paoID);
 
 	/**
 	 * 
 	 * @return Feeder
 	 */
-	public abstract Feeder getFeeder(Integer feederID);
+	public Feeder getFeeder(Integer feederID);
 
 	/**
 	 * @return CapBankDevice
 	 */
-	public abstract CapBankDevice getCapBankDevice(Integer capBankDeviceID);
+	public CapBankDevice getCapBankDevice(Integer capBankDeviceID);
 
 	/**
 	 * @return List<Feeder>
 	 */
-	public abstract List<Feeder> getFeedersBySubBus(Integer subBusID);
+	public List<Feeder> getFeedersBySubBus(Integer subBusID);
     
     /**
      * @return List<Feeder>
      */
-    public abstract List<Feeder> getFeedersBySubStation(SubStation sub);
+    public List<Feeder> getFeedersBySubStation(SubStation sub);
 
-    public abstract String getSubBusNameForFeeder(Feeder fdr);
+    public String getSubBusNameForFeeder(Feeder fdr);
 	/**
 	 * @return CapBankDevice[]
 	 */
-	public abstract CapBankDevice[] getCapBanksByFeeder(Integer feederID);
+	public CapBankDevice[] getCapBanksByFeeder(Integer feederID);
 
 	/**
 	 * Instant lookup to check if this paoID is used by a SubBus

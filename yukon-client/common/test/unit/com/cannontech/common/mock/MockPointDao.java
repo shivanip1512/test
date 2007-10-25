@@ -3,6 +3,7 @@ package com.cannontech.common.mock;
 import java.util.ArrayList;
 import java.util.Date;
 import java.util.List;
+import java.util.Map;
 
 import com.cannontech.core.dao.NotFoundException;
 import com.cannontech.core.dao.PointDao;
@@ -142,5 +143,10 @@ public class MockPointDao implements PointDao {
 		// TODO Auto-generated method stub
 		return null;
 	}
+
+    public Map<Integer, List<LitePoint>> getLitePointsByPaObject(List<Integer> paoIdList) {
+        // TODO Auto-generated method stub
+        return null;
+    }
 
 }

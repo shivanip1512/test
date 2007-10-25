@@ -5,11 +5,14 @@ import java.sql.SQLException;
 import java.sql.Timestamp;
 import java.util.ArrayList;
 import java.util.Date;
+import java.util.HashMap;
 import java.util.Iterator;
 import java.util.List;
+import java.util.Map;
 
 import org.springframework.dao.IncorrectResultSizeDataAccessException;
 import org.springframework.jdbc.core.JdbcOperations;
+import org.springframework.jdbc.core.RowCallbackHandler;
 import org.springframework.jdbc.core.RowMapper;
 
 import com.cannontech.clientutils.CTILogger;
@@ -22,6 +25,7 @@ import com.cannontech.database.data.lite.LitePointLimit;
 import com.cannontech.database.data.lite.LitePointUnit;
 import com.cannontech.database.data.lite.LiteRawPointHistory;
 import com.cannontech.database.data.lite.LiteStateGroup;
+import com.cannontech.database.data.lite.LiteYukonPAObject;
 import com.cannontech.database.data.pao.DeviceClasses;
 import com.cannontech.database.data.pao.PAOGroups;
 import com.cannontech.database.data.point.CapBankMonitorPointParams;
@@ -162,6 +166,44 @@ public final class PointDaoImpl implements PointDao {
         return points;
     }
 
+    public Map<Integer,List<LitePoint>> getLitePointsByPaObject(final List<Integer> paoIdList) {
+        final String startSql = litePointSql + "WHERE PaObjectId IN (";
+        final Map<Integer,List<LitePoint>> map = new HashMap<Integer,List<LitePoint>>();
+        final List<String> queryList = new ArrayList<String>();
+        StringBuilder sb = new StringBuilder(startSql);
+        int count = 0;
+        for (final Integer paoId : paoIdList) {
+            if (++count == 1000) {
+                count = 0;
+                String endSql = sb.substring(0, sb.length() - 1);
+                endSql += ")";
+                queryList.add(endSql);
+                sb = new StringBuilder(startSql);
+            }
+            sb.append(paoId + ",");
+        }
+        String endSql = sb.substring(0, sb.length() - 1);
+        endSql += ")";
+        queryList.add(endSql);
+        
+        for (final String sql : queryList) {
+            this.jdbcOps.query(sql, new RowCallbackHandler() {
+                public void processRow(ResultSet rs) throws SQLException {
+                    LitePoint point = PointDaoImpl.createLitePoint(rs);
+                    Integer key = point.getPaobjectID();
+                    List<LitePoint> pointList = map.get(key);
+                    if (pointList == null) {
+                        pointList = new ArrayList<LitePoint>();
+                        map.put(key, pointList);
+                    }
+                    pointList.add(point);
+                }
+            });
+        }
+        
+        return map;
+    }
+    
     /* (non-Javadoc)
      * @see com.cannontech.core.dao.PaoDao#getAllPointIDsAndTypesForPAObject(int)
      */
@@ -315,7 +357,7 @@ public final class PointDaoImpl implements PointDao {
 	}
     
     @SuppressWarnings("unchecked")
-	public List<LitePoint> searchByName(final String name, final String paoClass) {
+    public List<LitePoint> searchByName(final String name, final String paoClass) {
         String sql = litePointPaoSql + " WHERE YPO.PAOClass = ? AND UPPER(POINTNAME) LIKE ?";
         List<LitePoint> pointList = this.jdbcOps.query(
                                                        sql,

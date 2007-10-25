@@ -1,14 +1,18 @@
-package com.cannontech.cbc.web;
+package com.cannontech.cbc.cache.impl;
 
 import java.util.ArrayList;
+import java.util.Collections;
 import java.util.HashMap;
 import java.util.List;
 
+import com.cannontech.cbc.cache.CapControlCache;
+import com.cannontech.cbc.cache.filters.CacheFilter;
+import com.cannontech.cbc.web.CBCWebUpdatedObjectMap;
 import com.cannontech.common.util.CtiUtilities;
 import com.cannontech.database.data.lite.LiteState;
-import com.cannontech.spring.YukonSpringHook;
 import com.cannontech.web.lite.LiteWrapper;
 import com.cannontech.yukon.cbc.CBCArea;
+import com.cannontech.yukon.cbc.CBCClientConnection;
 import com.cannontech.yukon.cbc.CBCSpecialArea;
 import com.cannontech.yukon.cbc.CapBankDevice;
 import com.cannontech.yukon.cbc.Feeder;
@@ -22,20 +26,22 @@ import com.cannontech.yukon.cbc.SubStation;
  *
  */
 
-public class FilterCapControlCacheImpl implements FilterCapControlCache, CapControlDAO {
+public class FilterCapControlCacheImpl implements CapControlCache {
+	private CapControlCache cache;
+	private CacheFilter filter;
+	
+	public FilterCapControlCacheImpl() {
 
-	private static CapControlCache cache = (CapControlCache)YukonSpringHook.getBean("cbcCache");
+    }
 	
-	private CacheFilter filter = null;
-	
-	public FilterCapControlCacheImpl()
-	{}
-	
-	public void setFilter ( CacheFilter filter )
-	{
+	public void setFilter (CacheFilter filter) {
 		this.filter = filter;
 	}
 	
+    public void setCache(CapControlCache cache) {
+        this.cache = cache;
+    }
+    
 	public SubBus[] getAllSubBuses() {
 		SubBus[] aList = cache.getAllSubBuses();
 		SubBus[] retList = new SubBus[ aList.length ];
@@ -94,14 +100,6 @@ public class FilterCapControlCacheImpl implements FilterCapControlCache, CapCont
 		else
 			return null;
 	}
-    
-    public CapBankDevice[] getCapBanksBySpecialArea(Integer areaID) {
-        CBCSpecialArea area = cache.getCBCSpecialArea(areaID);
-        if ( filter.valid(area) )
-            return cache.getCapBanksByArea(areaID);
-        else
-            return null;
-    }
 
 	public CapBankDevice[] getCapBanksByFeeder(Integer feederID) {
 		int id = cache.getParentAreaID(feederID);
@@ -274,17 +272,9 @@ public class FilterCapControlCacheImpl implements FilterCapControlCache, CapCont
 		CBCArea area = cache.getCBCArea(areaId);
 		if ( filter.valid(area) )
 			return cache.getSubstationsByArea(areaId);
-		else
-			return new ArrayList<SubStation>();
+		
+        return Collections.emptyList();
 	}
-    
-    public List<SubStation> getSubstationsBySpecialArea(Integer areaId) {
-        CBCSpecialArea area = cache.getCBCSpecialArea(areaId);
-        if ( filter.valid(area) )
-            return cache.getSubstationsByArea(areaId);
-        else
-            return new ArrayList<SubStation>();
-    }
 
 	public boolean isCBCArea(int id) {
 		return cache.isCBCArea(id);
@@ -305,5 +295,45 @@ public class FilterCapControlCacheImpl implements FilterCapControlCache, CapCont
 	public boolean isSubBus(int id) {
 		return cache.isSubBus(id);
 	}
+
+    public CBCArea getArea(Integer areaId) {
+        return cache.getArea(areaId);
+    }
+
+    public int getParentAreaID(int childID) {
+        return cache.getParentAreaID(childID);
+    }
+
+    public CBCClientConnection getConnection() {
+        return cache.getConnection();
+    }
+
+    public Boolean getSystemStatusOn() {
+        return cache.getSystemStatusOn();
+    }
+
+    public CBCWebUpdatedObjectMap getUpdatedObjMap() {
+        return cache.getUpdatedObjMap();
+    }
+
+    public CBCSpecialArea getSpecialArea(Integer areaId) {
+        return cache.getSpecialArea(areaId);
+    }
+    
+    public CapBankDevice[] getCapBanksBySpecialArea(Integer areaID) {
+        CBCSpecialArea area = cache.getCBCSpecialArea(areaID);
+        if ( filter.valid(area) )
+            return cache.getCapBanksByArea(areaID);
+
+        return null;
+    }
+    
+    public List<SubStation> getSubstationsBySpecialArea(Integer areaId) {
+        CBCSpecialArea area = cache.getCBCSpecialArea(areaId);
+        if ( filter.valid(area) )
+            return cache.getSubstationsByArea(areaId);
+        
+        return Collections.emptyList();
+    }
 
 }

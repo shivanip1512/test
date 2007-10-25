@@ -1,11 +1,15 @@
+<%@ taglib uri="http://cannontech.com/tags/cti" prefix="cti" %>
+<%@ taglib uri="http://java.sun.com/jsp/jstl/core" prefix="c"%>
+
 <%@ page import="com.cannontech.core.dao.DaoFactory" %>
 <%@ page import="com.cannontech.yukon.cbc.StreamableCapObject" %>
 <%@ page import="com.cannontech.yukon.cbc.Feeder" %>
 <%@ page import="com.cannontech.yukon.cbc.SubBus" %>
 <%@ page import="com.cannontech.cbc.web.CBCWebUtils" %>
+<%@ page import="com.cannontech.spring.YukonSpringHook" %>
+<%@ page import="com.cannontech.cbc.cache.CapControlCache" %>
+
 <jsp:directive.page import="com.cannontech.database.db.capcontrol.RecentControls"/>
-<%@ taglib uri="http://cannontech.com/tags/cti" prefix="cti" %>
-<%@ taglib uri="http://java.sun.com/jsp/jstl/core" prefix="c"%>
 <cti:standardPage title="Results" module="capcontrol">
 <cti:standardMenu/>
 <%@include file="cbc_inc.jspf"%>
@@ -17,15 +21,13 @@
     <cti:crumbLink url="<%=ServletUtil.getFullURL(request)%>" title="Events" />
 </cti:breadCrumbs>
 
-<jsp:useBean id="capControlCache"
-	class="com.cannontech.cbc.web.CapControlCache"
-	type="com.cannontech.cbc.web.CapControlCache" scope="application"></jsp:useBean>
 <jsp:setProperty name="CtiNavObject" property="moduleExitPage" value="<%=request.getRequestURL().toString()%>"/>
 
 <!-- necessary DIV element for the OverLIB popup library -->
 <div id="overDiv" style="position:absolute; visibility:hidden; z-index:1000;"></div>
 
 <%
+    CapControlCache capControlCache = YukonSpringHook.getBean("cbcCache", CapControlCache.class);
 
 	int MAX_DAYS_CNT = 7;	
 	String type = ParamUtil.getString(request, "type", "");

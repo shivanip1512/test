@@ -1,13 +1,11 @@
-<%@ taglib uri="http://cannontech.com/tags/cti" prefix="cti" %>
-<%@include file="cbc_inc.jspf"%>
 
-<jsp:useBean id="capControlCache"
-	class="com.cannontech.cbc.web.CapControlCache"
-	type="com.cannontech.cbc.web.CapControlCache" scope="application"></jsp:useBean>
+<jsp:directive.page import="com.cannontech.cbc.cache.CapControlCache"/>
+<jsp:directive.page import="com.cannontech.spring.YukonSpringHook"/><%@ taglib uri="http://cannontech.com/tags/cti" prefix="cti" %>
+<%@include file="cbc_inc.jspf"%>
 
 <%
 	int MAX_TRENDS = 3;
-
+    CapControlCache capControlCache = YukonSpringHook.getBean("cbcCache", CapControlCache.class);
 	String type = ParamUtil.getString(request, "type", CBCWebUtils.TYPE_VARWATTS );
 	String period = ParamUtil.getString(request, "period", ServletUtil.PREVTHIRTYDAYS );
 	String[] chartParam = ParamUtil.getStrings(request, "value");

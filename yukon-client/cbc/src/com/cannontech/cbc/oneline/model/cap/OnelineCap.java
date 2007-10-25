@@ -1,5 +1,8 @@
 package com.cannontech.cbc.oneline.model.cap;
 
+import java.util.List;
+import java.util.Map;
+
 import com.cannontech.cbc.oneline.CommandPopups;
 import com.cannontech.cbc.oneline.elements.DynamicLineElement;
 import com.cannontech.cbc.oneline.model.HiddenStates;
@@ -14,6 +17,8 @@ import com.cannontech.cbc.oneline.view.OneLineDrawing;
 import com.cannontech.cbc.util.CBCUtils;
 import com.cannontech.core.dao.DaoFactory;
 import com.cannontech.database.data.capcontrol.CapBank;
+import com.cannontech.database.data.lite.LitePoint;
+import com.cannontech.database.data.pao.PAOGroups;
 import com.cannontech.esub.element.StateImage;
 import com.cannontech.esub.element.StaticImage;
 import com.cannontech.esub.element.StaticText;
@@ -30,7 +35,7 @@ public class OnelineCap implements OnelineObject {
 
     public static final String NAME_PREFIX = "CapBank_";
 
-
+    private Map<Integer, List<LitePoint>> pointCache;
     
     public OneLineDrawing drawing = null;
     private SubBus subBusMsg = null;
@@ -72,8 +77,12 @@ public class OnelineCap implements OnelineObject {
         initEditorImage();
         initInformationImage();
         
-        if (CBCUtils.isTwoWay(DaoFactory.getPaoDao().getLiteYukonPAO(getStreamable().getControlDeviceID())))
+        if (CBCUtils.isTwoWay(PAOGroups.getDeviceType(getStreamable().getControlDeviceType()))) {
             initPointTimestampsImage();
+        }
+        
+        //if (CBCUtils.isTwoWay(DaoFactory.getPaoDao().getLiteYukonPAO(getStreamable().getControlDeviceID())))
+        //    initPointTimestampsImage();
 
         initCapBankName ();
         graph.add(stateImage);
@@ -284,6 +293,16 @@ public class OnelineCap implements OnelineObject {
 
     public UpdatableTextList getTagInfo() {
         return tagInfo;
+    }
+
+
+
+    public Map<Integer, List<LitePoint>> getPointCache() {
+        return pointCache;
+    }
+
+    public void setPointCache(Map<Integer, List<LitePoint>> pointCache) {
+        this.pointCache = pointCache;      
     }
 
 }

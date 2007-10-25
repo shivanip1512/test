@@ -2,6 +2,7 @@ package com.cannontech.cbc.oneline.view;
 
 import java.util.ArrayList;
 import java.util.List;
+import java.util.Map;
 
 import com.cannontech.cbc.oneline.OneLineParams;
 import com.cannontech.cbc.oneline.model.OnelineLogos;
@@ -9,6 +10,7 @@ import com.cannontech.cbc.oneline.model.OnelineControlPanel;
 import com.cannontech.cbc.oneline.model.cap.OnelineCap;
 import com.cannontech.cbc.oneline.model.feeder.OnelineFeeder;
 import com.cannontech.cbc.oneline.model.sub.OnelineSub;
+import com.cannontech.database.data.lite.LitePoint;
 import com.cannontech.esub.Drawing;
 import com.cannontech.yukon.cbc.SubBus;
 
@@ -16,6 +18,7 @@ public class OneLineDrawing {
     private Drawing drawing;
     private OneLineParams layoutParams;
     private String fileName = null;
+    private Map<Integer,List<LitePoint>> pointCache;
 
     //3-tier
     private OnelineSub sub = null;
@@ -45,6 +48,7 @@ public class OneLineDrawing {
 
     public void addSub(SubBus subBusMessage) {
         sub = new OnelineSub(subBusMessage);
+        sub.setPointCache(this.pointCache);
         sub.addDrawing(this);
 
     }
@@ -57,6 +61,7 @@ public class OneLineDrawing {
 
     public void addCap(SubBus subBusMessage, int curIdx) {
         OnelineCap c = new OnelineCap(subBusMessage);
+        c.setPointCache(this.pointCache);
         c.setCurrentCapIdx(curIdx);
         c.addDrawing(this);
         caps.add(c);
@@ -85,6 +90,7 @@ public class OneLineDrawing {
 
     public void addFeeder(SubBus subBus) {
         OnelineFeeder onelineFeeder = new OnelineFeeder(subBus);
+        onelineFeeder.setPointCache(this.pointCache);
         onelineFeeder.addDrawing(this);
         feeders.add(onelineFeeder);
     }
@@ -103,7 +109,8 @@ public class OneLineDrawing {
         return controlPanel;
     }
 
-
-
+    public void setPointCache(Map<Integer, List<LitePoint>> pointCache) {
+        this.pointCache = pointCache;
+    }
 
 }

@@ -3,6 +3,8 @@ package com.cannontech.cbc.oneline.model.sub;
 import java.awt.Color;
 import java.awt.Font;
 import java.awt.geom.Point2D;
+import java.util.List;
+import java.util.Map;
 
 import com.cannontech.cbc.oneline.OneLineParams;
 import com.cannontech.cbc.oneline.elements.DynamicLineElement;
@@ -15,6 +17,7 @@ import com.cannontech.cbc.oneline.states.DynamicLineState;
 import com.cannontech.cbc.oneline.states.SubImgState;
 import com.cannontech.cbc.oneline.util.OnelineUtil;
 import com.cannontech.cbc.oneline.view.OneLineDrawing;
+import com.cannontech.database.data.lite.LitePoint;
 import com.cannontech.esub.Drawing;
 import com.cannontech.esub.element.LineElement;
 import com.cannontech.esub.element.StaticImage;
@@ -35,7 +38,15 @@ public class OnelineSub implements OnelineObject {
     private DynamicLineElement distributionLn;
     public Integer paoId;
     private StaticImage editorImage;
+    private Map<Integer,List<LitePoint>> pointCache;
 
+    public Map<Integer, List<LitePoint>> getPointCache() {
+        return pointCache;
+    }
+
+    public void setPointCache(Map<Integer, List<LitePoint>> pointCache) {
+        this.pointCache = pointCache;
+    }
 
     public OnelineSub(SubBus subBusMessage) {
         subBusMsg = subBusMessage;

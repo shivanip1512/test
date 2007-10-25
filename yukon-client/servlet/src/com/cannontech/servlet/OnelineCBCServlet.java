@@ -14,6 +14,7 @@ import javax.servlet.http.HttpServletResponse;
 
 import org.apache.commons.lang.StringUtils;
 
+import com.cannontech.cbc.cache.CapControlCache;
 import com.cannontech.cbc.oneline.CapControlDrawingUpdater;
 import com.cannontech.cbc.oneline.CapControlSVGGenerator;
 import com.cannontech.cbc.oneline.OneLineParams;
@@ -23,7 +24,6 @@ import com.cannontech.cbc.oneline.tag.OnelineTags;
 import com.cannontech.cbc.oneline.util.OnelineUtil;
 import com.cannontech.cbc.oneline.view.CapControlOnelineCanvas;
 import com.cannontech.cbc.web.CBCWebUtils;
-import com.cannontech.cbc.web.CapControlCache;
 import com.cannontech.common.constants.LoginController;
 import com.cannontech.core.dao.DaoFactory;
 import com.cannontech.database.data.lite.LitePoint;

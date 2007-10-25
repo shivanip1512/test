@@ -1,14 +1,15 @@
-<%@ page import="com.cannontech.common.constants.LoginController" %>
-<jsp:directive.page import="com.cannontech.database.data.capcontrol.CapControlArea"/>
-<jsp:directive.page import="com.cannontech.database.data.capcontrol.CapControlSpecialArea"/>
-<jsp:directive.page import="com.cannontech.database.db.capcontrol.CCSubSpecialAreaAssignment"/>
 <%@ taglib uri="http://cannontech.com/tags/cti" prefix="cti" %>
+
+<%@ page import="com.cannontech.common.constants.LoginController" %>
+<%@ page import="com.cannontech.database.data.capcontrol.CapControlArea" %>
+<%@ page import="com.cannontech.database.data.capcontrol.CapControlSpecialArea" %>
+<%@ page import="com.cannontech.spring.YukonSpringHook" %>
+<%@ page import="com.cannontech.cbc.cache.CapControlCache" %>
+<%@ page import="com.cannontech.cbc.cache.FilterCacheFactory" %>
+<%@ page import="com.cannontech.core.dao.PaoDao" %>
+
 <cti:standardPage title="Substations" module="capcontrol">
 <%@include file="cbc_inc.jspf"%>
-
-<jsp:useBean id="filterCapControlCache"
-	class="com.cannontech.cbc.web.FilterCapControlCacheImpl"
-	type="com.cannontech.cbc.web.FilterCapControlCacheImpl" scope="application"></jsp:useBean>
 
 <jsp:setProperty name="CtiNavObject" property="moduleExitPage" value="<%=request.getRequestURL().toString()%>"/>
 
@@ -16,9 +17,11 @@
 <div id="overDiv" style="position:absolute; visibility:hidden; z-index:1000;"></div>
 
 <%
-    String nd = "\"return nd();\"";
+    PaoDao paoDao = YukonSpringHook.getBean("paoDao", PaoDao.class);
+    FilterCacheFactory cacheFactory = YukonSpringHook.getBean("filterCacheFactory", FilterCacheFactory.class);
     LiteYukonUser user = (LiteYukonUser) session.getAttribute(LoginController.YUKON_USER);	
-	filterCapControlCache.setFilter(new CacheFilterUserAccessFilter(user));
+	CapControlCache filterCapControlCache = cacheFactory.createUserAccessFilteredCache(user);
+    String nd = "\"return nd();\"";
     String popupEvent = DaoFactory.getAuthDao().getRolePropertyValue(user, WebClientRole.POPUP_APPEAR_STYLE);
 	if (popupEvent == null) popupEvent = "onmouseover"; 
     
@@ -117,7 +120,7 @@ for( int i = 0; i < areaSubs.size(); i++ ) {
 				<%=CBCUtils.CBC_DISPLAY.getSubstationValueAt(substation, CBCDisplay.SUB_NAME_COLUMN)%>
 				</a>
 				<% if(substation.getSpecialAreaEnabled()){
-					String spcAreaName = CBCUtils.getPAOName(substation.getSpecialAreaId()); %>
+					String spcAreaName = paoDao.getYukonPAOName(substation.getSpecialAreaId()); %>
 					 <font color="red">SA <%=spcAreaName%></font>
 				<%}%>
 				</td>
@@ -164,7 +167,7 @@ for( int i = 0; i < areaSubs.size(); i++ ) {
 </form>
 <%}%>
 <script type="text/javascript">
-Event.observe(window, 'load', function() { new CtiNonScrollTable('subTable','subHeaderTable');});
+    Event.observe(window, 'load', function() { new CtiNonScrollTable('subTable','subHeaderTable');});
 </script>
 </cti:titledContainer>
 <div style = "display:none" id = "outerDiv">

@@ -1,17 +1,19 @@
 <%@ page import="com.cannontech.common.constants.LoginController" %>
+<%@ page import="com.cannontech.cbc.cache.FilterCacheFactory" %>
+<%@ page import="com.cannontech.spring.YukonSpringHook" %>
+<%@ page import="com.cannontech.cbc.cache.CapControlCache" %>
+
 <%@ taglib uri="http://cannontech.com/tags/cti" prefix="cti" %>
 <cti:standardPage title="Substation Bus Areas" module="capcontrol">
 <%@include file="cbc_inc.jspf"%>
 
-<jsp:useBean id="filterCapControlCache"
-	class="com.cannontech.cbc.web.FilterCapControlCacheImpl"
-	type="com.cannontech.cbc.web.FilterCapControlCacheImpl" scope="application"></jsp:useBean>
-	<%
-		LiteYukonUser user = (LiteYukonUser) session.getAttribute(LoginController.YUKON_USER);	
-		filterCapControlCache.setFilter(new CacheFilterUserAccessFilter(user));
-	    String nd = "\"return nd();\"";
-	    String popupEvent = DaoFactory.getAuthDao().getRolePropertyValue(user, WebClientRole.POPUP_APPEAR_STYLE);
-	    if (popupEvent == null) popupEvent = "onmouseover";
+    <%
+            FilterCacheFactory filterCacheFactory = YukonSpringHook.getBean("filterCacheFactory", FilterCacheFactory.class);
+			LiteYukonUser user = (LiteYukonUser) session.getAttribute(LoginController.YUKON_USER);	
+			CapControlCache filterCapControlCache = filterCacheFactory.createUserAccessFilteredCache(user);
+		    String nd = "\"return nd();\"";
+		    String popupEvent = DaoFactory.getAuthDao().getRolePropertyValue(user, WebClientRole.POPUP_APPEAR_STYLE);
+		    if (popupEvent == null) popupEvent = "onmouseover";
 	%>
 <jsp:setProperty name="CtiNavObject" property="moduleExitPage" value="<%=request.getRequestURL().toString()%>"/>
 

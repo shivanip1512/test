@@ -1,5 +1,6 @@
 package com.cannontech.cbc.web;
 
+import com.cannontech.cbc.cache.CapControlCache;
 import com.cannontech.database.data.point.PointQualities;
 import com.cannontech.database.data.point.PointTypes;
 import com.cannontech.message.dispatch.message.Multi;
@@ -19,7 +20,6 @@ public class CBCCommandExec
 {
 	private CapControlCache cbcCache = null;
 	private String userName = null;
-
 
 	/**
 	 * 

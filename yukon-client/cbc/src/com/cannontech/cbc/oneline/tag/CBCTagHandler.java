@@ -5,7 +5,9 @@ import java.sql.SQLException;
 import java.util.Date;
 import java.util.HashSet;
 import java.util.List;
+import java.util.Map;
 
+import com.cannontech.cbc.cache.CapControlCache;
 import com.cannontech.cbc.point.CBCPointFactory;
 import com.cannontech.clientutils.CTILogger;
 import com.cannontech.common.util.CtiUtilities;
@@ -14,7 +16,10 @@ import com.cannontech.database.PoolManager;
 import com.cannontech.database.data.capcontrol.CapBank;
 import com.cannontech.database.data.capcontrol.CapControlFeeder;
 import com.cannontech.database.data.capcontrol.CapControlSubBus;
-import com.cannontech.database.data.lite.*;
+import com.cannontech.database.data.lite.LiteFactory;
+import com.cannontech.database.data.lite.LitePoint;
+import com.cannontech.database.data.lite.LiteTag;
+import com.cannontech.database.data.lite.LiteYukonPAObject;
 import com.cannontech.database.data.pao.YukonPAObject;
 import com.cannontech.database.db.DBPersistent;
 import com.cannontech.database.db.point.TAGLog;
@@ -25,7 +30,6 @@ import com.cannontech.tags.Tag;
 import com.cannontech.tags.TagManager;
 import com.cannontech.yukon.cbc.CapBankDevice;
 import com.cannontech.yukon.cbc.Feeder;
-import com.cannontech.cbc.web.CapControlCache;
 
 public class CBCTagHandler {
 
@@ -126,7 +130,7 @@ public class CBCTagHandler {
     
     private void removeTag( Tag tag ) throws Exception
     {
-        CapControlCache cc = (CapControlCache)YukonSpringHook.getBean("cbcCache");
+        CapControlCache cc = YukonSpringHook.getBean("cbcCache", CapControlCache.class);
         List<Feeder> fList = null;
         CapBankDevice[] cList = null;
         
@@ -192,7 +196,7 @@ public class CBCTagHandler {
     
     private void createTag(String tagDesc, String reason, Integer tagID) throws Exception 
     {
-        CapControlCache cc = (CapControlCache)YukonSpringHook.getBean("cbcCache");
+        CapControlCache cc = YukonSpringHook.getBean("cbcCache", CapControlCache.class);
         List<Feeder> fList = null;
         CapBankDevice[] cList = null;
         
@@ -283,12 +287,18 @@ public class CBCTagHandler {
         LiteTag lt = DaoFactory.getTagDao().getLiteTag(tagName);
         return new Integer(lt.getLiteID());
     }
-
+    
     public static String getReason(String tagName, Integer paoID) {
+        return CBCTagHandler.getReason(tagName, paoID, null);
+    }
+
+    @SuppressWarnings("unchecked")
+    public static String getReason(String tagName, Integer paoID, Map<Integer,List<LitePoint>> pointCache) {
 
         LitePoint tagPoint = null;
         String reason = "";
-        tagPoint = CBCPointFactory.getTagPoint(paoID);
+        tagPoint = (pointCache != null) ?
+                CBCPointFactory.getTagPointFromCache(paoID, pointCache) : CBCPointFactory.getTagPoint(paoID);
 
         if (tagPoint != null) {
             List<TAGLog> tagLog = TagManager.getInstance()

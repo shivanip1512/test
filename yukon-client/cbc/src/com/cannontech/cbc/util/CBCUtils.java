@@ -4,10 +4,7 @@ import java.sql.ResultSet;
 import java.sql.SQLException;
 import java.text.NumberFormat;
 import java.util.Arrays;
-import java.util.Calendar;
 import java.util.Comparator;
-import java.util.Date;
-import java.util.GregorianCalendar;
 import java.util.Iterator;
 import java.util.List;
 import java.util.Vector;
@@ -16,7 +13,7 @@ import org.springframework.dao.IncorrectResultSizeDataAccessException;
 import org.springframework.jdbc.core.JdbcOperations;
 import org.springframework.jdbc.core.RowMapper;
 
-import com.cannontech.cbc.web.CapControlCache;
+import com.cannontech.cbc.cache.CapControlCache;
 import com.cannontech.clientutils.CTILogger;
 import com.cannontech.core.dao.DaoFactory;
 import com.cannontech.core.dao.NotFoundException;
@@ -29,6 +26,7 @@ import com.cannontech.database.data.lite.LiteState;
 import com.cannontech.database.data.lite.LiteStateGroup;
 import com.cannontech.database.data.lite.LiteYukonPAObject;
 import com.cannontech.database.data.lite.LiteYukonUser;
+import com.cannontech.database.data.pao.DeviceTypes;
 import com.cannontech.database.data.pao.PAOGroups;
 import com.cannontech.database.data.point.PointUnits;
 import com.cannontech.database.db.DBPersistent;
@@ -53,7 +51,7 @@ public final class CBCUtils {
     public static final int TEMP_MOVE_REFRESH = 1000;
     // responsible for how to render data for CBC displays
     public static final CBCDisplay CBC_DISPLAY = new CBCDisplay();
-    public static CapControlCache ccCache = (CapControlCache) YukonSpringHook.getBean("cbcCache");
+    public static CapControlCache ccCache = YukonSpringHook.getBean("cbcCache", CapControlCache.class);
 
     public static final Comparator<CBCArea> CBC_AREA_COMPARATOR = new Comparator<CBCArea>() {
         public int compare(CBCArea o1, CBCArea o2) {
@@ -329,16 +327,11 @@ public final class CBCUtils {
     }
 
     public static boolean isTwoWay(int type) {
-        switch (type) {
-        case PAOGroups.DNP_CBC_6510:
-        case PAOGroups.CBC_7020:
-        case PAOGroups.CBC_7022:
-        case PAOGroups.CBC_7023:
-        case PAOGroups.CBC_7024:
-            return true;
-        default:
-            return false;
+        int[] cbcTwoWay = DeviceTypes.CBC_TWOWAY;
+        for (int x = 0; x < cbcTwoWay.length; x++) {
+            if (type == cbcTwoWay[x]) return true;
         }
+        return false;
     }
 
     public static boolean isTwoWay(LiteYukonPAObject obj) {
@@ -584,11 +577,6 @@ public final class CBCUtils {
     public static String getAreaName(Integer subID) {
        Integer areaID = CCSubAreaAssignment.getAreaIDForSub(subID);
        return DaoFactory.getPaoDao().getYukonPAOName(areaID);
-    }
-    
-    public static String getPAOName(Integer paoId) {
-        String paoName = DaoFactory.getPaoDao().getYukonPAOName(paoId);
-        return paoName;
     }
 
     public static boolean signalQualityNormal(PointQualityCheckable checkable, Integer type) {

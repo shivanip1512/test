@@ -39,11 +39,11 @@ public class CapBankHiddenStates extends LxAbstractView implements HiddenStates 
     public void addStateInfo() {
         String elementID = "CapState_" + getCurrentCapIdFromMessage();
         String disableReason = CBCTagHandler.getReason(OnelineTags.TAGGRP_ENABLEMENT,
-                                                       getCurrentCapIdFromMessage());
+                                                       getCurrentCapIdFromMessage(), parent.getPointCache());
         String disableCapOVUVReason = CBCTagHandler.getReason(OnelineTags.TAGGRP_OVUV_ENABLEMENT,
-                                                              getCurrentCapIdFromMessage());
+                                                              getCurrentCapIdFromMessage(), parent.getPointCache());
         String standAloneReason = CBCTagHandler.getReason(OnelineTags.TAGGRP_CB_OPERATIONAL_STATE,
-                                                          getCurrentCapIdFromMessage());
+                                                          getCurrentCapIdFromMessage(), parent.getPointCache());
 
         HiddenTextElement stateInfo = new HiddenTextElement("HiddenTextElement",
                                                             elementID);

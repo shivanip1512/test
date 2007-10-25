@@ -14,6 +14,7 @@ import javax.servlet.http.HttpSession;
 import org.springframework.jdbc.core.JdbcOperations;
 import org.springframework.jdbc.core.RowMapper;
 
+import com.cannontech.cbc.cache.CapControlCache;
 import com.cannontech.clientutils.CTILogger;
 import com.cannontech.common.util.CtiUtilities;
 import com.cannontech.core.dao.DaoFactory;
@@ -50,7 +51,7 @@ public class CBCWebUtils implements CBCParamValues
 	 *  or SUBUBUS id
 	 * 
 	 */
-	public static synchronized String genGraphURL( int theId, CapControlDAO theCache, String period, String type )
+	public static synchronized String genGraphURL( int theId, CapControlCache theCache, String period, String type )
 	{
 		if( theCache == null )
 			return null;
@@ -77,7 +78,7 @@ public class CBCWebUtils implements CBCParamValues
 		return retURL;
 	}
 
-	public static synchronized String genGraphURL( int theId, CapControlDAO theCache, String type )
+	public static synchronized String genGraphURL( int theId, CapControlCache theCache, String type )
 	{
 		return genGraphURL( theId, theCache, ServletUtil.PREVTHIRTYDAYS, type );
 	}
@@ -250,7 +251,7 @@ public class CBCWebUtils implements CBCParamValues
 	 * Returns events that have occured on the the given PaoID. The events
      * will be retrieved from the SystemLog table
 	 */
-	public static synchronized SystemLogData[] getRecentControls( int theId, CapControlDAO theCache, int prevDayCount )
+	public static synchronized SystemLogData[] getRecentControls( int theId, CapControlCache theCache, int prevDayCount )
 	{
 		SystemLogData[] retLog = new SystemLogData[0];
 		if( theCache == null )
@@ -285,7 +286,7 @@ public class CBCWebUtils implements CBCParamValues
 		return retLog;
 	}
 	
-	public static List getCCEventsForPAO (Long _paoId_, String type, CapControlDAO theCache, int prevDaysCount) {
+	public static List getCCEventsForPAO (Long _paoId_, String type, CapControlCache theCache, int prevDaysCount) {
 	    String sqlStmt ="SELECT * FROM " + CCEventLog.TABLE_NAME + " WHERE"; 
 	    List<RecentControls> ccEvents = new ArrayList<RecentControls>();
 	    long startTS = ServletUtil.getDate(- prevDaysCount).getTime();
@@ -359,7 +360,7 @@ public class CBCWebUtils implements CBCParamValues
 	 * @param theCache
 	 * @return TODO
 	 */
-	private static synchronized Integer getStatusPointFromPaoId(Long _paoId_, CapControlDAO theCache) {
+	private static synchronized Integer getStatusPointFromPaoId(Long _paoId_, CapControlCache theCache) {
 		Integer statusPtId = null;
 		StreamableCapObject obj = theCache.getCapControlPAO(new Integer (_paoId_.intValue() ));
 			if (obj instanceof CapBankDevice) {

@@ -29,9 +29,9 @@ public class SubHiddenStates extends LxAbstractView implements HiddenStates {
         stateInfo.addProperty("isDisable", isDisabled().toString() );
         stateInfo.addProperty("isVerify", subBusMsg.getVerificationFlag().toString());
         String disableReason = CBCTagHandler.getReason(OnelineTags.TAGGRP_ENABLEMENT,
-                                                                                 subBusMsg.getCcId());
+                                                                                 subBusMsg.getCcId(), parent.getPointCache());
         String disableOVUVReason = CBCTagHandler.getReason(OnelineTags.TAGGRP_OVUV_ENABLEMENT,
-                                                       subBusMsg.getCcId());
+                                                       subBusMsg.getCcId(), parent.getPointCache());
         stateInfo.addProperty("subDisableReason", disableReason);
         stateInfo.addProperty("subDisableOVUVReason", disableOVUVReason);
 

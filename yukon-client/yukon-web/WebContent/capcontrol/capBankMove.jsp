@@ -1,14 +1,13 @@
+
+<jsp:directive.page import="com.cannontech.cbc.cache.CapControlCache"/>
+<jsp:directive.page import="com.cannontech.spring.YukonSpringHook"/>
 <%@ taglib uri="http://cannontech.com/tags/cti" prefix="cti" %>
 <cti:standardPage module="capcontrol_internal" title="">
 <%@include file="cbc_inc.jspf"%>
 <%@ page import="com.cannontech.util.*" %>
 
-
-<jsp:useBean id="capControlCache"
-	class="com.cannontech.cbc.web.CapControlCache"
-	type="com.cannontech.cbc.web.CapControlCache" scope="application"></jsp:useBean>
-
 <%
+    CapControlCache capControlCache = YukonSpringHook.getBean("cbcCache", CapControlCache.class);
 	String cmdType = ParamUtil.getString(request, "cmdType", "system"); //field or system
 	int capBankId = ParamUtil.getInteger(request, "capBankId", 0);
 	CapBankDevice capBank = capControlCache.getCapBankDevice( new Integer(capBankId) );

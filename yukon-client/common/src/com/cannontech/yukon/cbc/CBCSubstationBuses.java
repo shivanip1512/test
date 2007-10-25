@@ -1,5 +1,7 @@
 package com.cannontech.yukon.cbc;
 
+import java.util.Vector;
+
 /**
  */
 
@@ -7,7 +9,7 @@ package com.cannontech.yukon.cbc;
 public class CBCSubstationBuses extends com.cannontech.yukon.cbc.CBCMessage {
 	
 	private java.lang.Integer msgInfoBitMask = new Integer(0);
-	private java.util.Vector buses;
+	private java.util.Vector<SubBus> buses;
 	
 	
 	public static final int SUB_ALL    = 0x00000001;
@@ -47,8 +49,8 @@ public class CBCSubstationBuses extends com.cannontech.yukon.cbc.CBCMessage {
 	{
 		if( buses == null || index < 0 || index >= buses.size() )
 			return null;
-		else
-			return (SubBus)buses.get(index);
+
+        return buses.get(index);
 	}
 	
 	/**
@@ -63,10 +65,15 @@ public class CBCSubstationBuses extends com.cannontech.yukon.cbc.CBCMessage {
 	/**
 	 * This method was created in VisualAge.
 	 */
-	void setSubBuses(java.util.Vector subbuses)
+	void setSubBuses(Vector<SubBus> subbuses)
 	{
 		buses = subbuses;
 	}
+    
+    public Vector<SubBus> getSubBuses() {
+        return buses;
+    }
+    
 	/**
 	 * @return
 	 */

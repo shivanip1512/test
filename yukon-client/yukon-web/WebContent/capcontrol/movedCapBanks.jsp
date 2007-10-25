@@ -1,6 +1,8 @@
 <%@ taglib uri="http://cannontech.com/tags/cti" prefix="cti" %>
 <cti:standardPage title="Temp Move Report" module="capcontrol">
 <%@include file="cbc_inc.jspf"%>
+<%@ page import="com.cannontech.spring.YukonSpringHook" %>
+<%@ page import="com.cannontech.cbc.cache.CapControlCache" %>
 <%@ page import="com.cannontech.yukon.cbc.CapBankDevice" %>
 <%@ page import="com.cannontech.database.data.lite.LiteYukonUser" %>
 <%@ page import="com.cannontech.common.constants.LoginController" %>
@@ -13,10 +15,6 @@
 <%@ page import="com.cannontech.cbc.util.CBCDisplay" %>
 <%@ page import="com.cannontech.cbc.util.CBCUtils" %>
 
-
-<jsp:useBean id="capControlCache"
-	class="com.cannontech.cbc.web.CapControlCache"
-	type="com.cannontech.cbc.web.CapControlCache" scope="application"></jsp:useBean>
 <jsp:setProperty name="CtiNavObject" property="moduleExitPage" value="<%=request.getRequestURL().toString()%>"/>
 <!-- necessary DIV element for the OverLIB popup library -->
 <div id="overDiv" style="position:absolute; visibility:hidden; z-index:1000;"></div>
@@ -27,7 +25,7 @@
 </cti:breadCrumbs>
 <%
 String nd = "\"return nd();\"";
-
+CapControlCache capControlCache = YukonSpringHook.getBean("cbcCache", CapControlCache.class);
 LiteYukonUser user = (LiteYukonUser) session.getAttribute(LoginController.YUKON_USER);			
 String popupEvent = DaoFactory.getAuthDao().getRolePropertyValue(user, WebClientRole.POPUP_APPEAR_STYLE);
 if (popupEvent == null) popupEvent = "onmouseover";

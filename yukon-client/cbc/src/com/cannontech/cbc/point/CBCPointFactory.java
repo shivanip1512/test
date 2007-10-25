@@ -2,6 +2,7 @@ package com.cannontech.cbc.point;
 
 import java.util.ArrayList;
 import java.util.List;
+import java.util.Map;
 
 import com.cannontech.cbc.util.CBCUtils;
 import com.cannontech.core.dao.DaoFactory;
@@ -274,18 +275,26 @@ public class CBCPointFactory {
         return retSmart;
     }
 
-    public static LitePoint getTagPoint(Integer objectID) {
-        List<LitePoint> points = DaoFactory.getPointDao()
-                                           .getLitePointsByPaObjectId(objectID);
+    public static LitePoint getTagPointFromCache(final Integer objectId, final Map<Integer,List<LitePoint>> pointCache) {
+        List<LitePoint> pointList = pointCache.get(objectId);
+        return getTagPoint(objectId, pointList);
+    }
+    
+    public static LitePoint getTagPoint(final Integer objectId) {
+        List<LitePoint> pointList = DaoFactory.getPointDao().getLitePointsByPaObjectId(objectId);
+        return getTagPoint(objectId, pointList);
+    }
+    
+    private static LitePoint getTagPoint(final Integer objectId, final List<LitePoint> pointList) {
         LitePoint tagPoint = null;
-        for (LitePoint point : points) {
+        for (final LitePoint point : pointList) {
             if ((point.getPointType() == PointTypes.STATUS_POINT) && point.getPointName().equalsIgnoreCase(PointFactory.PTNAME_TAG)){
                 tagPoint = point;
                 break;
             }
         }
         if (tagPoint == null) {
-            tagPoint = createTagPoint(objectID);
+            tagPoint = createTagPoint(objectId);
         }
         return tagPoint;
     }

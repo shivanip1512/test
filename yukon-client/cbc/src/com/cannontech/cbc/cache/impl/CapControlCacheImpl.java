@@ -1,33 +1,62 @@
-package com.cannontech.cbc.web;
+package com.cannontech.cbc.cache.impl;
 
 /**
  * Maintains information from the capcontrol server
  */
 import java.io.IOException;
-import java.util.*;
+import java.util.ArrayList;
+import java.util.Arrays;
+import java.util.Collections;
+import java.util.Date;
+import java.util.HashMap;
+import java.util.Hashtable;
+import java.util.Iterator;
+import java.util.List;
+import java.util.Vector;
 import java.util.concurrent.TimeUnit;
 
 import org.apache.commons.lang.Validate;
 
+import com.cannontech.cbc.cache.CapControlCache;
 import com.cannontech.cbc.util.CBCUtils;
+import com.cannontech.cbc.web.CBCWebUpdatedObjectMap;
 import com.cannontech.clientutils.CTILogger;
-import com.cannontech.common.util.*;
-import com.cannontech.core.dao.DaoFactory;
+import com.cannontech.common.util.CtiUtilities;
+import com.cannontech.common.util.NativeIntVector;
+import com.cannontech.common.util.ScheduledExecutor;
+import com.cannontech.core.dao.PaoDao;
+import com.cannontech.core.dao.StateDao;
 import com.cannontech.database.data.capcontrol.CapBankController;
 import com.cannontech.database.data.capcontrol.CapControlSubBus;
 import com.cannontech.database.data.capcontrol.CapControlSubstation;
 import com.cannontech.database.data.lite.LiteComparators;
 import com.cannontech.database.data.lite.LiteState;
-import com.cannontech.database.db.capcontrol.*;
+import com.cannontech.database.db.capcontrol.CCSubAreaAssignment;
+import com.cannontech.database.db.capcontrol.CCSubSpecialAreaAssignment;
+import com.cannontech.database.db.capcontrol.CapBank;
+import com.cannontech.database.db.capcontrol.CapControlFeeder;
 import com.cannontech.database.db.state.StateGroupUtils;
-import com.cannontech.message.util.*;
+import com.cannontech.message.util.Message;
 import com.cannontech.message.util.MessageEvent;
+import com.cannontech.message.util.MessageListener;
 import com.cannontech.web.lite.LiteWrapper;
 import com.cannontech.yukon.IServerConnection;
-import com.cannontech.yukon.cbc.*;
+import com.cannontech.yukon.cbc.CBCArea;
+import com.cannontech.yukon.cbc.CBCClientConnection;
+import com.cannontech.yukon.cbc.CBCCommand;
+import com.cannontech.yukon.cbc.CBCSpecialArea;
+import com.cannontech.yukon.cbc.CBCSubAreas;
+import com.cannontech.yukon.cbc.CBCSubSpecialAreas;
+import com.cannontech.yukon.cbc.CBCSubStations;
+import com.cannontech.yukon.cbc.CBCSubstationBuses;
+import com.cannontech.yukon.cbc.CapBankDevice;
+import com.cannontech.yukon.cbc.Feeder;
+import com.cannontech.yukon.cbc.StreamableCapObject;
+import com.cannontech.yukon.cbc.SubBus;
+import com.cannontech.yukon.cbc.SubStation;
 import com.cannontech.yukon.conns.ConnPool;
 
-public class CapControlCache implements MessageListener, CapControlDAO {
+public class CapControlCacheImpl implements MessageListener, CapControlCache {
     private static final int STARTUP_REF_RATE = 15 * 1000;
     private static final int NORMAL_REF_RATE = 30 * 60 * 1000; //5 minutes
     private ScheduledExecutor refreshTimer;
@@ -43,11 +72,13 @@ public class CapControlCache implements MessageListener, CapControlDAO {
     private HashMap<String, Boolean> specialAreaStateMap = new HashMap<String, Boolean>();
     private Boolean systemStatusOn = Boolean.TRUE;
     private IServerConnection defCapControlConn;
+    private PaoDao paoDao;
+    private StateDao stateDao;
     
     /**
      * CapControlCache constructor.
      */
-    public CapControlCache() {
+    public CapControlCacheImpl() {
         super();
     }
     
@@ -78,6 +109,18 @@ public class CapControlCache implements MessageListener, CapControlDAO {
     /**
      * @return Area
      */
+    public synchronized CBCSpecialArea getSpecialArea( Integer areaId ) {
+        for (CBCSpecialArea a : cbcSpecialAreas) {
+            if (a.getCcId() == areaId) {
+                return a;
+            }
+        }
+        return null;
+    }
+    
+    /**
+     * @return Area
+     */
     public synchronized CBCArea getArea( Integer areaId )
     {
     	for ( CBCArea a : cbcAreas )
@@ -88,21 +131,6 @@ public class CapControlCache implements MessageListener, CapControlDAO {
     		}
     	}
     	return null;
-    }
-    
-    /**
-     * @return Area
-     */
-    public synchronized CBCSpecialArea getSpecialArea( Integer areaId )
-    {
-        for ( CBCSpecialArea a : cbcSpecialAreas )
-        {
-            if( a.getCcId() == areaId )
-            {
-                return a;
-            }
-        }
-        return null;
     }
     
     public String getSubBusNameForFeeder(Feeder fdr) {
@@ -145,8 +173,8 @@ public class CapControlCache implements MessageListener, CapControlDAO {
         
         if( subBus != null )
             return new ArrayList<Feeder>( subBus.getCcFeeders() );
-        else
-            return new ArrayList<Feeder>();
+        
+        return Collections.emptyList();
     }
     
     /**
@@ -348,7 +376,7 @@ public class CapControlCache implements MessageListener, CapControlDAO {
         LiteWrapper[] retVal = new LiteWrapper[ unassignedCBCsIds.length ];
         
         for( int i = 0 ; i < unassignedCBCsIds.length; i++ ) {
-            retVal[i] = new LiteWrapper( DaoFactory.getPaoDao().getLiteYukonPAO(unassignedCBCsIds[i]) );
+            retVal[i] = new LiteWrapper(paoDao.getLiteYukonPAO(unassignedCBCsIds[i]) );
         }
     
         return retVal;
@@ -365,7 +393,7 @@ public class CapControlCache implements MessageListener, CapControlDAO {
         
         for( int i = 0 ; i < unassignedBanks.length; i++ ) {
             CapBank capBank = unassignedBanks[i];       
-            retVal[i] = new LiteWrapper( DaoFactory.getPaoDao().getLiteYukonPAO(capBank.getDeviceID().intValue()) );
+            retVal[i] = new LiteWrapper(paoDao.getLiteYukonPAO(capBank.getDeviceID().intValue()) );
         }
         Arrays.sort(retVal, LiteComparators.liteNameComparator);
         return retVal;
@@ -382,7 +410,7 @@ public class CapControlCache implements MessageListener, CapControlDAO {
         
         for( int i = 0 ; i < unassignedFeeders.length; i++ ) {
             CapControlFeeder feeder = unassignedFeeders[i];     
-            retVal[i] = new LiteWrapper( DaoFactory.getPaoDao().getLiteYukonPAO(feeder.getFeederID().intValue()) );
+            retVal[i] = new LiteWrapper(paoDao.getLiteYukonPAO(feeder.getFeederID().intValue()) );
         }
         return retVal;
     }
@@ -392,7 +420,7 @@ public class CapControlCache implements MessageListener, CapControlDAO {
         List<Integer> allUnassignedSubstations = CapControlSubstation.getAllUnassignedSubstations();
         LiteWrapper[] retVal = new LiteWrapper[ allUnassignedSubstations.size() ];
         for (Integer id : allUnassignedSubstations) {
-            retVal[allUnassignedSubstations.indexOf(id)] = new LiteWrapper( DaoFactory.getPaoDao().getLiteYukonPAO(id) );
+            retVal[allUnassignedSubstations.indexOf(id)] = new LiteWrapper(paoDao.getLiteYukonPAO(id) );
         }
         return retVal;
     }
@@ -402,7 +430,7 @@ public class CapControlCache implements MessageListener, CapControlDAO {
         List<Integer> allUnassignedBuses = CapControlSubBus.getAllUnassignedBuses();
         LiteWrapper[] retVal = new LiteWrapper[ allUnassignedBuses.size() ];
         for (Integer id : allUnassignedBuses) {
-            retVal[allUnassignedBuses.indexOf(id)] = new LiteWrapper( DaoFactory.getPaoDao().getLiteYukonPAO(id) );
+            retVal[allUnassignedBuses.indexOf(id)] = new LiteWrapper(paoDao.getLiteYukonPAO(id) );
         }
         return retVal;
     }
@@ -443,7 +471,7 @@ public class CapControlCache implements MessageListener, CapControlDAO {
      * @return LiteState
      */
     public LiteState getCapBankState( int rawState ) {
-        return DaoFactory.getStateDao().getLiteState( StateGroupUtils.STATEGROUPID_CAPBANK, rawState );
+        return stateDao.getLiteState( StateGroupUtils.STATEGROUPID_CAPBANK, rawState );
     }
     
     /**
@@ -680,8 +708,8 @@ public class CapControlCache implements MessageListener, CapControlDAO {
             List<CBCArea> cachedAreas = getCbcAreas();
             List<CBCArea> workCopy = new Vector<CBCArea>();
             workCopy.addAll(cachedAreas);
-            for (Iterator iter = cachedAreas.iterator(); iter.hasNext();) {
-                CBCArea area = (CBCArea) iter.next();
+            for (Iterator<CBCArea> iter = cachedAreas.iterator(); iter.hasNext();) {
+                CBCArea area = iter.next();
                 if (area.getPaoID().intValue() == deviceID) {
                     workCopy.remove(area);
                 }
@@ -696,8 +724,8 @@ public class CapControlCache implements MessageListener, CapControlDAO {
             List<CBCSpecialArea> cachedSpecialAreas = getSpecialCbcAreas();
             List<CBCSpecialArea> workCopy = new Vector<CBCSpecialArea>();
             workCopy.addAll(cachedSpecialAreas);
-            for (Iterator iter = cachedSpecialAreas.iterator(); iter.hasNext();) {
-                CBCSpecialArea area = (CBCSpecialArea) iter.next();
+            for (Iterator<CBCSpecialArea> iter = cachedSpecialAreas.iterator(); iter.hasNext();) {
+                CBCSpecialArea area = iter.next();
                 if (area.getPaoID().intValue() == deviceID) {
                     workCopy.remove(area);
                 }
@@ -709,8 +737,8 @@ public class CapControlCache implements MessageListener, CapControlDAO {
     
     public boolean isCBCArea(int deviceID) {
         synchronized (cbcAreas) {
-            for (Iterator iter = cbcAreas.iterator(); iter.hasNext();) {
-                CBCArea area = (CBCArea) iter.next();
+            for (Iterator<CBCArea> iter = cbcAreas.iterator(); iter.hasNext();) {
+                CBCArea area = iter.next();
                 if (area.getPaoID().intValue() == deviceID) {
                     return true;
                 }
@@ -721,8 +749,8 @@ public class CapControlCache implements MessageListener, CapControlDAO {
     
     public boolean isSpecialCBCArea(int deviceID) {
         synchronized (getSpecialCbcAreas()) {
-            for (Iterator iter = getSpecialCbcAreas().iterator(); iter.hasNext();) {
-                CBCSpecialArea area = (CBCSpecialArea) iter.next();
+            for (Iterator<CBCSpecialArea> iter = getSpecialCbcAreas().iterator(); iter.hasNext();) {
+                CBCSpecialArea area = iter.next();
                 if (area.getPaoID().intValue() == deviceID) {
                     return true;
                 }
@@ -758,11 +786,11 @@ public class CapControlCache implements MessageListener, CapControlDAO {
         Validate.notNull(subBus, "subBus can't be null");
         subBusMap.remove(subBus.getCcId());
         subBusMap.put( subBus.getCcId(), subBus );
-        Vector feeders = subBus.getCcFeeders();
+        Vector<Feeder> feeders = subBus.getCcFeeders();
     
         NativeIntVector capBankIDs = new NativeIntVector(32);
         for( int i = 0; i < feeders.size(); i++ ) {
-            Feeder feeder = (Feeder)feeders.elementAt(i);
+            Feeder feeder = feeders.elementAt(i);
             feederMap.remove(feeder.getCcId());
             feederMap.put( feeder.getCcId(), feeder );
             
@@ -806,7 +834,7 @@ public class CapControlCache implements MessageListener, CapControlDAO {
      * Allows access the a CBCClientConnection instance
      * @return
      */
-    protected CBCClientConnection getConnection() {
+    public CBCClientConnection getConnection() {
         return (CBCClientConnection)ConnPool.getInstance().getDefCapControlConn();
     }
     
@@ -961,5 +989,21 @@ public class CapControlCache implements MessageListener, CapControlDAO {
         }else {
             return null;
         }
+    }
+    
+    public CapBankDevice[] getCapBanksBySpecialArea(Integer areaID) {
+        return getCapBanksByArea(areaID);
+    }
+    
+    public List<SubStation> getSubstationsBySpecialArea(Integer areaId) {
+        return getSubstationsByArea(areaId);
+    }
+
+    public void setPaoDao(PaoDao paoDao) {
+        this.paoDao = paoDao;
+    }
+
+    public void setStateDao(StateDao stateDao) {
+        this.stateDao = stateDao;
     }
 }

@@ -1,23 +1,23 @@
 <%@page import="java.util.*" %>
+<%@page import="com.cannontech.spring.YukonSpringHook" %>
 <%@page import="com.cannontech.roles.capcontrol.CBCSettingsRole" %>
 <%@page import="com.cannontech.roles.application.WebClientRole" %>
 <%@page import="com.cannontech.roles.application.CommanderRole" %>
 <%@page import="com.cannontech.yukon.cbc.*" %>
 <%@page import="com.cannontech.util.*" %>
 <%@page import="com.cannontech.cbc.web.*" %>
+<%@page import="com.cannontech.cbc.cache.CapControlCache" %>
 <%@page import="com.cannontech.servlet.CBCServlet" %>
 <%@page import="com.cannontech.database.data.lite.*" %>
 <%@page import="com.cannontech.web.lite.*" %>
 <%@page import="com.cannontech.core.dao.*" %>
 
 <%@page import="com.cannontech.common.util.CtiUtilities" %>
-<%@page import="com.cannontech.database.data.point.SystemLogData" %><%@ taglib uri="http://cannontech.com/tags/cti" prefix="cti" %>
+<%@page import="com.cannontech.database.data.point.SystemLogData" %>
+<jsp:directive.page import="com.cannontech.cbc.cache.CapControlCache"/><%@ taglib uri="http://cannontech.com/tags/cti" prefix="cti" %>
 
-<jsp:useBean id="capControlCache"
-	class="com.cannontech.cbc.web.CapControlCache"
-	type="com.cannontech.cbc.web.CapControlCache" scope="application"></jsp:useBean>
-	
 <%
+    CapControlCache capControlCache = YukonSpringHook.getBean("cbcCache", CapControlCache.class);
 	String feederid = request.getParameter("FeederID");
 	int id = Integer.valueOf(feederid);
 	Feeder feederobj = capControlCache.getFeeder(id);
