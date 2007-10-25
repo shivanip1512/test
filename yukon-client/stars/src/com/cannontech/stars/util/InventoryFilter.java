@@ -37,6 +37,9 @@ public class InventoryFilter extends AbstractFilter<LiteInventoryBase> {
             case YukonListEntryTypes.YUK_DEF_ID_INV_FILTER_BY_SERIAL_RANGE_MAX :
                 return this.filterBySerialRangeMax(inventoryBase, filter);
                 
+            case YukonListEntryTypes.YUK_DEF_ID_INV_FILTER_BY_SERIAL_RANGE_MIN :
+                return this.filterBySerialRangeMin(inventoryBase, filter);
+                
             case YukonListEntryTypes.YUK_DEF_ID_INV_FILTER_BY_APPLIANCE_TYPE :
                 return this.filterByApplianceType(inventoryBase, filter);
                 
@@ -120,6 +123,17 @@ public class InventoryFilter extends AbstractFilter<LiteInventoryBase> {
         if (inventoryBase instanceof LiteStarsLMHardware) {
             String serial = ((LiteStarsLMHardware) inventoryBase).getManufacturerSerialNumber();
             if (InventoryUtils.isSerialWithPossibleCharsLessThan(serial, specificFilterString)) {
+                return true;
+            }    
+        }
+        return false;
+    }
+    
+    private boolean filterBySerialRangeMin(final LiteInventoryBase inventoryBase, final FilterWrapper filter) {
+        final String specificFilterString = filter.getFilterID();
+        if (inventoryBase instanceof LiteStarsLMHardware) {
+            String serial = ((LiteStarsLMHardware) inventoryBase).getManufacturerSerialNumber();
+            if (InventoryUtils.isSerialWithPossibleCharsGreaterThan(serial, specificFilterString)) {
                 return true;
             }    
         }
