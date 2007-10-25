@@ -500,6 +500,9 @@ public class CapControlForm extends DBEditorForm implements ICapControlModel{
 
 	public void initWizard(int paoType) {
 		((CBCWizardModel) getWizData()).setWizPaoType(paoType);
+        if(paoType == CapControlTypes.CAP_CONTROL_SPECIAL_AREA) {
+            ((CBCWizardModel) getWizData()).setDisabled(true);
+        }
 		initPanels(paoType);
 	}
 

@@ -28,6 +28,7 @@ public class CapControlSpecialArea extends CapControlYukonPAOBase implements Edi
         setPAOCategory(PAOGroups.STRING_CAT_CAPCONTROL);
         setPAOClass(PAOGroups.STRING_CAT_CAPCONTROL);
         getYukonPAObject().setType(PAOGroups.STRING_CAPCONTROL_SPECIAL_AREA);
+        setDisabled(true);
     }
 
     public void retrieve() throws SQLException {
