@@ -15,7 +15,6 @@
  	<%pageContext.setAttribute("filterDeviceSerialRangeMin", new Integer(YukonListEntryTypes.YUK_DEF_ID_INV_FILTER_BY_SERIAL_RANGE_MIN).toString());%>
  	<%pageContext.setAttribute("filterDeviceSerialRangeMax", new Integer(YukonListEntryTypes.YUK_DEF_ID_INV_FILTER_BY_SERIAL_RANGE_MAX).toString());%>
 	<%pageContext.setAttribute("filterDevicePostalCode", new Integer(YukonListEntryTypes.YUK_DEF_ID_INV_FILTER_BY_POSTAL_CODES).toString());%>
-	<%pageContext.setAttribute("filterConsumptionType", new Integer(YukonListEntryTypes.YUK_DEF_ID_INV_FILTER_BY_CUST_TYPE).toString());%>
 	<%pageContext.setAttribute("filterCICustomerType", new Integer(YukonListEntryTypes.YUK_DEF_ID_INV_FILTER_BY_CUST_TYPE).toString());%>
 
 	<link rel="stylesheet" href="../../include/PurpleStyles.css" type="text/css">
@@ -149,7 +148,7 @@
         	<table width="600" border="0" cellspacing="0" cellpadding="5" align="center">
             	<tr>
                 	<td width="290" align="right"> 
-                    	<input type="button" name="Submit" value="Submit To Inventory" onclick="prepareSubmit(this.form)">
+                    	<input type="button" name="Submit" value="Query Inventory" onclick="prepareSubmit(this.form)">
                   	</td>
                   	<td width="205">  
                     	<input type="reset" name="Reset" value="Reset" onclick="location.reload()">

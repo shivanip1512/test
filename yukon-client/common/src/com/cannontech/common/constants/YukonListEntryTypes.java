@@ -248,4 +248,7 @@ public interface YukonListEntryTypes
     
     //entryIDS for CICustTypes
     public static final int CUSTOMER_TYPE_COMMERCIAL = 1930;
+    public static final int CUSTOMER_TYPE_INDUSTRIAL = 1931;
+    public static final int CUSTOMER_TYPE_MANUFACTURING = 1932;
+    public static final int CUSTOMER_TYPE_MUNICIPAL = 1933;
 }

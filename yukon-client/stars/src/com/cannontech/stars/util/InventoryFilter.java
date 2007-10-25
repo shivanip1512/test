@@ -100,7 +100,7 @@ public class InventoryFilter extends AbstractFilter<LiteInventoryBase> {
     private boolean filterByCustomerType(final LiteInventoryBase inventoryBase, final FilterWrapper filter) {
         final int specificFilterId = Integer.parseInt(filter.getFilterID());
         Map<Integer, Integer> accounts = this.getCustomerAccountsType(specificFilterId); 
-        if (accounts.get(inventoryBase.getAccountID()) != null && inventoryBase instanceof LiteStarsLMHardware) {
+        if (accounts.get(inventoryBase.getAccountID()) != null && (inventoryBase instanceof LiteStarsLMHardware || InventoryUtils.isMCT(inventoryBase.getCategoryID()))) {
             return true;
         }
         return false;
@@ -146,7 +146,7 @@ public class InventoryFilter extends AbstractFilter<LiteInventoryBase> {
     private boolean filterByPostalCodes(final LiteInventoryBase inventoryBase, final FilterWrapper filter) {
         final String specificFilterString = filter.getFilterID();
         Map<Integer,Integer> accounts = this.getCustomerAccountsPostalCodes(specificFilterString);
-        if(accounts.get(inventoryBase.getAccountID()) != null && inventoryBase instanceof LiteStarsLMHardware) {
+        if(accounts.get(inventoryBase.getAccountID()) != null && (inventoryBase instanceof LiteStarsLMHardware || InventoryUtils.isMCT(inventoryBase.getCategoryID()))) {
             return true;
         }
         return false;

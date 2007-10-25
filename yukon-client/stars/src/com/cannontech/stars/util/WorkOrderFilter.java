@@ -108,7 +108,8 @@ public class WorkOrderFilter extends AbstractFilter<LiteWorkOrderBase> {
                 }
                 break;
             }
-            case YukonListEntryTypes.CUSTOMER_TYPE_COMMERCIAL : {
+            case YukonListEntryTypes.CUSTOMER_TYPE_COMMERCIAL :
+            {
                 if (customer instanceof LiteCICustomer) {
                     int customerTypeId = ((LiteCICustomer) customer).getCICustType();
                     if (customerTypeId == filterId) {
@@ -121,6 +122,16 @@ public class WorkOrderFilter extends AbstractFilter<LiteWorkOrderBase> {
                     }
                 }
                 break;
+            }
+            case YukonListEntryTypes.CUSTOMER_TYPE_INDUSTRIAL:
+            case YukonListEntryTypes.CUSTOMER_TYPE_MANUFACTURING:
+            case YukonListEntryTypes.CUSTOMER_TYPE_MUNICIPAL: {
+                if (customer instanceof LiteCICustomer) {
+                    int customerTypeId = ((LiteCICustomer) customer).getCICustType();
+                    if (customerTypeId == filterId) {
+                        match = true;
+                    }
+                }
             }
         }
         return match;
