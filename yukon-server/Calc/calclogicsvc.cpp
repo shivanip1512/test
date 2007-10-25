@@ -40,6 +40,7 @@ BOOL UserQuit = FALSE;
 bool _shutdownOnThreadTimeout = false;
 bool _runCalcHistorical = false;
 bool _runCalcBaseline = false;
+bool _ignoreTimeValidTag = false;
 
 //Boolean if debug messages are printed
 ULONG _CALC_DEBUG = CALC_DEBUG_THREAD_REPORTING;
@@ -1890,6 +1891,17 @@ void CtiCalcLogicService::loadConfigParameters()
     else
     {
         _runCalcBaseline = false;
+    }
+
+    strcpy(var, "CALC_IGNORE_TIME_VALID_TAG");
+    if( !stringCompareIgnoreCase(gConfigParms.getValueAsString(var, "false"),"true") )
+    {
+        _ignoreTimeValidTag = true;
+    }
+    else
+    {
+        if(DebugLevel & CALC_DEBUG_CALC_INIT) cout << "Configuration Parameter CALC_IGNORE_TIME_VALID_TAG default : " << _ignoreTimeValidTag << endl;
+        _ignoreTimeValidTag = false;
     }
 
     SET_CRT_OUTPUT_MODES;

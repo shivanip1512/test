@@ -15,6 +15,7 @@ using namespace std;
 #include "rwutil.h"
 
 extern ULONG _CALC_DEBUG;
+extern bool _ignoreTimeValidTag;
 
 RWDEFINE_NAMED_COLLECTABLE( CtiCalcComponent, "CtiCalcComponent" );
 
@@ -940,7 +941,7 @@ double CtiCalcComponent::_doFunction( string &functionName, bool &validCalc )
             int    isMax  = _calcpoint->pop();  // is the value a max value (or a min)?
             int    needsHistory  = _calcpoint->pop();  // Are we supposed to look at historical values?
 
-            retVal = 999;
+            retVal = 9999;
             if(_componentPointId > 0)
             {
                 CtiPointStore* pointStore = CtiPointStore::getInstance();
@@ -967,7 +968,20 @@ double CtiCalcComponent::_doFunction( string &functionName, bool &validCalc )
                     }
 
                     double slope, intercept, xAtLimit, yNow;
-                    calcPointPtr->addRegressionVal( pointTime, value );
+
+                    if(_calcpoint != NULL && _calcpoint->getUpdateType() == anyUpdate)
+                    {
+                        if( calcPointPtr->getPointTags() & TAG_POINT_DATA_TIMESTAMP_VALID || _ignoreTimeValidTag )
+                        {
+                            calcPointPtr->addRegressionVal( pointTime, value );
+                        }
+                        //else do not add regression value.
+                    }
+                    else
+                    {
+                        calcPointPtr->addRegressionVal( pointTime, value );
+                    }
+
                     if( calcPointPtr->linearRegression(slope, intercept) )
                     {
                         depth = calcPointPtr->getRegressCurrentDepth();
@@ -999,6 +1013,10 @@ double CtiCalcComponent::_doFunction( string &functionName, bool &validCalc )
                         }
                     }
                 }
+            }
+            if( retVal > 9999 )
+            {
+                retVal = 9999;
             }
         }
         else if( !stringCompareIgnoreCase(functionName,"Linear Slope") )      // Stack has Depth,Minutes,Value
@@ -1038,7 +1056,20 @@ double CtiCalcComponent::_doFunction( string &functionName, bool &validCalc )
                     }
 
                     double slope, intercept, xAtLimit, yNow;
-                    calcPointPtr->addRegressionVal( pointTime, value );
+
+                    if(_calcpoint != NULL && _calcpoint->getUpdateType() == anyUpdate)
+                    {
+                        if( calcPointPtr->getPointTags() & TAG_POINT_DATA_TIMESTAMP_VALID || _ignoreTimeValidTag )
+                        {
+                            calcPointPtr->addRegressionVal( pointTime, value );
+                        }
+                        //else do not add regression value.
+                    }
+                    else
+                    {
+                        calcPointPtr->addRegressionVal( pointTime, value );
+                    }
+
                     if( calcPointPtr->linearRegression(slope, intercept) )
                     {
                         retVal = slope;
