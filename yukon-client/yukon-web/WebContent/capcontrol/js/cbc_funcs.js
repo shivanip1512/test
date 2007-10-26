@@ -891,23 +891,25 @@ function showOneLine () {
    var validElems = new Array();
    getValidChecks( elemSubs, validElems );
    if ( validElems.length <= 0 ) {
-        alert('Select Substation To View');
+        alert('Please select a Substation to view');
         return;
         }
     else {      
-        if (validElems.length > 1)
-            alert ("You can only copy 1 item at a time"); 
-         var anc_id = 'anc_' + validElems[0].getAttribute('value');        
-         //there is an id for the sub name
-         if (document.getElementById (anc_id)) {
-            id = anc_id.split('_')[1];
-            url = "/capcontrol/oneline/OnelineCBCServlet?id=" + id + "&redirectURL=" + currLoc;
-            post(url);
-            }
-         else {
-            alert ("Couldn't open window - URL invalid");
-            return;         
-         }
+        if (validElems.length > 1){
+            alert ("You can only view 1 item at a time");
+            return;
+        }
+        var anc_id = 'anc_' + validElems[0].getAttribute('value');        
+        //there is an id for the sub name
+        if (document.getElementById (anc_id)) {
+           id = anc_id.split('_')[1];
+           url = "/capcontrol/oneline/OnelineCBCServlet?id=" + id + "&redirectURL=" + currLoc;
+           post(url);
+           }
+        else {
+           alert ("Couldn't open window - URL invalid");
+           return;         
+        }
    }
 }
 

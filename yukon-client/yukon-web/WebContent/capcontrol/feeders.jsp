@@ -21,6 +21,7 @@
 	LiteYukonUser user = (LiteYukonUser) session.getAttribute(LoginController.YUKON_USER);	
     CapControlCache filterCapControlCache = cacheFactory.createUserAccessFilteredCache(user);
 	String nd = "\"return nd();\"";
+	String currentPageURL = request.getRequestURL().toString();
 	int subid = ccSession.getLastSubID();
 	Integer areaId = ccSession.getLastAreaId();
 	String popupEvent = DaoFactory.getAuthDao().getRolePropertyValue(user, WebClientRole.POPUP_APPEAR_STYLE);
@@ -174,7 +175,7 @@ for( SubBus subBus: subBuses ) {
 					<input type="image" id="showSnap<%=subBus.getCcId()%>" src="images/nav-plus.gif" onclick="showRowElems( 'subSnapShot<%=subBus.getCcId()%>', 'showSnap<%=subBus.getCcId()%>'); return false;"/>
 				</td>
 				<td id="subName">
-				<span><%=CBCUtils.CBC_DISPLAY.getSubBusValueAt(subBus, CBCDisplay.SUB_NAME_COLUMN)%></span>
+				<a href="/capcontrol/oneline/OnelineCBCServlet?id=<%=subBus.getCcId()%>&redirectURL=<%=currentPageURL %>" title="Click to view One-Line" ><%=CBCUtils.CBC_DISPLAY.getSubBusValueAt(subBus, CBCDisplay.SUB_NAME_COLUMN)%></a>
 				<% if( subBus.getVerificationFlag().booleanValue() ) {%>
 					<span class="popupImg" onmouseover="statusMsg(this, 'This SubBus is currently being<br>used in a Verification schedule');" >(v)</span>
 				<%}%>
