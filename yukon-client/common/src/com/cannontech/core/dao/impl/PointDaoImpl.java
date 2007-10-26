@@ -14,9 +14,11 @@ import org.springframework.dao.IncorrectResultSizeDataAccessException;
 import org.springframework.jdbc.core.JdbcOperations;
 import org.springframework.jdbc.core.RowCallbackHandler;
 import org.springframework.jdbc.core.RowMapper;
+import org.springframework.jdbc.core.simple.ParameterizedRowMapper;
 
 import com.cannontech.clientutils.CTILogger;
 import com.cannontech.common.util.CtiUtilities;
+import com.cannontech.common.util.SqlStatementBuilder;
 import com.cannontech.core.dao.NotFoundException;
 import com.cannontech.core.dao.PointDao;
 import com.cannontech.database.data.capcontrol.CapBank;
@@ -57,8 +59,8 @@ public final class PointDaoImpl implements PointDao {
         "LEFT OUTER JOIN YUKONPAOBJECT YPO ON P.PAOBJECTID=YPO.PAOBJECTID ) ";
 
     
-    private static final RowMapper litePointRowMapper = new RowMapper() {
-        public Object mapRow(ResultSet rs, int rowNum) throws SQLException {
+    private static final ParameterizedRowMapper<LitePoint> litePointRowMapper = new ParameterizedRowMapper<LitePoint>() {
+        public LitePoint mapRow(ResultSet rs, int rowNum) throws SQLException {
             return createLitePoint(rs);
         };
     };
@@ -167,29 +169,24 @@ public final class PointDaoImpl implements PointDao {
     }
 
     public Map<Integer,List<LitePoint>> getLitePointsByPaObject(final List<Integer> paoIdList) {
-        final String startSql = litePointSql + "WHERE PaObjectId IN (";
-        final Map<Integer,List<LitePoint>> map = new HashMap<Integer,List<LitePoint>>();
+        final Map<Integer,List<LitePoint>> map = new HashMap<Integer,List<LitePoint>>(paoIdList.size());
         final List<String> queryList = new ArrayList<String>();
-        StringBuilder sb = new StringBuilder(startSql);
-        int count = 0;
-        for (final Integer paoId : paoIdList) {
-            if (++count == 1000) {
-                count = 0;
-                String endSql = sb.substring(0, sb.length() - 1);
-                endSql += ")";
-                queryList.add(endSql);
-                sb = new StringBuilder(startSql);
-            }
-            sb.append(paoId + ",");
+        final List<Integer> tempPaoIdList = new ArrayList<Integer>(paoIdList);
+        
+        int size = paoIdList.size();
+        int chunkSize = 1000;
+        for (int start = 0; start < size; start += chunkSize ) {
+            int nextToIndex = start + chunkSize;
+            int toIndex = (size < nextToIndex) ? size : nextToIndex;
+            List<Integer> subList = tempPaoIdList.subList(start, toIndex);
+            String sql = buildSqlForPaoIdList(subList);
+            queryList.add(sql);
         }
-        String endSql = sb.substring(0, sb.length() - 1);
-        endSql += ")";
-        queryList.add(endSql);
         
         for (final String sql : queryList) {
             this.jdbcOps.query(sql, new RowCallbackHandler() {
                 public void processRow(ResultSet rs) throws SQLException {
-                    LitePoint point = PointDaoImpl.createLitePoint(rs);
+                    LitePoint point = litePointRowMapper.mapRow(rs, rs.getRow());
                     Integer key = point.getPaobjectID();
                     List<LitePoint> pointList = map.get(key);
                     if (pointList == null) {
@@ -202,6 +199,15 @@ public final class PointDaoImpl implements PointDao {
         }
         
         return map;
+    }
+
+    private String buildSqlForPaoIdList(List<Integer> subList) {
+        final StringBuilder sb = new StringBuilder();
+        sb.append(litePointSql);
+        sb.append("WHERE PaObjectId IN (");
+        sb.append(SqlStatementBuilder.convertToSqlLikeList(subList));
+        sb.append(")");
+        return sb.toString();
     }
     
     /* (non-Javadoc)
