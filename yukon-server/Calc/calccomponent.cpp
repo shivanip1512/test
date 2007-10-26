@@ -969,9 +969,9 @@ double CtiCalcComponent::_doFunction( string &functionName, bool &validCalc )
 
                     double slope, intercept, xAtLimit, yNow;
 
-                    if(_calcpoint != NULL && _calcpoint->getUpdateType() == anyUpdate)
+                    if(componentPointPtr != NULL && _calcpoint != NULL && _calcpoint->getUpdateType() == anyUpdate)
                     {
-                        if( calcPointPtr->getPointTags() & TAG_POINT_DATA_TIMESTAMP_VALID || _ignoreTimeValidTag )
+                        if( componentPointPtr->getPointTags() & TAG_POINT_DATA_TIMESTAMP_VALID || _ignoreTimeValidTag )
                         {
                             calcPointPtr->addRegressionVal( pointTime, value );
                         }
@@ -1057,9 +1057,9 @@ double CtiCalcComponent::_doFunction( string &functionName, bool &validCalc )
 
                     double slope, intercept, xAtLimit, yNow;
 
-                    if(_calcpoint != NULL && _calcpoint->getUpdateType() == anyUpdate)
+                    if(componentPointPtr != NULL && _calcpoint != NULL && _calcpoint->getUpdateType() == anyUpdate)
                     {
-                        if( calcPointPtr->getPointTags() & TAG_POINT_DATA_TIMESTAMP_VALID || _ignoreTimeValidTag )
+                        if( componentPointPtr->getPointTags() & TAG_POINT_DATA_TIMESTAMP_VALID || _ignoreTimeValidTag )
                         {
                             calcPointPtr->addRegressionVal( pointTime, value );
                         }
