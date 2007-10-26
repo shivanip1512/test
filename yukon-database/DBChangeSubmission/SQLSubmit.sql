@@ -74,7 +74,13 @@ go
 alter table dynamicccsubstation alter column saenabledid not null;
 /* end YUK-4591 */
 
+
 /* start: YUK-4593 */
+/*3.5 and HEAD*/
 update YukonListEntry set EntryText = 'Customer Type' where EntryText = 'Consumption Type'
 /* end YUK-4593
+
+/*start: YUK-4597*/
 /*3.5 and HEAD*/
+update YukonListEntry set EntryText = 'Postal Code' where EntryText = 'Zip Code' and ListID = 1056
+/* end YUK-4597*/
