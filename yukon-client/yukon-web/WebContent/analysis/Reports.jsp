@@ -142,6 +142,30 @@ function enableDates(value)
 	document.getElementById("stopCal").disabled = !value;
 
 }
+
+function checkDates(){
+	var good = false;
+	var startDate = $F('startCal');
+	var stopDate = $F('stopCal');
+	var myregex = /\d{1,2}\/\d{1,2}\/\d{4}/g;
+	if(startDate.match(myregex) && stopDate.match(myregex)){
+		var p = startDate.split("/");
+		var t = stopDate.split("/");
+		var realStartDate = new Date(p[2], p[1], p[0]);
+		var realStopDate = new Date(t[2], t[1], t[0]);
+		if(realStartDate < realStopDate){
+			loadTarget(document.reportForm);
+		} else {
+			alert("The start date is later than the stop date.");
+			$('startCal').focus();
+			return false;
+		}
+	} else {
+		alert("One of the dates entered is not a valid date.");
+		$('startCal').focus();
+		return false;
+	}
+}
 </script>
 <%
 	java.text.SimpleDateFormat datePart = new java.text.SimpleDateFormat("MM/dd/yyyy");
@@ -157,7 +181,7 @@ function enableDates(value)
 	final ReportModelBase model = REPORT_BEAN.getModel();
 %>
 
-	  <form name="reportForm" method="post" action="<%=request.getContextPath()%>/servlet/ReportGenerator?" onSubmit="loadTarget(document.reportForm)">
+	  <form name="reportForm" method="post" action="<%=request.getContextPath()%>/servlet/ReportGenerator?" onSubmit="return checkDates()">
 	  <!-- THE EXTRA INPUT TYPES ARE MAKING THE DOWNLOAD DIALOG APPEAR TWO TIMES -->
 	  <input type="hidden" name="REDIRECT" value="<%= request.getRequestURI() %>">
 	  <input type="hidden" name="REFERRER" value="<%= request.getRequestURI() %>">
@@ -279,7 +303,7 @@ function enableDates(value)
   						<input type="radio" name="ext" value="csv">CSV
 					  </td>
 					  <td class="main">
-					    <input type="image" id="Generate" src="<%=request.getContextPath()%>/WebConfig/yukon/Buttons/GoButtonGray.gif" name="Generate" border="0" alt="Generate" align="middle" <%=(model == null ? "DISABLED style='cursor:default'":"")%> onclick='document.reportForm.ACTION.value="DownloadReport";return true;'>
+					    <input type="image" id="Generate" src="<%=request.getContextPath()%>/WebConfig/yukon/Buttons/GoButtonGray.gif" name="Generate" border="0" alt="Generate" align="middle" <%=(model == null ? "DISABLED style='cursor:default'":"")%> onclick='document.reportForm.ACTION.value="DownloadReport"; return true;'>
 					  </td>
 					</tr>
 				  </table>
