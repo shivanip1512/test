@@ -19,7 +19,10 @@ UserPicker.prototype = Object.extend(new ItemPicker(), {
 	//controllerInParameterLabel should match name of appropriate parameter request in xxPickerController java class
 	setUrlIntParameter: function(url) {
 		var controllerIntParameterLabel = 'currentUserId';
-		url += '&' + controllerIntParameterLabel + '=' + $(this.destItemIdFieldId).value;
+		if( lastItemId != -1 )
+			url += '&' + controllerIntParameterLabel + '=' + lastItemId;
+		else
+			url += '&' + controllerIntParameterLabel + '=' + $(this.destItemIdFieldId).value;
 		//could add more parameters here
 		return url;
 	},
@@ -36,25 +39,13 @@ UserPicker.prototype = Object.extend(new ItemPicker(), {
 	    url += '&start=' + start;
 	},
 	
-	//should involve the actions taken when the pickertype-specific item is selected
-	selectThisItem: function(hit) {
-	    $(this.destItemIdFieldId).value = hit.userId;
-	    
-	    $('itemPickerContainer').parentNode.removeChild($('itemPickerContainer'));
-	    for (i=0; i < this.extraInfo.length; i+=1) {
-	        info = this.extraInfo[i];
-	        $(info.fieldid).innerHTML = hit[info.property];
-	    }
-	    
-	    this.triggerEndAction(hit);
-	},
-	
 	//it should do what is necessary to select the specific current row and guide any pickertype-
 	//specific output to the results table generator.
 	renderHtmlResult: function(json) {
 	    var pickerThis = this;
 	    var createItemLink = function(hit) {
 	        return function() {
+	        	pickerThis.setDestItemIdFieldId( hit.userId );
 	            pickerThis.selectThisItem(hit);
 	        };
 	    };

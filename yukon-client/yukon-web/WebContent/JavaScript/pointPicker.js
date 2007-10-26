@@ -21,24 +21,15 @@ PointPicker.prototype = Object.extend(new ItemPicker(), {
 	//controllerInParameterLabel should match name of appropriate parameter request in xxPickerController java class
 	setUrlIntParameter: function(url) {
 		var controllerIntParameterLabel = 'currentPointId';
-		url += '&' + controllerIntParameterLabel + '=' + $(this.destItemIdFieldId).value;
+		var defaultSearchId = 'defaultSearchId';
+		if( lastItemId != -1 )
+			url += '&' + controllerIntParameterLabel + '=' + lastItemId;
+		else
+			url += '&' + controllerIntParameterLabel + '=' + $(this.destItemIdFieldId).value;
 		//could add more parameters here
 		return url;
 	},
 	
-	//should involve the actions taken when the pickertype-specific item is selected
-	selectThisItem: function(hit) {
-	    $(this.destItemIdFieldId).value = hit.pointId;
-	    
-	    $('itemPickerContainer').parentNode.removeChild($('itemPickerContainer'));
-	    for (i=0; i < this.extraInfo.length; i+=1) {
-	        info = this.extraInfo[i];
-	        $(info.fieldid).innerHTML = hit[info.property];
-	    }
-		    
-		this.triggerEndAction(hit);
-	
-	},
 	
    //over-ride onPickerShown to allow attachment of event handler
    onPickerShown: function(transport, json) {
@@ -54,6 +45,7 @@ PointPicker.prototype = Object.extend(new ItemPicker(), {
 	    var pickerThis = this;
 	    var createItemLink = function(hit) {
 	        return function() {
+	        	pickerThis.setDestItemIdFieldId( hit.pointId );
 	            pickerThis.selectThisItem(hit);
 	        };
 	    };
