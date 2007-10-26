@@ -781,7 +781,8 @@ public class InventoryBean {
                 boolean found = false;
                 for(int x = 0; x < oldFilters.size(); x++)
                 {
-                    if(specificFilterID.intValue() == Integer.parseInt(oldFilters.get(x).getFilterID()))
+                    if(filterType == new Integer(((FilterWrapper)oldFilters.get(x)).getFilterTypeID())
+                            && specificFilterID.intValue() == new Integer(((FilterWrapper)oldFilters.get(x)).getFilterID()).intValue())
                     {
                         found = true;
                     }    
