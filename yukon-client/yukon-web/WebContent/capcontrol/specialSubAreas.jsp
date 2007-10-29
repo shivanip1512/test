@@ -62,13 +62,13 @@ if (allowCtlVal!=null) {
 	
 		CBCSpecialArea area = areas.get(i);
 		List<SubStation> areaStations = filterCapControlCache.getSubstationsBySpecialArea(area.getPaoID());
-		CapBankDevice[] areaCapBanks = filterCapControlCache.getCapBanksBySpecialArea(area.getPaoID());
+		List<CapBankDevice> areaCapBanks = filterCapControlCache.getCapBanksBySpecialArea(area.getPaoID());
 	
 		//new additions for the available and closed vars
-		String varsAvailable = CBCUtils.format( CBCUtils.calcVarsAvailableForSubStations(areaStations) );
-		String varsDisabled =  CBCUtils.format (CBCUtils.calcVarsDisabledForSubStations(areaStations) );
-		String closedVars = CBCUtils.format( CBCUtils.calcClosedVARS(areaCapBanks) );
-		String trippedVars = CBCUtils.format( CBCUtils.calcTrippedVARS(areaCapBanks) );
+		String varsAvailable = CBCUtils.format( CBCUtils.calcVarsAvailableForSubStations(areaStations, user) );
+		String varsUnavailable =  CBCUtils.format (CBCUtils.calcVarsUnavailableForSubStations(areaStations, user) );
+		String closedVars = CBCUtils.format( CBCUtils.calcVarsClosedForCapBanks(areaCapBanks, user) );
+		String trippedVars = CBCUtils.format( CBCUtils.calcVarsTrippedForCapBanks(areaCapBanks, user) );
 		String currPF = CBCDisplay.getPowerFactorText(CBCUtils.calcAvgPF(areaStations), true);
 		String estPF = CBCDisplay.getPowerFactorText(CBCUtils.calcAvgEstPF(areaStations), true);
 		Boolean b = (Boolean)(filterCapControlCache.getAreaStateMap().get(area.getPaoName()));
@@ -109,7 +109,7 @@ if (allowCtlVal!=null) {
                 </td>
 				<td><%=areaStations.size()%> Substation(s)</td>
 				<td><%=varsAvailable%></td>
-				<td><%=varsDisabled%></td>
+				<td><%=varsUnavailable%></td>
 				<td><%=closedVars%></td>
 				<td><%=trippedVars%></td>
 				<td><%=currPF%> / <%=estPF%></td>

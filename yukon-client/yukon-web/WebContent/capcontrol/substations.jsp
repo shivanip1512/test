@@ -107,10 +107,10 @@ for( int i = 0; i < areaSubs.size(); i++ ) {
     css = ("tableCell".equals(css) ? "altTableCell" : "tableCell");
     SubStation substation = areaSubs.get(i);
     
-	String varsAvailable = CBCUtils.format( CBCUtils.calcVarsAvailable(substation));
-	String varsDisabled =  CBCUtils.format (CBCUtils.calcVarsDisabled(substation));
-	String closedVars = CBCUtils.format( CBCUtils.calcClosedVARS(filterCapControlCache.getCapBanksBySubStation(substation)));
-	String trippedVars = CBCUtils.format( CBCUtils.calcTrippedVARS(filterCapControlCache.getCapBanksBySubStation(substation)));
+	String varsAvailable = CBCUtils.format( CBCUtils.calcVarsAvailableForSubStation(substation, user) );
+	String varsDisabled =  CBCUtils.format (CBCUtils.calcVarsUnavailableForSubStation(substation, user));
+	String closedVars = CBCUtils.format( CBCUtils.calcVarsClosedForCapBanks(filterCapControlCache.getCapBanksBySubStation(substation), user));
+	String trippedVars = CBCUtils.format( CBCUtils.calcVarsTrippedForCapBanks(filterCapControlCache.getCapBanksBySubStation(substation), user));
 %>
 
 	        <tr class="<%=css%>">

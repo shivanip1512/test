@@ -20,4 +20,13 @@ public interface CapControlConst
    public final static int BANK_OPEN_PENDING = 6;
    public final static int BANK_CLOSE_PENDING = 7;
    
+   public final static String STRING_BANK_OPEN = "Open";
+   public final static String STRING_BANK_CLOSE = "Close";
+   public final static String STRING_BANK_OPEN_QUESTIONABLE = "OpenQuestionable";
+   public final static String STRING_BANK_CLOSEQUESTIONABLE = "CloseQuestionable";
+   public final static String STRING_BANK_OPEN_FAIL = "OpenFail";
+   public final static String STRING_BANK_CLOSE_FAIL = "CloseFail";
+   public final static String STRING_BANK_OPEN_PENDING = "OpenPending";
+   public final static String STRING_BANK_CLOSE_PENDING = "ClosePending";
+   
 }

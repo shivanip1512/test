@@ -33,5 +33,9 @@ public interface CBCSettingsRole
 	public static final int CBC_DATABASE_EDIT = CapControlRoleDefs.CBC_PROPERTYID_BASE - 10;
     public static final int SHOW_FLIP_COMMAND = ApplicationRoleDefs.CBC_PROPERTYID_BASE - 11;
     public static final int SHOW_CB_ADDINFO = ApplicationRoleDefs.CBC_PROPERTYID_BASE - 12;
-
+    public static final int AVAILABLE_DEFINITION = ApplicationRoleDefs.CBC_PROPERTYID_BASE - 13;
+    public static final int UNAVAILABLE_DEFINITION = ApplicationRoleDefs.CBC_PROPERTYID_BASE - 14;
+    public static final int TRIPPED_DEFINITION = ApplicationRoleDefs.CBC_PROPERTYID_BASE - 15;
+    public static final int CLOSED_DEFINITION = ApplicationRoleDefs.CBC_PROPERTYID_BASE - 16;
+    
 }

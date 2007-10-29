@@ -17,7 +17,7 @@ import com.cannontech.yukon.cbc.SubStation;
 
 public interface CapControlCache {
 
-    public CapBankDevice[] getCapBanksBySpecialArea(Integer areaID);
+    public List<CapBankDevice> getCapBanksBySpecialArea(Integer areaID);
     
     public List<SubStation> getSubstationsBySpecialArea(Integer areaId);
     
@@ -118,7 +118,7 @@ public interface CapControlCache {
 	 * @return CapBankDevice[]
 	 * @param subBusID long
 	 */
-	public abstract CapBankDevice[] getCapBanksBySub(Integer subBusID);
+	public abstract List<CapBankDevice> getCapBanksBySubBus(Integer subBusID);
     
     /**
      * @return List<CapBankDevice>
@@ -142,7 +142,7 @@ public interface CapControlCache {
 	 * Returns all CapBanks for a given Area
 	 * 
 	 */
-	public abstract CapBankDevice[] getCapBanksByArea(Integer areaID);
+	public abstract List<CapBankDevice> getCapBanksByArea(Integer areaID);
 
 	/**
 	 * Returns all Feeders for a given Area

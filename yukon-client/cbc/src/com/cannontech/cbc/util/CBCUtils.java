@@ -3,11 +3,10 @@ package com.cannontech.cbc.util;
 import java.sql.ResultSet;
 import java.sql.SQLException;
 import java.text.NumberFormat;
+import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.Comparator;
-import java.util.Iterator;
 import java.util.List;
-import java.util.Vector;
 
 import org.springframework.dao.IncorrectResultSizeDataAccessException;
 import org.springframework.jdbc.core.JdbcOperations;
@@ -15,6 +14,7 @@ import org.springframework.jdbc.core.RowMapper;
 
 import com.cannontech.cbc.cache.CapControlCache;
 import com.cannontech.clientutils.CTILogger;
+import com.cannontech.core.dao.AuthDao;
 import com.cannontech.core.dao.DaoFactory;
 import com.cannontech.core.dao.NotFoundException;
 import com.cannontech.database.JdbcTemplateHelper;
@@ -52,6 +52,7 @@ public final class CBCUtils {
     // responsible for how to render data for CBC displays
     public static final CBCDisplay CBC_DISPLAY = new CBCDisplay();
     public static CapControlCache ccCache = YukonSpringHook.getBean("cbcCache", CapControlCache.class);
+    public static AuthDao authDao = DaoFactory.getAuthDao();
 
     public static final Comparator<CBCArea> CBC_AREA_COMPARATOR = new Comparator<CBCArea>() {
         public int compare(CBCArea o1, CBCArea o2) {
@@ -130,74 +131,38 @@ public final class CBCUtils {
      * Calculates the summation of VARS for an array of CapBankDevices that are
      * in a open state.
      */
-    public static final int calcTrippedVARS(CapBankDevice[] capBanks) {
-        int retVal = 0;
-        if (capBanks == null)
-            return retVal;
-
-        for (int i = 0; i < capBanks.length; i++) {
-            CapBankDevice capBank = capBanks[i];
-            if (CapBankDevice.isInAnyOpenState(capBank))
-                retVal += capBanks[i].getBankSize().intValue();
+    public static final int calcVarsTrippedForCapBanks(List<CapBankDevice> capBanks, LiteYukonUser user) {
+        int returnVal = 0;
+        if (capBanks == null) {
+            return returnVal;
         }
-
-        return retVal;
-    }
-    
-    /**
-     * Calculates the summation of VARS for an array of CapBankDevices that are
-     * in a open state.
-     */
-    public static final int calcTrippedVARS(List<CapBankDevice> capBanks) {
-        int retVal = 0;
-        if (capBanks == null)
-            return retVal;
-
-        for (int i = 0; i < capBanks.size(); i++) {
-            CapBankDevice capBank = capBanks.get(i);
-            if (CapBankDevice.isInAnyOpenState(capBank))
-                retVal += capBanks.get(i).getBankSize().intValue();
+        List<Integer> trippedStates = getTrippedStatesList(user); 
+        for (CapBankDevice capBank : capBanks) {
+            if(trippedStates.contains(capBank.getControlStatus())){
+                returnVal += capBank.getBankSize();
+            }
         }
-
-        return retVal;
-    }
-
-    /**
-     * Calculates the summation of VARS for an array of CapBankDevices that are
-     * in a closed state.
-     */
-    public static final int calcClosedVARS(CapBankDevice[] capBanks) {
-        int retVal = 0;
-        if (capBanks == null)
-            return retVal;
-
-        for (int i = 0; i < capBanks.length; i++) {
-            CapBankDevice capBank = capBanks[i];
-            if (CapBankDevice.isInAnyCloseState(capBank))
-                retVal += capBanks[i].getBankSize().intValue();
-        }
-
-        return retVal;
+        return returnVal;
     }
     
     /**
      * Calculates the summation of VARS for an array of CapBankDevices that are
      * in a closed state.
      */
-    public static final int calcClosedVARS(List<CapBankDevice> capBanks) {
-        int retVal = 0;
-        if (capBanks == null)
-            return retVal;
-
-        for (int i = 0; i < capBanks.size(); i++) {
-            CapBankDevice capBank = capBanks.get(i);
-            if (CapBankDevice.isInAnyCloseState(capBank))
-                retVal += capBanks.get(i).getBankSize().intValue();
+    public static final int calcVarsClosedForCapBanks(List<CapBankDevice> capBanks, LiteYukonUser user) {
+        int returnVal = 0;
+        if (capBanks == null) {
+            return returnVal;
         }
-
-        return retVal;
+        List<Integer> closedStates = getClosedStatesList(user); 
+        for (CapBankDevice capBank : capBanks) {
+            if(closedStates.contains(capBank.getControlStatus())){
+                returnVal += capBank.getBankSize();
+            }
+        }
+        return returnVal;
     }
-
+    
     /**
      * Calculates the average PowerFactor for an array of SubBuses that have
      * valid PowerFactor values.
@@ -406,10 +371,7 @@ public final class CBCUtils {
     }
 
     public static boolean isCBAdditionalInfoAllowed(LiteYukonUser user) {
-        boolean showCapBankAddInfo = Boolean.valueOf(DaoFactory.getAuthDao()
-                                                               .getRolePropertyValue(user,
-                                                                                     CBCSettingsRole.SHOW_CB_ADDINFO))
-                                            .booleanValue();
+        boolean showCapBankAddInfo = Boolean.valueOf(authDao.getRolePropertyValue(user, CBCSettingsRole.SHOW_CB_ADDINFO)).booleanValue();
         return showCapBankAddInfo;
     }
 
@@ -419,8 +381,169 @@ public final class CBCUtils {
      * @param sub
      * @return
      */
-    public static double calcVarsAvailable(SubBus sub) {
-        return (calcTotalSwitchedVars (sub) - calcVarsDisabled (sub));
+    public static double calcVarsAvailableForSubBus(SubBus subBus, LiteYukonUser user) {
+        double returnVal = 0.0;
+        List<Feeder> feeders = new ArrayList<Feeder>(subBus.getCcFeeders());
+        for (Feeder feeder : feeders) {
+            returnVal += calcVarsAvailableForFeeder(feeder, user);
+        }
+        return returnVal;
+    }
+    
+    public static double calcVarsAvailableForFeeder(Feeder feeder, LiteYukonUser user) {
+        double returnVal = 0.0;
+        List<CapBankDevice> capBanks = new ArrayList<CapBankDevice>(feeder.getCcCapBanks());
+        List<Integer> availableStates = getAvailableStatesList(user); 
+        for (CapBankDevice capBank : capBanks) {
+            if(availableStates.contains(capBank.getControlStatus())){
+                returnVal += capBank.getBankSize();
+            }
+        }
+        return returnVal;
+    }
+    
+    public static double calcVarsUnavailableForFeeder(Feeder feeder, LiteYukonUser user) {
+        double returnVal = 0.0;
+        List<CapBankDevice> capBanks = new ArrayList<CapBankDevice>(feeder.getCcCapBanks());
+        List<Integer> unavailableStates = getUnavailableStatesList(user); 
+        for (CapBankDevice capBank : capBanks) {
+            if(unavailableStates.contains(capBank.getControlStatus())){
+                returnVal += capBank.getBankSize();
+            }
+        }
+        return returnVal;
+    }
+    
+    // must be a better way to do this
+    public static List<Integer> getAvailableStatesList(LiteYukonUser user){
+        ArrayList<Integer> availableStates = new ArrayList<Integer>();
+        String availableStatesString = authDao.getRolePropertyValue(user, CBCSettingsRole.AVAILABLE_DEFINITION);
+        String[] array = availableStatesString.split(",");
+        List<String> list = Arrays.asList(array);
+        if(list.contains(CapControlConst.STRING_BANK_CLOSE)) {
+            availableStates.add(CapControlConst.BANK_CLOSE);
+        }
+        if(list.contains(CapControlConst.STRING_BANK_CLOSE_FAIL)) {
+            availableStates.add(CapControlConst.BANK_CLOSE_FAIL);
+        }
+        if(list.contains(CapControlConst.STRING_BANK_CLOSE_PENDING)) {
+            availableStates.add(CapControlConst.BANK_CLOSE_PENDING);
+        }
+        if(list.contains(CapControlConst.STRING_BANK_CLOSEQUESTIONABLE)) {
+            availableStates.add(CapControlConst.BANK_CLOSE_QUESTIONABLE);
+        }
+        if(list.contains(CapControlConst.STRING_BANK_OPEN)) {
+            availableStates.add(CapControlConst.BANK_OPEN);
+        }
+        if(list.contains(CapControlConst.STRING_BANK_OPEN_FAIL)) {
+            availableStates.add(CapControlConst.BANK_OPEN_FAIL);
+        }
+        if(list.contains(CapControlConst.STRING_BANK_OPEN_PENDING)) {
+            availableStates.add(CapControlConst.BANK_OPEN_PENDING);
+        }
+        if(list.contains(CapControlConst.STRING_BANK_OPEN_QUESTIONABLE)) {
+            availableStates.add(CapControlConst.BANK_OPEN_QUESTIONABLE);
+        }
+        return availableStates;
+    }
+    
+//  must be a better way to do this
+    public static List<Integer> getUnavailableStatesList(LiteYukonUser user){
+        ArrayList<Integer> unavailableStates = new ArrayList<Integer>();
+        String unavailableStatesString = authDao.getRolePropertyValue(user, CBCSettingsRole.UNAVAILABLE_DEFINITION);
+        String[] array = unavailableStatesString.split(",");
+        List<String> list = Arrays.asList(array);
+        if(list.contains(CapControlConst.STRING_BANK_CLOSE)) {
+            unavailableStates.add(CapControlConst.BANK_CLOSE);
+        }
+        if(list.contains(CapControlConst.STRING_BANK_CLOSE_FAIL)) {
+            unavailableStates.add(CapControlConst.BANK_CLOSE_FAIL);
+        }
+        if(list.contains(CapControlConst.STRING_BANK_CLOSE_PENDING)) {
+            unavailableStates.add(CapControlConst.BANK_CLOSE_PENDING);
+        }
+        if(list.contains(CapControlConst.STRING_BANK_CLOSEQUESTIONABLE)) {
+            unavailableStates.add(CapControlConst.BANK_CLOSE_QUESTIONABLE);
+        }
+        if(list.contains(CapControlConst.STRING_BANK_OPEN)) {
+            unavailableStates.add(CapControlConst.BANK_OPEN);
+        }
+        if(list.contains(CapControlConst.STRING_BANK_OPEN_FAIL)) {
+            unavailableStates.add(CapControlConst.BANK_OPEN_FAIL);
+        }
+        if(list.contains(CapControlConst.STRING_BANK_OPEN_PENDING)) {
+            unavailableStates.add(CapControlConst.BANK_OPEN_PENDING);
+        }
+        if(list.contains(CapControlConst.STRING_BANK_OPEN_QUESTIONABLE)) {
+            unavailableStates.add(CapControlConst.BANK_OPEN_QUESTIONABLE);
+        }
+        return unavailableStates;
+    }
+    
+//  must be a better way to do this
+    public static List<Integer> getClosedStatesList(LiteYukonUser user){
+        ArrayList<Integer> closedStates = new ArrayList<Integer>();
+        String closedStatesString = authDao.getRolePropertyValue(user, CBCSettingsRole.CLOSED_DEFINITION);
+        String[] array = closedStatesString.split(",");
+        List<String> list = Arrays.asList(array);
+        if(list.contains(CapControlConst.STRING_BANK_CLOSE)) {
+            closedStates.add(CapControlConst.BANK_CLOSE);
+        }
+        if(list.contains(CapControlConst.STRING_BANK_CLOSE_FAIL)) {
+            closedStates.add(CapControlConst.BANK_CLOSE_FAIL);
+        }
+        if(list.contains(CapControlConst.STRING_BANK_CLOSE_PENDING)) {
+            closedStates.add(CapControlConst.BANK_CLOSE_PENDING);
+        }
+        if(list.contains(CapControlConst.STRING_BANK_CLOSEQUESTIONABLE)) {
+            closedStates.add(CapControlConst.BANK_CLOSE_QUESTIONABLE);
+        }
+        if(list.contains(CapControlConst.STRING_BANK_OPEN)) {
+            closedStates.add(CapControlConst.BANK_OPEN);
+        }
+        if(list.contains(CapControlConst.STRING_BANK_OPEN_FAIL)) {
+            closedStates.add(CapControlConst.BANK_OPEN_FAIL);
+        }
+        if(list.contains(CapControlConst.STRING_BANK_OPEN_PENDING)) {
+            closedStates.add(CapControlConst.BANK_OPEN_PENDING);
+        }
+        if(list.contains(CapControlConst.STRING_BANK_OPEN_QUESTIONABLE)) {
+            closedStates.add(CapControlConst.BANK_OPEN_QUESTIONABLE);
+        }
+        return closedStates;
+    }
+    
+//  must be a better way to do this
+    public static List<Integer> getTrippedStatesList(LiteYukonUser user){
+        ArrayList<Integer> trippedStates = new ArrayList<Integer>();
+        String trippedStatesString = authDao.getRolePropertyValue(user, CBCSettingsRole.CLOSED_DEFINITION);
+        String[] array = trippedStatesString.split(",");
+        List<String> list = Arrays.asList(array);
+        if(list.contains(CapControlConst.STRING_BANK_CLOSE)) {
+            trippedStates.add(CapControlConst.BANK_CLOSE);
+        }
+        if(list.contains(CapControlConst.STRING_BANK_CLOSE_FAIL)) {
+            trippedStates.add(CapControlConst.BANK_CLOSE_FAIL);
+        }
+        if(list.contains(CapControlConst.STRING_BANK_CLOSE_PENDING)) {
+            trippedStates.add(CapControlConst.BANK_CLOSE_PENDING);
+        }
+        if(list.contains(CapControlConst.STRING_BANK_CLOSEQUESTIONABLE)) {
+            trippedStates.add(CapControlConst.BANK_CLOSE_QUESTIONABLE);
+        }
+        if(list.contains(CapControlConst.STRING_BANK_OPEN)) {
+            trippedStates.add(CapControlConst.BANK_OPEN);
+        }
+        if(list.contains(CapControlConst.STRING_BANK_OPEN_FAIL)) {
+            trippedStates.add(CapControlConst.BANK_OPEN_FAIL);
+        }
+        if(list.contains(CapControlConst.STRING_BANK_OPEN_PENDING)) {
+            trippedStates.add(CapControlConst.BANK_OPEN_PENDING);
+        }
+        if(list.contains(CapControlConst.STRING_BANK_OPEN_QUESTIONABLE)) {
+            trippedStates.add(CapControlConst.BANK_OPEN_QUESTIONABLE);
+        }
+        return trippedStates;
     }
     
     /**
@@ -429,8 +552,15 @@ public final class CBCUtils {
      * @param sub
      * @return
      */
-    public static double calcVarsAvailable(SubStation sub) {
-        return (calcTotalSwitchedVars (sub) - calcVarsDisabled(sub));
+    public static double calcVarsAvailableForSubStation(SubStation substation, LiteYukonUser user) {
+        double returnVal = 0.0;
+        List<SubBus> subBuses = ccCache.getSubBusesBySubStation(substation);
+        if( subBuses != null ) {
+            for (SubBus subBus : subBuses) {
+                returnVal += calcVarsAvailableForSubBus(subBus, user);
+            }
+        }
+        return returnVal;
     }
     
     /**
@@ -439,10 +569,10 @@ public final class CBCUtils {
      * @param subs
      * @return
      */
-    public static double calcVarsAvailableForSubBuses(List<SubBus> subs){
+    public static double calcVarsAvailableForSubBuses(List<SubBus> subs, LiteYukonUser user){
         double returnVal = 0.0;
         for (SubBus bus : subs) {
-            returnVal += calcVarsAvailable(bus);
+            returnVal += calcVarsAvailableForSubBus(bus, user);
         }
         return returnVal;
     }
@@ -453,40 +583,28 @@ public final class CBCUtils {
      * @param subs
      * @return
      */
-    public static double calcVarsAvailableForSubStations(List<SubStation> subs) {
+    public static double calcVarsAvailableForSubStations(List<SubStation> subs, LiteYukonUser user) {
         double returnVal = 0.0;
         if( subs != null )
             for (SubStation sub : subs) {
-                returnVal += calcVarsAvailable(sub);
+                returnVal += calcVarsAvailableForSubStation(sub, user);
             }
         return returnVal;
     }
     
-    private static double calcTotalSwitchedVars(SubStation sub) {
-        double retVal = addAllSwitchedCapsSubstation(sub, true);
-        retVal += addAllSwitchedCapsSubstation(sub, false);
-        return retVal;
-    }
-
-    private static double calcTotalSwitchedVars(SubBus sub) {
-        double retVal = addAllSwitchedCapsSub(sub, true);
-        retVal += addAllSwitchedCapsSub(sub, false);
-        return retVal;
-    }
-    
-    public static double calcVarsDisabledForSubBuses(List<SubBus> subs) {
+    public static double calcVarsUnavailableForSubBuses(List<SubBus> subs, LiteYukonUser user) {
         double returnVal = 0.0;
         for (SubBus bus : subs) {
-            returnVal+= calcVarsDisabled(bus);
+            returnVal+= calcVarsUnavailableForSubBus(bus, user);
         }
         return returnVal;
     }
     
-    public static double calcVarsDisabledForSubStations(List<SubStation> subs) {
+    public static double calcVarsUnavailableForSubStations(List<SubStation> subs, LiteYukonUser user) {
         double returnVal = 0.0;
         if( subs != null)
             for (SubStation bus : subs) {
-                returnVal+= calcVarsDisabled(bus);
+                returnVal+= calcVarsUnavailableForSubStation(bus, user);
             }
         return returnVal;
     }
@@ -497,13 +615,11 @@ public final class CBCUtils {
      * @param object
      * @return
      */
-    public static double calcVarsDisabled(SubBus sub) {
+    public static double calcVarsUnavailableForSubBus(SubBus subBus, LiteYukonUser user) {
         double returnVal = 0.0;
-        if (isDisabled(sub)) {
-            returnVal = addAllSwitchedCapsSub(sub, true);
-            returnVal += addAllSwitchedCapsSub(sub, false);
-        } else {
-            return addAllSwitchedCapsSub(sub, true);                
+        List<Feeder> feeders = new ArrayList<Feeder>(subBus.getCcFeeders());
+        for (Feeder feeder : feeders) {
+            returnVal += calcVarsUnavailableForFeeder(feeder, user);
         }
         return returnVal;
     }
@@ -514,48 +630,12 @@ public final class CBCUtils {
    * @param object
    * @return
    */
-    public static double calcVarsDisabled(SubStation sub) {
+    public static double calcVarsUnavailableForSubStation(SubStation substation, LiteYukonUser user) {
         double returnVal = 0.0;
-        if (isDisabled(sub)) {
-            returnVal = addAllSwitchedCapsSubstation(sub, true);
-            returnVal += addAllSwitchedCapsSubstation(sub, false);
-        } else {
-            return addAllSwitchedCapsSubstation(sub, true);                
-        }
-        return returnVal;
-    }
-
-    private static double addAllSwitchedCapsSub(SubBus sub, boolean disFlagAssert) {
-        Vector ccFeeders = sub.getCcFeeders();
-        double returnVal = 0.0;
-        for (Iterator iter = ccFeeders.iterator(); iter.hasNext();) {
-            Feeder feeder = (Feeder) iter.next();
-            if (feeder.getCcDisableFlag().booleanValue() == disFlagAssert) {
-                returnVal  += addAllSwitchedBankSizes(feeder);
-            }
-        }
-        return returnVal;
-    }
-
-    private static double addAllSwitchedCapsSubstation(SubStation sub, boolean disFlagAssert) {
-        List<Feeder> ccFeeders = ccCache.getFeedersBySubStation(sub);
-        double returnVal = 0.0;
-        for (Iterator<Feeder> iter = ccFeeders.iterator(); iter.hasNext();) {
-            Feeder feeder = iter.next();
-            if (feeder.getCcDisableFlag().booleanValue() == disFlagAssert) {
-                returnVal  += addAllSwitchedBankSizes(feeder);
-            }
-        }
-        return returnVal;
-    }
-
-    private static double addAllSwitchedBankSizes(Feeder feeder) {
-        double returnVal = 0.0;
-        Vector ccCapBanks = feeder.getCcCapBanks();
-        for (Iterator iterator = ccCapBanks.iterator(); iterator.hasNext();) {
-            CapBankDevice capBank = (CapBankDevice) iterator.next();
-            if (isSwitched(capBank)) {
-                returnVal += capBank.getBankSize();
+        List<SubBus> subBuses = ccCache.getSubBusesBySubStation(substation);
+        if( subBuses != null ) {
+            for (SubBus subBus : subBuses) {
+                returnVal += calcVarsUnavailableForSubBus(subBus, user);
             }
         }
         return returnVal;
@@ -570,8 +650,7 @@ public final class CBCUtils {
     }
 
     public static boolean isSwitched(CapBankDevice capBank) {
-        return capBank.getOperationalState()
-                      .equalsIgnoreCase(CapBank.SWITCHED_OPSTATE);
+        return capBank.getOperationalState().equalsIgnoreCase(CapBank.SWITCHED_OPSTATE);
     }
 
     public static String getAreaName(Integer subID) {

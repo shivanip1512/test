@@ -101,7 +101,7 @@ public class CBCInventoryModel extends BareReportModelBase<CBCInventoryModel.Mod
         sql.append("left outer join (select * from dynamicpaoinfo where infokey like '%udp ip%') as p on p.paobjectid = yp.paobjectid ");
         sql.append("left outer join ccsubstationsubbuslist ssb on ssb.substationbusid = sf.substationbusid ");
  	 	sql.append("left outer join ccsubareaassignment saa on saa.substationbusid = ssb.substationid ");
- 	 	sql.append("join (select paobjectid, paoname from yukonpaobject where type ='ccarea' ) as ca on ca.paobjectid = saa.areaid ");
+ 	 	sql.append("left outer join (select paobjectid, paoname from yukonpaobject where type ='ccarea' ) as ca on ca.paobjectid = saa.areaid ");
         
         String result = null;
         

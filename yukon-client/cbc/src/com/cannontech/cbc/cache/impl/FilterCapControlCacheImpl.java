@@ -93,7 +93,7 @@ public class FilterCapControlCacheImpl implements CapControlCache {
 		return cache.getCapBankState(rawState);
 	}
 
-	public CapBankDevice[] getCapBanksByArea(Integer areaID) {
+	public List<CapBankDevice> getCapBanksByArea(Integer areaID) {
 		CBCArea area = cache.getCBCArea(areaID);
 		if ( filter.valid(area) )
 			return cache.getCapBanksByArea(areaID);
@@ -119,11 +119,11 @@ public class FilterCapControlCacheImpl implements CapControlCache {
             return "";
 
     }
-	public CapBankDevice[] getCapBanksBySub(Integer subBusID) {
+	public List<CapBankDevice> getCapBanksBySubBus(Integer subBusID) {
 		int id = cache.getParentAreaID(subBusID);
 		CBCArea area = cache.getCBCArea(id);
 		if ( filter.valid(area) )
-			return cache.getCapBanksBySub(subBusID);
+			return cache.getCapBanksBySubBus(subBusID);
 		else
 			return null;
 	}
@@ -320,7 +320,7 @@ public class FilterCapControlCacheImpl implements CapControlCache {
         return cache.getSpecialArea(areaId);
     }
     
-    public CapBankDevice[] getCapBanksBySpecialArea(Integer areaID) {
+    public List<CapBankDevice> getCapBanksBySpecialArea(Integer areaID) {
         CBCSpecialArea area = cache.getCBCSpecialArea(areaID);
         if ( filter.valid(area) )
             return cache.getCapBanksByArea(areaID);

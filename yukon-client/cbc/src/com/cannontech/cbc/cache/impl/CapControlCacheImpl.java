@@ -268,16 +268,15 @@ public class CapControlCacheImpl implements MessageListener, CapControlCache {
      * @return CapBankDevice[]
      * @param subBusID long
      */
-    public synchronized CapBankDevice[] getCapBanksBySub(Integer subBusID)
-    {
-        int[] bankIDs = subToBankMap.get( subBusID );
-        if( bankIDs == null ) {
-            bankIDs = new int[0];
+    public synchronized List<CapBankDevice> getCapBanksBySubBus(Integer subBusId) {
+        int[] bankIds = subToBankMap.get( subBusId );
+        if( bankIds == null ) {
+            bankIds = new int[0];
         }
-        CapBankDevice[] retVal = new CapBankDevice[ bankIDs.length ];
+        List<CapBankDevice> retVal = new ArrayList<CapBankDevice>();
         
-        for( int i = 0; i < bankIDs.length; i++ ) {
-            retVal[i] = getCapBankDevice( new Integer(bankIDs[i]) );
+        for( int bankId : bankIds) {
+            retVal.add(getCapBankDevice(bankId));
         }
         return retVal;
     }
@@ -330,22 +329,22 @@ public class CapControlCacheImpl implements MessageListener, CapControlCache {
     /**
      * Returns all CapBanks for a given Area
      */
-    public synchronized CapBankDevice[] getCapBanksByArea(Integer areaID) {
+    public synchronized List<CapBankDevice> getCapBanksByArea(Integer areaID) {
         List<SubBus> subs = getSubBusesByArea( areaID );
         if( subs == null ) {
             subs = new ArrayList<SubBus>();
         }
-        Vector<CapBankDevice> allBanks = new Vector<CapBankDevice>(64);
+        List<CapBankDevice> allBanks = new ArrayList<CapBankDevice>(64);
         for( int i = 0; i < subs.size(); i++ ) {
             SubBus subBus = subs.get(i);
             if (subBus != null) {
-                CapBankDevice[] capBanks = getCapBanksBySub( subBus.getCcId() );        
-                allBanks.addAll( Arrays.asList(capBanks) );
+                List<CapBankDevice> capBanks = getCapBanksBySubBus( subBus.getCcId() );        
+                allBanks.addAll( capBanks );
             }
         }
     
         Collections.sort( allBanks, CBCUtils.CCNAME_COMPARATOR );
-        return allBanks.toArray( new CapBankDevice[allBanks.size()]);
+        return allBanks;
     }
     
     /**
@@ -991,7 +990,7 @@ public class CapControlCacheImpl implements MessageListener, CapControlCache {
         }
     }
     
-    public CapBankDevice[] getCapBanksBySpecialArea(Integer areaID) {
+    public List<CapBankDevice> getCapBanksBySpecialArea(Integer areaID) {
         return getCapBanksByArea(areaID);
     }
     
@@ -1006,4 +1005,5 @@ public class CapControlCacheImpl implements MessageListener, CapControlCache {
     public void setStateDao(StateDao stateDao) {
         this.stateDao = stateDao;
     }
+
 }
