@@ -435,6 +435,9 @@ update capcontrolstrategy set offpklead = -offpklead where offpklead > 0 and  co
 UPDATE Command SET Label = 'Turn Off Test Light' WHERE commandid = -65;
 UPDATE Command SET Label = 'Clear Comm Loss Counter' WHERE commandid = -67;
 
+delete from YukonRoleProperty where RolePropertyId = -1113;
+insert into YukonRoleProperty values(-10816, -108,'Standard Page Style Sheet',' ','A comma separated list of URLs for CSS files that will be included on every Standard Page');
+
 /******************************************************************************/
 /* Run the Stars Update if needed here */
 /* Note: DBUpdate application will ignore this if STARS is not present */
