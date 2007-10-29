@@ -28,7 +28,7 @@
 
 
 // ---- script function prototypes -----
-
+prototype Shell32.SHChangeNotify(LONG, LONG, POINTER, POINTER);
 
     // your script function prototypes
     // your global variables
@@ -395,6 +395,52 @@ begin
 		endwhile;
 
 	endif;
+
+end;
+//---------------------------------------------------------------------------
+// OnUpdateUIAfter
+//
+// Update Mode UI Sequence - After Move Data
+//
+// The OnUpdateUIAfter event called by OnShowUI after the file transfer
+// of the setup when the setup is running in update mode. By default
+// this event displays UI that informs the end user that the maintenance setup
+// has been completed successfully.
+//
+// Note: This event will not be called automatically in a
+// program...endprogram style setup.
+//---------------------------------------------------------------------------
+function OnUpdateUIAfter()
+    string	szTitle, szMsg1, szMsg2, szOpt1, szOpt2;
+    BOOL	bOpt1, bOpt2;
+begin
+
+    ShowObjWizardPages(NEXT);
+    
+	szTitle = SdLoadString(IDS_IFX_SDFINISH_UPDATE_TITLE);    
+    szMsg1  = SdLoadString(IDS_IFX_SDFINISH_UPDATE_MSG1);
+	szMsg2 = "";    
+    szOpt1 = "";
+    szOpt2 = "";
+	bOpt1   = FALSE;
+    bOpt2   = FALSE;    
+    
+    if ( BATCH_INSTALL ) then
+    	SdFinishReboot ( szTitle , szMsg1 , SYS_BOOTMACHINE , szMsg2 , 0 );
+    else    
+       	SdFinish ( szTitle , szMsg1 , szMsg2 , szOpt1 , szOpt2 , bOpt1 , bOpt2 );
+    endif;
+end;
+//---------------------------------------------------------------------------
+// OnEnd
+//
+// The OnEnd event is called at the end of the setup. This event is not
+// called if the setup is aborted.
+//---------------------------------------------------------------------------
+function OnEnd()
+begin
+
+SHChangeNotify(134217728, 0, NULL, NULL);
 
 end;
  
