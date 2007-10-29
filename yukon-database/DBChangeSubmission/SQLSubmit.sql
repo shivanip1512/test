@@ -74,11 +74,19 @@ go
 alter table dynamicccsubstation alter column saenabledid not null;
 /* end YUK-4591 */
 
-
 /* start: YUK-4593 */
-/*3.5 and HEAD*/
 update YukonListEntry set EntryText = 'Customer Type' where EntryText = 'Consumption Type'
-/* end YUK-4593
+/* end YUK-4593 */
+
+
+/* Role Prop changes for HEAD -- asolberg -- YUK-4312 */
+insert into YukonRoleProperty values(-70013,-700,'Definition Available','Open,OpenQuestionable,OpenPending','Capbank sized in these states will be added to the available sum.');
+insert into YukonRoleProperty values(-70014,-700,'Definition Unavailable','Close,CloseQuestionable,CloseFail,ClosePending,OpenFail','Capbank sized in these states will be added to the unavailable sum.');
+insert into YukonRoleProperty values(-70015,-700,'Definition Tripped','Open,OpenFail,OpenPending,OpenQuestionable','Capbank sized in these states will be added to the tripped sum.');
+insert into YukonRoleProperty values(-70016,-700,'Definition Closed','Close,CloseFail,CloseQuestionable,ClosePending','Capbank sized in these states will be added to the closed sum.');
+/* end */
+
+/*3.5 and HEAD */
 
 /*start: YUK-4597*/
 /*3.5 and HEAD*/
