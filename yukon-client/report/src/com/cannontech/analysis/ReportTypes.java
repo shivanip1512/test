@@ -70,6 +70,8 @@ public enum ReportTypes {
     		"Detailed report showing all capcontrol schedules and thier specifics."),
     CAP_CONTROL_DISABLED_DEVICES("Cap Control Disabled Devices", CapControlDisabledDevicesController.class, ReportGroup.CAP_CONTROL,
             "Report showing disabled capcontrol devices."),
+    CAP_CONTROL_MAINTENANCE_PENDING("Maintenance Pending", CapControlMaintenancePendingController.class, ReportGroup.CAP_CONTROL,
+            "Report showing sites pending maintenance."),
     
     COMM_STATISTICS("Communication Statistics", StatisticModel.class, ReportGroup.STATISTICAL),
 	//STATISTIC_HISTORY_PORT_DATA("Historical Daily Port Statistics", StatisticHistoryPortModel.class, ReportGroup.STATISTICAL),
