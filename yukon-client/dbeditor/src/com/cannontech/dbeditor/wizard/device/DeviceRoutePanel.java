@@ -16,6 +16,7 @@ import com.cannontech.database.TransactionException;
 import com.cannontech.database.cache.DefaultDatabaseCache;
 import com.cannontech.database.data.device.CarrierBase;
 import com.cannontech.database.data.device.DeviceBase;
+import com.cannontech.database.data.device.MCT400SeriesBase;
 import com.cannontech.database.data.device.RepeaterBase;
 import com.cannontech.database.data.lite.LiteBase;
 import com.cannontech.database.data.lite.LiteFactory;
@@ -162,6 +163,13 @@ public class DeviceRoutePanel
             
         } else {
             value = val;
+        }
+        
+        if (value instanceof MCT400SeriesBase) {
+            // sloppy way of setting a 400 series load profile default...
+            // improve this later
+            ((MCT400SeriesBase) value).getDeviceLoadProfile()
+                                      .setLoadProfileDemandRate(new Integer(3600));
         }
 
         ((CarrierBase) value).getDeviceRoutes().setRouteID(new Integer(((LiteYukonPAObject) getRouteComboBox().getSelectedItem()).getYukonID()));
