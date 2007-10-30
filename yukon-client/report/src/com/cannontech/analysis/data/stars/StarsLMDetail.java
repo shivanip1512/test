@@ -14,6 +14,7 @@ package com.cannontech.analysis.data.stars;
  */
 public class StarsLMDetail
 {
+    private String groupName = null;
     private Integer groupID = null;
     private Integer groupCapacity = null;
     private String accountNumber = null;
@@ -27,6 +28,7 @@ public class StarsLMDetail
     private Integer enrollStatus = null;
     
     /**
+     * @param groupName
      * @param groupID
      * @param groupCapacity
      * @param accountNumber
@@ -39,9 +41,11 @@ public class StarsLMDetail
      * @param applianceCapacity
      * @param enrollStatus
      */
-    public StarsLMDetail(Integer groupID, Integer groupCapacity, String accountNumber, String contLastName, String contFirstName, String mapNumber, String serialNumber,
+    public StarsLMDetail(String groupName, Integer groupID, Integer groupCapacity, String accountNumber, 
+            String contLastName, String contFirstName, String mapNumber, String serialNumber,
             Integer deviceType, Integer applianceType, Integer applianceCapacity, Integer enrollStatus) {
         super();
+        this.groupName = groupName;
         this.groupID = groupID;
         this.groupCapacity = groupCapacity;
         this.accountNumber = accountNumber;
@@ -130,5 +134,11 @@ public class StarsLMDetail
     public String getSerialNumber()
     {
         return serialNumber;
+    }
+    /**
+     * @return Returns the groupName
+     */
+    public String getGroupName() {
+        return groupName;
     }
 }

@@ -30,6 +30,7 @@ public class LMEvent
 	public static final int UF_EVENT = 2;
 	public static final int EMERGENCY_EVENT = 3;
 		
+    private String groupName = null;
 	/** Load Group ID */
 	private Integer groupID = null;
 	/** Actual event start dateTime */
@@ -89,8 +90,10 @@ public class LMEvent
 	/**
 	 * 
 	 */
-	public LMEvent(Integer groupID_, Date actualStart_, Date actualStop_, Integer energyCompanyID_, Integer[] customerIDs, Double [] custDemandLevels, Double [] custCurtailLoads)
+	public LMEvent(String groupName_, Integer groupID_, Date actualStart_, Date actualStop_, Integer energyCompanyID_, 
+                    Integer[] customerIDs, Double [] custDemandLevels, Double [] custCurtailLoads)
 	{
+        groupName = groupName_;
 		groupID = groupID_;
 		actualStartDateTime = actualStart_;
 		actualStopDateTime = actualStop_;
@@ -135,6 +138,14 @@ public class LMEvent
 		return groupID;
 	}
 
+    /**
+     * The name of the load group for the lm event.
+     * @return
+     */
+    public String getGroupName() {
+        return groupName;
+    }
+    
 	/**
 	 * Returns the rounded duration of an event.  Takes the rounded difference between the start and stop times 
 	 * and then adds the restoreDuration interval to that duration.
@@ -336,8 +347,7 @@ public class LMEvent
 	{
 		if( eventType < 0)
 		{
-			String groupName = DaoFactory.getPaoDao().getYukonPAOName(getGroupID().intValue());
-			if( groupName.toLowerCase().indexOf("emer") > -1)
+			if( getGroupName().toLowerCase().indexOf("emer") > -1)
 				eventType = EMERGENCY_EVENT;
 			else if( groupName.toLowerCase().indexOf("under") > -1) 
 				eventType = UF_EVENT;

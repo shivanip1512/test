@@ -356,9 +356,10 @@ public class HECO_SettlementModelBase extends ReportModelBase
 	 */
 	public StringBuffer buildSQLStatement()
 	{
-		StringBuffer sql = new StringBuffer("SELECT PAOBJECTID, STARTDATETIME, STOPDATETIME, ACTIVERESTORE " +
-			" FROM " + LMControlHistory.TABLE_NAME +  
-			" WHERE STARTDATETIME > ? and STARTDATETIME <= ? " +
+		StringBuffer sql = new StringBuffer("SELECT GRP.PAONAME, LMCH.PAOBJECTID, STARTDATETIME, STOPDATETIME, ACTIVERESTORE " +
+			" FROM " + LMControlHistory.TABLE_NAME +  " LMCH, YUKONPAOBJECT GRP " +
+			" WHERE LMCH.PAOBJECTID = GRP.PAOBJECTID " +
+            " AND STARTDATETIME > ? and STARTDATETIME <= ? " +
 			" AND CONTROLDURATION > 0 " + 
 			" AND ACTIVERESTORE IN ('M', 'T', 'O') " + 
 			" ORDER BY STARTDATETIME, STOPDATETIME ");
@@ -375,14 +376,15 @@ public class HECO_SettlementModelBase extends ReportModelBase
 	{
 		try
 		{
-			Integer groupID = new Integer(rset.getInt(1));
-            String groupName = DaoFactory.getPaoDao().getYukonPAOName(groupID.intValue());
+            String groupName = rset.getString(1);
             if( groupName.toLowerCase().indexOf("cidlc") > -1)
             {
-    			Timestamp startTS = rset.getTimestamp(2);
-    			Timestamp stopTS = rset.getTimestamp(3);
+                Integer groupID = new Integer(rset.getInt(2));
+    			Timestamp startTS = rset.getTimestamp(3);
+    			Timestamp stopTS = rset.getTimestamp(4);
     			
-    			LMEvent lmEvent = new LMEvent(groupID, new Date(startTS.getTime()), new Date(stopTS.getTime()), getEnergyCompanyID(), getCustomerIDS(), getCustDemandLevels(), getCustCurtailLoads());
+    			LMEvent lmEvent = new LMEvent(groupName, groupID, new Date(startTS.getTime()), new Date(stopTS.getTime()), 
+                                              getEnergyCompanyID(), getCustomerIDS(), getCustDemandLevels(), getCustCurtailLoads());
     			getDataObjects().add(lmEvent);
     			collectCustomerBillingData(lmEvent);
             }

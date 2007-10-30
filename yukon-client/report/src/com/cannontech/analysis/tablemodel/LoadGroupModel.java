@@ -12,7 +12,6 @@ import com.cannontech.clientutils.CTILogger;
 import com.cannontech.common.util.CtiUtilities;
 import com.cannontech.common.util.TimeUtil;
 import com.cannontech.core.authorization.support.Permission;
-import com.cannontech.core.dao.DaoFactory;
 import com.cannontech.database.PoolManager;
 import com.cannontech.database.SqlUtils;
 import com.cannontech.database.db.company.EnergyCompany;
@@ -25,7 +24,7 @@ import com.cannontech.database.db.pao.LMControlHistory;
  * Created on Dec 15, 2003
  * LoadGroupReportData TableModel object
  * Innerclass object for row data is LGAccounting:
- * 	String paoName				- DaoFactory.getPaoDao().getYukonPaoName(LMControlHistory.paobjectID)
+ * 	String paoName				- TempLMControlHistory.deviceName
  * 	java.util.Date startDate	- LMControlHistory.startDateTime
  *  java.util.Date stopDate		- LMControlHistory.stopDateTime
  *  String duration				- LMControlHistory.controlDuration (in seconds)
@@ -92,12 +91,35 @@ public class LoadGroupModel extends ReportModelBase
 	private static final String ATT_SHOW_ANNUAL_TOTAL = "showAnnualTotal";
 	private boolean showAnnualTotal = true;
 	
-	public static Comparator lmControlHistoryPAONameComparator = new java.util.Comparator()
+    class TempLMControlHistory
+    {
+        // holds just the info needed for this report for each control area
+        private String deviceName = null;
+        private LMControlHistory lmch = null;
+
+        public LMControlHistory getLMControlHistory() {
+            return lmch;
+        }
+
+        public void setLMControlHistory(LMControlHistory history) {
+            lmch = history;
+        }
+
+        public String getDeviceName() {
+            return deviceName;
+        }
+        
+        public void setDeviceName(String deviceName) {
+            this.deviceName = deviceName;
+        }
+    }
+    
+	public static Comparator<TempLMControlHistory> lmControlHistoryPAONameComparator = new Comparator<TempLMControlHistory>()
 	{
-		public int compare(Object o1, Object o2)
+		public int compare(TempLMControlHistory o1, TempLMControlHistory o2)
 		{
-			String thisVal = DaoFactory.getPaoDao().getYukonPAOName(((LMControlHistory)o1).getPaObjectID().intValue());
-			String anotherVal = DaoFactory.getPaoDao().getYukonPAOName(((LMControlHistory)o2).getPaObjectID().intValue());
+			String thisVal = o1.getDeviceName();
+			String anotherVal = o2.getDeviceName();
 		    return ( thisVal.compareToIgnoreCase(anotherVal));
 		}
 		public boolean equals(Object obj)
@@ -161,6 +183,8 @@ public class LoadGroupModel extends ReportModelBase
 				Integer seasonalTime = new Integer(rset.getInt(9));
 				Integer annualTime = new Integer(rset.getInt(10));
 				String activeRestore = rset.getString(11);
+                String soeTag = rset.getString(12);
+                String paoName = rset.getString(13);
 				
 				LMControlHistory lmControlHist = new LMControlHistory(ctrlHistID);
 				lmControlHist.setPaObjectID(paoID);
@@ -173,7 +197,10 @@ public class LoadGroupModel extends ReportModelBase
 				lmControlHist.setCurrentSeasonalTime(seasonalTime);
 				lmControlHist.setCurrentAnnualTime(annualTime);
 				lmControlHist.setActiveRestore(activeRestore); 
-				getData().add(lmControlHist);
+                TempLMControlHistory tempControlHistory = new TempLMControlHistory();
+                tempControlHistory.setLMControlHistory(lmControlHist);
+                tempControlHistory.setDeviceName(paoName);
+				getData().add(tempControlHistory);
 			}
 //			lastSoeTag = soeTag.intValue();
 		}
@@ -192,9 +219,10 @@ public class LoadGroupModel extends ReportModelBase
 		StringBuffer sql = new StringBuffer("SELECT LMCH.LMCTRLHISTID, LMCH.PAOBJECTID, LMCH.STARTDATETIME, LMCH.STOPDATETIME, "+
 				" LMCH.CONTROLDURATION, LMCH.CONTROLTYPE, "+
 				" LMCH.CURRENTDAILYTIME, LMCH.CURRENTMONTHLYTIME, "+
-				" LMCH.CURRENTSEASONALTIME, LMCH.CURRENTANNUALTIME, LMCH.ACTIVERESTORE, SOE_TAG "+
-				" FROM LMCONTROLHISTORY LMCH " + 
-				" WHERE LMCH.StartDateTime > ? AND LMCH.StopDateTime <= ? ");
+				" LMCH.CURRENTSEASONALTIME, LMCH.CURRENTANNUALTIME, LMCH.ACTIVERESTORE, SOE_TAG, PAO.PAONAME "+
+				" FROM LMCONTROLHISTORY LMCH, YUKONPAOBJECT PAO " + 
+				" WHERE LMCH.PAOBJECTID = PAO.PAOBJECTID " + 
+                " AND LMCH.StartDateTime > ? AND LMCH.StopDateTime <= ? ");
 				if(!isShowAllActiveRestore())
 					sql.append(" AND LMCH.ACTIVERESTORE IN ('R', 'T', 'O', 'M') ");
 				if(isIgnoreZeroDuration())
@@ -323,13 +351,14 @@ public class LoadGroupModel extends ReportModelBase
 	 */
 	public Object getAttribute(int columnIndex, Object o)
 	{
-		if( o instanceof LMControlHistory)
+		if( o instanceof TempLMControlHistory)
 		{
-			LMControlHistory lmch= ((LMControlHistory)o);
+			TempLMControlHistory tempLmch= ((TempLMControlHistory)o);
+            LMControlHistory lmch = tempLmch.getLMControlHistory();
 			switch( columnIndex)
 			{
 				case PAO_NAME_COLUMN:
-					return DaoFactory.getPaoDao().getYukonPAOName(lmch.getPaObjectID().intValue());
+					return tempLmch.getDeviceName();
 				case CONTROL_DATE_COLUMN:
 					return lmch.getStartDateTime();
 				case CONTROL_START_TIME_COLUMN:

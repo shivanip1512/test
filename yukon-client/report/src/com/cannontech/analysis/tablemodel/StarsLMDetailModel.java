@@ -73,14 +73,14 @@ public class StarsLMDetailModel extends ReportModelBase
 	private static final String ATT_ORDER_BY = "orderBy";
 	private static final String ATT_SHOW_CAPACITY = "showCapacity";
 
-	public Comparator lmDetailComparator = new java.util.Comparator()
+	public Comparator<StarsLMDetail> lmDetailComparator = new Comparator<StarsLMDetail>()
 	{
-		public int compare(Object o1, Object o2){
+		public int compare(StarsLMDetail o1, StarsLMDetail o2){
 
 		    int tempOrderBy = getOrderBy();
 		    //First by GroupName
-	        String thisStrVal = DaoFactory.getPaoDao().getYukonPAOName(((StarsLMDetail)o1).getGroupID().intValue());
-	        String anotherStrVal = DaoFactory.getPaoDao().getYukonPAOName(((StarsLMDetail)o2).getGroupID().intValue());
+	        String thisStrVal = o1.getGroupName();
+	        String anotherStrVal = o2.getGroupName();
 	        if ( thisStrVal.equalsIgnoreCase(anotherStrVal) )
 	        {
 			    if( getOrderBy() == ORDER_BY_STATE)
@@ -92,32 +92,32 @@ public class StarsLMDetailModel extends ReportModelBase
 			    }
 			    if( tempOrderBy == ORDER_BY_ACCOUNT_NUMBER)
 			    {
-			        thisStrVal = ((StarsLMDetail)o1).getAccountNumber();
-					anotherStrVal = ((StarsLMDetail)o2).getAccountNumber();
+			        thisStrVal = o1.getAccountNumber();
+					anotherStrVal = o2.getAccountNumber();
 					if (thisStrVal.equalsIgnoreCase(anotherStrVal))
 					    tempOrderBy = ORDER_BY_LAST_NAME;	//Need to order by lastName
 			    }
 			    if( tempOrderBy == ORDER_BY_LAST_NAME )
 			    {
-			        thisStrVal = ((StarsLMDetail)o1).getContLastName();
-					anotherStrVal = ((StarsLMDetail)o2).getContLastName();
+			        thisStrVal = o1.getContLastName();
+					anotherStrVal = o2.getContLastName();
 					if ( thisStrVal.equalsIgnoreCase(anotherStrVal))
 					{
-					    thisStrVal = ((StarsLMDetail)o1).getContFirstName();
-					    anotherStrVal = ((StarsLMDetail)o2).getContFirstName();
+					    thisStrVal = o1.getContFirstName();
+					    anotherStrVal = o2.getContFirstName();
 					    if (thisStrVal.equalsIgnoreCase(anotherStrVal))					    
 					        tempOrderBy = ORDER_BY_SERIAL_NUMBER;	//Need to order by serialNumber
 					}
 			    }
 			    if( getOrderBy() == ORDER_BY_SERIAL_NUMBER)
 			    {
-			        thisStrVal = ((StarsLMDetail)o1).getSerialNumber();
-					anotherStrVal = ((StarsLMDetail)o2).getSerialNumber();
+			        thisStrVal = o1.getSerialNumber();
+					anotherStrVal = o2.getSerialNumber();
 			    }
 			    if( getOrderBy() == ORDER_BY_MAP_NUMBER)
 			    {
-			        thisStrVal = ((StarsLMDetail)o1).getMapNumber();
-					anotherStrVal = ((StarsLMDetail)o2).getMapNumber();
+			        thisStrVal = o1.getMapNumber();
+					anotherStrVal = o2.getMapNumber();
 			    }
 	        }
 	        return ( thisStrVal.compareToIgnoreCase(anotherStrVal));
@@ -153,8 +153,11 @@ public class StarsLMDetailModel extends ReportModelBase
     	    Integer hardwareCapacity = new Integer(rset.getInt(9));
     	    Integer applianceType = new Integer(rset.getInt(10));
     	    Integer enrollmentActionID = new Integer(rset.getInt(11));
+            String groupName = rset.getString(12);
     	    
-    	    StarsLMDetail details = new StarsLMDetail(groupID, groupCapacity, accountNumber, lastName, firstName, siteNumber, serialNumber, hardwareType, applianceType, hardwareCapacity, enrollmentActionID);
+    	    StarsLMDetail details = new StarsLMDetail(groupName, groupID, groupCapacity, accountNumber, 
+                                                      lastName, firstName, siteNumber, serialNumber, hardwareType, 
+                                                      applianceType, hardwareCapacity, enrollmentActionID);
     	    getData().add(details);            
         }
         catch (SQLException e)
@@ -171,9 +174,10 @@ public class StarsLMDetailModel extends ReportModelBase
 	{
 		StringBuffer sql = new StringBuffer	("SELECT LMG.DEVICEID, LMG.KWCAPACITY, ACCOUNTNUMBER," +
 				" CONTLASTNAME, CONTFIRSTNAME, SITE.SITENUMBER, HARD.MANUFACTURERSERIALNUMBER, " +
-				" HARD.LMHARDWARETYPEID, AB.KWCAPACITY, AC.CATEGORYID, LMCEB.ACTIONID " +
+				" HARD.LMHARDWARETYPEID, AB.KWCAPACITY, AC.CATEGORYID, LMCEB.ACTIONID, Grp.PAONAME " +
 				" FROM CUSTOMERACCOUNT CA, CONTACT CONT, CUSTOMER CUST, ACCOUNTSITE SITE, LMHARDWAREBASE HARD, " +
-				" INVENTORYBASE IB, APPLIANCEBASE AB, LMHARDWARECONFIGURATION LMHC, LMGROUP LMG, LMCUSTOMEREVENTBASE LMCEB, APPLIANCECATEGORY AC " +
+				" INVENTORYBASE IB, APPLIANCEBASE AB, LMHARDWARECONFIGURATION LMHC, LMGROUP LMG, LMCUSTOMEREVENTBASE LMCEB, " +
+                " APPLIANCECATEGORY AC, YUKONPAOBJECT Grp " +
 				" WHERE CA.CUSTOMERID = CUST.CUSTOMERID " +
 				" AND CUST.PRIMARYCONTACTID = CONT.CONTACTID " +
 				" AND CA.ACCOUNTSITEID = SITE.ACCOUNTSITEID " +
@@ -183,6 +187,7 @@ public class StarsLMDetailModel extends ReportModelBase
 				" AND LMHC.APPLIANCEID = AB.APPLIANCEID " +
 				" AND LMG.DEVICEID = LMHC.ADDRESSINGGROUPID " +
 				" AND AB.APPLIANCECATEGORYID = AC.APPLIANCECATEGORYID " +
+                " AND LMG.DEVICEID = Grp.PAOBJECTID " +
 				" AND LMCEB.EVENTID = (SELECT MAX(EVENTID) FROM LMHARDWAREEVENT LMHE WHERE LMHC.INVENTORYID = LMHE.INVENTORYID) ") ;
 		
 		return sql;
@@ -256,9 +261,7 @@ public class StarsLMDetailModel extends ReportModelBase
 			switch( columnIndex)
 			{
 				case GROUP_NAME_COLUMN:
-				    if( details.getGroupID() != null)
-				        return DaoFactory.getPaoDao().getYukonPAOName(details.getGroupID().intValue());
-				    break;
+			        return details.getGroupName();
 				case GROUP_CAPACITY_COLUMN:
 					return details.getGroupCapacity();
 				case ACCOUNT_NUMBER_COLUMN:

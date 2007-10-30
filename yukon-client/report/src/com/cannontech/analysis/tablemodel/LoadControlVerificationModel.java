@@ -12,7 +12,6 @@ import com.cannontech.analysis.ColumnProperties;
 import com.cannontech.analysis.ReportFuncs;
 import com.cannontech.clientutils.CTILogger;
 import com.cannontech.common.util.CtiUtilities;
-import com.cannontech.core.dao.DaoFactory;
 import com.cannontech.database.PoolManager;
 import com.cannontech.database.SqlUtils;
 import com.cannontech.database.data.lite.LiteYukonPAObject;
@@ -63,7 +62,34 @@ public class LoadControlVerificationModel extends ReportModelBase
 	protected static final String ATT_TRANSMITTER_IDS = "transmitterID";
 	protected static final String ATT_LC_COMMAND = "lcCommand";
 	protected static final String ATT_LC_CODE = "lcCode";
-	/**
+    
+    class TempVerification 
+    {
+        // holds just the info needed for this report for each control area
+        private String receiverName = null;
+        private String transmitterName = null;
+        private DynamicVerification verification = null;
+        
+        public String getReceiverName() {
+            return receiverName;
+        }
+        public void setReceiverName(String receiverName) {
+            this.receiverName = receiverName;
+        }
+        public String getTransmitterName() {
+            return transmitterName;
+        }
+        public void setTransmitterName(String transmitterName) {
+            this.transmitterName = transmitterName;
+        }
+        public DynamicVerification getVerification() {
+            return verification;
+        }
+        public void setVerification(DynamicVerification verification) {
+            this.verification = verification;
+        }
+    }
+    /**
 	 * Constructor class
 	 * @param startTime_ DYNAMICVERIFICATION.dateTime
 	 * @param stopTime_ DYNAMICVERIFICATION.dateTime
@@ -115,7 +141,14 @@ public class LoadControlVerificationModel extends ReportModelBase
 			Date dt = new Date(dateTime.getTime());
 			DynamicVerification dv = new DynamicVerification(logID, dt, receiverID, transID, command, code, codesequence, received, codeStatus);
  
-			getData().add(dv);
+            String receiverName = rset.getString(10);
+            String transmitterName = rset.getString(11);
+            TempVerification verification = new TempVerification();
+            verification.setReceiverName(receiverName);
+            verification.setTransmitterName(transmitterName);
+            verification.setVerification(dv);
+            
+			getData().add(verification);
 		}
 		catch(java.sql.SQLException e)
 		{
@@ -129,9 +162,12 @@ public class LoadControlVerificationModel extends ReportModelBase
 	 */
 	public StringBuffer buildSQLStatement()
 	{
-		StringBuffer sql = new StringBuffer("SELECT LOGID, TIMEARRIVAL, RECEIVERID, TRANSMITTERID, COMMAND, CODE, CODESEQUENCE, RECEIVED, CODESTATUS "+ 
-			" FROM DYNAMICVERIFICATION ");
-			sql.append(" WHERE (TIMEARRIVAL > ?) AND (TIMEARRIVAL <= ?)");
+		StringBuffer sql = new StringBuffer("SELECT LOGID, TIMEARRIVAL, RECEIVERID, TRANSMITTERID, COMMAND, CODE, CODESEQUENCE, RECEIVED, CODESTATUS, "+
+                                            " REC.PAONAME, TRANS.PAONAME " + 
+			" FROM DYNAMICVERIFICATION, YUKONPAOBJECT REC, YUKONPAOBJECT TRANS " + 
+            " WHERE RECEIVERID = REC.PAOBJECTID " + 
+            " AND TRANSMITTERID = TRANS.PAOBJECTID ");
+			sql.append(" AND (TIMEARRIVAL > ?) AND (TIMEARRIVAL <= ?)");
 			
 //			Use transmitterIDs in query if they exist			
 			if( getTransmitterIDs() != null && getTransmitterIDs().length > 0)
@@ -223,9 +259,10 @@ public class LoadControlVerificationModel extends ReportModelBase
 	 */
 	public Object getAttribute(int columnIndex, Object o)
 	{
-		if( o instanceof DynamicVerification)
+		if( o instanceof TempVerification)
 		{
-			DynamicVerification dv = ((DynamicVerification)o);
+            TempVerification ver = ((TempVerification)o);
+			DynamicVerification dv = ver.getVerification();
 			switch( columnIndex)
 			{
 				case DATE_COLUMN:
@@ -242,9 +279,10 @@ public class LoadControlVerificationModel extends ReportModelBase
 				case TIME_COLUMN:
 					return dv.getTimeArrival();
 				case RECEIVER_NAME_COLUMN:
-					return dv.getReceiverID().intValue() == 0 ? NULL_STRING : DaoFactory.getPaoDao().getYukonPAOName(dv.getReceiverID().intValue());
+                    //Check that we don't have the SystemDevice (id=0) for the Receiver.
+					return dv.getReceiverID().intValue() == 0 ? NULL_STRING : ver.getReceiverName();
 				case TRANSMITTER_NAME_COLUMN:
-					return DaoFactory.getPaoDao().getYukonPAOName(dv.getTransmitterID().intValue());
+					return ver.getTransmitterName();
 				case COMMAND_COLUMN:
 					return dv.getCommand();
 				case CODE_COLUMN:

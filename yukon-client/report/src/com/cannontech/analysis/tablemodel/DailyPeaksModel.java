@@ -18,7 +18,6 @@ import com.cannontech.analysis.ColumnProperties;
 import com.cannontech.analysis.data.lm.DailyPeak;
 import com.cannontech.clientutils.CTILogger;
 import com.cannontech.common.util.CtiUtilities;
-import com.cannontech.core.dao.DaoFactory;
 import com.cannontech.database.PoolManager;
 import com.cannontech.database.data.point.CTIPointQuailtyException;
 import com.cannontech.database.data.point.PointQualities;
@@ -72,14 +71,14 @@ public class DailyPeaksModel extends ReportModelBase
 	private Double currentPeakValue = null;
 	private GregorianCalendar currentPeakTimestamp = null;
 	
-	public static Comparator lmControlAreaPAONameComparator = new Comparator()
+	public static Comparator<TempControlAreaObject> lmControlAreaPAONameComparator = new Comparator<TempControlAreaObject>()
 	{
-		public int compare(Object o1, Object o2)
+		public int compare(TempControlAreaObject o1, TempControlAreaObject o2)
 		{
-			LMControlArea object1 = ((TempControlAreaObject)o1).getLMControlArea();
-			LMControlArea object2 = ((TempControlAreaObject)o2).getLMControlArea();
-			String thisVal = DaoFactory.getPaoDao().getYukonPAOName(object1.getDeviceID().intValue());
-			String anotherVal = DaoFactory.getPaoDao().getYukonPAOName(object2.getDeviceID().intValue());
+            String object1 = o1.getControlAreaName();
+            String object2 = o2.getControlAreaName();
+			String thisVal = object1;
+			String anotherVal = object2;
 			return ( thisVal.compareToIgnoreCase(anotherVal));
 		}
 		public boolean equals(Object obj)
@@ -91,32 +90,36 @@ public class DailyPeaksModel extends ReportModelBase
 	class TempControlAreaObject
 	{
 		// holds just the info needed for this report for each control area
+        private String controlAreaName = null;
 		private LMControlArea lmca = null;
 		private LMControlAreaTrigger lmcat = null; 
 
-		public LMControlArea getLMControlArea()
-		{
+		public LMControlArea getLMControlArea() {
 			return lmca;
 		}
 
-		public LMControlAreaTrigger getLMControlAreaTrigger()
-		{
+		public LMControlAreaTrigger getLMControlAreaTrigger() {
 			return lmcat;
 		}
 
-		public void setLMControlArea(LMControlArea area)
-		{
+		public void setLMControlArea(LMControlArea area) {
 			lmca = area;
 		}
 
-		public void setLMControlAreaTrigger(LMControlAreaTrigger trigger)
-		{
+		public void setLMControlAreaTrigger(LMControlAreaTrigger trigger) {
 			lmcat = trigger;
 		}
+		
+        public String getControlAreaName() {
+            return controlAreaName;
+        }
+        
+        public void setControlAreaName(String controlAreaName) {
+            this.controlAreaName = controlAreaName;
+        }
+	}
 
-	}	
-	public DailyPeaksModel()
-	{
+	public DailyPeaksModel() {
 		this(null, null);
 	}	
 
@@ -127,8 +130,7 @@ public class DailyPeaksModel extends ReportModelBase
 	 * 
 	 * A null loadGroup is specified, which means ALL Load Groups!
 	 */
-	public DailyPeaksModel(Date start_, Date stop_)
-	{
+	public DailyPeaksModel(Date start_, Date stop_) {
 		this(null, start_, stop_);
 	}	
 	
@@ -138,8 +140,7 @@ public class DailyPeaksModel extends ReportModelBase
 	 * @param startTime_ LMControlHistory.startDateTime
 	 * @param stopTime_ LMControlHistory.stopDateTime
 	 */
-	public DailyPeaksModel( int[] paoIDs_,Date start_, Date stop_)
-	{
+	public DailyPeaksModel( int[] paoIDs_,Date start_, Date stop_) {
 		super(start_, stop_);
 		setPaoIDs(paoIDs_);
 		setFilterModelTypes(new ReportFilter[]{ 
@@ -149,8 +150,7 @@ public class DailyPeaksModel extends ReportModelBase
 	
 	@Override
 	@SuppressWarnings("unchecked")
-    public void collectData()
-	{
+    public void collectData() {
 		//Reset all objects, new data being collected!
 		setData(null);
 		
@@ -159,16 +159,17 @@ public class DailyPeaksModel extends ReportModelBase
 		{
 			conn = PoolManager.getInstance().getConnection(CtiUtilities.getDatabaseAlias());
 			java.sql.ResultSet rset = null;
-			if( conn == null )
-			{
+			if( conn == null ) {
 				CTILogger.info(getClass() + ":  Error getting database connection.");
 				return;
 			}
 
-			java.util.Vector controlAreaVector = new java.util.Vector();
-			StringBuffer sqlString = new StringBuffer("select ca.deviceid, defdailystarttime, defdailystoptime, threshold, peakpointid " +
-							"from lmcontrolarea ca, lmcontrolareatrigger trig " +
-							"where ca.deviceid = trig.deviceid and peakpointid > 0");
+			Vector<TempControlAreaObject> controlAreaVector = new Vector<TempControlAreaObject>();
+			StringBuffer sqlString = new StringBuffer("select ca.deviceid, defdailystarttime, defdailystoptime, threshold, peakpointid, paoname " +
+							" from lmcontrolarea ca, lmcontrolareatrigger trig, yukonpaobject pao " +
+							" where ca.deviceid = trig.deviceid " +
+                            " and ca.deviceid = pao.paobjectid " +
+                            " and peakpointid > 0");
 				if( getPaoIDs() != null)
 				{
 					sqlString.append(" and ca.deviceid in (" + getPaoIDs()[0]);
@@ -195,25 +196,29 @@ public class DailyPeaksModel extends ReportModelBase
 					lmcat.setDeviceID(deviceID);
 					lmcat.setThreshold(new Double(rset.getDouble(4)));
 					lmcat.setPeakPointID(new Integer(rset.getInt(5)));
-					TempControlAreaObject tempLM = new TempControlAreaObject();
+                    TempControlAreaObject tempLM = new TempControlAreaObject();
 					tempLM.setLMControlArea(lmca);
 					tempLM.setLMControlAreaTrigger(lmcat);
+                    String name = rset.getString(6);
+                    tempLM.setControlAreaName(name);
 					controlAreaVector.add(tempLM);
 				}
 			}
 			if( !controlAreaVector.isEmpty())
 				Collections.sort(controlAreaVector, lmControlAreaPAONameComparator);
 			rset = null;	//clean it out
-			for(int i=0;i<controlAreaVector.size();i++)
-			{
-				StringBuffer sqlString2 = new StringBuffer("select changeid, pointid, value, quality, timestamp " +
+//			for(int i=0;i<controlAreaVector.size();i++)
+
+            for (TempControlAreaObject controlAreaObject : controlAreaVector) {
+
+                StringBuffer sqlString2 = new StringBuffer("select changeid, pointid, value, quality, timestamp " +
 							"from rawpointhistory where pointid = ? and timestamp > ? and timestamp <= ? " +
 							"order by value desc");
 
 				java.sql.PreparedStatement pstmt2 = conn.prepareStatement(sqlString2.toString());
-				pstmt2.setInt(1,((TempControlAreaObject)controlAreaVector.get(i)).getLMControlAreaTrigger().getPeakPointID().intValue());
+				pstmt2.setInt(1, controlAreaObject.getLMControlAreaTrigger().getPeakPointID().intValue());
 				pstmt2.setObject(2, new Timestamp(getStartDate().getTime()));
-				pstmt2.setObject(3,new Timestamp(getStopDate().getTime()));
+				pstmt2.setObject(3, new Timestamp(getStopDate().getTime()));
 
 				rset = pstmt2.executeQuery();
 				if( rset != null )
@@ -221,8 +226,8 @@ public class DailyPeaksModel extends ReportModelBase
 					Vector controlTimePeakVector = new java.util.Vector(MAX_NUMBER_OF_PEAK_VALUES);
 					Vector nonControlTimePeakVector = new java.util.Vector(MAX_NUMBER_OF_PEAK_VALUES);
 
-					int defDailyStartTime = ((TempControlAreaObject)controlAreaVector.get(i)).getLMControlArea().getDefDailyStartTime().intValue();
-					int defDailyStopTime = ((TempControlAreaObject)controlAreaVector.get(i)).getLMControlArea().getDefDailyStopTime().intValue();
+					int defDailyStartTime = controlAreaObject.getLMControlArea().getDefDailyStartTime().intValue();
+					int defDailyStopTime = controlAreaObject.getLMControlArea().getDefDailyStopTime().intValue();
 
 					if( defDailyStartTime < 0 )
 						defDailyStartTime = 0;
@@ -255,8 +260,9 @@ public class DailyPeaksModel extends ReportModelBase
 					}
 
 					int rank = 1;
-                    Integer controlAreaID = ((TempControlAreaObject)controlAreaVector.get(i)).getLMControlArea().getDeviceID();
-                    Double threshold = ((TempControlAreaObject)controlAreaVector.get(i)).getLMControlAreaTrigger().getThreshold();
+                    String controlAreaName = controlAreaObject.getControlAreaName();
+                    Integer controlAreaID = controlAreaObject.getLMControlArea().getDeviceID();
+                    Double threshold = controlAreaObject.getLMControlAreaTrigger().getThreshold();
                     
                     for(int j = 0; j < Math.max(controlTimePeakVector.size(), nonControlTimePeakVector.size());j++)
                     {
@@ -281,7 +287,7 @@ public class DailyPeaksModel extends ReportModelBase
                             offPeakTimestamp = rph.getTimeStamp();
                         }
                         
-                        dailyPeak= new DailyPeak( controlAreaID, peakValue, peakDataQuality, peakTimestamp, 
+                        dailyPeak= new DailyPeak( controlAreaName, controlAreaID, peakValue, peakDataQuality, peakTimestamp, 
                                                   offPeakValue, offPeakDataQuality, offPeakTimestamp, threshold, new Integer(rank));
 
                         getData().add(dailyPeak);
@@ -349,7 +355,7 @@ public class DailyPeaksModel extends ReportModelBase
 			switch( columnIndex)
 			{
 				case CONTROL_ARAEA_COLUMN:
-					return DaoFactory.getPaoDao().getYukonPAOName(dp.getControlAreaID().intValue());
+					return dp.getControlAreaName();
 				case PEAK_TITLE_COLUMN:
 					return PEAK_TIME_TITLE_STRING;
 				case OFF_PEAK_TITLE_COLUMN:
@@ -482,40 +488,23 @@ public class DailyPeaksModel extends ReportModelBase
 	/* (non-Javadoc)
 	 * @see com.cannontech.analysis.Reportable#getTitleString()
 	 */
-	public String getTitleString()
-	{
+	public String getTitleString() {
 		return title;
 	}
 
-	/**
-	 * @return
-	 */
-	public GregorianCalendar getCurrentPeakTimestamp()
-	{
+	public GregorianCalendar getCurrentPeakTimestamp() {
 		return currentPeakTimestamp;
 	}
 
-	/**
-	 * @return
-	 */
-	public Double getCurrentPeakValue()
-	{
+	public Double getCurrentPeakValue() {
 		return currentPeakValue;
 	}
 
-	/**
-	 * @param calendar
-	 */
-	public void setCurrentPeakTimestamp(GregorianCalendar calendar)
-	{
+	public void setCurrentPeakTimestamp(GregorianCalendar calendar) {
 		currentPeakTimestamp = calendar;
 	}
 
-	/**
-	 * @param double1
-	 */
-	public void setCurrentPeakValue(Double double1)
-	{
+	public void setCurrentPeakValue(Double double1) {
 		currentPeakValue = double1;
 	}
 }

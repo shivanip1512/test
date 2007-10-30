@@ -13,7 +13,6 @@ import com.cannontech.analysis.data.activity.ActivityLog;
 import com.cannontech.analysis.data.lm.LMEvent;
 import com.cannontech.analysis.data.lm.LMEventCustomer;
 import com.cannontech.analysis.data.lm.SettlementCustomer;
-import com.cannontech.core.dao.DaoFactory;
 import com.cannontech.database.db.customer.CICustomerPointData;
 
 /**
@@ -195,7 +194,7 @@ public class HECO_LMEventSummaryModel extends HECO_SettlementModelBase
 			switch( columnIndex)
 			{
 				case EVENT_TYPE_COLUMN:
-					return DaoFactory.getPaoDao().getYukonPAOName(lmEvent.getGroupID().intValue());
+					return lmEvent.getGroupName();
 				case DATE_COLUMN:
 					return dateFormat.format(lmEvent.getActualStartDateTime());
 				case START_TIME_COLUMN:

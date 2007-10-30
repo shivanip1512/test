@@ -192,7 +192,7 @@ public class HECO_CustomerMonthlyBillingSettlementModel extends HECO_SettlementM
 					return intFormat.format(getTotalUFHours());
 					
 				case EVENT_TYPE_HEADING_DATA:
-					return DaoFactory.getPaoDao().getYukonPAOName(lmEvent.getGroupID().intValue());
+					return lmEvent.getGroupName();
 				case EVENT_DATE_HEADING_DATA:
 					return dateFormat.format(lmEvent.getActualStartDateTime());
 				case EVENT_START_TIME_HEADING_DATA:
