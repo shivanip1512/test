@@ -442,8 +442,11 @@ CtiLMControlArea& CtiLMControlArea::setPAODescription(const string& description)
 ---------------------------------------------------------------------------*/
 CtiLMControlArea& CtiLMControlArea::setDisableFlag(BOOL disable)
 {
-
-    _disableflag = disable;
+    if( disable != _disableflag )
+    {
+        _disableflag = disable;
+        setDirty(true);
+    }
 
     return *this;
 }

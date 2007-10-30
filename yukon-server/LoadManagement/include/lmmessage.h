@@ -473,8 +473,8 @@ private:
     CtiTime _nextchecktime;
     LONG _controlareastate;
     LONG _currentpriority;
-    CtiTime _currentdailystarttime;
-    CtiTime _currentdailystoptime;
+    LONG _currentdailystarttime;
+    LONG _currentdailystoptime;
     vector<CtiLMDynamicTriggerDataMsg> _triggers;
 };
 
