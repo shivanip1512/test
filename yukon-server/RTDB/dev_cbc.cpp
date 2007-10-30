@@ -6,8 +6,8 @@
 *
 * PVCS KEYWORDS:
 * ARCHIVE      :  $Archive:   Z:/SOFTWAREARCHIVES/YUKON/RTDB/dev_cbc.cpp-arc  $
-* REVISION     :  $Revision: 1.20 $
-* DATE         :  $Date: 2006/04/19 20:44:45 $
+* REVISION     :  $Revision: 1.21 $
+* DATE         :  $Date: 2007/10/30 17:59:39 $
 *
 * Copyright (c) 1999, 2000, 2001 Cannon Technologies Inc. All rights reserved.
 *-----------------------------------------------------------------------------*/
@@ -190,7 +190,7 @@ INT CtiDeviceCBC::executeFisherPierceCBC(CtiRequestMsg                  *pReq,
                 else
                     resultString += "CLOSED";
 
-                vgList.push_back(CTIDBG_new CtiPointDataMsg(pPoint->getPointID(), val, NormalQuality, 0, resultString));
+                vgList.push_back(CTIDBG_new CtiPointDataMsg(pPoint->getPointID(), val, NormalQuality, StatusPointType, resultString));
             }
             else
             {
@@ -306,7 +306,7 @@ INT CtiDeviceCBC::executeVersacomCBC(CtiRequestMsg                  *pReq,
                 else
                     resultString += "CLOSED";
 
-                vgList.push_back(CTIDBG_new CtiPointDataMsg(pPoint->getPointID(), val, NormalQuality, 0, resultString));
+                vgList.push_back(CTIDBG_new CtiPointDataMsg(pPoint->getPointID(), val, NormalQuality, StatusPointType, resultString));
             }
             else
             {
@@ -495,7 +495,7 @@ INT CtiDeviceCBC::executeExpresscomCBC(CtiRequestMsg                  *pReq,
                 if( val == ((double)OPENED) ) resultString += "OPENED";
                 else resultString += "CLOSED";
 
-                vgList.push_back(CTIDBG_new CtiPointDataMsg(pPoint->getPointID(), val, NormalQuality, 0, resultString));
+                vgList.push_back(CTIDBG_new CtiPointDataMsg(pPoint->getPointID(), val, NormalQuality, StatusPointType, resultString));
             }
             else if( parse.isKeyValid("xcflip") )
             {

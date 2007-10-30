@@ -31,7 +31,7 @@ BOOL MyCtrlHandler(DWORD fdwCtrlType)
     {
 
         /* Handle the CTRL+C signal. */
-        
+
         case CTRL_C_EVENT:
 
         case CTRL_CLOSE_EVENT:
@@ -76,7 +76,7 @@ void main(int argc, char **argv)
         }
 
         CtiConnection Connect(VANGOGHNEXUS, argv[1]);
-        
+
         Connect.WriteConnQue( CTIDBG_new CtiRegistrationMsg("point changer", rwThreadId(), TRUE) );
 
         CtiPointRegistrationMsg *ptReg = CTIDBG_new CtiPointRegistrationMsg( 0 );
@@ -87,8 +87,9 @@ void main(int argc, char **argv)
 
         CtiMessage *incoming = Connect.ReadConnQue( );
         CtiMultiMsg *ifIHaveTo;
-        int ptType, ptID;
-            
+        CtiPointType_t ptType;
+        int ptID;
+
         if( incoming->isA( ) == MSG_MULTI )
         {
             ifIHaveTo = (CtiMultiMsg *)incoming;

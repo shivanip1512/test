@@ -9,8 +9,8 @@
 *
 * PVCS KEYWORDS:
 * ARCHIVE      :  $Archive:   Z:/SOFTWAREARCHIVES/YUKON/RTDB/INCLUDE/dev_sixnet.h-arc  $
-* REVISION     :  $Revision: 1.10 $
-* DATE         :  $Date: 2006/09/21 21:31:39 $
+* REVISION     :  $Revision: 1.11 $
+* DATE         :  $Date: 2007/10/30 17:59:39 $
 *
 * Copyright (c) 1999, 2000 Cannon Technologies Inc. All rights reserved.
 *-----------------------------------------------------------------------------*/
@@ -26,29 +26,28 @@
 #include "dlldefs.h"
 #include "prot_sixnet.h"
 
-typedef struct
+struct CtiSixnetLPData
 {
-  ULONG time;
-  int type;
-  int offset;
-  double val;
-  UINT tag;
-
-} CtiSixnetLPData;
+   ULONG time;
+   CtiPointType_t type;
+   int offset;
+   double val;
+   UINT tag;
+};
 
 class CtiSxlRecord
 {
 protected:
 
-    CtiTime      _ptTime;        // When this all went and happened.
-    int         _ptType;        // Corresponds to the types in pointtypes.h
-    int         _ptOffset;      // 1 based offset on this device for this point type.
-    double      _ptValue;       // Go figure.
+    CtiTime        _ptTime;        // When this all went and happened.
+    CtiPointType_t _ptType;        // Corresponds to the types in pointtypes.h
+    int            _ptOffset;      // 1 based offset on this device for this point type.
+    double         _ptValue;       // Go figure.
 
 public:
 
     CtiSxlRecord();
-    CtiSxlRecord(int type, int offset, double val, const CtiTime &time);
+    CtiSxlRecord(CtiPointType_t type, int offset, double val, const CtiTime &time);
     virtual ~CtiSxlRecord();
 
     CtiTime& getTime();
@@ -57,7 +56,7 @@ public:
     double getValue() const;
 
     CtiSxlRecord& setTime(const CtiTime& ref);
-    CtiSxlRecord& setType(int type);
+    CtiSxlRecord& setType(CtiPointType_t type);
     CtiSxlRecord& setOffset(int offset);
     CtiSxlRecord& setValue(const double& val);
 

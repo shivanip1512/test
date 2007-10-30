@@ -9,8 +9,8 @@
 *
 * PVCS KEYWORDS:
 * ARCHIVE      :  $Archive$
-* REVISION     :  $Revision: 1.24 $
-* DATE         :  $Date: 2007/08/07 19:56:17 $
+* REVISION     :  $Revision: 1.25 $
+* DATE         :  $Date: 2007/10/30 17:59:39 $
 *
 * Copyright (c) 2002 Cannon Technologies Inc. All rights reserved.
 *-----------------------------------------------------------------------------*/
@@ -99,7 +99,7 @@ private:
     struct ion_pointdata_struct
     {
         long offset;
-        long type;
+        CtiPointType_t type;
         unsigned long time;
         double value;
         char name[20];

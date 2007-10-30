@@ -8,8 +8,8 @@
 *
 * PVCS KEYWORDS:
 * ARCHIVE      :  $Archive:   Z:/SOFTWAREARCHIVES/YUKON/RTDB/dev_sixnet.cpp-arc  $
-* REVISION     :  $Revision: 1.20 $
-* DATE         :  $Date: 2007/05/31 21:38:45 $
+* REVISION     :  $Revision: 1.21 $
+* DATE         :  $Date: 2007/10/30 17:59:39 $
 *
 * Copyright (c) 1999, 2000 Cannon Technologies Inc. All rights reserved.
 *-----------------------------------------------------------------------------*/
@@ -253,7 +253,7 @@ int CSxlField::processData(uchar *rec, vector< CtiSxlRecord > &_recordData, UINT
 CtiSxlRecord::CtiSxlRecord()
 {
 }
-CtiSxlRecord::CtiSxlRecord(int type, int offset, double val, const CtiTime &time) :
+CtiSxlRecord::CtiSxlRecord(CtiPointType_t type, int offset, double val, const CtiTime &time) :
 _ptTime(time),
 _ptType(type),
 _ptOffset(offset),
@@ -303,7 +303,7 @@ CtiSxlRecord& CtiSxlRecord::setTime(const CtiTime& ref)
     _ptTime = ref;
     return *this;
 }
-CtiSxlRecord& CtiSxlRecord::setType(int type)
+CtiSxlRecord& CtiSxlRecord::setType(CtiPointType_t type)
 {
     _ptType = type;
     return *this;

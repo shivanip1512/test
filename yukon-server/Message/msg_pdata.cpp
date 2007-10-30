@@ -6,8 +6,8 @@
 *
 * PVCS KEYWORDS:
 * ARCHIVE      :  $Archive:   Z:/SOFTWAREARCHIVES/YUKON/MESSAGE/msg_pdata.cpp-arc  $
-* REVISION     :  $Revision: 1.13 $
-* DATE         :  $Date: 2005/12/20 17:18:54 $
+* REVISION     :  $Revision: 1.14 $
+* DATE         :  $Date: 2007/10/30 17:59:39 $
 *
 * Copyright (c) 1999, 2000, 2001 Cannon Technologies Inc. All rights reserved.
 *-----------------------------------------------------------------------------*/
@@ -31,15 +31,15 @@ RWDEFINE_COLLECTABLE( CtiPointDataMsg, MSG_POINTDATA );
 unsigned int CtiPointDataMsg::_instanceCount = 0;
 
 CtiPointDataMsg::CtiPointDataMsg(long id,
-                                 double     value       ,
-                                 unsigned   quality     ,
-                                 int        type        ,
-                                 string  valReport   ,
-                                 unsigned   tags        ,
-                                 unsigned   attrib      ,
-                                 unsigned   limit       ,
-                                 int        pri         ,
-                                 unsigned   millis) :
+                                 double    value,
+                                 unsigned  quality,
+                                 CtiPointType_t type,
+                                 string    valReport,
+                                 unsigned  tags,
+                                 unsigned  attrib,
+                                 unsigned  limit,
+                                 int       pri,
+                                 unsigned  millis) :
    _id(id),
    _value(value),
    _quality(quality),
@@ -126,7 +126,7 @@ void CtiPointDataMsg::restoreGuts(RWvistream& aStream)
     aStream >> id >> type >> quality >> tags >> _attrib >> limit >> value >> force >> str >> intime >> millis;
 
     setId(id);
-    setType(type);
+    setType(resolveType(type));
     setQuality(quality);
 
     resetTags();
@@ -166,15 +166,35 @@ CtiPointDataMsg& CtiPointDataMsg::setString(const string& string_value)
 }
 
 
-int CtiPointDataMsg::getType() const
+CtiPointType_t CtiPointDataMsg::getType() const
 {
     return _type;
 }
 
-CtiPointDataMsg& CtiPointDataMsg::setType(int type)
+CtiPointDataMsg& CtiPointDataMsg::setType(CtiPointType_t type)
 {
     _type = type;
     return *this;
+}
+
+CtiPointType_t CtiPointDataMsg::resolveType(int type)
+{
+    CtiPointType_t retval = InvalidPointType;
+
+    switch( type )
+    {
+        case StatusPointType:            retval = StatusPointType;
+        case AnalogPointType:            retval = AnalogPointType;
+        case PulseAccumulatorPointType:  retval = PulseAccumulatorPointType;
+        case DemandAccumulatorPointType: retval = DemandAccumulatorPointType;
+        case CalculatedPointType:        retval = CalculatedPointType;
+        case StatusOutputPointType:      retval = StatusOutputPointType;
+        case AnalogOutputPointType:      retval = AnalogOutputPointType;
+        case SystemPointType:            retval = SystemPointType;
+        case CalculatedStatusPointType:  retval = CalculatedStatusPointType;
+    }
+
+    return retval;
 }
 
 double CtiPointDataMsg::getValue() const

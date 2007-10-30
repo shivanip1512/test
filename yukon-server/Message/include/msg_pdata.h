@@ -8,8 +8,8 @@
 *
 * PVCS KEYWORDS:
 * ARCHIVE      :  $Archive:   Z:/SOFTWAREARCHIVES/YUKON/MESSAGE/INCLUDE/msg_pdata.h-arc  $
-* REVISION     :  $Revision: 1.8 $
-* DATE         :  $Date: 2005/12/20 17:18:54 $
+* REVISION     :  $Revision: 1.9 $
+* DATE         :  $Date: 2007/10/30 17:59:39 $
 *
 * Copyright (c) 1999, 2000, 2001 Cannon Technologies Inc. All rights reserved.
 *-----------------------------------------------------------------------------*/
@@ -23,6 +23,7 @@
 
 #include "dlldefs.h"
 #include "pointdefs.h"
+#include "pointtypes.h"
 #include "message.h"
 
 #include "yukon.h"
@@ -32,7 +33,7 @@ class IM_EX_MSG CtiPointDataMsg : public CtiMessage
 protected:
 
    long           _id;
-   int            _type;
+   CtiPointType_t _type;
    unsigned       _quality;            // see pointdefs.h
    unsigned       _tags;               // see pointdefs.h
    unsigned       _attrib;             // see pointdefs.h
@@ -48,22 +49,24 @@ private:
 
     static unsigned int _instanceCount;
 
+    CtiPointType_t resolveType(int type);
+
 public:
 
    RWDECLARE_COLLECTABLE( CtiPointDataMsg );
 
    typedef CtiMessage Inherited;
 
-   CtiPointDataMsg(long       id          = 0,
-                   double     value       = 0.0,
-                   unsigned   quality     = NormalQuality,
-                   int        type        = 0,
-                   string  valReport   = string(),
-                   unsigned   tags        = 0,
-                   unsigned   attrib      = 0,
-                   unsigned   limit       = 0,
-                   int        pri         = 7,
-                   unsigned   millis      = 0
+   CtiPointDataMsg(long      id          = 0,
+                   double    value       = 0.0,
+                   unsigned  quality     = NormalQuality,
+                   CtiPointType_t type   = StatusPointType,
+                   string     valReport  = string(),
+                   unsigned  tags        = 0,
+                   unsigned  attrib      = 0,
+                   unsigned  limit       = 0,
+                   int       pri         = 7,
+                   unsigned  millis      = 0
                    );
 
    CtiPointDataMsg(const CtiPointDataMsg &aRef);
@@ -82,8 +85,8 @@ public:
    const string& getString() const;
    CtiPointDataMsg& setString(const string& string_value);
 
-   int getType() const;
-   CtiPointDataMsg& setType(int type);
+   CtiPointType_t getType() const;
+   CtiPointDataMsg& setType(CtiPointType_t type);
 
    double getValue() const;
    CtiPointDataMsg& setValue(double value);

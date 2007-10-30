@@ -6,8 +6,8 @@
 *
 * PVCS KEYWORDS:
 * ARCHIVE      :  $Archive:   Z:/SOFTWAREARCHIVES/YUKON/COMMON/resolvers.cpp-arc  $
-* REVISION     :  $Revision: 1.84 $
-* DATE         :  $Date: 2007/10/17 21:54:42 $
+* REVISION     :  $Revision: 1.85 $
+* DATE         :  $Date: 2007/10/30 17:59:39 $
 *
 * Copyright (c) 1999, 2000, 2001 Cannon Technologies Inc. All rights reserved.
 *-----------------------------------------------------------------------------*/
@@ -139,23 +139,23 @@ INT resolveAmpUseType(const string& _rwsTemp)
     return autype;
 }
 
-INT resolvePointType(const string& _rwsTemp)
+CtiPointType_t resolvePointType(const string& _rwsTemp)
 {
     static const string analog = "analog";
     static const string status = "status";
-    static const string pulseaccumulator = "pulseaccumulator";
+    static const string pulseaccumulator  = "pulseaccumulator";
     static const string pulse_accumulator = "pulse accumulator";
-    static const string accumulator = "accumulator";
-    static const string demandaccumulator = "demandaccumulator";
+    static const string accumulator       = "accumulator";
+    static const string demandaccumulator  = "demandaccumulator";
     static const string demand_accumulator = "demand accumulator";
-    static const string calculated = "calculated";
-    static const string calcanalog = "calcanalog";
-    static const string calcstatus = "calcstatus";
-    static const string system = "system";
+    static const string calculated   = "calculated";
+    static const string calcanalog   = "calcanalog";
+    static const string calcstatus   = "calcstatus";
+    static const string system       = "system";
     static const string statusoutput = "statusoutput";
     static const string analogoutput = "analogoutput";
 
-    INT Ret;
+    CtiPointType_t Ret;
     string rwsTemp = _rwsTemp;
     CtiToLower(rwsTemp);
     trim(rwsTemp);
@@ -168,7 +168,7 @@ INT resolvePointType(const string& _rwsTemp)
     {
         Ret = StatusPointType;
     }
-    else if(rwsTemp == pulseaccumulator ||
+    else if(rwsTemp == pulseaccumulator  ||
             rwsTemp == pulse_accumulator ||    // This WILL go away over time I hope!
             rwsTemp == accumulator)            // This WILL go away over time I hope!
     {
