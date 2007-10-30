@@ -368,6 +368,7 @@ insert into YukonRoleProperty values(-10816, -108,'Standard Page Style Sheet',' 
 
 update BillingFileFormats, set FormatType = 'DAFFRON' where formatType = 'DAFRON';
 update YukonListEntry set EntryText = 'Customer Type' where EntryText = 'Consumption Type'
+update YukonListEntry set EntryText = 'Postal Code' where EntryText = 'Zip Code' and ListID = 1056
 
 /******************************************************************************/
 /* Run the Stars Update if needed here */
