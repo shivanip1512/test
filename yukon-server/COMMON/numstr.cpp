@@ -8,378 +8,258 @@
 *
 * PVCS KEYWORDS:
 * ARCHIVE      :  $Archive$
-* REVISION     :  $Revision: 1.12 $
-* DATE         :  $Date: 2007/03/09 21:31:12 $
+* REVISION     :  $Revision: 1.13 $
+* DATE         :  $Date: 2007/10/30 13:33:02 $
 *
-* Copyright (c) 1999, 2000 Cannon Technologies Inc. All rights reserved.
+* Copyright (c) 2007 Cannon Technologies. All rights reserved.
 *-----------------------------------------------------------------------------*/
 #include "yukon.h"
 
-#include <stdio.h>  //  for _snprintf
+#include <ostream>
+#include <sstream>
+#include "math.h"
 #include "numstr.h"
 
-CtiNumStr::CtiNumStr( double dVal, int precision )  {  _data.ul = 0;    _data.d   =  dVal;               _dataType = DataType_Double;  _precision = precision;  init();  }
-CtiNumStr::CtiNumStr( float fVal,  int precision )  {  _data.ul = 0;    _data.f   =  fVal;               _dataType = DataType_Float;   _precision = precision;  init();  }
+using namespace std;
+using CtiNumStr::DataTypes;
 
-CtiNumStr::CtiNumStr( char cVal )                   {  _data.ul = 0;    _data.c   = (int)cVal;           _dataType = DataType_Char;       init();  }
-CtiNumStr::CtiNumStr( unsigned char ucVal )         {  _data.ul = 0;    _data.uc  = (unsigned int)ucVal; _dataType = DataType_UChar;      init();  }
+CtiNumStr::CtiNumStr( double d, int precision ) : _dataType(DataType_FloatingPoint)  {  init(precision);  _float =  d;  }
+CtiNumStr::CtiNumStr( float  f, int precision ) : _dataType(DataType_FloatingPoint)  {  init(precision);  _float =  f;  }
 
-CtiNumStr::CtiNumStr( short sVal )                  {  _data.ul = 0;    _data.s   =  sVal;               _dataType = DataType_Short;      init();  }
-CtiNumStr::CtiNumStr( unsigned short usVal )        {  _data.ul = 0;    _data.us  = usVal;               _dataType = DataType_UShort;     init();  }
-CtiNumStr::CtiNumStr( int iVal )                    {  _data.ul = 0;    _data.i   =  iVal;               _dataType = DataType_Int;        init();  }
-CtiNumStr::CtiNumStr( unsigned int uiVal )          {  _data.ul = 0;    _data.ui  = uiVal;               _dataType = DataType_UInt;       init();  }
-CtiNumStr::CtiNumStr( long lVal )                   {  _data.ul = 0;    _data.l   =  lVal;               _dataType = DataType_Long;       init();  }
-CtiNumStr::CtiNumStr( unsigned long ulVal )         {  _data.ul = 0;    _data.ul  = ulVal;               _dataType = DataType_ULong;      init();  }
+CtiNumStr::CtiNumStr( char  c ) : _dataType(DataType_Integer)  {  init( 8);  _integer = c;  }
+CtiNumStr::CtiNumStr( short s ) : _dataType(DataType_Integer)  {  init(16);  _integer = s;  }
+CtiNumStr::CtiNumStr( int   i ) : _dataType(DataType_Integer)  {  init(32);  _integer = i;  }
+CtiNumStr::CtiNumStr( long  l ) : _dataType(DataType_Integer)  {  init(32);  _integer = l;  }
 
-CtiNumStr::CtiNumStr( void *vpVal )                 {  _data.ul = 0;    _data.vp  = vpVal;               _dataType = DataType_Pointer;    init();  }
+CtiNumStr::CtiNumStr( unsigned char  uc ) : _dataType(DataType_Unsigned)  {  init( 8);  _unsigned = uc;  }
+CtiNumStr::CtiNumStr( unsigned short us ) : _dataType(DataType_Unsigned)  {  init(16);  _unsigned = us;  }
+CtiNumStr::CtiNumStr( unsigned int   ui ) : _dataType(DataType_Unsigned)  {  init(32);  _unsigned = ui;  }
+CtiNumStr::CtiNumStr( unsigned long  ul ) : _dataType(DataType_Unsigned)  {  init(32);  _unsigned = ul;  }
 
-CtiNumStr::CtiNumStr( const CtiNumStr &aRef )
-{
-    *this = aRef;
-}
+CtiNumStr::CtiNumStr( void *vp ) : _dataType(DataType_Pointer)  {  init(32);  _pointer = vp;  }  //  32-bit pointers
 
 CtiNumStr::~CtiNumStr( )
 {
-
 }
 
-
-CtiNumStr &CtiNumStr::operator=( const CtiNumStr &aRef )
+//  change this to accept bits for the integer types, and digits of accuracy for the floating-point
+//    actually, two seperate functions would be ideal
+void CtiNumStr::init( unsigned int width )
 {
-    if( this != &aRef )
-    {
-        this->_data = aRef._data;
-    }
-
-    return *this;
-}
-
-string CtiNumStr::toString()
-{
-    switch( _dataType )
-    {
-        case DataType_Char:
-        case DataType_UChar:
-        case DataType_Short:
-        case DataType_UShort:
-        case DataType_Int:
-        case DataType_UInt:
-        case DataType_Long:
-        case DataType_ULong:
-            buildIntString( );
-            break;
-
-        case DataType_Float:
-        case DataType_Double:
-            buildFloatString( );
-            break;
-
-        case DataType_Pointer:
-            buildPointerString( );
-            break;
-
-        default:
-            _snprintf( _dataString, DataStringLength, "*** CtiNumStr Error ***" );
-            _dataString[DataStringLength-1] = 0;
-    }
-
-    return string(_dataString);
-
-}
-
-
-
-CtiNumStr::operator string ( )
-{
-    switch( _dataType )
-    {
-        case DataType_Char:
-        case DataType_UChar:
-        case DataType_Short:
-        case DataType_UShort:
-        case DataType_Int:
-        case DataType_UInt:
-        case DataType_Long:
-        case DataType_ULong:
-            buildIntString( );
-            break;
-
-        case DataType_Float:
-        case DataType_Double:
-            buildFloatString( );
-            break;
-
-        case DataType_Pointer:
-            buildPointerString( );
-            break;
-
-        default:
-            _snprintf( _dataString, DataStringLength, "*** CtiNumStr Error ***" );
-            _dataString[DataStringLength-1] = 0;
-    }
-
-    return _dataString;
-}
-
-
-
-void CtiNumStr::init( void )
-{
-    if( _dataType == DataType_Float ||
-        _dataType == DataType_Double )
-    {
-        if( _precision > MaxPrecision )
-        {
-            _precision = MaxPrecision;
-        }
-    }
-    else
-    {
-        _precision = 0;
-    }
-
     _fmt = Format_Default;
 
-    _padding = 0;
-    _zeroes  = 0;
+    _padding = -1;
+    _zeroes  = false;
+
+    _integer   = 0;
+    _unsigned  = 0;
+    _pointer   = 0x00000000;
+
+    switch( _dataType )
+    {
+        case DataType_FloatingPoint:
+        {
+            _precision = (width <= MaxPrecision)?(width):(MaxPrecision);
+            _bits = 0;
+
+            break;
+        }
+
+        //  maybe we should complain if we try to assign a bitsize larger than 32 bits?
+        default:
+        {
+            _precision = 0;
+            _bits = (width <= MaxBits)?(width):(MaxBits);
+
+            break;
+        }
+    }
+}
+
+string CtiNumStr::toString() const
+{
+    return string(*this);
+}
+
+CtiNumStr::operator string() const
+{
+    int padding   = _padding;
+    int precision = _precision;
+
+    ostringstream stream;
+
+    if( _dataType == DataType_Integer || _dataType == DataType_Unsigned )
+    {
+        if( _fmt == Format_XHex )
+        {
+            //  special case for "0" - we have to output the "0x" ourselves
+            if( !_integer && !_unsigned )
+            {
+                if( !_zeroes )
+                {
+                    padding -= 3;
+
+                    while( padding-- > 0 )
+                    {
+                        stream << " ";
+                    }
+                }
+
+                stream << "0x";
+            }
+            else
+            {
+                if( _zeroes )
+                {
+                    padding += 2;
+                }
+
+                stream.setf(ios::showbase);
+            }
+        }
+
+        if( _fmt == Format_Hex || _fmt == Format_XHex )
+        {
+            stream.setf(ios::hex, ios::basefield);
+        }
+    }
+
+    if( padding > 0 )
+    {
+        if( _dataType == DataType_FloatingPoint )
+        {
+            if( _fmt == Format_Exponential )
+            {
+                if( _zeroes && ((_padding - 7) > _precision)  )
+                {
+                    precision = _padding - 7;
+                }
+            }
+            else
+            {
+                stream.setf((_zeroes)?(ios::internal):(ios::right), ios::adjustfield);
+            }
+        }
+        else
+        {
+            stream.setf((_zeroes)?(ios::internal):(ios::right), ios::adjustfield);
+        }
+
+        if( _zeroes )
+        {
+            stream.fill('0');
+        }
+
+        stream.width(padding);
+    }
+
+    switch( _dataType )
+    {
+        case DataType_Integer:
+        {
+            if( _integer < 0 && _bits < 32 && stream.flags() & ios::hex )
+            {
+                stream << ((unsigned long)_integer & (~0UL >> (32 - _bits)));
+            }
+            else
+            {
+                stream << _integer;
+            }
+
+            break;
+        }
+
+        case DataType_Unsigned:
+        {
+            stream << _unsigned;
+            break;
+        }
+
+        case DataType_FloatingPoint:
+        {
+            if( precision > 0 )  stream.precision(precision);
+
+            if( _fmt == Format_Exponential )  stream.setf(ios::scientific);
+            else                              stream.setf(ios::fixed);
+
+            stream.setf(ios::showpoint);
+
+            stream << _float;
+
+            break;
+        }
+        case DataType_Pointer:          stream << _pointer;  break;
+    }
+
+    return stream.str();
 }
 
 
-CtiNumStr &CtiNumStr::hex( void )
+CtiNumStr &CtiNumStr::hex( int pad )
 {
     _fmt = Format_Hex;
+
+    if( pad >= 0 )  zpad(pad);
+
     return *this;
 }
 
-CtiNumStr &CtiNumStr::xhex( void )
+CtiNumStr &CtiNumStr::xhex( int pad )
 {
     _fmt = Format_XHex;
+
+    if( pad >= 0 )  zpad(pad);
+
     return *this;
 }
 
 CtiNumStr &CtiNumStr::exp( void )
 {
     _fmt = Format_Exponential;
+
     return *this;
 }
 
-
 CtiNumStr &CtiNumStr::spad( unsigned int pad )
 {
-    if( pad > MaxSpacePadding )
-    {
-        pad = MaxSpacePadding;
-    }
-
-    _padding = pad;
-    _zeroes  = 0;
+    _padding = (pad > MaxSpacePadding)?(MaxSpacePadding):(pad);
+    _zeroes  = false;
 
     return *this;
 }
 
 CtiNumStr &CtiNumStr::zpad( unsigned int pad )
 {
-    if( pad > MaxZeroPadding )
-    {
-        pad = MaxZeroPadding;
-    }
-
-    _padding = pad;
-    _zeroes  = 1;
+    _padding = (pad > MaxSpacePadding)?(MaxSpacePadding):(pad);
+    _zeroes  = true;
 
     return *this;
 }
 
 
-void CtiNumStr::buildIntString( void )
-{
-    char fmtString[10];
-    int  fmtChars = 0,
-         overflow;
-
-    if( _fmt == Format_XHex )
-    {
-        fmtString[fmtChars++] = '0';
-        fmtString[fmtChars++] = 'x';
-    }
-
-    fmtString[fmtChars++] = '%';
-
-    if( _zeroes )
-    {
-        fmtString[fmtChars++] = '0';
-    }
-
-    fmtString[fmtChars++] = '*';
-
-    switch( _fmt )
-    {
-        case Format_Hex:
-        case Format_XHex:
-        {
-            if( _dataType == DataType_Short || _dataType == DataType_UShort ||
-                _dataType == DataType_Char  || _dataType == DataType_UChar )
-            {
-                //  anything shorter than 4 bytes needs this (see printf format specification for details)
-                fmtString[fmtChars++] = 'h';
-            }
-
-            fmtString[fmtChars++] = 'x';
-            break;
-        }
-
-        case Format_Default:
-        {
-            switch( _dataType )
-            {
-                case DataType_ULong:
-                    fmtString[fmtChars++] = 'l';
-                    fmtString[fmtChars++] = 'u';
-                    break;
-
-                case DataType_Long:
-                    fmtString[fmtChars++] = 'l';
-                    fmtString[fmtChars++] = 'd';
-                    break;
-
-                case DataType_UChar:
-                case DataType_UInt:
-                    fmtString[fmtChars++] = 'u';
-                    break;
-
-                case DataType_Char:
-                case DataType_Int:
-                    fmtString[fmtChars++] = 'd';
-                    break;
-
-                case DataType_UShort:
-                    fmtString[fmtChars++] = 'h';
-                    fmtString[fmtChars++] = 'u';
-                    break;
-
-                case DataType_Short:
-                    fmtString[fmtChars++] = 'h';
-                    fmtString[fmtChars++] = 'd';
-                    break;
-            }
-
-            break;
-        }
-    }
-
-    fmtString[fmtChars] = 0;
-
-    //  _data.l encapsulates all integer types, as it'll copy sizeof(long) length
-    //    of data, and _snprintf will only look at what it needs.  Thank You Little Endian!
-    if( _snprintf( _dataString, DataStringLength, fmtString, _padding, _data.l ) < 0 )
-    {
-        //  set the last character to "*" if we overflow
-        _dataString[DataStringLength-2] = '*';
-        _dataString[DataStringLength-1] = 0;
-    }
-}
-
-void CtiNumStr::buildFloatString( void )
-{
-    char fmtString[10];
-    int  fmtChars = 0;
-
-    fmtString[fmtChars++] = '%';
-
-    if( _zeroes )
-    {
-        fmtString[fmtChars++] = '0';
-    }
-
-    fmtString[fmtChars++] = '*';
-    fmtString[fmtChars++] = '.';
-    fmtString[fmtChars++] = '*';
-
-    switch( _fmt )
-    {
-        case Format_Exponential:
-        {
-            fmtString[fmtChars++] = 'g';
-            break;
-        }
-
-        default:
-        {
-            fmtString[fmtChars++] = 'f';
-            break;
-        }
-    }
-
-    fmtString[fmtChars] = 0;
-
-    if( _dataType == DataType_Float )
-    {
-        if( _snprintf( _dataString, DataStringLength, fmtString, _padding, _precision, _data.f ) < 0 )
-        {
-            //  set the last character to "*" if we overflow
-            _dataString[DataStringLength-2] = '*';
-            _dataString[DataStringLength-1] = 0;
-        }
-    }
-    else if( _dataType == DataType_Double )
-    {
-        if( _snprintf( _dataString, DataStringLength, fmtString, _padding, _precision, _data.d ) < 0 )
-        {
-            //  set the last character to "*" if we overflow
-            _dataString[DataStringLength-2] = '*';
-            _dataString[DataStringLength-1] = 0;
-        }
-    }
-}
-
-void CtiNumStr::buildPointerString( void )
-{
-    char fmtString[10];
-    int  fmtChars = 0;
-
-    fmtString[fmtChars++] = '%';
-    fmtString[fmtChars++] = '*';
-
-    fmtString[fmtChars++] = 'p';
-    fmtString[fmtChars]   = 0;
-
-    if( _snprintf( _dataString, DataStringLength, fmtString, _padding, _data.vp ) < 0 )
-    {
-        //  set the last character to "*" if we overflow
-        _dataString[DataStringLength-2] = '*';
-        _dataString[DataStringLength-1] = 0;
-    }
-}
-
-
 string operator +(const string &str, CtiNumStr &numStr)
 {
-    return str + numStr.toString();
+    return str + (string)numStr;
 }
 
 string operator +(CtiNumStr &numStr, const string &str)
 {
-    return numStr.toString() + str;
+    return (string)numStr + str;
 }
 
-
-string operator +(const string & str, const char *s)
-{
-    return str + string(s);
-}
-
-string operator +(const char *s, const string &str)
-{
-    return string(s) + str;
-}
 
 string operator +(const char *s, CtiNumStr &numStr)
 {
-    return string(s) + numStr.toString();
+    return s + (string)numStr;
 }
 
 string operator +(CtiNumStr &numStr, const char *s)
 {
-    return numStr.toString() + string(s);
+    return (string)numStr + s;
+}
+
+ostream &operator <<(ostream &o, CtiNumStr &numStr)
+{
+    return o << (string)numStr;
 }
 

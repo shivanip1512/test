@@ -9,8 +9,8 @@
 *
 * PVCS KEYWORDS:
 * ARCHIVE      :  $Archive$
-* REVISION     :  $Revision: 1.8 $
-* DATE         :  $Date: 2007/03/09 21:31:12 $
+* REVISION     :  $Revision: 1.9 $
+* DATE         :  $Date: 2007/10/30 13:33:03 $
 *
 * Copyright (c) 1999, 2000 Cannon Technologies Inc. All rights reserved.
 *-----------------------------------------------------------------------------*/
@@ -22,8 +22,6 @@
 #include "dlldefs.h"
 #include <string>
 
-using std::string;
-
 class IM_EX_CTIBASE CtiNumStr
 {
 private:
@@ -33,109 +31,93 @@ private:
         DataStringLength = 40
     };
 
-    union _types
-    {
-        double d;
-        float f;
+    long          _integer;
+    unsigned long _unsigned;
+    double  _float;
+    void   *_pointer;
 
-        int c;
-        unsigned int uc;
-
-        short s;
-        unsigned short us;
-        int i;
-        unsigned int ui;
-        long l;
-        unsigned long ul;
-        void *vp;
-    } _data;
-
-    char _dataString[DataStringLength];
-
-    int    _precision;
+    int    _precision;  //  stores floating precision
+    int    _bits;       //  stores integer bit sizes for negative hex representations
     int    _padding;
-    int    _zeroes;
+    bool   _zeroes;
 
     enum Formats
     {
         Format_Default,
+        Format_Exponential,
         Format_Hex,
         Format_XHex,
-        Format_Exponential
     } _fmt;
 
     enum DataTypes
     {
-        DataType_Double,
-        DataType_Float,
-        DataType_Char,
-        DataType_UChar,
-        DataType_Short,
-        DataType_UShort,
-        DataType_Int,
-        DataType_UInt,
-        DataType_Long,
-        DataType_ULong,
-        DataType_Pointer
+        DataType_FloatingPoint,
+        DataType_Integer,
+        DataType_Unsigned,
+        DataType_Pointer,
     } _dataType;
+
+    //  both of these are undefined - no one should call these...  CtiNumStr is a one-shot object
+    CtiNumStr &operator=( const CtiNumStr &aRef );
+    CtiNumStr( const CtiNumStr &aRef );
+
+    void init( unsigned int width );
 
 protected:
 
-    void buildIntString( void );
-    void buildFloatString( void );
-    void buildPointerString( void );
+    void buildIntString    ( std::string &s ) const;
+    void buildFloatString  ( std::string &s ) const;
+    void buildPointerString( std::string &s ) const;
 
 public:
 
-    explicit CtiNumStr( double dVal, int precision=DefaultPrecision );
-    explicit CtiNumStr( float fVal,  int precision=DefaultPrecision );
-    explicit CtiNumStr( char cVal );
-    explicit CtiNumStr( unsigned char ucVal );
-    explicit CtiNumStr( short sVal );
-    explicit CtiNumStr( unsigned short usVal );
-    explicit CtiNumStr( int iVal );
-    explicit CtiNumStr( unsigned int uiVal );
-    explicit CtiNumStr( long lVal );
-    explicit CtiNumStr( unsigned long ulVal );
-    CtiNumStr( void *vpVal );
+    explicit CtiNumStr( double dVal, int precision = DefaultPrecision );
+    explicit CtiNumStr( float  fVal, int precision = DefaultPrecision );
 
-    CtiNumStr( const CtiNumStr &aRef );
+    explicit CtiNumStr( unsigned char  ucVal );
+    explicit CtiNumStr(          char   cVal );
+    explicit CtiNumStr( unsigned short usVal );
+    explicit CtiNumStr(          short  sVal );
+    explicit CtiNumStr( unsigned int   uiVal );
+    explicit CtiNumStr(          int    iVal );
+    explicit CtiNumStr( unsigned long  ulVal );
+    explicit CtiNumStr(          long   lVal );
+
+    CtiNumStr( void *vpVal );
 
     ~CtiNumStr( );
 
-    CtiNumStr &operator=( const CtiNumStr &aRef );
-    operator string ( );
+    operator std::string() const;
 
-    void init( void );
+    std::string toString( void ) const;
 
-    string toString(void);
+    CtiNumStr &hex ( int pad = -1 );
+    CtiNumStr &xhex( int pad = -1 );
 
-    CtiNumStr &hex( void );
-    CtiNumStr &xhex( void );
+    CtiNumStr &exp ( void );
 
-    CtiNumStr &exp( void );
-
-    CtiNumStr &spad( unsigned int pad );
-    CtiNumStr &zpad( unsigned int pad );
+    CtiNumStr &spad( unsigned int pad );  //  includes the "0x" prefix - defines total space-padded width
+    CtiNumStr &zpad( unsigned int pad );  //  excludes the "0x" prefix - defines zero-padded width of the number itself
 
     enum Limits
     {
         DefaultPrecision =  3,
         MaxPrecision     = 15,
+        MaxBits          = 32,
         MaxZeroPadding   = 20,
-        MaxSpacePadding  = 20
+        MaxSpacePadding  = 20,
     };
 };
 
-//overload the + operator for (string, CtiNumStr)
-IM_EX_CTIBASE string operator +(const string & str, CtiNumStr & numStr);
-IM_EX_CTIBASE string operator +(CtiNumStr & numStr, const string & str);
+//  overload the + operator for (string, CtiNumStr)
+IM_EX_CTIBASE std::string operator +(const std::string &str, CtiNumStr &numStr);
+IM_EX_CTIBASE std::string operator +(CtiNumStr &numStr, const std::string &str);
 
-//overload the + operator for (char*, CtiNumStr)
-IM_EX_CTIBASE string operator +(const char * s, CtiNumStr & numStr);
-IM_EX_CTIBASE string operator +(CtiNumStr & numStr, const char * s);
+//  overload the + operator for (char *, CtiNumStr)
+IM_EX_CTIBASE std::string operator +(const char *s, CtiNumStr &numStr);
+IM_EX_CTIBASE std::string operator +(CtiNumStr &numStr, const char *s);
 
-IM_EX_CTIBASE string operator +(const string & str, const char* s);
-IM_EX_CTIBASE string operator +(const char* s, const string& str);
+//  overload the << operator for ostream
+IM_EX_CTIBASE std::ostream &operator <<(std::ostream &o, CtiNumStr &numStr);
 
 #endif // #ifndef __NUMSTR_H__
