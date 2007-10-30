@@ -116,8 +116,6 @@ insert into YukonRoleProperty values(-10814, -108,'Suppress Error Page Details',
 go
 
 insert into BillingFileFormats values(-25,'Itron Register Readings Export');
-insert into billingfileformats values( 13, 'NISC',1);
-insert into billingfileformats values( -19, ' NISC No Limit kWh ',1);
 go
 
 /* @error ignore-begin */
@@ -441,6 +439,7 @@ insert into YukonRoleProperty values(-10816, -108,'Standard Page Style Sheet',' 
 update BillingFileFormats, set FormatType = 'DAFFRON' where formatType = 'DAFRON';
 update YukonListEntry set EntryText = 'Customer Type' where EntryText = 'Consumption Type'
 update YukonListEntry set EntryText = 'Postal Code' where EntryText = 'Zip Code' and ListID = 1056
+
 
 /******************************************************************************/
 /* Run the Stars Update if needed here */

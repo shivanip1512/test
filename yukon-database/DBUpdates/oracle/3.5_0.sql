@@ -103,8 +103,6 @@ insert into FDRInterfaceOption values(25, 'Point', 1, 'Combo', 'Nucla 115/69 Xfm
 insert into YukonRoleProperty values(-10814, -108,'Suppress Error Page Details', 'false', 'Disable stack traces for this user.');
 
 insert into BillingFileFormats values(-25,'Itron Register Readings Export');
-insert into billingfileformats values( 13, 'NISC',1);
-insert into billingfileformats values( -19, ' NISC No Limit kWh ',1);
 
 /* @error ignore-begin */
 insert into billingfileformats values(-26, 'SIMPLE_TOU_DeviceName');
@@ -369,6 +367,7 @@ insert into YukonRoleProperty values(-10816, -108,'Standard Page Style Sheet',' 
 update BillingFileFormats, set FormatType = 'DAFFRON' where formatType = 'DAFRON';
 update YukonListEntry set EntryText = 'Customer Type' where EntryText = 'Consumption Type'
 update YukonListEntry set EntryText = 'Postal Code' where EntryText = 'Zip Code' and ListID = 1056
+
 
 /******************************************************************************/
 /* Run the Stars Update if needed here */
