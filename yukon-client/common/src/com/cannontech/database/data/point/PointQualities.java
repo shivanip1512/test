@@ -25,6 +25,7 @@ public final class PointQualities
 	public static final int POWERFAIL_QUALITY = 15;
 	public static final int UNREASONABLE_QUALITY = 16;
 	public static final int CONSTANT_QUALITY = 17;
+	public static final int ESTIMATED_QUALITY = 18;
 	
 	//All the strings associated with points and the database
 	private static final String[][] pointStrings = 
@@ -47,7 +48,8 @@ public final class PointQualities
 		{"Overflow", "Overflow"},
 		{"Pow-Fail", "Power Fail"},
 		{"Unr", "Unreasonable"}, //16
-		{"Const", "Constant"}
+		{"Const", "Constant"},
+		{"Est", "Estimated"}
 	};	
 /**
  * This method was created in VisualAge.
