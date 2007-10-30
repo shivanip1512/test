@@ -374,6 +374,8 @@ insert into yukonroleproperty values (-100203,-1002, 'CapBank Last Update Timest
 insert into yukonroleproperty values (-100105,-1001, 'Target', 'true', 'is target stat displayed');
 /* @error ignore-end */
 
+delete from YukonListEntry where EntryText = 'Configuration'
+
 /******************************************************************************/
 /* Run the Stars Update if needed here */
 /* Note: DBUpdate application will ignore this if STARS is not present */

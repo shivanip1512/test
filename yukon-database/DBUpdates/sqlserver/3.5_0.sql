@@ -446,6 +446,7 @@ update BillingFileFormats, set FormatType = 'DAFFRON' where formatType = 'DAFRON
 update YukonListEntry set EntryText = 'Customer Type' where EntryText = 'Consumption Type'
 update YukonListEntry set EntryText = 'Postal Code' where EntryText = 'Zip Code' and ListID = 1056
 
+delete from YukonListEntry where EntryText = 'Configuration'
 
 /******************************************************************************/
 /* Run the Stars Update if needed here */
