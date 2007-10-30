@@ -1,7 +1,7 @@
 /*==============================================================*/
 /* Database name:  YukonDatabase                                */
 /* DBMS name:      Microsoft SQL Server 2000                    */
-/* Created on:     10/17/2007 3:58:07 PM                        */
+/* Created on:     10/30/2007 4:31:55 PM                        */
 /*==============================================================*/
 
 
@@ -1553,6 +1553,13 @@ go
 
 if exists (select 1
             from  sysobjects
+           where  id = object_id('PEAKREPORT')
+            and   type = 'U')
+   drop table PEAKREPORT
+go
+
+if exists (select 1
+            from  sysobjects
            where  id = object_id('POINT')
             and   type = 'U')
    drop table POINT
@@ -2094,17 +2101,17 @@ insert into BillingFileFormats values( 2,'CADPXL2',1);
 insert into BillingFileFormats values( 3,'WLT-40',1);
 insert into BillingFileFormats values( 4,'CTI-CSV',1);
 insert into BillingFileFormats values( 5,'OPU',1);
-insert into BillingFileFormats values( 6,'DAFRON',1);
+insert into BillingFileFormats values( 6,'DAFFRON',1);
 insert into BillingFileFormats values( 7,'NCDC',1);
 insert into billingFileformats values( 9, 'CTI2',1);
 insert into billingfileformats values( 12, 'SEDC 5.4',1);
-insert into billingfileformats values( 13, 'NISC',1);
+insert into billingfileformats values( 13, 'NISC-Turtle',1);
 insert into billingfileformats values( 14, 'NISC-NCDC',1);
 insert into billingfileformats values( 15, 'NCDC-Handheld',1);
 insert into billingfileformats values( 16, 'NISC TOU (kVarH)',1);
 insert into billingfileformats values( -17, 'SEDC (yyyyMMdd)',1);
 insert into billingfileformats values( -18, 'ATS',1);
-insert into billingfileformats values( -19, ' NISC No Limit kWh ',1);
+insert into billingfileformats values( -19, ' NISC-Turtle No Limit kWh ',1);
 insert into billingfileformats values(-20, 'IVUE_BI_T65',1);
 insert into billingfileformats values(21, 'SIMPLE_TOU',1);
 insert into billingfileformats values(22, 'EXTENDED_TOU',1);
@@ -3027,7 +3034,6 @@ insert into command values(-106, 'getvalue outage ?''Outage Log (1 - 6)''', 'Rea
 insert into command values(-107, 'getvalue peak frozen', 'Read frozen demand - kW and kWh', 'MCT-410IL');
 insert into command values(-108, 'getvalue voltage frozen', 'Read frozen voltage - min, max', 'MCT-410IL');
 insert into command values(-109, 'putvalue powerfail reset', 'Reset blink counter', 'MCT-410IL');
-insert into command values(-110, 'getvalue voltage frozen', 'Read frozen voltage - min, max', 'MCT-410IL');
 insert into command values(-111, 'getconfig intervals', 'Read rates for LI, LP, Volt LI, and Volt Profile Demand', 'All MCT-4xx Series');
 insert into command values(-112, 'putconfig emetcon intervals', 'Write rate intervals from database to MCT', 'MCT-410IL');
 insert into command values(-113, 'putstatus emetcon freeze ?''(one or two)''', 'Reset and Write current peak demand - kW and kWh to frozen register', 'MCT-410IL');
@@ -5791,6 +5797,7 @@ create table GroupPaoPermission (
    GroupID              numeric              not null,
    PaoID                numeric              not null,
    Permission           varchar(50)          not null,
+   Allow                varchar(5)           not null default 'Allow',
    constraint PK_GROUPPAOPERMISSION primary key nonclustered (GroupPaoPermissionID)
 )
 go
@@ -6739,6 +6746,21 @@ create table PAOowner (
 go
 
 /*==============================================================*/
+/* Table: PEAKREPORT                                            */
+/*==============================================================*/
+create table PEAKREPORT (
+   resultID             int                  not null,
+   deviceID             numeric              null,
+   channel              int                  null,
+   peakType             varchar(50)          null,
+   runType              varchar(50)          null,
+   runDate              datetime             null,
+   resultString         varchar(1500)        null,
+   constraint PK_PEAKREPORT primary key (resultID)
+)
+go
+
+/*==============================================================*/
 /* Table: POINT                                                 */
 /*==============================================================*/
 create table POINT (
@@ -7598,6 +7620,7 @@ create table UserPaoPermission (
    UserID               numeric              not null,
    PaoID                numeric              not null,
    Permission           varchar(50)          not null,
+   Allow                varchar(5)           not null default 'Allow',
    constraint PK_USERPAOPERMISSION primary key nonclustered (UserPaoPermissionID)
 )
 go
@@ -8571,7 +8594,7 @@ insert into YukonListEntry values (1346,1055,0,'Customer Type',3406);
 insert into yukonlistentry values (1351, 1056, 0, 'Service Status', 3501);
 insert into YukonListEntry values (1352,1056,0,'Service Type',3502);
 insert into YukonListEntry values (1353,1056,0,'Service Company',3503);
-insert into YukonListEntry values (1354,1056,0,'Zip Code',3504);
+insert into YukonListEntry values (1354,1056,0,'Postal Code',3504);
 insert into YukonListEntry values (1355,1056,0,'Customer Type',3505);
 
 insert into YukonListEntry values (1400,1032,0,' ',0);
@@ -8813,7 +8836,7 @@ insert into yukonlistentry values (10103, 1067, 0, 'WorkOrder', 0);
 insert into yukonlistentry values (10201, 1068, 0, 'Created', 0);
 insert into yukonlistentry values (10202, 1068, 0, 'Updated', 0);
 
-insert into YukonListEntry values (10431,1053,0,'Consumption Type',2911);
+insert into YukonListEntry values (10431,1053,0,'Customer Type',2911);
 
 insert into YukonListEntry values (20000,0,0,'Customer List Entry Base 2',0);
 
@@ -8988,6 +9011,7 @@ insert into YukonRoleProperty values(-1109,-2,'z_optional_product_dev','00000000
 insert into YukonRoleProperty values(-1110,-2,'Default Temperature Unit','F','Default temperature unit for an energy company, F(ahrenheit) or C(elsius)');
 insert into YukonRoleProperty values(-1111,-2,'z_meter_mct_base_desig','yukon','Allow meters to be used general STARS entries versus Yukon MCTs');
 insert into YukonRoleProperty values(-1112,-2,'applicable_point_type_key','','The name of the set of CICustomerPointData TYPES that should be set for customers.');
+insert into YukonRoleProperty values(-1113,-2,'Standard Page Style Sheet',' ','A comma separated list of URLs for CSS files that will be included on every Standard Page');
 insert into YukonRoleProperty values(-1114,-2,'Inherit Parent App Cats','true','If part of a member structure, should appliance categories be inherited from the parent.');
 
 
@@ -9212,7 +9236,7 @@ insert into YukonRoleProperty values(-20014,-200,'View Device Config','true','Co
 insert into YukonRoleProperty values(-20203,-202,'Enable Bulk Importer','true','Allows access to the Bulk Importer');
 insert into YukonRoleProperty values(-20204,-202,'Enable Tou','true','Allows access to Tou(Time of use) data');  
 insert into YukonRoleProperty values(-20205,-202,'Enable Device Group','true','Allows access to change device groups for a device');  
-
+insert into YukonRoleProperty values(-20206,-202,'Enable Profile Request','true','Access to perform profile data request');
 
 /* Operator Esubstation Drawings Role Properties */
 insert into YukonRoleProperty values(-20600,-206,'View Drawings','true','Controls viewing of Esubstations drawings');
@@ -9404,7 +9428,10 @@ insert into YukonRoleProperty values(-70009,-700,'CBC Refresh Rate','60','The ra
 insert into YukonRoleProperty values(-70010,-700,'Database Editing','false','Allows the user to view/modify the database set up for all CapControl items');
 insert into YukonRoleProperty values(-70011,-700,'Show flip command', 'false', 'Show flip command for Cap Banks with 7010 type controller');
 insert into YukonRoleProperty values(-70012,-700,'Show Cap Bank Add Info','false','Show Cap Bank Addititional Info tab');
-
+insert into YukonRoleProperty values(-70013,-700,'Definition Available','Open,OpenQuestionable,OpenPending','Capbank sized in these states will be added to the available sum.');
+insert into YukonRoleProperty values(-70014,-700,'Definition Unavailable','Close,CloseQuestionable,CloseFail,ClosePending,OpenFail','Capbank sized in these states will be added to the unavailable sum.');
+insert into YukonRoleProperty values(-70015,-700,'Definition Tripped','Open,OpenFail,OpenPending,OpenQuestionable','Capbank sized in these states will be added to the tripped sum.');
+insert into YukonRoleProperty values(-70016,-700,'Definition Closed','Close,CloseFail,CloseQuestionable,ClosePending','Capbank sized in these states will be added to the closed sum.');
 
 /* Notification / IVR Role properties */
 insert into YukonRoleProperty values(-1400,-800,'voice_app','login','The voice server application that Yukon should use');
@@ -10564,6 +10591,7 @@ go
 alter table DYNAMICPAOSTATISTICSHISTORY
    add constraint FK_DYNPAOSTHIST_YKNPAO foreign key (PAObjectID)
       references YukonPAObject (PAObjectID)
+         on update cascade on delete cascade
 go
 
 alter table DYNAMICPOINTDISPATCH
@@ -11377,6 +11405,7 @@ go
 alter table PROFILEPEAKRESULT
    add constraint FK_PROFILEPKRSLT_DEVICE foreign key (DeviceId)
       references DEVICE (DEVICEID)
+         on update cascade on delete cascade
 go
 
 alter table PointAlarming

@@ -374,6 +374,9 @@ insert into yukonroleproperty values (-100203,-1002, 'CapBank Last Update Timest
 insert into yukonroleproperty values (-100105,-1001, 'Target', 'true', 'is target stat displayed');
 /* @error ignore-end */
 
+delete from devicetypecommand where commandid = -110;
+delete from command where commandid = -110;
+
 delete from YukonListEntry where EntryText = 'Configuration'
 
 /******************************************************************************/

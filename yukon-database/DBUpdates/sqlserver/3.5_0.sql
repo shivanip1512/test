@@ -448,6 +448,9 @@ update YukonListEntry set EntryText = 'Postal Code' where EntryText = 'Zip Code'
 
 delete from YukonListEntry where EntryText = 'Configuration'
 
+delete from devicetypecommand where commandid = -110;
+delete from command where commandid = -110;
+
 /******************************************************************************/
 /* Run the Stars Update if needed here */
 /* Note: DBUpdate application will ignore this if STARS is not present */
