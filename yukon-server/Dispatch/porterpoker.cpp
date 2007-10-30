@@ -10,8 +10,8 @@
 * Author: Corey G. Plender
 *
 * CVS KEYWORDS:
-* REVISION     :  $Revision: 1.5 $
-* DATE         :  $Date: 2006/04/24 20:47:29 $
+* REVISION     :  $Revision: 1.6 $
+* DATE         :  $Date: 2007/10/30 21:33:04 $
 *
 * Copyright (c) 2002 Cannon Technologies Inc. All rights reserved.
 *-----------------------------------------------------------------------------*/
@@ -36,6 +36,7 @@ using namespace std;  // get the STL into our namespace for use.  Do NOT use ios
 #include "message.h"
 #include "msg_cmd.h"
 #include "msg_reg.h"
+#include "msg_dbchg.h"
 #include "connection.h"
 #include "counter.h"
 #include "pointtypes.h"
@@ -91,6 +92,8 @@ void main(int argc, char **argv)
     dout << "Alt - R     Download all CCU Default Routes" << endl;
     dout << "Alt - S     Issue a system wide timesync" << endl;
     dout << "Alt - T     Trace all communications" << endl;
+    dout << "Alt - V     Issue Device DBChange" << endl;
+    dout << "Alt - W     Issue Point DBChange" << endl;
     */
 
 
@@ -117,6 +120,8 @@ void main(int argc, char **argv)
             dout << "         0x71 - Print port queue information" << endl;
             dout << "         0x01 0xXXXXXXXX - Set Porter's PorterDebugLevel" << endl;
             dout << "         0x02 0xXXXXXXXX - Set Porter's DBDEBUGLEVEL" << endl;
+            dout << "         0x03 0xXXXXXXXX - Send DISPATCH a device DBChange" << endl;
+            dout << "         0x04 0xXXXXXXXX - Send DISPATCH a point DBChange" << endl;
         }
     }
 
@@ -143,25 +148,50 @@ void main(int argc, char **argv)
             CtiPointRegistrationMsg    *PtRegMsg = CTIDBG_new CtiPointRegistrationMsg(REG_NOTHING);
             Connect.WriteConnQue(PtRegMsg);
 
-            CtiCommandMsg *pCmd = new CtiCommandMsg(CtiCommandMsg::PorterConsoleInput, 15);
-
-            pCmd->getOpArgList().push_back(-1);    // Token
-            pCmd->getOpArgList().push_back(command);
-
-            if( (command == 0x01 || command == 0x02) )
+            if( !(command == 0x03 || command == 0x04) )
+            {
+                CtiCommandMsg *pCmd = new CtiCommandMsg(CtiCommandMsg::PorterConsoleInput, 15);
+    
+                pCmd->getOpArgList().push_back(-1);    // Token
+                pCmd->getOpArgList().push_back(command);
+    
+                if( (command == 0x01 || command == 0x02) )
+                {
+                    if( argc >= 4 )
+                    {
+                        dblvl = strtoul(argv[3], &pch, 0);
+                        pCmd->getOpArgList().push_back(dblvl);
+                    }
+                    else
+                    {
+                        pCmd->getOpArgList().push_back(0x00000000);
+                    }
+                }
+    
+                Connect.WriteConnQue(pCmd);
+            }
+            else
             {
                 if( argc >= 4 )
                 {
                     dblvl = strtoul(argv[3], &pch, 0);
-                    pCmd->getOpArgList().push_back(dblvl);
                 }
                 else
                 {
-                    pCmd->getOpArgList().push_back(0x00000000);
+                    dblvl = 0;
+                }
+
+                if( command == 0x03 )
+                {
+                    CtiDBChangeMsg *chg = new CtiDBChangeMsg(dblvl, ChangePAODb, "device", "", ChangeTypeUpdate);
+                    Connect.WriteConnQue(chg);
+                }
+                else if( command == 0x04 )
+                {
+                    CtiDBChangeMsg *chg = new CtiDBChangeMsg(dblvl, ChangePointDb, "point", "", ChangeTypeUpdate);
+                    Connect.WriteConnQue(chg);
                 }
             }
-
-            Connect.WriteConnQue(pCmd);
 
             Connect.WriteConnQue(CTIDBG_new CtiCommandMsg(CtiCommandMsg::ClientAppShutdown, 0));
 
