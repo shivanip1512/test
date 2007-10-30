@@ -439,6 +439,7 @@ delete from YukonRoleProperty where RolePropertyId = -1113;
 insert into YukonRoleProperty values(-10816, -108,'Standard Page Style Sheet',' ','A comma separated list of URLs for CSS files that will be included on every Standard Page');
 
 update BillingFileFormats, set FormatType = 'DAFFRON' where formatType = 'DAFRON';
+update YukonListEntry set EntryText = 'Customer Type' where EntryText = 'Consumption Type'
 
 /******************************************************************************/
 /* Run the Stars Update if needed here */
