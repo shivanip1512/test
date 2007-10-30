@@ -21,6 +21,7 @@ INCLPATHS+= \
 TESTOBJS=\
 cmdparsetestgenerator.obj \
 test_cmdparse.obj \
+test_numstr.obj \
 test_rwutil.obj \
 test_ctidate.obj \
 test_ctitime.obj \
