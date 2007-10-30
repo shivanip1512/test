@@ -8,8 +8,8 @@
 *
 * PVCS KEYWORDS:
 * ARCHIVE      :  $Archive:   Z:/SOFTWAREARCHIVES/YUKON/RTDB/dev_mct4xx-arc  $
-* REVISION     :  $Revision: 1.68 $
-* DATE         :  $Date: 2007/09/24 19:51:41 $
+* REVISION     :  $Revision: 1.69 $
+* DATE         :  $Date: 2007/10/30 13:48:09 $
 *
 * Copyright (c) 2005 Cannon Technologies Inc. All rights reserved.
 *-----------------------------------------------------------------------------*/
@@ -220,7 +220,7 @@ bool CtiDeviceMCT4xx::is_valid_time( const CtiTime time )
     bool retval = false;
 
     //  between 2000-jan-01 and tomorrow
-    retval = (time > DawnOfTime) && 
+    retval = (time > DawnOfTime) &&
              (time < (CtiTime::now() + 86400));
 
     return retval;
@@ -869,12 +869,12 @@ INT CtiDeviceMCT4xx::executeGetValue( CtiRequestMsg        *pReq,
                             && getDynamicInfo(Keys::Key_MCT_SSpecRevision) < CtiDeviceMCT410::SspecRev_NewLLP_Min )
                         {
                             CtiReturnMsg *ReturnMsg = CTIDBG_new CtiReturnMsg(getID(), OutMessage->Request.CommandStr);
-    
+
                             if( ReturnMsg )
                             {
                                 ReturnMsg->setUserMessageId(OutMessage->Request.UserID);
                                 ReturnMsg->setResultString(getName() + " / Load profile reporting for MCT 410 only supported for SSPECs " + CtiNumStr(CtiDeviceMCT410::Sspec) + " revision " + CtiNumStr((double)(CtiDeviceMCT410::SspecRev_NewLLP_Min) / 10.0, 1) + " and up");
-    
+
                                 retMsgHandler( OutMessage->Request.CommandStr, NoMethod, ReturnMsg, vgList, retList, true );
                             }
                         }
@@ -883,13 +883,13 @@ INT CtiDeviceMCT4xx::executeGetValue( CtiRequestMsg        *pReq,
                             function = Emetcon::GetValue_LoadProfilePeakReport;
                             found = getOperation(function, OutMessage->Buffer.BSt);
                         }
-    
+
                         if( found )
                         {
                             int lp_peak_command = -1;
                             string lp_peaktype = parse.getsValue("lp_peaktype");
                             int request_range  = parse.getiValue("lp_range");  //  add safeguards to check that we're not >30 days... ?
-    
+
                             if( !lp_peaktype.compare("day") )
                             {
                                 lp_peak_command = FuncRead_LLPPeakDayPos;
@@ -902,14 +902,14 @@ INT CtiDeviceMCT4xx::executeGetValue( CtiRequestMsg        *pReq,
                             {
                                 lp_peak_command = FuncRead_LLPPeakIntervalPos;
                             }
-    
+
                             if( lp_peak_command > 0 )
                             {
                                 //  add on a day - this is the end of the interval, not the beginning,
                                 //    so we need to start at midnight of the following day
                                 request_time  = CtiTime(CtiDate(day, month, year)).seconds() + 86400;
-    
-                                //  if we need to send the period of interest, we'll use this later to 
+
+                                //  if we need to send the period of interest, we'll use this later to
                                 //    generate the actual read command
                                 _llpPeakInterest.command = lp_peak_command;
 
@@ -921,29 +921,29 @@ INT CtiDeviceMCT4xx::executeGetValue( CtiRequestMsg        *pReq,
                                     _llpPeakInterest.time    = request_time;
                                     _llpPeakInterest.channel = request_channel;
                                     _llpPeakInterest.period  = request_range;
-    
+
                                     function = Emetcon::PutConfig_LoadProfileReportPeriod;
-    
+
                                     OutMessage->Buffer.BSt.Function = FuncWrite_LLPPeakInterestPos;
                                     OutMessage->Buffer.BSt.IO       = Emetcon::IO_Function_Write;
                                     OutMessage->Buffer.BSt.Length   = FuncWrite_LLPPeakInterestLen;
                                     OutMessage->MessageFlags |= MessageFlag_ExpectMore;
-    
+
                                     unsigned long utc_time = request_time;
-    
+
                                     OutMessage->Buffer.BSt.Message[0] = gMCT400SeriesSPID;
-    
+
                                     OutMessage->Buffer.BSt.Message[1] = (request_channel + 1) & 0x000000ff;
-    
+
                                     OutMessage->Buffer.BSt.Message[2] = (utc_time >> 24)      & 0x000000ff;
                                     OutMessage->Buffer.BSt.Message[3] = (utc_time >> 16)      & 0x000000ff;
                                     OutMessage->Buffer.BSt.Message[4] = (utc_time >>  8)      & 0x000000ff;
                                     OutMessage->Buffer.BSt.Message[5] = (utc_time)            & 0x000000ff;
-    
+
                                     if( request_range < 256 )
                                     {
                                         OutMessage->Buffer.BSt.Message[6] = request_range & 0xff;
-                                        
+
                                         OutMessage->Buffer.BSt.Message[7] = 0;
                                         OutMessage->Buffer.BSt.Message[8] = 0;
                                     }
@@ -954,12 +954,12 @@ INT CtiDeviceMCT4xx::executeGetValue( CtiRequestMsg        *pReq,
                                         OutMessage->Buffer.BSt.Message[7] = (request_range >> 8) & 0xff;
                                         OutMessage->Buffer.BSt.Message[8] = (request_range     ) & 0xff;
                                     }
-    
+
                                     //  add a bit of a delay so the 410 can calculate...
                                     //    this delay may need to be increased by other means, depending
                                     //    on how long the larger peak report calculations take
                                     //interest_om->MessageFlags |= MessageFlag_AddSilence;
-    
+
                                     //outList.push_back(interest_om);
                                     //interest_om = 0;
                                 }
@@ -971,7 +971,7 @@ INT CtiDeviceMCT4xx::executeGetValue( CtiRequestMsg        *pReq,
                                     OutMessage->Buffer.BSt.IO       = Emetcon::IO_Function_Read;
                                     OutMessage->Buffer.BSt.Length   = 13;
                                 }
-    
+
                                 nRet = NoError;
                             }
                         }
@@ -1858,7 +1858,7 @@ INT CtiDeviceMCT4xx::decodePutConfig(INMESS *InMessage, CtiTime &TimeNow, list< 
 
             case Emetcon::PutConfig_LoadProfileReportPeriod:
             {
-                int variable_delay, 
+                int variable_delay,
                     fixed_delay;
 
                 fixed_delay     = gConfigParms.getValueAsInt("PORTER_MCT_PEAK_REPORT_DELAY", 10) * 1000;
@@ -1894,7 +1894,7 @@ INT CtiDeviceMCT4xx::decodePutConfig(INMESS *InMessage, CtiTime &TimeNow, list< 
 
                 command_str += CtiNumStr(_llpPeakInterest.period);
 
-                noqueue 
+                noqueue
 */
                 CtiRequestMsg newReq(getID(),
                                      InMessage->Return.CommandStr,
@@ -2682,7 +2682,22 @@ INT CtiDeviceMCT4xx::decodeGetConfigTime(INMESS *InMessage, CtiTime &TimeNow, li
                    InMessage->Buffer.DSt.Message[4];
 
             resultString  = getName() + " / Current Time: " + printable_time(time) + "\n";
-            resultString += getName() + " / Timezone Offset: " + CtiNumStr(((float)timezone_offset) / 4.0, 2) + " hours";
+
+            resultString += getName() + " / Timezone Offset: ";
+
+            if( timezone_offset <=  48 &&
+                timezone_offset >= -48 )
+            {
+                resultString += CtiNumStr(((float)timezone_offset) / 4.0, 2) + " hours\n";
+            }
+            else if( timezone_offset == 0x7f )
+            {
+                resultString += "(uninitialized [0x7f])\n";
+            }
+            else
+            {
+                resultString += "(invalid [" + CtiNumStr(timezone_offset).xhex(2) + "])\n";
+            }
         }
         else if( InMessage->Sequence == Emetcon::GetConfig_TSync )
         {
@@ -3418,7 +3433,7 @@ INT CtiDeviceMCT4xx::decodeGetValuePeakDemand(INMESS *InMessage, CtiTime &TimeNo
                         }
 
                         valid_data = false;
-                        ReturnMsg->setResultString("Freeze parity check failed (" + CtiNumStr(pi_kwh.freeze_bit) + ") != (" + CtiNumStr(_expected_freeze) + "), last recorded freeze sent at " + RWTime(getDynamicInfo(CtiTableDynamicPaoInfo::Key_DemandFreezeTimestamp)).asString());
+                        ReturnMsg->setResultString("Freeze parity check failed (" + CtiNumStr(pi_kwh.freeze_bit).toString() + ") != (" + CtiNumStr(_expected_freeze).toString() + "), last recorded freeze sent at " + CtiTime(getDynamicInfo(CtiTableDynamicPaoInfo::Key_DemandFreezeTimestamp)).asString());
                         status = NOTNORMAL;
                     }
                 }
