@@ -59,6 +59,9 @@ public class InventoryFilter extends AbstractFilter<LiteInventoryBase> {
             public int compare(Integer o1, Integer o2) {
                 final Integer speed1 = getSpeed(o1);
                 final Integer speed2 = getSpeed(o2);
+                
+                if (speed1.equals(speed2)) return o1.compareTo(o2);
+                
                 int result = speed1.compareTo(speed2);
                 return result;
             }

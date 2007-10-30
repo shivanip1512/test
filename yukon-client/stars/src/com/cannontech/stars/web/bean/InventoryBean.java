@@ -191,7 +191,6 @@ public class InventoryBean {
 	private int htmlStyle = HTML_STYLE_LIST_INVENTORY;
 	private String referer = null;
 	private List<Object> inventorySet = null;
-	private int member = -1;
 	private int searchBy = CtiUtilities.NONE_ZERO_ID;
 	private String searchValue = null;
 	private String action = null;
@@ -214,28 +213,35 @@ public class InventoryBean {
         return inventoryList;
     }
     
+    @SuppressWarnings("unchecked")
+    private List<LiteStarsEnergyCompany> getMembersFromFilterList() {
+        final List<LiteStarsEnergyCompany> companyList = new ArrayList<LiteStarsEnergyCompany>();
+        List<FilterWrapper> filterList = getFilterByList();
+        for (final FilterWrapper filter : filterList) {
+            Integer id = Integer.parseInt(filter.getFilterID());
+            companyList.add(StarsDatabaseCache.getInstance().getEnergyCompany(id));
+        }
+        return companyList;
+    }
+    
 	@SuppressWarnings("unchecked")
     private List<Object> getHardwareList(boolean showEnergyCompany) throws WebClientException {
 		if (inventoryList != null && !shipmentCheck) return inventoryList;
 		
-		List<Object> hardwares = null;
+		List<Object> hardwares = new ArrayList<Object>();
 		if ((getHtmlStyle() & HTML_STYLE_INVENTORY_SET) != 0 && inventorySet != null) {
 			hardwares = inventorySet;
 		}
 		else if (showEnergyCompany) {
-			if (getMember() >= 0) {
-				LiteStarsEnergyCompany member = StarsDatabaseCache.getInstance().getEnergyCompany( getMember() );
-                List<?> inventory = null;
-				if (getSearchBy() == 0)
-					inventory = member.loadAllInventory( true );
-				else
-					inventory = InventoryManagerUtil.searchInventory( member, getSearchBy(), getSearchValue(), false );
-				
-				hardwares = new ArrayList<Object>();
-				for (int i = 0; i < inventory.size(); i++)
-					hardwares.add( new Pair<Object,LiteStarsEnergyCompany>(inventory.get(i), member) );
-			}
-			else if (getSearchBy() == 0) {
+		    List<LiteStarsEnergyCompany> memberList = getMembersFromFilterList();
+		    if (memberList.size() > 0) {
+		        for (final LiteStarsEnergyCompany company : memberList) {
+		            List<LiteInventoryBase> invList = company.loadAllInventory(true);
+		            for (LiteInventoryBase inv : invList) {
+		                hardwares.add(new Pair(inv, company));
+		            }
+		        }
+			} else if (getSearchBy() == 0) {
                 List<LiteStarsEnergyCompany> members = ECUtils.getAllDescendants( getEnergyCompany() );
 				hardwares = new ArrayList<Object>();
 				
@@ -751,7 +757,6 @@ public class InventoryBean {
         
         List<FilterWrapper> oldFilters = filterByList;
         filterByList = new ArrayList<FilterWrapper>();
-        boolean memberSpecified = false;
         
         /**
          * Because of the size of Xcel, we need to handle members as the first part of
@@ -770,12 +775,7 @@ public class InventoryBean {
             Integer filterType = Integer.valueOf(newFilters.get(j).getFilterTypeID());
             String specificFilterString = newFilters.get(j).getFilterID();
             Integer specificFilterID = InventoryUtils.returnIntegerIfPossible(specificFilterString);
-            if(filterType.intValue() == YukonListEntryTypes.YUK_DEF_ID_INV_FILTER_BY_MEMBER)
-            {
-                setMember(specificFilterID.intValue());
-                memberSpecified = true;
-            }
-            
+
             if(inventoryList != null)
             {
                 boolean found = false;
@@ -798,9 +798,6 @@ public class InventoryBean {
          */
         Collections.sort(newFilters, FilterWrapper.filterWrapperComparator);
         filterByList = newFilters;
-        
-        if(!memberSpecified)
-            setMember(-1);
 	}
 
 	/**
@@ -938,14 +935,6 @@ public class InventoryBean {
 	public void setAction(String string) {
 		action = string;
 	}
-
-    public int getMember() {
-        return member;
-    }
-
-    public void setMember(int member) {
-        this.member = member;
-    }
     
     @SuppressWarnings("unchecked")
     public String getFilterInventoryHTML()
