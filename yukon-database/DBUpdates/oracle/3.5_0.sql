@@ -267,7 +267,8 @@ alter table DYNAMICPAOSTATISTICSHISTORY
 
 alter table DYNAMICPAOSTATISTICSHISTORY
    add constraint FK_DYNPAOSTHIST_YKNPAO foreign key (PAObjectID)
-      references YukonPAObject (PAObjectID);
+      references YukonPAObject (PAObjectID)
+        on update cascade on delete cascade;
       
 insert into DynamicPAOStatistics select distinct paobjectid, 'Lifetime', 0, 0, 0, 0, 0, 0, CURRENT_TIMESTAMP, CURRENT_TIMESTAMP from DynamicPAOStatistics;
       
