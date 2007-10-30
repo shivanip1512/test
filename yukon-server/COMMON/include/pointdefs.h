@@ -234,7 +234,8 @@ typedef enum
    OverflowQuality,
    PowerfailQuality,
    UnreasonableQuality,
-   ConstantQuality
+   ConstantQuality,
+   EstimatedQuality,
 
 } PointQuality_t;
 
