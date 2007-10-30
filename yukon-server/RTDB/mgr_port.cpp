@@ -6,8 +6,8 @@
 *
 * PVCS KEYWORDS:
 * ARCHIVE      :  $Archive:   Z:/SOFTWAREARCHIVES/YUKON/RTDB/mgr_port.cpp-arc  $
-* REVISION     :  $Revision: 1.32 $
-* DATE         :  $Date: 2007/07/10 21:02:14 $
+* REVISION     :  $Revision: 1.33 $
+* DATE         :  $Date: 2007/10/30 15:40:06 $
 *
 * Copyright (c) 1999, 2000, 2001 Cannon Technologies Inc. All rights reserved.
 *-----------------------------------------------------------------------------*/
@@ -409,9 +409,9 @@ void CtiPortManager::apply(void (*applyFun)(const long, ptr_type, void*), void* 
             }
         }
 
-        spiterator itr;
+        spiterator itr, itr_end = end();
 
-        for(itr = begin(); itr != end(); itr++)
+        for(itr = begin(); itr != itr_end; itr++)
         {
             applyFun( itr->first, itr->second, d);
         }
@@ -450,9 +450,9 @@ CtiPortManager::ptr_type CtiPortManager::find(bool (*findFun)(const long, ptr_ty
             }
         }
 
-        spiterator itr;
+        spiterator itr, itr_end = end();
 
-        for(itr = begin(); itr != end(); itr++)
+        for(itr = begin(); itr != itr_end; itr++)
         {
             if( findFun( itr->first, itr->second, d ) )
             {
@@ -486,9 +486,9 @@ void CtiPortManager::DumpList(void)
             gaurd.tryAcquire(30000);
         }
 
-        spiterator itr;
+        spiterator itr, itr_end = end();
 
-        for(itr = begin(); itr != end(); itr++)
+        for(itr = begin(); itr != itr_end; itr++)
         {
             itr->second->Dump();
         }
