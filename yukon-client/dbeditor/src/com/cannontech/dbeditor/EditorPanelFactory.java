@@ -32,12 +32,6 @@ public final class EditorPanelFactory
 		//{Object.class,Object.class}
    	{com.cannontech.database.db.notification.AlarmCategory.class,
 		 com.cannontech.dbeditor.editor.alarmcategories.AlarmCategoriesEditorPanel.class},
-   	
-   	{com.cannontech.database.data.capcontrol.CapControlFeeder.class,
-	   com.cannontech.dbeditor.editor.capfeeder.CCFeederEditor.class},
-
-		{com.cannontech.database.data.capcontrol.CapControlSubBus.class,
-	  	com.cannontech.dbeditor.editor.capsubbus.CCSubstationBusEditorPanel.class},
 		
 		{com.cannontech.database.data.customer.Customer.class,
 		 com.cannontech.dbeditor.editor.contact.CustomerEditor.class},

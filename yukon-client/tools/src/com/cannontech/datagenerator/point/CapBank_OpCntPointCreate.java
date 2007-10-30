@@ -14,6 +14,7 @@ package com.cannontech.datagenerator.point;
  */
 import java.util.Vector;
 
+import com.cannontech.cbc.dao.CapbankDao;
 import com.cannontech.clientutils.CTILogger;
 import com.cannontech.common.util.CtiUtilities;
 import com.cannontech.core.dao.DaoFactory;
@@ -26,9 +27,9 @@ import com.cannontech.database.data.point.AnalogPoint;
 import com.cannontech.database.data.point.PointFactory;
 import com.cannontech.database.data.point.PointTypes;
 import com.cannontech.database.data.point.PointUnits;
-import com.cannontech.database.db.capcontrol.CapBank;
 import com.cannontech.database.db.point.PointAlarming;
 import com.cannontech.database.db.point.PointUnit;
+import com.cannontech.spring.YukonSpringHook;
 
 public class CapBank_OpCntPointCreate extends PointCreate
 {
@@ -41,8 +42,9 @@ public class CapBank_OpCntPointCreate extends PointCreate
 	 */
 	public boolean isDeviceValid( LiteYukonPAObject litePaobject_ ) {
 		// All Switched Cap Banks are valid
+        CapbankDao dao = YukonSpringHook.getBean("capbankDao",CapbankDao.class);
 		if(DeviceTypesFuncs.CAPBANK == litePaobject_.getType())
-			return CapBank.isSwitchedBank(new Integer(litePaobject_.getLiteID()));
+			return dao.isSwitchedBank(new Integer(litePaobject_.getLiteID()));
 			
 		return false;
 	}

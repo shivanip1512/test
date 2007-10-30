@@ -138,40 +138,5 @@ public class CapControlSubstation extends CapControlYukonPAOBase implements
         }
         connection.close();
     }
-    
-    public static List<Integer> getAllUnassignedSubstations () {
-        SqlStatementBuilder allSubstations = new SqlStatementBuilder();
-        allSubstations.append("select paobjectid from yukonpaobject where type like 'CCSUBSTATION' ");
-        allSubstations.append("and ");
-        allSubstations.append("paobjectid not in (select substationbusid from ccsubareaassignment)");
-        JdbcOperations yukonTemplate = JdbcTemplateHelper.getYukonTemplate();
-        return yukonTemplate.queryForList(allSubstations.toString(), Integer.class);
-
-    }
-    
-    public static List<Integer> getAllSpecialAreaUnassignedSubstations (Integer areaId) {
-        SqlStatementBuilder allSubstations = new SqlStatementBuilder();
-        allSubstations.append("select paobjectid from yukonpaobject where type like 'CCSUBSTATION' ");
-        allSubstations.append("and ");
-        allSubstations.append("paobjectid not in (select substationbusid from ccsubspecialareaassignment where areaid = "+areaId+ " )");
-        JdbcOperations yukonTemplate = JdbcTemplateHelper.getYukonTemplate();
-        return yukonTemplate.queryForList(allSubstations.toString(), Integer.class);
-
-    }
-
-    public static List<Integer> getAllSubstationIDs() {
-        SqlStatementBuilder builder = new SqlStatementBuilder();
-        builder.append("select substationid from CapControlSubstation");
-        JdbcOperations yukonTemplate = JdbcTemplateHelper.getYukonTemplate();
-        return yukonTemplate.queryForList(builder.toString(), Integer.class);
-    }
-    
-    public static Integer  getSubstationIdByName (String name) {
-        SqlStatementBuilder builder = new SqlStatementBuilder();
-        builder.append("select substationid from CapControlSubstation, yukonpaobject");
-        builder.append("where substationid = paobjectid and paoname like "  + "'" +name+ "'");
-        JdbcOperations yukonTemplate = JdbcTemplateHelper.getYukonTemplate();
-        return (Integer) yukonTemplate.queryForObject(builder.toString(), Integer.class);
-    }
 
 }

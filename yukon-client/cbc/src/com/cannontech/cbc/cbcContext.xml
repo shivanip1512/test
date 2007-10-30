@@ -7,15 +7,36 @@
       <property name="jdbcTemplate" ref="simpleJdbcTemplate"/>
   </bean>
   
+  <bean id="substationBusDao" class="com.cannontech.cbc.dao.impl.SubstationBusDaoImpl">
+    <property name="simpleJdbcTemplate" ref="simpleJdbcTemplate"/>
+  </bean>
+  
+  <bean id="ccSubstationDao" class="com.cannontech.cbc.dao.impl.CcSubstationDaoImpl">
+    <property name="simpleJdbcTemplate" ref="simpleJdbcTemplate"/>
+  </bean>
+  
+  <bean id="feederDao" class="com.cannontech.cbc.dao.impl.FeederDaoImpl">
+    <property name="simpleJdbcTemplate" ref="simpleJdbcTemplate"/>
+  </bean> 
+  
+  <bean id="capbankDao" class="com.cannontech.cbc.dao.impl.CapbankDaoImpl">
+    <property name="simpleJdbcTemplate" ref="simpleJdbcTemplate"/>
+  </bean>
+  
   <bean id="cbcCache" class="com.cannontech.cbc.cache.impl.CapControlCacheImpl" init-method="initialize" >
   	  <property name="defCapControlConn" ref="cbcConnection"/>
   	  <property name="refreshTimer" ref="globalScheduledExecutor"/>
       <property name="paoDao" ref="paoDao"/>
       <property name="stateDao" ref="stateDao"/>
+      <property name="substationDao" ref="ccSubstationDao"/>
+      <property name="substationBusDao" ref="substationBusDao"/>
+      <property name="feederDao" ref="feederDao"/>
+      <property name="capbankDao" ref="capbankDao"/>
   </bean>
   
   <bean id="filterCacheFactory" class="com.cannontech.cbc.cache.FilterCacheFactory">
     <property name="cache" ref="cbcCache"/>
-  </bean>  
-  
+  </bean> 
+   
+
 </beans>

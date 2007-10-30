@@ -18,6 +18,7 @@ import java.util.concurrent.TimeUnit;
 import org.apache.commons.lang.Validate;
 
 import com.cannontech.cbc.cache.CapControlCache;
+import com.cannontech.cbc.dao.*;
 import com.cannontech.cbc.util.CBCUtils;
 import com.cannontech.cbc.web.CBCWebUpdatedObjectMap;
 import com.cannontech.clientutils.CTILogger;
@@ -27,14 +28,10 @@ import com.cannontech.common.util.ScheduledExecutor;
 import com.cannontech.core.dao.PaoDao;
 import com.cannontech.core.dao.StateDao;
 import com.cannontech.database.data.capcontrol.CapBankController;
-import com.cannontech.database.data.capcontrol.CapControlSubBus;
-import com.cannontech.database.data.capcontrol.CapControlSubstation;
 import com.cannontech.database.data.lite.LiteComparators;
 import com.cannontech.database.data.lite.LiteState;
 import com.cannontech.database.db.capcontrol.CCSubAreaAssignment;
 import com.cannontech.database.db.capcontrol.CCSubSpecialAreaAssignment;
-import com.cannontech.database.db.capcontrol.CapBank;
-import com.cannontech.database.db.capcontrol.CapControlFeeder;
 import com.cannontech.database.db.state.StateGroupUtils;
 import com.cannontech.message.util.Message;
 import com.cannontech.message.util.MessageEvent;
@@ -72,9 +69,13 @@ public class CapControlCacheImpl implements MessageListener, CapControlCache {
     private HashMap<String, Boolean> specialAreaStateMap = new HashMap<String, Boolean>();
     private Boolean systemStatusOn = Boolean.TRUE;
     private IServerConnection defCapControlConn;
+
     private PaoDao paoDao;
     private StateDao stateDao;
-    
+    private CcSubstationDao substationDao;
+    private FeederDao feederDao;
+    private SubstationBusDao substationBusDao;
+    private CapbankDao capbankDao;
     /**
      * CapControlCache constructor.
      */
@@ -387,12 +388,11 @@ public class CapControlCacheImpl implements MessageListener, CapControlCache {
      */
     public synchronized LiteWrapper[] getOrphanedCapBanks() {
         //hits the DB
-        CapBank[] unassignedBanks = CapBank.getUnassignedCapBanksList();
-        LiteWrapper[] retVal = new LiteWrapper[ unassignedBanks.length ];
+        List<Integer> unassignedBanks = capbankDao.getUnassignedCapBankIds();
+        LiteWrapper[] retVal = new LiteWrapper[ unassignedBanks.size() ];
         
-        for( int i = 0 ; i < unassignedBanks.length; i++ ) {
-            CapBank capBank = unassignedBanks[i];       
-            retVal[i] = new LiteWrapper(paoDao.getLiteYukonPAO(capBank.getDeviceID().intValue()) );
+        for( Integer i : unassignedBanks ) {   
+            retVal[unassignedBanks.indexOf(i)] = new LiteWrapper(paoDao.getLiteYukonPAO(i) );
         }
         Arrays.sort(retVal, LiteComparators.liteNameComparator);
         return retVal;
@@ -404,19 +404,18 @@ public class CapControlCacheImpl implements MessageListener, CapControlCache {
      */
     public synchronized LiteWrapper[] getOrphanedFeeders() {
         //hits the DB
-        CapControlFeeder[] unassignedFeeders = CapControlFeeder.getUnassignedFeeders();
-        LiteWrapper[] retVal = new LiteWrapper[ unassignedFeeders.length ];
+        List<Integer> unassignedFeeders = feederDao.getUnassignedFeederIds();
+        LiteWrapper[] retVal = new LiteWrapper[ unassignedFeeders.size() ];
         
-        for( int i = 0 ; i < unassignedFeeders.length; i++ ) {
-            CapControlFeeder feeder = unassignedFeeders[i];     
-            retVal[i] = new LiteWrapper(paoDao.getLiteYukonPAO(feeder.getFeederID().intValue()) );
+        for( Integer i : unassignedFeeders ) {
+            retVal[unassignedFeeders.indexOf(i)] = new LiteWrapper(paoDao.getLiteYukonPAO(i) );
         }
         return retVal;
     }
     
     public synchronized LiteWrapper[] getOrphanedSubstations() {
         //hits the DB
-        List<Integer> allUnassignedSubstations = CapControlSubstation.getAllUnassignedSubstations();
+        List<Integer> allUnassignedSubstations = substationDao.getAllUnassignedSubstationIds();
         LiteWrapper[] retVal = new LiteWrapper[ allUnassignedSubstations.size() ];
         for (Integer id : allUnassignedSubstations) {
             retVal[allUnassignedSubstations.indexOf(id)] = new LiteWrapper(paoDao.getLiteYukonPAO(id) );
@@ -426,7 +425,7 @@ public class CapControlCacheImpl implements MessageListener, CapControlCache {
     
     public synchronized LiteWrapper[] getOrphanedSubBuses() {
         //hits the DB
-        List<Integer> allUnassignedBuses = CapControlSubBus.getAllUnassignedBuses();
+        List<Integer> allUnassignedBuses = substationBusDao.getAllUnassignedBuses();
         LiteWrapper[] retVal = new LiteWrapper[ allUnassignedBuses.size() ];
         for (Integer id : allUnassignedBuses) {
             retVal[allUnassignedBuses.indexOf(id)] = new LiteWrapper(paoDao.getLiteYukonPAO(id) );
@@ -1004,6 +1003,22 @@ public class CapControlCacheImpl implements MessageListener, CapControlCache {
 
     public void setStateDao(StateDao stateDao) {
         this.stateDao = stateDao;
+    }
+
+    public void setCapbankDao(CapbankDao capbankDao) {
+        this.capbankDao = capbankDao;
+    }
+
+    public void setFeederDao(FeederDao feederDao) {
+        this.feederDao = feederDao;
+    }
+
+    public void setSubstationBusDao(SubstationBusDao substationBusDao) {
+        this.substationBusDao = substationBusDao;
+    }
+
+    public void setSubstationDao(CcSubstationDao substationDao) {
+        this.substationDao = substationDao;
     }
 
 }

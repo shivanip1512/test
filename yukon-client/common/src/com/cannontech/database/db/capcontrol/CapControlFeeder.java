@@ -1,10 +1,6 @@
 package com.cannontech.database.db.capcontrol;
 
-import com.cannontech.clientutils.CTILogger;
 import com.cannontech.common.util.CtiUtilities;
-import com.cannontech.common.util.NativeIntVector;
-import com.cannontech.database.PoolManager;
-import com.cannontech.database.SqlUtils;
 
 /**
  * Feeder object
@@ -100,124 +96,6 @@ public class CapControlFeeder extends com.cannontech.database.db.DBPersistent {
 	 */
 	public String getMapLocationID() {
 		return mapLocationID;
-	}
-	
-	/**
-	 * This method was created in VisualAge.
-	 * @param pointID java.lang.Integer
-	 *
-	 * This method returns all the Feeders that are not assgined
-	 *  to a SubBus.
-	 */
-	@SuppressWarnings({ "unchecked" })
-    public static CapControlFeeder[] getUnassignedFeeders() {
-		java.util.Vector returnVector = null;
-		java.sql.Connection conn = null;
-		java.sql.PreparedStatement pstmt = null;
-		java.sql.ResultSet rset = null;
-	
-		String sql = "SELECT FeederID FROM " + TABLE_NAME + " where " +
-						 " FeederID not in (select FeederID from " + CCFeederSubAssignment.TABLE_NAME +
-						 ") ORDER BY FeederID";
-		try {		
-			conn = PoolManager.getInstance().getConnection(CtiUtilities.getDatabaseAlias());
-	
-			if( conn == null ) {
-				throw new IllegalStateException("Error getting database connection.");
-			} else {
-				pstmt = conn.prepareStatement(sql.toString());
-				rset = pstmt.executeQuery();
-				returnVector = new java.util.Vector(5); //rset.getFetchSize()
-				while( rset.next() ) {				
-					returnVector.addElement( new CapControlFeeder(  new Integer(rset.getInt("FeederID")) ) );
-				}
-			}		
-		}
-		catch( java.sql.SQLException e ) {
-			CTILogger.error( e.getMessage(), e );
-		}
-		finally{
-			SqlUtils.close(rset, pstmt, conn );
-		}
-	
-		CapControlFeeder[] feeders = new CapControlFeeder[returnVector.size()];
-		return (CapControlFeeder[])returnVector.toArray( feeders );
-	}
-
-	/**
-	 * This method returns all the Feeder IDs that are not assgined
-	 *  to a SubBus.
-	 */
-	public static int[] getUnassignedFeederIDs() {
-		NativeIntVector intVect = new NativeIntVector(16);
-		java.sql.Connection conn = null;
-		java.sql.PreparedStatement pstmt = null;
-		java.sql.ResultSet rset = null;
-
-		String sql = "SELECT FeederID FROM " + TABLE_NAME + " where " +
-						 " FeederID not in (select FeederID from " + CCFeederSubAssignment.TABLE_NAME +
-						 ") ORDER BY FeederID";
-
-		try {		
-			conn = PoolManager.getInstance().getConnection(CtiUtilities.getDatabaseAlias());
-			if( conn == null ) {
-				throw new IllegalStateException("Error getting database connection.");
-			} else {
-				pstmt = conn.prepareStatement(sql.toString());
-				rset = pstmt.executeQuery();
-				while( rset.next() ) {				
-					intVect.add( rset.getInt(1) );
-				}
-			}		
-		} catch( java.sql.SQLException e ) {
-			CTILogger.error( e.getMessage(), e );
-		} finally {
-			SqlUtils.close(rset, pstmt, conn );
-		}
-		return intVect.toArray();
-	}
-
-	/**
-	 * This method returns the SubBus ID that owns the given feeder ID.
-	 * If no parent is found, CtiUtilities.NONE_ZERO_ID is returned.
-	 * 
-	 */
-	public static int getParentSubBusID( int feederID ) {
-		int subBusID = CtiUtilities.NONE_ZERO_ID;
-		java.sql.Connection conn = null;
-		java.sql.PreparedStatement pstmt = null;
-		java.sql.ResultSet rset = null;
-	
-		String sql = "SELECT SubStationBusID FROM " +
-					 	CCFeederSubAssignment.TABLE_NAME +
-					 	" where FeederID = ?";	
-		try {		
-			conn = PoolManager.getInstance().getConnection(CtiUtilities.getDatabaseAlias());
-			if( conn == null ) {
-				throw new IllegalStateException("Error getting database connection.");
-			} else {
-				pstmt = conn.prepareStatement(sql.toString());
-				pstmt.setInt( 1, feederID );				
-				rset = pstmt.executeQuery();
-				if( rset.next() ) {				
-					subBusID = rset.getInt(1);
-				}						
-			}		
-		}catch( java.sql.SQLException e ) {
-			CTILogger.error( e.getMessage(), e );
-		}finally {
-			try {
-				if( pstmt != null ) {
-                    pstmt.close();
-                }
-				if( conn != null ) {
-                    conn.close();
-                }
-			} catch( java.sql.SQLException e2 ) {
-				CTILogger.error( e2.getMessage(), e2 );//something is up
-			}	
-		}
-		return subBusID;
 	}
 
 	/**

@@ -7,10 +7,11 @@ import java.util.List;
 
 import javax.faces.context.FacesContext;
 
+import com.cannontech.cbc.dao.CcSubstationDao;
 import com.cannontech.clientutils.CTILogger;
 import com.cannontech.database.data.capcontrol.CapControlArea;
-import com.cannontech.database.data.capcontrol.CapControlSubstation;
 import com.cannontech.database.db.capcontrol.CCSubAreaAssignment;
+import com.cannontech.spring.YukonSpringHook;
 import com.cannontech.web.editor.data.CBCAreaData;
 import com.cannontech.web.util.CBCDBUtil;
 
@@ -47,7 +48,8 @@ public class CBCAreaDataModel extends EditorDataModelImpl {
             }
 
             void populateUnassigned() {
-                unassignedSubs = CapControlSubstation.getAllUnassignedSubstations();
+                CcSubstationDao dao = YukonSpringHook.getBean("ccSubstationDao", CcSubstationDao.class);
+                unassignedSubs = dao.getAllUnassignedSubstationIds();
             }
         };
     }

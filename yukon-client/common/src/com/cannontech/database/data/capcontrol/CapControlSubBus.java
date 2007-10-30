@@ -14,21 +14,22 @@ import com.cannontech.database.data.lite.LiteFactory;
 import com.cannontech.database.data.lite.LitePoint;
 import com.cannontech.database.data.pao.PAOGroups;
 import com.cannontech.database.data.point.PointBase;
+import com.cannontech.database.db.capcontrol.CapControlSubstationBus;
+import com.cannontech.common.editor.EditorPanel;
 
 /**
  * This type was created in VisualAge.
  */
-public class CapControlSubBus extends CapControlYukonPAOBase implements com.cannontech.common.editor.EditorPanel
+public class CapControlSubBus extends CapControlYukonPAOBase implements EditorPanel
 {
 	public static final String ENABLE_OPSTATE = "subEnabled";
     public static final String DISABLE_OPSTATE = "subDisabled";
     public static final String ENABLE_OVUVSTATE = "subOVUVEnabled";
     public static final String DISABLE_OVUVSTATE = "subOVUVDisabled";
 
-    private com.cannontech.database.db.capcontrol.CapControlSubstationBus capControlSubstationBus = null;
-
-	//contains objects of type com.cannontech.database.db.capcontrol.CCFeederSubAssignment
+    private CapControlSubstationBus capControlSubstationBus = null;
 	private ArrayList ccFeederList = null;
+    
 /**
  */
 public CapControlSubBus() {
@@ -51,7 +52,7 @@ public void add() throws java.sql.SQLException
 {
 	if( getCapControlPAOID() == null ) {
         PaoDao paoDao = DaoFactory.getPaoDao();
-		setCapControlPAOID(paoDao.getNextPaoId());
+        setCapControlPAOID(paoDao.getNextPaoId());
     }
 
 	super.add();
@@ -185,23 +186,4 @@ public void update() throws java.sql.SQLException
 		((com.cannontech.database.db.capcontrol.CCFeederSubAssignment) getChildList().get(i)).add();
 }
 
-public static List<Integer> getAllUnassignedBuses () {
-    SqlStatementBuilder allSubs = new SqlStatementBuilder();
-    allSubs.append("select paobjectid from yukonpaobject where type like 'CCSUBBUS' ");
-    allSubs.append("and ");
-    allSubs.append("paobjectid not in (select substationbusid from ccsubareaassignment)");
-    JdbcOperations yukonTemplate = JdbcTemplateHelper.getYukonTemplate();
-    return yukonTemplate.queryForList(allSubs.toString(), Integer.class);
-
-}
-
-public static List<Integer> getAllSpecialUnassignedBuses (int areaId) {
-    SqlStatementBuilder allSubs = new SqlStatementBuilder();
-    allSubs.append("select paobjectid from yukonpaobject where type like 'CCSUBBUS' ");
-    allSubs.append("and ");
-    allSubs.append("paobjectid not in (select substationbusid from ccsubspecialareaassignment where areaid = "+ areaId + ")");
-    JdbcOperations yukonTemplate = JdbcTemplateHelper.getYukonTemplate();
-    return yukonTemplate.queryForList(allSubs.toString(), Integer.class);
-
-}
 }

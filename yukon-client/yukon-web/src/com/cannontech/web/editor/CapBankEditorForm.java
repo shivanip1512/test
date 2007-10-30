@@ -17,10 +17,10 @@ import javax.faces.model.SelectItem;
 
 import org.springframework.jdbc.core.JdbcOperations;
 
+import com.cannontech.cbc.dao.CapbankDao;
 import com.cannontech.clientutils.CTILogger;
-import com.cannontech.common.search.criteria.CBCControlPointCriteria;
 import com.cannontech.common.util.CtiUtilities;
-import com.cannontech.core.dao.DaoFactory;
+import com.cannontech.core.dao.*;
 import com.cannontech.database.JdbcTemplateHelper;
 import com.cannontech.database.PoolManager;
 import com.cannontech.database.TransactionException;
@@ -41,15 +41,13 @@ import com.cannontech.database.db.capcontrol.CCMonitorBankList;
 import com.cannontech.database.db.capcontrol.CapBankAdditional;
 import com.cannontech.database.db.capcontrol.CapControlStrategy;
 import com.cannontech.database.db.device.DeviceScanRate;
+import com.cannontech.spring.YukonSpringHook;
 import com.cannontech.web.util.CBCDBUtil;
 import com.cannontech.web.util.CBCSelectionLists;
 import com.cannontech.web.util.JSFComparators;
 
 public class CapBankEditorForm extends DBEditorForm {
 
-    /**
-     * 
-     */
     // private static final long serialVersionUID = 5491225604682004562L;
     private List unassignedPoints = null;
     private List assignedPoints = null;
@@ -67,6 +65,9 @@ public class CapBankEditorForm extends DBEditorForm {
     private String[] DYNAMIC_TABLE_NAMES = { "DynamicCCMonitorBankHistory",
             "DynamicCCMonitorPointResponse" };
     private CapBankAdditional additionalInfo;
+    
+    private static PointDao pointDao = YukonSpringHook.getBean("pointDao",PointDao.class);
+    private static PaoDao paoDao = YukonSpringHook.getBean("paoDao",PaoDao.class);
     
    //over-rides the drop-down values
     private boolean customSize = Boolean.FALSE;
@@ -138,8 +139,7 @@ public class CapBankEditorForm extends DBEditorForm {
         handleMonitorPointsForController(capBank.getCapBank()
                                                 .getControlDeviceID()
                                                 .intValue());
-        assignedPoints = DaoFactory.getPointDao()
-                                   .getCapBankMonitorPoints(capBank);
+        assignedPoints = pointDao.getCapBankMonitorPoints(capBank);
         unassignedPoints = null;
         getUnassignedPoints();
         Collections.sort(assignedPoints,
@@ -160,8 +160,7 @@ public class CapBankEditorForm extends DBEditorForm {
                                          .getControlDeviceID()
                                          .intValue();
             if (controlDeviceId > 0) {
-                List allPoints = DaoFactory.getPointDao()
-                                           .getLitePointsByPaObjectId(controlDeviceId);
+                List allPoints = pointDao.getLitePointsByPaObjectId(controlDeviceId);
                 for (int i = 0; i < allPoints.size(); i++) {
                     LitePoint point = (LitePoint) allPoints.get(i);
                     if (point.getUofmID() == PointUnits.UOMID_VOLTS) {
@@ -188,11 +187,12 @@ public class CapBankEditorForm extends DBEditorForm {
 
     private void setDefaultFeederLimits(CapBank capBank,
             CapBankMonitorPointParams monitorPoint) {
-        int fdrId = com.cannontech.database.db.capcontrol.CapBank.getParentFeederID(capBank.getPAObjectID()
-                                                                                           .intValue());
+        
+        CapbankDao dao = YukonSpringHook.getBean("capbankDao", CapbankDao.class);
+        int fdrId = dao.getParentFeederId(capBank.getPAObjectID().intValue());
+        
         if (fdrId != 0) {
-            LiteYukonPAObject liteFeeder = DaoFactory.getPaoDao()
-                                                     .getLiteYukonPAO(fdrId);
+            LiteYukonPAObject liteFeeder = paoDao.getLiteYukonPAO(fdrId);
             CapControlFeeder feeder = (CapControlFeeder) LiteFactory.convertLiteToDBPers(liteFeeder);
             Connection conn = PoolManager.getInstance()
                                          .getConnection(CtiUtilities.getDatabaseAlias());
@@ -343,8 +343,7 @@ public class CapBankEditorForm extends DBEditorForm {
         if (controller instanceof CapBankController) {
             handleMonitorPointsForController(controllerID);
         } else if (controller instanceof CapBankController702x) {
-            assignedPoints = DaoFactory.getPointDao()
-                                       .getCapBankMonitorPoints(capBank);
+            assignedPoints = pointDao.getCapBankMonitorPoints(capBank);
             unassignedPoints = null;
             getUnassignedPoints();
             Collections.sort(assignedPoints,
@@ -358,10 +357,9 @@ public class CapBankEditorForm extends DBEditorForm {
      */
     private int resetController(CapBank capBank) {
         int controllerID = capBank.getCapBank().getControlDeviceID().intValue();
-        LiteYukonPAObject liteController = DaoFactory.getPaoDao()
-                                                     .getLiteYukonPAO(controllerID);
+        LiteYukonPAObject liteController = paoDao.getLiteYukonPAO(controllerID);
         if (liteController == null)
-            liteController = DaoFactory.getPaoDao().getLiteYukonPAO(0);
+            liteController = paoDao.getLiteYukonPAO(0);
         DBPersistent temp = LiteFactory.convertLiteToDBPersAndRetrieve(liteController);
         if (temp instanceof DeviceBase) {
             controller = (DeviceBase) temp;
@@ -398,8 +396,7 @@ public class CapBankEditorForm extends DBEditorForm {
 
     private void handleAllPointsOnList(List points, int controllerID,
             boolean delDynamic) {
-        List controllerPoints = DaoFactory.getPointDao()
-                                          .getLitePointsByPaObjectId(controllerID);
+        List controllerPoints = pointDao.getLitePointsByPaObjectId(controllerID);
         List pointsToRemove = new ArrayList(10);
         if (controllerPoints != null && points != null) {
             for (Iterator iter = points.iterator(); iter.hasNext();) {
@@ -504,8 +501,7 @@ public class CapBankEditorForm extends DBEditorForm {
             int controlPointId = capBank.getCapBank()
                                         .getControlPointID()
                                         .intValue();
-            LitePoint litePoint = DaoFactory.getPointDao()
-                                            .getLitePoint(controlPointId);
+            LitePoint litePoint = pointDao.getLitePoint(controlPointId);
             if (litePoint != null) {
                 int paoId = litePoint.getPaobjectID();
                 Integer ctlPointid = new Integer(paoId);
@@ -524,9 +520,7 @@ public class CapBankEditorForm extends DBEditorForm {
     public String getCtlPaoName() {
         if (capBank != null) {
             Integer controlDeviceID = capBank.getCapBank().getControlDeviceID();
-            return DaoFactory.getPaoDao()
-                             .getLiteYukonPAO(controlDeviceID)
-                             .getPaoName();
+            return paoDao.getLiteYukonPAO(controlDeviceID).getPaoName();
         } else
             return "";
     }
@@ -535,9 +529,7 @@ public class CapBankEditorForm extends DBEditorForm {
         try {
             Integer pointID = capBank.getCapBank().getControlPointID();
             if (pointID != null && pointID.intValue() > 0)
-                return DaoFactory.getPointDao()
-                                 .getLitePoint(pointID)
-                                 .getPointName();
+                return pointDao.getLitePoint(pointID).getPointName();
         } catch (NullPointerException npe) {
             CTILogger.info(npe.getMessage());
         }
@@ -573,8 +565,7 @@ public class CapBankEditorForm extends DBEditorForm {
             int controlPointId = capBank.getCapBank()
                                         .getControlPointID()
                                         .intValue();
-            LitePoint litePoint = DaoFactory.getPointDao()
-                                            .getLitePoint(controlPointId);
+            LitePoint litePoint = pointDao.getLitePoint(controlPointId);
             if (litePoint != null) {
                 int paoId = litePoint.getPaobjectID();
                 Integer ctlPointid = new Integer(paoId);
