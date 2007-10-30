@@ -23,7 +23,7 @@
      	</javac>
 
        <jar jarfile="${yukon.lib}/macs.jar"
-            basedir="build/">
+            basedir="build/" manifest="resource/manifest.mf">
            <manifest>
                <attribute name="Yukon-Version" value="${yukon.build.version}"/>
                <attribute name="Yukon-Details" value="${yukon.build.details}"/>
@@ -33,7 +33,7 @@
 
 	<target name="install" depends="build">
    		<jar jarfile="${yukon.client.bin}/macs.jar"
-   			basedir="build/">
+   			basedir="build/" manifest="resource/manifest.mf">
             <manifest>
                 <attribute name="Yukon-Version" value="${yukon.build.version}"/>
                 <attribute name="Yukon-Details" value="${yukon.build.details}"/>
