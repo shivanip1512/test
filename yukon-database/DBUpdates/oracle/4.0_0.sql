@@ -349,13 +349,16 @@ update command set label = 'Clear Comm Loss Counter' where commandid = -67;
 insert into seasonSchedule values (-1,'No Season');
 insert into dateOfSeason values(-1, 'Default', 1,1,12,31);
 
+/* @error ignore-begin */
 insert into yukonroleproperty values (-100011,-1000, 'Daily/Max Operation Count', 'true', 'is Daily/Max Operation stat displayed');
 insert into yukonroleproperty values (-100012,-1000, 'Substation Last Update Timestamp', 'true', 'is last update timstamp shown for substations');
 insert into yukonroleproperty values (-100106,-1001, 'Feeder Last Update Timestamp', 'true', 'is last update timstamp shown for feeders');
 insert into yukonroleproperty values (-100203,-1002, 'CapBank Last Update Timestamp', 'true', 'is last update timstamp shown for capbanks');
+insert into yukonroleproperty values (-100105,-1001, 'Target', 'true', 'is target stat displayed');
+/* @error ignore-end */
+
 update yukonroleproperty set DefaultValue = 'false' where rolepropertyid = -100008;
 update yukonroleproperty set DefaultValue = 'false' where rolepropertyid = -100007;
-insert into yukonroleproperty values (-100105,-1001, 'Target', 'true', 'is target stat displayed');
 
 insert into YukonRoleProperty values(-1308,-4,'LDAP DN','dc=example,dc=com','LDAP Distinguished Name')
 insert into YukonRoleProperty values(-1309,-4,'LDAP User Suffix','ou=users','LDAP User Suffix')
@@ -436,6 +439,7 @@ create table DEVICECONFIGURATIONITEM  (
 
 insert into YukonRoleProperty values(-20013,-200,'Edit Device Config','false','Controls the ability to edit and create device configurations');
 insert into YukonRoleProperty values(-20014,-200,'View Device Config','true','Controls the ability to view existing device configurations');
+insert into YukonRoleProperty values(-20206,-202,'Enable Profile Request','true','Access to perform profile data request');
 
 /**************************************************************/
 /* VERSION INFO                                               */
