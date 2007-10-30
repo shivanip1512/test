@@ -8,8 +8,8 @@
 *
 * PVCS KEYWORDS:
 * ARCHIVE      :  $Archive:   Z:/SOFTWAREARCHIVES/YUKON/DATABASE/tbl_base.cpp-arc  $
-* REVISION     :  $Revision: 1.8 $
-* DATE         :  $Date: 2006/09/26 13:53:24 $
+* REVISION     :  $Revision: 1.9 $
+* DATE         :  $Date: 2007/10/30 15:46:27 $
 *
 * Copyright (c) 1999, 2000 Cannon Technologies Inc. All rights reserved.
 *-----------------------------------------------------------------------------*/
@@ -116,8 +116,7 @@ void CtiTableDeviceBase::DumpData()
 
 void CtiTableDeviceBase::DecodeDatabaseReader(RWDBReader &rdr)
 {
-    INT iTemp;
-    string rwsTemp;
+    string sTemp;
 
     if(getDebugLevel() & DEBUGLEVEL_DATABASE)
     {
@@ -125,18 +124,10 @@ void CtiTableDeviceBase::DecodeDatabaseReader(RWDBReader &rdr)
         dout << "Decoding " << __FILE__ << " (" << __LINE__ << ")" << endl;
     }
 
-    rdr["alarminhibit"] >> rwsTemp;
-    transform(rwsTemp.begin(), rwsTemp.end(), rwsTemp.begin(), tolower);
-    if(rwsTemp.length() > 0)
-    {
-        _alarmInhibit = ((rwsTemp[(size_t)0] == 'y') ? TRUE : FALSE);
-    }
+    rdr["alarminhibit"  ] >> sTemp;
+    _alarmInhibit   = !sTemp.empty() && (sTemp[0] == 'y' || sTemp[0] == 'Y');
 
-    rdr["controlinhibit"] >> rwsTemp;
-    transform(rwsTemp.begin(), rwsTemp.end(), rwsTemp.begin(), tolower);
-    if(rwsTemp.length() > 0)
-    {
-        _controlInhibit = ((rwsTemp[(size_t)0] == 'y') ? TRUE : FALSE);
-    }
+    rdr["controlinhibit"] >> sTemp;
+    _controlInhibit = !sTemp.empty() && (sTemp[0] == 'y' || sTemp[0] == 'Y');
 }
 
