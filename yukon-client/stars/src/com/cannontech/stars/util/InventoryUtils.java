@@ -9,15 +9,20 @@ package com.cannontech.stars.util;
 import java.util.ArrayList;
 import java.util.List;
 
+import org.springframework.dao.IncorrectResultSizeDataAccessException;
+import org.springframework.jdbc.core.JdbcOperations;
+
 import com.cannontech.common.constants.YukonListEntry;
 import com.cannontech.common.constants.YukonListEntryTypes;
 import com.cannontech.common.util.CtiUtilities;
 import com.cannontech.core.dao.DaoFactory;
+import com.cannontech.database.JdbcTemplateHelper;
 import com.cannontech.database.data.lite.stars.LiteInventoryBase;
 import com.cannontech.database.data.lite.stars.LiteLMThermostatSchedule;
 import com.cannontech.database.data.lite.stars.LiteLMThermostatSeason;
 import com.cannontech.database.data.lite.stars.LiteStarsEnergyCompany;
 import com.cannontech.database.data.lite.stars.LiteStarsLMHardware;
+
 
 /**
  * @author yao
@@ -251,4 +256,22 @@ public class InventoryUtils {
         
         return convert;
     }
+    
+    public static Integer getYukonLoadGroupIDFromSTARSProgramID(int progID) {
+        String sql = "select distinct LMGroupDeviceID from LMProgramDirectGroup ldg, LMProgramWebPublishing lwp " +
+                "where ldg.DeviceID = lwp.DeviceID AND lwp.ProgramID = " + progID;
+        
+        Integer groupID = new Integer(0);
+        
+        try {
+            JdbcOperations jdbcOps = JdbcTemplateHelper.getYukonTemplate();
+            groupID = jdbcOps.queryForInt(sql);
+        } 
+        catch (IncorrectResultSizeDataAccessException e) {
+            return groupID;
+        }
+        
+        return groupID;
+    }
+
 }

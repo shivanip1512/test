@@ -25,6 +25,7 @@ import com.cannontech.database.db.stars.appliance.ApplianceHeatPump;
 import com.cannontech.database.db.stars.appliance.ApplianceIrrigation;
 import com.cannontech.database.db.stars.appliance.ApplianceStorageHeat;
 import com.cannontech.database.db.stars.appliance.ApplianceWaterHeater;
+import com.cannontech.stars.util.InventoryUtils;
 import com.cannontech.stars.util.EventUtils;
 import com.cannontech.stars.util.ServletUtils;
 import com.cannontech.stars.util.WebClientException;
@@ -461,8 +462,12 @@ public class CreateApplianceAction implements ActionBase {
 		if (newApp.getInventoryID() > 0) {
 			app.getLMHardwareConfig().setInventoryID( new Integer(newApp.getInventoryID()) );
 			app.getLMHardwareConfig().setLoadNumber( new Integer(newApp.getLoadNumber()) );
+			if(app.getLMHardwareConfig().getAddressingGroupID() == 0 && newApp.getProgramID() > 0) {
+                Integer groupID = InventoryUtils.getYukonLoadGroupIDFromSTARSProgramID(newApp.getProgramID());
+                app.getLMHardwareConfig().setAddressingGroupID(groupID);
+            }
 		}
-        
+		        
 		app = (com.cannontech.database.data.stars.appliance.ApplianceBase)
 				Transaction.createTransaction(Transaction.INSERT, app).execute();
 		

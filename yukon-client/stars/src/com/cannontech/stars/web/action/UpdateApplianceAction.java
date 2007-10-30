@@ -22,6 +22,7 @@ import com.cannontech.database.db.stars.appliance.ApplianceHeatPump;
 import com.cannontech.database.db.stars.appliance.ApplianceIrrigation;
 import com.cannontech.database.db.stars.appliance.ApplianceStorageHeat;
 import com.cannontech.database.db.stars.appliance.ApplianceWaterHeater;
+import com.cannontech.stars.util.InventoryUtils;
 import com.cannontech.stars.util.EventUtils;
 import com.cannontech.stars.util.ServletUtils;
 import com.cannontech.stars.util.WebClientException;
@@ -488,6 +489,10 @@ public class UpdateApplianceAction implements ActionBase {
 			appDB.setEfficiencyRating( new Double(updateApp.getEfficiencyRating()) );
         
         appConfig.setLoadNumber(new Integer(updateApp.getLoadNumber()));
+    	if(appConfig.getAddressingGroupID().intValue() == 0 && updateApp.getProgramID() > 0) {
+            Integer groupID = InventoryUtils.getYukonLoadGroupIDFromSTARSProgramID(updateApp.getProgramID());
+            appConfig.setAddressingGroupID(groupID);
+        }
     	
 		Transaction.createTransaction(Transaction.UPDATE, appDB).execute();
         Transaction.createTransaction(Transaction.UPDATE, appConfig).execute();

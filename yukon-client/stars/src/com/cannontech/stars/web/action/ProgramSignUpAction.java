@@ -52,6 +52,7 @@ import com.cannontech.stars.xml.serialize.StarsSULMPrograms;
 import com.cannontech.stars.xml.serialize.StarsSuccess;
 import com.cannontech.stars.xml.util.SOAPUtil;
 import com.cannontech.stars.xml.util.StarsConstants;
+import com.cannontech.stars.util.InventoryUtils;
 
 /**
  * @author yao
@@ -193,7 +194,7 @@ public class ProgramSignUpAction implements ActionBase {
                     }
                     else
                     {
-                        throw new WebClientException("Program not set defined correctly.  Contact your administrator.");
+                        throw new WebClientException("Program not defined correctly.  Contact your administrator.");
                     }
                 }
             }
@@ -541,6 +542,9 @@ public class ProgramSignUpAction implements ActionBase {
 				int groupID = program.getAddressingGroupID();
 				if (!program.hasAddressingGroupID() && !useHardwareAddressing && starsProg.getAddressingGroupCount() > 1)
 					groupID = starsProg.getAddressingGroup(1).getEntryID();
+                if(groupID == 0) {
+                    groupID = InventoryUtils.getYukonLoadGroupIDFromSTARSProgramID(program.getProgramID());
+                }
 				liteStarsProg.setGroupID( groupID );
         		
 				LiteStarsLMHardware liteHw = null;
@@ -599,7 +603,7 @@ public class ProgramSignUpAction implements ActionBase {
 						if (liteHw != null) {
 							if ((liteApp.getAddressingGroupID() != groupID || groupID == 0) && !hwsToConfig.contains( liteHw ))
 								hwsToConfig.add( liteHw );
-							liteApp.setAddressingGroupID( groupID );
+                            liteApp.setAddressingGroupID( groupID );
 						}
 						else
 							liteApp.setAddressingGroupID( 0 );
@@ -661,7 +665,7 @@ public class ProgramSignUpAction implements ActionBase {
 					if (liteHw != null) {
 						LMHardwareConfiguration hwConfig = new LMHardwareConfiguration();
 						hwConfig.setInventoryID( new Integer(program.getInventoryID()) );
-						hwConfig.setAddressingGroupID( new Integer(groupID) );
+                        hwConfig.setAddressingGroupID( groupID );
 						hwConfig.setLoadNumber( new Integer(program.getLoadNumber()) );
 						app.setLMHardwareConfig( hwConfig );
 	        			
