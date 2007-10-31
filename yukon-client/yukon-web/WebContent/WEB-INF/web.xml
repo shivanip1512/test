@@ -393,13 +393,6 @@
 	</servlet>
 
 	<servlet>
-		<description>Handles user authentication.</description>
-		<servlet-name>LoginController</servlet-name>
-		<servlet-class>
-			com.cannontech.servlet.LoginController
-		</servlet-class>
-	</servlet>
-	<servlet>
 		<description>
 			Returns an xml config file for log4j logging
 		</description>
