@@ -9,8 +9,8 @@
 *
 * PVCS KEYWORDS:
 * ARCHIVE      :  $Archive$
-* REVISION     :  $Revision: 1.8 $
-* DATE         :  $Date: 2007/08/07 19:56:17 $
+* REVISION     :  $Revision: 1.9 $
+* DATE         :  $Date: 2007/10/31 20:52:35 $
 *
 * Copyright (c) 2004 Cannon Technologies Inc. All rights reserved.
 *-----------------------------------------------------------------------------*/
@@ -258,11 +258,11 @@ public:
     void setAnalogOutPoints ( int min, int max );
 
     //  client-side (Scanner, PIL) functions
-    int sendCommRequest( OUTMESS *&OutMessage, list< OUTMESS* > &outList );
-    int recvCommResult ( INMESS   *InMessage,  list< OUTMESS* > &outList );
+    int sendCommRequest( OUTMESS *&OutMessage, std::list< OUTMESS* > &outList );
+    int recvCommResult ( INMESS   *InMessage,  std::list< OUTMESS* > &outList );
 
     bool hasInboundPoints( void );
-    void getInboundPoints( list< CtiPointDataMsg* > &pointList );
+    void getInboundPoints( std::list< CtiPointDataMsg* > &pointList );
 
     //  porter-side (portfield, specificially) functions
     int recvCommRequest( OUTMESS *OutMessage );
