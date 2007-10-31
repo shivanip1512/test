@@ -451,6 +451,19 @@ delete from YukonListEntry where EntryText = 'Configuration'
 delete from devicetypecommand where commandid = -110;
 delete from command where commandid = -110;
 
+/* @error ignore-begin */
+create index INDX_CONTID_LNAME on Contact (
+ContactID ASC,
+ContLastName ASC
+);
+
+create index INDX_CONTID_LNAME_FNAME on Contact (
+ContactID ASC,
+ContFirstName ASC,
+ContLastName ASC
+);
+/* @error ignore-end */
+
 /******************************************************************************/
 /* Run the Stars Update if needed here */
 /* Note: DBUpdate application will ignore this if STARS is not present */
