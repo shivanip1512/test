@@ -6,7 +6,6 @@
 <%@ taglib uri="http://cannontech.com/tags/cti" prefix="cti" %>
 <cti:standardPage title="Substation Bus Areas" module="capcontrol">
 <%@include file="cbc_inc.jspf"%>
-
     <%
             FilterCacheFactory filterCacheFactory = YukonSpringHook.getBean("filterCacheFactory", FilterCacheFactory.class);
 			LiteYukonUser user = (LiteYukonUser) session.getAttribute(LoginController.YUKON_USER);	
@@ -54,9 +53,10 @@ if (allowCtlVal!=null) {
 			<table id="areaTable" width="98%" border="0" cellspacing="0" cellpadding="0" >
 <%
 	String css = "tableCell";
-	for( int i = 0; i < filterCapControlCache.getCbcAreas().size(); i++ ) {
+	String cssSub = "tableCell";
+	List<CBCArea> cbcAreas = filterCapControlCache.getCbcAreas();
+	for( CBCArea area : cbcAreas ) {
 		css = ("tableCell".equals(css) ? "altTableCell" : "tableCell");
-		CBCArea area = (CBCArea)filterCapControlCache.getCbcAreas().get(i);
 		List<SubStation> areaStations = filterCapControlCache.getSubstationsByArea(area.getPaoID());
 		List<CapBankDevice> areaCapBanks = filterCapControlCache.getCapBanksByArea(area.getPaoID());
 		
@@ -75,18 +75,18 @@ if (allowCtlVal!=null) {
 	        <tr class="<%=css%>">
 				<td>				
 				<input type="checkbox" name="cti_chkbxAreas" value="<%=area.getPaoID()%>"/>
-				<input type="image" id="showAreas<%=i%>"
+				<input type="image" id="showAreas<%=area.getPaoID()%>"
 					src="images/nav-plus.gif"
-					onclick="showRowElems( 'allAreas<%=i%>', 'showAreas<%=i%>'); return false;"/>
+					onclick="showRowElems( 'allAreas<%=area.getPaoID()%>', 'showAreas<%=area.getPaoID()%>'); return false;"/>
 				<a href="#" class="<%=css%>" onclick="postMany('areaForm', '<%=CCSessionInfo.STR_CC_AREAID%>', '<%=area.getPaoID()%>')">
 				<%=area.getPaoName()%></a>
 				</td>
                 <td>
                 <!--Create  popup menu html-->               
-                <div id = "serverMessage<%=i%>" style="display:none" > </div>
+                <div id = "serverMessage<%=area.getPaoID()%>" style="display:none" > </div>
                 
                 <input id="cmd_area_<%=area.getPaoID()%>" type="hidden" name = "cmd_dyn" value= "" />
-                <a id="area_state_<%=i%>" name="area_state" 
+                <a id="area_state_<%=area.getPaoID()%>" name="area_state" 
                     style="<%=css%>"
                     href="javascript:void(0);"
                     <%=popupEvent%> ="return overlib(
@@ -102,21 +102,22 @@ if (allowCtlVal!=null) {
 				<td><%=varsUnavailable%></td>
 				<td><%=closedVars%></td>
 				<td><%=trippedVars%></td>
-				<td><a type="param1" name="cti_dyn" id="<%=area.getCcId()%>">
+				<td><a type="param1" name="cti_dyn" id="<%=area.getPaoID()%>">
                 <%=CBCUtils.CBC_DISPLAY.getAreaValueAt(area, CBCDisplay.AREA_POWER_FACTOR_COLUMN)%></a>
                 </td>
 			</tr>
 			<tr>
 				<td>
-					<table id="allAreas<%=i%>">
+					<table id="allAreas<%=area.getPaoID()%>">
 <%
 if (areaStations.size() > 0) {		
 	for( int j = 0; j < areaStations.size(); j++ ) {
 		SubStation substation = areaStations.get(j);
 		List<Feeder> subFeeders = filterCapControlCache.getFeedersBySubStation(substation);
 		List<CapBankDevice> subCapBanks = filterCapControlCache.getCapBanksBySubStation(substation);
+		cssSub = ("tableCell".equals(cssSub) ? "altTableCell" : "tableCell");
 %>
-				        <tr class="<%=css%>" style="display: none;">
+				        <tr class="<%=cssSub%>" style="display: none;">
 							<td><font class="lIndent"><%=CBCUtils.CBC_DISPLAY.getSubstationValueAt(substation, CBCDisplay.SUB_NAME_COLUMN)%></font></td>
 							<td><%=subFeeders.size()%> Feeder(s), <%=subCapBanks.size()%> Bank(s)</td>
 							<td></td>

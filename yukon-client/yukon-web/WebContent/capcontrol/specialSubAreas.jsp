@@ -56,6 +56,7 @@ if (allowCtlVal!=null) {
 		<table id="areaTable" width="98%" border="0" cellspacing="0" cellpadding="0" >
 <%
 	String css = "tableCell";
+	String cssSub = "tableCell";
 	List<CBCSpecialArea> areas = filterCapControlCache.getSpecialCbcAreas();
 	for( int i = 0; i < areas.size(); i++ ) {
 		css = ("tableCell".equals(css) ? "altTableCell" : "tableCell");
@@ -123,8 +124,9 @@ if (allowCtlVal!=null) {
 		SubStation substation = areaStations.get(j);
 		List<Feeder> subFeeders = filterCapControlCache.getFeedersBySubStation(substation);
 		List<CapBankDevice> subCapBanks = filterCapControlCache.getCapBanksBySubStation(substation);
+		cssSub = ("tableCell".equals(cssSub) ? "altTableCell" : "tableCell");
 %>
-				        <tr class="<%=css%>" style="display: none;">
+				        <tr class="<%=cssSub%>" style="display: none;">
 							<td><font class="lIndent"><%=CBCUtils.CBC_DISPLAY.getSubstationValueAt(substation, CBCDisplay.SUB_NAME_COLUMN)%></font></td>
 							<td><%=subFeeders.size()%> Feeder(s), <%=subCapBanks.size()%> Bank(s)</td>
 							<td></td>
