@@ -10,8 +10,8 @@
 *
 * PVCS KEYWORDS:
 * ARCHIVE      :  $Archive$
-* REVISION     :  $Revision: 1.2 $
-* DATE         :  $Date: 2007/09/04 16:48:22 $
+* REVISION     :  $Revision: 1.3 $
+* DATE         :  $Date: 2007/10/31 20:53:50 $
 *
 * Copyright (c) 2006 Cannon Technologies Inc. All rights reserved.
 *-----------------------------------------------------------------------------*/
@@ -72,21 +72,27 @@ private:
     enum IOStates
     {
         IO_State_Output,      //  normal output
-        IO_State_Reset,       //  reset request from master to CCU
-        IO_State_Retransmit,  //  retransmit request from master to CCU
         IO_State_Input,       //  input
         IO_State_Complete,    //  transaction complete
         IO_State_Failed,      //  transaction failed
         IO_State_Invalid,     //  catch-all error condition for initialization errors
     } _io_state;
 
+    enum ControlStates
+    {
+        Control_State_OK,
+        Control_State_ResetSend,  //  reset request from master to CCU
+        Control_State_ResetRecv,  //  reset request from master to CCU
+        Control_State_Retransmit, //  retransmit request from master to CCU
+    } _control_state;
+
     enum ControlCodes
     {
-        Control_ResetRequest      = 0x1f,
-        Control_ResetAcknowlegde  = 0x73,
-        Control_RejectWithRestart = 0x19,  //  upper 3 bits are the sequence number of the next frame expected
-        Control_RetransmitRequest = 0x1d,  //  upper 3 bits are the sequence number of the frame to retransmit
-        Control_Unsequenced       = 0x13,
+        ControlCode_ResetRequest      = 0x1f,
+        ControlCode_ResetAcknowlegde  = 0x73,
+        ControlCode_RejectWithRestart = 0x19,  //  upper 3 bits are the sequence number of the next frame expected
+        ControlCode_RetransmitRequest = 0x1d,  //  upper 3 bits are the sequence number of the frame to retransmit
+        ControlCode_Unsequenced       = 0x13,
     };
 
     enum Misc
@@ -115,6 +121,14 @@ private:
     int _protocol_errors;
     int _sanity_counter;
 
+    bool process_inbound( CtiXfer &xfer, int status );  //  returns completeFrame & crcValid & direction
+    int  process_control( frame in_frame );
+
+    int generate_control( CtiXfer &xfer );
+    int decode_control  ( CtiXfer &xfer, int status );
+
+    bool control_pending( void ) const;
+
     void sendFrame     (CtiXfer &xfer);
     void sendRetransmit(CtiXfer &xfer);
     void sendReset     (CtiXfer &xfer);
@@ -127,6 +141,8 @@ private:
     bool isCRCValid     (const frame &f);
     bool isControlFrame (const frame &f);
     bool isCompleteFrame(const frame &f, unsigned bytes_received);
+
+    bool setOutData( const unsigned char *buf, unsigned len );
 
     enum IDLCFrameEnum
     {
@@ -161,13 +177,13 @@ public:
     int generate( CtiXfer &xfer );
     int decode  ( CtiXfer &xfer, int status );
 
-    bool isTransactionComplete( void );
-    bool errorCondition( void );
+    bool isTransactionComplete( void ) const;
+    bool errorCondition( void ) const;
 
     bool send( const unsigned char *buf, unsigned len );
     bool recv( void );
 
-    bool setOutData( const unsigned char *buf, unsigned len );
+    bool init( void );
 
     void getInboundData( unsigned char *buf );
     int  getInboundDataLength( void );

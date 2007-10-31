@@ -8,8 +8,8 @@
 *
 * PVCS KEYWORDS:
 * ARCHIVE      :  $Archive$
-* REVISION     :  $Revision: 1.2 $
-* DATE         :  $Date: 2007/09/04 16:48:22 $
+* REVISION     :  $Revision: 1.3 $
+* DATE         :  $Date: 2007/10/31 20:53:50 $
 *
 * Copyright (c) 2006 Cannon Technologies Inc. All rights reserved.
 *-----------------------------------------------------------------------------*/
@@ -26,7 +26,9 @@
 namespace Cti       {
 namespace Protocol  {
 
-IDLC::IDLC()
+IDLC::IDLC() :
+    _io_state(IO_State_Invalid),
+    _control_state(Control_State_ResetSend)
 {
 }
 
@@ -107,7 +109,7 @@ void IDLC::sendRetransmit( CtiXfer &xfer )
     //  this sequence needs to have the upper (response) bits filled in with the
     //    sequence number you expect
     //  byte 2
-    _out_frame.header.control.code = Control_RetransmitRequest;
+    _out_frame.header.control.code = ControlCode_RetransmitRequest;
     _out_frame.header.control.response_sequence = _slave_sequence;
 
     //  the CRC omits the framing byte
@@ -138,7 +140,7 @@ void IDLC::sendReset( CtiXfer &xfer )
     _out_frame.header.direction = 1;
 
     //  byte 2
-    _out_frame.header.control.code = Control_ResetRequest;
+    _out_frame.header.control.code = ControlCode_ResetRequest;
 
     //  the CRC omits the framing byte
     crc = NCrcCalc_C(_out_frame.raw + 1, 2);
@@ -172,7 +174,6 @@ void IDLC::recvFrame( CtiXfer &xfer, unsigned bytes_received )
     xfer.setOutCount(0);
     xfer.setOutBuffer(0);
 
-    xfer.setInCountExpected(Frame_MinimumLength);
     xfer.setInBuffer(_in_frame.raw + bytes_received);
     xfer.setInCountActual(&_in_actual);
 }
@@ -238,10 +239,10 @@ bool IDLC::isControlFrame(const frame &f)
 {
     bool retval = false;
 
-    if( f.header.control.code          == Control_ResetAcknowlegde  ||
-        f.header.control.code          == Control_ResetRequest      ||
-        (f.header.control.code & 0x1f) == Control_RejectWithRestart ||
-        (f.header.control.code & 0x1f) == Control_RetransmitRequest )
+    if( f.header.control.code          == ControlCode_ResetAcknowlegde  ||
+        f.header.control.code          == ControlCode_ResetRequest      ||
+        (f.header.control.code & 0x1f) == ControlCode_RejectWithRestart ||
+        (f.header.control.code & 0x1f) == ControlCode_RetransmitRequest )
     {
         retval = true;
     }
@@ -260,27 +261,30 @@ int IDLC::generate( CtiXfer &xfer )
 {
     int retval = NoError;
 
-    switch( _io_state )
+    if( control_pending() )
     {
-        case IO_State_Output:       sendFrame(xfer);            break;
-
-        case IO_State_Reset:        sendReset(xfer);            break;
-
-        case IO_State_Retransmit:   sendRetransmit(xfer);       break;
-
-        case IO_State_Input:        recvFrame(xfer, _in_recv);  break;
-
-        case IO_State_Complete:
-        case IO_State_Invalid:
-        case IO_State_Failed:
-        default:
+        retval = generate_control(xfer);
+    }
+    else
+    {
+        switch( _io_state )
         {
-            {
-                CtiLockGuard<CtiLogger> doubt_guard(dout);
-                dout << CtiTime() << " **** Checkpoint - unhandled state (" << _io_state << ") in  **** " << __FILE__ << " (" << __LINE__ << ")" << endl;
-            }
+            case IO_State_Output:       sendFrame(xfer);            break;
 
-            retval = BADRANGE;
+            case IO_State_Input:        recvFrame(xfer, _in_recv);  break;
+
+            case IO_State_Complete:
+            case IO_State_Invalid:
+            case IO_State_Failed:
+            default:
+            {
+                {
+                    CtiLockGuard<CtiLogger> doubt_guard(dout);
+                    dout << CtiTime() << " **** Checkpoint - unhandled state (" << _io_state << ") in  **** " << __FILE__ << " (" << __LINE__ << ")" << endl;
+                }
+
+                retval = BADRANGE;
+            }
         }
     }
 
@@ -288,12 +292,34 @@ int IDLC::generate( CtiXfer &xfer )
 }
 
 
+int IDLC::generate_control( CtiXfer &xfer )
+{
+    switch( _control_state )
+    {
+        case Control_State_ResetSend:   sendReset(xfer);            break;
+        case Control_State_ResetRecv:   recvFrame(xfer, _in_recv);  break;
+
+        case Control_State_Retransmit:  sendRetransmit(xfer);   break;
+
+        case Control_State_OK:
+        default:
+            //  this should loop around with no problems
+            break;
+    }
+
+    return NoError;
+}
+
+
 int IDLC::decode( CtiXfer &xfer, int status )
 {
     int retval = NoError;
 
-    //  if there's an error, stay on the same state
-    if( status )
+    if( control_pending() )
+    {
+        retval = decode_control(xfer, status);
+    }
+    else if( status )
     {
         _comm_errors++;
     }
@@ -303,81 +329,42 @@ int IDLC::decode( CtiXfer &xfer, int status )
         {
             case IO_State_Input:
             {
-                if( !_in_recv )
+                if( process_inbound(xfer, status) )
                 {
-                    //  if we haven't received anything yet, make sure that we align on a
-                    //    framing byte first...
-                    //  in the normal case, this should return 0, meaning that we're aligned
-                    //    and that the whole _in_actual count is valid
-                    _framing_seek_length += alignFrame(xfer, _in_frame, _in_actual);
-
-                    _in_recv += _in_actual;
-                }
-                else if( !isCompleteFrame(_in_frame, _in_recv) )
-                {
-                    //  we didn't get the whole thing yet - loop back through generate() so we can grab the remainder
-                    ++_sanity_counter;
-                }
-                else if( !isCRCValid(_in_frame) )
-                {
-                    //  bad CRC, re-request frame
-                    _io_state = IO_State_Retransmit;
-                    _protocol_errors++;
-                }
-                else if( _in_frame.header.direction )
-                {
-                    //  nothing coming from the slave should have the direction bit set
-                    _protocol_errors++;
-                }
-                else if( isControlFrame(_in_frame) )
-                {
-                    if( _in_frame.header.control.code == Control_ResetAcknowlegde )
+                    if( isControlFrame(_in_frame) )
                     {
-                        _master_sequence = 1;
-                        _slave_sequence  = 1;
+                        if( retval = process_control(_in_frame) )
+                        {
+                            _protocol_errors++;
+                        }
                     }
-                    else if( (_in_frame.header.control.code & 0x1f) == Control_RejectWithRestart )
+                    else if( _in_frame.header.control.response_sequence != _slave_sequence )
                     {
-                        _master_sequence = _in_frame.header.control.response_sequence;
+                        //_io_state = IO_State_Retransmit;
                         _protocol_errors++;
                     }
                     else
                     {
-                        {
-                            CtiLockGuard<CtiLogger> doubt_guard(dout);
-                            dout << CtiTime() << " **** Checkpoint - unhandled control code (" << _in_frame.header.control.code << ") **** " << __FILE__ << " (" << __LINE__ << ")" << endl;
-                        }
+                        //  successful response - increment our sequence numbers
+                        _master_sequence = (_master_sequence + 1) % 8;
+                        _slave_sequence  = (_slave_sequence  + 1) % 8;
 
-                        _protocol_errors++;
+                        //  and copy the data
+                        _in_data_length = _in_frame.data[0];
+
+                        memcpy(_in_data, _in_frame.data + 1, _in_data_length);
+
+                        //  we're done
+                        _io_state = IO_State_Complete;
                     }
-                }
-                else if( _in_frame.header.control.response_sequence != _slave_sequence )
-                {
-                    _io_state = IO_State_Retransmit;
-                    _protocol_errors++;
-                }
-                else
-                {
-                    //  successful response - increment our sequence numbers
-                    _master_sequence = (_master_sequence + 1) % 8;
-                    _slave_sequence  = (_slave_sequence  + 1) % 8;
-
-                    //  and copy the data
-                    _in_data_length = _in_frame.data[0];
-
-                    memcpy(_in_data, _in_frame.data + 1, _in_data_length);
-
-                    //  we're done
-                    _io_state = IO_State_Complete;
                 }
 
                 break;
             }
 
             case IO_State_Output:
-            case IO_State_Retransmit:
             {
-                _io_state = IO_State_Input;
+                recv();
 
                 break;
             }
@@ -414,7 +401,141 @@ int IDLC::decode( CtiXfer &xfer, int status )
 }
 
 
-bool IDLC::isTransactionComplete( void )
+int IDLC::decode_control( CtiXfer &xfer, int status )
+{
+    int retval = NoError;
+
+    switch( _control_state )
+    {
+        case Control_State_ResetSend:
+        {
+            _control_state = Control_State_ResetRecv;
+            break;
+        }
+
+        case Control_State_ResetRecv:
+        {
+            if( process_inbound(xfer, status) )
+            {
+                if( isControlFrame(_in_frame) )
+                {
+                    retval = process_control(_in_frame);
+                }
+                else
+                {
+                    {
+                        CtiLockGuard<CtiLogger> doubt_guard(dout);
+                        dout << CtiTime() << " **** Checkpoint - unhandled frame [" << CtiNumStr(_in_frame.header.control.code).hex(2) << "] in Cti::Protocol::IDLC::decode_control() **** " << __FILE__ << " (" << __LINE__ << ")" << endl;
+                    }
+
+                    _protocol_errors++;
+
+                    _control_state = Control_State_OK;
+                }
+            }
+
+            break;
+        }
+
+        case Control_State_Retransmit:
+        {
+            _control_state = Control_State_OK;
+            break;
+        }
+
+        case Control_State_OK:
+        default:
+            //  this should loop around with no problems
+            break;
+    }
+
+    return retval;
+}
+
+int IDLC::process_control( frame in_frame )
+{
+    int retval = NoError;
+
+    if( in_frame.header.control.code == ControlCode_ResetAcknowlegde )
+    {
+        _master_sequence = 1;
+        _slave_sequence  = 1;
+
+        _control_state = Control_State_OK;
+    }
+    else if( (in_frame.header.control.code & 0x1f) == ControlCode_RejectWithRestart )
+    {
+        _master_sequence = in_frame.header.control.code >> 5;
+        _protocol_errors++;
+
+        _control_state = Control_State_OK;
+    }
+/*    else if( (in_frame.header.control.code & 0x1f) == ControlCode_RetransmitRequest )
+    {
+
+    }*/
+    else
+    {
+        {
+            CtiLockGuard<CtiLogger> doubt_guard(dout);
+            dout << CtiTime() << " **** Checkpoint - unhandled control frame [" << CtiNumStr(in_frame.header.control.code).hex(2) << "] in Cti::Protocol::IDLC::decode_control() **** " << __FILE__ << " (" << __LINE__ << ")" << endl;
+        }
+
+        _protocol_errors++;
+
+        _control_state = Control_State_OK;
+    }
+
+    return retval;
+}
+
+
+bool IDLC::process_inbound( CtiXfer &xfer, int status )
+{
+    bool valid_frame = false;
+
+    if( !_in_recv )
+    {
+        //  if we haven't received anything yet, make sure that we align on a
+        //    framing byte first...
+        //  in the normal case, this should return 0, meaning that we're aligned
+        //    and that the whole _in_actual count is valid
+        _framing_seek_length += alignFrame(xfer, _in_frame, _in_actual);
+
+        _in_recv += _in_actual;
+    }
+    else if( !isCompleteFrame(_in_frame, _in_recv) )
+    {
+        //  we didn't get the whole thing yet - loop back through generate() so we can grab the remainder
+        ++_sanity_counter;
+    }
+    else if( !isCRCValid(_in_frame) )
+    {
+        //  bad CRC, re-request frame
+        //_io_state = IO_State_Retransmit;
+        _protocol_errors++;
+    }
+    else if( _in_frame.header.direction )
+    {
+        //  nothing coming from the slave should have the direction bit set
+        _protocol_errors++;
+    }
+    else
+    {
+        valid_frame = true;
+    }
+
+    return valid_frame;
+}
+
+
+bool IDLC::control_pending( void ) const
+{
+    return _control_state != Control_State_OK;
+}
+
+
+bool IDLC::isTransactionComplete( void ) const
 {
     bool retval = false;
 
@@ -422,7 +543,7 @@ bool IDLC::isTransactionComplete( void )
     {
         case IO_State_Input:
         case IO_State_Output:
-        case IO_State_Retransmit:
+        //case IO_State_Retransmit:
             break;
 
         //  note the "default" case there - we exit instead of looping forever
@@ -437,7 +558,7 @@ bool IDLC::isTransactionComplete( void )
 }
 
 
-bool IDLC::errorCondition( void )
+bool IDLC::errorCondition( void ) const
 {
     return _io_state == IO_State_Failed;
 }
@@ -451,7 +572,17 @@ bool IDLC::send( const unsigned char *buf, unsigned len )
 
 bool IDLC::recv( void )
 {
-    return _io_state = IO_State_Input;
+    _io_state = IO_State_Input;
+    _in_recv  = 0;
+    _framing_seek_length = 0;
+
+    return true;
+}
+
+
+bool IDLC::init( void )
+{
+    return true;
 }
 
 
@@ -469,6 +600,9 @@ bool IDLC::setOutData( const unsigned char *buf, unsigned len )
         _sanity_counter  = 0;
         _comm_errors     = 0;
         _protocol_errors = 0;
+
+        _in_recv  = 0;
+        _framing_seek_length = 0;
     }
     else
     {
