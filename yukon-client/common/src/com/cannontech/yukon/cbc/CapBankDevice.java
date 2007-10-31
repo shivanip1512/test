@@ -48,6 +48,9 @@ public class CapBankDevice extends StreamableCapObject
     
     private Boolean ovUVDisabled = Boolean.TRUE;
     private String controlDeviceType = null;
+    private String beforeVars = new String();
+    private String afterVars = new String();
+    private String percentChange = new String();
 
 
 	public Boolean getOvUVDisabled() {
@@ -490,5 +493,22 @@ public class CapBankDevice extends StreamableCapObject
     public void setControlDeviceType(String controlDeviceType) {
         this.controlDeviceType = controlDeviceType;
     }
-
+    public String getBeforeVars() {
+        return beforeVars;
+    }
+    public void setBeforeVars(String beforeVars) {
+        this.beforeVars = beforeVars;
+    }
+    public String getAfterVars() {
+        return afterVars;
+    }
+    public void setAfterVars(String afterVars) {
+        this.afterVars = afterVars;
+    }
+    public String getPercentChange() {
+        return percentChange;
+    }
+    public void setPercentChange(String percentChange) {
+        this.percentChange = percentChange;
+    }
 }

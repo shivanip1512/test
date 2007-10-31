@@ -476,11 +476,12 @@ for( int i = 0; i < capBanks.size(); i++ ) {
 					<a type="state" name="cti_dyn" id="<%=capBank.getCcId()%>"
 						style="color: <%=CBCDisplay.getHTMLFgColor(capBank)%>;"
 						href="javascript:void(0);"
-					    <%=popupEvent%>= "popupWithHiLite ($F('cmd_cap_<%=capBank.getCcId()%>_system'),
+					    onclick = "popupWithHiLite ($F('cmd_cap_<%=capBank.getCcId()%>_system'),
     						155,200,40,15,
     						'tr_cap_<%=capBank.getCcId()%>',
     						'yellow'); "
-					    onmouseout = "return hidePopupHiLite('tr_cap_<%=capBank.getCcId()%>', '<%=rowColor%>');" >		
+					    onmouseout = "togglePopup('capBankStatusPopup_<%=capBank.getCcId()%>'); return hidePopupHiLite('tr_cap_<%=capBank.getCcId()%>', '<%=rowColor%>'); "
+					    onmouseover = "javascript:togglePopup('capBankStatusPopup_<%=capBank.getCcId()%>')" >
 					<%
 					} else {
 					%>
@@ -490,6 +491,9 @@ for( int i = 0; i < capBanks.size(); i++ ) {
 					%>
 					<%=CBCUtils.CBC_DISPLAY.getCapBankValueAt(capBank, CBCDisplay.CB_STATUS_COLUMN)%>
 					</a>
+					<div class="ccVarLoadPopup" id="capBankStatusPopup_<%=capBank.getCcId()%>" style="display:none" > 
+					  <span type="param10" name="cti_dyn<%=capBank.getCcId()%>" id="popupSpan<%=capBank.getCcId()%>"><%=CBCUtils.CBC_DISPLAY.getCapBankValueAt(capBank, CBCDisplay.CB_STATUS_POPUP)%></span>
+					</div>
 				</td>
 				<td id="cap_opcnt_span<%=capBank.getCcId()%>" style="display:none; " >
 					<label for="opcount" id="opcnt_label"> Op Count: </label>

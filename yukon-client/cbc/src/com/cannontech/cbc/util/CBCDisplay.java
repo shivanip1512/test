@@ -53,6 +53,7 @@ public class CBCDisplay {
     public static final int CB_CURRENT_DAILY_OP_COLUMN = 7;
     public static final int CB_DAILY_TOTAL_OP_COLUMN = 8;
     public static final int CB_SHORT_TIME_STAMP_COLUMN = 9;
+    public static final int CB_STATUS_POPUP = 10;
 
     // Column numbers for the Feeder display
     public static final int FDR_NAME_COLUMN = 0;
@@ -225,8 +226,13 @@ public class CBCDisplay {
             return new String(capBank.getCurrentDailyOperations() + " / " + capBank.getTotalOperations());
         }
         
-        case CB_CONTROLLER:
+        case CB_CONTROLLER:{
             return controllerName;
+        }
+        
+        case CB_STATUS_POPUP: {
+            return new String("Before: "+capBank.getBeforeVars()+ " After: " + capBank.getAfterVars() + " % Change: "+ capBank.getPercentChange());
+        }
         default:
             return null;
         }
