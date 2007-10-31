@@ -8,8 +8,8 @@
 *
 * PVCS KEYWORDS:
 * ARCHIVE      :  $Archive$
-* REVISION     :  $Revision: 1.9 $
-* DATE         :  $Date: 2007/09/04 16:46:52 $
+* REVISION     :  $Revision: 1.10 $
+* DATE         :  $Date: 2007/10/31 20:49:40 $
 *
 * Copyright (c) 2002 Cannon Technologies Inc. All rights reserved.
 *-----------------------------------------------------------------------------*/
@@ -53,7 +53,7 @@ int Interface::recvCommResult ( INMESS *InMessage,    list< OUTMESS* > &outList 
 int Interface::recvCommRequest( OUTMESS  *OutMessage )   {   return NoMethod;    }
 int Interface::sendCommResult ( INMESS   *InMessage  )   {   return NoMethod;    }
 
-bool Interface::isTransactionComplete( void ) {   return true;    }
+bool Interface::isTransactionComplete( void ) const {   return true;    }
 
 void Interface::getInboundPoints ( pointlist_t  &point_list )   {  };
 void Interface::getInboundStrings( stringlist_t &string_list )  {  };

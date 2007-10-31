@@ -10,8 +10,8 @@
 *
 * PVCS KEYWORDS:
 * ARCHIVE      :  $Archive$
-* REVISION     :  $Revision: 1.3 $
-* DATE         :  $Date: 2007/09/04 16:46:18 $
+* REVISION     :  $Revision: 1.4 $
+* DATE         :  $Date: 2007/10/31 20:51:03 $
 *
 * Copyright (c) 2006 Cannon Technologies Inc. All rights reserved.
 *-----------------------------------------------------------------------------*/
@@ -96,7 +96,7 @@ public:
     int generate(CtiXfer &xfer);
     int decode  (CtiXfer &xfer, int status);
 
-    bool isTransactionComplete(void);
+    bool isTransactionComplete(void) const;
 
     enum ProtocolWrap
     {
