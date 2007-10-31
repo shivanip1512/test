@@ -486,6 +486,10 @@ alter table LMHardwareToMeterMapping
 
 alter table ImportData
 	alter column SubstationName varchar(64) not null;
+	
+alter table ImportFail
+	alter column SubstationName varchar(64) not null;
+	
 /* @error ignore-end */
 
 /******************************************************************************/
