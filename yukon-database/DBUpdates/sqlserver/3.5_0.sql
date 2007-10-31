@@ -490,6 +490,10 @@ alter table ImportData
 alter table ImportFail
 	alter column SubstationName varchar(64) not null;
 	
+create index Indx_RwPtHisPtIDTst on RAWPOINTHISTORY (
+	POINTID ASC,
+	TIMESTAMP ASC
+);
 /* @error ignore-end */
 
 /******************************************************************************/
