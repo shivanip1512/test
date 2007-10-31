@@ -9,7 +9,6 @@ import org.springframework.web.bind.ServletRequestUtils;
 import com.cannontech.database.data.lite.LiteYukonUser;
 import com.cannontech.database.data.lite.stars.LiteStarsEnergyCompany;
 import com.cannontech.roles.application.WebClientRole;
-import com.cannontech.servlet.LoginController;
 import com.cannontech.stars.util.ServletUtils;
 import com.cannontech.stars.web.StarsYukonUser;
 import com.cannontech.web.navigation.CtiNavObject;
@@ -38,7 +37,7 @@ public class MemberLoginController extends StarsAdminActionController {
         
         LiteYukonUser liteUser = null;
         if (memberLogin == null ||
-            (liteUser = LoginController.internalLogin(
+            (liteUser = loginService.internalLogin(
                 request,
                 session,
                 memberLogin.getUsername(),

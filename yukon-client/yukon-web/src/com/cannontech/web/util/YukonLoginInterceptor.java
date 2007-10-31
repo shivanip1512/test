@@ -1,6 +1,5 @@
 package com.cannontech.web.util;
 
-import javax.servlet.http.Cookie;
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
 import javax.servlet.http.HttpSession;
@@ -12,7 +11,10 @@ import com.cannontech.database.data.lite.LiteYukonUser;
 import com.cannontech.util.ServletUtil;
 
 public class YukonLoginInterceptor extends  HandlerInterceptorAdapter {
-
+    private static final String paramName = LoginController.REDIRECTED_FROM;
+    private static final String loginURL = "/login.jsp";
+    
+    @Override
     public boolean preHandle(HttpServletRequest request,
             HttpServletResponse response, Object handler) throws Exception {
         
@@ -25,23 +27,11 @@ public class YukonLoginInterceptor extends  HandlerInterceptorAdapter {
             }
         }
         
-
+        String url = request.getRequestURL().toString();
+        String urlParams = request.getQueryString();
+        String navUrl = url + ((urlParams != null) ? "?" + urlParams : "");
         
-        // do a redirect (copied from CheckLoginTag)
-        String redirectURL = "/login.jsp";
-        
-        // I wish I know what the following was all about!
-        Cookie[] cookies = request.getCookies();
-        if(cookies != null) {       
-            for(int i = 0; i < cookies.length; i++) {
-                Cookie c = cookies[i];
-                if(c.getName().equalsIgnoreCase(LoginController.LOGIN_URL_COOKIE)) {
-                    redirectURL = c.getValue();
-                    break;
-                }
-            }
-        }
-
+        String redirectURL = loginURL + "?" + paramName + "=" + navUrl;
         response.sendRedirect(redirectURL);
         return false;
     }

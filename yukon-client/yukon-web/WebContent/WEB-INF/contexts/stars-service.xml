@@ -7,6 +7,7 @@
 		<property name="energyCompanyDao" ref="energyCompanyDao"/>
 		<property name="starsDatabaseCache" ref="starsDatabaseCache"/>
 		<property name="yukonUserDao" ref="yukonUserDao"/>
+        <property name="loginService" ref="loginService"/>
 	</bean>
 	
 	<bean id="timeConsumingTaskService" class="com.cannontech.web.stars.service.impl.TimeConsumingTaskServiceImpl"/>

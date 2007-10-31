@@ -10,16 +10,17 @@ import com.cannontech.core.dao.YukonUserDao;
 import com.cannontech.database.cache.StarsDatabaseCache;
 import com.cannontech.database.data.lite.LiteYukonUser;
 import com.cannontech.database.data.lite.stars.LiteStarsEnergyCompany;
-import com.cannontech.servlet.LoginController;
 import com.cannontech.stars.util.ServletUtils;
 import com.cannontech.stars.util.WebClientException;
 import com.cannontech.stars.web.StarsYukonUser;
+import com.cannontech.web.login.LoginService;
 import com.cannontech.web.stars.service.SwitchContextService;
 
 public class SwitchContextServiceImpl implements SwitchContextService {
     private StarsDatabaseCache starsDatabaseCache;
     private YukonUserDao yukonUserDao;
     private EnergyCompanyDao energyCompanyDao;
+    private LoginService loginService;
     
     public void setStarsDatabaseCache(final StarsDatabaseCache starsDatabaseCache) {
         this.starsDatabaseCache = starsDatabaseCache;
@@ -47,7 +48,7 @@ public class SwitchContextServiceImpl implements SwitchContextService {
             if (liteUser == null) continue;
             
             if (this.energyCompanyDao.getEnergyCompany( liteUser ).getEnergyCompanyID() == memberID) {
-                if (LoginController.internalLogin(
+                if (loginService.internalLogin(
                         request,
                         session,
                         liteUser.getUsername(),
@@ -62,6 +63,10 @@ public class SwitchContextServiceImpl implements SwitchContextService {
         }
         
         throw new WebClientException( "No member login assigned to '" + member.getName() + "'" );
+    }
+
+    public void setLoginService(LoginService loginService) {
+        this.loginService = loginService;
     }
     
 }

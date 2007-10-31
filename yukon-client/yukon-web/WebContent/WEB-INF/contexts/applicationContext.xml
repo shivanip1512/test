@@ -476,6 +476,12 @@
     		<value>/WEB-INF/friendlyExceptions.properties</value>
     	</property>
     </bean>
-    
-    
+
+    <bean id="loginService"
+        class="com.cannontech.web.login.impl.LoginServiceImpl">
+        <property name="authDao" ref="authDao" />
+        <property name="contactDao" ref="contactDao" />
+        <property name="yukonUserDao" ref="yukonUserDao" />
+    </bean>
+
 </beans>

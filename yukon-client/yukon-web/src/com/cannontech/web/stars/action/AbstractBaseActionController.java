@@ -18,6 +18,7 @@ import com.cannontech.database.cache.StarsDatabaseCache;
 import com.cannontech.database.data.lite.stars.LiteStarsEnergyCompany;
 import com.cannontech.stars.util.ServletUtils;
 import com.cannontech.stars.web.StarsYukonUser;
+import com.cannontech.web.login.LoginService;
 
 public abstract class AbstractBaseActionController implements Controller {
     public static final String LOGIN_URL = "/login.jsp";
@@ -28,7 +29,12 @@ public abstract class AbstractBaseActionController implements Controller {
     protected ContactDao contactDao;
     protected AuthDao authDao;
     protected YukonListDao yukonListDao;
+    protected LoginService loginService;
     
+    public void setLoginService(LoginService loginService) {
+        this.loginService = loginService;
+    }
+
     public abstract String getRedirect(HttpServletRequest request) throws Exception;
     
     public abstract String getReferer(HttpServletRequest request) throws Exception;

@@ -1,0 +1,49 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE beans PUBLIC "-//SPRING//DTD BEAN//EN" "http://www.springframework.org/dtd/spring-beans.dtd">
+
+<beans>
+
+    <bean id="simpleUrlMapping"
+        class="org.springframework.web.servlet.handler.SimpleUrlHandlerMapping">
+        <property name="mappings">
+            <props>
+                <prop key="controller">loginController</prop>
+                <prop key="/login.jsp">loginController</prop>
+                <prop key="/servlet/LoginController">
+                    loginController
+                </prop>
+            </props>
+        </property>
+    </bean>
+
+    <bean id="viewResolver"
+        class="org.springframework.web.servlet.view.UrlBasedViewResolver">
+        <property name="viewClass"
+            value="org.springframework.web.servlet.view.JstlView" />
+        <property name="prefix" value="/WEB-INF/pages/login/" />
+    </bean>
+
+    <bean id="loginController"
+        class="com.cannontech.web.login.YukonLoginController">
+        <property name="methodNameResolver" ref="methodNameResolver" />
+        <!--  <property name="authenticationService"
+            ref="authenticationService" /> -->
+        <property name="loginService" ref="loginService"/>
+        <property name="cryptoService" ref="cryptoService" />
+    </bean>
+
+    <bean id="methodNameResolver"
+        class="org.springframework.web.servlet.mvc.multiaction.ParameterMethodNameResolver">
+        <property name="defaultMethodName" value="view" />
+        <property name="paramName" value="ACTION" />
+        <property name="logicalMappings">
+            <props>
+                <prop key="LOGIN">login</prop>
+                <prop key="LOGOUT">logout</prop>
+                <prop key="CLIENTLOGIN">clientLogin</prop>
+                <prop key="VOICELOGIN">outboundVoiceLogin</prop>
+                <prop key="INBOUNDVOICELOGIN">inboundVoiceLogin</prop>
+            </props>
+        </property>
+    </bean>
+</beans>

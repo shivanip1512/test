@@ -61,5 +61,7 @@
     	<property name="ldapService" ref="ldapService"/>
     </bean>
     
+    <bean id="cryptoService" class="com.cannontech.core.authentication.service.impl.CryptoServiceImpl"/>
+    
 </beans>
 
