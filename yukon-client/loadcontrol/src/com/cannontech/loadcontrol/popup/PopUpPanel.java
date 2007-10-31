@@ -205,6 +205,7 @@ public class PopUpPanel {
             if( newCurrentGearNumber != null ) {
                 LMManualControlRequest lmCntrlMsg = panel.createMessage(currentProgram, newCurrentGearNumber);
                 lmCntrlMsg.setConstraintFlag(LMManualControlRequest.CONSTRAINTS_FLAG_CHECK);
+                lmCntrlMsg.setCommand(LMManualControlRequest.CHANGE_GEAR);
                 ResponseProg currentResponseProg = new ResponseProg(lmCntrlMsg, currentProgram );
                 ResponseProg[] responseWrapper = { currentResponseProg };
                 
