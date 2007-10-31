@@ -476,6 +476,13 @@ create index INDX_CUSTID_PCONTID on Customer (
 CustomerID ASC,
 PrimaryContactID ASC
 );
+
+alter table MSPInterface
+   add constraint FK_Intrfc_Vend foreign key (VendorID)
+      references MSPVendor (VendorID);
+
+alter table LMHardwareToMeterMapping
+   add constraint PK_LMHARDWARETOMETERMAPPING primary key nonclustered (LMHardwareInventoryID, MeterInventoryID);
 /* @error ignore-end */
 
 /******************************************************************************/
