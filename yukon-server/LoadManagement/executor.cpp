@@ -1332,7 +1332,7 @@ void CtiLMManualControlRequestExecutor::Execute()
                                                              startTime.seconds(),
                                                              stopTime.seconds());
 
-                passed_check &= checker.checkManualGearChangeConstraints(_controlMsg->getStartGear(), stopTime.seconds());
+                passed_check &= checker.checkManualGearChangeConstraints(_controlMsg->getStartGear()-1, stopTime.seconds());
 
 
                 if( controlArea != NULL )
@@ -1358,8 +1358,16 @@ void CtiLMManualControlRequestExecutor::Execute()
 
             case CtiLMManualControlRequest::OVERRIDE_CONSTRAINTS:
                 (boost::static_pointer_cast< CtiLMProgramDirect >(program))->setConstraintOverride(true);
-                if( checker.checkManualGearChangeConstraints(_controlMsg->getStartGear(), stopTime.seconds()) )// I have decided that these do not allow override
+                if( checker.checkManualGearChangeConstraints(_controlMsg->getStartGear()-1, stopTime.seconds()) )// I have decided that these do not allow override
                 {
+                    {
+                        CtiLockGuard<CtiLogger> logger_guard(dout);
+                        dout << CtiTime() << " Gear Change being sent: " << endl;
+                        dout << "     OldStopTime: " << (boost::static_pointer_cast< CtiLMProgramDirect >(program))->getDirectStopTime() <<
+                             " NewStopTime: " << stopTime << endl;
+                        dout << "     OldGear: " << (boost::static_pointer_cast< CtiLMProgramDirect >(program))->getCurrentGearNumber() << 
+                             " NewGear: " << _controlMsg->getStartGear()-1 << endl;
+                    }
                     StartProgram(program, controlArea, startTime, stopTime);
                     if( response != NULL )
                     {
@@ -1378,9 +1386,18 @@ void CtiLMManualControlRequestExecutor::Execute()
                 // Fix up program control window if necessary
                 (boost::static_pointer_cast< CtiLMProgramDirect >(program))->setConstraintOverride(false);
                 CoerceStartStopTime(program, startTime, stopTime, controlArea);
-                if( checker.checkConstraints(_controlMsg->getStartGear()-1, startTime.seconds(), stopTime.seconds()) &&
+                if( checker.checkManualGearChangeConstraints(_controlMsg->getStartGear()-1, stopTime.seconds()) &&
+                    checker.checkConstraints(_controlMsg->getStartGear()-1, startTime.seconds(), stopTime.seconds()) &&
                     checker.checkControlAreaControlWindows(*controlArea, startTime.seconds(), stopTime.seconds()) )
                 {
+                    {
+                        CtiLockGuard<CtiLogger> logger_guard(dout);
+                        dout << CtiTime() << " Gear Change being sent: " << endl;
+                        dout << "     OldStopTime: " << (boost::static_pointer_cast< CtiLMProgramDirect >(program))->getDirectStopTime() <<
+                             " NewStopTime: " << stopTime << endl;
+                        dout << "     OldGear: " << (boost::static_pointer_cast< CtiLMProgramDirect >(program))->getCurrentGearNumber() << 
+                             " NewGear: " << _controlMsg->getStartGear()-1 << endl;
+                    }
                     StartProgram(program, controlArea, startTime, stopTime);
 
                     if( response != NULL )
