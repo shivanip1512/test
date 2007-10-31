@@ -483,6 +483,9 @@ alter table MSPInterface
 
 alter table LMHardwareToMeterMapping
    add constraint PK_LMHARDWARETOMETERMAPPING primary key nonclustered (LMHardwareInventoryID, MeterInventoryID);
+
+alter table ImportData
+	alter column SubstationName varchar(64) not null;
 /* @error ignore-end */
 
 /******************************************************************************/
