@@ -462,6 +462,11 @@ ContactID ASC,
 ContFirstName ASC,
 ContLastName ASC
 );
+
+create index Indx_acctid_custid on CustomerAccount (
+AccountID ASC,
+CustomerID ASC
+);
 /* @error ignore-end */
 
 /******************************************************************************/

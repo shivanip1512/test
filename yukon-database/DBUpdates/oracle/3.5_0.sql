@@ -390,6 +390,11 @@ create index INDX_CONTID_LNAME_FNAME on Contact (
    ContFirstName ASC,
    ContLastName ASC
 );
+
+create index Indx_acctid_custid on CustomerAccount (
+   AccountID ASC,
+   CustomerID ASC
+);
 /* @error ignore-end */
 
 /******************************************************************************/
