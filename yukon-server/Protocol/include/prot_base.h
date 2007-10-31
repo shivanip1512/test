@@ -9,8 +9,8 @@
 *
 * PVCS KEYWORDS:
 * ARCHIVE      :  $Archive$
-* REVISION     :  $Revision: 1.10 $
-* DATE         :  $Date: 2007/09/04 16:46:52 $
+* REVISION     :  $Revision: 1.11 $
+* DATE         :  $Date: 2007/10/31 20:50:43 $
 *
 * Copyright (c) 2002 Cannon Technologies Inc. All rights reserved.
 *-----------------------------------------------------------------------------*/
@@ -18,14 +18,9 @@
 #define __PROT_BASE_H__
 #pragma warning( disable : 4786)
 
-#include <rw/tpslist.h>
-
 #include <vector>
 #include <string>
 #include <list>
-using std::list;
-using std::string;
-using std::vector;
 
 #include "dlldefs.h"
 #include "msg_pdata.h"
@@ -40,12 +35,12 @@ private:
 
 protected:
 
-    string _name;
+    std::string _name;
 
 public:
 
-    typedef vector< CtiPointDataMsg * > pointlist_t;
-    typedef vector< string * >          stringlist_t;
+    typedef std::vector< CtiPointDataMsg * > pointlist_t;
+    typedef std::vector< string * >          stringlist_t;
 
     Interface();
     Interface(const Interface &aRef);
@@ -55,8 +50,8 @@ public:
     Interface &operator=(const Interface &aRef);
 
     //  client-side (Scanner, PIL) functions
-    virtual int sendCommRequest( OUTMESS *&OutMessage, list< OUTMESS* > &outList );
-    virtual int recvCommResult ( INMESS   *InMessage,  list< OUTMESS* > &outList );
+    virtual int sendCommRequest( OUTMESS *&OutMessage, std::list< OUTMESS* > &outList );
+    virtual int recvCommResult ( INMESS   *InMessage,  std::list< OUTMESS* > &outList );
 
     virtual void getInboundPoints ( pointlist_t  &point_list );
     virtual void getInboundStrings( stringlist_t &string_list );
@@ -64,14 +59,14 @@ public:
     //  porter-side (portfield, specificially) functions
     virtual int recvCommRequest( OUTMESS *OutMessage );
 
-    virtual bool isTransactionComplete( void );
+    virtual bool isTransactionComplete( void ) const;
 
     virtual int generate( CtiXfer &xfer );
     virtual int decode  ( CtiXfer &xfer, int status );
 
     virtual int sendCommResult( INMESS  *InMessage  );
 
-    virtual void setName( const string &name );
+    virtual void setName( const std::string &name );
 };
 
 }
