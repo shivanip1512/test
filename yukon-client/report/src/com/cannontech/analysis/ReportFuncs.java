@@ -328,6 +328,8 @@ public class ReportFuncs
             
         } else if( filter.equals(ReportFilter.CAPCONTROLSUBBUS)) {
             return cache.getAllCapControlSubBuses();
+        } else if( filter.equals(ReportFilter.CAPCONTROLSUBSTATION)) {
+            return cache.getAllCapControlSubStations();
         } else if( filter.equals(ReportFilter.CAPCONTROLFEEDER)) {
             return cache.getAllCapControlFeeders();
         } else if( filter.equals(ReportFilter.CAPBANK)) {

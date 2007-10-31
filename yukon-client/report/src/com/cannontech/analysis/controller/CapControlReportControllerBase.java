@@ -25,24 +25,34 @@ public abstract class CapControlReportControllerBase extends ReportControllerBas
 
         if (filterModelType == ReportFilter.CAPCONTROLFEEDER.ordinal()) {
             filterableModel.setCapBankIdsFilter(null);
-            filterableModel.setSubbusIdsFilter(null);
-            filterableModel.setAreaIdsFilter(null);
             filterableModel.setFeederIdsFilter(idsSet);
+            filterableModel.setSubbusIdsFilter(null);
+            filterableModel.setSubstationIdsFilter(null);
+            filterableModel.setAreaIdsFilter(null);
         } else if (filterModelType == ReportFilter.CAPBANK.ordinal()) {
+            filterableModel.setCapBankIdsFilter(idsSet);
             filterableModel.setFeederIdsFilter(null);
             filterableModel.setSubbusIdsFilter(null);
+            filterableModel.setSubstationIdsFilter(null);
             filterableModel.setAreaIdsFilter(null);
-            filterableModel.setCapBankIdsFilter(idsSet);
         } else if (filterModelType == ReportFilter.CAPCONTROLSUBBUS.ordinal()) {
             filterableModel.setCapBankIdsFilter(null);
             filterableModel.setFeederIdsFilter(null);
-            filterableModel.setAreaIdsFilter(null);
             filterableModel.setSubbusIdsFilter(idsSet);
+            filterableModel.setSubstationIdsFilter(null);
+            filterableModel.setAreaIdsFilter(null);
+        }else if (filterModelType == ReportFilter.CAPCONTROLSUBSTATION.ordinal()) {
+            filterableModel.setCapBankIdsFilter(null);
+            filterableModel.setFeederIdsFilter(null);
+            filterableModel.setSubbusIdsFilter(null);
+            filterableModel.setSubstationIdsFilter(idsSet);
+            filterableModel.setAreaIdsFilter(null);
         } else if (filterModelType == ReportFilter.AREA.ordinal()) {
             filterableModel.setCapBankIdsFilter(null);
             filterableModel.setFeederIdsFilter(null);
-            filterableModel.setAreaIdsFilter(idsSet);
             filterableModel.setSubbusIdsFilter(null);
+            filterableModel.setSubstationIdsFilter(null);
+            filterableModel.setAreaIdsFilter(idsSet);
         }
     }
     

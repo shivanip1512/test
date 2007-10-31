@@ -20,6 +20,7 @@ public class CBCInventoryModel extends BareReportModelBase<CBCInventoryModel.Mod
     private Set<Integer> capBankIds;
     private Set<Integer> feederIds;
     private Set<Integer> subbusIds;
+    private Set<Integer> substationIds;
     private Set<Integer> areaIds;
     
     public CBCInventoryModel() {
@@ -97,6 +98,8 @@ public class CBCInventoryModel extends BareReportModelBase<CBCInventoryModel.Mod
         sql.append("left outer join yukonpaobject yp2 on yp2.paobjectid = fb.feederid ");
         sql.append("left outer join ccfeedersubassignment sf on fb.feederid = sf.feederid ");
         sql.append("left outer join yukonpaobject yp3 on yp3.paobjectid = sf.substationbusid ");
+        sql.append("left outer join ccsubstationsubbuslist ss on fs.substationbusid  = ss.substationbusid ");
+        sql.append("left outer join yukonpaobject yp4 on yp4.paobjectid = ss.substationid ");
         sql.append("left outer join deviceaddress da on da.deviceid = cb.controldeviceid ");
         sql.append("left outer join (select * from dynamicpaoinfo where infokey like '%udp ip%') as p on p.paobjectid = yp.paobjectid ");
         sql.append("left outer join ccsubstationsubbuslist ssb on ssb.substationbusid = sf.substationbusid ");
@@ -120,6 +123,11 @@ public class CBCInventoryModel extends BareReportModelBase<CBCInventoryModel.Mod
             String wheres = SqlStatementBuilder.convertToSqlLikeList(subbusIds);
             result += wheres;
             result += " ) ";
+        }else if(substationIds != null && !substationIds.isEmpty()) {
+            result = "yp4.paobjectid in ( ";
+            String wheres = SqlStatementBuilder.convertToSqlLikeList(substationIds);
+            result += wheres;
+            result += " ) ";
         }else if(areaIds != null && !areaIds.isEmpty()) {
             result = "ca.paobjectid in ( ";
             String wheres = SqlStatementBuilder.convertToSqlLikeList(areaIds);
@@ -136,30 +144,22 @@ public class CBCInventoryModel extends BareReportModelBase<CBCInventoryModel.Mod
         return sql;
     }
 
-    /* (non-Javadoc)
-     * @see com.cannontech.analysis.tablemodel.CapControlFilterable#setCapBankIdsFilter(java.util.Set)
-     */
     public void setCapBankIdsFilter(Set<Integer> capBankIds) {
         this.capBankIds = capBankIds;
     }
 
-    /* (non-Javadoc)
-     * @see com.cannontech.analysis.tablemodel.CapControlFilterable#setFeederIdsFilter(java.util.Set)
-     */
     public void setFeederIdsFilter(Set<Integer> feederIds) {
         this.feederIds = feederIds;
     }
     
-    /* (non-Javadoc)
-     * @see com.cannontech.analysis.tablemodel.CapControlFilterable#setSubbusIdsFilter(java.util.Set)
-     */
     public void setSubbusIdsFilter(Set<Integer> subbusIds) {
         this.subbusIds = subbusIds;
     }
     
-    /* (non-Javadoc)
-     * @see com.cannontech.analysis.tablemodel.CapControlFilterable#setAreaIdsFilter(java.util.Set)
-     */
+    public void setSubstationIdsFilter(Set<Integer> substationIds) {
+        this.substationIds = substationIds;
+    }
+    
     public void setAreaIdsFilter(Set<Integer> areaIds) {
         this.areaIds = areaIds;
     }

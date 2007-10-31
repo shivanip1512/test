@@ -22,6 +22,7 @@ public class CapBankOperationsPerformanceModel extends BareDatedReportModelBase<
     private Set<Integer> capBankIds;
     private Set<Integer> feederIds;
     private Set<Integer> subbusIds;
+    private Set<Integer> substationIds;
     private Set<Integer> areaIds;
     private String queryType;
     private String queryPercent = "100";
@@ -130,6 +131,11 @@ public class CapBankOperationsPerformanceModel extends BareDatedReportModelBase<
             String wheres = SqlStatementBuilder.convertToSqlLikeList(subbusIds);
             result += wheres;
             result += " ) ";
+        }else if(substationIds != null && !substationIds.isEmpty()) {
+            result = "d.substationid in ( ";
+            String wheres = SqlStatementBuilder.convertToSqlLikeList(substationIds);
+            result += wheres;
+            result += " ) ";
         }else if(areaIds != null && !areaIds.isEmpty()) {
             result = "ca.paobjectid in ( ";
             String wheres = SqlStatementBuilder.convertToSqlLikeList(areaIds);
@@ -146,30 +152,18 @@ public class CapBankOperationsPerformanceModel extends BareDatedReportModelBase<
         return sql;
     }
 
-    /* (non-Javadoc)
-     * @see com.cannontech.analysis.tablemodel.CapControlFilterable#setCapBankIdsFilter(java.util.Set)
-     */
     public void setCapBankIdsFilter(Set<Integer> capBankIds) {
         this.capBankIds = capBankIds;
     }
 
-    /* (non-Javadoc)
-     * @see com.cannontech.analysis.tablemodel.CapControlFilterable#setFeederIdsFilter(java.util.Set)
-     */
     public void setFeederIdsFilter(Set<Integer> feederIds) {
         this.feederIds = feederIds;
     }
     
-    /* (non-Javadoc)
-     * @see com.cannontech.analysis.tablemodel.CapControlFilterable#setSubbusIdsFilter(java.util.Set)
-     */
     public void setSubbusIdsFilter(Set<Integer> subbusIds) {
         this.subbusIds = subbusIds;
     }
     
-    /* (non-Javadoc)
-     * @see com.cannontech.analysis.tablemodel.CapControlFilterable#setAreaIdsFilter(java.util.Set)
-     */
     public void setAreaIdsFilter(Set<Integer> areaIds) {
         this.areaIds = areaIds;
     }
@@ -180,5 +174,9 @@ public class CapBankOperationsPerformanceModel extends BareDatedReportModelBase<
     
     public void setQueryPercent(String percent_) {
         this.queryPercent = percent_;
+    }
+
+    public void setSubstationIdsFilter(Set<Integer> substationIds) {
+        this.substationIds = substationIds;
     }
 }

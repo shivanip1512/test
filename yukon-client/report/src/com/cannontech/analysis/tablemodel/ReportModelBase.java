@@ -57,6 +57,7 @@ public abstract class ReportModelBase<E> extends javax.swing.table.AbstractTable
 			TRANSMITTER("Transmitter"),
 			RTU("RTU"),
 			CAPCONTROLSUBBUS("Substation Bus"),
+            CAPCONTROLSUBSTATION("Substation"),
 			CAPCONTROLFEEDER("Cap Feeder"),
 			CAPBANK("Cap Bank"),
             SCHEDULE("Schedule (Script)"),

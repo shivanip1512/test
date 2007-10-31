@@ -16,6 +16,7 @@ public class CapControlRetriesModel extends BareDatedReportModelBase<CapControlR
     private Set<Integer> capBankIds;
     private Set<Integer> feederIds;
     private Set<Integer> subbusIds;
+    private Set<Integer> substationIds;
     private Set<Integer> areaIds;
     
     static public class ModelRow {
@@ -99,6 +100,8 @@ public class CapControlRetriesModel extends BareDatedReportModelBase<CapControlR
         sql.append("join yukonpaobject yp2 on yp2.paobjectid = fb.feederid ");
         sql.append("join ccfeedersubassignment fs on fs.feederid = fb.feederid ");
         sql.append("join yukonpaobject yp1 on yp1.paobjectid = fs.substationbusid ");
+        sql.append("join ccsubstationsubbuslist ss on ss.substationbusid = fs.substationbusid ");
+        sql.append("join yukonpaobject yp5 on yp5.paobjectid = ss.substationid ");
         sql.append("join ccsubstationsubbus ssb on ssb.substationbusid = fs.substationbusid ");
         sql.append("join ccsubareaassignment sa on sa.substationbusid = ssb.substationid ");
         sql.append("join  yukonpaobject yp on yp.paobjectid = sa.areaid ");
@@ -121,6 +124,12 @@ public class CapControlRetriesModel extends BareDatedReportModelBase<CapControlR
         if(subbusIds != null && !subbusIds.isEmpty()) {
             result = "yp1.paobjectid in ( ";
             String wheres = SqlStatementBuilder.convertToSqlLikeList(subbusIds);
+            result += wheres;
+            result += " ) ";
+        }
+        if(substationIds != null && !substationIds.isEmpty()) {
+            result = "yp5.paobjectid in ( ";
+            String wheres = SqlStatementBuilder.convertToSqlLikeList(substationIds);
             result += wheres;
             result += " ) ";
         }
@@ -151,9 +160,10 @@ public class CapControlRetriesModel extends BareDatedReportModelBase<CapControlR
         this.subbusIds = subbusIds;
     }
     
-    /* (non-Javadoc)
-     * @see com.cannontech.analysis.tablemodel.CapControlFilterable#setAreaIdsFilter(java.util.Set)
-     */
+    public void setSubstationIdsFilter(Set<Integer> substationIds) {
+        this.substationIds = substationIds;
+    }
+    
     public void setAreaIdsFilter(Set<Integer> areaIds) {
         this.areaIds = areaIds;
     }

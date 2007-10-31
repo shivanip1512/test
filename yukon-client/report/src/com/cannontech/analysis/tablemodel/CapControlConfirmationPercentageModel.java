@@ -16,6 +16,7 @@ public class CapControlConfirmationPercentageModel extends BareDatedReportModelB
     private Set<Integer> capBankIds;
     private Set<Integer> feederIds;
     private Set<Integer> subbusIds;
+    private Set<Integer> substationIds;
     private Set<Integer> areaIds;
     
     static public class ModelRow {
@@ -139,6 +140,12 @@ public class CapControlConfirmationPercentageModel extends BareDatedReportModelB
             result += wheres;
             result += " ) ";
         }
+        if(substationIds != null && !substationIds.isEmpty()) {
+            result = "ssb.substationid in ( ";
+            String wheres = SqlStatementBuilder.convertToSqlLikeList(substationIds);
+            result += wheres;
+            result += " ) ";
+        }
         if(areaIds != null && !areaIds.isEmpty()) {
             result = "ca.paobjectid in ( ";
             String wheres = SqlStatementBuilder.convertToSqlLikeList(areaIds);
@@ -167,9 +174,10 @@ public class CapControlConfirmationPercentageModel extends BareDatedReportModelB
         this.subbusIds = subbusIds;
     }
     
-    /* (non-Javadoc)
-     * @see com.cannontech.analysis.tablemodel.CapControlFilterable#setAreaIdsFilter(java.util.Set)
-     */
+    public void setSubstationIdsFilter(Set<Integer> substationIds) {
+        this.substationIds = substationIds;
+    }
+    
     public void setAreaIdsFilter(Set<Integer> areaIds) {
         this.areaIds = areaIds;
     }

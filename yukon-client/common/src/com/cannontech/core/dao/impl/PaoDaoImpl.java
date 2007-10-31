@@ -124,6 +124,15 @@ public final class PaoDaoImpl implements PaoDao {
 
         return subBusList;
     }
+    
+    public List<LiteYukonPAObject> getAllCapControlSubStations() {
+        List<LiteYukonPAObject> subStationList = null;
+        synchronized (databaseCache) {
+            subStationList = databaseCache.getAllCapControlSubStations();
+        }
+
+        return subStationList;
+    }
 
     /*
      * (non-Javadoc)

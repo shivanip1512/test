@@ -22,6 +22,7 @@ public class CapControlDisabledDevicesModel extends BareReportModelBase<CapContr
     private Set<Integer> capBankIds;
     private Set<Integer> feederIds;
     private Set<Integer> subbusIds;
+    private Set<Integer> substationIds;
     private Set<Integer> areaIds;
     
     public CapControlDisabledDevicesModel() {
@@ -89,6 +90,11 @@ public class CapControlDisabledDevicesModel extends BareReportModelBase<CapContr
             String wheres = SqlStatementBuilder.convertToSqlLikeList(subbusIds);
             result += wheres;
             result += " ) ";
+        }else if(substationIds != null && !substationIds.isEmpty()) {
+            result = "yp.paobjectid in ( ";
+            String wheres = SqlStatementBuilder.convertToSqlLikeList(substationIds);
+            result += wheres;
+            result += " ) ";
         }else if(areaIds != null && !areaIds.isEmpty()) {
             result = "yp.paobjectid in ( ";
             String wheres = SqlStatementBuilder.convertToSqlLikeList(areaIds);
@@ -115,6 +121,10 @@ public class CapControlDisabledDevicesModel extends BareReportModelBase<CapContr
     
     public void setSubbusIdsFilter(Set<Integer> subbusIds) {
         this.subbusIds = subbusIds;
+    }
+    
+    public void setSubstationIdsFilter(Set<Integer> substationIds) {
+        this.substationIds = substationIds;
     }
     
     public void setAreaIdsFilter(Set<Integer> areaIds) {

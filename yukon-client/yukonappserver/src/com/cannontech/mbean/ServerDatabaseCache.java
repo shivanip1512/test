@@ -167,7 +167,8 @@ public class ServerDatabaseCache extends CTIMBeanBase implements IDatabaseCache
 	//lists that are created by the joining/parsing of existing lists
 	private ArrayList<LiteYukonPAObject> allUnusedCCDevices = null; //PAO
 	private ArrayList<LiteYukonPAObject> allCapControlFeeders = null; //PAO
-	private ArrayList<LiteYukonPAObject> allCapControlSubBuses = null; //PAO	
+	private ArrayList<LiteYukonPAObject> allCapControlSubBuses = null; //PAO
+    private ArrayList<LiteYukonPAObject> allCapControlSubStations = null; //PAO    
 	private ArrayList<LiteYukonPAObject> allDevices = null; //PAO
 	private ArrayList<LiteYukonPAObject> allLMPrograms = null; //PAO
 	private ArrayList<LiteYukonPAObject> allLMControlAreas = null;	//PAO
@@ -317,6 +318,26 @@ public synchronized List<LiteYukonPAObject> getAllCapControlSubBuses()
 
 	return allCapControlSubBuses;
 }
+
+public synchronized List<LiteYukonPAObject> getAllCapControlSubStations() 
+{
+    if( allCapControlSubStations == null )
+    {
+        allCapControlSubStations = new ArrayList<LiteYukonPAObject>( getAllYukonPAObjects().size() / 2 );
+
+        for( int i = 0; i < getAllYukonPAObjects().size(); i++ )
+        {
+            if( getAllYukonPAObjects().get(i).getCategory() == PAOGroups.CAT_CAPCONTROL
+                 && getAllYukonPAObjects().get(i).getType() == PAOGroups.CAP_CONTROL_SUBSTATION )
+                allCapControlSubStations.add( getAllYukonPAObjects().get(i) );
+        }
+
+        allCapControlSubStations.trimToSize();
+    }   
+
+    return allCapControlSubStations;
+}
+
 /**
  * Insert the method's description here.
  * Creation date: (3/14/00 3:19:19 PM)
@@ -1498,6 +1519,7 @@ public synchronized LiteBase handleDBChangeMessage(DBChangeMsg dbChangeMsg)
 		{
 			allCapControlFeeders = null;
 			allCapControlSubBuses = null;	
+            allCapControlSubStations = null;
 		}
 		else if( dbCategory.equalsIgnoreCase(PAOGroups.STRING_CAT_PORT) )
 		{
@@ -2827,6 +2849,7 @@ public synchronized void releaseAllCache()
 	allUnusedCCDevices = null; //PAO
 	allCapControlFeeders = null; //PAO
 	allCapControlSubBuses = null; //PAO   
+    allCapControlSubStations = null; //PAO
 	allDevices = null; //PAO
 	allLMPrograms = null; //PAO
 	allLMControlAreas = null; //PAO

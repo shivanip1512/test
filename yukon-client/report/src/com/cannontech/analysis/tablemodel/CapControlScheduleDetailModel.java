@@ -21,6 +21,7 @@ public class CapControlScheduleDetailModel extends BareDatedReportModelBase<CapC
     private Set<Integer> capBankIds;
     private Set<Integer> feederIds;
     private Set<Integer> subbusIds;
+    private Set<Integer> substationIds;
     private Set<Integer> areaIds;
     private String orderBy = "schedulename";
 
@@ -85,6 +86,8 @@ public class CapControlScheduleDetailModel extends BareDatedReportModelBase<CapC
         sql.append("join yukonpaobject yp on psa.paoid = yp.paobjectid  ");
         sql.append("join ccfeedersubassignment cfs on cfs.substationbusid = yp.paobjectid  ");
         sql.append("join yukonpaobject yp1 on yp1.paobjectid = cfs.feederid  ");
+        sql.append("join ccsubstationsubbuslist ss on ss.substationbusid = yp.paobjectid  ");
+        sql.append("join yukonpaobject yp2 on yp2.paobjectid = ss.substationid  ");
         sql.append("join paoschedule ps on ps.scheduleid = psa.scheduleid and ps.disabled = 'N'  ");
         sql.append("left outer join ccsubstationsubbuslist ssb on ssb.substationbusid = cfs.substationbusid ");
         sql.append("left outer join ccsubareaassignment saa on saa.substationbusid = ssb.substationid ");
@@ -106,6 +109,11 @@ public class CapControlScheduleDetailModel extends BareDatedReportModelBase<CapC
         }else if(subbusIds != null && !subbusIds.isEmpty()) {
             result = "yp.paobjectid in ( ";
             String wheres = SqlStatementBuilder.convertToSqlLikeList(subbusIds);
+            result += wheres;
+            result += " ) ";
+        }else if(substationIds != null && !substationIds.isEmpty()) {
+            result = "yp.paobjectid in ( ";
+            String wheres = SqlStatementBuilder.convertToSqlLikeList(substationIds);
             result += wheres;
             result += " ) ";
         }else if(areaIds != null && !areaIds.isEmpty()) {
@@ -138,30 +146,22 @@ public class CapControlScheduleDetailModel extends BareDatedReportModelBase<CapC
         return sql;
     }
 
-    /* (non-Javadoc)
-     * @see com.cannontech.analysis.tablemodel.CapControlFilterable#setCapBankIdsFilter(java.util.Set)
-     */
     public void setCapBankIdsFilter(Set<Integer> capBankIds) {
         this.capBankIds = capBankIds;
     }
 
-    /* (non-Javadoc)
-     * @see com.cannontech.analysis.tablemodel.CapControlFilterable#setFeederIdsFilter(java.util.Set)
-     */
     public void setFeederIdsFilter(Set<Integer> feederIds) {
         this.feederIds = feederIds;
     }
     
-    /* (non-Javadoc)
-     * @see com.cannontech.analysis.tablemodel.CapControlFilterable#setSubbusIdsFilter(java.util.Set)
-     */
     public void setSubbusIdsFilter(Set<Integer> subbusIds) {
         this.subbusIds = subbusIds;
     }
     
-    /* (non-Javadoc)
-     * @see com.cannontech.analysis.tablemodel.CapControlFilterable#setAreaIdsFilter(java.util.Set)
-     */
+    public void setSubstationIdsFilter(Set<Integer> substationIds) {
+        this.substationIds = substationIds;
+    }
+    
     public void setAreaIdsFilter(Set<Integer> areaIds) {
         this.areaIds = areaIds;
     }

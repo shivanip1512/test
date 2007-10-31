@@ -53,6 +53,8 @@ public interface IDatabaseCache {
     public List<LiteYukonPAObject> getAllCapControlFeeders();
 
     public List<LiteYukonPAObject> getAllCapControlSubBuses();
+    
+    public List<LiteYukonPAObject> getAllCapControlSubStations();
 
     public List<LiteContact> getAllContacts();
 

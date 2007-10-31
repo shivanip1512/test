@@ -10,6 +10,8 @@ public interface CapControlFilterable {
 
     public abstract void setSubbusIdsFilter(Set<Integer> subbusIds);
     
+    public abstract void setSubstationIdsFilter(Set<Integer> substationIds);
+    
     public abstract void setAreaIdsFilter(Set<Integer> areaIds);
 
 }

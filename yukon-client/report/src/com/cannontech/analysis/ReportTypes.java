@@ -72,6 +72,10 @@ public enum ReportTypes {
             "Report showing disabled capcontrol devices."),
     CAP_CONTROL_MAINTENANCE_PENDING("Maintenance Pending", CapControlMaintenancePendingController.class, ReportGroup.CAP_CONTROL,
             "Report showing sites pending maintenance."),
+    CAP_CONTROL_MAX_OPS_ALARMS("Max Ops Alarms Report", CapBankMaxOpsAlarmsController.class, ReportGroup.CAP_CONTROL,
+            "Report showing capbanks with max operation alarms"),
+    CAP_CONTROL_ABNORMAL_TELEMETRY_DATA("Abnormal Telemetry Data Report", AbnormalTelemetryDataController.class, ReportGroup.CAP_CONTROL,
+            "Report showing feeders with abnormal telemetry data."),
     
     COMM_STATISTICS("Communication Statistics", StatisticModel.class, ReportGroup.STATISTICAL),
 	//STATISTIC_HISTORY_PORT_DATA("Historical Daily Port Statistics", StatisticHistoryPortModel.class, ReportGroup.STATISTICAL),

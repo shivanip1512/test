@@ -109,6 +109,11 @@ public class IDatabaseCacheAdapter implements IDatabaseCache {
 
         throw new UnsupportedOperationException();
     }
+    
+    public List<LiteYukonPAObject> getAllCapControlSubStations() {
+
+        throw new UnsupportedOperationException();
+    }
 
     public List<LiteCommand> getAllCommands() {
 

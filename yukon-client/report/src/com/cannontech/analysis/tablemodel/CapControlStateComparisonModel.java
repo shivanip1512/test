@@ -21,6 +21,7 @@ public class CapControlStateComparisonModel extends BareReportModelBase<CapContr
     private Set<Integer> capBankIds;
     private Set<Integer> feederIds;
     private Set<Integer> subbusIds;
+    private Set<Integer> substationIds;
     private Set<Integer> areaIds;
     
     public CapControlStateComparisonModel() {
@@ -91,6 +92,8 @@ public class CapControlStateComparisonModel extends BareReportModelBase<CapContr
         sql.append("left outer join (select * from yukonpaobject where type like 'CCFEEDER') as  yp2 on yp2.paobjectid = fb.feederid ");
         sql.append("left outer join ccfeedersubassignment sf on fb.feederid = sf.feederid ");
         sql.append("left outer join (select * from yukonpaobject where type like 'CCSUBBUS') as yp3 on yp3.paobjectid = sf.substationbusid ");
+        sql.append("left outer join ccsubstationsubbuslist ss on sf.substationbusid = ss.substationbusid ");
+        sql.append("left outer join (select * from yukonpaobject where type like 'CCSUBSTATION') as yp4 on yp4.paobjectid = ss.substationid ");
         sql.append("join dynamiccccapbank dcb on dcb.capbankid = cb.deviceid ");
         sql.append("join state s on s.stategroupid = 3 and dcb.controlstatus = s.rawstate ");
         sql.append("left outer join state s1 on s1.stategroupid = 3 and dcb.twowaycbcstate = s1.rawstate ");
@@ -118,6 +121,12 @@ public class CapControlStateComparisonModel extends BareReportModelBase<CapContr
             result += wheres;
             result += " ) ";
         }
+        if(substationIds != null && !substationIds.isEmpty()) {
+            result = "yp4.paobjectid in ( ";
+            String wheres = SqlStatementBuilder.convertToSqlLikeList(substationIds);
+            result += wheres;
+            result += " ) ";
+        }
         if(areaIds != null && !areaIds.isEmpty()) {
             result = "ca.paobjectid in ( ";
             String wheres = SqlStatementBuilder.convertToSqlLikeList(areaIds);
@@ -133,30 +142,22 @@ public class CapControlStateComparisonModel extends BareReportModelBase<CapContr
         return sql;
     }
 
-    /* (non-Javadoc)
-     * @see com.cannontech.analysis.tablemodel.CapControlFilterable#setCapBankIdsFilter(java.util.Set)
-     */
     public void setCapBankIdsFilter(Set<Integer> capBankIds) {
         this.capBankIds = capBankIds;
     }
 
-    /* (non-Javadoc)
-     * @see com.cannontech.analysis.tablemodel.CapControlFilterable#setFeederIdsFilter(java.util.Set)
-     */
     public void setFeederIdsFilter(Set<Integer> feederIds) {
         this.feederIds = feederIds;
     }
     
-    /* (non-Javadoc)
-     * @see com.cannontech.analysis.tablemodel.CapControlFilterable#setSubbusIdsFilter(java.util.Set)
-     */
     public void setSubbusIdsFilter(Set<Integer> subbusIds) {
         this.subbusIds = subbusIds;
     }
     
-    /* (non-Javadoc)
-     * @see com.cannontech.analysis.tablemodel.CapControlFilterable#setAreaIdsFilter(java.util.Set)
-     */
+    public void setSubstationIdsFilter(Set<Integer> substationIds) {
+        this.substationIds = substationIds;
+    }
+    
     public void setAreaIdsFilter(Set<Integer> areaIds) {
         this.areaIds = areaIds;
     }
