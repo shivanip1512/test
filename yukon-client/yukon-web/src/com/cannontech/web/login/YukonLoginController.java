@@ -89,23 +89,15 @@ public class YukonLoginController extends MultiActionController {
             String username = split[0];
             String password = split[1];
 
-            boolean result = loginService.login(request, response, username, password, redirectedFrom);
-            if (!result) deleteCooke(response, cookie);
-            
+            loginService.login(request, response, username, password, redirectedFrom);
         } catch (GeneralSecurityException e) {
             CTILogger.warn(e);
-            deleteCooke(response, cookie);
             return new ModelAndView("login.jsp?force=true");
         }
 
         return null;
     }
 
-    private void deleteCooke(final HttpServletResponse response, final Cookie cookie) {
-        cookie.setMaxAge(0);
-        response.addCookie(cookie);
-    }
-    
     private void createCookie(final HttpServletRequest request, final HttpServletResponse response, 
             final String username, final String password) {
         

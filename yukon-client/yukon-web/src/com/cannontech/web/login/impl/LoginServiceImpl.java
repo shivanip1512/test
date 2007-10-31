@@ -147,9 +147,20 @@ public class LoginServiceImpl implements LoginService {
                 redirect = request.getContextPath() + INVALID_URI;
             }
         }
+        
         ActivityLogger.logEvent(LOGIN_FAILED_ACTIVITY_LOG, "Login attempt as " + username + " failed from " + request.getRemoteAddr());
+        deleteAllCookies(request, response);
         response.sendRedirect(redirect);
         return false;
+    }
+    
+    private void deleteAllCookies(final HttpServletRequest request, final HttpServletResponse response) {
+        Cookie[] cookies = request.getCookies();
+        if (cookies == null) return;
+        for (final Cookie cookie : cookies) {
+            cookie.setMaxAge(0);
+            response.addCookie(cookie);
+        }
     }
 
     public void logout(HttpServletRequest request, HttpServletResponse response) throws Exception {
