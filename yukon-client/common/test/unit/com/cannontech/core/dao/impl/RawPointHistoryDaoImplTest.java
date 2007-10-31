@@ -50,8 +50,8 @@ public class RawPointHistoryDaoImplTest {
     }
     
     @Test
-    public void testGetBinnedPointData1() {
-        List<PointValueHolder> binnedPointData = dao.getIntervalPointData(0, null, null, ChartInterval.HOUR, RawPointHistoryDao.Mode.HIGHEST);
+    public void testGetBinnedPointData1() throws ParseException {
+        List<PointValueHolder> binnedPointData = dao.getIntervalPointData(0, dateTimeInstance.parse("5/4/05 4:36 pm"), dateTimeInstance.parse("5/6/05 4:36 pm"), ChartInterval.HOUR, RawPointHistoryDao.Mode.HIGHEST);
         List<PointValueHolder> expected = new ArrayList<PointValueHolder>();
         expected.add(new PointValue("5/5/05 4:36 pm", 5.7));
         expected.add(new PointValue("5/5/05 6:30 pm", 9.9));
@@ -61,8 +61,8 @@ public class RawPointHistoryDaoImplTest {
     }
 
     @Test
-    public void testGetBinnedPointData2() {
-        List<PointValueHolder> binnedPointData = dao.getIntervalPointData(0, null, null, ChartInterval.HOUR, RawPointHistoryDao.Mode.LAST);
+    public void testGetBinnedPointData2() throws ParseException {
+        List<PointValueHolder> binnedPointData = dao.getIntervalPointData(0, dateTimeInstance.parse("5/4/05 4:36 pm"), dateTimeInstance.parse("5/6/05 4:36 pm"), ChartInterval.HOUR, RawPointHistoryDao.Mode.LAST);
         List<PointValueHolder> expected = new ArrayList<PointValueHolder>();
         expected.add(new PointValue("5/5/05 4:39 pm", 5.5));
         expected.add(new PointValue("5/5/05 6:39 pm", 3.5));

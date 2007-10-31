@@ -14,20 +14,38 @@
     </c:when>
     <c:when test="${supportedAttributes[attribute]}">
     <ct:attributeValue device="${device}" attribute="${attribute}" />
-    <c:if test="${attribute == 'USAGE'}">
-      <ct:nameValue name="Previous Usage">
-      <select onChange="${widgetParameters.widgetId}_usageSelection()" id="${widgetParameters.widgetId}_prevSelect">
-        <c:forEach items="${previousReadings}" var="reading">
-          <option value="${reading.value}"><cti:pointValueFormatter format="FULL" value="${reading}"/></option>
-        </c:forEach>
-      </select>
-      </ct:nameValue>
-      
-      <ct:nameValue name="Total Consumption">
-        <div id="${widgetParameters.widgetId}_totalConsumption" > 
-        </div>
-      </ct:nameValue>
-    </c:if>
+    
+	    <c:if test="${attribute == 'USAGE'}">
+	      
+	      <ct:nameValue name="Previous Usage">
+		      <select onChange="${widgetParameters.widgetId}_usageSelection()" id="${widgetParameters.widgetId}_prevSelect">
+				<cti:formatDate type="date" var="cutOff" value="${previousReadings_CutoffDate}"/>
+				<optgroup label="Recent Readings (since ${cutOff})">
+
+		        <c:forEach items="${previousReadings_All}" var="reading">
+			    	<option value="${reading.value}"><cti:pointValueFormatter format="FULL" value="${reading}"/></option>
+			    </c:forEach>
+			    </optgroup>
+			    
+				<c:if test="${previousReadings_Cutoff}">
+				<cti:formatDate type="date" var="cutOff" value="${previousReadings_CutoffDate}"/>
+				<optgroup label="Daily readings (before ${cutOff})">
+				</c:if>
+
+		        <c:forEach items="${previousReadings_Daily}" var="reading">
+			    	<option value="${reading.value}"><cti:pointValueFormatter format="FULL" value="${reading}"/></option>
+			    </c:forEach>
+			    </optgroup>
+			    
+		      </select>
+	      </ct:nameValue>
+	      
+	      <ct:nameValue name="Total Consumption">
+	        <div id="${widgetParameters.widgetId}_totalConsumption" /> 
+	      </ct:nameValue>
+	      
+	    </c:if>
+	    
     </c:when>
   </c:choose>
   </ct:nameValue>

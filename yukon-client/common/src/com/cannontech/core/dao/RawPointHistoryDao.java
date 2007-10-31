@@ -7,7 +7,13 @@ import com.cannontech.common.chart.model.ChartInterval;
 import com.cannontech.core.dynamic.PointValueHolder;
 
 /**
- * Data access object for raw point history values
+ * Data access object for raw point history values.
+ * 
+ * All of the methods in this DAO have the special behavior of
+ * accepting the start and stop dates in any order. If start is less than
+ * stop, the list will be ordered so that earlier values come first. If
+ * stop is less than start, the list will be ordered so that later values 
+ * come first (i.e. descending).
  */
 public interface RawPointHistoryDao {
 
@@ -16,13 +22,32 @@ public interface RawPointHistoryDao {
     }
 
     /**
-     * Method to get a list of point values for a given time period
+     * Method to get a list of point values for a given time period.
+     * 
+     * See note about start and stop order.
+     * 
      * @param pointId - Id of point to get values for
      * @param startDate - Start of time period
      * @param stopDate - End of time period
      * @return List of values for the point
      */
     public List<PointValueHolder> getPointData(int pointId, Date startDate, Date stopDate);
+    
+    /**
+     * Method to get a list of point values for a given time period, but only returning
+     * up to maxRows rows. If startDate.before(stopDate) is true, the returned list
+     * will contain the maxRows closset to startDate.  If stopDate.before(startDate) 
+     * is true, the returned list will contain the maxRows closset to stopDate. 
+     *
+     * See note about start and stop order.
+     * 
+     * @param pointId - Id of point to get values for
+     * @param startDate - Start of time period
+     * @param stopDate - End of time period
+     * @param maxRows - Maximum number of rows to return
+     * @return List of values for the point
+     */
+    public List<PointValueHolder> getPointData(int pointId, Date startDate, Date stopDate, int maxRows);
     
 
     /**
@@ -34,6 +59,8 @@ public interface RawPointHistoryDao {
      *   Mode.HIGHEST - The point data with the largest value for the period will be returned
      *   Mode.LAST - The point data with the largest timestamp for the period will be returned
      *   
+     * See note about start and stop order.
+     * 
      * @param pointId
      * @param startDate
      * @param stopDate

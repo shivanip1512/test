@@ -1,6 +1,7 @@
 package com.cannontech.web.widget;
 
-import java.util.ArrayList;
+import java.util.Calendar;
+import java.util.Collections;
 import java.util.Date;
 import java.util.HashMap;
 import java.util.List;
@@ -10,6 +11,7 @@ import java.util.Set;
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
 
+import org.apache.commons.lang.time.DateUtils;
 import org.springframework.beans.factory.annotation.Required;
 import org.springframework.web.bind.ServletRequestBindingException;
 import org.springframework.web.servlet.ModelAndView;
@@ -22,8 +24,6 @@ import com.cannontech.common.device.attribute.model.Attribute;
 import com.cannontech.common.device.attribute.model.BuiltInAttribute;
 import com.cannontech.common.device.attribute.service.AttributeService;
 import com.cannontech.common.device.commands.CommandResultHolder;
-import com.cannontech.common.util.ReverseList;
-import com.cannontech.common.util.TimeUtil;
 import com.cannontech.core.dao.RawPointHistoryDao;
 import com.cannontech.core.dynamic.PointValueHolder;
 import com.cannontech.database.data.lite.LitePoint;
@@ -66,39 +66,47 @@ public class MeterReadingsWidget extends WidgetControllerBase {
         Map<Attribute, Boolean> existingAttributes = convertSetToMap(allExistingAttributes);
         mav.addObject("existingAttributes", existingAttributes);
         LitePoint lp = attributeService.getPointForAttribute(meter, BuiltInAttribute.USAGE);
-        
-        List<PointValueHolder> previousReadings = getPreviousForDropdown(lp);
-        mav.addObject("previousReadings", previousReadings);
+        fillInPreviousReadings(mav, lp);
         
         return mav;
     }
 
-    private List<PointValueHolder> getPreviousForDropdown(LitePoint lp) {
-        List<PointValueHolder> allReadings = new ArrayList<PointValueHolder>();
+    private void fillInPreviousReadings(ModelAndView mav, LitePoint lp) {
+        // ask for six months, with a max of 36 results
         Date today = new Date();
         
-        // get one week of daily readings
-        Date oneWeekAgo = TimeUtil.addDays(today, -7);
-        List<PointValueHolder> dailyReadings = 
-            rphDao.getIntervalPointData(lp.getPointID(), oneWeekAgo, today, 
-                                        ChartInterval.DAY, RawPointHistoryDao.Mode.HIGHEST);
+        // first 36 hours - all points
+        Date sixMonthsAgo = DateUtils.addMonths(today, -6);
+        List<PointValueHolder> previous36 = rphDao.getPointData(lp.getPointID(), today, sixMonthsAgo, 36);
         
-        // get an additional (93 - 7) days of weekly readings 
-        oneWeekAgo = TimeUtil.addDays(oneWeekAgo, -1); // so we don't repeat 7 days ago
-        Date threeMonthsAgo = TimeUtil.addDays(oneWeekAgo, -(93 - 7));
-        List<PointValueHolder> weeklyReadings = 
-            rphDao.getIntervalPointData(lp.getPointID(), threeMonthsAgo, oneWeekAgo,
-                                        ChartInterval.WEEK, RawPointHistoryDao.Mode.HIGHEST);
-        
-        allReadings.addAll(weeklyReadings); // add oldeset first
-        allReadings.addAll(dailyReadings); // then more recent
-        // create a read only delegating list
-        ReverseList<PointValueHolder> reversedResult = new ReverseList<PointValueHolder>(allReadings);
-        return reversedResult;
+        List<PointValueHolder> previous3Months = Collections.emptyList();
+        if (previous36.size() == 36) {
+            // great, let's go get some more 
+            PointValueHolder lastPvhOfThe36 = previous36.get(36 - 1);
+            Date lastDateOfThe36 = lastPvhOfThe36.getPointDataTimeStamp();
+            Date beforeDate = DateUtils.truncate(lastDateOfThe36, Calendar.DATE);
+            beforeDate = DateUtils.addSeconds(beforeDate, -1);
+            mav.addObject("previousReadings_CutoffDate", beforeDate);
+            // ask for daily readings from 93 days ago to "before"
+            Date today1 = new Date();
+            
+            Date ninetyThreeDaysAgo = DateUtils.addDays(today1, -93);
+            
+            if (!beforeDate.before(ninetyThreeDaysAgo)) {
+                previous3Months = rphDao.getIntervalPointData(lp.getPointID(), beforeDate, ninetyThreeDaysAgo,
+                                                              ChartInterval.DAY_MIDNIGHT, RawPointHistoryDao.Mode.HIGHEST);
+            }
+        } else {
+            mav.addObject("previousReadings_CutoffDate", sixMonthsAgo);
+        }
+        mav.addObject("previousReadings_All", previous36);
+        mav.addObject("previousReadings_Daily", previous3Months);
+        mav.addObject("previousReadings_Cutoff", !previous3Months.isEmpty());
     }
-
+    
     public ModelAndView read(HttpServletRequest request, HttpServletResponse response)
     throws Exception {
+        
         Meter meter = getMeter(request);
         ModelAndView mav = new ModelAndView("common/meterReadingsResult.jsp");
         

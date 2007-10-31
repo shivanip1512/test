@@ -62,6 +62,42 @@ public enum ChartInterval {
         }
 
     },
+    DAY_MIDNIGHT {
+        public Date increment(Date date) {
+
+            Calendar cal = new GregorianCalendar();
+            cal.setTime(date);
+            cal.add(Calendar.DATE, 1);
+
+            return new Date(cal.getTimeInMillis());
+
+        }
+
+        public Date roundDownToIntervalUnit(Date date) {
+
+            Calendar cal = new GregorianCalendar();
+            cal.setTime(date);
+            
+            int unitsAfterMidnight = 
+                cal.get(Calendar.HOUR_OF_DAY) +
+                cal.get(Calendar.MINUTE) +
+                cal.get(Calendar.SECOND) +
+                cal.get(Calendar.MILLISECOND);
+            
+            if (unitsAfterMidnight == 0) {
+                cal.add(Calendar.DATE, -1);
+                cal.set(Calendar.MILLISECOND, 1);
+            } else {
+                cal.set(Calendar.HOUR_OF_DAY, 0);
+                cal.set(Calendar.MINUTE, 0);
+                cal.set(Calendar.SECOND, 0);
+                cal.set(Calendar.MILLISECOND, 1);
+            }
+
+            return cal.getTime();
+        }
+
+    },
     HOUR {
         public Date increment(Date date) {
 
