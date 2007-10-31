@@ -9,8 +9,8 @@
 *
 * PVCS KEYWORDS:
 * ARCHIVE      :  $Archive$
-* REVISION     :  $Revision: 1.2 $
-* DATE         :  $Date: 2007/09/04 16:43:22 $
+* REVISION     :  $Revision: 1.3 $
+* DATE         :  $Date: 2007/10/31 20:48:51 $
 *
 * Copyright (c) 2007 Cannon Technologies. All rights reserved.
 *-----------------------------------------------------------------------------*/
@@ -28,8 +28,9 @@ class Wrap : public Interface
 {
 public:
     virtual bool send( const unsigned char *payload, unsigned len ) = 0;
-
     virtual bool recv( void ) = 0;
+
+    virtual bool init( void ) = 0;
 
     virtual int  getInboundDataLength( void ) = 0;
     virtual void getInboundData( unsigned char *buf ) = 0;
