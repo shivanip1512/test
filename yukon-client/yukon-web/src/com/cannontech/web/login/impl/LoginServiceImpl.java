@@ -130,7 +130,7 @@ public class LoginServiceImpl implements LoginService {
             initSession(user, session);
             ActivityLogger.logEvent(user.getUserID(), LOGIN_WEB_ACTIVITY_ACTION, "User " + user.getUsername() + " (userid=" + user.getUserID() + ") has logged in from " + request.getRemoteAddr());
 
-            String location = (redirectedFrom != null) ? redirectedFrom : request.getContextPath() + home_url ;
+            String location = (redirectedFrom != null && !redirectedFrom.equals("")) ? redirectedFrom : request.getContextPath() + home_url ;
             response.sendRedirect(location);
             return true;
         }
