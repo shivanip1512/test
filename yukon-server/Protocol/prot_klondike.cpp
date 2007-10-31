@@ -8,8 +8,8 @@
 *
 * PVCS KEYWORDS:
 * ARCHIVE      :  $Archive$
-* REVISION     :  $Revision: 1.2 $
-* DATE         :  $Date: 2007/09/04 16:46:18 $
+* REVISION     :  $Revision: 1.3 $
+* DATE         :  $Date: 2007/10/31 20:51:56 $
 *
 * Copyright (c) 2006 Cannon Technologies Inc. All rights reserved.
 *-----------------------------------------------------------------------------*/
@@ -28,7 +28,8 @@ namespace Protocol  {
 Klondike::Klondike() :
     _command(Command_Invalid),
     _sequence(0),
-    _wrap(&_idlc_wrap)
+    _wrap(&_idlc_wrap),
+    _io_state(IO_Invalid)
 {
     setAddresses(DefaultSlaveAddress, DefaultMasterAddress);
 }
@@ -82,16 +83,16 @@ bool Klondike::setCommand( int command )
 {
     switch( command )
     {
-        case Command_DirectMessageRequest:  _command = Command_DirectMessageRequest;	break;
+        case Command_DirectMessageRequest:  _command = Command_DirectMessageRequest;    break;
 
-        case Command_WaitingQueueWrite:     _command = Command_WaitingQueueWrite;		break;
-        case Command_WaitingQueueFreeze:    _command = Command_WaitingQueueFreeze;		break;
-        case Command_WaitingQueueRead:      _command = Command_WaitingQueueRead;		break;
-        case Command_WaitingQueueClear:     _command = Command_WaitingQueueClear;		break;
-        case Command_ReplyQueueRead:        _command = Command_ReplyQueueRead;			break;
+        case Command_WaitingQueueWrite:     _command = Command_WaitingQueueWrite;       break;
+        case Command_WaitingQueueFreeze:    _command = Command_WaitingQueueFreeze;      break;
+        case Command_WaitingQueueRead:      _command = Command_WaitingQueueRead;        break;
+        case Command_WaitingQueueClear:     _command = Command_WaitingQueueClear;       break;
+        case Command_ReplyQueueRead:        _command = Command_ReplyQueueRead;          break;
 
-        case Command_TimeSyncCCU:           _command = Command_TimeSyncCCU;				break;
-        case Command_TimeSyncTransmit:      _command = Command_TimeSyncTransmit;		break;
+        case Command_TimeSyncCCU:           _command = Command_TimeSyncCCU;             break;
+        case Command_TimeSyncTransmit:      _command = Command_TimeSyncTransmit;        break;
 
         case Command_ConfigurationMemoryRead:   _command = Command_ConfigurationMemoryRead;  break;
         case Command_ConfigurationMemoryWrite:  _command = Command_ConfigurationMemoryWrite; break;
@@ -101,12 +102,14 @@ bool Klondike::setCommand( int command )
         case Command_RoutingTableRequestAvailableSlots: _command = Command_RoutingTableRequestAvailableSlots;    break;
         case Command_RoutingTableClear:                 _command = Command_RoutingTableClear;                    break;
 
-        default:    
+        default:
         {
-            _command = Command_Invalid; 
+            _command = Command_Invalid;
             break;
         }
     }
+
+    _io_state = IO_Output;
 
     return _command != Command_Invalid;
 }
@@ -123,7 +126,7 @@ int Klondike::generate( CtiXfer &xfer )
     if( _wrap->isTransactionComplete() )
     {
         switch( _io_state )
-        {          
+        {
             case IO_Output:     doOutput();     break;
             case IO_Input:      _wrap->recv();  break;
         }
@@ -143,8 +146,8 @@ void Klondike::doOutput()
         {
             _outbound[length++] = _command;
 
-            _outbound[length++] = (_sequence & 0x00ff) >> 8;
-            _outbound[length++] = (_sequence & 0x00ff);
+            _outbound[length++] = (_sequence >> 8) & 0x00ff;
+            _outbound[length++] =  _sequence       & 0x00ff;
 
             _outbound[length++] = _dtran_bstruct.DlcRoute.Bus;
             _outbound[length++] = _dtran_bstruct.DlcRoute.Stages;
@@ -217,11 +220,17 @@ int Klondike::decode( CtiXfer &xfer, int status )
     {
         switch( _command )
         {
-            case Command_DirectMessageRequest:  
+            case Command_DirectMessageRequest:
             {
                 //  process DTRAN response ACK/NACK
-
-                _command = Command_Complete;
+                if( _io_state == IO_Output )
+                {
+                    _io_state = IO_Input;
+                }
+                else
+                {
+                    _command = Command_Complete;
+                }
 
                 break;
             }
@@ -266,7 +275,7 @@ int Klondike::decode( CtiXfer &xfer, int status )
 }
 
 
-bool Klondike::isTransactionComplete( void )
+bool Klondike::isTransactionComplete( void ) const
 {
     return _command == Command_Complete ||
            _command == Command_Invalid  ||
