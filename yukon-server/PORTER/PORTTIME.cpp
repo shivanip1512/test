@@ -6,8 +6,8 @@
 *
 * PVCS KEYWORDS:
 * ARCHIVE      :  $Archive:   Z:/SOFTWAREARCHIVES/YUKON/PORTER/PORTTIME.cpp-arc  $
-* REVISION     :  $Revision: 1.48 $
-* DATE         :  $Date: 2007/10/24 14:08:51 $
+* REVISION     :  $Revision: 1.49 $
+* DATE         :  $Date: 2007/10/31 14:17:37 $
 *
 * Copyright (c) 1999, 2000, 2001 Cannon Technologies Inc. All rights reserved.
 *-----------------------------------------------------------------------------*/
@@ -203,10 +203,6 @@ static void apply710TimeSync(const long unusedid, CtiDeviceSPtr RemoteRecord, vo
 
                 if(RouteRecord->getTrxDeviceID() == RemoteRecord->getID() && RouteRecord->isDefaultRoute())
                 {
-                    int amp      =  0,
-                        fixed    = 31,
-                        variable =  7;
-
                     BSTRUCT message;
                     OUTMESS *OutMessage = CTIDBG_new OUTMESS;
 
@@ -238,10 +234,9 @@ static void apply710TimeSync(const long unusedid, CtiDeviceSPtr RemoteRecord, vo
                         //  this should all be filled in by the route's ExecuteRequest
                         OutMessage->Buffer.BSt.DlcRoute.Amp        = ((CtiDeviceIDLC *)(RemoteRecord.get()))->getIDLC().getAmp();
                         OutMessage->Buffer.BSt.DlcRoute.Bus        = RouteRecord->getBus();
-                        OutMessage->Buffer.BSt.DlcRoute.RepVar     = variable;
-                        OutMessage->Buffer.BSt.DlcRoute.RepFixed   = fixed;
-                        //OutMessage->Buffer.BSt.DlcRoute.Stages     = RouteRecord->getStages();  //  this doesn't work for a 710
-                        OutMessage->Buffer.BSt.DlcRoute.Stages     = 0;  //  so we set it to 0 instead
+                        OutMessage->Buffer.BSt.DlcRoute.RepVar     = RouteRecord->getCCUVarBits();
+                        OutMessage->Buffer.BSt.DlcRoute.RepFixed   = RouteRecord->getCCUFixBits();
+                        OutMessage->Buffer.BSt.DlcRoute.Stages     = 0;  //  must set the stages to 0 on a CCU 710
 
                         //  Ideally, use something like this instead of the above code...
                         //RouteRecord->ExecuteRequest();
@@ -524,20 +519,11 @@ static void applyMCT400TimeSync(const long key, CtiRouteSPtr pRoute, void* d)
             (RemoteRecord->getType() == TYPE_CCU700 || RemoteRecord->getType() == TYPE_CCU710 || RemoteRecord->getType() == TYPE_CCU711) &&
             (RemoteRecord->getPortID() == portid) && pRoute->isDefaultRoute() )
         {
-            int amp      =  0,
-                fixed    = 31,
-                variable =  7;
-
             BSTRUCT message;
             OUTMESS *OutMessage = CTIDBG_new OUTMESS;
 
             if( OutMessage )
             {
-                if( RemoteRecord->getType() == TYPE_CCU711 )
-                {
-                    amp = ((CtiDeviceCCU *)RemoteRecord.get())->getIDLC().getAmp();
-                }
-
                 //  load up all of the port/route specific items
                 OutMessage->DeviceID  = pRoute->getTrxDeviceID();
                 OutMessage->Port      = portid;
@@ -553,10 +539,6 @@ static void applyMCT400TimeSync(const long key, CtiRouteSPtr pRoute, void* d)
                 OutMessage->SaveNexus   = NULL;
                 OutMessage->MessageFlags = MessageFlag_ApplyExclusionLogic;
 
-                OutMessage->Buffer.BSt.Port   = RemoteRecord->getPortID();
-                OutMessage->Buffer.BSt.Remote = RemoteRecord->getAddress();
-
-
                 OutMessage->Buffer.BSt.Port    = RemoteRecord->getPortID();
                 OutMessage->Buffer.BSt.Remote  = RemoteRecord->getAddress();
                 //  this is key - this, and the TSYNC flag, are what get the 400-series time loaded into the message
@@ -568,10 +550,9 @@ static void applyMCT400TimeSync(const long key, CtiRouteSPtr pRoute, void* d)
 
                 OutMessage->Buffer.BSt.DlcRoute.Amp        = ((CtiDeviceIDLC *)(RemoteRecord.get()))->getIDLC().getAmp();
                 OutMessage->Buffer.BSt.DlcRoute.Bus        = pRoute->getBus();
-                OutMessage->Buffer.BSt.DlcRoute.RepVar     = variable;
-                OutMessage->Buffer.BSt.DlcRoute.RepFixed   = fixed;
-                //OutMessage->Buffer.BSt.DlcRoute.Stages     = pRoute->getStages();  //  this doesn't work for a 710
-                OutMessage->Buffer.BSt.DlcRoute.Stages     = 0;  //  so we set it to 0 instead
+                OutMessage->Buffer.BSt.DlcRoute.RepVar     = pRoute->getCCUVarBits();
+                OutMessage->Buffer.BSt.DlcRoute.RepFixed   = pRoute->getCCUFixBits();
+                OutMessage->Buffer.BSt.DlcRoute.Stages     = (RemoteRecord->getType() == TYPE_CCU711)?pRoute->getStages():0;  //  must set stages to 0 or the timesync will fail on the 700/710
 
                 //  Ideally, use something like this instead of the above code...
                 //pRoute->ExecuteRequest();
@@ -960,11 +941,9 @@ RefreshMCTTimeSync(OUTMESS *OutMessage)
     }
 
     //  lay it over the original message
-    unsigned words_to_write;
     C_Words(OutMessage->Buffer.OutMessage + PREIDLEN + PREAMLEN + BWORDLEN,
             timesync_message,
-            length,
-            &words_to_write);
+            length);
 
     return(NORMAL);
 }
