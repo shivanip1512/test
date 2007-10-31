@@ -257,6 +257,7 @@ public class InventoryUtils {
         return convert;
     }
     
+    //TODO: need to start putting these in an appropriate services/DAO structure
     public static Integer getYukonLoadGroupIDFromSTARSProgramID(int progID) {
         String sql = "select distinct LMGroupDeviceID from LMProgramDirectGroup ldg, LMProgramWebPublishing lwp " +
                 "where ldg.DeviceID = lwp.DeviceID AND lwp.ProgramID = " + progID;

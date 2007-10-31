@@ -13,7 +13,7 @@ import com.cannontech.database.db.stars.customer.CustomerAccount;
 import com.cannontech.database.db.stars.hardware.Warehouse;
 
 public class InventoryFilter extends AbstractFilter<LiteInventoryBase> {
-    private Map<Integer,Map<Integer,Integer>> applianceAccountsCache;
+    private Map<Integer,Map<Integer,Integer>> applianceToInventoryCache;
     private Map<String,Map<Integer,Integer>> customerAccountsPostalCodesCache;
     private Map<Integer,Map<Integer,Integer>> customerAccountsTypeCache;
     private Map<Integer,List<Integer>> warehouseListCache;
@@ -114,8 +114,8 @@ public class InventoryFilter extends AbstractFilter<LiteInventoryBase> {
     
     private boolean filterByApplianceType(final LiteInventoryBase inventoryBase, final FilterWrapper filter) {
         final int specificFilterId = Integer.parseInt(filter.getFilterID());
-        Map<Integer,Integer> accounts = this.getApplianceAccounts(specificFilterId);
-        if(accounts.get(inventoryBase.getAccountID()) != null && inventoryBase instanceof LiteStarsLMHardware) {
+        Map<Integer,Integer> appCatInventory = this.getApplianceInventory(specificFilterId);
+        if(appCatInventory.get(inventoryBase.getInventoryID()) != null && inventoryBase instanceof LiteStarsLMHardware) {
             return true;
         }
         return false;
@@ -246,20 +246,20 @@ public class InventoryFilter extends AbstractFilter<LiteInventoryBase> {
         return accountsMap;
     }
     
-    private Map<Integer,Map<Integer,Integer>> getApplianceAccountsCache() {
-        if (this.applianceAccountsCache == null) {
-            this.applianceAccountsCache = new HashMap<Integer,Map<Integer,Integer>>();
+    private Map<Integer,Map<Integer,Integer>> getApplianceToInventoryCache() {
+        if (this.applianceToInventoryCache == null) {
+            this.applianceToInventoryCache = new HashMap<Integer,Map<Integer,Integer>>();
         }
-        return this.applianceAccountsCache;
+        return this.applianceToInventoryCache;
     }
     
-    private Map<Integer,Integer> getApplianceAccounts(final int filterId) {
-        Map<Integer,Integer> accountsMap = this.getApplianceAccountsCache().get(filterId);
-        if (accountsMap == null) {
-            accountsMap = ApplianceBase.getAllAccountIDsFromApplianceCategory(filterId);
-            this.getApplianceAccountsCache().put(filterId, accountsMap);
+    private Map<Integer,Integer> getApplianceInventory(final int filterId) {
+        Map<Integer,Integer> appCatInventoryMap = this.getApplianceToInventoryCache().get(filterId);
+        if (appCatInventoryMap == null) {
+            appCatInventoryMap = ApplianceBase.getAllInventoryIDsFromApplianceCategory(filterId);
+            this.getApplianceToInventoryCache().put(filterId, appCatInventoryMap);
         }
-        return accountsMap;
+        return appCatInventoryMap;
     }
 
 }

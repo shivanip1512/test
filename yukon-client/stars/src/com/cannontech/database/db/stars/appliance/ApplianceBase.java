@@ -2,10 +2,15 @@ package com.cannontech.database.db.stars.appliance;
 
 import java.util.Date;
 import java.util.HashMap;
+import java.util.List;
 import java.util.Vector;
+
+import org.springframework.dao.IncorrectResultSizeDataAccessException;
+import org.springframework.jdbc.core.JdbcOperations;
 
 import com.cannontech.clientutils.CTILogger;
 import com.cannontech.common.util.CtiUtilities;
+import com.cannontech.database.JdbcTemplateHelper;
 import com.cannontech.database.SqlStatement;
 import com.cannontech.database.SqlUtils;
 import com.cannontech.database.db.DBPersistent;
@@ -195,35 +200,24 @@ public class ApplianceBase extends DBPersistent {
 		}
 	}
 
-    public static HashMap<Integer, Integer> getAllAccountIDsFromApplianceCategory(int appCatID)
+    public static HashMap<Integer, Integer> getAllInventoryIDsFromApplianceCategory(int appCatID)
     {
-        HashMap<Integer, Integer> accountIDs = new HashMap<Integer, Integer>();
+        HashMap<Integer, Integer> inventoryIDs = new HashMap<Integer, Integer>();
         
-        Date timerStart = new Date();
+        String stmt = "select InventoryID from LMHardwareConfiguration lmh, ApplianceBase app where lmh.ApplianceID = app.ApplianceID and app.ApplianceCategoryID = " + appCatID;
         
-        SqlStatement stmt = new SqlStatement("SELECT ACCOUNTID FROM " + TABLE_NAME + " WHERE APPLIANCECATEGORYID = " + appCatID, CtiUtilities.getDatabaseAlias());
-        
-        try
-        {
-            stmt.execute();
-            
-            if( stmt.getRowCount() > 0 )
-            {
-                for( int i = 0; i < stmt.getRowCount(); i++ )
-                {
-                    Integer newID = new Integer(stmt.getRow(i)[0].toString());
-                    accountIDs.put(newID, newID);
-                }
+        try {
+            JdbcOperations jdbcOps = JdbcTemplateHelper.getYukonTemplate();
+            List<Integer> ids = jdbcOps.queryForList(stmt, Integer.class);
+            for(Integer hardwareID : ids) {
+                inventoryIDs.put(hardwareID, hardwareID);
             }
-        }
-        catch( Exception e )
-        {
-            e.printStackTrace();
+        } 
+        catch (IncorrectResultSizeDataAccessException e) {
+            return inventoryIDs;
         }
         
-        CTILogger.debug((new Date().getTime() - timerStart.getTime())*.001 + " After accountIDFromApplianceCategory execute" );
-        
-        return accountIDs;
+        return inventoryIDs;
     }
 
 	public Integer getApplianceID() {
