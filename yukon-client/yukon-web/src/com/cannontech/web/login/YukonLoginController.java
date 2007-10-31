@@ -44,13 +44,14 @@ public class YukonLoginController extends MultiActionController {
     public ModelAndView login(HttpServletRequest request, HttpServletResponse response) throws Exception {
         final String username = ServletRequestUtils.getRequiredStringParameter(request, LoginController.USERNAME);
         final String password = ServletRequestUtils.getRequiredStringParameter(request, LoginController.PASSWORD);
+        final String redirectedFrom = ServletRequestUtils.getStringParameter(request, LoginController.REDIRECTED_FROM);
         
         String rememberme = ServletRequestUtils.getStringParameter(request, "rememberme");
         if (rememberme != null) {
             this.createCookie(request, response, username, password);
         }
         
-        loginService.login(request, response, username, password);
+        loginService.login(request, response, username, password, redirectedFrom);
         return null;
     }
 
