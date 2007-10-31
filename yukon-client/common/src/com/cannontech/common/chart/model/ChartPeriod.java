@@ -77,7 +77,7 @@ public enum ChartPeriod {
         }
 
         public ChartInterval getChartUnit(Date...date) {
-            return ChartInterval.MINUTE;
+            return ChartInterval.FIVEMINUTE;
         } 
     },
     NOPERIOD("NoPeriod") {

@@ -116,7 +116,7 @@ public enum ChartInterval {
             cal.setTime(date);
             cal.add(Calendar.SECOND, 15);
 
-            return new Date(cal.getTimeInMillis());
+            return cal.getTime();
 
         }
 
@@ -126,8 +126,10 @@ public enum ChartInterval {
             cal.setTime(date);
 
             cal.set(Calendar.MILLISECOND, 0);
+            int i = cal.get(Calendar.SECOND);
+            cal.set(Calendar.SECOND, i - (i % 15));
 
-            return new Date(cal.getTimeInMillis());
+            return cal.getTime();
         }
 
     }, 
@@ -152,6 +154,32 @@ public enum ChartInterval {
             cal.set(Calendar.MINUTE, 0);
             cal.set(Calendar.SECOND, 0);
             cal.set(Calendar.MILLISECOND, 0);
+
+            return cal.getTime();
+        }
+
+    }, 
+    
+    FIVEMINUTE {
+        public Date increment(Date date) {
+
+            Calendar cal = new GregorianCalendar();
+            cal.setTime(date);
+            cal.add(Calendar.MINUTE, 5);
+
+            return cal.getTime();
+
+        }
+
+        public Date roundDownToIntervalUnit(Date date) {
+
+            Calendar cal = new GregorianCalendar();
+            cal.setTime(date);
+
+            cal.set(Calendar.MILLISECOND, 0);
+            cal.set(Calendar.SECOND, 0);
+            int i = cal.get(Calendar.MINUTE);
+            cal.set(Calendar.MINUTE, i - (i % 5));
 
             return cal.getTime();
         }
