@@ -395,6 +395,10 @@ create index Indx_acctid_custid on CustomerAccount (
    AccountID ASC,
    CustomerID ASC
 );
+
+create index INDX_CCURPNG_PRGNM_PRGTYPEID on CCurtProgramNotifGroup (
+   NotificationGroupID ASC
+);
 /* @error ignore-end */
 
 /******************************************************************************/
