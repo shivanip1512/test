@@ -41,5 +41,6 @@ public interface CBCOnelineSettingsRole {
     public static final int CAP_BANK_SIZE = CAP_ONELINE_PROPID_BASE - 1;
     public static final int CAP_CBC_NAME = CAP_ONELINE_PROPID_BASE - 2;
     public static final int CAP_TIMESTAMP = CAP_ONELINE_PROPID_BASE - 3;
+    public static final int CAP_DAILY_TOTAL_OPCNT = CAP_ONELINE_PROPID_BASE - 4;
 
 }

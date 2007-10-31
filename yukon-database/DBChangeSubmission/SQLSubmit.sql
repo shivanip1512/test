@@ -92,3 +92,7 @@ insert into YukonRoleProperty values(-70016,-700,'Definition Closed','Close,Clos
 /*3.5 and HEAD*/
 update YukonListEntry set EntryText = 'Postal Code' where EntryText = 'Zip Code' and ListID = 1056
 /* end YUK-4597*/
+
+/* Head changes  Thain*/
+insert into YukonRoleProperty VALUES ( -100204, -1002, 'Daily/Total Operation Count', 'true', 'is Daily/Total Operation Count displayed');
+/*end*/
