@@ -6,8 +6,8 @@
 *
 * PVCS KEYWORDS:
 * ARCHIVE      :  $Archive:   Z:/SOFTWAREARCHIVES/YUKON/RTDB/dev_base.cpp-arc  $
-* REVISION     :  $Revision: 1.67 $
-* DATE         :  $Date: 2007/10/24 15:18:42 $
+* REVISION     :  $Revision: 1.68 $
+* DATE         :  $Date: 2007/11/01 15:46:23 $
 *
 * Copyright (c) 1999, 2000, 2001 Cannon Technologies Inc. All rights reserved.
 *-----------------------------------------------------------------------------*/
@@ -324,7 +324,7 @@ CtiPointSPtr CtiDeviceBase::getDeviceControlPointOffsetEqual(INT offset)
     return pPoint;
 }
 
-CtiPointSPtr CtiDeviceBase::getDevicePointOffsetTypeEqual(INT offset, INT type)
+CtiPointSPtr CtiDeviceBase::getDevicePointOffsetTypeEqual(INT offset, CtiPointType_t type)
 {
     CtiPointSPtr pPoint;
 

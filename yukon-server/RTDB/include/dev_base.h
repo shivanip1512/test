@@ -9,8 +9,8 @@
 *
 * PVCS KEYWORDS:
 * ARCHIVE      :  $Archive:   Z:/SOFTWAREARCHIVES/YUKON/RTDB/INCLUDE/dev_base.h-arc  $
-* REVISION     :  $Revision: 1.63 $
-* DATE         :  $Date: 2007/08/07 19:56:17 $
+* REVISION     :  $Revision: 1.64 $
+* DATE         :  $Date: 2007/11/01 15:46:23 $
 *
 * Copyright (c) 1999 Cannon Technologies Inc. All rights reserved.
 *-----------------------------------------------------------------------------*/
@@ -211,7 +211,7 @@ public:
 
     virtual CtiPointSPtr getDevicePointEqual(INT id);
     virtual CtiPointSPtr getDevicePointEqualByName(string pname);
-    virtual CtiPointSPtr getDevicePointOffsetTypeEqual(INT offset, INT type);
+    virtual CtiPointSPtr getDevicePointOffsetTypeEqual(INT offset, CtiPointType_t type);
     virtual CtiPointSPtr getDeviceControlPointOffsetEqual(INT offset);
 
     virtual CtiTransmitterInfo* getTrxInfo(); // Porter side info to retrieve transmitter device bookkeeping!
