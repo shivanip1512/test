@@ -336,7 +336,8 @@ go
 
 alter table PROFILEPEAKRESULT
    add constraint FK_PROFILEPKRSLT_DEVICE foreign key (DeviceId)
-      references DEVICE (DEVICEID);
+      references DEVICE (DEVICEID)
+        on update cascade on delete cascade;
 go
 
 if exists (select 1
@@ -401,17 +402,26 @@ ALTER TABLE DeviceReadJobLog DROP CONSTRAINT FK_DEVICERE_FK_DRJOBL_MACSCHED;
 /* @error ignore-end */
 go
 
-/* @error ignore-begin */
-insert into yukonroleproperty values (-100011,-1000, 'Daily/Max Operation Count', 'true', 'is Daily/Max Operation stat displayed');
-insert into yukonroleproperty values (-100012,-1000, 'Substation Last Update Timestamp', 'true', 'is last update timstamp shown for substations');
-insert into yukonroleproperty values (-100106,-1001, 'Feeder Last Update Timestamp', 'true', 'is last update timstamp shown for feeders');
-insert into yukonroleproperty values (-100203,-1002, 'CapBank Last Update Timestamp', 'true', 'is last update timstamp shown for capbanks');
-insert into yukonroleproperty values (-100105,-1001, 'Target', 'true', 'is target stat displayed');
-/* @error ignore-end */
-
 update yukonroleproperty set DefaultValue = 'false' where rolepropertyid = -100008;
 update yukonroleproperty set DefaultValue = 'false' where rolepropertyid = -100007;
 go
+
+/* @error ignore-begin */
+insert into yukonroleproperty values (-100011,-1000, 'Daily/Max Operation Count', 'true', 'is Daily/Max Operation stat displayed');
+insert into yukonroleproperty values (-100012,-1000, 'Substation Last Update Timestamp', 'true', 'is last update timestamp shown for substations');
+insert into yukonroleproperty values (-100106,-1001, 'Feeder Last Update Timestamp', 'true', 'is last update timestamp shown for feeders');
+insert into yukonroleproperty values (-100203,-1002, 'CapBank Last Update Timestamp', 'true', 'is last update timestamp shown for capbanks');
+insert into yukonroleproperty values (-100105,-1001, 'Target', 'true', 'is target stat displayed');
+
+create table dynamicccarea ( AreaID numeric not null, additionalflags varchar(20) not null );
+go
+alter table dynamicccarea
+   add constraint FK_ccarea_Dynccarea foreign key (areaID)
+      references Capcontrolarea (areaID);
+go
+insert into dynamicccarea (areaid, additionalflags) select areaid, 'NNNNNNNNNNNNNNNNNNNN' from capcontrolarea; 
+/* @error ignore-end */
+
 
 delete from LMThermostatSeasonEntry where SeasonID in (select SeasonID from LMThermostatSeason where ScheduleID in (select ScheduleID from LMThermostatSchedule where ThermostatTypeID in (select EntryID from YukonListEntry where YukonDefinitionID = 3100)));
 go
@@ -443,11 +453,9 @@ delete from YukonRoleProperty where RolePropertyId = -1113;
 insert into YukonRoleProperty values(-10816, -108,'Standard Page Style Sheet',' ','A comma separated list of URLs for CSS files that will be included on every Standard Page');
 
 update BillingFileFormats, set FormatType = 'DAFFRON' where formatType = 'DAFRON';
-update YukonListEntry set EntryText = 'Customer Type' where EntryText = 'Consumption Type'
-update YukonListEntry set EntryText = 'Postal Code' where EntryText = 'Zip Code' and ListID = 1056
-
-delete from YukonListEntry where EntryText = 'Configuration'
-
+update YukonListEntry set EntryText = 'Customer Type' where EntryText = 'Consumption Type';
+update YukonListEntry set EntryText = 'Postal Code' where EntryText = 'Zip Code' and ListID = 1056;
+delete from YukonListEntry where EntryText = 'Configuration';
 delete from devicetypecommand where commandid = -110;
 delete from command where commandid = -110;
 
@@ -480,16 +488,16 @@ PrimaryContactID ASC
 alter table MSPInterface
    add constraint FK_Intrfc_Vend foreign key (VendorID)
       references MSPVendor (VendorID);
-
+      
 alter table LMHardwareToMeterMapping
    add constraint PK_LMHARDWARETOMETERMAPPING primary key nonclustered (LMHardwareInventoryID, MeterInventoryID);
 
 alter table ImportData
 	alter column SubstationName varchar(64) not null;
-	
+
 alter table ImportFail
 	alter column SubstationName varchar(64) not null;
-	
+
 create index Indx_RwPtHisPtIDTst on RAWPOINTHISTORY (
 	POINTID ASC,
 	TIMESTAMP ASC

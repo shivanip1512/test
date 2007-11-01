@@ -5,10 +5,10 @@
 /*3.4 changes that may have been missed*/
 
 /* Delete roles that are no longer in use. */
-delete from YukonGroupRole 		where RoleID in (-204,-205,-301,-302)
-delete from YukonRoleProperty 	where RoleID in (-204,-205,-301,-302)
-delete from YukonUserRole 		where RoleID in (-204,-205,-301,-302)
-delete from YukonRole 			where RoleID in (-204,-205,-301,-302)
+delete from YukonGroupRole 		where RoleID in (-204,-205,-301,-302);
+delete from YukonRoleProperty 	where RoleID in (-204,-205,-301,-302);
+delete from YukonUserRole 		where RoleID in (-204,-205,-301,-302);
+delete from YukonRole 			where RoleID in (-204,-205,-301,-302);
 
 /* @error ignore-begin */
 insert into YukonRoleProperty values(-100105, -1001, 'Target', 'true', 'display target settings');
@@ -235,6 +235,7 @@ insert into YukonRoleProperty values(-1019,-1,'batched_switch_command_timer','au
 /* @error ignore-end */
 insert into YukonGroupRole values(-20,-1,-1,-1019,'(none)');
 insert into YukonGroupRole values(-21,-1,-1,-1020,'(none)');
+go
 
 update YukonGroupRole set RoleID=-102, RolePropertyID=-10206 where RoleID= -304 and RolePropertyID = -30403;
 update YukonGroupRole set RoleID=-102, RolePropertyID=-10205 where RoleID= -304 and RolePropertyID = -30402;
@@ -292,7 +293,8 @@ alter table PROFILEPEAKRESULT
 
 alter table PROFILEPEAKRESULT
    add constraint FK_PROFILEPKRSLT_DEVICE foreign key (DeviceId)
-      references DEVICE (DEVICEID);
+      references DEVICE (DEVICEID)
+         on update cascade on delete cascade;      
 
 drop index Indx_PAO;
       
@@ -337,6 +339,21 @@ ALTER TABLE DeviceReadJobLog DROP CONSTRAINT FK_DEVICERE_FK_DRJOBL_MACSCHED;
 update yukonroleproperty set DefaultValue = 'false' where rolepropertyid = -100008;
 update yukonroleproperty set DefaultValue = 'false' where rolepropertyid = -100007;
 
+/* @error ignore-begin */
+insert into yukonroleproperty values (-100011,-1000, 'Daily/Max Operation Count', 'true', 'is Daily/Max Operation stat displayed');
+insert into yukonroleproperty values (-100012,-1000, 'Substation Last Update Timestamp', 'true', 'is last update timestamp shown for substations');
+insert into yukonroleproperty values (-100106,-1001, 'Feeder Last Update Timestamp', 'true', 'is last update timestamp shown for feeders');
+insert into yukonroleproperty values (-100203,-1002, 'CapBank Last Update Timestamp', 'true', 'is last update timestamp shown for capbanks');
+insert into yukonroleproperty values (-100105,-1001, 'Target', 'true', 'is target stat displayed');
+
+create table dynamicccarea ( AreaID numeric not null, additionalflags varchar(20) not null );
+
+alter table dynamicccarea
+   add constraint FK_ccarea_Dynccarea foreign key (areaID)
+      references Capcontrolarea (areaID);
+
+insert into dynamicccarea (areaid, additionalflags) select areaid, 'NNNNNNNNNNNNNNNNNNNN' from capcontrolarea; 
+/* @error ignore-end */
 
 delete from LMThermostatSeasonEntry where SeasonID in (select SeasonID from LMThermostatSeason where ScheduleID in (select ScheduleID from LMThermostatSchedule where ThermostatTypeID in (select EntryID from YukonListEntry where YukonDefinitionID = 3100)));
 delete from LMThermostatSeason where ScheduleID in (select ScheduleID from LMThermostatSchedule where ThermostatTypeID in (select EntryID from YukonListEntry where YukonDefinitionID = 3100));
@@ -363,21 +380,11 @@ delete from YukonRoleProperty where RolePropertyId = -1113;
 insert into YukonRoleProperty values(-10816, -108,'Standard Page Style Sheet',' ','A comma separated list of URLs for CSS files that will be included on every Standard Page');
 
 update BillingFileFormats, set FormatType = 'DAFFRON' where formatType = 'DAFRON';
-update YukonListEntry set EntryText = 'Customer Type' where EntryText = 'Consumption Type'
-update YukonListEntry set EntryText = 'Postal Code' where EntryText = 'Zip Code' and ListID = 1056
-
-/* @error ignore-begin */
-insert into yukonroleproperty values (-100011,-1000, 'Daily/Max Operation Count', 'true', 'is Daily/Max Operation stat displayed');
-insert into yukonroleproperty values (-100012,-1000, 'Substation Last Update Timestamp', 'true', 'is last update timstamp shown for substations');
-insert into yukonroleproperty values (-100106,-1001, 'Feeder Last Update Timestamp', 'true', 'is last update timstamp shown for feeders');
-insert into yukonroleproperty values (-100203,-1002, 'CapBank Last Update Timestamp', 'true', 'is last update timstamp shown for capbanks');
-insert into yukonroleproperty values (-100105,-1001, 'Target', 'true', 'is target stat displayed');
-/* @error ignore-end */
-
+update YukonListEntry set EntryText = 'Customer Type' where EntryText = 'Consumption Type';
+update YukonListEntry set EntryText = 'Postal Code' where EntryText = 'Zip Code' and ListID = 1056;
+delete from YukonListEntry where EntryText = 'Configuration';
 delete from devicetypecommand where commandid = -110;
 delete from command where commandid = -110;
-
-delete from YukonListEntry where EntryText = 'Configuration'
 
 /* @error ignore-begin */
 create index INDX_CONTID_LNAME on Contact (
@@ -408,16 +415,16 @@ create index INDX_CUSTID_PCONTID on Customer (
 alter table MSPInterface
    add constraint FK_Intrfc_Vend foreign key (VendorID)
       references MSPVendor (VendorID);
-
+      
 alter table LMHardwareToMeterMapping
-   add constraint PK_LMHARDWARETOMETERMAPPING primary key (LMHardwareInventoryID, MeterInventoryID);      
+   add constraint PK_LMHARDWARETOMETERMAPPING primary key (LMHardwareInventoryID, MeterInventoryID);
 
 alter table ImportData
 	modify SubstationName varchar2(64) not null;
 
 alter table ImportFail
 	modify SubstationName varchar2(64) not null;
-
+	
 create index Indx_RwPtHisPtIDTst on RAWPOINTHISTORY (
 	POINTID ASC,
 	TIMESTAMP ASC
