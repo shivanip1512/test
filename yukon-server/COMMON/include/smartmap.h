@@ -189,7 +189,7 @@ public:
         return retRef;
     }
 
-    ptr_type find(bool (*testFun)(const long, ptr_type, void*),void* d)
+    ptr_type find(bool (*testFun)(const long, const ptr_type &, void*),void* d)
     {
         CtiLockGuard< CtiMutex > gaurd(_mux);
         ptr_type retRef;
