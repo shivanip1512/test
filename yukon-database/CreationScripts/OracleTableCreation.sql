@@ -1,7 +1,7 @@
 /*==============================================================*/
 /* Database name:  YukonDatabase                                */
 /* DBMS name:      ORACLE Version 9i                            */
-/* Created on:     10/30/2007 4:32:48 PM                        */
+/* Created on:     11/1/2007 3:00:28 PM                         */
 /*==============================================================*/
 
 
@@ -882,6 +882,10 @@ drop user Yukon
 create user Yukon identified by ''
 ;
 
+create cluster  C_ActivityLog (
+   ActivityLogID		NUMBER
+);
+
 /*==============================================================*/
 /* Table: ActivityLog                                           */
 /*==============================================================*/
@@ -894,7 +898,7 @@ create table ActivityLog  (
    CustomerID           NUMBER,
    PaoID                NUMBER,
    Action               VARCHAR2(80)                    not null,
-   Description          VARCHAR2(240)                   not null,
+   Description          VARCHAR2(240),
    constraint PK_ACTIVITYLOG primary key (ActivityLogID)
 )
 ;
@@ -1390,8 +1394,8 @@ create table CCurtCurtailmentEvent  (
    Message              VARCHAR2(255)                   not null,
    State                VARCHAR2(10)                    not null,
    StartTime            DATE                            not null,
-   CCurtProgramTypeID   NUMBER                          not null,
    Identifier           NUMBER                          not null,
+   CCurtProgramTypeID   NUMBER                          not null,
    constraint PK_CCURTCURTAILMENTEVENT primary key (CCurtCurtailmentEventID)
 )
 ;
@@ -1437,8 +1441,8 @@ create unique index INDX_CCURTEEPARTSEL_CCURTEEPR on CCurtEEParticipantSelection
 create table CCurtEEParticipantWindow  (
    CCurtEEParticipantWindowID NUMBER                          not null,
    EnergyToBuy          NUMBER(19,2)                    not null,
-   CCurtEEPricingWindowID NUMBER                          not null,
-   CCurtEEParticipantSelectionID NUMBER                          not null,
+   CCurtEEPricingWindowID NUMBER,
+   CCurtEEParticipantSelectionID NUMBER,
    constraint PK_CCURTEEPARTICIPANTWINDOW primary key (CCurtEEParticipantWindowID)
 )
 ;
@@ -1480,7 +1484,7 @@ create table CCurtEEPricingWindow  (
    CCurtEEPricingWindowID NUMBER                          not null,
    EnergyPrice          NUMBER(19,2)                    not null,
    Offset               NUMBER                          not null,
-   CCurtEEPricingID     NUMBER                          not null,
+   CCurtEEPricingID     NUMBER,
    constraint PK_CCURTEEPRICINGWINDOW primary key (CCurtEEPricingWindowID)
 )
 ;
@@ -1530,7 +1534,7 @@ create table CCurtEconomicEventNotif  (
 /*==============================================================*/
 create table CCurtGroup  (
    CCurtGroupID         NUMBER                          not null,
-   EnergyCompanyID      NUMBER                          not null,
+   EnergyCompanyID      NUMBER,
    CCurtGroupName       VARCHAR2(255)                   not null,
    constraint PK_CCURTGROUP primary key (CCurtGroupID)
 )
@@ -1551,8 +1555,8 @@ create unique index INDX_CCURTGROUP_ECID_GRPNM on CCurtGroup (
 create table CCurtGroupCustomerNotif  (
    CCurtGroupCustomerNotifID NUMBER                          not null,
    Attribs              VARCHAR2(255)                   not null,
-   CustomerID           NUMBER                          not null,
-   CCurtGroupID         NUMBER                          not null,
+   CustomerID           NUMBER,
+   CCurtGroupID         NUMBER,
    constraint PK_CCURTGROUPCUSTOMERNOTIF primary key (CCurtGroupCustomerNotifID)
 )
 ;
@@ -1593,8 +1597,8 @@ create index INDX_CCURTPGM_PRGNM_PRGTYPEID on CCurtProgram (
 /*==============================================================*/
 create table CCurtProgramGroup  (
    CCurtProgramGroupID  NUMBER                          not null,
-   CCurtProgramID       NUMBER                          not null,
-   CCurtGroupID         NUMBER                          not null,
+   CCurtProgramID       NUMBER,
+   CCurtGroupID         NUMBER,
    constraint PK_CCURTPROGRAMGROUP primary key (CCurtProgramGroupID)
 )
 ;
@@ -2050,6 +2054,10 @@ create unique index AK_KEY_CmdGrp_Name on CommandGroup (
 )
 ;
 
+create cluster  C_Contact (
+   ContactID		NUMBER
+);
+
 /*==============================================================*/
 /* Table: Contact                                               */
 /*==============================================================*/
@@ -2126,6 +2134,10 @@ create index Indx_CntNotif_CntId on ContactNotification (
    ContactID ASC
 )
 ;
+
+create cluster  C_Customer (
+   CustomerID		NUMBER
+);
 
 /*==============================================================*/
 /* Table: Customer                                              */
@@ -2420,7 +2432,7 @@ create table DEVICEDIALUPSETTINGS  (
 /*==============================================================*/
 create table DEVICEGROUP  (
    DeviceGroupId        NUMBER(18,0)                    not null,
-   GroupName            VARCHAR2(255),
+   GroupName            VARCHAR2(255)                   not null,
    ParentDeviceGroupId  NUMBER(18,0),
    SystemGroup          CHAR(1)                         not null,
    Type                 VARCHAR2(255)                   not null,
@@ -3766,7 +3778,7 @@ INSERT INTO DEVICETYPECOMMAND VALUES (-389, -106, 'MCT-410IL', 17, 'Y', -1);
 INSERT INTO DEVICETYPECOMMAND VALUES (-390, -107, 'MCT-410IL', 18, 'Y', -1);
 INSERT INTO DEVICETYPECOMMAND VALUES (-391, -108, 'MCT-410IL', 19, 'Y', -1);
 INSERT INTO DEVICETYPECOMMAND VALUES (-392, -109, 'All MCT-4xx Series', 20, 'Y', -1);
-INSERT INTO DEVICETYPECOMMAND VALUES (-393, -110, 'MCT-410IL', 21, 'Y', -1);
+INSERT INTO DEVICETYPECOMMAND VALUES (-393, -108, 'MCT-410IL', 21, 'Y', -1);
 INSERT INTO DEVICETYPECOMMAND VALUES (-394, -111, 'MCT-410IL', 22, 'Y', -1);
 INSERT INTO DEVICETYPECOMMAND VALUES (-395, -112, 'All MCT-4xx Series', 23, 'Y', -1);
 INSERT INTO DEVICETYPECOMMAND VALUES (-396, -113, 'All MCT-4xx Series', 24, 'Y', -1);
@@ -6212,7 +6224,7 @@ INSERT INTO StateGroup VALUES( 4, 'TrueFalse', 'Status' );
 INSERT INTO stategroup VALUES( 5, 'RemoteLocal', 'Status' );
 INSERT INTO StateGroup VALUES( 6, '1LNSUBSTATE', 'Status' );
 INSERT INTO StateGroup VALUES( 7, '1LNVERIFY', 'Status' );
-insert into StateGroup values (-8, 'TwoStateActive', 'Status')
+insert into StateGroup values (-8, 'TwoStateActive', 'Status');
 
 /*==============================================================*/
 /* Index: Indx_STATEGRP_Nme                                     */
@@ -6939,7 +6951,7 @@ insert into yukongrouprole values (-775,-301,-900,-90000,'(none)');
 insert into yukongrouprole values (-776,-301,-900,-90001,'(none)');
 insert into yukongrouprole values (-777,-301,-900,-90002,'(none)');
 insert into yukongrouprole values (-778,-301,-900,-90003,'(none)');
-insert into yukongrouprole values (-779,-301,-900,-90004,'(none)')
+insert into yukongrouprole values (-779,-301,-900,-90004,'(none)');
 
 insert into yukongrouprole values (-781,-301,-900,-90005,'(none)');
 insert into yukongrouprole values (-782,-301,-900,-90006,'(none)');
@@ -7975,7 +7987,7 @@ insert into YukonRoleProperty values(-1108,-2,'single_energy_company','true','In
 insert into YukonRoleProperty values(-1109,-2,'z_optional_product_dev','00000000','This feature is for development purposes only');
 insert into YukonRoleProperty values(-1110,-2,'Default Temperature Unit','F','Default temperature unit for an energy company, F(ahrenheit) or C(elsius)');
 insert into YukonRoleProperty values(-1111,-2,'z_meter_mct_base_desig','yukon','Allow meters to be used general STARS entries versus Yukon MCTs');
-insert into YukonRoleProperty values(-1112,-2,'applicable_point_type_key','','The name of the set of CICustomerPointData TYPES that should be set for customers.');
+insert into YukonRoleProperty values(-1112,-2,'applicable_point_type_key',' ','The name of the set of CICustomerPointData TYPES that should be set for customers.');
 insert into YukonRoleProperty values(-1113,-2,'Standard Page Style Sheet',' ','A comma separated list of URLs for CSS files that will be included on every Standard Page');
 insert into YukonRoleProperty values(-1114,-2,'Inherit Parent App Cats','true','If part of a member structure, should appliance categories be inherited from the parent.');
 
@@ -8734,7 +8746,7 @@ insert into YukonWebConfiguration values(0,'(none)','(none)','(none)','(none)');
 /*==============================================================*/
 /* View: CCINVENTORY_VIEW                                       */
 /*==============================================================*/
-create or replace view CCINVENTORY_VIEW as
+create or replace view CCINVENTORY_VIEW(Region, SubName, FeederName, subId, fdrId, CBCName, cbcId, capbankname, bankId, CapBankSize, Sequence, ControlStatus, SWMfgr, SWType, ControlType, Protocol, IPADDRESS, SlaveAddress, LAT, LON, DriveDirection, OpCenter, TA) as
 SELECT yp4.paoname AS Region, yp3.PAOName AS SubName, yp2.PAOName AS FeederName, yp3.PAObjectID AS subId, yp2.PAObjectID AS fdrId, 
                       yp.PAOName AS CBCName, yp.PAObjectID AS cbcId, yp1.PAOName AS Bankname, yp1.PAObjectID AS bankId, cb.BANKSIZE AS CapBankSize, 
                       fb.ControlOrder AS Sequence, dcb.ControlStatus, cb.SwitchManufacture AS SWMfgr, cb.TypeOfSwitch AS SWType, 
@@ -8762,7 +8774,7 @@ FROM CAPBANK cb INNER JOIN
 /*==============================================================*/
 /* View: CCOPERATIONS_VIEW                                      */
 /*==============================================================*/
-create or replace view CCOPERATIONS_VIEW as
+create or replace view CCOPERATIONS_VIEW(cbcName, capbankname, opTime, operation, confTime, confStatus, feederName, feederId, subName, subBusId, region, BANKSIZE, protocol, ipAddress, serialNum, SlaveAddress, kvarAfter, kvarChange, kvarBefore) as
 SELECT 
 	yp3.PAOName AS cbcName, yp.PAOName AS bankname, el.DateTime AS opTime, el.Text AS operation, 
 	el2.DateTime AS confTime, el2.Text AS confStatus, yp1.PAOName AS feederName, yp1.PAObjectID AS feederId, 

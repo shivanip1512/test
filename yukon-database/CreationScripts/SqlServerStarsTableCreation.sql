@@ -1,6 +1,6 @@
 /*==============================================================*/
 /* DBMS name:      Microsoft SQL Server 2000                    */
-/* Created on:     10/2/2007 4:01:19 PM                         */
+/* Created on:     10/31/2007 5:13:52 PM                        */
 /*==============================================================*/
 
 
@@ -659,14 +659,14 @@ go
 /*==============================================================*/
 create table ApplianceDualStageAirCond (
    ApplianceID          numeric              not null,
-   StateTwoTonnageID    numeric              null,
    StageOneTonnageID    numeric              null,
+   StageTwoTonnageID    numeric              null,
    TypeID               numeric              null
 )
 go
 
 alter table ApplianceDualStageAirCond
-   add constraint PK_APPLIANCEDUALSTAGEAIRCOND primary key nonclustered (ApplianceID)
+   add constraint PK_APPLIANCEDUALSTAGEAIRCOND primary key (ApplianceID)
 go
 
 /*==============================================================*/
@@ -801,7 +801,7 @@ go
 INSERT INTO CustomerAccount VALUES (0,0,'(none)',-1,0,'(none)');
 
 alter table CustomerAccount
-   add constraint PK_CUSTOMERACCOUNT primary key nonclustered (AccountID)
+   add constraint PK_CUSTOMERACCOUNT primary key (AccountID)
 go
 
 /*==============================================================*/
@@ -1187,7 +1187,7 @@ create table Invoice (
    HasPaid              varchar(1)           not null,
    DatePaid             datetime             not null,
    TotalQuantity        numeric              not null,
-   AuthorizedNumber     varchar(60)          not null
+   AuthorizedNumber     varchar(60)          not null default ''
 )
 go
 
@@ -1340,7 +1340,7 @@ create table LMHardwareBase (
 go
 
 alter table LMHardwareBase
-   add constraint PK_LMHARDWAREBASE primary key nonclustered (InventoryID)
+   add constraint PK_LMHARDWAREBASE primary key (InventoryID)
 go
 
 /*==============================================================*/
@@ -1534,7 +1534,7 @@ go
 create table MeterHardwareBase (
    InventoryID          numeric              not null,
    MeterNumber          varchar(30)          not null,
-   MeterTypeID          numeric              null
+   MeterTypeID          numeric              not null
 )
 go
 
@@ -1703,7 +1703,7 @@ create table Warehouse (
    WarehouseID          numeric              not null,
    WarehouseName        varchar(60)          not null,
    AddressID            numeric              not null,
-   Notes                varchar(300)         not null,
+   Notes                varchar(300)         null,
    EnergyCompanyID      numeric              not null
 )
 go
@@ -1728,7 +1728,7 @@ create table WorkOrderBase (
    DateCompleted        datetime             null,
    ActionTaken          varchar(200)         null,
    AccountID            numeric              null,
-   AdditionalOrderNumber varchar(24)          not null
+   AdditionalOrderNumber varchar(24)          null
 )
 go
 
@@ -1832,7 +1832,7 @@ alter table ApplianceDualStageAirCond
 go
 
 alter table ApplianceDualStageAirCond
-   add constraint FK_DUALSTAGE_STGTWONTRY foreign key (StateTwoTonnageID)
+   add constraint FK_DUALSTAGE_STGTWONTRY foreign key (StageTwoTonnageID)
       references YukonListEntry (EntryID)
 go
 
@@ -2467,7 +2467,7 @@ alter table SiteInformation
 go
 
 alter table Substation
-   add constraint FK_SUBSTATI_FK_SUB_RT_ROUTE foreign key (LMRouteID)
+   add constraint FK_Sub_Rt foreign key (LMRouteID)
       references Route (RouteID)
 go
 

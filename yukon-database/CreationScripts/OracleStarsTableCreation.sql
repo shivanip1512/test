@@ -1,6 +1,6 @@
 /*==============================================================*/
 /* DBMS name:      ORACLE Version 9i                            */
-/* Created on:     10/2/2007 3:58:34 PM                         */
+/* Created on:     10/31/2007 5:13:24 PM                        */
 /*==============================================================*/
 
 
@@ -259,13 +259,17 @@ create table ApplianceDualFuel  (
 alter table ApplianceDualFuel
    add constraint PK_APPLIANCEDUALFUEL primary key (ApplianceID);
 
+create cluster  C_ApplianceDualStageAirCond (
+   ApplianceID		NUMBER
+);
+
 /*==============================================================*/
 /* Table: ApplianceDualStageAirCond                             */
 /*==============================================================*/
 create table ApplianceDualStageAirCond  (
    ApplianceID          NUMBER                          not null,
-   StateTwoTonnageID    NUMBER,
    StageOneTonnageID    NUMBER,
+   StageTwoTonnageID    NUMBER,
    TypeID               NUMBER
 );
 
@@ -373,6 +377,10 @@ create table CallReportBase  (
 
 alter table CallReportBase
    add constraint PK_CALLREPORTBASE primary key (CallID);
+
+create cluster  C_CustomerAccount (
+   AccountID		NUMBER
+);
 
 /*==============================================================*/
 /* Table: CustomerAccount                                       */
@@ -737,7 +745,7 @@ create table Invoice  (
    HasPaid              VARCHAR2(1)                     not null,
    DatePaid             DATE                            not null,
    TotalQuantity        NUMBER                          not null,
-   AuthorizedNumber     varchar(60)                     not null
+   AuthorizedNumber     VARCHAR2(60)                   default '' not null
 );
 
 alter table Invoice
@@ -1044,7 +1052,7 @@ alter table LMThermostatSeasonEntry
 create table MeterHardwareBase  (
    InventoryID          NUMBER                          not null,
    MeterNumber          VARCHAR2(30)                    not null,
-   MeterTypeID          NUMBER
+   MeterTypeID          NUMBER                          not null
 );
 
 alter table MeterHardwareBase
@@ -1193,7 +1201,7 @@ create table Warehouse  (
    WarehouseID          NUMBER                          not null,
    WarehouseName        VARCHAR2(60)                    not null,
    AddressID            NUMBER                          not null,
-   Notes                VARCHAR2(300)                   not null,
+   Notes                VARCHAR2(300),
    EnergyCompanyID      NUMBER                          not null
 );
 
@@ -1216,7 +1224,7 @@ create table WorkOrderBase  (
    DateCompleted        DATE,
    ActionTaken          VARCHAR2(200),
    AccountID            NUMBER,
-   AdditionalOrderNumber VARCHAR2(24)                    not null
+   AdditionalOrderNumber VARCHAR2(24)
 );
 
 alter table WorkOrderBase
@@ -1299,7 +1307,7 @@ alter table ApplianceDualStageAirCond
       references ApplianceBase (ApplianceID);
 
 alter table ApplianceDualStageAirCond
-   add constraint FK_DUALSTAGE_STGTWONTRY foreign key (StateTwoTonnageID)
+   add constraint FK_DUALSTAGE_STGTWONTRY foreign key (StageTwoTonnageID)
       references YukonListEntry (EntryID);
 
 alter table ApplianceDualStageAirCond
@@ -1807,7 +1815,7 @@ alter table SiteInformation
       references Substation (SubstationID);
 
 alter table Substation
-   add constraint FK_SUBSTATI_FK_SUB_RT_ROUTE foreign key (LMRouteID)
+   add constraint FK_Sub_Rt foreign key (LMRouteID)
       references Route (RouteID);
 
 alter table SubstationToRouteMapping
