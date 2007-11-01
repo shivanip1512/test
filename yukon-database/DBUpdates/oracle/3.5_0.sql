@@ -379,7 +379,7 @@ UPDATE Command SET Label = 'Clear Comm Loss Counter' WHERE commandid = -67;
 delete from YukonRoleProperty where RolePropertyId = -1113;
 insert into YukonRoleProperty values(-10816, -108,'Standard Page Style Sheet',' ','A comma separated list of URLs for CSS files that will be included on every Standard Page');
 
-update BillingFileFormats, set FormatType = 'DAFFRON' where formatType = 'DAFRON';
+update BillingFileFormats set FormatType = 'DAFFRON' where formatType = 'DAFRON';
 update YukonListEntry set EntryText = 'Customer Type' where EntryText = 'Consumption Type';
 update YukonListEntry set EntryText = 'Postal Code' where EntryText = 'Zip Code' and ListID = 1056;
 delete from YukonListEntry where EntryText = 'Configuration';
