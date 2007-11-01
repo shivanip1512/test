@@ -79,9 +79,6 @@ public class OnelineCap implements OnelineObject {
         if (CBCUtils.isTwoWay(PAOGroups.getDeviceType(getStreamable().getControlDeviceType()))) {
             initPointTimestampsImage();
         }
-        
-        //if (CBCUtils.isTwoWay(DaoFactory.getPaoDao().getLiteYukonPAO(getStreamable().getControlDeviceID())))
-        //    initPointTimestampsImage();
 
         initCapBankName ();
         graph.add(stateImage);
@@ -120,10 +117,21 @@ public class OnelineCap implements OnelineObject {
     private void initCapBankName() {
         capBankName = new StaticText();
         capBankName.setFont(OnelineUtil.MEDIUM_FONT);
-        capBankName.setPaint(OnelineUtil.PURPLISH);
+        
         capBankName.setX(getStateImage().getX() + 20);
         capBankName.setY(getStateImage().getY() - 20);
         capBankName.setText(getStreamable().getCcName());
+        capBankName.setName(getName());
+        
+        if( !getStreamable().isBankMoved() ){
+            capBankName.setPaint(OnelineUtil.PURPLISH);
+            capBankName.setLinkTo("/capcontrol/tempmove.jsp?bankid=" + getStreamable().getCcId() + "&oneline=" + "true");
+        }
+        else{//if moved
+            capBankName.setPaint(OnelineUtil.ORANGE);
+            capBankName.setLinkTo("/capcontrol/oneline/OnelineCBCServlet?paoID=" + getStreamable().getCcId() + "&cmdID=11&controlType=CAPBANK_TYPE");
+        }
+       
     }
 
 

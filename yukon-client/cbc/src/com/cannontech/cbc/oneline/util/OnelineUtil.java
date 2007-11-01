@@ -76,7 +76,8 @@ public class OnelineUtil {
     
     public static final int EDITOR_CAPCONTROL = 2;
     public static final Color PURPLISH = new Color(115, 79, 182);
-
+    public static final Color ORANGE = new Color(255,165,0);
+    
     public static LiteStateGroup getOnelineStateGroup(String groupName) {
         LiteStateGroup[] groups = DaoFactory.getStateDao().getAllStateGroups();
         for (int i = 0; i < groups.length; i++) {

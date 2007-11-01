@@ -9,6 +9,12 @@
 <%
     CapControlCache capControlCache = YukonSpringHook.getBean("cbcCache", CapControlCache.class);
 	String feederID = request.getParameter("FeederID");
+	String subbusIDstr = request.getParameter("subbusID");
+	Integer subbusID = null;
+	if( subbusIDstr != null )
+	{
+		subbusID = Integer.valueOf(subbusIDstr);
+	}
 	String feederName = "null";
 	String subName = "null";
 	if( feederID != null){
@@ -24,7 +30,10 @@
  <form id="capbankmoved" action="/capcontrol/moved.jsp" method="post">
 	
 	<div class="capbankMoved" >CapBank moved to <%= feederName %> on <%= subName %>. </div>
-	
+	<% if( subbusID != null ) {%>
+		<div style="text-align: center;"><a href="/capcontrol/oneline/OnelineCBCServlet?id=<%=subbusID %>&redirectURL=/capcontrol/feeders.jsp">Return to OneLine</a></div>
+
+	<%} %>
 </form>
 </div>
 

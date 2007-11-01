@@ -852,7 +852,7 @@ public class CapControlCacheImpl implements MessageListener, CapControlCache {
     }
     
     /**
-     * Handles any type of message recieved from the connection.
+     * Handles any type of message received from the connection.
      * @param MessageEvent
      */
     public void messageReceived( MessageEvent e ) {
@@ -882,8 +882,7 @@ public class CapControlCacheImpl implements MessageListener, CapControlCache {
     
     
     public CBCArea getCBCArea(int id) {
-        for (Iterator<CBCArea> iter = cbcAreas.iterator(); iter.hasNext();) {
-            CBCArea area = iter.next();
+        for (CBCArea area : cbcAreas) {
             if (area.getPaoID().intValue() == id) {
                 return area;
             }
@@ -892,8 +891,7 @@ public class CapControlCacheImpl implements MessageListener, CapControlCache {
     }
     
     public CBCSpecialArea getCBCSpecialArea(int id) {
-        for (Iterator<CBCSpecialArea> iter = getSpecialCbcAreas().iterator(); iter.hasNext();) {
-            CBCSpecialArea area = iter.next();
+        for (CBCSpecialArea area : cbcSpecialAreas ) {
             if (area.getPaoID().intValue() == id) {
                 return area;
             }

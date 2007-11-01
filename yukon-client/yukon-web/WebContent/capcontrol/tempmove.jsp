@@ -15,10 +15,14 @@
 	CapControlCache filterCapControlCache = cacheFactory.createUserAccessFilteredCache(user);
 
 	int bankid = ParamUtil.getInteger(request, "bankid");
+	int subbusID = 0;
+	boolean oneline = ParamUtil.getBoolean(request,"oneline",false);
 	List<CBCArea> allAreas = filterCapControlCache.getCbcAreas();	
 	CapBankDevice capBank = filterCapControlCache.getCapBankDevice( new Integer(bankid) );
 	int oldfdrid = 0;
-	
+	if( oneline ){
+		subbusID = filterCapControlCache.getParentSubBusID(bankid);
+	}
 	if( capBank != null )
 	{
 		oldfdrid = capBank.getParentID();
@@ -47,9 +51,12 @@ function getOrder( str )
 	return Obj.value;
 }
 
-function setFeederIDinRedirectURL( id )
+function setFeederIDinRedirectURL( id, oneline, subbusID )
 {
 	$("redirectURL").value += "?FeederID=" + id;
+	if( oneline ){
+		$("redirectURL").value += "&subbusID=" + subbusID;
+	}
 }
 
 function selectFeeder( fid ){
@@ -88,14 +95,14 @@ Event.observe(window, 'load', updateFeederBankInfo );
 	<td class="rAlign">Trip Order:
 	<input type="text" id="txtTripOrder" class="tableCell" size="1" maxlength="3" value="1.5">
 	</td>
-	<td class="rAlign"><input id="submitOne" type="button" value="Submit" onclick="setFeederIDinRedirectURL(getSelectedFeeder());postMany('frmCapBankMove', 'opt[1]', getSelectedFeeder(), 'opt[2]', getOrder('Display'), 'opt[3]', getOrder('Close'), 'opt[4]', getOrder('Trip') );" />
+	<td class="rAlign"><input id="submitOne" type="button" value="Submit" onclick="setFeederIDinRedirectURL(getSelectedFeeder(),<%=oneline %>,<%=subbusID %>);postMany('frmCapBankMove', 'opt[1]', getSelectedFeeder(), 'opt[2]', getOrder('Display'), 'opt[3]', getOrder('Close'), 'opt[4]', getOrder('Trip') );" />
 	</td>
 </tr>
 
 </table>   
 
 <div id="ControlOrders" style="margin-left: 10%; margin-right: 10%;height:25%;max-height:25%;margin-bottom:2%;margin-top:2%;">
-content before hand
+
 </div>
 
       <div style="margin-left: 10%; margin-right: 10%;" >
@@ -108,11 +115,7 @@ int z = 0;
 String indent = "\t";
 for( CBCArea area : allAreas )
 {
-
 	List<SubStation> stationsOnArea = filterCapControlCache.getSubstationsByArea( area.getPaoID() );
-
-	
-	css = (css.compareTo("tableCell") == 0)?"altTableCell":"tableCell";
 	%>
 	
 	<div>		
@@ -121,12 +124,10 @@ for( CBCArea area : allAreas )
 		onclick="showDiv( 'areaId<%=z %>' );toggleImg( 'chkBxArea<%=z%>'); return false;">
 	<%=area.getPaoName() %></input>
 
-
-	<div class="<%=css%>" style="display:none" id="areaId<%=z %>">
+	<div class="tableCell" style="display:none" id="areaId<%=z %>">
 	
 	<% for( SubStation station : stationsOnArea ){
 		List<SubBus> subsOnStation = filterCapControlCache.getSubBusesBySubStation(station);
-		css = (css.compareTo("tableCell") == 0)?"altTableCell":"tableCell";
 	%>
 		<div>		
 		<input class="lIndent" type="image" id="chkBxStation<%=station.getCcId()%>"
@@ -135,13 +136,11 @@ for( CBCArea area : allAreas )
 		<%=station.getCcName() %></input>
 	
 	
-		<div class="<%=css%>" style="display:none" id="stationId<%=station.getCcId() %>">
+		<div class="tableCell" style="display:none" id="stationId<%=station.getCcId() %>">
 			<%	
 			for( SubBus subBus : subsOnStation )
 			{
 				List<Feeder> feeders = filterCapControlCache.getFeedersBySubBus(subBus.getCcId());
-				css = (css.compareTo("tableCell") == 0)?"altTableCell":"tableCell";
-				
 			%>
 		
 				<div>
@@ -150,7 +149,7 @@ for( CBCArea area : allAreas )
 					onclick="showDiv( 'subId<%=subBus.getCcId()%>' );toggleImg('chkBxSub<%=subBus.getCcId()%>'); return false;">
 					<%=CBCUtils.CBC_DISPLAY.getSubBusValueAt(subBus, CBCDisplay.SUB_NAME_COLUMN) %></input>
 				
-				<div class="<%=css%>" style="display:none" id="subId<%=subBus.getCcId()%>" >
+				<div class="altTableCell" style="display:none" id="subId<%=subBus.getCcId()%>" >
 			<%
 				for( Feeder feeder : feeders )
 				{

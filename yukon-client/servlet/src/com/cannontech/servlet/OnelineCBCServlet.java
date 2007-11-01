@@ -8,9 +8,7 @@ import java.util.Vector;
 
 import javax.servlet.ServletContext;
 import javax.servlet.ServletException;
-import javax.servlet.http.HttpServlet;
-import javax.servlet.http.HttpServletRequest;
-import javax.servlet.http.HttpServletResponse;
+import javax.servlet.http.*;
 
 import org.apache.commons.lang.StringUtils;
 
@@ -23,7 +21,9 @@ import com.cannontech.cbc.oneline.tag.CBCTagHandler;
 import com.cannontech.cbc.oneline.tag.OnelineTags;
 import com.cannontech.cbc.oneline.util.OnelineUtil;
 import com.cannontech.cbc.oneline.view.CapControlOnelineCanvas;
+import com.cannontech.cbc.web.CBCCommandExec;
 import com.cannontech.cbc.web.CBCWebUtils;
+import com.cannontech.clientutils.CTILogger;
 import com.cannontech.common.constants.LoginController;
 import com.cannontech.core.dao.DaoFactory;
 import com.cannontech.database.data.lite.LitePoint;
@@ -31,6 +31,7 @@ import com.cannontech.database.data.lite.LiteYukonUser;
 import com.cannontech.esub.Drawing;
 import com.cannontech.esub.svg.SVGOptions;
 import com.cannontech.servlet.nav.CBCNavigationUtil;
+import com.cannontech.spring.YukonSpringHook;
 import com.cannontech.util.ParamUtil;
 import com.cannontech.yukon.cbc.CapBankDevice;
 import com.cannontech.yukon.cbc.Feeder;
@@ -41,9 +42,9 @@ public class OnelineCBCServlet extends HttpServlet {
 
     public static final String TAGHANDLER = "TAGHANDLER";
     private Integer currentSubId;
-    private CapControlCache cache = null;
+    private static final CapControlCache cache = YukonSpringHook.getBean("cbcCache", CapControlCache.class);
     private CapControlSVGGenerator svgGenerator;
-
+    
     public Integer getCurrentSubId() {
         return currentSubId;
     }
@@ -51,25 +52,29 @@ public class OnelineCBCServlet extends HttpServlet {
     protected void doGet(HttpServletRequest req, HttpServletResponse resp)
             throws ServletException, IOException {
         ServletContext config = req.getSession().getServletContext();
+        LiteYukonUser user = (LiteYukonUser) req.getSession(false).getAttribute(LoginController.YUKON_USER);
         initHandler(config);
-        cache = (CapControlCache) config.getAttribute("capControlCache");
+        String redirectURL;
         currentSubId = ParamUtil.getInteger(req, "id");
-        String redirectURL = ParamUtil.getString(req, "redirectURL", null);
+        if( currentSubId == 0)
+        {
+            //This will be coming from a move back request in oneline.
+            int paoID = ParamUtil.getInteger( req, "paoID" );
+            executeCommand( req, user.getUsername() );
+            redirectURL= "/capcontrol/feeders.jsp";
+            currentSubId = cache.getParentSubBusID(paoID);
+        }else
+            redirectURL = ParamUtil.getString(req, "redirectURL", null);
         SubBus subBusMsg = cache.getSubBus(currentSubId);
         String absPath = config.getRealPath(CBCWebUtils.ONE_LINE_DIR);
         registerPointsWithDispatch(config, subBusMsg);
         
-        LiteYukonUser user = (LiteYukonUser) req.getSession(false).getAttribute(LoginController.YUKON_USER);
-        
-
         String subName = createSubBusDrawing(redirectURL, subBusMsg, absPath, user);
         String busHTML = subName + ".html";
         //remember the location
         String subOnelineURL = "/capcontrol/oneline/" + busHTML;
         CBCNavigationUtil.bookmarkLocationAndRedirect(subOnelineURL, req.getSession(false));
         resp.sendRedirect(busHTML);
-        
-        
     }
 
     private void initHandler(ServletContext config) {
@@ -134,9 +139,6 @@ public class OnelineCBCServlet extends HttpServlet {
     protected void doPost(HttpServletRequest req, HttpServletResponse resp)
             throws ServletException, IOException {
 
-        cache = (CapControlCache) req.getSession()
-                                     .getServletContext()
-                                     .getAttribute("capControlCache");
         currentSubId = ParamUtil.getInteger(req, "id");
         
         LiteYukonUser user = (LiteYukonUser) req.getSession(false).getAttribute(LoginController.YUKON_USER);
@@ -179,6 +181,28 @@ public class OnelineCBCServlet extends HttpServlet {
         return svgOptions;
     }
 
-   
+    /**
+     * Allows the execution of commands to the cbc server for all
+     * CBC object types.
+     */
+    private void executeCommand( HttpServletRequest req, String userName ) {
+
+        int cmdID = ParamUtil.getInteger( req, "cmdID" );
+        int paoID = ParamUtil.getInteger( req, "paoID" );
+        String controlType = ParamUtil.getString( req, "controlType" );
+        float[] optParams = com.cannontech.common.util.StringUtils.toFloatArray( ParamUtil.getStrings(req, "opt") );
+
+        CTILogger.debug(req.getServletPath() +
+            "     cmdID = " + cmdID +
+            ", controlType = " + controlType +
+            ", paoID = " + paoID +
+            ", opt = " + optParams  );
+                
+        CBCCommandExec cbcExecutor = new CBCCommandExec( cache, userName );
+            
+        if( controlType.equals(CBCServlet.TYPE_CAPBANK) )
+            cbcExecutor.execute_CapBankCmd( cmdID, paoID, optParams );
+        
+    }
 
 }

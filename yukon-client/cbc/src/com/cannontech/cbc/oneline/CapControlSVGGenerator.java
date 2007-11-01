@@ -123,7 +123,19 @@ public class CapControlSVGGenerator extends BaseSVGGenerator {
                                 "onmouseout",
                                 "noUnderLine(evt.getTarget())");
 
-        } else if (isCapBankImage(comp) && getGenOptions().isScriptingEnabled()) {
+        }
+        else if (isCapBank(comp) && getGenOptions().isScriptingEnabled()) {
+            String id = OnelineUtil.extractObjectIdFromString(comp.getName());
+            addDynamicAttributes(elem, CommandPopups.CAP_COMMAND +  "_" + id);
+            elem.setAttributeNS(null,
+                                "onmouseover",
+                                "underLine(evt.getTarget())");
+            elem.setAttributeNS(null,
+                                "onmouseout",
+                                "noUnderLine(evt.getTarget())");
+
+        }
+        else if (isCapBankImage(comp) && getGenOptions().isScriptingEnabled()) {
             String str = comp.getName();
             String id = OnelineUtil.extractObjectIdFromString(str);
             addDynamicAttributes(elem, CommandPopups.CAP_COMMAND + "_" + id);
@@ -177,6 +189,10 @@ public class CapControlSVGGenerator extends BaseSVGGenerator {
     private boolean isFeeder(LxComponent comp) {
         return (((comp instanceof LineElement) || comp instanceof LxAbstractText) && StringUtils.contains(comp.getName(),
                                                                                                           OnelineFeeder.NAME_PREFIX));
+    }
+    private boolean isCapBank(LxComponent comp) {
+        return (((comp instanceof LineElement) || comp instanceof LxAbstractText) && StringUtils.contains(comp.getName(),
+                                                                                                          OnelineCap.NAME_PREFIX));
     }
 
     private boolean isSub(StateImage newImage) {

@@ -209,7 +209,7 @@ public class FilterCapControlCacheImpl implements CapControlCache {
 	}
 
 	public int getParentSubBusID(int childID) {
-		CBCArea area = cache.getCBCArea(childID);
+		CBCArea area = cache.getCBCArea( cache.getParentAreaID(childID) );
 		if ( filter.valid(area) )
 			return cache.getParentSubBusID(childID);
 		else
