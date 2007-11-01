@@ -575,9 +575,15 @@ CtiLMControlArea& CtiLMControlArea::setNewPointDataReceivedFlag(BOOL newdatarece
 ---------------------------------------------------------------------------*/
 CtiLMControlArea& CtiLMControlArea::setUpdatedFlag(BOOL updated)
 {
-    if( _updatedflag != updated )
+    //For those who follow.. the updated flag is no longer used or cleared. Ever.
+    //I only left this function in case someone wanted this functionality back.
+    /*if( _updatedflag != updated )
     {
         _updatedflag = updated;
+        setDirty(true);
+    }*/
+    if( updated == TRUE )
+    {
         setDirty(true);
     }
     return *this;
@@ -2061,7 +2067,7 @@ void CtiLMControlArea::handleManualControl(ULONG secondsFrom1901, CtiMultiMsg* m
         CtiLMProgramBaseSPtr currentLMProgram = _lmprograms[i];
         if( currentLMProgram->getManualControlReceivedFlag() )
         {
-            if( currentLMProgram->handleManualControl(secondsFrom1901,multiPilMsg,multiDispatchMsg, multiNotifMsg) )
+            if( currentLMProgram->handleManualControl(secondsFrom1901,multiPilMsg,multiDispatchMsg, multiNotifMsg, getLMControlAreaTriggers()) )
             {
                 setUpdatedFlag(TRUE);
             }
