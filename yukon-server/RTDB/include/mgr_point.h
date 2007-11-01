@@ -12,8 +12,8 @@
 *
 * PVCS KEYWORDS:
 * ARCHIVE      :  $Archive:   Z:/SOFTWAREARCHIVES/YUKON/RTDB/INCLUDE/mgr_point.h-arc  $
-* REVISION     :  $Revision: 1.16 $
-* DATE         :  $Date: 2007/11/01 15:45:31 $
+* REVISION     :  $Revision: 1.17 $
+* DATE         :  $Date: 2007/11/01 16:39:06 $
 *
  * (c) 1999 Cannon Technologies Inc. Wayzata Minnesota
  * All Rights Reserved
@@ -70,8 +70,8 @@ private:
         }
     };
 
-    map< pao_offset_t, long >           _control_offsets;  //  this map contains all control point offsets
-    std::multimap< pao_offset_t, CtiPointType_t > _type_offsets;     //  this map contains all point offsets
+    map< pao_offset_t, long >           _control_offsets;  //  this map contains all control point offsets mapped to point ids
+    std::multimap< pao_offset_t, long > _type_offsets;     //  this map contains all point offsets mapped to point ids
 
     friend class Test_CtiPointManager;
 

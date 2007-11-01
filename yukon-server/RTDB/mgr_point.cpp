@@ -6,8 +6,8 @@
 *
 * PVCS KEYWORDS:
 * ARCHIVE      :  $Archive:   Z:/SOFTWAREARCHIVES/YUKON/RTDB/mgr_point.cpp-arc  $
-* REVISION     :  $Revision: 1.38 $
-* DATE         :  $Date: 2007/11/01 15:45:31 $
+* REVISION     :  $Revision: 1.39 $
+* DATE         :  $Date: 2007/11/01 16:39:06 $
 *
 * Copyright (c) 1999, 2000, 2001 Cannon Technologies Inc. All rights reserved.
 *-----------------------------------------------------------------------------*/
@@ -549,7 +549,7 @@ CtiPointManager::ptr_type CtiPointManager::getOffsetTypeEqual(LONG pao, INT Offs
 
     LockGuard  guard(getMux());
 
-    multimap<pao_offset_t, CtiPointType_t>::const_iterator type_itr, upper_bound;
+    multimap<pao_offset_t, long>::const_iterator type_itr, upper_bound;
 
     type_itr    = _type_offsets.lower_bound(pao_offset_t(pao, Offset));
     upper_bound = _type_offsets.upper_bound(pao_offset_t(pao, Offset));
@@ -612,7 +612,7 @@ void CtiPointManager::addPoint( CtiPointBase *point )
         _smartMap.insert(point->getID(), point); // Stuff it in the list
 
         //  add it into the offset lookup map
-        _type_offsets.insert(std::make_pair(pao_offset_t(point->getDeviceID(), point->getPointOffset()), point->getType()));
+        _type_offsets.insert(std::make_pair(pao_offset_t(point->getDeviceID(), point->getPointOffset()), point->getPointID()));
 
         //  if it's a control point, add it into the control offset lookup map
         if( point->getType() == StatusPointType &&
@@ -662,7 +662,7 @@ void CtiPointManager::removeSinglePoint(ptr_type pTempCtiPoint)
 {
     if( pTempCtiPoint )
     {
-        std::multimap<pao_offset_t, CtiPointType_t>::iterator type_itr;
+        std::multimap<pao_offset_t, long>::iterator type_itr;
         for( type_itr  = _type_offsets.lower_bound(pao_offset_t(pTempCtiPoint->getDeviceID(), pTempCtiPoint->getPointOffset()));
              type_itr != _type_offsets.upper_bound(pao_offset_t(pTempCtiPoint->getDeviceID(), pTempCtiPoint->getPointOffset()));
              type_itr++ )
