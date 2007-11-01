@@ -2257,8 +2257,7 @@ BOOL CtiLMProgramDirect::hasGearChanged(LONG currentPriority, vector<CtiLMContro
         else if( !stringCompareIgnoreCase(currentGearObject->getChangeCondition(),CtiLMProgramDirectGear::TriggerOffsetChangeCondition) )
         {
             if( currentGearObject->getChangeTriggerNumber() > 0 &&
-                currentGearObject->getChangeTriggerNumber() <= controlAreaTriggers.size() &&
-                !getManualControlReceivedFlag() )
+                currentGearObject->getChangeTriggerNumber() <= controlAreaTriggers.size() )
             {
                 CtiLMControlAreaTrigger* trigger = (CtiLMControlAreaTrigger*)controlAreaTriggers[currentGearObject->getChangeTriggerNumber()-1];
 
@@ -2381,8 +2380,7 @@ BOOL CtiLMProgramDirect::hasGearChanged(LONG currentPriority, vector<CtiLMContro
             else if( !stringCompareIgnoreCase(previousGearObject->getChangeCondition(),CtiLMProgramDirectGear::TriggerOffsetChangeCondition) )
             {
                 if( previousGearObject->getChangeTriggerNumber() > 0 &&
-                    previousGearObject->getChangeTriggerNumber() <= controlAreaTriggers.size() &&
-                    !getManualControlReceivedFlag() )
+                    previousGearObject->getChangeTriggerNumber() <= controlAreaTriggers.size() )
                 {
                     CtiLMControlAreaTrigger* trigger = (CtiLMControlAreaTrigger*)controlAreaTriggers[previousGearObject->getChangeTriggerNumber()-1];
                     if( isTriggerCheckNeeded &&
@@ -4416,12 +4414,11 @@ bool CtiLMProgramDirect::updateGroupsRampingOut(CtiMultiMsg* multiPilMsg, CtiMul
 
     Handles manual control messages for the direct program.
 ---------------------------------------------------------------------------*/
-BOOL CtiLMProgramDirect::handleManualControl(ULONG secondsFrom1901, CtiMultiMsg* multiPilMsg, CtiMultiMsg* multiDispatchMsg, CtiMultiMsg* multiNotifMsg)
+BOOL CtiLMProgramDirect::handleManualControl(ULONG secondsFrom1901, CtiMultiMsg* multiPilMsg, CtiMultiMsg* multiDispatchMsg, CtiMultiMsg* multiNotifMsg, vector<CtiLMControlAreaTrigger*>& controlAreaTriggers)
 {
     BOOL returnBoolean = FALSE;
-    vector<CtiLMControlAreaTrigger *> emptyTriggers;
 
-    if( getProgramState() == CtiLMProgramBase::ManualActiveState && hasGearChanged(_lmprogramdirectgears[_currentgearnumber]->getChangePriority() - 1, emptyTriggers, secondsFrom1901, multiDispatchMsg, false) )
+    if( getProgramState() == CtiLMProgramBase::ManualActiveState && hasGearChanged(_lmprogramdirectgears[_currentgearnumber]->getChangePriority() - 1, controlAreaTriggers, secondsFrom1901, multiDispatchMsg, true) )
     {
         // hasGearChanged here changed the gear for us, we want to do a full manual control now, not a refresh.
         setProgramState(CtiLMProgramBase::ScheduledState);

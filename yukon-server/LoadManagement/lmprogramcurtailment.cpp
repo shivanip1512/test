@@ -509,7 +509,7 @@ BOOL CtiLMProgramCurtailment::stopProgramControl(CtiMultiMsg* multiPilMsg, CtiMu
 
     Handles manual control messages for the curtailment program.
 ---------------------------------------------------------------------------*/
-BOOL CtiLMProgramCurtailment::handleManualControl(ULONG secondsFrom1901, CtiMultiMsg* multiPilMsg, CtiMultiMsg* multiDispatchMsg, CtiMultiMsg* multiNotifMsg)
+BOOL CtiLMProgramCurtailment::handleManualControl(ULONG secondsFrom1901, CtiMultiMsg* multiPilMsg, CtiMultiMsg* multiDispatchMsg, CtiMultiMsg* multiNotifMsg, vector<CtiLMControlAreaTrigger*>& controlAreaTriggers)
 {
     BOOL returnBoolean = FALSE;
 

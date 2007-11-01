@@ -262,7 +262,7 @@ BOOL CtiLMProgramEnergyExchange::stopProgramControl(CtiMultiMsg* multiPilMsg, Ct
 
     Handles manual control messages for the energy exchange program.
 ---------------------------------------------------------------------------*/
-BOOL CtiLMProgramEnergyExchange::handleManualControl(ULONG secondsFrom1901, CtiMultiMsg* multiPilMsg, CtiMultiMsg* multiDispatchMsg, CtiMultiMsg* multiNotifMsg)
+BOOL CtiLMProgramEnergyExchange::handleManualControl(ULONG secondsFrom1901, CtiMultiMsg* multiPilMsg, CtiMultiMsg* multiDispatchMsg, CtiMultiMsg* multiNotifMsg, vector<CtiLMControlAreaTrigger*>& controlAreaTriggers)
 {
 
 
