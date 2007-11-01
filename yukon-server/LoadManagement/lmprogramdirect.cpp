@@ -4414,14 +4414,16 @@ bool CtiLMProgramDirect::updateGroupsRampingOut(CtiMultiMsg* multiPilMsg, CtiMul
 
     Handles manual control messages for the direct program.
 ---------------------------------------------------------------------------*/
-BOOL CtiLMProgramDirect::handleManualControl(ULONG secondsFrom1901, CtiMultiMsg* multiPilMsg, CtiMultiMsg* multiDispatchMsg, CtiMultiMsg* multiNotifMsg, vector<CtiLMControlAreaTrigger*>& controlAreaTriggers)
+BOOL CtiLMProgramDirect::handleManualControl(ULONG secondsFrom1901, CtiMultiMsg* multiPilMsg, CtiMultiMsg* multiDispatchMsg, CtiMultiMsg* multiNotifMsg)
 {
     BOOL returnBoolean = FALSE;
-
-    if( getProgramState() == CtiLMProgramBase::ManualActiveState && hasGearChanged(_lmprogramdirectgears[_currentgearnumber]->getChangePriority() - 1, controlAreaTriggers, secondsFrom1901, multiDispatchMsg, true) )
+    if( getControlArea() != NULL )
     {
-        // hasGearChanged here changed the gear for us, we want to do a full manual control now, not a refresh.
-        setProgramState(CtiLMProgramBase::ScheduledState);
+        if( getProgramState() == CtiLMProgramBase::ManualActiveState && hasGearChanged(_lmprogramdirectgears[_currentgearnumber]->getChangePriority() - 1, getControlArea()->getLMControlAreaTriggers(), secondsFrom1901, multiDispatchMsg, true) )
+        {
+            // hasGearChanged here changed the gear for us, we want to do a full manual control now, not a refresh.
+            setProgramState(CtiLMProgramBase::ScheduledState);
+        }
     }
 
     if( getProgramState() == CtiLMProgramBase::ScheduledState )
