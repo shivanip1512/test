@@ -6,8 +6,8 @@
 *
 * PVCS KEYWORDS:
 * ARCHIVE      :  $Archive:   Z:/SOFTWAREARCHIVES/YUKON/DISPATCH/mgr_ptclients.cpp-arc  $
-* REVISION     :  $Revision: 1.25 $
-* DATE         :  $Date: 2007/10/24 14:51:29 $
+* REVISION     :  $Revision: 1.26 $
+* DATE         :  $Date: 2007/11/01 15:43:36 $
 *
 * Copyright (c) 1999, 2000, 2001 Cannon Technologies Inc. All rights reserved.
 *-----------------------------------------------------------------------------*/
@@ -36,7 +36,7 @@ using namespace std;
 
 static void verifyDynamicData(CtiPointSPtr &pTempPoint);
 
-bool findNonUpdatedDynamicData(const long key, CtiPointSPtr pTempPoint, void* d)
+bool findNonUpdatedDynamicData(const long key, const CtiPointSPtr &pTempPoint, void* d)
 {
     bool bRet = false;
 
@@ -50,7 +50,7 @@ bool findNonUpdatedDynamicData(const long key, CtiPointSPtr pTempPoint, void* d)
     return bRet;
 }
 
-bool findDirtyDynamicData(const long key, CtiPointSPtr pTempPoint, void* d)
+bool findDirtyDynamicData(const long key, const CtiPointSPtr &pTempPoint, void* d)
 {
     bool bRet = false;
 
@@ -305,7 +305,7 @@ int CtiPointClientManager::RemoveConnectionManager(CtiServer::ptr_type CM)
                 if( temp )
                 {
                     CtiDynamicPointDispatch *pDyn = (CtiDynamicPointDispatch*)temp->getDynamic();
-    
+
                     if(pDyn != NULL)
                     {
                         if(pDyn->getAttachment() != NULL)
