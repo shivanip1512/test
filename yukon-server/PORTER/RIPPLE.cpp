@@ -6,8 +6,8 @@
 *
 * PVCS KEYWORDS:
 * ARCHIVE      :  $Archive:   Z:/SOFTWAREARCHIVES/YUKON/PORTER/RIPPLE.cpp-arc  $
-* REVISION     :  $Revision: 1.37 $
-* DATE         :  $Date: 2007/07/23 15:36:40 $
+* REVISION     :  $Revision: 1.38 $
+* DATE         :  $Date: 2007/11/01 15:44:25 $
 *
 * Copyright (c) 1999, 2000, 2001 Cannon Technologies Inc. All rights reserved.
 *-----------------------------------------------------------------------------*/
@@ -810,7 +810,7 @@ MPCPointSet( int status, CtiDeviceBase *dev, bool setter )
 /*
  *  Returns true if the lcu is on ptrlcu's port and is set as LCUTRANSMITSENT.
  */
-static bool findWorkingLCU(const long unusedid, CtiDeviceSPtr Dev, void *ptrlcu)
+static bool findWorkingLCU(const long unusedid, const CtiDeviceSPtr &Dev, void *ptrlcu)
 {
     bool found = false;
 
@@ -852,7 +852,7 @@ BOOL LCUsAreDoneTransmitting(CtiDeviceSPtr splcu)
 /*
  *  Returns true if any LCU reported BUSY.  Assumes lcu is the global LCU.
  */
-static bool findWasTrxLCU(const long unusedid, CtiDeviceSPtr Dev, void *lprtid)
+static bool findWasTrxLCU(const long unusedid, const CtiDeviceSPtr &Dev, void *lprtid)
 {
     bool WasTrx = false;
     LONG PortID = (LONG)lprtid;

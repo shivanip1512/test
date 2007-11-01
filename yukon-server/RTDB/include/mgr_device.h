@@ -11,8 +11,8 @@
  *
  *
  * PVCS KEYWORDS:
- * REVISION     :  $Revision: 1.28 $
- * DATE         :  $Date: 2006/05/02 20:25:45 $
+ * REVISION     :  $Revision: 1.29 $
+ * DATE         :  $Date: 2007/11/01 15:44:12 $
  *
  *
  * (c) 1999 Cannon Technologies Inc. Wayzata Minnesota
@@ -123,8 +123,8 @@ public:
     ptr_type RemoteGetEqualbyName (const string &RemoteName);
 
     void apply(void (*applyFun)(const long, ptr_type, void*), void* d);
-    ptr_type  find(bool (*findFun)(const long, ptr_type, void*), void* d);
-    bool contains(bool (*findFun)(const long, ptr_type, void*), void* d);
+    ptr_type  find(bool (*findFun)(const long, const ptr_type &, void*), void* d);
+    bool contains (bool (*findFun)(const long, const ptr_type &, void*), void* d);
 
     int select(bool (*selectFun)(const long, ptr_type, void*), void* d, vector< ptr_type > &coll);
 

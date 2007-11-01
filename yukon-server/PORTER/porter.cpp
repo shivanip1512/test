@@ -6,8 +6,8 @@
 *
 * PVCS KEYWORDS:
 * ARCHIVE      :  $Archive:   Z:/SOFTWAREARCHIVES/YUKON/PORTER/porter.cpp-arc  $
-* REVISION     :  $Revision: 1.112 $
-* DATE         :  $Date: 2007/10/17 20:54:32 $
+* REVISION     :  $Revision: 1.113 $
+* DATE         :  $Date: 2007/11/01 15:43:14 $
 *
 * Copyright (c) 1999, 2000, 2001 Cannon Technologies Inc. All rights reserved.
 *-----------------------------------------------------------------------------*/
@@ -256,7 +256,7 @@ static RWWinSockInfo  winsock;
 
 ULONG WorkCountPointOffset = 0;
 
-bool findTAPDevice(const long key, CtiDeviceSPtr devsptr, void *ptr)
+bool findTAPDevice(const long key, const CtiDeviceSPtr &devsptr, void *ptr)
 {
     bool b = false;
     LONG PortNumber = (LONG) ptr;
@@ -721,7 +721,7 @@ void applyPortLoadReport(const long unusedid, CtiPortSPtr ptPort, void *passedPt
     }
 }
 
-bool findCCU711(const long key, CtiDeviceSPtr devsptr, void *ptr)
+bool findCCU711(const long key, const CtiDeviceSPtr &devsptr, void *ptr)
 {
     bool bStatus = false;
 

@@ -6,8 +6,8 @@
 *
 * PVCS KEYWORDS:
 * ARCHIVE      :  $Archive:   Z:/SOFTWAREARCHIVES/YUKON/RTDB/mgr_device.cpp-arc  $
-* REVISION     :  $Revision: 1.91 $
-* DATE         :  $Date: 2007/10/24 15:27:43 $
+* REVISION     :  $Revision: 1.92 $
+* DATE         :  $Date: 2007/11/01 15:44:12 $
 *
 * Copyright (c) 1999, 2000, 2001 Cannon Technologies Inc. All rights reserved.
 *-----------------------------------------------------------------------------*/
@@ -1113,7 +1113,7 @@ void CtiDeviceManager::refreshList(CtiDeviceBase* (*Factory)(RWDBReader &), bool
                         {
                             CtiLockGuard<CtiLogger> doubt_guard(dout); dout << "Looking for CCU-721 Devices" << endl;
                         }
-                        //  all of these getSQL() calls should be static functions at some point - it's pointless 
+                        //  all of these getSQL() calls should be static functions at some point - it's pointless
                         //    and costly to nstantiate devices for each block when a static function would do as well
                         Cti::Device::CCU721().getSQL( db, keyTable, selector );
                         if(paoID != 0) selector.where( keyTable["paobjectid"] == RWDBExpr( paoID ) && selector.where() );
@@ -2906,7 +2906,7 @@ int CtiDeviceManager::select(bool (*selectFun)(const long, ptr_type, void*), voi
     return coll.size();
 }
 
-CtiDeviceManager::ptr_type CtiDeviceManager::find(bool (*findFun)(const long, ptr_type, void*), void* d)
+CtiDeviceManager::ptr_type CtiDeviceManager::find(bool (*findFun)(const long, const ptr_type &, void*), void* d)
 {
     ptr_type p;
 
@@ -2944,7 +2944,7 @@ CtiDeviceManager::ptr_type CtiDeviceManager::find(bool (*findFun)(const long, pt
     return p;
 }
 
-bool CtiDeviceManager::contains(bool (*findFun)(const long, ptr_type, void*), void* d)
+bool CtiDeviceManager::contains(bool (*findFun)(const long, const ptr_type &, void*), void* d)
 {
     bool found = false;
 
