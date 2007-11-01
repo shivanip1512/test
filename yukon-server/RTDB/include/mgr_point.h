@@ -12,8 +12,8 @@
 *
 * PVCS KEYWORDS:
 * ARCHIVE      :  $Archive:   Z:/SOFTWAREARCHIVES/YUKON/RTDB/INCLUDE/mgr_point.h-arc  $
-* REVISION     :  $Revision: 1.15 $
-* DATE         :  $Date: 2007/10/24 14:51:29 $
+* REVISION     :  $Revision: 1.16 $
+* DATE         :  $Date: 2007/11/01 15:45:31 $
 *
  * (c) 1999 Cannon Technologies Inc. Wayzata Minnesota
  * All Rights Reserved
@@ -71,7 +71,7 @@ private:
     };
 
     map< pao_offset_t, long >           _control_offsets;  //  this map contains all control point offsets
-    std::multimap< pao_offset_t, long > _type_offsets;     //  this map contains all point offsets
+    std::multimap< pao_offset_t, CtiPointType_t > _type_offsets;     //  this map contains all point offsets
 
     friend class Test_CtiPointManager;
 
@@ -87,9 +87,9 @@ public:
     virtual void DeleteList(void);
 
     void apply(void (*applyFun)(const long, ptr_type, void*), void* d);
-    ptr_type find(bool (*findFun)(const long, ptr_type, void*), void* d);
+    ptr_type find(bool (*findFun)(const long, const ptr_type &, void*), void* d);
     ptr_type getControlOffsetEqual(LONG pao, INT Offset);
-    ptr_type getOffsetTypeEqual(LONG pao, INT Offset, INT Type);
+    ptr_type getOffsetTypeEqual(LONG pao, INT Offset, CtiPointType_t Type);
     ptr_type getEqual(LONG Pt);
     ptr_type getEqualByName(LONG pao, string pname);
 

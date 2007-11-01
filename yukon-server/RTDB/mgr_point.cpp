@@ -6,8 +6,8 @@
 *
 * PVCS KEYWORDS:
 * ARCHIVE      :  $Archive:   Z:/SOFTWAREARCHIVES/YUKON/RTDB/mgr_point.cpp-arc  $
-* REVISION     :  $Revision: 1.37 $
-* DATE         :  $Date: 2007/10/24 14:51:29 $
+* REVISION     :  $Revision: 1.38 $
+* DATE         :  $Date: 2007/11/01 15:45:31 $
 *
 * Copyright (c) 1999, 2000, 2001 Cannon Technologies Inc. All rights reserved.
 *-----------------------------------------------------------------------------*/
@@ -33,6 +33,8 @@
 #include "utility.h"
 
 #include "rwutil.h"
+
+using namespace std;
 
 #define PERF_TO_MS(b,a,p) (UINT)(((b).QuadPart - (a).QuadPart) / ((p).QuadPart / 1000L))
 
@@ -296,7 +298,7 @@ void CtiPointManager::refreshList(BOOL (*testFunc)(CtiPointBase*,void*), void *a
             {
                 CtiLockGuard<CtiLogger> doubt_guard(dout);
                 dout << CtiTime() << " " << stop.seconds() - start.seconds() << " seconds for Calc points " << endl;
-            }           
+            }
 
             // Now I need to check for any Point removals based upon the
             // Updated Flag being NOT set
@@ -540,14 +542,14 @@ CtiPointManager::ptr_type CtiPointManager::getEqualByName(LONG pao, string pname
     return pRet;
 }
 
-CtiPointManager::ptr_type CtiPointManager::getOffsetTypeEqual(LONG pao, INT Offset, INT Type)
+CtiPointManager::ptr_type CtiPointManager::getOffsetTypeEqual(LONG pao, INT Offset, CtiPointType_t Type)
 {
     ptr_type p;
     ptr_type pRet;
 
     LockGuard  guard(getMux());
 
-    std::multimap<pao_offset_t, long>::const_iterator type_itr, upper_bound;
+    multimap<pao_offset_t, CtiPointType_t>::const_iterator type_itr, upper_bound;
 
     type_itr    = _type_offsets.lower_bound(pao_offset_t(pao, Offset));
     upper_bound = _type_offsets.upper_bound(pao_offset_t(pao, Offset));
@@ -608,10 +610,10 @@ void CtiPointManager::addPoint( CtiPointBase *point )
     if( point )
     {
         _smartMap.insert(point->getID(), point); // Stuff it in the list
-    
+
         //  add it into the offset lookup map
-        _type_offsets.insert(std::make_pair(pao_offset_t(point->getDeviceID(), point->getPointOffset()), point->getPointID()));
-    
+        _type_offsets.insert(std::make_pair(pao_offset_t(point->getDeviceID(), point->getPointOffset()), point->getType()));
+
         //  if it's a control point, add it into the control offset lookup map
         if( point->getType() == StatusPointType &&
             point->getControlOffset() )
@@ -660,7 +662,7 @@ void CtiPointManager::removeSinglePoint(ptr_type pTempCtiPoint)
 {
     if( pTempCtiPoint )
     {
-        std::multimap<pao_offset_t, long>::iterator type_itr;
+        std::multimap<pao_offset_t, CtiPointType_t>::iterator type_itr;
         for( type_itr  = _type_offsets.lower_bound(pao_offset_t(pTempCtiPoint->getDeviceID(), pTempCtiPoint->getPointOffset()));
              type_itr != _type_offsets.upper_bound(pao_offset_t(pTempCtiPoint->getDeviceID(), pTempCtiPoint->getPointOffset()));
              type_itr++ )
@@ -668,11 +670,11 @@ void CtiPointManager::removeSinglePoint(ptr_type pTempCtiPoint)
              if( pTempCtiPoint->getType() == type_itr->second )
              {
                  _type_offsets.erase(type_itr);
-    
+
                  break;
              }
         }
-    
+
         //  If it's a status point with control, remove it from the control point lookup as well
         if( pTempCtiPoint->getType() == StatusPointType &&
             pTempCtiPoint->getControlOffset() )
@@ -861,7 +863,7 @@ void CtiPointManager::apply(void (*applyFun)(const long, ptr_type, void*), void*
     }
 }
 
-CtiPointManager::ptr_type CtiPointManager::find(bool (*findFun)(const long, ptr_type, void*), void* d)
+CtiPointManager::ptr_type CtiPointManager::find(bool (*findFun)(const long, const ptr_type &, void*), void* d)
 {
     ptr_type p;
 
