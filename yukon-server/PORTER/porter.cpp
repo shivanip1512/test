@@ -6,8 +6,8 @@
 *
 * PVCS KEYWORDS:
 * ARCHIVE      :  $Archive:   Z:/SOFTWAREARCHIVES/YUKON/PORTER/porter.cpp-arc  $
-* REVISION     :  $Revision: 1.113 $
-* DATE         :  $Date: 2007/11/01 15:43:14 $
+* REVISION     :  $Revision: 1.114 $
+* DATE         :  $Date: 2007/11/02 19:07:58 $
 *
 * Copyright (c) 1999, 2000, 2001 Cannon Technologies Inc. All rights reserved.
 *-----------------------------------------------------------------------------*/
@@ -220,10 +220,10 @@ extern INT RunningInConsole;              // From portmain.cpp
 // Some Global Manager types to allow us some RTDB stuff.
 CtiPortManager     PortManager(PortThreadFactory);
 CtiDeviceManager   DeviceManager(Application_Porter);
+CtiPointManager    PorterPointManager;
 CtiConfigManager   ConfigManager;
 CtiRouteManager    RouteManager;
 map< long, CtiPortShare * > PortShareManager;
-PointDeviceMapping PointToDeviceMap;
 
 //These form the connection between Pil and Porter
 extern DLLIMPORT CtiLocalConnect PilToPorter; //Pil handles this one
@@ -1493,7 +1493,7 @@ INT RefreshPorterRTDB(void *ptr)
         if(pChg == NULL)
         {
             attachRouteManagerToDevices(&DeviceManager, &RouteManager);
-            attachPointIDDeviceMapToDevices(&DeviceManager, &PointToDeviceMap);
+            attachPointManagerToDevices(&DeviceManager, &PorterPointManager);
             ConfigManager.initialize(DeviceManager);
         }
         else
@@ -1503,10 +1503,9 @@ INT RefreshPorterRTDB(void *ptr)
             if( pDev )
             {
                 pDev->setRouteManager(&RouteManager);
-                pDev->setPointDeviceMap(&PointToDeviceMap);
+                pDev->setPointManager(&PorterPointManager);
             }
         }
-
     }
 
     if(!PorterQuit)
@@ -1572,39 +1571,24 @@ INT RefreshPorterRTDB(void *ptr)
 
         if(pChg != NULL && (pChg->getDatabase() == ChangePointDb))
         {
-            LONG paoid = 0;
-            LONG pointID = pChg->getId();
+            if(pChg->getTypeOfChange() == ChangeTypeDelete)
             {
-                PointDeviceMapping::LockGuard guard(PointToDeviceMap.mux);
-                std::map<long, long>::iterator iter = PointToDeviceMap.point_device_map.find(pointID);
-                if(iter != PointToDeviceMap.point_device_map.end())
+                PorterPointManager.orphan(pChg->getId());
+
+                if( getDebugLevel() & DEBUGLEVEL_MGR_POINT )
                 {
-                    paoid = iter->second;
+                    CtiLockGuard<CtiLogger> doubt_guard(dout);
+                    dout << CtiTime() << " Deleting pointid (" << pChg->getId() << ")" << endl;
                 }
             }
-            if( paoid == 0)
+            else
             {
-                paoid = GetPAOIdOfPoint( pointID );
-            }
+                PorterPointManager.refreshList(isPoint, NULL, pChg->getId(), 0);
 
-            if(paoid != 0)
-            {
-                CtiDeviceManager::LockGuard  dev_guard(DeviceManager.getMux());       // Protect our iteration!
-                CtiDeviceSPtr pDevToReset = DeviceManager.getEqual( paoid );
-                if(pDevToReset)
+                if( getDebugLevel() & DEBUGLEVEL_MGR_POINT )
                 {
-                    if(pChg->getTypeOfChange() == ChangeTypeDelete)
-                    {
-                        pDevToReset->orphanDevicePoint(pointID);
-                        PointDeviceMapping::LockGuard guard(PointToDeviceMap.mux);
-                        PointToDeviceMap.point_device_map.erase(pointID);
-                    }
-
-                    pDevToReset->ResetDevicePoints();
-                    {
-                        CtiLockGuard<CtiLogger> doubt_guard(dout);
-                        dout << CtiTime() << " Reset device " << pDevToReset->getName() << "'s pointmanager due to pointchange on point " << pChg->getId() << endl;
-                    }
+                    CtiLockGuard<CtiLogger> doubt_guard(dout);
+                    dout << CtiTime() << " Refreshing pointid (" << pChg->getId() << ")" << endl;
                 }
             }
 
