@@ -23,12 +23,19 @@ function initiateCannonDataUpdate(url, delayMs) {
         });
         // find all of the callbacks
         cannonDataUpdateRegistrations.each(function(it) {
-            var id = it.identifier;
-            // use the cannonUpdater "id" to look up value in response
-            var newData = responseStruc.data[id];
-            if (newData) {
-                // we got a new value, call the callback
-                it.callback(newData);
+            
+            var idMap = $H(it['identifierMap']);
+            var allIdentifierValues = $H();
+            
+            idMap.keys().each(function(idFieldName) {
+            	var newData = responseStruc.data[idMap[idFieldName]];
+            	if(newData) {
+                    allIdentifierValues[idFieldName] = responseStruc.data[idMap[idFieldName]];
+            	}
+            });
+            
+            if(allIdentifierValues.keys().length >0) {
+                it.callback(allIdentifierValues);
             }
            
         });
@@ -56,9 +63,14 @@ function initiateCannonDataUpdate(url, delayMs) {
         // create an array of strings, with the value of the cannonUpdater attribute for each element
         // use readAttribute to avoid IE weirdness
         requestData.data = updatableElements.invoke('readAttribute', 'cannonUpdater');
+        
+        
         // add elements from JS registrations
-        var callbackIdentifiers = cannonDataUpdateRegistrations.pluck('identifier');
-        requestData.data = requestData.data.concat(callbackIdentifiers);
+        cannonDataUpdateRegistrations.each(function(it) {
+        
+        	var idMap = it['identifierMap'];
+        	requestData.data = requestData.data.concat(idMap.values);
+        });
         
         if (updatableElements.length == 0) {
             return;
@@ -84,11 +96,13 @@ function initiateCannonDataUpdate(url, delayMs) {
 
 var cannonDataUpdateRegistrations = $A();
 
-function cannonDataUpdateRegistration(identifier, callback) {
+function cannonDataUpdateRegistration(callback, identifierMap) {
   // callback will include the formatted string as its one argument
-  var theData = [];
-  theData.identifier = identifier;
-  theData.callback = callback;
-  cannonDataUpdateRegistrations.push(theData);
+  var theData = $H();
+  theData['identifierMap'] = identifierMap;
+  theData['callback'] = callback;
+  
+  cannonDataUpdateRegistrations.push(theData)
+    
 }
 

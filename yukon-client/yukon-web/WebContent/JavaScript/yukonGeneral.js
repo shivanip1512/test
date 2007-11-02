@@ -93,6 +93,38 @@ function yukonGeneral_moveOptionPositionInSelect(selectElement, direction) {
 	
 }
 
+function yukonGeneral_addOtpionToTopOfSelect(selectObj,optValue,optText) {
+    
+    // new option
+    var newOpt = document.createElement("option");
+
+    // get first option group - there will always be at least one [prototype function]
+    var firstOptGroup = selectObj.immediateDescendants()[0];
+    
+    // get first option in first group
+    var firstGroupOptions = firstOptGroup.immediateDescendants();
+    
+    // either stick new opt in before the opt that is currently first in the first option group [DOM function] 
+    // or, if there are no current opts, just append it to that first group
+    if(firstGroupOptions.length >0) {
+    
+        topOption = firstGroupOptions[0];
+    
+        // prevent duplicates from getting added to top of dropdown for each run of callback
+        if(topOption.text != optText) {
+            firstOptGroup.insertBefore(newOpt,topOption);
+        }
+    }
+    else {
+        firstOptGroup.appendChild(newOpt);
+    }
+    
+    // why set the option value and text now instead of when we made it? IE..
+    newOpt.value = optValue;
+    newOpt.text = optText;
+
+}
+
 function yukonGeneral_updatePrevious(idPrefix, currentUsage) {
   var previousVal = $(idPrefix + '_prevSelect').value;
   var totalUsage = currentUsage - previousVal;
