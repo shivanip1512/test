@@ -27,11 +27,31 @@
 #include <boost/thread/mutex.hpp>
 #include <vector>
 
-
+bool globalCtrlCFlag = false;
 
 using namespace std;
 
 boost::mutex io_mutex;
+
+/* CtrlHandler handles is used to catch ctrl-c when run in a console */
+BOOL CtrlHandler(DWORD fdwCtrlType)
+{
+   switch(fdwCtrlType)
+   {
+   case CTRL_C_EVENT:
+   case CTRL_SHUTDOWN_EVENT:
+   case CTRL_CLOSE_EVENT:
+   case CTRL_BREAK_EVENT:
+   case CTRL_LOGOFF_EVENT:
+
+      globalCtrlCFlag = true;
+      Sleep(50000);
+      return TRUE;
+
+   default:
+      return FALSE;
+   }
+}
 
 typedef void (*WorkerFunPtr)(const int&);
 
@@ -177,14 +197,19 @@ void worker(const int& s)
         listenSocket->CTINexusConnect(newSocket, NULL, 10000, CTINEXUS_FLAG_READEXACTLY);
         CtiTime Listening;
         {
-       boost::mutex::scoped_lock lock(io_mutex);
-        std::cout<<Listening.asString()<<" Listening on " << portNumber << std::endl;
+           boost::mutex::scoped_lock lock(io_mutex);
+           std::cout<<Listening.asString()<<" Listening on " << portNumber << std::endl;
+           if(globalCtrlCFlag) {
+              boost::mutex::scoped_lock lock(io_mutex);
+              cout<<"Listening thread closing..."<<endl;
+              exit(0);
+           }
         }
     }
 
     CCU710 aCCU710;
 
-    while(newSocket->CTINexusValid()) {
+    while(!globalCtrlCFlag) {
         unsigned char TempBuffer[2];
         TempBuffer[0] = 0x00;
         unsigned long bytesRead=0;
@@ -413,9 +438,13 @@ void worker(const int& s)
     CTISleep(250);
 
     }
+    {
+       boost::mutex::scoped_lock lock(io_mutex);
+       cout<<"Active thread closing..."<<endl;                  
+    }
     
-    CTISleep(1000);
-    cout<<"Program closing..."<<endl;
+    listenSocket->CTINexusClose();
+    newSocket->CTINexusClose();
     return;
 }
 
@@ -449,7 +478,17 @@ int main(int argc, char *argv[]) {
     
     vector<boost::thread *>::iterator itr = threadVector.begin();
 
+       //We need to catch ctrl-c so we can stop
+   if(!SetConsoleCtrlHandler((PHANDLER_ROUTINE) CtrlHandler,  TRUE))
+      cerr << "Could not install control handler" << endl;
+
     (*itr)->join();
+
+    
+    if(globalCtrlCFlag) {
+        cout<<"Main function closing..."<<endl;
+        exit(0);
+    }
 
     return 0;
 }
