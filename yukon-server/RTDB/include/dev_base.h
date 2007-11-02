@@ -9,8 +9,8 @@
 *
 * PVCS KEYWORDS:
 * ARCHIVE      :  $Archive:   Z:/SOFTWAREARCHIVES/YUKON/RTDB/INCLUDE/dev_base.h-arc  $
-* REVISION     :  $Revision: 1.64 $
-* DATE         :  $Date: 2007/11/01 15:46:23 $
+* REVISION     :  $Revision: 1.65 $
+* DATE         :  $Date: 2007/11/02 19:12:06 $
 *
 * Copyright (c) 1999 Cannon Technologies Inc. All rights reserved.
 *-----------------------------------------------------------------------------*/
@@ -52,7 +52,6 @@ class CtiRouteManager;
 class CtiPointBase;
 class CtiPointManager;
 class CtiTransmitterInfo;
-struct PointDeviceMapping;
 
 namespace Cti       {
 class DeviceQueueInterface;
@@ -103,9 +102,8 @@ protected:
     INT                  _attemptSuccessCount;    //  Cumulative. Comms successful.
 
 
-    CtiPointManager      *_pointMgr;              //  Manages points associated with this Device (Device owned memory)
-    CtiRouteManager      *_routeMgr;              //  Helps me find my Route.  (Memory managed elsewhere)
-    PointDeviceMapping   *_pointToDeviceMap;      //  Tracks the point ID to Device pairing.
+    CtiPointManager *_pointMgr;    //  Porter or Scanner's point manager, assigned by attachPointManagerToDevices()
+    CtiRouteManager *_routeMgr;    //  Porter's route manager, assigned by attachRouteManagerToDevices()
 
     union
     {
@@ -121,6 +119,7 @@ protected:
 
     set<CtiTableDynamicPaoInfo> _paoInfo;         //  This is a list of miscellaneous data that is dynamically generated
                                                   //    by Porter, Scanner, or whomever
+
 public:
 
     typedef vector< CtiTablePaoExclusion > exclusions;
@@ -136,7 +135,8 @@ public:
     CtiRouteSPtr         getRoute(LONG RteId) const;
     CtiRouteManager*     getRouteManager() const;
     CtiDeviceBase&       setRouteManager(CtiRouteManager* aPtr);
-    CtiDeviceBase&       setPointDeviceMap(PointDeviceMapping* aPtr);
+
+    CtiDeviceBase&       setPointManager(CtiPointManager* aPtr);
 
     virtual void getSQL(RWDBDatabase &db,  RWDBTable &keyTable, RWDBSelector &selector);
     virtual void DecodeDatabaseReader(RWDBReader &rdr);
@@ -184,9 +184,6 @@ public:
 
     /* Properly defined by the device types themselves... */
     virtual void deviceInitialization(list< CtiRequestMsg * > &request_list);
-    virtual INT  ResetDevicePoints();
-    virtual INT  RefreshDevicePoints();
-    virtual bool orphanDevicePoint(LONG id);
     virtual INT  GeneralScan    (CtiRequestMsg *pReq, CtiCommandParser &parse, OUTMESS *&pOM, list< CtiMessage* > &vgList, list< CtiMessage* > &retList, list< OUTMESS* > &outList, INT ScanPriority = 11);
     virtual INT  IntegrityScan  (CtiRequestMsg *pReq, CtiCommandParser &parse, OUTMESS *&pOM, list< CtiMessage* > &vgList, list< CtiMessage* > &retList, list< OUTMESS* > &outList, INT ScanPriority = 11);
     virtual INT  AccumulatorScan(CtiRequestMsg *pReq, CtiCommandParser &parse, OUTMESS *&pOM, list< CtiMessage* > &vgList, list< CtiMessage* > &retList, list< OUTMESS* > &outList, INT ScanPriority = 12);
@@ -208,7 +205,7 @@ public:
     BOOL              getLogOnNeeded() const;
     CtiDeviceBase&    setLogOnNeeded(BOOL b = TRUE);
 
-
+    virtual void getDevicePoints(vector<CtiPointSPtr> &points) const;
     virtual CtiPointSPtr getDevicePointEqual(INT id);
     virtual CtiPointSPtr getDevicePointEqualByName(string pname);
     virtual CtiPointSPtr getDevicePointOffsetTypeEqual(INT offset, CtiPointType_t type);
@@ -235,7 +232,6 @@ public:
     CtiDeviceBase&  setAttemptSuccessCount(const INT i);
 
     INT executeScan(CtiRequestMsg *pReq, CtiCommandParser &parse, OUTMESS *&OutMessage, list< CtiMessage* > &vgList, list< CtiMessage* > &retList, list< OUTMESS* > &outList);
-    bool loadDevicePoints();
     bool adjustCommCounts( bool &isCommFail, bool retry );
     bool isCommFailed() const;
 

@@ -6,8 +6,8 @@
 *
 * PVCS KEYWORDS:
 * ARCHIVE      :  $Archive:   Z:/SOFTWAREARCHIVES/YUKON/RTDB/dev_base.cpp-arc  $
-* REVISION     :  $Revision: 1.68 $
-* DATE         :  $Date: 2007/11/01 15:46:23 $
+* REVISION     :  $Revision: 1.69 $
+* DATE         :  $Date: 2007/11/02 19:12:06 $
 *
 * Copyright (c) 1999, 2000, 2001 Cannon Technologies Inc. All rights reserved.
 *-----------------------------------------------------------------------------*/
@@ -32,12 +32,6 @@
 
 CtiDeviceBase::~CtiDeviceBase()
 {
-    LockGuard  guard(monitor());
-
-    if(_pointMgr != NULL)
-    {
-        delete _pointMgr;
-    }
 }
 
 
@@ -66,11 +60,12 @@ CtiDeviceBase& CtiDeviceBase::setRouteManager(CtiRouteManager* aPtr)
     return *this;
 }
 
-CtiDeviceBase& CtiDeviceBase::setPointDeviceMap(PointDeviceMapping* aPtr)
+CtiDeviceBase& CtiDeviceBase::setPointManager(CtiPointManager* aPtr)
 {
-    _pointToDeviceMap = aPtr;
+    _pointMgr = aPtr;
     return *this;
 }
+
 
 INT CtiDeviceBase::ExecuteRequest(CtiRequestMsg                *pReq,
                                   CtiCommandParser             &parse,
@@ -179,104 +174,19 @@ void CtiDeviceBase::deviceInitialization(list< CtiRequestMsg * > &request_list)
 {
 }
 
-INT CtiDeviceBase::ResetDevicePoints()
+
+void CtiDeviceBase::getDevicePoints(vector<CtiPointSPtr> &points) const
 {
-    LockGuard guard(monitor());
-
-    if(_pointMgr != NULL)
+    if( _pointMgr )
     {
-        RefreshDevicePoints();
+        _pointMgr->getEqualByPAO(getID(), points);
     }
-
-    return NORMAL;
 }
 
-INT CtiDeviceBase::RefreshDevicePoints()
-{
-    INT status = NORMAL;
-    vector<long> pointList;
-
-    {
-        LockGuard guard(monitor());
-
-        if(_pointMgr == NULL)
-        {
-            _pointMgr = CTIDBG_new CtiPointManager();
-        }
-
-        if(_pointMgr != NULL)
-        {
-            try
-            {
-                _pointMgr->refreshList(isPoint, NULL, 0, getID());
-
-                {
-                    CtiPointManager::LockGuard guard(_pointMgr->getMux());
-                    /* Walk the point in memory db to see what the point range is */
-                    CtiPointManager::spiterator iter = _pointMgr->begin();
-
-                    CtiPointManager::spiterator end = _pointMgr->end();
-
-                    for( ; iter != end; iter++ )
-                    {
-                        pointList.push_back(iter->second->getPointID());
-                    }
-                }
-            }
-            catch(...)
-            {
-                {
-                    CtiLockGuard<CtiLogger> doubt_guard(dout);
-                    dout << CtiTime() << " EP: " << getName() << "  " << __FILE__ << " (" << __LINE__ << ")" << endl;
-                }
-            }
-        }
-        else
-        {
-            status = MEMORY;
-        }
-    }
-
-    if(_pointToDeviceMap != NULL)
-    {
-        PointDeviceMapping::LockGuard guard(_pointToDeviceMap->mux);
-        for(std::vector<long>::iterator iter = pointList.begin(); iter != pointList.end(); iter++)
-        {
-            _pointToDeviceMap->point_device_map.insert(std::map<long, long>::value_type(*iter, getID()));
-        }
-    }
-
-    return status;
-}
-
-bool CtiDeviceBase::orphanDevicePoint(LONG pid)
-{
-    bool status = false;
-
-    LockGuard guard(monitor());
-
-    if(_pointMgr != NULL)
-    {
-        {
-            CtiLockGuard<CtiLogger> doubt_guard(dout);
-            dout << CtiTime() << " Deleting point id " << pid << " from device " << getName() << endl;
-        }
-        status = _pointMgr->orphan(pid);
-    }
-
-    return status;
-}
 
 CtiPointSPtr CtiDeviceBase::getDevicePointEqual(INT id)
 {
     CtiPointSPtr pPoint;
-
-    LockGuard guard(monitor());
-
-    if(_pointMgr == NULL)
-    {
-        RefreshDevicePoints();
-    }
 
     if(_pointMgr != NULL)
     {
@@ -290,13 +200,6 @@ CtiPointSPtr CtiDeviceBase::getDevicePointEqualByName(string pname)
 {
     CtiPointSPtr pPoint;
 
-    LockGuard guard(monitor());
-
-    if(_pointMgr == NULL)
-    {
-        RefreshDevicePoints();
-    }
-
     if(_pointMgr != NULL)
     {
         pPoint = _pointMgr->getEqualByName( getID(), pname );
@@ -308,13 +211,6 @@ CtiPointSPtr CtiDeviceBase::getDevicePointEqualByName(string pname)
 CtiPointSPtr CtiDeviceBase::getDeviceControlPointOffsetEqual(INT offset)
 {
     CtiPointSPtr pPoint;
-
-    LockGuard guard(monitor());
-
-    if(_pointMgr == NULL)
-    {
-        RefreshDevicePoints();
-    }
 
     if(_pointMgr != NULL)
     {
@@ -328,37 +224,12 @@ CtiPointSPtr CtiDeviceBase::getDevicePointOffsetTypeEqual(INT offset, CtiPointTy
 {
     CtiPointSPtr pPoint;
 
-    LockGuard guard(monitor());
-
-    if(_pointMgr == NULL)
-    {
-        RefreshDevicePoints();
-    }
-
     if(_pointMgr != NULL)
     {
         pPoint = _pointMgr->getOffsetTypeEqual( getID(), offset, type );
     }
 
     return pPoint;
-}
-
-/*
- *  Loads the points on this device if the device knows how.  returns false if all is good, or the
- *  points are already loaded..
- */
-bool CtiDeviceBase::loadDevicePoints()
-{
-    LockGuard guard(monitor());
-
-    bool bstat = false;
-
-    if(_pointMgr == NULL)
-    {
-        bstat = RefreshDevicePoints() != NORMAL;
-    }
-
-    return bstat;
 }
 
 
