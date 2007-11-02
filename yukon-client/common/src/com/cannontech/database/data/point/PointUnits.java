@@ -85,15 +85,16 @@ public final class PointUnits
    public static final Integer[] CAP_CONTROL_WATTS_UOMIDS =
    {
       UOMID_KW,
-      UOMID_MW
+      UOMID_MW,
+      UOMID_WATTS
    };
    
    public static final Integer[] CAP_CONTROL_VOLTS_UOMIDS =
    {
 	  UOMID_KVOLTS,
 	  UOMID_VOLTS,
-	  UOMID_VOLTAMPS,
-	  UOMID_VOLTS_V2H
+	  UOMID_VOLTS_V2H,
+	  UOMID_KV
    };
 
 	/**
