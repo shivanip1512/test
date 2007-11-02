@@ -7,6 +7,7 @@
 
 class CtiPortManager;
 class CtiDeviceManager;
+class CtiPointManager;
 class CONTROLMAP;
 
 //#ifdef __cplusplus
@@ -20,6 +21,7 @@ class CONTROLMAP;
 
 extern CtiPortManager      PortManager;
 extern CtiDeviceManager    DeviceManager;
+extern CtiPointManager     PorterPointManager;
 
 IM_EX_CTIBASE INT PortGetGT(PORT *PortRecord);
 IM_EX_CTIBASE INT PortGetFirst(PORT *PortRecord);
