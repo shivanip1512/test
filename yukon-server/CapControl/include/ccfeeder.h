@@ -175,6 +175,7 @@ RWDECLARE_COLLECTABLE( CtiCCFeeder )
     BOOL getWaitForReCloseDelayFlag() const;
     BOOL getMaxDailyOpsHitFlag() const;
     BOOL getOvUvDisabledFlag() const;
+    BOOL getCorrectionNeededNoBankAvailFlag() const;
     LONG getCurrentVerificationCapBankId() const;
     LONG getCurrentVerificationCapBankOrigState() const;
     DOUBLE getTargetVarValue() const;
@@ -282,6 +283,7 @@ RWDECLARE_COLLECTABLE( CtiCCFeeder )
     CtiCCFeeder& setWaitForReCloseDelayFlag(BOOL flag);
     CtiCCFeeder& setMaxDailyOpsHitFlag(BOOL flag);
     CtiCCFeeder& setOvUvDisabledFlag(BOOL flag);
+    CtiCCFeeder& setCorrectionNeededNoBankAvailFlag(BOOL flag);
     CtiCCFeeder& setCurrentVerificationCapBankId(LONG capBankId);
     CtiCCFeeder& setCurrentVerificationCapBankState(LONG status);
     CtiCCFeeder& setTargetVarValue(DOUBLE value);
@@ -308,6 +310,13 @@ RWDECLARE_COLLECTABLE( CtiCCFeeder )
     CtiRequestMsg* createIncreaseVarRequest(CtiCCCapBank* capBank, CtiMultiMsg_vec& pointChanges, CtiMultiMsg_vec& ccEvents, string textInfo, DOUBLE kvarBefore);
     CtiRequestMsg* createDecreaseVarRequest(CtiCCCapBank* capBank, CtiMultiMsg_vec& pointChanges, CtiMultiMsg_vec& ccEvents, string textInfo, DOUBLE kvarBefore);
     BOOL capBankControlStatusUpdate(CtiMultiMsg_vec& pointChanges, CtiMultiMsg_vec& ccEvents, LONG minConfirmPercent, LONG failurePercent, DOUBLE varValueBeforeControl, DOUBLE currentVarLoadPointValue, LONG currentVarPointQuality);
+    BOOL capBankControlPerPhaseStatusUpdate(CtiMultiMsg_vec& pointChanges, CtiMultiMsg_vec& ccEvents, LONG minConfirmPercent, 
+                                                     LONG failurePercent, //DOUBLE varValueBeforeControl, DOUBLE currentVarLoadPointValue, 
+                                                     LONG currentVarPointQuality, DOUBLE varAValueBeforeControl, DOUBLE varBValueBeforeControl,
+                                                     DOUBLE varCValueBeforeControl, DOUBLE varAValue, DOUBLE varBValue, DOUBLE varCValue) ;
+    string createControlStatusUpdateText(const int capControlStatus, DOUBLE varAValue,DOUBLE varBValue, DOUBLE varCValue, 
+                                                  DOUBLE ratioA, DOUBLE ratioB, DOUBLE ratioC);
+    string createVarText(DOUBLE aValue,DOUBLE bValue, DOUBLE cValue, FLOAT multiplier);
     BOOL isPeakDay();
     BOOL isPastMaxConfirmTime(const CtiTime& currentDateTime, LONG maxConfirmTime, LONG feederRetries);
     BOOL checkForAndProvideNeededIndividualControl(const CtiTime& currentDateTime, CtiMultiMsg_vec& pointChanges, CtiMultiMsg_vec& ccEvents, CtiMultiMsg_vec& pilMessages, 
@@ -363,8 +372,8 @@ RWDECLARE_COLLECTABLE( CtiCCFeeder )
 
     CtiCCFeeder& operator=(const CtiCCFeeder& right);
 
-    int operator==(const CtiCCFeeder& right) const;
-    int operator!=(const CtiCCFeeder& right) const;
+    bool  operator==(const CtiCCFeeder& right) const;
+    bool  operator!=(const CtiCCFeeder& right) const;
 
     CtiCCFeeder* replicate() const;
 
@@ -473,6 +482,7 @@ private:
     BOOL _waitForReCloseDelayFlag;
     BOOL _maxDailyOpsHitFlag;
     BOOL _ovUvDisabledFlag;
+    BOOL _correctionNeededNoBankAvailFlag;
 
     LONG   _eventSeq;
 

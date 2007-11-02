@@ -705,7 +705,43 @@ void CtiCCSubstationBusStore::reset()
                     reloadSubstationFromDatabase(0, &temp_paobject_substation_map, &temp_paobject_area_map, 
                                                  &temp_substation_area_map, &tempCCSubstations);
 
+                    try
+                    {
+                        if (!_strategyid_strategy_map.empty())
+                        {
+                            map <long, CtiCCStrategyPtr>::iterator iter = _strategyid_strategy_map.begin();
+                            while (iter != _strategyid_strategy_map.end())
+                            {
+                                CtiCCStrategyPtr strat = iter->second;
+                                iter++;
+                                if (strat != NULL)
+                                {
+                                    delete strat;
+                                }
+                       
+                            }
+                       
+                            if (!_strategyid_strategy_map.empty())
+                                _strategyid_strategy_map.clear();
+                        }
 
+                        if (!_paobject_area_map.empty())
+                            _paobject_area_map.clear();
+                        if (!_paobject_specialarea_map.empty())
+                            _paobject_specialarea_map.clear();
+                        if (!_paobject_substation_map.empty())
+                            _paobject_substation_map.clear();
+                        
+                        _paobject_area_map = temp_paobject_area_map;
+                        _paobject_specialarea_map = temp_paobject_specialarea_map;
+                        _paobject_substation_map = temp_paobject_substation_map;
+                        _strategyid_strategy_map = temp_strategyid_strategy_map;
+                    }
+                    catch (...)
+                    {
+                        CtiLockGuard<CtiLogger> logger_guard(dout);
+                        dout << CtiTime() << " - Caught '...' in: " << __FILE__ << " at:" << __LINE__ << endl;
+                    }
 
                     /***********************************************************
                     *******  Loading SubBuses                            *******
@@ -801,23 +837,7 @@ void CtiCCSubstationBusStore::reset()
                         dout << CtiTime() << " - Caught '...' in: " << __FILE__ << " at:" << __LINE__ << endl;
                     }
                     
-                    if (!_strategyid_strategy_map.empty())
-                    {
-                        map <long, CtiCCStrategyPtr>::iterator iter = _strategyid_strategy_map.begin();
-                        while (iter != _strategyid_strategy_map.end())
-                        {
-                            CtiCCStrategyPtr strat = iter->second;
-                            iter++;
-                            if (strat != NULL)
-                            {
-                                delete strat;
-                            }
-
-                        }
-
-                        if (!_strategyid_strategy_map.empty())
-                            _strategyid_strategy_map.clear();
-                    }
+                    
                     try
                     {
                         if (!_orphanedFeeders.empty())
@@ -864,18 +884,9 @@ void CtiCCSubstationBusStore::reset()
                     }
                     
 
-                    if (!_paobject_area_map.empty())
-                        _paobject_area_map.clear();
-                    if (!_paobject_specialarea_map.empty())
-                        _paobject_specialarea_map.clear();
-
-
-                    if (!_paobject_substation_map.empty())
-                        _paobject_substation_map.clear();
+                    
                     if (!_paobject_subbus_map.empty())
                         _paobject_subbus_map.clear();
-
-
 
                     if (!_paobject_feeder_map.empty())
                         _paobject_feeder_map.clear();
@@ -915,15 +926,11 @@ void CtiCCSubstationBusStore::reset()
                     try
                     {
                         _altsub_sub_idmap = temp_altsub_sub_idmap;
-                        _paobject_area_map = temp_paobject_area_map;
-                        _paobject_specialarea_map = temp_paobject_specialarea_map;
-                        _paobject_substation_map = temp_paobject_substation_map;
                         _paobject_subbus_map = temp_paobject_subbus_map;
                         _paobject_feeder_map = temp_paobject_feeder_map;
                         _paobject_capbank_map = temp_paobject_capbank_map;
 
-                        _strategyid_strategy_map = temp_strategyid_strategy_map;
-                     }
+                    }
                     catch (...)
                     {
                         CtiLockGuard<CtiLogger> logger_guard(dout);
@@ -4072,6 +4079,64 @@ void CtiCCSubstationBusStore::reloadSubBusFromDatabase(long subBusId, map< long,
                         }
                         {
                             RWDBSelector selector = db.selector();
+
+                            selector << ccSubstationSubBusListTable["substationid"]
+                                     << ccSubstationSubBusListTable["substationbusid"]
+                                     << ccSubstationSubBusListTable["displayorder"] ;
+
+                            selector.from(ccSubstationSubBusListTable);
+
+                            if (subBusId > 0)
+                            {               
+                                selector.where( subBusId==ccSubstationSubBusListTable["substationbusid"] );
+
+                            }
+
+                            if ( _CC_DEBUG & CC_DEBUG_DATABASE )
+                            {
+                                CtiLockGuard<CtiLogger> logger_guard(dout);
+                                dout << CtiTime() << " - " << selector.asString().data() << endl;
+                            }
+                            RWDBReader rdr = selector.reader(conn);
+
+                            CtiCCSubstationBusPtr currentCCSubstationBus;
+                            RWDBNullIndicator isNull;
+                            while ( rdr() )
+                            {
+                                long currentSubstationId;
+                                long currentSubBusId;
+                                long displayOrder;
+                                rdr["substationid"] >> currentSubstationId;
+                                rdr["substationbusid"] >> currentSubBusId;
+                                rdr["displayorder"] >>displayOrder;
+                                currentCCSubstationBus = paobject_subbus_map->find(currentSubBusId)->second;
+                                currentCCSubstationBus->setParentId(currentSubstationId);
+                                currentCCSubstationBus->setDisplayOrder(displayOrder);
+                                CtiCCSubstationPtr currentCCSubstation = NULL;
+
+                                if (subBusId > 0)
+                                    currentCCSubstation = findSubstationByPAObjectID(currentSubstationId);
+                                else
+                                {
+                                    if (paobject_substation_map->find(currentSubstationId) != paobject_substation_map->end())
+                                        currentCCSubstation = paobject_substation_map->find(currentSubstationId)->second;
+                                }
+
+                                if (currentCCSubstation != NULL)
+                                {
+
+                                    //currentCCSubstationBus->setParentControlUnits(newStrategy->getControlUnits());
+                                    currentCCSubstationBus->setParentName(currentCCSubstation->getPAOName());
+                                    currentCCSubstation->getCCSubIds()->push_back(currentSubBusId);
+                                }
+
+                                subbus_substation_map->insert(make_pair(currentSubBusId, currentSubstationId));
+                            }
+                        }
+
+
+                        {
+                            RWDBSelector selector = db.selector();
                                          selector <<  ccScheduleStrat["paobjectid"]
                                                   <<  ccScheduleStrat["seasonscheduleid"]
                                                   <<  ccScheduleStrat["seasonname"]
@@ -4126,21 +4191,36 @@ void CtiCCSubstationBusStore::reloadSubBusFromDatabase(long subBusId, map< long,
                                       if (currentCCSubstationBus != NULL) 
                                       {
                                           CtiCCStrategyPtr currentCCStrategy = NULL;
-                                          if (subBusId > 0)
-                                              currentCCStrategy = findStrategyByStrategyID(stratId);
-                                          else
-                                              currentCCStrategy =  strategy_map->find(stratId)->second;
-                                      
-                                      
-                                          if (currentCCStrategy == NULL)
+
+                                          CtiCCSubstationPtr currentStation = NULL;
+                                          currentStation = findSubstationByPAObjectID(currentCCSubstationBus->getParentId());
+                                          if (currentStation != NULL)
                                           {
-                                              currentCCSubstationBus->setStrategyId(0);
-                                              if (subBusId > 0)
-                                                  currentCCStrategy = findStrategyByStrategyID(0);
+                                              if (currentStation->getSaEnabledFlag())
+                                              {
+                                                  CtiCCSpecialPtr spArea = findSpecialAreaByPAObjectID(currentStation->getSaEnabledId());
+                                                  if (spArea != NULL)
+                                                      currentCCStrategy =  strategy_map->find(spArea->getStrategyId())->second;
+                                              }
                                               else
-                                                  currentCCStrategy =  strategy_map->find(0)->second;
+                                              {
+                                              
+                                                  if (subBusId > 0)
+                                                      currentCCStrategy = findStrategyByStrategyID(stratId);
+                                                  else
+                                                      currentCCStrategy =  strategy_map->find(stratId)->second;
+                                              
+                                              }
+                                              if (currentCCStrategy == NULL)
+                                              {
+                                                  currentCCSubstationBus->setStrategyId(0);
+                                                  if (subBusId > 0)
+                                                      currentCCStrategy = findStrategyByStrategyID(0);
+                                                  else
+                                                      currentCCStrategy =  strategy_map->find(0)->second;
+                                              }
+                                              currentCCSubstationBus->setStrategyValues(currentCCStrategy);
                                           }
-                                          currentCCSubstationBus->setStrategyValues(currentCCStrategy);
                                       
                                       }
                                  }
@@ -4148,63 +4228,7 @@ void CtiCCSubstationBusStore::reloadSubBusFromDatabase(long subBusId, map< long,
                              }
                         }
 
-                        {
-                            RWDBSelector selector = db.selector();
-                            
-                            selector << ccSubstationSubBusListTable["substationid"]
-                                     << ccSubstationSubBusListTable["substationbusid"]
-                                     << ccSubstationSubBusListTable["displayorder"] ;
-
-                            selector.from(ccSubstationSubBusListTable);
-
-                            if (subBusId > 0)
-                            {               
-                                selector.where( subBusId==ccSubstationSubBusListTable["substationbusid"] );
-
-                            }
-                           
-                            if ( _CC_DEBUG & CC_DEBUG_DATABASE )
-                            {
-                                CtiLockGuard<CtiLogger> logger_guard(dout);
-                                dout << CtiTime() << " - " << selector.asString().data() << endl;
-                            }
-                            RWDBReader rdr = selector.reader(conn);
-                           
-                            CtiCCSubstationBusPtr currentCCSubstationBus;
-                            RWDBNullIndicator isNull;
-                            while ( rdr() )
-                            {
-                                long currentSubstationId;
-                                long currentSubBusId;
-                                long displayOrder;
-                                rdr["substationid"] >> currentSubstationId;
-                                rdr["substationbusid"] >> currentSubBusId;
-                                rdr["displayorder"] >>displayOrder;
-                                currentCCSubstationBus = paobject_subbus_map->find(currentSubBusId)->second;
-                                currentCCSubstationBus->setParentId(currentSubstationId);
-                                currentCCSubstationBus->setDisplayOrder(displayOrder);
-                                CtiCCSubstationPtr currentCCSubstation = NULL;
-                           
-                                if (subBusId > 0)
-                                    currentCCSubstation = findSubstationByPAObjectID(currentSubstationId);
-                                else
-                                {
-                                    if (paobject_substation_map->find(currentSubstationId) != paobject_substation_map->end())
-                                        currentCCSubstation = paobject_substation_map->find(currentSubstationId)->second;
-                                }
-                           
-                                if (currentCCSubstation != NULL)
-                                {
-                           
-                                    //currentCCSubstationBus->setParentControlUnits(newStrategy->getControlUnits());
-                                    currentCCSubstationBus->setParentName(currentCCSubstation->getPAOName());
-                                    currentCCSubstation->getCCSubIds()->push_back(currentSubBusId);
-                                }
-
-                                subbus_substation_map->insert(make_pair(currentSubBusId, currentSubstationId));
-                            }
-                        }
-
+                        
 
                         //while (!dualBusEnabledSubs.empty())
                         if (!altsub_sub_idmap->empty())
@@ -4640,6 +4664,92 @@ void CtiCCSubstationBusStore::reloadFeederFromDatabase(long feederId, map< long,
                     }
                     {
                         RWDBSelector selector = db.selector();
+                        
+                        selector << ccFeederSubAssignmentTable["feederid"]
+                                 << ccFeederSubAssignmentTable["substationbusid"]
+                                 << ccFeederSubAssignmentTable["displayorder"] ;
+                       
+                        selector.from(ccFeederSubAssignmentTable);
+                        //selector.from(capControlFeederTable);
+                       
+                        if (feederId > 0)
+                        {               
+                            selector.where( ccFeederSubAssignmentTable["feederid"] == feederId);
+                        }
+                       
+                        if ( _CC_DEBUG & CC_DEBUG_DATABASE )
+                        {
+                            CtiLockGuard<CtiLogger> logger_guard(dout);
+                            dout << CtiTime() << " - " << selector.asString().data() << endl;
+                        }
+                        RWDBReader rdr = selector.reader(conn);
+                       
+                        CtiCCFeederPtr currentCCFeeder;
+                        RWDBNullIndicator isNull;
+                        while ( rdr() )
+                        {
+                       
+                            long currentSubBusId;
+                            long currentFeederId;
+                            long displayOrder;
+                            rdr["feederid"] >> currentFeederId;
+                            rdr["substationbusid"] >> currentSubBusId;
+                            rdr["displayorder"] >>displayOrder;
+                            currentCCFeeder = paobject_feeder_map->find(currentFeederId)->second;
+                            currentCCFeeder->setParentId(currentSubBusId);
+                            currentCCFeeder->setDisplayOrder(displayOrder);
+                            CtiCCSubstationBusPtr currentCCSubstationBus = NULL;
+                       
+                            if (feederId > 0)
+                                currentCCSubstationBus = findSubBusByPAObjectID(currentSubBusId);
+                            else
+                            {
+                                if (paobject_subbus_map->find(currentSubBusId) != paobject_subbus_map->end())
+                                    currentCCSubstationBus = paobject_subbus_map->find(currentSubBusId)->second;
+                            }
+                       
+                            if (currentCCSubstationBus != NULL)
+                            {
+                       
+                                CtiCCStrategyPtr newStrategy = NULL;
+                                if (feederId > 0)
+                                    newStrategy = findStrategyByStrategyID(currentCCSubstationBus->getStrategyId());
+                                else
+                                    newStrategy =  strategy_map->find(currentCCSubstationBus->getStrategyId())->second;
+                       
+                                currentCCFeeder->setParentControlUnits(currentCCSubstationBus->getControlUnits());
+                                currentCCFeeder->setParentName(currentCCSubstationBus->getPAOName());
+                       
+                                if (currentCCFeeder->getStrategyId() == 0 && newStrategy != NULL)
+                                {                      
+                                    currentCCFeeder->setStrategyValues(newStrategy);
+                                    currentCCFeeder->setStrategyId(0);
+                                    currentCCFeeder->setStrategyName("(none)");
+                                }
+                            }
+                       
+                            CtiFeeder_vec& tempFeeders = currentCCSubstationBus->getCCFeeders();
+                            CtiCCFeederPtr tempFeeder;
+                            int insertPoint = tempFeeders.size();
+                            int j = insertPoint;
+                       
+                            while (j > 0)
+                            {
+                                tempFeeder = (CtiCCFeeder*)tempFeeders.at(j-1);
+                                if (displayOrder <= tempFeeder->getDisplayOrder())
+                                {
+                                    insertPoint =  j - 1;
+                                }
+                       
+                                j--;
+                            }
+                            CtiFeeder_vec& ccF = currentCCSubstationBus->getCCFeeders();
+                            ccF.insert( ccF.begin()+insertPoint, currentCCFeeder );
+                            feeder_subbus_map->insert(make_pair(currentFeederId, currentSubBusId));
+                        }
+                    }
+                    {
+                        RWDBSelector selector = db.selector();
                                      selector <<  ccScheduleStrat["paobjectid"]
                                               <<  ccScheduleStrat["seasonscheduleid"]
                                               <<  ccScheduleStrat["seasonname"]
@@ -4682,8 +4792,11 @@ void CtiCCSubstationBusStore::reloadFeederFromDatabase(long feederId, map< long,
                                  rdr["paobjectid"] >> feedId;
                                  rdr["strategyid"] >> stratId;
 
-
+                                 
                                  CtiCCFeederPtr currentCCFeeder = NULL;
+                                 CtiCCSubstationBusPtr currentSubBus = NULL;
+                                 CtiCCSubstationPtr currentStation = NULL;
+
                                  if (feederId > 0)
                                      currentCCFeeder = findFeederByPAObjectID(feedId);
                                  else
@@ -4694,13 +4807,32 @@ void CtiCCSubstationBusStore::reloadFeederFromDatabase(long feederId, map< long,
                                  if (currentCCFeeder != NULL) 
                                  {
                                      CtiCCStrategyPtr currentCCStrategy = NULL;
-                                     if (feederId > 0)
-                                         currentCCStrategy = findStrategyByStrategyID(stratId);
-                                     else
-                                     {
-                                         currentCCStrategy = strategy_map->find(stratId)->second;
-                                     }
 
+                                     currentSubBus = findSubBusByPAObjectID(currentCCFeeder->getParentId());
+                                     if (currentSubBus != NULL)
+                                     {
+                                         currentStation = findSubstationByPAObjectID(currentSubBus->getParentId());
+                                         if (currentStation != NULL)
+                                         {
+                                             if (currentStation->getSaEnabledFlag())
+                                             {
+                                                 CtiCCSpecialPtr spArea = findSpecialAreaByPAObjectID(currentStation->getSaEnabledId());
+                                                  if (spArea != NULL)
+                                                      currentCCStrategy =  strategy_map->find(spArea->getStrategyId())->second;
+                                            }
+                                             else
+                                             {
+                                                 if (feederId > 0)
+                                                     currentCCStrategy = findStrategyByStrategyID(stratId);
+                                                 else
+                                                 {
+                                                     currentCCStrategy = strategy_map->find(stratId)->second;
+                                                 }
+
+                                             }
+                                         }
+
+                                     }
                                      if (currentCCStrategy == NULL)
                                      {
                                          currentCCFeeder->setStrategyId(0);
@@ -4714,92 +4846,7 @@ void CtiCCSubstationBusStore::reloadFeederFromDatabase(long feederId, map< long,
                     }
 
 
-                {
-                    RWDBSelector selector = db.selector();
-                    
-                    selector << ccFeederSubAssignmentTable["feederid"]
-                             << ccFeederSubAssignmentTable["substationbusid"]
-                             << ccFeederSubAssignmentTable["displayorder"] ;
-
-                    selector.from(ccFeederSubAssignmentTable);
-                    //selector.from(capControlFeederTable);
-
-                    if (feederId > 0)
-                    {               
-                        selector.where( ccFeederSubAssignmentTable["feederid"] == feederId);
-                    }
-
-                    if ( _CC_DEBUG & CC_DEBUG_DATABASE )
-                    {
-                        CtiLockGuard<CtiLogger> logger_guard(dout);
-                        dout << CtiTime() << " - " << selector.asString().data() << endl;
-                    }
-                    RWDBReader rdr = selector.reader(conn);
-
-                    CtiCCFeederPtr currentCCFeeder;
-                    RWDBNullIndicator isNull;
-                    while ( rdr() )
-                    {
-
-                        long currentSubBusId;
-                        long currentFeederId;
-                        long displayOrder;
-                        rdr["feederid"] >> currentFeederId;
-                        rdr["substationbusid"] >> currentSubBusId;
-                        rdr["displayorder"] >>displayOrder;
-                        currentCCFeeder = paobject_feeder_map->find(currentFeederId)->second;
-                        currentCCFeeder->setParentId(currentSubBusId);
-                        currentCCFeeder->setDisplayOrder(displayOrder);
-                        CtiCCSubstationBusPtr currentCCSubstationBus = NULL;
-
-                        if (feederId > 0)
-                            currentCCSubstationBus = findSubBusByPAObjectID(currentSubBusId);
-                        else
-                        {
-                            if (paobject_subbus_map->find(currentSubBusId) != paobject_subbus_map->end())
-                                currentCCSubstationBus = paobject_subbus_map->find(currentSubBusId)->second;
-                        }
-
-                        if (/*currentCCFeeder->getStrategyId() == 0 && */currentCCSubstationBus != NULL)
-                        {
-
-                            CtiCCStrategyPtr newStrategy = NULL;
-                            if (feederId > 0)
-                                newStrategy = findStrategyByStrategyID(currentCCSubstationBus->getStrategyId());
-                            else
-                                newStrategy =  strategy_map->find(currentCCSubstationBus->getStrategyId())->second;
-
-                            currentCCFeeder->setParentControlUnits(currentCCSubstationBus->getControlUnits());
-                            currentCCFeeder->setParentName(currentCCSubstationBus->getPAOName());
-
-                            if (currentCCFeeder->getStrategyId() == 0 && newStrategy != NULL)
-                            {                      
-                                currentCCFeeder->setStrategyValues(newStrategy);
-                                currentCCFeeder->setStrategyId(0);
-                                currentCCFeeder->setStrategyName("(none)");
-                            }
-                        }
-
-                        CtiFeeder_vec& tempFeeders = currentCCSubstationBus->getCCFeeders();
-                        CtiCCFeederPtr tempFeeder;
-                        int insertPoint = tempFeeders.size();
-                        int j = insertPoint;
-
-                        while (j > 0)
-                        {
-                            tempFeeder = (CtiCCFeeder*)tempFeeders.at(j-1);
-                            if (displayOrder <= tempFeeder->getDisplayOrder())
-                            {
-                                insertPoint =  j - 1;
-                            }
-
-                            j--;
-                        }
-                        CtiFeeder_vec& ccF = currentCCSubstationBus->getCCFeeders();
-                        ccF.insert( ccF.begin()+insertPoint, currentCCFeeder );
-                        feeder_subbus_map->insert(make_pair(currentFeederId, currentSubBusId));
-                    }
-                }
+                
 
                 if (feederId > 0)
                 {    

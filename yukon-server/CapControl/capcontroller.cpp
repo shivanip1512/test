@@ -2935,23 +2935,7 @@ void CtiCapController::refreshCParmGlobals(bool force)
             dout << CtiTime() << " - Unable to obtain '" << var << "' value from cparms." << endl;
         }
 
-        dout.setOutputFile("capcontrol");
-
-        strcpy(var, "CAP_CONTROL_LOG_FILE");
-        if( !(str = gConfigParms.getValueAsString(var)).empty() )
-        {
-            dout.setOutputFile(str.c_str());
-            if( _CC_DEBUG & CC_DEBUG_STANDARD )
-            {
-                CtiLockGuard<CtiLogger> logger_guard(dout);
-                dout << CtiTime() << " - " << var << ":  " << str << endl;
-            }
-        }
-        else
-        {
-            CtiLockGuard<CtiLogger> logger_guard(dout);
-            dout << CtiTime() << " - Unable to obtain '" << var << "' value from cparms." << endl;
-        }
+        
 
         _DB_RELOAD_WAIT = 5;  //5 seconds
 

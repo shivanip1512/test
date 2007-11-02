@@ -151,6 +151,8 @@ RWDECLARE_COLLECTABLE( CtiCCSubstationBus )
     BOOL getWaitToFinishRegularControlFlag() const;
     BOOL getMaxDailyOpsHitFlag() const;
     BOOL getOvUvDisabledFlag() const;
+    BOOL getCorrectionNeededNoBankAvailFlag() const;
+    
     const string& getSolution() const;
     DOUBLE getTargetVarValue() const;
     const string& getParentControlUnits() const;
@@ -258,6 +260,7 @@ RWDECLARE_COLLECTABLE( CtiCCSubstationBus )
     CtiCCSubstationBus& setWaitToFinishRegularControlFlag(BOOL flag);
     CtiCCSubstationBus& setMaxDailyOpsHitFlag(BOOL flag);
     CtiCCSubstationBus& setOvUvDisabledFlag(BOOL flag);
+    CtiCCSubstationBus& setCorrectionNeededNoBankAvailFlag(BOOL flag);
     CtiCCSubstationBus& setAllAltSubValues(DOUBLE volt, DOUBLE var, DOUBLE watt);
     CtiCCSubstationBus& setSolution(const string& text);
     CtiCCSubstationBus& setTargetVarValue(DOUBLE value);
@@ -493,6 +496,7 @@ RWDECLARE_COLLECTABLE( CtiCCSubstationBus )
     BOOL _waitToFinishRegularControlFlag;
     BOOL _maxDailyOpsHitFlag;
     BOOL _ovUvDisabledFlag;
+    BOOL _correctionNeededNoBankAvailFlag;
 
     LONG _currentCapBankToVerifyAssumedOrigState;
     int _verificationStrategy;

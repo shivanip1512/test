@@ -190,6 +190,22 @@ LONG CtiCCCapBank::getIgnoredReason() const
 {
     return _ignoreReason;
 }
+ 
+const string& CtiCCCapBank::getBeforeVarsString() const
+{
+    return _sBeforeVars;
+}
+
+const string& CtiCCCapBank::getAfterVarsString() const
+{
+    return _sAfterVars;
+}
+
+const string& CtiCCCapBank::getPercentChangeString() const
+{
+    return _sPercentChange;
+}
+
 
 /*---------------------------------------------------------------------------
     getDisableFlag
@@ -991,7 +1007,8 @@ CtiCCCapBank& CtiCCCapBank::setIpAddress(ULONG value)
     _ipAddress = "(none)";
     if (value > 0) 
     {
-        char tempchar[4];
+        //char tempchar[4];
+        char* tempchar = NULL;
         BYTE temp;
         temp = (value >> 24) & 0xFF;
         _ipAddress = itoa(temp,tempchar,10);
@@ -1003,8 +1020,8 @@ CtiCCCapBank& CtiCCCapBank::setIpAddress(ULONG value)
         _ipAddress += itoa(temp,tempchar,10);
         _ipAddress += ".";
         temp = (value & 0xFF);
-        _ipAddress += itoa(temp,tempchar,10);
-    }
+        _ipAddress += itoa(temp,tempchar,10);   
+    } 
     return *this;
 }
 CtiCCCapBank& CtiCCCapBank::setUDPPort(LONG value)
@@ -1065,6 +1082,37 @@ CtiCCCapBank& CtiCCCapBank::setIgnoredReason(LONG value)
     return *this;
 
 }
+
+CtiCCCapBank& CtiCCCapBank::setBeforeVarsString(const string& before)
+{
+    if (_sBeforeVars != before)
+    {
+        _dirty = TRUE;
+    }
+    _sBeforeVars = before;
+    return *this;
+}
+
+CtiCCCapBank& CtiCCCapBank::setAfterVarsString(const string& after)
+{
+    if (_sAfterVars != after)
+    {
+        _dirty = TRUE;
+    }
+    _sAfterVars = after;
+    return *this;
+}
+
+CtiCCCapBank& CtiCCCapBank::setPercentChangeString(const string& percent)
+{
+    if (_sPercentChange != percent)
+    {
+        _dirty = TRUE;
+    }
+    _sPercentChange = percent;
+    return *this;
+}
+
 
 
 BOOL CtiCCCapBank::updateVerificationState(void)
@@ -1545,6 +1593,9 @@ void CtiCCCapBank::restoreGuts(RWvistream& istrm)
     >> _triporder
     >> _closeorder
     >> _controlDeviceType;
+    istrm >> _sBeforeVars;
+    istrm >> _sAfterVars;
+    istrm >> _sPercentChange;
     _laststatuschangetime = CtiTime(tempTime1);
 }
 
@@ -1594,6 +1645,9 @@ void CtiCCCapBank::saveGuts(RWvostream& ostrm ) const
     ostrm << _triporder;
     ostrm << _closeorder;
     ostrm << _controlDeviceType;
+    ostrm << _sBeforeVars;
+    ostrm << _sAfterVars;
+    ostrm << _sPercentChange;
 }
 
 /*---------------------------------------------------------------------------
@@ -1656,6 +1710,10 @@ CtiCCCapBank& CtiCCCapBank::operator=(const CtiCCCapBank& right)
 
         _ignoreFlag = right._ignoreFlag;
         _ignoreReason = right._ignoreReason;
+        _sAfterVars = right._sAfterVars;
+        _sBeforeVars = right._sBeforeVars;
+        _sPercentChange = right._sPercentChange;
+
     }
     return *this;
 }
@@ -1746,6 +1804,9 @@ void CtiCCCapBank::restore(RWDBReader& rdr)
 
     setIgnoreFlag(FALSE);
     setIgnoredReason(0);
+    setBeforeVarsString("none");
+    setAfterVarsString("none");
+    setPercentChangeString("none");
 
     _insertDynamicDataFlag = TRUE;
     /*{
@@ -1997,11 +2058,11 @@ const string CtiCCCapBank::FixedOperationalState = "Fixed";
 const string CtiCCCapBank::UninstalledState = "Uninstalled";
 const string CtiCCCapBank::StandAloneState = "Standalone";
 
-int CtiCCCapBank::Open = STATEZERO;
-int CtiCCCapBank::Close = STATEONE;
-int CtiCCCapBank::OpenQuestionable = STATETWO;
-int CtiCCCapBank::CloseQuestionable = STATETHREE;
-int CtiCCCapBank::OpenFail = STATEFOUR;
-int CtiCCCapBank::CloseFail = STATEFIVE;
-int CtiCCCapBank::OpenPending = STATESIX;
-int CtiCCCapBank::ClosePending = STATESEVEN;
+const int CtiCCCapBank::Open = STATEZERO;
+const int CtiCCCapBank::Close = STATEONE;
+const int CtiCCCapBank::OpenQuestionable = STATETWO;
+const int CtiCCCapBank::CloseQuestionable = STATETHREE;
+const int CtiCCCapBank::OpenFail = STATEFOUR;
+const int CtiCCCapBank::CloseFail = STATEFIVE;
+const int CtiCCCapBank::OpenPending = STATESIX;
+const int CtiCCCapBank::ClosePending = STATESEVEN;

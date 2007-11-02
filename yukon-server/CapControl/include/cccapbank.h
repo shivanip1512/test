@@ -95,6 +95,9 @@ public:
     const CtiTime& getReportedCBCStateTime() const;
     BOOL getIgnoreFlag() const;
     LONG getIgnoredReason() const;
+    const string& getBeforeVarsString() const;
+    const string& getAfterVarsString() const;
+    const string& getPercentChangeString() const;
 
 
     int  getVCtrlIndex() const;
@@ -155,6 +158,9 @@ public:
     CtiCCCapBank& setReportedCBCStateTime(const CtiTime& timestamp);
     CtiCCCapBank& setIgnoreFlag(BOOL flag);
     CtiCCCapBank& setIgnoredReason(LONG value);
+    CtiCCCapBank& setBeforeVarsString(const string& before);
+    CtiCCCapBank& setAfterVarsString(const string& after);
+    CtiCCCapBank& setPercentChangeString(const string& percent);
 
     CtiCCCapBank& setVCtrlIndex(int vCtrlIndex);
     CtiCCCapBank& setAssumedOrigVerificationState(int assumedOrigCapBankPos);
@@ -197,17 +203,14 @@ public:
     static const string StandAloneState;
     
     //Possible states
-    static int Open;
-    static int Close;
-    static int OpenQuestionable;
-    static int CloseQuestionable;
-    static int OpenFail;
-    static int CloseFail;
-    static int OpenPending;
-    static int ClosePending;
-
-    
-
+    static const int Open;
+    static const int Close;
+    static const int OpenQuestionable;
+    static const int CloseQuestionable;
+    static const int OpenFail;
+    static const int CloseFail;
+    static const int OpenPending;
+    static const int ClosePending;
         
 private:
 
@@ -270,6 +273,9 @@ private:
 
     BOOL _ignoreFlag;
     LONG _ignoreReason;
+    string _sBeforeVars;
+    string _sAfterVars;
+    string _sPercentChange;
     
     //don't stream
     BOOL _insertDynamicDataFlag;
