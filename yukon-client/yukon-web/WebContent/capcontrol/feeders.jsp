@@ -441,7 +441,7 @@ for( int i = 0; i < capBanks.size(); i++ ) {
                     <input id="is701x_<%=capBank.getCcId()%>" type="hidden" value="<%=CBCUtils.is701xDevice(obj)%>"/>
                     <a href="javascript:void(0);"
 					<%=popupEvent%>= "popupWithHiLite ($F('cmd_cap_<%=capBank.getCcId()%>_field'),
-						155,110,40,15,
+						155,110,1,10,
 						'tr_cap_<%=capBank.getCcId()%>',
 						'yellow'); "
 						onmouseout = "return hidePopupHiLite('tr_cap_<%=capBank.getCcId()%>', '<%=rowColor%>');" >	
@@ -477,7 +477,7 @@ for( int i = 0; i < capBanks.size(); i++ ) {
 						style="color: <%=CBCDisplay.getHTMLFgColor(capBank)%>;"
 						href="javascript:void(0);"
 					    onclick = "popupWithHiLite ($F('cmd_cap_<%=capBank.getCcId()%>_system'),
-    						155,200,40,15,
+    						155,200,1,10,
     						'tr_cap_<%=capBank.getCcId()%>',
     						'yellow'); "
 					    onmouseout = "togglePopup('capBankStatusPopup_<%=capBank.getCcId()%>'); return hidePopupHiLite('tr_cap_<%=capBank.getCcId()%>', '<%=rowColor%>'); "
