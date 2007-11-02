@@ -59,7 +59,7 @@ void worker(const int& s)
         }
 
     
-
+/*
 //////////////////////////////////////////////////////////
 //   ADDING CODE TO READ AND STORE GETKWH VALUES
 // ///////////////////////////////////////////////////////
@@ -153,7 +153,7 @@ void worker(const int& s)
         rdr1 >> newKwh;
         cout<<"FOUND KWH VALUE FROM DB OF: "<<newKwh<<endl;
    }
-
+*/
 //**************************************DONE***************************************
 
     

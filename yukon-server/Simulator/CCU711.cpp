@@ -742,11 +742,37 @@ void CCU711::CreateQueuedMsg()
         if(_messageQueue.empty())
         {
             CtiTime currentTime;
-            newMessage.setTime(currentTime, 6*(bytesToReturn/3));
+            int delay = 0;
+            if(bytesToReturn<4) 
+            {
+                delay = 3;
+            }
+            else if(bytesToReturn<9) 
+            {
+                delay=4;
+            }
+            else
+            {
+                delay = 6;
+            }
+            newMessage.setTime(currentTime, delay);
         }
         else
         {
-                newMessage.setTime(_messageQueue.back().getTime(), 6*(bytesToReturn/3));   //Should be words !!!!!
+            int delay = 0;
+            if(bytesToReturn<4) 
+            {
+                delay = 3;
+            }
+            else if(bytesToReturn<9) 
+            {
+                delay=4;
+            }
+            else
+            {
+                delay = 6;
+            }
+            newMessage.setTime(_messageQueue.back().getTime(), delay);   //Should be words !!!!!
         }
             
         //RTE_CIRCUIT;
