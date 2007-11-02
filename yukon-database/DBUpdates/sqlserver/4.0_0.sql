@@ -473,6 +473,11 @@ insert into YukonRoleProperty values(-20013,-200,'Edit Device Config','false','C
 insert into YukonRoleProperty values(-20014,-200,'View Device Config','true','Controls the ability to view existing device configurations');
 insert into YukonRoleProperty values(-20206,-202,'Enable Profile Request','true','Access to perform profile data request');
 
+alter table userPaoPermission add Allow varchar(5);
+update UserPaoPermission set Allow = 'ALLOW';
+alter table groupPaoPermission add Allow varchar(5);
+update GroupPaoPermission set Allow = 'ALLOW';
+
 /**************************************************************/
 /* VERSION INFO                                               */
 /*   Automatically gets inserted from build script            */
