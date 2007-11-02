@@ -122,7 +122,7 @@ public class SeasonScheduleDaoImpl implements SeasonScheduleDao{
         jdbcTemplate.update(sql, paoId);
         
         sql = "Insert Into CCSeasonStrategyAssignment Values ( ?,?,?,? )";
-        jdbcTemplate.update( sql, paoId, 0, "Default Season" ,  0);
+        jdbcTemplate.update( sql, paoId, -1, "Default" ,  0);
     }
     
     public static Connection getConnection() {

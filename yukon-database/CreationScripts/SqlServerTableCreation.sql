@@ -7311,7 +7311,6 @@ create table SeasonSchedule (
 )
 go
 
-insert into SeasonSchedule values( 0, 'Empty Schedule' );
 insert into seasonSchedule values (-1,'No Season');
 
 /*==============================================================*/
