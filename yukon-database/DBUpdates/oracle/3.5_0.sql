@@ -5,9 +5,9 @@
 /*3.4 changes that may have been missed*/
 
 /* Delete roles that are no longer in use. */
+delete from YukonUserRole 		where RoleID in (-204,-205,-301,-302);
 delete from YukonGroupRole 		where RoleID in (-204,-205,-301,-302);
 delete from YukonRoleProperty 	where RoleID in (-204,-205,-301,-302);
-delete from YukonUserRole 		where RoleID in (-204,-205,-301,-302);
 delete from YukonRole 			where RoleID in (-204,-205,-301,-302);
 
 /* @error ignore-begin */
@@ -269,7 +269,7 @@ alter table DYNAMICPAOSTATISTICSHISTORY
 alter table DYNAMICPAOSTATISTICSHISTORY
    add constraint FK_DYNPAOSTHIST_YKNPAO foreign key (PAObjectID)
       references YukonPAObject (PAObjectID)
-        on update cascade on delete cascade;
+      on delete cascade;
       
 insert into DynamicPAOStatistics select distinct paobjectid, 'Lifetime', 0, 0, 0, 0, 0, 0, CURRENT_TIMESTAMP, CURRENT_TIMESTAMP from DynamicPAOStatistics;
       
@@ -362,7 +362,6 @@ delete from LMThermostatSchedule where ThermostatTypeID in (select EntryID from 
 update LMHardwareBase set LMHardwareTypeID = 0 where LMHardwareTypeID in (select EntryID from YukonListEntry where YukonDefinitionID = 3100);
 delete from YukonlistEntry where YukonDefinitionID = 3100;
 
--- DeviceGroup needs a unique constraint on (ParentDeviceGroupId,GroupName)
 alter table DEVICEGROUP
    add constraint AK_DEVICEGR_PDG_GN unique (GroupName, ParentDeviceGroupId)
 ;
