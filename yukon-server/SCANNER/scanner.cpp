@@ -6,8 +6,8 @@
 *
 * PVCS KEYWORDS:
 * ARCHIVE      :  $Archive:   Z:/SOFTWAREARCHIVES/YUKON/SCANNER/scanner.cpp-arc  $
-* REVISION     :  $Revision: 1.67 $
-* DATE         :  $Date: 2007/07/10 21:07:09 $
+* REVISION     :  $Revision: 1.68 $
+* DATE         :  $Date: 2007/11/02 20:14:26 $
 *
 * Copyright (c) 1999, 2000, 2001 Cannon Technologies Inc. All rights reserved.
 *-----------------------------------------------------------------------------*/
@@ -53,6 +53,7 @@
 
 #include "rtdb.h"
 #include "mgr_device.h"
+#include "mgr_point.h"
 #include "dev_base.h"
 #include "dev_single.h"
 #include "dev_mct.h"  //  for DLC loadprofile scans
@@ -106,8 +107,8 @@ void    InitScannerGlobals(void);
 void    DumpRevision(void);
 INT     MakePorterRequests(list< OUTMESS* > &outList);
 
-CtiDeviceManager      ScannerDeviceManager(Application_Scanner);
-PointDeviceMapping    ScannerPointDeviceMap;
+CtiDeviceManager  ScannerDeviceManager(Application_Scanner);
+CtiPointManager   ScannerPointManager;
 
 static RWWinSockInfo  winsock;
 
@@ -1219,18 +1220,7 @@ void LoadScannableDevices(void *ptr)
                 devstr = pChg->getObjectType();
             }
 
-             ScannerDeviceManager.refresh(DeviceFactory, isNotAScannableDevice, NULL, chgid, catstr, devstr);
-
-            if(pChg == NULL)
-            {
-                attachPointIDDeviceMapToDevices(&ScannerDeviceManager, &ScannerPointDeviceMap);
-            }
-            else
-            {
-                CtiDeviceManager::LockGuard  dev_guard(ScannerDeviceManager.getMux());       // Protect our iteration!
-                CtiDeviceSPtr pDev = ScannerDeviceManager.getEqual( chgid );
-                if( pDev ) pDev->setPointDeviceMap(&ScannerPointDeviceMap);
-            }
+            ScannerDeviceManager.refresh(DeviceFactory, isNotAScannableDevice, NULL, chgid, catstr, devstr);
 
             stop = stop.now();
 
@@ -1283,53 +1273,29 @@ void LoadScannableDevices(void *ptr)
 
     if(pChg != NULL && pChg->getDatabase() == ChangePointDb)  // On a point specific message only!
     {
-        LONG paoDeviceID = 0;
-        LONG pointID = pChg->getId();
+        if( (pChg->getTypeOfChange() == ChangeTypeAdd) || (pChg->getTypeOfChange() == ChangeTypeUpdate) )
         {
-            PointDeviceMapping::LockGuard guard(ScannerPointDeviceMap.mux);
-            std::map<long, long>::iterator iter = ScannerPointDeviceMap.point_device_map.find(pointID);
-            if(iter != ScannerPointDeviceMap.point_device_map.end())
-            {
-                paoDeviceID = iter->second;
-            }
-        }
-        if( paoDeviceID == 0)
-        {
-            paoDeviceID = GetPAOIdOfPoint( pointID );
-        }
+            ScannerPointManager.refreshList(isPoint, NULL, pChg->getId(), 0);
 
-        {
-            CtiDeviceSPtr pBase = ScannerDeviceManager.getEqual(paoDeviceID);
+            LONG paoDeviceID = ScannerPointManager.getPAOIdForPointId(pChg->getId());
 
-            if(pBase)
+            if( paoDeviceID >= 0 )
             {
-                RWRecursiveLock<RWMutexLock>::LockGuard devguard(pBase->getMux());
-                if(pBase->isSingle())
+                CtiDeviceSPtr pBase = ScannerDeviceManager.getEqual(paoDeviceID);
+
+                if(pBase && pBase->isSingle())
                 {
-                    if( (pChg->getTypeOfChange() == ChangeTypeAdd) || (pChg->getTypeOfChange() == ChangeTypeUpdate) )
+                    // Do anything required be particular devices on a reload here.
+                    if(pBase->getType() == TYPE_WELCORTU)
                     {
-                        {
-                            CtiLockGuard<CtiLogger> doubt_guard(dout);
-                            dout << CtiTime() << " DBChange forced a reload of points for " << pBase->getName() << endl;
-                            pChg->dump();
-                        }
-                        pBase->RefreshDevicePoints();
-
-                        // Do anything required be particular devices on a reload here.
-                        if(pBase->getType() == TYPE_WELCORTU)
-                        {
-                            ((CtiDeviceWelco*)pBase.get())->setDeadbandsSent(false);
-                        }
-                    }
-                    else if(pChg->getTypeOfChange() == ChangeTypeDelete)
-                    {
-                        pBase->orphanDevicePoint(pointID);
-                        PointDeviceMapping::LockGuard guard(ScannerPointDeviceMap.mux);
-                        ScannerPointDeviceMap.point_device_map.erase(pointID);
+                        ((CtiDeviceWelco*)pBase.get())->setDeadbandsSent(false);
                     }
                 }
             }
-
+        }
+        else if(pChg->getTypeOfChange() == ChangeTypeDelete)
+        {
+            ScannerPointManager.orphan(pChg->getId());
         }
     }
 
