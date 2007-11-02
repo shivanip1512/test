@@ -9,8 +9,8 @@
 *
 * PVCS KEYWORDS:
 * ARCHIVE      :  $Archive:   Z:/SOFTWAREARCHIVES/YUKON/DISPATCH/INCLUDE/mgr_ptclients.h-arc  $
-* REVISION     :  $Revision: 1.12 $
-* DATE         :  $Date: 2007/10/24 14:51:29 $
+* REVISION     :  $Revision: 1.13 $
+* DATE         :  $Date: 2007/11/02 19:09:34 $
 *
 * Copyright (c) 1999, 2000, 2001 Cannon Technologies Inc. All rights reserved.
 *-----------------------------------------------------------------------------*/
@@ -45,15 +45,18 @@ class IM_EX_CTIVANGOGH CtiPointClientManager : public CtiPointManager
 {
 private:
    typedef map<LONG, CtiPointWPtr>     PointMap;
-   typedef map< LONG, PointMap >       ConfigMgrPointMap;
-   typedef ConfigMgrPointMap::iterator ConMgrPtMapIter;
-   typedef PointMap::iterator          PtMapIter;
+   typedef map<LONG, PointMap>         ConnectionMgrPointMap;
+   typedef ConnectionMgrPointMap::iterator ConMgrPtMapIter;
 
-   ConfigMgrPointMap _conMgrPointMap;
-
-public:
+   ConnectionMgrPointMap _conMgrPointMap;
 
    typedef CtiPointManager Inherited;
+
+protected:
+
+   virtual void removePoint(Inherited::ptr_type pTempCtiPoint);
+
+public:
 
    CtiPointClientManager();
 
@@ -62,7 +65,6 @@ public:
 
    void DumpList(void);
    virtual void DeleteList(void);
-   virtual void removeSinglePoint(Inherited::ptr_type pTempCtiPoint);
 
    int InsertConnectionManager(CtiServer::ptr_type CM, const CtiPointRegistrationMsg &aReg, bool debugprint = false);
    int RemoveConnectionManager(CtiServer::ptr_type CM);

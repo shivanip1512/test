@@ -6,8 +6,8 @@
 *
 * PVCS KEYWORDS:
 * ARCHIVE      :  $Archive:   Z:/SOFTWAREARCHIVES/YUKON/DISPATCH/mgr_ptclients.cpp-arc  $
-* REVISION     :  $Revision: 1.26 $
-* DATE         :  $Date: 2007/11/01 15:43:36 $
+* REVISION     :  $Revision: 1.27 $
+* DATE         :  $Date: 2007/11/02 19:09:34 $
 *
 * Copyright (c) 1999, 2000, 2001 Cannon Technologies Inc. All rights reserved.
 *-----------------------------------------------------------------------------*/
@@ -207,7 +207,7 @@ int CtiPointClientManager::InsertConnectionManager(CtiServer::ptr_type CM, const
     int nRet = 0;
     CtiTime   NowTime;
     int ptcnt = aReg.getCount();
-    ConMgrPtMapIter conIter = _conMgrPointMap.end();
+    ConnectionMgrPointMap::iterator conIter = _conMgrPointMap.end();
 
     if(!(aReg.getFlags() & (REG_ADD_POINTS | REG_REMOVE_POINTS)) )     // If add/remove is set, we are augmenting or removing an existing registration (Not the whole thing).
         RemoveConnectionManager(CM);
@@ -229,8 +229,8 @@ int CtiPointClientManager::InsertConnectionManager(CtiServer::ptr_type CM, const
         if( conIter == _conMgrPointMap.end() )
         {
             PointMap tempMap;
-            pair<ConMgrPtMapIter, bool> tempVal;
-            tempVal = _conMgrPointMap.insert(ConfigMgrPointMap::value_type(CM->hash(*CM.get()), tempMap));
+            pair<ConnectionMgrPointMap::iterator, bool> tempVal;
+            tempVal = _conMgrPointMap.insert(ConnectionMgrPointMap::value_type(CM->hash(*CM.get()), tempMap));
             conIter = tempVal.first;
         }
     }
@@ -294,11 +294,11 @@ int CtiPointClientManager::RemoveConnectionManager(CtiServer::ptr_type CM)
     // OK, now I walk the list of points looking at each one's list to remove the CM
     {
         LockGuard  guard(getMux());
-        ConMgrPtMapIter conIter = _conMgrPointMap.find(CM->hash(*CM.get()));
+        ConnectionMgrPointMap::iterator conIter = _conMgrPointMap.find(CM->hash(*CM.get()));
 
         if( conIter != _conMgrPointMap.end() && conIter->second.size() > 0 )
         {
-            for(PtMapIter pointIter = conIter->second.begin(); pointIter != conIter->second.end(); pointIter++)
+            for(PointMap::iterator pointIter = conIter->second.begin(); pointIter != conIter->second.end(); pointIter++)
             {
                 CtiPointSPtr temp = pointIter->second.lock();
 
@@ -500,7 +500,7 @@ void CtiPointClientManager::DeleteList(void)
 
     _conMgrPointMap.clear();
 
-    Inherited::DeleteList();
+    Inherited::ClearList();
 
 }
 
@@ -585,23 +585,23 @@ void CtiPointClientManager::RefreshDynamicData(LONG id)
 }
 
 //Virtual function, removes all internal references to a single point
-void CtiPointClientManager::removeSinglePoint(Inherited::ptr_type pTempCtiPoint)
+void CtiPointClientManager::removePoint(Inherited::ptr_type pTempCtiPoint)
 {
     if( pTempCtiPoint )
     {
-        for( ConMgrPtMapIter iter = _conMgrPointMap.begin(); iter != _conMgrPointMap.end(); iter++ )
+        for( ConnectionMgrPointMap::iterator iter = _conMgrPointMap.begin(); iter != _conMgrPointMap.end(); iter++ )
         {
             iter->second.erase(pTempCtiPoint->getPointID());
         }
     }
 
-    Inherited::removeSinglePoint(pTempCtiPoint);
+    Inherited::removePoint(pTempCtiPoint);
 }
 
 CtiPointClientManager::PointMap CtiPointClientManager::getRegistrationMap(LONG mgrID)
 {
     PointMap temp;
-    ConMgrPtMapIter conIter;
+    ConnectionMgrPointMap::iterator conIter;
 
     if( (conIter = _conMgrPointMap.find(mgrID)) != _conMgrPointMap.end() )
     {
