@@ -100,12 +100,6 @@
         <property name="jdbcTemplate" ref="simpleJdbcTemplate"/>
     </bean>
     
-    <bean id="profilePeakDao"
-        class="com.cannontech.common.device.profilePeak.dao.impl.ProfilePeakDaoImpl">
-        <property name="jdbcTemplate" ref="simpleJdbcTemplate"/>
-        <property name="nextValueHelper" ref="nextValueHelper"></property>
-    </bean>
-    
     <bean id="peakReportDao"
         class="com.cannontech.common.device.peakReport.dao.impl.PeakReportDaoImpl">
         <property name="jdbcTemplate" ref="simpleJdbcTemplate"/>

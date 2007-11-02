@@ -4,13 +4,23 @@ import java.text.ParseException;
 import java.text.SimpleDateFormat;
 import java.util.Calendar;
 import java.util.Date;
+import java.util.GregorianCalendar;
+import java.util.List;
 
 import org.apache.commons.lang.time.DateUtils;
 import org.springframework.beans.factory.annotation.Required;
 
+import com.cannontech.amr.errors.model.DeviceErrorDescription;
+import com.cannontech.amr.meter.dao.MeterDao;
+import com.cannontech.amr.meter.model.Meter;
+import com.cannontech.common.device.commands.CommandRequestExecutor;
+import com.cannontech.common.device.commands.CommandResultHolder;
+import com.cannontech.common.device.peakReport.dao.PeakReportDao;
 import com.cannontech.common.device.peakReport.model.PeakReportPeakType;
 import com.cannontech.common.device.peakReport.model.PeakReportResult;
+import com.cannontech.common.device.peakReport.model.PeakReportRunType;
 import com.cannontech.common.device.peakReport.service.PeakReportService;
+import com.cannontech.common.util.TimeUtil;
 import com.cannontech.core.dao.DBPersistentDao;
 import com.cannontech.core.dao.PaoDao;
 import com.cannontech.core.service.DateFormattingService;
@@ -25,10 +35,108 @@ public class PeakReportServiceImpl implements PeakReportService {
     private DateFormattingService dateFormattingService = null;
     private DBPersistentDao dbPersistentDao = null;
     private PaoDao paoDao = null;
+    private CommandRequestExecutor commandRequestExecutor = null;
+    private MeterDao meterDao = null;
+    private PeakReportDao peakReportDao = null;
     
-    public PeakReportResult parseResultString(PeakReportResult peakResult, String resultString, int interval, LiteYukonUser user){
+    
+    public PeakReportResult requestPeakReport(int deviceId, PeakReportPeakType peakType, PeakReportRunType runType, int channel, Date startDate, Date stopDate, boolean persist, LiteYukonUser user) {
         
-        PeakReportPeakType peakType = peakResult.getPeakType();
+        // interval
+        int interval = getChannelIntervalForDevice(deviceId, channel);
+        
+        // build command to be executed
+        StringBuffer commandBuffer = new StringBuffer();
+        commandBuffer.append("getvalue lp peak");
+        commandBuffer.append(" " + peakType.toString().toLowerCase());
+        commandBuffer.append(" channel " + channel);
+        commandBuffer.append(" " + dateFormattingService.formatDate(stopDate, DateFormattingService.DateFormatEnum.DATE, user));
+        
+        GregorianCalendar startDateCal = dateFormattingService.getGregorianCalendar(user);
+        startDateCal.setTime(startDate);
+        
+        GregorianCalendar stopDateCal = dateFormattingService.getGregorianCalendar(user);
+        stopDateCal.setTime(stopDate);
+        
+        int commandDays = TimeUtil.differenceInDays(startDateCal, stopDateCal) + 1;
+        commandBuffer.append(" " + commandDays);
+        
+        // execute command to get profile peak summary results for user request
+        Meter meter = meterDao.getForId(deviceId);
+        
+        // setup basics of PeakReportResult
+        PeakReportResult peakResult = new PeakReportResult();
+        peakResult.setDeviceId(deviceId);
+        peakResult.setChannel(channel);
+        peakResult.setPeakType(peakType);
+        peakResult.setRunType(runType);
+        peakResult.setRunDate(new Date());
+        
+        try{
+            
+            // run command
+            CommandResultHolder commandResultHolder = commandRequestExecutor.execute(meter, commandBuffer.toString(), user);
+            
+            // get result string from command, set result string
+            String resultString = commandResultHolder.getLastResultString();
+            peakResult.setResultString(resultString);
+            
+            // device errors!
+            if (commandResultHolder.isErrorsExist()) {
+                
+                peakResult.setErrors(commandResultHolder.getErrors());
+                
+                StringBuffer sb = new StringBuffer();
+                List<DeviceErrorDescription> errors = commandResultHolder.getErrors();
+                for (DeviceErrorDescription ded : errors) {
+                    sb.append(ded.toString() + "\n");
+                }
+                peakResult.setDeviceError(sb.toString());
+                peakResult.setNoData(true);
+                
+            // results exist, parse result string into peakResult
+            } else {
+                parseResultString(peakResult, resultString, interval, user);
+            }
+            
+        }
+        catch(Exception e){}
+        
+        // persist the results
+        if(!peakResult.isNoData() && persist){
+            peakReportDao.saveResult(peakResult);
+        }
+        
+        return peakResult;
+    }
+    
+    
+    public PeakReportResult retrieveArchivedPeakReport(int deviceId, PeakReportRunType runType, LiteYukonUser user){
+        
+        PeakReportResult peakResult = peakReportDao.getResult(deviceId, runType);
+        
+        if(peakResult != null){
+            
+            // channel
+            int channel = peakResult.getChannel();
+            
+            // interval
+            int interval = getChannelIntervalForDevice(deviceId, channel);
+            
+            // result string
+            String resultString = peakResult.getResultString();
+            
+            // parse result string to fill in rest of peak result obj
+            parseResultString(peakResult, resultString, interval, user);
+        }
+
+        return peakResult;
+    }
+    
+    
+    public void parseResultString(PeakReportResult peakResult, String resultString, int interval, LiteYukonUser user){
+        
+        SimpleDateFormat dateFormater = new SimpleDateFormat("MM/dd/yy hh:mm:ss");
         
         try{
             
@@ -44,9 +152,9 @@ public class PeakReportServiceImpl implements PeakReportService {
                     String[] rangeDateParts = reportRangeStr.split(" - ");
                     String rangeStartDateStr = rangeDateParts[0];
                     String rangeStopDateStr = rangeDateParts[1];
-              
-                    peakResult.setRangeStartDate(dateFormattingService.flexibleDateParser(rangeStartDateStr, user));
-                    peakResult.setRangeStopDate(dateFormattingService.flexibleDateParser(rangeStopDateStr, user));
+                    
+                    peakResult.setRangeStartDate(dateFormater.parse(rangeStartDateStr));
+                    peakResult.setRangeStopDate(dateFormater.parse(rangeStopDateStr));
                     
                     peakResult.setPeriodStartDateDisplay(dateFormattingService.formatDate(peakResult.getRangeStartDate(), DateFormattingService.DateFormatEnum.DATE, user));
                     peakResult.setPeriodStopDateDisplay(dateFormattingService.formatDate(peakResult.getRangeStopDate(), DateFormattingService.DateFormatEnum.DATE, user));
@@ -54,10 +162,10 @@ public class PeakReportServiceImpl implements PeakReportService {
                 }
                 
                 // peakStartDate, peakStopDate, peakValue
-                else if(s.startsWith("Peak day: ") && peakType == PeakReportPeakType.DAY) {
+                else if(s.startsWith("Peak day: ")) {
                     
                     String peakRangeEndStr = s.replaceFirst("Peak day: ", "");
-                    Date peakRangeEnd = dateFormattingService.flexibleDateParser(peakRangeEndStr, user);
+                    Date peakRangeEnd = dateFormater.parse(peakRangeEndStr);
                     
                     peakResult.setPeakStopDate(peakRangeEnd);
                     
@@ -66,10 +174,10 @@ public class PeakReportServiceImpl implements PeakReportService {
                     peakResult.setPeakValue(dateFormattingService.formatDate(peakRangeEnd, DateFormattingService.DateFormatEnum.DATE, user));
                     
                 }
-                else if (s.startsWith("Peak hour: ") && peakType == PeakReportPeakType.HOUR) {
+                else if (s.startsWith("Peak hour: ")) {
                     
                     String peakRangeEndStr = s.replaceFirst("Peak hour: ", "");
-                    Date peakRangeEnd = dateFormattingService.flexibleDateParser(peakRangeEndStr, user);
+                    Date peakRangeEnd = dateFormater.parse(peakRangeEndStr);
                     
                     peakResult.setPeakStopDate(peakRangeEnd);
                     
@@ -84,10 +192,10 @@ public class PeakReportServiceImpl implements PeakReportService {
                     peakResult.setPeakValue(peakValueStr);
                     
                  }
-                 else if (s.startsWith("Peak interval: ") && peakType == PeakReportPeakType.INTERVAL) {
+                 else if (s.startsWith("Peak interval: ")) {
                     
                      String peakRangeEndStr = s.replaceFirst("Peak interval: ", "");
-                     Date peakRangeEnd = dateFormattingService.flexibleDateParser(peakRangeEndStr, user);
+                     Date peakRangeEnd = dateFormater.parse(peakRangeEndStr);
                      
                      peakResult.setPeakStopDate(peakRangeEnd);
                     
@@ -152,7 +260,6 @@ public class PeakReportServiceImpl implements PeakReportService {
             peakResult.setNoData(true);
         }
         
-        return peakResult;
     }
 
     public int getChannelIntervalForDevice(int deviceId, int channel){
@@ -189,6 +296,22 @@ public class PeakReportServiceImpl implements PeakReportService {
     @Required
     public void setPaoDao(PaoDao paoDao) {
         this.paoDao = paoDao;
+    }
+
+    @Required
+    public void setCommandRequestExecutor(
+            CommandRequestExecutor commandRequestExecutor) {
+        this.commandRequestExecutor = commandRequestExecutor;
+    }
+
+    @Required
+    public void setMeterDao(MeterDao meterDao) {
+        this.meterDao = meterDao;
+    }
+
+    @Required
+    public void setPeakReportDao(PeakReportDao peakReportDao) {
+        this.peakReportDao = peakReportDao;
     }
     
 }

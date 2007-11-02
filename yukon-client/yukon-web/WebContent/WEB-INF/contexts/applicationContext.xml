@@ -209,10 +209,7 @@
               <ref local="widgetInput.deviceId"/>
            </set>
         </property>
-        <property name="commandRequestExecutor" ref="commandRequestExecutor" />
         <property name="peakReportService" ref="peakReportService" />
-        <property name="peakReportDao" ref="peakReportDao" />
-        <property name="meterDao" ref="meterDao"/>
         <property name="dateFormattingService" ref="dateFormattingService"/>
     </bean>
     
@@ -303,8 +300,6 @@
            </set>
         </property>
         <property name="peakReportService" ref="peakReportService" />
-        <property name="peakReportDao" ref="peakReportDao" />
-        <property name="commandRequestExecutor" ref="commandRequestExecutor" />
         <property name="meterDao" ref="meterDao"/>
         <property name="dateFormattingService" ref="dateFormattingService"/>
         <property name="attributeService" ref="attributeService"/>
@@ -352,6 +347,9 @@
 	  <property name="dateFormattingService" ref="dateFormattingService"/>
 	  <property name="dbPersistentDao" ref="dbPersistentDao"/>
 	  <property name="paoDao" ref="paoDao"/>
+      <property name="commandRequestExecutor" ref="commandRequestExecutor" />
+      <property name="meterDao" ref="meterDao"/>
+      <property name="peakReportDao" ref="peakReportDao" />
     </bean>
     
     <bean id="pointDataUpdateRegistrationService"

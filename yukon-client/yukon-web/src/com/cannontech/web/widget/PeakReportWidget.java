@@ -4,7 +4,6 @@ import java.text.ParseException;
 import java.util.ArrayList;
 import java.util.Collections;
 import java.util.Date;
-import java.util.GregorianCalendar;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
@@ -17,20 +16,15 @@ import org.apache.commons.lang.time.DateUtils;
 import org.springframework.beans.factory.annotation.Required;
 import org.springframework.web.servlet.ModelAndView;
 
-import com.cannontech.amr.errors.model.DeviceErrorDescription;
 import com.cannontech.amr.meter.dao.MeterDao;
 import com.cannontech.amr.meter.model.Meter;
 import com.cannontech.common.device.attribute.model.Attribute;
 import com.cannontech.common.device.attribute.model.BuiltInAttribute;
 import com.cannontech.common.device.attribute.service.AttributeService;
-import com.cannontech.common.device.commands.CommandRequestExecutor;
-import com.cannontech.common.device.commands.CommandResultHolder;
-import com.cannontech.common.device.peakReport.dao.PeakReportDao;
 import com.cannontech.common.device.peakReport.model.PeakReportPeakType;
 import com.cannontech.common.device.peakReport.model.PeakReportResult;
 import com.cannontech.common.device.peakReport.model.PeakReportRunType;
 import com.cannontech.common.device.peakReport.service.PeakReportService;
-import com.cannontech.common.util.TimeUtil;
 import com.cannontech.core.service.DateFormattingService;
 import com.cannontech.database.data.lite.LiteYukonUser;
 import com.cannontech.util.ServletUtil;
@@ -43,8 +37,6 @@ import com.cannontech.web.widget.support.WidgetParameterHelper;
 public class PeakReportWidget extends WidgetControllerBase {
 
     private PeakReportService peakReportService = null;
-    private PeakReportDao peakReportDao = null;
-    private CommandRequestExecutor commandRequestExecutor = null;
     private MeterDao meterDao = null;
     private DateFormattingService dateFormattingService = null;
     private AttributeService attributeService = null;
@@ -128,23 +120,10 @@ public class PeakReportWidget extends WidgetControllerBase {
         // initialize dates/times
         mav = setDefaultMavDateTime(request, mav, user);
        
-        // initialize previous peak report
-        PeakReportResult peakResult = peakReportDao.getResult(deviceId, PeakReportRunType.SINGLE);
+        // get previous peak report
+        PeakReportResult peakResult = peakReportService.retrieveArchivedPeakReport(deviceId, PeakReportRunType.SINGLE, user);
         
         if(peakResult != null){
-            
-            // channel
-            int channel = peakResult.getChannel();
-            
-            // interval
-            int interval = peakReportService.getChannelIntervalForDevice(deviceId, channel);
-            
-            // result string
-            String resultString = peakResult.getResultString();
-            
-            // parse result string to fill in rest of peak result obj
-            peakResult = peakReportService.parseResultString(peakResult, resultString, interval, user);
-            
             mav.addObject("peakResult", peakResult);
         }
 
@@ -162,9 +141,6 @@ public class PeakReportWidget extends WidgetControllerBase {
         
         // channel
         int channel = WidgetParameterHelper.getRequiredIntParameter(request, "channel");
-
-        // interval
-        int interval = peakReportService.getChannelIntervalForDevice(deviceId, channel);
         
         // peakType
         PeakReportPeakType peakType = PeakReportPeakType.valueOf(WidgetParameterHelper.getRequiredStringParameter(request, "peakType"));
@@ -227,62 +203,8 @@ public class PeakReportWidget extends WidgetControllerBase {
             return mav;
         }
             
-        
-        // build command to be executed
-        StringBuffer commandBuffer = new StringBuffer();
-        commandBuffer.append("getvalue lp peak");
-        commandBuffer.append(" " + peakType.toString().toLowerCase());
-        commandBuffer.append(" channel " + channel);
-        commandBuffer.append(" " + dateFormattingService.formatDate(stopDate, DateFormattingService.DateFormatEnum.DATE, user));
-        
-        GregorianCalendar startDateCal = dateFormattingService.getGregorianCalendar(user);
-        startDateCal.setTime(startDate);
-        
-        GregorianCalendar stopDateCal = dateFormattingService.getGregorianCalendar(user);
-        stopDateCal.setTime(stopDate);
-        
-        int commandDays = TimeUtil.differenceInDays(startDateCal, stopDateCal) + 1;
-        commandBuffer.append(" " + commandDays);
-        
-        // execute command to get profile peak summary results for user request
-        Meter meter = meterDao.getForId(deviceId);
-        CommandResultHolder commandResultHolder = commandRequestExecutor.execute(meter, commandBuffer.toString(), user);
-
-        // setup basics of PeakReportResult
-        PeakReportResult peakResult = new PeakReportResult();
-        peakResult.setDeviceId(deviceId);
-        peakResult.setChannel(channel);
-        peakResult.setPeakType(peakType);
-        peakResult.setRunType(PeakReportRunType.SINGLE);
-        peakResult.setRunDate(new Date());
-        
-        // get result string from command, set result string
-        String resultString = commandResultHolder.getLastResultString();
-        peakResult.setResultString(resultString);
-        
-        // device errors!
-        if (commandResultHolder.isErrorsExist()) {
-            
-            peakResult.setErrors(commandResultHolder.getErrors());
-            
-            StringBuffer sb = new StringBuffer();
-            List<DeviceErrorDescription> errors = commandResultHolder.getErrors();
-            for (DeviceErrorDescription ded : errors) {
-                sb.append(ded.toString() + "\n");
-            }
-            peakResult.setDeviceError(sb.toString());
-            peakResult.setNoData(true);
-            
-        // results exist, parse result string into peakResult
-        } else {
-            peakResult = peakReportService.parseResultString(peakResult, resultString, interval, user);
-            
-        }
-        
-        // persist the results
-        if(!peakResult.isNoData()){
-            peakReportDao.saveResult(peakResult);
-        }
+        // request report from service
+        PeakReportResult peakResult = peakReportService.requestPeakReport(deviceId, peakType, PeakReportRunType.SINGLE, channel, startDate, stopDate, true, user);
         
         mav.addObject("peakResult", peakResult);
         
@@ -323,17 +245,6 @@ public class PeakReportWidget extends WidgetControllerBase {
         return mav;
     }
 
-
-
-    @Required
-    public void setpeakReportDao(PeakReportDao peakReportDao) {
-        this.peakReportDao = peakReportDao;
-    }
-
-    @Required
-    public void setCommandRequestExecutor(CommandRequestExecutor commandRequestExecutor) {
-        this.commandRequestExecutor = commandRequestExecutor;
-    }
 
     @Required
     public void setMeterDao(MeterDao meterDao) {
