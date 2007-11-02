@@ -12,8 +12,8 @@
 *
 * PVCS KEYWORDS:
 * ARCHIVE      :  $Archive:   Z:/SOFTWAREARCHIVES/YUKON/RTDB/INCLUDE/mgr_point.h-arc  $
-* REVISION     :  $Revision: 1.17 $
-* DATE         :  $Date: 2007/11/01 16:39:06 $
+* REVISION     :  $Revision: 1.18 $
+* DATE         :  $Date: 2007/11/02 20:11:44 $
 *
  * (c) 1999 Cannon Technologies Inc. Wayzata Minnesota
  * All Rights Reserved
@@ -70,21 +70,29 @@ private:
         }
     };
 
-    map< pao_offset_t, long >           _control_offsets;  //  this map contains all control point offsets mapped to point ids
-    std::multimap< pao_offset_t, long > _type_offsets;     //  this map contains all point offsets mapped to point ids
+    std::map     < pao_offset_t, long >  _control_offsets;  //  this map contains all control point offsets
+    std::multimap< pao_offset_t, long >  _type_offsets;     //  this map contains all point offsets
+    std::multimap< long, long >          _pao_pointids;     //  this map contains the loaded pointids that belong to each pao
+
+    bool _all_paoids_loaded;
+    std::set<long> _paoids_loaded;
 
     friend class Test_CtiPointManager;
+
+protected:
+
+    virtual void removePoint(ptr_type pTempCtiPoint);
 
 public:
 
     CtiPointManager();
     virtual ~CtiPointManager();
+
+    virtual void refreshListByPAO(const vector<long> &paoids, BOOL (*fn)(CtiPointBase*,void*) = isPoint, void *d = NULL);
     virtual void refreshList(BOOL (*fn)(CtiPointBase*,void*) = isPoint, void *d = NULL, LONG pntID = 0, LONG paoID = 0);
 
-    virtual void removeSinglePoint(ptr_type pTempCtiPoint);
-
     virtual void DumpList(void);
-    virtual void DeleteList(void);
+    virtual void ClearList(void);
 
     void apply(void (*applyFun)(const long, ptr_type, void*), void* d);
     ptr_type find(bool (*findFun)(const long, const ptr_type &, void*), void* d);
@@ -92,6 +100,8 @@ public:
     ptr_type getOffsetTypeEqual(LONG pao, INT Offset, CtiPointType_t Type);
     ptr_type getEqual(LONG Pt);
     ptr_type getEqualByName(LONG pao, string pname);
+    void     getEqualByPAO(long pao, vector<ptr_type> &points);
+    long     getPAOIdForPointId(long pointid);
 
     bool orphan(long pid);
 
@@ -104,13 +114,6 @@ public:
     {
         return _smartMap.getMux();
     }
-};
-
-struct PointDeviceMapping
-{
-    std::map<long, long> point_device_map;
-    typedef CtiLockGuard<CtiMutex>    LockGuard;
-    CtiMutex mux;
 };
 
 class Test_CtiPointManager : public CtiPointManager

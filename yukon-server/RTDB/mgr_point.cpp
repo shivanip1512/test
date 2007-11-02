@@ -6,8 +6,8 @@
 *
 * PVCS KEYWORDS:
 * ARCHIVE      :  $Archive:   Z:/SOFTWAREARCHIVES/YUKON/RTDB/mgr_point.cpp-arc  $
-* REVISION     :  $Revision: 1.39 $
-* DATE         :  $Date: 2007/11/01 16:39:06 $
+* REVISION     :  $Revision: 1.40 $
+* DATE         :  $Date: 2007/11/02 20:11:43 $
 *
 * Copyright (c) 1999, 2000, 2001 Cannon Technologies Inc. All rights reserved.
 *-----------------------------------------------------------------------------*/
@@ -33,6 +33,9 @@
 #include "utility.h"
 
 #include "rwutil.h"
+#include "cparms.h"
+
+using namespace std;
 
 using namespace std;
 
@@ -315,11 +318,21 @@ void CtiPointManager::refreshList(BOOL (*testFunc)(CtiPointBase*,void*), void *a
                         dout << "  Evicting " << pTempCtiPoint->getName() << " from list" << endl;
                     }
 
-                    //  Remove the point from the type/offset lookup map
-                    removeSinglePoint(pTempCtiPoint);
+                    //  Remove the point from the lookup maps
+                    removePoint(pTempCtiPoint);
                 }
             }
         }   // Temporary results are destroyed to free the connection
+
+        if( paoID )
+        {
+            _paoids_loaded.insert(paoID);
+        }
+        else if( !pntID )
+        {
+            //  paoid == 0 and pntid == 0 means all points were loaded
+            _all_paoids_loaded = true;
+        }
 
         // Now load the properties onto the points we have collected.
         refreshPointProperties(pntID,paoID);
@@ -330,13 +343,224 @@ void CtiPointManager::refreshList(BOOL (*testFunc)(CtiPointBase*,void*), void *a
         //Make sure the list is cleared
         { CtiLockGuard<CtiLogger> doubt_guard(dout); dout << "Attempting to clear point list..." << endl;}
 
-        DeleteList();
+        ClearList();
 
         { CtiLockGuard<CtiLogger> doubt_guard(dout); dout << "getPoints:  " << e.why() << endl;}
         RWTHROW(e);
 
     }
 }
+
+
+void CtiPointManager::refreshListByPAO(const vector<long> &paoids, BOOL (*testFunc)(CtiPointBase*,void*), void *arg)
+{
+    {
+        // Make sure all objects that that store results
+        // are out of scope when the release is called
+        CtiLockGuard<CtiSemaphore> cg(gDBAccessSema);
+        RWDBConnection conn = getConnection();
+
+        RWDBDatabase  db = conn.database();
+        RWDBSelector  base_selector_accum  = db.selector(), selector_accum,
+                      base_selector_analog = db.selector(), selector_analog,
+                      base_selector_calc   = db.selector(), selector_calc,
+                      base_selector_status = db.selector(), selector_status,
+                      base_selector_system = db.selector(), selector_system;
+        RWDBTable     key_table_system,
+                      key_table_status,
+                      key_table_analog,
+                      key_table_accum,
+                      key_table_calc;
+        RWDBReader    rdr;
+
+        //  ACCUMULATOR points
+        CtiPointAccumulator().getSQL(db, key_table_accum, base_selector_accum);
+
+        //  ANALOG points
+        CtiPointAnalog().getSQL(db, key_table_analog, base_selector_analog);
+
+        //  CALC points
+        CtiPointNumeric().getSQL(db, key_table_calc, base_selector_calc);
+        base_selector_calc.where(base_selector_calc.where()     && (rwdbUpper(key_table_calc["pointtype"]) == RWDBExpr("CALCULATED") ||
+                                                                    rwdbUpper(key_table_calc["pointtype"]) == RWDBExpr("CALCANALOG")));
+
+        //  STATUS points
+        CtiPointStatus().getSQL(db, key_table_status, base_selector_status );
+        base_selector_status.where(base_selector_status.where() && (rwdbUpper(key_table_status["pointtype"]) == RWDBExpr("STATUS") ||
+                                                                    rwdbUpper(key_table_status["pointtype"]) == RWDBExpr("CALCSTATUS")));
+
+        //  SYSTEM points
+        CtiPointBase().getSQL(db, key_table_system, base_selector_system );
+        base_selector_system.where(base_selector_system.where() && rwdbUpper(key_table_system["pointtype"]) == RWDBExpr("SYSTEM"));
+
+        int paoids_per_select = gConfigParms.getValueAsInt("MAX_PAOIDS_PER_SELECT", 10);
+
+        //  I was going to turn these into a collection, but it's more obvious if I keep them seperate
+        selector_accum  = base_selector_accum;
+        selector_analog = base_selector_analog;
+        selector_calc   = base_selector_calc;
+        selector_status = base_selector_status;
+        selector_system = base_selector_system;
+
+        if( paoids_per_select > paoids.size() )
+        {
+            paoids_per_select = paoids.size();
+        }
+
+        vector<long> selector_paoids(paoids_per_select, -1);  //  initialize to a list of -1s
+        vector<long>::iterator selector_paoid_itr;
+
+        RWDBCriterion paoid_list_criterion_accum,
+                      paoid_list_criterion_analog,
+                      paoid_list_criterion_calc,
+                      paoid_list_criterion_status,
+                      paoid_list_criterion_system;
+
+/*
+        for( selector_paoid_itr  = selector_paoids.begin();
+             selector_paoid_itr != selector_paoids.end();
+             selector_paoid_itr++ )
+        {
+            paoid_list_criterion_accum  = paoid_list_criterion_accum  || (key_table_accum ["paobjectid"] == RWDBBoundExpr(selector_paoid_itr));
+            paoid_list_criterion_analog = paoid_list_criterion_analog || (key_table_analog["paobjectid"] == RWDBBoundExpr(selector_paoid_itr));
+            paoid_list_criterion_calc   = paoid_list_criterion_calc   || (key_table_calc  ["paobjectid"] == RWDBBoundExpr(selector_paoid_itr));
+            paoid_list_criterion_status = paoid_list_criterion_status || (key_table_status["paobjectid"] == RWDBBoundExpr(selector_paoid_itr));
+            paoid_list_criterion_system = paoid_list_criterion_system || (key_table_system["paobjectid"] == RWDBBoundExpr(selector_paoid_itr));
+        }
+
+        selector_accum .where(selector_accum .where() && paoid_list_criterion_accum);
+        selector_analog.where(selector_analog.where() && paoid_list_criterion_analog);
+        selector_calc  .where(selector_calc  .where() && paoid_list_criterion_calc);
+        selector_status.where(selector_status.where() && paoid_list_criterion_status);
+        selector_system.where(selector_system.where() && paoid_list_criterion_system);
+*/
+        bool rowFound = false;
+
+        vector<long>::const_iterator paoid_itr, paoid_itr_end;
+
+        paoid_itr     = paoids.begin();
+        paoid_itr_end = paoids.end();
+
+        while( distance(paoid_itr, paoid_itr_end) >= paoids_per_select )
+        {
+            string in_list;
+
+            /*for( selector_paoid_itr  = selector_paoids.begin();
+                 selector_paoid_itr != selector_paoids.end();
+                 selector_paoid_itr++, paoid_itr++ )*/
+            in_list.erase();
+
+            for( int i = 0; i < paoids_per_select; i++, paoid_itr++ )
+            {
+                if( !in_list.empty() )
+                {
+                    in_list += ",";
+                }
+
+                in_list += CtiNumStr(*paoid_itr);
+
+                //*selector_paoid_itr = *paoid_itr;
+
+                _paoids_loaded.insert(*paoid_itr);
+            }
+
+            in_list = "(" + in_list + ")";
+
+            selector_accum .where(base_selector_accum .where() && key_table_accum ["paobjectid"].in(RWDBExpr(in_list.c_str(), false)));
+            selector_analog.where(base_selector_analog.where() && key_table_analog["paobjectid"].in(RWDBExpr(in_list.c_str(), false)));
+            selector_calc  .where(base_selector_calc  .where() && key_table_calc  ["paobjectid"].in(RWDBExpr(in_list.c_str(), false)));
+            selector_status.where(base_selector_status.where() && key_table_status["paobjectid"].in(RWDBExpr(in_list.c_str(), false)));
+            selector_system.where(base_selector_system.where() && key_table_system["paobjectid"].in(RWDBExpr(in_list.c_str(), false)));
+
+            if( DebugLevel & 0x00010000 )
+            {
+                CtiLockGuard<CtiLogger> doubt_guard(dout);
+                dout << selector_accum .asString() << endl;
+                dout << selector_analog.asString() << endl;
+                dout << selector_calc  .asString() << endl;
+                dout << selector_status.asString() << endl;
+                dout << selector_system.asString() << endl;
+            }
+
+            refreshPoints(rowFound, selector_accum .reader(conn), testFunc, arg);
+            refreshPoints(rowFound, selector_analog.reader(conn), testFunc, arg);
+            refreshPoints(rowFound, selector_calc  .reader(conn), testFunc, arg);
+            refreshPoints(rowFound, selector_status.reader(conn), testFunc, arg);
+            refreshPoints(rowFound, selector_system.reader(conn), testFunc, arg);
+        }
+
+        //  catch the remaining few - no need to RWDBBoundExpr, since we're only going to be using this once
+        if( distance(paoid_itr, paoid_itr_end) > 0 )
+        {
+            selector_accum  = base_selector_accum;
+            selector_analog = base_selector_analog;
+            selector_calc   = base_selector_calc;
+            selector_status = base_selector_status;
+            selector_system = base_selector_system;
+
+            RWDBCriterion paoid_list_criterion;
+
+            string in_list;
+
+            for( ; paoid_itr != paoid_itr_end; paoid_itr++ )
+            {
+                if( !in_list.empty() )
+                {
+                    in_list += ",";
+                }
+
+                //*selector_paoid_itr = *paoid_itr;
+
+                _paoids_loaded.insert(*paoid_itr);
+            }
+
+            in_list += CtiNumStr(*paoid_itr);
+
+            in_list = "(" + in_list + ")";
+
+            selector_accum .where(base_selector_accum .where() && key_table_accum ["paobjectid"].in(RWDBExpr(in_list.c_str(), false)));
+            selector_analog.where(base_selector_analog.where() && key_table_analog["paobjectid"].in(RWDBExpr(in_list.c_str(), false)));
+            selector_calc  .where(base_selector_calc  .where() && key_table_calc  ["paobjectid"].in(RWDBExpr(in_list.c_str(), false)));
+            selector_status.where(base_selector_status.where() && key_table_status["paobjectid"].in(RWDBExpr(in_list.c_str(), false)));
+            selector_system.where(base_selector_system.where() && key_table_system["paobjectid"].in(RWDBExpr(in_list.c_str(), false)));
+            /*
+            for( ; paoid_itr != paoid_itr_end; paoid_itr++ )
+            {
+                paoid_list_criterion_accum  = paoid_list_criterion_accum  || (key_table_accum ["paobjectid"] == RWDBExpr(*paoid_itr));
+                paoid_list_criterion_analog = paoid_list_criterion_analog || (key_table_analog["paobjectid"] == RWDBExpr(*paoid_itr));
+                paoid_list_criterion_calc   = paoid_list_criterion_calc   || (key_table_calc  ["paobjectid"] == RWDBExpr(*paoid_itr));
+                paoid_list_criterion_status = paoid_list_criterion_status || (key_table_status["paobjectid"] == RWDBExpr(*paoid_itr));
+                paoid_list_criterion_system = paoid_list_criterion_system || (key_table_system["paobjectid"] == RWDBExpr(*paoid_itr));
+
+                _paoids_loaded.insert(*paoid_itr);
+            }
+
+            selector_accum .where(selector_accum .where() && paoid_list_criterion_accum);
+            selector_analog.where(selector_analog.where() && paoid_list_criterion_analog);
+            selector_calc  .where(selector_calc  .where() && paoid_list_criterion_calc);
+            selector_status.where(selector_status.where() && paoid_list_criterion_status);
+            selector_system.where(selector_system.where() && paoid_list_criterion_system);
+            */
+
+            if( DebugLevel & 0x00010000 )
+            {
+                CtiLockGuard<CtiLogger> doubt_guard(dout);
+                dout << selector_accum .asString() << endl;
+                dout << selector_analog.asString() << endl;
+                dout << selector_calc  .asString() << endl;
+                dout << selector_status.asString() << endl;
+                dout << selector_system.asString() << endl;
+            }
+
+            refreshPoints(rowFound, selector_accum .reader(conn), testFunc, arg);
+            refreshPoints(rowFound, selector_analog.reader(conn), testFunc, arg);
+            refreshPoints(rowFound, selector_calc  .reader(conn), testFunc, arg);
+            refreshPoints(rowFound, selector_status.reader(conn), testFunc, arg);
+            refreshPoints(rowFound, selector_system.reader(conn), testFunc, arg);
+        }
+    }
+}
+
 
 void CtiPointManager::DumpList(void)
 {
@@ -365,7 +589,7 @@ void CtiPointManager::DumpList(void)
         //Make sure the list is cleared
         { CtiLockGuard<CtiLogger> doubt_guard(dout); dout << "Attempting to clear device list..." << endl;}
 
-        DeleteList();
+        ClearList();
 
         { CtiLockGuard<CtiLogger> doubt_guard(dout); dout << "DumpPoints:  " << e.why() << endl;}
         RWTHROW(e);
@@ -379,8 +603,8 @@ CtiPointBase* PointFactory(RWDBReader &rdr)
     static const RWCString pointtype = "pointtype";
     static const RWCString pseudoflag = "pseudoflag";
 
-    INT       PtType;
-    INT       PseudoPt = FALSE;
+    INT    PtType;
+    INT    PseudoPt = FALSE;
     string rwsType;
     string rwsPseudo;
 
@@ -405,43 +629,43 @@ CtiPointBase* PointFactory(RWDBReader &rdr)
 
     switch(PtType)
     {
-    case StatusPointType:
+        case StatusPointType:
         {
-            Point = (CtiPointBase*) CTIDBG_new CtiPointStatus;
+            Point = CTIDBG_new CtiPointStatus;
             break;
         }
-    case AnalogOutputPointType:
-    case AnalogPointType:
+        case AnalogOutputPointType:
+        case AnalogPointType:
         {
             if(PseudoPt)
-                Point = (CtiPointBase*) CTIDBG_new CtiPointPseudoAnalog;     // Really a numeric!
+                Point = CTIDBG_new CtiPointPseudoAnalog;     // Really a numeric!
             else
-                Point = (CtiPointBase*) CTIDBG_new CtiPointAnalog;
+                Point = CTIDBG_new CtiPointAnalog;
 
             break;
         }
-    case PulseAccumulatorPointType:
-    case DemandAccumulatorPointType:
+        case PulseAccumulatorPointType:
+        case DemandAccumulatorPointType:
         {
-            Point = (CtiPointBase*) CTIDBG_new CtiPointAccumulator;
+            Point = CTIDBG_new CtiPointAccumulator;
             break;
         }
-    case CalculatedPointType:
+        case CalculatedPointType:
         {
-            Point = (CtiPointBase*) CTIDBG_new CtiPointCalculated;          // This too is really a numeric!
+            Point = CTIDBG_new CtiPointCalculated;          // This too is really a numeric!
             break;
         }
-    case CalculatedStatusPointType:
+        case CalculatedStatusPointType:
         {
-            Point = (CtiPointBase*) CTIDBG_new CtiPointCalculatedStatus;
+            Point = CTIDBG_new CtiPointCalculatedStatus;
             break;
         }
-    case SystemPointType:
+        case SystemPointType:
         {
             Point = CTIDBG_new CtiPointBase;
             break;
         }
-    default:
+        default:
         {
             { CtiLockGuard<CtiLogger> doubt_guard(dout); dout << "Unknown point type!" << endl;}
             break;
@@ -478,18 +702,18 @@ void CtiPointManager::refreshPoints(bool &rowFound, RWDBReader& rdr, BOOL (*test
         }
         else
         {
-            CtiPoint *pTempCtiPoint = PointFactory(rdr);               // Use the reader to get me an object of the proper type
-            pTempCtiPoint->DecodeDatabaseReader(rdr);        // Fills himself in from the reader
+            CtiPoint *pTempCtiPoint = PointFactory(rdr);    // Use the reader to get me an object of the proper type
+            pTempCtiPoint->DecodeDatabaseReader(rdr);       // Fills himself in from the reader
 
-            if(((*testFunc)(pTempCtiPoint, arg)))            // If I care about this point in the db in question....
+            if(((*testFunc)(pTempCtiPoint, arg)))           // If I care about this point in the db in question....
             {
                 // Add it to my list....
-                pTempCtiPoint->setUpdatedFlag();               // Mark it updated
+                pTempCtiPoint->setUpdatedFlag();            // Mark it updated
                 addPoint(pTempCtiPoint);
             }
             else
             {
-                delete pTempCtiPoint;                         // I don't want it!
+                delete pTempCtiPoint;                       // I don't want it!
             }
         }
     }
@@ -517,6 +741,11 @@ CtiPointManager::ptr_type CtiPointManager::getEqualByName(LONG pao, string pname
     LockGuard  guard(getMux());
     spiterator itr;
 
+    if( !_all_paoids_loaded && (_paoids_loaded.find(pao) == _paoids_loaded.end()) )
+    {
+        refreshList(isPoint, NULL, 0, pao);
+    }
+
     for(itr = begin(); itr != end(); itr++)
     {
         p = (itr->second);
@@ -542,12 +771,47 @@ CtiPointManager::ptr_type CtiPointManager::getEqualByName(LONG pao, string pname
     return pRet;
 }
 
+
+void CtiPointManager::getEqualByPAO(long pao, vector<ptr_type> &points)
+{
+    ptr_type p;
+    ptr_type pRet;
+
+    LockGuard  guard(getMux());
+
+    if( !_all_paoids_loaded && (_paoids_loaded.find(pao) == _paoids_loaded.end()) )
+    {
+        refreshList(isPoint, NULL, 0, pao);
+    }
+
+    multimap<long, long>::const_iterator itr         = _pao_pointids.lower_bound(pao),
+                                         lower_bound = _pao_pointids.upper_bound(pao);
+
+    for( ; itr != lower_bound; itr++ )
+    {
+        ptr_type p = getEqual(itr->second);
+
+        if( p )  points.push_back(p);
+    }
+}
+
+
 CtiPointManager::ptr_type CtiPointManager::getOffsetTypeEqual(LONG pao, INT Offset, CtiPointType_t Type)
 {
     ptr_type p;
     ptr_type pRet;
 
     LockGuard  guard(getMux());
+
+    if( !_all_paoids_loaded && (_paoids_loaded.find(pao) == _paoids_loaded.end()) )
+    {
+        {
+            CtiLockGuard<CtiLogger> doubt_guard(dout);
+            dout << CtiTime() << " refreshing points for paoid " << pao << endl;
+        }
+
+        refreshList(isPoint, NULL, 0, pao);
+    }
 
     multimap<pao_offset_t, long>::const_iterator type_itr, upper_bound;
 
@@ -584,6 +848,11 @@ CtiPointManager::ptr_type CtiPointManager::getControlOffsetEqual(LONG pao, INT O
 
     LockGuard  guard(getMux());
 
+    if( !_all_paoids_loaded && (_paoids_loaded.find(pao) == _paoids_loaded.end()) )
+    {
+        refreshList(isPoint, NULL, 0, pao);
+    }
+
     std::map<pao_offset_t, long>::const_iterator control_itr = _control_offsets.find(pao_offset_t(pao, Offset));
 
     if( control_itr != _control_offsets.end() )
@@ -613,6 +882,7 @@ void CtiPointManager::addPoint( CtiPointBase *point )
 
         //  add it into the offset lookup map
         _type_offsets.insert(std::make_pair(pao_offset_t(point->getDeviceID(), point->getPointOffset()), point->getPointID()));
+        _pao_pointids.insert(std::make_pair(point->getDeviceID(), point->getPointID()));
 
         //  if it's a control point, add it into the control offset lookup map
         if( point->getType() == StatusPointType &&
@@ -639,6 +909,22 @@ size_t CtiPointManager::entries()
     return _smartMap.entries();
 }
 
+
+long CtiPointManager::getPAOIdForPointId(long pointid)
+{
+    long retval = -1;
+
+    ptr_type p = getEqual(pointid);
+
+    if( p )
+    {
+        retval = p->getDeviceID();
+    }
+
+    return retval;
+}
+
+
 CtiPointManager::CtiPointManager() {}
 
 extern void cleanupDB();
@@ -649,40 +935,56 @@ CtiPointManager::~CtiPointManager()
 }
 
 
-void CtiPointManager::DeleteList(void)
+void CtiPointManager::ClearList(void)
 {
     _smartMap.removeAll(NULL, 0);
 
-    //  do these need to be muxed?
-    _type_offsets.erase(_type_offsets.begin(), _type_offsets.end());
-    _control_offsets.erase(_control_offsets.begin(), _control_offsets.end());
+    _pao_pointids.clear();
+    _type_offsets.clear();
+    _control_offsets.clear();
+
+    _paoids_loaded.clear();
+    _all_paoids_loaded = false;
 }
 
-void CtiPointManager::removeSinglePoint(ptr_type pTempCtiPoint)
+
+template <class K, class _Ty>
+void erase_from_multimap(multimap<K, _Ty> &coll, const K key, const _Ty value)
+{
+    multimap<K, _Ty>::iterator itr, upper_bound;
+
+    itr         = coll.lower_bound(key);
+    upper_bound = coll.upper_bound(key);
+
+    for( ; itr != upper_bound; itr++ )
+    {
+         if( itr->second == value )
+         {
+             coll.erase(itr);
+
+             break;
+         }
+    }
+}
+
+
+void CtiPointManager::removePoint(ptr_type pTempCtiPoint)
 {
     if( pTempCtiPoint )
     {
-        std::multimap<pao_offset_t, long>::iterator type_itr;
-        for( type_itr  = _type_offsets.lower_bound(pao_offset_t(pTempCtiPoint->getDeviceID(), pTempCtiPoint->getPointOffset()));
-             type_itr != _type_offsets.upper_bound(pao_offset_t(pTempCtiPoint->getDeviceID(), pTempCtiPoint->getPointOffset()));
-             type_itr++ )
-        {
-             if( pTempCtiPoint->getType() == type_itr->second )
-             {
-                 _type_offsets.erase(type_itr);
-
-                 break;
-             }
-        }
-
         //  If it's a status point with control, remove it from the control point lookup as well
         if( pTempCtiPoint->getType() == StatusPointType &&
             pTempCtiPoint->getControlOffset() )
         {
             _control_offsets.erase(pao_offset_t(pTempCtiPoint->getDeviceID(), pTempCtiPoint->getControlOffset()));
         }
+
+        erase_from_multimap(_type_offsets, pao_offset_t(pTempCtiPoint->getDeviceID(), pTempCtiPoint->getPointOffset()), pTempCtiPoint->getPointID());
+
+        erase_from_multimap(_pao_pointids, pTempCtiPoint->getDeviceID(), pTempCtiPoint->getPointID());
     }
 }
+
 
 bool CtiPointManager::orphan(long pid)
 {
@@ -832,15 +1134,15 @@ void CtiPointManager::apply(void (*applyFun)(const long, ptr_type, void*), void*
         int trycount = 0;
 
         #if 1
-        LockGuard gaurd(getMux(), 30000);
+        LockGuard guard(getMux(), 30000);
 
-        while(!gaurd.isAcquired())
+        while(!guard.isAcquired())
         {
             {
                 CtiLockGuard<CtiLogger> doubt_guard(dout);
                 dout << CtiTime() << " **** Checkpoint: Unable to lock point mutex.  Will retry. **** " << __FILE__ << " (" << __LINE__ << ") Last Acquired By TID: " << getMux().lastAcquiredByTID() << " Faddr: 0x" << applyFun << endl;
             }
-            gaurd.tryAcquire(30000);
+            guard.tryAcquire(30000);
 
             if(trycount++ > 6)
             {
