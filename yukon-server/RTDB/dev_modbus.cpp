@@ -8,18 +8,16 @@
 *
 * PVCS KEYWORDS:
 * ARCHIVE      :  $Archive:   Z:/SOFTWAREARCHIVES/YUKON/RTDB/dev_cbc.cpp-arc  $
-* REVISION     :  $Revision: 1.8 $
-* DATE         :  $Date: 2006/03/23 15:29:17 $
+* REVISION     :  $Revision: 1.9 $
+* DATE         :  $Date: 2007/11/02 20:18:47 $
 *
 * Copyright (c) 2002 Cannon Technologies Inc. All rights reserved.
 *-----------------------------------------------------------------------------*/
 #include "yukon.h"
 
 
-
 #include <map>
 #include <string>
-
 
 #include <windows.h>
 
@@ -29,6 +27,7 @@
 #include "pt_base.h"
 #include "pt_numeric.h"
 #include "pt_status.h"
+#include "pt_analog.h"
 #include "pt_accum.h"
 #include "master.h"
 #include "dllyukon.h"
@@ -304,71 +303,70 @@ int Modbus::recvCommRequest( OUTMESS *OutMessage )
 
         switch(_porter_info.protocol_command)
         {
-            case Protocol::Modbus::Command_ScanALL :
+            case Protocol::Modbus::Command_ScanALL:
+            {
+                try
                 {
-                    try
+                    std::vector<CtiPointManager::ptr_type> points;
+
+                    getDevicePoints(points);
+
+                    std::vector<CtiPointManager::ptr_type>::iterator itr;
+
+                    for( itr = points.begin(); itr != points.end(); itr++ )
                     {
-                        if(_pointMgr == NULL)      // Attached via the dev_base object.
-                        {
-                            RefreshDevicePoints(  );
-                        }
-                
-                        if(_pointMgr != NULL)
-                        {
-                            CtiPointManager::LockGuard guard(_pointMgr->getMux());
-                            /* Walk the point in memory db to see what the point range is */
-                            CtiPointManager::spiterator iter = _pointMgr->begin();
+                        CtiPointManager::ptr_type PointRecord = *itr;
 
-                            CtiPointManager::spiterator end = _pointMgr->end();
-
-                            for( ; iter != end; iter++ )
+                        switch(PointRecord->getType())
+                        {
+                            case StatusPointType:
                             {
-                                PointRecord = iter->second;
-                
-                                switch(PointRecord->getType())
+                                CtiPointStatusSPtr StatusPoint = boost::static_pointer_cast<CtiPointStatus>(PointRecord);
+
+                                if(StatusPoint->getPointOffset()>0)
                                 {
-                                case StatusPointType:
-                                    {
-                                        if(PointRecord->getPointOffset()>0)
-                                        {
-                                            _modbus.addStatusPoint(PointRecord->getPointOffset());
-                                        }
-                                        break;
-                                    }
-                                case AnalogPointType:
-                                    {
-                                        if(PointRecord->getPointOffset()>0)
-                                        {
-                                            _modbus.addAnalogPoint(PointRecord->getPointOffset());
-                                        }
-                                        break;
-                                    }
-                                default:
-                                    {
-                                        CtiLockGuard<CtiLogger> doubt_guard(dout);
-                                        dout << CtiTime() << " **** Checkpoint - An unexpected point (PID: "<<PointRecord->getPointID()<<") was seen " << __FILE__ << " (" << __LINE__ << ")" << endl;
-                                        break;
-                                    }
+                                    _modbus.addStatusPoint(StatusPoint->getPointOffset());
                                 }
+                                break;
+                            }
+                            case AnalogPointType:
+                            {
+                                CtiPointAnalogSPtr AnalogPoint = boost::static_pointer_cast<CtiPointAnalog>(PointRecord);
+
+                                if(AnalogPoint->getPointOffset()>0)
+                                {
+                                    _modbus.addAnalogPoint(AnalogPoint->getPointOffset());
+                                }
+                                break;
+                            }
+                            default:
+                            {
+                                CtiLockGuard<CtiLogger> doubt_guard(dout);
+                                dout << CtiTime() << " **** Checkpoint - An unexpected point (PID: "<<PointRecord->getPointID()<<") was seen " << __FILE__ << " (" << __LINE__ << ")" << endl;
+                                break;
                             }
                         }
-                        break;
                     }
-                    catch (...)
+                    break;
+                }
+                catch (...)
+                {
                     {
                         CtiLockGuard<CtiLogger> doubt_guard(dout);
                         dout << CtiTime() << " **** Checkpoint - An exception was thrown " << __FILE__ << " (" << __LINE__ << ")" << endl;
-                        _modbus.clearPoints();
-                        retVal = UnknownError;
-						break;
                     }
+
+                    _modbus.clearPoints();
+                    retVal = UnknownError;
+
+                    break;
                 }
-               
+            }
+
             default:
             {
                 CtiLockGuard<CtiLogger> doubt_guard(dout);
                 dout << CtiTime() << " **** Checkpoint - invalid command in Modbus::recvCommRequest() **** " << __FILE__ << " (" << __LINE__ << ")" << endl;
-                
             }
         }
 

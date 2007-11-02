@@ -5,8 +5,8 @@
 * Date:   10/4/2001
 *
 * PVCS KEYWORDS:
-* REVISION     :  $Revision: 1.60 $
-* DATE         :  $Date: 2007/03/28 21:18:42 $
+* REVISION     :  $Revision: 1.61 $
+* DATE         :  $Date: 2007/11/02 20:15:30 $
 *
 * Copyright (c) 1999, 2000, 2001 Cannon Technologies Inc. All rights reserved.
 *-----------------------------------------------------------------------------*/
@@ -1721,41 +1721,40 @@ CtiTime CtiDeviceSingle::peekDispatchTime() const
 {
     CtiTime dispatchTime;
 
-    if(_pointMgr != NULL)
+    vector<CtiPointSPtr> points;
+
+    getDevicePoints(points);
+
+    vector<CtiPointSPtr>::iterator itr;
+
+    for( itr = points.begin(); itr != points.end(); itr++ )
     {
         CtiTablePointDispatch ptdefault(0);
         CtiTablePointDispatch pd;
         CtiPointSPtr pPoint;
 
-        CtiPointManager::LockGuard guard(_pointMgr->getMux());
-        CtiPointManager::spiterator iter = _pointMgr->begin();
-        CtiPointManager::spiterator end = _pointMgr->end();
+        pPoint = *itr;
 
-        for( ; iter != end; iter++ )
+        if( pPoint )
         {
-            pPoint = iter->second;
+            pd.setPointID( pPoint->getPointID() );
+            RWDBStatus dbstat = pd.Restore();
 
-            if(pPoint)
+            if(dbstat.errorCode() == RWDBStatus::ok)
             {
-                pd.setPointID( pPoint->getPointID() );
-                RWDBStatus dbstat = pd.Restore();
-
-                if(dbstat.errorCode() == RWDBStatus::ok)
+                if(pd.getTimeStamp() > ptdefault.getTimeStamp() && pd.getTimeStamp() < dispatchTime)
                 {
-                    if(pd.getTimeStamp() > ptdefault.getTimeStamp() && pd.getTimeStamp() < dispatchTime)
-                    {
-                        dispatchTime = pd.getTimeStamp();
-                    }
+                    dispatchTime = pd.getTimeStamp();
                 }
             }
         }
+    }
 
-        if(getDebugLevel() & DEBUGLEVEL_LUDICROUS)
-        {
-            CtiLockGuard<CtiLogger> doubt_guard(dout);
-            dout << CtiTime() << " **** Checkpoint **** " << __FILE__ << " (" << __LINE__ << ")" << endl;
-            dout << "   Oldest dispatch write time is " << dispatchTime << endl;
-        }
+    if(getDebugLevel() & DEBUGLEVEL_LUDICROUS)
+    {
+        CtiLockGuard<CtiLogger> doubt_guard(dout);
+        dout << CtiTime() << " **** Checkpoint **** " << __FILE__ << " (" << __LINE__ << ")" << endl;
+        dout << "   Oldest dispatch write time is " << dispatchTime << endl;
     }
 
     return dispatchTime;
