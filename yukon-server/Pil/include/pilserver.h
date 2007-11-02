@@ -18,6 +18,7 @@ using std::iostream;
 #include "dlldefs.h"
 #include "msg_pcrequest.h"
 #include "mgr_device.h"
+#include "mgr_point.h"
 #include "mgr_route.h"
 #include "mgr_config.h"
 #include "ctibase.h"
@@ -26,33 +27,36 @@ class IM_EX_CTIPIL CtiPILServer : public CtiServer
 {
 private:
 
-   BOOL                          bServerClosing;
-   BOOL                          ListenerAvailable;
+   BOOL                 bServerClosing;
+   BOOL                 ListenerAvailable;
 
-   CtiDeviceManager              *DeviceManager;
-   CtiRouteManager               *RouteManager;
-   CtiConfigManager              *ConfigManager;
+   CtiDeviceManager    *DeviceManager;
+   CtiPointManager     *PointManager;
+   CtiRouteManager     *RouteManager;
+   CtiConfigManager    *ConfigManager;
 
-   RWThreadFunction              ResultThread_;     // Thread which translates INMESS to CtiReturnMsg
-   RWThreadFunction              _vgConnThread;     // Thread which manages VanGogh requests!
-   RWThreadFunction              _nexusThread;
-   RWThreadFunction              _nexusWriteThread;
+   RWThreadFunction     ResultThread_;     // Thread which translates INMESS to CtiReturnMsg
+   RWThreadFunction     _vgConnThread;     // Thread which manages VanGogh requests!
+   RWThreadFunction     _nexusThread;
+   RWThreadFunction     _nexusWriteThread;
 
-   CtiMutex                      _inMux;            // Protects the _inList.
-   list< INMESS*    >            _inList;           // Nexus dumps out into this list!
+   CtiMutex             _inMux;            // Protects the _inList.
+   list< INMESS* >      _inList;           // Nexus dumps out into this list!
 
    CtiFIFOQueue< CtiOutMessage > _porterOMQueue;    // Queue for items to be sent to Porter!
    bool                          _broken;           // When the PILServer knows he's sick.
 
-   int  getDeviceGroupMembers( string groupname, queue<long> &members );
+   int  getDeviceGroupMembers( string groupname, vector<long> &paoids );
+   void loadDevicePoints( const vector<long> &paoids );
 
 public:
 
    typedef CtiServer Inherited;
 
-   CtiPILServer(CtiDeviceManager *DM = NULL, CtiRouteManager *RM = NULL, CtiConfigManager *CM = NULL) :
+   CtiPILServer(CtiDeviceManager *DM = NULL, CtiPointManager *PM = NULL, CtiRouteManager *RM = NULL, CtiConfigManager *CM = NULL) :
       DeviceManager(DM),
-      RouteManager(RM),
+      PointManager (PM),
+      RouteManager (RM),
       ConfigManager(CM),
       ListenerAvailable(0),
       bServerClosing(FALSE)

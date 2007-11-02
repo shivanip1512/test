@@ -6,8 +6,8 @@
 *
 * PVCS KEYWORDS:
 * ARCHIVE      :  $Archive:   Z:/SOFTWAREARCHIVES/YUKON/PIL/pilserver.cpp-arc  $
-* REVISION     :  $Revision: 1.97 $
-* DATE         :  $Date: 2007/09/25 19:15:02 $
+* REVISION     :  $Revision: 1.98 $
+* DATE         :  $Date: 2007/11/02 19:06:32 $
 *
 * Copyright (c) 1999, 2000, 2001 Cannon Technologies Inc. All rights reserved.
 *-----------------------------------------------------------------------------*/
@@ -1333,7 +1333,7 @@ void CtiPILServer::vgConnThread()
 
 }
 
-int CtiPILServer::getDeviceGroupMembers( string groupname, queue<long> &members )
+int CtiPILServer::getDeviceGroupMembers( string groupname, vector<long> &paoids )
 {
     CtiLockGuard<CtiSemaphore> cg(gDBAccessSema);
     RWDBConnection conn = getConnection();
@@ -1394,10 +1394,38 @@ int CtiPILServer::getDeviceGroupMembers( string groupname, queue<long> &members 
     {
         rdr[0] >> deviceid;
 
-        members.push(deviceid);
+        paoids.push_back(deviceid);
     }
 
     return rdr.status().errorCode();
+}
+
+
+void CtiPILServer::loadDevicePoints(const vector<long> &paoids)
+{
+    CtiPoint *pTempCtiPoint = NULL;
+    bool     rowFound = false;
+
+    try
+    {
+        PointManager->refreshListByPAO(paoids, isPoint, NULL);
+    }
+    catch(RWExternalErr e )
+    {
+        {
+            CtiLockGuard<CtiLogger> doubt_guard(dout);
+            dout << "CtiPILServer::loadDevicePoints:  " << e.why() << endl;
+        }
+
+        RWTHROW(e);
+    }
+    catch(...)
+    {
+        {
+            CtiLockGuard<CtiLogger> doubt_guard(dout);
+            dout << CtiTime() << " **** EXCEPTION Checkpoint **** " << __FILE__ << " (" << __LINE__ << ")" << endl;
+        }
+    }
 }
 
 
@@ -1490,7 +1518,7 @@ INT CtiPILServer::analyzeWhiteRabbits(CtiRequestMsg& Req, CtiCommandParser &pars
         {
             string groupname;
             int groupsubmitcnt = 0;
-            queue<long> members;
+            vector<long> members;
 
             if( group )     groupname = parse.getsValue("group");
             if( altgroup )  groupname = parse.getsValue("altgroup");
@@ -1515,11 +1543,22 @@ INT CtiPILServer::analyzeWhiteRabbits(CtiRequestMsg& Req, CtiCommandParser &pars
                 std::transform(groupname.begin(), groupname.end(), groupname.begin(), ::tolower);
 
                 getDeviceGroupMembers(groupname, members);
+
+                if( members.size() > gConfigParms.getValueAsInt("BULK_POINT_LOAD_THRESHOLD", 10) )
+                {
+                    if( parse.getFlags() & CMD_FLAG_GV_KWH ||
+                        parse.getFlags() & CMD_FLAG_GV_DEMAND )
+                    {
+                        loadDevicePoints(members);
+                    }
+                }
             }
 
-            while( !members.empty() )
+            vector<long>::iterator itr, members_end = members.end();
+
+            for( itr = members.begin(); itr != members_end; itr++ )
             {
-                CtiDeviceManager::ptr_type device = DeviceManager->getEqual(members.front());
+                CtiDeviceManager::ptr_type device = DeviceManager->getEqual(*itr);
 
                 if( device )
                 {
@@ -1538,8 +1577,6 @@ INT CtiPILServer::analyzeWhiteRabbits(CtiRequestMsg& Req, CtiCommandParser &pars
 
                     groupsubmitcnt++;
                 }
-
-                members.pop();
             }
 
             {
@@ -1624,7 +1661,7 @@ INT CtiPILServer::analyzeWhiteRabbits(CtiRequestMsg& Req, CtiCommandParser &pars
                 //  trim off the quotes
                 groupname = groupname.substr(1, groupname.size() - 2);
 
-                queue<long> members;
+                vector<long> members;
 
                 //  if it's not a new-style group, convert it
                 if( groupname.find_first_of('/') == string::npos )
@@ -1662,8 +1699,6 @@ INT CtiPILServer::analyzeWhiteRabbits(CtiRequestMsg& Req, CtiCommandParser &pars
 
                         device->setExpectedFreeze(next_freeze);
                     }
-
-                    members.pop();
                 }
 
                 //  this is where we'd attempt to correct devices that have an incorrect freeze counter
