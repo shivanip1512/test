@@ -13,6 +13,7 @@
 #include <rw\thr\mutex.h>
 
 #include "mgr_device.h"
+#include "mgr_point.h"
 #include "mgr_route.h"
 #include "pilserver.h"
 #include "dlldefs.h"
@@ -24,6 +25,7 @@ DLLIMPORT extern RWMutexLock coutMux;
 
 BOOL              bAllDone = FALSE;
 CtiDeviceManager  DevMgr(Application_Invalid);
+CtiPointManager   PntMgr;
 CtiRouteManager   RteMgr;
 
 void CleanupHost()
@@ -76,9 +78,10 @@ int main(int argc, char **argv)
 
       /* Make routes associate with devices */
       attachRouteManagerToDevices(&DevMgr, &RteMgr);
+      attachPointManagerToDevices(&DevMgr, &PntMgr);
       attachTransmitterDeviceToRoutes(&DevMgr, &RteMgr);
 
-      CtiPILServer PIL(&DevMgr, &RteMgr);
+      CtiPILServer PIL(&DevMgr, &PntMgr, &RteMgr);
 
       /*
        *  Initialization Code for PIL as a whole
