@@ -9,8 +9,8 @@
 *
 * PVCS KEYWORDS:
 * ARCHIVE      :  $Archive:   Z:/SOFTWAREARCHIVES/YUKON/RTDB/INCLUDE/dev_welco.h-arc  $
-* REVISION     :  $Revision: 1.12 $
-* DATE         :  $Date: 2006/09/21 21:31:39 $
+* REVISION     :  $Revision: 1.13 $
+* DATE         :  $Date: 2007/11/02 20:53:21 $
 *
 * Copyright (c) 1999 Cannon Technologies Inc. All rights reserved.
 *-----------------------------------------------------------------------------*/
@@ -107,7 +107,6 @@ public:
 
    virtual INT executeControl(CtiRequestMsg *pReq, CtiCommandParser &parse, OUTMESS *&OutMessage, list< CtiMessage* > &vgList, list< CtiMessage* > &retList, list< OUTMESS* > &outList);
 
-   virtual INT RefreshDevicePoints();
    virtual bool clearedForScan(int scantype);
    virtual void resetForScan(int scantype);
 

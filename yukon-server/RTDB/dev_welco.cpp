@@ -6,8 +6,8 @@
 *
 * PVCS KEYWORDS:
 * ARCHIVE      :  $Archive:   Z:/SOFTWAREARCHIVES/YUKON/RTDB/dev_welco.cpp-arc  $
-* REVISION     :  $Revision: 1.37 $
-* DATE         :  $Date: 2006/05/23 21:50:50 $
+* REVISION     :  $Revision: 1.38 $
+* DATE         :  $Date: 2007/11/02 20:53:21 $
 *
 * Copyright (c) 1999, 2000, 2001 Cannon Technologies Inc. All rights reserved.
 *-----------------------------------------------------------------------------*/
@@ -174,82 +174,74 @@ INT CtiDeviceWelco::IntegrityScan(CtiRequestMsg *pReq,
 
     if(OutMessage != NULL)
     {
-        if(_pointMgr == NULL)      // Attached via the dev_base object.
+        std::vector<CtiPointSPtr> points;
+
+        getDevicePoints(points);
+
+        std::vector<CtiPointSPtr>::iterator itr;
+
+        for( itr = points.begin(); itr != points.end(); itr++ )
         {
-            RefreshDevicePoints(  );
-        }
+            CtiPointSPtr PointRecord = *itr;
 
-        if(_pointMgr != NULL)
-        {
-            CtiPointManager::LockGuard guard(_pointMgr->getMux());
-            /* Walk the point in memory db to see what the point range is */
-            CtiPointManager::spiterator iter = _pointMgr->begin();
-
-            CtiPointManager::spiterator end = _pointMgr->end();
-
-            for( ; iter != end; iter++ )
+            switch(PointRecord->getType())
             {
-                CtiPointSPtr PointRecord = iter->second;
-
-                switch(PointRecord->getType())
-                {
                 case StatusPointType:
+                {
+                    CtiPointStatusSPtr StatusPoint = boost::static_pointer_cast<CtiPointStatus>(PointRecord);
+
+                    if(!StatusPoint->isPseudoPoint() && StatusPoint->getPointOffset() < 2000)
                     {
-                        CtiPointStatusSPtr StatusPoint = boost::static_pointer_cast<CtiPointStatus>(PointRecord);
-
-                        if(!StatusPoint->isPseudoPoint() && StatusPoint->getPointOffset() < 2000)
+                        if(StatusPoint->getPointOffset() - 1 > StatusLast)
                         {
-                            if(StatusPoint->getPointOffset() - 1 > StatusLast)
-                            {
-                                StatusLast = StatusPoint->getPointOffset() - 1;
-                            }
-
-                            if(StatusPoint->getPointOffset() - 1 < StatusFirst)
-                            {
-                                StatusFirst = StatusPoint->getPointOffset() - 1;
-                            }
+                            StatusLast = StatusPoint->getPointOffset() - 1;
                         }
-                        break;
+
+                        if(StatusPoint->getPointOffset() - 1 < StatusFirst)
+                        {
+                            StatusFirst = StatusPoint->getPointOffset() - 1;
+                        }
                     }
+                    break;
+                }
                 case AnalogPointType:
+                {
+                    CtiPointAnalogSPtr AnalogPoint = boost::static_pointer_cast<CtiPointAnalog>(PointRecord);
+
+                    if(!AnalogPoint->isPseudoPoint())
                     {
-                        CtiPointAnalogSPtr AnalogPoint = boost::static_pointer_cast<CtiPointAnalog>(PointRecord);
-
-                        if(!AnalogPoint->isPseudoPoint())
+                        if(AnalogPoint->getPointOffset() - 1 > AnalogLast)
                         {
-                            if(AnalogPoint->getPointOffset() - 1 > AnalogLast)
-                            {
-                                AnalogLast = AnalogPoint->getPointOffset() - 1;
-                            }
-
-                            if(AnalogPoint->getPointOffset() - 1 < AnalogFirst)
-                            {
-                                AnalogFirst = AnalogPoint->getPointOffset() - 1;
-                            }
+                            AnalogLast = AnalogPoint->getPointOffset() - 1;
                         }
 
-                        break;
+                        if(AnalogPoint->getPointOffset() - 1 < AnalogFirst)
+                        {
+                            AnalogFirst = AnalogPoint->getPointOffset() - 1;
+                        }
                     }
+
+                    break;
+                }
                 case PulseAccumulatorPointType:
                 case DemandAccumulatorPointType:
+                {
+                    CtiPointAccumulatorSPtr AccumPoint = boost::static_pointer_cast<CtiPointAccumulator>(PointRecord);
+
+                    if(!AccumPoint->isPseudoPoint())
                     {
-                        CtiPointAccumulatorSPtr AccumPoint = boost::static_pointer_cast<CtiPointAccumulator>(PointRecord);
-
-                        if(!AccumPoint->isPseudoPoint())
+                        if(AccumPoint->getPointOffset() - 1 > AccumLast)
                         {
-                            if(AccumPoint->getPointOffset() - 1 > AccumLast)
-                            {
-                                AccumLast = AccumPoint->getPointOffset() - 1;
-                            }
-
-                            if(AccumPoint->getPointOffset() - 1 < AccumFirst)
-                            {
-                                AccumFirst = AccumPoint->getPointOffset() - 1;
-                            }
+                            AccumLast = AccumPoint->getPointOffset() - 1;
                         }
 
-                        break;
+                        if(AccumPoint->getPointOffset() - 1 < AccumFirst)
+                        {
+                            AccumFirst = AccumPoint->getPointOffset() - 1;
+                        }
                     }
+
+                    break;
                 }
             }
         }
@@ -1461,8 +1453,6 @@ INT CtiDeviceWelco::WelCoDeadBands(INMESS *InMessage, list< OUTMESS* > &outList,
 /* Routine to download deadbands for analogs */
 INT CtiDeviceWelco::WelCoDeadBands(OUTMESS *OutMessage, list< OUTMESS* > &outList, INT Priority)
 {
-
-
     INT      Position;
     ULONG    ByteCount;
 
@@ -1477,39 +1467,33 @@ INT CtiDeviceWelco::WelCoDeadBands(OUTMESS *OutMessage, list< OUTMESS* > &outLis
 
     if(OutMessage != NULL)
     {
-        if(_pointMgr == NULL)      // Attached via the dev_base object.
+        std::vector<CtiPointSPtr> points;
+
+        getDevicePoints(points);
+
+        std::vector<CtiPointSPtr>::iterator itr;
+
+        for( itr = points.begin(); itr != points.end(); itr++ )
         {
-            RefreshDevicePoints(  );
-        }
+            CtiPointSPtr PointRecord = *itr;
 
-        if(_pointMgr != NULL)
-        {
-            CtiPointManager::LockGuard guard(_pointMgr->getMux());
-            /* Walk the point in memory db to see what the point range is */
-            CtiPointManager::spiterator iter = _pointMgr->begin();
-
-            CtiPointManager::spiterator end = _pointMgr->end();
-
-            for( ; iter != end; iter++ )
+            switch(PointRecord->getType())
             {
-                PointRecord = iter->second;
-
-                switch(PointRecord->getType())
-                {
                 case AnalogPointType:
+                {
+                    CtiPointAnalogSPtr Point = boost::static_pointer_cast<CtiPointAnalog>(PointRecord);
+
+                    if(Point->getPointOffset() - 1 > AnalogLast)
                     {
-                        if(PointRecord->getPointOffset() - 1 > AnalogLast)
-                        {
-                            AnalogLast = PointRecord->getPointOffset() - 1;
-                        }
-
-                        if(PointRecord->getPointOffset() - 1 < AnalogFirst)
-                        {
-                            AnalogFirst = PointRecord->getPointOffset() - 1;
-                        }
-
-                        break;
+                        AnalogLast = Point->getPointOffset() - 1;
                     }
+
+                    if(Point->getPointOffset() - 1 < AnalogFirst)
+                    {
+                        AnalogFirst = Point->getPointOffset() - 1;
+                    }
+
+                    break;
                 }
             }
         }
@@ -1517,9 +1501,7 @@ INT CtiDeviceWelco::WelCoDeadBands(OUTMESS *OutMessage, list< OUTMESS* > &outLis
 
         if(AnalogFirst <= AnalogLast)
         {
-
             MyOutMessage = CTIDBG_new OUTMESS( *OutMessage );      // Use the copy constructor...
-
 
             if(MyOutMessage != NULL)
             {
@@ -1993,12 +1975,6 @@ INT CtiDeviceWelco::executeControl(CtiRequestMsg *pReq, CtiCommandParser &parse,
 
 
     return status;
-}
-
-INT CtiDeviceWelco::RefreshDevicePoints()
-{
-    setDeadbandsSent(false);                    // Make them go again on next general scan!!
-    return Inherited::RefreshDevicePoints();
 }
 
 
