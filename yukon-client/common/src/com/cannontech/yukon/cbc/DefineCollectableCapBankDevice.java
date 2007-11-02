@@ -86,6 +86,9 @@ public void restoreGuts(Object obj, com.roguewave.vsj.VirtualInputStream vstr, c
     capBank.setTripOrder( new Float((float)vstr.extractFloat() ) );
     capBank.setCloseOrder( new Float((float)vstr.extractFloat() ) );
     capBank.setControlDeviceType( (String) vstr.restoreObject( SimpleMappings.CString ) );
+    capBank.setBeforeVars( (String) vstr.restoreObject( SimpleMappings.CString ) );
+    capBank.setAfterVars( (String) vstr.restoreObject( SimpleMappings.CString ) );
+    capBank.setPercentChange( (String) vstr.restoreObject( SimpleMappings.CString ) );
     
 }
 /**
@@ -134,5 +137,8 @@ public void saveGuts(Object obj, com.roguewave.vsj.VirtualOutputStream vstr, com
     vstr.insertFloat( capBank.getTripOrder().floatValue() ); 
     vstr.insertFloat( capBank.getCloseOrder().floatValue() ); 
     vstr.saveObject( capBank.getControlDeviceType(), SimpleMappings.CString);
+    vstr.saveObject( capBank.getBeforeVars(), SimpleMappings.CString);
+    vstr.saveObject( capBank.getAfterVars(), SimpleMappings.CString);
+    vstr.saveObject( capBank.getPercentChange(), SimpleMappings.CString);
 }
 }
