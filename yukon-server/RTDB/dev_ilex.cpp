@@ -5,8 +5,8 @@
 * Date:   2/15/2001
 *
 * PVCS KEYWORDS:
-* REVISION     :  $Revision: 1.25 $
-* DATE         :  $Date: 2006/06/07 22:35:23 $
+* REVISION     :  $Revision: 1.26 $
+* DATE         :  $Date: 2007/11/02 20:40:48 $
 *
 * Copyright (c) 1999, 2000, 2001 Cannon Technologies Inc. All rights reserved.
 *-----------------------------------------------------------------------------*/
@@ -385,36 +385,6 @@ INT CtiDeviceILEX::ResultDecode(INMESS *InMessage, CtiTime &TimeNow, list< CtiMe
                 {
                     /* make sure this guy is marked as a bad freeze */
                     setLastFreezeNumber( 0 );
-
-                    if(_pointMgr == NULL)      // Attached via the dev_base object.
-                    {
-                        RefreshDevicePoints();
-                    }
-
-                    if(_pointMgr != NULL)
-                    {
-                       // LockGuard guard(monitor());
-
-                        /* Walk the point in memory db to see what the point range is */
-                       /* CtiRTDB<CtiPoint>::CtiRTDBIterator   itr_pt(_pointMgr->getMap());
-
-                        for(; ++itr_pt ;)
-                        {
-                            PointRecord = itr_pt.value();
-
-                            switch(PointRecord->getType())
-                            {
-                            case StatusPointType:
-                            case AnalogPointType:
-                            case PulseAccumulatorPointType:
-                            case DemandAccumulatorPointType:
-                                {
-                                    CtiPointAccumulator *AccumPoint = (CtiPointAccumulator *)PointRecord;
-                                    break;
-                                }
-                            }
-                        }*/
-                    }
 
                     resetScanFlag(ScanFrozen);
                     resetScanFlag(ScanFreezeFailed);
