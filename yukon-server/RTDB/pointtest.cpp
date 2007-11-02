@@ -6,8 +6,8 @@
 *
 * PVCS KEYWORDS:
 * ARCHIVE      :  $Archive:   Z:/SOFTWAREARCHIVES/YUKON/RTDB/pointtest.cpp-arc  $
-* REVISION     :  $Revision: 1.6 $
-* DATE         :  $Date: 2005/02/10 23:24:02 $
+* REVISION     :  $Revision: 1.7 $
+* DATE         :  $Date: 2007/11/02 20:12:56 $
 *
 * Copyright (c) 1999, 2000, 2001 Cannon Technologies Inc. All rights reserved.
 *-----------------------------------------------------------------------------*/
@@ -57,7 +57,7 @@ void main(int argc, char** argv)
       Sleep(Delay);
    }
 
-   PointManager.DeleteList();
+   PointManager.ClearList();
 
    dout.interrupt(CtiThread::SHUTDOWN);
    dout.join();
