@@ -6,8 +6,8 @@
 *
 * PVCS KEYWORDS:
 * ARCHIVE      :  $Archive$
-* REVISION     :  $Revision: 1.15 $
-* DATE         :  $Date: 2007/07/23 15:36:40 $
+* REVISION     :  $Revision: 1.16 $
+* DATE         :  $Date: 2007/11/02 20:13:40 $
 *
 * Copyright (c) 1999, 2000, 2001 Cannon Technologies Inc. All rights reserved.
 *-----------------------------------------------------------------------------*/
@@ -41,6 +41,7 @@
 
 #include "mgr_device.h"
 #include "mgr_route.h"
+#include "mgr_point.h"
 #include "pilserver.h"
 #include "dlldefs.h"
 #include "dllyukon.h"
@@ -55,10 +56,11 @@ using namespace std;
 
 // Some Global Manager types to allow us some RTDB stuff.
 extern CtiDeviceManager   DeviceManager;
+extern CtiPointManager    PorterPointManager;
 extern CtiRouteManager    RouteManager;
 extern CtiConfigManager   ConfigManager;
 
-CtiPILServer PIL(&DeviceManager, &RouteManager, &ConfigManager);
+CtiPILServer PIL(&DeviceManager, &PorterPointManager, &RouteManager, &ConfigManager);
 
 VOID PorterInterfaceThread (VOID *Arg)
 {
@@ -86,13 +88,13 @@ VOID PorterInterfaceThread (VOID *Arg)
                  CtiLockGuard<CtiLogger> doubt_guard(dout);
                  dout << CtiTime() << " Porter Interface Thread active. TID:  " << rwThreadId() << endl;
              }
-         
+
              CtiThreadRegData *data;
              data = CTIDBG_new CtiThreadRegData( GetCurrentThreadId(), "Porter Interface Thread", CtiThreadRegData::None, CtiThreadMonitor::StandardMonitorTime );
              ThreadMonitor.tickle( data );
              lastTickleTime = lastTickleTime.now();
          }
-        
+
          try
          {
             rwServiceCancellation();
