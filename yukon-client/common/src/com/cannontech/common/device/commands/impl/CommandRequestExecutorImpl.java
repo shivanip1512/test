@@ -19,6 +19,7 @@ import com.cannontech.amr.errors.dao.DeviceErrorTranslatorDao;
 import com.cannontech.amr.errors.model.DeviceErrorDescription;
 import com.cannontech.amr.meter.model.Meter;
 import com.cannontech.clientutils.YukonLogManager;
+import com.cannontech.common.device.YukonDevice;
 import com.cannontech.common.device.commands.CollectingCommandCompletionCallback;
 import com.cannontech.common.device.commands.CommandCompletionCallback;
 import com.cannontech.common.device.commands.CommandRequest;
@@ -155,9 +156,9 @@ public class CommandRequestExecutorImpl implements CommandRequestExecutor {
         }
     }
 
-    public CommandResultHolder execute(Meter meter, String command, LiteYukonUser user) throws Exception {
+    public CommandResultHolder execute(YukonDevice device, String command, LiteYukonUser user) throws Exception {
         CommandRequest cmdRequest = new CommandRequest();
-        cmdRequest.setDeviceId(meter.getDeviceId());
+        cmdRequest.setDeviceId(device.getDeviceId());
         
         String commandStr = command;
         commandStr += " update";

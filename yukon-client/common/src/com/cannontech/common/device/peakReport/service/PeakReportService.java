@@ -34,17 +34,7 @@ public interface PeakReportService {
      * @return
      */
     public PeakReportResult retrieveArchivedPeakReport(int deviceId, PeakReportRunType runType, LiteYukonUser user);
-    
-    /**
-     * Helper method that parses the result string of a peak report request and sets the appropriate members of a given PeakReportResult object.
-     * 
-     * @param peakResult
-     * @param resultString
-     * @param interval
-     * @param user
-     */
-    public void parseResultString(PeakReportResult peakResult, String resultString, int interval, LiteYukonUser user);
-    
+        
     /**
      * Helper method to determine the interval of a device for a given channel.
      * 

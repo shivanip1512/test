@@ -21,16 +21,10 @@ public class PeakReportResult {
     private Date rangeStopDate = null;
     private Date peakStartDate = null;
     private Date peakStopDate = null;
-    private String periodStartDateDisplay = "";
-    private String periodStopDateDisplay = "";
-    private String runDateDisplay = "";
     private double usage = 0.0;
     private double demand = 0.0;
     private double averageDailyUsage = 0.0;
     private double totalUsage = 0.0;
-    private String peakValue = "";
-    private String peakTypeDisplayName = "";
-    private String peakTypeReportDisplayName = "";
     
     // error values
     private boolean noData = true;
@@ -56,13 +50,9 @@ public class PeakReportResult {
     }
     public void setPeakType(PeakReportPeakType peakType) {
         this.peakType = peakType;
-        setPeakTypeDisplayName(this.peakType.displayName());
-        setPeakTypeReportDisplayName(this.peakType.reportTypeDisplayName());
     }
     public void setPeakType(String peakTypeStr) {
         this.peakType = PeakReportPeakType.valueOf(peakTypeStr.toUpperCase());
-        setPeakTypeDisplayName(this.peakType.displayName());
-        setPeakTypeReportDisplayName(this.peakType.reportTypeDisplayName());
     }
     public String getResultString() {
         return resultString;
@@ -111,13 +101,6 @@ public class PeakReportResult {
     public void setRangeStopDate(Date rangeStopDate) {
         this.rangeStopDate = rangeStopDate;
     }
-    public String getPeriodStopDateDisplay() {
-        return periodStopDateDisplay;
-    }
-    public void setPeriodStopDateDisplay(String periodStopDateDisplay) {
-        this.periodStopDateDisplay = periodStopDateDisplay;
-    }
-    
     public double getAverageDailyUsage() {
         return averageDailyUsage;
     }
@@ -129,12 +112,6 @@ public class PeakReportResult {
     }
     public void setDemand(double demand) {
         this.demand = demand;
-    }
-    public String getPeakValue() {
-        return peakValue;
-    }
-    public void setPeakValue(String peakValue) {
-        this.peakValue = peakValue;
     }
     public double getTotalUsage() {
         return totalUsage;
@@ -148,30 +125,6 @@ public class PeakReportResult {
     public void setUsage(double usage) {
         this.usage = usage;
     }
-    public String getPeriodStartDateDisplay() {
-        return periodStartDateDisplay;
-    }
-    public void setPeriodStartDateDisplay(String periodStartDateDisplay) {
-        this.periodStartDateDisplay = periodStartDateDisplay;
-    }
-    public String getPeakTypeDisplayName() {
-        return peakTypeDisplayName;
-    }
-    public void setPeakTypeDisplayName(String peakTypeDisplayName) {
-        this.peakTypeDisplayName = peakTypeDisplayName;
-    }
-    public String getRunDateDisplay() {
-        return runDateDisplay;
-    }
-    public void setRunDateDisplay(String runDateDisplay) {
-        this.runDateDisplay = runDateDisplay;
-    }
-    public String getPeakTypeReportDisplayName() {
-        return peakTypeReportDisplayName;
-    }
-    public void setPeakTypeReportDisplayName(String peakTypeReportDisplayName) {
-        this.peakTypeReportDisplayName = peakTypeReportDisplayName;
-    }   
     
     // error
     public String getDeviceError() {

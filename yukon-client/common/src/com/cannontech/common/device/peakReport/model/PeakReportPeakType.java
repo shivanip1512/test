@@ -15,11 +15,11 @@ public enum PeakReportPeakType {
         this.reportTypeDisplayName = reportTypeDisplayName;
     }
     
-    public String displayName(){
+    public String getDisplayName(){
         return displayName;
     }
     
-    public String reportTypeDisplayName(){
+    public String getReportTypeDisplayName(){
         return reportTypeDisplayName;
     }
 }

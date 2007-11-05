@@ -61,13 +61,13 @@
 			<table class="compactResultsTable">
 				
 				<tr>
-					<th>Report: <div style="font-weight:normal;display:inline;">${peakResult.peakTypeReportDisplayName}</div></th>
-					<th align="right" style="font-weight:normal;color:#666666;">${peakResult.runDateDisplay}</th>
+					<th>Report: <div style="font-weight:normal;display:inline;">${reportTypeDisplayName}</div></th>
+					<th align="right" style="font-weight:normal;color:#666666;">${runDateDisplay}</th>
 				</tr>
 		
 				<tr>
 					<td class="label">Period:</td>
-					<td>${peakResult.periodStartDateDisplay} - ${peakResult.periodStopDateDisplay}</td>
+					<td>${periodStartDateDisplay} - ${periodStopDateDisplay}</td>
 				</tr>
 				
 				<tr>
@@ -75,8 +75,8 @@
 					<td>${peakResult.averageDailyUsage} / ${peakResult.totalUsage} kWH</td>
 				</tr>
 				<tr>
-					<td class="label">Peak ${peakResult.peakTypeDisplayName}:</td>
-					<td>${peakResult.peakValue}</td>
+					<td class="label">Peak ${displayName}:</td>
+					<td>${peakValueStr}</td>
 				</tr>
 				
 				<c:choose>

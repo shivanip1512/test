@@ -2,8 +2,8 @@ package com.cannontech.core.service;
 
 import java.text.DateFormat;
 import java.text.ParseException;
+import java.util.Calendar;
 import java.util.Date;
-import java.util.GregorianCalendar;
 
 import com.cannontech.database.data.lite.LiteYukonUser;
 
@@ -37,6 +37,6 @@ public interface DateFormattingService {
     public Date flexibleDateParser(String dateStr, LiteYukonUser user)
             throws ParseException;
 
-    public GregorianCalendar getGregorianCalendar(LiteYukonUser user);
+    public Calendar getCalendar(LiteYukonUser user);
 
 }

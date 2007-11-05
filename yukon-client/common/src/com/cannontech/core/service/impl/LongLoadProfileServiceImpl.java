@@ -3,8 +3,8 @@ package com.cannontech.core.service.impl;
 import java.text.DateFormat;
 import java.text.SimpleDateFormat;
 import java.util.ArrayList;
+import java.util.Calendar;
 import java.util.Date;
-import java.util.GregorianCalendar;
 import java.util.HashMap;
 import java.util.HashSet;
 import java.util.List;
@@ -117,10 +117,10 @@ public class LongLoadProfileServiceImpl implements LongLoadProfileService {
             minutesPerInterval = voltageDemandRate / 60;
         }
         
-        GregorianCalendar startCal = dateFormattingService.getGregorianCalendar(user);
+        Calendar startCal = dateFormattingService.getCalendar(user);
         startCal.setTime(start);
         
-        GregorianCalendar stopCal = dateFormattingService.getGregorianCalendar(user);
+        Calendar stopCal = dateFormattingService.getCalendar(user);
         stopCal.setTime(stop);
         
         long minutesBetween = (stopCal.getTimeInMillis() - startCal.getTimeInMillis()) / 60000;

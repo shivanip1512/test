@@ -4,6 +4,7 @@ import java.text.DateFormat;
 import java.text.DateFormatSymbols;
 import java.text.ParseException;
 import java.text.SimpleDateFormat;
+import java.util.Calendar;
 import java.util.Date;
 import java.util.GregorianCalendar;
 import java.util.TimeZone;
@@ -96,8 +97,8 @@ public class DateFormattingServiceImpl implements DateFormattingService {
         return flexibleDateParser(dateStr, DateOnlyMode.START_OF_DAY, user);
     }
 
-    public GregorianCalendar getGregorianCalendar(LiteYukonUser user) {
-        return new GregorianCalendar(yukonUserDao.getUserTimeZone(user));
+    public Calendar getCalendar(LiteYukonUser user) {
+        return Calendar.getInstance(yukonUserDao.getUserTimeZone(user));
     }
 
 }

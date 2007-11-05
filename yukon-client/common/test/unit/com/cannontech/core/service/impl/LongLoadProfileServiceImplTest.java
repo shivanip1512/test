@@ -153,7 +153,7 @@ public class LongLoadProfileServiceImplTest {
         
         serviceDebug.setDateFormattingService(new DateFormattingServiceImpl(){
             
-            public GregorianCalendar getGregorianCalendar(LiteYukonUser user){
+            public GregorianCalendar getCalendar(LiteYukonUser user){
                 return new GregorianCalendar();
             }
             

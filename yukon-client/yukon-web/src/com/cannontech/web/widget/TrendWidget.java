@@ -103,7 +103,7 @@ public class TrendWidget extends WidgetControllerBase {
             int pointId = point.getPointID();
 
             // default start date (one year ago from today)
-            Calendar startDateCal = dateFormattingService.getGregorianCalendar(yukonUser);
+            Calendar startDateCal = dateFormattingService.getCalendar(yukonUser);
             Date startDate = new Date();
             startDateCal.setTime(startDate);
 
@@ -127,7 +127,7 @@ public class TrendWidget extends WidgetControllerBase {
             ChartPeriod period = ChartPeriod.valueOf(periodString);
 
             // default end date (today)
-            Calendar endDateCal = dateFormattingService.getGregorianCalendar(yukonUser);
+            Calendar endDateCal = dateFormattingService.getCalendar(yukonUser);
             Date endDate = new Date();
             endDateCal.setTime(endDate);
 

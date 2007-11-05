@@ -4,7 +4,6 @@ import java.text.ParseException;
 import java.text.SimpleDateFormat;
 import java.util.Calendar;
 import java.util.Date;
-import java.util.GregorianCalendar;
 import java.util.List;
 
 import org.apache.commons.lang.time.DateUtils;
@@ -52,10 +51,10 @@ public class PeakReportServiceImpl implements PeakReportService {
         commandBuffer.append(" channel " + channel);
         commandBuffer.append(" " + dateFormattingService.formatDate(stopDate, DateFormattingService.DateFormatEnum.DATE, user));
         
-        GregorianCalendar startDateCal = dateFormattingService.getGregorianCalendar(user);
+        Calendar startDateCal = dateFormattingService.getCalendar(user);
         startDateCal.setTime(startDate);
         
-        GregorianCalendar stopDateCal = dateFormattingService.getGregorianCalendar(user);
+        Calendar stopDateCal = dateFormattingService.getCalendar(user);
         stopDateCal.setTime(stopDate);
         
         int commandDays = TimeUtil.differenceInDays(startDateCal, stopDateCal) + 1;
@@ -96,7 +95,7 @@ public class PeakReportServiceImpl implements PeakReportService {
                 
             // results exist, parse result string into peakResult
             } else {
-                parseResultString(peakResult, resultString, interval, user);
+                parseResultString(peakResult, resultString, interval);
             }
             
         }
@@ -127,21 +126,19 @@ public class PeakReportServiceImpl implements PeakReportService {
             String resultString = peakResult.getResultString();
             
             // parse result string to fill in rest of peak result obj
-            parseResultString(peakResult, resultString, interval, user);
+            parseResultString(peakResult, resultString, interval);
         }
 
         return peakResult;
     }
     
     
-    public void parseResultString(PeakReportResult peakResult, String resultString, int interval, LiteYukonUser user){
+    private void parseResultString(PeakReportResult peakResult, String resultString, int interval){
         
         SimpleDateFormat dateFormater = new SimpleDateFormat("MM/dd/yy hh:mm:ss");
         
         try{
             
-            peakResult.setRunDateDisplay(dateFormattingService.formatDate(peakResult.getRunDate(), DateFormattingService.DateFormatEnum.DATEHM, user));
-        
             String[] strings = resultString.split("\n");
             for (String s : strings) {
     
@@ -155,10 +152,6 @@ public class PeakReportServiceImpl implements PeakReportService {
                     
                     peakResult.setRangeStartDate(dateFormater.parse(rangeStartDateStr));
                     peakResult.setRangeStopDate(dateFormater.parse(rangeStopDateStr));
-                    
-                    peakResult.setPeriodStartDateDisplay(dateFormattingService.formatDate(peakResult.getRangeStartDate(), DateFormattingService.DateFormatEnum.DATE, user));
-                    peakResult.setPeriodStopDateDisplay(dateFormattingService.formatDate(peakResult.getRangeStopDate(), DateFormattingService.DateFormatEnum.DATE, user));
-              
                 }
                 
                 // peakStartDate, peakStopDate, peakValue
@@ -171,7 +164,7 @@ public class PeakReportServiceImpl implements PeakReportService {
                     
                     peakResult.setPeakStartDate(DateUtils.truncate(peakRangeEnd, Calendar.DATE));
                     
-                    peakResult.setPeakValue(dateFormattingService.formatDate(peakRangeEnd, DateFormattingService.DateFormatEnum.DATE, user));
+//                    peakResult.setPeakValue(dateFormattingService.formatDate(peakRangeEnd, DateFormattingService.DateFormatEnum.DATE, user));
                     
                 }
                 else if (s.startsWith("Peak hour: ")) {
@@ -184,12 +177,12 @@ public class PeakReportServiceImpl implements PeakReportService {
                     Date peakStartDate = DateUtils.truncate(peakRangeEnd, Calendar.HOUR_OF_DAY);
                     peakResult.setPeakStartDate(peakStartDate);
                     
-                    String peakValueStr = new SimpleDateFormat("MM/dd/yy").format(peakRangeEnd);
-                    peakValueStr += " ";
-                    peakValueStr += new SimpleDateFormat("Ka").format(peakStartDate);
-                    peakValueStr += " - ";
-                    peakValueStr += new SimpleDateFormat("Ka").format(DateUtils.addMinutes(peakRangeEnd, 1));
-                    peakResult.setPeakValue(peakValueStr);
+//                    String peakValueStr = new SimpleDateFormat("MM/dd/yy").format(peakRangeEnd);
+//                    peakValueStr += " ";
+//                    peakValueStr += new SimpleDateFormat("Ka").format(peakStartDate);
+//                    peakValueStr += " - ";
+//                    peakValueStr += new SimpleDateFormat("Ka").format(DateUtils.addMinutes(peakRangeEnd, 1));
+//                    peakResult.setPeakValue(peakValueStr);
                     
                  }
                  else if (s.startsWith("Peak interval: ")) {
@@ -203,19 +196,19 @@ public class PeakReportServiceImpl implements PeakReportService {
                      peakStartDate = DateUtils.addMinutes(peakStartDate, -interval+1);
                      peakResult.setPeakStartDate(peakStartDate);
                     
-                     String peakValueStr = new SimpleDateFormat("MM/dd/yy").format(peakRangeEnd);
-                     peakValueStr += " ";
-                     if(interval == 60){
-                         peakValueStr += new SimpleDateFormat("Ha").format(peakStartDate);
-                         peakValueStr += " - ";
-                         peakValueStr += new SimpleDateFormat("Ha").format(DateUtils.addMinutes(peakRangeEnd, 1));
-                     }
-                     else{
-                         peakValueStr += new SimpleDateFormat("K:mma").format(peakStartDate);
-                         peakValueStr += " - ";
-                         peakValueStr += new SimpleDateFormat("K:mma").format(DateUtils.addMinutes(peakRangeEnd, 1));
-                     }
-                     peakResult.setPeakValue(peakValueStr);
+//                     String peakValueStr = new SimpleDateFormat("MM/dd/yy").format(peakRangeEnd);
+//                     peakValueStr += " ";
+//                     if(interval == 60){
+//                         peakValueStr += new SimpleDateFormat("Ha").format(peakStartDate);
+//                         peakValueStr += " - ";
+//                         peakValueStr += new SimpleDateFormat("Ha").format(DateUtils.addMinutes(peakRangeEnd, 1));
+//                     }
+//                     else{
+//                         peakValueStr += new SimpleDateFormat("K:mma").format(peakStartDate);
+//                         peakValueStr += " - ";
+//                         peakValueStr += new SimpleDateFormat("K:mma").format(DateUtils.addMinutes(peakRangeEnd, 1));
+//                     }
+//                     peakResult.setPeakValue(peakValueStr);
                     
                  }
                  else if (s.startsWith("Usage:  ")) {
