@@ -408,7 +408,7 @@ private Hashtable getOptionalParams( HttpServletRequest req )
 		optionalProps.put( "gearnum", new Integer(req.getParameter("gearnum")) );
 
     LiteYukonUser currentUser = (LiteYukonUser)req.getSession().getAttribute(ServletUtil.ATT_YUKON_USER);
-    GregorianCalendar gcStart = dateFormattingService.getGregorianCalendar(currentUser);
+    Calendar gcStart = dateFormattingService.getCalendar(currentUser);
 
 	if( req.getParameter("startbutton") != null
 		 && req.getParameter("startbutton").equals("startat") )
@@ -439,7 +439,7 @@ private Hashtable getOptionalParams( HttpServletRequest req )
 		optionalProps.put( "startdate", gcStart.getTime() );
 	}
 
-    GregorianCalendar gcStop = dateFormattingService.getGregorianCalendar(currentUser);
+    Calendar gcStop = dateFormattingService.getCalendar(currentUser);
     
 	if( req.getParameter("stopbutton") != null
 		 && req.getParameter("stopbutton").equals("stopat") )
@@ -472,7 +472,7 @@ private Hashtable getOptionalParams( HttpServletRequest req )
 	else
 	{
 		//set the stop time to 1 year from now if no stop selected
-		GregorianCalendar c = dateFormattingService.getGregorianCalendar(currentUser);
+		Calendar c = dateFormattingService.getCalendar(currentUser);
 		c.add( c.YEAR, 1 );
 		optionalProps.put( "stopdate", c.getTime() );
 	}
