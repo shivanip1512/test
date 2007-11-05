@@ -60,24 +60,3 @@
 	</div>
 </c:if>
 <br>
-
-<ct:nameValueContainer>
-  <ct:nameValue name="Outage Status">
-  	<c:if test="${state == 'RESTORED'}">
-		Meter responded successfully.
-	</c:if>
-	<c:if test="${state == 'OUTAGE'}">
-		Meter did not respond.
-	</c:if>
-	
-	<div style="text-align: right">
-	  <ct:widgetActionRefresh method="ping" label="Read" labelBusy="Reading"/>
-	</div>
-	<br>
-  </ct:nameValue>
-</ct:nameValueContainer>
-<br>
-
-<c:if test="${isRead}">
-	<c:import url="/WEB-INF/pages/widget/common/meterReadingsResult.jsp"/>
-</c:if>

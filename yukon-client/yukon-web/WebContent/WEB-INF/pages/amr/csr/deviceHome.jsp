@@ -38,7 +38,7 @@
 
 		<div class="widgetColumns">
 			<div class="left">
-				<ct:widget height="75px" bean="meterInformationWidget" />
+				<ct:widget bean="meterInformationWidget" />
 
 				<ct:widget bean="meterReadingsWidget" />
 

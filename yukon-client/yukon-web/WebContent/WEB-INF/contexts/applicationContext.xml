@@ -156,7 +156,6 @@
         <property name="attributeService" ref="attributeService"/>
         <property name="meterDao" ref="meterDao"/>
         <property name="pointFormattingService" ref="pointFormattingService"/>
-        <property name="commandRequestExecutor" ref="commandRequestExecutor"/>
     </bean>
     
     <bean id="meterInformationWidget"
@@ -170,6 +169,7 @@
         </property>
         <property name="meterDao" ref="meterDao"/>
         <property name="paoGroupsWrapper" ref="paoGroupsWrapper"/>
+        <property name="commandRequestExecutor" ref="commandRequestExecutor"/>
     </bean>
     
     <bean id="meterReadingsWidget"

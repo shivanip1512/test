@@ -17,14 +17,13 @@ import org.springframework.web.bind.ServletRequestBindingException;
 import org.springframework.web.servlet.ModelAndView;
 
 import com.cannontech.amr.deviceread.dao.MeterReadService;
-import com.cannontech.amr.errors.model.DeviceErrorDescription;
 import com.cannontech.amr.meter.dao.MeterDao;
 import com.cannontech.amr.meter.model.Meter;
 import com.cannontech.common.device.attribute.model.Attribute;
 import com.cannontech.common.device.attribute.model.BuiltInAttribute;
 import com.cannontech.common.device.attribute.service.AttributeService;
-import com.cannontech.common.device.commands.CommandRequestExecutor;
 import com.cannontech.common.device.commands.CommandResultHolder;
+import com.cannontech.common.device.outagestate.OutageState;
 import com.cannontech.common.util.TimeUtil;
 import com.cannontech.core.dynamic.PointValueHolder;
 import com.cannontech.core.service.PointFormattingService;
@@ -45,10 +44,6 @@ public class MeterOutagesWidget extends WidgetControllerBase {
     private MeterReadService meterReadService;
     private AttributeService attributeService;
     private PointFormattingService pointFormattingService;
-    private CommandRequestExecutor commandRequestExecutor;
-    
-    private enum OUTAGE_STATE {
-        RESTORED, OUTAGE, UNKNOWN};
 
     //Contains <DeviceID>,<PerishableOutageData>
     private ExpireLRUMap<Integer,PerishableOutageData> recentOutageLogs = 
@@ -149,52 +144,13 @@ public class MeterOutagesWidget extends WidgetControllerBase {
         return mav;
     }
     
-    public ModelAndView ping(HttpServletRequest request, HttpServletResponse response)
-    throws Exception {
-        Meter meter = getMeter(request);
-
-        Set<Attribute> allExistingAttributes = getExistingAttributes(meter);
-
-        ModelAndView mav = getOutagesModelAndView(meter, allExistingAttributes);
-
-        LiteYukonUser user = ServletUtil.getYukonUser(request);
-        CommandResultHolder result = commandRequestExecutor.execute(meter, "ping", user);
-        mav.addObject("state", getOutageState(result));
-        
-        PerishableOutageData data = getOutageData(meter);
-        mav.addObject("data", data);
-
-        mav.addObject("isRead", true);
-
-        mav.addObject("errorsExist", result.isErrorsExist());
-        
-        mav.addObject("result", result);
-        
-        return mav;
-    }
-    
-    private OUTAGE_STATE getOutageState(CommandResultHolder result) {
-        if( result.getErrors().isEmpty())
-            return OUTAGE_STATE.RESTORED;
-
-        for(DeviceErrorDescription deviceError: result.getErrors()) {
-            if( deviceError.getErrorCode() == 1 || 
-                deviceError.getErrorCode() == 17 || 
-                deviceError.getErrorCode() == 74 || 
-                deviceError.getErrorCode() == 0 ) {
-                return OUTAGE_STATE.RESTORED;
-            }
-        }
-        return OUTAGE_STATE.OUTAGE;
-    }
-    
     private ModelAndView getOutagesModelAndView(Meter meter, Set<Attribute> allExistingAttributes) throws Exception{
 
         ModelAndView mav = new ModelAndView("meterOutagesWidget/render.jsp");
         mav.addObject("device", meter);
         mav.addObject("attribute", BuiltInAttribute.BLINK_COUNT);
         mav.addObject("isRead", false);
-        mav.addObject("state", OUTAGE_STATE.UNKNOWN);
+        mav.addObject("state", OutageState.UNKNOWN);
         
         
         mav.addObject("isBlinkConfigured", allExistingAttributes.contains(BuiltInAttribute.BLINK_COUNT) );
@@ -265,11 +221,5 @@ public class MeterOutagesWidget extends WidgetControllerBase {
     public void setPointFormattingService(
             PointFormattingService pointFormattingService) {
         this.pointFormattingService = pointFormattingService;
-    }
-    
-    @Required
-    public void setCommandRequestExecutor(
-            CommandRequestExecutor commandRequestExecutor) {
-        this.commandRequestExecutor = commandRequestExecutor;
     }
 }
