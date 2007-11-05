@@ -7,6 +7,8 @@ package com.cannontech.servlet;
  * Creation date: (3/21/2001 11:31:54 AM)
  * @author: Aaron Lauinger
  */
+import java.text.ParseException;
+import java.util.Calendar;
 import java.util.GregorianCalendar;
 import java.util.Hashtable;
 
@@ -19,6 +21,8 @@ import javax.servlet.http.HttpSession;
 import com.cannontech.clientutils.CTILogger;
 import com.cannontech.common.util.CtiUtilities;
 import com.cannontech.core.dao.DaoFactory;
+import com.cannontech.core.service.DateFormattingService;
+import com.cannontech.database.data.lite.LiteYukonUser;
 import com.cannontech.loadcontrol.LCUtils;
 import com.cannontech.loadcontrol.LoadControlClientConnection;
 import com.cannontech.loadcontrol.data.LMControlArea;
@@ -28,6 +32,7 @@ import com.cannontech.loadcontrol.gui.manualentry.ResponseProg;
 import com.cannontech.loadcontrol.messages.LMManualControlRequest;
 import com.cannontech.message.dispatch.message.Multi;
 import com.cannontech.roles.yukon.SystemRole;
+import com.cannontech.spring.YukonSpringHook;
 import com.cannontech.util.ParamUtil;
 import com.cannontech.util.ServletUtil;
 import com.cannontech.web.loadcontrol.LMCmdMsgFactory;
@@ -42,6 +47,8 @@ public class LCConnectionServlet extends ErrorAwareInitializingServlet implement
 
 	private LoadControlClientConnection conn = null;
 	private com.cannontech.web.loadcontrol.LoadcontrolCache cache = null;
+    
+    private DateFormattingService dateFormattingService = (DateFormattingService) YukonSpringHook.getBean("dateFormattingService");
 	
 
 /**
@@ -400,50 +407,72 @@ private Hashtable getOptionalParams( HttpServletRequest req )
 	if( req.getParameter("gearnum") != null )
 		optionalProps.put( "gearnum", new Integer(req.getParameter("gearnum")) );
 
+    LiteYukonUser currentUser = (LiteYukonUser)req.getSession().getAttribute(ServletUtil.ATT_YUKON_USER);
+    GregorianCalendar gcStart = dateFormattingService.getGregorianCalendar(currentUser);
 
 	if( req.getParameter("startbutton") != null
 		 && req.getParameter("startbutton").equals("startat") )
 	{
-		GregorianCalendar gc = new GregorianCalendar();
+		
 		int secs = CtiUtilities.decodeStringToSeconds( req.getParameter("startTime1") );
 		
-		gc.setTime( ServletUtil.parseDateStringLiberally(req.getParameter("startdate")) );
-		gc.set( GregorianCalendar.HOUR, 0 );
-		gc.set( GregorianCalendar.MINUTE, 0 );
-		gc.set( GregorianCalendar.SECOND, secs );
+		try {
+		    gcStart.setTime( dateFormattingService.flexibleDateParser(req.getParameter("startdate"), currentUser) );
+        }
+        catch (ParseException e) {
+            gcStart.setTime( ServletUtil.parseDateStringLiberally(req.getParameter("startdate")) );
+        }
+		gcStart.set( GregorianCalendar.HOUR, 0 );
+		gcStart.set( GregorianCalendar.MINUTE, 0 );
+		gcStart.set( GregorianCalendar.SECOND, secs );
 
-		optionalProps.put( "startdate", gc.getTime() );
+		optionalProps.put( "startdate", gcStart.getTime() );
 	}
 	else
 	{
 		//assume they want to start now
-		optionalProps.put( "startdate", CtiUtilities.get1990GregCalendar().getTime() );
+        gcStart.set( Calendar.YEAR, 1990 );
+        gcStart.set( Calendar.DAY_OF_YEAR, 1 );
+        gcStart.set( Calendar.HOUR, 0 );
+        gcStart.set( Calendar.MINUTE, 0 );
+        gcStart.set( Calendar.SECOND, 0 );
+		optionalProps.put( "startdate", gcStart );
 	}
 
-
+    GregorianCalendar gcStop = dateFormattingService.getGregorianCalendar(currentUser);
+    
 	if( req.getParameter("stopbutton") != null
 		 && req.getParameter("stopbutton").equals("stopat") )
 	{
-		GregorianCalendar gc = new GregorianCalendar();
 		int secs = CtiUtilities.decodeStringToSeconds( req.getParameter("stopTime1") );
 		
-		gc.setTime( ServletUtil.parseDateStringLiberally(req.getParameter("stopdate")) );
-		gc.set( GregorianCalendar.HOUR, 0 );
-		gc.set( GregorianCalendar.MINUTE, 0 );
-		gc.set( GregorianCalendar.SECOND, secs );
+        try {
+            gcStop.setTime( dateFormattingService.flexibleDateParser(req.getParameter("stopdate"), currentUser) );
+        }
+        catch (ParseException e) {
+            gcStop.setTime( ServletUtil.parseDateStringLiberally(req.getParameter("stopdate")) );
+        }
+		gcStop.set( GregorianCalendar.HOUR, 0 );
+		gcStop.set( GregorianCalendar.MINUTE, 0 );
+		gcStop.set( GregorianCalendar.SECOND, secs );
 
-		optionalProps.put( "stopdate", gc.getTime() );
+		optionalProps.put( "stopdate", gcStop.getTime() );
 	}
 	else if( req.getParameter("stopbutton") != null
 				 && req.getParameter("stopbutton").equals("stopnow") )
 	{
 		//assume they want to stop now
-		optionalProps.put( "stopdate", CtiUtilities.get1990GregCalendar().getTime() );
+        gcStart.set( Calendar.YEAR, 1990 );
+        gcStart.set( Calendar.DAY_OF_YEAR, 1 );
+        gcStop.set( GregorianCalendar.HOUR, 0 );
+        gcStop.set( GregorianCalendar.MINUTE, 0 );
+        gcStop.set( GregorianCalendar.SECOND, 0 );
+		optionalProps.put( "stopdate", gcStop );
 	}
 	else
 	{
 		//set the stop time to 1 year from now if no stop selected
-		GregorianCalendar c = new GregorianCalendar();
+		GregorianCalendar c = dateFormattingService.getGregorianCalendar(currentUser);
 		c.add( c.YEAR, 1 );
 		optionalProps.put( "stopdate", c.getTime() );
 	}
@@ -498,6 +527,14 @@ private Hashtable getOptionalParams( HttpServletRequest req )
 	}
 	
 	return optionalProps;
+}
+
+private DateFormattingService getDateFormattingService() {
+    return dateFormattingService;
+}
+
+private void setDateFormattingService(DateFormattingService dateFormattingService) {
+    this.dateFormattingService = dateFormattingService;
 }
 
 

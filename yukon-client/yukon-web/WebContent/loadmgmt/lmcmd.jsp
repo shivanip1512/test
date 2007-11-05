@@ -96,6 +96,8 @@ function setStopAble( radioChk )
 </script>
 </head>
 
+<%Date nowStartOrStop = new Date();
+pageContext.setAttribute("nowDate", nowStartOrStop);%>
 
 <body leftmargin="0" topmargin="0" bgcolor="#FFFFFF">
 	<div align="center">
@@ -117,11 +119,13 @@ function setStopAble( radioChk )
 		LMProgramBase prg = null;
 %>
 	<div class="TableCell"> 
-	  <div align="center">Select either Start Now or Start at and select a Data and Time:</div>
+	  <div align="center">Select either Start Now or Start at and select a Date and Time:</div>
 	</div>
 
      <input type="hidden" name="h_starttime" id="h_starttime" value=""/>                       
      <input type="hidden" name="h_stoptime" id="h_stoptime" value=""/>                       
+    <cti:formatDate value="${nowDate}" type="BOTH" var="startAtThisMoment" />
+    <cti:formatDate value="${nowDate}" type="TIME" var="startAtThisMomentHHMM" />
     
     <table width="350" border="1" cellspacing="0" cellpadding="6" align="center" valign="top" bgcolor="#FFFFFF">
       <tr> 
@@ -211,7 +215,7 @@ function setStopAble( radioChk )
                 <div align="right">Date: </div>
               </td>
               <td width="179"> 
-                <input type="text" name="startdate" value="<%= LCUtils.DATE_FORMATTER.format(new java.util.Date()) %>" size="8" 
+                <input type="text" name="startdate" value="${startAtThisMoment}" size="8" 
                 onchange="dateChanged('start');"
                 disabled>
                 <a href="javascript:openCalendar(cmdForm.startdate)"
@@ -229,7 +233,7 @@ function setStopAble( radioChk )
               <td width="179" height="85" > 
                   <div> 
                     <input type="text" name="startTime1"
-                    	value="<%= LCUtils.TIME_FORMATTER.format(new java.util.Date()) %>"
+                    	value="${startAtThisMomentHHMM}"
                     	size="5" onchange="dateChanged('start');" disabled/>
                    	<font class="TableCell">(HH:mm)</font>
                   </div>
@@ -387,10 +391,14 @@ function setStopAble( radioChk )
               <td width="170"> 
 <%
  //add 4 hours worth of millis = 14400000
- java.util.Date stpDate = new java.util.Date();
- stpDate.setTime( stpDate.getTime() + 14400000 );
+ Date stpDate = new Date();
+ stpDate.setTime( nowStartOrStop.getTime() + 14400000 );
+ pageContext.setAttribute("stopNowDate", stpDate);%>
 %>
-                <input type="text" name="stopdate" value="<%= LCUtils.DATE_FORMATTER.format( stpDate ) %>" size="8"
+<cti:formatDate value="${stopNowDate}" type="BOTH" var="stopAtThisMoment" />
+<cti:formatDate value="${stopNowDate}" type="TIME" var="stopAtThisMomentHHMM" />
+ 
+                <input type="text" name="stopdate" value="${stopAtThisMoment}" size="8"
 				<%= (ILCCmds.PROG_STOP.equals(cmd) || ILCCmds.AREA_STOP_PROGS.equals(cmd) || ILCCmds.SC_STOP.equals(cmd) ? "disabled" : "") %> 
                 onchange="dateChanged('stop');">
                 <a href="javascript:openCalendar(cmdForm.stopdate)"
@@ -406,7 +414,7 @@ function setStopAble( radioChk )
               </td>
               <td width="170" height="85" >
 	              <input type="text" name="stopTime1" 
-	              		value="<%= LCUtils.TIME_FORMATTER.format( stpDate ) %>" size="5"
+	              		value="${stopAtThisMomentHHMM}" size="5"
 						<%= (ILCCmds.PROG_STOP.equals(cmd) || ILCCmds.AREA_STOP_PROGS.equals(cmd) || ILCCmds.SC_STOP.equals(cmd) ? "disabled" : "") %> 
                         onchange="dateChanged('stop');"/>
 	              	<font class="TableCell">(HH:mm)</font>

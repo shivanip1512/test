@@ -66,6 +66,9 @@ else
 
 <body class="Background" leftmargin="0" topmargin="0" onload="reload();" >
 
+<%pageContext.setAttribute("dashedLine", CtiUtilities.STRING_DASH_LINE);%>
+<%pageContext.setAttribute("noTimeWindow", CtiUtilities.STRING_DASH_LINE + " - " + CtiUtilities.STRING_DASH_LINE);%>
+
 <table width="760" border="0" cellspacing="0" cellpadding="0">
   <tr>
     <td>
@@ -180,22 +183,30 @@ else
                        </font></div></td>
 					  
                       <td width="67" class="TableCell" align="center">
-							  <%= LCUtils.getTriggerText( lmCntrArea, ControlAreaTableModel.VALUE_THRESHOLD ) %>
-							  </td>					  
-		                      <td width="94" class="TableCell" align="center">
-							  <%= LCUtils.getTriggerText( lmCntrArea, ControlAreaTableModel.PEAK_PROJECTION ) %>
-							  </td>					  
-		                      <td width="50" class="TableCell" align="center">
-							  <%= LCUtils.getTriggerText( lmCntrArea, ControlAreaTableModel.ATKU ) %>
-							  </td>					  
-		
-		                      <td width="40" class="TableCell" align="center">
-								<%= LCUtils.getControlAreaValueAt(lmCntrArea, ControlAreaTableModel.PRIORITY) %>
-							  </td>
-							  
-		                      <td width="75" class="TableCell">
-								<%= LCUtils.getControlAreaValueAt(lmCntrArea, ControlAreaTableModel.TIME_WINDOW) %>
-							  </td>
+					  		<%= LCUtils.getTriggerText( lmCntrArea, ControlAreaTableModel.VALUE_THRESHOLD ) %>
+					  </td>					  
+                      <td width="94" class="TableCell" align="center">
+					  		<%= LCUtils.getTriggerText( lmCntrArea, ControlAreaTableModel.PEAK_PROJECTION ) %>
+					  </td>					  
+                      <td width="50" class="TableCell" align="center">
+					  		<%= LCUtils.getTriggerText( lmCntrArea, ControlAreaTableModel.ATKU ) %>
+					  </td>					  
+
+                      <td width="40" class="TableCell" align="center">
+							<%= LCUtils.getControlAreaValueAt(lmCntrArea, ControlAreaTableModel.PRIORITY) %>
+					  </td>
+					  <%pageContext.setAttribute("controlAreaTimeWindow", LCUtils.getControlAreaValueAt(lmCntrArea, ControlAreaTableModel.TIME_WINDOW));%>
+                      <td width="75" class="TableCell" align="center"> 
+					  		<c:choose>
+					  			<c:when test="${controlAreaTimeWindow == noTimeWindow}">
+					  				${controlAreaTimeWindow}
+					  			</c:when>
+								<c:otherwise>	
+					  				<cti:formatDate value="${controlAreaTimeWindow}" type="BOTH" var="formattedControlAreaTimeWindow" />
+	                  				${formattedControlAreaTimeWindow} 	
+	                  			</c:otherwise>	
+	                  		</c:choose>
+					  </td> 
 					  
 <!--					  
                       <td width="97" class="TableCell"> 
@@ -310,9 +321,30 @@ else
                   <%= LCUtils.getProgramValueAt(prg, ProgramTableModel.CURRENT_STATUS) %>
 				  </div></font>
                 </td>
-                
-                <td width="133" class="TableCell"><%= LCUtils.getProgramValueAt(prg, ProgramTableModel.START_TIME) %></td>
-                <td width="129" class="TableCell"><%= LCUtils.getProgramValueAt(prg, ProgramTableModel.STOP_TIME) %></td>
+                <%pageContext.setAttribute("programStartTime", LCUtils.getProgramValueAt(prg, ProgramTableModel.START_TIME));%>
+                <td width="133" class="TableCell" align="center">
+           			<c:choose>
+			  			<c:when test="${programStartTime == dashedLine}">
+			  				${programStartTime}
+			  			</c:when>
+						<c:otherwise>	
+			  				<cti:formatDate value="${programStartTime}" type="BOTH" var="formattedProgramStartTime" />
+                    		${formattedProgramStartTime}	
+               			</c:otherwise>	
+               		</c:choose>
+                </td>
+                <%pageContext.setAttribute("programStopTime", LCUtils.getProgramValueAt(prg, ProgramTableModel.STOP_TIME));%>
+                <td width="129" class="TableCell" align="center">
+                	<c:choose>
+			  			<c:when test="${programStopTime == dashedLine}">
+			  				${programStopTime}
+			  			</c:when>
+						<c:otherwise>	
+			  				<cti:formatDate value="${programStopTime}" type="BOTH" var="formattedProgramStopTime" />
+                    		${formattedProgramStopTime}		
+               			</c:otherwise>	
+               		</c:choose>
+                </td>
                 <td width="103" class="TableCell" align="center"><%= LCUtils.getProgramValueAt(prg, ProgramTableModel.CURRENT_GEAR) %></td>
                 <td width="52" class="TableCell" align="center"><%= LCUtils.getProgramValueAt(prg, ProgramTableModel.PRIORITY) %></td>
               </tr>
@@ -365,8 +397,18 @@ else
                 <div name = "grpstatus" class="lm_tip_cell" onMouseOver="itemid=<%= grp.getYukonID() %>;menuAppear(event, 'groupMenu')" onMouseOut="menuDisappear(event, 'groupMenu')" >
                 	<%= LCUtils.getGroupValueAt(grp, GroupTableModel.GROUP_STATE) %>
                 </div></font></td>
-
-                <td width="134" class="TableCell"><%= LCUtils.getGroupValueAt(grp, GroupTableModel.TIME) %></td>
+				<%pageContext.setAttribute("groupStartTime", LCUtils.getGroupValueAt(grp, GroupTableModel.TIME));%>
+                <td width="134" class="TableCell" align="center">
+                	<c:choose>
+			  			<c:when test="${groupStartTime == dashedLine}">
+			  				${groupStartTime}
+			  			</c:when>
+						<c:otherwise>	
+			  				<cti:formatDate value="${groupStartTime}" type="BOTH" var="formattedGroupStartTime" />
+                    		${formattedGroupStartTime}		
+               			</c:otherwise>	
+               		</c:choose>
+                </td>
                 <td width="159" class="TableCell"><%= LCUtils.getGroupValueAt(grp, GroupTableModel.STATS) %></td>
               </tr>
 <% } /* for j */ %>
