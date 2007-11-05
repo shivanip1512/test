@@ -154,7 +154,7 @@ for( int i = 0; i < areaSubs.size(); i++ ) {
                 <td><%=varsDisabled %> </td>
                 <td><%=closedVars %> </td>
                 <td><%=trippedVars %> </td>
-                <td><a type="param4" name="cti_dyn" id="<%=substation.getCcId()%>">
+                <td><a type="param2" name="cti_dyn" id="<%=substation.getCcId()%>">
                 <%=CBCUtils.CBC_DISPLAY.getSubstationValueAt(substation, CBCDisplay.SUB_POWER_FACTOR_COLUMN)%></a>
                 </td>
             </tr>

@@ -242,10 +242,12 @@ public class CBCDisplay {
      * getValueAt method for Substations
      */
     public synchronized Object getSubstationValueAt(SubStation substation, int col) {
-        if (substation == null)
+        if (substation == null) {
             return "";
+        }
         
         switch (col) {
+        
         case SUB_NAME_COLUMN: {
             return substation.getCcName();
         }
@@ -256,23 +258,21 @@ public class CBCDisplay {
 
         case SUB_CURRENT_STATE_COLUMN: {
             String state = null;
-
             if (substation.getCcDisableFlag().booleanValue()) {
                 state = "DISABLED";
             } else {
                 state = "ENABLED";
             }
-            
             if (substation.getOvuvDisableFlag().booleanValue()) {
                 state += "-V";
             }
             return state;
-
         }
         
         case SUB_POWER_FACTOR_COLUMN: {
-            return getPowerFactorText(substation.getPowerFactorValue().doubleValue(), true)     
+            String pf =  getPowerFactorText(substation.getPowerFactorValue().doubleValue(), true)     
                 + " / " + getPowerFactorText(substation.getEstimatedPFValue().doubleValue(), true);
+            return pf;
         }
         
         default:
@@ -796,17 +796,14 @@ public class CBCDisplay {
     public static String getPowerFactorText(double value, boolean compute) {
         int decPlaces = 1;
         try {
-            decPlaces = Integer.parseInt(ClientSession.getInstance()
-                                                      .getRolePropertyValue(CBCSettingsRole.PFACTOR_DECIMAL_PLACES,
-                                                                            "1"));
+            decPlaces = Integer.parseInt(ClientSession.getInstance().getRolePropertyValue(CBCSettingsRole.PFACTOR_DECIMAL_PLACES, "1"));
         } catch (Exception e) {}
 
-        if (value <= CapControlConst.PF_INVALID_VALUE)
+        if (value <= CapControlConst.PF_INVALID_VALUE) {
             return STR_NA;
-        else
-            return CommonUtils.formatDecimalPlaces(value * (compute ? 100 : 1),
-                                                   decPlaces) + "%"; // get
-                                                                        // percent
+        }else {
+            return CommonUtils.formatDecimalPlaces(value * (compute ? 100 : 1), decPlaces) + "%";
+        }
     }
     
     public static synchronized String getHTMLFgColor(SubStation subBus) {

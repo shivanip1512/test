@@ -325,7 +325,7 @@ private boolean handleSubstationGET( String ids, ResultXML[] xmlMsgs, int indx )
     String[] optParams = {
         /*param0*/CBCDisplay.getHTMLFgColor(sub),
         /*param1*/CBCUtils.CBC_DISPLAY.getSubstationValueAt (sub, CBCDisplay.SUB_NAME_COLUMN).toString(),
-
+        /*param2*/CBCUtils.CBC_DISPLAY.getSubstationValueAt(sub, CBCDisplay.SUB_POWER_FACTOR_COLUMN).toString()
     };
 
     xmlMsgs[indx] = new ResultXML(
@@ -342,17 +342,13 @@ private boolean handleSubstationGET( String ids, ResultXML[] xmlMsgs, int indx )
  * id is a SubBus id, else returns false.
  *  
  */
-private boolean handleSubGET( String ids, ResultXML[] xmlMsgs, int indx )
-{
-	SubBus sub =
-		getCapControlCache().getSubBus( new Integer(ids) );
-
-	if( sub == null )
+private boolean handleSubGET( String ids, ResultXML[] xmlMsgs, int indx ) {
+	SubBus sub = getCapControlCache().getSubBus( new Integer(ids) );
+	if( sub == null ) {
 		return false;
-	
+    }
 
-	String[] optParams =
-	{
+	String[] optParams = {
 		/*param0*/CBCDisplay.getHTMLFgColor(sub),
 		/*param1*/CBCUtils.CBC_DISPLAY.getSubBusValueAt(sub, CBCDisplay.SUB_TARGET_COLUMN).toString(),
 		/*param2*/CBCUtils.CBC_DISPLAY.getSubBusValueAt(sub, CBCDisplay.SUB_VAR_LOAD_COLUMN).toString(),
@@ -365,15 +361,12 @@ private boolean handleSubGET( String ids, ResultXML[] xmlMsgs, int indx )
 		/*param8*/CBCUtils.CBC_DISPLAY.getSubBusValueAt (sub, CBCDisplay.SUB_NAME_COLUMN).toString(),
         /*param9*/CBCUtils.CBC_DISPLAY.getSubBusValueAt(sub, CBCDisplay.SUB_TARGET_POPUP).toString(),
         /*param10*/CBCUtils.CBC_DISPLAY.getSubBusValueAt(sub, CBCDisplay.SUB_VAR_LOAD_POPUP).toString(),    
-
 	};
 
 	xmlMsgs[indx] = new ResultXML(
 		sub.getCcId().toString(),
 		CBCUtils.CBC_DISPLAY.getSubBusValueAt(sub, CBCDisplay.SUB_CURRENT_STATE_COLUMN).toString(),		
 		optParams );
-
-
 	return true;
 }
 
