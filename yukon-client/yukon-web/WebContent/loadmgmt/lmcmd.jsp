@@ -393,7 +393,7 @@ pageContext.setAttribute("nowDate", nowStartOrStop);%>
  //add 4 hours worth of millis = 14400000
  Date stpDate = new Date();
  stpDate.setTime( nowStartOrStop.getTime() + 14400000 );
- pageContext.setAttribute("stopNowDate", stpDate);%>
+ pageContext.setAttribute("stopNowDate", stpDate);
 %>
 <cti:formatDate value="${stopNowDate}" type="BOTH" var="stopAtThisMoment" />
 <cti:formatDate value="${stopNowDate}" type="TIME" var="stopAtThisMomentHHMM" />

@@ -436,7 +436,7 @@ private Hashtable getOptionalParams( HttpServletRequest req )
         gcStart.set( Calendar.HOUR, 0 );
         gcStart.set( Calendar.MINUTE, 0 );
         gcStart.set( Calendar.SECOND, 0 );
-		optionalProps.put( "startdate", gcStart );
+		optionalProps.put( "startdate", gcStart.getTime() );
 	}
 
     GregorianCalendar gcStop = dateFormattingService.getGregorianCalendar(currentUser);
@@ -467,7 +467,7 @@ private Hashtable getOptionalParams( HttpServletRequest req )
         gcStop.set( GregorianCalendar.HOUR, 0 );
         gcStop.set( GregorianCalendar.MINUTE, 0 );
         gcStop.set( GregorianCalendar.SECOND, 0 );
-		optionalProps.put( "stopdate", gcStop );
+		optionalProps.put( "stopdate", gcStop.getTime() );
 	}
 	else
 	{
