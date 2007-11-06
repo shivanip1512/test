@@ -40,6 +40,7 @@ public abstract class GenericEmailHandler extends OutputHandler {
 
             String emailSubject = outXml.getChildTextNormalize("subject");
             String emailBody = outXml.getChildText("body");
+            String from = outXml.getChildText("from");
             
             if (emailBody == null || emailSubject == null) {
                 CTILogger.warn("Unable to " + getNotificationMethod() + " notification for " + contact 
@@ -50,6 +51,11 @@ public abstract class GenericEmailHandler extends OutputHandler {
             SimpleEmailMessage emailMsg = new SimpleEmailMessage();
             emailMsg.setSubject(emailSubject);
             emailMsg.setBody(emailBody);
+            
+            // override default from address (SystemRole.MAIL_FROM_ADDRESS) and set using address from XML
+            if(from != null) {
+                emailMsg.setFrom(from);
+            }
 
             for (Iterator iter = emailList.iterator(); iter.hasNext();) {
                 boolean success = false;

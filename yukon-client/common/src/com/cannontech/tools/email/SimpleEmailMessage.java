@@ -49,6 +49,11 @@ public class SimpleEmailMessage {
         _message = message;
     }
     
+    public void setFrom(String from) throws MessagingException {
+        InternetAddress addr = new InternetAddress(from);
+        _message.setFrom(addr);
+    }
+    
     public void setRecipient(String address) throws MessagingException {
         InternetAddress addr = new InternetAddress(address);
         _message.setRecipient(Message.RecipientType.TO, addr);
