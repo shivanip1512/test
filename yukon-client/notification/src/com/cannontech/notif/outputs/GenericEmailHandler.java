@@ -5,6 +5,7 @@ import java.util.List;
 
 import javax.mail.MessagingException;
 
+import org.apache.commons.lang.StringUtils;
 import org.jdom.Element;
 
 import com.cannontech.clientutils.CTILogger;
@@ -53,7 +54,7 @@ public abstract class GenericEmailHandler extends OutputHandler {
             emailMsg.setBody(emailBody);
             
             // override default from address (SystemRole.MAIL_FROM_ADDRESS) and set using address from XML
-            if(from != null) {
+            if(StringUtils.isNotBlank(from)) {
                 emailMsg.setFrom(from);
             }
 
