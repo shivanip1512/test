@@ -43,7 +43,7 @@ public class TestSubAreaAssignment extends TestCase {
         Integer subID = newAssignment.getSubstationBusID();
         Integer displayOrder = newAssignment.getDisplayOrder();
        
-        List<CCSubAreaAssignment> allAreaSubs = CCSubAreaAssignment.getAllAreaSubs(areaID);
+        List<CCSubAreaAssignment> allAreaSubs = CCSubAreaAssignment.getAllAreaSubStations(areaID);
         assertEquals(areaID, allAreaSubs.get(0).getAreaID());
         assertEquals(subID, allAreaSubs.get(0).getSubstationBusID());
         assertEquals(displayOrder, allAreaSubs.get(0).getDisplayOrder());

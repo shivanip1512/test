@@ -132,9 +132,9 @@ public class CBCDisplay {
      * getValueAt method for CapBanks.
      */
     public synchronized Object getCapBankValueAt(CapBankDevice capBank, int col) {
-        if (capBank == null)
+        if (capBank == null) {
             return "";
-
+        }
         Integer controlDeviceID = capBank.getControlDeviceID();
         String controllerName = (controlDeviceID != 0) ? DaoFactory.getPaoDao().getYukonPAOName(controlDeviceID) : DASH_LINE;
         switch (col) {
@@ -910,7 +910,7 @@ public class CBCDisplay {
 
         case SUB_ONELINE_AREANAME_COLUMN: 
         {
-            return CBCUtils.getAreaName(subBus.getCcId());
+            return CBCUtils.getAreaNameForSubBus(subBus.getCcId());
         }
         case SUB_ONELINE_CTL_METHOD_COLUMN: {
             return subBus.getControlMethod();

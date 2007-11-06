@@ -31,6 +31,7 @@ import com.cannontech.database.data.pao.PAOGroups;
 import com.cannontech.database.data.point.PointUnits;
 import com.cannontech.database.db.DBPersistent;
 import com.cannontech.database.db.capcontrol.CCSubAreaAssignment;
+import com.cannontech.database.db.capcontrol.CCSubstationSubBusList;
 import com.cannontech.database.db.point.calculation.CalcComponentTypes;
 import com.cannontech.roles.capcontrol.CBCSettingsRole;
 import com.cannontech.spring.YukonSpringHook;
@@ -316,7 +317,7 @@ public final class CBCUtils {
 
     }
 
-    public static String getAreaNameFromSubId(int subID) {
+    public static String getAreaNameFromSubStationId(int subID) {
 
         String sqlStmt1 = "SELECT AreaID FROM CCSubAreaAssignment WHERE SubstationBusID = ?";
         String sqlStmt2 = "SELECT PAOName FROM YukonPAObject WHERE PAObjectID = ?";
@@ -653,10 +654,15 @@ public final class CBCUtils {
         return capBank.getOperationalState().equalsIgnoreCase(CapBank.SWITCHED_OPSTATE);
     }
 
-    public static String getAreaName(Integer subID) {
-       Integer areaID = CCSubAreaAssignment.getAreaIDForSub(subID);
+    public static String getAreaNameForSubStation(Integer substationId) {
+       Integer areaID = CCSubAreaAssignment.getAreaIDForSubStation(substationId);
        return DaoFactory.getPaoDao().getYukonPAOName(areaID);
     }
+    
+    public static String getAreaNameForSubBus(Integer subBusId) {
+        Integer subStationId = CCSubstationSubBusList.getSubStationForSubBus(subBusId);
+        return getAreaNameForSubStation(subStationId);
+     }
 
     public static boolean signalQualityNormal(PointQualityCheckable checkable, Integer type) {
         boolean pointQualNormal = isPointQualNormal(checkable, type);

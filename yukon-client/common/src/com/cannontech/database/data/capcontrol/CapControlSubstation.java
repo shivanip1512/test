@@ -5,23 +5,15 @@ import java.sql.SQLException;
 import java.util.ArrayList;
 import java.util.List;
 
-import org.springframework.dao.EmptyResultDataAccessException;
-import org.springframework.jdbc.core.JdbcOperations;
-
-import com.cannontech.clientutils.CTILogger;
 import com.cannontech.common.editor.EditorPanel;
 import com.cannontech.common.util.CtiUtilities;
-import com.cannontech.common.util.SqlStatementBuilder;
 import com.cannontech.core.dao.DaoFactory;
 import com.cannontech.core.dao.PaoDao;
-import com.cannontech.database.JdbcTemplateHelper;
 import com.cannontech.database.PoolManager;
 import com.cannontech.database.data.pao.PAOGroups;
 import com.cannontech.database.db.capcontrol.CCSubstationSubBusList;
 
-@SuppressWarnings("serial")
-public class CapControlSubstation extends CapControlYukonPAOBase implements
-        EditorPanel {
+public class CapControlSubstation extends CapControlYukonPAOBase implements EditorPanel {
 
     private com.cannontech.database.db.capcontrol.CapControlSubstation CapControlSubstation;
     private ArrayList<CCSubstationSubBusList> substationSubBuses;
@@ -35,27 +27,18 @@ public class CapControlSubstation extends CapControlYukonPAOBase implements
 
     public void retrieve() throws SQLException {
         super.retrieve();
-
         getCapControlSubstation().retrieve();
-        ArrayList<CCSubstationSubBusList> allSubstationSubBuses = CCSubstationSubBusList.getCCSubBusesOnSubstation(getCapControlPAOID(), getDbConnection());
+        List<CCSubstationSubBusList> allSubstationSubBuses = CCSubstationSubBusList.getCCSubBusesOnSubstation(getCapControlPAOID());
         for (CCSubstationSubBusList assignment : allSubstationSubBuses) {
         	 substationSubBuses.add(assignment);
         }
     }
 
     public void delete() throws SQLException {
-
         // remove all the associations of Subs to this Area
-        com.cannontech.database.db.capcontrol.CCSubstationSubBusList.deleteCCSubBusFromSubstationList(getSubstationID(),
-                                                                             null,
-                                                                             getDbConnection());
-
+        com.cannontech.database.db.capcontrol.CCSubstationSubBusList.deleteCCSubBusFromSubstationList(getSubstationID(), null, getDbConnection());
         // Delete from all dynamic objects
         delete("DynamicCCSubstation", "substationID", getSubstationID());
-
-        // delete(Point.TABLE_NAME, Point.SETTER_COLUMNS[2],
-        // getCapControlPAOID());
-
         getCapControlSubstation().delete();
         super.delete();
     }
@@ -65,20 +48,15 @@ public class CapControlSubstation extends CapControlYukonPAOBase implements
     }
 
     public void add() throws SQLException {
-
         if (getPAObjectID() == null) {
             PaoDao paoDao = DaoFactory.getPaoDao();
             setCapControlPAOID(paoDao.getNextPaoId());
         }
-
         super.add();
-
         getCapControlSubstation().add();
-
         for (int i = 0; i < getChildList().size(); i++) {
-            ((com.cannontech.database.db.capcontrol.CCSubstationSubBusList) getChildList().get(i)).add();
+            getChildList().get(i).add();
         }
-
     }
 
     public com.cannontech.database.db.capcontrol.CapControlSubstation getCapControlSubstation() {
@@ -88,7 +66,7 @@ public class CapControlSubstation extends CapControlYukonPAOBase implements
         return CapControlSubstation;
     }
 
-    public ArrayList getChildList() {
+    public ArrayList<CCSubstationSubBusList> getChildList() {
         if (substationSubBuses == null) {
         	substationSubBuses = new ArrayList<CCSubstationSubBusList>();
         }
@@ -98,41 +76,34 @@ public class CapControlSubstation extends CapControlYukonPAOBase implements
     public void setCapControlPAOID(Integer paoID) {
         super.setPAObjectID(paoID);
         getCapControlSubstation().setSubstationID(paoID);
-
-        for (int i = 0; i < getChildList().size(); i++)
-            ((com.cannontech.database.db.capcontrol.CCSubstationSubBusList) getChildList().get(i)).setSubstationID(paoID);
-
+        for (int i = 0; i < getChildList().size(); i++) {
+            getChildList().get(i).setSubstationID(paoID);
+        }
     }
 
     public void setDbConnection(Connection conn) {
         super.setDbConnection(conn);
         getCapControlSubstation().setDbConnection(conn);
-
-        for (int i = 0; i < getChildList().size(); i++)
-            ((com.cannontech.database.db.capcontrol.CCSubstationSubBusList) getChildList().get(i)).setDbConnection(conn);
-
+        for (int i = 0; i < getChildList().size(); i++) {
+            getChildList().get(i).setDbConnection(conn);
+        }
     }
 
-    public void setSubstationSubBuses(ArrayList substationSubBuses) {
+    public void setSubstationSubBuses(ArrayList<CCSubstationSubBusList> substationSubBuses) {
         this.substationSubBuses = substationSubBuses;
     }
 
-    public void setCapControlSubstation(
-            com.cannontech.database.db.capcontrol.CapControlSubstation CapControlSubstation) {
+    public void setCapControlSubstation( com.cannontech.database.db.capcontrol.CapControlSubstation CapControlSubstation) {
         this.CapControlSubstation = CapControlSubstation;
     }
 
     public void update() throws java.sql.SQLException {
         super.update();
-
         getCapControlSubstation().update();
-
-        CCSubstationSubBusList.deleteCCSubBusFromSubstationList(getCapControlPAOID(),
-                                       null,
-                                       getDbConnection());
+        CCSubstationSubBusList.deleteCCSubBusFromSubstationList(getCapControlPAOID(), null, getDbConnection());
         Connection connection = PoolManager.getInstance().getConnection(CtiUtilities.getDatabaseAlias());
         for (int i = 0; i < getChildList().size(); i++) {
-        	CCSubstationSubBusList substationSubBusList = ((CCSubstationSubBusList) getChildList().get(i));
+        	CCSubstationSubBusList substationSubBusList = getChildList().get(i);
         	substationSubBusList.setDbConnection(connection );
         	substationSubBusList.add();
         }

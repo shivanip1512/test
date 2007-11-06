@@ -110,7 +110,7 @@ public class CBCTestUtil {
         Integer subID = null;
         if (allAreas.size() > 0) {
             Integer areaID = allAreas.get(allAreas.size()-1);
-            List<CCSubAreaAssignment> allAreaSubs = CCSubAreaAssignment.getAllAreaSubs(areaID);
+            List<CCSubAreaAssignment> allAreaSubs = CCSubAreaAssignment.getAllAreaSubStations(areaID);
             if (allAreaSubs.size() > 0) {
                 subID = (allAreaSubs.get(allAreaSubs.size() - 1)).getSubstationBusID();
             }

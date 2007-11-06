@@ -290,7 +290,7 @@ public class CapControlCacheImpl implements MessageListener, CapControlCache {
      */
     public  List<SubBus> getSubBusesByArea(Integer areaId) {
         if(getCBCArea(areaId) != null) {
-            List<CCSubAreaAssignment> allAreaSubs = CCSubAreaAssignment.getAllAreaSubs(areaId);
+            List<CCSubAreaAssignment> allAreaSubs = CCSubAreaAssignment.getAllAreaSubStations(areaId);
             List<Integer>intList = CCSubAreaAssignment.getAsIntegerList(allAreaSubs);
             List<SubBus> subList = new ArrayList<SubBus>();
             for (Integer id : intList) {
@@ -959,7 +959,7 @@ public class CapControlCacheImpl implements MessageListener, CapControlCache {
 
     public List<SubStation> getSubstationsByArea(Integer areaId) {
         if(getCBCArea(areaId) != null) {
-            List<CCSubAreaAssignment> allAreaSubs = CCSubAreaAssignment.getAllAreaSubs(areaId);
+            List<CCSubAreaAssignment> allAreaSubs = CCSubAreaAssignment.getAllAreaSubStations(areaId);
             List<Integer>intList = CCSubAreaAssignment.getAsIntegerList(allAreaSubs);
             List<SubStation> subList = new ArrayList<SubStation>();
             for (Integer id : intList) {

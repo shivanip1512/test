@@ -37,7 +37,7 @@ public class CapControlArea extends CapControlYukonPAOBase implements
         super.retrieve();
 
         getCapControlArea().retrieve();
-        List<CCSubAreaAssignment> allAreaSubs = CCSubAreaAssignment.getAllAreaSubs(getCapControlPAOID());
+        List<CCSubAreaAssignment> allAreaSubs = CCSubAreaAssignment.getAllAreaSubStations(getCapControlPAOID());
         for (CCSubAreaAssignment assignment : allAreaSubs) {
             areaSubs.add(assignment);
         }

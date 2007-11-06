@@ -41,7 +41,7 @@ public class CBCAreaDataModel extends EditorDataModelImpl {
             }
 
             void populateAssigned() {
-                List<CCSubAreaAssignment> allAreaSubs = CCSubAreaAssignment.getAllAreaSubs(areaPers.getPAObjectID());
+                List<CCSubAreaAssignment> allAreaSubs = CCSubAreaAssignment.getAllAreaSubStations(areaPers.getPAObjectID());
                 for (CCSubAreaAssignment assignment : allAreaSubs) {
                     assignedSubs.add(assignment.getSubstationBusID());
                 }
@@ -101,7 +101,7 @@ public class CBCAreaDataModel extends EditorDataModelImpl {
         // delete it from sub assignment
 
         Integer areaID = areaPers.getPAObjectID();
-        List<CCSubAreaAssignment> childList = CCSubAreaAssignment.getAllAreaSubs(areaID);
+        List<CCSubAreaAssignment> childList = CCSubAreaAssignment.getAllAreaSubStations(areaID);
         ArrayList<Integer> idsToRemove = CCSubAreaAssignment.getAsIntegerList(childList);
         idsToRemove.retainAll(unassignedIDs);
         CCSubAreaAssignment.deleteSubs(idsToRemove, areaID);
@@ -112,7 +112,7 @@ public class CBCAreaDataModel extends EditorDataModelImpl {
         for (Integer id : assignedIDs) {
             // see if it belongs to a different area than current
             // if yes - delete assignment from the old sub
-            Integer areaID = CCSubAreaAssignment.getAreaIDForSub(id);
+            Integer areaID = CCSubAreaAssignment.getAreaIDForSubStation(id);
             if (areaID != null && !areaID.equals(areaPers.getPAObjectID())) {
                 CCSubAreaAssignment objToDelete = new CCSubAreaAssignment();
                 objToDelete.setAreaID(areaID);
