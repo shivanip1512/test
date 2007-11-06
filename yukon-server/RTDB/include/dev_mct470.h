@@ -9,8 +9,8 @@
 *
 * PVCS KEYWORDS:
 * ARCHIVE      :  $Archive:   Z:/SOFTWAREARCHIVES/YUKON/RTDB/INCLUDE/dev_MCT470.h-arc  $
-* REVISION     :  $Revision: 1.42 $
-* DATE         :  $Date: 2007/11/06 21:24:56 $
+* REVISION     :  $Revision: 1.43 $
+* DATE         :  $Date: 2007/11/06 22:13:59 $
 *
 * Copyright (c) 2005 Cannon Technologies Inc. All rights reserved.
 *-----------------------------------------------------------------------------*/
@@ -207,7 +207,7 @@ protected:
         Memory_LastTSyncLen         =    4,
 
         Memory_IntervalsPos         = 0x32,
-        Memory_IntervalsLen         =    4,
+        Memory_IntervalsLen         =    6,
 
         Memory_DemandIntervalPos    = 0x32,
         Memory_DemandIntervalLen    =    1,
