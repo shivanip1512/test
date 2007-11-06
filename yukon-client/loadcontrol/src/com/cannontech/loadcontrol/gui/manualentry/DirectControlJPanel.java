@@ -328,7 +328,7 @@ public class DirectControlJPanel extends javax.swing.JPanel implements java.awt.
                                             getStartTime(), getStopTime(),
                                             program, gearNum, constID );
             
-            if(canSpecifyStopGear) {
+            if(canSpecifyStopGear && !getJCheckBoxStartStopNow().isSelected()) {
                 cmd.setStartGear(((LMProgramDirectGear)getSelectedStopGear()).getGearNumber());
                 cmd.setCommand(LMManualControlRequest.CHANGE_GEAR);
             }
@@ -1782,6 +1782,8 @@ private void initialize() {
 			getJTextFieldStopTime().setEnabled( !getJCheckBoxStartStopNow().isSelected() );
 			getJLabelLabelStopHRMN().setEnabled( !getJCheckBoxStartStopNow().isSelected() );
 			getDateComboStop().setEnabled( !getJCheckBoxStartStopNow().isSelected() );
+            getJComboBoxStopGear().setEnabled(!getJCheckBoxStartStopNow().isSelected());
+            getJLabelStopGear().setEnabled(!getJCheckBoxStartStopNow().isSelected());
 		}
 		else if( getMode() == MODE_START_STOP )
 		{
@@ -1790,7 +1792,6 @@ private void initialize() {
 			getJLabelLabelStartHRMN().setEnabled( !getJCheckBoxStartStopNow().isSelected() );
 			getDateComboStart().setEnabled( !getJCheckBoxStartStopNow().isSelected() );
 		}
-	
 	
 		if( getJCheckBoxStartStopNow().isSelected() )
 			getJButtonOk().setEnabled( true );
