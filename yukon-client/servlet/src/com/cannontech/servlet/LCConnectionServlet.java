@@ -346,7 +346,7 @@ private ResponseProg[] sendSyncMsg( final WebCmdMsg cmdMsg )
 
                 if( programResps[i].getViolations().size() <= 0 ) {
                     programResps[i].setAction(
-                        ResponseProg.NO_VILOATION_ACTION );
+                        ResponseProg.NO_VIOLATION_ACTION );
 
                     programResps[i].getViolations().add(
                         " No Constraints Violated");

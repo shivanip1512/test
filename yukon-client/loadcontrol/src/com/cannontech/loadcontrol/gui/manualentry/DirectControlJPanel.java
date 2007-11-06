@@ -65,6 +65,8 @@ public class DirectControlJPanel extends javax.swing.JPanel implements java.awt.
 	private javax.swing.JPanel ivjJPanelOkCancel = null;
 	private javax.swing.JCheckBox ivjJCheckBoxStartStopNow = null;
 	private javax.swing.JComboBox ivjJComboBoxGear = null;
+    private javax.swing.JComboBox jComboBoxStopGear = null;
+    private javax.swing.JLabel jLabelStopGear = null;
 	private javax.swing.JLabel ivjJLabelGear = null;
 	private com.cannontech.common.gui.panel.MultiSelectJPanel ivjJPanelMultiSelect = null;
 	private javax.swing.JPanel ivjJPanelControls = null;
@@ -88,7 +90,7 @@ public class DirectControlJPanel extends javax.swing.JPanel implements java.awt.
     private JButton targetAdjustButton = null;
     private TargetCycleConfigPanel gearConfigJPanel = null;
     
-    
+    boolean canSpecifyStopGear = false;
     /**
 	 * ManualChangeJPanel constructor comment.
 	 */
@@ -320,12 +322,18 @@ public class DirectControlJPanel extends javax.swing.JPanel implements java.awt.
 
 		if (getMode() == MODE_STOP) 
         {
-            return LCUtils.createProgMessage(
+            LMManualControlRequest cmd = LCUtils.createProgMessage(
                                             isStopStartNowSelected(),
                                             getMode() == MODE_STOP,
                                             getStartTime(), getStopTime(),
                                             program, gearNum, constID );
-                        
+            
+            if(canSpecifyStopGear) {
+                cmd.setStartGear(((LMProgramDirectGear)getSelectedStopGear()).getGearNumber());
+                cmd.setCommand(LMManualControlRequest.CHANGE_GEAR);
+            }
+            
+            return cmd;
         }
         else
         {
@@ -346,7 +354,6 @@ public class DirectControlJPanel extends javax.swing.JPanel implements java.awt.
                                                           getStartTime(), getStopTime(),
                                                           program, gearNum, constID, 
                                                           additionalInfo );
-                    
                     }
                 }
             }
@@ -1112,7 +1119,22 @@ private javax.swing.JLabel getJLabelScenario() {
 			constraintsJLabelGear.insets = new java.awt.Insets(5, 5, 4, 1);
 			getJPanelControls().add(getJLabelGear(), constraintsJLabelGear);
 
-		
+            java.awt.GridBagConstraints constraintsJComboBoxStopGear = new java.awt.GridBagConstraints();
+            constraintsJComboBoxStopGear.gridx = 2; constraintsJComboBoxStopGear.gridy = 9;
+            constraintsJComboBoxStopGear.gridwidth = 4;
+            constraintsJComboBoxStopGear.fill = java.awt.GridBagConstraints.HORIZONTAL;
+            constraintsJComboBoxStopGear.anchor = java.awt.GridBagConstraints.WEST;
+            constraintsJComboBoxStopGear.weightx = 1.0;
+            constraintsJComboBoxStopGear.ipadx = 106;
+            constraintsJComboBoxStopGear.insets = new java.awt.Insets(3, 2, 2, 5);
+            getJPanelControls().add(getJComboBoxStopGear(), constraintsJComboBoxStopGear);
+
+            java.awt.GridBagConstraints constraintsJLabelStopGear = new java.awt.GridBagConstraints();
+            constraintsJLabelStopGear.gridx = 1; constraintsJLabelStopGear.gridy = 9;
+            constraintsJLabelStopGear.anchor = java.awt.GridBagConstraints.WEST;
+            constraintsJLabelStopGear.ipadx = 9;
+            constraintsJLabelStopGear.insets = new java.awt.Insets(5, 5, 4, 1);
+            getJPanelControls().add(getJLabelStopGear(), constraintsJLabelStopGear);
             
             /******Gear Adjustments - Elliot Khazon******/
                     java.awt.GridBagConstraints buttonAnchor = new java.awt.GridBagConstraints();
@@ -1550,6 +1572,7 @@ private javax.swing.JLabel getJLabelScenario() {
 		
 		getJComboBoxGear().addActionListener( this );
 		getJComboBoxScenario().addActionListener( this );
+        getJComboBoxStopGear().addActionListener( this );
 		
 		// user code end
 		getJButtonCancel().addActionListener(this);
@@ -1647,7 +1670,7 @@ private void initialize() {
 		 	 && getStartTime() != null
 		 	 && getStopTime() != null )
 		{
-			if( getStartTime().after(CtiUtilities.get1990GregCalendar().getTime())
+            if( getStartTime().after(CtiUtilities.get1990GregCalendar().getTime())
 				 && getStopTime().after(CtiUtilities.get1990GregCalendar().getTime()) )
 			{
 				if( getStartTime().getTime() >= getStopTime().getTime() )
@@ -1807,16 +1830,20 @@ private void initialize() {
 	public void setGearList(java.util.Vector gears) 
 	{
 		getJComboBoxGear().removeAllItems();
+        getJComboBoxStopGear().removeAllItems();
 		
 		if( gears != null )
 		{
 			for( int i = 0; i < gears.size(); i++ )
 			{
 				getJComboBoxGear().addItem( gears.get(i) );
+                getJComboBoxStopGear().addItem( gears.get(i) );
 			}
 	
-			if( getJComboBoxGear().getItemCount() > 0 )
+			if( getJComboBoxGear().getItemCount() > 0 ) {
 				getJComboBoxGear().setSelectedIndex(0);
+                getJComboBoxStopGear().setSelectedIndex(0);
+            }
 		}
 	
 	}
@@ -1841,6 +1868,11 @@ private void initialize() {
 				getJPanelControls().setVisible( false );
 				//no break, let this fall through
 
+            case MODE_START_STOP:
+                getJComboBoxStopGear().setVisible(false);
+                getJLabelStopGear().setVisible(false);
+                break;
+                
 			case MODE_STOP:
 				getJLabelStartTime().setVisible(false);
 				getJTextFieldStartTime().setVisible(false);
@@ -1849,6 +1881,19 @@ private void initialize() {
 				getJComboBoxGear().setVisible(false);
 				getJLabelGear().setVisible(false);
 
+                canSpecifyStopGear = 
+                    DaoFactory.getAuthDao().checkRoleProperty(
+                        ClientSession.getInstance().getUser(),
+                        DirectLoadcontrolRole.ALLOW_STOP_GEAR_ACCESS);
+                if(canSpecifyStopGear) {
+                    getJComboBoxStopGear().setVisible(true);
+                    getJLabelStopGear().setVisible(true);
+                }
+                else {
+                    getJComboBoxStopGear().setVisible(false);
+                    getJLabelStopGear().setVisible(false);
+                }
+                
 				getJComboBoxConstraints().setVisible(false);
 				getJLabelGear1().setVisible(false);
 
@@ -1883,12 +1928,18 @@ private void initialize() {
 		}
 	
 	}
+    
     private Object getSelectedGear() {
         int selectedItem = getJComboBoxGear().getSelectedIndex();
         Object gear = getJComboBoxGear().getItemAt(selectedItem);
         return gear;
     }
     
+    private Object getSelectedStopGear() {
+        int selectedItem = getJComboBoxStopGear().getSelectedIndex();
+        Object gear = getJComboBoxStopGear().getItemAt(selectedItem);
+        return gear;
+    }
 
     private boolean isTargetCycleGear (Object gear) {
         if (gear instanceof LMProgramDirectGear)
@@ -2055,6 +2106,53 @@ private void initialize() {
             gearConfigJPanel = new TargetCycleConfigPanel();
         }
         return gearConfigJPanel;
+    }
+    
+    public javax.swing.JComboBox getJComboBoxStopGear() {
+        if (jComboBoxStopGear == null) {
+            try {
+                jComboBoxStopGear = new javax.swing.JComboBox();
+                jComboBoxStopGear.setName("JComboBoxStopGear");
+                jComboBoxStopGear.setEditor(new javax.swing.plaf.metal.MetalComboBoxEditor.UIResource());
+                jComboBoxStopGear.setRenderer(new javax.swing.plaf.basic.BasicComboBoxRenderer.UIResource());
+                // user code begin {1}
+                jComboBoxStopGear.setToolTipText( "The gear or gear number the program(s) should stop control with");
+                jComboBoxStopGear.setMaximumSize(new java.awt.Dimension(25,20));
+                // user code end
+            } catch (java.lang.Throwable ivjExc) {
+                // user code begin {2}
+                // user code end
+                handleException(ivjExc);
+            }
+        }
+        return jComboBoxStopGear;
+    }
+    
+    public void setJComboBoxStopGear(javax.swing.JComboBox ivjJComboBoxStopGear) {
+        this.jComboBoxStopGear = ivjJComboBoxStopGear;
+    }
+    public javax.swing.JLabel getJLabelStopGear() {
+        if (jLabelStopGear == null) {
+            try {
+                jLabelStopGear = new javax.swing.JLabel();
+                jLabelStopGear.setName("JLabelStopGear");
+                jLabelStopGear.setFont(new java.awt.Font("dialog", 0, 14));
+                jLabelStopGear.setText("Stop Gear:");
+                jLabelStopGear.setMaximumSize(new java.awt.Dimension(36, 19));
+                jLabelStopGear.setMinimumSize(new java.awt.Dimension(36, 19));
+                // user code begin {1}
+                jLabelStopGear.setToolTipText( "The gear or gear number the program(s) should stop control with");
+                // user code end
+            } catch (java.lang.Throwable ivjExc) {
+                // user code begin {2}
+                // user code end
+                handleException(ivjExc);
+            }
+        }
+        return jLabelStopGear;
+    }
+    public void setJLabelStopGear(javax.swing.JLabel ivjJLabelStopGear) {
+        this.jLabelStopGear = ivjJLabelStopGear;
     }
     
     

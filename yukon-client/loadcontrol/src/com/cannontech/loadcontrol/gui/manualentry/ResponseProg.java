@@ -27,7 +27,7 @@ public class ResponseProg
 
 
 	public static final String NONE_ACTION = "";
-	public static final String NO_VILOATION_ACTION = "No Violation";
+	public static final String NO_VIOLATION_ACTION = "No Violation";
 
 	/**
 	 * 

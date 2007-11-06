@@ -111,7 +111,6 @@ public class PopUpPanel {
 								selected[i].getBaseProgram() );
 
 					}
-
 					
 					boolean success = LCUtils.executeSyncMessage( programResp );
 
@@ -131,7 +130,7 @@ public class PopUpPanel {
 
 								if( programResp[i].getViolations().size() <= 0 ) {
 									programResp[i].setAction(
-										ResponseProg.NO_VILOATION_ACTION );
+										ResponseProg.NO_VIOLATION_ACTION );
 
 									programResp[i].getViolations().add(
 										" No Constraints Violated");
@@ -223,7 +222,7 @@ public class PopUpPanel {
                     //add a "Successful check" output if there are not
                     // any constraints violated
                     if( currentResponseProg.getViolations().size() <= 0 ) {
-                        currentResponseProg.setAction( ResponseProg.NO_VILOATION_ACTION );
+                        currentResponseProg.setAction( ResponseProg.NO_VIOLATION_ACTION );
                         currentResponseProg.getViolations().add("No Constraints Violated");
                     }
 

@@ -100,7 +100,7 @@ public class ConstraintTableModel extends javax.swing.table.AbstractTableModel i
 		else if( prog.getOverride().booleanValue() ) {
 			return CELL_COLORS[2];
 		}
-		else if( ResponseProg.NO_VILOATION_ACTION.equals(prog.getAction()) ) {
+		else if( ResponseProg.NO_VIOLATION_ACTION.equals(prog.getAction()) ) {
 			return CELL_COLORS[3];
 		}
 		else
