@@ -18,7 +18,9 @@ create table DYNAMICBILLINGFIELD (
    FormatID             numeric              not null,
    FieldName            varchar(50)          not null,
    FieldOrder           numeric              not null,
-   FieldFormat          varchar(50)          null
+   FieldFormat          varchar(50)          null,
+   MaxLength            numeric              not null,
+   constraint PK_DYNAMICBILLINGFIELD primary key (id)
 )
 go
 

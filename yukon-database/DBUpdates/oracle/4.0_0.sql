@@ -33,7 +33,9 @@ create table DYNAMICBILLINGFIELD  (
    FormatID             NUMBER                          not null,
    FieldName            VARCHAR2(50)                    not null,
    FieldOrder           NUMBER                          not null,
-   FieldFormat          VARCHAR2(50)
+   FieldFormat          VARCHAR2(50),
+   MaxLength            NUMBER                          not null,
+   constraint PK_DYNAMICBILLINGFIELD primary key (id)
 )
 ;
 
