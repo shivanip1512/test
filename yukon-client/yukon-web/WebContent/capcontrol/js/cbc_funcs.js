@@ -269,6 +269,34 @@ function updateHTML( result)
 
 }
 
+// -------------------------------------------
+//	Callback function for the xml HTTP request to
+// return the entire result object.
+//	This popup will not close by itself, closing must be 
+// handled by the html of the body.
+// -------------------------------------------
+function processMenuReqClosable() 
+{
+    var xmlHTTPreq = getReq(manMsgID);
+
+    // only if req shows "complete" and HTTP code is "OK"
+    if( xmlHTTPreq != null
+        && getReq(manMsgID).req != null
+        && getReq(manMsgID).req.readyState == 4 
+        && getReq(manMsgID).req.status == 200 )
+    {    
+        var req = getReq(manMsgID).req;
+
+        //store the response of the request
+        response = req.responseText;
+
+        overlib( response, FULLHTML, STICKY, FIXX, 225, FIXY, 225);
+
+        //always do this
+        freeReq( manMsgID );        
+    }
+
+}
 
 // -------------------------------------------
 //Callback function for the xml HTTP request to
@@ -300,16 +328,25 @@ function processMenuReq()
 }
 
 // -------------------------------------------
-//Shows a popup of the given message string.
+// Shows a popup of the given message string.
 // Uses the overlib library for display purposes.
 // -------------------------------------------
-function statusMsg(elem, msgStr)
-{
-    elem.onmouseout = function (e)
-    {
+function statusMsg(elem, msgStr) {
+    elem.onmouseout = function (e) {
         nd();
-    };  
+    };
     overlib( msgStr, WIDTH, 160, CSSCLASS, TEXTFONTCLASS, 'flyover' );
+}
+
+// -------------------------------------------
+// Shows a popup of the given message string.
+// Uses the overlib library for display purposes.
+// Leaves the closing of the popup to the caller.
+// -------------------------------------------
+function showDynamicPopup(elem) {
+	var spans = elem.getElementsByTagName('span');
+	var msg = new String(spans[0].innerHTML);
+    overlib( msg, WIDTH, 160, CSSCLASS, TEXTFONTCLASS, 'flyover' );
 }
 
 // -------------------------------------------
@@ -318,22 +355,17 @@ function statusMsg(elem, msgStr)
 // html is placed in the popup box and then the box is
 // made visible
 // -------------------------------------------
-function showPopUpChkBoxes( baseUrl )
-{
-    if( baseUrl == null )
+function showPopUpChkBoxes( baseUrl ) {
+    if( baseUrl == null ){
         return;
-
+	}
     var elemSubs = document.getElementsByName('cti_chkbxSubs');
     var elemFdrs = document.getElementsByName('cti_chkbxFdrs');
-    //var elemBanks = document.getElementsByName('cti_chkbxBanks');
-
     var validElems = new Array();
     getValidChecks( elemSubs, validElems );
     getValidChecks( elemFdrs, validElems );
-    //getValidChecks( elemBanks, validElems );
-
     var url = createURLreq( validElems, baseUrl, 'value' );
-    manMsgID = loadXMLDoc(url, 'processMenuReq');
+    manMsgID = loadXMLDoc(url, 'processMenuReqClosable');
 }
 
 // -------------------------------------------
@@ -367,10 +399,9 @@ function showRecentCmds( baseUrl )
 // -------------------------------------------
 function showPopUp( urlStr )
 {
-    if( urlStr == null )
+    if( urlStr == null ){
         return;
-
-    //var url = createURLreq( validElems, 'charts.jsp?type='+typeStr, 'value' );
+	}
     manMsgID = loadXMLDoc(urlStr, 'processMenuReq');
 }
 
