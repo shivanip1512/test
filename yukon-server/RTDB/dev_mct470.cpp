@@ -8,8 +8,8 @@
 *
 * PVCS KEYWORDS:
 * ARCHIVE      :  $Archive:   Z:/SOFTWAREARCHIVES/YUKON/RTDB/dev_mct310.cpp-arc  $
-* REVISION     :  $Revision: 1.101 $
-* DATE         :  $Date: 2007/08/23 17:26:31 $
+* REVISION     :  $Revision: 1.102 $
+* DATE         :  $Date: 2007/11/06 21:24:56 $
 *
 * Copyright (c) 2005 Cannon Technologies Inc. All rights reserved.
 *-----------------------------------------------------------------------------*/
@@ -3876,8 +3876,13 @@ INT CtiDeviceMCT470::decodeGetValueIED(INMESS *InMessage, CtiTime &TimeNow, list
 
                     if(pi.value != 0xFEFE )
                     {
-                        resultString += valueReport("outage count", pi).c_str();
-                        resultString += "\n";
+                        insertPointDataReport(AnalogPointType, PointOffset_OutageCount,
+                                              ReturnMsg, pi);
+                    }
+                    else
+                    {
+                        resultString += getName() + " / Outage Count: Data Unavailable" + "\n";
+                        insertPointFail(InMessage, ReturnMsg, ScanRateGeneral, PointOffset_OutageCount, AnalogPointType);
                     }
                 }
             }
