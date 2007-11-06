@@ -9,6 +9,7 @@ import java.util.Map;
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
 
+import org.apache.commons.lang.time.DateUtils;
 import org.springframework.beans.factory.annotation.Required;
 import org.springframework.web.bind.ServletRequestBindingException;
 import org.springframework.web.bind.ServletRequestUtils;
@@ -73,6 +74,22 @@ public class ProfilePeakWidget extends WidgetControllerBase {
         Date now = new Date();
         mav.addObject("startDate", COMMAND_FORMAT.format(TimeUtil.addDays(now, -5)));
         mav.addObject("stopDate", COMMAND_FORMAT.format(now));
+        
+        if(preResult != null) {
+            Map<String,String> preMap = getParsedPeakResultValuesMap(preResult, user, deviceId, 1);
+            mav.addObject("displayName", preMap.get("displayName"));
+            mav.addObject("prePeriodStartDateDisplay",preMap.get("periodStartDateDisplay"));
+            mav.addObject("prePeriodStopDateDisplay",preMap.get("periodStopDateDisplay"));
+            mav.addObject("prePeakValue",preMap.get("peakValueStr"));
+        }
+        
+        if(postResult != null) {
+            Map<String,String> postMap = getParsedPeakResultValuesMap(postResult, user, deviceId, 1);
+            mav.addObject("postPeriodStartDateDisplay",postMap.get("periodStartDateDisplay"));
+            mav.addObject("postPeriodStopDateDisplay",postMap.get("periodStopDateDisplay"));
+            mav.addObject("postPeakValue",postMap.get("peakValueStr"));
+        }
+        
 
         return mav;
     }
@@ -160,10 +177,74 @@ public class ProfilePeakWidget extends WidgetControllerBase {
         
         mav.addObject("preResult", prePeakResult);
         mav.addObject("postResult", postPeakResult);
+        
+        if(prePeakResult != null) {
+            Map<String,String> preMap = getParsedPeakResultValuesMap(prePeakResult, user, deviceId, 1);
+            mav.addObject("displayName", preMap.get("displayName"));
+            mav.addObject("prePeriodStartDateDisplay",preMap.get("periodStartDateDisplay"));
+            mav.addObject("prePeriodStopDateDisplay",preMap.get("periodStopDateDisplay"));
+            mav.addObject("prePeakValue",preMap.get("peakValueStr"));
+        }
+        
+        if(postPeakResult != null) {
+            Map<String,String> postMap = getParsedPeakResultValuesMap(postPeakResult, user, deviceId, 1);
+            mav.addObject("postPeriodStartDateDisplay",postMap.get("periodStartDateDisplay"));
+            mav.addObject("postPeriodStopDateDisplay",postMap.get("periodStopDateDisplay"));
+            mav.addObject("postPeakValue",postMap.get("peakValueStr"));
+        }
 
         return mav;
     }
-
+    
+    private Map<String, String> getParsedPeakResultValuesMap(PeakReportResult peakResult, LiteYukonUser user, int deviceId, int channel) {
+        
+        // init hash
+        Map<String, String> parsedVals = new HashMap<String, String>();
+        
+        // special formatting of peakResult dates for display purposes
+        String runDateDisplay = dateFormattingService.formatDate(peakResult.getRunDate(), DateFormattingService.DateFormatEnum.DATEHM, user);
+        parsedVals.put("runDateDisplay", runDateDisplay);
+        
+        String periodStartDateDisplay = dateFormattingService.formatDate(peakResult.getRangeStartDate(), DateFormattingService.DateFormatEnum.DATE, user);
+        parsedVals.put("periodStartDateDisplay", periodStartDateDisplay);
+        
+        String periodStopDateDisplay = dateFormattingService.formatDate(peakResult.getRangeStopDate(), DateFormattingService.DateFormatEnum.DATE, user);
+        parsedVals.put("periodStopDateDisplay", periodStopDateDisplay);
+        
+        parsedVals.put("displayName", peakResult.getPeakType().getDisplayName());
+        parsedVals.put("reportTypeDisplayName",peakResult.getPeakType().getReportTypeDisplayName());
+        
+        String peakValueStr = "";
+        if(peakResult.getPeakType() == PeakReportPeakType.DAY) {
+            peakValueStr = dateFormattingService.formatDate(peakResult.getPeakStopDate(), DateFormattingService.DateFormatEnum.DATE, user);
+        }
+        else if(peakResult.getPeakType() == PeakReportPeakType.HOUR) {
+            peakValueStr = new SimpleDateFormat("MM/dd/yy").format(peakResult.getPeakStopDate());
+            peakValueStr += " ";
+            peakValueStr += new SimpleDateFormat("Ka").format(peakResult.getPeakStartDate());
+            peakValueStr += " - ";
+            peakValueStr += new SimpleDateFormat("Ka").format(DateUtils.addMinutes(peakResult.getPeakStopDate(), 1));
+        }
+        else if(peakResult.getPeakType() == PeakReportPeakType.INTERVAL) {
+            int interval = peakReportService.getChannelIntervalForDevice(deviceId,channel);
+            peakValueStr = new SimpleDateFormat("MM/dd/yy").format(peakResult.getPeakStopDate());
+            peakValueStr += " ";
+            if(interval == 60){
+                peakValueStr += new SimpleDateFormat("Ha").format(peakResult.getPeakStartDate());
+                peakValueStr += " - ";
+                peakValueStr += new SimpleDateFormat("Ha").format(DateUtils.addMinutes(peakResult.getPeakStopDate(), 1));
+            }
+            else{
+                peakValueStr += new SimpleDateFormat("K:mma").format(peakResult.getPeakStartDate());
+                peakValueStr += " - ";
+                peakValueStr += new SimpleDateFormat("K:mma").format(DateUtils.addMinutes(peakResult.getPeakStopDate(), 1));
+            }
+        }
+        parsedVals.put("peakValueStr", peakValueStr);
+        
+        return parsedVals;
+    }
+    
     /**
      * Helper method to add highlighted fields to the ModelAndView
      * @param request - Current request

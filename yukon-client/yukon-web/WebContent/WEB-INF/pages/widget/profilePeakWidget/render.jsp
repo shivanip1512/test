@@ -68,7 +68,7 @@
 					Avg Daily / <br /> Total Usage
 				</th>
 				<th>
-					Peak ${preResult.peakTypeDisplayName}
+					Peak ${displayName}
 				</th>
 				<th width="200px">
 					Peak Day Total Usage
@@ -80,17 +80,17 @@
 						<c:when test="${!preResult.noData && preResult.deviceError == ''}">
 							<tr>
 								<td width="150px">
-									${preResult.periodStartDateDisplay} -<br/>
-									${preResult.periodStopDateDisplay}
+									${prePeriodStartDateDisplay} -<br/>
+									${prePeriodStopDateDisplay}
 								</td>
 								<td>
-									${preResult.averageDailyUsage} kWH / ${preResult.totalUsage} kWH
+									${preResult.averageDailyUsage} / ${preResult.totalUsage} kWH
 								</td>
 								<td width="150px">
-									${preResult.peakValue}
+									${prePeakValue}
 								</td>
 								<td>
-									${preResult.usage}
+									${preResult.usage} kWH
 								</td>
 								<td>
 									<!-- Load Profile collection -->
@@ -114,8 +114,8 @@
 						<c:otherwise>
 							<tr>
 								<td>
-									${preResult.periodStartDateDisplay} -<br/>
-									${preResult.periodStopDateDisplay}
+									${prePeriodStartDateDisplay} -<br/>
+									${prePeriodStopDateDisplay}
 								</td>					
 								<td colspan="4">
 									${preResult.deviceError}
@@ -130,16 +130,16 @@
 						<c:when test="${!postResult.noData && postResult.deviceError == ''}">
 							<tr>
 								<td width="150px">
-									${postResult.periodStartDateDisplay} - ${postResult.periodStopDateDisplay}
+									${postPeriodStartDateDisplay} - ${postPeriodStopDateDisplay}
 								</td>
 								<td>
-									${postResult.averageDailyUsage} kWH / ${postResult.totalUsage} kWH
+									${postResult.averageDailyUsage} / ${postResult.totalUsage} kWH
 								</td>
 								<td width="150px">
-									${postResult.peakValue}
+									${postPeakValue}
 								</td>
 								<td>
-									${postResult.usage}
+									${postResult.usage} kWH
 								</td>
 								<td>
 									<!-- Load Profile collection -->
@@ -163,7 +163,7 @@
 						<c:otherwise>
 							<tr>
 								<td>
-									${postResult.periodStartDateDisplay} - ${postResult.periodStopDateDisplay}
+									${postPeriodStartDateDisplay} - ${postPeriodStopDateDisplay}
 								</td>					
 								<td colspan="4">
 									${postResult.deviceError}
