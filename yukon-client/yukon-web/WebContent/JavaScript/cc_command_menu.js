@@ -110,60 +110,53 @@ function update_Command_Menu (type, id, state, opts) {
 //function to generate
 //html for the sub command menu
 function generateSubMenu (id, state, opts) {
- var ALL_SUB_CMDS = {
- 					 confirm_close:9,
- 				 	 enable_sub:0,
-	 				 disable_sub:1,
-	 				 reset_op_cnt:12,
-	 				 send_all_open:29, 
-	 				 send_all_close:30, 
-	 				 send_all_enable_ovuv:31, 
-	 				 send_all_disable_ovuv:32,
-	 				 send_all_2way_scan:33,
-	 				 v_all_banks:40,
-	 				 v_fq_banks:41,
-	 				 v_failed_banks:42,
-	 				 v_question_banks:43,
-	 				 v_disable_verify:44,
-	 				 v_standalone_banks:46
-	 				}
- //var table_header = "<table>";
- var table_footer = "</table>";
- var table_body = "<table >";
- table_body += "<tr><td class='top'>" + opts[1] + "</td></tr>"
- 
- if (id > 0) {
- 	table_body += add_AJAX_Function('sub', id, ALL_SUB_CMDS.confirm_close, 'Confirm_Sub');
- //	if (state != 'DISABLED') {
- if (!state.match('DISABLED')) {
- 		table_body += add_AJAX_Function('sub', id, ALL_SUB_CMDS.disable_sub, 'Disable_Sub');
- 	}
- 	else {
- 		table_body += add_AJAX_Function('sub', id, ALL_SUB_CMDS.enable_sub, 'Enable_Sub');
- 	}
+	var ALL_SUB_CMDS = {
+ 		confirm_close:9,
+ 		enable_sub:0,
+	 	disable_sub:1,
+	 	reset_op_cnt:12,
+	 	send_all_open:29, 
+	 	send_all_close:30, 
+	 	send_all_enable_ovuv:31, 
+	 	send_all_disable_ovuv:32,
+	 	send_all_2way_scan:33,
+	 	v_all_banks:40,
+	 	v_fq_banks:41,
+	 	v_failed_banks:42,
+	 	v_question_banks:43,
+	 	v_disable_verify:44,
+	 	v_standalone_banks:46
+	 }
+	var table_footer = "</table>";
+	var table_body = "<table >";
+	table_body += "<tr><td class='top'>" + opts[1] + "</td>";
+	table_body += "<td class='top' onclick='cClick()'><a href='javascript:void(0)'>X</a></td></tr>"
+	if (id > 0) {
+ 		table_body += add_AJAX_Function('sub', id, ALL_SUB_CMDS.confirm_close, 'Confirm_Sub');
+ 		if (!state.match('DISABLED')) {
+ 			table_body += add_AJAX_Function('sub', id, ALL_SUB_CMDS.disable_sub, 'Disable_Sub');
+ 		} else {
+ 			table_body += add_AJAX_Function('sub', id, ALL_SUB_CMDS.enable_sub, 'Enable_Sub');
+ 		}
  	
- 	table_body += add_AJAX_Function('sub', id, ALL_SUB_CMDS.reset_op_cnt, 'Reset_Op_Counts');
- 	table_body += add_AJAX_Function('sub', id, ALL_SUB_CMDS.send_all_open, 'Open_All_CapBanks');
- 	table_body += add_AJAX_Function('sub', id, ALL_SUB_CMDS.send_all_close, 'Close_All_CapBanks');
- 	table_body += add_AJAX_Function('sub', id, ALL_SUB_CMDS.send_all_enable_ovuv, 'Enable_OV/UV');
-	table_body += add_AJAX_Function('sub', id, ALL_SUB_CMDS.send_all_disable_ovuv, 'Disable_OV/UV');
-	table_body += add_AJAX_Function('sub', id, ALL_SUB_CMDS.send_all_2way_scan, 'Scan_All_2way_Scans');
-	if (!opts[0]){
- 		table_body += add_AJAX_Function('sub', id, ALL_SUB_CMDS.v_all_banks, 'Verify_All_Banks');
- 		table_body += add_AJAX_Function('sub', id, ALL_SUB_CMDS.v_fq_banks, 'Verify_Failed_And_Questionable_Banks');
- 		table_body += add_AJAX_Function('sub', id, ALL_SUB_CMDS.v_failed_banks, 'Verify_Failed_Banks');
- 		table_body += add_AJAX_Function('sub', id, ALL_SUB_CMDS.v_question_banks, 'Verify_Questionable_Banks');
- 		table_body += add_AJAX_Function('sub', id, ALL_SUB_CMDS.v_standalone_banks, 'Verify_Standalone_Banks');
+ 		table_body += add_AJAX_Function('sub', id, ALL_SUB_CMDS.reset_op_cnt, 'Reset_Op_Counts');
+ 		table_body += add_AJAX_Function('sub', id, ALL_SUB_CMDS.send_all_open, 'Open_All_CapBanks');
+ 		table_body += add_AJAX_Function('sub', id, ALL_SUB_CMDS.send_all_close, 'Close_All_CapBanks');
+ 		table_body += add_AJAX_Function('sub', id, ALL_SUB_CMDS.send_all_enable_ovuv, 'Enable_OV/UV');
+		table_body += add_AJAX_Function('sub', id, ALL_SUB_CMDS.send_all_disable_ovuv, 'Disable_OV/UV');
+		table_body += add_AJAX_Function('sub', id, ALL_SUB_CMDS.send_all_2way_scan, 'Scan_All_2way_Scans');
+		if (!opts[0]){
+	 		table_body += add_AJAX_Function('sub', id, ALL_SUB_CMDS.v_all_banks, 'Verify_All_Banks');
+	 		table_body += add_AJAX_Function('sub', id, ALL_SUB_CMDS.v_fq_banks, 'Verify_Failed_And_Questionable_Banks');
+	 		table_body += add_AJAX_Function('sub', id, ALL_SUB_CMDS.v_failed_banks, 'Verify_Failed_Banks');
+	 		table_body += add_AJAX_Function('sub', id, ALL_SUB_CMDS.v_question_banks, 'Verify_Questionable_Banks');
+	 		table_body += add_AJAX_Function('sub', id, ALL_SUB_CMDS.v_standalone_banks, 'Verify_Standalone_Banks');
+ 		} else {
+ 			table_body += add_AJAX_Function('sub', id, ALL_SUB_CMDS.v_disable_verify, 'Verify_Stop');	
+ 		}
  	}
- 	else {
- 		table_body += add_AJAX_Function('sub', id, ALL_SUB_CMDS.v_disable_verify, 'Verify_Stop');	
- 	}
- }
-
-	//table_header+= table_body;
 	table_body+= table_footer;
 	return table_body;
-
 }
 
 //function to generate
@@ -390,8 +383,11 @@ switch (type) {
     ajax_func += "'execute_SubAreaCommand (" + pao_id + "," + cmd_id + "," + str_cmd + "); '";
     break;
 }
-	
-ajax_func += ">"+ cmd_name+"</a>";
+myString = new String(cmd_name);
+rExp = /_/gi;
+newString = new String (" ");
+results = myString.replace(rExp, newString);
+ajax_func += ">"+ results +"</a>";
 ajax_func += "</td></tr>";
 return ajax_func;
 }
@@ -406,8 +402,7 @@ function executeSubCommand (paoId, command, cmd_name) {
 	onSuccess: function () { display_status(cmd_name, "Success", "green"); },
 	onFailure: function () { display_status(cmd_name, "Failed", "red"); }, 
 	asynchronous:true });
-	var cmdDiv = document.getElementById ('cmdDiv' + paoId);
-	cmdDiv.style.display = 'none';
+	return cClick();
 }
 
 

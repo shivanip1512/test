@@ -356,7 +356,6 @@ private boolean handleSubGET( String ids, ResultXML[] xmlMsgs, int indx ) {
 		/*param4*/CBCUtils.CBC_DISPLAY.getSubBusValueAt(sub, CBCDisplay.SUB_POWER_FACTOR_COLUMN).toString(),
 		/*param5*/CBCUtils.CBC_DISPLAY.getSubBusValueAt(sub, CBCDisplay.SUB_WATTS_COLUMN).toString(),
 		/*param6*/CBCUtils.CBC_DISPLAY.getSubBusValueAt(sub, CBCDisplay.SUB_DAILY_OPERATIONS_COLUMN).toString(),
-		
 		/*param7*/(sub.getVerificationFlag().booleanValue())? "true" : "false",
 		/*param8*/CBCUtils.CBC_DISPLAY.getSubBusValueAt (sub, CBCDisplay.SUB_NAME_COLUMN).toString(),
         /*param9*/CBCUtils.CBC_DISPLAY.getSubBusValueAt(sub, CBCDisplay.SUB_TARGET_POPUP).toString(),
@@ -433,7 +432,8 @@ private boolean handleCapBankGET( HttpServletRequest req, String ids, ResultXML[
 		/*param2*/CBCUtils.CBC_DISPLAY.getCapBankValueAt(capBank, CBCDisplay.CB_DAILY_TOTAL_OP_COLUMN).toString(),
 		/*param3*/CBCUtils.CBC_DISPLAY.getCapBankValueAt(capBank, CBCDisplay.CB_NAME_COLUMN).toString(),
 		/*param4*/allow_ovuv,
-		/*param5*/liteStates
+		/*param5*/liteStates,
+        /*param6*/CBCUtils.CBC_DISPLAY.getCapBankValueAt(capBank, CBCDisplay.CB_STATUS_POPUP).toString()
 	};
 
 	xmlMsgs[indx] = new ResultXML(

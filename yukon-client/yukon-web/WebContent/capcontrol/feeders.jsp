@@ -89,6 +89,11 @@ if(special){
    	   window.parent.location.replace('feeders.jsp');
    	}
    	
+   	function getSubBusMenu(name, id){
+   		var html = new String($F('cmd_sub_'+id));
+   		overlib(html, FULLHTML, STICKY);
+   	}
+   	
  </script>
 <%
 String css = "tableCell";
@@ -187,28 +192,35 @@ for( SubBus subBus: subBuses ) {
 					<a type="state" name="cti_dyn" id="<%=subBus.getCcId()%>"
 						style="color: <%=CBCDisplay.getHTMLFgColor(subBus)%>;"
 						href="javascript:void(0);"
-					    <%=popupEvent%> ="return overlib(
+						<%=popupEvent%> ="getSubBusMenu('<%=subBus.getCcName()%>', '<%=subBus.getCcId()%>' );"> 
+					    <!-- 
+					    	<%=popupEvent%> ="return overlib(
 							$F('cmd_sub_<%=subBus.getCcId()%>'),
 							STICKY, WIDTH,210, HEIGHT,170, OFFSETX,-15,OFFSETY,-15,MOUSEOFF, FULLHTML);"
-					    onmouseout = <%=nd%> > 
-					    
+						 -->
 				<% } else {%>
 					<a type="state" name="cti_dyn" id="<%=subBus.getCcId()%>" style="color: <%=CBCDisplay.getHTMLFgColor(subBus)%>;" >
 				<%}%>
 					<%=CBCUtils.CBC_DISPLAY.getSubBusValueAt(subBus, CBCDisplay.SUB_CURRENT_STATE_COLUMN)%>
 					</a>
 				</td>
-				
-				<td><a onmouseover="javascript:togglePopup('subPFPopup_<%=subBus.getCcId()%>')" 
-				       	onmouseout="javascript:togglePopup('subPFPopup_<%=subBus.getCcId()%>')"
-					   	type="param1" name="cti_dyn" id="<%=subBus.getCcId()%>">
-				<%=CBCUtils.CBC_DISPLAY.getSubBusValueAt(subBus, CBCDisplay.SUB_TARGET_COLUMN)%></a>
-				<div class="ccPFPopup" id="subPFPopup_<%=subBus.getCcId()%>_<%=CBCUtils.isPowerFactorControlled(subBus.getControlUnits())%>" style="display:none" > 
-				  <span type="param9" name="cti_dyn" id="<%=subBus.getCcId()%>"><%=CBCUtils.CBC_DISPLAY.getSubBusValueAt(subBus, CBCDisplay.SUB_TARGET_POPUP)%></span>
-				</div>
+				<!-- 
+				onmouseover="javascript:togglePopup('subPFPopup_<%=subBus.getCcId()%>')"
+				onmouseout="javascript:togglePopup('subPFPopup_<%=subBus.getCcId()%>')"  
+				-->
+				<td><a onmouseover="showDynamicPopup($('subPFPopup_<%=subBus.getCcId()%>_<%=CBCUtils.isPowerFactorControlled(subBus.getControlUnits())%>'))"
+						onmouseout="nd();"
+					   	type="param1" 
+					   	name="cti_dyn" 
+					   	id="<%=subBus.getCcId()%>">
+						<%=CBCUtils.CBC_DISPLAY.getSubBusValueAt(subBus, CBCDisplay.SUB_TARGET_COLUMN)%>
+					</a>
+					<div class="ccPFPopup" id="subPFPopup_<%=subBus.getCcId()%>_<%=CBCUtils.isPowerFactorControlled(subBus.getControlUnits())%>" style="display:none" > 
+					  <span type="param9" name="cti_dyn" id="<%=subBus.getCcId()%>"><%=CBCUtils.CBC_DISPLAY.getSubBusValueAt(subBus, CBCDisplay.SUB_TARGET_POPUP)%></span>
+					</div>
 				</td>
-				<td><a onmouseover="javascript:togglePopup('subVarLoadPopup_<%=subBus.getCcId()%>')" 
-				       	onmouseout="javascript:togglePopup('subVarLoadPopup_<%=subBus.getCcId()%>')"
+				<td><a onmouseover="showDynamicPopup($('subVarLoadPopup_<%=subBus.getCcId()%>'));" 
+				       	onmouseout="nd();"
 						type="param2" name="cti_dyn" id="<%=subBus.getCcId()%>">
 				<%=CBCUtils.CBC_DISPLAY.getSubBusValueAt(subBus, CBCDisplay.SUB_VAR_LOAD_COLUMN)%></a>
 				<div class="ccVarLoadPopup" id="subVarLoadPopup_<%=subBus.getCcId()%>" style="display:none" > 
@@ -233,12 +245,12 @@ for( SubBus subBus: subBuses ) {
 				<table id="subSnapShot<%=subBus.getCcId()%>">
 				
 				<%
-				if (subBus != null) {
-					String areaName = CBCUtils.getAreaNameFromSubId(subBus.getCcId().intValue());	
-					int varPoint = subBus.getCurrentVarLoadPointID().intValue();
-					int wattPoint = subBus.getCurrentWattLoadPointID().intValue();
-					int voltPoint = subBus.getCurrentVoltLoadPointID().intValue();
-				%>
+											if (subBus != null) {
+											String areaName = CBCUtils.getAreaNameFromSubStationId(subBus.getCcId().intValue());	
+											int varPoint = subBus.getCurrentVarLoadPointID().intValue();
+											int wattPoint = subBus.getCurrentWattLoadPointID().intValue();
+											int voltPoint = subBus.getCurrentVoltLoadPointID().intValue();
+								%>
 			        <tr class="tableCellSnapShot" style="display: none;">
 			        <td>
 			        <b><u>Substation Info</u></b>
@@ -348,16 +360,16 @@ if( hasControl ) {
 <%}%><%=CBCUtils.CBC_DISPLAY.getFeederValueAt(feeder, CBCDisplay.FDR_CURRENT_STATE_COLUMN)%>
 						</a>
 					</td>
-					<td><a onmouseover="javascript:togglePopup('feederPFPopup_<%=feeder.getCcId()%>')"
-						   onmouseout="javascript:togglePopup('feederPFPopup_<%=feeder.getCcId()%>')"
+					<td><a onmouseover="showDynamicPopup($('feederPFPopup_<%=feeder.getCcId()%>_<%=CBCUtils.isPowerFactorControlled(feeder.getControlUnits())%>'));"
+						   onmouseout="nd();"
 						   type="param1" name="cti_dyn" id="<%=feeder.getCcId()%>">
 					<%=CBCUtils.CBC_DISPLAY.getFeederValueAt(feeder, CBCDisplay.FDR_TARGET_COLUMN)%></a>
 					<div class="ccPFPopup" id="feederPFPopup_<%=feeder.getCcId()%>_<%=CBCUtils.isPowerFactorControlled(feeder.getControlUnits())%>" style="display:none" > 
 					  <span type="param8" name="cti_dyn" id="<%=feeder.getCcId()%>"><%=CBCUtils.CBC_DISPLAY.getFeederValueAt(feeder, CBCDisplay.FDR_TARGET_POPUP)%></span>
 					</div>
 					</td>
-					<td ><a onmouseover="javascript:togglePopup('feederVarLoadPopup_<%=feeder.getCcId()%>')" 
-					       	onmouseout="javascript:togglePopup('feederVarLoadPopup_<%=feeder.getCcId()%>')"
+					<td ><a onmouseover="showDynamicPopup($('feederVarLoadPopup_<%=feeder.getCcId()%>'));" 
+					       	onmouseout="nd();"
 							type="param2" name="cti_dyn" id="<%=feeder.getCcId()%>">
 					<%=CBCUtils.CBC_DISPLAY.getFeederValueAt(feeder, CBCDisplay.FDR_VAR_LOAD_COLUMN)%></a>
 					<div class="ccVarLoadPopup" id="feederVarLoadPopup_<%=feeder.getCcId()%>" style="display:none" > 
@@ -480,8 +492,9 @@ for( int i = 0; i < capBanks.size(); i++ ) {
     						155,200,1,10,
     						'tr_cap_<%=capBank.getCcId()%>',
     						'yellow'); "
-					    onmouseout = "togglePopup('capBankStatusPopup_<%=capBank.getCcId()%>'); return hidePopupHiLite('tr_cap_<%=capBank.getCcId()%>', '<%=rowColor%>'); "
-					    onmouseover = "javascript:togglePopup('capBankStatusPopup_<%=capBank.getCcId()%>')" >
+					    onmouseout = "hidePopupHiLite('tr_cap_<%=capBank.getCcId()%>', '<%=rowColor%>');"
+					    onmouseover = "showDynamicPopup($('capBankStatusPopup_<%=capBank.getCcId()%>'))"
+					    >
 					<%
 					} else {
 					%>
@@ -491,8 +504,8 @@ for( int i = 0; i < capBanks.size(); i++ ) {
 					%>
 					<%=CBCUtils.CBC_DISPLAY.getCapBankValueAt(capBank, CBCDisplay.CB_STATUS_COLUMN)%>
 					</a>
-					<div class="ccVarLoadPopup" id="capBankStatusPopup_<%=capBank.getCcId()%>" style="display:none" > 
-					  <span type="param10" name="cti_dyn<%=capBank.getCcId()%>" id="popupSpan<%=capBank.getCcId()%>"><%=CBCUtils.CBC_DISPLAY.getCapBankValueAt(capBank, CBCDisplay.CB_STATUS_POPUP)%></span>
+					<div id="capBankStatusPopup_<%=capBank.getCcId()%>" style="display:none" > 
+					  <span type="param6" name="cti_dyn" id="<%=capBank.getCcId()%>"><%=CBCUtils.CBC_DISPLAY.getCapBankValueAt(capBank, CBCDisplay.CB_STATUS_POPUP)%></span>
 					</div>
 				</td>
 				<td id="cap_opcnt_span<%=capBank.getCcId()%>" style="display:none; " >
