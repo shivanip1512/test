@@ -252,7 +252,7 @@ public class MeterReadModel extends ReportModelBase<MeterAndPointData> implement
 			
 		catch( java.sql.SQLException e )
 		{
-			e.printStackTrace();
+			throw new RuntimeException("Unable to collect data", e);
 		}
 		finally
 		{

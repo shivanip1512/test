@@ -1,5 +1,5 @@
 package com.cannontech.common.device.groups.dao;
 
 public enum DeviceGroupType {
-    STATIC,ROLODEX
+    STATIC,ROLODEX,ROUTE,DEVICETYPE
 }

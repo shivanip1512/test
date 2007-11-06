@@ -24,3 +24,13 @@ go
 alter table dynamicccsubstation alter column saenabledid not null;
 /* end YUK-4591 */
 
+
+/* start: YUK-4671  Add Dynamic Groups based on Route Name    MikeP */
+INSERT INTO DeviceGroup 
+(DeviceGroupId,GroupName,ParentDeviceGroupId,SystemGroup,Type)
+SELECT MAX(DeviceGroupID)+1,'Routes',0,'Y','ROUTE' FROM DeviceGroup WHERE DeviceGroupId<100;
+
+INSERT INTO DeviceGroup 
+(DeviceGroupId,GroupName,ParentDeviceGroupId,SystemGroup,Type)
+SELECT MAX(DeviceGroupID)+1,'Device Types',0,'Y','DEVICETYPE' FROM DeviceGroup WHERE DeviceGroupId<100;
+/* end YUK-4671      */
