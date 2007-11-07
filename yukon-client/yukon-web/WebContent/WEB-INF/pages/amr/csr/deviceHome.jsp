@@ -47,33 +47,53 @@
 				</c:if>
 
 				<ct:boxContainer title="Actions">
+                
+                    <!-- Actions: High Bill Complaint -->
 					<c:choose>
 						<c:when test="${highBillSupported}">
 							<c:url var="highBillUrl" value="/spring/csr/highBill">
 								<c:param name="deviceId" value="${deviceId}" />
 							</c:url>
 							<a href="${highBillUrl}">High Bill Complaint</a>
-							<br />
 						</c:when>
 						<c:otherwise>
-						High Bill Complaint (not supported)<br />
+						High Bill Complaint (not supported)
 						</c:otherwise>
 					</c:choose>
+                    <br/>
 					<cti:checkRole role="CommanderRole.ROLEID">
-						<c:url var="profileUrl" value="/apps/CommandDevice2.jsp">
-							<c:param name="deviceID" value="${deviceId}" />
-							<c:param name="lp" value="" />
-						</c:url>
-						<a href="${profileUrl}">Profile</a>
-						<br />
-
-						<c:url var="voltageTouUrl" value="/apps/CommandDevice2.jsp">
-							<c:param name="deviceID" value="${deviceId}" />
-							<c:param name="command" value="null" />
-						</c:url>
-						<a href="${voltageTouUrl}">Voltage &amp; TOU</a>
-						<br>
-
+                        
+                        <!-- Actions: Profile -->
+                        <c:choose>
+                            <c:when test="${lpSupported && lpEnabled}">
+        						<c:url var="profileUrl" value="/apps/CommandDevice2.jsp">
+        							<c:param name="deviceID" value="${deviceId}" />
+        							<c:param name="lp" value="" />
+        						</c:url>
+                                <a href="${profileUrl}">Profile</a>
+                            </c:when>
+						    <c:otherwise>
+                            Profile (not supported)
+                            </c:otherwise>
+                        </c:choose>
+                        <br/>
+                        
+                        <!-- Actions: Voltage & TOU -->
+                        <c:choose>
+                            <c:when test="${isMCT4XX}">
+        						<c:url var="voltageTouUrl" value="/apps/CommandDevice2.jsp">
+        							<c:param name="deviceID" value="${deviceId}" />
+        							<c:param name="command" value="null" />
+        						</c:url>
+        						<a href="${voltageTouUrl}">Voltage &amp; TOU</a>
+                            </c:when>
+                            <c:otherwise>
+                            Voltage &amp; TOU (not supported)
+                            </c:otherwise>
+                        </c:choose>
+                        <br/>
+                        
+                        <!-- Actions: >Manual Commander -->
 						<c:url var="commanderUrl" value="/apps/CommandDevice.jsp">
 							<c:param name="deviceID" value="${deviceId}" />
 							<c:param name="manual" value="" />

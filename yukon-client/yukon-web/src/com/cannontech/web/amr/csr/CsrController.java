@@ -173,6 +173,9 @@ public class CsrController extends MultiActionController {
         boolean peakReportSupported = DeviceTypesFuncs.isMCT410(device.getType());
         mav.addObject("peakReportSupported", peakReportSupported);
         
+        boolean isMCT4XX = DeviceTypesFuncs.isMCT4XX(device.getType());
+        mav.addObject("isMCT4XX", isMCT4XX);
+        
         return mav;
     }
 
