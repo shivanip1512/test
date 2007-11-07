@@ -4219,6 +4219,7 @@ void CtiCCSubstationBusStore::reloadSubBusFromDatabase(long subBusId, map< long,
                                                   else
                                                       currentCCStrategy =  strategy_map->find(0)->second;
                                               }
+                                              currentCCSubstationBus->setStrategyId(currentCCStrategy->getStrategyId());
                                               currentCCSubstationBus->setStrategyValues(currentCCStrategy);
                                           }
                                       
