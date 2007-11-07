@@ -169,8 +169,7 @@ void  CtiCommandParser::parse()
 
             if(!(token = token.match(str_quoted_token, nstop)).empty())   // get the value
             {
-                token.erase(0,1);token.erase(token.length()-1,token.length()-1);
-                _cmd["device"] = CtiParseValue( token, -1 );
+                _cmd["device"] = CtiParseValue(token.substr(1, token.length() - 2), -1 );
             }
 
             CmdStr.replace(re_name, "");
@@ -196,9 +195,7 @@ void  CtiCommandParser::parse()
 
             if(!(token = token.match(str_quoted_token, nstop)).empty())   // get the value
             {
-                //Removes the ' " ' character from "something"
-                token.erase(0,1);token.erase(token.length()-1,token.length()-1);
-                _cmd["group"] = CtiParseValue( token, -1 );
+                _cmd["group"] = CtiParseValue(token.substr(1, token.length() - 2), -1 );
             }
             CmdStr.replace(re_grp, "");
         }
@@ -212,9 +209,7 @@ void  CtiCommandParser::parse()
 
             if(!(token = token.match(str_quoted_token, nstop)).empty())   // get the value
             {
-                //Removes the ' " ' character from "something"
-                token.erase(0,1);token.erase(token.length()-1,token.length()-1);
-                _cmd["altgroup"] = CtiParseValue( token, -1 );
+                _cmd["altgroup"] = CtiParseValue(token.substr(1, token.length() - 2), -1 );
             }
             CmdStr.replace(re_altg, "");
         }
@@ -228,9 +223,7 @@ void  CtiCommandParser::parse()
 
             if(!(token = token.match(str_quoted_token, nstop)).empty())   // get the value
             {
-                //Removes the ' " ' character from "something"
-                token.erase(0,1);token.erase(token.length()-1,token.length()-1);
-                _cmd["billgroup"] = CtiParseValue( token, -1 );
+                _cmd["billgroup"] = CtiParseValue(token.substr(1, token.length() - 2), -1 );
             }
             CmdStr.replace(re_altg, "");
         }
@@ -244,9 +237,7 @@ void  CtiCommandParser::parse()
 
             if(!(token = token.match(str_quoted_token, nstop)).empty())   // get the value
             {
-                //Removes the ' " ' character from "something"
-                token.erase(0,1);token.erase(token.length()-1,token.length()-1);
-                _cmd["route"] = CtiParseValue( token, -1 );
+                _cmd["route"] = CtiParseValue(token.substr(1, token.length() - 2), -1 );
             }
             CmdStr.replace(re_rtename, "");
         }
@@ -270,9 +261,7 @@ void  CtiCommandParser::parse()
 
             if(!(token = token.match(str_quoted_token, nstop)).empty())   // get the value
             {
-                //Removes the ' " ' character from "something"
-                token.erase(0,1);token.erase(token.length()-1,token.length()-1);
-                _cmd["point"] = CtiParseValue( token, -1 );
+                _cmd["point"] = CtiParseValue(token.substr(1, token.length() - 2), -1 );
             }
             CmdStr.replace(re_ptname, "");
         }
@@ -1573,6 +1562,10 @@ void  CtiCommandParser::doParseGetConfig(const string &_CmdStr)
         {
             _cmd["scan"] = CtiParseValue("TRUE");
         }
+        if(CmdStr.contains(" thresholds"))
+        {
+            _cmd["thresholds"] = CtiParseValue("TRUE");
+        }
         if(CmdStr.contains(" interval"))
         {
             if(!(token = CmdStr.match(re_interval)).empty())
@@ -1679,8 +1672,7 @@ void  CtiCommandParser::doParsePutConfig(const string &_CmdStr)
 
             if(!(token = token.match(str_quoted_token, nstop)).empty())   // get the template name...
             {
-                token = token.substr((size_t)1, (size_t)(token.length() - 2));
-                _cmd["template"] = CtiParseValue( token );
+                _cmd["template"] = CtiParseValue(token.substr(1, token.length() - 2));
             }
 
             CtiString sistr;
@@ -4387,7 +4379,7 @@ void  CtiCommandParser::doParseControlExpresscom(const string &_CmdStr)
         if(!(temp = CmdStr.match(" duty " + str_num)).empty())
         {
             iValue = atoi(valStr.c_str());
-            if (iValue == 100) 
+            if (iValue == 100)
                 iValue = 0;
             _cmd["xcbacklightduty"] = CtiParseValue( iValue );
         }
@@ -4600,7 +4592,7 @@ void  CtiCommandParser::doParsePutConfigExpresscom(const string &_CmdStr)
 
     if(!(token = CmdStr.match(" data( (0x)?[0-9a-f]+)+")).empty())
     {
-        
+
         token.replace(" data", "");
         if(!(str = token.match("( (0x)?[0-9a-f][0-9a-f])+")).empty())
         {
@@ -4608,12 +4600,11 @@ void  CtiCommandParser::doParsePutConfigExpresscom(const string &_CmdStr)
         }
     }
     if(!(token = CmdStr.match("data " + str_quoted_token)).empty())
-    {   
+    {
         _cmd["xcascii"] = CtiParseValue(TRUE);
         if(!(str = token.match(str_quoted_token)).empty())
         {
-            str.erase(0,1);str.erase(str.length()-1,str.length()-1);
-            _cmd["xcdata"] = CtiParseValue( str );
+            _cmd["xcdata"] = CtiParseValue(str.substr(1, str.length() - 2));
         }
         if(!(temp = CmdStr.match("port " + str_num)).empty())
         {
@@ -4629,7 +4620,7 @@ void  CtiCommandParser::doParsePutConfigExpresscom(const string &_CmdStr)
             {
                 iValue = atoi(valStr.c_str());
                 _cmd["xcpriority"] = CtiParseValue( iValue );
-            } 
+            }
         }
         if(!(temp = CmdStr.match(" deletable")).empty())
         {
@@ -4887,7 +4878,7 @@ void  CtiCommandParser::doParsePutConfigExpresscom(const string &_CmdStr)
         _cmd["xcutilusage"] = TRUE;
         doParsePutConfigUtilityUsage(CmdStr);
     }
-    else if (CmdStr.contains("thermo config")) 
+    else if (CmdStr.contains("thermo config"))
     {
         _cmd["xcconfig"] = TRUE;
         if(!(token = CmdStr.match("thermo config " + str_num)).empty())
@@ -4898,30 +4889,30 @@ void  CtiCommandParser::doParsePutConfigExpresscom(const string &_CmdStr)
             _cmd["xcthermoconfig"] = CtiParseValue( config );
         }
     }
-    else if (CmdStr.contains("extended tier")) 
+    else if (CmdStr.contains("extended tier"))
     {
         _cmd["xcextier"] = TRUE;
         if(!(token = CmdStr.match(" tier " + str_num)).empty())
-        {  
+        {
             str = token.match(re_num);
             int tier = atoi(str.c_str());
             _cmd["xcextierlevel"] = CtiParseValue(tier);
 
             if(!(token = CmdStr.match(" rate " + str_num)).empty())
-            {  
+            {
                 str = token.match(re_num);
                 int rate = atoi(str.c_str());
                 _cmd["xcextierrate"] = CtiParseValue(rate);
             }
 
             if(!(token = CmdStr.match(" (cmd|command) " + str_num)).empty())
-            {  
+            {
                 str = token.match(re_num);
                 int command = atoi(str.c_str());
                 _cmd["xcextiercmd"] = CtiParseValue(command);
             }
             if(!(token = CmdStr.match(" display " + str_num)).empty())
-            {  
+            {
                 str = token.match(re_num);
                 int display = atoi(str.c_str());
                 _cmd["xcextierdisp"] = CtiParseValue(display);
@@ -4946,11 +4937,11 @@ void  CtiCommandParser::doParsePutConfigExpresscom(const string &_CmdStr)
         }
 
     }
-    else if (CmdStr.contains("display")) 
+    else if (CmdStr.contains("display"))
     {
         _cmd["xcdisplay"] = TRUE;
         if(!(token = CmdStr.match(" setup (lcd)|(seg)")).empty())
-        {   
+        {
             if (token.contains("lcd"))
                 _cmd["xclcddisplay"] = CtiParseValue(TRUE);
             else
@@ -4964,8 +4955,7 @@ void  CtiCommandParser::doParsePutConfigExpresscom(const string &_CmdStr)
 
             if(!(str = token.match(str_quoted_token)).empty())
             {
-                str.erase(0,1);str.erase(str.length()-1,str.length()-1);
-                _cmd["xcdisplaymessage"] = CtiParseValue( str );
+                _cmd["xcdisplaymessage"] = CtiParseValue(str.substr(1, str.length() - 2));
             }
         }
     }
@@ -4991,17 +4981,15 @@ void  CtiCommandParser::doParsePutConfigExpresscom(const string &_CmdStr)
         {
             if(!(str = token.match(str_quoted_token)).empty())
             {
-                str.erase(0,1);str.erase(str.length()-1,str.length()-1);
-                _cmd["xcparametername"] = CtiParseValue( str );
+                _cmd["xcparametername"] = CtiParseValue(str.substr(1, str.length() - 2));
             }
         }
-        
+
         if(!(token = CmdStr.match("currency " + str_quoted_token)).empty())
         {
             if(!(str = token.match(str_quoted_token)).empty())
             {
-                str.erase(0,1);str.erase(str.length()-1,str.length()-1);
-                _cmd["xccurrency"] = CtiParseValue( str );
+                _cmd["xccurrency"] = CtiParseValue(str.substr(1, str.length() - 2));
             }
         }
         if (CmdStr.contains(" present ") || CmdStr.contains(" past "))
@@ -5029,7 +5017,7 @@ void  CtiCommandParser::doParsePutConfigExpresscom(const string &_CmdStr)
                 _cmd["xcpresentcharge"] = CtiParseValue( charge );
                 if(!(token = CmdStr.match(" cents ")).empty())
                     _cmd["xcchargedollars"] = CtiParseValue(FALSE);
-                else 
+                else
                     _cmd["xcchargedollars"] = CtiParseValue(TRUE);
 
             }
@@ -5041,7 +5029,7 @@ void  CtiCommandParser::doParsePutConfigExpresscom(const string &_CmdStr)
                 _cmd["xcpastcharge"] = CtiParseValue( charge );
                 if(!(token = CmdStr.match(" cents ")).empty())
                     _cmd["xcchargedollars"] = CtiParseValue(FALSE);
-                else 
+                else
                     _cmd["xcchargedollars"] = CtiParseValue(TRUE);
             }
         }
@@ -5103,7 +5091,7 @@ void  CtiCommandParser::doParsePutStatusExpresscom(const string &_CmdStr)
             op = 0x080;
             _snprintf(op_name, sizeof(op_name), "PING");
         }
-        
+
         if(op != -1)
         {
             CHAR  tbuf[80];
