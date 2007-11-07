@@ -2639,7 +2639,7 @@ BOOL CtiCCFeeder::checkForAndProvideNeededIndividualControl(const CtiTime& curre
                         {
                             //DOUBLE controlValue = (!stringCompareIgnoreCase(feederControlUnits,CtiCCSubstationBus::VoltControlUnits) ? getCurrentVoltLoadPointValue() : getCurrentVarLoadPointValue());
                             string text = createTextString(CtiCCSubstationBus::IndividualFeederControlMethod, CtiCCCapBank::Close, getIVControl(), getCurrentVarLoadPointValue());
-                            request = createDecreaseVarRequest(capBank , pointChanges, ccEvents, text, getIVControl());
+                            request = createDecreaseVarRequest(capBank , pointChanges, ccEvents, text, getCurrentVarLoadPointValue());
 
                             if( request == NULL )
                             {
@@ -2698,7 +2698,7 @@ BOOL CtiCCFeeder::checkForAndProvideNeededIndividualControl(const CtiTime& curre
 
                         //DOUBLE controlValue = (!stringCompareIgnoreCase(feederControlUnits,CtiCCSubstationBus::VoltControlUnits) ? getCurrentVoltLoadPointValue() : getCurrentVarLoadPointValue());
                         string text = createTextString(CtiCCSubstationBus::IndividualFeederControlMethod, CtiCCCapBank::Open, getIVControl(), getCurrentVarLoadPointValue());
-                        request = createIncreaseVarRequest(capBank, pointChanges, ccEvents, text, getIVControl());
+                        request = createIncreaseVarRequest(capBank, pointChanges, ccEvents, text, getCurrentVarLoadPointValue());
     
                         if( request == NULL )
                         {
@@ -2789,7 +2789,7 @@ BOOL CtiCCFeeder::checkForAndProvideNeededIndividualControl(const CtiTime& curre
                         if( adjustedBankKVARReduction <= (-1.0*getKVARSolution()) )
                         {
                             string text = createTextString(CtiCCSubstationBus::IndividualFeederControlMethod, CtiCCCapBank::Close, getIVControl(), getCurrentVarLoadPointValue());
-                            request = createDecreaseVarRequest(capBank, pointChanges, ccEvents, text, getIVControl());
+                            request = createDecreaseVarRequest(capBank, pointChanges, ccEvents, text, getCurrentVarLoadPointValue());
                         }
                         else
                         {//cap bank too big
@@ -2853,7 +2853,7 @@ BOOL CtiCCFeeder::checkForAndProvideNeededIndividualControl(const CtiTime& curre
                     if( adjustedBankKVARIncrease <= getKVARSolution() )
                     {
                         string text = createTextString(CtiCCSubstationBus::IndividualFeederControlMethod, CtiCCCapBank::Open, getIVControl(), getCurrentVarLoadPointValue());
-                        request = createIncreaseVarRequest(capBank, pointChanges, ccEvents, text, getIVControl());
+                        request = createIncreaseVarRequest(capBank, pointChanges, ccEvents, text, getCurrentVarLoadPointValue());
                     }
                     else
                     {//cap bank too big

@@ -2902,7 +2902,7 @@ void CtiCCSubstationBus::regularSubstationBusControl(DOUBLE lagLevel, DOUBLE lea
                         else
                         {
                             DOUBLE controlValue = ( !stringCompareIgnoreCase(_controlunits, CtiCCSubstationBus::VoltControlUnits) ? getCurrentVoltLoadPointValue() : getCurrentVarLoadPointValue());
-                            string text = currentFeeder->createTextString(getControlMethod(), CtiCCCapBank::Close, controlValue,  getIVControl()) ;
+                            string text = currentFeeder->createTextString(getControlMethod(), CtiCCCapBank::Close, controlValue,  getCurrentVarLoadPointValue()) ;
 
                             request = currentFeeder->createDecreaseVarRequest(capBank, pointChanges, ccEvents, text,  getIVControl());
                         }
@@ -3008,7 +3008,7 @@ void CtiCCSubstationBus::regularSubstationBusControl(DOUBLE lagLevel, DOUBLE lea
                     {    
                         DOUBLE controlValue = (!stringCompareIgnoreCase(_controlunits,CtiCCSubstationBus::VoltControlUnits) ? getCurrentVoltLoadPointValue() :  getIVControl());
                         string text = currentFeeder->createTextString(getControlMethod(), CtiCCCapBank::Open, controlValue, getCurrentVarLoadPointValue()) ;
-                        request = currentFeeder->createIncreaseVarRequest(capBank, pointChanges, ccEvents, text,  getIVControl());
+                        request = currentFeeder->createIncreaseVarRequest(capBank, pointChanges, ccEvents, text,  getCurrentVarLoadPointValue());
                     }
                 }
 
@@ -3125,7 +3125,7 @@ void CtiCCSubstationBus::regularSubstationBusControl(DOUBLE lagLevel, DOUBLE lea
                             {
                                 string text = currentFeeder->createTextString(getControlMethod(), CtiCCCapBank::Close,  getIVControl(), getCurrentVarLoadPointValue());
 
-                                request = currentFeeder->createDecreaseVarRequest(capBank, pointChanges, ccEvents, text,  getIVControl());
+                                request = currentFeeder->createDecreaseVarRequest(capBank, pointChanges, ccEvents, text,  getCurrentVarLoadPointValue());
                             }
                         }
                         else
@@ -3224,7 +3224,7 @@ void CtiCCSubstationBus::regularSubstationBusControl(DOUBLE lagLevel, DOUBLE lea
                         {
 
                             string text = currentFeeder->createTextString(getControlMethod(), CtiCCCapBank::Open,  getIVControl(), getCurrentVarLoadPointValue());
-                            request = currentFeeder->createIncreaseVarRequest(capBank, pointChanges, ccEvents, text,  getIVControl());
+                            request = currentFeeder->createIncreaseVarRequest(capBank, pointChanges, ccEvents, text,  getCurrentVarLoadPointValue());
                         }
                         else
                         {//cap bank too big

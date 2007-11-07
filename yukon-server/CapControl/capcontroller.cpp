@@ -2046,7 +2046,8 @@ void CtiCapController::pointDataMsg( long pointID, double value, unsigned qualit
                         currentSubstationBus->setBusUpdatedFlag(TRUE);
                         found = TRUE;
                     }
-                    else if ((currentSubstationBus->getPhaseBId() == pointID ||
+
+                    if ((currentSubstationBus->getPhaseBId() == pointID ||
                              currentSubstationBus->getPhaseCId() == pointID ) &&
                              currentSubstationBus->getUsePhaseData())
                     {
@@ -2080,6 +2081,7 @@ void CtiCapController::pointDataMsg( long pointID, double value, unsigned qualit
                             currentSubstationBus->setAltSubControlValue(currentSubstationBus->getCurrentVarLoadPointValue());
                             currentSubstationBus->setBusUpdatedFlag(TRUE);
                         }
+                        currentSubstationBus->figureEstimatedVarLoadPointValue();
                     }
                     else if (currentSubstationBus->getEstimatedPowerFactorPointId()  == pointID|| 
                              currentSubstationBus->getEstimatedVarLoadPointId()  == pointID||
@@ -2273,7 +2275,7 @@ void CtiCapController::pointDataMsg( long pointID, double value, unsigned qualit
                            // break;
                         }
                         
-                        else if ((currentFeeder->getPhaseBId() == pointID ||
+                        if ((currentFeeder->getPhaseBId() == pointID ||
                              currentFeeder->getPhaseCId() == pointID ) &&
                              currentFeeder->getUsePhaseData())
                         {
@@ -2301,6 +2303,8 @@ void CtiCapController::pointDataMsg( long pointID, double value, unsigned qualit
                                     currentFeeder->setCurrentVarLoadPointValue(currentFeeder->getPhaseAValue() + currentFeeder->getPhaseBValue() + currentFeeder->getPhaseCValue());
                                 }
                             }
+                            currentFeeder->figureEstimatedVarLoadPointValue();
+
                         }
                     }
                 }
