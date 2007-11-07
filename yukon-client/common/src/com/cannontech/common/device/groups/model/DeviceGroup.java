@@ -47,6 +47,10 @@ public class DeviceGroup implements Comparable<DeviceGroup> {
         }
     }
     
+    public boolean isMovable() {
+        return isGroupEditable();
+    }
+    
     public boolean isRemovable() {
         return isRemovable;
     }

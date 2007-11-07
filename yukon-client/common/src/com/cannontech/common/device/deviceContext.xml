@@ -1,7 +1,16 @@
 <?xml version="1.0" encoding="UTF-8"?>
-<!DOCTYPE beans PUBLIC "-//SPRING//DTD BEAN//EN" "http://www.springframework.org/dtd/spring-beans.dtd">
 
-<beans>
+<beans xmlns="http://www.springframework.org/schema/beans"
+       xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+       xmlns:aop="http://www.springframework.org/schema/aop"
+       xmlns:tx="http://www.springframework.org/schema/tx"
+       xsi:schemaLocation="
+       http://www.springframework.org/schema/beans http://www.springframework.org/schema/beans/spring-beans-2.0.xsd
+       http://www.springframework.org/schema/tx http://www.springframework.org/schema/tx/spring-tx-2.0.xsd
+       http://www.springframework.org/schema/aop http://www.springframework.org/schema/aop/spring-aop-2.0.xsd">
+	
+	<tx:annotation-driven />
+	
 	<bean id="commandRequestExecutor" class="com.cannontech.common.device.commands.impl.CommandRequestExecutorImpl">
         <property name="porterConnection" ref="porterConnection" />
         <property name="deviceErrorTranslatorDao" ref="deviceErrorTranslator" />
@@ -9,31 +18,31 @@
         <property name="commandAuthorizationService" ref="paoCommandAuthorizationService" />
     </bean>
     
-    <bean id="attributeService" class="com.cannontech.common.device.attribute.service.AttributeServiceImpl" singleton="true">
+    <bean id="attributeService" class="com.cannontech.common.device.attribute.service.AttributeServiceImpl" scope="singleton">
         <property name="deviceDefinitionDao" ref="deviceDefinitionDao" />
         <property name="pointService" ref="devicePointService" />
         <property name="pointDao" ref="pointDao"/>
     </bean>
     
-    <bean id="devicePointService" class="com.cannontech.common.device.service.PointServiceImpl" singleton="true">
+    <bean id="devicePointService" class="com.cannontech.common.device.service.PointServiceImpl" scope="singleton">
         <property name="pointDao" ref="pointDao" />
         <property name="nextValueHelper" ref="nextValueHelper" />
     </bean>
     
-    <bean id="simpleDeviceService" class="com.cannontech.common.device.definition.service.SimpleDeviceDefinitionServiceImpl" singleton="true">
+    <bean id="simpleDeviceService" class="com.cannontech.common.device.definition.service.SimpleDeviceDefinitionServiceImpl" scope="singleton">
         <property name="deviceDefinitionDao" ref="deviceDefinitionDao" />
         <property name="pointService" ref="devicePointService" />
         <property name="pointDao" ref="pointDao" />
     </bean>
     
-    <bean id="deviceService" class="com.cannontech.common.device.definition.service.DeviceDefinitionServiceImpl" singleton="true">
+    <bean id="deviceService" class="com.cannontech.common.device.definition.service.DeviceDefinitionServiceImpl" scope="singleton">
         <property name="simpleDeviceDefinitionService" ref="simpleDeviceService" />
         <property name="pointService" ref="devicePointService" />
         <property name="attributeService" ref="attributeService" />
         <property name="paoGroupsWrapper" ref="paoGroupsWrapper" />
     </bean>
     
-	<bean id="deviceDefinitionDao" class="com.cannontech.common.device.definition.dao.DeviceDefinitionDaoImpl" singleton="true" init-method="initialize">
+	<bean id="deviceDefinitionDao" class="com.cannontech.common.device.definition.dao.DeviceDefinitionDaoImpl" scope="singleton" init-method="initialize">
         <property name="inputFile" value="classpath:com/cannontech/common/device/definition/dao/deviceDefinition.xml" />
         <property name="pointLegendFile" value="classpath:com/cannontech/common/device/definition/dao/pointOffset.xsl" />
         <property name="javaConstantClassName" value="com.cannontech.database.data.pao.DeviceTypes" />
@@ -42,9 +51,9 @@
         <property name="stateDao" ref="stateDao" />
     </bean>
     
-	<bean id="paoGroupsWrapper" class="com.cannontech.database.data.pao.PaoGroupsWrapperImpl" singleton="true" />
+	<bean id="paoGroupsWrapper" class="com.cannontech.database.data.pao.PaoGroupsWrapperImpl" scope="singleton" />
     
-    <bean id="attrDynamicDataSource" class="com.cannontech.common.device.attribute.service.AttributeDynamicDataSource" singleton="true">
+    <bean id="attrDynamicDataSource" class="com.cannontech.common.device.attribute.service.AttributeDynamicDataSource" scope="singleton">
         <property name="dynamicDataSource" ref="dynamicDataSource"/>
         <property name="attributeService" ref="attributeService"/>
     </bean>	
@@ -54,7 +63,6 @@
         <property name="deviceGroupEditorDao" ref="deviceGroupEditorDao"/>
         <property name="deviceGroupMemberEditorDao" ref="deviceGroupMemberEditorDao"/>
         <property name="jdbcTemplate" ref="simpleJdbcTemplate"/>
-        <property name="paoGroupsWrapper" ref="paoGroupsWrapper"/>
         <property name="mainDelegator" ref="deviceGroupDao"/>
     </bean>
     
@@ -87,6 +95,7 @@
         <property name="jdbcTemplate" ref="simpleJdbcTemplate"/>
         <property name="paoGroupsWrapper" ref="paoGroupsWrapper"/>
         <property name="nextValueHelper" ref="nextValueHelper"/>
+        <property name="deviceGroupProviderDao" ref="deviceGroupDao" />
     </bean>
     
     <alias alias="deviceGroupMemberEditorDao" name="deviceGroupEditorDao"/>

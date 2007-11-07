@@ -9,20 +9,16 @@ import org.springframework.beans.factory.annotation.Required;
 import org.springframework.jdbc.core.simple.SimpleJdbcOperations;
 
 import com.cannontech.common.device.YukonDevice;
-import com.cannontech.common.device.groups.dao.DeviceGroupType;
 import com.cannontech.common.device.groups.editor.dao.DeviceGroupEditorDao;
 import com.cannontech.common.device.groups.editor.dao.DeviceGroupMemberEditorDao;
-import com.cannontech.common.device.groups.editor.dao.impl.YukonDeviceRowMapper;
 import com.cannontech.common.device.groups.editor.model.StoredDeviceGroup;
 import com.cannontech.common.device.groups.model.DeviceGroup;
 import com.cannontech.common.util.SqlStatementBuilder;
-import com.cannontech.database.data.pao.PaoGroupsWrapper;
 
 public class StaticDeviceGroupProvider extends DeviceGroupProviderBase {
     private DeviceGroupEditorDao deviceGroupEditorDao;
     private DeviceGroupMemberEditorDao deviceGroupMemberEditorDao;
     private SimpleJdbcOperations jdbcTemplate;
-    private PaoGroupsWrapper paoGroupsWrapper;
 
     @Override
     public List<YukonDevice> getChildDevices(DeviceGroup group) {
@@ -46,6 +42,11 @@ public class StaticDeviceGroupProvider extends DeviceGroupProviderBase {
                             " WHERE DEVICEGROUPID = " + 
                             sdg.getId() + ") ";
         return whereString;
+    }
+    
+    public void removeGroupDependancies(DeviceGroup group) {
+        String sql = "DELETE FROM DeviceGroupMember where DeviceGroupId = ?";
+        jdbcTemplate.update(sql, getStoredGroup(group).getId());
     }
 
     private StoredDeviceGroup getStoredGroup(DeviceGroup group) {
@@ -94,11 +95,6 @@ public class StaticDeviceGroupProvider extends DeviceGroupProviderBase {
         this.jdbcTemplate = jdbcTemplate;
     }
 
-    @Required
-    public void setPaoGroupsWrapper(PaoGroupsWrapper paoGroupsWrapper) {
-        this.paoGroupsWrapper = paoGroupsWrapper;
-    }
-    
     @Required
     public void setDeviceGroupEditorDao(DeviceGroupEditorDao deviceGroupEditorDao) {
         this.deviceGroupEditorDao = deviceGroupEditorDao;

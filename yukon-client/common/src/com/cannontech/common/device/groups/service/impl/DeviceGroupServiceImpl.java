@@ -17,6 +17,7 @@ import org.springframework.beans.factory.annotation.Required;
 import com.cannontech.common.device.YukonDevice;
 import com.cannontech.common.device.groups.dao.DeviceGroupProviderDao;
 import com.cannontech.common.device.groups.model.DeviceGroup;
+import com.cannontech.common.device.groups.model.DeviceGroupHierarchy;
 import com.cannontech.common.device.groups.service.DeviceGroupService;
 import com.cannontech.core.dao.NotFoundException;
 
@@ -91,6 +92,11 @@ public class DeviceGroupServiceImpl implements DeviceGroupService {
     public DeviceGroup resolveGroupName(String groupName) {
         Validate.isTrue(groupName.startsWith("/"), "Group name isn't valid, must start with '/': " + groupName);
         groupName = groupName.substring(1);
+        
+        if(StringUtils.isEmpty(groupName)){
+            return getRootGroup();
+        }
+        
         String[] strings = groupName.split("/");
         List<String> names = new LinkedList<String>(Arrays.asList(strings));
         return getRelativeGroup(getRootGroup(), names);
@@ -124,5 +130,35 @@ public class DeviceGroupServiceImpl implements DeviceGroupService {
     public void setDeviceGroupDao(DeviceGroupProviderDao deviceGroupDao) {
         this.deviceGroupDao = deviceGroupDao;
     }
-    
+
+    public DeviceGroupHierarchy getDeviceGroupHierarchy(DeviceGroup root) {
+
+        DeviceGroupHierarchy hierarchy = new DeviceGroupHierarchy();
+        hierarchy.setGroup(root);
+
+        setChildHierarchy(hierarchy);
+
+        return hierarchy;
+    }
+
+    /**
+     * Helper method to recursively set child hierarchy
+     * @param hierarchy - parent hierarchy to set children on
+     */
+    private void setChildHierarchy(DeviceGroupHierarchy hierarchy) {
+
+        List<DeviceGroupHierarchy> childGroupList = new ArrayList<DeviceGroupHierarchy>();
+        List<? extends DeviceGroup> childGroups = deviceGroupDao.getChildGroups(hierarchy.getGroup());
+        for (DeviceGroup childGroup : childGroups) {
+            DeviceGroupHierarchy childHierarchy = new DeviceGroupHierarchy();
+            childHierarchy.setGroup(childGroup);
+
+            setChildHierarchy(childHierarchy);
+
+            childGroupList.add(childHierarchy);
+        }
+
+        hierarchy.setChildGroupList(childGroupList);
+    }
+
 }

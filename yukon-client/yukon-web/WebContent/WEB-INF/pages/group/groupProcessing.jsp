@@ -32,7 +32,7 @@
 		<c:set var="errorMsg" value="" scope="request"/>
 	</c:if>
 	
-	<form action="<c:url value="/spring/command/executeCommand" />">
+	<form action="<c:url value="/spring/group/executeCommand" />">
 		<table>
 			<tr>
 				<td>

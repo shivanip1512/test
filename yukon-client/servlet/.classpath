@@ -26,7 +26,6 @@
 	<classpathentry kind="lib" path="/third-party/jradius-client.jar"/>
 	<classpathentry kind="src" path="/report"/>
 	<classpathentry kind="src" path="/stars"/>
-	<classpathentry kind="lib" path="/third-party/commons-fileupload.jar"/>
 	<classpathentry kind="src" path="/tools"/>
 	<classpathentry kind="lib" path="/third-party/saaj.jar"/>
 	<classpathentry kind="src" path="/multispeak"/>
@@ -36,5 +35,6 @@
 	<classpathentry kind="lib" path="/third-party/servlet-api.jar" sourcepath="Z:/java/Third-Party Sources/apache-tomcat-5.5.20-src.zip"/>
 	<classpathentry kind="lib" path="/third-party/mail.jar"/>
 	<classpathentry combineaccessrules="false" kind="src" path="/esub"/>
+	<classpathentry kind="lib" path="/third-party/commons-fileupload-1.2.jar"/>
 	<classpathentry kind="output" path="bin"/>
 </classpath>

@@ -23,6 +23,14 @@ public abstract class DeviceGroupProviderBase implements DeviceGroupProvider {
 
     public abstract List<? extends DeviceGroup> getChildGroups(DeviceGroup group);
     
+    public int getChildDeviceCount(DeviceGroup group) {
+        return getChildDevices(group).size();
+    }
+    
+    public void removeGroupDependancies(DeviceGroup group) {
+        // Do nothing - no extra work to be done for base removal
+    }
+    
     public String getDeviceGroupSqlWhereClause(DeviceGroup group, String identifier) {
         List<String> whereClauseList = new ArrayList<String>();
         whereClauseList.add(getChildDeviceGroupSqlWhereClause(group, identifier));
@@ -43,6 +51,10 @@ public abstract class DeviceGroupProviderBase implements DeviceGroupProvider {
             }
         }
         throw new NotFoundException("Group " + groupName + " wasn't found under " + base);
+    }
+    
+    public int getDeviceCount(DeviceGroup group) {
+        return getDevices(group).size();
     }
 
     public List<Integer> getDeviceIds(DeviceGroup group) {

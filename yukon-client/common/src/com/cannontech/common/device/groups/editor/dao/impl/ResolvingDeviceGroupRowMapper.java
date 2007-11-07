@@ -10,10 +10,22 @@ import org.springframework.jdbc.core.simple.ParameterizedRowMapper;
 import com.cannontech.common.device.groups.dao.DeviceGroupType;
 import com.cannontech.common.device.groups.editor.model.StoredDeviceGroup;
 
+/**
+ * NOTE: This class MUST be used in an '@Transactional' method. This
+ * mapper does a recursive call which hits the db in each recursion. If it
+ * is not transactional, each recursion will get it's own connection and we
+ * will run out of connections.
+ */
 public class ResolvingDeviceGroupRowMapper implements ParameterizedRowMapper<StoredDeviceGroup> {
     private final DeviceGroupEditorDaoImpl groupEditorDao;
     private Map<Integer, StoredDeviceGroup> cache = new HashMap<Integer, StoredDeviceGroup>();
     
+    /**
+     * NOTE: This class MUST be used in an '@Transactional' method. This
+     * mapper does a recursive call which hits the db in each recursion. If it
+     * is not transactional, each recursion will get it's own connection and we
+     * will run out of connections.
+     */
     public ResolvingDeviceGroupRowMapper(DeviceGroupEditorDaoImpl groupEditorDao) {
         this.groupEditorDao = groupEditorDao;
     }

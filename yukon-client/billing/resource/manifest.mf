@@ -9,7 +9,6 @@ Class-Path: ./
  batik.jar 
  classes12.jar 
  commons-discovery.jar 
- commons-fileupload.jar 
  commons-httpclient.jar 
  jaxm-api.jar 
  jaxrpc.jar 

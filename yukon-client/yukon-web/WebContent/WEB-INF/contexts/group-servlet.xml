@@ -10,18 +10,23 @@
         </property>
         <property name="mappings">
             <value>
-            	/*=CommandController
+            	/addDevicesResultUpdate=addDevicesResultUpdate
+            	/*=GroupController
             </value>
         </property>
     </bean>    
+
+	<bean id="multipartResolver" class="org.springframework.web.multipart.commons.CommonsMultipartResolver">
+	    <property name="maxUploadSize" value="100000"/>
+	</bean>    
     
     <bean id="viewResolver"
       class="org.springframework.web.servlet.view.UrlBasedViewResolver">
         <property name="viewClass" value="org.springframework.web.servlet.view.JstlView"/>
-        <property name="prefix" value="/WEB-INF/pages/command/"/>
+        <property name="prefix" value="/WEB-INF/pages/group/"/>
     </bean>
     
-    <bean id="CommandController" class="com.cannontech.web.command.CommandController" >
+    <bean id="GroupController" class="com.cannontech.web.group.GroupController" >
         <property name="cacheSeconds">
             <value type="int">0</value>
         </property>
@@ -38,10 +43,25 @@
             <value type="boolean">true</value>
         </property>
         
-        <property name="commandDao" ref="commandDao" />
-        <property name="deviceGroupDao" ref="deviceGroupDao" />
         <property name="deviceGroupService" ref="deviceGroupService"/>
+        <property name="deviceGroupDao" ref="deviceGroupDao" />
+        <property name="deviceGroupEditorDao" ref="deviceGroupEditorDao" />
+        <property name="commandDao" ref="commandDao" />
         <property name="groupCommandExecutor" ref="groupCommandExecutor" />
+        
+        <property name="bulkProcessor" ref="oneAtATimeProcessor" />
+        <property name="objectMapperFactory" ref="objectMapperFactory" />
+        <property name="processorFactory" ref="processorFactory" />
+        
+        <property name="paoDao" ref="paoDao" />
+    </bean>
+    
+	<bean id="bulkDeviceAdd" class="org.springframework.web.servlet.mvc.ParameterizableViewController">
+    	<property name="viewName" value="bulkDeviceAdd.jsp"/>
+    </bean>
+    
+	<bean id="addDevicesResultUpdate" class="org.springframework.web.servlet.mvc.ParameterizableViewController">
+    	<property name="viewName" value="addDevicesResultUpdate.jsp"/>
     </bean>
     
 </beans>

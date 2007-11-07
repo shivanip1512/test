@@ -5,16 +5,17 @@ import java.util.List;
 import java.util.Set;
 
 import org.springframework.beans.factory.annotation.Required;
+import org.springframework.dao.DataIntegrityViolationException;
 import org.springframework.jdbc.core.simple.SimpleJdbcOperations;
 import org.springframework.transaction.annotation.Propagation;
 import org.springframework.transaction.annotation.Transactional;
 
 import com.cannontech.common.device.YukonDevice;
+import com.cannontech.common.device.groups.dao.DeviceGroupProviderDao;
 import com.cannontech.common.device.groups.dao.DeviceGroupType;
 import com.cannontech.common.device.groups.editor.dao.DeviceGroupEditorDao;
 import com.cannontech.common.device.groups.editor.dao.DeviceGroupMemberEditorDao;
 import com.cannontech.common.device.groups.editor.model.StoredDeviceGroup;
-import com.cannontech.common.device.groups.model.DeviceGroup;
 import com.cannontech.common.device.groups.util.YukonDeviceToIdMapper;
 import com.cannontech.common.util.MappingList;
 import com.cannontech.common.util.SqlStatementBuilder;
@@ -25,6 +26,8 @@ public class DeviceGroupEditorDaoImpl implements DeviceGroupEditorDao, DeviceGro
     private SimpleJdbcOperations jdbcTemplate;
     private PaoGroupsWrapper paoGroupsWrapper;
     private NextValueHelper nextValueHelper;
+    
+    private DeviceGroupProviderDao deviceGroupProviderDao = null;
 
     public void addDevices(StoredDeviceGroup group, List<? extends YukonDevice> devices) {
         for (YukonDevice device : devices) {
@@ -34,7 +37,11 @@ public class DeviceGroupEditorDaoImpl implements DeviceGroupEditorDao, DeviceGro
             sql.append("values");
             sql.append("(?, ?)");
             
-            jdbcTemplate.update(sql.toString(), group.getId(), device.getDeviceId());
+            try {
+                jdbcTemplate.update(sql.toString(), group.getId(), device.getDeviceId());
+            } catch (DataIntegrityViolationException e) {
+                // ignore - tried to insert duplicate
+            }
         }
     }
 
@@ -89,8 +96,35 @@ public class DeviceGroupEditorDaoImpl implements DeviceGroupEditorDao, DeviceGro
         return result;
     }
 
+    public void updateGroup(StoredDeviceGroup group) {
+
+        SqlStatementBuilder sql = new SqlStatementBuilder();
+        sql.append("UPDATE DeviceGroup");
+        sql.append("SET GroupName = ?");
+        sql.append("WHERE");
+        sql.append("DeviceGroupId = ?");
+        
+        jdbcTemplate.update(sql.toString(), group.getName(), group.getId());
+    }
+
+    @Transactional
     public void removeGroup(StoredDeviceGroup group) {
-        // does this call the provider or something???
+        
+        List<StoredDeviceGroup> childGroups = getChildGroups(group);
+        for(StoredDeviceGroup childGroup : childGroups){
+            removeGroup(childGroup);
+        }
+        
+        deviceGroupProviderDao.removeGroupDependancies(group);
+        
+        String sql = "DELETE FROM DeviceGroup WHERE DeviceGroupId = ?";
+        jdbcTemplate.update(sql, group.getId());
+        
+    }
+
+    public void moveGroup(StoredDeviceGroup group, StoredDeviceGroup parentGroup) {
+        String sql = "UPDATE DeviceGroup SET ParentDeviceGroupId = ? WHERE DeviceGroupId = ?";
+        jdbcTemplate.update(sql, parentGroup.getId(), group.getId());
     }
     
     public void removeDevices(StoredDeviceGroup group, List<? extends YukonDevice> devices) {
@@ -128,6 +162,10 @@ public class DeviceGroupEditorDaoImpl implements DeviceGroupEditorDao, DeviceGro
         return new HashSet<StoredDeviceGroup>(groups);
     }
     
+    // This method is transactional because the mapper does a recursive call
+    // which hits the db in each recursion.  If it is not transactional, each
+    // recursion will get it's own connection and we will run out of connections.
+    @Transactional
     public StoredDeviceGroup getGroupById(int groupId) {
         ResolvingDeviceGroupRowMapper mapper = new ResolvingDeviceGroupRowMapper(this);
         return getGroupById(groupId, mapper);
@@ -158,5 +196,9 @@ public class DeviceGroupEditorDaoImpl implements DeviceGroupEditorDao, DeviceGro
         this.nextValueHelper = nextValueHelper;
     }
 
+    @Required
+    public void setDeviceGroupProviderDao(DeviceGroupProviderDao deviceGroupProviderDao) {
+        this.deviceGroupProviderDao = deviceGroupProviderDao;
+    }
 
 }

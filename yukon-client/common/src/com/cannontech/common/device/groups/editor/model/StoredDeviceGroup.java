@@ -22,4 +22,14 @@ public class StoredDeviceGroup extends DeviceGroup {
         this.systemGroup = systemGroup;
     }
     
+    @Override
+    public boolean isRemovable() {
+        return !isSystemGroup();
+    }
+    
+    @Override
+    public boolean isMovable() {
+        return !isSystemGroup();
+    }
+    
 }

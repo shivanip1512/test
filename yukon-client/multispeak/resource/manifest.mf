@@ -18,7 +18,6 @@ Class-Path:
  commons-httpclient.jar 
  jaxrpc.jar 
  wsdl4j.jar 
- commons-fileupload.jar 
  mail.jar 
  jaxm-api.jar 
  saaj.jar 

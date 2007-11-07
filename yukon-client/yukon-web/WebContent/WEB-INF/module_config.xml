@@ -67,8 +67,11 @@
           <requireRole value="CommanderRole.ROLEID"/> <!-- THIS ROLE will change when more group items are added -->
 		  <sublinks>
 		    <option id="commander" name="Commander">
-              <link>/spring/command/configure</link>
+              <link>/spring/group/groupProcessing</link>
               <requireRole value="CommanderRole.ROLEID"/>
+            </option>
+		    <option id="home" name="Groups Home">
+              <link>/spring/group/home</link>
             </option>
           </sublinks>
 	    </option>

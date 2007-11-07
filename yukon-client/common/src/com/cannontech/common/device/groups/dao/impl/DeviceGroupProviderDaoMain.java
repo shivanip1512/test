@@ -22,6 +22,10 @@ public class DeviceGroupProviderDaoMain implements DeviceGroupProviderDao {
     public List<YukonDevice> getChildDevices(DeviceGroup group) {
         return getProvider(group).getChildDevices(group);
     }
+    
+    public int getChildDeviceCount(DeviceGroup group) {
+        return getProvider(group).getChildDeviceCount(group);
+    }
 
     public List<? extends DeviceGroup> getChildGroups(DeviceGroup group) {
         return getProvider(group).getChildGroups(group);
@@ -41,6 +45,10 @@ public class DeviceGroupProviderDaoMain implements DeviceGroupProviderDao {
 
     public List<YukonDevice> getDevices(DeviceGroup group) {
         return getProvider(group).getDevices(group);
+    }
+
+    public int getDeviceCount(DeviceGroup group) {
+        return getProvider(group).getDeviceCount(group);
     }
     
     public DeviceGroup getGroup(DeviceGroup base, String groupName) {
@@ -94,6 +102,10 @@ public class DeviceGroupProviderDaoMain implements DeviceGroupProviderDao {
 
     public boolean isDeviceInGroup(DeviceGroup group, YukonDevice device) {
         return getProvider(group).isDeviceInGroup(group,device);
+    }
+
+    public void removeGroupDependancies(DeviceGroup group) {
+        getProvider(group).removeGroupDependancies(group);
     }
     
 }
