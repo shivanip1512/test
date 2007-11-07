@@ -58,10 +58,9 @@ if (allowCtlVal!=null) {
 	String css = "tableCell";
 	String cssSub = "tableCell";
 	List<CBCSpecialArea> areas = filterCapControlCache.getSpecialCbcAreas();
-	for( int i = 0; i < areas.size(); i++ ) {
+	for( CBCSpecialArea area : areas ) {
 		css = ("tableCell".equals(css) ? "altTableCell" : "tableCell");
 	
-		CBCSpecialArea area = areas.get(i);
 		List<SubStation> areaStations = filterCapControlCache.getSubstationsBySpecialArea(area.getPaoID());
 		List<CapBankDevice> areaCapBanks = filterCapControlCache.getCapBanksBySpecialArea(area.getPaoID());
 	
@@ -72,39 +71,34 @@ if (allowCtlVal!=null) {
 		String trippedVars = CBCUtils.format( CBCUtils.calcVarsTrippedForCapBanks(areaCapBanks, user) );
 		String currPF = CBCDisplay.getPowerFactorText(CBCUtils.calcAvgPF(areaStations), true);
 		String estPF = CBCDisplay.getPowerFactorText(CBCUtils.calcAvgEstPF(areaStations), true);
-		Boolean b = (Boolean)(filterCapControlCache.getAreaStateMap().get(area.getPaoName()));
+		Boolean b = (Boolean)(filterCapControlCache.getSpecialAreaStateMap().get(area.getPaoName()));
 		String areaState;
-		if( b == null )// was here, this shouldn't ever appear
+		if( b == null ){// was here, this shouldn't ever appear
 			areaState = "UNKNOWN";
-		else
+		} else {
 			areaState = (b.booleanValue()?"ENABLED":"DISABLED");
-		if( area.getOvUvDisabledFlag() )
-		{
+		}
+		if( area.getOvUvDisabledFlag() ) {
 			areaState += "-V";
 		}
 %>
 	        <tr class="<%=css%>">
 				<td>
 				<input type="checkbox" name="cti_chkbxAreas" value="<%=area.getPaoID()%>"/>
-				<input type="image" id="showAreas<%=i%>"
+				<input type="image" id="showAreas<%=area.getPaoID()%>"
 					src="images/nav-plus.gif"
-					onclick="showRowElems( 'allAreas<%=i%>', 'showAreas<%=i%>'); return false;"/>
+					onclick="showRowElems( 'allAreas<%=area.getPaoID()%>', 'showAreas<%=area.getPaoID()%>'); return false;"/>
 				<a href="#" class="<%=css%>" onclick="postMany('areaForm', '<%=CCSessionInfo.STR_CC_AREAID%>', '<%=area.getPaoID()%>')">
 				<%=area.getPaoName()%></a>
 				</td>
                 <td>
                 <!--Create  popup menu html-->               
-                <div id = "serverMessage<%=i%>" style="display:none" > </div>
-                
+                <div id = "serverMessage<%=area.getPaoID()%>" style="display:none" > </div>
                 <input id="cmd_area_<%=area.getPaoID()%>" type="hidden" name = "cmd_dyn" value= "" />
-                <a id="area_state_<%=i%>" name="area_state" 
+                <a id="area_state_<%=area.getPaoID()%>" name="area_state" 
                     style="<%=css%>"
                     href="javascript:void(0);"
-                    <%=popupEvent%> ="return overlib(
-                        $F('cmd_area_<%=area.getPaoID()%>'),
-                        STICKY, WIDTH,210, HEIGHT,170, OFFSETX,-15,OFFSETY,-15,
-                        MOUSEOFF, FULLHTML);"
-                    onmouseout= <%=nd%> >
+                    <%=popupEvent%>="getSpecialAreaMenu('<%=area.getPaoID()%>');">
                 <%=areaState%>
                 </a>
                 </td>
@@ -117,7 +111,7 @@ if (allowCtlVal!=null) {
 			</tr>
 			<tr>
 				<td>
-					<table id="allAreas<%=i%>">
+					<table id="allAreas<%=area.getPaoID()%>">
 <%
 	if (areaStations.size() > 0) {		
 	for( int j = 0; j < areaStations.size(); j++ ) {
@@ -173,30 +167,42 @@ function allIsWell() {
 function getServerData() {
 	var els = document.getElementsByName('area_state');
 	for (var i=0; i < els.length; i++) {
-	     new Ajax.PeriodicalUpdater("serverMessage"+i, '/servlet/CBCServlet', {
+	var strings = els[i].id.split('_');
+        var id = strings[2];
+	     new Ajax.PeriodicalUpdater("serverMessage"+id, '/servlet/CBCServlet', {
 	     method:'post', 
 	     asynchronous:true, 
-	     parameters:'specialAreaIndex='+i, 
+	     parameters:'specialAreaId='+id, 
 	     frequency:5, 
 	     onSuccess: updateAreaMenu});
 	}
 }
 
-
 function updateAreaMenu (resp) {
-	var msgs = resp.responseText.split(':');
-	var areaname = msgs[0];
-	var areaindex = msgs[1];
-	var areaID = msgs[2];
-	var areastate = msgs[3];
-	//update state
-	document.getElementById ('area_state_' + areaindex).innerHTML = areastate;
-	//update menu
-	if (areastate == 'ENABLED') {
-	    document.getElementById('cmd_area_' + areaID).value = generate_SubAreaMenu(areaID,areaname, 0);
-	} else if (areastate == 'DISABLED') {
-	    document.getElementById('cmd_area_' + areaID).value = generate_SubAreaMenu(areaID,areaname, 1);
-	}
+    var msgs = resp.responseText.split(':');
+    var areaname = msgs[0];
+    var areaId = msgs[1];
+    var areastate = new String(msgs[2]);
+    //update state
+    var stateElem = document.getElementById ('area_state_' + areaId);
+    stateElem.innerHTML = areastate;
+    //update menu
+    if (areastate == 'ENABLED' || areastate == 'ENABLED-V') {
+        var html = generateAreaMenu(areaId,areaname, 0);
+        var elem = document.getElementById('cmd_area_' + areaId); 
+        elem.value = html;
+        stateElem.style.color = '#3C8242';
+    } else if (areastate == 'DISABLED' || areastate == 'DISABLED-V') {
+        var html = generateAreaMenu(areaId,areaname, 1);
+        var elem = document.getElementById('cmd_area_' + areaId); 
+        elem.value = html;
+        stateElem.style.color = '#FF0000';
+    }
+}
+
+function getSpecialAreaMenu(id){
+    var html = new String($F('cmd_area_'+id));
+    overlib(html, FULLHTML, STICKY);
 }
 </script>
 </cti:titledContainer>

@@ -71,7 +71,7 @@ if(special){
 
 	//returned when a cap bank menu is triggered to appear
 	function popupWithHiLite (html, width, height, offsetx, offsety, rowID, color) {
-		hiLiteTRow (rowID, color);
+		
 		return overlib (html, STICKY, WIDTH, width, HEIGHT, height, OFFSETX, offsetx, OFFSETY, offsety, MOUSEOFF, FULLHTML, ABOVE);
 	}
 	
@@ -89,9 +89,31 @@ if(special){
    	   window.parent.location.replace('feeders.jsp');
    	}
    	
-   	function getSubBusMenu(name, id){
+   	function getSubBusMenu(id){
    		var html = new String($F('cmd_sub_'+id));
    		overlib(html, FULLHTML, STICKY);
+   	}
+   	
+   	function getSubstationMenu(id){
+   		var html = new String($F('cmd_substation_'+id));
+   		overlib(html, FULLHTML, STICKY);
+   	}
+   	
+   	function getFeederMenu(id){
+   		var html = new String($F('cmd_fdr_'+id));
+   		overlib(html, FULLHTML, STICKY);
+   	}
+   	
+   	function getCapBankMenu(id){
+   		var html = new String($F('cmd_cap_'+id+'_field'));
+   		overlib(html, FULLHTML, STICKY);
+   		hiLiteTRow ('tr_cap_'+id , 'yellow');
+   	}
+   	
+   	function getCapBankSystemMenu(id){
+   		var html = new String($F('cmd_cap_'+id+'_system'));
+   		overlib(html, FULLHTML, STICKY);
+   		hiLiteTRow ('tr_cap_'+id , 'yellow');
    	}
    	
  </script>
@@ -126,8 +148,7 @@ String css = "tableCell";
 					<input id="cmd_substation_<%=substation.getCcId()%>" type="hidden" name = "cmd_dyn" value= "" />				
 					<a type="state" name="cti_dyn" id="<%=substation.getCcId()%>" style="color: <%=CBCDisplay.getHTMLFgColor(substation)%>;" 
 						href="javascript:void(0);"
-					    <%=popupEvent%> ="return overlib($F('cmd_sub_<%=substation.getCcId()%>'), STICKY, WIDTH,210, HEIGHT,170, OFFSETX,-15,OFFSETY,-15,MOUSEOFF, FULLHTML);"
-					    onmouseout = <%=nd%> > 
+					    <%=popupEvent%>="getSubstationMenu('<%=substation.getCcId()%>');">
 				<%
 				} else {
 				%>
@@ -192,22 +213,13 @@ for( SubBus subBus: subBuses ) {
 					<a type="state" name="cti_dyn" id="<%=subBus.getCcId()%>"
 						style="color: <%=CBCDisplay.getHTMLFgColor(subBus)%>;"
 						href="javascript:void(0);"
-						<%=popupEvent%> ="getSubBusMenu('<%=subBus.getCcName()%>', '<%=subBus.getCcId()%>' );"> 
-					    <!-- 
-					    	<%=popupEvent%> ="return overlib(
-							$F('cmd_sub_<%=subBus.getCcId()%>'),
-							STICKY, WIDTH,210, HEIGHT,170, OFFSETX,-15,OFFSETY,-15,MOUSEOFF, FULLHTML);"
-						 -->
+						<%=popupEvent%> ="getSubBusMenu('<%=subBus.getCcId()%>');"> 
 				<% } else {%>
 					<a type="state" name="cti_dyn" id="<%=subBus.getCcId()%>" style="color: <%=CBCDisplay.getHTMLFgColor(subBus)%>;" >
 				<%}%>
 					<%=CBCUtils.CBC_DISPLAY.getSubBusValueAt(subBus, CBCDisplay.SUB_CURRENT_STATE_COLUMN)%>
 					</a>
 				</td>
-				<!-- 
-				onmouseover="javascript:togglePopup('subPFPopup_<%=subBus.getCcId()%>')"
-				onmouseout="javascript:togglePopup('subPFPopup_<%=subBus.getCcId()%>')"  
-				-->
 				<td><a onmouseover="showDynamicPopup($('subPFPopup_<%=subBus.getCcId()%>_<%=CBCUtils.isPowerFactorControlled(subBus.getControlUnits())%>'))"
 						onmouseout="nd();"
 					   	type="param1" 
@@ -348,11 +360,7 @@ if( hasControl ) {
 						<a type="state" name="cti_dyn" id="<%=feeder.getCcId()%>"
 							style="color: <%=CBCDisplay.getHTMLFgColor(feeder)%>;"
 							href="javascript:void(0);"
-						    <%=popupEvent%> ="return overlib(
-								$F('cmd_fdr_<%=feeder.getCcId()%>'),
-								STICKY, WIDTH,<%=feeder.getCcName().length() * 8 +  75%>, HEIGHT,75, OFFSETX,-15, OFFSETY,-15,
-								MOUSEOFF, FULLHTML);"
-						    onmouseout = <%=nd%> >	
+						    <%=popupEvent%> ="getFeederMenu('<%=feeder.getCcId()%>');"> 
 <%
 	} else {
 	%>
@@ -452,12 +460,8 @@ for( int i = 0; i < capBanks.size(); i++ ) {
                     <input id="showFlip_<%=capBank.getCcId()%>" type="hidden" value="<%=showFlip%>"/>
                     <input id="is701x_<%=capBank.getCcId()%>" type="hidden" value="<%=CBCUtils.is701xDevice(obj)%>"/>
                     <a href="javascript:void(0);"
-					<%=popupEvent%>= "popupWithHiLite ($F('cmd_cap_<%=capBank.getCcId()%>_field'),
-						155,110,1,10,
-						'tr_cap_<%=capBank.getCcId()%>',
-						'yellow'); "
-						onmouseout = "return hidePopupHiLite('tr_cap_<%=capBank.getCcId()%>', '<%=rowColor%>');" >	
-						<%=CBCUtils.CBC_DISPLAY.getCapBankValueAt(capBank, CBCDisplay.CB_NAME_COLUMN)%>
+                    <%=popupEvent%> ="getCapBankMenu('<%=capBank.getCcId()%>');">
+                    	<%=CBCUtils.CBC_DISPLAY.getCapBankValueAt(capBank, CBCDisplay.CB_NAME_COLUMN)%>
 					</a>
 					<%
 					} else {
@@ -488,10 +492,7 @@ for( int i = 0; i < capBanks.size(); i++ ) {
 					<a type="state" name="cti_dyn" id="<%=capBank.getCcId()%>"
 						style="color: <%=CBCDisplay.getHTMLFgColor(capBank)%>;"
 						href="javascript:void(0);"
-					    onclick = "popupWithHiLite ($F('cmd_cap_<%=capBank.getCcId()%>_system'),
-    						155,200,1,10,
-    						'tr_cap_<%=capBank.getCcId()%>',
-    						'yellow'); "
+					    onclick ="getCapBankSystemMenu('<%=capBank.getCcId()%>');"
 					    onmouseout = "hidePopupHiLite('tr_cap_<%=capBank.getCcId()%>', '<%=rowColor%>');"
 					    onmouseover = "showDynamicPopup($('capBankStatusPopup_<%=capBank.getCcId()%>'))"
 					    >

@@ -59,6 +59,7 @@ public class CBCServlet extends ErrorAwareInitializingServlet
 	public static final String REF_SECONDS_PEND = "5";
 
 	public static final String TYPE_SUB = "SUB_TYPE";
+    public static final String TYPE_SUBSTATION = "SUBSTATION_TYPE";
 	public static final String TYPE_FEEDER = "FEEDER_TYPE";
 	public static final String TYPE_CAPBANK = "CAPBANK_TYPE";
     public static final String TYPE_AREA = "AREA_TYPE";
@@ -74,16 +75,13 @@ public void destroy()
 }
 
 /**
- * Creates a cache if one is not alread created
+ * Creates a cache if one is not already created
  *
  */
-private CapControlCache getCapControlCache()
-{
-	CapControlCache cbcCache =
-		(CapControlCache)getServletContext().getAttribute(CBC_CACHE_STR);
+private CapControlCache getCapControlCache() {
+	CapControlCache cbcCache = (CapControlCache)getServletContext().getAttribute(CBC_CACHE_STR);
 
-	if( cbcCache == null )
-	{
+	if( cbcCache == null ) {
 		// Add application scope variables to the context
 		cbcCache = YukonSpringHook.getBean("cbcCache", CapControlCache.class);
 		getServletContext().setAttribute(CBC_CACHE_STR, cbcCache);
@@ -142,18 +140,18 @@ public void doPost(HttpServletRequest req, HttpServletResponse resp) throws java
     String redirectURL = ParamUtil.getString( req, "redirectURL", null );
 
     	//handle any commands that a client may want to send to the CBC server
-        Integer areaIndex = ParamUtil.getInteger(req, "areaIndex", -1);
-        Integer specialAreaIndex = ParamUtil.getInteger(req, "specialAreaIndex", -1);
+        Integer areaId = ParamUtil.getInteger(req, "areaId", -1);
+        Integer specialAreaId = ParamUtil.getInteger(req, "specialAreaId", -1);
     	//be sure we have a valid user and that user has the rights to control
     	if( user != null && CBCWebUtils.hasControlRights(session) ) {
     		
     		try {
     			
                 Writer writer = resp.getWriter();
-                if (areaIndex != -1) {
-                    updateSubAreaMenu(areaIndex, writer);
-                } else if(specialAreaIndex != -1) {
-                    updateSubSpecialAreaMenu(specialAreaIndex, writer);
+                if (areaId != -1) {
+                    updateSubAreaMenu(areaId, writer);
+                } else if(specialAreaId != -1) {
+                    updateSubSpecialAreaMenu(specialAreaId, writer);
                 } else
                     //send the command with the id, type, paoid
                     executeCommand( req, user.getUsername() );
@@ -173,11 +171,11 @@ public void doPost(HttpServletRequest req, HttpServletResponse resp) throws java
     }
 }
 
-private void updateSubAreaMenu(Integer areaIndex, Writer writer) throws IOException {
-    CBCArea area = getCapControlCache().getCbcAreas().get(areaIndex);
+private void updateSubAreaMenu(Integer areaId, Writer writer) throws IOException {
+    CapControlCache cache = getCapControlCache();
+    CBCArea area = cache.getCBCArea(areaId);
     Boolean state = (Boolean) getCapControlCache().getAreaStateMap().get(area.getPaoName());
-    Integer areaID = area.getPaoID();
-    String msg = area.getPaoName() + ":" + areaIndex + ":" + areaID + ":";
+    String msg = area.getPaoName() + ":" + areaId + ":";
     msg += (state)?"ENABLED":"DISABLED";
     if ( area.getOvUvDisabledFlag() ) {
         msg += "-V";
@@ -186,11 +184,11 @@ private void updateSubAreaMenu(Integer areaIndex, Writer writer) throws IOExcept
     writer.flush();
 }
 
-private void updateSubSpecialAreaMenu(Integer areaIndex, Writer writer) throws IOException {
-    CBCSpecialArea area = getCapControlCache().getSpecialCbcAreas().get(areaIndex);
+private void updateSubSpecialAreaMenu(Integer areaId, Writer writer) throws IOException {
+    CapControlCache cache = getCapControlCache();
+    CBCSpecialArea area = cache.getCBCSpecialArea(areaId);
     Boolean state = (Boolean) getCapControlCache().getSpecialAreaStateMap().get(area.getPaoName());
-    Integer areaID = area.getPaoID();
-    String msg = area.getPaoName() + ":" + areaIndex + ":" + areaID + ":";
+    String msg = area.getPaoName() + ":" + areaId + ":";
     msg += (state)?"ENABLED":"DISABLED";
     if ( area.getOvUvDisabledFlag() ) {
         msg += "-V";
@@ -265,7 +263,7 @@ private String createXMLResponse(HttpServletRequest req, HttpServletResponse res
 	//ParamUtil.getInts( req, "id");
 	//filter the ids into the ones that has been updated by the server 
 	//since the last update
-	WebUpdatedDAO updatedObjMap = getCapControlCache().getUpdatedObjMap();		
+	WebUpdatedDAO updatedObjMap = getCapControlCache().getUpdatedObjMap();
 	String[] updatedIds = updatedObjMap.getUpdatedIdsSince (allIds, timeFrame);
 	try
 	{
@@ -277,15 +275,12 @@ private String createXMLResponse(HttpServletRequest req, HttpServletResponse res
             if(handleSubstationGET(updatedIds[i], xmlMsgs, i)){
                 continue;
             }
-            
 			if(handleSubGET(updatedIds[i], xmlMsgs, i)) {
 				continue;
 			}
-				
 			if (handleFeederGET(updatedIds[i], xmlMsgs, i)) {
 				continue;
 			}
-			
 			if (handleCapBankGET(req, updatedIds[i], xmlMsgs, i)) {
 				continue;
 			}
@@ -325,14 +320,14 @@ private boolean handleSubstationGET( String ids, ResultXML[] xmlMsgs, int indx )
     String[] optParams = {
         /*param0*/CBCDisplay.getHTMLFgColor(sub),
         /*param1*/CBCUtils.CBC_DISPLAY.getSubstationValueAt (sub, CBCDisplay.SUB_NAME_COLUMN).toString(),
-        /*param2*/CBCUtils.CBC_DISPLAY.getSubstationValueAt(sub, CBCDisplay.SUB_POWER_FACTOR_COLUMN).toString()
+        /*param2*/CBCUtils.CBC_DISPLAY.getSubstationValueAt(sub, CBCDisplay.SUB_POWER_FACTOR_COLUMN).toString(),
+        /*param3*/(sub.getVerificationFlag().booleanValue())? "true" : "false"
     };
 
     xmlMsgs[indx] = new ResultXML(
         sub.getCcId().toString(),
         CBCUtils.CBC_DISPLAY.getSubstationValueAt(sub, CBCDisplay.SUB_CURRENT_STATE_COLUMN).toString(),     
         optParams );
-
 
     return true;
 }
@@ -532,18 +527,21 @@ private synchronized void executeCommand( HttpServletRequest req, String userNam
 		
 
     //send the command with the id, type, paoid
-	if( CBCServlet.TYPE_SUB.equals(controlType) )
+    if( CBCServlet.TYPE_SUBSTATION.equals(controlType) ) {
+        cbcExecutor.execute_SubstationCmd( cmdID, paoID );
+    }
+	if( CBCServlet.TYPE_SUB.equals(controlType) ) {
 		cbcExecutor.execute_SubCmd( cmdID, paoID );
-	
-	if( CBCServlet.TYPE_FEEDER.equals(controlType) )
+    }
+	if( CBCServlet.TYPE_FEEDER.equals(controlType) ) {
 		cbcExecutor.execute_FeederCmd( cmdID, paoID );
-
-	if( CBCServlet.TYPE_CAPBANK.equals(controlType) )
+    }
+	if( CBCServlet.TYPE_CAPBANK.equals(controlType) ) {
 		cbcExecutor.execute_CapBankCmd( cmdID, paoID, optParams );
-	
-    if ( CBCServlet.TYPE_AREA.equals (controlType) ) 
+    }
+    if ( CBCServlet.TYPE_AREA.equals (controlType) ) { 
         cbcExecutor.execute_SubAreaCmd(cmdID, paoID);
-
+    }
 }
 
 }

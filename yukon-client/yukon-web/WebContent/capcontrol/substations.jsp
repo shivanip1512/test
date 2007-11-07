@@ -57,10 +57,12 @@ if(special){
 </cti:breadCrumbs>
   
 <script type="text/javascript">
-	
- Event.observe(window, 'load', function () {								
- 								callBack();
- 								});
+	Event.observe(window, 'load', function () {callBack();});
+ 								
+	function getSubstationMenu(id){
+   		var html = new String($F('cmd_substation_'+id));
+   		overlib(html, FULLHTML, STICKY);
+   	}
 </script>
 
 <cti:titledContainer title="<%="Substation In Area:  " + ccSession.getLastArea()%>" id="last_titled_container">
@@ -130,16 +132,11 @@ for( int i = 0; i < areaSubs.size(); i++ ) {
 							if( hasControl ) {
 							%>
 				<!--Create  popup menu html-->
-				<input id="cmd_sub_<%=substation.getCcId()%>" type="hidden" name = "cmd_dyn" value= "" />
+				<input id="cmd_substation_<%=substation.getCcId()%>" type="hidden" name = "cmd_dyn" value= "" />
 				<a type="state" name="cti_dyn" id="<%=substation.getCcId()%>"
 					style="color: <%=CBCDisplay.getHTMLFgColor(substation)%>;"
 					href="javascript:void(0);"
-				    <%=popupEvent%> ="return overlib(
-						$F('cmd_sub_<%=substation.getCcId()%>'),
-						STICKY, WIDTH,210, HEIGHT,170, OFFSETX,-15,OFFSETY,-15,
-						MOUSEOFF, FULLHTML);"
-				    onmouseout= <%=nd%> >
-
+					<%=popupEvent%>="getSubstationMenu('<%=substation.getCcId()%>');">
 			<%
 			} else {
 			%>

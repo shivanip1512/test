@@ -11,7 +11,8 @@ public class SubStation extends StreamableCapObject //implements PointQualityChe
     private Double estimatedPFValue = null;
     private Boolean specialAreaEnabled;
     private Integer specialAreaId;
-	
+	private Boolean verificationFlag = false;
+    
 	public SubStation(){
 		super();
 	}
@@ -79,5 +80,13 @@ public class SubStation extends StreamableCapObject //implements PointQualityChe
     
     public void setSpecialAreaId(Integer specialAreaId) {
         this.specialAreaId = specialAreaId;
+    }
+    
+    public Boolean getVerificationFlag() {
+        return verificationFlag;
+    }
+
+    public void setVerificationFlag(Boolean bool) {
+        verificationFlag = bool;
     }
 }

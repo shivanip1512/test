@@ -22,25 +22,27 @@ function updateCommandMenu(result) {
             
             if (id == xmlID) {
  				//sub command is unique in that it requires additional params to be extracted from the result
- 				if (type == 'sub')
- 					{
+ 				if (type == 'substation') {
+ 					 var verify = getElementTextNS(result[i], 0,'param3');
+ 					 var name = getElementTextNS(result[i], 0,'param1');
+ 					 if ( verify == 'true'){
+ 					 	opts = [true, name];
+ 					 } else {
+ 					 	opts= [false, name];
+ 					 } 
+				} else if (type == 'sub') {
  					 var verify = getElementTextNS(result[i], 0,'param7');
  					 var name = getElementTextNS(result[i], 0,'param8');
  					 if ( verify == 'true'){
  					 	opts = [true, name];
- 					 	
- 					 } 
- 					 else {
+ 					 } else {
  					 	opts= [false, name];
  					 } 
- 					}
- 				 else if (type == 'fdr') {
+				} else if (type == 'fdr') {
  				 	var name = getElementTextNS(result[i], 0,'param7');
  				 	opts = [false, name];
- 				 }
- 				 else if (type =='cap') {
- 				 
- 				 	var name = getElementTextNS(result[i], 0,'param3');
+				} else if (type =='cap') {
+ 					var name = getElementTextNS(result[i], 0,'param3');
  				 	var allow_ovuv = getElementTextNS(result[i], 0,'param4');
  				 	var all_manual_sts = getElementTextNS(result[i], 0,'param5');
                     if (document.getElementById ('2_way_' + id))
@@ -53,9 +55,8 @@ function updateCommandMenu(result) {
  				 	opts = [false, name, sub_type, allow_ovuv, all_manual_sts, is2_Way, showFlip];
  				 	document.getElementById ('cmd_cap_move_back_' + id).value = generate_CB_Move_Back (id, name);		       	
                  }
- 				//otherwise the only thing left is to get state
+				//otherwise the only thing left is to get state
  				var state = getElementTextNS(result[i], 0,'state');
- 				
  				update_Command_Menu	(type, id, state, opts);
         	}
         }
@@ -86,6 +87,9 @@ function update_Command_Menu (type, id, state, opts) {
 	footer = " </div></BODY></HTML>";	
 	var html = header;
 	switch (type) {
+		case 'substation':
+			html += generateSubstationMenu (id, state, opts);
+			break;
 		case 'sub':
 			html += generateSubMenu (id, state, opts);
 			break;
@@ -105,6 +109,58 @@ function update_Command_Menu (type, id, state, opts) {
 
 	document.getElementById(html_id).value = html;
 	 	
+}
+
+//function to generate
+//html for the sub command menu
+function generateSubstationMenu (id, state, opts) {
+	var ALL_SUBSTATION_CMDS = {
+ 		confirm_close:9,
+ 		enable_sub:0,
+	 	disable_sub:1,
+	 	reset_op_cnt:12,
+	 	send_all_open:29, 
+	 	send_all_close:30, 
+	 	send_all_enable_ovuv:31, 
+	 	send_all_disable_ovuv:32,
+	 	send_all_2way_scan:33,
+	 	v_all_banks:40,
+	 	v_fq_banks:41,
+	 	v_failed_banks:42,
+	 	v_question_banks:43,
+	 	v_disable_verify:44,
+	 	v_standalone_banks:46
+	 }
+	var table_footer = "</table>";
+	var table_body = "<table >";
+	table_body += "<tr><td class='top'>" + opts[1] + "</td>";
+	table_body += "<td class='top' onclick='cClick()'><a href='javascript:void(0)'>X</a></td></tr>";
+	if (id > 0) {
+ 		table_body += add_AJAX_Function('substation', id, ALL_SUBSTATION_CMDS.confirm_close, 'Confirm_Sub');
+ 		if (!state.match('DISABLED')) {
+ 			table_body += add_AJAX_Function('substation', id, ALL_SUBSTATION_CMDS.disable_sub, 'Disable_Sub');
+ 		} else {
+ 			table_body += add_AJAX_Function('substation', id, ALL_SUBSTATION_CMDS.enable_sub, 'Enable_Sub');
+ 		}
+ 	
+ 		table_body += add_AJAX_Function('substation', id, ALL_SUBSTATION_CMDS.reset_op_cnt, 'Reset_Op_Counts');
+ 		table_body += add_AJAX_Function('substation', id, ALL_SUBSTATION_CMDS.send_all_open, 'Open_All_CapBanks');
+ 		table_body += add_AJAX_Function('substation', id, ALL_SUBSTATION_CMDS.send_all_close, 'Close_All_CapBanks');
+ 		table_body += add_AJAX_Function('substation', id, ALL_SUBSTATION_CMDS.send_all_enable_ovuv, 'Enable_OV/UV');
+		table_body += add_AJAX_Function('substation', id, ALL_SUBSTATION_CMDS.send_all_disable_ovuv, 'Disable_OV/UV');
+		table_body += add_AJAX_Function('substation', id, ALL_SUBSTATION_CMDS.send_all_2way_scan, 'Scan_All_2way_Scans');
+		if (!opts[0]){
+	 		table_body += add_AJAX_Function('substation', id, ALL_SUBSTATION_CMDS.v_all_banks, 'Verify_All_Banks');
+	 		table_body += add_AJAX_Function('substation', id, ALL_SUBSTATION_CMDS.v_fq_banks, 'Verify_Failed_And_Questionable_Banks');
+	 		table_body += add_AJAX_Function('substation', id, ALL_SUBSTATION_CMDS.v_failed_banks, 'Verify_Failed_Banks');
+	 		table_body += add_AJAX_Function('substation', id, ALL_SUBSTATION_CMDS.v_question_banks, 'Verify_Questionable_Banks');
+	 		table_body += add_AJAX_Function('substation', id, ALL_SUBSTATION_CMDS.v_standalone_banks, 'Verify_Standalone_Banks');
+ 		} else {
+ 			table_body += add_AJAX_Function('substation', id, ALL_SUBSTATION_CMDS.v_disable_verify, 'Verify_Stop');	
+ 		}
+ 	}
+	table_body+= table_footer;
+	return table_body;
 }
 
 //function to generate
@@ -130,7 +186,7 @@ function generateSubMenu (id, state, opts) {
 	var table_footer = "</table>";
 	var table_body = "<table >";
 	table_body += "<tr><td class='top'>" + opts[1] + "</td>";
-	table_body += "<td class='top' onclick='cClick()'><a href='javascript:void(0)'>X</a></td></tr>"
+	table_body += "<td class='top' onclick='cClick()'><a href='javascript:void(0)'>X</a></td></tr>";
 	if (id > 0) {
  		table_body += add_AJAX_Function('sub', id, ALL_SUB_CMDS.confirm_close, 'Confirm_Sub');
  		if (!state.match('DISABLED')) {
@@ -175,8 +231,8 @@ function generateFeederMenu (id, state, opts) {
  //var table_header = "<table>";
  var table_footer = "</table>";
  var table_body = "<table >";
- table_body += "<tr><td class='top'>" + opts[1] + "</td></tr>"
-
+ table_body += "<tr><td class='top'>" + opts[1] + "</td>";
+	table_body += "<td class='top' onclick='cClick()'><a href='javascript:void(0)'>X</a></td></tr>"
  if (id > 0) {
     if (!state.match('DISABLED')) {
  		table_body += add_AJAX_Function('feeder', id, ALL_FDR_CMDS.disable_fdr, 'Disable_Feeder');
@@ -224,27 +280,28 @@ function generate_CB_Move_Back (id, name, red) {
  return html;			  
 }
 
-//function to generate the cap bank move back menu
-function generate_SubAreaMenu (id, name, enable) {
+function generateAreaMenu (id, name, enable) {
 	
-     //start and end of div html
-     var div_start_tag = "<HTML><BODY><div id='area" + id + "'";
-     var div_end_tag = " </div></BODY></HTML>";
-     //css for the div
-     div_start_tag += " style='background:white; border:1px solid black;'>";
-     //init return variable
-     var html = div_start_tag;
-     //generate the table
-     var table_footer = "</table>";
-     var table_body = "<table >";
+    //start and end of div html
+    var div_start_tag = "<HTML><BODY><div id='area" + id + "'";
+    var div_end_tag = " </div></BODY></HTML>";
+    //css for the div
+    div_start_tag += " style='background:white; border:1px solid black;'>";
+    //init return variable
+    var html = div_start_tag;
+    //generate the table
+    var table_footer = "</table>";
+    var table_body = "<table >";
          
-     table_body += "<tr><td class='top'>" + name + "</td></tr>"
-     table_body += add_AJAX_Function('area', id, 21, 'Confirm_Area');
-     if (enable == 1)
-        table_body += add_AJAX_Function('area', id, 22, 'Enable_Area');
-     else
+    table_body += "<tr><td class='top'>" + name+ "</td>";
+	table_body += "<td class='top' onclick='cClick()'><a href='javascript:void(0)'>X</a></td></tr>"
+    table_body += add_AJAX_Function('area', id, 21, 'Confirm_Area');
+    if (enable == 1){
+		table_body += add_AJAX_Function('area', id, 22, 'Enable_Area');
+	} else{
         table_body += add_AJAX_Function('area', id, 23, 'Disable_Area');
-     table_body += add_AJAX_Function('area', id, 29, 'Open_All_CapBanks');
+	}
+    table_body += add_AJAX_Function('area', id, 29, 'Open_All_CapBanks');
  	table_body += add_AJAX_Function('area', id, 30, 'Close_All_CapBanks');
  	table_body += add_AJAX_Function('area', id, 31, 'Enable_OV/UV');
 	table_body += add_AJAX_Function('area', id, 32, 'Disable_OV/UV');
@@ -279,8 +336,8 @@ function generateCapBankMenu (id, state, opts) {
  var allow_ovuv = opts[3];
  //contains all the possible manual states for a cap bank
  var manual_states = opts[4];
- table_body += "<tr><td class='top'>" + opts[1] + "</td></tr>"
-	
+ 	table_body += "<tr><td class='top'>" + opts[1] + "</td>";
+	table_body += "<td class='top' onclick='cClick()'><a href='javascript:void(0)'>X</a></td></tr>"
 	if (id > 0) {
 		if (opts[2] == 'field') {
 		   table_body += add_AJAX_Function('cap', id, ALL_CAP_CMDS.confirm_open, 'Confirm', false);
@@ -354,8 +411,10 @@ ajax_func += " onmouseover='changeOptionStyle(this);' "
 ajax_func += " onclick=";
 var str_cmd = '\"' + cmd_name + '\"';
 switch (type) {
+	case 'substation':
+	ajax_func +=  	"'executeSubstationCommand (" + pao_id + "," + cmd_id + "," + str_cmd + "); '";
+	break;
  case 'sub':
-	
 	ajax_func +=  	"'executeSubCommand (" + pao_id + "," + cmd_id + "," + str_cmd + "); '";
 	break;
  case 'feeder':
@@ -395,6 +454,17 @@ return ajax_func;
 
 //AJAX command functions
 ///////////////////////////////////////////////
+
+function executeSubstationCommand (paoId, command, cmd_name) {
+	new Ajax.Request ('/servlet/CBCServlet', 
+	{method:'post', 
+	parameters:'cmdID='+command+'&paoID='+paoId + '&controlType=SUBSTATION_TYPE',
+	onSuccess: function () { display_status(cmd_name, "Success", "green"); },
+	onFailure: function () { display_status(cmd_name, "Failed", "red"); }, 
+	asynchronous:true });
+	return cClick();
+}
+
 function executeSubCommand (paoId, command, cmd_name) {
 	new Ajax.Request ('/servlet/CBCServlet', 
 	{method:'post', 
@@ -404,7 +474,6 @@ function executeSubCommand (paoId, command, cmd_name) {
 	asynchronous:true });
 	return cClick();
 }
-
 
 function executeFeederCommand (paoId, command, cmd_name) {
 	

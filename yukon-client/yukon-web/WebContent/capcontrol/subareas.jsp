@@ -65,8 +65,6 @@ if (allowCtlVal!=null) {
 		String varsUnavailable =  CBCUtils.format (CBCUtils.calcVarsUnavailableForSubStations(areaStations, user) );
 		String closedVars = CBCUtils.format( CBCUtils.calcVarsClosedForCapBanks(areaCapBanks, user) );
 		String trippedVars = CBCUtils.format( CBCUtils.calcVarsTrippedForCapBanks(areaCapBanks, user) );
-		String currPF = CBCDisplay.getPowerFactorText(CBCUtils.calcAvgPF(areaStations), true);
-		String estPF = CBCDisplay.getPowerFactorText(CBCUtils.calcAvgEstPF(areaStations), true);
 		String areaState = ((Boolean)(filterCapControlCache.getAreaStateMap().get(area.getPaoName())))?"ENABLED":"DISABLED";
 		if( area.getOvUvDisabledFlag() ){
 			areaState += "-V";
@@ -89,11 +87,7 @@ if (allowCtlVal!=null) {
                 <a id="area_state_<%=area.getPaoID()%>" name="area_state" 
                     style="<%=css%>"
                     href="javascript:void(0);"
-                    <%=popupEvent%> ="return overlib(
-                        $F('cmd_area_<%=area.getPaoID()%>'),
-                        STICKY, WIDTH,210, HEIGHT,170, OFFSETX,-15,OFFSETY,-15,
-                        MOUSEOFF, FULLHTML);"
-                    onmouseout= <%=nd%> >
+                   	<%=popupEvent%>="getAreaMenu('<%=area.getPaoID()%>');">
                 <%=areaState%>
                 </a>
                 </td>
@@ -164,29 +158,42 @@ function allIsWell() {
 function getServerData() {
 	var els = document.getElementsByName('area_state');
 	for (var i=0; i < els.length; i++) {
-	     new Ajax.PeriodicalUpdater("serverMessage"+i, '/servlet/CBCServlet', {
-	     method:'post', 
-	     asynchronous:true, 
-	     parameters:'areaIndex='+i, 
-	     frequency:5, 
-	     onSuccess: updateAreaMenu});
+        var strings = els[i].id.split('_');
+        var id = strings[2];
+	    new Ajax.PeriodicalUpdater("serverMessage"+id, '/servlet/CBCServlet', {
+	    method:'post', 
+	    asynchronous:true, 
+	    parameters:'areaId='+id, 
+	    frequency:5, 
+	    onSuccess: updateAreaMenu});
 	}
 }
 
-
 function updateAreaMenu (resp) {
-var msgs = resp.responseText.split(':');
-var areaname = msgs[0];
-var areaindex = msgs[1];
-var areaID = msgs[2];
-var areastate = msgs[3];
-//update state
-document.getElementById ('area_state_' + areaindex).innerHTML = areastate;
-//update menu
-if (areastate == 'ENABLED' || areastate == 'ENABLED-V')
-    document.getElementById('cmd_area_' + areaID).value = generate_SubAreaMenu(areaID,areaname, 0);
-if (areastate == 'DISABLED' || areastate == 'DISABLED-V')
-    document.getElementById('cmd_area_' + areaID).value = generate_SubAreaMenu(areaID,areaname, 1);
+	var msgs = resp.responseText.split(':');
+	var areaname = msgs[0];
+	var areaId = msgs[1];
+	var areastate = new String(msgs[2]);
+	//update state
+	var stateElem = document.getElementById ('area_state_' + areaId);
+	stateElem.innerHTML = areastate;
+	//update menu
+	if (areastate == 'ENABLED' || areastate == 'ENABLED-V') {
+		var html = generateAreaMenu(areaId,areaname, 0);
+		var elem = document.getElementById('cmd_area_' + areaId); 
+	    elem.value = html;
+	    stateElem.style.color = '#3C8242';
+	} else if (areastate == 'DISABLED' || areastate == 'DISABLED-V') {
+	    var html = generateAreaMenu(areaId,areaname, 1);
+        var elem = document.getElementById('cmd_area_' + areaId); 
+        elem.value = html;
+        stateElem.style.color = '#FF0000';
+	}
+}
+
+function getAreaMenu(id){
+	var html = new String($F('cmd_area_'+id));
+	overlib(html, FULLHTML, STICKY);
 }
 </script>
 </cti:titledContainer>
