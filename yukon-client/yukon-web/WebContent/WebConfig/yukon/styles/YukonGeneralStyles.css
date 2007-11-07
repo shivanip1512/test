@@ -188,7 +188,7 @@ table.nameValueTable td.value {
 	width: 60%;
 }
 
-tr.altRow {
+.altRow {
 	background-color: #f6f6f6; 
 }
 
@@ -393,19 +393,16 @@ th.widgetInternalSectionSubHeader {
 }
 
 div.boxContainer{ 
-	position: relative;
 	margin-bottom: 10px;
 }
 
 div.boxContainer .titleBar { 
 	background-color: #F0F0F0;
 	border: 1px solid #BBBBBB;
-	height: 1.5em;
 	padding: .25em .5em; 
 }
 
 div.boxContainer .titleBar .title { 
-	float: left;
 	line-height: 1.5em;
 	font-weight: bold;
     font-size: 12px;
@@ -413,7 +410,7 @@ div.boxContainer .titleBar .title {
 }
 
 div.boxContainer .titleBar .controls { 
-	float: right; 
+	float: right;
 	text-align: center;
 	cursor: pointer;
 }
@@ -429,6 +426,10 @@ div.boxContainer .titleBar .controls .minMax {
 }
 
 div.boxContainer .content { 
-	padding: 1em;
+	padding: .5em;
 	border: 1px solid #BBBBBB;
+}
+
+.pointer {
+	cursor: pointer;
 }

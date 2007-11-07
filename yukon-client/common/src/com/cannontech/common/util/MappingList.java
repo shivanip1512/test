@@ -3,6 +3,7 @@ package com.cannontech.common.util;
 import java.util.AbstractList;
 import java.util.List;
 
+import com.cannontech.common.bulk.mapper.IgnoreMappingException;
 import com.cannontech.common.bulk.mapper.ObjectMappingException;
 
 public class MappingList<J, K> extends AbstractList<K> {
@@ -22,6 +23,8 @@ public class MappingList<J, K> extends AbstractList<K> {
         try {
             k = objectMapper.map(j);
         } catch (ObjectMappingException e) {
+            throw new RuntimeException(e);
+        } catch (IgnoreMappingException e) {
             throw new RuntimeException(e);
         }
         return k;

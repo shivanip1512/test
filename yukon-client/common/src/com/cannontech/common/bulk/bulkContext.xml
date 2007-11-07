@@ -13,8 +13,8 @@
     </bean>
     
     <bean id="objectMapperFactory" class="com.cannontech.common.bulk.mapper.ObjectMapperFactoryImpl">
-    	<property name="jdbcTemplate" ref="simpleJdbcTemplate" />
-    	<property name="paoGroupsWrapper" ref="paoGroupsWrapper" />
+    	<property name="paoDao" ref="paoDao" />
+    	<property name="deviceDao" ref="deviceDao" />
     </bean>
     
     <bean id="processorFactory" class="com.cannontech.common.bulk.processor.ProcessorFactoryImpl">

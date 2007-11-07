@@ -15,9 +15,6 @@
 <div class="boxContainer ${styleClass}" <c:if test="${!empty id}" >id="${id}"</c:if>>
 
 	<div class="titleBar">
-		<span class="title">
-			${title}
-		</span>
 		<div class="controls">
 			<c:if test="${(hideEnabled == null) || hideEnabled}">
 				<img 
@@ -31,6 +28,9 @@
                     alt="show"
 					src="<c:url value="/WebConfig/yukon/Icons/clearbits/add.gif"/>">
 			</c:if>
+		</div>
+		<div class="title">
+			${title}
 		</div>
 	</div>
 	

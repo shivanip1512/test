@@ -4,8 +4,6 @@ package com.cannontech.core.dao.impl;
  * Implementation of PaoDao Creation date: (7/1/2006 9:40:33 AM)
  * @author: alauinger
  */
-import java.sql.ResultSet;
-import java.sql.SQLException;
 import java.util.ArrayList;
 import java.util.Iterator;
 import java.util.List;
@@ -15,7 +13,6 @@ import org.springframework.dao.IncorrectResultSizeDataAccessException;
 import org.springframework.jdbc.core.JdbcOperations;
 import org.springframework.jdbc.core.RowMapper;
 
-import com.cannontech.common.util.StopWatch;
 import com.cannontech.core.dao.AuthDao;
 import com.cannontech.core.dao.NotFoundException;
 import com.cannontech.core.dao.PaoDao;
@@ -243,30 +240,42 @@ public final class PaoDaoImpl implements PaoDao {
 
     public List<LiteYukonPAObject> getLiteYukonPaoByName(String name,
             boolean partialMatch) {
-        StopWatch sw = new StopWatch();
-        sw.start();
+
         String sql = litePaoSql;
 
         if (partialMatch) {
             sql += "where y.PAOName like ? ";
         } else {
             sql += "where y.PAOName=? ";
-
         }
 
-        // sql += "where y.PAOName=? ";
         sql += "ORDER BY y.Category, y.PAOClass, y.PAOName";
 
         if (partialMatch) {
             name += "%";
         }
 
-        JdbcOperations jdbcOps = JdbcTemplateHelper.getYukonTemplate();
         List<LiteYukonPAObject> paos = jdbcOps.query(sql,
                                                      new Object[] { name },
                                                      litePaoRowMapper);
         return paos;
     }
+
+    public List<LiteYukonPAObject> getLiteYukonPaobjectsByMeterNumber(String meterNumber) {
+
+        String sql = litePaoSql;
+        sql += " LEFT OUTER JOIN deviceMeterGroup dmg ON y.paobjectid = dmg.deviceid ";
+        sql += " WHERE upper(meternumber) = ?";
+
+        List<LiteYukonPAObject> paos = jdbcOps.query(sql.toString(),
+                                                     new Object[] { StringUtils.upperCase(meterNumber) },
+                                                     litePaoRowMapper);
+
+        return paos;
+
+    }
+    
+    
     /**
      * Returns a list of LiteYukonPaobjects where DeviceCarrierSettings.address is address
      * @param address
@@ -287,10 +296,36 @@ public final class PaoDaoImpl implements PaoDao {
                 " where address = ? " +
                 " ORDER BY pao.Category, pao.PAOClass, pao.PAOName";
             
-            liteYukonPaobects = JdbcTemplateHelper.getYukonTemplate().query(sqlString, new Object[] { new Integer(address)}, litePaoRowMapper);
+            liteYukonPaobects = jdbcOps.query(sqlString, new Object[] { new Integer(address)}, litePaoRowMapper);
         } catch (IncorrectResultSizeDataAccessException e) {
-            throw new NotFoundException("No liteYukonPaobjects found wiht (carrier) address(" + address+")");
+            throw new NotFoundException("No liteYukonPaobjects found with (carrier) address(" + address + ")");
         }
+        return liteYukonPaobects;
+    }
+    
+    public List<LiteYukonPAObject> getLiteYukonPaobjectsByAddressRange(int startAddress,
+            int endAddress) {
+
+        List<LiteYukonPAObject> liteYukonPaobects = new ArrayList();
+        try {
+            String sqlString = 
+                "SELECT pao.PAObjectID, pao.Category, pao.PAOName, " +
+                " pao.Type, pao.PAOClass, pao.Description, pao.DisableFlag, d.PORTID, dcs.ADDRESS, dr.routeid " +
+                " FROM " + YukonPAObject.TABLE_NAME+ " pao " + 
+                " left outer join " + DeviceDirectCommSettings.TABLE_NAME + " d on pao.paobjectid = d.deviceid " +
+                " left outer join " + DeviceCarrierSettings.TABLE_NAME + " DCS ON pao.PAOBJECTID = DCS.DEVICEID " +        
+                " left outer join " + DeviceRoutes.TABLE_NAME + " dr on pao.paobjectid = dr.deviceid " +
+                " where address >= ? AND address <= ?" +
+                " ORDER BY pao.Category, pao.PAOClass, pao.PAOName";
+            
+            liteYukonPaobects = jdbcOps.query(sqlString,
+                                              new Object[] { startAddress, endAddress },
+                                              litePaoRowMapper);
+
+        } catch (IncorrectResultSizeDataAccessException e) {
+            throw new NotFoundException("No liteYukonPaobjects found in (carrier) address range(" + startAddress + " - " + endAddress + ")");
+        }
+
         return liteYukonPaobects;
     }
     
