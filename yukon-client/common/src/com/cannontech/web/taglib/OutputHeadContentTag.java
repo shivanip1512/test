@@ -107,7 +107,7 @@ public class OutputHeadContentTag extends BodyTagSupport {
         LiteYukonUser user = 
             (LiteYukonUser) pageContext.getSession().getAttribute(ServletUtil.ATT_YUKON_USER);
         String cssLocations = DaoFactory.getAuthDao().getRolePropertyValue(user, WebClientRole.STD_PAGE_STYLE_SHEET);
-        cssLocations = StringUtils.defaultString("");
+        cssLocations = StringUtils.defaultString(cssLocations,"");
         String[] cssLocationArray = cssLocations.split("\\s*,\\s*");
         outputCssFiles(Arrays.asList(cssLocationArray));
     }
