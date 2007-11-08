@@ -7,6 +7,8 @@ import java.util.Iterator;
 import java.util.List;
 import java.util.Map;
 
+import org.springframework.beans.factory.annotation.Required;
+
 import com.cannontech.clientutils.CTILogger;
 import com.cannontech.common.device.configuration.model.Category;
 import com.cannontech.common.device.configuration.model.DeviceConfiguration;
@@ -200,6 +202,9 @@ public class ServerDatabaseCache extends CTIMBeanBase implements IDatabaseCache
 	private Map<Integer, LiteContact> userContactMap = new HashMap<Integer, LiteContact>();
     private Map<MapKeyInts, String> userRolePropertyValueMap = null;
 	private Map<MapKeyInts, LiteYukonRole> userRoleMap = null;
+
+    // injected loaders
+    private YukonUserLoader yukonUserLoader;
 
 /**
  * ServerDatabaseCache constructor comment.
@@ -1085,8 +1090,7 @@ public synchronized List<LiteYukonPAObject> getAllYukonPAObjects()
 		{
 			allYukonUsers = new ArrayList<LiteYukonUser>();
 			allUsersMap = new HashMap<Integer, LiteYukonUser>();
-			YukonUserLoader l = new YukonUserLoader(allYukonUsers, allUsersMap);
-			l.run();
+			yukonUserLoader.load(allYukonUsers, allUsersMap);
 			return allYukonUsers;
 		}
 
@@ -3327,5 +3331,10 @@ public synchronized List getDevicesByCommPort(int portId)
 public List getDevicesByDeviceAddress(Integer masterAddress, Integer slaveAddress) {
     return DeviceCommPortLoader.getDevicesByDeviceAddress(masterAddress, slaveAddress);
     
+}
+
+@Required
+public void setYukonUserLoader(YukonUserLoader yukonUserLoader) {
+    this.yukonUserLoader = yukonUserLoader;
 }
 }

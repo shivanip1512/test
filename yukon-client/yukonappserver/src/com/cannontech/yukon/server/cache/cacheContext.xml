@@ -1,0 +1,15 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE beans PUBLIC "-//SPRING//DTD BEAN//EN" "http://www.springframework.org/dtd/spring-beans.dtd">
+
+<beans>
+
+    <bean id="databaseCache" class="com.cannontech.mbean.ServerDatabaseCache">
+        <property name="dbChangeListener" ref="cacheDbChangeListener" />
+        <property name="yukonUserLoader" ref="yukonUserLoader" />
+    </bean>
+
+    <bean id="yukonUserLoader" class="com.cannontech.yukon.server.cache.YukonUserLoader">
+        <property name="jdbcTemplate" ref="jdbcTemplate"/>
+    </bean>
+
+</beans>

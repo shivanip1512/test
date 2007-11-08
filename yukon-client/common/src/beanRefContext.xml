@@ -9,6 +9,7 @@
      <constructor-arg>
        <list>
 			<value>com/cannontech/mainContext.xml</value>
+			<value>com/cannontech/yukon/server/cache/cacheContext.xml</value>
 			<value>com/cannontech/amr/amrContext-client.xml</value>
 			<value>com/cannontech/amr/amrContext.xml</value>
 			<value>com/cannontech/common/device/deviceContext.xml</value>
