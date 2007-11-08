@@ -3197,9 +3197,9 @@ BOOL CtiCCFeeder::capBankControlPerPhaseStatusUpdate(CtiMultiMsg_vec& pointChang
                         dout << CtiTime() << " - Var change in wrong direction? changeA:"<<changeA<<" changeB:"<<changeB<<" changeC:"
                             <<changeC<<" in: " << __FILE__ << " at: " << __LINE__ << endl;
                     }
-                    ratioA = changeA/currentCapBank->getBankSize();
-                    ratioB = changeB/currentCapBank->getBankSize();
-                    ratioC = changeC/currentCapBank->getBankSize();
+                    ratioA = changeA/(currentCapBank->getBankSize() /3);
+                    ratioB = changeB/(currentCapBank->getBankSize() /3);
+                    ratioC = changeC/(currentCapBank->getBankSize() /3);
                     if( ratioA < minConfirmPercent*.01 || 
                         ratioB < minConfirmPercent*.01 || 
                         ratioC < minConfirmPercent*.01  )
@@ -3255,9 +3255,9 @@ BOOL CtiCCFeeder::capBankControlPerPhaseStatusUpdate(CtiMultiMsg_vec& pointChang
                         CtiLockGuard<CtiLogger> logger_guard(dout);
                         dout << CtiTime() << " - Var change in wrong direction? in: " << __FILE__ << " at: " << __LINE__ << endl;
                     }
-                    ratioA = changeA/currentCapBank->getBankSize();
-                    ratioB = changeB/currentCapBank->getBankSize();
-                    ratioC = changeC/currentCapBank->getBankSize();
+                    ratioA = changeA/(currentCapBank->getBankSize() /3);
+                    ratioB = changeB/(currentCapBank->getBankSize() /3);
+                    ratioC = changeC/(currentCapBank->getBankSize() /3);
 
                     if(  ratioA < minConfirmPercent*.01 || 
                          ratioB < minConfirmPercent*.01 || 

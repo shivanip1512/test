@@ -4015,7 +4015,19 @@ BOOL CtiCCSubstationBus::capBankControlStatusUpdate(CtiMultiMsg_vec& pointChange
                 if( currentFeeder->isAlreadyControlled(minConfirmPercent) ||
                     currentFeeder->isPastMaxConfirmTime(CtiTime(),maxConfirmTime,sendRetries) )
                 {
-                    currentFeeder->capBankControlStatusUpdate(pointChanges, ccEvents, minConfirmPercent,failPercent,currentFeeder->getVarValueBeforeControl(),currentFeeder->getCurrentVarLoadPointValue(), currentFeeder->getCurrentVarPointQuality());
+
+                    if (getUsePhaseData())
+                    {
+                        currentFeeder->capBankControlPerPhaseStatusUpdate(pointChanges, ccEvents, minConfirmPercent, 
+                                                           failPercent, currentFeeder->getCurrentVarPointQuality(), currentFeeder->getPhaseAValueBeforeControl(),
+                                                           currentFeeder->getPhaseBValueBeforeControl(),currentFeeder->getPhaseCValueBeforeControl(), 
+                                                           currentFeeder->getPhaseAValue(), currentFeeder->getPhaseBValue(), currentFeeder->getPhaseCValue()); 
+                  
+                    }
+                    else
+                    {
+                        currentFeeder->capBankControlStatusUpdate(pointChanges, ccEvents, minConfirmPercent,failPercent,currentFeeder->getVarValueBeforeControl(),currentFeeder->getCurrentVarLoadPointValue(), currentFeeder->getCurrentVarPointQuality());
+                    }
                     
                 }
                 if( currentFeeder->getRecentlyControlledFlag() )
@@ -4046,7 +4058,18 @@ BOOL CtiCCSubstationBus::capBankControlStatusUpdate(CtiMultiMsg_vec& pointChange
                 sendRetries = currentFeeder->getControlSendRetries();
                 failPercent = currentFeeder->getFailurePercent();
             }
-            currentFeeder->capBankControlStatusUpdate(pointChanges, ccEvents,minConfirmPercent,failPercent,getVarValueBeforeControl(),getCurrentVarLoadPointValue(), getCurrentVarPointQuality());
+            if (getUsePhaseData())
+            {
+                currentFeeder->capBankControlPerPhaseStatusUpdate(pointChanges, ccEvents, minConfirmPercent, 
+                                                   failPercent, getCurrentVarPointQuality(), getPhaseAValueBeforeControl(),
+                                                   getPhaseBValueBeforeControl(),getPhaseCValueBeforeControl(), 
+                                                   getPhaseAValue(), getPhaseBValue(), getPhaseCValue()); 
+
+            }
+            else
+            {
+                currentFeeder->capBankControlStatusUpdate(pointChanges, ccEvents,minConfirmPercent,failPercent,getVarValueBeforeControl(),getCurrentVarLoadPointValue(), getCurrentVarPointQuality());
+            }
             setRecentlyControlledFlag(FALSE);
             figureEstimatedVarLoadPointValue();
             found = TRUE;
@@ -4960,6 +4983,13 @@ BOOL CtiCCSubstationBus::isAlreadyControlled()
             {
                 DOUBLE oldCalcValue = getVarValueBeforeControl();
                 DOUBLE newCalcValue = getCurrentVarLoadPointValue();
+
+                if (getUsePhaseData())
+                {
+                    oldCalcValue = getPhaseAValueBeforeControl() + getPhaseBValueBeforeControl() + getPhaseCValueBeforeControl();
+                    newCalcValue = getPhaseAValue() + getPhaseBValue() + getPhaseCValue();
+                }
+
                 CtiCCFeeder* currentFeeder = NULL;
                 for(LONG i=0;i<=_ccfeeders.size();i++)
                 {
