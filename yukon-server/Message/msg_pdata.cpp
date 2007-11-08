@@ -6,8 +6,8 @@
 *
 * PVCS KEYWORDS:
 * ARCHIVE      :  $Archive:   Z:/SOFTWAREARCHIVES/YUKON/MESSAGE/msg_pdata.cpp-arc  $
-* REVISION     :  $Revision: 1.14 $
-* DATE         :  $Date: 2007/10/30 17:59:39 $
+* REVISION     :  $Revision: 1.15 $
+* DATE         :  $Date: 2007/11/08 22:47:24 $
 *
 * Copyright (c) 1999, 2000, 2001 Cannon Technologies Inc. All rights reserved.
 *-----------------------------------------------------------------------------*/
@@ -183,15 +183,15 @@ CtiPointType_t CtiPointDataMsg::resolveType(int type)
 
     switch( type )
     {
-        case StatusPointType:            retval = StatusPointType;
-        case AnalogPointType:            retval = AnalogPointType;
-        case PulseAccumulatorPointType:  retval = PulseAccumulatorPointType;
-        case DemandAccumulatorPointType: retval = DemandAccumulatorPointType;
-        case CalculatedPointType:        retval = CalculatedPointType;
-        case StatusOutputPointType:      retval = StatusOutputPointType;
-        case AnalogOutputPointType:      retval = AnalogOutputPointType;
-        case SystemPointType:            retval = SystemPointType;
-        case CalculatedStatusPointType:  retval = CalculatedStatusPointType;
+        case StatusPointType:            retval = StatusPointType; break;
+        case AnalogPointType:            retval = AnalogPointType; break;
+        case PulseAccumulatorPointType:  retval = PulseAccumulatorPointType; break;
+        case DemandAccumulatorPointType: retval = DemandAccumulatorPointType; break;
+        case CalculatedPointType:        retval = CalculatedPointType; break;
+        case StatusOutputPointType:      retval = StatusOutputPointType; break;
+        case AnalogOutputPointType:      retval = AnalogOutputPointType; break;
+        case SystemPointType:            retval = SystemPointType; break;
+        case CalculatedStatusPointType:  retval = CalculatedStatusPointType; break;
     }
 
     return retval;
