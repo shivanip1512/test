@@ -3249,7 +3249,6 @@ BOOL CtiCCFeeder::capBankControlPerPhaseStatusUpdate(CtiMultiMsg_vec& pointChang
                     changeB = varBValueBeforeControl - varBValue;
                     changeC = varCValueBeforeControl - varCValue;
 
-                    changeA =varAValue;
                     if( changeA < 0 ||  changeB < 0 ||  changeC < 0)
                     {
                         CtiLockGuard<CtiLogger> logger_guard(dout);
