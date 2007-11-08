@@ -1,0 +1,108 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<beans xmlns="http://www.springframework.org/schema/beans"
+       xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+       xmlns:aop="http://www.springframework.org/schema/aop"
+       xmlns:tx="http://www.springframework.org/schema/tx"
+       xsi:schemaLocation="
+       http://www.springframework.org/schema/beans http://www.springframework.org/schema/beans/spring-beans-2.0.xsd
+       http://www.springframework.org/schema/tx http://www.springframework.org/schema/tx/spring-tx-2.0.xsd
+       http://www.springframework.org/schema/aop http://www.springframework.org/schema/aop/spring-aop-2.0.xsd">
+
+    <!-- <tx:annotation-driven/> -->
+    <bean id="yukonJobDefinitionFactory" class="org.springframework.beans.factory.config.ServiceLocatorFactoryBean">
+        <property name="serviceLocatorInterface" value="com.cannontech.jobs.support.YukonJobDefinitionFactory"/>
+    </bean>
+    
+    <bean id="jobStatusDao" class="com.cannontech.jobs.dao.impl.JobStatusDaoImpl">
+        <property name="jdbcTemplate" ref="simpleJdbcTemplate"/>
+        <property name="nextValueHelper" ref="nextValueHelper"/>
+    </bean>
+    
+    <bean id="scheduledRepeatingJobDao" class="com.cannontech.jobs.dao.impl.ScheduledRepeatingJobDaoImpl">
+        <property name="jdbcTemplate" ref="simpleJdbcTemplate"/>
+        <property name="nextValueHelper" ref="nextValueHelper"/>
+        <property name="yukonUserDao" ref="yukonUserDao"/>
+        <property name="beanDefinitionFactory" ref="yukonJobDefinitionFactory"/>
+    </bean>
+    
+    <bean id="scheduledOneTimeJobDao" class="com.cannontech.jobs.dao.impl.ScheduledOneTimeJobDaoImpl">
+        <property name="jdbcTemplate" ref="simpleJdbcTemplate"/>
+        <property name="nextValueHelper" ref="nextValueHelper"/>
+        <property name="yukonUserDao" ref="yukonUserDao"/>
+        <property name="beanDefinitionFactory" ref="yukonJobDefinitionFactory"/>
+    </bean>
+    
+    <bean id="jobScheduledExecutor" class="com.cannontech.common.util.ScheduledExecutorDelegate">
+       <property name="service">
+            <bean class="java.util.concurrent.Executors"
+                factory-method="newScheduledThreadPool"
+                destroy-method="shutdownNow">
+                <constructor-arg value="2" />
+            </bean>
+       </property>
+    </bean>
+        
+    <bean id="jobManager" class="com.cannontech.jobs.service.impl.JobManagerImpl" init-method="initialize">
+        <property name="timeSource" ref="timeSource"/>
+        <property name="scheduledOneTimeJobDao" ref="scheduledOneTimeJobDao"/>
+        <property name="scheduledRepeatingJobDao" ref="scheduledRepeatingJobDao"/>
+        <property name="jobStatusDao" ref="jobStatusDao"/>
+        <property name="transactionTemplate" ref="transactionTemplate"/>
+        <property name="yukonUserDao" ref="yukonUserDao"/>
+        <property name="scheduledExecutor" ref="jobScheduledExecutor"/>
+    </bean>
+    
+    <bean id="stupidTestJob" class="com.cannontech.jobs.support.SimpleYukonJobDefinition">
+        <property name="taskName"><idref local="stupidTestTask"/></property>
+        <property name="title" value="Stupid Test Job"/>
+        <property name="inputs">
+          <bean class="com.cannontech.web.input.InputRoot">
+            <property name="inputList">
+              <list>
+                <bean class="com.cannontech.web.input.InputBase">
+                    <property name="field" value="deviceGroup"/>
+                    <property name="displayName" value="Device Group"/>
+                    <property name="type">
+                      <bean class="com.cannontech.web.input.type.DeviceGroupType">
+                        <property name="deviceGroupService" ref="deviceGroupService"/>
+                      </bean>
+                    </property>
+                </bean>
+                <bean class="com.cannontech.web.input.InputBase">
+                    <property name="field" value="startDate"/>
+                    <property name="displayName" value="Start Date"/>
+                    <property name="type">
+                      <bean class="com.cannontech.web.input.type.DateType"/>
+                    </property>
+                </bean>
+                <bean class="com.cannontech.web.input.InputBase">
+                    <property name="field" value="numberOfDays"/>
+                    <property name="displayName" value="Number Of Days"/>
+                    <property name="type">
+                      <bean class="com.cannontech.web.input.type.IntegerType"/>
+                    </property>
+                </bean>
+                <bean class="com.cannontech.web.input.InputBase">
+                    <property name="field" value="includeDisabled"/>
+                    <property name="displayName" value="Include Disabled Devices"/>
+                    <property name="type">
+                      <bean class="com.cannontech.web.input.type.BooleanType"/>
+                    </property>
+                </bean>
+              </list>
+            </property>
+          </bean>
+        </property>
+    </bean>
+    
+    <bean id="stupidTestTask" class="com.cannontech.jobs.StupidTestTask" scope="prototype">
+         <!-- standard dependencies and input defaults would go here -->
+         <property name="deviceGroupService" ref="deviceGroupService"/>
+    </bean>
+    <bean id="someFakeService" class="com.cannontech.jobs.SomeFakeService">
+         <property name="deviceGroupService" ref="deviceGroupService"/>
+         <property name="jobManager" ref="jobManager"/>
+         <property name="stupidTestDefinition" ref="stupidTestJob"/>
+    </bean>
+</beans>
+

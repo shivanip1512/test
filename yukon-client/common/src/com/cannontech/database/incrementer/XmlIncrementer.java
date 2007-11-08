@@ -23,6 +23,7 @@ public class XmlIncrementer implements KeyedIncrementer {
     private URL configFile;
     private DataSource dataSource;
     private RuntimeException initializationException = null;
+    private MultiTableIncrementer defaultIncrementer;
     
     
     public URL getConfigFile() {
@@ -61,6 +62,7 @@ public class XmlIncrementer implements KeyedIncrementer {
                     // foreach sequence
                     String sequenceName = sequence.getAttributeValue("name");
                     
+                    
                     MultiTableIncrementer currentIncrementer = new CachingTableIncrementer(dataSource);
                     currentIncrementer.setSequenceTableName(sequenceTableName);
                     currentIncrementer.setValueColumnName(valueColumnName);
@@ -86,6 +88,11 @@ public class XmlIncrementer implements KeyedIncrementer {
                         }
                         addIncrementerForTable(tableName, currentIncrementer);
                     }
+
+                    String defaultStr = sequence.getAttributeValue("default", "false");
+                    if (BooleanUtils.toBoolean(defaultStr)) {
+                        setDefaultIncrementer(currentIncrementer);
+                    }
                 }
             }
         } catch (Exception e) {
@@ -103,10 +110,17 @@ public class XmlIncrementer implements KeyedIncrementer {
         sequenceLookup.put(tableName.toLowerCase(), currentIncrementer);
     }
     
+    private void setDefaultIncrementer(MultiTableIncrementer defaultIncrementer) {
+        this.defaultIncrementer = defaultIncrementer;
+    }
+    
     private MultiTableIncrementer getIncrementerForTable(String tableName) {
         String lcTableName = tableName.toLowerCase();
         if (!sequenceLookup.containsKey(lcTableName)) {
-            throw new IllegalArgumentException("Table '" + tableName + "' is not contained in " + configFile);
+            if (defaultIncrementer == null) {
+                throw new IllegalArgumentException("Table '" + tableName + "' is not contained in " + configFile + ", and no default is set");
+            }
+            return defaultIncrementer;
         }
         return sequenceLookup.get(lcTableName);
     }

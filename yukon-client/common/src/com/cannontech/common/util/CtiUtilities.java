@@ -1036,6 +1036,10 @@ public final static Character getTrueCharacter() {
 	return trueChar;
 }
 
+public static char getBooleanCharacter(boolean value) {
+    return value ? trueChar : falseChar;
+}
+
 /**
  * 
  * 

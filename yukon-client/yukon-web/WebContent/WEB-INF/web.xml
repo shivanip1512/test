@@ -393,6 +393,14 @@
 	</servlet>
 
 	<servlet>
+		<servlet-name>debug</servlet-name>
+		<servlet-class>
+			com.cannontech.servlet.CannonDispatcherServlet
+		</servlet-class>
+		<load-on-startup>2</load-on-startup>
+	</servlet>
+
+	<servlet>
 		<description>
 			Returns an xml config file for log4j logging
 		</description>
@@ -845,6 +853,11 @@
 	<servlet-mapping>
 		<servlet-name>multispeak</servlet-name>
 		<url-pattern>/spring/multispeak/*</url-pattern>
+	</servlet-mapping>
+
+	<servlet-mapping>
+		<servlet-name>debug</servlet-name>
+		<url-pattern>/spring/debug/*</url-pattern>
 	</servlet-mapping>
 
 	<servlet-mapping>

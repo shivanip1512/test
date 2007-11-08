@@ -335,6 +335,20 @@
     </toplinks>
   </module>
         
+  <module name="debug">
+    <skin name="standard"/>
+    
+    <toplinks>
+    <option id="scheduler" name="Scheduler">
+    	<sublinks>
+    	  <option id="active" name="Active">
+    		<link>/spring/debug/scheduler/active</link>
+    	  </option>
+    	</sublinks>
+      </option>
+    </toplinks>
+  </module>
+        
    <module name="blank">
     <skin name="standard"/>
   </module>

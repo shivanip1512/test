@@ -4,7 +4,7 @@
         for any objects whose tables may have been populated in the past.
     -->
   <sequencetable name="SequenceNumber" valuecolumn="lastValue" keycolumn="sequenceName">
-      <sequence name="general" >
+      <sequence name="general" default="true">
         <table name="Warehouse" identitycolumn="WarehouseID"/>
       	<table name="InventoryBase" identitycolumn="InventoryID"/>
       	<table name="LMHardwareBase" identitycolumn="InventoryID"/>
@@ -16,8 +16,8 @@
         <table name="CCurtProgramGroup" identitycolumn="CCurtProgramGroupId"/>
         <table name="CCurtGroupCustomerNotif" identitycolumn="CCurtGroupCustomerNotifId"/>
         <table name="CICustomerBase" identitycolumn="CustomerID"/>
-        <table name="CCurtCENotif" identitycolumn="CCurtCurtailmentEventId"/>
-        <table name="CCurtCEParticipant" identitycolumn="CCurtCurtailmentEventParticipantId"/>
+        <table name="CCurtCENotif" identitycolumn="CCurtCENotifId"/>
+        <table name="CCurtCEParticipant" identitycolumn="CCurtCEParticipantId"/>
         <table name="CCurtCurtailmentEvent" identitycolumn="CCurtCurtailmentEventId"/>
         <table name="CCurtProgramParameter" identitycolumn="CCurtProgramParameterId"/>
         <table name="CCurtEconomicEvent" identitycolumn="CCurtEconomicEventId"/>

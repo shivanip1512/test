@@ -82,6 +82,7 @@
         <webClassPathEntry>/third-party/mx4j-tools.jar</webClassPathEntry>
         <webClassPathEntry>/third-party/mx4j.jar</webClassPathEntry>
         <webClassPathEntry>/third-party/poi.jar</webClassPathEntry>
+        <webClassPathEntry>/third-party/quartz-all-1.6.0.jar</webClassPathEntry>
         <webClassPathEntry>/third-party/rwav.jar</webClassPathEntry>
         <webClassPathEntry>/third-party/saaj.jar</webClassPathEntry>
         <webClassPathEntry>/third-party/spring.jar</webClassPathEntry>
