@@ -29,6 +29,7 @@ if( cmdMsg.getLMData() == null )
 
 	isPageGood = false;
 }
+
 %>
 
 <html>
@@ -72,16 +73,27 @@ function setStopAble( radioChk )
 	var val = radioChk.value == "stopat" && radioChk.checked;	
 	document.cmdForm.stopdate.disabled = !val;
 	document.cmdForm.stopTime1.disabled = !val;
-    if (radioChk.value == "stopmanual" && radioChk.checked)
-    {
-        document.getElementById('tgconfig').style.display = 'none';
-    }
-    if (radioChk.value == "stopat" && radioChk.checked)
-    {
-        document.getElementById('tgconfig').style.display = 'inline';
-    
-    }
+	<% if( ILCCmds.PROG_STOP.equals(cmd) ) {   %>
+		document.cmdForm.useStopGear.disabled = !val;
+	<% }
+    if( ILCCmds.PROG_START.equals(cmd) ) {   %>
+	    if (radioChk.value == "stopmanual" && radioChk.checked)
+	    {
+	        document.getElementById('tgconfig').style.display = 'none';
+	    }
+	    if (val)
+	    {
+	        document.getElementById('tgconfig').style.display = 'inline';
+	    }
+	<%}%>
+}
 
+function activateStopGear()
+{
+	var val = document.getElementById('useStopGear').checked;	
+	<% if( ILCCmds.PROG_STOP.equals(cmd) ) {   %>
+		document.cmdForm.stopGearNum.disabled = !val;
+	<% } %>
 }
 
 <%if (ILCCmds.PROG_START.equals(cmd)) {%>
@@ -106,7 +118,8 @@ pageContext.setAttribute("nowDate", nowStartOrStop);%>
 		<input type="hidden" name="cmd" value="<%= cmd %>" >
 		<input type="hidden" name="itemid" value="<%= itemid %>" >
         <input type="hidden" name="adjustments" id="h_adjustments" value=""/>                       
-        <input type="hidden" name="cancelPrev" id="cancelPrev" value=""/>                       
+        <input type="hidden" name="cancelPrev" id="cancelPrev" value=""/>  
+        <input type="hidden" name="currentUserID" value="<%=((LiteYukonUser)session.getAttribute(ServletUtil.ATT_YUKON_USER)).getUserID()%>" />                     
     
     <div class="confMsg"><BR><%= cmdMsg.getHTMLTextMsg() %></div>
 		<BR>
@@ -164,7 +177,6 @@ pageContext.setAttribute("nowDate", nowStartOrStop);%>
               <td width="179">
                   <select name="gearnum" onchange="showtgconfig (this.options[this.selectedIndex].value);" >
 				<%
-
 					if( gearList.size() <= 0 )
 						gearList = java.util.Arrays.asList(
 							new String[]{"Gear 1","Gear 2","Gear 3","Gear 4"} );
@@ -420,6 +432,42 @@ pageContext.setAttribute("nowDate", nowStartOrStop);%>
 	              	<font class="TableCell">(HH:mm)</font>
               </td>
             </tr>
+            <%if (ILCCmds.PROG_STOP.equals(cmd)) {%>
+	            <tr>
+	            	<cti:checkProperty property="DirectLoadcontrolRole.ALLOW_STOP_GEAR_ACCESS">
+	            		<tr valign="top"> 
+			              <td width="85" class="TableCell"> 
+			                <div id="stopGearLabel" align="right"><b>Stop gear: </b></div>
+			              </td>
+			              <td width="25">&nbsp;</td>
+			              <td width="36">&nbsp;
+				              <input type="checkbox" id="useStopGear" name="useStopGear" onClick="activateStopGear()" disabled/>
+			              </td>
+			              <td width="179">
+				                <select id="stopGearNum" name="stopGearNum" disabled>
+								<%
+									LMProgramBase prgForStop = (LMProgramBase)lcCache.getProgram( new Integer(itemid) );
+	            					java.util.List stopGearList = ( prgForStop instanceof IGearProgram 
+	            							? ((IGearProgram)prgForStop).getDirectGearVector()
+	                            			: new java.util.Vector() );
+									if( stopGearList.size() <= 0 )
+										stopGearList = java.util.Arrays.asList(
+											new String[]{"Gear 1","Gear 2","Gear 3","Gear 4"} );
+				
+									for( int i = 0; i < stopGearList.size(); i++ )
+									{
+								%>
+										<option value=<%= i+1 %> <%= (i == 0 ? "selected" : "") %>  >
+											<%= stopGearList.get(i).toString() %>
+										</option>
+								<%	}
+				               %>
+				              </select>
+						  </td>
+			            </tr>			
+	            	</cti:checkProperty>	
+	            </tr>
+	      	<%} %>
           </table>
         </td>
       </tr>

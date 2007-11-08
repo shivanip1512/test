@@ -103,4 +103,9 @@ public class WebCmdMsg
 		_genLCMsg = lmMsg;
 	}
 
+
+    public void setCmd(String _cmd) {
+        this._cmd = _cmd;
+    }
+
 }

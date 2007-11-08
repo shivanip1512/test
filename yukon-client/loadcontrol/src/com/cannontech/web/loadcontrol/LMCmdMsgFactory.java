@@ -146,7 +146,6 @@ public final class LMCmdMsgFactory
 			dblarray1 = (Double[])optionalProps.get("dblarray1");
 			dblarray2 = (Double[])optionalProps.get("dblarray2");
 			constraint = (String)optionalProps.get("constraint");
-            
 		}			
 
 		//set the data we are operating with
@@ -505,15 +504,32 @@ public final class LMCmdMsgFactory
 								stopdate,
 								1, null, false,
 								LMManualControlRequest.CONSTRAINTS_FLAG_USE) );
-				else					
-					cmdMsg.setGenLCMsg(
-						prg.createScheduledStopMsg(
-								startdate, 
-								stopdate,
-								1, null) );
+				else {
+				    /*Gear change requested for stop purposes*/
+                    if(optionalProps.get("allowStopGear") != null && optionalProps.get("stopgearnum") != null) {
+                        int gearNumForStop = Integer.parseInt((String)optionalProps.get("stopgearnum")); 
+                        LMManualControlRequest changeGearRequest = 
+                                        prg.createScheduledStopMsg(
+                                                startdate, 
+                                                stopdate,
+                                                gearNumForStop, null);
+                        changeGearRequest.setCommand(LMManualControlRequest.CHANGE_GEAR);
+                        cmdMsg.setGenLCMsg(changeGearRequest);
+                        /*Remove this if we don't want to do this as a 
+                         * sync msg and hear about constraint violations
+                         */
+                        cmdMsg.setCmd(ILCCmds.PROG_CHANGE_GEAR);
+                    }
+                    else 
+    					cmdMsg.setGenLCMsg(
+    						prg.createScheduledStopMsg(
+    								startdate, 
+    								stopdate,
+    								1, null) );
+                }
 			}
-
 		}
+        /*Normal change gear request*/
         else if( ILCCmds.PROG_CHANGE_GEAR.equals(cmdMsg.getCmd()) && prg.getProgramStatus() == LMProgramBase.STATUS_MANUAL_ACTIVE) {
             if( optionalProps != null ) {
                 int constID = LMManualControlRequest.getConstraintID( constraint );

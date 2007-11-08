@@ -20,6 +20,7 @@ import javax.servlet.http.HttpSession;
 
 import com.cannontech.clientutils.CTILogger;
 import com.cannontech.common.util.CtiUtilities;
+import com.cannontech.core.dao.AuthDao;
 import com.cannontech.core.dao.DaoFactory;
 import com.cannontech.core.service.DateFormattingService;
 import com.cannontech.database.data.lite.LiteYukonUser;
@@ -31,10 +32,12 @@ import com.cannontech.loadcontrol.data.LMProgramDirect;
 import com.cannontech.loadcontrol.gui.manualentry.ResponseProg;
 import com.cannontech.loadcontrol.messages.LMManualControlRequest;
 import com.cannontech.message.dispatch.message.Multi;
+import com.cannontech.roles.loadcontrol.DirectLoadcontrolRole;
 import com.cannontech.roles.yukon.SystemRole;
 import com.cannontech.spring.YukonSpringHook;
 import com.cannontech.util.ParamUtil;
 import com.cannontech.util.ServletUtil;
+import com.cannontech.web.loadcontrol.ILCCmds;
 import com.cannontech.web.loadcontrol.LMCmdMsgFactory;
 import com.cannontech.web.loadcontrol.LMSession;
 import com.cannontech.web.loadcontrol.LoadcontrolCache;
@@ -49,7 +52,7 @@ public class LCConnectionServlet extends ErrorAwareInitializingServlet implement
 	private com.cannontech.web.loadcontrol.LoadcontrolCache cache = null;
     
     private DateFormattingService dateFormattingService = (DateFormattingService) YukonSpringHook.getBean("dateFormattingService");
-	
+    private AuthDao authDao = (AuthDao) YukonSpringHook.getBean("authDao");
 
 /**
  * Insert the method's description here.
@@ -143,8 +146,7 @@ public void update(java.util.Observable obs, Object o) {}
 public void service(HttpServletRequest req, HttpServletResponse resp) throws javax.servlet.ServletException, java.io.IOException
 {
 	String redirectURL = req.getParameter("redirectURL");
-	Hashtable optionalProps = new Hashtable(8);
-
+	Hashtable optionalProps = new Hashtable(10);
 
 	//handle any commands that we may need to send to the server from any page here
 	String cmd = req.getParameter("cmd");
@@ -152,14 +154,16 @@ public void service(HttpServletRequest req, HttpServletResponse resp) throws jav
 	String resendSyncMsgs = req.getParameter("resendSyncMsgs");
     String adjustments = ParamUtil.getString(req, "adjustments", null);
     String cancelPrev = ParamUtil.getString(req, "cancelPrev", null);
-
-    
+    String currentUserID = req.getParameter("currentUserID");
 
 	//add any optional properties here
-	
     optionalProps = getOptionalParams( req );
 	ResponseProg[] violatResp = null;
-
+    boolean allowStopGear = currentUserID != null && authDao.checkRoleProperty(Integer.parseInt(currentUserID), DirectLoadcontrolRole.ALLOW_STOP_GEAR_ACCESS);
+    if(allowStopGear && ILCCmds.PROG_STOP.equals(cmd) ) {
+        optionalProps.put("allowStopGear", "true");
+    }
+    
 	if( cmd != null )
 	{
 		try
@@ -185,7 +189,8 @@ public void service(HttpServletRequest req, HttpServletResponse resp) throws jav
 			//send the LMCommand to the LoadControl server
 			if( msg.genLCCmdMsg() != null )
 			{
-				if( LMCmdMsgFactory.isSyncMsg(cmd) )
+				if( LMCmdMsgFactory.isSyncMsg(cmd) || 
+                        (optionalProps.get("stopgearnum") != null && LMCmdMsgFactory.isSyncMsg(msg.getCmd())))
 				{					
 					violatResp = sendSyncMsg( msg );
 					CTILogger.info("   Synchronous command was sent and responded to " + 
@@ -196,11 +201,9 @@ public void service(HttpServletRequest req, HttpServletResponse resp) throws jav
 					getConnection().write( msg.genLCCmdMsg() );
 					CTILogger.info("   Command was sent");
 				}
-				
 			}
 			else
 				CTILogger.info("   Command was not sent since it did not have a message defined for it");
-			
 		}
 		catch( Exception e )
 		{
@@ -252,7 +255,6 @@ private void resendSyncMsgs( HttpServletRequest req, Double[] progIds )
 		{
 			if( !"Resubmit".equalsIgnoreCase(buttonPressed) )
 				return;
-
 
 			//ResponseProg[] resProgArr = new ResponseProg[ progIds.length ];
 			
@@ -351,7 +353,6 @@ private ResponseProg[] sendSyncMsg( final WebCmdMsg cmdMsg )
                     programResps[i].getViolations().add(
                         " No Constraints Violated");
                 }
-                
             }                       
         }
         
@@ -395,7 +396,7 @@ private LMSession getLMSession( HttpServletRequest req )
 
 private Hashtable getOptionalParams( HttpServletRequest req )
 {
-	Hashtable optionalProps = new Hashtable(8);
+	Hashtable optionalProps = new Hashtable(10);
 	
 	if( req.getParameter("duration") != null )
 		optionalProps.put( "duration",
@@ -525,6 +526,10 @@ private Hashtable getOptionalParams( HttpServletRequest req )
 				new Integer( CtiUtilities.decodeStringToSeconds( req.getParameter("stopTime1") )) );
 		}
 	}
+    
+    if( req.getParameter("stopGearNum") != null) {
+        optionalProps.put( "stopgearnum", req.getParameter("stopGearNum") );
+    }
 	
 	return optionalProps;
 }
