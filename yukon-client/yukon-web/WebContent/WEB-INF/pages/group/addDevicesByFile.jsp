@@ -6,9 +6,14 @@
 
 <cti:standardPage title="Add multiple devices to group" module="amr">
 <cti:standardMenu menuSelection="devicegroups|commander"/>
+   	
+   	<c:url var="homeUrl" value="/spring/group/home">
+		<c:param name="groupName" value="${group.fullName}" />
+	</c:url>
+   	
    	<cti:breadCrumbs>
 	    <cti:crumbLink url="/operator/Operations.jsp" title="Operations Home" />
-	    <cti:crumbLink url="/spring/group/home?groupName=${group.fullName}" title="Groups Home" />
+	    <cti:crumbLink url="${homeUrl}" title="Groups Home" />
 	    &gt; Add Devices by file
 	</cti:breadCrumbs>
 	
@@ -47,7 +52,7 @@
 	
 	</script>
 	
-	<h2>Group: <a href="/spring/group/home?groupName=${group.fullName}">${group.fullName}</a></h2>
+	<h2>Group: <a href="${homeUrl}">${group.fullName}</a></h2>
 	
 	<c:if test="${not empty param.errorMessage}">
 		<div style="color: red">
@@ -58,7 +63,7 @@
 	<div style="width: 700px">
 		<tags:boxContainer title="Add Multiple Devices by file" hideEnabled="false">
 			<div>
-				<form method="post" action="/spring/group/addDeviceByFile" enctype="multipart/form-data">
+				<form method="post" action="/spring/group/addDevicesByFile" enctype="multipart/form-data" onsubmit="return addDevicesByFile()">
 					<input type="hidden" name="groupName" value="${group.fullName}" />
 					Select the type of data included in the upload file:
 					<select id="uploadType" name="uploadType" onchange="updateFileNote()">

@@ -96,6 +96,16 @@ public class RouteGroupProvider extends DeviceGroupProviderBase {
 
     private class RouteDeviceGroup extends DeviceGroup {
         public int routeId;
+
+        @Override
+        public boolean isEditable() {
+            return false;
+        }
+
+        @Override
+        public boolean isModifiable() {
+            return false;
+        }
     }
 
     public void setJdbcTemplate(SimpleJdbcOperations jdbcTemplate) {

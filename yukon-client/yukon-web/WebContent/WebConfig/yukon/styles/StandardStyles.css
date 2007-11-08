@@ -151,4 +151,11 @@ img.cssicon, input.cssicon {
   vertical-align: middle;
 }
 
+img.graycssicon, input.graycssicon {
+  background-color: #BBB;
+  background-image: url(../Icons/clearbits/bg_rounded.gif);
+  background-repeat: no-repeat;
+  border: none;
+  vertical-align: middle;
+}
 

@@ -90,6 +90,16 @@ public class RolodexGroupProvider extends DeviceGroupProviderBase {
 
     private class RolodexLetterDeviceGroup extends DeviceGroup {
         public char firstLetter;
+
+        @Override
+        public boolean isEditable() {
+            return false;
+        }
+
+        @Override
+        public boolean isModifiable() {
+            return false;
+        }
     }
 
     public void setJdbcTemplate(SimpleJdbcOperations jdbcTemplate) {

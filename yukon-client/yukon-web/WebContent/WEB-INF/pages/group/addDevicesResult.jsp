@@ -6,13 +6,17 @@
 
 <cti:standardPage title="Bulk Device add to Group result" module="amr">
 <cti:standardMenu menuSelection="devicegroups|commander"/>
-   	<cti:breadCrumbs>
+   	<c:url var="homeUrl" value="/spring/group/home">
+		<c:param name="groupName" value="${group.fullName}" />
+	</c:url>
+	
+	<cti:breadCrumbs>
 	    <cti:crumbLink url="/operator/Operations.jsp" title="Operations Home" />
-	    <cti:crumbLink url="/spring/group/home?groupName=${group.fullName}" title="Groups Home" />
+	    <cti:crumbLink url="${homeUrl}" title="Groups Home" />
 	    &gt; Bulk Device add to Group result
 	</cti:breadCrumbs>
 	
-	<h2>Group: <a href="/spring/group/home?groupName=${group.fullName}">${group.fullName}</a></h2>
+	<h2>Group: <a href="${homeUrl}">${group.fullName}</a></h2>
 
 	<div>
 		${resultInfo}

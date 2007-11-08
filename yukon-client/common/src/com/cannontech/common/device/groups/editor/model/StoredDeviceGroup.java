@@ -1,15 +1,16 @@
 package com.cannontech.common.device.groups.editor.model;
 
+import com.cannontech.common.device.groups.dao.DeviceGroupType;
 import com.cannontech.common.device.groups.model.DeviceGroup;
 
 public class StoredDeviceGroup extends DeviceGroup {
     private int id;
     private boolean systemGroup;
-    
+
     public int getId() {
         return id;
     }
-    
+
     public boolean isSystemGroup() {
         return systemGroup;
     }
@@ -21,15 +22,15 @@ public class StoredDeviceGroup extends DeviceGroup {
     public void setSystemGroup(boolean systemGroup) {
         this.systemGroup = systemGroup;
     }
-    
+
     @Override
-    public boolean isRemovable() {
+    public boolean isEditable() {
         return !isSystemGroup();
     }
-    
+
     @Override
-    public boolean isMovable() {
-        return !isSystemGroup();
+    public boolean isModifiable() {
+        return getType() == DeviceGroupType.STATIC;
     }
-    
+
 }

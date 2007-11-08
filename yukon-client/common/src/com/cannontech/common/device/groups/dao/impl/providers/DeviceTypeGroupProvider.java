@@ -103,6 +103,16 @@ public class DeviceTypeGroupProvider extends DeviceGroupProviderBase {
 
     private class DeviceTypeDeviceGroup extends DeviceGroup {
         public String type;
+
+        @Override
+        public boolean isEditable() {
+            return false;
+        }
+
+        @Override
+        public boolean isModifiable() {
+            return false;
+        }
     }
 
     public void setJdbcTemplate(SimpleJdbcOperations jdbcTemplate) {

@@ -21,8 +21,13 @@
 				</c:if>
 			</div>
 			<div style="float: left;margin-left: 5px;">
+				
+				<c:url var="homeUrl" value="/spring/group/home">
+					<c:param name="groupName" value="${hierarchy.group.fullName}" />
+				</c:url>
+			
 				<c:if test="${empty hierarchy.group.name}">[</c:if>
-				<a href="/spring/group/home?groupName=${hierarchy.group.fullName}">${(empty hierarchy.group.name)? 'Top Level' : hierarchy.group.name}</a>
+				<a href="${homeUrl}">${(empty hierarchy.group.name)? 'Top Level' : hierarchy.group.name}</a>
 				<c:if test="${empty hierarchy.group.name}">]</c:if>
 			</div>
 		</div>

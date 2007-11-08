@@ -17,27 +17,27 @@ public class DeviceGroupTest {
 
     @Before
     public void setUp() throws Exception {
-        root = new DeviceGroup();
+        root = new TestDeviceGroup();
         root.setParent(null);
         root.setName("");
         root.setType(DeviceGroupType.STATIC);
         
-        a = new DeviceGroup();
+        a = new TestDeviceGroup();
         a.setParent(root);
         a.setName("a");
         a.setType(DeviceGroupType.STATIC);
         
-        b = new DeviceGroup();
+        b = new TestDeviceGroup();
         b.setParent(a);
         b.setName("b");
         b.setType(DeviceGroupType.STATIC);
         
-        b2 = new DeviceGroup();
+        b2 = new TestDeviceGroup();
         b2.setParent(a);
         b2.setName("b2");
         b2.setType(DeviceGroupType.STATIC);
         
-        c = new DeviceGroup();
+        c = new TestDeviceGroup();
         c.setParent(b);
         c.setName("c");
         c.setType(DeviceGroupType.STATIC);
@@ -84,6 +84,20 @@ public class DeviceGroupTest {
         
         Assert.assertFalse(c.isChildOf(b2));
         Assert.assertFalse(b2.isChildOf(c));
+    }
+    
+    private class TestDeviceGroup extends DeviceGroup {
+
+        @Override
+        public boolean isEditable() {
+            return false;
+        }
+
+        @Override
+        public boolean isModifiable() {
+            return false;
+        }
+        
     }
 
 }

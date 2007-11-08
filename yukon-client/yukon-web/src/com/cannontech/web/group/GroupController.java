@@ -129,12 +129,13 @@ public class GroupController extends MultiActionController {
         mav.addObject("groupHierarchy", groupHierarchy);
 
         // Create a list of groups the current group could move to excluding
-        // any groups the current group is a part of
+        // any groups the current group is a part of and any groups that are not
+        // modifiable
         List<? extends DeviceGroup> groups = deviceGroupDao.getAllGroups();
         List<DeviceGroup> moveGroups = new ArrayList<DeviceGroup>();
         moveGroups.add(rootGroup);
         for (DeviceGroup deviceGroup : groups) {
-            if (!deviceGroup.getFullName().contains(group.getName())) {
+            if (!deviceGroup.getFullName().contains(group.getName()) && deviceGroup.isModifiable()) {
                 moveGroups.add(deviceGroup);
             }
         }
@@ -174,7 +175,7 @@ public class GroupController extends MultiActionController {
         String newGroupName = ServletRequestUtils.getStringParameter(request, "newGroupName");
 
         // Make sure a new name was entered and doesn't contain slashes
-        if (newGroupName == null || newGroupName == "" || (newGroupName.contains("\\")) || (newGroupName.contains("/"))) {
+        if (StringUtils.isEmpty(newGroupName) || (newGroupName.contains("\\")) || (newGroupName.contains("/"))) {
             mav.addObject("errorMessage",
                           "You must enter a New Group Name.  Group names may not contain slashes.");
             return mav;
@@ -199,10 +200,26 @@ public class GroupController extends MultiActionController {
         mav.addObject("groupName", groupName);
 
         DeviceGroup group = deviceGroupService.resolveGroupName(groupName);
-        String childGroupName = ServletRequestUtils.getStringParameter(request, "childGroupName");
-        deviceGroupEditorDao.addGroup((StoredDeviceGroup) group,
-                                      DeviceGroupType.STATIC,
-                                      childGroupName);
+        if (group.isModifiable()) {
+
+            String childGroupName = ServletRequestUtils.getStringParameter(request,
+                                                                           "childGroupName");
+
+            // Make sure a new name was entered and doesn't contain slashes
+            if (StringUtils.isEmpty(childGroupName) || (childGroupName.contains("\\")) || (childGroupName.contains("/"))) {
+                mav.addObject("errorMessage",
+                              "You must enter a Sub Group Name.  Group names may not contain slashes.");
+                return mav;
+            }
+
+            deviceGroupEditorDao.addGroup((StoredDeviceGroup) group,
+                                          DeviceGroupType.STATIC,
+                                          childGroupName);
+            
+        } else {
+            mav.addObject("errorMessage", "Cannot add sub group to " + group.getFullName());
+            return mav;
+        }
 
         return mav;
     }
@@ -216,17 +233,23 @@ public class GroupController extends MultiActionController {
         mav.addObject("groupName", groupName);
 
         DeviceGroup group = deviceGroupService.resolveGroupName(groupName);
-        Integer deviceId = ServletRequestUtils.getIntParameter(request, "deviceId");
+        if (group.isModifiable()) {
 
-        YukonDevice device = new YukonDevice();
-        device.setDeviceId(deviceId);
-        ((DeviceGroupMemberEditorDao) deviceGroupEditorDao).addDevices((StoredDeviceGroup) group,
-                                                                       Collections.singletonList(device));
+            Integer deviceId = ServletRequestUtils.getIntParameter(request, "deviceId");
+
+            YukonDevice device = new YukonDevice();
+            device.setDeviceId(deviceId);
+            ((DeviceGroupMemberEditorDao) deviceGroupEditorDao).addDevices((StoredDeviceGroup) group,
+                                                                           Collections.singletonList(device));
+        } else {
+            mav.addObject("errorMessage", "Cannot add devices to " + group.getFullName());
+            return mav;
+        }
 
         return mav;
     }
 
-    public ModelAndView addDevicesByFile(HttpServletRequest request, HttpServletResponse response)
+    public ModelAndView showAddDevicesByFile(HttpServletRequest request, HttpServletResponse response)
             throws ServletException {
 
         ModelAndView mav = new ModelAndView("addDevicesByFile.jsp");
@@ -238,7 +261,7 @@ public class GroupController extends MultiActionController {
         return mav;
     }
 
-    public ModelAndView addDevicesByAddress(HttpServletRequest request, HttpServletResponse response)
+    public ModelAndView showAddDevicesByAddress(HttpServletRequest request, HttpServletResponse response)
             throws ServletException {
 
         ModelAndView mav = new ModelAndView("addDevicesByAddress.jsp");
@@ -250,65 +273,74 @@ public class GroupController extends MultiActionController {
         return mav;
     }
 
-    public ModelAndView addDeviceByFile(HttpServletRequest request, HttpServletResponse response)
+    public ModelAndView addDevicesByFile(HttpServletRequest request, HttpServletResponse response)
             throws ServletException {
 
         ModelAndView mav = new ModelAndView("redirect:/spring/group/addDevicesResult");
         String groupName = ServletRequestUtils.getStringParameter(request, "groupName");
         mav.addObject("groupName", groupName);
 
-        boolean isMultipart = ServletFileUpload.isMultipartContent(request);
+        DeviceGroup group = deviceGroupService.resolveGroupName(groupName);
 
-        if (isMultipart) {
-            MultipartHttpServletRequest mRequest = (MultipartHttpServletRequest) request;
+        if (group.isModifiable()) {
 
-            MultipartFile dataFile = mRequest.getFile("dataFile");
-            if (dataFile == null || dataFile.getSize() == 0) {
-                mav.setViewName("redirect:/spring/group/addMultipleDevices");
-                mav.addObject("errorMessage",
-                              "You must choose a file that has data to add devices.");
-                return mav;
+            boolean isMultipart = ServletFileUpload.isMultipartContent(request);
+
+            if (isMultipart) {
+                MultipartHttpServletRequest mRequest = (MultipartHttpServletRequest) request;
+
+                MultipartFile dataFile = mRequest.getFile("dataFile");
+                if (dataFile == null || dataFile.getSize() == 0) {
+                    mav.setViewName("redirect:/spring/group/showAddDevicesByFile");
+                    mav.addObject("errorMessage",
+                                  "You must choose a file that has data to add devices.");
+                    return mav;
+                }
+
+                mav.addObject("resultInfo",
+                              "Results for upload from file: " + dataFile.getOriginalFilename());
+
+                ObjectMapper<String, YukonDevice> yukonDeviceMapper = null;
+
+                // Create the mapper based on the type of file upload
+                String uploadType = ServletRequestUtils.getStringParameter(request, "uploadType");
+                if ("PAONAME".equalsIgnoreCase(uploadType)) {
+                    yukonDeviceMapper = objectMapperFactory.createPaoNameToYukonDeviceMapper();
+                } else if ("METERNUMBER".equalsIgnoreCase(uploadType)) {
+                    yukonDeviceMapper = objectMapperFactory.createMeterNumberToYukonDeviceMapper();
+                } else if ("ADDRESS".equalsIgnoreCase(uploadType)) {
+                    yukonDeviceMapper = objectMapperFactory.createAddressToYukonDeviceMapper();
+                } else if ("BULK".equalsIgnoreCase(uploadType)) {
+                    yukonDeviceMapper = objectMapperFactory.createBulkImporterToYukonDeviceMapper();
+                }
+
+                Processor<YukonDevice> addToGroupProcessor = processorFactory.createAddYukonDeviceToGroupProcessor((StoredDeviceGroup) group);
+
+                try {
+
+                    // Create a collecting callback and stick it into the
+                    // session
+                    // for later use (progress updating, etc...)
+                    CollectingBulkProcessorCallback callback = new CollectingBulkProcessorCallback();
+                    request.getSession().setAttribute("bulkAddDeviceToGroup", callback);
+
+                    Iterator<String> iterator = new InputStreamIterator(dataFile.getInputStream());
+                    bulkProcessor.backgroundBulkProcess(iterator,
+                                                        yukonDeviceMapper,
+                                                        addToGroupProcessor,
+                                                        callback);
+
+                } catch (IOException e) {
+                    mav.addObject("errorMessage",
+                                  "There was a problem processing the file: " + e.getMessage());
+                }
+
             }
 
-            mav.addObject("resultInfo",
-                          "Results for upload from file: " + dataFile.getOriginalFilename());
-
-            DeviceGroup group = deviceGroupService.resolveGroupName(groupName);
-
-            ObjectMapper<String, YukonDevice> yukonDeviceMapper = null;
-
-            // Create the mapper based on the type of file upload
-            String uploadType = ServletRequestUtils.getStringParameter(request, "uploadType");
-            if ("PAONAME".equalsIgnoreCase(uploadType)) {
-                yukonDeviceMapper = objectMapperFactory.createPaoNameToYukonDeviceMapper();
-            } else if ("METERNUMBER".equalsIgnoreCase(uploadType)) {
-                yukonDeviceMapper = objectMapperFactory.createMeterNumberToYukonDeviceMapper();
-            } else if ("ADDRESS".equalsIgnoreCase(uploadType)) {
-                yukonDeviceMapper = objectMapperFactory.createAddressToYukonDeviceMapper();
-            } else if ("BULK".equalsIgnoreCase(uploadType)) {
-                yukonDeviceMapper = objectMapperFactory.createBulkImporterToYukonDeviceMapper();
-            }
-
-            Processor<YukonDevice> addToGroupProcessor = processorFactory.createAddYukonDeviceToGroupProcessor((StoredDeviceGroup) group);
-
-            try {
-
-                // Create a collecting callback and stick it into the session
-                // for later use (progress updating, etc...)
-                CollectingBulkProcessorCallback callback = new CollectingBulkProcessorCallback();
-                request.getSession().setAttribute("bulkAddDeviceToGroup", callback);
-
-                Iterator<String> iterator = new InputStreamIterator(dataFile.getInputStream());
-                bulkProcessor.backgroundBulkProcess(iterator,
-                                                    yukonDeviceMapper,
-                                                    addToGroupProcessor,
-                                                    callback);
-
-            } catch (IOException e) {
-                mav.addObject("errorMessage",
-                              "There was a problem processing the file: " + e.getMessage());
-            }
-
+        } else {
+            mav.setViewName("redirect:/spring/group/home");
+            mav.addObject("errorMessage", "Cannot add devices to " + group.getFullName());
+            return mav;
         }
 
         return mav;
@@ -324,44 +356,52 @@ public class GroupController extends MultiActionController {
 
         DeviceGroup group = deviceGroupService.resolveGroupName(groupName);
 
-        Integer startRange = ServletRequestUtils.getIntParameter(request, "startRange");
-        Integer endRange = ServletRequestUtils.getIntParameter(request, "endRange");
+        if (group.isModifiable()) {
 
-        if (startRange == null) {
-            mav.setViewName("redirect:/spring/group/addMultipleDevices");
-            mav.addObject("errorMessage", "Please enter a valid integer Start of Range value.");
+            Integer startRange = ServletRequestUtils.getIntParameter(request, "startRange");
+            Integer endRange = ServletRequestUtils.getIntParameter(request, "endRange");
+
+            if (startRange == null) {
+                mav.setViewName("redirect:/spring/group/showAddDevicesByAddressRange");
+                mav.addObject("errorMessage", "Please enter a valid integer Start of Range value.");
+                return mav;
+            }
+            if (endRange == null) {
+                mav.setViewName("redirect:/spring/group/showAddDevicesByAddressRange");
+                mav.addObject("errorMessage", "Please enter a valid integer End of Range value.");
+                return mav;
+            }
+            if (endRange <= startRange) {
+                mav.setViewName("redirect:/spring/group/showAddDevicesByAddressRange");
+                mav.addObject("errorMessage",
+                              "Please enter an End of Range value that is greater than the Start of Range value.");
+                return mav;
+            }
+
+            mav.addObject("resultInfo",
+                          "Results for device add for address range: " + startRange + " - " + endRange);
+
+            List<LiteYukonPAObject> litePaos = paoDao.getLiteYukonPaobjectsByAddressRange(startRange,
+                                                                                          endRange);
+
+            ObjectMapper<LiteYukonPAObject, YukonDevice> yukonDeviceMapper = objectMapperFactory.createLiteYukonPAObjectToYukonDeviceMapper();
+            Processor<YukonDevice> addToGroupProcessor = processorFactory.createAddYukonDeviceToGroupProcessor((StoredDeviceGroup) group);
+
+            // Create a collecting callback and stick it into the session
+            // for later use (progress updating, etc...)
+            CollectingBulkProcessorCallback callback = new CollectingBulkProcessorCallback();
+            request.getSession().setAttribute("bulkAddDeviceToGroup", callback);
+
+            bulkProcessor.backgroundBulkProcess(litePaos.iterator(),
+                                                yukonDeviceMapper,
+                                                addToGroupProcessor,
+                                                callback);
+
+        } else {
+            mav.setViewName("redirect:/spring/group/home");
+            mav.addObject("errorMessage", "Cannot add devices to " + group.getFullName());
             return mav;
         }
-        if (endRange == null) {
-            mav.setViewName("redirect:/spring/group/addMultipleDevices");
-            mav.addObject("errorMessage", "Please enter a valid integer End of Range value.");
-            return mav;
-        }
-        if (endRange <= startRange) {
-            mav.setViewName("redirect:/spring/group/addMultipleDevices");
-            mav.addObject("errorMessage",
-                          "Please enter an End of Range value that is greater than the Start of Range value.");
-            return mav;
-        }
-
-        mav.addObject("resultInfo",
-                      "Results for device add for address range: " + startRange + " - " + endRange);
-
-        List<LiteYukonPAObject> litePaos = paoDao.getLiteYukonPaobjectsByAddressRange(startRange,
-                                                                                      endRange);
-
-        ObjectMapper<LiteYukonPAObject, YukonDevice> yukonDeviceMapper = objectMapperFactory.createLiteYukonPAObjectToYukonDeviceMapper();
-        Processor<YukonDevice> addToGroupProcessor = processorFactory.createAddYukonDeviceToGroupProcessor((StoredDeviceGroup) group);
-
-        // Create a collecting callback and stick it into the session
-        // for later use (progress updating, etc...)
-        CollectingBulkProcessorCallback callback = new CollectingBulkProcessorCallback();
-        request.getSession().setAttribute("bulkAddDeviceToGroup", callback);
-
-        bulkProcessor.backgroundBulkProcess(litePaos.iterator(),
-                                            yukonDeviceMapper,
-                                            addToGroupProcessor,
-                                            callback);
 
         return mav;
     }
@@ -375,12 +415,20 @@ public class GroupController extends MultiActionController {
         mav.addObject("groupName", groupName);
 
         DeviceGroup group = deviceGroupService.resolveGroupName(groupName);
-        Integer deviceId = ServletRequestUtils.getIntParameter(request, "deviceId");
 
-        YukonDevice device = new YukonDevice();
-        device.setDeviceId(deviceId);
-        ((DeviceGroupMemberEditorDao) deviceGroupEditorDao).removeDevices((StoredDeviceGroup) group,
-                                                                          Collections.singletonList(device));
+        if (group.isModifiable()) {
+
+            Integer deviceId = ServletRequestUtils.getIntParameter(request, "deviceId");
+
+            YukonDevice device = new YukonDevice();
+            device.setDeviceId(deviceId);
+            ((DeviceGroupMemberEditorDao) deviceGroupEditorDao).removeDevices((StoredDeviceGroup) group,
+                                                                              Collections.singletonList(device));
+
+        } else {
+            mav.addObject("errorMessage", "Cannot remove devices from " + group.getFullName());
+            return mav;
+        }
 
         return mav;
     }
@@ -398,7 +446,7 @@ public class GroupController extends MultiActionController {
         DeviceGroup parentGroup = deviceGroupService.resolveGroupName(parentGroupName);
 
         // Make sure we can move the group
-        if (group.isMovable()) {
+        if (group.isEditable()) {
             deviceGroupEditorDao.moveGroup((StoredDeviceGroup) group,
                                            (StoredDeviceGroup) parentGroup);
 
@@ -426,7 +474,7 @@ public class GroupController extends MultiActionController {
         DeviceGroup removeGroup = deviceGroupService.resolveGroupName(removeGroupName);
 
         // Make sure we can remove the group
-        if (removeGroup.isRemovable()) {
+        if (removeGroup.isEditable()) {
             deviceGroupEditorDao.removeGroup((StoredDeviceGroup) removeGroup);
         } else {
             mav.addObject("errorMessage", "Cannot remove Group: " + removeGroup.getFullName());

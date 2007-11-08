@@ -6,9 +6,14 @@
 
 <cti:standardPage title="Add multiple devices to group" module="amr">
 <cti:standardMenu menuSelection="devicegroups|commander"/>
+   	
+   	<c:url var="homeUrl" value="/spring/group/home">
+		<c:param name="groupName" value="${group.fullName}" />
+	</c:url>
+   	
    	<cti:breadCrumbs>
 	    <cti:crumbLink url="/operator/Operations.jsp" title="Operations Home" />
-	    <cti:crumbLink url="/spring/group/home?groupName=${group.fullName}" title="Groups Home" />
+	    <cti:crumbLink url="${homeUrl}" title="Groups Home" />
 	    &gt; Add Devices by Physical Address range
 	</cti:breadCrumbs>
 	
@@ -37,12 +42,13 @@
 	
 	</script>
 	
-	<h2>Group: <a href="/spring/group/home?groupName=${group.fullName}">${group.fullName}</a></h2>
+	<h2>Group: <a href="${homeUrl}">${group.fullName}</a></h2>
 	
 	<c:if test="${not empty param.errorMessage}">
 		<div style="color: red">
 			${param.errorMessage}
 		</div>
+		<br/><br/>
 	</c:if>
 
 	<div style="width: 700px">

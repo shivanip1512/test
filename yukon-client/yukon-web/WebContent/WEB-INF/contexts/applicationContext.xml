@@ -370,6 +370,7 @@
         abstract="false" singleton="true" lazy-init="default" autowire="default"
         dependency-check="default">
         <property name="meterDao" ref="meterDao"/>
+        <property name="paoDao" ref="paoDao" />
     </bean>
 
     <bean id="dataUpdaterCallbackTagPrototype" class="com.cannontech.web.updater.DataUpdaterCallbackTag"

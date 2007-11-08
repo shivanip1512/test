@@ -5,32 +5,49 @@ import org.springframework.core.style.ToStringCreator;
 
 import com.cannontech.common.device.groups.dao.DeviceGroupType;
 
-public class DeviceGroup implements Comparable<DeviceGroup> {
+public abstract class DeviceGroup implements Comparable<DeviceGroup> {
     private DeviceGroupType type;
     private String name;
     private DeviceGroup parent;
-    private boolean isRemovable;
+
+    /**
+     * Method to determine if this group can have it's name changed, parent
+     * changed, or be deleted
+     * @return True if editable
+     */
+    public abstract boolean isEditable();
+
+    /**
+     * Method to determine if this group can have sub groups added or removed
+     * and have devices added or removed
+     * @return True if modifiable
+     */
+    public abstract boolean isModifiable();
 
     public void setName(String name) {
         this.name = name;
     }
+
     public void setParent(DeviceGroup parent) {
         this.parent = parent;
     }
+
     public void setType(DeviceGroupType type) {
         this.type = type;
-        this.isRemovable = this.isGroupEditable();
     }
+
     public String getName() {
         return name;
     }
+
     public DeviceGroup getParent() {
         return parent;
     }
+
     public DeviceGroupType getType() {
         return type;
     }
-    
+
     public String getFullName() {
         if (parent == null) {
             return "/";
@@ -38,7 +55,7 @@ public class DeviceGroup implements Comparable<DeviceGroup> {
             return getFullNameInternal();
         }
     }
-    
+
     private String getFullNameInternal() {
         if (parent == null) {
             return "";
@@ -46,20 +63,7 @@ public class DeviceGroup implements Comparable<DeviceGroup> {
             return getParent().getFullNameInternal() + "/" + getName();
         }
     }
-    
-    public boolean isMovable() {
-        return isGroupEditable();
-    }
-    
-    public boolean isRemovable() {
-        return isRemovable;
-    }
 
-    public void setRemovable(boolean isRemovable) {
-        this.isRemovable = isRemovable;
-    }
-    
-    
     public boolean isDescendantOf(DeviceGroup possibleParent) {
         if (isChildOf(possibleParent)) {
             return true;
@@ -69,7 +73,7 @@ public class DeviceGroup implements Comparable<DeviceGroup> {
             return parent.isDescendantOf(possibleParent);
         }
     }
-    
+
     public boolean isChildOf(DeviceGroup possibleParent) {
         Validate.notNull(possibleParent);
         boolean equals = possibleParent.equals(parent);
@@ -81,9 +85,9 @@ public class DeviceGroup implements Comparable<DeviceGroup> {
         ToStringCreator tsc = new ToStringCreator(this);
         tsc.append("fullName", getFullName());
         tsc.append("type", getType());
-        tsc.append("isRemovable", isRemovable());
-        return tsc.toString();    
+        return tsc.toString();
     }
+
     @Override
     public int hashCode() {
         final int PRIME = 31;
@@ -92,7 +96,7 @@ public class DeviceGroup implements Comparable<DeviceGroup> {
         result = PRIME * result + ((parent == null) ? 0 : parent.hashCode());
         return result;
     }
-    
+
     @Override
     public boolean equals(Object obj) {
         if (this == obj)
@@ -113,10 +117,6 @@ public class DeviceGroup implements Comparable<DeviceGroup> {
         } else if (!parent.equals(other.parent))
             return false;
         return true;
-    }
-    
-    public boolean isGroupEditable(){
-        return type.equals(DeviceGroupType.STATIC);
     }
 
     public int compareTo(DeviceGroup dg) {

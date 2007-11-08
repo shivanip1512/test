@@ -65,7 +65,7 @@ public class DeviceGroupWidget extends WidgetControllerBase {
          */
         List<? extends DeviceGroup> addableGroupsCopy = deviceGroupDao.getAllGroups();
         for (DeviceGroup group : addableGroupsCopy) {
-            if(group.isGroupEditable()){
+            if(group.isEditable()){
                 for (DeviceGroup possibleParent : currentGroupsSet) {
                     if (group.isDescendantOf(possibleParent)) {
                         addableGroups.remove(group);
