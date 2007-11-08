@@ -19,6 +19,7 @@
 			<value>com/cannontech/billing/billingContext.xml</value>
 			<value>com/cannontech/stars/starsContext.xml</value>
 			<value>com/cannontech/cbc/cbcContext.xml</value>
+            <value>com/cannontech/jobs/jobContext.xml</value>
        </list>
      </constructor-arg>
      <constructor-arg>

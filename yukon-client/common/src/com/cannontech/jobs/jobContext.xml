@@ -41,8 +41,8 @@
             </bean>
        </property>
     </bean>
-        
-    <bean id="jobManager" class="com.cannontech.jobs.service.impl.JobManagerImpl" init-method="initialize">
+        <!--  temp: remove initialize method -->
+    <bean id="jobManager" class="com.cannontech.jobs.service.impl.JobManagerImpl">
         <property name="timeSource" ref="timeSource"/>
         <property name="scheduledOneTimeJobDao" ref="scheduledOneTimeJobDao"/>
         <property name="scheduledRepeatingJobDao" ref="scheduledRepeatingJobDao"/>
@@ -50,59 +50,6 @@
         <property name="transactionTemplate" ref="transactionTemplate"/>
         <property name="yukonUserDao" ref="yukonUserDao"/>
         <property name="scheduledExecutor" ref="jobScheduledExecutor"/>
-    </bean>
-    
-    <bean id="stupidTestJob" class="com.cannontech.jobs.support.SimpleYukonJobDefinition">
-        <property name="taskName"><idref local="stupidTestTask"/></property>
-        <property name="title" value="Stupid Test Job"/>
-        <property name="inputs">
-          <bean class="com.cannontech.web.input.InputRoot">
-            <property name="inputList">
-              <list>
-                <bean class="com.cannontech.web.input.InputBase">
-                    <property name="field" value="deviceGroup"/>
-                    <property name="displayName" value="Device Group"/>
-                    <property name="type">
-                      <bean class="com.cannontech.web.input.type.DeviceGroupType">
-                        <property name="deviceGroupService" ref="deviceGroupService"/>
-                      </bean>
-                    </property>
-                </bean>
-                <bean class="com.cannontech.web.input.InputBase">
-                    <property name="field" value="startDate"/>
-                    <property name="displayName" value="Start Date"/>
-                    <property name="type">
-                      <bean class="com.cannontech.web.input.type.DateType"/>
-                    </property>
-                </bean>
-                <bean class="com.cannontech.web.input.InputBase">
-                    <property name="field" value="numberOfDays"/>
-                    <property name="displayName" value="Number Of Days"/>
-                    <property name="type">
-                      <bean class="com.cannontech.web.input.type.IntegerType"/>
-                    </property>
-                </bean>
-                <bean class="com.cannontech.web.input.InputBase">
-                    <property name="field" value="includeDisabled"/>
-                    <property name="displayName" value="Include Disabled Devices"/>
-                    <property name="type">
-                      <bean class="com.cannontech.web.input.type.BooleanType"/>
-                    </property>
-                </bean>
-              </list>
-            </property>
-          </bean>
-        </property>
-    </bean>
-    
-    <bean id="stupidTestTask" class="com.cannontech.jobs.StupidTestTask" scope="prototype">
-         <!-- standard dependencies and input defaults would go here -->
-         <property name="deviceGroupService" ref="deviceGroupService"/>
-    </bean>
-    <bean id="someFakeService" class="com.cannontech.jobs.SomeFakeService">
-         <property name="deviceGroupService" ref="deviceGroupService"/>
-         <property name="jobManager" ref="jobManager"/>
-         <property name="stupidTestDefinition" ref="stupidTestJob"/>
     </bean>
 </beans>
 
