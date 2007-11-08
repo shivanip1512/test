@@ -283,7 +283,7 @@ public class DeviceChngTypesPanel extends DataInputPanel implements ListSelectio
         } else {
             LitePoint point = null;
             for (PointTemplate template : templates) {
-                point = pointService.getPointForDevice(getYukonDeviceForDevice(getCurrentDevice()), template);
+                point = pointService.getPointForDevice(getYukonDeviceForDevice(getCurrentDevice()), template.getDevicePointIdentifier());
                 buffer.append("-- #" + point.getPointOffset() + " " + point.getPointName() + "\n");
             }
         }
@@ -318,7 +318,7 @@ public class DeviceChngTypesPanel extends DataInputPanel implements ListSelectio
         YukonDevice device = getYukonDeviceForDevice(getCurrentDevice());
         
         for (PointTemplate template : transferTemplates) {
-        	LitePoint litePoint = pointService.getPointForDevice(device, template);
+        	LitePoint litePoint = pointService.getPointForDevice(device, template.getDevicePointIdentifier());
             PointBase point = (PointBase) LiteFactory.createDBPersistent(litePoint);
 
             buffer.append("-- #" + litePoint.getPointOffset() + " " + litePoint.getPointName()

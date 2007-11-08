@@ -41,7 +41,7 @@ public class AttributeServiceImpl implements AttributeService {
 
         PointTemplate pointTemplate = deviceDefinitionDao.getPointTemplateForAttribute(device,
                                                                                        attribute);
-        return pointService.getPointForDevice(device, pointTemplate);
+        return pointService.getPointForDevice(device, pointTemplate.getDevicePointIdentifier());
     }
 
     public Set<Attribute> getAvailableAttributes(YukonDevice device) {
@@ -88,7 +88,7 @@ public class AttributeServiceImpl implements AttributeService {
             PointTemplate template = deviceDefinitionDao.getPointTemplateForAttribute(device,
                                                                                       attribute);
 
-            return pointService.pointExistsForDevice(device, template);
+            return pointService.pointExistsForDevice(device, template.getDevicePointIdentifier());
         }
 
         throw new IllegalArgumentException("Device: " + device + " does not support attribute: " + attribute.getKey());

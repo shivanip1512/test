@@ -35,7 +35,7 @@ public class MeterReadServiceImpl implements MeterReadService {
         Set<DevicePointIdentifier> pointSet = new HashSet<DevicePointIdentifier>(attributes.size());
         for (Attribute attribute : attributes) {
             PointTemplate pointTemplateForAttribute = deviceDefinitionDao.getPointTemplateForAttribute(device, attribute);
-            pointSet.add(pointTemplateForAttribute);
+            pointSet.add(pointTemplateForAttribute.getDevicePointIdentifier());
         }
         
         return readMeterPoints(device, pointSet, user);

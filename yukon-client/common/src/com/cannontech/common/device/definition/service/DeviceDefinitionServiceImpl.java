@@ -243,7 +243,7 @@ public class DeviceDefinitionServiceImpl implements DeviceDefinitionService {
         YukonDevice meter = getYukonDeviceForDevice(device);
 
         for (PointTemplate template : removeTemplates) {
-            LitePoint litePoint = pointService.getPointForDevice(meter, template);
+            LitePoint litePoint = pointService.getPointForDevice(meter, template.getDevicePointIdentifier());
 
             PointBase point = (PointBase) LiteFactory.convertLiteToDBPers(litePoint);
             Transaction t = Transaction.createTransaction(Transaction.DELETE, point);
@@ -289,7 +289,7 @@ public class DeviceDefinitionServiceImpl implements DeviceDefinitionService {
         YukonDevice meter = getYukonDeviceForDevice(device);
 
         for (PointTemplate template : transferTemplates) {
-            LitePoint litePoint = pointService.getPointForDevice(meter, template);
+            LitePoint litePoint = pointService.getPointForDevice(meter, template.getDevicePointIdentifier());
             PointBase point = (PointBase) LiteFactory.convertLiteToDBPers(litePoint);
 
             Transaction t = Transaction.createTransaction(Transaction.RETRIEVE, point);

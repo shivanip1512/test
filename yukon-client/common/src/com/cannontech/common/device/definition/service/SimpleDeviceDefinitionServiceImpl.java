@@ -128,7 +128,7 @@ public class SimpleDeviceDefinitionServiceImpl implements SimpleDeviceDefinition
         // the device
         Set<PointTemplate> nonExistingPointSet = new HashSet<PointTemplate>();
         for (PointTemplate template : existingTemplates) {
-            if (!pointService.pointExistsForDevice(device, template)) {
+            if (!pointService.pointExistsForDevice(device, template.getDevicePointIdentifier())) {
                 nonExistingPointSet.add(template);
             }
         }

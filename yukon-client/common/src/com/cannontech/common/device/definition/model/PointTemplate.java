@@ -7,8 +7,8 @@ import com.cannontech.database.db.state.StateGroupUtils;
  * Interface which represents a template which can be used to create point
  * instances
  */
-public class PointTemplate extends DevicePointIdentifier implements Comparable<PointTemplate> {
-
+public class PointTemplate implements Comparable<PointTemplate> {
+    private DevicePointIdentifier devicePointIdentifier;
     private String name = null;
     private double multiplier = 1.0;
     private int unitOfMeasure = PointUnits.UOMID_INVALID;
@@ -16,12 +16,24 @@ public class PointTemplate extends DevicePointIdentifier implements Comparable<P
     private boolean shouldInitialize = false;
 
     public PointTemplate(int type, int offset) {
-        super(type, offset);
+        devicePointIdentifier = new DevicePointIdentifier(type, offset);
+    }
+
+    public int getOffset() {
+        return devicePointIdentifier.getOffset();
+    }
+
+    public int getType() {
+        return devicePointIdentifier.getType();
+    }
+
+    public DevicePointIdentifier getDevicePointIdentifier() {
+        return devicePointIdentifier;
     }
 
     public PointTemplate(String name, int type, int offset, double multiplier,
             int unitOfMeasure, int stateGroupId, boolean shouldInitialize) {
-        super(type, offset);
+        devicePointIdentifier = new DevicePointIdentifier(type, offset);
         this.name = name;
         this.multiplier = multiplier;
         this.unitOfMeasure = unitOfMeasure;
@@ -85,8 +97,37 @@ public class PointTemplate extends DevicePointIdentifier implements Comparable<P
 
     }
 
-	public boolean isComparableTo(DevicePointIdentifier identifier) {
-    	
-    	return super.isComparableTo(identifier);
+	@Override
+    public int hashCode() {
+        final int prime = 31;
+        int result = 1;
+        result =
+            prime * result + ((devicePointIdentifier == null) ? 0 : devicePointIdentifier
+                .hashCode());
+        result = prime * result + ((name == null) ? 0 : name.hashCode());
+        return result;
     }
+
+	@Override
+    public boolean equals(Object obj) {
+        if (this == obj)
+            return true;
+        if (obj == null)
+            return false;
+        if (getClass() != obj.getClass())
+            return false;
+        final PointTemplate other = (PointTemplate) obj;
+        if (devicePointIdentifier == null) {
+            if (other.devicePointIdentifier != null)
+                return false;
+        } else if (!devicePointIdentifier.equals(other.devicePointIdentifier))
+            return false;
+        if (name == null) {
+            if (other.name != null)
+                return false;
+        } else if (!name.equals(other.name))
+            return false;
+        return true;
+    }
+
 }
