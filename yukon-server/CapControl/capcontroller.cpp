@@ -344,8 +344,14 @@ void CtiCapController::controlLoop()
                 for(LONG i=0; i < ccSubstationBuses.size();i++)
                 {
                     CtiCCSubstationBus* currentSubstationBus = (CtiCCSubstationBus*)ccSubstationBuses[i];
+                    CtiCCArea* currentArea = NULL;
+                    CtiCCSubstation* currentStation = NULL;
 
-                    CtiCCArea* currentArea = store->findAreaByPAObjectID(currentSubstationBus->getParentId());
+                    currentStation = store->findSubstationByPAObjectID(currentSubstationBus->getParentId());
+                    if (currentStation != NULL && !currentStation->getDisableFlag())
+                    {
+                        currentArea = store->findAreaByPAObjectID(currentStation->getParentId());
+                    }
 
                     try
                     {
@@ -2051,6 +2057,8 @@ void CtiCapController::pointDataMsg( long pointID, double value, unsigned qualit
                              currentSubstationBus->getPhaseCId() == pointID ) &&
                              currentSubstationBus->getUsePhaseData())
                     {
+                        currentSubstationBus->setNewPointDataReceivedFlag(TRUE);
+
                         if( _CC_DEBUG & CC_DEBUG_RIDICULOUS )
                         {
                             CtiLockGuard<CtiLogger> logger_guard(dout);
@@ -2279,6 +2287,8 @@ void CtiCapController::pointDataMsg( long pointID, double value, unsigned qualit
                              currentFeeder->getPhaseCId() == pointID ) &&
                              currentFeeder->getUsePhaseData())
                         {
+                            currentFeeder->setNewPointDataReceivedFlag(TRUE);
+
                             if( _CC_DEBUG & CC_DEBUG_RIDICULOUS )
                             {
                                 CtiLockGuard<CtiLogger> logger_guard(dout);

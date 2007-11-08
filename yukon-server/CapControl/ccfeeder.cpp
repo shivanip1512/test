@@ -2003,7 +2003,12 @@ CtiRequestMsg* CtiCCFeeder::createIncreaseVarRequest(CtiCCCapBank* capBank, CtiM
         setRecentlyControlledFlag(TRUE);
 
         setVarValueBeforeControl(kvarBefore);
-        
+
+        capBank->setBeforeVarsString(" --- : --- : --- ");
+        capBank->setAfterVarsString(" --- : --- : --- ");
+        capBank->setPercentChangeString(" --- : --- : --- ");
+
+
         if( capBank->getStatusPointId() > 0 )
         {
             string additional;
@@ -2222,6 +2227,11 @@ CtiRequestMsg* CtiCCFeeder::createDecreaseVarRequest(CtiCCCapBank* capBank, CtiM
         setRecentlyControlledFlag(TRUE);
         //setVarValueBeforeControl(getCurrentVarLoadPointValue());
         setVarValueBeforeControl(kvarBefore);
+
+        capBank->setBeforeVarsString(" --- : --- : --- ");
+        capBank->setAfterVarsString(" --- : --- : --- ");
+        capBank->setPercentChangeString(" --- : --- : --- ");
+
         if( capBank->getStatusPointId() > 0 )
         {
             string additional;
@@ -4021,6 +4031,12 @@ BOOL CtiCCFeeder::isAlreadyControlled(LONG minConfirmPercent)
         {
             DOUBLE oldVarValue = getVarValueBeforeControl();
             DOUBLE newVarValue = getCurrentVarLoadPointValue();
+            if (getUsePhaseData())
+            {
+                oldVarValue = getPhaseAValueBeforeControl() + getPhaseBValueBeforeControl() + getPhaseCValueBeforeControl();
+                newVarValue = getPhaseAValue() + getPhaseBValue() + getPhaseCValue();
+            }
+
             for(LONG i=0;i<_cccapbanks.size();i++)
             {
                 CtiCCCapBank* currentCapBank = (CtiCCCapBank*)_cccapbanks[i];
@@ -6362,17 +6378,17 @@ string CtiCCFeeder::createControlStatusUpdateText(const int capControlStatus, DO
 {
     string text = ("");
     text = string("Var: ");
-    text += CtiNumStr(varAValue, getDecimalPlaces()).toString();
+    text += CtiNumStr(varAValue, 2).toString();
     text += "/";
-    text += CtiNumStr(varBValue, getDecimalPlaces()).toString();
+    text += CtiNumStr(varBValue, 2).toString();
     text += "/";
-    text += CtiNumStr(varCValue, getDecimalPlaces()).toString();
+    text += CtiNumStr(varCValue, 2).toString();
     text += "/ ( ";
-    text += CtiNumStr(ratioA*100.0,getDecimalPlaces()).toString();
+    text += CtiNumStr(ratioA*100.0, 2).toString();
     text += "% / ";
-    text += CtiNumStr(ratioB*100.0,getDecimalPlaces()).toString();
+    text += CtiNumStr(ratioB*100.0, 2).toString();
     text += "% / ";
-    text += CtiNumStr(ratioC*100.0,getDecimalPlaces()).toString();
+    text += CtiNumStr(ratioC*100.0, 2).toString();
 
     if (capControlStatus ==  CtiCCCapBank::Open)
     {
