@@ -6365,11 +6365,11 @@ BOOL CtiCCFeeder::checkMaxDailyOpCountExceeded()
 string CtiCCFeeder::createVarText(DOUBLE aValue,DOUBLE bValue, DOUBLE cValue, FLOAT multiplier)
 {
     string text = ("");
-    text += CtiNumStr(aValue*multiplier, getDecimalPlaces()).toString();
+    text += CtiNumStr(aValue*multiplier, 2).toString();
     text += " : ";
-    text += CtiNumStr(bValue*multiplier, getDecimalPlaces()).toString();
+    text += CtiNumStr(bValue*multiplier, 2).toString();
     text += " : ";
-    text += CtiNumStr(cValue*multiplier, getDecimalPlaces()).toString();
+    text += CtiNumStr(cValue*multiplier, 2).toString();
     return text;
 }
 
