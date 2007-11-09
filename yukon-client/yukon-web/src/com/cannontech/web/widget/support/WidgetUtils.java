@@ -52,4 +52,14 @@ public class WidgetUtils {
         str = str.replaceAll("[^\\w]+", " ");
         return str;
     }
+    
+    /**
+     * Method which escapes the characters in a String using JavaScript String
+     * rules
+     * @param string - String to escape
+     * @return The escaped string
+     */
+    public static String escapeJavaScript(String string) {
+        return StringEscapeUtils.escapeJavaScript(string);
+    }
 }

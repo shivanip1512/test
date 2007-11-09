@@ -4,8 +4,9 @@
 
 <%@ taglib  prefix="c" uri="http://java.sun.com/jsp/jstl/core" %>
 <%@ taglib prefix="tags" tagdir="/WEB-INF/tags" %>
+<%@ taglib uri="http://cannontech.com/tags/cti" prefix="cti" %>
 
-
+<cti:uniqueIdentifier prefix="groupSelect_" var="fieldId"/>
 <script type="text/javascript">
 
 	function highlight(theDiv) {
@@ -18,16 +19,15 @@
 	
 	}
 	
-	function groupSelected(groupName){
+	function groupSelected(selectedDiv, groupName) {
+
+		<c:if test="${not empty fieldName}">
+			$('${fieldName}').value = groupName;
+		</c:if>
 	
 		<c:if test="${not empty onSelect}">
 			${onSelect}(groupName);
 		</c:if>
-
-		<c:if test="${not empty fieldName}">
-			${fieldName}.value = groupName;
-		</c:if>
-	
 	}
 
 </script>
@@ -35,7 +35,7 @@
 <div style="border: 1px solid black; width: 300px; height: 100px; overflow: auto; margin: 5px 0px;">
 	
 	<c:forEach var="group" items="${groupList}">
-		<div style="border-bottom: 1px solid #BBBBBB; padding: 2px 3px;" onmouseover="highlight(this);" onmouseout="highlight(this);" onclick="groupSelected('${group.fullName}')">
+		<div style="border-bottom: 1px solid #BBBBBB; padding: 2px 3px;" onmouseover="highlight(this);" onmouseout="highlight(this);" onclick="groupSelected(this, '${cti:escapeJavaScript(group.fullName)}')">
 			${group.fullName}
 		</div>
 	</c:forEach>
@@ -43,5 +43,5 @@
 </div>
 
 <c:if test="${not empty fieldName}">
-	<input type="text" name="${fieldName}" />
+	<input type="hidden" id="${fieldName}" name="${fieldName}" />
 </c:if>

@@ -61,6 +61,7 @@ public class DeviceGroupProviderDaoMain implements DeviceGroupProviderDao {
     
     public List<? extends DeviceGroup> getAllGroups() {
         List<DeviceGroup> result = new ArrayList<DeviceGroup>(10);
+        result.add(getRootGroup());
         collectChildGroups(result, getRootGroup());
         
         return result;

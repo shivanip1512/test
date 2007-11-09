@@ -82,8 +82,8 @@
 		
 		function showDevices() {
 			
-			// encode the group name to escape problem characters
-			var groupName = ${cti:jsonString(group.fullName)};
+			// escape the group name to escape problem characters
+			var groupName = '${cti:escapeJavaScript(group.fullName)}';
 			var params = {'groupName': groupName};
     		new Ajax.Updater('deviceMembers', '/spring/group/getDevicesForGroup', {method: 'post', parameters: params});
 			

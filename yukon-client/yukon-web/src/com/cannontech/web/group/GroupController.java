@@ -133,7 +133,6 @@ public class GroupController extends MultiActionController {
         // modifiable
         List<? extends DeviceGroup> groups = deviceGroupDao.getAllGroups();
         List<DeviceGroup> moveGroups = new ArrayList<DeviceGroup>();
-        moveGroups.add(rootGroup);
         for (DeviceGroup deviceGroup : groups) {
             if (!deviceGroup.getFullName().contains(group.getName()) && deviceGroup.isModifiable()) {
                 moveGroups.add(deviceGroup);
@@ -261,8 +260,8 @@ public class GroupController extends MultiActionController {
         return mav;
     }
 
-    public ModelAndView showAddDevicesByAddress(HttpServletRequest request, HttpServletResponse response)
-            throws ServletException {
+    public ModelAndView showAddDevicesByAddress(HttpServletRequest request,
+            HttpServletResponse response) throws ServletException {
 
         ModelAndView mav = new ModelAndView("addDevicesByAddress.jsp");
 
@@ -319,8 +318,7 @@ public class GroupController extends MultiActionController {
                 try {
 
                     // Create a collecting callback and stick it into the
-                    // session
-                    // for later use (progress updating, etc...)
+                    // session for later use (progress updating, etc...)
                     CollectingBulkProcessorCallback callback = new CollectingBulkProcessorCallback();
                     request.getSession().setAttribute("bulkAddDeviceToGroup", callback);
 

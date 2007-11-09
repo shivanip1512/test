@@ -18,6 +18,7 @@ import com.cannontech.common.device.groups.editor.dao.DeviceGroupEditorDao;
 import com.cannontech.common.device.groups.editor.dao.DeviceGroupMemberEditorDao;
 import com.cannontech.common.device.groups.editor.model.StoredDeviceGroup;
 import com.cannontech.common.device.groups.model.DeviceGroup;
+import com.cannontech.common.device.groups.service.DeviceGroupService;
 import com.cannontech.web.widget.support.WidgetControllerBase;
 import com.cannontech.web.widget.support.WidgetParameterHelper;
 
@@ -26,6 +27,7 @@ import com.cannontech.web.widget.support.WidgetParameterHelper;
  */
 public class DeviceGroupWidget extends WidgetControllerBase {
 
+    private DeviceGroupService deviceGroupService = null;
     private DeviceGroupProviderDao deviceGroupDao;
     private DeviceGroupEditorDao deviceGroupEditorDao;
     private DeviceGroupMemberEditorDao deviceGroupMemberEditorDao;
@@ -55,31 +57,25 @@ public class DeviceGroupWidget extends WidgetControllerBase {
 
         Collections.sort(currentGroups);
 
-        // Gets all the available groups that the device can be added to
-        List<? extends DeviceGroup> addableGroups = deviceGroupDao.getAllGroups();
-        addableGroups.removeAll(currentGroupsSet);
+        // Make a list of all the groups the device is not in and that are
+        // modifiable
 
+        // Get all groups
+        List<? extends DeviceGroup> allGroups = deviceGroupDao.getAllGroups();
+        
+        // Remove the groups the device is already in
+        allGroups.removeAll(currentGroupsSet);
 
-        /* Traverses down the addableGroups list and removes the redundant groups 
-         * so they aren't shown.
-         */
-        List<? extends DeviceGroup> addableGroupsCopy = deviceGroupDao.getAllGroups();
-        for (DeviceGroup group : addableGroupsCopy) {
-            if(group.isEditable()){
-                for (DeviceGroup possibleParent : currentGroupsSet) {
-                    if (group.isDescendantOf(possibleParent)) {
-                        addableGroups.remove(group);
-                        break;
-                    }
-                }
-            }else{
-                addableGroups.remove(group);
+        // Iterate the list and take the modifiable groups
+        List<DeviceGroup> groupList = new ArrayList<DeviceGroup>();
+        for (DeviceGroup group : allGroups) {
+            if (group.isModifiable()) {
+                groupList.add(group);
             }
         }
 
-        // Adds the group to the mav object
         mav.addObject("currentGroups", currentGroups);
-        mav.addObject("addableGroups", addableGroups);
+        mav.addObject("addableGroups", groupList);
         mav.addObject("meter", meter);
 
         return mav;
@@ -121,19 +117,18 @@ public class DeviceGroupWidget extends WidgetControllerBase {
      * @return
      * @throws Exception
      */
-    public ModelAndView add(HttpServletRequest request,
-            HttpServletResponse response) throws Exception {
+    public ModelAndView add(HttpServletRequest request, HttpServletResponse response)
+            throws Exception {
 
         // Gets the parameters from the request
-        int deviceId = WidgetParameterHelper.getRequiredIntParameter(request,
-                                                                     "deviceId");
+        int deviceId = WidgetParameterHelper.getRequiredIntParameter(request, "deviceId");
         Meter meter = meterDao.getForId(deviceId);
-        List<Meter> devices = Collections.singletonList(meter);
 
-        int storedDeviceGroupId = WidgetParameterHelper.getRequiredIntParameter(request,
-                                                                                "groupId");
-        StoredDeviceGroup storedDeviceGroup = deviceGroupEditorDao.getGroupById(storedDeviceGroupId);
-        deviceGroupMemberEditorDao.addDevices(storedDeviceGroup, devices);
+        String groupName = WidgetParameterHelper.getRequiredStringParameter(request, "groupName");
+        DeviceGroup group = deviceGroupService.resolveGroupName(groupName);
+
+        deviceGroupMemberEditorDao.addDevices((StoredDeviceGroup) group,
+                                              Collections.singletonList(meter));
 
         return this.render(request, response);
     }
@@ -157,6 +152,10 @@ public class DeviceGroupWidget extends WidgetControllerBase {
 
     public void setDeviceGroupEditorDao(DeviceGroupEditorDao deviceGroupEditorDao) {
         this.deviceGroupEditorDao = deviceGroupEditorDao;
+    }
+
+    public void setDeviceGroupService(DeviceGroupService deviceGroupService) {
+        this.deviceGroupService = deviceGroupService;
     }
 
 }

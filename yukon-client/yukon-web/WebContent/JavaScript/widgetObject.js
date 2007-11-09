@@ -20,6 +20,15 @@ JsWidgetObject.prototype = {
     this.linkInfo = $H();
   },
   
+  doDirectActionRefresh: function(cmd) {
+    $(this.container).getElementsBySelector('input').invoke('disable');
+    
+    params = this.getWidgetParameters();
+    
+    var url = "/spring/widget/" + this.shortName + "/" + cmd;
+    new Ajax.Updater(this.container, url, {'parameters': params, 'evalScripts': true, 'onSuccess': this.onSuccess.bind(this)});
+  },
+  
   doActionRefresh: function(cmd, actionButton, waitingLabel, key) {
     $(actionButton).getElementsByClassName('widgetAction_waiting').invoke('show');
     $(actionButton).getElementsBySelector('input').each(function(it) {it.value = waitingLabel});
