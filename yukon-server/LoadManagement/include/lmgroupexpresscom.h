@@ -47,6 +47,11 @@ RWDECLARE_COLLECTABLE( CtiLMGroupExpresscom )
                                                     LONG valueB, LONG valueD, LONG valueF, LONG random,
                                                     LONG valueTA, LONG valueTB, LONG valueTC, LONG valueTD,
                                                     LONG valueTE, LONG valueTF, int priority) const;
+    virtual CtiRequestMsg* createSetPointSimpleMsg(string settings, LONG minValue, LONG maxValue,
+                                                    LONG precoolTemp, LONG random, float rampRate,
+                                                    LONG precoolTime, LONG precoolHoldTime, LONG maxTempChange,
+                                                    LONG totalTime, LONG rampOutTime, LONG minutesFromBegin,
+                                                    int priority) const;
 
     //Members inherited from RWCollectable
     void restoreGuts(RWvistream& );

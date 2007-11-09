@@ -1030,7 +1030,8 @@ void CtiLMControlAreaStore::reset()
                         << lmThermoStatGearTable["valuetc"]
                         << lmThermoStatGearTable["valuetd"]
                         << lmThermoStatGearTable["valuete"]
-                        << lmThermoStatGearTable["valuetf"];
+                        << lmThermoStatGearTable["valuetf"]
+                        << lmThermoStatGearTable["ramprate"];
 
                         selector.from(lmProgramDirectGearTable);
                         selector.from(lmThermoStatGearTable);

@@ -63,15 +63,15 @@ LONG CtiLMProgramThermoStatGear::getMaxValue() const
 {
     return _maxvalue;
 }
-LONG CtiLMProgramThermoStatGear::getValueB() const
+LONG CtiLMProgramThermoStatGear::getPrecoolTemp() const
 {
     return _valueb;
 }
-LONG CtiLMProgramThermoStatGear::getValueD() const
+LONG CtiLMProgramThermoStatGear::getControlTemp() const
 {
     return _valued;
 }
-LONG CtiLMProgramThermoStatGear::getValueF() const
+LONG CtiLMProgramThermoStatGear::getRestoreTemp() const
 {
     return _valuef;
 }
@@ -79,98 +79,34 @@ LONG CtiLMProgramThermoStatGear::getRandom() const
 {
     return _random;
 }
-LONG CtiLMProgramThermoStatGear::getValueTa() const
+LONG CtiLMProgramThermoStatGear::getDelayTime() const
 {
     return _valueta;
 }
-LONG CtiLMProgramThermoStatGear::getValueTb() const
+LONG CtiLMProgramThermoStatGear::getPrecoolTime() const
 {
     return _valuetb;
 }
-LONG CtiLMProgramThermoStatGear::getValueTc() const
+LONG CtiLMProgramThermoStatGear::getPrecoolHoldTime() const
 {
     return _valuetc;
 }
-LONG CtiLMProgramThermoStatGear::getValueTd() const
+LONG CtiLMProgramThermoStatGear::getControlTime() const
 {
     return _valuetd;
 }
-LONG CtiLMProgramThermoStatGear::getValueTe() const
+LONG CtiLMProgramThermoStatGear::getControlHoldTime() const
 {
     return _valuete;
 }
-LONG CtiLMProgramThermoStatGear::getValueTf() const
+LONG CtiLMProgramThermoStatGear::getRestoreTime() const
 {
     return _valuetf;
 }
-
-
-CtiLMProgramThermoStatGear& CtiLMProgramThermoStatGear::setSettings(const string& settings)
+float CtiLMProgramThermoStatGear::getRampRate() const
 {
-    _settings = settings;
-    return *this;
+    return _rampRate;
 }
-CtiLMProgramThermoStatGear& CtiLMProgramThermoStatGear::setMinValue(LONG val)
-{
-    _minvalue = val;
-    return *this;
-}
-CtiLMProgramThermoStatGear& CtiLMProgramThermoStatGear::setMaxValue(LONG val)
-{
-    _maxvalue = val;
-    return *this;
-}
-CtiLMProgramThermoStatGear& CtiLMProgramThermoStatGear::setValueB(LONG val)
-{
-    _valueb = val;
-    return *this;
-}
-CtiLMProgramThermoStatGear& CtiLMProgramThermoStatGear::setValueD(LONG val)
-{
-    _valued = val;
-    return *this;
-}
-CtiLMProgramThermoStatGear& CtiLMProgramThermoStatGear::setValueF(LONG val)
-{
-    _valuef = val;
-    return *this;
-}
-CtiLMProgramThermoStatGear& CtiLMProgramThermoStatGear::setRandom(LONG val)
-{
-    _random = val;
-    return *this;
-}
-CtiLMProgramThermoStatGear& CtiLMProgramThermoStatGear::setValueTa(LONG val)
-{
-    _valueta = val;
-    return *this;
-}
-CtiLMProgramThermoStatGear& CtiLMProgramThermoStatGear::setValueTb(LONG val)
-{
-    _valuetb = val;
-    return *this;
-}
-CtiLMProgramThermoStatGear& CtiLMProgramThermoStatGear::setValueTc(LONG val)
-{
-    _valuetc = val;
-    return *this;
-}
-CtiLMProgramThermoStatGear& CtiLMProgramThermoStatGear::setValueTd(LONG val)
-{
-    _valuetd = val;
-    return *this;
-}
-CtiLMProgramThermoStatGear& CtiLMProgramThermoStatGear::setValueTe(LONG val)
-{
-    _valuete = val;
-    return *this;
-}
-CtiLMProgramThermoStatGear& CtiLMProgramThermoStatGear::setValueTf(LONG val)
-{
-    _valuetf = val;
-    return *this;
-}
-
 
 /*-------------------------------------------------------------------------
     restoreGuts
@@ -193,7 +129,8 @@ void CtiLMProgramThermoStatGear::restoreGuts(RWvistream& istrm)
     >> _valuetc
     >> _valuetd
     >> _valuete
-    >> _valuetf;
+    >> _valuetf
+    >> _rampRate;
 }
 
 /*---------------------------------------------------------------------------
@@ -217,7 +154,8 @@ void CtiLMProgramThermoStatGear::saveGuts(RWvostream& ostrm ) const
     << _valuetc
     << _valuetd
     << _valuete
-    << _valuetf;
+    << _valuetf
+    << _rampRate;
 
     return;
 }
@@ -244,6 +182,7 @@ CtiLMProgramThermoStatGear& CtiLMProgramThermoStatGear::operator=(const CtiLMPro
         _valuetd  = right._valuetd ;
         _valuete  = right._valuete ;
         _valuetf  = right._valuetf ;
+        _rampRate = right._rampRate;
     }
 
     return *this;
@@ -299,6 +238,7 @@ void CtiLMProgramThermoStatGear::restore(RWDBReader& rdr)
     rdr["valuetd"] >> _valuetd;
     rdr["valuete"] >> _valuete;
     rdr["valuetf"] >> _valuetf;
+    rdr["ramprate"] >> _rampRate;
 }
 
 // Static Members

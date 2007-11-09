@@ -883,6 +883,21 @@ CtiRequestMsg* CtiLMGroupBase::createSetPointRequestMsg(string settings, LONG mi
     return NULL;
 }
 
+// CreateSetPointSimpleMessage
+// Only in expresscom.
+CtiRequestMsg* CtiLMGroupBase::createSetPointSimpleMsg(string settings, LONG minValue, LONG maxValue,
+                                                       LONG precoolTemp, LONG random, float rampRate,
+                                                       LONG precoolTime, LONG precoolHoldTime, LONG maxTempChange,
+                                                       LONG totalTime, LONG rampOutTime, LONG minutesFromBegin,
+                                                       int priority) const
+{
+    {
+        CtiLockGuard<CtiLogger> logger_guard(dout);
+        dout << CtiTime() << " - Can not create a Set Point command to a non-Expresscom Load Management Group, in: " << __FILE__ << " at:" << __LINE__ << endl;
+    }
+    return NULL;
+}
+
 /*-------------------------------------------------------------------------
     restoreGuts
 

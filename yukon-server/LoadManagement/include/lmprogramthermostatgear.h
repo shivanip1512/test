@@ -6,9 +6,9 @@
         Description:    Header file for CtiLMProgramThermoStatGear
                         CtiLMProgramThermoStatGear
 
-        Initial Date:  11/1/2002
+        Initial Date:  11/5/2002
         
-        COPYRIGHT:  Copyright (C) Cannon Technologies, Inc., 2002
+        COPYRIGHT:  Copyright (C) Cooper Industries, 2002
 ---------------------------------------------------------------------------*/
 #pragma warning( disable : 4786 )  // No truncated debug name warnings please....
 
@@ -40,30 +40,17 @@ RWDECLARE_COLLECTABLE( CtiLMProgramThermoStatGear )
     const string& getSettings() const;
     LONG getMinValue() const;
     LONG getMaxValue() const;
-    LONG getValueB() const;
-    LONG getValueD() const;
-    LONG getValueF() const;
+    LONG getPrecoolTemp() const;
+    LONG getControlTemp() const;
+    LONG getRestoreTemp() const;
     LONG getRandom() const;
-    LONG getValueTa() const;
-    LONG getValueTb() const;
-    LONG getValueTc() const;
-    LONG getValueTd() const;
-    LONG getValueTe() const;
-    LONG getValueTf() const;
-
-    CtiLMProgramThermoStatGear& setSettings(const string& settings);
-    CtiLMProgramThermoStatGear& setMinValue(LONG val);
-    CtiLMProgramThermoStatGear& setMaxValue(LONG val);
-    CtiLMProgramThermoStatGear& setValueB(LONG val);
-    CtiLMProgramThermoStatGear& setValueD(LONG val);
-    CtiLMProgramThermoStatGear& setValueF(LONG val);
-    CtiLMProgramThermoStatGear& setRandom(LONG val);
-    CtiLMProgramThermoStatGear& setValueTa(LONG val);
-    CtiLMProgramThermoStatGear& setValueTb(LONG val);
-    CtiLMProgramThermoStatGear& setValueTc(LONG val);
-    CtiLMProgramThermoStatGear& setValueTd(LONG val);
-    CtiLMProgramThermoStatGear& setValueTe(LONG val);
-    CtiLMProgramThermoStatGear& setValueTf(LONG val);
+    LONG getDelayTime() const;
+    LONG getPrecoolTime() const;
+    LONG getPrecoolHoldTime() const;
+    LONG getControlTime() const;
+    LONG getControlHoldTime() const;
+    LONG getRestoreTime() const;
+    float getRampRate() const;
 
     CtiLMProgramThermoStatGear* replicate() const;
 
@@ -93,6 +80,7 @@ private:
     LONG _valuetd;
     LONG _valuete;
     LONG _valuetf;
+    float _rampRate;
 
     void restore(RWDBReader& rdr);
 };

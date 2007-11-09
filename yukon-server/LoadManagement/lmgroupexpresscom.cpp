@@ -409,6 +409,193 @@ CtiRequestMsg* CtiLMGroupExpresscom::createSetPointRequestMsg(string settings, L
     return CTIDBG_new CtiRequestMsg(getPAOId(), controlString,0,0,0,0,0,0,priority);
 }
 
+//Create a setpoint message using slopes instead of absolute values.
+//Sends a bump message only when minutesFromBegin is > 0.
+CtiRequestMsg* CtiLMGroupExpresscom::createSetPointSimpleMsg(string settings, LONG minValue, LONG maxValue,
+                                                              LONG precoolTemp, LONG random, float rampRate,
+                                                              LONG precoolTime, LONG precoolHoldTime, LONG maxTempChange,
+                                                              LONG totalTime, LONG rampOutTime, LONG minutesFromBegin,
+                                                              int priority) const
+{
+    LONG controlTime, controlHoldTime;
+    LONG rampUpTime = totalTime - (precoolTime + rampOutTime + precoolHoldTime);
+    bool retFlag = true;
+    if( rampUpTime < 60 )
+    {
+        CtiLockGuard<CtiLogger> logger_guard(dout);
+        dout << CtiTime() << " *** CHECKPOINT *** LM Group " << getPAOName() << " improperly configured time, not enough ramp time " << endl;
+        retFlag = false;
+    }
+    string controlString("control xcom setpoint ");
+
+    std::transform(settings.begin(), settings.end(), settings.begin(), tolower);
+    if( settings.length() > 0 && settings[(size_t)0]=='d' )
+    {
+        controlString += "delta ";
+    }
+    if( settings.length() > 1 && settings[(size_t)1]=='c' )
+    {
+        controlString += "celsius ";
+    }
+    if( settings.length() > 3 && settings[(size_t)2]=='h' && settings[(size_t)3]=='i' )
+    {
+        controlString += "mode both ";
+    }
+    else if( settings.length() > 2 && settings[(size_t)2]=='h' )
+    {
+        controlString += "mode heat ";
+        if( precoolTemp < 0 )
+        {
+            precoolTemp = precoolTemp*-1;
+        }
+        if( rampRate < 0 )
+        {
+            rampRate = rampRate*-1;
+        }
+    }
+    else if( settings.length() > 3 && settings[(size_t)3]=='i' )
+    {
+        controlString += "mode cool ";
+        if( precoolTemp > 0 )
+        {
+            precoolTemp = precoolTemp*-1;
+        }
+        if( rampRate < 0 )
+        {
+            rampRate = rampRate*-1;
+        }
+    }
+
+    if( minValue != 0 )
+    {
+        controlString += "min ";
+        char tempchar[64];
+        _ltoa(minValue,tempchar,10);
+        controlString += tempchar;
+        controlString += " ";
+    }
+    if( maxValue != 0 )
+    {
+        controlString += "max ";
+        char tempchar[64];
+        _ltoa(maxValue,tempchar,10);
+        controlString += tempchar;
+        controlString += " ";
+    }
+    if( random != 0 )
+    {
+        controlString += "tr ";
+        char tempchar[64];
+        _ltoa(random,tempchar,10);
+        controlString += tempchar;
+        controlString += " ";
+    }
+    if( precoolTime != 0 )
+    {
+        controlString += "tb ";
+        char tempchar[64];
+        _ltoa(precoolTime,tempchar,10);
+        controlString += tempchar;
+        controlString += " ";
+    }
+    if( precoolTemp != 0 )
+    {
+        controlString += "dsb ";
+        char tempchar[64];
+        _ltoa(precoolTemp,tempchar,10);
+        controlString += tempchar;
+        controlString += " ";
+    }
+    if( precoolHoldTime != 0 )
+    {
+        controlString += "tc ";
+        char tempchar[64];
+        _ltoa(precoolHoldTime,tempchar,10);
+        controlString += tempchar;
+        controlString += " ";
+    }
+
+    int degrees = ((float)rampUpTime/60) * rampRate; //rampRate D is the degree/hour rate, degrees is an int because we can only send a whole number.
+
+    if( degrees > maxTempChange )
+    {
+        degrees = maxTempChange;
+    }
+    if( rampUpTime != 0 && degrees != 0 )
+    {
+        // Control time = (total time to do X degrees) - (hold time for the final degree)
+        // Hold Time = (hold time for final degree) + any leftover time;
+        // This works because of the way degrees is calculated before we get here.
+        controlTime = (float)degrees / rampRate * 60 - ((float)1/rampRate * 60);
+        controlHoldTime = rampUpTime -controlTime;
+
+        controlString += "td ";
+        char tempchar[64];
+        _ltoa(controlTime,tempchar,10);
+        controlString += tempchar;
+        controlString += " ";
+
+        controlString += "dsd ";
+        _ltoa(degrees,tempchar,10);
+        controlString += tempchar;
+        controlString += " ";
+
+        controlString += "te ";
+        _ltoa(controlHoldTime,tempchar,10);
+        controlString += tempchar;
+        controlString += " ";
+
+    }
+    else
+    {
+        CtiLockGuard<CtiLogger> logger_guard(dout);
+        dout << CtiTime() << " *** CHECKPOINT *** LM Group " << getPAOName() << " improperly configured ramp time/rate. " << endl;
+        retFlag = false;
+    }
+
+    if( rampOutTime != 0 )
+    {
+        controlString += "tf ";
+        char tempchar[64];
+        _ltoa(rampOutTime,tempchar,10);
+        controlString += tempchar;
+        controlString += " ";
+    }
+    if( degrees != 0 )
+    {
+        //Set number of degrees to count down.
+        controlString += "dsf ";
+        char tempchar[64];
+        _ltoa((-1*degrees - precoolTemp),tempchar,10);
+        controlString += tempchar;
+        controlString += " ";
+    }
+
+    if( minutesFromBegin > 0 )
+    {
+        controlString += "bump stage ";//these are seperate commands
+        char tempchar[64];
+        _ltoa(minutesFromBegin,tempchar,10);
+        controlString += tempchar;
+        controlString += " ";
+
+    }
+
+    if( retFlag && _LM_DEBUG & LM_DEBUG_STANDARD )
+    {
+        CtiLockGuard<CtiLogger> logger_guard(dout);
+        dout << CtiTime() << " - Sending set point command, LM Group: " << getPAOName() << ", string: " << controlString << ", priority: " << priority << endl;
+    }
+    if( retFlag )
+    {
+        return CTIDBG_new CtiRequestMsg(getPAOId(), controlString,0,0,0,0,0,0,priority);
+    }
+    else
+    {
+        return NULL;
+    }
+}
+
 /*-------------------------------------------------------------------------
     restoreGuts
     

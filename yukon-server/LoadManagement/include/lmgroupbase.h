@@ -133,6 +133,11 @@ public:
                                                     LONG valueB, LONG valueD, LONG valueF, LONG random,
                                                     LONG valueTA, LONG valueTB, LONG valueTC, LONG valueTD,
                                                     LONG valueTE, LONG valueTF, int priority) const;// in CtiLMGroupExpresscom
+    virtual CtiRequestMsg* createSetPointSimpleMsg(string settings, LONG minValue, LONG maxValue,
+                                                    LONG precoolTemp, LONG random, float rampRate,
+                                                    LONG precoolTime, LONG precoolHoldTime, LONG maxTempChange,
+                                                    LONG totalTime, LONG rampOutTime, LONG minutesFromBegin,
+                                                    int priority) const;// CtiLMGroupExpresscom
 
     //pure virtuals
     virtual CtiLMGroupBase* replicate() const = 0;

@@ -747,6 +747,7 @@ const string CtiLMProgramDirectGear::RotationMethod = "Rotation";
 const string CtiLMProgramDirectGear::LatchingMethod = "Latching";
 const string CtiLMProgramDirectGear::TrueCycleMethod = "TrueCycle";
 const string CtiLMProgramDirectGear::ThermostatRampingMethod = "ThermostatRamping";
+const string CtiLMProgramDirectGear::SimpleThermostatRampingMethod = "SimpleThermostatRamping";
 const string CtiLMProgramDirectGear::TargetCycleMethod = "TargetCycle";
 const string CtiLMProgramDirectGear::MagnitudeCycleMethod = "MagnitudeCycle";
 const string CtiLMProgramDirectGear::NoControlMethod = "NoControl";

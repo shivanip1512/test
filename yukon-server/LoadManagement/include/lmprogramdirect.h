@@ -210,8 +210,7 @@ private:
     void ResetGroupsInternalState();    
     void RampInGroups(ULONG secondsFrom1901, CtiLMProgramDirectGear* lm_gear = 0);
     double StartMasterCycle(ULONG secondsFrom1901, CtiLMProgramDirectGear* lm_gear);
-
-
+    bool sendSimpleThermostatMessage(CtiLMProgramDirectGear* currentGearObject, LONG secondsFrom1901, CtiMultiMsg* multiPilMsg, double &expectedLoadReduced, bool isRefresh);
     
     void restore(RWDBReader& rdr);
 };

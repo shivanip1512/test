@@ -1027,16 +1027,16 @@ DOUBLE CtiLMProgramDirect::reduceProgramLoad(DOUBLE loadReductionNeeded, LONG cu
                     string settings = thermostatGearObject->getSettings();
                     LONG minValue = thermostatGearObject->getMinValue();
                     LONG maxValue = thermostatGearObject->getMaxValue();
-                    LONG valueB = thermostatGearObject->getValueB();
-                    LONG valueD = thermostatGearObject->getValueD();
-                    LONG valueF = thermostatGearObject->getValueF();
+                    LONG valueB = thermostatGearObject->getPrecoolTemp();
+                    LONG valueD = thermostatGearObject->getControlTemp();
+                    LONG valueF = thermostatGearObject->getRestoreTemp();
                     LONG random = thermostatGearObject->getRandom();
-                    LONG valueTA = thermostatGearObject->getValueTa();
-                    LONG valueTB = thermostatGearObject->getValueTb();
-                    LONG valueTC = thermostatGearObject->getValueTc();
-                    LONG valueTD = thermostatGearObject->getValueTd();
-                    LONG valueTE = thermostatGearObject->getValueTe();
-                    LONG valueTF = thermostatGearObject->getValueTf();
+                    LONG valueTA = thermostatGearObject->getDelayTime();
+                    LONG valueTB = thermostatGearObject->getPrecoolTime();
+                    LONG valueTC = thermostatGearObject->getPrecoolHoldTime();
+                    LONG valueTD = thermostatGearObject->getControlTime();
+                    LONG valueTE = thermostatGearObject->getControlHoldTime();
+                    LONG valueTF = thermostatGearObject->getRestoreTime();
 
                     if( _LM_DEBUG & LM_DEBUG_STANDARD )
                     {
@@ -1074,6 +1074,14 @@ DOUBLE CtiLMProgramDirect::reduceProgramLoad(DOUBLE loadReductionNeeded, LONG cu
                         }
                     }
                     if( getProgramState() != CtiLMProgramBase::ManualActiveState )
+                    {
+                        setProgramState(CtiLMProgramBase::FullyActiveState);
+                    }
+                }
+                else if( !stringCompareIgnoreCase(currentGearObject->getControlMethod(),CtiLMProgramDirectGear::SimpleThermostatRampingMethod) )
+                {
+                    bool didSendMessages = sendSimpleThermostatMessage(currentGearObject, secondsFrom1901, multiPilMsg, expectedLoadReduced, false);
+                    if( didSendMessages && getProgramState() != CtiLMProgramBase::ManualActiveState )
                     {
                         setProgramState(CtiLMProgramBase::FullyActiveState);
                     }
@@ -1779,16 +1787,16 @@ DOUBLE CtiLMProgramDirect::manualReduceProgramLoad(ULONG secondsFrom1901, CtiMul
                 string settings = thermostatGearObject->getSettings();
                 LONG minValue = thermostatGearObject->getMinValue();
                 LONG maxValue = thermostatGearObject->getMaxValue();
-                LONG valueB = thermostatGearObject->getValueB();
-                LONG valueD = thermostatGearObject->getValueD();
-                LONG valueF = thermostatGearObject->getValueF();
+                LONG valueB = thermostatGearObject->getPrecoolTemp();
+                LONG valueD = thermostatGearObject->getControlTemp();
+                LONG valueF = thermostatGearObject->getRestoreTemp();
                 LONG random = thermostatGearObject->getRandom();
-                LONG valueTA = thermostatGearObject->getValueTa();
-                LONG valueTB = thermostatGearObject->getValueTb();
-                LONG valueTC = thermostatGearObject->getValueTc();
-                LONG valueTD = thermostatGearObject->getValueTd();
-                LONG valueTE = thermostatGearObject->getValueTe();
-                LONG valueTF = thermostatGearObject->getValueTf();
+                LONG valueTA = thermostatGearObject->getDelayTime();
+                LONG valueTB = thermostatGearObject->getPrecoolTime();
+                LONG valueTC = thermostatGearObject->getPrecoolHoldTime();
+                LONG valueTD = thermostatGearObject->getControlTime();
+                LONG valueTE = thermostatGearObject->getControlHoldTime();
+                LONG valueTF = thermostatGearObject->getRestoreTime();
 
                 if( _LM_DEBUG & LM_DEBUG_STANDARD )
                 {
@@ -1825,6 +1833,14 @@ DOUBLE CtiLMProgramDirect::manualReduceProgramLoad(ULONG secondsFrom1901, CtiMul
                     }
                 }
                 if( getProgramState() != CtiLMProgramBase::ManualActiveState )
+                {
+                    setProgramState(CtiLMProgramBase::FullyActiveState);
+                }
+            }
+            else if( !stringCompareIgnoreCase(currentGearObject->getControlMethod(),CtiLMProgramDirectGear::SimpleThermostatRampingMethod) )
+            {
+                bool didSendMessages = sendSimpleThermostatMessage(currentGearObject, secondsFrom1901, multiPilMsg, expectedLoadReduced, false);
+                if( didSendMessages && getProgramState() != CtiLMProgramBase::ManualActiveState )
                 {
                     setProgramState(CtiLMProgramBase::FullyActiveState);
                 }
@@ -3096,16 +3112,16 @@ DOUBLE CtiLMProgramDirect::updateProgramControlForGearChange(ULONG secondsFrom19
             string settings = thermostatGearObject->getSettings();
             LONG minValue = thermostatGearObject->getMinValue();
             LONG maxValue = thermostatGearObject->getMaxValue();
-            LONG valueB = thermostatGearObject->getValueB();
-            LONG valueD = thermostatGearObject->getValueD();
-            LONG valueF = thermostatGearObject->getValueF();
+            LONG valueB = thermostatGearObject->getPrecoolTemp();
+            LONG valueD = thermostatGearObject->getControlTemp();
+            LONG valueF = thermostatGearObject->getRestoreTemp();
             LONG random = thermostatGearObject->getRandom();
-            LONG valueTA = thermostatGearObject->getValueTa();
-            LONG valueTB = thermostatGearObject->getValueTb();
-            LONG valueTC = thermostatGearObject->getValueTc();
-            LONG valueTD = thermostatGearObject->getValueTd();
-            LONG valueTE = thermostatGearObject->getValueTe();
-            LONG valueTF = thermostatGearObject->getValueTf();
+            LONG valueTA = thermostatGearObject->getDelayTime();
+            LONG valueTB = thermostatGearObject->getPrecoolTime();
+            LONG valueTC = thermostatGearObject->getPrecoolHoldTime();
+            LONG valueTD = thermostatGearObject->getControlTime();
+            LONG valueTE = thermostatGearObject->getControlHoldTime();
+            LONG valueTF = thermostatGearObject->getRestoreTime();
 
             if( _LM_DEBUG & LM_DEBUG_STANDARD )
             {
@@ -3214,12 +3230,12 @@ DOUBLE CtiLMProgramDirect::updateProgramControlForGearChange(ULONG secondsFrom19
                                 CtiLMProgramThermoStatGear* thermostatGear = (CtiLMProgramThermoStatGear*)previousGearObject;
                                 int minutesToAdd = 0;
                                 minutesToAdd += (thermostatGear->getRandom()/2+thermostatGear->getRandom()%2);
-                                minutesToAdd += thermostatGear->getValueTa();
-                                minutesToAdd += thermostatGear->getValueTb();
-                                minutesToAdd += thermostatGear->getValueTc();
-                                minutesToAdd += thermostatGear->getValueTd();
-                                minutesToAdd += thermostatGear->getValueTe();
-                                minutesToAdd += thermostatGear->getValueTf();
+                                minutesToAdd += thermostatGear->getDelayTime();
+                                minutesToAdd += thermostatGear->getPrecoolTime();
+                                minutesToAdd += thermostatGear->getPrecoolHoldTime();
+                                minutesToAdd += thermostatGear->getControlTime();
+                                minutesToAdd += thermostatGear->getControlHoldTime();
+                                minutesToAdd += thermostatGear->getRestoreTime();
                                 timeToTimeIn.addMinutes(minutesToAdd);
                             }
                             else
@@ -4105,6 +4121,15 @@ BOOL CtiLMProgramDirect::refreshStandardProgramControl(ULONG secondsFrom1901, Ct
             /*CtiLockGuard<CtiLogger> logger_guard(dout);
             dout << CtiTime() << " - Gear Control Method: " << getPAOName() << " Gear#: " << currentGearObject->getGearNumber() << " control method isn't supported yet.  In: " << __FILE__ << " at:" << __LINE__ << endl;*/
         }
+        else if( !stringCompareIgnoreCase(currentGearObject->getControlMethod(),CtiLMProgramDirectGear::SimpleThermostatRampingMethod) )
+        {
+            double dummyVariable;
+            bool didSendMessages = sendSimpleThermostatMessage(currentGearObject, secondsFrom1901, multiPilMsg, dummyVariable, true);
+            if( didSendMessages && getProgramState() != CtiLMProgramBase::ManualActiveState )
+            {
+                setProgramState(CtiLMProgramBase::FullyActiveState);
+            }
+        }
         else if( !stringCompareIgnoreCase(currentGearObject->getControlMethod(),CtiLMProgramDirectGear::ThermostatRampingMethod) ||
                  !stringCompareIgnoreCase(currentGearObject->getControlMethod(),CtiLMProgramDirectGear::NoControlMethod) )
         {
@@ -4252,12 +4277,12 @@ BOOL CtiLMProgramDirect::stopProgramControl(CtiMultiMsg* multiPilMsg, CtiMultiMs
                             CtiLMProgramThermoStatGear* thermostatGear = (CtiLMProgramThermoStatGear*)currentGearObject;
                             int minutesToAdd = 0;
                             minutesToAdd += (thermostatGear->getRandom()/2+thermostatGear->getRandom()%2);
-                            minutesToAdd += thermostatGear->getValueTa();
-                            minutesToAdd += thermostatGear->getValueTb();
-                            minutesToAdd += thermostatGear->getValueTc();
-                            minutesToAdd += thermostatGear->getValueTd();
-                            minutesToAdd += thermostatGear->getValueTe();
-                            minutesToAdd += thermostatGear->getValueTf();
+                            minutesToAdd += thermostatGear->getDelayTime();
+                            minutesToAdd += thermostatGear->getPrecoolTime();
+                            minutesToAdd += thermostatGear->getPrecoolHoldTime();
+                            minutesToAdd += thermostatGear->getControlTime();
+                            minutesToAdd += thermostatGear->getControlHoldTime();
+                            minutesToAdd += thermostatGear->getRestoreTime();
                             timeToTimeIn.addMinutes(minutesToAdd);
                         }
                         else
@@ -5249,7 +5274,7 @@ void CtiLMProgramDirect::dumpDynamicData(RWDBConnection& conn, CtiTime& currentD
                 << dynamicLMProgramDirectTable["notifyactivetime"].assign(toRWDBDT(getNotifyActiveTime()))
                 << dynamicLMProgramDirectTable["startedrampingout"].assign(toRWDBDT(getStartedRampingOutTime()))
                 << dynamicLMProgramDirectTable["notifyinactivetime"].assign(toRWDBDT(getNotifyInactiveTime()))
-                << dynamicLMProgramDirectTable["constraintoverride"].assign( (getUpdatedFlag() ? "Y":"N") )
+                << dynamicLMProgramDirectTable["constraintoverride"].assign( (getConstraintOverride() ? "Y":"N") )
                 << dynamicLMProgramDirectTable["additionalinfo"].assign(additionalInfo.c_str());
 
                 updater.where(dynamicLMProgramDirectTable["deviceid"]==getPAOId());//will be paobjectid
@@ -5751,6 +5776,102 @@ void CtiLMProgramDirect::scheduleStopNotification(const CtiTime& stop_time)
             dout << CtiTime() << " - " << " going to notify of stop @: " << notifyStopTime.asString() << endl;
         }
     }
+}
+
+bool CtiLMProgramDirect::sendSimpleThermostatMessage(CtiLMProgramDirectGear* currentGearObject, LONG secondsFrom1901, CtiMultiMsg* multiPilMsg, double &expectedLoadReduced, bool isRefresh)
+{
+    bool retVal = false;
+    CtiLMProgramThermoStatGear* thermostatGearObject = (CtiLMProgramThermoStatGear*)currentGearObject;
+    string settings = thermostatGearObject->getSettings();
+    LONG minValue = thermostatGearObject->getMinValue();
+    LONG maxValue = thermostatGearObject->getMaxValue();
+    LONG precoolTemp = thermostatGearObject->getPrecoolTemp();
+    LONG random = thermostatGearObject->getRandom();
+    float rampRate = thermostatGearObject->getRampRate();
+    LONG precoolTime = thermostatGearObject->getPrecoolTime();
+    LONG precoolHoldTime = thermostatGearObject->getPrecoolHoldTime();
+    LONG maxTempChange = thermostatGearObject->getControlTemp();
+    LONG rampOutTime = thermostatGearObject->getRestoreTime();
+    LONG maxTotalMinutes = thermostatGearObject->getDelayTime();
+    LONG refreshRate = thermostatGearObject->getMethodRate();
+    LONG totalMinutes;
+    if( getDirectStopTime() != gInvalidCtiTime )
+        totalMinutes = (getDirectStopTime().seconds() - getDirectStartTime().seconds()) / 60;
+    else
+        totalMinutes = maxTotalMinutes;
+
+    // We could check for a midnight boundary, but I think maxTotalMinutes is good enough.
+    if( totalMinutes > maxTotalMinutes )
+    {
+        totalMinutes = maxTotalMinutes;
+    }
+    CtiTime endTime(getDirectStartTime().seconds() + totalMinutes*60);
+    CtiTime now;
+
+    for( CtiLMGroupIter i = _lmprogramdirectgroups.begin(); i != _lmprogramdirectgroups.end(); i++ )
+    {
+        CtiLMGroupPtr currentLMGroup  = *i;
+        CtiLMGroupConstraintChecker con_checker(*this, currentLMGroup, secondsFrom1901);
+        long controlTime = endTime.seconds() - now.seconds(); //Control time left from right now!
+
+        if( currentLMGroup->getNextControlTime() < now &&
+           (currentLMGroup->getNextControlTime() != gInvalidCtiTime || !isRefresh) &&
+            !currentLMGroup->getDisableFlag() &&
+            !currentLMGroup->getControlInhibit() &&
+            (getConstraintOverride() || con_checker.checkControl(controlTime, true))  )
+        {
+            // Ok, so controlTime is the time from now until when we have to stop controlling..
+            // Then total control time is start time - (now+calculated control time);
+            int totalControlMinutes = ((now.seconds() + controlTime) - getDirectStartTime().seconds())/60;
+            int minutesFromBegin = (now.seconds() - getDirectStartTime().seconds())/60;
+            if( !isRefresh && minutesFromBegin < 5 ) //A little sloppy here, why 5 minutes? It is assumed there is no resend faster than 5 minutes..
+            {
+                minutesFromBegin = 0;
+            }
+            if( currentLMGroup->getPAOType() == TYPE_LMGROUP_EXPRESSCOM )
+            {
+                // XXX thermostat constraints??
+                CtiRequestMsg* requestMsg = currentLMGroup->createSetPointSimpleMsg(settings, minValue, maxValue, precoolTemp, random, rampRate, precoolTime, precoolHoldTime, maxTempChange, totalControlMinutes, rampOutTime, minutesFromBegin, defaultLMStartPriority);
+                startGroupControl(currentLMGroup, requestMsg, multiPilMsg);
+                if( refreshRate > 0 )
+                {
+                    currentLMGroup->setNextControlTime(CtiTime(now.seconds() + refreshRate));
+                    if( _LM_DEBUG & LM_DEBUG_STANDARD )
+                    {
+                        CtiLockGuard<CtiLogger> dout_guard(dout);
+                        dout << CtiTime() << " LMProgram: " << getPAOName() << ", LMGroup: " << currentLMGroup->getPAOName() << " next at: " << currentLMGroup->getNextControlTime().asString() << endl;
+                    }
+                }
+                else
+                {
+                    currentLMGroup->setNextControlTime(gInvalidCtiTime);
+                    if( _LM_DEBUG & LM_DEBUG_STANDARD )
+                    {
+                        CtiLockGuard<CtiLogger> logger_guard(dout);
+                        dout << CtiTime() << " - Thermostat Simple Set Point, LM Program: " << getPAOName() << endl;
+                    }
+                }
+
+                
+                retVal = true;
+
+                if( currentGearObject->getPercentReduction() > 0.0 )
+                {
+                    expectedLoadReduced += (currentGearObject->getPercentReduction() / 100.0) * currentLMGroup->getKWCapacity();
+                }
+                else
+                {
+                    expectedLoadReduced += currentLMGroup->getKWCapacity() * (currentGearObject->getMethodRate() / 100.0);
+                }
+            }
+            else
+            {
+                CtiLockGuard<CtiLogger> logger_guard(dout);
+                dout << CtiTime() << " - Program: " << getPAOName() << ", can not Thermostat Set Point command a non-Expresscom group: " << currentLMGroup->getPAOName() << " in: " << __FILE__ << " at:" << __LINE__ << endl;
+            }
+        }
+    }
+    return retVal;
 }
 
 // Static Members
