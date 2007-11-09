@@ -6,8 +6,8 @@
 *
 * PVCS KEYWORDS:
 * ARCHIVE      :  $Archive:   Z:/SOFTWAREARCHIVES/YUKON/RTDB/mgr_point.cpp-arc  $
-* REVISION     :  $Revision: 1.40 $
-* DATE         :  $Date: 2007/11/02 20:11:43 $
+* REVISION     :  $Revision: 1.41 $
+* DATE         :  $Date: 2007/11/09 20:12:34 $
 *
 * Copyright (c) 1999, 2000, 2001 Cannon Technologies Inc. All rights reserved.
 *-----------------------------------------------------------------------------*/
@@ -393,7 +393,7 @@ void CtiPointManager::refreshListByPAO(const vector<long> &paoids, BOOL (*testFu
         CtiPointBase().getSQL(db, key_table_system, base_selector_system );
         base_selector_system.where(base_selector_system.where() && rwdbUpper(key_table_system["pointtype"]) == RWDBExpr("SYSTEM"));
 
-        int paoids_per_select = gConfigParms.getValueAsInt("MAX_PAOIDS_PER_SELECT", 10);
+        int paoids_per_select = gConfigParms.getValueAsInt("MAX_PAOIDS_PER_SELECT", 256);
 
         //  I was going to turn these into a collection, but it's more obvious if I keep them seperate
         selector_accum  = base_selector_accum;
