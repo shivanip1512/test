@@ -377,9 +377,9 @@ update capcontrolstrategy set offpklead = -offpklead where offpklead > 0 and  co
 UPDATE Command SET Label = 'Turn Off Test Light' WHERE commandid = -65;
 UPDATE Command SET Label = 'Clear Comm Loss Counter' WHERE commandid = -67;
 
-delete from YukonGroupRole where RolePropertyId = -1113;
-delete from YukonUserRole where RolePropertyId = -1113;
-delete from YukonRoleProperty where RolePropertyId = -1113;
+delete from YukonGroupRole where RolePropertyId in (-1113,-10809);
+delete from YukonUserRole where RolePropertyId in (-1113,-10809);
+delete from YukonRoleProperty where RolePropertyId in (-1113,-10809);
 insert into YukonRoleProperty values(-10816, -108,'Standard Page Style Sheet',' ','A comma separated list of URLs for CSS files that will be included on every Standard Page');
 
 update BillingFileFormats set FormatType = 'DAFFRON' where formatType = 'DAFRON';
