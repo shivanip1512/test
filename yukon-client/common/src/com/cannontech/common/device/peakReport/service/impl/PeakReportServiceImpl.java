@@ -19,6 +19,7 @@ import com.cannontech.common.device.peakReport.model.PeakReportPeakType;
 import com.cannontech.common.device.peakReport.model.PeakReportResult;
 import com.cannontech.common.device.peakReport.model.PeakReportRunType;
 import com.cannontech.common.device.peakReport.service.PeakReportService;
+import com.cannontech.common.exception.PeakSummaryReportRequestException;
 import com.cannontech.common.util.TimeUtil;
 import com.cannontech.core.dao.DBPersistentDao;
 import com.cannontech.core.dao.PaoDao;
@@ -71,35 +72,37 @@ public class PeakReportServiceImpl implements PeakReportService {
         peakResult.setRunType(runType);
         peakResult.setRunDate(new Date());
         
+        
+        // run command
+        CommandResultHolder commandResultHolder;
         try{
-            
-            // run command
-            CommandResultHolder commandResultHolder = commandRequestExecutor.execute(meter, commandBuffer.toString(), user);
-            
-            // get result string from command, set result string
-            String resultString = commandResultHolder.getLastResultString();
-            peakResult.setResultString(resultString);
-            
-            // device errors!
-            if (commandResultHolder.isErrorsExist()) {
-                
-                peakResult.setErrors(commandResultHolder.getErrors());
-                
-                StringBuffer sb = new StringBuffer();
-                List<DeviceErrorDescription> errors = commandResultHolder.getErrors();
-                for (DeviceErrorDescription ded : errors) {
-                    sb.append(ded.toString() + "\n");
-                }
-                peakResult.setDeviceError(sb.toString());
-                peakResult.setNoData(true);
-                
-            // results exist, parse result string into peakResult
-            } else {
-                parseResultString(peakResult, resultString, interval);
-            }
-            
+            commandResultHolder = commandRequestExecutor.execute(meter, commandBuffer.toString(), user);
         }
-        catch(Exception e){}
+        catch(Exception e){
+            throw new PeakSummaryReportRequestException();
+        }
+        // get result string from command, set result string
+        String resultString = commandResultHolder.getLastResultString();
+        peakResult.setResultString(resultString);
+        
+        // device errors!
+        if (commandResultHolder.isErrorsExist()) {
+            
+            peakResult.setErrors(commandResultHolder.getErrors());
+            
+            StringBuffer sb = new StringBuffer();
+            List<DeviceErrorDescription> errors = commandResultHolder.getErrors();
+            for (DeviceErrorDescription ded : errors) {
+                sb.append(ded.toString() + "\n");
+            }
+            peakResult.setDeviceError(sb.toString());
+            peakResult.setNoData(true);
+            
+        // results exist, parse result string into peakResult
+        } else {
+            parseResultString(peakResult, resultString, interval);
+        }
+       
         
         // persist the results
         if(!peakResult.isNoData() && persist){

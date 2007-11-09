@@ -178,7 +178,7 @@ public class ProfilePeakWidget extends WidgetControllerBase {
         mav.addObject("preResult", prePeakResult);
         mav.addObject("postResult", postPeakResult);
         
-        if(prePeakResult != null) {
+        if(prePeakResult != null && !prePeakResult.isNoData()) {
             Map<String,String> preMap = getParsedPeakResultValuesMap(prePeakResult, user, deviceId, 1);
             mav.addObject("displayName", preMap.get("displayName"));
             mav.addObject("prePeriodStartDateDisplay",preMap.get("periodStartDateDisplay"));
@@ -186,7 +186,7 @@ public class ProfilePeakWidget extends WidgetControllerBase {
             mav.addObject("prePeakValue",preMap.get("peakValueStr"));
         }
         
-        if(postPeakResult != null) {
+        if(postPeakResult != null && !postPeakResult.isNoData()) {
             Map<String,String> postMap = getParsedPeakResultValuesMap(postPeakResult, user, deviceId, 1);
             mav.addObject("postPeriodStartDateDisplay",postMap.get("periodStartDateDisplay"));
             mav.addObject("postPeriodStopDateDisplay",postMap.get("periodStopDateDisplay"));

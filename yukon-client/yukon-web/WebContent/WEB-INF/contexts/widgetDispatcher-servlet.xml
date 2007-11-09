@@ -24,7 +24,9 @@
         <property name="suffix" value=""/>
     </bean>
     
-    <bean class="com.cannontech.web.widget.support.WidgetExceptionHandler"/>
+    <bean class="com.cannontech.web.widget.support.WidgetExceptionHandler">
+        <property name="friendlyExceptionResolver" ref="friendlyExceptionResolver"/>
+    </bean>
     
     <bean id="viewNameTranslator" class="org.springframework.web.servlet.view.DefaultRequestToViewNameTranslator">
         <property name="suffix" value=".jsp"/>

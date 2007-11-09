@@ -8,18 +8,20 @@
 	<tags:nameValue name="Physical Address">${meter.address}</tags:nameValue>
 	<tags:nameValue name="Route">${meter.route}</tags:nameValue>
     
-    <tags:nameValue name="Outage Status">
-        <c:if test="${state == 'RESTORED'}">
-            Meter responded successfully.
-        </c:if>
-        <c:if test="${state == 'OUTAGE'}">
-            Meter did not respond.
-        </c:if>
-        
-        <div style="text-align: right">
-          <tags:widgetActionRefresh method="ping" label="Ping" labelBusy="Pinging"/>
+    <tr><td><div style="height:8px;"></div></td></tr>
+    <tr>
+        <td><tags:widgetActionUpdate method="ping" label="Ping" labelBusy="Pinging" container="${widgetParameters.widgetId}_results" /></td>
+        <td>
+        <div id="${widgetParameters.widgetId}_results">
+            <c:if test="${state == 'RESTORED' && empty errorsExist}">
+                Meter responded successfully.
+            </c:if>
+            <c:if test="${state == 'OUTAGE' || not empty errorsExist}">
+                Meter did not respond.
+            </c:if>
         </div>
-    </tags:nameValue>
+        </td>
+    </tr>    
   
 </tags:nameValueContainer>
 

@@ -56,7 +56,7 @@ public class MeterInformationWidget extends WidgetControllerBase {
         
         int deviceId = WidgetParameterHelper.getRequiredIntParameter(request, "deviceId");
         
-        ModelAndView mav = getMeterInformationModelAndView(deviceId);
+        ModelAndView mav = new ModelAndView("common/meterReadingsResult.jsp");
 
         Meter meter = meterDao.getForId(deviceId);
         LiteYukonUser user = ServletUtil.getYukonUser(request);

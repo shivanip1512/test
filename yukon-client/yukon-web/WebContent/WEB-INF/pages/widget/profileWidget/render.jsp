@@ -99,87 +99,15 @@
 			<input id="email" name="email" type="text" value="${email}" size="25" style="height:16px;">
 		</td>
 		<td class="last" align="right">
-			<tags:widgetActionRefresh method="initiateLoadProfile" label="Start" labelBusy="Start"/>
+			<tags:widgetActionUpdate method="initiateLoadProfile" label="Start" labelBusy="Start" container="${widgetParameters.widgetId}_results"/>
 		</td>
 	</tr>
 	
 </table>
 <br/>
 
-
-
-<%--ONGOING PROFILES--%>
-<c:choose>
-
-	<c:when test="${empty pendingRequests}">
-		<div class="compactResultTableDescription">Pending Requests: </div>None
-	</c:when>
-
-	<c:when test="${not empty pendingRequests}">
-	
-		<table class="compactResultsTable">
-		
-			<tr><th>Pending Requests:</th></tr>
-			
-			<tr>
-				<td>
-					<table>
-						<c:forEach var="pendingRequest" items="${pendingRequests}">
-
-							<tr valign="top" class="<tags:alternateRow odd="" even="altRow"/>">
-								
-								<!-- MORE INFO HIDE REVEAL --------------------------------------------->
-								<td>
-									<tags:hideReveal
-										title="${pendingRequest.from} - ${pendingRequest.to}"
-										showInitially="false"
-										identifier="pendingContainer${pendingRequest.requestId}">
-
-										<table class="compactResultsTable" style="margin-left:20px">
-											<tr>
-												<td class="label">Channel:</td>
-												<td>${pendingRequest.channel}</td>
-											</tr>
-											<tr>
-												<td class="label">Requested By:</td>
-												<td>${pendingRequest.userName}</td>
-											</tr>
-											<tr>
-												<td colspan="2">${pendingRequest.email}</td>
-											</tr>
-										</table>
-									</tags:hideReveal>
-								</td>
-								
-								<!-- STATUS BAR --------------------------------------------------------->
-								<td>
-									<div id="profileStatusBar${pendingRequest.requestId}" style="vertical-align: top"></div>
-
-									<script language="JavaScript">
-										progressUpdaters[${pendingRequest.requestId}] = new Ajax.PeriodicalUpdater('profileStatusBar${pendingRequest.requestId}', '/spring/widget/profileWidget/percentDoneProgressBarHTML?requestId=${pendingRequest.requestId}', {method: 'post', frequency: 2});
-									</script>
-
-								</td>
-								
-								<!-- CANCEL ICON ------------------------------------------------------->
-								<td
-									onClick="javascript:progressUpdaters[${pendingRequest.requestId}].stop();">
-									<tags:widgetActionRefreshImage method="cancelLoadProfile"
-										requestId="${pendingRequest.requestId}" title="Cancel"
-										imgSrc="/WebConfig/yukon/Icons/action_stop.gif"
-										imgSrcHover="/WebConfig/yukon/Icons/action_stop.gif" />
-								</td>
-
-							</tr>
-
-						</c:forEach>
-					</table>
-				</td>
-			</tr>
-		</table>
-	</c:when>
-</c:choose>
-
-
-
-
+<%--RESULTS--%>
+<div id="${widgetParameters.widgetId}_results">
+    <c:url var="ongoingProfilesUrl" value="/WEB-INF/pages/widget/profileWidget/ongoingProfiles.jsp" />
+    <jsp:include page="${ongoingProfilesUrl}" />
+</div>

@@ -192,7 +192,7 @@ public class PeakReportWidget extends WidgetControllerBase {
         }
         
         // init mav
-        ModelAndView mav = render(request, response);
+        ModelAndView mav = new ModelAndView("peakReportWidget/peakSummaryReportResult.jsp");
         
         // bad date, return mav with redisplay dates and error msg
         if(!datesOk){
@@ -211,7 +211,9 @@ public class PeakReportWidget extends WidgetControllerBase {
         mav.addObject("peakResult", peakResult);
         
         // special formatting of peakResult dates for display purposes
-        addParsedPeakResultValuesToMav(peakResult, mav, user, deviceId, channel);
+        if(!peakResult.isNoData()) {
+            addParsedPeakResultValuesToMav(peakResult, mav, user, deviceId, channel);
+        }
         
         return mav;
     }

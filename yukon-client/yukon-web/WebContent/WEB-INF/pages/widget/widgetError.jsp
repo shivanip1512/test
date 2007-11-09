@@ -1,4 +1,4 @@
 <%@ taglib prefix="ct" tagdir="/WEB-INF/tags" %>
 
-<b>Error processing this widget:</b><br>
+<div style="font-weight:bold;color:#CC0000;">Error processing this widget:</div>
 ${errorMessage}

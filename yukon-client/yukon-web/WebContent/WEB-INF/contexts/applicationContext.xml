@@ -461,12 +461,32 @@
         <property name="exceptionStrings" ref="friendlyExceptionsProperties" />
         
         <property name="knownExceptions">
-            <set>
+            <list>
+                 <bean class="com.cannontech.common.util.KnownExceptionType">
+                    <property name="exceptionClass" value="com.cannontech.message.util.ConnectionException" />
+                    <property name="friendlyExceptionPropertyKey" value="ConnectionException" />
+                </bean>
                 <bean class="com.cannontech.common.util.KnownExceptionType">
                 	<property name="exceptionClass" value="com.cannontech.core.dynamic.exception.DynamicDataAccessException" />
                 	<property name="friendlyExceptionPropertyKey" value="DispatchInvalid" />
                 </bean>
-            </set>
+                <bean class="com.cannontech.common.util.KnownExceptionType">
+                    <property name="exceptionClass" value="com.cannontech.common.exception.InitiateLoadProfileRequestException" />
+                    <property name="friendlyExceptionPropertyKey" value="LoadProfileException" />
+                </bean>
+                <bean class="com.cannontech.common.util.KnownExceptionType">
+                    <property name="exceptionClass" value="com.cannontech.common.exception.PingMeterException" />
+                    <property name="friendlyExceptionPropertyKey" value="PingMeterException" />
+                </bean>
+                <bean class="com.cannontech.common.util.KnownExceptionType">
+                    <property name="exceptionClass" value="com.cannontech.common.exception.PeakSummaryReportRequestException" />
+                    <property name="friendlyExceptionPropertyKey" value="PeakReportException" />
+                </bean>
+                <bean class="com.cannontech.common.util.KnownExceptionType">
+                    <property name="exceptionClass" value="com.cannontech.common.exception.MeterReadRequestException" />
+                    <property name="friendlyExceptionPropertyKey" value="MeterReadException" />
+                </bean>
+            </list>
         </property>
     
     </bean>	

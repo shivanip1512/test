@@ -18,6 +18,7 @@ import org.apache.log4j.Logger;
 import org.springframework.beans.factory.annotation.Required;
 
 import com.cannontech.clientutils.YukonLogManager;
+import com.cannontech.common.exception.InitiateLoadProfileRequestException;
 import com.cannontech.common.util.MapQueue;
 import com.cannontech.common.util.ScheduledExecutor;
 import com.cannontech.core.dao.DBPersistentDao;
@@ -190,12 +191,12 @@ public class LongLoadProfileServiceImpl implements LongLoadProfileService {
                     checkRequestStatus(info);
                 }
             }, 5 * 60, TimeUnit.SECONDS);
-        } catch (RuntimeException e) {
+        } catch (Exception e) {
             // clear out pending requests
             currentRequestIds.remove(info.requestId);
             expectedReturnCount.remove(info.requestId);
             receivedReturnsCount.remove(info.requestId);
-            throw e;
+            throw new InitiateLoadProfileRequestException();
         }        
     }
     

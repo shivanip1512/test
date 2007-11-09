@@ -98,7 +98,7 @@
 										<br/>
 										<c:choose>
 											<c:when test="${preCommandDays <= 90}">
-												<tags:longLoadProfile styleClass="Link1" deviceId="${widgetParameters.deviceId}" lpStartDate="${preResult.periodStartDateDisplay}" lpStopDate="${preResult.periodStopDateDisplay}" profileRequestOrigin="${widgetParameters.loadProfileRequestOrigin}">Profile</tags:longLoadProfile>
+												<tags:longLoadProfile styleClass="Link1" deviceId="${widgetParameters.deviceId}" lpStartDate="${prePeriodStartDateDisplay}" lpStopDate="${prePeriodStopDateDisplay}" profileRequestOrigin="${widgetParameters.loadProfileRequestOrigin}">Profile</tags:longLoadProfile>
 											</c:when>
 											<c:otherwise>
 												<span onmouseover="javascript:toggleLP($('lpDiv'))" onmouseout="javascript:toggleLP($('lpDiv'))">Profile N/A</span>
@@ -113,12 +113,14 @@
 						</c:when>
 						<c:otherwise>
 							<tr>
-								<td>
-									${prePeriodStartDateDisplay} -<br/>
-									${prePeriodStopDateDisplay}
-								</td>					
-								<td colspan="4">
-									${preResult.deviceError}
+								<td colspan="5">
+                                There was an error reading the meter<br>
+                                <c:forEach items="${preResult.errors}" var="error">
+                                    <tags:hideReveal title="${error.description} (${error.errorCode})" showInitially="false">
+                                    ${error.porter}<br>
+                                    ${error.troubleshooting}<br>
+                                    </tags:hideReveal><br>
+                                </c:forEach>
 								</td>
 							</tr>
 						</c:otherwise>
@@ -147,7 +149,7 @@
 										<br/>
 										<c:choose>
 											<c:when test="${postCommandDays <= 90}">
-												<tags:longLoadProfile styleClass="Link1" deviceId="${widgetParameters.deviceId}" lpStartDate="${postResult.periodStartDateDisplay}" lpStopDate="${postResult.periodStopDateDisplay}" profileRequestOrigin="${widgetParameters.loadProfileRequestOrigin}">Profile</tags:longLoadProfile>
+												<tags:longLoadProfile styleClass="Link1" deviceId="${widgetParameters.deviceId}" lpStartDate="${postPeriodStartDateDisplay}" lpStopDate="${postPeriodStopDateDisplay}" profileRequestOrigin="${widgetParameters.loadProfileRequestOrigin}">Profile</tags:longLoadProfile>
 											</c:when>
 											<c:otherwise>
 												<span onmouseover="javascript:toggleLP($('lpDiv2'))" onmouseout="javascript:toggleLP($('lpDiv2'))">Profile N/A</span>
@@ -162,11 +164,14 @@
 						</c:when>
 						<c:otherwise>
 							<tr>
-								<td>
-									${postPeriodStartDateDisplay} - ${postPeriodStopDateDisplay}
-								</td>					
-								<td colspan="4">
-									${postResult.deviceError}
+								<td colspan="5">
+                                There was an error reading the meter<br>
+                                <c:forEach items="${postResult.errors}" var="error">
+                                    <tags:hideReveal title="${error.description} (${error.errorCode})" showInitially="false">
+                                    ${error.porter}<br>
+                                    ${error.troubleshooting}<br>
+                                    </tags:hideReveal><br>
+                                </c:forEach>
 								</td>
 							</tr>
 						</c:otherwise>

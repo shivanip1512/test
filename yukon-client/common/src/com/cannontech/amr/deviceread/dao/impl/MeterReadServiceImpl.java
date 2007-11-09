@@ -19,6 +19,7 @@ import com.cannontech.common.device.definition.dao.DeviceDefinitionDao;
 import com.cannontech.common.device.definition.model.CommandDefinition;
 import com.cannontech.common.device.definition.model.DevicePointIdentifier;
 import com.cannontech.common.device.definition.model.PointTemplate;
+import com.cannontech.common.exception.MeterReadRequestException;
 import com.cannontech.database.data.lite.LiteYukonUser;
 
 public class MeterReadServiceImpl implements MeterReadService {
@@ -78,7 +79,7 @@ public class MeterReadServiceImpl implements MeterReadService {
         try {
             holder = commandExecutor.execute(commands, user);
         } catch (Exception e) {
-            throw new RuntimeException("There was a Yukon error while reading the meter", e);
+            throw new MeterReadRequestException(e);
         }
         
         return holder;

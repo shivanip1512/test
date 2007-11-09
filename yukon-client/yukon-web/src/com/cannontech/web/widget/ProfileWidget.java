@@ -198,7 +198,6 @@ public class ProfileWidget extends WidgetControllerBase {
         List<Map<String, String>> pendingRequests = getPendingRequests(device, user);
         
         ModelAndView mav = render(request, response);
-        mav.addObject("requestId", requestId);
 
         // reload pending request
         mav.addObject("pendingRequests", pendingRequests);
@@ -213,10 +212,9 @@ public class ProfileWidget extends WidgetControllerBase {
     public ModelAndView initiateLoadProfile(HttpServletRequest request,
             HttpServletResponse response) throws Exception {
 
-        ModelAndView mav = render(request, response);
+        ModelAndView mav = new ModelAndView("profileWidget/ongoingProfiles.jsp");
 
-        boolean success = false;
-        String initiateMessage = "Unknown Error";
+        String dateErrorMessage = "Unknown Error";
 
         String email = WidgetParameterHelper.getRequiredStringParameter(request,
         "email");
@@ -249,13 +247,11 @@ public class ProfileWidget extends WidgetControllerBase {
             boolean datesOk = false;
 
             if (startDate == null) {
-                success = false;
                 datesOk = false;
-                initiateMessage = "Start Date Required";
+                dateErrorMessage = "Start Date Required";
             } else if (stopDate == null) {
-                success = false;
                 datesOk = false;
-                initiateMessage = "Stop Date Required";
+                dateErrorMessage = "Stop Date Required";
             } else {
 
                 String todayStr = dateFormattingService.formatDate(new Date(),
@@ -266,13 +262,11 @@ public class ProfileWidget extends WidgetControllerBase {
                                                                       user);
 
                 if (startDate.after(stopDate)) {
-                    success = false;
                     datesOk = false;
-                    initiateMessage = "Start Date Must Be Before Stop Date";
+                    dateErrorMessage = "Start Date Must Be Before Stop Date";
                 } else if (stopDate.after(today)) {
-                    success = false;
                     datesOk = false;
-                    initiateMessage = "Stop Date Must Be On Or Before Today";
+                    dateErrorMessage = "Stop Date Must Be On Or Before Today";
                 } else {
                     datesOk = true;
                 }
@@ -303,7 +297,8 @@ public class ProfileWidget extends WidgetControllerBase {
                 callback.setSuccessMessage(msgData);
                 callback.setFailureMessage(msgData);
                 callback.setCancelMessage(msgData);
-
+                
+                // will throw InitiateLoadProfileRequestException if connection problem
                 loadProfileService.initiateLongLoadProfile(device,
                                                            channel,
                                                            startDate,
@@ -311,8 +306,7 @@ public class ProfileWidget extends WidgetControllerBase {
                                                            callback,
                                                            user);
 
-                success = true;
-                initiateMessage = "";
+                dateErrorMessage = "";
                 mav.addObject("channel", channel);
                 
                 // reload pending request
@@ -321,12 +315,10 @@ public class ProfileWidget extends WidgetControllerBase {
             }
 
         } catch (ParseException e) {
-            success = false;
-            initiateMessage = "Unable to parse: " + e.getMessage();
+            dateErrorMessage = "Unable to parse: " + e.getMessage();
         }
 
-        mav.addObject("success", success);
-        mav.addObject("initiateMessage", initiateMessage);
+        mav.addObject("dateErrorMessage", dateErrorMessage);
         
         return mav;
     }

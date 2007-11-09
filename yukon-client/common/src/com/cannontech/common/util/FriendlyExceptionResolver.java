@@ -1,13 +1,13 @@
 package com.cannontech.common.util;
 
-import java.util.HashSet;
+import java.util.ArrayList;
+import java.util.List;
 import java.util.Locale;
 import java.util.Properties;
-import java.util.Set;
 
 public class FriendlyExceptionResolver {
 
-    Set<KnownExceptionType> knownExceptions = new HashSet<KnownExceptionType>();
+    List<KnownExceptionType> knownExceptions = new ArrayList<KnownExceptionType>();
     Properties exceptionStrings;
 
     // getFriendlyExceptionMessage - default to US locale
@@ -23,13 +23,11 @@ public class FriendlyExceptionResolver {
         KnownExceptionType knownExceptionType = getKnownExceptionType(exception);
 
         if (knownExceptionType != null) {
-
-            try {
-                String friendlyExceptionPropertyKey = knownExceptionType.getFriendlyExceptionPropertyKey();
-                friendlyExceptionMessage = exceptionStrings.getProperty(friendlyExceptionPropertyKey);
-            } catch (NullPointerException e) {
-                friendlyExceptionMessage = null;
-            }
+            String friendlyExceptionPropertyKey = knownExceptionType.getFriendlyExceptionPropertyKey();
+            friendlyExceptionMessage = exceptionStrings.getProperty(friendlyExceptionPropertyKey);
+        }
+        if (friendlyExceptionMessage == null) {
+            friendlyExceptionMessage = exception.getMessage();
         }
 
         return friendlyExceptionMessage;
@@ -52,11 +50,11 @@ public class FriendlyExceptionResolver {
 
 
     // setter/getters
-    public Set<KnownExceptionType> getKnownExceptions() {
+    public List<KnownExceptionType> getKnownExceptions() {
         return knownExceptions;
     }
 
-    public void setKnownExceptions(Set<KnownExceptionType> knownExceptions) {
+    public void setKnownExceptions(List<KnownExceptionType> knownExceptions) {
         this.knownExceptions = knownExceptions;
     }
 
