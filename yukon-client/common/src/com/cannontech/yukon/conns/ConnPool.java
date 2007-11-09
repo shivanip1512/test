@@ -1,7 +1,6 @@
 
 package com.cannontech.yukon.conns;
 
-import java.io.IOException;
 import java.util.Hashtable;
 
 import com.cannontech.clientutils.CTILogger;
@@ -15,7 +14,6 @@ import com.cannontech.yukon.IMACSConnection;
 import com.cannontech.yukon.INotifConnection;
 import com.cannontech.yukon.IServerConnection;
 import com.cannontech.yukon.cbc.CBCClientConnection;
-import com.cannontech.yukon.cbc.CBCCommand;
 
 /**
  * @author rneuharth
@@ -134,15 +132,9 @@ public class ConnPool
 	        connToDispatch = (ClientConnection)createDispatchConn();
 	        connToDispatch.setHost(defaultHost);
 	        connToDispatch.setPort(defaultPort);
-	        try 
-	        {
-	            CTILogger.info("Attempting Dispatch connection to " + connToDispatch.getHost() + ":" + connToDispatch.getPort());
-	            connToDispatch.connectWithoutWait();
-	        }
-	        catch( Exception e ) 
-	        {
-	            CTILogger.error( "Unable to connect the dispatch connection", e );
-	        }
+	        
+	        CTILogger.info("Attempting Dispatch connection to " + connToDispatch.getHost() + ":" + connToDispatch.getPort());
+	        connToDispatch.connectWithoutWait();
 
 	        getAllConns().put( DISPATCH_CONN, connToDispatch); 
 	    }
@@ -182,16 +174,9 @@ public class ConnPool
             porterCC.setHost(host);
             porterCC.setPort(port);
             
-            try 
-            {
-                CTILogger.info("Attempting Porter connection to " + porterCC.getHost() + ":" + porterCC.getPort());
-                porterCC.connectWithoutWait();
-            }
-            catch( Exception e ) 
-            {
-                CTILogger.error("Unable to connect the dispatch connection", e );
-            }
-                
+            CTILogger.info("Attempting Porter connection to " + porterCC.getHost() + ":" + porterCC.getPort());
+            porterCC.connectWithoutWait();
+
             getAllConns().put( PORTER_CONN, porterCC );            
         }
                     
@@ -230,15 +215,10 @@ public class ConnPool
 		    macsConn.setTimeToReconnect(5);
             
             macsConn.setRegistrationMsg(macsConn.getRetrieveAllSchedulesMsg());
-            
-            try {
-                CTILogger.info("Attempting MACS connection to " + macsConn.getHost() + ":" + macsConn.getPort());
-                macsConn.connectWithoutWait();
-            }
-            catch( Exception e ) {
-                CTILogger.error("Unable to connect the dispatch connection", e );
-            }
-                
+
+            CTILogger.info("Attempting MACS connection to " + macsConn.getHost() + ":" + macsConn.getPort());
+            macsConn.connectWithoutWait();
+
             getAllConns().put( MACS_CONN, macsConn );            
         }
                     
@@ -271,17 +251,7 @@ public class ConnPool
             String portStr = standaloneRoleDao.getGlobalPropertyValue( SystemRole.CAP_CONTROL_PORT );
             cbcConn.setPort( Integer.parseInt(portStr ) );
 
-			try
-			{
-				//start the conn!!!
-				cbcConn.connect( 15000 );
-				
-				cbcConn.executeCommand( 0, CBCCommand.REQUEST_ALL_AREAS );
-			}
-			catch( IOException ex )
-			{
-				CTILogger.error( "Unable to set \"REQUEST_ALL_AREAS\" to cbc connection", ex );
-			}
+            cbcConn.connectWithoutWait();
 			
 			getAllConns().put( CAPCONTROL_CONN, cbcConn );
         }
