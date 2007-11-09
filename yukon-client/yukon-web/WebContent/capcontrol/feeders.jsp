@@ -31,9 +31,13 @@
 	List<SubBus> subBuses = filterCapControlCache.getSubBusesBySubStation(substation);
 	List<Feeder> feeders = filterCapControlCache.getFeedersBySubStation(substation);
 	List<CapBankDevice> capBanks = filterCapControlCache.getCapBanksBySubStation(substation);
-
+	
+	int lastAccessed = ParamUtil.getInteger(request, "lastAccessed", -1);
+	
 	boolean hasControl = CBCWebUtils.hasControlRights(session);
 	boolean special = filterCapControlCache.isSpecialCBCArea(areaId);
+	
+	
 %>
 <script type="text/javascript"> 
 	function togglePopup( v ){
@@ -67,7 +71,23 @@ if(special){
 
 <script type="text/javascript">
    	Event.observe(window, 'load', function () {callBack();});
+   	Event.observe(window, 'load', function () {highlightLast();});
+    
     GreyBox.preloadGreyBoxImages();
+
+	function highlightLast()
+	{
+		var id = $("lastAccessedID").value;
+		if( id != -1 )
+		{
+			var elem = $('tr_cap_'+id);
+			//verify the id is a capbank. if not no highlight.
+			
+			if( elem != null ){//find a way to test is teh element is present!
+				hiLiteTRow ('tr_cap_'+id , 'lightgrey');
+			}
+		}
+	}
 
 	//returned when a cap bank menu is triggered to appear
 	function popupWithHiLite (html, width, height, offsetx, offsety, rowID, color) {
@@ -120,6 +140,8 @@ if(special){
 <%
 String css = "tableCell";
 %>
+<input type="hidden" id="lastAccessedID" value="<%= lastAccessed %>">
+
 	<cti:titledContainer title="Substation">
 		<table id="substationTable" width="98%" border="0" cellspacing="0" cellpadding="0">
 			<tr class="columnHeader lAlign">

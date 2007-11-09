@@ -25,6 +25,19 @@ public class CBCNavigationUtil {
         navObject.setNavigation(redirectURL);
     }
     
+    public static void setParamOnBookmark(String param, String val, HttpSession session )
+    {
+        CtiNavObject navObject = (CtiNavObject) session.getAttribute("CtiNavObject");
+        String url = navObject.getHistory().pop();
+        if( url.contains("?") ){
+            url += "&" + param + "=" + val;
+        }
+        else{
+            url += "?" + param + "=" + val;
+        }
+        navObject.getHistory().push(url);
+    }
+    
     public static void redirect(String redirectURL, HttpSession session) {
         CtiNavObject navObject = (CtiNavObject) session.getAttribute("CtiNavObject");
         navObject.setNavigation(redirectURL);
