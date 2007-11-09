@@ -6,8 +6,8 @@
 *
 * PVCS KEYWORDS:
 * ARCHIVE      :  $Archive:   Z:/SOFTWAREARCHIVES/YUKON/RTDB/mgr_point.cpp-arc  $
-* REVISION     :  $Revision: 1.41 $
-* DATE         :  $Date: 2007/11/09 20:12:34 $
+* REVISION     :  $Revision: 1.42 $
+* DATE         :  $Date: 2007/11/09 20:14:36 $
 *
 * Copyright (c) 1999, 2000, 2001 Cannon Technologies Inc. All rights reserved.
 *-----------------------------------------------------------------------------*/
@@ -805,6 +805,7 @@ CtiPointManager::ptr_type CtiPointManager::getOffsetTypeEqual(LONG pao, INT Offs
 
     if( !_all_paoids_loaded && (_paoids_loaded.find(pao) == _paoids_loaded.end()) )
     {
+        if( DebugLevel & 0x00010000 )
         {
             CtiLockGuard<CtiLogger> doubt_guard(dout);
             dout << CtiTime() << " refreshing points for paoid " << pao << endl;
