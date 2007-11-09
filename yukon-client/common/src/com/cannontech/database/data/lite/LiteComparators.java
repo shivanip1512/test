@@ -9,12 +9,12 @@ import com.cannontech.clientutils.CTILogger;
  */
 public final class LiteComparators 
 {
-	public static java.util.Comparator litePointDeviceIDComparator = new java.util.Comparator()
+	public static Comparator<LitePoint> litePointDeviceIDComparator = new Comparator<LitePoint>()
 	{
-		public int compare(Object o1, Object o2)
+		public int compare(LitePoint o1, LitePoint o2)
 		{
-			int thisVal = ((LitePoint)o1).getPaobjectID();
-			int anotherVal = ((LitePoint)o2).getPaobjectID();
+			int thisVal = o1.getPaobjectID();
+			int anotherVal = o2.getPaobjectID();
 			return (thisVal<anotherVal ? -1 : (thisVal==anotherVal ? 0 : 1));
 /*
 			if( thisVal != anotherVal )
@@ -25,18 +25,18 @@ public final class LiteComparators
 			return (val < 0 ? -1 : (val > 0 ? 1 : 0) );
 */
 		}
-		public boolean equals(Object obj)
+		public boolean equals(LitePoint obj)
 		{
 			return false;
 		}
 	};
 
-	public static java.util.Comparator litePaoPortIDComparator = new java.util.Comparator()
+	public static Comparator<LiteYukonPAObject> litePaoPortIDComparator = new Comparator<LiteYukonPAObject>()
 	{
-		public int compare(Object o1, Object o2)
+		public int compare(LiteYukonPAObject o1, LiteYukonPAObject o2)
 		{
-			int thisVal = ((LiteYukonPAObject)o1).getPortID();
-			int anotherVal = ((LiteYukonPAObject)o2).getPortID();
+			int thisVal = o1.getPortID();
+			int anotherVal = o2.getPortID();
 			return (thisVal<anotherVal ? -1 : (thisVal==anotherVal ? 0 : 1));
 		}
 		public boolean equals(Object obj)
@@ -45,12 +45,12 @@ public final class LiteComparators
 		}
 	};
 
-	public static java.util.Comparator litePaoTypeComparator = new java.util.Comparator()
+	public static Comparator<LiteYukonPAObject> litePaoTypeComparator = new Comparator<LiteYukonPAObject>()
 	{
-		public int compare(Object o1, Object o2)
+		public int compare(LiteYukonPAObject o1, LiteYukonPAObject o2)
 		{
-			int thisVal = ((LiteYukonPAObject)o1).getType();
-			int anotherVal = ((LiteYukonPAObject)o2).getType();
+			int thisVal = o1.getType();
+			int anotherVal = o2.getType();
 			
 			
 			if( thisVal != anotherVal )
@@ -63,104 +63,104 @@ public final class LiteComparators
 			return( thisName.compareToIgnoreCase(anotherName) );			
 			//return (thisVal<anotherVal ? -1 : (thisVal==anotherVal ? 0 : 1));
 		}
-		public boolean equals(Object obj)
+		public boolean equals(LiteYukonPAObject obj)
 		{
 			return false;
 		}
 	};
 
-	public static java.util.Comparator litePointPointOffsetComparator = new java.util.Comparator()
+	public static Comparator<LitePoint> litePointPointOffsetComparator = new Comparator<LitePoint>()
 	{
-		public int compare(Object o1, Object o2)
+		public int compare(LitePoint o1, LitePoint o2)
 		{
-			int thisVal = ((LitePoint)o1).getPointOffset();
-			int anotherVal = ((LitePoint)o2).getPointOffset();
+			int thisVal = o1.getPointOffset();
+			int anotherVal = o2.getPointOffset();
 			return (thisVal<anotherVal ? -1 : (thisVal == anotherVal ? 0:1));
 		}
-		public boolean equals(Object obj)
+		public boolean equals(LitePoint obj)
 		{
 			return false;
 		}
 	};
 	
-	public static java.util.Comparator litePointIDComparator = new java.util.Comparator()
+	public static Comparator<LitePoint> litePointIDComparator = new Comparator<LitePoint>()
 	{
-		public int compare(Object o1, Object o2)
+		public int compare(LitePoint o1, LitePoint o2)
 		{
-			int thisVal = ((LitePoint)o1).getPointID();
-			int anotherVal = ((LitePoint)o2).getPointID();
+			int thisVal = o1.getPointID();
+			int anotherVal = o2.getPointID();
 			return (thisVal<anotherVal ? -1 : (thisVal==anotherVal ? 0 : 1));
 		}
-		public boolean equals(Object obj)
+		public boolean equals(LitePoint obj)
 		{
 			return false;
 		}
 	};
 
-	public static java.util.Comparator liteYukonPAObjectPortComparator = new java.util.Comparator()
+	public static Comparator<LiteYukonPAObject> liteYukonPAObjectPortComparator = new Comparator<LiteYukonPAObject>()
 	{
-		public int compare(Object o1, Object o2)
+		public int compare(LiteYukonPAObject o1, LiteYukonPAObject o2)
 		{
-			int thisVal = ((LiteYukonPAObject)o1).getPortID();
-			int anotherVal = ((LiteYukonPAObject)o2).getPortID();
+			int thisVal = o1.getPortID();
+			int anotherVal = o2.getPortID();
             
             
             if( thisVal != anotherVal )
                 return (thisVal<anotherVal ? -1 : (thisVal==anotherVal ? 0 : 1));
                 
             //if the types are equal, we need to sort by Name
-            String thisName = ((LiteYukonPAObject)o1).getPaoName();
-            String anotherName = ((LiteYukonPAObject)o2).getPaoName();
+            String thisName = o1.getPaoName();
+            String anotherName = o2.getPaoName();
                 
             return( thisName.compareToIgnoreCase(anotherName) );            
             //return (thisVal<anotherVal ? -1 : (thisVal==anotherVal ? 0 : 1));            
             
 		}
-		public boolean equals(Object obj)
+		public boolean equals(LiteYukonPAObject obj)
 		{
 			return false;
 		}
 	};
 
 
-	public static java.util.Comparator liteYukonPAObjectIDComparator = new java.util.Comparator()
+	public static Comparator<LiteYukonPAObject> liteYukonPAObjectIDComparator = new Comparator<LiteYukonPAObject>()
 	{
-		public int compare(Object o1, Object o2)
+		public int compare(LiteYukonPAObject o1, LiteYukonPAObject o2)
 		{
-			int thisVal = ((LiteYukonPAObject)o1).getYukonID();
-			int anotherVal = ((LiteYukonPAObject)o2).getYukonID();
+			int thisVal = o1.getYukonID();
+			int anotherVal = o2.getYukonID();
 			return (thisVal<anotherVal ? -1 : (thisVal==anotherVal ? 0 : 1));
 		}
-		public boolean equals(Object obj)
+		public boolean equals(LiteYukonPAObject obj)
 		{
 			return false;
 		}
 	};
 
-   public static java.util.Comparator liteYukonImageCategoryComparator = new java.util.Comparator()
+   public static Comparator<LiteYukonImage> liteYukonImageCategoryComparator = new Comparator<LiteYukonImage>()
    {
-      public int compare(Object o1, Object o2)
+      public int compare(LiteYukonImage o1, LiteYukonImage o2)
       {
-         String thisVal = ((LiteYukonImage)o1).getImageCategory();
-         String anotherVal = ((LiteYukonImage)o2).getImageCategory();
+         String thisVal = o1.getImageCategory();
+         String anotherVal = o2.getImageCategory();
 
          return ( thisVal.compareToIgnoreCase(anotherVal) );
       }
-      public boolean equals(Object obj)
+      public boolean equals(LiteYukonImage obj)
       {
          return false;
       }
    };
 
-	public static java.util.Comparator liteBaseIDComparator = new java.util.Comparator()
+	public static Comparator<LiteBase> liteBaseIDComparator = new Comparator<LiteBase>()
 	{
-		public int compare(Object o1, Object o2)
+		public int compare(LiteBase o1, LiteBase o2)
 		{
-			int thisVal = ((LiteBase)o1).getLiteID();
-			int anotherVal = ((LiteBase)o2).getLiteID();
+			int thisVal = o1.getLiteID();
+			int anotherVal = o2.getLiteID();
 			return (thisVal<anotherVal ? -1 : (thisVal==anotherVal ? 0 : 1));
 		}
-		public boolean equals(Object obj)
+		public boolean equals(LiteBase obj)
 		{
 			return false;
 		}
@@ -183,24 +183,24 @@ public final class LiteComparators
 		}
 	};
 	
-	public static java.util.Comparator liteRoleCategoryComparator = new java.util.Comparator()
+	public static Comparator<LiteYukonRole> liteRoleCategoryComparator = new Comparator<LiteYukonRole>()
 	{
-		public int compare(Object o1, Object o2)
+		public int compare(LiteYukonRole o1, LiteYukonRole o2)
 		{
-			String thisVal = ((LiteYukonRole)o1).getCategory();
-			String anotherVal = ((LiteYukonRole)o2).getCategory();
+			String thisVal = o1.getCategory();
+			String anotherVal = o2.getCategory();
 
 			if( !thisVal.equalsIgnoreCase(anotherVal) )
 				return( thisVal.compareToIgnoreCase(anotherVal) );
 				
 			//if the Categories are equal, we need to sort by Role Name
-			String thisName = ((LiteYukonRole)o1).getRoleName();
-			String anotherName = ((LiteYukonRole)o2).getRoleName();
+			String thisName = o1.getRoleName();
+			String anotherName = o2.getRoleName();
 				
 			return( thisName.compareToIgnoreCase(anotherName) );
          //return ( thisVal.compareToIgnoreCase(anotherVal) );
 		}
-		public boolean equals(Object obj)
+		public boolean equals(LiteYukonRole obj)
 		{
 			return false;
 		}
@@ -208,15 +208,15 @@ public final class LiteComparators
 	/**
 	 * Sort deviceTypeCommands by their displayOrder
 	 */
-	public static java.util.Comparator liteDeviceTypeCommandComparator = new java.util.Comparator()
+	public static Comparator<LiteDeviceTypeCommand> liteDeviceTypeCommandComparator = new Comparator<LiteDeviceTypeCommand>()
 	{
-		public int compare(Object o1, Object o2)
+		public int compare(LiteDeviceTypeCommand o1, LiteDeviceTypeCommand o2)
 		{
-			int thisVal = ((LiteDeviceTypeCommand)o1).getDisplayOrder();
-			int anotherVal = ((LiteDeviceTypeCommand)o2).getDisplayOrder();
+			int thisVal = o1.getDisplayOrder();
+			int anotherVal = o2.getDisplayOrder();
 			return (thisVal<anotherVal ? -1 : (thisVal==anotherVal ? 0 : 1));
 		}
-		public boolean equals(Object obj)
+		public boolean equals(LiteDeviceTypeCommand obj)
 		{
 			return false;
 		}
@@ -224,24 +224,24 @@ public final class LiteComparators
 	/**
 	 * Sort Commands by their label
 	 */
-	public static java.util.Comparator liteCommandComparator = new java.util.Comparator()
+	public static Comparator<LiteCommand> liteCommandComparator = new Comparator<LiteCommand>()
 	{
-		public int compare(Object o1, Object o2)
+		public int compare(LiteCommand o1, LiteCommand o2)
 		{
-			String thisVal = ((LiteCommand)o1).getLabel();
-			String anotherVal = ((LiteCommand)o2).getLabel();
+			String thisVal = o1.getLabel();
+			String anotherVal = o2.getLabel();
 			return ( thisVal.compareToIgnoreCase(anotherVal) );
 		}
-		public boolean equals(Object obj)
+		public boolean equals(LiteCommand obj)
 		{
 			return false;
 		}
 	};
 	// this method is used to compare Strings found in ANY lite class
 	//   ADD ALL LIGHT CLASSES YOU WANT TO COMPARE BELOW!!!!!!!!!!!!!
-	public static java.util.Comparator<Object> liteStringComparator = new java.util.Comparator<Object>()
+	public static Comparator<LiteBase> liteStringComparator = new Comparator<LiteBase>()
 	{
-		public int compare(Object o1, Object o2)
+		public int compare(LiteBase o1, LiteBase o2)
 		{
 			String thisVal = null, anotherVal = null;
             
@@ -401,7 +401,7 @@ public final class LiteComparators
 
         }
 		
-		public boolean equals(Object obj)
+		public boolean equals(LiteBase obj)
 		{
 			return false;
 		}
