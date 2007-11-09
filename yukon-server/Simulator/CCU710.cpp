@@ -38,7 +38,8 @@ CCU710::CCU710() :
       _outmessageType(0),
       _outcommandType(0),
       _outpreamble(0),
-      _bytesToFollow(0)
+      _bytesToFollow(0),
+      _strategy(0)
 {
       memset(_messageData, 0, 100);
       memset(_outmessageData, 0, 100);
@@ -445,7 +446,12 @@ void CCU710::CreateMessage(int MsgType, int WrdFnc, int mctNumber, int ccuNumber
 
             EmetconWord newWord;
             int Function = 0;
-            Ctr = newWord.InsertWord(D_WORD,  _outmessageData, Function, mctNumber, Ctr, (getRepeaters()));
+            if(_strategy==0) {
+                Ctr = newWord.InsertWord(D_WORD,  _outmessageData, Function, mctNumber, Ctr, (getRepeaters()));
+            }
+            else if(_strategy==1) {
+                Ctr = newWord.InsertWord(X_WORD,  _outmessageData, Function, mctNumber, Ctr, (getRepeaters()));
+            }
             _words[0]=newWord;
             _outmessageData[Ctr++] = ack;
 
@@ -619,6 +625,11 @@ int CCU710::DecodeCCUAddress()
     }
 
     return setCCUAddress;
+}
+
+void CCU710::setStrategy(int strategy)
+{
+    _strategy = strategy;
 }
 
 

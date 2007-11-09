@@ -53,31 +53,33 @@ BOOL CtrlHandler(DWORD fdwCtrlType)
    }
 }
 
-typedef void (*WorkerFunPtr)(const int&);
+typedef void (*WorkerFunPtr)(const int&, const int&);
 
 
 template<typename FunT,
-         typename ParamT>
+         typename ParamT,
+         typename ParamU>
 struct Adapter {
-    Adapter(FunT f, ParamT& p) :
-        f_(f), p_(&p) {}
+    Adapter(FunT f, ParamT& p, ParamU& q) :
+        f_(f), p_(&p) , q_(&q){}
 
     void operator()(){
-        f_(*p_);
+        f_(*p_,*q_);
     }
  private:
      FunT f_;
      ParamT* p_;
+     ParamU* q_;
 };
 
-void worker(const int& s) 
+void worker(const int& s, const int& strtgy) 
 {
     int portNumber = s;
         {
             boost::mutex::scoped_lock lock(io_mutex);
             cout<<"Port: "<<portNumber<<endl;
         }
-
+    int strategy=strtgy;
     
 /*
 //////////////////////////////////////////////////////////
@@ -207,7 +209,11 @@ void worker(const int& s)
         }
     }
 
+
+
     CCU710 aCCU710;
+    aCCU710.setStrategy(strategy);
+           
 
     while(!globalCtrlCFlag) {
         unsigned char TempBuffer[2];
@@ -231,6 +237,7 @@ void worker(const int& s)
                 std::cout<<'\n'<<addressFound<<" is not in the map!";
                 aCCU711 = new CCU711(addressFound);
                 ccuList[addressFound] = aCCU711;
+                aCCU711->setStrategy(strategy);
             }
             else
             {
@@ -454,12 +461,16 @@ int main(int argc, char *argv[]) {
 
     vector<boost::thread *> threadVector;
 
-    if(argc==3)
+    if(argc==4)
     {   // Specify port number
+        cout<<"Port range "<<argv[1]<<" - "<<argv[2]<<endl;
+        cout<<"Strategy selected: "<<argv[3]<<endl;
+    }
+    else if(argc==3) {
         cout<<"Port range "<<argv[1]<<" - "<<argv[2]<<endl;
     }
     else
-        {
+    {
         cout<<"Invalid port range entry.  Format is:  ccu_simulator 00001 99999"<<endl;
         return 0;
     }
@@ -467,9 +478,13 @@ int main(int argc, char *argv[]) {
 
     int portNum = atoi(argv[1]);
     int portMax = atoi(argv[2]);
+    int strategy = 0;
+    if(argc==4) {
+        strategy = atoi(argv[3]);
+    }
     boost::thread *thr1;
     while(portNum != (portMax+1)) {
-        thr1 = new boost::thread(Adapter<WorkerFunPtr, int>(worker, portNum));
+        thr1 = new boost::thread(Adapter<WorkerFunPtr, int, int>(worker, portNum, strategy));
         threadVector.push_back(thr1);
         CTISleep(750);
         portNum++;
@@ -483,13 +498,22 @@ int main(int argc, char *argv[]) {
       cerr << "Could not install control handler" << endl;
 
     (*itr)->join();
+   /* if(argv[1]!=argv[2]) { //  Check to see if there was >1 port specified
+        itr++;
+        (*itr)->join();
+        cout<<"Threads have joined!!!"<<endl;
+    }*/
+
 
     
     if(globalCtrlCFlag) {
+        boost::mutex::scoped_lock lock(io_mutex);
         cout<<"Main function closing..."<<endl;
         exit(0);
     }
 
+    cout<<"Returning from main function..."<<endl;
+    CTISleep(10000);
     return 0;
 }
     

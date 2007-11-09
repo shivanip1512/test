@@ -38,6 +38,7 @@ class EmetconWord
 			C_WORD = 33,
 			D_WORD = 34,
 			E_WORD = 35,
+            X_WORD = 36
 		};
 
 		// Function to read the data in the word to the screen

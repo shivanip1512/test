@@ -158,6 +158,8 @@ public:
     void decodeForQueueMessage(int & type, int & iotype, int & function, unsigned char & address, long int & mctaddress,int & bytesToReturn, int offset);
     //  Returns number of data bytes to be sent to poerter at an index and fills the data array
     void getData(long int mctAddress, int function, int ioType, int bytesToReturn);
+    //  Allows serverNexus to set the current strategy
+    void setStrategy(int strategy);
 
 
 
@@ -191,6 +193,7 @@ private:
     int _mctNumber;
     std::deque <_queueMessage> _messageQueue;
     int _qmessagesReady;
+    int _strategy;
 };
 
 #endif

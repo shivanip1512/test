@@ -42,7 +42,8 @@ CCU711::CCU711(unsigned char addressFound) :
       _outcommandType(0),  
       _outpreamble(0),     
       _mctNumber(0),
-      _qmessagesReady(0)
+      _qmessagesReady(0),
+      _strategy(0)
 {
     _address = addressFound;
 
@@ -1124,6 +1125,12 @@ void CCU711::getData(long int mctAddress, int function, int ioType, int bytesToR
     srand ( time(NULL) );
     int random = rand() % 10 + 1;
     _data[1]= (mctAddress >> 6) + random;
+}
+
+void CCU711::setStrategy(int strategy)
+{
+    _strategy = strategy;
+    subCCU710.setStrategy(strategy);
 }
 
 /***************************************************************************************

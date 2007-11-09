@@ -40,6 +40,7 @@ public:
         C_WORD     = 33,
         D_WORD     = 34,
         E_WORD     = 35,
+        X_WORD     = 36,
         FEEDEROP   = 21,
         PING       = 22,
         FUNCREAD    = 41,
@@ -90,6 +91,8 @@ public:
     int getRepeaters();
     //  Return the number of words coming in
     int getWordsInbound(); 
+    //  Allows CCU711 and serverNexus to set the current strategy
+    void setStrategy(int strategy);
 
 private:
     //Storage for sockets
@@ -114,6 +117,7 @@ private:
     int _outindexOfEnd;
     int _outindexOfWords;
     int _wordsRequested;
+    int _strategy;
 };
 
 #endif

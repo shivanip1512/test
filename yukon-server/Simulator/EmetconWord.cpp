@@ -72,6 +72,24 @@ int EmetconWord::InsertWord(int Type, unsigned char * pMessageData, int WordFunc
 
 		return Ctr;
 	}
+    else if( _wordType == X_WORD ) 
+	{
+		_wordSize = 7;
+        
+		pMessageData[Ctr++] = ((mctNumber >> 12) & 0x01) | (Repeaters << 1) | 0xf0;   //beginning of d word
+		pMessageData[Ctr++] = (mctNumber >> 4) & 0xff;
+		pMessageData[Ctr++] = (mctNumber << 4) & 0xf0;   //data begins in second half of this byte
+        pMessageData[Ctr++] = 0x0f;   // data
+		pMessageData[Ctr++] = 0x00;   // data
+		pMessageData[Ctr++] = 0x00;   // data ends first half of this byte
+		pMessageData[Ctr++] = 0x00; 
+
+		unsigned char BCH = BCHCalc_C (pMessageData+Ctr-7, 46);
+		pMessageData[Ctr-2] |= BCH >> 6;
+		pMessageData[Ctr-1] = BCH << 2;
+
+		return Ctr;
+	}
 	else if(_wordType == 3) {
 		_wordSize = 7;
 		// calculate bch code
