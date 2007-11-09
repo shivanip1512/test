@@ -1,7 +1,7 @@
 /*==============================================================*/
 /* Database name:  YukonDatabase                                */
 /* DBMS name:      ORACLE Version 9i                            */
-/* Created on:     11/9/2007 8:57:34 AM                         */
+/* Created on:     11/9/2007 9:13:39 AM                         */
 /*==============================================================*/
 
 
@@ -10246,6 +10246,7 @@ alter table MCTBroadCastMapping
 alter table MCTConfigMapping
    add constraint FK_McCfgM_Dev foreign key (MctID)
       references DEVICE (DEVICEID)
+      on delete cascade
 ;
 
 alter table MCTConfigMapping

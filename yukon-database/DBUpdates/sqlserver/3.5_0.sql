@@ -504,6 +504,13 @@ create index Indx_RwPtHisPtIDTst on RAWPOINTHISTORY (
 	POINTID ASC,
 	TIMESTAMP ASC
 );
+
+alter table MCTConfigMapping drop constraint FK_McCfgM_Dev;
+alter table MCTConfigMapping
+   add constraint FK_McCfgM_Dev foreign key (MctID)
+      references DEVICE (DEVICEID)
+         on update cascade on delete cascade;
+
 /* @error ignore-end */
 
 /******************************************************************************/

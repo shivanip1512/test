@@ -432,6 +432,13 @@ create index Indx_RwPtHisPtIDTst on RAWPOINTHISTORY (
 );
 /* @error ignore-end */
 
+alter table MCTConfigMapping
+	drop constraint FK_McCfgM_Dev;
+alter table MCTConfigMapping
+   add constraint FK_McCfgM_Dev foreign key (MctID)
+      references DEVICE (DEVICEID)
+      on delete cascade;
+      
 /******************************************************************************/
 /* Run the Stars Update if needed here */
 /* Note: DBUpdate application will ignore this if STARS is not present */

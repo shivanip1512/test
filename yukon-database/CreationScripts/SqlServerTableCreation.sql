@@ -1,7 +1,7 @@
 /*==============================================================*/
 /* Database name:  YukonDatabase                                */
 /* DBMS name:      Microsoft SQL Server 2000                    */
-/* Created on:     11/9/2007 8:55:05 AM                         */
+/* Created on:     11/9/2007 9:17:11 AM                         */
 /*==============================================================*/
 
 
@@ -11269,6 +11269,7 @@ go
 alter table MCTConfigMapping
    add constraint FK_McCfgM_Dev foreign key (MctID)
       references DEVICE (DEVICEID)
+         on update cascade on delete cascade
 go
 
 alter table MCTConfigMapping
