@@ -218,8 +218,11 @@ public class InventoryBean {
         final List<LiteStarsEnergyCompany> companyList = new ArrayList<LiteStarsEnergyCompany>();
         List<FilterWrapper> filterList = getFilterByList();
         for (final FilterWrapper filter : filterList) {
-            Integer id = Integer.parseInt(filter.getFilterID());
-            companyList.add(StarsDatabaseCache.getInstance().getEnergyCompany(id));
+            int filterType = Integer.parseInt(filter.getFilterTypeID());
+            if(filterType == YukonListEntryTypes.YUK_DEF_ID_INV_FILTER_BY_MEMBER) {
+                Integer id = Integer.parseInt(filter.getFilterID());
+                companyList.add(StarsDatabaseCache.getInstance().getEnergyCompany(id));
+            }
         }
         return companyList;
     }
