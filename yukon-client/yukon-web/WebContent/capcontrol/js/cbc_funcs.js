@@ -299,7 +299,7 @@ function processMenuReqClosable()
         //store the response of the request
         response = req.responseText;
 
-        overlib( response, FULLHTML, STICKY, FIXX, 225, FIXY, 225);
+        overlib( response, FULLHTML, STICKY, FIXX, 225, FIXY, 125);
 
         //always do this
         freeReq( manMsgID );        

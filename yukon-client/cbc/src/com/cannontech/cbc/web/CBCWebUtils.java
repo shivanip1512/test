@@ -77,11 +77,83 @@ public class CBCWebUtils implements CBCParamValues
 
 		return retURL;
 	}
+	
+	public static synchronized String genGraphVarURL(int id, CapControlCache capControlCache, String period, String type) {
+	    
+	    if( capControlCache == null )
+            return null;
+        
+        String retURL = GRAPH_30_DAY_URL;
+        if( period == null )
+            retURL += "&period=" + ServletUtil.PREVTHIRTYDAYS;
+        else
+            retURL += "&period=" + period;
+        
+        String res = null;
+        if( capControlCache.isSubBus(id) ) {
+            res = createSubBusVarGraphURL( capControlCache.getSubBus(new Integer(id)), type );
+            retURL = (res == null ? null : retURL + res);
+        } else if( capControlCache.isFeeder(id) ) {
+            res = createFeederVarGraphURL( capControlCache.getFeeder(new Integer(id)), type );
+            retURL = (res == null ? null : retURL + res);
+        }
+        return retURL;
+	}
+	
+public static synchronized String genGraphWattURL(int id, CapControlCache capControlCache, String period, String type) {
+        
+        if( capControlCache == null ) {
+            return null;
+        }
+        String retURL = GRAPH_30_DAY_URL;
+        if( period == null ) {
+            retURL += "&period=" + ServletUtil.PREVTHIRTYDAYS;
+        }else {
+            retURL += "&period=" + period;
+        }
+        String res = null;
+        if( capControlCache.isSubBus(id) ) {
+            res = createSubBusWattGraphURL( capControlCache.getSubBus(new Integer(id)), type );
+            retURL = (res == null ? null : retURL + res);
+        } else if( capControlCache.isFeeder(id) ) {
+            res = createFeederWattGraphURL( capControlCache.getFeeder(new Integer(id)), type );
+            retURL = (res == null ? null : retURL + res);
+        }
+        return retURL;
+    }
 
-	public static synchronized String genGraphURL( int theId, CapControlCache theCache, String type )
-	{
+	public static synchronized String genGraphURL( int theId, CapControlCache theCache, String type ) {
 		return genGraphURL( theId, theCache, ServletUtil.PREVTHIRTYDAYS, type );
 	}
+	
+	/**
+     * Creates a URL for the given SubBus's points
+     * 
+     */
+    private static synchronized String createSubBusVarGraphURL( SubBus subBus, String type ) {
+        String temp = "";
+        temp += _getPointStr( subBus.getCurrentVarLoadPointID() );      
+        temp += _getPointStr( subBus.getEstimatedVarLoadPointID() );
+        if( temp.length() > 0 ) {
+            return "&pointid=" + temp.substring(1);
+        } else {
+            return null;
+        }
+    }
+    
+    /**
+     * Creates a URL for the given SubBus's points
+     * 
+     */
+    private static synchronized String createSubBusWattGraphURL( SubBus subBus, String type ) {
+        String temp = "";
+        temp += _getPointStr( subBus.getCurrentWattLoadPointID() );
+        if( temp.length() > 0 ) {
+            return "&pointid=" + temp.substring(1);
+        } else {
+            return null;
+        }
+    }
 
 	/**
 	 * Creates a URL for the given SubBus's points
@@ -109,6 +181,37 @@ public class CBCWebUtils implements CBCParamValues
 			return null;
 	}
 
+	/**
+     * Creates a URL for the given feeders points
+     * 
+     */
+    private static synchronized String createFeederVarGraphURL( Feeder feeder, String type ) {
+        String temp = "";
+        temp += _getPointStr( feeder.getCurrentVarLoadPointID() );      
+        temp += _getPointStr( feeder.getEstimatedVarLoadPointID() );
+        
+        if( temp.length() > 0 ) {
+            return "&pointid=" + temp.substring(1);
+        }else {
+            return null;
+        }
+    }
+    
+    /**
+     * Creates a URL for the given feeders points
+     * 
+     */
+    private static synchronized String createFeederWattGraphURL( Feeder feeder, String type ) {
+        String temp = "";
+        temp += _getPointStr( feeder.getCurrentWattLoadPointID() );
+        
+        if( temp.length() > 0 ) {
+            return "&pointid=" + temp.substring(1);
+        } else {
+            return null;
+        }
+    }
+	
 	/**
 	 * Creates a URL for the given feeders points
 	 * 
