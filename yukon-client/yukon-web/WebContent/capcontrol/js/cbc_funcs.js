@@ -183,7 +183,7 @@ function callBack( response)
     else
     {   
         // Input mode
-        var elems = document.getElementsByName('cti_dyn');
+        var elems = $$('*[name="cti_dyn"]');
         var url = createURLreq( elems, '/servlet/CBCServlet?method=callBack', 'id' );
         var lastUpdate = document.getElementById ('lastUpdate');
         if (lastUpdate != null)
@@ -205,19 +205,16 @@ function callBack( response)
 // URL. Ensures that each element is only requested onces
 // in the URL line. 
 // -------------------------------------------
-function createURLreq( elems, initialURL, attrib )
-{
+function createURLreq( elems, initialURL, attrib ) {
     var lastID = '';
     var sepChar = '?';
     if( initialURL.indexOf('?') >= 0 ) sepChar = '&';
-
-    for (var i = 0; i < elems.length; i++, sepChar='&')
-    {
+    for (var i = 0; i < elems.length; i++, sepChar='&') {
         lastID = sepChar + attrib + '=' + elems[i].getAttribute(attrib);
-
         //only add the IDs that we do not have yet
-        if( lastID != initialURL.substring(initialURL.lastIndexOf('&'), initialURL.length) )
+        if( lastID != initialURL.substring(initialURL.lastIndexOf('&'), initialURL.length) ){
             initialURL += lastID;
+        }
     }
 
     return initialURL;
@@ -227,40 +224,33 @@ function createURLreq( elems, initialURL, attrib )
 //Update the HTML on the screen with the results
 // returned from the XMLhttp call
 // -------------------------------------------
-function updateHTML( result)
-{
-    if( result != null )
-    {
-        
-        var elems = document.getElementsByName('cti_dyn');
-        for (var i = 0; i < result.length; i++)
-        {
+function updateHTML( result) {
+    if( result != null ) {
+        var elems = $$('*[name="cti_dyn"]');
+        for (var i = 0; i < result.length; i++) {
             var xmlID = getElementTextNS(result[i], 0, 'id');
 
-            for( var j = 0; j < elems.length; j++ )
-            {
-                if( elems[j].getAttribute('id') == xmlID )
-                {
+            for( var j = 0; j < elems.length; j++ ) {
+                if( elems[j].getAttribute('id') == xmlID ) {
                     var elemType = elems[j].getAttribute('type');
-                    switch( elemType )
-                    {
+                    switch( elemType ) {
                     
                         case 'warning':
                             var image = getElementTextNS(result[i],0,'warning');
                             var warningID = "warning_alert_"+xmlID;
                             var okId = "warning_ok_"+xmlID;
                             if( image == "true" ){
-
                                if( !$(warningID).visible() )
                                		$(warningID).toggle();
                                if( $(okId).visible() )
                                		$(okId).toggle();
-                            }else
-                            {
-                               if( $(warningID).visible() )
+                            } else {
+                               if( $(warningID).visible() ){
                                		$(warningID).toggle();
-                               if( !$(okId).visible() )
-                               		$(okId).toggle();       
+                               	} 
+                               	if( !$(okId).visible() ){
+                               		$(okId).toggle();      
+                               	} 
                             }
                         break;
                         
@@ -268,8 +258,8 @@ function updateHTML( result)
                         case 'state':
                             var xmlColor = getElementTextNS(result[i], 0, 'param0');                            
                             elems[j].style.color = xmlColor;
-						
-							
+                            elems[j].innerHTML = getElementTextNS(result[i], 0, elemType);
+						    break;
                         
                         //most of this time this will suffice
                         default:
@@ -280,14 +270,12 @@ function updateHTML( result)
             }
         }
         updateCommandMenu(result);
-        
         var lastUpdate = document.getElementById('lastUpdate');
-        if (lastUpdate)
+        if (lastUpdate){
             lastUpdate.value = new Date().getTime();
+        }
         setTimeout('callBack()', clientRefresh );
-      
     }
-
 }
 
 // -------------------------------------------
@@ -366,7 +354,7 @@ function statusMsg(elem, msgStr) {
 // -------------------------------------------
 function showDynamicPopup(elem) {
 	var spans = elem.getElementsByTagName('span');
-	var msg = new String(spans[0].innerHTML);
+	var msg = spans[0].innerHTML;
     overlib( msg, WIDTH, 160, CSSCLASS, TEXTFONTCLASS, 'flyover' );
 }
 
@@ -876,7 +864,7 @@ function pause(numberMillis) {
     	for (var i=0; i < rows.length; i++) {
             var row = rows[i];
             var cells = row.getElementsByTagName('td');
-            var fdr = cells[8];
+            var fdr = cells[7];
             var spans = fdr.getElementsByTagName('span');
 	        var fdrName = new String (spans[0].innerHTML);
     		var index = feederNames.indexOf(trim(fdrName));

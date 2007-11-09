@@ -12,11 +12,11 @@
         formatSelectedPoint ('feederWattDiv');
         formatSelectedPoint ('feederVoltDiv');
 		
-		var feeder_Var_PointPicker = new PointPicker('var_point','com.cannontech.common.search.criteria.CCVarCriteria','pointName:feederVarPoint;deviceName:feederVarDevice','feederVarPointPicker','',Prototype.emptyFunction,Prototype.emptyFunction);
-		var feeder_Var_PhaseB_PointPicker = new PointPicker('var_phase_b_point','com.cannontech.common.search.criteria.CCVarCriteria','pointName:feeder_Var_PhaseB_Point;deviceName:feeder_Var_PhaseB_Device','feeder_Var_PhaseB_PointPicker','',Prototype.emptyFunction,Prototype.emptyFunction);
-		var feeder_Var_PhaseC_PointPicker = new PointPicker('var_phase_c_point','com.cannontech.common.search.criteria.CCVarCriteria','pointName:feeder_Var_PhaseC_Point;deviceName:feeder_Var_PhaseC_Device','feeder_Var_PhaseC_PointPicker','',Prototype.emptyFunction,Prototype.emptyFunction);
-		var feederWattPointPicker = new PointPicker('watt_point','com.cannontech.common.search.criteria.CCWattCriteria','pointName:feederWattPoint;deviceName:feederWattDevice','feederWattPointPicker','',Prototype.emptyFunction,Prototype.emptyFunction);
-		var feederVoltPointPicker = new PointPicker('volt_point','com.cannontech.common.search.criteria.CCVoltCriteria','pointName:feederVoltPoint;deviceName:feederVoltDevice','feederVoltPointPicker','',Prototype.emptyFunction,Prototype.emptyFunction);
+		var feederVarPointPicker = new PointPicker('varPoint','com.cannontech.common.search.criteria.CCVarCriteria','pointName:feederVarPoint;deviceName:feederVarDevice','feederVarPointPicker','',Prototype.emptyFunction,Prototype.emptyFunction);
+		var feederVarPhaseBPointPicker = new PointPicker('varPhaseBPoint','com.cannontech.common.search.criteria.CCVarCriteria','pointName:feederVarPhaseBPoint;deviceName:feederVarPhaseBDevice','feederVarPhaseBPointPicker','',Prototype.emptyFunction,Prototype.emptyFunction);
+		var feederVarPhaseCPointPicker = new PointPicker('varPhaseCPoint','com.cannontech.common.search.criteria.CCVarCriteria','pointName:feederVarPhaseCPoint;deviceName:feederVarPhaseCDevice','feederVarPhaseCPointPicker','',Prototype.emptyFunction,Prototype.emptyFunction);
+		var feederWattPointPicker = new PointPicker('wattPoint','com.cannontech.common.search.criteria.CCWattCriteria','pointName:feederWattPoint;deviceName:feederWattDevice','feederWattPointPicker','',Prototype.emptyFunction,Prototype.emptyFunction);
+		var feederVoltPointPicker = new PointPicker('voltPoint','com.cannontech.common.search.criteria.CCVoltCriteria','pointName:feederVoltPoint;deviceName:feederVoltDevice','feederVoltPointPicker','',Prototype.emptyFunction,Prototype.emptyFunction);
     </script>
 	</f:verbatim>
     <h:panelGrid id="fdrBody" columns="2" styleClass="gridLayout" columnClasses="gridColumn" >
@@ -64,12 +64,12 @@
     </legend>
     </f:verbatim>
 	
-	<x:div id="feeder_Var_Div" forceId="true">
-	<h:selectBooleanCheckbox id="Use_Phase_Data_Checkbox" 
+	<x:div id="feederVarDiv" forceId="true">
+	<h:selectBooleanCheckbox id="usePhaseDataCheckbox" 
 	   	onclick="submit();"
 		valueChangeListener="#{capControlForm.usePhaseDataClicked}"
 		value="#{capControlForm.PAOBase.capControlFeeder.usePhaseDataBoolean}"/>
-	<x:outputLabel for="Use_Phase_Data_Checkbox" 
+	<x:outputLabel for="usePhaseDataCheckbox" 
 		value="Use Per Phase Var Data" 
         title="Check this box to use 3 phase var data." 
         styleClass="smallStaticLabel"/>
@@ -78,17 +78,17 @@
     <br/>
     <br/>
     </f:verbatim>
-    <x:inputHidden id="var_point" forceId="true" value="#{capControlForm.PAOBase.capControlFeeder.currentVarLoadPointID }" />      
-    <x:outputLabel for="feeder_Var_Device" value="Selected Point: " title="Data Point used for the current VAR value" styleClass="medStaticLabel"/>
-    <x:outputText id="feeder_Var_Device" forceId="true" value="#{capControlForm.paoNameMap[capControlForm.PAOBase.capControlFeeder.currentVarLoadPointID]}"/> 
-    <x:outputText id="feeder_Var_Point_Seperator" forceId="true" value=" : " />
-    <x:outputText id="feeder_Var_Point" forceId="true" value="#{capControlForm.pointNameMap[capControlForm.PAOBase.capControlFeeder.currentVarLoadPointID]}" /> 
+    <x:inputHidden id="varPoint" forceId="true" value="#{capControlForm.PAOBase.capControlFeeder.currentVarLoadPointID }" />      
+    <x:outputLabel for="feederVarDevice" value="Selected Point: " title="Data Point used for the current VAR value" styleClass="medStaticLabel"/>
+    <x:outputText id="feederVarDevice" forceId="true" value="#{capControlForm.paoNameMap[capControlForm.PAOBase.capControlFeeder.currentVarLoadPointID]}"/> 
+    <x:outputText id="feederVarPointSeperator" forceId="true" value=" : " />
+    <x:outputText id="feederVarPoint" forceId="true" value="#{capControlForm.pointNameMap[capControlForm.PAOBase.capControlFeeder.currentVarLoadPointID]}" /> 
     
     <f:verbatim>
     <br/>
     </f:verbatim>
     
-    <h:outputLink  value="javascript:feeder_Var_PointPicker.showPicker()" >
+    <h:outputLink  value="javascript:feederVarPointPicker.showPicker()" >
     <h:outputText value="Select point..."/>
     </h:outputLink>
     
@@ -97,19 +97,19 @@
     <br/>
     </f:verbatim>
     
-    <x:div id="use_Phase_Data_Div" forceId="true" rendered="#{capControlForm.PAOBase.capControlFeeder.usePhaseDataBoolean}">
+    <x:div id="usePhaseDataDiv" forceId="true" rendered="#{capControlForm.PAOBase.capControlFeeder.usePhaseDataBoolean}">
     
-    <x:inputHidden id="var_phase_b_point" forceId="true" value="#{capControlForm.PAOBase.capControlFeeder.phaseB }" />      
-    <x:outputLabel for="feeder_Var_PhaseB_Device" value="Selected PhaseB Point: " title="Data Point used for the current phase B VAR value" styleClass="medStaticLabel"/>
-    <x:outputText id="feeder_Var_PhaseB_Device" forceId="true" value="#{capControlForm.paoNameMap[capControlForm.PAOBase.capControlFeeder.phaseB]}"/> 
-    <x:outputText id="feeder_Var_PhaseB_Point_Seperator" forceId="true" value=" : "/>
-    <x:outputText id="feeder_Var_PhaseB_Point" forceId="true" value="#{capControlForm.pointNameMap[capControlForm.PAOBase.capControlFeeder.phaseB]}"/> 
+    <x:inputHidden id="varPhaseBPoint" forceId="true" value="#{capControlForm.PAOBase.capControlFeeder.phaseB }" />      
+    <x:outputLabel for="feederVarPhaseBDevice" value="Selected PhaseB Point: " title="Data Point used for the current phase B VAR value" styleClass="medStaticLabel"/>
+    <x:outputText id="feederVarPhaseBDevice" forceId="true" value="#{capControlForm.paoNameMap[capControlForm.PAOBase.capControlFeeder.phaseB]}"/> 
+    <x:outputText id="feederVarPhaseBPointSeperator" forceId="true" value=" : "/>
+    <x:outputText id="feederVarPhaseBPoint" forceId="true" value="#{capControlForm.pointNameMap[capControlForm.PAOBase.capControlFeeder.phaseB]}"/> 
     
     <f:verbatim>
     <br/>
     </f:verbatim>
     
-    <h:outputLink  value="javascript:feeder_Var_PhaseB_PointPicker.showPicker()">
+    <h:outputLink  value="javascript:feederVarPhaseBPointPicker.showPicker()">
     <h:outputText value="Select point for Phase B"/>
     </h:outputLink>
     
@@ -118,17 +118,17 @@
     <br/>
     </f:verbatim>
     
-    <x:inputHidden id="var_phase_c_point" forceId="true" value="#{capControlForm.PAOBase.capControlFeeder.phaseC }" />      
-    <x:outputLabel for="feeder_Var_PhaseC_Device" value="Selected PhaseC Point: " title="Data Point used for the current phase B VAR value" styleClass="medStaticLabel"/>
-    <x:outputText id="feeder_Var_PhaseC_Device" forceId="true" value="#{capControlForm.paoNameMap[capControlForm.PAOBase.capControlFeeder.phaseC]}"/> 
-    <x:outputText id="feeder_Var_PhaseC_Point_Seperator" forceId="true" value=" : "/>
-    <x:outputText id="feeder_Var_PhaseC_Point" forceId="true" value="#{capControlForm.pointNameMap[capControlForm.PAOBase.capControlFeeder.phaseC]}"/> 
+    <x:inputHidden id="varPhaseCPoint" forceId="true" value="#{capControlForm.PAOBase.capControlFeeder.phaseC }" />      
+    <x:outputLabel for="feederVarPhaseCDevice" value="Selected PhaseC Point: " title="Data Point used for the current phase B VAR value" styleClass="medStaticLabel"/>
+    <x:outputText id="feederVarPhaseCDevice" forceId="true" value="#{capControlForm.paoNameMap[capControlForm.PAOBase.capControlFeeder.phaseC]}"/> 
+    <x:outputText id="feederVarPhaseCPointSeperator" forceId="true" value=" : "/>
+    <x:outputText id="feederVarPhaseCPoint" forceId="true" value="#{capControlForm.pointNameMap[capControlForm.PAOBase.capControlFeeder.phaseC]}"/> 
     
     <f:verbatim>
     <br/>
     </f:verbatim>
     
-    <h:outputLink  value="javascript:feeder_Var_PhaseC_PointPicker.showPicker()">
+    <h:outputLink  value="javascript:feederVarPhaseCPointPicker.showPicker()">
     <h:outputText value="Select point for Phase C"/>
     </h:outputLink>
     
@@ -137,7 +137,7 @@
     <f:verbatim>
     <br/>
     </f:verbatim>
-    <x:commandLink id="varPoint_setNone" title="Do not use a point for the VAR value" 
+    <x:commandLink id="varPointSetNone" title="Do not use a point for the VAR value" 
     	styleClass="medStaticLabel"
         value="No Var Point" actionListener="#{capControlForm.varPtTeeClick}">
     <f:param name="ptID" value="0"/>
@@ -154,16 +154,11 @@
     </legend>
     </f:verbatim>
 	<x:div id="feederWattDiv" forceId="true">
-    <x:inputHidden id="watt_point" forceId="true" 
-    	value="#{capControlForm.PAOBase.capControlFeeder.currentWattLoadPointID }" />      
-    <x:outputLabel for="feederWattDevice" value="Selected Point: " 
-    	title="Data Point used for the current WATT value" 
-        styleClass="medStaticLabel"/>
-    <x:outputText id="feederWattDevice" forceId="true" 
-    	value="#{capControlForm.paoNameMap[capControlForm.PAOBase.capControlFeeder.currentWattLoadPointID]}"/> 
-   	<x:outputText id="feeder_Watt_Point_Seperator" forceId="true" value=" : " />
-    <x:outputText id="feederWattPoint" forceId="true" 
-    	value="#{capControlForm.pointNameMap[capControlForm.PAOBase.capControlFeeder.currentWattLoadPointID]}" /> 
+    <x:inputHidden id="wattPoint" forceId="true" value="#{capControlForm.PAOBase.capControlFeeder.currentWattLoadPointID }" />      
+    <x:outputLabel for="feederWattDevice" value="Selected Point: " title="Data Point used for the current WATT value" styleClass="medStaticLabel"/>
+    <x:outputText id="feederWattDevice" forceId="true" value="#{capControlForm.paoNameMap[capControlForm.PAOBase.capControlFeeder.currentWattLoadPointID]}"/> 
+   	<x:outputText id="feederWattPointSeperator" forceId="true" value=" : " />
+    <x:outputText id="feederWattPoint" forceId="true" value="#{capControlForm.pointNameMap[capControlForm.PAOBase.capControlFeeder.currentWattLoadPointID]}" /> 
     <f:verbatim>
     <br/>
     </f:verbatim>
@@ -174,7 +169,7 @@
     <f:verbatim>
     <br/>
     </f:verbatim>
-    <x:commandLink id="wattPoint_setNone" title="Do not use a point for the WATT value" 
+    <x:commandLink id="wattPointSetNone" title="Do not use a point for the WATT value" 
     	styleClass="medStaticLabel"
         value="No WATT Point" actionListener="#{capControlForm.wattPtTeeClick}">
     <f:param name="ptID" value="0"/>
@@ -191,14 +186,11 @@
     </legend>
     </f:verbatim>
 	<x:div id="feederVoltDiv" forceId="true">
-    <x:inputHidden id="volt_point" forceId="true" value="#{capControlForm.PAOBase.capControlFeeder.currentVoltLoadPointID }" />      
-    <x:outputLabel for="feederVoltDevice" value="Selected Point: " 
-    	title="Data Point used for the current VOLT value" styleClass="medStaticLabel"/>
-    <x:outputText id="feederVoltDevice" forceId="true" 
-    	value="#{capControlForm.paoNameMap[capControlForm.PAOBase.capControlFeeder.currentVoltLoadPointID]}"/> 
-   	<x:outputText id="feeder_Volt_Point_Seperator" forceId="true" value=" : " />
-    <x:outputText id="feederVoltPoint" forceId="true" 
-    	value="#{capControlForm.pointNameMap[capControlForm.PAOBase.capControlFeeder.currentVoltLoadPointID]}" /> 
+    <x:inputHidden id="voltPoint" forceId="true" value="#{capControlForm.PAOBase.capControlFeeder.currentVoltLoadPointID }" />      
+    <x:outputLabel for="feederVoltDevice" value="Selected Point: " title="Data Point used for the current VOLT value" styleClass="medStaticLabel"/>
+    <x:outputText id="feederVoltDevice" forceId="true" value="#{capControlForm.paoNameMap[capControlForm.PAOBase.capControlFeeder.currentVoltLoadPointID]}"/> 
+   	<x:outputText id="feederVoltPointSeperator" forceId="true" value=" : " />
+    <x:outputText id="feederVoltPoint" forceId="true" value="#{capControlForm.pointNameMap[capControlForm.PAOBase.capControlFeeder.currentVoltLoadPointID]}" /> 
     <f:verbatim>
     <br/>
     </f:verbatim>
@@ -209,7 +201,7 @@
     <f:verbatim>
     <br/>
     </f:verbatim>
-    <x:commandLink id="voltPoint_setNone" title="Do not use a point for the VOLT value" 
+    <x:commandLink id="voltPointSetNone" title="Do not use a point for the VOLT value" 
     	styleClass="medStaticLabel"
     	value="No VOLT Point" actionListener="#{capControlForm.voltPtTeeClick}">
     <f:param name="ptID" value="0"/>

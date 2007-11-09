@@ -249,7 +249,10 @@ public class CBCDisplay {
             return warningText;
         }
         case CB_STATUS_POPUP: {
-            return new String("Before: "+capBank.getBeforeVars()+ " After: " + capBank.getAfterVars() + " % Change: "+ capBank.getPercentChange());
+            String before = capBank.getBeforeVars();
+            String after = capBank.getAfterVars();
+            String change = capBank.getPercentChange();
+            return new String(" Before: "+before+ " \n After: " + after + " \n % Change: "+ change);
         }
         default:
             return null;

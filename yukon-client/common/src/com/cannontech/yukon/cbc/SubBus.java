@@ -54,7 +54,7 @@ public class SubBus extends StreamableCapObject implements PointQualityCheckable
     private Double targetvarvalue = null;
     private String solution = null;
 
-    private Vector<Feeder>ccFeeders = null;
+    private Vector<Feeder>ccFeeders = new Vector<Feeder>();
     private Boolean switchOverStatus = null;
     private Double peakPFSetPoint = new Double(100.0);
     private Double offpeakPFSetPoint = new Double(100.0);
