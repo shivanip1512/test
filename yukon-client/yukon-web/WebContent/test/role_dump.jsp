@@ -25,10 +25,10 @@
 		r = DaoFactory.getAuthDao().getRole(user, r.getRoleID());
 		if(r != null) {
 			out.println("roleid: " + r.getRoleID() + "&nbsp&nbsp&nbspname: " + r.getRoleName() + "<br>");
-			List roleProps = DaoFactory.getAuthDao().getRoleProperties(r);
-			for(Iterator j = roleProps.iterator(); j.hasNext();) {
-						System.out.println("h2");
-				LiteYukonRoleProperty p = (LiteYukonRoleProperty) j.next();
+			LiteYukonRoleProperty[] roleProps = DaoFactory.getRoleDao().getRoleProperties(r.getRoleID());
+			for(int i = 0; i < roleProps.length; ++i) {
+				System.out.println("h2");
+				LiteYukonRoleProperty p = roleProps[i];
 				if(DaoFactory.getAuthDao().checkRoleProperty(user, p.getRolePropertyID())) {
 					out.println("propertyid: " + p.getRolePropertyID() + "&nbsp&nbsp&nbspkey: " + p.getKeyName() + "&nbsp&nbsp&nbspdefault: " + p.getDefaultValue() + "&nbsp&nbsp&nbspvalue: " + DaoFactory.getAuthDao().getRolePropertyValue(user, p.getRolePropertyID()) + "<br>");
 				}

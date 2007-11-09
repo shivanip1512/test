@@ -11,7 +11,6 @@
   	<property name="dynamicDataSource" ref="dynamicDataSource"/>
   </bean>  
   <bean id="authDao" class="com.cannontech.core.dao.impl.AuthDaoImpl" >
-  	<property name="roleDao" ref="roleDao" />
   	<property name="yukonUserDao" ref="yukonUserDao" />
   	<property name="contactDao" ref="contactDao" />
   	<property name="databaseCache" ref="databaseCache" />
@@ -92,6 +91,9 @@
   <bean id="roleDao" class="com.cannontech.core.dao.impl.RoleDaoImpl" >
   	<property name="authDao" ref="authDao"/>
     <property name="databaseCache" ref="databaseCache"/>        	
+  </bean>
+  <bean id="standaloneRoleDao" class="com.cannontech.core.dao.impl.StandaloneRoleDaoImpl" >
+  	<property name="jdbcTemplate" ref="simpleJdbcTemplate"/>
   </bean>
    <bean id="simplePointAccessDao" class="com.cannontech.core.dao.impl.SimplePointAccessDaoImpl" >
     <property name="dynamicDataSource" ref="dynamicDataSource"/>

@@ -19,6 +19,7 @@ public interface AuthDao {
      * @return LiteYukonUser
      * @deprecated Please call AuthenticationService.login() directly
      */
+    @Deprecated
     public LiteYukonUser login(String username, String password);
 
     /**
@@ -89,6 +90,16 @@ public interface AuthDao {
             int rolePropertyID, String defaultValue);
 
     /**
+     * Returns the value for a given group and role property.
+     * If no value is found then defaultValue is returned for convenience.
+     * @param groupId
+     * @param roleProperty
+     * @return String
+     */
+    public String getRolePropValueGroup(int groupId,
+                                        int rolePropertyId, String defaultValue);
+
+    /**
      * Returns a list of roles that are in the given category.
      * @param category
      * @return List
@@ -108,13 +119,6 @@ public interface AuthDao {
      * @return
      */
     public LiteYukonRoleProperty getRoleProperty(int propid);
-
-    /**
-     * Return a List<LiteYukonRoleProperty> for a given LiteYukonRole
-     * @param role
-     * @return
-     */
-    public List getRoleProperties(LiteYukonRole role);
 
     /**
      * Return a particular lite yukon group given the group name

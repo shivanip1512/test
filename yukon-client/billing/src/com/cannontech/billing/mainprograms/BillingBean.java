@@ -135,7 +135,7 @@ public BillingFileDefaults getBillingDefaults()
 public int getFileFormat()
 {
 	if( fileFormat == FileFormatTypes.INVALID) {
-		String format = DaoFactory.getRoleDao().getRolePropertyValue(getLiteYukonUser().getUserID(), BillingRole.DEFAULT_BILLING_FORMAT, null);
+		String format = DaoFactory.getAuthDao().getRolePropertyValue(getLiteYukonUser(), BillingRole.DEFAULT_BILLING_FORMAT);
 		fileFormat = FileFormatTypes.getFormatID(format);
 	}
 	return fileFormat;
@@ -179,7 +179,7 @@ public void setEndDateStr(String newEndDateStr)
 public int getDemandDaysPrev()
 {
 	if( demandDaysPrev < 0)
-		demandDaysPrev = Integer.valueOf(DaoFactory.getRoleDao().getRolePropertyValue(getLiteYukonUser().getUserID(), BillingRole.DEMAND_DAYS_PREVIOUS, null)).intValue();
+		demandDaysPrev = Integer.valueOf(DaoFactory.getAuthDao().getRolePropertyValue(getLiteYukonUser(), BillingRole.DEMAND_DAYS_PREVIOUS)).intValue();
 	return demandDaysPrev;
 }
 /**
@@ -201,7 +201,7 @@ public void setDemandDaysPrev(int newDemandDaysPrev)
 public int getEnergyDaysPrev()
 {
 	if (energyDaysPrev < 0)
-		energyDaysPrev = Integer.valueOf(DaoFactory.getRoleDao().getRolePropertyValue(getLiteYukonUser().getUserID(), BillingRole.ENERGY_DAYS_PREVIOUS, null)).intValue();
+		energyDaysPrev = Integer.valueOf(DaoFactory.getAuthDao().getRolePropertyValue(getLiteYukonUser(), BillingRole.ENERGY_DAYS_PREVIOUS)).intValue();
 	return energyDaysPrev;
 }
 public void setEnergyDaysPrev(int newEnergyDaysPrev)
@@ -213,7 +213,7 @@ public void setEnergyDaysPrev(int newEnergyDaysPrev)
 public boolean getAppendToFile()
 {
 	if( appendToFile == null)
-		appendToFile = Boolean.valueOf(DaoFactory.getRoleDao().getRolePropertyValue(getLiteYukonUser().getUserID(), BillingRole.APPEND_TO_FILE, null));
+		appendToFile = Boolean.valueOf(DaoFactory.getAuthDao().getRolePropertyValue(getLiteYukonUser(), BillingRole.APPEND_TO_FILE));
 	return appendToFile.booleanValue();
 }
 public void setAppendToFile(boolean isAppendToFile)
@@ -224,7 +224,7 @@ public void setAppendToFile(boolean isAppendToFile)
 public boolean getRemoveMult()
 {
 	if (removeMult == null)
-		removeMult = Boolean.valueOf(DaoFactory.getRoleDao().getRolePropertyValue(getLiteYukonUser().getUserID(), BillingRole.REMOVE_MULTIPLIER, null));
+		removeMult = Boolean.valueOf(DaoFactory.getAuthDao().getRolePropertyValue(getLiteYukonUser(), BillingRole.REMOVE_MULTIPLIER));
 	return removeMult.booleanValue();
 }
 public void setRemoveMult(boolean isRemoveMult)
@@ -311,7 +311,7 @@ public void setLiteYukonUser(LiteYukonUser liteYukonUser) {
 }
 public String getInputFile() {
 	if( inputFile == null)
-		inputFile = DaoFactory.getRoleDao().getRolePropertyValue(getLiteYukonUser().getUserID(), BillingRole.INPUT_FILE, null);
+		inputFile = DaoFactory.getAuthDao().getRolePropertyValue(getLiteYukonUser(), BillingRole.INPUT_FILE);
 	return inputFile;
 }
 public void setInputFile(String inputFile) {

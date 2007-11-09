@@ -45,7 +45,7 @@ public int doEndTag() throws javax.servlet.jsp.JspException {
  */
 public int doStartTag() throws JspException {
 	try {
-		String uri = null;			
+		String uri = null;
 		LiteYukonUser user = (LiteYukonUser) pageContext.getSession().getAttribute("YUKON_USER");
 		if(user != null) {
             int propId;
@@ -54,11 +54,7 @@ public int doStartTag() throws JspException {
             } else {
                 propId = ReflectivePropertySearcher.getRoleProperty().getIntForName(property);
             }
-			String missingValue = "Missing rolePropertyID:  " + Integer.toString(propId);
-			String text = DaoFactory.getAuthDao().getRolePropertyValue(user, propId);
-            if (text == null) {
-                text = missingValue;
-            }
+			String text = DaoFactory.getAuthDao().getRolePropertyValueEx(user, propId);
 			String fmat = getFormat();
 			if (fmat != null) {
 				if (fmat.equalsIgnoreCase( ServletUtil.FORMAT_UPPER ))
@@ -73,7 +69,7 @@ public int doStartTag() throws JspException {
 					text = ServletUtil.addArticle( text );
 			}
 			pageContext.getOut().write(text);
-		}				 	
+		}
 	}
 	catch(java.io.IOException e )
 	{

@@ -38,6 +38,7 @@
             <value type="boolean">true</value>
         </property>
 		<property name="deviceDao" ref="deviceDao"/>
+		<property name="authDao" ref="authDao"/>
 		<property name="roleDao" ref="roleDao"/>
 		<property name="csrService" ref="csrService" />
 		<property name="attributeService" ref="attributeService" />

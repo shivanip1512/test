@@ -18,13 +18,13 @@ public abstract class ErrorAwareContextListener implements ServletContextListene
     
     public void contextInitialized(ServletContextEvent sce) {
         ServletContext servletContext = sce.getServletContext();
-        applicationContext = WebApplicationContextUtils.getRequiredWebApplicationContext(servletContext);
 
         if (ErrorHelperFilter.doesStartupErrorExist(servletContext)) {
             CTILogger.error("Skipping load of " + this.getClass().getSimpleName() + " because of previous errors");
             return;
         }
         try {
+            applicationContext = WebApplicationContextUtils.getRequiredWebApplicationContext(servletContext);
             doContextInitialized(sce);
         } catch (RuntimeException re) {
             handleException(servletContext, re);

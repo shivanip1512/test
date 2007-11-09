@@ -51,9 +51,6 @@
         <constructor-arg ref="jdbcTemplate"/>
     </bean>
 
-    <bean id="databaseCache" class="com.cannontech.mbean.ServerDatabaseCache">
-        <property name="dbChangeListener" ref="cacheDbChangeListener" />
-    </bean>
     <bean id="cacheDbChangeListener" class="com.cannontech.database.cache.CacheDBChangeListener">
         <constructor-arg>
             <ref bean="connectionPool" />
@@ -61,7 +58,7 @@
     </bean>
 
     <bean id="connectionPool" class="com.cannontech.yukon.conns.ConnPool" destroy-method="shutdown">
-        <property name="roleDao" ref="roleDao" />
+        <property name="standaloneRoleDao" ref="standaloneRoleDao" />
     </bean>
 
     <bean id="ctiSqlStatement" class="com.cannontech.ejb.SqlStatementBean" singleton="false" />

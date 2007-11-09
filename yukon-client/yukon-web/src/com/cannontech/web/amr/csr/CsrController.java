@@ -24,12 +24,13 @@ import com.cannontech.common.device.attribute.model.Attribute;
 import com.cannontech.common.device.attribute.model.BuiltInAttribute;
 import com.cannontech.common.device.attribute.service.AttributeService;
 import com.cannontech.common.search.SearchResult;
+import com.cannontech.core.dao.AuthDao;
 import com.cannontech.core.dao.DeviceDao;
 import com.cannontech.core.dao.RoleDao;
 import com.cannontech.database.data.device.DeviceTypesFuncs;
 import com.cannontech.database.data.lite.LiteYukonUser;
-import com.cannontech.roles.yukon.MultispeakRole;
 import com.cannontech.roles.operator.MeteringRole;
+import com.cannontech.roles.yukon.MultispeakRole;
 import com.cannontech.util.ServletUtil;
 
 /**
@@ -37,6 +38,7 @@ import com.cannontech.util.ServletUtil;
  */
 public class CsrController extends MultiActionController {
 
+    private AuthDao authDao = null;
     private RoleDao roleDao = null;
     private CsrService csrService = null;
     private AttributeService attributeService = null;
@@ -48,6 +50,10 @@ public class CsrController extends MultiActionController {
 
     public void setCsrService(CsrService csrService) {
         this.csrService = csrService;
+    }
+
+    public void setAuthDao(AuthDao authDao) {
+        this.authDao = authDao;
     }
 
     public void setRoleDao(RoleDao roleDao) {
@@ -156,18 +162,18 @@ public class CsrController extends MultiActionController {
         mav.addObject("disconnectSupported", disconnectSupported);
         
         LiteYukonUser user = ServletUtil.getYukonUser(request);
-        
-        boolean deviceGroupEnabled = Boolean.parseBoolean(roleDao.getRolePropertyValue(user.getUserID(), MeteringRole.DEVICE_GROUP_ENABLED, "true"));
+
+        boolean deviceGroupEnabled = Boolean.parseBoolean(authDao.getRolePropertyValue(user, MeteringRole.DEVICE_GROUP_ENABLED));
         mav.addObject("deviceGroupsSupported", deviceGroupEnabled);
 
         boolean touSupported = DeviceTypesFuncs.isTouEnabled(device);
-        boolean touEnabled = Boolean.parseBoolean(roleDao.getRolePropertyValue(user.getUserID(), MeteringRole.TOU_ENABLED, "true"));
+        boolean touEnabled = Boolean.parseBoolean(authDao.getRolePropertyValue(user, MeteringRole.TOU_ENABLED));
         mav.addObject("touSupported", (touSupported && touEnabled));
 
         boolean lpSupported = DeviceTypesFuncs.isMCT4XX(device.getType());
         mav.addObject("lpSupported", lpSupported);
-        
-        boolean lpEnabled = Boolean.parseBoolean(roleDao.getRolePropertyValue(user.getUserID(), MeteringRole.PROFILE_REQUEST_ENABLED, "true"));
+
+        boolean lpEnabled = Boolean.parseBoolean(authDao.getRolePropertyValue(user, MeteringRole.PROFILE_REQUEST_ENABLED));
         mav.addObject("lpEnabled", lpEnabled);
         
         boolean peakReportSupported = DeviceTypesFuncs.isMCT410(device.getType());

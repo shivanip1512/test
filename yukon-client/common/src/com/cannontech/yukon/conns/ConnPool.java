@@ -1,11 +1,12 @@
 
 package com.cannontech.yukon.conns;
 
+import java.io.IOException;
 import java.util.Hashtable;
 
 import com.cannontech.clientutils.CTILogger;
 import com.cannontech.common.util.CtiUtilities;
-import com.cannontech.core.dao.RoleDao;
+import com.cannontech.core.dao.StandaloneRoleDao;
 import com.cannontech.message.dispatch.ClientConnection;
 import com.cannontech.message.dispatch.message.Registration;
 import com.cannontech.roles.yukon.SystemRole;
@@ -42,7 +43,7 @@ public class ConnPool
 	// Map<String, IServerConnection>
 	private Hashtable<String, IServerConnection> _allConns = null;
 
-    private RoleDao roleDao;
+    private StandaloneRoleDao standaloneRoleDao;
 
 	/**
 	 * Returns the singleton instance of this class
@@ -113,39 +114,40 @@ public class ConnPool
 	 */
 	public IServerConnection getDefDispatchConn() {
 
-		//check our master Map of existing connections
-		ClientConnection connToDispatch =
-            (ClientConnection)getAllConns().get(DISPATCH_CONN);
+	    //check our master Map of existing connections
+	    ClientConnection connToDispatch =
+	        (ClientConnection)getAllConns().get(DISPATCH_CONN);
 
-		if( connToDispatch == null ) {
-			String defaultHost = "127.0.0.1";
-			int defaultPort = 1510;
-	
-			try {
-				defaultHost = roleDao.getGlobalPropertyValue(SystemRole.DISPATCH_MACHINE);
-	
-				defaultPort = Integer.parseInt(roleDao.getGlobalPropertyValue(SystemRole.DISPATCH_PORT));
-			} catch (Exception e) {
-				CTILogger.warn("Could not get host and port for dispatch connection from Role Properties, using defaults", e);
-			}
-	
-			connToDispatch = (ClientConnection)createDispatchConn();
-            connToDispatch.setHost(defaultHost);
-            connToDispatch.setPort(defaultPort);
-			try 
-			{
-				CTILogger.info("Attempting Dispatch connection to " + connToDispatch.getHost() + ":" + connToDispatch.getPort());
-				connToDispatch.connectWithoutWait();
-			}
-			catch( Exception e ) 
-			{
-				CTILogger.error( e.getMessage(), e );
-			}
-	                
-			getAllConns().put( DISPATCH_CONN, connToDispatch); 
-		}
+	    if( connToDispatch == null ) {
+	        String defaultHost = "127.0.0.1";
+	        int defaultPort = 1510;
 
-		return connToDispatch;
+	        defaultHost = standaloneRoleDao.getGlobalPropertyValue(SystemRole.DISPATCH_MACHINE);
+
+	        String portStr = standaloneRoleDao.getGlobalPropertyValue(SystemRole.DISPATCH_PORT);
+	        try {
+	            defaultPort = Integer.parseInt(portStr);
+	        } catch (NumberFormatException e) {
+	            CTILogger.warn("dispatch connection port value was not valid '" + portStr + "', using default", e);
+	        }
+
+	        connToDispatch = (ClientConnection)createDispatchConn();
+	        connToDispatch.setHost(defaultHost);
+	        connToDispatch.setPort(defaultPort);
+	        try 
+	        {
+	            CTILogger.info("Attempting Dispatch connection to " + connToDispatch.getHost() + ":" + connToDispatch.getPort());
+	            connToDispatch.connectWithoutWait();
+	        }
+	        catch( Exception e ) 
+	        {
+	            CTILogger.error( "Unable to connect the dispatch connection", e );
+	        }
+
+	        getAllConns().put( DISPATCH_CONN, connToDispatch); 
+	    }
+
+	    return connToDispatch;
 	}
 
     /**
@@ -165,16 +167,14 @@ public class ConnPool
             String host = "127.0.0.1";
             int port = 1510;
             
-            try
-            {
-                host = roleDao.getGlobalPropertyValue( SystemRole.PORTER_MACHINE );
-    
-                port = Integer.parseInt( 
-                    roleDao.getGlobalPropertyValue( SystemRole.PORTER_PORT ) ); 
-            }
-            catch( Exception e)
-            {
-                CTILogger.error( e.getMessage(), e );
+            host = standaloneRoleDao.getGlobalPropertyValue( SystemRole.PORTER_MACHINE );
+            String portStr = standaloneRoleDao.getGlobalPropertyValue( SystemRole.PORTER_PORT );
+            try {
+                port = Integer.parseInt(portStr);
+            } catch (NumberFormatException e) {
+                CTILogger
+                    .error("porter connection port value was not valid '" + portStr + "', using default",
+                           e);
             }
     
             porterCC = (com.cannontech.message.porter.ClientConnection)createPorterConn();
@@ -189,7 +189,7 @@ public class ConnPool
             }
             catch( Exception e ) 
             {
-                CTILogger.error( e.getMessage(), e );
+                CTILogger.error("Unable to connect the dispatch connection", e );
             }
                 
             getAllConns().put( PORTER_CONN, porterCC );            
@@ -213,14 +213,15 @@ public class ConnPool
             String host = "127.0.0.1";
             int port = 1900;
             
+            host = standaloneRoleDao.getGlobalPropertyValue( SystemRole.MACS_MACHINE );
+            String portStr = standaloneRoleDao.getGlobalPropertyValue( SystemRole.MACS_PORT );
             try {
-                host = roleDao.getGlobalPropertyValue( SystemRole.MACS_MACHINE );
-                port = Integer.parseInt( roleDao.getGlobalPropertyValue( SystemRole.MACS_PORT ) ); 
-            }
-            catch( Exception e) {
-                CTILogger.error( e.getMessage(), e );
-            }
-    
+                port = Integer.parseInt(portStr);
+            } catch (NumberFormatException e) {
+                CTILogger
+                    .error("macs connection port value was not valid '" + portStr + "', using default",
+                           e);
+            }    
             macsConn = (ServerMACSConnection)createMacsConn();
     
             macsConn.setHost(host);
@@ -235,7 +236,7 @@ public class ConnPool
                 macsConn.connectWithoutWait();
             }
             catch( Exception e ) {
-                CTILogger.error( e.getMessage(), e );
+                CTILogger.error("Unable to connect the dispatch connection", e );
             }
                 
             getAllConns().put( MACS_CONN, macsConn );            
@@ -266,8 +267,9 @@ public class ConnPool
         if( cbcConn == null )
         {		
         	cbcConn = (CBCClientConnection)createCapControlConn();
-            cbcConn.setHost( roleDao.getGlobalPropertyValue( SystemRole.CAP_CONTROL_MACHINE ) );
-            cbcConn.setPort( Integer.parseInt(roleDao.getGlobalPropertyValue( SystemRole.CAP_CONTROL_PORT ) ) );
+            cbcConn.setHost( standaloneRoleDao.getGlobalPropertyValue( SystemRole.CAP_CONTROL_MACHINE ) );
+            String portStr = standaloneRoleDao.getGlobalPropertyValue( SystemRole.CAP_CONTROL_PORT );
+            cbcConn.setPort( Integer.parseInt(portStr ) );
 
 			try
 			{
@@ -276,9 +278,9 @@ public class ConnPool
 				
 				cbcConn.executeCommand( 0, CBCCommand.REQUEST_ALL_AREAS );
 			}
-			catch( java.io.IOException ex )
+			catch( IOException ex )
 			{
-				CTILogger.error( ex );
+				CTILogger.error( "Unable to set \"REQUEST_ALL_AREAS\" to cbc connection", ex );
 			}
 			
 			getAllConns().put( CAPCONTROL_CONN, cbcConn );
@@ -326,13 +328,16 @@ public class ConnPool
 	private IServerConnection createNotificationConn()
 	{       
 		NotifClientConnection notifConn = new NotifClientConnection();
-        notifConn.setHost(roleDao.getGlobalPropertyValue( SystemRole.NOTIFICATION_HOST ));
-        notifConn.setPort(Integer.parseInt(roleDao.getGlobalPropertyValue( SystemRole.NOTIFICATION_PORT )));
+        String host = standaloneRoleDao.getGlobalPropertyValue( SystemRole.NOTIFICATION_HOST );
+        notifConn.setHost(host);
+        String portStr = standaloneRoleDao.getGlobalPropertyValue( SystemRole.NOTIFICATION_PORT );
+        int port = Integer.parseInt(portStr);
+        notifConn.setPort(port);
 		return notifConn;
 	}
 
-    public void setRoleDao(RoleDao roleDao) {
-        this.roleDao = roleDao;
+    public void setStandaloneRoleDao(StandaloneRoleDao standaloneRoleDao) {
+        this.standaloneRoleDao = standaloneRoleDao;
     }
 
 }

@@ -653,15 +653,14 @@ private String getRoleValue( int rolePropID_, String defValue_ )
 {
 	if( getRoleContainer() instanceof YukonUser )
 	{
-		return DaoFactory.getRoleDao().getRolePropertyValue(
-				getRoleContainer().getID().intValue(),
-				rolePropID_,
-				defValue_ );
+		return DaoFactory.getAuthDao().getRolePropertyValue(
+				getRoleContainer().getID(),
+				rolePropID_);
 	}
 	else if( getRoleContainer() instanceof YukonGroup )
 	{
-		return DaoFactory.getRoleDao().getRolePropValueGroup(
-				getRoleContainer().getID().intValue(),
+		return DaoFactory.getAuthDao().getRolePropValueGroup(
+				getRoleContainer().getID(),
 				rolePropID_,
 				defValue_ );
 	}

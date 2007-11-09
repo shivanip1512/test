@@ -1,19 +1,16 @@
 package com.cannontech.core.dao.impl;
 
 import java.util.ArrayList;
-import java.util.Arrays;
 import java.util.Iterator;
 import java.util.List;
 import java.util.Map;
 import java.util.Set;
-import java.util.Map.Entry;
 
 import org.apache.commons.lang.Validate;
 import org.springframework.beans.factory.annotation.Required;
 
 import com.cannontech.clientutils.CTILogger;
 import com.cannontech.common.constants.YukonListEntryTypes;
-import com.cannontech.common.exception.BadAuthenticationException;
 import com.cannontech.common.exception.NotAuthorizedException;
 import com.cannontech.common.util.CtiUtilities;
 import com.cannontech.core.authentication.service.AuthenticationService;
@@ -21,7 +18,6 @@ import com.cannontech.core.authorization.service.PaoPermissionService;
 import com.cannontech.core.authorization.support.Permission;
 import com.cannontech.core.dao.AuthDao;
 import com.cannontech.core.dao.ContactDao;
-import com.cannontech.core.dao.RoleDao;
 import com.cannontech.core.dao.UnknownRolePropertyException;
 import com.cannontech.core.dao.YukonUserDao;
 import com.cannontech.database.data.lite.LiteContact;
@@ -36,20 +32,17 @@ import com.cannontech.yukon.IDatabaseCache;
 
 
 /**
- * A collection of methods to handle authenticating, authorization, and the retrieval of role property values.
+ * A collection of methods to handle authenticating, authorization, and the retrieval of 
+ * role property values.
  * @author alauinger
  */
 public class AuthDaoImpl implements AuthDao {
 	
-    private RoleDao roleDao;
     private YukonUserDao yukonUserDao;
     private ContactDao contactDao;
     private IDatabaseCache databaseCache;
     private AuthenticationService authenticationService;
     
-	/* (non-Javadoc)
-     * @see com.cannontech.core.dao.AuthDao#login(java.lang.String, java.lang.String)
-     */
 	public LiteYukonUser login(String username, String password) {
         try {
             return authenticationService.login(username, password);
@@ -57,27 +50,8 @@ public class AuthDaoImpl implements AuthDao {
             CTILogger.info(e);
             return null;
         }
-//		String radiusMethod;
-//		//If admin user, skip the radius login attempt (the authentication mode is YUKON when skipped).
-//		if( isAdminUser(username))
-//			radiusMethod  = AuthenticationRole.YUKON_AUTH_STRING;
-//		else
-//			radiusMethod = roleDao.getGlobalPropertyValue(AuthenticationRole.AUTHENTICATION_MODE);
-//			
-//		if(radiusMethod != null && radiusMethod.equalsIgnoreCase(AuthenticationRole.RADIUS_AUTH_STRING))
-//		{
-//			CTILogger.info("Attempting a RADIUS login");
-//			return RadiusLogin.login(username, password);
-//		}
-//		else
-//		{
-//			return yukonLogin(username, password);
-//		}
 	}
 	
-	/* (non-Javadoc)
-     * @see com.cannontech.core.dao.AuthDao#checkRole(com.cannontech.database.data.lite.LiteYukonUser, int)
-     */
 	/*This was changed to bypass the huge memory overhead in caching several
 	 * complex map within map structures for every single user when all we really
 	 * need is one.
@@ -95,38 +69,15 @@ public class AuthDaoImpl implements AuthDao {
     }
 	
 	
-	/*
-	public LiteYukonRole checkRole(LiteYukonUser user, int roleID) {		
-		DefaultDatabaseCache cache = DefaultDatabaseCache.getInstance();
-		synchronized(cache) {
-			Map lookupMap = cache.getYukonUserRoleIDLookupMap(user.getLiteID());
-			Map roleMap = (Map) lookupMap.get(user);
-			if(roleMap != null) {
-				LiteYukonRole role= (LiteYukonRole) roleMap.get(new Integer(roleID));
-				return role;
-			}
-		}			
-		return null;		
-	}
-	*/
-	/* (non-Javadoc)
-     * @see com.cannontech.core.dao.AuthDao#checkRoleProperty(com.cannontech.database.data.lite.LiteYukonUser, int)
-     */
 	public boolean checkRoleProperty(LiteYukonUser user, int rolePropertyID) {
 		return !CtiUtilities.isFalse(getRolePropertyValue(user, rolePropertyID));
 	}
     
-    /* (non-Javadoc)
-     * @see com.cannontech.core.dao.AuthDao#checkRoleProperty(int, int)
-     */
     public boolean checkRoleProperty(int userID, int rolePropertyID) {
         LiteYukonUser user = yukonUserDao.getLiteYukonUser(userID);
         return !CtiUtilities.isFalse(getRolePropertyValue(user, rolePropertyID));
     }   
     
-   /* (non-Javadoc)
- * @see com.cannontech.core.dao.AuthDao#getRolePropertyValueEx(com.cannontech.database.data.lite.LiteYukonUser, int)
- */
     public String getRolePropertyValueEx(LiteYukonUser user, int rolePropertyID) throws UnknownRolePropertyException {
         String value = getRolePropertyValue(user,rolePropertyID);
         if (value == null) {
@@ -135,9 +86,6 @@ public class AuthDaoImpl implements AuthDao {
         return value;
     }
     
-	/* (non-Javadoc)
-     * @see com.cannontech.core.dao.AuthDao#getRolePropertyValue(com.cannontech.database.data.lite.LiteYukonUser, int)
-     */
 	/*This was changed to bypass the huge memory overhead in caching several
 	 * complex map within map structures for every single user when all we really
 	 * need is one return value straight from the db.
@@ -150,69 +98,43 @@ public class AuthDaoImpl implements AuthDao {
 		}
 	}
     
-    /* (non-Javadoc)
-     * @see com.cannontech.core.dao.AuthDao#getRolePropertyValue(int, int)
-     */
     public String getRolePropertyValue(int userID, int rolePropertyID) {
         LiteYukonUser liteYukonUser = yukonUserDao.getLiteYukonUser(userID);
         Validate.notNull(liteYukonUser, "Could not find a valid LiteYukonUser for userID=" + userID);
         return getRolePropertyValue(liteYukonUser, rolePropertyID);
     }
 	
-	/*
-	public String getRolePropertyValue(LiteYukonUser user, int rolePropertyID, String defaultValue) {
-		DefaultDatabaseCache cache = DefaultDatabaseCache.getInstance();
-		synchronized(cache) {
-			Map lookupMap = cache.getYukonUserRolePropertyIDLookupMap();
-			Map propMap = (Map) lookupMap.get(user);
-			if(propMap != null) {
-				Pair p = (Pair) propMap.get(new Integer(rolePropertyID));
-				if(p != null) {
-					return (String) p.second;
-				}
-			}	
-		}
-		//If the defaultValue is null, attempt to use the default value from the roleProperty
-		// Returning a null value could cause some serious exceptions.
-		// By returning the default value from the property, we should be able to continue on
-		//  with life better when new properties have been added to a Role but may not have 
-		//  successfully updated all existing login groups with the new properties. 
-		if(defaultValue == null)
-		{
-			LiteYukonRoleProperty prop = getRoleProperty(rolePropertyID);
-			CTILogger.warn("Unknown RoleProperty(" + rolePropertyID + ") '" + prop.getKeyName() + "' for user " + user + ".  Default value from DB will be used.");
-			return prop == null ? defaultValue : prop.getDefaultValue();	
-		}
-		return defaultValue;	
-	}
-	*/
-	/* (non-Javadoc)
-     * @see com.cannontech.core.dao.AuthDao#getRolePropValueGroup(com.cannontech.database.data.lite.LiteYukonGroup, int, java.lang.String)
-     */
-	public String getRolePropValueGroup(LiteYukonGroup group_, int rolePropertyID, String defaultValue) 
-	{
-		synchronized(databaseCache) 
-		{
-			Map<LiteYukonGroup, Map<LiteYukonRole, Map<LiteYukonRoleProperty, String>>> lookupMap = 
+	public String getRolePropValueGroup(LiteYukonGroup group,
+                                        int rolePropertyID,
+                                        String defaultValue) {
+        synchronized (databaseCache) {
+            LiteYukonRoleProperty roleProperty = getRoleProperty(rolePropertyID);
+
+            Map<LiteYukonGroup, Map<LiteYukonRole, Map<LiteYukonRoleProperty, String>>> lookupMap =
                 databaseCache.getYukonGroupRolePropertyMap();
-			
-			Map<LiteYukonRole, Map<LiteYukonRoleProperty, String>> roleMap = lookupMap.get( group_ );			
-			
-			if(roleMap != null) {			
-                Iterator<Entry<LiteYukonRole, Map<LiteYukonRoleProperty, String>>> rIter = roleMap.entrySet().iterator();
-				while(rIter.hasNext()) {
-					Map<LiteYukonRoleProperty, String> propMap = rIter.next().getValue();
-					String val = propMap.get(getRoleProperty(rolePropertyID));
-					if(val != null) return val;
-				}
-			}
-		}
-		return defaultValue;		 	
+
+            Map<LiteYukonRole, Map<LiteYukonRoleProperty, String>> roleMap = lookupMap.get(group);
+
+            if (roleMap != null) {
+                for (Map<LiteYukonRoleProperty, String> propMap : roleMap.values()) {
+                    String val = propMap.get(roleProperty);
+                    if (val != null) {
+                        return val;
+                    }
+                }
+            }
+        }
+        // I'm not sure when this would happen as the loader seems to take care of the default
+        return defaultValue;
+    }
+
+	@Override
+	public String getRolePropValueGroup(int groupId, int rolePropertyId, String defaultValue) {
+        LiteYukonGroup liteYukonGroup = getGroup(groupId);
+        Validate.notNull(liteYukonGroup, "Could not find a valid LiteYukonGroup for groupId=" + groupId);
+        return getRolePropValueGroup(liteYukonGroup, rolePropertyId, defaultValue);
 	}
 	
-	/* (non-Javadoc)
-     * @see com.cannontech.core.dao.AuthDao#getRoles(java.lang.String)
-     */
 	public List<LiteYukonRole> getRoles(String category) {
 		List<LiteYukonRole> retList = new ArrayList<LiteYukonRole>(100);
 				
@@ -228,9 +150,6 @@ public class AuthDaoImpl implements AuthDao {
 		return retList;
 	}
 	
-	/* (non-Javadoc)
-     * @see com.cannontech.core.dao.AuthDao#getRole(int)
-     */
 	public LiteYukonRole getRole(int roleid) {		
 				
 		synchronized(databaseCache) {
@@ -245,9 +164,6 @@ public class AuthDaoImpl implements AuthDao {
 		return null;
 	}
 	
-	/* (non-Javadoc)
-     * @see com.cannontech.core.dao.AuthDao#getRoleProperty(int)
-     */
 	public LiteYukonRoleProperty getRoleProperty(int propid) {
 		
 		synchronized(databaseCache) {
@@ -261,26 +177,6 @@ public class AuthDaoImpl implements AuthDao {
 		return null;
 	}
 	
-	/* (non-Javadoc)
-     * @see com.cannontech.core.dao.AuthDao#getRoleProperties(com.cannontech.database.data.lite.LiteYukonRole)
-     */
-	public List<LiteYukonRoleProperty> getRoleProperties(LiteYukonRole role) {
-		ArrayList<LiteYukonRoleProperty> props = new ArrayList<LiteYukonRoleProperty>();
-		
-        synchronized(databaseCache) {
-			for(Iterator i = databaseCache.getAllYukonRoleProperties().iterator(); i.hasNext();) {
-				LiteYukonRoleProperty p = (LiteYukonRoleProperty) i.next();
-				if(p.getRoleID() == role.getRoleID()) {
-					props.add(p);
-				}
-			}
-		}
-		return props;
-	}
-	
-	/* (non-Javadoc)
-     * @see com.cannontech.core.dao.AuthDao#getGroup(java.lang.String)
-     */
 	public LiteYukonGroup getGroup(String groupName) {
         
         synchronized (databaseCache) {
@@ -295,9 +191,6 @@ public class AuthDaoImpl implements AuthDao {
         return null;
 	}
 
-	/* (non-Javadoc)
-     * @see com.cannontech.core.dao.AuthDao#getGroup(int)
-     */
 	public LiteYukonGroup getGroup(int grpID_) 
 	{
 		  synchronized (databaseCache) 
@@ -313,27 +206,12 @@ public class AuthDaoImpl implements AuthDao {
 		  return null;
 	}
 	
-	/**
-	 * Dont let anyone instantiate me
-	 * @see java.lang.Object#Object()
-	 */
-	private AuthDaoImpl() 
-	{
-		super();
-	}
-
-	/* (non-Javadoc)
-     * @see com.cannontech.core.dao.AuthDao#isAdminUser(java.lang.String)
-     */
 	public boolean isAdminUser(String username_)
 	{
 		LiteYukonUser liteUser = yukonUserDao.getLiteYukonUser(username_);
 		return isAdminUser(liteUser);
 	}
 
-	/* (non-Javadoc)
-	 * @see com.cannontech.core.dao.AuthDao#isAdminUser(java.lang.String)
-	 */
 	public boolean isAdminUser(LiteYukonUser user)
 	{
 	    if ( user != null && user.getUserID() == UserUtils.USER_ADMIN_ID )
@@ -341,9 +219,6 @@ public class AuthDaoImpl implements AuthDao {
 	    return false;
 	}
 	
-    /* (non-Javadoc)
-     * @see com.cannontech.core.dao.AuthDao#userHasAccessPAO(com.cannontech.database.data.lite.LiteYukonUser, int)
-     */
     public boolean userHasAccessPAO( LiteYukonUser user, int paoID )
     {
         PaoPermissionService pService = (PaoPermissionService) YukonSpringHook.getBean("paoPermissionService");
@@ -360,9 +235,6 @@ public class AuthDaoImpl implements AuthDao {
         return true;
     }
     
-    /* (non-Javadoc)
-     * @see com.cannontech.core.dao.AuthDao#hasExlusiveAccess(com.cannontech.database.data.lite.LiteYukonUser, int)
-     */
     public boolean hasExlusiveAccess( LiteYukonUser user, int paoID )
     {
         PaoPermissionService pService = (PaoPermissionService) YukonSpringHook.getBean("paoPermissionService");
@@ -374,9 +246,6 @@ public class AuthDaoImpl implements AuthDao {
         return false;
     }    
 
-    /* (non-Javadoc)
-     * @see com.cannontech.core.dao.AuthDao#inboundVoiceLogin(java.lang.String, java.lang.String)
-     */
     public LiteYukonUser inboundVoiceLogin(String phoneNumber, String pin){
         
         LiteYukonUser user = null;
@@ -415,9 +284,6 @@ public class AuthDaoImpl implements AuthDao {
         return user;
     }
 
-	/* (non-Javadoc)
-     * @see com.cannontech.core.dao.AuthDao#voiceLogin(int, java.lang.String)
-     */
 	public LiteYukonUser voiceLogin(int contactid, String pin) {
 			
 		LiteContact lContact = contactDao.getContact( contactid );
@@ -459,9 +325,6 @@ public class AuthDaoImpl implements AuthDao {
 		return null;  //failure
 	}
 
-	/* (non-Javadoc)
-     * @see com.cannontech.core.dao.AuthDao#hasPAOAccess(com.cannontech.database.data.lite.LiteYukonUser)
-     */
 	public boolean hasPAOAccess( LiteYukonUser user ) 
 	{
         PaoPermissionService pService = (PaoPermissionService) YukonSpringHook.getBean("paoPermissionService");
@@ -510,11 +373,6 @@ public class AuthDaoImpl implements AuthDao {
     @Required
     public void setDatabaseCache(IDatabaseCache databaseCache) {
         this.databaseCache = databaseCache;
-    }
-
-    @Required
-    public void setRoleDao(RoleDao roleDao) {
-        this.roleDao = roleDao;
     }
 
     @Required
