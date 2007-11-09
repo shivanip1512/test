@@ -440,7 +440,7 @@ for( int i = 0; i < capBanks.size(); i++ ) {
     String rowColor = ((i % 2) == 0) ? "#eeeeee" : "white";
 %>
 			<tr class="<%=css%>" id="tr_cap_<%=capBank.getCcId()%>">
-				<td><input type="checkbox" name="cti_chkbxBanks" value="<%=capBank.getCcId()%>" onclick="javascript:tscall()"/></td>
+				<td><input type="checkbox" name="cti_chkbxBanks" value="<%=capBank.getCcId()%>"/></td>
 				<td>		
 				
 					<input type="warning" name="cti_dyn" id="<%=capBank.getCcId()%>" style="display:none">
