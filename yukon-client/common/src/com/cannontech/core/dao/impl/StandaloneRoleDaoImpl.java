@@ -14,7 +14,6 @@ public class StandaloneRoleDaoImpl implements StandaloneRoleDao {
     private SimpleJdbcTemplate jdbcTemplate;
     private Logger log = YukonLogManager.getLogger(StandaloneRoleDaoImpl.class);
 
-    @Override
     public String getGlobalPropertyValue(int rolePropertyId) {
         // try to get stored value
         String ygrSql =

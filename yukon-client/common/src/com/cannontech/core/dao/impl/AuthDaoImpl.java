@@ -128,7 +128,6 @@ public class AuthDaoImpl implements AuthDao {
         return defaultValue;
     }
 
-	@Override
 	public String getRolePropValueGroup(int groupId, int rolePropertyId, String defaultValue) {
         LiteYukonGroup liteYukonGroup = getGroup(groupId);
         Validate.notNull(liteYukonGroup, "Could not find a valid LiteYukonGroup for groupId=" + groupId);
