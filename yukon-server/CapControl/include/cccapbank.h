@@ -165,6 +165,10 @@ public:
     CtiCCCapBank& setVCtrlIndex(int vCtrlIndex);
     CtiCCCapBank& setAssumedOrigVerificationState(int assumedOrigCapBankPos);
     CtiCCCapBank& setPreviousVerificationControlStatus(LONG status);
+
+    void setOvUvSituationFlag( bool flag );
+    bool getOvUvSituationFlag();
+
     BOOL updateVerificationState(void);
     CtiCCCapBank& updatePointResponseDeltas(CtiCCMonitorPoint* point);
 
@@ -264,6 +268,8 @@ private:
     BOOL _retryOpenFailedFlag;
     BOOL _retryCloseFailedFlag;
     BOOL _ovUvDisabledFlag;
+    bool _ovuvSituationFlag;
+
     BOOL _maxDailyOpsHitFlag;
     CtiCCTwoWayPoints *_twoWayPoints;
     string _ipAddress;

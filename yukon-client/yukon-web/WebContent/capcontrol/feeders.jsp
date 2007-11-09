@@ -420,7 +420,8 @@ Event.observe(window, 'load', function() { new CtiNonScrollTable('fdrTable','fdr
 		<table id="capBankTable" width="98%" border="0" cellspacing="0" cellpadding="0" >
             <tr class="columnHeader lAlign">
                 <td><input type="checkbox" name="chkAllBanksBx" onclick="checkAll(this, 'cti_chkbxBanks');" /> </td>
-                <td>CBC Name</td>                    
+                <td></td>    
+                <td>CBC Name</td>
                 <td>CB Name (Order) <img class="rAlign popupImg" src="images\question.gif" onmouseover="statusMsg(this, 'Order is the order the CapBank will control in.<br>Commands that can be sent to a field device are initiated from this column');" /></td>                    
                 <td>State <img class="rAlign popupImg" src="images\question.gif" onmouseover="statusMsg(this, 'System Commands, those commands that do NOT send out a message to a field device, can be initiated from this column');"/></td>
                 <td id="cb_state_td_hdr2" style="display:none" >Op Count Value</td>
@@ -439,7 +440,27 @@ for( int i = 0; i < capBanks.size(); i++ ) {
     String rowColor = ((i % 2) == 0) ? "#eeeeee" : "white";
 %>
 			<tr class="<%=css%>" id="tr_cap_<%=capBank.getCcId()%>">
-				<td><input type="checkbox" name="cti_chkbxBanks" value="<%=capBank.getCcId()%>" /></td>
+				<td><input type="checkbox" name="cti_chkbxBanks" value="<%=capBank.getCcId()%>" onclick="javascript:tscall()"/></td>
+				<td>		
+				
+					<input type="warning" name="cti_dyn" id="<%=capBank.getCcId()%>" style="display:none">
+					</input>
+					
+					<span id ="warning_ok_<%=capBank.getCcId()%>" style="display:none">
+				       	<img src="/capcontrol/images/Green.gif"/>
+				    </span>
+				    <span id ="warning_alert_<%=capBank.getCcId()%>" style="display:none" 
+						  onmouseover="showDynamicPopup($('capWarningPopup_<%=capBank.getCcId()%>'));" 
+				       	  onmouseout="nd();"
+				       	  >
+				       	  	<img src="/capcontrol/images/Yellow.gif"/>
+				    </span>
+			
+					<div class="ccVarLoadPopup" id="capWarningPopup_<%=capBank.getCcId()%>" style="display:none" > 
+					  <span type="param7" name="cti_dyn" id="<%=capBank.getCcId()%>"><%=CBCUtils.CBC_DISPLAY.getCapBankValueAt(capBank, CBCDisplay.CB_WARNING_POPUP)%></span>
+					</div>
+
+				</td>
 				<td>
 				<%
 				String name = "---";

@@ -35,6 +35,7 @@ RWDEFINE_COLLECTABLE( CtiCCCapBank, CTICCCAPBANK_ID )
 CtiCCCapBank::CtiCCCapBank()
 {
     _twoWayPoints = NULL;
+    _ovuvSituationFlag = false;
 
 }
 
@@ -44,6 +45,7 @@ CtiCCCapBank::CtiCCCapBank(RWDBReader& rdr)
      _monitorPoint.clear();
      _pointResponses.clear();
      _twoWayPoints = NULL;
+     _ovuvSituationFlag = false;
 }
 
 CtiCCCapBank::CtiCCCapBank(const CtiCCCapBank& cap)
@@ -1596,6 +1598,8 @@ void CtiCCCapBank::restoreGuts(RWvistream& istrm)
     istrm >> _sBeforeVars;
     istrm >> _sAfterVars;
     istrm >> _sPercentChange;
+    istrm >> _maxDailyOpsHitFlag;
+    istrm >> _ovuvSituationFlag;
     _laststatuschangetime = CtiTime(tempTime1);
 }
 
@@ -1648,6 +1652,8 @@ void CtiCCCapBank::saveGuts(RWvostream& ostrm ) const
     ostrm << _sBeforeVars;
     ostrm << _sAfterVars;
     ostrm << _sPercentChange;
+    ostrm << _maxDailyOpsHitFlag;
+    ostrm << _ovuvSituationFlag;
 }
 
 /*---------------------------------------------------------------------------
@@ -1713,6 +1719,7 @@ CtiCCCapBank& CtiCCCapBank::operator=(const CtiCCCapBank& right)
         _sAfterVars = right._sAfterVars;
         _sBeforeVars = right._sBeforeVars;
         _sPercentChange = right._sPercentChange;
+        _ovuvSituationFlag = right._ovuvSituationFlag;
 
     }
     return *this;

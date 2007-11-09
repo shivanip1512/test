@@ -19,6 +19,8 @@ public class CapBankDevice extends StreamableCapObject
 
 	private Integer maxDailyOperation = null;
 	private Boolean maxOperationDisableFlag = null;
+	private Boolean maxDailyOperationHitFlag = null;
+	private Boolean ovuvSituationFlag = null;
 
 	private Integer alarmInhibit = null;
 	private Integer controlInhibit = null;
@@ -53,7 +55,19 @@ public class CapBankDevice extends StreamableCapObject
     private String percentChange = new String();
 
 
-	public Boolean getOvUVDisabled() {
+	public Boolean getMaxDailyOperationHitFlag() {
+        return maxDailyOperationHitFlag;
+    }
+    public void setMaxDailyOperationHitFlag(Boolean maxDailyOperationHitFlag) {
+        this.maxDailyOperationHitFlag = maxDailyOperationHitFlag;
+    }
+    public Boolean getOvuvSituationFlag() {
+        return ovuvSituationFlag;
+    }
+    public void setOvuvSituationFlag(Boolean ovuvSituationFlag) {
+        this.ovuvSituationFlag = ovuvSituationFlag;
+    }
+    public Boolean getOvUVDisabled() {
         //here to fake the return
         //boolean retVal = ((Math.random() * 100) > 50) ?  true : false; 
         return ovUVDisabled;

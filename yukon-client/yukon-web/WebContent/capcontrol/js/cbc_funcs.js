@@ -244,11 +244,32 @@ function updateHTML( result)
                     var elemType = elems[j].getAttribute('type');
                     switch( elemType )
                     {
+                    
+                        case 'warning':
+                            var image = getElementTextNS(result[i],0,'warning');
+                            var warningID = "warning_alert_"+xmlID;
+                            var okId = "warning_ok_"+xmlID;
+                            if( image == "true" ){
+
+                               if( !$(warningID).visible() )
+                               		$(warningID).toggle();
+                               if( $(okId).visible() )
+                               		$(okId).toggle();
+                            }else
+                            {
+                               if( $(warningID).visible() )
+                               		$(warningID).toggle();
+                               if( !$(okId).visible() )
+                               		$(okId).toggle();       
+                            }
+                        break;
+                        
                         //special case since 2 elements are involved with 1 TAG
                         case 'state':
                             var xmlColor = getElementTextNS(result[i], 0, 'param0');                            
                             elems[j].style.color = xmlColor;
-
+						
+							
                         
                         //most of this time this will suffice
                         default:
@@ -855,7 +876,7 @@ function pause(numberMillis) {
     	for (var i=0; i < rows.length; i++) {
             var row = rows[i];
             var cells = row.getElementsByTagName('td');
-            var fdr = cells[7];
+            var fdr = cells[8];
             var spans = fdr.getElementsByTagName('span');
 	        var fdrName = new String (spans[0].innerHTML);
     		var index = feederNames.indexOf(trim(fdrName));

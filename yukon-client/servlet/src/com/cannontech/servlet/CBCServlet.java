@@ -428,13 +428,15 @@ private boolean handleCapBankGET( HttpServletRequest req, String ids, ResultXML[
 		/*param3*/CBCUtils.CBC_DISPLAY.getCapBankValueAt(capBank, CBCDisplay.CB_NAME_COLUMN).toString(),
 		/*param4*/allow_ovuv,
 		/*param5*/liteStates,
-        /*param6*/CBCUtils.CBC_DISPLAY.getCapBankValueAt(capBank, CBCDisplay.CB_STATUS_POPUP).toString()
+        /*param6*/CBCUtils.CBC_DISPLAY.getCapBankValueAt(capBank, CBCDisplay.CB_STATUS_POPUP).toString(),
+        /*param7*/CBCUtils.CBC_DISPLAY.getCapBankValueAt(capBank, CBCDisplay.CB_WARNING_POPUP).toString()
 	};
 
 	xmlMsgs[indx] = new ResultXML(
 		capBank.getCcId().toString(),
 		CBCUtils.CBC_DISPLAY.getCapBankValueAt(capBank, CBCDisplay.CB_STATUS_COLUMN).toString(),
 		optParams );
+	xmlMsgs[indx].setWarning(CBCUtils.CBC_DISPLAY.getCapBankValueAt(capBank, CBCDisplay.CB_WARNING_IMAGE).toString());
 
 	return true;
 }

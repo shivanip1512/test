@@ -54,6 +54,8 @@ public class CBCDisplay {
     public static final int CB_DAILY_TOTAL_OP_COLUMN = 8;
     public static final int CB_SHORT_TIME_STAMP_COLUMN = 9;
     public static final int CB_STATUS_POPUP = 10;
+    public static final int CB_WARNING_IMAGE = 11;
+    public static final int CB_WARNING_POPUP = 12;
 
     // Column numbers for the Feeder display
     public static final int FDR_NAME_COLUMN = 0;
@@ -229,7 +231,23 @@ public class CBCDisplay {
         case CB_CONTROLLER:{
             return controllerName;
         }
-        
+        case CB_WARNING_IMAGE:{
+            
+            if( capBank.getMaxDailyOperationHitFlag() || capBank.getOvuvSituationFlag()  )
+                return "true";
+            else
+                return "false";
+        }
+        case CB_WARNING_POPUP:{
+            String warningText = "Alerts:";
+            
+            if( capBank.getMaxDailyOperationHitFlag() )
+                warningText += " Max Daily Operations" ;
+            if( capBank.getOvuvSituationFlag() )
+                warningText += " OVUV Situation" ;
+
+            return warningText;
+        }
         case CB_STATUS_POPUP: {
             return new String("Before: "+capBank.getBeforeVars()+ " After: " + capBank.getAfterVars() + " % Change: "+ capBank.getPercentChange());
         }

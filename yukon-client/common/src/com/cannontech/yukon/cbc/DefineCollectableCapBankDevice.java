@@ -62,7 +62,6 @@ public void restoreGuts(Object obj, com.roguewave.vsj.VirtualInputStream vstr, c
 	capBank.setOperationalState( (String) vstr.restoreObject( SimpleMappings.CString ) );
 	capBank.setControllerType( (String) vstr.restoreObject( SimpleMappings.CString ) );
 	capBank.setControlDeviceID( new Integer( (int)vstr.extractUnsignedInt() ) );
-//	capBank.setControlPointID( new Integer( (int)vstr.extractUnsignedInt() ) );
 	capBank.setBankSize( new Integer( (int)vstr.extractUnsignedInt() ) );
 	capBank.setTypeOfSwitch( (String) vstr.restoreObject( SimpleMappings.CString ) );
 	capBank.setSwitchManufacture( (String) vstr.restoreObject( SimpleMappings.CString ) );	
@@ -89,7 +88,8 @@ public void restoreGuts(Object obj, com.roguewave.vsj.VirtualInputStream vstr, c
     capBank.setBeforeVars( (String) vstr.restoreObject( SimpleMappings.CString ) );
     capBank.setAfterVars( (String) vstr.restoreObject( SimpleMappings.CString ) );
     capBank.setPercentChange( (String) vstr.restoreObject( SimpleMappings.CString ) );
-    
+    capBank.setMaxDailyOperationHitFlag(new Boolean ((int)vstr.extractUnsignedInt() == 1) ? new Boolean(true) : new Boolean(false) );
+    capBank.setOvuvSituationFlag(new Boolean ((int)vstr.extractUnsignedInt() == 1) ? new Boolean(true) : new Boolean(false) );
 }
 /**
  * saveGuts method comment.
@@ -110,7 +110,7 @@ public void saveGuts(Object obj, com.roguewave.vsj.VirtualOutputStream vstr, com
 	vstr.saveObject( capBank.getOperationalState(), SimpleMappings.CString );
 	vstr.saveObject( capBank.getControllerType(), SimpleMappings.CString );
 	vstr.insertUnsignedInt( capBank.getControlDeviceID().intValue() );
-//	vstr.insertUnsignedInt( capBank.getControlPointID().intValue() );
+
 	vstr.insertUnsignedInt( capBank.getBankSize().intValue() );
 	vstr.saveObject( capBank.getTypeOfSwitch(), SimpleMappings.CString );
 	vstr.saveObject( capBank.getSwitchManufacture(), SimpleMappings.CString );
@@ -140,5 +140,7 @@ public void saveGuts(Object obj, com.roguewave.vsj.VirtualOutputStream vstr, com
     vstr.saveObject( capBank.getBeforeVars(), SimpleMappings.CString);
     vstr.saveObject( capBank.getAfterVars(), SimpleMappings.CString);
     vstr.saveObject( capBank.getPercentChange(), SimpleMappings.CString);
+    vstr.insertUnsignedInt( (capBank.getMaxDailyOperationHitFlag() == true)?1:0);
+    vstr.insertUnsignedInt( (capBank.getOvuvSituationFlag() == true)?1:0);
 }
 }

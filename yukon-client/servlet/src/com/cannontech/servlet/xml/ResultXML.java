@@ -19,7 +19,7 @@ import org.w3c.dom.Element;
 public class ResultXML extends XMLBaseMsg
 {
 	private String state = null;
-
+	private String warning = null;
 	//some generic optional elements
 	// returns items with an element name in the following format:
 	//    param0, param1, param2, param3 ...
@@ -28,7 +28,7 @@ public class ResultXML extends XMLBaseMsg
 
 	public ResultXML( String id_, String state_ )
 	{
-		this(id_, state_, new String[0] );
+		this(id_, state_, new String[0]);
 	}
 
 	public ResultXML( String id_, String state_, String[] optionalElems_ )
@@ -37,7 +37,7 @@ public class ResultXML extends XMLBaseMsg
 		
 		setId( id_ );
 		setState( state_ );
-
+		
 		setOptionalElems( optionalElems_ );		
 	}
 
@@ -53,17 +53,21 @@ public class ResultXML extends XMLBaseMsg
 		//all elements inside of the <result> tag
 		Element idElem = doc.createElement("id");
 		Element stateElem = doc.createElement("state");
-	
+		
 		stateElem.appendChild( doc.createTextNode(getState()) );				
 		idElem.appendChild( doc.createTextNode(getId()) );
 		
-	
-
 		//add all elements here
 		resultElem.appendChild( idElem );
 		resultElem.appendChild( stateElem );
 
-
+		if( getWarning() != null  )
+		{
+            Element warningElem = doc.createElement("warning");
+            warningElem.appendChild( doc.createTextNode(getWarning()));
+    		resultElem.appendChild( warningElem );
+    	}
+		
 		//add all attributes here
 		//example:
 		//	stateElem.setAttribute( "name", getName() );
@@ -120,5 +124,13 @@ public class ResultXML extends XMLBaseMsg
 	{
 		optionalElems = strings;
 	}
+
+    public String getWarning() {
+        return warning;
+    }
+
+    public void setWarning(String warning) {
+        this.warning = warning;
+    }
 
 }
