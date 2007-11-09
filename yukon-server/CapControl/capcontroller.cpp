@@ -2101,6 +2101,20 @@ void CtiCapController::pointDataMsg( long pointID, double value, unsigned qualit
                             CtiLockGuard<CtiLogger> logger_guard(dout);
                             dout << CtiTime() << " - Optional POINT data message received for: " << pointID << " on SUB: " << currentSubstationBus->getPAOName() << endl;
                         }
+
+                        if( currentSubstationBus->getEstimatedPowerFactorPointId()  == pointID )
+                        {
+                            currentSubstationBus->setEstimatedPowerFactorValue(value);
+                        }
+                        if( currentSubstationBus->getEstimatedVarLoadPointId()  == pointID )
+                        {
+                            currentSubstationBus->setEstimatedVarLoadPointValue(value);
+                        }
+                        if( currentSubstationBus->getPowerFactorPointId()  == pointID)
+                        {
+                            currentSubstationBus->setPowerFactorValue(value);
+                        }
+                        
                         //do nothing
                     }
                     else
@@ -2486,6 +2500,14 @@ void CtiCapController::pointDataMsg( long pointID, double value, unsigned qualit
                                     {
                                         currentCapBank->setOvUvDisabledFlag(TRUE);
                                     }
+                                }
+                                if (twoWayPts->getOvCondition() || twoWayPts->getUvCondition() ) 
+                                {
+                                    currentCapBank->setOvUvSituationFlag(TRUE);
+                                }
+                                else 
+                                { 
+                                    currentCapBank->setOvUvSituationFlag(FALSE);
                                 }
 
                             }

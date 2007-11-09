@@ -3014,6 +3014,12 @@ BOOL CtiCCFeeder::capBankControlStatusUpdate(CtiMultiMsg_vec& pointChanges, CtiM
                         text += CtiNumStr(ratio*100.0,getDecimalPlaces()).toString();
                         text += "% change), Open";
                     }
+                    text = createControlStatusUpdateText(currentCapBank->getControlStatus(), currentVarLoadPointValue,ratio);
+
+                    currentCapBank->setBeforeVarsString(createVarText( currentVarLoadPointValue, 1.0));
+                    currentCapBank->setAfterVarsString(createVarText(varValueBeforeControl, 1.0));
+                    currentCapBank->setPercentChangeString(createVarText(ratio, 100.0));
+
                 }
                 else
                 {
@@ -3078,6 +3084,11 @@ BOOL CtiCCFeeder::capBankControlStatusUpdate(CtiMultiMsg_vec& pointChanges, CtiM
                         text += CtiNumStr(ratio*100.0,getDecimalPlaces()).toString();
                         text += "% change), Closed";
                     }
+                    text = createControlStatusUpdateText(currentCapBank->getControlStatus(), currentVarLoadPointValue, ratio);
+
+                    currentCapBank->setBeforeVarsString(createVarText( currentVarLoadPointValue, 1.0));
+                    currentCapBank->setAfterVarsString(createVarText(varValueBeforeControl, 1.0));
+                    currentCapBank->setPercentChangeString(createVarText(ratio, 100.0));
                 }
                 else
                 {
@@ -3221,12 +3232,12 @@ BOOL CtiCCFeeder::capBankControlPerPhaseStatusUpdate(CtiMultiMsg_vec& pointChang
                     {
                         currentCapBank->setControlStatus(CtiCCCapBank::Open);
                     }
-                    text = createControlStatusUpdateText(currentCapBank->getControlStatus(), varAValue, 
+                    text = createPhaseControlStatusUpdateText(currentCapBank->getControlStatus(), varAValue, 
                                                           varBValue, varCValue, ratioA, ratioB, ratioC);
 
-                    currentCapBank->setBeforeVarsString(createVarText(varAValueBeforeControl, varBValueBeforeControl, varCValueBeforeControl,1.0));
-                    currentCapBank->setAfterVarsString(createVarText(varAValue, varBValue, varCValue,1.0));
-                    currentCapBank->setPercentChangeString(createVarText(ratioA, ratioB, ratioC,100.0));
+                    currentCapBank->setBeforeVarsString(createPhaseVarText(varAValueBeforeControl, varBValueBeforeControl, varCValueBeforeControl,1.0));
+                    currentCapBank->setAfterVarsString(createPhaseVarText(varAValue, varBValue, varCValue,1.0));
+                    currentCapBank->setPercentChangeString(createPhaseVarText(ratioA, ratioB, ratioC,100.0));
                 }
                 else
                 {
@@ -3281,12 +3292,12 @@ BOOL CtiCCFeeder::capBankControlPerPhaseStatusUpdate(CtiMultiMsg_vec& pointChang
                     {
                         currentCapBank->setControlStatus(CtiCCCapBank::Close);
                     }
-                    text = createControlStatusUpdateText(currentCapBank->getControlStatus(), varAValue, 
+                    text = createPhaseControlStatusUpdateText(currentCapBank->getControlStatus(), varAValue, 
                                                           varBValue, varCValue, ratioA, ratioB, ratioC);
 
-                    currentCapBank->setBeforeVarsString(createVarText(varAValueBeforeControl, varBValueBeforeControl, varCValueBeforeControl,1.0));
-                    currentCapBank->setAfterVarsString(createVarText(varAValue, varBValue, varCValue,1.0));
-                    currentCapBank->setPercentChangeString(createVarText(ratioA, ratioB, ratioC,100.0));
+                    currentCapBank->setBeforeVarsString(createPhaseVarText(varAValueBeforeControl, varBValueBeforeControl, varCValueBeforeControl,1.0));
+                    currentCapBank->setAfterVarsString(createPhaseVarText(varAValue, varBValue, varCValue,1.0));
+                    currentCapBank->setPercentChangeString(createPhaseVarText(ratioA, ratioB, ratioC,100.0));
                 }
                 else
                 {
@@ -6361,7 +6372,7 @@ BOOL CtiCCFeeder::checkMaxDailyOpCountExceeded()
     return retVal;
 }
 
-string CtiCCFeeder::createVarText(DOUBLE aValue,DOUBLE bValue, DOUBLE cValue, FLOAT multiplier)
+string CtiCCFeeder::createPhaseVarText(DOUBLE aValue,DOUBLE bValue, DOUBLE cValue, FLOAT multiplier)
 {
     string text = ("");
     text += CtiNumStr(aValue*multiplier, 2).toString();
@@ -6371,8 +6382,14 @@ string CtiCCFeeder::createVarText(DOUBLE aValue,DOUBLE bValue, DOUBLE cValue, FL
     text += CtiNumStr(cValue*multiplier, 2).toString();
     return text;
 }
+string CtiCCFeeder::createVarText(DOUBLE aValue,FLOAT multiplier)
+{
+    string text = ("");
+    text += CtiNumStr(aValue*multiplier, 2).toString();
+    return text;
+}
 
-string CtiCCFeeder::createControlStatusUpdateText(const int capControlStatus, DOUBLE varAValue,DOUBLE varBValue, DOUBLE varCValue, 
+string CtiCCFeeder::createPhaseControlStatusUpdateText(const int capControlStatus, DOUBLE varAValue,DOUBLE varBValue, DOUBLE varCValue, 
                                                   DOUBLE ratioA, DOUBLE ratioB, DOUBLE ratioC)
 {
     string text = ("");
@@ -6382,12 +6399,52 @@ string CtiCCFeeder::createControlStatusUpdateText(const int capControlStatus, DO
     text += CtiNumStr(varBValue, 2).toString();
     text += "/";
     text += CtiNumStr(varCValue, 2).toString();
-    text += "/ ( ";
+    text += "  ( ";
     text += CtiNumStr(ratioA*100.0, 2).toString();
     text += "% / ";
     text += CtiNumStr(ratioB*100.0, 2).toString();
     text += "% / ";
     text += CtiNumStr(ratioC*100.0, 2).toString();
+
+    if (capControlStatus ==  CtiCCCapBank::Open)
+    {
+        text += "% change), Open";
+    }
+    else if (capControlStatus ==  CtiCCCapBank::OpenQuestionable)
+    {
+        text += "% change), OpenQuestionable";
+    }
+    else if (capControlStatus == CtiCCCapBank::OpenFail)
+    {
+        text += "% change), OpenFail";
+    }
+    else if (capControlStatus ==  CtiCCCapBank::Close)
+    {
+        text += "% change), Close";
+    }
+    else if (capControlStatus ==  CtiCCCapBank::CloseQuestionable)
+    {
+        text += "% change), CloseQuestionable";
+    }
+    else if (capControlStatus ==  CtiCCCapBank::CloseFail)
+    {
+        text += "% change), CloseFail";
+    }
+    else 
+    {
+        text += "% change)";
+    }                       
+    
+    return text;
+}
+
+string CtiCCFeeder::createControlStatusUpdateText(const int capControlStatus, DOUBLE varAValue, DOUBLE ratioA)
+{
+    string text = ("");
+    text = string("Var: ");
+    text += CtiNumStr(varAValue, 2).toString();
+    text += "  ( ";
+    text += CtiNumStr(ratioA*100.0, 2).toString();
 
     if (capControlStatus ==  CtiCCCapBank::Open)
     {

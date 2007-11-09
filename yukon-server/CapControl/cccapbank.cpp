@@ -450,6 +450,10 @@ BOOL CtiCCCapBank::getMaxDailyOpsHitFlag() const
 {
     return _maxDailyOpsHitFlag;
 }
+BOOL CtiCCCapBank::getOvUvSituationFlag() const
+{
+    return _ovuvSituationFlag;
+}
 
 
 /*---------------------------------------------------------------------------
@@ -982,6 +986,23 @@ CtiCCCapBank& CtiCCCapBank::setOvUvDisabledFlag(BOOL ovUvDisabledFlag)
         _dirty = TRUE;
     }
     _ovUvDisabledFlag = ovUvDisabledFlag;
+
+    return *this;
+}
+
+/*---------------------------------------------------------------------------
+    setOvUvDisabledFlag
+    
+    Sets the ovUvDisabledFlag ..
+---------------------------------------------------------------------------*/
+CtiCCCapBank& CtiCCCapBank::setOvUvSituationFlag(BOOL ovUvSituationFlag)
+{
+
+    if (_ovuvSituationFlag != ovUvSituationFlag)
+    {
+        _dirty = TRUE;
+    }
+    _ovuvSituationFlag = ovUvSituationFlag;
 
     return *this;
 }
@@ -1801,6 +1822,7 @@ void CtiCCCapBank::restore(RWDBReader& rdr)
     setRetryCloseFailedFlag(FALSE);
     setOvUvDisabledFlag(FALSE);
     setMaxDailyOpsHitFlag(FALSE);
+    setOvUvSituationFlag(FALSE);
     _additionalFlags = string("NNNNNNNNNNNNNNNNNNNN");
     setCurrentDailyOperations(0);
 
@@ -1848,10 +1870,14 @@ void CtiCCCapBank::setDynamicData(RWDBReader& rdr)
     _retryCloseFailedFlag = (_additionalFlags[4]=='y'?TRUE:FALSE);
     _ovUvDisabledFlag = (_additionalFlags[5]=='y'?TRUE:FALSE);
     _maxDailyOpsHitFlag = (_additionalFlags[6]=='y'?TRUE:FALSE);
+    _ovuvSituationFlag = (_additionalFlags[7]=='y'?TRUE:FALSE);
 
     rdr["currentdailyoperations"] >> _currentdailyoperations;
     rdr["twowaycbcstate"] >> _reportedCBCState;
     rdr["twowaycbcstatetime"] >> _reportedCBCStateTime;
+    rdr["beforevar"] >> _sBeforeVars;  
+    rdr["aftervar"] >> _sAfterVars;   
+    rdr["changevar"] >> _sPercentChange;
 
     _insertDynamicDataFlag = FALSE;
     _dirty = FALSE;
@@ -1937,6 +1963,7 @@ void CtiCCCapBank::dumpDynamicData(RWDBConnection& conn, CtiTime& currentDateTim
             addFlags[4] = (_retryCloseFailedFlag?'Y':'N');
             addFlags[5] = (_ovUvDisabledFlag?'Y':'N');
             addFlags[6] = (_maxDailyOpsHitFlag?'Y':'N');
+            addFlags[7] = (_ovuvSituationFlag?'Y':'N');
             _additionalFlags = char2string(*addFlags);
             _additionalFlags.append(char2string(*(addFlags+1)));
             _additionalFlags.append(char2string(*(addFlags+2))); 
@@ -1944,7 +1971,8 @@ void CtiCCCapBank::dumpDynamicData(RWDBConnection& conn, CtiTime& currentDateTim
             _additionalFlags.append(char2string(*(addFlags+4))); 
             _additionalFlags.append(char2string(*(addFlags+5))); 
             _additionalFlags.append(char2string(*(addFlags+6))); 
-            _additionalFlags.append("NNNNNNNNNNNNN");
+            _additionalFlags.append(char2string(*(addFlags+7))); 
+            _additionalFlags.append("NNNNNNNNNNNN");
 
             RWDBUpdater updater = dynamicCCCapBankTable.updater();
 
@@ -1963,7 +1991,10 @@ void CtiCCCapBank::dumpDynamicData(RWDBConnection& conn, CtiTime& currentDateTim
             << dynamicCCCapBankTable["additionalflags"].assign(string2RWCString(_additionalFlags))
             << dynamicCCCapBankTable["currentdailyoperations"].assign( _currentdailyoperations )
             << dynamicCCCapBankTable["twowaycbcstate"].assign(_reportedCBCState)
-            << dynamicCCCapBankTable["twowaycbcstatetime"].assign( toRWDBDT((CtiTime)_reportedCBCStateTime) );
+            << dynamicCCCapBankTable["twowaycbcstatetime"].assign( toRWDBDT((CtiTime)_reportedCBCStateTime) )
+            << dynamicCCCapBankTable["beforevar"].assign( string2RWCString(_sBeforeVars) )
+            << dynamicCCCapBankTable["aftervar"].assign( string2RWCString(_sAfterVars) )
+            << dynamicCCCapBankTable["changevar"].assign( string2RWCString(_sPercentChange) );
             /*{
                 CtiLockGuard<CtiLogger> logger_guard(dout);
                 dout << CtiTime() << " - " << updater.asString().c_str() << endl;
@@ -2027,7 +2058,10 @@ void CtiCCCapBank::dumpDynamicData(RWDBConnection& conn, CtiTime& currentDateTim
             << string2RWCString(addFlags)
             << _currentdailyoperations
             << _reportedCBCState
-            << _reportedCBCStateTime;
+            << _reportedCBCStateTime
+            << _sBeforeVars
+            << _sAfterVars
+            << _sPercentChange;
 
             if( _CC_DEBUG & CC_DEBUG_DATABASE )
             {

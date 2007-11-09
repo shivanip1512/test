@@ -5374,8 +5374,10 @@ void CtiCCSubstationBusStore::reloadCapBankFromDatabase(long capBankId, map< lon
                     << dynamicCCCapBankTable["additionalflags"]
                     << dynamicCCCapBankTable["currentdailyoperations"]
                     << dynamicCCCapBankTable["twowaycbcstate"]
-                    << dynamicCCCapBankTable["twowaycbcstatetime"];
-
+                    << dynamicCCCapBankTable["twowaycbcstatetime"]
+                    << dynamicCCCapBankTable["beforevar"]
+                    << dynamicCCCapBankTable["aftervar"] 
+                    << dynamicCCCapBankTable["changevar"];
 
                     selector.from(dynamicCCCapBankTable);
                     selector.from(capBankTable);

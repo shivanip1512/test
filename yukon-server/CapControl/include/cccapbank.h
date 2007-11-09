@@ -89,6 +89,7 @@ public:
     BOOL getRetryCloseFailedFlag() const;
     BOOL getOvUvDisabledFlag() const;
     BOOL getMaxDailyOpsHitFlag() const;
+    BOOL getOvUvSituationFlag() const;
     LONG getUDPPort() const;
     const string& getIpAddress() const;
     LONG getReportedCBCState() const;
@@ -152,6 +153,7 @@ public:
     CtiCCCapBank& setRetryCloseFailedFlag(BOOL retryCloseFailedFlag);
     CtiCCCapBank& setOvUvDisabledFlag(BOOL ovUvDisabledFlag);
     CtiCCCapBank& setMaxDailyOpsHitFlag(BOOL flag);
+    CtiCCCapBank& setOvUvSituationFlag(BOOL ovUvSituationFlag);
     CtiCCCapBank& setUDPPort(LONG value);
     CtiCCCapBank& setIpAddress(ULONG value);
     CtiCCCapBank& setReportedCBCState(LONG value);
@@ -268,7 +270,7 @@ private:
     BOOL _retryOpenFailedFlag;
     BOOL _retryCloseFailedFlag;
     BOOL _ovUvDisabledFlag;
-    bool _ovuvSituationFlag;
+    BOOL _ovuvSituationFlag;
 
     BOOL _maxDailyOpsHitFlag;
     CtiCCTwoWayPoints *_twoWayPoints;

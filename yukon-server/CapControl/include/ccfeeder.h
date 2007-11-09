@@ -314,9 +314,11 @@ RWDECLARE_COLLECTABLE( CtiCCFeeder )
                                                      LONG failurePercent, //DOUBLE varValueBeforeControl, DOUBLE currentVarLoadPointValue, 
                                                      LONG currentVarPointQuality, DOUBLE varAValueBeforeControl, DOUBLE varBValueBeforeControl,
                                                      DOUBLE varCValueBeforeControl, DOUBLE varAValue, DOUBLE varBValue, DOUBLE varCValue) ;
-    string createControlStatusUpdateText(const int capControlStatus, DOUBLE varAValue,DOUBLE varBValue, DOUBLE varCValue, 
+    string createPhaseControlStatusUpdateText(const int capControlStatus, DOUBLE varAValue,DOUBLE varBValue, DOUBLE varCValue, 
                                                   DOUBLE ratioA, DOUBLE ratioB, DOUBLE ratioC);
-    string createVarText(DOUBLE aValue,DOUBLE bValue, DOUBLE cValue, FLOAT multiplier);
+    string createControlStatusUpdateText(const int capControlStatus, DOUBLE varAValue, DOUBLE ratioA);
+    string createPhaseVarText(DOUBLE aValue,DOUBLE bValue, DOUBLE cValue, FLOAT multiplier);
+    string createVarText(DOUBLE aValue, FLOAT multiplier);
     BOOL isPeakDay();
     BOOL isPastMaxConfirmTime(const CtiTime& currentDateTime, LONG maxConfirmTime, LONG feederRetries);
     BOOL checkForAndProvideNeededIndividualControl(const CtiTime& currentDateTime, CtiMultiMsg_vec& pointChanges, CtiMultiMsg_vec& ccEvents, CtiMultiMsg_vec& pilMessages, 
