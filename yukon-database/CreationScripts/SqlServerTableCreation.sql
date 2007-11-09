@@ -1,7 +1,7 @@
 /*==============================================================*/
 /* Database name:  YukonDatabase                                */
 /* DBMS name:      Microsoft SQL Server 2000                    */
-/* Created on:     11/6/2007 4:08:29 PM                         */
+/* Created on:     11/9/2007 8:55:05 AM                         */
 /*==============================================================*/
 
 
@@ -5171,6 +5171,9 @@ create table DynamicCCCapBank (
    CurrentDailyOperations numeric              not null,
    TwoWayCBCState       numeric              not null,
    TwoWayCBCStateTime   datetime             not null,
+   beforeVar            varchar(32)          not null,
+   afterVar             varchar(32)          not null,
+   changeVar            varchar(32)          not null,
    constraint PK_DYNAMICCCCAPBANK primary key nonclustered (CapBankID)
 )
 go
@@ -7318,6 +7321,7 @@ create table SeasonSchedule (
 )
 go
 
+insert into SeasonSchedule values( 0, 'Empty Schedule' );
 insert into seasonSchedule values (-1,'No Season');
 
 /*==============================================================*/

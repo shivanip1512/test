@@ -494,6 +494,25 @@ INSERT INTO DeviceGroup
 (DeviceGroupId,GroupName,ParentDeviceGroupId,SystemGroup,Type)
 SELECT MAX(DeviceGroupID)+1,'Device Types',0,'Y','DEVICETYPE' FROM DeviceGroup WHERE DeviceGroupId<100;
 
+alter table dynamiccccapbank add beforeVar varchar(32);
+go
+update dynamiccccapbank set beforeVar = '---';
+go
+alter table dynamiccccapbank alter column beforeVar varchar(32) not null;
+go
+alter table dynamiccccapbank add afterVar varchar(32);
+go
+update dynamiccccapbank set afterVar = '---';
+go
+alter table dynamiccccapbank alter column afterVar varchar(32) not null;
+go
+alter table dynamiccccapbank add changeVar varchar(32);
+go
+update dynamiccccapbank set changeVar = '---';
+go
+alter table dynamiccccapbank alter column changeVar varchar(32) not null;
+go
+
 /**************************************************************/
 /* VERSION INFO                                               */
 /*   Automatically gets inserted from build script            */
