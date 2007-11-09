@@ -513,6 +513,14 @@ go
 alter table dynamiccccapbank alter column changeVar varchar(32) not null;
 go
 
+
+alter table lmthermostatgear add RampRate float;
+go
+update lmthermostatgear set RampRate = 0;
+go
+alter table lmthermostatgear alter column RampRate float not null;
+go
+
 /**************************************************************/
 /* VERSION INFO                                               */
 /*   Automatically gets inserted from build script            */

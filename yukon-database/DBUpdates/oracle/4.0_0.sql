@@ -472,6 +472,11 @@ alter table dynamiccccapbank add changeVar varchar2(32);
 update dynamiccccapbank set changeVar = '---';
 alter table dynamiccccapbank modify changeVar varchar2(32) not null;
 
+alter table lmthermostatgear add RampRate float;
+update lmthermostatgear set RampRate = 0;
+alter table lmthermostatgear modify RampRate not null;
+
+
 /**************************************************************/
 /* VERSION INFO                                               */
 /*   Automatically gets inserted from build script            */
