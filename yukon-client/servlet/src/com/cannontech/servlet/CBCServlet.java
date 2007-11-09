@@ -222,9 +222,9 @@ public void doGet(HttpServletRequest req, HttpServletResponse resp) throws javax
                 CBCNavigationUtil.bookmarkLocationAndRedirect(redirectURL, session);
                 
                 String val = ParamUtil.getString(req, "itemid", null);
-                if( val != null)
-                    CBCNavigationUtil.setParamOnBookmark("lastAccessed", val, session);
-                
+                if( val != null){
+                    session.setAttribute("lastAccessed", val);
+                }
                 CTILogger.debug("servlet nav to: " + redirectURL );
 			}
 			else {

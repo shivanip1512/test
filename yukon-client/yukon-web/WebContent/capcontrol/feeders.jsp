@@ -32,7 +32,8 @@
 	List<Feeder> feeders = filterCapControlCache.getFeedersBySubStation(substation);
 	List<CapBankDevice> capBanks = filterCapControlCache.getCapBanksBySubStation(substation);
 	
-	int lastAccessed = ParamUtil.getInteger(request, "lastAccessed", -1);
+	String lastStr = (String) request.getSession(false).getAttribute("lastAccessed");
+	int lastAccessed = (lastStr == null) ? -1:Integer.parseInt(lastStr);
 	
 	boolean hasControl = CBCWebUtils.hasControlRights(session);
 	boolean special = filterCapControlCache.isSpecialCBCArea(areaId);
