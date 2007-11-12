@@ -6041,7 +6041,7 @@
         </points>
         <commands>
         	<command name="General Scan">
-        		<cmd text="scan itegrity"/>
+        		<cmd text="scan general"/>
         		<pointRef name="Total kWh"/>
         		<pointRef name="Total kVArh"/>
         	</command>
@@ -6392,7 +6392,7 @@
         </points>
         <commands>
         	<command name="General Scan">
-        		<cmd text="scan itegrity"/>
+        		<cmd text="scan general"/>
         		<pointRef name="Total kWh"/>
         		<pointRef name="Total kVArh"/>
         	</command>
@@ -6743,7 +6743,7 @@
         </points>
         <commands>
         	<command name="General Scan">
-        		<cmd text="scan itegrity"/>
+        		<cmd text="scan general"/>
         		<pointRef name="Total kWh"/>
         		<pointRef name="Total kVArh"/>
         	</command>
@@ -7142,7 +7142,7 @@
         </points>
         <commands>
         	<command name="General Scan">
-        		<cmd text="scan itegrity"/>
+        		<cmd text="scan general"/>
         		<pointRef name="Total kWh"/>
         		<pointRef name="Total kVArh"/>
         	</command>
@@ -7493,7 +7493,7 @@
         </points>
         <commands>
         	<command name="General Scan">
-        		<cmd text="scan itegrity"/>
+        		<cmd text="scan general"/>
         		<pointRef name="Total kWh"/>
         		<pointRef name="Total kVArh"/>
         	</command>
@@ -7873,7 +7873,7 @@
         </points>
         <commands>
         	<command name="General Scan">
-        		<cmd text="scan itegrity"/>
+        		<cmd text="scan general"/>
         		<pointRef name="Total kWh"/>
         		<pointRef name="Total kVArh"/>
         	</command>
@@ -8224,7 +8224,7 @@
         </points>
         <commands>
         	<command name="General Scan">
-        		<cmd text="scan itegrity"/>
+        		<cmd text="scan general"/>
         		<pointRef name="Total kWh"/>
         		<pointRef name="Total kVArh"/>
         	</command>
@@ -8575,7 +8575,7 @@
         </points>
         <commands>
         	<command name="General Scan">
-        		<cmd text="scan itegrity"/>
+        		<cmd text="scan general"/>
         		<pointRef name="Total kWh"/>
         		<pointRef name="Total kVArh"/>
         	</command>
@@ -8926,7 +8926,7 @@
         </points>
         <commands>
         	<command name="General Scan">
-        		<cmd text="scan itegrity"/>
+        		<cmd text="scan general"/>
         		<pointRef name="Total kWh"/>
         		<pointRef name="Total kVArh"/>
         	</command>
@@ -9277,7 +9277,7 @@
         </points>
         <commands>
         	<command name="General Scan">
-        		<cmd text="scan itegrity"/>
+        		<cmd text="scan general"/>
         		<pointRef name="Total kWh"/>
         		<pointRef name="Total kVArh"/>
         	</command>
@@ -9628,7 +9628,7 @@
         </points>
         <commands>
         	<command name="General Scan">
-        		<cmd text="scan itegrity"/>
+        		<cmd text="scan general"/>
         		<pointRef name="Total kWh"/>
         		<pointRef name="Total kVArh"/>
         	</command>
@@ -9669,7 +9669,7 @@
         </points>
         <commands>
         	<command name="General Scan">
-        		<cmd text="scan itegrity"/>
+        		<cmd text="scan general"/>
         		<pointRef name="Total kWh"/>
         	</command>
         </commands>
@@ -10013,7 +10013,7 @@
         </points>
         <commands>
         	<command name="General Scan">
-        		<cmd text="scan itegrity"/>
+        		<cmd text="scan general"/>
         		<pointRef name="Total kWh"/>
         		<pointRef name="Total kVArh"/>
         	</command>
