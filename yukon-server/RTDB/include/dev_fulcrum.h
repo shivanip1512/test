@@ -9,8 +9,8 @@
 *
 * PVCS KEYWORDS:
 * ARCHIVE      :  $Archive:   Z:/SOFTWAREARCHIVES/YUKON/RTDB/INCLUDE/dev_fulcrum.h-arc  $
-* REVISION     :  $Revision: 1.10 $
-* DATE         :  $Date: 2006/09/26 14:13:29 $
+* REVISION     :  $Revision: 1.11 $
+* DATE         :  $Date: 2007/11/12 17:04:11 $
 *
 * Copyright (c) 2000 Cannon Technologies Inc. All rights reserved.
 *-----------------------------------------------------------------------------*/
@@ -26,7 +26,6 @@
 #include "dsm2.h"
 #include "dev_meter.h"
 #include "dev_schlum.h"
-#include "mgr_point.h"
 
 #pragma pack(push, schlumberger_packing, 1)
 

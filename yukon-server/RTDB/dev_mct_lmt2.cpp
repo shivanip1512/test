@@ -8,8 +8,8 @@
 *
 * PVCS KEYWORDS:
 * ARCHIVE      :  $Archive:   Z:/SOFTWAREARCHIVES/YUKON/RTDB/dev_mct_lmt2.cpp-arc  $
-* REVISION     :  $Revision: 1.36 $
-* DATE         :  $Date: 2006/12/26 15:52:10 $
+* REVISION     :  $Revision: 1.37 $
+* DATE         :  $Date: 2007/11/12 17:04:59 $
 *
 * Copyright (c) 1999, 2000 Cannon Technologies Inc. All rights reserved.
 *-----------------------------------------------------------------------------*/
@@ -20,7 +20,6 @@
 #include "devicetypes.h"
 #include "dev_mct_lmt2.h"
 #include "logger.h"
-#include "mgr_point.h"
 #include "pt_numeric.h"
 #include "numstr.h"
 

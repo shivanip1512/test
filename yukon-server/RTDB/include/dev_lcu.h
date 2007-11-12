@@ -9,8 +9,8 @@
 *
 * PVCS KEYWORDS:
 * ARCHIVE      :  $Archive:   Z:/SOFTWAREARCHIVES/YUKON/RTDB/INCLUDE/dev_lcu.h-arc  $
-* REVISION     :  $Revision: 1.22 $
-* DATE         :  $Date: 2006/11/06 21:46:25 $
+* REVISION     :  $Revision: 1.23 $
+* DATE         :  $Date: 2007/11/12 17:08:02 $
 *
 * Copyright (c) 1999, 2000 Cannon Technologies Inc. All rights reserved.
 *-----------------------------------------------------------------------------*/
@@ -22,7 +22,6 @@
 #include <vector>
 using std::vector;
 
-#include <rw/tpslist.h>
 #include <rw/tvordvec.h>
 
 #include "ctitypes.h"
@@ -30,7 +29,6 @@ using std::vector;
 #include "os2_2w32.h"
 #include "dsm2.h"
 #include "dev_idlc.h"
-#include "mgr_point.h"
 #include "mutex.h"
 
 #define SEQUENCE_ACTIVE    1000

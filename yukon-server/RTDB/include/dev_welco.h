@@ -9,8 +9,8 @@
 *
 * PVCS KEYWORDS:
 * ARCHIVE      :  $Archive:   Z:/SOFTWAREARCHIVES/YUKON/RTDB/INCLUDE/dev_welco.h-arc  $
-* REVISION     :  $Revision: 1.13 $
-* DATE         :  $Date: 2007/11/02 20:53:21 $
+* REVISION     :  $Revision: 1.14 $
+* DATE         :  $Date: 2007/11/12 17:03:26 $
 *
 * Copyright (c) 1999 Cannon Technologies Inc. All rights reserved.
 *-----------------------------------------------------------------------------*/
@@ -25,7 +25,6 @@
 #include "os2_2w32.h"
 #include "dsm2.h"
 #include "dev_idlc.h"
-#include "mgr_point.h"
 #include "prot_welco.h"
 
 class IM_EX_DEVDB CtiDeviceWelco : public CtiDeviceIDLC

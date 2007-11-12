@@ -9,8 +9,8 @@
 *
 * PVCS KEYWORDS:
 * ARCHIVE      :  $Archive:   Z:/SOFTWAREARCHIVES/YUKON/DATABASE/INCLUDE/tbl_alm_nloc.h-arc  $
-* REVISION     :  $Revision: 1.10 $
-* DATE         :  $Date: 2006/09/21 21:31:39 $
+* REVISION     :  $Revision: 1.11 $
+* DATE         :  $Date: 2007/11/12 17:03:26 $
 *
 * Copyright (c) 2000 Cannon Technologies Inc. All rights reserved.
 *-----------------------------------------------------------------------------*/
@@ -25,7 +25,6 @@
 #include "os2_2w32.h"
 #include "dsm2.h"
 #include "dev_meter.h"
-#include "mgr_point.h"
 
 #define SCHLUMBERGER_RETRIES 7
 

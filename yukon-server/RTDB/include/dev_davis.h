@@ -8,8 +8,8 @@
 * Author: Corey G. Plender
 *
 * PVCS KEYWORDS:
-* REVISION     :  $Revision: 1.6 $
-* DATE         :  $Date: 2006/09/21 21:31:37 $
+* REVISION     :  $Revision: 1.7 $
+* DATE         :  $Date: 2007/11/12 17:04:31 $
 *
 * Copyright (c) 2002 Cannon Technologies Inc. All rights reserved.
 *-----------------------------------------------------------------------------*/
@@ -20,7 +20,6 @@
 
 #include <windows.h>
 #include "dev_ied.h"
-#include "mgr_point.h"
 
 class IM_EX_DEVDB CtiDeviceDavis : public CtiDeviceIED
 {

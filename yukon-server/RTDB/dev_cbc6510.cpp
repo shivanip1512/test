@@ -6,8 +6,8 @@
 *
 * PVCS KEYWORDS:
 * ARCHIVE      :  $Archive:   Z:/SOFTWAREARCHIVES/YUKON/RTDB/dev_cbc.cpp-arc  $
-* REVISION     :  $Revision: 1.21 $
-* DATE         :  $Date: 2006/02/27 23:58:29 $
+* REVISION     :  $Revision: 1.22 $
+* DATE         :  $Date: 2007/11/12 17:06:18 $
 *
 * Copyright (c) 2002 Cannon Technologies Inc. All rights reserved.
 *-----------------------------------------------------------------------------*/
@@ -26,7 +26,6 @@
 
 #include "pointtypes.h"
 #include "mgr_route.h"
-#include "mgr_point.h"
 #include "msg_pcrequest.h"
 #include "msg_pcreturn.h"
 #include "msg_pdata.h"

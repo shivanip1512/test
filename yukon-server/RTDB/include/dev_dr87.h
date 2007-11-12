@@ -9,8 +9,8 @@
 *
 * PVCS KEYWORDS:
 * ARCHIVE      :  $Archive:   Z:/SOFTWAREARCHIVES/YUKON/RTDB/INCLUDE/dev_dr87.h-arc  $
-* REVISION     :  $Revision: 1.10 $
-* DATE         :  $Date: 2006/09/21 21:31:37 $
+* REVISION     :  $Revision: 1.11 $
+* DATE         :  $Date: 2007/11/12 17:04:31 $
 *
 * Copyright (c) 2000 Cannon Technologies Inc. All rights reserved.
 *-----------------------------------------------------------------------------*/
@@ -28,7 +28,6 @@
 #include "os2_2w32.h"
 #include "dsm2.h"
 #include "dev_meter.h"
-#include "mgr_point.h"
 #include "logger.h"
 #include "guard.h"
 

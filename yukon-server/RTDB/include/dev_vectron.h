@@ -9,8 +9,8 @@
 *
 * PVCS KEYWORDS:
 * ARCHIVE      :  $Archive:   Z:/SOFTWAREARCHIVES/YUKON/RTDB/INCLUDE/dev_vectron.h-arc  $
-* REVISION     :  $Revision: 1.10 $
-* DATE         :  $Date: 2006/09/26 14:13:30 $
+* REVISION     :  $Revision: 1.11 $
+* DATE         :  $Date: 2007/11/12 17:03:26 $
 *
 * Copyright (c) 2000 Cannon Technologies Inc. All rights reserved.
 *-----------------------------------------------------------------------------*/
@@ -26,7 +26,6 @@
 #include "dsm2.h"
 #include "dev_meter.h"
 #include "dev_schlum.h"
-#include "mgr_point.h"
 
 // possible load profile mappings
 #define VECTRON_NO_MAPPING              0

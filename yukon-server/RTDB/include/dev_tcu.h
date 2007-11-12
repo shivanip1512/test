@@ -9,8 +9,8 @@
 *
 * PVCS KEYWORDS:
 * ARCHIVE      :  $Archive:   Z:/SOFTWAREARCHIVES/YUKON/RTDB/INCLUDE/dev_tcu.h-arc  $
-* REVISION     :  $Revision: 1.10 $
-* DATE         :  $Date: 2006/09/21 21:31:39 $
+* REVISION     :  $Revision: 1.11 $
+* DATE         :  $Date: 2007/11/12 17:08:02 $
 *
 * Copyright (c) 1999 Cannon Technologies Inc. All rights reserved.
 *-----------------------------------------------------------------------------*/
@@ -20,14 +20,11 @@
 
 #include <windows.h>
 
-#include <rw/tpslist.h>
-
 #include "ctitypes.h"
 #include "types.h"
 #include "os2_2w32.h"
 #include "dsm2.h"
 #include "dev_idlc.h"
-#include "mgr_point.h"
 
 class IM_EX_DEVDB CtiDeviceTCU : public CtiDeviceIDLC
 {

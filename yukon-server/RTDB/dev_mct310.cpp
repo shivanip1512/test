@@ -8,8 +8,8 @@
 *
 * PVCS KEYWORDS:
 * ARCHIVE      :  $Archive:   Z:/SOFTWAREARCHIVES/YUKON/RTDB/dev_mct310.cpp-arc  $
-* REVISION     :  $Revision: 1.63 $
-* DATE         :  $Date: 2007/05/31 21:17:19 $
+* REVISION     :  $Revision: 1.64 $
+* DATE         :  $Date: 2007/11/12 17:07:26 $
 *
 * Copyright (c) 1999, 2000 Cannon Technologies Inc. All rights reserved.
 *-----------------------------------------------------------------------------*/
@@ -22,7 +22,6 @@
 #include "devicetypes.h"
 #include "dev_mct310.h"
 #include "logger.h"
-#include "mgr_point.h"
 #include "pt_status.h"
 #include "numstr.h"
 #include "porter.h"

@@ -6,8 +6,8 @@
 *
 * PVCS KEYWORDS:
 * ARCHIVE      :  $Archive:   Z:/SOFTWAREARCHIVES/YUKON/RTDB/dev_cbc.cpp-arc  $
-* REVISION     :  $Revision: 1.59 $
-* DATE         :  $Date: 2007/08/22 20:19:21 $
+* REVISION     :  $Revision: 1.60 $
+* DATE         :  $Date: 2007/11/12 17:06:44 $
 *
 * Copyright (c) 2002 Cannon Technologies Inc. All rights reserved.
 *-----------------------------------------------------------------------------*/
@@ -33,7 +33,6 @@
 
 #include "pointtypes.h"
 #include "mgr_route.h"
-#include "mgr_point.h"
 #include "msg_cmd.h"
 #include "msg_pcrequest.h"
 #include "msg_pcreturn.h"
@@ -1036,7 +1035,7 @@ INT DNP::ErrorDecode(INMESS *InMessage, CtiTime &TimeNow, list< CtiMessage* > &v
     INT retCode = NORMAL;
 
     CtiCommandParser  parse(InMessage->Return.CommandStr);
-    
+
     CtiPointDataMsg  *commFailed;
     CtiPointSPtr     commPoint;
 

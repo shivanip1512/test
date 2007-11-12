@@ -8,8 +8,8 @@
 *
 * PVCS KEYWORDS:
 * ARCHIVE      :  $Archive:   Z:/SOFTWAREARCHIVES/YUKON/RTDB/dev_dct501.cpp-arc  $
-* REVISION     :  $Revision: 1.34 $
-* DATE         :  $Date: 2006/12/26 15:42:07 $
+* REVISION     :  $Revision: 1.35 $
+* DATE         :  $Date: 2007/11/12 17:06:18 $
 *
 * Copyright (c) 1999, 2000 Cannon Technologies Inc. All rights reserved.
 *-----------------------------------------------------------------------------*/
@@ -23,7 +23,6 @@
 #include "tbl_ptdispatch.h"
 #include "dev_dct501.h"
 #include "logger.h"
-#include "mgr_point.h"
 #include "porter.h"
 #include "pt_numeric.h"
 #include "numstr.h"

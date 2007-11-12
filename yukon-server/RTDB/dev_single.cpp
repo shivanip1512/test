@@ -5,8 +5,8 @@
 * Date:   10/4/2001
 *
 * PVCS KEYWORDS:
-* REVISION     :  $Revision: 1.61 $
-* DATE         :  $Date: 2007/11/02 20:15:30 $
+* REVISION     :  $Revision: 1.62 $
+* DATE         :  $Date: 2007/11/12 17:04:59 $
 *
 * Copyright (c) 1999, 2000, 2001 Cannon Technologies Inc. All rights reserved.
 *-----------------------------------------------------------------------------*/
@@ -18,7 +18,6 @@
 #include "dev_single.h"
 #include "logger.h"
 #include "porter.h"
-#include "mgr_point.h"
 #include "numstr.h"
 #include "tbl_ptdispatch.h"
 #include "utility.h"

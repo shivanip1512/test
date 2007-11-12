@@ -20,7 +20,6 @@
 #include "os2_2w32.h"
 #include "dsm2.h"
 #include "dev_meter.h"
-#include "mgr_point.h"
 
 #include "tbl_dv_address.h"
 #include "prot_ion.h"

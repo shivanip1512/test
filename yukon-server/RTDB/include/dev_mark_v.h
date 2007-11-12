@@ -9,8 +9,8 @@
 *
 * PVCS KEYWORDS:
 * ARCHIVE      :  $Archive$
-* REVISION     :  $Revision: 1.20 $
-* DATE         :  $Date: 2006/09/26 14:19:19 $
+* REVISION     :  $Revision: 1.21 $
+* DATE         :  $Date: 2007/11/12 17:03:46 $
 *
 * Copyright (c) 1999, 2000, 2001, 2002 Cannon Technologies Inc. All rights reserved.
 *----------------------------------------------------------------------------------*/
@@ -25,7 +25,6 @@
 #include "dsm2.h"
 #include "ctitypes.h"
 #include "types.h"
-#include "mgr_point.h"
 #include "device.h"
 #include "pt_numeric.h"
 #include "connection.h"

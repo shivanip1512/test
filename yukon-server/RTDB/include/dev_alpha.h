@@ -21,7 +21,6 @@
 #include "os2_2w32.h"
 #include "dsm2.h"
 #include "dev_meter.h"
-#include "mgr_point.h"
 #include "device.h"
 
 #define ALPHA_DEFAULT_OTHERCLASS   9999

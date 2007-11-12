@@ -23,7 +23,6 @@
 #include "dsm2.h"
 #include "dev_meter.h"
 #include "dev_schlum.h"
-#include "mgr_point.h"
 
 #define QUANTUM_MAX_MMRECORD_SIZE  1547
 

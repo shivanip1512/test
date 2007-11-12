@@ -9,11 +9,15 @@
 *
 * PVCS KEYWORDS:
 * ARCHIVE      :  $Archive:   Z:/SOFTWAREARCHIVES/YUKON/RTDB/INCLUDE/dev_kv2.h-arc  $
-* REVISION     :  $Revision: 1.14 $
-* DATE         :  $Date: 2006/02/27 23:58:32 $
+* REVISION     :  $Revision: 1.15 $
+* DATE         :  $Date: 2007/11/12 17:04:11 $
 *
 *    History:
       $Log: dev_kv2.h,v $
+      Revision 1.15  2007/11/12 17:04:11  mfisher
+      YUK-4464 Large meter reads can cause major database delays
+      Removed references to "mgr_point.h"
+
       Revision 1.14  2006/02/27 23:58:32  tspar
       Phase two of RWTPtrSlist replacement.
 
@@ -59,7 +63,6 @@
 #include "dsm2.h"
 #include "ctitypes.h"
 #include "types.h"
-#include "mgr_point.h"
 #include "device.h"
 #include "dllyukon.h"
 
@@ -73,12 +76,12 @@ public:
    CtiDeviceKV2();
    virtual ~CtiDeviceKV2();
 
-   virtual INT DemandReset( CtiRequestMsg *pReq, 
-                    CtiCommandParser &parse, 
-                    OUTMESS *&OutMessage, 
+   virtual INT DemandReset( CtiRequestMsg *pReq,
+                    CtiCommandParser &parse,
+                    OUTMESS *&OutMessage,
                     list< CtiMessage* > &vgList,
-                    list< CtiMessage* > &retList, 
-                    list< OUTMESS* > &outList, 
+                    list< CtiMessage* > &retList,
+                    list< OUTMESS* > &outList,
                     INT ScanPriority = MAXPRIORITY-4);
 
    virtual INT GeneralScan(CtiRequestMsg              *pReq,
