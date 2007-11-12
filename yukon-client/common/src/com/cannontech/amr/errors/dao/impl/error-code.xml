@@ -227,7 +227,7 @@
   </error>
 
 <error code="31">
-	<category>Powerline Carrier</category> 
+	<category>Bulk Communications</category> 
 	<porter>Timeout Reading from Port</porter>
     <description>The master station did not receive a response from the targeted device.</description>
     <troubleshooting>
