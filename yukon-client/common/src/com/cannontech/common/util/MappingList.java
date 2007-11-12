@@ -3,9 +3,6 @@ package com.cannontech.common.util;
 import java.util.AbstractList;
 import java.util.List;
 
-import com.cannontech.common.bulk.mapper.IgnoreMappingException;
-import com.cannontech.common.bulk.mapper.ObjectMappingException;
-
 public class MappingList<J, K> extends AbstractList<K> {
 
     private final List<? extends J> base;
@@ -19,14 +16,8 @@ public class MappingList<J, K> extends AbstractList<K> {
     @Override
     public K get(int index) {
         J j = base.get(index);
-        K k;
-        try {
-            k = objectMapper.map(j);
-        } catch (ObjectMappingException e) {
-            throw new RuntimeException(e);
-        } catch (IgnoreMappingException e) {
-            throw new RuntimeException(e);
-        }
+        K k = objectMapper.map(j);
+
         return k;
     }
 

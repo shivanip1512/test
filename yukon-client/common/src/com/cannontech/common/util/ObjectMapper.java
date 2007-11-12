@@ -1,6 +1,5 @@
 package com.cannontech.common.util;
 
-import com.cannontech.common.bulk.mapper.IgnoreMappingException;
 import com.cannontech.common.bulk.mapper.ObjectMappingException;
 
 public interface ObjectMapper<J, K> {
@@ -10,7 +9,6 @@ public interface ObjectMapper<J, K> {
      * @param from - Object to map
      * @return - Mapped object
      * @throws ObjectMappingException if there was a problem mappint the object
-     * @throws IgnoreMappingException if the mapping was ignored
      */
-    public K map(J from) throws ObjectMappingException, IgnoreMappingException;
+    public K map(J from) throws ObjectMappingException;
 }

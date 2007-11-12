@@ -3,7 +3,7 @@ package com.cannontech.common.bulk.processor;
 /**
  * Exception thrown when there is a problem when trying to process an object
  */
-public class ProcessingException extends Exception {
+public class ProcessingException extends RuntimeException {
 
     public ProcessingException(String message) {
         super(message);

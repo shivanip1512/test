@@ -128,13 +128,13 @@ public class GroupController extends MultiActionController {
         DeviceGroupHierarchy groupHierarchy = deviceGroupService.getDeviceGroupHierarchy(rootGroup);
         mav.addObject("groupHierarchy", groupHierarchy);
 
-        // Create a list of groups the current group could move to excluding
-        // any groups the current group is a part of and any groups that are not
-        // modifiable
+        // Create a list of groups the current group could move to excluding the
+        // current group itself, any decendant groups of the current group and
+        // any groups that are not modifiable
         List<? extends DeviceGroup> groups = deviceGroupDao.getAllGroups();
         List<DeviceGroup> moveGroups = new ArrayList<DeviceGroup>();
         for (DeviceGroup deviceGroup : groups) {
-            if (!deviceGroup.getFullName().contains(group.getName()) && deviceGroup.isModifiable()) {
+            if (deviceGroup.isModifiable() && !deviceGroup.equals(group) && !deviceGroup.isDescendantOf(group)) {
                 moveGroups.add(deviceGroup);
             }
         }
@@ -247,7 +247,7 @@ public class GroupController extends MultiActionController {
             mav.addObject("errorMessage", "Cannot add devices to " + group.getFullName());
             return mav;
         }
-        
+
         Boolean showDevices = ServletRequestUtils.getBooleanParameter(request, "showDevices");
         mav.addObject("showDevices", showDevices);
 
@@ -307,20 +307,6 @@ public class GroupController extends MultiActionController {
 
                 ObjectMapper<String, YukonDevice> yukonDeviceMapper = null;
 
-                // Create the mapper based on the type of file upload
-                String uploadType = ServletRequestUtils.getStringParameter(request, "uploadType");
-                if ("PAONAME".equalsIgnoreCase(uploadType)) {
-                    yukonDeviceMapper = objectMapperFactory.createPaoNameToYukonDeviceMapper();
-                } else if ("METERNUMBER".equalsIgnoreCase(uploadType)) {
-                    yukonDeviceMapper = objectMapperFactory.createMeterNumberToYukonDeviceMapper();
-                } else if ("ADDRESS".equalsIgnoreCase(uploadType)) {
-                    yukonDeviceMapper = objectMapperFactory.createAddressToYukonDeviceMapper();
-                } else if ("BULK".equalsIgnoreCase(uploadType)) {
-                    yukonDeviceMapper = objectMapperFactory.createBulkImporterToYukonDeviceMapper();
-                }
-
-                Processor<YukonDevice> addToGroupProcessor = processorFactory.createAddYukonDeviceToGroupProcessor((StoredDeviceGroup) group);
-
                 try {
 
                     // Create a collecting callback and stick it into the
@@ -328,7 +314,29 @@ public class GroupController extends MultiActionController {
                     CollectingBulkProcessorCallback callback = new CollectingBulkProcessorCallback();
                     request.getSession().setAttribute("bulkAddDeviceToGroup", callback);
 
+                    // Create an iterator to iterate through the file line by
+                    // line
                     Iterator<String> iterator = new InputStreamIterator(dataFile.getInputStream());
+
+                    // Create the mapper based on the type of file upload
+                    String uploadType = ServletRequestUtils.getStringParameter(request,
+                                                                               "uploadType");
+                    if ("PAONAME".equalsIgnoreCase(uploadType)) {
+                        yukonDeviceMapper = objectMapperFactory.createPaoNameToYukonDeviceMapper();
+                    } else if ("METERNUMBER".equalsIgnoreCase(uploadType)) {
+                        yukonDeviceMapper = objectMapperFactory.createMeterNumberToYukonDeviceMapper();
+                    } else if ("ADDRESS".equalsIgnoreCase(uploadType)) {
+                        yukonDeviceMapper = objectMapperFactory.createAddressToYukonDeviceMapper();
+                    } else if ("BULK".equalsIgnoreCase(uploadType)) {
+                        yukonDeviceMapper = objectMapperFactory.createBulkImporterToYukonDeviceMapper();
+                        // Skip the first line in the file for bulk import
+                        // format - header line
+                        iterator.next();
+                    }
+
+                    // Get the processor that adds devices to groups
+                    Processor<YukonDevice> addToGroupProcessor = processorFactory.createAddYukonDeviceToGroupProcessor((StoredDeviceGroup) group);
+
                     bulkProcessor.backgroundBulkProcess(iterator,
                                                         yukonDeviceMapper,
                                                         addToGroupProcessor,

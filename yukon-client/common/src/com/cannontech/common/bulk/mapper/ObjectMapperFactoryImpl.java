@@ -107,8 +107,7 @@ public class ObjectMapperFactoryImpl implements ObjectMapperFactory {
 
         return new ObjectMapper<String, YukonDevice>() {
 
-            public YukonDevice map(String from) throws ObjectMappingException,
-                    IgnoreMappingException {
+            public YukonDevice map(String from) throws ObjectMappingException{
 
                 String[] strings = from.split(",");
                 if (strings.length == 0 || strings[0] == null || strings[0] == "") {
@@ -116,10 +115,6 @@ public class ObjectMapperFactoryImpl implements ObjectMapperFactory {
                 }
 
                 String address = strings[0];
-
-                if ("Address".equalsIgnoreCase(address)) {
-                    throw new IgnoreMappingException("Ignore the header line in the Bulk Importer file");
-                }
 
                 List<LiteYukonPAObject> deviceList = null;
                 try {

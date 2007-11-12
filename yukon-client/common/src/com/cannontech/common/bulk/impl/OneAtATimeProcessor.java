@@ -9,7 +9,6 @@ import com.cannontech.common.bulk.BulkProcessingResultHolder;
 import com.cannontech.common.bulk.BulkProcessor;
 import com.cannontech.common.bulk.BulkProcessorCallback;
 import com.cannontech.common.bulk.CollectingBulkProcessorCallback;
-import com.cannontech.common.bulk.mapper.IgnoreMappingException;
 import com.cannontech.common.bulk.mapper.ObjectMappingException;
 import com.cannontech.common.bulk.processor.ProcessingException;
 import com.cannontech.common.bulk.processor.Processor;
@@ -80,8 +79,6 @@ public class OneAtATimeProcessor implements BulkProcessor {
                             processor.process(out);
                             callback.processedObject();
 
-                        } catch (IgnoreMappingException e) {
-                            // do nothing - ignore this object
                         } catch (ObjectMappingException e) {
                             callback.receivedObjectMappingException(e);
                             callback.processedObject();
