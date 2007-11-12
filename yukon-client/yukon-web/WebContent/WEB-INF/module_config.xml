@@ -173,19 +173,19 @@
       <option id="orphans" name="Orphans">
         <sublinks>
         <option name="Orphaned Substations">
-            <script>results('cbc_lastSearch=__cti_oSubstations__')</script>
+            <script>resultsPost('cbc_lastSearch=__cti_oSubstations__')</script>
           </option>
          <option name="Orphaned Substation Buses">
-            <script>results('cbc_lastSearch=__cti_oSubBuses__')</script>
+            <script>resultsPost('cbc_lastSearch=__cti_oSubBuses__')</script>
           </option>
           <option name="Orphaned Feeders">
-            <script>results('cbc_lastSearch=__cti_oFeeders__')</script>
+            <script>resultsPost('cbc_lastSearch=__cti_oFeeders__')</script>
           </option>
           <option name="Orphaned CapBanks">
-            <script>results('cbc_lastSearch=__cti_oBanks__')</script>
+            <script>resultsPost('cbc_lastSearch=__cti_oBanks__')</script>
           </option>
           <option name="Orphaned CBCs">
-            <script>results('cbc_lastSearch=__cti_oCBCs__')</script>
+            <script>resultsPost('cbc_lastSearch=__cti_oCBCs__')</script>
           </option>
         </sublinks>
       </option>
