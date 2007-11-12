@@ -1,6 +1,7 @@
 package com.cannontech.web.login.impl;
 
 import java.util.Enumeration;
+import java.util.List;
 import java.util.Properties;
 
 import javax.servlet.http.Cookie;
@@ -21,6 +22,7 @@ import com.cannontech.database.data.lite.LiteYukonUser;
 import com.cannontech.roles.application.WebClientRole;
 import com.cannontech.stars.util.ServletUtils;
 import com.cannontech.web.login.LoginService;
+import com.cannontech.web.login.SessionInitializer;
 import com.cannontech.web.navigation.CtiNavObject;
 
 public class LoginServiceImpl implements LoginService {
@@ -48,10 +50,7 @@ public class LoginServiceImpl implements LoginService {
     private AuthDao authDao;
     private ContactDao contactDao;
     private YukonUserDao yukonUserDao;
-
-    public void setContactDao(ContactDao contactDao) {
-        this.contactDao = contactDao;
-    }
+    private List<SessionInitializer> sessionInitializers;
 
     public void clientLogin(HttpServletRequest request, HttpServletResponse response) throws Exception {
         String username = request.getParameter(USERNAME);
@@ -347,11 +346,13 @@ public class LoginServiceImpl implements LoginService {
         return  redirect;
     }
 
-    private static void initSession(LiteYukonUser user, HttpSession session) {
+    private void initSession(final LiteYukonUser user, final HttpSession session) {
         session.setAttribute(YUKON_USER, user);
+        for (final SessionInitializer initializer : sessionInitializers) {
+            initializer.initSession(user, session);
+        }
         CTILogger.info("Created session " + session.getId() + " for " + user);
     }
-
 
     public void setAuthDao(AuthDao authDao) {
         this.authDao = authDao;
@@ -359,6 +360,14 @@ public class LoginServiceImpl implements LoginService {
 
     public void setYukonUserDao(YukonUserDao yukonUserDao) {
         this.yukonUserDao = yukonUserDao;
+    }
+
+    public void setContactDao(ContactDao contactDao) {
+        this.contactDao = contactDao;
+    }
+
+    public void setSessionInitializers(List<SessionInitializer> sessionInitializers) {
+        this.sessionInitializers = sessionInitializers;
     }
 
 }

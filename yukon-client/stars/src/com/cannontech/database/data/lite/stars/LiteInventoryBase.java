@@ -7,6 +7,7 @@
 package com.cannontech.database.data.lite.stars;
 
 import java.util.ArrayList;
+import java.util.List;
 
 import com.cannontech.common.constants.YukonListEntry;
 import com.cannontech.common.constants.YukonListEntryTypes;
@@ -38,7 +39,7 @@ public class LiteInventoryBase extends LiteBase {
     private int currentStateID = CtiUtilities.NONE_ZERO_ID;
 	
 	// Extended fields
-	private ArrayList inventoryHistory = null;		// List of LiteLMHardwareEvent
+	private List inventoryHistory = null;		// List of LiteLMHardwareEvent
 	private int deviceStatus = CtiUtilities.NONE_ZERO_ID;
 	
 	private boolean extended = false;
@@ -218,7 +219,7 @@ public class LiteInventoryBase extends LiteBase {
 	 * Returns the hardwareHistory.
 	 * @return com.cannontech.stars.xml.serialize.StarsLMHardwareHistory
 	 */
-	public ArrayList getInventoryHistory() {
+	public List getInventoryHistory() {
 		if (inventoryHistory == null)
 			inventoryHistory = new ArrayList();
 		return inventoryHistory;
@@ -228,7 +229,7 @@ public class LiteInventoryBase extends LiteBase {
 	 * Sets the hardwareHistory.
 	 * @param hardwareHistory The hardwareHistory to set
 	 */
-	public void setInventoryHistory(ArrayList inventoryHistory) {
+	public void setInventoryHistory(List inventoryHistory) {
 		this.inventoryHistory = inventoryHistory;
 	}
 
@@ -243,7 +244,7 @@ public class LiteInventoryBase extends LiteBase {
 	}
 	
 	public void updateDeviceStatus() {
-		ArrayList invHist = getInventoryHistory();
+		List invHist = getInventoryHistory();
 		
 		boolean isSA = false;
 		if (this instanceof LiteStarsLMHardware) {

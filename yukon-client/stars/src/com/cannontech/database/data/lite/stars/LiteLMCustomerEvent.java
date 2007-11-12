@@ -1,5 +1,7 @@
 package com.cannontech.database.data.lite.stars;
 
+import java.util.Date;
+
 import com.cannontech.database.data.lite.LiteBase;
 import com.cannontech.database.data.lite.LiteTypes;
 
@@ -11,7 +13,7 @@ import com.cannontech.database.data.lite.LiteTypes;
  * To enable and disable the creation of type comments go to
  * Window>Preferences>Java>Code Generation.
  */
-public abstract class LiteLMCustomerEvent extends LiteBase {
+public class LiteLMCustomerEvent extends LiteBase {
 	
 	private int eventTypeID = com.cannontech.common.util.CtiUtilities.NONE_ZERO_ID;
 	private int actionID = com.cannontech.common.util.CtiUtilities.NONE_ZERO_ID;

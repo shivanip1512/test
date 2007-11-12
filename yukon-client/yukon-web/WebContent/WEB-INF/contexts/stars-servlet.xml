@@ -19,7 +19,8 @@
 				<prop key="/servlet/StarsPWordRequest">starsPWordRequest</prop>
 				<prop key="/servlet/ImportManager">importManager</prop>
 				<prop key="/home">homeServletController</prop>
-				<prop key="/hardware/thermostatactivation">thermostatActivationController</prop>
+				<prop key="/hardware/deviceactivation">deviceActivationController</prop>
+                <prop key="/hardware/deviceverification">deviceVerificationController</prop>
 			</props>
 		</property>
 	</bean>
@@ -59,10 +60,19 @@
 	
 	<bean id="homeServletController" class="com.cannontech.web.stars.HomeServletController"/>
 
-	<bean id="thermostatActivationController" class="com.cannontech.web.stars.dr.hardware.ThermostatActivationController">
-		<property name="thermostatActivationService" ref="thermostatActivationService"/>
+	<bean id="deviceActivationController" class="com.cannontech.web.stars.dr.hardware.DeviceActivationController">
+		<property name="deviceActivationService" ref="deviceActivationService"/>
+        <property name="starsDatabaseCache" ref="starsDatabaseCache"/>
 		<property name="methodNameResolver" ref="methodNameResolver" />
+        <property name="customerAccountDao" ref="customerAccountDao"/>
+        <property name="contactDao" ref="contactDao"/>
+        <property name="addressDao" ref="addressDao"/>
 	</bean>
+    
+    <bean id="deviceVerificationController" class="com.cannontech.web.stars.dr.hardware.DeviceVerificationController">
+        <property name="deviceVerificationService" ref="deviceVerificationService"/>
+        <property name="methodNameResolver" ref="methodNameResolver" />
+    </bean>
 	
 	<bean id="methodNameResolver"
 		class="org.springframework.web.servlet.mvc.multiaction.ParameterMethodNameResolver">
@@ -71,6 +81,8 @@
 			<list>
                 <value>view</value>
 				<value>activate</value>
+                <value>confirmation</value>
+                <value>verify</value>
 			</list>
 		</property>
 	</bean>

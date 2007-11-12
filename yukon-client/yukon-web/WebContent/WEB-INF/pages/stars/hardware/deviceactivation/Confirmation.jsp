@@ -1,0 +1,63 @@
+<%@ taglib uri="http://java.sun.com/jsp/jstl/core" prefix="c"%>
+<c:url var="url" value="/spring/stars/hardware/deviceactivation" />
+
+<html>
+    <body>
+    <head>
+        <title>Device Activation Confirmation</title>
+    </head>
+    <center>
+        <div id="main">
+            <h2>
+                Device Activation Confirmation
+            </h2>
+            <form id="activateform" method="POST" action="${url}"
+                style="margin: 0px; padding: 0px;">
+                <table cellspacing="5">
+                    <tr>
+                        <td valign="top" style="text-align: right">
+                            Account Number :
+                        </td>
+                        <td valign="top" style="text-align: left">${accountNumber}</td>
+                    </tr>
+                    <tr>
+                        <td valign="top" style="text-align: right">
+                            Serial Number :
+                        </td>
+                        <td valign="top" style="text-align: left">${serialNumber}</td>
+                    </tr>
+                    <tr>
+                        <td valign="top" style="text-align: right">
+                            Contact Name:
+                        </td>
+                        <td valign="top" style="text-align: left">
+                            <c:if test='${not empty contact}'>
+                                ${contact.contFirstName} ${contact.contLastName}
+                            </c:if>
+                        </td>
+                    </tr>
+                    <tr>
+                        <td valign="top" style="text-align: right">
+                            Address:
+                        </td>
+                        <td valign="top" style="text-align: left">
+                            <c:if test='${not empty address}'>
+                                <p>${address.locationAddress1}</p><p>${address.cityName}, ${address.stateCode} ${address.zipCode}</p>
+                            </c:if>
+                        </td>        
+                    </tr>    
+                    <tr>
+                        <td/>
+                        <td align="left">
+                            <input type="submit" name="activate" value="Yes" />
+                            <input type="submit" name="view" value="No"/>
+                        </td>
+                    </tr>
+                </table>
+                <input type="hidden" name="accountnumber" value="${accountNumber}"/>
+                <input type="hidden" name="serialnumber" value="${serialNumber}"/>
+            </form>
+        </div>
+    </center>
+    </body>
+</html>

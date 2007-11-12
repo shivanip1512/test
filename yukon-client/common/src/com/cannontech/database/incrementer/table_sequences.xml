@@ -5,6 +5,7 @@
     -->
   <sequencetable name="SequenceNumber" valuecolumn="lastValue" keycolumn="sequenceName">
       <sequence name="general" default="true">
+        <table name="LMCustomerEventBase" identitycolumn="EventID" initsequence="true"/>
         <table name="Warehouse" identitycolumn="WarehouseID"/>
       	<table name="InventoryBase" identitycolumn="InventoryID"/>
       	<table name="LMHardwareBase" identitycolumn="InventoryID"/>

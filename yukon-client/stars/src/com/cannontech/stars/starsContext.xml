@@ -10,11 +10,18 @@
             ref="asyncDynamicDataSource" />
     </bean>
 
-    <bean id="thermostatActivationService"
-        class="com.cannontech.stars.dr.hardware.service.impl.ThermostatActivationServiceImpl">
+    <bean id="deviceActivationService"
+        class="com.cannontech.stars.dr.hardware.service.impl.DeviceActivationServiceImpl">
         <property name="customerAccountDao" ref="customerAccountDao" />
         <property name="inventoryBaseDao" ref="inventoryBaseDao" />
         <property name="hardwareBaseDao" ref="hardwareBaseDao" />
+        <property name="customerEventBaseDao" ref="customerEventBaseDao"/>
+        <property name="cacheService" ref="starsCacheService"/>
+    </bean>
+
+    <bean id="deviceVerificationService" class="com.cannontech.stars.dr.hardware.service.impl.DeviceVerificationServiceImpl">
+        <property name="hardwareBaseDao" ref="hardwareBaseDao" />
+        <property name="porterConnection" ref="porterConnection"/>
     </bean>
 
     <bean id="customerAccountDao"
@@ -39,5 +46,16 @@
         class="com.cannontech.stars.core.dao.impl.ECSearchDaoImpl">
         <property name="simpleJdbcTemplate" ref="simpleJdbcTemplate" />
     </bean>
-
+    
+    <bean id="starsRowCountDao" class="com.cannontech.stars.core.dao.impl.StarsRowCountDaoImpl">
+        <property name="simpleJdbcTemplate" ref="simpleJdbcTemplate"/>
+    </bean>
+    
+    <bean id="customerEventBaseDao" class="com.cannontech.stars.dr.event.dao.impl.LMCustomerEventBaseDaoImpl">
+        <property name="nextValueHelper" ref="nextValueHelper" />
+        <property name="simpleJdbcTemplate" ref="simpleJdbcTemplate"/>
+    </bean>
+    
+    <bean id="starsCacheService" class="com.cannontech.stars.core.service.impl.StarsCacheServiceImpl"/>
+    
 </beans>

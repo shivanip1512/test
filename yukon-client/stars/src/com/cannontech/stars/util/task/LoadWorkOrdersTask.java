@@ -6,10 +6,21 @@
  */
 package com.cannontech.stars.util.task;
 
+import java.sql.ResultSet;
+import java.sql.SQLException;
 import java.util.Date;
 
+import org.springframework.jdbc.core.JdbcTemplate;
+import org.springframework.jdbc.core.RowCallbackHandler;
+import org.springframework.jdbc.core.simple.ParameterizedRowMapper;
+import org.springframework.jdbc.datasource.DataSourceTransactionManager;
+import org.springframework.transaction.PlatformTransactionManager;
+import org.springframework.transaction.TransactionDefinition;
+import org.springframework.transaction.TransactionStatus;
+import org.springframework.transaction.support.TransactionCallback;
+import org.springframework.transaction.support.TransactionTemplate;
+
 import com.cannontech.clientutils.CTILogger;
-import com.cannontech.common.util.CtiUtilities;
 import com.cannontech.database.PoolManager;
 import com.cannontech.database.data.lite.stars.LiteStarsEnergyCompany;
 import com.cannontech.database.data.lite.stars.LiteWorkOrderBase;
@@ -22,149 +33,179 @@ import com.cannontech.database.data.stars.event.EventWorkOrder;
  * Window>Preferences>Java>Code Generation>Code and Comments
  */
 public class LoadWorkOrdersTask extends TimeConsumingTask {
+    private static final JdbcTemplate jdbcTemplate;
+    private static final PlatformTransactionManager transactionManager;
+    private static final String selectSql;
+    private static final String selectEventWorkOrder;
+    private static final ParameterizedRowMapper<EventWorkOrder> eventWorkOrderRowMapper;
+    private static final ParameterizedRowMapper<LiteWorkOrderBase> workOrderBaseRowMapper;
+    
+	private final LiteStarsEnergyCompany energyCompany;
+	private int numOrderLoaded;
 
-	LiteStarsEnergyCompany energyCompany = null;
-	
-	int numOrderLoaded = 0;
-	
-	public LoadWorkOrdersTask(LiteStarsEnergyCompany energyCompany) {
+    static {
+
+        jdbcTemplate = new JdbcTemplate(PoolManager.getYukonDataSource());
+        
+        transactionManager = new DataSourceTransactionManager(jdbcTemplate.getDataSource());
+        
+        selectSql = "SELECT OrderID,OrderNumber,WorkTypeID,CurrentStateID,ServiceCompanyID,DateReported, OrderedBy," +
+                    "Description,DateScheduled,DateCompleted,ActionTaken,AdditionalOrderNumber," +
+                    "AccountID,EnergyCompanyID " +
+                    "FROM WorkOrderBase wo, ECToWorkOrderMapping map " +
+                    "WHERE map.EnergyCompanyID = ? " +
+                    "AND map.WorkOrderID = wo.OrderID";
+        
+        selectEventWorkOrder = "SELECT EB.EVENTID,USERID,SYSTEMCATEGORYID,ACTIONID,EVENTTIMESTAMP,ORDERID " +
+                               "FROM EventBase EB,EventWorkOrder EWO,ECToWorkOrderMapping map " + 
+                               "WHERE EB.EVENTID = EWO.EVENTID " +
+                               "AND map.EnergyCompanyID = ? " +
+                               "AND MAP.WORKORDERID = EWO.ORDERID " +
+                               "ORDER BY EB.EVENTID, EVENTTIMESTAMP";
+        
+        eventWorkOrderRowMapper = createEventWorkOrderRowMapper();
+        
+        workOrderBaseRowMapper = createWorkOrderBaseRowMapper(); 
+        
+    }
+    
+	public LoadWorkOrdersTask(final LiteStarsEnergyCompany energyCompany) {
 		this.energyCompany = energyCompany;
 	}
 
 	/* (non-Javadoc)
 	 * @see com.cannontech.stars.util.task.TimeConsumingTask#getProgressMsg()
 	 */
-	public String getProgressMsg() {
-		if (status == STATUS_RUNNING) {
-			if (numOrderLoaded > 0)
-				return numOrderLoaded + " work orders loaded";
-			else
-				return "Preparing for loading the work orders...";
-		}
-		return null;
-	}
+    @Override
+    public String getProgressMsg() {
+        if (status == STATUS_RUNNING) {
+            if (numOrderLoaded > 0) {
+                return numOrderLoaded + " work orders loaded";
+            }    
+            return "Preparing for loading the work orders...";
+        }
+        return null;
+    }
 
 	/* (non-Javadoc)
 	 * @see java.lang.Runnable#run()
 	 */
-	public void run() {
-		if (energyCompany == null) {
-			status = STATUS_ERROR;
-			errorMsg = "Energy company cannot be null";
-			return;
-		}
-		
-		status = STATUS_RUNNING;
-		
-		String sql = "SELECT OrderID, OrderNumber, WorkTypeID, CurrentStateID, ServiceCompanyID," +
-			" DateReported, OrderedBy, Description, DateScheduled, DateCompleted, ActionTaken, AdditionalOrderNumber, " +
-			" AccountID, EnergyCompanyID " +
-			" FROM WorkOrderBase wo, ECToWorkOrderMapping map" +
-			" WHERE map.EnergyCompanyID = " + energyCompany.getEnergyCompanyID() +
-			" AND map.WorkOrderID = wo.OrderID";
-		
-		java.sql.Connection conn = null;
-		java.sql.Statement stmt = null;
-		
-		try {
-			conn = PoolManager.getInstance().getConnection( CtiUtilities.getDatabaseAlias() );
-			if (conn == null) {
-				CTILogger.error( getClass() + ": failed to get database connection" );
-				return;
-			}
-			
-			stmt = conn.createStatement();
-			java.sql.ResultSet rset = stmt.executeQuery( sql );
-			
-			while (rset.next()) {
-				loadWorkOrder(rset);
-				numOrderLoaded++;
-				
-				if (isCanceled) {
-					status = STATUS_CANCELED;
-					return;
-				}
-			}
-			if( stmt != null)
-				stmt.close();
-			
-			sql = "SELECT EB.EVENTID, USERID, SYSTEMCATEGORYID, ACTIONID, EVENTTIMESTAMP, ORDERID " +
-			" FROM " + com.cannontech.database.db.stars.event.EventBase.TABLE_NAME + " EB, " +
-			com.cannontech.database.db.stars.event.EventWorkOrder.TABLE_NAME + " EWO, " +
-			" ECToWorkOrderMapping map " + 
-			" WHERE EB.EVENTID = EWO.EVENTID " +
-			" AND map.EnergyCompanyID = " + energyCompany.getEnergyCompanyID() + 
-			" AND MAP.WORKORDERID = EWO.ORDERID " +
-			" ORDER BY EB.EVENTID, EVENTTIMESTAMP";
-			
-			stmt = conn.createStatement();
-			rset = stmt.executeQuery( sql );
-			while (rset.next()) {
+    public void run() {
+        TransactionTemplate template = new TransactionTemplate(transactionManager);
+        template.setPropagationBehavior(TransactionDefinition.PROPAGATION_SUPPORTS);
+        template.setReadOnly(true);
+        template.execute(new TransactionCallback() {
+            @Override
+            public Object doInTransaction(TransactionStatus status) {
+                doAction();
+                return null;
+            }
+        });
+    }
 
-				int orderID = rset.getInt(6);
-				LiteWorkOrderBase liteWorkOrderBase = energyCompany.getWorkOrderBase(orderID, false);
-                if( liteWorkOrderBase != null)
-                {
-            		EventWorkOrder eventWorkOrder = new EventWorkOrder();
-            		eventWorkOrder.setEventID(new Integer(rset.getInt(1)));
-            		eventWorkOrder.getEventBase().setUserID(new Integer(rset.getInt(2)));
-            		eventWorkOrder.getEventBase().setSystemCategoryID(new Integer(rset.getInt(3)));
-            		eventWorkOrder.getEventBase().setActionID(new Integer(rset.getInt(4)));
-            		eventWorkOrder.getEventBase().setEventTimestamp( new Date(rset.getTimestamp(5).getTime() ));        		
-            		eventWorkOrder.getEventWorkOrder().setWorkOrderID(new Integer(new Integer( orderID)));
-    				liteWorkOrderBase.getEventWorkOrders().add(0, eventWorkOrder);
-                }
-                else {
-                    CTILogger.error("WorkOrderID: " + orderID + " - Not loaded for EnergyCompanyID: " + energyCompany.getEnergyCompanyID().intValue());
-                }
-				if (isCanceled) {
-					status = STATUS_CANCELED;
-					return;
-				}
-			}
-			energyCompany.setWorkOrdersLoaded( true );
-			status = STATUS_FINISHED;
-            rset.close();
-			
-			CTILogger.info( "All work orders loaded for energy company #" + energyCompany.getEnergyCompanyID() );
-		}
-		catch (Exception e) {
-			CTILogger.error( e.getMessage(), e );
-			status = STATUS_ERROR;
-			errorMsg = "Failed to load work orders";
-		}
-		finally {
-			try {
-				if (stmt != null) stmt.close();
-				if (conn != null) conn.close();
-			}
-			catch (java.sql.SQLException e) {
-				CTILogger.error( e.getMessage(), e );
-			}
-		}
+	private void doAction() {
+	    if (energyCompany == null) {
+	        status = STATUS_ERROR;
+	        errorMsg = "Energy company cannot be null";
+	        return;
+	    }
+
+	    status = STATUS_RUNNING;
+
+	    try {
+	        jdbcTemplate.query(
+	                           selectSql,
+	                           new Object[]{energyCompany.getEnergyCompanyID()},
+	                           new RowCallbackHandler() {
+	                               public void processRow(ResultSet rs) throws SQLException {
+	                                   if (isCanceled) {
+	                                       status = STATUS_CANCELED;
+	                                       return;
+	                                   }
+
+	                                   loadWorkOrder(rs);
+	                                   numOrderLoaded++;
+	                               }
+	                           });
+
+	        jdbcTemplate.query(
+	                           selectEventWorkOrder,
+	                           new Object[]{energyCompany.getEnergyCompanyID()},
+	                           new RowCallbackHandler() {
+	                               public void processRow(ResultSet rs) throws SQLException {
+	                                   if (isCanceled) {
+	                                       status = STATUS_CANCELED;
+	                                       return;
+	                                   }
+
+	                                   final int orderId = rs.getInt("ORDERID");
+
+	                                   LiteWorkOrderBase liteWorkOrderBase = energyCompany.getWorkOrderBase(orderId, false);
+	                                   if (liteWorkOrderBase != null) {
+	                                       EventWorkOrder eventWorkOrder = eventWorkOrderRowMapper.mapRow(rs, rs.getRow());
+	                                       liteWorkOrderBase.getEventWorkOrders().add(0, eventWorkOrder);
+	                                   } else {
+	                                       CTILogger.error("WorkOrderID: " + orderId + " - Not loaded for EnergyCompanyID: " + energyCompany.getEnergyCompanyID());
+	                                   }
+	                               }
+	                           });
+
+	        energyCompany.setWorkOrdersLoaded( true );
+	        status = STATUS_FINISHED;
+	        CTILogger.info("All work orders loaded for energy company #" + energyCompany.getEnergyCompanyID());
+	    } catch (Exception e) {
+	        CTILogger.error( e.getMessage(), e );
+	        status = STATUS_ERROR;
+	        errorMsg = "Failed to load work orders";
+	    }
 	}
 	
-	private void loadWorkOrder(java.sql.ResultSet rset) throws java.sql.SQLException {
-		int orderID = rset.getInt( "OrderID" );
+	private void loadWorkOrder(java.sql.ResultSet rs) throws java.sql.SQLException {
+		final int orderID = rs.getInt( "OrderID" );
 		
-		if (energyCompany.getWorkOrderBase( orderID, false ) != null)
-			return;	// work order already loaded
-		LiteWorkOrderBase liteOrder = new LiteWorkOrderBase();
-		liteOrder.setOrderID( orderID );
-		liteOrder.setOrderNumber( rset.getString("OrderNumber") );
-		liteOrder.setWorkTypeID( rset.getInt("WorkTypeID") );
-		liteOrder.setCurrentStateID( rset.getInt("CurrentStateID") );
-		liteOrder.setServiceCompanyID( rset.getInt("ServiceCompanyID") );
-		liteOrder.setDateReported( rset.getTimestamp("DateReported").getTime() );
-		liteOrder.setOrderedBy( rset.getString("OrderedBy") );
-		liteOrder.setDescription( rset.getString("Description") );
-		liteOrder.setDateScheduled( rset.getTimestamp("DateScheduled").getTime() );
-		liteOrder.setDateCompleted( rset.getTimestamp("DateCompleted").getTime() );
-		liteOrder.setActionTaken( rset.getString("ActionTaken") );
-		liteOrder.setAdditionalOrderNumber( rset.getString("AdditionalOrderNumber") );
-		liteOrder.setAccountID( rset.getInt("AccountID") );
-		liteOrder.setEnergyCompanyID( rset.getInt("EnergyCompanyID") );
-		
-		energyCompany.addWorkOrderBase( liteOrder );
+		if (energyCompany.getWorkOrderBase(orderID, false) != null) return; // work order already loaded
+			
+		LiteWorkOrderBase liteOrder = workOrderBaseRowMapper.mapRow(rs, rs.getRow());
+		energyCompany.addWorkOrderBase(liteOrder);
 	}
+    
+    private static ParameterizedRowMapper<LiteWorkOrderBase> createWorkOrderBaseRowMapper() {
+        final ParameterizedRowMapper<LiteWorkOrderBase> mapper = new ParameterizedRowMapper<LiteWorkOrderBase>() {
+            public LiteWorkOrderBase mapRow(ResultSet rs, int rowNum) throws SQLException {
+                final LiteWorkOrderBase liteOrder = new LiteWorkOrderBase();
+                liteOrder.setOrderID(rs.getInt("OrderID"));
+                liteOrder.setOrderNumber(rs.getString("OrderNumber"));
+                liteOrder.setWorkTypeID(rs.getInt("WorkTypeID"));
+                liteOrder.setCurrentStateID(rs.getInt("CurrentStateID"));
+                liteOrder.setServiceCompanyID(rs.getInt("ServiceCompanyID"));
+                liteOrder.setDateReported(rs.getTimestamp("DateReported").getTime());
+                liteOrder.setOrderedBy(rs.getString("OrderedBy"));
+                liteOrder.setDescription(rs.getString("Description"));
+                liteOrder.setDateScheduled(rs.getTimestamp("DateScheduled").getTime());
+                liteOrder.setDateCompleted(rs.getTimestamp("DateCompleted").getTime());
+                liteOrder.setActionTaken(rs.getString("ActionTaken"));
+                liteOrder.setAdditionalOrderNumber(rs.getString("AdditionalOrderNumber"));
+                liteOrder.setAccountID(rs.getInt("AccountID"));
+                liteOrder.setEnergyCompanyID(rs.getInt("EnergyCompanyID"));
+                return liteOrder;
+            }
+        };
+        return mapper;
+    }
+    
+	private static ParameterizedRowMapper<EventWorkOrder> createEventWorkOrderRowMapper() {
+	    final ParameterizedRowMapper<EventWorkOrder> mapper = new ParameterizedRowMapper<EventWorkOrder>() {
+	        public EventWorkOrder mapRow(ResultSet rs, int rowNum) throws SQLException {
+	            final EventWorkOrder eventWorkOrder = new EventWorkOrder();
+	            eventWorkOrder.setEventID(rs.getInt("EVENTID"));
+	            eventWorkOrder.getEventBase().setUserID(rs.getInt("USERID"));
+	            eventWorkOrder.getEventBase().setSystemCategoryID(rs.getInt("SYSTEMCATEGORYID"));
+	            eventWorkOrder.getEventBase().setActionID(rs.getInt("ACTIONID"));
+	            eventWorkOrder.getEventBase().setEventTimestamp( new Date(rs.getTimestamp("EVENTTIMESTAMP").getTime() ));                
+	            eventWorkOrder.getEventWorkOrder().setWorkOrderID(rs.getInt("ORDERID"));
+	            return eventWorkOrder;
+	        }
+	    };
+	    return mapper;
+	}     
 }

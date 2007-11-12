@@ -6,14 +6,25 @@
  */
 package com.cannontech.stars.util.task;
 
+import java.sql.ResultSet;
+import java.sql.SQLException;
 import java.util.ArrayList;
-import java.util.Hashtable;
+import java.util.HashMap;
+import java.util.List;
+import java.util.Map;
+
+import org.springframework.jdbc.core.JdbcTemplate;
+import org.springframework.jdbc.core.RowCallbackHandler;
+import org.springframework.jdbc.datasource.DataSourceTransactionManager;
+import org.springframework.transaction.PlatformTransactionManager;
+import org.springframework.transaction.TransactionDefinition;
+import org.springframework.transaction.TransactionStatus;
+import org.springframework.transaction.support.TransactionCallback;
+import org.springframework.transaction.support.TransactionTemplate;
 
 import com.cannontech.clientutils.CTILogger;
-import com.cannontech.common.util.CtiUtilities;
 import com.cannontech.database.PoolManager;
 import com.cannontech.database.cache.DefaultDatabaseCache;
-import com.cannontech.database.data.lite.LiteCustomer;
 import com.cannontech.database.data.lite.stars.LiteAccountSite;
 import com.cannontech.database.data.lite.stars.LiteCustomerAccount;
 import com.cannontech.database.data.lite.stars.LiteSiteInformation;
@@ -30,194 +41,225 @@ import com.cannontech.yukon.IDatabaseCache;
  * Window>Preferences>Java>Code Generation>Code and Comments
  */
 public class LoadCustAccountsTask extends TimeConsumingTask {
-
-	LiteStarsEnergyCompany energyCompany = null;
+    private static final JdbcTemplate jdbcTemplate;
+    private static final PlatformTransactionManager transactionManager;
+    private static final String selectSql;
+    private static final String selectSql2;
+    private static final String selectSql3;
+	private final LiteStarsEnergyCompany energyCompany;
+    private final int energyCompanyId;
+	private int numAcctLoaded;
+    private Map<Integer,List<Integer>> acctAppIDMap;
+    private Map<Integer,List<Integer>> acctInvIDMap;
 	
-	int numAcctLoaded = 0;
-	
-	public LoadCustAccountsTask(LiteStarsEnergyCompany energyCompany) {
+    static {
+        
+        jdbcTemplate = new JdbcTemplate(PoolManager.getYukonDataSource());
+        
+        transactionManager = new DataSourceTransactionManager(jdbcTemplate.getDataSource());
+        
+        selectSql = "SELECT ac.AccountID, ac.AccountSiteID, ac.AccountNumber,ac.CustomerID, ac.BillingAddressID, ac.AccountNotes, " +
+                    "ba.LocationAddress1 as BAddr1, ba.LocationAddress2 as BAddr2, ba.CityName as BCity, ba.StateCode as BState, ba.ZipCode as BZip, ba.County as BCounty, " +
+                    "acs.SiteInformationID, acs.SiteNumber, acs.StreetAddressID, acs.PropertyNotes, acs.CustAtHome, " +
+                    "sa.LocationAddress1 as SAddr1, sa.LocationAddress2 as SAddr2, sa.CityName as SCity, sa.StateCode as SState, sa.ZipCode as SZip, sa.County as SCounty, " +
+                    "si.Feeder, si.Pole, si.TransformerSize, si.ServiceVoltage, si.SubstationID, sub.SubstationName, sub.LMRouteID " +
+                    "FROM CustomerAccount ac, Address ba, AccountSite acs, Address sa, SiteInformation si, Substation sub, ECToAccountMapping map " +
+                    "WHERE map.EnergyCompanyID = ? AND map.AccountID = ac.AccountID " +
+                    "AND ac.BillingAddressID = ba.AddressID AND ac.AccountSiteID = acs.AccountSiteID AND acs.StreetAddressID = sa.AddressID " +
+                    "AND acs.SiteInformationID = si.SiteID AND si.SubstationID = sub.SubstationID";
+        
+        selectSql2 = "SELECT totals.total,app.ApplianceID,app.AccountID " + 
+                     "FROM ApplianceBase app,ECToAccountMapping map, " +
+                         "(SELECT COUNT(*) as total FROM ApplianceBase app,ECToAccountMapping map WHERE map.EnergyCompanyID = ? AND map.AccountID = app.AccountID) totals " +
+                     "WHERE map.EnergyCompanyID = ? " + 
+                     "AND map.AccountID = app.AccountID";
+        
+        selectSql3 = "SELECT totals.total,inv.InventoryID,inv.AccountID " +
+                     "FROM InventoryBase inv, ECToAccountMapping map, " +
+                         "(SELECT COUNT(*) as total FROM InventoryBase inv,ECToAccountMapping map WHERE map.EnergyCompanyID = ? AND map.AccountID = inv.AccountID) totals " +
+                     "WHERE map.EnergyCompanyID = ? " +
+                     "AND map.AccountID = inv.AccountID";
+                         
+    }
+    
+	public LoadCustAccountsTask(final LiteStarsEnergyCompany energyCompany) {
 		this.energyCompany = energyCompany;
+        this.energyCompanyId = energyCompany.getEnergyCompanyID();
 	}
 
 	/* (non-Javadoc)
 	 * @see com.cannontech.stars.util.task.TimeConsumingTask#getProgressMsg()
 	 */
+    @Override
 	public String getProgressMsg() {
-		if (status == STATUS_RUNNING) {
-			if (numAcctLoaded > 0)
-				return numAcctLoaded + " customer accounts loaded";
-			else
-				return "Preparing for loading customer accounts...";
-		}
+        if (status == STATUS_RUNNING) {
+            if (numAcctLoaded > 0) {
+                return numAcctLoaded + " customer accounts loaded";
+            }    
+            return "Preparing for loading customer accounts...";
+        }
 		return null;
 	}
 
-	/* (non-Javadoc)
-	 * @see java.lang.Runnable#run()
-	 */
-	public void run() {
-		if (energyCompany == null) {
-			status = STATUS_ERROR;
-			errorMsg = "Energy company cannot be null";
-			return;
-		}
-		
-		status = STATUS_RUNNING;
-		
-		String sql = "SELECT ac.AccountID, ac.AccountSiteID, ac.AccountNumber,ac.CustomerID, ac.BillingAddressID, ac.AccountNotes," +
-			" ba.LocationAddress1 as BAddr1, ba.LocationAddress2 as BAddr2, ba.CityName as BCity, ba.StateCode as BState, ba.ZipCode as BZip, ba.County as BCounty," +
-			" acs.SiteInformationID, acs.SiteNumber, acs.StreetAddressID, acs.PropertyNotes, acs.CustAtHome, " +
-			" sa.LocationAddress1 as SAddr1, sa.LocationAddress2 as SAddr2, sa.CityName as SCity, sa.StateCode as SState, sa.ZipCode as SZip, sa.County as SCounty," +
-			" si.Feeder, si.Pole, si.TransformerSize, si.ServiceVoltage, si.SubstationID, sub.SubstationName, sub.LMRouteID" +
-			" FROM CustomerAccount ac, Address ba, AccountSite acs, Address sa, SiteInformation si, Substation sub, ECToAccountMapping map" +
-			" WHERE map.EnergyCompanyID = " + energyCompany.getEnergyCompanyID() + " AND map.AccountID = ac.AccountID" +
-			" AND ac.BillingAddressID = ba.AddressID AND ac.AccountSiteID = acs.AccountSiteID AND acs.StreetAddressID = sa.AddressID" +
-			" AND acs.SiteInformationID = si.SiteID AND si.SubstationID = sub.SubstationID";
-		
-		String sql2 = "SELECT app.ApplianceID, app.AccountID FROM ApplianceBase app, ECToAccountMapping map" +
-			" WHERE map.EnergyCompanyID = " + energyCompany.getEnergyCompanyID() + " AND map.AccountID = app.AccountID";
-		
-		String sql3 = "SELECT inv.InventoryID, inv.AccountID FROM InventoryBase inv, ECToAccountMapping map" +
-			" WHERE map.EnergyCompanyID = " + energyCompany.getEnergyCompanyID() + " AND map.AccountID = inv.AccountID";
-		
-		java.sql.Connection conn = null;
-		java.sql.Statement stmt = null;
-		
-		try {
-			conn = PoolManager.getInstance().getConnection( CtiUtilities.getDatabaseAlias() );
-			if (conn == null) {
-				CTILogger.error( getClass() + ": failed to get database connection" );
-				return;
-			}
-			
-			stmt = conn.createStatement();
-			java.sql.ResultSet rset = stmt.executeQuery( sql2 );
-			
-			Hashtable acctAppIDMap = new Hashtable();
-			while (rset.next()) {
-				Integer appID = new Integer( rset.getInt(1) );
-				Integer acctID = new Integer( rset.getInt(2) );
-				
-				ArrayList appIDs = (ArrayList) acctAppIDMap.get( acctID );
-				if (appIDs == null) {
-					appIDs = new ArrayList();
-					acctAppIDMap.put( acctID, appIDs );
-				}
-				appIDs.add( appID );
-			}
-			
-			rset.close();
-			rset = stmt.executeQuery( sql3 );
-			
-			Hashtable acctInvIDMap = new Hashtable();
-			while (rset.next()) {
-				Integer invID = new Integer( rset.getInt(1) );
-				Integer acctID = new Integer( rset.getInt(2) );
-				
-				ArrayList invIDs = (ArrayList) acctInvIDMap.get( acctID );
-				if (invIDs == null) {
-					invIDs = new ArrayList();
-					acctInvIDMap.put( acctID, invIDs );
-				}
-				invIDs.add( invID );
-			}
-			
-			rset.close();
-			rset = stmt.executeQuery( sql );
-			
-			while (rset.next()) {
-				loadCustomerAccount(rset, acctAppIDMap, acctInvIDMap);
-				numAcctLoaded++;
-				
-				if (isCanceled) {
-					status = STATUS_CANCELED;
-					return;
-				}
-			}
-			
-			energyCompany.setAccountsLoaded( true );
-			status = STATUS_FINISHED;
-			
-			CTILogger.info( "All customer accounts loaded for energy company #" + energyCompany.getEnergyCompanyID() );
-		}
-		catch (Exception e) {
-			CTILogger.error( e.getMessage(), e );
-			status = STATUS_ERROR;
-			
-			if (e instanceof WebClientException)
-				errorMsg = e.getMessage();
-			else
-				errorMsg = "Failed to load customer accounts";
-		}
-		finally {
-			try {
-				if (stmt != null) stmt.close();
-				if (conn != null) conn.close();
-			}
-			catch (java.sql.SQLException e) {
-				CTILogger.error( e.getMessage(), e );
-			}
-		}
+    /* (non-Javadoc)
+     * @see java.lang.Runnable#run()
+     */
+    public void run() {
+        TransactionTemplate template = new TransactionTemplate(transactionManager);
+        template.setPropagationBehavior(TransactionDefinition.PROPAGATION_SUPPORTS);
+        template.setReadOnly(true);
+        template.execute(new TransactionCallback() {
+            @Override
+            public Object doInTransaction(TransactionStatus status) {
+                doAction();
+                return null;
+            }
+        });
+    }
+	
+	private void doAction() {
+	    if (energyCompany == null) {
+	        status = STATUS_ERROR;
+	        errorMsg = "Energy company cannot be null";
+	        return;
+	    }
+
+	    status = STATUS_RUNNING;
+
+	    try {
+	        jdbcTemplate.query(selectSql2,
+	                           new Object[]{energyCompanyId, energyCompanyId},
+	                           new RowCallbackHandler() {
+	            public void processRow(ResultSet rs) throws SQLException {
+	                if (acctAppIDMap == null) {
+	                    int rows = rs.getInt("total");
+	                    int initialCap = (int) (rows / 0.75f);
+	                    acctAppIDMap = new HashMap<Integer,List<Integer>>(initialCap);
+	                }
+
+	                final Integer applianceId = rs.getInt("ApplianceID");
+	                final Integer accountId = rs.getInt("AccountID");
+
+	                List<Integer> appIdList = acctAppIDMap.get(accountId);
+	                if (appIdList == null) {
+	                    appIdList = new ArrayList<Integer>();
+	                    acctAppIDMap.put(accountId, appIdList);
+	                }
+	                appIdList.add(applianceId);
+	            }
+	        });
+
+	        jdbcTemplate.query(selectSql3,
+	                           new Object[]{energyCompanyId, energyCompanyId},
+	                           new RowCallbackHandler() {
+	            public void processRow(ResultSet rs) throws SQLException {
+	                if (acctInvIDMap == null) {
+	                    int rows = rs.getInt("total");
+	                    int initialCap = (int) (rows / 0.75f);
+	                    acctInvIDMap = new HashMap<Integer,List<Integer>>(initialCap);
+	                }
+
+	                final Integer inventoryId = rs.getInt("InventoryID");
+	                final Integer accountId = rs.getInt("AccountID");
+
+	                List<Integer> inventoryIdList = acctInvIDMap.get(accountId);
+	                if (inventoryIdList == null) {
+	                    inventoryIdList = new ArrayList<Integer>();
+	                    acctInvIDMap.put(accountId, inventoryIdList);
+	                }
+	                inventoryIdList.add(inventoryId);
+	            }
+	        });
+
+	        jdbcTemplate.query(selectSql,
+	                           new Object[]{energyCompanyId},
+	                           new RowCallbackHandler() {
+	            public void processRow(ResultSet rs) throws SQLException {
+	                if (isCanceled) {
+	                    status = STATUS_CANCELED;
+	                    return;
+	                }
+
+	                loadCustomerAccount(rs);
+	                numAcctLoaded++;
+	            }
+	        });
+
+	        energyCompany.setAccountsLoaded( true );
+	        status = STATUS_FINISHED;
+	        CTILogger.info( "All customer accounts loaded for energy company #" + energyCompany.getEnergyCompanyID() );
+	    } catch (Exception e) {
+	        CTILogger.error(e.getMessage(), e);
+	        status = STATUS_ERROR;
+
+	        if (e instanceof WebClientException)
+	            errorMsg = e.getMessage();
+	        else
+	            errorMsg = "Failed to load customer accounts";
+	    }
 	}
 	
-	private void loadCustomerAccount(java.sql.ResultSet rset, Hashtable acctAppIDMap, Hashtable acctInvIDMap)
-		throws java.sql.SQLException
-	{
-		int accountID = rset.getInt("AccountID");
+	private void loadCustomerAccount(final ResultSet rs) throws SQLException {
+		int accountID = rs.getInt("AccountID");
 		
 		if (energyCompany.getBriefCustAccountInfo(accountID, false) != null)
 			return;	// customer account already loaded
 		
-		LiteStarsCustAccountInformation liteAcctInfo = new LiteStarsCustAccountInformation( accountID );
+		final LiteStarsCustAccountInformation liteAcctInfo = new LiteStarsCustAccountInformation( accountID );
 		
-		LiteCustomerAccount liteAccount = new LiteCustomerAccount();
+		final LiteCustomerAccount liteAccount = new LiteCustomerAccount();
 		liteAccount.setAccountID( accountID );
-		liteAccount.setAccountSiteID( rset.getInt("AccountSiteID") );
-		liteAccount.setAccountNumber( rset.getString("AccountNumber") );
-		liteAccount.setCustomerID( rset.getInt("CustomerID") );
-		liteAccount.setBillingAddressID( rset.getInt("BillingAddressID") );
-		liteAccount.setAccountNotes( rset.getString("AccountNotes") );
+		liteAccount.setAccountSiteID( rs.getInt("AccountSiteID") );
+		liteAccount.setAccountNumber( rs.getString("AccountNumber") );
+		liteAccount.setCustomerID( rs.getInt("CustomerID") );
+		liteAccount.setBillingAddressID( rs.getInt("BillingAddressID") );
+		liteAccount.setAccountNotes( rs.getString("AccountNotes") );
 		liteAcctInfo.setCustomerAccount( liteAccount );
 		
-		LiteAccountSite liteAcctSite = new LiteAccountSite();
+		final LiteAccountSite liteAcctSite = new LiteAccountSite();
 		liteAcctSite.setAccountSiteID( liteAccount.getAccountSiteID() );
-		liteAcctSite.setSiteInformationID( rset.getInt("SiteInformationID") );
-		liteAcctSite.setSiteNumber( rset.getString("SiteNumber") );
-		liteAcctSite.setStreetAddressID( rset.getInt("StreetAddressID") );
-		liteAcctSite.setPropertyNotes( rset.getString("PropertyNotes") );
-        liteAcctSite.setCustAtHome(rset.getString("CustAtHome"));
+		liteAcctSite.setSiteInformationID( rs.getInt("SiteInformationID") );
+		liteAcctSite.setSiteNumber( rs.getString("SiteNumber") );
+		liteAcctSite.setStreetAddressID( rs.getInt("StreetAddressID") );
+		liteAcctSite.setPropertyNotes( rs.getString("PropertyNotes") );
+        liteAcctSite.setCustAtHome(rs.getString("CustAtHome"));
 		liteAcctInfo.setAccountSite( liteAcctSite );
 		
-		LiteSiteInformation liteSiteInfo = new LiteSiteInformation();
+		final LiteSiteInformation liteSiteInfo = new LiteSiteInformation();
 		liteSiteInfo.setSiteID( liteAcctSite.getSiteInformationID() );
-		liteSiteInfo.setFeeder( rset.getString("Feeder") );
-		liteSiteInfo.setPole( rset.getString("Pole") );
-		liteSiteInfo.setTransformerSize( rset.getString("TransformerSize") );
-		liteSiteInfo.setServiceVoltage( rset.getString("ServiceVoltage") );
-		liteSiteInfo.setSubstationID( rset.getInt("SubstationID") );
+		liteSiteInfo.setFeeder( rs.getString("Feeder") );
+		liteSiteInfo.setPole( rs.getString("Pole") );
+		liteSiteInfo.setTransformerSize( rs.getString("TransformerSize") );
+		liteSiteInfo.setServiceVoltage( rs.getString("ServiceVoltage") );
+		liteSiteInfo.setSubstationID( rs.getInt("SubstationID") );
 		liteAcctInfo.setSiteInformation( liteSiteInfo );
 		
 		IDatabaseCache cache = DefaultDatabaseCache.getInstance();
 		synchronized (cache) {
-			liteAcctInfo.setCustomer( (LiteCustomer)cache.getACustomerByCustomerID(liteAccount.getCustomerID()) );
+			liteAcctInfo.setCustomer(cache.getACustomerByCustomerID(liteAccount.getCustomerID()));
 		}
         
-        ArrayList appIDs = (ArrayList) acctAppIDMap.get( new Integer(accountID) );
-        if (appIDs != null) {
-			ArrayList appliances = new ArrayList();
-			for (int i = 0; i < appIDs.size(); i++) {
-				LiteStarsAppliance liteApp = new LiteStarsAppliance();
-				liteApp.setApplianceID( ((Integer)appIDs.get(i)).intValue() );
-				appliances.add( liteApp );
-			}
-			liteAcctInfo.setAppliances( appliances );
-        }
+		if (acctAppIDMap != null) {
+		    final List<Integer> appIDs = acctAppIDMap.get(accountID);
+		    if (appIDs != null) {
+		        final List<LiteStarsAppliance> appliances = new ArrayList<LiteStarsAppliance>();
+		        for (final Integer applianceId : appIDs) {
+		            final LiteStarsAppliance liteApp = new LiteStarsAppliance();
+		            liteApp.setApplianceID(applianceId);
+		            appliances.add(liteApp);
+		        }
+		        liteAcctInfo.setAppliances(appliances);
+		    }
+		}
         
-        ArrayList invIDs = (ArrayList) acctInvIDMap.get( new Integer(accountID) );
-        if (invIDs != null)
-        	liteAcctInfo.setInventories( invIDs );
+		if (acctInvIDMap != null) {
+		    final List<Integer> invIDs = acctInvIDMap.get(accountID);
+		    if (invIDs != null) {
+		        liteAcctInfo.setInventories( invIDs );
+		    }
+		}
         
-		energyCompany.addCustAccountInformation( liteAcctInfo );
+		energyCompany.addCustAccountInformation(liteAcctInfo);
 	}
 
 }

@@ -502,6 +502,15 @@
         <property name="authDao" ref="authDao" />
         <property name="contactDao" ref="contactDao" />
         <property name="yukonUserDao" ref="yukonUserDao" />
+        <property name="sessionInitializers">
+            <list>
+                <ref bean="starsSessionInitializer"/>   
+            </list>
+        </property>
+    </bean>
+    
+    <bean id="starsSessionInitializer" class="com.cannontech.web.login.impl.StarsSessionInitializer">
+        <property name="starsDatabaseCache" ref="starsDatabaseCache"/>
     </bean>
 
 </beans>

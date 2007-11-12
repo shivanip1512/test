@@ -1,5 +1,5 @@
 <%@ taglib uri="http://java.sun.com/jsp/jstl/core" prefix="c"%>
-<c:url var="url" value="/spring/stars/hardware/thermostatactivation" />
+<c:url var="url" value="/spring/stars/hardware/deviceactivation" />
 
 <script language="JavaScript" type="text/javascript" src="/JavaScript/prototype.js"></script>
 <script language="JavaScript">

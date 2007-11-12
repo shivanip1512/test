@@ -59,6 +59,7 @@ import com.cannontech.roles.operator.ConsumerInfoRole;
 import com.cannontech.roles.yukon.EnergyCompanyRole;
 import com.cannontech.spring.YukonSpringHook;
 import com.cannontech.stars.core.dao.ECSearchDao;
+import com.cannontech.stars.core.dao.StarsRowCountDao;
 import com.cannontech.stars.util.ECUtils;
 import com.cannontech.stars.util.InventoryUtils;
 import com.cannontech.stars.util.ObjectInOtherEnergyCompanyException;
@@ -231,7 +232,8 @@ public class LiteStarsEnergyCompany extends LiteBase {
 
     private static final AddressDao addressDao = YukonSpringHook.getBean("addressDao", AddressDao.class);
     private static final ECSearchDao ecSearchDao = YukonSpringHook.getBean("ecSearchDao", ECSearchDao.class);
-
+    private static final StarsRowCountDao starsRowCountDao = YukonSpringHook.getBean("starsRowCountDao", StarsRowCountDao.class);
+ 
     public LiteStarsEnergyCompany() {
         super();
         setLiteType( LiteTypes.ENERGY_COMPANY );
@@ -1379,9 +1381,11 @@ public class LiteStarsEnergyCompany extends LiteBase {
     }
     
     private synchronized Map<Integer,LiteInventoryBase> getInventoryMap() {
-        if (inventory == null)
-            inventory = new Hashtable<Integer,LiteInventoryBase>();
-        
+        if (inventory == null) {
+            int count = starsRowCountDao.getInventoryRowCount(getEnergyCompanyID());
+            int initialCap = (int) (count / 0.75f);
+            inventory = new Hashtable<Integer,LiteInventoryBase>(initialCap);
+        }
         return inventory;
     }
     
@@ -1391,9 +1395,11 @@ public class LiteStarsEnergyCompany extends LiteBase {
     }
     
     private synchronized Map<Integer,LiteWorkOrderBase> getWorkOrderMap() {
-        if (workOrders == null)
-            workOrders = new Hashtable<Integer,LiteWorkOrderBase>();
-        
+        if (workOrders == null) {
+            int count = starsRowCountDao.getWorkOrdersRowCount(getEnergyCompanyID());
+            int initialCap = (int) (count / 0.75f);
+            workOrders = new Hashtable<Integer,LiteWorkOrderBase>(initialCap);
+        }
         return workOrders;
     }
     
@@ -1403,9 +1409,11 @@ public class LiteStarsEnergyCompany extends LiteBase {
     }
     
     private synchronized Map<Integer,LiteStarsCustAccountInformation> getCustAccountInfoMap() {
-        if (custAccountInfos == null)
-            custAccountInfos = new Hashtable<Integer,LiteStarsCustAccountInformation>();
-        
+        if (custAccountInfos == null) {
+            int count = starsRowCountDao.getCustAccountsRowCount(getEnergyCompanyID());
+            int initialCap = (int) (count / 0.75f);
+            custAccountInfos = new Hashtable<Integer,LiteStarsCustAccountInformation>(initialCap);
+        }
         return custAccountInfos;
     }
     
@@ -1620,9 +1628,8 @@ public class LiteStarsEnergyCompany extends LiteBase {
                 
                 addInventory( liteInv );
                 return liteInv;
-            }
-            catch (TransactionException e) {
-                CTILogger.error( e.getMessage(), e );
+            } catch (TransactionException e) {
+                CTILogger.error(e.getMessage(), e);
             }
         }
         

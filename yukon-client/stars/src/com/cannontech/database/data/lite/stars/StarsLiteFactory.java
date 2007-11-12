@@ -226,7 +226,7 @@ public class StarsLiteFactory {
          * such as MCT events, then this will need to be moved back to setLiteInventoryBase;
          * not sure why it was originally put there, though.  This should be LMHardware specific.
          */
-        ArrayList invHist = liteHw.getInventoryHistory();
+        List invHist = liteHw.getInventoryHistory();
         invHist.clear();
     
         com.cannontech.database.data.stars.event.LMHardwareEvent[] events =

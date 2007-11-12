@@ -281,7 +281,7 @@ public class UpdateLMHardwareAction implements ActionBase {
 			// Update the "install" event if necessary
 			int installEntryID = energyCompany.getYukonListEntry(YukonListEntryTypes.YUK_DEF_ID_CUST_ACT_INSTALL).getEntryID();
 			
-			ArrayList hwHist = liteInv.getInventoryHistory();
+			List hwHist = liteInv.getInventoryHistory();
 			for (int i = hwHist.size() - 1; i >= 0; i--) {
 				LiteLMHardwareEvent liteEvent = (LiteLMHardwareEvent) hwHist.get(i);
 				
