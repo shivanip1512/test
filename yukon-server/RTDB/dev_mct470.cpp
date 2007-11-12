@@ -8,8 +8,8 @@
 *
 * PVCS KEYWORDS:
 * ARCHIVE      :  $Archive:   Z:/SOFTWAREARCHIVES/YUKON/RTDB/dev_mct310.cpp-arc  $
-* REVISION     :  $Revision: 1.105 $
-* DATE         :  $Date: 2007/11/12 19:59:05 $
+* REVISION     :  $Revision: 1.106 $
+* DATE         :  $Date: 2007/11/12 20:29:01 $
 *
 * Copyright (c) 2005 Cannon Technologies Inc. All rights reserved.
 *-----------------------------------------------------------------------------*/
@@ -1483,128 +1483,159 @@ INT CtiDeviceMCT470::executeGetValue( CtiRequestMsg        *pReq,
 
     if( parse.getFlags() & CMD_FLAG_GV_IED )  //  This parse has the token "IED" in it!
     {
-        if( getDynamicInfo(Keys::Key_MCT_SSpecRevision) < SspecRev_IED_ZeroWriteMin )
+        if( parse.isKeyValid("outage") )
         {
-            //If we need to read out the time, do so.
+            if( !hasDynamicInfo(Keys::Key_MCT_Configuration) )
+            {
+                //  we need to read the IED info byte out of the MCT
+                function = Emetcon::GetConfig_Model;
+                found = getOperation(function, OutMessage->Buffer.BSt);
+
+                if( found )
+                {
+                    OutMessage->DeviceID  = getID();
+                    OutMessage->TargetID  = getID();
+                    OutMessage->Port      = getPortID();
+                    OutMessage->Remote    = getAddress();
+                    OutMessage->TimeOut   = 2;
+                    OutMessage->Sequence  = function;         // Helps us figure it out later!
+                    OutMessage->Retry     = 2;
+                    OutMessage->Request.RouteID   = getRouteID();
+
+                    strncpy(OutMessage->Request.CommandStr, "getconfig model", COMMAND_STR_SIZE );
+                    outList.push_back(CTIDBG_new OUTMESS(*OutMessage));
+                    incrementGroupMessageCount(pReq->UserMessageId(), (long)pReq->getConnectionHandle());
+                }
+            }
+
             function = Emetcon::GetConfig_IEDTime;
             found = getOperation(function, OutMessage->Buffer.BSt);
-            if( found )
-            {
-                OutMessage->DeviceID  = getID();
-                OutMessage->TargetID  = getID();
-                OutMessage->Port      = getPortID();
-                OutMessage->Remote    = getAddress();
-                OutMessage->TimeOut   = 2;
-                OutMessage->Sequence  = function;         // Helps us figure it out later!
-                OutMessage->Retry     = 2;
-                OutMessage->Request.RouteID   = getRouteID();
-
-                strncpy(OutMessage->Request.CommandStr, "getconfig ied time", COMMAND_STR_SIZE );
-                outList.push_back(CTIDBG_new OUTMESS(*OutMessage));
-                incrementGroupMessageCount(pReq->UserMessageId(), (long)pReq->getConnectionHandle());
-            }
         }
-
-        if( parse.getFlags() & CMD_FLAG_GV_DEMAND )
-        {
-            //  this will be for the real-time table
-            function = Emetcon::GetValue_IEDDemand;
-            found = getOperation(function, OutMessage->Buffer.BSt);
-        }
-        else if( parse.isKeyValid("ied_dnp") )
-        {
-            int i = 0;
-            if( (i = parse.getiValue("collectionnumber")) != INT_MIN )
-            {
-                if( i == 1 )
-                {
-                    function = Emetcon::GetValue_IED;
-                    found = getOperation(function, OutMessage->Buffer.BSt);
-                    OutMessage->Buffer.BSt.Function = FuncRead_IED_RealTime;
-                }
-                else if( i == 2 )
-                {
-                    function = Emetcon::GetValue_IED;
-                    found = getOperation(function, OutMessage->Buffer.BSt);
-                    OutMessage->Buffer.BSt.Function = FuncRead_IED_RealTime2;
-                }
-                else
-                {
-                    nRet = BADRANGE;
-                    found = false;
-                }
-            }
-            else if( (i = parse.getiValue("analognumber")) != INT_MIN )
-            {
-                function = Emetcon::GetValue_IED;   //This means we have to fill in the function
-                found = getOperation(function, OutMessage->Buffer.BSt);
-
-                OutMessage->Buffer.BSt.Function = FuncRead_IED_Precanned_Base + (i-1) + MCT470_DNP_Analog_Precanned_Offset;
-                if( OutMessage->Buffer.BSt.Function >= FuncRead_IED_Precanned_Base + MCT470_DNP_Counter_Precanned_Offset )
-                {
-                    nRet = BADRANGE;
-                    found = false;
-                }
-            }
-            else if( (i = parse.getiValue("accumulatornumber")) != INT_MIN )
-            {
-                function = Emetcon::GetValue_IED;   //This means we have to fill in the function
-                found = getOperation(function, OutMessage->Buffer.BSt);
-
-                OutMessage->Buffer.BSt.Function = FuncRead_IED_Precanned_Base + (i-1) + MCT470_DNP_Counter_Precanned_Offset;
-                if( i > MCT470_DNP_Counter_Precanned_Reads ) //only 8 reads possible.
-                {
-                    nRet = BADRANGE;
-                    found = false;
-                }
-            }
-            else if( (i = parse.getiValue("statusnumber")) != INT_MIN )
-            {
-                function = Emetcon::GetValue_IED;   //This means we have to fill in the function
-                found = getOperation(function, OutMessage->Buffer.BSt);
-
-                OutMessage->Buffer.BSt.Function = FuncRead_IED_Precanned_Base + MCT470_DNP_Status_Precanned_Offset;
-            }
-            else if( parse.isKeyValid("dnp_crc") )
-            {
-                function = Emetcon::GetValue_IED;
-                OutMessage->Buffer.BSt.Function = FuncRead_IED_CRCPos;
-                OutMessage->Buffer.BSt.Length   = FuncRead_IED_CRCLen;
-                OutMessage->Buffer.BSt.IO = Emetcon::IO_Function_Read;
-                found = true;
-            }
-        }
-        // else if()  //  this is where the IED status would be handled
         else
         {
-            function = Emetcon::GetValue_IED;
-
-            found = getOperation(function, OutMessage->Buffer.BSt);
-
-            if( parse.getFlags() & CMD_FLAG_GV_RATET )
+            if( getDynamicInfo(Keys::Key_MCT_SSpecRevision) < SspecRev_IED_ZeroWriteMin )
             {
-                OutMessage->Buffer.BSt.Function = FuncRead_IED_TOU_CurrentTotals;
+                //If we need to read out the time, do so.
+                function = Emetcon::GetConfig_IEDTime;
+                found = getOperation(function, OutMessage->Buffer.BSt);
+                if( found )
+                {
+                    OutMessage->DeviceID  = getID();
+                    OutMessage->TargetID  = getID();
+                    OutMessage->Port      = getPortID();
+                    OutMessage->Remote    = getAddress();
+                    OutMessage->TimeOut   = 2;
+                    OutMessage->Sequence  = function;         // Helps us figure it out later!
+                    OutMessage->Retry     = 2;
+                    OutMessage->Request.RouteID   = getRouteID();
+
+                    strncpy(OutMessage->Request.CommandStr, "getconfig ied time", COMMAND_STR_SIZE );
+                    outList.push_back(CTIDBG_new OUTMESS(*OutMessage));
+                    incrementGroupMessageCount(pReq->UserMessageId(), (long)pReq->getConnectionHandle());
+                }
             }
+
+            if( parse.getFlags() & CMD_FLAG_GV_DEMAND )
+            {
+                //  this will be for the real-time table
+                function = Emetcon::GetValue_IEDDemand;
+                found = getOperation(function, OutMessage->Buffer.BSt);
+            }
+            else if( parse.isKeyValid("ied_dnp") )
+            {
+                int i = 0;
+                if( (i = parse.getiValue("collectionnumber")) != INT_MIN )
+                {
+                    if( i == 1 )
+                    {
+                        function = Emetcon::GetValue_IED;
+                        found = getOperation(function, OutMessage->Buffer.BSt);
+                        OutMessage->Buffer.BSt.Function = FuncRead_IED_RealTime;
+                    }
+                    else if( i == 2 )
+                    {
+                        function = Emetcon::GetValue_IED;
+                        found = getOperation(function, OutMessage->Buffer.BSt);
+                        OutMessage->Buffer.BSt.Function = FuncRead_IED_RealTime2;
+                    }
+                    else
+                    {
+                        nRet = BADRANGE;
+                        found = false;
+                    }
+                }
+                else if( (i = parse.getiValue("analognumber")) != INT_MIN )
+                {
+                    function = Emetcon::GetValue_IED;   //This means we have to fill in the function
+                    found = getOperation(function, OutMessage->Buffer.BSt);
+
+                    OutMessage->Buffer.BSt.Function = FuncRead_IED_Precanned_Base + (i-1) + MCT470_DNP_Analog_Precanned_Offset;
+                    if( OutMessage->Buffer.BSt.Function >= FuncRead_IED_Precanned_Base + MCT470_DNP_Counter_Precanned_Offset )
+                    {
+                        nRet = BADRANGE;
+                        found = false;
+                    }
+                }
+                else if( (i = parse.getiValue("accumulatornumber")) != INT_MIN )
+                {
+                    function = Emetcon::GetValue_IED;   //This means we have to fill in the function
+                    found = getOperation(function, OutMessage->Buffer.BSt);
+
+                    OutMessage->Buffer.BSt.Function = FuncRead_IED_Precanned_Base + (i-1) + MCT470_DNP_Counter_Precanned_Offset;
+                    if( i > MCT470_DNP_Counter_Precanned_Reads ) //only 8 reads possible.
+                    {
+                        nRet = BADRANGE;
+                        found = false;
+                    }
+                }
+                else if( (i = parse.getiValue("statusnumber")) != INT_MIN )
+                {
+                    function = Emetcon::GetValue_IED;   //This means we have to fill in the function
+                    found = getOperation(function, OutMessage->Buffer.BSt);
+
+                    OutMessage->Buffer.BSt.Function = FuncRead_IED_Precanned_Base + MCT470_DNP_Status_Precanned_Offset;
+                }
+                else if( parse.isKeyValid("dnp_crc") )
+                {
+                    function = Emetcon::GetValue_IED;
+                    OutMessage->Buffer.BSt.Function = FuncRead_IED_CRCPos;
+                    OutMessage->Buffer.BSt.Length   = FuncRead_IED_CRCLen;
+                    OutMessage->Buffer.BSt.IO = Emetcon::IO_Function_Read;
+                    found = true;
+                }
+            }
+            // else if()  //  this is where the IED status would be handled
             else
             {
-                if( parse.getFlags() & CMD_FLAG_GV_KVARH || parse.getFlags() & CMD_FLAG_GV_KVAH  )
+                function = Emetcon::GetValue_IED;
+
+                found = getOperation(function, OutMessage->Buffer.BSt);
+
+                if( parse.getFlags() & CMD_FLAG_GV_RATET )
                 {
-                    OutMessage->Buffer.BSt.Function = FuncRead_IED_TOU_CurrentKMBase;
+                    OutMessage->Buffer.BSt.Function = FuncRead_IED_TOU_CurrentTotals;
                 }
                 else
                 {
-                    OutMessage->Buffer.BSt.Function = FuncRead_IED_TOU_CurrentKWBase;
+                    if( parse.getFlags() & CMD_FLAG_GV_KVARH || parse.getFlags() & CMD_FLAG_GV_KVAH  )
+                    {
+                        OutMessage->Buffer.BSt.Function = FuncRead_IED_TOU_CurrentKMBase;
+                    }
+                    else
+                    {
+                        OutMessage->Buffer.BSt.Function = FuncRead_IED_TOU_CurrentKWBase;
+                    }
+
+                    if(      parse.getFlags() & CMD_FLAG_GV_RATEA )  OutMessage->Buffer.BSt.Function += 0;
+                    else if( parse.getFlags() & CMD_FLAG_GV_RATEB )  OutMessage->Buffer.BSt.Function += 1;
+                    else if( parse.getFlags() & CMD_FLAG_GV_RATEC )  OutMessage->Buffer.BSt.Function += 2;
+                    else if( parse.getFlags() & CMD_FLAG_GV_RATED )  OutMessage->Buffer.BSt.Function += 3;
                 }
 
-                if(      parse.getFlags() & CMD_FLAG_GV_RATEA )  OutMessage->Buffer.BSt.Function += 0;
-                else if( parse.getFlags() & CMD_FLAG_GV_RATEB )  OutMessage->Buffer.BSt.Function += 1;
-                else if( parse.getFlags() & CMD_FLAG_GV_RATEC )  OutMessage->Buffer.BSt.Function += 2;
-                else if( parse.getFlags() & CMD_FLAG_GV_RATED )  OutMessage->Buffer.BSt.Function += 3;
-            }
-
-            if( parse.getFlags() & CMD_FLAG_FROZEN )
-            {
-                OutMessage->Buffer.BSt.Function += FuncRead_IED_TOU_PreviousOffset;
+                if( parse.getFlags() & CMD_FLAG_FROZEN )
+                {
+                    OutMessage->Buffer.BSt.Function += FuncRead_IED_TOU_PreviousOffset;
+                }
             }
         }
     }
@@ -1877,7 +1908,7 @@ INT CtiDeviceMCT470::executeGetConfig( CtiRequestMsg         *pReq,
     else if( parse.isKeyValid("ied") )
     {
         //  ACH:  add a dynamic info check to ensure that we're reading from Precanned Table 1
-        if(parse.isKeyValid("time"))
+        if( parse.isKeyValid("time") )
         {
             if( !hasDynamicInfo(Keys::Key_MCT_Configuration) )
             {
