@@ -16,8 +16,6 @@
 
 <cti:breadCrumbs>
     <cti:crumbLink url="subareas.jsp" title="SubBus Areas" />
-    <cti:crumbLink url="substations.jsp" title="Substations" />
-    <cti:crumbLink url="feeders.jsp" title="Feeders" />
     <cti:crumbLink url="<%=ServletUtil.getFullURL(request)%>" title="Events" />
 </cti:breadCrumbs>
 
@@ -174,14 +172,15 @@ while(paoIDs.hasMoreElements()){
 	for (int i=0; i < strPaoids.length; i++) {
 	int id = Integer.parseInt(strPaoids[i]);
 %>
+
 <script type="text/javascript">
 Event.observe(window, 'load', function() { new CtiNonScrollTable('resTable<%=id%>','resHeaderTable<%=id%>');});
 </script>
 <% }
- 
+
 } 
 
 %>
-
+ <input type="button" value="Back" onclick="history.back()">
 
 </cti:standardPage>
