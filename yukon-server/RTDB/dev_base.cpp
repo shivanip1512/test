@@ -6,16 +6,13 @@
 *
 * PVCS KEYWORDS:
 * ARCHIVE      :  $Archive:   Z:/SOFTWAREARCHIVES/YUKON/RTDB/dev_base.cpp-arc  $
-* REVISION     :  $Revision: 1.69 $
-* DATE         :  $Date: 2007/11/02 19:12:06 $
+* REVISION     :  $Revision: 1.70 $
+* DATE         :  $Date: 2007/11/12 17:05:32 $
 *
 * Copyright (c) 1999, 2000, 2001 Cannon Technologies Inc. All rights reserved.
 *-----------------------------------------------------------------------------*/
 #include "yukon.h"
 
-
-
-#include <rw/tpslist.h>
 #include <limits>
 
 #include "cparms.h"

@@ -9,8 +9,8 @@
 *
 * PVCS KEYWORDS:
 * ARCHIVE      :  $Archive:   Z:/SOFTWAREARCHIVES/YUKON/RTDB/INCLUDE/dev_base.h-arc  $
-* REVISION     :  $Revision: 1.65 $
-* DATE         :  $Date: 2007/11/02 19:12:06 $
+* REVISION     :  $Revision: 1.66 $
+* DATE         :  $Date: 2007/11/12 17:05:39 $
 *
 * Copyright (c) 1999 Cannon Technologies Inc. All rights reserved.
 *-----------------------------------------------------------------------------*/
@@ -18,7 +18,6 @@
 #define __DEV_BASE_H__
 
 #include <rw\thr\mutex.h>
-#include <rw/tpslist.h>
 
 #include "boost/shared_ptr.hpp"
 using boost::shared_ptr;
