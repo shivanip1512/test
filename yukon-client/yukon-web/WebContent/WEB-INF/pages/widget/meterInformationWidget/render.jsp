@@ -5,10 +5,16 @@
 	<tags:nameValue name="Device Name">${meter.name}</tags:nameValue>
 	<tags:nameValue name="Meter Number">${meter.meterNumber}</tags:nameValue>
 	<tags:nameValue name="Type">${deviceType}</tags:nameValue>
-	<tags:nameValue name="Physical Address">${meter.address}</tags:nameValue>
-	<tags:nameValue name="Route">${meter.route}</tags:nameValue>
-    
-    <tr><td><div style="height:8px;"></div></td></tr>
+	<tags:nameValue name="Physical Address">
+	<c:if test='${meter.address != null}'>${meter.address}</c:if>
+    <c:if test='${meter.address == null}'>n/a</c:if>
+    </tags:nameValue>
+	<tags:nameValue name="Route">
+	<c:if test='${meter.route != null}'>${meter.route}</c:if>
+    <c:if test='${meter.route == null}'>n/a</c:if>
+    </tags:nameValue>
+	
+	<tr><td><div style="height:8px;"></div></td></tr>
     <tr>
         <td><tags:widgetActionUpdate method="ping" label="Ping" labelBusy="Pinging" container="${widgetParameters.widgetId}_results" /></td>
         <td>
@@ -21,7 +27,7 @@
             </c:if>
         </div>
         </td>
-    </tr>    
+    </tr>
   
 </tags:nameValueContainer>
 
