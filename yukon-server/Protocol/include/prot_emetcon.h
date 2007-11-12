@@ -9,8 +9,8 @@
 *
 * PVCS KEYWORDS:
 * ARCHIVE      :  $Archive:   Z:/SOFTWAREARCHIVES/YUKON/PROTOCOL/INCLUDE/prot_emetcon.h-arc  $
-* REVISION     :  $Revision: 1.45 $
-* DATE         :  $Date: 2007/09/04 16:45:16 $
+* REVISION     :  $Revision: 1.46 $
+* DATE         :  $Date: 2007/11/12 16:47:15 $
 *
 * Copyright (c) 1999, 2000 Cannon Technologies Inc. All rights reserved.
 *-----------------------------------------------------------------------------*/
@@ -20,8 +20,6 @@
 
 
 #include <utility>
-
-#include <rw/tpslist.h>
 
 #include "ctidbgmem.h" // defines CTIDBG_new
 #include "dsm2.h"

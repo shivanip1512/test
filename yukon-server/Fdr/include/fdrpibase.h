@@ -14,15 +14,14 @@
  *
  * PVCS KEYWORDS:
  *    ARCHIVE      :  $Archive:     $
- *    REVISION     :  $Revision: 1.4 $
- *    DATE         :  $Date: 2005/12/20 17:17:16 $
- * 
+ *    REVISION     :  $Revision: 1.5 $
+ *    DATE         :  $Date: 2007/11/12 16:46:55 $
+ *
  * Copyright (c) 2005 Cannon Technologies Inc. All rights reserved.
  *    History:
  */
 
 #include <windows.h>    //  NOTE:  if porting this to non-WIN32, make sure to replace this
-#include <rw/tpslist.h>
 #include <rw/db/status.h>
 #include <vector>
 #include <map>
@@ -53,10 +52,10 @@ class IM_EX_FDRPIBASEAPI CtiFDRPiBase : public CtiFDRSimple
     unsigned int period; // in seconds
     int digitalOffset;
     int digitalLastIndex;
-  
+
   } PiPointInfo;
 
-  
+
 
 public:
 
@@ -85,10 +84,10 @@ protected:
   virtual void endNewPoints() {};
 
 
-  void handlePiUpdate(const PiPointInfo info, 
-                    const float rval, 
-                    const int32 istat, 
-                    const time_t timestamp_utc, 
+  void handlePiUpdate(const PiPointInfo info,
+                    const float rval,
+                    const int32 istat,
+                    const time_t timestamp_utc,
                     const int32 errorcode);
 
   //ULONG getScanRateSeconds() const;

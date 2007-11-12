@@ -28,7 +28,6 @@
 #include <map>
 
 #include <rw/tphdict.h>
-#include <rw/tpslist.h>
 
 #include <rw/thr/recursiv.h>
 #include <rw/thr/monitor.h>
@@ -102,7 +101,7 @@ public:
        if ( itr != Map.end() ) {
            long foundKey = (*itr).first
            temp = (*itr).second
-    
+
            Map.erase( id );
        }else
            temp = NULL;
@@ -123,7 +122,7 @@ public:
     void ts_for_each(_II _F, _II _L, _Fn _Op, void* d)
     {
         for (; _F != _L; ++_F)
-            _Op(*_F, d);    
+            _Op(*_F, d);
     }
     void apply(void (*applyFun)(const long, T*&, void*), void* d)
     {

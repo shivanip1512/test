@@ -6,8 +6,8 @@
 *
 * PVCS KEYWORDS:
 * ARCHIVE      :  $Archive:   Z:/SOFTWAREARCHIVES/YUKON/PORTER/INCLUDE/PORTGLOB.H-arc  $
-* REVISION     :  $Revision: 1.18 $
-* DATE         :  $Date: 2005/12/20 17:19:24 $
+* REVISION     :  $Revision: 1.19 $
+* DATE         :  $Date: 2007/11/12 16:47:28 $
 *
 * Copyright (c) 1999, 2000, 2001 Cannon Technologies Inc. All rights reserved.
 *-----------------------------------------------------------------------------*/
@@ -17,8 +17,6 @@
 #include <rw/tpsldict.h>
 #include <set>
 using std::set;
-
-#include <rw/tpslist.h>
 
 
 #include "dlldefs.h"

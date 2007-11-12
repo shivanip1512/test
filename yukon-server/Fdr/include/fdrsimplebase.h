@@ -16,12 +16,11 @@
  *
  * PVCS KEYWORDS:
  *    ARCHIVE      :  $Archive:     $
- *    REVISION     :  $Revision: 1.4 $
- *    DATE         :  $Date: 2005/12/20 17:17:16 $
+ *    REVISION     :  $Revision: 1.5 $
+ *    DATE         :  $Date: 2007/11/12 16:46:55 $
  */
 
 #include <windows.h>    //  NOTE:  if porting this to non-WIN32, make sure to replace this
-#include <rw/tpslist.h>
 #include <rw/db/status.h>
 #include <vector>
 #include <map>
@@ -77,12 +76,12 @@ protected:
 
   virtual void doUpdates() = 0;
 
-  void handleUpdate(CtiFDRPoint *ctiPoint, 
-                    const double value, 
+  void handleUpdate(CtiFDRPoint *ctiPoint,
+                    const double value,
                     const time_t timestamp,
                     const PointQuality_t quality = NormalQuality);
 
-  void handleNonUpdate(CtiFDRPoint *ctiPoint, 
+  void handleNonUpdate(CtiFDRPoint *ctiPoint,
                        const time_t timestamp);
 
   bool isDebugLevel (long debugLevel) {return getDebugLevel() & debugLevel;};

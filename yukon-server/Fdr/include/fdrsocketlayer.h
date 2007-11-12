@@ -3,11 +3,10 @@
 #ifndef __FDRSOCKETLAYER_H__
 #define __FDRSOCKETLAYER_H__
 
-#include <rw/tpslist.h>
 #include <rw/thr/mutex.h>
 #include <rw/thr/barrier.h>
 #include <rw/thr/condtion.h>
-#include <rw/thr/thrfunc.h> 
+#include <rw/thr/thrfunc.h>
 
 #include "dlldefs.h"
 #include "queues.h"
@@ -22,24 +21,24 @@ class CtiMessage;
 
 class RWThreadFunction;
 
-class IM_EX_FDRBASE CtiFDRSocketLayer 
-{                                    
+class IM_EX_FDRBASE CtiFDRSocketLayer
+{
     public:
 
         typedef enum {
-             Server_Single=0, 
-             Server_Multiple, 
+             Server_Single=0,
+             Server_Multiple,
              Client_Multiple
         } FDRConnectionType;
 
-        CtiFDRSocketLayer::CtiFDRSocketLayer(string & interfaceName, 
+        CtiFDRSocketLayer::CtiFDRSocketLayer(string & interfaceName,
                                              FDRConnectionType aType,
-                                             CtiFDRSocketInterface *aParent);    
-        CtiFDRSocketLayer::CtiFDRSocketLayer(string & interfaceName, 
+                                             CtiFDRSocketInterface *aParent);
+        CtiFDRSocketLayer::CtiFDRSocketLayer(string & interfaceName,
                                              CtiFDRServerConnection *aInBoundConnection,
                                              FDRConnectionType aType,
                                              CtiFDRSocketInterface *aParent);
-        CtiFDRSocketLayer::CtiFDRSocketLayer(string & interfaceName, 
+        CtiFDRSocketLayer::CtiFDRSocketLayer(string & interfaceName,
                                              SOCKET aInBound,
                                              SOCKET aOutBound,
                                              FDRConnectionType aType,
@@ -99,9 +98,9 @@ class IM_EX_FDRBASE CtiFDRSocketLayer
         long                getLinkStatusID( void ) const;
         CtiFDRSocketLayer &  setLinkStatusID(const long aPointID);
 
-        int init (); 
-        int run  (); 
-        int stop (); 
+        int init ();
+        int run  ();
+        int stop ();
 
     protected:
 
@@ -110,11 +109,11 @@ class IM_EX_FDRBASE CtiFDRSocketLayer
 
     private:
         string               iName;
-        CtiFDRSocketInterface  *iParent;    
-                                   
-        CtiFDRServerConnection  *iInBoundConnection;            
-        CtiFDRClientConnection  *iOutBoundConnection;            
-                           
+        CtiFDRSocketInterface  *iParent;
+
+        CtiFDRServerConnection  *iInBoundConnection;
+        CtiFDRClientConnection  *iOutBoundConnection;
+
         FDRConnectionType       iConnectionType;
         HEV                     iSemaphore;
         long                    iLinkStatusID;

@@ -6,8 +6,8 @@
 *
 * PVCS KEYWORDS:
 * ARCHIVE      :  $Archive:   Z:/SOFTWAREARCHIVES/YUKON/MACS/INCLUDE/mc_interp.h-arc  $
-* REVISION     :  $Revision: 1.3 $
-* DATE         :  $Date: 2007/03/08 21:56:14 $
+* REVISION     :  $Revision: 1.4 $
+* DATE         :  $Date: 2007/11/12 16:47:40 $
 *
 * Copyright (c) 2003, Cannon Technologies Inc. All rights reserved.
 *-----------------------------------------------------------------------------*/
@@ -33,7 +33,6 @@
 #ifndef __INTERP__H__
 #define __INTERP__H__
 
-#include <rw/tpslist.h>
 #include <rw/thr/thread.h>
 #include <rw/thr/thrfunc.h>
 #include <rw/thr/recursiv.h>
@@ -51,7 +50,7 @@ class IM_EX_INTERP CtiInterpreter : public CtiThread
 {
 
 public:
-       
+
     CtiInterpreter();
     virtual ~CtiInterpreter();
 
@@ -80,7 +79,7 @@ private:
         WAITING
     };
 
-    RWBarrier _eval_barrier;    
+    RWBarrier _eval_barrier;
 
     void (*preEvalFunction)(CtiInterpreter* interp);
     void (*postEvalFunction)(CtiInterpreter* interp);
@@ -92,7 +91,7 @@ private:
 
     string _evalstring;
     RWCountedPointer< CtiCountedPCPtrQueue<RWCollectable> > _queue;
-    
+
     static RWRecursiveLock<RWMutexLock> _mutex;
 
     static const CHAR _loadcommand[];

@@ -1,4 +1,3 @@
-
 /*-----------------------------------------------------------------------------*
 *
 * File:   rte_expresscom
@@ -11,16 +10,14 @@
 *
 * PVCS KEYWORDS:
 * ARCHIVE      :  $Archive:   Z:/SOFTWAREARCHIVES/YUKON/RTDB/INCLUDE/rte_versacom.h-arc  $
-* REVISION     :  $Revision: 1.2 $
-* DATE         :  $Date: 2006/07/19 19:00:59 $
+* REVISION     :  $Revision: 1.3 $
+* DATE         :  $Date: 2007/11/12 16:49:47 $
 *
 * Copyright (c) 2006 Cannon Technologies Inc. All rights reserved.
 *-----------------------------------------------------------------------------*/
 #ifndef __RTE_EXPRESSCOM_H__
 #define __RTE_EXPRESSCOM_H__
 
-
-#include <rw/tpslist.h>
 
 #include "dsm2.h"
 #include "rte_xcu.h"

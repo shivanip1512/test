@@ -6,8 +6,6 @@
 
 #include <windows.h>
 
-#include <rw/tpslist.h>
-
 #include "dlldefs.h"
 #include "queues.h"
 #include "fdrclientserverconnection.h"
@@ -16,24 +14,24 @@
 class CtiTime;
 
 class IM_EX_FDRBASE CtiFDRSocketServer : public CtiFDRInterface
-{                                    
+{
 
     public:
         // constructors and destructors
-        CtiFDRSocketServer(string &); 
+        CtiFDRSocketServer(string &);
 
         virtual ~CtiFDRSocketServer();
 
         // This method is of no use to use, but it has to be defined in our class.
         // Fortunately it is never called via our baseclass.
         virtual int processMessageFromForeignSystem(CHAR *data) { return 0; };
-        
+
         virtual int processMessageFromForeignSystem(
           CtiFDRClientServerConnection& connection, char* data, unsigned int size) = 0;
 
         bool loadTranslationLists(void);
 
-        virtual BOOL init( void );   
+        virtual BOOL init( void );
         virtual BOOL run( void );
         virtual BOOL stop( void );
 
@@ -42,7 +40,7 @@ class IM_EX_FDRBASE CtiFDRSocketServer : public CtiFDRInterface
         virtual int readConfig( void )=0;
 
         virtual bool isClientConnectionValid (void);
-        
+
         unsigned short  getPortNumber() const;
         void setPortNumber(const unsigned short port);
         int  getPointTimeVariation() const;
@@ -51,36 +49,36 @@ class IM_EX_FDRBASE CtiFDRSocketServer : public CtiFDRInterface
         void setTimestampReasonabilityWindow(const int window);
         int  getLinkTimeout() const;
         void setLinkTimeout(const int linkTimeout);
-        
-        
+
+
         typedef std::list<CtiFDRClientServerConnection*> ConnectionList;
-        
+
     protected:
         void clearFailedLayers();
         SOCKET createBoundListener();
-    
+
         virtual CtiFDRClientServerConnection* createNewConnection(SOCKET newConnection) = 0;
-        
+
         virtual void begineNewPoints() {};
         virtual bool processNewDestination(CtiFDRDestination& pointDestination, bool isSend) {return true;};
-        
+
         bool sendAllPoints(CtiFDRClientServerConnection* layer);
         virtual bool forwardPointData(const CtiPointDataMsg& localMsg);
-        virtual bool buildForeignSystemHeartbeatMsg(char** buffer, 
+        virtual bool buildForeignSystemHeartbeatMsg(char** buffer,
                                                     unsigned int& bufferSize);
         virtual bool buildForeignSystemMessage(const CtiFDRDestination& destination,
-                                               char** buffer, 
+                                               char** buffer,
                                                unsigned int& bufferSize) = 0;
-                                          
+
     private:
         bool loadList(string& aDirection,  CtiFDRPointList& aList);
-        
+
         RWThreadFunction  _threadConnection;
         void threadFunctionConnection(void);
-        
+
         RWThreadFunction  _threadHeartbeat;
         void threadFunctionSendHeartbeat(void);
-        
+
         ConnectionList  _connectionList;
         CtiMutex _connectionListMutex;
         CtiFDRClientServerConnection* findConnectionForDestination(
@@ -91,7 +89,7 @@ class IM_EX_FDRBASE CtiFDRSocketServer : public CtiFDRInterface
         int _pointTimeVariation;
         int _timestampReasonabilityWindow;
         int _linkTimeout;
-        
+
         HANDLE _shutdownEvent;
 };
 

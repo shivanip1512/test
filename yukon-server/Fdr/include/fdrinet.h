@@ -21,7 +21,6 @@
 
 #include <windows.h>    //  NOTE:  if porting this to non-WIN32, make sure to replace this
 #include <vector>
-#include <rw/tpslist.h>
 
 #include "dlldefs.h"
 #include "queues.h"
@@ -30,11 +29,11 @@
 #include "device.h"             // get the raw states
 
 // global defines
-#define INET_PORTNUMBER     	1000
+#define INET_PORTNUMBER         1000
 
 #define INETDESTSIZE            10
 
-// Inet Type definitions 
+// Inet Type definitions
 #define INETTYPEDEFAULT              0
 #define INETTYPEVALUE                1
 #define INETTYPEALARM                2
@@ -107,12 +106,12 @@ class CtiTime;
 // forward class declarations
 
 class IM_EX_FDRINET CtiFDR_Inet : public CtiFDRSocketInterface
-{                                    
+{
     typedef CtiFDRSocketInterface Inherited;
 
     public:
         // constructors and destructors
-        CtiFDR_Inet(string aName=string ("INET")); 
+        CtiFDR_Inet(string aName=string ("INET"));
 
         virtual ~CtiFDR_Inet();
 
@@ -122,7 +121,7 @@ class IM_EX_FDRINET CtiFDR_Inet : public CtiFDRSocketInterface
         virtual string decodeClientName(CHAR *data);
         virtual bool CtiFDR_Inet::buildAndWriteToForeignSystem (CtiFDRPoint &aPoint );
 
-        virtual BOOL    init( void );   
+        virtual BOOL    init( void );
         virtual BOOL    run( void );
         virtual BOOL    stop( void );
 
@@ -140,7 +139,7 @@ class IM_EX_FDRINET CtiFDR_Inet : public CtiFDRSocketInterface
         static const CHAR * KEY_QUEUE_FLUSH_RATE;
 
         enum {Inet_Invalid=0,
-              Inet_Open, 
+              Inet_Open,
               Inet_Closed,
               Inet_Indeterminate,
               Inet_State_Four,
@@ -163,7 +162,7 @@ class IM_EX_FDRINET CtiFDR_Inet : public CtiFDRSocketInterface
 
         virtual bool loadTranslationLists(void);
         virtual bool loadClientList(void);
-		bool loadList(string &aDirection, CtiFDRPointList &aList);
+        bool loadList(string &aDirection, CtiFDRPointList &aList);
 
         virtual int   readConfig( void );
         virtual void setCurrentClientLinkStates();
@@ -200,6 +199,6 @@ class IM_EX_FDRINET CtiFDR_Inet : public CtiFDRSocketInterface
         CtiMutex                    iClientListMux;
 
 
-};                              
+};
 
 #endif

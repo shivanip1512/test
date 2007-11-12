@@ -6,8 +6,8 @@
 *
 *    PVCS KEYWORDS:
 *    ARCHIVE      :  $Archive:   Z:/SOFTWAREARCHIVES/YUKON/FDR/INCLUDE/fdrsinglesocket.h-arc  $
-*    REVISION     :  $Revision: 1.5 $
-*    DATE         :  $Date: 2005/12/20 17:17:16 $
+*    REVISION     :  $Revision: 1.6 $
+*    DATE         :  $Date: 2007/11/12 16:46:55 $
 *
 *
 *    AUTHOR: David Sutton
@@ -18,14 +18,20 @@
 *                   that uses a single socket to exchange data with a foreign system
 *
 *    ---------------------------------------------------
-*    History: 
+*    History:
 *     $Log: fdrsinglesocket.h,v $
+*     Revision 1.6  2007/11/12 16:46:55  mfisher
+*     Removed some Rogue Wave includes
+*
 *     Revision 1.5  2005/12/20 17:17:16  tspar
 *     Commiting  RougeWave Replacement of:  RWCString RWTokenizer RWtime RWDate Regex
 *
 *     Revision 1.4  2005/09/13 20:45:53  tmack
 *     In the process of working on the new ACS(MULTI) implementation, the following changes were made:
       $Log: fdrsinglesocket.h,v $
+      Revision 1.6  2007/11/12 16:46:55  mfisher
+      Removed some Rogue Wave includes
+
       Revision 1.5  2005/12/20 17:17:16  tspar
       Commiting  RougeWave Replacement of:  RWCString RWTokenizer RWtime RWDate Regex
 
@@ -45,22 +51,22 @@
 
       This is an update due to the freezing of PVCS on 4/13/2002
 
- * 
+ *
  *    Rev 2.5   01 Mar 2002 13:10:22   dsutton
  * function proto's for timesync processing and client link state processing
- * 
+ *
  *    Rev 2.4   20 Dec 2001 14:50:02   dsutton
  * added a isregistrationneeded function to check if the initial data dump is dependant on a registration message.  Base function in this class returns false and it can be overridden for any child classes.  Aslo a call to see if the client connection is valid to keep from getting stuck in the initial upload loop
- * 
+ *
  *    Rev 2.3   14 Dec 2001 17:12:18   dsutton
  * identical functions from child classes were moved here
- * 
+ *
  *    Rev 2.2   15 Nov 2001 16:15:54   dsutton
  * code for multipliers and an queue for the messages to dispatch
- * 
+ *
  *    Rev 2.1   26 Oct 2001 15:21:46   dsutton
  * moving revision 1 to 2.x
- * 
+ *
  *    Rev 1.0   19 Jun 2001 10:43:36   dsutton
  * Initial revision.
 *
@@ -75,7 +81,6 @@
 #define __FDRSINGLESOCKET_H__
 
 #include <windows.h>    //  NOTE:  if porting this to non-WIN32, make sure to replace this
-#include <rw/tpslist.h>
 
 #include "dlldefs.h"
 #include "queues.h"
@@ -89,7 +94,7 @@
 #define SINGLE_SOCKET_STATUS           102
 #define SINGLE_SOCKET_VALMET_CONTROL   103 // arrgh, backward compatibility
 #define SINGLE_SOCKET_CONTROL          201
-#define SINGLE_SOCKET_FORCESCAN        110 
+#define SINGLE_SOCKET_FORCESCAN        110
 #define SINGLE_SOCKET_TIMESYNC         401
 #define SINGLE_SOCKET_STRATEGY         501
 #define SINGLE_SOCKET_STRATEGYSTOP     503
@@ -98,12 +103,12 @@
 class CtiTime;
 
 class IM_EX_FDRBASE CtiFDRSingleSocket : public CtiFDRSocketInterface
-{                                    
+{
     typedef CtiFDRSocketInterface Inherited;
 
     public:
         // constructors and destructors
-        CtiFDRSingleSocket(string &); 
+        CtiFDRSingleSocket(string &);
 
         virtual ~CtiFDRSingleSocket();
 
@@ -118,7 +123,7 @@ class IM_EX_FDRBASE CtiFDRSingleSocket : public CtiFDRSocketInterface
 
         virtual bool loadList(string &aDirection,  CtiFDRPointList &aList);
 
-        virtual BOOL    init( void );   
+        virtual BOOL    init( void );
         virtual BOOL    run( void );
         virtual BOOL    stop( void );
 
@@ -137,7 +142,7 @@ class IM_EX_FDRBASE CtiFDRSingleSocket : public CtiFDRSocketInterface
         virtual bool isRegistrationNeeded(void);
         virtual bool isClientConnectionValid (void);
         virtual void setCurrentClientLinkStates();
-        
+
     protected:
 
         RWThreadFunction    iThreadSendDebugData;

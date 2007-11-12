@@ -19,7 +19,6 @@
 #define __FDRSOCKETINTERFACE_H__
 
 #include <windows.h>    //  NOTE:  if porting this to non-WIN32, make sure to replace this
-#include <rw/tpslist.h>
 
 #include "dlldefs.h"
 #include "queues.h"
@@ -29,21 +28,21 @@ class CtiFDRSocketConnection;
 class CtiTime;
 
 class IM_EX_FDRBASE CtiFDRSocketInterface : public CtiFDRInterface
-{                                    
+{
     typedef CtiFDRInterface Inherited;
 
     public:
         // constructors and destructors
-        CtiFDRSocketInterface(string & interfaceType, int aPort=0, int aWindow = 120); 
+        CtiFDRSocketInterface(string & interfaceType, int aPort=0, int aWindow = 120);
 
         virtual ~CtiFDRSocketInterface();
 
-        virtual BOOL    init( void );   
+        virtual BOOL    init( void );
         virtual BOOL    run( void );
         virtual BOOL    stop( void );
 
-		bool loadTranslationLists(void);
-                     
+        bool loadTranslationLists(void);
+
         int  getPortNumber () const;
         CtiFDRSocketInterface& setPortNumber(int aPort);
 
@@ -54,11 +53,11 @@ class IM_EX_FDRBASE CtiFDRSocketInterface : public CtiFDRInterface
         CtiFDRSocketInterface& setConnectPortNumber(int aPort);
         int  getTimestampReasonabilityWindow () const;
         CtiFDRSocketInterface& setTimestampReasonabilityWindow(int aWindow);
-                       
+
         int  getPointTimeVariation () const;
         CtiFDRSocketInterface& setPointTimeVariation(int aTime);
 
-		virtual bool loadList(string &aDirection, CtiFDRPointList &aList) = 0;
+        virtual bool loadList(string &aDirection, CtiFDRPointList &aList) = 0;
         virtual CHAR *buildForeignSystemHeartbeatMsg (void) = 0;
         virtual INT getMessageSize(CHAR *data)=0;
         virtual string decodeClientName(CHAR *data)=0;
@@ -74,22 +73,22 @@ class IM_EX_FDRBASE CtiFDRSocketInterface : public CtiFDRInterface
         void shutdownListener();
         CtiFDRSocketConnection * getListener ();
         CtiFDRSocketInterface & setListener (CtiFDRSocketConnection *aListener);
-        
+
         static FLOAT   ntohieeef (LONG NetLong);
-        static LONG    htonieeef (FLOAT  HostFloat); 
+        static LONG    htonieeef (FLOAT  HostFloat);
 
 
     private:
 
-		int     iPortNumber;
-		int     iTimestampReasonabilityWindow;
+        int     iPortNumber;
+        int     iTimestampReasonabilityWindow;
         bool    iRegistered;
         int     iPointTimeVariation;
 
         CtiMutex                    iListenerMux;
         CtiFDRSocketConnection      *iListener;
 
-		/********************************
+        /********************************
         * added for Progress energy to run RCCS and Yukon on the same machine
         * both applications are trying to listen and connect on socket 1000
         * so I'm adding a connect socket number to make this work BIG UGLY HACK !!
@@ -106,7 +105,7 @@ class IM_EX_FDRBASE CtiFDRSocketInterface : public CtiFDRInterface
         *********************************
         */
         int                   iLinkTimeout;
-};                              
+};
 
 #endif
 

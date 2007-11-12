@@ -9,8 +9,8 @@
 *
 * PVCS KEYWORDS:
 * ARCHIVE      :  $Archive:   Z:/SOFTWAREARCHIVES/YUKON/RTDB/INCLUDE/rte_macro.h-arc  $
-* REVISION     :  $Revision: 1.10 $
-* DATE         :  $Date: 2006/02/27 23:58:33 $
+* REVISION     :  $Revision: 1.11 $
+* DATE         :  $Date: 2007/11/12 16:48:55 $
 *
 * Copyright (c) 1999 Cannon Technologies Inc. All rights reserved.
 *-----------------------------------------------------------------------------*/
@@ -20,7 +20,6 @@
 
 #include <rw/tpordvec.h>
 #include <rw/tvordvec.h>
-#include <rw/tpslist.h>
 
 #include "boost/shared_ptr.hpp"
 using boost::shared_ptr;

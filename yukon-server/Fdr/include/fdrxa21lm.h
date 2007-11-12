@@ -26,7 +26,6 @@
 #define __FDRXA21LM_H__
 
 #include <windows.h>    //  NOTE:  if porting this to non-WIN32, make sure to replace this
-#include <rw/tpslist.h>
 
 #include "dlldefs.h"
 #include "queues.h"
@@ -250,21 +249,21 @@ public:
     ULONG getMPCFunction() const;
     vector<string> getPendingGroups() const;
     vector<string> getCompletedGroups() const;
-    
+
     unsigned getNumCompletedGroups() const;
     unsigned getNumPendingGroups() const;
-    
+
     int getCommandedState(const string& group_name) const;
     time_t getExpirationTime() const;
 
     bool isGroupPending(const string& group_name) const;
-    
+
     bool setGroupCompleted(const string& group_name);
 
     static CurrentControl createCurrentControl(XA21LMMESS* lm_msg);
 
     void dump();
-    
+
 private:
     ULONG _mpc_function;
     time_t _expiration_time;
@@ -273,12 +272,12 @@ private:
 };
 
 class IM_EX_FDRXA21LM CtiFDR_XA21LM : public CtiFDRSingleSocket
-{                                    
+{
     typedef CtiFDRSingleSocket Inherited;
 
     public:
         // constructors and destructors
-        CtiFDR_XA21LM(); 
+        CtiFDR_XA21LM();
 
         virtual ~CtiFDR_XA21LM();
 
@@ -287,20 +286,20 @@ class IM_EX_FDRXA21LM CtiFDR_XA21LM : public CtiFDRSingleSocket
         virtual CHAR *buildForeignSystemMsg (CtiFDRPoint &aPoint);
         virtual int getMessageSize(CHAR *data);
         virtual string decodeClientName(CHAR *data);
-	
+
         virtual int readConfig( void );
 
         virtual int processRegistrationMessage(CHAR *data);
         virtual int processControlMessage(CHAR *data);
 
-	CHAR* buildMPCStatus(const CurrentControl& ctrl, const string& group_name);
-	CHAR* buildMPCUnsolicited(const string& group_name, unsigned state);
-	
-	void saveControl(XA21LMMESS* ctrl_msg);
-	void cleanupCurrentControls();
-	
-	void MPCStatusUpdateThr();
-	
+    CHAR* buildMPCStatus(const CurrentControl& ctrl, const string& group_name);
+    CHAR* buildMPCUnsolicited(const string& group_name, unsigned state);
+
+    void saveControl(XA21LMMESS* ctrl_msg);
+    void cleanupCurrentControls();
+
+    void MPCStatusUpdateThr();
+
         ULONG       ForeignToYukonQuality (ULONG aQuality);
         ULONG       ForeignToYukonStatus (ULONG aStatus);
         CtiTime      ForeignToYukonTime (PCHAR aTime);
@@ -318,23 +317,23 @@ class IM_EX_FDRXA21LM CtiFDR_XA21LM : public CtiFDRSingleSocket
         string   YukonToForeignTime (CtiTime aTimeStamp);
         ULONG         YukonToForeignQuality (ULONG aQuality);
         ULONG         YukonToForeignStatus (ULONG aStatus);
-	ULONG YukonToXA21Time(time_t time, bool is_dst, XA21TIME* xa21_time);
-	
+    ULONG YukonToXA21Time(time_t time, bool is_dst, XA21TIME* xa21_time);
+
         enum {XA21LM_Open = 0, XA21LM_Closed = 1, XA21LM_Invalid=99};
         virtual bool translateAndUpdatePoint(CtiFDRPoint *translationPoint, int aDestinationIndex);
         virtual bool isRegistrationNeeded(void);
 
-	void dumpXA21LMMessage(XA21LMMESS* lm_msg);
-	    
+    void dumpXA21LMMessage(XA21LMMESS* lm_msg);
+
 private:
 
-	int stripAreaCode(string& group_name);
-	
-	/* A new MPC control will create an entry in this vector
-	   Either all the groups have to switch to the correct
-	   state or the control must timeout to be removed from here */
-	vector<CurrentControl> _current_controls;
-	CtiCriticalSection _control_cs;
+    int stripAreaCode(string& group_name);
+
+    /* A new MPC control will create an entry in this vector
+       Either all the groups have to switch to the correct
+       state or the control must timeout to be removed from here */
+    vector<CurrentControl> _current_controls;
+    CtiCriticalSection _control_cs;
 };
 
 

@@ -10,14 +10,13 @@
  * Author: Tom Mack
  *
  * PVCS KEYWORDS:
- *    REVISION     :  $Revision: 1.2 $
- *    DATE         :  $Date: 2005/12/20 17:17:16 $
+ *    REVISION     :  $Revision: 1.3 $
+ *    DATE         :  $Date: 2007/11/12 16:46:55 $
  *    History:
  *      $History:$
  */
 
 #include <windows.h>    //  NOTE:  if porting this to non-WIN32, make sure to replace this
-#include <rw/tpslist.h>
 #include <rw/db/status.h>
 #include <vector>
 #include <list>
@@ -45,7 +44,7 @@ public:
   struct PointInfo {
     LDAddress pointAddress;
     CtiFDRPoint         *ctiPoint;
-    unsigned int         period; // in seconds  
+    unsigned int         period; // in seconds
     //unsigned int         length;
     LiveDataTypes::Base    *liveDataType;
   };
@@ -54,7 +53,7 @@ public:
 
 protected:
   // callback classes
-  class LiveDataWriteCallback : public WriteCallback 
+  class LiveDataWriteCallback : public WriteCallback
   {
   public:
     LiveDataWriteCallback(CtiFDRLiveData* that);

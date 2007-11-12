@@ -16,10 +16,13 @@
 *
 *    Copyright (C) 2000 Cannon Technologies, Inc.  All rights reserved.
 *    ARCHIVE      :  $Archive:   Z:/SOFTWAREARCHIVES/YUKON/FDR/fdrpoint.h-arc  $
-*    REVISION     :  $Revision: 1.5 $
-*    DATE         :  $Date: 2005/12/20 17:17:16 $
-*    History: 
+*    REVISION     :  $Revision: 1.6 $
+*    DATE         :  $Date: 2007/11/12 16:46:55 $
+*    History:
       $Log: fdrpoint.h,v $
+      Revision 1.6  2007/11/12 16:46:55  mfisher
+      Removed some Rogue Wave includes
+
       Revision 1.5  2005/12/20 17:17:16  tspar
       Commiting  RougeWave Replacement of:  RWCString RWTokenizer RWtime RWDate Regex
 
@@ -54,7 +57,6 @@
 /** include files **/
 #include <windows.h>
 #include <vector>
-#include <rw/tpslist.h>
 #include "dlldefs.h"
 #include "pointtypes.h"
 #include "fdrdestination.h"
@@ -106,8 +108,8 @@ public:
 
     CtiTime              getLastTimeStamp ( void ) const;
     CtiFDRPoint &  setLastTimeStamp ( const CtiTime & aTime );
-    
-    CtiPointType_t getPointType() const;        
+
+    CtiPointType_t getPointType() const;
     CtiFDRPoint & setPointType(CtiPointType_t aType);
 
     string      getTranslateName(string &aDestination);

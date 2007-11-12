@@ -11,11 +11,14 @@
 *
 *    DESCRIPTION: This class implements an interface that exchanges point data
 *                 with a scada system.  The data is both status and Analog data.
-*             Information is exchanged using sockets opened on a predefined socket 
-*             number and also pre-defined messages between the systems.  See the 
+*             Information is exchanged using sockets opened on a predefined socket
+*             number and also pre-defined messages between the systems.  See the
 *             design document for more information
-*    History: 
+*    History:
       $Log: fdrrdex.h,v $
+      Revision 1.6  2007/11/12 16:46:55  mfisher
+      Removed some Rogue Wave includes
+
       Revision 1.5  2005/12/20 17:17:16  tspar
       Commiting  RougeWave Replacement of:  RWCString RWTokenizer RWtime RWDate Regex
 
@@ -41,16 +44,16 @@
 
       This is an update due to the freezing of PVCS on 4/13/2002
 
- * 
+ *
  *    Rev 2.1   15 Feb 2002 11:11:30   dsutton
  * added two new cparms to control data flow to RDEX that limit the number of entries sent per so many seconds
- * 
+ *
  *    Rev 2.0   20 Dec 2001 14:51:34   dsutton
  * Overrode the isregistrationneeded to return true
- * 
+ *
  *    Rev 1.0   14 Dec 2001 17:14:06   dsutton
  * Initial revision.
- * 
+ *
 *
 *    Copyright (C) 2000 Cannon Technologies, Inc.  All rights reserved.
 ****************************************************************************
@@ -60,7 +63,6 @@
 #define __FDRRDEX_H__
 
 #include <windows.h>    //  NOTE:  if porting this to non-WIN32, make sure to replace this
-#include <rw/tpslist.h>
 
 #include "dlldefs.h"
 #include "queues.h"
@@ -79,12 +81,12 @@
 #define RDEX_MANUAL           0x0002   // Manual  entry
 #define RDEX_QUESTIONABLE     0x0004   // Anything else
 
-#define RDEX_NULL						0
-#define RDEX_REGISTRATION				1
-#define RDEX_ACKNOWLEDGMENT		        2
-#define RDEX_VALUE						101
-#define RDEX_STATUS						102
-#define RDEX_CONTROL					201
+#define RDEX_NULL                       0
+#define RDEX_REGISTRATION               1
+#define RDEX_ACKNOWLEDGMENT             2
+#define RDEX_VALUE                      101
+#define RDEX_STATUS                     102
+#define RDEX_CONTROL                    201
 
 /*
 
@@ -93,15 +95,15 @@ NOTE:  All data limit violations will be handled by the receiving system
 
 /*
 NOTE:  Decision was made to use function 201 as a way of starting and
-      stopping control by strategy and also by group.  
-      
+      stopping control by strategy and also by group.
+
       RDEX_OPEN   =     stop strategy  =  restore load group
       RDEX_CLOSED =  start strategy =  Shed load group
 */
-      
+
 #pragma pack(push, rdex_packing, 4)
 // R-DEX Null Message Function: 0
-typedef struct 
+typedef struct
 {
    ULONG function;      // Function 0 - Null Message
    CHAR timestamp[16];
@@ -111,7 +113,7 @@ typedef struct
 } Rdex_Null;
 
 // R-DEX Registration Function: 1
-typedef struct 
+typedef struct
 {
    ULONG function;      // Function 1 - Registration Message
    CHAR  timestamp[16];
@@ -123,11 +125,11 @@ typedef struct
 
 // R-DEX Acknowledge Function: 2
 
-typedef struct 
+typedef struct
 {
    ULONG function;      // Function 2 - Acknowledge Message
    CHAR  timestamp[16];
-   CHAR  serverName[40];    // unique name of server 
+   CHAR  serverName[40];    // unique name of server
    CHAR  spare1[40];
    ULONG spare2;
    ULONG spare3;
@@ -135,7 +137,7 @@ typedef struct
 
 // R-DEX Value Message Function: 101
 
-typedef struct             
+typedef struct
 {
    ULONG function;      // Function 101 - Value Message
    CHAR  timestamp[16];
@@ -210,7 +212,7 @@ typedef struct {
          ULONG value;
       } status;
 
-      struct               // function = 201 
+      struct               // function = 201
       {
          CHAR  translation[80];
          ULONG spare1;
@@ -224,12 +226,12 @@ typedef struct {
 class CtiTime;
 
 class IM_EX_FDRRDEX CtiFDR_Rdex : public CtiFDRSingleSocket
-{                                    
+{
     typedef CtiFDRSingleSocket Inherited;
 
     public:
         // constructors and destructors
-        CtiFDR_Rdex(); 
+        CtiFDR_Rdex();
 
         virtual ~CtiFDR_Rdex();
 

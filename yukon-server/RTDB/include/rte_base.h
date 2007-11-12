@@ -9,8 +9,8 @@
 *
 * PVCS KEYWORDS:
 * ARCHIVE      :  $Archive:   Z:/SOFTWAREARCHIVES/YUKON/RTDB/INCLUDE/rte_base.h-arc  $
-* REVISION     :  $Revision: 1.12 $
-* DATE         :  $Date: 2007/02/09 20:53:32 $
+* REVISION     :  $Revision: 1.13 $
+* DATE         :  $Date: 2007/11/12 16:49:47 $
 *
 * Copyright (c) 1999 Cannon Technologies Inc. All rights reserved.
 *-----------------------------------------------------------------------------*/
@@ -22,7 +22,6 @@ using boost::shared_ptr;
 
 #include <rw/db/dbase.h>
 #include <rw/db/table.h>
-#include <rw/tpslist.h>
 
 #include "dsm2.h"
 #include "dbmemobject.h"

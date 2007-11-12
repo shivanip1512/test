@@ -10,16 +10,14 @@
 *
 * PVCS KEYWORDS:
 * ARCHIVE      :  $Archive:   Z:/SOFTWAREARCHIVES/YUKON/RTDB/INCLUDE/rte_versacom.h-arc  $
-* REVISION     :  $Revision: 1.7 $
-* DATE         :  $Date: 2006/02/27 23:58:33 $
+* REVISION     :  $Revision: 1.8 $
+* DATE         :  $Date: 2007/11/12 16:48:55 $
 *
 * Copyright (c) 1999 Cannon Technologies Inc. All rights reserved.
 *-----------------------------------------------------------------------------*/
 #ifndef __RTE_VERSACOM_H__
 #define __RTE_VERSACOM_H__
 
-
-#include <rw/tpslist.h>
 
 #include "dsm2.h"
 #include "rte_xcu.h"

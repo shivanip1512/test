@@ -20,7 +20,6 @@
 #define __FDRRCCS_H__
 
 #include <windows.h>    //  NOTE:  if porting this to non-WIN32, make sure to replace this
-#include <rw/tpslist.h>
 
 #include "dlldefs.h"
 #include "queues.h"
@@ -44,12 +43,12 @@
 class CtiTime;
 
 class IM_EX_FDRRCCS CtiFDR_Rccs : public CtiFDR_Inet
-{                                    
+{
     typedef CtiFDR_Inet Inherited;
 
     public:
         // constructors and destructors
-        CtiFDR_Rccs(); 
+        CtiFDR_Rccs();
 
         virtual ~CtiFDR_Rccs();
 
@@ -85,7 +84,7 @@ class IM_EX_FDRRCCS CtiFDR_Rccs : public CtiFDR_Inet
         int                         iAuthorizationFlags;
         string                   iBatchMarkerName;
         bool                        iStandalone;
-};                              
+};
 
 #endif
 

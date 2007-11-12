@@ -9,16 +9,14 @@
 *
 * PVCS KEYWORDS:
 * ARCHIVE      :  $Archive:   Z:/SOFTWAREARCHIVES/YUKON/RTDB/INCLUDE/rte_xcu.h-arc  $
-* REVISION     :  $Revision: 1.13 $
-* DATE         :  $Date: 2006/02/27 23:58:33 $
+* REVISION     :  $Revision: 1.14 $
+* DATE         :  $Date: 2007/11/12 16:48:55 $
 *
 * Copyright (c) 1999 Cannon Technologies Inc. All rights reserved.
 *-----------------------------------------------------------------------------*/
 #ifndef __RTE_XCU_H__
 #define __RTE_XCU_H__
 
-
-#include <rw/tpslist.h>
 
 #include "dev_base.h"
 #include "rte_base.h"

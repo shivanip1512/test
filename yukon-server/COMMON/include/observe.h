@@ -1,16 +1,16 @@
 /*-----------------------------------------------------------------------------
     Filename:  observe.h
-        
+
     Programmer:  Aaron Lauinger
-    
+
     Description:    Header file for CtiObserver and CtiObservable
                     which are implementations of the Observer pattern.
                     Many CtiObservers can be regiseterd with a CtiObservable
                     in order to receive notifications of state changes in the
                     CtiObservable.  Each CtiObserver can be registered with
-                    many CtiObservables also.                        
+                    many CtiObservables also.
     Initial Date:  4/7/99
-    
+
     COPYRIGHT: Copyright (C) Cannon Technologies, Inc., 1999
 -----------------------------------------------------------------------------*/
 
@@ -18,7 +18,6 @@
 #define CTIOBSERVE_H
 
 #include <windows.h>
-#include <rw/tpslist.h>
 
 #include "types.h"
 #include "dlldefs.h"
@@ -50,7 +49,7 @@ public:
     virtual void addObserver(CtiObserver& observer);
     virtual void deleteObserver(CtiObserver& observer);
     virtual void deleteObservers();
-  
+
     virtual void notifyObservers();
 
     virtual void setChanged();

@@ -6,8 +6,8 @@
 *
 * PVCS KEYWORDS:
 * ARCHIVE      :  $Archive$
-* REVISION     :  $Revision: 1.13 $
-* DATE         :  $Date: 2006/03/02 23:03:19 $
+* REVISION     :  $Revision: 1.14 $
+* DATE         :  $Date: 2007/11/12 16:47:15 $
 *
 * Copyright (c) 1999, 2000, 2001 Cannon Technologies Inc. All rights reserved.
 *-----------------------------------------------------------------------------*/
@@ -16,8 +16,6 @@
 #pragma warning( disable : 4786)
 
 
-
-#include <rw/tpslist.h>
 
 #include "dsm2.h"
 #include "dllbase.h"
@@ -196,7 +194,7 @@ public:
    CtiProtocolVersacom& operator=(const CtiProtocolVersacom& aRef)
    {
       if(this != &aRef)
-      { 
+      {
          delete_list(_vst);
          _vst.clear();
 

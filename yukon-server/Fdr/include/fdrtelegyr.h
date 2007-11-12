@@ -5,7 +5,6 @@
 
 
 #include <windows.h>    //  NOTE:  if porting this to non-WIN32, make sure to replace this
-#include <rw/tpslist.h>
 #include <rw/db/status.h>
 #include <vector>
 
@@ -39,7 +38,7 @@ typedef struct
    char *name_list[];
 } GROUPS_TO_GET;
 
-class IM_EX_FDRTELEGYRAPI CtiFDRTelegyr : public CtiFDRInterface 
+class IM_EX_FDRTELEGYRAPI CtiFDRTelegyr : public CtiFDRInterface
 {
    private:
 
@@ -63,7 +62,7 @@ class IM_EX_FDRTELEGYRAPI CtiFDRTelegyr : public CtiFDRInterface
       typedef CtiFDRInterface Inherited;
 
    public:
-   
+
       // constructors and destructors
       CtiFDRTelegyr();
       virtual ~CtiFDRTelegyr();
@@ -72,19 +71,19 @@ class IM_EX_FDRTELEGYRAPI CtiFDRTelegyr : public CtiFDRInterface
       virtual BOOL init( void );
       virtual BOOL run( void );
       virtual BOOL stop( void );
-   
+
       double getHiReasonabilityFilter() const;
       CtiFDRTelegyr & setHiReasonabilityFilter( const double myValue );
-   
+
       ULONG getScanRateSeconds() const;
       void  setScanRateSeconds( const ULONG mySeconds );
-   
+
       bool isConnected( void );
       CtiFDRTelegyr & setConnected( bool conn );
-   
+
       string getPath( void );
       CtiFDRTelegyr & setPath( string inPath );
-   
+
       static const CHAR * TBLNAME_TELEGYR_GROUPS;
       static const CHAR * KEY_HI_REASONABILITY_FILTER;
       static const CHAR * KEY_APPLICATION_NAME;
@@ -104,20 +103,20 @@ class IM_EX_FDRTELEGYRAPI CtiFDRTelegyr : public CtiFDRInterface
       static const CHAR * COLNAME_TELEGYR_NAME;
       static const CHAR * COLNAME_TELEGYR_INTERVAL;
       static const CHAR * COLNAME_TELEGYR_TYPE;
-   
+
       long getLinkStatusID( void ) const;
       CtiFDRTelegyr &setLinkStatusID( const long aPointID );
       void sendLinkState( int aState );
-   
+
    protected:
-   
+
       RWThreadFunction                    _threadGetTelegyrData;
       RWThreadFunction                    _threadMain;
       int                                 _numberOfConnections;
       CtiTelegyrControlCenter             _controlCenter;
       double                              _hiReasonabilityFilter;
       long                                _linkStatusID;
-   
+
       bool processBadPoint( int groupid, int index );
       bool loadTranslationLists( void );
       bool loadGroupLists( void );

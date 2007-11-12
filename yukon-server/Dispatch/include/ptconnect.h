@@ -9,8 +9,8 @@
 *
 * PVCS KEYWORDS:
 * ARCHIVE      :  $Archive:   Z:/SOFTWAREARCHIVES/YUKON/DISPATCH/INCLUDE/ptconnect.h-arc  $
-* REVISION     :  $Revision: 1.6 $
-* DATE         :  $Date: 2006/06/15 20:41:55 $
+* REVISION     :  $Revision: 1.7 $
+* DATE         :  $Date: 2007/11/12 16:47:40 $
 *
 * Copyright (c) 1999, 2000, 2001 Cannon Technologies Inc. All rights reserved.
 *-----------------------------------------------------------------------------*/
@@ -21,7 +21,6 @@
 #include <rw/thr/recursiv.h>
 #include <rw/thr/monitor.h>
 #include <rw\thr\mutex.h>
-#include <rw/tpslist.h>
 
 #include "dlldefs.h"
 #include "hashkey.h"

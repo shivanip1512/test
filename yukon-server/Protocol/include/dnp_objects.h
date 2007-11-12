@@ -10,8 +10,8 @@
 *
 * PVCS KEYWORDS:
 * ARCHIVE      :  $Archive$
-* REVISION     :  $Revision: 1.18 $
-* DATE         :  $Date: 2006/10/04 15:49:25 $
+* REVISION     :  $Revision: 1.19 $
+* DATE         :  $Date: 2007/11/12 16:47:15 $
 *
 * Copyright (c) 2002 Cannon Technologies Inc. All rights reserved.
 *-----------------------------------------------------------------------------*/
@@ -22,8 +22,6 @@
 
 #include <vector>
 #include <queue>
-
-#include <rw/tpslist.h>
 
 #include "dllbase.h"
 

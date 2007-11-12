@@ -6,23 +6,15 @@
 *
 * PVCS KEYWORDS:
 * ARCHIVE      :  $Archive:   Z:/SOFTWAREARCHIVES/YUKON/RTDB/dev_ccu.cpp-arc  $
-* REVISION     :  $Revision: 1.22 $
-* DATE         :  $Date: 2007/02/22 17:46:41 $
+* REVISION     :  $Revision: 1.23 $
+* DATE         :  $Date: 2007/11/12 16:48:29 $
 *
 * Copyright (c) 1999, 2000, 2001 Cannon Technologies Inc. All rights reserved.
 *-----------------------------------------------------------------------------*/
 #include "yukon.h"
 
-
-
 #include <windows.h>
 #include <iostream>
-
-
-#include <rw/tvhdict.h>
-#include <rw/tvslist.h>
-
-#include <rw\ctoken.h>
 
 #include "cmdparse.h"
 #include "dsm2.h"
@@ -250,7 +242,7 @@ INT CtiDeviceCCU::queuedWorkCount() const
     if( getType() == TYPE_CCU711 && _trxInfo != NULL )
     {
         CtiTransmitter711Info *p711Info =  (CtiTransmitter711Info *)_trxInfo;
-        workCount = p711Info->QueueHandle->Elements;        
+        workCount = p711Info->QueueHandle->Elements;
     }
 
     return workCount;
@@ -278,7 +270,7 @@ Cti::DeviceQueueInterface* CtiDeviceCCU::getDeviceQueueHandler()
     {
         return NULL;
     }
-    
+
 }
 
 /* Routine to decode returned CCU message and update database */

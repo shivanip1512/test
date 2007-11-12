@@ -9,11 +9,14 @@
  *
  *    DESCRIPTION: This class implements an interface that exchanges point data
  *                 from an ACS scada system.  The data is both status and Analog data.
- *                 Information is exchanged using sockets opened on a predefined socket 
- *                 number and also pre-defined messages between the systems.  See the 
+ *                 Information is exchanged using sockets opened on a predefined socket
+ *                 number and also pre-defined messages between the systems.  See the
  *                 design document for more information
- *    History: 
+ *    History:
  *      $Log$
+ *      Revision 1.5  2007/11/12 16:46:55  mfisher
+ *      Removed some Rogue Wave includes
+ *
  *      Revision 1.4  2007/05/11 19:20:27  tspar
  *      missed file
  *
@@ -36,7 +39,6 @@
 
 #include <windows.h>    //  NOTE:  if porting this to non-WIN32, make sure to replace this
 
-#include <rw/tpslist.h>
 #include <map>
 
 #include "dlldefs.h"
@@ -47,15 +49,15 @@
 #include "fdrscadahelper.h"
 
 // global defines
-#define ACS_PORTNUMBER     	1668
+#define ACS_PORTNUMBER      1668
 
 
 /* Definitions and structures used to share data with ACS */
 
 // ACS quality codes
-#define ACS_NORMAL            	0x0001		// channel up good reading
-#define ACS_MANUALENTRY         0x0002		// operator entered
-#define ACS_PLUGGED		        0x0004		// channel down
+#define ACS_NORMAL              0x0001      // channel up good reading
+#define ACS_MANUALENTRY         0x0002      // operator entered
+#define ACS_PLUGGED             0x0004      // channel down
 /*
 
 NOTE:  All data limit violations will be handled by the receiving system
@@ -63,36 +65,36 @@ NOTE:  All data limit violations will be handled by the receiving system
 
 /*
 NOTE:  Decision was made to use function 201 (ACS_CONTROL) as a way of starting and
-		stopping control by strategy and also by group (as opposed to functions 503/501).  
-		Differentation between these and regular control are to be implemented on the 
-		DSM2 side by using the naming convention @C_ in the device name
-		
-		ACS_OPEN  	=  	stop strategy	= 	restore load group
-		ACS_CLOSED	=	start strategy	=	Shed load group
+        stopping control by strategy and also by group (as opposed to functions 503/501).
+        Differentation between these and regular control are to be implemented on the
+        DSM2 side by using the naming convention @C_ in the device name
+
+        ACS_OPEN    =   stop strategy   =   restore load group
+        ACS_CLOSED  =   start strategy  =   Shed load group
 */
-		
+
 /*
 Naming conventions for points are as follows:
 
-	RrrrrCcPxxxx		where
-							rrrr = remote number
-							c	  = category
-							pppp = point number
-							
-	Current valid categories are:
-									
-      R    remote
-		P    pseudo
-		C    calculated
-		D    diagnostic
+    RrrrrCcPxxxx        where
+                            rrrr = remote number
+                            c     = category
+                            pppp = point number
 
-		A    accumulator
+    Current valid categories are:
+
+      R    remote
+        P    pseudo
+        C    calculated
+        D    diagnostic
+
+        A    accumulator
 */
 
 // error codes for ACS
 // NOTE:  Currently, they treat all errors as no replies DLS 8 Apr 99
 #define ACS_ERRROR_NOREPLY          31
-#define ACS_ERRROR_SEQUENCE	        32
+#define ACS_ERRROR_SEQUENCE         32
 #define ACS_ERRROR_FRAME            33
 #define ACS_ERRROR_BADCRC           34
 #define ACS_ERRROR_BADLENGTH        35
@@ -134,13 +136,13 @@ struct IM_EX_FDRBASE CtiAcsId
             return ServerName < other.ServerName;
         }
     }
-        
+
 };
 
 inline std::ostream& operator<< (std::ostream& os, const CtiAcsId& id)
 {
-    return os << "[ACS: R=" << id.RemoteNumber << ", P=" 
-        << id.PointNumber << ", C=" << id.CategoryCode 
+    return os << "[ACS: R=" << id.RemoteNumber << ", P="
+        << id.PointNumber << ", C=" << id.CategoryCode
         << ", S=" << id.ServerName << "]";
 }
 
@@ -149,15 +151,15 @@ inline std::ostream& operator<< (std::ostream& os, const CtiAcsId& id)
 typedef struct {
     USHORT Function;
     CHAR TimeStamp[16];
-	union {
+    union {
         /* Null Message     Function = 0 */
 
         /* Value Message   Function = 101 */
         struct {
-			USHORT RemoteNumber;
-			USHORT PointNumber;
-			CHAR CategoryCode;
-			CHAR Spare;
+            USHORT RemoteNumber;
+            USHORT PointNumber;
+            CHAR CategoryCode;
+            CHAR Spare;
             union {
                 FLOAT Value;
                 ULONG LongValue;
@@ -167,20 +169,20 @@ typedef struct {
 
         /* Status Message   Function = 102 */
         struct {
-			USHORT RemoteNumber;
-			USHORT PointNumber;
-			CHAR CategoryCode;
-			CHAR Spare;
+            USHORT RemoteNumber;
+            USHORT PointNumber;
+            CHAR CategoryCode;
+            CHAR Spare;
             USHORT Value;
             USHORT Quality;
         } Status;
 
         /* Control Message   Function = 103 */
         struct {
-			USHORT RemoteNumber;
-			USHORT PointNumber;
-			CHAR CategoryCode;
-			CHAR Spare;
+            USHORT RemoteNumber;
+            USHORT PointNumber;
+            CHAR CategoryCode;
+            CHAR Spare;
             USHORT Value;
         } Control;
     };
@@ -195,13 +197,13 @@ typedef struct {
 class CtiTime;
 
 class IM_EX_FDRACSMULTI CtiFDRAcsMulti : public CtiFDRScadaServer
-{                                    
+{
     public:
         // helper structs
-        
-        
+
+
         // constructors and destructors
-        CtiFDRAcsMulti(); 
+        CtiFDRAcsMulti();
 
         virtual ~CtiFDRAcsMulti();
 
@@ -215,27 +217,27 @@ class IM_EX_FDRACSMULTI CtiFDRAcsMulti : public CtiFDRScadaServer
 
     protected:
         virtual CtiFDRClientServerConnection* createNewConnection(SOCKET newConnection);
-    
+
         virtual void begineNewPoints();
         virtual bool processNewDestination(CtiFDRDestination& pointDestination, bool isSend);
-        
-        virtual bool buildForeignSystemHeartbeatMsg(char** buffer, 
+
+        virtual bool buildForeignSystemHeartbeatMsg(char** buffer,
                                                     unsigned int& bufferSize);
         virtual bool buildForeignSystemMessage(const CtiFDRDestination& destination,
-                                               char** buffer, 
+                                               char** buffer,
                                                unsigned int& bufferSize);
 
-        virtual bool processValueMessage(CtiFDRClientServerConnection& connection, 
+        virtual bool processValueMessage(CtiFDRClientServerConnection& connection,
                                          char* data, unsigned int size);
-        virtual bool processStatusMessage(CtiFDRClientServerConnection& connection, 
+        virtual bool processStatusMessage(CtiFDRClientServerConnection& connection,
                                           char* data, unsigned int size);
-        virtual bool processControlMessage(CtiFDRClientServerConnection& connection, 
+        virtual bool processControlMessage(CtiFDRClientServerConnection& connection,
                                            char* data, unsigned int size);
-        virtual bool processTimeSyncMessage(CtiFDRClientServerConnection& connection, 
+        virtual bool processTimeSyncMessage(CtiFDRClientServerConnection& connection,
                                             char* data, unsigned int size);
 
     private:
-        CtiAcsId    ForeignToYukonId(USHORT remote, CHAR category, USHORT point, 
+        CtiAcsId    ForeignToYukonId(USHORT remote, CHAR category, USHORT point,
                                      CtiFDRClientServerConnection::Destination serverName);
         USHORT      ForeignToYukonQuality (USHORT aQuality);
         int         ForeignToYukonStatus (USHORT aStatus);
@@ -245,7 +247,7 @@ class IM_EX_FDRACSMULTI CtiFDRAcsMulti : public CtiFDRScadaServer
         int         YukonToForeignId (string aPointName, USHORT &remoteNumber, CHAR &category, USHORT &pointNumber);
         USHORT      YukonToForeignQuality (USHORT aQuality);
         USHORT      YukonToForeignStatus (int aStatus);
-        
+
         CtiFDRScadaHelper<CtiAcsId>* _helper;
         // maps ip address -> server name
         typedef std::map<std::string, std::string> ServerNameMap;

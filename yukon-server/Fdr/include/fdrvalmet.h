@@ -11,11 +11,14 @@
 *
 *    DESCRIPTION: This class implements an interface that exchanges point data
 *                 from an VALMET scada system.  The data is both status and Analog data.
-*				  Information is exchanged using sockets opened on a predefined socket 
-*				  number and also pre-defined messages between the systems.  See the 
-*				  design document for more information
-*    History: 
+*                 Information is exchanged using sockets opened on a predefined socket
+*                 number and also pre-defined messages between the systems.  See the
+*                 design document for more information
+*    History:
       $Log: fdrvalmet.h,v $
+      Revision 1.6  2007/11/12 16:46:55  mfisher
+      Removed some Rogue Wave includes
+
       Revision 1.5  2005/12/20 17:17:16  tspar
       Commiting  RougeWave Replacement of:  RWCString RWTokenizer RWtime RWDate Regex
 
@@ -41,28 +44,28 @@
 
       This is an update due to the freezing of PVCS on 4/13/2002
 
- * 
+ *
  *    Rev 2.6   08 Apr 2002 14:41:28   dsutton
  * updated foreigntoyukontime function to contain a flag that says whether we're processing a time sync.  If we are, we don't want to do the validity window since the timesync has a configurable window of its own
- * 
+ *
  *    Rev 2.5   01 Mar 2002 13:04:14   dsutton
  * added new cparms to handle timesync functions
- * 
+ *
  *    Rev 2.4   15 Feb 2002 11:11:44   dsutton
  * added two new cparms to control data flow to VALMET that limit the number of entries sent per so many seconds
- * 
+ *
  *    Rev 2.3   14 Dec 2001 17:08:12   dsutton
  * changed prototypes for new fdrpointclass and moved a few functions to singlesocket class
- * 
+ *
  *    Rev 2.2   15 Nov 2001 16:15:54   dsutton
  * code for multipliers and an queue for the messages to dispatch
- * 
+ *
  *    Rev 2.1   26 Oct 2001 15:21:56   dsutton
  * moving revision 1 to 2.x
- * 
+ *
  *    Rev 1.1   23 Aug 2001 14:03:24   dsutton
  * add function to check send state of a point to intercept control points
- * 
+ *
  *    Rev 1.0   19 Jun 2001 10:43:52   dsutton
  * Initial revision.
 
@@ -76,7 +79,6 @@
 #define __FDRVALMET_H__
 
 #include <windows.h>    //  NOTE:  if porting this to non-WIN32, make sure to replace this
-#include <rw/tpslist.h>
 
 #include "dlldefs.h"
 #include "queues.h"
@@ -86,7 +88,7 @@
 #include "fdrsinglesocket.h"
 
 // global defines
-#define VALMET_PORTNUMBER     	1666
+#define VALMET_PORTNUMBER       1666
 
 
 /* Definitions and structures used to share data with VALMET */
@@ -104,7 +106,7 @@ NOTE:  All data limit violations will be handled by the receiving system
 */
 #pragma pack(push, valmet_packing, 1)
 
-typedef struct 
+typedef struct
 {
     USHORT Function;
     CHAR TimeStamp[18];
@@ -152,12 +154,12 @@ typedef struct
 class CtiTime;
 
 class IM_EX_FDRVALMET CtiFDR_Valmet : public CtiFDRSingleSocket
-{                                    
+{
     typedef CtiFDRSingleSocket Inherited;
 
     public:
         // constructors and destructors
-        CtiFDR_Valmet(); 
+        CtiFDR_Valmet();
 
         virtual ~CtiFDR_Valmet();
 
@@ -196,9 +198,9 @@ class IM_EX_FDRVALMET CtiFDR_Valmet : public CtiFDRSingleSocket
         bool translateAndUpdatePoint(CtiFDRPoint *translationPoint, int aIndex);
 
 
-        enum {  Valmet_Invalid = 0, 
-                Valmet_Open = 1, 
-                Valmet_Closed=2, 
+        enum {  Valmet_Invalid = 0,
+                Valmet_Open = 1,
+                Valmet_Closed=2,
                 Valmet_Indeterminate=3};
 
 };
