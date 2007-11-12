@@ -30,9 +30,9 @@ public class MeterDaoImpl implements MeterDao {
         + "from YukonPaObject "
         + "join Device on YukonPaObject.paObjectId = Device.deviceId "
         + "join DeviceMeterGroup on Device.deviceId = DeviceMeterGroup.deviceId "
-        + "join DeviceCarrierSettings on Device.deviceId = DeviceCarrierSettings.deviceId "
-        + "join DeviceRoutes on Device.deviceId = DeviceRoutes.deviceId "
-        + "join YukonPaObject yporoute on DeviceRoutes.routeId = yporoute.paObjectId ";
+        + "left outer join DeviceCarrierSettings on Device.deviceId = DeviceCarrierSettings.deviceId "
+        + "left outer join DeviceRoutes on Device.deviceId = DeviceRoutes.deviceId "
+        + "left outer join YukonPaObject yporoute on DeviceRoutes.routeId = yporoute.paObjectId ";
 
     String retrieveOneByIdSql = retrieveMeterSql + "where YukonPaObject.paObjectId = ? ";
     String retrieveOneByMeterNumberSql = retrieveMeterSql + "where DeviceMeterGroup.MeterNumber = ? ";

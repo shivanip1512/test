@@ -42,13 +42,13 @@ public class CsrSearchDaoImpl implements CsrSearchDao {
         "       device                                                          " +
         "       JOIN yukonpaobject ypo                                          " + 
         "           ON device.deviceid = ypo.paobjectid                         " + 
-        "       JOIN devicecarriersettings dcs                                  " + 
+        "       LEFT OUTER JOIN devicecarriersettings dcs                       " + 
         "           ON dcs.deviceid = ypo.paobjectid                            " + 
         "       JOIN devicemetergroup dmg                                       " + 
         "           ON dmg.deviceid = ypo.paobjectid                            " + 
-        "       JOIN deviceroutes dr                                            " + 
+        "       LEFT OUTER JOIN deviceroutes dr                                 " + 
         "           on ypo.paobjectid = dr.deviceid                             " +
-        "       JOIN yukonpaobject rypo                                         " +
+        "       LEFT OUTER JOIN yukonpaobject rypo                              " +
         "           on dr.routeid = rypo.paobjectid                             " +
         ((filterByList.size() > 0) ? " WHERE " + StringUtils.join(filterByList, " AND ") : "");
 
@@ -76,13 +76,13 @@ public class CsrSearchDaoImpl implements CsrSearchDao {
         "       device                                                          " +
         "       JOIN yukonpaobject ypo                                          " + 
         "           ON device.deviceid = ypo.paobjectid                         " + 
-        "       JOIN devicecarriersettings dcs                                  " + 
+        "       LEFT OUTER JOIN devicecarriersettings dcs                       " + 
         "           ON dcs.deviceid = ypo.paobjectid                            " + 
         "       JOIN devicemetergroup dmg                                       " + 
         "           ON dmg.deviceid = ypo.paobjectid                            " + 
-        "       JOIN deviceroutes dr                                            " + 
+        "       LEFT OUTER JOIN deviceroutes dr                                 " + 
         "           on ypo.paobjectid = dr.deviceid                             " +
-        "       JOIN yukonpaobject rypo                                         " +
+        "       LEFT OUTER JOIN yukonpaobject rypo                              " +
         "           on dr.routeid = rypo.paobjectid                             " +
         ((filterByList.size() > 0) ? " WHERE " + StringUtils.join(filterByList, " AND ") : "") +
         "   ORDER BY                                                            " +

@@ -6039,6 +6039,13 @@
                 <unitofmeasure value="Undefined"/>
             </point>
         </points>
+        <commands>
+        	<command name="General Scan">
+        		<cmd text="scan itegrity"/>
+        		<pointRef name="Total kWh"/>
+        		<pointRef name="Total kVArh"/>
+        	</command>
+        </commands>
         <attributes>
 	        <attribute name="USAGE">
         		<basicLookup point="Total kWh" />
@@ -6383,6 +6390,13 @@
                 <unitofmeasure value="Undefined"/>
             </point>
         </points>
+        <commands>
+        	<command name="General Scan">
+        		<cmd text="scan itegrity"/>
+        		<pointRef name="Total kWh"/>
+        		<pointRef name="Total kVArh"/>
+        	</command>
+        </commands>
         <attributes>
 	        <attribute name="USAGE">
         		<basicLookup point="Total kWh" />
@@ -6727,6 +6741,13 @@
                 <unitofmeasure value="Undefined"/>
             </point>
         </points>
+        <commands>
+        	<command name="General Scan">
+        		<cmd text="scan itegrity"/>
+        		<pointRef name="Total kWh"/>
+        		<pointRef name="Total kVArh"/>
+        	</command>
+        </commands>
         <attributes>
 	        <attribute name="USAGE">
         		<basicLookup point="Total kWh" />
@@ -7119,6 +7140,13 @@
                 <unitofmeasure value="Undefined"/>
             </point>
         </points>
+        <commands>
+        	<command name="General Scan">
+        		<cmd text="scan itegrity"/>
+        		<pointRef name="Total kWh"/>
+        		<pointRef name="Total kVArh"/>
+        	</command>
+        </commands>
         <attributes>
 	        <attribute name="USAGE">
         		<basicLookup point="Total kWh" />
@@ -7463,6 +7491,13 @@
                 <unitofmeasure value="Undefined"/>
             </point>
         </points>
+        <commands>
+        	<command name="General Scan">
+        		<cmd text="scan itegrity"/>
+        		<pointRef name="Total kWh"/>
+        		<pointRef name="Total kVArh"/>
+        	</command>
+        </commands>
         <attributes>
 	        <attribute name="USAGE">
         		<basicLookup point="Total kWh" />
@@ -7836,6 +7871,13 @@
                 <unitofmeasure value="Undefined"/>
             </point>
         </points>
+        <commands>
+        	<command name="General Scan">
+        		<cmd text="scan itegrity"/>
+        		<pointRef name="Total kWh"/>
+        		<pointRef name="Total kVArh"/>
+        	</command>
+        </commands>
         <attributes>
 	        <attribute name="USAGE">
         		<basicLookup point="Total kWh" />
@@ -8180,6 +8222,13 @@
                 <unitofmeasure value="Undefined"/>
             </point>
         </points>
+        <commands>
+        	<command name="General Scan">
+        		<cmd text="scan itegrity"/>
+        		<pointRef name="Total kWh"/>
+        		<pointRef name="Total kVArh"/>
+        	</command>
+        </commands>
         <attributes>
 	        <attribute name="USAGE">
         		<basicLookup point="Total kWh" />
@@ -8524,6 +8573,13 @@
                 <unitofmeasure value="Undefined"/>
             </point>
         </points>
+        <commands>
+        	<command name="General Scan">
+        		<cmd text="scan itegrity"/>
+        		<pointRef name="Total kWh"/>
+        		<pointRef name="Total kVArh"/>
+        	</command>
+        </commands>
         <attributes>
 	        <attribute name="USAGE">
         		<basicLookup point="Total kWh" />
@@ -8868,6 +8924,13 @@
                 <unitofmeasure value="Undefined"/>
             </point>
         </points>
+        <commands>
+        	<command name="General Scan">
+        		<cmd text="scan itegrity"/>
+        		<pointRef name="Total kWh"/>
+        		<pointRef name="Total kVArh"/>
+        	</command>
+        </commands>
         <attributes>
 	        <attribute name="USAGE">
         		<basicLookup point="Total kWh" />
@@ -9212,6 +9275,13 @@
                 <unitofmeasure value="Undefined"/>
             </point>
         </points>
+        <commands>
+        	<command name="General Scan">
+        		<cmd text="scan itegrity"/>
+        		<pointRef name="Total kWh"/>
+        		<pointRef name="Total kVArh"/>
+        	</command>
+        </commands>
         <attributes>
 	        <attribute name="USAGE">
         		<basicLookup point="Total kWh" />
@@ -9556,6 +9626,13 @@
                 <unitofmeasure value="Undefined"/>
             </point>
         </points>
+        <commands>
+        	<command name="General Scan">
+        		<cmd text="scan itegrity"/>
+        		<pointRef name="Total kWh"/>
+        		<pointRef name="Total kVArh"/>
+        	</command>
+        </commands>
         <attributes>
 	        <attribute name="USAGE">
         		<basicLookup point="Total kWh" />
@@ -9590,6 +9667,12 @@
                 <unitofmeasure value="kW"/>
             </point>
         </points>
+        <commands>
+        	<command name="General Scan">
+        		<cmd text="scan itegrity"/>
+        		<pointRef name="Total kWh"/>
+        	</command>
+        </commands>
         <attributes>
 	        <attribute name="USAGE">
         		<basicLookup point="Total kWh" />
@@ -9928,6 +10011,13 @@
                 <unitofmeasure value="Undefined"/>
             </point>
         </points>
+        <commands>
+        	<command name="General Scan">
+        		<cmd text="scan itegrity"/>
+        		<pointRef name="Total kWh"/>
+        		<pointRef name="Total kVArh"/>
+        	</command>
+        </commands>
         <attributes>
 	        <attribute name="USAGE">
         		<basicLookup point="Total kWh" />
