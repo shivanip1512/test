@@ -227,6 +227,7 @@
 								
 								<form id="addDeviceForm" method="post" action="/spring/group/addDevice">
 									<input type="hidden" name="groupName" value="${group.fullName}" />
+									<input type="hidden" name="showDevices" value="true" />
 									<input type="hidden" id="deviceToAdd" name="deviceId" />
 								</form>
 								<cti:paoPicker pickerId="devicePickerId" paoIdField="deviceToAdd" finalTriggerAction="addDevice"><span title="Click to add a device">Individual Device</span></cti:paoPicker>
@@ -277,7 +278,7 @@
 			<jsp:body>
 				<div style="overflow: auto; height: 300px;">
 	
-					<table style="width: 100%; border-bottom: 1px dotted black;padding-bottom: 10px; margin-bottom: 10px;" >
+					<table style="width: 95%; border-bottom: 1px dotted black;padding-bottom: 10px; margin-bottom: 10px;" >
 						<c:choose>
 							<c:when test="${fn:length(subGroups) > 0}">
 								<c:forEach var="subGroup" items="${subGroups}">
@@ -322,8 +323,8 @@
 				
 					<div id="deviceMembers">
 						<c:choose>
-							<c:when test="${deviceCount > 5}">
-								<table style="width: 100%;" >
+							<c:when test="${deviceCount > 5 && (showDevices == false )}">
+								<table style="width: 95%;" >
 									<tr>
 										<td>
 											This group contains ${deviceCount} devices.

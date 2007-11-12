@@ -93,8 +93,8 @@ public class OneAtATimeProcessor implements BulkProcessor {
                     callback.processingComplete();
                 } catch (Exception e) {
                     log.warn("Bulk Processing failed", e);
-                    callback.processingComplete();
                     callback.processingFailed(e);
+                    callback.processingComplete();
                 }
             }
         };

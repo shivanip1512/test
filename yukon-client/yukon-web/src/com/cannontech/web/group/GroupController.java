@@ -143,6 +143,9 @@ public class GroupController extends MultiActionController {
         List<? extends DeviceGroup> childGroups = deviceGroupDao.getChildGroups(group);
         mav.addObject("subGroups", childGroups);
 
+        Boolean showDevices = ServletRequestUtils.getBooleanParameter(request, "showDevices", false);
+        mav.addObject("showDevices", showDevices);
+
         return mav;
 
     }
@@ -214,7 +217,7 @@ public class GroupController extends MultiActionController {
             deviceGroupEditorDao.addGroup((StoredDeviceGroup) group,
                                           DeviceGroupType.STATIC,
                                           childGroupName);
-            
+
         } else {
             mav.addObject("errorMessage", "Cannot add sub group to " + group.getFullName());
             return mav;
@@ -244,12 +247,15 @@ public class GroupController extends MultiActionController {
             mav.addObject("errorMessage", "Cannot add devices to " + group.getFullName());
             return mav;
         }
+        
+        Boolean showDevices = ServletRequestUtils.getBooleanParameter(request, "showDevices");
+        mav.addObject("showDevices", showDevices);
 
         return mav;
     }
 
-    public ModelAndView showAddDevicesByFile(HttpServletRequest request, HttpServletResponse response)
-            throws ServletException {
+    public ModelAndView showAddDevicesByFile(HttpServletRequest request,
+            HttpServletResponse response) throws ServletException {
 
         ModelAndView mav = new ModelAndView("addDevicesByFile.jsp");
 
@@ -411,6 +417,9 @@ public class GroupController extends MultiActionController {
 
         String groupName = ServletRequestUtils.getStringParameter(request, "groupName");
         mav.addObject("groupName", groupName);
+
+        Boolean showDevices = ServletRequestUtils.getBooleanParameter(request, "showDevices");
+        mav.addObject("showDevices", showDevices);
 
         DeviceGroup group = deviceGroupService.resolveGroupName(groupName);
 

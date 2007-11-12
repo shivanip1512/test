@@ -4,7 +4,7 @@
 <%@ taglib uri="http://cannontech.com/tags/cti" prefix="cti"%>
 <%@ taglib prefix="tags" tagdir="/WEB-INF/tags" %>
 
-	<table style="width: 100%;" >
+	<table style="width: 95%;" >
 		<c:choose>
 			<c:when test="${fn:length(deviceList) > 0}">
 				<c:forEach var="device" items="${deviceList}">
@@ -20,6 +20,7 @@
 									<form style="display: inline;" id="${thisId}_removeDevice" action="/spring/group/removeDevice" method="post">
 										<input type="hidden" name="deviceId" value="${device.deviceId}" />
 										<input type="hidden" name="groupName" value="${group.fullName}" />
+										<input type="hidden" name="showDevices" value="true" />
 										<input type="image" title="Remove device from group" class="cssicon" src="<c:url value="/WebConfig/yukon/Icons/clearbits/close.gif"/>" />
 									</form>
 								</c:when>
