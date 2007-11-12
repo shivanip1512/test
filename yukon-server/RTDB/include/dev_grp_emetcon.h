@@ -9,16 +9,14 @@
 *
 * PVCS KEYWORDS:
 * ARCHIVE      :  $Archive:   Z:/SOFTWAREARCHIVES/YUKON/RTDB/INCLUDE/dev_grp_emetcon.h-arc  $
-* REVISION     :  $Revision: 1.10 $
-* DATE         :  $Date: 2006/09/21 21:31:38 $
+* REVISION     :  $Revision: 1.11 $
+* DATE         :  $Date: 2007/11/12 16:56:45 $
 *
 * Copyright (c) 1999 Cannon Technologies Inc. All rights reserved.
 *-----------------------------------------------------------------------------*/
 #ifndef __DEV_GRP_EMETCON_H__
 #define __DEV_GRP_EMETCON_H__
 
-
-#include <rw/tpslist.h>
 
 #include "dev_base.h"
 #include "dev_grp.h"

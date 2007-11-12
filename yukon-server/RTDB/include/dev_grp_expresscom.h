@@ -8,8 +8,8 @@
 * Author: Corey G. Plender
 *
 * CVS KEYWORDS:
-* REVISION     :  $Revision: 1.8 $
-* DATE         :  $Date: 2006/09/21 21:31:38 $
+* REVISION     :  $Revision: 1.9 $
+* DATE         :  $Date: 2007/11/12 16:56:45 $
 *
 * Copyright (c) 2002 Cannon Technologies Inc. All rights reserved.
 *-----------------------------------------------------------------------------*/
@@ -17,8 +17,6 @@
 #define __DEV_GRP_EXPRESSCOM_H__
 #pragma warning( disable : 4786)
 
-
-#include <rw/tpslist.h>
 
 #include "dev_base.h"
 #include "dev_grp.h"
