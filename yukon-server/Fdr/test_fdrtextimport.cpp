@@ -46,7 +46,7 @@ BOOST_AUTO_UNIT_TEST(test_foreignToYukonQuality)
     BOOST_CHECK_EQUAL(quality, NonUpdatedQuality);
     std::cout << "test_foreignToYukonQuality is not finished " << std::endl;
 }
-
+/*
 BOOST_AUTO_UNIT_TEST( test_ForeignToYukonTime_flag )
 {
     // date form:  string 05/02/2007 11:32:25
@@ -97,7 +97,7 @@ BOOST_AUTO_UNIT_TEST( test_ForeignToYukonTime_flag )
     BOOST_CHECK_EQUAL(res, badresult);
 
 }
-
+*/
 BOOST_AUTO_UNIT_TEST( test_parseFile_OneFile )
 {
     CtiFDR_TextImport import;
