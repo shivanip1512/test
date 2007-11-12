@@ -566,7 +566,7 @@ void  CtiCommandParser::doParseGetValue(const string &_CmdStr)
                 offset = 0;
             }
         }
-        else if(CmdStr.contains(" outage "))
+        else if(CmdStr.contains(" outage"))
         {
             if(!(token = CmdStr.match(re_outage)).empty())
             {
@@ -576,6 +576,10 @@ void  CtiCommandParser::doParseGetValue(const string &_CmdStr)
                 cmdtok();  //  move past "outage"
 
                 _cmd["outage"] = atoi(CtiString(cmdtok()).c_str());
+            }
+            else
+            {
+                _cmd["outage"] = -1;
             }
         }
         else if(CmdStr.contains(" codes"))
