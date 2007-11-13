@@ -25,6 +25,14 @@ public interface DeviceDefinitionDao {
     public abstract Set<Attribute> getAvailableAttributes(YukonDevice meter);
 
     /**
+     * Method to get a set of point templates for a given device and set of attributes
+     * @param device - Device to get set of point templates for
+     * @param attributes - Attributes to get set of point templates for
+     * @return The Set of DevicePointIdentifier for the device and Attribute Set
+     */
+    public abstract Set<DevicePointIdentifier> getDevicePointIdentifierForAttributes(YukonDevice device, Set<Attribute> attributes);
+    
+    /**
      * Method to get the point template for a given device and attribute
      * @param device - Device to get point template for
      * @param attribute - Attribute to get point template for
@@ -98,6 +106,15 @@ public interface DeviceDefinitionDao {
      * @return The set of commands affecting one or more of the points
      */
     public Set<CommandDefinition> getAffected(YukonDevice device, Set<? extends DevicePointIdentifier> pointSet);
+    
+    /**
+     * Method to get a list of command definitions for the given device which
+     * affect the point for the given attribute
+     * @param device - Device to get commands for
+     * @param attribute - The attribute to get affecting commands for
+     * @return The set of commands affecting the point for the attribute
+     */
+    public Set<CommandDefinition> getAffected(YukonDevice device, Attribute attribute);
     
     public String getPointLegendHtml(String displayGroup);
 

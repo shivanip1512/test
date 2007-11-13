@@ -21,4 +21,16 @@ public interface MeterReadService {
      */
     public CommandResultHolder readMeter(Meter device, Set<Attribute> attribute, LiteYukonUser user);
 
+    /**
+     * This method will verify which commands need to be sent to read the attributes.  If there
+     * are no commands supported/available to read the attributes, then return false.
+     * This method also validates the pao authorization of the user.  If the user does not have
+     * rights (based on Commander role properties) to all commands that are to be issued, then return false.
+     * Note: If one of the commands does not have access rights, all fail.
+     * @param device
+     * @param attributes
+     * @param user
+     * @return
+     */
+    public boolean isReadable(Meter device, Set<Attribute> attributes, LiteYukonUser user);
 }

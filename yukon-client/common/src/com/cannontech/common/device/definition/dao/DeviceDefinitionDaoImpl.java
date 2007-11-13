@@ -128,6 +128,15 @@ public class DeviceDefinitionDaoImpl implements DeviceDefinitionDao {
         }
     }
 
+    public Set<DevicePointIdentifier> getDevicePointIdentifierForAttributes(YukonDevice device, Set<Attribute> attributes) {
+    	
+        Set<DevicePointIdentifier> pointSet = new HashSet<DevicePointIdentifier>(attributes.size());
+        for (Attribute attribute : attributes) {
+            PointTemplate pointTemplateForAttribute = getPointTemplateForAttribute(device, attribute);
+            pointSet.add(pointTemplateForAttribute.getDevicePointIdentifier());
+        }
+        return pointSet;
+    }
     public PointTemplate getPointTemplateForAttribute(YukonDevice device, Attribute attribute) {
         int deviceType = device.getType();
         if (this.deviceAttributeAttrDefinitionMap.containsKey(deviceType)) {
@@ -198,7 +207,14 @@ public class DeviceDefinitionDaoImpl implements DeviceDefinitionDao {
         }
 
     }
+   	
+    public Set<CommandDefinition> getAffected(YukonDevice device, Attribute attribute) {
 
+    	PointTemplate pointTemplateForAttribute = getPointTemplateForAttribute(device, attribute);
+    	DevicePointIdentifier devicePointIdentifier = pointTemplateForAttribute.getDevicePointIdentifier();
+    	return getAffected(device, Collections.singleton(devicePointIdentifier));
+    }
+    
     public Set<CommandDefinition> getAffected(YukonDevice device, Set<? extends DevicePointIdentifier> pointSet) {
 
         Set<CommandDefinition> commandSet = new HashSet<CommandDefinition>();

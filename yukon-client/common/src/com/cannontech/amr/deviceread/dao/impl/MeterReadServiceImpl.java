@@ -18,41 +18,63 @@ import com.cannontech.common.device.commands.CommandResultHolder;
 import com.cannontech.common.device.definition.dao.DeviceDefinitionDao;
 import com.cannontech.common.device.definition.model.CommandDefinition;
 import com.cannontech.common.device.definition.model.DevicePointIdentifier;
-import com.cannontech.common.device.definition.model.PointTemplate;
 import com.cannontech.common.exception.MeterReadRequestException;
+import com.cannontech.core.authorization.exception.PaoAuthorizationException;
+import com.cannontech.core.authorization.service.PaoCommandAuthorizationService;
+import com.cannontech.core.dao.PaoDao;
+import com.cannontech.database.data.lite.LiteYukonPAObject;
 import com.cannontech.database.data.lite.LiteYukonUser;
 
 public class MeterReadServiceImpl implements MeterReadService {
     private Logger log = YukonLogManager.getLogger(MeterReadServiceImpl.class);
     private DeviceDefinitionDao deviceDefinitionDao;
     private CommandRequestExecutor commandExecutor;
+    private PaoCommandAuthorizationService commandAuthorizationService;
+    private PaoDao paoDao;
+    
+    private boolean isUpdate = true;
+    private boolean isNoqueue = true;
+    
+    public boolean isReadable(Meter device, Set<Attribute> attributes, LiteYukonUser user) {
+    	log.info("Validating Readability for" + attributes + " on device " + device + " for " + user);
+    	
+        // reduce number of commands
+    	Set<DevicePointIdentifier> pointSet = deviceDefinitionDao.getDevicePointIdentifierForAttributes(device, attributes);
+        Set<CommandWrapper> minimalCommands = getMinimalCommandSet(device, pointSet);
+        if (minimalCommands == null) {
+        	log.info("No commands defined to read " + pointSet + " for device type " + device.getType());
+            return false;
+        }
 
-    public CommandResultHolder readMeter(Meter device,
-            Set<Attribute> attributes,
-            LiteYukonUser user) {
+        try {
+        	LiteYukonPAObject litePaobject = paoDao.getLiteYukonPAO(device.getDeviceId());
+        	
+        	for (CommandWrapper wrapper : minimalCommands) {
+                List<String> commandStringList = wrapper.commandDefinition.getCommandStringList();
+                for (String commandStr : commandStringList) {
+    	        	commandAuthorizationService.verifyAuthorized(user, commandStr, litePaobject);
+                }
+            }
+        } catch (PaoAuthorizationException e) {
+        	log.info(e.getMessage());
+            return false;
+        }
+        
+    	return true;
+    }
+    
+    public CommandResultHolder readMeter(Meter device, Set<Attribute> attributes, LiteYukonUser user) {
         log.info("Reading " + attributes + " on device " + device + " for " + user);
         
         // figure out which commands to send
-        Set<DevicePointIdentifier> pointSet = new HashSet<DevicePointIdentifier>(attributes.size());
-        for (Attribute attribute : attributes) {
-            PointTemplate pointTemplateForAttribute = deviceDefinitionDao.getPointTemplateForAttribute(device, attribute);
-            pointSet.add(pointTemplateForAttribute.getDevicePointIdentifier());
-        }
-        
+        Set<DevicePointIdentifier> pointSet = deviceDefinitionDao.getDevicePointIdentifierForAttributes(device, attributes);
         return readMeterPoints(device, pointSet, user);
     }
     
     private CommandResultHolder readMeterPoints(Meter device, Set<DevicePointIdentifier> pointSet, LiteYukonUser user) {
         log.debug("Reading " + pointSet + " on device " + device + " for " + user);
-        Set<CommandDefinition> allPossibleCommands = deviceDefinitionDao.getAffected(device, pointSet);
-        
-        Set<CommandWrapper> wrappedCommands = new HashSet<CommandWrapper>(allPossibleCommands.size());
-        for (CommandDefinition definition : allPossibleCommands) {
-            wrappedCommands.add(new CommandWrapper(definition));
-        }
-        
         // reduce number of commands
-        Set<CommandWrapper> minimalCommands = SetCoveringSolver.getMinimalSet(wrappedCommands, pointSet);
+        Set<CommandWrapper> minimalCommands = getMinimalCommandSet(device, pointSet);
         
         if (minimalCommands == null) {
             throw new RuntimeException("It isn't possible to read " + pointSet + " for device type " + device.getType());
@@ -60,20 +82,9 @@ public class MeterReadServiceImpl implements MeterReadService {
         log.debug("Using " + minimalCommands + " for read");
         
         
-        // send commands
-        List<CommandRequest> commands = new ArrayList<CommandRequest>(minimalCommands.size());
-        for (CommandWrapper wrapper : minimalCommands) {
-            List<String> commandStringList = wrapper.commandDefinition.getCommandStringList();
-            for (String commandStr : commandStringList) {
-                CommandRequest request = new CommandRequest();
-                request.setDeviceId(device.getDeviceId());
-                commandStr += " update";
-                commandStr += " noqueue";
-                request.setCommand(commandStr);
-                commands.add(request);
-            }
-        }
-        
+        // get command requests to send
+        List<CommandRequest> commands = getCommandRequests(device, minimalCommands);
+
         // wait for results
         CommandResultHolder holder;
         try {
@@ -83,6 +94,36 @@ public class MeterReadServiceImpl implements MeterReadService {
         }
         
         return holder;
+    }
+    
+    private List<CommandRequest> getCommandRequests(Meter device, Set<CommandWrapper> commands) {
+        List<CommandRequest> commandRequests = new ArrayList<CommandRequest>(commands.size());
+        for (CommandWrapper wrapper : commands) {
+            List<String> commandStringList = wrapper.commandDefinition.getCommandStringList();
+            for (String commandStr : commandStringList) {
+                CommandRequest request = new CommandRequest();
+                request.setDeviceId(device.getDeviceId());
+                commandStr += (isUpdate ? " update " : "");
+                commandStr += (isNoqueue ? " noqueue " : "");
+
+                request.setCommand(commandStr);
+                commandRequests.add(request);
+            }
+        }
+        return commandRequests;
+    }
+    
+    private Set<CommandWrapper> getMinimalCommandSet(Meter device, Set<DevicePointIdentifier> pointSet) {
+        Set<CommandDefinition> allPossibleCommands = deviceDefinitionDao.getAffected(device, pointSet);
+        
+        Set<CommandWrapper> wrappedCommands = new HashSet<CommandWrapper>(allPossibleCommands.size());
+        for (CommandDefinition definition : allPossibleCommands) {
+            wrappedCommands.add(new CommandWrapper(definition));
+        }
+        
+        // reduce number of commands
+        Set<CommandWrapper> minimalCommands = SetCoveringSolver.getMinimalSet(wrappedCommands, pointSet);
+        return minimalCommands;
     }
     
     private class CommandWrapper implements SetCoveringSolver.HasWeight<DevicePointIdentifier> {
@@ -113,7 +154,6 @@ public class MeterReadServiceImpl implements MeterReadService {
         
     }
     
-    
     @Required
     public void setDeviceDefinitionDao(DeviceDefinitionDao deviceDefinitionDao) {
         this.deviceDefinitionDao = deviceDefinitionDao;
@@ -124,4 +164,14 @@ public class MeterReadServiceImpl implements MeterReadService {
         this.commandExecutor = commandExecutor;
     }
 
+    @Required
+    public void setCommandAuthorizationService(
+			PaoCommandAuthorizationService commandAuthorizationService) {
+		this.commandAuthorizationService = commandAuthorizationService;
+	}
+    
+    @Required
+    public void setPaoDao(PaoDao paoDao) {
+		this.paoDao = paoDao;
+	}
 }
