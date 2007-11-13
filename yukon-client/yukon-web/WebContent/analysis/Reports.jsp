@@ -327,21 +327,12 @@ function checkDates(){
 		  
           <cti:titledContainer title="Filter">
 			<SCRIPT>
-        function selectNoneFilter(group){
-          group.selectedIndex = -1;
-          group.disabled = false;
-          document.reportForm.selectAll.checked = false;
-        }
-        
-        function selectAllFilter(selectVal, group){
-          if (selectVal) {
-            group.disabled = true;
-            for (var i = 0; i < group.length; i++) {
-              group[i].selected = true;     
+
+        function selectAllFilter(booleanValue, element){
+            var options = $("selectFilterValues").options;
+            for (var x = 0; x < options.length; x++) {
+                options[x].selected = booleanValue;
             }
-          } else {
-            group.disabled = false;
-          }
         }
         
         function changeFilter(filterBy) {
@@ -390,7 +381,7 @@ function checkDates(){
         		            <BR><span class='NavText'>* Enter a comma separated list of Device Name(s).</span><br></div>                    
             			<% }else {%>
             				<div id="Div<%=filter.getFilterTitle()%>" style="display:<%=isFirst==0?"true":"none"%>">
-                    		<select name='filterValues' size='10' multiple style='width:350px;'>
+                    		<select id="selectFilterValues" name='filterValues' size='10' multiple style='width:350px;'>
                 			<%List objects = filterObjectsMap.get(filter);%>
                 			<%if (objects != null) {
                     			for (Object object : objects) {
@@ -409,21 +400,14 @@ function checkDates(){
                 			<BR><span class='NavText'>* Hold &lt;CTRL&gt; key down to select multiple values</span><br>
                 			<span class='NavText'>* Hold &lt;Shift&gt; key down to select range of values</span>
                       		<div id='DivSelectAll' style='display:true'>
-                        	<input type='checkbox' name='selectAll' value='selectAll' onclick='selectAllFilter(this.checked, document.reportForm.filterValues);'>Select All
+                        	<input type='checkbox' name='selectAll' value='selectAll' onclick='selectAllFilter(this.checked);'>Select All
                       		</div>
-                      		<div id='DivSelectNone' style='display:true'>         
-                        	<input type='button' value='Unselect All' onclick='selectNoneFilter(document.reportForm.filterValues);'/>
-                      		</div>                
                       	</div>
             			<% } %>
             		<% isFirst++; %>
         			<% }%>
         		</td>
         	</tr>
-          	<tr>
-            	<td class='main' height='10' style='padding-left:5; padding-top:5'>
-        		</td>
-          	</tr>
         </table>
         </cti:titledContainer>
 		<%}%>	  	  	  
