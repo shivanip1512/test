@@ -58,7 +58,7 @@ public class LMHardwareBaseDaoImpl implements LMHardwareBaseDao {
         hardwareBase.setInventoryId(nextId);
         
         int rowsAffected = simpleJdbcTemplate.update(insertSql, hardwareBase.getInventoryId(),
-                                                                hardwareBase.getManufactoruerSerialNumber(),
+                                                                hardwareBase.getManufacturerSerialNumber(),
                                                                 hardwareBase.getLMHarewareTypeId(),
                                                                 hardwareBase.getRouteId(),
                                                                 hardwareBase.getConfigurationId());
@@ -75,7 +75,7 @@ public class LMHardwareBaseDaoImpl implements LMHardwareBaseDao {
     
     @Transactional(readOnly = false, propagation = Propagation.REQUIRED)
     public boolean update(final LMHardwareBase hardwareBase) {
-        int rowsAffected = simpleJdbcTemplate.update(updateSql, hardwareBase.getManufactoruerSerialNumber(),
+        int rowsAffected = simpleJdbcTemplate.update(updateSql, hardwareBase.getManufacturerSerialNumber(),
                                                                 hardwareBase.getLMHarewareTypeId(),
                                                                 hardwareBase.getRouteId(),
                                                                 hardwareBase.getConfigurationId(),

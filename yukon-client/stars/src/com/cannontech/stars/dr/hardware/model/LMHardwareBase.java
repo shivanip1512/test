@@ -2,7 +2,7 @@ package com.cannontech.stars.dr.hardware.model;
 
 public class LMHardwareBase {
     private int inventoryId;
-    private String manufactoruerSerialNumber;
+    private String manufacturerSerialNumber;
     private int LMHarewareTypeId;
     private int routeId;
     private int configurationId;
@@ -35,12 +35,12 @@ public class LMHardwareBase {
         LMHarewareTypeId = harewareTypeId;
     }
 
-    public String getManufactoruerSerialNumber() {
-        return manufactoruerSerialNumber;
+    public String getManufacturerSerialNumber() {
+        return manufacturerSerialNumber;
     }
 
     public void setManufactoruerSerialNumber(String manufactoruerSerialNumber) {
-        this.manufactoruerSerialNumber = manufactoruerSerialNumber;
+        this.manufacturerSerialNumber = manufactoruerSerialNumber;
     }
 
     public int getRouteId() {
@@ -58,7 +58,7 @@ public class LMHardwareBase {
         result = PRIME * result + LMHarewareTypeId;
         result = PRIME * result + configurationId;
         result = PRIME * result + inventoryId;
-        result = PRIME * result + ((manufactoruerSerialNumber == null) ? 0 : manufactoruerSerialNumber.hashCode());
+        result = PRIME * result + ((manufacturerSerialNumber == null) ? 0 : manufacturerSerialNumber.hashCode());
         result = PRIME * result + routeId;
         return result;
     }
@@ -78,10 +78,10 @@ public class LMHardwareBase {
             return false;
         if (inventoryId != other.inventoryId)
             return false;
-        if (manufactoruerSerialNumber == null) {
-            if (other.manufactoruerSerialNumber != null)
+        if (manufacturerSerialNumber == null) {
+            if (other.manufacturerSerialNumber != null)
                 return false;
-        } else if (!manufactoruerSerialNumber.equals(other.manufactoruerSerialNumber))
+        } else if (!manufacturerSerialNumber.equals(other.manufacturerSerialNumber))
             return false;
         if (routeId != other.routeId)
             return false;
