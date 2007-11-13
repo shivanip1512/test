@@ -233,7 +233,7 @@ public class CBCTagHandler {
                     tagManager.createTag(lp.getPointID(),tagID,userName,reason,getReferenceString(cd.getCcId(), tagDesc),tagName);
                 }
             }
-            if( fList.size() > 0 )
+            if (fList != null && fList.size() > 0 )
             {
                 tagManager.createTag(point.getPointID(),tagID,userName,reason,refString,tagName);
                 for( Feeder f : fList )

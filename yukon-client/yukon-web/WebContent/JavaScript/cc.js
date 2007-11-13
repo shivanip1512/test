@@ -186,6 +186,8 @@ function callback() {
 	setTimeout("updateDrawing()", UPDATE_EVERY);
 }
 function updateHTML(xml) {
+    updateBackgroundColor();
+
 	updateSub(xml);
 //	say("after sub");
 	updateFeeders(xml);
@@ -194,6 +196,16 @@ function updateHTML(xml) {
 //	say("after caps");
 
 }
+
+function updateBackgroundColor() {
+    var back = document.getElementById('backgroundRect');
+    if (printableView) {
+        back.setAttribute('style', 'fill:white;');
+    } else {
+        back.setAttribute('style', 'fill:black;');
+    }
+}
+
 function updateSub(xml) {
 	updateImages(SUB_IMAGES, xml);
 	updateHiddenTextElements("SubState", xml, ["isDisable", "isVerify", "subDisableReason", "isOVUVDis", "subDisableOVUVReason"]);
@@ -231,21 +243,18 @@ function updateCaps(xml) {
 }
 
 function updateVisibleText(prefix, xml) {
-	var textEls = document.getElementsByTagName("text");
-	for (var i = 0; i < textEls.length; i++) {
-		textEl = textEls.item(i);
-		var id = textEl.getAttribute("id");
-		if (textEl.getAttribute("id").split("_")[0] == prefix) {
-			xmlDynamicEls = xml.getElementsByTagName("text");
-			for (var j = 0; j < xmlDynamicEls.length; j++) {
-				xmlText = xmlDynamicEls.item(j);
-				xmlID = xmlText.getAttribute("id");
-				if ((xmlID == id) && (i == j)) {
-					textEl.getFirstChild().setData(xmlText.text);
-					color = xmlText.getAttribute("style");
-					textEl.setAttribute("style", color);
-					
-				}
+    var textEls = document.getElementsByTagName("text");
+    for (var i = 0; i < textEls.length; i++) {
+        textEl = textEls.item(i);
+        var id = textEl.getAttribute("id");
+        if (textEl.getAttribute("id").split("_")[0] == prefix) {
+            xmlDynamicEls = xml.getElementsByTagName("text");
+            xmlText = xmlDynamicEls.item(i);
+            xmlID = xmlText.getAttribute("id");
+            if (xmlID == id) {
+                textEl.getFirstChild().setData(xmlText.text);
+                color = xmlText.getAttribute("style");
+			    textEl.setAttribute("style", color);
 			}
 		}
 	}
@@ -275,10 +284,9 @@ function updateHiddenTextElements(grpName, xml, attrs) {
 		id = txtNode.getAttribute("id");
 		if ((id.split("_")[0] == grpName) && txtNode.getAttribute("elementID") == "HiddenTextElement") {
 			xmlDynamicEls = xml.getElementsByTagName("text");
-			for (var j = 0; j < xmlDynamicEls.length; j++) {
-				xmlText = xmlDynamicEls.item(j);
+				xmlText = xmlDynamicEls.item(i);
 				xmlID = xmlText.getAttribute("id");
-				if ((xmlID == id) && xmlText.getAttribute("elementID") == "HiddenTextElement" && i == j) {
+				if ((xmlID == id) && xmlText.getAttribute("elementID") == "HiddenTextElement") {
 					if (attrs == null) {
 						txtNode.getFirstChild().setData(xmlText.text);
 						aElement = txtNode.getParentNode();
@@ -294,7 +302,6 @@ function updateHiddenTextElements(grpName, xml, attrs) {
 						}
 					}
 				}
-			}
 		}
 	}
 }

@@ -12,27 +12,18 @@ var ALL_POPUP_TYPES = {
 	//because they are the children 
 	childCapMaint: "CapBankMaint",
 	childCapDBChange:"CapDBChange",
-	cbcPointTimestamp: "CapPtTmstmp"
+	cbcPointTimestamp: "CapPtTmstmp",
+    
+    legend: "legend"
 };
 
 var clkCountQueue = $H();
 
-
-
 function openPopupWin(elem, compositeIdType) {
-	popupx = parseInt(elem.getAttribute("x"));
-	popupy = parseInt(elem.getAttribute("y"));
-	if (!(popupx || popupy ))
-	{
-		origDiv = document.getElementById("controlrequest");
-		popupx = origDiv.offsetLeft;
-		popupy = origDiv.offsetTop;
-	}
-
 	currentPopup = new PopupWindow("controlrequest");
-	currentPopup.offsetX = popupx + 20;
-	currentPopup.offsetY = popupy - 20;
-	
+	currentPopup.offsetX = x;
+	currentPopup.offsetY = y;
+    
 	currentPopup.autoHide();
 	
 	type = compositeIdType.split("_")[0];
@@ -75,12 +66,26 @@ function openPopupWin(elem, compositeIdType) {
 						showPointTimestamps(id);
 						return;
 	}
+    else if (type == ALL_POPUP_TYPES.legend) {
+        var legendUrl = '/spring/capcontrol/oneline/legend';
+        new Ajax.Request(legendUrl, {
+            method: 'get',
+            onSuccess: function(transport) {
+                currentPopup.offsetX = window.innerWidth/2;
+                currentPopup.offsetY = 0;
+                
+                var html = transport.responseText;
+                showPopup(html);
+            }
+        });
+        return;
+    }
 
 	showPopup(url);
 
 }
 
-function showPopup (html) {
+function showPopup(html) {
 	currentPopup.populate(html);
 	//over-ride this function since we
 	//need to adjust table headers
@@ -94,7 +99,6 @@ function showPopup (html) {
 	window.parent.document.getElementById("controlrequest").style.borderWidth = "thin";
 	window.parent.document.getElementById("controlrequest").style.backgroundColor = "black";
 }
-
 
 function createCapInfoTable (paoName, testData) {
 

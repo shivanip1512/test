@@ -21,7 +21,7 @@
 				<entry key="/checkCapPoint">
 					<ref bean="checkCapPoint" />
 				</entry>
-
+                <entry key="/oneline/legend"><ref bean="onelineLegendController"/></entry>
 			</map>
 		</property>
 	</bean>
@@ -84,6 +84,11 @@
 		class="com.cannontech.web.editor.CheckCapPoint" >
 			<property name="jdbcTemplate" ref="jdbcTemplate"/>
 	</bean>
+    
+    <bean id="onelineLegendController" class="com.cannontech.web.cbc.OnelineLegendController">
+        <property name="stateDao" ref="stateDao"/>
+        <property name="yukonImageDao" ref="yukonImageDao"/>
+    </bean>
 	
 	<!-- Method name resolvers -->
 	<bean id="methodNameResolver"
