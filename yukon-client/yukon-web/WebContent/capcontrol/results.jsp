@@ -3,6 +3,7 @@
 <%@ page import="com.cannontech.web.editor.*" %>
 <%@ page import="com.cannontech.database.data.lite.LiteTypes" %>
 <%@ page import="com.cannontech.web.util.*" %>
+<%@ page import="com.cannontech.web.navigation.CtiNavObject" %>
 <%@ page import="com.cannontech.spring.YukonSpringHook" %>
 <%@ page import="com.cannontech.cbc.cache.CapControlCache" %>
 
@@ -20,6 +21,8 @@
 	String srchCriteria = ParamUtil.getString(request, CCSessionInfo.STR_LAST_SEARCH, null);
 	ParentStringPrinter psp = new ParentStringPrinter (capControlCache);
 	psp.setLinkedToEditors(true);
+	CtiNavObject nav = (CtiNavObject) request.getSession(false).getAttribute(ServletUtil.NAVIGATE);
+	String returnURL = nav.getPreviousPage();
 	if( srchCriteria == null )
 		srchCriteria = ccSession.getLastSearchCriteria();
 
@@ -108,7 +111,7 @@ for( int i = 0; i < items.length; i++ )
             </table>
         </div>
 <br/>        
-<input type="button" value="Back" onclick="history.back()">
+<input type="button" value="Back" onclick="javascript:location.href='<%=returnURL %>'">
 </form>
 <script type="text/javascript">
 Event.observe(window, 'load', function() { new CtiNonScrollTable('resTable','headerTable');    }, false);

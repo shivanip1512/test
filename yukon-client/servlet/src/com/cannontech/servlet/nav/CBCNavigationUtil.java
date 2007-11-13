@@ -34,7 +34,14 @@ public class CBCNavigationUtil {
         CtiNavObject navObject = (CtiNavObject) session.getAttribute("CtiNavObject");
         navObject.getHistory().push(navObject.getCurrentPage());
     }
-                        
+    
+    public static void bookmarkThisLocationCCSpecial(HttpSession session) {
+        CtiNavObject navObject = (CtiNavObject) session.getAttribute("CtiNavObject");
+        navObject.getHistory().push(navObject.getCurrentPage());
+        //Cap control tweak. We want to preserve the previous page for when we come out of faces
+        navObject.setCurrentPage(navObject.getPreviousPage());
+    }
+    
     public static String goBack(HttpSession session) {        
         CtiNavObject navObject = (CtiNavObject) session.getAttribute("CtiNavObject");        
         if (navObject.getHistory().size() >= 1)

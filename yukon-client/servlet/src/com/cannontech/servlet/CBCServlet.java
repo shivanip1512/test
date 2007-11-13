@@ -217,9 +217,11 @@ public void doGet(HttpServletRequest req, HttpServletResponse resp) throws javax
 			if( "nav".equalsIgnoreCase(type) ) {
 				//handle navigation here
 				redirectURL = createNavigation( req );
-                //code to memorize the position of the page we
-                //are at and the page we are going to
-                CBCNavigationUtil.bookmarkLocationAndRedirect(redirectURL, session);
+				
+                //Code to memorize the position of the page we are at.
+				//We want to stop calling setNavigation when entering jsf pages
+				//this sets them up so on the return we end up where we left jsp land.
+				CBCNavigationUtil.bookmarkThisLocationCCSpecial(session);
                 
                 String val = ParamUtil.getString(req, "itemid", null);
                 if( val != null){

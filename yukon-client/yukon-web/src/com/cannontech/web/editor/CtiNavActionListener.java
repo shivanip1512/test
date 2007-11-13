@@ -32,18 +32,22 @@ public class CtiNavActionListener implements ActionListener {
 				
 				String red = "";
 				HttpSession session = (HttpSession) context.getExternalContext().getSession(false);
-                red = CBCNavigationUtil.goBack(session);
-                    if (!red.equalsIgnoreCase("")) {
-                        ctiNav.setNavigation(red);                                   
-                    }
                 
-                //redirect to our module redirect page first, if it set, else
-				// we return to the module exit page
-                    else if( ctiNav.getModuleRedirectPage() != null ) {
-                        red = ctiNav.getModuleRedirectPage();
-                        ctiNav.setModuleRedirectPage( null );
+			    red = CBCNavigationUtil.goBack(session);
+				if (!red.equalsIgnoreCase("")) {
+                    //Tweaking the NavObject so that when the ReferrerPageFilter 
+				    //Catches the page load, it puts the page we want into the Previous Page
+				    ctiNav.setCurrentPage(ctiNav.getCurrentPage());
+                }
+                else if( ctiNav.getModuleRedirectPage() != null ) 
+                {
+                    //redirect to our module redirect page first, if it set, else
+                    // we return to the module exit page
+                    red = ctiNav.getModuleRedirectPage();
+                    ctiNav.setModuleRedirectPage( null );
 				}
-				else {
+				else 
+				{
 					red = ctiNav.getModuleExitPage();
 				}
 

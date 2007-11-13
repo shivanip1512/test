@@ -16,57 +16,54 @@ import com.cannontech.util.ServletUtil;
 import com.cannontech.web.navigation.CtiNavObject;
 
 /**
- * Filter that keeps track of referrer pages and sets 
- * referrer variables in the session for "Back" button functionality.
+ * Filter that keeps track of referrer pages and sets referrer variables in the
+ * session for "Back" button functionality.
  * @author jdayton
  */
 public class ReferrerPageFilter implements Filter {
 
-	// Save the filter config for getting at servlet context
-	private FilterConfig config;
-	
-	/**
-	 * @see javax.servlet.Filter#init(FilterConfig)
-	 */
-	public void init(FilterConfig fc) throws ServletException {
-		config = fc;
-	}
+    // Save the filter config for getting at servlet context
+    private FilterConfig config;
 
-	/**
-	 * @see javax.servlet.Filter#doFilter(ServletRequest, ServletResponse, FilterChain)
-	 */
-	public void doFilter(
-		ServletRequest req,
-		ServletResponse resp,
-		FilterChain chain)
-		throws IOException, ServletException {
-				
-		HttpServletRequest request = (HttpServletRequest) req;
-		HttpServletResponse response = (HttpServletResponse) resp;
+    /**
+     * @see javax.servlet.Filter#init(FilterConfig)
+     */
+    public void init(FilterConfig fc) throws ServletException {
+        config = fc;
+    }
 
-		HttpSession session = request.getSession(false);
-		if(session != null)
-		{
-			CtiNavObject navigator = (CtiNavObject) session.getAttribute(ServletUtil.NAVIGATE);
-			if(navigator == null)
-				navigator = new CtiNavObject();
-			
+    /**
+     * @see javax.servlet.Filter#doFilter(ServletRequest, ServletResponse,
+     *      FilterChain)
+     */
+    public void doFilter(ServletRequest req, ServletResponse resp,
+            FilterChain chain) throws IOException, ServletException {
+
+        HttpServletRequest request = (HttpServletRequest) req;
+        HttpServletResponse response = (HttpServletResponse) resp;
+
+        HttpSession session = request.getSession(false);
+        if (session != null) {
+            CtiNavObject navigator = (CtiNavObject) session.getAttribute(ServletUtil.NAVIGATE);
+            if (navigator == null)
+                navigator = new CtiNavObject();
+
             String url = request.getRequestURL().toString();
             String urlParams = request.getQueryString();
             String navUrl = url + ((urlParams != null) ? "?" + urlParams : "");
-			navigator.setNavigation(navUrl);
-			
-			session.setAttribute(ServletUtil.NAVIGATE, navigator);
-		}
-		
-		chain.doFilter(req,resp);
+            navigator.setNavigation(navUrl);
+
+            session.setAttribute(ServletUtil.NAVIGATE, navigator);
+        }
+
+        chain.doFilter(req, resp);
     }
-	
-	/**
-	 * @see javax.servlet.Filter#destroy()
-	 */
-	public void destroy() {
-		config = null;
-	}
+
+    /**
+     * @see javax.servlet.Filter#destroy()
+     */
+    public void destroy() {
+        config = null;
+    }
 
 }
