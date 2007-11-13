@@ -18,8 +18,8 @@ public interface CommanderRole {
 
     public static final int READ_DEVICE = ApplicationRoleDefs.COMMANDER_PROPERTYID_BASE - 6;
     public static final int WRITE_TO_DEVICE = ApplicationRoleDefs.COMMANDER_PROPERTYID_BASE - 7;
-    public static final int READ_DISCONNECT_DEVICE = ApplicationRoleDefs.COMMANDER_PROPERTYID_BASE - 8;
-    public static final int WRITE_DISCONNECT_DEVICE = ApplicationRoleDefs.COMMANDER_PROPERTYID_BASE - 9;
+    //DEPRECATED 4.0.0 public static final int READ_DISCONNECT_DEVICE = ApplicationRoleDefs.COMMANDER_PROPERTYID_BASE - 8;
+    public static final int CONTROL_DISCONNECT_DEVICE = ApplicationRoleDefs.COMMANDER_PROPERTYID_BASE - 9;
 
     public static final int READ_LM_DEVICE = ApplicationRoleDefs.COMMANDER_PROPERTYID_BASE - 10;
     public static final int WRITE_TO_LM_DEVICE = ApplicationRoleDefs.COMMANDER_PROPERTYID_BASE - 11;
