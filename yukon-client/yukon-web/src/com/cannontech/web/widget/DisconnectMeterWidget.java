@@ -18,6 +18,7 @@ import com.cannontech.common.device.attribute.model.BuiltInAttribute;
 import com.cannontech.common.device.attribute.service.AttributeService;
 import com.cannontech.common.device.commands.CommandRequestExecutor;
 import com.cannontech.common.device.commands.CommandResultHolder;
+import com.cannontech.core.authorization.service.PaoCommandAuthorizationService;
 import com.cannontech.core.dao.NotFoundException;
 import com.cannontech.core.dao.StateDao;
 import com.cannontech.core.dynamic.DynamicDataSource;
@@ -37,6 +38,11 @@ public class DisconnectMeterWidget extends WidgetControllerBase {
     private StateDao stateDao;
     private DynamicDataSource dynamicDataSource;
     private CommandRequestExecutor commandRequestExecutor;
+    private PaoCommandAuthorizationService commandAuthorizationService;
+    
+    private boolean controlable = false;
+    private boolean readable = false;
+    
     private Set<Attribute> disconnectAttribute = Collections.singleton((Attribute)BuiltInAttribute.DISCONNECT_STATUS);
     private enum DISCONNECT_STATE {
         CONNECTED, DISCONNECTED, UNKNOWN}; 
@@ -65,6 +71,14 @@ public class DisconnectMeterWidget extends WidgetControllerBase {
         
         mav.addObject("isConfigured", isConfigured);
         mav.addObject("configString", "");
+        
+        LiteYukonUser user = ServletUtil.getYukonUser(request);
+        controlable = commandAuthorizationService.isAuthorized(user, "control connect", meter);
+        mav.addObject("controlable", controlable);
+
+        readable = meterReadService.isReadable(meter, disconnectAttribute, user);
+        mav.addObject("readable", readable);
+        
         return mav;
     }
 
@@ -113,6 +127,9 @@ public class DisconnectMeterWidget extends WidgetControllerBase {
         mav.addObject("isRead", true);
         mav.addObject("isSupported", true);
         mav.addObject("isConfigured", true);
+        mav.addObject("controlable", controlable);
+        mav.addObject("readable", readable);
+
         return mav;
     }
     
@@ -188,4 +205,10 @@ public class DisconnectMeterWidget extends WidgetControllerBase {
             CommandRequestExecutor commandRequestExecutor) {
         this.commandRequestExecutor = commandRequestExecutor;
     }
+    
+    @Required
+    public void setCommandAuthorizationService(
+			PaoCommandAuthorizationService commandAuthorizationService) {
+		this.commandAuthorizationService = commandAuthorizationService;
+	}
 }

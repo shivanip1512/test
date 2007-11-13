@@ -18,7 +18,7 @@
 	   		</select>
 	   	</td>
 	   	<td colspan="2" align="right">
-	   		<tags:widgetActionUpdate method="requestReport" label="Get Report" labelBusy="Reading" container="${widgetParameters.widgetId}_results"/>
+	   		<tags:widgetActionUpdate hide="${!readable}" method="requestReport" label="Get Report" labelBusy="Reading" container="${widgetParameters.widgetId}_results"/>
 	   	</td>
 	</tr>
 	

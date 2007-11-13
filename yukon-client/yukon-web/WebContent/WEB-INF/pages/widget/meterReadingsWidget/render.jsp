@@ -97,5 +97,5 @@ Event.observe(window,"load", ${widgetParameters.widgetId}_usageSelection);
 <br>
 <div id="${widgetParameters.widgetId}_results"></div>
 <div style="text-align: right">
-<ct:widgetActionUpdate method="read" label="Read Now" labelBusy="Reading" container="${widgetParameters.widgetId}_results"/>
+	<ct:widgetActionUpdate hide="${!readable}" method="read" label="Read Now" labelBusy="Reading" container="${widgetParameters.widgetId}_results"/>
 </div>

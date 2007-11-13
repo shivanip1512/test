@@ -26,6 +26,7 @@ import com.cannontech.common.device.peakReport.model.PeakReportPeakType;
 import com.cannontech.common.device.peakReport.model.PeakReportResult;
 import com.cannontech.common.device.peakReport.model.PeakReportRunType;
 import com.cannontech.common.device.peakReport.service.PeakReportService;
+import com.cannontech.core.authorization.service.PaoCommandAuthorizationService;
 import com.cannontech.core.service.DateFormattingService;
 import com.cannontech.database.data.lite.LiteYukonUser;
 import com.cannontech.util.ServletUtil;
@@ -41,7 +42,9 @@ public class PeakReportWidget extends WidgetControllerBase {
     private MeterDao meterDao = null;
     private DateFormattingService dateFormattingService = null;
     private AttributeService attributeService = null;
+    private PaoCommandAuthorizationService commandAuthorizationService;
     
+    private boolean readable = false;
 
     public ModelAndView render(HttpServletRequest request,
             HttpServletResponse response) throws Exception {
@@ -128,6 +131,9 @@ public class PeakReportWidget extends WidgetControllerBase {
             mav.addObject("peakResult", peakResult);
             addParsedPeakResultValuesToMav(peakResult, mav, user, deviceId, prevChannel);
         }
+        
+        readable = commandAuthorizationService.isAuthorized(user, "getvalue lp peak", meter);
+        mav.addObject("readable", readable);
 
         return mav;
     }
@@ -193,6 +199,8 @@ public class PeakReportWidget extends WidgetControllerBase {
         
         // init mav
         ModelAndView mav = new ModelAndView("peakReportWidget/peakSummaryReportResult.jsp");
+        
+        mav.addObject("readable", readable);
         
         // bad date, return mav with redisplay dates and error msg
         if(!datesOk){
@@ -314,4 +322,10 @@ public class PeakReportWidget extends WidgetControllerBase {
     public void setAttributeService(AttributeService attributeService) {
         this.attributeService = attributeService;
     }
+    
+    @Required
+    public void setCommandAuthorizationService(
+			PaoCommandAuthorizationService commandAuthorizationService) {
+		this.commandAuthorizationService = commandAuthorizationService;
+	}
 }

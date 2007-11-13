@@ -46,7 +46,7 @@
 				</a>
 			</td>
 			<td align="right">
-				<tags:widgetActionRefresh method="getReport" label="Get Report" labelBusy="Get Report" />
+				<tags:widgetActionRefresh hide="${!readable}" method="getReport" label="Get Report" labelBusy="Get Report" />
 			</td>
 		</tr>
 	</table>

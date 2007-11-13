@@ -35,6 +35,7 @@ public class TouWidget extends WidgetControllerBase {
     private MeterReadService meterReadService;
     private TouDao touDao;
 
+    private boolean readable = false;
     /**
      * This method renders the default deviceGroupWidget
      * 
@@ -58,6 +59,10 @@ public class TouWidget extends WidgetControllerBase {
         mav.addObject("meter", meter);
         mav.addObject("isRead", false);
         mav.addObject("rateTypes", touRates);
+        
+        LiteYukonUser user = ServletUtil.getYukonUser(request);
+        readable = meterReadService.isReadable(meter, existingAttributes, user);
+        mav.addObject("readable", readable);
         
         return mav;
     }
@@ -85,6 +90,7 @@ public class TouWidget extends WidgetControllerBase {
         CommandResultHolder result = meterReadService.readMeter(meter, existingAttributes, user);
 
         mav.addObject("result", result);
+        mav.addObject("readable", readable);
         
         return mav;
     }

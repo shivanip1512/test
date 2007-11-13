@@ -13,14 +13,15 @@
   </ct:nameValue>
 </ct:nameValueContainer>
 <BR>
+
 <div style="text-align: right">
-<ct:widgetActionRefresh method="read" label="Read Status" labelBusy="Reading"/>
-<c:if test="${state != 'CONNECTED'}">
-	<ct:widgetActionRefresh method="connect" label="Connect" labelBusy="Connecting"/>
-</c:if>
-<c:if test="${state != 'DISCONNECTED'}">
-	<ct:widgetActionRefresh method="disconnect" label="Disconnect" labelBusy="Disconnecting"/>
-</c:if>
+	<ct:widgetActionRefresh hide="${!readable}" method="read" label="Read Status" labelBusy="Reading"/>
+	<c:if test="${state != 'CONNECTED'}">
+		<ct:widgetActionRefresh hide="${!controllable}" method="connect" label="Connect" labelBusy="Connecting"/>
+	</c:if>
+	<c:if test="${state != 'DISCONNECTED'}">
+		<ct:widgetActionRefresh hide="${!controllable}" method="disconnect" label="Disconnect" labelBusy="Disconnecting"/>
+	</c:if>
 </div>
 <BR>
 <c:if test="${configString != ''}">

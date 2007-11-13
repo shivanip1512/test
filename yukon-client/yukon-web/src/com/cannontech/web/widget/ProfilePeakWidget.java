@@ -15,11 +15,14 @@ import org.springframework.web.bind.ServletRequestBindingException;
 import org.springframework.web.bind.ServletRequestUtils;
 import org.springframework.web.servlet.ModelAndView;
 
+import com.cannontech.amr.meter.dao.MeterDao;
+import com.cannontech.amr.meter.model.Meter;
 import com.cannontech.common.device.peakReport.model.PeakReportPeakType;
 import com.cannontech.common.device.peakReport.model.PeakReportResult;
 import com.cannontech.common.device.peakReport.model.PeakReportRunType;
 import com.cannontech.common.device.peakReport.service.PeakReportService;
 import com.cannontech.common.util.TimeUtil;
+import com.cannontech.core.authorization.service.PaoCommandAuthorizationService;
 import com.cannontech.core.service.DateFormattingService;
 import com.cannontech.database.data.lite.LiteYukonUser;
 import com.cannontech.util.ServletUtil;
@@ -36,16 +39,10 @@ public class ProfilePeakWidget extends WidgetControllerBase {
 
     private PeakReportService peakReportService = null;
     private DateFormattingService dateFormattingService = null;
-
-    @Required
-    public void setDateFormattingService(DateFormattingService dateFormattingService) {
-        this.dateFormattingService = dateFormattingService;
-    }
+    private MeterDao meterDao = null;
+    private PaoCommandAuthorizationService commandAuthorizationService = null;
     
-    @Required
-    public void setPeakReportService(PeakReportService peakReportService) {
-        this.peakReportService = peakReportService;
-    }
+    private boolean readable = false;
 
     public ModelAndView render(HttpServletRequest request,
             HttpServletResponse response) throws Exception {
@@ -58,6 +55,9 @@ public class ProfilePeakWidget extends WidgetControllerBase {
         // Add any previous results for the device into the mav
         int deviceId = WidgetParameterHelper.getRequiredIntParameter(request,
                                                                      "deviceId");
+        // get meter
+        Meter meter = meterDao.getForId(deviceId);
+        
         // pre
         PeakReportResult preResult = peakReportService.retrieveArchivedPeakReport(deviceId, PeakReportRunType.PRE, user);
         mav.addObject("preResult", preResult);
@@ -90,6 +90,8 @@ public class ProfilePeakWidget extends WidgetControllerBase {
             mav.addObject("postPeakValue",postMap.get("peakValueStr"));
         }
         
+        readable = commandAuthorizationService.isAuthorized(user, "getvalue lp peak", meter);
+        mav.addObject("readable", readable);
 
         return mav;
     }
@@ -107,7 +109,9 @@ public class ProfilePeakWidget extends WidgetControllerBase {
         long postCommandDays = 0;
         
         int deviceId = WidgetParameterHelper.getRequiredIntParameter(request, "deviceId");
-        
+
+        mav.addObject("readable", readable);
+
         // Get the user's timezone
         LiteYukonUser user = ServletUtil.getYukonUser(request);
         
@@ -275,4 +279,24 @@ public class ProfilePeakWidget extends WidgetControllerBase {
         return days;
     }
 
+    @Required
+    public void setDateFormattingService(DateFormattingService dateFormattingService) {
+        this.dateFormattingService = dateFormattingService;
+    }
+    
+    @Required
+    public void setPeakReportService(PeakReportService peakReportService) {
+        this.peakReportService = peakReportService;
+    }
+    
+    @Required
+    public void setCommandAuthorizationService(
+			PaoCommandAuthorizationService commandAuthorizationService) {
+		this.commandAuthorizationService = commandAuthorizationService;
+	}
+    
+    @Required
+    public void setMeterDao(MeterDao meterDao) {
+		this.meterDao = meterDao;
+	}
 }
