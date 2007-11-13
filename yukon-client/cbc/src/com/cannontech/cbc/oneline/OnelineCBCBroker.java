@@ -275,7 +275,7 @@ public class OnelineCBCBroker implements MessageListener {
         CTILogger.info("Stopping CBC One-Line ....");
         try {
             getConnection().removeMessageListener(this);
-            CTILogger.info("CBC One-Line successfully stoped.");
+            CTILogger.info("CBC One-Line successfully stopped.");
         } catch (Exception e) {
             CTILogger.info("CBC One-Line could not be stopped: " + e.getMessage());
         }

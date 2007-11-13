@@ -48,7 +48,7 @@ public class CBCSpecialAreaDataModel extends EditorDataModelImpl {
             }
 
             void populateUnassigned() {
-                CcSubstationDao dao = YukonSpringHook.getBean("subStationDao", CcSubstationDao.class);
+                CcSubstationDao dao = YukonSpringHook.getBean("ccSubstationDao", CcSubstationDao.class);
                 unassignedSubs = dao.getAllSpecialAreaUnassignedSubstationIds(areaPers.getPAObjectID());
             }
         };
