@@ -403,6 +403,7 @@ div.boxContainer .titleBar {
 }
 
 div.boxContainer .titleBar .title { 
+	color: #0066CC;
 	line-height: 1.5em;
 	font-weight: bold;
     font-size: 12px;
