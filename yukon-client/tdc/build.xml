@@ -28,8 +28,7 @@
             <attribute name="Yukon-Details" value="${yukon.build.details}"/>
         </manifest>
  	    <fileset dir="resource">
-			<include name="**/*.gif"/>
-	 		<include name="**/*.ico"/>
+ 	    	<exclude name="**/*.java"/>
 		</fileset>
 	</jar>
 

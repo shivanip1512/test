@@ -27,9 +27,13 @@
                <attribute name="Yukon-Version" value="${yukon.build.version}"/>
                <attribute name="Yukon-Details" value="${yukon.build.details}"/>
            </manifest>
-	 	    <fileset dir="resource/">
-	 			<include name="**/*.ico"/>
-		    </fileset>
+	 	   <fileset dir="resource/">
+	 		   <include name="**/*.ico"/>
+		   </fileset>
+       	   <fileset dir="src">
+       	       <exclude name="**/*.java"/>
+       	   </fileset>
+
 		</jar>
 
 	<copy todir="${yukon.lib}">

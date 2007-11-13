@@ -32,6 +32,10 @@
             <fileset dir="src">
                 <include name="**/*.xml"/>
             </fileset>
+			<fileset dir="src">
+			    <exclude name="**/*.java"/>
+			</fileset>
+
 		</jar>
 	</target>
 

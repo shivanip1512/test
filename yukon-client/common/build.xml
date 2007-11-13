@@ -32,8 +32,7 @@
 		 		<include name="**/*.au"/>
 			</fileset>
 		    <fileset dir="src">
-		 		<include name="**/*.tcl"/>
-		 		<include name="**/*.xml"/>
+		    	<exclude name="**/*.java"/>
 			</fileset>
        	</jar>
 

@@ -31,7 +31,11 @@
 		    <fileset dir="resource">
 				<include name="**/*.gif"/>
 		 		<include name="**/*.ico"/>       	
-			</fileset>   	
+			</fileset>
+			<fileset dir="src">
+			    <exclude name="**/*.java"/>
+			</fileset>
+
 		</jar>
 	</target>
 

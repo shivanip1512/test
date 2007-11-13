@@ -29,6 +29,10 @@
 				<include name="**/*.gif"/>
 				<include name="**/*.ico"/>
 			</fileset>       	
+       	    <fileset dir="src">
+       	        <exclude name="**/*.java"/>
+       	    </fileset>
+
        	</jar>
             
         <copy todir="${yukon.lib}/images">
