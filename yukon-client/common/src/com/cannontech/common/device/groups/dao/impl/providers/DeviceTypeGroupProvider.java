@@ -37,9 +37,10 @@ public class DeviceTypeGroupProvider extends DeviceGroupProviderBase {
             sql.append("SELECT ypo.paobjectid, ypo.type");
             sql.append("FROM Device d");
             sql.append("JOIN YukonPaObject ypo ON (d.deviceid = ypo.paobjectid)");
-            sql.append("JOIN devicecarriersettings dcs ON (dcs.deviceid = ypo.paobjectid)");
+            sql.append("LEFT OUTER JOIN devicecarriersettings dcs ON (dcs.deviceid = ypo.paobjectid)");
             sql.append("JOIN devicemetergroup dmg ON (dmg.deviceid = ypo.paobjectid)");
-            sql.append("JOIN DeviceRoutes dr ON (d.deviceid = dr.deviceid)");
+            sql.append("LEFT OUTER JOIN DeviceRoutes dr ON (d.deviceid = dr.deviceid)");
+            sql.append("LEFT OUTER JOIN YukonPaObject rypo ON (dr.routeid = rypo.paobjectid)");
             sql.append("WHERE ypo.type = ?");
             
             
@@ -65,9 +66,10 @@ public class DeviceTypeGroupProvider extends DeviceGroupProviderBase {
         sql.append("SELECT DISTINCT ypo.type");
         sql.append("FROM Device d");
         sql.append("JOIN YukonPaObject ypo ON (d.deviceid = ypo.paobjectid)");
-        sql.append("JOIN devicecarriersettings dcs ON (dcs.deviceid = ypo.paobjectid)");
+        sql.append("LEFT OUTER JOIN devicecarriersettings dcs ON (dcs.deviceid = ypo.paobjectid)");
         sql.append("JOIN devicemetergroup dmg ON (dmg.deviceid = ypo.paobjectid)");
-        sql.append("JOIN DeviceRoutes dr ON (d.deviceid = dr.deviceid)");
+        sql.append("LEFT OUTER JOIN DeviceRoutes dr ON (d.deviceid = dr.deviceid)");
+        sql.append("LEFT OUTER JOIN YukonPaObject rypo ON (dr.routeid = rypo.paobjectid)");
         sql.append("ORDER BY ypo.type");
 
         ParameterizedRowMapper<DeviceTypeDeviceGroup> mapper = new ParameterizedRowMapper<DeviceTypeDeviceGroup>() {
