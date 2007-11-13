@@ -31,7 +31,7 @@ public class LMHardwareBaseDaoImpl implements LMHardwareBaseDao {
     
     static {
         
-        insertSql = "INSERT INTO LMHwardwareBase (InventoryID,ManufacturerSerialNumber,LMHardwareTypeID,RouteID,ConfigurationID) VALUES (?,?,?,?,?)";
+        insertSql = "INSERT INTO LMHardwareBase (InventoryID,ManufacturerSerialNumber,LMHardwareTypeID,RouteID,ConfigurationID) VALUES (?,?,?,?,?)";
         
         removeSql = "DELETE FROM LMHardwareBase WHERE InventoryID = ?";
          
