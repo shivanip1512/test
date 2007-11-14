@@ -9,6 +9,7 @@
 <%@ page import="com.cannontech.web.navigation.CtiNavObject" %>
 <%@ page import="com.cannontech.spring.YukonSpringHook" %>
 <%@ page import="com.cannontech.cbc.cache.CapControlCache" %>
+<%@ page import="com.cannontech.util.ServletUtil" %>
 
 <jsp:directive.page import="com.cannontech.database.db.capcontrol.RecentControls"/>
 <cti:standardPage title="Results" module="capcontrol">
