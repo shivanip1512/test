@@ -35,7 +35,7 @@ public class MeterReadServiceImpl implements MeterReadService {
     private boolean isUpdate = true;
     private boolean isNoqueue = true;
     
-    public boolean isReadable(Meter device, Set<Attribute> attributes, LiteYukonUser user) {
+    public boolean isReadable(Meter device, Set<? extends Attribute> attributes, LiteYukonUser user) {
     	log.debug("Validating Readability for" + attributes + " on device " + device + " for " + user);
     	
         // reduce number of commands
@@ -63,7 +63,7 @@ public class MeterReadServiceImpl implements MeterReadService {
     	return true;
     }
     
-    public CommandResultHolder readMeter(Meter device, Set<Attribute> attributes, LiteYukonUser user) {
+    public CommandResultHolder readMeter(Meter device, Set<? extends Attribute> attributes, LiteYukonUser user) {
         log.info("Reading " + attributes + " on device " + device + " for " + user);
         
         // figure out which commands to send

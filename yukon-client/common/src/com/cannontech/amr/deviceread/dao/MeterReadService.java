@@ -19,7 +19,7 @@ public interface MeterReadService {
      * @param device
      * @param attribute
      */
-    public CommandResultHolder readMeter(Meter device, Set<Attribute> attribute, LiteYukonUser user);
+    public CommandResultHolder readMeter(Meter device, Set<? extends Attribute> attribute, LiteYukonUser user);
 
     /**
      * This method will verify which commands need to be sent to read the attributes.  If there
@@ -32,5 +32,5 @@ public interface MeterReadService {
      * @param user
      * @return
      */
-    public boolean isReadable(Meter device, Set<Attribute> attributes, LiteYukonUser user);
+    public boolean isReadable(Meter device, Set<? extends Attribute> attributes, LiteYukonUser user);
 }

@@ -44,8 +44,8 @@ public class DisconnectMeterWidget extends WidgetControllerBase {
     private final String CONTROL_DISCONNECT_COMMAND = "control disconnect";
     
     
-    private Set<Attribute> disconnectAttribute = Collections.singleton((Attribute)BuiltInAttribute.DISCONNECT_STATUS);
-    private enum DISCONNECT_STATE {
+    private Set<? extends Attribute> disconnectAttribute = Collections.singleton(BuiltInAttribute.DISCONNECT_STATUS);
+    private enum DisconnectState {
         CONNECTED, DISCONNECTED, UNKNOWN}; 
 
     
@@ -175,9 +175,9 @@ public class DisconnectMeterWidget extends WidgetControllerBase {
         return mav;
     }
     
-    private DISCONNECT_STATE getDisconnectedState(CommandResultHolder result) {
+    private DisconnectState getDisconnectedState(CommandResultHolder result) {
         if( result.getValues().isEmpty())
-            return DISCONNECT_STATE.UNKNOWN;
+            return DisconnectState.UNKNOWN;
 
         double value = result.getValues().get(0).getValue();
         return getDisconnectedState(value);
@@ -192,12 +192,12 @@ public class DisconnectMeterWidget extends WidgetControllerBase {
      * @param value
      * @return true if value is a disconnected state
      */
-    private DISCONNECT_STATE getDisconnectedState(double value) {
+    private DisconnectState getDisconnectedState(double value) {
 
         if (value == 0 || value == 2) 
-            return DISCONNECT_STATE.DISCONNECTED;
+            return DisconnectState.DISCONNECTED;
         else 
-            return DISCONNECT_STATE.CONNECTED;
+            return DisconnectState.CONNECTED;
     }
     
     @Required
