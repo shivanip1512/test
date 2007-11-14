@@ -29,6 +29,8 @@ public interface LMHardwareControlGroupDao {
     
     public List<LMHardwareControlGroup> getByOptOutStopDateRange(Date first, Date second);
     
+    public LMHardwareControlGroup getByInventoryIdAndGroupIdAndAccountId(int inventoryId, int lmGroupId, int accountId);
+    
     public List<LMHardwareControlGroup> getAll();
     
 }

@@ -24,6 +24,17 @@
         <property name="porterConnection" ref="porterConnection"/>
     </bean>
 
+	<bean id="lmHardwareControlInformationService" class="com.cannontech.stars.dr.hardware.service.impl.LMHardwareControlInformationServiceImpl">
+		<property name="lmHardwareControlGroupDao" ref="lmHardwareControlGroupDao"/>
+		    <property name="dateFormattingService" ref="dateFormattingService"/>
+	</bean>
+	
+	<bean id="lmHardwareControlGroupDao"
+        class="com.cannontech.stars.dr.hardware.dao.impl.LMHardwareControlGroupDaoImpl">
+        <property name="nextValueHelper" ref="nextValueHelper" />
+        <property name="simpleJdbcTemplate" ref="simpleJdbcTemplate" />
+    </bean>
+	
     <bean id="customerAccountDao"
         class="com.cannontech.stars.dr.account.dao.impl.CustomerAccountDaoImpl">
         <property name="nextValueHelper" ref="nextValueHelper" />

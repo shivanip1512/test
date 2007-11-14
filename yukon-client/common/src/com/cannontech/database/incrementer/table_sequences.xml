@@ -97,5 +97,8 @@
       <sequence name="DeviceConfigItem">
         <table name="DeviceConfigurationItem" identitycolumn="DeviceConfigurationItemId" initsequence="true"/>
       </sequence>
+      <sequence name="LMHardwareControlGroup">
+        <table name="LMHardwareControlGroup" identitycolumn="ControlEntryId" initsequence="true"/>
+      </sequence>
   </sequencetable>
 </sequencetables>

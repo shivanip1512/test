@@ -29,6 +29,7 @@ public class LMHardwareControlGroupDaoImpl implements LMHardwareControlGroupDao 
     private static final String selectByEnrollStopRange;
     private static final String selectByOptOutStartRange;
     private static final String selectByOptOutStopRange;
+    private static final String selectByInventoryIdAndGroupIdAndAccountId;
     private static final ParameterizedRowMapper<LMHardwareControlGroup> rowMapper;
     private SimpleJdbcTemplate simpleJdbcTemplate;
     private NextValueHelper nextValueHelper;
@@ -61,6 +62,8 @@ public class LMHardwareControlGroupDaoImpl implements LMHardwareControlGroupDao 
         selectByOptOutStartRange = selectAllSql + " WHERE OptOutStart > ? AND OptOutStart <= ?";
         
         selectByOptOutStopRange = selectAllSql + " WHERE OptOutStop > ? AND OptOutStop <= ?";
+        
+        selectByInventoryIdAndGroupIdAndAccountId = selectAllSql + " WHERE InventoryID = ? AND LMGroupID = ? AND AccountID = ?";
         
         rowMapper = LMHardwareControlGroupDaoImpl.createRowMapper();
     }
@@ -177,6 +180,12 @@ public class LMHardwareControlGroupDaoImpl implements LMHardwareControlGroupDao 
         } catch (DataAccessException e) {
             return Collections.emptyList();
         } 
+    }
+    
+    @Transactional(readOnly = true, propagation = Propagation.SUPPORTS)
+    public LMHardwareControlGroup getByInventoryIdAndGroupIdAndAccountId(int inventoryId, int lmGroupId, int accountId) {
+        LMHardwareControlGroup hardwareControlGroup = simpleJdbcTemplate.queryForObject(selectByInventoryIdAndGroupIdAndAccountId, rowMapper, inventoryId, lmGroupId, accountId);
+        return hardwareControlGroup;
     }
     
     @Transactional(readOnly = true, propagation = Propagation.SUPPORTS)

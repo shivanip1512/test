@@ -350,7 +350,7 @@ public class UpdateLMHardwareConfigAction implements ActionBase {
 				progSignUp.getStarsSULMPrograms().addSULMProgram( suProg );
 			}
 			
-			hwsToConfig = ProgramSignUpAction.updateProgramEnrollment( progSignUp, liteAcctInfo, liteHw, energyCompany );
+			hwsToConfig = ProgramSignUpAction.updateProgramEnrollment( progSignUp, liteAcctInfo, liteHw, energyCompany, null );
 			
 			if (!hwsToConfig.contains( liteHw ))
 				hwsToConfig.add( 0, liteHw );

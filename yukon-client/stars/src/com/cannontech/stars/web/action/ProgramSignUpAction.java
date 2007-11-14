@@ -2,6 +2,7 @@ package com.cannontech.stars.web.action;
 
 import java.util.ArrayList;
 import java.util.Date;
+import java.util.HashMap;
 import java.util.Hashtable;
 import java.util.Iterator;
 import java.util.List;
@@ -14,10 +15,12 @@ import com.cannontech.clientutils.ActivityLogger;
 import com.cannontech.clientutils.CTILogger;
 import com.cannontech.common.constants.YukonListEntryTypes;
 import com.cannontech.core.dao.DaoFactory;
+import com.cannontech.core.service.DateFormattingService;
 import com.cannontech.database.Transaction;
 import com.cannontech.database.TransactionException;
 import com.cannontech.database.cache.StarsDatabaseCache;
 import com.cannontech.database.data.activity.ActivityLogActions;
+import com.cannontech.database.data.lite.LiteYukonUser;
 import com.cannontech.database.data.lite.stars.LiteApplianceCategory;
 import com.cannontech.database.data.lite.stars.LiteInventoryBase;
 import com.cannontech.database.data.lite.stars.LiteLMProgramEvent;
@@ -32,6 +35,8 @@ import com.cannontech.database.db.stars.hardware.LMHardwareConfiguration;
 import com.cannontech.roles.consumer.ResidentialCustomerRole;
 import com.cannontech.roles.operator.ConsumerInfoRole;
 import com.cannontech.roles.yukon.EnergyCompanyRole;
+import com.cannontech.spring.YukonSpringHook;
+import com.cannontech.stars.dr.hardware.service.LMHardwareControlInformationService;
 import com.cannontech.stars.util.EventUtils;
 import com.cannontech.stars.util.ServerUtils;
 import com.cannontech.stars.util.ServletUtils;
@@ -131,10 +136,19 @@ public class ProgramSignUpAction implements ActionBase {
 	public SOAPMessage process(SOAPMessage reqMsg, HttpSession session) {
 		StarsOperation respOper = new StarsOperation();
         
+        /*
+         * New enrollment, opt out, and control history tracking
+         */
+        LMHardwareControlInformationService lmHardwareControlInformationService = (LMHardwareControlInformationService) YukonSpringHook.getBean("lmHardwareControlInformationService");
+        HashMap<Integer, Integer> inventoryIDToGroupIDMap = new HashMap<Integer, Integer>(5);
+        /*
+         * */
+        
 		try {
 			StarsOperation reqOper = SOAPUtil.parseSOAPMsgForOperation( reqMsg );
 			
 			StarsYukonUser user = (StarsYukonUser) session.getAttribute( ServletUtils.ATT_STARS_YUKON_USER );
+            LiteYukonUser liteUser = (LiteYukonUser) session.getAttribute( ServletUtils.ATT_YUKON_USER );
 			StarsProgramSignUp progSignUp = reqOper.getStarsProgramSignUp();
             
 			int energyCompanyID = progSignUp.getEnergyCompanyID();
@@ -205,7 +219,7 @@ public class ProgramSignUpAction implements ActionBase {
 			StarsInventories starsInvs = new StarsInventories();
 			
 			try {
-				ArrayList hwsToConfig = updateProgramEnrollment( progSignUp, liteAcctInfo, null, energyCompany );
+				ArrayList hwsToConfig = updateProgramEnrollment( progSignUp, liteAcctInfo, null, energyCompany, inventoryIDToGroupIDMap );
 				
 				// Send out the config/disable command
 				for (int i = 0; i < hwsToConfig.size(); i++) {
@@ -221,10 +235,17 @@ public class ProgramSignUpAction implements ActionBase {
 							YukonSwitchCommandAction.sendConfigCommand( energyCompany, liteHw, false, null );
 						else if (liteHw.getDeviceStatus() == YukonListEntryTypes.YUK_DEF_ID_DEV_STAT_UNAVAIL)
 							YukonSwitchCommandAction.sendEnableCommand( energyCompany, liteHw, null );
+                        lmHardwareControlInformationService.startEnrollment(liteHw.getInventoryID(), inventoryIDToGroupIDMap.get(liteHw.getInventoryID()), liteHw.getAccountID(), liteUser);
 					}
 					else {
 						// Send disable command to hardware
 						YukonSwitchCommandAction.sendDisableCommand( energyCompany, liteHw, null );
+                        /*
+                         * New enrollment, opt out, and control history tracking should properly be used
+                         * in tandem with the actual switch getting disabled/enabled/configged, hence
+                         * placing it here.
+                         */
+                        lmHardwareControlInformationService.stopEnrollment(liteHw.getInventoryID(), inventoryIDToGroupIDMap.get(liteHw.getInventoryID()), liteHw.getAccountID(), liteUser);
 					}
 					
 					StarsInventory starsInv = StarsLiteFactory.createStarsInventory( liteHw, energyCompany );
@@ -352,7 +373,7 @@ public class ProgramSignUpAction implements ActionBase {
 	}
 	
 	public static ArrayList updateProgramEnrollment(StarsProgramSignUp progSignUp, LiteStarsCustAccountInformation liteAcctInfo,
-		LiteInventoryBase liteInv, LiteStarsEnergyCompany energyCompany) throws WebClientException
+		LiteInventoryBase liteInv, LiteStarsEnergyCompany energyCompany, HashMap<Integer, Integer> inventoryToGroupIDMap) throws WebClientException
 	{
 		StarsSULMPrograms programs = progSignUp.getStarsSULMPrograms();
 		ArrayList hwsToConfig = new ArrayList();
@@ -679,8 +700,11 @@ public class ProgramSignUpAction implements ActionBase {
 					liteApp = StarsLiteFactory.createLiteStarsAppliance( app, energyCompany );
 					newAppList.add( liteApp );
 				}
+                
+                if(inventoryToGroupIDMap != null)
+                    inventoryToGroupIDMap.put(liteHw.getInventoryID(), groupID);
 			}
-			
+            
 			// Update appliances saved earlier
 			for (int i = 0; i < appsToUpdate.size(); i++) {
 				LiteStarsAppliance liteApp = (LiteStarsAppliance) appsToUpdate.get(i);

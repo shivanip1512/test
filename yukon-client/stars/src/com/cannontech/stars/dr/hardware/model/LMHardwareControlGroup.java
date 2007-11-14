@@ -14,6 +14,12 @@ public class LMHardwareControlGroup {
     
     public LMHardwareControlGroup() { 
     }
+    
+    public LMHardwareControlGroup(int inventoryId, int loadGroupId, int accountId) { 
+        this.inventoryId = inventoryId;
+        this.lmGroupId = loadGroupId;
+        this.accountId = accountId;
+    }
 
     public int getInventoryId() {
         return inventoryId;
