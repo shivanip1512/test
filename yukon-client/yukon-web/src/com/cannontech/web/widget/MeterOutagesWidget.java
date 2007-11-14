@@ -45,8 +45,6 @@ public class MeterOutagesWidget extends WidgetControllerBase {
     private AttributeService attributeService;
     private PointFormattingService pointFormattingService;
 
-    private boolean readable = false;
-
     //Contains <DeviceID>,<PerishableOutageData>
     private ExpireLRUMap<Integer,PerishableOutageData> recentOutageLogs = 
         new ExpireLRUMap<Integer,PerishableOutageData>(100);
@@ -121,7 +119,7 @@ public class MeterOutagesWidget extends WidgetControllerBase {
         mav.addObject("data", data);
                              
         LiteYukonUser user = ServletUtil.getYukonUser(request);
-        readable = meterReadService.isReadable(meter, allExistingAttributes, user);
+        boolean readable = meterReadService.isReadable(meter, allExistingAttributes, user);
         mav.addObject("readable", readable);
 
         return mav;
@@ -147,6 +145,9 @@ public class MeterOutagesWidget extends WidgetControllerBase {
         
         mav.addObject("result", result);
         
+        boolean readable = meterReadService.isReadable(meter, allExistingAttributes, user);
+        mav.addObject("readable", readable);
+        
         return mav;
     }
     
@@ -158,7 +159,6 @@ public class MeterOutagesWidget extends WidgetControllerBase {
         mav.addObject("isRead", false);
         mav.addObject("state", OutageState.UNKNOWN);
         
-        mav.addObject("readable", readable);
         mav.addObject("isBlinkConfigured", allExistingAttributes.contains(BuiltInAttribute.BLINK_COUNT) );
         mav.addObject("isOutageSupported", attributeService.isAttributeSupported(meter, BuiltInAttribute.OUTAGE_LOG) );
         mav.addObject("isOutageConfigured", allExistingAttributes.contains(BuiltInAttribute.OUTAGE_LOG) );

@@ -43,8 +43,6 @@ public class MeterReadingsWidget extends WidgetControllerBase {
     private RawPointHistoryDao rphDao;
     private List<? extends Attribute> attributesToShow;
 
-    private boolean readable = false;
-    
     public void setMeterReadService(MeterReadService meterReadService) {
         this.meterReadService = meterReadService;
     }
@@ -72,7 +70,7 @@ public class MeterReadingsWidget extends WidgetControllerBase {
 
         allExistingAttributes.retainAll(attributesToShow);
         LiteYukonUser user = ServletUtil.getYukonUser(request);
-        readable = meterReadService.isReadable(meter, allExistingAttributes, user);
+        boolean readable = meterReadService.isReadable(meter, allExistingAttributes, user);
         mav.addObject("readable", readable);
 
         return mav;
@@ -128,8 +126,9 @@ public class MeterReadingsWidget extends WidgetControllerBase {
         
         mav.addObject("result", result);
         
+        boolean readable = meterReadService.isReadable(meter, allExistingAttributes, user);
         mav.addObject("readable", readable);
-        
+
         return mav;
     }
 

@@ -44,8 +44,6 @@ public class PeakReportWidget extends WidgetControllerBase {
     private AttributeService attributeService = null;
     private PaoCommandAuthorizationService commandAuthorizationService;
     
-    private boolean readable = false;
-
     public ModelAndView render(HttpServletRequest request,
             HttpServletResponse response) throws Exception {
 
@@ -132,7 +130,7 @@ public class PeakReportWidget extends WidgetControllerBase {
             addParsedPeakResultValuesToMav(peakResult, mav, user, deviceId, prevChannel);
         }
         
-        readable = commandAuthorizationService.isAuthorized(user, "getvalue lp peak", meter);
+        boolean readable = commandAuthorizationService.isAuthorized(user, "getvalue lp peak", meter);
         mav.addObject("readable", readable);
 
         return mav;
@@ -146,6 +144,9 @@ public class PeakReportWidget extends WidgetControllerBase {
 
         // deviceId
         int deviceId = WidgetParameterHelper.getRequiredIntParameter(request, "deviceId");
+        
+        // get meter
+        Meter meter = meterDao.getForId(deviceId);
         
         // channel
         int channel = WidgetParameterHelper.getRequiredIntParameter(request, "channel");
@@ -200,6 +201,7 @@ public class PeakReportWidget extends WidgetControllerBase {
         // init mav
         ModelAndView mav = new ModelAndView("peakReportWidget/peakSummaryReportResult.jsp");
         
+        boolean readable = commandAuthorizationService.isAuthorized(user, "getvalue lp peak", meter);
         mav.addObject("readable", readable);
         
         // bad date, return mav with redisplay dates and error msg

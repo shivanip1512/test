@@ -42,8 +42,6 @@ public class ProfilePeakWidget extends WidgetControllerBase {
     private MeterDao meterDao = null;
     private PaoCommandAuthorizationService commandAuthorizationService = null;
     
-    private boolean readable = false;
-
     public ModelAndView render(HttpServletRequest request,
             HttpServletResponse response) throws Exception {
 
@@ -90,7 +88,7 @@ public class ProfilePeakWidget extends WidgetControllerBase {
             mav.addObject("postPeakValue",postMap.get("peakValueStr"));
         }
         
-        readable = commandAuthorizationService.isAuthorized(user, "getvalue lp peak", meter);
+        boolean readable = commandAuthorizationService.isAuthorized(user, "getvalue lp peak", meter);
         mav.addObject("readable", readable);
 
         return mav;
@@ -110,11 +108,15 @@ public class ProfilePeakWidget extends WidgetControllerBase {
         
         int deviceId = WidgetParameterHelper.getRequiredIntParameter(request, "deviceId");
 
-        mav.addObject("readable", readable);
-
+        // get meter
+        Meter meter = meterDao.getForId(deviceId);
+        
         // Get the user's timezone
         LiteYukonUser user = ServletUtil.getYukonUser(request);
         
+        boolean readable = commandAuthorizationService.isAuthorized(user, "getvalue lp peak", meter);
+        mav.addObject("readable", readable);
+
         // Get the report type for the commands
         String reportType = ServletRequestUtils.getRequiredStringParameter(request,
                                                                            "reportType");

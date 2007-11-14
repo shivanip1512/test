@@ -40,9 +40,6 @@ public class DisconnectMeterWidget extends WidgetControllerBase {
     private CommandRequestExecutor commandRequestExecutor;
     private PaoCommandAuthorizationService commandAuthorizationService;
     
-    private boolean controlable = false;
-    private boolean readable = false;
-    
     private Set<Attribute> disconnectAttribute = Collections.singleton((Attribute)BuiltInAttribute.DISCONNECT_STATUS);
     private enum DISCONNECT_STATE {
         CONNECTED, DISCONNECTED, UNKNOWN}; 
@@ -73,10 +70,10 @@ public class DisconnectMeterWidget extends WidgetControllerBase {
         mav.addObject("configString", "");
         
         LiteYukonUser user = ServletUtil.getYukonUser(request);
-        controlable = commandAuthorizationService.isAuthorized(user, "control connect", meter);
+        boolean controlable = commandAuthorizationService.isAuthorized(user, "control connect", meter);
         mav.addObject("controlable", controlable);
 
-        readable = meterReadService.isReadable(meter, disconnectAttribute, user);
+        boolean readable = meterReadService.isReadable(meter, disconnectAttribute, user);
         mav.addObject("readable", readable);
         
         return mav;
@@ -98,6 +95,13 @@ public class DisconnectMeterWidget extends WidgetControllerBase {
         mav.addObject("configString", configStr);
         
         mav.addObject("result", result);
+        
+        boolean controlable = commandAuthorizationService.isAuthorized(user, "control connect", meter);
+        mav.addObject("controlable", controlable);
+
+        boolean readable = meterReadService.isReadable(meter, disconnectAttribute, user);
+        mav.addObject("readable", readable);
+
         return mav;
     }
 
@@ -127,9 +131,7 @@ public class DisconnectMeterWidget extends WidgetControllerBase {
         mav.addObject("isRead", true);
         mav.addObject("isSupported", true);
         mav.addObject("isConfigured", true);
-        mav.addObject("controlable", controlable);
-        mav.addObject("readable", readable);
-
+        
         return mav;
     }
     
@@ -146,6 +148,12 @@ public class DisconnectMeterWidget extends WidgetControllerBase {
         
         mav.addObject("errorsExist", result.isErrorsExist());
         mav.addObject("result", result);
+        
+        boolean controlable = commandAuthorizationService.isAuthorized(user, "control connect", meter);
+        mav.addObject("controlable", controlable);
+
+        boolean readable = meterReadService.isReadable(meter, disconnectAttribute, user);
+        mav.addObject("readable", readable);
         
         return mav;
     }
