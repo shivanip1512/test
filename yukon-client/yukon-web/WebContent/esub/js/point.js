@@ -23,7 +23,7 @@ function showPointDetails(evt, allowControl) {
 	
 	var url = "/esub/jsp/point_detail.jsp?pointid=" + id + "&controlPointId=" + controlPointId + "&allowControl=" + allowControl;
 		
-	getURL(url, handleShowPointReq);
+	getCtiURL(url, handleShowPointReq);
 	
 }
 
@@ -77,7 +77,7 @@ function showControlWindow(pointID) {
  */
 function submitControl(pointid, rawstate) {
 	var url = '/servlet/ControlServlet?id=' + pointid + '&rawstate=' + rawstate;
-	getURL(url, null);
+	getCtiURL(url, null);
 }
 
 function submitControlXMLHttp(pointid, rawstate, close) {

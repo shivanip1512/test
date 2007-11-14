@@ -6,7 +6,7 @@ function editValue(evt) {
 	var newVal = prompt("Enter the new value:",node.getFirstChild.getData());
 	if (newVal) {
 		url = '/servlet/UpdateAttribute' + '?' +'id=' + node.getAttribute('id')  + '&dattrib=' + node.getAttribute('dattrib') + '&value=' + newVal;
-		getURL(url, fn);
+		getCtiURL(url, fn);
 	}
 	
 	function fn(obj) {

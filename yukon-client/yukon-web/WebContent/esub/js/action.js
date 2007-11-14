@@ -9,7 +9,7 @@ function editValue(evt) {
 	var newVal = prompt("Enter the new value:",node.getFirstChild.getData());
 	if (newVal) {
 		url = '/servlet/UpdateAttribute' + '?' +'id=' + node.getAttribute('id')  + '&dattrib=' + node.getAttribute('dattrib') + '&value=' + newVal;
-		getURL(url, fn);
+		getCtiURL(url, fn);
 	}
 	
 	function fn(obj) {
@@ -24,7 +24,7 @@ function acknowledgeAlarm(deviceIds, pointIds, alarmCategoryIds) {
 			  '&pointid=' + pointIds +
 			  '&alarmcategoryid=' + alarmCategoryIds;
 
-		getURL(url,fn);
+		getCtiURL(url,fn);
 	}
 	
 	function fn(obj) {
@@ -38,7 +38,7 @@ function toggleMute(evt) {
 
 	if(audioElem.getAttribute('isPlaying') == 'true') {	
 		stopAlarmAudio();
-		getURL('/servlet/AlarmAudioServlet?mute=true', fn);		
+		getCtiURL('/servlet/AlarmAudioServlet?mute=true', fn);		
 	}
 
 	function fn(obj) {

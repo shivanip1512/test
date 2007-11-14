@@ -744,7 +744,7 @@ CGUI.loadSkin = function(filename) {
 		
     //get file
 		CGUI.skinloaded = false;
-		getURL(filename,loadUI);
+		getCtiURL(filename,loadUI);
 		
 
 };

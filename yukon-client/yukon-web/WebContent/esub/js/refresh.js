@@ -135,10 +135,7 @@ function updateAllBlinkers() {
 } //end updateAllBlinkers
 
 function blinkAllBlinkers(){
-	//alert('size ' + allDynamicBlinkers.length);
 	for(i = 0; i < allDynamicBlinkers.length; i++) {
-		//alert('got here');
-		//alert('node ' + blinkBlinker(allDynamicBlinkers[i]));
 		blinkBlinker(allDynamicBlinkers[i]);
 	}
 } // end blinkAllBlinkers
@@ -163,14 +160,9 @@ function checkAlarmAudio(deviceIds, pointIds, alarmCategoryIds) {
 			"&alarmcategoryid=" + alarmCategoryIds +
 			"&rand=" + Math.random();
 
-	getURL(url, fn3);
+	getCtiURL(url, fn3);
 
 	function fn3(obj) {
-		if(!obj.success) {
-				//alert('Alarm audio request failed.  Please restart your browser if this continues.');
-				stopAlarmAudio();
-		}
-		else		
 		if(obj.content == 'true') {
 			playAlarmAudio();
 		}
@@ -220,7 +212,7 @@ function updateAlarmsTable(node,url) {
 				'&rand=' + Math.random();		
 				
 				
-	getURL(url,fn2);
+	getCtiURL(url,fn2);
 	
 	function fn2(obj) {   
 		if(!obj.success) {
@@ -268,7 +260,7 @@ function updateBlinker(node){
 
 	if(blinkPointID > 0) {
 		url = '/servlet/DynamicTextServlet' + '?' + 'id=' + blinkPointID + '&dattrib=4096';
-        getURL(url, bfn);
+        getCtiURL(url, bfn);
 	}else if(blink == "1"){
 		node.setAttribute('isBlinking', 'yes');
 	}else {
@@ -295,7 +287,7 @@ function updateNode(node) {
 		var colorPointID = node.getAttribute('colorid');
 		if(colorPointID > 0){
 	        url = '/servlet/DynamicTextServlet' + '?' + 'id=' + colorPointID + '&dattrib=4096';
-	        getURL(url, cfn);
+	        getCtiURL(url, cfn);
 	    }
     }
     
@@ -305,17 +297,17 @@ function updateNode(node) {
 	    //alert("csi " + node.getAttribute('currentstateid'));
 	    if(currentStatePointID > 0){
 	        url = '/servlet/DynamicTextServlet' + '?' + 'id=' + currentStatePointID + '&dattrib=4096';
-	        getURL(url, tfn);
+	        getCtiURL(url, tfn);
 	    }else { 
 	    	if (node.getAttribute('dattrib')) {
 		    	url = '/servlet/DynamicTextServlet' + '?' + 'id=' + node.getAttribute('id') + '&' + 'dattrib=' + node.getAttribute('dattrib');
-				getURL(url, fn);
+				getCtiURL(url, fn);
 			}
 		}
 	}else{
 		if (node.getAttribute('dattrib')) {
 	    	url = '/servlet/DynamicTextServlet' + '?' + 'id=' + node.getAttribute('id') + '&' + 'dattrib=' + node.getAttribute('dattrib');
-			getURL(url, fn);
+			getCtiURL(url, fn);
 		}
 	}
 
@@ -351,7 +343,7 @@ function updateImage(node) {
 	var pointId = node.getAttribute('id');
 	if( !isNaN(pointId) ) {
 		url = '/servlet/DynamicTextServlet' + '?' + 'id=' + pointId + '&dattrib=4096';
-		getURL(url, fn);		
+		getCtiURL(url, fn);		
 	}
 	
 	function fn(obj) {
@@ -379,19 +371,19 @@ function updateLine(node) {
     var opacityPointID = node.getAttribute('opacityid');
     if(colorPointID > 0){
         url = '/servlet/DynamicTextServlet' + '?' + 'id=' + colorPointID + '&dattrib=4096';
-        getURL(url, cfn);
+        getCtiURL(url, cfn);
     }
     if(thicknessPointID > 0){
         url = '/servlet/DynamicTextServlet' + '?' + 'id=' + thicknessPointID + '&dattrib=4096';
-        getURL(url, tfn);
+        getCtiURL(url, tfn);
     }
     if(arrowPointID > 0){
         url = '/servlet/DynamicTextServlet' + '?' + 'id=' + arrowPointID + '&dattrib=4096';
-        getURL(url, afn);
+        getCtiURL(url, afn);
     }
     if(opacityPointID > 0){
 	    url = '/servlet/DynamicTextServlet' + '?' + 'id=' + opacityPointID + '&dattrib=4096';
-	    getURL(url, ofn);
+	    getCtiURL(url, ofn);
     }
     function cfn(obj) {
         if(obj.content) {
@@ -438,7 +430,7 @@ function updateAlarmText(node) {
 	var fill2 = node.getAttribute('fill2');
 
 	url = encodeURI('/servlet/AlarmTextStyleServlet' + '?' + 'deviceid=' + deviceIds + '&pointid=' + pointIds + '&alarmcategoryid=' + alarmCategoryIds + '&fill1=' + fill1 + '&fill2=' + fill2);
-	getURL(url,fn);	
+	getCtiURL(url,fn);	
 
 	/* Handle the getURL to the AlarmTextStyleServlet */
 	function fn(obj) {
@@ -453,4 +445,14 @@ function updateAlarmText(node) {
  */
 function trim (s) {
 	return s.replace(/^\s+|\s+$/g, '');
-} 
+}
+
+function getCtiURL(url, callback) {
+    getURL(url, function(obj) {
+        if (obj.success) {
+            callback(obj);
+        } else {
+            stopAlarmAudio();    
+        }  
+    });
+}
