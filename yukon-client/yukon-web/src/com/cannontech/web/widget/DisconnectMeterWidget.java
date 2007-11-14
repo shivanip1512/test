@@ -40,6 +40,10 @@ public class DisconnectMeterWidget extends WidgetControllerBase {
     private CommandRequestExecutor commandRequestExecutor;
     private PaoCommandAuthorizationService commandAuthorizationService;
     
+    private final String CONTROL_CONNECT_COMMAND = "control connect";
+    private final String CONTROL_DISCONNECT_COMMAND = "control disconnect";
+    
+    
     private Set<Attribute> disconnectAttribute = Collections.singleton((Attribute)BuiltInAttribute.DISCONNECT_STATUS);
     private enum DISCONNECT_STATE {
         CONNECTED, DISCONNECTED, UNKNOWN}; 
@@ -70,8 +74,8 @@ public class DisconnectMeterWidget extends WidgetControllerBase {
         mav.addObject("configString", "");
         
         LiteYukonUser user = ServletUtil.getYukonUser(request);
-        boolean controlable = commandAuthorizationService.isAuthorized(user, "control connect", meter);
-        mav.addObject("controlable", controlable);
+        boolean controllable = commandAuthorizationService.isAuthorized(user, CONTROL_CONNECT_COMMAND, meter);
+        mav.addObject("controllable", controllable);
 
         boolean readable = meterReadService.isReadable(meter, disconnectAttribute, user);
         mav.addObject("readable", readable);
@@ -96,8 +100,8 @@ public class DisconnectMeterWidget extends WidgetControllerBase {
         
         mav.addObject("result", result);
         
-        boolean controlable = commandAuthorizationService.isAuthorized(user, "control connect", meter);
-        mav.addObject("controlable", controlable);
+        boolean controllable = commandAuthorizationService.isAuthorized(user, CONTROL_CONNECT_COMMAND, meter);
+        mav.addObject("controllable", controllable);
 
         boolean readable = meterReadService.isReadable(meter, disconnectAttribute, user);
         mav.addObject("readable", readable);
@@ -107,16 +111,30 @@ public class DisconnectMeterWidget extends WidgetControllerBase {
 
     public ModelAndView connect(HttpServletRequest request, HttpServletResponse response)
     throws Exception {
-        ModelAndView mav = getControlModelAndView(request, "control connect");
+    	
+    	Meter meter = getMeter(request);
+    	
+    	LiteYukonUser user = ServletUtil.getYukonUser(request);
+        CommandResultHolder result = commandRequestExecutor.execute(meter, CONTROL_CONNECT_COMMAND, user);
+        
+        ModelAndView mav = getControlModelAndView(request, result);
         
         return mav;
     }
     
     public ModelAndView disconnect(HttpServletRequest request, HttpServletResponse response)
     throws Exception {
-        ModelAndView mav = getControlModelAndView(request, "control disconnect");
+    	
+    	Meter meter = getMeter(request);
+    	
+    	LiteYukonUser user = ServletUtil.getYukonUser(request);
+        CommandResultHolder result = commandRequestExecutor.execute(meter, CONTROL_DISCONNECT_COMMAND, user);
+        
+        ModelAndView mav = getControlModelAndView(request, result);
+        
         return mav;
     }
+    
     private Meter getMeter(HttpServletRequest request) throws ServletRequestBindingException {
         int deviceId = WidgetParameterHelper.getRequiredIntParameter(request, "deviceId");
         Meter meter = meterDao.getForId(deviceId);
@@ -135,13 +153,12 @@ public class DisconnectMeterWidget extends WidgetControllerBase {
         return mav;
     }
     
-    private ModelAndView getControlModelAndView(HttpServletRequest request, String command) throws Exception {
+    private ModelAndView getControlModelAndView(HttpServletRequest request, CommandResultHolder result) throws Exception {
         Meter meter = getMeter(request);
         
         ModelAndView mav = getReadModelAndView(meter);
         
         LiteYukonUser user = ServletUtil.getYukonUser(request);
-        CommandResultHolder result = commandRequestExecutor.execute(meter, command, user);
         
         mav.addObject("state", getDisconnectedState(result));
         mav.addObject("configString", "");
@@ -149,8 +166,8 @@ public class DisconnectMeterWidget extends WidgetControllerBase {
         mav.addObject("errorsExist", result.isErrorsExist());
         mav.addObject("result", result);
         
-        boolean controlable = commandAuthorizationService.isAuthorized(user, "control connect", meter);
-        mav.addObject("controlable", controlable);
+        boolean controllable = commandAuthorizationService.isAuthorized(user, "control connect", meter);
+        mav.addObject("controllable", controllable);
 
         boolean readable = meterReadService.isReadable(meter, disconnectAttribute, user);
         mav.addObject("readable", readable);
