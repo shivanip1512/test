@@ -56,7 +56,7 @@ FROM CAPBANK cb INNER JOIN
                       DeviceAddress da ON da.DeviceID = cb.CONTROLDEVICEID INNER JOIN
                       PORTTERMINALSERVER pts ON pts.PORTID = ddcs.PORTID INNER JOIN
                       DeviceCBC cbc ON cbc.DEVICEID = cb.CONTROLDEVICEID INNER JOIN
-                      capbankadditional capa on capa.deviceid = cb.deviceid
+                      capbankadditional capa on capa.deviceid = cb.deviceid;
 go
 
 drop view ccoperations_view;
@@ -104,7 +104,7 @@ GROUP BY op.LogID) OpConf INNER JOIN
         FROM DynamicPAOInfo WHERE (InfoKey LIKE '%udp ip%')) 
         p ON p.PAObjectID = cb.CONTROLDEVICEID LEFT OUTER JOIN
         ccsubareaassignment as csa on csa.substationbusid = el.SubID left outer join 
-        YukonPAObject AS yp4 ON yp4.paobjectid = csa.areaid
+        YukonPAObject AS yp4 ON yp4.paobjectid = csa.areaid;
 go
 
 insert into FDRInterface values (25, 'TRISTATESUB', 'Receive', 'f' );
