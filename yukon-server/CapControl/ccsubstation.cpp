@@ -224,7 +224,7 @@ void CtiCCSubstation::restore(RWDBReader& rdr)
     setSaEnabledId(0);
 
     _insertDynamicDataFlag = TRUE;
-    _dirty = FALSE;
+    _dirty = TRUE;
 
 }
 
@@ -256,16 +256,18 @@ void CtiCCSubstation::dumpDynamicData(RWDBConnection& conn, CtiTime& currentDate
         {
             RWDBUpdater updater = dynamicCCSubstationTable.updater();
 
-            
             unsigned char addFlags[] = {'N','N','N','N','N','N','N','N','N','N','N','N','N','N','N','N','N','N','N','N'};
             addFlags[0] = (_ovUvDisabledFlag?'Y':'N');
             addFlags[1] = (_saEnabledFlag?'Y':'N');
-            _additionalFlags = string(char2string(*addFlags) + char2string(*addFlags+1));
+            _additionalFlags = string(char2string(*addFlags) + char2string(*(addFlags+1)));
             _additionalFlags.append("NNNNNNNNNNNNNNNNNN");
 
             updater.clear();
 
             updater.where(dynamicCCSubstationTable["substationid"]==_paoid);
+
+            updater << dynamicCCSubstationTable["additionalflags"].assign( string2RWCString(_additionalFlags) )
+                    << dynamicCCSubstationTable["saenabledid"].assign( _saEnabledId );
 
             updater.execute( conn );
 
@@ -298,7 +300,8 @@ void CtiCCSubstation::dumpDynamicData(RWDBConnection& conn, CtiTime& currentDate
             RWDBInserter inserter = dynamicCCSubstationTable.inserter();
             //TS FLAG
             inserter << _paoid
-            << addFlags;
+                    << addFlags
+                    << _saEnabledId;
 
             if( _CC_DEBUG & CC_DEBUG_DATABASE )
             {
@@ -332,6 +335,7 @@ void CtiCCSubstation::dumpDynamicData(RWDBConnection& conn, CtiTime& currentDate
 void CtiCCSubstation::setDynamicData(RWDBReader& rdr)
 {   
     rdr["additionalflags"] >> _additionalFlags;
+    std::transform(_additionalFlags.begin(), _additionalFlags.end(), _additionalFlags.begin(), tolower);
     _ovUvDisabledFlag = (_additionalFlags[0]=='y'?TRUE:FALSE);
     _saEnabledFlag = (_additionalFlags[1]=='y'?TRUE:FALSE);
     rdr["saenabledid"] >> _saEnabledId;
@@ -619,6 +623,7 @@ CtiCCSubstation& CtiCCSubstation::setDisplayOrder(LONG displayOrder)
 ---------------------------------------------------------------------------*/
 CtiCCSubstation& CtiCCSubstation::setPFactor(DOUBLE pfactor)
 {
+
     _pfactor = pfactor;
     return *this;
 }
@@ -641,6 +646,10 @@ CtiCCSubstation& CtiCCSubstation::setEstPFactor(DOUBLE estpfactor)
 ---------------------------------------------------------------------------*/
 CtiCCSubstation& CtiCCSubstation::setSaEnabledFlag(BOOL flag)
 {
+    if (_saEnabledFlag != flag)
+    {
+        _dirty = TRUE;
+    }
     _saEnabledFlag = flag;
     return *this;
 }
@@ -652,6 +661,11 @@ CtiCCSubstation& CtiCCSubstation::setSaEnabledFlag(BOOL flag)
 ---------------------------------------------------------------------------*/
 CtiCCSubstation& CtiCCSubstation::setSaEnabledId(LONG saId)
 {
+    if (_saEnabledId != saId)
+    {
+        _dirty = TRUE;
+    }
+
     _saEnabledId = saId;
     return *this;
 }

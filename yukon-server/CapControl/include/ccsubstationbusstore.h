@@ -196,10 +196,12 @@ public:
     BOOL isCapBankOrphan(long capBankId);
     BOOL isFeederOrphan(long feederId);
     void removeFromOrphanList(long ccId);
+    
 
     list <CC_DBRELOAD_INFO> getDBReloadList() { return _reloadList; };
     void insertDBReloadList(CC_DBRELOAD_INFO x);
     void checkDBReloadList();
+    void addSubstationObjectsToList(list <LONG> *substationIds, CtiMultiMsg_vec &modifiedSubsList);
     void clearDBReloadList();
     void setRegMask(LONG mask);
     LONG getRegMask(void);

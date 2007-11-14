@@ -234,6 +234,7 @@ void CtiCCSpecial::dumpDynamicData(RWDBConnection& conn, CtiTime& currentDateTim
             updater.clear();
 
             updater.where(dynamicCCAreaTable["areaid"]==_paoid);
+            updater << dynamicCCAreaTable["additionalflags"].assign( string2RWCString(_additionalFlags) );
 
             updater.execute( conn );
 
@@ -300,6 +301,8 @@ void CtiCCSpecial::dumpDynamicData(RWDBConnection& conn, CtiTime& currentDateTim
 void CtiCCSpecial::setDynamicData(RWDBReader& rdr)
 {   
     rdr["additionalflags"] >> _additionalFlags;
+    std::transform(_additionalFlags.begin(), _additionalFlags.end(), _additionalFlags.begin(), tolower);
+
     _ovUvDisabledFlag = (_additionalFlags[0]=='y'?TRUE:FALSE);
 
     _insertDynamicDataFlag = FALSE;

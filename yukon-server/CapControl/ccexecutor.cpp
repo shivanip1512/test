@@ -2072,7 +2072,7 @@ void CtiCCCommandExecutor::EnableArea()
                     currentSubstation->setSaEnabledId(areaId);
                 }
             }
-            store->setValid(false);
+            store->setValid(false);  //This is to do a full DATABASE RELOAD.
 
             if (eventMulti->getCount() > 0)
                 CtiCapController::getInstance()->getCCEventMsgQueueHandle().write(eventMulti);
@@ -2163,7 +2163,9 @@ void CtiCCCommandExecutor::DisableArea()
                     currentSubstation->setSaEnabledId(0);
                 }
             }
-            store->setValid(false);
+            store->setValid(false);  //This is to do a full DATABASE RELOAD.
+
+
             if (eventMulti->getCount() > 0)
                 CtiCapController::getInstance()->getCCEventMsgQueueHandle().write(eventMulti);
             if (multi->getCount() > 0)
