@@ -2677,7 +2677,7 @@ BOOL CtiCCFeeder::checkForAndProvideNeededIndividualControl(const CtiTime& curre
                                     else
                                         textInfo += " Cannot Increase Volt Level.  No Cap Banks Available to Close.";
                            
-                                    ccEvents.push_back(new CtiCCEventLogMsg(0, SYS_PID_CAPCONTROL, getPAOId(), 0, capControlPointOutsideOperatingLimits, getEventSequence(), -1, textInfo, "cap control", getCurrentVarLoadPointValue(), getCurrentVarLoadPointValue(), 0));
+                                    ccEvents.push_back(new CtiCCEventLogMsg(0, SYS_PID_CAPCONTROL, getParentId(), getPAOId(), capControlPointOutsideOperatingLimits, getEventSequence(), -1, textInfo, "cap control", getCurrentVarLoadPointValue(), getCurrentVarLoadPointValue(), 0));
                                 }
                             }
                             else
@@ -2736,7 +2736,7 @@ BOOL CtiCCFeeder::checkForAndProvideNeededIndividualControl(const CtiTime& curre
                                 else
                                     textInfo += " Cannot Decrease Volt Level.  No Cap Banks Available to Open.";
                         
-                                ccEvents.push_back(new CtiCCEventLogMsg(0, SYS_PID_CAPCONTROL, getPAOId(), 0, capControlPointOutsideOperatingLimits, getEventSequence(), -1, textInfo, "cap control", getCurrentVarLoadPointValue(), getCurrentVarLoadPointValue(), 0));
+                                ccEvents.push_back(new CtiCCEventLogMsg(0, SYS_PID_CAPCONTROL, getParentId(), getPAOId(), capControlPointOutsideOperatingLimits, getEventSequence(), -1, textInfo, "cap control", getCurrentVarLoadPointValue(), getCurrentVarLoadPointValue(), 0));
                             }
                         }
                         else
@@ -2838,7 +2838,7 @@ BOOL CtiCCFeeder::checkForAndProvideNeededIndividualControl(const CtiTime& curre
                             textInfo = ("Sub: ");
                             textInfo += getPAOName();
                             textInfo += " Cannot Decrease Var Level.  No Cap Banks Available to Close.";
-                            ccEvents.push_back(new CtiCCEventLogMsg(0, SYS_PID_CAPCONTROL, getPAOId(), 0, capControlPointOutsideOperatingLimits, getEventSequence(), -1, textInfo, "cap control", getCurrentVarLoadPointValue(), getCurrentVarLoadPointValue(), 0));
+                            ccEvents.push_back(new CtiCCEventLogMsg(0, SYS_PID_CAPCONTROL, getParentId(), getPAOId(), capControlPointOutsideOperatingLimits, getEventSequence(), -1, textInfo, "cap control", getCurrentVarLoadPointValue(), getCurrentVarLoadPointValue(), 0));
                         }
                     }
                     else
@@ -2903,7 +2903,7 @@ BOOL CtiCCFeeder::checkForAndProvideNeededIndividualControl(const CtiTime& curre
                         textInfo = ("Sub: ");
                         textInfo += getPAOName();
                         textInfo += " Cannot Increase Var Level.  No Cap Banks Available to Open.";
-                        ccEvents.push_back(new CtiCCEventLogMsg(0, SYS_PID_CAPCONTROL, getPAOId(), 0, capControlPointOutsideOperatingLimits, getEventSequence(), -1, textInfo, "cap control", getCurrentVarLoadPointValue(), getCurrentVarLoadPointValue(), 0));
+                        ccEvents.push_back(new CtiCCEventLogMsg(0, SYS_PID_CAPCONTROL, getParentId(), getPAOId(), capControlPointOutsideOperatingLimits, getEventSequence(), -1, textInfo, "cap control", getCurrentVarLoadPointValue(), getCurrentVarLoadPointValue(), 0));
                     }
                 }
                 else

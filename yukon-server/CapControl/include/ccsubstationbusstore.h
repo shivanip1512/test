@@ -175,7 +175,9 @@ public:
                                   CtiCCSubstationBus_vec *cCSubstationBuses );
     void reloadSubstationFromDatabase(long substationId, map< long, CtiCCSubstationPtr > *paobject_substation_map,
                                       map <long, CtiCCAreaPtr> *paobject_area_map,
+                                      map <long, CtiCCSpecialPtr> *paobject_specialarea_map,
                                       map< long, long> *substation_area_map,
+                                      map< long, long> *substation_specialarea_map,
                                       CtiCCSubstation_vec *ccSubstations);
     void reloadAreaFromDatabase(long areaId, map< long, CtiCCStrategyPtr > *strategy_map, 
                                   map< long, CtiCCAreaPtr > *paobject_area_map,

@@ -1030,8 +1030,8 @@ CtiCCCapBank& CtiCCCapBank::setIpAddress(ULONG value)
     _ipAddress = "(none)";
     if (value > 0) 
     {
-        //char tempchar[4];
-        char* tempchar = NULL;
+        char tempchar[4];
+        //char* tempchar = NULL;
         BYTE temp;
         temp = (value >> 24) & 0xFF;
         _ipAddress = itoa(temp,tempchar,10);

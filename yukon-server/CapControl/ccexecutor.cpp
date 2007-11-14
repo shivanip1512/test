@@ -1261,9 +1261,9 @@ void CtiCCCommandExecutor::SendAllCapBankCommands()
                 currentArea->setOvUvDisabledFlag(FALSE);
             if (_command->getCommand() == CtiCCCommand::SEND_ALL_DISABLE_OVUV) 
                 currentArea->setOvUvDisabledFlag(TRUE);
-            std::list <long>::iterator subIter = currentSpArea->getSubstationIds()->begin();
+            std::list <long>::iterator subIter = currentArea->getSubStationList()->begin();
 
-            while (subIter != currentSpArea->getSubstationIds()->end())
+            while (subIter != currentArea->getSubStationList()->end())
             {
                 currentStation = store->findSubstationByPAObjectID(*subIter);
                 subIter++;

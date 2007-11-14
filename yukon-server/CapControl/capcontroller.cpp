@@ -1540,11 +1540,16 @@ void CtiCapController::parseMessage(RWCollectable *message, ULONG secondsFrom190
                                  dout << CtiTime() << " VIRTUAL SYSTEM Device Change "<<dbChange->getId() << endl;
                             }
                         }
+                        else if (resolvePAOType(dbChange->getCategory(),dbChange->getObjectType()) == TYPE_CC_SPECIALAREA)
+                        {
+
+                            CtiCCSubstationBusStore::getInstance()->setValid(false);
+                            CtiPAOScheduleManager::getInstance()->setValid(false);  
+                        }
                         else if (resolvePAOType(dbChange->getCategory(),dbChange->getObjectType()) == TYPE_CC_AREA)
                         {
                             objType = CtiCCSubstationBusStore::Area;
 
-                            CtiCCSubstationBusStore::getInstance()->setValid(false);
                             CtiPAOScheduleManager::getInstance()->setValid(false);  
                         }
                         else if (resolvePAOType(dbChange->getCategory(),dbChange->getObjectType()) == TYPE_CC_SUBSTATION)
@@ -2371,8 +2376,6 @@ void CtiCapController::pointDataMsg( long pointID, double value, unsigned qualit
 
                     if (currentSubstationBus != NULL && currentFeeder != NULL)
                     {                                                        
-                        vector<CtiCCFeeder*>& ccFeeders = currentSubstationBus->getCCFeeders();
-
                         if( currentCapBank->getStatusPointId() == pointID )
                         {
                             if( timestamp > currentCapBank->getLastStatusChangeTime() ||
@@ -2503,11 +2506,20 @@ void CtiCapController::pointDataMsg( long pointID, double value, unsigned qualit
                                 }
                                 if (twoWayPts->getOvCondition() || twoWayPts->getUvCondition() ) 
                                 {
-                                    currentCapBank->setOvUvSituationFlag(TRUE);
+                                    if (!currentCapBank->getOvUvSituationFlag())
+                                    {
+                                        currentCapBank->setOvUvSituationFlag(TRUE);
+                                        currentSubstationBus->setBusUpdatedFlag(TRUE);
+                                    }
                                 }
-                                else 
+                                else  //!(twoWayPts->getOvCondition() || twoWayPts->getUvCondition()
                                 { 
-                                    currentCapBank->setOvUvSituationFlag(FALSE);
+                                    if (currentCapBank->getOvUvSituationFlag())
+                                    {
+                                        currentSubstationBus->setBusUpdatedFlag(TRUE);
+                                        currentCapBank->setOvUvSituationFlag(FALSE);
+                                    }
+                                    
                                 }
 
                             }
@@ -3164,7 +3176,7 @@ void CtiCapController::refreshCParmGlobals(bool force)
 
         _LINK_STATUS_TIMEOUT = 5;  //1 minute
 
-        strcpy(var, "CAP_CONTROL__LINK_STATUS_TIMEOUT");
+        strcpy(var, "CAP_CONTROL_LINK_STATUS_TIMEOUT");
         if( !(str = gConfigParms.getValueAsString(var)).empty() )
         {
             _LINK_STATUS_TIMEOUT = atoi(str.data())+1;

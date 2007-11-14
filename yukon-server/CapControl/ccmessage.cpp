@@ -1042,10 +1042,21 @@ CtiCCSubstationsMsg::CtiCCSubstationsMsg(CtiCCSubstation_vec& ccSubstations) : C
     if( _CC_DEBUG & CC_DEBUG_RIDICULOUS )  
     {
         for (int h=0;h < ccSubstations.size(); h++) 
-        {
+        {   
+            CtiCCSubstation* station = (CtiCCSubstation*)ccSubstations[h];
             {
                 CtiLockGuard<CtiLogger> logger_guard(dout);
-                dout << CtiTime() << " - Substation: "<<((CtiCCSubstation*)ccSubstations[h])->getPAOName()<< endl;
+                dout << CtiTime() << " - Substation: "<<station->getPAOName()<< endl;
+            }
+            std::list <LONG>::const_iterator iterBus = station->getCCSubIds()->begin();
+            while (iterBus  != station->getCCSubIds()->end())
+            { 
+                LONG busId = *iterBus;
+                {
+                    CtiLockGuard<CtiLogger> logger_guard(dout);
+                    dout << CtiTime() << " -    SubBus: "<< busId << endl;
+                }
+                iterBus++;
             }
         }
     }

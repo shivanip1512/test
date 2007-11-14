@@ -168,9 +168,6 @@ public:
     CtiCCCapBank& setAssumedOrigVerificationState(int assumedOrigCapBankPos);
     CtiCCCapBank& setPreviousVerificationControlStatus(LONG status);
 
-    void setOvUvSituationFlag( bool flag );
-    bool getOvUvSituationFlag();
-
     BOOL updateVerificationState(void);
     CtiCCCapBank& updatePointResponseDeltas(CtiCCMonitorPoint* point);
 

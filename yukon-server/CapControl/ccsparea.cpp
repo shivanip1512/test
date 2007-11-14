@@ -55,15 +55,7 @@ CtiCCSpecial::CtiCCSpecial(const CtiCCSpecial& special)
 ---------------------------------------------------------------------------*/
 CtiCCSpecial::~CtiCCSpecial()
 {  
-    try
-    {  
-        _substationIds.clear();   
-    }
-    catch (...)
-    {
-        CtiLockGuard<CtiLogger> logger_guard(dout);
-        dout << CtiTime() << " - Caught '...' in: " << __FILE__ << " at:" << __LINE__ << endl;
-    }
+    
 }
 
 

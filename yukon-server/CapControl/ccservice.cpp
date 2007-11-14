@@ -359,7 +359,7 @@ void CtiCCService::Init()
 
     _LINK_STATUS_TIMEOUT = 5;  //1 minute
 
-    strcpy(var, "CAP_CONTROL__LINK_STATUS_TIMEOUT");
+    strcpy(var, "CAP_CONTROL_LINK_STATUS_TIMEOUT");
     if( !(str = gConfigParms.getValueAsString(var)).empty() )
     {
         _LINK_STATUS_TIMEOUT = atoi(str.data())+1;
