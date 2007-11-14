@@ -11,16 +11,17 @@ public class CBCSpecialArea extends StreamableCapObject {
     private Integer paoID;
     private String paoClass;
 	//should only contain objects of type integer
-	private java.util.Vector ccSubIds = null;
+	private int[] ccSubIds = null;
     private Double powerFactorValue = null;
     private Double estimatedPFValue = null;
     
 
-    public java.util.Vector getCcSubIds() {
+
+    public int[] getCcSubIds() {
 		return ccSubIds;
 	}
 
-	public void setCcSubIds(java.util.Vector ccSubIds) {
+	public void setCcSubIds(int[] ccSubIds) {
 		this.ccSubIds = ccSubIds;
 	}
 
