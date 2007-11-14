@@ -128,7 +128,7 @@ public class DeviceDefinitionDaoImpl implements DeviceDefinitionDao {
         }
     }
 
-    public Set<DevicePointIdentifier> getDevicePointIdentifierForAttributes(YukonDevice device, Set<Attribute> attributes) {
+    public Set<DevicePointIdentifier> getDevicePointIdentifiersForAttributes(YukonDevice device, Set<Attribute> attributes) {
     	
         Set<DevicePointIdentifier> pointSet = new HashSet<DevicePointIdentifier>(attributes.size());
         for (Attribute attribute : attributes) {
@@ -206,13 +206,6 @@ public class DeviceDefinitionDaoImpl implements DeviceDefinitionDao {
                     + "' is not supported.");
         }
 
-    }
-   	
-    public Set<CommandDefinition> getAffected(YukonDevice device, Attribute attribute) {
-
-    	PointTemplate pointTemplateForAttribute = getPointTemplateForAttribute(device, attribute);
-    	DevicePointIdentifier devicePointIdentifier = pointTemplateForAttribute.getDevicePointIdentifier();
-    	return getAffected(device, Collections.singleton(devicePointIdentifier));
     }
     
     public Set<CommandDefinition> getAffected(YukonDevice device, Set<? extends DevicePointIdentifier> pointSet) {

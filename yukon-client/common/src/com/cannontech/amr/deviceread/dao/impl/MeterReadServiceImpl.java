@@ -36,13 +36,13 @@ public class MeterReadServiceImpl implements MeterReadService {
     private boolean isNoqueue = true;
     
     public boolean isReadable(Meter device, Set<Attribute> attributes, LiteYukonUser user) {
-    	log.info("Validating Readability for" + attributes + " on device " + device + " for " + user);
+    	log.debug("Validating Readability for" + attributes + " on device " + device + " for " + user);
     	
         // reduce number of commands
-    	Set<DevicePointIdentifier> pointSet = deviceDefinitionDao.getDevicePointIdentifierForAttributes(device, attributes);
+    	Set<DevicePointIdentifier> pointSet = deviceDefinitionDao.getDevicePointIdentifiersForAttributes(device, attributes);
         Set<CommandWrapper> minimalCommands = getMinimalCommandSet(device, pointSet);
         if (minimalCommands == null) {
-        	log.info("No commands defined to read " + pointSet + " for device type " + device.getType());
+        	log.info("Not Readable: No commands defined to read " + pointSet + " for device type " + device.getType());
             return false;
         }
 
@@ -56,7 +56,7 @@ public class MeterReadServiceImpl implements MeterReadService {
                 }
             }
         } catch (PaoAuthorizationException e) {
-        	log.info(e.getMessage());
+        	log.info("Not Readable: " + e.getMessage());
             return false;
         }
         
@@ -67,7 +67,7 @@ public class MeterReadServiceImpl implements MeterReadService {
         log.info("Reading " + attributes + " on device " + device + " for " + user);
         
         // figure out which commands to send
-        Set<DevicePointIdentifier> pointSet = deviceDefinitionDao.getDevicePointIdentifierForAttributes(device, attributes);
+        Set<DevicePointIdentifier> pointSet = deviceDefinitionDao.getDevicePointIdentifiersForAttributes(device, attributes);
         return readMeterPoints(device, pointSet, user);
     }
     
