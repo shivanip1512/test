@@ -476,9 +476,13 @@ insert into YukonRoleProperty values(-20014,-200,'View Device Config','true','Co
 insert into YukonRoleProperty values(-20206,-202,'Enable Profile Request','true','Access to perform profile data request');
 
 alter table userPaoPermission add Allow varchar(5);
+go
 update UserPaoPermission set Allow = 'ALLOW';
+go
 alter table groupPaoPermission add Allow varchar(5);
+go
 update GroupPaoPermission set Allow = 'ALLOW';
+go
 
 insert into YukonRoleProperty values(-70013,-700,'Definition Available','Open,OpenQuestionable,OpenPending','Capbank sized in these states will be added to the available sum.');
 insert into YukonRoleProperty values(-70014,-700,'Definition Unavailable','Close,CloseQuestionable,CloseFail,ClosePending,OpenFail','Capbank sized in these states will be added to the unavailable sum.');
