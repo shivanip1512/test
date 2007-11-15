@@ -67,7 +67,7 @@ BOOST_AUTO_UNIT_TEST(test_writeread)
     //The stop time is set a way out because we wont want busy system false positives.
     BOOST_CHECK_EQUAL(garbage == NULL, true);
     BOOST_CHECK( (unsigned int)startTime.sec < (unsigned int)endTime.sec );
-    BOOST_CHECK( (unsigned int)startTime.sec + 2 > (unsigned int)endTime.sec );
+    BOOST_CHECK( (unsigned int)startTime.sec + 4 > (unsigned int)endTime.sec );
 
     boost::xtime_get(&startTime, boost::TIME_UTC);
     q->read(garbage, 100);
