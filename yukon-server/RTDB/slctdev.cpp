@@ -6,8 +6,8 @@
 *
 * PVCS KEYWORDS:
 * ARCHIVE      :  $Archive:   Z:/SOFTWAREARCHIVES/YUKON/RTDB/slctdev.cpp-arc  $
-* REVISION     :  $Revision: 1.57 $
-* DATE         :  $Date: 2007/10/12 21:14:17 $
+* REVISION     :  $Revision: 1.58 $
+* DATE         :  $Date: 2007/11/15 17:50:53 $
 *
 * Copyright (c) 1999, 2000, 2001 Cannon Technologies Inc. All rights reserved.
 *-----------------------------------------------------------------------------*/
@@ -127,6 +127,7 @@ DLLEXPORT CtiDeviceBase* DeviceFactory(RWDBReader &rdr)
         case TYPE_ILEXRTU:      NewDevice = CTIDBG_new CtiDeviceILEX;       break;
 
         case TYPE_DARTRTU:
+        case TYPECBCDNP:
         case TYPE_DNPRTU:       NewDevice = CTIDBG_new Device::DNP;         break;
 
         case TYPE_SERIESVRTU:   NewDevice = CTIDBG_new CtiDeviceSeriesV;    break;

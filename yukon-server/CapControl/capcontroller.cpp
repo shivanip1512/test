@@ -1512,7 +1512,8 @@ void CtiCapController::parseMessage(RWCollectable *message, ULONG secondsFrom190
                         if( dbChange->getTypeOfChange() == ChangeTypeDelete &&
                             ( resolvePAOType(dbChange->getCategory(),dbChange->getObjectType()) == TYPE_CC_SUBSTATION_BUS ||
                               resolvePAOType(dbChange->getCategory(),dbChange->getObjectType()) == TYPE_CC_SUBSTATION ||
-                              resolvePAOType(dbChange->getCategory(),dbChange->getObjectType()) == TYPE_CC_AREA ) )
+                              resolvePAOType(dbChange->getCategory(),dbChange->getObjectType()) == TYPE_CC_AREA||
+                              resolvePAOType(dbChange->getCategory(),dbChange->getObjectType()) == TYPE_CC_SPECIALAREA ) )
                         {
                             CtiCCSubstationBusStore::getInstance()->setWasSubBusDeletedFlag(TRUE);
                         }
@@ -1600,9 +1601,10 @@ void CtiCapController::parseMessage(RWCollectable *message, ULONG secondsFrom190
                                  (resolveDeviceType(dbChange->getObjectType()) == TYPEVERSACOMCBC ||
                                   resolveDeviceType(dbChange->getObjectType()) == TYPEEXPRESSCOMCBC ||
                                   resolveDeviceType(dbChange->getObjectType()) == TYPECBC7010 ||
-                                   resolveDeviceType(dbChange->getObjectType()) == TYPECBC7020 ||
-                                   resolveDeviceType(dbChange->getObjectType()) == TYPEFISHERPCBC ||
-                                   resolveDeviceType(dbChange->getObjectType()) == TYPECBC6510 ) ) 
+                                  resolveDeviceType(dbChange->getObjectType()) == TYPECBC7020 ||
+                                  resolveDeviceType(dbChange->getObjectType()) == TYPECBCDNP ||
+                                  resolveDeviceType(dbChange->getObjectType()) == TYPEFISHERPCBC ||
+                                  resolveDeviceType(dbChange->getObjectType()) == TYPECBC6510 ) ) 
                         {
                             if( _CC_DEBUG & CC_DEBUG_EXTENDED )
                             {

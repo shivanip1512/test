@@ -7,8 +7,8 @@
 * Author: Matt Fisher
 *
 * CVS KEYWORDS:
-* REVISION     :  $Revision: 1.17 $
-* DATE         :  $Date: 2007/10/11 14:29:52 $
+* REVISION     :  $Revision: 1.18 $
+* DATE         :  $Date: 2007/11/15 17:50:53 $
 *
 * Copyright (c) 2004 Cannon Technologies Inc. All rights reserved.
 *-----------------------------------------------------------------------------*/
@@ -503,6 +503,7 @@ bool UDPInterface::getPackets( int wait )
                             //  we didn't have this device in the mapping table, so look it up
                             if( (dev_base = DeviceManager.RemoteGetPortMasterSlaveTypeEqual(_port->getPortID(), master_address, slave_address, TYPE_DNPRTU)) ||
                                 (dev_base = DeviceManager.RemoteGetPortMasterSlaveTypeEqual(_port->getPortID(), master_address, slave_address, TYPECBC7020)) ||
+                                (dev_base = DeviceManager.RemoteGetPortMasterSlaveTypeEqual(_port->getPortID(), master_address, slave_address, TYPECBCDNP)) ||
                                 (dev_base = DeviceManager.RemoteGetPortMasterSlaveTypeEqual(_port->getPortID(), master_address, slave_address, TYPE_FCI)) )
                             {
                                 if( gConfigParms.getValueAsULong("PORTER_UDP_DEBUGLEVEL", 0, 16) & 0x00000001 )
@@ -1465,6 +1466,7 @@ void UDPInterface::processInbounds( void )
             {
                 case TYPE_DNPRTU:
                 case TYPECBC7020:
+                case TYPECBCDNP:
                 {
                     //  are we doing anything?
                     if( !dr->device->isTransactionComplete() )

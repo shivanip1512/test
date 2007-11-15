@@ -8,8 +8,8 @@
 *
 * PVCS KEYWORDS:
 * ARCHIVE      :  $Archive:   Z:/SOFTWAREARCHIVES/YUKON/COMMON/desolvers.cpp-arc  $
-* REVISION     :  $Revision: 1.47 $
-* DATE         :  $Date: 2007/10/12 21:14:17 $
+* REVISION     :  $Revision: 1.48 $
+* DATE         :  $Date: 2007/11/15 17:50:53 $
 *
 * Copyright (c) 1999, 2000, 2001 Cannon Technologies Inc. All rights reserved.
 *-----------------------------------------------------------------------------*/
@@ -231,7 +231,8 @@ string desolveDeviceType( INT aType )
         case TYPECBC6510:               Ret = "cbc 6510";           break;
         case TYPECBC7010:               Ret = "cbc 7010";           break;
         case TYPECBC7020:               Ret = "cbc 7020";           break;
-                                                                    
+        case TYPECBCDNP:                Ret = "cbc dnp";           break;
+
         case TYPE_TAPTERM:              Ret = "tap terminal";       break;
         case TYPE_SNPP:                 Ret = "snpp terminal";      break;
         case TYPE_TNPP:                 Ret = "tnpp terminal";      break;

@@ -6,8 +6,8 @@
 *
 * PVCS KEYWORDS:
 * ARCHIVE      :  $Archive:   Z:/SOFTWAREARCHIVES/YUKON/COMMON/resolvers.cpp-arc  $
-* REVISION     :  $Revision: 1.85 $
-* DATE         :  $Date: 2007/10/30 17:59:39 $
+* REVISION     :  $Revision: 1.86 $
+* DATE         :  $Date: 2007/11/15 17:50:53 $
 *
 * Copyright (c) 1999, 2000, 2001 Cannon Technologies Inc. All rights reserved.
 *-----------------------------------------------------------------------------*/
@@ -594,6 +594,10 @@ INT resolveDeviceType(const string& _rwsTemp)
     {
         nRet = TYPECBC7020;
     }
+    else if (rwsTemp == "cbc dnp")
+    {
+        nRet = TYPECBCDNP;
+    }
     else if(rwsTemp == "cbc versacom")
     {
         nRet = TYPEVERSACOMCBC;
@@ -748,6 +752,10 @@ INT resolveCapControlType(const string& _rwsTemp)
     else if(rwsTemp == "ccfeeder")
     {
         nRet = TYPE_CC_FEEDER;
+    }
+    if(rwsTemp == "ccspecialarea")
+    {
+        nRet = TYPE_CC_SPECIALAREA;
     }
     else
     {
@@ -1198,6 +1206,7 @@ bool resolveIsDeviceTypeSingle(INT Type)
         case TYPELMT2:
         case TYPECBC6510:
         case TYPECBC7020:
+        case TYPECBCDNP:
         case TYPE_RTC:
         case TYPE_RTM:
         case TYPE_FMU:

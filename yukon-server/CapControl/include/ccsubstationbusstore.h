@@ -57,7 +57,8 @@ public:
         Substation,
         Area,
         Strategy,
-        Schedule
+        Schedule,
+        SpecialArea
     } CtiCapControlObjectType;
 
     typedef enum

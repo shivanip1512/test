@@ -7,8 +7,8 @@
 *
 * PVCS KEYWORDS:
 * ARCHIVE      :  $Archive:   Z:/SOFTWAREARCHIVES/YUKON/COMMON/resolvers.cpp-arc  $
-* REVISION     :  $Revision: 1.5 $
-* DATE         :  $Date: 2007/10/12 21:14:17 $
+* REVISION     :  $Revision: 1.6 $
+* DATE         :  $Date: 2007/11/15 17:50:53 $
 *
 * Copyright (c) 2007 Cannon Technologies. All rights reserved.
 *-----------------------------------------------------------------------------*/
@@ -399,6 +399,9 @@ BOOST_AUTO_UNIT_TEST(test_resolveDeviceType)
     tempName = "cbc 7024";
     BOOST_CHECK_EQUAL(resolveDeviceType(tempName), devType);
     tempName = "cbc 7030";
+    BOOST_CHECK_EQUAL(resolveDeviceType(tempName), devType);
+    tempName = "cbc dnp";
+    devType = TYPECBCDNP;
     BOOST_CHECK_EQUAL(resolveDeviceType(tempName), devType);
     tempName = "cbc versacom";
     devType = TYPEVERSACOMCBC;
