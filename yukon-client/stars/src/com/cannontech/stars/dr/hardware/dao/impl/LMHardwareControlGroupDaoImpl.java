@@ -2,24 +2,29 @@ package com.cannontech.stars.dr.hardware.dao.impl;
 
 import java.sql.ResultSet;
 import java.sql.SQLException;
+import java.sql.Types;
 import java.util.Collections;
 import java.util.Date;
 import java.util.List;
 
 import org.springframework.dao.DataAccessException;
+import org.springframework.jdbc.core.namedparam.MapSqlParameterSource;
 import org.springframework.jdbc.core.simple.ParameterizedRowMapper;
 import org.springframework.jdbc.core.simple.SimpleJdbcTemplate;
 import org.springframework.transaction.annotation.Propagation;
 import org.springframework.transaction.annotation.Transactional;
 
+import com.cannontech.database.FieldMapper;
+import com.cannontech.database.SimpleTableAccessTemplate;
 import com.cannontech.database.incrementer.NextValueHelper;
+import com.cannontech.jobs.model.JobStatus;
+import com.cannontech.jobs.model.ScheduledOneTimeJob;
+import com.cannontech.jobs.model.ScheduledRepeatingJob;
 import com.cannontech.stars.dr.hardware.dao.LMHardwareControlGroupDao;
 import com.cannontech.stars.dr.hardware.model.LMHardwareControlGroup;
 
 public class LMHardwareControlGroupDaoImpl implements LMHardwareControlGroupDao {
-    private static final String insertSql;
     private static final String removeSql;
-    private static final String updateSql;
     private static final String selectAllSql;
     private static final String selectById;
     private static final String selectByLMGroupId;
@@ -34,19 +39,14 @@ public class LMHardwareControlGroupDaoImpl implements LMHardwareControlGroupDao 
     private static final ParameterizedRowMapper<LMHardwareControlGroup> rowMapper;
     private SimpleJdbcTemplate simpleJdbcTemplate;
     private NextValueHelper nextValueHelper;
+    private SimpleTableAccessTemplate<LMHardwareControlGroup> template;
     
     static {
         
-        insertSql = "INSERT INTO LMHardwareControlGroup (ControlEntryId, InventoryId, LMGroupId, AccountId, GroupEnrollStart, " +
-                "GroupEnrollStop, OptOutStart, OptOutStop) VALUES (?,?,?,?,?,?,?,?)";
-        
         removeSql = "DELETE FROM LMHardwareControlGroup WHERE ControlEntryID = ?";
          
-        updateSql = "UPDATE LMHardwareControlGroup SET InventoryID = ?, LMGroupID = ?, AccountID = ?, GroupEnrollStart = ?, " +
-                "GroupEnrollStop = ?, OptOutStart = ?, OptOutStop = ? WHERE ControlEntryID = ?";
-        
         selectAllSql = "SELECT ControlEntryId, InventoryId, LMGroupId, AccountId, GroupEnrollStart, GroupEnrollStop, OptOutStart, " +
-                "OptOutStop from LMHardwareControlGroup";
+                "OptOutStop, Type from LMHardwareControlGroup";
     
         selectById = selectAllSql + " WHERE ControlEntryID = ?";
         
@@ -72,20 +72,12 @@ public class LMHardwareControlGroupDaoImpl implements LMHardwareControlGroupDao 
     }
     
     @Transactional(readOnly = false, propagation = Propagation.REQUIRED)
-    public boolean add(final LMHardwareControlGroup hardwareControlGroup) {
-        int nextId = nextValueHelper.getNextValue("LMHardwareControlGroup");
-        hardwareControlGroup.setControlEntryId(nextId);
-        
-        int rowsAffected = simpleJdbcTemplate.update(insertSql, hardwareControlGroup.getControlEntryId(),
-                                                                hardwareControlGroup.getInventoryId(),
-                                                                hardwareControlGroup.getLMGroupId(),
-                                                                hardwareControlGroup.getAccountId(),
-                                                                hardwareControlGroup.getGroupEnrollStart(),
-                                                                hardwareControlGroup.getGroupEnrollStop(),
-                                                                hardwareControlGroup.getOptOutStart(),
-                                                                hardwareControlGroup.getOptOutStop());
-        boolean result = (rowsAffected == 1);
-        return result;
+    public void add(final LMHardwareControlGroup hardwareControlGroup) throws Exception {
+        template = new SimpleTableAccessTemplate<LMHardwareControlGroup>(simpleJdbcTemplate, nextValueHelper);
+        template.withTableName("LMHardwareControlGroup");
+        template.withPrimaryKeyField("controlEntryId");
+        template.withFieldMapper(controlGroupFieldMapper); 
+        template.insert(hardwareControlGroup);
     }
     
     @Transactional(readOnly = false, propagation = Propagation.REQUIRED)
@@ -96,17 +88,12 @@ public class LMHardwareControlGroupDaoImpl implements LMHardwareControlGroupDao 
     }
     
     @Transactional(readOnly = false, propagation = Propagation.REQUIRED)
-    public boolean update(final LMHardwareControlGroup hardwareControlGroup) {
-        int rowsAffected = simpleJdbcTemplate.update(updateSql, hardwareControlGroup.getInventoryId(),
-                                                     hardwareControlGroup.getLMGroupId(),
-                                                     hardwareControlGroup.getAccountId(),
-                                                     hardwareControlGroup.getGroupEnrollStart(),
-                                                     hardwareControlGroup.getGroupEnrollStop(),
-                                                     hardwareControlGroup.getOptOutStart(),
-                                                     hardwareControlGroup.getOptOutStop(),
-                                                     hardwareControlGroup.getControlEntryId());
-        boolean result = (rowsAffected == 1);
-        return result;
+    public void update(final LMHardwareControlGroup hardwareControlGroup) throws Exception {
+        template = new SimpleTableAccessTemplate<LMHardwareControlGroup>(simpleJdbcTemplate, nextValueHelper);
+        template.withTableName("LMHardwareControlGroup");
+        template.withPrimaryKeyField("controlEntryId");
+        template.withFieldMapper(controlGroupFieldMapper); 
+        template.update(hardwareControlGroup);
     }
     
     @Transactional(readOnly = true, propagation = Propagation.SUPPORTS)
@@ -231,6 +218,26 @@ public class LMHardwareControlGroupDaoImpl implements LMHardwareControlGroupDao 
         };
         return rowMapper;
     }
+    
+    private FieldMapper<LMHardwareControlGroup> controlGroupFieldMapper = new FieldMapper<LMHardwareControlGroup>() {
+        public void extractValues(MapSqlParameterSource p, LMHardwareControlGroup controlInfo) {
+            p.addValue("controlEntryId", controlInfo.getControlEntryId());
+            p.addValue("inventoryId", controlInfo.getInventoryId());
+            p.addValue("lmGroupId", controlInfo.getLMGroupId());
+            p.addValue("accountId", controlInfo.getAccountId());
+            p.addValue("groupEnrollStart", controlInfo.getGroupEnrollStart(), Types.TIMESTAMP);
+            p.addValue("groupEnrollStop", controlInfo.getGroupEnrollStop(), Types.TIMESTAMP);
+            p.addValue("optOutStart", controlInfo.getOptOutStart(), Types.TIMESTAMP);
+            p.addValue("optOutStop", controlInfo.getOptOutStop(), Types.TIMESTAMP);
+            p.addValue("type", controlInfo.getType());
+        }
+        public Number getPrimaryKey(LMHardwareControlGroup controlInfo) {
+            return controlInfo.getControlEntryId();
+        }
+        public void setPrimaryKey(LMHardwareControlGroup controlInfo, int value) {
+            controlInfo.setControlEntryId(value);
+        }
+    };
 
     public void setNextValueHelper(final NextValueHelper nextValueHelper) {
         this.nextValueHelper = nextValueHelper;

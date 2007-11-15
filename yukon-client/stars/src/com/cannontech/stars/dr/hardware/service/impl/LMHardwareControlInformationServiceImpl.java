@@ -4,11 +4,10 @@ import java.util.Date;
 import java.util.List;
 
 import org.apache.commons.lang.Validate;
-import org.springframework.dao.DataAccessException;
+import org.apache.log4j.Logger;
 import org.springframework.dao.DataRetrievalFailureException;
-import org.springframework.dao.EmptyResultDataAccessException;
 
-import com.cannontech.clientutils.CTILogger;
+import com.cannontech.clientutils.YukonLogManager;
 import com.cannontech.core.service.DateFormattingService;
 import com.cannontech.database.data.lite.LiteYukonUser;
 import com.cannontech.stars.dr.hardware.dao.LMHardwareControlGroupDao;
@@ -17,6 +16,7 @@ import com.cannontech.stars.dr.hardware.service.LMHardwareControlInformationServ
 
 public class LMHardwareControlInformationServiceImpl implements LMHardwareControlInformationService {
     
+    private Logger logger = YukonLogManager.getLogger(LMHardwareControlInformationServiceImpl.class);
     private LMHardwareControlGroupDao lmHardwareControlGroupDao;
     private DateFormattingService dateFormattingService;
 
@@ -49,7 +49,8 @@ public class LMHardwareControlInformationServiceImpl implements LMHardwareContro
             controlInformation.setGroupEnrollStart(now);
             lmHardwareControlGroupDao.add(controlInformation);
             return true;
-        } catch (DataRetrievalFailureException e) {
+        } catch (Exception e) {
+            logger.error("Enrollment start occurred for InventoryId: " + inventoryId + " LMGroupId: " + loadGroupId + " AccountId: " + accountId + "done by user: " + currentUser.getUsername() + " but could NOT be recorded in the LMHardwareControlGroup table.", e );
             return false;
         }
     }
@@ -81,7 +82,8 @@ public class LMHardwareControlInformationServiceImpl implements LMHardwareContro
              * TODO: make sure database script to handle existing enrollments is complete
              */
             return false;
-        } catch (DataRetrievalFailureException e) {
+        } catch (Exception e) {
+            logger.error("Enrollment stop occurred for InventoryId: " + inventoryId + " LMGroupId: " + loadGroupId + " AccountId: " + accountId + "done by user: " + currentUser.getUsername() + " but could NOT be recorded in the LMHardwareControlGroup table.", e );
             return false;
         }
     }
@@ -97,7 +99,7 @@ public class LMHardwareControlInformationServiceImpl implements LMHardwareContro
             lmHardwareControlGroupDao.add(controlInformation);
             return true;
         } catch (Exception e) {
-            CTILogger.error("Opt out start failed to log", e);
+            logger.error("Opt out was started/scheduled for InventoryId: " + inventoryId + " LMGroupId: " + loadGroupId + " AccountId: " + accountId + "done by user: " + currentUser.getUsername() + " but could NOT be recorded in the LMHardwareControlGroup table.", e );
             return false;
         }
     }
@@ -124,7 +126,8 @@ public class LMHardwareControlInformationServiceImpl implements LMHardwareContro
              * Shouldn't have a stop without a start.
              */
             return false;
-        } catch (DataRetrievalFailureException e) {
+        } catch (Exception e) {
+            logger.error("Opt out was stopped for InventoryId: " + inventoryId + " LMGroupId: " + loadGroupId + " AccountId: " + accountId + "done by user: " + currentUser.getUsername() + " but could NOT be recorded in the LMHardwareControlGroup table.", e );
             return false;
         }
     }

@@ -7,11 +7,11 @@ import com.cannontech.stars.dr.hardware.model.LMHardwareControlGroup;
 
 public interface LMHardwareControlGroupDao {
 
-    public boolean add(LMHardwareControlGroup hardwareControlGroup);
+    public void add(LMHardwareControlGroup hardwareControlGroup) throws Exception;
     
     public boolean remove(LMHardwareControlGroup hardwareControlGroup);
     
-    public boolean update(LMHardwareControlGroup hardwareControlGroup);
+    public void update(LMHardwareControlGroup hardwareControlGroup) throws Exception;
     
     public LMHardwareControlGroup getById(int controlEntryId) throws DataAccessException;
     
