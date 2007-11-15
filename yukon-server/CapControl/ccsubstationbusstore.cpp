@@ -2795,7 +2795,7 @@ bool CtiCCSubstationBusStore::UpdateSpecialAreaDisableFlagInDB(CtiCCSpecial* are
             CtiDBChangeMsg* dbChange = new CtiDBChangeMsg(area->getPAOId(), ChangePAODb,
                                                           area->getPAOCategory(), area->getPAOType(),
                                                           ChangeTypeUpdate);
-            dbChange->setSource(CAP_CONTROL_DBCHANGE_MSG_SOURCE);
+            dbChange->setSource(CAP_CONTROL_DBCHANGE_MSG_SOURCE2);
             CtiCapController::getInstance()->sendMessageToDispatch(dbChange);
 
             return updater.status().isValid();
@@ -4017,7 +4017,7 @@ void CtiCCSubstationBusStore::reloadAreaFromDatabase(long areaId, map< long, Cti
 ---------------------------------------------------------------------------*/
 void CtiCCSubstationBusStore::reloadSpecialAreaFromDatabase(long areaId, map< long, CtiCCStrategyPtr > *strategy_map, 
                                   map< long, CtiCCSpecialPtr > *paobject_specialarea_map,
-                                  multimap< long, CtiCCSpecialPtr > *pointid_specialarea_map, 
+                                  multimap< long, CtiCCSpecialPtr > *pointid_specialarea_map,
                                   CtiCCSpArea_vec *ccSpecialAreas)
 {
     CtiCCSpecialPtr spAreaToUpdate = NULL;
@@ -4117,7 +4117,11 @@ void CtiCCSubstationBusStore::reloadSpecialAreaFromDatabase(long areaId, map< lo
                              selector.where(ccScheduleStrat["paobjectid"]==capControlSpecialAreaTable["areaid"]  &&
                                            ccScheduleStrat["seasonscheduleid"] == dateOfSeason["seasonscheduleid"] &&
                                            ccScheduleStrat["seasonname"] == dateOfSeason["seasonname"]);
-
+                         if ( _CC_DEBUG & CC_DEBUG_DATABASE )
+                         {
+                             CtiLockGuard<CtiLogger> logger_guard(dout);
+                             dout << CtiTime() << " - " << selector.asString().data() << endl;
+                         }
                          RWDBReader rdr = selector.reader(conn);
                          while ( rdr() )
                          {
@@ -4228,14 +4232,10 @@ void CtiCCSubstationBusStore::reloadSpecialAreaFromDatabase(long areaId, map< lo
 
                             rdr["substationbusid"] >> currentSubId;
                             //add substationbusids to special area list...;
-                            long currentSpAreaId;
+                            reloadSubstationFromDatabase(currentSubId,&_paobject_substation_map,
+                                                   &_paobject_area_map, &_paobject_specialarea_map, &_substation_area_map,
+                                                   &_substation_specialarea_map, _ccSubstations );
 
-                            rdr["areaid"] >> currentSpAreaId;
-                            CtiCCSpecialPtr currentCCSpArea = paobject_specialarea_map->find(currentSpAreaId)->second;
-                            if (currentCCSpArea != NULL) 
-                            {
-                                currentCCSpArea->getSubstationIds()->push_back(currentSubId);
-                            }
                         }
                     }
                     
@@ -7431,7 +7431,6 @@ void CtiCCSubstationBusStore::checkDBReloadList()
                         }
                         break;
                     }
-
                     //area
                     case Area:
                     {
@@ -7513,11 +7512,61 @@ void CtiCCSubstationBusStore::checkDBReloadList()
                                                     modifiedSubsList.push_back(tempSub);                 
                                                     msgBitMask |= CtiCCSubstationBusMsg::SubBusModified; 
                                                 }
+                                                iterBus++;
                                             }
                                         }
+                                        iter++;
                                     }
                                 }
                             //}
+                        }
+                        break;
+                    }
+                    //special area
+                    case SpecialArea:
+                    {
+                        if (reloadTemp.action == ChangeTypeDelete)
+                        {
+                            deleteArea(reloadTemp.objectId); 
+
+                            CtiCCExecutorFactory f;
+                            CtiCCExecutor* executor = f.createExecutor(new CtiCCCommand(CtiCCCommand::DELETE_ITEM, reloadTemp.objectId));
+                            executor->Execute();
+                            delete executor;
+
+                        }
+                        else  // ChangeTypeAdd, ChangeTypeUpdate
+                        {   
+                            reloadSpecialAreaFromDatabase(reloadTemp.objectId, &_strategyid_strategy_map, 
+                                                     &_paobject_specialarea_map, &_pointid_specialarea_map, _ccSpecialAreas);
+                            CtiCCSpecialPtr tempSpArea = findSpecialAreaByPAObjectID(reloadTemp.objectId);
+
+                            
+                            if (tempSpArea != NULL) 
+                            {
+                                list <LONG>::const_iterator iter = tempSpArea->getSubstationIds()->begin();
+                                while (iter != tempSpArea->getSubstationIds()->end())
+                                {   
+                                    LONG stationId = *iter;
+                                    CtiCCSubstation *station = findSubstationByPAObjectID(stationId);
+                                    if (station != NULL)
+                                    {                   
+                                        list <LONG>::const_iterator iterBus = station->getCCSubIds()->begin();
+                                        while (iterBus  != station->getCCSubIds()->end())
+                                        { 
+                                            LONG busId = *iterBus;
+                                            CtiCCSubstationBus* tempSub = findSubBusByPAObjectID(busId);
+                                            if (tempSub != NULL)
+                                            {
+                                                modifiedSubsList.push_back(tempSub);                 
+                                                msgBitMask |= CtiCCSubstationBusMsg::SubBusModified; 
+                                            }
+                                            iterBus++;
+                                        }
+                                    }
+                                    iter++;
+                                }
+                            }
                         }
                         break;
                     }
@@ -8157,4 +8206,5 @@ const string CtiCCSubstationBusStore::m3iAMFMSwitchedString = "SWITCHED";
 const string CtiCCSubstationBusStore::m3iAMFMNullString = "(NULL)";
 
 const string CtiCCSubstationBusStore::CAP_CONTROL_DBCHANGE_MSG_SOURCE = "CAP_CONTROL_SERVER";
+const string CtiCCSubstationBusStore::CAP_CONTROL_DBCHANGE_MSG_SOURCE2 = "CAP_CONTROL_SERVER_FORCED_RELOAD";
 

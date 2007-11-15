@@ -40,8 +40,8 @@ struct CC_DBRELOAD_INFO
 {
    LONG objectId;
    unsigned char action:2;
-   unsigned char objecttype:3;
-   unsigned char filler:3;
+   unsigned char objecttype:4;
+   unsigned char filler:2;
 };
 
 class CtiCCSubstationBusStore : public RWMonitor< RWRecursiveLock< RWMutexLock > >
@@ -219,6 +219,7 @@ public:
     map <long, CtiCCSubstationBusPtr>* getPAOSubMap();
 
     static const string CAP_CONTROL_DBCHANGE_MSG_SOURCE;
+    static const string CAP_CONTROL_DBCHANGE_MSG_SOURCE2;
     static void sendUserQuit(void *who);
     static void periodicComplain( void *la );
 

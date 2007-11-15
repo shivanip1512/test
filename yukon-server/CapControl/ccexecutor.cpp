@@ -913,8 +913,11 @@ void CtiCCCommandExecutor::EnableOvUv()
     }
     else
     {
-        CtiLockGuard<CtiLogger> logger_guard(dout);
-        dout << CtiTime() << " - ControlDeviceID: "<<controlID<<" - Could not create Porter Request Message in: " << __FILE__ << " at: " << __LINE__ << endl;
+        delete multi;
+        {
+            CtiLockGuard<CtiLogger> logger_guard(dout);
+            dout << CtiTime() << " - ControlDeviceID: "<<controlID<<" - Could not create Porter Request Message in: " << __FILE__ << " at: " << __LINE__ << endl;
+        }
     }
 
 
@@ -1013,8 +1016,11 @@ void CtiCCCommandExecutor::DisableOvUv()
     }
     else
     {
-        CtiLockGuard<CtiLogger> logger_guard(dout);
-        dout << CtiTime() << " - ControlDeviceID: "<<controlID<<" - Could not create Porter Request Message in: " << __FILE__ << " at: " << __LINE__ << endl;
+        delete multi;
+        {
+            CtiLockGuard<CtiLogger> logger_guard(dout);
+            dout << CtiTime() << " - ControlDeviceID: "<<controlID<<" - Could not create Porter Request Message in: " << __FILE__ << " at: " << __LINE__ << endl;
+        }
     }
 
 }
@@ -1433,6 +1439,10 @@ void CtiCCCommandExecutor::SendAllCapBankCommands()
        executor->Execute();
        delete executor;
     }
+    else
+    {
+        delete actionMulti;
+    }
     CtiCCExecutorFactory f;
     CtiCCExecutor* executor = f.createExecutor(new CtiCCGeoAreasMsg(ccAreas));
     executor->Execute();
@@ -1447,8 +1457,15 @@ void CtiCCCommandExecutor::SendAllCapBankCommands()
     delete executor;
     if (multi->getCount() > 0 || multiPilMsg->getCount() > 0)
         CtiCapController::getInstance()->confirmCapBankControl(multiPilMsg, multi);
+    else
+    {
+        delete multi;
+        delete multiPilMsg;
+    }
     if (eventMulti->getCount() > 0)
         CtiCapController::getInstance()->getCCEventMsgQueueHandle().write(eventMulti);
+    else
+        delete eventMulti;
 
 }
 
@@ -1716,6 +1733,8 @@ void CtiCCCommandExecutor::OpenCapBank()
 
         if (eventMulti->getCount() >0)
             CtiCapController::getInstance()->getCCEventMsgQueueHandle().write(eventMulti);
+        else
+            delete eventMulti;
         if (updatedSubs.size() > 0) 
         {
             CtiCCExecutorFactory f;
@@ -1726,8 +1745,11 @@ void CtiCCCommandExecutor::OpenCapBank()
     }
     else
     {
-        CtiLockGuard<CtiLogger> logger_guard(dout);
-        dout << CtiTime() << " - Could not create Porter Request Message in: " << __FILE__ << " at: " << __LINE__ << endl;
+        delete multi;
+        {
+            CtiLockGuard<CtiLogger> logger_guard(dout);
+            dout << CtiTime() << " - Could not create Porter Request Message in: " << __FILE__ << " at: " << __LINE__ << endl;
+        }
     }
 }
 
@@ -2033,12 +2055,16 @@ void CtiCCCommandExecutor::EnableArea()
                
         if (eventMulti->getCount() > 0)
             CtiCapController::getInstance()->getCCEventMsgQueueHandle().write(eventMulti);
+        else
+            delete eventMulti;
         if (multi->getCount() > 0)
             CtiCapController::getInstance()->sendMessageToDispatch(multi);
+        else
+            delete multi;
 
         
         CtiCCExecutorFactory f;
-        CtiCCExecutor *executor = f.createExecutor(new CtiCCGeoAreasMsg(ccAreas)); 
+        CtiCCExecutor* executor = f.createExecutor(new CtiCCGeoAreasMsg(ccAreas)); 
         executor->Execute();
         delete executor;
     }
@@ -2072,20 +2098,21 @@ void CtiCCCommandExecutor::EnableArea()
                     currentSubstation->setSaEnabledId(areaId);
                 }
             }
-            store->setValid(false);  //This is to do a full DATABASE RELOAD.
+            //store->setValid(false);  //This is to do a full DATABASE RELOAD.
 
             if (eventMulti->getCount() > 0)
                 CtiCapController::getInstance()->getCCEventMsgQueueHandle().write(eventMulti);
+            else
+                delete eventMulti;
             if (multi->getCount() > 0)
                 CtiCapController::getInstance()->sendMessageToDispatch(multi);
-
+            else
+                delete multi;
 
             CtiCCExecutorFactory f;
             CtiCCExecutor *executor = f.createExecutor(new CtiCCSpecialAreasMsg(*store->getCCSpecialAreas(CtiTime().seconds())));
             executor->Execute();
             delete executor;
-
-
         }
     }
 }
@@ -2124,8 +2151,12 @@ void CtiCCCommandExecutor::DisableArea()
         
         if (eventMulti->getCount() > 0)
             CtiCapController::getInstance()->getCCEventMsgQueueHandle().write(eventMulti);
+        else
+            delete eventMulti;
         if (multi->getCount() > 0)
             CtiCapController::getInstance()->sendMessageToDispatch(multi);
+        else
+            delete multi;
 
         CtiCCExecutorFactory f;
         CtiCCExecutor *executor = f.createExecutor(new CtiCCGeoAreasMsg(ccAreas)); 
@@ -2163,19 +2194,24 @@ void CtiCCCommandExecutor::DisableArea()
                     currentSubstation->setSaEnabledId(0);
                 }
             }
-            store->setValid(false);  //This is to do a full DATABASE RELOAD.
+            //store->setValid(false);  //This is to do a full DATABASE RELOAD.
 
 
             if (eventMulti->getCount() > 0)
                 CtiCapController::getInstance()->getCCEventMsgQueueHandle().write(eventMulti);
+            else
+                delete eventMulti;
+
             if (multi->getCount() > 0)
                 CtiCapController::getInstance()->sendMessageToDispatch(multi);
+            else
+                delete multi;
+
 
             CtiCCExecutorFactory f;
             CtiCCExecutor *executor = f.createExecutor(new CtiCCSpecialAreasMsg(*store->getCCSpecialAreas(CtiTime().seconds())));
             executor->Execute();
             delete executor;
-
 
         }
     }
@@ -2216,8 +2252,12 @@ void CtiCCCommandExecutor::EnableSystem()
                
     if (eventMulti->getCount() > 0)
         CtiCapController::getInstance()->getCCEventMsgQueueHandle().write(eventMulti);
+    else
+        delete eventMulti;
     if (multi->getCount() > 0)
         CtiCapController::getInstance()->sendMessageToDispatch(multi);
+    else
+        delete multi;
 
     
     CtiCCExecutorFactory f;
@@ -2265,8 +2305,12 @@ void CtiCCCommandExecutor::DisableSystem()
                
     if (eventMulti->getCount() > 0)
         CtiCapController::getInstance()->getCCEventMsgQueueHandle().write(eventMulti);
+    else
+        delete eventMulti;
     if (multi->getCount() > 0)
         CtiCapController::getInstance()->sendMessageToDispatch(multi);
+    else
+        delete multi;
 
     
     CtiCCExecutorFactory f;
@@ -2628,8 +2672,12 @@ void CtiCCCommandExecutor::Scan2WayDevice()
     }
     if (eventMulti->getCount() > 0)
         CtiCapController::getInstance()->getCCEventMsgQueueHandle().write(eventMulti);
+    else
+        delete eventMulti;
     if (multi->getCount() > 0)
         CtiCapController::getInstance()->sendMessageToDispatch(multi);
+    else
+        delete multi;
   
 }
 
@@ -2793,8 +2841,15 @@ void CtiCCCommandExecutor::ConfirmSub()
     }
     if (multi->getCount() > 0 || multiPilMsg->getCount() > 0)
         CtiCapController::getInstance()->confirmCapBankControl(multiPilMsg, multi);
+    else
+    {
+        delete multi;
+        delete multiPilMsg;
+    }
     if (eventMulti->getCount() > 0)
         CtiCapController::getInstance()->getCCEventMsgQueueHandle().write(eventMulti);
+    else
+        delete eventMulti;
     
 }
 
@@ -2857,8 +2912,12 @@ void CtiCCCommandExecutor::ConfirmArea()
 
 
         }
+        else
+            delete confirmMulti;
         if (eventMulti->getCount() > 0)
             CtiCapController::getInstance()->getCCEventMsgQueueHandle().write(eventMulti);
+        else
+            delete eventMulti;
         if (multi->getCount() > 0)
             CtiCapController::getInstance()->sendMessageToDispatch(multi);
 
@@ -2904,8 +2963,13 @@ void CtiCCCommandExecutor::ConfirmArea()
             }
             if (eventMulti->getCount() > 0)
                 CtiCapController::getInstance()->getCCEventMsgQueueHandle().write(eventMulti);
+            else
+                delete eventMulti;
+
             if (multi->getCount() > 0)
                 CtiCapController::getInstance()->sendMessageToDispatch(multi);
+            else
+                delete multi;
 
         }
 
@@ -3174,6 +3238,8 @@ void CtiCCCommandExecutor::ConfirmOpen()
         CtiCapController::getInstance()->manualCapBankControl( reqMsg, multi );
         if (eventMulti->getCount() >0)
             CtiCapController::getInstance()->getCCEventMsgQueueHandle().write(eventMulti);
+        else
+            delete eventMulti;
         if (updatedSubs.size() > 0) 
         {
             CtiCCExecutorFactory f;
@@ -3184,8 +3250,11 @@ void CtiCCCommandExecutor::ConfirmOpen()
     }
     else
     {
-        CtiLockGuard<CtiLogger> logger_guard(dout);
-        dout << CtiTime() << " - Could not create Porter Request Message in: " << __FILE__ << " at: " << __LINE__ << endl;
+        delete multi;
+        {
+            CtiLockGuard<CtiLogger> logger_guard(dout);
+            dout << CtiTime() << " - Could not create Porter Request Message in: " << __FILE__ << " at: " << __LINE__ << endl;
+        }
     }
 }
 
@@ -3453,6 +3522,8 @@ void CtiCCCommandExecutor::ConfirmClose()
         CtiCapController::getInstance()->manualCapBankControl( reqMsg, multi );
         if (eventMulti->getCount() >0)
             CtiCapController::getInstance()->getCCEventMsgQueueHandle().write(eventMulti);
+        else
+            delete eventMulti;
         if (updatedSubs.size() > 0) 
         {
             CtiCCExecutorFactory f;
@@ -3463,8 +3534,11 @@ void CtiCCCommandExecutor::ConfirmClose()
     }
     else
     {
-        CtiLockGuard<CtiLogger> logger_guard(dout);
-        dout << CtiTime() << " - Could not create Porter Request Message in: " << __FILE__ << " at: " << __LINE__ << endl;
+        delete multi;
+        {
+            CtiLockGuard<CtiLogger> logger_guard(dout);
+            dout << CtiTime() << " - Could not create Porter Request Message in: " << __FILE__ << " at: " << __LINE__ << endl;
+        }
     }
 }
 
@@ -3964,10 +4038,14 @@ void CtiCCCommandExecutor::ResetDailyOperations()
 		{
 			CtiCapController::getInstance()->sendMessageToDispatch(multiDispatchMsg);
 		}
+        else
+            delete multiDispatchMsg;
         if (ccEvents.size() > 0)                                                  
         {
             CtiCapController::getInstance()->getCCEventMsgQueueHandle().write(eventMulti);
         }
+        else
+            delete eventMulti;
     }
     else
     {

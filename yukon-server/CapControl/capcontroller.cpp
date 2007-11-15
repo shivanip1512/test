@@ -1543,8 +1543,9 @@ void CtiCapController::parseMessage(RWCollectable *message, ULONG secondsFrom190
                         }
                         else if (resolvePAOType(dbChange->getCategory(),dbChange->getObjectType()) == TYPE_CC_SPECIALAREA)
                         {
+                            objType = CtiCCSubstationBusStore::SpecialArea;
 
-                            CtiCCSubstationBusStore::getInstance()->setValid(false);
+                            //CtiCCSubstationBusStore::getInstance()->setValid(false);
                             CtiPAOScheduleManager::getInstance()->setValid(false);  
                         }
                         else if (resolvePAOType(dbChange->getCategory(),dbChange->getObjectType()) == TYPE_CC_AREA)
