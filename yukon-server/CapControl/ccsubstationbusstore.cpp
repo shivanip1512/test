@@ -4139,9 +4139,9 @@ void CtiCCSubstationBusStore::reloadSpecialAreaFromDatabase(long areaId, map< lo
 
                                  CtiCCSpecialPtr currentCCSpArea = NULL;
                                  if (areaId > 0)
-                                     findSpecialAreaByPAObjectID(currentAreaId);
+                                     currentCCSpArea = findSpecialAreaByPAObjectID(currentAreaId);
                                  else
-                                    paobject_specialarea_map->find(currentAreaId)->second;
+                                     currentCCSpArea = paobject_specialarea_map->find(currentAreaId)->second;
 
                                  if (currentCCSpArea != NULL) 
                                  {
@@ -4153,12 +4153,13 @@ void CtiCCSubstationBusStore::reloadSpecialAreaFromDatabase(long areaId, map< lo
 
                                      if (currentCCStrategy == NULL)
                                      {
-                                         currentCCSpArea->setStrategyId(0);
+                                         stratId = 0;
                                          if (areaId > 0)
-                                             currentCCStrategy = findStrategyByStrategyID(0);
+                                             currentCCStrategy = findStrategyByStrategyID(stratId);
                                          else
-                                             currentCCStrategy =  strategy_map->find(0)->second;
+                                             currentCCStrategy =  strategy_map->find(stratId)->second;
                                      }
+                                     currentCCSpArea->setStrategyId(stratId);
                                      currentCCSpArea->setStrategyValues(currentCCStrategy);
 
                                  }
