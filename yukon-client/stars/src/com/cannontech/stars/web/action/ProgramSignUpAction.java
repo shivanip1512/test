@@ -235,7 +235,11 @@ public class ProgramSignUpAction implements ActionBase {
 							YukonSwitchCommandAction.sendConfigCommand( energyCompany, liteHw, false, null );
 						else if (liteHw.getDeviceStatus() == YukonListEntryTypes.YUK_DEF_ID_DEV_STAT_UNAVAIL)
 							YukonSwitchCommandAction.sendEnableCommand( energyCompany, liteHw, null );
-                        lmHardwareControlInformationService.startEnrollment(liteHw.getInventoryID(), inventoryIDToGroupIDMap.get(liteHw.getInventoryID()), liteHw.getAccountID(), liteUser);
+                        boolean success = lmHardwareControlInformationService.startEnrollment(liteHw.getInventoryID(), inventoryIDToGroupIDMap.get(liteHw.getInventoryID()), liteHw.getAccountID(), liteUser);
+                        if(!success) {
+                            CTILogger.error( "Enrollment start occurred for InventoryId: " + liteHw.getInventoryID() + " LMGroupId: " + inventoryIDToGroupIDMap.get(liteHw.getInventoryID()) +
+                                             " AccountId: " + liteHw.getAccountID() + "done by user: " + liteUser.getUsername() + " but could NOT be logged to LMHardwareControlGroup table." );
+                        }
 					}
 					else {
 						// Send disable command to hardware
@@ -245,7 +249,11 @@ public class ProgramSignUpAction implements ActionBase {
                          * in tandem with the actual switch getting disabled/enabled/configged, hence
                          * placing it here.
                          */
-                        lmHardwareControlInformationService.stopEnrollment(liteHw.getInventoryID(), inventoryIDToGroupIDMap.get(liteHw.getInventoryID()), liteHw.getAccountID(), liteUser);
+                        boolean success = lmHardwareControlInformationService.stopEnrollment(liteHw.getInventoryID(), inventoryIDToGroupIDMap.get(liteHw.getInventoryID()), liteHw.getAccountID(), liteUser);
+                        if(!success) {
+                            CTILogger.error( "Enrollment stop occurred for InventoryId: " + liteHw.getInventoryID() + " LMGroupId: " + inventoryIDToGroupIDMap.get(liteHw.getInventoryID()) +
+                                             " AccountId: " + liteHw.getAccountID() + " done by user: " + liteUser.getUsername() + " but could NOT be logged to LMHardwareControlGroup table." );
+                        }
 					}
 					
 					StarsInventory starsInv = StarsLiteFactory.createStarsInventory( liteHw, energyCompany );

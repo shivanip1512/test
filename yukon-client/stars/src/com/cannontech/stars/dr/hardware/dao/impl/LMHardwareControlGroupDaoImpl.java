@@ -30,6 +30,7 @@ public class LMHardwareControlGroupDaoImpl implements LMHardwareControlGroupDao 
     private static final String selectByOptOutStartRange;
     private static final String selectByOptOutStopRange;
     private static final String selectByInventoryIdAndGroupIdAndAccountId;
+    private static final String selectByInventoryIdAndGroupIdAndAccountIdAndType;
     private static final ParameterizedRowMapper<LMHardwareControlGroup> rowMapper;
     private SimpleJdbcTemplate simpleJdbcTemplate;
     private NextValueHelper nextValueHelper;
@@ -64,6 +65,8 @@ public class LMHardwareControlGroupDaoImpl implements LMHardwareControlGroupDao 
         selectByOptOutStopRange = selectAllSql + " WHERE OptOutStop > ? AND OptOutStop <= ?";
         
         selectByInventoryIdAndGroupIdAndAccountId = selectAllSql + " WHERE InventoryID = ? AND LMGroupID = ? AND AccountID = ?";
+        
+        selectByInventoryIdAndGroupIdAndAccountIdAndType = selectAllSql + " WHERE InventoryID = ? AND LMGroupID = ? AND AccountID = ? AND Type = ?";
         
         rowMapper = LMHardwareControlGroupDaoImpl.createRowMapper();
     }
@@ -183,9 +186,22 @@ public class LMHardwareControlGroupDaoImpl implements LMHardwareControlGroupDao 
     }
     
     @Transactional(readOnly = true, propagation = Propagation.SUPPORTS)
-    public LMHardwareControlGroup getByInventoryIdAndGroupIdAndAccountId(int inventoryId, int lmGroupId, int accountId) {
-        LMHardwareControlGroup hardwareControlGroup = simpleJdbcTemplate.queryForObject(selectByInventoryIdAndGroupIdAndAccountId, rowMapper, inventoryId, lmGroupId, accountId);
-        return hardwareControlGroup;
+    public List<LMHardwareControlGroup> getByInventoryIdAndGroupIdAndAccountId(int inventoryId, int lmGroupId, int accountId) {
+        try {
+            List<LMHardwareControlGroup> list = simpleJdbcTemplate.query(selectByInventoryIdAndGroupIdAndAccountId, rowMapper, inventoryId, lmGroupId, accountId);
+            return list;
+        } catch (DataAccessException e) {
+            return Collections.emptyList();
+        }
+    }
+    
+    public List<LMHardwareControlGroup> getByInventoryIdAndGroupIdAndAccountIdAndType(int inventoryId, int lmGroupId, int accountId, int type) {
+        try {
+            List<LMHardwareControlGroup> list = simpleJdbcTemplate.query(selectByInventoryIdAndGroupIdAndAccountIdAndType, rowMapper, inventoryId, lmGroupId, accountId, type);
+            return list;
+        } catch (DataAccessException e) {
+            return Collections.emptyList();
+        }
     }
     
     @Transactional(readOnly = true, propagation = Propagation.SUPPORTS)

@@ -11,14 +11,19 @@ public class LMHardwareControlGroup {
     private Date groupEnrollStop;
     private Date optOutStart;
     private Date optOutStop;
+    private int type;
+    
+    public static final int ENROLLMENT_ENTRY = 1;
+    public static final int OPT_OUT_ENTRY = 2;
     
     public LMHardwareControlGroup() { 
     }
     
-    public LMHardwareControlGroup(int inventoryId, int loadGroupId, int accountId) { 
+    public LMHardwareControlGroup(int inventoryId, int loadGroupId, int accountId, int type) { 
         this.inventoryId = inventoryId;
         this.lmGroupId = loadGroupId;
         this.accountId = accountId;
+        this.type = type;
     }
 
     public int getInventoryId() {
@@ -105,5 +110,13 @@ public class LMHardwareControlGroup {
         if (controlEntryId != other.controlEntryId)
             return false;
         return true;
+    }
+
+    public int getType() {
+        return type;
+    }
+
+    public void setType(int type) {
+        this.type = type;
     }
 }
