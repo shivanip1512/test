@@ -9,6 +9,10 @@ public class CBCControlPointCriteria extends YukonObjectCriteriaHelper {
     public CBCControlPointCriteria() {
         super();
         //point should only belong to cap bank controller
+        for (int i = 0; i < PAOGroups.STRING_CBC_DNP.length; i++) {
+            String type = PAOGroups.STRING_CBC_DNP[i];
+            addCriteria("paotype", type, BooleanClause.Occur.SHOULD);
+        }
         for (int i = 0; i < PAOGroups.STRING_CBC_7010.length; i++) {
             String type = PAOGroups.STRING_CBC_7010[i];
             addCriteria("paotype", type, BooleanClause.Occur.SHOULD);
