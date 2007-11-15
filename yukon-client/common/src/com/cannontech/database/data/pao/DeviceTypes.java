@@ -133,10 +133,11 @@ public interface DeviceTypes extends TypeBase
     public final static int REPEATER_902      = DEVICE_OFFSET + 101;
     public final static int FAULT_CI          = DEVICE_OFFSET + 102;
     public final static int NEUTRAL_MONITOR   = DEVICE_OFFSET + 103;
+    public final static int CBC_DNP           = DEVICE_OFFSET + 104;
     //***IMPORTANT ** If you add a deviceType, please update the total device type count!
-	public final static int DEVICE_TYPES_COUNT = 103;
+	public final static int DEVICE_TYPES_COUNT = 104;
 	
-    public static final int[] CBC_TWOWAY = new int[]{DNP_CBC_6510,CBC_7020,CBC_7022,CBC_7023,CBC_7024};
+    public static final int[] CBC_TWOWAY = new int[]{DNP_CBC_6510,CBC_7020,CBC_7022,CBC_7023,CBC_7024,CBC_DNP};
 
 	//all the possible text representation of each device type.
 	//If you want the string of any type, just access the zeroth element, example: STRING_CCU_710[0]
@@ -244,6 +245,7 @@ public interface DeviceTypes extends TypeBase
 	public static final String[] STRING_ALPHA_A3 = {"ALPHA A3"};
 	public static final String[] STRING_CBC_7010 = {"CBC 7010", "CBC 7011", "CBC 7012"};
 	public static final String[] STRING_CBC_7020 = {"CBC 7020", "CBC 7022", "CBC 7023", "CBC 7024"};
+	public static final String[] STRING_CBC_DNP  = {"CBC DNP"};
     public static final String[] STRING_NEUTRAL_MONITOR = { "Capacitor Bank Neutral Monitor" };
     public static final String[] STRING_FAULT_CI = { "Faulted Circuit Indicator" };
     

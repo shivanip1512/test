@@ -3,6 +3,7 @@ package com.cannontech.database.data.capcontrol;
 import com.cannontech.database.db.capcontrol.DeviceCBC;
 import com.cannontech.database.db.device.DeviceAddress;
 
+
 public class CapBankControllerDNP extends com.cannontech.database.data.device.RemoteBase implements com.cannontech.database.db.DBCopiable, ICapBankController
 {
    private DeviceAddress deviceAddress = null;

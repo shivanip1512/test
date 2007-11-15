@@ -680,13 +680,19 @@ public class CBControllerEditor implements ICBControllerModel {
 	public boolean isDevice702X() {
 		if (getPaoCBC() != null) {
 			int deviceType = PAOGroups.getDeviceType(getPaoCBC().getPAOType());
-			if (DeviceTypesFuncs.isCapBankController (deviceType) && 
-					DeviceTypesFuncs.cbcHasPort(deviceType))
-				return true;
+			return DeviceTypesFuncs.isCapBankController702X(deviceType);
 		}
 		return false;		
 	}
 
+	public boolean isDeviceDNP() {
+        if (getPaoCBC() != null) {
+            int deviceType = PAOGroups.getDeviceType(getPaoCBC().getPAOType());
+            return DeviceTypesFuncs.isCapBankControllerDNP(deviceType);
+        }
+        return false;       
+	}
+	
 	/* (non-Javadoc)
      * @see com.cannontech.web.editor.ICBControllerEditor#isDevice701X()
      */

@@ -22,7 +22,6 @@ import com.cannontech.database.data.pao.PAOGroups;
 import com.cannontech.database.db.DBPersistent;
 import com.cannontech.dbeditor.DatabaseEditor;
 import com.cannontech.dbeditor.wizard.device.DeviceRoutePanel;
-import com.cannontech.dbeditor.wizard.device.capcontrol.CapBankCntrlCreationPanel;
 import com.cannontech.dbeditor.wizard.device.lmgroup.LMGroupVersacomEditorPanel;
 
 /* All Panels used in this WizardPanel MUST be able to handle MultiDBPersistent  */
@@ -32,7 +31,7 @@ public class DeviceCopyWizardPanel extends com.cannontech.common.wizard.WizardPa
 	private DeviceMeterGroupPanel deviceMeterGroupPanel;
     private DeviceCopyNameAddressPanel deviceCopyNameAddressPanel;
 	private DeviceCopyPointPanel deviceCopyPointPanel;
-	private CapBankCntrlCreationPanel capBankCntrlCreationPanel;
+
 	
 	private LMGroupVersacomEditorPanel lmGroupVersacomEditorPanel;
 	private RoutePanel routePanel;
@@ -45,7 +44,7 @@ public class DeviceCopyWizardPanel extends com.cannontech.common.wizard.WizardPa
 	private com.cannontech.database.db.DBPersistent copyObject = null;
 	private int deviceType;
 	private Character addressUsage;
-	private boolean isCapBank = false;
+
 /**
  * DeviceWizardPanel constructor comment.
  */
@@ -57,8 +56,6 @@ public DeviceCopyWizardPanel(com.cannontech.database.db.DBPersistent objectToCop
 	setDeviceType();
 	if (objectToCopy instanceof com.cannontech.database.data.device.lm.LMGroupEmetcon)
 		setAddressUsage();
-	if(objectToCopy instanceof com.cannontech.database.data.capcontrol.CapBank)
-		isCapBank = true;
 }
 /**
  * Insert the method's description here.
@@ -126,12 +123,6 @@ protected DeviceRoutePanel getDeviceRoutePanel() {
     return deviceRoutePanel;
 }
 
-protected com.cannontech.dbeditor.wizard.device.capcontrol.CapBankCntrlCreationPanel getCapBankCntrlCreationPanel() {
-	if( capBankCntrlCreationPanel == null )
-		capBankCntrlCreationPanel = new CapBankCntrlCreationPanel();
-		
-	return capBankCntrlCreationPanel;
-}
 /**
  * Insert the method's description here.
  * Creation date: (6/7/2001 9:30:52 AM)
@@ -305,13 +296,7 @@ protected DataInputPanel getNextInputPanel(
 		getRoutePanel().setFirstFocus();
 		return getRoutePanel();
 	}
-
-	else if( (currentInputPanel == getDeviceCopyNameAddressPanel() || currentInputPanel == getDeviceCopyPointPanel()) &&
-	getDeviceType() == PAOGroups.CAPBANK)
-    {
-        getCapBankCntrlCreationPanel().setFirstFocus();
-		return getCapBankCntrlCreationPanel();
-    }else if( currentInputPanel == getRoutePanel() && (getDeviceType() == DeviceTypes.MCT470
+	else if( currentInputPanel == getRoutePanel() && (getDeviceType() == DeviceTypes.MCT470
                                                     || getDeviceType() == DeviceTypes.MCT430S4
                                                     || getDeviceType() == DeviceTypes.MCT430A
                                                     || getDeviceType() == DeviceTypes.MCT430SL
@@ -423,10 +408,7 @@ private DatabaseEditor getDbEditor() {
 protected boolean isLastInputPanel(com.cannontech.common.gui.util.DataInputPanel currentPanel) {
 	
 
-	if (isCapBank)
-    {
-		return (currentPanel == getCapBankCntrlCreationPanel());
-    }else if( (currentPanel == getDeviceCopyNameAddressPanel()) && (getDeviceType() == DeviceTypes.MCT470
+    if( (currentPanel == getDeviceCopyNameAddressPanel()) && (getDeviceType() == DeviceTypes.MCT470
                                                                  || getDeviceType() == DeviceTypes.MCT430S4
                                                                  || getDeviceType() == DeviceTypes.MCT430A
                                                                  || getDeviceType() == DeviceTypes.MCT430SL

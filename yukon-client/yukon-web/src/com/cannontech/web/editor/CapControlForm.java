@@ -49,16 +49,7 @@ import com.cannontech.common.util.CtiUtilities;
 import com.cannontech.common.util.StringUtils;
 import com.cannontech.core.dao.*;
 import com.cannontech.database.TransactionException;
-import com.cannontech.database.data.capcontrol.CCYukonPAOFactory;
-import com.cannontech.database.data.capcontrol.CapBank;
-import com.cannontech.database.data.capcontrol.CapBankController;
-import com.cannontech.database.data.capcontrol.CapBankController702x;
-import com.cannontech.database.data.capcontrol.CapControlArea;
-import com.cannontech.database.data.capcontrol.CapControlFeeder;
-import com.cannontech.database.data.capcontrol.CapControlSpecialArea;
-import com.cannontech.database.data.capcontrol.CapControlSubBus;
-import com.cannontech.database.data.capcontrol.CapControlSubstation;
-import com.cannontech.database.data.capcontrol.ICapBankController;
+import com.cannontech.database.data.capcontrol.*;
 import com.cannontech.database.data.device.DeviceBase;
 import com.cannontech.database.data.device.DeviceTypesFuncs;
 import com.cannontech.database.data.device.TwoWayDevice;
@@ -524,7 +515,7 @@ public class CapControlForm extends DBEditorForm implements ICapControlModel{
 		// decide what editor type should be used
 		if (getDbPersistent() instanceof YukonPAObject) {
 			itemID = ((YukonPAObject) getDbPersistent()).getPAObjectID().intValue();
-           if (getDbPersistent() instanceof CapBankController || getDbPersistent() instanceof CapBankController702x) {
+           if (getDbPersistent() instanceof CapBankController || getDbPersistent() instanceof CapBankController702x || getDbPersistent() instanceof CapBankControllerDNP) {
                setEditingController( true );
            }
            else {
@@ -714,7 +705,8 @@ public class CapControlForm extends DBEditorForm implements ICapControlModel{
             case PAOGroups.CBC_7020:
             case PAOGroups.CBC_7022:
             case PAOGroups.CBC_7023:
-            case PAOGroups.CBC_7024:                         
+            case PAOGroups.CBC_7024: 
+            case PAOGroups.CBC_DNP:
     			setEditorTitle("CBC");
     			setPaoDescLabel(null);
     			getVisibleTabs().put("CBCType", Boolean.TRUE);
@@ -991,11 +983,13 @@ public class CapControlForm extends DBEditorForm implements ICapControlModel{
 			facesMsg.setDetail("Database add was SUCCESSFUL");
 			// init this form with the newly created DB object wich should be in the cache
 			initItem(itemID, editorType);
-            //create points for the CBC702x device   
-            if (dbObj instanceof CapBankController702x){
+			
+            //create points for the CBC702x or CBC DNP device   
+            if (dbObj instanceof CapBankController702x || dbObj instanceof CapBankControllerDNP){
                 DBPersistent pointVector = CBCPointFactory.createPointsForCBCDevice((YukonPAObject)dbObj);
                 CBControllerEditor.insertPointsIntoDB(pointVector);  
             }
+
             if(!(paoType == DBEditorTypes.EDITOR_STRATEGY)) {
                 DBPersistentUtils.generateDBChangeMsg(dbObj, DBChangeMsg.CHANGE_TYPE_UPDATE);
             }else {
@@ -1060,7 +1054,7 @@ public class CapControlForm extends DBEditorForm implements ICapControlModel{
 	public ICBControllerModel getCBControllerEditor() {
 		if (cbControllerEditor == null) {
             int paoId = itemID;			
-            if ((getDbPersistent() instanceof CapBankController702x) || (getDbPersistent() instanceof CapBankController)){
+            if ((getDbPersistent() instanceof CapBankController702x) || (getDbPersistent() instanceof CapBankController) || (getDbPersistent() instanceof CapBankControllerDNP)){
                 setEditingController(true);
                 cbControllerEditor = new CBControllerEditor(paoId);
             }else{

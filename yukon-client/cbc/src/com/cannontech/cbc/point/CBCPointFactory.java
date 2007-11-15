@@ -154,8 +154,11 @@ public class CBCPointFactory {
         case PAOGroups.CBC_7022:
         case PAOGroups.CBC_7023:
         case PAOGroups.CBC_7024:
-
+        
             dbPersistentVector = (MultiDBPersistent) createPointsForCBCDevice(paoId);
+            break;
+        case PAOGroups.CBC_DNP:
+            dbPersistentVector = (MultiDBPersistent) createPointsForCBCDNPDevice(paoId);
         }
 
         return dbPersistentVector;
@@ -166,7 +169,27 @@ public class CBCPointFactory {
         dbPersistentVector.getDBPersistentVector().addAll(createPoints(paoId));
         return dbPersistentVector;
     }
-
+    
+    public static DBPersistent createPointsForCBCDNPDevice(Integer paoId) {
+        MultiDBPersistent dbPersistentVector = new MultiDBPersistent();
+        PointBase point = PointFactory.createPoint(PointTypes.STATUS_POINT);
+        
+        point = PointFactory.createNewPoint(point.getPoint()
+                                            .getPointID(),
+                                       PointTypes.STATUS_POINT,
+                                       CBC_POINT_PROTOTYPES[0].getName(),
+                                       paoId,
+                                       new Integer(CBC_POINT_PROTOTYPES[0].getOffset()));
+        
+        setGrpForStatusPoint(CBC_POINT_PROTOTYPES[0], point);
+        PointStatus pointStatus = (((StatusPoint) point).getPointStatus());
+        int controlType = ((StatusPointParams) CBC_POINT_PROTOTYPES[0]).getControlType();
+        pointStatus.setControlType(PointTypes.getType(controlType));
+        
+        dbPersistentVector.getDBPersistentVector().add(point);
+        return dbPersistentVector;
+    }
+    
     private static List createPoints(Integer paoId) {
 
         List pointList = new ArrayList();

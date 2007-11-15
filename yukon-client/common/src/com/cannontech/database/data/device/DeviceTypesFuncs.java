@@ -189,8 +189,23 @@ public final static boolean isCapBankController( int deviceType )
              || deviceType == CBC_7020 
              || deviceType == CBC_7022
              || deviceType == CBC_7023
+             || deviceType == CBC_7024
+             || deviceType == CBC_DNP);
+}
+
+public final static boolean isCapBankController702X( int deviceType )
+{
+    return ( deviceType == CBC_7020 
+             || deviceType == CBC_7022
+             || deviceType == CBC_7023
              || deviceType == CBC_7024);
 }
+
+public final static boolean isCapBankControllerDNP( int deviceType )
+{
+    return ( deviceType == CBC_DNP);
+}
+
 /**
  * This method was created in VisualAge.
  * @return int
@@ -212,7 +227,8 @@ public final static boolean cbcHasPort( int cbcType ) {
 		|| cbcType == CBC_7020
         || cbcType == CBC_7022
         || cbcType == CBC_7023
-        || cbcType == CBC_7024;
+        || cbcType == CBC_7024
+        || cbcType == CBC_DNP;
 }
 
 

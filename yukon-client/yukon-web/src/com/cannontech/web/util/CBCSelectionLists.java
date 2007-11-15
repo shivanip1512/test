@@ -85,7 +85,7 @@ public class CBCSelectionLists {
         new SelectItem(new Integer(PAOGroups.CBC_7022), PAOGroups.getPAOTypeString(PAOGroups.CBC_7022) ),
         new SelectItem(new Integer(PAOGroups.CBC_7023), PAOGroups.getPAOTypeString(PAOGroups.CBC_7023) ),
         new SelectItem(new Integer(PAOGroups.CBC_7024), PAOGroups.getPAOTypeString(PAOGroups.CBC_7024) ),
-        
+        new SelectItem(new Integer(PAOGroups.CBC_DNP), PAOGroups.getPAOTypeString(PAOGroups.CBC_DNP) ),
 		new SelectItem(new Integer(PAOGroups.CBC_FP_2800), PAOGroups.getPAOTypeString(PAOGroups.CBC_FP_2800) ),
         
 	};

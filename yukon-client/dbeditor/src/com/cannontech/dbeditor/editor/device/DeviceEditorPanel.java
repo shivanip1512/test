@@ -152,11 +152,6 @@ public Object[] createNewPanel(int panelIndex)
 			objs[0] = new com.cannontech.dbeditor.editor.device.DeviceMeterGroupEditorPanel();
 			objs[1] = "Metering";
 			break;
-
-      	case 2:
-         	objs[0] = new com.cannontech.dbeditor.editor.device.capcontrol.DeviceCapBankControllerEditorPanel();
-         	objs[1] = "General";
-        	break;
          
 		case 3:
 			objs[0] = new com.cannontech.dbeditor.editor.device.Series5SettingsEditorPanel();
@@ -168,11 +163,6 @@ public Object[] createNewPanel(int panelIndex)
 			objs[1] = "Scan Rate";
 			break;
 
-/*		case 4:
-			objs[0] = new com.cannontech.dbeditor.editor.device.DeviceStatisticsEditorPanel();
-			objs[1] = "Statistics";
-			break;
-*/
 		case 5:
 			objs[0] = new com.cannontech.dbeditor.editor.device.DeviceTapTerminalEditorPanel();
 			objs[1] = "Paging";
@@ -181,21 +171,6 @@ public Object[] createNewPanel(int panelIndex)
 		case 6:
 			objs[0] = new com.cannontech.dbeditor.editor.device.DeviceMCTIEDPortEditorPanel();
 			objs[1] = "IED Port";
-			break;
-/*
-		case 6:
-			objs[0] = new com.cannontech.dbeditor.editor.device.DeviceAlarmEditorPanel();
-			objs[1] = "Alarm";
-			break;
-*/
-		case 7:
-			objs[0] = new com.cannontech.dbeditor.editor.device.capcontrol.DeviceCapBankEditorPanel();
-			objs[1] = "General";
-			break;
-	
-		case 8:
-			objs[0] = new com.cannontech.dbeditor.editor.device.capcontrol.CapBankInfoPanel();
-			objs[1] = "Information";
 			break;
 
 		case 9:

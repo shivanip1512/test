@@ -1,7 +1,6 @@
 package com.cannontech.database.data.device;
 
-import com.cannontech.database.data.capcontrol.CapBankController701x;
-import com.cannontech.database.data.capcontrol.CapBankController702x;
+import com.cannontech.database.data.capcontrol.*;
 import com.cannontech.database.data.device.lm.LMGroupPoint;
 import com.cannontech.database.data.device.lm.LMGroupRipple;
 import com.cannontech.database.data.device.lm.MacroGroup;
@@ -342,6 +341,11 @@ public final static DeviceBase createDevice(int deviceType) {
           returnDevice.setDeviceClass(PAOGroups.STRING_CAT_CAPCONTROL);
           break;      
          
+      case PAOGroups.CBC_DNP:
+          returnDevice = new CapBankControllerDNP();
+          returnDevice.setDeviceType(PAOGroups.STRING_CBC_DNP[0] );
+          returnDevice.setDeviceClass(PAOGroups.STRING_CAT_CAPCONTROL);
+          break;
           
           //The new MCT broadcast group (lead meter broadcast)
       case PAOGroups.MCTBROADCAST:

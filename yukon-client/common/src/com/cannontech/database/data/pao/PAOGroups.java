@@ -322,6 +322,8 @@ public final static int getDeviceType(String typeString)
         return CBC_7023;
     else if (isStringDevice(compareString, STRING_CBC_7020[3]))
         return CBC_7024;
+    else if (isStringDevice(compareString, STRING_CBC_DNP[0]))
+        return CBC_DNP;
     else if (isStringDevice(compareString, Schedule.SIMPLE_TYPE))
         return SIMPLE_SCHEDULE;
     else if (isStringDevice(compareString, Schedule.SCRIPT_TYPE))
@@ -607,6 +609,8 @@ public final static String getPAOTypeString(int type)
             return STRING_CBC_7020[2];
         case CBC_7024:
             return STRING_CBC_7020[3];
+        case CBC_DNP:
+            return STRING_CBC_DNP[0];
         case SIMPLE_SCHEDULE:
             return Schedule.SIMPLE_TYPE;
         case SCRIPT:
