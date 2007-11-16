@@ -1000,7 +1000,7 @@ void CtiCapController::processCCEventMsgs()
 
                         msg = (CtiCCEventLogMsg *) temp[i];
                         CtiCCSubstationBusStore::getInstance()->InsertCCEventLogInDB(msg);
-                        delete msg;
+                        delete msg1;
                     }
 
                 }
@@ -1008,9 +1008,16 @@ void CtiCapController::processCCEventMsgs()
                 {
                     msg = (CtiCCEventLogMsg *) msg1;
                     CtiCCSubstationBusStore::getInstance()->InsertCCEventLogInDB(msg);
-                    delete msg;
+                    delete msg1;
+                }      
+                else
+                {
+                    if (msg1 != NULL)
+                    {
+                        delete msg1;
+                        msg1 = NULL;
+                    }
                 }
-
 
             }
             catch(...)
