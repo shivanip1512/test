@@ -14,6 +14,10 @@
     
     <bean name="/scheduler/*" class="com.cannontech.web.debug.SchedulerDebugController">
         <property name="jobManager" ref="jobManager"/>
+        <property name="yukonJobDao" ref="yukonJobDao"/>
+        <property name="jobStatusDao" ref="jobStatusDao"/>
+        <property name="scheduledOneTimeJobDao" ref="scheduledOneTimeJobDao"/>
+        <property name="scheduledRepeatingJobDao" ref="scheduledRepeatingJobDao"/>
     </bean>
     
 
