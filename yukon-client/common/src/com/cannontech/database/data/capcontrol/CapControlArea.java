@@ -5,10 +5,8 @@ import java.sql.SQLException;
 import java.util.ArrayList;
 import java.util.List;
 
-import org.springframework.dao.EmptyResultDataAccessException;
 import org.springframework.jdbc.core.JdbcOperations;
 
-import com.cannontech.clientutils.CTILogger;
 import com.cannontech.common.editor.EditorPanel;
 import com.cannontech.common.util.CtiUtilities;
 import com.cannontech.common.util.SqlStatementBuilder;
@@ -19,9 +17,7 @@ import com.cannontech.database.PoolManager;
 import com.cannontech.database.data.pao.PAOGroups;
 import com.cannontech.database.db.capcontrol.CCSubAreaAssignment;
 
-@SuppressWarnings("serial")
-public class CapControlArea extends CapControlYukonPAOBase implements
-        EditorPanel {
+public class CapControlArea extends CapControlYukonPAOBase implements EditorPanel {
 
     private com.cannontech.database.db.capcontrol.CapControlArea capControlArea;
     private ArrayList<CCSubAreaAssignment> areaSubs;
@@ -76,7 +72,7 @@ public class CapControlArea extends CapControlYukonPAOBase implements
         getCapControlArea().add();
 
         for (int i = 0; i < getChildList().size(); i++) {
-            ((com.cannontech.database.db.capcontrol.CCSubAreaAssignment) getChildList().get(i)).add();
+            getChildList().get(i).add();
         }
 
     }
@@ -88,7 +84,7 @@ public class CapControlArea extends CapControlYukonPAOBase implements
         return capControlArea;
     }
 
-    public ArrayList getChildList() {
+    public ArrayList<CCSubAreaAssignment> getChildList() {
         if (areaSubs == null) {
             areaSubs = new ArrayList<CCSubAreaAssignment>();
         }
@@ -100,7 +96,7 @@ public class CapControlArea extends CapControlYukonPAOBase implements
         getCapControlArea().setAreaID(paoID);
 
         for (int i = 0; i < getChildList().size(); i++)
-            ((com.cannontech.database.db.capcontrol.CCSubAreaAssignment) getChildList().get(i)).setAreaID(paoID);
+            getChildList().get(i).setAreaID(paoID);
 
     }
 
@@ -109,11 +105,11 @@ public class CapControlArea extends CapControlYukonPAOBase implements
         getCapControlArea().setDbConnection(conn);
 
         for (int i = 0; i < getChildList().size(); i++)
-            ((com.cannontech.database.db.capcontrol.CCSubAreaAssignment) getChildList().get(i)).setDbConnection(conn);
+            getChildList().get(i).setDbConnection(conn);
 
     }
 
-    public void setAreaSubs(ArrayList areaSubs) {
+    public void setAreaSubs(ArrayList<CCSubAreaAssignment> areaSubs) {
         this.areaSubs = areaSubs;
     }
 
@@ -132,7 +128,7 @@ public class CapControlArea extends CapControlYukonPAOBase implements
                                        getDbConnection());
         Connection connection = PoolManager.getInstance().getConnection(CtiUtilities.getDatabaseAlias());
         for (int i = 0; i < getChildList().size(); i++) {
-            CCSubAreaAssignment subAreaAssignment = ((CCSubAreaAssignment) getChildList().get(i));
+            CCSubAreaAssignment subAreaAssignment = getChildList().get(i);
             subAreaAssignment.setDbConnection(connection );
             subAreaAssignment.add();
         }
@@ -202,6 +198,7 @@ public class CapControlArea extends CapControlYukonPAOBase implements
         }
     }*/
 
+    @SuppressWarnings("unchecked")
     public static List<Integer> getAllAreaIDs() {
         SqlStatementBuilder builder = new SqlStatementBuilder();
         builder.append("select areaid from capcontrolarea");

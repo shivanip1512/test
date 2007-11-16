@@ -45,7 +45,7 @@ public class CapBank extends CapControlDeviceBase {
     public static final String DISABLE_OVUV_OPSTATE = "capOVUVDisabled";
 
     private com.cannontech.database.db.capcontrol.CapBank capBank = null;
-    private List ccMonitorBankList = new ArrayList();
+    private List<CCMonitorBankList> ccMonitorBankList = new ArrayList<CCMonitorBankList>();
 
     /**
      */
@@ -60,8 +60,8 @@ public class CapBank extends CapControlDeviceBase {
         super.add();
         getCapBank().add();
         CCMonitorBankList.deleteMonitorPointsOnCapBankList(getCapBank().getDeviceID());
-        for (Iterator iter = ccMonitorBankList.iterator(); iter.hasNext();) {
-            CCMonitorBankList item = (CCMonitorBankList) iter.next();
+        for (Iterator<CCMonitorBankList> iter = ccMonitorBankList.iterator(); iter.hasNext();) {
+            CCMonitorBankList item = iter.next();
             item.add();
         }
     }
@@ -131,8 +131,8 @@ public class CapBank extends CapControlDeviceBase {
         super.setDbConnection(conn);
         getCapBank().setDbConnection(conn);
 
-        for (Iterator iter = ccMonitorBankList.iterator(); iter.hasNext();) {
-            CCMonitorBankList item = (CCMonitorBankList) iter.next();
+        for (Iterator<CCMonitorBankList> iter = ccMonitorBankList.iterator(); iter.hasNext();) {
+            CCMonitorBankList item = iter.next();
             item.setDbConnection(conn);
         }
     }
@@ -160,17 +160,17 @@ public class CapBank extends CapControlDeviceBase {
         super.update();
         getCapBank().update();
         CCMonitorBankList.deleteMonitorPointsOnCapBankList(getCapBank().getDeviceID());
-        for (Iterator iter = ccMonitorBankList.iterator(); iter.hasNext();) {
-            CCMonitorBankList item = (CCMonitorBankList) iter.next();
+        for (Iterator<CCMonitorBankList> iter = ccMonitorBankList.iterator(); iter.hasNext();) {
+            CCMonitorBankList item = iter.next();
             item.add();
         }
     }
 
-    public List getCcMonitorBankList() {
+    public List<CCMonitorBankList> getCcMonitorBankList() {
         return ccMonitorBankList;
     }
 
-    public void setCcMonitorBankList(List ccMonitorBankList) {
+    public void setCcMonitorBankList(List<CCMonitorBankList> ccMonitorBankList) {
         this.ccMonitorBankList = ccMonitorBankList;
     }
 
@@ -178,10 +178,10 @@ public class CapBank extends CapControlDeviceBase {
      * @throws SQLException
      */
     private void deleteMonitorPoints() throws SQLException {
-        List monitorPoints = CCMonitorBankList.getMonitorPointsOnCapBankList(getPAObjectID());
+        List<CCMonitorBankList> monitorPoints = CCMonitorBankList.getMonitorPointsOnCapBankList(getPAObjectID());
         if (monitorPoints != null) {
-            for (Iterator iter = monitorPoints.iterator(); iter.hasNext();) {
-                CCMonitorBankList element = (CCMonitorBankList) iter.next();
+            for (Iterator<CCMonitorBankList> iter = monitorPoints.iterator(); iter.hasNext();) {
+                CCMonitorBankList element = iter.next();
                 delete("DynamicCCMonitorPointResponse",
                        "PointID",
                        element.getPointId());

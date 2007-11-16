@@ -27,7 +27,7 @@ public abstract class YukonPAObject extends com.cannontech.database.db.DBPersist
 	private Vector paoExclusionVector = null;
 
 	//may have zero or more schedules, instance of PAOScheduleAssign
-	private ArrayList schedules = null;
+	private ArrayList<PAOScheduleAssign> schedules = null;
 
 /**
  * YukonPAObject constructor comment.
@@ -398,10 +398,10 @@ public void update() throws java.sql.SQLException
 	/**
 	 * @return
 	 */
-	public ArrayList getSchedules() {
+	public ArrayList<PAOScheduleAssign> getSchedules() {
 		
 		if( schedules == null )
-			schedules = new ArrayList(8);
+			schedules = new ArrayList<PAOScheduleAssign>(8);
 
 		return schedules;
 	}

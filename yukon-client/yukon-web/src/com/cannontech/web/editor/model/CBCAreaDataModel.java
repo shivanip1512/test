@@ -89,9 +89,8 @@ public class CBCAreaDataModel extends EditorDataModelImpl {
         // create assignment persistent objects (CCSubAreaAssignment) from the
         // assigned list
         // and persist them to DB
-        List<CCSubAreaAssignment> newAssignments = CCSubAreaAssignment.asList(assignedIDs,
-                                                                              areaPers.getPAObjectID());
-        areaPers.setAreaSubs((ArrayList) newAssignments);
+        ArrayList<CCSubAreaAssignment> newAssignments = CCSubAreaAssignment.asList(assignedIDs, areaPers.getPAObjectID());
+        areaPers.setAreaSubs(newAssignments);
 
     }
 

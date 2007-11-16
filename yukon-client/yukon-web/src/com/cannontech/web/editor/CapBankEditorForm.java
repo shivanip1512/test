@@ -49,8 +49,8 @@ import com.cannontech.web.util.JSFComparators;
 public class CapBankEditorForm extends DBEditorForm {
 
     // private static final long serialVersionUID = 5491225604682004562L;
-    private List unassignedPoints = null;
-    private List assignedPoints = null;
+    private List<CapBankMonitorPointParams> unassignedPoints = null;
+    private List<CapBankMonitorPointParams> assignedPoints = null;
     private MultiDBPersistent monitorPointsVector = null;
     // this variable exists only to display relevant information about a cbc
     // in the cap bank editor. Right now it is not possible to
@@ -77,9 +77,9 @@ public class CapBankEditorForm extends DBEditorForm {
     }
 
     protected void checkForErrors() throws IllegalArgumentException {
-        List monitorPointList = ((CapBank) getDbPersistent()).getCcMonitorBankList();
-        for (Iterator iter = monitorPointList.iterator(); iter.hasNext();) {
-            CCMonitorBankList monitorPoint = (CCMonitorBankList) iter.next();
+        List<CCMonitorBankList> monitorPointList = ((CapBank) getDbPersistent()).getCcMonitorBankList();
+        for (Iterator<CCMonitorBankList> iter = monitorPointList.iterator(); iter.hasNext();) {
+            CCMonitorBankList monitorPoint = iter.next();
             if (monitorPoint.getNINAvg().longValue() <= 0)
                 throw new IllegalArgumentException("Adaptive Count value should be greater then 0.");
         }
@@ -90,9 +90,9 @@ public class CapBankEditorForm extends DBEditorForm {
 
         FacesMessage facesMessage = new FacesMessage();
         facesMessage.setDetail("Database UPDATE successful");
-        List points = new ArrayList();
-        for (Iterator iter = assignedPoints.iterator(); iter.hasNext();) {
-            CapBankMonitorPointParams point = (CapBankMonitorPointParams) iter.next();
+        List<CCMonitorBankList> points = new ArrayList<CCMonitorBankList>();
+        for (Iterator<CapBankMonitorPointParams> iter = assignedPoints.iterator(); iter.hasNext();) {
+            CapBankMonitorPointParams point = iter.next();
             CCMonitorBankList monitorPoint = new CCMonitorBankList(point);
             points.add(monitorPoint);
         }
@@ -142,27 +142,26 @@ public class CapBankEditorForm extends DBEditorForm {
         assignedPoints = pointDao.getCapBankMonitorPoints(capBank);
         unassignedPoints = null;
         getUnassignedPoints();
-        Collections.sort(assignedPoints,
-                         JSFComparators.monitorPointDisplayOrderComparator);
+        Collections.sort(assignedPoints, JSFComparators.monitorPointDisplayOrderComparator);
     }
 
-    public List getAssignedPoints() {
+    public List<CapBankMonitorPointParams> getAssignedPoints() {
         if (assignedPoints == null)
-            assignedPoints = new ArrayList();
+            assignedPoints = new ArrayList<CapBankMonitorPointParams>();
         return assignedPoints;
     }
 
-    public List getUnassignedPoints() {
+    public List<CapBankMonitorPointParams> getUnassignedPoints() {
         if (unassignedPoints == null) {
-            unassignedPoints = new ArrayList();
+            unassignedPoints = new ArrayList<CapBankMonitorPointParams>();
             CapBank capBank = ((CapBank) getDbPersistent());
             int controlDeviceId = capBank.getCapBank()
                                          .getControlDeviceID()
                                          .intValue();
             if (controlDeviceId > 0) {
-                List allPoints = pointDao.getLitePointsByPaObjectId(controlDeviceId);
+                List<LitePoint> allPoints = pointDao.getLitePointsByPaObjectId(controlDeviceId);
                 for (int i = 0; i < allPoints.size(); i++) {
-                    LitePoint point = (LitePoint) allPoints.get(i);
+                    LitePoint point = allPoints.get(i);
                     if (point.getUofmID() == PointUnits.UOMID_VOLTS) {
                         CapBankMonitorPointParams monitorPoint = new CapBankMonitorPointParams(point);
                         // set the cap bank id to replace the CBC if with Cap
@@ -179,8 +178,7 @@ public class CapBankEditorForm extends DBEditorForm {
                     }
                 }
             }
-            Collections.sort(unassignedPoints,
-                             JSFComparators.monitorPointComparator);
+            Collections.sort(unassignedPoints, JSFComparators.monitorPointComparator);
         }
         return unassignedPoints;
     }
@@ -246,16 +244,15 @@ public class CapBankEditorForm extends DBEditorForm {
 
         if ("CapBankPoint".equalsIgnoreCase(swapType)) {
             if (unassignedPoints != null) {
-                for (Iterator iter = getAssignedPoints().iterator(); iter.hasNext();) {
-                    CapBankMonitorPointParams monitorPoint = (CapBankMonitorPointParams) iter.next();
+                for (Iterator<CapBankMonitorPointParams> iter = getAssignedPoints().iterator(); iter.hasNext();) {
+                    CapBankMonitorPointParams monitorPoint = iter.next();
                     if (monitorPoint.getPointId() == elemId) {
                         getAssignedPoints().remove(monitorPoint);
                         getUnassignedPoints().add(monitorPoint);
                         break;
                     }
                 }
-                Collections.sort(unassignedPoints,
-                                 JSFComparators.monitorPointComparator);
+                Collections.sort(unassignedPoints, JSFComparators.monitorPointComparator);
             }
         }
     }
@@ -268,8 +265,8 @@ public class CapBankEditorForm extends DBEditorForm {
         int elemId = new Integer((String) paramMap.get("id")).intValue();
         if (unassignedPoints != null) {
             if ("CapBankPoint".equalsIgnoreCase(swapType)) {
-                for (Iterator iter = getUnassignedPoints().iterator(); iter.hasNext();) {
-                    CapBankMonitorPointParams monitorPoint = (CapBankMonitorPointParams) iter.next();
+                for (Iterator<CapBankMonitorPointParams> iter = getUnassignedPoints().iterator(); iter.hasNext();) {
+                    CapBankMonitorPointParams monitorPoint = iter.next();
                     monitorPoint.setDisplayOrder(getAssignedPoints().size() + 1);
                     if (monitorPoint.getPointId() == elemId) {
                         getUnassignedPoints().remove(monitorPoint);
@@ -277,10 +274,8 @@ public class CapBankEditorForm extends DBEditorForm {
                         break;
                     }
                 }
-                Collections.sort(unassignedPoints,
-                                 JSFComparators.monitorPointComparator);
-                Collections.sort(assignedPoints,
-                                 JSFComparators.monitorPointDisplayOrderComparator);
+                Collections.sort(unassignedPoints, JSFComparators.monitorPointComparator);
+                Collections.sort(assignedPoints, JSFComparators.monitorPointDisplayOrderComparator);
             }
         }
     }
@@ -346,8 +341,7 @@ public class CapBankEditorForm extends DBEditorForm {
             assignedPoints = pointDao.getCapBankMonitorPoints(capBank);
             unassignedPoints = null;
             getUnassignedPoints();
-            Collections.sort(assignedPoints,
-                             JSFComparators.monitorPointDisplayOrderComparator);
+            Collections.sort(assignedPoints, JSFComparators.monitorPointDisplayOrderComparator);
         }
     }
 
@@ -377,12 +371,12 @@ public class CapBankEditorForm extends DBEditorForm {
         handleAllPointsOnList(getUnassignedPoints(), controllerID, false);
     }
 
-    private void deleteAllDynamic(List points) {
+    private void deleteAllDynamic(List<CapBankMonitorPointParams> points) {
 
         for (int i = 0; i < DYNAMIC_TABLE_NAMES.length; i++) {
             String table = DYNAMIC_TABLE_NAMES[i];
-            for (Iterator iter = points.iterator(); iter.hasNext();) {
-                CapBankMonitorPointParams point = (CapBankMonitorPointParams) iter.next();
+            for (Iterator<CapBankMonitorPointParams> iter = points.iterator(); iter.hasNext();) {
+                CapBankMonitorPointParams point = iter.next();
                 deletePointFromTable(table, point.getPointId());
             }
         }
@@ -394,13 +388,13 @@ public class CapBankEditorForm extends DBEditorForm {
         yukonTemplate.update(sqlStmt, new Integer[] { new Integer(pointId) });
     }
 
-    private void handleAllPointsOnList(List points, int controllerID,
+    private void handleAllPointsOnList(List<CapBankMonitorPointParams> points, int controllerID,
             boolean delDynamic) {
-        List controllerPoints = pointDao.getLitePointsByPaObjectId(controllerID);
-        List pointsToRemove = new ArrayList(10);
+        List<LitePoint> controllerPoints = pointDao.getLitePointsByPaObjectId(controllerID);
+        List<CapBankMonitorPointParams> pointsToRemove = new ArrayList<CapBankMonitorPointParams>(10);
         if (controllerPoints != null && points != null) {
-            for (Iterator iter = points.iterator(); iter.hasNext();) {
-                CapBankMonitorPointParams point = (CapBankMonitorPointParams) iter.next();
+            for (Iterator<CapBankMonitorPointParams> iter = points.iterator(); iter.hasNext();) {
+                CapBankMonitorPointParams point = iter.next();
                 if (!pointBelongsToController(controllerPoints,
                                               point.getPointId()))
                     pointsToRemove.add(point);
@@ -414,9 +408,9 @@ public class CapBankEditorForm extends DBEditorForm {
         }
     }
 
-    private boolean pointBelongsToController(List controllerPoints, int pointID) {
+    private boolean pointBelongsToController(List<LitePoint> controllerPoints, int pointID) {
         for (int i = 0; i < controllerPoints.size(); i++) {
-            LitePoint point = (LitePoint) controllerPoints.get(i);
+            LitePoint point = controllerPoints.get(i);
             if (point.getLiteID() == pointID)
                 return true;
         }
@@ -436,8 +430,8 @@ public class CapBankEditorForm extends DBEditorForm {
      * @param monitorPoint
      */
     private boolean isPointAssigned(CapBankMonitorPointParams monitorPoint) {
-        for (Iterator iter = getAssignedPoints().iterator(); iter.hasNext();) {
-            CapBankMonitorPointParams assignedPoint = (CapBankMonitorPointParams) iter.next();
+        for (Iterator<CapBankMonitorPointParams> iter = getAssignedPoints().iterator(); iter.hasNext();) {
+            CapBankMonitorPointParams assignedPoint = iter.next();
             if (assignedPoint.getPointId() == monitorPoint.getPointId()) {
                 return true;
             }

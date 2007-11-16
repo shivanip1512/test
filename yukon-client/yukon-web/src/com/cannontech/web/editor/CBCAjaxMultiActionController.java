@@ -32,13 +32,7 @@ public class CBCAjaxMultiActionController extends MultiActionController {
      * @param writer
      */
 
-    public ModelAndView updateSystemCommandMenu(HttpServletRequest req,
-            HttpServletResponse resp)
-
-    {
-//        CapControlCache cbcCache = (CapControlCache) req.getSession(false)
-//                                                        .getServletContext()
-//                                                        .getAttribute(CBCServlet.CBC_CACHE_STR);
+    public ModelAndView updateSystemCommandMenu(HttpServletRequest req, HttpServletResponse resp) {
         StringBuffer buf = generateHtmlLink(cbcCache);
         String commandLink = buf.toString();
         try {

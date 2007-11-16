@@ -27,7 +27,6 @@ import com.cannontech.database.data.lite.LitePointLimit;
 import com.cannontech.database.data.lite.LitePointUnit;
 import com.cannontech.database.data.lite.LiteRawPointHistory;
 import com.cannontech.database.data.lite.LiteStateGroup;
-import com.cannontech.database.data.lite.LiteYukonPAObject;
 import com.cannontech.database.data.pao.DeviceClasses;
 import com.cannontech.database.data.pao.PAOGroups;
 import com.cannontech.database.data.point.CapBankMonitorPointParams;
@@ -220,8 +219,8 @@ public final class PointDaoImpl implements PointDao {
         List<LitePoint> points = getLitePointsByPaObjectId(deviceid);
         int[][] idAndTypes = new int[points.size()][2];
         for(int i = 0; i < points.size(); i++) {
-            idAndTypes[i][0] = ((LitePoint)points.get(i)).getPointID();
-            idAndTypes[i][1] = ((LitePoint)points.get(i)).getPointType();
+            idAndTypes[i][0] = points.get(i).getPointID();
+            idAndTypes[i][1] = points.get(i).getPointType();
         }
         return idAndTypes;
     }
@@ -239,9 +238,9 @@ public final class PointDaoImpl implements PointDao {
      */
 	public LitePointLimit getPointLimit(int pointID) {
 		synchronized(databaseCache) {
-			Iterator iter = databaseCache.getAllPointLimits().iterator();
+			Iterator<LitePointLimit> iter = databaseCache.getAllPointLimits().iterator();
 			while(iter.hasNext()) {
-				LitePointLimit lpl = (LitePointLimit) iter.next();
+				LitePointLimit lpl = iter.next();
 				if( lpl.getPointID() == pointID ) {
 					return lpl;
 				}
@@ -338,10 +337,10 @@ public final class PointDaoImpl implements PointDao {
 	/* (non-Javadoc)
      * @see com.cannontech.core.dao.PointDao#getCapBankMonitorPoints(com.cannontech.database.data.capcontrol.CapBank)
      */
-	public List getCapBankMonitorPoints(CapBank capBank) {
-		List monitorPointList = new ArrayList();
-		for (Iterator iter = capBank.getCcMonitorBankList().iterator(); iter.hasNext();) {
-			CCMonitorBankList point = (CCMonitorBankList) iter.next();			
+	public List<CapBankMonitorPointParams> getCapBankMonitorPoints(CapBank capBank) {
+		List<CapBankMonitorPointParams> monitorPointList = new ArrayList<CapBankMonitorPointParams>();
+		for (Iterator<CCMonitorBankList> iter = capBank.getCcMonitorBankList().iterator(); iter.hasNext();) {
+			CCMonitorBankList point = iter.next();			
 			
 			CapBankMonitorPointParams monitorPoint = new CapBankMonitorPointParams();
 			monitorPoint.setCapBankId(point.getCapBankId().intValue());

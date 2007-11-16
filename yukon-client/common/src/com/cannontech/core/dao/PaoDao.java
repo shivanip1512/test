@@ -55,7 +55,7 @@ public interface PaoDao {
      */
     public List<LiteYukonPAObject> getLiteYukonPAObjectBy(Integer[] paoType, Integer[] paoCategory, Integer[] paoClass, Integer[] pointTypes, Integer[] uOfMId);
     
-    public List getAllCapControlSubBuses();
+    public List<LiteYukonPAObject> getAllCapControlSubBuses();
 
     /**
      * Insert the method's description here.

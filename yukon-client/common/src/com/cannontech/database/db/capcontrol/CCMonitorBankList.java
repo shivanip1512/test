@@ -173,12 +173,12 @@ public class CCMonitorBankList extends DBPersistent {
 		return monitorPoint;
 	}
 	
-    public static List getMonitorPointsOnCapBankList (Integer capBankId) {
+    public static List<CCMonitorBankList> getMonitorPointsOnCapBankList (Integer capBankId) {
         String sqlStmt = "SELECT * FROM CCMonitorBankList WHERE bankId = ?";  
     
         JdbcOperations yukonTemplate = JdbcTemplateHelper.getYukonTemplate();            
         
-        List monitorPoints = yukonTemplate.query(sqlStmt, new Integer[] {capBankId},
+        List<CCMonitorBankList> monitorPoints = yukonTemplate.query(sqlStmt, new Integer[] {capBankId},
         		new RowMapper() {
         			public Object mapRow(ResultSet rs, int rowNum) throws SQLException {
         				CCMonitorBankList monitorPoint = new CCMonitorBankList(); 

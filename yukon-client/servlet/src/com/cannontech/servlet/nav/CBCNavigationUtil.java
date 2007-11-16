@@ -7,9 +7,6 @@ import com.cannontech.web.navigation.CtiNavObject;
 public class CBCNavigationUtil {
     
 	private static final String [] PAGES_TO_SKIP = {
-        //"capBankCmd.jsp", 
-	    //"feederCmd.jsp",
-	    //"subCmd.jsp",
 													"charts.jsp",
 													"capBankMove.jsp",
 													"tempmove.jsp",
@@ -33,6 +30,11 @@ public class CBCNavigationUtil {
     public static void bookmarkThisLocation(HttpSession session) {
         CtiNavObject navObject = (CtiNavObject) session.getAttribute("CtiNavObject");
         navObject.getHistory().push(navObject.getCurrentPage());
+    }
+    
+    public static void setNavigation(String url, HttpSession session) {
+        CtiNavObject navObject = (CtiNavObject) session.getAttribute("CtiNavObject");
+        navObject.setNavigation(url);
     }
     
     public static void bookmarkThisLocationCCSpecial(HttpSession session) {

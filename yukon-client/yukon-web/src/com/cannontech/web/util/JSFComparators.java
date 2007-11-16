@@ -8,13 +8,13 @@ import com.cannontech.database.data.point.CapBankMonitorPointParams;
 
 public class JSFComparators {
 
-	public static Comparator monitorPointComparator = new java.util.Comparator()
+	public static Comparator<CapBankMonitorPointParams> monitorPointComparator = new java.util.Comparator<CapBankMonitorPointParams>()
 	{
-		public int compare(Object o1, Object o2)
+		public int compare(CapBankMonitorPointParams o1, CapBankMonitorPointParams o2)
 		{
 			
-			String thisVal = ((CapBankMonitorPointParams)o1).getPointName();
-			String anotherVal = ((CapBankMonitorPointParams)o2).getPointName();
+			String thisVal = o1.getPointName();
+			String anotherVal = o2.getPointName();
 			return ( thisVal.compareToIgnoreCase(anotherVal) );
 		}
 		public boolean equals(Object obj)
@@ -22,12 +22,12 @@ public class JSFComparators {
 			return false;
 		}
 	};
-	public static Comparator treeNodeDescriptionComparator = new java.util.Comparator()
+	public static Comparator<TreeNodeBase> treeNodeDescriptionComparator = new java.util.Comparator<TreeNodeBase>()
 	{
-		public int compare(Object o1, Object o2)
+		public int compare(TreeNodeBase o1, TreeNodeBase o2)
 		{
-			String thisVal = ((TreeNodeBase)o1).getDescription();
-			String anotherVal = ((TreeNodeBase)o2).getDescription();
+			String thisVal = o1.getDescription();
+			String anotherVal = o2.getDescription();
 			return ( thisVal.compareToIgnoreCase(anotherVal) );
 		}
 		public boolean equals(Object obj)
@@ -35,12 +35,12 @@ public class JSFComparators {
 			return false;
 		}
 	};
-	public static Comparator monitorPointDisplayOrderComparator = new Comparator() 
+	public static Comparator<CapBankMonitorPointParams> monitorPointDisplayOrderComparator = new Comparator<CapBankMonitorPointParams>() 
 	{
-		public int compare(Object o1, Object o2)
+		public int compare(CapBankMonitorPointParams o1, CapBankMonitorPointParams o2)
 		{
-			int thisVal = ((CapBankMonitorPointParams)o1).getDisplayOrder();
-			int anotherVal = ((CapBankMonitorPointParams)o2).getDisplayOrder();
+			int thisVal = o1.getDisplayOrder();
+			int anotherVal = o2.getDisplayOrder();
 			return ( thisVal  - anotherVal );
 		}
 		public boolean equals(Object obj)

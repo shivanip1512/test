@@ -1,4 +1,3 @@
-
 <%@ taglib uri="http://java.sun.com/jsf/html" prefix="h" %>
 <%@ taglib uri="http://java.sun.com/jsf/core" prefix="f" %>
 <%@ taglib uri="http://myfaces.apache.org/tomahawk" prefix="x" %>
@@ -14,29 +13,37 @@
 	}
 
 	function resetVals() {
-		if ($("controlAlgoToggle").value == "true")
-		{
-			if ($("Peak_Leading"))
+		if ($("controlAlgoToggle").value == "true") {
+			if ($("Peak_Leading")){
 				$("Peak_Leading").value = "0.0";
-			if ($("Offpeak_Leading"))
+			}
+			if ($("Offpeak_Leading")) {
 				$("Offpeak_Leading").value = "0.0";
-			if ($("Peak_Lagging"))
+			}
+			if ($("Peak_Lagging")) {
 				$("Peak_Lagging").value = "0.0";
-			if($ ("Offpeak_Lagging"))
+			}
+			if($ ("Offpeak_Lagging")) {
 				$("Offpeak_Lagging").value = "0.0";
-			if($("peak_upper"))
+			}
+			if($("peak_upper")) {
 				$("peak_upper").value = "0.0";
-			if($("offpeak_upper"))
+			}
+			if($("offpeak_upper")) {
 				$("offpeak_upper").value = "0.0";
-			if($("peak_lower"))
+			}
+			if($("peak_lower")){
 				$("peak_lower").value = "0.0";
-			if($("offpeak_lower"))
+			}
+			if($("offpeak_lower")) {
 				$("offpeak_lower").value = "0.0";
-			if($("Target_Peak_PF_Point"))
+			}
+			if($("Target_Peak_PF_Point")) {
 				$("Target_Peak_PF_Point").value = "100.0";
-			if($("Target_OffPeak_PF_point"))			
+			}
+			if($("Target_OffPeak_PF_point")) {			
 				$("Target_OffPeak_PF_point").value = "100.0";
-			
+			}
 			$("controlAlgoToggle").value = "false";
 		}
 	}
@@ -45,33 +52,29 @@
 
 </f:verbatim>
 <f:subview id="cbcStrategy" rendered="#{capControlForm.visibleTabs['CBCArea'] 
-||capControlForm.visibleTabs['CBCSubstationBus'] || capControlForm.visibleTabs['CBCFeeder'] || capControlForm.visibleTabs['CBCStrategy']}" >
+                                                        ||capControlForm.visibleTabs['CBCSubstationBus'] 
+                                                        || capControlForm.visibleTabs['CBCFeeder'] 
+                                                        || capControlForm.visibleTabs['CBCStrategy']}" >
 
     <f:subview id="paoArea" rendered="#{capControlForm.visibleTabs['CBCArea']}" >
 		<f:verbatim><br/></f:verbatim>
-		
 		<x:outputLabel for="Area_Strategy_Selection" value="Selected Strategy: " title="The current control strategy we are using"/>
 		<x:selectOneMenu id="Area_Strategy_Selection" onchange="submit();" disabled="#{capControlForm.editingCBCStrategy}"
 				value="#{capControlForm.PAOBase.capControlArea.strategyID}" 
                 valueChangeListener="#{capControlForm.newStrategySelected}" >
 			<f:selectItems value="#{capControlForm.cbcStrategies}"/>
 		</x:selectOneMenu>
-		
     </f:subview>
-
 
     <f:subview id="paoSubBus" rendered="#{capControlForm.visibleTabs['CBCSubstationBus']}" >
 		<f:verbatim><br/></f:verbatim>
-		
 		<x:outputLabel for="Sub_Strategy_Selection" value="Selected Strategy: " title="The current control strategy we are using"/>
 		<x:selectOneMenu id="Sub_Strategy_Selection" onchange="submit();" disabled="#{capControlForm.editingCBCStrategy}"
 				value="#{capControlForm.PAOBase.capControlSubstationBus.strategyID}" 
                 valueChangeListener="#{capControlForm.newStrategySelected}">
 			<f:selectItems value="#{capControlForm.cbcStrategies}"/>
 		</x:selectOneMenu>
-		
     </f:subview>
-
 
     <f:subview id="paoFeeder" rendered="#{capControlForm.visibleTabs['CBCFeeder']}" >
 		<f:verbatim><br/></f:verbatim>
@@ -79,21 +82,21 @@
 		<x:selectOneMenu id="Feeder_Strategy_Selection" onchange="submit();" disabled="#{capControlForm.editingCBCStrategy}"
 				value="#{capControlForm.PAOBase.capControlFeeder.strategyID}" 
                 valueChangeListener="#{capControlForm.newStrategySelected}">
-                
 			<f:selectItems value="#{capControlForm.cbcStrategies}"/>
 		</x:selectOneMenu>
     </f:subview>
 
-
 	<f:verbatim><br/></f:verbatim>
-	
-	<h:selectBooleanCheckbox id="Edit_Strategy" onclick="lockButtonsPerSubmit('Strategy_Buttons'); submit();"
+	<h:selectBooleanCheckbox id="Edit_Strategy" 
+        onclick="lockButtonsPerSubmit('Strategy_Buttons'); submit();"
 		value="#{capControlForm.editingCBCStrategy}"
 		disabled="#{capControlForm.currentStrategyID == 0}" />
-		
-	<x:outputLabel for="Edit_Strategy" value="Edit Strategy" title="A toggle to edit the selected strategy"/>
+	<x:outputLabel for="Edit_Strategy" 
+	   value="Edit Strategy" 
+	   title="A toggle to edit the selected strategy"/>
 	<x:outputText id="stratNameWarn" styleClass="alert"
-		rendered="#{capControlForm.editingCBCStrategy}" value="  (WARNING: Modifying this strategy will affect all feeders or subs that use this strategy)"/>
+		rendered="#{capControlForm.editingCBCStrategy}" 
+		value="  (WARNING: Modifying this strategy will affect all feeders or subs that use this strategy)"/>
 	<f:verbatim><br/></f:verbatim>
 	<x:panelGroup id="Strategy_Buttons" forceId="true">
 		<x:commandButton id="Create_Strategy" value="New Strategy" title="Create a new strategy"
@@ -107,80 +110,198 @@
 	
 	<h:panelGrid id="body" columns="2" styleClass="gridLayout" columnClasses="gridColumn" >
 		<h:column rendered="#{capControlForm.currentStrategyID != 0}" >
-		    <f:verbatim><br/><fieldset><legend>Strategy Detail</legend></f:verbatim>
-			<x:outputLabel for="Strategy_Name" value="Strategy Name: " title="A label for the strategy in the system"/>
-			<x:inputText id="Strategy_Name" disabled="#{!capControlForm.editingCBCStrategy}" required="true" maxlength="32"
-					value="#{capControlForm.cbcStrategiesMap[capControlForm.currentStrategyID].strategyName}" />
-	
-			<f:verbatim><br/></f:verbatim>
+		
+		    <f:verbatim><br/>
+                <fieldset>
+                    <legend>Strategy Detail</legend>
+		    </f:verbatim>
+		    <f:verbatim>
+		    <table>
+		    <tr>
+		    <td>
+		    </f:verbatim>
+		    
+		    <x:outputLabel for="Strategy_Name" value="Strategy Name: " title="A label for the strategy in the system"/>
+		    
+		    <f:verbatim>
+            </td>
+            <td>
+		    </f:verbatim>
+		    
+            <x:inputText id="Strategy_Name" disabled="#{!capControlForm.editingCBCStrategy}" required="true" maxlength="32"
+                    value="#{capControlForm.cbcStrategiesMap[capControlForm.currentStrategyID].strategyName}" />
+                    
+            <f:verbatim>
+            </td>
+            </tr>
+            <tr>
+            <td>
+            </f:verbatim>
+            
 			<x:outputLabel for="Control_Method" value="Control Method: " title="How the CapBanks are to be controlled"/>
+			
+			<f:verbatim>
+			</td>
+			<td>
+			</f:verbatim>
+			
 			<x:selectOneMenu id="Control_Method" onchange="submit();" disabled="#{!capControlForm.editingCBCStrategy}"
-					value="#{capControlForm.cbcStrategiesMap[capControlForm.currentStrategyID].controlMethod}" 
+                    value="#{capControlForm.cbcStrategiesMap[capControlForm.currentStrategyID].controlMethod}" 
                     valueChangeListener="#{capControlForm.currentStratModel.resetValues}">
                     
-				<f:selectItems value="#{capControlForm.controlMethods}"/>
-			</x:selectOneMenu>
+                <f:selectItems value="#{capControlForm.controlMethods}"/>
+            </x:selectOneMenu>
 	
-			<f:verbatim><br/></f:verbatim>
-			<x:outputLabel for="Control_Interval" value="Analysis Interval: " title="How often the system should check to determine the need for control"/>
-			<x:selectOneMenu id="Control_Interval" disabled="#{!capControlForm.editingCBCStrategy}"
-					value="#{capControlForm.cbcStrategiesMap[capControlForm.currentStrategyID].controlInterval}" >
-				<f:selectItem itemLabel="(On New Data Only)" itemValue="0"/>
-				<f:selectItems value="#{capControlForm.timeInterval}"/>
-			</x:selectOneMenu>
+			<f:verbatim>
+			</td>
+			</tr>
+			<tr>
+			<td>
+            </f:verbatim>
+            
+			<x:outputLabel rendered="#{!capControlForm.timeOfDay}" for="Control_Interval" value="Analysis Interval: " title="How often the system should check to determine the need for control"/>
 	
-			<f:verbatim><br/></f:verbatim>
-			<x:outputLabel for="Max_Confirm_Time" value="Max Confirm Time: " title="How much time the system waits until the control is considered successful"/>
-			<x:selectOneMenu id="Max_Confirm_Time" disabled="#{!capControlForm.editingCBCStrategy}"
-					value="#{capControlForm.cbcStrategiesMap[capControlForm.currentStrategyID].minResponseTime}" >
-				<f:selectItem itemLabel="(none)" itemValue="0"/>
-				<f:selectItems value="#{capControlForm.timeInterval}"/>				
-			</x:selectOneMenu>
-	
-			<f:verbatim><br/></f:verbatim>
-			<x:outputLabel for="Pass_Percent" value="Pass Percent: " title="This amount of change or higher is considered to be a successful control"/>
-			<x:inputText id="Pass_Percent" styleClass="percentLabel" disabled="#{!capControlForm.editingCBCStrategy}" required="true"
-					value="#{capControlForm.cbcStrategiesMap[capControlForm.currentStrategyID].minConfirmPercent}">
-					<f:validateLongRange minimum="0" maximum="100" />
-			</x:inputText>
-			<x:outputText id="PassPercLab" value="%"/>
-	
-			<f:verbatim><br/></f:verbatim>
-			<x:outputLabel for="Failure_Percent" value="Failure Percent: " title="This amount of change or lower is considered to be a failed control"/>
-			<x:inputText id="Failure_Percent" styleClass="percentLabel" disabled="#{!capControlForm.editingCBCStrategy}" required="true"
-					value="#{capControlForm.cbcStrategiesMap[capControlForm.currentStrategyID].failurePercent}">
-					<f:validateLongRange minimum="0" maximum="100" />
-			</x:inputText>
-			<x:outputText id="FailPercLab" value="%"/>
-	
-			<f:verbatim><br/></f:verbatim>
-			<x:outputLabel for="Send_Retries" value="Send Retries: " title="How many times the control should be repeatedly sent out to the field"/>
-			<x:inputText id="Send_Retries" styleClass="percentLabel" disabled="#{!capControlForm.editingCBCStrategy}" required="true"
-					value="#{capControlForm.cbcStrategiesMap[capControlForm.currentStrategyID].controlSendRetries}">
-					<f:validateLongRange minimum="0" maximum="100" />
-			</x:inputText>
-	
-			<f:verbatim><br/></f:verbatim>
-			<x:outputLabel for="Delay_Time" value="Delay Time: " title="How much time we should wait before sending the control command into the field"/>
-			<x:selectOneMenu id="Delay_Time" disabled="#{!capControlForm.editingCBCStrategy}"
-					value="#{capControlForm.cbcStrategiesMap[capControlForm.currentStrategyID].controlDelayTime}" >
-				<f:selectItem itemValue="0" itemLabel="(none)" />
-				<f:selectItems value="#{capControlForm.timeInterval}" />
-			</x:selectOneMenu>
+			<f:verbatim>
+			</td>
+			<td>
+			</f:verbatim>
 			
-			<f:verbatim><br/></f:verbatim>
-			<x:outputLabel for="IntegrateFlag" value="Integrate Control?"/>
-			<x:selectBooleanCheckbox  id="IntegrateFlag" value="#{capControlForm.currentStratModel.integrateFlag}" 
+			<x:selectOneMenu rendered="#{!capControlForm.timeOfDay}" id="Control_Interval" disabled="#{!capControlForm.editingCBCStrategy}"
+                    value="#{capControlForm.cbcStrategiesMap[capControlForm.currentStrategyID].controlInterval}" >
+                <f:selectItem itemLabel="(On New Data Only)" itemValue="0"/>
+                <f:selectItems value="#{capControlForm.timeInterval}"/>
+            </x:selectOneMenu>
+            
+            <f:verbatim>
+            </td>
+            </tr>
+            <tr>
+            <td>
+            </f:verbatim>
+			
+			<x:outputLabel rendered="#{!capControlForm.timeOfDay}" for="Max_Confirm_Time" value="Max Confirm Time: " title="How much time the system waits until the control is considered successful"/>
+			
+			<f:verbatim>
+			</td>
+			<td>
+			</f:verbatim>
+			
+			<x:selectOneMenu rendered="#{!capControlForm.timeOfDay}" id="Max_Confirm_Time" disabled="#{!capControlForm.editingCBCStrategy}"
+                    value="#{capControlForm.cbcStrategiesMap[capControlForm.currentStrategyID].minResponseTime}" >
+                <f:selectItem itemLabel="(none)" itemValue="0"/>
+                <f:selectItems value="#{capControlForm.timeInterval}"/>
+            </x:selectOneMenu>
+            
+            <f:verbatim>
+            </td>
+            </tr>
+            <tr
+            <td>
+            </f:verbatim>
+			
+			<x:outputLabel rendered="#{!capControlForm.timeOfDay}" for="Pass_Percent" value="Pass Percent: " title="This amount of change or higher is considered to be a successful control"/>
+			
+			<f:verbatim>
+			</td>
+			<td>
+			</f:verbatim>
+			
+			<x:inputText rendered="#{!capControlForm.timeOfDay}" id="Pass_Percent" styleClass="percentLabel" disabled="#{!capControlForm.editingCBCStrategy}" required="true"
+                    value="#{capControlForm.cbcStrategiesMap[capControlForm.currentStrategyID].minConfirmPercent}">
+                    <f:validateLongRange minimum="0" maximum="100" />
+            </x:inputText>
+            <x:outputText rendered="#{!capControlForm.timeOfDay}" id="PassPercLab" value="%"/>
+            
+            <f:verbatim>
+            </td>
+            </tr>
+            <tr>
+            <td>
+            </f:verbatim>
+			
+			<x:outputLabel rendered="#{!capControlForm.timeOfDay}" for="Failure_Percent" value="Failure Percent: " title="This amount of change or lower is considered to be a failed control"/>
+			
+			<f:verbatim>
+			</td>
+			<td>
+			</f:verbatim>
+			
+			<x:inputText rendered="#{!capControlForm.timeOfDay}" id="Failure_Percent" styleClass="percentLabel" disabled="#{!capControlForm.editingCBCStrategy}" required="true"
+                    value="#{capControlForm.cbcStrategiesMap[capControlForm.currentStrategyID].failurePercent}">
+                    <f:validateLongRange minimum="0" maximum="100" />
+            </x:inputText>
+            <x:outputText rendered="#{!capControlForm.timeOfDay}" id="FailPercLab" value="%"/>
+            
+            <f:verbatim>
+            </td>
+            </tr>
+            <tr>
+            <td>
+            </f:verbatim>
+			
+			<x:outputLabel rendered="#{!capControlForm.timeOfDay}" for="Send_Retries" value="Send Retries: " title="How many times the control should be repeatedly sent out to the field"/>
+			
+			<f:verbatim>
+			</td>
+			<td>
+			</f:verbatim>
+			
+			<x:inputText rendered="#{!capControlForm.timeOfDay}" id="Send_Retries" styleClass="percentLabel" disabled="#{!capControlForm.editingCBCStrategy}" required="true"
+                    value="#{capControlForm.cbcStrategiesMap[capControlForm.currentStrategyID].controlSendRetries}">
+                    <f:validateLongRange minimum="0" maximum="100" />
+            </x:inputText>
+            
+            <f:verbatim>
+            </td>
+            </tr>
+            <tr>
+            <td>
+            </f:verbatim>
+			
+			<x:outputLabel rendered="#{!capControlForm.timeOfDay}" for="Delay_Time" value="Delay Time: " title="How much time we should wait before sending the control command into the field"/>
+			
+			<f:verbatim>
+			</td>
+			<td>
+			</f:verbatim>
+			
+			<x:selectOneMenu rendered="#{!capControlForm.timeOfDay}" id="Delay_Time" disabled="#{!capControlForm.editingCBCStrategy}"
+                    value="#{capControlForm.cbcStrategiesMap[capControlForm.currentStrategyID].controlDelayTime}" >
+                <f:selectItem itemValue="0" itemLabel="(none)" />
+                <f:selectItems value="#{capControlForm.timeInterval}" />
+            </x:selectOneMenu>
+            
+            <f:verbatim>
+            </td>
+            </tr>
+            <tr>
+            <td>
+            </f:verbatim>
+			
+			<x:outputLabel rendered="#{!capControlForm.timeOfDay}" for="IntegrateFlag" value="Integrate Control?"/>
+			<x:selectBooleanCheckbox rendered="#{!capControlForm.timeOfDay}" id="IntegrateFlag" value="#{capControlForm.currentStratModel.integrateFlag}" 
 					disabled="#{!capControlForm.editingCBCStrategy}" onclick="submit();"/>
-			<f:verbatim>&nbsp;&nbsp;&nbsp;</f:verbatim>
-			<x:selectOneMenu id="IntegratePeriods" disabled="#{!capControlForm.editingCBCStrategy || !capControlForm.currentStratModel.integrateFlag}"
-					value="#{capControlForm.currentStratModel.integratePeriod}" >
-				<f:selectItems value="#{selLists.integrationPeriods}" />
-			</x:selectOneMenu>
+			
+            <f:verbatim>
+            </td>
+            <td>
+            </f:verbatim>
+            
+            <x:selectOneMenu rendered="#{!capControlForm.timeOfDay}" id="IntegratePeriods" disabled="#{!capControlForm.editingCBCStrategy || !capControlForm.currentStratModel.integrateFlag}"
+                    value="#{capControlForm.currentStratModel.integratePeriod}" >
+                <f:selectItems value="#{selLists.integrationPeriods}" />
+            </x:selectOneMenu>
+            
 	
-			<f:verbatim></fieldset></f:verbatim>
+			<f:verbatim>
+			</td>
+			</tr>
+			</table>
+            </fieldset>
+			</f:verbatim>
 	
-	
+            <h:panelGrid rendered="#{!capControlForm.timeOfDay}">
+            <h:column>
 		    <f:verbatim><br/><fieldset><legend>Strategy Operations</legend></f:verbatim>
 			<x:outputLabel for="Max_Daily_Ops" value="Max Daily Operations: " title="The total number of controls allowed per day"/>
 			<x:inputText id="Max_Daily_Ops" styleClass="char16Label" required="true"
@@ -196,12 +317,23 @@
 			<x:outputLabel for="Disabled_Ops" value="Disable upon reaching max operations" 
                 title="Should we be automatically disabled after reaching our max op counts"/>
 			<f:verbatim></fieldset></f:verbatim>
+			</h:column>
+			</h:panelGrid>
 		</h:column>
 
-		<h:column rendered="#{capControlForm.currentStrategyID != 0}" >
-            <f:verbatim><br/><fieldset><legend>Strategy Peaks</legend></f:verbatim>
-
+		<h:column rendered="#{capControlForm.currentStrategyID != 0 && (!capControlForm.timeOfDay)}" >
+            <f:verbatim><br/><fieldset><legend>Strategy Peaks</legend>
+            <table>
+            <tr>
+            <td>
+            </f:verbatim>
+            
 			<x:outputLabel for="Control_Algorithm" value="Control Algorithm: " title="The units and process we use to make control decisions"/>
+			
+			<f:verbatim>
+			</td>
+			<td>
+			</f:verbatim>
 			<x:selectOneMenu id="Control_Algorithm" onchange="controlAlgoChanged();" disabled="#{!capControlForm.editingCBCStrategy}"
 					value="#{capControlForm.cbcStrategiesMap[capControlForm.currentStrategyID].controlUnits}" 
                     valueChangeListener="#{capControlForm.currentStratModel.resetValues}"   
@@ -209,22 +341,53 @@
 				<f:selectItems value="#{selLists.cbcControlAlgorithim}"/>
 			</x:selectOneMenu>
 
-                <f:verbatim><br/></f:verbatim>
-                <x:outputLabel for="Peak_Start_Time" value="Peak Start Time: " title="Starting time for the peak time window" />
-                <x:inputText id="Peak_Start_Time" styleClass="char16Label" disabled="#{!capControlForm.editingCBCStrategy}"
-                        required="true" converter="cti_TimeConverter"
-                        value="#{capControlForm.cbcStrategiesMap[capControlForm.currentStrategyID].peakStartTime}" >
-                </x:inputText>
-                <x:outputText id="PkStartLab" value="(HH:mm)"/>
-                <f:verbatim><br/></f:verbatim>
+            <f:verbatim>
+            </td>
+            </tr>
+            <tr>
+            <td>
+            </f:verbatim>
+            
+            <x:outputLabel for="Peak_Start_Time" value="Peak Start Time: " title="Starting time for the peak time window" />
+            
+            <f:verbatim>
+            </td>
+            <td>
+            </f:verbatim>
+            
+            <x:inputText id="Peak_Start_Time" styleClass="char16Label" disabled="#{!capControlForm.editingCBCStrategy}"
+                required="true" converter="cti_TimeConverter"
+                value="#{capControlForm.cbcStrategiesMap[capControlForm.currentStrategyID].peakStartTime}" >
+            </x:inputText>
+            <x:outputText id="PkStartLab" value="(HH:mm)"/>
+            
+            <f:verbatim>
+            </td>
+            </tr>
+            <tr>
+            <td>
+            </f:verbatim>
+            
             <x:outputLabel for="Peak_Stop_Time" value="Peak Stop Time: " title="Stop time for the peak time window" />
+            
+            <f:verbatim>
+            </td>
+            <td>
+            </f:verbatim>
+            
             <x:inputText id="Peak_Stop_Time" styleClass="char16Label" disabled="#{!capControlForm.editingCBCStrategy}"
                     required="true" converter="cti_TimeConverter"
                     value="#{capControlForm.cbcStrategiesMap[capControlForm.currentStrategyID].peakStopTime}" >
             </x:inputText>
             <x:outputText id="PkStopLab" value="(HH:mm)"/>
 
-                <f:verbatim><br/><br/><br/></f:verbatim>
+            <f:verbatim>
+            </td>
+            </tr>
+            </table>
+            <br>
+            <br>
+            </f:verbatim>
 
             <f:verbatim>
                <table id="algorithmTableData" >
@@ -274,8 +437,7 @@
                              valueChangeListener="#{capControlForm.currentStratModel.dataChanged}">
                         <f:validateDoubleRange minimum="-100" maximum="100" />
                 </x:inputText>
-                <x:outputText value="%" styleClass="padlabel"
-                             rendered="#{capControlForm.currentStratModel.enableTable[capControlForm.currentStratModel.PEAK_PF_POINT]}"/>
+                <x:outputText value="%" styleClass="padlabel" rendered="#{capControlForm.currentStratModel.enableTable[capControlForm.currentStratModel.PEAK_PF_POINT]}"/>
             <f:verbatim>
                 </td> <!--offPkPFPoint-->
               </tr>    <!--pfrow-->
@@ -519,13 +681,461 @@
     <f:verbatim></fieldset></f:verbatim>
     <f:verbatim><br/><fieldset><legend>Peak Operating Days</legend></f:verbatim>
     
-	<x:selectManyCheckbox id="Peak_Operating_Days" value="#{capControlForm.stratDaysOfWeek}"
-                    disabled="#{!capControlForm.editingCBCStrategy}" layout="pageDirection" 
-                    rendered="#{capControlForm.currentStrategyID != 0}">
-                <f:selectItems value="#{selLists.daySelections}"/>
-            </x:selectManyCheckbox>
-   <f:verbatim></fieldset></f:verbatim>
-         </h:column>
+        <x:selectManyCheckbox id="Peak_Operating_Days" value="#{capControlForm.stratDaysOfWeek}"
+        disabled="#{!capControlForm.editingCBCStrategy}" layout="pageDirection" 
+        rendered="#{capControlForm.currentStrategyID != 0}">
+            <f:selectItems value="#{selLists.daySelections}"/>
+        </x:selectManyCheckbox>
+        <f:verbatim></fieldset></f:verbatim>
+    </h:column>
+         
+    <h:column rendered="#{capControlForm.currentStrategyID != 0 && (capControlForm.timeOfDay)}" >
+         
+        <f:verbatim><br/><fieldset><legend>Strategy Settings</legend>
+        <table>
+        <tr>
+        <td/>
+        <td>
+        </f:verbatim>
+            <x:outputLabel for="hourZeroClose" value="Close:"/>
+        <f:verbatim>
+        </td>
+        <td>
+        </f:verbatim>
+            <x:outputLabel for="hourZeroClose" value="Open:"/>        
+        <f:verbatim>
+        </td>
+        </tr>
+        <tr>
+        <td>
+        </f:verbatim>
+        <x:outputLabel for="hourZeroClose" id="hourZeroLabel" value = "00:00"/>
+        <f:verbatim>
+        </td>
+        <td>
+        </f:verbatim>
+        <x:inputText id="hourZeroClose" disabled="#{!capControlForm.editingCBCStrategy}"
+        value="#{capControlForm.strategyTimeOfDay.hourZero}"/>
+        <f:verbatim>
+        </td>
+        <td>
+        </f:verbatim>
+        <x:outputLabel for="hourZeroClose" id="hourZeroOpen" value="#{capControlForm.strategyTimeOfDay.hourZeroOpen}"/>
+        <f:verbatim>
+        </td>
+        </tr>
+        <tr>
+        <td>
+        </f:verbatim>
+        <x:outputLabel for="hourOneClose" id="hourOneLabel" value="01:00"/>
+        <f:verbatim>
+        </td>
+        <td>
+        </f:verbatim>
+        <x:inputText id="hourOneClose" disabled="#{!capControlForm.editingCBCStrategy}"
+        value="#{capControlForm.strategyTimeOfDay.hourOne}"/>
+        <f:verbatim>
+        </td>
+        <td>
+        </f:verbatim>
+        <x:outputLabel for="hourOneClose" id="hourOneOpen" value="#{capControlForm.strategyTimeOfDay.hourOneOpen}"/>
+        <f:verbatim>
+        </td>
+        </tr>
+        <tr>
+        <td>
+        </f:verbatim>
+        <x:outputLabel for="hourTwoClose" id="hourTwoLabel" value="02:00"/>
+        <f:verbatim>
+        </td>
+        <td>
+        </f:verbatim>
+        <x:inputText id="hourTwoClose" disabled="#{!capControlForm.editingCBCStrategy}"
+        value="#{capControlForm.strategyTimeOfDay.hourTwo}"/>
+        <f:verbatim>
+        </td>
+        <td>
+        </f:verbatim>
+        <x:outputLabel for="hourTwoClose" id="hourTwoOpen" value="#{capControlForm.strategyTimeOfDay.hourTwoOpen}"/>
+        <f:verbatim>
+        </td>
+        </tr>
+        <tr>
+        <td>
+        </f:verbatim>
+        <x:outputLabel for="hourThreeClose" id="hourThreeLabel" value="03:00"/>
+        <f:verbatim>
+        </td>
+        <td>
+        </f:verbatim>
+        <x:inputText id="hourThreeClose" disabled="#{!capControlForm.editingCBCStrategy}"
+        value="#{capControlForm.strategyTimeOfDay.hourThree}"/>
+        <f:verbatim>
+        </td>
+        <td>
+        </f:verbatim>
+        <x:outputLabel for="hourThreeClose"  id="hourThreeOpen" value="#{capControlForm.strategyTimeOfDay.hourThreeOpen}"/>
+        <f:verbatim>
+        </td>
+        </tr>
+        <tr>
+        <td>
+        </f:verbatim>
+        <x:outputLabel for="hourFourClose" id="hourFourLabel" value="04:00"/>
+        <f:verbatim>
+        </td>
+        <td>
+        </f:verbatim>
+        <x:inputText id="hourFourClose" disabled="#{!capControlForm.editingCBCStrategy}"
+        value="#{capControlForm.strategyTimeOfDay.hourFour}"/>
+        <f:verbatim>
+        </td>
+        <td>
+        </f:verbatim>
+        <x:outputLabel for="hourFourClose" id="hourFourOpen" value="#{capControlForm.strategyTimeOfDay.hourFourOpen}"/>
+        <f:verbatim>
+        </td>
+        </tr>
+        <tr>
+        <td>
+        </f:verbatim>
+        <x:outputLabel for="hourFiveClose" id="hourFiveLabel" value="05:00"/>
+        <f:verbatim>
+        </td>
+        <td>
+        </f:verbatim>
+        <x:inputText id="hourFiveClose" disabled="#{!capControlForm.editingCBCStrategy}"
+        value="#{capControlForm.strategyTimeOfDay.hourFive}"/>
+        <f:verbatim>
+        </td>
+        <td>
+        </f:verbatim>
+        <x:outputLabel for="hourFiveClose" id="hourFiveOpen" value="#{capControlForm.strategyTimeOfDay.hourFiveOpen}"/>
+        <f:verbatim>
+        </td>
+        </tr>
+        <tr>
+        <td>
+        </f:verbatim>
+        <x:outputLabel for="hourSixClose" id="hourSixLabel" value="06:00"/>
+        <f:verbatim>
+        </td>
+        <td>
+        </f:verbatim>
+        <x:inputText id="hourSixClose" disabled="#{!capControlForm.editingCBCStrategy}"
+        value="#{capControlForm.strategyTimeOfDay.hourSix}"/>
+        <f:verbatim>
+        </td>
+        <td>
+        </f:verbatim>
+        <x:outputLabel for="hourSixClose" id="hourSixOpen" value="#{capControlForm.strategyTimeOfDay.hourSixOpen}"/>
+        <f:verbatim>
+        </td>
+        </tr>
+        <tr>
+        <td>
+        </f:verbatim>
+        <x:outputLabel for="hourSevenClose" id="hourSevenLabel" value="07:00"/>
+        <f:verbatim>
+        </td>
+        <td>
+        </f:verbatim>
+        <x:inputText id="hourSevenClose" disabled="#{!capControlForm.editingCBCStrategy}"
+        value="#{capControlForm.strategyTimeOfDay.hourSeven}"/>
+        <f:verbatim>
+        </td>
+        <td>
+        </f:verbatim>
+        <x:outputLabel for="hourSevenClose" id="hourSevenOpen" value="#{capControlForm.strategyTimeOfDay.hourSevenOpen}"/>
+        <f:verbatim>
+        </td>
+        </tr>
+        <tr>
+        <td>
+        </f:verbatim>
+        <x:outputLabel for="hourEightClose" id="hourEightLabel" value="08:00"/>
+        <f:verbatim>
+        </td>
+        <td>
+        </f:verbatim>
+        <x:inputText id="hourEightClose" disabled="#{!capControlForm.editingCBCStrategy}"
+        value="#{capControlForm.strategyTimeOfDay.hourEight}"/>
+        <f:verbatim>
+        </td>
+        <td>
+        </f:verbatim>
+        <x:outputLabel for="hourEightClose" id="hourEightOpen" value="#{capControlForm.strategyTimeOfDay.hourEightOpen}"/>
+        <f:verbatim>
+        </td>
+        </tr>
+        <tr>
+        <td>
+        </f:verbatim>
+        <x:outputLabel for="hourNineClose" id="hourNineLabel" value="09:00"/>
+        <f:verbatim>
+        </td>
+        <td>
+        </f:verbatim>
+        <x:inputText id="hourNineClose" disabled="#{!capControlForm.editingCBCStrategy}"
+        value="#{capControlForm.strategyTimeOfDay.hourNine}"/>
+        <f:verbatim>
+        </td>
+        <td>
+        </f:verbatim>
+        <x:outputLabel for="hourNineClose" id="hourNineOpen" value="#{capControlForm.strategyTimeOfDay.hourNineOpen}"/>
+        <f:verbatim>
+        </td>
+        </tr>
+        <tr>
+        <td>
+        </f:verbatim>
+        <x:outputLabel for="hourTenClose" id="hourTenLabel" value="10:00"/>
+        <f:verbatim>
+        </td>
+        <td>
+        </f:verbatim>
+        <x:inputText id="hourTenClose" disabled="#{!capControlForm.editingCBCStrategy}"
+        value="#{capControlForm.strategyTimeOfDay.hourTen}"/>
+        <f:verbatim>
+        </td>
+        <td>
+        </f:verbatim>
+        <x:outputLabel for="hourTenClose" id="hourTenOpen" value="#{capControlForm.strategyTimeOfDay.hourTenOpen}"/>
+        <f:verbatim>
+        </td>
+        </tr>
+        <tr>
+        <td>
+        </f:verbatim>
+        <x:outputLabel for="hourElevenClose" id="hourElevenLabel" value="11:00"/>
+        <f:verbatim>
+        </td>
+        <td>
+        </f:verbatim>
+        <x:inputText id="hourElevenClose" disabled="#{!capControlForm.editingCBCStrategy}"
+        value="#{capControlForm.strategyTimeOfDay.hourEleven}"/>
+        <f:verbatim>
+        </td>
+        <td>
+        </f:verbatim>
+        <x:outputLabel for="hourElevenClose" id="hourElevenOpen" value="#{capControlForm.strategyTimeOfDay.hourElevenOpen}"/>
+        <f:verbatim>
+        </td>
+        </tr>
+        <tr>
+        <td>
+        </f:verbatim>
+        <x:outputLabel for="hourTwelveClose" id="hourTwelveLabel" value="12:00"/>
+        <f:verbatim>
+        </td>
+        <td>
+        </f:verbatim>
+        <x:inputText id="hourTwelveClose" disabled="#{!capControlForm.editingCBCStrategy}"
+        value="#{capControlForm.strategyTimeOfDay.hourTwelve}"/>
+        <f:verbatim>
+        </td>
+        <td>
+        </f:verbatim>
+        <x:outputLabel for="hourTwelveClose" id="hourTwelveOpen" value="#{capControlForm.strategyTimeOfDay.hourTwelveOpen}"/>
+        <f:verbatim>
+        </td>
+        </tr>
+        <tr>
+        <td>
+        </f:verbatim>
+        <x:outputLabel for="hourThirteenClose" id="hourThirteenLabel" value="13:00"/>
+        <f:verbatim>
+        </td>
+        <td>
+        </f:verbatim>
+        <x:inputText id="hourThirteenClose" disabled="#{!capControlForm.editingCBCStrategy}"
+        value="#{capControlForm.strategyTimeOfDay.hourThirteen}"/>
+        <f:verbatim>
+        </td>
+        <td>
+        </f:verbatim>
+        <x:outputLabel for="hourThirteenClose" id="hourThirteenOpen" value="#{capControlForm.strategyTimeOfDay.hourThirteenOpen}"/>
+        <f:verbatim>
+        </td>
+        </tr>
+        <tr>
+        <td>
+        </f:verbatim>
+        <x:outputLabel for="hourFourteenClose" id="hourFourteenLabel" value = "14:00"/>
+        <f:verbatim>
+        </td>
+        <td>
+        </f:verbatim>
+        <x:inputText id="hourFourteenClose" disabled="#{!capControlForm.editingCBCStrategy}"
+        value="#{capControlForm.strategyTimeOfDay.hourFourteen}"/>
+        <f:verbatim>
+        </td>
+        <td>
+        </f:verbatim>
+        <x:outputLabel for="hourFourteenClose" id="hourFourteenOpen" value="#{capControlForm.strategyTimeOfDay.hourFourteenOpen}"/>
+        <f:verbatim>
+        </td>
+        </tr>
+        <tr>
+        <td>
+        </f:verbatim>
+        <x:outputLabel for="hourFifteenClose" id="hourFifteenLabel" value="15:00"/>
+        <f:verbatim>
+        </td>
+        <td>
+        </f:verbatim>
+        <x:inputText id="hourFifteenClose" disabled="#{!capControlForm.editingCBCStrategy}"
+        value="#{capControlForm.strategyTimeOfDay.hourFifteen}"/>
+        <f:verbatim>
+        </td>
+        <td>
+        </f:verbatim>
+        <x:outputLabel for="hourFifteenClose" id="hourFifteenOpen" value="#{capControlForm.strategyTimeOfDay.hourFifteenOpen}"/>
+        <f:verbatim>
+        </td>
+        </tr>
+        <tr>
+        <td>
+        </f:verbatim>
+        <x:outputLabel for="hourSixteenClose" id="hourSixteenLabel" value="16:00"/>
+        <f:verbatim>
+        </td>
+        <td>
+        </f:verbatim>
+        <x:inputText id="hourSixteenClose" disabled="#{!capControlForm.editingCBCStrategy}"
+        value="#{capControlForm.strategyTimeOfDay.hourSixteen}"/>
+        <f:verbatim>
+        </td>
+        <td>
+        </f:verbatim>
+        <x:outputLabel for="hourSixteenClose" id="hourSixteenOpen" value="#{capControlForm.strategyTimeOfDay.hourSixteenOpen}"/>
+        <f:verbatim>
+        </td>
+        </tr>
+        <tr>
+        <td>
+        </f:verbatim>
+        <x:outputLabel for="hourSeventeenClose" id="hourSeventeenLabel" value="17:00"/>
+        <f:verbatim>
+        </td>
+        <td>
+        </f:verbatim>
+        <x:inputText id="hourSeventeenClose" disabled="#{!capControlForm.editingCBCStrategy}"
+        value="#{capControlForm.strategyTimeOfDay.hourSeventeen}"/>
+        <f:verbatim>
+        </td>
+        <td>
+        </f:verbatim>
+        <x:outputLabel for="hourSeventeenClose" id="hourSeventeenOpen" value="#{capControlForm.strategyTimeOfDay.hourSeventeenOpen}"/>
+        <f:verbatim>
+        </td>
+        </tr>
+        <tr>
+        <td>
+        </f:verbatim>
+        <x:outputLabel for="hourEighteenClose" id="hourEighteenLabel" value="18:00"/>
+        <f:verbatim>
+        </td>
+        <td>
+        </f:verbatim>
+        <x:inputText id="hourEighteenClose" disabled="#{!capControlForm.editingCBCStrategy}"
+        value="#{capControlForm.strategyTimeOfDay.hourEighteen}"/>
+        <f:verbatim>
+        </td>
+        <td>
+        </f:verbatim>
+        <x:outputLabel for="hourEighteenClose" id="hourEighteenOpen" value="#{capControlForm.strategyTimeOfDay.hourEighteenOpen}"/>
+        <f:verbatim>
+        </td>
+        </tr>
+        <tr>
+        <td>
+        </f:verbatim>
+        <x:outputLabel for="hourNineteenClose" id="hourNineteenLabel" value="19:00"/>
+        <f:verbatim>
+        </td>
+        <td>
+        </f:verbatim>
+        <x:inputText id="hourNineteenClose" disabled="#{!capControlForm.editingCBCStrategy}"
+        value="#{capControlForm.strategyTimeOfDay.hourNineteen}"/>
+        <f:verbatim>
+        </td>
+        <td>
+        </f:verbatim>
+        <x:outputLabel for="hourNineteenClose" id="hourNineteenOpen" value="#{capControlForm.strategyTimeOfDay.hourNineteenOpen}"/>
+        <f:verbatim>
+        </td>
+        </tr>
+        <tr>
+        <td>
+        </f:verbatim>
+        <x:outputLabel for="hourTwentyClose" id="hourTwentyLabel" value="20:00"/>
+        <f:verbatim>
+        </td>
+        <td>
+        </f:verbatim>
+        <x:inputText id="hourTwentyClose" disabled="#{!capControlForm.editingCBCStrategy}"
+        value="#{capControlForm.strategyTimeOfDay.hourTwenty}"/>
+        <f:verbatim>
+        </td>
+        <td>
+        </f:verbatim>
+        <x:outputLabel for="hourTwentyClose" id="hourTwentyOpen" value="#{capControlForm.strategyTimeOfDay.hourTwentyOpen}"/>
+        <f:verbatim>
+        </td>
+        </tr>
+        <tr>
+        <td>
+        </f:verbatim>
+        <x:outputLabel for="hourTwentyOneClose" id="hourTwentyOneLabel" value="21:00"/>
+        <f:verbatim>
+        </td>
+        <td>
+        </f:verbatim>
+        <x:inputText id="hourTwentyOneClose" disabled="#{!capControlForm.editingCBCStrategy}"
+        value="#{capControlForm.strategyTimeOfDay.hourTwentyOne}"/>
+        <f:verbatim>
+        </td>
+        <td>
+        </f:verbatim>
+        <x:outputLabel for="hourTwentyOneClose" id="hourTwentyOneOpen" value="#{capControlForm.strategyTimeOfDay.hourTwentyOneOpen}"/>
+        <f:verbatim>
+        </td>
+        </tr>
+        <tr>
+        <td>
+        </f:verbatim>
+        <x:outputLabel for="hourTwentyTwoClose" id="hourTwentyTwoLabel" value="22:00"/>
+        <f:verbatim>
+        </td>
+        <td>
+        </f:verbatim>
+        <x:inputText id="hourTwentyTwoClose" disabled="#{!capControlForm.editingCBCStrategy}"
+        value="#{capControlForm.strategyTimeOfDay.hourTwentyTwo}"/>
+        <f:verbatim>
+        </td>
+        <td>
+        </f:verbatim>
+        <x:outputLabel for="hourTwentyTwoClose" id="hourTwentyTwoOpen" value="#{capControlForm.strategyTimeOfDay.hourTwentyTwoOpen}"/>
+        <f:verbatim>
+        </td>
+        </tr>
+        <tr>
+        <td>
+        </f:verbatim>
+        <x:outputLabel for="hourTwentyThreeClose" id="hourTwentyThreeLabel" value="23:00"/>
+        <f:verbatim>
+        </td>
+        <td>
+        </f:verbatim>
+        <x:inputText id="hourTwentyThreeClose" disabled="#{!capControlForm.editingCBCStrategy}"
+        value="#{capControlForm.strategyTimeOfDay.hourTwentyThree}"/>
+        <f:verbatim>
+        </td>
+        <td>
+        </f:verbatim>
+        <x:outputLabel for="hourTwentyThreeClose" id="hourTwentyThreeOpen" value="#{capControlForm.strategyTimeOfDay.hourTwentyThreeOpen}"/>
+    </h:column>
     </h:panelGrid>
 	<x:inputHidden forceId="true" id="controlAlgoToggle" value="#{capControlForm.currentStratModel.resetPkOffPkVals}" />
 </f:subview>

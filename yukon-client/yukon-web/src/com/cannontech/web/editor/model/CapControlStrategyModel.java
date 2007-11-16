@@ -16,12 +16,10 @@ import com.cannontech.web.util.CapControlModelUtil;
 public class CapControlStrategyModel implements EditorDataModel{
 
     private CapControlStrategy strategy = null;
-    private HashMap enableTable = new HashMap(10);
-    private HashMap valueTable = new HashMap(10);
+    private HashMap<String, Boolean> enableTable = new HashMap<String, Boolean>(10);
+    private HashMap<String, Double> valueTable = new HashMap<String, Double>(10);
     private boolean resetPkOffPkVals;
     
-    
-
     public boolean isResetPkOffPkVals() {
         return resetPkOffPkVals;
     }
@@ -61,27 +59,21 @@ public class CapControlStrategyModel implements EditorDataModel{
         enableTable.put(CapControlModelUtil.OFFP_UPPER, Boolean.FALSE);
         enableTable.put(CapControlModelUtil.OFFP_LAG, Boolean.FALSE);
         enableTable.put(CapControlModelUtil.OFFP_LEAD, Boolean.FALSE);
-        
         enableTable.put(CapControlModelUtil.PEAK_PF_POINT, Boolean.FALSE);
         enableTable.put(CapControlModelUtil.OFFP_PF_POINT, Boolean.FALSE);
-
     }
 
     private void resetValueTable() {
-
         valueTable.put(CapControlModelUtil.PEAK_LOWER, new Double(0.0));
         valueTable.put(CapControlModelUtil.PEAK_UPPER, new Double(0.0));
         valueTable.put(CapControlModelUtil.PEAK_LAG, new Double(0.0));
         valueTable.put(CapControlModelUtil.PEAK_LEAD, new Double(0.0));
-
         valueTable.put(CapControlModelUtil.OFFP_LOWER, new Double(0.0));
         valueTable.put(CapControlModelUtil.OFFP_UPPER, new Double(0.0));
         valueTable.put(CapControlModelUtil.OFFP_LAG, new Double(0.0));
         valueTable.put(CapControlModelUtil.OFFP_LEAD, new Double(0.0));
-        
         valueTable.put(CapControlModelUtil.PEAK_PF_POINT, new Double (0.0));
         valueTable.put(CapControlModelUtil.OFFP_PF_POINT, new Double (0.0));
-
     }
 
     public CapControlStrategy getStrategy() {
@@ -89,36 +81,27 @@ public class CapControlStrategyModel implements EditorDataModel{
     }
 
     private void updateView() {
-
         resetEnableMap();
         resetValueTable();
-
         String algo = strategy.getControlUnits();
         if (CapControlModelUtil.isVarStrat(algo)) {
             updateVoltStrat();
-
-        } 
-        else if (CapControlModelUtil.isPFactor(algo)) {
+        } else if (CapControlModelUtil.isPFactor(algo)) {
             updatePFStrat();
             updateVoltStrat();
-        } 
-        else if (CapControlModelUtil.isVoltStrat(algo)) {
+        } else if (CapControlModelUtil.isVoltStrat(algo)) {
             updateVoltStrat();
-        }
-        else if (CapControlModelUtil.isVoltVar(algo)) {
+        } else if (CapControlModelUtil.isVoltVar(algo)) {
             updateVarStrat();
             updateVoltStrat();
         }
-        
     }
 
-
-
-    public HashMap getEnableTable() {
+    public HashMap<String, Boolean> getEnableTable() {
         return enableTable;
     }
 
-    public HashMap getValueTable() {
+    public HashMap<String, Double> getValueTable() {
         return valueTable;
     }
 
@@ -127,12 +110,10 @@ public class CapControlStrategyModel implements EditorDataModel{
         enableTable.put(CapControlModelUtil.PEAK_LEAD, Boolean.TRUE);
         enableTable.put(CapControlModelUtil.OFFP_LAG, Boolean.TRUE);
         enableTable.put(CapControlModelUtil.OFFP_LEAD, Boolean.TRUE);
-
         valueTable.put(CapControlModelUtil.PEAK_LAG, strategy.getPeakLag());
         valueTable.put(CapControlModelUtil.PEAK_LEAD, strategy.getPeakLead());
         valueTable.put(CapControlModelUtil.OFFP_LAG, strategy.getOffPkLag());
         valueTable.put(CapControlModelUtil.OFFP_LEAD, strategy.getOffPkLead());
-
     }
 
     private void updateVarStrat() {
@@ -140,23 +121,18 @@ public class CapControlStrategyModel implements EditorDataModel{
         enableTable.put(CapControlModelUtil.PEAK_UPPER, Boolean.TRUE);
         enableTable.put(CapControlModelUtil.OFFP_LOWER, Boolean.TRUE);
         enableTable.put(CapControlModelUtil.OFFP_UPPER, Boolean.TRUE);
-
         valueTable.put(CapControlModelUtil.PEAK_LOWER, strategy.getPkVarLag());
         valueTable.put(CapControlModelUtil.PEAK_UPPER, strategy.getPkVarLead());
-        valueTable.put(CapControlModelUtil.OFFP_LOWER,
-                       strategy.getOffpkVarLag());
-        valueTable.put(CapControlModelUtil.OFFP_UPPER,
-                       strategy.getOffpkVarLead());
+        valueTable.put(CapControlModelUtil.OFFP_LOWER, strategy.getOffpkVarLag());
+        valueTable.put(CapControlModelUtil.OFFP_UPPER, strategy.getOffpkVarLead());
 
     }
     
     private void updatePFStrat () {
         enableTable.put(CapControlModelUtil.PEAK_PF_POINT, Boolean.TRUE);
         enableTable.put(CapControlModelUtil.OFFP_PF_POINT, Boolean.TRUE);
-        
         valueTable.put(CapControlModelUtil.PEAK_PF_POINT, strategy.getPkPFPoint());
         valueTable.put(CapControlModelUtil.OFFP_PF_POINT, strategy.getOffPkPFPoint());
-
     }
 
     public String getPEAK_UPPER() {
@@ -190,7 +166,6 @@ public class CapControlStrategyModel implements EditorDataModel{
     public String getPEAK_LOWER() {
         return CapControlModelUtil.PEAK_LOWER;
     }
-
     
     public String getPEAK_PF_POINT() {
         return CapControlModelUtil.PEAK_PF_POINT;
@@ -206,19 +181,16 @@ public class CapControlStrategyModel implements EditorDataModel{
     }
 
     private void updateData() {
-            strategy.setPeakLag((Double) valueTable.get(CapControlModelUtil.PEAK_LAG));
-            strategy.setPeakLead((Double) valueTable.get(CapControlModelUtil.PEAK_LEAD));
-            strategy.setOffPkLag((Double) valueTable.get(CapControlModelUtil.OFFP_LAG));
-            strategy.setOffPkLead((Double) valueTable.get(CapControlModelUtil.OFFP_LEAD));
-
-            strategy.setPkVarLag((Double) valueTable.get(CapControlModelUtil.PEAK_LOWER));
-            strategy.setPkVarLead((Double) valueTable.get(CapControlModelUtil.PEAK_UPPER));
-            strategy.setOffpkVarLag((Double) valueTable.get(CapControlModelUtil.OFFP_LOWER));
-            strategy.setOffpkVarLead((Double) valueTable.get(CapControlModelUtil.OFFP_UPPER));
-
-            strategy.setPkPFPoint((Double) valueTable.get(CapControlModelUtil.PEAK_PF_POINT));
-            strategy.setOffPkPFPoint((Double)valueTable.get(CapControlModelUtil.OFFP_PF_POINT));
-
+            strategy.setPeakLag(valueTable.get(CapControlModelUtil.PEAK_LAG));
+            strategy.setPeakLead(valueTable.get(CapControlModelUtil.PEAK_LEAD));
+            strategy.setOffPkLag(valueTable.get(CapControlModelUtil.OFFP_LAG));
+            strategy.setOffPkLead(valueTable.get(CapControlModelUtil.OFFP_LEAD));
+            strategy.setPkVarLag(valueTable.get(CapControlModelUtil.PEAK_LOWER));
+            strategy.setPkVarLead(valueTable.get(CapControlModelUtil.PEAK_UPPER));
+            strategy.setOffpkVarLag(valueTable.get(CapControlModelUtil.OFFP_LOWER));
+            strategy.setOffpkVarLead(valueTable.get(CapControlModelUtil.OFFP_UPPER));
+            strategy.setPkPFPoint(valueTable.get(CapControlModelUtil.PEAK_PF_POINT));
+            strategy.setOffPkPFPoint(valueTable.get(CapControlModelUtil.OFFP_PF_POINT));
     }
 
     public void dataChanged(ValueChangeEvent vce) {
@@ -227,51 +199,46 @@ public class CapControlStrategyModel implements EditorDataModel{
             HtmlInputText textField = (HtmlInputText) comp;
             String clientID = textField.getClientId(FacesContext.getCurrentInstance());
             if (clientID.equalsIgnoreCase(CapControlModelUtil.PEAK_LAG)) {
-                valueTable.put(vce.getNewValue(), CapControlModelUtil.PEAK_LAG);
+                valueTable.put(CapControlModelUtil.PEAK_LAG, (Double)vce.getNewValue());
                 strategy.setPeakLag((Double) vce.getNewValue());
             }
             if (clientID.equalsIgnoreCase(CapControlModelUtil.PEAK_LEAD)) {
-                valueTable.put(vce.getNewValue(), CapControlModelUtil.PEAK_LEAD);
+                valueTable.put(CapControlModelUtil.PEAK_LEAD, (Double)vce.getNewValue());
                 strategy.setPeakLead((Double) vce.getNewValue());
-
             }
             if (clientID.equalsIgnoreCase(CapControlModelUtil.OFFP_LAG)) {
-                valueTable.put(vce.getNewValue(), CapControlModelUtil.OFFP_LAG);
+                valueTable.put(CapControlModelUtil.OFFP_LAG, (Double)vce.getNewValue());
                 strategy.setOffPkLag((Double) vce.getNewValue());
             }
             if (clientID.equalsIgnoreCase(CapControlModelUtil.OFFP_LEAD)) {
-                valueTable.put(vce.getNewValue(), CapControlModelUtil.OFFP_LEAD);
+                valueTable.put(CapControlModelUtil.OFFP_LEAD, (Double)vce.getNewValue());
                 strategy.setOffPkLead((Double) vce.getNewValue());
             }
-
             if (clientID.equalsIgnoreCase(CapControlModelUtil.PEAK_LOWER)) {
-                valueTable.put(vce.getNewValue(), CapControlModelUtil.PEAK_LOWER);
+                valueTable.put(CapControlModelUtil.PEAK_LOWER, (Double)vce.getNewValue());
                 strategy.setPkVarLag((Double) vce.getNewValue());
             }
             if (clientID.equalsIgnoreCase(CapControlModelUtil.PEAK_UPPER)) {
-                valueTable.put(vce.getNewValue(), CapControlModelUtil.PEAK_UPPER);
+                valueTable.put(CapControlModelUtil.PEAK_UPPER, (Double)vce.getNewValue());
                 strategy.setPkVarLead((Double) vce.getNewValue());
             }
             if (clientID.equalsIgnoreCase(CapControlModelUtil.OFFP_LOWER)) {
-                valueTable.put(vce.getNewValue(), CapControlModelUtil.OFFP_LOWER);
+                valueTable.put(CapControlModelUtil.OFFP_LOWER, (Double)vce.getNewValue());
                 strategy.setOffpkVarLag((Double) vce.getNewValue());
             }
             if (clientID.equalsIgnoreCase(CapControlModelUtil.OFFP_UPPER)) {
-                valueTable.put(vce.getNewValue(), CapControlModelUtil.OFFP_UPPER);
+                valueTable.put(CapControlModelUtil.OFFP_UPPER, (Double)vce.getNewValue());
                 strategy.setOffpkVarLead((Double) vce.getNewValue());
             }
             if (clientID.equalsIgnoreCase(CapControlModelUtil.PEAK_PF_POINT)) {
-                valueTable.put(vce.getNewValue(), CapControlModelUtil.PEAK_PF_POINT);
+                valueTable.put(CapControlModelUtil.PEAK_PF_POINT, (Double)vce.getNewValue());
                 strategy.setPkPFPoint((Double) vce.getNewValue());
             }
             if (clientID.equalsIgnoreCase(CapControlModelUtil.OFFP_PF_POINT)) {
-                valueTable.put(vce.getNewValue(), CapControlModelUtil.OFFP_PF_POINT);
+                valueTable.put(CapControlModelUtil.OFFP_PF_POINT, (Double)vce.getNewValue());
                 strategy.setOffPkPFPoint((Double) vce.getNewValue());
             }
-
-        
         }
-
         updateModel();
     }
 
@@ -282,8 +249,7 @@ public class CapControlStrategyModel implements EditorDataModel{
     
     public boolean isKVarAlgorithm () {
         String algo = strategy.getControlUnits();
-        return 
-                CapControlModelUtil.isVarStrat(algo) ;
+        return CapControlModelUtil.isVarStrat(algo);
     }
     
     public boolean isPFAlgorithm () {
@@ -300,5 +266,4 @@ public class CapControlStrategyModel implements EditorDataModel{
         updateModel();
     }
     
-
 }

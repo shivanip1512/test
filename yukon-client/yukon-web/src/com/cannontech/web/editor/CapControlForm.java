@@ -10,7 +10,7 @@ import java.util.HashMap;
 import java.util.Iterator;
 import java.util.List;
 import java.util.Map;
-import java.util.Set;
+import java.util.TreeSet;
 import java.util.Vector;
 
 import javax.faces.application.FacesMessage;
@@ -71,6 +71,7 @@ import com.cannontech.database.data.point.StatusPoint;
 import com.cannontech.database.db.DBPersistent;
 import com.cannontech.database.db.capcontrol.CCFeederBankList;
 import com.cannontech.database.db.capcontrol.CCFeederSubAssignment;
+import com.cannontech.database.db.capcontrol.CCStrategyTimeOfDay;
 import com.cannontech.database.db.capcontrol.CCSubstationSubBusList;
 import com.cannontech.database.db.capcontrol.CapBankAdditional;
 import com.cannontech.database.db.capcontrol.CapControlStrategy;
@@ -104,10 +105,10 @@ public class CapControlForm extends DBEditorForm implements ICapControlModel{
 	// contains <Integer(stratID), CapControlStrategy>
 	private HashMap<Integer, CapControlStrategy> cbcStrategiesMap = null;
 	// contains LiteYukonPAObject
-	private List unassignedBanks = null;
+	private List<LiteYukonPAObject> unassignedBanks = null;
 	// contains LiteYukonPAObject
-	private List unassignedFeeders = null;
-	private List unassignedSubBuses = null;
+	private List<LiteYukonPAObject> unassignedFeeders = null;
+	private List<LiteYukonPAObject> unassignedSubBuses = null;
 	// possible selection types for every wizard panel
 	private CBCCreationModel wizData = null;
 	// possible editor for the CBC a CapBank belongs to
@@ -119,10 +120,10 @@ public class CapControlForm extends DBEditorForm implements ICapControlModel{
 	private SelectItem[] cbcStrategies = null;
     private SelectItem[] cbcSchedules = null;
 	// variables that hold sub bus info
-	protected List subBusList = null;
+	protected List<LiteYukonPAObject> subBusList = null;
     private Integer oldSubBus = null;
     //contains the offset variables
-    private Map offsetMap = new HashMap();
+    private Map<String, String> offsetMap = new HashMap<String, String>();
 	// Boolean to keep track of the disable dual subbus status
 	// by default will be set to true
     private Boolean enableDualBus = Boolean.FALSE;
@@ -133,13 +134,14 @@ public class CapControlForm extends DBEditorForm implements ICapControlModel{
     private TreeNode wattTreeData = null;
     private TreeNode voltTreeData = null;
     private SelectItem[] controlMethods = null;
-    private Map paoNameMap = null;
-    private Map pointNameMap = null;
+    private Map<Integer, String> paoNameMap = null;
+    private Map<Integer, String> pointNameMap = null;
     private Map<Season, Integer> assignedStratMap = null;
     private EditorDataModel dataModel = null;
     private EditorDataModel currentStratModel = null;
     private SeasonScheduleDao seasonScheduleDao;
     private Integer scheduleId = -1;
+    private CCStrategyTimeOfDay strategyTimeOfDay = null;
     
     private static CapbankDao capbankDao = YukonSpringHook.getBean("capbankDao",CapbankDao.class);
     private static FeederDao feederDao = YukonSpringHook.getBean("feederDao",FeederDao.class);
@@ -174,11 +176,11 @@ public class CapControlForm extends DBEditorForm implements ICapControlModel{
     
     public SelectItem[] getCbcStrategies() {
 		if (cbcStrategies == null) {
-			CapControlStrategy[] cbcDBStrats = CapControlStrategy.getAllCBCStrategies();
-			cbcStrategies = new SelectItem[cbcDBStrats.length];
-			for (int i = 0; i < cbcDBStrats.length; i++) {
-				cbcStrategies[i] = new SelectItem(cbcDBStrats[i].getStrategyID(), cbcDBStrats[i].getStrategyName());
-				getCbcStrategiesMap().put(cbcDBStrats[i].getStrategyID(),cbcDBStrats[i]);
+			List<CapControlStrategy> cbcDBStrats = CapControlStrategy.getAllCBCStrategies();
+			cbcStrategies = new SelectItem[cbcDBStrats.size()];
+			for (int i = 0; i < cbcDBStrats.size(); i++) {
+				cbcStrategies[i] = new SelectItem(cbcDBStrats.get(i).getStrategyID(), cbcDBStrats.get(i).getStrategyName());
+				getCbcStrategiesMap().put(cbcDBStrats.get(i).getStrategyID(),cbcDBStrats.get(i));
 			}
 		}
 		return cbcStrategies;
@@ -272,7 +274,7 @@ public class CapControlForm extends DBEditorForm implements ICapControlModel{
 		if (varTreeData == null){
 			varTreeData = new TreeNodeBase("root", "Var Points", false);
 			Integer [] types = { PointTypes.ANALOG_POINT, PointTypes.CALCULATED_POINT, PointTypes.DEMAND_ACCUMULATOR_POINT, PointTypes.PULSE_ACCUMULATOR_POINT};
-			List points = pointDao.getLitePointsBy(types, PointUnits.CAP_CONTROL_VAR_UOMIDS, null,null,null);
+			List<LitePoint> points = pointDao.getLitePointsBy(types, PointUnits.CAP_CONTROL_VAR_UOMIDS, null,null,null);
 			JSFTreeUtils.createPAOTreeFromPointList (points, varTreeData, JSFParamUtil.getYukonUser());
 		}	
 		return varTreeData;
@@ -282,7 +284,7 @@ public class CapControlForm extends DBEditorForm implements ICapControlModel{
 		if (wattTreeData == null){
 			wattTreeData =  new TreeNodeBase("root", "Watt Points", false);
             Integer [] types = { PointTypes.ANALOG_POINT, PointTypes.CALCULATED_POINT, PointTypes.DEMAND_ACCUMULATOR_POINT, PointTypes.PULSE_ACCUMULATOR_POINT};
-            List points = pointDao.getLitePointsBy(types, PointUnits.CAP_CONTROL_WATTS_UOMIDS, null,null,null);
+            List<LitePoint> points = pointDao.getLitePointsBy(types, PointUnits.CAP_CONTROL_WATTS_UOMIDS, null,null,null);
 			JSFTreeUtils.createPAOTreeFromPointList (points, wattTreeData, JSFParamUtil.getYukonUser());
 		}	
 		return wattTreeData;
@@ -292,7 +294,7 @@ public class CapControlForm extends DBEditorForm implements ICapControlModel{
 		if (voltTreeData == null){
 			voltTreeData = new TreeNodeBase("root", "Volt Points", false);
 			Integer [] types = { PointTypes.ANALOG_POINT, PointTypes.CALCULATED_POINT, PointTypes.DEMAND_ACCUMULATOR_POINT, PointTypes.PULSE_ACCUMULATOR_POINT};
-			List points = pointDao.getLitePointsBy(types, PointUnits.CAP_CONTROL_VOLTS_UOMIDS, null,null,null);
+			List<LitePoint> points = pointDao.getLitePointsBy(types, PointUnits.CAP_CONTROL_VOLTS_UOMIDS, null,null,null);
 			JSFTreeUtils.createPAOTreeFromPointList (points, voltTreeData, JSFParamUtil.getYukonUser());
 		}	
 		return voltTreeData;
@@ -531,8 +533,27 @@ public class CapControlForm extends DBEditorForm implements ICapControlModel{
             initPanels(DBEditorTypes.PAO_SCHEDULE);
 		}
         else if (getDbPersistent() instanceof CapControlStrategy) {
-            itemID = ((CapControlStrategy)getDbPersistent()).getStrategyID().intValue();
+            CapControlStrategy strat = (CapControlStrategy)getDbPersistent();
+            itemID = strat.getStrategyID().intValue();
             initPanels(DBEditorTypes.EDITOR_STRATEGY);
+            if(strat.getControlMethod().equalsIgnoreCase(CapControlStrategy.CNTRL_TIME_OF_DAY)) {
+                CCStrategyTimeOfDay tod = getStrategyTimeOfDay();
+                tod.setStrategyId(strat.getStrategyID());
+                Connection connection = CBCDBUtil.getConnection();
+                try {
+                    tod.setDbConnection( connection );
+                    tod.retrieve();
+                }
+                catch( SQLException sql ) {
+                    CTILogger.error("Unable to retrieve CCStrategyTimeofDay Object", sql );
+                }
+                finally {
+                    getDbPersistent().setDbConnection( null );
+                    try {
+                    if( connection != null ) connection.close();
+                    } catch( java.sql.SQLException e2 ) { }         
+                }
+            }
         }
 		//restore the value of the dual bus from DB
 		resetDualBusEnabled();
@@ -767,12 +788,16 @@ public class CapControlForm extends DBEditorForm implements ICapControlModel{
 	public void update() throws SQLException {
 		// this message will be filled in by the super class
 		FacesMessage facesMsg = new FacesMessage();
-        Connection connection = null;
+        Connection connection = getDbPersistent().getDbConnection();
 		try {
 			// update the CBCStrategy object if we are editing it
 			if (isEditingCBCStrategy() && (! (getDbPersistent() instanceof CapControlStrategy))) {
                 CapControlStrategy currentStrategy = ((CapControlStrategyModel) getCurrentStratModel()).getStrategy();
                 updateDBObject(currentStrategy, facesMsg);
+                if(currentStrategy.getControlMethod().equalsIgnoreCase(CapControlStrategy.CNTRL_TIME_OF_DAY)) {
+                    getStrategyTimeOfDay().setStrategyId(currentStrategy.getStrategyID());
+                    getStrategyTimeOfDay().add();
+                }
 				// clear out the memory of any list of Strategies
 				resetCurrentStratModel();
                 resetStrategies();
@@ -822,10 +847,10 @@ public class CapControlForm extends DBEditorForm implements ICapControlModel{
             if (getDataModel() != null) {
                 getDataModel().updateDataModel();    
             }
-            if (getDbPersistent().getDbConnection() == null) {
-                connection = CBCDBUtil.getConnection();
-                getDbPersistent().setDbConnection(connection);
-            }
+            
+            connection = CBCDBUtil.getConnection();
+            getDbPersistent().setDbConnection(connection);
+            
             DBPersistent dbPers = getDbPersistent();
             if (getDbPersistent() instanceof CapControlStrategy) {
                 dbPers = ((CapControlStrategyModel) getCurrentStratModel()).getStrategy();
@@ -835,7 +860,24 @@ public class CapControlForm extends DBEditorForm implements ICapControlModel{
             if(!(getDbPersistent() instanceof CapControlStrategy)) {
                 int paoId = ((YukonPAObject)getDbPersistent()).getPAObjectID();
                 seasonScheduleDao.saveSeasonStrategyAssigment(paoId, getAssignedStratMap(), getScheduleId());
+            }else {
+                if(((CapControlStrategy)dbPers).getControlMethod().equalsIgnoreCase(CapControlStrategy.CNTRL_TIME_OF_DAY)) {
+                    DBPersistent ccStrategyTimeOfDay = getStrategyTimeOfDay();
+                    ccStrategyTimeOfDay.setDbConnection(connection);
+                    if(CapControlStrategy.todExists(((CCStrategyTimeOfDay)ccStrategyTimeOfDay).getStrategyId())) {
+                        updateDBObject(ccStrategyTimeOfDay, facesMsg);
+                    }else {
+                        getStrategyTimeOfDay().setDbConnection(connection);
+                        getStrategyTimeOfDay().setStrategyId(((CapControlStrategy)dbPers).getStrategyID());
+                        getStrategyTimeOfDay().add();
+                    }
+                }else {
+                    CapControlStrategy.deleteTod(((CapControlStrategy)getDbPersistent()).getStrategyID());
+                    strategyTimeOfDay = new CCStrategyTimeOfDay();
+                }
             }
+            pointNameMap = null;
+            paoNameMap = null;
 		} catch (TransactionException te) {
             String errorString = te.getMessage();
             facesMsg.setDetail(errorString);
@@ -1161,7 +1203,7 @@ public class CapControlForm extends DBEditorForm implements ICapControlModel{
 			// a table that swaps CapBanks, must be for a Feeder object
 			if (unassignedBanks != null) {
 				for (int i = 0; i < unassignedBanks.size(); i++) {
-					if (elemID == ((LiteYukonPAObject) unassignedBanks.get(i)).getLiteID()) {
+					if (elemID == unassignedBanks.get(i).getLiteID()) {
 						// Add the mapping for the given CapBank id to this Feeder
 						CapControlFeeder currFdr = (CapControlFeeder) getDbPersistent();
                         float order = maxDispOrderOnList (currFdr.getChildList()) + 1;
@@ -1177,7 +1219,7 @@ public class CapControlForm extends DBEditorForm implements ICapControlModel{
 			// a table that swaps Feeders, must be for a SubBus object
 			if (unassignedFeeders != null) {
 				for (int i = 0; i < unassignedFeeders.size(); i++) {
-					if (elemID == ((LiteYukonPAObject) unassignedFeeders.get(i)).getLiteID()) {
+					if (elemID == unassignedFeeders.get(i).getLiteID()) {
 						// Add the mapping for the given Feeders id to this Sub
 						CapControlSubBus currSub = (CapControlSubBus) getDbPersistent();
                         //NOTE: casting maxDispOrderOnList. if we change this to float later need to remove cast.
@@ -1191,7 +1233,7 @@ public class CapControlForm extends DBEditorForm implements ICapControlModel{
 		} else if ( "SubstationBus".equalsIgnoreCase(swapType)) {
             if (unassignedSubBuses != null) {
                 for (int i = 0; i < unassignedSubBuses.size(); i++) {
-                    if (elemID == ((LiteYukonPAObject) unassignedSubBuses.get(i)).getLiteID()) {
+                    if (elemID == unassignedSubBuses.get(i).getLiteID()) {
                         CapControlSubstation currSub = (CapControlSubstation) getDbPersistent();
                         CCSubstationSubBusList sa = new CCSubstationSubBusList(itemID,elemID,(int)maxDispOrderOnList (currSub.getChildList())+ 1); 
                         currSub.getChildList().add(sa);
@@ -1215,6 +1257,7 @@ public class CapControlForm extends DBEditorForm implements ICapControlModel{
         }
     }
 
+    @SuppressWarnings("unchecked")
     private void reorderList(ArrayList childList) {
 		for (int i = 0; i < childList.size(); i++) {
 			Object element = childList.get(i);
@@ -1233,7 +1276,8 @@ public class CapControlForm extends DBEditorForm implements ICapControlModel{
 	}
 
     //Warning: instanceof CCFeederSubAssignment is putting an int into a float.
-	private float maxDispOrderOnList(ArrayList childList) {
+	@SuppressWarnings("unchecked")
+    private float maxDispOrderOnList(ArrayList childList) {
 		float max = 0;
 		for (Iterator iter = childList.iterator(); iter.hasNext();) {
 			Object element = iter.next();
@@ -1296,7 +1340,7 @@ public class CapControlForm extends DBEditorForm implements ICapControlModel{
 		} else if ("SubstationBus".equalsIgnoreCase(swapType)) {
             CapControlSubstation currSub = (CapControlSubstation) getDbPersistent();
             for (int i = 0; i < currSub.getChildList().size(); i++) {
-                CCSubstationSubBusList listItem = (CCSubstationSubBusList) currSub.getChildList().get(i);
+                CCSubstationSubBusList listItem = currSub.getChildList().get(i);
                 if (elemID == listItem.getSubstationBusID().intValue()) {
                     // remove the mapping for the given Feeder id to this SubBus
                     currSub.getChildList().remove(i);
@@ -1310,7 +1354,6 @@ public class CapControlForm extends DBEditorForm implements ICapControlModel{
         }
 	}
 
-	@SuppressWarnings("unchecked")
     public void initEditorPanels() {
 		if (getDbPersistent() instanceof CapControlFeeder) {
 			com.cannontech.database.db.capcontrol.CapControlFeeder capControlFeeder = ((CapControlFeeder) getDbPersistent()).getCapControlFeeder();
@@ -1331,7 +1374,7 @@ public class CapControlForm extends DBEditorForm implements ICapControlModel{
 		}
 
 		List<Integer> unassignedBankIDs = capbankDao.getUnassignedCapBankIds();
-        unassignedBanks = new Vector(unassignedBankIDs.size());
+        unassignedBanks = new ArrayList<LiteYukonPAObject>(unassignedBankIDs.size());
 		for (Integer i : unassignedBankIDs ) {
 			LiteYukonPAObject liteYukonPAO = paoDao.getLiteYukonPAO(i);
 			if (liteYukonPAO != null) {
@@ -1341,14 +1384,14 @@ public class CapControlForm extends DBEditorForm implements ICapControlModel{
 		Collections.sort(unassignedBanks, LiteComparators.liteStringComparator);
 		
 		List<Integer> unassignedFeederIDs = feederDao.getUnassignedFeederIds();
-        unassignedFeeders = new ArrayList(unassignedFeederIDs.size());
+        unassignedFeeders = new ArrayList<LiteYukonPAObject>(unassignedFeederIDs.size());
         for ( Integer i : unassignedFeederIDs ) {
 			unassignedFeeders.add(paoDao.getLiteYukonPAO(i));
 		}
 		Collections.sort(unassignedFeeders, LiteComparators.liteStringComparator);
 				
         List<Integer> allUnassignedBuses = substationBusDao.getAllUnassignedBuses();
-        unassignedSubBuses = new ArrayList(allUnassignedBuses.size());
+        unassignedSubBuses = new ArrayList<LiteYukonPAObject>(allUnassignedBuses.size());
         for (Integer i : allUnassignedBuses) {
 			unassignedSubBuses.add( paoDao.getLiteYukonPAO(i));
 		}
@@ -1375,11 +1418,11 @@ public class CapControlForm extends DBEditorForm implements ICapControlModel{
 		return CBCSelectionLists.getTimeSubList(300);
 	}
 
-	public List getUnassignedBanks() {
+	public List<LiteYukonPAObject> getUnassignedBanks() {
 		return unassignedBanks;
 	}
 
-	public List getUnassignedFeeders() {
+	public List<LiteYukonPAObject> getUnassignedFeeders() {
 		return unassignedFeeders;
 	}
 
@@ -1450,7 +1493,6 @@ public class CapControlForm extends DBEditorForm implements ICapControlModel{
         }
 	}
 
-	@SuppressWarnings("unchecked")
     public void addSchedule() {
 		if (!(getDbPersistent() instanceof CapControlSubBus)) {
 			return;
@@ -1485,17 +1527,16 @@ public class CapControlForm extends DBEditorForm implements ICapControlModel{
 			//subBusList = PAOFuncs.getAllCapControlSubBuses();			
 			subBusList = DaoFactory.getCBCDao().getAllSubsForUser (JSFParamUtil.getYukonUser());
 		}
-		return (LiteYukonPAObject[]) subBusList.toArray(new LiteYukonPAObject[subBusList.size()]);
+		return subBusList.toArray(new LiteYukonPAObject[subBusList.size()]);
 	}
 
 	public TreeNode getSwitchPointList() {
 	    TreeNode rootData = new TreeNodeBase("root","Switch Points", false);
-        Set points = PointLists.getAllTwoStateStatusPoints();
+        TreeSet<LitePoint> points = PointLists.getAllTwoStateStatusPoints();
         rootData = JSFTreeUtils.createPAOTreeFromPointList(points, rootData, JSFParamUtil.getYukonUser());
         return rootData;
     }
     
-	@SuppressWarnings("unchecked")
     public String getSelectedSubBusFormatString() {
         
 		String retString = new String();
@@ -1512,8 +1553,7 @@ public class CapControlForm extends DBEditorForm implements ICapControlModel{
 		// from the total list
 		if (this.subBusList != null && subPAOid != null) {
 			for (int i = 0; i < this.subBusList.size(); i++) {
-				LiteYukonPAObject device = (LiteYukonPAObject) 
-				this.subBusList.get(i);
+				LiteYukonPAObject device = this.subBusList.get(i);
 				if (device.getLiteID() == subPAOid.intValue()) {
 				    offsetMap.put("selectedSubBus", "" + i);
                 }
@@ -1535,14 +1575,14 @@ public class CapControlForm extends DBEditorForm implements ICapControlModel{
 			pointId = ((CapControlSubBus) getDbPersistent()).getCapControlSubstationBus().getSwitchPointID();
 		}
 		TreeNode tn = this.getSwitchPointList();
-		List paos = tn.getChildren();
+		List<TreeNodeBase> paos = tn.getChildren();
       
 		for (int i = 0; i < paos.size(); i++) {
-			TreeNodeBase pao = (TreeNodeBase) paos.get(i);
+			TreeNodeBase pao = paos.get(i);
 			String paoName = pao.getDescription();
-			List points = pao.getChildren();
+			List<TreeNodeBase> points = pao.getChildren();
 			for (int j = 0; j < points.size(); j++) {
-				TreeNodeBase point = (TreeNodeBase) points.get(j);
+				TreeNodeBase point = points.get(j);
 				if (pointId.equals(new Integer(point.getIdentifier()))) {
 					retString = retString + paoName + "/" + point.getDescription();
 					//code to expand the selected node
@@ -1604,11 +1644,11 @@ public class CapControlForm extends DBEditorForm implements ICapControlModel{
 		this.isDualSubBusEdited = isDualSubBusEdited;
 	}
 
-    public Map getOffsetMap() {
+    public Map<String, String> getOffsetMap() {
         return offsetMap;
     }
 
-    public void setOffsetMap(Map offsetMap) {
+    public void setOffsetMap(Map<String, String> offsetMap) {
         this.offsetMap = offsetMap;
     }
 
@@ -1738,15 +1778,13 @@ public class CapControlForm extends DBEditorForm implements ICapControlModel{
         return pointNameMap;
      }
      
-    @SuppressWarnings("cast")
-    public void setPointNameMap (Map m) {
-         pointNameMap = (HashMap) m;
+    public void setPointNameMap (Map<Integer, String> m) {
+         pointNameMap =  m;
      }
 
-    @SuppressWarnings("unchecked")
-    public Map getPaoNameMap () {
+    public Map<Integer, String> getPaoNameMap () {
         if(paoNameMap == null) {
-            paoNameMap = new HashMap();
+            paoNameMap = new HashMap<Integer, String>();
             int varPoint = getControlPoint (PointUnits.UOMID_KVAR);
             int wattPoint = getControlPoint(PointUnits.UOMID_KW);
             int voltPoint = getControlPoint(PointUnits.UOMID_KVOLTS);
@@ -1759,16 +1797,22 @@ public class CapControlForm extends DBEditorForm implements ICapControlModel{
                 CapControlSubstationBus sub = ((CapControlSubBus) getPAOBase()).getCapControlSubstationBus();
                 int phaseBPoint = sub.getPhaseB();
                 int phaseCPoint = sub.getPhaseC();
-                paoNameMap.put(phaseBPoint, paoDao.getYukonPAOName(pointDao.getLitePoint(varPoint).getPaobjectID()));
-                paoNameMap.put(phaseCPoint, paoDao.getYukonPAOName(pointDao.getLitePoint(wattPoint).getPaobjectID()));
+                paoNameMap.put(phaseBPoint, paoDao.getYukonPAOName(pointDao.getLitePoint(phaseBPoint).getPaobjectID()));
+                paoNameMap.put(phaseCPoint, paoDao.getYukonPAOName(pointDao.getLitePoint(phaseCPoint).getPaobjectID()));
+            }else if(getDbPersistent() instanceof CapControlFeeder) {
+                CapControlFeeder feeder = (CapControlFeeder) getDbPersistent();
+                com.cannontech.database.db.capcontrol.CapControlFeeder feederthinger = feeder.getCapControlFeeder();
+                int phaseBPoint = feederthinger.getPhaseB();
+                int phaseCPoint = feederthinger.getPhaseC();
+                paoNameMap.put(phaseBPoint, paoDao.getYukonPAOName(pointDao.getLitePoint(phaseBPoint).getPaobjectID()));
+                paoNameMap.put(phaseCPoint, paoDao.getYukonPAOName(pointDao.getLitePoint(phaseCPoint).getPaobjectID()));
             }
         }
         return paoNameMap;
      }
      
-    @SuppressWarnings("cast")
-    public void setPaoNameMap (Map m) {
-         paoNameMap = (HashMap) m;
+    public void setPaoNameMap (Map<Integer, String> m) {
+         paoNameMap = m;
      }
 
     private int getControlPoint(int uomid) {
@@ -1848,10 +1892,10 @@ public class CapControlForm extends DBEditorForm implements ICapControlModel{
     }
     
     public List<CapControlStrategy> getAllCBCStrats() {
-        CapControlStrategy[] allCBCStrategies = CapControlStrategy.getAllCBCStrategies();
+        List<CapControlStrategy> allCBCStrategies = CapControlStrategy.getAllCBCStrategies();
         List<CapControlStrategy> allStratList = new ArrayList<CapControlStrategy>();
-        for (int i = 0; i < allCBCStrategies.length; i++) {
-            CapControlStrategy strategy = allCBCStrategies[i];
+        for (int i = 0; i < allCBCStrategies.size(); i++) {
+            CapControlStrategy strategy = allCBCStrategies.get(i);
             if (strategy.getStrategyID().intValue() > 0) {
                 allStratList.add(strategy);
             }
@@ -1859,25 +1903,48 @@ public class CapControlForm extends DBEditorForm implements ICapControlModel{
         return allStratList;
     }
     
+    @SuppressWarnings("unchecked")
     public void editCBCStrat( ActionEvent ev ) {
         FacesContext context = FacesContext.getCurrentInstance();
-        Map paramMap = context.getExternalContext().getRequestParameterMap();
-        int elemID = Integer.parseInt( (String)paramMap.get("stratID") );
+        Map<Integer, String> paramMap = context.getExternalContext().getRequestParameterMap();
+        int elemID = Integer.parseInt( paramMap.get("stratID") );
+        HttpSession session = (HttpSession) context.getExternalContext().getSession(false);
+        CBCNavigationUtil.bookmarkThisLocation(session);
         try {
             String location = "/editor/cbcBase.jsf?type=5&itemid="+elemID;
             context.getExternalContext().redirect(location);
         } catch (IOException e) {
             CTILogger.error(e);
-        }            
-        FacesContext.getCurrentInstance().responseComplete();            
+        }
+        FacesContext.getCurrentInstance().responseComplete();
     }
     
+    @SuppressWarnings("unchecked")
     public void deleteStrat( ActionEvent ev ) {
         FacesContext context = FacesContext.getCurrentInstance();
-        Map paramMap = context.getExternalContext().getRequestParameterMap();
-        int elemID = Integer.parseInt( (String)paramMap.get("stratID") );
+        Map<Integer, String> paramMap = context.getExternalContext().getRequestParameterMap();
+        int elemID = Integer.parseInt( paramMap.get("stratID") );
         initItem(elemID, DBEditorTypes.EDITOR_STRATEGY);
         deleteStrategy();
+    }
+    
+    public boolean isTimeOfDay() {
+        String strat = getCbcStrategiesMap().get(getCurrentStrategyID()).getControlMethod();
+        if( strat.equalsIgnoreCase(CapControlStrategy.CNTRL_TIME_OF_DAY)){
+            return true;
+        }
+        return false;
+    }
+    
+    public CCStrategyTimeOfDay getStrategyTimeOfDay() {
+        if(strategyTimeOfDay == null) {
+            strategyTimeOfDay = new CCStrategyTimeOfDay(getCurrentStrategyID());
+        }
+        return strategyTimeOfDay;
+    }
+    
+    public void setStrategyTimeOfDay(CCStrategyTimeOfDay strategyTimeOfDay) {
+        this.strategyTimeOfDay = strategyTimeOfDay;
     }
 
     public void setScheduleId(Integer id) {
@@ -1888,11 +1955,11 @@ public class CapControlForm extends DBEditorForm implements ICapControlModel{
         this.seasonScheduleDao = seasonScheduleDao;
     }
 
-	public List getUnassignedSubBuses() {
+	public List<LiteYukonPAObject> getUnassignedSubBuses() {
 		return unassignedSubBuses;
 	}
 
-	public void setUnassignedSubBuses(List unassignedSubBuses) {
+	public void setUnassignedSubBuses(List<LiteYukonPAObject> unassignedSubBuses) {
 		this.unassignedSubBuses = unassignedSubBuses;
 	}
 

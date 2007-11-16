@@ -13,36 +13,11 @@ import com.cannontech.database.db.capcontrol.CapControlStrategy;
 public interface ICapControlModel {
 
 
-    public abstract HashMap getCbcStrategiesMap();
-
+    public abstract HashMap<Integer, CapControlStrategy> getCbcStrategiesMap();
 
     public abstract int getCurrentStrategyID();
 
     public abstract EditorDataModel getCurrentStratModel();
-
-    //public abstract void newStrategySelected(ValueChangeEvent vce);
-
-    //public abstract TreeNode getVarTreeData();
-
-    //public abstract TreeNode getWattTreeData();
-
-   //public abstract TreeNode getVoltTreeData();
-
-    //public abstract TreeNode getCapBankPoints();
-
-    //public abstract void varPtTeeClick(ActionEvent ae);
-
-    //public abstract void twoWayPtsTeeClick(ActionEvent ae);
-
-/*    public abstract void selectedTwoWayPointClick(ActionEvent ae);
-
-    public abstract void selectedAltSubBusClick(ActionEvent ae);
-
-    public abstract void subBusPAOsClick(ActionEvent ae);
-
-    public abstract void wattPtTeeClick(ActionEvent ae);
-
-    public abstract void voltPtTeeClick(ActionEvent ae);*/
 
     public abstract void initItem(int id, int type);
 
@@ -52,15 +27,11 @@ public interface ICapControlModel {
 
     public abstract DBPersistent getPAOBase();
 
-    //public abstract void kwkvarPaosChanged(ValueChangeEvent ev);
-
     public abstract void clearfaces();
 
     public abstract void update() throws SQLException;
 
     public abstract String create();
-
-    //public abstract void showScanRate(ValueChangeEvent ev);
 
     public abstract ICBControllerModel getCBControllerEditor();
 
@@ -90,13 +61,9 @@ public interface ICapControlModel {
 
     public abstract void setEditingCBCStrategy(boolean b);
 
-    //public abstract SelectItem[] getTimeInterval();
+    public abstract List<LiteYukonPAObject> getUnassignedBanks();
 
-    //public abstract SelectItem[] getScheduleRepeatTime();
-
-    public abstract List getUnassignedBanks();
-
-    public abstract List getUnassignedFeeders();
+    public abstract List<LiteYukonPAObject> getUnassignedFeeders();
 
     public abstract String getChildLabel();
 
@@ -118,15 +85,9 @@ public interface ICapControlModel {
 
     public abstract LiteYukonPAObject[] getSubBusList();
 
-    //public abstract TreeNode getSwitchPointList();
-
     public abstract String getSelectedSubBusFormatString();
 
     public abstract String getSelectedTwoWayPointsFormatString();
-
-    //public abstract HtmlTree getDualBusSwitchPointTree();
-
-    //public abstract void setDualBusSwitchPointTree(HtmlTree tree);
 
     public abstract Boolean getEnableDualBus();
 
@@ -140,9 +101,9 @@ public interface ICapControlModel {
 
     public abstract void setOldSubBus(Integer oldSubBus);
 
-    public abstract Map getOffsetMap();
+    public abstract Map<String, String> getOffsetMap();
 
-    public abstract void setOffsetMap(Map offsetMap);
+    public abstract void setOffsetMap(Map<String, String> offsetMap);
 
     public abstract int getSelectedPanelIndex();
 
@@ -150,29 +111,22 @@ public interface ICapControlModel {
 
     public abstract LitePoint[] getCapBankPointList();
 
-    //public abstract void capBankPointClick(ActionEvent ae);
-
     public abstract boolean isSwitchPointEnabled();
 
     public abstract void setSwitchPointEnabled(boolean switchPointEnabled);
 
-    //public abstract SelectItem[] getControlMethods();
+    public abstract Map<Integer, String> getPointNameMap();
 
-    public abstract Map getPointNameMap();
+    public abstract void setPointNameMap(Map<Integer, String> m);
 
-    public abstract void setPointNameMap(Map m);
+    public abstract Map<Integer, String> getPaoNameMap();
 
-    public abstract Map getPaoNameMap();
-
-    public abstract void setPaoNameMap(Map m);
-
-    //public abstract void paoClick(ActionEvent ae);
+    public abstract void setPaoNameMap(Map<Integer, String> m);
 
     public abstract EditorDataModel getDataModel();
 
     public abstract void setDataModel(EditorDataModel dataModel);
     
     public List<CapControlStrategy> getAllCBCStrats();
-     
 
 }

@@ -127,7 +127,9 @@ public class CBCSelectionLists {
 		new SelectItem(CapControlStrategy.CNTRL_MANUAL_ONLY,
 				StringUtils.addCharBetweenWords( ' ', CapControlStrategy.CNTRL_MANUAL_ONLY)),		
 		new SelectItem(CapControlStrategy.CNTRL_SUBSTATION_BUS,
-				StringUtils.addCharBetweenWords( ' ', CapControlStrategy.CNTRL_SUBSTATION_BUS))
+				StringUtils.addCharBetweenWords( ' ', CapControlStrategy.CNTRL_SUBSTATION_BUS)),
+		new SelectItem(CapControlStrategy.CNTRL_TIME_OF_DAY,
+		        StringUtils.addCharBetweenWords(' ', CapControlStrategy.CNTRL_TIME_OF_DAY))
 	};
 
 
@@ -247,12 +249,12 @@ public class CBCSelectionLists {
 
 		IDatabaseCache cache = DefaultDatabaseCache.getInstance();
 		synchronized(cache) {
-			List ports = cache.getAllPorts();
+			List<LiteYukonPAObject> ports = cache.getAllPorts();
 			Collections.sort( ports, LiteComparators.liteStringComparator );
 
 			selItems = new SelectItem[ports.size()];
 			for( int i = 0; i < ports.size(); i++ ) {
-				LiteYukonPAObject litePort = (LiteYukonPAObject)ports.get(i);
+				LiteYukonPAObject litePort = ports.get(i);
 				selItems[i] = new SelectItem(new Integer(litePort.getYukonID()), litePort.getPaoName() );
 			}
 
@@ -279,12 +281,12 @@ public class CBCSelectionLists {
 
 		IDatabaseCache cache = DefaultDatabaseCache.getInstance();
 		synchronized(cache) {
-			List routes = cache.getAllRoutes();
+			List<LiteYukonPAObject> routes = cache.getAllRoutes();
 			Collections.sort( routes, LiteComparators.liteStringComparator );
 
 			selItems = new SelectItem[routes.size()];
 			for( int i = 0; i < routes.size(); i++ ) {
-				LiteYukonPAObject liteRoute = (LiteYukonPAObject)routes.get(i);
+				LiteYukonPAObject liteRoute = routes.get(i);
 				selItems[i] = new SelectItem(new Integer(liteRoute.getYukonID()), liteRoute.getPaoName() );
 			}
 		}

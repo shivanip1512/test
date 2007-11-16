@@ -10,7 +10,7 @@ import com.cannontech.database.data.lite.LitePointLimit;
 import com.cannontech.database.data.lite.LitePointUnit;
 import com.cannontech.database.data.lite.LiteRawPointHistory;
 import com.cannontech.database.data.lite.LiteStateGroup;
-import com.cannontech.database.data.lite.LiteYukonPAObject;
+import com.cannontech.database.data.point.CapBankMonitorPointParams;
 
 public interface PointDao {
 
@@ -129,7 +129,7 @@ public interface PointDao {
      */
     public List<LiteRawPointHistory> getPointData(int pointID, Date startDate, Date stopDate);
 
-    public List getCapBankMonitorPoints(CapBank capBank);
+    public List<CapBankMonitorPointParams> getCapBankMonitorPoints(CapBank capBank);
 
     /**
      * Returns the point offset for the given point

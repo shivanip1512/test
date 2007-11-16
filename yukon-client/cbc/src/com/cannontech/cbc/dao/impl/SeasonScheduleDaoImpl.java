@@ -3,11 +3,9 @@ package com.cannontech.cbc.dao.impl;
 import java.sql.Connection;
 import java.sql.ResultSet;
 import java.sql.SQLException;
-import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
-import java.util.Set;
 
 import org.springframework.dao.EmptyResultDataAccessException;
 import org.springframework.jdbc.core.simple.ParameterizedRowMapper;
@@ -18,7 +16,6 @@ import com.cannontech.cbc.model.Season;
 import com.cannontech.clientutils.CTILogger;
 import com.cannontech.common.util.CtiUtilities;
 import com.cannontech.database.PoolManager;
-import com.cannontech.database.SqlUtils;
 import com.cannontech.database.db.season.SeasonSchedule;
 
 public class SeasonScheduleDaoImpl implements SeasonScheduleDao{

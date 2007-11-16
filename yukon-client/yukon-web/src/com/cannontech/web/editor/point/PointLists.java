@@ -79,7 +79,7 @@ public class PointLists {
     }
 
 
-    public static Set getAllTwoStateStatusPoints() {
+    public static TreeSet<LitePoint> getAllTwoStateStatusPoints() {
         List<LitePoint> twoStatePoints = DaoFactory.getPointDao().getLitePointsByNumStates(2);
         ListIterator<LitePoint> iter = twoStatePoints.listIterator();
         while(iter.hasPrevious()) {
@@ -91,7 +91,7 @@ public class PointLists {
             }
         }
         
-        TreeSet pointSet = new TreeSet(twoStatePoints);
+        TreeSet<LitePoint> pointSet = new TreeSet<LitePoint>(twoStatePoints);
         return pointSet;
     }
 

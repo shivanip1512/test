@@ -57,8 +57,7 @@ public class CBCTestUtil {
    
 
     public static Integer getSubIDToUpdate() {
-        List<LiteYukonPAObject> buses = DaoFactory.getPaoDao()
-                                                  .getAllCapControlSubBuses();
+        List<LiteYukonPAObject> buses = DaoFactory.getPaoDao().getAllCapControlSubBuses();
         Integer newSubID = null;
         for (LiteYukonPAObject bus : buses) {
             if (bus.getLiteID() != CBCTestUtil.getValidSubId().intValue())
@@ -69,15 +68,13 @@ public class CBCTestUtil {
     }
 
     public static Integer getStratIDToUpdate() {
-        CapControlStrategy[] allCBCStrategies = CapControlStrategy.getAllCBCStrategies();
+        List<CapControlStrategy> allCBCStrategies = CapControlStrategy.getAllCBCStrategies();
         Integer newStratID = null;
-        for (int i = 0; i < allCBCStrategies.length; i++) {
-            CapControlStrategy strategy = allCBCStrategies[i];
+        for (CapControlStrategy strategy : allCBCStrategies ) {
             if (!strategy.getStrategyID().equals(getStrategyID())) {
                 newStratID = strategy.getStrategyID();
                 break;
             }
-
         }
         return newStratID;
     }

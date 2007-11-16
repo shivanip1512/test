@@ -1,22 +1,33 @@
 package com.cannontech.database.db.capcontrol;
 
-import java.util.Vector;
+import java.sql.ResultSet;
+import java.sql.SQLException;
+import java.util.ArrayList;
+import java.util.List;
+
+import org.springframework.dao.IncorrectResultSizeDataAccessException;
+import org.springframework.jdbc.core.JdbcOperations;
+import org.springframework.jdbc.core.JdbcTemplate;
+import org.springframework.jdbc.core.RowCallbackHandler;
+import org.springframework.jdbc.core.simple.SimpleJdbcOperations;
 
 import com.cannontech.clientutils.CTILogger;
 import com.cannontech.common.util.CtiUtilities;
 import com.cannontech.common.util.NativeIntVector;
+import com.cannontech.database.JdbcTemplateHelper;
 import com.cannontech.database.PoolManager;
 import com.cannontech.database.SqlStatement;
 import com.cannontech.database.SqlUtils;
 import com.cannontech.database.db.point.calculation.CalcComponentTypes;
 import com.cannontech.message.dispatch.message.DBChangeMsg;
+import com.cannontech.spring.YukonSpringHook;
+
 /**
  * Strategy of control for a SubBus or Feeder.
  *  No .data. object for this DBPersistent at this time.
  * 
  */
-public class CapControlStrategy extends com.cannontech.database.db.DBPersistent  implements com.cannontech.database.db.CTIDbChange
-{
+public class CapControlStrategy extends com.cannontech.database.db.DBPersistent  implements com.cannontech.database.db.CTIDbChange {
 	private Integer strategyID = null;
 	private String strategyName = null;
 	private String controlMethod = CNTRL_INDIVIDUAL_FEEDER;
@@ -32,31 +43,24 @@ public class CapControlStrategy extends com.cannontech.database.db.DBPersistent 
 	private String controlUnits = CalcComponentTypes.LABEL_KVAR;
 	private Integer controlDelayTime = new Integer(0);
 	private Integer controlSendRetries = new Integer(0);
-	
 	private Double peakLag = new Double(0.0);
 	private Double peakLead = new Double(0.0);
 	private Double offPkLag = new Double(0.0);
 	private Double offPkLead = new Double(0.0);
-    
 	private Double pkVarLag = new Double (0.0);
 	private Double pkVarLead = new Double(0.0);
 	private Double offpkVarLead = new Double(0.0);
 	private Double offpkVarLag = new Double(0.0);
-
 	private Double pkPFPoint = new Double (0.1);
 	private Double offPkPFPoint = new Double (0.1);
-    
     private String integrateFlag = "N";
     private Integer integratePeriod = new Integer (0);
-
-
 	public static final String CNTRL_INDIVIDUAL_FEEDER = "IndividualFeeder";
 	public static final String CNTRL_SUBSTATION_BUS = "SubstationBus";
 	public static final String CNTRL_BUSOPTIMIZED_FEEDER= "BusOptimizedFeeder";
 	public static final String CNTRL_MANUAL_ONLY= "ManualOnly";
-
-	public static final String SETTER_COLUMNS[] = 
-	{ 
+	public static final String CNTRL_TIME_OF_DAY= "TimeOfDay";
+	public static final String SETTER_COLUMNS[] = { 
 		"StrategyName", "ControlMethod", "MaxDailyOperation",
 		"MaxOperationDisableFlag",
 		"PeakStartTime", "PeakStopTime",
@@ -67,25 +71,22 @@ public class CapControlStrategy extends com.cannontech.database.db.DBPersistent 
         "PeakVARLag", "PeakVARLead" , "OffPkVARLag", "OffPkVARLead",
         "PeakPFSetPoint", "OffPkPFSetPoint", "IntegrateFlag", "IntegratePeriod"
 	};
-
 	public static final String CONSTRAINT_COLUMNS[] = { "StrategyID" };
 	public static final String TABLE_NAME = "CapControlStrategy";
+	public static boolean todExists = false;
 
 	/**
 	 * Default constructor.
 	 */
-	public CapControlStrategy()
-	{
+	public CapControlStrategy() {
 		super();
 	}
 	
 	/**
 	 * add method comment.
 	 */
-	public void add() throws java.sql.SQLException 
-	{
-		Object[] addValues = 
-		{
+	public void add() throws java.sql.SQLException {
+		Object[] addValues = {
 			getStrategyID(), getStrategyName(), getControlMethod(), getMaxDailyOperation(), 
 			getMaxOperationDisableFlag(), getPeakStartTime(), getPeakStopTime(),
 			getControlInterval(), getMinResponseTime(), getMinConfirmPercent(),
@@ -95,7 +96,6 @@ public class CapControlStrategy extends com.cannontech.database.db.DBPersistent 
             getPkVarLag(), getPkVarLead(), getOffPkLag(), getOffPkLead(),
             getPkPFPoint(), getOffPkPFPoint(), getIntegrateFlag(), getIntegratePeriod()
 		};
-	
 		add( TABLE_NAME, addValues );
 	}
 	
@@ -103,11 +103,9 @@ public class CapControlStrategy extends com.cannontech.database.db.DBPersistent 
 	/**
 	 * delete method comment.
 	 */
-	public void delete() throws java.sql.SQLException 
-	{
+	public void delete() throws java.sql.SQLException {
 		delete( TABLE_NAME, CONSTRAINT_COLUMNS[0], getStrategyID() );	
 	}
-	
 	
 	/**
 	 * This method was created in VisualAge.
@@ -117,7 +115,6 @@ public class CapControlStrategy extends com.cannontech.database.db.DBPersistent 
 		return controlInterval;
 	}
 	
-	
 	/**
 	 * Insert the method's description here.
 	 * Creation date: (11/9/2001 1:42:02 PM)
@@ -126,7 +123,6 @@ public class CapControlStrategy extends com.cannontech.database.db.DBPersistent 
 	public java.lang.String getControlMethod() {
 		return controlMethod;
 	}
-	
 	
 	/**
 	 * Insert the method's description here.
@@ -146,7 +142,6 @@ public class CapControlStrategy extends com.cannontech.database.db.DBPersistent 
 		return daysOfWeek;
 	}
 	
-	
 	/**
 	 * This method was created in VisualAge.
 	 * @return java.lang.Integer
@@ -163,7 +158,6 @@ public class CapControlStrategy extends com.cannontech.database.db.DBPersistent 
 		return maxDailyOperation;
 	}
 	
-	
 	/**
 	 * Insert the method's description here.
 	 * Creation date: (11/9/2001 1:42:02 PM)
@@ -173,7 +167,6 @@ public class CapControlStrategy extends com.cannontech.database.db.DBPersistent 
 		return maxOperationDisableFlag;
 	}
 
-	
 	/**
 	 * Boolean method for MaxOperations diable flag
 	 */
@@ -185,8 +178,7 @@ public class CapControlStrategy extends com.cannontech.database.db.DBPersistent 
 	 * Boolean method for MaxOperations diable flag
 	 */
 	public void setMaxOperationDisabled( boolean val ) {
-		setMaxOperationDisableFlag(
-			(val ? CtiUtilities.trueChar : CtiUtilities.falseChar) );
+		setMaxOperationDisableFlag( (val ? CtiUtilities.trueChar : CtiUtilities.falseChar) );
 	}
 
 	/**
@@ -197,7 +189,6 @@ public class CapControlStrategy extends com.cannontech.database.db.DBPersistent 
 		return minConfirmPercent;
 	}
 	
-	
 	/**
 	 * This method was created in VisualAge.
 	 * @return java.lang.Integer
@@ -205,7 +196,6 @@ public class CapControlStrategy extends com.cannontech.database.db.DBPersistent 
 	public Integer getMinResponseTime() {
 		return minResponseTime;
 	}
-	
 	
 	/**
 	 * Insert the method's description here.
@@ -215,7 +205,6 @@ public class CapControlStrategy extends com.cannontech.database.db.DBPersistent 
 	public java.lang.Integer getPeakStartTime() {
 		return peakStartTime;
 	}
-	
 	
 	/**
 	 * Insert the method's description here.
@@ -242,13 +231,11 @@ public class CapControlStrategy extends com.cannontech.database.db.DBPersistent 
 	/**
 	 * retrieve method comment.
 	 */
-	public void retrieve() throws java.sql.SQLException 
-	{
+	public void retrieve() throws java.sql.SQLException {
 		Object constraintValues[] = { getStrategyID() };
 		Object results[] = retrieve( SETTER_COLUMNS, TABLE_NAME, CONSTRAINT_COLUMNS, constraintValues );
 	
-		if( results.length == SETTER_COLUMNS.length )
-		{
+		if( results.length == SETTER_COLUMNS.length ) {
 			setStrategyName( (String) results[0] );
 			setControlMethod( (String) results[1] );
 			setMaxDailyOperation( (Integer) results[2] );
@@ -263,7 +250,6 @@ public class CapControlStrategy extends com.cannontech.database.db.DBPersistent 
 			setControlUnits( (String) results[11] );
 			setControlDelayTime( (Integer) results[12] );
 			setControlSendRetries( (Integer) results[13] );
-
 			setPeakLag( (Double) results[14] );
 			setPeakLead( (Double) results[15] );
 			setOffPkLag( (Double) results[16] );
@@ -272,16 +258,13 @@ public class CapControlStrategy extends com.cannontech.database.db.DBPersistent 
 			setPkVarLead( (Double) results[19] );
             setOffpkVarLag( (Double) results[20] );
             setOffPkLead( (Double) results[21] );
-            
             setPkPFPoint((Double) results[22]);
             setOffPkPFPoint((Double) results [23]);
             setIntegrateFlag((String)results[24]);
-        }   
-		else
-			throw new Error(getClass() + " - Incorrect Number of results retrieved");
-	
+        } else {
+			throw new IncorrectResultSizeDataAccessException(SETTER_COLUMNS.length, results.length);
+		}
 	}
-	
 	
 	/**
 	 * This method was created in VisualAge.
@@ -291,7 +274,6 @@ public class CapControlStrategy extends com.cannontech.database.db.DBPersistent 
 		this.controlInterval = newValue;
 	}
 	
-	
 	/**
 	 * Insert the method's description here.
 	 * Creation date: (11/9/2001 1:42:02 PM)
@@ -300,7 +282,6 @@ public class CapControlStrategy extends com.cannontech.database.db.DBPersistent 
 	public void setControlMethod(java.lang.String newControlMethod) {
 		controlMethod = newControlMethod;
 	}
-	
 	
 	/**
 	 * Insert the method's description here.
@@ -336,7 +317,6 @@ public class CapControlStrategy extends com.cannontech.database.db.DBPersistent 
 		this.maxDailyOperation = newValue;
 	}
 	
-	
 	/**
 	 * Insert the method's description here.
 	 * Creation date: (11/9/2001 1:42:02 PM)
@@ -346,7 +326,6 @@ public class CapControlStrategy extends com.cannontech.database.db.DBPersistent 
 		maxOperationDisableFlag = newMaxOperationDisableFlag;
 	}
 	
-	
 	/**
 	 * This method was created in VisualAge.
 	 * @param newValue java.lang.Integer
@@ -354,7 +333,6 @@ public class CapControlStrategy extends com.cannontech.database.db.DBPersistent 
 	public void setMinConfirmPercent(Integer newValue) {
 		this.minConfirmPercent = newValue;
 	}
-	
 	
 	/**
 	 * This method was created in VisualAge.
@@ -372,7 +350,6 @@ public class CapControlStrategy extends com.cannontech.database.db.DBPersistent 
 	public void setPeakStartTime(java.lang.Integer newPeakStartTime) {
 		peakStartTime = newPeakStartTime;
 	}
-	
 	
 	/**
 	 * Insert the method's description here.
@@ -393,10 +370,8 @@ public class CapControlStrategy extends com.cannontech.database.db.DBPersistent 
 	/**
 	 * update method comment.
 	 */
-	public void update() throws java.sql.SQLException 
-	{
-		Object setValues[]= 
-		{ 
+	public void update() throws java.sql.SQLException {
+		Object setValues[]= { 
 			getStrategyName(), getControlMethod(), getMaxDailyOperation(), 
 			getMaxOperationDisableFlag(), getPeakStartTime(), getPeakStopTime(),
 			getControlInterval(), getMinResponseTime(), getMinConfirmPercent(),
@@ -406,10 +381,7 @@ public class CapControlStrategy extends com.cannontech.database.db.DBPersistent 
             getPkVarLag(), getPkVarLead(), getOffpkVarLag(), getOffpkVarLead(),
             getPkPFPoint(), getOffPkPFPoint(), getIntegrateFlag(), getIntegratePeriod()
 		};
-	
-	
 		Object constraintValues[] = { getStrategyID() };
-	
 		update( TABLE_NAME, SETTER_COLUMNS, setValues, CONSTRAINT_COLUMNS, constraintValues );
 	}
 
@@ -417,38 +389,50 @@ public class CapControlStrategy extends com.cannontech.database.db.DBPersistent 
 	 * Gets the next unused ID for a Strategy
 	 * 
 	 */
-	public final static Integer getNextStrategyID() 
-	{
-		SqlStatement stmt = new SqlStatement(
-					"SELECT Max(StrategyID)+1 FROM " + TABLE_NAME , CtiUtilities.getDatabaseAlias());
+	public final static Integer getNextStrategyID() {
+		SqlStatement stmt = new SqlStatement( "SELECT Max(StrategyID)+1 FROM " + TABLE_NAME , CtiUtilities.getDatabaseAlias());
 
-		try
-		{
+		try {
 			stmt.execute();
-			
-			if( stmt.getRowCount() > 0 )
+			if( stmt.getRowCount() > 0 ) {
 				return new Integer(stmt.getRow(0)[0].toString());
-			else
+			}else {
 				return new Integer(1);
-		}
-		catch( Exception e )
-		{
+			}
+		} catch( Exception e ) {
 		   CTILogger.warn( e.getMessage(), e );
 		   return new Integer(1);
 		}
 	}
+	
+	public static boolean todExists(Integer strategyId) {
+	    String sql = "Select strategyId from ccstrategytimeofday where strategyId = ?";
+	    JdbcOperations yukonTemplate = JdbcTemplateHelper.getYukonTemplate();
+	    todExists = false;
+	    yukonTemplate.query(sql, new Integer[] {strategyId}, new RowCallbackHandler() {
+            public void processRow(ResultSet rs) throws SQLException {
+                todExists = true;
+            }
+        });
+	    return todExists;
+	}
+	
+	public static void deleteTod(Integer strategyId) {
+        String sql = "delete from ccstrategytimeofday where strategyId = ?";
+        SimpleJdbcOperations jdbcTemplate = (SimpleJdbcOperations) YukonSpringHook.getBean("simpleJdbcTemplate");
+        jdbcTemplate.update(sql, strategyId);
+    }
 
 	/**
 	 * This method returns all CapControlStrategy currently
 	 * in the database with all their attributes populated
 	 *
 	 */
-	public static CapControlStrategy[] getAllCBCStrategies()
-	{
+	public static List<CapControlStrategy> getAllCBCStrategies() {
 		java.sql.Connection conn = null;
 		java.sql.PreparedStatement pstmt = null;
 		java.sql.ResultSet rset = null;
-		Vector vect = new Vector(32);
+		List<CapControlStrategy> list = new ArrayList<CapControlStrategy>();
 
 	   //Get all the data from the database                
 	   String sql = "select " + 
@@ -468,14 +452,12 @@ public class CapControlStrategy extends com.cannontech.database.db.DBPersistent 
 
 			if( conn == null ) {
 				throw new IllegalStateException("Error getting database connection.");
-			}
-			else {
+			} else {
 				pstmt = conn.prepareStatement(sql.toString());			
 				rset = pstmt.executeQuery();
 	
 				while( rset.next() ) {
 					CapControlStrategy cbcStrat = new CapControlStrategy();
-
 					cbcStrat.setStrategyID( new Integer(rset.getInt(1)) );
 					cbcStrat.setStrategyName( rset.getString(2) );
 					cbcStrat.setControlMethod( rset.getString(3) );
@@ -491,22 +473,19 @@ public class CapControlStrategy extends com.cannontech.database.db.DBPersistent 
 					cbcStrat.setControlUnits( rset.getString(13) );
 					cbcStrat.setControlDelayTime( new Integer(rset.getInt(14)) );
 					cbcStrat.setControlSendRetries( new Integer(rset.getInt(15)) );
-
 					cbcStrat.setPeakLag( new Double(rset.getDouble(16)) );
 					cbcStrat.setPeakLead( new Double(rset.getDouble(17)) );
 					cbcStrat.setOffPkLag( new Double(rset.getDouble(18)) );
 					cbcStrat.setOffPkLead( new Double(rset.getDouble(19)) );
-                    
                     cbcStrat.setPkVarLag(new Double (rset.getDouble(20)) );
                     cbcStrat.setPkVarLead(new Double (rset.getDouble(21)) );
                     cbcStrat.setOffpkVarLag(new Double (rset.getDouble(22)) );
                     cbcStrat.setOffpkVarLead(new Double (rset.getDouble(23)) );
-                    
                     cbcStrat.setPkPFPoint(new Double (rset.getDouble(24)));
                     cbcStrat.setOffPkPFPoint(new Double (rset.getDouble(25)));
                     cbcStrat.setIntegrateFlag(new String (rset.getString(26)));
                     cbcStrat.setIntegratePeriod(new Integer (rset.getInt(27)));
-					vect.add( cbcStrat );				
+					list.add( cbcStrat );				
 				}
 
 			}		
@@ -517,10 +496,7 @@ public class CapControlStrategy extends com.cannontech.database.db.DBPersistent 
 		finally {
 			SqlUtils.close(rset, pstmt, conn );
 		}
-
-
-		CapControlStrategy[] strats = new CapControlStrategy[vect.size()];
-		return (CapControlStrategy[])vect.toArray( strats );
+		return list;
 	}
 
 	/**
@@ -724,8 +700,6 @@ public class CapControlStrategy extends com.cannontech.database.db.DBPersistent 
         pkPFPoint = d;
     }
 
-
-
     public Integer getIntegratePeriod() {
         return integratePeriod;
     }
@@ -741,7 +715,5 @@ public class CapControlStrategy extends com.cannontech.database.db.DBPersistent 
     public void setIntegrateFlag(String integratedFlad) {
         this.integrateFlag = integratedFlad;
     }
-
-
 
 }
