@@ -14,8 +14,8 @@ public interface ScheduledOneTimeJobDao {
     /**
      * Saves the job and its properties. When it completes, its id
      * will be set to the correct value to match what was set in the database.
-     * @param repeatingJob
+     * @param oneTimeJob
      */
-    public void save(ScheduledOneTimeJob repeatingJob);
+    public void save(ScheduledOneTimeJob oneTimeJob);
 
 }

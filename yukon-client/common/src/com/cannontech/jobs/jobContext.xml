@@ -16,20 +16,31 @@
     <bean id="jobStatusDao" class="com.cannontech.jobs.dao.impl.JobStatusDaoImpl">
         <property name="jdbcTemplate" ref="simpleJdbcTemplate"/>
         <property name="nextValueHelper" ref="nextValueHelper"/>
+        <property name="yukonJobMapper" ref="yukonJobBaseRowMapper"/>
+    </bean>
+    
+    <bean id="yukonJobBaseRowMapper" class="com.cannontech.jobs.dao.impl.YukonJobBaseRowMapper">
+        <property name="beanDefinitionFactory" ref="yukonJobDefinitionFactory"/>
+        <property name="jdbcTemplate" ref="jdbcTemplate"/>
+        <property name="yukonUserDao" ref="yukonUserDao"/>
+    </bean>
+    
+    <bean id="yukonJobDao" class="com.cannontech.jobs.dao.impl.YukonJobDaoImpl">
+        <property name="jdbcTemplate" ref="simpleJdbcTemplate"/>
+        <property name="nextValueHelper" ref="nextValueHelper"/>
+        <property name="yukonJobMapper" ref="yukonJobBaseRowMapper"/>
     </bean>
     
     <bean id="scheduledRepeatingJobDao" class="com.cannontech.jobs.dao.impl.ScheduledRepeatingJobDaoImpl">
         <property name="jdbcTemplate" ref="simpleJdbcTemplate"/>
         <property name="nextValueHelper" ref="nextValueHelper"/>
-        <property name="yukonUserDao" ref="yukonUserDao"/>
-        <property name="beanDefinitionFactory" ref="yukonJobDefinitionFactory"/>
+        <property name="yukonJobMapper" ref="yukonJobBaseRowMapper"/>
     </bean>
     
     <bean id="scheduledOneTimeJobDao" class="com.cannontech.jobs.dao.impl.ScheduledOneTimeJobDaoImpl">
         <property name="jdbcTemplate" ref="simpleJdbcTemplate"/>
         <property name="nextValueHelper" ref="nextValueHelper"/>
-        <property name="yukonUserDao" ref="yukonUserDao"/>
-        <property name="beanDefinitionFactory" ref="yukonJobDefinitionFactory"/>
+        <property name="yukonJobMapper" ref="yukonJobBaseRowMapper"/>
     </bean>
     
     <bean id="jobScheduledExecutor" class="com.cannontech.common.util.ScheduledExecutorDelegate">
@@ -42,10 +53,11 @@
        </property>
     </bean>
         <!--  temp: remove initialize method -->
-    <bean id="jobManager" class="com.cannontech.jobs.service.impl.JobManagerImpl">
+    <bean id="jobManager" class="com.cannontech.jobs.service.impl.JobManagerImpl" init-method="initialize">
         <property name="timeSource" ref="timeSource"/>
         <property name="scheduledOneTimeJobDao" ref="scheduledOneTimeJobDao"/>
         <property name="scheduledRepeatingJobDao" ref="scheduledRepeatingJobDao"/>
+        <property name="yukonJobDao" ref="yukonJobDao"/>
         <property name="jobStatusDao" ref="jobStatusDao"/>
         <property name="transactionTemplate" ref="transactionTemplate"/>
         <property name="yukonUserDao" ref="yukonUserDao"/>

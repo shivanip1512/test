@@ -5,11 +5,10 @@ import java.util.Collection;
 import java.util.Date;
 import java.util.HashMap;
 import java.util.Set;
-import java.util.SortedSet;
 import java.util.TimeZone;
 import java.util.concurrent.ConcurrentHashMap;
 import java.util.concurrent.ConcurrentMap;
-import java.util.concurrent.ConcurrentSkipListSet;
+import java.util.concurrent.ScheduledFuture;
 import java.util.concurrent.TimeUnit;
 import java.util.concurrent.atomic.AtomicInteger;
 
@@ -30,6 +29,7 @@ import com.cannontech.database.data.lite.LiteYukonUser;
 import com.cannontech.jobs.dao.JobStatusDao;
 import com.cannontech.jobs.dao.ScheduledOneTimeJobDao;
 import com.cannontech.jobs.dao.ScheduledRepeatingJobDao;
+import com.cannontech.jobs.dao.YukonJobDao;
 import com.cannontech.jobs.model.JobState;
 import com.cannontech.jobs.model.JobStatus;
 import com.cannontech.jobs.model.ScheduledOneTimeJob;
@@ -48,13 +48,16 @@ public class JobManagerImpl implements JobManager {
     private TimeSource timeSource;
     private YukonUserDao yukonUserDao;
     private JobStatusDao jobStatusDao;
+    private YukonJobDao yukonJobDao;
     private ScheduledOneTimeJobDao scheduledOneTimeJobDao;
     private ScheduledRepeatingJobDao scheduledRepeatingJobDao;
     private ScheduledExecutor scheduledExecutor;
     private TransactionTemplate transactionTemplate;
 
     private ConcurrentMap<YukonJob, YukonTask> currentlyRunning = new ConcurrentHashMap<YukonJob, YukonTask>(10, .75f, 2);
-    private ConcurrentSkipListSet<ScheduledJobInfo> scheduledJobs = new ConcurrentSkipListSet<ScheduledJobInfo>();
+    
+    // JobId -> ScheduledJobInfoImpl
+    private ConcurrentMap<Integer, ScheduledInfo> scheduledJobs = new ConcurrentHashMap<Integer, ScheduledInfo>();
 
     private AtomicInteger startOffsetMs = new AtomicInteger(5000);
     private int startOffsetIncrement = 1000;
@@ -72,22 +75,30 @@ public class JobManagerImpl implements JobManager {
                 log.warn("tried to restart a repeating job status that wasn't in the all set: " + status);
                 continue;
             }
-            // we want to rerun this immediately and when it's done, schedule its next run
-            final RunnableRetryJob runnable = new RunnableRetryJob(status) {
-                @Override
-                protected void afterRun() {
-                    doScheduleScheduledJob(status.getJob());
-                }
-            };
-            Date nextStartupTime = getNextStartupTime();
-            doSchedule(runnable, nextStartupTime);
-            log.info("restart repeating job " + status + " scheduled for " + nextStartupTime + "ms from now");
+            if (status.getJob().isDisabled()) {
+                handleDisabledRestart(status);
+            } else {
+                // we want to rerun this immediately and when it's done, schedule its next run
+                final RunnableRetryJob runnable = new RunnableRetryJob(status) {
+                    @Override
+                    protected void afterRun() {
+                        doScheduleScheduledJob(status.getJob());
+                    }
+                };
+                Date nextStartupTime = getNextStartupTime();
+                doSchedule(status.getJob(), runnable, nextStartupTime);
+                log.info("restart repeating job " + status + " scheduled for " + nextStartupTime + "ms from now");
+            }
         }
 
         for (ScheduledRepeatingJob job : allRepeatingJobs) {
             // this means we never do a catchup if the server was
             // off when a job was supposed to run
-            doScheduleScheduledJob(job);
+            if (!job.isDisabled()) {
+                doScheduleScheduledJob(job);
+            } else {
+                log.debug("Skipping disabled repeating job: " + job);
+            }
         }
 
         // get all jobs
@@ -101,19 +112,32 @@ public class JobManagerImpl implements JobManager {
                 log.warn("tried to restart a one time job status that wasn't in the all set: " + status);
                 continue;
             }
-            // we want to rerun this immediately and when it's done, schedule its next run
-            final RunnableRetryJob runnable = new RunnableRetryJob(status);
-            Date nextStartupTime = getNextStartupTime();
-            doSchedule(runnable, nextStartupTime);
-            log.info("restart one time job " + status + " scheduled for " + nextStartupTime + "ms from now");
+            if (status.getJob().isDisabled()) {
+                handleDisabledRestart(status);
+            } else {
+                // we want to rerun this immediately and when it's done, schedule its next run
+                final RunnableRetryJob runnable = new RunnableRetryJob(status);
+                Date nextStartupTime = getNextStartupTime();
+                doSchedule(status.getJob(), runnable, nextStartupTime);
+                log.info("restart one time job " + status + " scheduled for " + nextStartupTime + "ms from now");
+            }
         }
 
         for (ScheduledOneTimeJob job : allOneTimeJobs) {
-            // this means we never do a catchup if the server was
-            // off when a job was supposed to run
-            doScheduleOneTimeJob(job);
+            if (!job.isDisabled()) {
+                doScheduleOneTimeJob(job);
+            } else {
+                log.debug("Skipping disabled one time job: " + job);
+            }
         }
 
+    }
+
+    private void handleDisabledRestart(final JobStatus<?> status) {
+        // this is weird, so we're going to use a special case for it
+        status.setJobState(JobState.DISABLED);
+        jobStatusDao.saveOrUpdate(status);
+        log.info("tried to restart a disabled job status, changed status do DISABLED: " + status);
     }
 
     private synchronized Date getNextStartupTime() {
@@ -169,7 +193,7 @@ public class JobManagerImpl implements JobManager {
     private void doScheduleScheduledJob(final ScheduledRepeatingJob job) {
         log.debug("doScheduleScheduledJob for " + job);
         try {
-            RunnableJob runnable = new BaseRunnableJob(job) {
+            Runnable runnable = new BaseRunnableJob(job) {
                 @Override
                 protected void afterRun() {
                     doScheduleScheduledJob(job);
@@ -177,7 +201,7 @@ public class JobManagerImpl implements JobManager {
             };
 
             Date nextRuntime = getNextRuntime(job, timeSource.getCurrentTime());
-            doSchedule(runnable, nextRuntime);
+            doSchedule(job, runnable, nextRuntime);
             log.info("job " + job + " scheduled for " + nextRuntime);
         } catch (Exception e) {
             log.error("unable to schedule job " + job, e);
@@ -187,39 +211,81 @@ public class JobManagerImpl implements JobManager {
     private void doScheduleOneTimeJob(final ScheduledOneTimeJob job) {
         // we could just hold onto the job id and then look up the full YukonJob when the run
         // method is called, this would reduce the memory footprint
-        RunnableJob runnable = new BaseRunnableJob(job);
+        Runnable runnable = new BaseRunnableJob(job);
 
-        doSchedule(runnable, job.getStartTime());
+        doSchedule(job, runnable, job.getStartTime());
     }
 
-    private void doSchedule(final RunnableJob runnable, Date nextRuntime) {
-        long delay = nextRuntime.getTime() - System.currentTimeMillis();
-        final ScheduledJobInfoImpl impl = new ScheduledJobInfoImpl(runnable.getJob(), nextRuntime);
-        boolean b = scheduledJobs.add(impl);
-        if (!b) {
-            throw new RuntimeException("scheduledJobs set already containd job: "
-                + runnable.getJob());
+    private void doSchedule(YukonJob job, final Runnable runnable, Date nextRuntime) {
+        final int jobId = job.getId();
+        long delay = nextRuntime.getTime() - timeSource.getCurrentMillis();
+        final ScheduledInfo info = new ScheduledInfo(jobId, nextRuntime);
+        ScheduledInfo oldValue = scheduledJobs.put(jobId, info);
+        if (oldValue != null) {
+            throw new RuntimeException("scheduledJobs map already contained job: " + job);
         }
         try {
-            scheduledExecutor.schedule(new Runnable() {
+            Runnable runnerToSchedule = new Runnable() {
                 public void run() {
-                    impl.setRunning(true);
-                    try {
+                    ScheduledInfo removed = scheduledJobs.remove(jobId);
+                    if (removed != null) {
                         runnable.run();
-                    } finally {
-                        scheduledJobs.remove(impl);
+                    } else {
+                        log.info("time came to run schedule and it wasn't in scheduledJobs, must have been removed: jobId=" + jobId);
                     }
                 }
-
-            }, delay, TimeUnit.MILLISECONDS);
+            };
+            ScheduledFuture<?> future =
+                scheduledExecutor.schedule(runnerToSchedule, delay, TimeUnit.MILLISECONDS);
+            info.future = future;
         } catch (RuntimeException e) {
             log.error("Couldn't add runnable to the scheduledExecutor", e);
-            scheduledJobs.remove(impl);
+            scheduledJobs.remove(jobId);
         }
     }
-
-    public SortedSet<ScheduledJobInfo> getScheduledJobInfo() {
-        return scheduledJobs;
+    
+    public void disableJob(YukonJob job) {
+        log.info("disabling job: " + job);
+        job.setDisabled(true);
+        yukonJobDao.update(job);
+        
+        // see if we can cancel it
+        ScheduledInfo jobInfo = scheduledJobs.remove(job.getId());
+        
+        if (jobInfo != null) {
+            // this should unschedule it, but since we removed it from the map
+            // the is no longer any way it could run
+            
+            // there is no need to pass true because it is taken out of scheduledJobs
+            // before it actually runs
+            jobInfo.future.cancel(false);
+        } else {
+            log.info("tried to remove job while disabling, it no longer existed: " + job);
+        }
+        
+        
+    }
+    
+    public void enableJob(YukonJob job) {
+        log.info("enabling job: " + job);
+        job.setDisabled(false);
+        
+        // not great, but I don't really have a better way
+        if (job instanceof ScheduledOneTimeJob) {
+            ScheduledOneTimeJob oneTimeJob = (ScheduledOneTimeJob) job;
+            scheduledOneTimeJobDao.save(oneTimeJob);
+            
+            // put it into the schedule
+            doScheduleOneTimeJob(oneTimeJob);
+        } else if (job instanceof ScheduledRepeatingJob) {
+            ScheduledRepeatingJob repeatingJob = (ScheduledRepeatingJob) job;
+            scheduledRepeatingJobDao.save(repeatingJob);
+            
+            // put it into the schedule
+            doScheduleScheduledJob(repeatingJob);
+        }
+        
+        
     }
 
     private Date getNextRuntime(ScheduledRepeatingJob job, Date from) throws ScheduleException {
@@ -300,19 +366,11 @@ public class JobManagerImpl implements JobManager {
     }
 
 
-    private interface RunnableJob extends Runnable {
-        public YukonJob getJob();
-    }
-
-    private class BaseRunnableJob implements RunnableJob {
-        private final YukonJob job;
+    private class BaseRunnableJob implements Runnable {
+        private final int jobId;
 
         private BaseRunnableJob(YukonJob job) {
-            this.job = job;
-        }
-
-        public YukonJob getJob() {
-            return job;
+            this.jobId = job.getId();
         }
 
         public void run() {
@@ -321,7 +379,11 @@ public class JobManagerImpl implements JobManager {
                 final JobStatus<YukonJob> status = new JobStatus<YukonJob>();
                 transactionTemplate.execute(new TransactionCallback() {
                     public Object doInTransaction(TransactionStatus transactionStatus) {
-                        log.info("starting runnable for " + job);
+                        log.info("starting runnable: jobId=" + jobId);
+                        
+                        // fetch the job
+                        YukonJob job = yukonJobDao.getById(jobId);
+                        
                         beforeRun();
                         status.setStartTime(timeSource.getCurrentTime());
                         status.setJobState(JobState.STARTED);
@@ -363,45 +425,21 @@ public class JobManagerImpl implements JobManager {
         }
     }
 
-    private class ScheduledJobInfoImpl implements ScheduledJobInfo {
-        private YukonJob job;
-        private Date time;
-        private boolean running;
+    private class ScheduledInfo {
+        Date time;
+        ScheduledFuture<?> future;
+        int jobId;
 
-        public YukonJob getJob() {
-            return job;
-        }
-
-        public Date getTime() {
-            return time;
-        }
-
-        public boolean isRunning() {
-            return running;
-        }
-
-        public void setRunning(boolean running) {
-            this.running = running;
-        }
-
-        public ScheduledJobInfoImpl(YukonJob job, Date time) {
-            this.job = job;
+        public ScheduledInfo(int jobId, Date time) {
+            this.jobId = jobId;
             this.time = time;
-            this.running = false;
-        }
-
-        public int compareTo(ScheduledJobInfo o) {
-            if (this.time.equals(o.getTime())) {
-                return job.getId().compareTo(o.getJob().getId());
-            }
-            return time.compareTo(o.getTime());
         }
 
         @Override
         public int hashCode() {
             final int prime = 31;
             int result = 1;
-            result = prime * result + ((job == null) ? 0 : job.hashCode());
+            result = prime * result + jobId;
             result = prime * result + ((time == null) ? 0 : time.hashCode());
             return result;
         }
@@ -414,11 +452,8 @@ public class JobManagerImpl implements JobManager {
                 return false;
             if (getClass() != obj.getClass())
                 return false;
-            final ScheduledJobInfoImpl other = (ScheduledJobInfoImpl) obj;
-            if (job == null) {
-                if (other.job != null)
-                    return false;
-            } else if (!job.equals(other.job))
+            final ScheduledInfo other = (ScheduledInfo) obj;
+            if (jobId != other.jobId)
                 return false;
             if (time == null) {
                 if (other.time != null)
@@ -427,6 +462,8 @@ public class JobManagerImpl implements JobManager {
                 return false;
             return true;
         }
+
+
     }
 
     @Required
@@ -470,5 +507,10 @@ public class JobManagerImpl implements JobManager {
     @Required
     public void setYukonUserDao(YukonUserDao yukonUserDao) {
         this.yukonUserDao = yukonUserDao;
+    }
+    
+    @Required
+    public void setYukonJobDao(YukonJobDao yukonJobDao) {
+        this.yukonJobDao = yukonJobDao;
     }
 }

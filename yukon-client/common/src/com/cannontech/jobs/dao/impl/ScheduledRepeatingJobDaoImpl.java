@@ -6,8 +6,9 @@ import java.util.HashSet;
 import java.util.List;
 import java.util.Set;
 
+import org.springframework.beans.factory.InitializingBean;
+import org.springframework.beans.factory.annotation.Required;
 import org.springframework.jdbc.core.namedparam.MapSqlParameterSource;
-import org.springframework.jdbc.core.simple.ParameterizedRowMapper;
 import org.springframework.transaction.annotation.Propagation;
 import org.springframework.transaction.annotation.Transactional;
 
@@ -20,8 +21,8 @@ import com.cannontech.jobs.model.JobStatus;
 import com.cannontech.jobs.model.ScheduledRepeatingJob;
 import com.cannontech.spring.SeparableRowMapper;
 
-public class ScheduledRepeatingJobDaoImpl extends JobDaoBase implements ScheduledRepeatingJobDao {
-    private FieldMapper<ScheduledRepeatingJob> jobFieldMapper = new FieldMapper<ScheduledRepeatingJob>() {
+public class ScheduledRepeatingJobDaoImpl extends JobDaoBase implements ScheduledRepeatingJobDao, InitializingBean {
+    private final FieldMapper<ScheduledRepeatingJob> jobFieldMapper = new FieldMapper<ScheduledRepeatingJob>() {
         public void extractValues(MapSqlParameterSource p, ScheduledRepeatingJob job) {
             String cronString = job.getCronString();
             p.addValue("cronString", cronString);
@@ -35,24 +36,26 @@ public class ScheduledRepeatingJobDaoImpl extends JobDaoBase implements Schedule
         }
     };
     
-    private SeparableRowMapper<ScheduledRepeatingJob> jobRowMapper = 
-        new SeparableRowMapper<ScheduledRepeatingJob>(yukonJobMapper) {
-        protected ScheduledRepeatingJob createObject(ResultSet rs) throws SQLException {
-            ScheduledRepeatingJob job = new ScheduledRepeatingJob();
-            return job;
-        }
-        protected void mapRow(ResultSet rs, ScheduledRepeatingJob job) throws SQLException {
-            job.setCronString(rs.getString("cronString"));
-        }
-    };
-
-    private ParameterizedRowMapper<JobStatus<ScheduledRepeatingJob>> jobStatusRowMapper = 
-        new JobStatusRowMapper<ScheduledRepeatingJob>(jobRowMapper);
+    private YukonJobBaseRowMapper yukonJobBaseRowMapper;
     
+    private SeparableRowMapper<ScheduledRepeatingJob> jobRowMapper;
+
     private SimpleTableAccessTemplate<ScheduledRepeatingJob> template;
     
     public void afterPropertiesSet() throws Exception {
         super.afterPropertiesSet();
+        
+        jobRowMapper = new SeparableRowMapper<ScheduledRepeatingJob>(yukonJobBaseRowMapper) {
+            protected ScheduledRepeatingJob createObject(ResultSet rs) throws SQLException {
+                ScheduledRepeatingJob job = new ScheduledRepeatingJob();
+                return job;
+            }
+
+            protected void mapRow(ResultSet rs, ScheduledRepeatingJob job) throws SQLException {
+                job.setCronString(rs.getString("cronString"));
+            }
+        };
+        
         template = new SimpleTableAccessTemplate<ScheduledRepeatingJob>(jdbcTemplate, nextValueHelper);
         template.withTableName("JobScheduledRepeating");
         template.withPrimaryKeyField("jobId");
@@ -79,22 +82,23 @@ public class ScheduledRepeatingJobDaoImpl extends JobDaoBase implements Schedule
         sql.append("join Job j on jsr.jobId = j.jobId");
         sql.append("where jobState = ?");
         String jobState = JobState.STARTED.name();
+        JobStatusRowMapper<ScheduledRepeatingJob> jobStatusRowMapper = new JobStatusRowMapper<ScheduledRepeatingJob>(jobRowMapper);
         List<JobStatus<ScheduledRepeatingJob>> resultList = jdbcTemplate.query(sql.toString(), jobStatusRowMapper, jobState);
         HashSet<JobStatus<ScheduledRepeatingJob>> resultSet = new HashSet<JobStatus<ScheduledRepeatingJob>>(resultList);
         return resultSet;
     }
 
     public ScheduledRepeatingJob getById(int id) {
-        return null;
+        throw new UnsupportedOperationException();
     }
     
     @Transactional(propagation=Propagation.REQUIRED)
     public void save(ScheduledRepeatingJob repeatingJob) {
         try {
             // create the Job entry first
-            saveJob(repeatingJob);
+            insertJob(repeatingJob);
             // create JobScheduledRepeating entry
-            template.save(repeatingJob);
+            template.insert(repeatingJob);
 
         } catch (RuntimeException e) {
             // if an exception gets thrown, the transaction will be rolled back
@@ -102,6 +106,13 @@ public class ScheduledRepeatingJobDaoImpl extends JobDaoBase implements Schedule
             repeatingJob.setId(null);
             throw e;
         }        
+    }
+    
+    
+    
+    @Required
+    public void setYukonJobMapper(YukonJobBaseRowMapper yukonJobMapper) {
+        this.yukonJobBaseRowMapper = yukonJobMapper;
     }
 
 }

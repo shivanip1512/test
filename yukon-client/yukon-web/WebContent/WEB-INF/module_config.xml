@@ -344,6 +344,12 @@
     	  <option id="active" name="Active">
     		<link>/spring/debug/scheduler/active</link>
     	  </option>
+    	  <option id="status" name="Status">
+    		<link>/spring/debug/scheduler/status</link>
+    	  </option>
+    	  <option id="jobs" name="Jobs">
+    		<link>/spring/debug/scheduler/jobs</link>
+    	  </option>
     	</sublinks>
       </option>
     </toplinks>

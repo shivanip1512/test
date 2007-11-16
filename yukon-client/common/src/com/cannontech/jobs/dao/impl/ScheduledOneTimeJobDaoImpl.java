@@ -7,8 +7,8 @@ import java.util.HashSet;
 import java.util.List;
 import java.util.Set;
 
+import org.springframework.beans.factory.annotation.Required;
 import org.springframework.jdbc.core.namedparam.MapSqlParameterSource;
-import org.springframework.jdbc.core.simple.ParameterizedRowMapper;
 import org.springframework.transaction.annotation.Propagation;
 import org.springframework.transaction.annotation.Transactional;
 
@@ -22,53 +22,57 @@ import com.cannontech.jobs.model.ScheduledOneTimeJob;
 import com.cannontech.spring.SeparableRowMapper;
 
 public class ScheduledOneTimeJobDaoImpl extends JobDaoBase implements ScheduledOneTimeJobDao {
-    private FieldMapper<ScheduledOneTimeJob> jobFieldMapper = new FieldMapper<ScheduledOneTimeJob>() {
-        public void extractValues(MapSqlParameterSource p, ScheduledOneTimeJob job) {
-            Date startTime = job.getStartTime();
-            p.addValue("startTime", startTime);
-            
-        }
-        public Number getPrimaryKey(ScheduledOneTimeJob job) {
-            return job.getId();
-        }
-        public void setPrimaryKey(ScheduledOneTimeJob job, int value) {
-            job.setId(value);
-        }
-    };
-    
-    private SeparableRowMapper<ScheduledOneTimeJob> jobRowMapper = 
-        new SeparableRowMapper<ScheduledOneTimeJob>(yukonJobMapper) {
-        protected ScheduledOneTimeJob createObject(ResultSet rs) throws SQLException {
-            ScheduledOneTimeJob job = new ScheduledOneTimeJob();
-            return job;
-        }
-        protected void mapRow(ResultSet rs, ScheduledOneTimeJob job) throws SQLException {
-            job.setStartTime(rs.getTimestamp("startTime"));
-        }
-    };
-
-    private ParameterizedRowMapper<JobStatus<ScheduledOneTimeJob>> jobStatusRowMapper = 
-        new JobStatusRowMapper<ScheduledOneTimeJob>(jobRowMapper);
-    
+    private YukonJobBaseRowMapper yukonJobBaseRowMapper;
     private SimpleTableAccessTemplate<ScheduledOneTimeJob> template;
     
+    private final FieldMapper<ScheduledOneTimeJob> jobFieldMapper =
+        new FieldMapper<ScheduledOneTimeJob>() {
+            public void extractValues(MapSqlParameterSource p, ScheduledOneTimeJob job) {
+                Date startTime = job.getStartTime();
+                p.addValue("startTime", startTime);
+
+            }
+
+            public Number getPrimaryKey(ScheduledOneTimeJob job) {
+                return job.getId();
+            }
+
+            public void setPrimaryKey(ScheduledOneTimeJob job, int value) {
+                job.setId(value);
+            }
+        };
+
+    private SeparableRowMapper<ScheduledOneTimeJob> jobRowMapper;
+
+
     public void afterPropertiesSet() throws Exception {
         super.afterPropertiesSet();
-        template = new SimpleTableAccessTemplate<ScheduledOneTimeJob>(jdbcTemplate, nextValueHelper);
+        
+        jobRowMapper = new SeparableRowMapper<ScheduledOneTimeJob>(yukonJobBaseRowMapper) {
+            protected ScheduledOneTimeJob createObject(ResultSet rs) throws SQLException {
+                ScheduledOneTimeJob job = new ScheduledOneTimeJob();
+                return job;
+            }
+
+            protected void mapRow(ResultSet rs, ScheduledOneTimeJob job) throws SQLException {
+                job.setStartTime(rs.getTimestamp("startTime"));
+            }
+        };
+        
+        template =
+            new SimpleTableAccessTemplate<ScheduledOneTimeJob>(jdbcTemplate, nextValueHelper);
         template.withTableName("JobScheduledOneTime");
         template.withPrimaryKeyField("jobId");
-        template.withFieldMapper(jobFieldMapper); 
+        template.withFieldMapper(jobFieldMapper);
     }
 
     public Set<ScheduledOneTimeJob> getAll() {
-        String sql = 
-            "select * " +
-            "from JobScheduledOneTime jsr " +
-            "join Job on Job.jobId = jsr.jobId";
-        
+        String sql =
+            "select * " + "from JobScheduledOneTime jsr " + "join Job on Job.jobId = jsr.jobId";
+
         List<ScheduledOneTimeJob> jobList = jdbcTemplate.query(sql, jobRowMapper);
         Set<ScheduledOneTimeJob> jobSet = new HashSet<ScheduledOneTimeJob>(jobList);
-        
+
         return jobSet;
     }
 
@@ -80,20 +84,22 @@ public class ScheduledOneTimeJobDaoImpl extends JobDaoBase implements ScheduledO
         sql.append("join Job j on jso.jobid = j.jobid");
         sql.append("where jobState = ?");
         String jobState = JobState.STARTED.name();
-        List<JobStatus<ScheduledOneTimeJob>> resultList = jdbcTemplate.query(sql.toString(), jobStatusRowMapper, jobState);
-        HashSet<JobStatus<ScheduledOneTimeJob>> resultSet = new HashSet<JobStatus<ScheduledOneTimeJob>>(resultList);
+        List<JobStatus<ScheduledOneTimeJob>> resultList =
+            jdbcTemplate.query(sql.toString(), new JobStatusRowMapper<ScheduledOneTimeJob>(jobRowMapper), jobState);
+        HashSet<JobStatus<ScheduledOneTimeJob>> resultSet =
+            new HashSet<JobStatus<ScheduledOneTimeJob>>(resultList);
         return resultSet;
     }
 
     public ScheduledOneTimeJob getById(int id) {
-        return null;
+        throw new UnsupportedOperationException();
     }
-    
-    @Transactional(propagation=Propagation.REQUIRED)
+
+    @Transactional(propagation = Propagation.REQUIRED)
     public void save(ScheduledOneTimeJob oneTimeJob) {
         try {
             // create the Job entry first
-            saveJob(oneTimeJob);
+            insertJob(oneTimeJob);
             // create ScheduledOneTimeJob entry
             template.save(oneTimeJob);
 
@@ -102,7 +108,12 @@ public class ScheduledOneTimeJobDaoImpl extends JobDaoBase implements ScheduledO
             // in this case we want to reset the id to null
             oneTimeJob.setId(null);
             throw e;
-        }        
+        }
+    }
+
+    @Required
+    public void setYukonJobMapper(YukonJobBaseRowMapper yukonJobBaseRowMapper) {
+        this.yukonJobBaseRowMapper = yukonJobBaseRowMapper;
     }
 
 }

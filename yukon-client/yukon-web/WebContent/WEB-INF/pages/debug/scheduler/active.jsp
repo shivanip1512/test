@@ -3,16 +3,25 @@
 <%@ taglib prefix="ct" tagdir="/WEB-INF/tags"%>
 
 <cti:standardPage title="Debug Home Page" module="debug">
-    <cti:standardMenu menuSelection="scheduler|active" />
-    
-    <table>
-    <c:forEach items="${scheduledJobInfo}" var="jobInfo">
-        <tr>
-            <td>${jobInfo.job.jobDefinition.title}</td>
-            <td>${jobInfo.time}</td>
-            <td>${jobInfo.running}</td>
-        </tr>            
+  <cti:standardMenu menuSelection="scheduler|active" />
+
+  <table class="resultsTable">
+    <tr>
+      <th>Job Name</th>
+      <th>Start Time</th>
+      <th>Running?</th>
+    </tr>
+    <c:forEach items="${activeJobs}" var="job">
+      <tr>
+        <td title="${job.id}">${job.jobDefinition.title}</td>
+        <td>
+            <form action="abortJob" method="post">
+            <input type="hidden" name="jobId" value="${job.id}"> 
+            <input type="submit" value="Abort">
+            </form>
+        </td>
+      </tr>
     </c:forEach>
-    </table>
-    
+  </table>
+
 </cti:standardPage>
