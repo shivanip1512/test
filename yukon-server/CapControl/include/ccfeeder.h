@@ -176,6 +176,7 @@ RWDECLARE_COLLECTABLE( CtiCCFeeder )
     BOOL getMaxDailyOpsHitFlag() const;
     BOOL getOvUvDisabledFlag() const;
     BOOL getCorrectionNeededNoBankAvailFlag() const;
+    BOOL getLikeDayControlFlag() const;
     LONG getCurrentVerificationCapBankId() const;
     LONG getCurrentVerificationCapBankOrigState() const;
     DOUBLE getTargetVarValue() const;
@@ -284,6 +285,7 @@ RWDECLARE_COLLECTABLE( CtiCCFeeder )
     CtiCCFeeder& setMaxDailyOpsHitFlag(BOOL flag);
     CtiCCFeeder& setOvUvDisabledFlag(BOOL flag);
     CtiCCFeeder& setCorrectionNeededNoBankAvailFlag(BOOL flag);
+    CtiCCFeeder& setLikeDayControlFlag(BOOL flag);
     CtiCCFeeder& setCurrentVerificationCapBankId(LONG capBankId);
     CtiCCFeeder& setCurrentVerificationCapBankState(LONG status);
     CtiCCFeeder& setTargetVarValue(DOUBLE value);
@@ -485,6 +487,7 @@ private:
     BOOL _maxDailyOpsHitFlag;
     BOOL _ovUvDisabledFlag;
     BOOL _correctionNeededNoBankAvailFlag;
+    BOOL _likeDayControlFlag;
 
     LONG   _eventSeq;
 

@@ -14,6 +14,7 @@ public class SubBus extends StreamableCapObject implements PointQualityCheckable
     private Boolean maxOperationDisableFlag = null;
     private Double currentVarLoadPointValue = null;
     private Boolean ovUvDisabledFlag = null;
+    private Boolean likeDayControlFlag = null;
 
     private Double currentWattLoadPointValue = null;
     private String mapLocationID = null;
@@ -735,5 +736,13 @@ public class SubBus extends StreamableCapObject implements PointQualityCheckable
     public void setPhaseC(Double phaseC) {
         this.phaseC = phaseC;
     }
+
+	public Boolean getLikeDayControlFlag() {
+		return likeDayControlFlag;
+	}
+
+	public void setLikeDayControlFlag(Boolean likeDayControlFlag) {
+		this.likeDayControlFlag = likeDayControlFlag;
+	}
 
 }

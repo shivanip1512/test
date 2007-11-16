@@ -2032,7 +2032,7 @@ CtiRequestMsg* CtiCCFeeder::createIncreaseVarRequest(CtiCCCapBank* capBank, CtiM
 
             //setEventSequence(getEventSequence() + 1);
             INT actionId = CCEventActionIdGen(capBank->getStatusPointId()) + 1;
-            ccEvents.push_back(new CtiCCEventLogMsg(0, capBank->getStatusPointId(), getParentId(), getPAOId(), capBankStateUpdate, getEventSequence(), capBank->getControlStatus(), textInfo, "cap control", kvarBefore, kvarBefore, 0, capBank->getIpAddress(), actionId));
+            ccEvents.push_back(new CtiCCEventLogMsg(0, capBank->getStatusPointId(), getParentId(), getPAOId(), capControlCommandSent, getEventSequence(), capBank->getControlStatus(), textInfo, "cap control", kvarBefore, kvarBefore, 0, capBank->getIpAddress(), actionId));
         }
         else
         {
@@ -2255,7 +2255,7 @@ CtiRequestMsg* CtiCCFeeder::createDecreaseVarRequest(CtiCCCapBank* capBank, CtiM
 
             //setEventSequence(getEventSequence() + 1);
             INT actionId = CCEventActionIdGen(capBank->getStatusPointId()) + 1;
-            ccEvents.push_back(new CtiCCEventLogMsg(0, capBank->getStatusPointId(), getParentId(), getPAOId(), capBankStateUpdate, getEventSequence(), capBank->getControlStatus(), textInfo, "cap control", kvarBefore, kvarBefore, 0, capBank->getIpAddress(), actionId));
+            ccEvents.push_back(new CtiCCEventLogMsg(0, capBank->getStatusPointId(), getParentId(), getPAOId(), capControlCommandSent, getEventSequence(), capBank->getControlStatus(), textInfo, "cap control", kvarBefore, kvarBefore, 0, capBank->getIpAddress(), actionId));
         }
         else
         {
@@ -4455,6 +4455,14 @@ CtiCCFeeder& CtiCCFeeder::setCorrectionNeededNoBankAvailFlag(BOOL flag)
     return *this;
 }
 
+CtiCCFeeder& CtiCCFeeder::setLikeDayControlFlag(BOOL flag)
+{
+    if (_likeDayControlFlag != flag)
+        _dirty = TRUE;
+    _likeDayControlFlag = flag;
+
+    return *this;
+}
 
 CtiCCFeeder& CtiCCFeeder::setCurrentVerificationCapBankId(LONG capBankId)
 {
@@ -4740,6 +4748,11 @@ BOOL CtiCCFeeder::getCorrectionNeededNoBankAvailFlag() const
     return _correctionNeededNoBankAvailFlag;
 
 }
+BOOL CtiCCFeeder::getLikeDayControlFlag() const
+{
+    return _likeDayControlFlag;
+}
+
 
 LONG CtiCCFeeder::getCurrentVerificationCapBankId() const
 {
@@ -5556,6 +5569,8 @@ void CtiCCFeeder::dumpDynamicData(RWDBConnection& conn, CtiTime& currentDateTime
             addFlags[8] = (_maxDailyOpsHitFlag?'Y':'N');
             addFlags[9] = (_ovUvDisabledFlag?'Y':'N');
             addFlags[10] = (_correctionNeededNoBankAvailFlag?'Y':'N');
+            addFlags[11] = (_likeDayControlFlag?'Y':'N');
+
             _additionalFlags = char2string(*addFlags);
             _additionalFlags.append(char2string(*(addFlags+1)));
             _additionalFlags.append(char2string(*(addFlags+2))); 
@@ -5567,7 +5582,8 @@ void CtiCCFeeder::dumpDynamicData(RWDBConnection& conn, CtiTime& currentDateTime
             _additionalFlags.append(char2string(*(addFlags+8)));
             _additionalFlags.append(char2string(*(addFlags+9)));
             _additionalFlags.append(char2string(*(addFlags+10)));
-            _additionalFlags.append("NNNNNNNNN");
+            _additionalFlags.append(char2string(*(addFlags+11)));
+            _additionalFlags.append("NNNNNNNN");
 
             updater.clear();
 
@@ -5760,7 +5776,8 @@ void CtiCCFeeder::restoreGuts(RWvistream& istrm)
     >> _controlmethod
     >> _phaseAvalue
     >> _phaseBvalue
-    >> _phaseCvalue;
+    >> _phaseCvalue
+    >> _likeDayControlFlag;
    
     istrm >> numberOfCapBanks;
     for(LONG i=0;i<numberOfCapBanks;i++)
@@ -5844,7 +5861,8 @@ void CtiCCFeeder::saveGuts(RWvostream& ostrm ) const
     << _controlmethod
     << _phaseAvalue
     << _phaseBvalue
-    << _phaseCvalue;
+    << _phaseCvalue
+    << _likeDayControlFlag;
 
     ostrm << _cccapbanks.size();
     for(LONG i=0;i<_cccapbanks.size();i++)
@@ -5935,6 +5953,7 @@ CtiCCFeeder& CtiCCFeeder::operator=(const CtiCCFeeder& right)
         _maxDailyOpsHitFlag = right._maxDailyOpsHitFlag;
         _ovUvDisabledFlag = right._ovUvDisabledFlag;
         _correctionNeededNoBankAvailFlag = right._correctionNeededNoBankAvailFlag;
+        _likeDayControlFlag = right._likeDayControlFlag;
 
         _targetvarvalue = right._targetvarvalue;
         _solution = right._solution;
@@ -6089,6 +6108,7 @@ void CtiCCFeeder::restore(RWDBReader& rdr)
     setMaxDailyOpsHitFlag(FALSE);
     setOvUvDisabledFlag(FALSE);
     setCorrectionNeededNoBankAvailFlag(FALSE);
+    setLikeDayControlFlag(FALSE);
     setPeakTimeFlag(FALSE);
     setEventSequence(0);
     setCurrentVerificationCapBankId(-1);
@@ -6208,6 +6228,7 @@ void CtiCCFeeder::setDynamicData(RWDBReader& rdr)
     _maxDailyOpsHitFlag = (_additionalFlags[8]=='y'?TRUE:FALSE);
     _ovUvDisabledFlag = (_additionalFlags[9]=='y'?TRUE:FALSE);
     _correctionNeededNoBankAvailFlag = (_additionalFlags[10]=='y'?TRUE:FALSE);
+    _likeDayControlFlag = (_additionalFlags[11]=='y'?TRUE:FALSE);
     rdr["eventSeq"] >> _eventSeq;
     rdr["currverifycbid"] >> _currentVerificationCapBankId;
     rdr["currverifycborigstate"] >> _currentCapBankToVerifyAssumedOrigState;

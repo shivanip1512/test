@@ -1038,7 +1038,10 @@ BOOL CtiCCSubstationBus::getCorrectionNeededNoBankAvailFlag() const
 {
     return _correctionNeededNoBankAvailFlag;
 }
-
+BOOL CtiCCSubstationBus::getLikeDayControlFlag() const
+{
+    return _likeDayControlFlag;
+}
 LONG CtiCCSubstationBus::getCurrentVerificationFeederId() const
 {
     return _currentVerificationFeederId;
@@ -5335,6 +5338,15 @@ CtiCCSubstationBus& CtiCCSubstationBus::setCorrectionNeededNoBankAvailFlag(BOOL 
     return *this;
 }
 
+CtiCCSubstationBus& CtiCCSubstationBus::setLikeDayControlFlag(BOOL flag)
+{
+    if (_likeDayControlFlag != flag) 
+    {
+        _dirty = TRUE;
+    }
+    _likeDayControlFlag = flag;
+    return *this;
+}
 
 CtiCCSubstationBus& CtiCCSubstationBus::setCurrentVerificationFeederId(LONG feederId)
 {
@@ -6179,12 +6191,13 @@ void CtiCCSubstationBus::dumpDynamicData(RWDBConnection& conn, CtiTime& currentD
             addFlags[10] = (_maxDailyOpsHitFlag?'Y':'N');
             addFlags[11] = (_ovUvDisabledFlag?'Y':'N');
             addFlags[12] = (_correctionNeededNoBankAvailFlag?'Y':'N');
+            addFlags[13] = (_likeDayControlFlag?'Y':'N');
 			_additionalFlags = string(char2string(*addFlags) + char2string(*(addFlags+1)) + char2string(*(addFlags+2))+ 
                                          char2string(*(addFlags+3)) + char2string(*(addFlags+4)) +  char2string(*(addFlags+5)) +
                                          char2string(*(addFlags+6)) + char2string(*(addFlags+7)) + char2string(*(addFlags+8)) +
                                          char2string(*(addFlags+9)) + char2string(*(addFlags+10)) + char2string(*(addFlags+11)) +
-                                         char2string(*(addFlags+12)));
-            _additionalFlags.append("NNNNNNN");
+                                         char2string(*(addFlags+12)) +char2string(*(addFlags+13)));
+            _additionalFlags.append("NNNNNN");
 
             updater.clear();
 
@@ -8376,6 +8389,7 @@ void CtiCCSubstationBus::restoreGuts(RWvistream& istrm)
     >> _phaseAvalue
     >> _phaseBvalue
     >> _phaseCvalue
+    >> _likeDayControlFlag
     >> _ccfeeders;
 
     _lastcurrentvarpointupdatetime = CtiTime(tempTime2);
@@ -8476,6 +8490,7 @@ void CtiCCSubstationBus::saveGuts(RWvostream& ostrm ) const
     << _phaseAvalue
     << _phaseBvalue
     << _phaseCvalue
+    << _likeDayControlFlag
     << _ccfeeders;
 }
 
@@ -8569,6 +8584,7 @@ CtiCCSubstationBus& CtiCCSubstationBus::operator=(const CtiCCSubstationBus& righ
         _maxDailyOpsHitFlag = right._maxDailyOpsHitFlag;
         _ovUvDisabledFlag = right._ovUvDisabledFlag;
         _correctionNeededNoBankAvailFlag = right._correctionNeededNoBankAvailFlag;
+        _likeDayControlFlag = right._likeDayControlFlag;
 
         _altDualSubId = right._altDualSubId;
         _switchOverPointId = right._switchOverPointId;
@@ -8743,6 +8759,7 @@ void CtiCCSubstationBus::restore(RWDBReader& rdr)
     setMaxDailyOpsHitFlag(FALSE);
     setOvUvDisabledFlag(FALSE);
     setCorrectionNeededNoBankAvailFlag(FALSE);
+    setLikeDayControlFlag(FALSE);
     setCurrentVerificationCapBankId(-1);
     setCurrentVerificationFeederId(-1);
     setCurrentVerificationCapBankState(0);
@@ -8889,6 +8906,7 @@ void CtiCCSubstationBus::setDynamicData(RWDBReader& rdr)
         _maxDailyOpsHitFlag = (_additionalFlags[10]=='y'?TRUE:FALSE);
         _ovUvDisabledFlag = (_additionalFlags[11]=='y'?TRUE:FALSE);
         _correctionNeededNoBankAvailFlag = (_additionalFlags[12]=='y'?TRUE:FALSE); 
+        _likeDayControlFlag = (_additionalFlags[13]=='y'?TRUE:FALSE); 
 
         rdr["currverifycbid"] >> _currentVerificationCapBankId;
         rdr["currverifyfeederid"] >> _currentVerificationFeederId;

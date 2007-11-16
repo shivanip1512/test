@@ -15,6 +15,7 @@ public class Feeder extends StreamableCapObject implements PointQualityCheckable
 	private Integer maxDailyOperation = null;
 	private Boolean maxOperationDisableFlag = null;
 	private Boolean ovUvDisabledFlag = null;
+	private Boolean likeDayControlFlag = null;
 
 	private Integer currentVarLoadPointID = null;
 	private Double currentVarLoadPointValue = null;
@@ -677,4 +678,10 @@ public void setVarValueBeforeControl(java.lang.Double newVarValueBeforeControl) 
     public void setPhaseC(Double phaseC) {
         this.phaseC = phaseC;
     }
+	public Boolean getLikeDayControlFlag() {
+		return likeDayControlFlag;
+	}
+	public void setLikeDayControlFlag(Boolean likeDayControlFlag) {
+		this.likeDayControlFlag = likeDayControlFlag;
+	}
 }
