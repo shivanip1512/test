@@ -796,7 +796,7 @@ public class ScriptScheduleSetupPanel extends DataInputPanel implements JCValueL
                 selectionModel.clearSelection();
                 selectionModel.setSelectionMode(TreeSelectionModel.SINGLE_TREE_SELECTION);
                 meterReadGroupTree.setSelectionModel(selectionModel);
-                TreeModel model = modelFactory.getModel();
+                TreeModel model = modelFactory.getStaticOnlyModel();
                 meterReadGroupTree.setModel(model);
     
             } catch (Throwable ivjExc) {
@@ -826,6 +826,8 @@ public class ScriptScheduleSetupPanel extends DataInputPanel implements JCValueL
                 selectionModel.clearSelection();
                 selectionModel.setSelectionMode(TreeSelectionModel.SINGLE_TREE_SELECTION);
                 billingGroupTree.setSelectionModel(selectionModel);
+                // it is okay to include dynamic groups here because the string is simply 
+                // passed to BillingFile and not interpreted by MACS
                 TreeModel model = modelFactory.getModel();
                 billingGroupTree.setModel(model);
     

@@ -14,18 +14,28 @@ import org.springframework.beans.factory.annotation.Required;
 
 import com.cannontech.common.device.YukonDevice;
 import com.cannontech.common.device.groups.dao.DeviceGroupProviderDao;
+import com.cannontech.common.device.groups.dao.DeviceGroupType;
 import com.cannontech.common.device.groups.model.DeviceGroup;
+import com.cannontech.common.util.predicate.Predicate;
 import com.cannontech.core.dao.NotFoundException;
 import com.cannontech.database.model.DBTreeModel;
 import com.cannontech.database.model.LiteBaseTreeModel;
 
 public class DeviceGroupTreeFactory {
+    private final class NullPredicate implements Predicate<DeviceGroup> {
+        public boolean evaluate(DeviceGroup object) {
+            return true;
+        }
+    }
+
     public final class LiteBaseModel extends DBTreeModel {
         private final boolean devices;
+        private final NullPredicate nullPredicate;
 
-        public LiteBaseModel(TreeNode root, boolean devices) {
+        public LiteBaseModel(TreeNode root, boolean devices, NullPredicate nullPredicate) {
             super(root);
             this.devices = devices;
+            this.nullPredicate = nullPredicate;
         }
 
         public boolean isLiteTypeSupported(int liteType) {
@@ -33,7 +43,7 @@ public class DeviceGroupTreeFactory {
         }
 
         public void update() {
-            DefaultMutableTreeNode rootNode = (DefaultMutableTreeNode) getRootNode(devices);
+            DefaultMutableTreeNode rootNode = (DefaultMutableTreeNode) getRootNode(devices, nullPredicate);
             // this is lame, but this is life... blame TreeViewPanel
             DefaultMutableTreeNode newRoot = new DefaultMutableTreeNode("Device Groups");
             Enumeration enumeration = rootNode.children();
@@ -52,29 +62,43 @@ public class DeviceGroupTreeFactory {
 
     private DeviceGroupProviderDao deviceGroupDao;
     
-    public TreeNode getRootNode(boolean includeDevices) {
+    public TreeNode getRootNode(boolean includeDevices, Predicate<DeviceGroup> deviceGroupFilter) {
         DeviceGroup rootGroup = deviceGroupDao.getRootGroup();
-        TreeNode root = createNode(rootGroup, includeDevices);
+        TreeNode root = createNode(rootGroup, includeDevices, deviceGroupFilter);
         return root;
     }
     
     public LiteBaseTreeModel getLiteBaseModel(final boolean includeDevices) {
-        DBTreeModel model = new LiteBaseModel(null, includeDevices);
+        DBTreeModel model = new LiteBaseModel(null, includeDevices, new NullPredicate());
         return model;
     }
     
     public TreeModel getModel() {
-        DefaultTreeModel model = new DefaultTreeModel(getRootNode(false), true);
+        return getModel(new NullPredicate());
+    }
+    
+    public TreeModel getStaticOnlyModel() {
+        return getModel(new Predicate<DeviceGroup>() {
+            public boolean evaluate(DeviceGroup object) {
+                return object.getType().equals(DeviceGroupType.STATIC);
+            }
+        });
+    }
+    
+    public TreeModel getModel(Predicate<DeviceGroup> deviceGroupFilter) {
+        DefaultTreeModel model = new DefaultTreeModel(getRootNode(false, deviceGroupFilter), true);
         return model;
     }
     
-    private DefaultMutableTreeNode createNode(DeviceGroup deviceGroup, boolean includeDevices) {
+    private DefaultMutableTreeNode createNode(DeviceGroup deviceGroup, boolean includeDevices, Predicate<DeviceGroup> deviceGroupFilter) {
         DefaultMutableTreeNode node = new DefaultMutableTreeNode(deviceGroup);
         
         List<? extends DeviceGroup> childGroups = deviceGroupDao.getChildGroups(deviceGroup);
         for (DeviceGroup child : childGroups) {
-            DefaultMutableTreeNode childNode = createNode(child, includeDevices);
-            node.add(childNode);
+            if (deviceGroupFilter.evaluate(child)) {
+                DefaultMutableTreeNode childNode = createNode(child, includeDevices, deviceGroupFilter);
+                node.add(childNode);
+            }
         }
         if (includeDevices) {
             List<YukonDevice> childDevices = deviceGroupDao.getChildDevices(deviceGroup);
