@@ -141,6 +141,23 @@ public class MCT470 extends BillingDeviceBase {
                 addData(Channel.FOUR, readingType, BillableField.totalConsumption, data);
 
                 break;
+
+            case 101: // Rate A KWh
+                addData(Channel.ONE, readingType, BillableField.rateAConsumption, data);
+                break;
+
+            case 121: // Rate B KWh
+                addData(Channel.ONE, readingType, BillableField.rateBConsumption, data);
+                break;
+
+            case 141: // Rate C KWh
+                addData(Channel.ONE, readingType, BillableField.rateCConsumption, data);
+                break;
+
+            case 161: // Rate D KWh
+                addData(Channel.ONE, readingType, BillableField.rateDConsumption, data);
+                break;
+
             }
 
             break;
@@ -167,6 +184,22 @@ public class MCT470 extends BillingDeviceBase {
             case 14: // Total Peak Demand - channel 4
                 addData(Channel.FOUR, readingType, BillableField.totalPeakDemand, data);
 
+                break;
+
+            case 111: // Rate A KW
+                addData(Channel.ONE, readingType, BillableField.rateADemand, data);
+                break;
+
+            case 131: // Rate B KW
+                addData(Channel.ONE, readingType, BillableField.rateBDemand, data);
+                break;
+
+            case 151: // Rate C KW
+                addData(Channel.ONE, readingType, BillableField.rateCDemand, data);
+                break;
+
+            case 171: // Rate D KW
+                addData(Channel.ONE, readingType, BillableField.rateDDemand, data);
                 break;
 
             }
