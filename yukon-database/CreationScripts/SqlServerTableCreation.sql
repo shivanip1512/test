@@ -1,7 +1,7 @@
 /*==============================================================*/
 /* Database name:  YukonDatabase                                */
 /* DBMS name:      Microsoft SQL Server 2000                    */
-/* Created on:     11/9/2007 1:49:42 PM                         */
+/* Created on:     11/19/2007 1:49:02 PM                        */
 /*==============================================================*/
 
 
@@ -209,6 +209,13 @@ go
 
 if exists (select 1
             from  sysobjects
+           where  id = object_id('CAPCONTROLSUBSTATION')
+            and   type = 'U')
+   drop table CAPCONTROLSUBSTATION
+go
+
+if exists (select 1
+            from  sysobjects
            where  id = object_id('CAPCONTROLSUBSTATIONBUS')
             and   type = 'U')
    drop table CAPCONTROLSUBSTATIONBUS
@@ -261,6 +268,13 @@ if exists (select 1
            where  id = object_id('CCSUBSPECIALAREAASSIGNMENT')
             and   type = 'U')
    drop table CCSUBSPECIALAREAASSIGNMENT
+go
+
+if exists (select 1
+            from  sysobjects
+           where  id = object_id('CCSUBSTATIONSUBBUSLIST')
+            and   type = 'U')
+   drop table CCSUBSTATIONSUBBUSLIST
 go
 
 if exists (select 1
@@ -1178,6 +1192,13 @@ if exists (select 1
            where  id = object_id('ImportPendingComm')
             and   type = 'U')
    drop table ImportPendingComm
+go
+
+if exists (select 1
+            from  sysobjects
+           where  id = object_id('JOB')
+            and   type = 'U')
+   drop table JOB
 go
 
 if exists (select 1
@@ -2214,7 +2235,17 @@ go
 /* Table: CAPCONTROLSPECIALAREA                                 */
 /*==============================================================*/
 create table CAPCONTROLSPECIALAREA (
-   AreaID               numeric              not null
+   AreaID               numeric              not null,
+   constraint PK_CapControlSpecialArea primary key (AreaID)
+)
+go
+
+/*==============================================================*/
+/* Table: CAPCONTROLSUBSTATION                                  */
+/*==============================================================*/
+create table CAPCONTROLSUBSTATION (
+   SubstationID         numeric              not null,
+   constraint PK_CAPCONTROLSUBSTATION primary key nonclustered (SubstationID)
 )
 go
 
@@ -2351,6 +2382,17 @@ create table CCSUBSPECIALAREAASSIGNMENT (
    AreaID               numeric              not null,
    SubstationBusID      numeric              not null,
    DisplayOrder         numeric              not null
+)
+go
+
+/*==============================================================*/
+/* Table: CCSUBSTATIONSUBBUSLIST                                */
+/*==============================================================*/
+create table CCSUBSTATIONSUBBUSLIST (
+   SubStationID         numeric              not null,
+   SubStationBusID      numeric              not null,
+   DisplayOrder         numeric              not null,
+   constraint PK_CCSUBSTATIONSUBBUSLIST primary key (SubStationID, SubStationBusID)
 )
 go
 
@@ -5888,6 +5930,18 @@ create table ImportPendingComm (
    BillGrp              varchar(64)          not null,
    SubstationName       varchar(64)          not null,
    constraint PK_IMPORTPENDINGCOMM primary key nonclustered (DeviceID)
+)
+go
+
+/*==============================================================*/
+/* Table: JOB                                                   */
+/*==============================================================*/
+create table JOB (
+   JobID                int                  not null,
+   BeanName             varchar(250)         not null,
+   Disabled             char(1)              not null,
+   UserID               numeric              not null,
+   constraint PK_JOB primary key nonclustered (JobID)
 )
 go
 
@@ -10036,6 +10090,17 @@ alter table CAPBANKADDITIONAL
       references CAPBANK (DEVICEID)
 go
 
+alter table CAPCONTROLSPECIALAREA
+   add constraint FK_CAPCONTR_REFERENCE_YUKONPAO2 foreign key (AreaID)
+      references YukonPAObject (PAObjectID)
+go
+
+alter table CAPCONTROLSUBSTATION
+   add constraint FK_CAPCONTR_REFERENCE_YUKONPAO foreign key (SubstationID)
+      references YukonPAObject (PAObjectID)
+         on update cascade on delete cascade
+go
+
 alter table CAPCONTROLSUBSTATIONBUS
    add constraint FK_CAPCONTR_SWPTID foreign key (SwitchPointID)
       references POINT (POINTID)
@@ -10108,6 +10173,29 @@ go
 
 alter table CCSUBAREAASSIGNMENT
    add constraint FK_CCSUBARE_CAPSUBAREAASSGN foreign key (SubstationBusID)
+      references CAPCONTROLSUBSTATION (SubstationID)
+         on delete cascade
+go
+
+alter table CCSUBSPECIALAREAASSIGNMENT
+   add constraint FK_CCSUBSPE_REFERENCE_CAPCONTR2 foreign key (SubstationBusID)
+      references CAPCONTROLSUBSTATION (SubstationID)
+         on update cascade on delete cascade
+go
+
+alter table CCSUBSPECIALAREAASSIGNMENT
+   add constraint FK_CCSUBSPE_REFERENCE_CAPCONTR foreign key (AreaID)
+      references CAPCONTROLSPECIALAREA (AreaID)
+         on update cascade on delete cascade
+go
+
+alter table CCSUBSTATIONSUBBUSLIST
+   add constraint FK_CCSUBSTA_REFERENCE_CAPCONTR2 foreign key (SubStationID)
+      references CAPCONTROLSUBSTATION (SubstationID)
+go
+
+alter table CCSUBSTATIONSUBBUSLIST
+   add constraint FK_CCSUBSTA_REFERENCE_CAPCONTR foreign key (SubStationBusID)
       references CAPCONTROLSUBSTATIONBUS (SubstationBusID)
 go
 
@@ -10902,6 +10990,11 @@ go
 alter table ImportPendingComm
    add constraint FK_ImpPC_PAO foreign key (DeviceID)
       references YukonPAObject (PAObjectID)
+go
+
+alter table JOB
+   add constraint FK_Job_YukonUser foreign key (UserID)
+      references YukonUser (UserID)
 go
 
 alter table LMCONTROLAREAPROGRAM

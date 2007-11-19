@@ -1,7 +1,7 @@
 /*==============================================================*/
 /* Database name:  YukonDatabase                                */
 /* DBMS name:      ORACLE Version 9i                            */
-/* Created on:     11/9/2007 1:48:49 PM                         */
+/* Created on:     11/19/2007 2:00:34 PM                        */
 /*==============================================================*/
 
 
@@ -144,6 +144,9 @@ drop table CAPBANKADDITIONAL cascade constraints
 drop table CAPCONTROLSPECIALAREA cascade constraints
 ;
 
+drop table CAPCONTROLSUBSTATION cascade constraints
+;
+
 drop table CAPCONTROLSUBSTATIONBUS cascade constraints
 ;
 
@@ -166,6 +169,9 @@ drop table CCSUBAREAASSIGNMENT cascade constraints
 ;
 
 drop table CCSUBSPECIALAREAASSIGNMENT cascade constraints
+;
+
+drop table CCSUBSTATIONSUBBUSLIST cascade constraints
 ;
 
 drop table CCURTACCTEVENT cascade constraints
@@ -559,6 +565,9 @@ drop table ImportFail cascade constraints
 ;
 
 drop table ImportPendingComm cascade constraints
+;
+
+drop table JOB cascade constraints
 ;
 
 drop table LMCONTROLAREAPROGRAM cascade constraints
@@ -1183,7 +1192,17 @@ create table CAPBANKADDITIONAL  (
 /* Table: CAPCONTROLSPECIALAREA                                 */
 /*==============================================================*/
 create table CAPCONTROLSPECIALAREA  (
-   AreaID               NUMBER                          not null
+   AreaID               NUMBER                          not null,
+   constraint PK_CapControlSpecialArea primary key (AreaID)
+)
+;
+
+/*==============================================================*/
+/* Table: CAPCONTROLSUBSTATION                                  */
+/*==============================================================*/
+create table CAPCONTROLSUBSTATION  (
+   SubstationID         NUMBER                          not null,
+   constraint PK_CAPCONTROLSUBSTATION primary key (SubstationID)
 )
 ;
 
@@ -1320,6 +1339,17 @@ create table CCSUBSPECIALAREAASSIGNMENT  (
    AreaID               NUMBER                          not null,
    SubstationBusID      NUMBER                          not null,
    DisplayOrder         NUMBER                          not null
+)
+;
+
+/*==============================================================*/
+/* Table: CCSUBSTATIONSUBBUSLIST                                */
+/*==============================================================*/
+create table CCSUBSTATIONSUBBUSLIST  (
+   SubStationID         NUMBER                          not null,
+   SubStationBusID      NUMBER                          not null,
+   DisplayOrder         NUMBER                          not null,
+   constraint PK_CCSUBSTATIONSUBBUSLIST primary key (SubStationID, SubStationBusID)
 )
 ;
 
@@ -4865,6 +4895,18 @@ create table ImportPendingComm  (
    BillGrp              VARCHAR2(64)                    not null,
    SubstationName       VARCHAR2(64)                    not null,
    constraint PK_IMPORTPENDINGCOMM primary key (DeviceID)
+)
+;
+
+/*==============================================================*/
+/* Table: JOB                                                   */
+/*==============================================================*/
+create table JOB  (
+   JobID                INTEGER                         not null,
+   BeanName             VARCHAR2(250)                   not null,
+   Disabled             CHAR(1)                         not null,
+   UserID               NUMBER                          not null,
+   constraint PK_JOB primary key (JobID)
 )
 ;
 
@@ -9013,6 +9055,17 @@ alter table CAPBANKADDITIONAL
       references CAPBANK (DEVICEID)
 ;
 
+alter table CAPCONTROLSPECIALAREA
+   add constraint FK_CAPCONTR_YUKONPAO2 foreign key (AreaID)
+      references YukonPAObject (PAObjectID)
+;
+
+alter table CAPCONTROLSUBSTATION
+   add constraint FK_CAPCONTR_REFERENCE_YUKONPAO foreign key (SubstationID)
+      references YukonPAObject (PAObjectID)
+      on delete cascade
+;
+
 alter table CAPCONTROLSUBSTATIONBUS
    add constraint FK_CAPCONTR_SWPTID foreign key (SwitchPointID)
       references POINT (POINTID)
@@ -9085,6 +9138,29 @@ alter table CCSEASONSTRATEGYASSIGNMENT
 
 alter table CCSUBAREAASSIGNMENT
    add constraint FK_CCSUBARE_CAPSUBAREAASSGN foreign key (SubstationBusID)
+      references CAPCONTROLSUBSTATION (SubstationID)
+      on delete cascade
+;
+
+alter table CCSUBSPECIALAREAASSIGNMENT
+   add constraint FK_CCSUBSPE_CAPCONTR2 foreign key (SubstationBusID)
+      references CAPCONTROLSUBSTATION (SubstationID)
+      on delete cascade
+;
+
+alter table CCSUBSPECIALAREAASSIGNMENT
+   add constraint FK_CCSUBSPE_REFERENCE_CAPCONTR foreign key (AreaID)
+      references CAPCONTROLSPECIALAREA (AreaID)
+      on delete cascade
+;
+
+alter table CCSUBSTATIONSUBBUSLIST
+   add constraint FK_CCSUBSTA_CAPCONTR foreign key (SubStationID)
+      references CAPCONTROLSUBSTATION (SubstationID)
+;
+
+alter table CCSUBSTATIONSUBBUSLIST
+   add constraint FK_CCSUBSTA_REFERENCE_CAPCONTR foreign key (SubStationBusID)
       references CAPCONTROLSUBSTATIONBUS (SubstationBusID)
 ;
 
@@ -9879,6 +9955,11 @@ alter table GroupPaoPermission
 alter table ImportPendingComm
    add constraint FK_ImpPC_PAO foreign key (DeviceID)
       references YukonPAObject (PAObjectID)
+;
+
+alter table JOB
+   add constraint FK_Job_YukonUser foreign key (UserID)
+      references YukonUser (UserID)
 ;
 
 alter table LMCONTROLAREAPROGRAM
