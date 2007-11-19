@@ -5,13 +5,21 @@ package com.cannontech.dbeditor.wizard.copy.lm;
  */
 
 import java.util.Collections;
+import java.util.List;
+import java.util.Vector;
 
 import com.cannontech.common.gui.util.TextFieldDocument;
 import com.cannontech.core.dao.DaoFactory;
 import com.cannontech.core.dao.PaoDao;
+import com.cannontech.database.Transaction;
 import com.cannontech.database.data.device.lm.LMProgramBase;
 import com.cannontech.database.data.device.lm.LMProgramDirect;
 import com.cannontech.database.data.lite.LiteComparators;
+import com.cannontech.database.data.lite.LiteFactory;
+import com.cannontech.database.data.lite.LitePoint;
+import com.cannontech.database.data.multi.MultiDBPersistent;
+import com.cannontech.database.data.multi.SmartMultiDBPersistent;
+import com.cannontech.database.data.point.PointBase;
 import com.cannontech.database.db.device.lm.LMProgramDirectGear;
 import com.cannontech.yukon.IDatabaseCache;
 
@@ -434,10 +442,33 @@ private javax.swing.JTextField getJTextFieldName() {
 public Object getValue(Object o) 
 {
 	LMProgramDirect program = (LMProgramDirect)o;
+	SmartMultiDBPersistent smartMulti = new SmartMultiDBPersistent();
+	smartMulti.addOwnerDBPersistent(program);
 	
-    PaoDao paoDao = DaoFactory.getPaoDao();
-	program.setPAObjectID(paoDao.getNextPaoId());
+	//need the original paobjectid to find the points
+	int oldProgramID = program.getPAObjectID();
+	
+	//new paobjectid for the new copy
+	Integer newProgramID = DaoFactory.getPaoDao().getNextPaoId();
+	program.setPAObjectID(newProgramID);
 
+	// get all of the original program's points (should just be the Status point for now)
+	// and copy them over to the new program
+	List<LitePoint> points = DaoFactory.getPointDao().getLitePointsByPaObjectId(oldProgramID);
+	for (LitePoint litePoint : points) {
+		PointBase pointBase = (PointBase) LiteFactory.convertLiteToDBPers(litePoint);
+		try {
+            Transaction t = Transaction.createTransaction(Transaction.RETRIEVE, pointBase);
+            t.execute();
+            pointBase.setPointID(DaoFactory.getPointDao().getNextPointId());
+    		pointBase.getPoint().setPaoID(newProgramID);
+    		smartMulti.addDBPersistent(pointBase);
+        } catch (com.cannontech.database.TransactionException e) {
+            com.cannontech.clientutils.CTILogger.error( e.getMessage(), e );
+        }
+	}
+	
+	//now start filling in values from the form
 	program.setName( getJTextFieldName().getText() );
 	program.getProgram().setControlType( getJComboBoxOperationalState().getSelectedItem().toString() );
 	
@@ -460,7 +491,7 @@ public Object getValue(Object o)
 		program.getPAOExclusionVector().removeAllElements();
 	}
 
-	return o;
+	return smartMulti;
 }
 /**
  * Called whenever the part throws an exception.
