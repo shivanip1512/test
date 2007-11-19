@@ -682,7 +682,7 @@ private javax.swing.JTextField getJTextFieldPhoneNumber() {
 			{
 				((com.cannontech.database.data.point.PointBase) devicePoints.get(i)).setPointID(DaoFactory.getPointDao().getNextPointId());
 				((com.cannontech.database.data.point.PointBase) devicePoints.get(i)).getPoint().setPaoID(newDeviceID);
-				objectsToAdd.getDBPersistentVector().add(devicePoints.get(i));
+				objectsToAdd.getDBPersistentVector().add((DBPersistent) devicePoints.get(i));
 			}
 			hasPoints = true;				
 		}

@@ -47,6 +47,7 @@ import com.cannontech.database.data.multi.MultiDBPersistent;
 import com.cannontech.database.data.pao.DeviceTypes;
 import com.cannontech.database.data.point.PointBase;
 import com.cannontech.database.data.point.PointTypes;
+import com.cannontech.database.db.DBPersistent;
 import com.cannontech.database.db.device.DeviceMeterGroup;
 import com.cannontech.database.db.device.DeviceRoutes;
 import com.cannontech.database.db.importer.ImportData;
@@ -517,7 +518,7 @@ public void runImport(List<ImportData> imps) {
 			for (int i = 0; i < points.size(); i++) {
 				((PointBase) points.get(i)).setPointID(DaoFactory.getPointDao().getNextPointId());
 				((PointBase) points.get(i)).getPoint().setPaoID(deviceID);
-				objectsToAdd.getDBPersistentVector().add(points.get(i));
+				objectsToAdd.getDBPersistentVector().add((DBPersistent) points.get(i));
 //				log.info("Added object to Add: Device(" + current400Series.getPAObjectID() + ") Point(" + ((PointBase)points.get(i)).getPoint().getPointID()+").");
 				hasPoints = true;
 			}

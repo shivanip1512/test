@@ -16,7 +16,6 @@ import com.cannontech.common.constants.LoginController;
 import com.cannontech.core.dao.DaoFactory;
 import com.cannontech.database.data.lite.LiteYukonUser;
 import com.cannontech.roles.capcontrol.CBCSettingsRole;
-import com.cannontech.servlet.CBCServlet;
 import com.cannontech.spring.YukonSpringHook;
 import com.cannontech.util.ParamUtil;
 import com.cannontech.yukon.cbc.CBCCommand;

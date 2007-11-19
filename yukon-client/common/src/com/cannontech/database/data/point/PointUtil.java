@@ -49,7 +49,7 @@ public class PointUtil {
             PaoDao paoDao = DaoFactory.getPaoDao();
             ((DeviceBase) val).setDeviceID(paoDao.getNextPaoId());
 
-            newVal.getDBPersistentVector().add(val);
+            newVal.getDBPersistentVector().add((DBPersistent) val);
 
             // accumulator point is automatically added
 

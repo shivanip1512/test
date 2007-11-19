@@ -1,5 +1,7 @@
 package com.cannontech.database.data.multi;
 
+import com.cannontech.database.db.DBPersistent;
+
 /**
  * This type was created in VisualAge.
  */
@@ -15,7 +17,7 @@ public MultiDBPersistent() {
 /**
  * This method was created in VisualAge.
  */
-public java.util.Vector getDBPersistentVector() 
+public java.util.Vector<DBPersistent> getDBPersistentVector() 
 {
 	return super.getDBPersistentVector();
 }
@@ -34,7 +36,7 @@ public void retrieve() throws java.sql.SQLException {
 /**
  * This method was created in VisualAge.
  */
-public void setDBPersistentVector(java.util.Vector newValue)
+public void setDBPersistentVector(java.util.Vector<DBPersistent> newValue)
 {
 	super.setDBPersistentVector(newValue);
 }

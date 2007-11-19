@@ -185,7 +185,7 @@ public class DeviceRoutePanel
 
         if (value instanceof RepeaterBase) {
             MultiDBPersistent newVal = new MultiDBPersistent();
-            newVal.getDBPersistentVector().add(value);
+            newVal.getDBPersistentVector().add((DBPersistent) value);
 
             PaoDao paoDao = DaoFactory.getPaoDao();
             ((DeviceBase) value).setDeviceID(paoDao.getNextPaoId());

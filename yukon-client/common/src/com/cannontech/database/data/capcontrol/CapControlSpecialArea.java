@@ -17,7 +17,6 @@ import com.cannontech.database.PoolManager;
 import com.cannontech.database.data.pao.PAOGroups;
 import com.cannontech.database.db.capcontrol.CCSubSpecialAreaAssignment;
 
-@SuppressWarnings("serial")
 public class CapControlSpecialArea extends CapControlYukonPAOBase implements EditorPanel {
 
     private com.cannontech.database.db.capcontrol.CapControlSpecialArea capControlSpecialArea;
@@ -65,7 +64,7 @@ public class CapControlSpecialArea extends CapControlYukonPAOBase implements Edi
         getCapControlSpecialArea().add();
 
         for (int i = 0; i < getChildList().size(); i++) {
-            ((com.cannontech.database.db.capcontrol.CCSubSpecialAreaAssignment) getChildList().get(i)).add();
+            getChildList().get(i).add();
         }
 
     }
@@ -77,7 +76,7 @@ public class CapControlSpecialArea extends CapControlYukonPAOBase implements Edi
         return capControlSpecialArea;
     }
 
-    public ArrayList getChildList() {
+    public ArrayList<CCSubSpecialAreaAssignment> getChildList() {
         if (specialAreaSubs == null) {
             specialAreaSubs = new ArrayList<CCSubSpecialAreaAssignment>();
         }
@@ -89,7 +88,7 @@ public class CapControlSpecialArea extends CapControlYukonPAOBase implements Edi
         getCapControlSpecialArea().setAreaID(paoID);
 
         for (int i = 0; i < getChildList().size(); i++)
-            ((com.cannontech.database.db.capcontrol.CCSubSpecialAreaAssignment) getChildList().get(i)).setAreaID(paoID);
+            getChildList().get(i).setAreaID(paoID);
 
     }
 
@@ -98,11 +97,11 @@ public class CapControlSpecialArea extends CapControlYukonPAOBase implements Edi
         getCapControlSpecialArea().setDbConnection(conn);
 
         for (int i = 0; i < getChildList().size(); i++)
-            ((com.cannontech.database.db.capcontrol.CCSubSpecialAreaAssignment) getChildList().get(i)).setDbConnection(conn);
+            getChildList().get(i).setDbConnection(conn);
 
     }
 
-    public void setSpecialAreaSubs(ArrayList specialAreaSubs) {
+    public void setSpecialAreaSubs(ArrayList<CCSubSpecialAreaAssignment> specialAreaSubs) {
         this.specialAreaSubs = specialAreaSubs;
     }
 
@@ -119,13 +118,14 @@ public class CapControlSpecialArea extends CapControlYukonPAOBase implements Edi
         CCSubSpecialAreaAssignment.deleteSubs(getCapControlPAOID(), null, getDbConnection());
         Connection connection = PoolManager.getInstance().getConnection(CtiUtilities.getDatabaseAlias());
         for (int i = 0; i < getChildList().size(); i++) {
-            CCSubSpecialAreaAssignment subSpecialAreaAssignment = ((CCSubSpecialAreaAssignment) getChildList().get(i));
+            CCSubSpecialAreaAssignment subSpecialAreaAssignment = getChildList().get(i);
             subSpecialAreaAssignment.setDbConnection(connection );
             subSpecialAreaAssignment.add();
         }
         connection.close();
     }
 
+    @SuppressWarnings("unchecked")
     public static List<Integer> getAllSpecialAreaIDs() {
         SqlStatementBuilder builder = new SqlStatementBuilder();
         builder.append("select areaid from capcontrolspecialarea");

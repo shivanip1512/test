@@ -134,8 +134,8 @@ public class CCSubSpecialAreaAssignment extends DBPersistent {
         return returnList;
     }
 
-    public static List<CCSubSpecialAreaAssignment> asList(List<Integer> newIntList, Integer areaID) {
-        List<CCSubSpecialAreaAssignment> returnList = new ArrayList<CCSubSpecialAreaAssignment>();
+    public static ArrayList<CCSubSpecialAreaAssignment> asList(List<Integer> newIntList, Integer areaID) {
+        ArrayList<CCSubSpecialAreaAssignment> returnList = new ArrayList<CCSubSpecialAreaAssignment>();
         for (Integer subID : newIntList) {
             CCSubSpecialAreaAssignment temp = new CCSubSpecialAreaAssignment();
             temp.setAreaID(areaID);

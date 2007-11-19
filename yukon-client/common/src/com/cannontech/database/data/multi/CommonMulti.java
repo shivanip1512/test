@@ -5,13 +5,13 @@ package com.cannontech.database.data.multi;
  * Creation date: (12/31/2001 11:40:21 AM)
  * @author: 
  */
-import com.cannontech.core.dao.DaoFactory;
 import com.cannontech.database.db.CTIDbChange;
 import com.cannontech.database.db.DBPersistent;
+import com.cannontech.message.dispatch.message.DBChangeMsg;
 
 public abstract class CommonMulti extends com.cannontech.database.db.DBPersistent 
 {
-	private java.util.Vector dbPersistentVector = null;
+	private java.util.Vector<DBPersistent> dbPersistentVector = null;
 
 	//Support to use the SUPER HACK in the add() method
 	private boolean createNewPAOIDs = true;
@@ -96,7 +96,7 @@ public void add() throws java.sql.SQLException
 	//Orginal code is below	
 	for(int i = 0; i < getDBPersistentVector().size(); i++)
 	{			
-		((DBPersistent)getDBPersistentVector().elementAt(i)).add();
+		getDBPersistentVector().elementAt(i).add();
 	}
 
 }
@@ -107,7 +107,7 @@ public void delete() throws java.sql.SQLException
 {
 
     for(int i = 0; i < getDBPersistentVector().size(); i++){           
-        ((DBPersistent)getDBPersistentVector().elementAt(i)).delete();
+        getDBPersistentVector().elementAt(i).delete();
     }
 
 }
@@ -124,16 +124,16 @@ public boolean getCreateNewPAOIDs() {
  * Creation date: (12/19/2001 1:45:25 PM)
  * @return com.cannontech.message.dispatch.message.DBChangeMsg[]
  */
-public com.cannontech.message.dispatch.message.DBChangeMsg[] getDBChangeMsgs( int typeOfChange )
+public DBChangeMsg[] getDBChangeMsgs( int typeOfChange )
 {
-	java.util.ArrayList list = new java.util.ArrayList(10);
+	java.util.ArrayList<DBChangeMsg> list = new java.util.ArrayList<DBChangeMsg>(10);
 
 	for( int i = 0; i < getDBPersistentVector().size(); i++ )
 	{
 		if( getDBPersistentVector().get(i) instanceof CTIDbChange )
 		{
 			//add the basic change method
-			com.cannontech.message.dispatch.message.DBChangeMsg[] msgs = 
+			DBChangeMsg[] msgs = 
 				((CTIDbChange)getDBPersistentVector().get(i)).getDBChangeMsgs(typeOfChange);
 
 			for( int j = 0; j < msgs.length; j++ )
@@ -144,21 +144,21 @@ public com.cannontech.message.dispatch.message.DBChangeMsg[] getDBChangeMsgs( in
 	
 
 	if( list.size() == 0 )
-		return new com.cannontech.message.dispatch.message.DBChangeMsg[0];
+		return new DBChangeMsg[0];
 	else
 	{ 
-		com.cannontech.message.dispatch.message.DBChangeMsg[] dbChange = new com.cannontech.message.dispatch.message.DBChangeMsg[list.size()];
-		return (com.cannontech.message.dispatch.message.DBChangeMsg[])list.toArray( dbChange );
+		DBChangeMsg[] dbChange = new DBChangeMsg[list.size()];
+		return list.toArray( dbChange );
 	}
 
 }
 /**
  * This method was created in VisualAge.
  */
-protected java.util.Vector getDBPersistentVector() 
+protected java.util.Vector<DBPersistent> getDBPersistentVector() 
 {
 	if( dbPersistentVector == null )
-		dbPersistentVector = new java.util.Vector();
+		dbPersistentVector = new java.util.Vector<DBPersistent>();
 		
 	return dbPersistentVector;
 }
@@ -168,6 +168,7 @@ protected java.util.Vector getDBPersistentVector()
  * object hierarchary of that element for the Class, 
  * then moves to the next element and repeats.
  */
+@SuppressWarnings("unchecked")
 public static final DBPersistent getFirstObjectOfType( Class type, CommonMulti multi )
 {
 	if( multi != null )
@@ -179,7 +180,7 @@ public static final DBPersistent getFirstObjectOfType( Class type, CommonMulti m
          while( currClass != null )
          {
    			if( currClass.equals(type) )
-   				return (DBPersistent)multi.getDBPersistentVector().get(i);
+   				return multi.getDBPersistentVector().get(i);
             else
                currClass = currClass.getSuperclass();
          }
@@ -208,14 +209,14 @@ public void setDbConnection(java.sql.Connection conn)
 
 	for(int i = 0;i < getDBPersistentVector().size();i++)
 	{
-		((DBPersistent)getDBPersistentVector().elementAt(i)).setDbConnection(conn);
+		getDBPersistentVector().elementAt(i).setDbConnection(conn);
 	}
 }
 /**
  * This method was created in VisualAge.
  * @param newValue com.cannontech.database.db.device.Device
  */
-protected void setDBPersistentVector(java.util.Vector newValue) {
+protected void setDBPersistentVector(java.util.Vector<DBPersistent> newValue) {
 	this.dbPersistentVector = newValue;
 }
 /**
@@ -225,7 +226,7 @@ protected void setDBPersistentVector(java.util.Vector newValue) {
 public String toString() {
 
 	if( getDBPersistentVector().size() > 0 )
-		return ((DBPersistent)getDBPersistentVector().elementAt(0)).toString();
+		return getDBPersistentVector().elementAt(0).toString();
 	else
 		return null;
 }
