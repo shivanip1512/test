@@ -26,7 +26,7 @@ public final class FileFormatTypes {
 	// ** THESE MUST MATCH THE DATABASE TABLE BILLINGFILEFORMATS **
 	// ** IF YOU ADD TO THESE VALUES, YOU MUST ADD TO THE DATABASE
 	// ** TABLE THE FORMATS THAT ARE VALID FOR EACH CUSTOMER.
-	public static final int INVALID = -1;
+	public static final int INVALID = -100;
 	public static final int SEDC = 0;
 	public static final int CADP = 1;
 	public static final int CADPXL2 = 2;
@@ -56,7 +56,8 @@ public final class FileFormatTypes {
   	public static final int SIMPLE_TOU_DEVICE_NAME = 26;
 
   	public static final int MVRS_KETCHIKAN = 30;
-
+  	public static final int STANDARD = 31;
+  	
 	public static final String SEDC_STRING = "SEDC";
 	public static final String CADP_STRING = "CADP";
 	public static final String CADPXL2_STRING = "CADPXL2";
@@ -83,44 +84,27 @@ public final class FileFormatTypes {
 	public static final String ITRON_REGISTER_READINGS_EXPORT_STRING = "Itron Register Readings Export";
 	public static final String SIMPLE_TOU_DEVICE_NAME_STRING  = "SIMPLE_TOU_DeviceName";
 	public static final String MVRS_KETCHIKAN_STRING = "MVRS Ketchikan";
+	public static final String STANDARD_STRING = "Standard";
 	
     private static final int[] defaultValidFormatIDs;
     private static final String[] defaultValidFormatTypes;
     
     static {
         defaultValidFormatIDs = new int[] {
-                SEDC, 
-                CADP,
+                STANDARD, 
                 CADPXL2, 
                 CTICSV, 
-                OPU, 
-                DAFFRON, 
-                NCDC,
                 CTIStandard2, 
-                SEDC_5_4,
-                NISC_TURTLE,
-                NISC_NCDC,
-                NCDC_HANDHELD,
-                ATS,
                 IVUE_BI_T65,
                 SIMPLE_TOU,
                 EXTENDED_TOU
         };
         
         defaultValidFormatTypes = new String[]{
-                SEDC_STRING, 
-                CADP_STRING, 
+                STANDARD_STRING, 
                 CADPXL2_STRING, 
                 CTICSV_STRING, 
-                OPU_STRING, 
-                DAFFRON_STRING, 
-                NCDC_STRING, 
                 CTI_STANDARD2_STRING,
-                SEDC_5_4_STRING,
-                NISC_TURTLE_STRING,
-                NISC_NCDC_STRING,
-                NCDC_HANDHELD_STRING,
-                ATS_STRING,
                 IVUE_BI_T65_STRING,
                 SIMPLE_TOU_STRING,
                 EXTENDED_TOU_STRING
