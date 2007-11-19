@@ -42,7 +42,7 @@ public class MeterReadServiceImpl implements MeterReadService {
     	Set<DevicePointIdentifier> pointSet = deviceDefinitionDao.getDevicePointIdentifiersForAttributes(device, attributes);
         Set<CommandWrapper> minimalCommands = getMinimalCommandSet(device, pointSet);
         if (minimalCommands == null) {
-        	log.info("Not Readable: No commands defined to read " + pointSet + " for device type " + device.getType());
+        	log.debug("Not Readable: No commands defined to read " + pointSet + " for device type " + device.getType());
             return false;
         }
 
@@ -56,7 +56,7 @@ public class MeterReadServiceImpl implements MeterReadService {
                 }
             }
         } catch (PaoAuthorizationException e) {
-        	log.info("Not Readable: " + e.getMessage());
+        	log.debug("Not Readable: " + e.getMessage());
             return false;
         }
         
