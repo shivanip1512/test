@@ -10,6 +10,7 @@
                 /user/*=UserPickerController
                 /loginGroup/*=LoginGroupPickerController
                 /pao/*=PaoPickerController
+                /multi/*=MultiPickerController
             </value>
         </property>
     </bean>    
@@ -88,6 +89,22 @@
         </property>
         <property name="validators">
             <null />
+        </property>
+        <property name="methodNameResolver">
+           <bean class="org.springframework.web.servlet.mvc.multiaction.InternalPathMethodNameResolver"/>
+        </property>
+        <property name="requireSession">
+            <value type="boolean">true</value>
+        </property>
+        <property name="synchronizeOnSession">
+            <value type="boolean">true</value>
+        </property>
+        <property name="paoTypeSearcher" ref="paoTypeSearcher"/>
+    </bean>
+    
+    <bean id="MultiPickerController" class="com.cannontech.web.picker.multi.MultiPickerController" >
+        <property name="cacheSeconds">
+            <value type="int">0</value>
         </property>
         <property name="methodNameResolver">
            <bean class="org.springframework.web.servlet.mvc.multiaction.InternalPathMethodNameResolver"/>

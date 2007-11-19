@@ -45,7 +45,7 @@ function createHtmlTableFromJson(dataArray, outputCols, rowCallback) {
               tableCell.appendChild(link);
               var linkFuncGenerate = outputCols[col].link;
               link.setAttribute("href", "javascript:nothing()");
-              var linkFunc = linkFuncGenerate(dataArray[i]);
+              var linkFunc = linkFuncGenerate(dataArray[i], link);
               Event.observe(link,'click',linkFunc);
           }
           

@@ -5,6 +5,7 @@ import java.sql.SQLException;
 import java.util.ArrayList;
 import java.util.List;
 
+import org.apache.commons.lang.StringUtils;
 import org.apache.lucene.analysis.Analyzer;
 import org.apache.lucene.document.Document;
 import org.apache.lucene.document.Field;
@@ -31,9 +32,10 @@ public class PaoTypeIndexManager extends AbstractIndexManager {
     }
 
     protected String getDocumentQuery() {
-        String query = "select *                                                        "
-                + " from                                                                "
-                + "     yukonpaobject                                                   ";
+        String query = "select ypo.*, d.deviceid "
+                + " from"
+                + "  yukonpaobject ypo "
+                + "  left join device d on d.deviceid = ypo.paobjectid ";
         return query;
     }
 
@@ -53,7 +55,7 @@ public class PaoTypeIndexManager extends AbstractIndexManager {
         String category = rs.getString("category");
         String paoid = Integer.toString(rs.getInt("paobjectid"));
         String paoClass = rs.getString("paoclass");
-        String all = paoName + " " + type + " " + paoid + " " + type;
+        String all = paoName + " " + type + " " + paoid + " " + paoClass + " " + category;
         doc.add(new Field("pao", paoName, Field.Store.YES, Field.Index.TOKENIZED));
         doc.add(new Field("type", type, Field.Store.YES, Field.Index.UN_TOKENIZED));
         doc.add(new Field("all", all, Field.Store.YES, Field.Index.TOKENIZED));
@@ -62,6 +64,10 @@ public class PaoTypeIndexManager extends AbstractIndexManager {
 
         doc.add(new Field("category", category, Field.Store.YES, Field.Index.UN_TOKENIZED));
         doc.add(new Field("paoclass", paoClass, Field.Store.YES, Field.Index.UN_TOKENIZED));
+
+        String isDeviceVal = rs.getString("deviceId");
+        String isDevice = new Boolean(!StringUtils.isEmpty(isDeviceVal)).toString();
+        doc.add(new Field("isDevice", isDevice, Field.Store.YES, Field.Index.UN_TOKENIZED));
 
         return doc;
     }

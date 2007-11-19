@@ -17,12 +17,14 @@ public class ItemPickerTag extends SimpleTagSupport {
         super();
     }
     
-    public void startOfTag(String newPickerJsFile) {
+    public void startOfTag(String... newPickerJsFiles) {
         // make sure our script file is included
         StandardPageTag spTag = StandardPageTag.find(getJspContext());
         if (spTag != null) {
             spTag.addScriptFile("/JavaScript/itemPicker.js");
-            spTag.addScriptFile(newPickerJsFile);
+            for(String jsFile : newPickerJsFiles) {
+                spTag.addScriptFile(jsFile);
+            }
             spTag.addScriptFile("/JavaScript/tableCreation.js");
             spTag.addCSSFile("/WebConfig/yukon/styles/itemPicker.css");
         }

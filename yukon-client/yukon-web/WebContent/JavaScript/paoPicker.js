@@ -44,20 +44,13 @@ PaoPicker.prototype = Object.extend(new ItemPicker(), {
 	//specific output to the results table generator.
 	renderHtmlResult: function(json) {
 	    var pickerThis = this;
-	    var createItemLink = function(hit) {
+	    var createItemLink = function(hit, link) {
 	        return function() {
 	        	pickerThis.setDestItemIdFieldId( hit.paoId );
-	            pickerThis.selectThisItem(hit);
+	            pickerThis.selectThisItem(hit, link);
 	        };
 	    };
 	
-	    var currentId = $(this.destItemIdFieldId).value;
-	    var selectCurrent = function(rowElement, data) {
-	        if (data.paoId == currentId) {
-	            rowElement.className = "itemPicker_currentPaoRow";
-	        }
-	    };
-	    
 	    ///////////////////////////////////////////////////////////////////
 	    // The following array refers to properties that are available in
 	    // the UltraLightPao interface. If additional properties are added
@@ -73,7 +66,17 @@ PaoPicker.prototype = Object.extend(new ItemPicker(), {
 	        {"title": "Pao", "field": "paoName", "link": createItemLink}
 	      ];
 	    
-	    return this.renderTableResults(json, selectCurrent);
+	    return this.renderTableResults(json, this.processRowForRender.bind(this));
+	},
+	
+	// This method should be implemented to apply any css to each row in the 
+	// picker's results area as the results are being drawn
+	processRowForRender: function (rowElement, data) {
+	    var currentId = $(this.destItemIdFieldId).value;
+
+        if (data.paoId == currentId) {
+            rowElement.className = "itemPicker_currentPaoRow";
+        }
 	},
 	
 	onPickerShown: function(transport, json) {

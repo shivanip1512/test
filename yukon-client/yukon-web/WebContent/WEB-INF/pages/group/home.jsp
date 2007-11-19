@@ -23,7 +23,14 @@
 			
 		}
 		
-		function addDevice(){
+		function addDevice(devices){
+		
+			var ids = '';
+			$(devices).each(function(device){
+				ids += device.paoId + ',';
+			});
+		
+			$('deviceToAdd').value = ids;
 			$('addDeviceForm').submit();
 			window.event.returnValue = false;
 		}
@@ -230,7 +237,7 @@
 									<input type="hidden" name="showDevices" value="true" />
 									<input type="hidden" id="deviceToAdd" name="deviceId" />
 								</form>
-								<cti:paoPicker pickerId="devicePickerId" paoIdField="deviceToAdd" finalTriggerAction="addDevice"><span title="Click to add a device">Individual Device</span></cti:paoPicker>
+								<cti:multiPaoPicker pickerId="devicePickerId" paoIdField="deviceToAdd" constraint="com.cannontech.common.search.criteria.DeviceCriteria" finalTriggerAction="addDevice" selectionLinkName="Add Devices to Group"><span title="Click to select devices to add">Select Devices</span></cti:multiPaoPicker>
 							</div>
 				
 							<br/>

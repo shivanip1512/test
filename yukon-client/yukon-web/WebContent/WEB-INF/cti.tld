@@ -450,6 +450,46 @@
       <rtexprvalue>true</rtexprvalue>
     </attribute>
   </tag>
+  <tag>
+    <name>multiPaoPicker</name>
+    <tag-class>com.cannontech.web.taglib.MultiPaoPickerTag</tag-class>
+    <body-content>scriptless</body-content>
+    <attribute>
+      <name>pickerId</name>
+      <required>false</required>
+      <rtexprvalue>true</rtexprvalue>
+    </attribute>
+    <attribute>
+      <name>paoIdField</name>
+      <required>true</required>
+      <rtexprvalue>true</rtexprvalue>
+    </attribute>
+   <attribute>
+      <name>constraint</name>
+      <required>false</required>
+      <rtexprvalue>true</rtexprvalue>
+    </attribute>
+   <attribute>
+      <name>paoNameElement</name>
+      <required>false</required>
+      <rtexprvalue>false</rtexprvalue>
+    </attribute>
+   <attribute>
+      <name>typeElement</name>
+      <required>false</required>
+      <rtexprvalue>false</rtexprvalue>
+    </attribute>
+    <attribute>
+      <name>finalTriggerAction</name>
+      <required>false</required>
+      <rtexprvalue>true</rtexprvalue>
+    </attribute>
+    <attribute>
+      <name>selectionLinkName</name>
+      <required>false</required>
+      <rtexprvalue>true</rtexprvalue>
+    </attribute>
+  </tag>
   
   <tag>
     <name>beanLookup</name>

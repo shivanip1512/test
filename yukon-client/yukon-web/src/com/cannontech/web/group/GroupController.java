@@ -237,12 +237,24 @@ public class GroupController extends MultiActionController {
         DeviceGroup group = deviceGroupService.resolveGroupName(groupName);
         if (group.isModifiable()) {
 
-            Integer deviceId = ServletRequestUtils.getIntParameter(request, "deviceId");
+            String deviceId = ServletRequestUtils.getStringParameter(request, "deviceId");
 
-            YukonDevice device = new YukonDevice();
-            device.setDeviceId(deviceId);
+            String[] ids = StringUtils.split(deviceId, ",");
+
+            List<YukonDevice> deviceList = new ArrayList<YukonDevice>();
+            for (String id : ids) {
+                id = id.trim();
+                
+                if (!StringUtils.isEmpty(id)) {
+                    Integer idInt = Integer.parseInt(id);
+                    YukonDevice device = new YukonDevice();
+                    device.setDeviceId(idInt);
+                    deviceList.add(device);
+                }
+            }
+
             ((DeviceGroupMemberEditorDao) deviceGroupEditorDao).addDevices((StoredDeviceGroup) group,
-                                                                           Collections.singletonList(device));
+                                                                           deviceList);
         } else {
             mav.addObject("errorMessage", "Cannot add devices to " + group.getFullName());
             return mav;

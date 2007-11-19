@@ -72,10 +72,17 @@ ItemPicker.prototype = {
 	    bodyElem.appendChild(newDivElem);
 	    
 	    var url = this.setUrlPrefix('initial');
-	    url += 'pickerId=' + this.pickerId;
-	    url += '&sameItemLink=' + this.sameItemLink;
+	    url += this.showPickerValues();
 
 	    new Ajax.Updater('itemPickerContainer', url, {'method': 'get', 'onComplete': this.onPickerShown.bind(this), 'onFailure': this.ajaxError.bind(this)});
+	},
+	
+	showPickerValues: function() {
+	    var values = '';
+	    values += 'pickerId=' + this.pickerId;
+	    values += '&sameItemLink=' + this.sameItemLink;
+		
+		return values;
 	},
 	
 	doPartialSearch: function(start) {
@@ -101,7 +108,7 @@ ItemPicker.prototype = {
 		lastItemId = id;
 	},
 
-	selectThisItem: function(hit) {
+	selectThisItem: function(hit, link) {
 	    
 	    $('itemPickerContainer').parentNode.removeChild($('itemPickerContainer'));
 	    for (i=0; i < this.extraInfo.length; i+=1) {
