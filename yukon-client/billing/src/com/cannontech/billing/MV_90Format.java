@@ -98,7 +98,7 @@ public class MV_90Format extends FileFormatBase
 						double multiplier = 1;
 						if( getBillingDefaults().isRemoveMultiplier())
 						{
-							multiplier = ((Double)getPointIDMultiplierHashTable().get(new Integer(pointID))).doubleValue();
+							multiplier = getPointIDMultiplierHashTable().get(new Integer(pointID)).doubleValue();
 						}
 						
 						String meterNumber = rset.getString(1);

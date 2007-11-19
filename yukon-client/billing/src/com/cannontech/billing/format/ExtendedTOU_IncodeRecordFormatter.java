@@ -139,7 +139,7 @@ public class ExtendedTOU_IncodeRecordFormatter extends ExtendedTOURecordFormatte
     @Override
     protected String getMeterNumber(BillableDevice device, String code ) {
     	String key = buildKey(code, device.getData(BillableField.address));
-        String customMeterNumber = (String)getCISMeterNumbers().get(key);
+        String customMeterNumber = getCISMeterNumbers().get(key);
         return (customMeterNumber != null ? 
         		customMeterNumber : super.getMeterNumber(device, code));
     }

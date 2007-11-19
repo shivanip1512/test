@@ -123,7 +123,7 @@ public class NCDC_HandheldFormat extends FileFormatBase
 						double multiplier = 1;
 						if( getBillingDefaults().isRemoveMultiplier())
 						{
-							multiplier = ((Double)getPointIDMultiplierHashTable().get(new Integer(pointID))).doubleValue();
+							multiplier = getPointIDMultiplierHashTable().get(new Integer(pointID)).doubleValue();
 						}
 						if( pointID != lastPointID )	//just getting max time for each point
 						{
@@ -277,7 +277,7 @@ public class NCDC_HandheldFormat extends FileFormatBase
 	
 			for (int i = 0; i < linesInFile.size(); i++)
 			{
-				String line = (String)linesInFile.get(i);
+				String line = linesInFile.get(i);
 				String keyLocation = line.substring(0, 25).trim();
 				String valueLocation = keyLocation;
 				String valueAccount = line.substring(34,46).trim();

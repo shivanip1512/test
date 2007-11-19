@@ -353,7 +353,7 @@ public abstract class FileFormatBase
 			accountNumberHashTable = new Hashtable<String, String>(hashCapacity);
 	
 			for (int i = 0; i < linesInFile.size(); i++) {
-				String line = (String)linesInFile.get(i);
+				String line = linesInFile.get(i);
 				int commaIndex = line.indexOf(",");
 				
 				String keyMeterNumber = line.substring(0, commaIndex);

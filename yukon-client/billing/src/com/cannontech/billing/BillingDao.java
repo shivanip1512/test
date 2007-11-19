@@ -146,7 +146,7 @@ public class BillingDao {
 
                     double multiplier = 1;
                     if (defaults.isRemoveMultiplier()) {
-                        multiplier = ((Double) retrievePointIDMultiplierHashTable().get(new Integer(currentPointID))).doubleValue();
+                        multiplier = retrievePointIDMultiplierHashTable().get(new Integer(currentPointID)).doubleValue();
                     }
 
                     double reading = rset.getDouble(7) / multiplier;
@@ -316,7 +316,7 @@ public class BillingDao {
             accountNumberHashTable = new HashMap<String, String>(hashCapacity);
 
             for (int i = 0; i < linesInFile.size(); i++) {
-                String line = (String) linesInFile.get(i);
+                String line = linesInFile.get(i);
                 int commaIndex = line.indexOf(",");
 
                 String keyMeterNumber = line.substring(0, commaIndex);

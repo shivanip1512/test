@@ -285,7 +285,7 @@ public boolean retrieveBillingData(java.util.Vector collectionGroups)
 			String substationId = null;
 			Vector<Integer> channelPointIdVector = new Vector<Integer>();
 
-			java.util.StringTokenizer stringTokenizer = new java.util.StringTokenizer(((String)substationPointGroupVector.get(i)),",");
+			java.util.StringTokenizer stringTokenizer = new java.util.StringTokenizer(substationPointGroupVector.get(i),",");
 			int pass = 0;
 			while( stringTokenizer.hasMoreTokens() )
 			{
@@ -315,9 +315,9 @@ public boolean retrieveBillingData(java.util.Vector collectionGroups)
 				{
 					for(int j=0;j<channelPointIdVector.size();j++)
 					{
-						if( ((Integer)channelPointIdVector.get(j)).intValue() > 0 )
+						if( channelPointIdVector.get(j).intValue() > 0 )
 						{
-							preparedStatement.setInt(1,((Integer)channelPointIdVector.get(j)).intValue());
+							preparedStatement.setInt(1,channelPointIdVector.get(j).intValue());
 							preparedStatement.setTimestamp(2,new java.sql.Timestamp(getBillingDefaults().getDemandStartDate().getTime()));
 							preparedStatement.setTimestamp(3,new java.sql.Timestamp(getBillingDefaults().getEndDate().getTime()));
 							rset = preparedStatement.executeQuery();
@@ -404,9 +404,9 @@ public boolean retrieveBillingData(java.util.Vector collectionGroups)
 				{
 					for(int j=0;j<channelPointIdVector.size();j++)
 					{
-						if( ((Integer)channelPointIdVector.get(j)).intValue() > 0 )
+						if( channelPointIdVector.get(j).intValue() > 0 )
 						{
-							preparedStatement.setInt(1,((Integer)channelPointIdVector.get(j)).intValue());
+							preparedStatement.setInt(1,channelPointIdVector.get(j).intValue());
 							rset = preparedStatement.executeQuery();
 
 							if( rset.next() )
@@ -473,14 +473,14 @@ public boolean retrieveBillingData(java.util.Vector collectionGroups)
 				int missingIntervals = 0;
 				for(int k=0;k<missingIntervalsVector.size();k++)
 				{
-					if( ((Integer)missingIntervalsVector.get(k)).intValue() > missingIntervals )
+					if( missingIntervalsVector.get(k).intValue() > missingIntervals )
 					{//we take just the highest missing intervals number because if we will have 3 times to many missing intervals if we count all 3 channels
-						missingIntervals = ((Integer)missingIntervalsVector.get(k)).intValue();
+						missingIntervals = missingIntervalsVector.get(k).intValue();
 					}
 				}
 				int falseIntervals = 0;
 				for(int k=0;k<falseIntervalsVector.size();k++)
-					falseIntervals += ((Integer)falseIntervalsVector.get(k)).intValue();
+					falseIntervals += falseIntervalsVector.get(k).intValue();
 
 				header0000.setStartTime(tempGreg1);
 				header0000.setStopTime(tempGreg2);
@@ -497,7 +497,7 @@ public boolean retrieveBillingData(java.util.Vector collectionGroups)
 				Vector<Integer> unitOfMeasureCodeVector = new Vector<Integer>();
 				for(int k=0;k<unitOfMeasureIdVector.size();k++)
 				{
-					String unitMeasureName = DaoFactory.getUnitMeasureDao().getLiteUnitMeasure(((Integer)unitOfMeasureIdVector.get(k)).intValue()).getUnitMeasureName();
+					String unitMeasureName = DaoFactory.getUnitMeasureDao().getLiteUnitMeasure(unitOfMeasureIdVector.get(k).intValue()).getUnitMeasureName();
 					if( unitMeasureName.equalsIgnoreCase("kWh") )
 					{
 						unitOfMeasureCodeVector.addElement(new Integer(1));
