@@ -20,7 +20,7 @@
 	<%pageContext.setAttribute("currentUser", lYukonUser);%>
 	<c:set target="${configBean}" property="currentUser" value="${currentUser}" />
 	
-	<link rel="stylesheet" href="../../include/PurpleStyles.css" type="text/css">
+	<cti:includeCss link="/include/PurpleStyles.css"/>
 	<div class="headerbar">
 		<%@ include file="include/HeaderBar.jspf" %>
 	</div>

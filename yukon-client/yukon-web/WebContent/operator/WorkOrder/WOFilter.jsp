@@ -12,7 +12,7 @@
  	<%pageContext.setAttribute("filterServiceStatus", new Integer(YukonListEntryTypes.YUK_DEF_ID_SO_FILTER_BY_STATUS).toString());%>
  	<%pageContext.setAttribute("filterCICustomerType", new Integer(YukonListEntryTypes.YUK_DEF_ID_SO_FILTER_BY_CUST_TYPE).toString());%>
 
-	<link rel="stylesheet" href="../../include/PurpleStyles.css" type="text/css">
+	<cti:includeCss link="/include/PurpleStyles.css"/>
 	<div class="headerbar">
 		<%@ include file="include/HeaderBar.jspf" %>
 	</div>

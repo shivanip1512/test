@@ -112,23 +112,26 @@ public class OutputHeadContentTag extends BodyTagSupport {
         outputCssFiles(Arrays.asList(cssLocationArray));
     }
     
-    private void outputCssFiles(List cssList) throws IOException {
-        boolean foundNone = true;
-        for (Iterator iter = cssList.iterator(); iter.hasNext();) {
-            String cssFile = (String) iter.next();
-            cssFile = StringUtils.strip(cssFile);
-
-            if (StringUtils.isNotBlank(cssFile)) {
-                cssFile = ServletUtil.createSafeUrl(pageContext.getRequest(), cssFile);
-                pageContext.getOut()
-                    .write("<link rel=\"stylesheet\" type=\"text/css\" href=\"");
-                pageContext.getOut().write(cssFile.trim());
-                pageContext.getOut().write("\" >\n");
-                foundNone = false;
+    private void outputCssFiles(List<String> cssList) throws IOException {
+        Set<String> cssSet = new LinkedHashSet<String>();
+        
+        for (String file : cssList) {
+            // we want the order to reflect the position of the last reference to the file
+            file = StringUtils.strip(file);
+            if (StringUtils.isNotBlank(file)) {
+                cssSet.remove(file);
+                cssSet.add(file);
             }
         }
-        if (foundNone) {
+        if (cssSet.isEmpty()) {
             pageContext.getOut().write("<!--  (none)  -->\n");
+        } else {
+            for (String cssFile : cssSet) {
+                cssFile = ServletUtil.createSafeUrl(pageContext.getRequest(), cssFile);
+                pageContext.getOut().write("<link rel=\"stylesheet\" type=\"text/css\" href=\"");
+                pageContext.getOut().write(cssFile.trim());
+                pageContext.getOut().write("\" >\n");
+            }
         }
     }
     

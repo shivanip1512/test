@@ -3,7 +3,7 @@
 <jsp:useBean id="wareAdmin" scope="page" class="com.cannontech.stars.web.bean.WarehouseAdminBean" />
 
 <cti:standardPage title="Energy Services Operations Center" module="stars">
-	<link rel="stylesheet" href="../../include/PurpleStyles.css" type="text/css">
+	<cti:includeCss link="/include/PurpleStyles.css"/>
 	
 	<div class="headerbar">
 		<%@ include file="include/HeaderBar.jspf" %>

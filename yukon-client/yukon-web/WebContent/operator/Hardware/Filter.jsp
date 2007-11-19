@@ -19,7 +19,7 @@
 	<%pageContext.setAttribute("filterCICustomerType", new Integer(YukonListEntryTypes.YUK_DEF_ID_INV_FILTER_BY_CUST_TYPE).toString());%>
 	<%pageContext.setAttribute("backOnePage", ((CtiNavObject)session.getAttribute(ServletUtils.NAVIGATE)).getPreviousPage());%>
 
-	<link rel="stylesheet" href="../../include/PurpleStyles.css" type="text/css">
+	<cti:includeCss link="/include/PurpleStyles.css"/>
 	<div class="headerbar">
 		<%@ include file="include/HeaderBar.jspf" %>
 	</div>

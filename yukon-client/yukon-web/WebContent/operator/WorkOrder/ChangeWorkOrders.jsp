@@ -10,7 +10,7 @@
  	<%pageContext.setAttribute("changeServiceType", new Integer(ServletUtils.ACTION_CHANGE_WO_SERVICE_TYPE).toString());%>
  	<%pageContext.setAttribute("changeServiceStatus", new Integer(ServletUtils.ACTION_CHANGE_WO_SERVICE_STATUS).toString());%>
  		
-	<link rel="stylesheet" href="../../include/PurpleStyles.css" type="text/css">
+	<cti:includeCss link="/include/PurpleStyles.css"/>
 	<div class="headerbar">
 		<%@ include file="include/HeaderBar.jspf" %>
 	</div>

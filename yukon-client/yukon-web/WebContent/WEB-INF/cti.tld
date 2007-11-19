@@ -271,6 +271,7 @@
     <attribute>
       <name>link</name>
       <required>true</required>
+      <rtexprvalue>true</rtexprvalue>
     </attribute>
   </tag>
   

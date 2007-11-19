@@ -7,7 +7,7 @@
 	<%pageContext.setAttribute("currentAccountID", account.getAccountID());%>
 	<c:set target="${accountBean}" property="currentAccount" value="${currentAccountID}" />
 	
-	<link rel="stylesheet" href="../../include/PurpleStyles.css" type="text/css">
+	<cti:includeCss link="/include/PurpleStyles.css"/>
 	<div class="headerbar">
 		<%@ include file="include/HeaderBar.jspf" %>
 	</div>
