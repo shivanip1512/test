@@ -143,6 +143,7 @@ CtiCCStrategy& CtiCCStrategy::operator=(const CtiCCStrategy& right)
         _offpkPFSetPoint = right._offpkPFSetPoint;
         _integrateFlag = right._integrateFlag;
         _integratePeriod = right._integratePeriod;
+        _likeDayFallBack = right._likeDayFallBack;
     }
     return *this;
 
@@ -231,6 +232,10 @@ void CtiCCStrategy::restore(RWDBReader &rdr)
     _integrateFlag = (tempBoolString=="y"?TRUE:FALSE);
 
     rdr["integrateperiod"] >> _integratePeriod;
+
+    rdr["likedayfallback"] >> tempBoolString;
+    CtiToLower(tempBoolString);
+    _likeDayFallBack = (tempBoolString=="y"?TRUE:FALSE);
 
 }
 
@@ -375,6 +380,10 @@ LONG CtiCCStrategy::getIntegratePeriod() const
     return _integratePeriod;
 }
 
+BOOL CtiCCStrategy::getLikeDayFallBack() const
+{
+    return _likeDayFallBack;
+}
 CtiCCStrategy& CtiCCStrategy::setStrategyId(LONG id)
 {
     _strategyid = id;
@@ -531,6 +540,12 @@ CtiCCStrategy& CtiCCStrategy::setIntegrateFlag(BOOL flag)
 CtiCCStrategy& CtiCCStrategy::setIntegratePeriod(LONG period)
 {
     _integratePeriod = period;
+    return *this;
+}
+
+CtiCCStrategy& CtiCCStrategy::setLikeDayFallBack(BOOL flag)
+{
+    _likeDayFallBack = flag;
     return *this;
 }
 

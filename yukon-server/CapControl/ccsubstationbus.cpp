@@ -206,6 +206,17 @@ LONG CtiCCSubstationBus::getIntegratePeriod() const
 {
     return _integrateperiod;
 }
+
+/*---------------------------------------------------------------------------
+    getLikeDayFallBack
+
+    Returns the LikeDayFallBack of the substation
+---------------------------------------------------------------------------*/
+BOOL CtiCCSubstationBus::getLikeDayFallBack() const
+{
+    return _likedayfallback;
+}
+
 /*---------------------------------------------------------------------------
     getIVControlTot
 
@@ -791,6 +802,27 @@ const CtiTime& CtiCCSubstationBus::getLastCurrentVarPointUpdateTime() const
 }
 
 /*---------------------------------------------------------------------------
+    getLastWattPointTime
+
+    Returns the last current watt point update time of the substation
+---------------------------------------------------------------------------*/
+const CtiTime& CtiCCSubstationBus::getLastWattPointTime() const
+{
+    return _lastWattPointTime;
+}
+
+/*---------------------------------------------------------------------------
+    getLastVoltPointTime
+
+    Returns the last current var point update time of the substation
+---------------------------------------------------------------------------*/
+const CtiTime& CtiCCSubstationBus::getLastVoltPointTime() const
+{
+    return _lastVoltPointTime;
+}
+
+
+/*---------------------------------------------------------------------------
     getEstimatedVarLoadPointId
 
     Returns the estimated var load point id of the substation
@@ -1269,7 +1301,16 @@ CtiCCSubstationBus& CtiCCSubstationBus::setIntegratePeriod(LONG period)
     _integrateperiod = period;
     return *this;
 }
+/*---------------------------------------------------------------------------
+    LikeDayFallBack
 
+    Sets the LikeDayFallBack of the substation
+---------------------------------------------------------------------------*/
+CtiCCSubstationBus& CtiCCSubstationBus::setLikeDayFallBack(BOOL flag)
+{
+    _likedayfallback = flag;
+    return *this;
+}
 /*---------------------------------------------------------------------------
     setIVControlTot 
         
@@ -1977,6 +2018,42 @@ CtiCCSubstationBus& CtiCCSubstationBus::setLastCurrentVarPointUpdateTime(const C
         _dirty = TRUE;
     }
     _lastcurrentvarpointupdatetime = lastpointupdate;
+    return *this;
+}
+/*---------------------------------------------------------------------------
+    setLastWattPointTime
+
+    Sets the last current Watt point update time of the subbus
+---------------------------------------------------------------------------*/
+CtiCCSubstationBus& CtiCCSubstationBus::setLastWattPointTime(const CtiTime& lastpointupdate)
+{
+    if( _lastWattPointTime != lastpointupdate )
+    {
+        /*{
+            CtiLockGuard<CtiLogger> doubt_guard(dout);
+            dout << CtiTime() << " - _dirty = TRUE  " << __FILE__ << " (" << __LINE__ << ")" << endl;
+        }*/
+        _dirty = TRUE;
+    }
+    _lastWattPointTime = lastpointupdate;
+    return *this;
+}
+/*---------------------------------------------------------------------------
+    setLastVoltPointTime
+
+    Sets the last current Volt point update time of the subbus
+---------------------------------------------------------------------------*/
+CtiCCSubstationBus& CtiCCSubstationBus::setLastVoltPointTime(const CtiTime& lastpointupdate)
+{
+    if( _lastVoltPointTime != lastpointupdate )
+    {
+        /*{
+            CtiLockGuard<CtiLogger> doubt_guard(dout);
+            dout << CtiTime() << " - _dirty = TRUE  " << __FILE__ << " (" << __LINE__ << ")" << endl;
+        }*/
+        _dirty = TRUE;
+    }
+    _lastVoltPointTime = lastpointupdate;
     return *this;
 }
 
@@ -6228,7 +6305,11 @@ void CtiCCSubstationBus::dumpDynamicData(RWDBConnection& conn, CtiTime& currentD
             << dynamicCCSubstationBusTable["iwcount"].assign( _iWCount )
             << dynamicCCSubstationBusTable["phaseavalue"].assign( _phaseAvalue )
             << dynamicCCSubstationBusTable["phasebvalue"].assign( _phaseBvalue )
-            << dynamicCCSubstationBusTable["phasecvalue"].assign( _phaseCvalue );
+            << dynamicCCSubstationBusTable["phasecvalue"].assign( _phaseCvalue )
+            << dynamicCCSubstationBusTable["lastwattpointtime"].assign( toRWDBDT((CtiTime)_lastWattPointTime) )
+            << dynamicCCSubstationBusTable["lastvoltpointtime"].assign( toRWDBDT((CtiTime)_lastVoltPointTime) );
+
+            ;
              
             /*{
                 CtiLockGuard<CtiLogger> logger_guard(dout);
@@ -6303,7 +6384,10 @@ void CtiCCSubstationBus::dumpDynamicData(RWDBConnection& conn, CtiTime& currentD
             <<  _iWCount
             << _phaseAvalue
             << _phaseBvalue
-            << _phaseCvalue;
+            << _phaseCvalue
+            << _lastWattPointTime
+            << _lastVoltPointTime;
+
 
             if( _CC_DEBUG & CC_DEBUG_DATABASE )
             {
@@ -8603,6 +8687,7 @@ CtiCCSubstationBus& CtiCCSubstationBus::operator=(const CtiCCSubstationBus& righ
         _targetvarvalue = right._targetvarvalue;
         _integrateflag = right._integrateflag;
         _integrateperiod = right._integrateperiod;
+        _likedayfallback = right._likedayfallback;
         _iVControlTot = right._iVControlTot;
         _iVCount = right._iVCount;
         _iWControlTot = right._iWControlTot;
@@ -8619,7 +8704,10 @@ CtiCCSubstationBus& CtiCCSubstationBus::operator=(const CtiCCSubstationBus& righ
         _phaseCvalue = right._phaseCvalue;
         _phaseAvalueBeforeControl = right._phaseAvalueBeforeControl;
         _phaseBvalueBeforeControl = right._phaseBvalueBeforeControl;
-        _phaseCvalueBeforeControl = right._phaseCvalueBeforeControl;
+        _phaseCvalueBeforeControl = right._phaseCvalueBeforeControl;   
+
+        _lastWattPointTime = right._lastWattPointTime;
+        _lastVoltPointTime = right._lastVoltPointTime;
 
         _ccfeeders.clear();
         for(LONG i=0;i<right._ccfeeders.size();i++)
@@ -8815,6 +8903,9 @@ void CtiCCSubstationBus::restore(RWDBReader& rdr)
     setPhaseBValueBeforeControl(0);
     setPhaseCValueBeforeControl(0);
 
+    setLastWattPointTime(gInvalidCtiTime);
+    setLastVoltPointTime(gInvalidCtiTime);
+
 }
 
 void CtiCCSubstationBus::setStrategyValues(CtiCCStrategyPtr strategy)
@@ -8847,6 +8938,7 @@ void CtiCCSubstationBus::setStrategyValues(CtiCCStrategyPtr strategy)
     _controlsendretries = strategy->getControlSendRetries();
     _integrateflag = strategy->getIntegrateFlag();
     _integrateperiod = strategy->getIntegratePeriod();
+    _likedayfallback = strategy->getLikeDayFallBack();
 
 }
 
@@ -8935,6 +9027,9 @@ void CtiCCSubstationBus::setDynamicData(RWDBReader& rdr)
         rdr["phaseavalue"] >> _phaseAvalue;
         rdr["phasebvalue"] >> _phaseBvalue;
         rdr["phasecvalue"] >> _phaseCvalue;
+
+        rdr["lastwattpointtime"] >> _lastWattPointTime;
+        rdr["lastvoltpointtime"] >> _lastVoltPointTime;
         
         _insertDynamicDataFlag = FALSE;
 

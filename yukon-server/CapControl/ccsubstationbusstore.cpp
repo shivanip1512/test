@@ -3161,7 +3161,8 @@ void CtiCCSubstationBusStore::reloadStrategyFromDataBase(long strategyId, map< l
                 << capControlStrategy["peakpfsetpoint"] 
                 << capControlStrategy["offpkpfsetpoint"]
                 << capControlStrategy["integrateflag"] 
-                << capControlStrategy["integrateperiod"];
+                << capControlStrategy["integrateperiod"]
+                << capControlStrategy["likedayfallback"];
                 
 
                 selector.from(capControlStrategy);
@@ -4679,7 +4680,9 @@ void CtiCCSubstationBusStore::reloadSubBusFromDatabase(long subBusId, map< long,
                         << dynamicCCSubstationBusTable["iwcount"]
                         << dynamicCCSubstationBusTable["phaseavalue"]
                         << dynamicCCSubstationBusTable["phasebvalue"]
-                        << dynamicCCSubstationBusTable["phasecvalue"];
+                        << dynamicCCSubstationBusTable["phasecvalue"]
+                        << dynamicCCSubstationBusTable["lastwattpointtime"]
+                        << dynamicCCSubstationBusTable["lastvoltpointtime"];
 
                         selector.from(capControlSubstationBusTable);
                         selector.from(dynamicCCSubstationBusTable);
@@ -5286,7 +5289,10 @@ void CtiCCSubstationBusStore::reloadFeederFromDatabase(long feederId, map< long,
                     << dynamicCCFeederTable["iwcount"]
                     << dynamicCCFeederTable["phaseavalue"]
                     << dynamicCCFeederTable["phasebvalue"]
-                    << dynamicCCFeederTable["phasecvalue"];
+                    << dynamicCCFeederTable["phasecvalue"]
+                    << dynamicCCFeederTable["lastwattpointtime"]
+                    << dynamicCCFeederTable["lastvoltpointtime"];
+
 
                     selector.from(dynamicCCFeederTable);
                     selector.from(capControlFeederTable);

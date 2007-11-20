@@ -161,6 +161,7 @@ RWDECLARE_COLLECTABLE( CtiCCSubstationBus )
     LONG getDisplayOrder() const;  
     BOOL getIntegrateFlag() const;
     LONG getIntegratePeriod() const;
+    BOOL getLikeDayFallBack() const;
     DOUBLE getIVControlTot() const;
     LONG getIVCount() const;
     DOUBLE getIWControlTot() const;
@@ -176,6 +177,8 @@ RWDECLARE_COLLECTABLE( CtiCCSubstationBus )
     DOUBLE getPhaseAValueBeforeControl() const;
     DOUBLE getPhaseBValueBeforeControl() const;
     DOUBLE getPhaseCValueBeforeControl() const;
+    const CtiTime& getLastWattPointTime() const;
+    const CtiTime& getLastVoltPointTime() const;
 
     CtiFeeder_vec& getCCFeeders();
     void deleteCCFeeder(long feederId);
@@ -271,6 +274,7 @@ RWDECLARE_COLLECTABLE( CtiCCSubstationBus )
     CtiCCSubstationBus& setDisplayOrder(LONG displayOrder);
     CtiCCSubstationBus& setIntegrateFlag(BOOL flag);
     CtiCCSubstationBus& setIntegratePeriod(LONG period);
+    CtiCCSubstationBus& setLikeDayFallBack(BOOL flag);
     CtiCCSubstationBus& setIVControlTot(DOUBLE value);
     CtiCCSubstationBus& setIVCount(LONG value);
     CtiCCSubstationBus& setIWControlTot(DOUBLE value);
@@ -286,6 +290,8 @@ RWDECLARE_COLLECTABLE( CtiCCSubstationBus )
     CtiCCSubstationBus& setPhaseAValueBeforeControl(DOUBLE value);
     CtiCCSubstationBus& setPhaseBValueBeforeControl(DOUBLE value);
     CtiCCSubstationBus& setPhaseCValueBeforeControl(DOUBLE value);
+    CtiCCSubstationBus& setLastWattPointTime(const CtiTime& lastpointupdate);
+    CtiCCSubstationBus& setLastVoltPointTime(const CtiTime& lastpointupdate);
 
 
     BOOL isPastMaxConfirmTime(const CtiTime& currentDateTime);
@@ -480,6 +486,7 @@ RWDECLARE_COLLECTABLE( CtiCCSubstationBus )
     BOOL _waivecontrolflag;
     BOOL _integrateflag;
     LONG _integrateperiod;
+    BOOL _likedayfallback;
 
     string _additionalFlags;
     LONG _currentVerificationCapBankId;
@@ -535,7 +542,9 @@ RWDECLARE_COLLECTABLE( CtiCCSubstationBus )
     DOUBLE _phaseAvalueBeforeControl;
     DOUBLE _phaseBvalueBeforeControl;
     DOUBLE _phaseCvalueBeforeControl;
-
+    
+    CtiTime _lastWattPointTime;
+    CtiTime _lastVoltPointTime;
 
     //don't stream
     BOOL _insertDynamicDataFlag;

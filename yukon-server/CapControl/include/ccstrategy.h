@@ -68,6 +68,7 @@ RWDECLARE_COLLECTABLE( CtiCCStrategy )
     LONG getControlSendRetries() const;
     BOOL getIntegrateFlag() const;
     LONG getIntegratePeriod() const;
+    BOOL getLikeDayFallBack() const;
 
     CtiCCStrategy& setStrategyId(LONG id);
     CtiCCStrategy& setStrategyName(const string& strategyname);
@@ -96,7 +97,7 @@ RWDECLARE_COLLECTABLE( CtiCCStrategy )
     CtiCCStrategy& setControlSendRetries(LONG retries);
     CtiCCStrategy& setIntegrateFlag(BOOL flag);
     CtiCCStrategy& setIntegratePeriod(LONG period);
-
+    CtiCCStrategy& setLikeDayFallBack(BOOL flag);
 
     BOOL isDirty() const;
 
@@ -154,6 +155,7 @@ RWDECLARE_COLLECTABLE( CtiCCStrategy )
     DOUBLE _offpkPFSetPoint;
     BOOL  _integrateFlag;
     LONG _integratePeriod;
+    BOOL _likeDayFallBack;
 
 
 

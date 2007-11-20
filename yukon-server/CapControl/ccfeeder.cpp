@@ -499,6 +499,17 @@ LONG CtiCCFeeder::getIntegratePeriod() const
 {
     return _integrateperiod;
 }
+
+/*---------------------------------------------------------------------------
+    getLikeDayFallBack
+
+    Returns the LikeDayFallBack of the feeder
+---------------------------------------------------------------------------*/
+BOOL CtiCCFeeder::getLikeDayFallBack() const
+{
+    return _likedayfallback;
+}
+
 /*---------------------------------------------------------------------------
     getIVControlTot
 
@@ -660,6 +671,28 @@ const CtiTime& CtiCCFeeder::getLastCurrentVarPointUpdateTime() const
 {
     return _lastcurrentvarpointupdatetime;
 }
+
+/*---------------------------------------------------------------------------
+    getLastWattPointTime
+
+    Returns the last current watt point update time of the feeder
+---------------------------------------------------------------------------*/
+const CtiTime& CtiCCFeeder::getLastWattPointTime() const
+{
+    return _lastWattPointTime;
+}
+
+/*---------------------------------------------------------------------------
+    getLastVoltPointTime
+
+    Returns the last current var point update time of the feeder
+---------------------------------------------------------------------------*/
+const CtiTime& CtiCCFeeder::getLastVoltPointTime() const
+{
+    return _lastVoltPointTime;
+}
+
+
 
 /*---------------------------------------------------------------------------
     getEstimatedVarLoadPointId
@@ -1417,6 +1450,43 @@ CtiCCFeeder& CtiCCFeeder::setLastCurrentVarPointUpdateTime(const CtiTime& lastpo
     _lastcurrentvarpointupdatetime = lastpointupdate;
     return *this;
 }
+/*---------------------------------------------------------------------------
+    setLastWattPointTime
+
+    Sets the last current Watt point update time of the feeder
+---------------------------------------------------------------------------*/
+CtiCCFeeder& CtiCCFeeder::setLastWattPointTime(const CtiTime& lastpointupdate)
+{
+    if( _lastWattPointTime != lastpointupdate )
+    {
+        /*{
+            CtiLockGuard<CtiLogger> doubt_guard(dout);
+            dout << CtiTime() << " - _dirty = TRUE  " << __FILE__ << " (" << __LINE__ << ")" << endl;
+        }*/
+        _dirty = TRUE;
+    }
+    _lastWattPointTime = lastpointupdate;
+    return *this;
+}
+/*---------------------------------------------------------------------------
+    setLastVoltPointTime
+
+    Sets the last current Volt point update time of the feeder
+---------------------------------------------------------------------------*/
+CtiCCFeeder& CtiCCFeeder::setLastVoltPointTime(const CtiTime& lastpointupdate)
+{
+    if( _lastVoltPointTime != lastpointupdate )
+    {
+        /*{
+            CtiLockGuard<CtiLogger> doubt_guard(dout);
+            dout << CtiTime() << " - _dirty = TRUE  " << __FILE__ << " (" << __LINE__ << ")" << endl;
+        }*/
+        _dirty = TRUE;
+    }
+    _lastVoltPointTime = lastpointupdate;
+    return *this;
+}
+
 
 /*---------------------------------------------------------------------------
     setEstimatedVarLoadPointId
@@ -4547,6 +4617,19 @@ CtiCCFeeder& CtiCCFeeder::setIntegratePeriod(LONG period)
     _integrateperiod = period;
     return *this;
 }
+
+
+/*---------------------------------------------------------------------------
+    setLikeDayFallBack
+
+    Sets the LikeDayFallBack of the feeder
+---------------------------------------------------------------------------*/
+CtiCCFeeder& CtiCCFeeder::setLikeDayFallBack(BOOL flag)
+{
+    _likedayfallback = flag;
+    return *this;
+}
+
 /*---------------------------------------------------------------------------
     setIVControlTot 
         
@@ -5608,7 +5691,9 @@ void CtiCCFeeder::dumpDynamicData(RWDBConnection& conn, CtiTime& currentDateTime
             << dynamicCCFeederTable["iwcount"].assign(_iWCount)
             << dynamicCCFeederTable["phaseavalue"].assign(_phaseAvalue)
             << dynamicCCFeederTable["phasebvalue"].assign(_phaseBvalue)
-            << dynamicCCFeederTable["phasecvalue"].assign(_phaseCvalue);
+            << dynamicCCFeederTable["phasecvalue"].assign(_phaseCvalue)
+            << dynamicCCFeederTable["lastwattpointtime"].assign( toRWDBDT((CtiTime)_lastWattPointTime) )
+            << dynamicCCFeederTable["lastvoltpointtime"].assign( toRWDBDT((CtiTime)_lastVoltPointTime) );
 
             /*{
                 CtiLockGuard<CtiLogger> logger_guard(dout);
@@ -5678,7 +5763,9 @@ void CtiCCFeeder::dumpDynamicData(RWDBConnection& conn, CtiTime& currentDateTime
             <<  _iWCount
             << _phaseAvalue
             << _phaseBvalue
-            << _phaseCvalue;
+            << _phaseCvalue
+            << _lastWattPointTime
+            << _lastVoltPointTime;
 
 
             if( _CC_DEBUG & CC_DEBUG_DATABASE )
@@ -5959,6 +6046,7 @@ CtiCCFeeder& CtiCCFeeder::operator=(const CtiCCFeeder& right)
         _solution = right._solution;
         _integrateflag = right._integrateflag;
         _integrateperiod = right._integrateperiod;
+        _likedayfallback = right._likedayfallback;
         _iVControlTot = right._iVControlTot;
         _iVCount = right._iVCount;
         _iWControlTot = right._iWControlTot;
@@ -5976,6 +6064,9 @@ CtiCCFeeder& CtiCCFeeder::operator=(const CtiCCFeeder& right)
         _phaseBvalueBeforeControl = right._phaseBvalueBeforeControl;
         _phaseCvalueBeforeControl = right._phaseCvalueBeforeControl;
 
+         _lastWattPointTime = right._lastWattPointTime;
+         _lastVoltPointTime = right._lastVoltPointTime;
+        
         _cccapbanks.clear();
         for(LONG i=0;i<right._cccapbanks.size();i++)
         {
@@ -6152,6 +6243,10 @@ void CtiCCFeeder::restore(RWDBReader& rdr)
     setPhaseAValueBeforeControl(0);
     setPhaseBValueBeforeControl(0);
     setPhaseCValueBeforeControl(0);
+
+    setLastWattPointTime(gInvalidCtiTime);
+    setLastVoltPointTime(gInvalidCtiTime);
+
 }
 
 void CtiCCFeeder::setStrategyValues(CtiCCStrategyPtr strategy)
@@ -6184,6 +6279,7 @@ void CtiCCFeeder::setStrategyValues(CtiCCStrategyPtr strategy)
     _controlsendretries = strategy->getControlSendRetries(); 
     _integrateflag = strategy->getIntegrateFlag();
     _integrateperiod = strategy->getIntegratePeriod();
+    _likedayfallback = strategy->getLikeDayFallBack();
 }
 void CtiCCFeeder::setDynamicData(RWDBReader& rdr)
 {
@@ -6244,8 +6340,9 @@ void CtiCCFeeder::setDynamicData(RWDBReader& rdr)
     rdr["phasebvalue"] >> _phaseBvalue;
     rdr["phasecvalue"] >> _phaseCvalue;
 
+    rdr["lastwattpointtime"] >> _lastWattPointTime;
+    rdr["lastvoltpointtime"] >> _lastVoltPointTime;
 
-    
     _insertDynamicDataFlag = FALSE;
     _dirty = false;
 

@@ -1888,70 +1888,79 @@ void CtiCapController::pointDataMsg( long pointID, double value, unsigned qualit
                     }
                     else if( currentSubstationBus->getCurrentWattLoadPointId() == pointID )
                     {                         
-                        if (!stringCompareIgnoreCase(currentSubstationBus->getControlUnits(),CtiCCSubstationBus::PF_BY_KQControlUnits))
+                        if( timestamp > currentSubstationBus->getLastWattPointTime() )
                         {
-                            DOUBLE tempKQ = currentSubstationBus->convertKVARToKQ(value,currentSubstationBus->getCurrentWattLoadPointValue());
-                            currentSubstationBus->setCurrentVarLoadPointValue(currentSubstationBus->convertKQToKVAR(tempKQ,value));
-                        }
-
-                        if (currentSubstationBus->getCurrentWattLoadPointValue() != value) 
-                        {
-                            currentSubstationBus->setCurrentWattLoadPointValue(value);
-                            currentSubstationBus->setBusUpdatedFlag(TRUE);
-                            if (currentSubstationBus->isControlPoint(pointID) && currentSubstationBus->getIntegrateFlag()) 
+                            currentSubstationBus->setLastWattPointTime(timestamp);
+                            if (!stringCompareIgnoreCase(currentSubstationBus->getControlUnits(),CtiCCSubstationBus::PF_BY_KQControlUnits))
                             {
-                                currentSubstationBus->updateIntegrationWPoint(CtiTime());
+                                DOUBLE tempKQ = currentSubstationBus->convertKVARToKQ(value,currentSubstationBus->getCurrentWattLoadPointValue());
+                                currentSubstationBus->setCurrentVarLoadPointValue(currentSubstationBus->convertKQToKVAR(tempKQ,value));
                             }
-                        }
-                        
-                        currentSubstationBus->setCurrentWattPointQuality(quality);
-
-                        if( currentSubstationBus->getCurrentVarLoadPointId() > 0 )
-                        {
-                            currentSubstationBus->setPowerFactorValue(currentSubstationBus->calculatePowerFactor(currentSubstationBus->getCurrentVarLoadPointValue(),currentSubstationBus->getCurrentWattLoadPointValue()));
-                            currentSubstationBus->setEstimatedPowerFactorValue(currentSubstationBus->calculatePowerFactor(currentSubstationBus->getEstimatedVarLoadPointValue(),currentSubstationBus->getCurrentWattLoadPointValue()));
-                            store->calculateParentPowerFactor(currentSubstationBus->getPAOId());
-
-                            if( currentSubstationBus->getPowerFactorPointId() > 0 )
+                            
+                            if (currentSubstationBus->getCurrentWattLoadPointValue() != value) 
                             {
-                                sendMessageToDispatch(new CtiPointDataMsg(currentSubstationBus->getPowerFactorPointId(),convertPowerFactorToSend(currentSubstationBus->getPowerFactorValue()),NormalQuality,AnalogPointType));
+                                currentSubstationBus->setCurrentWattLoadPointValue(value);
+                                currentSubstationBus->setBusUpdatedFlag(TRUE);
+                                if (currentSubstationBus->isControlPoint(pointID) && currentSubstationBus->getIntegrateFlag()) 
+                                {
+                                    currentSubstationBus->updateIntegrationWPoint(CtiTime());
+                                }
                             }
-                            if( currentSubstationBus->getEstimatedPowerFactorPointId() > 0 )
+                            
+                            currentSubstationBus->setCurrentWattPointQuality(quality);
+                            
+                            if( currentSubstationBus->getCurrentVarLoadPointId() > 0 )
                             {
-                                sendMessageToDispatch(new CtiPointDataMsg(currentSubstationBus->getEstimatedPowerFactorPointId(),convertPowerFactorToSend(currentSubstationBus->getEstimatedPowerFactorValue()),NormalQuality,AnalogPointType));
+                                currentSubstationBus->setPowerFactorValue(currentSubstationBus->calculatePowerFactor(currentSubstationBus->getCurrentVarLoadPointValue(),currentSubstationBus->getCurrentWattLoadPointValue()));
+                                currentSubstationBus->setEstimatedPowerFactorValue(currentSubstationBus->calculatePowerFactor(currentSubstationBus->getEstimatedVarLoadPointValue(),currentSubstationBus->getCurrentWattLoadPointValue()));
+                                store->calculateParentPowerFactor(currentSubstationBus->getPAOId());
+                            
+                                if( currentSubstationBus->getPowerFactorPointId() > 0 )
+                                {
+                                    sendMessageToDispatch(new CtiPointDataMsg(currentSubstationBus->getPowerFactorPointId(),convertPowerFactorToSend(currentSubstationBus->getPowerFactorValue()),NormalQuality,AnalogPointType));
+                                }
+                                if( currentSubstationBus->getEstimatedPowerFactorPointId() > 0 )
+                                {
+                                    sendMessageToDispatch(new CtiPointDataMsg(currentSubstationBus->getEstimatedPowerFactorPointId(),convertPowerFactorToSend(currentSubstationBus->getEstimatedPowerFactorValue()),NormalQuality,AnalogPointType));
+                                }
                             }
+                            //This IS supposed to be != so don't add a ! at the beginning like the other compareTo calls!!!!!!!!!!!
+                            else if( stringCompareIgnoreCase(currentSubstationBus->getControlUnits(),CtiCCSubstationBus::KVARControlUnits) )
+                            {//This IS supposed to be != so don't add a ! at the beginning like the other compareTo calls!!!!!!!!!!!
+                                CtiLockGuard<CtiLogger> logger_guard(dout);
+                                dout << CtiTime() << " - No Var Point, cannot calculate power factor, in: " << __FILE__ << " at:" << __LINE__ << endl;
+                            }
+                            found = TRUE;
+                            // break;
                         }
-                        //This IS supposed to be != so don't add a ! at the beginning like the other compareTo calls!!!!!!!!!!!
-                        else if( stringCompareIgnoreCase(currentSubstationBus->getControlUnits(),CtiCCSubstationBus::KVARControlUnits) )
-                        {//This IS supposed to be != so don't add a ! at the beginning like the other compareTo calls!!!!!!!!!!!
-                            CtiLockGuard<CtiLogger> logger_guard(dout);
-                            dout << CtiTime() << " - No Var Point, cannot calculate power factor, in: " << __FILE__ << " at:" << __LINE__ << endl;
-                        }
-                        found = TRUE;
-                       // break;
                     }
                     else if( currentSubstationBus->getCurrentVoltLoadPointId() == pointID )
                     {
 
-                        if (currentSubstationBus->getCurrentVoltLoadPointValue() != value) 
+                        if( timestamp > currentSubstationBus->getLastVoltPointTime() )
                         {
-                            currentSubstationBus->setCurrentVoltLoadPointValue(value);
-                            currentSubstationBus->setBusUpdatedFlag(TRUE);
-                            if (currentSubstationBus->isControlPoint(pointID) && currentSubstationBus->getIntegrateFlag()) 
+                            currentSubstationBus->setLastVoltPointTime(timestamp);
+                            if (currentSubstationBus->getCurrentVoltLoadPointValue() != value) 
                             {
-                                currentSubstationBus->updateIntegrationVPoint(CtiTime());
+                                currentSubstationBus->setCurrentVoltLoadPointValue(value);
+                                currentSubstationBus->setBusUpdatedFlag(TRUE);
+                                if (currentSubstationBus->isControlPoint(pointID) && currentSubstationBus->getIntegrateFlag()) 
+                                {
+                                    currentSubstationBus->updateIntegrationVPoint(CtiTime());
+                                }
                             }
+                            currentSubstationBus->setCurrentVoltPointQuality(quality);
+                            if (currentSubstationBus->getAltDualSubId() == currentSubstationBus->getPAOId() &&
+                                !stringCompareIgnoreCase(currentSubstationBus->getControlUnits(),CtiCCSubstationBus::VoltControlUnits))
+                            {
+                                currentSubstationBus->setAltSubControlValue(value);
+                                currentSubstationBus->setBusUpdatedFlag(TRUE);
+                            }
+                            currentSubstationBus->setNewPointDataReceivedFlag(TRUE);
+                            found = TRUE;
+                           // break;  
+
                         }
-                        currentSubstationBus->setCurrentVoltPointQuality(quality);
-                        if (currentSubstationBus->getAltDualSubId() == currentSubstationBus->getPAOId() &&
-                            !stringCompareIgnoreCase(currentSubstationBus->getControlUnits(),CtiCCSubstationBus::VoltControlUnits))
-                        {
-                            currentSubstationBus->setAltSubControlValue(value);
-                            currentSubstationBus->setBusUpdatedFlag(TRUE);
-                        }
-                        currentSubstationBus->setNewPointDataReceivedFlag(TRUE);
-                        found = TRUE;
-                       // break;
                     }
                     else if (currentSubstationBus->getSwitchOverPointId() == pointID)
                     {
@@ -2261,55 +2270,65 @@ void CtiCapController::pointDataMsg( long pointID, double value, unsigned qualit
                         }
                         else if( currentFeeder->getCurrentWattLoadPointId() == pointID )
                         {
-                            if( !stringCompareIgnoreCase(currentSubstationBus->getControlUnits(),CtiCCSubstationBus::PF_BY_KQControlUnits) )
+                            if( timestamp > currentFeeder->getLastWattPointTime() )
                             {
-                                DOUBLE tempKQ = currentSubstationBus->convertKVARToKQ(value,currentFeeder->getCurrentWattLoadPointValue());
-                                currentFeeder->setCurrentVarLoadPointValue(currentSubstationBus->convertKQToKVAR(tempKQ,value));
-                            }
+                                currentFeeder->setLastWattPointTime(timestamp);
+                                if( !stringCompareIgnoreCase(currentSubstationBus->getControlUnits(),CtiCCSubstationBus::PF_BY_KQControlUnits) )
+                                {
+                                    DOUBLE tempKQ = currentSubstationBus->convertKVARToKQ(value,currentFeeder->getCurrentWattLoadPointValue());
+                                    currentFeeder->setCurrentVarLoadPointValue(currentSubstationBus->convertKQToKVAR(tempKQ,value));
+                                }
+                               
+                                if (currentFeeder->getCurrentWattLoadPointValue() != value) 
+                                {
+                                    currentFeeder->setCurrentWattLoadPointValue(value);
+                                    currentFeeder->setNewPointDataReceivedFlag(TRUE);
+                                    currentSubstationBus->setBusUpdatedFlag(TRUE);
+                                }
+                                currentFeeder->setCurrentWattPointQuality(quality);
+                                
+                                if( currentFeeder->getCurrentVarLoadPointId() > 0 )
+                                {
+                                    currentFeeder->setPowerFactorValue(currentSubstationBus->calculatePowerFactor(currentFeeder->getCurrentVarLoadPointValue(),currentFeeder->getCurrentWattLoadPointValue()));
+                                    currentFeeder->setEstimatedPowerFactorValue(currentSubstationBus->calculatePowerFactor(currentFeeder->getEstimatedVarLoadPointValue(),currentFeeder->getCurrentWattLoadPointValue()));
+                                    if( currentFeeder->getPowerFactorPointId() > 0 )
+                                    {
+                                        sendMessageToDispatch(new CtiPointDataMsg(currentFeeder->getPowerFactorPointId(),convertPowerFactorToSend(currentFeeder->getPowerFactorValue()),NormalQuality,AnalogPointType));
+                                    }
+                                    if( currentFeeder->getEstimatedPowerFactorPointId() > 0 )
+                                    {
+                                        sendMessageToDispatch(new CtiPointDataMsg(currentFeeder->getEstimatedPowerFactorPointId(),convertPowerFactorToSend(currentFeeder->getEstimatedPowerFactorValue()),NormalQuality,AnalogPointType));
+                                    }
+                                }
+                                //This IS supposed to be != so don't add a ! at the beginning like the other compareTo calls!!!!!!!!!!!
+                                else if( stringCompareIgnoreCase(currentSubstationBus->getControlUnits(),CtiCCSubstationBus::KVARControlUnits) )
+                                {//This IS supposed to be != so don't add a ! at the beginning like the other compareTo calls!!!!!!!!!!!
+                                    CtiLockGuard<CtiLogger> logger_guard(dout);
+                                    dout << CtiTime() << " - No Var Point, cannot calculate power factor, in: " << __FILE__ << " at:" << __LINE__ << endl;
+                                }
+                                found = TRUE;
+                               // break;
 
-                            if (currentFeeder->getCurrentWattLoadPointValue() != value) 
-                            {
-                                currentFeeder->setCurrentWattLoadPointValue(value);
-                                currentFeeder->setNewPointDataReceivedFlag(TRUE);
-                                currentSubstationBus->setBusUpdatedFlag(TRUE);
                             }
-                            currentFeeder->setCurrentWattPointQuality(quality);
-                            
-                            if( currentFeeder->getCurrentVarLoadPointId() > 0 )
-                            {
-                                currentFeeder->setPowerFactorValue(currentSubstationBus->calculatePowerFactor(currentFeeder->getCurrentVarLoadPointValue(),currentFeeder->getCurrentWattLoadPointValue()));
-                                currentFeeder->setEstimatedPowerFactorValue(currentSubstationBus->calculatePowerFactor(currentFeeder->getEstimatedVarLoadPointValue(),currentFeeder->getCurrentWattLoadPointValue()));
-                                if( currentFeeder->getPowerFactorPointId() > 0 )
-                                {
-                                    sendMessageToDispatch(new CtiPointDataMsg(currentFeeder->getPowerFactorPointId(),convertPowerFactorToSend(currentFeeder->getPowerFactorValue()),NormalQuality,AnalogPointType));
-                                }
-                                if( currentFeeder->getEstimatedPowerFactorPointId() > 0 )
-                                {
-                                    sendMessageToDispatch(new CtiPointDataMsg(currentFeeder->getEstimatedPowerFactorPointId(),convertPowerFactorToSend(currentFeeder->getEstimatedPowerFactorValue()),NormalQuality,AnalogPointType));
-                                }
-                            }
-                            //This IS supposed to be != so don't add a ! at the beginning like the other compareTo calls!!!!!!!!!!!
-                            else if( stringCompareIgnoreCase(currentSubstationBus->getControlUnits(),CtiCCSubstationBus::KVARControlUnits) )
-                            {//This IS supposed to be != so don't add a ! at the beginning like the other compareTo calls!!!!!!!!!!!
-                                CtiLockGuard<CtiLogger> logger_guard(dout);
-                                dout << CtiTime() << " - No Var Point, cannot calculate power factor, in: " << __FILE__ << " at:" << __LINE__ << endl;
-                            }
-                            found = TRUE;
-                           // break;
                         }
                         else if( currentFeeder->getCurrentVoltLoadPointId() == pointID )
                         {
-                            if (currentFeeder->getCurrentVoltLoadPointValue() != value) 
+                            if( timestamp > currentFeeder->getLastVoltPointTime() )
                             {
-                                currentFeeder->setCurrentVoltLoadPointValue(value);
-                                currentFeeder->setNewPointDataReceivedFlag(TRUE);
-                                currentSubstationBus->setBusUpdatedFlag(TRUE);
+                                currentFeeder->setLastVoltPointTime(timestamp);
+                                if (currentFeeder->getCurrentVoltLoadPointValue() != value) 
+                                {
+                                    currentFeeder->setCurrentVoltLoadPointValue(value);
+                                    currentFeeder->setNewPointDataReceivedFlag(TRUE);
+                                    currentSubstationBus->setBusUpdatedFlag(TRUE);
+                                }
+                                currentFeeder->setCurrentVoltPointQuality(quality);
+                               
+                               
+                                found = TRUE;
+                               // break;
+
                             }
-                            currentFeeder->setCurrentVoltPointQuality(quality);
-
-
-                            found = TRUE;
-                           // break;
                         }
                         
                         if ((currentFeeder->getPhaseBId() == pointID ||

@@ -43,7 +43,14 @@ public class CapControlStrategyModel implements EditorDataModel{
     public void setIntegratePeriod(Integer integratePeriod) {
         strategy.setIntegratePeriod(integratePeriod);
     }
+    public Boolean getLikeDayFallBack() {
+        return strategy.getLikeDayFallBack().equalsIgnoreCase("Y");
+    }
 
+    public void setLikeDayFallBack(Boolean fallBackFlag) {
+        strategy.setLikeDayFallBack((fallBackFlag) ? "Y" : "N");
+    }
+    
     public CapControlStrategyModel(CapControlStrategy s) {
         super();
         strategy = s;
