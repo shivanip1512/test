@@ -76,6 +76,8 @@ public enum ReportTypes {
             "Report showing capbanks with max operation alarms"),
     CAP_CONTROL_ABNORMAL_TELEMETRY_DATA("Abnormal Telemetry Data Report", AbnormalTelemetryDataController.class, ReportGroup.CAP_CONTROL,
             "Report showing feeders with abnormal telemetry data."),
+    CAP_CONTROL_VAR_CHANGE("Var Change Report", CapControlVarChangeController.class, ReportGroup.CAP_CONTROL,
+            "Report showing change in var values."),
     
     COMM_STATISTICS("Communication Statistics", StatisticModel.class, ReportGroup.STATISTICAL),
 	//STATISTIC_HISTORY_PORT_DATA("Historical Daily Port Statistics", StatisticHistoryPortModel.class, ReportGroup.STATISTICAL),
@@ -102,12 +104,14 @@ public enum ReportTypes {
 	HECO_DSMIS("DSMIS Settlement", HECO_DSMISModel.class, null);
 
     
+    @SuppressWarnings("unchecked")
     private ReportTypes(String title, Class modelClass, ReportGroup reportGroup) {
         this.title = title;
         this.modelClass = modelClass;
         this.reportGroup = reportGroup;
     }
 
+    @SuppressWarnings("unchecked")
     private ReportTypes(String title, Class modelClass, ReportGroup reportGroup, String description) {
         this.title = title;
         this.modelClass = modelClass;
@@ -117,7 +121,8 @@ public enum ReportTypes {
 	
 	private String title;
 	/** Class <? extends ReportModelBase> modelClass; OR Class <? extends ReportController> modelClass*/
-	private Class modelClass;
+	@SuppressWarnings("unchecked")
+    private Class modelClass;
 	private ReportGroup reportGroup;
 	private String description;
 	
@@ -125,7 +130,8 @@ public enum ReportTypes {
 		return description;
 	}
 
-	public Class getModelClass() {
+	@SuppressWarnings("unchecked")
+    public Class getModelClass() {
 		return modelClass;
 	}
 
@@ -180,7 +186,8 @@ public enum ReportTypes {
 	 * @return com.cannontech.database.model.DBTreeModel
 	 * @param type int
 	 */
-	public static ReportController create(ReportTypes reportType) {
+	@SuppressWarnings("unchecked")
+    public static ReportController create(ReportTypes reportType) {
 	
         ReportController returnVal = null;
 		
