@@ -373,7 +373,9 @@ RWDECLARE_COLLECTABLE( CtiCCFeeder )
     BOOL capBankVerificationStatusUpdate(CtiMultiMsg_vec& pointChanges, CtiMultiMsg_vec& ccEvents, LONG minConfirmPercent, LONG failurePercent, DOUBLE varValueBeforeControl, DOUBLE currentVarLoadPointValue, LONG currentVarPointQuality);
     CtiCCFeeder& addAllFeederPointsToMsg(CtiCommandMsg *pointAddMsg);
     CtiCCCapBank* getMonitorPointParentBank(CtiCCMonitorPoint* point);
-    
+
+    BOOL isDataOldAndFallBackNecessary(string controlUnits);
+
     BOOL isDirty() const;
     void dumpDynamicData();
     void dumpDynamicData(RWDBConnection& conn, CtiTime& currentDateTime);

@@ -371,8 +371,7 @@ RWDECLARE_COLLECTABLE( CtiCCSubstationBus )
     LONG getCapBankInactivityTime(void) const;
 
     BOOL capBankVerificationStatusUpdate(CtiMultiMsg_vec& pointChanges, CtiMultiMsg_vec& ccEvents);
-    
-
+    BOOL isDataOldAndFallBackNecessary();
 
     BOOL isDirty() const;
     void dumpDynamicData();

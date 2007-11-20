@@ -40,6 +40,7 @@ extern ULONG _SCAN_WAIT_EXPIRE;
 extern BOOL _RETRY_FAILED_BANKS;
 extern BOOL _END_DAY_ON_TRIP;
 extern BOOL _LOG_MAPID_INFO;
+extern ULONG _LIKEDAY_OVERRIDE_TIMEOUT;
 
 RWDEFINE_COLLECTABLE( CtiCCFeeder, CTICCFEEDER_ID )
 
@@ -6700,4 +6701,48 @@ CtiCCCapBank* CtiCCFeeder::getMonitorPointParentBank(CtiCCMonitorPoint* point)
     }
     return NULL;
 }
+
+
+
+BOOL CtiCCFeeder::isDataOldAndFallBackNecessary(string controlUnits)
+{
+    BOOL retVal = FALSE;
+    CtiTime timeNow = CtiTime();
+    string feederControlUnits = controlUnits;
+    //DON'T ADD !... Supposed to be !=none
+    if (stringCompareIgnoreCase(_strategyName,"(none)"))
+    {
+        feederControlUnits = _controlunits;
+    }
+    if (getLikeDayFallBack())
+    {
+        if ( !stringCompareIgnoreCase(feederControlUnits, CtiCCSubstationBus::VoltControlUnits) )
+        {
+             if (timeNow > getLastVoltPointTime() + _LIKEDAY_OVERRIDE_TIMEOUT ||
+                timeNow > getLastCurrentVarPointUpdateTime() + _LIKEDAY_OVERRIDE_TIMEOUT )
+            {
+                 retVal = TRUE;
+            }
+        }
+        else if ( !stringCompareIgnoreCase(feederControlUnits, CtiCCSubstationBus::PF_BY_KVARControlUnits) )
+        {
+             if (timeNow > getLastWattPointTime() + _LIKEDAY_OVERRIDE_TIMEOUT ||
+                timeNow > getLastVoltPointTime() + _LIKEDAY_OVERRIDE_TIMEOUT ||
+                timeNow > getLastCurrentVarPointUpdateTime() + _LIKEDAY_OVERRIDE_TIMEOUT )
+            {
+                 retVal = TRUE;
+            }
+        }
+        else //if( !stringCompareIgnoreCase(feederControlUnits, CtiCCSubstationBus::KVARControlUnits) ) 
+        {
+            if (timeNow > getLastCurrentVarPointUpdateTime() + _LIKEDAY_OVERRIDE_TIMEOUT )
+            {
+                retVal = TRUE;
+            }
+        }
+    }
+    
+    return retVal;
+}
+
 

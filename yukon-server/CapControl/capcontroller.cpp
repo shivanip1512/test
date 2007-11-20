@@ -61,6 +61,7 @@ extern BOOL _USE_FLIP_FLAG;
 extern BOOL _ALLOW_PARALLEL_TRUING;
 extern ULONG _DB_RELOAD_WAIT;
 extern ULONG _LINK_STATUS_TIMEOUT;
+extern ULONG _LIKEDAY_OVERRIDE_TIMEOUT;
 
 extern BOOL _IGNORE_NOT_NORMAL_FLAG;
 extern ULONG _POINT_AGE;
@@ -3220,6 +3221,25 @@ void CtiCapController::refreshCParmGlobals(bool force)
             CtiLockGuard<CtiLogger> logger_guard(dout);
             dout << CtiTime() << " - Unable to obtain '" << var << "' value from cparms." << endl;
         }
+
+        _LIKEDAY_OVERRIDE_TIMEOUT = 2400;  //minutes
+
+        strcpy(var, "CAP_CONTROL_LIKEDAY_OVERRIDE_TIMEOUT");
+        if( !(str = gConfigParms.getValueAsString(var)).empty() )
+        {
+            _LIKEDAY_OVERRIDE_TIMEOUT = atoi(str.data())+1;
+            if( _CC_DEBUG & CC_DEBUG_STANDARD )
+            {
+                CtiLockGuard<CtiLogger> logger_guard(dout);
+                dout << CtiTime() << " - " << var << ":  " << str << endl;
+            }
+        }
+        else
+        {
+            CtiLockGuard<CtiLogger> logger_guard(dout);
+            dout << CtiTime() << " - Unable to obtain '" << var << "' value from cparms." << endl;
+        }
+
 
     }
     catch(RWxmsg& msg )

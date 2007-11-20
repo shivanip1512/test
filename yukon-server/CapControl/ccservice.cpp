@@ -35,6 +35,7 @@ ULONG _DB_RELOAD_WAIT;
 BOOL _LOG_MAPID_INFO;
 ULONG _LINK_STATUS_TIMEOUT;
 BOOL _END_DAY_ON_TRIP;
+ULONG _LIKEDAY_OVERRIDE_TIMEOUT;
 
 CtiDate gInvalidCtiDate = CtiDate(1,1, 1990);
 CtiTime gInvalidCtiTime = CtiTime(gInvalidCtiDate,0,0,0);
@@ -357,7 +358,7 @@ void CtiCCService::Init()
         dout << CtiTime() << " - Unable to obtain '" << var << "' value from cparms." << endl;
     }
 
-    _LINK_STATUS_TIMEOUT = 5;  //1 minute
+    _LINK_STATUS_TIMEOUT = 300;  //minutes - 5 hours.
 
     strcpy(var, "CAP_CONTROL_LINK_STATUS_TIMEOUT");
     if( !(str = gConfigParms.getValueAsString(var)).empty() )
@@ -376,6 +377,23 @@ void CtiCCService::Init()
     }
 
 
+    _LIKEDAY_OVERRIDE_TIMEOUT = 2400;  //hours
+
+    strcpy(var, "CAP_CONTROL_LIKEDAY_OVERRIDE_TIMEOUT");
+    if( !(str = gConfigParms.getValueAsString(var)).empty() )
+    {
+        _LIKEDAY_OVERRIDE_TIMEOUT = atoi(str.data())+1;
+        if( _CC_DEBUG & CC_DEBUG_STANDARD )
+        {
+            CtiLockGuard<CtiLogger> logger_guard(dout);
+            dout << CtiTime() << " - " << var << ":  " << str << endl;
+        }
+    }
+    else
+    {
+        CtiLockGuard<CtiLogger> logger_guard(dout);
+        dout << CtiTime() << " - Unable to obtain '" << var << "' value from cparms." << endl;
+    }
 
     _quit = false;
 }
