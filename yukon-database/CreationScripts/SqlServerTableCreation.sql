@@ -1,7 +1,7 @@
 /*==============================================================*/
 /* Database name:  YukonDatabase                                */
 /* DBMS name:      Microsoft SQL Server 2000                    */
-/* Created on:     11/20/2007 11:25:15 AM                       */
+/* Created on:     11/20/2007 1:56:33 PM                        */
 /*==============================================================*/
 
 
@@ -2938,11 +2938,12 @@ create table CapControlStrategy (
    OffPkPFSetPoint      float                not null,
    IntegrateFlag        char(1)              not null,
    IntegratePeriod      numeric              not null,
+   DayFallBack          char(1)              not null,
    constraint PK_CAPCONTROLSTRAT primary key nonclustered (StrategyID)
 )
 go
 
-insert into CapControlStrategy values (0, '(none)', '(none)', 0, 'N', 0, 0, 0, 0, 0, 0, 'NYYYYYNN', '(none)', 0, 0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 100.0, 100.0, 'N', 0);
+insert into CapControlStrategy values (0, '(none)', '(none)', 0, 'N', 0, 0, 0, 0, 0, 0, 'NYYYYYNN', '(none)', 0, 0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 100.0, 100.0, 'N', 0, 'N'); 
 
 /*==============================================================*/
 /* Index: Indx_CapCntrlStrat_name_UNQ                           */
@@ -5325,6 +5326,8 @@ create table DynamicCCFeeder (
    phaseavalue          float                not null default 0,
    phasebvalue          float                not null default 0,
    phasecvalue          float                not null default 0,
+   LastWattPointTime    datetime             not null,
+   LastVoltPointTime    datetime             not null,
    constraint PK_DYNAMICCCFEEDER primary key nonclustered (FeederID)
 )
 go
@@ -5398,6 +5401,8 @@ create table DynamicCCSubstationBus (
    phaseavalue          float                not null default 0,
    phasebvalue          float                not null default 0,
    phasecvalue          float                not null default 0,
+   LastWattPointTime    datetime             not null,
+   LastVoltPointTime    datetime             not null,
    constraint PK_DYNAMICCCSUBSTATIONBUS primary key nonclustered (SubstationBusID)
 )
 go

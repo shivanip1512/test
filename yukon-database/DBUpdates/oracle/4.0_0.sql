@@ -703,6 +703,22 @@ alter table CCSTRATEGYTIMEOFDAY
 
 /* End YUK-4716 */
 
+/* Start YUK-4763 */
+alter table DynamicCCFeeder add LastWattPointTime datetime;
+update DynamicCCFeeder set LastWattPointTime = '1990-01-01 00:00:00';
+alter table DynamicCCFeeder alter column LastWattPointTime datetime not null;
+alter table DynamicCCFeeder add LastVoltPointTime datetime;
+update DynamicCCFeeder set LastVoltPointTime = '1990-01-01 00:00:00';
+alter table DynamicCCFeeder alter column LastVoltPointTime datetime not null;
+
+alter table DynamicCCSubstationbus add LastWattPointTime datetime;
+update DynamicCCSubstationbus set LastWattPointTime = '1990-01-01 00:00:00';
+alter table DynamicCCSubstationbus alter column LastWattPointTime datetime not null;
+alter table DynamicCCSubstationbus add LastVoltPointTime datetime;
+update DynamicCCSubstationbus set LastVoltPointTime = '1990-01-01 00:00:00';
+alter table DynamicCCSubstationbus alter column LastVoltPointTime datetime not null;
+/* End YUK-4763*/
+
 /**************************************************************/
 /* VERSION INFO                                               */
 /*   Automatically gets inserted from build script            */
