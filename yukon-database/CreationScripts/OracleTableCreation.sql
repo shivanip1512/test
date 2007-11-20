@@ -1,7 +1,7 @@
 /*==============================================================*/
 /* Database name:  YukonDatabase                                */
 /* DBMS name:      ORACLE Version 9i                            */
-/* Created on:     11/20/2007 11:00:34 AM                       */
+/* Created on:     11/20/2007 11:26:17 AM                       */
 /*==============================================================*/
 
 
@@ -163,6 +163,9 @@ drop table CCMONITORBANKLIST cascade constraints
 ;
 
 drop table CCSEASONSTRATEGYASSIGNMENT cascade constraints
+;
+
+drop table CCSTRATEGYTIMEOFDAY cascade constraints
 ;
 
 drop table CCSUBAREAASSIGNMENT cascade constraints
@@ -1332,6 +1335,39 @@ insert into ccseasonstrategyassignment
 (paobjectid, seasonscheduleid, seasonname, strategyid)
 select areaid, -1, 'Default',strategyid from capcontrolarea;
 go
+
+/*==============================================================*/
+/* Table: CCSTRATEGYTIMEOFDAY                                   */
+/*==============================================================*/
+create table CCSTRATEGYTIMEOFDAY  (
+   StrategyID           NUMBER                          not null,
+   HourZero             NUMBER                          not null,
+   HourOne              NUMBER                          not null,
+   HourTwo              NUMBER                          not null,
+   HourThree            NUMBER                          not null,
+   HourFour             NUMBER                          not null,
+   HourFive             NUMBER                          not null,
+   HourSix              NUMBER                          not null,
+   HourSeven            NUMBER                          not null,
+   HourEight            NUMBER                          not null,
+   HourNine             NUMBER                          not null,
+   HourTen              NUMBER                          not null,
+   HourEleven           NUMBER                          not null,
+   HourTwelve           NUMBER                          not null,
+   HourThirteen         NUMBER                          not null,
+   HourFourteen         NUMBER                          not null,
+   HourFifteen          NUMBER                          not null,
+   HourSixteen          NUMBER                          not null,
+   HourSeventeen        NUMBER                          not null,
+   HourEighteen         NUMBER                          not null,
+   HourNineteen         NUMBER                          not null,
+   HourTwenty           NUMBER                          not null,
+   HourTwentyOne        NUMBER                          not null,
+   HourTwentyTwo        NUMBER                          not null,
+   HourTwentyThree      NUMBER                          not null,
+   constraint PK_STRAT_TOD primary key (StrategyID)
+)
+;
 
 /*==============================================================*/
 /* Table: CCSUBAREAASSIGNMENT                                   */
@@ -9192,6 +9228,11 @@ alter table CCSEASONSTRATEGYASSIGNMENT
 alter table CCSEASONSTRATEGYASSIGNMENT
    add constraint FK_ccssa_season foreign key (seasonscheduleid, seasonname)
       references DateOfSeason (SeasonScheduleID, SeasonName)
+;
+
+alter table CCSTRATEGYTIMEOFDAY
+   add constraint FK_STRAT_TOD_CCSTRAT foreign key (StrategyID)
+      references CapControlStrategy (StrategyID)
 ;
 
 alter table CCSUBAREAASSIGNMENT

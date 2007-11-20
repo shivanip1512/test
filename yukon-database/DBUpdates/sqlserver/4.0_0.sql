@@ -954,6 +954,52 @@ go
 
 /* End YUK-4730 */
 
+/* Begin YUK-4716 */
+if exists (select 1
+            from  sysobjects
+           where  id = object_id('CCSTRATEGYTIMEOFDAY')
+            and   type = 'U')
+   drop table CCSTRATEGYTIMEOFDAY
+go
+
+/*==============================================================*/
+/* Table: CCSTRATEGYTIMEOFDAY                                   */
+/*==============================================================*/
+create table CCSTRATEGYTIMEOFDAY (
+   StrategyID           numeric              not null,
+   HourZero             numeric              not null,
+   HourOne              numeric              not null,
+   HourTwo              numeric              not null,
+   HourThree            numeric              not null,
+   HourFour             numeric              not null,
+   HourFive             numeric              not null,
+   HourSix              numeric              not null,
+   HourSeven            numeric              not null,
+   HourEight            numeric              not null,
+   HourNine             numeric              not null,
+   HourTen              numeric              not null,
+   HourEleven           numeric              not null,
+   HourTwelve           numeric              not null,
+   HourThirteen         numeric              not null,
+   HourFourteen         numeric              not null,
+   HourFifteen          numeric              not null,
+   HourSixteen          numeric              not null,
+   HourSeventeen        numeric              not null,
+   HourEighteen         numeric              not null,
+   HourNineteen         numeric              not null,
+   HourTwenty           numeric              not null,
+   HourTwentyOne        numeric              not null,
+   HourTwentyTwo        numeric              not null,
+   HourTwentyThree      numeric              not null,
+   constraint PK_STRAT_TOD primary key nonclustered (StrategyID)
+)
+go
+
+alter table CCSTRATEGYTIMEOFDAY
+   add constraint FK_STRAT_TOD_CCSTRAT foreign key (StrategyID)
+      references CapControlStrategy (StrategyID)
+go
+/* End YUK-4716 */
 
 /**************************************************************/
 /* VERSION INFO                                               */

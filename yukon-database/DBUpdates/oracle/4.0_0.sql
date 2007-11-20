@@ -662,6 +662,47 @@ alter table JOBSTATUS
 
 /* End YUK-4730 */
 
+/* Begin YUK-4716 */
+drop table CCSTRATEGYTIMEOFDAY cascade constraints;
+
+/*==============================================================*/
+/* Table: CCSTRATEGYTIMEOFDAY                                   */
+/*==============================================================*/
+create table CCSTRATEGYTIMEOFDAY  (
+   StrategyID           number                          not null,
+   HourZero             number                          not null,
+   HourOne              NUMBER                          not null,
+   HourTwo              number                          not null,
+   HourThree            number                          not null,
+   HourFour             number                          not null,
+   HourFive             number                          not null,
+   HourSix              number                          not null,
+   HourSeven            number                          not null,
+   HourEight            number                          not null,
+   HourNine             number                          not null,
+   HourTen              number                          not null,
+   HourEleven           number                          not null,
+   HourTwelve           number                          not null,
+   HourThirteen         number                          not null,
+   HourFourteen         number                          not null,
+   HourFifteen          number                          not null,
+   HourSixteen          number                          not null,
+   HourSeventeen        number                          not null,
+   HourEighteen         number                          not null,
+   HourNineteen         number                          not null,
+   HourTwenty           number                          not null,
+   HourTwentyOne        number                          not null,
+   HourTwentyTwo        number                          not null,
+   HourTwentyThree      number                          not null,
+   constraint PK_STRAT_TOD primary key (StrategyID)
+);
+
+alter table CCSTRATEGYTIMEOFDAY
+   add constraint FK_STRAT_TOD_CCSTRAT foreign key (StrategyID)
+      references CapControlStrategy (StrategyID);
+
+/* End YUK-4716 */
+
 /**************************************************************/
 /* VERSION INFO                                               */
 /*   Automatically gets inserted from build script            */
