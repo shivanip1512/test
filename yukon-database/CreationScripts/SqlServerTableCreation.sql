@@ -1,7 +1,7 @@
 /*==============================================================*/
 /* Database name:  YukonDatabase                                */
 /* DBMS name:      Microsoft SQL Server 2000                    */
-/* Created on:     11/19/2007 1:49:02 PM                        */
+/* Created on:     11/20/2007 10:59:31 AM                       */
 /*==============================================================*/
 
 
@@ -1199,6 +1199,34 @@ if exists (select 1
            where  id = object_id('JOB')
             and   type = 'U')
    drop table JOB
+go
+
+if exists (select 1
+            from  sysobjects
+           where  id = object_id('JOBPROPERTY')
+            and   type = 'U')
+   drop table JOBPROPERTY
+go
+
+if exists (select 1
+            from  sysobjects
+           where  id = object_id('JOBSCHEDULEDONETIME')
+            and   type = 'U')
+   drop table JOBSCHEDULEDONETIME
+go
+
+if exists (select 1
+            from  sysobjects
+           where  id = object_id('JOBSCHEDULEDREPEATING')
+            and   type = 'U')
+   drop table JOBSCHEDULEDREPEATING
+go
+
+if exists (select 1
+            from  sysobjects
+           where  id = object_id('JOBSTATUS')
+            and   type = 'U')
+   drop table JOBSTATUS
 go
 
 if exists (select 1
@@ -5946,6 +5974,52 @@ create table JOB (
 go
 
 /*==============================================================*/
+/* Table: JOBPROPERTY                                           */
+/*==============================================================*/
+create table JOBPROPERTY (
+   JobProperty          numeric              not null,
+   JobID                int                  not null,
+   name                 text                 not null,
+   value                text                 not null,
+   constraint PK_JOBPROPERTY primary key (JobProperty)
+)
+go
+
+/*==============================================================*/
+/* Table: JOBSCHEDULEDONETIME                                   */
+/*==============================================================*/
+create table JOBSCHEDULEDONETIME (
+   JobID                int                  not null,
+   StartTime            datetime             not null,
+   constraint PK_JOBSCHEDULEDONETIME primary key nonclustered (JobID)
+)
+go
+
+/*==============================================================*/
+/* Table: JOBSCHEDULEDREPEATING                                 */
+/*==============================================================*/
+create table JOBSCHEDULEDREPEATING (
+   JobID                int                  not null,
+   CronString           text                 not null,
+   constraint PK_JobScheduledRepeating primary key (JobID)
+)
+go
+
+/*==============================================================*/
+/* Table: JOBSTATUS                                             */
+/*==============================================================*/
+create table JOBSTATUS (
+   JobStatusID          int                  not null,
+   JobID                int                  not null,
+   StartTime            datetime             not null,
+   StopTime             datetime             null,
+   JobState             varchar(50)          null,
+   message              text                 null,
+   constraint PK_JOBSTATUS primary key (JobStatusID)
+)
+go
+
+/*==============================================================*/
 /* Table: LMCONTROLAREAPROGRAM                                  */
 /*==============================================================*/
 create table LMCONTROLAREAPROGRAM (
@@ -10091,7 +10165,7 @@ alter table CAPBANKADDITIONAL
 go
 
 alter table CAPCONTROLSPECIALAREA
-   add constraint FK_CAPCONTR_REFERENCE_YUKONPAO2 foreign key (AreaID)
+   add constraint FK_CAPCONTR_YUKONPAO2 foreign key (AreaID)
       references YukonPAObject (PAObjectID)
 go
 
@@ -10178,7 +10252,7 @@ alter table CCSUBAREAASSIGNMENT
 go
 
 alter table CCSUBSPECIALAREAASSIGNMENT
-   add constraint FK_CCSUBSPE_REFERENCE_CAPCONTR2 foreign key (SubstationBusID)
+   add constraint FK_CCSUBSPE_CAPCONTR2 foreign key (SubstationBusID)
       references CAPCONTROLSUBSTATION (SubstationID)
          on update cascade on delete cascade
 go
@@ -10190,7 +10264,7 @@ alter table CCSUBSPECIALAREAASSIGNMENT
 go
 
 alter table CCSUBSTATIONSUBBUSLIST
-   add constraint FK_CCSUBSTA_REFERENCE_CAPCONTR2 foreign key (SubStationID)
+   add constraint FK_CCSUBSTA_CAPCONTR foreign key (SubStationID)
       references CAPCONTROLSUBSTATION (SubstationID)
 go
 
@@ -10995,6 +11069,30 @@ go
 alter table JOB
    add constraint FK_Job_YukonUser foreign key (UserID)
       references YukonUser (UserID)
+go
+
+alter table JOBPROPERTY
+   add constraint FK_JobProperty_Job foreign key (JobID)
+      references JOB (JobID)
+         on update cascade on delete cascade
+go
+
+alter table JOBSCHEDULEDONETIME
+   add constraint FK_JobScheduledOneTime_Job foreign key (JobID)
+      references JOB (JobID)
+         on delete cascade
+go
+
+alter table JOBSCHEDULEDREPEATING
+   add constraint FK_JOBSCHED_REFERENCE_JOB foreign key (JobID)
+      references JOB (JobID)
+         on update cascade on delete cascade
+go
+
+alter table JOBSTATUS
+   add constraint FK_JobStatus_Job foreign key (JobID)
+      references JOB (JobID)
+         on update cascade on delete cascade
 go
 
 alter table LMCONTROLAREAPROGRAM

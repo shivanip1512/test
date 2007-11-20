@@ -548,6 +548,120 @@ GROUP BY op.LogID) OpConf INNER JOIN
         YukonPAObject AS yp4 ON yp4.paobjectid = csa.areaid;
 ;
 
+/* Start YUK-4730 */
+drop table JOB cascade constraints;
+
+/*==============================================================*/
+/* Table: JOB                                                   */
+/*==============================================================*/
+create table JOB  (
+   JobID                INTEGER                         not null,
+   BeanName             VARCHAR2(250)                   not null,
+   Disabled             CHAR(1)                         not null,
+   UserID               NUMBER                          not null,
+   constraint PK_JOB primary key (JobID)
+);
+
+alter table JOB
+   add constraint FK_Job_YukonUser foreign key (UserID)
+      references YukonUser (UserID);
+
+drop table JOBPROPERTY cascade constraints;
+
+/*==============================================================*/
+/* Table: JOBPROPERTY                                           */
+/*==============================================================*/
+create table JOBPROPERTY  (
+   JobProperty          NUMBER                          not null,
+   JobID                INTEGER                         not null,
+   name                 CLOB                            not null,
+   value                CLOB                            not null,
+   constraint PK_JOBPROPERTY primary key (JobProperty)
+);
+
+alter table JOBPROPERTY
+   add constraint FK_JobProperty_Job foreign key (JobID)
+      references JOB (JobID)
+      on delete cascade;
+
+drop table JOBSCHEDULEDONETIME cascade constraints;
+
+/*==============================================================*/
+/* Table: JOBSCHEDULEDONETIME                                   */
+/*==============================================================*/
+create table JOBSCHEDULEDONETIME  (
+   JobID                int                             not null,
+   StartTime            DATE                            not null,
+   constraint PK_JOBSCHEDULEDONETIME primary key (JobID)
+);
+
+alter table JOBSCHEDULEDONETIME
+   add constraint FK_JobScheduledOneTime_Job foreign key (JobID)
+      references JOB (JobID)
+      on delete cascade;
+
+drop table JOBSCHEDULEDREPEATING cascade constraints;
+
+/*==============================================================*/
+/* Table: JOBSCHEDULEDREPEATING                                 */
+/*==============================================================*/
+create table JOBSCHEDULEDREPEATING  (
+   JobID                INTEGER                         not null,
+   CronString           CLOB                            not null,
+   constraint PK_JobScheduledRepeating primary key (JobID)
+);
+
+alter table JOBSCHEDULEDREPEATING
+   add constraint FK_JOBSCHED_REFERENCE_JOB foreign key (JobID)
+      references JOB (JobID)
+      on delete cascade;
+
+drop table JOBSTATUS cascade constraints;
+
+/*==============================================================*/
+/* Table: JOBSTATUS                                             */
+/*==============================================================*/
+create table JOBSTATUS  (
+   JobStatusID          INTEGER                         not null,
+   JobID                INTEGER                         not null,
+   StartTime            DATE                            not null,
+   StopTime             DATE,
+   JobState             VARCHAR2(50),
+   message              CLOB,
+   constraint PK_JOBSTATUS primary key (JobStatusID)
+);
+
+alter table JOBSTATUS
+   add constraint FK_JobStatus_Job foreign key (JobID)
+      references JOB (JobID)
+      on delete cascade;
+
+alter table JOBSTATUS
+   add constraint FK_JobStatus_JobStatus foreign key (JobStatusID)
+      references JOBSTATUS (JobStatusID);
+
+drop table JOBSTATUS cascade constraints;
+
+/*==============================================================*/
+/* Table: JOBSTATUS                                             */
+/*==============================================================*/
+create table JOBSTATUS  (
+   JobStatusID          INTEGER                         not null,
+   JobID                INTEGER                         not null,
+   StartTime            DATE                            not null,
+   StopTime             DATE,
+   JobState             VARCHAR2(50),
+   message              CLOB,
+   constraint PK_JOBSTATUS primary key (JobStatusID)
+);
+
+alter table JOBSTATUS
+   add constraint FK_JobStatus_Job foreign key (JobID)
+      references JOB (JobID)
+      on delete cascade;
+
+/* End YUK-4730 */
+
 /**************************************************************/
 /* VERSION INFO                                               */
 /*   Automatically gets inserted from build script            */

@@ -1,7 +1,7 @@
 /*==============================================================*/
 /* Database name:  YukonDatabase                                */
 /* DBMS name:      ORACLE Version 9i                            */
-/* Created on:     11/19/2007 2:00:34 PM                        */
+/* Created on:     11/20/2007 11:00:34 AM                       */
 /*==============================================================*/
 
 
@@ -568,6 +568,18 @@ drop table ImportPendingComm cascade constraints
 ;
 
 drop table JOB cascade constraints
+;
+
+drop table JOBPROPERTY cascade constraints
+;
+
+drop table JOBSCHEDULEDONETIME cascade constraints
+;
+
+drop table JOBSCHEDULEDREPEATING cascade constraints
+;
+
+drop table JOBSTATUS cascade constraints
 ;
 
 drop table LMCONTROLAREAPROGRAM cascade constraints
@@ -4907,6 +4919,52 @@ create table JOB  (
    Disabled             CHAR(1)                         not null,
    UserID               NUMBER                          not null,
    constraint PK_JOB primary key (JobID)
+)
+;
+
+/*==============================================================*/
+/* Table: JOBPROPERTY                                           */
+/*==============================================================*/
+create table JOBPROPERTY  (
+   JobProperty          NUMBER                          not null,
+   JobID                INTEGER                         not null,
+   name                 CLOB                            not null,
+   value                CLOB                            not null,
+   constraint PK_JOBPROPERTY primary key (JobProperty)
+)
+;
+
+/*==============================================================*/
+/* Table: JOBSCHEDULEDONETIME                                   */
+/*==============================================================*/
+create table JOBSCHEDULEDONETIME  (
+   JobID                INTEGER                         not null,
+   StartTime            DATE                            not null,
+   constraint PK_JOBSCHEDULEDONETIME primary key (JobID)
+)
+;
+
+/*==============================================================*/
+/* Table: JOBSCHEDULEDREPEATING                                 */
+/*==============================================================*/
+create table JOBSCHEDULEDREPEATING  (
+   JobID                INTEGER                         not null,
+   CronString           CLOB                            not null,
+   constraint PK_JobScheduledRepeating primary key (JobID)
+)
+;
+
+/*==============================================================*/
+/* Table: JOBSTATUS                                             */
+/*==============================================================*/
+create table JOBSTATUS  (
+   JobStatusID          INTEGER                         not null,
+   JobID                INTEGER                         not null,
+   StartTime            DATE                            not null,
+   StopTime             DATE,
+   JobState             VARCHAR2(50),
+   message              CLOB,
+   constraint PK_JOBSTATUS primary key (JobStatusID)
 )
 ;
 
@@ -9960,6 +10018,30 @@ alter table ImportPendingComm
 alter table JOB
    add constraint FK_Job_YukonUser foreign key (UserID)
       references YukonUser (UserID)
+;
+
+alter table JOBPROPERTY
+   add constraint FK_JobProperty_Job foreign key (JobID)
+      references JOB (JobID)
+      on delete cascade
+;
+
+alter table JOBSCHEDULEDONETIME
+   add constraint FK_JobScheduledOneTime_Job foreign key (JobID)
+      references JOB (JobID)
+      on delete cascade
+;
+
+alter table JOBSCHEDULEDREPEATING
+   add constraint FK_JOBSCHED_REFERENCE_JOB foreign key (JobID)
+      references JOB (JobID)
+      on delete cascade
+;
+
+alter table JOBSTATUS
+   add constraint FK_JobStatus_Job foreign key (JobID)
+      references JOB (JobID)
+      on delete cascade
 ;
 
 alter table LMCONTROLAREAPROGRAM
