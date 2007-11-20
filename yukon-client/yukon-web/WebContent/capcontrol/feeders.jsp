@@ -205,6 +205,7 @@ String css = "tableCell";
 				<%}%>
 				</select>
 				</td>
+				<td/>
 				<td>State</td>
 				<td>Target</td>
 				<td>KVAR Load / Est.</td>
@@ -229,6 +230,28 @@ for( SubBus subBus: subBuses ) {
 					<span class="popupImg" onmouseover="statusMsg(this, 'This SubBus is currently being<br>used in a Verification schedule');" >(v)</span>
 				<%}%>
 				</td>
+				
+				<td>        
+                
+                    <input type="warning" name="cti_dyn" id="<%=subBus.getCcId()%>" style="display:none">
+                    </input>
+                    
+                    <span id ="warning_ok_<%=subBus.getCcId()%>" style="display:none">
+                        <img src="/capcontrol/images/Green.gif"/>
+                    </span>
+                    <span id ="warning_alert_<%=subBus.getCcId()%>" style="display:none" 
+                          onmouseover="showDynamicPopup($('subWarningPopup_<%=subBus.getCcId()%>'));" 
+                          onmouseout="nd();"
+                          >
+                            <img src="/capcontrol/images/Yellow.gif"/>
+                    </span>
+            
+                    <div class="ccVarLoadPopup" id="subWarningPopup_<%=subBus.getCcId()%>" style="display:none" > 
+                      <span type="param11" name="cti_dyn" id="<%=subBus.getCcId()%>"><%=CBCUtils.CBC_DISPLAY.getSubBusValueAt(subBus, CBCDisplay.SUB_WARNING_POPUP)%></span>
+                    </div>
+
+                </td>
+				
 				<td >
 				<% if( hasControl ) {%>
 					<!--Create  popup menu html-->
@@ -340,7 +363,8 @@ for( SubBus subBus: subBuses ) {
 	<cti:titledContainer title="Feeders">
 
     <!--form id="fdrForm" action="feeders.jsp" method="post"-->
-		<table id=fdrHeaderTable width="100%" border="0" cellspacing="0" cellpadding="0">
+		<!-- <table id=fdrHeaderTable width="100%" border="0" cellspacing="0" cellpadding="0">  -->
+		<table id="fdrTable" width="98%" border="0" cellspacing="0" cellpadding="0">
         	<tr class="columnHeader lAlign">
          		<td><input type="checkbox" name="chkAllFdrsBx" onclick="checkAll(this, 'cti_chkbxFdrs');" />
          			<select id='feederFilter' onchange='applyFeederSelectFilter(this);'>
@@ -350,6 +374,7 @@ for( SubBus subBus: subBuses ) {
 						<%}%>
 					</select>
 				</td>
+				<td/>
          		<td>State</td>
          		<td>Target</td>
          		<td>kVAR Load / Est.</td>
@@ -357,12 +382,9 @@ for( SubBus subBus: subBuses ) {
          		<td>PFactor / Est.</td>
          		<td>kW / Volts</td>
          		<td>Daily/Max Ops</td>
-         		<td style="display:none"/>
          	</tr>
-       	</table>
-
-		<div>
-		<table id="fdrTable" width="98%" border="0" cellspacing="0" cellpadding="0">
+       	<!-- </table>  -->
+		
 <%
 css = "tableCell";
 for( int i = 0; i < feeders.size(); i++ )
@@ -375,6 +397,28 @@ for( int i = 0; i < feeders.size(); i++ )
 						<input type="checkbox" name="cti_chkbxFdrs" value="<%=feeder.getCcId()%>"/>
 						<span><%=CBCUtils.CBC_DISPLAY.getFeederValueAt(feeder, CBCDisplay.FDR_NAME_COLUMN)%></span>
 					</td>
+					
+					<td>        
+                
+	                    <input type="warning" name="cti_dyn" id="<%=feeder.getCcId()%>" style="display:none">
+	                    </input>
+	                    
+	                    <span id ="warning_ok_<%=feeder.getCcId()%>" style="display:none">
+	                        <img src="/capcontrol/images/Green.gif"/>
+	                    </span>
+	                    <span id ="warning_alert_<%=feeder.getCcId()%>" style="display:none" 
+	                          onmouseover="showDynamicPopup($('subWarningPopup_<%=feeder.getCcId()%>'));" 
+	                          onmouseout="nd();"
+	                          >
+	                            <img src="/capcontrol/images/Yellow.gif"/>
+	                    </span>
+	            
+	                    <div class="ccVarLoadPopup" id="subWarningPopup_<%=feeder.getCcId()%>" style="display:none" > 
+	                      <span type="param11" name="cti_dyn" id="<%=feeder.getCcId()%>"><%=CBCUtils.CBC_DISPLAY.getFeederValueAt(feeder, CBCDisplay.FDR_WARNING_POPUP)%></span>
+	                    </div>
+
+                    </td>
+					
 					<td>
 <%
 if( hasControl ) {
@@ -424,16 +468,9 @@ if( hasControl ) {
 <%
 }
 %>
+		</table>
 
-				
-			</table>
-			</div>
-            <!--/form-->
-<script type="text/javascript">
-Event.observe(window, 'load', function() { new CtiNonScrollTable('fdrTable','fdrHeaderTable');    }, false);
-</script>
-
-			</cti:titledContainer>
+    </cti:titledContainer>
 
 	<br>
 

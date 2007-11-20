@@ -843,7 +843,7 @@ function pause(numberMillis) {
         for (var i=0; i < rows.length; i++) {
             var row = rows[i];
             var cells = row.getElementsByTagName('td');
-            var sub = cells[8];
+            var sub = cells[9];
             var subBusName = new String (sub.innerHTML);
 			var index = subBusNames.indexOf(subBusName);
 			if(index > -1){
@@ -864,7 +864,7 @@ function pause(numberMillis) {
     	for (var i=0; i < rows.length; i++) {
             var row = rows[i];
             var cells = row.getElementsByTagName('td');
-            var fdr = cells[8];
+            var fdr = cells[9];
             var spans = fdr.getElementsByTagName('span');
 	        var fdrName = new String (spans[0].innerHTML);
     		var index = feederNames.indexOf(trim(fdrName));

@@ -73,6 +73,8 @@ public class CBCDisplay {
     public static final int FDR_SHORT_TIME_STAMP_COLUMN = 11;
     public static final int FDR_TARGET_POPUP = 12;
     public static final int FDR_VAR_LOAD_POPUP = 13;
+    public static final int FDR_WARNING_IMAGE = 14;
+    public static final int FDR_WARNING_POPUP = 15;
     
     // Column numbers for the SubBus display
     public static final int SUB_AREA_NAME_COLUMN = 0;
@@ -100,8 +102,10 @@ public class CBCDisplay {
     public static final int SUB_SHORT_TIME_STAMP_COLUMN = 21;
     public static final int SUB_TARGET_POPUP = 22;
     public static final int SUB_VAR_LOAD_POPUP = 23;
+    public static final int SUB_WARNING_IMAGE = 24;
+    public static final int SUB_WARNING_POPUP = 25;
     
-    public static final int AREA_POWER_FACTOR_COLUMN = 24;
+    public static final int AREA_POWER_FACTOR_COLUMN = 0;
     
     // The color schemes - based on the schedule status
     private static final Color[] _DEFAULT_COLORS = {
@@ -495,6 +499,19 @@ public class CBCDisplay {
                 return new ModifiedDate(subBus.getLastCurrentVarPointUpdateTime().getTime(),shortTimeFormat).toString();
         }
         
+        case SUB_WARNING_POPUP: {
+            return "Operating in like-day history control.";
+        }
+        
+        case SUB_WARNING_IMAGE:{
+            
+            if( subBus.getLikeDayControlFlag() ) {
+                return "true";
+            } else {
+                return "false";
+            }
+        }
+        
         default:
             return null;
         }
@@ -528,8 +545,7 @@ public class CBCDisplay {
         }
         CapControlSubBus capControlSubBus1 = ((CapControlSubBus) pao);
         CapControlSubBus capControlSubBus = capControlSubBus1;
-        String dualBusEnabled = capControlSubBus.getCapControlSubstationBus()
-                                                .getDualBusEnabled();
+        String dualBusEnabled = capControlSubBus.getCapControlSubstationBus().getDualBusEnabled();
         return (dualBusEnabled.equalsIgnoreCase("Y")) ? true : false;
 
     }
@@ -539,13 +555,11 @@ public class CBCDisplay {
      */
     public String getSubBusPendingState(SubBus subBus) {
         for (int i = 0; i < subBus.getCcFeeders().size(); i++) {
-            com.cannontech.yukon.cbc.Feeder feeder = (com.cannontech.yukon.cbc.Feeder) subBus.getCcFeeders()
-                                                                                             .get(i);
+            com.cannontech.yukon.cbc.Feeder feeder = subBus.getCcFeeders().get(i);
 
             int size = feeder.getCcCapBanks().size();
             for (int j = 0; j < size; j++) {
-                CapBankDevice capBank = ((CapBankDevice) feeder.getCcCapBanks()
-                                                               .elementAt(j));
+                CapBankDevice capBank = feeder.getCcCapBanks().elementAt(j);
 
                 if (capBank.getControlStatus().intValue() == CapControlConst.BANK_CLOSE_PENDING)
                     return getCBCStateNames()[CapControlConst.BANK_CLOSE_PENDING].getStateText();
@@ -566,8 +580,7 @@ public class CBCDisplay {
     public String getFeederPendingState(Feeder feeder) {
         int size = feeder.getCcCapBanks().size();
         for (int j = 0; j < size; j++) {
-            CapBankDevice capBank = ((CapBankDevice) feeder.getCcCapBanks()
-                                                           .elementAt(j));
+            CapBankDevice capBank = feeder.getCcCapBanks().elementAt(j);
 
             if (capBank.getControlStatus().intValue() == CapControlConst.BANK_CLOSE_PENDING)
                 return getCBCStateNames()[CapControlConst.BANK_CLOSE_PENDING].getStateText();
@@ -802,6 +815,17 @@ public class CBCDisplay {
             return retVal;
         }
         
+        case FDR_WARNING_POPUP: {
+            return "Operating in like-day history control.";
+        }
+        
+        case FDR_WARNING_IMAGE:{
+            if( feeder.getLikeDayControlFlag() ) {
+                return "true";
+            } else {
+                return "false";
+            }
+        }
 
         default:
             return null;

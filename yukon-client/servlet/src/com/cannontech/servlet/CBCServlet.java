@@ -360,13 +360,14 @@ private boolean handleSubGET( String ids, ResultXML[] xmlMsgs, int indx ) {
 		/*param7*/(sub.getVerificationFlag().booleanValue())? "true" : "false",
 		/*param8*/CBCUtils.CBC_DISPLAY.getSubBusValueAt (sub, CBCDisplay.SUB_NAME_COLUMN).toString(),
         /*param9*/CBCUtils.CBC_DISPLAY.getSubBusValueAt(sub, CBCDisplay.SUB_TARGET_POPUP).toString(),
-        /*param10*/CBCUtils.CBC_DISPLAY.getSubBusValueAt(sub, CBCDisplay.SUB_VAR_LOAD_POPUP).toString(),    
+        /*param10*/CBCUtils.CBC_DISPLAY.getSubBusValueAt(sub, CBCDisplay.SUB_VAR_LOAD_POPUP).toString(),
+        /*param11*/CBCUtils.CBC_DISPLAY.getSubBusValueAt(sub, CBCDisplay.SUB_WARNING_POPUP).toString()
 	};
 
-	xmlMsgs[indx] = new ResultXML(
-		sub.getCcId().toString(),
+	xmlMsgs[indx] = new ResultXML( sub.getCcId().toString(),
 		CBCUtils.CBC_DISPLAY.getSubBusValueAt(sub, CBCDisplay.SUB_CURRENT_STATE_COLUMN).toString(),		
 		optParams );
+	xmlMsgs[indx].setWarning(CBCUtils.CBC_DISPLAY.getSubBusValueAt(sub, CBCDisplay.SUB_WARNING_IMAGE).toString());
 	return true;
 }
 
@@ -395,13 +396,14 @@ private boolean handleFeederGET( String ids, ResultXML[] xmlMsgs, int indx )
 		/*param7*/CBCUtils.CBC_DISPLAY.getFeederValueAt (fdr, CBCDisplay.FDR_NAME_COLUMN).toString(),
 		/*param8*/CBCUtils.CBC_DISPLAY.getFeederValueAt(fdr, CBCDisplay.FDR_TARGET_POPUP).toString(),
         /*param9*/CBCUtils.CBC_DISPLAY.getFeederValueAt(fdr, CBCDisplay.FDR_VAR_LOAD_POPUP).toString(),
+        /*param10*/CBCUtils.CBC_DISPLAY.getFeederValueAt(fdr, CBCDisplay.FDR_WARNING_POPUP).toString()
 	};
 
 	xmlMsgs[indx] = new ResultXML(
 		fdr.getCcId().toString(),
 		CBCUtils.CBC_DISPLAY.getFeederValueAt(fdr, CBCDisplay.FDR_CURRENT_STATE_COLUMN).toString(),
 		optParams );
-
+	xmlMsgs[indx].setWarning(CBCUtils.CBC_DISPLAY.getFeederValueAt(fdr, CBCDisplay.FDR_WARNING_IMAGE).toString());
 
 	return true;
 }
