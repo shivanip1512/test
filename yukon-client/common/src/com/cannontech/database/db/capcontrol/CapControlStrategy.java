@@ -447,7 +447,7 @@ public class CapControlStrategy extends com.cannontech.database.db.DBPersistent 
 		   "ControlUnits, ControlDelayTime, ControlSendRetries," +
 		   "PeakLag, PeakLead, OffPkLag, OffPkLead, " + 
            "PeakVARLag, PeakVARLead , OffPkVARLag , OffPkVARLead," + 
-           "PeakPFSetPoint, OffPkPFSetPoint, IntegrateFlag, IntegratePeriod" +
+           "PeakPFSetPoint, OffPkPFSetPoint, IntegrateFlag, IntegratePeriod," +
            "LikeDayFallBack" +
 		   " from " + TABLE_NAME + " order by StrategyName";
 

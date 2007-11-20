@@ -278,9 +278,9 @@
             <td>
             </f:verbatim>
 			
-			<x:outputLabel rendered="#{!capControlForm.timeOfDay}" for="IntegrateFlag" value="Integrate Control?"/>
 			<x:selectBooleanCheckbox rendered="#{!capControlForm.timeOfDay}" id="IntegrateFlag" value="#{capControlForm.currentStratModel.integrateFlag}" 
-					disabled="#{!capControlForm.editingCBCStrategy}" onclick="submit();"/>
+                    disabled="#{!capControlForm.editingCBCStrategy}" onclick="submit();"/>
+			<x:outputLabel rendered="#{!capControlForm.timeOfDay}" for="IntegrateFlag" value="Integrate Control?"/>
 			
             <f:verbatim>
             </td>
@@ -292,6 +292,19 @@
                 <f:selectItems value="#{selLists.integrationPeriods}" />
             </x:selectOneMenu>
             
+            <f:verbatim>
+            </td>
+            </tr>
+            </table>
+            <table>
+            <tr>
+            <td>
+            </f:verbatim>
+            
+            <h:selectBooleanCheckbox id="Like_Day_Fall_Back_CheckBox" onclick="submit();" rendered="#{!capControlForm.timeOfDay}"
+                value="#{capControlForm.currentStratModel.likeDayFallBack}" disabled="#{!capControlForm.editingCBCStrategy}" />
+            <x:outputLabel for="Like_Day_Fall_Back_CheckBox" value="Fall back to like-day history control." rendered="#{!capControlForm.timeOfDay}"
+                title="Check to use like-day history control on this strategy."/>
 	
 			<f:verbatim>
 			</td>
