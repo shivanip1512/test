@@ -6,8 +6,8 @@
 *
 * PVCS KEYWORDS:
 * ARCHIVE      :  $Archive:   Z:/SOFTWAREARCHIVES/YUKON/RTDB/mgr_device.cpp-arc  $
-* REVISION     :  $Revision: 1.92 $
-* DATE         :  $Date: 2007/11/01 15:44:12 $
+* REVISION     :  $Revision: 1.93 $
+* DATE         :  $Date: 2007/11/21 19:55:47 $
 *
 * Copyright (c) 1999, 2000, 2001 Cannon Technologies Inc. All rights reserved.
 *-----------------------------------------------------------------------------*/
@@ -80,6 +80,18 @@ bool findExecutingAndExcludedDevice(const long key, CtiDeviceSPtr devsptr, void*
             // Ok, now decide if that excluded device is currently executing....
             bstatus = Device->isExecuting();
         }
+    }
+
+    return bstatus;
+}
+
+bool findAllExpresscomGroups(const long key, CtiDeviceSPtr devsptr, void* d)
+{
+    bool bstatus = false;
+
+    if( devsptr && devsptr->isGroup() && devsptr->getType() == TYPE_LMGROUP_EXPRESSCOM )
+    {
+        bstatus = true;
     }
 
     return bstatus;
@@ -3173,5 +3185,84 @@ void CtiDeviceManager::refreshPointGroups(LONG paoID, CtiDeviceBase* (*Factory)(
     {
         CtiLockGuard<CtiLogger> doubt_guard(dout); dout << "Done looking for Point Group Devices" << endl;
     }
+}
+
+//Currently sets up addressing for expresscom only.
+void CtiDeviceManager::refreshGroupHierarchy(LONG deviceID)
+{
+    CtiDeviceManager::ptr_type device = RemoteGetEqual(deviceID);
+
+    if( gConfigParms.isTrue("LOG_WITH_EXPRESSCOM_HIERARCHY") && (deviceID == 0 || (device && device->isGroup() && device->getType() == TYPE_LMGROUP_EXPRESSCOM)) )
+    {
+        CtiDeviceGroupBaseSPtr groupDevice = boost::static_pointer_cast<CtiDeviceGroupBase>(device);
+        vector< CtiDeviceSPtr > match_coll;
+        vector< CtiDeviceGroupBaseSPtr > groupVec;
+        select(findAllExpresscomGroups, NULL, match_coll);
+
+        //This makes me so very unhappy.
+        for( vector< CtiDeviceSPtr >::iterator iter = match_coll.begin(); iter != match_coll.end(); iter++ )
+        {
+            groupVec.push_back(boost::static_pointer_cast<CtiDeviceGroupBase>(*iter));
+        }
+
+        if( deviceID != 0 )
+        {
+            groupDevice->clearChildren();//Remove all!
+
+            for( vector< CtiDeviceGroupBaseSPtr >::iterator iter = groupVec.begin(); iter != groupVec.end(); iter++ )
+            {
+                if( (*iter)->getID() != deviceID )
+                {
+                    (*iter)->removeChild(deviceID); //We clear them, then check if they need to be added again
+                    CtiDeviceGroupBase::ADDRESSING_COMPARE_RESULT result = groupDevice->compareAddressing(*iter);
+                    if( result == CtiDeviceGroupBase::ADDRESSING_EQUIVALENT )
+                    {
+                        (*iter)->addChild(groupDevice);
+                        groupDevice->addChild((*iter));
+                    }
+                    else if( result == CtiDeviceGroupBase::THIS_IS_PARENT )
+                    {
+                        groupDevice->addChild((*iter));
+                    }
+                    else if( result == CtiDeviceGroupBase::OPERAND_IS_PARENT )
+                    {
+                        (*iter)->addChild(groupDevice);
+                    }
+                }
+            }
+
+        }
+        else
+        {
+            for( vector< CtiDeviceGroupBaseSPtr >::iterator allIter = groupVec.begin(); allIter != groupVec.end(); allIter++ )
+            {
+                (*allIter)->clearChildren();
+            }
+
+            for( vector< CtiDeviceGroupBaseSPtr >::iterator iter = groupVec.begin(); iter != groupVec.end(); iter++ )
+            {
+                vector< CtiDeviceGroupBaseSPtr >::iterator tempIter = iter;
+                tempIter++;
+                for( ; tempIter != groupVec.end(); tempIter++ )
+                {
+                    CtiDeviceGroupBase::ADDRESSING_COMPARE_RESULT result = (*iter)->compareAddressing(*tempIter);
+                    if( result == CtiDeviceGroupBase::ADDRESSING_EQUIVALENT )
+                    {
+                        (*iter)->addChild((*tempIter));
+                        (*tempIter)->addChild((*iter));
+                    }
+                    else if( result == CtiDeviceGroupBase::THIS_IS_PARENT )
+                    {
+                        (*iter)->addChild((*tempIter));
+                    }
+                    else if( result == CtiDeviceGroupBase::OPERAND_IS_PARENT )
+                    {
+                        (*tempIter)->addChild((*iter));
+                    }
+                }
+            }
+        }
+    }
+    //if not 0 and not a group, we do nothing!
 }
 

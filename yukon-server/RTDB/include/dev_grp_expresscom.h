@@ -8,8 +8,8 @@
 * Author: Corey G. Plender
 *
 * CVS KEYWORDS:
-* REVISION     :  $Revision: 1.9 $
-* DATE         :  $Date: 2007/11/12 16:56:45 $
+* REVISION     :  $Revision: 1.10 $
+* DATE         :  $Date: 2007/11/21 19:55:47 $
 *
 * Copyright (c) 2002 Cannon Technologies Inc. All rights reserved.
 *-----------------------------------------------------------------------------*/
@@ -30,6 +30,9 @@ private:
 
     // This method makes a gripe if any addressing level or load is predefined when submitting a request to a group
     bool checkForEmptyParseAddressing( CtiCommandParser &parse, OUTMESS *&OutMessage, list< CtiMessage* > &retList );
+    void reportChildControlStart(int isshed, int shedtime, int reductionratio, list< CtiMessage* >  &vgList, string cmd );
+    typedef std::map< long, CtiDeviceGroupBaseWPtr > WPtrGroupMap;
+    WPtrGroupMap _children;
 
 protected:
 
@@ -54,6 +57,14 @@ public:
     virtual void DecodeDatabaseReader(RWDBReader &rdr);
     virtual INT ExecuteRequest(CtiRequestMsg *pReq, CtiCommandParser &parse, OUTMESS *&OutMessage, list< CtiMessage* > &vgList, list< CtiMessage* > &retList, list< OUTMESS* > &outList);
     virtual string getPutConfigAssignment(UINT modifier = 0);
+    virtual void reportControlStart(int isshed, int shedtime, int reductionratio, list< CtiMessage* >  &vgList, string cmd = string("") );
+
+    virtual ADDRESSING_COMPARE_RESULT compareAddressing(CtiDeviceGroupBaseSPtr otherGroup);
+    bool compareAddressValues(USHORT addressing, CtiDeviceGroupExpresscom *expGroup);
+    virtual bool isAParent();
+    virtual void addChild(CtiDeviceGroupBaseSPtr child);
+    virtual void removeChild(long child);
+    virtual void clearChildren();
 
 };
 #endif // #ifndef __DEV_GRP_EXPRESSCOM_H__

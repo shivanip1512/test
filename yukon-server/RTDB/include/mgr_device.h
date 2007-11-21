@@ -11,8 +11,8 @@
  *
  *
  * PVCS KEYWORDS:
- * REVISION     :  $Revision: 1.29 $
- * DATE         :  $Date: 2007/11/01 15:44:12 $
+ * REVISION     :  $Revision: 1.30 $
+ * DATE         :  $Date: 2007/11/21 19:55:47 $
  *
  *
  * (c) 1999 Cannon Technologies Inc. Wayzata Minnesota
@@ -29,6 +29,7 @@
 #include "dev_base.h"
 #include "slctdev.h"
 #include "smartmap.h"
+#include <map>
 
 class CtiCommandMsg;
 /*
@@ -78,7 +79,6 @@ private:
     void refreshMCT400Configs(LONG paoID = 0);
     void refreshDynamicPaoInfo(LONG paoID = 0);
 
-
 public:
 
     CtiDeviceManager(CtiApplication_t app_id);
@@ -110,6 +110,7 @@ public:
     }
 
     void refresh(CtiDeviceBase* (*Factory)(RWDBReader &) = DeviceFactory, bool (*removeFunc)(CtiDeviceSPtr&,void*) = isNotADevice, void *d = NULL, LONG paoID = 0, string category = string(""), string devicetype = string(""));
+    void refreshGroupHierarchy(LONG paoID = 0);
     void writeDynamicPaoInfo(void);
 
     void dumpList(void);

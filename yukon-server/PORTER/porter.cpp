@@ -6,8 +6,8 @@
 *
 * PVCS KEYWORDS:
 * ARCHIVE      :  $Archive:   Z:/SOFTWAREARCHIVES/YUKON/PORTER/porter.cpp-arc  $
-* REVISION     :  $Revision: 1.114 $
-* DATE         :  $Date: 2007/11/02 19:07:58 $
+* REVISION     :  $Revision: 1.115 $
+* DATE         :  $Date: 2007/11/21 19:55:47 $
 *
 * Copyright (c) 1999, 2000, 2001 Cannon Technologies Inc. All rights reserved.
 *-----------------------------------------------------------------------------*/
@@ -1495,6 +1495,7 @@ INT RefreshPorterRTDB(void *ptr)
             attachRouteManagerToDevices(&DeviceManager, &RouteManager);
             attachPointManagerToDevices(&DeviceManager, &PorterPointManager);
             ConfigManager.initialize(DeviceManager);
+            DeviceManager.refreshGroupHierarchy();
         }
         else
         {
@@ -1504,6 +1505,11 @@ INT RefreshPorterRTDB(void *ptr)
             {
                 pDev->setRouteManager(&RouteManager);
                 pDev->setPointManager(&PorterPointManager);
+
+                if( pDev->isGroup() ) //Doing this call here saves us a tiny bit of time! yay!
+                {
+                    DeviceManager.refreshGroupHierarchy(chgid);
+                }
             }
         }
     }

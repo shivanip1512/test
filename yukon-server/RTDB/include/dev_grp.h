@@ -9,8 +9,8 @@
 *
 * PVCS KEYWORDS:
 * ARCHIVE      :  $Archive:   Z:/SOFTWAREARCHIVES/YUKON/DATABASE/INCLUDE/tbl_alm_nloc.h-arc  $
-* REVISION     :  $Revision: 1.23 $
-* DATE         :  $Date: 2007/10/16 18:40:42 $
+* REVISION     :  $Revision: 1.24 $
+* DATE         :  $Date: 2007/11/21 19:55:47 $
 *
 * Copyright (c) 1999 Cannon Technologies Inc. All rights reserved.
 *-----------------------------------------------------------------------------*/
@@ -31,7 +31,12 @@
 #include "pt_analog.h"
 
 #include "dev_base.h"
+using boost::weak_ptr;
+
 static const string GROUP_CONTROL_EXPIRATION = "STANDARD_CONTROL_EXPIRATION";
+class CtiDeviceGroupBase;
+typedef shared_ptr< CtiDeviceGroupBase > CtiDeviceGroupBaseSPtr;
+typedef weak_ptr< CtiDeviceGroupBase > CtiDeviceGroupBaseWPtr;
 
 class CtiDeviceGroupBase : public CtiDeviceBase
 {
@@ -121,7 +126,7 @@ public:
         _lastCommandExpiration = now.seconds() + parse.getiValue("control_interval", 0);
     }
 
-    void reportControlStart(int isshed, int shedtime, int reductionratio, list< CtiMessage* >  &vgList, string cmd = string("") )
+    virtual void reportControlStart(int isshed, int shedtime, int reductionratio, list< CtiMessage* >  &vgList, string cmd = string("") )
     {
         /*
          *  This is the CONTROL STATUS point (offset) for the group.
@@ -211,5 +216,26 @@ public:
         return command;
     }
 
+    enum ADDRESSING_COMPARE_RESULT
+    {
+        NO_RELATIONSHIP,  // Neither is a parent or child.
+        THIS_IS_PARENT,   // *this is the parent
+        OPERAND_IS_PARENT,   // The operand (otherGroup) is the parent
+        ADDRESSING_EQUIVALENT, // The two groups have identical addrsesing
+        NO_COMPARISON_POSSIBLE, //No comparison is possible for this group
+    };
+
+    // Returns the result of *this compared to *other. THIS_IS_PARENT means *this is the parent.
+    virtual ADDRESSING_COMPARE_RESULT compareAddressing(CtiDeviceGroupBaseSPtr otherGroup)
+    {
+        return NO_COMPARISON_POSSIBLE;
+    }
+
+    virtual bool isAParent() { return false; }
+    virtual void addChild(CtiDeviceGroupBaseSPtr child) {}
+    virtual void removeChild(long child) {}
+    virtual void clearChildren() {}
+
 };
+
 #endif // #ifndef __DEV_GRP_H__

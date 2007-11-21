@@ -39,7 +39,17 @@ INCLPATHS+= \
 ;$(RW)
 
 LIBS=\
-kernel32.lib user32.lib advapi32.lib wsock32.lib $(COMPILEBASE)\lib\ctidevdb.lib $(COMPILEBASE)\lib\ctipntdb.lib
+kernel32.lib user32.lib advapi32.lib \
+$(COMPILEBASE)\lib\ctibase.lib \
+$(COMPILEBASE)\lib\ctimsg.lib \
+$(COMPILEBASE)\lib\ctiprot.lib \
+$(COMPILEBASE)\lib\ctidbsrc.lib \
+$(COMPILEBASE)\lib\ctipntdb.lib \
+$(COMPILEBASE)\lib\cticparms.lib \
+$(COMPILEBASE)\lib\ctidevdb.lib \
+$(COMPILEBASE)\lib\cticonfig.lib \
+$(COMPILEBASE)\lib\$(XERCES_LIB).lib \
+$(COMPILEBASE)\lib\clrdump.lib \
 
 ALL:            ctidevdbtest ctipntdbtest
 

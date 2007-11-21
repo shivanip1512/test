@@ -7,8 +7,8 @@
 * Author: Corey G. Plender
 *
 * CVS KEYWORDS:
-* REVISION     :  $Revision: 1.28 $
-* DATE         :  $Date: 2007/10/16 18:40:42 $
+* REVISION     :  $Revision: 1.29 $
+* DATE         :  $Date: 2007/11/21 19:55:47 $
 *
 * Copyright (c) 2002 Cannon Technologies Inc. All rights reserved.
 *-----------------------------------------------------------------------------*/
@@ -26,6 +26,7 @@
 #include "msg_pdata.h"
 #include "numstr.h"
 #include "utility.h"
+#include "devicetypes.h"
 
 CtiDeviceGroupExpresscom::CtiDeviceGroupExpresscom()
 {
@@ -411,4 +412,122 @@ bool CtiDeviceGroupExpresscom::checkForEmptyParseAddressing( CtiCommandParser &p
     return status;
 }
 
+CtiDeviceGroupBase::ADDRESSING_COMPARE_RESULT CtiDeviceGroupExpresscom::compareAddressing(CtiDeviceGroupBaseSPtr otherGroup)
+{
+    ADDRESSING_COMPARE_RESULT retVal = NO_RELATIONSHIP;
 
+    if( otherGroup  && otherGroup->getType() == TYPE_LMGROUP_EXPRESSCOM )
+    {
+        CtiDeviceGroupExpresscom *expGroup = (CtiDeviceGroupExpresscom*)otherGroup.get();
+        if( _expresscomGroup.getAddressUsage() == expGroup->_expresscomGroup.getAddressUsage() )
+        {
+            //They have identical address levels, check every level they have to ensure they are the same.
+            if( compareAddressValues(_expresscomGroup.getAddressUsage(), expGroup) )
+            {
+                retVal = ADDRESSING_EQUIVALENT;
+            }
+        }
+        else if( _expresscomGroup.getAddressUsage() < expGroup->_expresscomGroup.getAddressUsage() &&
+                (_expresscomGroup.getAddressUsage() & expGroup->_expresscomGroup.getAddressUsage()) == _expresscomGroup.getAddressUsage() )
+        {
+            //This means that *this is potentially the parent of the operand
+            if( compareAddressValues(_expresscomGroup.getAddressUsage(), expGroup) )
+            {
+                retVal = THIS_IS_PARENT;
+            }
+        }
+        else if( _expresscomGroup.getAddressUsage() > expGroup->_expresscomGroup.getAddressUsage() &&
+                (_expresscomGroup.getAddressUsage() & expGroup->_expresscomGroup.getAddressUsage()) == expGroup->_expresscomGroup.getAddressUsage() )
+        {
+            //The operand is potentially the parent of *this;
+            if( compareAddressValues(expGroup->_expresscomGroup.getAddressUsage(), expGroup) )
+            {
+                retVal = OPERAND_IS_PARENT;
+            }
+        }
+    }
+
+    return retVal;
+}
+
+// Function to report control start for this group and ALL CHILD groups
+void CtiDeviceGroupExpresscom::reportControlStart(int isshed, int shedtime, int reductionratio, list< CtiMessage* >  &vgList, string cmd )
+{
+    reportChildControlStart(isshed, shedtime, reductionratio, vgList, cmd);
+    if( isAParent() )
+    {
+        //We need multiple copies!
+        for( WPtrGroupMap::iterator iter = _children.begin(); iter != _children.end(); iter++ )
+        {
+            CtiDeviceGroupBaseSPtr sptr = iter->second.lock();
+            if( sptr && sptr->getType() == TYPE_LMGROUP_EXPRESSCOM )
+            {
+                CtiDeviceGroupExpresscom *grpPtr = (CtiDeviceGroupExpresscom*)sptr.get();
+                grpPtr->reportChildControlStart(isshed, shedtime, reductionratio, vgList, cmd);
+            }
+        }
+    }
+}
+
+// Function to report control start for ONLY this group.
+void CtiDeviceGroupExpresscom::reportChildControlStart(int isshed, int shedtime, int reductionratio, list< CtiMessage* >  &vgList, string cmd )
+{
+    Inherited::reportControlStart(isshed, shedtime, reductionratio, vgList, cmd);
+}
+
+bool CtiDeviceGroupExpresscom::compareAddressValues(USHORT addressing, CtiDeviceGroupExpresscom *expGroup)
+{
+    bool retVal = true;
+    if( expGroup != NULL )
+    {
+        if(addressing & CtiProtocolExpresscom::atSpid) 
+            retVal &= (getExpresscomGroup().getServiceProvider() == expGroup->getExpresscomGroup().getServiceProvider());
+        if(addressing & CtiProtocolExpresscom::atGeo)
+            retVal &= (getExpresscomGroup().getGeo() == expGroup->getExpresscomGroup().getGeo());
+        if(addressing & CtiProtocolExpresscom::atSubstation)
+            retVal &= (getExpresscomGroup().getSubstation() == expGroup->getExpresscomGroup().getSubstation());
+        if(addressing & CtiProtocolExpresscom::atFeeder)
+            retVal &= (getExpresscomGroup().getFeeder() == expGroup->getExpresscomGroup().getFeeder());
+        if(addressing & CtiProtocolExpresscom::atZip)
+            retVal &= (getExpresscomGroup().getZip() == expGroup->getExpresscomGroup().getZip());
+        if(addressing & CtiProtocolExpresscom::atUser)
+            retVal &= (getExpresscomGroup().getUda() == expGroup->getExpresscomGroup().getUda());
+        if(addressing & CtiProtocolExpresscom::atProgram)
+            retVal &= (getExpresscomGroup().getProgram() == expGroup->getExpresscomGroup().getProgram());
+        if(addressing & CtiProtocolExpresscom::atSplinter)
+            retVal &= (getExpresscomGroup().getSplinter() == expGroup->getExpresscomGroup().getSplinter());
+        if(addressing & CtiProtocolExpresscom::atIndividual)
+            retVal &= (getExpresscomGroup().getSerial() == expGroup->getExpresscomGroup().getSerial());
+        if(addressing & CtiProtocolExpresscom::atLoad)
+            retVal &= (getExpresscomGroup().getLoadMask() == expGroup->getExpresscomGroup().getLoadMask());
+    }
+    else
+    {
+        retVal = false;
+    }
+
+    return retVal;
+}
+
+bool CtiDeviceGroupExpresscom::isAParent()
+{
+    return _children.size() > 0;
+}
+
+void CtiDeviceGroupExpresscom::addChild(CtiDeviceGroupBaseSPtr child)
+{
+    if( child )
+    {
+        _children.insert(WPtrGroupMap::value_type(child->getID(), child));
+    }
+}
+
+void CtiDeviceGroupExpresscom::removeChild(long child)
+{
+    _children.erase(child);
+}
+
+void CtiDeviceGroupExpresscom::clearChildren()
+{
+    _children.clear();
+}
