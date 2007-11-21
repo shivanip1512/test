@@ -1,5 +1,6 @@
 package com.cannontech.esub;
 
+import java.awt.Color;
 import java.awt.Dimension;
 import java.io.File;
 import java.io.FileWriter;
@@ -184,7 +185,7 @@ public class Drawing implements Serializable {
 			lxView.setEditMode(LxView.EDITOR_MODE);
 			lxView.setAntialiasingActivated(false);
 			lxView.lassoSetDisplayed(true);
-			lxView.setBackground(java.awt.Color.black);
+			lxView.setBackground(new Color(getMetaElement().getDrawingRGBColor()));
 			lxView.setMagneticGridColor(java.awt.Color.gray);
 			lxView.setMagneticGridEnabled(true);
 			lxView.setMagneticGridVisible(true);

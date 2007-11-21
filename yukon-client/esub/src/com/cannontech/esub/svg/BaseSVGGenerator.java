@@ -103,7 +103,7 @@ public abstract class BaseSVGGenerator implements ISVGGenerator {
         backRect.setAttributeNS(null, "id", "backgroundRect");
         backRect.setAttributeNS(null, "width", "100%");
         backRect.setAttributeNS(null, "height", "100%");
-        backRect.setAttributeNS(null, "color", "#000000");
+        backRect.setAttributeNS(null, "fill", d.getMetaElement().getDrawingHTMLColor());
         svgRoot.appendChild(backRect);          
 
         LxComponent[] c = graph.getComponents();

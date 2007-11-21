@@ -43,8 +43,9 @@ public class ESubSVGGenerator extends BaseSVGGenerator {
         svgRoot.insertBefore(createScriptElement(doc, "cgui_lib.js"), svgRoot.getFirstChild());
     }
 
+    @Override
     public DrawingUpdater initDrawingUpdater(Drawing d) {
-        ESubDrawingUpdater   updater = new ESubDrawingUpdater(d);
+        ESubDrawingUpdater updater = new ESubDrawingUpdater(d);
         updater.setUpdateGraphs(false);
         return updater;
     }

@@ -31,6 +31,7 @@ public class OnelineLogos {
         DrawingMetaElement me = drawing.getMetaElement();
         me.setDrawingWidth(layoutParams.getWidth());
         me.setDrawingHeight(layoutParams.getHeight());
+        me.setDrawingRgbColor(layoutParams.getRgbColor());
 
         graph.add(getCcLogo());
         graph.add(getYukonLogo());

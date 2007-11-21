@@ -1,5 +1,8 @@
 package com.cannontech.esub.element;
 
+import static java.lang.String.format;
+
+import java.awt.Color;
 import java.io.IOException;
 import java.io.InputStream;
 import java.io.OutputStream;
@@ -23,11 +26,12 @@ public class DrawingMetaElement extends LxAbstractText implements DrawingElement
 
 	private static final String ELEMENT_ID = "metaElement";
 	
-	private static final int CURRENT_VERSION = 1;
+	private static final int CURRENT_VERSION = 2;
 	private static final int DEFAULT_ROLE_ID = -1;
 	
 	private int drawingWidth;
 	private int drawingHeight;
+	private int drawingRGBColor = Color.BLACK.getRGB();
 	private int roleID = DEFAULT_ROLE_ID;
 		
 	private transient Drawing drawing = null;
@@ -41,7 +45,8 @@ public class DrawingMetaElement extends LxAbstractText implements DrawingElement
 	/**
 	 * @see com.loox.jloox.LxComponent#readFromJLX(InputStream, String)
 	 */
-	public void readFromJLX(InputStream in, String version) throws IOException {
+	@Override
+    public void readFromJLX(InputStream in, String version) throws IOException {
 		super.readFromJLX(in, version);
 		PersistDrawingMetaElement.getInstance().readFromJLX(this,in);
 	}
@@ -49,7 +54,8 @@ public class DrawingMetaElement extends LxAbstractText implements DrawingElement
 	/**
 	 * @see com.loox.jloox.LxComponent#saveAsJLX(OutputStream)
 	 */
-	public void saveAsJLX(OutputStream out) throws IOException {
+	@Override
+    public void saveAsJLX(OutputStream out) throws IOException {
 		super.saveAsJLX(out);
 		PersistDrawingMetaElement.getInstance().saveAsJLX(this,out);
 	}
@@ -171,4 +177,22 @@ public class DrawingMetaElement extends LxAbstractText implements DrawingElement
 	public String getElementID() {
 		return ELEMENT_ID;
 	}
+
+    public int getDrawingRGBColor() {
+        return drawingRGBColor;
+    }
+    
+    public String getDrawingHTMLColor() {
+        Color color = new Color(drawingRGBColor);
+        int red = color.getRed();
+        int green = color.getGreen();
+        int blue = color.getBlue();
+        String htmlColorCode = format("#%02X%02X%02X", red, green, blue);
+        return htmlColorCode;
+    }
+
+    public void setDrawingRgbColor(int drawingRGBColor) {
+        this.drawingRGBColor = drawingRGBColor;
+    }
+    
 }

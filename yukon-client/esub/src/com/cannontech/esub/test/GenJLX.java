@@ -35,6 +35,7 @@ public class GenJLX {
 		DrawingMetaElement me = d.getMetaElement();		
 		me.setDrawingWidth(1024);
 		me.setDrawingHeight(800);
+		me.setDrawingRgbColor(Color.BLACK.getRGB());
 				
 		LxLine line = new LxLine();		
 		line.setPoint1(10.0,10.0);

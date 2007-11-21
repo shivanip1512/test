@@ -26,33 +26,39 @@ public class PersistDrawingMetaElement extends BasePersistElement {
 	/**
 	 * @see com.cannontech.esub.element.persist.PersistElement#readFromJLX(DrawingElement, InputStream)
 	 */
+	@Override
 	public void readFromJLX(DrawingElement drawingElem, InputStream in, int version)
-		throws IOException {
-			DrawingMetaElement elem = (DrawingMetaElement) drawingElem;
+	throws IOException {
+	    DrawingMetaElement elem = (DrawingMetaElement) drawingElem;
 
-			switch(version) {
-				
-				case 1: {
-					elem.setDrawingWidth(LxSaveUtils.readInt(in));
-					elem.setDrawingHeight(LxSaveUtils.readInt(in));
-					elem.setRoleID(LxSaveUtils.readInt(in));
-				}
-				break;
-				
-				default: {
-					throw new IOException("Unknown version: " + version + " in " + elem.getClass().getName());
-				}
-			}
+	    switch(version) {
+	        case 2 : {
+	            elem.setDrawingWidth(LxSaveUtils.readInt(in));
+	            elem.setDrawingHeight(LxSaveUtils.readInt(in));
+	            elem.setDrawingRgbColor(LxSaveUtils.readInt(in));
+	            elem.setRoleID(LxSaveUtils.readInt(in));
+	            break;
+	        }
+	        case 1: {
+	            elem.setDrawingWidth(LxSaveUtils.readInt(in));
+	            elem.setDrawingHeight(LxSaveUtils.readInt(in));
+	            elem.setRoleID(LxSaveUtils.readInt(in));
+	            break;
+	        }
+	        default: throw new IOException("Unknown version: " + version + " in " + elem.getClass().getName());
+	    }
 	}
 
 	/**
 	 * @see com.cannontech.esub.element.persist.PersistElement#saveAsJLX(DrawingElement, OutputStream)
 	 */
-	public void saveAsJLX(DrawingElement drawingElem, OutputStream out, int version)
+	@Override
+    public void saveAsJLX(DrawingElement drawingElem, OutputStream out, int version)
 		throws IOException {
 			DrawingMetaElement elem = (DrawingMetaElement) drawingElem;
 			LxSaveUtils.writeInt(out, elem.getDrawingWidth());
 			LxSaveUtils.writeInt(out, elem.getDrawingHeight());
+			LxSaveUtils.writeInt(out, elem.getDrawingRGBColor());
 			LxSaveUtils.writeInt(out, elem.getRoleID());	
 		}
 

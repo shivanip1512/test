@@ -6,6 +6,7 @@ public class OneLineParams {
 
     private int height;
     private int width;
+    private int rgbColor;
     private boolean isSingleFeeder = false;
     private String redirectURL;
     private LiteYukonUser user;
@@ -109,6 +110,14 @@ public class OneLineParams {
 
     public LiteYukonUser getUser() {
         return user;
+    }
+
+    public int getRgbColor() {
+        return rgbColor;
+    }
+
+    public void setRgbColor(int rgbColor) {
+        this.rgbColor = rgbColor;
     }
 
 }

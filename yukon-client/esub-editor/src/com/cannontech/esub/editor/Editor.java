@@ -1,5 +1,6 @@
 package com.cannontech.esub.editor;
 
+import java.awt.Color;
 import java.awt.Cursor;
 import java.awt.Dimension;
 import java.awt.FlowLayout;
@@ -101,7 +102,8 @@ public class Editor extends JPanel {
     
 	// Handles clicks on the LxView	
 	private final MouseListener viewMouseListener = new MouseAdapter() {
-		public void mousePressed(MouseEvent evt) {
+		@Override
+        public void mousePressed(MouseEvent evt) {
 			if (elementPlacer.isPlacing()) {
 							
 				elementPlacer.setXPosition(evt.getX());
@@ -130,7 +132,8 @@ public class Editor extends JPanel {
 	
 	// Handles double clicks on an LxElement in the LxView
 	private final LxMouseListener editElementMouseListener = new LxMouseAdapter() {
-		public void mouseDoubleClicked(LxMouseEvent evt) {
+		@Override
+        public void mouseDoubleClicked(LxMouseEvent evt) {
 			synchronized(getDrawing()) {				
 				editElement(evt.getLxComponent());
 			}
@@ -347,7 +350,8 @@ public class Editor extends JPanel {
 		
 		elementPlacer = new ElementPlacer();
 		undoManager = new UndoManager() {
-			public boolean addEdit(UndoableEdit e) {
+			@Override
+            public boolean addEdit(UndoableEdit e) {
 // uncomment for debugging	System.out.println(e.getPresentationName());
 				return super.addEdit(e);
 			}			
@@ -358,6 +362,7 @@ public class Editor extends JPanel {
 		
 		drawing.getMetaElement().setDrawingWidth(prefs.getDefaultDrawingWidth());
 		drawing.getMetaElement().setDrawingHeight(prefs.getDefaultDrawingHeight());
+		drawing.getMetaElement().setDrawingRgbColor(prefs.getDefaultDrawingRGBColor());
 		
 		lxGraph.addUndoableEditListener(undoManager);
 		lxGraph.addItemListener(itemListener);
@@ -383,10 +388,12 @@ public class Editor extends JPanel {
 		p.add(toolBar, java.awt.BorderLayout.WEST);
 		lxView.addMouseListener(viewMouseListener);
         lxView.addMouseListener(new MouseAdapter() { 
-			public void mousePressed(MouseEvent e) {
+			@Override
+            public void mousePressed(MouseEvent e) {
 				maybeShowPopup(e);
 			}
-			public void mouseReleased(MouseEvent e) {
+			@Override
+            public void mouseReleased(MouseEvent e) {
 				maybeShowPopup(e);
 			}
 			private void maybeShowPopup(MouseEvent e) {
@@ -409,6 +416,7 @@ public class Editor extends JPanel {
         });
         
 		updateSize();
+		updateColor();
 		
 		synchActionsWithSelection();
 		startUpdating();		
@@ -457,6 +465,7 @@ public class Editor extends JPanel {
 		EditorPrefs prefs = EditorPrefs.getPreferences();		
 		dme.setDrawingWidth(prefs.getDefaultDrawingWidth());
 		dme.setDrawingHeight(prefs.getDefaultDrawingHeight());
+		dme.setDrawingRgbColor(prefs.getDefaultDrawingRGBColor());
 		//getUndoManager().discardAllEdits();  
 		setFrameTitle("Untitled");
 	}
@@ -486,6 +495,7 @@ public class Editor extends JPanel {
 		setFrameTitle(drawingFile);
 
 		updateSize();
+		updateColor();
 		startUpdating();
 		
 		} 
@@ -493,8 +503,10 @@ public class Editor extends JPanel {
 				
 			int currentWidth = getDrawing().getMetaElement().getDrawingWidth();
 			int currentHeight = getDrawing().getMetaElement().getDrawingHeight();
+			int currentRGBColor = getDrawing().getMetaElement().getDrawingRGBColor();
 			EditorPrefs.getPreferences().setDefaultDrawingWidth(currentWidth);
 			EditorPrefs.getPreferences().setDefaultDrawingHeight(currentHeight);
+			EditorPrefs.getPreferences().setDefaultDrawingRGBColor(currentRGBColor);
 			
 			getUndoManager().discardAllEdits();
 			setCursor(Cursor.getDefaultCursor());
@@ -512,7 +524,8 @@ public class Editor extends JPanel {
 		frame = new JFrame();
 
 		frame.addWindowListener(new java.awt.event.WindowAdapter() {
-			public void windowClosing(java.awt.event.WindowEvent e) {
+			@Override
+            public void windowClosing(java.awt.event.WindowEvent e) {
                 // Make sure to shutdown properly so dispatch is not left with a vagrant connect for a while.
                 // Ugly cast.  We want to call disconnect though so that our shutdown message gets
                 // written out.
@@ -609,9 +622,10 @@ public class Editor extends JPanel {
 				
 			int currentWidth = getDrawing().getMetaElement().getDrawingWidth();
 			int currentHeight = getDrawing().getMetaElement().getDrawingHeight();
+			int currentRGBColor = getDrawing().getMetaElement().getDrawingRGBColor();
 			EditorPrefs.getPreferences().setDefaultDrawingWidth(currentWidth);
 			EditorPrefs.getPreferences().setDefaultDrawingHeight(currentHeight);
-
+			EditorPrefs.getPreferences().setDefaultDrawingRGBColor(currentRGBColor);
 		}
 
 	} 
@@ -713,6 +727,18 @@ public class Editor extends JPanel {
 		aboutDialog.dispose();
 	}
 	
+	private void updateColor() {
+	    final int rgbColor = getDrawing().getMetaElement().getDrawingRGBColor();
+	    final LxView view = getDrawing().getLxView();
+	    
+	    SwingUtilities.invokeLater( new Runnable() {
+            public void run() {
+                view.setBackground(new Color(rgbColor));
+                view.repaint();
+            }
+        });
+	}
+	
 	void updateSize() {
 		final int width = getDrawing().getMetaElement().getDrawingWidth();
 		final int height = getDrawing().getMetaElement().getDrawingHeight();
@@ -729,6 +755,7 @@ public class Editor extends JPanel {
 	void editDrawingProperties() {
 		editElement(getDrawing().getMetaElement());				
 		updateSize();
+		updateColor();
 	}
 	
 	public void cutSelection() { 

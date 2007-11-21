@@ -1,5 +1,7 @@
 package com.cannontech.esub.editor;
 
+import java.awt.Color;
+
 import com.cannontech.common.util.CtiPreferences;
 
 /**
@@ -14,6 +16,7 @@ public class EditorPrefs extends CtiPreferences {
 	public static final String DEFAULT_WORKING_DIR = "Default Working";
 	public static final String DEFAULT_DRAWING_WIDTH = "Default Drawing Width";
 	public static final String DEFAULT_DRAWING_HEIGHT = "Default Drawing Height";
+	public static final String DEFAULT_DRAWING_RGBCOLOR = "Default Drawing Background RGB Color";
 	
 	public static final String DEFAULT_WINDOW_WIDTH = "Default Window Width";
 	public static final String DEFAULT_WINDOW_HEIGHT = "Default Window Height";
@@ -47,8 +50,17 @@ public class EditorPrefs extends CtiPreferences {
 		return Integer.parseInt(heightStr);
 	}
 	
+	public int getDefaultDrawingRGBColor() {
+	    String rgbColor = get(DEFAULT_DRAWING_RGBCOLOR, Integer.toString(Color.BLACK.getRGB()));
+	    return Integer.parseInt(rgbColor);
+	}
+	
 	public void setDefaultDrawingHeight(int height) {
 		put(DEFAULT_DRAWING_HEIGHT, Integer.toString(height));
+	}
+	
+	public void setDefaultDrawingRGBColor(int rgbColor) {
+	    put(DEFAULT_DRAWING_RGBCOLOR, Integer.toString(rgbColor));
 	}
 			
 	/**
