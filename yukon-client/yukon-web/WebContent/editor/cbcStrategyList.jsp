@@ -2,10 +2,14 @@
 <%@ taglib uri="http://java.sun.com/jsf/core" prefix="f"%>
 <%@ taglib uri="http://myfaces.apache.org/tomahawk" prefix="x"%>
 <%@ taglib uri="http://cannontech.com/tags/cti" prefix="cti"%>
+<jsp:directive.page import="com.cannontech.servlet.nav.CBCNavigationUtil"/>
+<%
+//String currentPageURL = request.getRequestURL().toString();
+//CBCNavigationUtil.setNavigation(currentPageURL, session);
+//CBCNavigationUtil.bookmarkThisLocation(session);
+ %>
 <f:view>
 <cti:standardPage title="CapControl Wizard" module="capcontrol">
-
-
 <script type="text/javascript">
 <!--
     var submitAllowed = true;

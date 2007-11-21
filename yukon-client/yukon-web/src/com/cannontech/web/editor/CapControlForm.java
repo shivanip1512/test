@@ -71,7 +71,7 @@ import com.cannontech.database.data.point.StatusPoint;
 import com.cannontech.database.db.DBPersistent;
 import com.cannontech.database.db.capcontrol.CCFeederBankList;
 import com.cannontech.database.db.capcontrol.CCFeederSubAssignment;
-import com.cannontech.database.db.capcontrol.CCStrategyTimeOfDay;
+import com.cannontech.database.db.capcontrol.CCStrategyTimeOfDaySet;
 import com.cannontech.database.db.capcontrol.CCSubstationSubBusList;
 import com.cannontech.database.db.capcontrol.CapBankAdditional;
 import com.cannontech.database.db.capcontrol.CapControlStrategy;
@@ -141,7 +141,7 @@ public class CapControlForm extends DBEditorForm implements ICapControlModel{
     private EditorDataModel currentStratModel = null;
     private SeasonScheduleDao seasonScheduleDao;
     private Integer scheduleId = -1;
-    private CCStrategyTimeOfDay strategyTimeOfDay = null;
+    private CCStrategyTimeOfDaySet strategyTimeOfDay = null;
     
     private static CapbankDao capbankDao = YukonSpringHook.getBean("capbankDao",CapbankDao.class);
     private static FeederDao feederDao = YukonSpringHook.getBean("feederDao",FeederDao.class);
@@ -537,12 +537,11 @@ public class CapControlForm extends DBEditorForm implements ICapControlModel{
             itemID = strat.getStrategyID().intValue();
             initPanels(DBEditorTypes.EDITOR_STRATEGY);
             if(strat.getControlMethod().equalsIgnoreCase(CapControlStrategy.CNTRL_TIME_OF_DAY)) {
-                CCStrategyTimeOfDay tod = getStrategyTimeOfDay();
+                CCStrategyTimeOfDaySet tod = getStrategyTimeOfDay();
                 tod.setStrategyId(strat.getStrategyID());
                 Connection connection = CBCDBUtil.getConnection();
                 try {
-                    tod.setDbConnection( connection );
-                    tod.retrieve();
+                    tod.retrieve(connection);
                 }
                 catch( SQLException sql ) {
                     CTILogger.error("Unable to retrieve CCStrategyTimeofDay Object", sql );
@@ -796,7 +795,7 @@ public class CapControlForm extends DBEditorForm implements ICapControlModel{
                 updateDBObject(currentStrategy, facesMsg);
                 if(currentStrategy.getControlMethod().equalsIgnoreCase(CapControlStrategy.CNTRL_TIME_OF_DAY)) {
                     getStrategyTimeOfDay().setStrategyId(currentStrategy.getStrategyID());
-                    getStrategyTimeOfDay().add();
+                    getStrategyTimeOfDay().add(connection);
                 }
 				// clear out the memory of any list of Strategies
 				resetCurrentStratModel();
@@ -862,18 +861,16 @@ public class CapControlForm extends DBEditorForm implements ICapControlModel{
                 seasonScheduleDao.saveSeasonStrategyAssigment(paoId, getAssignedStratMap(), getScheduleId());
             }else {
                 if(((CapControlStrategy)dbPers).getControlMethod().equalsIgnoreCase(CapControlStrategy.CNTRL_TIME_OF_DAY)) {
-                    DBPersistent ccStrategyTimeOfDay = getStrategyTimeOfDay();
-                    ccStrategyTimeOfDay.setDbConnection(connection);
-                    if(CapControlStrategy.todExists(((CCStrategyTimeOfDay)ccStrategyTimeOfDay).getStrategyId())) {
-                        updateDBObject(ccStrategyTimeOfDay, facesMsg);
+                    CCStrategyTimeOfDaySet ccStrategyTimeOfDay = getStrategyTimeOfDay();
+                    if(CapControlStrategy.todExists(ccStrategyTimeOfDay.getStrategyId())) {
+                        ccStrategyTimeOfDay.update(connection);
                     }else {
-                        getStrategyTimeOfDay().setDbConnection(connection);
                         getStrategyTimeOfDay().setStrategyId(((CapControlStrategy)dbPers).getStrategyID());
-                        getStrategyTimeOfDay().add();
+                        getStrategyTimeOfDay().add(connection);
                     }
                 }else {
                     CapControlStrategy.deleteTod(((CapControlStrategy)getDbPersistent()).getStrategyID());
-                    strategyTimeOfDay = new CCStrategyTimeOfDay();
+                    strategyTimeOfDay = new CCStrategyTimeOfDaySet();
                 }
             }
             pointNameMap = null;
@@ -1940,14 +1937,14 @@ public class CapControlForm extends DBEditorForm implements ICapControlModel{
         return false;
     }
     
-    public CCStrategyTimeOfDay getStrategyTimeOfDay() {
+    public CCStrategyTimeOfDaySet getStrategyTimeOfDay() {
         if(strategyTimeOfDay == null) {
-            strategyTimeOfDay = new CCStrategyTimeOfDay(getCurrentStrategyID());
+            strategyTimeOfDay = new CCStrategyTimeOfDaySet(getCurrentStrategyID());
         }
         return strategyTimeOfDay;
     }
     
-    public void setStrategyTimeOfDay(CCStrategyTimeOfDay strategyTimeOfDay) {
+    public void setStrategyTimeOfDay(CCStrategyTimeOfDaySet strategyTimeOfDay) {
         this.strategyTimeOfDay = strategyTimeOfDay;
     }
 

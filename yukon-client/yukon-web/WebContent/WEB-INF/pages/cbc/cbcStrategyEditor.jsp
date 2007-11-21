@@ -728,12 +728,12 @@
         <td>
         </f:verbatim>
         <x:inputText id="hourZeroClose" disabled="#{!capControlForm.editingCBCStrategy}"
-        value="#{capControlForm.strategyTimeOfDay.hourZero}"/>
+        value="#{capControlForm.strategyTimeOfDay.hourZero.percentClose}"/>
         <f:verbatim>
         </td>
         <td>
         </f:verbatim>
-        <x:outputLabel for="hourZeroClose" id="hourZeroOpen" value="#{capControlForm.strategyTimeOfDay.hourZeroOpen}"/>
+        <x:outputLabel for="hourZeroClose" id="hourZeroOpen" value="#{capControlForm.strategyTimeOfDay.hourZero.percentOpen}"/>
         <f:verbatim>
         </td>
         </tr>
@@ -746,12 +746,12 @@
         <td>
         </f:verbatim>
         <x:inputText id="hourOneClose" disabled="#{!capControlForm.editingCBCStrategy}"
-        value="#{capControlForm.strategyTimeOfDay.hourOne}"/>
+        value="#{capControlForm.strategyTimeOfDay.hourOne.percentClose}"/>
         <f:verbatim>
         </td>
         <td>
         </f:verbatim>
-        <x:outputLabel for="hourOneClose" id="hourOneOpen" value="#{capControlForm.strategyTimeOfDay.hourOneOpen}"/>
+        <x:outputLabel for="hourOneClose" id="hourOneOpen" value="#{capControlForm.strategyTimeOfDay.hourOne.percentOpen}"/>
         <f:verbatim>
         </td>
         </tr>
@@ -764,12 +764,12 @@
         <td>
         </f:verbatim>
         <x:inputText id="hourTwoClose" disabled="#{!capControlForm.editingCBCStrategy}"
-        value="#{capControlForm.strategyTimeOfDay.hourTwo}"/>
+        value="#{capControlForm.strategyTimeOfDay.hourTwo.percentClose}"/>
         <f:verbatim>
         </td>
         <td>
         </f:verbatim>
-        <x:outputLabel for="hourTwoClose" id="hourTwoOpen" value="#{capControlForm.strategyTimeOfDay.hourTwoOpen}"/>
+        <x:outputLabel for="hourTwoClose" id="hourTwoOpen" value="#{capControlForm.strategyTimeOfDay.hourTwo.percentOpen}"/>
         <f:verbatim>
         </td>
         </tr>
@@ -782,12 +782,12 @@
         <td>
         </f:verbatim>
         <x:inputText id="hourThreeClose" disabled="#{!capControlForm.editingCBCStrategy}"
-        value="#{capControlForm.strategyTimeOfDay.hourThree}"/>
+        value="#{capControlForm.strategyTimeOfDay.hourThree.percentClose}"/>
         <f:verbatim>
         </td>
         <td>
         </f:verbatim>
-        <x:outputLabel for="hourThreeClose"  id="hourThreeOpen" value="#{capControlForm.strategyTimeOfDay.hourThreeOpen}"/>
+        <x:outputLabel for="hourThreeClose"  id="hourThreeOpen" value="#{capControlForm.strategyTimeOfDay.hourThree.percentOpen}"/>
         <f:verbatim>
         </td>
         </tr>
@@ -800,12 +800,12 @@
         <td>
         </f:verbatim>
         <x:inputText id="hourFourClose" disabled="#{!capControlForm.editingCBCStrategy}"
-        value="#{capControlForm.strategyTimeOfDay.hourFour}"/>
+        value="#{capControlForm.strategyTimeOfDay.hourFour.percentClose}"/>
         <f:verbatim>
         </td>
         <td>
         </f:verbatim>
-        <x:outputLabel for="hourFourClose" id="hourFourOpen" value="#{capControlForm.strategyTimeOfDay.hourFourOpen}"/>
+        <x:outputLabel for="hourFourClose" id="hourFourOpen" value="#{capControlForm.strategyTimeOfDay.hourFour.percentOpen}"/>
         <f:verbatim>
         </td>
         </tr>
@@ -818,12 +818,12 @@
         <td>
         </f:verbatim>
         <x:inputText id="hourFiveClose" disabled="#{!capControlForm.editingCBCStrategy}"
-        value="#{capControlForm.strategyTimeOfDay.hourFive}"/>
+        value="#{capControlForm.strategyTimeOfDay.hourFive.percentClose}"/>
         <f:verbatim>
         </td>
         <td>
         </f:verbatim>
-        <x:outputLabel for="hourFiveClose" id="hourFiveOpen" value="#{capControlForm.strategyTimeOfDay.hourFiveOpen}"/>
+        <x:outputLabel for="hourFiveClose" id="hourFiveOpen" value="#{capControlForm.strategyTimeOfDay.hourFive.percentOpen}"/>
         <f:verbatim>
         </td>
         </tr>
@@ -836,12 +836,12 @@
         <td>
         </f:verbatim>
         <x:inputText id="hourSixClose" disabled="#{!capControlForm.editingCBCStrategy}"
-        value="#{capControlForm.strategyTimeOfDay.hourSix}"/>
+        value="#{capControlForm.strategyTimeOfDay.hourSix.percentClose}"/>
         <f:verbatim>
         </td>
         <td>
         </f:verbatim>
-        <x:outputLabel for="hourSixClose" id="hourSixOpen" value="#{capControlForm.strategyTimeOfDay.hourSixOpen}"/>
+        <x:outputLabel for="hourSixClose" id="hourSixOpen" value="#{capControlForm.strategyTimeOfDay.hourSix.percentOpen}"/>
         <f:verbatim>
         </td>
         </tr>
@@ -854,12 +854,12 @@
         <td>
         </f:verbatim>
         <x:inputText id="hourSevenClose" disabled="#{!capControlForm.editingCBCStrategy}"
-        value="#{capControlForm.strategyTimeOfDay.hourSeven}"/>
+        value="#{capControlForm.strategyTimeOfDay.hourSeven.percentClose}"/>
         <f:verbatim>
         </td>
         <td>
         </f:verbatim>
-        <x:outputLabel for="hourSevenClose" id="hourSevenOpen" value="#{capControlForm.strategyTimeOfDay.hourSevenOpen}"/>
+        <x:outputLabel for="hourSevenClose" id="hourSevenOpen" value="#{capControlForm.strategyTimeOfDay.hourSeven.percentOpen}"/>
         <f:verbatim>
         </td>
         </tr>
@@ -872,12 +872,12 @@
         <td>
         </f:verbatim>
         <x:inputText id="hourEightClose" disabled="#{!capControlForm.editingCBCStrategy}"
-        value="#{capControlForm.strategyTimeOfDay.hourEight}"/>
+        value="#{capControlForm.strategyTimeOfDay.hourEight.percentClose}"/>
         <f:verbatim>
         </td>
         <td>
         </f:verbatim>
-        <x:outputLabel for="hourEightClose" id="hourEightOpen" value="#{capControlForm.strategyTimeOfDay.hourEightOpen}"/>
+        <x:outputLabel for="hourEightClose" id="hourEightOpen" value="#{capControlForm.strategyTimeOfDay.hourEight.percentOpen}"/>
         <f:verbatim>
         </td>
         </tr>
@@ -890,12 +890,12 @@
         <td>
         </f:verbatim>
         <x:inputText id="hourNineClose" disabled="#{!capControlForm.editingCBCStrategy}"
-        value="#{capControlForm.strategyTimeOfDay.hourNine}"/>
+        value="#{capControlForm.strategyTimeOfDay.hourNine.percentClose}"/>
         <f:verbatim>
         </td>
         <td>
         </f:verbatim>
-        <x:outputLabel for="hourNineClose" id="hourNineOpen" value="#{capControlForm.strategyTimeOfDay.hourNineOpen}"/>
+        <x:outputLabel for="hourNineClose" id="hourNineOpen" value="#{capControlForm.strategyTimeOfDay.hourNine.percentOpen}"/>
         <f:verbatim>
         </td>
         </tr>
@@ -908,12 +908,12 @@
         <td>
         </f:verbatim>
         <x:inputText id="hourTenClose" disabled="#{!capControlForm.editingCBCStrategy}"
-        value="#{capControlForm.strategyTimeOfDay.hourTen}"/>
+        value="#{capControlForm.strategyTimeOfDay.hourTen.percentClose}"/>
         <f:verbatim>
         </td>
         <td>
         </f:verbatim>
-        <x:outputLabel for="hourTenClose" id="hourTenOpen" value="#{capControlForm.strategyTimeOfDay.hourTenOpen}"/>
+        <x:outputLabel for="hourTenClose" id="hourTenOpen" value="#{capControlForm.strategyTimeOfDay.hourTen.percentOpen}"/>
         <f:verbatim>
         </td>
         </tr>
@@ -926,12 +926,12 @@
         <td>
         </f:verbatim>
         <x:inputText id="hourElevenClose" disabled="#{!capControlForm.editingCBCStrategy}"
-        value="#{capControlForm.strategyTimeOfDay.hourEleven}"/>
+        value="#{capControlForm.strategyTimeOfDay.hourEleven.percentClose}"/>
         <f:verbatim>
         </td>
         <td>
         </f:verbatim>
-        <x:outputLabel for="hourElevenClose" id="hourElevenOpen" value="#{capControlForm.strategyTimeOfDay.hourElevenOpen}"/>
+        <x:outputLabel for="hourElevenClose" id="hourElevenOpen" value="#{capControlForm.strategyTimeOfDay.hourEleven.percentOpen}"/>
         <f:verbatim>
         </td>
         </tr>
@@ -944,12 +944,12 @@
         <td>
         </f:verbatim>
         <x:inputText id="hourTwelveClose" disabled="#{!capControlForm.editingCBCStrategy}"
-        value="#{capControlForm.strategyTimeOfDay.hourTwelve}"/>
+        value="#{capControlForm.strategyTimeOfDay.hourTwelve.percentClose}"/>
         <f:verbatim>
         </td>
         <td>
         </f:verbatim>
-        <x:outputLabel for="hourTwelveClose" id="hourTwelveOpen" value="#{capControlForm.strategyTimeOfDay.hourTwelveOpen}"/>
+        <x:outputLabel for="hourTwelveClose" id="hourTwelveOpen" value="#{capControlForm.strategyTimeOfDay.hourTwelve.percentOpen}"/>
         <f:verbatim>
         </td>
         </tr>
@@ -962,12 +962,12 @@
         <td>
         </f:verbatim>
         <x:inputText id="hourThirteenClose" disabled="#{!capControlForm.editingCBCStrategy}"
-        value="#{capControlForm.strategyTimeOfDay.hourThirteen}"/>
+        value="#{capControlForm.strategyTimeOfDay.hourThirteen.percentClose}"/>
         <f:verbatim>
         </td>
         <td>
         </f:verbatim>
-        <x:outputLabel for="hourThirteenClose" id="hourThirteenOpen" value="#{capControlForm.strategyTimeOfDay.hourThirteenOpen}"/>
+        <x:outputLabel for="hourThirteenClose" id="hourThirteenOpen" value="#{capControlForm.strategyTimeOfDay.hourThirteen.percentOpen}"/>
         <f:verbatim>
         </td>
         </tr>
@@ -980,12 +980,12 @@
         <td>
         </f:verbatim>
         <x:inputText id="hourFourteenClose" disabled="#{!capControlForm.editingCBCStrategy}"
-        value="#{capControlForm.strategyTimeOfDay.hourFourteen}"/>
+        value="#{capControlForm.strategyTimeOfDay.hourFourteen.percentClose}"/>
         <f:verbatim>
         </td>
         <td>
         </f:verbatim>
-        <x:outputLabel for="hourFourteenClose" id="hourFourteenOpen" value="#{capControlForm.strategyTimeOfDay.hourFourteenOpen}"/>
+        <x:outputLabel for="hourFourteenClose" id="hourFourteenOpen" value="#{capControlForm.strategyTimeOfDay.hourFourteen.percentOpen}"/>
         <f:verbatim>
         </td>
         </tr>
@@ -998,12 +998,12 @@
         <td>
         </f:verbatim>
         <x:inputText id="hourFifteenClose" disabled="#{!capControlForm.editingCBCStrategy}"
-        value="#{capControlForm.strategyTimeOfDay.hourFifteen}"/>
+        value="#{capControlForm.strategyTimeOfDay.hourFifteen.percentClose}"/>
         <f:verbatim>
         </td>
         <td>
         </f:verbatim>
-        <x:outputLabel for="hourFifteenClose" id="hourFifteenOpen" value="#{capControlForm.strategyTimeOfDay.hourFifteenOpen}"/>
+        <x:outputLabel for="hourFifteenClose" id="hourFifteenOpen" value="#{capControlForm.strategyTimeOfDay.hourFifteen.percentOpen}"/>
         <f:verbatim>
         </td>
         </tr>
@@ -1016,12 +1016,12 @@
         <td>
         </f:verbatim>
         <x:inputText id="hourSixteenClose" disabled="#{!capControlForm.editingCBCStrategy}"
-        value="#{capControlForm.strategyTimeOfDay.hourSixteen}"/>
+        value="#{capControlForm.strategyTimeOfDay.hourSixteen.percentClose}"/>
         <f:verbatim>
         </td>
         <td>
         </f:verbatim>
-        <x:outputLabel for="hourSixteenClose" id="hourSixteenOpen" value="#{capControlForm.strategyTimeOfDay.hourSixteenOpen}"/>
+        <x:outputLabel for="hourSixteenClose" id="hourSixteenOpen" value="#{capControlForm.strategyTimeOfDay.hourSixteen.percentOpen}"/>
         <f:verbatim>
         </td>
         </tr>
@@ -1034,12 +1034,12 @@
         <td>
         </f:verbatim>
         <x:inputText id="hourSeventeenClose" disabled="#{!capControlForm.editingCBCStrategy}"
-        value="#{capControlForm.strategyTimeOfDay.hourSeventeen}"/>
+        value="#{capControlForm.strategyTimeOfDay.hourSeventeen.percentClose}"/>
         <f:verbatim>
         </td>
         <td>
         </f:verbatim>
-        <x:outputLabel for="hourSeventeenClose" id="hourSeventeenOpen" value="#{capControlForm.strategyTimeOfDay.hourSeventeenOpen}"/>
+        <x:outputLabel for="hourSeventeenClose" id="hourSeventeenOpen" value="#{capControlForm.strategyTimeOfDay.hourSeventeen.percentOpen}"/>
         <f:verbatim>
         </td>
         </tr>
@@ -1052,12 +1052,12 @@
         <td>
         </f:verbatim>
         <x:inputText id="hourEighteenClose" disabled="#{!capControlForm.editingCBCStrategy}"
-        value="#{capControlForm.strategyTimeOfDay.hourEighteen}"/>
+        value="#{capControlForm.strategyTimeOfDay.hourEighteen.percentClose}"/>
         <f:verbatim>
         </td>
         <td>
         </f:verbatim>
-        <x:outputLabel for="hourEighteenClose" id="hourEighteenOpen" value="#{capControlForm.strategyTimeOfDay.hourEighteenOpen}"/>
+        <x:outputLabel for="hourEighteenClose" id="hourEighteenOpen" value="#{capControlForm.strategyTimeOfDay.hourEighteen.percentOpen}"/>
         <f:verbatim>
         </td>
         </tr>
@@ -1070,12 +1070,12 @@
         <td>
         </f:verbatim>
         <x:inputText id="hourNineteenClose" disabled="#{!capControlForm.editingCBCStrategy}"
-        value="#{capControlForm.strategyTimeOfDay.hourNineteen}"/>
+        value="#{capControlForm.strategyTimeOfDay.hourNineteen.percentClose}"/>
         <f:verbatim>
         </td>
         <td>
         </f:verbatim>
-        <x:outputLabel for="hourNineteenClose" id="hourNineteenOpen" value="#{capControlForm.strategyTimeOfDay.hourNineteenOpen}"/>
+        <x:outputLabel for="hourNineteenClose" id="hourNineteenOpen" value="#{capControlForm.strategyTimeOfDay.hourNineteen.percentOpen}"/>
         <f:verbatim>
         </td>
         </tr>
@@ -1088,12 +1088,12 @@
         <td>
         </f:verbatim>
         <x:inputText id="hourTwentyClose" disabled="#{!capControlForm.editingCBCStrategy}"
-        value="#{capControlForm.strategyTimeOfDay.hourTwenty}"/>
+        value="#{capControlForm.strategyTimeOfDay.hourTwenty.percentClose}"/>
         <f:verbatim>
         </td>
         <td>
         </f:verbatim>
-        <x:outputLabel for="hourTwentyClose" id="hourTwentyOpen" value="#{capControlForm.strategyTimeOfDay.hourTwentyOpen}"/>
+        <x:outputLabel for="hourTwentyClose" id="hourTwentyOpen" value="#{capControlForm.strategyTimeOfDay.hourTwenty.percentOpen}"/>
         <f:verbatim>
         </td>
         </tr>
@@ -1106,12 +1106,12 @@
         <td>
         </f:verbatim>
         <x:inputText id="hourTwentyOneClose" disabled="#{!capControlForm.editingCBCStrategy}"
-        value="#{capControlForm.strategyTimeOfDay.hourTwentyOne}"/>
+        value="#{capControlForm.strategyTimeOfDay.hourTwentyOne.percentClose}"/>
         <f:verbatim>
         </td>
         <td>
         </f:verbatim>
-        <x:outputLabel for="hourTwentyOneClose" id="hourTwentyOneOpen" value="#{capControlForm.strategyTimeOfDay.hourTwentyOneOpen}"/>
+        <x:outputLabel for="hourTwentyOneClose" id="hourTwentyOneOpen" value="#{capControlForm.strategyTimeOfDay.hourTwentyOne.percentOpen}"/>
         <f:verbatim>
         </td>
         </tr>
@@ -1124,12 +1124,12 @@
         <td>
         </f:verbatim>
         <x:inputText id="hourTwentyTwoClose" disabled="#{!capControlForm.editingCBCStrategy}"
-        value="#{capControlForm.strategyTimeOfDay.hourTwentyTwo}"/>
+        value="#{capControlForm.strategyTimeOfDay.hourTwentyTwo.percentClose}"/>
         <f:verbatim>
         </td>
         <td>
         </f:verbatim>
-        <x:outputLabel for="hourTwentyTwoClose" id="hourTwentyTwoOpen" value="#{capControlForm.strategyTimeOfDay.hourTwentyTwoOpen}"/>
+        <x:outputLabel for="hourTwentyTwoClose" id="hourTwentyTwoOpen" value="#{capControlForm.strategyTimeOfDay.hourTwentyTwo.percentOpen}"/>
         <f:verbatim>
         </td>
         </tr>
@@ -1142,12 +1142,12 @@
         <td>
         </f:verbatim>
         <x:inputText id="hourTwentyThreeClose" disabled="#{!capControlForm.editingCBCStrategy}"
-        value="#{capControlForm.strategyTimeOfDay.hourTwentyThree}"/>
+        value="#{capControlForm.strategyTimeOfDay.hourTwentyThree.percentClose}"/>
         <f:verbatim>
         </td>
         <td>
         </f:verbatim>
-        <x:outputLabel for="hourTwentyThreeClose" id="hourTwentyThreeOpen" value="#{capControlForm.strategyTimeOfDay.hourTwentyThreeOpen}"/>
+        <x:outputLabel for="hourTwentyThreeClose" id="hourTwentyThreeOpen" value="#{capControlForm.strategyTimeOfDay.hourTwentyThree.percentOpen}"/>
     </h:column>
     </h:panelGrid>
 	<x:inputHidden forceId="true" id="controlAlgoToggle" value="#{capControlForm.currentStratModel.resetPkOffPkVals}" />
