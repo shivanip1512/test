@@ -6,8 +6,8 @@
 *
 * PVCS KEYWORDS:
 * ARCHIVE      :  $Archive$
-* REVISION     :  $Revision: 1.211 $
-* DATE         :  $Date: 2007/10/15 22:24:11 $
+* REVISION     :  $Revision: 1.212 $
+* DATE         :  $Date: 2007/11/21 20:54:57 $
 *
 * Copyright (c) 1999, 2000, 2001 Cannon Technologies Inc. All rights reserved.
 *-----------------------------------------------------------------------------*/
@@ -1362,6 +1362,7 @@ INT CommunicateDevice(CtiPortSPtr Port, INMESS *InMessage, OUTMESS *OutMessage, 
                     case TYPE_ION8300:
                     case TYPECBC6510:
                     case TYPECBC7020:
+                    case TYPECBCDNP:
                     case TYPE_DNPRTU:
                     case TYPE_DARTRTU:
                     case TYPE_SERIESVRTU:
@@ -2191,6 +2192,7 @@ INT CommunicateDevice(CtiPortSPtr Port, INMESS *InMessage, OUTMESS *OutMessage, 
                             break;
                         }
                     case TYPECBC7020:
+                    case TYPECBCDNP:
                     case TYPE_DNPRTU:
                     case TYPE_DARTRTU:
                     case TYPE_SERIESVRTU:
@@ -2315,6 +2317,7 @@ INT CommunicateDevice(CtiPortSPtr Port, INMESS *InMessage, OUTMESS *OutMessage, 
                     case TYPE_DAVIS:
                     case TYPECBC6510:
                     case TYPECBC7020:
+                    case TYPECBCDNP:
                         {
                             {
                                 CtiLockGuard<CtiLogger> doubt_guard(dout);
