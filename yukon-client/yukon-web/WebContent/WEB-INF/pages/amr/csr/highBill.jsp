@@ -40,12 +40,8 @@
                 <c:choose>
                 
                     <c:when test="${lmPointExists}">
-                        <div style="width: 400px">
-                            <ct:widget bean="meterInformationWidget" identify="false" deviceId="${deviceId}" hideEnabled="false" />
-                        </div>
-                        <div style="width: 700px">
-                            <ct:widget bean="profilePeakWidget" identify="false" deviceId="${deviceId}" collectLPVisible="true" highlight="usage,averageUsage" loadProfileRequestOrigin="HBC"  hideEnabled="false"/>
-                        </div>
+                        <ct:widget bean="meterInformationWidget" width="400px" identify="false" deviceId="${deviceId}" hideEnabled="false" />
+                        <ct:widget bean="profilePeakWidget"  width="700px" identify="false" deviceId="${deviceId}" collectLPVisible="true" highlight="usage,averageUsage" loadProfileRequestOrigin="HBC"  hideEnabled="false"/>
                     </c:when>
                     
                     <c:otherwise>
