@@ -1121,9 +1121,9 @@ public class CapControlForm extends DBEditorForm implements ICapControlModel{
 	public void createStrategy() {
         currentStratModel = null;
         CapControlStrategy ccStrat = CCYukonPAOFactory.createCapControlStrategy();
-		Integer newID = CapControlStrategy.getNextStrategyID();
-		ccStrat.setStrategyID(newID);
-		ccStrat.setStrategyName("Strat #" + newID + " (New)");
+		Integer newId = CapControlStrategy.getNextStrategyID();
+		ccStrat.setStrategyID(newId);
+		ccStrat.setStrategyName("Strat #" + newId + " (New)");
 		// this message will be filled in by the super class
 		FacesMessage facesMsg = new FacesMessage();
 		try {
@@ -1132,6 +1132,8 @@ public class CapControlForm extends DBEditorForm implements ICapControlModel{
 			resetStrategies();
 			setEditingCBCStrategy(true);
 			facesMsg.setDetail("CapControl Strategy add was SUCCESSFUL");
+			cbcStrategiesMap.put(newId, ccStrat);
+			JSFUtil.redirect("/editor/cbcBase.jsf?type=" + DBEditorTypes.EDITOR_STRATEGY + "&itemid=" + newId);
 		} catch (TransactionException te) {
 			// do nothing since the appropriate actions was taken in the super
 		} finally {
@@ -1684,6 +1686,8 @@ public class CapControlForm extends DBEditorForm implements ICapControlModel{
 	        	if (getDbPersistent() != null) {
 	            	retStr = ((PAOSchedule)getDbPersistent()).getScheduleName();
 	        	}
+	        } else if (getDbPersistent() instanceof CapControlStrategy) {
+	            retStr = ((CapControlStrategy)getDbPersistent()).getStrategyName();
 	        }
     	}
         return retStr;

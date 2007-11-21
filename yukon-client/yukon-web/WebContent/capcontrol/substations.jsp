@@ -43,13 +43,13 @@
 <%
 if(special){
 %>
-  <cti:crumbLink url="subareas.jsp" title="Substation Areas" /> 
+  <cti:crumbLink url="subareas.jsp" title="Home" /> 
   <cti:crumbLink url="specialSubAreas.jsp" title="Special Substation Areas" />
   <%
   } else{
   %>
-  <cti:crumbLink url="subareas.jsp" title="Substation Areas" /> 
-  <cti:crumbLink url="specialSubAreas.jsp" title="Special Substation Areas" />
+  <cti:crumbLink url="subareas.jsp" title="Home" /> 
+  <cti:crumbLink url="subareas.jsp" title="Substation Areas" />
   <%
   }
   %>
