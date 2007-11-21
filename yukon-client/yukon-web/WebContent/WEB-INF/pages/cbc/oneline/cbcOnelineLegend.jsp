@@ -105,6 +105,16 @@
                                     </td>
                                 </tr>
                                 <tr>
+                                    <td
+                                        style="color: rgb(255, 165, 0); font-size: 15;">
+                                        CapBank
+                                    </td>
+                                    <td
+                                        style="color: rgb(192, 192, 192); font-size: 12;">
+                                        Temp Moved CapBank
+                                    </td>
+                                </tr>
+                                <tr>
                                     <td colspan="2"
                                         style="color: rgb(192, 192, 192); font-size: 12;">
                                         <div>
