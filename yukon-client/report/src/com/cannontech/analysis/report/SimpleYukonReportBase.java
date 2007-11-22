@@ -14,12 +14,15 @@ import java.util.Iterator;
 import java.util.List;
 import java.util.Map;
 
+import org.apache.commons.lang.Validate;
+import org.jfree.report.Element;
 import org.jfree.report.ElementAlignment;
 import org.jfree.report.Group;
 import org.jfree.report.GroupFooter;
 import org.jfree.report.GroupHeader;
 import org.jfree.report.GroupList;
 import org.jfree.report.ItemBand;
+import org.jfree.report.JFreeReport;
 import org.jfree.report.elementfactory.DateFieldElementFactory;
 import org.jfree.report.elementfactory.LabelElementFactory;
 import org.jfree.report.elementfactory.NumberFieldElementFactory;
@@ -57,6 +60,7 @@ public abstract class SimpleYukonReportBase extends YukonReportBase {
 
 
     public SimpleYukonReportBase(BareReportModel bareModel) {
+        Validate.notNull(bareModel, "BareReportModel must not be null");
         this.bareModel = bareModel;
         model = new BareReportModelAdapter(bareModel, new ReportModelLayout() {
             public ColumnProperties getColumnProperties(int i) {
@@ -64,8 +68,6 @@ public abstract class SimpleYukonReportBase extends YukonReportBase {
             }
         });
         setModel(model);
-        
-        initializeColumns();
     }
 
     public SimpleYukonReportBase(ReportModelBase model) {
@@ -79,7 +81,16 @@ public abstract class SimpleYukonReportBase extends YukonReportBase {
         });
         setModel(model);
         
+    }
+    
+    protected void initialize() {
         initializeColumns();
+    }
+    
+    @Override
+    public JFreeReport createReport() throws FunctionInitializeException {
+        initialize();
+        return super.createReport();
     }
 
     protected void initializeColumns() {

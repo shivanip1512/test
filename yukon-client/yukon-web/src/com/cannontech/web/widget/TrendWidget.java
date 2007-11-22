@@ -205,9 +205,12 @@ public class TrendWidget extends WidgetControllerBase {
                                                                                               .getKey() + ": " + startDateStr + " - " + endDateStr);
             }
 
+            mav.addObject("deviceId", deviceId);
             mav.addObject("pointIds", pointId);
-            mav.addObject("startDate", startDateCal.getTimeInMillis());
-            mav.addObject("endDate", endDateCal.getTimeInMillis());
+            mav.addObject("startDateMillis", startDateCal.getTimeInMillis());
+            mav.addObject("endDateMillis", endDateCal.getTimeInMillis());
+            mav.addObject("startDate", startDateCal.getTime());
+            mav.addObject("stopDate", endDateCal.getTime());
             mav.addObject("period", periodString);
 
         }

@@ -34,16 +34,24 @@ public class LongLoadProfileServiceEmailCompletionCallbackImpl implements LongLo
     
     private final String baseSubjectFormat = "Profile data collection for {formattedDeviceName} from {startDate} - {stopDate} {status}";
 
-    private final String lpNotificationFormat_Success = "{statusMsg}\n\n" + "Device Summary\n" + "Device Name: {deviceName}    \n" + "Meter Number: {meterNumber}    \n" + "Physical Address: {physAddress}\n\n" + "Request Range: {startDate} to {stopDate}    \n" + "Total Requested Days: {totalDays}\n\n" + "Data is now available online.";
-    private final String lpNotificationFormat_Failure = "{statusMsg}\n\n" + "Device Summary\n" + "Device Name: {deviceName}    \n" + "Meter Number: {meterNumber}    \n" + "Physical Address: {physAddress}\n\n" + "Request Range: {startDate} to {stopDate}    \n" + "Total Requested Days: {totalDays}";
-    private final String lpNotificationFormat_Cancel = "{statusMsg}\n\n" + "Device Summary\n" + "Device Name: {deviceName}    \n" + "Meter Number: {meterNumber}    \n" + "Physical Address: {physAddress}\n\n" + "Request Range: {startDate} to {stopDate}    \n" + "Total Requested Days: {totalDays}";
+    private String base_template_plain = "{statusMsg}\n\n" + "Device Summary\n" + "Device Name: {deviceName}\n" + "Meter Number: {meterNumber}\n" + "Physical Address: {physAddress}\n\n" + "Request Range: {startDate} to {stopDate}\n" + "Total Requested Days: {totalDays} \n\n";
+    private String base_template_html  = "{statusMsg}<br/><br/>" + "Device Summary<br/>" + "Device Name: {deviceName}<br/>" + "Meter Number: {meterNumber}<br/>" + "Physical Address: {physAddress}<br/><br/>" + "Request Range: {startDate} to {stopDate}<br/>" + "Total Requested Days: {totalDays}<br/><br/>";
+    
+    private final String success_template_plain = base_template_plain + "Data is now available online.\n\nHTML\n{reportHtmlUrl}\n\nCSV\n{reportCsvUrl}\n\nPDF\n{reportPdfUrl}\n\n";
+    private final String failure_template_plain = base_template_plain;
+    private final String cancel_template_plain  = base_template_plain + "Partial data may be available online.\n\nHTML\n{reportHtmlUrl}\n\nCSV\n{reportCsvUrl}\n\nPDF\n{reportPdfUrl}\n\n";
+    
+    private final String success_template_html = base_template_html + "Data is now available online.<br/>View Report: <a href=\"{reportHtmlUrl}\">HTML</a> | <a href=\"{reportCsvUrl}\">CSV</a> | <a href=\"{reportPdfUrl}\">PDF</a><br/><br/>";
+    private final String failure_template_html = base_template_html;
+    private final String cancel_template_html  = base_template_html + "Partial data may be available online.<br/>View Report: <a href=\"{reportHtmlUrl}\">HTML</a> | <a href=\"{reportCsvUrl}\">CSV</a> | <a href=\"{reportPdfUrl}\">PDF</a><br/><br/>";
 
-    private DefaultEmailMessage getEmailer(String email, String subject, String body){
+    private DefaultEmailMessage getEmailer(String email, String subject, String body, String htmlBody){
         
         DefaultEmailMessage emailer = new DefaultEmailMessage();
         emailer.setRecipient(email);
         emailer.setSubject(subject);
         emailer.setBody(body);
+        emailer.setHtmlBody(htmlBody);
         
         return emailer;
     }
@@ -61,9 +69,10 @@ public class LongLoadProfileServiceEmailCompletionCallbackImpl implements LongLo
         msgData.put("statusMsg", "Your profile data collection request has completed.");
 
         String subject = tp.process(baseSubjectFormat, msgData);
-        String body = tp.process(lpNotificationFormat_Success, msgData);
+        String body = tp.process(success_template_plain, msgData);
+        String htmlBody = tp.process(success_template_html, msgData);
         
-        this.successMessage = getEmailer((String)msgData.get("email"), subject, body);
+        this.successMessage = getEmailer((String)msgData.get("email"), subject, body, htmlBody);
     }
     
     public void setFailureMessage(Map<String, Object> msgData) {
@@ -72,9 +81,10 @@ public class LongLoadProfileServiceEmailCompletionCallbackImpl implements LongLo
         msgData.put("statusMsg", "Your profile data collection request has encountered an error.");
 
         String subject = tp.process(baseSubjectFormat, msgData);
-        String body = tp.process(lpNotificationFormat_Failure, msgData);
+        String body = tp.process(failure_template_plain, msgData);
+        String htmlBody = tp.process(failure_template_html, msgData);
         
-        this.failureMessage = getEmailer((String)msgData.get("email"), subject, body);
+        this.failureMessage = getEmailer((String)msgData.get("email"), subject, body, htmlBody);
         
     }
     
@@ -84,9 +94,10 @@ public class LongLoadProfileServiceEmailCompletionCallbackImpl implements LongLo
         msgData.put("statusMsg", "Your profile data collection was canceled.");
 
         String subject = tp.process(baseSubjectFormat, msgData);
-        String body = tp.process(lpNotificationFormat_Cancel, msgData);
+        String body = tp.process(cancel_template_plain, msgData);
+        String htmlBody = tp.process(cancel_template_html, msgData);
         
-        this.cancelMessage = getEmailer((String)msgData.get("email"), subject, body);
+        this.cancelMessage = getEmailer((String)msgData.get("email"), subject, body, htmlBody);
     }
 
     //  onFailure
@@ -155,7 +166,7 @@ public class LongLoadProfileServiceEmailCompletionCallbackImpl implements LongLo
             String newBody = originalBody + "\n\n" + cancelInfo;
             cancelMessage.setBody(newBody);
             
-            emailService.sendMessage(cancelMessage);
+            emailService.sendHTMLMessage(cancelMessage);
             
         } catch (MessagingException e) {
             log.error("Unable to send onCancel message",e);

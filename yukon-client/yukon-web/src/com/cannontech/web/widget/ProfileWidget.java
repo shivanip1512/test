@@ -38,11 +38,13 @@ import com.cannontech.core.service.impl.LongLoadProfileServiceEmailCompletionCal
 import com.cannontech.database.data.device.MCTBase;
 import com.cannontech.database.data.lite.LiteContact;
 import com.cannontech.database.data.lite.LiteDeviceMeterNumber;
+import com.cannontech.database.data.lite.LitePoint;
 import com.cannontech.database.data.lite.LiteYukonPAObject;
 import com.cannontech.database.data.lite.LiteYukonUser;
 import com.cannontech.database.data.pao.YukonPAObject;
 import com.cannontech.database.db.device.DeviceLoadProfile;
 import com.cannontech.message.dispatch.message.DBChangeMsg;
+import com.cannontech.simplereport.SimpleReportService;
 import com.cannontech.tools.email.EmailService;
 import com.cannontech.util.ServletUtil;
 import com.cannontech.web.widget.support.WidgetControllerBase;
@@ -65,6 +67,7 @@ public class ProfileWidget extends WidgetControllerBase {
     private AttributeService attributeService = null;
     private YukonUserDao yukonUserDao = null;
     private ContactDao contactDao = null;
+    private SimpleReportService simpleReportService = null;
     
     private static DateFormat dateFormat = new SimpleDateFormat("MM/dd/yy hh:mma");
     /*
@@ -289,6 +292,34 @@ public class ProfileWidget extends WidgetControllerBase {
                 msgData.put("stopDate", dateFormat.format(stopDate));
                 long numDays = (stopDate.getTime() - startDate.getTime()) / MS_IN_A_DAY;
                 msgData.put("totalDays", Long.toString(numDays));
+                
+                // determine pointId in order to build report URL
+                Attribute attribute = null;
+                if(channel == 1){
+                    attribute = BuiltInAttribute.LOAD_PROFILE;
+                }
+                else if(channel == 4) {
+                    attribute = BuiltInAttribute.VOLTAGE_PROFILE;
+                }
+                LitePoint litePoint = attributeService.getPointForAttribute(deviceDao.getYukonDevice(device), attribute);
+                
+                Map<String, Object> inputValues = new HashMap<String, Object>();
+                inputValues.put("startDate", startDate.getTime());
+                inputValues.put("stopDate", stopDate.getTime());
+                inputValues.put("pointId", litePoint.getPointID());
+                
+                Map<String, String> optionalAttributeDefaults = new HashMap<String, String>();
+                optionalAttributeDefaults.put("module", "amr");
+                optionalAttributeDefaults.put("showMenu", "true");
+                optionalAttributeDefaults.put("menuSelection", "deviceselection");
+                optionalAttributeDefaults.put("deviceId", ((Integer)deviceId).toString());
+                
+                String reportHtmlUrl = simpleReportService.getReportUrl(request, "rawPointHistoryDefinition", inputValues, optionalAttributeDefaults, "htmlView");
+                String reportCsvUrl = simpleReportService.getReportUrl(request, "rawPointHistoryDefinition", inputValues, optionalAttributeDefaults, "csvView");
+                String reportPdfUrl = simpleReportService.getReportUrl(request, "rawPointHistoryDefinition", inputValues, optionalAttributeDefaults, "pdfView");
+                msgData.put("reportHtmlUrl", reportHtmlUrl);
+                msgData.put("reportCsvUrl", reportCsvUrl);
+                msgData.put("reportPdfUrl", reportPdfUrl);
 
                 // completion callbacks
                 LongLoadProfileServiceEmailCompletionCallbackImpl callback = 
@@ -485,5 +516,10 @@ public class ProfileWidget extends WidgetControllerBase {
     @Required
     public void setContactDao(ContactDao contactDao) {
         this.contactDao = contactDao;
+    }
+
+    @Required
+    public void setSimpleReportService(SimpleReportService simpleReportService) {
+        this.simpleReportService = simpleReportService;
     }
 }

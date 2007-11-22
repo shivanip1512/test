@@ -4,10 +4,13 @@ import java.util.Date;
 
 import javax.mail.Message;
 import javax.mail.MessagingException;
+import javax.mail.Multipart;
 import javax.mail.Session;
 import javax.mail.Transport;
 import javax.mail.internet.InternetAddress;
+import javax.mail.internet.MimeBodyPart;
 import javax.mail.internet.MimeMessage;
+import javax.mail.internet.MimeMultipart;
 
 import org.springframework.beans.factory.annotation.Required;
 
@@ -19,7 +22,40 @@ import com.cannontech.tools.email.EmailService;
 public class EmailServiceImpl implements EmailService {
     private RoleDao roleDao;
 
+    
     public void sendMessage(EmailMessageHolder holder) throws MessagingException {
+        
+        MimeMessage _message = prepareMessage(holder);
+        _message.setText(holder.getBody());
+        send(_message);
+    }
+    
+    public void sendHTMLMessage(EmailMessageHolder holder) throws MessagingException {
+        
+        MimeMessage _message = prepareMessage(holder);
+        
+        Multipart mp = new MimeMultipart();
+        
+        MimeBodyPart plain_part = new MimeBodyPart();
+        plain_part.setContent(holder.getBody(), "text/plain");
+        
+        MimeBodyPart html_part = new MimeBodyPart();
+        html_part.setContent(holder.getHtmlBody(), "text/html");
+        
+        mp.addBodyPart(html_part);
+        mp.addBodyPart(plain_part);
+        
+        
+        _message.setContent(mp);
+        
+        send(_message);
+    }
+    
+    private void send(MimeMessage _message) throws MessagingException{
+        Transport.send(_message);
+    }
+    
+    private MimeMessage prepareMessage(EmailMessageHolder holder) throws MessagingException {
         java.util.Properties systemProps = System.getProperties();
         
         //a property used internally by the JavaMail API
@@ -44,12 +80,14 @@ public class EmailServiceImpl implements EmailService {
         _message.setRecipient(Message.RecipientType.TO, addr);
         
         _message.setSubject(holder.getSubject());
-        _message.setText(holder.getBody());
         
         _message.setSentDate(new Date());
-        Transport.send(_message);
-
+        
+        return _message;
     }
+    
+    
+    
 
     @Required
     public void setRoleDao(RoleDao roleDao) {

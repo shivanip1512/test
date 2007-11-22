@@ -15,11 +15,16 @@ import com.cannontech.database.JdbcTemplateHelper;
 
 public class DisconnectCollarModel extends BareReportModelBase<DisconnectCollarModel.ModelRow> {
     
-    private static String title = "Disconnect Collar Report";
-    private List<ModelRow> data = new ArrayList<ModelRow>();
+    // dependencies
     private JdbcOperations jdbcOps = JdbcTemplateHelper.getYukonTemplate();
+    
+    // inputs
     private Set<Integer> deviceIds;
     private Set<Integer> deviceNames;
+    
+    // member veriables
+    private static String title = "Disconnect Collar Report";
+    private List<ModelRow> data = new ArrayList<ModelRow>();
     
     static public class ModelRow {
         public String deviceName;
@@ -100,13 +105,25 @@ String result = null;
     public String getTitle() {
         return title;
     }
-    
-    public void setDeviceIdsFilter(Set<Integer> deviceIds) {
-        this.deviceIds = deviceIds;
+
+    public void setJdbcOps(JdbcOperations jdbcOps) {
+        this.jdbcOps = jdbcOps;
+    }
+
+    public Set<Integer> getDeviceIds() {
+        return deviceIds;
     }
     
-    public void setDeviceNamesFilter(Set<Integer> deviceNameIds) {
-        this.deviceNames = deviceNameIds;
+    public void setDeviceIds(Set<Integer> deviceIds) {
+        this.deviceIds = deviceIds;
+    }
+
+    public Set<Integer> getDeviceNames() {
+        return deviceNames;
+    }
+
+    public void setDeviceNames(Set<Integer> deviceNames) {
+        this.deviceNames = deviceNames;
     }
 
 }

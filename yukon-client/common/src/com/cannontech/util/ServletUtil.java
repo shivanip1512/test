@@ -1124,6 +1124,7 @@ public static Date roundToMinute(Date toRound) {
 		return req.getRequestURI() + q;		
 	}
     
+	
     public static String createSafeUrl(ServletRequest request, String url) {
         if (request instanceof HttpServletRequest) {
             HttpServletRequest httpRequest = (HttpServletRequest)request;
@@ -1136,6 +1137,45 @@ public static Date roundToMinute(Date toRound) {
             return url;
         }
     }
+    
+    /**
+     * Using a <String, String> Map, build a name1=value1&name2=value2 style URL query string
+     * using safe URL encoding.
+     * 
+     * @param propertiesMap
+     * @return
+     * @throws UnsupportedEncodingException
+     */
+    public static String buildSafeQueryStringFromMap(Map<String,String> propertiesMap) throws UnsupportedEncodingException {
+        final String urlEncoding = "UTF-8"; 
+        List<String> parameterPairs = new ArrayList<String>(propertiesMap.size()); 
+        for (String parameter : propertiesMap.keySet()) {
+            String thisPair = URLEncoder.encode(parameter, urlEncoding) + "=" + URLEncoder.encode(propertiesMap.get(parameter), urlEncoding);
+            parameterPairs.add(thisPair);
+        }
+
+        String queryString = StringUtils.join(parameterPairs, "&");
+
+        if(!StringUtils.isBlank(queryString)){
+            queryString = "&" + queryString;
+        }
+
+        return queryString;
+    }
+    
+    
+    
+    public static String makeWindowsSafeFileName(String fileName) {
+        
+        char[] badChars = {' ', '\\', '/', ':', '*', '?', '<', '>', '|'};
+        
+        for(char c : badChars) {
+            fileName = fileName.replace(c, '_');
+        }
+        
+        return fileName;
+    }
+    
     
     /**
      * Returns a URL that points to the same page as request, but has newParameter and newValue

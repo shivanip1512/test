@@ -255,6 +255,7 @@
         <property name="attributeService" ref="attributeService"/>
         <property name="yukonUserDao" ref="yukonUserDao"/>
         <property name="contactDao" ref="contactDao"/>
+        <property name="simpleReportService" ref="simpleReportService"/>
         
     </bean>
     
@@ -388,6 +389,19 @@
         abstract="false" singleton="true" lazy-init="default" autowire="default"
         dependency-check="default">
         <property name="pointFormattingService" ref="pointFormattingService"/>
+    </bean>
+    
+    <bean id="simpleReportLinkFromNameTagPrototype" class="com.cannontech.web.reports.SimpleReportLinkFromNameTag"
+        abstract="false" singleton="true" lazy-init="default" autowire="default"
+        dependency-check="default">
+        <property name="reportDefinitionFactory" ref="yukonReportModelDefinitionFactory"/>
+        <property name="simpleReportService" ref="simpleReportService"/>
+    </bean>
+    
+    <bean id="simpleReportLinkFromModelTagPrototype" class="com.cannontech.web.reports.SimpleReportLinkFromModelTag"
+        abstract="false" singleton="true" lazy-init="default" autowire="default"
+        dependency-check="default">
+        <property name="reportDefinitionFactory" ref="yukonReportModelDefinitionFactory"/>
     </bean>
 
     <bean id="trendWidget"

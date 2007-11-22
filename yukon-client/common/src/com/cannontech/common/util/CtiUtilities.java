@@ -29,6 +29,7 @@ import java.util.Enumeration;
 import java.util.HashSet;
 import java.util.LinkedHashSet;
 import java.util.List;
+import java.util.Map;
 import java.util.Set;
 import java.util.TimeZone;
 import java.util.Vector;
@@ -1753,7 +1754,26 @@ public static double convertTemperature(double temperature, String fromUnit, Str
         }
         return sb.toString().trim();
     }
-
+    
+    /**
+     * Given a map (A) of key = default value, and a map (B) of key = other value
+     * override matching keys from 
+     * 
+     * @param <K>
+     * @param <V>
+     * @param possible
+     * @param defaults
+     */
+     public static void overrideValuesOfDefaultsMap(
+              Map<String, String> defaultsMap,
+              Map<String, Object> otherMap) {
+         for (String defaultsKey : defaultsMap.keySet()) {
+             if (otherMap.containsKey(defaultsKey)) {
+                 defaultsMap.put(defaultsKey, otherMap.get(defaultsKey).toString());
+             }
+         }
+     }
+     
 }
 
 

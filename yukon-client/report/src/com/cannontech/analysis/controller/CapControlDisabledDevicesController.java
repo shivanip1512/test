@@ -5,6 +5,7 @@ import com.cannontech.analysis.report.YukonReportBase;
 import com.cannontech.analysis.tablemodel.CapControlDisabledDevicesModel;
 import com.cannontech.analysis.tablemodel.ReportModelBase;
 import com.cannontech.analysis.tablemodel.ReportModelBase.ReportFilter;
+import com.cannontech.spring.YukonSpringHook;
 
 public class CapControlDisabledDevicesController extends CapControlReportControllerBase {
     
@@ -16,7 +17,7 @@ public class CapControlDisabledDevicesController extends CapControlReportControl
     
     public CapControlDisabledDevicesController() {
         super();
-        model = new CapControlDisabledDevicesModel();
+        model = (CapControlDisabledDevicesModel)YukonSpringHook.getBean("capControlDisabledDevicesModel");
         report = new CapControlDisabledDevicesReport(model);
     }
 

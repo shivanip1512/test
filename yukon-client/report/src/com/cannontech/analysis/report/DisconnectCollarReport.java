@@ -5,23 +5,20 @@ import java.util.List;
 
 import com.cannontech.analysis.tablemodel.BareReportModel;
 import com.cannontech.analysis.tablemodel.DisconnectCollarModel;
+import com.cannontech.simplereport.reportlayoutdata.DisconnectCollarReportLayoutData;
+import com.cannontech.spring.YukonSpringHook;
 
 public class DisconnectCollarReport extends SimpleYukonReportBase {
     
-    private static final ColumnLayoutData bodyColumns[] = new ColumnLayoutData[] {
-        new ColumnLayoutData("Device Name", "deviceName", 200),
-        new ColumnLayoutData("Device Type", "deviceType", 80),
-        new ColumnLayoutData("Meter Number", "meterNumber", 80),
-        new ColumnLayoutData("Address", "physicalAddress", 80),
-        new ColumnLayoutData("Disconnect Address", "disconnectAddress", 120),
-    };
+    private static final ColumnLayoutData[] bodyColumns = new DisconnectCollarReportLayoutData().getBodyColumns();
 
     public DisconnectCollarReport(BareReportModel bareModel) {
         super(bareModel);
     }
     
     public DisconnectCollarReport() {
-        this(new DisconnectCollarModel());
+        this((DisconnectCollarModel)YukonSpringHook.getBean("disconnectCollarModel"));
+        //this(new DisconnectCollarModel());
     }
 
     @Override

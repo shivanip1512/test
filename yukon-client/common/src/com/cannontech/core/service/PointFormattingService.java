@@ -127,5 +127,7 @@ public interface PointFormattingService {
      * @return
      */
     public String getValueString(PointValueHolder value, String format, TimeZone timeZone);
+    
+    public PointFormattingService getCachedInstance();
 
 }

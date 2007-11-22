@@ -36,11 +36,11 @@ public class PointFormattingServiceImpl implements PointFormattingService {
     private Logger log = YukonLogManager.getLogger(PointFormattingServiceImpl.class);
 
     public String getValueString(PointValueHolder value, Format format) {
-        return getValueString(value, format.getFormat(), TimeZone.getDefault());
+        return getCachedInstance().getValueString(value, format);
     }
     
     public String getValueString(PointValueHolder value, String format) {
-        return getValueString(value, format, TimeZone.getDefault());
+        return getCachedInstance().getValueString(value, format);
     }
     
     @Required
@@ -62,77 +62,146 @@ public class PointFormattingServiceImpl implements PointFormattingService {
     public void setEnergyCompanyDao(EnergyCompanyDao energyCompanyDao) {
         this.energyCompanyDao = energyCompanyDao;
     }
+    
+    @Override
+    public PointFormattingService getCachedInstance() {
+        PointFormattingService impl = new PointFormattingService() {
+            
+            private Map<Integer, LitePoint> litePointCache = new HashMap<Integer, LitePoint>();
+            private Map<Integer, LiteState> stateCache = new HashMap<Integer, LiteState>();
+            private Map<Integer, LiteUnitMeasure> unitCache = new HashMap<Integer, LiteUnitMeasure>();
+            private Map<Integer, LitePointUnit> pointUnitCache = new HashMap<Integer, LitePointUnit>();
+            
+            public String getValueString(PointValueHolder data, String format, TimeZone timeZone) {
+                TemplateProcessor templateProcessor = new SimpleTemplateProcessor();
+                Object value = "";
+                String valueStr = "";
+                String unitString = "";
+                String state = "";
+                Boolean statusPoint = data.getType() == PointTypes.STATUS_POINT;
+                if (statusPoint) {
+                    
+                    // lite point
+                    LitePoint litePoint = litePointCache.get(data.getId());
+                    if (litePoint == null) {
+                        litePoint = pointDao.getLitePoint(data.getId());
+                        litePointCache.put(data.getId(), litePoint);
+                    }
+                    
+                    // state group
+                    LiteState liteState = stateCache.get((int) data.getValue());
+                    if (liteState == null) {
+                        int stateGroupId = litePoint.getStateGroupID();
+                        liteState = stateDao.getLiteState(stateGroupId, (int) data.getValue());
+                        stateCache.put((int) data.getValue(), liteState);
+                    }
+                    
+                    state = liteState.getStateText();
+                    value = liteState.getStateText();
+                    valueStr = liteState.getStateText();
+                    
+                } else {
+                    value = data.getValue();
+                    if (templateProcessor.contains(format, "unit")) {
+                        
+                        // unit of measure
+                        LiteUnitMeasure unitOfMeasure = unitCache.get(data.getId());
+                        if (unitOfMeasure == null) {
+                            unitOfMeasure = unitMeasureDao.getLiteUnitMeasureByPointID(data.getId());
+                            unitCache.put(data.getId(), unitOfMeasure);
+                        }
+                        
+                        if (unitOfMeasure != null) {
+                            unitString = unitOfMeasure.getUnitMeasureName();
+                        } else {
+                            log.debug("Couldn't load LiteUnitMeasure for point " + data.getId());
+                        }
+                        
+                    }
+
+                    if (templateProcessor.contains(format, "default")) {
+                        int decimalPlaces = 4;
+                        try {
+                            
+                            // point unit
+                            LitePointUnit pointUnit = pointUnitCache.get(data.getId());
+                            if (pointUnit == null) {
+                                pointUnit = pointDao.getPointUnit(data.getId());
+                                pointUnitCache.put(data.getId(), pointUnit);
+                            }
+                            
+                            decimalPlaces = pointUnit.getDecimalPlaces();
+                        } catch (NotFoundException e) {
+                            log.debug("Couldn't load LitePointUnit for point " + data.getId() + ", using default");
+                        }
+                        NumberFormat numberInstance = NumberFormat.getNumberInstance();
+                        numberInstance.setMinimumFractionDigits(decimalPlaces);
+                        numberInstance.setMaximumFractionDigits(decimalPlaces);
+                        valueStr = numberInstance.format(data.getValue());
+                    }
+                }
+                Map<String,Object> params = new HashMap<String, Object>();
+                params.put("value", value);
+                params.put("default", valueStr);
+                params.put("status", statusPoint);
+                params.put("state", state);
+                params.put("unit", unitString);
+                Date pointDataTimeStamp = data.getPointDataTimeStamp();
+                Calendar pointDataCal = Calendar.getInstance(timeZone);
+                pointDataCal.setTime(pointDataTimeStamp);
+                params.put("time", pointDataCal);
+                String result = templateProcessor.process(format, params);
+                return result;
+            }
+
+            public String getValueString(PointValueHolder value, String format, LiteYukonUser user) {
+                LiteEnergyCompany energyCompany = energyCompanyDao.getEnergyCompany(user);
+                TimeZone timeZone = energyCompanyDao.getEnergyCompanyTimeZone(energyCompany);
+
+                return getValueString(value, format, timeZone);
+            }
+
+            public String getValueString(PointValueHolder value, Format format) {
+                return getValueString(value, format.getFormat(), TimeZone.getDefault());
+            }
+            
+            public String getValueString(PointValueHolder value, String format) {
+                return getValueString(value, format, TimeZone.getDefault());
+            }
+            
+            public String getValueString(PointValueHolder value, Format format, LiteYukonUser user) {
+                LiteEnergyCompany energyCompany = energyCompanyDao.getEnergyCompany(user);
+                TimeZone timeZone = energyCompanyDao.getEnergyCompanyTimeZone(energyCompany);
+                
+                return getValueString(value, format.getFormat(), timeZone);
+            }
+
+            public String getValueString(PointValueHolder value, Format format, TimeZone timeZone) {
+                return getValueString(value, format.getFormat(), timeZone);
+            }
+            
+            @Override
+            public PointFormattingService getCachedInstance() {
+                return this;
+            }
+        };
+        return impl;
+    }
 
     public String getValueString(PointValueHolder value, String format, LiteYukonUser user) {
-        LiteEnergyCompany energyCompany = energyCompanyDao.getEnergyCompany(user);
-        TimeZone timeZone = energyCompanyDao.getEnergyCompanyTimeZone(energyCompany);
-
-        return getValueString(value, format, timeZone);
+        return getCachedInstance().getValueString(value, format, user);
     }
 
     public String getValueString(PointValueHolder data, String format, TimeZone timeZone) {
-        TemplateProcessor templateProcessor = new SimpleTemplateProcessor();
-        Object value = "";
-        String valueStr = "";
-        String unitString = "";
-        String state = "";
-        Boolean statusPoint = data.getType() == PointTypes.STATUS_POINT;
-        if (statusPoint) {
-            LitePoint litePoint = pointDao.getLitePoint(data.getId());
-            int stateGroupId = litePoint.getStateGroupID();
-            LiteState liteState = stateDao.getLiteState(stateGroupId, (int) data.getValue());
-            state = liteState.getStateText();
-            value = liteState.getStateText();
-            valueStr = liteState.getStateText();
-        } else {
-            value = data.getValue();
-            if (templateProcessor.contains(format, "unit")) {
-                LiteUnitMeasure unitOfMeasure;
-                unitOfMeasure = unitMeasureDao.getLiteUnitMeasureByPointID(data.getId());
-                if (unitOfMeasure != null) {
-                    unitString = unitOfMeasure.getUnitMeasureName();
-                } else {
-                    log.debug("Couldn't load LiteUnitMeasure for point " + data.getId());
-                }
-            }
-
-            if (templateProcessor.contains(format, "default")) {
-                int decimalPlaces = 4;
-                try {
-                    LitePointUnit pointUnit = pointDao.getPointUnit(data.getId());
-                    decimalPlaces = pointUnit.getDecimalPlaces();
-                } catch (NotFoundException e) {
-                    log.debug("Couldn't load LitePointUnit for point " + data.getId() + ", using default");
-                }
-                NumberFormat numberInstance = NumberFormat.getNumberInstance();
-                numberInstance.setMinimumFractionDigits(decimalPlaces);
-                numberInstance.setMaximumFractionDigits(decimalPlaces);
-                valueStr = numberInstance.format(data.getValue());
-            }
-        }
-        Map<String,Object> params = new HashMap<String, Object>();
-        params.put("value", value);
-        params.put("default", valueStr);
-        params.put("status", statusPoint);
-        params.put("state", state);
-        params.put("unit", unitString);
-        Date pointDataTimeStamp = data.getPointDataTimeStamp();
-        Calendar pointDataCal = Calendar.getInstance(timeZone);
-        pointDataCal.setTime(pointDataTimeStamp);
-        params.put("time", pointDataCal);
-        String result = templateProcessor.process(format, params);
-        return result;
+        return getCachedInstance().getValueString(data, format, timeZone);
     }
 
     public String getValueString(PointValueHolder value, Format format, LiteYukonUser user) {
-        LiteEnergyCompany energyCompany = energyCompanyDao.getEnergyCompany(user);
-        TimeZone timeZone = energyCompanyDao.getEnergyCompanyTimeZone(energyCompany);
-        
-        return getValueString(value, format.getFormat(), timeZone);
+        return getCachedInstance().getValueString(value, format, user);
     }
 
     public String getValueString(PointValueHolder value, Format format, TimeZone timeZone) {
-        return getValueString(value, format.getFormat(), timeZone);
+        return getCachedInstance().getValueString(value, format, timeZone);
     }
 
 }

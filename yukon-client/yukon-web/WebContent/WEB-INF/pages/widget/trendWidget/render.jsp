@@ -27,7 +27,7 @@
 		
 		<!-- Trend -->
 		<div style="height: 250px">
-			<tags:trend title="${title}" pointIds="${pointIds}" startDate="${startDate}" endDate="${endDate}" period="${period}" converterType="${selectedAttributeGraph.converterType}" graphType="${graphType}"></tags:trend>
+			<tags:trend title="${title}" pointIds="${pointIds}" startDate="${startDateMillis}" endDate="${endDateMillis}" period="${period}" converterType="${selectedAttributeGraph.converterType}" graphType="${graphType}"></tags:trend>
 		</div>
 		
 		<table class="compactResultsTable">
@@ -111,7 +111,20 @@
 				<tags:widgetLink method="render" title="Column Graph" labelBusy="Column" selected="${graphType == 'COLUMN'}" graphType="COLUMN">Column</tags:widgetLink>
 			</td>
 		</tr>
-		
+        
+        <!-- export to report -->
+		<tr>
+            <td class="label"><b>Tabular Data:</b></td>
+            
+            <td>
+                <cti:simpleReportLinkFromNameTag definitionName="rawPointHistoryDefinition" viewType="htmlView" module="amr" showMenu="true" menuSelection="deviceselection" deviceId="${deviceId}" pointId="${pointIds}" startDate="${startDateMillis}" stopDate="${stopDateMillis}">HTML</cti:simpleReportLinkFromNameTag>
+                |
+                <cti:simpleReportLinkFromNameTag definitionName="rawPointHistoryDefinition" viewType="csvView" module="amr" showMenu="true" menuSelection="deviceselection" deviceId="${deviceId}" pointId="${pointIds}" startDate="${startDateMillis}" stopDate="${stopDateMillis}">CSV</cti:simpleReportLinkFromNameTag>
+                |
+                <cti:simpleReportLinkFromNameTag definitionName="rawPointHistoryDefinition" viewType="pdfView" module="amr" showMenu="true" menuSelection="deviceselection" deviceId="${deviceId}" pointId="${pointIds}" startDate="${startDateMillis}" stopDate="${stopDateMillis}">PDF</cti:simpleReportLinkFromNameTag>
+            </td>
+        </tr>
+        
 		</table>
 		
 		</c:when>

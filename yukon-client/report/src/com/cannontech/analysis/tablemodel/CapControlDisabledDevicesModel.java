@@ -2,28 +2,32 @@ package com.cannontech.analysis.tablemodel;
 
 import java.sql.ResultSet;
 import java.sql.SQLException;
-import java.sql.Timestamp;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.Set;
 
+import org.springframework.beans.factory.annotation.Required;
 import org.springframework.jdbc.core.JdbcOperations;
 import org.springframework.jdbc.core.RowCallbackHandler;
 
 import com.cannontech.clientutils.CTILogger;
 import com.cannontech.common.util.SqlStatementBuilder;
-import com.cannontech.database.JdbcTemplateHelper;
 
 
 public class CapControlDisabledDevicesModel extends BareReportModelBase<CapControlDisabledDevicesModel.ModelRow> implements CapControlFilterable {
     
-    private List<ModelRow> data = new ArrayList<ModelRow>();
-    private JdbcOperations jdbcOps = JdbcTemplateHelper.getYukonTemplate();
+    // dependencies
+    private JdbcOperations jdbcOps;
+    
+    // inputs
     private Set<Integer> capBankIds;
     private Set<Integer> feederIds;
     private Set<Integer> subbusIds;
     private Set<Integer> substationIds;
     private Set<Integer> areaIds;
+    
+    // member variables
+    private List<ModelRow> data = new ArrayList<ModelRow>();
     
     public CapControlDisabledDevicesModel() {
     }
@@ -129,6 +133,11 @@ public class CapControlDisabledDevicesModel extends BareReportModelBase<CapContr
     
     public void setAreaIdsFilter(Set<Integer> areaIds) {
         this.areaIds = areaIds;
+    }
+    
+    @Required
+    public void setJdbcOps(JdbcOperations jdbcOps) {
+        this.jdbcOps = jdbcOps;
     }
     
 }

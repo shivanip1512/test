@@ -1,5 +1,7 @@
 package com.cannontech.web.util;
 
+import java.net.URLEncoder;
+
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
 import javax.servlet.http.HttpSession;
@@ -30,6 +32,7 @@ public class YukonLoginInterceptor extends  HandlerInterceptorAdapter {
         String url = request.getRequestURL().toString();
         String urlParams = request.getQueryString();
         String navUrl = url + ((urlParams != null) ? "?" + urlParams : "");
+        navUrl = URLEncoder.encode(navUrl, "UTF-8");
         
         String redirectURL = loginURL + "?" + paramName + "=" + navUrl;
         response.sendRedirect(redirectURL);

@@ -238,6 +238,7 @@
     <attribute>
       <name>module</name>
       <required>true</required>
+      <rtexprvalue>true</rtexprvalue>
     </attribute>
   </tag>
   
@@ -645,6 +646,45 @@
   		<required>true</required>
   		<rtexprvalue>true</rtexprvalue>	
 	</attribute>
+  </tag>
+  
+  <tag>
+    <name>simpleReportLinkFromNameTag</name>
+    <tag-class>com.cannontech.web.reports.SimpleReportLinkFromNameTag</tag-class>
+    <body-content>scriptless</body-content>
+    <attribute>
+      <name>definitionName</name>
+      <required>true</required>
+      <rtexprvalue>true</rtexprvalue>
+    </attribute>
+    <attribute>
+      <name>viewType</name>
+      <required>true</required>
+      <rtexprvalue>true</rtexprvalue>
+    </attribute>
+    <dynamic-attributes>true</dynamic-attributes>
+  </tag>
+  
+  <tag>
+    <name>simpleReportLinkFromModelTag</name>
+    <tag-class>com.cannontech.web.reports.SimpleReportLinkFromModelTag</tag-class>
+    <body-content>scriptless</body-content>
+    <attribute>
+      <name>definitionName</name>
+      <required>true</required>
+      <rtexprvalue>true</rtexprvalue>
+    </attribute>
+    <attribute>
+      <name>reportModel</name>
+      <required>true</required>
+      <rtexprvalue>true</rtexprvalue>
+    </attribute>
+    <attribute>
+      <name>viewType</name>
+      <required>true</required>
+      <rtexprvalue>true</rtexprvalue>
+    </attribute>
+    <dynamic-attributes>true</dynamic-attributes>
   </tag>
   
   <function>

@@ -2,21 +2,22 @@ package com.cannontech.analysis.report;
 
 import java.util.Arrays;
 import java.util.List;
+
 import com.cannontech.analysis.tablemodel.BareReportModel;
 import com.cannontech.analysis.tablemodel.CapControlDisabledDevicesModel;
+import com.cannontech.simplereport.reportlayoutdata.CapControlDisasbledDevicesReportLayoutData;
+import com.cannontech.spring.YukonSpringHook;
 
 public class CapControlDisabledDevicesReport extends SimpleYukonReportBase {
     
-    private static final ColumnLayoutData bodyColumns[] = new ColumnLayoutData[] {
-        new ColumnLayoutData("Device Name", "deviceName", 200),
-    };
+    private static final ColumnLayoutData[] bodyColumns = new CapControlDisasbledDevicesReportLayoutData().getBodyColumns();
 
     public CapControlDisabledDevicesReport(BareReportModel bareModel) {
         super(bareModel);
     }
     
     public CapControlDisabledDevicesReport() {
-        this(new CapControlDisabledDevicesModel());
+        this((CapControlDisabledDevicesModel)YukonSpringHook.getBean("capControlDisabledDevicesModel"));
     }
 
     @Override

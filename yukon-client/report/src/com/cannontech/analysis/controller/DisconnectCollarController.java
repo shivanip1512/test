@@ -14,8 +14,10 @@ import com.cannontech.analysis.tablemodel.ReportModelBase;
 import com.cannontech.analysis.tablemodel.ReportModelBase.ReportFilter;
 import com.cannontech.core.dao.DaoFactory;
 import com.cannontech.database.data.lite.LiteYukonPAObject;
+import com.cannontech.spring.YukonSpringHook;
 
 public class DisconnectCollarController extends ReportControllerBase {
+    
     
     private ReportFilter[] filterModelTypes = new ReportFilter[]{
             ReportFilter.METER,
@@ -24,7 +26,7 @@ public class DisconnectCollarController extends ReportControllerBase {
     
     public DisconnectCollarController() {
         super();
-        model = new DisconnectCollarModel();
+        model = (DisconnectCollarModel)YukonSpringHook.getBean("disconnectCollarModel");
         report = new DisconnectCollarReport(model);
     }
 
@@ -66,8 +68,8 @@ public class DisconnectCollarController extends ReportControllerBase {
             for (int id : idsArray) {
                 idsSet.add(id);
             }
-            diconnectModel.setDeviceNamesFilter(null);
-            diconnectModel.setDeviceIdsFilter(idsSet);
+            diconnectModel.setDeviceNames(null);
+            diconnectModel.setDeviceIds(idsSet);
         }else if (filterModelType == ReportFilter.DEVICE.ordinal()) {
             String filterValueList = request.getParameter(ReportModelBase.ATT_FILTER_DEVICE_VALUES).trim();
             StringTokenizer st = new StringTokenizer(filterValueList, ",\t\n\r\f");
@@ -84,8 +86,8 @@ public class DisconnectCollarController extends ReportControllerBase {
             for (int id : devicesArray) {
                 devicesSet.add(id);
             }
-            diconnectModel.setDeviceIdsFilter(null);
-            diconnectModel.setDeviceNamesFilter(devicesSet);
+            diconnectModel.setDeviceIds(null);
+            diconnectModel.setDeviceNames(devicesSet);
         }
     }
 }
