@@ -380,11 +380,11 @@ SELECT MAX(DeviceGroupID)+1,'System',0,'Y','STATIC' FROM DeviceGroup WHERE Devic
 go
 INSERT INTO DeviceGroup
 (DeviceGroupId,GroupName,ParentDeviceGroupId,SystemGroup,Type)
-SELECT MAX(DeviceGroupID)+1,'Routes',(SELECT MAX(DeviceGroupID) from DeviceGroup),'Y','ROUTE' FROM DeviceGroup WHERE DeviceGroupId<100;
+SELECT MAX(DeviceGroupID)+1,'Routes',(SELECT MAX(DeviceGroupID) from DeviceGroup WHERE DeviceGroupId<100),'Y','ROUTE' FROM DeviceGroup WHERE DeviceGroupId<100;
 go
 INSERT INTO DeviceGroup
 (DeviceGroupId,GroupName,ParentDeviceGroupId,SystemGroup,Type)
-SELECT MAX(DeviceGroupID)+1,'Device Types',(SELECT MAX(DeviceGroupID) from DeviceGroup),'Y','DEVICETYPE' FROM DeviceGroup WHERE DeviceGroupId<100; 
+SELECT MAX(DeviceGroupID)+1,'Device Types',(SELECT MAX(DeviceGroupID) from DeviceGroup WHERE DeviceGroupId<100),'Y','DEVICETYPE' FROM DeviceGroup WHERE DeviceGroupId<100; 
 go
 /* End YUK-4752 */
 
