@@ -357,13 +357,19 @@ insert into YukonRoleProperty values(-70015,-700,'Definition Tripped','Open,Open
 insert into YukonRoleProperty values(-70016,-700,'Definition Closed','Close,CloseFail,CloseQuestionable,ClosePending','Capbank sized in these states will be added to the closed sum.');
 insert into YukonRoleProperty VALUES(-100204, -1002, 'Daily/Total Operation Count', 'true', 'is Daily/Total Operation Count displayed');
 
-INSERT INTO DeviceGroup 
+/* Start YUK-4752 */
+INSERT INTO DeviceGroup
 (DeviceGroupId,GroupName,ParentDeviceGroupId,SystemGroup,Type)
-SELECT MAX(DeviceGroupID)+1,'Routes',0,'Y','ROUTE' FROM DeviceGroup WHERE DeviceGroupId<100;
+SELECT MAX(DeviceGroupID)+1,'System',0,'Y','STATIC' FROM DeviceGroup WHERE DeviceGroupId<100;
 
-INSERT INTO DeviceGroup 
+INSERT INTO DeviceGroup
 (DeviceGroupId,GroupName,ParentDeviceGroupId,SystemGroup,Type)
-SELECT MAX(DeviceGroupID)+1,'Device Types',0,'Y','DEVICETYPE' FROM DeviceGroup WHERE DeviceGroupId<100;
+SELECT MAX(DeviceGroupID)+1,'Routes',(SELECT MAX(DeviceGroupID) from DeviceGroup),'Y','ROUTE' FROM DeviceGroup WHERE DeviceGroupId<100;
+
+INSERT INTO DeviceGroup
+(DeviceGroupId,GroupName,ParentDeviceGroupId,SystemGroup,Type)
+SELECT MAX(DeviceGroupID)+1,'Device Types',(SELECT MAX(DeviceGroupID) from DeviceGroup),'Y','DEVICETYPE' FROM DeviceGroup WHERE DeviceGroupId<100; 
+/* End YUK-4752 */
 
 alter table dynamiccccapbank add beforeVar varchar2(32);
 update dynamiccccapbank set beforeVar = '---';

@@ -1,7 +1,7 @@
 /*==============================================================*/
 /* Database name:  YukonDatabase                                */
 /* DBMS name:      Microsoft SQL Server 2000                    */
-/* Created on:     11/26/2007 2:52:45 PM                        */
+/* Created on:     11/26/2007 3:39:19 PM                        */
 /*==============================================================*/
 
 
@@ -3558,13 +3558,9 @@ insert into DeviceGroup values (8,'Flags',1,'Y','STATIC');
 insert into DeviceGroup values (9,'Inventory',8,'Y','STATIC');
 insert into DeviceGroup values (10,'DisconnectedStatus',8,'Y','STATIC');
 insert into DeviceGroup values (11,'UsageMonitoring',8,'Y','STATIC');
-INSERT INTO DeviceGroup 
-(DeviceGroupId,GroupName,ParentDeviceGroupId,SystemGroup,Type)
-SELECT MAX(DeviceGroupID)+1,'Routes',0,'Y','ROUTE' FROM DeviceGroup WHERE DeviceGroupId<100;
-
-INSERT INTO DeviceGroup 
-(DeviceGroupId,GroupName,ParentDeviceGroupId,SystemGroup,Type)
-SELECT MAX(DeviceGroupID)+1,'Device Types',0,'Y','DEVICETYPE' FROM DeviceGroup WHERE DeviceGroupId<100;
+INSERT INTO DeviceGroup values (12,'System',0,'Y','STATIC');
+INSERT INTO DeviceGroup values (13,'Routes',12,'Y','ROUTE');
+INSERT INTO DeviceGroup values (14,'Device Types',13,'Y','DEVICETYPE'); 
 
 alter table DEVICEGROUP
    add constraint AK_DEVICEGR_PDG_GN unique (GroupName, ParentDeviceGroupId)
