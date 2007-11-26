@@ -513,6 +513,11 @@ alter table MCTConfigMapping
 
 /* @error ignore-end */
 
+/* Start YUK-4745 */
+insert into YukonRole values(-211,'CI Curtailment','Operator','Operator access to C&I Curtailment');
+insert into YukonRoleProperty values(-21100,-211,'CI Curtailment Label','CI Curtailment','The operator specific name for C&I Curtailment');
+/* End YUK-4745 */
+
 /******************************************************************************/
 /* Run the Stars Update if needed here */
 /* Note: DBUpdate application will ignore this if STARS is not present */

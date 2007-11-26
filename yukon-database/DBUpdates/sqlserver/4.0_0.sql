@@ -241,7 +241,6 @@ go
 delete from YukonlistEntry where YukonDefinitionID = 3100;
 go
 
-/* @error ignore-end */
 
 update State
 set text = 'Normal'
@@ -938,6 +937,14 @@ insert into devicetypecommand values(-691, -136, 'MCT-410GL', 30, 'N', -1);
 insert into devicetypecommand values(-692, -136, 'MCT-410IL', 30, 'N', -1);
 insert into devicetypecommand values(-693, -136, 'MCT-470', 32, 'N', -1); 
 /* End YUK-4638 */
+
+/* Start YUK-4745 */
+/* @error ignore-begin */
+insert into YukonRole values(-211,'CI Curtailment','Operator','Operator access to C&I Curtailment');
+insert into YukonRoleProperty values(-21100,-211,'CI Curtailment Label','CI Curtailment','The operator specific name for C&I Curtailment');
+/* @error ignore-end */
+/* End YUK-4745 */
+
 /**************************************************************/
 /* VERSION INFO                                               */
 /*   Automatically gets inserted from build script            */
