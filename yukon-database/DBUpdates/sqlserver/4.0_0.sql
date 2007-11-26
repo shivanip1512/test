@@ -988,6 +988,17 @@ alter table capcontrolstrategy alter column likeDayFallBack char(1) not null;
 go 
 /* End YUK-4763*/
 
+/* Start YUK-4759 */
+alter table SubstationToRouteMapping drop constraint FK_Sub_Rte_Map_RteID;
+go
+
+alter table SubstationToRouteMapping
+   add constraint FK_Sub_Rte_Map_RteID foreign key (RouteID)
+      references Route (RouteID)
+         on update cascade on delete cascade;
+go
+/* End YUK-4759 */
+
 /**************************************************************/
 /* VERSION INFO                                               */
 /*   Automatically gets inserted from build script            */

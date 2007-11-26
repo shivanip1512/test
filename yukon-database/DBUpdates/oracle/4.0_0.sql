@@ -911,6 +911,14 @@ update DynamicCCSubstationbus set LastVoltPointTime = '1990-01-01 00:00:00';
 alter table DynamicCCSubstationbus alter column LastVoltPointTime datetime not null;
 /* End YUK-4772*/
 
+/* Start YUK-4759 */
+alter table SubstationToRouteMapping drop constraint FK_Sub_Rte_Map_RteID;
+
+alter table SubstationToRouteMapping
+   add constraint FK_Sub_Rte_Map_RteID foreign key (RouteID)
+      references Route (RouteID)
+      on delete cascade;
+/* End YUK-4759 */
 /**************************************************************/
 /* VERSION INFO                                               */
 /*   Automatically gets inserted from build script            */

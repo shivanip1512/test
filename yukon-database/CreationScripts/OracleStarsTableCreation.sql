@@ -1,6 +1,6 @@
 /*==============================================================*/
 /* DBMS name:      ORACLE Version 9i                            */
-/* Created on:     10/31/2007 5:13:24 PM                        */
+/* Created on:     11/26/2007 10:30:01 AM                       */
 /*==============================================================*/
 
 
@@ -1820,7 +1820,8 @@ alter table Substation
 
 alter table SubstationToRouteMapping
    add constraint FK_Sub_Rte_Map_RteID foreign key (RouteID)
-      references Route (RouteID);
+      references Route (RouteID)
+      on delete cascade;
 
 alter table SubstationToRouteMapping
    add constraint FK_Sub_Rte_Map_SubID foreign key (SubstationID)

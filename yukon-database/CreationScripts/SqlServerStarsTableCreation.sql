@@ -1,6 +1,6 @@
 /*==============================================================*/
 /* DBMS name:      Microsoft SQL Server 2000                    */
-/* Created on:     10/31/2007 5:13:52 PM                        */
+/* Created on:     11/26/2007 10:30:37 AM                       */
 /*==============================================================*/
 
 
@@ -2474,6 +2474,7 @@ go
 alter table SubstationToRouteMapping
    add constraint FK_Sub_Rte_Map_RteID foreign key (RouteID)
       references Route (RouteID)
+         on update cascade on delete cascade
 go
 
 alter table SubstationToRouteMapping
