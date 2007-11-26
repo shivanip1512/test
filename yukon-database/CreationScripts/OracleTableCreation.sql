@@ -1,7 +1,7 @@
 /*==============================================================*/
 /* Database name:  YukonDatabase                                */
 /* DBMS name:      ORACLE Version 9i                            */
-/* Created on:     11/26/2007 12:16:15 PM                       */
+/* Created on:     11/26/2007 2:51:52 PM                        */
 /*==============================================================*/
 
 
@@ -8133,8 +8133,7 @@ insert into YukonRoleProperty values(-10304,-103,'DCU SA305 Serial','false','Sho
 insert into YukonRoleProperty values(-10305,-103,'Commands Group Name','Default Commands','The commands group name for the displayed commands.');
 insert into yukonroleproperty values(-10306,-103,'Read device', 'true', 'Allow the ability to read values from a device');
 insert into yukonroleproperty values(-10307,-103,'Write to device', 'true', 'Allow the ability to write values to a device');
-insert into yukonroleproperty values(-10308,-103,'Read disconnect', 'true', 'Allow the ability to read disconnect from a device');
-insert into yukonroleproperty values(-10309,-103,'Write disconnect', 'true', 'Allow the ability to write a disconnect to a device');
+insert into yukonroleproperty values(-10309,-103,'Control disconnect', 'true', 'Allow the ability to control a disconnect to a device');
 insert into yukonroleproperty values(-10310,-103,'Read LM device', 'true', 'Allow the ability to read values from an LM device');
 insert into yukonroleproperty values(-10311,-103,'Write to LM device', 'true', 'Allow the ability to write values to an LM device');
 insert into yukonroleproperty values(-10312,-103,'Control LM device', 'true', 'Allow the ability to control an LM device');

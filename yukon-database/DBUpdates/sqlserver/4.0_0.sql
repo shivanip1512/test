@@ -945,6 +945,13 @@ insert into YukonRoleProperty values(-21100,-211,'CI Curtailment Label','CI Curt
 /* @error ignore-end */
 /* End YUK-4745 */
 
+/* Start YUK-4733 */
+delete yukongrouprole where rolepropertyID = -10308;
+delete yukonroleproperty where rolepropertyID = -10308; 
+delete yukonuserrole where rolepropertyID = -10308;
+update yukonroleproperty set keyName = 'Control disconnect', description = 'Allow the ability to control a disconnect to a device' where RolePropertyID = -10309;
+/* End YUK-4733 */
+
 /**************************************************************/
 /* VERSION INFO                                               */
 /*   Automatically gets inserted from build script            */
