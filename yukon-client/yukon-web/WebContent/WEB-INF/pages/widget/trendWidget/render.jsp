@@ -25,14 +25,14 @@
 			<div id="whatsThisText" class="widgetPopup" style="display:none;">${selectedAttributeGraph.description}</div>
 		</c:if>
 		
-		<!-- Trend -->
+		<%-- Trend --%>
 		<div style="height: 250px">
 			<tags:trend title="${title}" pointIds="${pointIds}" startDate="${startDateMillis}" endDate="${endDateMillis}" period="${period}" converterType="${selectedAttributeGraph.converterType}" graphType="${graphType}"></tags:trend>
 		</div>
 		
 		<table class="compactResultsTable">
 		
-		<!-- Available attribute graphs -->
+		<%-- Available attribute graphs --%>
 		<tr>
 		<td class="label">Graph Type:</td>
 		
@@ -50,7 +50,7 @@
 		</td>
 		</tr>
 		
-		<!-- Time periods -->
+		<%-- Time periods --%>
 		<tr>
 			<td class="label">Time Period:</td>
 		
@@ -70,7 +70,7 @@
 			</td>
 		</tr>
 		
-		<!-- Optional Data Fields -->
+		<%-- Optional Data Fields --%>
 		<c:choose>
 		<c:when test="${period == 'NOPERIOD'}">
 		
@@ -101,7 +101,7 @@
 		</c:choose>
 		
 		
-		<!-- Charting Style (line/bar) -->
+		<%-- Charting Style (line/bar) --%>
 		<tr>
 			<td class="label"><b>Chart Style:</b></td>
 		
@@ -112,16 +112,16 @@
 			</td>
 		</tr>
         
-        <!-- export to report -->
+        <%-- export to report --%>
 		<tr>
             <td class="label"><b>Tabular Data:</b></td>
             
             <td>
-                <cti:simpleReportLinkFromNameTag definitionName="rawPointHistoryDefinition" viewType="htmlView" module="amr" showMenu="true" menuSelection="deviceselection" deviceId="${deviceId}" pointId="${pointIds}" startDate="${startDateMillis}" stopDate="${stopDateMillis}">HTML</cti:simpleReportLinkFromNameTag>
+                <cti:simpleReportLinkFromNameTag definitionName="rawPointHistoryDefinition" viewType="htmlView" module="amr" showMenu="true" menuSelection="deviceselection" pointId="${pointIds}" startDate="${startDateMillis}" stopDate="${stopDateMillis}">HTML</cti:simpleReportLinkFromNameTag>
                 |
-                <cti:simpleReportLinkFromNameTag definitionName="rawPointHistoryDefinition" viewType="csvView" module="amr" showMenu="true" menuSelection="deviceselection" deviceId="${deviceId}" pointId="${pointIds}" startDate="${startDateMillis}" stopDate="${stopDateMillis}">CSV</cti:simpleReportLinkFromNameTag>
+                <cti:simpleReportLinkFromNameTag definitionName="rawPointHistoryDefinition" viewType="csvView" module="amr" showMenu="true" menuSelection="deviceselection" pointId="${pointIds}" startDate="${startDateMillis}" stopDate="${stopDateMillis}">CSV</cti:simpleReportLinkFromNameTag>
                 |
-                <cti:simpleReportLinkFromNameTag definitionName="rawPointHistoryDefinition" viewType="pdfView" module="amr" showMenu="true" menuSelection="deviceselection" deviceId="${deviceId}" pointId="${pointIds}" startDate="${startDateMillis}" stopDate="${stopDateMillis}">PDF</cti:simpleReportLinkFromNameTag>
+                <cti:simpleReportLinkFromNameTag definitionName="rawPointHistoryDefinition" viewType="pdfView" module="amr" showMenu="true" menuSelection="deviceselection" pointId="${pointIds}" startDate="${startDateMillis}" stopDate="${stopDateMillis}">PDF</cti:simpleReportLinkFromNameTag>
             </td>
         </tr>
         

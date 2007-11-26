@@ -2,19 +2,19 @@
 <%@ taglib uri="http://cannontech.com/tags/cti" prefix="cti"%>
 <%@ taglib prefix="tags" tagdir="/WEB-INF/tags" %>
 
-<!-- MODULE, MENU -->
+<%-- MODULE, MENU --%>
 <cti:standardPage title="${reportTitle}" module="${module}">
 <c:if test="${showMenu}">
     <cti:standardMenu menuSelection="${menuSelection}" />
 </c:if>
 
 
-<!-- TITLE -->
+<%-- TITLE --%>
 <div class="simpleReportHeader">${reportTitle}</div>
 
 ${xurl}
 
-<!-- INPUTS -->
+<%-- INPUTS --%>
 <c:if test="${not empty metaInfo}">
     <br/>
     <tags:nameValueContainer style="width:30%;">
@@ -26,19 +26,19 @@ ${xurl}
 
 
 
-<!-- EXPORT OPTIONS -->
+<%-- EXPORT OPTIONS --%>
 <br/>
 <tags:nameValueContainer style="width:30%;">
     <tags:nameValue name="Export Data">
-        <cti:simpleReportLinkFromModelTag reportModel="${reportModel}" definitionName="${definitionName}" viewType="csv">CSV</cti:simpleReportLinkFromModelTag>
+        <cti:simpleReportLinkFromModelTag reportModel="${reportModel}" definitionName="${definitionName}" viewType="csvView">CSV</cti:simpleReportLinkFromModelTag>
         |
-        <cti:simpleReportLinkFromModelTag reportModel="${reportModel}" definitionName="${definitionName}" viewType="pdf">PDF</cti:simpleReportLinkFromModelTag>
+        <cti:simpleReportLinkFromModelTag reportModel="${reportModel}" definitionName="${definitionName}" viewType="pdfView">PDF</cti:simpleReportLinkFromModelTag>
     </tags:nameValue>
 </tags:nameValueContainer>
 <br/>
 
 
-<!-- REPORT TABLE -->
+<%-- REPORT TABLE --%>
 <table class="compactResultsTable">
 
     <!-- COLUMN HEADER -->

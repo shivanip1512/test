@@ -54,7 +54,6 @@ public class SimpleReportLinkFromNameTag extends YukonTagSupport implements Dyna
         optionalAttributeDefaults.put("module", "blank");
         optionalAttributeDefaults.put("showMenu", "false");
         optionalAttributeDefaults.put("menuSelection", "");
-        optionalAttributeDefaults.put("deviceId", "0");
         CtiUtilities.overrideValuesOfDefaultsMap(optionalAttributeDefaults, identifierAttributes);
         
         propertiesMap.putAll(optionalAttributeDefaults);
