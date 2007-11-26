@@ -5,6 +5,7 @@ import java.util.Map;
 
 import javax.mail.MessagingException;
 
+import org.apache.commons.lang.StringUtils;
 import org.apache.log4j.Logger;
 import org.springframework.beans.factory.annotation.Required;
 
@@ -38,11 +39,11 @@ public class LongLoadProfileServiceEmailCompletionCallbackImpl implements LongLo
     private String base_template_html  = "{statusMsg}<br/><br/>" + "Device Summary<br/>" + "Device Name: {deviceName}<br/>" + "Meter Number: {meterNumber}<br/>" + "Physical Address: {physAddress}<br/><br/>" + "Request Range: {startDate} to {stopDate}<br/>" + "Total Requested Days: {totalDays}<br/><br/>";
     
     private final String success_template_plain = base_template_plain + "Data is now available online.\n\nHTML\n{reportHtmlUrl}\n\nCSV\n{reportCsvUrl}\n\nPDF\n{reportPdfUrl}\n\n";
-    private final String failure_template_plain = base_template_plain;
+    private final String failure_template_plain = base_template_plain + "Partial data may be available online.\n\nHTML\n{reportHtmlUrl}\n\nCSV\n{reportCsvUrl}\n\nPDF\n{reportPdfUrl}\n\n";
     private final String cancel_template_plain  = base_template_plain + "Partial data may be available online.\n\nHTML\n{reportHtmlUrl}\n\nCSV\n{reportCsvUrl}\n\nPDF\n{reportPdfUrl}\n\n";
     
     private final String success_template_html = base_template_html + "Data is now available online.<br/>View Report: <a href=\"{reportHtmlUrl}\">HTML</a> | <a href=\"{reportCsvUrl}\">CSV</a> | <a href=\"{reportPdfUrl}\">PDF</a><br/><br/>";
-    private final String failure_template_html = base_template_html;
+    private final String failure_template_html = base_template_html + "Partial data may be available online.<br/>View Report: <a href=\"{reportHtmlUrl}\">HTML</a> | <a href=\"{reportCsvUrl}\">CSV</a> | <a href=\"{reportPdfUrl}\">PDF</a><br/><br/>";
     private final String cancel_template_html  = base_template_html + "Partial data may be available online.<br/>View Report: <a href=\"{reportHtmlUrl}\">HTML</a> | <a href=\"{reportCsvUrl}\">CSV</a> | <a href=\"{reportPdfUrl}\">PDF</a><br/><br/>";
 
     private DefaultEmailMessage getEmailer(String email, String subject, String body, String htmlBody){
@@ -104,32 +105,41 @@ public class LongLoadProfileServiceEmailCompletionCallbackImpl implements LongLo
     public void onFailure(int returnStatus, String resultString) {
         try {
            
-            String errorReason = "Error Reason:\n";
+            String errorReason = "";
+            String errorHtmlReason = "";
             
             boolean haveSpecificReason = false;
-            if(returnStatus > 0){
+            if (returnStatus > 0) {
                 
                 DeviceErrorDescription deviceErrorDescription = deviceErrorTranslatorDao.translateErrorCode(returnStatus);
-                if(deviceErrorDescription != null){
+                if (deviceErrorDescription != null) {
                     
                     haveSpecificReason = true;
                     String porter = deviceErrorDescription.getPorter();
                     String description = deviceErrorDescription.getDescription();
                     
-                    errorReason += porter + ": " + description;
+                    errorReason += "Error Reason:\n" + porter + ": " + description;
+                    errorHtmlReason += "Error Reason:<br/>" + porter + ": " + description;
                 }
             }
             
-            if(!haveSpecificReason){
-                errorReason +=resultString;
+            if (!haveSpecificReason && !StringUtils.isBlank(resultString)){
+                errorReason += "Error Reason:\n" + resultString;
+                errorHtmlReason += "Error Reason:<br/>" + resultString;
             }
             
+            if (!StringUtils.isBlank(errorReason)) {
+                String originalBody = failureMessage.getBody();
+                String newBody = originalBody + "\n\n" + errorReason;
+                failureMessage.setBody(newBody);
+
+                String originalHtmlBody = failureMessage.getHtmlBody();
+                String newHtmlBody = originalHtmlBody + "<br/><br/>" + errorHtmlReason;
+                failureMessage.setHtmlBody(newHtmlBody);
+            }
             
-            String originalBody = failureMessage.getBody();
-            String newBody = originalBody + "\n\n" + errorReason;
-            failureMessage.setBody(newBody);
+            emailService.sendHTMLMessage(failureMessage);
             
-            emailService.sendMessage(failureMessage);
         } catch (MessagingException e) {
             log.error("Unable to send onFailure message",e);
         }
@@ -138,11 +148,19 @@ public class LongLoadProfileServiceEmailCompletionCallbackImpl implements LongLo
     // onSuccess
     public void onSuccess(String successInfo) {
         try {
-            String originalBody = successMessage.getBody();
-            String newBody = originalBody + "\n\n" + successInfo;
-            successMessage.setBody(newBody);
             
-            emailService.sendMessage(successMessage);
+            if (!StringUtils.isBlank(successInfo)) {
+                String originalBody = successMessage.getBody();
+                String newBody = originalBody + "\n\n" + successInfo;
+                successMessage.setBody(newBody);
+                
+                String originalHtmlBody = successMessage.getHtmlBody();
+                String newHtmlBody = originalHtmlBody + "<br/><br/>" + successInfo;
+                successMessage.setHtmlBody(newHtmlBody);
+            }
+            
+            emailService.sendHTMLMessage(successMessage);
+            
         } catch (MessagingException e) {
             log.error("Unable to send onSuccess message",e);
         }
@@ -155,16 +173,22 @@ public class LongLoadProfileServiceEmailCompletionCallbackImpl implements LongLo
             String cancelInfo = "";
             String cancelUserName = cancelUser.getUsername();
             int cancelUserID = cancelUser.getUserID();
-            if(cancelUser != null){
+            if (cancelUser != null) {
                 Date now = new Date();
                 cancelInfo = "Canceled by " + cancelUserName + " (" + cancelUserID + ")" 
                             + " on " + dateFormattingService.formatDate(now, DateFormattingService.DateFormatEnum.DATE, cancelUser) 
                             + " at " + dateFormattingService.formatDate(now, DateFormattingService.DateFormatEnum.TIME, cancelUser) + ".";
             }
             
-            String originalBody = cancelMessage.getBody();
-            String newBody = originalBody + "\n\n" + cancelInfo;
-            cancelMessage.setBody(newBody);
+            if (!StringUtils.isBlank(cancelInfo)) {
+                String originalBody = cancelMessage.getBody();
+                String newBody = originalBody + "\n\n" + cancelInfo;
+                cancelMessage.setBody(newBody);
+                
+                String originalHtmlBody = cancelMessage.getHtmlBody();
+                String newHtmlBody = originalHtmlBody + "<br/><br/>" + cancelInfo;
+                cancelMessage.setHtmlBody(newHtmlBody);
+            }
             
             emailService.sendHTMLMessage(cancelMessage);
             
