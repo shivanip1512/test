@@ -911,6 +911,33 @@ alter table DynamicPAOStatistics
 go
 /* End YUK-4721 */
 
+/* Start YUK-4638 */
+update devicetypecommand set devicetype ='MCT-430S4' where devicetype = 'MCT-430S';
+go
+insert into command values(-136, 'putconfig emetcon timezone ?''Enter Timezone (et|ct|mt|pt OR #offset)''', 'Write Timezone to Meter', 'MCT-430A'); 
+go
+
+INSERT INTO DEVICETYPECOMMAND VALUES (-676, -111, 'MCT-430A', 26, 'Y', -1);
+INSERT INTO DEVICETYPECOMMAND VALUES (-677, -2, 'MCT-430A', 27, 'Y', -1);
+INSERT INTO DEVICETYPECOMMAND VALUES (-678, -83, 'MCT-430A', 28, 'Y', -1);
+INSERT INTO DEVICETYPECOMMAND VALUES (-679, -136, 'MCT-430A', 29, 'Y', -1);
+
+INSERT INTO DEVICETYPECOMMAND VALUES (-680, -111, 'MCT-430S4', 26, 'Y', -1);
+INSERT INTO DEVICETYPECOMMAND VALUES (-681, -2, 'MCT-430S4', 27, 'Y', -1);
+INSERT INTO DEVICETYPECOMMAND VALUES (-682, -83, 'MCT-430S4', 28, 'Y', -1);
+INSERT INTO DEVICETYPECOMMAND VALUES (-683, -136, 'MCT-430S4', 29, 'Y', -1);
+
+INSERT INTO DEVICETYPECOMMAND VALUES (-684, -111, 'MCT-430SL', 26, 'Y', -1);
+INSERT INTO DEVICETYPECOMMAND VALUES (-685, -2, 'MCT-430SL', 27, 'Y', -1);
+INSERT INTO DEVICETYPECOMMAND VALUES (-686, -83, 'MCT-430SL', 28, 'Y', -1);
+INSERT INTO DEVICETYPECOMMAND VALUES (-687, -136, 'MCT-430SL', 29, 'Y', -1);
+
+insert into devicetypecommand values(-689, -136, 'MCT-410CL', 30, 'N', -1);
+insert into devicetypecommand values(-690, -136, 'MCT-410FL', 30, 'N', -1);
+insert into devicetypecommand values(-691, -136, 'MCT-410GL', 30, 'N', -1);
+insert into devicetypecommand values(-692, -136, 'MCT-410IL', 30, 'N', -1);
+insert into devicetypecommand values(-693, -136, 'MCT-470', 32, 'N', -1); 
+/* End YUK-4638 */
 /**************************************************************/
 /* VERSION INFO                                               */
 /*   Automatically gets inserted from build script            */

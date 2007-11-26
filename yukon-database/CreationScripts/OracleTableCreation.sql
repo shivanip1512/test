@@ -1,7 +1,7 @@
 /*==============================================================*/
 /* Database name:  YukonDatabase                                */
 /* DBMS name:      ORACLE Version 9i                            */
-/* Created on:     11/26/2007 11:48:00 AM                       */
+/* Created on:     11/26/2007 12:16:15 PM                       */
 /*==============================================================*/
 
 
@@ -2083,6 +2083,8 @@ insert into command values(-133, 'putconfig xcom utility usage ?''Channel'':?''V
 insert into command values(-134, 'putconfig xcom data ''?''Text Message'''' port ?''Port (0 is default)'' deletable priority 7 timeout 30 hour clear', 'Thermostat Text Message', 'ExpresscomSerial');
 insert into command values(-135, 'control xcom backlight cycles 20 duty 30 bperiod 10', 'Thermostat Display Blink', 'ExpresscomSerial');
 
+insert into command values(-136, 'putconfig emetcon timezone ?''Enter Timezone (et|ct|mt|pt OR #offset)''', 'Write Timezone to Meter', 'MCT-430A'); 
+
 /*==============================================================*/
 /* Table: CommandGroup                                          */
 /*==============================================================*/
@@ -3779,19 +3781,19 @@ INSERT INTO DEVICETYPECOMMAND VALUES (-436, -121, 'MCT-430A', 11, 'N', -1);
 INSERT INTO DEVICETYPECOMMAND VALUES (-437, -122, 'MCT-430A', 12, 'N', -1);
 INSERT INTO DEVICETYPECOMMAND VALUES (-448, -123, 'MCT-430A', 13, 'Y', -1);
 
-INSERT INTO DEVICETYPECOMMAND VALUES (-449, -3, 'MCT-430S', 1, 'Y', -1);
-INSERT INTO DEVICETYPECOMMAND VALUES (-450, -20, 'MCT-430S', 2, 'Y', -1);
-INSERT INTO DEVICETYPECOMMAND VALUES (-451, -21, 'MCT-430S', 3, 'Y', -1);
-INSERT INTO DEVICETYPECOMMAND VALUES (-452, -22, 'MCT-430S', 4, 'Y', -1);
-INSERT INTO DEVICETYPECOMMAND VALUES (-453, -115, 'MCT-430S', 5, 'Y', -1);
-INSERT INTO DEVICETYPECOMMAND VALUES (-454, -116, 'MCT-430S', 6, 'N', -1);
-INSERT INTO DEVICETYPECOMMAND VALUES (-455, -117, 'MCT-430S', 7, 'N', -1);
-INSERT INTO DEVICETYPECOMMAND VALUES (-456, -118, 'MCT-430S', 8, 'N', -1);
-INSERT INTO DEVICETYPECOMMAND VALUES (-457, -119, 'MCT-430S', 9, 'Y', -1);
-INSERT INTO DEVICETYPECOMMAND VALUES (-458, -120, 'MCT-430S', 10, 'N', -1);
-INSERT INTO DEVICETYPECOMMAND VALUES (-459, -121, 'MCT-430S', 11, 'N', -1);
-INSERT INTO DEVICETYPECOMMAND VALUES (-460, -122, 'MCT-430S', 12, 'N', -1);
-INSERT INTO DEVICETYPECOMMAND VALUES (-461, -123, 'MCT-430S', 13, 'Y', -1);
+INSERT INTO DEVICETYPECOMMAND VALUES (-449, -3, 'MCT-430S4', 1, 'Y', -1);
+INSERT INTO DEVICETYPECOMMAND VALUES (-450, -20, 'MCT-430S4', 2, 'Y', -1);
+INSERT INTO DEVICETYPECOMMAND VALUES (-451, -21, 'MCT-430S4', 3, 'Y', -1);
+INSERT INTO DEVICETYPECOMMAND VALUES (-452, -22, 'MCT-430S4', 4, 'Y', -1);
+INSERT INTO DEVICETYPECOMMAND VALUES (-453, -115, 'MCT-430S4', 5, 'Y', -1);
+INSERT INTO DEVICETYPECOMMAND VALUES (-454, -116, 'MCT-430S4', 6, 'N', -1);
+INSERT INTO DEVICETYPECOMMAND VALUES (-455, -117, 'MCT-430S4', 7, 'N', -1);
+INSERT INTO DEVICETYPECOMMAND VALUES (-456, -118, 'MCT-430S4', 8, 'N', -1);
+INSERT INTO DEVICETYPECOMMAND VALUES (-457, -119, 'MCT-430S4', 9, 'Y', -1);
+INSERT INTO DEVICETYPECOMMAND VALUES (-458, -120, 'MCT-430S4', 10, 'N', -1);
+INSERT INTO DEVICETYPECOMMAND VALUES (-459, -121, 'MCT-430S4', 11, 'N', -1);
+INSERT INTO DEVICETYPECOMMAND VALUES (-460, -122, 'MCT-430S4', 12, 'N', -1);
+INSERT INTO DEVICETYPECOMMAND VALUES (-461, -123, 'MCT-430S4', 13, 'Y', -1);
 
 INSERT INTO DEVICETYPECOMMAND VALUES (-462, -30, 'CBC Expresscom', 1, 'Y', -1);
 INSERT INTO DEVICETYPECOMMAND VALUES (-463, -31, 'CBC Expresscom', 2, 'Y', -1);
@@ -4039,6 +4041,27 @@ insert into DeviceTypeCommand values (-672, -135, 'ExpresscomSerial', 23, 'Y', -
 insert into DeviceTypeCommand values (-673, -133, 'Expresscom Group', 3, 'Y', -1);
 insert into DeviceTypeCommand values (-674, -134, 'Expresscom Group', 4, 'Y', -1);
 insert into DeviceTypeCommand values (-675, -135, 'Expresscom Group', 5, 'Y', -1);
+
+INSERT INTO DEVICETYPECOMMAND VALUES (-676, -111, 'MCT-430A', 26, 'Y', -1);
+INSERT INTO DEVICETYPECOMMAND VALUES (-677, -2, 'MCT-430A', 27, 'Y', -1);
+INSERT INTO DEVICETYPECOMMAND VALUES (-678, -83, 'MCT-430A', 28, 'Y', -1);
+INSERT INTO DEVICETYPECOMMAND VALUES (-679, -136, 'MCT-430A', 29, 'Y', -1);
+
+INSERT INTO DEVICETYPECOMMAND VALUES (-680, -111, 'MCT-430S4', 26, 'Y', -1);
+INSERT INTO DEVICETYPECOMMAND VALUES (-681, -2, 'MCT-430S4', 27, 'Y', -1);
+INSERT INTO DEVICETYPECOMMAND VALUES (-682, -83, 'MCT-430S4', 28, 'Y', -1);
+INSERT INTO DEVICETYPECOMMAND VALUES (-683, -136, 'MCT-430S4', 29, 'Y', -1);
+
+INSERT INTO DEVICETYPECOMMAND VALUES (-684, -111, 'MCT-430SL', 26, 'Y', -1);
+INSERT INTO DEVICETYPECOMMAND VALUES (-685, -2, 'MCT-430SL', 27, 'Y', -1);
+INSERT INTO DEVICETYPECOMMAND VALUES (-686, -83, 'MCT-430SL', 28, 'Y', -1);
+INSERT INTO DEVICETYPECOMMAND VALUES (-687, -136, 'MCT-430SL', 29, 'Y', -1); 
+
+insert into devicetypecommand values(-689, -136, 'MCT-410CL', 30, 'N', -1);
+insert into devicetypecommand values(-690, -136, 'MCT-410FL', 30, 'N', -1);
+insert into devicetypecommand values(-691, -136, 'MCT-410GL', 30, 'N', -1);
+insert into devicetypecommand values(-692, -136, 'MCT-410IL', 30, 'N', -1);
+insert into devicetypecommand values(-693, -136, 'MCT-470', 32, 'N', -1); 
 
 /*==============================================================*/
 /* Index: Indx_DevTypeCmd_GroupID                               */
