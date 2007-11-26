@@ -69,7 +69,11 @@ public class CBCInventoryModel extends BareReportModelBase<CBCInventoryModel.Mod
 
                 row.cbcName = rs.getString("cbcName");
                 String bob = rs.getString("ipAddress");
-                int boss = Integer.valueOf(bob);
+                Long boss = 0l;
+                
+                if(bob !=null) {
+                    boss = new Long(bob);
+                }
                 row.ipAddress = convertToOctalIp(boss); 
                 row.slaveAddress = rs.getString("slaveAddress");
                 row.protocol = rs.getString("protocol");
@@ -88,16 +92,16 @@ public class CBCInventoryModel extends BareReportModelBase<CBCInventoryModel.Mod
         CTILogger.info("Report Records Collected from Database: " + data.size());
     }
     
-    public String convertToOctalIp(int ipvalue){
+    public String convertToOctalIp(long ipvalue){
         
         StringBuilder sb = new StringBuilder();
-        byte temp = (byte) ((ipvalue >> 24) & 0xFF);
+        int temp = (int) ((ipvalue >> 24) & 0xFF);
         sb.append(Integer.toString(temp, 10) + ".");
-        temp = (byte) ((ipvalue >> 16) & 0xFF);
+        temp = (int) ((ipvalue >> 16) & 0xFF);
         sb.append(Integer.toString(temp, 10) + ".");
-        temp = (byte) ((ipvalue >> 8) & 0xFF);
+        temp = (int) ((ipvalue >> 8) & 0xFF);
         sb.append(Integer.toString(temp, 10) + ".");
-        temp = (byte) ((ipvalue >> 4) & 0xFF);
+        temp = (int) (ipvalue & 0xFF);
         sb.append(Integer.toString(temp, 10));
        
         return sb.toString();
