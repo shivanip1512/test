@@ -10,7 +10,7 @@
     <br/>
 </c:if>
 
-<%--ONGOING PROFILES--%>
+<%-- ONGOING PROFILES --%>
 <c:choose>
 
 	<c:when test="${empty pendingRequests}">
@@ -30,7 +30,7 @@
 
 							<tr valign="top" class="<tags:alternateRow odd="" even="altRow"/>">
 								
-								<%-- MORE INFO HIDE REVEAL ---------------------------------------------%>
+								<%-- MORE INFO HIDE REVEAL --%>
 								<td>
 									<tags:hideReveal
 										title="${pendingRequest.from} - ${pendingRequest.to}"
@@ -53,7 +53,7 @@
 									</tags:hideReveal>
 								</td>
 								
-								<%-- STATUS BAR ---------------------------------------------------------%>
+								<%-- STATUS BAR --%>
 								<td>
 									<div id="profileStatusBar${pendingRequest.requestId}" style="vertical-align: top"></div>
 
@@ -63,7 +63,7 @@
 
 								</td>
 								
-								<%-- CANCEL ICON -------------------------------------------------------%>
+								<%-- CANCEL ICON --%>
 								<td
 									onClick="javascript:progressUpdaters[${pendingRequest.requestId}].stop();">
 									<tags:widgetActionRefreshImage method="cancelLoadProfile"
