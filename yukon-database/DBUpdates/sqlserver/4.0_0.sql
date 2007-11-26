@@ -369,23 +369,6 @@ alter table ccfeederbanklist alter column triporder float;
 update command set label = 'Turn Off Test Light' where commandid = -65;
 update command set label = 'Clear Comm Loss Counter' where commandid = -67;
 
-/*==============================================================*/
-/* Table: CAPCONTROLSPECIALAREA                                 */
-/*==============================================================*/
-create table CAPCONTROLSPECIALAREA  (
-   AreaID               NUMBER                          not null
-)
-;
-/*==============================================================*/
-/* Table: CCSUBSPECIALAREAASSIGNMENT                            */
-/*==============================================================*/
-create table CCSUBSPECIALAREAASSIGNMENT  (
-   AreaID               NUMBER                          not null,
-   SubstationBusID      NUMBER                          not null,
-   DisplayOrder         NUMBER                          not null
-)
-;
-
 insert into seasonSchedule values (-1,'No Season');
 insert into dateOfSeason values(-1, 'Default', 1,1,12,31);
 
