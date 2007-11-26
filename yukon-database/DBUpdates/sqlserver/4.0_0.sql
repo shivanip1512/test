@@ -900,6 +900,17 @@ alter table SubstationToRouteMapping
 go
 /* End YUK-4759 */
 
+/* Start YUK-4721 */
+alter table DynamicPAOStatistics drop constraint FK_PASt_YkPA;
+go
+
+alter table DynamicPAOStatistics
+   add constraint FK_PASt_YkPA foreign key (PAOBjectID)
+      references YukonPAObject (PAObjectID)
+         on update cascade on delete cascade;
+go
+/* End YUK-4721 */
+
 /**************************************************************/
 /* VERSION INFO                                               */
 /*   Automatically gets inserted from build script            */

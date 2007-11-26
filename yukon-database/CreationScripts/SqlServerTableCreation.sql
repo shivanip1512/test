@@ -1,7 +1,7 @@
 /*==============================================================*/
 /* Database name:  YukonDatabase                                */
 /* DBMS name:      Microsoft SQL Server 2000                    */
-/* Created on:     11/26/2007 11:10:05 AM                       */
+/* Created on:     11/26/2007 11:48:59 AM                       */
 /*==============================================================*/
 
 
@@ -10880,6 +10880,7 @@ go
 alter table DynamicPAOStatistics
    add constraint FK_PASt_YkPA foreign key (PAOBjectID)
       references YukonPAObject (PAObjectID)
+         on delete cascade
 go
 
 alter table DynamicPointAlarming
