@@ -10,14 +10,14 @@ import java.util.List;
  */
 public class DelegatingEnumeratedType<T> extends BaseEnumeratedType<T> {
 
-    private List<String> optionList = new ArrayList<String>();
+    private List<InputOption> optionList = new ArrayList<InputOption>();
     private InputType<T> enumeratedType;
 
-    public List<String> getOptionList() {
+    public List<InputOption> getOptionList() {
         return optionList;
     }
 
-    public void setOptionList(List<String> optionList) {
+    public void setOptionList(List<InputOption> optionList) {
         this.optionList = optionList;
     }
 

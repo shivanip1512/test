@@ -23,12 +23,36 @@ public class MCT470Configuration extends ConfigurationBase {
 
     // Options
     private Boolean alarmMaskMeter = null;
-    private Boolean alarmMaskEvent1 = null;
-    private Boolean alarmMaskEvent2 = null;
-    private Integer timeAdjustTolerance = null;
-    private Boolean configuration = null;
-    private Boolean options = null;
-    private Integer outageCycles = null;
+
+    private Boolean powerFailEvent = null;
+    private Boolean underVoltageEvent = null;
+    private Boolean overVoltageEvent = null;
+    private Boolean powerFailCarryover = null;
+    private Boolean rtcAdjusted = null;
+    private Boolean holidayFlag = null;
+    private Boolean dstChange = null;
+    private Boolean tamperFlag = null;
+
+    private Boolean zeroUsage = null;
+    private Boolean disconnectError = null;
+    private Boolean meterReadingCorrupted = null;
+    private Boolean transmitterOverheat = null;
+
+    private Integer timeAdjustTolerance = 15;
+
+    private Boolean dailyReporting = null;
+    private Boolean mct410dRevE = null;
+    private Boolean roleEnabled = null;
+    private Boolean disconnectCyclingMode = null;
+    private Boolean demandLimitMode = null;
+    private Boolean disableReconnectButton = null;
+    private Boolean ledTestEnabled = null;
+    private Boolean enableDst = null;
+
+    private int channel3MeterConfig = 0;
+    private int channel2MeterConfig = 0;
+
+    private Integer outageCycles = 30;
 
     // Demand and LP
     private Integer demandInterval = null;
@@ -204,20 +228,231 @@ public class MCT470Configuration extends ConfigurationBase {
         this.voltageLpInterval = voltageLpInterval;
     }
 
-    public Boolean getAlarmMaskEvent1() {
-        return alarmMaskEvent1;
+    public int getAlarmMaskEvent1() {
+
+        // Get the bits and mask them to throw out erroneous values, also shift
+        // them to their correct position
+
+        // bit 0
+        int powerFailEvent = (getPowerFailEvent()) ? 1 : 0;
+        powerFailEvent = (0x01 & powerFailEvent);
+
+        // bit 1
+        int underVoltageEvent = (getUnderVoltageEvent()) ? 1 : 0;
+        underVoltageEvent = 0x02 & (underVoltageEvent << 1);
+
+        // bit 2
+        int overVoltageEvent = (getOverVoltageEvent()) ? 1 : 0;
+        overVoltageEvent = 0x04 & (overVoltageEvent << 2);
+
+        // bit 3
+        int powerFailCarryover = (getPowerFailCarryover()) ? 1 : 0;
+        powerFailCarryover = 0x08 & (powerFailCarryover << 3);
+
+        // bit 4
+        int rtcAdjusted = (getRtcAdjusted()) ? 1 : 0;
+        rtcAdjusted = 0x10 & (rtcAdjusted << 4);
+
+        // bit 5
+        int holidayFlag = (getHolidayFlag()) ? 1 : 0;
+        holidayFlag = 0x20 & (holidayFlag << 5);
+
+        // bit 6
+        int dstChange = (getDstChange()) ? 1 : 0;
+        dstChange = 0x40 & (dstChange << 6);
+
+        // bit 7
+        int tamperFlag = (getTamperFlag()) ? 1 : 0;
+        tamperFlag = 0x80 & (tamperFlag << 7);
+
+        // Combine the bits to make the full value
+        int alarmMaskEvent1Value = powerFailEvent | underVoltageEvent | overVoltageEvent | powerFailCarryover | rtcAdjusted | holidayFlag | dstChange | tamperFlag;
+
+        return alarmMaskEvent1Value;
+
     }
 
-    public void setAlarmMaskEvent1(Boolean alarmMaskEvent1) {
-        this.alarmMaskEvent1 = alarmMaskEvent1;
+    public void setAlarmMaskEvent1(int alarmMaskEvent1) {
+
+        // Unmask and shift the bits and set them to the correct param
+
+        // bit 0
+        int powerFailEvent = (0x01 & alarmMaskEvent1);
+        this.setPowerFailEvent(powerFailEvent == 1);
+
+        // bit 1
+        int underVoltageEvent = (0x02 & alarmMaskEvent1) >> 1;
+        this.setUnderVoltageEvent(underVoltageEvent == 1);
+
+        // bit 2
+        int overVoltageEvent = (0x04 & alarmMaskEvent1) >> 2;
+        this.setOverVoltageEvent(overVoltageEvent == 1);
+
+        // bit 3
+        int powerFailCarryover = (0x08 & alarmMaskEvent1) >> 3;
+        this.setPowerFailCarryover(powerFailCarryover == 1);
+
+        // bit 4
+        int rtcAdjusted = (0x10 & alarmMaskEvent1) >> 4;
+        this.setRtcAdjusted(rtcAdjusted == 1);
+
+        // bit 5
+        int holidayFlag = (0x20 & alarmMaskEvent1) >> 5;
+        this.setHolidayFlag(holidayFlag == 1);
+
+        // bit 6
+        int dstChange = (0x40 & alarmMaskEvent1) >> 6;
+        this.setDstChange(dstChange == 1);
+
+        // bit 7
+        int tamperFlag = (0x80 & alarmMaskEvent1) >> 7;
+        this.setTamperFlag(tamperFlag == 1);
+
     }
 
-    public Boolean getAlarmMaskEvent2() {
-        return alarmMaskEvent2;
+    public Boolean getPowerFailEvent() {
+        return powerFailEvent;
     }
 
-    public void setAlarmMaskEvent2(Boolean alarmMaskEvent2) {
-        this.alarmMaskEvent2 = alarmMaskEvent2;
+    public void setPowerFailEvent(Boolean powerFailEvent) {
+        this.powerFailEvent = powerFailEvent;
+    }
+
+    public Boolean getUnderVoltageEvent() {
+        return underVoltageEvent;
+    }
+
+    public void setUnderVoltageEvent(Boolean underVoltageEvent) {
+        this.underVoltageEvent = underVoltageEvent;
+    }
+
+    public Boolean getOverVoltageEvent() {
+        return overVoltageEvent;
+    }
+
+    public void setOverVoltageEvent(Boolean overVoltageEvent) {
+        this.overVoltageEvent = overVoltageEvent;
+    }
+
+    public Boolean getPowerFailCarryover() {
+        return powerFailCarryover;
+    }
+
+    public void setPowerFailCarryover(Boolean powerFailCarryover) {
+        this.powerFailCarryover = powerFailCarryover;
+    }
+
+    public Boolean getRtcAdjusted() {
+        return rtcAdjusted;
+    }
+
+    public void setRtcAdjusted(Boolean rtcAdjusted) {
+        this.rtcAdjusted = rtcAdjusted;
+    }
+
+    public Boolean getHolidayFlag() {
+        return holidayFlag;
+    }
+
+    public void setHolidayFlag(Boolean holidayFlag) {
+        this.holidayFlag = holidayFlag;
+    }
+
+    public Boolean getDstChange() {
+        return dstChange;
+    }
+
+    public void setDstChange(Boolean dstChange) {
+        this.dstChange = dstChange;
+    }
+
+    public Boolean getTamperFlag() {
+        return tamperFlag;
+    }
+
+    public void setTamperFlag(Boolean tamperFlag) {
+        this.tamperFlag = tamperFlag;
+    }
+
+    public int getAlarmMaskEvent2() {
+
+        // Get the bits and mask them to throw out erroneous values, also shift
+        // them to their correct position
+
+        // bit 0
+        int zeroUsage = (getZeroUsage()) ? 1 : 0;
+        zeroUsage = (0x01 & zeroUsage);
+
+        // bit 1
+        int disconnectError = (getDisconnectError()) ? 1 : 0;
+        disconnectError = 0x02 & (disconnectError << 1);
+
+        // bit 2
+        int meterReadingCorrupted = (getMeterReadingCorrupted()) ? 1 : 0;
+        meterReadingCorrupted = 0x04 & (meterReadingCorrupted << 2);
+
+        // bit 3
+        int transmitterOverheat = (getTransmitterOverheat()) ? 1 : 0;
+        transmitterOverheat = 0x08 & (transmitterOverheat << 3);
+
+        // Combine the bits to make the full value
+        int alarmMaskEvent2Value = zeroUsage | disconnectError | meterReadingCorrupted | transmitterOverheat;
+
+        return alarmMaskEvent2Value;
+    }
+
+    public void setAlarmMaskEvent2(int alarmMaskEvent2) {
+
+        // Unmask and shift the bits and set them to the correct param
+
+        // bit 0
+        int zeroUsage = (0x01 & alarmMaskEvent2);
+        this.setZeroUsage(zeroUsage == 1);
+
+        // bit 1
+        int disconnectError = (0x02 & alarmMaskEvent2) >> 1;
+        this.setDisconnectError(disconnectError == 1);
+
+        // bit 2
+        int meterReadingCorrupted = (0x04 & alarmMaskEvent2) >> 2;
+        this.setMeterReadingCorrupted(meterReadingCorrupted == 1);
+
+        // bit 3
+        int transmitterOverheat = (0x08 & alarmMaskEvent2) >> 3;
+        this.setTransmitterOverheat(transmitterOverheat == 1);
+
+    }
+
+    public Boolean getDisconnectError() {
+        return disconnectError;
+    }
+
+    public void setDisconnectError(Boolean disconnectError) {
+        this.disconnectError = disconnectError;
+    }
+
+    public Boolean getMeterReadingCorrupted() {
+        return meterReadingCorrupted;
+    }
+
+    public void setMeterReadingCorrupted(Boolean meterReadingCorrupted) {
+        this.meterReadingCorrupted = meterReadingCorrupted;
+    }
+
+    public Boolean getTransmitterOverheat() {
+        return transmitterOverheat;
+    }
+
+    public void setTransmitterOverheat(Boolean transmitterOverheat) {
+        this.transmitterOverheat = transmitterOverheat;
+    }
+
+    public Boolean getZeroUsage() {
+        return zeroUsage;
+    }
+
+    public void setZeroUsage(Boolean zeroUsage) {
+        this.zeroUsage = zeroUsage;
     }
 
     public Boolean getAlarmMaskMeter() {
@@ -292,12 +527,150 @@ public class MCT470Configuration extends ConfigurationBase {
         this.channelConfig4 = channelConfig4;
     }
 
-    public Boolean getConfiguration() {
-        return configuration;
+    public int getConfiguration() {
+
+        // Get the bits and mask them to throw out erroneous values, also shift
+        // them to their correct position
+
+        // bit 0
+        int enableDst = (getEnableDst()) ? 1 : 0;
+        enableDst = (0x01 & enableDst);
+
+        // bit 1
+        int ledTestEnabled = (getLedTestEnabled()) ? 1 : 0;
+        ledTestEnabled = 0x02 & (ledTestEnabled << 1);
+
+        // bit 2
+        int disableReconnectButton = (getDisableReconnectButton()) ? 1 : 0;
+        disableReconnectButton = 0x04 & (disableReconnectButton << 2);
+
+        // bit 3
+        int demandLimitMode = (getDemandLimitMode()) ? 1 : 0;
+        demandLimitMode = 0x08 & (demandLimitMode << 3);
+
+        // bit 4
+        int disconnectCyclingMode = (getDisconnectCyclingMode()) ? 1 : 0;
+        disconnectCyclingMode = 0x10 & (disconnectCyclingMode << 4);
+
+        // bit 5
+        int roleEnabled = (getRoleEnabled()) ? 1 : 0;
+        roleEnabled = 0x20 & (roleEnabled << 5);
+
+        // bit 6
+        int mct410dRevE = (getMct410dRevE()) ? 1 : 0;
+        mct410dRevE = 0x40 & (mct410dRevE << 6);
+
+        // bit 7
+        int dailyReporting = (getDailyReporting()) ? 1 : 0;
+        dailyReporting = 0x80 & (dailyReporting << 7);
+
+        // Combine the bits to make the full value
+        int configurationValue = enableDst | ledTestEnabled | disableReconnectButton | demandLimitMode | disconnectCyclingMode | roleEnabled | mct410dRevE | dailyReporting;
+
+        return configurationValue;
+
     }
 
-    public void setConfiguration(Boolean configuration) {
-        this.configuration = configuration;
+    public void setConfiguration(int configuration) {
+
+        // Unmask and shift the bits and set them to the correct param
+
+        // bit 0
+        int enableDst = (0x01 & configuration);
+        this.setEnableDst(enableDst == 1);
+
+        // bit 1
+        int ledTestEnabled = (0x02 & configuration) >> 1;
+        this.setLedTestEnabled(ledTestEnabled == 1);
+
+        // bit 2
+        int disbaleReconnectButton = (0x04 & configuration) >> 2;
+        this.setDisableReconnectButton(disbaleReconnectButton == 1);
+
+        // bit 3
+        int demandLimitMode = (0x08 & configuration) >> 3;
+        this.setDemandLimitMode(demandLimitMode == 1);
+
+        // bit 4
+        int disconnectCyclingMode = (0x10 & configuration) >> 4;
+        this.setDisconnectCyclingMode(disconnectCyclingMode == 1);
+
+        // bit 5
+        int roleEnabled = (0x20 & configuration) >> 5;
+        this.setRoleEnabled(roleEnabled == 1);
+
+        // bit 6
+        int mct410dRevE = (0x40 & configuration) >> 6;
+        this.setMct410dRevE(mct410dRevE == 1);
+
+        // bit 7
+        int dailyReporting = (0x80 & configuration) >> 7;
+        this.setDailyReporting(dailyReporting == 1);
+
+    }
+
+    public Boolean getDailyReporting() {
+        return dailyReporting;
+    }
+
+    public void setDailyReporting(Boolean dailyReporting) {
+        this.dailyReporting = dailyReporting;
+    }
+
+    public Boolean getDemandLimitMode() {
+        return demandLimitMode;
+    }
+
+    public void setDemandLimitMode(Boolean demandLimitMode) {
+        this.demandLimitMode = demandLimitMode;
+    }
+
+    public Boolean getDisableReconnectButton() {
+        return disableReconnectButton;
+    }
+
+    public void setDisableReconnectButton(Boolean disableReconnectButton) {
+        this.disableReconnectButton = disableReconnectButton;
+    }
+
+    public Boolean getDisconnectCyclingMode() {
+        return disconnectCyclingMode;
+    }
+
+    public void setDisconnectCyclingMode(Boolean disconnectCyclingMode) {
+        this.disconnectCyclingMode = disconnectCyclingMode;
+    }
+
+    public Boolean getEnableDst() {
+        return enableDst;
+    }
+
+    public void setEnableDst(Boolean enableDst) {
+        this.enableDst = enableDst;
+    }
+
+    public Boolean getLedTestEnabled() {
+        return ledTestEnabled;
+    }
+
+    public void setLedTestEnabled(Boolean ledTestEnabled) {
+        this.ledTestEnabled = ledTestEnabled;
+    }
+
+    public Boolean getMct410dRevE() {
+        return mct410dRevE;
+    }
+
+    public void setMct410dRevE(Boolean mct410dRevE) {
+        this.mct410dRevE = mct410dRevE;
+    }
+
+    public Boolean getRoleEnabled() {
+        return roleEnabled;
+    }
+
+    public void setRoleEnabled(Boolean roleEnabled) {
+        this.roleEnabled = roleEnabled;
     }
 
     public String getDemandMetersToScan() {
@@ -340,12 +713,59 @@ public class MCT470Configuration extends ConfigurationBase {
         this.meterNumber = meterNumber;
     }
 
-    public Boolean getOptions() {
-        return options;
+    public int getOptions() {
+
+        // Get the bits and mask them to throw out erroneous values, also shift
+        // them to their correct position
+
+        // bits 0,1 - cannot change: determined by the software version
+        // programmed into the meter
+
+        // bits 2,3,4
+        int channel2MeterConfig = getChannel2MeterConfig();
+        channel2MeterConfig = 0x1C & (channel2MeterConfig << 2);
+
+        // bits 5,6,7
+        int channel3MeterConfig = getChannel3MeterConfig();
+        channel3MeterConfig = 0xE0 & (channel3MeterConfig << 5);
+
+        // Combine the bits to make the full value
+        int optionsValue = channel2MeterConfig | channel3MeterConfig;
+
+        return optionsValue;
     }
 
-    public void setOptions(Boolean options) {
-        this.options = options;
+    public void setOptions(int options) {
+
+        // Unmask and shift the bits and set them to the correct param
+
+        // bits 0,1 - cannot change: determined by the software version
+        // programmed into the meter
+
+        // bits 2,3,4
+        int channel2MeterConfig = (0x1C & options) >> 2;
+        this.setChannel2MeterConfig(channel2MeterConfig);
+
+        // bits 5,6,7
+        int channel3MeterConfig = (0xE0 & options) >> 5;
+        this.setChannel3MeterConfig(channel3MeterConfig);
+
+    }
+
+    public int getChannel3MeterConfig() {
+        return channel3MeterConfig;
+    }
+
+    public void setChannel3MeterConfig(int channel3MeterConfig) {
+        this.channel3MeterConfig = channel3MeterConfig;
+    }
+
+    public int getChannel2MeterConfig() {
+        return channel2MeterConfig;
+    }
+
+    public void setChannel2MeterConfig(int channel2MeterConfig) {
+        this.channel2MeterConfig = channel2MeterConfig;
     }
 
     public Integer getOutageCycles() {

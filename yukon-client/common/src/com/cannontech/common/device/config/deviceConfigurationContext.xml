@@ -417,28 +417,158 @@
 					<property name="type" ref="inputBooleanType" />
 					<property name="security" ref="configEditSecurity" />
 				</bean>
+				
+				<!-- Event Flags-1 Byte
+					From MCT-410 SSPEC 4.7:
+					Various Status Flags that indicate that specific events have occurred.  The Master 
+					Station can clear these flags.  Event flags are not self clearing unless otherwise 
+					specified.  This byte is logically AND with ‘Event Flags-1 Alarm Mask’ in location 
+					0x0A.  If the result is a non-zero value then the General Alarm flag (bit 45 of 
+					D-Word 1) with each message that is returned.
+				 -->
 				<bean class="com.cannontech.web.input.InputBase">
-					<property name="displayName" value="Alarm Mask Event 1" />
-					<property name="field" value="alarmMaskEvent1" />
+					<property name="displayName" value="Power Fail Event" />
+					<property name="field" value="powerFailEvent" />
 					<property name="description">
 						<value>
-							Bit field, bits ordered 76543210, defined as: 7 NegativeTimeSync 6 DST Change 5 Holiday Flag 4 RTC Adjusted 3 Power Fail Carryover 2 Stack Overflow 1 Electronic Meter Communication Error 0 Power Fail Event
+							Set if Power Fail Event alarms matter
 						</value>
 					</property>
 					<property name="type" ref="inputBooleanType" />
 					<property name="security" ref="configEditSecurity" />
 				</bean>
 				<bean class="com.cannontech.web.input.InputBase">
-					<property name="displayName" value="Alarm Mask Event 2" />
-					<property name="field" value="alarmMaskEvent2" />
+					<property name="displayName" value="Under-Voltage Event" />
+					<property name="field" value="underVoltageEvent" />
 					<property name="description">
 						<value>
-							Bit field, bits ordered 76543210, defined as: 7,6,5 Unused. 4: Address Corruption, 3: Zero Usage Channel 4, 2: Zero Usage Channel 3, 1: Zero Usage Channel 2. 0: Zero Usage Channel 1
+							Set if Under-Voltage Event alarms matter
 						</value>
 					</property>
 					<property name="type" ref="inputBooleanType" />
 					<property name="security" ref="configEditSecurity" />
 				</bean>
+				<bean class="com.cannontech.web.input.InputBase">
+					<property name="displayName" value="Over-Voltage Event" />
+					<property name="field" value="overVoltageEvent" />
+					<property name="description">
+						<value>
+							Set if Over-Voltage Event alarms matter
+						</value>
+					</property>
+					<property name="type" ref="inputBooleanType" />
+					<property name="security" ref="configEditSecurity" />
+				</bean>
+				<bean class="com.cannontech.web.input.InputBase">
+					<property name="displayName" value="Power Fail Carryover" />
+					<property name="field" value="powerFailCarryover" />
+					<property name="description">
+						<value>
+							Set if Power Fail Carryover alarms matter
+						</value>
+					</property>
+					<property name="type" ref="inputBooleanType" />
+					<property name="security" ref="configEditSecurity" />
+				</bean>
+				<bean class="com.cannontech.web.input.InputBase">
+					<property name="displayName" value="RTC Adjusted" />
+					<property name="field" value="rtcAdjusted" />
+					<property name="description">
+						<value>
+							Set if RTC Adjusted alarms matter
+						</value>
+					</property>
+					<property name="type" ref="inputBooleanType" />
+					<property name="security" ref="configEditSecurity" />
+				</bean>
+				<bean class="com.cannontech.web.input.InputBase">
+					<property name="displayName" value="Holiday Flag" />
+					<property name="field" value="holidayFlag" />
+					<property name="description">
+						<value>
+							Set if Holiday Flag alarms matter
+						</value>
+					</property>
+					<property name="type" ref="inputBooleanType" />
+					<property name="security" ref="configEditSecurity" />
+				</bean>
+				<bean class="com.cannontech.web.input.InputBase">
+					<property name="displayName" value="DST Change" />
+					<property name="field" value="dstChange" />
+					<property name="description">
+						<value>
+							Set if DST Change alarms matter
+						</value>
+					</property>
+					<property name="type" ref="inputBooleanType" />
+					<property name="security" ref="configEditSecurity" />
+				</bean>
+				<bean class="com.cannontech.web.input.InputBase">
+					<property name="displayName" value="Tamper Flag" />
+					<property name="field" value="tamperFlag" />
+					<property name="description">
+						<value>
+							Set if Tamper Flag alarms matter
+						</value>
+					</property>
+					<property name="type" ref="inputBooleanType" />
+					<property name="security" ref="configEditSecurity" />
+				</bean>
+				<!-- END Event Flags-1 Byte -->
+				
+				<!-- Event Flags-2 Byte
+					From MCT-410 SSPEC 4.8:
+					This location is reserved for any future event status flags.  It could be moved or 
+					changed if necessary in the future.  This byte will be logically AND with ‘Event 
+					Flags-2 Alarm Mask’ in location 0x0B.  If the result is a non-zero value then the 
+					General Alarm flag (bit 45 of D-Word 1) with each message that is returned.
+				-->
+				<bean class="com.cannontech.web.input.InputBase">
+					<property name="displayName" value="Zero Usage" />
+					<property name="field" value="zeroUsage" />
+					<property name="description">
+						<value>
+							Set if Zero Usage alarms matter
+						</value>
+					</property>
+					<property name="type" ref="inputBooleanType" />
+					<property name="security" ref="configEditSecurity" />
+				</bean>				
+				<bean class="com.cannontech.web.input.InputBase">
+					<property name="displayName" value="Disconnect Error" />
+					<property name="field" value="disconnectError" />
+					<property name="description">
+						<value>
+							Set if Disconnect Error alarms matter
+						</value>
+					</property>
+					<property name="type" ref="inputBooleanType" />
+					<property name="security" ref="configEditSecurity" />
+				</bean>				
+				<bean class="com.cannontech.web.input.InputBase">
+					<property name="displayName" value="Meter Reading Corrupted" />
+					<property name="field" value="meterReadingCorrupted" />
+					<property name="description">
+						<value>
+							Set if Meter Reading Corrupted alarms matter
+						</value>
+					</property>
+					<property name="type" ref="inputBooleanType" />
+					<property name="security" ref="configEditSecurity" />
+				</bean>				
+				<bean class="com.cannontech.web.input.InputBase">
+					<property name="displayName" value="Transmitter Overheat" />
+					<property name="field" value="transmitterOverheat" />
+					<property name="description">
+						<value>
+							Set if Transmitter Overheat alarms matter
+						</value>
+					</property>
+					<property name="type" ref="inputBooleanType" />
+					<property name="security" ref="configEditSecurity" />
+				</bean>
+				<!-- END Event Flags-2 Byte -->		
+				
 				<bean class="com.cannontech.web.input.InputBase">
 					<property name="displayName" value="Time Adjust Tolerance" />
 					<property name="field" value="timeAdjustTolerance" />
@@ -448,34 +578,203 @@
 						</value>
 					</property>
 					<property name="type" ref="inputIntegerType" />
+					<property name="validatorList">
+						<list>
+							<bean class="com.cannontech.web.input.validate.IntegerRangeValidator">
+								<property name="minValue" value="0" />
+								<property name="maxValue" value="255" />
+							</bean>
+						</list>
+					</property>
 					<property name="security" ref="configEditSecurity" />
 				</bean>
+				
+				<!-- Configuration Byte 0x03 
+					From MCT-410 SSPEC 4.4:
+					The Configuration register defines some of the MCT behaviors. This byte is meant to 
+					be set by the user from the Master Station or with the FTU. The default config value 
+					(written for reset ram function) is 0x83. Configuration byte 1 is located at 
+					address 0xCE.
+				-->
 				<bean class="com.cannontech.web.input.InputBase">
-					<property name="displayName" value="Configuration" />
-					<property name="field" value="configuration" />
+					<property name="displayName" value="Enable DST" />
+					<property name="field" value="enableDst" />
 					<property name="description">
 						<value>
-							For MCT 470, bit field use caution.
+							If this is set, the device will action any DST changes.  Clearing this will force the DST Active flag to zero.
 						</value>
 					</property>
 					<property name="type" ref="inputBooleanType" />
 					<property name="security" ref="configEditSecurity" />
 				</bean>
 				<bean class="com.cannontech.web.input.InputBase">
-					<property name="displayName" value="Options" />
-					<property name="field" value="options" />
+					<property name="displayName" value="LED Test Enabled" />
+					<property name="field" value="ledTestEnabled" />
 					<property name="description">
 						<value>
-							For MCT 470, bit field use caution.
+							When this is set, the LED will turn on for 14.5 seconds, then turn off for 0.5 seconds.  This on/off pattern is repeated 20 times, for a total of 5 minutes.  Before this pattern starts, the LED will blink on and off 5 times for its normal startup pattern.  If a carrier message is received during the 5 minute pattern, the pattern will be cancelled.
 						</value>
 					</property>
 					<property name="type" ref="inputBooleanType" />
 					<property name="security" ref="configEditSecurity" />
 				</bean>
+				<bean class="com.cannontech.web.input.InputBase">
+					<property name="displayName" value="Disable Reconnect button" />
+					<property name="field" value="disableReconnectButton" />
+					<property name="description">
+						<value>
+							When this is set, the disconnect does not require a button to be pressed to reconnect the meter.  The normal mode of operation is with this cleared and the button must be pressed for a reconnect.
+						</value>
+					</property>
+					<property name="type" ref="inputBooleanType" />
+					<property name="security" ref="configEditSecurity" />
+				</bean>
+				<bean class="com.cannontech.web.input.InputBase">
+					<property name="displayName" value="Demand Limit Mode" />
+					<property name="field" value="demandLimitMode" />
+					<property name="description">
+						<value>
+							When this is set a disconnect command will use a demand limit threshold to determine when the use will be disconnected.  The normal mode of operation will be with this cleared, which will cause an immediate disconnect when the command is received.  If both this and Disconnect Cycling Mode are set then the Demand Limit mode takes precedence.
+						</value>
+					</property>
+					<property name="type" ref="inputBooleanType" />
+					<property name="security" ref="configEditSecurity" />
+				</bean>
+				<bean class="com.cannontech.web.input.InputBase">
+					<property name="displayName" value="Disconnect Cycling Mode" />
+					<property name="field" value="disconnectCyclingMode" />
+					<property name="description">
+						<value>
+							When this is set, a disconnect command will send a cycling disconnect command to the disconnect device.
+						</value>
+					</property>
+					<property name="type" ref="inputBooleanType" />
+					<property name="security" ref="configEditSecurity" />
+				</bean>
+				<bean class="com.cannontech.web.input.InputBase">
+					<property name="displayName" value="Role Enabled" />
+					<property name="field" value="roleEnabled" />
+					<property name="description">
+						<value>
+							Enable Role code
+						</value>
+					</property>
+					<property name="type" ref="inputBooleanType" />
+					<property name="security" ref="configEditSecurity" />
+				</bean>
+				<bean class="com.cannontech.web.input.InputBase">
+					<property name="displayName" value="MCT-410d Rev E" />
+					<property name="field" value="mct410dRevE" />
+					<property name="description">
+						<value>
+							If set then, attached MCT-410d Firmware is Rev E or later.
+						</value>
+					</property>
+					<property name="type" ref="inputBooleanType" />
+					<property name="security" ref="configEditSecurity" />
+				</bean>
+				<bean class="com.cannontech.web.input.InputBase">
+					<property name="displayName" value="Daily Reporting" />
+					<property name="field" value="dailyReporting" />
+					<property name="description">
+						<value>
+							Setting this bit will enable daily reporting.  *** Note: changing this bit will clear all saved Load Profile data ***
+						</value>
+					</property>
+					<property name="type" ref="inputBooleanType" />
+					<property name="security" ref="configEditSecurity" />
+				</bean>
+				<!-- END Configuration Byte 0x03 -->
+
+				<!-- Options Byte 0x02 
+					From MCT-410 SSPEC 4.3:
+					The Options byte enables and disables the corresponding functions in the device. By 
+					setting (enabling) the bit for the corresponding function it is enabled. The bits 
+					are checked as needed so the can be changed on the fly (without cycling power). The 
+					following table shows the defined bits and functions.  The MCT-410 does not 
+					currently implement any option bits.
+				-->
+				<bean class="com.cannontech.web.input.InputBase">
+					<property name="displayName" value="Channel #2 External Meter Configuration" />
+					<property name="field" value="channel2MeterConfig" />
+					<property name="description">
+						<value>
+							Used to determine the type of external meter being used for channel #3
+						</value>
+					</property>
+					<property name="type">
+						<bean class="com.cannontech.web.input.type.DelegatingEnumeratedType">
+							<property name="enumeratedType" ref="inputIntegerType" />
+							<property name="optionList">
+								<list>
+									<bean class="com.cannontech.web.input.type.InputOption">
+										<property name="text" value="No Meter Attached" />
+										<property name="value" value="0" />
+									</bean>
+									<bean class="com.cannontech.web.input.type.InputOption">
+										<property name="text" value="Wired UI1203 Sensus Water Meter" />
+										<property name="value" value="1" />
+									</bean>
+									<bean class="com.cannontech.web.input.type.InputOption">
+										<property name="text" value="Wired UI1204  (Touchread) Sensus or Badger Water Meter" />
+										<property name="value" value="2" />
+									</bean>
+									<bean class="com.cannontech.web.input.type.InputOption">
+										<property name="text" value="Net Metering Mode Enabled. Reverse power for a pulse meter on channel #1" />
+										<property name="value" value="7" />
+									</bean>
+								</list>
+							</property>
+						</bean>
+					</property>
+					<property name="security" ref="configEditSecurity" />
+				</bean>
+				
+				<bean class="com.cannontech.web.input.InputBase">
+					<property name="displayName" value="Channel #3 External Meter Configuration" />
+					<property name="field" value="channel3MeterConfig" />
+					<property name="description">
+						<value>
+							Used to determine the type of external meter being used for channel #3
+						</value>
+					</property>
+					<property name="type">
+						<bean class="com.cannontech.web.input.type.DelegatingEnumeratedType">
+							<property name="enumeratedType" ref="inputIntegerType" />
+							<property name="optionList">
+								<list>
+									<bean class="com.cannontech.web.input.type.InputOption">
+										<property name="text" value="No Meter Attached" />
+										<property name="value" value="0" />
+									</bean>
+									<bean class="com.cannontech.web.input.type.InputOption">
+										<property name="text" value="Wired UI1203 Sensus Water Meter" />
+										<property name="value" value="1" />
+									</bean>
+									<bean class="com.cannontech.web.input.type.InputOption">
+										<property name="text" value="Wired UI1204  (Touchread) Sensus or Badger Water Meter" />
+										<property name="value" value="2" />
+									</bean>
+								</list>
+							</property>
+						</bean>
+					</property>
+					<property name="security" ref="configEditSecurity" />
+				</bean>
+				<!-- END Options Byte 0x02 -->
+				
 				<bean class="com.cannontech.web.input.InputBase">
 					<property name="displayName" value="Outage Cycles" />
 					<property name="field" value="outageCycles" />
 					<property name="type" ref="inputIntegerType" />
+					<property name="validatorList">
+						<list>
+							<bean class="com.cannontech.web.input.validate.IntegerRangeValidator">
+								<property name="minValue" value="15" />
+								<property name="maxValue" value="60" />
+							</bean>
+						</list>
+					</property>
 					<property name="security" ref="configEditSecurity" />
 				</bean>
 			</list>
@@ -518,10 +817,18 @@
 							<property name="enumeratedType" ref="inputIntegerType" />
 							<property name="optionList">
 								<list>
-									<value>5</value>
-									<value>15</value>
-									<value>30</value>
-									<value>60</value>
+									<bean class="com.cannontech.web.input.type.InputOption">
+										<property name="value" value="5" />
+									</bean>
+									<bean class="com.cannontech.web.input.type.InputOption">
+										<property name="value" value="15" />
+									</bean>
+									<bean class="com.cannontech.web.input.type.InputOption">
+										<property name="value" value="30" />
+									</bean>
+									<bean class="com.cannontech.web.input.type.InputOption">
+										<property name="value" value="60" />
+									</bean>
 								</list>
 							</property>
 						</bean>
@@ -541,10 +848,18 @@
 							<property name="enumeratedType" ref="inputIntegerType" />
 							<property name="optionList">
 								<list>
-									<value>5</value>
-									<value>15</value>
-									<value>30</value>
-									<value>60</value>
+									<bean class="com.cannontech.web.input.type.InputOption">
+										<property name="value" value="5" />
+									</bean>
+									<bean class="com.cannontech.web.input.type.InputOption">
+										<property name="value" value="15" />
+									</bean>
+									<bean class="com.cannontech.web.input.type.InputOption">
+										<property name="value" value="30" />
+									</bean>
+									<bean class="com.cannontech.web.input.type.InputOption">
+										<property name="value" value="60" />
+									</bean>
 								</list>
 							</property>
 						</bean>
@@ -583,10 +898,18 @@
 							<property name="enumeratedType" ref="inputIntegerType" />
 							<property name="optionList">
 								<list>
-									<value>5</value>
-									<value>15</value>
-									<value>30</value>
-									<value>60</value>
+									<bean class="com.cannontech.web.input.type.InputOption">
+										<property name="value" value="5" />
+									</bean>
+									<bean class="com.cannontech.web.input.type.InputOption">
+										<property name="value" value="15" />
+									</bean>
+									<bean class="com.cannontech.web.input.type.InputOption">
+										<property name="value" value="30" />
+									</bean>
+									<bean class="com.cannontech.web.input.type.InputOption">
+										<property name="value" value="60" />
+									</bean>
 								</list>
 							</property>
 						</bean>
@@ -980,9 +1303,15 @@
 							<property name="enumeratedType" ref="inputStringType" />
 							<property name="optionList">
 								<list>
-									<value>All</value>
-									<value>IED</value>
-									<value>Pulse</value>
+									<bean class="com.cannontech.web.input.type.InputOption">
+										<property name="value" value="All" />
+									</bean>
+									<bean class="com.cannontech.web.input.type.InputOption">
+										<property name="value" value="IED" />
+									</bean>
+									<bean class="com.cannontech.web.input.type.InputOption">
+										<property name="value" value="Pulse" />
+									</bean>
 								</list>
 							</property>
 						</bean>
@@ -1338,10 +1667,18 @@
 											<property name="enumeratedType" ref="inputStringType" />
 											<property name="optionList">
 												<list>
-													<value>A</value>
-													<value>B</value>
-													<value>C</value>
-													<value>D</value>
+													<bean class="com.cannontech.web.input.type.InputOption">
+														<property name="value" value="A" />
+													</bean>
+													<bean class="com.cannontech.web.input.type.InputOption">
+														<property name="value" value="B" />
+													</bean>
+													<bean class="com.cannontech.web.input.type.InputOption">
+														<property name="value" value="C" />
+													</bean>
+													<bean class="com.cannontech.web.input.type.InputOption">
+														<property name="value" value="D" />
+													</bean>
 												</list>
 											</property>
 										</bean>
@@ -1453,10 +1790,18 @@
 												<property name="enumeratedType" ref="inputStringType" />
 												<property name="optionList">
 													<list>
-														<value>A</value>
-														<value>B</value>
-														<value>C</value>
-														<value>D</value>
+														<bean class="com.cannontech.web.input.type.InputOption">
+															<property name="value" value="A" />
+														</bean>
+														<bean class="com.cannontech.web.input.type.InputOption">
+															<property name="value" value="B" />
+														</bean>
+														<bean class="com.cannontech.web.input.type.InputOption">
+															<property name="value" value="C" />
+														</bean>
+														<bean class="com.cannontech.web.input.type.InputOption">
+															<property name="value" value="D" />
+														</bean>
 													</list>
 												</property>
 											</bean>
@@ -1503,10 +1848,18 @@
 								<property name="enumeratedType" ref="inputStringType" />
 								<property name="optionList">
 									<list>
-										<value>A</value>
-										<value>B</value>
-										<value>C</value>
-										<value>D</value>
+										<bean class="com.cannontech.web.input.type.InputOption">
+											<property name="value" value="A" />
+										</bean>
+										<bean class="com.cannontech.web.input.type.InputOption">
+											<property name="value" value="B" />
+										</bean>
+										<bean class="com.cannontech.web.input.type.InputOption">
+											<property name="value" value="C" />
+										</bean>
+										<bean class="com.cannontech.web.input.type.InputOption">
+											<property name="value" value="D" />
+										</bean>
 									</list>
 								</property>
 							</bean>
@@ -1522,10 +1875,18 @@
 		<property name="enumeratedType" ref="inputStringType" />
 		<property name="optionList">
 			<list>
-				<value>Schedule 1</value>
-				<value>Schedule 2</value>
-				<value>Schedule 3</value>
-				<value>Schedule 4</value>
+				<bean class="com.cannontech.web.input.type.InputOption">
+					<property name="value" value="Schedule 1" />
+				</bean>
+				<bean class="com.cannontech.web.input.type.InputOption">
+					<property name="value" value="Schedule 2" />
+				</bean>
+				<bean class="com.cannontech.web.input.type.InputOption">
+					<property name="value" value="Schedule 3" />
+				</bean>
+				<bean class="com.cannontech.web.input.type.InputOption">
+					<property name="value" value="Schedule 4" />
+				</bean>
 			</list>
 		</property>
 	</bean>
@@ -1534,25 +1895,74 @@
 		<property name="name" value="MCT Centron" />
 		<property name="inputList">
 			<list>
+			
+				<!-- Centron Parameters Byte MCT-410 SSPEC 4.14-->
 				<bean class="com.cannontech.web.input.InputBase">
-					<property name="displayName" value="Paramteters" />
-					<property name="field" value="parameters" />
+					<property name="displayName" value="Display" />
+					<property name="field" value="displayBits" />
 					<property name="description">
 						<value>
-							Use great caution. Is a bitfield.
+							Display
 						</value>
 					</property>
-					<property name="type" ref="inputIntegerType" />
-					<property name="validatorList">
-						<list>
-							<bean class="com.cannontech.web.input.validate.IntegerRangeValidator">
-								<property name="minValue" value="0" />
-								<property name="maxValue" value="50" />
-							</bean>
-						</list>
+					<property name="type">
+						<bean class="com.cannontech.web.input.type.DelegatingEnumeratedType">
+							<property name="enumeratedType" ref="inputIntegerType" />
+							<property name="optionList">
+								<list>
+									<bean class="com.cannontech.web.input.type.InputOption">
+										<property name="text" value="5x1 display (5 digits, 1kWHr resolution)" />
+										<property name="value" value="0" />
+									</bean>
+									<bean class="com.cannontech.web.input.type.InputOption">
+										<property name="text" value="4x1 display (4 digits, 1kWHr resolution)" />
+										<property name="value" value="1" />
+									</bean>
+									<bean class="com.cannontech.web.input.type.InputOption">
+										<property name="text" value="4x10 display (4 digits, 10kWHr resolution)" />
+										<property name="value" value="2" />
+									</bean>
+								</list>
+							</property>
+						</bean>
 					</property>
 					<property name="security" ref="configEditSecurity" />
 				</bean>
+				<bean class="com.cannontech.web.input.InputBase">
+					<property name="displayName" value="LCD Segment Test" />
+					<property name="field" value="lcdSegmentTest" />
+					<property name="description">
+						<value>
+							Set if LCD Segment test required
+						</value>
+					</property>
+					<property name="type" ref="inputBooleanType" />
+					<property name="security" ref="configEditSecurity" />
+				</bean>
+				<bean class="com.cannontech.web.input.InputBase">
+					<property name="displayName" value="LCD Segment Test time" />
+					<property name="field" value="lcdSegmentTestTime" />
+					<property name="description">
+						<value>
+							Set if LCD Segment test is seven seconds, clear for 1 second
+						</value>
+					</property>
+					<property name="type" ref="inputBooleanType" />
+					<property name="security" ref="configEditSecurity" />
+				</bean>
+				<bean class="com.cannontech.web.input.InputBase">
+					<property name="displayName" value="LCD Error Display Enabled" />
+					<property name="field" value="lcdErrorDisplay" />
+					<property name="description">
+						<value>
+							Set if LCD Error Display Enabled, clear for disabled
+						</value>
+					</property>
+					<property name="type" ref="inputBooleanType" />
+					<property name="security" ref="configEditSecurity" />
+				</bean>
+				<!-- END Centron Parameters Byte -->
+				
 				<bean class="com.cannontech.web.input.InputBase">
 					<property name="displayName" value="Transformer Ratio" />
 					<property name="field" value="transformerRatio" />

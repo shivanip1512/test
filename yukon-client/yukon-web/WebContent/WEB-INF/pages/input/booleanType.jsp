@@ -5,4 +5,5 @@
 <spring:bind path="${input.field}">
 	<ct:inputName input="${input}" error="${status.error}" />
 	<input type="checkbox" name="${status.expression}" value="true" <c:if test="${status.value}">checked</c:if>>
+	<input type="hidden" value="1" name="_${status.expression}"/>
 </spring:bind>

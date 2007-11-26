@@ -13,7 +13,7 @@ public abstract class BaseEnumeratedType<T> implements InputType<T> {
 
     private String renderer = "enumeratedType.jsp";
 
-    public abstract List<String> getOptionList();
+    public abstract List<InputOption> getOptionList();
 
     public BaseEnumeratedType() {
         super();
@@ -33,10 +33,20 @@ public abstract class BaseEnumeratedType<T> implements InputType<T> {
             public void validate(String path, String displayName, Object value, Errors errors) {
 
                 String valueString = value.toString();
-                if (!getOptionList().contains(valueString)) {
-                    errors.rejectValue(path, "error.invalidOption", new Object[] { displayName,
-                            value }, "The value is not a valid option.");
+
+                List<InputOption> optionList = getOptionList();
+                for (InputOption option : optionList) {
+                    if (valueString.equalsIgnoreCase(option.getValue())) {
+                        // is valid option - in option list
+                        return;
+                    }
                 }
+                
+                // Not in the option list
+                errors.rejectValue(path,
+                                   "error.invalidOption",
+                                   new Object[] { displayName, value },
+                                   "The value is not a valid option.");
             }
 
             public String getDescription() {
