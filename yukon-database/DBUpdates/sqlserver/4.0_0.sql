@@ -959,6 +959,11 @@ delete yukonuserrole where rolepropertyID = -10308;
 update yukonroleproperty set keyName = 'Control disconnect', description = 'Allow the ability to control a disconnect to a device' where RolePropertyID = -10309;
 /* End YUK-4733 */
 
+/* Start YUK-2924 */
+update command set label = 'Configure LEDS (load, test, report)' where commandid = -49;
+update command set label = 'Configure LEDS (load, test, report)' where commandid = -97;
+/* End YUK-2924 */
+
 /**************************************************************/
 /* VERSION INFO                                               */
 /*   Automatically gets inserted from build script            */

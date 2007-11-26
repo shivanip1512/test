@@ -1,7 +1,7 @@
 /*==============================================================*/
 /* Database name:  YukonDatabase                                */
 /* DBMS name:      ORACLE Version 9i                            */
-/* Created on:     11/26/2007 4:25:49 PM                        */
+/* Created on:     11/26/2007 4:38:37 PM                        */
 /*==============================================================*/
 
 
@@ -1981,7 +1981,8 @@ insert into command values(-45, 'control cycle terminate', 'Terminate Cycle', 'V
 insert into command values(-46, 'putconfig service out', 'Set to Out-Of-Service', 'Versacom Group');
 insert into command values(-47, 'putconfig service in', 'Set to In-Service', 'Versacom Group');
 insert into command values(-48, 'putstatus reset r1 r2 r3 cl', 'Reset All Counters', 'Versacom Group');
-insert into command values(-49, 'putconfig led yyy', 'Configure LEDS (report, test, load)', 'Versacom Group');
+insert into command values(-49, 'putconfig led yyy', 'Configure LEDS (load, test, report)', 'Versacom Group');
+
 /* TCU-BASE*/
 /* insert into command values(-50, 'loop', '1 TCU Loop', 'All TCUs'); */
 /* insert into command values(-51, 'loop 5', '5 TCU Loops', 'All TCUs'); */
@@ -2038,7 +2039,7 @@ insert into command values(-93, 'control cycle terminate relay 2', 'Terminate Cy
 insert into command values(-94, 'control cycle terminate relay 3', 'Terminate Cycle Relay 3', 'All LCRs');
 insert into command values(-95, 'putconfig service out', 'Set to Out-of-Service', 'All LCRs');
 insert into command values(-96, 'putconfig service in', 'Set to In-Service', 'All LCRs');
-insert into command values(-97, 'putconfig led yyy', 'Configure LEDS (report, test, load)', 'All LCRs');
+insert into command values(-97, 'putconfig led yyy', 'Configure LEDS (load, test, report)', 'All LCRs'); 
 
 insert into command values(-98, 'putconfig emetcon disconnect', 'Upload Disconnect Address', 'MCT-410IL');
 insert into command values(-99, 'getconfig disconnect', 'Read Disconnect Address/Status', 'MCT-410IL');
