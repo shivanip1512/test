@@ -1,7 +1,7 @@
 /*==============================================================*/
 /* Database name:  YukonDatabase                                */
 /* DBMS name:      Microsoft SQL Server 2000                    */
-/* Created on:     11/20/2007 1:56:33 PM                        */
+/* Created on:     11/26/2007 9:33:18 AM                        */
 /*==============================================================*/
 
 
@@ -2404,31 +2404,9 @@ go
 /*==============================================================*/
 create table CCSTRATEGYTIMEOFDAY (
    StrategyID           numeric              not null,
-   HourZero             numeric              not null,
-   HourOne              numeric              not null,
-   HourTwo              numeric              not null,
-   HourThree            numeric              not null,
-   HourFour             numeric              not null,
-   HourFive             numeric              not null,
-   HourSix              numeric              not null,
-   HourSeven            numeric              not null,
-   HourEight            numeric              not null,
-   HourNine             numeric              not null,
-   HourTen              numeric              not null,
-   HourEleven           numeric              not null,
-   HourTwelve           numeric              not null,
-   HourThirteen         numeric              not null,
-   HourFourteen         numeric              not null,
-   HourFifteen          numeric              not null,
-   HourSixteen          numeric              not null,
-   HourSeventeen        numeric              not null,
-   HourEighteen         numeric              not null,
-   HourNineteen         numeric              not null,
-   HourTwenty           numeric              not null,
-   HourTwentyOne        numeric              not null,
-   HourTwentyTwo        numeric              not null,
-   HourTwentyThree      numeric              not null,
-   constraint PK_STRAT_TOD primary key nonclustered (StrategyID)
+   StartTimeSeconds     numeric              not null,
+   PercentClose         numeric              not null,
+   constraint PK_STRAT_TOD primary key (StrategyID, StartTimeSeconds)
 )
 go
 

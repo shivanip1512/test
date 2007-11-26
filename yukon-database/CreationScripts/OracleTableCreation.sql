@@ -1,7 +1,7 @@
 /*==============================================================*/
 /* Database name:  YukonDatabase                                */
 /* DBMS name:      ORACLE Version 9i                            */
-/* Created on:     11/20/2007 1:55:04 PM                        */
+/* Created on:     11/26/2007 9:34:15 AM                        */
 /*==============================================================*/
 
 
@@ -1341,31 +1341,9 @@ go
 /*==============================================================*/
 create table CCSTRATEGYTIMEOFDAY  (
    StrategyID           NUMBER                          not null,
-   HourZero             NUMBER                          not null,
-   HourOne              NUMBER                          not null,
-   HourTwo              NUMBER                          not null,
-   HourThree            NUMBER                          not null,
-   HourFour             NUMBER                          not null,
-   HourFive             NUMBER                          not null,
-   HourSix              NUMBER                          not null,
-   HourSeven            NUMBER                          not null,
-   HourEight            NUMBER                          not null,
-   HourNine             NUMBER                          not null,
-   HourTen              NUMBER                          not null,
-   HourEleven           NUMBER                          not null,
-   HourTwelve           NUMBER                          not null,
-   HourThirteen         NUMBER                          not null,
-   HourFourteen         NUMBER                          not null,
-   HourFifteen          NUMBER                          not null,
-   HourSixteen          NUMBER                          not null,
-   HourSeventeen        NUMBER                          not null,
-   HourEighteen         NUMBER                          not null,
-   HourNineteen         NUMBER                          not null,
-   HourTwenty           NUMBER                          not null,
-   HourTwentyOne        NUMBER                          not null,
-   HourTwentyTwo        NUMBER                          not null,
-   HourTwentyThree      NUMBER                          not null,
-   constraint PK_STRAT_TOD primary key (StrategyID)
+   StartTimeSeconds     NUMBER                          not null,
+   PercentClose         NUMBER                          not null,
+   constraint PK_STRAT_TOD primary key (StrategyID, StartTimeSeconds)
 )
 ;
 

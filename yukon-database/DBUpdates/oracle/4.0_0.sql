@@ -476,6 +476,221 @@ alter table lmthermostatgear add RampRate float;
 update lmthermostatgear set RampRate = 0;
 alter table lmthermostatgear modify RampRate not null;
 
+/* Start YUK-4707 */
+create table CAPCONTROLSUBSTATION (
+   SubstationID         numeric              not null,
+   constraint PK_CAPCONTROLSUBSTATION primary key nonclustered (SubstationID)
+);
+
+create table dynamicccsubstation
+(
+	substationid numeric not null,
+	additionalflags varchar(20) not null,
+	saenabledid numeric not null
+);
+
+
+create table ccsubstationsubbuslist
+(
+	substationid numeric not null,
+	substationbusid numeric not null,
+	displayorder numeric not null
+);
+
+select
+	paoname as SubBusName,
+	paobjectid as subbusId,
+	paoname as CCsubStationName
+into
+	 #mySubstation
+from
+	yukonpaobject
+where
+	type = 'CCSUBBUS';
+
+
+declare @ccsubstationname varchar(60);
+
+declare substation_curs cursor for (select distinct(CCsubStationName) from #mySubstation);
+open substation_curs;
+fetch substation_curs into @ccsubstationname;
+
+while (@@fetch_status = 0)
+	begin
+		insert into yukonpaobject (paobjectid, category, paoclass, paoname, type, description, disableflag, paostatistics)
+		select 
+			Max(paobjectid) + 1,
+			'CAPCONTROL',
+			'CAPCONTROL',
+			@ccsubstationname,
+			'CCSUBSTATION',
+			'(none)',
+			'N',
+			'-----' 
+		from 
+			yukonpaobject;
+		fetch substation_curs into @ccsubstationname;
+	end
+close substation_curs;
+deallocate substation_curs;
+
+select 
+	s.*
+	, yp.paobjectid as Substationid
+	, yp1.paoname as areaname
+	, yp1.paobjectid as areaId
+into 
+	#mySubstation2
+from
+	yukonpaobject yp
+	, #mySubstation s
+	, yukonpaobject yp1
+	, ccsubareaassignment sa
+where
+	yp.paoname = s.ccsubstationname
+	and yp.type = 'CCSUBSTATION'
+	and s.subbusid = sa.substationbusid
+	and sa.areaid = yp1.paobjectid;
+
+select 
+	s.*
+	, yp.paobjectid as Substationid
+	, yp1.paoname as areaname
+	, yp1.paobjectid as areaId
+into 
+	#mySubstation3
+from
+	yukonpaobject yp
+	, #mySubstation s
+	, yukonpaobject yp1
+	, ccsubspecialareaassignment sa
+where
+	yp.paoname = s.ccsubstationname
+	and yp.type = 'CCSUBSTATION'
+	and s.subbusid = sa.substationbusid
+	and sa.areaid = yp1.paobjectid;
+
+select 
+	*
+into
+	#ccsubareaassignment_backup
+from 
+	ccsubareaassignment;
+
+select 
+	*
+into
+	#ccsubspecialareaassignment_backup
+from 
+	ccsubspecialareaassignment;
+
+alter table ccsubareaassignment drop constraint FK_CCSUBARE_CAPSUBAREAASSGN;
+alter table CCSUBAREAASSIGNMENT
+   add constraint FK_CCSUBARE_CAPSUBAREAASSGN foreign key (SubstationBusID)
+      references CAPCONTROLSUBSTATION (SubstationID);
+
+update 
+	ccsubareaassignment
+set 
+	ccsubareaassignment.substationbusid=#mySubstation2.substationid
+from 
+	ccsubareaassignment
+	, #mySubstation2
+where 
+	ccsubareaassignment.substationbusid = #mySubstation2.subbusid;
+
+update 
+	ccsubspecialareaassignment
+set 
+	ccsubspecialareaassignment.substationbusid = #mySubstation3.substationid
+from 
+	ccsubspecialareaassignment
+	, #mySubstation3
+where 
+	ccsubspecialareaassignment.substationbusid = #mySubstation3.subbusid;
+
+
+declare @ccsubstationid numeric;
+declare @lastsubstationid numeric;
+declare @ccsubbusid numeric;
+declare @index numeric;
+
+declare substation_curs cursor for (select subbusid, substationid from #mySubstation2);
+open substation_curs;
+fetch substation_curs into @ccsubbusid, @ccsubstationid;
+set @index = 1;
+while (@@fetch_status = 0)
+    begin
+		insert into ccsubstationsubbuslist (substationid,substationbusid, displayorder)
+		select 
+			@ccsubstationid
+			, @ccsubbusid
+			, @index ;
+		set @lastsubstationid = @ccsubstationid;
+		fetch substation_curs into @ccsubbusid, @ccsubstationid;
+		if (@lastsubstationid = @ccsubstationid)
+			set @index = @index + 1;
+		else
+			set @index = 1;
+	end
+
+close substation_curs;
+deallocate substation_curs;
+
+insert into capcontrolsubstation (substationid) select paobjectid from yukonpaobject where type = 'CCSUBSTATION';
+
+drop table #mySubstation;
+drop table #mySubstation2;
+drop table #mySubstation3;
+drop table #ccsubareaassignment_backup;
+drop table #ccsubspecialareaassignment_backup;
+
+alter table CAPCONTROLSUBSTATION
+   add constraint FK_CAPCONTR_REFERENCE_YUKONPAO foreign key (SubstationID)
+      references YukonPAObject (PAObjectID)
+         on update cascade on delete cascade;
+go
+
+alter table CCSUBSPECIALAREAASSIGNMENT
+   add constraint FK_CCSUBSPE_REFERENCE_CAPCONTR foreign key (AreaID)
+      references CAPCONTROLSPECIALAREA (AreaID);
+go
+
+alter table CCSUBAREAASSIGNMENT
+   add constraint FK_CCSUBARE_CAPSUBAREAASSGN foreign key (SubstationBusID)
+      references CAPCONTROLSUBSTATION (SubstationID)
+         on delete cascade;
+go
+
+alter table CCSUBSPECIALAREAASSIGNMENT
+   add constraint FK_CCSUBSPE_CAPCONTR2 foreign key (SubstationBusID)
+      references CAPCONTROLSUBSTATION (SubstationID)
+         on update cascade on delete cascade;
+go
+
+alter table CAPCONTROLSPECIALAREA
+   add constraint FK_CAPCONTR_YUKONPAO2 foreign key (AreaID)
+      references YukonPAObject (PAObjectID);
+go
+
+ALTER TABLE CCSUBSTATIONSUBBUSLIST 
+	ADD  CONSTRAINT PK_CCSUBSTATIONSUBBUSLIST PRIMARY KEY CLUSTERED 
+(
+	SubStationID ASC,
+	SubStationBusID ASC
+);
+
+alter table CCSUBSTATIONSUBBUSLIST
+   add constraint FK_CCSUBSTA_CAPCONTR foreign key (SubStationID)
+      references CAPCONTROLSUBSTATION (SubstationID);
+go
+
+alter table CCSUBSTATIONSUBBUSLIST
+   add constraint FK_CCSUBSTA_REFERENCE_CAPCONTR foreign key (SubStationBusID)
+      references CAPCONTROLSUBSTATIONBUS (SubstationBusID);
+go
+/* End YUK-4707 */
+
 create or replace view CCINVENTORY_VIEW(Region, SubName, FeederName, subId, substationid, fdrId, CBCName, cbcId, capbankname, bankId, CapBankSize, Sequence, ControlStatus, SWMfgr, SWType, ControlType, Protocol, IPADDRESS, SlaveAddress, LAT, LON, DriveDirection, OpCenter, TA) as
 SELECT yp4.paoname AS Region, yp3.PAOName AS SubName, yp2.PAOName AS FeederName, yp3.PAObjectID AS subId, ssl.substationid AS substationid, yp2.PAObjectID AS fdrId, 
                       yp.PAOName AS CBCName, yp.PAObjectID AS cbcId, yp1.PAOName AS capBankName, yp1.PAObjectID AS bankId, cb.BANKSIZE AS CapBankSize, 
@@ -662,45 +877,22 @@ alter table JOBSTATUS
 
 /* End YUK-4730 */
 
-/* Begin YUK-4716 */
+/* Begin YUK-4771 (formerly YUK-4716) */
 drop table CCSTRATEGYTIMEOFDAY cascade constraints;
 
 /*==============================================================*/
 /* Table: CCSTRATEGYTIMEOFDAY                                   */
 /*==============================================================*/
 create table CCSTRATEGYTIMEOFDAY  (
-   StrategyID           number                          not null,
-   HourZero             number                          not null,
-   HourOne              NUMBER                          not null,
-   HourTwo              number                          not null,
-   HourThree            number                          not null,
-   HourFour             number                          not null,
-   HourFive             number                          not null,
-   HourSix              number                          not null,
-   HourSeven            number                          not null,
-   HourEight            number                          not null,
-   HourNine             number                          not null,
-   HourTen              number                          not null,
-   HourEleven           number                          not null,
-   HourTwelve           number                          not null,
-   HourThirteen         number                          not null,
-   HourFourteen         number                          not null,
-   HourFifteen          number                          not null,
-   HourSixteen          number                          not null,
-   HourSeventeen        number                          not null,
-   HourEighteen         number                          not null,
-   HourNineteen         number                          not null,
-   HourTwenty           number                          not null,
-   HourTwentyOne        number                          not null,
-   HourTwentyTwo        number                          not null,
-   HourTwentyThree      number                          not null,
-   constraint PK_STRAT_TOD primary key (StrategyID)
+   StrategyID           NUMBER                          not null,
+   StartTimeSeconds     NUMBER                          not null,
+   PercentClose         NUMBER                          not null,
+   constraint PK_STRAT_TOD primary key (StrategyID, StartTimeSeconds)
 );
 
 alter table CCSTRATEGYTIMEOFDAY
    add constraint FK_STRAT_TOD_CCSTRAT foreign key (StrategyID)
       references CapControlStrategy (StrategyID);
-
 /* End YUK-4716 */
 
 /* Start YUK-4763 */
@@ -717,7 +909,7 @@ alter table DynamicCCSubstationbus alter column LastWattPointTime datetime not n
 alter table DynamicCCSubstationbus add LastVoltPointTime datetime;
 update DynamicCCSubstationbus set LastVoltPointTime = '1990-01-01 00:00:00';
 alter table DynamicCCSubstationbus alter column LastVoltPointTime datetime not null;
-/* End YUK-4763*/
+/* End YUK-4772*/
 
 /**************************************************************/
 /* VERSION INFO                                               */
