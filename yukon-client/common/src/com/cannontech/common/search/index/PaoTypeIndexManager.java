@@ -24,7 +24,7 @@ public class PaoTypeIndexManager extends AbstractIndexManager {
     }
 
     protected int getIndexVersion() {
-        return 2;
+        return 3;
     }
 
     protected Analyzer getAnalyzer() {
@@ -67,7 +67,7 @@ public class PaoTypeIndexManager extends AbstractIndexManager {
 
         String isDeviceVal = rs.getString("deviceId");
         String isDevice = new Boolean(!StringUtils.isEmpty(isDeviceVal)).toString();
-        doc.add(new Field("isDevice", isDevice, Field.Store.YES, Field.Index.UN_TOKENIZED));
+        doc.add(new Field("isDevice", isDevice, Field.Store.NO, Field.Index.UN_TOKENIZED));
 
         return doc;
     }
