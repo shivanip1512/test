@@ -1,9 +1,11 @@
 package com.cannontech.common.chart.service.impl;
 
 import java.text.DecimalFormat;
+import java.text.Format;
 import java.text.NumberFormat;
 import java.text.SimpleDateFormat;
 import java.util.ArrayList;
+import java.util.Calendar;
 import java.util.Date;
 import java.util.HashSet;
 import java.util.List;
@@ -11,9 +13,9 @@ import java.util.Set;
 
 import com.cannontech.common.chart.model.ChartInterval;
 import com.cannontech.common.chart.model.ChartValue;
+import com.cannontech.common.chart.model.ConverterType;
 import com.cannontech.common.chart.model.Graph;
 import com.cannontech.common.chart.model.GraphType;
-import com.cannontech.common.chart.model.ConverterType;
 import com.cannontech.common.chart.service.ChartDataConverter;
 import com.cannontech.common.chart.service.ChartService;
 import com.cannontech.core.dao.PointDao;
@@ -105,17 +107,21 @@ public class ChartServiceImpl implements ChartService {
     public List<ChartValue> getXAxisData(Date startDate, Date stopDate, ChartInterval interval) {
 
         Date currDate = interval.roundDownToIntervalUnit(startDate);
+        Calendar currCal = Calendar.getInstance();
+        currCal.setTime(currDate);
+        
         List<ChartValue> xAxisData = new ArrayList<ChartValue>();
-        while (stopDate.compareTo(currDate) >= 0) {
+        Format format = interval.getFormat();
+        while (stopDate.compareTo(currCal.getTime()) >= 0) {
 
             ChartValue<Date> chartValue = new ChartValue<Date>();
-            chartValue.setId(currDate.getTime());
-            chartValue.setValue(currDate);
-            chartValue.setFormat(interval.getFormat());
+            chartValue.setId(currCal.getTimeInMillis());
+            chartValue.setValue(currCal.getTime());
+            chartValue.setFormat(format);
 
             xAxisData.add(chartValue);
 
-            currDate = interval.increment(currDate);
+            interval.increment(currCal);
         }
 
         return xAxisData;
@@ -135,7 +141,12 @@ public class ChartServiceImpl implements ChartService {
 
         // Round the start date down to the nearest interval
         Date currDate = interval.roundDownToIntervalUnit(startDate);
-        Date nextDate = interval.increment(currDate);
+        
+        // create calendar to make increment more efficient
+        Calendar nextCal = Calendar.getInstance();
+        nextCal.setTime(currDate);
+        interval.increment(nextCal);
+        //Date nextDate = interval.increment(currDate);
 
         // Iterate through each of the chart values
         for (int position = 0; position < chartData.size();) {
@@ -143,14 +154,14 @@ public class ChartServiceImpl implements ChartService {
             ChartValue<Double> currValue = chartData.get(position);
 
             // Move forward to correct time interval for the current value
-            while (!(currValue.getId() >= currDate.getTime() && currValue.getId() < nextDate.getTime())) {
-                currDate = nextDate;
-                nextDate = interval.increment(nextDate);
+            while (!(currValue.getId() >= currDate.getTime() && currValue.getId() < nextCal.getTimeInMillis())) {
+                currDate = nextCal.getTime();
+                interval.increment(nextCal);
             }
 
             // Find all of the values in the current time interval
             Set<ChartValue<Double>> intervalValues = new HashSet<ChartValue<Double>>();
-            while (currValue.getId() < nextDate.getTime()) {
+            while (currValue.getId() < nextCal.getTimeInMillis()) {
                 intervalValues.add(currValue);
 
                 if (++position < chartData.size()) {

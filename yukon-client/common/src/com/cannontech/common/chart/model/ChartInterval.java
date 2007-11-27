@@ -13,15 +13,10 @@ import java.util.GregorianCalendar;
 public enum ChartInterval {
 
     MONTH {
-        public Date increment(Date date) {
-
-            Calendar cal = new GregorianCalendar();
-            cal.setTime(date);
+        public void increment(Calendar cal) {
             cal.add(Calendar.MONTH, 1);
-
-            return new Date(cal.getTimeInMillis());
         }
-
+        
         public Date roundDownToIntervalUnit(Date date) {
 
             Calendar cal = new GregorianCalendar();
@@ -38,14 +33,8 @@ public enum ChartInterval {
 
     },
     DAY {
-        public Date increment(Date date) {
-
-            Calendar cal = new GregorianCalendar();
-            cal.setTime(date);
+        public void increment(Calendar cal) {
             cal.add(Calendar.DATE, 1);
-
-            return new Date(cal.getTimeInMillis());
-
         }
 
         public Date roundDownToIntervalUnit(Date date) {
@@ -63,14 +52,8 @@ public enum ChartInterval {
 
     },
     DAY_MIDNIGHT {
-        public Date increment(Date date) {
-
-            Calendar cal = new GregorianCalendar();
-            cal.setTime(date);
+        public void increment(Calendar cal) {
             cal.add(Calendar.DATE, 1);
-
-            return new Date(cal.getTimeInMillis());
-
         }
 
         public Date roundDownToIntervalUnit(Date date) {
@@ -100,13 +83,15 @@ public enum ChartInterval {
     },
     HOUR {
         public Date increment(Date date) {
+            long time = date.getTime();
+            time += (60 * 60 * 1000);
 
-            Calendar cal = new GregorianCalendar();
-            cal.setTime(date);
+            return new Date(time);
+        }
+        
+        @Override
+        public void increment(Calendar cal) {
             cal.add(Calendar.HOUR_OF_DAY, 1);
-
-            return new Date(cal.getTimeInMillis());
-
         }
 
         public Date roundDownToIntervalUnit(Date date) {
@@ -124,15 +109,17 @@ public enum ChartInterval {
     },
     MINUTE {
         public Date increment(Date date) {
+            long time = date.getTime();
+            time += (60 * 1000);
 
-            Calendar cal = new GregorianCalendar();
-            cal.setTime(date);
+            return new Date(time);
+         }
+
+        public void increment(Calendar cal) {
+            
             cal.add(Calendar.MINUTE, 1);
-
-            return new Date(cal.getTimeInMillis());
-
         }
-
+        
         public Date roundDownToIntervalUnit(Date date) {
 
             Calendar cal = new GregorianCalendar();
@@ -147,15 +134,16 @@ public enum ChartInterval {
     },
     FIFTEENSECOND {
         public Date increment(Date date) {
+            long time = date.getTime();
+            time += (15 * 1000);
 
-            Calendar cal = new GregorianCalendar();
-            cal.setTime(date);
-            cal.add(Calendar.SECOND, 15);
-
-            return cal.getTime();
-
+            return new Date(time);
         }
 
+        public void increment(Calendar cal) {
+            cal.add(Calendar.SECOND, 15);
+        }
+        
         public Date roundDownToIntervalUnit(Date date) {
 
             Calendar cal = new GregorianCalendar();
@@ -170,14 +158,8 @@ public enum ChartInterval {
 
     }, 
     WEEK {
-        public Date increment(Date date) {
-
-            Calendar cal = new GregorianCalendar();
-            cal.setTime(date);
+        public void increment(Calendar cal) {
             cal.add(Calendar.DATE, 7);
-
-            return cal.getTime();
-
         }
 
         public Date roundDownToIntervalUnit(Date date) {
@@ -198,13 +180,14 @@ public enum ChartInterval {
     
     FIVEMINUTE {
         public Date increment(Date date) {
+            long time = date.getTime();
+            time += (5 * 60 * 1000);
 
-            Calendar cal = new GregorianCalendar();
-            cal.setTime(date);
+            return new Date(time);
+        }
+        
+        public void increment(Calendar cal) {
             cal.add(Calendar.MINUTE, 5);
-
-            return cal.getTime();
-
         }
 
         public Date roundDownToIntervalUnit(Date date) {
@@ -227,7 +210,21 @@ public enum ChartInterval {
      * @param date - Date to increment
      * @return A new date whose time is the old date plus the interval
      */
-    public abstract Date increment(Date date);
+    public Date increment(Date date) {
+        Calendar cal = Calendar.getInstance();
+        cal.setTime(date);
+        increment(cal);
+        Date time = cal.getTime();
+        return time;
+    }
+    
+    /**
+     * Method to add the given chart interval to the date.
+     * (Should be faster than passing in a date.)
+     * @param date
+     * @return
+     */
+    public abstract void increment(Calendar date);
 
     /**
      * Method to round a date down to the interval unit. If the interval is DAY -
