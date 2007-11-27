@@ -39,13 +39,11 @@ public class CsrSearchDaoImpl implements CsrSearchDao {
         String sqlCount = "SELECT                                               " + 
         "       count(*)                                                        " + 
         "   FROM                                                                " + 
-        "       device                                                          " +
+        "       devicemetergroup device                                                        " +
         "       JOIN yukonpaobject ypo                                          " + 
         "           ON device.deviceid = ypo.paobjectid                         " + 
         "       LEFT OUTER JOIN devicecarriersettings dcs                       " + 
         "           ON dcs.deviceid = ypo.paobjectid                            " + 
-        "       JOIN devicemetergroup dmg                                       " + 
-        "           ON dmg.deviceid = ypo.paobjectid                            " + 
         "       LEFT OUTER JOIN deviceroutes dr                                 " + 
         "           on ypo.paobjectid = dr.deviceid                             " +
         "       LEFT OUTER JOIN yukonpaobject rypo                              " +

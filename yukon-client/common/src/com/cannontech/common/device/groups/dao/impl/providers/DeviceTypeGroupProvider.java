@@ -35,10 +35,9 @@ public class DeviceTypeGroupProvider extends DeviceGroupProviderBase {
             // return devices that belong to this route
             SqlStatementBuilder sql = new SqlStatementBuilder();
             sql.append("SELECT ypo.paobjectid, ypo.type");
-            sql.append("FROM Device d");
+            sql.append("FROM DeviceMeterGroup d");
             sql.append("JOIN YukonPaObject ypo ON (d.deviceid = ypo.paobjectid)");
             sql.append("LEFT OUTER JOIN devicecarriersettings dcs ON (dcs.deviceid = ypo.paobjectid)");
-            sql.append("JOIN devicemetergroup dmg ON (dmg.deviceid = ypo.paobjectid)");
             sql.append("LEFT OUTER JOIN DeviceRoutes dr ON (d.deviceid = dr.deviceid)");
             sql.append("LEFT OUTER JOIN YukonPaObject rypo ON (dr.routeid = rypo.paobjectid)");
             sql.append("WHERE ypo.type = ?");
