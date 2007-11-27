@@ -35,12 +35,12 @@
 	CtiNavObject nav = (CtiNavObject) request.getSession(false).getAttribute(ServletUtil.NAVIGATE);
 	
 	//Setup return URL (Need to set the returnURL when loading this page)
-	String returnURL  = null;//ParamUtil.getString(request,"returnURL");
+	String returnURL = ParamUtil.getString(request,"returnURL");
 	
-	//if param not set
+	//if param not set lets default to something plausible
 	if( returnURL == null ){
-		returnURL  = nav.getPreviousPage();
-		//request.getParameterMap().put("returnURL",returnURL);
+		returnURL = nav.getPreviousPage();
+		request.getParameterMap().put("returnURL",returnURL);
 	}
 	
 	String currentURL = nav.getCurrentPage();

@@ -432,7 +432,7 @@ function createCapTagMenu (paoID) {
 		str += generateReasonSpan ((isStandalone == "true"), aloneCap.createName() + 'ReasonSpan', aloneReason);
 
 	//***********COMMENTS****************//
-	str+='<a href="/capcontrol/capbankcomments.jsp?capbankID=' + paoID + '"  ><font color="white"><B>Comments</B><\/font></a><\/><\/br>';
+	str+='<a href="/capcontrol/capbankcomments.jsp?capbankID=' + paoID + '&returnURL=' + window.location +'"  ><font color="white"><B>Comments</B><\/font></a><\/><\/br>';
 	str+='<font color="white">';
 	str+= generateCommentField("commentField_" + paoID, comments );	//str += generateReasonSpan ((isStandalone == "true"), aloneCap.createName() + 'ReasonSpan', aloneReason);
 	str+='</font>';
