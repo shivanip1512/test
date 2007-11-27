@@ -4,8 +4,6 @@ import java.sql.ResultSet;
 import java.sql.SQLException;
 import java.util.*;
 
-import org.springframework.dao.DataAccessException;
-
 import org.springframework.jdbc.core.simple.ParameterizedRowMapper;
 import org.springframework.jdbc.core.simple.SimpleJdbcTemplate;
 import org.springframework.transaction.annotation.Propagation;
@@ -13,6 +11,7 @@ import org.springframework.transaction.annotation.Transactional;
 
 import com.cannontech.cbc.dao.SubstationBusDao;
 import com.cannontech.cbc.model.SubstationBus;
+import com.cannontech.core.dao.NotFoundException;
 import com.cannontech.util.Validator;
 
 public class SubstationBusDaoImpl implements SubstationBusDao {
@@ -128,13 +127,9 @@ public class SubstationBusDaoImpl implements SubstationBusDao {
     }
 
     @Transactional(readOnly = true, propagation = Propagation.SUPPORTS)
-    public SubstationBus getById(int id) throws DataAccessException {
-        try {
-            List<SubstationBus> list = simpleJdbcTemplate.query(selectByIdSql, rowMapper, id);
-            return list.get(0);
-        } catch (DataAccessException e) {
-            return null;
-        }
+    public SubstationBus getById(int id) throws NotFoundException {
+        List<SubstationBus> list = simpleJdbcTemplate.query(selectByIdSql, rowMapper, id);
+        return list.get(0);
     }
     
     public List<Integer> getAllUnassignedBuses () {

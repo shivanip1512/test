@@ -4,8 +4,7 @@ import java.sql.ResultSet;
 import java.sql.SQLException;
 import java.util.List;
 
-import org.springframework.dao.DataAccessException;
-import org.springframework.dao.EmptyResultDataAccessException;
+
 import org.springframework.jdbc.core.simple.ParameterizedRowMapper;
 import org.springframework.jdbc.core.simple.SimpleJdbcTemplate;
 import org.springframework.transaction.annotation.Propagation;
@@ -13,8 +12,7 @@ import org.springframework.transaction.annotation.Transactional;
 
 import com.cannontech.cbc.dao.CapbankDao;
 import com.cannontech.cbc.model.Capbank;
-import com.cannontech.clientutils.CTILogger;
-import com.cannontech.common.util.CtiUtilities;
+import com.cannontech.core.dao.NotFoundException;
 import com.cannontech.util.Validator;
 
 public class CapbankDaoImpl implements CapbankDao {
@@ -119,17 +117,13 @@ public class CapbankDaoImpl implements CapbankDao {
     }
     
     @Transactional(readOnly = true, propagation = Propagation.SUPPORTS)
-    public Capbank getById(int id) throws DataAccessException {
-        try {
-            List<Capbank> list = simpleJdbcTemplate.query(selectByIdSql, rowMapper, id);
-            return list.get(0);
-        } catch (DataAccessException e) {
-            return null;
-        }
+    public Capbank getById(int id) throws NotFoundException {
+        List<Capbank> list = simpleJdbcTemplate.query(selectByIdSql, rowMapper, id);
+        return list.get(0);
     }
 
     /**
-     * This method returns all the CapBank IDs that are not assgined
+     * This method returns all the CapBank IDs that are not assigned
      *  to a Feeder.
      */
     public List<Integer> getUnassignedCapBankIds(){
@@ -148,19 +142,12 @@ public class CapbankDaoImpl implements CapbankDao {
         return listmap;
     }
     /**
-     * This method returns the Feeder ID that owns the given capbank ID.
-     * If no parent is found, CtiUtilities.NONE_ZERO_ID is returned.
+     * This method returns the Feeder ID that owns the given cap bank ID.
      */
-    public int getParentFeederId( int capBankID )
+    public int getParentFeederId( int capBankID ) throws NotFoundException
     {
         String sql = "SELECT FeederID FROM CCFeederBankList where DeviceID = ?";
-        Integer i = CtiUtilities.NONE_ZERO_ID;
-        try{
-            i = simpleJdbcTemplate.queryForInt(sql,capBankID);
-        }catch( EmptyResultDataAccessException e ){
-            CTILogger.warn("Capbank orphaned",e);
-        }
-        return i;
+        return simpleJdbcTemplate.queryForInt(sql,capBankID);
     }   
     
     public boolean isSwitchedBank( Integer paoID ){

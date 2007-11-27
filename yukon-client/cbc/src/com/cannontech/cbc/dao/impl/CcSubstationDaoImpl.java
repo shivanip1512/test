@@ -71,7 +71,7 @@ public class CcSubstationDaoImpl implements CcSubstationDao {
     public Integer getSubstationIdByName(String name) {
 
         String query = "select substationid from CapControlSubstation, yukonpaobject";
-        query += "where substationid = paobjectid and paoname like "  + "'" +name+ "'";
+        query += "where substationid = paobjectid and paoname like "  + "'?'";
 
         Integer i = simpleJdbcTemplate.queryForInt(query, name);
         

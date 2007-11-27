@@ -4,8 +4,6 @@ import java.sql.ResultSet;
 import java.sql.SQLException;
 import java.util.List;
 
-import org.springframework.dao.DataAccessException;
-import org.springframework.dao.EmptyResultDataAccessException;
 import org.springframework.jdbc.core.simple.ParameterizedRowMapper;
 import org.springframework.jdbc.core.simple.SimpleJdbcTemplate;
 import org.springframework.transaction.annotation.Propagation;
@@ -13,8 +11,7 @@ import org.springframework.transaction.annotation.Transactional;
 
 import com.cannontech.cbc.dao.FeederDao;
 import com.cannontech.cbc.model.Feeder;
-import com.cannontech.clientutils.CTILogger;
-import com.cannontech.common.util.CtiUtilities;
+import com.cannontech.core.dao.NotFoundException;
 import com.cannontech.util.Validator;
 
 public class FeederDaoImpl implements FeederDao {
@@ -89,15 +86,13 @@ public class FeederDaoImpl implements FeederDao {
         boolean result = (rowsAffected == 1);
         return result;
     }
+    
     @Transactional(readOnly = true, propagation = Propagation.SUPPORTS)
-    public Feeder getById(int id) throws DataAccessException {
-        try {
-            List<Feeder> list = simpleJdbcTemplate.query(selectByIdSql, rowMapper, id);
-            return list.get(0);
-        } catch (DataAccessException e) {
-            return null;
-        }
+    public Feeder getById(int id) throws NotFoundException {
+        List<Feeder> list = simpleJdbcTemplate.query(selectByIdSql, rowMapper, id);
+        return list.get(0);
     }
+    
     @Transactional(readOnly = false, propagation = Propagation.REQUIRED)
     public boolean remove(Feeder feeder) {
         int rowsAffected = simpleJdbcTemplate.update(removeSql,feeder.getId() );
@@ -142,16 +137,11 @@ public class FeederDaoImpl implements FeederDao {
      * This method returns the SubBus ID that owns the given feeder ID.
      * If no parent is found, CtiUtilities.NONE_ZERO_ID is returned.
      */
-    public int getParentSubBusID( int feederID ) {
+    public int getParentSubBusID( int feederID ) throws NotFoundException{
     
         String sql = "SELECT SubStationBusID FROM CCFeederSubAssignment where FeederID = ?"; 
-        Integer i = CtiUtilities.NONE_ZERO_ID;
-        try{
-            i = simpleJdbcTemplate.queryForInt(sql,feederID);
-        }catch( EmptyResultDataAccessException e ){
-            CTILogger.warn("Orphaned Feeder",e);
-        }
-        return i;
+
+        return simpleJdbcTemplate.queryForInt(sql,feederID);
     }
 
 }

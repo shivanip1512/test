@@ -1,5 +1,8 @@
 package com.cannontech.cbc.oneline.model.cap;
 
+import java.util.List;
+
+import com.cannontech.cbc.dao.CapbankCommentDao;
 import com.cannontech.cbc.oneline.elements.HiddenTextElement;
 import com.cannontech.cbc.oneline.model.HiddenStates;
 import com.cannontech.cbc.oneline.model.OnelineObject;
@@ -8,6 +11,7 @@ import com.cannontech.cbc.oneline.tag.OnelineTags;
 import com.cannontech.cbc.util.CBCUtils;
 import com.cannontech.core.dao.DaoFactory;
 import com.cannontech.database.data.lite.LiteYukonPAObject;
+import com.cannontech.spring.YukonSpringHook;
 import com.loox.jloox.LxAbstractView;
 import com.loox.jloox.LxGraph;
 
@@ -62,6 +66,25 @@ public class CapBankHiddenStates extends LxAbstractView implements HiddenStates 
         boolean isTwoWay = CBCUtils.isTwoWay( lite );
         stateInfo.addProperty("scanOptionDis", "" + !isTwoWay);
 
+        /*Start*************************/
+            //Adding The last 5 comments to the Pop-up.
+        CapbankCommentDao ccDao = (CapbankCommentDao) YukonSpringHook.getBean("capbankCommentDao");
+        List<String> lastFive = ccDao.getLastFiveByPaoId( parent.getPaoId() );
+        
+        
+        
+        String fiveToAdd = "";
+        for( String str : lastFive )
+        {
+            //TODO going to want to use a delimeter and escapes... later.
+            //TODO If more than ...  30 characters replace the rest with ...
+            fiveToAdd += str + ";";
+        }
+        
+        
+        stateInfo.addProperty("capbankComments", fiveToAdd);
+        /*End*************************/
+        
         graph.add(stateInfo);
 
     }

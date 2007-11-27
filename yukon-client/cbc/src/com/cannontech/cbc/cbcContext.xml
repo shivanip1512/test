@@ -23,6 +23,11 @@
     <property name="simpleJdbcTemplate" ref="simpleJdbcTemplate"/>
   </bean>
   
+  <bean id="capbankCommentDao" class="com.cannontech.cbc.dao.impl.CapbankCommentDaoImpl">
+    <property name="nextValueHelper" ref="nextValueHelper"/>
+    <property name="simpleJdbcTemplate" ref="simpleJdbcTemplate"/>
+  </bean>
+  
   <bean id="cbcCache" class="com.cannontech.cbc.cache.impl.CapControlCacheImpl" init-method="initialize" >
   	  <property name="defCapControlConn" ref="cbcConnection"/>
   	  <property name="refreshTimer" ref="globalScheduledExecutor"/>
