@@ -51,8 +51,8 @@ public class LCConnectionServlet extends ErrorAwareInitializingServlet implement
 	private LoadControlClientConnection conn = null;
 	private com.cannontech.web.loadcontrol.LoadcontrolCache cache = null;
     
-    private DateFormattingService dateFormattingService = (DateFormattingService) YukonSpringHook.getBean("dateFormattingService");
-    private AuthDao authDao = (AuthDao) YukonSpringHook.getBean("authDao");
+    private DateFormattingService dateFormattingService = null;
+    private AuthDao authDao = null;
 
 /**
  * Insert the method's description here.
@@ -95,15 +95,15 @@ public void doInit(ServletConfig config) throws ServletException {
 	String lcHost = "127.0.0.1";
 	int lcPort = 1920;
 
-	try {
-		lcHost = DaoFactory.getRoleDao().getGlobalPropertyValue( SystemRole.LOADCONTROL_MACHINE );
+    dateFormattingService = YukonSpringHook.getBean("dateFormattingService", DateFormattingService.class);
+    authDao = YukonSpringHook.getBean("authDao", AuthDao.class);
 
-		lcPort = Integer.parseInt(
-			DaoFactory.getRoleDao().getGlobalPropertyValue( SystemRole.LOADCONTROL_PORT ) );
+    lcHost = DaoFactory.getRoleDao().getGlobalPropertyValue( SystemRole.LOADCONTROL_MACHINE );
 
-	} catch (Exception e) {
-		com.cannontech.clientutils.CTILogger.error(e.getMessage(), e);
-	}
+    String lcPortStr =
+            DaoFactory.getRoleDao().getGlobalPropertyValue(SystemRole.LOADCONTROL_PORT);
+    lcPort = Integer.parseInt(lcPortStr);
+
 
 	CTILogger.info("Will attempt to connect to loadcontrol @" + lcHost + ":" + lcPort);
 	conn = LoadControlClientConnection.getInstance();
