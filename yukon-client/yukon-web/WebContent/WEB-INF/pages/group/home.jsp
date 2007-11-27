@@ -258,6 +258,21 @@
 							Cannot add Devices to this group
 						</c:otherwise>
 					</c:choose>
+                    
+                    <h4>Tabular Data</h4>
+                    <c:choose>
+                        <c:when test="${deviceCount > 0}">
+                            <cti:simpleReportLinkFromNameTag definitionName="groupDevicesDefinition" viewType="htmlView" module="amr" showMenu="true" menuSelection="devicegroups|home" groupName="${group.fullName}">HTML</cti:simpleReportLinkFromNameTag>
+                            |
+                            <cti:simpleReportLinkFromNameTag definitionName="groupDevicesDefinition" viewType="csvView" groupName="${group.fullName}">CSV</cti:simpleReportLinkFromNameTag>
+                            |
+                            <cti:simpleReportLinkFromNameTag definitionName="groupDevicesDefinition" viewType="pdfView" groupName="${group.fullName}">PDF</cti:simpleReportLinkFromNameTag>
+                       
+                        </c:when>
+                        <c:otherwise>
+                            No devices
+                        </c:otherwise>
+                    </c:choose>
 				</div>
 				
 			</jsp:body>

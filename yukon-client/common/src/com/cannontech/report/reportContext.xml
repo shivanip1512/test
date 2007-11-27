@@ -170,5 +170,35 @@
         </property>
     </bean>
     
+    <!-- Group Devices -->
+   <bean id="groupDevicesModel" class="com.cannontech.analysis.tablemodel.GroupDevicesModel"
+         scope="prototype">
+        <property name="deviceGroupService" ref="deviceGroupService"/>
+        <property name="deviceGroupDao" ref="deviceGroupDao"/>
+        <property name="meterDao" ref="meterDao"/>
+    </bean>
+    
+    <bean id="groupDevicesDefinition" class="com.cannontech.simplereport.SimpleYukonReportDefinition">
+        <property name="reportModelName"><idref local="groupDevicesModel"/></property>
+        <property name="inputs">
+          <bean class="com.cannontech.web.input.InputRoot">
+            <property name="inputList">
+              <list>
+                <bean class="com.cannontech.web.input.InputBase">
+                    <property name="field" value="groupName"/>
+                    <property name="displayName" value="Group Name"/>
+                    <property name="type">
+                      <bean class="com.cannontech.web.input.type.StringType"/>
+                    </property>
+                </bean>
+              </list>
+            </property>
+          </bean>
+        </property>
+        <property name="reportLayoutData">
+            <bean class="com.cannontech.simplereport.reportlayoutdata.GroupDevicesReportLayoutData"/>
+        </property>
+    </bean>
+    
 </beans>
 
