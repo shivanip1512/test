@@ -34,7 +34,7 @@ public class RouteGroupProvider extends DeviceGroupProviderBase {
             // return devices that belong to this route
             SqlStatementBuilder sql = new SqlStatementBuilder();
             sql.append("SELECT ypo.paobjectid, ypo.type");
-            sql.append("FROM Device d");
+            sql.append("FROM DeviceMeterGroup d");
             sql.append("JOIN YukonPaObject ypo ON (d.deviceid = ypo.paobjectid)");
             sql.append("JOIN DeviceRoutes dr ON (d.deviceid = dr.deviceid)");
             sql.append("WHERE dr.routeid = ?");
