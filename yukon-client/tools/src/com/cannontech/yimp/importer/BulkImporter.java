@@ -260,8 +260,23 @@ public void runImport(List<ImportData> imps) {
 		//validation
 		StringBuffer errorMsg = new StringBuffer("Failed due to: ");
 		badEntry = false;
-		updateDeviceID = DBFuncs.getDeviceIDByAddress(address);
-		       
+		
+		if (StringUtils.isBlank(address)) {
+			log.info("No address entered.");
+			badEntry = true;
+			errorMsg.append("No address entered.");
+		}else{
+			try{
+				// Does a parseCheck to make sure its a numical value
+				Double doubleAddress = Double.parseDouble(address);				
+				updateDeviceID = DBFuncs.getDeviceIDByAddress(doubleAddress.toString());
+			} catch (NumberFormatException nfe) {
+				log.info("Address has to be a numeric value ("+address+")");
+				badEntry = true;
+				errorMsg.append("Address has to be a numeric value. ("+address+")");
+			}
+		}
+		
         if(StringUtils.isBlank(templateName)) {
             if(updateDeviceID == null) {
                 log.info("Import entry with name " + name + " has no specified 410 template.");
