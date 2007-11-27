@@ -678,7 +678,7 @@ public void setValue(Object val)
 		String generate = new String();
 
 		if( allAlarmStates.size() <= 0 )
-			throw new ArrayIndexOutOfBoundsException("No AlarmStates exist, unable to create alarms, occured in " + this.getClass() );
+			throw new ArrayIndexOutOfBoundsException("No AlarmStates exist, unable to create alarms, occurred in " + this.getClass() );
 	   
       
 		if( ptType == com.cannontech.database.data.point.PointTypes.STATUS_POINT

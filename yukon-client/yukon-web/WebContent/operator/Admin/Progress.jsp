@@ -52,7 +52,7 @@
 				if (taskError != null)
 					session.setAttribute(ServletUtils.ATT_ERROR_MESSAGE, taskError);
 				else
-					session.setAttribute(ServletUtils.ATT_ERROR_MESSAGE, "An error occured during the operation.");
+					session.setAttribute(ServletUtils.ATT_ERROR_MESSAGE, "An error occurred during the operation.");
 			}
 			else
 				session.setAttribute(ServletUtils.ATT_ERROR_MESSAGE, "Operation is canceled by user");
@@ -114,7 +114,7 @@
                     <% } else if (task.getStatus() == TimeConsumingTask.STATUS_CANCELED) { %>
                     Operation is canceled. 
                     <% } else if (task.getStatus() == TimeConsumingTask.STATUS_ERROR) { %>
-                    Error occured during operation. 
+                    Error occurred during operation. 
                     <% } %>
                     <br>
                     <br>

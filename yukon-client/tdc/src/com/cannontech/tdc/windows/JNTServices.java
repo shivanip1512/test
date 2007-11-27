@@ -546,7 +546,7 @@ public class JNTServices implements IServiceConstants
                             catch(Exception e)
                             {
                                 aServices = null;
-                                CTILogger.error("EXCEPTION Occured: Could not connect to services through JNTServices.DLL");
+                                CTILogger.error("EXCEPTION Occurred: Could not connect to services through JNTServices.DLL");
                             }
                             
                          }

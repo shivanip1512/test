@@ -356,7 +356,7 @@ public class ImportDSMDataTask extends TimeConsumingTask {
 				CTILogger.error( e.getMessage(), e );
 				
 				if (errorLocation != null) {
-					errorMsg = "An error occured at " + errorLocation;
+					errorMsg = "An error occurred at " + errorLocation;
 					if (e instanceof WebClientException)
 						errorMsg += ": " + e.getMessage();
 				}
@@ -364,7 +364,7 @@ public class ImportDSMDataTask extends TimeConsumingTask {
 					if (e instanceof WebClientException)
 						errorMsg = e.getMessage();
 					else
-						errorMsg = "An error occured in the process of converting the DSM database";
+						errorMsg = "An error occurred in the process of converting the DSM database";
 				}
 			}
 			

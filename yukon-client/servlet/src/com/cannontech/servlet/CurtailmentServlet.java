@@ -132,7 +132,7 @@ public void doPost(javax.servlet.http.HttpServletRequest req, javax.servlet.http
 			"yukon")
 		)
 		{
-			CTILogger.error("An error occured acknowledging");
+			CTILogger.error("An error occurred acknowledging");
 		}		
 		else
 		{

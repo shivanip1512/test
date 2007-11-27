@@ -201,7 +201,7 @@ private void initialize(String message) {
  */
 public static void main(java.lang.String[] args) {
 	try {
-		String message = "An error occured in Port Wizard.  See stack trace for more info.";
+		String message = "An error occurred in Port Wizard.  See stack trace for more info.";
 		MessageDialog.showMessageDialog(message);
 		
 		

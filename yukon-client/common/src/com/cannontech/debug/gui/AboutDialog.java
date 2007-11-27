@@ -138,7 +138,7 @@ private void init() {
 	catch(Throwable t)  // Catch ALL things and just print them out
 	{
 		com.cannontech.clientutils.CTILogger.info("*** Throwable caught in + " + this.getClass() + " : " + t.getMessage() );
-		_listData.addElement("(Exception occured while getting values from database)");
+		_listData.addElement("(Exception occurred while getting values from database)");
 	}
 	getJListInfo().setListData(_listData);
 }

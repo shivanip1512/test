@@ -368,7 +368,7 @@ public class Contact extends com.cannontech.database.db.DBPersistent implements 
 		}
 		catch( Exception e ) 
 		{
-			CTILogger.error( "A db error occured", e );
+			CTILogger.error( "A db error occurred", e );
 		}
 		finally 
 		{

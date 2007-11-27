@@ -51,7 +51,7 @@ public class UpdateDrawings implements Runnable {
 				d.load(f.getAbsolutePath());
 				d.save();
 			} catch(Exception e) {
-				CTILogger.error("An error occured processing: " + f.getAbsolutePath(), e);
+				CTILogger.error("An error occurred processing: " + f.getAbsolutePath(), e);
 			}
 		}
 	}

@@ -499,7 +499,7 @@ public void Load_ActionPerformed(java.awt.event.ActionEvent actionEvent)
 			}
 			catch (Exception exep)
 			{
-				javax.swing.JOptionPane.showMessageDialog(parent, "An error occured saving to a file", "Error",	javax.swing.JOptionPane.ERROR_MESSAGE);
+				javax.swing.JOptionPane.showMessageDialog(parent, "An error occurred saving to a file", "Error",	javax.swing.JOptionPane.ERROR_MESSAGE);
 			}
 		}
 	}
@@ -561,7 +561,7 @@ public void Save_ActionPerformed(java.awt.event.ActionEvent actionEvent)
 			}
 			catch (Exception exep)
 			{
-				javax.swing.JOptionPane.showMessageDialog(parent, "An error occured saving prsu.cfg", "Error",	javax.swing.JOptionPane.ERROR_MESSAGE);
+				javax.swing.JOptionPane.showMessageDialog(parent, "An error occurred saving prsu.cfg", "Error",	javax.swing.JOptionPane.ERROR_MESSAGE);
 			}
 		}
 
@@ -578,7 +578,7 @@ public void Save_ActionPerformed(java.awt.event.ActionEvent actionEvent)
 			}
 			catch (Exception exep)
 			{
-				javax.swing.JOptionPane.showMessageDialog(parent, "An error occured saving prsu.ady", "Error",	javax.swing.JOptionPane.ERROR_MESSAGE);
+				javax.swing.JOptionPane.showMessageDialog(parent, "An error occurred saving prsu.ady", "Error",	javax.swing.JOptionPane.ERROR_MESSAGE);
 			}
 		}
 	}

@@ -1680,7 +1680,7 @@ public boolean isInputValid()
 	}
 	catch(Exception ex)
 	{
-		setErrorString("An Exception occured while trying to decipher the Absolute Stop Time text field or the Start Time text field");
+		setErrorString("An Exception occurred while trying to decipher the Absolute Stop Time text field or the Start Time text field");
 		return false;
 	}
 

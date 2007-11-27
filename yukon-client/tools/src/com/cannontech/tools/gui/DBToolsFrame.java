@@ -382,7 +382,7 @@ public void getChooser()
 		}
 		catch (Exception exep)
 		{
-			javax.swing.JOptionPane.showMessageDialog(parent,"An error occured opening file","Error",javax.swing.JOptionPane.ERROR_MESSAGE);
+			javax.swing.JOptionPane.showMessageDialog(parent,"An error occurred opening file","Error",javax.swing.JOptionPane.ERROR_MESSAGE);
 		}
 	}
 

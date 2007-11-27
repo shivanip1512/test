@@ -753,7 +753,7 @@ public void jButtonAddImages_ActionPerformed(java.awt.event.ActionEvent actionEv
             }
             catch( Exception e )
             {
-               com.cannontech.clientutils.CTILogger.error( "Exception occured when saving image file to database", e );
+               com.cannontech.clientutils.CTILogger.error( "Exception occurred when saving image file to database", e );
             }
          
          }

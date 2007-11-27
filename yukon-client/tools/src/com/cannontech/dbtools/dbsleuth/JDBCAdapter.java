@@ -133,7 +133,7 @@ public class JDBCAdapter extends AbstractTableModel
        }
        catch (SQLException ex)
        {
-           CTILogger.error("An error has occured", ex);
+           CTILogger.error("An error has occurred", ex);
        }
     }
 

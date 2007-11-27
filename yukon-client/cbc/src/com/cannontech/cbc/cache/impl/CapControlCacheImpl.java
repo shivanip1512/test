@@ -845,7 +845,7 @@ public class CapControlCacheImpl implements MessageListener, CapControlCache {
         try  {
             getConnection().executeCommand( 0, CBCCommand.REQUEST_ALL_AREAS );
         } catch ( IOException ioe ) {
-            CTILogger.error( "Exception occured during a refresh_cache operation", ioe );
+            CTILogger.error( "Exception occurred during a refresh_cache operation", ioe );
             return false;
         }
         return true;

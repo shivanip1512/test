@@ -1145,7 +1145,7 @@ private void handleException(java.lang.Throwable exception)
 	com.cannontech.clientutils.CTILogger.info("--------- UNCAUGHT EXCEPTION ---------");
 	com.cannontech.clientutils.CTILogger.error( exception.getMessage(), exception );;
 
-	getMessagePanel().messageEvent( new com.cannontech.common.util.MessageEvent(this, "The following exception occured : " + exception.getMessage(), com.cannontech.common.util.MessageEvent.ERROR_MESSAGE) );
+	getMessagePanel().messageEvent( new com.cannontech.common.util.MessageEvent(this, "The following exception occurred : " + exception.getMessage(), com.cannontech.common.util.MessageEvent.ERROR_MESSAGE) );
 }
 /**
  * Insert the method's description here.

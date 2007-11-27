@@ -144,7 +144,7 @@ public class Yukon3Migrator extends MessageFrameAdaptor
 		}
 		catch(Exception e) 
 		{
-			getIMessageFrame().addOutput("An error occured when trying to process the properties" );
+			getIMessageFrame().addOutput("An error occurred when trying to process the properties" );
 			e.printStackTrace();
 			throw e;
 		}

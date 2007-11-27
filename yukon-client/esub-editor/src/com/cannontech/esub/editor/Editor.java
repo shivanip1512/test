@@ -637,7 +637,7 @@ public class Editor extends JPanel {
 		catch(Exception e) {
 			CTILogger.error("Error saving drawing", e);
 			JOptionPane.showMessageDialog(com.cannontech.common.util.CtiUtilities.getParentFrame(
-			getDrawing().getLxView()), "An error occured saving the drawing", "Saving Error", JOptionPane.ERROR_MESSAGE);
+			getDrawing().getLxView()), "An error occurred saving the drawing", "Saving Error", JOptionPane.ERROR_MESSAGE);
 		}
 	}
 	

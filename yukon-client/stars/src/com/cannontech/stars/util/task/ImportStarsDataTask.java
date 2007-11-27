@@ -579,7 +579,7 @@ public class ImportStarsDataTask extends TimeConsumingTask {
 				CTILogger.error( e.getMessage(), e );
 				
 				if (position != null) {
-					errorMsg = "An error occured at " + position;
+					errorMsg = "An error occurred at " + position;
 					if (e instanceof WebClientException)
 						errorMsg += ": " + e.getMessage();
 				}
@@ -587,7 +587,7 @@ public class ImportStarsDataTask extends TimeConsumingTask {
 					if (e instanceof WebClientException)
 						errorMsg = e.getMessage();
 					else
-						errorMsg = "An error occured in the process of importing old STARS data";
+						errorMsg = "An error occurred in the process of importing old STARS data";
 				}
 			}
 			

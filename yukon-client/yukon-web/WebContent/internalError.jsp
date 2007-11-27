@@ -103,7 +103,7 @@ function showStack( chkBox ) {
 <div id="errorFriendly"><%=friendlyExceptionMessage %></div>
 <br/>
 <% } else{%>
-<div id="errorMain">An error occured while processing your request</div>
+<div id="errorMain">An error occurred while processing your request</div>
 <% }%>
 <% if (errorKey == null) { %>
 <div id="errorSub">Try to execute your request again.</div>

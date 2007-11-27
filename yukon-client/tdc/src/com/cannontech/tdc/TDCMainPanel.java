@@ -2607,7 +2607,7 @@ public void jMenuItemPopUpDisable_ActionPerformed(java.awt.event.ActionEvent act
 						
 	sig.setPointID( ptValue.getPointID() );
 	
-	sig.setDescription("Point control change occured from TDC on point: " + 
+	sig.setDescription("Point control change occurred from TDC on point: " + 
 		ptValue.getDeviceName().toString() + " / " + ptValue.getPointName()); //who
 	
 	sig.setAction("A " + msg + " control point event was executed");

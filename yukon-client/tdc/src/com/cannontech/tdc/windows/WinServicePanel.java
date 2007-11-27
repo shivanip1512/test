@@ -236,7 +236,7 @@ private javax.swing.JTable getJTableServices() {
          catch( Exception e )
          {
             com.cannontech.clientutils.CTILogger.error(
-               "Exception occured when opening the Service Manager." + System.getProperty("line.separator") +
+               "Exception occurred when opening the Service Manager." + System.getProperty("line.separator") +
                "Be sure you have access and user rights to operate the Yukon Server services",
                e );
  				

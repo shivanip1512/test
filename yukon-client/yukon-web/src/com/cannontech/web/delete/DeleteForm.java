@@ -115,7 +115,7 @@ public abstract class DeleteForm extends DBEditorForm
 		}
 		catch( Exception e ) {
 			CTILogger.error( e.getMessage(), e );				
-			delItem.setWarningMsg( "(db exception occured)" );
+			delItem.setWarningMsg( "(db exception occurred)" );
 		}
 		
 	}

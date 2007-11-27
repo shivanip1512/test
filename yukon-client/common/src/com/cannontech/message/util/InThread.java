@@ -51,7 +51,7 @@ public void run() {
 	}
 	catch( java.io.IOException e )
 	{
-		CTILogger.warn("IOException in inThread occured", e);
+		CTILogger.warn("IOException in inThread occurred", e);
 	}	
 	
 }

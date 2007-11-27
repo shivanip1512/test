@@ -759,7 +759,7 @@ public class ViewCreator
 			}
 			catch( CTIPointQuailtyException ex )
 			{
-				CTILogger.error( "An error occured with the point quality", ex );
+				CTILogger.error( "An error occurred with the point quality", ex );
 			}	
 
 

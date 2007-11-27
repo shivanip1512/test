@@ -150,7 +150,7 @@ public class CBCCommandExec
 
 			pt.setId( bank.getStatusPointID().intValue() );
 			pt.setQuality( PointQualities.MANUAL_QUALITY );
-			pt.setStr("Manual change occured using CBC Web Client");
+			pt.setStr("Manual change occurred using CBC Web Client");
 			pt.setTime( new java.util.Date() );
 			pt.setTimeStamp( new java.util.Date() );
 			pt.setType( PointTypes.STATUS_POINT );

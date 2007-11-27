@@ -31,7 +31,7 @@ public class InactiveAlarmFilter extends TDCFilterBase
 	 */
 	public String getDescription()
 	{
-		return "History of alarms that have occured in the system";
+		return "History of alarms that have occurred in the system";
 	}
 
 }
