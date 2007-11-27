@@ -7,6 +7,7 @@ import java.io.InputStream;
 import java.io.OutputStream;
 import java.net.Socket;
 import java.util.ArrayList;
+import java.util.Random;
 
 import org.apache.log4j.Logger;
 
@@ -45,7 +46,7 @@ public class ClientConnection extends java.util.Observable implements Runnable, 
 
 	//seconds until an another attempt is made to reconnect
 	//if autoReconenct is true
-	private int timeToReconnect = 5;
+	private int timeToReconnect = 10;
 	
 	//This message will be sent automatically on connecting
 	private Message registrationMsg = null;
@@ -240,7 +241,11 @@ public Message getRegistrationMsg() {
  * @return int
  */
 public int getTimeToReconnect() {
-	return this.timeToReconnect;
+    Random pseudoRandomizer = new Random();
+    timeToReconnect = pseudoRandomizer.nextInt(60);
+    if(timeToReconnect < 10) 
+        timeToReconnect += 10;
+    return timeToReconnect;
 }
 
 /**
@@ -455,7 +460,7 @@ public void run()
 
 			try
 			{
-				Thread.sleep( getTimeToReconnect() * 1000 );
+				Thread.sleep( timeToReconnect * 1000 );
 			}
 			catch(InterruptedException e )
 			{
