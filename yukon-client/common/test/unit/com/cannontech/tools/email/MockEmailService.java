@@ -12,6 +12,10 @@ public class MockEmailService implements EmailService {
     public void sendMessage(EmailMessageHolder message) throws MessagingException {
         sentMessages.add(message);
     }
+    
+    public void sendHTMLMessage(EmailMessageHolder message) throws MessagingException {
+        sentMessages.add(message);
+    }
 
     public List<EmailMessageHolder> getSentMessages() {
         return sentMessages;
