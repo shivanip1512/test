@@ -187,7 +187,14 @@ public class CapBankEditorForm extends DBEditorForm {
             CapBankMonitorPointParams monitorPoint) {
         
         CapbankDao dao = YukonSpringHook.getBean("capbankDao", CapbankDao.class);
-        int fdrId = dao.getParentFeederId(capBank.getPAObjectID().intValue());
+        int fdrId = 0;
+        try{
+            fdrId = dao.getParentFeederId(capBank.getPAObjectID().intValue());
+        }
+        catch( NotFoundException e)
+        {
+            CTILogger.warn("Feeder " + capBank.getPAObjectID().intValue() + " not found.", e);
+        }
         
         if (fdrId != 0) {
             LiteYukonPAObject liteFeeder = paoDao.getLiteYukonPAO(fdrId);

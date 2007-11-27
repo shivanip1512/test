@@ -130,6 +130,11 @@
 	</filter-mapping>
 
 	<filter-mapping>
+		<filter-name>noCacheFilter</filter-name>
+		<url-pattern>*.html</url-pattern>
+	</filter-mapping>
+
+	<filter-mapping>
 		<filter-name>referrerPageFilter</filter-name>
 		<url-pattern>*.jsp</url-pattern>
 	</filter-mapping>

@@ -1182,7 +1182,11 @@ public class CapControlForm extends DBEditorForm implements ICapControlModel{
 		if (getDbPersistent() instanceof CapControlFeeder) {
 			parentID = feederDao.getParentSubBusID(itemID);
         } else if (getDbPersistent() instanceof CapBank) {
-			parentID = capbankDao.getParentFeederId(itemID);
+			try{
+			    parentID = capbankDao.getParentFeederId(itemID);
+			}catch(NotFoundException e){
+			    CTILogger.warn("Feeder " + itemID + " not found. ", e);
+			}
         }
 		if (parentID == CtiUtilities.NONE_ZERO_ID) {
 			return CtiUtilities.STRING_NONE;

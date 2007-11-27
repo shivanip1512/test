@@ -439,6 +439,19 @@ function generateReasonSpan(visible, spanName, text) {
 	return str;
 }
 
+function generateCommentField( spanName, comments )
+{
+	str = "";
+	var strList = comments.split(";");
+	for( var i = 0 ; i < strList.length; i++)
+	{
+		str += "<span id=\"" + spanName + "_" + i;
+		str += "\" style=\"display: inline\">";
+		str += strList[i];
+		str += "</span></br>";
+	}
+	return str;
+}
 
 
 //disables all the checked checkboxes in span

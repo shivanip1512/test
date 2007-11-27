@@ -8,6 +8,7 @@ package com.cannontech.servlet;
  */ 
 import java.io.IOException;
 import java.io.Writer;
+import java.sql.Time;
 import java.util.Date;
 
 import javax.servlet.ServletConfig;
@@ -17,6 +18,8 @@ import javax.servlet.http.HttpServletResponse;
 import javax.servlet.http.HttpSession;
 
 import com.cannontech.cbc.cache.CapControlCache;
+import com.cannontech.cbc.dao.CapbankCommentDao;
+import com.cannontech.cbc.model.CapbankComment;
 import com.cannontech.cbc.oneline.OnelineCBCBroker;
 import com.cannontech.cbc.util.CBCDisplay;
 import com.cannontech.cbc.util.CBCUtils;
@@ -140,19 +143,24 @@ public void doPost(HttpServletRequest req, HttpServletResponse resp) throws java
     String redirectURL = ParamUtil.getString( req, "redirectURL", null );
 
     	//handle any commands that a client may want to send to the CBC server
-        Integer areaId = ParamUtil.getInteger(req, "areaId", -1);
-        Integer specialAreaId = ParamUtil.getInteger(req, "specialAreaId", -1);
+        int areaId = ParamUtil.getInteger(req, "areaId", -1);
+        int specialAreaId = ParamUtil.getInteger(req, "specialAreaId", -1);
+        int commentID = ParamUtil.getInteger(req, "selectedComment", 0);
+        
     	//be sure we have a valid user and that user has the rights to control
     	if( user != null && CBCWebUtils.hasControlRights(session) ) {
     		
     		try {
     			
                 Writer writer = resp.getWriter();
-                if (areaId != -1) {
+                if (areaId != -1){
                     updateSubAreaMenu(areaId, writer);
-                } else if(specialAreaId != -1) {
+                }else if(specialAreaId != -1){
                     updateSubSpecialAreaMenu(specialAreaId, writer);
-                } else
+                }else if( commentID != 0){
+                    processComment(commentID,req,user);
+                }
+                else
                     //send the command with the id, type, paoid
                     executeCommand( req, user.getUsername() );
     		}
@@ -168,6 +176,51 @@ public void doPost(HttpServletRequest req, HttpServletResponse resp) throws java
     if( redirectURL != null )
 		resp.sendRedirect( resp.encodeRedirectURL(req.getContextPath() + redirectURL) );
 
+    }
+}
+
+private void processComment( int cid, HttpServletRequest req, LiteYukonUser user) throws Exception
+{
+    Integer paoId = ParamUtil.getInteger(req, "paoID");
+    String comment = ParamUtil.getString(req, "comment");
+    //get Comment out of parameters.
+    if( paoId == null ){
+        throw new Exception("Parameter Required for processComment: paoID ");
+    }
+    if( comment == null ){
+        throw new Exception("Parameter Required for processComment: comment ");
+    }
+    CapbankCommentDao dao = (CapbankCommentDao) YukonSpringHook.getBean("capbankCommentDao");
+    if( cid == -1){//adding new
+        CapbankComment c = new CapbankComment();
+        c.setAltered(false);
+        c.setPaoId(paoId);
+        c.setTime(new Date());
+        c.setUserId(user.getUserID());
+        c.setComment(comment);
+
+        dao.add(c);
+    }else{//edit or delete
+        Integer delete = ParamUtil.getInteger(req, "delete");
+        if( delete == null ){
+            throw new Exception("Parameter Required for processComment: delete ");
+        }
+        if( delete == -1 ){//edit
+            CapbankComment c = dao.getById(cid);
+            c.setComment(comment);
+            c.setUserId(user.getUserID());
+            c.setAltered(true);
+            c.setTime(new Date());
+            
+            dao.update(c);
+            
+        }else if( delete == 1){//delete
+            CapbankComment c = dao.getById(cid);
+            dao.remove(c);
+        }else{
+            throw new Exception("Parameter Value incorrect for processComment: delete ");
+        }
+        
     }
 }
 

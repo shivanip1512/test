@@ -335,6 +335,7 @@ function createSubTagMenu() {
 
 function createCapTagMenu (paoID) {
 	//state var	
+	var comments = getState("CapState_" + paoID, "capbankComments");
 	//variables pushed from the server
 	var paoName = getState("CapState_" + paoID, "paoName"); //name of the capbank
 	//capbank states
@@ -420,6 +421,7 @@ function createCapTagMenu (paoID) {
 	str+=					' checked ';
 	str+='> <font color="white">Disable OVUV<\/font><\/><\/br>';
 	str += generateReasonSpan((isOVUVDis == "true"),  disCapOVUVTag.createName() + 'ReasonSpan' , disableCapOVUVReason);
+	
 	//***********STANDALONE****************//
 	str+='					<input   name="';
 	str+=					aloneCap.createName();
@@ -428,6 +430,13 @@ function createCapTagMenu (paoID) {
 			str+=					' checked';
 	str+='> <font color="white">Standalone<\/font><\/><\/br>';
 		str += generateReasonSpan ((isStandalone == "true"), aloneCap.createName() + 'ReasonSpan', aloneReason);
+
+	//***********COMMENTS****************//
+	str+='<a href="/capcontrol/capbankcomments.jsp?capbankID=' + paoID + '"  ><font color="white"><B>Comments</B><\/font></a><\/><\/br>';
+	str+='<font color="white">';
+	str+= generateCommentField("commentField_" + paoID, comments );	//str += generateReasonSpan ((isStandalone == "true"), aloneCap.createName() + 'ReasonSpan', aloneReason);
+	str+='</font>';
+	
 	//************************	
 	str+='<\/span><\/br>';
 	str+='				<\/span>';
