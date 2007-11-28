@@ -1545,10 +1545,7 @@ void CtiCCCommandExecutor::OpenCapBank()
                             currentFeeder->setLastOperationTime(CtiTime());
                             currentCapBank->setControlStatus(CtiCCCapBank::OpenPending);
                             currentSubstationBus->figureEstimatedVarLoadPointValue();
-                            currentSubstationBus->setCurrentDailyOperations(currentSubstationBus->getCurrentDailyOperations() + 1);
-                            currentFeeder->setCurrentDailyOperations(currentFeeder->getCurrentDailyOperations() + 1);
                             currentCapBank->setTotalOperations(currentCapBank->getTotalOperations() + 1);
-                            currentCapBank->setCurrentDailyOperations(currentCapBank->getCurrentDailyOperations() + 1);
                             currentSubstationBus->setBusUpdatedFlag(TRUE);
                             currentSubstationBus->setVarValueBeforeControl(currentSubstationBus->getCurrentVarLoadPointValue());
                             currentFeeder->setVarValueBeforeControl(currentFeeder->getCurrentVarLoadPointValue());
@@ -1816,10 +1813,7 @@ void CtiCCCommandExecutor::CloseCapBank()
                             currentFeeder->setLastOperationTime(CtiTime());
                             currentCapBank->setControlStatus(CtiCCCapBank::ClosePending);
                             currentSubstationBus->figureEstimatedVarLoadPointValue();
-                            currentSubstationBus->setCurrentDailyOperations(currentSubstationBus->getCurrentDailyOperations() + 1);
-                            currentFeeder->setCurrentDailyOperations(currentFeeder->getCurrentDailyOperations() + 1);
                             currentCapBank->setTotalOperations(currentCapBank->getTotalOperations() + 1);
-                            currentCapBank->setCurrentDailyOperations(currentCapBank->getCurrentDailyOperations() + 1);
                             currentSubstationBus->setBusUpdatedFlag(TRUE);
                             currentSubstationBus->setVarValueBeforeControl(currentSubstationBus->getCurrentVarLoadPointValue());
                             currentFeeder->setVarValueBeforeControl(currentFeeder->getCurrentVarLoadPointValue());
@@ -2397,10 +2391,7 @@ void CtiCCCommandExecutor::Flip7010Device()
                                 currentCapBank->setControlStatus(CtiCCCapBank::OpenPending);
                             }
                             currentSubstationBus->figureEstimatedVarLoadPointValue();
-                            currentSubstationBus->setCurrentDailyOperations(currentSubstationBus->getCurrentDailyOperations() + 1);
-                            currentFeeder->setCurrentDailyOperations(currentFeeder->getCurrentDailyOperations() + 1);
                             currentCapBank->setTotalOperations(currentCapBank->getTotalOperations() + 1);
-                            currentCapBank->setCurrentDailyOperations(currentCapBank->getCurrentDailyOperations() + 1);
                             currentSubstationBus->setBusUpdatedFlag(TRUE);
                             currentSubstationBus->setVarValueBeforeControl(currentSubstationBus->getCurrentVarLoadPointValue());
                             currentFeeder->setVarValueBeforeControl(currentFeeder->getCurrentVarLoadPointValue());
