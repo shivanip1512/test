@@ -9,6 +9,11 @@ import com.cannontech.common.device.config.model.tou.Tou;
  * Backing bean for mct 410 device configurations
  */
 public class MCT410Configuration extends ConfigurationBase {
+    
+    @Override
+    public ConfigurationType getType() {
+        return ConfigurationType.MCT410;
+    }
 
     // Centron
     private int displayBits = 0;
@@ -152,11 +157,6 @@ public class MCT410Configuration extends ConfigurationBase {
     private Date dstBegin = null;
     private Date dstEnd = null;
     private Integer timeZoneOffset = null;
-
-    @Override
-    public ConfigurationType getType() {
-        return ConfigurationType.MCT410;
-    }
 
     public Date getDstBegin() {
         return dstBegin;

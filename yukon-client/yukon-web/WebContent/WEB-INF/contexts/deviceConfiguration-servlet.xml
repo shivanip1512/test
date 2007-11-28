@@ -11,6 +11,10 @@
     
     <bean name="/success" class="org.springframework.web.servlet.mvc.UrlFilenameViewController" />
     
+    <bean id="multipartResolver" class="org.springframework.web.multipart.commons.CommonsMultipartResolver">
+	    <property name="maxUploadSize" value="100000"/>
+	</bean> 
+    
     <bean name="/*" class="com.cannontech.web.amr.device.configuration.DeviceConfigurationController">
         <property name="cacheSeconds">
             <value type="int">0</value>
@@ -24,6 +28,12 @@
 						<value>editConfig</value>
 						<value>removeConfig</value>
 						<value>cloneConfig</value>
+						<value>assignDevices</value>
+						<value>assignConfigToDevices</value>
+						<value>assignConfigByAddress</value>
+						<value>assignConfigByFileUpload</value>
+						<value>assignConfigByGroup</value>
+						<value>unassignConfigForDevice</value>
 					</list>
 				</property>
 			</bean>
@@ -36,6 +46,14 @@
         </property>
         
 		<property name="deviceConfigurationDao" ref="deviceConfigurationDao"/>
+		
+		<property name="bulkProcessor" ref="oneAtATimeProcessor" />
+        <property name="objectMapperFactory" ref="objectMapperFactory" />
+        <property name="processorFactory" ref="processorFactory" />
+        <property name="paoDao" ref="paoDao" />
+        <property name="deviceGroupDao" ref="deviceGroupDao" />
+        <property name="deviceGroupService" ref="deviceGroupService"/>
+        
     </bean>
     
     <bean name="/470Config" class="com.cannontech.web.amr.device.configuration.DeviceConfigurationFormController" init-method="init">

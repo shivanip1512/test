@@ -3,6 +3,8 @@ package com.cannontech.common.device.config.dao;
 import com.cannontech.common.device.config.model.ConfigurationBase;
 import com.cannontech.common.device.config.model.MCT410Configuration;
 import com.cannontech.common.device.config.model.MCT470Configuration;
+import com.cannontech.common.search.criteria.MCT410Criteria;
+import com.cannontech.common.search.criteria.MCT470Criteria;
 
 /**
  * Enum for all the types of configurations
@@ -17,6 +19,14 @@ public enum ConfigurationType {
         public String getConfigurationTemplateName() {
             return "MCT 470 Configuration";
         }
+
+        public Class getCriteria() {
+            return MCT470Criteria.class;
+        }
+
+        public String[] getSupportedDeviceTypeList() {
+            return MCT470Criteria.MCT_470_TYPES;
+        }
     },
     MCT410 {
         public ConfigurationBase getConfigurationClass() {
@@ -25,6 +35,14 @@ public enum ConfigurationType {
 
         public String getConfigurationTemplateName() {
             return "MCT 410 Configuration";
+        }
+
+        public Class getCriteria() {
+            return MCT410Criteria.class;
+        }
+
+        public String[] getSupportedDeviceTypeList() {
+            return MCT410Criteria.MCT_410_TYPES;
         }
     };
 
@@ -41,4 +59,17 @@ public enum ConfigurationType {
      * @return The template name
      */
     public abstract String getConfigurationTemplateName();
+
+    /**
+     * Method to get the search criteria associated with this configuration type
+     * @return Search criteria
+     */
+    public abstract Class getCriteria();
+
+    /**
+     * Method to get an array of the device types this configuration type
+     * supports
+     * @return Array of device types
+     */
+    public abstract String[] getSupportedDeviceTypeList();
 }

@@ -2,6 +2,8 @@ package com.cannontech.common.device.config.dao;
 
 import java.sql.ResultSet;
 import java.sql.SQLException;
+import java.util.ArrayList;
+import java.util.Collection;
 import java.util.List;
 import java.util.Map;
 import java.util.Properties;
@@ -9,14 +11,19 @@ import java.util.Properties;
 import org.springframework.beans.BeanWrapper;
 import org.springframework.beans.BeanWrapperImpl;
 import org.springframework.beans.PropertyEditorRegistry;
+import org.springframework.dao.DataIntegrityViolationException;
 import org.springframework.jdbc.core.JdbcOperations;
 import org.springframework.jdbc.core.RowCallbackHandler;
 import org.springframework.jdbc.core.simple.ParameterizedRowMapper;
 import org.springframework.jdbc.core.simple.SimpleJdbcTemplate;
 import org.springframework.transaction.annotation.Transactional;
 
+import com.cannontech.common.device.YukonDevice;
 import com.cannontech.common.device.config.model.ConfigurationBase;
 import com.cannontech.common.device.config.model.ConfigurationTemplate;
+import com.cannontech.common.device.groups.editor.dao.impl.YukonDeviceRowMapper;
+import com.cannontech.common.util.SqlStatementBuilder;
+import com.cannontech.database.data.pao.PaoGroupsWrapper;
 import com.cannontech.database.incrementer.NextValueHelper;
 import com.cannontech.web.input.InputBeanWrapperImpl;
 import com.cannontech.web.input.InputRoot;
@@ -31,6 +38,8 @@ public class DeviceConfigurationDaoImpl implements DeviceConfigurationDao {
     private SimpleJdbcTemplate simpleJdbcTemplate = null;
     private NextValueHelper nextValueHelper = null;
 
+    private PaoGroupsWrapper paoGroupsWrapper;
+
     private List<ConfigurationTemplate> configurationTemplateList = null;
 
     public void setSimpleJdbcTemplate(SimpleJdbcTemplate simpleJdbcTemplate) {
@@ -39,6 +48,10 @@ public class DeviceConfigurationDaoImpl implements DeviceConfigurationDao {
 
     public void setNextValueHelper(NextValueHelper nextValueHelper) {
         this.nextValueHelper = nextValueHelper;
+    }
+
+    public void setPaoGroupsWrapper(PaoGroupsWrapper paoGroupsWrapper) {
+        this.paoGroupsWrapper = paoGroupsWrapper;
     }
 
     public List<ConfigurationTemplate> getConfigurationTemplateList() {
@@ -166,6 +179,66 @@ public class DeviceConfigurationDaoImpl implements DeviceConfigurationDao {
         String sql = "DELETE FROM DeviceConfiguration WHERE DeviceConfigurationId = ?";
         simpleJdbcTemplate.update(sql, id);
 
+    }
+
+    public List<YukonDevice> getAssignedDevices(ConfigurationBase configuration) {
+
+        SqlStatementBuilder sql = new SqlStatementBuilder();
+        sql.append("SELECT dcdm.DeviceId paobjectid, ypo.type");
+        sql.append("FROM DeviceConfigurationDeviceMap dcdm");
+        sql.append("JOIN YukonPaobject ypo on ypo.paobjectid = dcdm.DeviceId");
+        sql.append("WHERE dcdm.DeviceConfigurationId = ?");
+        List<YukonDevice> deviceList = simpleJdbcTemplate.query(sql.toString(),
+                                                                new YukonDeviceRowMapper(paoGroupsWrapper),
+                                                                configuration.getId());
+
+        return deviceList;
+    }
+
+    @Transactional
+    public void assignConfigToDevices(ConfigurationBase configuration,
+            Collection<YukonDevice> devices) {
+
+        // Get the device types that the configuration supports
+        String[] supportedDeviceTypeList = configuration.getType().getSupportedDeviceTypeList();
+        List<Integer> typeList = new ArrayList<Integer>();
+        for (String deviceType : supportedDeviceTypeList) {
+            int type = paoGroupsWrapper.getDeviceType(deviceType);
+            typeList.add(type);
+        }
+
+        for (YukonDevice device : devices) {
+
+            // Clean out any assigned configs - device can only be assigned one
+            // config
+            unassignConfig(device.getDeviceId());
+
+            // Only add the devices whose type is supported by the configuration
+            if (typeList.contains(device.getType())) {
+
+                SqlStatementBuilder sql = new SqlStatementBuilder();
+                sql.append("insert into DeviceConfigurationDeviceMap");
+                sql.append("(DeviceConfigurationId, DeviceId)");
+                sql.append("values");
+                sql.append("(?, ?)");
+
+                try {
+                    simpleJdbcTemplate.update(sql.toString(),
+                                              configuration.getId(),
+                                              device.getDeviceId());
+                } catch (DataIntegrityViolationException e) {
+                    // ignore - tried to insert duplicate
+                }
+            }
+        }
+
+    }
+
+    public void unassignConfig(Integer deviceId) {
+
+        // Remove any assigned configuration mappings
+        String sql = "DELETE FROM DeviceConfigurationDeviceMap WHERE DeviceId = ?";
+        simpleJdbcTemplate.update(sql, deviceId);
     }
 
     /**

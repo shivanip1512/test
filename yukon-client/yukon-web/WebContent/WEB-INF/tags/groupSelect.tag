@@ -32,7 +32,7 @@
 
 </script>
 
-<div style="border: 1px solid black; width: 300px; height: 100px; overflow: auto; margin: 5px 0px;">
+<div style="border: 1px solid black; height: 100px; overflow: auto; margin: 5px 0px;">
 	
 	<c:forEach var="group" items="${groupList}">
 		<div style="border-bottom: 1px solid #BBBBBB; padding: 2px 3px;" onmouseover="highlight(this);" onmouseout="highlight(this);" onclick="groupSelected(this, '${cti:escapeJavaScript(group.fullName)}')">

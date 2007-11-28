@@ -10,6 +10,11 @@ import com.cannontech.common.device.config.model.tou.Tou;
  */
 public class MCT470Configuration extends ConfigurationBase {
 
+    @Override
+    public ConfigurationType getType() {
+        return ConfigurationType.MCT470;
+    }
+
     // Addressing
     private Integer bronzeAddress = null;
     private Integer leadAddress = null;
@@ -126,11 +131,6 @@ public class MCT470Configuration extends ConfigurationBase {
     private Integer accumulator8 = null;
     private Integer binaryByte1a = null;
     private Integer binaryByte1b = null;
-
-    @Override
-    public ConfigurationType getType() {
-        return ConfigurationType.MCT470;
-    }
 
     public Integer getBronzeAddress() {
         return bronzeAddress;

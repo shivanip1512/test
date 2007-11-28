@@ -1,20 +1,40 @@
 package com.cannontech.web.amr.device.configuration;
 
+import java.io.IOException;
 import java.util.ArrayList;
+import java.util.Collections;
+import java.util.Iterator;
 import java.util.List;
+import java.util.Set;
 
 import javax.servlet.ServletException;
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
 
+import org.apache.commons.fileupload.servlet.ServletFileUpload;
+import org.apache.commons.lang.StringUtils;
 import org.springframework.web.bind.ServletRequestUtils;
+import org.springframework.web.multipart.MultipartFile;
+import org.springframework.web.multipart.MultipartHttpServletRequest;
 import org.springframework.web.servlet.ModelAndView;
 import org.springframework.web.servlet.mvc.multiaction.MultiActionController;
 
+import com.cannontech.common.bulk.BulkProcessor;
+import com.cannontech.common.bulk.iterator.InputStreamIterator;
+import com.cannontech.common.bulk.mapper.ObjectMapperFactory;
+import com.cannontech.common.bulk.processor.Processor;
+import com.cannontech.common.bulk.processor.ProcessorFactory;
+import com.cannontech.common.device.YukonDevice;
 import com.cannontech.common.device.config.dao.ConfigurationType;
 import com.cannontech.common.device.config.dao.DeviceConfigurationDao;
 import com.cannontech.common.device.config.model.ConfigurationBase;
 import com.cannontech.common.device.config.model.ConfigurationTemplate;
+import com.cannontech.common.device.groups.dao.DeviceGroupProviderDao;
+import com.cannontech.common.device.groups.model.DeviceGroup;
+import com.cannontech.common.device.groups.service.DeviceGroupService;
+import com.cannontech.common.util.ObjectMapper;
+import com.cannontech.core.dao.PaoDao;
+import com.cannontech.database.data.lite.LiteYukonPAObject;
 
 /**
  * Spring controller class for Device Configuration
@@ -23,8 +43,40 @@ public class DeviceConfigurationController extends MultiActionController {
 
     public DeviceConfigurationDao deviceConfigurationDao = null;
 
+    private BulkProcessor bulkProcessor = null;
+    private ProcessorFactory processorFactory = null;
+    private ObjectMapperFactory objectMapperFactory = null;
+
+    private PaoDao paoDao = null;
+    private DeviceGroupProviderDao deviceGroupDao = null;
+    private DeviceGroupService deviceGroupService = null;
+
     public void setDeviceConfigurationDao(DeviceConfigurationDao deviceConfigurationDao) {
         this.deviceConfigurationDao = deviceConfigurationDao;
+    }
+
+    public void setBulkProcessor(BulkProcessor bulkProcessor) {
+        this.bulkProcessor = bulkProcessor;
+    }
+
+    public void setProcessorFactory(ProcessorFactory processorFactory) {
+        this.processorFactory = processorFactory;
+    }
+
+    public void setObjectMapperFactory(ObjectMapperFactory objectMapperFactory) {
+        this.objectMapperFactory = objectMapperFactory;
+    }
+
+    public void setPaoDao(PaoDao paoDao) {
+        this.paoDao = paoDao;
+    }
+
+    public void setDeviceGroupDao(DeviceGroupProviderDao deviceGroupDao) {
+        this.deviceGroupDao = deviceGroupDao;
+    }
+
+    public void setDeviceGroupService(DeviceGroupService deviceGroupService) {
+        this.deviceGroupService = deviceGroupService;
     }
 
     public ModelAndView home(HttpServletRequest request, HttpServletResponse response)
@@ -118,6 +170,197 @@ public class DeviceConfigurationController extends MultiActionController {
         ModelAndView mav = new ModelAndView(viewPath);
 
         mav.addObject("configurationId", configuration.getId().toString());
+
+        return mav;
+    }
+
+    public ModelAndView assignDevices(HttpServletRequest request, HttpServletResponse response)
+            throws ServletException {
+
+        ModelAndView mav = new ModelAndView("assignDevices");
+
+        Integer configId = ServletRequestUtils.getIntParameter(request, "configuration");
+
+        ConfigurationBase configuration = deviceConfigurationDao.getConfiguration(configId);
+        mav.addObject("configuration", configuration);
+
+        List<YukonDevice> deviceList = deviceConfigurationDao.getAssignedDevices(configuration);
+        mav.addObject("deviceList", deviceList);
+
+        List<Integer> deviceIdList = new ArrayList<Integer>();
+        for (YukonDevice device : deviceList) {
+            deviceIdList.add(device.getDeviceId());
+        }
+
+        mav.addObject("selectedDeviceIds", StringUtils.join(deviceIdList, ","));
+
+        // Get all of the device groups and add them to the model
+        List<? extends DeviceGroup> groups = deviceGroupDao.getAllGroups();
+        mav.addObject("groups", groups);
+
+        return mav;
+    }
+
+    public ModelAndView assignConfigToDevices(HttpServletRequest request,
+            HttpServletResponse response) throws ServletException {
+
+        ModelAndView mav = new ModelAndView("redirect:/spring/deviceConfiguration?assignDevices");
+
+        String deviceIds = ServletRequestUtils.getStringParameter(request, "deviceIds");
+
+        String[] ids = StringUtils.split(deviceIds, ",");
+
+        List<Integer> deviceIdList = new ArrayList<Integer>();
+        for (String id : ids) {
+            id = id.trim();
+
+            int paoId = Integer.parseInt(id);
+            deviceIdList.add(paoId);
+        }
+
+        Integer configId = ServletRequestUtils.getIntParameter(request, "configuration");
+        mav.addObject("configuration", configId);
+        ConfigurationBase configuration = deviceConfigurationDao.getConfiguration(configId);
+
+        Processor<YukonDevice> processor = processorFactory.createAssignConfigurationToYukonDeviceProcessor(configuration);
+        ObjectMapper<Integer, YukonDevice> mapper = objectMapperFactory.createPaoIdToYukonDeviceMapper();
+
+        bulkProcessor.bulkProcess(deviceIdList.iterator(), mapper, processor);
+
+        return mav;
+    }
+
+    public ModelAndView assignConfigByAddress(HttpServletRequest request,
+            HttpServletResponse response) throws ServletException {
+
+        ModelAndView mav = new ModelAndView("redirect:/spring/deviceConfiguration?assignDevices");
+
+        Integer configId = ServletRequestUtils.getIntParameter(request, "configuration");
+        mav.addObject("configuration", configId);
+        ConfigurationBase configuration = deviceConfigurationDao.getConfiguration(configId);
+
+        Integer startRange = ServletRequestUtils.getIntParameter(request, "startRange");
+        Integer endRange = ServletRequestUtils.getIntParameter(request, "endRange");
+
+        if (startRange == null) {
+            mav.addObject("errorMessage", "Please enter a valid integer Start of Range value.");
+            return mav;
+        }
+        if (endRange == null) {
+            mav.addObject("errorMessage", "Please enter a valid integer End of Range value.");
+            return mav;
+        }
+        if (endRange <= startRange) {
+            mav.addObject("errorMessage",
+                          "Please enter an End of Range value that is greater than the Start of Range value.");
+            return mav;
+        }
+
+        List<LiteYukonPAObject> litePaos = paoDao.getLiteYukonPaobjectsByAddressRange(startRange,
+                                                                                      endRange);
+
+        ObjectMapper<LiteYukonPAObject, YukonDevice> mapper = objectMapperFactory.createLiteYukonPAObjectToYukonDeviceMapper();
+        Processor<YukonDevice> processor = processorFactory.createAssignConfigurationToYukonDeviceProcessor(configuration);
+
+        bulkProcessor.bulkProcess(litePaos.iterator(), mapper, processor);
+
+        return mav;
+    }
+
+    public ModelAndView assignConfigByGroup(HttpServletRequest request, HttpServletResponse response)
+            throws ServletException {
+
+        ModelAndView mav = new ModelAndView("redirect:/spring/deviceConfiguration?assignDevices");
+
+        String groupName = ServletRequestUtils.getStringParameter(request, "groupName");
+
+        // Get the group and then all the devices in the group
+        DeviceGroup group = deviceGroupService.resolveGroupName(groupName);
+        mav.addObject("group", groupName);
+        Set<Integer> deviceIds = deviceGroupService.getDeviceIds(Collections.singletonList(group));
+
+        Integer configId = ServletRequestUtils.getIntParameter(request, "configuration");
+        mav.addObject("configuration", configId);
+        ConfigurationBase configuration = deviceConfigurationDao.getConfiguration(configId);
+
+        ObjectMapper<Integer, YukonDevice> mapper = objectMapperFactory.createPaoIdToYukonDeviceMapper();
+        Processor<YukonDevice> processor = processorFactory.createAssignConfigurationToYukonDeviceProcessor(configuration);
+
+        bulkProcessor.bulkProcess(deviceIds.iterator(), mapper, processor);
+
+        return mav;
+    }
+
+    public ModelAndView assignConfigByFileUpload(HttpServletRequest request,
+            HttpServletResponse response) throws ServletException {
+
+        ModelAndView mav = new ModelAndView("redirect:/spring/deviceConfiguration?assignDevices");
+
+        Integer configId = ServletRequestUtils.getIntParameter(request, "configuration");
+        mav.addObject("configuration", configId);
+        ConfigurationBase configuration = deviceConfigurationDao.getConfiguration(configId);
+
+        boolean isMultipart = ServletFileUpload.isMultipartContent(request);
+
+        if (isMultipart) {
+            MultipartHttpServletRequest mRequest = (MultipartHttpServletRequest) request;
+
+            MultipartFile dataFile = mRequest.getFile("dataFile");
+            if (dataFile == null || dataFile.getSize() == 0) {
+                mav.addObject("errorMessage",
+                              "You must choose a file that has data to add devices.");
+                return mav;
+            }
+
+            ObjectMapper<String, YukonDevice> mapper = null;
+
+            try {
+
+                // Create an iterator to iterate through the file line by
+                // line
+                Iterator<String> iterator = new InputStreamIterator(dataFile.getInputStream());
+
+                // Create the mapper based on the type of file upload
+                String uploadType = ServletRequestUtils.getStringParameter(request, "uploadType");
+                if ("PAONAME".equalsIgnoreCase(uploadType)) {
+                    mapper = objectMapperFactory.createPaoNameToYukonDeviceMapper();
+                } else if ("METERNUMBER".equalsIgnoreCase(uploadType)) {
+                    mapper = objectMapperFactory.createMeterNumberToYukonDeviceMapper();
+                } else if ("ADDRESS".equalsIgnoreCase(uploadType)) {
+                    mapper = objectMapperFactory.createAddressToYukonDeviceMapper();
+                } else if ("BULK".equalsIgnoreCase(uploadType)) {
+                    mapper = objectMapperFactory.createBulkImporterToYukonDeviceMapper();
+                    // Skip the first line in the file for bulk import
+                    // format - header line
+                    iterator.next();
+                }
+
+                // Get the processor that adds devices to groups
+                Processor<YukonDevice> processor = processorFactory.createAssignConfigurationToYukonDeviceProcessor(configuration);
+
+                bulkProcessor.bulkProcess(iterator, mapper, processor);
+
+            } catch (IOException e) {
+                mav.addObject("errorMessage",
+                              "There was a problem processing the file: " + e.getMessage());
+            }
+
+        }
+
+        return mav;
+
+    }
+
+    public ModelAndView unassignConfigForDevice(HttpServletRequest request,
+            HttpServletResponse response) throws ServletException {
+
+        ModelAndView mav = new ModelAndView("redirect:/spring/deviceConfiguration?assignDevices");
+
+        Integer configId = ServletRequestUtils.getIntParameter(request, "configuration");
+        mav.addObject("configuration", configId);
+
+        Integer deviceId = ServletRequestUtils.getIntParameter(request, "deviceId");
+        deviceConfigurationDao.unassignConfig(deviceId);
 
         return mav;
     }

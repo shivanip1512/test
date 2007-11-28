@@ -19,6 +19,7 @@
     
     <bean id="processorFactory" class="com.cannontech.common.bulk.processor.ProcessorFactoryImpl">
     	<property name="deviceGroupMemberEditorDao" ref="deviceGroupMemberEditorDao" />
+    	<property name="deviceConfigurationDao" ref="deviceConfigurationDao" />
     </bean>
     
 </beans>

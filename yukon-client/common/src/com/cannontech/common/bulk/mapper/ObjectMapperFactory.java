@@ -42,4 +42,10 @@ public interface ObjectMapperFactory {
      */
     public ObjectMapper<String, YukonDevice> createBulkImporterToYukonDeviceMapper();
 
+    /**
+     * Method to get an object mapper that maps a paoId into a yukon device
+     * @return Pao id to yukon device mapper
+     */
+    public ObjectMapper<Integer, YukonDevice> createPaoIdToYukonDeviceMapper();
+
 }

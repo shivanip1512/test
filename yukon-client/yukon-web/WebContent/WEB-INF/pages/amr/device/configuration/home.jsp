@@ -9,7 +9,7 @@
 	<cti:crumbLink url="/operator/Operations.jsp" title="Operations Home"  />
     &gt; Device Configuration Home
 </cti:breadCrumbs>
-	
+
 	<c:set var="editConfig" scope="page">
 		<cti:getProperty property="AdministratorRole.ADMIN_EDIT_CONFIG"/>
 	</c:set>
@@ -46,10 +46,11 @@
 		
 		<input type="submit" name="editConfig" value="${editConfig ? 'Edit' : 'View'}"/>
 		<c:if test="${editConfig}">
-			<input type="submit" name="removeConfig" value="Delete""/>
-			<input type="submit" name="cloneConfig" value="Clone""/>
+			<input type="submit" name="removeConfig" value="Delete"/>
+			<input type="submit" name="cloneConfig" value="Clone"/>
 		</c:if>
+		<input type="submit" name="assignDevices" value="Assign to Devices"/>
 	
 	</form>
-		
+	
 </cti:standardPage>

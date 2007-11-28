@@ -11,14 +11,26 @@
     &gt; Device Configuration
 </cti:breadCrumbs>
 
-<!-- Focus on the name field on page load -->
 <script type="text/javascript">
+	<!-- Focus on the name field on page load -->
 	Event.observe(window, 'load', function() {
 		var name = $('name');
 	 	if(name){
 	  		name.focus();
 	  	}
 	});
+	
+	function saveConfig(){
+
+		var confirmSave = confirm("Are you sure you want to change this configuration?  This change will affect *ALL* devices that have been assigned this configuration.");
+		return confirmSave;
+	}
+
+	function cancel(){
+		window.location = '/spring/deviceConfiguration?home';
+		window.event.returnValue = false;
+	}
+	
 </script>
 
 	<c:set var="editConfig" scope="page">
@@ -41,20 +53,23 @@
 	   	</div>
 	</spring:hasBindErrors>
 		
-	<form action="" method="post">
+	<form id="configurationForm" action="" method="post" onsubmit="return saveConfig()">
 		
 		<spring:nestedPath path="deviceConfiguration">
 			<div style="width: 600px; margin: 15px 10px; font-size: 12px;">
 				
 				<c:if test="${editConfig}">
-					<input type="submit" value="Save" /><br/><br/>
+					<input type="submit" value="Save" />
+					<input type="button" value="Cancel" onclick="cancel()" /><br/><br/>
 				</c:if>
 					
 				<tags:boxContainer title="Details" hideEnabled="false">
 					<div style="margin: 0px 0px 5px 0px;">
 						${configurationTemplate.description}
 					</div>
-					<cti:renderInput input="${name}" /><br/><br/>
+					<div style="margin: 0px 0px 5px 0px;">
+						<cti:renderInput input="${name}" />
+					</div>
 				</tags:boxContainer>
 	
 				<c:forEach var="category" items="${configurationTemplate.categoryList}">

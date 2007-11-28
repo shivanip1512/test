@@ -107,7 +107,7 @@ public class ObjectMapperFactoryImpl implements ObjectMapperFactory {
 
         return new ObjectMapper<String, YukonDevice>() {
 
-            public YukonDevice map(String from) throws ObjectMappingException{
+            public YukonDevice map(String from) throws ObjectMappingException {
 
                 String[] strings = from.split(",");
                 if (strings.length == 0 || strings[0] == null || strings[0] == "") {
@@ -146,6 +146,19 @@ public class ObjectMapperFactoryImpl implements ObjectMapperFactory {
         return new ObjectMapper<LiteYukonPAObject, YukonDevice>() {
 
             public YukonDevice map(LiteYukonPAObject from) throws ObjectMappingException {
+
+                YukonDevice device = deviceDao.getYukonDevice(from);
+                return device;
+
+            }
+        };
+    }
+
+    public ObjectMapper<Integer, YukonDevice> createPaoIdToYukonDeviceMapper() {
+
+        return new ObjectMapper<Integer, YukonDevice>() {
+
+            public YukonDevice map(Integer from) throws ObjectMappingException {
 
                 YukonDevice device = deviceDao.getYukonDevice(from);
                 return device;
