@@ -3,11 +3,6 @@
 
 <beans>
     <bean class="org.springframework.web.servlet.handler.SimpleUrlHandlerMapping">
-        <property name="interceptors">
-            <list>
-              <ref bean="yukonLoginCheckInterceptor"/>
-            </list>
-        </property>
         <property name="mappings">
             <value>
             	/*=ChartController

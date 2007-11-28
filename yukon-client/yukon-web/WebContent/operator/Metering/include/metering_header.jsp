@@ -10,8 +10,6 @@
 <%@ page import="com.cannontech.database.db.company.EnergyCompany" %>
 <%@ taglib uri="http://cannontech.com/tags/cti" prefix="cti" %>
 
-<cti:checklogin/>
-
 <%
     java.text.SimpleDateFormat datePart = new java.text.SimpleDateFormat("MM/dd/yyyy");	  
     java.text.SimpleDateFormat timePart = new java.text.SimpleDateFormat("HH:mm");

@@ -13,23 +13,7 @@
         <link rel="stylesheet"
             href="WebConfig/yukon/styles/loginStyles.css"
             type="text/css">
-        <script type="text/javascript" src="JavaScript/prototype.js"></script>
-        <script type="text/javascript" src="JavaScript/CtiMenu.js"></script>
-
     </head>
-
-    <script type='text/javascript' language=''>
-		<!--
-		var ctiMenu = new CtiMenu('subMenu');
-		// -->
-	</script>
-
-    <script LANGUAGE="JavaScript">
-		function popUp(url) {
-			sealWin=window.open(url,"win",'toolbar=0,location=0,directories=0,status=1,menubar=1,scrollbars=1,resizable=1,width=500,height=450');
-			self.name = "mainWin";
-		}
-	</script>
 
     <body class="blank_module"
         onLoad="document.forms.form1.USERNAME.focus()">

@@ -9,7 +9,6 @@
       <property name="interceptors">
         <list>
           <bean class="com.cannontech.web.widget.support.WidgetInterceptor"/>
-          <ref bean="yukonLoginCheckInterceptor"/>
         </list>
       </property>
     </bean>

@@ -12,7 +12,6 @@
 
 <b>checklogin</b><br>
 ----<br>
-<cti:checklogin/>
 User is logged in<br>
 ----<br>
 

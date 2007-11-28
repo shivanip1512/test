@@ -26,8 +26,6 @@
 <%@ page import="com.cannontech.stars.xml.util.SOAPUtil" %>
 <%@ page import="com.cannontech.util.ServletUtil" %>
 
-<cti:checklogin/>
-
 <%
 	LiteYukonUser lYukonUser = (LiteYukonUser) session.getAttribute(ServletUtils.ATT_YUKON_USER);
 	StarsYukonUser user = (StarsYukonUser) session.getAttribute(ServletUtils.ATT_STARS_YUKON_USER);

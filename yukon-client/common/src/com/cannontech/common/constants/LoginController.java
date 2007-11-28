@@ -53,7 +53,7 @@ public interface LoginController {
 	public static final String YUKON_USER = ServletUtil.ATT_YUKON_USER;
 	public static final String SAVED_YUKON_USERS = "SAVED_YUKON_USERS";
 	
-	public static final String LOGIN_URL_COOKIE = "LOGIN_URL";
+	public static final String LOGIN_URL = "/login.jsp";
 	public static final String REMEMBER_ME_COOKIE = "REMEMBER_ME_COOKIE";
     public static final String USER_LOGIN_INFO_COOKIE = "USER_LOGIN_INFO_COOKIE";
     public static final String REDIRECTED_FROM = "REDIRECTED_FROM";

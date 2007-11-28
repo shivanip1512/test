@@ -7,8 +7,6 @@
       Currently, beans are loaded via a parent context specified in web.xml.
     </description>
     
-    <bean id="yukonLoginCheckInterceptor" class="com.cannontech.web.util.YukonLoginInterceptor"/>
-    
     <bean id="localMasterConfig" class="com.cannontech.common.config.MasterConfigHelper"
           factory-method="getLocalConfiguration">
     </bean>
@@ -17,8 +15,6 @@
       <property name="timer" ref="globalScheduledExecutor"/>
     </bean>
     
-    <bean id="checkLoginIntercepter" class="com.cannontech.web.util.CheckLoginIntercepter"/>
-  
     <bean id="menuBuilder" class="com.cannontech.web.menu.CommonModuleBuilder" init-method="processConfigFile">
       <constructor-arg value="/WEB-INF/module_config.xml"/>
       <property name="userCheckerFactory" ref="rolePropertyUserCheckerFactory"/>
@@ -517,6 +513,8 @@
 
     <bean id="loginService"
         class="com.cannontech.web.login.impl.LoginServiceImpl">
+        <property name="authenticationService" ref="authenticationService"/>
+        <property name="cryptoService" ref="cryptoService"/>
         <property name="authDao" ref="authDao" />
         <property name="contactDao" ref="contactDao" />
         <property name="yukonUserDao" ref="yukonUserDao" />

@@ -32,6 +32,13 @@
 		</param-value>
 	</context-param>
 
+    <filter>
+        <filter-name>loginFilter</filter-name>
+        <filter-class>
+            com.cannontech.web.login.LoginFilter
+        </filter-class>
+    </filter>        
+
 	<filter>
 		<filter-name>timerFilter</filter-name>
 		<filter-class>
@@ -66,38 +73,41 @@
 			com.cannontech.esub.web.filter.JSFilter
 		</filter-class>
 	</filter>
+    
 	<filter>
 		<filter-name>imageFilter</filter-name>
 		<filter-class>
 			com.cannontech.esub.web.filter.ImageFilter
 		</filter-class>
 	</filter>
-	<filter>
+	
+    <filter>
 		<filter-name>htmlFilter</filter-name>
 		<filter-class>
 			com.cannontech.esub.web.filter.HTMLFilter
 		</filter-class>
 	</filter>
-	<filter>
+	
+    <filter>
 		<filter-name>cssFilter</filter-name>
 		<filter-class>
 			com.cannontech.esub.web.filter.CSSFilter
 		</filter-class>
 	</filter>
-	<filter>
+	
+    <filter>
 		<filter-name>audioFilter</filter-name>
 		<filter-class>
 			com.cannontech.esub.web.filter.AudioFilter
 		</filter-class>
 	</filter>
-	<filter>
+	
+    <filter>
 		<filter-name>svgFilter</filter-name>
 		<filter-class>
 			com.cannontech.esub.web.filter.SVGFilter
 		</filter-class>
 	</filter>
-
-
 
 	<!-- A MyFaces filter used to find resources in jar files -->
 	<filter>
@@ -107,7 +117,11 @@
 		</filter-class>
 	</filter>
 
-
+    <!--  LoginFilter must be first filter-mapping entry -->
+    <filter-mapping>
+        <filter-name>loginFilter</filter-name>
+        <url-pattern>/*</url-pattern>
+    </filter-mapping>
 
 	<filter-mapping>
 		<filter-name>ErrorHelper</filter-name>
@@ -172,7 +186,6 @@
 		<url-pattern>/esub/*</url-pattern>
 	</filter-mapping>
 
-
 	<filter-mapping>
 		<filter-name>jsFilter</filter-name>
 		<url-pattern>/capcontrol/oneline/*</url-pattern>
@@ -187,8 +200,6 @@
 		<filter-name>svgFilter</filter-name>
 		<url-pattern>/capcontrol/oneline/*</url-pattern>
 	</filter-mapping>
-
-
 
 	<filter-mapping>
 		<filter-name>extensionsFilter</filter-name>
@@ -757,6 +768,10 @@
         <url-pattern>/servlet/LoginController</url-pattern>
     </servlet-mapping>
    
+    <servlet-mapping>
+        <servlet-name>login</servlet-name>
+        <url-pattern>/index.jsp</url-pattern>
+    </servlet-mapping>
 
 	<servlet-mapping>
 		<servlet-name>deviceConfiguration</servlet-name>
@@ -871,11 +886,6 @@
 	<servlet-mapping>
 		<servlet-name>debug</servlet-name>
 		<url-pattern>/spring/debug/*</url-pattern>
-	</servlet-mapping>
-	
-	<servlet-mapping>
-		<servlet-name>reports</servlet-name>
-		<url-pattern>/spring/reports/*</url-pattern>
 	</servlet-mapping>
 
 	<servlet-mapping>
@@ -1048,8 +1058,7 @@
 
 
 	<welcome-file-list>
-		<welcome-file>org.apache.jsp.login_jsp</welcome-file>
-		<welcome-file>login.jsp</welcome-file>
+		<welcome-file>index.jsp</welcome-file>
 	</welcome-file-list>
 
 

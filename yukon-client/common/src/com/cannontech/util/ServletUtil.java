@@ -19,7 +19,9 @@ import java.util.StringTokenizer;
 import java.util.TimeZone;
 
 import javax.servlet.ServletRequest;
+import javax.servlet.http.Cookie;
 import javax.servlet.http.HttpServletRequest;
+import javax.servlet.http.HttpServletResponse;
 import javax.servlet.http.HttpSession;
 
 import org.apache.commons.lang.StringEscapeUtils;
@@ -1085,9 +1087,9 @@ public static Date roundToMinute(Date toRound) {
 	 * Returns the current Yukon user object found in the session.
 	 *
 	 */
-	public static LiteYukonUser getYukonUser( HttpSession session )
-	{
-		return (LiteYukonUser)session.getAttribute(ATT_YUKON_USER);
+	public static LiteYukonUser getYukonUser( HttpSession session ) {
+	    if (session == null) return null;
+		return (LiteYukonUser) session.getAttribute(ATT_YUKON_USER);
 	}
 
 	/**
@@ -1302,4 +1304,33 @@ public static Date roundToMinute(Date toRound) {
 		}
 		return false;
 	}
+	
+	public static void createCookie(final HttpServletRequest request, final HttpServletResponse response,
+	        final String cookieName, final String cookieValue) {
+	    Cookie cookie = new Cookie(cookieName, cookieValue);
+        cookie.setMaxAge(Integer.MAX_VALUE);
+        cookie.setPath("/" + request.getContextPath());
+        response.addCookie(cookie);
+	}
+	
+    public static Cookie getCookie(final HttpServletRequest request, final String cookieName) {
+        final Cookie[] cookieArray = request.getCookies();
+        if (cookieArray == null) return null;
+        for (final Cookie cookie : cookieArray) {
+            if (cookie.getName().equals(cookieName)) {
+                return cookie;
+            }
+        }
+        return null;
+    }
+    
+    public static void deleteAllCookies(final HttpServletRequest request, final HttpServletResponse response) {
+        Cookie[] cookies = request.getCookies();
+        if (cookies == null) return;
+        for (final Cookie cookie : cookies) {
+            cookie.setMaxAge(0);
+            response.addCookie(cookie);
+        }
+    }
+
 }

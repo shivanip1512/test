@@ -53,8 +53,6 @@
 	class="com.cannontech.web.loadcontrol.LMSession"
 />
 
-<cti:checklogin/>
-
 <%  
     LCConnectionServlet connServlet = (LCConnectionServlet)
         application.getAttribute(LCConnectionServlet.SERVLET_CONTEXT_ID);

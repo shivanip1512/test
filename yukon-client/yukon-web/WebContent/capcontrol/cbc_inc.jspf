@@ -19,7 +19,6 @@
 - Login and scope variables init
 -
 -->
-<cti:checklogin/>
 <cti:isPropertyFalse propertyid="<%= CBCSettingsRole.ACCESS %>">
 	<jsp:forward page="/capcontrol/redirect.jsp">
 		<jsp:param name="reason" value="Access to the page could not be granted." />

@@ -8,7 +8,6 @@
 <%@ page import="com.cannontech.roles.application.TrendingRole"%>
 <%@ taglib uri="http://cannontech.com/tags/cti" prefix="cti" %>
 
-<cti:checklogin/>
 <%
 	LiteYukonUser liteYukonUser = (LiteYukonUser) session.getAttribute(ServletUtil.ATT_YUKON_USER);
 	if (liteYukonUser == null)

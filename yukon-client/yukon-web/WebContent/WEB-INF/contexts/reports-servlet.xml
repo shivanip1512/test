@@ -2,14 +2,7 @@
 <!DOCTYPE beans PUBLIC "-//SPRING//DTD BEAN//EN" "http://www.springframework.org/dtd/spring-beans.dtd">
 <beans>
 
-  <bean class="org.springframework.web.servlet.handler.BeanNameUrlHandlerMapping">
-    <property name="interceptors">
-        <list>
-            <ref bean="yukonLoginCheckInterceptor"/>
-        </list>
-    </property>
- </bean>
-  
+  <bean class="org.springframework.web.servlet.handler.BeanNameUrlHandlerMapping"/>
 
     <bean id="viewResolver"
       class="org.springframework.web.servlet.view.UrlBasedViewResolver">

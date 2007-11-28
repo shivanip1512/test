@@ -58,14 +58,9 @@ public class StandardPageTag extends BodyTagSupport {
     private String menuSelection = null;
     private boolean skipPage;
     
+    @Override
     public int doStartTag() throws JspException {
-        // check if the user is logged in
         skipPage = false;
-        if (!CheckLoginTag.checkLogin(pageContext)) {
-            // the checkLogin calls sets a redirect
-            skipPage = true;
-            return SKIP_BODY;
-        }
         
         // check if authorized for this page
         ModuleBuilder moduleBuilder = getModuleBuilder();
@@ -92,10 +87,12 @@ public class StandardPageTag extends BodyTagSupport {
         return EVAL_BODY_BUFFERED;
     }
     
+    @Override
     public int doAfterBody() throws JspException {
         return SKIP_BODY;
     }
     
+    @Override
     public int doEndTag() throws JspException {
         try {
             if (skipPage) {

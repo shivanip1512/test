@@ -1,8 +1,11 @@
 package com.cannontech.web.login.impl;
 
+import java.io.IOException;
+import java.security.GeneralSecurityException;
 import java.util.Enumeration;
 import java.util.List;
 import java.util.Properties;
+import java.util.Random;
 
 import javax.servlet.http.Cookie;
 import javax.servlet.http.HttpServletRequest;
@@ -13,7 +16,12 @@ import org.springframework.web.bind.ServletRequestUtils;
 
 import com.cannontech.clientutils.ActivityLogger;
 import com.cannontech.clientutils.CTILogger;
+import com.cannontech.common.constants.LoginController;
+import com.cannontech.common.exception.BadAuthenticationException;
+import com.cannontech.common.exception.NotLoggedInException;
 import com.cannontech.common.util.Pair;
+import com.cannontech.core.authentication.service.AuthenticationService;
+import com.cannontech.core.authentication.service.CryptoService;
 import com.cannontech.core.dao.AuthDao;
 import com.cannontech.core.dao.ContactDao;
 import com.cannontech.core.dao.YukonUserDao;
@@ -21,12 +29,14 @@ import com.cannontech.database.data.lite.LiteContact;
 import com.cannontech.database.data.lite.LiteYukonUser;
 import com.cannontech.roles.application.WebClientRole;
 import com.cannontech.stars.util.ServletUtils;
+import com.cannontech.util.ServletUtil;
 import com.cannontech.web.login.LoginService;
 import com.cannontech.web.login.SessionInitializer;
 import com.cannontech.web.navigation.CtiNavObject;
 
 public class LoginServiceImpl implements LoginService {
-    private static final String LOGIN_URI = "/login.jsp";
+    private static final Random rand = new Random();
+    private static final String delimiter = ":";
     private static final String INVALID_PARAMS = "failed=true";
     private static final String INVALID_URI = "/login.jsp?failed=true";
     private static final String INVALID_INBOUND_URI = "/voice/inboundLogin.jsp";
@@ -37,149 +47,123 @@ public class LoginServiceImpl implements LoginService {
     private static final String PASSWORD = com.cannontech.common.constants.LoginController.PASSWORD;
     private static final String TOKEN = com.cannontech.common.constants.LoginController.TOKEN;
     private static final String REDIRECT = com.cannontech.common.constants.LoginController.REDIRECT;
-    private static final String SAVE_CURRENT_USER = com.cannontech.common.constants.LoginController.SAVE_CURRENT_USER;
     private static final String YUKON_USER = com.cannontech.common.constants.LoginController.YUKON_USER;
     private static final String SAVED_YUKON_USERS = com.cannontech.common.constants.LoginController.SAVED_YUKON_USERS;
-    private static final String LOGIN_URL_COOKIE = com.cannontech.common.constants.LoginController.LOGIN_URL_COOKIE;
     private static final String LOGIN_WEB_ACTIVITY_ACTION = com.cannontech.database.data.activity.ActivityLogActions.LOGIN_WEB_ACTIVITY_ACTION;
     private static final String LOGIN_CLIENT_ACTIVITY_ACTION = com.cannontech.database.data.activity.ActivityLogActions.LOGIN_CLIENT_ACTIVITY_ACTION;
     private static final String LOGOUT_ACTIVITY_LOG = com.cannontech.database.data.activity.ActivityLogActions.LOGOUT_ACTIVITY_LOG;
     private static final String LOGIN_FAILED_ACTIVITY_LOG = com.cannontech.database.data.activity.ActivityLogActions.LOGIN_FAILED_ACTIVITY_LOG;
     private static final String OUTBOUND_LOGIN_VOICE_ACTIVITY_ACTION = com.cannontech.database.data.activity.ActivityLogActions.LOGIN_VOICE_ACTIVITY_ACTION;
     private static final String INBOUND_LOGIN_VOICE_ACTIVITY_ACTION = "LOG IN (INBOUND VOICE)";
+    private AuthenticationService authenticationService;
     private AuthDao authDao;
     private ContactDao contactDao;
     private YukonUserDao yukonUserDao;
+    private CryptoService cryptoService;
     private List<SessionInitializer> sessionInitializers;
 
-    public void clientLogin(HttpServletRequest request, HttpServletResponse response) throws Exception {
-        String username = request.getParameter(USERNAME);
-        String password = request.getParameter(PASSWORD);   
-        LiteYukonUser user = authDao.login(username,password);
+    public boolean login(HttpServletRequest request, HttpServletResponse response, Cookie cookie) throws Exception {
+        try {
+            String cryptValue = cookie.getValue();
+            String value = cryptoService.decrypt(cryptValue);
 
-        if(user != null) {
+            String[] split = value.split(delimiter);
+            if (split.length < 3) return false;
+
+            final String username = split[1];
+            final String password = split[2];
+            
+            return this.login(request, response, username, password, false);
+        } catch (GeneralSecurityException e) {
+            CTILogger.warn(e);
+            return false;
+        }
+    }
+
+    public boolean login(HttpServletRequest request, HttpServletResponse response, String username, String password, 
+            boolean createRememberMeCookie) throws Exception {
+        try {
+            final LiteYukonUser user = authenticationService.login(username, password);
+            createSession(request, response, user);
+            
+            if (createRememberMeCookie) createRememberMeCookie(request, response, username, password);
+            
+            ActivityLogger.logEvent(user.getUserID(), LOGIN_WEB_ACTIVITY_ACTION, "User " + user.getUsername() + " (userid=" + user.getUserID() + ") has logged in from " + request.getRemoteAddr());
+            return true;
+        } catch (BadAuthenticationException e) {
+            handleBadAuthentication(request, response, username);
+            return false;
+        }
+    }
+    
+    private void handleBadAuthentication(HttpServletRequest request, HttpServletResponse response, String username) throws IOException {
+        ActivityLogger.logEvent(LOGIN_FAILED_ACTIVITY_LOG, "Login attempt as " + username + " failed from " + request.getRemoteAddr());
+        ServletUtil.deleteAllCookies(request, response);
+        String redirect = request.getContextPath() + INVALID_URI;
+        response.sendRedirect(redirect);
+    }
+    
+    private void createRememberMeCookie(final HttpServletRequest request, HttpServletResponse response, 
+            String username, String password) {
+        try {
+            String value = createCookieValue(username, password);
+            String cryptValue = cryptoService.encrypt(value);
+            ServletUtil.createCookie(request, response, LoginController.REMEMBER_ME_COOKIE, cryptValue);
+        } catch (GeneralSecurityException e) {
+            CTILogger.warn("Creation of RememberMeCookie Failed!", e);
+        }    
+    }
+
+    private String createCookieValue(final String username, final String password) {
+        final String randomString = Long.toString(Math.abs(rand.nextLong()));
+        final StringBuilder sb = new StringBuilder();
+        sb.append(randomString);
+        sb.append(delimiter);
+        sb.append(username);
+        sb.append(delimiter);
+        sb.append(password);
+        return sb.toString();
+    }
+    
+    private void createSession(HttpServletRequest request, HttpServletResponse response, LiteYukonUser user) {
+        HttpSession session = request.getSession(false);
+        if (session != null) session.invalidate();
+        session = request.getSession(true);
+        initSession(user, session);
+    }
+    
+    public void clientLogin(HttpServletRequest request, HttpServletResponse response) throws Exception {
+        String username = ServletRequestUtils.getRequiredStringParameter(request, USERNAME);
+        String password = ServletRequestUtils.getRequiredStringParameter(request, PASSWORD);
+        
+        try {
+            LiteYukonUser user = authenticationService.login(username, password);
             HttpSession session = request.getSession(true);
             initSession(user, session);
             ActivityLogger.logEvent(user.getUserID(), LOGIN_CLIENT_ACTIVITY_ACTION, "User " + user.getUsername() + " (userid=" + user.getUserID() + ") has logged in from " + request.getRemoteAddr());
-        }
-        else{
+        } catch (BadAuthenticationException e) {
+            ActivityLogger.logEvent(LOGIN_FAILED_ACTIVITY_LOG, "Login attempt as " + username + " failed from " + request.getRemoteAddr());
             response.sendError(HttpServletResponse.SC_FORBIDDEN);
         }
     }
 
-    public boolean login(HttpServletRequest request, HttpServletResponse response) throws Exception {
-        return login(request, response, null, null, null);
-    }
-    
-    public boolean login(HttpServletRequest request, HttpServletResponse response, String username, String password) throws Exception {
-        return login(request, response, username, password, null);
-    }
-    
-    public boolean login(HttpServletRequest request, HttpServletResponse response, String username, String password, 
-            String redirectedFrom) throws Exception {
-        
-        username = (username != null) ? username : ServletRequestUtils.getStringParameter(request, USERNAME);
-        password = (password != null) ? password : ServletRequestUtils.getStringParameter(request, PASSWORD);
-        
-        String referer = this.getReferer(request);
-        String redirect = this.getRedirect(request);
-        
-        LiteYukonUser user = authDao.login(username,password);
-        String home_url = null;
-
-        if(user != null && 
-                (home_url = authDao.getRolePropertyValue(user,WebClientRole.HOME_URL)) != null) {
-            HttpSession session = request.getSession();
-
-            if (request.getParameter(SAVE_CURRENT_USER) != null) {
-                if (session != null && session.getAttribute(YUKON_USER) != null) {
-                    Properties oldContext = new Properties();
-                    Enumeration attNames = session.getAttributeNames();
-                    while (attNames.hasMoreElements()) {
-                        String attName = (String) attNames.nextElement();
-                        oldContext.put( attName, session.getAttribute(attName) );
-                    }
-
-                    session.invalidate();
-                    session = request.getSession(true);
-
-                    if(referer == null)
-                        referer = authDao.getRolePropertyValue(user,WebClientRole.HOME_URL);
-
-                    // Save the old session context and where to direct the browser when the new user logs off
-                    session.setAttribute( SAVED_YUKON_USERS, new Pair(oldContext, referer) );
-                }
-            }
-            else {
-                if (session != null && session.getAttribute(YUKON_USER) != null) {
-                    session.invalidate();
-                    session = request.getSession(true);
-                }
-
-                //stash a cookie that might tell us later where they log in at                              
-                String loginUrl = authDao.getRolePropertyValue(user, WebClientRole.LOG_IN_URL);
-                if (loginUrl.startsWith("/")) loginUrl = request.getContextPath() + loginUrl;
-
-                Cookie c = new Cookie(LOGIN_URL_COOKIE, loginUrl);
-                c.setPath("/"+request.getContextPath());
-                c.setMaxAge(Integer.MAX_VALUE);
-                response.addCookie(c);
-            }
-
-            initSession(user, session);
-            ActivityLogger.logEvent(user.getUserID(), LOGIN_WEB_ACTIVITY_ACTION, "User " + user.getUsername() + " (userid=" + user.getUserID() + ") has logged in from " + request.getRemoteAddr());
-
-            String location = (redirectedFrom != null && !redirectedFrom.equals("")) ? redirectedFrom : request.getContextPath() + home_url ;
-            response.sendRedirect(location);
-            return true;
-        }
-        
-        // Login failed, send them on their way using one of
-        // REDIRECT parameter, referer, INVALID_URI in that order 
-        if (redirect == null) {
-            if(referer != null) {
-                redirect = referer;
-                if(!redirect.endsWith(INVALID_PARAMS)) 
-                    redirect += "?" + INVALID_PARAMS;    
-            }
-            else {
-                redirect = request.getContextPath() + INVALID_URI;
-            }
-        }
-        
-        ActivityLogger.logEvent(LOGIN_FAILED_ACTIVITY_LOG, "Login attempt as " + username + " failed from " + request.getRemoteAddr());
-        deleteAllCookies(request, response);
-        response.sendRedirect(redirect);
-        return false;
-    }
-    
-    private void deleteAllCookies(final HttpServletRequest request, final HttpServletResponse response) {
-        Cookie[] cookies = request.getCookies();
-        if (cookies == null) return;
-        for (final Cookie cookie : cookies) {
-            cookie.setMaxAge(0);
-            response.addCookie(cookie);
-        }
-    }
-
+    @SuppressWarnings("unchecked")
     public void logout(HttpServletRequest request, HttpServletResponse response) throws Exception {
-        HttpSession session = request.getSession(false);
         String redirect = this.getRedirect(request);
-
-        if(session != null) {
-            LiteYukonUser user = (LiteYukonUser) session.getAttribute(YUKON_USER);          
+        
+        try {
+            LiteYukonUser user = ServletUtil.getYukonUser(request);
+            HttpSession session = request.getSession(false);
             Pair p = (Pair) session.getAttribute(SAVED_YUKON_USERS);
             session.invalidate();
-
-            if(user != null) {
-                redirect = authDao.getRolePropertyValue(user, WebClientRole.LOG_IN_URL);
-                ActivityLogger.logEvent(user.getUserID(),LOGOUT_ACTIVITY_LOG, "User " + user.getUsername() + " (userid=" + user.getUserID() + ") has logged out from " + request.getRemoteAddr());
-            }
+            
+            redirect = authDao.getRolePropertyValue(user, WebClientRole.LOG_IN_URL);
+            ActivityLogger.logEvent(user.getUserID(),LOGOUT_ACTIVITY_LOG, "User " + user.getUsername() + " (userid=" + user.getUserID() + ") has logged out from " + request.getRemoteAddr());
 
             if (p != null) {
                 Properties oldContext = (Properties) p.getFirst();
                 redirect = (String) p.getSecond();
-
+                
                 // Restore saved session context
                 session = request.getSession( true );
                 Enumeration attNames = oldContext.propertyNames();
@@ -188,26 +172,10 @@ public class LoginServiceImpl implements LoginService {
                     session.setAttribute( attName, oldContext.get(attName) );
                 }
             }
+        } catch (NotLoggedInException e) {
+            redirect = ServletUtil.createSafeUrl(request, LoginController.LOGIN_URL);
         }
 
-        //Try to send them back to where they logged in from
-        if (redirect == null) {
-            Cookie[] cookies = request.getCookies();
-            if(cookies != null) {       
-                for(int i = 0; i < cookies.length; i++) {
-                    Cookie c = cookies[i];
-                    if(c.getName().equalsIgnoreCase(LOGIN_URL_COOKIE)) {
-                        redirect = c.getValue();
-                        break;
-                    }
-                }
-            }
-        }
-
-        if (redirect == null)
-            redirect = request.getContextPath() + LOGIN_URI;
-
-        redirect = (!redirect.equals(LOGIN_URI)) ? redirect : redirect + "?force=true";
         response.sendRedirect(redirect);
     }
 
@@ -368,6 +336,14 @@ public class LoginServiceImpl implements LoginService {
 
     public void setSessionInitializers(List<SessionInitializer> sessionInitializers) {
         this.sessionInitializers = sessionInitializers;
+    }
+
+    public void setCryptoService(CryptoService cryptoService) {
+        this.cryptoService = cryptoService;
+    }
+
+    public void setAuthenticationService(AuthenticationService authenticationService) {
+        this.authenticationService = authenticationService;
     }
 
 }

@@ -13,11 +13,6 @@
             </value>
         </property>
         <property name="order" value="1"/>
-        <property name="interceptors">
-            <list>
-                <ref bean="yukonLoginCheckInterceptor"/>
-            </list>
-        </property>
     </bean>
     
     <bean id="deviceBaseController" class="com.cannontech.web.util.ClasspathResourceController">

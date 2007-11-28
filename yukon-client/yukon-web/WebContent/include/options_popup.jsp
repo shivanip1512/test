@@ -4,7 +4,6 @@
 <%@ page import="com.cannontech.database.db.graph.GraphRenderers" %>
 <%@ taglib uri="http://cannontech.com/tags/cti" prefix="cti" %>
 
-<cti:checklogin/>
 <head>
 <title>Trending Options Popup</title>
 <link rel="stylesheet" href="../WebConfig/yukon/CannonStyle.css" type="text/css">

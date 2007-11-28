@@ -7,6 +7,7 @@
         class="org.springframework.web.servlet.handler.SimpleUrlHandlerMapping">
         <property name="mappings">
             <props>
+                <prop key="/index.jsp">indexController</prop>
                 <prop key="controller">loginController</prop>
                 <prop key="/login.jsp">loginController</prop>
                 <prop key="/servlet/LoginController">
@@ -23,13 +24,15 @@
         <property name="prefix" value="/WEB-INF/pages/login/" />
     </bean>
 
+    <bean id="indexController" class="com.cannontech.web.login.IndexController">
+        <property name="authDao" ref="authDao"/>
+    </bean>
+
     <bean id="loginController"
         class="com.cannontech.web.login.YukonLoginController">
         <property name="methodNameResolver" ref="methodNameResolver" />
-        <!--  <property name="authenticationService"
-            ref="authenticationService" /> -->
         <property name="loginService" ref="loginService"/>
-        <property name="cryptoService" ref="cryptoService" />
+        <property name="authDao" ref="authDao"/>
     </bean>
 
     <bean id="methodNameResolver"

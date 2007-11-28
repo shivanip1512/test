@@ -15,8 +15,6 @@
 <%@ page import="com.cannontech.analysis.*"%> 	
 <%@ taglib uri="http://cannontech.com/tags/cti" prefix="cti" %>
 
-<cti:checklogin/>
-
 <%
 	LiteYukonUser liteYukonUser = (LiteYukonUser) session.getAttribute(ServletUtil.ATT_YUKON_USER);
 	int liteYukonUserID = liteYukonUser.getLiteID();

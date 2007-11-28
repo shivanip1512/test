@@ -6,7 +6,6 @@
 <%@ page import="com.cannontech.stars.util.ServletUtils" %>
 <%@ page import="com.cannontech.stars.web.StarsYukonUser" %>
 <%@ page import="com.cannontech.stars.xml.serialize.*" %>
-<cti:checklogin/>
 <%
 	StarsYukonUser user = (StarsYukonUser) session.getAttribute(ServletUtils.ATT_STARS_YUKON_USER);
 	if (!StarsUtils.isOperator(user)) {

@@ -19,7 +19,6 @@
 
 <%@ taglib uri="http://cannontech.com/tags/cti" prefix="cti" %>
  
-<cti:checklogin/>
 <jsp:useBean id="YUKON_USER" scope="session" class="com.cannontech.database.data.lite.LiteYukonUser"/>
 
 <%  

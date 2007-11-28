@@ -119,6 +119,7 @@
      <property name="jdbcTemplate" ref="jdbcTemplate"/>
   </bean>
   <bean id="yukonUserDao" class="com.cannontech.core.dao.impl.YukonUserDaoImpl" >
+     <property name="simpleJdbcTemplate" ref="simpleJdbcTemplate"/>
      <property name="databaseCache" ref="databaseCache"/>
      <property name="energyCompanyDao" ref="energyCompanyDao" />
   </bean>
