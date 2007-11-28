@@ -6,8 +6,8 @@
 *
 * PVCS KEYWORDS:
 * ARCHIVE      :  $Archive:   Z:/SOFTWAREARCHIVES/YUKON/COMMON/resolvers.cpp-arc  $
-* REVISION     :  $Revision: 1.86 $
-* DATE         :  $Date: 2007/11/15 17:50:53 $
+* REVISION     :  $Revision: 1.87 $
+* DATE         :  $Date: 2007/11/28 20:36:16 $
 *
 * Copyright (c) 1999, 2000, 2001 Cannon Technologies Inc. All rights reserved.
 *-----------------------------------------------------------------------------*/
@@ -753,7 +753,7 @@ INT resolveCapControlType(const string& _rwsTemp)
     {
         nRet = TYPE_CC_FEEDER;
     }
-    if(rwsTemp == "ccspecialarea")
+    else if(rwsTemp == "ccspecialarea")
     {
         nRet = TYPE_CC_SPECIALAREA;
     }

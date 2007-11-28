@@ -188,6 +188,7 @@ public:
                                   map< long, CtiCCSpecialPtr > *paobject_specialarea_map,
                                   multimap< long, CtiCCSpecialPtr > *pointid_specialarea_map,
                                   CtiCCSpArea_vec *ccSpecialAreas);
+    void reloadTimeOfDayStrategyFromDataBase(long strategyId, map< long, CtiCCStrategyPtr > *strategy_map);
     void reloadStrategyFromDataBase(long strategyId, map< long, CtiCCStrategyPtr > *strategy_map);
     void reloadCapBankStatesFromDatabase();
     void reloadGeoAreasFromDatabase();

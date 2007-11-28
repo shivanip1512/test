@@ -37,11 +37,13 @@ RWDEFINE_COLLECTABLE( CtiCCStrategy, CTICCSTRATEGY_ID )
     Constructors
 ---------------------------------------------------------------------------*/
 CtiCCStrategy::CtiCCStrategy()
-{
+{      
+    _todc.clear();
 }
 
 CtiCCStrategy::CtiCCStrategy(RWDBReader& rdr)
 {
+    _todc.clear();
     restore(rdr);
 }
 
@@ -55,6 +57,11 @@ CtiCCStrategy::CtiCCStrategy(const CtiCCStrategy& strategy)
 ---------------------------------------------------------------------------*/
 CtiCCStrategy::~CtiCCStrategy()
 {
+    if (!_todc.empty())
+    {
+        delete_vector(_todc);
+        _todc.clear();
+    } 
 }
 
 BOOL CtiCCStrategy::isDirty() const
@@ -144,6 +151,15 @@ CtiCCStrategy& CtiCCStrategy::operator=(const CtiCCStrategy& right)
         _integrateFlag = right._integrateFlag;
         _integratePeriod = right._integratePeriod;
         _likeDayFallBack = right._likeDayFallBack;
+
+        _todc.clear();
+        for(LONG i=0;i<right._todc.size();i++)
+        {
+            CtiTimeOfDayController* tmp = new CtiTimeOfDayController;
+            tmp->_percentToClose = ((CtiTimeOfDayController*)right._todc[i])->_percentToClose;
+            tmp->_secsFromMidnight = ((CtiTimeOfDayController*)right._todc[i])->_secsFromMidnight;
+            _todc.push_back(tmp);
+        }
     }
     return *this;
 
@@ -163,6 +179,17 @@ CtiCCStrategy* CtiCCStrategy::replicate() const
     return(new CtiCCStrategy(*this));
 }
 
+void CtiCCStrategy::setTimeAndCloseValues(RWDBReader &rdr)
+{
+    CtiTimeOfDayController *todc = new CtiTimeOfDayController;
+    
+    rdr["starttimeseconds"]  >> todc->_secsFromMidnight;
+    rdr["percentclose"] >> todc->_percentToClose;
+
+    _todc.push_back(todc);
+
+    return;
+}   
 
 void CtiCCStrategy::restore(RWDBReader &rdr)
 {
@@ -236,6 +263,7 @@ void CtiCCStrategy::restore(RWDBReader &rdr)
     rdr["likedayfallback"] >> tempBoolString;
     CtiToLower(tempBoolString);
     _likeDayFallBack = (tempBoolString=="y"?TRUE:FALSE);
+    //_todc.clear();
 
 }
 

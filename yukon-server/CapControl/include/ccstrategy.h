@@ -28,6 +28,21 @@
 #include "observe.h"
 #include "msg_pcrequest.h"
 
+typedef struct
+{
+    long _secsFromMidnight;
+    int  _percentToClose;
+
+} CtiTimeOfDayController;
+//For Sorted Vector, the vector will use this to determine position in the vector.
+struct CtiTimeOfDayController_less 
+{
+    bool operator()( const CtiTimeOfDayController* _X , const CtiTimeOfDayController* _Y)
+        { return ( _X->_secsFromMidnight < _Y->_secsFromMidnight ); }
+};
+//Typedef for Sanity using sorted vectors
+typedef codeproject::sorted_vector<CtiTimeOfDayController*,true,CtiTimeOfDayController_less> CtiTODC_SVector;
+     
 class CtiCCStrategy : public RWCollectable
 {
 
@@ -70,6 +85,9 @@ RWDECLARE_COLLECTABLE( CtiCCStrategy )
     LONG getIntegratePeriod() const;
     BOOL getLikeDayFallBack() const;
 
+    CtiTODC_SVector& getTimeOfDayControllers(){return _todc;};
+
+
     CtiCCStrategy& setStrategyId(LONG id);
     CtiCCStrategy& setStrategyName(const string& strategyname);
     CtiCCStrategy& setControlMethod(const string& method);
@@ -98,6 +116,8 @@ RWDECLARE_COLLECTABLE( CtiCCStrategy )
     CtiCCStrategy& setIntegrateFlag(BOOL flag);
     CtiCCStrategy& setIntegratePeriod(LONG period);
     CtiCCStrategy& setLikeDayFallBack(BOOL flag);
+
+    void setTimeAndCloseValues(RWDBReader& rdr);
 
     BOOL isDirty() const;
 
@@ -156,6 +176,8 @@ RWDECLARE_COLLECTABLE( CtiCCStrategy )
     BOOL  _integrateFlag;
     LONG _integratePeriod;
     BOOL _likeDayFallBack;
+
+    CtiTODC_SVector _todc;
 
 
 

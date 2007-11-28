@@ -55,7 +55,11 @@ CtiCCArea::CtiCCArea(const CtiCCArea& area)
 ---------------------------------------------------------------------------*/
 CtiCCArea::~CtiCCArea()
 {  
-    
+    if (!_subStationIds.empty())
+    {
+        _subStationIds.clear();
+    }
+
 }
 
 /*-------------------------------------------------------------------------

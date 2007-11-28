@@ -55,7 +55,11 @@ CtiCCSpecial::CtiCCSpecial(const CtiCCSpecial& special)
 ---------------------------------------------------------------------------*/
 CtiCCSpecial::~CtiCCSpecial()
 {  
-    
+
+    if (!_substationIds.empty())
+    {
+        _substationIds.clear();
+    }
 }
 
 
