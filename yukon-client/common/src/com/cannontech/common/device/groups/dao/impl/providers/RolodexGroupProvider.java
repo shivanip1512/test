@@ -36,7 +36,7 @@ public class RolodexGroupProvider extends DeviceGroupProviderBase {
             sql.append("where upper(ypo.PAOName) like ?");
             YukonDeviceRowMapper mapper = new YukonDeviceRowMapper(paoGroupsWrapper);
             List<YukonDevice> devices = jdbcTemplate.query(sql.toString(), mapper, matcher);
-            return devices;
+            return Collections.unmodifiableList(devices);
         }
         // this must be our parent group
         return Collections.emptyList();

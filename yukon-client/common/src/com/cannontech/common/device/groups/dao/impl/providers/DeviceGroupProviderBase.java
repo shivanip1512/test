@@ -68,7 +68,14 @@ public abstract class DeviceGroupProviderBase implements DeviceGroupProvider {
     }
 
     public List<YukonDevice> getDevices(DeviceGroup group) {
-        List<YukonDevice> deviceList = getChildDevices(group);
+        
+        List<YukonDevice> deviceList = new ArrayList<YukonDevice>();
+
+        // Get child devices
+        List<YukonDevice> childDeviceList = getChildDevices(group);
+        deviceList.addAll(childDeviceList);
+        
+        // Get child group's devices
         List<? extends DeviceGroup> childGroups = getChildGroups(group);
         for (DeviceGroup childGroup : childGroups) {
             List<YukonDevice> devices = mainDelegator.getDevices(childGroup);

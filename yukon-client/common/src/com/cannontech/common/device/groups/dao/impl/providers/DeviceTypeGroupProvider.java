@@ -46,7 +46,7 @@ public class DeviceTypeGroupProvider extends DeviceGroupProviderBase {
             YukonDeviceRowMapper mapper = new YukonDeviceRowMapper(paoGroupsWrapper);
             List<YukonDevice> devices = jdbcTemplate.query(sql.toString(), mapper, deviceTypeGroup.type);
             
-            return devices;
+            return Collections.unmodifiableList(devices);
         }
         
         // this must be our parent group

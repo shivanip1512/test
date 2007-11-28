@@ -29,6 +29,8 @@ public interface DeviceGroupProvider {
     public String getChildDeviceGroupSqlWhereClause(DeviceGroup group, String identifier);    
     public String getDeviceGroupSqlWhereClause(DeviceGroup group, String identifier);
     public List<? extends DeviceGroup> getChildGroups(DeviceGroup group);
+    
+    // Returns an unmodifiable list
     public List<YukonDevice> getChildDevices(DeviceGroup group);
     public DeviceGroup getGroup(DeviceGroup base, String groupName) throws NotFoundException;
     public boolean isDeviceInGroup(DeviceGroup deviceGroup, YukonDevice device);

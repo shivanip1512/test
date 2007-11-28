@@ -1,5 +1,6 @@
 package com.cannontech.common.device.groups.dao.impl.providers;
 
+import java.util.Collections;
 import java.util.HashSet;
 import java.util.List;
 import java.util.Set;
@@ -24,7 +25,7 @@ public class StaticDeviceGroupProvider extends DeviceGroupProviderBase {
     public List<YukonDevice> getChildDevices(DeviceGroup group) {
         StoredDeviceGroup sdg = getStoredGroup(group);
         List<YukonDevice> childDevices = deviceGroupMemberEditorDao.getChildDevices(sdg);
-        return childDevices;
+        return Collections.unmodifiableList(childDevices);
     }
 
     @Override
