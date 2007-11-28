@@ -4,7 +4,7 @@
         for any objects whose tables may have been populated in the past.
     -->
   <sequencetable name="SequenceNumber" valuecolumn="lastValue" keycolumn="sequenceName">
-      <sequence name="general" default="true">
+      <sequence name="general">
       	<table name="CapbankComment" identitycolumn="commentid" initsequence="true"/>
         <table name="LMCustomerEventBase" identitycolumn="EventID" initsequence="true"/>
         <table name="Warehouse" identitycolumn="WarehouseID"/>
@@ -100,6 +100,11 @@
       </sequence>
       <sequence name="LMControlInfo">
         <table name="LMHardwareControlGroup" identitycolumn="ControlEntryId" initsequence="true"/>
+      </sequence>
+      <sequence name="Jobs">
+        <table name="JobProperty" identitycolumn="JobPropertyId"/>
+        <table name="JobStatus" identitycolumn="JobStatusId"/>
+        <table name="Job" identitycolumn="JobId"/>
       </sequence>
   </sequencetable>
 </sequencetables>
