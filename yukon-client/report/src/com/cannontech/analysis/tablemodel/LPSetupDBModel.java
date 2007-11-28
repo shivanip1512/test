@@ -86,7 +86,7 @@ public class LPSetupDBModel extends ReportModelBase<LPMeterData> implements Comp
             meter.setDeviceId(rs.getInt("PAOBJECTID"));
             meter.setName(rs.getString("PAONAME"));
             meter.setTypeStr(rs.getString("TYPE"));
-            meter.setType(PAOGroups.getDeviceType(rs.getString("TYPE")));
+            meter.setType(PAOGroups.getDeviceType(meter.getTypeStr()));
             meter.setDisabled(CtiUtilities.isTrue(rs.getString("DISABLEFLAG")));
             meter.setMeterNumber(rs.getString("METERNUMBER"));
             meter.setAddress(rs.getString("ADDRESS"));
@@ -95,11 +95,7 @@ public class LPSetupDBModel extends ReportModelBase<LPMeterData> implements Comp
 
             final MeterAndPointData mpData = 
                 new MeterAndPointData(
-                    meter,
-                    rs.getInt("POINTID"),
-                    rs.getString("POINTNAME"),
-                    null,
-                    null
+                    meter
                 );
 
 			
@@ -124,22 +120,21 @@ public class LPSetupDBModel extends ReportModelBase<LPMeterData> implements Comp
 	public StringBuilder buildSQLStatement() {
 		final StringBuilder sql = new StringBuilder();
         //SELECT
-        sql.append("SELECT DISTINCT PAO.PAOBJECTID, PAO.PAONAME, PAO.TYPE, PAO.DISABLEFLAG, ");
-        sql.append("DMG.METERNUMBER, DCS.ADDRESS, ROUTE.PAOBJECTID as ROUTEPAOBJECTID, ROUTE.PAONAME as ROUTEPAONAME, ");
-        sql.append("P.POINTID, P.POINTNAME, DLP.LASTINTERVALDEMANDRATE, VOLTAGEDMDINTERVAL, ");
-        sql.append("LOADPROFILEDEMANDRATE, VOLTAGEDMDRATE ");
+        sql.append(" SELECT DISTINCT PAO.PAOBJECTID, PAO.PAONAME, PAO.TYPE, PAO.DISABLEFLAG, ");
+        sql.append(" DMG.METERNUMBER, DCS.ADDRESS, ROUTE.PAOBJECTID as ROUTEPAOBJECTID, ROUTE.PAONAME as ROUTEPAONAME, ");
+        sql.append(" DLP.LASTINTERVALDEMANDRATE, VOLTAGEDMDINTERVAL, ");
+        sql.append(" LOADPROFILEDEMANDRATE, VOLTAGEDMDRATE ");
         
         //FROM
-        sql.append("FROM YUKONPAOBJECT PAO, DEVICELOADPROFILE DLP, DEVICEMETERGROUP DMG, DEVICECARRIERSETTINGS DCS, ");
-        sql.append("POINT P, DEVICEROUTES DR, YUKONPAOBJECT ROUTE ");
+        sql.append(" FROM YUKONPAOBJECT PAO, DEVICELOADPROFILE DLP, DEVICEMETERGROUP DMG, DEVICECARRIERSETTINGS DCS, ");
+        sql.append(" DEVICEROUTES DR, YUKONPAOBJECT ROUTE ");
         
         //WHERE
-		sql.append("WHERE PAO.PAOBJECTID = DLP.DEVICEID ");
-        sql.append("AND PAO.PAOBJECTID = P.PAOBJECTID ");
-        sql.append("AND PAO.PAOBJECTID = DMG.DEVICEID ");
-        sql.append("AND PAO.PAOBJECTID = DCS.DEVICEID ");
-        sql.append("AND PAO.PAOBJECTID = DR.DEVICEID ");
-        sql.append("AND ROUTE.PAOBJECTID = DR.ROUTEID ");
+		sql.append(" WHERE PAO.PAOBJECTID = DLP.DEVICEID ");
+        sql.append(" AND PAO.PAOBJECTID = DMG.DEVICEID ");
+        sql.append(" AND PAO.PAOBJECTID = DCS.DEVICEID ");
+        sql.append(" AND PAO.PAOBJECTID = DR.DEVICEID ");
+        sql.append(" AND ROUTE.PAOBJECTID = DR.ROUTEID ");
         
         //ORDER
 		sql.append("ORDER BY PAO.PAOBJECTID");
@@ -288,17 +283,16 @@ public class LPSetupDBModel extends ReportModelBase<LPMeterData> implements Comp
 	{
 		if(columnProperties == null)
 		{
-		    int offset = 0;
 			columnProperties = new ColumnProperties[]{
-				new ColumnProperties(offset, 1, offset+=150, null),
-				new ColumnProperties(offset, 1, offset+=75, null),
-				new ColumnProperties(offset, 1, offset+=70, null),
-				new ColumnProperties(offset, 1, offset+=70, null),
-				new ColumnProperties(offset, 1, offset+=125, null),
-				new ColumnProperties(offset, 1, offset+=50, null),
-				new ColumnProperties(offset, 1, offset+=50, null),
-				new ColumnProperties(offset, 1, offset+=60, null),
-				new ColumnProperties(offset, 1, offset+=60, null)
+				new ColumnProperties(0, 1, 150, null),
+				new ColumnProperties(150, 1, 75, null),
+				new ColumnProperties(225, 1, 70, null),
+				new ColumnProperties(295, 1, 70, null),
+				new ColumnProperties(365, 1, 125, null),
+				new ColumnProperties(490, 1, 50, null),
+				new ColumnProperties(540, 1, 50, null),
+				new ColumnProperties(590, 1, 60, null),
+				new ColumnProperties(640, 1, 60, null)
 			};
 		}
 		return columnProperties;

@@ -27,22 +27,13 @@ public class MeterAndPointData
     private Integer quality = null; 
 	
 	/**
-	 * 
-	 */
-	public MeterAndPointData()
-	{
-		super();
-	}
-
-	/**
 	 * @param paobjectid_
 	 * @param pointid_
 	 * @param type_
 	 * @param timestamp_
 	 * @param value_
 	 */
-	public MeterAndPointData(Meter meter_, Integer pointID_, String pointName_, java.util.Date timeStamp_, Double value_, Integer quality_)
-	{
+	public MeterAndPointData(Meter meter_, Integer pointID_, String pointName_, java.util.Date timeStamp_, Double value_, Integer quality_) {
 	    meter = meter_;
 	    pointID = pointID_;
 		timeStamp = timeStamp_;
@@ -51,8 +42,7 @@ public class MeterAndPointData
         quality = quality_;
 	}
 
-    public MeterAndPointData(Meter meter_, Integer pointID_, String pointName_, java.util.Date timeStamp_, Double value_)
-    {
+    public MeterAndPointData(Meter meter_, Integer pointID_, String pointName_, java.util.Date timeStamp_, Double value_) {
         meter = meter_;
         pointID = pointID_;
         pointName = pointName_;
@@ -60,6 +50,9 @@ public class MeterAndPointData
         value = value_;         
     }
     
+    public MeterAndPointData(Meter meter_)  {
+        meter = meter_;
+    }
 	/**
 	 * @return
 	 */
