@@ -4,11 +4,14 @@ MultiPaoPicker = Class.create();
 
 //must extend ItemPicker; this will not work as a standalone object
 MultiPaoPicker.prototype = Object.extend(new PaoPicker(), { 
-	initialize: function(destItemIdFieldId, criteria, extraMapping, pickerId, context, triggerAction, selectionLinkName) {
+	initialize: function(destItemIdFieldId, criteria, extraMapping, pickerId, context, triggerAction, selectionLinkName, excludeIds, showExcluded) {
 		this.baseInitialize(destItemIdFieldId, criteria, extraMapping, pickerId, context);
 		this.sameItemLink = 'Same Type';
 		this.triggerFinalAction = triggerAction;
 		this.selectionLinkName = selectionLinkName;
+		this.excludeIds = excludeIds.split(',');
+		this.showExcluded = showExcluded;
+
 		this.selectedItems = new Array();
 	},
 	
@@ -33,13 +36,19 @@ MultiPaoPicker.prototype = Object.extend(new PaoPicker(), {
 	// override paoPicker.js
 	processRowForRender: function (rowElement, data) {
 		
-		var selectedItems = this.selectedItems;
-		
-        this.selectedItems.each(function(item){
-	        if (data.paoId == item.paoId) {
-	            $(rowElement).addClassName("highlighted");
-	        }
-        });
+        if (this.excludeIds.indexOf(data.paoId) != -1) {
+        	if(this.showExcluded == 'true') {
+            	$(rowElement).addClassName("highlighted");
+        	} else {
+        		$(rowElement).hide();
+        	}
+        } else {
+	        this.selectedItems.each(function(item){
+		        if (data.paoId == item.paoId) {
+		            $(rowElement).addClassName("highlighted");
+		        }
+	        });
+        }
 	},
 	
 	// override paoPicker.js
