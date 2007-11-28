@@ -48,6 +48,7 @@ import com.cannontech.analysis.report.ProgramDetailReport;
 import com.cannontech.analysis.report.RepeaterRoleCollisionReport;
 import com.cannontech.analysis.report.RouteDBReport;
 import com.cannontech.analysis.report.RouteMacroReport;
+import com.cannontech.analysis.report.ScanRateSetupDBReport;
 import com.cannontech.analysis.report.ScheduledMeterReadReport;
 import com.cannontech.analysis.report.StarsAMRDetailReport;
 import com.cannontech.analysis.report.StarsLMDetailReport;
@@ -87,6 +88,7 @@ import com.cannontech.analysis.tablemodel.RepeaterRoleCollisionModel;
 import com.cannontech.analysis.tablemodel.ReportModelBase;
 import com.cannontech.analysis.tablemodel.RouteDBModel;
 import com.cannontech.analysis.tablemodel.RouteMacroModel;
+import com.cannontech.analysis.tablemodel.ScanRateSetupDBModel;
 import com.cannontech.analysis.tablemodel.ScheduledMeterReadModel;
 import com.cannontech.analysis.tablemodel.StarsAMRDetailModel;
 import com.cannontech.analysis.tablemodel.StarsLMDetailModel;
@@ -156,6 +158,8 @@ public class ReportFuncs
             returnVal = new ECActivityLogReport();
         else if( model instanceof RouteMacroModel)
             returnVal = new RouteMacroReport();
+        else if( model instanceof ScanRateSetupDBModel)
+            returnVal = new ScanRateSetupDBReport();
         else if( model instanceof LPSetupDBModel)
             returnVal = new LPSetupDBReport();
         else if( model instanceof LPDataSummaryModel)
