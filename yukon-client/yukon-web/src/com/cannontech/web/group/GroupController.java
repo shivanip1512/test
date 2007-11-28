@@ -145,6 +145,13 @@ public class GroupController extends MultiActionController {
 
         Boolean showDevices = ServletRequestUtils.getBooleanParameter(request, "showDevices", false);
         mav.addObject("showDevices", showDevices);
+        
+        List<YukonDevice> deviceList = deviceGroupDao.getChildDevices(group);
+        List<Integer> deviceIdList = new ArrayList<Integer>();
+        for(YukonDevice device : deviceList){
+            deviceIdList.add(device.getDeviceId());
+        }
+        mav.addObject("deviceIdsInGroup", StringUtils.join(deviceIdList, ","));
 
         return mav;
 
