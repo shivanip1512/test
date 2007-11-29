@@ -292,15 +292,16 @@ protected com.cannontech.common.gui.util.DataInputPanel getNextInputPanel(
 		{
 			getDeviceMeterNumberPanel().setValue(null);
 			getDeviceMeterNumberPanel().setMCT400Type(devType);
-			if( DeviceTypesFuncs.isMCTiORMCT2XX(devType) )
+			if( DeviceTypesFuncs.isMCT2XXORMCT310XX(devType) )
 			{
-				getDeviceMeterNumberPanel().setDefaultMeterNumber(getDeviceNameAddressPanel().getAddress());
+				//Append "10" to the address for the desired default meter number.
+				getDeviceMeterNumberPanel().setDefaultMeterNumber("10" + getDeviceNameAddressPanel().getAddress());
 			}
 			
 			if(DeviceTypesFuncs.isMCT4XX(devType))
 			{
 				getDeviceMeterNumberPanel().setMCT400Type(devType);
-				getDeviceMeterNumberPanel().setDefaultMeterNumber(getDeviceNameAddressPanel().getAddress());
+				getDeviceMeterNumberPanel().setDefaultMeterNumber("");	//Default the meterNumber to nothing
 			}
 			getDeviceMeterNumberPanel().setFirstFocus();
 			return getDeviceMeterNumberPanel();

@@ -263,14 +263,9 @@ public static void main(java.lang.String[] args) {
  * Creation date: (7/27/2001 9:23:34 AM)
  * @param address java.lang.String
  */
-public void setDefaultMeterNumber(String address) {
-	
-	if(DeviceTypesFuncs.isCL(mctType)) getMeterNumberTextField().setText("");
-	else if(DeviceTypesFuncs.isMCT410(mctType))
-		getMeterNumberTextField().setText(address);
-	else
-		getMeterNumberTextField().setText("10" + address);
-	}
+public void setDefaultMeterNumber(String defaultValue) {
+		getMeterNumberTextField().setText(defaultValue);
+}
 /**
  * This method was created in VisualAge.
  * @param val java.lang.Object

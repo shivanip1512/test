@@ -639,7 +639,7 @@ public final static boolean isMCT3xx(int deviceType)
  * Creation date: (7/27/2001 9:45:34 AM)
  * @return boolean
  */
-public static boolean isMCTiORMCT2XX( int type )
+public static boolean isMCT2XXORMCT310XX( int type )
 {
 	switch (type)
 	{
@@ -651,11 +651,7 @@ public static boolean isMCTiORMCT2XX( int type )
 		case MCT310 :
 		case MCT310ID :
 		case MCT310IDL:
-		case MCT310IL :
-		case MCT410IL :
-		case MCT410CL :
-		case MCT410FL :
-		case MCT410GL :
+		case MCT310IL :	
       	case MCT310CT:
       	case MCT310IM:      
 			return true;
