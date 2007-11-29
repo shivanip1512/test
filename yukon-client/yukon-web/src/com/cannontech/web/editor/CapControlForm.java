@@ -1181,17 +1181,17 @@ public class CapControlForm extends DBEditorForm implements ICapControlModel{
 	public String getParent() {
 		int parentID = CtiUtilities.NONE_ZERO_ID;
 		if (getDbPersistent() instanceof CapControlFeeder) {
-    		try{
-    		    parentID = feederDao.getParentSubBusID(itemID);
-    		}catch( EmptyResultDataAccessException e){
-    		    //do nothing
-    		}
+		    try{
+		        parentID = feederDao.getParentSubBusID(itemID);
+		    }catch( EmptyResultDataAccessException e ){
+		        //do nothing
+		    }
 		} else if (getDbPersistent() instanceof CapBank) {
-			try{
-			    parentID = capbankDao.getParentFeederId(itemID);
-			}catch( EmptyResultDataAccessException e){
-			    //do nothing
-			}
+		    try{
+		        parentID = capbankDao.getParentFeederId(itemID);
+            }catch( EmptyResultDataAccessException e ){
+                //do nothing
+            }
         }
 		if (parentID == CtiUtilities.NONE_ZERO_ID) {
 			return CtiUtilities.STRING_NONE;

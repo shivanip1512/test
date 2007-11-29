@@ -1,8 +1,9 @@
 package com.cannontech.cbc.dao;
 
 import java.util.List;
+
+import org.springframework.dao.EmptyResultDataAccessException;
 import com.cannontech.cbc.model.Feeder;
-import com.cannontech.core.dao.NotFoundException;
 
 public interface FeederDao {
 
@@ -12,10 +13,10 @@ public interface FeederDao {
     
     public boolean update( Feeder feeder );
     
-    public Feeder getById( int id ) throws NotFoundException;
+    public Feeder getById( int id );
 
     /**
-     * This method returns all the Feeder IDs that are not assgined
+     * This method returns all the Feeder IDs that are not assigned
      *  to a SubBus.
      */
     public List<Integer> getUnassignedFeederIds();
@@ -25,6 +26,6 @@ public interface FeederDao {
      * If no parent is found, CtiUtilities.NONE_ZERO_ID is returned.
      * 
      */
-    public int getParentSubBusID( int feederID ) throws NotFoundException;
+    public int getParentSubBusID( int feederID ) throws EmptyResultDataAccessException;
 
 }

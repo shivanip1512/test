@@ -5,6 +5,7 @@ import java.sql.SQLException;
 import java.util.List;
 
 
+import org.springframework.dao.EmptyResultDataAccessException;
 import org.springframework.jdbc.core.simple.ParameterizedRowMapper;
 import org.springframework.jdbc.core.simple.SimpleJdbcTemplate;
 import org.springframework.transaction.annotation.Propagation;
@@ -117,9 +118,9 @@ public class CapbankDaoImpl implements CapbankDao {
     }
     
     @Transactional(readOnly = true, propagation = Propagation.SUPPORTS)
-    public Capbank getById(int id) throws NotFoundException {
-        List<Capbank> list = simpleJdbcTemplate.query(selectByIdSql, rowMapper, id);
-        return list.get(0);
+    public Capbank getById(int id) {
+        Capbank c = simpleJdbcTemplate.queryForObject(selectByIdSql, rowMapper, id);
+        return c;
     }
 
     /**
@@ -144,7 +145,7 @@ public class CapbankDaoImpl implements CapbankDao {
     /**
      * This method returns the Feeder ID that owns the given cap bank ID.
      */
-    public int getParentFeederId( int capBankID ) throws NotFoundException
+    public int getParentFeederId( int capBankID )  throws EmptyResultDataAccessException
     {
         String sql = "SELECT FeederID FROM CCFeederBankList where DeviceID = ?";
         return simpleJdbcTemplate.queryForInt(sql,capBankID);

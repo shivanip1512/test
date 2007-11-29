@@ -51,7 +51,9 @@ public class CapbankCommentDaoImpl implements CapbankCommentDao {
                 comment.setUserId(rs.getInt("UserId"));
                 comment.setTime(rs.getDate("commentTime"));
                 comment.setComment(rs.getString("comment"));
-                comment.setAltered(rs.getString("Altered"));
+                String str = rs.getString("Altered");
+                boolean b = ((str.charAt(0) == 'Y') || (str.charAt(0) == 'y') || (str.charAt(0) == '1'))? true:false;
+                comment.setAltered(b);
                 return comment;
             }
         };
@@ -67,7 +69,6 @@ public class CapbankCommentDaoImpl implements CapbankCommentDao {
     }
     
     public boolean add( CapbankComment comment ){
-        //TODO check for String < 500 characters. Or just throw?
         int id = nextValueHelper.getNextValue("CapbankComment");
         int rowsAffected = simpleJdbcTemplate.update(insertSql, id,
                                                      comment.getPaoId(),
@@ -84,7 +85,6 @@ public class CapbankCommentDaoImpl implements CapbankCommentDao {
     }
     
     public boolean update( CapbankComment comment ){
-        //TODO check for String < 500 characters. Or just throw?
         int rowsAffected = simpleJdbcTemplate.update(updateSql, comment.getPaoId(),
                                                      comment.getUserId(),
                                                      comment.getTime(),
@@ -94,12 +94,13 @@ public class CapbankCommentDaoImpl implements CapbankCommentDao {
         return (rowsAffected == 1);
     }
     
-    public CapbankComment getById( int id ) throws NotFoundException {
-        List<CapbankComment> list = simpleJdbcTemplate.query(selectByIdSql, rowMapper, id);
-        return list.get(0);
+    public CapbankComment getById( int id )
+    {
+        CapbankComment c = simpleJdbcTemplate.queryForObject(selectByIdSql, rowMapper, id);
+        return c;
     }
     
-    public List<String> getLastFiveByPaoId( int paoId ) throws NotFoundException{       
+    public List<String> getLastFiveByPaoId( int paoId ){       
         List<CapbankComment> list = simpleJdbcTemplate.query(selectAllSql + " WHERE paoId = ? ORDER BY commentTime desc ", rowMapper, paoId);
         List<String> tsTemp = new ArrayList<String>();
         for( int i = 0; i < list.size(); i++ )
@@ -111,7 +112,7 @@ public class CapbankCommentDaoImpl implements CapbankCommentDao {
         return tsTemp;
     }
     
-    public List<CapbankComment> getAllCommentsByPao( int paoId ) throws NotFoundException{ 
+    public List<CapbankComment> getAllCommentsByPao( int paoId ) { 
         String sql = selectAllSql + " WHERE paoId = ? ORDER BY commentTime desc";
         
         List<CapbankComment> list = simpleJdbcTemplate.query(sql, rowMapper, paoId);

@@ -4,6 +4,7 @@ import java.sql.ResultSet;
 import java.sql.SQLException;
 import java.util.List;
 
+import org.springframework.dao.EmptyResultDataAccessException;
 import org.springframework.jdbc.core.simple.ParameterizedRowMapper;
 import org.springframework.jdbc.core.simple.SimpleJdbcTemplate;
 import com.cannontech.cbc.dao.CcSubstationDao;
@@ -68,7 +69,7 @@ public class CcSubstationDaoImpl implements CcSubstationDao {
         return listmap;
     }
     
-    public Integer getSubstationIdByName(String name) {
+    public Integer getSubstationIdByName(String name) throws EmptyResultDataAccessException{
 
         String query = "select substationid from CapControlSubstation, yukonpaobject";
         query += "where substationid = paobjectid and paoname like "  + "'?'";

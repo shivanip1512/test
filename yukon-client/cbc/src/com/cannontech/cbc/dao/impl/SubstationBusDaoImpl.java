@@ -127,9 +127,9 @@ public class SubstationBusDaoImpl implements SubstationBusDao {
     }
 
     @Transactional(readOnly = true, propagation = Propagation.SUPPORTS)
-    public SubstationBus getById(int id) throws NotFoundException {
-        List<SubstationBus> list = simpleJdbcTemplate.query(selectByIdSql, rowMapper, id);
-        return list.get(0);
+    public SubstationBus getById(int id){
+        SubstationBus s = simpleJdbcTemplate.queryForObject(selectByIdSql, rowMapper, id);
+        return s;
     }
     
     public List<Integer> getAllUnassignedBuses () {

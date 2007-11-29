@@ -4,6 +4,7 @@ import java.sql.ResultSet;
 import java.sql.SQLException;
 import java.util.List;
 
+import org.springframework.dao.EmptyResultDataAccessException;
 import org.springframework.jdbc.core.simple.ParameterizedRowMapper;
 import org.springframework.jdbc.core.simple.SimpleJdbcTemplate;
 import org.springframework.transaction.annotation.Propagation;
@@ -88,9 +89,9 @@ public class FeederDaoImpl implements FeederDao {
     }
     
     @Transactional(readOnly = true, propagation = Propagation.SUPPORTS)
-    public Feeder getById(int id) throws NotFoundException {
-        List<Feeder> list = simpleJdbcTemplate.query(selectByIdSql, rowMapper, id);
-        return list.get(0);
+    public Feeder getById(int id) {
+        Feeder f = simpleJdbcTemplate.queryForObject(selectByIdSql, rowMapper, id);
+        return f;
     }
     
     @Transactional(readOnly = false, propagation = Propagation.REQUIRED)
@@ -115,7 +116,7 @@ public class FeederDaoImpl implements FeederDao {
     }
 
     /**
-     * This method returns all the Feeder IDs that are not assgined
+     * This method returns all the Feeder IDs that are not assigned
      *  to a SubBus.
      */
     public List<Integer> getUnassignedFeederIds() {
@@ -135,9 +136,8 @@ public class FeederDaoImpl implements FeederDao {
 
     /**
      * This method returns the SubBus ID that owns the given feeder ID.
-     * If no parent is found, CtiUtilities.NONE_ZERO_ID is returned.
      */
-    public int getParentSubBusID( int feederID ) throws NotFoundException{
+    public int getParentSubBusID( int feederID ) throws EmptyResultDataAccessException {
     
         String sql = "SELECT SubStationBusID FROM CCFeederSubAssignment where FeederID = ?"; 
 

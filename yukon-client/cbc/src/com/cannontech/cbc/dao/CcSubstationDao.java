@@ -2,7 +2,7 @@ package com.cannontech.cbc.dao;
 
 import java.util.List;
 
-import com.cannontech.core.dao.NotFoundException;
+import org.springframework.dao.EmptyResultDataAccessException;
 
 public interface CcSubstationDao {
     public List<Integer> getAllUnassignedSubstationIds();
@@ -11,5 +11,5 @@ public interface CcSubstationDao {
 
     public List<Integer> getAllSubstationIds();
     
-    public Integer getSubstationIdByName( String name ) throws NotFoundException;
+    public Integer getSubstationIdByName( String name )  throws EmptyResultDataAccessException;
 }

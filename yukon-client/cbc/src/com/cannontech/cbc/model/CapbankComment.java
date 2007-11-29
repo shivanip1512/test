@@ -101,9 +101,6 @@ public class CapbankComment {
     public void setAltered(boolean altered){
         this.altered = altered;
     }
-    public void setAltered(String altered) {
-        this.altered = ((altered.charAt(0) == 'Y') || (altered.charAt(0) == 'y') || (altered.charAt(0) == '1'))? true:false;
-    }
     
     
 }

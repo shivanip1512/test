@@ -1,8 +1,10 @@
 package com.cannontech.cbc.dao;
 
 import java.util.List;
+
+import org.springframework.dao.EmptyResultDataAccessException;
+
 import com.cannontech.cbc.model.Capbank;
-import com.cannontech.core.dao.NotFoundException;
 
 public interface CapbankDao {
     public boolean add( Capbank bank );
@@ -11,19 +13,19 @@ public interface CapbankDao {
     
     public boolean update( Capbank bank );
     
-    public Capbank getById( int id ) throws NotFoundException;
+    public Capbank getById( int id );
     
     /**
-     * This method returns all the CapBank IDs that are not assgined
+     * This method returns all the CapBank IDs that are not assigned
      *  to a Feeder.
      */
     public List<Integer> getUnassignedCapBankIds();
     
     /**
-     * This method returns the Feeder ID that owns the given capbank ID.
+     * This method returns the Feeder ID that owns the given cap bank ID.
      * If no parent is found, CtiUtilities.NONE_ZERO_ID is returned.
      */
-    public int getParentFeederId( int capBankID ) throws NotFoundException;
+    public int getParentFeederId( int capBankID )  throws EmptyResultDataAccessException;
     
     public boolean isSwitchedBank( Integer paoID );
 }

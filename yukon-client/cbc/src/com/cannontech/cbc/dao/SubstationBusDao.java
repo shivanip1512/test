@@ -3,7 +3,6 @@ package com.cannontech.cbc.dao;
 import java.util.List;
 
 import com.cannontech.cbc.model.SubstationBus;
-import com.cannontech.core.dao.NotFoundException;
 
 public interface SubstationBusDao {
     public boolean add( SubstationBus feeder );
@@ -12,7 +11,7 @@ public interface SubstationBusDao {
     
     public boolean update( SubstationBus feeder );
     
-    public SubstationBus getById( int id ) throws NotFoundException;
+    public SubstationBus getById( int id );
     
     public List<Integer> getAllUnassignedBuses ();
 }
