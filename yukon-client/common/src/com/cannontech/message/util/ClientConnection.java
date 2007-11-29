@@ -7,8 +7,8 @@ import java.io.InputStream;
 import java.io.OutputStream;
 import java.net.Socket;
 import java.util.ArrayList;
-import java.util.Random;
 
+import org.apache.commons.lang.math.RandomUtils;
 import org.apache.log4j.Logger;
 
 import com.cannontech.clientutils.YukonLogManager;
@@ -44,10 +44,6 @@ public class ClientConnection extends java.util.Observable implements Runnable, 
     //create a logger for instances of this class and its subclasses
     private Logger logger = YukonLogManager.getLogger(this.getClass());      
 
-	//seconds until an another attempt is made to reconnect
-	//if autoReconenct is true
-	private int timeToReconnect = 10;
-	
 	//This message will be sent automatically on connecting
 	private Message registrationMsg = null;
 
@@ -241,11 +237,7 @@ public Message getRegistrationMsg() {
  * @return int
  */
 public int getTimeToReconnect() {
-    Random pseudoRandomizer = new Random();
-    timeToReconnect = pseudoRandomizer.nextInt(60);
-    if(timeToReconnect < 10) 
-        timeToReconnect += 10;
-    return timeToReconnect;
+    return RandomUtils.nextInt(50) + 10;
 }
 
 /**
@@ -456,7 +448,8 @@ public void run()
 		}
 		else
 		{
-			logger.debug("Connection to  " + host + " " + port + " is set to autoreconnect in " + getTimeToReconnect() + " seconds");			
+			int timeToReconnect = getTimeToReconnect();
+            logger.debug("Connection to  " + host + " " + port + " is set to autoreconnect in " + timeToReconnect + " seconds");			
 
 			try
 			{
@@ -509,13 +502,6 @@ public void setPort(int port) {
  */
 public void setRegistrationMsg(Message newValue) {
 	this.registrationMsg = newValue;
-}
-/**
- * This method was created in VisualAge.
- * @param secs int
- */
-public void setTimeToReconnect(int secs) {
-	this.timeToReconnect = secs;
 }
 /**
  * Writes an object to the output queue. If the connection is invalid,
