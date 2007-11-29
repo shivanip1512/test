@@ -392,7 +392,7 @@ function toggleCB(spanID, cb, reason) {
 	span = document.getElementById(spanID);
 	if (cb.type == "checkbox" && cb.checked) {
 		str = "";
-		str = "<font style='color:gray'><span style='vertical-align: top'>Reason: </span><textarea rows=\"2\">";
+		str = "<font style='color:gray'>Reason: <textarea style='vertical-align: bottom' rows=\"2\">";
 		if (reason) {
 			str += reason;
 		}
@@ -421,8 +421,8 @@ function setReason(obj, reason, prntCB) {
 function generateReasonText(reason) {
 	var str = "";
 	str += "\" style=\"display: inline\" >";
-	str += "<font style=\"color:gray\"><span style='vertical-align: top';>Reason: </span>";
-    str += "<textarea style=\"color: gray;\" rows=\"2\" readonly>" + reason + "</textarea>";
+	str += "<font style=\"color:gray\">Reason: ";
+	str += "<textarea style='color: gray; vertical-align: bottom;' rows=\"2\" readonly>" + reason + "</textarea>";
 	str += "</font>";
 	return str;
 }
@@ -461,7 +461,10 @@ function disableAllCheckedReasons(spanPrefix, id) {
 	for (var i = 0; i < all.length; i++) {
 		el = all[i];
 		if (el.style.display != "none") {
-			el.getElementsByTagName("input")[0].disabled = true;
+			var textAreaArray = el.getElementsByTagName("textarea");
+            for (var x = 0; x < textAreaArray.length; x++) {
+                textAreaArray[x].setAttribute('readOnly','readOnly');
+            }    
 		}
 	}
 }
@@ -581,7 +584,7 @@ function executeMultipleCommands(spanPrefix, id) {
 				for (var j = 0; j < listofCommands.length; j++) {
 					
 					if ((listofCommands[j] + "ReasonSpan") == reasonSpan.id) {
-						listofCommands[j] = listofCommands[j] + "_" + reasonSpan.getElementsByTagName("input")[0].value;
+						listofCommands[j] = listofCommands[j] + "_" + reasonSpan.getElementsByTagName("textarea")[0].value;
 					}
 				}
 			}
