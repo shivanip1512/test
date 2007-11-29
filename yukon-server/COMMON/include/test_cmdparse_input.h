@@ -4,11 +4,13 @@
 
 #include <string>
 
-#define TEST_SIZE 118
+#define TEST_SIZE 120
 
 std::string inputString[TEST_SIZE] = {
-    "getvalue kwh",
-      "control emetcon shed 1hr relay 1,2",
+"getvalue kwh",
+"getvalue kwh select name \"test device\"",
+"getvalue kwh select name \" test  multispace  device     \"",
+"control emetcon shed 1hr relay 1,2",
 "control shed ?'NumMins'm",
 "putconfig led yyy",
 "putconfig service in",
@@ -27,7 +29,7 @@ std::string inputString[TEST_SIZE] = {
 "putconfig emetcon timesync",
 "getvalue voltage",
 "getvalue demand",
-"putconfig cold_load r1 10", 
+"putconfig cold_load r1 10",
 "putconfig template '?LoadGroup'",
 "putconfig cycle r1 50",
 "putconfig xcom service in",

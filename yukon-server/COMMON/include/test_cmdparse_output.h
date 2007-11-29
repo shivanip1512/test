@@ -3,6 +3,8 @@
 #include "test_cmdparse_input.h"
 std::string  outputString[TEST_SIZE]= {
 "command=getvalue,1,1.000:flag=(none),32,32.000:offset=(none),0,0.000:type=versacom,0,0.000",
+"command=getvalue,1,1.000:device=test device,-1,-1.000:flag=(none),32,32.000:offset=(none),0,0.000:type=versacom,0,0.000",
+"command=getvalue,1,1.000:device= test  multispace  device     ,-1,-1.000:flag=(none),32,32.000:offset=(none),0,0.000:type=versacom,0,0.000",
 "command=control,8,8.000:flag=(none),1024,1024.000:offset=(none),0,0.000:relaymask=(none),3,3.000:sa_dlc_mode=(none),1,1.000:sa_f0bit=(none),0,0.000:sa_f1bit=(none),0,0.000:type=emetcon,7,7.000",
 "command=control,8,8.000:flag=(none),1024,1024.000:offset=(none),0,0.000:sa_dlc_mode=(none),1,1.000:sa_f0bit=(none),0,0.000:sa_f1bit=(none),0,0.000:type=versacom,0,0.000",
 "command=putconfig,6,6.000:led=(none),224,224.000:type=versacom,0,0.000",
