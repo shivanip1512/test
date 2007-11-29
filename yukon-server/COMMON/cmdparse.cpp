@@ -41,11 +41,53 @@ static const boost::regex   re_date     (str_date);
 static const boost::regex   re_time     (str_time);
 static const boost::regex   re_daterange(str_daterange);
 
-CtiCommandParser::CtiCommandParser(const string str) :
-_cmdString(str)
+CtiCommandParser::CtiCommandParser(const string str)
 {
-    _actionItems.clear();
-    _cmd.clear();
+    CtiString cmdStr(str);
+
+    cmdStr.toLower();
+
+    for( int pos = 0; pos < cmdStr.length(); )
+    {
+        CtiString::size_type quoted_begin, quoted_length;
+
+        //  look for any quoted tokens we need to leave untouched
+        quoted_begin = cmdStr.index(str_quoted_token.c_str(), &quoted_length, pos);
+
+        //  if there's non-quoted content in the string, process it first
+        if( (quoted_begin - pos) > 0 )
+        {
+            CtiString temp_str;
+
+            if( quoted_begin == CtiString::npos )
+            {
+                //  grab the rest of the string
+                temp_str = cmdStr.substr(pos);
+            }
+            else
+            {
+                //  grab up until the quoted token
+                temp_str = cmdStr.substr(pos, quoted_begin - pos);
+            }
+
+            //  move us forward by the amount we're about to process
+            pos += temp_str.length();
+
+            temp_str.replace("\t", " ", CtiString::all);  //  first, replace all tabs with spaces
+            temp_str.replace(" +", " ", CtiString::all);  //  then truncate any duplicate spaces
+
+            _cmdString += temp_str;
+        }
+
+        //  if we found a quoted token, copy it over unmodified
+        if( quoted_begin != CtiString::npos )
+        {
+            _cmdString += cmdStr.substr(quoted_begin, quoted_length);
+
+            pos += quoted_length;
+        }
+    }
+
     doParse(_cmdString);
 }
 
@@ -75,17 +117,7 @@ CtiCommandParser& CtiCommandParser::operator=(const CtiCommandParser& aRef)
 
 void  CtiCommandParser::doParse(const string &_Cmd)
 {
-    // This may look like replication of the assignment, but allows re-use of the object for
-    // other parsing....
-    CtiString Cmd = _Cmd;
-    Cmd.toLower();
-    Cmd.replace("\t", " ", CtiString::all);  //  replace all tabs with spaces
-    Cmd.replace(" +", " ", CtiString::all);  //  truncate any duplicate spaces
-
-    _cmdString = Cmd.c_str();       // OK already, now we are in business.
     parse();
-
-    return;
 }
 
 
