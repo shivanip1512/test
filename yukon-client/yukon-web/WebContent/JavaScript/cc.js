@@ -392,11 +392,11 @@ function toggleCB(spanID, cb, reason) {
 	span = document.getElementById(spanID);
 	if (cb.type == "checkbox" && cb.checked) {
 		str = "";
-		str = "<font style='color:gray'>Reason: <input type='text'";
+		str = "<font style='color:gray'><span style='vertical-align: top'>Reason: </span><textarea rows=\"2\">";
 		if (reason) {
-			str += " value='" + reason + "'>";
+			str += reason;
 		}
-		str += "</input></font>";
+		str += "</textarea></font>";
 		span.innerHTML = str;
 		span.style.display = "inline";
 	} else {
@@ -421,8 +421,8 @@ function setReason(obj, reason, prntCB) {
 function generateReasonText(reason) {
 	var str = "";
 	str += "\" style=\"display: inline\" >";
-	str += "<font style=\"color:gray\">Reason:";
-	str += "<input type=\"text\"  value=\"" + reason + "\" disabled/>";
+	str += "<font style=\"color:gray\"><span style='vertical-align: top';>Reason: </span>";
+    str += "<textarea style=\"color: gray;\" rows=\"2\" readonly>" + reason + "</textarea>";
 	str += "</font>";
 	return str;
 }

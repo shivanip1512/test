@@ -389,7 +389,7 @@ function createCapTagMenu (paoID) {
 	str+='<body style="background-color:black">';
 	var str='';
 	str+='	<table>';
-	str += '<table border=2 style="border-color: black black white black; width=200">'
+	str += '<table border=2 style="border-color: black black white black; width=236">'
 	str+='			<tr style="color:#9FBBAC; font-weight: bold; font-size: 16; border-color: black black white black;" >';
 	str+='				<td style="border-color: black black black black;" align="center" colspan="2" > ' + paoName + ' <\/td>';
 	str+='				<td style="border-color: black black black black;" align="right" valign="top" id = "popupplaceholder">';
