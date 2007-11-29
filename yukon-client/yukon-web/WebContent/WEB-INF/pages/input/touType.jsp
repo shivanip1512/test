@@ -34,7 +34,7 @@
 			
 			
 			
-			<tags:hideReveal title="Schedule ${i+1}" showInitially="${showSchedule}" identifier="Schedule ${i+1}">
+			<tags:hideReveal title="Schedule ${i+1}" showInitially="${showSchedule}">
 				<cti:renderInput input="${input.inputMap[key]}" />
 			</tags:hideReveal>
 			<br />
