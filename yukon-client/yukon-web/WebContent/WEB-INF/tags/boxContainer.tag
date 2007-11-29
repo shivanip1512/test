@@ -8,15 +8,15 @@
 <%@ taglib uri="http://java.sun.com/jsp/jstl/core" prefix="c" %>
 
 <cti:includeScript link="/JavaScript/simpleCookies.js"/>
-<cti:includeScript link="/JavaScript/boxContainer.js"/>
+<cti:includeScript link="/JavaScript/hideReveal.js"/>
 
-<cti:uniqueIdentifier prefix="boxContainer_" var="thisId"/>
+<cti:uniqueIdentifier prefix="titledContainer_" var="thisId"/>
 
-<div class="boxContainer ${styleClass}" <c:if test="${!empty id}" >id="${id}"</c:if>>
+<div class="titledContainer boxContainer ${styleClass}" <c:if test="${!empty id}" >id="${id}"</c:if>>
 
 	<div class="titleBar">
-		<div class="controls">
 			<c:if test="${(hideEnabled == null) || hideEnabled}">
+		      <div class="controls" id="${thisId}_control">
 				<img 
 					class="minMax" 
 					id="${thisId}_minusImg" 
@@ -27,8 +27,8 @@
 					id="${thisId}_plusImg" 
                     alt="show"
 					src="<c:url value="/WebConfig/yukon/Icons/clearbits/add.gif"/>">
+		      </div>
 			</c:if>
-		</div>
 		<div class="title">
 			${title}
 		</div>
@@ -45,6 +45,6 @@
 
 <c:if test="${(hideEnabled == null) || hideEnabled}">
 	<script type="text/javascript">
-		boxContainerSetup('${thisId}', ${showInitially ? 'true' : 'false'}, '${cti:jsSafe(title)}');
+        hideRevealSectionSetup('${thisId}_plusImg', '${thisId}_minusImg', '${thisId}_control', '${thisId}_content', ${showInitially ? true : false}, '${cti:jsSafe(title)}');
 	</script>
 </c:if>

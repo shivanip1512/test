@@ -1,14 +1,20 @@
-th {  
-	text-align: left;
-	font-size: 11px; 
-}
-
-td {  
-	font-size: 11px; 
+h2 { /*Page Header*/
+  margin: 0;
 }
 
 .pickerLink a {
 	color: #FC6;
+}
+
+.titledContainer .content h4 {
+  margin-bottom: 2px;
+  margin-top: 8px;
+  font-size: 13px
+}
+
+form {
+  margin: 0;
+  padding: 0;
 }
 
 div.simplePopup {
@@ -193,24 +199,24 @@ table.nameValueTable td.value {
 }
 
 /* Titled Container styles */
-div.titledContainer{ 
+div.roundedContainer{ 
 	width: 100%;
 	position: relative;
 }
-div.titledContainer .content {
+div.roundedContainer .content {
 	padding: 4px;
 	border-left: 1px solid #0066CC;
 	border-right: 1px solid #0066CC;
 }
 
-div.titledContainer .title table {
+div.roundedContainer .title table {
 	margin: 0;
 	padding: 0;
 	border: 0;
 	border-collapse: collapse;
 }
 
-div.titledContainer .title {
+div.roundedContainer .title {
 	padding: 0px 9px 6px 9px;
 	background: #0066CC;
 	font-weight: bold;
@@ -218,54 +224,54 @@ div.titledContainer .title {
     color: white;
 }
 
-div.titledContainer .lbottom {
+div.roundedContainer .lbottom {
 	display: block;
 	position: absolute;
 	left: 0;
 	width: 6px;
 }
 
-div.titledContainer .rbottom {
+div.roundedContainer .rbottom {
 	position: absolute;
 	right: 0;
 	width: 6px;
 }
 	
-div.titledContainer .top span, div.titledContainer .lbottom span, 
-div.titledContainer .rbottom span {
+div.roundedContainer .top span, div.roundedContainer .lbottom span, 
+div.roundedContainer .rbottom span {
 	display: block;
 	height: 1px;
     overflow: hidden; 
     background: #0066CC;
 }
 
-div.titledContainer .content .makesNoSense {
+div.roundedContainer .content .makesNoSense {
 	padding: 0;
 	margin: 0;
 	height: 0;
 	font-size: 0em;
 }
 
-div.titledContainer .t1{margin: 0 5px}
-div.titledContainer .t2{margin: 0 3px}
-div.titledContainer .t3{margin: 0 2px}
-div.titledContainer .t4{margin: 0 1px;height: 1px;}
-div.titledContainer .t5{margin: 0 1px;height: 1px;}
-div.titledContainer .t6{margin: 0 0px;height: 1px;}
+div.roundedContainer .t1{margin: 0 5px}
+div.roundedContainer .t2{margin: 0 3px}
+div.roundedContainer .t3{margin: 0 2px}
+div.roundedContainer .t4{margin: 0 1px;height: 1px;}
+div.roundedContainer .t5{margin: 0 1px;height: 1px;}
+div.roundedContainer .t6{margin: 0 0px;height: 1px;}
 
-div.titledContainer .lbottom span.l1{margin: 0 1px 0 3px; width: 2px; height: 1px;}
-div.titledContainer .l2{margin: 0 3px 0 2px; width: 1px;}
-div.titledContainer .l3{margin: 0 4px 0 1px; width: 1px;}
-div.titledContainer .l4{margin: 0 4px 0 1px; width: 1px;}
-div.titledContainer .l5{margin: 0 5px 0 0px; width: 1px;}
+div.roundedContainer .lbottom span.l1{margin: 0 1px 0 3px; width: 2px; height: 1px;}
+div.roundedContainer .l2{margin: 0 3px 0 2px; width: 1px;}
+div.roundedContainer .l3{margin: 0 4px 0 1px; width: 1px;}
+div.roundedContainer .l4{margin: 0 4px 0 1px; width: 1px;}
+div.roundedContainer .l5{margin: 0 5px 0 0px; width: 1px;}
 
-div.titledContainer .r1{margin: 0 3px 0 1px; width: 2px; height: 2px}
-div.titledContainer .r2{margin: 0 2px 0 3px; width: 1px;}
-div.titledContainer .r3{margin: 0 1px 0 4px; width: 1px;}
-div.titledContainer .r4{margin: 0 1px 0 4px; width: 1px;}
-div.titledContainer .r5{margin: 0 0px 0 5px; width: 1px;}
+div.roundedContainer .r1{margin: 0 3px 0 1px; width: 2px; height: 2px}
+div.roundedContainer .r2{margin: 0 2px 0 3px; width: 1px;}
+div.roundedContainer .r3{margin: 0 1px 0 4px; width: 1px;}
+div.roundedContainer .r4{margin: 0 1px 0 4px; width: 1px;}
+div.roundedContainer .r5{margin: 0 0px 0 5px; width: 1px;}
 
-div.titledContainer .bottomBar{
+div.roundedContainer .bottomBar{
 	position: relative;
 	margin-bottom: 5px;
 	top: 5px;
@@ -295,31 +301,17 @@ div.styledContainer .content
 	font-size: .75em;
 }
 
+.widgetColumns td.widgetColumnCell .titledContainer {
+  margin: 18px 9px;
+}
+.widgetColumns td.widgetColumnCell {
+  padding: 0;
+  width: 50%;
+}
+
 .widgetColumns {
-	width: 900px;
-}
-
-.widgetColumns .left {
-	float: left; 
-	width: 425px; 
-}
-
-.widgetColumns .right {
-	float: right; 
-	width: 425px; 
-}
-
-.widgetColumns .left div.section, .widgetColumns .right div.section {
-}
-
-.widgetColumns div.titledContainer {
-	margin-bottom: 16px;
-	font-size: .75em;
-}
-
-.widgetColumns div.boxContainer {
-	margin-bottom: 16px;
-	font-size: .75em;
+  margin: auto 0;
+  width: 100%;
 }
 
 div.widgetInternalSectionHeader {
@@ -343,7 +335,7 @@ div.widgetInternalSection {
 
 div.widgetPopup {
 	position: absolute;
-	top: 50px; 
+	top: -5px; 
 	right: 0px; 
 	margin: 15px;
 	padding: 5px;
@@ -392,6 +384,11 @@ th.widgetInternalSectionSubHeader {
 	
 }
 
+div.triangleContainer .titleBar .controls { 
+    cursor: pointer;
+}
+
+
 div.boxContainer{ 
 	margin-bottom: 10px;
 }
@@ -428,7 +425,9 @@ div.boxContainer .titleBar .controls .minMax {
 
 div.boxContainer .content { 
 	padding: .5em;
-	border: 1px solid #BBBBBB;
+	border-left: 1px solid #BBBBBB;
+	border-right: 1px solid #BBBBBB;
+	border-bottom: 1px solid #BBBBBB;
 }
 
 .pointer {

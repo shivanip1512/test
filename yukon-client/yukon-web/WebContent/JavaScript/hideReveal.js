@@ -1,16 +1,16 @@
-function hideRevealSectionSetup(id, section, showInitially, persistId) {
+function hideRevealSectionSetup(showElement, hideElement, clickableElement, section, showInitially, persistId) {
   var doShow = function() {
     $(section).show();
-    $(id + '_plusImg').hide();
-    $(id + '_minusImg').show();
+    $(showElement).hide();
+    $(hideElement).show();
     if (persistId != '') {
       YukonClientPersistance.persistState('hideReveal', persistId, 'show');
     }
   };
   var doHide = function() {
     $(section).hide();
-    $(id + '_minusImg').hide();
-    $(id + '_plusImg').show();
+    $(hideElement).hide();
+    $(showElement).show();
     if (persistId != '') {
       YukonClientPersistance.persistState('hideReveal', persistId, 'hide');
     }
@@ -33,7 +33,7 @@ function hideRevealSectionSetup(id, section, showInitially, persistId) {
     doHide();
   }
 
-  $(id + '_span').observe('click', function(event) {
+  $(clickableElement).observe('click', function(event) {
     if ($(section).visible()) {
       doHide();
     } else {

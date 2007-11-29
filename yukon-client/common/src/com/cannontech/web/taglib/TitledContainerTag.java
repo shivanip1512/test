@@ -8,6 +8,9 @@ import javax.servlet.jsp.tagext.TagSupport;
 /**
  * Generates HTML to wrap the body in a nice rounded box with a shaded area at
  * the top for the title.
+ * 
+ * Note: this code is duplicated in roundedContainer.tag
+ * 
  */
 public class TitledContainerTag extends TagSupport {
     private String title;
@@ -16,7 +19,7 @@ public class TitledContainerTag extends TagSupport {
 
     public int doStartTag() throws JspException {
         try {
-            pageContext.getOut().print("<div class=\"titledContainer " + getStyleClass() + "\" "
+            pageContext.getOut().print("<div class=\"roundedContainer " + getStyleClass() + "\" "
                     + ((id != null) ? "id=\"" + id + "\"" : "") + ">\n"
                     + "           <span class=\"top\">\n"
                     + "             <span class=\"t1\"></span>\n"

@@ -1,7 +1,7 @@
 <%@ attribute name="title" required="true" type="java.lang.String"%>
+<%@ attribute name="id" required="false" type="java.lang.String"%>
 <%@ attribute name="styleClass" required="false" type="java.lang.String"%>
 <%@ attribute name="showInitially" required="false" type="java.lang.Boolean"%>
-<%@ attribute name="identifier" required="false" type="java.lang.String"%>
 <%@ taglib uri="http://cannontech.com/tags/cti" prefix="cti" %>
 <%@ taglib uri="http://java.sun.com/jsp/jstl/core" prefix="c" %>
 
@@ -10,17 +10,21 @@
 
 <cti:uniqueIdentifier prefix="hideReveal_" var="thisId"/>
 
-<span id="${thisId}_span" class="${styleClass}" style="cursor: pointer">
+<div class="titledContainer triangleContainer ${styleClass}" <c:if test="${!empty id}" >id="${id}"</c:if>>
+<div class="titleBar">
+<span id="${thisId}_control" class="controls">
 <img id="${thisId}_plusImg" src="/WebConfig/yukon/Icons/triangle-right.gif">
 <img id="${thisId}_minusImg" src="/WebConfig/yukon/Icons/triangle-down.gif">
-${title}
+<span class="title">${title}</span>
 </span>
-
-<div id="${thisId}_container">
+</div>
+<div id="${thisId}_content" class="content">
 <jsp:doBody/>
 </div>
 
+</div>
+
 <script type="text/javascript">
-hideRevealSectionSetup('${thisId}', '${thisId}_container', ${showInitially ? true : false}, '${empty identifier ? "" : identifier}');
+hideRevealSectionSetup('${thisId}_plusImg', '${thisId}_minusImg', '${thisId}_control', '${thisId}_content', ${showInitially ? true : false}, '${cti:jsSafe(title)}');
 </script>
 	

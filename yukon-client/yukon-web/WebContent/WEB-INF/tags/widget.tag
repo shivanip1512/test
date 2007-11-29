@@ -41,7 +41,7 @@ Event.observe(window,'load', function() {${widgetParameters.jsWidget}.render()})
 <c:set var="containerTitle" value="${beanInst.title}"/>
 </c:if>
 
-<ct:boxContainer title="${containerTitle}" id="widgetTitledContainer_${widgetParameters.widgetId}" styleClass="widgetContainer" hideEnabled="${empty hideEnabled ? true : hideEnabled}">
+<ct:abstractContainer type="box" title="${containerTitle}" id="widgetTitledContainer_${widgetParameters.widgetId}" styleClass="widgetContainer" showInitially="true" hideEnabled="${empty hideEnabled ? true : hideEnabled}">
 
 <div id="widgetContainer_${widgetParameters.widgetId}" style="height: ${widgetParameters.height};">
 <c:choose>
@@ -56,6 +56,6 @@ Event.observe(window,'load', function() {${widgetParameters.jsWidget}.render()})
 </c:choose>
 </div>
 
-</ct:boxContainer>
+</ct:abstractContainer>
 
 </div>

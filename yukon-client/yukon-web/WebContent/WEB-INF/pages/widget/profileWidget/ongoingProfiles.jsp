@@ -34,8 +34,7 @@
 								<td>
 									<tags:hideReveal
 										title="${pendingRequest.from} - ${pendingRequest.to}"
-										showInitially="false"
-										identifier="pendingContainer${pendingRequest.requestId}">
+										showInitially="false">
 
 										<table class="compactResultsTable" style="margin-left:20px">
 											<tr>

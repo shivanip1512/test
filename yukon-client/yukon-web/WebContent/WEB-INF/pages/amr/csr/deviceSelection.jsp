@@ -63,7 +63,7 @@
 	
 	<br/><br/>
 
-    <tags:hideReveal title="Edit Filters" showInitially="true" identifier="deviceSelection">
+    <tags:hideReveal title="Edit Filters" showInitially="true">
     <form id="filterForm" action="/spring/csr/search">
         <input type="hidden" name="Filter" value="true" />
         <input type="hidden" name="startIndex" value="${results.startIndex}" />

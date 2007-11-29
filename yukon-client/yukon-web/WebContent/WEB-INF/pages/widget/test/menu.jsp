@@ -9,7 +9,7 @@
 <c:forEach items="${widgets}" var="widget">
 <form action="create" method="get">
 <div style="margin-bottom: 8px">
-<ct:hideReveal title="${widget.title}" identifier="widgetTest_${widget.shortName}">
+<ct:abstractContainer type="triangle" title="${widget.title}">
 <div style="margin-left: 15px; margin-bottom: 15px">
 
   <table>
@@ -24,11 +24,9 @@
   <input type="hidden" name="type" value="${widget.shortName}">
   <input type="submit" name="create" value="Show Widget">
   </div>
-</ct:hideReveal>
+</ct:abstractContainer>
 </div>
 </form>
 </c:forEach>
-
-<ct:widget bean="readCurrentTimeWidget"/>
 
 </cti:standardPage>

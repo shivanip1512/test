@@ -5,11 +5,12 @@
 <cti:standardMenu/>
 
 <ct:widgetContainer>
-<div style="height: 400px; width: 400px">
-<ct:widget height="300px" bean="${param.type}" identify="true" paramMap="${param}"/>
+<div>
+<ct:widget width="50%" bean="${param.type}" identify="true" paramMap="${param}"/>
 </div>
 </ct:widgetContainer>
 
+(Widgets are displayed at 50% width.)
 <ct:dataUpdateEnabler />
 
 </cti:standardPage>
