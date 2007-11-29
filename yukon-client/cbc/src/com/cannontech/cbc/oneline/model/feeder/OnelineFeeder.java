@@ -20,6 +20,7 @@ import com.cannontech.esub.element.StaticImage;
 import com.cannontech.esub.element.StaticText;
 import com.cannontech.yukon.cbc.Feeder;
 import com.cannontech.yukon.cbc.SubBus;
+import com.loox.jloox.LxArrowElement;
 import com.loox.jloox.LxGraph;
 import com.loox.jloox.LxLine;
 
@@ -62,8 +63,8 @@ public class OnelineFeeder implements OnelineObject {
                                   .getInjectionLine()
                                   .getPoint2()
                                   .getX();
-        //TODO: the +1 is not right.  There is a black line being drawn above this line that i need to find to officially fix this.
-        LineElement feederLn = createFeederLn(fdrYCoord+1, subInjLnX);
+
+        LineElement feederLn = createFeederLn(fdrYCoord, subInjLnX);
 
         initEditorImage();
         initInformationImage();
@@ -111,7 +112,7 @@ public class OnelineFeeder implements OnelineObject {
             int height = (int) (yukonLogo.getX() + yukonLogo.getWidth());
             feederLn.setPoint2(height, fdrYCoord);
             feederLn.setLineColor(Color.YELLOW);
-            feederLn.setLineArrow(LineElement.ARROW_END);
+            feederLn.setLineArrow(LxArrowElement.ARROW_END);
             feederLn.setName(getName());
 
             feederName = new StaticText();
@@ -119,7 +120,7 @@ public class OnelineFeeder implements OnelineObject {
             feederName.setPaint(Color.PINK);
             feederName.setX(currFdrX + 5);
             feederName.setY(fdrYCoord + 5);
-            Feeder feeder = (Feeder) subBusMsg.getCcFeeders().get(currFdrIdx);
+            Feeder feeder = subBusMsg.getCcFeeders().get(currFdrIdx);
             feederName.setText(feeder.getCcName());
             drawing.getDrawing().getLxGraph().add(feederName);
             feederName.setName(getName());
@@ -142,7 +143,7 @@ public class OnelineFeeder implements OnelineObject {
     }
 
     private Integer getCurrentFeederIdFromMessage() {
-        Feeder feeder = (Feeder) subBusMsg.getCcFeeders()
+        Feeder feeder = subBusMsg.getCcFeeders()
                                           .get(drawing.getFeeders().size());
         Integer ccId = feeder.getCcId();
         return ccId;
@@ -197,7 +198,7 @@ public class OnelineFeeder implements OnelineObject {
     }
 
     public Feeder getStreamable() {
-        return (Feeder) subBusMsg.getCcFeeders().get(currFdrIdx);
+        return subBusMsg.getCcFeeders().get(currFdrIdx);
     }
 
     public UpdatableTextList getTag() {

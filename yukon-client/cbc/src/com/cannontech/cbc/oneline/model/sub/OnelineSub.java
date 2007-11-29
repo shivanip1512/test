@@ -149,8 +149,6 @@ public class OnelineSub implements OnelineObject {
         double lnY = drawing.getLayoutParams().getHeight();
         ln.setPoint1(injLnPt1.getX(), lnY);
         ln.setPoint2(injLnPt1.getX() + 800, lnY);
-        //        ln.setLineColor(Color.YELLOW);
-        drawing.getDrawing().getLxGraph().add(ln);
         return ln;
     }
 
@@ -160,7 +158,6 @@ public class OnelineSub implements OnelineObject {
         double lnY = ccLogo.getY() + ccLogo.getHeight() + 30;
         ln.setPoint1(0, lnY);
         ln.setPoint2(drawing.getLayoutParams().getWidth(), lnY);
-        drawing.getDrawing().getLxGraph().add(ln);
         return ln;
     }
 
