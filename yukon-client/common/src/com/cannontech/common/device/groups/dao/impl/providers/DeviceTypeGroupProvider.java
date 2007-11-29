@@ -54,7 +54,7 @@ public class DeviceTypeGroupProvider extends DeviceGroupProviderBase {
     }
 
     @Override
-    public List<? extends DeviceGroup> getChildGroups(DeviceGroup group) {
+    public List<DeviceGroup> getChildGroups(DeviceGroup group) {
         if (group instanceof DeviceTypeDeviceGroup) {
             return Collections.emptyList();
         }
@@ -71,8 +71,8 @@ public class DeviceTypeGroupProvider extends DeviceGroupProviderBase {
         sql.append("LEFT OUTER JOIN YukonPaObject rypo ON (dr.routeid = rypo.paobjectid)");
         sql.append("ORDER BY ypo.type");
 
-        ParameterizedRowMapper<DeviceTypeDeviceGroup> mapper = new ParameterizedRowMapper<DeviceTypeDeviceGroup>() {
-            public DeviceTypeDeviceGroup mapRow(ResultSet rs, int rowNum) throws SQLException {
+        ParameterizedRowMapper<DeviceGroup> mapper = new ParameterizedRowMapper<DeviceGroup>() {
+            public DeviceGroup mapRow(ResultSet rs, int rowNum) throws SQLException {
 
                 DeviceTypeDeviceGroup deviceTypeGroup = new DeviceTypeDeviceGroup();
                 deviceTypeGroup.type = rs.getString("type");
@@ -82,13 +82,12 @@ public class DeviceTypeGroupProvider extends DeviceGroupProviderBase {
                 return deviceTypeGroup;
             }
         };
-        List<DeviceTypeDeviceGroup> resultList = jdbcTemplate.query(sql.toString(), mapper);
-          
+        List<DeviceGroup> resultList = jdbcTemplate.query(sql.toString(), mapper);
         
-        return resultList;
+        return Collections.unmodifiableList(resultList);
     }
     
-    public Set<? extends DeviceGroup> getGroups(DeviceGroup base, YukonDevice device) {
+    public Set<DeviceGroup> getGroupMembership(DeviceGroup base, YukonDevice device) {
         
         LiteYukonPAObject devicePao = paoDao.getLiteYukonPAO(device.getDeviceId());
         String type = paoGroupsWrapper.getPAOTypeString(devicePao.getType());
@@ -98,8 +97,11 @@ public class DeviceTypeGroupProvider extends DeviceGroupProviderBase {
         routeGroup.setName(type);
         routeGroup.setParent(base);
         routeGroup.setType(base.getType());
+        
+        // helps the singleton method be happy
+        DeviceGroup result = routeGroup;
     
-        return Collections.singleton(routeGroup);
+        return Collections.singleton(result);
     }
 
     private class DeviceTypeDeviceGroup extends DeviceGroup {

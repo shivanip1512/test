@@ -95,7 +95,6 @@
         <property name="jdbcTemplate" ref="simpleJdbcTemplate"/>
         <property name="paoGroupsWrapper" ref="paoGroupsWrapper"/>
         <property name="nextValueHelper" ref="nextValueHelper"/>
-        <property name="deviceGroupProviderDao" ref="deviceGroupDao" />
     </bean>
     
     <alias alias="deviceGroupMemberEditorDao" name="deviceGroupEditorDao"/>

@@ -11,7 +11,7 @@ public abstract class DeviceGroup implements Comparable<DeviceGroup> {
     private DeviceGroup parent;
 
     /**
-     * Method to determine if this group can have it's name changed, parent
+     * Method to determine if this group can have its name changed, parent
      * changed, or be deleted
      * @return True if editable
      */

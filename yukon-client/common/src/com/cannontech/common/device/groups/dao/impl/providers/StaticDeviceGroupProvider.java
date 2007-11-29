@@ -1,5 +1,6 @@
 package com.cannontech.common.device.groups.dao.impl.providers;
 
+import java.util.ArrayList;
 import java.util.Collections;
 import java.util.HashSet;
 import java.util.List;
@@ -29,10 +30,29 @@ public class StaticDeviceGroupProvider extends DeviceGroupProviderBase {
     }
 
     @Override
-    public List<? extends DeviceGroup> getChildGroups(DeviceGroup group) {
+    public List<DeviceGroup> getChildGroups(DeviceGroup group) {
         StoredDeviceGroup sdg = getStoredGroup(group);
-        List<StoredDeviceGroup> childGroups = deviceGroupEditorDao.getChildGroups(sdg);
-        return childGroups;
+        List<? extends DeviceGroup> childGroups = deviceGroupEditorDao.getChildGroups(sdg);
+        
+        List<DeviceGroup> result = Collections.unmodifiableList(childGroups);
+        return result;
+    }
+    
+    @Override
+    public List<DeviceGroup> getGroups(DeviceGroup group) {
+        List<DeviceGroup> result = new ArrayList<DeviceGroup>();
+        StoredDeviceGroup sdg = getStoredGroup(group);
+        List<StoredDeviceGroup> staticGroups = deviceGroupEditorDao.getStaticGroups(sdg);
+        result.addAll(staticGroups);
+
+        // now get the non static ones
+        List<StoredDeviceGroup> nonStaticGroups = deviceGroupEditorDao.getNonStaticGroups(sdg);
+        for (StoredDeviceGroup nonStaticGroup : nonStaticGroups) {
+            List<DeviceGroup> tempGroups = getMainDelegator().getGroups(nonStaticGroup);
+            result.addAll(tempGroups);
+        }
+        
+        return Collections.unmodifiableList(result);
     }
     
     @Override
@@ -45,32 +65,29 @@ public class StaticDeviceGroupProvider extends DeviceGroupProviderBase {
         return whereString;
     }
     
-    public void removeGroupDependancies(DeviceGroup group) {
-        String sql = "DELETE FROM DeviceGroupMember where DeviceGroupId = ?";
-        jdbcTemplate.update(sql, getStoredGroup(group).getId());
-    }
-
     private StoredDeviceGroup getStoredGroup(DeviceGroup group) {
         Validate.isTrue(group instanceof StoredDeviceGroup, "Group must be static at this point");
         StoredDeviceGroup sdg = (StoredDeviceGroup) group;
         return sdg;
     }
     
-    public Set<? extends DeviceGroup> getGroups(DeviceGroup base,
-            YukonDevice device) {
+    public Set<DeviceGroup> getGroupMembership(DeviceGroup base, YukonDevice device) {
+        StoredDeviceGroup storedGroup = getStoredGroup(base);
 
-        Set<DeviceGroup> resultSet = new HashSet<DeviceGroup>();
-        if(getMainDelegator().isDeviceInGroup(base, device)){
-            resultSet.add(base);
-        }
-        List<? extends DeviceGroup> childGroups = getChildGroups(base);
-        for (DeviceGroup group : childGroups) {
-            Set<? extends DeviceGroup> tempGroups = getMainDelegator().getGroups(group,
-                                                                                device);
-            resultSet.addAll(tempGroups);
+        Set<StoredDeviceGroup> groups = deviceGroupMemberEditorDao.getGroupMembership(storedGroup, device);
+        
+        // create a new set to get around generics weirdness
+        Set<DeviceGroup> result = new HashSet<DeviceGroup>(groups);
+
+        List<StoredDeviceGroup> nonStaticGroups =
+            deviceGroupEditorDao.getNonStaticGroups(storedGroup);
+        for (StoredDeviceGroup nonStaticGroup : nonStaticGroups) {
+            Set<? extends DeviceGroup> tempGroups =
+                getMainDelegator().getGroupMembership(nonStaticGroup, device);
+            result.addAll(tempGroups);
         }
 
-        return resultSet;
+        return result;
     }
     
     public DeviceGroup getRootGroup() {
@@ -79,7 +96,7 @@ public class StaticDeviceGroupProvider extends DeviceGroupProviderBase {
     }
     
     public boolean isDeviceInGroup(DeviceGroup deviceGroup, YukonDevice device) {
-            StoredDeviceGroup storedGroup = (StoredDeviceGroup) deviceGroup;
+            StoredDeviceGroup storedGroup = getStoredGroup(deviceGroup);
             SqlStatementBuilder sql = new SqlStatementBuilder();
             sql.append("select count(*)");
             sql.append("from DeviceGroupMember dgm");

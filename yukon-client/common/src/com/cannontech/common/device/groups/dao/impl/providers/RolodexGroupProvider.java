@@ -43,11 +43,11 @@ public class RolodexGroupProvider extends DeviceGroupProviderBase {
     }
 
     @Override
-    public List<? extends DeviceGroup> getChildGroups(DeviceGroup group) {
+    public List<DeviceGroup> getChildGroups(DeviceGroup group) {
         if (group instanceof RolodexLetterDeviceGroup) {
             return Collections.emptyList();
         }
-        List<RolodexLetterDeviceGroup> resultList = new ArrayList<RolodexLetterDeviceGroup>(26);
+        List<DeviceGroup> resultList = new ArrayList<DeviceGroup>(26);
         
         SqlStatementBuilder sql = new SqlStatementBuilder();
         sql.append("select distinct SUBSTRING(ypo.PAOName, 1, 1)");
@@ -70,12 +70,12 @@ public class RolodexGroupProvider extends DeviceGroupProviderBase {
             }
         }
         
-        return resultList;
+        return Collections.unmodifiableList(resultList);
     }
 
     
     
-    public Set<? extends DeviceGroup> getGroups(DeviceGroup base, YukonDevice device) {
+    public Set<DeviceGroup> getGroupMembership(DeviceGroup base, YukonDevice device) {
         LiteYukonPAObject liteYukonPAO = paoDao.getLiteYukonPAO(device.getDeviceId());
         
         char currentLetter = liteYukonPAO.getPaoName().charAt(0);
@@ -85,7 +85,10 @@ public class RolodexGroupProvider extends DeviceGroupProviderBase {
         letterGroup.setParent(base);
         letterGroup.setType(base.getType());
     
-        return Collections.singleton(letterGroup);
+        // helps the singleton method be happy
+        DeviceGroup result = letterGroup;
+    
+        return Collections.singleton(result);
     }
 
     private class RolodexLetterDeviceGroup extends DeviceGroup {

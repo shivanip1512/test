@@ -3,21 +3,24 @@ package com.cannontech.common.device.groups.editor.dao.impl;
 import java.sql.ResultSet;
 import java.sql.SQLException;
 
-import org.apache.commons.lang.Validate;
 import org.springframework.jdbc.core.simple.ParameterizedRowMapper;
 
 import com.cannontech.common.device.groups.dao.DeviceGroupType;
 import com.cannontech.common.device.groups.editor.model.StoredDeviceGroup;
 
-public class StoredDeviceGroupRowMapper implements ParameterizedRowMapper<StoredDeviceGroup> {
-    private final StoredDeviceGroup parent;
+/**
+ * This is a cheater class so that we can map rows into an object that fully represents
+ * their state without taken the extra step of retrieving the parent of the DeviceGroup.
+ * 
+ * To efficiently resolve the parents, it is more efficient to work on an entire collection
+ * that can be processed in a non-linear manner.
+ */
+public class PartialDeviceGroupRowMapper implements ParameterizedRowMapper<PartialDeviceGroup> {
     
-    public StoredDeviceGroupRowMapper(StoredDeviceGroup parent) {
-        this.parent = parent;
-    }
-
-    public StoredDeviceGroup mapRow(ResultSet rs, int rowNum) throws SQLException {
+    public PartialDeviceGroup mapRow(ResultSet rs, int rowNum) throws SQLException {
+        PartialDeviceGroup partialDeviceGroup = new PartialDeviceGroup();
         StoredDeviceGroup group = new StoredDeviceGroup();
+        partialDeviceGroup.setStoredDeviceGroup(group);
         
         int id = rs.getInt("devicegroupid");
         group.setId(id);
@@ -26,14 +29,11 @@ public class StoredDeviceGroupRowMapper implements ParameterizedRowMapper<Stored
         group.setName(groupName);
         
         int parentId = rs.getInt("parentdevicegroupid");
-        boolean matchingParent = false;
-        if (parent == null) {
-            matchingParent = rs.wasNull();
+        if (rs.wasNull()) {
+            partialDeviceGroup.setParentGroupId(null);
         } else {
-            matchingParent = parentId == parent.getId();
+            partialDeviceGroup.setParentGroupId(parentId);
         }
-        Validate.isTrue(matchingParent, "ParentDeviceGroupId of row does not match parent " + parent);
-        group.setParent(parent);
         
         String systemGroupStr = rs.getString("systemgroup");
         boolean systemGroup = systemGroupStr.equalsIgnoreCase("Y");
@@ -43,7 +43,7 @@ public class StoredDeviceGroupRowMapper implements ParameterizedRowMapper<Stored
         DeviceGroupType type = DeviceGroupType.valueOf(typeStr);
         group.setType(type);
         
-        return group;
+        return partialDeviceGroup;
     }
 
 }

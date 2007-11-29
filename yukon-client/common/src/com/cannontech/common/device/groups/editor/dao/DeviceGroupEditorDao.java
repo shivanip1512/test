@@ -9,6 +9,21 @@ public interface DeviceGroupEditorDao {
     public StoredDeviceGroup getRootGroup();
 
     public List<StoredDeviceGroup> getChildGroups(StoredDeviceGroup group);
+    
+    
+    /**
+     * This find all STATIC groups that are descendants of group.
+     * @param group
+     * @return
+     */
+    public List<StoredDeviceGroup> getStaticGroups(StoredDeviceGroup group);
+    
+    /**
+     * This find all non STATIC groups that are descendants of group.
+     * @param group
+     * @return
+     */
+    public List<StoredDeviceGroup> getNonStaticGroups(StoredDeviceGroup group);
 
     public StoredDeviceGroup addGroup(StoredDeviceGroup group, DeviceGroupType type,
             String groupName);

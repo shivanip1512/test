@@ -1,6 +1,7 @@
 package com.cannontech.common.device.groups.editor.dao.impl;
 
 import java.util.HashSet;
+import java.util.Iterator;
 import java.util.List;
 import java.util.Set;
 
@@ -11,7 +12,6 @@ import org.springframework.transaction.annotation.Propagation;
 import org.springframework.transaction.annotation.Transactional;
 
 import com.cannontech.common.device.YukonDevice;
-import com.cannontech.common.device.groups.dao.DeviceGroupProviderDao;
 import com.cannontech.common.device.groups.dao.DeviceGroupType;
 import com.cannontech.common.device.groups.editor.dao.DeviceGroupEditorDao;
 import com.cannontech.common.device.groups.editor.dao.DeviceGroupMemberEditorDao;
@@ -22,13 +22,13 @@ import com.cannontech.common.util.SqlStatementBuilder;
 import com.cannontech.database.data.pao.PaoGroupsWrapper;
 import com.cannontech.database.incrementer.NextValueHelper;
 
-public class DeviceGroupEditorDaoImpl implements DeviceGroupEditorDao, DeviceGroupMemberEditorDao {
+public class DeviceGroupEditorDaoImpl implements DeviceGroupEditorDao, DeviceGroupMemberEditorDao, PartialDeviceGroupDao {
     private SimpleJdbcOperations jdbcTemplate;
     private PaoGroupsWrapper paoGroupsWrapper;
     private NextValueHelper nextValueHelper;
     
-    private DeviceGroupProviderDao deviceGroupProviderDao = null;
-
+    private StoredDeviceGroup rootGroupCache = null;
+    
     public void addDevices(StoredDeviceGroup group, List<? extends YukonDevice> devices) {
         for (YukonDevice device : devices) {
             SqlStatementBuilder sql = new SqlStatementBuilder();
@@ -63,19 +63,92 @@ public class DeviceGroupEditorDaoImpl implements DeviceGroupEditorDao, DeviceGro
         sql.append("from DeviceGroup dg");
         sql.append("where dg.parentdevicegroupid = ?");
         sql.append("order by GroupName");
-        StoredDeviceGroupRowMapper mapper = new StoredDeviceGroupRowMapper(group);
-        List<StoredDeviceGroup> groups = jdbcTemplate.query(sql.toString(), mapper, group.getId());
-        return groups;
+        PartialDeviceGroupRowMapper mapper = new PartialDeviceGroupRowMapper();
+        List<PartialDeviceGroup> groups = jdbcTemplate.query(sql.toString(), mapper, group.getId());
+
+        PartialGroupResolver resolver = new PartialGroupResolver(this);
+        resolver.addKnownGroups(group);
+        List<StoredDeviceGroup> resolvedPartials = resolver.resolvePartials(groups);
+        
+        return resolvedPartials;
     }
     
-    public StoredDeviceGroup getRootGroup() {
+    @Override
+    public List<StoredDeviceGroup> getNonStaticGroups(StoredDeviceGroup group) {
+        // we're going to let the database ignore the parent group because we can do it easier in code
         SqlStatementBuilder sql = new SqlStatementBuilder();
         sql.append("select dg.*");
         sql.append("from DeviceGroup dg");
-        sql.append("where dg.parentdevicegroupid is null");
-        StoredDeviceGroupRowMapper mapper = new StoredDeviceGroupRowMapper(null);
-        StoredDeviceGroup group = jdbcTemplate.queryForObject(sql.toString(), mapper);
-        return group;
+        sql.append("where dg.Type != 'STATIC'");
+        PartialDeviceGroupRowMapper mapper = new PartialDeviceGroupRowMapper();
+        List<PartialDeviceGroup> groups = jdbcTemplate.query(sql.toString(), mapper);
+        
+        PartialGroupResolver resolver = new PartialGroupResolver(this);
+        resolver.addKnownGroups(group);
+        List<StoredDeviceGroup> resolvedPartials = resolver.resolvePartials(groups);
+        
+        // alright, now we have to filter, but first we'll check if base is root
+        if (group.getParent() == null) {
+            // well, everything is a descendant of root, so lets just return everything
+            return resolvedPartials;
+        }
+        
+        Iterator<StoredDeviceGroup> iterator = resolvedPartials.iterator();
+        while (iterator.hasNext()) {
+            StoredDeviceGroup next = iterator.next();
+            if (!next.isDescendantOf(group)) {
+                // I don't really care that this is an array list, because this will usually get called on the top group
+                iterator.remove();
+            }
+        }
+        
+        return resolvedPartials;
+    }
+    
+    @Override
+    public List<StoredDeviceGroup> getStaticGroups(StoredDeviceGroup group) {
+        // we're going to let the database ignore the parent group because we can do it easier in code
+        SqlStatementBuilder sql = new SqlStatementBuilder();
+        sql.append("select dg.*");
+        sql.append("from DeviceGroup dg");
+        sql.append("where dg.Type = 'STATIC'");
+        PartialDeviceGroupRowMapper mapper = new PartialDeviceGroupRowMapper();
+        List<PartialDeviceGroup> groups = jdbcTemplate.query(sql.toString(), mapper);
+        
+        PartialGroupResolver resolver = new PartialGroupResolver(this);
+        resolver.addKnownGroups(group);
+        List<StoredDeviceGroup> resolvedPartials = resolver.resolvePartials(groups);
+        
+        // alright, now we have to filter, but first we'll check if base is root
+        if (group.getParent() == null) {
+            // well, everything is a descendant of root, so lets just return everything
+            return resolvedPartials;
+        }
+        Iterator<StoredDeviceGroup> iterator = resolvedPartials.iterator();
+        while (iterator.hasNext()) {
+            StoredDeviceGroup next = iterator.next();
+            if (!next.isDescendantOf(group)) {
+                // I don't really care that this is probably an array list, 
+                // because this will usually get called on the top group
+                iterator.remove();
+            }
+        }
+        
+        return resolvedPartials;
+    }
+    
+    public synchronized StoredDeviceGroup getRootGroup() {
+        if (rootGroupCache == null) {
+            SqlStatementBuilder sql = new SqlStatementBuilder();
+            sql.append("select dg.*");
+            sql.append("from DeviceGroup dg");
+            sql.append("where dg.parentdevicegroupid is null");
+            PartialDeviceGroupRowMapper mapper = new PartialDeviceGroupRowMapper();
+            PartialDeviceGroup group = jdbcTemplate.queryForObject(sql.toString(), mapper);
+            PartialGroupResolver resolver = new PartialGroupResolver(this);
+            rootGroupCache = resolver.resolvePartial(group);
+        }
+        return rootGroupCache;
     }
     
     public StoredDeviceGroup addGroup(StoredDeviceGroup group, DeviceGroupType type, String groupName) {
@@ -115,10 +188,11 @@ public class DeviceGroupEditorDaoImpl implements DeviceGroupEditorDao, DeviceGro
             removeGroup(childGroup);
         }
         
-        deviceGroupProviderDao.removeGroupDependancies(group);
+        String sql1 = "DELETE FROM DeviceGroupMember where DeviceGroupId = ?";
+        jdbcTemplate.update(sql1, group.getId());
         
-        String sql = "DELETE FROM DeviceGroup WHERE DeviceGroupId = ?";
-        jdbcTemplate.update(sql, group.getId());
+        String sql2 = "DELETE FROM DeviceGroup WHERE DeviceGroupId = ?";
+        jdbcTemplate.update(sql2, group.getId());
         
     }
 
@@ -147,39 +221,93 @@ public class DeviceGroupEditorDaoImpl implements DeviceGroupEditorDao, DeviceGro
         addDevices(group, devices);
     }
     
+    /**
+     * Deprecated via interface.
+     */
     @Transactional(propagation=Propagation.REQUIRED)
     public Set<StoredDeviceGroup> getGroups(StoredDeviceGroup base, YukonDevice device) {
-        ResolvingDeviceGroupRowMapper mapper = new ResolvingDeviceGroupRowMapper(this);
+        PartialDeviceGroupRowMapper mapper = new PartialDeviceGroupRowMapper();
         SqlStatementBuilder sql = new SqlStatementBuilder();
         sql.append("select dg.*");
         sql.append("from DeviceGroupMember dgm");
         sql.append("join DeviceGroup dg on dg.devicegroupid = dgm.devicegroupid");
         sql.append("where dgm.yukonpaoid = ? and dg.parentdevicegroupid = ?");
-        List<StoredDeviceGroup> groups = jdbcTemplate.query(sql.toString(), 
+        List<PartialDeviceGroup> groups = jdbcTemplate.query(sql.toString(), 
                                                             mapper, 
                                                             device.getDeviceId(),
                                                             base.getId());
-        return new HashSet<StoredDeviceGroup>(groups);
-    }
-    
-    // This method is transactional because the mapper does a recursive call
-    // which hits the db in each recursion.  If it is not transactional, each
-    // recursion will get it's own connection and we will run out of connections.
-    @Transactional
-    public StoredDeviceGroup getGroupById(int groupId) {
-        ResolvingDeviceGroupRowMapper mapper = new ResolvingDeviceGroupRowMapper(this);
-        return getGroupById(groupId, mapper);
+        HashSet<StoredDeviceGroup> result = new HashSet<StoredDeviceGroup>();
+        PartialGroupResolver resolver = new PartialGroupResolver(this);
+        resolver.addKnownGroups(base);
+        resolver.resolvePartials(groups, result);        
+        return result;
     }
     
     @Transactional(propagation=Propagation.REQUIRED)
-    public StoredDeviceGroup getGroupById(int groupId, ResolvingDeviceGroupRowMapper mapper) {
+    public Set<StoredDeviceGroup> getGroupMembership(StoredDeviceGroup base, YukonDevice device) {
+        // The thinking behind this implementation is that no matter how popular
+        // a device is, it is likely to only be in a few groups. Therefor, we
+        // might as well retrieve all of those groups and then filter out the groups
+        // which are not descendants of base (also, in most cases this is called with
+        // base being the root group, so we handle that as a special case).
+        PartialDeviceGroupRowMapper mapper = new PartialDeviceGroupRowMapper();
+        SqlStatementBuilder sql = new SqlStatementBuilder();
+        sql.append("select dg.*");
+        sql.append("from DeviceGroupMember dgm");
+        sql.append("join DeviceGroup dg on dg.devicegroupid = dgm.devicegroupid");
+        sql.append("where dgm.yukonpaoid = ?");
+        List<PartialDeviceGroup> groups = jdbcTemplate.query(sql.toString(), 
+                                                            mapper, 
+                                                            device.getDeviceId());
+        Set<StoredDeviceGroup> result = new HashSet<StoredDeviceGroup>();
+        PartialGroupResolver resolver = new PartialGroupResolver(this);
+        resolver.addKnownGroups(base);
+        resolver.resolvePartials(groups, result);
+        
+        // alright, now we have to filter, but first we'll check if base is root
+        if (base.getParent() == null) {
+            // well, everything is a descendant of root, so lets just return everything
+            return result;
+        }
+        
+        Iterator<StoredDeviceGroup> iterator = result.iterator();
+        while (iterator.hasNext()) {
+            StoredDeviceGroup next = iterator.next();
+            if (!next.isDescendantOf(base)) {
+                iterator.remove();
+            }
+        }
+        return result;
+    }
+    
+    @Transactional
+    public StoredDeviceGroup getGroupById(int groupId) {
+        PartialGroupResolver resolver = new PartialGroupResolver(this);
+        resolver.addKnownGroups(getRootGroup());
         SqlStatementBuilder sql = new SqlStatementBuilder();
         sql.append("select dg.*");
         sql.append("from DeviceGroup dg");
         sql.append("where dg.devicegroupid = ?");
-        StoredDeviceGroup group = jdbcTemplate.queryForObject(sql.toString(), mapper, groupId);
-        return group;
+        PartialDeviceGroupRowMapper mapper = new PartialDeviceGroupRowMapper();
+        PartialDeviceGroup group = jdbcTemplate.queryForObject(sql.toString(), mapper, groupId);
+        
+        StoredDeviceGroup storedDeviceGroup = resolver.resolvePartial(group);
+        
+        return storedDeviceGroup;
     }
+    
+    public Set<PartialDeviceGroup> getPartialGroupsById(Set<Integer> neededIds) {
+        SqlStatementBuilder sql = new SqlStatementBuilder();
+        sql.append("select dg.*");
+        sql.append("from DeviceGroup dg");
+        sql.append("where dg.devicegroupid in (", neededIds, ")");
+        PartialDeviceGroupRowMapper mapper = new PartialDeviceGroupRowMapper();
+        List<PartialDeviceGroup> groups = jdbcTemplate.query(sql.toString(), mapper);
+        
+        Set<PartialDeviceGroup> result = new HashSet<PartialDeviceGroup>(groups);
+        return result;
+    }
+
     
     @Required
     public void setJdbcTemplate(SimpleJdbcOperations jdbcTemplate) {
@@ -194,11 +322,6 @@ public class DeviceGroupEditorDaoImpl implements DeviceGroupEditorDao, DeviceGro
     @Required
     public void setNextValueHelper(NextValueHelper nextValueHelper) {
         this.nextValueHelper = nextValueHelper;
-    }
-
-    @Required
-    public void setDeviceGroupProviderDao(DeviceGroupProviderDao deviceGroupProviderDao) {
-        this.deviceGroupProviderDao = deviceGroupProviderDao;
     }
 
 }

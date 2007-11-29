@@ -1,7 +1,7 @@
 package com.cannontech.common.device.groups.dao.impl;
 
 import java.util.ArrayList;
-import java.util.Collection;
+import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 import java.util.Set;
@@ -13,11 +13,21 @@ import com.cannontech.common.device.groups.dao.DeviceGroupProviderDao;
 import com.cannontech.common.device.groups.dao.DeviceGroupType;
 import com.cannontech.common.device.groups.dao.impl.providers.DeviceGroupProvider;
 import com.cannontech.common.device.groups.dao.impl.providers.StaticDeviceGroupProvider;
+import com.cannontech.common.device.groups.editor.model.StoredDeviceGroup;
 import com.cannontech.common.device.groups.model.DeviceGroup;
 
+/**
+ * This class serves as a delegation point between the DeviceGroupProviderDao
+ * and the associated DeviceGroupProvider implementations. When a method
+ * is invoked on this class (with the exception of a few special cases), the 
+ * actual provider implementation is looked up based on the type of the device
+ * and then the same method is invoked on the provider.
+ */
 public class DeviceGroupProviderDaoMain implements DeviceGroupProviderDao {
     private Map<DeviceGroupType, DeviceGroupProvider> providers;
     private StaticDeviceGroupProvider staticProvider;
+    private Map<String, DeviceGroup> systemGroupCache = new HashMap<String, DeviceGroup>();
+
 
     public List<YukonDevice> getChildDevices(DeviceGroup group) {
         return getProvider(group).getChildDevices(group);
@@ -27,7 +37,7 @@ public class DeviceGroupProviderDaoMain implements DeviceGroupProviderDao {
         return getProvider(group).getChildDeviceCount(group);
     }
 
-    public List<? extends DeviceGroup> getChildGroups(DeviceGroup group) {
+    public List<DeviceGroup> getChildGroups(DeviceGroup group) {
         return getProvider(group).getChildGroups(group);
     }
 
@@ -51,42 +61,59 @@ public class DeviceGroupProviderDaoMain implements DeviceGroupProviderDao {
         return getProvider(group).getDeviceCount(group);
     }
     
-    public DeviceGroup getGroup(DeviceGroup base, String groupName) {
-        return getProvider(base).getGroup(base, groupName);
+    public synchronized DeviceGroup getGroup(DeviceGroup base, String groupName) {
+        // check cache
+        String presumedName = base.getFullName() + "/" + groupName;
+        DeviceGroup deviceGroup = systemGroupCache.get(presumedName);
+        if (deviceGroup != null) {
+            return deviceGroup;
+        }
+        
+        // not in system cache, go look it up
+        DeviceGroup group = getProvider(base).getGroup(base, groupName);
+        
+        // if this is a system group, let's cache it
+        if (group instanceof StoredDeviceGroup) {
+            StoredDeviceGroup storedDeviceGroup = (StoredDeviceGroup) group;
+            if (storedDeviceGroup.isSystemGroup()) {
+                systemGroupCache.put(storedDeviceGroup.getFullName(), storedDeviceGroup);
+            }
+        }
+        return group;
     }
     
     public DeviceGroup getRootGroup() {
+        // the root is a special case, we always know that it is static
         return staticProvider.getRootGroup();
     }
     
-    public List<? extends DeviceGroup> getAllGroups() {
+    public List<DeviceGroup> getAllGroups() {
         List<DeviceGroup> result = new ArrayList<DeviceGroup>(10);
-        result.add(getRootGroup());
-        collectChildGroups(result, getRootGroup());
+        DeviceGroup rootGroup = getRootGroup();
+        result.add(rootGroup);
+        List<DeviceGroup> allButRoot = getGroups(rootGroup);
+        result.addAll(allButRoot);
         
         return result;
     }
-    
-    public Set<? extends DeviceGroup> getGroups(YukonDevice device) {
-        DeviceGroup rootGroup = getRootGroup();
-        return getGroups(rootGroup, device);
+
+    @Override
+    public List<DeviceGroup> getGroups(DeviceGroup group) {
+        return getProvider(group).getGroups(group);
     }
     
-    public Set<? extends DeviceGroup> getGroups(DeviceGroup base, YukonDevice device) {
+    public Set<DeviceGroup> getGroupMembership(YukonDevice device) {
+        DeviceGroup rootGroup = getRootGroup();
+        return getGroupMembership(rootGroup, device);
+    }
+    
+    public Set<DeviceGroup> getGroupMembership(DeviceGroup base, YukonDevice device) {
         DeviceGroupProvider provider = getProvider(base);
-        Set<? extends DeviceGroup> groups = provider.getGroups(base, device);
+        Set<DeviceGroup> groups = provider.getGroupMembership(base, device);
         
         return groups;
     }
     
-    private void collectChildGroups(Collection<DeviceGroup> result, DeviceGroup rootGroup) {
-        List<? extends DeviceGroup> childGroups = getChildGroups(rootGroup);
-        for (DeviceGroup group : childGroups) {
-            result.add(group);
-            collectChildGroups(result, group);
-        }
-    }
-
     protected DeviceGroupProvider getProvider(DeviceGroup group) {
         return providers.get(group.getType());
     }
@@ -105,8 +132,4 @@ public class DeviceGroupProviderDaoMain implements DeviceGroupProviderDao {
         return getProvider(group).isDeviceInGroup(group,device);
     }
 
-    public void removeGroupDependancies(DeviceGroup group) {
-        getProvider(group).removeGroupDependancies(group);
-    }
-    
 }

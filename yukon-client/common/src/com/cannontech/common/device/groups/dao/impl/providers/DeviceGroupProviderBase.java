@@ -1,6 +1,7 @@
 package com.cannontech.common.device.groups.dao.impl.providers;
 
 import java.util.ArrayList;
+import java.util.Collections;
 import java.util.List;
 
 import org.apache.commons.lang.StringUtils;
@@ -13,22 +14,28 @@ import com.cannontech.common.util.MappingList;
 import com.cannontech.common.util.ObjectMapper;
 import com.cannontech.core.dao.NotFoundException;
 
+/**
+ * Provides a base implementation of DeviceGroupProvider. For the most part, each of 
+ * the "child" methods is abstract. This class then implements the recursive part (e.g. 
+ * getDevices() is implemented on top of getChildGroups() and getChildDevices()). One
+ * important aspect of this class is that whenever it calls getChildDevices(), it uses
+ * the mainDelegator process the result. This is because classes that extends this class
+ * will be written for a specific DeviceGroupType, but they may contain sub groups
+ * of another type. For this reason, the mainDelegator must be used to ensure that 
+ * each group is processed by the correct provider.
+ */
 public abstract class DeviceGroupProviderBase implements DeviceGroupProvider {
     
     private DeviceGroupProviderDao mainDelegator;
-
+    
     public abstract List<YukonDevice> getChildDevices(DeviceGroup group);
     
     public abstract String getChildDeviceGroupSqlWhereClause(DeviceGroup group, String identifier);
 
-    public abstract List<? extends DeviceGroup> getChildGroups(DeviceGroup group);
+    public abstract List<DeviceGroup> getChildGroups(DeviceGroup group);
     
     public int getChildDeviceCount(DeviceGroup group) {
         return getChildDevices(group).size();
-    }
-    
-    public void removeGroupDependancies(DeviceGroup group) {
-        // Do nothing - no extra work to be done for base removal
     }
     
     public String getDeviceGroupSqlWhereClause(DeviceGroup group, String identifier) {
@@ -68,7 +75,6 @@ public abstract class DeviceGroupProviderBase implements DeviceGroupProvider {
     }
 
     public List<YukonDevice> getDevices(DeviceGroup group) {
-        
         List<YukonDevice> deviceList = new ArrayList<YukonDevice>();
 
         // Get child devices
@@ -82,6 +88,17 @@ public abstract class DeviceGroupProviderBase implements DeviceGroupProvider {
             deviceList.addAll(devices);
         }
         return deviceList;
+    }
+    
+    public List<DeviceGroup> getGroups(DeviceGroup group) {
+        List<DeviceGroup> result = new ArrayList<DeviceGroup>(20);
+        List<DeviceGroup> groups = getChildGroups(group);
+        result.addAll(groups);
+        for (DeviceGroup childGroup : groups) {
+            List<DeviceGroup> grandChildren = mainDelegator.getGroups(childGroup);
+            result.addAll(grandChildren);
+        }
+        return Collections.unmodifiableList(result);
     }
     
     @Required

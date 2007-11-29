@@ -52,7 +52,7 @@ public class DeviceGroupWidget extends WidgetControllerBase {
         Meter meter = meterDao.getForId(deviceId);
 
         // Gets all the current groups of the device
-        Set<? extends DeviceGroup> currentGroupsSet = deviceGroupDao.getGroups(meter);
+        Set<? extends DeviceGroup> currentGroupsSet = deviceGroupDao.getGroupMembership(meter);
         List<DeviceGroup> currentGroups = new ArrayList<DeviceGroup>(currentGroupsSet);
 
         Collections.sort(currentGroups);
@@ -69,7 +69,8 @@ public class DeviceGroupWidget extends WidgetControllerBase {
         // Iterate the list and take the modifiable groups
         List<DeviceGroup> groupList = new ArrayList<DeviceGroup>();
         for (DeviceGroup group : allGroups) {
-            if (group.isModifiable()) {
+            // parent check enforces no-devices-under-root rule
+            if (group.isModifiable() && group.getParent() != null) {
                 groupList.add(group);
             }
         }
