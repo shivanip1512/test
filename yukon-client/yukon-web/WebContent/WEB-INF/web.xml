@@ -887,7 +887,12 @@
 		<servlet-name>debug</servlet-name>
 		<url-pattern>/spring/debug/*</url-pattern>
 	</servlet-mapping>
-
+	
+	<servlet-mapping>
+		<servlet-name>reports</servlet-name>
+		<url-pattern>/spring/reports/*</url-pattern>
+	</servlet-mapping>
+	
 	<servlet-mapping>
 		<servlet-name>capcontrol</servlet-name>
 		<url-pattern>/spring/capcontrol/*</url-pattern>
