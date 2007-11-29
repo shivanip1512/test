@@ -27,6 +27,7 @@ import org.apache.myfaces.custom.tree2.TreeModelBase;
 import org.apache.myfaces.custom.tree2.TreeNode;
 import org.apache.myfaces.custom.tree2.TreeNodeBase;
 import org.apache.myfaces.custom.tree2.TreeStateBase;
+import org.springframework.dao.EmptyResultDataAccessException;
 
 import com.cannontech.cbc.dao.*;
 import com.cannontech.cbc.db.DBPersistentUtils;
@@ -956,12 +957,12 @@ public class CapControlForm extends DBEditorForm implements ICapControlModel{
     			YukonPAObject pao = ((YukonPAObject) smartMulti.getOwnerDBPersistent());
                 ((CapBank) dbObj).getCapBank().setControlDeviceID(pao.getPAObjectID());
                 StatusPoint statusPt;
-                if (pao instanceof CapBankController702x) {
-                       MultiDBPersistent pointVector = CBCPointFactory.createPointsForCBCDevice(pao);           
-                       CBControllerEditor.insertPointsIntoDB(pointVector);  
-                       statusPt = (StatusPoint) MultiDBPersistent.getFirstObjectOfType(StatusPoint.class, pointVector);
-                } else {
-                    //create addtional info find the first status point in our CBC and assign its ID to our CapBank for control purposes
+                if ( pao instanceof CapBankController702x || pao instanceof CapBankControllerDNP ) {
+                   MultiDBPersistent pointVector = CBCPointFactory.createPointsForCBCDevice(pao);           
+                   CBControllerEditor.insertPointsIntoDB(pointVector);  
+                   statusPt = (StatusPoint) MultiDBPersistent.getFirstObjectOfType(StatusPoint.class, pointVector);
+                }else {
+                    //create additional info find the first status point in our CBC and assign its ID to our CapBank for control purposes
                     statusPt = (StatusPoint) SmartMultiDBPersistent.getFirstObjectOfType(StatusPoint.class, smartMulti);
                 }
     			((CapBank) dbObj).getCapBank().setControlPointID(statusPt.getPoint().getPointID());
@@ -1180,12 +1181,16 @@ public class CapControlForm extends DBEditorForm implements ICapControlModel{
 	public String getParent() {
 		int parentID = CtiUtilities.NONE_ZERO_ID;
 		if (getDbPersistent() instanceof CapControlFeeder) {
-			parentID = feederDao.getParentSubBusID(itemID);
-        } else if (getDbPersistent() instanceof CapBank) {
+    		try{
+    		    parentID = feederDao.getParentSubBusID(itemID);
+    		}catch( EmptyResultDataAccessException e){
+    		    //do nothing
+    		}
+		} else if (getDbPersistent() instanceof CapBank) {
 			try{
 			    parentID = capbankDao.getParentFeederId(itemID);
-			}catch(NotFoundException e){
-			    CTILogger.warn("Feeder " + itemID + " not found. ", e);
+			}catch( EmptyResultDataAccessException e){
+			    //do nothing
 			}
         }
 		if (parentID == CtiUtilities.NONE_ZERO_ID) {
