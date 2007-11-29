@@ -19,10 +19,10 @@
 	<c:when test="${selectedAttributeGraph != null}">
 
 		<c:if test="${selectedAttributeGraph.description != null}">
-			<div style="font-size: 10px; text-align: right;">
-				<span onmouseover="javascript:toggleWhatsThis()" onmouseout="javascript:toggleWhatsThis()">What's this?</span>
+			<div style="font-size: 10px; text-align: right; position: relative"  onmouseover="javascript:toggleWhatsThis()" onmouseout="javascript:toggleWhatsThis()">
+				What's this?
+			<div id="whatsThisText" class="widgetPopup" style="display:none;text-align: left">${selectedAttributeGraph.description}</div>
 			</div>
-			<div id="whatsThisText" class="widgetPopup" style="display:none;">${selectedAttributeGraph.description}</div>
 		</c:if>
 		
 		<%-- Trend --%>
@@ -103,7 +103,7 @@
 		
 		<%-- Charting Style (line/bar) --%>
 		<tr>
-			<td class="label"><b>Chart Style:</b></td>
+			<td class="label">Chart Style:</td>
 		
 			<td class="last">
 				<tags:widgetLink method="render" title="Line Graph" labelBusy="Line" selected="${graphType == 'LINE'}" graphType="LINE">Line</tags:widgetLink>

@@ -99,7 +99,7 @@
 	</script>
 
 	<h2>Groups Home</h2>
-	
+	<br>
 	<c:if test="${not empty param.errorMessage}">
 		<div style="color: red;">
 			${param.errorMessage}
@@ -107,10 +107,11 @@
 		<br/><br/>
 	</c:if>
 
-	<div style="float: left; margin-right: .75em; margin-bottom: .5em; width: 350px;">
+	<div style="float: left; margin-right: .75em; margin-bottom: .5em; width: 350px">
 
 		<tags:boxContainer title="Groups" hideEnabled="false">
-			<table style="width: 100%;" >
+            <div style="height: 600px; overflow: auto;">
+			<table style="width: 95%">
 				<c:choose>
 					<c:when test="${fn:length(groupHierarchy.childGroupList) > 0}">
 						<tags:groupHierarchy hierarchy="${groupHierarchy}" selectedGroup="${group.fullName}" />
@@ -122,11 +123,11 @@
 					</c:otherwise>
 				</c:choose>
 			</table>
-		
+		    </div>
 		</tags:boxContainer>
 	</div>
 	
-	<div style="float: left; margin-right: .75em; margin-bottom: .5em; width: 450px;">
+	<div style="float: left; margin-right: .75em; margin-bottom: 10px; width: 450px;">
 		
 		<tags:boxContainer hideEnabled="false">
 			
@@ -144,8 +145,9 @@
 			</jsp:attribute>
 			
 			<jsp:body>
-				<div style="font-size: .75em; display: inline;">
+				<div style="font-size: .75em;">
 				
+                    <h4>Edit Group</h4>
 					<c:choose>
 						<c:when test="${group.editable}">
 							<a title="Click to edit group name" href="javascript:showGroupPopup('editGroupNameDiv', 'newGroupName');">Edit Group Name</a>
@@ -153,84 +155,64 @@
 								<div style="width: 100%; text-align: right;margin-bottom: 10px;">
 									<a href="javascript:showGroupPopup('editGroupNameDiv');">cancel</a>
 								</div>
-								<form style="display: inline;" method="post" action="/spring/group/updateGroupName" onsubmit="return changeGroupName();">
+								<form method="post" action="/spring/group/updateGroupName" onsubmit="return changeGroupName();">
 									New Group Name: <input id="newGroupName" name="newGroupName" type="text" value="${group.name}" />
 									<input type="hidden" name="groupName" value="${group.fullName}" />
 									<input type="submit" value="Save" onclick="return changeGroupName();" />
 								</form>
 							</div>
+                            <form id="removeGroupForm" action="/spring/group/removeGroup" method="post">
+                                <input type="hidden" name="removeGroupName" value="${group.fullName}" />
+                                <a title="Click to delete this group" href="javascript:removeGroup('removeGroupForm')">Delete Group</a>
+                            </form>
+                            <div>
+                            <a title="Click to move this group" href="javascript:showGroupPopup('moveGroup');">Move Group</a>
+                            <div id="moveGroup" class="popUpDiv" style="width: 310px; display: none; background-color: white; border: 1px solid black;padding: 10px 10px;">
+                                
+                                <div style="width: 100%; text-align: right;margin-bottom: 10px;">
+                                    <a href="javascript:showGroupPopup('moveGroup');">cancel</a>
+                                </div>
+                                <form id="moveGroupForm" action="/spring/group/moveGroup">
+                                    Select Parent Group:
+                                    <tags:groupSelect groupList="${moveGroups}" onSelect="moveGroup"/>
+                                    
+                                    <input type="hidden" name="groupName" value="${group.fullName}" />
+                                    <input type="hidden" id="parentGroupName" name="parentGroupName" />
+                                </form>
+                            </div>
+                            </div>
 						</c:when>
 						<c:otherwise>
-							<span title="Cannot change group name">Edit Group Name</span>
+							<span>Cannot edit this group</span>
 						</c:otherwise>
 					</c:choose>
 					
-					<br/>
-					
-					<c:choose>
-						<c:when test="${group.modifiable}">
-							<a title="Click to add a sub group" href="javascript:showGroupPopup('addGroup', 'childGroupName');">Add Sub Group</a>
-							<div id="addGroup" class="popUpDiv" style="width: 330px; display: none; background-color: white; border: 1px solid black;padding: 10px 10px;">
-								<div style="width: 100%; text-align: right;margin-bottom: 10px;">
-									<a href="javascript:showGroupPopup('addGroup');">cancel</a>
-								</div>
-								<form id="addSubGroupForm" method="post"  action="/spring/group/addChild" onsubmit="return addSubGroup()">
-									Sub Group Name: <input id="childGroupName" name="childGroupName" type="text" />
-									<input type="submit" value="Save" onclick="return addSubGroup();" >
-									<input type="hidden" name="groupName" value="${group.fullName}">
-								</form>
-							</div>
-						</c:when>
-						<c:otherwise>
-							<span title="Cannot add sub group">Add Sub Group</span>
-						</c:otherwise>
-					</c:choose>
-		
-					<br/>
-					
-					<c:choose>
-						<c:when test="${group.editable}">
-							<form style="display: inline;" id="removeGroupForm" action="/spring/group/removeGroup" method="post">
-								<input type="hidden" name="removeGroupName" value="${group.fullName}" />
-								<a title="Click to delete this group" href="javascript:removeGroup('removeGroupForm')">Delete Group</a>
-							</form>
-						</c:when>
-						<c:otherwise>
-							<span title="Cannot delete group">Delete Group</span>
-						</c:otherwise>
-					</c:choose>
-					
-					<br/>
-
-					<c:choose>
-						<c:when test="${group.editable}">
-							<a title="Click to move this group" href="javascript:showGroupPopup('moveGroup');">Move Group</a>
-							<div id="moveGroup" class="popUpDiv" style="width: 310px; display: none; background-color: white; border: 1px solid black;padding: 10px 10px;">
-								
-								<div style="width: 100%; text-align: right;margin-bottom: 10px;">
-									<a href="javascript:showGroupPopup('moveGroup');">cancel</a>
-								</div>
-								<form id="moveGroupForm" action="/spring/group/moveGroup">
-									Select Parent Group:
-									<tags:groupSelect groupList="${moveGroups}" onSelect="moveGroup"/>
-									
-									<input type="hidden" name="groupName" value="${group.fullName}" />
-									<input type="hidden" id="parentGroupName" name="parentGroupName" />
-								</form>
-							</div>
-						</c:when>
-						<c:otherwise>
-							<span title="Cannot move group">Move Group</span>
-						</c:otherwise>
-					</c:choose>
-		
-					<br/><br/>
-
+                    
+                    <h4>Add Groups</h4>
+                    <c:choose>
+                        <c:when test="${group.modifiable}">
+                            <a title="Click to add a sub group" href="javascript:showGroupPopup('addGroup', 'childGroupName');">Add Sub Group</a>
+                            <div id="addGroup" class="popUpDiv" style="width: 330px; display: none; background-color: white; border: 1px solid black;padding: 10px 10px;">
+                                <div style="width: 100%; text-align: right;margin-bottom: 10px;">
+                                    <a href="javascript:showGroupPopup('addGroup');">cancel</a>
+                                </div>
+                                <form id="addSubGroupForm" method="post"  action="/spring/group/addChild" onsubmit="return addSubGroup()">
+                                    Sub Group Name: <input id="childGroupName" name="childGroupName" type="text" />
+                                    <input type="submit" value="Save" onclick="return addSubGroup();" >
+                                    <input type="hidden" name="groupName" value="${group.fullName}">
+                                </form>
+                            </div>
+                        </c:when>
+                        <c:otherwise>
+                            <span>Cannot add sub groups to this group</span>
+                        </c:otherwise>
+                    </c:choose>
+        
 					<h4>Add Devices</h4>
 		
 					<c:choose>
-						<c:when test="${group.modifiable}">
-							<div style="display: inline; position: relative;">
+						<c:when test="${group.modifiable and group.parent != null}">
+							<div>
 								
 								<form id="addDeviceForm" method="post" action="/spring/group/addDevice">
 									<input type="hidden" name="groupName" value="${group.fullName}" />
@@ -240,14 +222,12 @@
 								<cti:multiPaoPicker pickerId="devicePickerId" paoIdField="deviceToAdd" constraint="com.cannontech.common.search.criteria.DeviceCriteria" finalTriggerAction="addDevice" selectionLinkName="Add Devices to Group" excludeIds="${deviceIdsInGroup}"><span title="Click to select devices to add">Select Devices</span></cti:multiPaoPicker>
 							</div>
 				
-							<br/>
-							
 							<c:url var="addByFileUrl" value="/spring/group/showAddDevicesByFile">
 								<c:param name="groupName" value="${group.fullName}" />
 							</c:url>
 							<a title="Click to add multiple devices via file upload" href="${addByFileUrl}">By File Upload</a>
 							
-							<br/>
+							<br>
 							
 							<c:url var="addByAddressUrl" value="/spring/group/showAddDevicesByAddress">
 								<c:param name="groupName" value="${group.fullName}" />
@@ -259,7 +239,7 @@
 						</c:otherwise>
 					</c:choose>
                     
-                    <h4>Tabular Data</h4>
+                    <h4>Generate Report</h4>
                     <c:choose>
                         <c:when test="${deviceCount > 0}">
                             <cti:simpleReportLinkFromNameTag definitionName="groupDevicesDefinition" viewType="htmlView" module="amr" showMenu="true" menuSelection="devicegroups|home" groupName="${group.fullName}">HTML</cti:simpleReportLinkFromNameTag>
@@ -280,7 +260,7 @@
 		</tags:boxContainer>
 	</div>
 	
-	<div style="float: left; margin-right: .75em; margin-bottom: .5em; width: 450px;">
+	<div style="float: left; margin-right: .75em; margin-bottom: .5em; width: 450px">
 	
 		<tags:boxContainer hideEnabled="false">
 		
@@ -298,7 +278,7 @@
 			</jsp:attribute>
 		
 			<jsp:body>
-				<div style="overflow: auto; height: 300px;">
+				<div style="overflow: auto; height: 353px;">
 	
 					<table style="width: 95%; border-bottom: 1px dotted black;padding-bottom: 10px; margin-bottom: 10px;" >
 						<c:choose>
@@ -345,7 +325,7 @@
 				
 					<div id="deviceMembers">
 						<c:choose>
-							<c:when test="${deviceCount > 5 && (showDevices == false )}">
+							<c:when test="${deviceCount > 15 && (showDevices == false )}">
 								<table style="width: 95%;" >
 									<tr>
 										<td>
@@ -358,9 +338,9 @@
 								</table>
 							</c:when>
 							<c:otherwise>
-								<script type="text/javascript">
-									showDevices();
-								</script>
+                                <jsp:include page="/spring/group/getDevicesForGroup">
+                                    <jsp:param name="groupName" value="${group.fullName}"/>
+                                </jsp:include>
 							</c:otherwise>
 						</c:choose>
 					</div>

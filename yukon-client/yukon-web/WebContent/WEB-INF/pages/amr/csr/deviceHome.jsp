@@ -13,12 +13,12 @@
 
 	<table class="widgetColumns">
 		<tr>
-			<td>
-				<h2 style="display: inline;">
+			<td class="widgetColumnCell" valign="top">
+				<h2>
 					<cti:deviceName deviceId="${deviceId}"></cti:deviceName>
 				</h2>
 			</td>
-			<td align="right">
+			<td  class="widgetColumnCell" align="right">
 				<amr:searchResultsLink></amr:searchResultsLink>
 				<div style="margin-top: 5px;">
 					<form name="quickSearchForm" action="/spring/csr/search">
@@ -32,12 +32,11 @@
 		</tr>
 	</table>
 
-	<br />
 
 	<ct:widgetContainer deviceId="${deviceId}" identify="false">
 
-		<div class="widgetColumns">
-			<div class="left">
+		<table class="widgetColumns"><tr>
+			<td class="widgetColumnCell" valign="top">
 				<ct:widget bean="meterInformationWidget" />
 
 				<ct:widget bean="meterReadingsWidget" />
@@ -45,6 +44,10 @@
 				<c:if test="${mspSupported}">
 					<ct:widget height="185px" bean="accountInformationWidget" />
 				</c:if>
+
+                <c:if test="${deviceGroupsSupported}">
+                    <ct:widget bean="deviceGroupWidget" />
+                </c:if>
 
 				<ct:boxContainer title="Actions">
                 
@@ -104,8 +107,8 @@
 					</cti:checkRole>
 				</ct:boxContainer>
 
-			</div>
-			<div class="right">
+			</td>
+			<td class="widgetColumnCell" valign="top">
 
 				<c:if test="${peakReportSupported}">
 					<ct:widget bean="peakReportWidget" />
@@ -125,18 +128,13 @@
 					<ct:widget bean="meterOutagesWidget" />
 				</c:if>
 
-				<c:if test="${deviceGroupsSupported}">
-					<ct:widget bean="deviceGroupWidget" />
-				</c:if>
-
 				<c:if test="${touSupported}">
 					<ct:widget bean="touWidget" />
 				</c:if>
-							</div>
-		</div>
+			</td>
+		</tr></table>
 
 	</ct:widgetContainer>
-	<div style="clear: both"></div>
 
 	<ct:dataUpdateEnabler />
 </cti:standardPage>

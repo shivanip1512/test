@@ -6,10 +6,9 @@
 <cti:includeCss link="/WebConfig/yukon/styles/calendarControl.css"/>
 
 <%--REQUEST--%>
-<table class="compactResultsTable">
-
+<table width="100%">
 	<tr>
-		<td class="label" nowrap="nowrap">Channel:</td>
+		<td>Channel:</td>
 		<td>
 			<select name="channel" style="width:145px;">
 				<c:forEach var="channelInfo" items="${availableChannels}">
@@ -23,7 +22,7 @@
 	</tr>
 	
 	<tr>
-		<td class="label">Report Type:</td>
+		<td>Report Type:</td>
 		<td colspan="3">
 			<select name="peakType" style="height:20px;width:145px;">
 				<c:forEach var="peakTypeInfo" items="${availablePeakTypes}">
@@ -34,11 +33,11 @@
 	</tr>
 </table> 
 
-<table class="compactResultsTable">
+<table>
 	<tr>
-		<td class="label">Start:</td>
+		<td>Start:</td>
 		<td><tags:dateInputCalendar fieldName="startDateStr" fieldValue="${startDateStr}"></tags:dateInputCalendar></td>
-		<td class="label">Stop: </td>
+		<td>Stop: </td>
 		<td><tags:dateInputCalendar fieldName="stopDateStr" fieldValue="${stopDateStr}"></tags:dateInputCalendar></td>
 	</tr>
 </table>
