@@ -6,8 +6,8 @@
 *
 * PVCS KEYWORDS:
 * ARCHIVE      :  $Archive$
-* REVISION     :  $Revision: 1.31 $
-* DATE         :  $Date: 2006/05/17 22:02:20 $
+* REVISION     :  $Revision: 1.32 $
+* DATE         :  $Date: 2007/11/29 15:08:28 $
 *
 * Copyright (c) 1999, 2000, 2001 Cannon Technologies Inc. All rights reserved.
 *-----------------------------------------------------------------------------*/
@@ -1830,8 +1830,8 @@ INT CtiProtocolVersacom::assembleControl(CtiCommandParser  &parse, const VSTRUCT
         }
 
         // Add these two items to the list for control accounting!
-        parse.Map()["control_interval"]  = CtiParseValue( shed_time );
-        parse.Map()["control_reduction"] = CtiParseValue( 100 );
+        parse.setValue("control_interval",  shed_time );
+        parse.setValue("control_reduction", 100 );
 
         if( useVersacomTypeFourControl  || getTransmitterType() == TYPE_TCU5000 || shed_time == 1 )     // Positional relays only one thru three can go out type four (in one message).
         {
@@ -1875,13 +1875,13 @@ INT CtiProtocolVersacom::assembleControl(CtiCommandParser  &parse, const VSTRUCT
     else if(CtlReq == CMD_FLAG_CTL_CYCLE)
     {
         // Add these two items to the list for control accounting!
-        parse.Map()["control_reduction"] = CtiParseValue( parse.getiValue("cycle") );
+        parse.setValue("control_reduction", parse.getiValue("cycle"));
 
         // Control percentage is in the parsers iValue!
         // Assume the VSTRUCT RelayMask is set, otherwise use default relay 0
         if(useVersacomTypeFourControl || getTransmitterType() == TYPE_TCU5000)
         {
-            parse.Map()["control_interval"]  = CtiParseValue( 60 * 30 * 8 );    // Assume a bit here!
+            parse.setValue("control_interval", 60 * 30 * 8);    // Assume a bit here!
 
             primeAndAppend(aVst);  // Get a new one in the system
             if(VersacomCycleCommand(parse.getiValue("cycle")))
@@ -1893,7 +1893,7 @@ INT CtiProtocolVersacom::assembleControl(CtiCommandParser  &parse, const VSTRUCT
             INT repeat     = parse.getiValue("cycle_count", 8);
             INT delay      = parse.getiValue("cycle_delay", 0);
 
-            parse.Map()["control_interval"]  = CtiParseValue( 60 * period * repeat );
+            parse.setValue("control_interval", 60 * period * repeat);
 
             if(relay != 0)
             {
@@ -1933,7 +1933,7 @@ INT CtiProtocolVersacom::assembleControl(CtiCommandParser  &parse, const VSTRUCT
     }
     else if(CtlReq == CMD_FLAG_CTL_OPEN)
     {
-        parse.Map()["control_reduction"] = CtiParseValue( 100 );
+        parse.setValue("control_reduction", 100);
 
         primeAndAppend(aVst);  // Get a new one in the system
         VersacomCapacitorControlCommand(TRUE);
