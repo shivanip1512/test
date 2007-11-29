@@ -4576,6 +4576,7 @@ void CtiCCPointDataMsgExecutor::Execute()
                             if (currentCapBank->getControlStatus() == CtiCCCapBank::OpenPending ||  
                                 currentCapBank->getControlStatus() == CtiCCCapBank::ClosePending) 
                             { 
+                                currentFeeder->removeMaxKvar(currentCapBank->getPAOId());
                                 logToCCEvent = TRUE; 
                             } 
 

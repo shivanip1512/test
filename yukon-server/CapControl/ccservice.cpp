@@ -36,6 +36,7 @@ BOOL _LOG_MAPID_INFO;
 ULONG _LINK_STATUS_TIMEOUT;
 BOOL _END_DAY_ON_TRIP;
 ULONG _LIKEDAY_OVERRIDE_TIMEOUT;
+ULONG _MAX_KVAR;
 
 CtiDate gInvalidCtiDate = CtiDate(1,1, 1990);
 CtiTime gInvalidCtiTime = CtiTime(gInvalidCtiDate,0,0,0);
@@ -337,6 +338,13 @@ void CtiCCService::Init()
     {
         CtiLockGuard<CtiLogger> logger_guard(dout);
         dout << CtiTime() << " - Unable to obtain '" << var << "' value from cparms." << endl;
+    }
+
+    _MAX_KVAR = gConfigParms.getValueAsULong("CAP_CONTROL_MAX_KVAR", -1);
+    if ( _CC_DEBUG & CC_DEBUG_STANDARD)
+    {
+        CtiLockGuard<CtiLogger> logger_guard(dout);
+        dout << CtiTime() << " - CAP_CONTROL_MAX_KVAR: " << _MAX_KVAR << endl;
     }
 
     _LOG_MAPID_INFO = FALSE;

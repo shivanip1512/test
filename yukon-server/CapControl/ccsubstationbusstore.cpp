@@ -47,6 +47,7 @@
 
 extern ULONG _CC_DEBUG;
 extern ULONG _DB_RELOAD_WAIT;
+extern ULONG _MAX_KVAR;
 
 using namespace std;
 
@@ -8653,6 +8654,39 @@ void CtiCCSubstationBusStore::calculateParentPowerFactor(LONG subBusId)
         }
     }
 
+}
+
+/* Relating to Max Kvar Cparm */
+bool CtiCCSubstationBusStore::addKVAROperation( long capbankId, long kvar )
+{
+    if( !isKVARAvailable( kvar ) )
+        return false;
+    maxKvarMap.insert( make_pair(capbankId,kvar) );
+
+    return true;
+}
+
+bool CtiCCSubstationBusStore::removeKVAROperation( long capbankId )
+{
+    int removed = maxKvarMap.erase(capbankId);
+
+    return ( removed > 0 );
+}
+
+/* Relating to Max Kvar Cparm */
+long CtiCCSubstationBusStore::isKVARAvailable( long kvarNeeded )
+{
+    if( _MAX_KVAR < 0 )
+        return true;
+
+    long kvarInList = 0;
+    for( std::map<long,long>::iterator itr = maxKvarMap.begin(); itr != maxKvarMap.end(); itr++ )
+    {
+        kvarInList += (*itr).second;
+    }
+    if( (kvarInList + kvarNeeded) < _MAX_KVAR )
+        return true;
+    return false;
 }
 
 

@@ -68,6 +68,7 @@ extern ULONG _POINT_AGE;
 extern ULONG _SCAN_WAIT_EXPIRE;
 extern BOOL _RETRY_FAILED_BANKS;
 extern BOOL _END_DAY_ON_TRIP;
+extern ULONG _MAX_KVAR;
 extern BOOL _LOG_MAPID_INFO;
 
 
@@ -374,6 +375,7 @@ void CtiCapController::controlLoop()
                                 {
                                     try
                                     {
+                                        //TS 3
                                         if( currentSubstationBus->isAlreadyControlled() ||
                                             currentSubstationBus->isPastMaxConfirmTime(currentDateTime) )
                                         {
@@ -383,7 +385,7 @@ void CtiCapController::controlLoop()
                                                 currentSubstationBus->checkForAndPerformSendRetry(currentDateTime, pointChanges, ccEvents, pilMessages) )
                                             {
                                                 currentSubstationBus->setBusUpdatedFlag(TRUE);
-                                            }
+                                            }//TS 4
                                             else if( currentSubstationBus->capBankControlStatusUpdate(pointChanges, ccEvents) )
                                             {
                                                 currentSubstationBus->setBusUpdatedFlag(TRUE);
@@ -3183,6 +3185,13 @@ void CtiCapController::refreshCParmGlobals(bool force)
         {
             CtiLockGuard<CtiLogger> logger_guard(dout);
             dout << CtiTime() << " - Unable to obtain '" << var << "' value from cparms." << endl;
+        }
+
+        _MAX_KVAR = gConfigParms.getValueAsULong("CAP_CONTROL_MAX_KVAR", -1);
+        if ( _CC_DEBUG & CC_DEBUG_STANDARD)
+        {
+            CtiLockGuard<CtiLogger> logger_guard(dout);
+            dout << CtiTime() << " - CAP_CONTROL_MAX_KVAR: " << _MAX_KVAR << endl;
         }
 
         _LOG_MAPID_INFO = FALSE;

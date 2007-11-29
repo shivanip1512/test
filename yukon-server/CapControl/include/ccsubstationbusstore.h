@@ -224,10 +224,16 @@ public:
     static void sendUserQuit(void *who);
     static void periodicComplain( void *la );
 
-
     RWRecursiveLock<RWMutexLock> & getMux() { return mutex(); };
 
+    /* Relating to Max Kvar Cparm */
+    bool addKVAROperation( long capbankId, long kvar );
+    bool removeKVAROperation( long capbankId );
+
 private:
+
+    /* Relating to Max Kvar Cparm */
+    long isKVARAvailable( long kvarNeeded );
 
     //Don't allow just anyone to create or destroy control areas
     CtiCCSubstationBusStore();
@@ -331,6 +337,8 @@ private:
     list <CC_DBRELOAD_INFO> _reloadList;
     list <long> _orphanedCapBanks;
     list <long> _orphanedFeeders;
+
+    map< long, long > maxKvarMap;
 
     //mutable RWRecursiveLock<RWMutexLock> _storemutex;
 };

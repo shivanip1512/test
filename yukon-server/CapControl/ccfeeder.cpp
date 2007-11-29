@@ -2054,6 +2054,22 @@ CtiCCCapBank* CtiCCFeeder::findCapBankToChangeVars(DOUBLE kvarSolution)
     return returnCapBank;
 }
 
+bool CtiCCFeeder::checkForMaxKvar( long bankId, long bankSize )
+{
+    //check to make sure we will not over run the max kvar cparm.
+    CtiCCSubstationBusStore* store = CtiCCSubstationBusStore::getInstance();
+
+    return store->addKVAROperation(bankId, bankSize);
+}
+
+bool CtiCCFeeder::removeMaxKvar( long bankId )
+{
+    //check to make sure we will not over run the max kvar cparm.
+    CtiCCSubstationBusStore* store = CtiCCSubstationBusStore::getInstance();
+
+    return store->removeKVAROperation(bankId);
+}
+
 /*---------------------------------------------------------------------------
     createIncreaseVarRequest
 
@@ -2063,77 +2079,81 @@ CtiCCCapBank* CtiCCFeeder::findCapBankToChangeVars(DOUBLE kvarSolution)
 CtiRequestMsg* CtiCCFeeder::createIncreaseVarRequest(CtiCCCapBank* capBank, CtiMultiMsg_vec& pointChanges, CtiMultiMsg_vec& ccEvents, string textInfo, DOUBLE kvarBefore)
 {
     CtiRequestMsg* reqMsg = NULL;
-    if( capBank != NULL )
+    if( capBank == NULL )
+        return reqMsg;
+
+    //Determine if we are at max KVAR and don't create the request if we are.
+    if( checkForMaxKvar(capBank->getPAOId(), capBank->getBankSize() ) == false )
+        return reqMsg;
+
+    setLastCapBankControlledDeviceId(capBank->getPAOId());
+    capBank->setControlStatus(CtiCCCapBank::OpenPending);
+    figureEstimatedVarLoadPointValue();
+    _currentdailyoperations++;
+    capBank->setTotalOperations(capBank->getTotalOperations() + 1);
+    capBank->setCurrentDailyOperations(capBank->getCurrentDailyOperations() + 1);
+    setRecentlyControlledFlag(TRUE);
+
+    setVarValueBeforeControl(kvarBefore);
+
+    capBank->setBeforeVarsString(" --- : --- : --- ");
+    capBank->setAfterVarsString(" --- : --- : --- ");
+    capBank->setPercentChangeString(" --- : --- : --- ");
+
+
+    if( capBank->getStatusPointId() > 0 )
     {
-        setLastCapBankControlledDeviceId(capBank->getPAOId());
-        capBank->setControlStatus(CtiCCCapBank::OpenPending);
-        figureEstimatedVarLoadPointValue();
-        _currentdailyoperations++;
-        capBank->setTotalOperations(capBank->getTotalOperations() + 1);
-        capBank->setCurrentDailyOperations(capBank->getCurrentDailyOperations() + 1);
-        setRecentlyControlledFlag(TRUE);
-
-        setVarValueBeforeControl(kvarBefore);
-
-        capBank->setBeforeVarsString(" --- : --- : --- ");
-        capBank->setAfterVarsString(" --- : --- : --- ");
-        capBank->setPercentChangeString(" --- : --- : --- ");
-
-
-        if( capBank->getStatusPointId() > 0 )
+        string additional;
+        additional = ("Sub: ");
+        additional += getParentName();
+        additional += " /Feeder: ";
+        additional += getPAOName();
+        if (_LOG_MAPID_INFO) 
         {
-            string additional;
-            additional = ("Sub: ");
-            additional += getParentName();
-            additional += " /Feeder: ";
-            additional += getPAOName();
-            if (_LOG_MAPID_INFO) 
-            {
-                additional += " MapID: ";
-                additional += getMapLocationId();
-                additional += " (";
-                additional += getPAODescription();
-                additional += ")";
-            }
-            pointChanges.push_back(new CtiSignalMsg(capBank->getStatusPointId(),0,textInfo,additional,CapControlLogType,SignalEvent, "cap control"));
-            ((CtiPointDataMsg*)pointChanges[pointChanges.size()-1])->setSOE(1);
-            pointChanges.push_back(new CtiPointDataMsg(capBank->getStatusPointId(),capBank->getControlStatus(),NormalQuality,StatusPointType, capBank->getPAOName()));
-            ((CtiPointDataMsg*)pointChanges[pointChanges.size()-1])->setSOE(2);
-            capBank->setLastStatusChangeTime(CtiTime());
-
-            //setEventSequence(getEventSequence() + 1);
-            INT actionId = CCEventActionIdGen(capBank->getStatusPointId()) + 1;
-            ccEvents.push_back(new CtiCCEventLogMsg(0, capBank->getStatusPointId(), getParentId(), getPAOId(), capControlCommandSent, getEventSequence(), capBank->getControlStatus(), textInfo, "cap control", kvarBefore, kvarBefore, 0, capBank->getIpAddress(), actionId));
+            additional += " MapID: ";
+            additional += getMapLocationId();
+            additional += " (";
+            additional += getPAODescription();
+            additional += ")";
         }
-        else
-        {
-            CtiLockGuard<CtiLogger> logger_guard(dout);
-            dout << CtiTime() << " - Cap Bank: " << capBank->getPAOName()
-            << " DeviceID: " << capBank->getPAOId() << " doesn't have a status point!" << endl;
-        }
+        pointChanges.push_back(new CtiSignalMsg(capBank->getStatusPointId(),0,textInfo,additional,CapControlLogType,SignalEvent, "cap control"));
+        ((CtiPointDataMsg*)pointChanges[pointChanges.size()-1])->setSOE(1);
+        pointChanges.push_back(new CtiPointDataMsg(capBank->getStatusPointId(),capBank->getControlStatus(),NormalQuality,StatusPointType, capBank->getPAOName()));
+        ((CtiPointDataMsg*)pointChanges[pointChanges.size()-1])->setSOE(2);
+        capBank->setLastStatusChangeTime(CtiTime());
 
-        if( capBank->getOperationAnalogPointId() > 0 )
-        {
-            pointChanges.push_back(new CtiPointDataMsg(capBank->getOperationAnalogPointId(),capBank->getTotalOperations(),NormalQuality,AnalogPointType));
-            ((CtiPointDataMsg*)pointChanges[pointChanges.size()-1])->setSOE(3);
-
-            //setEventSequence(getEventSequence() + 1);
-            ccEvents.push_back(new CtiCCEventLogMsg(0, capBank->getOperationAnalogPointId(), getParentId(), getPAOId(), capControlSetOperationCount, getEventSequence(), capBank->getTotalOperations(), "opCount adjustment", "cap control"));
-        }
-        if  (capBank->getTwoWayPoints() != NULL) 
-        {
-            if (capBank->getTwoWayPoints()->getCapacitorBankStateId() > 0) 
-            { 
-                CtiLMControlHistoryMsg *hist = CTIDBG_new CtiLMControlHistoryMsg ( capBank->getControlDeviceId(), capBank->getTwoWayPoints()->getCapacitorBankStateId(), capBank->getControlStatus(), CtiTime(), -1, 100 );
-                hist->setMessagePriority( hist->getMessagePriority() + 2 );
-                pointChanges.push_back( hist );
-                ((CtiPointDataMsg*)pointChanges[pointChanges.size()-1])->setSOE(4);
-            }
-        }
-
-        reqMsg = new CtiRequestMsg(capBank->getControlDeviceId(),"control open");
-        reqMsg->setSOE(4);
+        //setEventSequence(getEventSequence() + 1);
+        INT actionId = CCEventActionIdGen(capBank->getStatusPointId()) + 1;
+        ccEvents.push_back(new CtiCCEventLogMsg(0, capBank->getStatusPointId(), getParentId(), getPAOId(), capControlCommandSent, getEventSequence(), capBank->getControlStatus(), textInfo, "cap control", kvarBefore, kvarBefore, 0, capBank->getIpAddress(), actionId));
     }
+    else
+    {
+        CtiLockGuard<CtiLogger> logger_guard(dout);
+        dout << CtiTime() << " - Cap Bank: " << capBank->getPAOName()
+        << " DeviceID: " << capBank->getPAOId() << " doesn't have a status point!" << endl;
+    }
+
+    if( capBank->getOperationAnalogPointId() > 0 )
+    {
+        pointChanges.push_back(new CtiPointDataMsg(capBank->getOperationAnalogPointId(),capBank->getTotalOperations(),NormalQuality,AnalogPointType));
+        ((CtiPointDataMsg*)pointChanges[pointChanges.size()-1])->setSOE(3);
+
+        //setEventSequence(getEventSequence() + 1);
+        ccEvents.push_back(new CtiCCEventLogMsg(0, capBank->getOperationAnalogPointId(), getParentId(), getPAOId(), capControlSetOperationCount, getEventSequence(), capBank->getTotalOperations(), "opCount adjustment", "cap control"));
+    }
+    if  (capBank->getTwoWayPoints() != NULL) 
+    {
+        if (capBank->getTwoWayPoints()->getCapacitorBankStateId() > 0) 
+        { 
+            CtiLMControlHistoryMsg *hist = CTIDBG_new CtiLMControlHistoryMsg ( capBank->getControlDeviceId(), capBank->getTwoWayPoints()->getCapacitorBankStateId(), capBank->getControlStatus(), CtiTime(), -1, 100 );
+            hist->setMessagePriority( hist->getMessagePriority() + 2 );
+            pointChanges.push_back( hist );
+            ((CtiPointDataMsg*)pointChanges[pointChanges.size()-1])->setSOE(4);
+        }
+    }
+
+    reqMsg = new CtiRequestMsg(capBank->getControlDeviceId(),"control open");
+    reqMsg->setSOE(4);
 
     return reqMsg;
 }
@@ -2141,69 +2161,73 @@ CtiRequestMsg* CtiCCFeeder::createIncreaseVarRequest(CtiCCCapBank* capBank, CtiM
 CtiRequestMsg* CtiCCFeeder::createIncreaseVarVerificationRequest(CtiCCCapBank* capBank, CtiMultiMsg_vec& pointChanges, CtiMultiMsg_vec& ccEvents, string textInfo, DOUBLE kvarBefore )
 {
     CtiRequestMsg* reqMsg = NULL;
-    if( capBank != NULL )
+    if( capBank == NULL )
+        return reqMsg;
+
+    //Determine if we are at max KVAR and don't create the request if we are.
+    if( checkForMaxKvar(capBank->getPAOId(), capBank->getBankSize() ) == false )
+        return reqMsg;
+
+    if (_CC_DEBUG & CC_DEBUG_VERIFICATION)
     {
-        if (_CC_DEBUG & CC_DEBUG_VERIFICATION)
-        {
-            CtiLockGuard<CtiLogger> doubt_guard(dout);
-            dout << CtiTime() << " ***VERIFICATION INFO***  CBid: "<<capBank->getPAOId()<<" vCtrlIdx: "<< capBank->getVCtrlIndex() <<"  CurrControlStatus: " << capBank->getControlStatus() << "  Control Open Sent Now " << endl;
-        }
-
-        setLastCapBankControlledDeviceId(capBank->getPAOId());
-        capBank->setControlStatus(CtiCCCapBank::OpenPending);
-        figureEstimatedVarLoadPointValue();
-        _currentdailyoperations++;
-        capBank->setTotalOperations(capBank->getTotalOperations() + 1);
-        capBank->setCurrentDailyOperations(capBank->getCurrentDailyOperations() + 1);
-        //setRecentlyControlledFlag(TRUE);
-        setVarValueBeforeControl(getCurrentVarLoadPointValue());
-
-        if( capBank->getStatusPointId() > 0 )
-        {
-            string additional("Sub: ");
-            additional += getParentName();
-            additional += " /Feeder: ";
-            additional += getPAOName();
-            if (_LOG_MAPID_INFO) 
-            {
-                additional += " MapID: ";
-                additional += getMapLocationId();
-                additional += " (";
-                additional += getPAODescription();
-                additional += ")";
-            }
-            pointChanges.push_back(new CtiSignalMsg(capBank->getStatusPointId(),0,textInfo,additional,CapControlLogType,SignalEvent, "cap control verification"));
-            ((CtiPointDataMsg*)pointChanges[pointChanges.size()-1])->setSOE(1);
-            pointChanges.push_back(new CtiPointDataMsg(capBank->getStatusPointId(),capBank->getControlStatus(),NormalQuality,StatusPointType));
-            ((CtiPointDataMsg*)pointChanges[pointChanges.size()-1])->setSOE(2);
-            capBank->setLastStatusChangeTime(CtiTime());
-
-            //setEventSequence(getEventSequence() + 1); // should be sub's event sequence for verification...
-            ccEvents.push_back(new CtiCCEventLogMsg(0, capBank->getStatusPointId(), getParentId(), getPAOId(), capControlVerificationCommandSent, getEventSequence(), capBank->getControlStatus(), textInfo, "cap control verification", kvarBefore, kvarBefore, 0, capBank->getIpAddress()));
-        }
-        else
-        {
-            CtiLockGuard<CtiLogger> logger_guard(dout);
-            dout << CtiTime() << " - Cap Bank: " << capBank->getPAOName()
-            << " DeviceID: " << capBank->getPAOId() << " doesn't have a status point!" << endl;
-        } 
-
-        if( capBank->getOperationAnalogPointId() > 0 )
-        {
-            pointChanges.push_back(new CtiPointDataMsg(capBank->getOperationAnalogPointId(),capBank->getTotalOperations(),NormalQuality,AnalogPointType));
-            ((CtiPointDataMsg*)pointChanges[pointChanges.size()-1])->setSOE(3);
-
-            //setEventSequence(getEventSequence() + 1);
-            ccEvents.push_back(new CtiCCEventLogMsg(0, capBank->getOperationAnalogPointId(), getParentId(), getPAOId(), capControlSetOperationCount, getEventSequence(), capBank->getTotalOperations(), "opCount adjustment", "cap control verification"));
-        }  
-
-        if  (stringContainsIgnoreCase(capBank->getControlDeviceType(),"CBC 701") &&
-             _USE_FLIP_FLAG == TRUE)
-            reqMsg = new CtiRequestMsg(capBank->getControlDeviceId(),"control flip");
-        else
-            reqMsg = new CtiRequestMsg(capBank->getControlDeviceId(),"control open");
-        reqMsg->setSOE(4);
+        CtiLockGuard<CtiLogger> doubt_guard(dout);
+        dout << CtiTime() << " ***VERIFICATION INFO***  CBid: "<<capBank->getPAOId()<<" vCtrlIdx: "<< capBank->getVCtrlIndex() <<"  CurrControlStatus: " << capBank->getControlStatus() << "  Control Open Sent Now " << endl;
     }
+
+    setLastCapBankControlledDeviceId(capBank->getPAOId());
+    capBank->setControlStatus(CtiCCCapBank::OpenPending);
+    figureEstimatedVarLoadPointValue();
+    _currentdailyoperations++;
+    capBank->setTotalOperations(capBank->getTotalOperations() + 1);
+    capBank->setCurrentDailyOperations(capBank->getCurrentDailyOperations() + 1);
+    //setRecentlyControlledFlag(TRUE);
+    setVarValueBeforeControl(getCurrentVarLoadPointValue());
+
+    if( capBank->getStatusPointId() > 0 )
+    {
+        string additional("Sub: ");
+        additional += getParentName();
+        additional += " /Feeder: ";
+        additional += getPAOName();
+        if (_LOG_MAPID_INFO) 
+        {
+            additional += " MapID: ";
+            additional += getMapLocationId();
+            additional += " (";
+            additional += getPAODescription();
+            additional += ")";
+        }
+        pointChanges.push_back(new CtiSignalMsg(capBank->getStatusPointId(),0,textInfo,additional,CapControlLogType,SignalEvent, "cap control verification"));
+        ((CtiPointDataMsg*)pointChanges[pointChanges.size()-1])->setSOE(1);
+        pointChanges.push_back(new CtiPointDataMsg(capBank->getStatusPointId(),capBank->getControlStatus(),NormalQuality,StatusPointType));
+        ((CtiPointDataMsg*)pointChanges[pointChanges.size()-1])->setSOE(2);
+        capBank->setLastStatusChangeTime(CtiTime());
+
+        //setEventSequence(getEventSequence() + 1); // should be sub's event sequence for verification...
+        ccEvents.push_back(new CtiCCEventLogMsg(0, capBank->getStatusPointId(), getParentId(), getPAOId(), capControlVerificationCommandSent, getEventSequence(), capBank->getControlStatus(), textInfo, "cap control verification", kvarBefore, kvarBefore, 0, capBank->getIpAddress()));
+    }
+    else
+    {
+        CtiLockGuard<CtiLogger> logger_guard(dout);
+        dout << CtiTime() << " - Cap Bank: " << capBank->getPAOName()
+        << " DeviceID: " << capBank->getPAOId() << " doesn't have a status point!" << endl;
+    } 
+
+    if( capBank->getOperationAnalogPointId() > 0 )
+    {
+        pointChanges.push_back(new CtiPointDataMsg(capBank->getOperationAnalogPointId(),capBank->getTotalOperations(),NormalQuality,AnalogPointType));
+        ((CtiPointDataMsg*)pointChanges[pointChanges.size()-1])->setSOE(3);
+
+        //setEventSequence(getEventSequence() + 1);
+        ccEvents.push_back(new CtiCCEventLogMsg(0, capBank->getOperationAnalogPointId(), getParentId(), getPAOId(), capControlSetOperationCount, getEventSequence(), capBank->getTotalOperations(), "opCount adjustment", "cap control verification"));
+    }  
+
+    if  (stringContainsIgnoreCase(capBank->getControlDeviceType(),"CBC 701") &&
+         _USE_FLIP_FLAG == TRUE)
+        reqMsg = new CtiRequestMsg(capBank->getControlDeviceId(),"control flip");
+    else
+        reqMsg = new CtiRequestMsg(capBank->getControlDeviceId(),"control open");
+    reqMsg->setSOE(4);
 
     return reqMsg;
 }
@@ -2211,68 +2235,72 @@ CtiRequestMsg* CtiCCFeeder::createIncreaseVarVerificationRequest(CtiCCCapBank* c
 CtiRequestMsg* CtiCCFeeder::createDecreaseVarVerificationRequest(CtiCCCapBank* capBank, CtiMultiMsg_vec& pointChanges, CtiMultiMsg_vec& ccEvents, string textInfo, DOUBLE kvarBefore )  
 {
     CtiRequestMsg* reqMsg = NULL;
-    if( capBank != NULL )
+    if( capBank == NULL )
+        return reqMsg;
+
+    //Determine if we are at max KVAR and don't create the request if we are.
+    if( checkForMaxKvar(capBank->getPAOId(), capBank->getBankSize() ) == false )
+        return reqMsg;
+
+    if (_CC_DEBUG & CC_DEBUG_VERIFICATION)
     {
-        if (_CC_DEBUG & CC_DEBUG_VERIFICATION)
-        {
-            CtiLockGuard<CtiLogger> doubt_guard(dout);
-            dout << CtiTime() << " ***VERIFICATION INFO***  CBid: "<<capBank->getPAOId()<<" vCtrlIdx: "<< capBank->getVCtrlIndex() <<"  CurrControlStatus: " << capBank->getControlStatus() << "  Control Close Sent Now " << endl;
-        }
-
-        setLastCapBankControlledDeviceId(capBank->getPAOId());
-        capBank->setControlStatus(CtiCCCapBank::ClosePending);
-        figureEstimatedVarLoadPointValue();
-        _currentdailyoperations++;
-        capBank->setTotalOperations(capBank->getTotalOperations() + 1);
-        capBank->setCurrentDailyOperations(capBank->getCurrentDailyOperations() + 1);
-        //setRecentlyControlledFlag(TRUE);
-        setVarValueBeforeControl(getCurrentVarLoadPointValue());
-        if( capBank->getStatusPointId() > 0 )
-        {
-            string additional("Sub: ");
-            additional += getParentName();
-            additional += " /Feeder: ";
-            additional += getPAOName();
-            if (_LOG_MAPID_INFO) 
-            {
-                additional += " MapID: ";
-                additional += getMapLocationId();
-                additional += " (";
-                additional += getPAODescription();
-                additional += ")";
-            }
-            pointChanges.push_back(new CtiSignalMsg(capBank->getStatusPointId(),0,textInfo,additional,CapControlLogType,SignalEvent, "cap control verification"));
-            ((CtiPointDataMsg*)pointChanges[pointChanges.size()-1])->setSOE(1);
-            pointChanges.push_back(new CtiPointDataMsg(capBank->getStatusPointId(),capBank->getControlStatus(),NormalQuality,StatusPointType));
-            ((CtiPointDataMsg*)pointChanges[pointChanges.size()-1])->setSOE(2);
-            capBank->setLastStatusChangeTime(CtiTime());
-
-            //setEventSequence(getEventSequence() + 1);     // should be sub's sequence for verification
-            ccEvents.push_back(new CtiCCEventLogMsg(0, capBank->getStatusPointId(), getParentId(), getPAOId(), capControlVerificationCommandSent, getEventSequence(), capBank->getControlStatus(), textInfo, "cap control verification", kvarBefore, kvarBefore, 0, capBank->getIpAddress()));
-        }
-        else
-        {
-            CtiLockGuard<CtiLogger> logger_guard(dout);
-            dout << CtiTime() << " - Cap Bank: " << capBank->getPAOName()
-            << " DeviceID: " << capBank->getPAOId() << " doesn't have a status point!" << endl;
-        } 
-
-        if( capBank->getOperationAnalogPointId() > 0 )
-        {
-            pointChanges.push_back(new CtiPointDataMsg(capBank->getOperationAnalogPointId(),capBank->getTotalOperations(),NormalQuality,AnalogPointType));
-            ((CtiPointDataMsg*)pointChanges[pointChanges.size()-1])->setSOE(3);
-
-            //setEventSequence(getEventSequence() + 1);
-            ccEvents.push_back(new CtiCCEventLogMsg(0, capBank->getOperationAnalogPointId(), getParentId(), getPAOId(), capControlSetOperationCount, getEventSequence(), capBank->getTotalOperations(), "opCount adjustment", "cap control verification"));
-        }  
-
-        if  (stringContainsIgnoreCase(capBank->getControlDeviceType(),"CBC 701") &&
-             _USE_FLIP_FLAG == TRUE)
-            reqMsg = new CtiRequestMsg(capBank->getControlDeviceId(),"control flip");
-        else
-            reqMsg = new CtiRequestMsg(capBank->getControlDeviceId(),"control close");
-        reqMsg->setSOE(4);
+        CtiLockGuard<CtiLogger> doubt_guard(dout);
+        dout << CtiTime() << " ***VERIFICATION INFO***  CBid: "<<capBank->getPAOId()<<" vCtrlIdx: "<< capBank->getVCtrlIndex() <<"  CurrControlStatus: " << capBank->getControlStatus() << "  Control Close Sent Now " << endl;
     }
+
+    setLastCapBankControlledDeviceId(capBank->getPAOId());
+    capBank->setControlStatus(CtiCCCapBank::ClosePending);
+    figureEstimatedVarLoadPointValue();
+    _currentdailyoperations++;
+    capBank->setTotalOperations(capBank->getTotalOperations() + 1);
+    capBank->setCurrentDailyOperations(capBank->getCurrentDailyOperations() + 1);
+    //setRecentlyControlledFlag(TRUE);
+    setVarValueBeforeControl(getCurrentVarLoadPointValue());
+    if( capBank->getStatusPointId() > 0 )
+    {
+        string additional("Sub: ");
+        additional += getParentName();
+        additional += " /Feeder: ";
+        additional += getPAOName();
+        if (_LOG_MAPID_INFO) 
+        {
+            additional += " MapID: ";
+            additional += getMapLocationId();
+            additional += " (";
+            additional += getPAODescription();
+            additional += ")";
+        }
+        pointChanges.push_back(new CtiSignalMsg(capBank->getStatusPointId(),0,textInfo,additional,CapControlLogType,SignalEvent, "cap control verification"));
+        ((CtiPointDataMsg*)pointChanges[pointChanges.size()-1])->setSOE(1);
+        pointChanges.push_back(new CtiPointDataMsg(capBank->getStatusPointId(),capBank->getControlStatus(),NormalQuality,StatusPointType));
+        ((CtiPointDataMsg*)pointChanges[pointChanges.size()-1])->setSOE(2);
+        capBank->setLastStatusChangeTime(CtiTime());
+
+        //setEventSequence(getEventSequence() + 1);     // should be sub's sequence for verification
+        ccEvents.push_back(new CtiCCEventLogMsg(0, capBank->getStatusPointId(), getParentId(), getPAOId(), capControlVerificationCommandSent, getEventSequence(), capBank->getControlStatus(), textInfo, "cap control verification", kvarBefore, kvarBefore, 0, capBank->getIpAddress()));
+    }
+    else
+    {
+        CtiLockGuard<CtiLogger> logger_guard(dout);
+        dout << CtiTime() << " - Cap Bank: " << capBank->getPAOName()
+        << " DeviceID: " << capBank->getPAOId() << " doesn't have a status point!" << endl;
+    } 
+
+    if( capBank->getOperationAnalogPointId() > 0 )
+    {
+        pointChanges.push_back(new CtiPointDataMsg(capBank->getOperationAnalogPointId(),capBank->getTotalOperations(),NormalQuality,AnalogPointType));
+        ((CtiPointDataMsg*)pointChanges[pointChanges.size()-1])->setSOE(3);
+
+        //setEventSequence(getEventSequence() + 1);
+        ccEvents.push_back(new CtiCCEventLogMsg(0, capBank->getOperationAnalogPointId(), getParentId(), getPAOId(), capControlSetOperationCount, getEventSequence(), capBank->getTotalOperations(), "opCount adjustment", "cap control verification"));
+    }  
+
+    if  (stringContainsIgnoreCase(capBank->getControlDeviceType(),"CBC 701") &&
+         _USE_FLIP_FLAG == TRUE)
+        reqMsg = new CtiRequestMsg(capBank->getControlDeviceId(),"control flip");
+    else
+        reqMsg = new CtiRequestMsg(capBank->getControlDeviceId(),"control close");
+    reqMsg->setSOE(4);
 
     return reqMsg;
 }
@@ -2287,81 +2315,83 @@ CtiRequestMsg* CtiCCFeeder::createDecreaseVarVerificationRequest(CtiCCCapBank* c
 CtiRequestMsg* CtiCCFeeder::createDecreaseVarRequest(CtiCCCapBank* capBank, CtiMultiMsg_vec& pointChanges, CtiMultiMsg_vec& ccEvents, string textInfo, DOUBLE kvarBefore)
 {
     CtiRequestMsg* reqMsg = NULL;
-    if( capBank != NULL )
+    if( capBank == NULL )
+        return reqMsg;
+
+    //Determine if we are at max KVAR and don't create the request if we are.
+    if( checkForMaxKvar(capBank->getPAOId(), capBank->getBankSize() ) == false )
+        return reqMsg;
+
+    setLastCapBankControlledDeviceId(capBank->getPAOId());
+    capBank->setControlStatus(CtiCCCapBank::ClosePending);
+    figureEstimatedVarLoadPointValue();
+    _currentdailyoperations++;
+    capBank->setTotalOperations(capBank->getTotalOperations() + 1);
+    capBank->setCurrentDailyOperations(capBank->getCurrentDailyOperations() + 1);
+    setRecentlyControlledFlag(TRUE);
+    //setVarValueBeforeControl(getCurrentVarLoadPointValue());
+    setVarValueBeforeControl(kvarBefore);
+
+    capBank->setBeforeVarsString(" --- : --- : --- ");
+    capBank->setAfterVarsString(" --- : --- : --- ");
+    capBank->setPercentChangeString(" --- : --- : --- ");
+
+    if( capBank->getStatusPointId() > 0 )
     {
-        setLastCapBankControlledDeviceId(capBank->getPAOId());
-        capBank->setControlStatus(CtiCCCapBank::ClosePending);
-        figureEstimatedVarLoadPointValue();
-        _currentdailyoperations++;
-        capBank->setTotalOperations(capBank->getTotalOperations() + 1);
-        capBank->setCurrentDailyOperations(capBank->getCurrentDailyOperations() + 1);
-        setRecentlyControlledFlag(TRUE);
-        //setVarValueBeforeControl(getCurrentVarLoadPointValue());
-        setVarValueBeforeControl(kvarBefore);
-
-        capBank->setBeforeVarsString(" --- : --- : --- ");
-        capBank->setAfterVarsString(" --- : --- : --- ");
-        capBank->setPercentChangeString(" --- : --- : --- ");
-
-        if( capBank->getStatusPointId() > 0 )
+        string additional;
+        additional = ("Sub: ");
+        additional += getParentName();
+        additional += " /Feeder: ";
+        additional += getPAOName();
+        if (_LOG_MAPID_INFO) 
         {
-            string additional;
-            additional = ("Sub: ");
-            additional += getParentName();
-            additional += " /Feeder: ";
-            additional += getPAOName();
-            if (_LOG_MAPID_INFO) 
-            {
-                additional += " MapID: ";
-                additional += getMapLocationId();
-                additional += " (";
-                additional += getPAODescription();
-                additional += ")";
-            }
-            pointChanges.push_back(new CtiSignalMsg(capBank->getStatusPointId(),0,textInfo,additional,CapControlLogType,SignalEvent, "cap control"));
-            ((CtiPointDataMsg*)pointChanges[pointChanges.size()-1])->setSOE(1);
-            pointChanges.push_back(new CtiPointDataMsg(capBank->getStatusPointId(),capBank->getControlStatus(),NormalQuality,StatusPointType, capBank->getPAOName()));
-            ((CtiPointDataMsg*)pointChanges[pointChanges.size()-1])->setSOE(2);
-            capBank->setLastStatusChangeTime(CtiTime());
-
-            //setEventSequence(getEventSequence() + 1);
-            INT actionId = CCEventActionIdGen(capBank->getStatusPointId()) + 1;
-            ccEvents.push_back(new CtiCCEventLogMsg(0, capBank->getStatusPointId(), getParentId(), getPAOId(), capControlCommandSent, getEventSequence(), capBank->getControlStatus(), textInfo, "cap control", kvarBefore, kvarBefore, 0, capBank->getIpAddress(), actionId));
+            additional += " MapID: ";
+            additional += getMapLocationId();
+            additional += " (";
+            additional += getPAODescription();
+            additional += ")";
         }
-        else
-        {
-            CtiLockGuard<CtiLogger> logger_guard(dout);
-            dout << CtiTime() << " - Cap Bank: " << capBank->getPAOName()
-            << " DeviceID: " << capBank->getPAOId() << " doesn't have a status point!" << endl;
-        }
+        pointChanges.push_back(new CtiSignalMsg(capBank->getStatusPointId(),0,textInfo,additional,CapControlLogType,SignalEvent, "cap control"));
+        ((CtiPointDataMsg*)pointChanges[pointChanges.size()-1])->setSOE(1);
+        pointChanges.push_back(new CtiPointDataMsg(capBank->getStatusPointId(),capBank->getControlStatus(),NormalQuality,StatusPointType, capBank->getPAOName()));
+        ((CtiPointDataMsg*)pointChanges[pointChanges.size()-1])->setSOE(2);
+        capBank->setLastStatusChangeTime(CtiTime());
 
-        if( capBank->getOperationAnalogPointId() > 0 )
-        {
-            pointChanges.push_back(new CtiPointDataMsg(capBank->getOperationAnalogPointId(),capBank->getTotalOperations(),NormalQuality,AnalogPointType));
-            ((CtiPointDataMsg*)pointChanges[pointChanges.size()-1])->setSOE(3);
-
-            //setEventSequence(getEventSequence() + 1);
-            ccEvents.push_back(new CtiCCEventLogMsg(0, capBank->getOperationAnalogPointId(), getParentId(), getPAOId(), capControlSetOperationCount, getEventSequence(), capBank->getTotalOperations(), "opCount adjustment", "cap control"));
-        }
-
-        if  (capBank->getTwoWayPoints() != NULL) 
-        {
-            if (capBank->getTwoWayPoints()->getCapacitorBankStateId() > 0) 
-            { 
-                CtiLMControlHistoryMsg *hist = CTIDBG_new CtiLMControlHistoryMsg ( capBank->getControlDeviceId(), capBank->getTwoWayPoints()->getCapacitorBankStateId(), capBank->getControlStatus(), CtiTime(), -1, 100 );
-                hist->setMessagePriority( hist->getMessagePriority() + 2 );
-                pointChanges.push_back( hist );
-                ((CtiPointDataMsg*)pointChanges[pointChanges.size()-1])->setSOE(4);
-            
-            
-            }
-        }
-
-
-
-        reqMsg = new CtiRequestMsg( capBank->getControlDeviceId(),"control close" );
-        reqMsg->setSOE(4);
+        //setEventSequence(getEventSequence() + 1);
+        INT actionId = CCEventActionIdGen(capBank->getStatusPointId()) + 1;
+        ccEvents.push_back(new CtiCCEventLogMsg(0, capBank->getStatusPointId(), getParentId(), getPAOId(), capControlCommandSent, getEventSequence(), capBank->getControlStatus(), textInfo, "cap control", kvarBefore, kvarBefore, 0, capBank->getIpAddress(), actionId));
     }
+    else
+    {
+        CtiLockGuard<CtiLogger> logger_guard(dout);
+        dout << CtiTime() << " - Cap Bank: " << capBank->getPAOName()
+        << " DeviceID: " << capBank->getPAOId() << " doesn't have a status point!" << endl;
+    }
+
+    if( capBank->getOperationAnalogPointId() > 0 )
+    {
+        pointChanges.push_back(new CtiPointDataMsg(capBank->getOperationAnalogPointId(),capBank->getTotalOperations(),NormalQuality,AnalogPointType));
+        ((CtiPointDataMsg*)pointChanges[pointChanges.size()-1])->setSOE(3);
+
+        //setEventSequence(getEventSequence() + 1);
+        ccEvents.push_back(new CtiCCEventLogMsg(0, capBank->getOperationAnalogPointId(), getParentId(), getPAOId(), capControlSetOperationCount, getEventSequence(), capBank->getTotalOperations(), "opCount adjustment", "cap control"));
+    }
+
+    if  (capBank->getTwoWayPoints() != NULL) 
+    {
+        if (capBank->getTwoWayPoints()->getCapacitorBankStateId() > 0) 
+        { 
+            CtiLMControlHistoryMsg *hist = CTIDBG_new CtiLMControlHistoryMsg ( capBank->getControlDeviceId(), capBank->getTwoWayPoints()->getCapacitorBankStateId(), capBank->getControlStatus(), CtiTime(), -1, 100 );
+            hist->setMessagePriority( hist->getMessagePriority() + 2 );
+            pointChanges.push_back( hist );
+            ((CtiPointDataMsg*)pointChanges[pointChanges.size()-1])->setSOE(4);
+        
+        
+        }
+    }
+
+    reqMsg = new CtiRequestMsg( capBank->getControlDeviceId(),"control close" );
+    reqMsg->setSOE(4);
 
     return reqMsg;
 }
@@ -3036,6 +3066,7 @@ BOOL CtiCCFeeder::capBankControlStatusUpdate(CtiMultiMsg_vec& pointChanges, CtiM
         {
             if( currentCapBank->getControlStatus() == CtiCCCapBank::OpenPending )
             {
+                removeMaxKvar(currentCapBank->getPAOId());
                 if( !_IGNORE_NOT_NORMAL_FLAG ||
                     currentVarPointQuality == NormalQuality )
                 {
@@ -3106,6 +3137,7 @@ BOOL CtiCCFeeder::capBankControlStatusUpdate(CtiMultiMsg_vec& pointChanges, CtiM
             }
             else if( currentCapBank->getControlStatus() == CtiCCCapBank::ClosePending )
             {
+                removeMaxKvar(currentCapBank->getPAOId());
                 if( !_IGNORE_NOT_NORMAL_FLAG ||
                     currentVarPointQuality == NormalQuality )
                 {
