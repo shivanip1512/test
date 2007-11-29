@@ -1,7 +1,5 @@
 package com.cannontech.web.login;
 
-import java.net.URLDecoder;
-
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
 
@@ -38,7 +36,7 @@ public class YukonLoginController extends MultiActionController {
       
         String redirect;
         if (redirectedFrom != null && !redirectedFrom.equals("")) {
-            redirect = URLDecoder.decode(redirectedFrom, "UTF-8"); 
+            redirect = redirectedFrom; 
         } else {
             LiteYukonUser user = ServletUtil.getYukonUser(request);
             String homeUrl = authDao.getRolePropertyValue(user, WebClientRole.HOME_URL);
