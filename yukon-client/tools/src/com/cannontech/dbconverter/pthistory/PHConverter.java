@@ -68,7 +68,6 @@ private static ClientConnection connect() throws java.io.IOException {
 	reg.setAppExpirationDelay(5000);
 		
 	conn.setAutoReconnect(true);
-	conn.setTimeToReconnect(30);
 
 	conn.connect();
 

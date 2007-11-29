@@ -116,7 +116,6 @@ public void doInit(ServletConfig config) throws ServletException {
 		conn.setPort(lcPort);
 		
 	conn.setAutoReconnect(true);	
-	conn.setTimeToReconnect(30);
 
 	conn.connectWithoutWait();
 

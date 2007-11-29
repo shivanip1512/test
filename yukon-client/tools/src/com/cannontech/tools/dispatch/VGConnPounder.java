@@ -96,7 +96,6 @@ public class VGConnPounder {
             multi.getVector().addElement(pReg);
             conn.setRegistrationMsg(multi);
             conn.setAutoReconnect(true);
-            conn.setTimeToReconnect(30);
             conn.setQueueMessages(false);
 
             conn.connectWithoutWait();

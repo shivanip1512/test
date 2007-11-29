@@ -212,7 +212,6 @@ public class ConnPool
             macsConn.setHost(host);
             macsConn.setPort(port);
         	macsConn.setAutoReconnect(true);
-		    macsConn.setTimeToReconnect(5);
             
             macsConn.setRegistrationMsg(macsConn.getRetrieveAllSchedulesMsg());
 

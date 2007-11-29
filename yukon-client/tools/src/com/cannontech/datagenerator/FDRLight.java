@@ -46,7 +46,6 @@ public class FDRLight {
 		multi.getVector().addElement(pReg);
 		srcConn.setRegistrationMsg(multi);
 		srcConn.setAutoReconnect(true);
-		srcConn.setTimeToReconnect(30);
 		
 		ClientConnection destConn = new ClientConnection();
 		destConn.setHost(args.getDestHost());
@@ -54,7 +53,6 @@ public class FDRLight {
 		
 		destConn.setRegistrationMsg(reg);
 		destConn.setAutoReconnect(true);
-		destConn.setTimeToReconnect(30);
 		
 		try {
 		srcConn.connect();

@@ -176,7 +176,6 @@ private void initialize()
 
 	getConnection().addMessageListener( this );
 	getConnection().setAutoReconnect( true );
-	getConnection().setTimeToReconnect( 10 );
 }
 
 /**

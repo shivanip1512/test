@@ -1182,7 +1182,6 @@ private void initClientConnection()
    LoadControlClientConnection.getInstance().setHost(host);
    LoadControlClientConnection.getInstance().setPort(port);
    LoadControlClientConnection.getInstance().setAutoReconnect(true);
-   LoadControlClientConnection.getInstance().setTimeToReconnect(5);
 
    //lock the connection down and try to connect if we arent connected already
    synchronized( LoadControlClientConnection.getInstance() )
