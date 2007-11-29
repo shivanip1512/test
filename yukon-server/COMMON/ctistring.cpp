@@ -131,7 +131,7 @@ size_t CtiString::index(boost::regex& re, size_t* ext, size_t i) {
 
 }
 
-size_t CtiString::index(char* e, size_t* ext, size_t i) {
+size_t CtiString::index(const char* e, size_t* ext, size_t i) {
     boost::regex re;
     re.assign(e);
     return index(re, ext, i);

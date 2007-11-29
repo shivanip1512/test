@@ -65,7 +65,7 @@ public:
     CtiString& operator= ( const string& s);
     CtiString& operator= ( const char* s);
     size_t index(boost::regex& re, size_t* ext, size_t i=0);
-    size_t index(char* e, size_t* ext, size_t i=0);
+    size_t index(const char* e, size_t* ext, size_t i=0);
 
 };
 
