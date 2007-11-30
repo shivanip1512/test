@@ -185,17 +185,10 @@ private javax.swing.JButton getJButtonCreate() {
 		try {
 			ivjJButtonCreate = new javax.swing.JButton();
 			ivjJButtonCreate.setName("JButtonCreate");
-			ivjJButtonCreate.setMnemonic('C');
-			ivjJButtonCreate.setText("Create...");
-			// user code begin {1}
-
 			ivjJButtonCreate.setMnemonic('a');
 			ivjJButtonCreate.setText("Add");
 			
-			// user code end
 		} catch (java.lang.Throwable ivjExc) {
-			// user code begin {2}
-			// user code end
 			handleException(ivjExc);
 		}
 	}

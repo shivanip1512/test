@@ -36,6 +36,7 @@ public interface IlmDefines
     public static final String CONTROL_MAGNITUDE_CYCLE = "MagnitudeCycle";
     public static final String CONTROL_TARGET_CYCLE = "TargetCycle";
 	public static final String THERMOSTAT_SETBACK = "ThermostatRamping";
+	public static final String SIMPLE_THERMOSTAT_SETBACK = "SimpleThermostatRamping";
 	public static final String THERMOSTAT_PRE_OPERATE = "ThermostatPre-operate";
 	public static final String NO_CONTROL = "NoControl";
 
@@ -52,6 +53,7 @@ public interface IlmDefines
 		CONTROL_LATCHING,
 		THERMOSTAT_PRE_OPERATE,
 		THERMOSTAT_SETBACK,
+		SIMPLE_THERMOSTAT_SETBACK,
 		NO_CONTROL
 		
 	};

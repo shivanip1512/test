@@ -6,6 +6,7 @@ import com.cannontech.common.util.CtiUtilities;
 import com.cannontech.database.SqlUtils;
 import com.cannontech.database.data.device.lm.NoControlGear;
 import com.cannontech.database.data.device.lm.MagnitudeCycleGear;
+import com.cannontech.database.data.device.lm.SimpleThermostatRampingGear;
 import com.cannontech.database.data.device.lm.TargetCycleGear;
 import com.cannontech.database.data.device.lm.ThermostatPreOperateGear;
 import com.cannontech.database.data.device.lm.ThermostatSetbackGear;
@@ -162,6 +163,10 @@ public abstract class LMProgramDirectGear
 		{
 			return new ThermostatSetbackGear();
 		}
+		else if (gearType.equalsIgnoreCase(SIMPLE_THERMOSTAT_SETBACK))
+		{
+		    return new SimpleThermostatRampingGear();
+		}
 		else if (gearType.equalsIgnoreCase(NO_CONTROL))
 		{
 			return new NoControlGear();
@@ -269,10 +274,9 @@ public abstract class LMProgramDirectGear
 				gear.setDbConnection(conn);
 				
 				//need to make sure we get the Thermostat specific information from its separate table
-				if(gear instanceof ThermostatSetbackGear)
+				if (gear instanceof ThermostatSetbackGear || gear instanceof SimpleThermostatRampingGear) {
 					gear.retrieve();
-				else
-				{
+				} else {
 					gear.setGearName(name);
 					gear.setGearNumber(gearNum);
 					
@@ -525,7 +529,7 @@ public static final Integer getDefaultGearID(Integer programID, java.sql.Connect
 	 * Creation date: (3/16/2001 5:20:28 PM)
 	 * @return java.lang.Integer
 	 */
-	protected java.lang.Integer getMethodRate()
+	public java.lang.Integer getMethodRate()
 	{
 		return methodRate;
 	}
@@ -771,7 +775,7 @@ public static final Integer getDefaultGearID(Integer programID, java.sql.Connect
 	 * Creation date: (3/16/2001 5:20:28 PM)
 	 * @param newMethodRate java.lang.Integer
 	 */
-	protected void setMethodRate(java.lang.Integer newMethodRate)
+	public void setMethodRate(java.lang.Integer newMethodRate)
 	{
 		methodRate = newMethodRate;
 	}

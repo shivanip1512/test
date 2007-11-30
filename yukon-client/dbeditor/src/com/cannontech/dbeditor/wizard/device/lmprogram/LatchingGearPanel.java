@@ -6,63 +6,63 @@ package com.cannontech.dbeditor.wizard.device.lmprogram;
  */
 
 import com.cannontech.database.db.device.lm.LMProgramDirectGear;
- 
+
 public class LatchingGearPanel extends GenericGearPanel {
-	private javax.swing.JComboBox ivjJComboBoxControlStartState = null;
-	private com.klg.jclass.field.JCSpinField ivjJCSpinFieldPercentReduction = null;
-	private javax.swing.JLabel ivjJLabelControlStartState = null;
-	private javax.swing.JLabel ivjJLabelPercentReduction = null;
+    private javax.swing.JComboBox ivjJComboBoxControlStartState = null;
+    private com.klg.jclass.field.JCSpinField ivjJCSpinFieldPercentReduction = null;
+    private javax.swing.JLabel ivjJLabelControlStartState = null;
+    private javax.swing.JLabel ivjJLabelPercentReduction = null;
 
-/**
- * LatchingGearPanel constructor comment.
- */
-public LatchingGearPanel() {
-	super();
-	initialize();
-}
+    /**
+     * LatchingGearPanel constructor comment.
+     */
+    public LatchingGearPanel() {
+        super();
+        initialize();
+    }
 
-/**
- * Method to handle events for the ActionListener interface.
- * @param e java.awt.event.ActionEvent
- */
-/* WARNING: THIS METHOD WILL BE REGENERATED. */
-public void actionPerformed(java.awt.event.ActionEvent e) {
-	// user code begin {1}
-		if (e.getSource() == getJComboBoxControlStartState()) 
-		connEtoC9(e);
-	// user code end
+    /**
+     * Method to handle events for the ActionListener interface.
+     * @param e java.awt.event.ActionEvent
+     */
+    /* WARNING: THIS METHOD WILL BE REGENERATED. */
+    public void actionPerformed(java.awt.event.ActionEvent e) {
+        // user code begin {1}
+        if (e.getSource() == getJComboBoxControlStartState()) 
+            connEtoC9(e);
+        // user code end
 
-	// user code begin {2}
-	// user code end
-}
+        // user code begin {2}
+        // user code end
+    }
 
-/**
- * connEtoC9:  (JComboBoxLatchCommand.action.actionPerformed(java.awt.event.ActionEvent) --> DirectModifyGearPanel.fireInputUpdate()V)
- * @param arg1 java.awt.event.ActionEvent
- */
-/* WARNING: THIS METHOD WILL BE REGENERATED. */
-private void connEtoC9(java.awt.event.ActionEvent arg1) {
-	try {
-		// user code begin {1}
-		// user code end
-		this.fireInputUpdate();
-		// user code begin {2}
-		// user code end
-	} catch (java.lang.Throwable ivjExc) {
-		// user code begin {3}
-		// user code end
-		handleException(ivjExc);
-	}
-}
+    /**
+     * connEtoC9:  (JComboBoxLatchCommand.action.actionPerformed(java.awt.event.ActionEvent) --> DirectModifyGearPanel.fireInputUpdate()V)
+     * @param arg1 java.awt.event.ActionEvent
+     */
+    /* WARNING: THIS METHOD WILL BE REGENERATED. */
+    private void connEtoC9(java.awt.event.ActionEvent arg1) {
+        try {
+            // user code begin {1}
+            // user code end
+            this.fireInputUpdate();
+            // user code begin {2}
+            // user code end
+        } catch (java.lang.Throwable ivjExc) {
+            // user code begin {3}
+            // user code end
+            handleException(ivjExc);
+        }
+    }
 
 
-/**
- * 
- */
-/* WARNING: THIS METHOD WILL BE REGENERATED. */
-private static void getBuilderData() {
-/*V1.1
-**start of data**
+    /**
+     * 
+     */
+    /* WARNING: THIS METHOD WILL BE REGENERATED. */
+    private static void getBuilderData() {
+        /*V1.1
+         **start of data**
 	D0CB838494G88G88G4CD485ADGGGGGGGGGGGG8CGGGE2F5E9ECE4E5F2A0E4E1F4E135BA8BF49457F5CA8FF14809EA638447F28E2929A1BE44A18EEDC9CAD2B5258ECE418803C1E0BE829403ED618843E9F14B696114372B1510B0A0814286A3434AFC02BE56874936AA14C48BC2C8D8989DA40330790D34333B03E6E7563333524A9128773EB7EFF6345A95B8ED771C3BB36F3E7B6E3B3FF75FFDEF17949E1E18ED339792E24BA64667A39BA10D6F9372E862371E62389333DDF94472A98658
 	CDAE5FF640338E7A46EDF26595101AEB3950EE0376448D2E3C3761FDAF293B5672BBF809B30F937A1EF8EC4D7B234F536F6573EC236D320BBB60398B209DF0BA404C59B87FA797779B78A4E86FB25E91ECF6C264B9C8F36A66FE8B5EB10751F5994F4D14C63AD8E474CF07B65224G244F0970E4C2FE3D3E4EE8DFFBF8BC59745CF17BCE1C4B421FC363F3EC2C5BF8BA49535490D924AC779CBC9B5AFB3DFF68D17D95BD0222280AAE7678AA5C5D22DB52D52D22DF7AD2505C95EE31CF6A91ABE4FFC0D33D1A602F
 	2FEF93749E1F24F84F090256AEA822CCD21FC379051B3914B7A193204DE4FDE1E703A14B785E71A4FD520138326E1F4BE4EC189B11F5F0114F1EB997F9FF1B5A9E478DC2FBBAG1BF379C5BEE7D50AABEFDA8A62749BC86B037784002494AE4B6FFF47E5697A53A41258D035ADBF0EAC1BD2188CC573A232A4FFD6396DG0D03AC89FD5985FD03G63G26832482EC82B8C8636F175ED2F83A3A75B32A5F2FAA2EC060346C56AE28EED106777AFA68B1F017449ED5F39342E24CF333BC06BC9CF6BCBFBC3EA2B1F1
@@ -87,281 +87,281 @@ private static void getBuilderData() {
 	0549E56FBF649FABBE3FF6C69631B7136D32AA381B059ED8DD2DA4CF77E9E250274A6EF0600F0CD1EEBF3F504C82F687CD75D1590ACED8CC26503D616FA76E4C5859EC073ADAA31514928B388A1342FD46A7E8B01528356A78DF9ED5BBEA76FD6D10FEFC5E39372F59094DD0929D39BD9C50C90EC770CB72G3CB45124CBDD3CCB87E9B5C189FAD44D8F12B923A463DD6684955F19D375488F7F73B3BAC1E428CE8EB3D34250CA2F287AABDD9E0F2408A68330AB30FF57E40FB495D1B4FB428F6FBB3FF8EBB744C1
 	934972D7D5516FEA7AFD923F2BA9261AE22ACF02F1B712D1BF517DE12EB38D9EB32A517D954D60C1FD797AB9CF2CE85818895AB513EC7A1BACB821A0C275C9485FADEA8FCCFD645DB74727FF8BFD9440D089A35FBD0CBD2EFE046DC64C971AEB896B0EC00CD66E0808C36C0E11210368825301585ACBC977516F7DDF599CB86A9DBA364854622829054DEFE80139B4A70E96A781CE18A3E4E3847EA269B0E99ACC9AF304D13F158CD96F5DB7FF7D6D383FBF25EEE2F5DB462668FB778B3DE81F23EF38729A5F607B
 	5E77EF639F0F635D85F67885D956853957253871DE707400AEC66EB5AE75A27FA027B1BA0D7F74507F135D360C799FD0CB8788F86F30137D91GGE8ADGGD0CB818294G94G88G88G4CD485ADF86F30137D91GGE8ADGG8CGGGGGGGGGGGGGGGGGE2F5E9ECE4E5F2A0E4E1F4E1D0CB8586GGGG81G81GBAGGGB792GGGG
-**end of data**/
-}
+         **end of data**/
+    }
 
-/**
- * Return the JComboBoxControlStartState property value.
- * @return javax.swing.JComboBox
- */
-/* WARNING: THIS METHOD WILL BE REGENERATED. */
-private javax.swing.JComboBox getJComboBoxControlStartState() {
-	if (ivjJComboBoxControlStartState == null) {
-		try {
-			ivjJComboBoxControlStartState = new javax.swing.JComboBox();
-			ivjJComboBoxControlStartState.setName("JComboBoxControlStartState");
-			ivjJComboBoxControlStartState.setPreferredSize(new java.awt.Dimension(170, 23));
-			ivjJComboBoxControlStartState.setAlignmentX(java.awt.Component.LEFT_ALIGNMENT);
-			ivjJComboBoxControlStartState.setAlignmentY(java.awt.Component.TOP_ALIGNMENT);
-			// user code begin {1}
-			ivjJComboBoxControlStartState.addItem("OPEN  (RawState: 0)");
-			ivjJComboBoxControlStartState.addItem("CLOSE (RawState: 1)");
-			// user code end
-		} catch (java.lang.Throwable ivjExc) {
-			// user code begin {2}
-			// user code end
-			handleException(ivjExc);
-		}
-	}
-	return ivjJComboBoxControlStartState;
-}
+    /**
+     * Return the JComboBoxControlStartState property value.
+     * @return javax.swing.JComboBox
+     */
+    /* WARNING: THIS METHOD WILL BE REGENERATED. */
+    private javax.swing.JComboBox getJComboBoxControlStartState() {
+        if (ivjJComboBoxControlStartState == null) {
+            try {
+                ivjJComboBoxControlStartState = new javax.swing.JComboBox();
+                ivjJComboBoxControlStartState.setName("JComboBoxControlStartState");
+                ivjJComboBoxControlStartState.setPreferredSize(new java.awt.Dimension(170, 23));
+                ivjJComboBoxControlStartState.setAlignmentX(java.awt.Component.LEFT_ALIGNMENT);
+                ivjJComboBoxControlStartState.setAlignmentY(java.awt.Component.TOP_ALIGNMENT);
+                // user code begin {1}
+                ivjJComboBoxControlStartState.addItem("OPEN  (RawState: 0)");
+                ivjJComboBoxControlStartState.addItem("CLOSE (RawState: 1)");
+                // user code end
+            } catch (java.lang.Throwable ivjExc) {
+                // user code begin {2}
+                // user code end
+                handleException(ivjExc);
+            }
+        }
+        return ivjJComboBoxControlStartState;
+    }
 
-/**
- * Return the JCSpinFieldPercentReduction property value.
- * @return com.klg.jclass.field.JCSpinField
- */
-/* WARNING: THIS METHOD WILL BE REGENERATED. */
-private com.klg.jclass.field.JCSpinField getJCSpinFieldPercentReduction() {
-	if (ivjJCSpinFieldPercentReduction == null) {
-		try {
-			ivjJCSpinFieldPercentReduction = new com.klg.jclass.field.JCSpinField();
-			ivjJCSpinFieldPercentReduction.setName("JCSpinFieldPercentReduction");
-			ivjJCSpinFieldPercentReduction.setPreferredSize(new java.awt.Dimension(40, 50));
-			ivjJCSpinFieldPercentReduction.setMaximumSize(new java.awt.Dimension(40, 60));
-			ivjJCSpinFieldPercentReduction.setMinimumSize(new java.awt.Dimension(40, 50));
-			// user code begin {1}
-			ivjJCSpinFieldPercentReduction.setDataProperties(
-					new com.klg.jclass.field.DataProperties(
-						new com.klg.jclass.field.validate.JCIntegerValidator(
-						null, new Integer(0), new Integer(100), null, true, 
-						null, new Integer(1), "#,##0.###;-#,##0.###", false, 
-						false, false, null, new Integer(100)), 
-						new com.klg.jclass.util.value.MutableValueModel(java.lang.Integer.class, 
-						new Integer(0)), new com.klg.jclass.field.JCInvalidInfo(true, 2, 
-						new java.awt.Color(0, 0, 0, 255), new java.awt.Color(255, 255, 255, 255))));
+    /**
+     * Return the JCSpinFieldPercentReduction property value.
+     * @return com.klg.jclass.field.JCSpinField
+     */
+    /* WARNING: THIS METHOD WILL BE REGENERATED. */
+    private com.klg.jclass.field.JCSpinField getJCSpinFieldPercentReduction() {
+        if (ivjJCSpinFieldPercentReduction == null) {
+            try {
+                ivjJCSpinFieldPercentReduction = new com.klg.jclass.field.JCSpinField();
+                ivjJCSpinFieldPercentReduction.setName("JCSpinFieldPercentReduction");
+                ivjJCSpinFieldPercentReduction.setPreferredSize(new java.awt.Dimension(40, 50));
+                ivjJCSpinFieldPercentReduction.setMaximumSize(new java.awt.Dimension(40, 60));
+                ivjJCSpinFieldPercentReduction.setMinimumSize(new java.awt.Dimension(40, 50));
+                // user code begin {1}
+                ivjJCSpinFieldPercentReduction.setDataProperties(
+                                                                 new com.klg.jclass.field.DataProperties(
+                                                                                                         new com.klg.jclass.field.validate.JCIntegerValidator(
+                                                                                                                                                              null, new Integer(0), new Integer(100), null, true, 
+                                                                                                                                                              null, new Integer(1), "#,##0.###;-#,##0.###", false, 
+                                                                                                                                                              false, false, null, new Integer(100)), 
+                                                                                                                                                              new com.klg.jclass.util.value.MutableValueModel(java.lang.Integer.class, 
+                                                                                                                                                                                                              new Integer(0)), new com.klg.jclass.field.JCInvalidInfo(true, 2, 
+                                                                                                                                                                                                                                                                      new java.awt.Color(0, 0, 0, 255), new java.awt.Color(255, 255, 255, 255))));
 
-			ivjJCSpinFieldPercentReduction.setValue( new Integer(100) );
+                ivjJCSpinFieldPercentReduction.setValue( new Integer(100) );
 
-			// user code end
-		} catch (java.lang.Throwable ivjExc) {
-			// user code begin {2}
-			// user code end
-			handleException(ivjExc);
-		}
-	}
-	return ivjJCSpinFieldPercentReduction;
-}
-
-
-/**
- * Return the JLabelControlStartState property value.
- * @return javax.swing.JLabel
- */
-/* WARNING: THIS METHOD WILL BE REGENERATED. */
-private javax.swing.JLabel getJLabelControlStartState() {
-	if (ivjJLabelControlStartState == null) {
-		try {
-			ivjJLabelControlStartState = new javax.swing.JLabel();
-			ivjJLabelControlStartState.setName("JLabelControlStartState");
-			ivjJLabelControlStartState.setFont(new java.awt.Font("dialog", 0, 12));
-			ivjJLabelControlStartState.setAlignmentY(java.awt.Component.TOP_ALIGNMENT);
-			ivjJLabelControlStartState.setText("Control Start State:");
-			ivjJLabelControlStartState.setAlignmentX(java.awt.Component.LEFT_ALIGNMENT);
-			// user code begin {1}
-			// user code end
-		} catch (java.lang.Throwable ivjExc) {
-			// user code begin {2}
-			// user code end
-			handleException(ivjExc);
-		}
-	}
-	return ivjJLabelControlStartState;
-}
+                // user code end
+            } catch (java.lang.Throwable ivjExc) {
+                // user code begin {2}
+                // user code end
+                handleException(ivjExc);
+            }
+        }
+        return ivjJCSpinFieldPercentReduction;
+    }
 
 
-/**
- * Return the JLabelPercentReduction property value.
- * @return javax.swing.JLabel
- */
-/* WARNING: THIS METHOD WILL BE REGENERATED. */
-private javax.swing.JLabel getJLabelPercentReduction() {
-	if (ivjJLabelPercentReduction == null) {
-		try {
-			ivjJLabelPercentReduction = new javax.swing.JLabel();
-			ivjJLabelPercentReduction.setName("JLabelPercentReduction");
-			ivjJLabelPercentReduction.setAlignmentY(java.awt.Component.TOP_ALIGNMENT);
-			ivjJLabelPercentReduction.setText("Group Capacity Reduction %:");
-			ivjJLabelPercentReduction.setMaximumSize(new java.awt.Dimension(112, 14));
-			ivjJLabelPercentReduction.setPreferredSize(new java.awt.Dimension(112, 14));
-			ivjJLabelPercentReduction.setFont(new java.awt.Font("dialog", 0, 12));
-			ivjJLabelPercentReduction.setMinimumSize(new java.awt.Dimension(112, 14));
-			// user code begin {1}
-			// user code end
-		} catch (java.lang.Throwable ivjExc) {
-			// user code begin {2}
-			// user code end
-			handleException(ivjExc);
-		}
-	}
-	return ivjJLabelPercentReduction;
-}
+    /**
+     * Return the JLabelControlStartState property value.
+     * @return javax.swing.JLabel
+     */
+    /* WARNING: THIS METHOD WILL BE REGENERATED. */
+    private javax.swing.JLabel getJLabelControlStartState() {
+        if (ivjJLabelControlStartState == null) {
+            try {
+                ivjJLabelControlStartState = new javax.swing.JLabel();
+                ivjJLabelControlStartState.setName("JLabelControlStartState");
+                ivjJLabelControlStartState.setFont(new java.awt.Font("dialog", 0, 12));
+                ivjJLabelControlStartState.setAlignmentY(java.awt.Component.TOP_ALIGNMENT);
+                ivjJLabelControlStartState.setText("Control Start State:");
+                ivjJLabelControlStartState.setAlignmentX(java.awt.Component.LEFT_ALIGNMENT);
+                // user code begin {1}
+                // user code end
+            } catch (java.lang.Throwable ivjExc) {
+                // user code begin {2}
+                // user code end
+                handleException(ivjExc);
+            }
+        }
+        return ivjJLabelControlStartState;
+    }
 
 
-/**
- * getValue method comment.
- */
-public Object getValue(Object o) 
-{
-	LMProgramDirectGear gear = null;
-	
-	gear = (LMProgramDirectGear)o;
-	
-	gear.setPercentReduction( new Integer( ((Number)getJCSpinFieldPercentReduction().getValue()).intValue() ) );
-	
-	com.cannontech.database.data.device.lm.LatchingGear l = (com.cannontech.database.data.device.lm.LatchingGear)gear;
-
-	l.setStartControlState( new Integer(getJComboBoxControlStartState().getSelectedIndex()) );
-	
-	return l;
-}
-
-
-/**
- * Called whenever the part throws an exception.
- * @param exception java.lang.Throwable
- */
-private void handleException(java.lang.Throwable exception) {
-
-	/* Uncomment the following lines to print uncaught exceptions to stdout */
-	// System.out.println("--------- UNCAUGHT EXCEPTION ---------");
-	// exception.printStackTrace(System.out);
-}
+    /**
+     * Return the JLabelPercentReduction property value.
+     * @return javax.swing.JLabel
+     */
+    /* WARNING: THIS METHOD WILL BE REGENERATED. */
+    private javax.swing.JLabel getJLabelPercentReduction() {
+        if (ivjJLabelPercentReduction == null) {
+            try {
+                ivjJLabelPercentReduction = new javax.swing.JLabel();
+                ivjJLabelPercentReduction.setName("JLabelPercentReduction");
+                ivjJLabelPercentReduction.setAlignmentY(java.awt.Component.TOP_ALIGNMENT);
+                ivjJLabelPercentReduction.setText("Group Capacity Reduction %:");
+                ivjJLabelPercentReduction.setMaximumSize(new java.awt.Dimension(112, 14));
+                ivjJLabelPercentReduction.setPreferredSize(new java.awt.Dimension(112, 14));
+                ivjJLabelPercentReduction.setFont(new java.awt.Font("dialog", 0, 12));
+                ivjJLabelPercentReduction.setMinimumSize(new java.awt.Dimension(112, 14));
+                // user code begin {1}
+                // user code end
+            } catch (java.lang.Throwable ivjExc) {
+                // user code begin {2}
+                // user code end
+                handleException(ivjExc);
+            }
+        }
+        return ivjJLabelPercentReduction;
+    }
 
 
-/**
- * Initializes connections
- * @exception java.lang.Exception The exception description.
- */
-/* WARNING: THIS METHOD WILL BE REGENERATED. */
-private void initConnections() throws java.lang.Exception {
-	// user code begin {1}
+    /**
+     * getValue method comment.
+     */
+    public Object getValue(Object o) 
+    {
+        LMProgramDirectGear gear = null;
 
-	getJCSpinFieldPercentReduction().addValueListener(this);
-	getJComboBoxControlStartState().addActionListener(this);
-	
-	// user code end
-	
-}
+        gear = (LMProgramDirectGear)o;
 
-/**
- * Initialize the class.
- */
-/* WARNING: THIS METHOD WILL BE REGENERATED. */
-private void initialize() {
-	try {
-		// user code begin {1}
-		// user code end
-		setName("LatchingGearPanel");
-		setPreferredSize(new java.awt.Dimension(402, 430));
-		setLayout(new java.awt.GridBagLayout());
-		setSize(402, 430);
-		setMinimumSize(new java.awt.Dimension(0, 0));
+        gear.setPercentReduction( new Integer( ((Number)getJCSpinFieldPercentReduction().getValue()).intValue() ) );
 
-		java.awt.GridBagConstraints constraintsJComboBoxControlStartState = new java.awt.GridBagConstraints();
-		constraintsJComboBoxControlStartState.gridx = 2; constraintsJComboBoxControlStartState.gridy = 1;
-		constraintsJComboBoxControlStartState.gridwidth = 2;
-		constraintsJComboBoxControlStartState.anchor = java.awt.GridBagConstraints.NORTHWEST;
-		constraintsJComboBoxControlStartState.weightx = 1.0;
-		constraintsJComboBoxControlStartState.ipadx = 44;
-		constraintsJComboBoxControlStartState.insets = new java.awt.Insets(15, 4, 4, 87);
-		add(getJComboBoxControlStartState(), constraintsJComboBoxControlStartState);
+        com.cannontech.database.data.device.lm.LatchingGear l = (com.cannontech.database.data.device.lm.LatchingGear)gear;
 
-		java.awt.GridBagConstraints constraintsJLabelControlStartState = new java.awt.GridBagConstraints();
-		constraintsJLabelControlStartState.gridx = 1; constraintsJLabelControlStartState.gridy = 1;
-		constraintsJLabelControlStartState.anchor = java.awt.GridBagConstraints.NORTHWEST;
-		constraintsJLabelControlStartState.ipadx = 25;
-		constraintsJLabelControlStartState.insets = new java.awt.Insets(20, 10, 6, 4);
-		add(getJLabelControlStartState(), constraintsJLabelControlStartState);
+        l.setStartControlState( new Integer(getJComboBoxControlStartState().getSelectedIndex()) );
 
-		java.awt.GridBagConstraints constraintsJLabelPercentReduction = new java.awt.GridBagConstraints();
-		constraintsJLabelPercentReduction.gridx = 1; constraintsJLabelPercentReduction.gridy = 2;
-		constraintsJLabelPercentReduction.gridwidth = 2;
-		constraintsJLabelPercentReduction.anchor = java.awt.GridBagConstraints.NORTHWEST;
-		constraintsJLabelPercentReduction.ipadx = 53;
-		constraintsJLabelPercentReduction.ipady = 3;
-		constraintsJLabelPercentReduction.insets = new java.awt.Insets(6, 10, 365, 9);
-		add(getJLabelPercentReduction(), constraintsJLabelPercentReduction);
-
-		java.awt.GridBagConstraints constraintsJCSpinFieldPercentReduction = new java.awt.GridBagConstraints();
-		constraintsJCSpinFieldPercentReduction.gridx = 3; constraintsJCSpinFieldPercentReduction.gridy = 2;
-		constraintsJCSpinFieldPercentReduction.anchor = java.awt.GridBagConstraints.NORTHWEST;
-		constraintsJCSpinFieldPercentReduction.ipadx = 48;
-		constraintsJCSpinFieldPercentReduction.ipady = -30;
-		constraintsJCSpinFieldPercentReduction.insets = new java.awt.Insets(4, 10, 364, 120);
-		add(getJCSpinFieldPercentReduction(), constraintsJCSpinFieldPercentReduction);
-	} catch (java.lang.Throwable ivjExc) {
-		handleException(ivjExc);
-	}
-	// user code begin {2}
-		try
-	{
-		initConnections();
-	}
-	catch(Exception e)	{ }
-	// user code end
-}
-
-/**
- * main entrypoint - starts the part when it is run as an application
- * @param args java.lang.String[]
- */
-public static void main(java.lang.String[] args) {
-	try {
-		javax.swing.JFrame frame = new javax.swing.JFrame();
-		LatchingGearPanel aLatchingGearPanel;
-		aLatchingGearPanel = new LatchingGearPanel();
-		frame.setContentPane(aLatchingGearPanel);
-		frame.setSize(aLatchingGearPanel.getSize());
-		frame.addWindowListener(new java.awt.event.WindowAdapter() {
-			public void windowClosing(java.awt.event.WindowEvent e) {
-				System.exit(0);
-			};
-		});
-		frame.show();
-		java.awt.Insets insets = frame.getInsets();
-		frame.setSize(frame.getWidth() + insets.left + insets.right, frame.getHeight() + insets.top + insets.bottom);
-		frame.setVisible(true);
-	} catch (Throwable exception) {
-		System.err.println("Exception occurred in main() of com.cannontech.dbeditor.wizard.device.lmprogram.GenericGearPanel");
-		exception.printStackTrace(System.out);
-	}
-}
+        return l;
+    }
 
 
-/**
- * setValue method comment.
- */
-public void setValue(Object o) 
-{
-	LMProgramDirectGear gear = null;
-	
-	if( o == null )
-	{
-		return;
-	}
-	else
-		gear = (LMProgramDirectGear)o;
+    /**
+     * Called whenever the part throws an exception.
+     * @param exception java.lang.Throwable
+     */
+    private void handleException(java.lang.Throwable exception) {
 
-	getJCSpinFieldPercentReduction().setValue( gear.getPercentReduction() );
-	
-	com.cannontech.database.data.device.lm.LatchingGear l = (com.cannontech.database.data.device.lm.LatchingGear)gear;
+        /* Uncomment the following lines to print uncaught exceptions to stdout */
+        // System.out.println("--------- UNCAUGHT EXCEPTION ---------");
+        // exception.printStackTrace(System.out);
+    }
 
-	getJComboBoxControlStartState().setSelectedIndex( l.getStartControlState().intValue() );
-	
-}
-public void valueChanged(com.klg.jclass.util.value.JCValueEvent arg1) 
-{
-	//fire this event for all JCSpinFields!!
-	this.fireInputUpdate();
-}
+
+    /**
+     * Initializes connections
+     * @exception java.lang.Exception The exception description.
+     */
+    /* WARNING: THIS METHOD WILL BE REGENERATED. */
+    private void initConnections() throws java.lang.Exception {
+        // user code begin {1}
+
+        getJCSpinFieldPercentReduction().addValueListener(this);
+        getJComboBoxControlStartState().addActionListener(this);
+
+        // user code end
+
+    }
+
+    /**
+     * Initialize the class.
+     */
+    /* WARNING: THIS METHOD WILL BE REGENERATED. */
+    private void initialize() {
+        try {
+            // user code begin {1}
+            // user code end
+            setName("LatchingGearPanel");
+            setPreferredSize(new java.awt.Dimension(402, 430));
+            setLayout(new java.awt.GridBagLayout());
+            setSize(402, 430);
+            setMinimumSize(new java.awt.Dimension(0, 0));
+
+            java.awt.GridBagConstraints constraintsJComboBoxControlStartState = new java.awt.GridBagConstraints();
+            constraintsJComboBoxControlStartState.gridx = 2; constraintsJComboBoxControlStartState.gridy = 1;
+            constraintsJComboBoxControlStartState.gridwidth = 2;
+            constraintsJComboBoxControlStartState.anchor = java.awt.GridBagConstraints.NORTHWEST;
+            constraintsJComboBoxControlStartState.weightx = 1.0;
+            constraintsJComboBoxControlStartState.ipadx = 44;
+            constraintsJComboBoxControlStartState.insets = new java.awt.Insets(15, 4, 4, 87);
+            add(getJComboBoxControlStartState(), constraintsJComboBoxControlStartState);
+
+            java.awt.GridBagConstraints constraintsJLabelControlStartState = new java.awt.GridBagConstraints();
+            constraintsJLabelControlStartState.gridx = 1; constraintsJLabelControlStartState.gridy = 1;
+            constraintsJLabelControlStartState.anchor = java.awt.GridBagConstraints.NORTHWEST;
+            constraintsJLabelControlStartState.ipadx = 25;
+            constraintsJLabelControlStartState.insets = new java.awt.Insets(20, 10, 6, 4);
+            add(getJLabelControlStartState(), constraintsJLabelControlStartState);
+
+            java.awt.GridBagConstraints constraintsJLabelPercentReduction = new java.awt.GridBagConstraints();
+            constraintsJLabelPercentReduction.gridx = 1; constraintsJLabelPercentReduction.gridy = 2;
+            constraintsJLabelPercentReduction.gridwidth = 2;
+            constraintsJLabelPercentReduction.anchor = java.awt.GridBagConstraints.NORTHWEST;
+            constraintsJLabelPercentReduction.ipadx = 53;
+            constraintsJLabelPercentReduction.ipady = 3;
+            constraintsJLabelPercentReduction.insets = new java.awt.Insets(6, 10, 365, 9);
+            add(getJLabelPercentReduction(), constraintsJLabelPercentReduction);
+
+            java.awt.GridBagConstraints constraintsJCSpinFieldPercentReduction = new java.awt.GridBagConstraints();
+            constraintsJCSpinFieldPercentReduction.gridx = 3; constraintsJCSpinFieldPercentReduction.gridy = 2;
+            constraintsJCSpinFieldPercentReduction.anchor = java.awt.GridBagConstraints.NORTHWEST;
+            constraintsJCSpinFieldPercentReduction.ipadx = 48;
+            constraintsJCSpinFieldPercentReduction.ipady = -30;
+            constraintsJCSpinFieldPercentReduction.insets = new java.awt.Insets(4, 10, 364, 120);
+            add(getJCSpinFieldPercentReduction(), constraintsJCSpinFieldPercentReduction);
+        } catch (java.lang.Throwable ivjExc) {
+            handleException(ivjExc);
+        }
+        // user code begin {2}
+        try
+        {
+            initConnections();
+        }
+        catch(Exception e)	{ }
+        // user code end
+    }
+
+    /**
+     * main entrypoint - starts the part when it is run as an application
+     * @param args java.lang.String[]
+     */
+    public static void main(java.lang.String[] args) {
+        try {
+            javax.swing.JFrame frame = new javax.swing.JFrame();
+            LatchingGearPanel aLatchingGearPanel;
+            aLatchingGearPanel = new LatchingGearPanel();
+            frame.setContentPane(aLatchingGearPanel);
+            frame.setSize(aLatchingGearPanel.getSize());
+            frame.addWindowListener(new java.awt.event.WindowAdapter() {
+                public void windowClosing(java.awt.event.WindowEvent e) {
+                    System.exit(0);
+                };
+            });
+            frame.show();
+            java.awt.Insets insets = frame.getInsets();
+            frame.setSize(frame.getWidth() + insets.left + insets.right, frame.getHeight() + insets.top + insets.bottom);
+            frame.setVisible(true);
+        } catch (Throwable exception) {
+            System.err.println("Exception occurred in main() of com.cannontech.dbeditor.wizard.device.lmprogram.GenericGearPanel");
+            exception.printStackTrace(System.out);
+        }
+    }
+
+
+    /**
+     * setValue method comment.
+     */
+    public void setValue(Object o) 
+    {
+        LMProgramDirectGear gear = null;
+
+        if( o == null )
+        {
+            return;
+        }
+        else
+            gear = (LMProgramDirectGear)o;
+
+        getJCSpinFieldPercentReduction().setValue( gear.getPercentReduction() );
+
+        com.cannontech.database.data.device.lm.LatchingGear l = (com.cannontech.database.data.device.lm.LatchingGear)gear;
+
+        getJComboBoxControlStartState().setSelectedIndex( l.getStartControlState().intValue() );
+
+    }
+    public void valueChanged(com.klg.jclass.util.value.JCValueEvent arg1) 
+    {
+        //fire this event for all JCSpinFields!!
+        this.fireInputUpdate();
+    }
 }
