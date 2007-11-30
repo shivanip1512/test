@@ -1,4 +1,5 @@
-<%@ taglib uri="http://cannontech.com/tags/cti" prefix="cti" %>
+
+<jsp:directive.page import="com.cannontech.common.version.VersionTools"/><%@ taglib uri="http://cannontech.com/tags/cti" prefix="cti" %>
 <%@ taglib uri="http://java.sun.com/jsp/jstl/core" prefix="c" %>
 <jsp:useBean id="starsLMPermissionBean" class="com.cannontech.stars.web.bean.StarsLMPermissionBean" scope="page"/>
 
@@ -43,7 +44,20 @@
 		}
 	}
 	
-	if (user == null) {
+	boolean starsExists = false;
+    try{
+        starsExists = VersionTools.starsExists();
+    }catch (Exception e)
+    {
+    }
+    
+    if(!starsExists) {
+		response.sendRedirect(request.getContextPath() + "/servlet/LoginController?ACTION=LOGOUT");
+		return;
+	}
+    
+    /*This is now preset by the SessionInitializer so it should not be null*/
+    if (user == null) {
 		user = StarsDatabaseCache.getInstance().getStarsYukonUser( lYukonUser );
 		if (user == null) {
 			// Something wrong happened when instantiating the StarsYukonUser
@@ -58,12 +72,13 @@
 		StarsEnergyCompanySettings settings = liteEC.getStarsEnergyCompanySettings( user );
 		session.setAttribute( ServletUtils.ATT_ENERGY_COMPANY_SETTINGS, settings );
 		
-		// Get customer account information
-		GetCustAccountAction action = new GetCustAccountAction();
-		SOAPMessage reqMsg = action.build(request, session);
-		SOAPMessage respMsg = action.process(reqMsg, session);
-		action.parse(reqMsg, respMsg, session);
 	}
+	
+	// Get customer account information
+	GetCustAccountAction action = new GetCustAccountAction();
+	SOAPMessage reqMsg = action.build(request, session);
+	SOAPMessage respMsg = action.process(reqMsg, session);
+	action.parse(reqMsg, respMsg, session);
 	
 	java.text.SimpleDateFormat datePart = new java.text.SimpleDateFormat("MM/dd/yy");
 	java.text.SimpleDateFormat timePart = new java.text.SimpleDateFormat("HH:mm");
@@ -154,7 +169,6 @@
 	dateFormat.setTimeZone(tz);
 	histDateFormat.setTimeZone(tz);
 	
-   
     String dbAlias = com.cannontech.common.util.CtiUtilities.getDatabaseAlias();
 	
     Class[] types = { Integer.class,String.class };    
