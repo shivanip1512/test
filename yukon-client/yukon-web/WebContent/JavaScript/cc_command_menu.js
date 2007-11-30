@@ -387,15 +387,10 @@ function generateCapBankMenu (id, state, opts) {
 }
 
 //helper function to set opcounts
-function enableOpCounts (pao_id) {
-	window.document.getElementById ("cmdDiv"+pao_id).style.display = 'none';	
+function enableResetOpCountSpan (pao_id) {
 	window.document.getElementById ("cb_state_td_hdr2").style.display = '';
-	enableDisplayAll ('capBankTable');
-    var invis_idx = 4;
-	//the index of the invisible input text field in the table
-    //located right after CB Name(Order) column
-    alignHeadersIgnoreDisplayNone ('capBankTable','capBankHeaderTable', invis_idx);	
-	window.document.getElementById ("cap_opcnt_span"+pao_id).style.display = '';
+    var elem = document.getElementById('cap_opcnt_span'+pao_id);
+	elem.style.display = '';
 }
 
 
@@ -422,7 +417,7 @@ switch (type) {
  case 'cap':
  	//special case for reset op-counts
 	if (cmd_id == 12) {
-		var temp_str = "'enableOpCounts(" + pao_id + ");'"; 
+		var temp_str = "'enableResetOpCountSpan(" + pao_id + ");'"; 
 		ajax_func += temp_str;
 	}
  	else

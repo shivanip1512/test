@@ -237,7 +237,7 @@ for( SubBus subBus: subBuses ) {
                     <input type="warning" name="cti_dyn" id="<%=subBus.getCcId()%>" style="display:none">
                     </input>
                     
-                    <span id ="warning_ok_<%=subBus.getCcId()%>" style="display:none">
+                    <span id ="warning_ok_<%=subBus.getCcId()%>" style="display:">
                         <img src="/capcontrol/images/Green.gif"/>
                     </span>
                     <span id ="warning_alert_<%=subBus.getCcId()%>" style="display:none" 
@@ -404,7 +404,7 @@ for( int i = 0; i < feeders.size(); i++ )
 	                    <input type="warning" name="cti_dyn" id="<%=feeder.getCcId()%>" style="display:none">
 	                    </input>
 	                    
-	                    <span id ="warning_ok_<%=feeder.getCcId()%>" style="display:none">
+	                    <span id ="warning_ok_<%=feeder.getCcId()%>" style="display:">
 	                        <img src="/capcontrol/images/Green.gif"/>
 	                    </span>
 	                    <span id ="warning_alert_<%=feeder.getCcId()%>" style="display:none" 
@@ -484,8 +484,8 @@ if( hasControl ) {
                 <td></td>    
                 <td>CBC Name</td>
                 <td>CB Name (Order) <img class="rAlign popupImg" src="images\question.gif" onmouseover="statusMsg(this, 'Order is the order the CapBank will control in.<br>Commands that can be sent to a field device are initiated from this column');" /></td>                    
-                <td>State <img class="rAlign popupImg" src="images\question.gif" onmouseover="statusMsg(this, 'System Commands, those commands that do NOT send out a message to a field device, can be initiated from this column');"/></td>
-                <td id="cb_state_td_hdr2" style="display:none" >Op Count Value</td>
+                <td>State <img class="rAlign popupImg" src="images\question.gif" onmouseover="statusMsg(this, 'System Commands, those commands that do NOT send out a message to a field device, can be initiated from this column');"/> <span id="cb_state_td_hdr2" style="display:none" >[Op Count Value]</span> </td>
+                
                 <td>Date/Time</td>
                 <td>Bank Size</td>
                 <td>Parent Feeder</td>
@@ -507,7 +507,7 @@ for( int i = 0; i < capBanks.size(); i++ ) {
 					<input type="warning" name="cti_dyn" id="<%=capBank.getCcId()%>" style="display:none">
 					</input>
 					
-					<span id ="warning_ok_<%=capBank.getCcId()%>" style="display:none">
+					<span id ="warning_ok_<%=capBank.getCcId()%>" style="display:">
 				       	<img src="/capcontrol/images/Green.gif"/>
 				    </span>
 				    <span id ="warning_alert_<%=capBank.getCcId()%>" style="display:none" 
@@ -587,14 +587,14 @@ for( int i = 0; i < capBanks.size(); i++ ) {
 					%>
 					<%=CBCUtils.CBC_DISPLAY.getCapBankValueAt(capBank, CBCDisplay.CB_STATUS_COLUMN)%>
 					</a>
-					<div id="capBankStatusPopup_<%=capBank.getCcId()%>" style="display:none" > 
-					  <span type="param6" name="cti_dyn" id="<%=capBank.getCcId()%>"><%=CBCUtils.CBC_DISPLAY.getCapBankValueAt(capBank, CBCDisplay.CB_STATUS_POPUP)%></span>
-					</div>
-				</td>
-				<td id="cap_opcnt_span<%=capBank.getCcId()%>" style="display:none; " >
+				<span id="cap_opcnt_span<%=capBank.getCcId()%>" style="display:none; " >
 					<label for="opcount" id="opcnt_label"> Op Count: </label>
 					<input type="text" name="opcount" id="opcnt_input<%=capBank.getCcId()%>" maxlength="5" size="5"/>
 					<a href="javascript:void(0);" onclick="return executeCapBankCommand (<%=capBank.getCcId()%>,12,false,'Reset_OpCount', 'cap_opcnt_span<%=capBank.getCcId()%>');" >Reset</a>
+				</span>
+					<div id="capBankStatusPopup_<%=capBank.getCcId()%>" style="display:none" > 
+					  <span type="param6" name="cti_dyn" id="<%=capBank.getCcId()%>"><%=CBCUtils.CBC_DISPLAY.getCapBankValueAt(capBank, CBCDisplay.CB_STATUS_POPUP)%></span>
+					</div>
 				</td>
 				<td><a type="param1" name="cti_dyn" id="<%=capBank.getCcId()%>">
 					<%=CBCUtils.CBC_DISPLAY.getCapBankValueAt(capBank, CBCDisplay.CB_TIME_STAMP_COLUMN)%></a>

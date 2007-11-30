@@ -627,54 +627,6 @@ hdrTable =  document.getElementById(headerTable);
 	}
 }
 
-
-function enableDisplayAll (mainTable) {
-    var mytable = document.getElementById(mainTable);
-    for (j=0; j < mytable.getElementsByTagName('tr').length; j ++ ) {
-        var myrow = mytable.getElementsByTagName('tr').item(j);
-     
-        if ((myrow != null) && myrow.style.display != 'none') {
-            var colNum = myrow.cells.length;
-            for(i=0;i < colNum - 1; i++) {
-                myrow.cells[i].style.display = '';
-            }
-        }
-    }
-}
-
-
-function alignHeadersIgnoreDisplayNone (mainTable, headerTable, invis_idx) {
-mytable = document.getElementById(mainTable);
-hdrTable =  document.getElementById(headerTable);
-if (hdrTable)
-	{
-	hdrRow=hdrTable.getElementsByTagName('tr').item(0);
-		if (hdrRow)
-	    {
-			for (j=0; j < mytable.getElementsByTagName('tr').length; j ++ ) 
-            {
-			    var myrow = mytable.getElementsByTagName('tr').item(j);
-			    
-			     if (myrow != null) 
-                 {
-			        var colNum = myrow.cells.length;
-			    
-			        for(i=0;i < colNum - 1; i++) 
-                    {
-			            maxWidth = Math.max(hdrRow.getElementsByTagName('td').item(i).offsetWidth, myrow.cells[i].offsetWidth);
-			            hdrRow.getElementsByTagName('td').item(i).width = maxWidth;
-			            myrow.cells[i].width = maxWidth;
-			            if (i == invis_idx)
-			                myrow.cells[i].style.display = 'none';
-			                                                                       
-			         }
-			    
-			      }
-			 }
-		}
-    }
-}
-
 var CtiNonScrollTable = Class.create();
 CtiNonScrollTable.prototype = {
   initialize: function(mainTable, headerTable) {
@@ -864,7 +816,7 @@ function pause(numberMillis) {
     	for (var i=0; i < rows.length; i++) {
             var row = rows[i];
             var cells = row.getElementsByTagName('td');
-            var fdr = cells[9];
+            var fdr = cells[8];
             var spans = fdr.getElementsByTagName('span');
 	        var fdrName = new String (spans[0].innerHTML);
     		var index = feederNames.indexOf(trim(fdrName));

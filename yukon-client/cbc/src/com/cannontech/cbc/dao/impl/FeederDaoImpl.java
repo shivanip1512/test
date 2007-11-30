@@ -12,7 +12,6 @@ import org.springframework.transaction.annotation.Transactional;
 
 import com.cannontech.cbc.dao.FeederDao;
 import com.cannontech.cbc.model.Feeder;
-import com.cannontech.core.dao.NotFoundException;
 import com.cannontech.util.Validator;
 
 public class FeederDaoImpl implements FeederDao {
