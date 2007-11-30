@@ -20,6 +20,7 @@ import com.cannontech.core.dao.DaoFactory;
 import com.cannontech.database.data.lite.LiteContact;
 import com.cannontech.database.data.lite.LiteContactNotification;
 import com.cannontech.database.data.lite.LiteYukonGroup;
+import com.cannontech.database.data.lite.LiteYukonUser;
 import com.cannontech.database.data.lite.stars.LiteApplianceCategory;
 import com.cannontech.database.data.lite.stars.LiteInventoryBase;
 import com.cannontech.database.data.lite.stars.LiteServiceCompany;
@@ -912,9 +913,10 @@ public class ImportManagerUtil {
 	 * @param programs Array of (ProgramID, ApplianceCategoryID, GroupID, LoadNumber).
 	 * The ApplianceCategoryID, GroupID, and LoadNumber are optional, set them to -1 if you don't want to privide the value.
 	 * @param liteInv The hardware the programs are attached to
+	 * @param currentUser TODO
 	 */
 	public static void programSignUp(int[][] programs, LiteStarsCustAccountInformation liteAcctInfo,
-		LiteInventoryBase liteInv, LiteStarsEnergyCompany energyCompany) throws Exception
+		LiteInventoryBase liteInv, LiteStarsEnergyCompany energyCompany, LiteYukonUser currentUser) throws Exception
 	{
 		// Build request message
 		StarsSULMPrograms suPrograms = new StarsSULMPrograms();

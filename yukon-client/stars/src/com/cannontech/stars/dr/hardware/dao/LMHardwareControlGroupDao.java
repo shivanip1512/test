@@ -3,6 +3,8 @@ package com.cannontech.stars.dr.hardware.dao;
 import java.util.Date;
 import java.util.List;
 import org.springframework.dao.DataAccessException;
+
+import com.cannontech.stars.dr.hardware.model.LMHardwareConfiguration;
 import com.cannontech.stars.dr.hardware.model.LMHardwareControlGroup;
 
 public interface LMHardwareControlGroupDao {
@@ -35,4 +37,7 @@ public interface LMHardwareControlGroupDao {
     
     public List<LMHardwareControlGroup> getAll();
     
+    public List<LMHardwareConfiguration> getOldConfigDataByInventoryId(int inventoryId);
+    
+    public List<LMHardwareConfiguration> getOldConfigDataByInventoryIdAndGroupId(int inventoryId, int lmGroupId);
 }

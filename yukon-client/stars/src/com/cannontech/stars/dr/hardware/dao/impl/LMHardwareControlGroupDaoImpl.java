@@ -7,6 +7,7 @@ import java.util.Collections;
 import java.util.Date;
 import java.util.List;
 
+import org.springframework.beans.factory.InitializingBean;
 import org.springframework.dao.DataAccessException;
 import org.springframework.jdbc.core.namedparam.MapSqlParameterSource;
 import org.springframework.jdbc.core.simple.ParameterizedRowMapper;
@@ -17,13 +18,11 @@ import org.springframework.transaction.annotation.Transactional;
 import com.cannontech.database.FieldMapper;
 import com.cannontech.database.SimpleTableAccessTemplate;
 import com.cannontech.database.incrementer.NextValueHelper;
-import com.cannontech.jobs.model.JobStatus;
-import com.cannontech.jobs.model.ScheduledOneTimeJob;
-import com.cannontech.jobs.model.ScheduledRepeatingJob;
 import com.cannontech.stars.dr.hardware.dao.LMHardwareControlGroupDao;
+import com.cannontech.stars.dr.hardware.model.LMHardwareConfiguration;
 import com.cannontech.stars.dr.hardware.model.LMHardwareControlGroup;
 
-public class LMHardwareControlGroupDaoImpl implements LMHardwareControlGroupDao {
+public class LMHardwareControlGroupDaoImpl implements LMHardwareControlGroupDao, InitializingBean {
     private static final String removeSql;
     private static final String selectAllSql;
     private static final String selectById;
@@ -41,12 +40,17 @@ public class LMHardwareControlGroupDaoImpl implements LMHardwareControlGroupDao 
     private NextValueHelper nextValueHelper;
     private SimpleTableAccessTemplate<LMHardwareControlGroup> template;
     
+    private static final String TABLE_NAME = "LMHardwareControlGroup";
+    private static final String selectOldInventoryLoadGroupConfigInfo; 
+    private static final String selectOldInventoryConfigInfo; 
+    private static final ParameterizedRowMapper<LMHardwareConfiguration> oldControlInfoRowMapper;
+    
     static {
         
-        removeSql = "DELETE FROM LMHardwareControlGroup WHERE ControlEntryID = ?";
+        removeSql = "DELETE from " + TABLE_NAME + " WHERE ControlEntryID = ?";
          
         selectAllSql = "SELECT ControlEntryId, InventoryId, LMGroupId, AccountId, GroupEnrollStart, GroupEnrollStop, OptOutStart, " +
-                "OptOutStop, Type from LMHardwareControlGroup";
+                "OptOutStop, Type, Relay, UserId from " + TABLE_NAME;
     
         selectById = selectAllSql + " WHERE ControlEntryID = ?";
         
@@ -68,15 +72,18 @@ public class LMHardwareControlGroupDaoImpl implements LMHardwareControlGroupDao 
         
         selectByInventoryIdAndGroupIdAndAccountIdAndType = selectAllSql + " WHERE InventoryID = ? AND LMGroupID = ? AND AccountID = ? AND Type = ?";
         
+        selectOldInventoryConfigInfo = "select InventoryId, ApplianceId, AddressingGroupId, LoadNumber from LMHardwareConfiguration where InventoryId = ?";
+        
+        selectOldInventoryLoadGroupConfigInfo = "select InventoryId, ApplianceId, AddressingGroupId, LoadNumber from LMHardwareConfiguration where InventoryId = ? and AddressingGroupId = ?";
+        
         rowMapper = LMHardwareControlGroupDaoImpl.createRowMapper();
+        
+        oldControlInfoRowMapper = LMHardwareControlGroupDaoImpl.createOldConfigInfoRowMapper();
+        
     }
     
     @Transactional(readOnly = false, propagation = Propagation.REQUIRED)
     public void add(final LMHardwareControlGroup hardwareControlGroup) throws Exception {
-        template = new SimpleTableAccessTemplate<LMHardwareControlGroup>(simpleJdbcTemplate, nextValueHelper);
-        template.withTableName("LMHardwareControlGroup");
-        template.withPrimaryKeyField("controlEntryId");
-        template.withFieldMapper(controlGroupFieldMapper); 
         template.insert(hardwareControlGroup);
     }
     
@@ -89,10 +96,6 @@ public class LMHardwareControlGroupDaoImpl implements LMHardwareControlGroupDao 
     
     @Transactional(readOnly = false, propagation = Propagation.REQUIRED)
     public void update(final LMHardwareControlGroup hardwareControlGroup) throws Exception {
-        template = new SimpleTableAccessTemplate<LMHardwareControlGroup>(simpleJdbcTemplate, nextValueHelper);
-        template.withTableName("LMHardwareControlGroup");
-        template.withPrimaryKeyField("controlEntryId");
-        template.withFieldMapper(controlGroupFieldMapper); 
         template.update(hardwareControlGroup);
     }
     
@@ -219,9 +222,22 @@ public class LMHardwareControlGroupDaoImpl implements LMHardwareControlGroupDao 
         return rowMapper;
     }
     
+    private static final ParameterizedRowMapper<LMHardwareConfiguration> createOldConfigInfoRowMapper() {
+        final ParameterizedRowMapper<LMHardwareConfiguration> oldConfigInfoRowMapper = new ParameterizedRowMapper<LMHardwareConfiguration>() {
+            public LMHardwareConfiguration mapRow(ResultSet rs, int rowNum) throws SQLException {
+                LMHardwareConfiguration hardwareConfiguration = new LMHardwareConfiguration();
+                hardwareConfiguration.setInventoryId(rs.getInt("InventoryID"));
+                hardwareConfiguration.setApplianceId(rs.getInt("ApplianceID"));
+                hardwareConfiguration.setAddressingGroupId(rs.getInt("AddressingGroupID"));
+                hardwareConfiguration.setLoadNumber(rs.getInt("LoadNumber"));
+                return hardwareConfiguration;
+            }
+        };
+        return oldConfigInfoRowMapper;
+    }
+    
     private FieldMapper<LMHardwareControlGroup> controlGroupFieldMapper = new FieldMapper<LMHardwareControlGroup>() {
         public void extractValues(MapSqlParameterSource p, LMHardwareControlGroup controlInfo) {
-            p.addValue("controlEntryId", controlInfo.getControlEntryId());
             p.addValue("inventoryId", controlInfo.getInventoryId());
             p.addValue("lmGroupId", controlInfo.getLMGroupId());
             p.addValue("accountId", controlInfo.getAccountId());
@@ -230,6 +246,8 @@ public class LMHardwareControlGroupDaoImpl implements LMHardwareControlGroupDao 
             p.addValue("optOutStart", controlInfo.getOptOutStart(), Types.TIMESTAMP);
             p.addValue("optOutStop", controlInfo.getOptOutStop(), Types.TIMESTAMP);
             p.addValue("type", controlInfo.getType());
+            p.addValue("relay", controlInfo.getRelay());
+            p.addValue("userId", controlInfo.getUserId());
         }
         public Number getPrimaryKey(LMHardwareControlGroup controlInfo) {
             return controlInfo.getControlEntryId();
@@ -247,5 +265,31 @@ public class LMHardwareControlGroupDaoImpl implements LMHardwareControlGroupDao 
         this.simpleJdbcTemplate = simpleJdbcTemplate;
     }
     
+    @Transactional(readOnly = true, propagation = Propagation.SUPPORTS)
+    public List<LMHardwareConfiguration> getOldConfigDataByInventoryId(int inventoryId) {
+        try {
+            List<LMHardwareConfiguration> list = simpleJdbcTemplate.query(selectOldInventoryConfigInfo, oldControlInfoRowMapper, inventoryId);
+            return list;
+        } catch (DataAccessException e) {
+            return Collections.emptyList();
+        }
+    }
+    
+    @Transactional(readOnly = true, propagation = Propagation.SUPPORTS)
+    public List<LMHardwareConfiguration> getOldConfigDataByInventoryIdAndGroupId(int inventoryId, int lmGroupId) {
+        try {
+            List<LMHardwareConfiguration> list = simpleJdbcTemplate.query(selectOldInventoryLoadGroupConfigInfo, oldControlInfoRowMapper, inventoryId, lmGroupId);
+            return list;
+        } catch (DataAccessException e) {
+            return Collections.emptyList();
+        }
+    }
+
+    public void afterPropertiesSet() throws Exception {
+        template = new SimpleTableAccessTemplate<LMHardwareControlGroup>(simpleJdbcTemplate, nextValueHelper);
+        template.withTableName(TABLE_NAME);
+        template.withPrimaryKeyField("controlEntryId");
+        template.withFieldMapper(controlGroupFieldMapper); 
+    }
     
 }

@@ -52,6 +52,10 @@ public class SimpleTableAccessTemplate<T> {
     public void insert(T object) {
         final MapSqlParameterSource parameterSource = new MapSqlParameterSource();
         fieldMapper.extractValues(parameterSource, object);
+        /*TODO: Add before this is committed -- we should have a validation here
+         * to warn if the primary key field has been passed in as a normal field in
+         * the fieldmapper.  
+         */
         
         int nextId;
         if (fieldMapper.getPrimaryKey(object) == null) {

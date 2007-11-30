@@ -21,31 +21,32 @@ public class LMHardwareControlInformationServiceImpl implements LMHardwareContro
     private DateFormattingService dateFormattingService;
 
     /*@SuppressWarnings("unused")*/
-    public boolean startEnrollment(int inventoryId, int loadGroupId, int accountId, LiteYukonUser currentUser) {
+    public boolean startEnrollment(int inventoryId, int loadGroupId, int accountId, int relay, LiteYukonUser currentUser) {
         Validate.notNull(inventoryId, "InventoryID cannot be null");
         Validate.notNull(loadGroupId, "LoadGroupID cannot be null");
         Validate.notNull(accountId, "AccountID cannot be null");
+        Validate.notNull(currentUser, "CurrentUser cannot be null");
+        Validate.notNull(relay, "Relay cannot be null");
         List<LMHardwareControlGroup> controlInformationList;
         /*Shouldn't already be an entry, but this might be a repeat enrollment.  Check for existence*/
         try {
             controlInformationList = lmHardwareControlGroupDao.getByInventoryIdAndGroupIdAndAccountIdAndType(inventoryId, loadGroupId, accountId, LMHardwareControlGroup.ENROLLMENT_ENTRY);
             Date now = dateFormattingService.getCalendar(currentUser).getTime();
-            /*Unexpected, there was at least one entry already there.  this may be a repeat enrollment?*/
-            if(controlInformationList.size() > 0) {
-                for(LMHardwareControlGroup controlInformation : controlInformationList) {
-                    /*entry in need of a start date -- this is an unlikely case*/
-                    if(controlInformation.getGroupEnrollStart() == null && controlInformation.getGroupEnrollStop() == null) {
-                        controlInformation.setGroupEnrollStart(now);
-                        lmHardwareControlGroupDao.update(controlInformation);
-                        return true;
-                    }
-                    /*enrollment is already current*/
-                    else if(controlInformation.getGroupEnrollStart() != null && controlInformation.getGroupEnrollStop() == null)
-                        return true;
+            /*If there is an existing enrollment that is using this same device, load group, and potentially, the same relay
+             * we need to then stop enrollment for that before starting the existing.
+             * We need to allow this method to do stops as well as starts to help migrate from legacy STARS systems and to
+             * properly log repetitive enrollments.
+             */
+            for(LMHardwareControlGroup existingEnrollment : controlInformationList) {
+                if(existingEnrollment.getRelay() == relay && existingEnrollment.getGroupEnrollStop() == null) {
+                    /*This entry already has a start date, has no stop date, and is on the same relay: better register a stop.*/
+                    existingEnrollment.setGroupEnrollStop(now);
+                    existingEnrollment.setUserId(currentUser.getUserID());
+                    lmHardwareControlGroupDao.update(existingEnrollment);
                 }
             }
-            /*As expected, there was NOT an enrollment already for this group, inventory, account.*/
-            LMHardwareControlGroup controlInformation = new LMHardwareControlGroup(inventoryId, loadGroupId, accountId, LMHardwareControlGroup.ENROLLMENT_ENTRY);
+            /*Do the start*/
+            LMHardwareControlGroup controlInformation = new LMHardwareControlGroup(inventoryId, loadGroupId, accountId, LMHardwareControlGroup.ENROLLMENT_ENTRY, relay, currentUser.getUserID());
             controlInformation.setGroupEnrollStart(now);
             lmHardwareControlGroupDao.add(controlInformation);
             return true;
@@ -55,10 +56,11 @@ public class LMHardwareControlInformationServiceImpl implements LMHardwareContro
         }
     }
     
-    public boolean stopEnrollment(int inventoryId, int loadGroupId, int accountId, LiteYukonUser currentUser) {
+    public boolean stopEnrollment(int inventoryId, int loadGroupId, int accountId, int relay, LiteYukonUser currentUser) {
         Validate.notNull(inventoryId, "InventoryID cannot be null");
         Validate.notNull(loadGroupId, "LoadGroupID cannot be null");
         Validate.notNull(accountId, "AccountID cannot be null");
+        Validate.notNull(currentUser, "CurrentUser cannot be null");
         List<LMHardwareControlGroup> controlInformationList;
         try {
             controlInformationList = lmHardwareControlGroupDao.getByInventoryIdAndGroupIdAndAccountIdAndType(inventoryId, loadGroupId, accountId, LMHardwareControlGroup.ENROLLMENT_ENTRY);
@@ -66,8 +68,10 @@ public class LMHardwareControlInformationServiceImpl implements LMHardwareContro
             /*Should be an entry with a start date but no stop date.*/
             if(controlInformationList.size() > 0) {
                 for(LMHardwareControlGroup controlInformation : controlInformationList) {
-                    if(controlInformation.getGroupEnrollStart() != null && controlInformation.getGroupEnrollStop() == null) {
+                    if(controlInformation.getGroupEnrollStart() != null && controlInformation.getGroupEnrollStop() == null 
+                            && controlInformation.getRelay() == relay) {
                         controlInformation.setGroupEnrollStop(now);
+                        controlInformation.setUserId(currentUser.getUserID());
                         lmHardwareControlGroupDao.update(controlInformation);
                         return true;
                     }
@@ -78,7 +82,7 @@ public class LMHardwareControlInformationServiceImpl implements LMHardwareContro
             }
             /*
              * Shouldn't insert a stop without a start.
-             * Assume we have handling existing enrollments on roll-out
+             * Assume we have handled existing enrollments on deployment of this functionality
              * TODO: make sure database script to handle existing enrollments is complete
              */
             return false;
@@ -94,7 +98,7 @@ public class LMHardwareControlInformationServiceImpl implements LMHardwareContro
         Validate.notNull(accountId, "AccountID cannot be null");
         try {
             Date now = dateFormattingService.getCalendar(currentUser).getTime();
-            LMHardwareControlGroup controlInformation = new LMHardwareControlGroup(inventoryId, loadGroupId, accountId, LMHardwareControlGroup.OPT_OUT_ENTRY);
+            LMHardwareControlGroup controlInformation = new LMHardwareControlGroup(inventoryId, loadGroupId, accountId, LMHardwareControlGroup.OPT_OUT_ENTRY, currentUser.getUserID());
             controlInformation.setOptOutStart(now);
             lmHardwareControlGroupDao.add(controlInformation);
             return true;
@@ -117,6 +121,7 @@ public class LMHardwareControlInformationServiceImpl implements LMHardwareContro
                 for(LMHardwareControlGroup controlInformation : controlInformationList) {
                     if(controlInformation.getOptOutStart() != null && controlInformation.getOptOutStop() == null) {
                         controlInformation.setOptOutStop(now);
+                        controlInformation.setUserId(currentUser.getUserID());
                         lmHardwareControlGroupDao.update(controlInformation);
                         return true;
                     }

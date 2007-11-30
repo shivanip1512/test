@@ -136,14 +136,6 @@ public class ProgramSignUpAction implements ActionBase {
 	public SOAPMessage process(SOAPMessage reqMsg, HttpSession session) {
 		StarsOperation respOper = new StarsOperation();
         
-        /*
-         * New enrollment, opt out, and control history tracking
-         */
-        LMHardwareControlInformationService lmHardwareControlInformationService = (LMHardwareControlInformationService) YukonSpringHook.getBean("lmHardwareControlInformationService");
-        HashMap<Integer, Integer> inventoryIDToGroupIDMap = new HashMap<Integer, Integer>(5);
-        /*
-         * */
-        
 		try {
 			StarsOperation reqOper = SOAPUtil.parseSOAPMsgForOperation( reqMsg );
 			
@@ -219,7 +211,7 @@ public class ProgramSignUpAction implements ActionBase {
 			StarsInventories starsInvs = new StarsInventories();
 			
 			try {
-				ArrayList hwsToConfig = updateProgramEnrollment( progSignUp, liteAcctInfo, null, energyCompany, inventoryIDToGroupIDMap );
+				ArrayList hwsToConfig = updateProgramEnrollment( progSignUp, liteAcctInfo, null, energyCompany, liteUser );
 				
 				// Send out the config/disable command
 				for (int i = 0; i < hwsToConfig.size(); i++) {
@@ -231,29 +223,16 @@ public class ProgramSignUpAction implements ActionBase {
 						// whether to send the config command is controlled by the AUTOMATIC_CONFIGURATION role property
 						if (!useHardwareAddressing
 							&& (StarsUtils.isOperator(user) && DaoFactory.getAuthDao().checkRoleProperty( user.getYukonUser(), ConsumerInfoRole.AUTOMATIC_CONFIGURATION )
-								|| StarsUtils.isResidentialCustomer(user) && DaoFactory.getAuthDao().checkRoleProperty(user.getYukonUser(), ResidentialCustomerRole.AUTOMATIC_CONFIGURATION)))
+								|| StarsUtils.isResidentialCustomer(user) && DaoFactory.getAuthDao().checkRoleProperty(user.getYukonUser(), ResidentialCustomerRole.AUTOMATIC_CONFIGURATION))) {
 							YukonSwitchCommandAction.sendConfigCommand( energyCompany, liteHw, false, null );
-						else if (liteHw.getDeviceStatus() == YukonListEntryTypes.YUK_DEF_ID_DEV_STAT_UNAVAIL)
+                        }
+						else if (liteHw.getDeviceStatus() == YukonListEntryTypes.YUK_DEF_ID_DEV_STAT_UNAVAIL) {
 							YukonSwitchCommandAction.sendEnableCommand( energyCompany, liteHw, null );
-                        boolean success = lmHardwareControlInformationService.startEnrollment(liteHw.getInventoryID(), inventoryIDToGroupIDMap.get(liteHw.getInventoryID()), liteHw.getAccountID(), liteUser);
-                        if(!success) {
-                            CTILogger.error( "Enrollment start occurred for InventoryId: " + liteHw.getInventoryID() + " LMGroupId: " + inventoryIDToGroupIDMap.get(liteHw.getInventoryID()) +
-                                             " AccountId: " + liteHw.getAccountID() + "done by user: " + liteUser.getUsername() + " but could NOT be logged to LMHardwareControlGroup table." );
                         }
 					}
 					else {
 						// Send disable command to hardware
 						YukonSwitchCommandAction.sendDisableCommand( energyCompany, liteHw, null );
-                        /*
-                         * New enrollment, opt out, and control history tracking should properly be used
-                         * in tandem with the actual switch getting disabled/enabled/configged, hence
-                         * placing it here.
-                         */
-                        boolean success = lmHardwareControlInformationService.stopEnrollment(liteHw.getInventoryID(), inventoryIDToGroupIDMap.get(liteHw.getInventoryID()), liteHw.getAccountID(), liteUser);
-                        if(!success) {
-                            CTILogger.error( "Enrollment stop occurred for InventoryId: " + liteHw.getInventoryID() + " LMGroupId: " + inventoryIDToGroupIDMap.get(liteHw.getInventoryID()) +
-                                             " AccountId: " + liteHw.getAccountID() + " done by user: " + liteUser.getUsername() + " but could NOT be logged to LMHardwareControlGroup table." );
-                        }
 					}
 					
 					StarsInventory starsInv = StarsLiteFactory.createStarsInventory( liteHw, energyCompany );
@@ -381,11 +360,27 @@ public class ProgramSignUpAction implements ActionBase {
 	}
 	
 	public static ArrayList updateProgramEnrollment(StarsProgramSignUp progSignUp, LiteStarsCustAccountInformation liteAcctInfo,
-		LiteInventoryBase liteInv, LiteStarsEnergyCompany energyCompany, HashMap<Integer, Integer> inventoryToGroupIDMap) throws WebClientException
+		LiteInventoryBase liteInv, LiteStarsEnergyCompany energyCompany, LiteYukonUser currentUser) throws WebClientException
 	{
 		StarsSULMPrograms programs = progSignUp.getStarsSULMPrograms();
 		ArrayList hwsToConfig = new ArrayList();
 		
+        /*
+         * New enrollment, opt out, and control history tracking
+         *-------------------------------------------------------------------------------
+         */
+        LMHardwareControlInformationService lmHardwareControlInformationService = (LMHardwareControlInformationService) YukonSpringHook.getBean("lmHardwareControlInformationService");
+        List<int[]> hwInfoToEnroll = new ArrayList<int[]>(3);
+        List<int[]> hwInfoToUnenroll = new ArrayList<int[]>(3);
+        final int INV = 0;
+        final int ACCT = 1;
+        final int GROUP = 2;
+        final int RELAY = 3;
+        //final int APPCAT = 4;
+        //final int PROG = 5;
+        /*-------------------------------------------------------------------------------
+         * */
+        
 		try {
             List<LiteApplianceCategory> appCats = energyCompany.getAllApplianceCategories();
 			Integer accountID = new Integer( liteAcctInfo.getCustomerAccount().getAccountID() );
@@ -522,8 +517,25 @@ public class ProgramSignUpAction implements ActionBase {
 					
 					if (liteApp.getInventoryID() > 0) {
 						LiteStarsLMHardware liteHw = (LiteStarsLMHardware) energyCompany.getInventory( liteApp.getInventoryID(), true );
-						if (!hwsToConfig.contains( liteHw ))
+						if (!hwsToConfig.contains( liteHw )) 
 							hwsToConfig.add( liteHw );
+                            
+                        /* New enrollment, opt out, and control history tracking
+                         *-------------------------------------------------------------------------------
+                         * here we catch hardware that are ONLY be unenrolled.  If they are simply being enrolled in a different
+                         * program, then the service's startEnrollment will handle the appropriate un-enrollments.
+                         */
+                        int[] currentUnenrollmentInfo = new int[6];
+                        currentUnenrollmentInfo[INV] = liteHw.getInventoryID();
+                        currentUnenrollmentInfo[ACCT] = liteHw.getAccountID();
+                        currentUnenrollmentInfo[GROUP] = liteApp.getAddressingGroupID();
+                        if(currentUnenrollmentInfo[GROUP] == 0)
+                            currentUnenrollmentInfo[GROUP] = InventoryUtils.getYukonLoadGroupIDFromSTARSProgramID(liteApp.getProgramID());
+                        currentUnenrollmentInfo[RELAY] = liteApp.getLoadNumber();
+                        //currentUnenrollmentInfo[APPCAT] = liteApp.getApplianceCategoryID();
+                        //currentUnenrollmentInfo[PROG] = liteApp.getProgramID();
+                        hwInfoToUnenroll.add(currentUnenrollmentInfo);
+                        /*-------------------------------------------------------------------------------*/
 					}
 					
 					liteApp.setInventoryID( 0 );
@@ -569,6 +581,7 @@ public class ProgramSignUpAction implements ActionBase {
 					newProgList.add( liteStarsProg );
 			    
 				int groupID = program.getAddressingGroupID();
+                int relay = program.getLoadNumber();
 				if (!program.hasAddressingGroupID() && !useHardwareAddressing && starsProg.getAddressingGroupCount() > 1)
 					groupID = starsProg.getAddressingGroup(1).getEntryID();
                 if(groupID == 0) {
@@ -615,23 +628,69 @@ public class ProgramSignUpAction implements ActionBase {
 				
 				if (liteApp != null) {
 					liteApp.setInventoryID( program.getInventoryID() );
-					liteApp.setLoadNumber( program.getLoadNumber() );
+					int oldApplianceRelay = liteApp.getLoadNumber();
+                    int oldLoadGroupId = liteApp.getAddressingGroupID();
+                    liteApp.setLoadNumber( relay );
 					
+                    //the appliance is on a different program then the current, this is an enrollment switch
 					if (liteApp.getProgramID() != program.getProgramID()) {
 						// If the appliance is enrolled in another program, update its program enrollment
 						Integer newProgID = new Integer( program.getProgramID() );
 						if (!progNewEnrollList.contains( newProgID ))
 							progNewEnrollList.add( newProgID );
-						
+                        
 						if (liteApp.getProgramID() != 0) {
 							Integer oldProgID = new Integer( liteApp.getProgramID() );
+                            
 							if (!progUnenrollList.contains( oldProgID ))
 								progUnenrollList.add( oldProgID );
+                            
 						}
 		            	
 						if (liteHw != null) {
-							if ((liteApp.getAddressingGroupID() != groupID || groupID == 0) && !hwsToConfig.contains( liteHw ))
+							if ((liteApp.getAddressingGroupID() != groupID || groupID == 0) && !hwsToConfig.contains( liteHw )) 
 								hwsToConfig.add( liteHw );
+                                
+                            /* New enrollment, opt out, and control history tracking
+                             * TODO Refactor this
+                             *-------------------------------------------------------------------------------
+                             */
+                            int[] currentEnrollmentInformation = new int[4];
+                            currentEnrollmentInformation[INV] = liteHw.getInventoryID();
+                            currentEnrollmentInformation[ACCT] = liteHw.getAccountID();
+                            currentEnrollmentInformation[GROUP] = groupID;
+                            currentEnrollmentInformation[RELAY] = relay;
+                            hwInfoToEnroll.add(currentEnrollmentInformation);
+                            /*
+                             * This is a special case since we don't allow enrollment in multiple programs under the
+                             * same appliance category for the same switch.  
+                             * TODO: What about different relays?
+                             */
+                            if(program.getApplianceCategoryID() == liteApp.getApplianceCategoryID() && 
+                                    program.getLoadNumber() == oldApplianceRelay &&
+                                    oldLoadGroupId != 0) {
+                                int[] currentUnenrollmentInformation = new int[4];
+                                currentUnenrollmentInformation[INV] = liteHw.getInventoryID();
+                                currentUnenrollmentInformation[ACCT] = liteHw.getAccountID();
+                                currentUnenrollmentInformation[GROUP] = oldLoadGroupId;
+                                currentUnenrollmentInformation[RELAY] = oldApplianceRelay;
+                                hwInfoToUnenroll.add(currentUnenrollmentInformation);
+                            }
+                            /*
+                             * here we catch hardware that are ONLY being unenrolled.  If they are simply being enrolled in a different
+                             * program, then the service's startEnrollment will handle the appropriate un-enrollments and we don't need
+                             * to specifically do a stopEnrollment.
+                             */
+                            /*for(int[] potentialUnenroll : hwInfoToUnenroll) {
+                                if(currentEnrollmentInformation[INV] == potentialUnenroll[INV] &&
+                                        currentEnrollmentInformation[ACCT] == potentialUnenroll[ACCT] &&
+                                        currentEnrollmentInformation[GROUP] == potentialUnenroll[GROUP] &&
+                                        currentEnrollmentInformation[RELAY] == potentialUnenroll[RELAY]) {
+                                    hwInfoToUnenroll.remove(potentialUnenroll);
+                                }
+                            }*/
+                            /*-------------------------------------------------------------------------------*/
+                            
                             liteApp.setAddressingGroupID( groupID );
 						}
 						else
@@ -650,9 +709,35 @@ public class ProgramSignUpAction implements ActionBase {
 						 */
 						if (liteHw != null && program.hasAddressingGroupID() && liteApp.getAddressingGroupID() != groupID) {
 							liteApp.setAddressingGroupID( groupID );
-							if (!hwsToConfig.contains( liteHw ))
+							if (!hwsToConfig.contains( liteHw )) 
 								hwsToConfig.add( liteHw );
-							
+                            
+                            /* New enrollment, opt out, and control history tracking
+                             * TODO Refactor this
+                             *-------------------------------------------------------------------------------
+                             */
+                            int[] currentEnrollmentInformation = new int[6];
+                            currentEnrollmentInformation[INV] = liteHw.getInventoryID();
+                            currentEnrollmentInformation[ACCT] = liteHw.getAccountID();
+                            currentEnrollmentInformation[GROUP] = groupID;
+                            currentEnrollmentInformation[RELAY] = relay;
+                            hwInfoToEnroll.add(currentEnrollmentInformation);
+                            /*
+                             * here we catch hardware that are ONLY being unenrolled.  If they are simply being enrolled in a different
+                             * program, then the service's startEnrollment will handle the appropriate un-enrollments and we don't need
+                             * to specifically do a stopEnrollment.
+                             */
+                            /*for(int[] potentialUnenroll : hwInfoToUnenroll) {
+                                if(currentEnrollmentInformation[INV] == potentialUnenroll[INV] &&
+                                        currentEnrollmentInformation[ACCT] == potentialUnenroll[ACCT] &&
+                                        currentEnrollmentInformation[GROUP] == potentialUnenroll[GROUP] &&
+                                        currentEnrollmentInformation[RELAY] == potentialUnenroll[RELAY]) {
+                                    hwInfoToUnenroll.remove(potentialUnenroll);
+                                }
+                                    
+                            }*/
+                            /*-------------------------------------------------------------------------------*/
+                            
 							app = (com.cannontech.database.data.stars.appliance.ApplianceBase) StarsLiteFactory.createDBPersistent( liteApp );
 							app = (com.cannontech.database.data.stars.appliance.ApplianceBase)
 									Transaction.createTransaction( Transaction.UPDATE, app ).execute();
@@ -700,6 +785,31 @@ public class ProgramSignUpAction implements ActionBase {
 	        			
 						if (!hwsToConfig.contains( liteHw ))
 							hwsToConfig.add( liteHw );
+                        
+                        /* New enrollment, opt out, and control history tracking
+                         * TODO Refactor this
+                         *-------------------------------------------------------------------------------
+                         */
+                        int[] currentEnrollmentInformation = new int[6];
+                        currentEnrollmentInformation[INV] = liteHw.getInventoryID();
+                        currentEnrollmentInformation[ACCT] = liteHw.getAccountID();
+                        currentEnrollmentInformation[GROUP] = groupID;
+                        currentEnrollmentInformation[RELAY] = relay;
+                        hwInfoToEnroll.add(currentEnrollmentInformation);
+                        /*
+                         * here we catch hardware that are ONLY being unenrolled.  If they are simply being enrolled in a different
+                         * program, then the service's startEnrollment will handle the appropriate un-enrollments and we don't need
+                         * to specifically do a stopEnrollment.
+                         */
+                       /* for(int[] potentialUnenroll : hwInfoToUnenroll) {
+                            if(currentEnrollmentInformation[INV] == potentialUnenroll[INV] &&
+                                    currentEnrollmentInformation[ACCT] == potentialUnenroll[ACCT] &&
+                                    currentEnrollmentInformation[GROUP] == potentialUnenroll[GROUP] &&
+                                    currentEnrollmentInformation[RELAY] == potentialUnenroll[RELAY]) {
+                                hwInfoToUnenroll.remove(potentialUnenroll);
+                            }
+                        }*/
+                        /*-------------------------------------------------------------------------------*/
 					}
 	        		
 					app = (com.cannontech.database.data.stars.appliance.ApplianceBase)
@@ -708,9 +818,6 @@ public class ProgramSignUpAction implements ActionBase {
 					liteApp = StarsLiteFactory.createLiteStarsAppliance( app, energyCompany );
 					newAppList.add( liteApp );
 				}
-                
-                if(inventoryToGroupIDMap != null)
-                    inventoryToGroupIDMap.put(liteHw.getInventoryID(), groupID);
 			}
             
 			// Update appliances saved earlier
@@ -803,6 +910,43 @@ public class ProgramSignUpAction implements ActionBase {
     		
 			liteAcctInfo.setAppliances( newAppList );
 			liteAcctInfo.setPrograms( newProgList );
+            
+            /* New enrollment, opt out, and control history tracking
+             *-------------------------------------------------------------------------------
+             */
+                            
+            //unenroll
+            for(int[] currentUnenrollmentInfo : hwInfoToUnenroll) {
+                boolean success = lmHardwareControlInformationService.stopEnrollment(currentUnenrollmentInfo[INV], 
+                                                                                     currentUnenrollmentInfo[GROUP], 
+                                                                                     currentUnenrollmentInfo[ACCT], 
+                                                                                     currentUnenrollmentInfo[RELAY], 
+                                                                                     currentUser);
+                if(!success) {
+                    CTILogger.error( "Enrollment STOP occurred for InventoryId: " + currentUnenrollmentInfo[INV] + 
+                                     " LMGroupId: " + currentUnenrollmentInfo[GROUP] + 
+                                     " on relay " + currentUnenrollmentInfo[RELAY] +
+                                     " AccountId: " + currentUnenrollmentInfo[ACCT] + " done by user: " + 
+                                     currentUser.getUsername() + " but could NOT be logged to LMHardwareControlGroup table." );
+                }
+            }
+            
+            //enroll
+            for(int[] currentEnrollmentInfo : hwInfoToEnroll) {
+                boolean success = lmHardwareControlInformationService.startEnrollment(currentEnrollmentInfo[INV], 
+                                                                                     currentEnrollmentInfo[GROUP], 
+                                                                                     currentEnrollmentInfo[ACCT], 
+                                                                                     currentEnrollmentInfo[RELAY], 
+                                                                                     currentUser);
+                if(!success) {
+                    CTILogger.error( "Enrollment START occurred for InventoryId: " + currentEnrollmentInfo[INV] + 
+                                     " LMGroupId: " + currentEnrollmentInfo[GROUP] + 
+                                     " on relay " + currentEnrollmentInfo[RELAY] +
+                                     " AccountId: " + currentEnrollmentInfo[ACCT] + " done by user: " + 
+                                     currentUser.getUsername() + " but could NOT be logged to LMHardwareControlGroup table." );
+                }
+            }
+            /*-------------------------------------------------------------------------------*/
 		}
 		catch (TransactionException e) {
 			CTILogger.error( e.getMessage(), e );
@@ -904,5 +1048,4 @@ public class ProgramSignUpAction implements ActionBase {
 		resp.setDescription( "Not enrolled command has been resent successfully" );
 		return resp;
 	}
-
 }

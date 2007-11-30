@@ -18,6 +18,7 @@ import com.cannontech.common.constants.YukonSelectionList;
 import com.cannontech.common.constants.YukonSelectionListDefs;
 import com.cannontech.core.dao.DaoFactory;
 import com.cannontech.core.dao.NotFoundException;
+import com.cannontech.core.dao.YukonUserDao;
 import com.cannontech.database.data.activity.ActivityLogActions;
 import com.cannontech.database.data.lite.LiteYukonUser;
 import com.cannontech.database.data.lite.stars.LiteInventoryBase;
@@ -26,6 +27,7 @@ import com.cannontech.database.data.lite.stars.LiteStarsAppliance;
 import com.cannontech.database.data.lite.stars.LiteStarsCustAccountInformation;
 import com.cannontech.database.data.lite.stars.LiteStarsEnergyCompany;
 import com.cannontech.database.data.lite.stars.LiteStarsLMHardware;
+import com.cannontech.spring.YukonSpringHook;
 import com.cannontech.stars.util.ImportProblem;
 import com.cannontech.stars.util.ServerUtils;
 import com.cannontech.stars.util.StarsUtils;
@@ -1250,7 +1252,8 @@ public class ImportCustAccountsTask extends TimeConsumingTask {
             }
         }
 
-        ImportManagerUtil.programSignUp( programs, liteAcctInfo, liteInv, energyCompany );
+        LiteYukonUser currentUser = ((YukonUserDao)YukonSpringHook.getBean("YukonUserDao")).getLiteYukonUser(userID);
+        ImportManagerUtil.programSignUp( programs, liteAcctInfo, liteInv, energyCompany, currentUser );
 		
 		if (appFields != null && appFields[ImportManagerUtil.IDX_APP_TYPE].trim().length() > 0) {
 			int appID = -1;

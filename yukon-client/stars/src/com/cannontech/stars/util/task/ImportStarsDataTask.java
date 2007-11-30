@@ -322,7 +322,7 @@ public class ImportStarsDataTask extends TimeConsumingTask {
 						if (progList.size() > 0) {
 							int[][] programs = new int[ progList.size() ][];
 							progList.toArray( programs );
-							ImportManagerUtil.programSignUp( programs, liteAcctInfo, liteInv, energyCompany );
+							ImportManagerUtil.programSignUp( programs, liteAcctInfo, liteInv, energyCompany, null );
 							
 							int[] appIDs = new int[3];
 							for (int i = 0; i < programs.length; i++) {

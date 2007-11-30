@@ -2,8 +2,10 @@ package com.cannontech.stars.dr.hardware.model;
 
 import java.util.Date;
 
+import com.cannontech.user.UserUtils;
+
 public class LMHardwareControlGroup {
-    private int controlEntryId;
+    private Integer controlEntryId;
     private int inventoryId;
     private int lmGroupId;
     private int accountId;
@@ -12,6 +14,8 @@ public class LMHardwareControlGroup {
     private Date optOutStart;
     private Date optOutStop;
     private int type;
+    private int relay;
+    private int userId;
     
     public static final int ENROLLMENT_ENTRY = 1;
     public static final int OPT_OUT_ENTRY = 2;
@@ -24,6 +28,26 @@ public class LMHardwareControlGroup {
         this.lmGroupId = loadGroupId;
         this.accountId = accountId;
         this.type = type;
+        this.relay = 0;
+        this.userId = UserUtils.USER_DEFAULT_ID;
+    }
+    
+    public LMHardwareControlGroup(int inventoryId, int loadGroupId, int accountId, int type, int userId) { 
+        this.inventoryId = inventoryId;
+        this.lmGroupId = loadGroupId;
+        this.accountId = accountId;
+        this.type = type;
+        this.relay = 0;
+        this.userId = userId;
+    }
+    
+    public LMHardwareControlGroup(int inventoryId, int loadGroupId, int accountId, int type, int relay, int userId) { 
+        this.inventoryId = inventoryId;
+        this.lmGroupId = loadGroupId;
+        this.accountId = accountId;
+        this.type = type;
+        this.relay = relay;
+        this.userId = userId;
     }
 
     public int getInventoryId() {
@@ -50,11 +74,11 @@ public class LMHardwareControlGroup {
         this.accountId = accountId;
     }
 
-    public int getControlEntryId() {
+    public Integer getControlEntryId() {
         return controlEntryId;
     }
 
-    public void setControlEntryId(int controlEntryId) {
+    public void setControlEntryId(Integer controlEntryId) {
         this.controlEntryId = controlEntryId;
     }
 
@@ -118,5 +142,21 @@ public class LMHardwareControlGroup {
 
     public void setType(int type) {
         this.type = type;
+    }
+
+    public int getRelay() {
+        return relay;
+    }
+
+    public void setRelay(int relay) {
+        this.relay = relay;
+    }
+
+    public int getUserId() {
+        return userId;
+    }
+
+    public void setUserId(int userId) {
+        this.userId = userId;
     }
 }
