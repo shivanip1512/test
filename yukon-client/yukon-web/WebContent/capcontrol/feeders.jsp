@@ -29,6 +29,7 @@
     if (popupEvent == null) popupEvent = "onmouseover";
 	SubStation substation = filterCapControlCache.getSubstation( new Integer(subid) );
 	List<SubBus> subBuses = filterCapControlCache.getSubBusesBySubStation(substation);
+    Collections.sort(subBuses, CBCUtils.SUB_DISPLAY_COMPARATOR);
 	List<Feeder> feeders = filterCapControlCache.getFeedersBySubStation(substation);
 	List<CapBankDevice> capBanks = filterCapControlCache.getCapBanksBySubStation(substation);
 	

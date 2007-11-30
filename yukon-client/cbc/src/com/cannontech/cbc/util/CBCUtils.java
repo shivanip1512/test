@@ -55,6 +55,16 @@ public final class CBCUtils {
     public static CapControlCache ccCache = YukonSpringHook.getBean("cbcCache", CapControlCache.class);
     public static AuthDao authDao = DaoFactory.getAuthDao();
 
+    public static final Comparator<SubBus> SUB_DISPLAY_COMPARATOR = new Comparator<SubBus>() {
+        @Override
+        public int compare(SubBus o1, SubBus o2) {
+            Integer order1 = o1.getDisplayOrder();
+            Integer order2 = o2.getDisplayOrder();
+            int result = order1.compareTo(order2);
+            return result;
+        }
+    };
+    
     public static final Comparator<CBCArea> CBC_AREA_COMPARATOR = new Comparator<CBCArea>() {
         public int compare(CBCArea o1, CBCArea o2) {
             try {
