@@ -1,12 +1,11 @@
 <?xml version="1.0" encoding="UTF-8"?>
-<!DOCTYPE beans PUBLIC "-//SPRING//DTD BEAN//EN" "http://www.springframework.org/dtd/spring-beans.dtd">
+<beans xmlns="http://www.springframework.org/schema/beans"
+       xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+       xmlns:aop="http://www.springframework.org/schema/aop"
+       xsi:schemaLocation="
+http://www.springframework.org/schema/beans http://www.springframework.org/schema/beans/spring-beans-2.0.xsd
+http://www.springframework.org/schema/aop http://www.springframework.org/schema/aop/spring-aop-2.0.xsd">
 
-<beans>
-    <description>
-      Web specific beans could be placed here.
-      Currently, beans are loaded via a parent context specified in web.xml.
-    </description>
-    
     <bean id="localMasterConfig" class="com.cannontech.common.config.MasterConfigHelper"
           factory-method="getLocalConfiguration">
     </bean>
@@ -153,7 +152,7 @@
         <property name="meterReadService" ref="meterReadService"/>
         <property name="attributeService" ref="attributeService"/>
         <property name="meterDao" ref="meterDao"/>
-        <property name="pointFormattingService" ref="pointFormattingService"/>
+        <property name="pointFormattingService" ref="pointFormattingServiceForRequest"/>
     </bean>
     
     <bean id="meterInformationWidget"
@@ -310,7 +309,7 @@
     <!-- Update Service -->
         
     <bean id="dataUpdaterService" class="com.cannontech.web.updater.DefaultDataUpdaterService"
-        abstract="false" singleton="true" lazy-init="default" autowire="default"
+        abstract="false" lazy-init="default" autowire="default"
         dependency-check="default">
         <property name="timeSource">
             <ref bean="timeSource" />
@@ -324,9 +323,14 @@
         </property>
     </bean>
     
+    <bean id="pointFormattingServiceForRequest" factory-bean="pointFormattingService"
+        factory-method="getCachedInstance" scope="request">
+        <!--  <aop:scoped-proxy proxy-target-class="false"/> after Spring 2.0.3 -->
+        <aop:scoped-proxy />
+    </bean>
+    
     <bean id="pointUpdateBackingService"
-        class="com.cannontech.web.updater.point.PointUpdateBackingService" abstract="false"
-        singleton="true" lazy-init="default" autowire="default" dependency-check="default">
+        class="com.cannontech.web.updater.point.PointUpdateBackingService">
         <property name="maxCacheSize">
             <value type="int">1000</value>
         </property>
@@ -334,7 +338,7 @@
             <ref bean="asyncDynamicDataSource" />
         </property>
         <property name="pointFormattingService">
-            <ref bean="pointFormattingService" />
+            <ref bean="pointFormattingServiceForRequest" />
         </property>
         <property name="timeSource">
             <ref bean="timeSource" />
@@ -355,48 +359,35 @@
     </bean>
     
     <bean id="pointDataUpdateRegistrationService"
-        class="com.cannontech.web.updater.point.PointDataRegistrationServiceImpl" abstract="false"
-        singleton="true" lazy-init="default" autowire="default" dependency-check="default">
+        class="com.cannontech.web.updater.point.PointDataRegistrationServiceImpl" abstract="false">
         <property name="updaterService">
             <ref local="dataUpdaterService" />
         </property>
     </bean>
     
-    <bean id="pointValueTagPrototype" class="com.cannontech.web.updater.point.PointValueTag"
-        abstract="false" singleton="true" lazy-init="default" autowire="default"
-        dependency-check="default">
+    <bean id="pointValueTagPrototype" class="com.cannontech.web.updater.point.PointValueTag">
         <property name="registrationService" ref="pointDataUpdateRegistrationService"/>
     </bean>
 
-    <bean id="deviceNameTagPrototype" class="com.cannontech.web.amr.taglib.DeviceNameTag"
-        abstract="false" singleton="true" lazy-init="default" autowire="default"
-        dependency-check="default">
+    <bean id="deviceNameTagPrototype" class="com.cannontech.web.amr.taglib.DeviceNameTag">
         <property name="meterDao" ref="meterDao"/>
         <property name="paoDao" ref="paoDao" />
     </bean>
 
-    <bean id="dataUpdaterCallbackTagPrototype" class="com.cannontech.web.updater.DataUpdaterCallbackTag"
-        abstract="false" singleton="true" lazy-init="default" autowire="default"
-        dependency-check="default">
+    <bean id="dataUpdaterCallbackTagPrototype" class="com.cannontech.web.updater.DataUpdaterCallbackTag">
         <property name="registrationService" ref="dataUpdaterService"/>
     </bean>
 
-    <bean id="pointValueFormatterTagPrototype" class="com.cannontech.web.util.PointValueFormatterTag"
-        abstract="false" singleton="true" lazy-init="default" autowire="default"
-        dependency-check="default">
-        <property name="pointFormattingService" ref="pointFormattingService"/>
+    <bean id="pointValueFormatterTagPrototype" class="com.cannontech.web.util.PointValueFormatterTag">
+        <property name="pointFormattingService" ref="pointFormattingServiceForRequest"/>
     </bean>
     
-    <bean id="simpleReportLinkFromNameTagPrototype" class="com.cannontech.web.reports.SimpleReportLinkFromNameTag"
-        abstract="false" singleton="true" lazy-init="default" autowire="default"
-        dependency-check="default">
+    <bean id="simpleReportLinkFromNameTagPrototype" class="com.cannontech.web.reports.SimpleReportLinkFromNameTag">
         <property name="reportDefinitionFactory" ref="yukonReportModelDefinitionFactory"/>
         <property name="simpleReportService" ref="simpleReportService"/>
     </bean>
     
-    <bean id="simpleReportLinkFromModelTagPrototype" class="com.cannontech.web.reports.SimpleReportLinkFromModelTag"
-        abstract="false" singleton="true" lazy-init="default" autowire="default"
-        dependency-check="default">
+    <bean id="simpleReportLinkFromModelTagPrototype" class="com.cannontech.web.reports.SimpleReportLinkFromModelTag">
         <property name="reportDefinitionFactory" ref="yukonReportModelDefinitionFactory"/>
     </bean>
 
@@ -454,23 +445,17 @@
         </property>
     </bean>
 
-    <bean id="attributeResolverTagPrototype" class="com.cannontech.web.util.AttributeResolverTag"
-        abstract="false" singleton="true" lazy-init="default" autowire="default"
-        dependency-check="default">
+    <bean id="attributeResolverTagPrototype" class="com.cannontech.web.util.AttributeResolverTag">
         <property name="deviceDao" ref="deviceDao" />
         <property name="attributeService" ref="attributeService"/>
     </bean>
     
-    <bean id="formatDateTagPrototype" class="com.cannontech.web.util.FormatDateTag"
-    	abstract="false" singleton="false" lazy-init="default" autowire="default"
-        dependency-check="default">
+    <bean id="formatDateTagPrototype" class="com.cannontech.web.util.FormatDateTag">
         <property name="dateFormattingService" ref="dateFormattingService"/>
     </bean>
     
     
-    <bean id="friendlyExceptionResolver" class="com.cannontech.common.util.FriendlyExceptionResolver"
-    	abstract="false" singleton="false" lazy-init="default" autowire="default"
-        dependency-check="default">
+    <bean id="friendlyExceptionResolver" class="com.cannontech.common.util.FriendlyExceptionResolver">
         
         <property name="exceptionStrings" ref="friendlyExceptionsProperties" />
         
