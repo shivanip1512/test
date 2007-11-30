@@ -16,12 +16,15 @@ import javax.servlet.http.HttpServletResponse;
 import org.apache.commons.fileupload.servlet.ServletFileUpload;
 import org.apache.commons.lang.StringUtils;
 import org.apache.log4j.Logger;
+import org.springframework.beans.factory.annotation.Required;
 import org.springframework.web.bind.ServletRequestUtils;
 import org.springframework.web.multipart.MultipartFile;
 import org.springframework.web.multipart.MultipartHttpServletRequest;
 import org.springframework.web.servlet.ModelAndView;
 import org.springframework.web.servlet.mvc.multiaction.MultiActionController;
 
+import com.cannontech.amr.meter.dao.MeterDao;
+import com.cannontech.amr.meter.model.Meter;
 import com.cannontech.clientutils.YukonLogManager;
 import com.cannontech.common.bulk.BulkProcessingResultHolder;
 import com.cannontech.common.bulk.BulkProcessor;
@@ -40,6 +43,9 @@ import com.cannontech.common.device.groups.editor.model.StoredDeviceGroup;
 import com.cannontech.common.device.groups.model.DeviceGroup;
 import com.cannontech.common.device.groups.model.DeviceGroupHierarchy;
 import com.cannontech.common.device.groups.service.DeviceGroupService;
+import com.cannontech.common.device.groups.util.YukonDeviceToIdMapper;
+import com.cannontech.common.util.MapQueue;
+import com.cannontech.common.util.MappingList;
 import com.cannontech.common.util.ObjectMapper;
 import com.cannontech.core.authorization.exception.PaoAuthorizationException;
 import com.cannontech.core.dao.CommandDao;
@@ -67,6 +73,7 @@ public class GroupController extends MultiActionController {
     private ProcessorFactory processorFactory = null;
 
     private PaoDao paoDao = null;
+    private MeterDao meterDao = null;
 
     public void setDeviceGroupService(DeviceGroupService deviceGroupService) {
         this.deviceGroupService = deviceGroupService;
@@ -103,6 +110,11 @@ public class GroupController extends MultiActionController {
     public void setPaoDao(PaoDao paoDao) {
         this.paoDao = paoDao;
     }
+    
+    @Required
+    public void setMeterDao(MeterDao meterDao) {
+        this.meterDao = meterDao;
+    }
 
     public ModelAndView home(HttpServletRequest request, HttpServletResponse response)
             throws ServletException {
@@ -113,7 +125,7 @@ public class GroupController extends MultiActionController {
 
         DeviceGroup group = null;
         DeviceGroup rootGroup = deviceGroupService.getRootGroup();
-        mav.addObject("rootGroup", deviceGroupService.getRootGroup());
+        mav.addObject("rootGroup", rootGroup);
 
         if (!StringUtils.isEmpty(groupName)) {
             group = deviceGroupService.resolveGroupName(groupName);
@@ -122,39 +134,53 @@ public class GroupController extends MultiActionController {
         }
         mav.addObject("group", group);
 
-        int deviceCount = deviceGroupDao.getChildDeviceCount(group);
-        mav.addObject("deviceCount", deviceCount);
-
-        DeviceGroupHierarchy groupHierarchy = deviceGroupService.getDeviceGroupHierarchy(rootGroup);
-        mav.addObject("groupHierarchy", groupHierarchy);
-
         // Create a list of groups the current group could move to excluding the
         // current group itself, any decendant groups of the current group and
         // any groups that are not modifiable
-        List<? extends DeviceGroup> groups = deviceGroupDao.getAllGroups();
+        List<DeviceGroup> groups = deviceGroupDao.getAllGroups();
         List<DeviceGroup> moveGroups = new ArrayList<DeviceGroup>();
+        MapQueue<DeviceGroup, DeviceGroup> childList = new MapQueue<DeviceGroup, DeviceGroup>();
         for (DeviceGroup deviceGroup : groups) {
-            if (deviceGroup.isModifiable() && !deviceGroup.equals(group) && !deviceGroup.isDescendantOf(group)) {
+            if (deviceGroup.isModifiable() 
+                && !deviceGroup.equals(group) 
+                && !deviceGroup.isDescendantOf(group)
+                && !deviceGroup.equals(group.getParent())) {
                 moveGroups.add(deviceGroup);
+            }
+            if (deviceGroup.getParent() != null) {
+                childList.add(deviceGroup.getParent(), deviceGroup);
             }
         }
         mav.addObject("moveGroups", moveGroups);
 
-        List<? extends DeviceGroup> childGroups = deviceGroupDao.getChildGroups(group);
+        DeviceGroupHierarchy groupHierarchy = createHierarchy(rootGroup, childList);
+        mav.addObject("groupHierarchy", groupHierarchy);
+        
+        List<DeviceGroup> childGroups = childList.get(group);
         mav.addObject("subGroups", childGroups);
 
         Boolean showDevices = ServletRequestUtils.getBooleanParameter(request, "showDevices", false);
         mav.addObject("showDevices", showDevices);
         
         List<YukonDevice> deviceList = deviceGroupDao.getChildDevices(group);
-        List<Integer> deviceIdList = new ArrayList<Integer>();
-        for(YukonDevice device : deviceList){
-            deviceIdList.add(device.getDeviceId());
-        }
+        List<Integer> deviceIdList = new MappingList<YukonDevice, Integer>(deviceList, new YukonDeviceToIdMapper());
         mav.addObject("deviceIdsInGroup", StringUtils.join(deviceIdList, ","));
 
+        mav.addObject("deviceCount", deviceIdList.size());
+        
         return mav;
 
+    }
+    
+    private DeviceGroupHierarchy createHierarchy(DeviceGroup root, MapQueue<DeviceGroup, DeviceGroup> childList) {
+        DeviceGroupHierarchy result = new DeviceGroupHierarchy();
+        result.setGroup(root);
+        List<DeviceGroup> list = childList.get(root);
+        for (DeviceGroup childGroup : list) {
+            DeviceGroupHierarchy childHierarchy = createHierarchy(childGroup, childList);
+            result.getChildGroupList().add(childHierarchy);
+        }
+        return result;
     }
 
     public ModelAndView getDevicesForGroup(HttpServletRequest request, HttpServletResponse response)
@@ -166,7 +192,10 @@ public class GroupController extends MultiActionController {
 
         DeviceGroup group = deviceGroupService.resolveGroupName(groupName);
 
-        List<YukonDevice> deviceList = deviceGroupDao.getChildDevices(group);
+        List<Meter> deviceList = meterDao.getChildMetersByGroup(group);
+        
+        Collections.sort(deviceList, meterDao.getMeterComparator());
+        
         mav.addObject("deviceList", deviceList);
 
         mav.addObject("group", group);

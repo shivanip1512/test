@@ -49,6 +49,7 @@
         <property name="processorFactory" ref="processorFactory" />
         
         <property name="paoDao" ref="paoDao" />
+        <property name="meterDao" ref="meterDao" />
     </bean>
     
 	<bean id="bulkDeviceAdd" class="org.springframework.web.servlet.mvc.ParameterizableViewController">
