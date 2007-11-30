@@ -4,11 +4,13 @@ import org.apache.commons.lang.Validate;
 import org.springframework.core.style.ToStringCreator;
 
 import com.cannontech.common.device.groups.dao.DeviceGroupType;
+import com.cannontech.util.NaturalOrderComparator;
 
 public abstract class DeviceGroup implements Comparable<DeviceGroup> {
     private DeviceGroupType type;
     private String name;
     private DeviceGroup parent;
+    private String cachedFullNameInternal = null;
 
     /**
      * Method to determine if this group can have its name changed, parent
@@ -26,10 +28,12 @@ public abstract class DeviceGroup implements Comparable<DeviceGroup> {
 
     public void setName(String name) {
         this.name = name;
+        cachedFullNameInternal = null;
     }
 
     public void setParent(DeviceGroup parent) {
         this.parent = parent;
+        cachedFullNameInternal = null;
     }
 
     public void setType(DeviceGroupType type) {
@@ -59,9 +63,12 @@ public abstract class DeviceGroup implements Comparable<DeviceGroup> {
     private String getFullNameInternal() {
         if (parent == null) {
             return "";
-        } else {
-            return getParent().getFullNameInternal() + "/" + getName();
         }
+
+        if (cachedFullNameInternal == null) {
+            cachedFullNameInternal = getParent().getFullNameInternal() + "/" + getName();
+        }
+        return cachedFullNameInternal;
     }
 
     public boolean isDescendantOf(DeviceGroup possibleParent) {
@@ -120,6 +127,7 @@ public abstract class DeviceGroup implements Comparable<DeviceGroup> {
     }
 
     public int compareTo(DeviceGroup dg) {
-        return this.getFullName().compareTo(dg.getFullName());
+        NaturalOrderComparator naturalOrderComparator = new NaturalOrderComparator();
+        return naturalOrderComparator.compare(this.getFullName(),dg.getFullName());
     }
 }
