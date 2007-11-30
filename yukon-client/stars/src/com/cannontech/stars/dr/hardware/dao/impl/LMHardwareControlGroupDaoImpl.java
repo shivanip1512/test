@@ -50,7 +50,7 @@ public class LMHardwareControlGroupDaoImpl implements LMHardwareControlGroupDao,
         removeSql = "DELETE from " + TABLE_NAME + " WHERE ControlEntryID = ?";
          
         selectAllSql = "SELECT ControlEntryId, InventoryId, LMGroupId, AccountId, GroupEnrollStart, GroupEnrollStop, OptOutStart, " +
-                "OptOutStop, Type, Relay, UserId from " + TABLE_NAME;
+                "OptOutStop, Type, Relay, UserIdFirstAction, UserIdSecondAction from " + TABLE_NAME;
     
         selectById = selectAllSql + " WHERE ControlEntryID = ?";
         
@@ -218,7 +218,8 @@ public class LMHardwareControlGroupDaoImpl implements LMHardwareControlGroupDao,
                 hardwareControlGroup.setOptOutStop(rs.getTimestamp("OptOutStop"));
                 hardwareControlGroup.setType(rs.getInt("Type"));
                 hardwareControlGroup.setRelay(rs.getInt("Relay"));
-                hardwareControlGroup.setUserId(rs.getInt("UserId"));
+                hardwareControlGroup.setUserIdFirstAction(rs.getInt("UserIdFirstAction"));
+                hardwareControlGroup.setUserIdSecondAction(rs.getInt("UserIdSecondAction"));
                 return hardwareControlGroup;
             }
         };
@@ -250,7 +251,8 @@ public class LMHardwareControlGroupDaoImpl implements LMHardwareControlGroupDao,
             p.addValue("optOutStop", controlInfo.getOptOutStop(), Types.TIMESTAMP);
             p.addValue("type", controlInfo.getType());
             p.addValue("relay", controlInfo.getRelay());
-            p.addValue("userId", controlInfo.getUserId());
+            p.addValue("userIdFirstAction", controlInfo.getUserIdFirstAction());
+            p.addValue("userIdSecondAction", controlInfo.getUserIdSecondAction());
         }
         public Number getPrimaryKey(LMHardwareControlGroup controlInfo) {
             return controlInfo.getControlEntryId();

@@ -18,6 +18,7 @@ import com.cannontech.core.dao.DaoFactory;
 import com.cannontech.database.Transaction;
 import com.cannontech.database.cache.StarsDatabaseCache;
 import com.cannontech.database.data.activity.ActivityLogActions;
+import com.cannontech.database.data.lite.LiteYukonUser;
 import com.cannontech.database.data.lite.stars.LiteLMHardwareEvent;
 import com.cannontech.database.data.lite.stars.LiteLMProgramEvent;
 import com.cannontech.database.data.lite.stars.LiteStarsAppliance;
@@ -30,6 +31,8 @@ import com.cannontech.roles.consumer.ResidentialCustomerRole;
 import com.cannontech.roles.operator.ConsumerInfoRole;
 import com.cannontech.roles.operator.InventoryRole;
 import com.cannontech.roles.yukon.EnergyCompanyRole;
+import com.cannontech.spring.YukonSpringHook;
+import com.cannontech.stars.dr.hardware.service.LMHardwareControlInformationService;
 import com.cannontech.stars.util.InventoryUtils;
 import com.cannontech.stars.util.OptOutEventQueue;
 import com.cannontech.stars.util.ServerUtils;
@@ -139,7 +142,8 @@ public class ProgramOptOutAction implements ActionBase {
         try {
             StarsOperation reqOper = SOAPUtil.parseSOAPMsgForOperation( reqMsg );
             
-			StarsYukonUser user = (StarsYukonUser) session.getAttribute( ServletUtils.ATT_STARS_YUKON_USER );
+            LiteYukonUser theUsefulUser = (LiteYukonUser) session.getAttribute( ServletUtils.ATT_YUKON_USER );
+            StarsYukonUser user = (StarsYukonUser) session.getAttribute( ServletUtils.ATT_STARS_YUKON_USER );
             if (user == null) {
                 respOper.setStarsFailure( StarsFactory.newStarsFailure(
                 		StarsConstants.FAILURE_CODE_SESSION_INVALID, "Session invalidated, please login again") );
@@ -169,16 +173,16 @@ public class ProgramOptOutAction implements ActionBase {
 				return SOAPUtil.buildSOAPMessage( respOper );
 			}
             
-            // Get all the hardwares to be opted out
-            ArrayList hardwares = null;
+            // Get all the hardware to be opted out
+            ArrayList hardware = null;
             if (optOut.getInventoryIDCount() > 0) {
-            	hardwares = new ArrayList();
+            	hardware = new ArrayList();
             	for (int i = 0; i < optOut.getInventoryIDCount(); i++)
-					hardwares.add( energyCompany.getInventory(optOut.getInventoryID(i), true) );
+					hardware.add( energyCompany.getInventory(optOut.getInventoryID(i), true) );
             }
             else {
-				hardwares = getAffectedHardwares( liteAcctInfo, energyCompany );
-				if (hardwares.size() == 0) {
+				hardware = getAffectedHardwares( liteAcctInfo, energyCompany );
+				if (hardware.size() == 0) {
 					respOper.setStarsFailure( StarsFactory.newStarsFailure(
 							StarsConstants.FAILURE_CODE_OPERATION_FAILED, "There is no hardware assigned to any program.") );
 					return SOAPUtil.buildSOAPMessage( respOper );
@@ -206,9 +210,9 @@ public class ProgramOptOutAction implements ActionBase {
             	
 				logMsg = "Start Date/Time:" + StarsUtils.formatDate(optOut.getStartDateTime(), tz) +
             			", Duration:" + ServletUtils.getDurationFromHours( optOut.getPeriod() );
-				logMsg += ", Serial #:" + ((LiteStarsLMHardware) hardwares.get(0)).getManufacturerSerialNumber();
-				for (int i = 1; i < hardwares.size(); i++)
-					logMsg += "," + ((LiteStarsLMHardware) hardwares.get(i)).getManufacturerSerialNumber();
+				logMsg += ", Serial #:" + ((LiteStarsLMHardware) hardware.get(0)).getManufacturerSerialNumber();
+				for (int i = 1; i < hardware.size(); i++)
+					logMsg += "," + ((LiteStarsLMHardware) hardware.get(i)).getManufacturerSerialNumber();
             }
 			else if (optOut.getPeriod() == REPEAT_LAST) {
 				/* We will only resend the command if there is a reenable event in the queue
@@ -231,8 +235,8 @@ public class ProgramOptOutAction implements ActionBase {
 						hw[0] = (LiteStarsLMHardware) energyCompany.getInventory(reenableEvents[i].getInventoryID(), true);
 					}
 					else {
-						hw = new LiteStarsLMHardware[ hardwares.size() ];
-						hardwares.toArray( hw );
+						hw = new LiteStarsLMHardware[ hardware.size() ];
+						hardware.toArray( hw );
 					}
 					
 					for (int j = 0; j < hw.length; j++) {
@@ -250,15 +254,15 @@ public class ProgramOptOutAction implements ActionBase {
 				Calendar reenableTime = Calendar.getInstance();
 				reenableTime.add( Calendar.HOUR_OF_DAY, optOut.getPeriod() );
 				
-				for (int i = 0; i < hardwares.size(); i++) {
-					LiteStarsLMHardware liteHw = (LiteStarsLMHardware) hardwares.get(i);
+				for (int i = 0; i < hardware.size(); i++) {
+					LiteStarsLMHardware liteHw = (LiteStarsLMHardware) hardware.get(i);
 					
 					String cmd = getOptOutCommand( liteHw, energyCompany, optOut.getPeriod() );
 					int routeID = liteHw.getRouteID();
 					if (routeID == 0) routeID = energyCompany.getDefaultRouteID();
 					ServerUtils.sendSerialCommand( cmd, routeID, user.getYukonUser() );
 					
-					StarsLMHardwareHistory hwHist = processOptOut( optOut, liteHw, liteAcctInfo, energyCompany );
+					StarsLMHardwareHistory hwHist = processOptOut( optOut, liteHw, liteAcctInfo, energyCompany, theUsefulUser );
 					resp.addStarsLMHardwareHistory( hwHist );
 				}
 	            
@@ -285,9 +289,9 @@ public class ProgramOptOutAction implements ActionBase {
 			        resp.setDescription( "Your programs have been " + energyCompany.getEnergyCompanySetting(ConsumerInfoRole.WEB_TEXT_OPT_OUT_PAST) + "." );
 			    
 				logMsg = "Start Date/Time:(Immediately), Duration:" + ServletUtils.getDurationFromHours( optOut.getPeriod() );
-				logMsg += ", Serial #:" + ((LiteStarsLMHardware) hardwares.get(0)).getManufacturerSerialNumber();
-				for (int i = 1; i < hardwares.size(); i++)
-					logMsg += "," + ((LiteStarsLMHardware) hardwares.get(i)).getManufacturerSerialNumber();
+				logMsg += ", Serial #:" + ((LiteStarsLMHardware) hardware.get(0)).getManufacturerSerialNumber();
+				for (int i = 1; i < hardware.size(); i++)
+					logMsg += "," + ((LiteStarsLMHardware) hardware.get(i)).getManufacturerSerialNumber();
             }
             
 			// Log activity
@@ -606,9 +610,10 @@ public class ProgramOptOutAction implements ActionBase {
 	
 	/**
 	 * Update the program and hardware history when an opt out event happens
+	 * @param currentUser TODO
 	 */
 	private static StarsLMHardwareHistory processOptOut(StarsProgramOptOut optOut, LiteStarsLMHardware liteHw,
-		LiteStarsCustAccountInformation liteAcctInfo, LiteStarsEnergyCompany energyCompany)
+		LiteStarsCustAccountInformation liteAcctInfo, LiteStarsEnergyCompany energyCompany, LiteYukonUser currentUser)
 		throws com.cannontech.database.TransactionException
 	{
 		if (optOut.getPeriod() <= 0) return null;
@@ -680,6 +685,15 @@ public class ProgramOptOutAction implements ActionBase {
 			if (liteApp.getInventoryID() == liteHw.getInventoryID() && liteApp.getProgramID() > 0) {
 				LiteStarsLMProgram liteProg = ProgramSignUpAction.getLMProgram( liteAcctInfo, liteApp.getProgramID() );
 				
+                /*
+                 * New enrollment, opt out, and control history tracking
+                 *-------------------------------------------------------------------------------
+                 */
+                LMHardwareControlInformationService lmHardwareControlInformationService = (LMHardwareControlInformationService) YukonSpringHook.getBean("lmHardwareControlInformationService");
+                lmHardwareControlInformationService.startOptOut(liteHw.getInventoryID(), liteApp.getAddressingGroupID(), liteHw.getAccountID(), currentUser);
+                /*-------------------------------------------------------------------------------
+                 * */
+                
 				multiDB = new com.cannontech.database.data.multi.MultiDBPersistent();
 	            
 				com.cannontech.database.data.stars.event.LMProgramEvent event =
@@ -805,7 +819,7 @@ public class ProgramOptOutAction implements ActionBase {
 		return cmd;
 	}
 	
-	public static void handleOptOutEvent(OptOutEventQueue.OptOutEvent event, LiteStarsEnergyCompany energyCompany) {
+	public static void handleOptOutEvent(OptOutEventQueue.OptOutEvent event, LiteStarsEnergyCompany energyCompany, LiteYukonUser currentUser) {
 		LiteStarsCustAccountInformation liteAcctInfo = energyCompany.getCustAccountInformation( event.getAccountID(), true );
 		
 		ArrayList hardwares = new ArrayList();
@@ -823,7 +837,7 @@ public class ProgramOptOutAction implements ActionBase {
 		for (int i = 0; i < hardwares.size(); i++) {
 			LiteStarsLMHardware liteHw = (LiteStarsLMHardware) hardwares.get(i);
 			try {
-				resp.addStarsLMHardwareHistory( processOptOut(optOut, liteHw, liteAcctInfo, energyCompany) );
+				resp.addStarsLMHardwareHistory( processOptOut(optOut, liteHw, liteAcctInfo, energyCompany, null) );
 			}
 			catch (com.cannontech.database.TransactionException e) {
 				CTILogger.error( e.getMessage(), e );

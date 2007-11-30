@@ -41,8 +41,11 @@ public class LMHardwareControlInformationServiceImpl implements LMHardwareContro
                 if(existingEnrollment.getRelay() == relay && existingEnrollment.getGroupEnrollStop() == null) {
                     /*This entry already has a start date, has no stop date, and is on the same relay: better register a stop.*/
                     existingEnrollment.setGroupEnrollStop(now);
-                    existingEnrollment.setUserId(currentUser.getUserID());
+                    existingEnrollment.setUserIdSecondAction(currentUser.getUserID());
                     lmHardwareControlGroupDao.update(existingEnrollment);
+                    
+                    /*Unenrolling also means a current opt out needs to be marked as complete*/
+                    stopOptOut(inventoryId, loadGroupId, accountId, currentUser);
                 }
             }
             /*Do the start*/
@@ -71,14 +74,16 @@ public class LMHardwareControlInformationServiceImpl implements LMHardwareContro
                     if(controlInformation.getGroupEnrollStart() != null && controlInformation.getGroupEnrollStop() == null 
                             && controlInformation.getRelay() == relay) {
                         controlInformation.setGroupEnrollStop(now);
-                        controlInformation.setUserId(currentUser.getUserID());
+                        controlInformation.setUserIdSecondAction(currentUser.getUserID());
                         lmHardwareControlGroupDao.update(controlInformation);
-                        return true;
+                        
+                        /*Unenrolling also means a current opt out needs to be marked as complete*/
+                        stopOptOut(inventoryId, loadGroupId, accountId, currentUser);
                     }
-                    /*enrollment is already current*/
-                    else if(controlInformation.getGroupEnrollStart() != null && controlInformation.getGroupEnrollStop() != null)
-                        return true;
-                }
+                    /*else enrollment is already current*/
+                    //else if(controlInformation.getGroupEnrollStart() != null && controlInformation.getGroupEnrollStop() != null)
+                };
+                return true;
             }
             /*
              * Shouldn't insert a stop without a start.
@@ -96,6 +101,8 @@ public class LMHardwareControlInformationServiceImpl implements LMHardwareContro
         Validate.notNull(inventoryId, "InventoryID cannot be null");
         Validate.notNull(loadGroupId, "LoadGroupID cannot be null");
         Validate.notNull(accountId, "AccountID cannot be null");
+        Validate.notNull(currentUser, "CurrentUser cannot be null");
+        
         try {
             Date now = dateFormattingService.getCalendar(currentUser).getTime();
             LMHardwareControlGroup controlInformation = new LMHardwareControlGroup(inventoryId, loadGroupId, accountId, LMHardwareControlGroup.OPT_OUT_ENTRY, currentUser.getUserID());
@@ -104,14 +111,16 @@ public class LMHardwareControlInformationServiceImpl implements LMHardwareContro
             return true;
         } catch (Exception e) {
             logger.error("Opt out was started/scheduled for InventoryId: " + inventoryId + " LMGroupId: " + loadGroupId + " AccountId: " + accountId + "done by user: " + currentUser.getUsername() + " but could NOT be recorded in the LMHardwareControlGroup table.", e );
-            return false;
         }
+        return false;
     }
     
     public boolean stopOptOut(int inventoryId, int loadGroupId, int accountId, LiteYukonUser currentUser) {
         Validate.notNull(inventoryId, "InventoryID cannot be null");
         Validate.notNull(loadGroupId, "LoadGroupID cannot be null");
         Validate.notNull(accountId, "AccountID cannot be null");
+        Validate.notNull(currentUser, "CurrentUser cannot be null");
+        
         List<LMHardwareControlGroup> controlInformationList;
         try {
             controlInformationList = lmHardwareControlGroupDao.getByInventoryIdAndGroupIdAndAccountIdAndType(inventoryId, loadGroupId, accountId, LMHardwareControlGroup.OPT_OUT_ENTRY);
@@ -121,7 +130,7 @@ public class LMHardwareControlInformationServiceImpl implements LMHardwareContro
                 for(LMHardwareControlGroup controlInformation : controlInformationList) {
                     if(controlInformation.getOptOutStart() != null && controlInformation.getOptOutStop() == null) {
                         controlInformation.setOptOutStop(now);
-                        controlInformation.setUserId(currentUser.getUserID());
+                        controlInformation.setUserIdSecondAction(currentUser.getUserID());
                         lmHardwareControlGroupDao.update(controlInformation);
                         return true;
                     }
@@ -130,11 +139,10 @@ public class LMHardwareControlInformationServiceImpl implements LMHardwareContro
             /*
              * Shouldn't have a stop without a start.
              */
-            return false;
         } catch (Exception e) {
             logger.error("Opt out was stopped for InventoryId: " + inventoryId + " LMGroupId: " + loadGroupId + " AccountId: " + accountId + "done by user: " + currentUser.getUsername() + " but could NOT be recorded in the LMHardwareControlGroup table.", e );
-            return false;
         }
+        return false;
     }
     
     public long calculateControlHistory(int loadGroupId, int accountId, Date start, Date stop, LiteYukonUser currentUser) {

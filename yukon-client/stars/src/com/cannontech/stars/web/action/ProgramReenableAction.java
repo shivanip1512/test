@@ -13,6 +13,7 @@ import com.cannontech.common.constants.YukonListEntryTypes;
 import com.cannontech.database.Transaction;
 import com.cannontech.database.cache.StarsDatabaseCache;
 import com.cannontech.database.data.activity.ActivityLogActions;
+import com.cannontech.database.data.lite.LiteYukonUser;
 import com.cannontech.database.data.lite.stars.LiteLMHardwareEvent;
 import com.cannontech.database.data.lite.stars.LiteLMProgramEvent;
 import com.cannontech.database.data.lite.stars.LiteStarsAppliance;
@@ -23,6 +24,8 @@ import com.cannontech.database.data.lite.stars.LiteStarsLMProgram;
 import com.cannontech.database.data.lite.stars.StarsLiteFactory;
 import com.cannontech.roles.operator.ConsumerInfoRole;
 import com.cannontech.roles.yukon.EnergyCompanyRole;
+import com.cannontech.spring.YukonSpringHook;
+import com.cannontech.stars.dr.hardware.service.LMHardwareControlInformationService;
 import com.cannontech.stars.util.InventoryUtils;
 import com.cannontech.stars.util.OptOutEventQueue;
 import com.cannontech.stars.util.ServerUtils;
@@ -91,6 +94,7 @@ public class ProgramReenableAction implements ActionBase {
 		try {
 			StarsOperation reqOper = SOAPUtil.parseSOAPMsgForOperation( reqMsg );
             
+            LiteYukonUser theUsefulUser = (LiteYukonUser) session.getAttribute( ServletUtils.ATT_YUKON_USER );
 			StarsYukonUser user = (StarsYukonUser) session.getAttribute( ServletUtils.ATT_STARS_YUKON_USER );
 			if (user == null) {
 				respOper.setStarsFailure( StarsFactory.newStarsFailure(
@@ -158,7 +162,7 @@ public class ProgramReenableAction implements ActionBase {
 					if (routeID == 0) routeID = energyCompany.getDefaultRouteID();
 					ServerUtils.sendSerialCommand( cmd, routeID, user.getYukonUser() );
 					
-					StarsLMHardwareHistory hwHist = processReenable( liteHw, liteAcctInfo, energyCompany );
+					StarsLMHardwareHistory hwHist = processReenable( liteHw, liteAcctInfo, energyCompany, theUsefulUser );
 					resp.addStarsLMHardwareHistory( hwHist );
 				}
 				
@@ -248,7 +252,7 @@ public class ProgramReenableAction implements ActionBase {
 	}
 	
 	private static StarsLMHardwareHistory processReenable(LiteStarsLMHardware liteHw, 
-		LiteStarsCustAccountInformation liteAcctInfo, LiteStarsEnergyCompany energyCompany)
+		LiteStarsCustAccountInformation liteAcctInfo, LiteStarsEnergyCompany energyCompany, LiteYukonUser currentUser)
 		throws com.cannontech.database.TransactionException
 	{
 		Integer hwEventEntryID = new Integer( energyCompany.getYukonListEntry(YukonListEntryTypes.YUK_DEF_ID_CUST_EVENT_LMHARDWARE).getEntryID() );
@@ -287,7 +291,7 @@ public class ProgramReenableAction implements ActionBase {
 			StarsLiteFactory.setStarsLMCustomerEvent( starsEvent, liteHwEvent );
 			hwHist.addStarsLMHardwareEvent( starsEvent );
 		}
-		
+        
 		// Add "Activation Completed" to program events
 		for (int i = 0; i < liteAcctInfo.getAppliances().size(); i++) {
 			LiteStarsAppliance liteApp = (LiteStarsAppliance) liteAcctInfo.getAppliances().get(i);
@@ -296,6 +300,15 @@ public class ProgramReenableAction implements ActionBase {
 	        	
 				// If program is already in service, do nothing
 				if (liteProg.isInService()) continue;
+                
+                /*
+                 * New enrollment, opt out, and control history tracking
+                 *-------------------------------------------------------------------------------
+                 */
+                LMHardwareControlInformationService lmHardwareControlInformationService = (LMHardwareControlInformationService) YukonSpringHook.getBean("lmHardwareControlInformationService");
+                lmHardwareControlInformationService.stopOptOut(liteHw.getInventoryID(), liteApp.getAddressingGroupID(), liteHw.getAccountID(), currentUser);
+                /*-------------------------------------------------------------------------------
+                 * */
 	    		
 				com.cannontech.database.data.stars.event.LMProgramEvent event =
 						new com.cannontech.database.data.stars.event.LMProgramEvent();
@@ -388,7 +401,7 @@ public class ProgramReenableAction implements ActionBase {
 		return cmd;
 	}
 	
-	public static void handleReenableEvent(OptOutEventQueue.OptOutEvent event, LiteStarsEnergyCompany energyCompany) {
+	public static void handleReenableEvent(OptOutEventQueue.OptOutEvent event, LiteStarsEnergyCompany energyCompany, LiteYukonUser currentUser) {
 		LiteStarsCustAccountInformation liteAcctInfo = energyCompany.getCustAccountInformation( event.getAccountID(), true );
 		
 		ArrayList hardwares = new ArrayList();
@@ -402,7 +415,7 @@ public class ProgramReenableAction implements ActionBase {
 		for (int i = 0; i < hardwares.size(); i++) {
 			LiteStarsLMHardware liteHw = (LiteStarsLMHardware) hardwares.get(i);
 			try {
-				resp.addStarsLMHardwareHistory( processReenable(liteHw, liteAcctInfo, energyCompany) );
+				resp.addStarsLMHardwareHistory( processReenable(liteHw, liteAcctInfo, energyCompany, currentUser) );
 			}
 			catch (com.cannontech.database.TransactionException e) {
 				CTILogger.error( e.getMessage(), e );

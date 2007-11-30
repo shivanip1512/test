@@ -15,7 +15,8 @@ public class LMHardwareControlGroup {
     private Date optOutStop;
     private int type;
     private int relay;
-    private int userId;
+    private int userIdFirstAction;
+    private int userIdSecondAction;
     
     public static final int ENROLLMENT_ENTRY = 1;
     public static final int OPT_OUT_ENTRY = 2;
@@ -29,7 +30,8 @@ public class LMHardwareControlGroup {
         this.accountId = accountId;
         this.type = type;
         this.relay = 0;
-        this.userId = UserUtils.USER_DEFAULT_ID;
+        this.userIdFirstAction = UserUtils.USER_DEFAULT_ID;
+        this.userIdSecondAction = UserUtils.USER_DEFAULT_ID;
     }
     
     public LMHardwareControlGroup(int inventoryId, int loadGroupId, int accountId, int type, int userId) { 
@@ -38,7 +40,8 @@ public class LMHardwareControlGroup {
         this.accountId = accountId;
         this.type = type;
         this.relay = 0;
-        this.userId = userId;
+        this.userIdFirstAction = userId;
+        this.userIdSecondAction = UserUtils.USER_DEFAULT_ID;
     }
     
     public LMHardwareControlGroup(int inventoryId, int loadGroupId, int accountId, int type, int relay, int userId) { 
@@ -47,7 +50,8 @@ public class LMHardwareControlGroup {
         this.accountId = accountId;
         this.type = type;
         this.relay = relay;
-        this.userId = userId;
+        this.userIdFirstAction = userId;
+        this.userIdSecondAction = UserUtils.USER_DEFAULT_ID;
     }
 
     public int getInventoryId() {
@@ -152,11 +156,19 @@ public class LMHardwareControlGroup {
         this.relay = relay;
     }
 
-    public int getUserId() {
-        return userId;
+    public int getUserIdFirstAction() {
+        return userIdFirstAction;
     }
 
-    public void setUserId(int userId) {
-        this.userId = userId;
+    public void setUserIdFirstAction(int userId) {
+        this.userIdFirstAction = userId;
+    }
+
+    public int getUserIdSecondAction() {
+        return userIdSecondAction;
+    }
+
+    public void setUserIdSecondAction(int userIdSecondAction) {
+        this.userIdSecondAction = userIdSecondAction;
     }
 }

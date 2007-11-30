@@ -108,7 +108,7 @@ public class HourlyTimerTask extends StarsTimerTask {
 							ServerUtils.sendSerialCommand( cmd, routeID, user );
 						}
 						
-						ProgramReenableAction.handleReenableEvent( dueEvents[j], company );
+						ProgramReenableAction.handleReenableEvent( dueEvents[j], company, user );
 					}
 					else {	// This is a "opt out" event
 						ArrayList hardwares = new ArrayList();
@@ -126,7 +126,7 @@ public class HourlyTimerTask extends StarsTimerTask {
 							ServerUtils.sendSerialCommand( cmd, routeID, user );
 						}
 						
-						ProgramOptOutAction.handleOptOutEvent( dueEvents[j], company );
+						ProgramOptOutAction.handleOptOutEvent( dueEvents[j], company, user );
 						
 						// Insert a corresponding "reenable" event back into the queue
 						OptOutEventQueue.OptOutEvent e = new OptOutEventQueue.OptOutEvent();
