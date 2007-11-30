@@ -2087,7 +2087,7 @@ CtiRequestMsg* CtiCCFeeder::createIncreaseVarRequest(CtiCCCapBank* capBank, CtiM
     if( checkForMaxKvar(capBank->getPAOId(), capBank->getBankSize() ) == false )
     {
         CtiLockGuard<CtiLogger> logger_guard(dout);
-        dout << CtiTime() << " Exceeded Max Kvar of "<< _MAX_KVAR<< ", not doing control. "  << endl;
+        dout << CtiTime() << " Exceeded Max Kvar of "<< _MAX_KVAR<< ", not doing control on bank: "<< capBank->getPAOName() << ". "  << endl;
         return reqMsg;
     }
 
@@ -2171,7 +2171,11 @@ CtiRequestMsg* CtiCCFeeder::createIncreaseVarVerificationRequest(CtiCCCapBank* c
 
     //Determine if we are at max KVAR and don't create the request if we are.
     if( checkForMaxKvar(capBank->getPAOId(), capBank->getBankSize() ) == false )
+    {
+        CtiLockGuard<CtiLogger> logger_guard(dout);
+        dout << CtiTime() << " Exceeded Max Kvar of "<< _MAX_KVAR<< ", not doing control on bank: "<< capBank->getPAOName() << ". "  << endl;
         return reqMsg;
+    }
 
     if (_CC_DEBUG & CC_DEBUG_VERIFICATION)
     {
@@ -2245,7 +2249,11 @@ CtiRequestMsg* CtiCCFeeder::createDecreaseVarVerificationRequest(CtiCCCapBank* c
 
     //Determine if we are at max KVAR and don't create the request if we are.
     if( checkForMaxKvar(capBank->getPAOId(), capBank->getBankSize() ) == false )
+    {
+        CtiLockGuard<CtiLogger> logger_guard(dout);
+        dout << CtiTime() << " Exceeded Max Kvar of "<< _MAX_KVAR<< ", not doing control on bank: "<< capBank->getPAOName() << ". "  << endl;
         return reqMsg;
+    }
 
     if (_CC_DEBUG & CC_DEBUG_VERIFICATION)
     {
@@ -2325,7 +2333,11 @@ CtiRequestMsg* CtiCCFeeder::createDecreaseVarRequest(CtiCCCapBank* capBank, CtiM
 
     //Determine if we are at max KVAR and don't create the request if we are.
     if( checkForMaxKvar(capBank->getPAOId(), capBank->getBankSize() ) == false )
+    {
+        CtiLockGuard<CtiLogger> logger_guard(dout);
+        dout << CtiTime() << " Exceeded Max Kvar of "<< _MAX_KVAR<< ", not doing control on bank: "<< capBank->getPAOName() << ". "  << endl;
         return reqMsg;
+    }
 
     setLastCapBankControlledDeviceId(capBank->getPAOId());
     capBank->setControlStatus(CtiCCCapBank::ClosePending);
