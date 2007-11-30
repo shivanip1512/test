@@ -659,7 +659,6 @@ new Ajax.Request ('/servlet/CBCServlet',
 
 function handleOpcountDiv (cmd_div_name) {
 	var cmdDiv = document.getElementById (cmd_div_name);
-	document.getElementById('cb_state_td_hdr1').style.display = 'none';
 	document.getElementById('cb_state_td_hdr2').style.display = 'none';
 	alignHeaders ('capBankTable','capBankHeaderTable');
 	return cmdDiv;
