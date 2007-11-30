@@ -174,7 +174,6 @@
    <bean id="groupDevicesModel" class="com.cannontech.analysis.tablemodel.GroupDevicesModel"
          scope="prototype">
         <property name="deviceGroupService" ref="deviceGroupService"/>
-        <property name="deviceGroupDao" ref="deviceGroupDao"/>
         <property name="meterDao" ref="meterDao"/>
     </bean>
     
@@ -189,6 +188,13 @@
                     <property name="displayName" value="Group Name"/>
                     <property name="type">
                       <bean class="com.cannontech.web.input.type.StringType"/>
+                    </property>
+                </bean>
+                <bean class="com.cannontech.web.input.InputBase">
+                    <property name="field" value="includeSubGroups"/>
+                    <property name="displayName" value="Include Sub Groups"/>
+                    <property name="type">
+                      <bean class="com.cannontech.web.input.type.BooleanType"/>
                     </property>
                 </bean>
               </list>

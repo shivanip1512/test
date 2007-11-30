@@ -1,33 +1,28 @@
 package com.cannontech.analysis.tablemodel;
 
 import java.util.ArrayList;
-import java.util.Date;
 import java.util.LinkedHashMap;
 import java.util.List;
 
+import org.apache.commons.lang.BooleanUtils;
 import org.springframework.beans.factory.annotation.Required;
 
 import com.cannontech.amr.meter.dao.MeterDao;
 import com.cannontech.amr.meter.model.Meter;
 import com.cannontech.clientutils.CTILogger;
-import com.cannontech.common.device.YukonDevice;
-import com.cannontech.common.device.groups.dao.DeviceGroupProviderDao;
 import com.cannontech.common.device.groups.model.DeviceGroup;
 import com.cannontech.common.device.groups.service.DeviceGroupService;
-import com.cannontech.core.service.DateFormattingService;
-import com.cannontech.database.data.lite.LitePoint;
-import com.cannontech.database.data.lite.LiteYukonPAObject;
 import com.cannontech.database.data.lite.LiteYukonUser;
 
 public class GroupDevicesModel extends BareReportModelBase<GroupDevicesModel.ModelRow> implements ReportModelMetaInfo {
     
     // dependencies
     private DeviceGroupService deviceGroupService = null;
-    private DeviceGroupProviderDao deviceGroupDao = null;
     private MeterDao meterDao = null;
     
     // inputs
-    String groupName;
+    private String groupName;
+    private boolean includeSubGroups = false;
 
     // member variables
     private static String title = "Group Devices Report";
@@ -46,12 +41,15 @@ public class GroupDevicesModel extends BareReportModelBase<GroupDevicesModel.Mod
     public void doLoadData() {
         
         DeviceGroup group = deviceGroupService.resolveGroupName(groupName);
-        List<YukonDevice> deviceList = deviceGroupDao.getChildDevices(group);
         
-        for (YukonDevice device : deviceList) {
-            
-            int deviceId = device.getDeviceId();
-            Meter meter = meterDao.getForId(deviceId);
+        List<Meter> deviceList;
+        if (includeSubGroups) {
+            deviceList = meterDao.getMetersByGroup(group);
+        } else {
+            deviceList = meterDao.getChildMetersByGroup(group);
+        }
+        
+        for (Meter meter : deviceList) {
             
             GroupDevicesModel.ModelRow row = new GroupDevicesModel.ModelRow();
             row.name = meterDao.getFormattedDeviceName(meter);
@@ -72,6 +70,7 @@ public class GroupDevicesModel extends BareReportModelBase<GroupDevicesModel.Mod
         LinkedHashMap<String, String> info = new LinkedHashMap<String, String>();
         
         info.put("Group", groupName);
+        info.put("Include Sub Groups", BooleanUtils.toStringYesNo(includeSubGroups));
         return info;
     }
     
@@ -107,12 +106,15 @@ public class GroupDevicesModel extends BareReportModelBase<GroupDevicesModel.Mod
     }
 
     @Required
-    public void setDeviceGroupDao(DeviceGroupProviderDao deviceGroupDao) {
-        this.deviceGroupDao = deviceGroupDao;
-    }
-
-    @Required
     public void setMeterDao(MeterDao meterDao) {
         this.meterDao = meterDao;
+    }
+
+    public boolean isIncludeSubGroups() {
+        return includeSubGroups;
+    }
+
+    public void setIncludeSubGroups(boolean includeSubGroups) {
+        this.includeSubGroups = includeSubGroups;
     }
 }
