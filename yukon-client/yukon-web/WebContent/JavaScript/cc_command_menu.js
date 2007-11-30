@@ -389,7 +389,6 @@ function generateCapBankMenu (id, state, opts) {
 //helper function to set opcounts
 function enableOpCounts (pao_id) {
 	window.document.getElementById ("cmdDiv"+pao_id).style.display = 'none';	
-	window.document.getElementById ("cb_state_td_hdr1").style.display = '';
 	window.document.getElementById ("cb_state_td_hdr2").style.display = '';
 	enableDisplayAll ('capBankTable');
     var invis_idx = 4;
