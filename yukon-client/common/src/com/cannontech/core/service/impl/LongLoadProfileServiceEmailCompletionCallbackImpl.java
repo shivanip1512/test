@@ -31,8 +31,6 @@ public class LongLoadProfileServiceEmailCompletionCallbackImpl implements LongLo
     private DefaultEmailMessage failureMessage = new DefaultEmailMessage();
     private DefaultEmailMessage cancelMessage = new DefaultEmailMessage();
     
-    private TemplateProcessor tp = new SimpleTemplateProcessor();
-    
     private final String baseSubjectFormat = "Profile data collection for {formattedDeviceName} from {startDate} - {stopDate} {status}";
 
     private String base_template_plain = "{statusMsg}\n\n" + "Device Summary\n" + "Device Name: {deviceName}\n" + "Meter Number: {meterNumber}\n" + "Physical Address: {physAddress}\n\n" + "Request Range: {startDate} to {stopDate}\n" + "Total Requested Days: {totalDays} \n\n";
@@ -69,6 +67,7 @@ public class LongLoadProfileServiceEmailCompletionCallbackImpl implements LongLo
         msgData.put("status", "completed");
         msgData.put("statusMsg", "Your profile data collection request has completed.");
 
+        TemplateProcessor tp = new SimpleTemplateProcessor();
         String subject = tp.process(baseSubjectFormat, msgData);
         String body = tp.process(success_template_plain, msgData);
         String htmlBody = tp.process(success_template_html, msgData);
@@ -81,6 +80,7 @@ public class LongLoadProfileServiceEmailCompletionCallbackImpl implements LongLo
         msgData.put("status", "failed");
         msgData.put("statusMsg", "Your profile data collection request has encountered an error.");
 
+        TemplateProcessor tp = new SimpleTemplateProcessor();
         String subject = tp.process(baseSubjectFormat, msgData);
         String body = tp.process(failure_template_plain, msgData);
         String htmlBody = tp.process(failure_template_html, msgData);
@@ -94,6 +94,7 @@ public class LongLoadProfileServiceEmailCompletionCallbackImpl implements LongLo
         msgData.put("status", "canceled");
         msgData.put("statusMsg", "Your profile data collection was canceled.");
 
+        TemplateProcessor tp = new SimpleTemplateProcessor();
         String subject = tp.process(baseSubjectFormat, msgData);
         String body = tp.process(cancel_template_plain, msgData);
         String htmlBody = tp.process(cancel_template_html, msgData);
