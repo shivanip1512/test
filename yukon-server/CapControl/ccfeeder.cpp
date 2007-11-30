@@ -39,6 +39,7 @@ extern ULONG _POINT_AGE;
 extern ULONG _SCAN_WAIT_EXPIRE;
 extern BOOL _RETRY_FAILED_BANKS;
 extern BOOL _END_DAY_ON_TRIP;
+extern ULONG _MAX_KVAR;
 extern BOOL _LOG_MAPID_INFO;
 extern ULONG _LIKEDAY_OVERRIDE_TIMEOUT;
 
@@ -2084,7 +2085,11 @@ CtiRequestMsg* CtiCCFeeder::createIncreaseVarRequest(CtiCCCapBank* capBank, CtiM
 
     //Determine if we are at max KVAR and don't create the request if we are.
     if( checkForMaxKvar(capBank->getPAOId(), capBank->getBankSize() ) == false )
+    {
+        CtiLockGuard<CtiLogger> logger_guard(dout);
+        dout << CtiTime() << " Exceeded Max Kvar of "<< _MAX_KVAR<< ", not doing control. "  << endl;
         return reqMsg;
+    }
 
     setLastCapBankControlledDeviceId(capBank->getPAOId());
     capBank->setControlStatus(CtiCCCapBank::OpenPending);
