@@ -6,6 +6,7 @@ import java.text.NumberFormat;
 import java.text.SimpleDateFormat;
 import java.util.Calendar;
 import java.util.Date;
+import java.util.HashMap;
 import java.util.Locale;
 import java.util.Map;
 import java.util.Stack;
@@ -20,6 +21,7 @@ public class SimpleTemplateProcessor implements TemplateProcessor {
     private static Pattern pattern = Pattern.compile("\\{([^}|]+)(\\|([^}]+))?\\}");
     private Locale locale = Locale.getDefault();
     private TimeZone timeZone = TimeZone.getDefault();
+    private static Map<String, SimpleDateFormat> dateFormatCache = new HashMap<String, SimpleDateFormat>();
     
     /* (non-Javadoc)
      * @see com.cannontech.common.util.TemplateProcessor#process(java.lang.CharSequence, java.util.Map)
@@ -64,46 +66,58 @@ public class SimpleTemplateProcessor implements TemplateProcessor {
         return result.toString();
     }
     
+    private SimpleDateFormat getDateFormatter(String format) {
+        SimpleDateFormat simpleDateFormat = dateFormatCache.get(format);
+        if (simpleDateFormat == null) {
+            simpleDateFormat = new SimpleDateFormat(format);
+            dateFormatCache.put(format, simpleDateFormat);
+        }
+        return simpleDateFormat;
+    }
+    
     private CharSequence processToken(CharSequence token, Map<String, ? extends Object> values) {
-        Matcher matcher = pattern.matcher(token);
-        CharSequence result = token;
-        if (matcher.matches()) {
-            String key = matcher.group(1);
-            Object value = values.get(key);
-            if (value != null) {
-                String extra = matcher.group(3);
-                if (StringUtils.isNotBlank(extra)) {
-                    if (value instanceof Number) {
-                        NumberFormat format = new DecimalFormat(extra);
-                        result = format.format(value);
-                    } else if (value instanceof Date) {
-                        DateFormat format = new SimpleDateFormat(extra);
-                        format.setTimeZone(timeZone);
-                        result = format.format(value);
-                    } else if (value instanceof Calendar) {
-                        Calendar valueCal = (Calendar) value;
-                        DateFormat format = new SimpleDateFormat(extra);
-                        format.setCalendar(valueCal);
-                        result = format.format(valueCal.getTime());
-                    } else if (value instanceof Boolean) {
-                        boolean showFirst = (Boolean) value;
-                        // split extra on the | character
-                        String[] strings = extra.split("\\|", 2);
-                        if (showFirst) {
-                            result = strings[0];
+        // This is synchronized because it uses shared SimpleDateFormat objects. My thinking
+        // is that synchronizing is faster than constructing these things.
+        synchronized (SimpleTemplateProcessor.class) {
+            Matcher matcher = pattern.matcher(token);
+            CharSequence result = token;
+            if (matcher.matches()) {
+                String key = matcher.group(1);
+                Object value = values.get(key);
+                if (value != null) {
+                    String extra = matcher.group(3);
+                    if (StringUtils.isNotBlank(extra)) {
+                        if (value instanceof Number) {
+                            NumberFormat format = new DecimalFormat(extra);
+                            result = format.format(value);
+                        } else if (value instanceof Date) {
+                            DateFormat format = getDateFormatter(extra);
+                            format.setTimeZone(timeZone);
+                            result = format.format(value);
+                        } else if (value instanceof Calendar) {
+                            Calendar valueCal = (Calendar) value;
+                            DateFormat format = getDateFormatter(extra);
+                            format.setCalendar(valueCal);
+                            result = format.format(valueCal.getTime());
+                        } else if (value instanceof Boolean) {
+                            boolean showFirst = (Boolean) value;
+                            // split extra on the | character
+                            String[] strings = extra.split("\\|", 2);
+                            if (showFirst) {
+                                result = strings[0];
+                            } else {
+                                result = strings[1];
+                            }
                         } else {
-                            result = strings[1];
+                            result = "???";
                         }
                     } else {
-                        result = "???";
+                        result = value.toString();
                     }
-                } else {
-                    result = value.toString();
                 }
             }
+            return result;
         }
-
-        return result;
     }
 
     public boolean contains(CharSequence template, String key) {
