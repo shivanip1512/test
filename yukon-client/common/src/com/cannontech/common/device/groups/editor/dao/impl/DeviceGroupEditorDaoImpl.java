@@ -76,12 +76,14 @@ public class DeviceGroupEditorDaoImpl implements DeviceGroupEditorDao, DeviceGro
     @Override
     public List<StoredDeviceGroup> getNonStaticGroups(StoredDeviceGroup group) {
         // we're going to let the database ignore the parent group because we can do it easier in code
+        // on second thought, we'll exclude the parent, but otherwise ignore!
         SqlStatementBuilder sql = new SqlStatementBuilder();
         sql.append("select dg.*");
         sql.append("from DeviceGroup dg");
         sql.append("where dg.Type != 'STATIC'");
+        sql.append("and DeviceGroupId != ?");
         PartialDeviceGroupRowMapper mapper = new PartialDeviceGroupRowMapper();
-        List<PartialDeviceGroup> groups = jdbcTemplate.query(sql.toString(), mapper);
+        List<PartialDeviceGroup> groups = jdbcTemplate.query(sql.toString(), mapper, group.getId());
         
         PartialGroupResolver resolver = new PartialGroupResolver(this);
         resolver.addKnownGroups(group);
@@ -108,12 +110,14 @@ public class DeviceGroupEditorDaoImpl implements DeviceGroupEditorDao, DeviceGro
     @Override
     public List<StoredDeviceGroup> getStaticGroups(StoredDeviceGroup group) {
         // we're going to let the database ignore the parent group because we can do it easier in code
+        // on second thought, we'll exclude the parent, but otherwise ignore!
         SqlStatementBuilder sql = new SqlStatementBuilder();
         sql.append("select dg.*");
         sql.append("from DeviceGroup dg");
         sql.append("where dg.Type = 'STATIC'");
+        sql.append("and DeviceGroupId != ?");
         PartialDeviceGroupRowMapper mapper = new PartialDeviceGroupRowMapper();
-        List<PartialDeviceGroup> groups = jdbcTemplate.query(sql.toString(), mapper);
+        List<PartialDeviceGroup> groups = jdbcTemplate.query(sql.toString(), mapper, group.getId());
         
         PartialGroupResolver resolver = new PartialGroupResolver(this);
         resolver.addKnownGroups(group);
@@ -149,6 +153,19 @@ public class DeviceGroupEditorDaoImpl implements DeviceGroupEditorDao, DeviceGro
             rootGroupCache = resolver.resolvePartial(group);
         }
         return rootGroupCache;
+    }
+    
+    public StoredDeviceGroup getGroupByName(StoredDeviceGroup parent, String groupName) {
+        SqlStatementBuilder sql = new SqlStatementBuilder();
+        sql.append("select dg.*");
+        sql.append("from DeviceGroup dg");
+        sql.append("where dg.parentdevicegroupid = ? and dg.groupname = ?");
+        PartialDeviceGroupRowMapper mapper = new PartialDeviceGroupRowMapper();
+        PartialDeviceGroup group = jdbcTemplate.queryForObject(sql.toString(), mapper, parent.getId(), groupName);
+        PartialGroupResolver resolver = new PartialGroupResolver(this);
+        resolver.addKnownGroups(parent);
+        StoredDeviceGroup resolvedGroup = resolver.resolvePartial(group);
+        return resolvedGroup;
     }
     
     public StoredDeviceGroup addGroup(StoredDeviceGroup group, DeviceGroupType type, String groupName) {

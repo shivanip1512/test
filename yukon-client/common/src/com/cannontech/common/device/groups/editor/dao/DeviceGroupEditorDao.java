@@ -10,6 +10,7 @@ public interface DeviceGroupEditorDao {
 
     public List<StoredDeviceGroup> getChildGroups(StoredDeviceGroup group);
     
+    public StoredDeviceGroup getGroupByName(StoredDeviceGroup parent, String groupName);
     
     /**
      * This find all STATIC groups that are descendants of group.

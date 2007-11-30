@@ -52,6 +52,10 @@ public class StaticDeviceGroupProvider extends DeviceGroupProviderBase {
             result.addAll(tempGroups);
         }
         
+        // because the base implementation of this method returns everything
+        // in a pretty nice order, we should try to do the same
+        Collections.sort(result);
+        
         return Collections.unmodifiableList(result);
     }
     
@@ -88,6 +92,11 @@ public class StaticDeviceGroupProvider extends DeviceGroupProviderBase {
         }
 
         return result;
+    }
+    
+    @Override
+    public DeviceGroup getGroup(DeviceGroup base, String groupName) {
+        return deviceGroupEditorDao.getGroupByName(getStoredGroup(base), groupName);
     }
     
     public DeviceGroup getRootGroup() {
