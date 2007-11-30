@@ -29,8 +29,10 @@ public class TitledContainerTag extends TagSupport {
                     + "             <span class=\"t5\"></span>\n"
                     + "             <span class=\"t6\"></span>\n" 
                     + "           </span>\n                      "
-                    + "           <div class=\"title\">" + getTitle() + "</div>\n"
-                    + "           <div class=\"content\">\n");
+                    + "           <div class=\"titleBar roundedContainer_titleBar\">"
+                    + "           <div class=\"title roundedContainer_title\">" + getTitle() + "</div>"
+                    + "           </div>\n"
+                    + "           <div class=\"content roundedContainer_content\">\n");
         } catch (IOException e) {
             throw new JspException(e);
         }

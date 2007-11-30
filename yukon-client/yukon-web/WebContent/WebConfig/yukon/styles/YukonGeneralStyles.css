@@ -199,24 +199,24 @@ table.nameValueTable td.value {
 }
 
 /* Titled Container styles */
-div.roundedContainer{ 
+div.roundedContainer { 
 	width: 100%;
 	position: relative;
 }
-div.roundedContainer .content {
+div.roundedContainer .roundedContainer_content {
 	padding: 4px;
 	border-left: 1px solid #0066CC;
 	border-right: 1px solid #0066CC;
 }
 
-div.roundedContainer .title table {
+div.roundedContainer .roundedContainer_title table {
 	margin: 0;
 	padding: 0;
 	border: 0;
 	border-collapse: collapse;
 }
 
-div.roundedContainer .title {
+div.roundedContainer .roundedContainer_title {
 	padding: 0px 9px 6px 9px;
 	background: #0066CC;
 	font-weight: bold;
@@ -245,7 +245,7 @@ div.roundedContainer .rbottom span {
     background: #0066CC;
 }
 
-div.roundedContainer .content .makesNoSense {
+div.roundedContainer .roundedContainer_content .makesNoSense {
 	padding: 0;
 	margin: 0;
 	height: 0;
@@ -384,7 +384,7 @@ th.widgetInternalSectionSubHeader {
 	
 }
 
-div.triangleContainer .titleBar .controls { 
+div.triangleContainer .triangleContainer_titleBar .controls { 
     cursor: pointer;
 }
 
@@ -393,13 +393,13 @@ div.boxContainer{
 	margin-bottom: 10px;
 }
 
-div.boxContainer .titleBar { 
+div.boxContainer .boxContainer_titleBar { 
 	background-color: #F0F0F0;
 	border: 1px solid #BBBBBB;
 	padding: .25em .5em; 
 }
 
-div.boxContainer .titleBar .title { 
+div.boxContainer .boxContainer_titleBar .boxContainer_title { 
 	color: #0066CC;
 	line-height: 1.5em;
 	font-weight: bold;
@@ -407,13 +407,13 @@ div.boxContainer .titleBar .title {
     height: 100%;
 }
 
-div.boxContainer .titleBar .controls { 
+div.boxContainer .boxContainer_titleBar .controls { 
 	float: right;
 	text-align: center;
 	cursor: pointer;
 }
 
-div.boxContainer .titleBar .controls .minMax { 
+div.boxContainer .boxContainer_titleBar .controls .minMax { 
 	background-color: #BBBBBB;
   	border: none;
 	height: 16px;
@@ -423,7 +423,7 @@ div.boxContainer .titleBar .controls .minMax {
 	cursor: pointer;
 }
 
-div.boxContainer .content { 
+div.boxContainer .boxContainer_content { 
 	padding: .5em;
 	border-left: 1px solid #BBBBBB;
 	border-right: 1px solid #BBBBBB;

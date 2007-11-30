@@ -16,10 +16,10 @@
     <span class="t5"></span>
     <span class="t6"></span>
     </span>
-    <div class="titleBar">
-    <div class="title">${title}</div>
+    <div class="titleBar roundedContainer_titleBar">
+    <div class="title roundedContainer_title">${title}</div>
     </div>
-    <div class="content">
+    <div class="content roundedContainer_content">
 
     <jsp:doBody/>
 

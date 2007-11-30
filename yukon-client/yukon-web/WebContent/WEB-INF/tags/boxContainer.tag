@@ -14,7 +14,7 @@
 
 <div class="titledContainer boxContainer ${styleClass}" <c:if test="${!empty id}" >id="${id}"</c:if>>
 
-	<div class="titleBar">
+	<div class="titleBar boxContainer_titleBar">
 			<c:if test="${(hideEnabled == null) || hideEnabled}">
 		      <div class="controls" id="${thisId}_control">
 				<img 
@@ -29,12 +29,12 @@
 					src="<c:url value="/WebConfig/yukon/Icons/clearbits/add.gif"/>">
 		      </div>
 			</c:if>
-		<div class="title">
+		<div class="title boxContainer_title">
 			${title}
 		</div>
 	</div>
 	
-	<div id="${thisId}_content" class="content">
+	<div id="${thisId}_content" class="content boxContainer_content">
 		<jsp:doBody/>
 	</div>    
 	            
