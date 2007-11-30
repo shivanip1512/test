@@ -156,7 +156,7 @@ function createFeederTagMenu(feederID) {
 
 		disableFeeder = new Command (feederID, ALL_FDR_CMDS.enable_fdr, ALL_CMD_TYPES.feeder);
 		disFeederTag = new Command (feederID, "feederEnabled", ALL_CMD_TYPES.tag);
-		disableReason = getState("FeederState_" + feederID, "disableFdrReason");
+		disableReason = escape(getState("FeederState_" + feederID, "disableFdrReason"));
 
 	}
 	else
@@ -173,7 +173,7 @@ function createFeederTagMenu(feederID) {
 	{
 		disFeederOVUV = new Command (feederID, ALL_FDR_CMDS.send_all_enable_ovuv, ALL_CMD_TYPES.feeder);
 		disFeederOVUVTag = new Command (feederID, ALL_TAG_CMDS.feederOVUVEnabled, ALL_CMD_TYPES.tag);
-		disableOVUVReason = getState("FeederState_" + feederID, "disableOVUVFdrReason");
+		disableOVUVReason = escape(getState("FeederState_" + feederID, "disableOVUVFdrReason"));
 	}
 	else 
 	{
@@ -343,9 +343,9 @@ function createCapTagMenu (paoID) {
 	var isOVUVDis = getState("CapState_" + paoID, "isOVUVDis");
 	var isStandalone = getState("CapState_" + paoID, "isStandalone");
 	//reasons
-	var disableCapReason = getState("CapState_" + paoID, "disableCapReason");
-	var disableCapOVUVReason = getState("CapState_" + paoID, "disableCapOVUVReason");
-	var aloneReason = getState("CapState_" + paoID, "standAloneReason");
+	var disableCapReason = escape(getState("CapState_" + paoID, "disableCapReason"));
+	var disableCapOVUVReason = escape(getState("CapState_" + paoID, "disableCapOVUVReason"));
+	var aloneReason = escape(getState("CapState_" + paoID, "standAloneReason"));
 	
 	//variables used to hold command information
 	//we need to for enablement and ovuv because it is

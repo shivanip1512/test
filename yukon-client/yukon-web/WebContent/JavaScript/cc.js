@@ -394,7 +394,7 @@ function toggleCB(spanID, cb, reason) {
 		str = "";
 		str = "<font style='color:gray'>Reason: <textarea style='vertical-align: bottom' rows=\"2\">";
 		if (reason) {
-			str += reason;
+			str += unescape(reason);
 		}
 		str += "</textarea></font>";
 		span.innerHTML = str;
@@ -422,7 +422,7 @@ function generateReasonText(reason) {
 	var str = "";
 	str += "\" style=\"display: inline\" >";
 	str += "<font style=\"color:gray\">Reason: ";
-	str += "<textarea style='color: gray; vertical-align: bottom;' rows=\"2\" readonly>" + reason + "</textarea>";
+	str += "<textarea style='color: gray; vertical-align: bottom;' rows=\"2\" readonly>" + unescape(reason) + "</textarea>";
 	str += "</font>";
 	return str;
 }
