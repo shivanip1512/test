@@ -75,10 +75,10 @@
 	}
 	
 	// Get customer account information
-	GetCustAccountAction action = new GetCustAccountAction();
-	SOAPMessage reqMsg = action.build(request, session);
-	SOAPMessage respMsg = action.process(reqMsg, session);
-	action.parse(reqMsg, respMsg, session);
+	GetCustAccountAction getCustAccountAction = new GetCustAccountAction();
+	SOAPMessage reqMsg = getCustAccountAction.build(request, session);
+	SOAPMessage respMsg = getCustAccountAction.process(reqMsg, session);
+	getCustAccountAction.parse(reqMsg, respMsg, session);
 	
 	java.text.SimpleDateFormat datePart = new java.text.SimpleDateFormat("MM/dd/yy");
 	java.text.SimpleDateFormat timePart = new java.text.SimpleDateFormat("HH:mm");
