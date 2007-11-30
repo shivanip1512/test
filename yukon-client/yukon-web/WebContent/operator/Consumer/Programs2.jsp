@@ -135,7 +135,7 @@ function prepareSubmit(form) {
 <% if (!useHardwareAddressing) { %>
                     <td class="HeaderCell" width="25%">Group Assigned</td>
 <% } %>
-                    <td class="HeaderCell" width="50%">Hardware(s) Assigned</td>
+                    <td class="HeaderCell" width="50%">Hardware Assigned</td>
                   </tr>
                   <%
 	for (int i = 0; i < suPrograms.getSULMProgramCount(); i++) {

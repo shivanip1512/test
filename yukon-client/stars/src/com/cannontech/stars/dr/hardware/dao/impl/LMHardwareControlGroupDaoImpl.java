@@ -212,10 +212,13 @@ public class LMHardwareControlGroupDaoImpl implements LMHardwareControlGroupDao,
                 hardwareControlGroup.setInventoryId(rs.getInt("InventoryID"));
                 hardwareControlGroup.setLMGroupId(rs.getInt("LMGroupID"));
                 hardwareControlGroup.setAccountId(rs.getInt("AccountID"));
-                hardwareControlGroup.setGroupEnrollStart(rs.getDate("GroupEnrollStart"));
-                hardwareControlGroup.setGroupEnrollStop(rs.getDate("GroupEnrollStop"));
-                hardwareControlGroup.setOptOutStart(rs.getDate("OptOutStart"));
-                hardwareControlGroup.setOptOutStop(rs.getDate("OptOutStop"));
+                hardwareControlGroup.setGroupEnrollStart(rs.getTimestamp("GroupEnrollStart"));
+                hardwareControlGroup.setGroupEnrollStop(rs.getTimestamp("GroupEnrollStop"));
+                hardwareControlGroup.setOptOutStart(rs.getTimestamp("OptOutStart"));
+                hardwareControlGroup.setOptOutStop(rs.getTimestamp("OptOutStop"));
+                hardwareControlGroup.setType(rs.getInt("Type"));
+                hardwareControlGroup.setRelay(rs.getInt("Relay"));
+                hardwareControlGroup.setUserId(rs.getInt("UserId"));
                 return hardwareControlGroup;
             }
         };
