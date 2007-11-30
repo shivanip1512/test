@@ -6,10 +6,10 @@ import javax.servlet.jsp.JspException;
 import javax.servlet.jsp.JspWriter;
 
 import org.springframework.beans.factory.annotation.Configurable;
-import org.springframework.dao.EmptyResultDataAccessException;
 
 import com.cannontech.amr.meter.dao.MeterDao;
 import com.cannontech.amr.meter.model.Meter;
+import com.cannontech.core.dao.NotFoundException;
 import com.cannontech.core.dao.PaoDao;
 import com.cannontech.database.data.lite.LiteYukonPAObject;
 import com.cannontech.web.taglib.YukonTagSupport;
@@ -38,12 +38,12 @@ public class DeviceNameTag extends YukonTagSupport {
             try {
                 device = meterDao.getForId(deviceId);
                 formattedName = meterDao.getFormattedDeviceName(device);
-            } catch (EmptyResultDataAccessException e) {
+            } catch (NotFoundException e) {
                 // device is not a meter
                 try {
                     LiteYukonPAObject pao = paoDao.getLiteYukonPAO(deviceId);
                     formattedName = pao.getPaoName();
-                } catch (EmptyResultDataAccessException e1) {
+                } catch (NotFoundException e1) {
                     throw new JspException("deviceId: " + deviceId + " is not a valid deviceId");
                 }
             }

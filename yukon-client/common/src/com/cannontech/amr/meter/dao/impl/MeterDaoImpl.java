@@ -6,6 +6,8 @@ import java.util.List;
 import java.util.Map;
 
 import org.apache.commons.lang.Validate;
+import org.springframework.dao.DataAccessException;
+import org.springframework.dao.IncorrectResultSizeDataAccessException;
 import org.springframework.jdbc.core.JdbcOperations;
 import org.springframework.jdbc.core.simple.ParameterizedRowMapper;
 import org.springframework.jdbc.core.simple.SimpleJdbcOperations;
@@ -14,6 +16,7 @@ import com.cannontech.amr.meter.dao.MeterDao;
 import com.cannontech.amr.meter.model.Meter;
 import com.cannontech.common.util.SimpleTemplateProcessor;
 import com.cannontech.common.util.TemplateProcessor;
+import com.cannontech.core.dao.NotFoundException;
 import com.cannontech.core.dao.RoleDao;
 import com.cannontech.database.ListRowCallbackHandler;
 import com.cannontech.database.MaxRowCalbackHandlerRse;
@@ -43,22 +46,34 @@ public class MeterDaoImpl implements MeterDao {
     }
 
     public Meter getForId(Integer id) {
-        Meter meter = simpleJdbcTemplate.queryForObject(retrieveOneByIdSql, meterRowMapper, id);
-        return meter;
+        try {
+            Meter meter = simpleJdbcTemplate.queryForObject(retrieveOneByIdSql, meterRowMapper, id);
+            return meter;
+        } catch (IncorrectResultSizeDataAccessException e) {
+            throw new NotFoundException("Unknown meter id " + id);
+        }
     }
     
     public Meter getForMeterNumber(String meterNumber) {
-        Meter meter = simpleJdbcTemplate.queryForObject(retrieveOneByMeterNumberSql, 
-                                                        meterRowMapper, 
-                                                        meterNumber);
-        return meter;
+        try {
+            Meter meter = simpleJdbcTemplate.queryForObject(retrieveOneByMeterNumberSql, 
+                                                            meterRowMapper, 
+                                                            meterNumber);
+            return meter;
+        } catch (DataAccessException e) {
+            throw new NotFoundException("Unknown meter number " + meterNumber);
+        }
     }
     
     public Meter getForPaoName(String paoName) {
-        Meter meter = simpleJdbcTemplate.queryForObject(retrieveOneByPaoNameSql, 
-                                                        meterRowMapper, 
-                                                        paoName);
-        return meter;
+        try {
+            Meter meter = simpleJdbcTemplate.queryForObject(retrieveOneByPaoNameSql, 
+                                                            meterRowMapper, 
+                                                            paoName);
+            return meter;
+        } catch (DataAccessException e) {
+            throw new NotFoundException("Unknown pao name " + paoName);
+        }
     }
     
     public void save(Meter object) {
@@ -66,7 +81,6 @@ public class MeterDaoImpl implements MeterDao {
     }
     
     public String getFormattedDeviceName(Meter device) {
-        // the formatting string could be from a role property
         TemplateProcessor templateProcessor = new SimpleTemplateProcessor();
         String formattingStr = roleDao.getGlobalPropertyValue(ConfigurationRole.DEVICE_DISPLAY_TEMPLATE);
         Validate.notNull(formattingStr, "Device display template role property does not exist.");
