@@ -1,11 +1,13 @@
 package com.cannontech.amr.meter.dao.impl;
 
 import java.util.ArrayList;
+import java.util.Comparator;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 
 import org.apache.commons.lang.Validate;
+import org.springframework.beans.factory.annotation.Required;
 import org.springframework.dao.DataAccessException;
 import org.springframework.dao.IncorrectResultSizeDataAccessException;
 import org.springframework.jdbc.core.JdbcOperations;
@@ -14,6 +16,8 @@ import org.springframework.jdbc.core.simple.SimpleJdbcOperations;
 
 import com.cannontech.amr.meter.dao.MeterDao;
 import com.cannontech.amr.meter.model.Meter;
+import com.cannontech.common.device.groups.dao.DeviceGroupProviderDao;
+import com.cannontech.common.device.groups.model.DeviceGroup;
 import com.cannontech.common.util.SimpleTemplateProcessor;
 import com.cannontech.common.util.TemplateProcessor;
 import com.cannontech.core.dao.NotFoundException;
@@ -21,12 +25,14 @@ import com.cannontech.core.dao.RoleDao;
 import com.cannontech.database.ListRowCallbackHandler;
 import com.cannontech.database.MaxRowCalbackHandlerRse;
 import com.cannontech.roles.yukon.ConfigurationRole;
+import com.cannontech.util.NaturalOrderComparator;
 
 public class MeterDaoImpl implements MeterDao {
     private SimpleJdbcOperations simpleJdbcTemplate;
     private JdbcOperations jdbcOps;
     private ParameterizedRowMapper<Meter> meterRowMapper;
     private RoleDao roleDao;
+    private DeviceGroupProviderDao deviceGroupProviderDao;
     
     String retrieveMeterSql = 
         "select YukonPaObject.*, DeviceMeterGroup.*, DeviceCarrierSettings.*, DeviceRoutes.*, yporoute.paoName as route "
@@ -76,11 +82,45 @@ public class MeterDaoImpl implements MeterDao {
         }
     }
     
+    public List<Meter> getMetersByGroup(DeviceGroup group) {
+        String sqlWhereClause = deviceGroupProviderDao.getDeviceGroupSqlWhereClause(group, "Device.deviceId");
+        String sql = retrieveMeterSql + " where " + sqlWhereClause;
+        
+        List<Meter> meterList = simpleJdbcTemplate.query(sql, meterRowMapper);
+        
+        return meterList;
+    }
+    
+    public List<Meter> getChildMetersByGroup(DeviceGroup group) {
+        String sqlWhereClause = deviceGroupProviderDao.getChildDeviceGroupSqlWhereClause(group, "Device.deviceId");
+        String sql = retrieveMeterSql + " where " + sqlWhereClause;
+        
+        List<Meter> meterList = simpleJdbcTemplate.query(sql, meterRowMapper);
+        
+        return meterList;
+    }
+    
     public void save(Meter object) {
         throw new UnsupportedOperationException("maybe someday...");
     }
     
     public String getFormattedDeviceName(Meter device) {
+        String result;
+        if (device instanceof DisplayNameCachingMeter) {
+            DisplayNameCachingMeter cachingMeter = (DisplayNameCachingMeter) device;
+            if (cachingMeter.getDisplayNameCache() == null) {
+                result = computeDeviceName(device);
+                cachingMeter.setDisplayNameCache(result);
+            } else {
+                result = cachingMeter.getDisplayNameCache();
+            }
+        } else {
+            result = computeDeviceName(device);
+        }
+        return result;
+    }
+
+    private String computeDeviceName(Meter device) {
         TemplateProcessor templateProcessor = new SimpleTemplateProcessor();
         String formattingStr = roleDao.getGlobalPropertyValue(ConfigurationRole.DEVICE_DISPLAY_TEMPLATE);
         Validate.notNull(formattingStr, "Device display template role property does not exist.");
@@ -131,6 +171,17 @@ public class MeterDaoImpl implements MeterDao {
         return mspMeters;
     }
     
+    public Comparator<Meter> getMeterComparator() {
+        final NaturalOrderComparator naturalOrderComparator = new NaturalOrderComparator();
+        return new Comparator<Meter>() {
+            public int compare(Meter o1, Meter o2) {
+                String n1 = getFormattedDeviceName(o1);
+                String n2 = getFormattedDeviceName(o2);
+                return naturalOrderComparator.compare(n1,n2);
+            }
+        };
+    }
+    
     public void setMeterRowMapper(ParameterizedRowMapper<Meter> meterRowMapper) {
         this.meterRowMapper = meterRowMapper;
     }
@@ -145,5 +196,10 @@ public class MeterDaoImpl implements MeterDao {
     
     public void setJdbcOps(JdbcOperations jdbcOps) {
         this.jdbcOps = jdbcOps;
+    }
+    
+    @Required
+    public void setDeviceGroupProviderDao(DeviceGroupProviderDao deviceGroupProviderDao) {
+        this.deviceGroupProviderDao = deviceGroupProviderDao;
     }
 }
