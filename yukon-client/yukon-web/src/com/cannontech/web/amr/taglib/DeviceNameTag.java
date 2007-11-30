@@ -44,7 +44,7 @@ public class DeviceNameTag extends YukonTagSupport {
                     LiteYukonPAObject pao = paoDao.getLiteYukonPAO(deviceId);
                     formattedName = pao.getPaoName();
                 } catch (NotFoundException e1) {
-                    throw new JspException("deviceId: " + deviceId + " is not a valid deviceId");
+                    throw new JspException("deviceId: " + deviceId + " is not a valid deviceId", e1);
                 }
             }
             
