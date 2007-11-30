@@ -8595,6 +8595,7 @@ void CtiCCSubstationBus::restoreGuts(RWvistream& istrm)
     >> _phaseBvalue
     >> _phaseCvalue
     >> _likeDayControlFlag
+    >> _displayOrder
     >> _ccfeeders;
 
     _lastcurrentvarpointupdatetime = CtiTime(tempTime2);
@@ -8696,6 +8697,7 @@ void CtiCCSubstationBus::saveGuts(RWvostream& ostrm ) const
     << _phaseBvalue
     << _phaseCvalue
     << _likeDayControlFlag
+    << _displayOrder
     << _ccfeeders;
 }
 
@@ -8829,6 +8831,8 @@ CtiCCSubstationBus& CtiCCSubstationBus::operator=(const CtiCCSubstationBus& righ
 
         _lastWattPointTime = right._lastWattPointTime;
         _lastVoltPointTime = right._lastVoltPointTime;
+
+        _displayOrder = right._displayOrder;
 
         _ccfeeders.clear();
         for(LONG i=0;i<right._ccfeeders.size();i++)

@@ -63,6 +63,7 @@ public class SubBus extends StreamableCapObject implements PointQualityCheckable
     private Double phaseB = new Double(0.0);
     private Double phaseC = new Double(0.0);
     private String controlMethod = null;
+    private Integer displayOrder;
     
     /**
      * constructor comment.
@@ -744,5 +745,13 @@ public class SubBus extends StreamableCapObject implements PointQualityCheckable
 	public void setLikeDayControlFlag(Boolean likeDayControlFlag) {
 		this.likeDayControlFlag = likeDayControlFlag;
 	}
+
+    public Integer getDisplayOrder() {
+        return displayOrder;
+    }
+
+    public void setDisplayOrder(Integer displayOrder) {
+        this.displayOrder = displayOrder;
+    }
 
 }

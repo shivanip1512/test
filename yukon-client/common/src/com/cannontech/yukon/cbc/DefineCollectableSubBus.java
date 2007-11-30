@@ -104,7 +104,8 @@ public void restoreGuts(Object obj, com.roguewave.vsj.VirtualInputStream vstr, c
     subBus.setPhaseB( new Double( vstr.extractDouble() ));
     subBus.setPhaseC( new Double( vstr.extractDouble() ));
     subBus.setLikeDayControlFlag( ((int)vstr.extractUnsignedInt() == 1) ? new Boolean(true) : new Boolean(false) );
-    	subBus.setCcFeeders( VectorExtract.extractVector(vstr, polystr));
+    subBus.setDisplayOrder( new Integer( vstr.extractInt() ));
+    subBus.setCcFeeders( VectorExtract.extractVector(vstr, polystr));
 }
 
 /**
@@ -160,6 +161,7 @@ public void saveGuts(Object obj, com.roguewave.vsj.VirtualOutputStream vstr, com
     vstr.insertDouble( subBus.getPhaseB() );
     vstr.insertDouble( subBus.getPhaseC() );
     vstr.insertUnsignedInt( (subBus.getLikeDayControlFlag().booleanValue() == true) ? 1 : 0 );
+    vstr.insertInt( subBus.getDisplayOrder() );
 	VectorInsert.insertVector( subBus.getCcFeeders(), vstr, polystr );
 }
 }
