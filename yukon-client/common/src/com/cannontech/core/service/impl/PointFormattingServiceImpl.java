@@ -71,6 +71,7 @@ public class PointFormattingServiceImpl implements PointFormattingService {
             private Map<Integer, LiteState> stateCache = new HashMap<Integer, LiteState>();
             private Map<Integer, LiteUnitMeasure> unitCache = new HashMap<Integer, LiteUnitMeasure>();
             private Map<Integer, LitePointUnit> pointUnitCache = new HashMap<Integer, LitePointUnit>();
+            private Map<LiteYukonUser, TimeZone> timeZoneCache = new HashMap<LiteYukonUser, TimeZone>();
             
             public String getValueString(PointValueHolder data, String format, TimeZone timeZone) {
                 TemplateProcessor templateProcessor = new SimpleTemplateProcessor();
@@ -155,8 +156,12 @@ public class PointFormattingServiceImpl implements PointFormattingService {
             }
 
             public String getValueString(PointValueHolder value, String format, LiteYukonUser user) {
-                LiteEnergyCompany energyCompany = energyCompanyDao.getEnergyCompany(user);
-                TimeZone timeZone = energyCompanyDao.getEnergyCompanyTimeZone(energyCompany);
+                TimeZone timeZone = timeZoneCache.get(user);
+                if (timeZone == null) {
+                    LiteEnergyCompany energyCompany = energyCompanyDao.getEnergyCompany(user);
+                    timeZone = energyCompanyDao.getEnergyCompanyTimeZone(energyCompany);
+                    timeZoneCache.put(user, timeZone);
+                }
 
                 return getValueString(value, format, timeZone);
             }
@@ -170,9 +175,13 @@ public class PointFormattingServiceImpl implements PointFormattingService {
             }
             
             public String getValueString(PointValueHolder value, Format format, LiteYukonUser user) {
-                LiteEnergyCompany energyCompany = energyCompanyDao.getEnergyCompany(user);
-                TimeZone timeZone = energyCompanyDao.getEnergyCompanyTimeZone(energyCompany);
-                
+                TimeZone timeZone = timeZoneCache.get(user);
+                if (timeZone == null) {
+                    LiteEnergyCompany energyCompany = energyCompanyDao.getEnergyCompany(user);
+                    timeZone = energyCompanyDao.getEnergyCompanyTimeZone(energyCompany);
+                    timeZoneCache.put(user, timeZone);
+                }
+
                 return getValueString(value, format.getFormat(), timeZone);
             }
 
