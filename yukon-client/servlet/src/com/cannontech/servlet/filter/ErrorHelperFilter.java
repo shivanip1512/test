@@ -21,6 +21,7 @@ import javax.servlet.http.HttpSession;
 
 import org.apache.commons.lang.RandomStringUtils;
 import org.apache.commons.lang.StringUtils;
+import org.apache.commons.lang.exception.ExceptionUtils;
 import org.apache.log4j.Level;
 import org.apache.log4j.Logger;
 import org.apache.log4j.MDC;
@@ -127,7 +128,7 @@ public class ErrorHelperFilter  implements Filter {
 		} catch (Error e) {
 			Throwable rc = CtiUtilities.getRootCause(e);
             String key = setupUniqueLogKey(request);
-            CTILogger.error("Servlet error filter caught an Error processing {" + key + "}: " + getRequestInfo(request), rc);
+            CTILogger.error("Servlet error filter caught an Error processing {" + key + "}: " + getRequestInfo(request), e);
 			if (ServletUtil.isAjaxRequest(request)) {
 				handleAjaxErrorResponse(response, rc);
 			} else {
@@ -136,7 +137,7 @@ public class ErrorHelperFilter  implements Filter {
 		} catch (RuntimeException re) {
 		    Throwable rc = CtiUtilities.getRootCause(re);
 		    String key = setupUniqueLogKey(request);
-			handleException(request, rc, key);
+			handleException(request, re, key);
 			if (ServletUtil.isAjaxRequest(request)) {
 				handleAjaxErrorResponse(response, rc);
 			} else {
@@ -145,7 +146,7 @@ public class ErrorHelperFilter  implements Filter {
 		} catch (Throwable t) {
 		    Throwable rc = CtiUtilities.getRootCause(t);
 		    String key = setupUniqueLogKey(request);
-		    handleException(request, rc, key);
+		    handleException(request, t, key);
 			if (ServletUtil.isAjaxRequest(request)) {
 				handleAjaxErrorResponse(response, rc);
 			} else {
@@ -157,13 +158,24 @@ public class ErrorHelperFilter  implements Filter {
         }
 		
 	}
-
-    private void handleException(ServletRequest request, Throwable rc, String key) {
+	
+    private void handleException(ServletRequest request, Throwable t, String key) {
         Level level = Level.ERROR;
-        if (exceptionToIgnore.contains(rc.getClass())) {
+        if (ignoreException(t)) {
             level = Level.DEBUG;
         }
-        log.log(level, "Servlet error filter caught an exception processing {" + key + "}: " + getRequestInfo(request), rc);
+        log.log(level, "Servlet error filter caught an exception processing {" + key + "}: " + getRequestInfo(request), t);
+    }
+
+    private boolean ignoreException(Throwable t) {
+        Throwable exception = t;
+        while (exception != null) {
+            if (exceptionToIgnore.contains(exception.getClass())) {
+                return true;
+            }
+            exception = ExceptionUtils.getCause(exception);
+        }
+        return false;
     }
     
     private String setupUniqueLogKey(ServletRequest request) {
