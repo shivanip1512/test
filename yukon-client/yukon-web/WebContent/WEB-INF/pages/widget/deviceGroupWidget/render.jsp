@@ -16,17 +16,42 @@
 </script>
 
 <div id="currentGroups">
-	<div class="widgetInternalSectionHeader"> Current Groups </div>
-	<span id="currentGroupList">
-		<c:forEach var="removableGroup" items="${currentGroups}">
-			<div style="margin-left: 10px;">
-				${(empty removableGroup.name)? '[ Top Level ]' : removableGroup.fullName}<c:if test="${removableGroup.modifiable}"> (<ct:widgetLink method="remove" title="Remove" labelBusy="Removing" groupId="${removableGroup.id}">remove</ct:widgetLink>)</c:if> <br/>
-			</div>
-		</c:forEach>
-	</span>
+	<div class="widgetInternalSectionHeader">Current Groups</div>
+        <c:choose>
+            <c:when test="${not empty currentGroups}">
+  <table style="width: 100%">
+                <c:forEach var="group" items="${currentGroups}">
+                    <tr class="<ct:alternateRow odd="" even="altRow"/>">
+                        <td style="border: none">
+                           <c:url value="/spring/group/home" var="groupEditorUrl">
+                             <c:param name="groupName" value="${group.fullName}"/>
+                           </c:url>
+            
+                            <a href="${groupEditorUrl}">${group.fullName}</a>
+                        </td>
+                        <td style="border: none; width: 15px; text-align: center;">
+                            <c:choose>
+                                <c:when test="${group.modifiable}">
+                                <ct:widgetLink method="remove" title="Remove" labelBusy="Removing" groupId="${group.id}">
+                                    <img class="cssicon" src="<c:url value="/WebConfig/yukon/Icons/clearbits/close.gif"/>">
+                                </ct:widgetLink>
+                                </c:when>
+                                <c:otherwise>
+                                    <img class="graycssicon" title="Cannot remove device from group" src="<c:url value="/WebConfig/yukon/Icons/clearbits/close.gif"/>">
+                                </c:otherwise>
+                            </c:choose>
+                        </td>
+                    </tr>
+                </c:forEach>
+  </table>
+            </c:when>
+            <c:otherwise>
+                No Groups
+            </c:otherwise>
+        </c:choose> 
 </div>
 
-<br />
+<br>
 
 <div id="addGroups">
 
