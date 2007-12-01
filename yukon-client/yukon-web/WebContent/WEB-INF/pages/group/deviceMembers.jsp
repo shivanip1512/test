@@ -10,7 +10,11 @@
 				<c:forEach var="device" items="${deviceList}">
 					<tr class="<tags:alternateRow odd="" even="altRow"/>">
 						<td style="border: none;">
-							<cti:deviceName deviceId="${device.deviceId}" />
+                           <c:url value="/spring/csr/home" var="csrHomeUrl">
+                             <c:param name="deviceId" value="${device.deviceId}"/>
+                           </c:url>
+            
+							<a href="${csrHomeUrl}"><cti:deviceName device="${device}" /></a>
 						</td>
 						<td style="border: none; width: 15px;text-align: center;">
 							
