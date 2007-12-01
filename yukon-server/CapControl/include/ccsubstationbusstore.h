@@ -105,6 +105,7 @@ public:
     bool UpdateAreaDisableFlagInDB(CtiCCArea* bus);
     bool UpdateSpecialAreaDisableFlagInDB(CtiCCSpecial* area);
     bool UpdateBusDisableFlagInDB(CtiCCSubstationBus* bus);
+    bool UpdateSubstationDisableFlagInDB(CtiCCSubstation* station);
     bool UpdateBusVerificationFlagsInDB(CtiCCSubstationBus* bus);
     bool UpdateFeederDisableFlagInDB(CtiCCFeeder* feeder);
     bool UpdateCapBankDisableFlagInDB(CtiCCCapBank* capbank);
