@@ -28,10 +28,9 @@ import com.cannontech.yukon.conns.ConnPool;
 
 @SuppressWarnings("serial")
 public class CBCReasonUpdaterServlet extends HttpServlet {
-
-    private CBCTagHandler handler;
     private ClientConnection dispatchConn;
-
+    
+    @Override
     protected void service(HttpServletRequest req, HttpServletResponse resp)
             throws ServletException, IOException {
 
@@ -54,7 +53,7 @@ public class CBCReasonUpdaterServlet extends HttpServlet {
         }
 
         else {
-            handler = (CBCTagHandler) servletContext.getAttribute(OnelineCBCServlet.TAGHANDLER);
+            CBCTagHandler handler = (CBCTagHandler) servletContext.getAttribute(OnelineCBCServlet.TAGHANDLER);
             LiteYukonPAObject liteYukonPAO = DaoFactory.getPaoDao()
                                                        .getLiteYukonPAO(paoID.intValue());
             DBPersistent dbPers = LiteFactory.convertLiteToDBPers(liteYukonPAO);
@@ -98,11 +97,10 @@ public class CBCReasonUpdaterServlet extends HttpServlet {
     }
 
     private synchronized ClientConnection getDispatchConn() {
-        if (dispatchConn == null)
-            return (ClientConnection) ConnPool.getInstance()
-                                              .getDefDispatchConn();
-        else
-            return dispatchConn;
+        if (dispatchConn == null) {
+            dispatchConn = (ClientConnection) ConnPool.getInstance().getDefDispatchConn();
+        }    
+        return dispatchConn;
     }
 
 
