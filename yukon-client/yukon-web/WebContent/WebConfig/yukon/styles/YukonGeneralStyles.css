@@ -59,6 +59,18 @@ div.simplePopup h2 {
   font-size: 1.4em
 }
 
+div.internalSectionHeader {
+	padding-top: 5px; 
+	padding-bottom: 5px; 
+	margin-left: 5px;
+}
+
+span.internalSectionHeader {
+	padding-top: 5px; 
+	padding-bottom: 5px; 
+	margin-left: 5px;
+}
+
 /* Data results table styles */
 table.resultsTable {
 	width: 95%;	

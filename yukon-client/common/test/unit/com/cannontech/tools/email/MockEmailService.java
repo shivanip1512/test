@@ -21,4 +21,9 @@ public class MockEmailService implements EmailService {
         return sentMessages;
     }
 
+    public DefaultEmailMessage getEmailer(String email, String subject, String body) {
+        // TODO Auto-generated method stub
+        return null;
+    }
+
 }

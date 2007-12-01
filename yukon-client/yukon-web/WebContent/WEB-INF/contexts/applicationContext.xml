@@ -348,16 +348,6 @@ http://www.springframework.org/schema/aop http://www.springframework.org/schema/
         </property>
     </bean>
     
-    <bean id="peakReportService"
-      class="com.cannontech.common.device.peakReport.service.impl.PeakReportServiceImpl">
-	  <property name="dateFormattingService" ref="dateFormattingService"/>
-	  <property name="dbPersistentDao" ref="dbPersistentDao"/>
-	  <property name="paoDao" ref="paoDao"/>
-      <property name="commandRequestExecutor" ref="commandRequestExecutor" />
-      <property name="meterDao" ref="meterDao"/>
-      <property name="peakReportDao" ref="peakReportDao" />
-    </bean>
-    
     <bean id="pointDataUpdateRegistrationService"
         class="com.cannontech.web.updater.point.PointDataRegistrationServiceImpl" abstract="false">
         <property name="updaterService">

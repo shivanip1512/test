@@ -13,6 +13,7 @@ import org.springframework.dao.IncorrectResultSizeDataAccessException;
 import org.springframework.jdbc.core.JdbcOperations;
 import org.springframework.jdbc.core.simple.ParameterizedRowMapper;
 import org.springframework.jdbc.core.simple.SimpleJdbcOperations;
+import org.springframework.transaction.annotation.Transactional;
 
 import com.cannontech.amr.meter.dao.MeterDao;
 import com.cannontech.amr.meter.model.Meter;
@@ -30,6 +31,7 @@ import com.cannontech.util.NaturalOrderComparator;
 public class MeterDaoImpl implements MeterDao {
     private SimpleJdbcOperations simpleJdbcTemplate;
     private JdbcOperations jdbcOps;
+    private SimpleJdbcOperations jdbcTemplate;
     private ParameterizedRowMapper<Meter> meterRowMapper;
     private RoleDao roleDao;
     private DeviceGroupProviderDao deviceGroupProviderDao;
@@ -42,7 +44,7 @@ public class MeterDaoImpl implements MeterDao {
         + "left outer join DeviceCarrierSettings on Device.deviceId = DeviceCarrierSettings.deviceId "
         + "left outer join DeviceRoutes on Device.deviceId = DeviceRoutes.deviceId "
         + "left outer join YukonPaObject yporoute on DeviceRoutes.routeId = yporoute.paObjectId ";
-
+    
     String retrieveOneByIdSql = retrieveMeterSql + "where YukonPaObject.paObjectId = ? ";
     String retrieveOneByMeterNumberSql = retrieveMeterSql + "where DeviceMeterGroup.MeterNumber = ? ";
     String retrieveOneByPaoNameSql = retrieveMeterSql + "where YukonPaobject.PaoName = ? ";
@@ -51,6 +53,41 @@ public class MeterDaoImpl implements MeterDao {
         throw new UnsupportedOperationException("maybe someday...");
     }
 
+    @Transactional
+    public void update(Meter prevMeterInfo, Meter newMeterInfo){
+        String sqlUpdate;
+        
+        // Updates the meter's name and the meter's type
+        sqlUpdate =
+            " UPDATE YukonPAObject" 
+            + " SET PAOName = ?, Type = ?" 
+            + " WHERE PAObjectID = ?";
+        jdbcOps.update(sqlUpdate, new Object[] {
+                    newMeterInfo.getName(),
+                    newMeterInfo.getTypeStr(),
+                    prevMeterInfo.getDeviceId()});
+        
+        // Updates the meter's meter number
+        sqlUpdate = 
+            " UPDATE DEVICEMETERGROUP" 
+            + " SET METERNUMBER = ?" 
+            + " WHERE DEVICEID = ? ";
+        
+        jdbcOps.update(sqlUpdate, new Object[] {
+                       newMeterInfo.getMeterNumber(),
+                       prevMeterInfo.getDeviceId()});
+
+        // Updates the meter's address
+        sqlUpdate = 
+            " UPDATE DeviceCarrierSettings" 
+            + " SET Address = ?" 
+            + " WHERE DEVICEID = ? ";
+        
+        jdbcOps.update(sqlUpdate, new Object[] {
+                       newMeterInfo.getAddress(),
+                       prevMeterInfo.getDeviceId()});
+    }
+    
     public Meter getForId(Integer id) {
         try {
             Meter meter = simpleJdbcTemplate.queryForObject(retrieveOneByIdSql, meterRowMapper, id);

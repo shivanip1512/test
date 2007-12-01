@@ -101,7 +101,7 @@ public class ScheduledOneTimeJobDaoImpl extends JobDaoBase implements ScheduledO
             // create the Job entry first
             insertJob(oneTimeJob);
             // create ScheduledOneTimeJob entry
-            template.save(oneTimeJob);
+            template.insert(oneTimeJob);
 
         } catch (RuntimeException e) {
             // if an exception gets thrown, the transaction will be rolled back

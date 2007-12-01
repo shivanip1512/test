@@ -1,0 +1,41 @@
+<%@ taglib tagdir="/WEB-INF/tags" prefix="ct"%>
+<%@ taglib uri="http://cannontech.com/tags/cti" prefix="cti"%>
+<%@ taglib uri="http://java.sun.com/jsp/jstl/core" prefix="c"%>
+<c:url var="moveOutFormUrl"
+    value="/WEB-INF/pages/moveInMoveOut/moveOutForm.jsp" />
+<c:url var="moveOutResultsUrl"
+    value="/WEB-INF/pages/moveInMoveOut/moveOutResults.jsp" />
+
+<cti:standardPage title="Move Out Page" module="amr">
+    <cti:standardMenu menuSelection="deviceselection" />
+    <cti:breadCrumbs>
+        <cti:crumbLink url="/operator/Operations.jsp"
+            title="Operations Home" />
+        <cti:crumbLink url="/spring/csr/search" title="Device Selection" />
+        <cti:crumbLink url="/spring/csr/home?deviceId=${meter.deviceId}"
+            title="Device Detail" />
+        &gt; Move Out
+    </cti:breadCrumbs>
+
+    <body>
+        <c:choose>
+            <c:when test="${not (submissionType eq 'moveOut')}">
+                
+                <div id="meterinfo" style="width: 400px">
+                    <ct:widget bean="meterInformationWidget"
+                        identify="false" deviceId="${deviceId}"
+                        hideEnabled="false" />
+                </div>
+                
+                <div id="moveout">
+                    <jsp:include page="${moveOutFormUrl}" />
+                </div>
+            </c:when>
+            <c:otherwise>
+                <div id="results">
+                    <jsp:include page="${moveOutResultsUrl}" />
+                </div>
+            </c:otherwise>
+        </c:choose>
+    </body>
+</cti:standardPage>

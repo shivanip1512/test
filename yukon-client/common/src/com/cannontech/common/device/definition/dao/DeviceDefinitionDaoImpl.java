@@ -128,7 +128,7 @@ public class DeviceDefinitionDaoImpl implements DeviceDefinitionDao {
         }
     }
 
-    public Set<DevicePointIdentifier> getDevicePointIdentifiersForAttributes(YukonDevice device, Set<? extends Attribute> attributes) {
+    public Set<DevicePointIdentifier> getDevicePointIdentifierForAttributes(YukonDevice device, Set<? extends Attribute> attributes) {
     	
         Set<DevicePointIdentifier> pointSet = new HashSet<DevicePointIdentifier>(attributes.size());
         for (Attribute attribute : attributes) {

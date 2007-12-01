@@ -54,12 +54,24 @@
                     <!-- Actions: High Bill Complaint -->
 					<c:choose>
 						<c:when test="${highBillSupported}">
+                            <c:url var="moveInUrl" value="/spring/moveInMoveOut/moveIn">
+                                <c:param name="deviceId" value="${deviceId}" />
+                            </c:url>
+                            <a href="${moveInUrl}">Move In</a> <br />
+
+                            <c:url var="moveOutUrl" value="/spring/moveInMoveOut/moveOut">
+                                <c:param name="deviceId" value="${deviceId}" />
+                            </c:url>
+                            <a href="${moveOutUrl}">Move Out</a> <br />
+
 							<c:url var="highBillUrl" value="/spring/csr/highBill">
 								<c:param name="deviceId" value="${deviceId}" />
 							</c:url>
 							<a href="${highBillUrl}">High Bill Complaint</a>
 						</c:when>
 						<c:otherwise>
+                        Customer Move In (not supported) <br />
+                        Customer Move Out (not supported) <br />
 						High Bill Complaint (not supported)
 						</c:otherwise>
 					</c:choose>
@@ -105,6 +117,12 @@
 						<a href="${commanderUrl}">Manual Commander</a>
 						<br>
 					</cti:checkRole>
+                    
+                    <c:url var="commanderUrl" value="/spring/moveInMoveOut/moveInMoveOut">
+                        <c:param name="deviceId" value="${deviceId}" />
+                    </c:url>
+                    <br />
+                    
 				</ct:boxContainer>
 
 			</td>

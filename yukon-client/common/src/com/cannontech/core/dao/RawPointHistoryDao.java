@@ -22,6 +22,19 @@ public interface RawPointHistoryDao {
     }
 
     /**
+     * Method to get a point value for a given time.
+     * 
+     * See note about start and stop order.
+     * 
+     * @param pointId - Id of point to get values for
+     * @param startDate - Start of time period
+     * @param stopDate - End of time period
+     * @return List of values for the point
+     */
+    public PointValueHolder getPointData(int pointId, Date date);
+    
+    
+    /**
      * Method to get a list of point values for a given time period.
      * 
      * See note about start and stop order.

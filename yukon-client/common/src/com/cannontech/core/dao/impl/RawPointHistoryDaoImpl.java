@@ -30,6 +30,20 @@ public class RawPointHistoryDaoImpl implements RawPointHistoryDao {
         this.jdbcTemplate = jdbcTemplate;
     }
 
+    private static final String sqlBasePoint = 
+        "SELECT DISTINCT                                           " + 
+        "       rph.pointid,                                                    " + 
+        "       rph.timestamp,                                                  " + 
+        "       rph.value,                                                      " + 
+        "       p.pointtype                                                     " + 
+        "   FROM                                                                " + 
+        "       rawpointhistory rph,                                            " + 
+        "       point p                                                         " + 
+        "   WHERE                                                               " + 
+        "       rph.pointid IN (?)                                              " + 
+        "       AND rph.timestamp = ?                                           " + 
+        "       AND rph.pointid = p.pointid                                     ";
+    
     private static final String sqlBase = 
         "SELECT DISTINCT                                           " + 
         "       rph.pointid,                                                    " + 
@@ -53,6 +67,19 @@ public class RawPointHistoryDaoImpl implements RawPointHistoryDao {
         sqlBase + 
         "   ORDER BY " + 
         "       rph.timestamp DESC";
+
+    
+    public PointValueHolder getPointData(int pointId, Date date) {
+        PointValueHolder result;
+        List<PointValueHolder> results = jdbcTemplate.query(sqlBasePoint, new LiteRPHRowMapper(), pointId, date);
+        if(results.isEmpty()){
+            return null;
+        }else{
+            result = results.get(0);
+        }
+
+        return result;
+    }
     
     public List<PointValueHolder> getPointData(int pointId, Date startDate, Date stopDate) {
         List<PointValueHolder> result;

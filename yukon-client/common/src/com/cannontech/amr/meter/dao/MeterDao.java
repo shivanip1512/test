@@ -23,4 +23,7 @@ public interface MeterDao extends StandardDaoOperations<Meter> {
     public List<Meter> getChildMetersByGroup(DeviceGroup group);
     
     public Comparator<Meter> getMeterComparator();
+    
+    public void update(Meter prevMeterInfo, Meter newMeterInfo);
+    
 }

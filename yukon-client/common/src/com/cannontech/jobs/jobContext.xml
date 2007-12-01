@@ -1,24 +1,26 @@
 <?xml version="1.0" encoding="UTF-8"?>
 <beans xmlns="http://www.springframework.org/schema/beans"
-       xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
-       xmlns:aop="http://www.springframework.org/schema/aop"
-       xmlns:tx="http://www.springframework.org/schema/tx"
-       xsi:schemaLocation="
+    xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+    xmlns:aop="http://www.springframework.org/schema/aop"
+    xmlns:tx="http://www.springframework.org/schema/tx"
+    xsi:schemaLocation="
        http://www.springframework.org/schema/beans http://www.springframework.org/schema/beans/spring-beans-2.0.xsd
        http://www.springframework.org/schema/tx http://www.springframework.org/schema/tx/spring-tx-2.0.xsd
        http://www.springframework.org/schema/aop http://www.springframework.org/schema/aop/spring-aop-2.0.xsd">
 
     <!-- <tx:annotation-driven/> -->
-    <bean id="yukonJobDefinitionFactory" class="org.springframework.beans.factory.config.ServiceLocatorFactoryBean">
-        <property name="serviceLocatorInterface" value="com.cannontech.jobs.support.YukonJobDefinitionFactory"/>
+    <bean id="yukonJobDefinitionFactory"
+        class="org.springframework.beans.factory.config.ServiceLocatorFactoryBean">
+        <property name="serviceLocatorInterface"
+            value="com.cannontech.jobs.support.YukonJobDefinitionFactory" />
     </bean>
-    
+
     <bean id="jobStatusDao" class="com.cannontech.jobs.dao.impl.JobStatusDaoImpl">
         <property name="jdbcTemplate" ref="simpleJdbcTemplate"/>
         <property name="nextValueHelper" ref="nextValueHelper"/>
         <property name="yukonJobMapper" ref="yukonJobBaseRowMapper"/>
     </bean>
-    
+
     <bean id="yukonJobBaseRowMapper" class="com.cannontech.jobs.dao.impl.YukonJobBaseRowMapper">
         <property name="beanDefinitionFactory" ref="yukonJobDefinitionFactory"/>
         <property name="jdbcTemplate" ref="jdbcTemplate"/>
@@ -36,22 +38,124 @@
         <property name="nextValueHelper" ref="nextValueHelper"/>
         <property name="yukonJobMapper" ref="yukonJobBaseRowMapper"/>
     </bean>
-    
+
     <bean id="scheduledOneTimeJobDao" class="com.cannontech.jobs.dao.impl.ScheduledOneTimeJobDaoImpl">
         <property name="jdbcTemplate" ref="simpleJdbcTemplate"/>
         <property name="nextValueHelper" ref="nextValueHelper"/>
         <property name="yukonJobMapper" ref="yukonJobBaseRowMapper"/>
     </bean>
-    
-    <bean id="jobScheduledExecutor" class="com.cannontech.common.util.ScheduledExecutorDelegate">
-       <property name="service">
+
+    <bean id="jobScheduledExecutor"
+        class="com.cannontech.common.util.ScheduledExecutorDelegate">
+        <property name="service">
             <bean class="java.util.concurrent.Executors"
                 factory-method="newScheduledThreadPool"
                 destroy-method="shutdownNow">
                 <constructor-arg value="2" />
             </bean>
-       </property>
+        </property>
     </bean>
+
+    <!-- Moving JobDefinitions -->
+    <bean id="moveInJob" class="com.cannontech.jobs.support.SimpleYukonJobDefinition">
+        <property name="taskName"><idref local="moveInTask" /></property>
+        <property name="title" value="Move In Job" />
+        <property name="inputs">
+            <bean class="com.cannontech.web.input.InputRoot">
+                <property name="inputList">
+                    <list>
+                        <bean class="com.cannontech.web.input.InputBase">
+                            <property name="field" value="meter" />
+                            <property name="displayName" value="Meter" />
+                            <property name="type">
+                                <bean class="com.cannontech.web.input.type.MeterType" >
+                                    <property name="meterDao" ref="meterDao" />
+                                </bean>
+                            </property>
+                        </bean>
+                        <bean class="com.cannontech.web.input.InputBase">
+                            <property name="field" value="newMeterNumber" />
+                            <property name="displayName" value="New Meter Number" />
+                            <property name="type">
+                                <bean class="com.cannontech.web.input.type.StringType" />
+                            </property>
+                        </bean>
+                        <bean class="com.cannontech.web.input.InputBase">
+                            <property name="field" value="newMeterName" />
+                            <property name="displayName" value="New Meter Name" />
+                            <property name="type">
+                                <bean class="com.cannontech.web.input.type.StringType" />
+                            </property>
+                        </bean>
+                        <bean class="com.cannontech.web.input.InputBase">
+                            <property name="field" value="emailAddress" />
+                            <property name="displayName" value="Email Address" />
+                            <property name="type">
+                                <bean class="com.cannontech.web.input.type.StringType" />
+                            </property>
+                        </bean>
+                        <bean class="com.cannontech.web.input.InputBase">
+                            <property name="field" value="moveInDate" />
+                            <property name="displayName" value="Move In Date" />
+                            <property name="type">
+                                <bean class="com.cannontech.web.input.type.DateType" />
+                            </property>
+                        </bean>
+                    </list>
+                </property>
+            </bean>
+        </property>
+    </bean>
+
+    <bean id="moveOutJob" class="com.cannontech.jobs.support.SimpleYukonJobDefinition">
+        <property name="taskName"><idref local="moveOutTask" /></property>
+        <property name="title" value="Move Out Job" />
+        <property name="inputs">
+            <bean class="com.cannontech.web.input.InputRoot">
+                <property name="inputList">
+                    <list>
+                        <bean class="com.cannontech.web.input.InputBase">
+                            <property name="field" value="meter" />
+                            <property name="displayName" value="Meter" />
+                            <property name="type">
+                                <bean class="com.cannontech.web.input.type.MeterType" >
+                                    <property name="meterDao" ref="meterDao" />
+                                </bean>
+                            </property>
+                        </bean>
+                        <bean class="com.cannontech.web.input.InputBase">
+                            <property name="field" value="emailAddress" />
+                            <property name="displayName" value="Email Address" />
+                            <property name="type">
+                                <bean class="com.cannontech.web.input.type.StringType" />
+                            </property>
+                        </bean>
+                        <bean class="com.cannontech.web.input.InputBase">
+                            <property name="field" value="moveOutDate" />
+                            <property name="displayName" value="Move Out Date" />
+                            <property name="type">
+                                <bean class="com.cannontech.web.input.type.DateType" />
+                            </property>
+                        </bean>
+                    </list>
+                </property>
+            </bean>
+        </property>
+    </bean>
+
+    <!--  Moving Tasks -->
+    <bean id="moveInTask" class="com.cannontech.jobs.tasks.MoveInTask">
+        <property name="moveInMoveOutService" ref="moveInMoveOutService" />
+        <property name="moveInMoveOutEmailService" ref="moveInMoveOutEmailService" />
+    </bean>
+
+    <bean id="moveOutTask" class="com.cannontech.jobs.tasks.MoveOutTask">
+        <property name="moveInMoveOutService" ref="moveInMoveOutService" />
+        <property name="moveInMoveOutEmailService" ref="moveInMoveOutEmailService" />
+        <property name="rphDao" ref="rphDao" />
+    </bean>
+
+
         <!--  temp: remove initialize method -->
     <bean id="jobManager" class="com.cannontech.jobs.service.impl.JobManagerImpl" init-method="initialize">
         <property name="timeSource" ref="timeSource"/>

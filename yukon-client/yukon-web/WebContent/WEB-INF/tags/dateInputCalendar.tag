@@ -4,6 +4,9 @@
 <%@ taglib uri="http://cannontech.com/tags/cti" prefix="cti" %>
 <%@ taglib uri="http://java.sun.com/jsp/jstl/core" prefix="c" %>
 
+<cti:includeScript link="/JavaScript/calendarControl.js"/>
+<cti:includeCss link="/WebConfig/yukon/styles/calendarControl.css"/>
+
 <cti:uniqueIdentifier var="uniqueId" prefix="dateInputCalendarId_"/>
 
 <input id="${uniqueId}" name="${fieldName}" type="text" size="10" maxlength="10" value="${fieldValue}" style="width:64px;">&nbsp;

@@ -2,49 +2,32 @@
 <!DOCTYPE beans PUBLIC "-//SPRING//DTD BEAN//EN" "http://www.springframework.org/dtd/spring-beans.dtd">
 
 <beans>
-    <bean id="deviceReadJobLogDao" class="com.cannontech.amr.deviceread.dao.impl.DeviceReadJobLogDaoImpl">
-      <property name="template" ref="simpleJdbcTemplate"/>
+
+    <bean id="moveInMoveOutEmailService"
+        class="com.cannontech.amr.moveInMoveOut.service.impl.MoveInMoveOutEmailServiceImpl">
+        <property name="dateFormattingService" ref="dateFormattingService"/>
+        <property name="emailService" ref="emailService"/>
+        <property name="pointFormattingService" ref="pointFormattingService"/>
     </bean>
-	
-	<bean id="csrService" class="com.cannontech.amr.csr.service.impl.CsrServiceImpl">
-		<property name="csrSearchDao" ref="csrSearchDao" />
-	</bean>
-	
-	<bean id="csrSearchDao" class="com.cannontech.amr.csr.dao.impl.CsrSearchDaoImpl">
-		<property name="jdbcTemplate" ref="simpleJdbcTemplate"/>
-		<property name="meterRowMapper" ref="extendedMeterRowMapper"/>
-	</bean>
-	
-	<bean id="macsScheduleService" class="com.cannontech.amr.macsscheduler.service.impl.MACSScheduleServiceImpl">
-		<property name="connection" ref="macsConnection"/>
-	</bean>
-    
-    <bean id="meterDao" class="com.cannontech.amr.meter.dao.impl.MeterDaoImpl">
-	  	<property name="simpleJdbcTemplate" ref="simpleJdbcTemplate"/>
-	  	<property name="meterRowMapper" ref="meterRowMapper"/>
-	  	<property name="roleDao" ref="roleDao"/>
-	    <property name="jdbcOps" ref="jdbcTemplate"/>
-	    <property name="deviceGroupProviderDao" ref="deviceGroupDao"/>
-	</bean>
-    
-    <bean id="meterRowMapper" class="com.cannontech.amr.meter.dao.impl.MeterRowMapper">
-        <constructor-arg ref="paoGroupsWrapper"/>
+
+    <bean id="moveInMoveOutService"
+        class="com.cannontech.amr.moveInMoveOut.service.impl.MoveInMoveOutServiceImpl">
+
+        <property name="jobManager" ref="jobManager" />
+        <property name="moveInDefinition" ref="moveInJob" />
+        <property name="moveOutDefinition" ref="moveOutJob" />
+
+        <property name="attributeService" ref="attributeService" />
+        <property name="authDao" ref="authDao" />
+        <property name="deviceGroupDao" ref="deviceGroupDao" />
+        <property name="deviceGroupEditorDao" ref="deviceGroupEditorDao" />
+        <property name="deviceGroupMemberEditorDao" ref="deviceGroupMemberEditorDao" />
+        <property name="dynamicDataSource" ref="dynamicDataSource" />
+        <property name="jdbcTemplate" ref="simpleJdbcTemplate" />
+        <property name="meterDao" ref="meterDao" />
+        <property name="meterReadService" ref="meterReadService" />
+        <property name="peakReportService" ref="peakReportService" />
     </bean>
-    
-    <bean id="extendedMeterRowMapper" class="com.cannontech.amr.csr.dao.impl.ExtendedMeterRowMapper">
-        <constructor-arg ref="paoGroupsWrapper"/>
-    </bean>
-    
-    <bean id="meterReadService" class="com.cannontech.amr.deviceread.dao.impl.MeterReadServiceImpl">
-        <property name="deviceDefinitionDao" ref="deviceDefinitionDao"/>
-        <property name="commandExecutor" ref="commandRequestExecutor"/>
-        <property name="commandAuthorizationService" ref="paoCommandAuthorizationService" />
-        <property name="paoDao" ref="paoDao"/>
-    </bean>
-    
-    <bean id="touDao" class="com.cannontech.amr.tou.dao.impl.TouDaoImpl">
-	  	<property name="simpleJdbcTemplate" ref="simpleJdbcTemplate"/>
-	</bean>
 
 </beans>
 

@@ -5,7 +5,7 @@ import org.springframework.core.style.ToStringCreator;
 import com.cannontech.common.device.YukonDevice;
 
 
-public class Meter extends YukonDevice {
+public class Meter extends YukonDevice implements Cloneable{
     private String name;
     private String typeStr;
     
@@ -91,4 +91,12 @@ public class Meter extends YukonDevice {
         return tsc.toString();
     }
 
+    public Object clone(){
+        try{
+            return super.clone();
+        }
+        catch (CloneNotSupportedException e) {
+            throw new InternalError(e.toString());
+        }
+    }
 }

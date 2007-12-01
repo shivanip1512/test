@@ -13,5 +13,6 @@ public interface MeteringRole {
     public static final int TOU_ENABLED = OperatorRoleDefs.METERING_PROPERTYID_BASE - 4; // -20204
     public static final int DEVICE_GROUP_ENABLED = OperatorRoleDefs.METERING_PROPERTYID_BASE - 5; // -20205
     public static final int PROFILE_REQUEST_ENABLED = OperatorRoleDefs.METERING_PROPERTYID_BASE - 6; // -20206
+    public static final int AUTO_ARCHIVING_ENABLED = OperatorRoleDefs.METERING_PROPERTYID_BASE - 7; // -20207
 
 }

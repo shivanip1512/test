@@ -1,5 +1,6 @@
 package com.cannontech.common.device.groups.editor.dao.impl;
 
+import java.util.Arrays;
 import java.util.HashSet;
 import java.util.Iterator;
 import java.util.List;
@@ -15,6 +16,7 @@ import com.cannontech.common.device.YukonDevice;
 import com.cannontech.common.device.groups.dao.DeviceGroupType;
 import com.cannontech.common.device.groups.editor.dao.DeviceGroupEditorDao;
 import com.cannontech.common.device.groups.editor.dao.DeviceGroupMemberEditorDao;
+import com.cannontech.common.device.groups.editor.dao.SystemGroupEnum;
 import com.cannontech.common.device.groups.editor.model.StoredDeviceGroup;
 import com.cannontech.common.device.groups.util.YukonDeviceToIdMapper;
 import com.cannontech.common.util.MappingList;
@@ -105,6 +107,11 @@ public class DeviceGroupEditorDaoImpl implements DeviceGroupEditorDao, DeviceGro
         }
         
         return resolvedPartials;
+    }
+
+    public void addDevices(StoredDeviceGroup group, YukonDevice... device) {
+        List<YukonDevice> devices = Arrays.asList(device);
+        addDevices(group, devices);
     }
     
     @Override
@@ -218,6 +225,11 @@ public class DeviceGroupEditorDaoImpl implements DeviceGroupEditorDao, DeviceGro
         jdbcTemplate.update(sql, parentGroup.getId(), group.getId());
     }
     
+    public void removeDevices(StoredDeviceGroup group, YukonDevice... device) {
+        List<YukonDevice> devices = Arrays.asList(device);
+        removeDevices(group, devices);
+    }
+    
     public void removeDevices(StoredDeviceGroup group, List<? extends YukonDevice> devices) {
         List<Integer> deviceIds = new MappingList<YukonDevice, Integer>(devices, new YukonDeviceToIdMapper());
         SqlStatementBuilder sql = new SqlStatementBuilder();
@@ -228,6 +240,11 @@ public class DeviceGroupEditorDaoImpl implements DeviceGroupEditorDao, DeviceGro
         jdbcTemplate.update(sql.toString(), group.getId());
     }
 
+    public void updateDevices(StoredDeviceGroup group, YukonDevice... device) {
+        List<YukonDevice> devices = Arrays.asList(device);
+        updateDevices(group, devices);
+    }
+    
     public void updateDevices(StoredDeviceGroup group, List<? extends YukonDevice> devices) {
         SqlStatementBuilder sql = new SqlStatementBuilder();
         sql.append("delete from DeviceGroupMember");
@@ -325,6 +342,10 @@ public class DeviceGroupEditorDaoImpl implements DeviceGroupEditorDao, DeviceGro
         return result;
     }
 
+    
+    public StoredDeviceGroup getGroup(SystemGroupEnum group) {
+        return getGroupById(group.getId());
+    }
     
     @Required
     public void setJdbcTemplate(SimpleJdbcOperations jdbcTemplate) {

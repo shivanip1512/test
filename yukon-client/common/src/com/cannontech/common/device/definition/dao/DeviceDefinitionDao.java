@@ -30,7 +30,7 @@ public interface DeviceDefinitionDao {
      * @param attributes - Attributes to get set of point templates for
      * @return The Set of DevicePointIdentifier for the device and Attribute Set
      */
-    public abstract Set<DevicePointIdentifier> getDevicePointIdentifiersForAttributes(YukonDevice device, Set<? extends Attribute> attributes);
+    public abstract Set<DevicePointIdentifier> getDevicePointIdentifierForAttributes(YukonDevice device, Set<? extends Attribute> attributes);
     
     /**
      * Method to get the point template for a given device and attribute

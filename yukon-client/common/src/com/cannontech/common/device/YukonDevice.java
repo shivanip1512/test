@@ -4,7 +4,7 @@ import org.apache.commons.lang.builder.EqualsBuilder;
 import org.apache.commons.lang.builder.HashCodeBuilder;
 import org.springframework.core.style.ToStringCreator;
 
-public class YukonDevice {
+public class YukonDevice implements Cloneable {
     private int deviceId;
     private int type;
 

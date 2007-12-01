@@ -8,7 +8,9 @@
         lazy-init="true">
      <constructor-arg>
        <list>
-			<value>com/cannontech/cc/applicationContext.xml</value>
+            <value>com/cannontech/amr/amrContext.xml</value>
+            <value>com/cannontech/amr/amrContext-client.xml</value>
+            <value>com/cannontech/cc/applicationContext.xml</value>
 			<value>com/cannontech/common/chart/chartContext.xml</value>
 			<value>com/cannontech/common/search/searchContext.xml</value>
 			<value>com/cannontech/core/service/applicationContext.xml</value>

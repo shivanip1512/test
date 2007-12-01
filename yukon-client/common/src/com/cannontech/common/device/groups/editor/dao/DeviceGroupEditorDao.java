@@ -30,7 +30,7 @@ public interface DeviceGroupEditorDao {
             String groupName);
 
     /**
-     * Method to remove a stored device group and all of it's children and
+     * Method to remove a stored device group and all of its children and
      * dependancies.
      * @param group - Group to remove
      */
@@ -44,6 +44,8 @@ public interface DeviceGroupEditorDao {
     public void moveGroup(StoredDeviceGroup group, StoredDeviceGroup parentGroup);
 
     public StoredDeviceGroup getGroupById(int groupId);
+    
+    public StoredDeviceGroup getGroup(SystemGroupEnum group);
 
     public void updateGroup(StoredDeviceGroup group);
 }

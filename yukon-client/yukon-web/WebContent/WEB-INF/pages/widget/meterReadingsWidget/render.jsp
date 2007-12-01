@@ -1,62 +1,52 @@
-<%@ taglib tagdir="/WEB-INF/tags" prefix="ct" %>
-<%@ taglib uri="http://cannontech.com/tags/cti" prefix="cti" %>
-<%@ taglib uri="http://java.sun.com/jsp/jstl/core" prefix="c" %>
+<%@ taglib tagdir="/WEB-INF/tags" prefix="ct"%>
+<%@ taglib uri="http://cannontech.com/tags/cti" prefix="cti"%>
+<%@ taglib uri="http://java.sun.com/jsp/jstl/core" prefix="c"%>
+<c:url var="previousReadingOptionsUrl"
+    value="/WEB-INF/pages/point/previousReadingsOptions.jsp" />
 
 <ct:nameValueContainer altRowOn="true">
-<c:forEach items="${attributes}" var="attribute">
-  <ct:nameValue name="${attribute.description}">
-  <c:choose>
-    <c:when test="${not supportedAttributes[attribute]}">
+    <c:forEach items="${attributes}" var="attribute">
+        <ct:nameValue name="${attribute.description}">
+            <c:choose>
+                <c:when test="${not supportedAttributes[attribute]}">
     unsupported
     </c:when>
-    <c:when test="${not existingAttributes[attribute]}">
+                <c:when test="${not existingAttributes[attribute]}">
     not configured
     </c:when>
-    <c:when test="${supportedAttributes[attribute]}">
-    <ct:attributeValue device="${device}" attribute="${attribute}" />
-    
-	    <c:if test="${attribute == 'USAGE'}">
-	      
-	      <ct:nameValue name="Previous Usage">
-		      <select onChange="${widgetParameters.widgetId}_usageSelection()" id="${widgetParameters.widgetId}_prevSelect">
-				<cti:formatDate type="DATE" var="cutOff" value="${previousReadings_CutoffDate}"/>
-				<optgroup id="firstOptGroup" label="Recent Readings (since ${cutOff})">
+                <c:when test="${supportedAttributes[attribute]}">
+                    <ct:attributeValue device="${device}"
+                        attribute="${attribute}" />
 
-		        <c:forEach items="${previousReadings_All}" var="reading">
-			    	<option value="${reading.value}"><cti:pointValueFormatter format="FULL" value="${reading}"/></option>
-			    </c:forEach>
-			    </optgroup>
-			    
-				<c:if test="${previousReadings_Cutoff}">
-				<cti:formatDate type="DATE" var="cutOff" value="${previousReadings_CutoffDate}"/>
-				<optgroup label="Daily readings (before ${cutOff})">
-				
-		        <c:forEach items="${previousReadings_Daily}" var="reading">
-			    	<option value="${reading.value}"><cti:pointValueFormatter format="FULL" value="${reading}"/></option>
-			    </c:forEach>
-			    </optgroup>
-			    </c:if>
-       
-		      </select>
-	      </ct:nameValue>
-	      
-	      <ct:nameValue name="Total Consumption">
-	        <div id="${widgetParameters.widgetId}_totalConsumption" /> 
-	      </ct:nameValue>
-	      
-	    </c:if>
-	    
-    </c:when>
-  </c:choose>
-  </ct:nameValue>
-</c:forEach>
+                    <c:if test="${attribute == 'USAGE'}">
+
+                        <ct:nameValue name="Previous Usage">
+                            <select
+                                onChange="${widgetParameters.widgetId}_usageSelection()"
+                                id="${widgetParameters.widgetId}_prevSelect">
+                                <jsp:include page="${previousReadingOptionsUrl}" />
+                            </select>
+                        </ct:nameValue>
+
+                        <ct:nameValue name="Total Consumption">
+                            <div
+                                id="${widgetParameters.widgetId}_totalConsumption" />
+                        </ct:nameValue>
+
+                    </c:if>
+
+                </c:when>
+            </c:choose>
+        </ct:nameValue>
+    </c:forEach>
 </ct:nameValueContainer>
 
 
 
 <div style="display:none" id="${widgetParameters.widgetId}_currentUsage">
-<cti:attributeResolver device="${device}" attributeName="USAGE" var="pointId"/>
-<cti:pointValue format="{value}" pointId="${pointId}"/>
+    <cti:attributeResolver device="${device}" attributeName="USAGE"
+        var="pointId" />
+    <cti:pointValue format="{value}" pointId="${pointId}" />
 </div>
 
 <script type="text/javascript">
@@ -92,7 +82,10 @@ function ${widgetParameters.widgetId}_usageUpdate(allIdentifierValues) {
 }
 Event.observe(window,"load", ${widgetParameters.widgetId}_usageSelection);
 </script>
-<cti:dataUpdaterCallback function="${widgetParameters.widgetId}_usageUpdate" valueIdentifier="POINT/${pointId}/{value}" fullIdentifier="POINT/${pointId}/FULL"/>
+<cti:dataUpdaterCallback
+    function="${widgetParameters.widgetId}_usageUpdate"
+    valueIdentifier="POINT/${pointId}/{value}"
+    fullIdentifier="POINT/${pointId}/FULL" />
 
 <br>
 <div id="${widgetParameters.widgetId}_results"></div>

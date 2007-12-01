@@ -34,9 +34,12 @@ public interface DeviceGroupMemberEditorDao {
      * @param group - Group to add devices to
      * @param devices - Devices to add
      */
+    public void addDevices(StoredDeviceGroup group, YukonDevice... device);
     public void addDevices(StoredDeviceGroup group, List<? extends YukonDevice> devices);
 
+    public void removeDevices(StoredDeviceGroup group, YukonDevice... device);
     public void removeDevices(StoredDeviceGroup group, List<? extends YukonDevice> devices);
 
+    public void updateDevices(StoredDeviceGroup group, YukonDevice... device);
     public void updateDevices(StoredDeviceGroup group, List<? extends YukonDevice> devices);
 }
