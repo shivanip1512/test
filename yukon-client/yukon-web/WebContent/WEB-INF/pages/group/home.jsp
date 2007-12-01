@@ -118,7 +118,7 @@
 					</c:when>
 					<c:otherwise>
 						<tr style="height: 20px;">
-							<td colspan="2">No child groups</td>
+							<td colspan="2">No groups found?</td>
 						</tr>
 					</c:otherwise>
 				</c:choose>
