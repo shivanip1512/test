@@ -1003,7 +1003,7 @@ void CtiCapController::processCCEventMsgs()
 
                         msg = (CtiCCEventLogMsg *) temp[i];
                         CtiCCSubstationBusStore::getInstance()->InsertCCEventLogInDB(msg);
-                        delete msg1;
+                        delete msg;
                     }
 
                 }
@@ -1011,7 +1011,7 @@ void CtiCapController::processCCEventMsgs()
                 {
                     msg = (CtiCCEventLogMsg *) msg1;
                     CtiCCSubstationBusStore::getInstance()->InsertCCEventLogInDB(msg);
-                    delete msg1;
+                    delete msg;
                 }      
                 else
                 {
@@ -2086,7 +2086,7 @@ void CtiCapController::pointDataMsg( long pointID, double value, unsigned qualit
                     {
                         currentSubstationBus->setNewPointDataReceivedFlag(TRUE);
 
-                        if( _CC_DEBUG & CC_DEBUG_RIDICULOUS )
+                        if( _CC_DEBUG & CC_DEBUG_OPTIONALPOINT )
                         {
                             CtiLockGuard<CtiLogger> logger_guard(dout);
                             dout << CtiTime() << " - 3-Phase DEVELOPMENT NEEDED! " << pointID << " on SUB: " << currentSubstationBus->getPAOName() << endl;
@@ -2333,6 +2333,35 @@ void CtiCapController::pointDataMsg( long pointID, double value, unsigned qualit
 
                             }
                         }
+                       /* else if ()
+                        {
+                            else if (currentFeeder->getEstimatedPowerFactorPointId()  == pointID|| 
+                             currentFeeder->getEstimatedVarLoadPointId()  == pointID||
+                             currentFeeder->getDailyOperationsAnalogPointId()  == pointID||
+                             currentFeeder->getPowerFactorPointId() == pointID ) 
+                             {
+                                 if( _CC_DEBUG & CC_DEBUG_RIDICULOUS )
+                                 {
+                                     CtiLockGuard<CtiLogger> logger_guard(dout);
+                                     dout << CtiTime() << " - Optional POINT data message received for: " << pointID << " on SUB: " << currentSubstationBus->getPAOName() << endl;
+                                 }
+                           
+                                 if( currentFeeder->getEstimatedPowerFactorPointId()  == pointID )
+                                 {
+                                     currentFeeder->setEstimatedPowerFactorValue(value);
+                                 }
+                                 if( currentFeeder->getEstimatedVarLoadPointId()  == pointID )
+                                 {
+                                     currentFeeder->setEstimatedVarLoadPointValue(value);
+                                 }
+                                 if( currentFeeder->getPowerFactorPointId()  == pointID)
+                                 {
+                                     currentFeeder->setPowerFactorValue(value);
+                                 }
+                                 
+                                 //do nothing
+                             }
+                        } */
                         
                         if ((currentFeeder->getPhaseBId() == pointID ||
                              currentFeeder->getPhaseCId() == pointID ) &&
@@ -2473,6 +2502,8 @@ void CtiCapController::pointDataMsg( long pointID, double value, unsigned qualit
                                    currentSubstationBus->setBusUpdatedFlag(TRUE);
                                    string text = string("CBC rejected command!");
                                    string text1 = string("Var: CBC rejected command!, ");
+                                   currentCapBank->setAfterVarsString(" CBC rejected ");
+                                   currentCapBank->setPercentChangeString(" --- ");
                                    if (currentCapBank->getControlStatus() == CtiCCCapBank::OpenPending ||
                                        currentCapBank->getControlStatus() == CtiCCCapBank::OpenQuestionable ||
                                        currentCapBank->getControlStatus() == CtiCCCapBank::Open ) 
@@ -2499,7 +2530,8 @@ void CtiCapController::pointDataMsg( long pointID, double value, unsigned qualit
 
                                    currentSubstationBus->setBusUpdatedFlag(TRUE);
                                    sendMessageToDispatch(new CtiPointDataMsg(currentCapBank->getStatusPointId(),currentCapBank->getControlStatus(),NormalQuality,StatusPointType, "Forced ccServer Update", TAG_POINT_FORCE_UPDATE));
-                                   CtiCCEventLogMsg* eventMsg = new CtiCCEventLogMsg(0, currentCapBank->getStatusPointId(), currentSubstationBus->getPAOId(), currentFeeder->getPAOId(), capBankStateUpdate, currentSubstationBus->getEventSequence(), currentCapBank->getControlStatus(), text1, "cap control");
+                                   INT actionId = CCEventActionIdGen(currentCapBank->getStatusPointId());
+                                   CtiCCEventLogMsg* eventMsg = new CtiCCEventLogMsg(0, currentCapBank->getStatusPointId(), currentSubstationBus->getPAOId(), currentFeeder->getPAOId(), capBankStateUpdate, currentSubstationBus->getEventSequence(), currentCapBank->getControlStatus(), text1, "cap control", 0, 0, 0, currentCapBank->getIpAddress(), actionId);
                                    eventMsg->setActionId(CCEventActionIdGen(currentCapBank->getStatusPointId()));
                                    getCCEventMsgQueueHandle().write(eventMsg);
                                    currentCapBank->setLastStatusChangeTime(CtiTime());
@@ -2760,6 +2792,9 @@ void CtiCapController::porterReturnMsg( long deviceId, const string& _commandStr
 
                                 string text = string("Porter Return caused a Cap Bank to go into Failed State!");
                                 string text1 = string("Var: Porter Fail Msg, ");
+                                currentCapBank->setAfterVarsString(" Cmd rejected ");
+                                currentCapBank->setPercentChangeString(" --- ");
+
                                 if (currentCapBank->getControlStatus() == CtiCCCapBank::CloseFail) 
                                 {
                                     text1 += "CloseFail";
@@ -2768,7 +2803,8 @@ void CtiCapController::porterReturnMsg( long deviceId, const string& _commandStr
                                     text1 += "OpenFail";
                                 sendMessageToDispatch(new CtiSignalMsg(currentCapBank->getStatusPointId(),1,text,additional,CapControlLogType,SignalEvent,"cap control"));
                                 sendMessageToDispatch(new CtiPointDataMsg(currentCapBank->getStatusPointId(),currentCapBank->getControlStatus(),NormalQuality,StatusPointType, "Forced ccServer Update", TAG_POINT_FORCE_UPDATE));
-                                CtiCCEventLogMsg* eventMsg = new CtiCCEventLogMsg(0, currentCapBank->getStatusPointId(), currentSubstationBus->getPAOId(), currentFeeder->getPAOId(), capBankStateUpdate, currentSubstationBus->getEventSequence(), currentCapBank->getControlStatus(), text1, "cap control");
+                                INT actionId = CCEventActionIdGen(currentCapBank->getStatusPointId());
+                                CtiCCEventLogMsg* eventMsg = new CtiCCEventLogMsg(0, currentCapBank->getStatusPointId(), currentSubstationBus->getPAOId(), currentFeeder->getPAOId(), capBankStateUpdate, currentSubstationBus->getEventSequence(), currentCapBank->getControlStatus(), text1, "cap control", 0, 0, 0, currentCapBank->getIpAddress(), actionId);
                                 eventMsg->setActionId(CCEventActionIdGen(currentCapBank->getStatusPointId()));
                                 getCCEventMsgQueueHandle().write(eventMsg);
                                 currentCapBank->setLastStatusChangeTime(CtiTime());

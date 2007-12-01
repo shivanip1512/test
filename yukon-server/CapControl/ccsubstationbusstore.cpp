@@ -448,6 +448,25 @@ void CtiCCSubstationBusStore::dumpAllDynamicData()
                         }
                     }
                 }
+                if(_ccSpecialAreas->size() > 0 )
+                {
+                    for(LONG i=0;i<_ccSpecialAreas->size();i++)
+                    {
+                        CtiCCSpecial* currentSpecial = (CtiCCSpecial*)(*_ccSpecialAreas)[i];
+                        if( currentSpecial->isDirty() )
+                        {
+                            try
+                            {
+                                currentSpecial->dumpDynamicData(conn,currentDateTime);
+                            }
+                            catch(...)
+                            {
+                                CtiLockGuard<CtiLogger> logger_guard(dout);
+                                dout << CtiTime() << " - Caught '...' in: " << __FILE__ << " at:" << __LINE__ << endl;
+                            }
+                        }
+                    }
+                }
                 if( _ccSubstations->size() > 0 )
                 {
                     for(LONG i=0;i<_ccSubstations->size();i++)
@@ -2480,6 +2499,9 @@ void CtiCCSubstationBusStore::verifySubBusAndFeedersStates()
                                     dout << CtiTime() << " - Setting status to close questionable, Cap Bank: " << currentCapBank->getPAOName() << " in: " << __FILE__ << " at: " << __LINE__ << endl;
                                 }
                                 currentCapBank->setControlStatus(CtiCCCapBank::CloseQuestionable);
+                                //currentCapBank->setBeforeVarsString("abnormal data");
+                                currentCapBank->setAfterVarsString("abnormal data");
+                                currentCapBank->setPercentChangeString(" --- ");
                                 CtiCapController::getInstance()->sendMessageToDispatch(new CtiPointDataMsg(currentCapBank->getStatusPointId(),CtiCCCapBank::CloseQuestionable,NormalQuality,StatusPointType, "cap control",  TAG_POINT_FORCE_UPDATE));
                                 CtiCCEventLogMsg* eventMsg = new CtiCCEventLogMsg(0, currentCapBank->getStatusPointId(), currentSubstationBus->getPAOId(), currentFeeder->getPAOId(), capBankStateUpdate, currentSubstationBus->getEventSequence(), CtiCCCapBank::CloseQuestionable, "Var: Multiple banks pending, CloseQuestionable", "cap control");
                                 eventMsg->setActionId(CCEventActionIdGen(currentCapBank->getStatusPointId()));
@@ -2493,6 +2515,9 @@ void CtiCCSubstationBusStore::verifySubBusAndFeedersStates()
                                     dout << CtiTime() << " - Setting status to open questionable, Cap Bank: " << currentCapBank->getPAOName() << " in: " << __FILE__ << " at: " << __LINE__ << endl;
                                 }
                                 currentCapBank->setControlStatus(CtiCCCapBank::OpenQuestionable);
+                                //currentCapBank->setBeforeVarsString("abnormal data");
+                                currentCapBank->setAfterVarsString("abnormal data");
+                                currentCapBank->setPercentChangeString(" --- ");
                                 CtiCapController::getInstance()->sendMessageToDispatch(new CtiPointDataMsg(currentCapBank->getStatusPointId(),CtiCCCapBank::OpenQuestionable,NormalQuality,StatusPointType, "cap control",  TAG_POINT_FORCE_UPDATE));
                                 CtiCCEventLogMsg* eventMsg = new CtiCCEventLogMsg(0, currentCapBank->getStatusPointId(), currentSubstationBus->getPAOId(), currentFeeder->getPAOId(), capBankStateUpdate, currentSubstationBus->getEventSequence(), CtiCCCapBank::OpenQuestionable, "Var: Multiple banks pending, OpenQuestionable", "cap control");
                                 eventMsg->setActionId(CCEventActionIdGen(currentCapBank->getStatusPointId()));
@@ -2527,6 +2552,9 @@ void CtiCCSubstationBusStore::verifySubBusAndFeedersStates()
                                 dout << CtiTime() << " - Cap Bank: " << currentCapBank->getPAOName() << " questionable because feeder is not recently controlled in: " << __FILE__ << " at: " << __LINE__ << endl;
                             }
                             currentCapBank->setControlStatus(CtiCCCapBank::CloseQuestionable);
+                            //currentCapBank->setBeforeVarsString("abnormal data");
+                            currentCapBank->setAfterVarsString("abnormal data");
+                            currentCapBank->setPercentChangeString(" --- ");
                             CtiCapController::getInstance()->sendMessageToDispatch(new CtiPointDataMsg(currentCapBank->getStatusPointId(),CtiCCCapBank::CloseQuestionable,NormalQuality,StatusPointType, "cap control",  TAG_POINT_FORCE_UPDATE));
                             CtiCCEventLogMsg* eventMsg = new CtiCCEventLogMsg(0, currentCapBank->getStatusPointId(), currentSubstationBus->getPAOId(), currentFeeder->getPAOId(), capBankStateUpdate, currentSubstationBus->getEventSequence(), CtiCCCapBank::CloseQuestionable, "Var: Feeder not recently controlled, CloseQuestionable", "cap control");
                             eventMsg->setActionId(CCEventActionIdGen(currentCapBank->getStatusPointId()));
@@ -2539,6 +2567,9 @@ void CtiCCSubstationBusStore::verifySubBusAndFeedersStates()
                                 dout << CtiTime() << " - Cap Bank: " << currentCapBank->getPAOName() << " questionable because feeder is not recently controlled in: " << __FILE__ << " at: " << __LINE__ << endl;
                             }
                             currentCapBank->setControlStatus(CtiCCCapBank::OpenQuestionable);
+                            //currentCapBank->setBeforeVarsString("abnormal data");
+                            currentCapBank->setAfterVarsString("abnormal data");
+                            currentCapBank->setPercentChangeString(" --- ");
                             CtiCapController::getInstance()->sendMessageToDispatch(new CtiPointDataMsg(currentCapBank->getStatusPointId(),CtiCCCapBank::OpenQuestionable,NormalQuality,StatusPointType, "cap control",  TAG_POINT_FORCE_UPDATE));
 
                             CtiCCEventLogMsg* eventMsg = new CtiCCEventLogMsg(0, currentCapBank->getStatusPointId(), currentSubstationBus->getPAOId(), currentFeeder->getPAOId(), capBankStateUpdate, currentSubstationBus->getEventSequence(), CtiCCCapBank::OpenQuestionable, "Var: Feeder not recently controlled, OpenQuestionable", "cap control");
@@ -2599,6 +2630,9 @@ void CtiCCSubstationBusStore::verifySubBusAndFeedersStates()
                                 dout << CtiTime() << " - Setting status to close questionable, Cap Bank: " << currentCapBank->getPAOName() << " in: " << __FILE__ << " at: " << __LINE__ << endl;
                             }
                             currentCapBank->setControlStatus(CtiCCCapBank::CloseQuestionable);
+                            //currentCapBank->setBeforeVarsString("abnormal data");
+                            currentCapBank->setAfterVarsString("abnormal data");
+                            currentCapBank->setPercentChangeString(" --- ");
                             CtiCapController::getInstance()->sendMessageToDispatch(new CtiPointDataMsg(currentCapBank->getStatusPointId(),CtiCCCapBank::CloseQuestionable,NormalQuality,StatusPointType, "cap control",  TAG_POINT_FORCE_UPDATE));
 
                             CtiCCEventLogMsg* eventMsg = new CtiCCEventLogMsg(0, currentCapBank->getStatusPointId(), currentSubstationBus->getPAOId(), currentFeeder->getPAOId(), capBankStateUpdate, currentSubstationBus->getEventSequence(), CtiCCCapBank::CloseQuestionable, "Var: Sub not recently controlled, CloseQuestionable", "cap control");
@@ -2613,6 +2647,9 @@ void CtiCCSubstationBusStore::verifySubBusAndFeedersStates()
                                 dout << CtiTime() << " - Setting status to open questionable, Cap Bank: " << currentCapBank->getPAOName() << " in: " << __FILE__ << " at: " << __LINE__ << endl;
                             }
                             currentCapBank->setControlStatus(CtiCCCapBank::OpenQuestionable);
+                            //currentCapBank->setBeforeVarsString("abnormal data");
+                            currentCapBank->setAfterVarsString("abnormal data");
+                            currentCapBank->setPercentChangeString(" --- ");
                             CtiCapController::getInstance()->sendMessageToDispatch(new CtiPointDataMsg(currentCapBank->getStatusPointId(),CtiCCCapBank::OpenQuestionable,NormalQuality,StatusPointType, "cap control",  TAG_POINT_FORCE_UPDATE));
                             
                             CtiCCEventLogMsg* eventMsg = new CtiCCEventLogMsg(0, currentCapBank->getStatusPointId(), currentSubstationBus->getPAOId(), currentFeeder->getPAOId(), capBankStateUpdate, currentSubstationBus->getEventSequence(), CtiCCCapBank::OpenQuestionable, "Var: Sub not recently controlled, OpenQuestionable", "cap control");
@@ -5563,7 +5600,9 @@ void CtiCCSubstationBusStore::reloadFeederFromDatabase(long feederId, map< long,
                                  {
                                      CtiCCStrategyPtr currentCCStrategy = NULL;
 
-                                     currentSubBus = findSubBusByPAObjectID(currentCCFeeder->getParentId());
+                                     if (paobject_subbus_map->find(currentCCFeeder->getParentId()) != paobject_subbus_map->end())
+                                         currentSubBus = paobject_subbus_map->find(currentCCFeeder->getParentId())->second;
+                                     
                                      if (currentSubBus != NULL)
                                      {
                                          currentStation = findSubstationByPAObjectID(currentSubBus->getParentId());
@@ -7901,22 +7940,52 @@ void CtiCCSubstationBusStore::checkDBReloadList()
                         {   
                             CtiCCAreaPtr tempArea = findAreaByPAObjectID(reloadTemp.objectId);
 
-                            tempArea = findAreaByPAObjectID(reloadTemp.objectId);
                             if (tempArea != NULL) 
                             {
-                                if (tempArea->getSubStationList()->size() > 3)
+                                if (tempArea->getSubStationList()->size() > 1)
                                 {
                                     setValid(false);
                                     _reloadList.clear();
                                     forceFullReload = TRUE;
+                                }
+                                else
+                                {   
+                                    reloadAreaFromDatabase(reloadTemp.objectId, &_strategyid_strategy_map, 
+                                                             &_paobject_area_map, &_pointid_area_map, _ccGeoAreas);
+                               
+                                    tempArea = findAreaByPAObjectID(reloadTemp.objectId);
+                                    if (tempArea != NULL) 
+                                    {
+                                        list <LONG>::const_iterator iter = tempArea->getSubStationList()->begin();
+                                        while (iter != tempArea->getSubStationList()->end())
+                                        {   
+                                            LONG stationId = *iter;
+                                            CtiCCSubstation *station = findSubstationByPAObjectID(stationId);
+                                            if (station != NULL)
+                                            {                   
+                                                list <LONG>::const_iterator iterBus = station->getCCSubIds()->begin();
+                                                while (iterBus  != station->getCCSubIds()->end())
+                                                { 
+                                                    LONG busId = *iterBus;
+                                                    CtiCCSubstationBus* tempSub = findSubBusByPAObjectID(busId);
+                                                    if (tempSub != NULL)
+                                                    {
+                                                        modifiedSubsList.push_back(tempSub);                 
+                                                        msgBitMask |= CtiCCSubstationBusMsg::SubBusModified; 
+                                                    }
+                                                    iterBus++;
+                                                }
+                                            }
+                                            iter++;
+                                        }
+                                    }
                                 }
                             }
                             else
                             {   
                                 reloadAreaFromDatabase(reloadTemp.objectId, &_strategyid_strategy_map, 
                                                          &_paobject_area_map, &_pointid_area_map, _ccGeoAreas);
-                                CtiCCAreaPtr tempArea = findAreaByPAObjectID(reloadTemp.objectId);
-
+                            
                                 tempArea = findAreaByPAObjectID(reloadTemp.objectId);
                                 if (tempArea != NULL) 
                                 {
@@ -7966,7 +8035,7 @@ void CtiCCSubstationBusStore::checkDBReloadList()
 
                             if (tempSpArea != NULL) 
                             {
-                                if (tempSpArea->getSubstationIds()->size() > 3)
+                                if (tempSpArea->getSubstationIds()->size() > 1)
                                 {
                                     deleteSpecialArea(reloadTemp.objectId); //this forces substation flags to saEnabled = false;
                                     setValid(false);
@@ -8031,6 +8100,40 @@ void CtiCCSubstationBusStore::checkDBReloadList()
                                         } 
                                     }
                                 }
+                            }
+                            else
+                            {
+                                reloadSpecialAreaFromDatabase(reloadTemp.objectId, &_strategyid_strategy_map, 
+                                                             &_paobject_specialarea_map, &_pointid_specialarea_map, _ccSpecialAreas);
+                                    tempSpArea = findSpecialAreaByPAObjectID(reloadTemp.objectId);
+                                    
+                                    
+                                    if (tempSpArea != NULL) 
+                                    {   
+                                    
+                                        list <LONG>::const_iterator iter = tempSpArea->getSubstationIds()->begin();
+                                        while (iter != tempSpArea->getSubstationIds()->end())
+                                        {   
+                                            LONG stationId = *iter;
+                                            CtiCCSubstation *station = findSubstationByPAObjectID(stationId);
+                                            if (station != NULL)
+                                            {                   
+                                                list <LONG>::const_iterator iterBus = station->getCCSubIds()->begin();
+                                                while (iterBus  != station->getCCSubIds()->end())
+                                                { 
+                                                    LONG busId = *iterBus;
+                                                    CtiCCSubstationBus* tempSub = findSubBusByPAObjectID(busId);
+                                                    if (tempSub != NULL)
+                                                    {
+                                                        modifiedSubsList.push_back(tempSub);                 
+                                                        msgBitMask |= CtiCCSubstationBusMsg::SubBusModified; 
+                                                    }
+                                                    iterBus++;
+                                                }
+                                            }
+                                            iter++;
+                                        } 
+                                    }
                             }
                         }
                         break;
@@ -8236,6 +8339,9 @@ void CtiCCSubstationBusStore::checkDBReloadList()
                 executor->Execute();
                 delete executor;
                 executor = f.createExecutor(new CtiCCGeoAreasMsg(*_ccGeoAreas));
+                executor->Execute();
+                delete executor; 
+                executor = f.createExecutor(new CtiCCSpecialAreasMsg(*_ccSpecialAreas));
                 executor->Execute();
                 delete executor; 
                 if (msgBitMask & CtiCCSubstationBusMsg::AllSubBusesSent) 

@@ -2101,9 +2101,9 @@ CtiRequestMsg* CtiCCFeeder::createIncreaseVarRequest(CtiCCCapBank* capBank, CtiM
 
     setVarValueBeforeControl(kvarBefore);
 
-    capBank->setBeforeVarsString(" --- : --- : --- ");
-    capBank->setAfterVarsString(" --- : --- : --- ");
-    capBank->setPercentChangeString(" --- : --- : --- ");
+    capBank->setBeforeVarsString(createVarText(kvarBefore, 1.0));
+    capBank->setAfterVarsString(" --- ");
+    capBank->setPercentChangeString(" --- ");
 
 
     if( capBank->getStatusPointId() > 0 )
@@ -2137,15 +2137,16 @@ CtiRequestMsg* CtiCCFeeder::createIncreaseVarRequest(CtiCCCapBank* capBank, CtiM
         dout << CtiTime() << " - Cap Bank: " << capBank->getPAOName()
         << " DeviceID: " << capBank->getPAOId() << " doesn't have a status point!" << endl;
     }
-
+    
     if( capBank->getOperationAnalogPointId() > 0 )
     {
         pointChanges.push_back(new CtiPointDataMsg(capBank->getOperationAnalogPointId(),capBank->getTotalOperations(),NormalQuality,AnalogPointType));
         ((CtiPointDataMsg*)pointChanges[pointChanges.size()-1])->setSOE(3);
-
+    
         //setEventSequence(getEventSequence() + 1);
         ccEvents.push_back(new CtiCCEventLogMsg(0, capBank->getOperationAnalogPointId(), getParentId(), getPAOId(), capControlSetOperationCount, getEventSequence(), capBank->getTotalOperations(), "opCount adjustment", "cap control"));
     }
+    
     if  (capBank->getTwoWayPoints() != NULL) 
     {
         if (capBank->getTwoWayPoints()->getCapacitorBankStateId() > 0) 
@@ -2154,9 +2155,11 @@ CtiRequestMsg* CtiCCFeeder::createIncreaseVarRequest(CtiCCCapBank* capBank, CtiM
             hist->setMessagePriority( hist->getMessagePriority() + 2 );
             pointChanges.push_back( hist );
             ((CtiPointDataMsg*)pointChanges[pointChanges.size()-1])->setSOE(4);
+        
+        
         }
     }
-
+    
     reqMsg = new CtiRequestMsg(capBank->getControlDeviceId(),"control open");
     reqMsg->setSOE(4);
 
@@ -2182,7 +2185,6 @@ CtiRequestMsg* CtiCCFeeder::createIncreaseVarVerificationRequest(CtiCCCapBank* c
         CtiLockGuard<CtiLogger> doubt_guard(dout);
         dout << CtiTime() << " ***VERIFICATION INFO***  CBid: "<<capBank->getPAOId()<<" vCtrlIdx: "<< capBank->getVCtrlIndex() <<"  CurrControlStatus: " << capBank->getControlStatus() << "  Control Open Sent Now " << endl;
     }
-
     setLastCapBankControlledDeviceId(capBank->getPAOId());
     capBank->setControlStatus(CtiCCCapBank::OpenPending);
     figureEstimatedVarLoadPointValue();
@@ -2191,6 +2193,10 @@ CtiRequestMsg* CtiCCFeeder::createIncreaseVarVerificationRequest(CtiCCCapBank* c
     capBank->setCurrentDailyOperations(capBank->getCurrentDailyOperations() + 1);
     //setRecentlyControlledFlag(TRUE);
     setVarValueBeforeControl(getCurrentVarLoadPointValue());
+
+    capBank->setBeforeVarsString(createVarText(kvarBefore, 1.0));
+    capBank->setAfterVarsString(" --- ");
+    capBank->setPercentChangeString(" --- ");
 
     if( capBank->getStatusPointId() > 0 )
     {
@@ -2213,8 +2219,9 @@ CtiRequestMsg* CtiCCFeeder::createIncreaseVarVerificationRequest(CtiCCCapBank* c
         capBank->setLastStatusChangeTime(CtiTime());
 
         //setEventSequence(getEventSequence() + 1); // should be sub's event sequence for verification...
-        ccEvents.push_back(new CtiCCEventLogMsg(0, capBank->getStatusPointId(), getParentId(), getPAOId(), capControlVerificationCommandSent, getEventSequence(), capBank->getControlStatus(), textInfo, "cap control verification", kvarBefore, kvarBefore, 0, capBank->getIpAddress()));
-    }
+        INT actionId = CCEventActionIdGen(capBank->getStatusPointId()) + 1;
+        ccEvents.push_back(new CtiCCEventLogMsg(0, capBank->getStatusPointId(), getParentId(), getPAOId(), capControlVerificationCommandSent, getEventSequence(), capBank->getControlStatus(), textInfo, "cap control verification", kvarBefore, kvarBefore, 0, capBank->getIpAddress(), actionId));
+    }                                                                                                                                                                                                                                 
     else
     {
         CtiLockGuard<CtiLogger> logger_guard(dout);
@@ -2260,7 +2267,6 @@ CtiRequestMsg* CtiCCFeeder::createDecreaseVarVerificationRequest(CtiCCCapBank* c
         CtiLockGuard<CtiLogger> doubt_guard(dout);
         dout << CtiTime() << " ***VERIFICATION INFO***  CBid: "<<capBank->getPAOId()<<" vCtrlIdx: "<< capBank->getVCtrlIndex() <<"  CurrControlStatus: " << capBank->getControlStatus() << "  Control Close Sent Now " << endl;
     }
-
     setLastCapBankControlledDeviceId(capBank->getPAOId());
     capBank->setControlStatus(CtiCCCapBank::ClosePending);
     figureEstimatedVarLoadPointValue();
@@ -2269,6 +2275,11 @@ CtiRequestMsg* CtiCCFeeder::createDecreaseVarVerificationRequest(CtiCCCapBank* c
     capBank->setCurrentDailyOperations(capBank->getCurrentDailyOperations() + 1);
     //setRecentlyControlledFlag(TRUE);
     setVarValueBeforeControl(getCurrentVarLoadPointValue());
+
+    capBank->setBeforeVarsString(createVarText(kvarBefore, 1.0));
+    capBank->setAfterVarsString(" --- ");
+    capBank->setPercentChangeString(" --- ");
+
     if( capBank->getStatusPointId() > 0 )
     {
         string additional("Sub: ");
@@ -2290,6 +2301,7 @@ CtiRequestMsg* CtiCCFeeder::createDecreaseVarVerificationRequest(CtiCCCapBank* c
         capBank->setLastStatusChangeTime(CtiTime());
 
         //setEventSequence(getEventSequence() + 1);     // should be sub's sequence for verification
+        INT actionId = CCEventActionIdGen(capBank->getStatusPointId()) + 1;
         ccEvents.push_back(new CtiCCEventLogMsg(0, capBank->getStatusPointId(), getParentId(), getPAOId(), capControlVerificationCommandSent, getEventSequence(), capBank->getControlStatus(), textInfo, "cap control verification", kvarBefore, kvarBefore, 0, capBank->getIpAddress()));
     }
     else
@@ -2349,9 +2361,9 @@ CtiRequestMsg* CtiCCFeeder::createDecreaseVarRequest(CtiCCCapBank* capBank, CtiM
     //setVarValueBeforeControl(getCurrentVarLoadPointValue());
     setVarValueBeforeControl(kvarBefore);
 
-    capBank->setBeforeVarsString(" --- : --- : --- ");
-    capBank->setAfterVarsString(" --- : --- : --- ");
-    capBank->setPercentChangeString(" --- : --- : --- ");
+    capBank->setBeforeVarsString(createVarText(kvarBefore, 1.0));
+    capBank->setAfterVarsString(" --- ");
+    capBank->setPercentChangeString(" --- ");
 
     if( capBank->getStatusPointId() > 0 )
     {
@@ -2373,7 +2385,7 @@ CtiRequestMsg* CtiCCFeeder::createDecreaseVarRequest(CtiCCCapBank* capBank, CtiM
         pointChanges.push_back(new CtiPointDataMsg(capBank->getStatusPointId(),capBank->getControlStatus(),NormalQuality,StatusPointType, capBank->getPAOName()));
         ((CtiPointDataMsg*)pointChanges[pointChanges.size()-1])->setSOE(2);
         capBank->setLastStatusChangeTime(CtiTime());
-
+    
         //setEventSequence(getEventSequence() + 1);
         INT actionId = CCEventActionIdGen(capBank->getStatusPointId()) + 1;
         ccEvents.push_back(new CtiCCEventLogMsg(0, capBank->getStatusPointId(), getParentId(), getPAOId(), capControlCommandSent, getEventSequence(), capBank->getControlStatus(), textInfo, "cap control", kvarBefore, kvarBefore, 0, capBank->getIpAddress(), actionId));
@@ -2384,16 +2396,16 @@ CtiRequestMsg* CtiCCFeeder::createDecreaseVarRequest(CtiCCCapBank* capBank, CtiM
         dout << CtiTime() << " - Cap Bank: " << capBank->getPAOName()
         << " DeviceID: " << capBank->getPAOId() << " doesn't have a status point!" << endl;
     }
-
+    
     if( capBank->getOperationAnalogPointId() > 0 )
     {
         pointChanges.push_back(new CtiPointDataMsg(capBank->getOperationAnalogPointId(),capBank->getTotalOperations(),NormalQuality,AnalogPointType));
         ((CtiPointDataMsg*)pointChanges[pointChanges.size()-1])->setSOE(3);
-
+    
         //setEventSequence(getEventSequence() + 1);
         ccEvents.push_back(new CtiCCEventLogMsg(0, capBank->getOperationAnalogPointId(), getParentId(), getPAOId(), capControlSetOperationCount, getEventSequence(), capBank->getTotalOperations(), "opCount adjustment", "cap control"));
     }
-
+    
     if  (capBank->getTwoWayPoints() != NULL) 
     {
         if (capBank->getTwoWayPoints()->getCapacitorBankStateId() > 0) 
@@ -3062,6 +3074,7 @@ BOOL CtiCCFeeder::capBankControlStatusUpdate(CtiMultiMsg_vec& pointChanges, CtiM
     BOOL found = FALSE;
     char tempchar[64] = "";
     DOUBLE change = 0;
+    DOUBLE ratio = 0;
     string text = "";
     string additional = "Sub: ";
               additional += getParentName();
@@ -3093,7 +3106,7 @@ BOOL CtiCCFeeder::capBankControlStatusUpdate(CtiMultiMsg_vec& pointChanges, CtiM
                         CtiLockGuard<CtiLogger> logger_guard(dout);
                         dout << CtiTime() << " - Var change in wrong direction? in: " << __FILE__ << " at: " << __LINE__ << endl;
                     }
-                    DOUBLE ratio = change/currentCapBank->getBankSize();
+                    ratio = change/currentCapBank->getBankSize();
                     if( ratio < minConfirmPercent*.01 )
                     {
                         if( ratio < failurePercent*.01 && failurePercent != 0 && minConfirmPercent != 0 )
@@ -3135,8 +3148,8 @@ BOOL CtiCCFeeder::capBankControlStatusUpdate(CtiMultiMsg_vec& pointChanges, CtiM
                     }
                     text = createControlStatusUpdateText(currentCapBank->getControlStatus(), currentVarLoadPointValue,ratio);
 
-                    currentCapBank->setBeforeVarsString(createVarText( currentVarLoadPointValue, 1.0));
-                    currentCapBank->setAfterVarsString(createVarText(varValueBeforeControl, 1.0));
+                    currentCapBank->setBeforeVarsString(createVarText(varValueBeforeControl, 1.0));
+                    currentCapBank->setAfterVarsString(createVarText(currentVarLoadPointValue, 1.0));
                     currentCapBank->setPercentChangeString(createVarText(ratio, 100.0));
 
                 }
@@ -3150,6 +3163,11 @@ BOOL CtiCCFeeder::capBankControlStatusUpdate(CtiMultiMsg_vec& pointChanges, CtiM
                     text += " Var: ";
                     text += CtiNumStr(currentVarLoadPointValue, getDecimalPlaces()).toString();
                     text += ", OpenQuestionable";
+
+                    currentCapBank->setBeforeVarsString(createVarText(varValueBeforeControl, 1.0));
+                    currentCapBank->setAfterVarsString(createVarText(currentVarLoadPointValue, 1.0));
+                    currentCapBank->setPercentChangeString(createVarText(ratio, 100.0));
+
                 }
             }
             else if( currentCapBank->getControlStatus() == CtiCCCapBank::ClosePending )
@@ -3206,8 +3224,8 @@ BOOL CtiCCFeeder::capBankControlStatusUpdate(CtiMultiMsg_vec& pointChanges, CtiM
                     }
                     text = createControlStatusUpdateText(currentCapBank->getControlStatus(), currentVarLoadPointValue, ratio);
 
-                    currentCapBank->setBeforeVarsString(createVarText( currentVarLoadPointValue, 1.0));
-                    currentCapBank->setAfterVarsString(createVarText(varValueBeforeControl, 1.0));
+                    currentCapBank->setBeforeVarsString(createVarText(varValueBeforeControl, 1.0));
+                    currentCapBank->setAfterVarsString(createVarText(currentVarLoadPointValue, 1.0));
                     currentCapBank->setPercentChangeString(createVarText(ratio, 100.0));
                 }
                 else
@@ -3220,6 +3238,11 @@ BOOL CtiCCFeeder::capBankControlStatusUpdate(CtiMultiMsg_vec& pointChanges, CtiM
                     text += " Var: ";
                     text += CtiNumStr(currentVarLoadPointValue, getDecimalPlaces()).toString();
                     text += ", CloseQuestionable";
+
+                    currentCapBank->setBeforeVarsString(createVarText(varValueBeforeControl, 1.0));
+                    currentCapBank->setAfterVarsString(createVarText(currentVarLoadPointValue, 1.0));
+                    currentCapBank->setPercentChangeString(createVarText(ratio, 100.0));
+
                 }
             }
             else
@@ -3493,6 +3516,7 @@ BOOL CtiCCFeeder::capBankVerificationStatusUpdate(CtiMultiMsg_vec& pointChanges,
     BOOL foundCap = FALSE;
     char tempchar[64] = "";
     DOUBLE change = 0;
+    DOUBLE ratio = 0;
     string text = "";
     string additional = "";
     BOOL assumedWrongFlag = FALSE;
@@ -3532,7 +3556,7 @@ BOOL CtiCCFeeder::capBankVerificationStatusUpdate(CtiMultiMsg_vec& pointChanges,
                            change = 0 - change;
                        }
                    }
-                   DOUBLE ratio = change/currentCapBank->getBankSize();
+                   ratio = change/currentCapBank->getBankSize();
                    if( ratio < minConfirmPercent*.01 )
                    {
                        if( ratio < failurePercent*.01 && failurePercent != 0 && minConfirmPercent != 0 )
@@ -3542,14 +3566,6 @@ BOOL CtiCCFeeder::capBankVerificationStatusUpdate(CtiMultiMsg_vec& pointChanges,
                            else
                                currentCapBank->setControlStatus(CtiCCCapBank::CloseFail);
 
-                           text = string("Var: ");
-                           text += CtiNumStr(getCurrentVarLoadPointValue(), getDecimalPlaces()).toString();
-                           text += " ( ";
-                           text += CtiNumStr(ratio*100.0,getDecimalPlaces()).toString();
-                           if (!assumedWrongFlag)
-                               text += "% change), OpenFail";
-                           else
-                               text += "% change), CloseFail";
                            additional = string("Feeder: ");
                            additional += getPAOName();
                        }
@@ -3559,14 +3575,6 @@ BOOL CtiCCFeeder::capBankVerificationStatusUpdate(CtiMultiMsg_vec& pointChanges,
                                currentCapBank->setControlStatus(CtiCCCapBank::OpenQuestionable);
                            else
                                currentCapBank->setControlStatus(CtiCCCapBank::CloseQuestionable);
-                           text = string("Var: ");
-                           text += CtiNumStr(getCurrentVarLoadPointValue(), getDecimalPlaces()).toString();
-                           text += " ( ";
-                           text += CtiNumStr(ratio*100.0,getDecimalPlaces()).toString();
-                           if (!assumedWrongFlag)
-                               text += "% change), OpenQuestionable";
-                           else
-                               text += "% change), CloseQuestionable";
                            additional = string("Feeder: ");
                            additional += getPAOName();
                        }
@@ -3577,14 +3585,6 @@ BOOL CtiCCFeeder::capBankVerificationStatusUpdate(CtiMultiMsg_vec& pointChanges,
                            else
                                currentCapBank->setControlStatus(CtiCCCapBank::Close);
                            
-                           text = string("Var: ");
-                           text += CtiNumStr(getCurrentVarLoadPointValue(), getDecimalPlaces()).toString();
-                           text += " ( ";
-                           text += CtiNumStr(ratio*100.0,getDecimalPlaces()).toString();
-                           if (!assumedWrongFlag)
-                               text += "% change), Open";
-                           else
-                               text += "% change), Close";
                            additional = string("Feeder: ");
                            additional += getPAOName();
                            vResult = TRUE;
@@ -3597,18 +3597,18 @@ BOOL CtiCCFeeder::capBankVerificationStatusUpdate(CtiMultiMsg_vec& pointChanges,
                        else
                            currentCapBank->setControlStatus(CtiCCCapBank::Close);
 
-                       text = string("Var: ");
-                       text += CtiNumStr(getCurrentVarLoadPointValue(), getDecimalPlaces()).toString();
-                       text += " ( ";
-                       text += CtiNumStr(ratio*100.0,getDecimalPlaces()).toString();
-                       if (!assumedWrongFlag)
-                           text += "% change), Open";
-                       else
-                           text += "% change), Close";
                        additional = string("Feeder: ");
                        additional += getPAOName();
                        vResult = TRUE;
                    }
+
+
+                   text = createControlStatusUpdateText(currentCapBank->getControlStatus(), getCurrentVarLoadPointValue(),ratio);
+
+                   currentCapBank->setBeforeVarsString(createVarText(getVarValueBeforeControl(), 1.0));
+                   currentCapBank->setAfterVarsString(createVarText(getCurrentVarLoadPointValue(), 1.0));
+                   currentCapBank->setPercentChangeString(createVarText(ratio, 100.0));
+
                }
                else
                {
@@ -3622,6 +3622,10 @@ BOOL CtiCCFeeder::capBankVerificationStatusUpdate(CtiMultiMsg_vec& pointChanges,
                    text += ", OpenQuestionable";
                    additional = string("Feeder: ");
                    additional += getPAOName();
+
+                   currentCapBank->setBeforeVarsString(createVarText(getVarValueBeforeControl(), 1.0));
+                   currentCapBank->setAfterVarsString(createVarText(getCurrentVarLoadPointValue(), 1.0));
+                   currentCapBank->setPercentChangeString(createVarText(ratio, 100.0));
                }
            }
            else if( currentCapBank->getControlStatus() == CtiCCCapBank::ClosePending )
@@ -3647,7 +3651,7 @@ BOOL CtiCCFeeder::capBankVerificationStatusUpdate(CtiMultiMsg_vec& pointChanges,
                            change = 0 - change;
                        }
                    }
-                   DOUBLE ratio = change/currentCapBank->getBankSize();
+                   ratio = change/currentCapBank->getBankSize();
                    if( ratio < minConfirmPercent*.01 )
                    {
                        if( ratio < failurePercent*.01 && failurePercent != 0 && minConfirmPercent != 0 )
@@ -3656,15 +3660,6 @@ BOOL CtiCCFeeder::capBankVerificationStatusUpdate(CtiMultiMsg_vec& pointChanges,
                                currentCapBank->setControlStatus(CtiCCCapBank::CloseFail);
                            else
                                currentCapBank->setControlStatus(CtiCCCapBank::OpenFail);
-
-                           text = string("Var: ");
-                           text += CtiNumStr(getCurrentVarLoadPointValue(), getDecimalPlaces()).toString();
-                           text += " ( ";
-                           text += CtiNumStr(ratio*100.0,getDecimalPlaces()).toString();
-                           if (!assumedWrongFlag)
-                               text += "% change), CloseFail";
-                           else
-                               text += "% change), OpenFail";
 
                            additional = string("Feeder: ");
                            additional += getPAOName();
@@ -3676,15 +3671,6 @@ BOOL CtiCCFeeder::capBankVerificationStatusUpdate(CtiMultiMsg_vec& pointChanges,
                            else
                                currentCapBank->setControlStatus(CtiCCCapBank::OpenQuestionable);
 
-                           text = string("Var: ");
-                           text += CtiNumStr(getCurrentVarLoadPointValue(), getDecimalPlaces()).toString();
-                           text += " ( ";
-                           text += CtiNumStr(ratio*100.0,getDecimalPlaces()).toString();
-                           if (!assumedWrongFlag)
-                               text += "% change), CloseQuestionable";
-                           else
-                               text += "% change), OpenQuestionable";
-
                            additional = string("Feeder: ");
                            additional += getPAOName();
                        }
@@ -3695,14 +3681,6 @@ BOOL CtiCCFeeder::capBankVerificationStatusUpdate(CtiMultiMsg_vec& pointChanges,
                            else
                                currentCapBank->setControlStatus(CtiCCCapBank::Open);
 
-                           text = string("Var: ");
-                           text += CtiNumStr(getCurrentVarLoadPointValue(), getDecimalPlaces()).toString();
-                           text += " ( ";
-                           text += CtiNumStr(ratio*100.0,getDecimalPlaces()).toString();
-                           if (!assumedWrongFlag)
-                               text += "% change), Closed";
-                           else
-                               text += "% change), Open";
                            additional = string("Feeder: ");
                            additional += getPAOName();
                            vResult = TRUE;
@@ -3714,18 +3692,16 @@ BOOL CtiCCFeeder::capBankVerificationStatusUpdate(CtiMultiMsg_vec& pointChanges,
                            currentCapBank->setControlStatus(CtiCCCapBank::Close);
                        else
                            currentCapBank->setControlStatus(CtiCCCapBank::Open);
-                       text = string("Var: ");
-                           text += CtiNumStr(getCurrentVarLoadPointValue(), getDecimalPlaces()).toString();
-                           text += " ( ";
-                           text += CtiNumStr(ratio*100.0,getDecimalPlaces()).toString();
-                           if (!assumedWrongFlag)
-                               text += "% change), Closed";
-                           else
-                               text += "% change), Open";
-                           additional = string("Feeder: ");
-                           additional += getPAOName();
+                       additional = string("Feeder: ");
+                       additional += getPAOName();
                        vResult = TRUE;
                    }
+
+                   text = createControlStatusUpdateText(currentCapBank->getControlStatus(), getCurrentVarLoadPointValue(),ratio);
+
+                   currentCapBank->setBeforeVarsString(createVarText(getVarValueBeforeControl(), 1.0));
+                   currentCapBank->setAfterVarsString(createVarText(getCurrentVarLoadPointValue(), 1.0));
+                   currentCapBank->setPercentChangeString(createVarText(ratio, 100.0));
                }
                else
                {
@@ -3739,6 +3715,11 @@ BOOL CtiCCFeeder::capBankVerificationStatusUpdate(CtiMultiMsg_vec& pointChanges,
                    text += ", CloseQuestionable";
                    additional = string("Feeder: ");
                    additional += getPAOName();
+
+
+                   currentCapBank->setBeforeVarsString(createVarText(getVarValueBeforeControl(), 1.0));
+                   currentCapBank->setAfterVarsString(createVarText(getCurrentVarLoadPointValue(), 1.0));
+                   currentCapBank->setPercentChangeString(createVarText(ratio, 100.0));
                }
            }
            else
@@ -3787,7 +3768,8 @@ BOOL CtiCCFeeder::capBankVerificationStatusUpdate(CtiMultiMsg_vec& pointChanges,
                currentCapBank->setLastStatusChangeTime(CtiTime()); 
 
                //setEventSequence(currentFeeder->getEventSequence() + 1);
-               ccEvents.push_back(new CtiCCEventLogMsg(0, currentCapBank->getStatusPointId(), getParentId(), getPAOId(), capBankStateUpdate, getEventSequence(), currentCapBank->getControlStatus(), text, "cap control verification", varValueBeforeControl, currentVarLoadPointValue, change));
+               INT actionId = CCEventActionIdGen(currentCapBank->getStatusPointId());
+               ccEvents.push_back(new CtiCCEventLogMsg(0, currentCapBank->getStatusPointId(), getParentId(), getPAOId(), capBankStateUpdate, getEventSequence(), currentCapBank->getControlStatus(), text, "cap control verification", varValueBeforeControl, currentVarLoadPointValue, change, currentCapBank->getIpAddress(), actionId));
                //setEventSequence(0);
            }
            else

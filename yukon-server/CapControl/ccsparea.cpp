@@ -228,11 +228,10 @@ void CtiCCSpecial::restore(RWDBReader& rdr)
 
     setPFactor(0);
     setEstPFactor(0);
-
-
-
     setPFactor(0);
     setEstPFactor(0);
+
+    _insertDynamicDataFlag = TRUE;
 
 }
 
@@ -306,7 +305,7 @@ void CtiCCSpecial::dumpDynamicData(RWDBConnection& conn, CtiTime& currentDateTim
             RWDBInserter inserter = dynamicCCAreaTable.inserter();
             //TS FLAG
             inserter << _paoid
-            << addFlags;
+            <<  string2RWCString(addFlags);
 
             if( _CC_DEBUG & CC_DEBUG_DATABASE )
             {

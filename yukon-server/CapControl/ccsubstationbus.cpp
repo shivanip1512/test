@@ -4259,6 +4259,11 @@ BOOL CtiCCSubstationBus::capBankVerificationStatusUpdate(CtiMultiMsg_vec& pointC
     char tempchar[64] = "";
     string text = "";
     string additional = "";
+    DOUBLE ratio = 0;
+    DOUBLE change = 0;
+    DOUBLE oldValue = 0;
+    DOUBLE newValue = 0;
+
 
     LONG minConfirmPercent = getMinConfirmPercent();
     LONG maxConfirmTime = getMaxConfirmTime();
@@ -4295,9 +4300,6 @@ BOOL CtiCCSubstationBus::capBankVerificationStatusUpdate(CtiMultiMsg_vec& pointC
                        if( !_IGNORE_NOT_NORMAL_FLAG ||
                            getCurrentVarPointQuality() == NormalQuality )
                        {    
-                           DOUBLE change;
-                           DOUBLE oldValue;
-                           DOUBLE newValue;
                            if( !stringCompareIgnoreCase(_controlmethod, CtiCCSubstationBus::IndividualFeederControlMethod) ||
                                !stringCompareIgnoreCase(_controlmethod, CtiCCSubstationBus::BusOptimizedFeederControlMethod) )
                            {
@@ -4328,7 +4330,7 @@ BOOL CtiCCSubstationBus::capBankVerificationStatusUpdate(CtiMultiMsg_vec& pointC
                                    assumedWrongFlag = TRUE;
                                }
                            }
-                           DOUBLE ratio = change/currentCapBank->getBankSize();
+                           ratio = change/currentCapBank->getBankSize();
                            if( ratio < minConfirmPercent*.01 )
                            {
                                if( ratio < failPercent*.01 && failPercent != 0 && minConfirmPercent != 0 )
@@ -4338,14 +4340,6 @@ BOOL CtiCCSubstationBus::capBankVerificationStatusUpdate(CtiMultiMsg_vec& pointC
                                    else
                                        currentCapBank->setControlStatus(CtiCCCapBank::CloseFail);
 
-                                   text = string("Var: ");
-                                   text += doubleToString(newValue);
-                                   text += " ( ";
-                                   text += doubleToString(ratio*100.0);
-                                   if (!assumedWrongFlag)
-                                       text += "% change), OpenFail";
-                                   else
-                                       text += "% change), CloseFail";
                                    additional = string("Feeder: ");
                                    additional += currentFeeder->getPAOName();
                                }
@@ -4356,14 +4350,6 @@ BOOL CtiCCSubstationBus::capBankVerificationStatusUpdate(CtiMultiMsg_vec& pointC
                                    else
                                        currentCapBank->setControlStatus(CtiCCCapBank::CloseQuestionable);
 
-                                   text = string("Var: ");
-                                   text += doubleToString(newValue);
-                                   text += " ( ";
-                                   text += doubleToString(ratio*100.0);
-                                   if (!assumedWrongFlag)
-                                       text += "% change), OpenQuestionable";
-                                   else
-                                       text += "% change), CloseQuestionable";
                                    additional = string("Feeder: ");
                                    additional += currentFeeder->getPAOName();
                                }
@@ -4374,14 +4360,6 @@ BOOL CtiCCSubstationBus::capBankVerificationStatusUpdate(CtiMultiMsg_vec& pointC
                                    else
                                        currentCapBank->setControlStatus(CtiCCCapBank::Close);
 
-                                   text = string("Var: ");
-                                   text += doubleToString(newValue);
-                                   text += " ( ";
-                                   text += doubleToString(ratio*100.0);
-                                   if (!assumedWrongFlag)
-                                       text += "% change), Open";
-                                   else
-                                       text += "% change), Closed";
                                    additional = string("Feeder: ");
                                    additional += currentFeeder->getPAOName();
                                    vResult = TRUE;
@@ -4393,18 +4371,17 @@ BOOL CtiCCSubstationBus::capBankVerificationStatusUpdate(CtiMultiMsg_vec& pointC
                                    currentCapBank->setControlStatus(CtiCCCapBank::Open);
                                else
                                    currentCapBank->setControlStatus(CtiCCCapBank::Close);
-                               text = string("Var: ");
-                               text += doubleToString(newValue);
-                               text += " ( ";
-                               text += doubleToString(ratio*100.0);
-                               if (!assumedWrongFlag)
-                                   text += "% change), Open";
-                               else
-                                   text += "% change), Closed";
                                additional = string("Feeder: ");
                                additional += currentFeeder->getPAOName();
                                vResult = TRUE;
                            }
+
+                           text = currentFeeder->createControlStatusUpdateText(currentCapBank->getControlStatus(), newValue,ratio);
+
+                           currentCapBank->setBeforeVarsString(currentFeeder->createVarText(oldValue, 1.0));
+                           currentCapBank->setAfterVarsString(currentFeeder->createVarText(newValue, 1.0));
+                           currentCapBank->setPercentChangeString(currentFeeder->createVarText(ratio, 100.0));
+
                        }
                        else
                        {
@@ -4418,6 +4395,10 @@ BOOL CtiCCSubstationBus::capBankVerificationStatusUpdate(CtiMultiMsg_vec& pointC
                            text += ", OpenQuestionable";
                            additional = string("Feeder: ");
                            additional += currentFeeder->getPAOName();
+
+                           currentCapBank->setBeforeVarsString(currentFeeder->createVarText(oldValue, 1.0));
+                           currentCapBank->setAfterVarsString(currentFeeder->createVarText(newValue, 1.0));
+                           currentCapBank->setPercentChangeString(currentFeeder->createVarText(ratio, 100.0));
                        }
                    }
                    else if( currentCapBank->getControlStatus() == CtiCCCapBank::ClosePending )
@@ -4425,9 +4406,6 @@ BOOL CtiCCSubstationBus::capBankVerificationStatusUpdate(CtiMultiMsg_vec& pointC
                        if( !_IGNORE_NOT_NORMAL_FLAG ||
                            getCurrentVarPointQuality() == NormalQuality )
                        {
-                           DOUBLE change;
-                           DOUBLE oldValue;
-                           DOUBLE newValue;
                            if( !stringCompareIgnoreCase(_controlmethod, CtiCCSubstationBus::IndividualFeederControlMethod) ||
                                !stringCompareIgnoreCase(_controlmethod, CtiCCSubstationBus::BusOptimizedFeederControlMethod) )
                            {
@@ -4459,7 +4437,7 @@ BOOL CtiCCSubstationBus::capBankVerificationStatusUpdate(CtiMultiMsg_vec& pointC
                                    assumedWrongFlag = TRUE;
                                }
                            }
-                           DOUBLE ratio = change/currentCapBank->getBankSize();
+                           ratio = change/currentCapBank->getBankSize();
                            if( ratio < minConfirmPercent*.01 )
                            {
                                if( ratio < failPercent*.01 && failPercent != 0 && minConfirmPercent != 0 )
@@ -4468,15 +4446,6 @@ BOOL CtiCCSubstationBus::capBankVerificationStatusUpdate(CtiMultiMsg_vec& pointC
                                        currentCapBank->setControlStatus(CtiCCCapBank::CloseFail);
                                    else
                                        currentCapBank->setControlStatus(CtiCCCapBank::OpenFail);
-
-                                   text = string("Var: ");
-                                   text += doubleToString(newValue);
-                                   text += " ( ";
-                                   text += doubleToString(ratio*100.0);
-                                   if (!assumedWrongFlag)
-                                       text += "% change), CloseFail";
-                                   else
-                                       text += "% change), OpenFail";
 
                                    additional = string("Feeder: ");
                                    additional += currentFeeder->getPAOName();
@@ -4487,15 +4456,6 @@ BOOL CtiCCSubstationBus::capBankVerificationStatusUpdate(CtiMultiMsg_vec& pointC
                                        currentCapBank->setControlStatus(CtiCCCapBank::CloseQuestionable);
                                    else
                                        currentCapBank->setControlStatus(CtiCCCapBank::OpenQuestionable);
-
-                                   text = string("Var: ");
-                                   text += doubleToString(newValue);
-                                   text += " ( ";
-                                   text += doubleToString(ratio*100.0);
-                                   if (!assumedWrongFlag)
-                                       text += "% change), CloseQuestionable";
-                                   else
-                                       text += "% change), OpenQuestionable";
 
                                    additional = string("Feeder: ");
                                    additional += currentFeeder->getPAOName();
@@ -4528,19 +4488,16 @@ BOOL CtiCCSubstationBus::capBankVerificationStatusUpdate(CtiMultiMsg_vec& pointC
                                else
                                    currentCapBank->setControlStatus(CtiCCCapBank::Open);
 
-                               text = string("Var: ");
-                               text += doubleToString(newValue);
-                               text += " ( ";
-                               text += doubleToString(ratio*100.0);
-                               if (!assumedWrongFlag)
-                                   text += "% change), Closed";
-                               else
-                                   text += "% change), Open";
-
                                additional = string("Feeder: ");
                                additional += currentFeeder->getPAOName();
                                vResult = TRUE;
                            }
+
+                           text = currentFeeder->createControlStatusUpdateText(currentCapBank->getControlStatus(), newValue,ratio);
+
+                           currentCapBank->setBeforeVarsString(currentFeeder->createVarText(oldValue, 1.0));
+                           currentCapBank->setAfterVarsString(currentFeeder->createVarText(newValue, 1.0));
+                           currentCapBank->setPercentChangeString(currentFeeder->createVarText(ratio, 100.0));
                        }
                        else
                        {
@@ -4554,6 +4511,10 @@ BOOL CtiCCSubstationBus::capBankVerificationStatusUpdate(CtiMultiMsg_vec& pointC
                            text += ", CloseQuestionable";
                            additional = string("Feeder: ");
                            additional += currentFeeder->getPAOName();
+ 
+                           currentCapBank->setBeforeVarsString(currentFeeder->createVarText(oldValue, 1.0));
+                           currentCapBank->setAfterVarsString(currentFeeder->createVarText(newValue, 1.0));
+                           currentCapBank->setPercentChangeString(currentFeeder->createVarText(ratio, 100.0));
                        }
                    }
                    else
@@ -4600,7 +4561,9 @@ BOOL CtiCCSubstationBus::capBankVerificationStatusUpdate(CtiMultiMsg_vec& pointC
                        ((CtiPointDataMsg*)pointChanges[pointChanges.size()-1])->setSOE(2);
                        currentCapBank->setLastStatusChangeTime(CtiTime());
 
-                       ccEvents.push_back(new CtiCCEventLogMsg(0, currentCapBank->getStatusPointId(), getPAOId(), currentFeeder->getPAOId(), capBankStateUpdate, getEventSequence(), currentCapBank->getControlStatus(), text, "cap control verification"));
+                       INT actionId = CCEventActionIdGen(currentCapBank->getStatusPointId());
+                       ccEvents.push_back(new CtiCCEventLogMsg(0, currentCapBank->getStatusPointId(), getPAOId(), currentFeeder->getPAOId(), capBankStateUpdate, getEventSequence(), currentCapBank->getControlStatus(), text, "cap control verification", oldValue, newValue, change, currentCapBank->getIpAddress(), actionId));
+
                    }
                    else
                    {

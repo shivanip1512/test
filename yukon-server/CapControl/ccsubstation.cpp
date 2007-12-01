@@ -300,7 +300,7 @@ void CtiCCSubstation::dumpDynamicData(RWDBConnection& conn, CtiTime& currentDate
             RWDBInserter inserter = dynamicCCSubstationTable.inserter();
             //TS FLAG
             inserter << _paoid
-                    << addFlags
+                    <<  string2RWCString(addFlags)
                     << _saEnabledId;
 
             if( _CC_DEBUG & CC_DEBUG_DATABASE )
