@@ -17,7 +17,7 @@ ${xurl}
 <%-- INPUTS --%>
 <c:if test="${not empty metaInfo}">
     <br/>
-    <tags:nameValueContainer style="width:30%;">
+    <tags:nameValueContainer style="width:40%;">
         <c:forEach var="metaInfo" items="${metaInfo}">
             <tags:nameValue name="${metaInfo.key}">${metaInfo.value}</tags:nameValue>
         </c:forEach>
