@@ -1,4 +1,5 @@
-<jsp:directive.page import="com.cannontech.common.version.VersionTools"/><%@ taglib uri="http://cannontech.com/tags/cti" prefix="cti" %>
+<jsp:directive.page import="com.cannontech.common.version.VersionTools"/>
+<jsp:directive.page import="com.cannontech.database.data.lite.stars.LiteStarsCustAccountInformation"/><%@ taglib uri="http://cannontech.com/tags/cti" prefix="cti" %>
 <%@ taglib uri="http://java.sun.com/jsp/jstl/core" prefix="c" %>
 <jsp:useBean id="starsLMPermissionBean" class="com.cannontech.stars.web.bean.StarsLMPermissionBean" scope="page"/>
 
