@@ -41,6 +41,10 @@
 <%@ page import="com.cannontech.stars.xml.serialize.types.*" %>
 <%@ page import="com.cannontech.stars.xml.util.SOAPUtil" %>
 <%@ page import="com.cannontech.util.ServletUtil" %>
+<jsp:directive.page import="com.cannontech.spring.YukonSpringHook"/>
+<jsp:directive.page import="com.cannontech.stars.dr.hardware.service.LMHardwareControlInformationService"/>
+<jsp:directive.page import="com.cannontech.database.data.lite.stars.LiteStarsCustAccountInformation"/>
+<jsp:directive.page import="com.cannontech.database.data.lite.stars.LiteStarsAppliance"/>s
  
 <%
 	LiteYukonUser lYukonUser = (LiteYukonUser) session.getAttribute(ServletUtils.ATT_YUKON_USER);
@@ -123,6 +127,7 @@
 	StarsServiceRequestHistory serviceHist = null;
 	StarsSavedThermostatSchedules thermSchedules = null;
 	StarsUser userLogin = null;
+	LiteStarsCustAccountInformation currentLiteAcctInfo = null;
 	
 	java.util.Vector custGraphs = null;
 	if (user != null) {
@@ -194,6 +199,7 @@
 			serviceHist = accountInfo.getStarsServiceRequestHistory();
 			thermSchedules = accountInfo.getStarsSavedThermostatSchedules();
 			userLogin = accountInfo.getStarsUser();
+			currentLiteAcctInfo = liteEC.getBriefCustAccountInfo(account.getAccountID(), true);
 		}
 	}
 	

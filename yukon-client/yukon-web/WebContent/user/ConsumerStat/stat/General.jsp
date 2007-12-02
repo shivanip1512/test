@@ -1,7 +1,4 @@
-<jsp:directive.page import="com.cannontech.spring.YukonSpringHook"/>
-<jsp:directive.page import="com.cannontech.stars.dr.hardware.service.LMHardwareControlInformationService"/>
-<jsp:directive.page import="com.cannontech.database.data.lite.stars.LiteStarsCustAccountInformation"/>
-<jsp:directive.page import="com.cannontech.database.data.lite.stars.LiteStarsAppliance"/><%@ include file="include/StarsHeader.jsp" %>
+<%@ include file="include/StarsHeader.jsp" %>
 <html>
 <head>
 <title>Consumer Energy Services</title>
@@ -152,11 +149,14 @@
 					}
 				}
 			}
+			// New enrollment, opt out, and control history tracking
+    		//-------------------------------------------------------------------------------
 			List<Integer> inventoryIds = partialOptOutMap.get(program.getProgramID());
 			if(inventoryIds.size() > 0) {
 %>
 											<div align="left">Partially out of service.  Still active for <%= inventoryIds.size() %> <%=(inventoryIds.size() == 1 ? "device" : "devices")%>.
-<%			} else { %>
+<%			//-------------------------------------------------------------------------------
+			} else { %>
                                             <div align="left">Out of service<%= untilStr %>. 
 <%			}                                            
 		} else if (todayCtrlHist.getBeingControlled()) { %>

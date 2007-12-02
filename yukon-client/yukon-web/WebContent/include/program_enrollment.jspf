@@ -135,6 +135,26 @@ function confirmCancel() {
 	int numProgCat = 0;
 	int numEnrolledProg = 0;
 	
+	// New enrollment, opt out, and control history tracking
+    //-------------------------------------------------------------------------------
+	List<LiteStarsAppliance> currentAppList = currentLiteAcctInfo.getAppliances();
+	HashMap<Integer, List<Integer>> partialOptOutMap = new HashMap<Integer, List<Integer>>();
+	for(int x = 0; x < currentAppList.size(); x++) {
+		LiteStarsAppliance currentApp = (LiteStarsAppliance)currentAppList.get(x);
+        LMHardwareControlInformationService lmHardwareControlInformationService = (LMHardwareControlInformationService) YukonSpringHook.getBean("lmHardwareControlInformationService");
+        List<Integer> inventoryNotOptedOut = lmHardwareControlInformationService.getInventoryNotOptedOut(currentApp.getInventoryID(), currentApp.getAddressingGroupID(), account.getAccountID());
+        for(Integer invenId : inventoryNotOptedOut) {
+        	if(currentApp.getInventoryID() == invenId) {
+        		List<Integer> progInventory = partialOptOutMap.get(currentApp.getProgramID());
+        		if(progInventory == null) 
+        			partialOptOutMap.put(currentApp.getProgramID(), new ArrayList<Integer>(2));
+        		else
+        			progInventory.add(invenId);
+        	}
+        }
+	}
+	//-------------------------------------------------------------------------------
+	
 	for (int i = 0; i < categories.getStarsApplianceCategoryCount(); i++) {
 		StarsApplianceCategory category = categories.getStarsApplianceCategory(i);
 		if (category.getStarsEnrLMProgramCount() == 0) continue;
@@ -146,7 +166,14 @@ function confirmCancel() {
 			StarsLMProgram prog = programs.getStarsLMProgram(j);
 			if (prog.getApplianceCategoryID() == category.getApplianceCategoryID()) {
 				program = prog;
-				programStatus = program.getStatus();
+				// New enrollment, opt out, and control history tracking
+	    		//-------------------------------------------------------------------------------
+				List<Integer> inventoryIds = partialOptOutMap.get(program.getProgramID());
+				if(inventoryIds.size() > 0 && program.getStatus().equalsIgnoreCase("Out of Service")) 
+					programStatus = "Partially out of service.  Still active for " + inventoryIds.size() + (inventoryIds.size() == 1 ? " device." : " devices.");
+				//-------------------------------------------------------------------------------
+				else
+					programStatus = program.getStatus();
 				numEnrolledProg++;
 				break;
 			}
