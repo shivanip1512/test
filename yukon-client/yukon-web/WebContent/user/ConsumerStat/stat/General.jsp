@@ -66,46 +66,27 @@
 								    <td colspan="3" class="TableCell">You are not enrolled in any viewable programs.</td>
 								  </tr>
 <% } else {
-	// New enrollment, opt out, and control history tracking
-    //-------------------------------------------------------------------------------
-	List<LiteStarsAppliance> currentAppList = liteAcctInfo.getAppliances();
-	HashMap<Integer, List<Integer>> partialOptOutMap = new HashMap<Integer, List<Integer>>();
-	for(int x = 0; x < currentAppList.size(); x++) {
-		LiteStarsAppliance currentApp = (LiteStarsAppliance)currentAppList.get(x);
-        LMHardwareControlInformationService lmHardwareControlInformationService = (LMHardwareControlInformationService) YukonSpringHook.getBean("lmHardwareControlInformationService");
-        List<Integer> inventoryNotOptedOut = lmHardwareControlInformationService.getInventoryNotOptedOut(currentApp.getInventoryID(), currentApp.getAddressingGroupID(), account.getAccountID());
-        for(Integer invenId : inventoryNotOptedOut) {
-        	if(currentApp.getInventoryID() == invenId) {
-        		List<Integer> progInventory = partialOptOutMap.get(currentApp.getProgramID());
-        		if(progInventory == null) 
-        			partialOptOutMap.put(currentApp.getProgramID(), new ArrayList<Integer>(2));
-        		else
-        			progInventory.add(invenId);
-        	}
-        }
-	}
-	//-------------------------------------------------------------------------------
-	for (int i = 0; i < starsLMPermissionBean.getStarsEnrolledLMPrograms().getStarsLMProgramCount(); i++) {
-		StarsLMProgram program = starsLMPermissionBean.getStarsEnrolledLMPrograms().getStarsLMProgram(i);
-		StarsApplianceCategory category = null;
-		String ctrlOdds = null;
-		
-		StarsLMControlHistory todayCtrlHist = ServletUtils.getControlHistory(program, appliances, StarsCtrlHistPeriod.PASTDAY, liteEC);
-		
-		for (int j = 0; j < categories.getStarsApplianceCategoryCount(); j++) {
-			StarsApplianceCategory appCat = categories.getStarsApplianceCategory(j);
-			if (appCat.getApplianceCategoryID() == program.getApplianceCategoryID()) {
-				category = appCat;
-				
-				for (int k = 0; k < category.getStarsEnrLMProgramCount(); k++) {
-					StarsEnrLMProgram enrProg = category.getStarsEnrLMProgram(k);
-					if (enrProg.getProgramID() == program.getProgramID()) {
-						if (enrProg.getChanceOfControl() != null)
-							ctrlOdds = DaoFactory.getYukonListDao().getYukonListEntry(enrProg.getChanceOfControl().getEntryID()).getEntryText();
-						break;
+		for (int i = 0; i < starsLMPermissionBean.getStarsEnrolledLMPrograms().getStarsLMProgramCount(); i++) {
+			StarsLMProgram program = starsLMPermissionBean.getStarsEnrolledLMPrograms().getStarsLMProgram(i);
+			StarsApplianceCategory category = null;
+			String ctrlOdds = null;
+			
+			StarsLMControlHistory todayCtrlHist = ServletUtils.getControlHistory(program, appliances, StarsCtrlHistPeriod.PASTDAY, liteEC);
+			
+			for (int j = 0; j < categories.getStarsApplianceCategoryCount(); j++) {
+				StarsApplianceCategory appCat = categories.getStarsApplianceCategory(j);
+				if (appCat.getApplianceCategoryID() == program.getApplianceCategoryID()) {
+					category = appCat;
+					
+					for (int k = 0; k < category.getStarsEnrLMProgramCount(); k++) {
+						StarsEnrLMProgram enrProg = category.getStarsEnrLMProgram(k);
+						if (enrProg.getProgramID() == program.getProgramID()) {
+							if (enrProg.getChanceOfControl() != null)
+								ctrlOdds = DaoFactory.getYukonListDao().getYukonListEntry(enrProg.getChanceOfControl().getEntryID()).getEntryText();
+							break;
+						}
 					}
-				}
-				break;
+					break;
 			}
 		}
 %>

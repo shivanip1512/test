@@ -215,6 +215,8 @@
 	dateTimeFormat.setTimeZone(tz);
 	histDateFormat.setTimeZone(tz);
 	
+	HashMap<Integer, List<Integer>> partialOptOutMap = null;
+	
 	if( account != null)
 	{
 		try{
@@ -230,6 +232,26 @@
 		catch( java.lang.Exception e){
 			com.cannontech.clientutils.CTILogger.error(e.getMessage(), e);
 		}
+		
+		// New enrollment, opt out, and control history tracking
+	    //-------------------------------------------------------------------------------
+		List<LiteStarsAppliance> currentAppList = currentLiteAcctInfo.getAppliances();
+		partialOptOutMap = new HashMap<Integer, List<Integer>>();
+		for(int x = 0; x < currentAppList.size(); x++) {
+			LiteStarsAppliance currentApp = (LiteStarsAppliance)currentAppList.get(x);
+	        LMHardwareControlInformationService lmHardwareControlInformationService = (LMHardwareControlInformationService) YukonSpringHook.getBean("lmHardwareControlInformationService");
+	        List<Integer> inventoryNotOptedOut = lmHardwareControlInformationService.getInventoryNotOptedOut(currentApp.getInventoryID(), currentApp.getAddressingGroupID(), account.getAccountID());
+	        for(Integer invenId : inventoryNotOptedOut) {
+	        	if(currentApp.getInventoryID() == invenId) {
+	        		List<Integer> progInventory = partialOptOutMap.get(currentApp.getProgramID());
+	        		if(progInventory == null) 
+	        			partialOptOutMap.put(currentApp.getProgramID(), new ArrayList<Integer>(2));
+	        		else
+	        			progInventory.add(invenId);
+	        	}
+	        }
+		}
+		//-------------------------------------------------------------------------------
 	}
 
 	com.cannontech.graph.GraphBean graphBean = (com.cannontech.graph.GraphBean) session.getAttribute(ServletUtil.ATT_GRAPH_BEAN);
@@ -238,4 +260,5 @@
 		session.setAttribute(ServletUtil.ATT_GRAPH_BEAN, new com.cannontech.graph.GraphBean());
 		graphBean = (com.cannontech.graph.GraphBean)session.getAttribute(ServletUtil.ATT_GRAPH_BEAN);
 	}
+	
 %>

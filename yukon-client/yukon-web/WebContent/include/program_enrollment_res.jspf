@@ -138,26 +138,6 @@ function confirmCancel() {
 	int numProgCat = 0;
 	int numEnrolledProg = 0;
 	
-	// New enrollment, opt out, and control history tracking
-    //-------------------------------------------------------------------------------
-	List<LiteStarsAppliance> currentAppList = liteAcctInfo.getAppliances();
-	HashMap<Integer, List<Integer>> partialOptOutMap = new HashMap<Integer, List<Integer>>();
-	for(int x = 0; x < currentAppList.size(); x++) {
-		LiteStarsAppliance currentApp = (LiteStarsAppliance)currentAppList.get(x);
-        LMHardwareControlInformationService lmHardwareControlInformationService = (LMHardwareControlInformationService) YukonSpringHook.getBean("lmHardwareControlInformationService");
-        List<Integer> inventoryNotOptedOut = lmHardwareControlInformationService.getInventoryNotOptedOut(currentApp.getInventoryID(), currentApp.getAddressingGroupID(), account.getAccountID());
-        for(Integer invenId : inventoryNotOptedOut) {
-        	if(currentApp.getInventoryID() == invenId) {
-        		List<Integer> progInventory = partialOptOutMap.get(currentApp.getProgramID());
-        		if(progInventory == null) 
-        			partialOptOutMap.put(currentApp.getProgramID(), new ArrayList<Integer>(2));
-        		else
-        			progInventory.add(invenId);
-        	}
-        }
-	}
-	//-------------------------------------------------------------------------------
-	
 	for (int i = 0; i < categories.getStarsApplianceCategoryCount(); i++) {
 		StarsApplianceCategory category = categories.getStarsApplianceCategory(i);
 		if (category.getStarsEnrLMProgramCount() == 0) continue;

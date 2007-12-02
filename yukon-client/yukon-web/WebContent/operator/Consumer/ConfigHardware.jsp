@@ -286,11 +286,22 @@ function changeProgSelection(chkBox) {
 				break;
 			}
 		}
+		// New enrollment, opt out, and control history tracking
+   		//-------------------------------------------------------------------------------
+		List<Integer> inventoryIds = partialOptOutMap.get(program.getProgramID());
+		String programStatus = program.getStatus();
+		for(Integer invenId : inventoryIds) {
+			if(invenId == inventory.getInventoryID() && program.getStatus().equalsIgnoreCase("Out of Service")) {
+				programStatus = "In Service";
+				break;
+			}
+		}
+		//-------------------------------------------------------------------------------
 %>
                 <tr bgcolor="#FFFFFF" valign="top"> 
                   <td width="25%" class="TableCell"><%= ServletUtils.getApplianceDescription(categories, appliance) %></td>
                   <td width="15%" class="TableCell"><%= loadNo %></td>
-                  <td width="15%" class="TableCell"><%= program.getStatus() %></td>
+                  <td width="15%" class="TableCell"><%= programStatus %></td>
                   <td width="45%"> 
                     <div align="center"> 
                       <% if (!category.getStarsWebConfig().getLogoLocation().equals("")) { %>
