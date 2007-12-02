@@ -124,6 +124,7 @@
 	StarsSavedThermostatSchedules thermSchedules = null;
 	StarsAppliances appliances = null;
 	StarsUser userLogin = null;
+	LiteStarsCustAccountInformation liteAcctInfo = null;
 	
 	accountInfo = (StarsCustAccountInformation) session.getAttribute(ServletUtils.TRANSIENT_ATT_LEADING + ServletUtils.ATT_CUSTOMER_ACCOUNT_INFO);
 	
@@ -138,6 +139,7 @@
 	
 	if (accountInfo != null) {
 		account = accountInfo.getStarsCustomerAccount();
+		liteAcctInfo = liteEC.getBriefCustAccountInfo(account.getAccountID(), true);
 		propAddr = account.getStreetAddress();
 		siteInfo = account.getStarsSiteInformation();
 		billAddr = account.getBillingAddress();

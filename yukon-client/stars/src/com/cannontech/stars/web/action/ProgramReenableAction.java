@@ -298,9 +298,6 @@ public class ProgramReenableAction implements ActionBase {
 			if (liteApp.getInventoryID() == liteHw.getInventoryID() && liteApp.getProgramID() > 0) {
 				LiteStarsLMProgram liteProg = ProgramSignUpAction.getLMProgram( liteAcctInfo, liteApp.getProgramID() );
 	        	
-				// If program is already in service, do nothing
-				if (liteProg.isInService()) continue;
-                
                 /*
                  * New enrollment, opt out, and control history tracking
                  *-------------------------------------------------------------------------------
@@ -310,6 +307,9 @@ public class ProgramReenableAction implements ActionBase {
                 /*-------------------------------------------------------------------------------
                  * */
 	    		
+                // If program is already in service, do nothing
+                if (liteProg.isInService()) continue;
+                
 				com.cannontech.database.data.stars.event.LMProgramEvent event =
 						new com.cannontech.database.data.stars.event.LMProgramEvent();
 	            

@@ -1,5 +1,6 @@
 package com.cannontech.stars.dr.hardware.service.impl;
 
+import java.util.ArrayList;
 import java.util.Date;
 import java.util.List;
 
@@ -132,9 +133,9 @@ public class LMHardwareControlInformationServiceImpl implements LMHardwareContro
                         controlInformation.setOptOutStop(now);
                         controlInformation.setUserIdSecondAction(currentUser.getUserID());
                         lmHardwareControlGroupDao.update(controlInformation);
-                        return true;
                     }
                 }
+                return true;
             }
             /*
              * Shouldn't have a stop without a start.
@@ -144,6 +145,30 @@ public class LMHardwareControlInformationServiceImpl implements LMHardwareContro
         }
         return false;
     }
+    
+    public List<Integer> getInventoryNotOptedOut(int inventoryId, int loadGroupId, int accountId) {
+        Validate.notNull(loadGroupId, "LoadGroupID cannot be null");
+        Validate.notNull(accountId, "AccountID cannot be null");
+        
+        List<LMHardwareControlGroup> controlInformationList;
+        List<Integer> inventoryIds = new ArrayList<Integer>();
+        try {
+            controlInformationList = lmHardwareControlGroupDao.getByInventoryIdAndGroupIdAndAccountIdAndType(inventoryId, loadGroupId, accountId, LMHardwareControlGroup.OPT_OUT_ENTRY);
+            if(controlInformationList.size() > 0) {
+                for(LMHardwareControlGroup controlInformation : controlInformationList) {
+                    //currently opted out
+                    if(controlInformation.getOptOutStart() != null && controlInformation.getOptOutStop() == null) 
+                        continue;
+                    //not opted out, return it
+                    inventoryIds.add(controlInformation.getInventoryId());
+                }
+            }
+        } catch (Exception e) {
+            logger.error("Unable to retrieve non-opted-out inventory for LMGroupId: " + loadGroupId + " AccountId: " + accountId, e );
+        }
+        return inventoryIds;
+    }
+    
     
     public long calculateControlHistory(int loadGroupId, int accountId, Date start, Date stop, LiteYukonUser currentUser) {
         Validate.notNull(loadGroupId, "LoadGroupID cannot be null");

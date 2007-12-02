@@ -23,6 +23,8 @@ public interface LMHardwareControlGroupDao {
     
     public List<LMHardwareControlGroup> getByAccountId(int accountId);
     
+    public List<LMHardwareControlGroup> getByLMGroupIdAndAccountIdAndType(int lmGroupId, int accountId, int type);
+    
     public List<LMHardwareControlGroup> getByEnrollmentStartDateRange(Date first, Date second);
     
     public List<LMHardwareControlGroup> getByEnrollmentStopDateRange(Date first, Date second);

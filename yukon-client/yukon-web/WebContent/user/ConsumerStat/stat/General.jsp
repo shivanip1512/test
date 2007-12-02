@@ -1,4 +1,8 @@
-<%@ include file="include/StarsHeader.jsp" %>
+
+<jsp:directive.page import="com.cannontech.spring.YukonSpringHook"/>
+<jsp:directive.page import="com.cannontech.stars.dr.hardware.service.LMHardwareControlInformationService"/>
+<jsp:directive.page import="com.cannontech.database.data.lite.stars.LiteStarsCustAccountInformation"/>
+<jsp:directive.page import="com.cannontech.database.data.lite.stars.LiteStarsAppliance"/><%@ include file="include/StarsHeader.jsp" %>
 <html>
 <head>
 <title>Consumer Energy Services</title>
@@ -66,6 +70,25 @@
 								    <td colspan="3" class="TableCell">You are not enrolled in any viewable programs.</td>
 								  </tr>
 <% } else {
+	// New enrollment, opt out, and control history tracking
+    //-------------------------------------------------------------------------------
+	List<LiteStarsAppliance> currentAppList = liteAcctInfo.getAppliances();
+	HashMap<Integer, List<Integer>> partialOptOutMap = new HashMap<Integer, List<Integer>>();
+	for(int x = 0; x < currentAppList.size(); x++) {
+		LiteStarsAppliance currentApp = (LiteStarsAppliance)currentAppList.get(x);
+        LMHardwareControlInformationService lmHardwareControlInformationService = (LMHardwareControlInformationService) YukonSpringHook.getBean("lmHardwareControlInformationService");
+        List<Integer> inventoryNotOptedOut = lmHardwareControlInformationService.getInventoryNotOptedOut(currentApp.getInventoryID(), currentApp.getAddressingGroupID(), account.getAccountID());
+        for(Integer invenId : inventoryNotOptedOut) {
+        	if(currentApp.getInventoryID() == invenId) {
+        		List<Integer> progInventory = partialOptOutMap.get(currentApp.getProgramID());
+        		if(progInventory == null) 
+        			partialOptOutMap.put(currentApp.getProgramID(), new ArrayList<Integer>(2));
+        		else
+        			progInventory.add(invenId);
+        	}
+        }
+	}
+	//-------------------------------------------------------------------------------
 	for (int i = 0; i < starsLMPermissionBean.getStarsEnrolledLMPrograms().getStarsLMProgramCount(); i++) {
 		StarsLMProgram program = starsLMPermissionBean.getStarsEnrolledLMPrograms().getStarsLMProgram(i);
 		StarsApplianceCategory category = null;
@@ -130,9 +153,14 @@
 					}
 				}
 			}
+			List<Integer> inventoryIds = partialOptOutMap.get(program.getProgramID());
+			if(inventoryIds.size() > 0) {
 %>
+											<div align="left">Partially out of service.  Still active for <%= inventoryIds.size() %> <%=(inventoryIds.size() == 1 ? "device" : "devices")%>.
+<%			} else { %>
                                             <div align="left">Out of service<%= untilStr %>. 
-<%		} else if (todayCtrlHist.getBeingControlled()) { %>
+<%			}                                            
+		} else if (todayCtrlHist.getBeingControlled()) { %>
                                               Currently <cti:getProperty propertyid="<%= ResidentialCustomerRole.WEB_TEXT_CONTROLLING %>" defaultvalue="controlling"/>. 
 <%		} else if (todayCtrlHist.getControlHistoryCount() > 0) { %>
                                               You have been <cti:getProperty propertyid="<%=ResidentialCustomerRole.WEB_TEXT_CONTROLLED %>" defaultvalue="controlled"/> 

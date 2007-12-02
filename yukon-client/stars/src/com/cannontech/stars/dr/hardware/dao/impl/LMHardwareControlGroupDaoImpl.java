@@ -29,6 +29,7 @@ public class LMHardwareControlGroupDaoImpl implements LMHardwareControlGroupDao,
     private static final String selectByLMGroupId;
     private static final String selectByInventoryId;
     private static final String selectByAccountId;
+    private static final String selectByLMGroupIdAndAccountIdAndType; 
     private static final String selectByEnrollStartRange;
     private static final String selectByEnrollStopRange;
     private static final String selectByOptOutStartRange;
@@ -59,6 +60,8 @@ public class LMHardwareControlGroupDaoImpl implements LMHardwareControlGroupDao,
         selectByInventoryId = selectAllSql + " WHERE InventoryID = ?";
         
         selectByAccountId = selectAllSql + " WHERE AccountID = ?";
+        
+        selectByLMGroupIdAndAccountIdAndType = selectAllSql + " WHERE LMGroupID = ? AND AccountID = ? AND Type = ?";
         
         selectByEnrollStartRange = selectAllSql + " WHERE GroupEnrollStart > ? AND GroupEnrollStart <= ?";
         
@@ -173,6 +176,16 @@ public class LMHardwareControlGroupDaoImpl implements LMHardwareControlGroupDao,
         } catch (DataAccessException e) {
             return Collections.emptyList();
         } 
+    }
+    
+    @Transactional(readOnly = true, propagation = Propagation.SUPPORTS)
+    public List<LMHardwareControlGroup> getByLMGroupIdAndAccountIdAndType(int lmGroupId, int accountId, int type) {
+        try {
+            List<LMHardwareControlGroup> list = simpleJdbcTemplate.query(selectByLMGroupIdAndAccountIdAndType, rowMapper, lmGroupId, accountId, type);
+            return list;
+        } catch (DataAccessException e) {
+            return Collections.emptyList();
+        }
     }
     
     @Transactional(readOnly = true, propagation = Propagation.SUPPORTS)
