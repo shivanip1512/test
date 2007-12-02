@@ -171,6 +171,7 @@ public class CBCDisplay {
 
                     String disStateString = "DISABLED : " + (isFixedState ? CapBank.FIXED_OPSTATE 
                                                 : currentState);
+                    disStateString += capBank.getControlStatusQualityString();                    
                     if (capBank.getOvUVDisabled()){
                     	disStateString += "-V";
                     }
@@ -188,6 +189,8 @@ public class CBCDisplay {
                     }
                    
                     EnStateString += currentState;
+                    EnStateString += capBank.getControlStatusQualityString();           
+                    
                     if (capBank.getOvUVDisabled()){
                     	EnStateString += "-V";
                     }

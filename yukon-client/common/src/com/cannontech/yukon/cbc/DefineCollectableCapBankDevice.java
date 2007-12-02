@@ -90,6 +90,8 @@ public void restoreGuts(Object obj, com.roguewave.vsj.VirtualInputStream vstr, c
     capBank.setPercentChange( (String) vstr.restoreObject( SimpleMappings.CString ) );
     capBank.setMaxDailyOperationHitFlag(new Boolean ((int)vstr.extractUnsignedInt() == 1) ? new Boolean(true) : new Boolean(false) );
     capBank.setOvuvSituationFlag(new Boolean ((int)vstr.extractUnsignedInt() == 1) ? new Boolean(true) : new Boolean(false) );
+    capBank.setControlStatusQuality( new Integer( (int)vstr.extractUnsignedInt() ) );
+	
 }
 /**
  * saveGuts method comment.
@@ -142,5 +144,7 @@ public void saveGuts(Object obj, com.roguewave.vsj.VirtualOutputStream vstr, com
     vstr.saveObject( capBank.getPercentChange(), SimpleMappings.CString);
     vstr.insertUnsignedInt( (capBank.getMaxDailyOperationHitFlag() == true)?1:0);
     vstr.insertUnsignedInt( (capBank.getOvuvSituationFlag() == true)?1:0);
+    vstr.insertUnsignedInt( capBank.getControlStatusQuality().intValue() );
+	
 }
 }

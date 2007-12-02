@@ -21,6 +21,7 @@ public class CapBankDevice extends StreamableCapObject
 	private Boolean maxOperationDisableFlag = null;
 	private Boolean maxDailyOperationHitFlag = null;
 	private Boolean ovuvSituationFlag = null;
+	private Integer controlStatusQuality = null;
 
 	private Integer alarmInhibit = null;
 	private Integer controlInhibit = null;
@@ -525,4 +526,37 @@ public class CapBankDevice extends StreamableCapObject
     public void setPercentChange(String percentChange) {
         this.percentChange = percentChange;
     }
+	public Integer getControlStatusQuality() {
+		return controlStatusQuality;
+	}
+	public void setControlStatusQuality(Integer controlStatusQuality) {
+		this.controlStatusQuality = controlStatusQuality;
+	}
+	
+	public String getControlStatusQualityString(){
+		String retVal = "";
+		switch ((int)getControlStatusQuality())
+		{
+			case CapControlConst.CC_PARTIAL_QUAL:{
+				retVal = "-P";
+				break;
+			}
+			case CapControlConst.CC_SIGNIFICANT_QUAL:{
+				retVal = "-S";
+				break;
+			}
+			case CapControlConst.CC_ABNORMAL_QUAL:{
+				retVal = "-Q";
+			    break;
+			}
+			case CapControlConst.CC_FAIL_QUAL:
+			case CapControlConst.CC_COMMFAIL_QUAL:
+			case CapControlConst.CC_NO_CONTROL_QUAL:
+		    case CapControlConst.CC_NORMAL_QUAL:
+			default:
+				break;
+		}
+		return retVal;
+		
+	}
 }

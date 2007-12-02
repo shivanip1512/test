@@ -37,4 +37,12 @@ public interface CapControlConst
    public final static String ONELINE_SUBSTATE_STATEGROUP_NAME = "1LNSUBSTATE";
    public final static String ONELINE_VERIFY_STATEGROUP_NAME = "1LNVERIFY";
    
+   public final static int CC_NORMAL_QUAL = 0;
+   public final static int CC_PARTIAL_QUAL = 1;
+   public final static int CC_SIGNIFICANT_QUAL = 2;
+   public final static int CC_ABNORMAL_QUAL = 3;
+   public final static int CC_FAIL_QUAL = 4;
+   public final static int CC_COMMFAIL_QUAL = 5;
+   public final static int CC_NO_CONTROL_QUAL = 6;
+   
 }
