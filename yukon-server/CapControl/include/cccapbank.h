@@ -31,6 +31,16 @@
 #include "ctitime.h"
 #include "ctidate.h"
 
+typedef enum
+{
+    CC_Normal = 0,
+    CC_Partial = 1,
+    CC_Significant = 2,
+    CC_AbnormalQuality = 3,
+    CC_Fail = 4,
+    CC_CommFail = 5,
+    CC_NoControl = 6
+} CtiCCControlStatusQaulity;
                 
 class CtiCCCapBank : public RWCollectable
 {
@@ -89,6 +99,14 @@ public:
     BOOL getRetryCloseFailedFlag() const;
     BOOL getOvUvDisabledFlag() const;
     BOOL getMaxDailyOpsHitFlag() const;
+    BOOL getControlStatusPartialFlag() const;
+    BOOL getControlStatusSignificantFlag() const;
+    BOOL getControlStatusAbnQualityFlag() const;
+    BOOL getControlStatusFailFlag() const;
+    BOOL getControlStatusCommFailFlag() const;
+    BOOL getControlStatusNoControlFlag() const;
+    LONG getControlStatusQuality() const;
+
     BOOL getOvUvSituationFlag() const;
     LONG getUDPPort() const;
     const string& getIpAddress() const;
@@ -153,6 +171,14 @@ public:
     CtiCCCapBank& setRetryCloseFailedFlag(BOOL retryCloseFailedFlag);
     CtiCCCapBank& setOvUvDisabledFlag(BOOL ovUvDisabledFlag);
     CtiCCCapBank& setMaxDailyOpsHitFlag(BOOL flag);
+    CtiCCCapBank& setControlStatusPartialFlag(BOOL flag);
+    CtiCCCapBank& setControlStatusSignificantFlag(BOOL flag);
+    CtiCCCapBank& setControlStatusAbnQualityFlag(BOOL flag);
+    CtiCCCapBank& setControlStatusFailFlag(BOOL flag);
+    CtiCCCapBank& setControlStatusCommFailFlag(BOOL flag);
+    CtiCCCapBank& setControlStatusNoControlFlag(BOOL flag);
+    CtiCCCapBank& setControlStatusQuality(CtiCCControlStatusQaulity quality);
+
     CtiCCCapBank& setOvUvSituationFlag(BOOL ovUvSituationFlag);
     CtiCCCapBank& setUDPPort(LONG value);
     CtiCCCapBank& setIpAddress(ULONG value);
@@ -214,7 +240,16 @@ public:
     static const int CloseFail;
     static const int OpenPending;
     static const int ClosePending;
-        
+
+    /*typedef enum
+    {
+        Normal = 0,
+        Partial = 1,
+        Significant = 2,
+        AbnormalQuality = 3
+    } CtiCCControlStatusQaulity;
+    */
+
 private:
 
     LONG _paoid;
@@ -267,9 +302,15 @@ private:
     BOOL _retryOpenFailedFlag;
     BOOL _retryCloseFailedFlag;
     BOOL _ovUvDisabledFlag;
-    BOOL _ovuvSituationFlag;
-
     BOOL _maxDailyOpsHitFlag;
+    BOOL _controlStatusPartialFlag;
+    BOOL _controlStatusSignificantFlag;
+    BOOL _controlStatusAbnQualityFlag;
+    BOOL _controlStatusFailFlag;
+    BOOL _controlStatusCommFailFlag;
+    BOOL _controlStatusNoControlFlag;
+    BOOL _ovuvSituationFlag;
+    
     CtiCCTwoWayPoints *_twoWayPoints;
     string _ipAddress;
     LONG _udpPortNumber;
@@ -281,6 +322,7 @@ private:
     string _sBeforeVars;
     string _sAfterVars;
     string _sPercentChange;
+    LONG _controlStatusQuality;
     
     //don't stream
     BOOL _insertDynamicDataFlag;

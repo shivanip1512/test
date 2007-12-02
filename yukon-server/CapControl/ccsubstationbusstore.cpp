@@ -2499,7 +2499,8 @@ void CtiCCSubstationBusStore::verifySubBusAndFeedersStates()
                                     dout << CtiTime() << " - Setting status to close questionable, Cap Bank: " << currentCapBank->getPAOName() << " in: " << __FILE__ << " at: " << __LINE__ << endl;
                                 }
                                 currentCapBank->setControlStatus(CtiCCCapBank::CloseQuestionable);
-                                //currentCapBank->setBeforeVarsString("abnormal data");
+                                currentCapBank->setControlStatusQuality(CC_AbnormalQuality);
+
                                 currentCapBank->setAfterVarsString("abnormal data");
                                 currentCapBank->setPercentChangeString(" --- ");
                                 CtiCapController::getInstance()->sendMessageToDispatch(new CtiPointDataMsg(currentCapBank->getStatusPointId(),CtiCCCapBank::CloseQuestionable,NormalQuality,StatusPointType, "cap control",  TAG_POINT_FORCE_UPDATE));
@@ -2515,7 +2516,8 @@ void CtiCCSubstationBusStore::verifySubBusAndFeedersStates()
                                     dout << CtiTime() << " - Setting status to open questionable, Cap Bank: " << currentCapBank->getPAOName() << " in: " << __FILE__ << " at: " << __LINE__ << endl;
                                 }
                                 currentCapBank->setControlStatus(CtiCCCapBank::OpenQuestionable);
-                                //currentCapBank->setBeforeVarsString("abnormal data");
+                                currentCapBank->setControlStatusQuality(CC_AbnormalQuality);
+
                                 currentCapBank->setAfterVarsString("abnormal data");
                                 currentCapBank->setPercentChangeString(" --- ");
                                 CtiCapController::getInstance()->sendMessageToDispatch(new CtiPointDataMsg(currentCapBank->getStatusPointId(),CtiCCCapBank::OpenQuestionable,NormalQuality,StatusPointType, "cap control",  TAG_POINT_FORCE_UPDATE));
@@ -2552,7 +2554,8 @@ void CtiCCSubstationBusStore::verifySubBusAndFeedersStates()
                                 dout << CtiTime() << " - Cap Bank: " << currentCapBank->getPAOName() << " questionable because feeder is not recently controlled in: " << __FILE__ << " at: " << __LINE__ << endl;
                             }
                             currentCapBank->setControlStatus(CtiCCCapBank::CloseQuestionable);
-                            //currentCapBank->setBeforeVarsString("abnormal data");
+                            currentCapBank->setControlStatusQuality(CC_AbnormalQuality);
+
                             currentCapBank->setAfterVarsString("abnormal data");
                             currentCapBank->setPercentChangeString(" --- ");
                             CtiCapController::getInstance()->sendMessageToDispatch(new CtiPointDataMsg(currentCapBank->getStatusPointId(),CtiCCCapBank::CloseQuestionable,NormalQuality,StatusPointType, "cap control",  TAG_POINT_FORCE_UPDATE));
@@ -2567,7 +2570,8 @@ void CtiCCSubstationBusStore::verifySubBusAndFeedersStates()
                                 dout << CtiTime() << " - Cap Bank: " << currentCapBank->getPAOName() << " questionable because feeder is not recently controlled in: " << __FILE__ << " at: " << __LINE__ << endl;
                             }
                             currentCapBank->setControlStatus(CtiCCCapBank::OpenQuestionable);
-                            //currentCapBank->setBeforeVarsString("abnormal data");
+                            currentCapBank->setControlStatusQuality(CC_AbnormalQuality);
+
                             currentCapBank->setAfterVarsString("abnormal data");
                             currentCapBank->setPercentChangeString(" --- ");
                             CtiCapController::getInstance()->sendMessageToDispatch(new CtiPointDataMsg(currentCapBank->getStatusPointId(),CtiCCCapBank::OpenQuestionable,NormalQuality,StatusPointType, "cap control",  TAG_POINT_FORCE_UPDATE));
@@ -2630,7 +2634,8 @@ void CtiCCSubstationBusStore::verifySubBusAndFeedersStates()
                                 dout << CtiTime() << " - Setting status to close questionable, Cap Bank: " << currentCapBank->getPAOName() << " in: " << __FILE__ << " at: " << __LINE__ << endl;
                             }
                             currentCapBank->setControlStatus(CtiCCCapBank::CloseQuestionable);
-                            //currentCapBank->setBeforeVarsString("abnormal data");
+                            currentCapBank->setControlStatusQuality(CC_AbnormalQuality);
+
                             currentCapBank->setAfterVarsString("abnormal data");
                             currentCapBank->setPercentChangeString(" --- ");
                             CtiCapController::getInstance()->sendMessageToDispatch(new CtiPointDataMsg(currentCapBank->getStatusPointId(),CtiCCCapBank::CloseQuestionable,NormalQuality,StatusPointType, "cap control",  TAG_POINT_FORCE_UPDATE));
@@ -2647,7 +2652,8 @@ void CtiCCSubstationBusStore::verifySubBusAndFeedersStates()
                                 dout << CtiTime() << " - Setting status to open questionable, Cap Bank: " << currentCapBank->getPAOName() << " in: " << __FILE__ << " at: " << __LINE__ << endl;
                             }
                             currentCapBank->setControlStatus(CtiCCCapBank::OpenQuestionable);
-                            //currentCapBank->setBeforeVarsString("abnormal data");
+                            currentCapBank->setControlStatusQuality(CC_AbnormalQuality);
+
                             currentCapBank->setAfterVarsString("abnormal data");
                             currentCapBank->setPercentChangeString(" --- ");
                             CtiCapController::getInstance()->sendMessageToDispatch(new CtiPointDataMsg(currentCapBank->getStatusPointId(),CtiCCCapBank::OpenQuestionable,NormalQuality,StatusPointType, "cap control",  TAG_POINT_FORCE_UPDATE));

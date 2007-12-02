@@ -4342,6 +4342,8 @@ BOOL CtiCCSubstationBus::capBankVerificationStatusUpdate(CtiMultiMsg_vec& pointC
 
                                    additional = string("Feeder: ");
                                    additional += currentFeeder->getPAOName();
+
+                                   currentCapBank->setControlStatusQuality(CC_Fail);
                                }
                                else if( minConfirmPercent != 0 )
                                {
@@ -4352,6 +4354,8 @@ BOOL CtiCCSubstationBus::capBankVerificationStatusUpdate(CtiMultiMsg_vec& pointC
 
                                    additional = string("Feeder: ");
                                    additional += currentFeeder->getPAOName();
+
+                                   currentCapBank->setControlStatusQuality(CC_Significant);
                                }
                                else
                                {
@@ -4362,6 +4366,8 @@ BOOL CtiCCSubstationBus::capBankVerificationStatusUpdate(CtiMultiMsg_vec& pointC
 
                                    additional = string("Feeder: ");
                                    additional += currentFeeder->getPAOName();
+
+                                   currentCapBank->setControlStatusQuality(CC_Normal);
                                    vResult = TRUE;
                                }
                            }
@@ -4373,6 +4379,8 @@ BOOL CtiCCSubstationBus::capBankVerificationStatusUpdate(CtiMultiMsg_vec& pointC
                                    currentCapBank->setControlStatus(CtiCCCapBank::Close);
                                additional = string("Feeder: ");
                                additional += currentFeeder->getPAOName();
+
+                               currentCapBank->setControlStatusQuality(CC_Normal);
                                vResult = TRUE;
                            }
 
@@ -4399,6 +4407,8 @@ BOOL CtiCCSubstationBus::capBankVerificationStatusUpdate(CtiMultiMsg_vec& pointC
                            currentCapBank->setBeforeVarsString(currentFeeder->createVarText(oldValue, 1.0));
                            currentCapBank->setAfterVarsString(currentFeeder->createVarText(newValue, 1.0));
                            currentCapBank->setPercentChangeString(currentFeeder->createVarText(ratio, 100.0));
+
+                           currentCapBank->setControlStatusQuality(CC_AbnormalQuality);
                        }
                    }
                    else if( currentCapBank->getControlStatus() == CtiCCCapBank::ClosePending )
@@ -4449,6 +4459,8 @@ BOOL CtiCCSubstationBus::capBankVerificationStatusUpdate(CtiMultiMsg_vec& pointC
 
                                    additional = string("Feeder: ");
                                    additional += currentFeeder->getPAOName();
+
+                                   currentCapBank->setControlStatusQuality(CC_Fail);
                                }
                                else if( minConfirmPercent != 0 )
                                {
@@ -4459,6 +4471,8 @@ BOOL CtiCCSubstationBus::capBankVerificationStatusUpdate(CtiMultiMsg_vec& pointC
 
                                    additional = string("Feeder: ");
                                    additional += currentFeeder->getPAOName();
+
+                                   currentCapBank->setControlStatusQuality(CC_Significant);
                                }
                                else
                                {
@@ -4478,6 +4492,8 @@ BOOL CtiCCSubstationBus::capBankVerificationStatusUpdate(CtiMultiMsg_vec& pointC
 
                                    additional = string("Feeder: ");
                                    additional += currentFeeder->getPAOName();
+
+                                   currentCapBank->setControlStatusQuality(CC_Normal);
                                    vResult = TRUE;
                                }
                            }
@@ -4490,6 +4506,8 @@ BOOL CtiCCSubstationBus::capBankVerificationStatusUpdate(CtiMultiMsg_vec& pointC
 
                                additional = string("Feeder: ");
                                additional += currentFeeder->getPAOName();
+
+                               currentCapBank->setControlStatusQuality(CC_Normal);
                                vResult = TRUE;
                            }
 
@@ -4515,6 +4533,8 @@ BOOL CtiCCSubstationBus::capBankVerificationStatusUpdate(CtiMultiMsg_vec& pointC
                            currentCapBank->setBeforeVarsString(currentFeeder->createVarText(oldValue, 1.0));
                            currentCapBank->setAfterVarsString(currentFeeder->createVarText(newValue, 1.0));
                            currentCapBank->setPercentChangeString(currentFeeder->createVarText(ratio, 100.0));
+
+                           currentCapBank->setControlStatusQuality(CC_AbnormalQuality);
                        }
                    }
                    else
@@ -4531,6 +4551,7 @@ BOOL CtiCCSubstationBus::capBankVerificationStatusUpdate(CtiMultiMsg_vec& pointC
                        {
                            text = "CloseFail";
                        }
+                       currentCapBank->setControlStatusQuality(CC_Fail);
                        returnBoolean = FALSE;
                       // break;
                    }

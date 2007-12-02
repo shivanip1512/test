@@ -1626,6 +1626,7 @@ void CtiCCCommandExecutor::OpenCapBank()
                             currentSubstationBus->setLastOperationTime(CtiTime());
                             currentFeeder->setLastOperationTime(CtiTime());
                             currentCapBank->setControlStatus(CtiCCCapBank::OpenPending);
+                            currentCapBank->setControlStatusQuality(CC_Normal);
                             currentSubstationBus->figureEstimatedVarLoadPointValue();
                             currentCapBank->setTotalOperations(currentCapBank->getTotalOperations() + 1);
                             currentSubstationBus->setBusUpdatedFlag(TRUE);
@@ -1899,6 +1900,7 @@ void CtiCCCommandExecutor::CloseCapBank()
                             currentSubstationBus->setLastOperationTime(CtiTime());
                             currentFeeder->setLastOperationTime(CtiTime());
                             currentCapBank->setControlStatus(CtiCCCapBank::ClosePending);
+                            currentCapBank->setControlStatusQuality(CC_Normal);
                             currentSubstationBus->figureEstimatedVarLoadPointValue();
                             currentCapBank->setTotalOperations(currentCapBank->getTotalOperations() + 1);
                             currentSubstationBus->setBusUpdatedFlag(TRUE);
@@ -2543,6 +2545,7 @@ void CtiCCCommandExecutor::Flip7010Device()
                             {
                                 currentCapBank->setControlStatus(CtiCCCapBank::OpenPending);
                             }
+                            currentCapBank->setControlStatusQuality(CC_Normal);
                             currentSubstationBus->figureEstimatedVarLoadPointValue();
                             currentCapBank->setTotalOperations(currentCapBank->getTotalOperations() + 1);
                             currentSubstationBus->setBusUpdatedFlag(TRUE);
@@ -2956,6 +2959,7 @@ void CtiCCCommandExecutor::ConfirmSub()
                                 text += "Close Sent, Sub VarLoad = ";
                                 currentCapBank->setControlStatus(CtiCCCapBank::Close);
                             }
+                            currentCapBank->setControlStatusQuality(CC_Normal);
 
                             _snprintf(tempchar,80,"%.*f",currentSubstationBus->getDecimalPlaces(),currentSubstationBus->getCurrentVarLoadPointValue());
                             text += tempchar;
@@ -3284,6 +3288,7 @@ void CtiCCCommandExecutor::ConfirmOpen()
                             currentFeeder->setLastOperationTime(CtiTime());
                             savedControlStatus = currentCapBank->getControlStatus();
                             currentCapBank->setControlStatus(CtiCCCapBank::OpenPending);
+                            currentCapBank->setControlStatusQuality(CC_Normal);
                             currentSubstationBus->figureEstimatedVarLoadPointValue();
                             //currentSubstationBus->setCurrentDailyOperations(currentSubstationBus->getCurrentDailyOperations() + 1);
                             //currentFeeder->setCurrentDailyOperations(currentFeeder->getCurrentDailyOperations() + 1);
@@ -3573,6 +3578,7 @@ void CtiCCCommandExecutor::ConfirmClose()
                             currentFeeder->setLastOperationTime(CtiTime());
                             savedControlStatus = currentCapBank->getControlStatus();
                             currentCapBank->setControlStatus(CtiCCCapBank::ClosePending);
+                            currentCapBank->setControlStatusQuality(CC_Normal);
                             currentSubstationBus->figureEstimatedVarLoadPointValue();
                             //currentSubstationBus->setCurrentDailyOperations(currentSubstationBus->getCurrentDailyOperations() + 1);
                             //currentFeeder->setCurrentDailyOperations(currentFeeder->getCurrentDailyOperations() + 1);
@@ -3816,6 +3822,7 @@ void CtiCCCommandExecutor::doConfirmImmediately(CtiCCSubstationBus* currentSubst
                 if( currentCapBank->getControlStatus() == CtiCCCapBank::ClosePending )
                 {
                     currentCapBank->setControlStatus(CtiCCCapBank::Close);
+                    currentCapBank->setControlStatusQuality(CC_Normal);
                     if( currentCapBank->getStatusPointId() > 0 )
                     {
                         pointChanges.push_back(new CtiPointDataMsg(currentCapBank->getStatusPointId(),CtiCCCapBank::Close,NormalQuality,StatusPointType,"Forced ccServer Update", TAG_POINT_FORCE_UPDATE));
@@ -3859,6 +3866,7 @@ void CtiCCCommandExecutor::doConfirmImmediately(CtiCCSubstationBus* currentSubst
                 else if( currentCapBank->getControlStatus() == CtiCCCapBank::OpenPending )
                 {
                     currentCapBank->setControlStatus(CtiCCCapBank::Open);
+                    currentCapBank->setControlStatusQuality(CC_Normal);
                     if( currentCapBank->getStatusPointId() > 0 )
                     {
                         pointChanges.push_back(new CtiPointDataMsg(currentCapBank->getStatusPointId(),CtiCCCapBank::Open,NormalQuality,StatusPointType,"Forced ccServer Update", TAG_POINT_FORCE_UPDATE));
@@ -3952,6 +3960,7 @@ void CtiCCCommandExecutor::doConfirmImmediately(CtiCCSubstationBus* currentSubst
                         if( currentCapBank->getControlStatus() == CtiCCCapBank::ClosePending )
                         {
                             currentCapBank->setControlStatus(CtiCCCapBank::Close);
+                            currentCapBank->setControlStatusQuality(CC_Normal);
                             if( currentCapBank->getStatusPointId() > 0 )
                             {
                                 pointChanges.push_back(new CtiPointDataMsg(currentCapBank->getStatusPointId(),CtiCCCapBank::Close,NormalQuality,StatusPointType,"Forced ccServer Update", TAG_POINT_FORCE_UPDATE));
@@ -3993,6 +4002,7 @@ void CtiCCCommandExecutor::doConfirmImmediately(CtiCCSubstationBus* currentSubst
                         {
 
                             currentCapBank->setControlStatus(CtiCCCapBank::Open);
+                            currentCapBank->setControlStatusQuality(CC_Normal);
                             if( currentCapBank->getStatusPointId() > 0 )
                             {
                                 pointChanges.push_back(new CtiPointDataMsg(currentCapBank->getStatusPointId(),CtiCCCapBank::Open,NormalQuality,StatusPointType,"Forced ccServer Update", TAG_POINT_FORCE_UPDATE));
@@ -4905,6 +4915,7 @@ void CtiCCPointDataMsgExecutor::Execute()
 
                             currentSubstationBus->setBusUpdatedFlag(TRUE);
                             currentCapBank->setControlStatus((LONG)value);
+                            currentCapBank->setControlStatusQuality(CC_Normal);
                             currentCapBank->setTagsControlStatus((LONG)tags);
                             currentCapBank->setLastStatusChangeTime(timestamp);
                             currentSubstationBus->figureEstimatedVarLoadPointValue();

@@ -454,6 +454,36 @@ BOOL CtiCCCapBank::getOvUvSituationFlag() const
 {
     return _ovuvSituationFlag;
 }
+BOOL CtiCCCapBank::getControlStatusPartialFlag() const
+{
+    return _controlStatusPartialFlag;
+}
+BOOL CtiCCCapBank::getControlStatusSignificantFlag() const
+{
+    return _controlStatusSignificantFlag;
+}
+BOOL CtiCCCapBank::getControlStatusAbnQualityFlag() const
+{
+    return _controlStatusAbnQualityFlag;
+}
+BOOL CtiCCCapBank::getControlStatusFailFlag() const
+{
+    return _controlStatusFailFlag;
+}
+BOOL CtiCCCapBank::getControlStatusCommFailFlag() const
+{
+    return _controlStatusCommFailFlag;
+}
+BOOL CtiCCCapBank::getControlStatusNoControlFlag() const
+{
+    return _controlStatusNoControlFlag;
+}
+
+
+LONG CtiCCCapBank::getControlStatusQuality() const
+{
+    return _controlStatusQuality;
+}
 
 
 /*---------------------------------------------------------------------------
@@ -1020,6 +1050,192 @@ CtiCCCapBank& CtiCCCapBank::setMaxDailyOpsHitFlag(BOOL flag)
         _dirty = TRUE;
     }
     _maxDailyOpsHitFlag = flag;
+
+    return *this;
+}
+/*---------------------------------------------------------------------------
+    setControlStatusPartialFlag(
+    
+    Sets the ControlStatusPartialFlag( ..
+---------------------------------------------------------------------------*/
+CtiCCCapBank& CtiCCCapBank::setControlStatusPartialFlag(BOOL flag)
+{
+
+    if (_controlStatusPartialFlag != flag)
+    {
+        _dirty = TRUE;
+    }
+    _controlStatusPartialFlag = flag;
+
+    return *this;
+}
+/*---------------------------------------------------------------------------
+    setControlStatusSignificantFlag
+    
+    Sets the ControlStatusPartialFlag ..
+---------------------------------------------------------------------------*/
+CtiCCCapBank& CtiCCCapBank::setControlStatusSignificantFlag(BOOL flag)
+{
+
+    if (_controlStatusSignificantFlag != flag)
+    {
+        _dirty = TRUE;
+    }
+    _controlStatusSignificantFlag = flag;
+
+    return *this;
+}
+
+/*---------------------------------------------------------------------------
+    setControlStatusAbnQualityFlag
+    
+    Sets the ControlStatusAbnQualityFlag ..
+---------------------------------------------------------------------------*/
+CtiCCCapBank& CtiCCCapBank::setControlStatusAbnQualityFlag(BOOL flag)
+{
+
+    if (_controlStatusAbnQualityFlag != flag)
+    {
+        _dirty = TRUE;
+    }
+    _controlStatusAbnQualityFlag = flag;
+
+    return *this;
+}
+/*---------------------------------------------------------------------------
+    setControlStatusFailFlag
+    
+    Sets the ControlStatusFailFlag ..
+---------------------------------------------------------------------------*/
+CtiCCCapBank& CtiCCCapBank::setControlStatusFailFlag(BOOL flag)
+{
+
+    if (_controlStatusFailFlag != flag)
+    {
+        _dirty = TRUE;
+    }
+    _controlStatusFailFlag = flag;
+
+    return *this;
+}
+/*---------------------------------------------------------------------------
+    setControlStatusCommFailFlag
+    
+    Sets the ControlStatusCommFailFlag ..
+---------------------------------------------------------------------------*/
+CtiCCCapBank& CtiCCCapBank::setControlStatusCommFailFlag(BOOL flag)
+{
+
+    if (_controlStatusCommFailFlag != flag)
+    {
+        _dirty = TRUE;
+    }
+    _controlStatusCommFailFlag = flag;
+
+    return *this;
+}
+/*---------------------------------------------------------------------------
+    setControlStatusNoControlFlag
+    
+    Sets the ControlStatusNoControlFlag ..
+---------------------------------------------------------------------------*/
+CtiCCCapBank& CtiCCCapBank::setControlStatusNoControlFlag(BOOL flag)
+{
+
+    if (_controlStatusNoControlFlag != flag)
+    {
+        _dirty = TRUE;
+    }
+    _controlStatusNoControlFlag = flag;
+
+    return *this;
+}
+
+/*---------------------------------------------------------------------------
+    setControlStatusQuality
+    
+    Sets the ControlStatusQuality ..
+---------------------------------------------------------------------------*/
+CtiCCCapBank& CtiCCCapBank::setControlStatusQuality(CtiCCControlStatusQaulity quality)
+{
+
+    _controlStatusQuality = quality;
+    switch (quality)
+    {
+        case CC_Partial:
+        {
+            setControlStatusPartialFlag(TRUE);
+            setControlStatusSignificantFlag(FALSE);
+            setControlStatusAbnQualityFlag(FALSE);
+            setControlStatusFailFlag(FALSE);
+            setControlStatusCommFailFlag(FALSE);
+            setControlStatusNoControlFlag(FALSE);
+            break;
+        }
+       
+        case CC_Significant:
+        {
+            setControlStatusPartialFlag(FALSE);
+            setControlStatusSignificantFlag(TRUE);
+            setControlStatusAbnQualityFlag(FALSE);
+            setControlStatusFailFlag(FALSE);
+            setControlStatusCommFailFlag(FALSE);
+            setControlStatusNoControlFlag(FALSE);
+            break;
+       
+        }
+        case CC_AbnormalQuality:
+        {
+            setControlStatusPartialFlag(FALSE);
+            setControlStatusSignificantFlag(FALSE);
+            setControlStatusAbnQualityFlag(TRUE);
+            setControlStatusFailFlag(FALSE);
+            setControlStatusCommFailFlag(FALSE);
+            setControlStatusNoControlFlag(FALSE);
+            break;
+        }
+        case CC_Fail:
+        {
+            setControlStatusPartialFlag(FALSE);
+            setControlStatusSignificantFlag(FALSE);
+            setControlStatusAbnQualityFlag(FALSE);
+            setControlStatusFailFlag(TRUE);
+            setControlStatusCommFailFlag(FALSE);
+            setControlStatusNoControlFlag(FALSE);
+            break;
+        }
+        case CC_CommFail:
+        {
+            setControlStatusPartialFlag(FALSE);
+            setControlStatusSignificantFlag(FALSE);
+            setControlStatusAbnQualityFlag(FALSE);
+            setControlStatusFailFlag(FALSE);
+            setControlStatusCommFailFlag(TRUE);
+            setControlStatusNoControlFlag(FALSE);
+            break;
+        }
+        case CC_NoControl:
+        {
+            setControlStatusPartialFlag(FALSE);
+            setControlStatusSignificantFlag(FALSE);
+            setControlStatusAbnQualityFlag(FALSE);
+            setControlStatusFailFlag(FALSE);
+            setControlStatusCommFailFlag(FALSE);
+            setControlStatusNoControlFlag(TRUE);
+            break;
+        }
+        case CC_Normal:
+        default:
+        {
+            setControlStatusPartialFlag(FALSE);
+            setControlStatusSignificantFlag(FALSE);
+            setControlStatusAbnQualityFlag(FALSE);
+            setControlStatusFailFlag(FALSE);
+            setControlStatusCommFailFlag(FALSE);
+            setControlStatusNoControlFlag(FALSE);
+            break;
+        }
+    }
 
     return *this;
 }
@@ -1621,6 +1837,7 @@ void CtiCCCapBank::restoreGuts(RWvistream& istrm)
     istrm >> _sPercentChange;
     istrm >> _maxDailyOpsHitFlag;
     istrm >> _ovuvSituationFlag;
+    istrm >> _controlStatusQuality;
     _laststatuschangetime = CtiTime(tempTime1);
 }
 
@@ -1675,6 +1892,7 @@ void CtiCCCapBank::saveGuts(RWvostream& ostrm ) const
     ostrm << _sPercentChange;
     ostrm << _maxDailyOpsHitFlag;
     ostrm << _ovuvSituationFlag;
+    ostrm << _controlStatusQuality;
 }
 
 /*---------------------------------------------------------------------------
@@ -1729,7 +1947,14 @@ CtiCCCapBank& CtiCCCapBank::operator=(const CtiCCCapBank& right)
         _retryCloseFailedFlag = right._retryCloseFailedFlag;           
         _ovUvDisabledFlag = right._ovUvDisabledFlag;
         _maxDailyOpsHitFlag = right._maxDailyOpsHitFlag;
-
+        _controlStatusPartialFlag =     right._controlStatusPartialFlag;   
+        _controlStatusSignificantFlag = right._controlStatusSignificantFlag;
+        _controlStatusAbnQualityFlag = right._controlStatusAbnQualityFlag;
+        _controlStatusFailFlag = right._controlStatusFailFlag;
+        _controlStatusCommFailFlag = right._controlStatusCommFailFlag;
+        _controlStatusNoControlFlag = right._controlStatusNoControlFlag;
+        _controlStatusQuality = right._controlStatusQuality;
+        
         _ipAddress = right._ipAddress;
         _udpPortNumber = right._udpPortNumber;
         _reportedCBCState = right._reportedCBCState;
@@ -1741,6 +1966,7 @@ CtiCCCapBank& CtiCCCapBank::operator=(const CtiCCCapBank& right)
         _sBeforeVars = right._sBeforeVars;
         _sPercentChange = right._sPercentChange;
         _ovuvSituationFlag = right._ovuvSituationFlag;
+
 
     }
     return *this;
@@ -1822,6 +2048,11 @@ void CtiCCCapBank::restore(RWDBReader& rdr)
     setRetryCloseFailedFlag(FALSE);
     setOvUvDisabledFlag(FALSE);
     setMaxDailyOpsHitFlag(FALSE);
+    setControlStatusPartialFlag(FALSE);     
+    setControlStatusSignificantFlag(FALSE);
+    setControlStatusAbnQualityFlag(FALSE);
+    setControlStatusQuality(CC_Normal);      
+
     setOvUvSituationFlag(FALSE);
     _additionalFlags = string("NNNNNNNNNNNNNNNNNNNN");
     setCurrentDailyOperations(0);
@@ -1871,7 +2102,28 @@ void CtiCCCapBank::setDynamicData(RWDBReader& rdr)
     _ovUvDisabledFlag = (_additionalFlags[5]=='y'?TRUE:FALSE);
     _maxDailyOpsHitFlag = (_additionalFlags[6]=='y'?TRUE:FALSE);
     _ovuvSituationFlag = (_additionalFlags[7]=='y'?TRUE:FALSE);
+    _controlStatusPartialFlag = (_additionalFlags[8]=='y'?TRUE:FALSE);   
+    _controlStatusSignificantFlag = (_additionalFlags[9]=='y'?TRUE:FALSE);
+    _controlStatusAbnQualityFlag = (_additionalFlags[10]=='y'?TRUE:FALSE);
+    _controlStatusFailFlag = (_additionalFlags[11]=='y'?TRUE:FALSE);
+    _controlStatusCommFailFlag = (_additionalFlags[12]=='y'?TRUE:FALSE);
+    _controlStatusNoControlFlag = (_additionalFlags[13]=='y'?TRUE:FALSE);
 
+    if (_controlStatusPartialFlag)
+        _controlStatusQuality = CC_Partial;
+    else if(_controlStatusPartialFlag)
+        _controlStatusQuality = CC_Significant;
+    else if(_controlStatusAbnQualityFlag)
+        _controlStatusQuality = CC_AbnormalQuality;
+    else if(_controlStatusFailFlag)
+        _controlStatusQuality = CC_Fail;
+    else if(_controlStatusCommFailFlag)
+        _controlStatusQuality = CC_CommFail;
+    else if(_controlStatusNoControlFlag)
+        _controlStatusQuality = CC_NoControl;
+    else
+        _controlStatusQuality = CC_Normal;
+    
     rdr["currentdailyoperations"] >> _currentdailyoperations;
     rdr["twowaycbcstate"] >> _reportedCBCState;
     rdr["twowaycbcstatetime"] >> _reportedCBCStateTime;
@@ -1964,6 +2216,12 @@ void CtiCCCapBank::dumpDynamicData(RWDBConnection& conn, CtiTime& currentDateTim
             addFlags[5] = (_ovUvDisabledFlag?'Y':'N');
             addFlags[6] = (_maxDailyOpsHitFlag?'Y':'N');
             addFlags[7] = (_ovuvSituationFlag?'Y':'N');
+            addFlags[8] = (_controlStatusPartialFlag?'Y':'N');
+            addFlags[9] = (_controlStatusSignificantFlag?'Y':'N');
+            addFlags[10] = (_controlStatusAbnQualityFlag?'Y':'N');
+            addFlags[11] = (_controlStatusFailFlag?'Y':'N');
+            addFlags[12] = (_controlStatusCommFailFlag?'Y':'N');
+            addFlags[13] = (_controlStatusNoControlFlag?'Y':'N');
             _additionalFlags = char2string(*addFlags);
             _additionalFlags.append(char2string(*(addFlags+1)));
             _additionalFlags.append(char2string(*(addFlags+2))); 
@@ -1972,7 +2230,13 @@ void CtiCCCapBank::dumpDynamicData(RWDBConnection& conn, CtiTime& currentDateTim
             _additionalFlags.append(char2string(*(addFlags+5))); 
             _additionalFlags.append(char2string(*(addFlags+6))); 
             _additionalFlags.append(char2string(*(addFlags+7))); 
-            _additionalFlags.append("NNNNNNNNNNNN");
+            _additionalFlags.append(char2string(*(addFlags+8))); 
+            _additionalFlags.append(char2string(*(addFlags+9))); 
+            _additionalFlags.append(char2string(*(addFlags+10))); 
+            _additionalFlags.append(char2string(*(addFlags+11))); 
+            _additionalFlags.append(char2string(*(addFlags+12))); 
+            _additionalFlags.append(char2string(*(addFlags+13))); 
+            _additionalFlags.append("NNNNNN");
 
             RWDBUpdater updater = dynamicCCCapBankTable.updater();
 

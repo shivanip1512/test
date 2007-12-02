@@ -2509,6 +2509,7 @@ void CtiCapController::pointDataMsg( long pointID, double value, unsigned qualit
                                        currentCapBank->getControlStatus() == CtiCCCapBank::Open ) 
                                    {
                                        currentCapBank->setControlStatus(CtiCCCapBank::OpenFail);
+                                       currentCapBank->setControlStatusQuality(CC_NoControl);
                                        text1 += "OpenFail";
                                    }
                                    else if (currentCapBank->getControlStatus() == CtiCCCapBank::ClosePending ||
@@ -2516,6 +2517,7 @@ void CtiCapController::pointDataMsg( long pointID, double value, unsigned qualit
                                        currentCapBank->getControlStatus() == CtiCCCapBank::Close ) 
                                    {
                                        currentCapBank->setControlStatus(CtiCCCapBank::CloseFail);
+                                       currentCapBank->setControlStatusQuality(CC_NoControl);
                                        text1 += "CloseFail";
                                    }
                                    if( !stringCompareIgnoreCase(currentSubstationBus->getControlMethod(), CtiCCSubstationBus::IndividualFeederControlMethod) )
@@ -2530,8 +2532,7 @@ void CtiCapController::pointDataMsg( long pointID, double value, unsigned qualit
 
                                    currentSubstationBus->setBusUpdatedFlag(TRUE);
                                    sendMessageToDispatch(new CtiPointDataMsg(currentCapBank->getStatusPointId(),currentCapBank->getControlStatus(),NormalQuality,StatusPointType, "Forced ccServer Update", TAG_POINT_FORCE_UPDATE));
-                                   INT actionId = CCEventActionIdGen(currentCapBank->getStatusPointId());
-                                   CtiCCEventLogMsg* eventMsg = new CtiCCEventLogMsg(0, currentCapBank->getStatusPointId(), currentSubstationBus->getPAOId(), currentFeeder->getPAOId(), capBankStateUpdate, currentSubstationBus->getEventSequence(), currentCapBank->getControlStatus(), text1, "cap control", 0, 0, 0, currentCapBank->getIpAddress(), actionId);
+                                   CtiCCEventLogMsg* eventMsg = new CtiCCEventLogMsg(0, currentCapBank->getStatusPointId(), currentSubstationBus->getPAOId(), currentFeeder->getPAOId(), capBankStateUpdate, currentSubstationBus->getEventSequence(), currentCapBank->getControlStatus(), text1, "cap control", 0, 0, 0, currentCapBank->getIpAddress());
                                    eventMsg->setActionId(CCEventActionIdGen(currentCapBank->getStatusPointId()));
                                    getCCEventMsgQueueHandle().write(eventMsg);
                                    currentCapBank->setLastStatusChangeTime(CtiTime());
@@ -2795,6 +2796,8 @@ void CtiCapController::porterReturnMsg( long deviceId, const string& _commandStr
                                 currentCapBank->setAfterVarsString(" Cmd rejected ");
                                 currentCapBank->setPercentChangeString(" --- ");
 
+                                currentCapBank->setControlStatusQuality(CC_CommFail);
+
                                 if (currentCapBank->getControlStatus() == CtiCCCapBank::CloseFail) 
                                 {
                                     text1 += "CloseFail";
@@ -2803,8 +2806,7 @@ void CtiCapController::porterReturnMsg( long deviceId, const string& _commandStr
                                     text1 += "OpenFail";
                                 sendMessageToDispatch(new CtiSignalMsg(currentCapBank->getStatusPointId(),1,text,additional,CapControlLogType,SignalEvent,"cap control"));
                                 sendMessageToDispatch(new CtiPointDataMsg(currentCapBank->getStatusPointId(),currentCapBank->getControlStatus(),NormalQuality,StatusPointType, "Forced ccServer Update", TAG_POINT_FORCE_UPDATE));
-                                INT actionId = CCEventActionIdGen(currentCapBank->getStatusPointId());
-                                CtiCCEventLogMsg* eventMsg = new CtiCCEventLogMsg(0, currentCapBank->getStatusPointId(), currentSubstationBus->getPAOId(), currentFeeder->getPAOId(), capBankStateUpdate, currentSubstationBus->getEventSequence(), currentCapBank->getControlStatus(), text1, "cap control", 0, 0, 0, currentCapBank->getIpAddress(), actionId);
+                                CtiCCEventLogMsg* eventMsg = new CtiCCEventLogMsg(0, currentCapBank->getStatusPointId(), currentSubstationBus->getPAOId(), currentFeeder->getPAOId(), capBankStateUpdate, currentSubstationBus->getEventSequence(), currentCapBank->getControlStatus(), text1, "cap control", 0, 0, 0, currentCapBank->getIpAddress());
                                 eventMsg->setActionId(CCEventActionIdGen(currentCapBank->getStatusPointId()));
                                 getCCEventMsgQueueHandle().write(eventMsg);
                                 currentCapBank->setLastStatusChangeTime(CtiTime());

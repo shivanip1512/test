@@ -2093,6 +2093,7 @@ CtiRequestMsg* CtiCCFeeder::createIncreaseVarRequest(CtiCCCapBank* capBank, CtiM
 
     setLastCapBankControlledDeviceId(capBank->getPAOId());
     capBank->setControlStatus(CtiCCCapBank::OpenPending);
+    capBank->setControlStatusQuality(CC_Normal);
     figureEstimatedVarLoadPointValue();
     _currentdailyoperations++;
     capBank->setTotalOperations(capBank->getTotalOperations() + 1);
@@ -2187,6 +2188,7 @@ CtiRequestMsg* CtiCCFeeder::createIncreaseVarVerificationRequest(CtiCCCapBank* c
     }
     setLastCapBankControlledDeviceId(capBank->getPAOId());
     capBank->setControlStatus(CtiCCCapBank::OpenPending);
+    capBank->setControlStatusQuality(CC_Normal);
     figureEstimatedVarLoadPointValue();
     _currentdailyoperations++;
     capBank->setTotalOperations(capBank->getTotalOperations() + 1);
@@ -2269,6 +2271,7 @@ CtiRequestMsg* CtiCCFeeder::createDecreaseVarVerificationRequest(CtiCCCapBank* c
     }
     setLastCapBankControlledDeviceId(capBank->getPAOId());
     capBank->setControlStatus(CtiCCCapBank::ClosePending);
+    capBank->setControlStatusQuality(CC_Normal);
     figureEstimatedVarLoadPointValue();
     _currentdailyoperations++;
     capBank->setTotalOperations(capBank->getTotalOperations() + 1);
@@ -2353,6 +2356,7 @@ CtiRequestMsg* CtiCCFeeder::createDecreaseVarRequest(CtiCCCapBank* capBank, CtiM
 
     setLastCapBankControlledDeviceId(capBank->getPAOId());
     capBank->setControlStatus(CtiCCCapBank::ClosePending);
+    capBank->setControlStatusQuality(CC_Normal);
     figureEstimatedVarLoadPointValue();
     _currentdailyoperations++;
     capBank->setTotalOperations(capBank->getTotalOperations() + 1);
@@ -3117,6 +3121,7 @@ BOOL CtiCCFeeder::capBankControlStatusUpdate(CtiMultiMsg_vec& pointChanges, CtiM
                             text += " ( ";
                             text += CtiNumStr(ratio*100.0,getDecimalPlaces()).toString();
                             text += "% change), OpenFail";
+                            currentCapBank->setControlStatusQuality(CC_Fail);
                         }
                         else if( minConfirmPercent != 0 )
                         {
@@ -3126,6 +3131,7 @@ BOOL CtiCCFeeder::capBankControlStatusUpdate(CtiMultiMsg_vec& pointChanges, CtiM
                             text += " ( ";
                             text += CtiNumStr(ratio*100.0,getDecimalPlaces()).toString();
                             text += "% change), OpenQuestionable";
+                            currentCapBank->setControlStatusQuality(CC_Significant);
                         }
                         else
                         {
@@ -3135,6 +3141,7 @@ BOOL CtiCCFeeder::capBankControlStatusUpdate(CtiMultiMsg_vec& pointChanges, CtiM
                             text += " ( ";
                             text += CtiNumStr(ratio*100.0,getDecimalPlaces()).toString();
                             text += "% change), Open";
+                            currentCapBank->setControlStatusQuality(CC_Normal);
                         }
                     }
                     else
@@ -3145,6 +3152,7 @@ BOOL CtiCCFeeder::capBankControlStatusUpdate(CtiMultiMsg_vec& pointChanges, CtiM
                         text += " ( ";
                         text += CtiNumStr(ratio*100.0,getDecimalPlaces()).toString();
                         text += "% change), Open";
+                        currentCapBank->setControlStatusQuality(CC_Normal);
                     }
                     text = createControlStatusUpdateText(currentCapBank->getControlStatus(), currentVarLoadPointValue,ratio);
 
@@ -3167,8 +3175,10 @@ BOOL CtiCCFeeder::capBankControlStatusUpdate(CtiMultiMsg_vec& pointChanges, CtiM
                     currentCapBank->setBeforeVarsString(createVarText(varValueBeforeControl, 1.0));
                     currentCapBank->setAfterVarsString(createVarText(currentVarLoadPointValue, 1.0));
                     currentCapBank->setPercentChangeString(createVarText(ratio, 100.0));
+                    currentCapBank->setControlStatusQuality(CC_AbnormalQuality);
 
                 }
+                
             }
             else if( currentCapBank->getControlStatus() == CtiCCCapBank::ClosePending )
             {
@@ -3193,6 +3203,7 @@ BOOL CtiCCFeeder::capBankControlStatusUpdate(CtiMultiMsg_vec& pointChanges, CtiM
                             text += " ( ";
                             text += CtiNumStr(ratio*100.0,getDecimalPlaces()).toString();
                             text += "% change), CloseFail";
+                            currentCapBank->setControlStatusQuality(CC_Fail);
                         }
                         else if( minConfirmPercent != 0 )
                         {
@@ -3202,6 +3213,7 @@ BOOL CtiCCFeeder::capBankControlStatusUpdate(CtiMultiMsg_vec& pointChanges, CtiM
                             text += " ( ";
                             text += CtiNumStr(ratio*100.0,getDecimalPlaces()).toString();
                             text += "% change), CloseQuestionable";
+                            currentCapBank->setControlStatusQuality(CC_Significant);
                         }
                         else
                         {
@@ -3211,6 +3223,7 @@ BOOL CtiCCFeeder::capBankControlStatusUpdate(CtiMultiMsg_vec& pointChanges, CtiM
                             text += " ( ";
                             text += CtiNumStr(ratio*100.0,getDecimalPlaces()).toString();
                             text += "% change), Closed";
+                            currentCapBank->setControlStatusQuality(CC_Normal);
                         }
                     }
                     else
@@ -3221,6 +3234,7 @@ BOOL CtiCCFeeder::capBankControlStatusUpdate(CtiMultiMsg_vec& pointChanges, CtiM
                         text += " ( ";
                         text += CtiNumStr(ratio*100.0,getDecimalPlaces()).toString();
                         text += "% change), Closed";
+                        currentCapBank->setControlStatusQuality(CC_Normal);
                     }
                     text = createControlStatusUpdateText(currentCapBank->getControlStatus(), currentVarLoadPointValue, ratio);
 
@@ -3242,6 +3256,7 @@ BOOL CtiCCFeeder::capBankControlStatusUpdate(CtiMultiMsg_vec& pointChanges, CtiM
                     currentCapBank->setBeforeVarsString(createVarText(varValueBeforeControl, 1.0));
                     currentCapBank->setAfterVarsString(createVarText(currentVarLoadPointValue, 1.0));
                     currentCapBank->setPercentChangeString(createVarText(ratio, 100.0));
+                    currentCapBank->setControlStatusQuality(CC_AbnormalQuality);
 
                 }
             }
@@ -3361,19 +3376,45 @@ BOOL CtiCCFeeder::capBankControlPerPhaseStatusUpdate(CtiMultiMsg_vec& pointChang
                         if( ratioA < failurePercent*.01 && failurePercent != 0 && minConfirmPercent != 0 )
                         {
                             currentCapBank->setControlStatus(CtiCCCapBank::OpenFail);
+                            currentCapBank->setControlStatusQuality(CC_Normal);
                         }
                         else if( minConfirmPercent != 0 )
                         {
                             currentCapBank->setControlStatus(CtiCCCapBank::OpenQuestionable);
+                            if (ratioA < minConfirmPercent*.01)
+                            {
+                                if (ratioB >= minConfirmPercent*.01 && ratioC >= minConfirmPercent*.01 ) 
+                                    currentCapBank->setControlStatusQuality(CC_Partial);
+                                else
+                                    currentCapBank->setControlStatusQuality(CC_Significant);
+                            }
+                            else if (ratioB < minConfirmPercent*.01)
+                            {
+                                if (ratioA >= minConfirmPercent*.01 && ratioC >= minConfirmPercent*.01 ) 
+                                    currentCapBank->setControlStatusQuality(CC_Partial);
+                                else
+                                    currentCapBank->setControlStatusQuality(CC_Significant);
+                            }
+                            else if (ratioC < minConfirmPercent*.01)
+                            {
+                                if (ratioA >= minConfirmPercent*.01 && ratioB >= minConfirmPercent*.01 ) 
+                                    currentCapBank->setControlStatusQuality(CC_Partial);
+                                else
+                                    currentCapBank->setControlStatusQuality(CC_Significant);
+                            }
+                            else
+                                currentCapBank->setControlStatusQuality(CC_Significant);
                         }
                         else
                         {
                             currentCapBank->setControlStatus(CtiCCCapBank::Open);
+                            currentCapBank->setControlStatusQuality(CC_Normal);
                         }
                     }
                     else
                     {
                         currentCapBank->setControlStatus(CtiCCCapBank::Open);
+                        currentCapBank->setControlStatusQuality(CC_Normal);
                     }
                     text = createPhaseControlStatusUpdateText(currentCapBank->getControlStatus(), varAValue, 
                                                           varBValue, varCValue, ratioA, ratioB, ratioC);
@@ -3392,6 +3433,7 @@ BOOL CtiCCFeeder::capBankControlPerPhaseStatusUpdate(CtiMultiMsg_vec& pointChang
                     text += " Var: ";
                     text += CtiNumStr(varAValue, getDecimalPlaces()).toString();
                     text += ", OpenQuestionable";
+                    currentCapBank->setControlStatusQuality(CC_AbnormalQuality);
                 }
             }
             else if( currentCapBank->getControlStatus() == CtiCCCapBank::ClosePending )
@@ -3420,20 +3462,46 @@ BOOL CtiCCFeeder::capBankControlPerPhaseStatusUpdate(CtiMultiMsg_vec& pointChang
                              failurePercent != 0 && minConfirmPercent != 0 )
                         {
                             currentCapBank->setControlStatus(CtiCCCapBank::CloseFail);
+                            currentCapBank->setControlStatusQuality(CC_Normal);
                         }
                         else if( minConfirmPercent != 0 )
                         {
                             currentCapBank->setControlStatus(CtiCCCapBank::CloseQuestionable);
+                            if (ratioA < minConfirmPercent*.01)
+                            {
+                                if (ratioB >= minConfirmPercent*.01 && ratioC >= minConfirmPercent*.01 ) 
+                                    currentCapBank->setControlStatusQuality(CC_Partial);
+                                else
+                                    currentCapBank->setControlStatusQuality(CC_Significant);
+                            }
+                            else if (ratioB < minConfirmPercent*.01)
+                            {
+                                if (ratioA >= minConfirmPercent*.01 && ratioC >= minConfirmPercent*.01 ) 
+                                    currentCapBank->setControlStatusQuality(CC_Partial);
+                                else
+                                    currentCapBank->setControlStatusQuality(CC_Significant);
+                            }
+                            else if (ratioC < minConfirmPercent*.01)
+                            {
+                                if (ratioA >= minConfirmPercent*.01 && ratioB >= minConfirmPercent*.01 ) 
+                                    currentCapBank->setControlStatusQuality(CC_Partial);
+                                else
+                                    currentCapBank->setControlStatusQuality(CC_Significant);
+                            }
+                            else
+                                currentCapBank->setControlStatusQuality(CC_Significant);
                             
                         }
                         else
                         {
                             currentCapBank->setControlStatus(CtiCCCapBank::Close);
+                            currentCapBank->setControlStatusQuality(CC_Normal);
                         }
                     }
                     else
                     {
                         currentCapBank->setControlStatus(CtiCCCapBank::Close);
+                        currentCapBank->setControlStatusQuality(CC_Normal);
                     }
                     text = createPhaseControlStatusUpdateText(currentCapBank->getControlStatus(), varAValue, 
                                                           varBValue, varCValue, ratioA, ratioB, ratioC);
@@ -3452,6 +3520,7 @@ BOOL CtiCCFeeder::capBankControlPerPhaseStatusUpdate(CtiMultiMsg_vec& pointChang
                     text += " Var: ";
                     text += CtiNumStr(varAValue, getDecimalPlaces()).toString();
                     text += ", CloseQuestionable";
+                    currentCapBank->setControlStatusQuality(CC_AbnormalQuality);
                 }
 
             }
@@ -3568,6 +3637,7 @@ BOOL CtiCCFeeder::capBankVerificationStatusUpdate(CtiMultiMsg_vec& pointChanges,
 
                            additional = string("Feeder: ");
                            additional += getPAOName();
+                           currentCapBank->setControlStatusQuality(CC_Fail);
                        }
                        else if( minConfirmPercent != 0 )
                        {
@@ -3577,6 +3647,7 @@ BOOL CtiCCFeeder::capBankVerificationStatusUpdate(CtiMultiMsg_vec& pointChanges,
                                currentCapBank->setControlStatus(CtiCCCapBank::CloseQuestionable);
                            additional = string("Feeder: ");
                            additional += getPAOName();
+                           currentCapBank->setControlStatusQuality(CC_Significant);
                        }
                        else
                        {    
@@ -3587,6 +3658,7 @@ BOOL CtiCCFeeder::capBankVerificationStatusUpdate(CtiMultiMsg_vec& pointChanges,
                            
                            additional = string("Feeder: ");
                            additional += getPAOName();
+                           currentCapBank->setControlStatusQuality(CC_Normal);
                            vResult = TRUE;
                        }
                    }        
@@ -3599,16 +3671,15 @@ BOOL CtiCCFeeder::capBankVerificationStatusUpdate(CtiMultiMsg_vec& pointChanges,
 
                        additional = string("Feeder: ");
                        additional += getPAOName();
+                       currentCapBank->setControlStatusQuality(CC_Normal);
                        vResult = TRUE;
                    }
-
-
                    text = createControlStatusUpdateText(currentCapBank->getControlStatus(), getCurrentVarLoadPointValue(),ratio);
 
                    currentCapBank->setBeforeVarsString(createVarText(getVarValueBeforeControl(), 1.0));
                    currentCapBank->setAfterVarsString(createVarText(getCurrentVarLoadPointValue(), 1.0));
                    currentCapBank->setPercentChangeString(createVarText(ratio, 100.0));
-
+                   
                }
                else
                {
@@ -3626,6 +3697,7 @@ BOOL CtiCCFeeder::capBankVerificationStatusUpdate(CtiMultiMsg_vec& pointChanges,
                    currentCapBank->setBeforeVarsString(createVarText(getVarValueBeforeControl(), 1.0));
                    currentCapBank->setAfterVarsString(createVarText(getCurrentVarLoadPointValue(), 1.0));
                    currentCapBank->setPercentChangeString(createVarText(ratio, 100.0));
+                   currentCapBank->setControlStatusQuality(CC_AbnormalQuality);
                }
            }
            else if( currentCapBank->getControlStatus() == CtiCCCapBank::ClosePending )
@@ -3663,6 +3735,7 @@ BOOL CtiCCFeeder::capBankVerificationStatusUpdate(CtiMultiMsg_vec& pointChanges,
 
                            additional = string("Feeder: ");
                            additional += getPAOName();
+                           currentCapBank->setControlStatusQuality(CC_Fail);
                        }
                        else if( minConfirmPercent != 0 )
                        {
@@ -3673,6 +3746,7 @@ BOOL CtiCCFeeder::capBankVerificationStatusUpdate(CtiMultiMsg_vec& pointChanges,
 
                            additional = string("Feeder: ");
                            additional += getPAOName();
+                           currentCapBank->setControlStatusQuality(CC_Significant);
                        }
                        else
                        {
@@ -3683,6 +3757,7 @@ BOOL CtiCCFeeder::capBankVerificationStatusUpdate(CtiMultiMsg_vec& pointChanges,
 
                            additional = string("Feeder: ");
                            additional += getPAOName();
+                           currentCapBank->setControlStatusQuality(CC_Normal);
                            vResult = TRUE;
                        }
                    }
@@ -3694,6 +3769,7 @@ BOOL CtiCCFeeder::capBankVerificationStatusUpdate(CtiMultiMsg_vec& pointChanges,
                            currentCapBank->setControlStatus(CtiCCCapBank::Open);
                        additional = string("Feeder: ");
                        additional += getPAOName();
+                       currentCapBank->setControlStatusQuality(CC_Normal);
                        vResult = TRUE;
                    }
 
@@ -3720,6 +3796,8 @@ BOOL CtiCCFeeder::capBankVerificationStatusUpdate(CtiMultiMsg_vec& pointChanges,
                    currentCapBank->setBeforeVarsString(createVarText(getVarValueBeforeControl(), 1.0));
                    currentCapBank->setAfterVarsString(createVarText(getCurrentVarLoadPointValue(), 1.0));
                    currentCapBank->setPercentChangeString(createVarText(ratio, 100.0));
+
+                   currentCapBank->setControlStatusQuality(CC_AbnormalQuality);
                }
            }
            else
@@ -3736,6 +3814,7 @@ BOOL CtiCCFeeder::capBankVerificationStatusUpdate(CtiMultiMsg_vec& pointChanges,
                {
                    text = "CloseFail";
                }
+               currentCapBank->setControlStatusQuality(CC_Fail);
                returnBoolean = FALSE;
               // break;
            }
