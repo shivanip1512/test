@@ -115,21 +115,15 @@ function update_Command_Menu (type, id, state, opts) {
 //html for the sub command menu
 function generateSubstationMenu (id, state, opts) {
 	var ALL_SUBSTATION_CMDS = {
- 		confirm_close:9,
- 		enable_sub:0,
-	 	disable_sub:1,
+ 		confirm_close:21,
+ 		enable_sub:22,
+	 	disable_sub:23,
 	 	reset_op_cnt:12,
 	 	send_all_open:29, 
 	 	send_all_close:30, 
-	 	send_all_enable_ovuv:31, 
-	 	send_all_disable_ovuv:32,
-	 	send_all_2way_scan:33,
-	 	v_all_banks:40,
-	 	v_fq_banks:41,
-	 	v_failed_banks:42,
-	 	v_question_banks:43,
-	 	v_disable_verify:44,
-	 	v_standalone_banks:46
+	 	send_all_enable_ovuv:17, 
+	 	send_all_disable_ovuv:18,
+	 	send_all_2way_scan:33
 	 }
 	var table_footer = "</table>";
 	var table_body = "<table >";
@@ -149,15 +143,6 @@ function generateSubstationMenu (id, state, opts) {
  		table_body += add_AJAX_Function('substation', id, ALL_SUBSTATION_CMDS.send_all_enable_ovuv, 'Enable_OV/UV');
 		table_body += add_AJAX_Function('substation', id, ALL_SUBSTATION_CMDS.send_all_disable_ovuv, 'Disable_OV/UV');
 		table_body += add_AJAX_Function('substation', id, ALL_SUBSTATION_CMDS.send_all_2way_scan, 'Scan_All_2way_Scans');
-		if (!opts[0]){
-	 		table_body += add_AJAX_Function('substation', id, ALL_SUBSTATION_CMDS.v_all_banks, 'Verify_All_Banks');
-	 		table_body += add_AJAX_Function('substation', id, ALL_SUBSTATION_CMDS.v_fq_banks, 'Verify_Failed_And_Questionable_Banks');
-	 		table_body += add_AJAX_Function('substation', id, ALL_SUBSTATION_CMDS.v_failed_banks, 'Verify_Failed_Banks');
-	 		table_body += add_AJAX_Function('substation', id, ALL_SUBSTATION_CMDS.v_question_banks, 'Verify_Questionable_Banks');
-	 		table_body += add_AJAX_Function('substation', id, ALL_SUBSTATION_CMDS.v_standalone_banks, 'Verify_Standalone_Banks');
- 		} else {
- 			table_body += add_AJAX_Function('substation', id, ALL_SUBSTATION_CMDS.v_disable_verify, 'Verify_Stop');	
- 		}
  	}
 	table_body+= table_footer;
 	return table_body;
@@ -635,20 +620,20 @@ for (var i=0; i < hiddens.length; i++) {
 }
 
 function handleOpcountRequest (command, paoId, cmd_name) {
-var op_cnt = document.getElementById('opcnt_input'+paoId).value;
-//make sure that contains a valid number
-if (!isValidOpcount (op_cnt)) {
-	alert ('Op Count value not specified. New Op Count value will be set to 0.');
-	op_cnt = 0;
-}
-else
-	op_cnt = parseInt(op_cnt);
-new Ajax.Request ('/servlet/CBCServlet', 
-				{method:'post', 
-				parameters:'cmdID='+command+'&paoID='+paoId + '&controlType=CAPBANK_TYPE&opt='+op_cnt, 
-				onSuccess: function () { display_status(cmd_name, "Message sent successfully", "green"); },
-				onFailure: function () { display_status(cmd_name, "Command failed", "red"); }, 
-				asynchronous:true });
+	var op_cnt = document.getElementById('opcnt_input'+paoId).value;
+	//make sure that contains a valid number
+	if (!isValidOpcount (op_cnt)) {
+		alert ('Op Count value not specified. New Op Count value will be set to 0.');
+		op_cnt = 0;
+	}
+	else
+		op_cnt = parseInt(op_cnt);
+	new Ajax.Request ('/servlet/CBCServlet', 
+					{method:'post', 
+					parameters:'cmdID='+command+'&paoID='+paoId + '&controlType=CAPBANK_TYPE&opt='+op_cnt, 
+					onSuccess: function () { display_status(cmd_name, "Message sent successfully", "green"); },
+					onFailure: function () { display_status(cmd_name, "Command failed", "red"); }, 
+					asynchronous:true });
 
 }
 
