@@ -5057,15 +5057,39 @@ BOOL CtiCCSubstationBus::isAlreadyControlled()
                                 if( currentCapBank->getControlStatus() == CtiCCCapBank::OpenPending ||
                                     currentCapBank->getControlStatus() == CtiCCCapBank::ClosePending )
                                 {
-                                    DOUBLE change = newCalcValue - oldCalcValue;
-                                    DOUBLE ratio = fabs(change/currentCapBank->getBankSize());
-                                    if( ratio >= minConfirmPercent*.01 )
+
+                                    if (getUsePhaseData())
                                     {
-                                        returnBoolean = TRUE;
+                                        DOUBLE ratioA = fabs((getPhaseAValue() - getPhaseAValueBeforeControl()) /
+                                                              (currentCapBank->getBankSize() / 3));
+                                        DOUBLE ratioB = fabs((getPhaseBValue() - getPhaseBValueBeforeControl()) /
+                                                              (currentCapBank->getBankSize() / 3));
+                                        DOUBLE ratioC = fabs((getPhaseCValue() - getPhaseCValueBeforeControl()) /
+                                                              (currentCapBank->getBankSize() / 3));
+                                   
+                                        if( ratioA >= minConfirmPercent*.01 &&
+                                            ratioB >= minConfirmPercent*.01 &&
+                                            ratioC >= minConfirmPercent*.01 )
+                                        {
+                                            returnBoolean = TRUE;
+                                        }
+                                        else
+                                        {
+                                            returnBoolean = FALSE;
+                                        }
                                     }
                                     else
                                     {
-                                        returnBoolean = FALSE;
+                                        DOUBLE change = newCalcValue - oldCalcValue;
+                                        DOUBLE ratio = fabs(change/currentCapBank->getBankSize());
+                                        if( ratio >= minConfirmPercent*.01 )
+                                        {
+                                            returnBoolean = TRUE;
+                                        }
+                                        else
+                                        {
+                                            returnBoolean = FALSE;
+                                        }
                                     }
                                 }
                                 else
@@ -5130,15 +5154,39 @@ BOOL CtiCCSubstationBus::isAlreadyControlled()
                                             if( currentCapBank->getControlStatus() == CtiCCCapBank::OpenPending ||
                                                 currentCapBank->getControlStatus() == CtiCCCapBank::ClosePending )
                                             {
-                                                DOUBLE change = newCalcValue - oldCalcValue;
-                                                DOUBLE ratio = fabs(change/currentCapBank->getBankSize());
-                                                if( ratio >= minConfirmPercent*.01 )
+                                                if (getUsePhaseData())
                                                 {
-                                                    returnBoolean = TRUE;
+                                                    DOUBLE ratioA = fabs((getPhaseAValue() - getPhaseAValueBeforeControl()) /
+                                                                          (currentCapBank->getBankSize() / 3));
+                                                    DOUBLE ratioB = fabs((getPhaseBValue() - getPhaseBValueBeforeControl()) /
+                                                                          (currentCapBank->getBankSize() / 3));
+                                                    DOUBLE ratioC = fabs((getPhaseCValue() - getPhaseCValueBeforeControl()) /
+                                                                          (currentCapBank->getBankSize() / 3));
+                                               
+                                                    if( ratioA >= minConfirmPercent*.01 &&
+                                                        ratioB >= minConfirmPercent*.01 &&
+                                                        ratioC >= minConfirmPercent*.01 )
+                                                    {
+                                                        returnBoolean = TRUE;
+                                                    }
+                                                    else
+                                                    {
+                                                        returnBoolean = FALSE;
+                                                    }
+                                                    found = TRUE;
                                                 }
                                                 else
                                                 {
-                                                    returnBoolean = FALSE;
+                                                    DOUBLE change = newCalcValue - oldCalcValue;
+                                                    DOUBLE ratio = fabs(change/currentCapBank->getBankSize());
+                                                    if( ratio >= minConfirmPercent*.01 )
+                                                    {
+                                                        returnBoolean = TRUE;
+                                                    }
+                                                    else
+                                                    {
+                                                        returnBoolean = FALSE;
+                                                    }
                                                 }
                                             }
                                             else

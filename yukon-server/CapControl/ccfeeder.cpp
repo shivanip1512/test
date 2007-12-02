@@ -2779,7 +2779,7 @@ BOOL CtiCCFeeder::checkForAndProvideNeededIndividualControl(const CtiTime& curre
                         {
                             //DOUBLE controlValue = (!stringCompareIgnoreCase(feederControlUnits,CtiCCSubstationBus::VoltControlUnits) ? getCurrentVoltLoadPointValue() : getCurrentVarLoadPointValue());
                             string text = createTextString(CtiCCSubstationBus::IndividualFeederControlMethod, CtiCCCapBank::Close, getIVControl(), getCurrentVarLoadPointValue());
-                            request = createDecreaseVarRequest(capBank , pointChanges, ccEvents, text, getCurrentVarLoadPointValue());
+                            request = createDecreaseVarRequest(capBank, pointChanges, ccEvents, text, getCurrentVarLoadPointValue());
 
                             if( request == NULL )
                             {
@@ -4143,12 +4143,6 @@ BOOL CtiCCFeeder::isAlreadyControlled(LONG minConfirmPercent)
         {
             DOUBLE oldVarValue = getVarValueBeforeControl();
             DOUBLE newVarValue = getCurrentVarLoadPointValue();
-            if (getUsePhaseData())
-            {
-                oldVarValue = getPhaseAValueBeforeControl() + getPhaseBValueBeforeControl() + getPhaseCValueBeforeControl();
-                newVarValue = getPhaseAValue() + getPhaseBValue() + getPhaseCValue();
-            }
-
             for(LONG i=0;i<_cccapbanks.size();i++)
             {
                 CtiCCCapBank* currentCapBank = (CtiCCCapBank*)_cccapbanks[i];
@@ -4157,17 +4151,42 @@ BOOL CtiCCFeeder::isAlreadyControlled(LONG minConfirmPercent)
                     if( currentCapBank->getControlStatus() == CtiCCCapBank::OpenPending || 
                         currentCapBank->getControlStatus() == CtiCCCapBank::ClosePending )
                     {
-                        DOUBLE change = newVarValue - oldVarValue;
-                        DOUBLE ratio = fabs(change/currentCapBank->getBankSize());
-                        if( ratio >= minConfirmPercent*.01 )
+                        if (getUsePhaseData())
                         {
-                            returnBoolean = TRUE;
+                            DOUBLE ratioA = fabs((getPhaseAValue() - getPhaseAValueBeforeControl()) /
+                                                  (currentCapBank->getBankSize() / 3));
+                            DOUBLE ratioB = fabs((getPhaseBValue() - getPhaseBValueBeforeControl()) /
+                                                  (currentCapBank->getBankSize() / 3));
+                            DOUBLE ratioC = fabs((getPhaseCValue() - getPhaseCValueBeforeControl()) /
+                                                  (currentCapBank->getBankSize() / 3));
+
+                            if( ratioA >= minConfirmPercent*.01 &&
+                                ratioB >= minConfirmPercent*.01 &&
+                                ratioC >= minConfirmPercent*.01 )
+                            {
+                                returnBoolean = TRUE;
+                            }
+                            else
+                            {
+                                returnBoolean = FALSE;
+                            }
+                            found = TRUE;
                         }
                         else
                         {
-                            returnBoolean = FALSE;
+                        
+                            DOUBLE change = newVarValue - oldVarValue;
+                            DOUBLE ratio = fabs(change/currentCapBank->getBankSize());
+                            if( ratio >= minConfirmPercent*.01 )
+                            {
+                                returnBoolean = TRUE;
+                            }
+                            else
+                            {
+                                returnBoolean = FALSE;
+                            }
+                            found = TRUE;
                         }
-                        found = TRUE;
                     }
                     else
                     {
@@ -4188,17 +4207,41 @@ BOOL CtiCCFeeder::isAlreadyControlled(LONG minConfirmPercent)
                     if (currentCapBank->getControlStatus() == CtiCCCapBank::OpenPending || 
                         currentCapBank->getControlStatus() == CtiCCCapBank::ClosePending )
                     {
-                        DOUBLE change = newVarValue - oldVarValue;
-                        DOUBLE ratio = fabs(change/currentCapBank->getBankSize());
-                        if( ratio >= minConfirmPercent*.01 )
+                        if (getUsePhaseData())
                         {
-                            returnBoolean = TRUE;
+                            DOUBLE ratioA = fabs((getPhaseAValue() - getPhaseAValueBeforeControl()) /
+                                                  (currentCapBank->getBankSize() / 3));
+                            DOUBLE ratioB = fabs((getPhaseBValue() - getPhaseBValueBeforeControl()) /
+                                                  (currentCapBank->getBankSize() / 3));
+                            DOUBLE ratioC = fabs((getPhaseCValue() - getPhaseCValueBeforeControl()) /
+                                                  (currentCapBank->getBankSize() / 3));
+
+                            if( ratioA >= minConfirmPercent*.01 &&
+                                ratioB >= minConfirmPercent*.01 &&
+                                ratioC >= minConfirmPercent*.01 )
+                            {
+                                returnBoolean = TRUE;
+                            }
+                            else
+                            {
+                                returnBoolean = FALSE;
+                            }
+                            found = TRUE;
                         }
                         else
                         {
-                            returnBoolean = FALSE;
+                            DOUBLE change = newVarValue - oldVarValue;
+                            DOUBLE ratio = fabs(change/currentCapBank->getBankSize());
+                            if( ratio >= minConfirmPercent*.01 )
+                            {
+                                returnBoolean = TRUE;
+                            }
+                            else
+                            {
+                                returnBoolean = FALSE;
+                            }
+                            found = TRUE;
                         }
-                        found = TRUE;
                         if (!stringCompareIgnoreCase(currentCapBank->getOperationalState(),CtiCCCapBank::SwitchedOperationalState)) 
                             setLastCapBankControlledDeviceId(currentCapBank->getPAOId());
                     }
@@ -6681,19 +6724,75 @@ string CtiCCFeeder::createTextString(const string& controlMethod, int control, D
              !stringCompareIgnoreCase(getParentControlUnits(), CtiCCSubstationBus::PF_BY_KQControlUnits))
     {
         if (!stringCompareIgnoreCase(controlMethod,CtiCCSubstationBus::SubstationBusControlMethod))
+        {
             text += "SubBus-Var: ";
-        else if (!stringCompareIgnoreCase(controlMethod,CtiCCSubstationBus::BusOptimizedFeederControlMethod))
-            text += "BusOp-Var: ";
-        else if (!stringCompareIgnoreCase(controlMethod,CtiCCSubstationBus::IndividualFeederControlMethod))
-            text += "IndvFdr-Var: ";
-        else if (!stringCompareIgnoreCase(controlMethod,CtiCCSubstationBus::ManualOnlyControlMethod))
-            text += "Manual-Var: ";
-        else
-            text += "No Method Defined? Var:";
+            text += doubleToString(controlValue, getDecimalPlaces());
+            text += "/Var: ";
+            CtiCCSubstationBusPtr bus = CtiCCSubstationBusStore::getInstance()->findSubBusByPAObjectID(getParentId());
+            if (bus != NULL)
+            {
+                if (bus->getUsePhaseData())
+                {
+                    text += doubleToString(bus->getPhaseAValue(), getDecimalPlaces());
+                    text += " : ";
+                    text += doubleToString(bus->getPhaseBValue(), getDecimalPlaces());
+                    text += " : ";
+                    text += doubleToString(bus->getPhaseCValue(), getDecimalPlaces());
+                }
+                else
+                    text += doubleToString(monitorValue, getDecimalPlaces());
+            }
+            else 
+                text += doubleToString(monitorValue, getDecimalPlaces());
+        }
 
-        text += doubleToString(controlValue, getDecimalPlaces());
-        text += "/Var: ";
-        text += doubleToString(monitorValue, getDecimalPlaces());
+        else if (!stringCompareIgnoreCase(controlMethod,CtiCCSubstationBus::BusOptimizedFeederControlMethod))
+        {
+            text += "BusOp-Var: ";
+            text += doubleToString(controlValue, getDecimalPlaces());
+            text += "/Var: ";
+            if (getUsePhaseData())
+            {
+                text += doubleToString(getPhaseAValue(), getDecimalPlaces());
+                text += " : ";
+                text += doubleToString(getPhaseBValue(), getDecimalPlaces());
+                text += " : ";
+                text += doubleToString(getPhaseCValue(), getDecimalPlaces());
+            }
+            else
+                text += doubleToString(monitorValue, getDecimalPlaces());
+
+        }
+        else if (!stringCompareIgnoreCase(controlMethod,CtiCCSubstationBus::IndividualFeederControlMethod))
+        {
+            text += "IndvFdr-Var: ";
+            text += doubleToString(controlValue, getDecimalPlaces());
+            text += "/Var: ";
+            if (getUsePhaseData())
+            {
+                text += doubleToString(getPhaseAValue(), getDecimalPlaces());
+                text += " : ";
+                text += doubleToString(getPhaseBValue(), getDecimalPlaces());
+                text += " : ";
+                text += doubleToString(getPhaseCValue(), getDecimalPlaces());
+            }
+            else
+                text += doubleToString(monitorValue, getDecimalPlaces());
+        }
+        else if (!stringCompareIgnoreCase(controlMethod,CtiCCSubstationBus::ManualOnlyControlMethod))
+        {
+            text += "Manual-Var: ";
+            text += doubleToString(controlValue, getDecimalPlaces());
+            text += "/Var: ";
+            text += doubleToString(monitorValue, getDecimalPlaces());
+        }
+        else
+        {
+            text += "No Method Defined? Var:";
+            text += doubleToString(controlValue, getDecimalPlaces());
+            text += "/Var: ";
+            text += doubleToString(monitorValue, getDecimalPlaces());
+        }
     }
     if (!stringCompareIgnoreCase(getParentControlUnits(), CtiCCSubstationBus::MultiVoltControlUnits))
     {

@@ -1283,7 +1283,7 @@ void CtiCCCommandExecutor::SendAllCapBankCommands()
                         if (_command->getCommand() == CtiCCCommand::SEND_ALL_DISABLE_OVUV) 
                             currentSubstationBus->setOvUvDisabledFlag(TRUE);
                         if (((action  == CtiCCCommand::OPEN_CAPBANK || action  == CtiCCCommand::CLOSE_CAPBANK) &&
-                               !currentSubstationBus->getDisableFlag() && !currentArea->getDisableFlag())  ||
+                               !currentSubstationBus->getDisableFlag() )  ||
                                (action  == CtiCCCommand::ENABLE_OVUV || action  == CtiCCCommand::DISABLE_OVUV ||
                                 action  == CtiCCCommand::SCAN_2WAY_DEVICE) ) 
                         {
