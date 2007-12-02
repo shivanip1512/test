@@ -66,6 +66,17 @@
 		
 		StarsLMControlHistory ctrlHistToday = ServletUtils.getControlHistory( program, appliances, StarsCtrlHistPeriod.PASTDAY, liteEC );
 		ControlSummary summary = ctrlHistToday.getControlSummary();
+		
+		// New enrollment, opt out, and control history tracking
+   		//-------------------------------------------------------------------------------
+		List<Integer> inventoryIds = partialOptOutMap.get(program.getProgramID());
+		String programStatus = program.getStatus();
+		boolean partialOutOfService = false;
+		if(inventoryIds.size() > 0 && program.getStatus().equalsIgnoreCase(ServletUtils.OUT_OF_SERVICE)) { 
+			programStatus = "Partially out of service.  Still active for " + inventoryIds.size() + (inventoryIds.size() == 1 ? " device." : " devices.");
+			partialOutOfService = true;
+		}
+		//-------------------------------------------------------------------------------
 %>
                 <tr bgcolor="#FFFFFF"> 
                   <td width="110"> 
@@ -78,12 +89,15 @@
                   </td>
                   <td width="200" valign="top"> 
                     <%
-		if (program.getStatus().equalsIgnoreCase(ServletUtils.OUT_OF_SERVICE)) {
+		if (programStatus.equalsIgnoreCase(ServletUtils.OUT_OF_SERVICE)) {
 %>
-                    <div align="center" class="TableCell">Out of Service</div>
+                    <div align="center" class="TableCell"><%=programStatus%></div>
                     <%
 		}
 		else {
+			if(partialOutOfService) { %>
+				    <div align="center" class="TableCell"><%=programStatus%></div>
+<%			}
 %>
                     <table width="200" border="0" cellspacing="0" cellpadding="3" align="center">
                       <tr> 
