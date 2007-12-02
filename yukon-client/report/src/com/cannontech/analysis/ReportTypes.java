@@ -79,8 +79,10 @@ public enum ReportTypes {
             "Report showing feeders with abnormal telemetry data."),
     CAP_CONTROL_VAR_CHANGE("Var Change Report", CapControlVarChangeController.class, ReportGroup.CAP_CONTROL,
             "Report showing change in var values."),
-            CAP_CONTROL_ASSET_AVAILABILITY("Asset Availability Report", CapControlAssetAvailabilityController.class, ReportGroup.CAP_CONTROL,
+    CAP_CONTROL_ASSET_AVAILABILITY("Asset Availability Report", CapControlAssetAvailabilityController.class, ReportGroup.CAP_CONTROL,
             "Report showing asset availability."),
+    CAP_CONTROL_TIME_CONTROLLED_CAPBANKS("Time Controlled CapBanks", TimeControlledCapBanksController.class, ReportGroup.CAP_CONTROL,
+            "Report showing all time controlled capbanks."),
     
     COMM_STATISTICS("Communication Statistics", StatisticModel.class, ReportGroup.STATISTICAL),
 	//STATISTIC_HISTORY_PORT_DATA("Historical Daily Port Statistics", StatisticHistoryPortModel.class, ReportGroup.STATISTICAL),

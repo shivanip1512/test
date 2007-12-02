@@ -73,7 +73,7 @@ public class CapBankMaxOpsAlarmsModel extends BareReportModelBase<CapBankMaxOpsA
     }
     
     public StringBuffer buildSQLStatement() {
-        StringBuffer sql = new StringBuffer ("select yp.paoname as cabBankName, yp1.paoname as feederName, c.maxdailyops, c.maxopDisable, ");
+        StringBuffer sql = new StringBuffer ("select yp.paoname as capBankName, yp1.paoname as feederName, c.maxdailyops, c.maxopDisable, ");
         sql.append("substring(dcb.additionalflags, 7, 1) as maxOpHitFlag ");
         sql.append("from yukonpaobject yp, ");
         sql.append("yukonpaobject yp1, ");
@@ -90,7 +90,7 @@ public class CapBankMaxOpsAlarmsModel extends BareReportModelBase<CapBankMaxOpsA
         sql.append("and yp1.paobjectid = fb.feederid ");
         sql.append("and c.deviceid = fb.deviceid ");
         sql.append("and yp.paobjectid = c.deviceid ");
-        sql.append("and c.maxdailyops > 0 and (substring(dcb.additionalflags, 7, 1) = 'y' or c.maxopdisable = 'y') ");
+        sql.append("and c.maxdailyops > 0 and (substring(dcb.additionalflags, 7, 1) = 'Y' or c.maxopdisable = 'Y') ");
         
         String result = null;
         

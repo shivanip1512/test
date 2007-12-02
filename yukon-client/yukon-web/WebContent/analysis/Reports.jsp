@@ -151,12 +151,12 @@ function checkDates(){
 	if(startDate.match(myregex) && stopDate.match(myregex)){
 		var p = startDate.split("/");
 		var t = stopDate.split("/");
-		var realStartDate = new Date(p[2], p[1], p[0]);
-		var realStopDate = new Date(t[2], t[1], t[0]);
+		var realStartDate = new Date(p[2], (p[0]-1), p[1]);
+		var realStopDate = new Date(t[2], t[0]-1, t[1]);
 		if(realStartDate < realStopDate){
 			loadTarget(document.reportForm);
 		} else {
-			alert("The start date is later than the stop date.");
+			alert("The start date is later than the stop date. ");
 			$('startCal').focus();
 			return false;
 		}

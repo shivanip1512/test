@@ -26,6 +26,7 @@ import com.cannontech.database.data.lite.LitePoint;
 import com.cannontech.database.data.point.PointTypes;
 import com.cannontech.spring.YukonSpringHook;
 
+@SuppressWarnings("unchecked")
 public class PointDataSummaryModel extends ReportModelBase
 {
 	/** Number of columns */
@@ -151,11 +152,14 @@ public class PointDataSummaryModel extends ReportModelBase
 	public final static String DAILY_COUNT_STRING = "Daily Count";
 
 	//contain values of Integer (pointID ) to MeterAndPointData object vlaues
-	private HashMap allMPDataPeaks = new HashMap();
-	private HashMap allMPDataLows = new HashMap();
+	@SuppressWarnings("unchecked")
+    private HashMap allMPDataPeaks = new HashMap();
+	@SuppressWarnings("unchecked")
+    private HashMap allMPDataLows = new HashMap();
 	
 	//contains all PointID (Integer) values to number of missing intervals (Integer).
-	private HashMap allMissingData = new HashMap();
+	@SuppressWarnings("unchecked")
+    private HashMap allMissingData = new HashMap();
 	
 	/** A string for the title of the data */
 	private static String title = "Point Data Summary Report";
@@ -202,7 +206,8 @@ public class PointDataSummaryModel extends ReportModelBase
 		ORDER_BY_DEVICE_NAME, ORDER_BY_METER_NUMBER, ORDER_BY_PHYSICAL_ADDRESS 
 	};
 
-	public Comparator lpDataSummaryComparator = new java.util.Comparator<LPMeterData>()
+	@SuppressWarnings("unchecked")
+    public Comparator lpDataSummaryComparator = new java.util.Comparator<LPMeterData>()
 	{
 		public int compare(LPMeterData o1, LPMeterData o2){
 		    String thisVal = NULL_STRING;
@@ -226,7 +231,8 @@ public class PointDataSummaryModel extends ReportModelBase
 		}
 	};
 	
-	public static Comparator mpDataValueComparator = new Comparator()
+	@SuppressWarnings("unchecked")
+    public static Comparator mpDataValueComparator = new Comparator()
 	{
 		public int compare(Object o1, Object o2)
 		{
@@ -338,6 +344,7 @@ public class PointDataSummaryModel extends ReportModelBase
 				" OR P.POINTTYPE = '" + PointTypes.getType(PointTypes.CALCULATED_STATUS_POINT) + "' )");
 		}
 		//Use paoIDs in query if they exist
+        @SuppressWarnings("unused")
         final DeviceGroupService deviceGroupService = YukonSpringHook.getBean("deviceGroupService", DeviceGroupService.class);
         final String[] groups = getBillingGroups();
         
@@ -360,7 +367,8 @@ public class PointDataSummaryModel extends ReportModelBase
 		return sql;
 	}
 		
-	@Override
+	@SuppressWarnings({ "unchecked", "unchecked" })
+    @Override
 	public void collectData()
 	{
 		//Reset all objects, new data being collected!
@@ -369,7 +377,8 @@ public class PointDataSummaryModel extends ReportModelBase
 		allMPDataPeaks = new HashMap();
 		allMissingData = new HashMap();
 		
-		int rowCount = 0;
+		@SuppressWarnings("unused")
+        int rowCount = 0;
 		StringBuffer sql = buildSQLStatement();
 		CTILogger.info(sql.toString());	
 		
@@ -405,6 +414,7 @@ public class PointDataSummaryModel extends ReportModelBase
 				{
 					Integer paobjectID = new Integer(rset.getInt(1));
                     String paoName = rset.getString(2);
+                    @SuppressWarnings("unused")
                     String paoCategory = rset.getString(3);
                     String paoType = rset.getString(4);
                     String meterNumber = rset.getString(5);
@@ -431,7 +441,6 @@ public class PointDataSummaryModel extends ReportModelBase
 							    intervals = (int) (totalTime / Integer.valueOf(lpDemandRate).intValue());
 							else if( lp.getPointType() == PointTypes.DEMAND_ACCUMULATOR_POINT&& liDemandRate != null)
 							    intervals = (int) (totalTime / Integer.valueOf(liDemandRate).intValue());
-							//TODO not sure what to do with voltage yet.
 //							else if( pointOffset == PointTypes.PT_OFFSET_VOLTAGE_DEMAND && voltageDemandInterval != null)
 //							    intervals = (int) (totalTime / Integer.valueOf(voltageDemandInterval).intValue());
 							
@@ -491,7 +500,6 @@ public class PointDataSummaryModel extends ReportModelBase
 				    intervals = (int) (totalTime / Integer.valueOf(lpDemandRate).intValue());
 				else if( lp.getPointType() == PointTypes.DEMAND_ACCUMULATOR_POINT&& liDemandRate != null)
 				    intervals = (int) (totalTime / Integer.valueOf(liDemandRate).intValue());
-				//TODO not sure what to do with voltage yet.
 //				else if( pointOffset == PointTypes.PT_OFFSET_VOLTAGE_DEMAND && voltageDemandInterval != null)
 //				    intervals = (int) (totalTime / Integer.valueOf(voltageDemandInterval).intValue());
 
@@ -523,7 +531,8 @@ public class PointDataSummaryModel extends ReportModelBase
 	 * @param pointid
 	 * @param  allMPData - Vector of MeterAndPointData values
 	 */
-	private void loadSummaryData(Integer pointID, Vector allMPData)
+	@SuppressWarnings("unchecked")
+    private void loadSummaryData(Integer pointID, Vector allMPData)
 	{
 		Collections.sort(allMPData, mpDataValueComparator);
 	
@@ -706,7 +715,8 @@ public class PointDataSummaryModel extends ReportModelBase
 	 * @param i
 	 * @return
 	 */
-	private Date getPeakTimestamp(int pointID, int i)
+	@SuppressWarnings("unchecked")
+    private Date getPeakTimestamp(int pointID, int i)
 	{
 		List peaks = ((List)allMPDataPeaks.get(new Integer(pointID)));
 		if( peaks != null && peaks.size() > i)
@@ -719,7 +729,8 @@ public class PointDataSummaryModel extends ReportModelBase
 	 * @param i
 	 * @return
 	 */
-	private Double getPeakValue(int pointID, int i)
+	@SuppressWarnings("unchecked")
+    private Double getPeakValue(int pointID, int i)
 	{
 		List peaks = ((List)allMPDataPeaks.get(new Integer(pointID)));
 		if( peaks != null && peaks.size() > i)
@@ -730,7 +741,8 @@ public class PointDataSummaryModel extends ReportModelBase
 	 * @param i
 	 * @return
 	 */
-	private Date getLowTimestamp(int pointID, int i)
+	@SuppressWarnings("unchecked")
+    private Date getLowTimestamp(int pointID, int i)
 	{
 		List lows = ((List)allMPDataLows.get(new Integer(pointID)));
 		if( lows != null && lows.size() > i)
@@ -743,7 +755,8 @@ public class PointDataSummaryModel extends ReportModelBase
 	 * @param i
 	 * @return
 	 */
-	private Double getLowValue(int pointID, int i)
+	@SuppressWarnings("unchecked")
+    private Double getLowValue(int pointID, int i)
 	{
 		List lows = ((List)allMPDataLows.get(new Integer(pointID)));
 		if( lows != null && lows.size() > i)
@@ -754,7 +767,8 @@ public class PointDataSummaryModel extends ReportModelBase
 	/* (non-Javadoc)
 	 * @see com.cannontech.analysis.Reportable#getColumnNames()
 	 */
-	public String[] getColumnNames()
+	@SuppressWarnings("unchecked")
+    public String[] getColumnNames()
 	{
 		if( columnNames == null)
 		{
@@ -823,7 +837,8 @@ public class PointDataSummaryModel extends ReportModelBase
 	/* (non-Javadoc)
 	 * @see com.cannontech.analysis.Reportable#getColumnTypes()
 	 */
-	public Class[] getColumnTypes()
+	@SuppressWarnings("unchecked")
+    public Class[] getColumnTypes()
 	{
 		if( columnTypes == null)
 		{
@@ -891,7 +906,8 @@ public class PointDataSummaryModel extends ReportModelBase
 	/* (non-Javadoc)
 	 * @see com.cannontech.analysis.Reportable#getColumnProperties()
 	 */
-	public ColumnProperties[] getColumnProperties()
+	@SuppressWarnings("unchecked")
+    public ColumnProperties[] getColumnProperties()
 	{
 		if(columnProperties == null)
 		{
@@ -1117,6 +1133,7 @@ public class PointDataSummaryModel extends ReportModelBase
     /**
      * @return Returns the allMissingDataPointIDs.
      */
+    @SuppressWarnings("unchecked")
     public HashMap getAllMissingDataPointIDs()
     {
         return allMissingData;

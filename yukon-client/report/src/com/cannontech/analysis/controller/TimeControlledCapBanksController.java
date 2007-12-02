@@ -1,25 +1,25 @@
 package com.cannontech.analysis.controller;
 
-import com.cannontech.analysis.report.CapControlDisabledDevicesReport;
+import com.cannontech.analysis.report.TimeControlledCapBanksReport;
 import com.cannontech.analysis.report.YukonReportBase;
-import com.cannontech.analysis.tablemodel.CapControlDisabledDevicesModel;
 import com.cannontech.analysis.tablemodel.ReportModelBase;
+import com.cannontech.analysis.tablemodel.TimeControlledCapBanksModel;
 import com.cannontech.analysis.tablemodel.ReportModelBase.ReportFilter;
 import com.cannontech.spring.YukonSpringHook;
 
-public class CapControlDisabledDevicesController extends CapControlReportControllerBase {
+public class TimeControlledCapBanksController extends CapControlReportControllerBase {
     
     private ReportFilter[] filterModelTypes = new ReportFilter[]{
-            ReportFilter.CAPCONTROLSUBBUS,
             ReportFilter.CAPCONTROLSUBSTATION,
+            ReportFilter.CAPCONTROLSUBBUS,
             ReportFilter.CAPBANK,
             ReportFilter.CAPCONTROLFEEDER,
             ReportFilter.AREA};
     
-    public CapControlDisabledDevicesController() {
+    public TimeControlledCapBanksController() {
         super();
-        model = (CapControlDisabledDevicesModel)YukonSpringHook.getBean("capControlDisabledDevicesModel");
-        report = new CapControlDisabledDevicesReport(model);
+        model = (TimeControlledCapBanksModel)YukonSpringHook.getBean("timeControlledCapBanksModel");
+        report = new TimeControlledCapBanksReport(model);
     }
 
     public String getHTMLOptionsTable() {
