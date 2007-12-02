@@ -1,11 +1,9 @@
-
 <jsp:directive.page import="com.cannontech.common.version.VersionTools"/><%@ taglib uri="http://cannontech.com/tags/cti" prefix="cti" %>
 <%@ taglib uri="http://java.sun.com/jsp/jstl/core" prefix="c" %>
 <jsp:useBean id="starsLMPermissionBean" class="com.cannontech.stars.web.bean.StarsLMPermissionBean" scope="page"/>
 
 <%@ page import="java.util.*" %>
 <%@ page import="javax.xml.soap.SOAPMessage" %>
-
 <%@ page import="com.cannontech.core.dao.DaoFactory" %>
 <%@ page import="com.cannontech.common.constants.YukonListEntry" %>
 <%@ page import="com.cannontech.common.constants.YukonListEntryTypes" %>

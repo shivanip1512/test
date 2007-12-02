@@ -309,5 +309,4 @@ public class LMHardwareControlGroupDaoImpl implements LMHardwareControlGroupDao,
         template.withPrimaryKeyField("controlEntryId");
         template.withFieldMapper(controlGroupFieldMapper); 
     }
-    
 }

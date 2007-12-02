@@ -164,7 +164,7 @@ public class LMHardwareControlInformationServiceImpl implements LMHardwareContro
                 }
             }
         } catch (Exception e) {
-            logger.error("Unable to retrieve non-opted-out inventory for LMGroupId: " + loadGroupId + " AccountId: " + accountId, e );
+            logger.error("Unable to retrieve non-opted-out inventory for InventoryId: " + inventoryId + " LMGroupId: " + loadGroupId + " AccountId: " + accountId, e );
         }
         return inventoryIds;
     }

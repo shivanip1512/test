@@ -307,7 +307,7 @@ public class ProgramReenableAction implements ActionBase {
                 /*-------------------------------------------------------------------------------
                  * */
 	    		
-                // If program is already in service, do nothing
+                // Program is already in service, do nothing
                 if (liteProg.isInService()) continue;
                 
 				com.cannontech.database.data.stars.event.LMProgramEvent event =
