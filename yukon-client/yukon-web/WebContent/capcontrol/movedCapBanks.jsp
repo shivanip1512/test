@@ -68,7 +68,7 @@ for( int i = 0; i < movedCaps.size(); i++ )
 			          			STICKY, WIDTH,155, HEIGHT,50, OFFSETX,-15,OFFSETY,-15, MOUSEOFF, FULLHTML);"
 
 										onmouseout = <%=nd %> >
-										<%=CBCUtils.CBC_DISPLAY.getCapBankValueAt(cap, CBCDisplay.CB_PARENT_COLUMN)%>
+										<%=CBCUtils.CBC_DISPLAY.getCapBankValueAt(cap, CBCDisplay.CB_PARENT_COLUMN, user)%>
 						</a>					
 					</td>
 					<td><%=DaoFactory.getPaoDao().getYukonPAOName( cap.getOrigFeederID() )%></td>
