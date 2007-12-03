@@ -1,7 +1,7 @@
 /*==============================================================*/
 /* Database name:  YukonDatabase                                */
 /* DBMS name:      Microsoft SQL Server 2000                    */
-/* Created on:     12/3/2007 7:51:10 AM                         */
+/* Created on:     12/3/2007 10:42:51 AM                        */
 /*==============================================================*/
 
 
@@ -3705,8 +3705,6 @@ create table DEVICEREADJOBLOG (
    constraint PK_DEVICEREADJOBLOG primary key nonclustered (DeviceReadJobLogID)
 )
 go
-
-ALTER TABLE DeviceReadJobLog DROP CONSTRAINT FK_DEVICERE_FK_DRJOBL_MACSCHED
 
 /*==============================================================*/
 /* Table: DEVICEREADLOG                                         */
@@ -7453,6 +7451,7 @@ insert into SequenceNumber values (1,'DeviceReadLog');
 insert into SequenceNumber values (1,'DeviceReadRequestLog');
 insert into SequenceNumber values (1,'DeviceReadJobLog');
 insert into sequenceNumber values (100, 'BillingFileFormats');
+insert into sequencenumber values (1, 'CapbankComment');
 
 /*==============================================================*/
 /* Table: SettlementConfig                                      */
@@ -7537,26 +7536,6 @@ create table TOUATTRIBUTEMAPPING (
    constraint PK_TOUATTRIBUTEMAPPING primary key (touid)
 )
 go
-
-/*
-For Oracle only
-The next bit of code is only needed on Oracle databases and can be removed from MS SQL scripts.
-It will fail if run on MS SQL servers but nothing bad will happen, just an error message.
-*/
-CREATE SEQUENCE TouAttributeMapping_sequence;
-
-CREATE OR REPLACE TRIGGER TouAttributeMapping_trigger
-BEFORE INSERT
-ON TouAttributeMapping
-REFERENCING NEW AS NEW
-FOR EACH ROW
-BEGIN
-SELECT TouAttributeMapping_sequence.nextval INTO :NEW.touid FROM dual;
-END;
-/
-/*
-End Oracle only
-*/
 
 INSERT INTO TouAttributeMapping (displayname, peakattribute, usageattribute) VALUES ('A', 'TOU_RATE_A_PEAK_DEMAND', 'TOU_RATE_A_USAGE');
 INSERT INTO TouAttributeMapping (displayname, peakattribute, usageattribute) VALUES ('B', 'TOU_RATE_B_PEAK_DEMAND', 'TOU_RATE_B_USAGE');

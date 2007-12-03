@@ -845,6 +845,10 @@ alter table DynamicCCSubstationbus modify LastWattPointTime datetime not null;
 alter table DynamicCCSubstationbus add LastVoltPointTime datetime;
 update DynamicCCSubstationbus set LastVoltPointTime = '1990-01-01 00:00:00';
 alter table DynamicCCSubstationbus modify LastVoltPointTime datetime not null;
+
+alter table capcontrolstrategy add likeDayFallBack char(1);
+update capcontrolstrategy set likeDayFallBack = 'N';
+alter table capcontrolstrategy modify likeDayFallBack char(1) not null;
 /* End YUK-4763*/
 
 /* Start YUK-4759 */
