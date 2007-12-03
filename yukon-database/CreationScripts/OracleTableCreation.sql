@@ -1,7 +1,7 @@
 /*==============================================================*/
 /* Database name:  YukonDatabase                                */
 /* DBMS name:      ORACLE Version 9i                            */
-/* Created on:     12/3/2007 7:37:33 AM                         */
+/* Created on:     12/3/2007 7:54:09 AM                         */
 /*==============================================================*/
 
 
@@ -345,6 +345,9 @@ drop table DEVICECONFIGURATIONITEM cascade constraints
 ;
 
 drop table DEVICEDIALUPSETTINGS cascade constraints
+;
+
+drop table DEVICEEVENT cascade constraints
 ;
 
 drop table DEVICEGROUP cascade constraints
@@ -2504,6 +2507,17 @@ create table DEVICEDIALUPSETTINGS  (
    LINESETTINGS         VARCHAR2(8)                     not null,
    BaudRate             NUMBER                          not null,
    constraint PK_DEVICEDIALUPSETTINGS primary key (DEVICEID)
+)
+;
+
+/*==============================================================*/
+/* Table: DEVICEEVENT                                           */
+/*==============================================================*/
+create table DEVICEEVENT  (
+   DeviceID             NUMBER                          not null,
+   TimeStamp            DATE                            not null,
+   "Comment"            VARCHAR2(50)                    not null,
+   constraint PK_DEVICEEVENT primary key (DeviceID)
 )
 ;
 
@@ -8279,6 +8293,7 @@ insert into YukonRoleProperty values(-20203,-202,'Enable Bulk Importer','true','
 insert into YukonRoleProperty values(-20204,-202,'Enable Tou','true','Allows access to Tou(Time of use) data');  
 insert into YukonRoleProperty values(-20205,-202,'Enable Device Group','true','Allows access to change device groups for a device');  
 insert into YukonRoleProperty values(-20206,-202,'Enable Profile Request','true','Access to perform profile data request');
+insert into YukonRoleProperty values(-20207,-202,'Enable Auto Archiving','true','Allows a user to setup automatic archiving on their yukon system pertaining to the move in/move out interface');
 
 /* Operator Esubstation Drawings Role Properties */
 insert into YukonRoleProperty values(-20600,-206,'View Drawings','true','Controls viewing of Esubstations drawings');

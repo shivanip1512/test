@@ -1059,6 +1059,28 @@ go
 
 insert into sequencenumber values ( 1, 'CapbankComment');
 /* End YUK 4762 */
+
+/* Start YUK-4810 */
+insert into YukonRoleProperty values(-20207,-202,'Enable Auto Archiving','true','Allows a user to setup automatic archiving on their yukon system pertaining to the move in/move out interface');
+
+if exists (select 1
+            from  sysobjects
+           where  id = object_id('DEVICEEVENT')
+            and   type = 'U')
+   drop table DEVICEEVENT
+go
+
+/*==============================================================*/
+/* Table: DEVICEEVENT                                           */
+/*==============================================================*/
+create table DEVICEEVENT (
+   DeviceID             numeric              not null,
+   TimeStamp            datetime             not null,
+   Comment              varchar(50)          not null,
+   constraint PK_DEVICEEVENT primary key (DeviceID)
+);
+go
+/* End YUK-4810 */
 /**************************************************************/
 /* VERSION INFO                                               */
 /*   Automatically gets inserted from build script            */
