@@ -1034,6 +1034,31 @@ go
 alter table cceventlog alter column capbankstateinfo varchar(20) not null ;
 go
 /* End YUK-4813 */
+
+/* Start YUK-4762 */
+if exists (select 1
+            from  sysobjects
+           where  id = object_id('CAPBANKCOMMENT')
+            and   type = 'U')
+   drop table CAPBANKCOMMENT
+go
+
+/*==============================================================*/
+/* Table: CAPBANKCOMMENT                                        */
+/*==============================================================*/
+create table CAPBANKCOMMENT (
+   CommentID            int                  not null,
+   PaoID                int                  not null,
+   UserID               int                  not null,
+   CommentTime          datetime             not null,
+   Comment              varchar(500)         not null,
+   Altered              varchar(3)           not null,
+   constraint PK_CAPBANKCOMMENT primary key (CommentID)
+)
+go
+
+insert into sequencenumber values ( 1, 'CapbankComment');
+/* End YUK 4762 */
 /**************************************************************/
 /* VERSION INFO                                               */
 /*   Automatically gets inserted from build script            */

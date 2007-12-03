@@ -1,7 +1,7 @@
 /*==============================================================*/
 /* Database name:  YukonDatabase                                */
 /* DBMS name:      Microsoft SQL Server 2000                    */
-/* Created on:     12/3/2007 7:23:42 AM                         */
+/* Created on:     12/3/2007 7:36:33 AM                         */
 /*==============================================================*/
 
 
@@ -192,6 +192,13 @@ if exists (select 1
            where  id = object_id('CAPBANKADDITIONAL')
             and   type = 'U')
    drop table CAPBANKADDITIONAL
+go
+
+if exists (select 1
+            from  sysobjects
+           where  id = object_id('CAPBANKCOMMENT')
+            and   type = 'U')
+   drop table CAPBANKCOMMENT
 go
 
 if exists (select 1
@@ -2258,6 +2265,22 @@ create table CAPBANKADDITIONAL (
    constraint PK_CAPBANKADDITIONAL primary key nonclustered (DeviceID)
 )
 go
+
+/*==============================================================*/
+/* Table: CAPBANKCOMMENT                                        */
+/*==============================================================*/
+create table CAPBANKCOMMENT (
+   CommentID            int                  not null,
+   PaoID                int                  not null,
+   UserID               int                  not null,
+   CommentTime          datetime             not null,
+   Comment              varchar(500)         not null,
+   Altered              varchar(3)           not null,
+   constraint PK_CAPBANKCOMMENT primary key (CommentID)
+)
+go
+
+insert into sequencenumber values ( 1, 'CapbankComment');
 
 /*==============================================================*/
 /* Table: CAPCONTROLSPECIALAREA                                 */

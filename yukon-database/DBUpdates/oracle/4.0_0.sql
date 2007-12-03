@@ -909,6 +909,24 @@ update cceventlog set capbankstateinfo = 'N/A';
 alter table cceventlog modify capbankstateinfo varchar2(20) not null ;
 /* End YUK-4813 */
 
+/* Start YUK-4762 */
+drop table CAPBANKCOMMENT cascade constraints;
+
+/*==============================================================*/
+/* Table: CAPBANKCOMMENT                                        */
+/*==============================================================*/
+create table CAPBANKCOMMENT  (
+   CommentID            INTEGER                         not null,
+   PaoID                INTEGER                         not null,
+   UserID               INTEGER                         not null,
+   CommentTime          DATE                            not null,
+   "Comment"            VARCHAR2(500)                   not null,
+   Altered              VARCHAR2(3)                     not null,
+   constraint PK_CAPBANKCOMMENT primary key (CommentID)
+);
+
+insert into sequencenumber values ( 1, 'CapbankComment');
+/* End YUK-4762 */
 /**************************************************************/
 /* VERSION INFO                                               */
 /*   Automatically gets inserted from build script            */

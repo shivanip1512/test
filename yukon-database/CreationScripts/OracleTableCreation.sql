@@ -1,7 +1,7 @@
 /*==============================================================*/
 /* Database name:  YukonDatabase                                */
 /* DBMS name:      ORACLE Version 9i                            */
-/* Created on:     12/3/2007 7:25:07 AM                         */
+/* Created on:     12/3/2007 7:37:33 AM                         */
 /*==============================================================*/
 
 
@@ -132,6 +132,9 @@ drop table CAPBANK cascade constraints
 ;
 
 drop table CAPBANKADDITIONAL cascade constraints
+;
+
+drop table CAPBANKCOMMENT cascade constraints
 ;
 
 drop table CAPCONTROLSPECIALAREA cascade constraints
@@ -1190,6 +1193,22 @@ create table CAPBANKADDITIONAL  (
    constraint PK_CAPBANKADDITIONAL primary key (DeviceID)
 )
 ;
+
+/*==============================================================*/
+/* Table: CAPBANKCOMMENT                                        */
+/*==============================================================*/
+create table CAPBANKCOMMENT  (
+   CommentID            INTEGER                         not null,
+   PaoID                INTEGER                         not null,
+   UserID               INTEGER                         not null,
+   CommentTime          DATE                            not null,
+   "Comment"            VARCHAR2(500)                   not null,
+   Altered              VARCHAR2(3)                     not null,
+   constraint PK_CAPBANKCOMMENT primary key (CommentID)
+)
+;
+
+insert into sequencenumber values ( 1, 'CapbankComment');
 
 /*==============================================================*/
 /* Table: CAPCONTROLSPECIALAREA                                 */
