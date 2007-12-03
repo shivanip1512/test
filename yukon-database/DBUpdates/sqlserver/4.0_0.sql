@@ -1081,6 +1081,11 @@ create table DEVICEEVENT (
 );
 go
 /* End YUK-4810 */
+
+/* Begin YUK-4815 */
+insert into YukonRoleProperty values (-100205, -1002, 'Capbank Fixed/Static Text', 'Fixed', 'The text to display for fixed/static capbanks');
+/* End YUK-4815 */
+
 /**************************************************************/
 /* VERSION INFO                                               */
 /*   Automatically gets inserted from build script            */

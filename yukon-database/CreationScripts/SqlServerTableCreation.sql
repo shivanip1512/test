@@ -1,7 +1,7 @@
 /*==============================================================*/
 /* Database name:  YukonDatabase                                */
 /* DBMS name:      Microsoft SQL Server 2000                    */
-/* Created on:     12/3/2007 10:42:51 AM                        */
+/* Created on:     12/3/2007 1:27:50 PM                         */
 /*==============================================================*/
 
 
@@ -2287,8 +2287,6 @@ create table CAPBANKCOMMENT (
 )
 go
 
-insert into sequencenumber values ( 1, 'CapbankComment');
-
 /*==============================================================*/
 /* Table: CAPCONTROLSPECIALAREA                                 */
 /*==============================================================*/
@@ -2408,19 +2406,6 @@ create table CCSEASONSTRATEGYASSIGNMENT (
    strategyid           numeric              not null,
    constraint PK_CCSEASONSTRATEGYASSIGNMENT primary key (paobjectid)
 )
-go
-
-insert into ccseasonstrategyassignment 
-(paobjectid, seasonscheduleid, seasonname, strategyid)
-select substationbusid, -1,'Default',strategyid from capcontrolsubstationbus;
-go
-insert into ccseasonstrategyassignment 
-(paobjectid, seasonscheduleid, seasonname, strategyid)
-select feederid, -1, 'Default',strategyid from capcontrolfeeder;
-go
-insert into ccseasonstrategyassignment 
-(paobjectid, seasonscheduleid, seasonname, strategyid)
-select areaid, -1, 'Default',strategyid from capcontrolarea;
 go
 
 /*==============================================================*/
@@ -4153,8 +4138,6 @@ create table DYNAMICCCAREA (
    additionalflags      varchar(20)          not null
 )
 go
-
-insert into dynamicccarea (areaid, additionalflags) select areaid, 'NNNNNNNNNNNNNNNNNNNN' from capcontrolarea;
 
 /*==============================================================*/
 /* Table: DYNAMICCCSPECIALAREA                                  */
@@ -9583,6 +9566,7 @@ insert into yukonroleproperty values (-100011,-1000, 'Daily/Max Operation Count'
 insert into yukonroleproperty values (-100012,-1000, 'Substation Last Update Timestamp', 'true', 'is last update timestamp shown for substations');
 insert into yukonroleproperty values (-100106,-1001, 'Feeder Last Update Timestamp', 'true', 'is last update timestamp shown for feeders');
 insert into yukonroleproperty values (-100203,-1002, 'CapBank Last Update Timestamp', 'true', 'is last update timestamp shown for capbanks');
+insert into YukonRoleProperty values (-100205,-1002, 'Capbank Fixed/Static Text', 'Fixed', 'The text to display for fixed/static capbanks');
 
 /*==============================================================*/
 /* Table: YukonSelectionList                                    */
@@ -9875,6 +9859,7 @@ insert into YukonWebConfiguration values(0,'(none)','(none)','(none)','(none)');
 /*==============================================================*/
 /* View: CCINVENTORY_VIEW                                       */
 /*==============================================================*/
+go
 create view CCINVENTORY_VIEW (Region, SubName, FeederName, subId, substationid, fdrId, CBCName, cbcId, capbankname, bankId, CapBankSize, Sequence, ControlStatus, SWMfgr, SWType, ControlType, Protocol, IPADDRESS, SlaveAddress, LAT, LON, DriveDirection, OpCenter, TA) as
 SELECT yp4.paoname AS Region, yp3.PAOName AS SubName, yp2.PAOName AS FeederName, yp3.PAObjectID AS subId, ssl.substationid AS substationid, yp2.PAObjectID AS fdrId, 
                       yp.PAOName AS CBCName, yp.PAObjectID AS cbcId, yp1.PAOName AS capBankName, yp1.PAObjectID AS bankId, cb.BANKSIZE AS CapBankSize, 
@@ -9904,6 +9889,7 @@ go
 /*==============================================================*/
 /* View: CCOPERATIONS_VIEW                                      */
 /*==============================================================*/
+go
 create view CCOPERATIONS_VIEW (cbcName, capbankname, opTime, operation, confTime, confStatus, feederName, feederId, subName, subBusId, substationid, region, BANKSIZE, protocol, ipAddress, serialNum, SlaveAddress, kvarAfter, kvarChange, kvarBefore) as
 SELECT 
       yp3.PAOName AS cbcName, yp.PAOName AS capbankname, el.DateTime AS opTime, el.Text AS operation, 
@@ -9953,6 +9939,7 @@ go
 /*==============================================================*/
 /* View: DISPLAY2WAYDATA_VIEW                                   */
 /*==============================================================*/
+go
 create view DISPLAY2WAYDATA_VIEW as
 select POINTID as PointID, POINTNAME as PointName, POINTTYPE as PointType, SERVICEFLAG as PointState, YukonPAObject.PAOName as DeviceName, YukonPAObject.Type as DeviceType, YukonPAObject.Description as DeviceCurrentState, YukonPAObject.PAObjectID as DeviceID, '**DYNAMIC**' as PointValue, '**DYNAMIC**' as PointQuality, '**DYNAMIC**' as PointTimeStamp, (select uomname from pointunit,unitmeasure where pointunit.pointid=point.pointid and pointunit.uomid=unitmeasure.uomid) as UofM, '**DYNAMIC**' as Tags
 from YukonPAObject, POINT
@@ -9962,6 +9949,7 @@ go
 /*==============================================================*/
 /* View: ExpressComAddress_View                                 */
 /*==============================================================*/
+go
 create view ExpressComAddress_View as
 select x.LMGroupID, x.RouteID, x.SerialNumber, s.Address as serviceaddress,
 g.Address as geoaddress, b.Address as substationaddress, f.Address as feederaddress,
@@ -9983,6 +9971,7 @@ go
 /*==============================================================*/
 /* View: FeederAddress_View                                     */
 /*==============================================================*/
+go
 create view FeederAddress_View as
 select x.LMGroupID, a.Address as FeederAddress
 from LMGroupExpressCom x, LMGroupExpressComAddress a
@@ -9992,6 +9981,7 @@ go
 /*==============================================================*/
 /* View: FullEventLog_View                                      */
 /*==============================================================*/
+go
 create view FullEventLog_View (EventID, PointID, EventTimeStamp, EventSequence, EventType, EventAlarmID, DeviceName, PointName, EventDescription, AdditionalInfo, EventUserName) as
 select s.LOGID, s.POINTID, s.DATETIME, s.SOE_TAG, s.TYPE, s.PRIORITY, y.PAOName, p.POINTNAME, s.DESCRIPTION, s.ACTION, s.USERNAME
 from YukonPAObject y, POINT p, SYSTEMLOG s
@@ -10001,6 +9991,7 @@ go
 /*==============================================================*/
 /* View: FullPointHistory_View                                  */
 /*==============================================================*/
+go
 create view FullPointHistory_View (PointID, DeviceName, PointName, DataValue, DataTimeStamp, DataQuality) as
 select r.POINTID, y.PAOName, p.POINTNAME, r.VALUE, r.TIMESTAMP, r.QUALITY
 from YukonPAObject y, POINT p, RAWPOINTHISTORY r
@@ -10010,6 +10001,7 @@ go
 /*==============================================================*/
 /* View: GeoAddress_View                                        */
 /*==============================================================*/
+go
 create view GeoAddress_View as
 select x.LMGroupID, a.Address as GeoAddress
 from LMGroupExpressCom x, LMGroupExpressComAddress a
@@ -10019,6 +10011,7 @@ go
 /*==============================================================*/
 /* View: LMCurtailCustomerActivity_View                         */
 /*==============================================================*/
+go
 create view LMCurtailCustomerActivity_View as
 select cust.CustomerID, prog.CurtailmentStartTime, prog.CurtailReferenceID, prog.CurtailmentStopTime, cust.AcknowledgeStatus, cust.AckDateTime, cust.NameOfAckPerson, cust.AckLateFlag
 from LMCurtailProgramActivity prog, LMCurtailCustomerActivity cust
@@ -10028,6 +10021,7 @@ go
 /*==============================================================*/
 /* View: LMProgram_View                                         */
 /*==============================================================*/
+go
 create view LMProgram_View as
 select t.DeviceID, t.ControlType, u.ConstraintID, u.ConstraintName, u.AvailableWeekDays, u.MaxHoursDaily, u.MaxHoursMonthly, u.MaxHoursSeasonal, u.MaxHoursAnnually, u.MinActivateTime, u.MinRestartTime, u.MaxDailyOps, u.MaxActivateTime, u.HolidayScheduleID, u.SeasonScheduleID
 from LMPROGRAM t, LMProgramConstraints u
@@ -10037,6 +10031,7 @@ go
 /*==============================================================*/
 /* View: Peakpointhistory_View                                  */
 /*==============================================================*/
+go
 create view Peakpointhistory_View as
 select rph1.POINTID pointid, rph1.VALUE value, min(rph1.timestamp) timestamp
 from RAWPOINTHISTORY rph1
@@ -10047,6 +10042,7 @@ go
 /*==============================================================*/
 /* View: PointEventLog_View                                     */
 /*==============================================================*/
+go
 create view PointEventLog_View (EventID, PointID, EventTimeStamp, EventSequence, EventType, EventAlarmID, PointName, EventDescription, AdditionalInfo, EventUserName) as
 select s.LOGID, s.POINTID, s.DATETIME, s.SOE_TAG, s.TYPE, s.PRIORITY, p.POINTNAME, s.DESCRIPTION, s.ACTION, s.USERNAME
 from POINT p, SYSTEMLOG s
@@ -10056,6 +10052,7 @@ go
 /*==============================================================*/
 /* View: PointHistory_View                                      */
 /*==============================================================*/
+go
 create view PointHistory_View (PointID, PointName, DataValue, DataTimeStamp, DataQuality) as
 select r.POINTID, p.POINTNAME, r.VALUE, r.TIMESTAMP, r.QUALITY
 from POINT p, RAWPOINTHISTORY r
@@ -10065,6 +10062,7 @@ go
 /*==============================================================*/
 /* View: ProgramAddress_View                                    */
 /*==============================================================*/
+go
 create view ProgramAddress_View as
 select x.LMGroupID, a.Address as ProgramAddress
 from LMGroupExpressCom x, LMGroupExpressComAddress a
@@ -10074,6 +10072,7 @@ go
 /*==============================================================*/
 /* View: ServiceAddress_View                                    */
 /*==============================================================*/
+go
 create view ServiceAddress_View as
 select x.LMGroupID, a.Address as ServiceAddress
 from LMGroupExpressCom x, LMGroupExpressComAddress a
@@ -10083,6 +10082,7 @@ go
 /*==============================================================*/
 /* View: SubstationAddress_View                                 */
 /*==============================================================*/
+go
 create view SubstationAddress_View as
 select x.LMGroupID, a.Address as SubstationAddress
 from LMGroupExpressCom x, LMGroupExpressComAddress a
@@ -10435,7 +10435,7 @@ go
 
 alter table CapControlStrategy
    add constraint FK_ccssa_strat foreign key (StrategyID)
-      references CCSEASONSTRATEGYASSIGNMENT (strategyid)
+      references CCSEASONSTRATEGYASSIGNMENT (paobjectid)
 go
 
 alter table CarrierRoute

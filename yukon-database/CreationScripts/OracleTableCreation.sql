@@ -1,7 +1,7 @@
 /*==============================================================*/
 /* Database name:  YukonDatabase                                */
 /* DBMS name:      ORACLE Version 9i                            */
-/* Created on:     12/3/2007 10:43:54 AM                        */
+/* Created on:     12/3/2007 1:26:41 PM                         */
 /*==============================================================*/
 
 
@@ -1211,8 +1211,6 @@ create table CAPBANKCOMMENT  (
 )
 ;
 
-insert into sequencenumber values ( 1, 'CapbankComment');
-
 /*==============================================================*/
 /* Table: CAPCONTROLSPECIALAREA                                 */
 /*==============================================================*/
@@ -1333,19 +1331,6 @@ create table CCSEASONSTRATEGYASSIGNMENT  (
    constraint PK_CCSEASONSTRATEGYASSIGNMENT primary key (paobjectid)
 )
 ;
-
-insert into ccseasonstrategyassignment 
-(paobjectid, seasonscheduleid, seasonname, strategyid)
-select substationbusid, -1,'Default',strategyid from capcontrolsubstationbus;
-go
-insert into ccseasonstrategyassignment 
-(paobjectid, seasonscheduleid, seasonname, strategyid)
-select feederid, -1, 'Default',strategyid from capcontrolfeeder;
-go
-insert into ccseasonstrategyassignment 
-(paobjectid, seasonscheduleid, seasonname, strategyid)
-select areaid, -1, 'Default',strategyid from capcontrolarea;
-go
 
 /*==============================================================*/
 /* Table: CCSTRATEGYTIMEOFDAY                                   */
@@ -3085,8 +3070,6 @@ create table DYNAMICCCAREA  (
    additionalflags      VARCHAR2(20)                    not null
 )
 ;
-
-insert into dynamicccarea (areaid, additionalflags) select areaid, 'NNNNNNNNNNNNNNNNNNNN' from capcontrolarea;
 
 /*==============================================================*/
 /* Table: DYNAMICCCSPECIALAREA                                  */
@@ -8515,6 +8498,7 @@ insert into yukonroleproperty values (-100011,-1000, 'Daily/Max Operation Count'
 insert into yukonroleproperty values (-100012,-1000, 'Substation Last Update Timestamp', 'true', 'is last update timestamp shown for substations');
 insert into yukonroleproperty values (-100106,-1001, 'Feeder Last Update Timestamp', 'true', 'is last update timestamp shown for feeders');
 insert into yukonroleproperty values (-100203,-1002, 'CapBank Last Update Timestamp', 'true', 'is last update timestamp shown for capbanks');
+insert into YukonRoleProperty values (-100205,-1002, 'Capbank Fixed/Static Text', 'Fixed', 'The text to display for fixed/static capbanks');
 
 /*==============================================================*/
 /* Table: YukonSelectionList                                    */
@@ -9367,7 +9351,7 @@ alter table CapControlFeeder
 
 alter table CapControlStrategy
    add constraint FK_ccssa_strat foreign key (StrategyID)
-      references CCSEASONSTRATEGYASSIGNMENT (strategyid)
+      references CCSEASONSTRATEGYASSIGNMENT (paobjectid)
 ;
 
 alter table CarrierRoute
