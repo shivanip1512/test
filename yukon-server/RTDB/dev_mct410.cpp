@@ -8,34 +8,34 @@
 *
 * PVCS KEYWORDS:
 * ARCHIVE      :  $Archive:   Z:/SOFTWAREARCHIVES/YUKON/RTDB/dev_mct310.cpp-arc  $
-* REVISION     :  $Revision: 1.147 $
-* DATE         :  $Date: 2007/10/09 18:59:44 $
+* REVISION     :  $Revision: 1.148 $
+* DATE         :  $Date: 2007/12/03 16:08:44 $
 *
 * Copyright (c) 1999, 2000 Cannon Technologies Inc. All rights reserved.
 *-----------------------------------------------------------------------------*/
 #include "yukon.h"
 
 #include <windows.h>
-#include "device.h"
-#include "devicetypes.h"
-#include "dev_mct410.h"
+#include <string>
+
+#include "logger.h"
+#include "numstr.h"
+#include "dllyukon.h"  //  for ResolveStateName()
+#include "utility.h"
+
 #include "dev_base.h"
+#include "dev_mct410.h"
 #include "tbl_ptdispatch.h"
 #include "tbl_dyn_paoinfo.h"
-#include "logger.h"
+
 #include "mgr_point.h"
 #include "pt_status.h"
-#include "numstr.h"
-#include "porter.h"
+
+//#include "porter.h"
 #include "portglob.h"
-#include "utility.h"
-#include "dllyukon.h"
 
 #include "ctidate.h"
 #include "ctitime.h"
-#include <string>
-
-using std::string;
 
 using namespace std;
 
@@ -1393,6 +1393,33 @@ INT CtiDeviceMCT410::executeGetValue( CtiRequestMsg              *pReq,
         if( parse.getFlags() & CMD_FLAG_GV_RATEC )  OutMessage->Buffer.BSt.Function += 2;
         if( parse.getFlags() & CMD_FLAG_GV_RATED )  OutMessage->Buffer.BSt.Function += 3;
     }
+    else if( parse.getFlags() & CMD_FLAG_GV_PEAK )
+    {
+        function = Emetcon::GetValue_PeakDemand;
+        found = getOperation(function, OutMessage->Buffer.BSt);
+
+        if( parse.isKeyValid("channel") )
+        {
+            switch( parse.getiValue("channel") )
+            {
+                //  both 0 and 1 resolve to the first register
+                case 0:     break;                                          //  0x93
+                case 1:     break;
+                //  please note the magic numbers
+                case 2:     OutMessage->Buffer.BSt.Function += 5;   break;  //  0x98
+                case 3:     OutMessage->Buffer.BSt.Function += 7;   break;  //  0x9a
+
+                //  anything outside the range from 0-4 is invalid
+                default:    found = false;  break;
+            }
+        }
+
+        if( parse.getFlags() & CMD_FLAG_FROZEN )
+        {
+            //  magic number
+            OutMessage->Buffer.BSt.Function += 1;
+        }
+    }
     else if( parse.isKeyValid("daily_read") )
     {
         //  daily reads
@@ -2693,8 +2720,8 @@ INT CtiDeviceMCT410::decodeGetValueOutage( INMESS *InMessage, CtiTime &TimeNow, 
                     {
                         pointString += "(outage greater than 45 days)";
 
-						cycles *= 60;  //  minutes to seconds
-						cycles *= 60;  //  seconds to cycles
+                        cycles *= 60;  //  minutes to seconds
+                        cycles *= 60;  //  seconds to cycles
                     }
                     else
                     {
@@ -2733,11 +2760,11 @@ INT CtiDeviceMCT410::decodeGetValueOutage( INMESS *InMessage, CtiTime &TimeNow, 
                         minutes = seconds / 60;
                         hours   = minutes / 60;
                         days    = hours   / 24;
-    
+
                         seconds %= 60;
                         minutes %= 60;
                         hours   %= 24;
-    
+
                         if( days == 1 )
                         {
                             pointString += CtiNumStr(days) + " day, ";
@@ -2746,21 +2773,21 @@ INT CtiDeviceMCT410::decodeGetValueOutage( INMESS *InMessage, CtiTime &TimeNow, 
                         {
                             pointString += CtiNumStr(days) + " days, ";
                         }
-    
+
                         pointString += CtiNumStr(hours).zpad(2) + string(":") +
                                        CtiNumStr(minutes).zpad(2) + ":" +
                                        CtiNumStr(seconds).zpad(2);
-    
+
                         if( cycles % 60 )
                         {
                             int millis = (cycles % 60) * 1000;
                             millis /= 60;
-    
+
                             pointString += "." + CtiNumStr(millis).zpad(3);
                         }
                     }
 
-                    if( (pPoint = getDevicePointOffsetTypeEqual(PointOffset_Analog_Outage, AnalogPointType)) 
+                    if( (pPoint = getDevicePointOffsetTypeEqual(PointOffset_Analog_Outage, AnalogPointType))
                         && is_valid_time(outageTime) )
                     {
                         value  = cycles;
@@ -3177,7 +3204,7 @@ INT CtiDeviceMCT410::decodeGetValueDailyRead(INMESS *InMessage, CtiTime &TimeNow
                     time_peak        = ((DSt->Message[8]  & 0x01) << 10) |  //  1 bit
                                        ((DSt->Message[9]  & 0xff) <<  2) |  //  8 bits
                                        ((DSt->Message[10] & 0xc0) >>  6);   //  2 bits
-                                       
+
 
                     time_voltage_max = ((DSt->Message[10] & 0x3f) <<  5) |  //  6 bits
                                        ((DSt->Message[11] & 0xf8) >>  3);   //  5 bits
@@ -3692,6 +3719,7 @@ INT CtiDeviceMCT410::decodeGetConfigCentron(INMESS *InMessage, CtiTime &TimeNow,
 
     return status;
 }
+
 
 
 INT CtiDeviceMCT410::decodeGetConfigDisconnect(INMESS *InMessage, CtiTime &TimeNow, list< CtiMessage* > &vgList, list< CtiMessage* > &retList, list< OUTMESS* > &outList)
