@@ -8411,8 +8411,9 @@ BOOL CtiCCSubstationBus::isDataOldAndFallBackNecessary()
             CtiCCFeederPtr currentFeeder = (CtiCCFeederPtr)_ccfeeders[i];
             if (currentFeeder->isDataOldAndFallBackNecessary(getControlUnits()))
             {
+                currentFeeder->setLikeDayControlFlag(TRUE);
                 retVal = TRUE;
-                break;
+               
             }
         }
 

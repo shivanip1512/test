@@ -397,6 +397,7 @@ RWDECLARE_COLLECTABLE( CtiCCSubstationBus )
     static const string IndividualFeederControlMethod;
     static const string BusOptimizedFeederControlMethod;
     static const string ManualOnlyControlMethod;
+    static const string TimeOfDayMethod;
 
     static const string KVARControlUnits;
     static const string VoltControlUnits;

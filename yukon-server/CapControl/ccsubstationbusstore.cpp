@@ -3669,12 +3669,12 @@ void CtiCCSubstationBusStore::reloadTimeOfDayStrategyFromDataBase(long strategyI
 
                 CtiCCStrategyPtr currentCCStrategy;
 
-                long strategyId = 0;
+                long stratId = 0;
 
                 while ( rdr() )
                 {                
-                    rdr["strategyid"] >> strategyId;
-                    currentCCStrategy =  strategy_map->find(strategyId)->second;
+                    rdr["strategyid"] >> stratId;
+                    currentCCStrategy =  strategy_map->find(stratId)->second;
                     if (currentCCStrategy != NULL)
                     {
                         currentCCStrategy->setTimeAndCloseValues(rdr);
