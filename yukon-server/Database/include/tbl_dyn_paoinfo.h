@@ -8,8 +8,8 @@
 * Author: Corey G. Plender
 *
 * CVS KEYWORDS:
-* REVISION     :  $Revision: 1.18 $
-* DATE         :  $Date: 2007/10/24 15:27:44 $
+* REVISION     :  $Revision: 1.19 $
+* DATE         :  $Date: 2007/12/03 17:21:58 $
 *
 * Copyright (c) 2002 Cannon Technologies Inc. All rights reserved.
 *-----------------------------------------------------------------------------*/
@@ -128,6 +128,8 @@ public:
         Key_FrozenRateCPeakTimestamp,
         Key_FrozenRateDPeakTimestamp,
         Key_FrozenDemandPeakTimestamp,
+        Key_FrozenDemand2PeakTimestamp,
+        Key_FrozenDemand3PeakTimestamp,
         Key_DemandFreezeTimestamp,
         Key_VoltageFreezeTimestamp,
 
@@ -178,6 +180,8 @@ protected:
     static const string _key_expected_freeze;
     static const string _key_verification_sequence;
     static const string _key_frozen_demand_peak_timestamp;
+    static const string _key_frozen_demand2_peak_timestamp;
+    static const string _key_frozen_demand3_peak_timestamp;
     static const string _key_frozen_rate_a_peak_timestamp;
     static const string _key_frozen_rate_b_peak_timestamp;
     static const string _key_frozen_rate_c_peak_timestamp;

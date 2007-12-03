@@ -7,8 +7,8 @@
 * Author: Matt Fisher
 *
 * CVS KEYWORDS:
-* REVISION     :  $Revision: 1.24 $
-* DATE         :  $Date: 2007/10/24 15:27:44 $
+* REVISION     :  $Revision: 1.25 $
+* DATE         :  $Date: 2007/12/03 17:21:58 $
 *
 * Copyright (c) 2002 Cannon Technologies Inc. All rights reserved.
 *-----------------------------------------------------------------------------*/
@@ -34,66 +34,68 @@ const string CtiTableDynamicPaoInfo::_owner_loadmanagement = "load management";
 const string CtiTableDynamicPaoInfo::_owner_calc           = "calc and logic";
 
 //  !!!  these strings MUST NOT CHANGE - this is what the DB keys on  !!!
-const string CtiTableDynamicPaoInfo::_key_mct_sspec                    = "mct sspec";
-const string CtiTableDynamicPaoInfo::_key_mct_sspec_revision           = "mct sspec revision";
-const string CtiTableDynamicPaoInfo::_key_mct_loadprofile_config       = "mct load profile config";
-const string CtiTableDynamicPaoInfo::_key_mct_loadprofile_interval     = "mct load profile interval";
-const string CtiTableDynamicPaoInfo::_key_mct_loadprofile_interval2    = "mct load profile interval 2";
-const string CtiTableDynamicPaoInfo::_key_mct_ied_loadprofile_interval = "mct ied load profile rate";
+const string CtiTableDynamicPaoInfo::_key_mct_sspec                     = "mct sspec";
+const string CtiTableDynamicPaoInfo::_key_mct_sspec_revision            = "mct sspec revision";
+const string CtiTableDynamicPaoInfo::_key_mct_loadprofile_config        = "mct load profile config";
+const string CtiTableDynamicPaoInfo::_key_mct_loadprofile_interval      = "mct load profile interval";
+const string CtiTableDynamicPaoInfo::_key_mct_loadprofile_interval2     = "mct load profile interval 2";
+const string CtiTableDynamicPaoInfo::_key_mct_ied_loadprofile_interval  = "mct ied load profile rate";
 
-const string CtiTableDynamicPaoInfo::_key_freeze_counter               = "freeze counter";
-const string CtiTableDynamicPaoInfo::_key_expected_freeze              = "expected freeze";
-const string CtiTableDynamicPaoInfo::_key_verification_sequence        = "verification sequence";
+const string CtiTableDynamicPaoInfo::_key_freeze_counter                = "freeze counter";
+const string CtiTableDynamicPaoInfo::_key_expected_freeze               = "expected freeze";
+const string CtiTableDynamicPaoInfo::_key_verification_sequence         = "verification sequence";
 
-const string CtiTableDynamicPaoInfo::_key_mct_time_adjust_tolerance    = "mct time adjust tolerance";
-const string CtiTableDynamicPaoInfo::_key_frozen_demand_peak_timestamp = "frozen demand peak timestamp";
-const string CtiTableDynamicPaoInfo::_key_frozen_rate_a_peak_timestamp = "frozen rate a peak timestamp";
-const string CtiTableDynamicPaoInfo::_key_frozen_rate_b_peak_timestamp = "frozen rate b peak timestamp";
-const string CtiTableDynamicPaoInfo::_key_frozen_rate_c_peak_timestamp = "frozen rate c peak timestamp";
-const string CtiTableDynamicPaoInfo::_key_frozen_rate_d_peak_timestamp = "frozen rate d peak timestamp";
-const string CtiTableDynamicPaoInfo::_key_demand_freeze_timestamp      = "demand freeze timestamp";
-const string CtiTableDynamicPaoInfo::_key_voltage_freeze_timestamp     = "voltage freeze timestamp";
+const string CtiTableDynamicPaoInfo::_key_mct_time_adjust_tolerance     = "mct time adjust tolerance";
+const string CtiTableDynamicPaoInfo::_key_frozen_demand_peak_timestamp  = "frozen demand peak timestamp";
+const string CtiTableDynamicPaoInfo::_key_frozen_demand2_peak_timestamp = "frozen channel 2 demand peak timestamp";
+const string CtiTableDynamicPaoInfo::_key_frozen_demand3_peak_timestamp = "frozen channel 3 demand peak timestamp";
+const string CtiTableDynamicPaoInfo::_key_frozen_rate_a_peak_timestamp  = "frozen rate a peak timestamp";
+const string CtiTableDynamicPaoInfo::_key_frozen_rate_b_peak_timestamp  = "frozen rate b peak timestamp";
+const string CtiTableDynamicPaoInfo::_key_frozen_rate_c_peak_timestamp  = "frozen rate c peak timestamp";
+const string CtiTableDynamicPaoInfo::_key_frozen_rate_d_peak_timestamp  = "frozen rate d peak timestamp";
+const string CtiTableDynamicPaoInfo::_key_demand_freeze_timestamp       = "demand freeze timestamp";
+const string CtiTableDynamicPaoInfo::_key_voltage_freeze_timestamp      = "voltage freeze timestamp";
 
-const string CtiTableDynamicPaoInfo::_key_mct_dst_start_time           = "mct dst start time";
-const string CtiTableDynamicPaoInfo::_key_mct_dst_end_time             = "mct dst end time";
-const string CtiTableDynamicPaoInfo::_key_mct_time_zone_offset         = "mct time zone offset";
-const string CtiTableDynamicPaoInfo::_key_mct_over_voltage_threshold   = "mct over voltage threshold";
-const string CtiTableDynamicPaoInfo::_key_mct_under_voltage_threshold  = "mct under voltage threshold";
-const string CtiTableDynamicPaoInfo::_key_mct_demand_interval          = "mct demand interval";
-const string CtiTableDynamicPaoInfo::_key_mct_voltage_profile_interval = "mct voltage profile interval";
-const string CtiTableDynamicPaoInfo::_key_mct_voltage_demand_interval  = "mct voltage demand interval";
+const string CtiTableDynamicPaoInfo::_key_mct_dst_start_time            = "mct dst start time";
+const string CtiTableDynamicPaoInfo::_key_mct_dst_end_time              = "mct dst end time";
+const string CtiTableDynamicPaoInfo::_key_mct_time_zone_offset          = "mct time zone offset";
+const string CtiTableDynamicPaoInfo::_key_mct_over_voltage_threshold    = "mct over voltage threshold";
+const string CtiTableDynamicPaoInfo::_key_mct_under_voltage_threshold   = "mct under voltage threshold";
+const string CtiTableDynamicPaoInfo::_key_mct_demand_interval           = "mct demand interval";
+const string CtiTableDynamicPaoInfo::_key_mct_voltage_profile_interval  = "mct voltage profile interval";
+const string CtiTableDynamicPaoInfo::_key_mct_voltage_demand_interval   = "mct voltage demand interval";
 
-const string CtiTableDynamicPaoInfo::_key_mct_day_table                = "mct day table";
-const string CtiTableDynamicPaoInfo::_key_mct_day_schedule_1           = "mct day schedule 1";
-const string CtiTableDynamicPaoInfo::_key_mct_day_schedule_2           = "mct day schedule 2";
-const string CtiTableDynamicPaoInfo::_key_mct_day_schedule_3           = "mct day schedule 3";
-const string CtiTableDynamicPaoInfo::_key_mct_day_schedule_4           = "mct day schedule 4";
-const string CtiTableDynamicPaoInfo::_key_mct_default_tou_rate         = "mct default tou rate";
+const string CtiTableDynamicPaoInfo::_key_mct_day_table                 = "mct day table";
+const string CtiTableDynamicPaoInfo::_key_mct_day_schedule_1            = "mct day schedule 1";
+const string CtiTableDynamicPaoInfo::_key_mct_day_schedule_2            = "mct day schedule 2";
+const string CtiTableDynamicPaoInfo::_key_mct_day_schedule_3            = "mct day schedule 3";
+const string CtiTableDynamicPaoInfo::_key_mct_day_schedule_4            = "mct day schedule 4";
+const string CtiTableDynamicPaoInfo::_key_mct_default_tou_rate          = "mct default tou rate";
 
-const string CtiTableDynamicPaoInfo::_key_mct_bronze_address           = "mct bronze address";
-const string CtiTableDynamicPaoInfo::_key_mct_lead_address             = "mct lead address";
-const string CtiTableDynamicPaoInfo::_key_mct_collection_address       = "mct collection address";
-const string CtiTableDynamicPaoInfo::_key_mct_service_provider_id      = "mct service provider id";
+const string CtiTableDynamicPaoInfo::_key_mct_bronze_address            = "mct bronze address";
+const string CtiTableDynamicPaoInfo::_key_mct_lead_address              = "mct lead address";
+const string CtiTableDynamicPaoInfo::_key_mct_collection_address        = "mct collection address";
+const string CtiTableDynamicPaoInfo::_key_mct_service_provider_id       = "mct service provider id";
 
-const string CtiTableDynamicPaoInfo::_key_mct_configuration            = "mct configuration";
-const string CtiTableDynamicPaoInfo::_key_mct_options                  = "mct options";
-const string CtiTableDynamicPaoInfo::_key_mct_outage_cycles            = "mct outage cycles";
-const string CtiTableDynamicPaoInfo::_key_mct_event_flags_mask_1       = "mct event flags mask 1";
-const string CtiTableDynamicPaoInfo::_key_mct_event_flags_mask_2       = "mct event flags mask 2";
-const string CtiTableDynamicPaoInfo::_key_mct_meter_alarm_mask         = "mct meter alarm mask";
-const string CtiTableDynamicPaoInfo::_key_mct_demand_limit             = "mct demand limit";
-const string CtiTableDynamicPaoInfo::_key_mct_connect_delay            = "mct connect delay";
-const string CtiTableDynamicPaoInfo::_key_mct_disconnect_minutes       = "mct disconnect minutes";
-const string CtiTableDynamicPaoInfo::_key_mct_connect_minutes          = "mct connect minutes";
+const string CtiTableDynamicPaoInfo::_key_mct_configuration             = "mct configuration";
+const string CtiTableDynamicPaoInfo::_key_mct_options                   = "mct options";
+const string CtiTableDynamicPaoInfo::_key_mct_outage_cycles             = "mct outage cycles";
+const string CtiTableDynamicPaoInfo::_key_mct_event_flags_mask_1        = "mct event flags mask 1";
+const string CtiTableDynamicPaoInfo::_key_mct_event_flags_mask_2        = "mct event flags mask 2";
+const string CtiTableDynamicPaoInfo::_key_mct_meter_alarm_mask          = "mct meter alarm mask";
+const string CtiTableDynamicPaoInfo::_key_mct_demand_limit              = "mct demand limit";
+const string CtiTableDynamicPaoInfo::_key_mct_connect_delay             = "mct connect delay";
+const string CtiTableDynamicPaoInfo::_key_mct_disconnect_minutes        = "mct disconnect minutes";
+const string CtiTableDynamicPaoInfo::_key_mct_connect_minutes           = "mct connect minutes";
 
-const string CtiTableDynamicPaoInfo::_key_mct_holiday_1                = "mct holiday 1";
-const string CtiTableDynamicPaoInfo::_key_mct_holiday_3                = "mct holiday 3";
-const string CtiTableDynamicPaoInfo::_key_mct_holiday_2                = "mct holiday 2";
+const string CtiTableDynamicPaoInfo::_key_mct_holiday_1                 = "mct holiday 1";
+const string CtiTableDynamicPaoInfo::_key_mct_holiday_3                 = "mct holiday 3";
+const string CtiTableDynamicPaoInfo::_key_mct_holiday_2                 = "mct holiday 2";
 
-const string CtiTableDynamicPaoInfo::_key_mct_llp_channel1_len         = "mct llp channel 1 length";
-const string CtiTableDynamicPaoInfo::_key_mct_llp_channel2_len         = "mct llp channel 2 length";
-const string CtiTableDynamicPaoInfo::_key_mct_llp_channel3_len         = "mct llp channel 3 length";
-const string CtiTableDynamicPaoInfo::_key_mct_llp_channel4_len         = "mct llp channel 4 length";
+const string CtiTableDynamicPaoInfo::_key_mct_llp_channel1_len          = "mct llp channel 1 length";
+const string CtiTableDynamicPaoInfo::_key_mct_llp_channel2_len          = "mct llp channel 2 length";
+const string CtiTableDynamicPaoInfo::_key_mct_llp_channel3_len          = "mct llp channel 3 length";
+const string CtiTableDynamicPaoInfo::_key_mct_llp_channel4_len          = "mct llp channel 4 length";
 
 const string CtiTableDynamicPaoInfo::_key_mct_load_profile_channel_1_config = "mct load profile channel 1 config";
 const string CtiTableDynamicPaoInfo::_key_mct_load_profile_channel_2_config = "mct load profile channel 2 config";
@@ -255,6 +257,8 @@ CtiTableDynamicPaoInfo::key_map_t CtiTableDynamicPaoInfo::init_key_map()
     retval.insert(make_pair(Key_FrozenRateCPeakTimestamp,       &_key_frozen_rate_c_peak_timestamp));
     retval.insert(make_pair(Key_FrozenRateDPeakTimestamp,       &_key_frozen_rate_d_peak_timestamp));
     retval.insert(make_pair(Key_FrozenDemandPeakTimestamp,      &_key_frozen_demand_peak_timestamp));
+    retval.insert(make_pair(Key_FrozenDemand2PeakTimestamp,     &_key_frozen_demand2_peak_timestamp));
+    retval.insert(make_pair(Key_FrozenDemand3PeakTimestamp,     &_key_frozen_demand3_peak_timestamp));
     retval.insert(make_pair(Key_DemandFreezeTimestamp,          &_key_demand_freeze_timestamp));
     retval.insert(make_pair(Key_VoltageFreezeTimestamp,         &_key_voltage_freeze_timestamp));
 
@@ -458,7 +462,7 @@ RWDBStatus CtiTableDynamicPaoInfo::Update(RWDBConnection &conn, long &rowsAffect
     {
         RWDBUpdater updater = table.updater();
 
-        updater.where(table["paobjectid"] == getPaoID() && 
+        updater.where(table["paobjectid"] == getPaoID() &&
                       table["owner"]      == tmp_owner->data() &&
                       table["infokey"]    == tmp_key->data());
 
