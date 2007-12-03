@@ -1,7 +1,7 @@
 /*==============================================================*/
 /* Database name:  YukonDatabase                                */
 /* DBMS name:      ORACLE Version 9i                            */
-/* Created on:     12/2/2007 11:47:18 PM                        */
+/* Created on:     12/3/2007 7:25:07 AM                         */
 /*==============================================================*/
 
 
@@ -1256,6 +1256,7 @@ create table CCEventLog  (
    KVARChange           FLOAT                           not null,
    AdditionalInfo       VARCHAR2(20)                    not null,
    actionId             NUMBER                         default -1 not null,
+   CapStateInfo         VARCHAR2(20)                   default 'N/A' not null,
    constraint PK_CCEventLog primary key (LogID)
 )
 ;

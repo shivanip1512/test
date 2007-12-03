@@ -1026,6 +1026,14 @@ update command set label = 'Configure LEDS (load, test, report)' where commandid
 update command set label = 'Configure LEDS (load, test, report)' where commandid = -97;
 /* End YUK-2924 */
 
+/* Start YUK-4813 */
+alter table cceventlog add capbankstateinfo varchar(20);
+go
+update cceventlog set capbankstateinfo = 'N/A';
+go
+alter table cceventlog alter column capbankstateinfo varchar(20) not null ;
+go
+/* End YUK-4813 */
 /**************************************************************/
 /* VERSION INFO                                               */
 /*   Automatically gets inserted from build script            */
