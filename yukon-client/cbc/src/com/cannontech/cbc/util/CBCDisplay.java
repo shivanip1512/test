@@ -17,11 +17,13 @@ import com.cannontech.database.data.capcontrol.CapBank;
 import com.cannontech.database.data.capcontrol.CapControlSubBus;
 import com.cannontech.database.data.lite.LiteState;
 import com.cannontech.database.data.lite.LiteYukonPAObject;
+import com.cannontech.database.data.lite.LiteYukonUser;
 import com.cannontech.database.data.pao.PAOFactory;
 import com.cannontech.database.data.point.PointTypes;
 import com.cannontech.database.data.point.PointUnits;
 import com.cannontech.database.db.DBPersistent;
 import com.cannontech.database.db.state.StateGroupUtils;
+import com.cannontech.roles.capcontrol.CBCOnelineSettingsRole;
 import com.cannontech.roles.capcontrol.CBCSettingsRole;
 import com.cannontech.util.ColorUtil;
 import com.cannontech.yukon.cbc.CBCArea;
@@ -35,6 +37,7 @@ import com.cannontech.yukon.cbc.SubStation;
  * @author rneuharth
  */
 public class CBCDisplay {
+    
     public static final String SYMBOL_SIGNAL_QUALITY = "(*)";
     public static final String STR_NA = "  NA";
     public static final String DASH_LINE = "  ----";
@@ -137,7 +140,9 @@ public class CBCDisplay {
     /**
      * getValueAt method for CapBanks.
      */
-    public synchronized Object getCapBankValueAt(CapBankDevice capBank, int col) {
+    public synchronized Object getCapBankValueAt(CapBankDevice capBank, int col, LiteYukonUser user) {
+        String fixedCapbankLabel = DaoFactory.getAuthDao().getRolePropertyValue(user, CBCOnelineSettingsRole.CAP_BANK_FIXED_TEXT);
+        if (fixedCapbankLabel == null) fixedCapbankLabel = "Fixed";
         if (capBank == null) {
             return "";
         }
@@ -169,7 +174,7 @@ public class CBCDisplay {
                 
                 if (isCapBankDisabled) {
 
-                    String disStateString = "DISABLED : " + (isFixedState ? CapBank.FIXED_OPSTATE 
+                    String disStateString = "DISABLED : " + (isFixedState ? fixedCapbankLabel 
                                                 : currentState);
                     disStateString += capBank.getControlStatusQualityString();                    
                     if (capBank.getOvUVDisabled()){
@@ -182,7 +187,7 @@ public class CBCDisplay {
 
                     String EnStateString = "";
                     if (isFixedState){
-                    	EnStateString = CapBank.FIXED_OPSTATE + " : ";
+                    	EnStateString = fixedCapbankLabel + " : ";
                     }
                     else if (isStandaloneState ){
                     	EnStateString = CapBank.STANDALONE_OPSTATE + " : ";

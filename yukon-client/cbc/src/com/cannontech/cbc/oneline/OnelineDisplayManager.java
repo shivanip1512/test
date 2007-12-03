@@ -61,6 +61,7 @@ public class OnelineDisplayManager {
 
     public String getDisplayValue(StreamableCapObject stream, int rolePropID,
             UpdatableStats stats) {
+        
         CBCDisplay oldWebDisplay = new CBCDisplay();
         Integer dispCol = stats.getPropColumnMap().get(rolePropID);
 
@@ -74,9 +75,13 @@ public class OnelineDisplayManager {
             return (String) oldWebDisplay.getFeederValueAt((Feeder) stream,
                                                            dispCol);
         } else if (stream instanceof CapBankDevice) {
-            return oldWebDisplay.getCapBankValueAt((CapBankDevice) stream,
-                                                   dispCol.intValue())
-                                .toString();
+            OnelineObject parentOnelineObject = stats.getParentOnelineObject();
+            if (parentOnelineObject != null) {
+                LiteYukonUser user = parentOnelineObject.getDrawing().getLayoutParams().getUser();
+                if (user != null) {
+                    return oldWebDisplay.getCapBankValueAt((CapBankDevice) stream, dispCol.intValue(), user).toString();
+                }
+            }
         }
         return "(none)";
 

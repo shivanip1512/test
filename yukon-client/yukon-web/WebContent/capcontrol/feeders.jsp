@@ -1,6 +1,7 @@
 <%@ page import="com.cannontech.spring.YukonSpringHook" %>
 <%@ page import="com.cannontech.cbc.cache.CapControlCache" %>
 <%@ page import="com.cannontech.cbc.cache.FilterCacheFactory" %>
+<%@page import="com.cannontech.roles.capcontrol.CBCOnelineSettingsRole"%>
 <%@ taglib uri="http://cannontech.com/tags/cti" prefix="cti" %>
 <cti:standardPage title="Feeders" module="capcontrol">
 <%@include file="cbc_inc.jspf"%>
@@ -25,6 +26,7 @@
 	int subid = ccSession.getLastSubID();
 	Integer areaId = ccSession.getLastAreaId();
 	String popupEvent = DaoFactory.getAuthDao().getRolePropertyValue(user, WebClientRole.POPUP_APPEAR_STYLE);
+	
     boolean showFlip = Boolean.valueOf(DaoFactory.getAuthDao().getRolePropertyValue(user, CBCSettingsRole.SHOW_FLIP_COMMAND)).booleanValue();
     if (popupEvent == null) popupEvent = "onmouseover";
 	SubStation substation = filterCapControlCache.getSubstation( new Integer(subid) );
@@ -518,7 +520,7 @@ for( int i = 0; i < capBanks.size(); i++ ) {
 				    </span>
 			
 					<div class="ccVarLoadPopup" id="capWarningPopup_<%=capBank.getCcId()%>" style="display:none" > 
-					  <span type="param7" name="cti_dyn" id="<%=capBank.getCcId()%>"><%=CBCUtils.CBC_DISPLAY.getCapBankValueAt(capBank, CBCDisplay.CB_WARNING_POPUP)%></span>
+					  <span type="param7" name="cti_dyn" id="<%=capBank.getCcId()%>"><%=CBCUtils.CBC_DISPLAY.getCapBankValueAt(capBank, CBCDisplay.CB_WARNING_POPUP, user)%></span>
 					</div>
 
 				</td>
@@ -543,13 +545,13 @@ for( int i = 0; i < capBanks.size(); i++ ) {
                     <input id="is701x_<%=capBank.getCcId()%>" type="hidden" value="<%=CBCUtils.is701xDevice(obj)%>"/>
                     <a href="javascript:void(0);"
                     <%=popupEvent%> ="getCapBankMenu('<%=capBank.getCcId()%>');">
-                    	<%=CBCUtils.CBC_DISPLAY.getCapBankValueAt(capBank, CBCDisplay.CB_NAME_COLUMN)%>
+                    	<%=CBCUtils.CBC_DISPLAY.getCapBankValueAt(capBank, CBCDisplay.CB_NAME_COLUMN, user)%>
 					</a>
 					<%
 					} else {
 					%>
 					<span>
-						<%=CBCUtils.CBC_DISPLAY.getCapBankValueAt(capBank, CBCDisplay.CB_NAME_COLUMN)%>
+						<%=CBCUtils.CBC_DISPLAY.getCapBankValueAt(capBank, CBCDisplay.CB_NAME_COLUMN, user)%>
 					</span>
 					<%
 					}
@@ -585,7 +587,7 @@ for( int i = 0; i < capBanks.size(); i++ ) {
 					<%
 					}
 					%>
-					<%=CBCUtils.CBC_DISPLAY.getCapBankValueAt(capBank, CBCDisplay.CB_STATUS_COLUMN)%>
+					<%=CBCUtils.CBC_DISPLAY.getCapBankValueAt(capBank, CBCDisplay.CB_STATUS_COLUMN, user)%>
 					</a>
 				<span id="cap_opcnt_span<%=capBank.getCcId()%>" style="display:none; " >
 					<label for="opcount" id="opcnt_label"> Op Count: </label>
@@ -593,13 +595,13 @@ for( int i = 0; i < capBanks.size(); i++ ) {
 					<a href="javascript:void(0);" onclick="return executeCapBankCommand (<%=capBank.getCcId()%>,12,false,'Reset_OpCount', 'cap_opcnt_span<%=capBank.getCcId()%>');" >Reset</a>
 				</span>
 					<div id="capBankStatusPopup_<%=capBank.getCcId()%>" style="display:none" > 
-					  <span type="param6" name="cti_dyn" id="<%=capBank.getCcId()%>"><%=CBCUtils.CBC_DISPLAY.getCapBankValueAt(capBank, CBCDisplay.CB_STATUS_POPUP)%></span>
+					  <span type="param6" name="cti_dyn" id="<%=capBank.getCcId()%>"><%=CBCUtils.CBC_DISPLAY.getCapBankValueAt(capBank, CBCDisplay.CB_STATUS_POPUP, user)%></span>
 					</div>
 				</td>
 				<td><a type="param1" name="cti_dyn" id="<%=capBank.getCcId()%>">
-					<%=CBCUtils.CBC_DISPLAY.getCapBankValueAt(capBank, CBCDisplay.CB_TIME_STAMP_COLUMN)%></a>
+					<%=CBCUtils.CBC_DISPLAY.getCapBankValueAt(capBank, CBCDisplay.CB_TIME_STAMP_COLUMN, user)%></a>
 				</td>
-				<td><%=CBCUtils.CBC_DISPLAY.getCapBankValueAt(capBank, CBCDisplay.CB_BANK_SIZE_COLUMN)%></td>
+				<td><%=CBCUtils.CBC_DISPLAY.getCapBankValueAt(capBank, CBCDisplay.CB_BANK_SIZE_COLUMN, user)%></td>
                 <td>
                     <input id="cmd_cap_move_back_<%=capBank.getCcId()%>" type="hidden" value= "" />
                     <a href="javascript:void(0);"
@@ -610,12 +612,12 @@ for( int i = 0; i < capBanks.size(); i++ ) {
                         onmouseover="statusMsg(this, 'Click here to temporarily move this CapBank from it\'s current parent feeder');"
                         onclick="return GB_show('CapBank Temp Move Target (Pick feeder by clicking on name)','tempmove.jsp?bankid='+<%=capBank.getCcId()%>, 500, 700, onGreyBoxClose);"
                     <% } %>
-                    	><span><%=CBCUtils.CBC_DISPLAY.getCapBankValueAt(capBank, CBCDisplay.CB_PARENT_COLUMN)%></span>
+                    	><span><%=CBCUtils.CBC_DISPLAY.getCapBankValueAt(capBank, CBCDisplay.CB_PARENT_COLUMN, user)%></span>
                     	</a>                    
                     </td>
 					<td>
 						<a type="param2" name="cti_dyn" id="<%=capBank.getCcId()%>">
-						<%=CBCUtils.CBC_DISPLAY.getCapBankValueAt(capBank, CBCDisplay.CB_DAILY_TOTAL_OP_COLUMN)%></a>
+						<%=CBCUtils.CBC_DISPLAY.getCapBankValueAt(capBank, CBCDisplay.CB_DAILY_TOTAL_OP_COLUMN, user)%></a>
 					</td>
 				</tr>
 				<% } %>

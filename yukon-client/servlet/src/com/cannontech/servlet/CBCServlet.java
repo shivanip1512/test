@@ -66,7 +66,7 @@ public class CBCServlet extends ErrorAwareInitializingServlet
 	public static final String TYPE_FEEDER = "FEEDER_TYPE";
 	public static final String TYPE_CAPBANK = "CAPBANK_TYPE";
     public static final String TYPE_AREA = "AREA_TYPE";
-
+    
 /**
  * Removes any resources used by this servlet
  *
@@ -469,8 +469,12 @@ private boolean handleFeederGET( String ids, ResultXML[] xmlMsgs, int indx )
  */
 private boolean handleCapBankGET( HttpServletRequest req, String ids, ResultXML[] xmlMsgs, int indx )
 {
-	CapBankDevice capBank =
-		getCapControlCache().getCapBankDevice( new Integer(ids) );
+    HttpSession session = req.getSession( false );
+    LiteYukonUser user = new LiteYukonUser();
+    if (session != null) {
+        user = (LiteYukonUser) session.getAttribute(LoginController.YUKON_USER);
+    }
+	CapBankDevice capBank = getCapControlCache().getCapBankDevice( new Integer(ids) );
 	//see if the user has the rights to change ov/uv
 	String allow_ovuv = init_isOVUV(req);
 	String liteStates = init_All_Manual_Cap_States();
@@ -484,20 +488,20 @@ private boolean handleCapBankGET( HttpServletRequest req, String ids, ResultXML[
 	String[] optParams =
 	{
 		/*param0*/CBCDisplay.getHTMLFgColor(capBank),
-		/*param1*/CBCUtils.CBC_DISPLAY.getCapBankValueAt(capBank, CBCDisplay.CB_TIME_STAMP_COLUMN).toString(),
-		/*param2*/CBCUtils.CBC_DISPLAY.getCapBankValueAt(capBank, CBCDisplay.CB_DAILY_TOTAL_OP_COLUMN).toString(),
-		/*param3*/CBCUtils.CBC_DISPLAY.getCapBankValueAt(capBank, CBCDisplay.CB_NAME_COLUMN).toString(),
+		/*param1*/CBCUtils.CBC_DISPLAY.getCapBankValueAt(capBank, CBCDisplay.CB_TIME_STAMP_COLUMN, user).toString(),
+		/*param2*/CBCUtils.CBC_DISPLAY.getCapBankValueAt(capBank, CBCDisplay.CB_DAILY_TOTAL_OP_COLUMN, user).toString(),
+		/*param3*/CBCUtils.CBC_DISPLAY.getCapBankValueAt(capBank, CBCDisplay.CB_NAME_COLUMN, user).toString(),
 		/*param4*/allow_ovuv,
 		/*param5*/liteStates,
-        /*param6*/CBCUtils.CBC_DISPLAY.getCapBankValueAt(capBank, CBCDisplay.CB_STATUS_POPUP).toString(),
-        /*param7*/CBCUtils.CBC_DISPLAY.getCapBankValueAt(capBank, CBCDisplay.CB_WARNING_POPUP).toString()
+        /*param6*/CBCUtils.CBC_DISPLAY.getCapBankValueAt(capBank, CBCDisplay.CB_STATUS_POPUP, user).toString(),
+        /*param7*/CBCUtils.CBC_DISPLAY.getCapBankValueAt(capBank, CBCDisplay.CB_WARNING_POPUP, user).toString()
 	};
 
 	xmlMsgs[indx] = new ResultXML(
 		capBank.getCcId().toString(),
-		CBCUtils.CBC_DISPLAY.getCapBankValueAt(capBank, CBCDisplay.CB_STATUS_COLUMN).toString(),
+		CBCUtils.CBC_DISPLAY.getCapBankValueAt(capBank, CBCDisplay.CB_STATUS_COLUMN, user).toString(),
 		optParams );
-	xmlMsgs[indx].setWarning(CBCUtils.CBC_DISPLAY.getCapBankValueAt(capBank, CBCDisplay.CB_WARNING_IMAGE).toString());
+	xmlMsgs[indx].setWarning(CBCUtils.CBC_DISPLAY.getCapBankValueAt(capBank, CBCDisplay.CB_WARNING_IMAGE, user).toString());
 
 	return true;
 }
