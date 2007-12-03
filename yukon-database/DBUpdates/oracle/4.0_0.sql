@@ -2,7 +2,7 @@
 /**** Oracle DBupdates   		       ****/
 /******************************************/
 
-create table dynamicccarea ( AreaID numeric not null, additionalflags varchar(20) not null );
+create table dynamicccarea ( AreaID number not null, additionalflags varchar2(20) not null );
 
 alter table dynamicccarea
    add constraint FK_ccarea_Dynccarea foreign key (areaID)
@@ -39,7 +39,7 @@ create table DYNAMICBILLINGFIELD  (
 )
 ;
 
-alter table BillingFileFormats modify FormatType varchar(100);
+alter table BillingFileFormats modify FormatType varchar2(100);
 go
 
 alter table BillingFileFormats ADD SystemFormat bit;
@@ -99,10 +99,10 @@ insert into SeasonSchedule values (-1,'No Season');
 insert into DateOfSeason values(-1, 'Default', 1,1,12,31);
 
 create table CCSeasonStrategyAssignment (
-	PaobjectId numeric not null,
-	SeasonScheduleId numeric not null,
-	SeasonName varchar(20) not null,
-	StrategyId numeric not null
+	PaobjectId number not null,
+	SeasonScheduleId number not null,
+	SeasonName varchar2(20) not null,
+	StrategyId number not null
 );
 
 alter table CapControlArea  drop constraint FK_CAPCONTAREA_CAPCONTRSTRAT;
@@ -112,16 +112,16 @@ alter table CapControlSubstationbus drop column StrategyId;
 alter table CapControlFeeder  drop constraint FK_CCFDR_CCSTR;
 alter table CapControlFeeder drop column StrategyId;
 
-create table CapControlSpecialArea( AreaID numeric not null );
+create table CapControlSpecialArea( AreaID number not null );
 
 alter table CapControlSpecialArea
    add constraint PK_CapControlSpecialArea primary key nonclustered (AreaID);
 
 create table CCSubSpecialAreaAssignment (
 
-   AreaID numeric not null,
-   SubstationBusID numeric not null,
-   DisplayOrder numeric not null
+   AreaID number not null,
+   SubstationBusID number not null,
+   DisplayOrder number not null
 );
 
 alter table CCSubSpecialAreaAssignment
@@ -136,8 +136,8 @@ alter table CCSubSpecialAreaAssignment
       references CapControlSubstationBus (SubstationBusId);
 
 create table DynamicCCSpecialArea (
-   AreaID               numeric              not null,
-   Additionalflags      varchar(20)          not null
+   AreaID               number              not null,
+   Additionalflags      varchar2(20)          not null
 );
 
 alter table DynamicCCSpecialArea
@@ -174,25 +174,25 @@ alter table CapControlFeeder add UsePhaseData char(1);
 update CapControlFeeder set UsePhaseData = 'N';
 alter table CapControlFeeder modify UsePhaseData char(1) not null;
 
-alter table CapControlFeeder add PhaseB numeric;
+alter table CapControlFeeder add PhaseB number;
 update CapControlFeeder set PhaseB = 0;
-alter table CapControlFeeder modify PhaseB numeric not null;
+alter table CapControlFeeder modify PhaseB number not null;
 
-alter table CapControlFeeder add PhaseC numeric;
+alter table CapControlFeeder add PhaseC number;
 update CapControlFeeder set PhaseC = 0;
-alter table CapControlFeeder modify PhaseC numeric not null;
+alter table CapControlFeeder modify PhaseC number not null;
 
 alter table CapControlSubstationbus add UsePhaseData char(1);
 update CapControlSubstationbus set UsePhaseData = 'N';
 alter table CapControlSubstationbus modify UsePhaseData char(1) not null;
 
-alter table CapControlSubstationbus add PhaseB numeric;
+alter table CapControlSubstationbus add PhaseB number;
 update CapControlSubstationbus set PhaseB = 0;
-alter table CapControlSubstationbus modify PhaseB numeric not null;
+alter table CapControlSubstationbus modify PhaseB number not null;
 
-alter table CapControlSubstationbus add PhaseC numeric;
+alter table CapControlSubstationbus add PhaseC number;
 update CapControlSubstationbus set PhaseC = 0;
-alter table CapControlSubstationbus modify PhaseC numeric not null;
+alter table CapControlSubstationbus modify PhaseC number not null;
 
 /************************************* 
 	END CAPCONTROL 4.0 CHANGES 
@@ -310,11 +310,11 @@ INSERT INTO TouAttributeMapping (displayname, peakattribute, usageattribute) VAL
 alter table TOUATTRIBUTEMAPPING
    add constraint PK_TOUATTRIBUTEMAPPING primary key (touID);
 
-alter table cceventlog add actionId numeric;
+alter table cceventlog add actionId number;
 go
 update cceventlog set actionId = -1;
 go
-alter table cceventlog modify actionId numeric not null;
+alter table cceventlog modify actionId number not null;
 
 /* Begin YUK-4785 */
 drop table DEVICECONFIGURATIONDEVICEMAP cascade constraints;
@@ -368,14 +368,14 @@ alter table DEVICECONFIGURATIONITEM
       references DEVICECONFIGURATION (DeviceConfigurationID)
       on delete cascade;
       
-/* End YUK-4785
+/* End YUK-4785 */
 insert into YukonRoleProperty values(-20013,-200,'Edit Device Config','false','Controls the ability to edit and create device configurations');
 insert into YukonRoleProperty values(-20014,-200,'View Device Config','true','Controls the ability to view existing device configurations');
 insert into YukonRoleProperty values(-20206,-202,'Enable Profile Request','true','Access to perform profile data request');
 
-alter table userPaoPermission add Allow varchar(5);
+alter table userPaoPermission add Allow varchar2(5);
 update UserPaoPermission set Allow = 'ALLOW';
-alter table groupPaoPermission add Allow varchar(5);
+alter table groupPaoPermission add Allow varchar2(5);
 update GroupPaoPermission set Allow = 'ALLOW';
 
 insert into YukonRoleProperty values(-70013,-700,'Definition Available','Open,OpenQuestionable,OpenPending','Capbank sized in these states will be added to the available sum.');
@@ -414,23 +414,23 @@ alter table lmthermostatgear modify RampRate not null;
 
 /* Start YUK-4707 */
 create table CAPCONTROLSUBSTATION (
-   SubstationID         numeric              not null,
+   SubstationID         number              not null,
    constraint PK_CAPCONTROLSUBSTATION primary key nonclustered (SubstationID)
 );
 
 create table dynamicccsubstation
 (
-	substationid numeric not null,
-	additionalflags varchar(20) not null,
-	saenabledid numeric not null
+	substationid number not null,
+	additionalflags varchar2(20) not null,
+	saenabledid number not null
 );
 
 
 create table ccsubstationsubbuslist
 (
-	substationid numeric not null,
-	substationbusid numeric not null,
-	displayorder numeric not null
+	substationid number not null,
+	substationbusid number not null,
+	displayorder number not null
 );
 
 select
@@ -445,7 +445,7 @@ where
 	type = 'CCSUBBUS';
 
 
-declare @ccsubstationname varchar(60);
+declare @ccsubstationname varchar2(60);
 
 declare substation_curs cursor for (select distinct(CCsubStationName) from #mySubstation);
 open substation_curs;
@@ -546,10 +546,10 @@ where
 	ccsubspecialareaassignment.substationbusid = #mySubstation3.subbusid;
 
 
-declare @ccsubstationid numeric;
-declare @lastsubstationid numeric;
-declare @ccsubbusid numeric;
-declare @index numeric;
+declare @ccsubstationid number;
+declare @lastsubstationid number;
+declare @ccsubbusid number;
+declare @index number;
 
 declare substation_curs cursor for (select subbusid, substationid from #mySubstation2);
 open substation_curs;
