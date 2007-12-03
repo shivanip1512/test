@@ -29,9 +29,10 @@ public:
 
    CtiHashKey(const string str) :
       _bIDBased(false),
-      _hashStr(str),
-      ID(LONG_MAX)
-   {}
+      _hashStr(str)
+   {
+       ID = hash();
+   }
 
    bool operator < ( const CtiHashKey &aRef) const
    {
@@ -41,7 +42,14 @@ public:
       }
       else
       {
-         return( _hashStr < aRef.getHashStr() );
+          if( ID == aRef.ID )
+          {
+              return (_hashStr < aRef.getHashStr() );
+          }
+          else
+          {
+              return ID < aRef.ID;
+          }
       }
    }
 
@@ -53,7 +61,15 @@ public:
       }
       else
       {
-         return (_hashStr == aRef.getHashStr() );
+          if( ID == aRef.ID )
+          {
+              return (_hashStr == aRef.getHashStr());
+          }
+          else
+          {
+              return false;
+          }
+         
       }
    }
 
