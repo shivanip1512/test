@@ -193,10 +193,10 @@ public:
     CtiCCCapBank& setVCtrlIndex(int vCtrlIndex);
     CtiCCCapBank& setAssumedOrigVerificationState(int assumedOrigCapBankPos);
     CtiCCCapBank& setPreviousVerificationControlStatus(LONG status);
-
     BOOL updateVerificationState(void);
     CtiCCCapBank& updatePointResponseDeltas(CtiCCMonitorPoint* point);
 
+    string getControlStatusQualityString();
     //int getAssumedOrigVerificationState();
     CtiCCCapBank& initVerificationControlStatus();
     CtiCCCapBank& addAllCapBankPointsToMsg(CtiCommandMsg *pointAddMsg);

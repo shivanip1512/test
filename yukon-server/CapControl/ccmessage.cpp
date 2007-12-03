@@ -447,6 +447,7 @@ CtiCCEventLogMsg& CtiCCEventLogMsg::operator=(const CtiCCEventLogMsg& right)
         _kvarChange = right._kvarChange;
         _ipAddress  = right._ipAddress;
         _actionId   = right._actionId;
+        _stateInfo  = right._stateInfo;
 
     }
 

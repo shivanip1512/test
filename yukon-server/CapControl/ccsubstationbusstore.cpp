@@ -2506,6 +2506,7 @@ void CtiCCSubstationBusStore::verifySubBusAndFeedersStates()
                                 CtiCapController::getInstance()->sendMessageToDispatch(new CtiPointDataMsg(currentCapBank->getStatusPointId(),CtiCCCapBank::CloseQuestionable,NormalQuality,StatusPointType, "cap control",  TAG_POINT_FORCE_UPDATE));
                                 CtiCCEventLogMsg* eventMsg = new CtiCCEventLogMsg(0, currentCapBank->getStatusPointId(), currentSubstationBus->getPAOId(), currentFeeder->getPAOId(), capBankStateUpdate, currentSubstationBus->getEventSequence(), CtiCCCapBank::CloseQuestionable, "Var: Multiple banks pending, CloseQuestionable", "cap control");
                                 eventMsg->setActionId(CCEventActionIdGen(currentCapBank->getStatusPointId()));
+                                eventMsg->setStateInfo(currentCapBank->getControlStatusQualityString());
                                 CtiCapController::getInstance()->getCCEventMsgQueueHandle().write(eventMsg);
 
                             }
@@ -2523,6 +2524,7 @@ void CtiCCSubstationBusStore::verifySubBusAndFeedersStates()
                                 CtiCapController::getInstance()->sendMessageToDispatch(new CtiPointDataMsg(currentCapBank->getStatusPointId(),CtiCCCapBank::OpenQuestionable,NormalQuality,StatusPointType, "cap control",  TAG_POINT_FORCE_UPDATE));
                                 CtiCCEventLogMsg* eventMsg = new CtiCCEventLogMsg(0, currentCapBank->getStatusPointId(), currentSubstationBus->getPAOId(), currentFeeder->getPAOId(), capBankStateUpdate, currentSubstationBus->getEventSequence(), CtiCCCapBank::OpenQuestionable, "Var: Multiple banks pending, OpenQuestionable", "cap control");
                                 eventMsg->setActionId(CCEventActionIdGen(currentCapBank->getStatusPointId()));
+                                eventMsg->setStateInfo(currentCapBank->getControlStatusQualityString());
                                 CtiCapController::getInstance()->getCCEventMsgQueueHandle().write(eventMsg);
                             }
                         }
@@ -2561,6 +2563,7 @@ void CtiCCSubstationBusStore::verifySubBusAndFeedersStates()
                             CtiCapController::getInstance()->sendMessageToDispatch(new CtiPointDataMsg(currentCapBank->getStatusPointId(),CtiCCCapBank::CloseQuestionable,NormalQuality,StatusPointType, "cap control",  TAG_POINT_FORCE_UPDATE));
                             CtiCCEventLogMsg* eventMsg = new CtiCCEventLogMsg(0, currentCapBank->getStatusPointId(), currentSubstationBus->getPAOId(), currentFeeder->getPAOId(), capBankStateUpdate, currentSubstationBus->getEventSequence(), CtiCCCapBank::CloseQuestionable, "Var: Feeder not recently controlled, CloseQuestionable", "cap control");
                             eventMsg->setActionId(CCEventActionIdGen(currentCapBank->getStatusPointId()));
+                            eventMsg->setStateInfo(currentCapBank->getControlStatusQualityString());
                             CtiCapController::getInstance()->getCCEventMsgQueueHandle().write(eventMsg);
                         }
                         else if( currentCapBank->getControlStatus() == CtiCCCapBank::OpenPending && currentCapBank->getStatusPointId() > 0)
@@ -2578,6 +2581,7 @@ void CtiCCSubstationBusStore::verifySubBusAndFeedersStates()
 
                             CtiCCEventLogMsg* eventMsg = new CtiCCEventLogMsg(0, currentCapBank->getStatusPointId(), currentSubstationBus->getPAOId(), currentFeeder->getPAOId(), capBankStateUpdate, currentSubstationBus->getEventSequence(), CtiCCCapBank::OpenQuestionable, "Var: Feeder not recently controlled, OpenQuestionable", "cap control");
                             eventMsg->setActionId(CCEventActionIdGen(currentCapBank->getStatusPointId()));
+                            eventMsg->setStateInfo(currentCapBank->getControlStatusQualityString());
                             CtiCapController::getInstance()->getCCEventMsgQueueHandle().write(eventMsg);
                         }
                     }
@@ -2642,6 +2646,7 @@ void CtiCCSubstationBusStore::verifySubBusAndFeedersStates()
 
                             CtiCCEventLogMsg* eventMsg = new CtiCCEventLogMsg(0, currentCapBank->getStatusPointId(), currentSubstationBus->getPAOId(), currentFeeder->getPAOId(), capBankStateUpdate, currentSubstationBus->getEventSequence(), CtiCCCapBank::CloseQuestionable, "Var: Sub not recently controlled, CloseQuestionable", "cap control");
                             eventMsg->setActionId(CCEventActionIdGen(currentCapBank->getStatusPointId()));
+                            eventMsg->setStateInfo(currentCapBank->getControlStatusQualityString());
                             CtiCapController::getInstance()->getCCEventMsgQueueHandle().write(eventMsg);
 
                         }
@@ -2660,6 +2665,7 @@ void CtiCCSubstationBusStore::verifySubBusAndFeedersStates()
                             
                             CtiCCEventLogMsg* eventMsg = new CtiCCEventLogMsg(0, currentCapBank->getStatusPointId(), currentSubstationBus->getPAOId(), currentFeeder->getPAOId(), capBankStateUpdate, currentSubstationBus->getEventSequence(), CtiCCCapBank::OpenQuestionable, "Var: Sub not recently controlled, OpenQuestionable", "cap control");
                             eventMsg->setActionId(CCEventActionIdGen(currentCapBank->getStatusPointId()));
+                            eventMsg->setStateInfo(currentCapBank->getControlStatusQualityString());
                             CtiCapController::getInstance()->getCCEventMsgQueueHandle().write(eventMsg);
                         }
                     }
@@ -3141,7 +3147,8 @@ bool CtiCCSubstationBusStore::InsertCCEventLogInDB(CtiCCEventLogMsg* msg)
                      << msg->getKvarAfter()   
                      << msg->getKvarChange()  
                      << msg->getIpAddress()
-                     << msg->getActionId();
+                     << msg->getActionId()
+                     << msg->getStateInfo();
 
             if( _CC_DEBUG & CC_DEBUG_DATABASE )
             {

@@ -2541,6 +2541,7 @@ void CtiCapController::pointDataMsg( long pointID, double value, unsigned qualit
                                    sendMessageToDispatch(new CtiPointDataMsg(currentCapBank->getStatusPointId(),currentCapBank->getControlStatus(),NormalQuality,StatusPointType, "Forced ccServer Update", TAG_POINT_FORCE_UPDATE));
                                    CtiCCEventLogMsg* eventMsg = new CtiCCEventLogMsg(0, currentCapBank->getStatusPointId(), currentSubstationBus->getPAOId(), currentFeeder->getPAOId(), capBankStateUpdate, currentSubstationBus->getEventSequence(), currentCapBank->getControlStatus(), text1, "cap control", 0, 0, 0, currentCapBank->getIpAddress());
                                    eventMsg->setActionId(CCEventActionIdGen(currentCapBank->getStatusPointId()));
+                                   eventMsg->setStateInfo(currentCapBank->getControlStatusQualityString());
                                    getCCEventMsgQueueHandle().write(eventMsg);
                                    currentCapBank->setLastStatusChangeTime(CtiTime());
                                 }
@@ -2815,6 +2816,7 @@ void CtiCapController::porterReturnMsg( long deviceId, const string& _commandStr
                                 sendMessageToDispatch(new CtiPointDataMsg(currentCapBank->getStatusPointId(),currentCapBank->getControlStatus(),NormalQuality,StatusPointType, "Forced ccServer Update", TAG_POINT_FORCE_UPDATE));
                                 CtiCCEventLogMsg* eventMsg = new CtiCCEventLogMsg(0, currentCapBank->getStatusPointId(), currentSubstationBus->getPAOId(), currentFeeder->getPAOId(), capBankStateUpdate, currentSubstationBus->getEventSequence(), currentCapBank->getControlStatus(), text1, "cap control", 0, 0, 0, currentCapBank->getIpAddress());
                                 eventMsg->setActionId(CCEventActionIdGen(currentCapBank->getStatusPointId()));
+                                eventMsg->setStateInfo(currentCapBank->getControlStatusQualityString());
                                 getCCEventMsgQueueHandle().write(eventMsg);
                                 currentCapBank->setLastStatusChangeTime(CtiTime());
                             }

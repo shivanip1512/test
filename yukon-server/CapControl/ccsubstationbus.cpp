@@ -4583,7 +4583,8 @@ BOOL CtiCCSubstationBus::capBankVerificationStatusUpdate(CtiMultiMsg_vec& pointC
                        currentCapBank->setLastStatusChangeTime(CtiTime());
 
                        INT actionId = CCEventActionIdGen(currentCapBank->getStatusPointId());
-                       ccEvents.push_back(new CtiCCEventLogMsg(0, currentCapBank->getStatusPointId(), getPAOId(), currentFeeder->getPAOId(), capBankStateUpdate, getEventSequence(), currentCapBank->getControlStatus(), text, "cap control verification", oldValue, newValue, change, currentCapBank->getIpAddress(), actionId));
+                       string stateInfo = currentCapBank->getControlStatusQualityString();
+                       ccEvents.push_back(new CtiCCEventLogMsg(0, currentCapBank->getStatusPointId(), getPAOId(), currentFeeder->getPAOId(), capBankStateUpdate, getEventSequence(), currentCapBank->getControlStatus(), text, "cap control verification", oldValue, newValue, change, currentCapBank->getIpAddress(), actionId, stateInfo));
 
                    }
                    else
@@ -9279,6 +9280,7 @@ const string CtiCCSubstationBus::IndividualFeederControlMethod   = "IndividualFe
 const string CtiCCSubstationBus::SubstationBusControlMethod      = "SubstationBus";
 const string CtiCCSubstationBus::BusOptimizedFeederControlMethod = "BusOptimizedFeeder";
 const string CtiCCSubstationBus::ManualOnlyControlMethod         = "ManualOnly";
+const string CtiCCSubstationBus::TimeOfDayMethod                 = "TimeOfDay";
 
 const string CtiCCSubstationBus::KVARControlUnits         = "KVAR";
 const string CtiCCSubstationBus::VoltControlUnits         = "Volts";

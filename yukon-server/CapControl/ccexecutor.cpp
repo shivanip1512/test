@@ -1699,7 +1699,12 @@ void CtiCCCommandExecutor::OpenCapBank()
                                 INT seqId = CCEventSeqIdGen();
                                 currentSubstationBus->setEventSequence(seqId);
                                 INT actionId = CCEventActionIdGen(currentCapBank->getStatusPointId()) + 1;
-                                ccEvents.push_back(new CtiCCEventLogMsg(0, currentCapBank->getStatusPointId(), currentSubstationBus->getPAOId(), currentFeeder->getPAOId(), capBankStateUpdate, currentSubstationBus->getEventSequence(), currentCapBank->getControlStatus(), text, _command->getUser(), kvarBefore, kvarAfter, kvarChange, currentCapBank->getIpAddress(), actionId));
+                                string stateInfo = currentCapBank->getControlStatusQualityString();
+                                
+                                ccEvents.push_back(new CtiCCEventLogMsg(0, currentCapBank->getStatusPointId(), currentSubstationBus->getPAOId(), 
+                                                                        currentFeeder->getPAOId(), capBankStateUpdate, currentSubstationBus->getEventSequence(), 
+                                                                        currentCapBank->getControlStatus(), text, _command->getUser(), kvarBefore, kvarAfter, kvarChange, 
+                                                                        currentCapBank->getIpAddress(), actionId, stateInfo));
 
                             }
                             else
@@ -1971,7 +1976,8 @@ void CtiCCCommandExecutor::CloseCapBank()
                                 INT seqId = CCEventSeqIdGen();
                                 currentSubstationBus->setEventSequence(seqId);
                                 INT actionId = CCEventActionIdGen(currentCapBank->getStatusPointId()) + 1;
-                                ccEvents.push_back(new CtiCCEventLogMsg(0, currentCapBank->getStatusPointId(), currentSubstationBus->getPAOId(), currentFeeder->getPAOId(), capBankStateUpdate, currentSubstationBus->getEventSequence(), currentCapBank->getControlStatus(), text, _command->getUser(), kvarBefore, kvarAfter, kvarChange, currentCapBank->getIpAddress(), actionId));
+                                string stateInfo = currentCapBank->getControlStatusQualityString();
+                                ccEvents.push_back(new CtiCCEventLogMsg(0, currentCapBank->getStatusPointId(), currentSubstationBus->getPAOId(), currentFeeder->getPAOId(), capBankStateUpdate, currentSubstationBus->getEventSequence(), currentCapBank->getControlStatus(), text, _command->getUser(), kvarBefore, kvarAfter, kvarChange, currentCapBank->getIpAddress(), actionId, stateInfo));
                             }
                             else
                             {
@@ -2611,7 +2617,9 @@ void CtiCCCommandExecutor::Flip7010Device()
                                 currentSubstationBus->setEventSequence(seqId);
 
                                 INT actionId = CCEventActionIdGen(currentCapBank->getStatusPointId()) + 1;
-                                ccEvents.push_back(new CtiCCEventLogMsg(0, currentCapBank->getStatusPointId(), currentSubstationBus->getPAOId(), currentFeeder->getPAOId(), capBankStateUpdate, currentSubstationBus->getEventSequence(), currentCapBank->getControlStatus(), text, _command->getUser(), kvarBefore, 0, 0, currentCapBank->getIpAddress(), actionId));
+                                string stateInfo = currentCapBank->getControlStatusQualityString();
+                                ccEvents.push_back(new CtiCCEventLogMsg(0, currentCapBank->getStatusPointId(), currentSubstationBus->getPAOId(), currentFeeder->getPAOId(), capBankStateUpdate, currentSubstationBus->getEventSequence(), currentCapBank->getControlStatus(), text,
+                                                                        _command->getUser(), kvarBefore, 0, 0, currentCapBank->getIpAddress(), actionId, stateInfo));
                             }
                             else
                             {
@@ -3848,7 +3856,9 @@ void CtiCCCommandExecutor::doConfirmImmediately(CtiCCSubstationBus* currentSubst
 
 
                         INT actionId = CCEventActionIdGen(currentCapBank->getStatusPointId());
-                        ccEvents.push_back(new CtiCCEventLogMsg(0, currentCapBank->getStatusPointId(), currentSubstationBus->getPAOId(), currentFeeder->getPAOId(), capBankStateUpdate, currentSubstationBus->getEventSequence(), currentCapBank->getControlStatus(), "Var: Forced Close by manual confirm, Close", _command->getUser(), kvarBefore, kvarAfter, kvarChange, currentCapBank->getIpAddress(), actionId));
+                        string stateInfo = currentCapBank->getControlStatusQualityString();
+                        ccEvents.push_back(new CtiCCEventLogMsg(0, currentCapBank->getStatusPointId(), currentSubstationBus->getPAOId(), currentFeeder->getPAOId(), capBankStateUpdate, currentSubstationBus->getEventSequence(), currentCapBank->getControlStatus(), "Var: Forced Close by manual confirm, Close", 
+                                                                _command->getUser(), kvarBefore, kvarAfter, kvarChange, currentCapBank->getIpAddress(), actionId, stateInfo));
 
                         currentCapBank->setBeforeVarsString(currentFeeder->createVarText(kvarBefore, 1.0));
                         currentCapBank->setAfterVarsString(" Forced Confirm ");
@@ -3891,7 +3901,9 @@ void CtiCCCommandExecutor::doConfirmImmediately(CtiCCSubstationBus* currentSubst
                         }
 
                         INT actionId = CCEventActionIdGen(currentCapBank->getStatusPointId());
-                        ccEvents.push_back(new CtiCCEventLogMsg(0, currentCapBank->getStatusPointId(), currentSubstationBus->getPAOId(), currentFeeder->getPAOId(), capBankStateUpdate, currentSubstationBus->getEventSequence(), currentCapBank->getControlStatus(), "Var: Forced Open by manual confirm, Open", _command->getUser(), kvarBefore, kvarAfter, kvarChange, currentCapBank->getIpAddress(), actionId));
+                        string stateInfo = currentCapBank->getControlStatusQualityString();
+                        ccEvents.push_back(new CtiCCEventLogMsg(0, currentCapBank->getStatusPointId(), currentSubstationBus->getPAOId(), currentFeeder->getPAOId(), capBankStateUpdate, currentSubstationBus->getEventSequence(), currentCapBank->getControlStatus(), "Var: Forced Open by manual confirm, Open",
+                                                                 _command->getUser(), kvarBefore, kvarAfter, kvarChange, currentCapBank->getIpAddress(), actionId, stateInfo));
 
                         currentCapBank->setBeforeVarsString(currentFeeder->createVarText(kvarBefore, 1.0));
                         currentCapBank->setAfterVarsString(" Forced Confirm ");
@@ -4027,7 +4039,9 @@ void CtiCCCommandExecutor::doConfirmImmediately(CtiCCSubstationBus* currentSubst
                                 }
 
                                 INT actionId = CCEventActionIdGen(currentCapBank->getStatusPointId());
-                                ccEvents.push_back(new CtiCCEventLogMsg(0, currentCapBank->getStatusPointId(), currentSubstationBus->getPAOId(), currentFeeder->getPAOId(), capBankStateUpdate, currentSubstationBus->getEventSequence(), currentCapBank->getControlStatus(), "Var: Forced Open by manual confirm, Open", _command->getUser(), kvarBefore, kvarAfter, kvarChange, currentCapBank->getIpAddress(), actionId));
+                                string stateInfo = currentCapBank->getControlStatusQualityString();
+                                ccEvents.push_back(new CtiCCEventLogMsg(0, currentCapBank->getStatusPointId(), currentSubstationBus->getPAOId(), currentFeeder->getPAOId(), capBankStateUpdate, currentSubstationBus->getEventSequence(), currentCapBank->getControlStatus(), "Var: Forced Open by manual confirm, Open",
+                                                                        _command->getUser(), kvarBefore, kvarAfter, kvarChange, currentCapBank->getIpAddress(), actionId, stateInfo));
                                 currentCapBank->setBeforeVarsString(currentFeeder->createVarText(kvarBefore, 1.0));
                                 currentCapBank->setAfterVarsString(" Forced Confirm ");
                                 currentCapBank->setPercentChangeString(" --- ");
@@ -4939,6 +4953,8 @@ void CtiCCPointDataMsgExecutor::Execute()
 
                                 CtiCCEventLogMsg* eventMsg = new CtiCCEventLogMsg(0, currentCapBank->getStatusPointId(), currentSubstationBus->getPAOId(), currentFeeder->getPAOId(), capBankStateUpdate, currentSubstationBus->getEventSequence(), currentCapBank->getControlStatus(), text, _pointDataMsg->getUser() );
                                 eventMsg->setActionId(CCEventActionIdGen(currentCapBank->getStatusPointId()));
+                                eventMsg->setStateInfo(currentCapBank->getControlStatusQualityString());
+
                                 CtiCapController::getInstance()->getCCEventMsgQueueHandle().write(eventMsg); 
                             } 
 

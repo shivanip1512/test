@@ -219,10 +219,11 @@ public:
 
     CtiCCEventLogMsg(LONG logId, LONG pointId, LONG subId, LONG feederId, LONG eventType, LONG seqId, LONG value, 
                      string text, string userName, DOUBLE kvarBefore= 0, DOUBLE kvarAfter = 0, DOUBLE kvarChange = 0, 
-                     string ipAddress = string("(N/A)"), LONG actionId = -1 ) : 
+                     string ipAddress = string("(N/A)"), LONG actionId = -1, string stateInfo = string("(N/A)")) : 
         _logId(logId), _timeStamp(CtiTime()), _pointId(pointId), _subId(subId),
         _feederId(feederId), _eventType(eventType), _seqId(seqId), _value(value), _text(text), _userName(userName),
-        _kvarBefore(kvarBefore), _kvarAfter(kvarAfter), _kvarChange(kvarChange), _ipAddress(ipAddress), _actionId(actionId) { }; //provided for polymorphic persitence only
+        _kvarBefore(kvarBefore), _kvarAfter(kvarAfter), _kvarChange(kvarChange), _ipAddress(ipAddress), 
+        _actionId(actionId), _stateInfo(stateInfo) { }; //provided for polymorphic persitence only
 
     LONG getLogId() const { return _logId; };
     CtiTime getTimeStamp() const { return _timeStamp; };
@@ -239,10 +240,13 @@ public:
     DOUBLE getKvarChange() const { return _kvarChange; };
     string getIpAddress() const { return _ipAddress; };
     LONG getActionId() const { return _actionId; };
+    string getStateInfo() const { return _stateInfo; };
 
 
     void setLogId(LONG id) { _logId = id; return;};
     void setActionId(LONG id) { _actionId = id; return;};
+    void setStateInfo(string stateInfo) { _stateInfo = stateInfo; return;};
+
 
 
     void restoreGuts(RWvistream&);
@@ -270,6 +274,7 @@ private:
     DOUBLE _kvarChange;
     string _ipAddress;
     LONG _actionId;
+    string _stateInfo;
     
 };
     

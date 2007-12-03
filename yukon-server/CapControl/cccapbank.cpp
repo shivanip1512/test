@@ -1240,6 +1240,56 @@ CtiCCCapBank& CtiCCCapBank::setControlStatusQuality(CtiCCControlStatusQaulity qu
     return *this;
 }
 
+string CtiCCCapBank::getControlStatusQualityString()
+{
+    string retString = "Normal";
+    switch (_controlStatusQuality)
+    {
+        case CC_Partial:
+        {
+            retString = "Partial";
+            break;
+        }
+       
+        case CC_Significant:
+        {
+            retString = "Significant";
+            break;
+       
+        }
+        case CC_AbnormalQuality:
+        {
+            retString = "Abnormal Quality";
+            break;
+        }
+        case CC_Fail:
+        {
+            retString = "Fail";
+            break;
+        }
+        case CC_CommFail:
+        {
+            retString = "Comm Fail";
+            break;
+        }
+        case CC_NoControl:
+        {
+            retString = "No Control";
+            break;
+        }
+        case CC_Normal:
+        default:
+        {
+            retString = "Normal";
+            break;
+        }
+    }
+
+    return retString;
+
+
+}
+
 
 CtiCCCapBank& CtiCCCapBank::setIpAddress(ULONG value)
 {
