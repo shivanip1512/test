@@ -2057,6 +2057,7 @@ void  CtiCommandParser::doParsePutConfigEmetcon(const string &_CmdStr)
                              " [0-9]+" \
                              " [0-9]+");
     static const boost::regex  re_interval("interval(s| lp| li)");  //  match "intervals", "interval lp" and "interval li"
+    static const boost::regex  re_thresholds("(outage|voltage) threshold " + str_num);
     static const boost::regex  re_multiplier("mult(iplier)? kyz *[0-9]+ [0-9]+(\\.[0-9]+)?");  //  match "mult kyz # #(.###)
     static const boost::regex  re_ied_class("ied class [0-9]+ [0-9]+");
     static const boost::regex  re_ied_scan ("ied scan [0-9]+ [0-9]+");
@@ -2254,6 +2255,22 @@ void  CtiCommandParser::doParsePutConfigEmetcon(const string &_CmdStr)
                 {
                     //  "all", "li", or "lp"
                     _cmd["interval"] = CtiParseValue(cmdtok());
+                }
+            }
+        }
+        if(CmdStr.contains(" threshold"))
+        {
+            if(!(token = CmdStr.match(re_thresholds)).empty())
+            {
+                CtiTokenizer cmdtok(token);
+
+                CtiString temp = cmdtok();
+
+                if( temp.contains("outage") )
+                {
+                    cmdtok();
+
+                    _cmd["outage_threshold"] = CtiParseValue( atoi( cmdtok().c_str() ) );
                 }
             }
         }
