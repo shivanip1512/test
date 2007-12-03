@@ -4,6 +4,7 @@ import java.sql.ResultSet;
 import java.sql.SQLException;
 import java.sql.Timestamp;
 import java.util.ArrayList;
+import java.util.Arrays;
 import java.util.List;
 import java.util.Set;
 
@@ -24,6 +25,7 @@ public class CapControlOperationsModel extends BareDatedReportModelBase<CapContr
     private Set<Integer> subbusIds;
     private Set<Integer> substationIds;
     private Set<Integer> areaIds;
+    private String[] statusQualities;
     
     public CapControlOperationsModel() {
     }
@@ -35,6 +37,7 @@ public class CapControlOperationsModel extends BareDatedReportModelBase<CapContr
         public String operation;
         public Timestamp confTime;
         public String confStatus;
+        public String bankStatusQuality;
         public String feederName;
         public Integer feederId;
         public String subName;
@@ -82,6 +85,7 @@ public class CapControlOperationsModel extends BareDatedReportModelBase<CapContr
                 row.operation = rs.getString("operation");
                 row.confTime = rs.getTimestamp("confTime");
                 row.confStatus = rs.getString("confStatus");
+                row.bankStatusQuality = rs.getString("bankStatusQuality");
                 row.feederName = rs.getString("feederName");
                 row.feederId = rs.getInt("feederId");
                 row.subName = rs.getString("subName");
@@ -103,7 +107,7 @@ public class CapControlOperationsModel extends BareDatedReportModelBase<CapContr
     public StringBuffer buildSQLStatement()
     {
         StringBuffer sql = new StringBuffer ("select yp3.paoName as cbcName, yp.paoName as bankName, el.datetime as opTime, el.text as operation, ");
-        sql.append("el2.datetime as confTime, el2.text as confStatus, yp1.paoName as feederName, yp1.paobjectId as feederId,  yp2.paoName as subName, ");
+        sql.append("el2.datetime as confTime, el2.text as confStatus, el2.capbankstateInfo as bankStatusQuality, yp1.paoName as feederName, yp1.paobjectId as feederId,  yp2.paoName as subName, ");
         sql.append("yp2.paobjectid as subBusId, ca.paoname as region, cb.bankSize as bankSize, cb.controllertype as protocol, p.value as ipAddress, ");
         sql.append("cbc.serialnumber as serialNum, da.slaveAddress as slaveAddress "); 
         sql.append("from ( select op.logid as oid,  min(aaa.confid) as cid  from (select logid, pointid from cceventlog where datetime > ? and datetime < ? and (text like '%Close sent,%' or text like '%Open sent,%' )) op ");
@@ -133,6 +137,9 @@ public class CapControlOperationsModel extends BareDatedReportModelBase<CapContr
         sql.append("left outer join ccsubstationsubbuslist sbb on sbb.substationbusid = yp2.paobjectid ");
         sql.append("left outer join ccsubareaassignment saa on saa.substationbusid = sbb.substationid  ");
  	 	sql.append("join yukonpaobject ca on ca.paobjectid = saa.areaid ");
+ 	 	String qualities = getQualities();
+ 	 	sql.append("where el2.capbankstateInfo in (" + qualities+ ") ");
+ 	 	
         
         String result = null;
         
@@ -164,12 +171,25 @@ public class CapControlOperationsModel extends BareDatedReportModelBase<CapContr
         }
         
         if (result != null) {
-            sql.append(" where ");
+            sql.append(" and ");
             sql.append(result);
         }
         
         sql.append(";");
         return sql;
+    }
+    
+    private String getQualities() {
+        String list = "";
+        for (int i = 0; i < statusQualities.length; i ++) {
+            list+="'";
+            list+=statusQualities[i];
+            list+="'";
+            if(i != statusQualities.length -1) {
+                list+=",";
+            }
+        }
+        return list;
     }
 
     public void setCapBankIdsFilter(Set<Integer> capBankIds) {
@@ -190,6 +210,10 @@ public class CapControlOperationsModel extends BareDatedReportModelBase<CapContr
     
     public void setAreaIdsFilter(Set<Integer> areaIds) {
         this.areaIds = areaIds;
+    }
+    
+    public void setStatusQualities(String[] statusQualities) {
+        this.statusQualities = statusQualities;
     }
     
 }

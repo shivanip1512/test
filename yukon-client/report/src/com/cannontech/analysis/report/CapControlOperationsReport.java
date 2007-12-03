@@ -12,21 +12,22 @@ import com.cannontech.analysis.tablemodel.CapControlOperationsModel;
 public class CapControlOperationsReport extends SimpleYukonReportBase {
     
     private static final ColumnLayoutData bodyColumns[] = new ColumnLayoutData[] {
-        new ColumnLayoutData("Cbc Name", "cbcName", 50),
-        new ColumnLayoutData("Op Time", "opTime", 48),
-        new ColumnLayoutData("Operation", "operation", 48),
-        new ColumnLayoutData("Conf Time", "confTime", 49),
-        new ColumnLayoutData("Conf Status", "confStatus", 49),
-        new ColumnLayoutData("Feeder Name", "feederName", 49),
-        new ColumnLayoutData("Feeder ID", "feederId", 49),
-        new ColumnLayoutData("Sub Name", "subName", 48),
-        new ColumnLayoutData("SubBus ID", "subBusId", 49),
-        new ColumnLayoutData("Area", "region", 49),
-        new ColumnLayoutData("Bank Size", "bankSize", 49),
-        new ColumnLayoutData("Protocol", "protocol", 49),
+        new ColumnLayoutData("Cbc Name", "cbcName", 45),
+        new ColumnLayoutData("Op Time", "opTime", 45),
+        new ColumnLayoutData("Operation", "operation", 45),
+        new ColumnLayoutData("Conf Time", "confTime", 45),
+        new ColumnLayoutData("Conf Status", "confStatus", 45),
+        new ColumnLayoutData("Status Quality", "bankStatusQuality", 45),
+        new ColumnLayoutData("Feeder Name", "feederName", 45),
+        new ColumnLayoutData("Feeder ID", "feederId", 45),
+        new ColumnLayoutData("Sub Name", "subName", 45),
+        new ColumnLayoutData("SubBus ID", "subBusId", 45),
+        new ColumnLayoutData("Area", "region", 45),
+        new ColumnLayoutData("Bank Size", "bankSize", 45),
+        new ColumnLayoutData("Protocol", "protocol", 45),
         new ColumnLayoutData("IP Address", "ipAddress", 45),
-        new ColumnLayoutData("Serial Num", "serialNum", 49),
-        new ColumnLayoutData("Slave Address", "slaveAddress", 50),
+        new ColumnLayoutData("Serial Num", "serialNum", 45),
+        new ColumnLayoutData("Slave Address", "slaveAddress", 45),
     };
 
     public CapControlOperationsReport(BareReportModel bareModel) {
