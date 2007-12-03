@@ -385,7 +385,7 @@ public class CapControlForm extends DBEditorForm implements ICapControlModel{
 	}
 
 	public void varPtTeeClick(ActionEvent ae) {
-		String val = (String) FacesContext.getCurrentInstance().getExternalContext().getRequestParameterMap().get("currentVarPointId");
+		String val = (String) FacesContext.getCurrentInstance().getExternalContext().getRequestParameterMap().get("ptId");
 		if (val == null) {
 			return;
         }

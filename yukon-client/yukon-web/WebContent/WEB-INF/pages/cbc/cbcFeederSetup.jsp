@@ -140,7 +140,7 @@
     <x:commandLink id="varPointSetNone" title="Do not use a point for the VAR value" 
     	styleClass="medStaticLabel"
         value="No Var Point" actionListener="#{capControlForm.varPtTeeClick}">
-    <f:param name="ptID" value="0"/>
+    <f:param name="ptId" value="0"/>
     </x:commandLink>
 	<f:verbatim>
     </fieldset>
