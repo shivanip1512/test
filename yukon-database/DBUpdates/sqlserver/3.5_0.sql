@@ -118,11 +118,6 @@ go
 insert into BillingFileFormats values(-25,'Itron Register Readings Export');
 go
 
-/* @error ignore-begin */
-insert into billingfileformats values(-26, 'SIMPLE_TOU_DeviceName');
-/* @error ignore-end */
-go
-
 alter table ActivityLog alter column Description varchar(240);
 go
 
