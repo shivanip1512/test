@@ -39,7 +39,7 @@ create table DYNAMICBILLINGFIELD  (
 )
 ;
 
-alter table BillingFileFormats ALTER COLUMN FormatType varchar(100);
+alter table BillingFileFormats modify FormatType varchar(100);
 go
 
 alter table BillingFileFormats ADD SystemFormat bit;
@@ -148,51 +148,51 @@ insert into DynamicCCSpecialArea (AreaId, Additionalflags) select areaid, 'NNNNN
 
 alter table DynamicCCFeeder add PhaseAValue float;
 update DynamicCCFeeder set PhaseAValue = 0;
-alter table DynamicCCFeeder alter column PhaseAValue float not null;
+alter table DynamicCCFeeder modify PhaseAValue float not null;
 
 alter table DynamicCCFeeder add PhaseBValue float;
 update DynamicCCFeeder set PhaseBValue = 0;
-alter table DynamicCCFeeder alter column PhaseBValue float not null;
+alter table DynamicCCFeeder modify PhaseBValue float not null;
 
 alter table DynamicCCFeeder add PhaseCValue float;
 update DynamicCCFeeder set PhaseCValue = 0;
-alter table DynamicCCFeeder alter column PhaseCValue float not null;
+alter table DynamicCCFeeder modify PhaseCValue float not null;
 
 alter table DynamicCCSubstationbus add PhaseAValue float;
 update DynamicCCSubstationbus set PhaseAValue = 0;
-alter table DynamicCCSubstationbus alter column PhaseAValue float not null;
+alter table DynamicCCSubstationbus modify PhaseAValue float not null;
 
 alter table DynamicCCSubstationbus add PhaseBValue float;
 update DynamicCCSubstationbus set PhaseBValue = 0;
-alter table DynamicCCSubstationbus alter column PhaseBValue float not null;
+alter table DynamicCCSubstationbus modify PhaseBValue float not null;
 
 alter table DynamicCCSubstationbus add PhaseCValue float;
 update DynamicCCSubstationbus set PhaseCValue = 0;
-alter table DynamicCCSubstationbus alter column PhaseCValue float not null;
+alter table DynamicCCSubstationbus modify PhaseCValue float not null;
 
 alter table CapControlFeeder add UsePhaseData char(1);
 update CapControlFeeder set UsePhaseData = 'N';
-alter table CapControlFeeder alter column UsePhaseData char(1) not null;
+alter table CapControlFeeder modify UsePhaseData char(1) not null;
 
 alter table CapControlFeeder add PhaseB numeric;
 update CapControlFeeder set PhaseB = 0;
-alter table CapControlFeeder alter column PhaseB numeric not null;
+alter table CapControlFeeder modify PhaseB numeric not null;
 
 alter table CapControlFeeder add PhaseC numeric;
 update CapControlFeeder set PhaseC = 0;
-alter table CapControlFeeder alter column PhaseC numeric not null;
+alter table CapControlFeeder modify PhaseC numeric not null;
 
 alter table CapControlSubstationbus add UsePhaseData char(1);
 update CapControlSubstationbus set UsePhaseData = 'N';
-alter table CapControlSubstationbus alter column UsePhaseData char(1) not null;
+alter table CapControlSubstationbus modify UsePhaseData char(1) not null;
 
 alter table CapControlSubstationbus add PhaseB numeric;
 update CapControlSubstationbus set PhaseB = 0;
-alter table CapControlSubstationbus alter column PhaseB numeric not null;
+alter table CapControlSubstationbus modify PhaseB numeric not null;
 
 alter table CapControlSubstationbus add PhaseC numeric;
 update CapControlSubstationbus set PhaseC = 0;
-alter table CapControlSubstationbus alter column PhaseC numeric not null;
+alter table CapControlSubstationbus modify PhaseC numeric not null;
 
 /************************************* 
 	END CAPCONTROL 4.0 CHANGES 
@@ -244,9 +244,9 @@ INSERT INTO State VALUES(-1, 9, 'High Limit 1', 9, 6 , 0);
 INSERT INTO State VALUES(-1, 10, 'High Limit 2', 10, 6 , 0);
 /* @error ignore-end */
 
-alter table ccfeederbanklist alter column controlorder float;
-alter table ccfeederbanklist alter column closeorder float;
-alter table ccfeederbanklist alter column triporder float;
+alter table ccfeederbanklist modify controlorder float;
+alter table ccfeederbanklist modify closeorder float;
+alter table ccfeederbanklist modify triporder float;
 
 update command set label = 'Turn Off Test Light' where commandid = -65;
 update command set label = 'Clear Comm Loss Counter' where commandid = -67;
@@ -314,7 +314,7 @@ alter table cceventlog add actionId numeric;
 go
 update cceventlog set actionId = -1;
 go
-alter table cceventlog alter column actionId numeric not null;
+alter table cceventlog modify actionId numeric not null;
 
 /* Begin YUK-4785 */
 drop table DEVICECONFIGURATIONDEVICEMAP cascade constraints;
@@ -834,18 +834,18 @@ alter table CCSTRATEGYTIMEOFDAY
 /* Start YUK-4763 */
 alter table DynamicCCFeeder add LastWattPointTime datetime;
 update DynamicCCFeeder set LastWattPointTime = '1990-01-01 00:00:00';
-alter table DynamicCCFeeder alter column LastWattPointTime datetime not null;
+alter table DynamicCCFeeder modify LastWattPointTime datetime not null;
 alter table DynamicCCFeeder add LastVoltPointTime datetime;
 update DynamicCCFeeder set LastVoltPointTime = '1990-01-01 00:00:00';
-alter table DynamicCCFeeder alter column LastVoltPointTime datetime not null;
+alter table DynamicCCFeeder modify LastVoltPointTime datetime not null;
 
 alter table DynamicCCSubstationbus add LastWattPointTime datetime;
 update DynamicCCSubstationbus set LastWattPointTime = '1990-01-01 00:00:00';
-alter table DynamicCCSubstationbus alter column LastWattPointTime datetime not null;
+alter table DynamicCCSubstationbus modify LastWattPointTime datetime not null;
 alter table DynamicCCSubstationbus add LastVoltPointTime datetime;
 update DynamicCCSubstationbus set LastVoltPointTime = '1990-01-01 00:00:00';
-alter table DynamicCCSubstationbus alter column LastVoltPointTime datetime not null;
-/* End YUK-4772*/
+alter table DynamicCCSubstationbus modify LastVoltPointTime datetime not null;
+/* End YUK-4763*/
 
 /* Start YUK-4759 */
 alter table SubstationToRouteMapping drop constraint FK_Sub_Rte_Map_RteID;
