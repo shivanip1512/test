@@ -369,6 +369,8 @@ public final static String getPAOTypeString(int type)
 			return STRING_RTC_ROUTE;
 
 		//capcontrol
+		case CAP_CONTROL_SUBSTATION:
+            return STRING_CAPCONTROL_SUBSTATION;
 		case CAP_CONTROL_SUBBUS:
 			return STRING_CAPCONTROL_SUBBUS;
 		case CAP_CONTROL_FEEDER:
