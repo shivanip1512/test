@@ -6,19 +6,21 @@
 *
 * PVCS KEYWORDS:
 * ARCHIVE      :  $Archive:   Z:/SOFTWAREARCHIVES/YUKON/DEVICECONFIGURATION/config_device.cpp-arc  $
-* REVISION     :  $Revision: 1.3 $
-* DATE         :  $Date: 2005/10/17 16:42:18 $
+* REVISION     :  $Revision: 1.4 $
+* DATE         :  $Date: 2007/12/03 21:15:54 $
 *
 * Copyright (c) 2005 Cannon Technologies Inc. All rights reserved.
 *-----------------------------------------------------------------------------*/
 #include "yukon.h"
 
 #include "config_device.h"
-#include "config_resolvers.h"
+#include <string>
+
 namespace Cti       {
 namespace Config    {
 
-CtiConfigDevice::CtiConfigDevice()
+CtiConfigDevice::CtiConfigDevice(long ID, string& name, string& type) :
+_id(ID), _name(name), _type(type)
 {
 }
 
@@ -26,38 +28,141 @@ CtiConfigDevice::~CtiConfigDevice()
 {
 }
 
-BaseSPtr CtiConfigDevice::getConfigFromType(CtiConfig_type type)
+// Inserts a value into the mapping, this is a protected function and is
+// not meant to be called by devices
+bool CtiConfigDevice::insertValue(string identifier, const string& value)
 {
-    LockGuard config_guard(_mux);
+    CtiToLower(identifier);
+    CtiHashKey insertKey = CtiHashKey(identifier);
 
-    BasePointerMap::iterator bcIterator = _baseConfigurations.find(type);
-    if(bcIterator != _baseConfigurations.end())
-    {
-        return ((*bcIterator).second);
-    }
-    else
-    {
-        return BaseSPtr();
-    }
+    std::pair<ConfigValueMap::iterator, bool> retVal = _configurationValues.insert(ConfigValueMap::value_type(insertKey, value));
+
+    return retVal.second;
 }
 
-void CtiConfigDevice::insertConfig(BaseSPtr configuration)
+// getValue will look for the key and set value to the value of that key.
+// returns true if successful.
+bool CtiConfigDevice::getValue(std::string key, string& value)
 {
-    LockGuard config_guard(_mux);
+    bool retVal = false;
+    CtiToLower(key);
+    CtiHashKey findKey = CtiHashKey(key);
+    value = string();
 
-    _baseConfigurations.insert(BasePointerMap::value_type(configuration->getType(), configuration));
+    ConfigValueMap::iterator iter = _configurationValues.find(key);
+
+    if( iter != _configurationValues.end() )
+    {
+        value = iter->second;
+        retVal = true;
+    }
+
+    return retVal;
 }
 
-string CtiConfigDevice::getAllOutputStrings()
+// getLongValue will look for the key and set value to the long value of that key.
+// returns true if successful.
+bool CtiConfigDevice::getLongValue(std::string key, long& value)
 {
-    string returnString = "";
-    LockGuard config_guard(_mux);
+    bool retVal = false;
+    CtiToLower(key);
+    CtiHashKey findKey = CtiHashKey(key);
+    value = std::numeric_limits<long>::min();
 
-    for(BasePointerMap::iterator confItr = _baseConfigurations.begin(); confItr!=_baseConfigurations.end(); confItr++)
+    ConfigValueMap::iterator iter = _configurationValues.find(findKey);
+
+    if( iter != _configurationValues.end() )
     {
-        returnString += confItr->second->getOutputStrings();
+        string tempStr = iter->second;
+
+        if(!tempStr.empty())
+        {
+            value = strtol(tempStr.data(),NULL,0);
+            retVal = true;
+        }
+        
     }
-    return returnString;
+    return retVal;
+}
+
+string CtiConfigDevice::getValueFromKey(std::string key)
+{
+    string retVal;
+    CtiToLower(key);
+    CtiHashKey findKey = CtiHashKey(key);
+
+    ConfigValueMap::iterator iter = _configurationValues.find(key);
+
+    if( iter != _configurationValues.end() )
+    {
+        retVal = iter->second;
+    }
+
+    return retVal;
+}
+
+long CtiConfigDevice::getLongValueFromKey(std::string key)
+{
+    long retVal = std::numeric_limits<long>::min();
+    CtiToLower(key);
+    CtiHashKey findKey = CtiHashKey(key);
+
+    ConfigValueMap::iterator iter = _configurationValues.find(findKey);
+
+    if( iter != _configurationValues.end() )
+    {
+        string tempStr = iter->second;
+
+        if(!tempStr.empty())
+        {
+            retVal = strtol(tempStr.data(),NULL,0);
+        }
+    }
+    return retVal;
+}
+
+double CtiConfigDevice::getFloatValueFromKey(std::string key)
+{
+    double retVal = std::numeric_limits<double>::min();
+    CtiToLower(key);
+    CtiHashKey findKey = CtiHashKey(key);
+
+    ConfigValueMap::iterator iter = _configurationValues.find(findKey);
+
+    if( iter != _configurationValues.end() )
+    {
+        string tempStr = iter->second;
+
+        if(!tempStr.empty())
+        {
+            retVal = atof(tempStr.data());
+        }
+    }
+    return retVal;
+}
+
+// Checks each key in the array to see if it exists. The strings in the array will be changed.
+bool CtiConfigDevice::checkValues(string stringArray[], unsigned int arrayLen)
+{
+    bool retVal = false;
+    if( arrayLen > 0 )
+    {
+        retVal = true; //This is temporary!
+
+        for( int i = 0; i < arrayLen; i++ )
+        {
+            CtiToLower(stringArray[i]);
+            CtiHashKey findKey = CtiHashKey(stringArray[i]);
+            ConfigValueMap::iterator iter = _configurationValues.find(findKey);
+
+            if( iter == _configurationValues.end() )
+            {
+                retVal = false;
+            }
+        }
+    }
+
+    return retVal;
 }
 
 }

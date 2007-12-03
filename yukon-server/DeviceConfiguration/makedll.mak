@@ -40,11 +40,8 @@ $(COMPILEBASE)\lib\ctibase.lib \
 $(COMPILEBASE)\lib\clrdump.lib
 
 DLLOBJS = \
-config_base.obj \
 config_device.obj \
-config_resolvers.obj \
-config_parts_mct.obj \
-config_parts_cbc.obj \
+config_strings.obj \
 
 
 CTIPROGS=\
@@ -104,34 +101,20 @@ id_dcdll.obj:    id_dcdll.cpp include\id_dcdll.h id_vinfo.h
 ######################################################################################
 
 #UPDATE#
-config_base.obj:	yukon.h precompiled.h ctidbgmem.h config_base.h \
-		logger.h dlldefs.h thread.h mutex.h guard.h numstr.h \
-		clrdump.h ctitime.h CtiPCPtrQueue.h utility.h queues.h \
-		types.h sorted_vector.h dllbase.h os2_2w32.h cticalls.h \
-		dsm2.h cticonnect.h netports.h config_resolvers.h
 config_device.obj:	yukon.h precompiled.h ctidbgmem.h config_device.h \
 		logger.h dlldefs.h thread.h mutex.h guard.h numstr.h \
 		clrdump.h ctitime.h CtiPCPtrQueue.h utility.h queues.h \
 		types.h sorted_vector.h dllbase.h os2_2w32.h cticalls.h \
-		dsm2.h cticonnect.h netports.h config_base.h \
-		config_resolvers.h
-config_parts_cbc.obj:	yukon.h precompiled.h ctidbgmem.h config_parts.h \
-		config_base.h logger.h dlldefs.h thread.h mutex.h guard.h \
-		numstr.h clrdump.h ctitime.h CtiPCPtrQueue.h utility.h \
-		queues.h types.h sorted_vector.h dllbase.h os2_2w32.h \
-		cticalls.h dsm2.h cticonnect.h netports.h config_resolvers.h \
-		rwutil.h boost_time.h
-config_parts_mct.obj:	yukon.h precompiled.h ctidbgmem.h config_parts.h \
-		config_base.h logger.h dlldefs.h thread.h mutex.h guard.h \
-		numstr.h clrdump.h ctitime.h CtiPCPtrQueue.h utility.h \
-		queues.h types.h sorted_vector.h dllbase.h os2_2w32.h \
-		cticalls.h dsm2.h cticonnect.h netports.h config_resolvers.h \
-		rwutil.h boost_time.h
+		dsm2.h cticonnect.h netports.h hashkey.h hash_functions.h
 config_resolvers.obj:	yukon.h precompiled.h ctidbgmem.h rwutil.h \
-		ctitime.h dlldefs.h boost_time.h config_resolvers.h logger.h \
-		thread.h mutex.h guard.h numstr.h clrdump.h CtiPCPtrQueue.h \
-		utility.h queues.h types.h sorted_vector.h dllbase.h \
-		os2_2w32.h cticalls.h dsm2.h cticonnect.h netports.h
+		ctitime.h dlldefs.h boost_time.h logger.h thread.h mutex.h \
+		guard.h numstr.h clrdump.h CtiPCPtrQueue.h utility.h queues.h \
+		types.h sorted_vector.h
+config_strings.obj:	yukon.h precompiled.h ctidbgmem.h \
+		config_data_cbc.h dllbase.h os2_2w32.h dlldefs.h types.h \
+		cticalls.h dsm2.h mutex.h guard.h numstr.h clrdump.h \
+		cticonnect.h netports.h config_data_mct.h
+config_test_a.obj:	yukon.h precompiled.h ctidbgmem.h config_test_a.h
 id_dcdll.obj:	yukon.h precompiled.h ctidbgmem.h id_dcdll.h utility.h \
 		ctitime.h dlldefs.h queues.h types.h numstr.h sorted_vector.h \
 		id_vinfo.h
