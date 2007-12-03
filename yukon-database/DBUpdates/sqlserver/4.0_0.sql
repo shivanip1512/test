@@ -341,19 +341,81 @@ update cceventlog set actionId = -1;
 go
 alter table cceventlog alter column actionId numeric not null;
 
-create table DeviceConfiguration (
-	DeviceConfigurationId           numeric              not null,
-	Name        varchar(30)          not null,
-	Type		varchar(30) not null
-)
+ 
+/* Begin YUK-4785 */
+if exists (select 1
+            from  sysobjects
+           where  id = object_id('DEVICECONFIGURATIONDEVICEMAP')
+            and   type = 'U')
+   drop table DEVICECONFIGURATIONDEVICEMAP;
+go
 
-create table DeviceConfigurationItem (
-	DeviceConfigurationItemId	numeric             not null,
-	DeviceConfigurationId		numeric             not null,
-	FieldName					varchar(30)			not null,
-	Value						varchar(30)         not null
+/*==============================================================*/
+/* Table: DEVICECONFIGURATIONDEVICEMAP                          */
+/*==============================================================*/
+create table DEVICECONFIGURATIONDEVICEMAP (
+   DeviceConfigurationId numeric              not null,
+   DeviceID             numeric              not null,
+   constraint PK_DEVICECONFIGURATIONDEVICEMA primary key (DeviceConfigurationId);
 )
+go
 
+alter table DEVICECONFIGURATIONDEVICEMAP
+   add constraint FK_DEVICECO_REFERENCE_YUKONPAO foreign key (DeviceID)
+      references YukonPAObject (PAObjectID)
+         on update cascade on delete cascade;
+go
+
+if exists (select 1
+            from  sysobjects
+           where  id = object_id('DEVICECONFIGURATION')
+            and   type = 'U')
+   drop table DEVICECONFIGURATION;
+go
+
+/*==============================================================*/
+/* Table: DEVICECONFIGURATION                                   */
+/*==============================================================*/
+create table DEVICECONFIGURATION (
+   DeviceConfigurationID numeric              not null,
+   Name                 varchar(30)          not null,
+   Type                 varchar(30)          not null,
+   constraint PK_DEVICECONFIGURATION primary key (DeviceConfigurationID);
+)
+go
+
+alter table DEVICECONFIGURATION
+   add constraint FK_DEVICECO_REF_DEVICECO2 foreign key (DeviceConfigurationID)
+      references DEVICECONFIGURATIONDEVICEMAP (DeviceConfigurationId)
+         on update cascade on delete cascade;
+go
+
+
+if exists (select 1
+            from  sysobjects
+           where  id = object_id('DEVICECONFIGURATIONITEM')
+            and   type = 'U')
+   drop table DEVICECONFIGURATIONITEM;
+go
+
+/*==============================================================*/
+/* Table: DEVICECONFIGURATIONITEM                               */
+/*==============================================================*/
+create table DEVICECONFIGURATIONITEM (
+   DEVICECONFIGURATIONITEMID numeric              not null,
+   DeviceConfigurationID numeric              not null,
+   FieldName            varchar(30)          not null,
+   Value                varchar(30)          not null,
+   constraint PK_DEVICECONFIGURATIONITEM primary key (DEVICECONFIGURATIONITEMID)
+);
+go
+
+alter table DEVICECONFIGURATIONITEM
+   add constraint FK_DEVICECO_REFERENCE_DEVICECO foreign key (DeviceConfigurationID)
+      references DEVICECONFIGURATION (DeviceConfigurationID)
+         on update cascade on delete cascade;
+go
+/* End YUK-4785 */
 insert into YukonRoleProperty values(-20013,-200,'Edit Device Config','false','Controls the ability to edit and create device configurations');
 insert into YukonRoleProperty values(-20014,-200,'View Device Config','true','Controls the ability to view existing device configurations');
 insert into YukonRoleProperty values(-20206,-202,'Enable Profile Request','true','Access to perform profile data request');

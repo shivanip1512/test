@@ -316,6 +316,23 @@ update cceventlog set actionId = -1;
 go
 alter table cceventlog alter column actionId numeric not null;
 
+/* Begin YUK-4785 */
+drop table DEVICECONFIGURATIONDEVICEMAP cascade constraints;
+
+/*==============================================================*/
+/* Table: DEVICECONFIGURATIONDEVICEMAP                          */
+/*==============================================================*/
+create table DEVICECONFIGURATIONDEVICEMAP  (
+   DeviceConfigurationId NUMBER                          not null,
+   DeviceID             NUMBER                          not null,
+   constraint PK_DEVICECONFIGURATIONDEVICEMA primary key (DeviceConfigurationId)
+);
+
+alter table DEVICECONFIGURATIONDEVICEMAP
+   add constraint FK_DEVICECO_REFERENCE_YUKONPAO foreign key (DeviceID)
+      references YukonPAObject (PAObjectID)
+      on delete cascade;
+
 drop table DEVICECONFIGURATION cascade constraints;
 
 /*==============================================================*/
@@ -324,11 +341,14 @@ drop table DEVICECONFIGURATION cascade constraints;
 create table DEVICECONFIGURATION  (
    DeviceConfigurationID NUMBER                          not null,
    Name                 VARCHAR2(30)                    not null,
-   Type                 VARCHAR2(30)                    not null
+   Type                 VARCHAR2(30)                    not null,
+   constraint PK_DEVICECONFIGURATION primary key (DeviceConfigurationID)
 );
 
 alter table DEVICECONFIGURATION
-   add constraint PK_DEVICECONFIGURATION primary key ();
+   add constraint FK_DEVICECO_REF_DEVICECO2 foreign key (DeviceConfigurationID)
+      references DEVICECONFIGURATIONDEVICEMAP (DeviceConfigurationId)
+      on delete cascade;
 
 drop table DEVICECONFIGURATIONITEM cascade constraints;
 
@@ -336,12 +356,19 @@ drop table DEVICECONFIGURATIONITEM cascade constraints;
 /* Table: DEVICECONFIGURATIONITEM                               */
 /*==============================================================*/
 create table DEVICECONFIGURATIONITEM  (
-   DeviceConfigurationItemId NUMBER                          not null,
+   DEVICECONFIGURATIONITEMID NUMBER                          not null,
    DeviceConfigurationID NUMBER                          not null,
    FieldName            VARCHAR2(30)                    not null,
-   Value                VARCHAR2(30)                    not null
+   Value                VARCHAR2(30)                    not null,
+   constraint PK_DEVICECONFIGURATIONITEM primary key (DEVICECONFIGURATIONITEMID)
 );
 
+alter table DEVICECONFIGURATIONITEM
+   add constraint FK_DEVICECO_REFERENCE_DEVICECO foreign key (DeviceConfigurationID)
+      references DEVICECONFIGURATION (DeviceConfigurationID)
+      on delete cascade;
+      
+/* End YUK-4785
 insert into YukonRoleProperty values(-20013,-200,'Edit Device Config','false','Controls the ability to edit and create device configurations');
 insert into YukonRoleProperty values(-20014,-200,'View Device Config','true','Controls the ability to view existing device configurations');
 insert into YukonRoleProperty values(-20206,-202,'Enable Profile Request','true','Access to perform profile data request');

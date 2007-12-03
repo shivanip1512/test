@@ -1,14 +1,8 @@
 /*==============================================================*/
 /* Database name:  YukonDatabase                                */
 /* DBMS name:      Microsoft SQL Server 2000                    */
-/* Created on:     11/26/2007 4:37:40 PM                        */
+/* Created on:     12/2/2007 11:49:03 PM                        */
 /*==============================================================*/
-
-
-/* @error ignore-begin */
-set define off;
-/* @error ignore-end */
-
 
 
 if exists (select 1
@@ -667,6 +661,13 @@ if exists (select 1
            where  id = object_id('DEVICECONFIGURATION')
             and   type = 'U')
    drop table DEVICECONFIGURATION
+go
+
+if exists (select 1
+            from  sysobjects
+           where  id = object_id('DEVICECONFIGURATIONDEVICEMAP')
+            and   type = 'U')
+   drop table DEVICECONFIGURATIONDEVICEMAP
 go
 
 if exists (select 1
@@ -3505,7 +3506,18 @@ go
 create table DEVICECONFIGURATION (
    DeviceConfigurationID numeric              not null,
    Name                 varchar(30)          not null,
-   Type                 varchar(30)          not null
+   Type                 varchar(30)          not null,
+   constraint PK_DEVICECONFIGURATION primary key (DeviceConfigurationID)
+)
+go
+
+/*==============================================================*/
+/* Table: DEVICECONFIGURATIONDEVICEMAP                          */
+/*==============================================================*/
+create table DEVICECONFIGURATIONDEVICEMAP (
+   DeviceConfigurationId numeric              not null,
+   DeviceID             numeric              not null,
+   constraint PK_DEVICECONFIGURATIONDEVICEMA primary key (DeviceConfigurationId)
 )
 go
 
@@ -3516,7 +3528,8 @@ create table DEVICECONFIGURATIONITEM (
    DEVICECONFIGURATIONITEMID numeric              not null,
    DeviceConfigurationID numeric              not null,
    FieldName            varchar(30)          not null,
-   Value                varchar(30)          not null
+   Value                varchar(30)          not null,
+   constraint PK_DEVICECONFIGURATIONITEM primary key (DEVICECONFIGURATIONITEMID)
 )
 go
 
@@ -10581,6 +10594,24 @@ go
 alter table DEVICECARRIERSETTINGS
    add constraint SYS_C0013216 foreign key (DEVICEID)
       references DEVICE (DEVICEID)
+go
+
+alter table DEVICECONFIGURATION
+   add constraint FK_DEVICECO_REF_DEVICECO2 foreign key (DeviceConfigurationID)
+      references DEVICECONFIGURATIONDEVICEMAP (DeviceConfigurationId)
+         on update cascade on delete cascade
+go
+
+alter table DEVICECONFIGURATIONDEVICEMAP
+   add constraint FK_DEVICECO_REFERENCE_YUKONPAO foreign key (DeviceID)
+      references YukonPAObject (PAObjectID)
+         on update cascade on delete cascade
+go
+
+alter table DEVICECONFIGURATIONITEM
+   add constraint FK_DEVICECO_REFERENCE_DEVICECO foreign key (DeviceConfigurationID)
+      references DEVICECONFIGURATION (DeviceConfigurationID)
+         on update cascade on delete cascade
 go
 
 alter table DEVICEDIALUPSETTINGS

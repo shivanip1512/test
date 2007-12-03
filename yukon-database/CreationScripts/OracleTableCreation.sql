@@ -1,12 +1,11 @@
 /*==============================================================*/
 /* Database name:  YukonDatabase                                */
 /* DBMS name:      ORACLE Version 9i                            */
-/* Created on:     11/26/2007 4:38:37 PM                        */
+/* Created on:     12/2/2007 11:47:18 PM                        */
 /*==============================================================*/
 
 
-
--- Integrity package declaration
+set define off;-- Integrity package declaration
 create or replace package IntegrityPackage AS
  procedure InitNestLevel;
  function GetNestLevel return number;
@@ -52,12 +51,6 @@ create or replace package body IntegrityPackage AS
 
  end IntegrityPackage;
 /
-
-
-/* @error ignore-begin */
-set define off;
-/* @error ignore-end */
-
 
 
 drop trigger TRIGGER_1
@@ -340,6 +333,9 @@ drop table DEVICECARRIERSETTINGS cascade constraints
 ;
 
 drop table DEVICECONFIGURATION cascade constraints
+;
+
+drop table DEVICECONFIGURATIONDEVICEMAP cascade constraints
 ;
 
 drop table DEVICECONFIGURATIONITEM cascade constraints
@@ -2450,7 +2446,18 @@ create table DEVICECARRIERSETTINGS  (
 create table DEVICECONFIGURATION  (
    DeviceConfigurationID NUMBER                          not null,
    Name                 VARCHAR2(30)                    not null,
-   Type                 VARCHAR2(30)                    not null
+   Type                 VARCHAR2(30)                    not null,
+   constraint PK_DEVICECONFIGURATION primary key (DeviceConfigurationID)
+)
+;
+
+/*==============================================================*/
+/* Table: DEVICECONFIGURATIONDEVICEMAP                          */
+/*==============================================================*/
+create table DEVICECONFIGURATIONDEVICEMAP  (
+   DeviceConfigurationId NUMBER                          not null,
+   DeviceID             NUMBER                          not null,
+   constraint PK_DEVICECONFIGURATIONDEVICEMA primary key (DeviceConfigurationId)
 )
 ;
 
@@ -2461,7 +2468,8 @@ create table DEVICECONFIGURATIONITEM  (
    DEVICECONFIGURATIONITEMID NUMBER                          not null,
    DeviceConfigurationID NUMBER                          not null,
    FieldName            VARCHAR2(30)                    not null,
-   Value                VARCHAR2(30)                    not null
+   Value                VARCHAR2(30)                    not null,
+   constraint PK_DEVICECONFIGURATIONITEM primary key (DEVICECONFIGURATIONITEMID)
 )
 ;
 
@@ -9526,6 +9534,24 @@ alter table DEVICE2WAYFLAGS
 alter table DEVICECARRIERSETTINGS
    add constraint SYS_C0013216 foreign key (DEVICEID)
       references DEVICE (DEVICEID)
+;
+
+alter table DEVICECONFIGURATION
+   add constraint FK_DEVICECO_REF_DEVICECO2 foreign key (DeviceConfigurationID)
+      references DEVICECONFIGURATIONDEVICEMAP (DeviceConfigurationId)
+      on delete cascade
+;
+
+alter table DEVICECONFIGURATIONDEVICEMAP
+   add constraint FK_DEVICECO_REFERENCE_YUKONPAO foreign key (DeviceID)
+      references YukonPAObject (PAObjectID)
+      on delete cascade
+;
+
+alter table DEVICECONFIGURATIONITEM
+   add constraint FK_DEVICECO_REFERENCE_DEVICECO foreign key (DeviceConfigurationID)
+      references DEVICECONFIGURATION (DeviceConfigurationID)
+      on delete cascade
 ;
 
 alter table DEVICEDIALUPSETTINGS
