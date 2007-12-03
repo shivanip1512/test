@@ -15,7 +15,6 @@ import java.io.StringWriter;
 import java.lang.management.ManagementFactory;
 import java.lang.reflect.Field;
 import java.lang.reflect.Modifier;
-import java.net.HttpURLConnection;
 import java.net.InetAddress;
 import java.net.NetworkInterface;
 import java.net.SocketException;
@@ -49,6 +48,7 @@ import org.springframework.util.FileCopyUtils;
 import com.cannontech.clientutils.CTILogger;
 import com.cannontech.common.login.ClientSession;
 import com.cannontech.common.version.VersionTools;
+import com.cannontech.core.dao.NotFoundException;
 import com.cannontech.database.data.lite.LiteComparators;
 
 public final class CtiUtilities 
@@ -1732,18 +1732,7 @@ public static double convertTemperature(double temperature, String fromUnit, Str
         if (fileList != null && fileList.length > 0) {
             return fileList[0].getName();
         }
-        return null;
-    }
-    
-    public static String getJREDownloadURL() {
-        try {
-            String urlString = "http://www.java.com/getjava/";
-            HttpURLConnection connection = (HttpURLConnection) new URL(urlString).openConnection();
-            if (connection.getResponseCode() == HttpURLConnection.HTTP_OK) {
-                return urlString;
-            }
-        } catch (java.io.IOException ignore) { }
-        return "http://java.sun.com";
+        throw new NotFoundException("JRE Installer file missing!");
     }
     
     private static String getJvmInputArgs() {

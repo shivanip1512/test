@@ -34,6 +34,7 @@ public class JwsMenuController extends AbstractController implements Initializin
         this.view = view;
     }
 
+    @SuppressWarnings("unchecked")
     @Override
     protected ModelAndView handleRequestInternal(HttpServletRequest request,
                                                  HttpServletResponse response) throws Exception {
@@ -45,15 +46,11 @@ public class JwsMenuController extends AbstractController implements Initializin
         String jreInstaller = CtiUtilities.getJREInstaller();
         mav.addObject("jreInstaller", jreInstaller);
         
-        if (jreInstaller == null) {
-            String jreDownloadURL = CtiUtilities.getJREDownloadURL();
-            mav.addObject("jreDownloadURL", jreDownloadURL);
-        }
-        
         mav.addObject("jnlpList", filteredList);
         return mav;
     }
     
+    @SuppressWarnings("unchecked")
     public void afterPropertiesSet() throws Exception {
         ApplicationContext context = getApplicationContext();
         Map beansOfType = context.getBeansOfType(JnlpController.class);

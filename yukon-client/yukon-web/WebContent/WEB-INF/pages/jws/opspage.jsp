@@ -25,14 +25,7 @@ If you think Java is already installed, you may also attempt to start the
 application.
 </div>
 <div id="javaWebStartLinks" style="text-align:center;padding: 15px;">
-<c:choose>
-    <c:when test='${jreInstaller != null}'>
         <a href="<c:url value="/spring/static/jre/${jreInstaller}"/>" onclick="jwsClosePopup()">Install Java</a>    
-    </c:when>
-    <c:otherwise>
-        <a href="${jreDownloadURL}" onclick="jwsClosePopup()">Install Java</a>
-    </c:otherwise>
-</c:choose>
 &nbsp;&nbsp;&nbsp;&nbsp;&nbsp;
 <a href="javascript:jwsRelaunchCurrent()">Relaunch Application</a>
 </div>
