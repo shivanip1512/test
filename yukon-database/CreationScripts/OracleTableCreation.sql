@@ -1,7 +1,7 @@
 /*==============================================================*/
 /* Database name:  YukonDatabase                                */
 /* DBMS name:      ORACLE Version 9i                            */
-/* Created on:     12/3/2007 1:26:41 PM                         */
+/* Created on:     12/3/2007 1:35:22 PM                         */
 /*==============================================================*/
 
 
@@ -1849,7 +1849,7 @@ create table CapControlStrategy  (
    OffPkPFSetPoint      FLOAT                           not null,
    IntegrateFlag        CHAR(1)                         not null,
    IntegratePeriod      NUMBER                          not null,
-   DayFallBack          CHAR(1)                         not null,
+   LikeDayFallBack      CHAR(1)                         not null,
    constraint PK_CAPCONTROLSTRAT primary key (StrategyID)
 )
 ;
