@@ -8,16 +8,12 @@
 *
 * PVCS KEYWORDS:
 * ARCHIVE      :  $Archive:   Z:/SOFTWAREARCHIVES/YUKON/RTDB/dev_mct4xx-arc  $
-* REVISION     :  $Revision: 1.69 $
-* DATE         :  $Date: 2007/10/30 13:48:09 $
+* REVISION     :  $Revision: 1.70 $
+* DATE         :  $Date: 2007/12/03 17:23:32 $
 *
 * Copyright (c) 2005 Cannon Technologies Inc. All rights reserved.
 *-----------------------------------------------------------------------------*/
 #include "yukon.h"
-
-
-#include <rw\re.h>
-#undef mask_                // Stupid RogueWave re.h
 
 #include <boost/regex.hpp>
 #include <limits>
@@ -3297,6 +3293,10 @@ INT CtiDeviceMCT4xx::decodeGetValuePeakDemand(INMESS *InMessage, CtiTime &TimeNo
     {
         pointoffset = 2;
     }
+    else if( parse.getiValue("channel") == 3 )
+    {
+        pointoffset = 3;
+    }
 
     if( parse.getFlags() & (CMD_FLAG_GV_RATEMASK ^ CMD_FLAG_GV_RATET) )
     {
@@ -3313,6 +3313,8 @@ INT CtiDeviceMCT4xx::decodeGetValuePeakDemand(INMESS *InMessage, CtiTime &TimeNo
     else if( parse.getFlags() & CMD_FLAG_GV_RATEB )  key_peak_timestamp = CtiTableDynamicPaoInfo::Key_FrozenRateBPeakTimestamp;
     else if( parse.getFlags() & CMD_FLAG_GV_RATEC )  key_peak_timestamp = CtiTableDynamicPaoInfo::Key_FrozenRateCPeakTimestamp;
     else if( parse.getFlags() & CMD_FLAG_GV_RATED )  key_peak_timestamp = CtiTableDynamicPaoInfo::Key_FrozenRateDPeakTimestamp;
+    else if( parse.getiValue("channel") == 2 )       key_peak_timestamp = CtiTableDynamicPaoInfo::Key_FrozenDemand2PeakTimestamp;
+    else if( parse.getiValue("channel") == 3 )       key_peak_timestamp = CtiTableDynamicPaoInfo::Key_FrozenDemand3PeakTimestamp;
     else                                             key_peak_timestamp = CtiTableDynamicPaoInfo::Key_FrozenDemandPeakTimestamp;
 
     if( !(status = decodeCheckErrorReturn(InMessage, retList, outList)) )
@@ -3484,14 +3486,25 @@ INT CtiDeviceMCT4xx::decodeGetValuePeakDemand(INMESS *InMessage, CtiTime &TimeNo
                 }
             }
 
+            string peak_demand_str   = "Peak Demand",
+                   meter_reading_str = "Meter Reading";
+
+            if( parse.getiValue("channel") > 1 )
+            {
+                string channel_str = "Channel " + CtiNumStr(parse.getiValue("channel")) + " ";
+
+                peak_demand_str   = channel_str + peak_demand_str;
+                meter_reading_str = channel_str + meter_reading_str;
+            }
+
             if( kw_valid )
             {
                 insertPointDataReport(DemandAccumulatorPointType, pointoffset + PointOffset_PeakOffset,
-                                      ReturnMsg, pi_kw, "Peak Demand", kw_time);
+                                      ReturnMsg, pi_kw, peak_demand_str, kw_time);
             }
 
             insertPointDataReport(PulseAccumulatorPointType, pointoffset,
-                                  ReturnMsg, pi_kwh, "Meter Reading", kwh_time, 0.1);
+                                  ReturnMsg, pi_kwh, meter_reading_str, kwh_time, 0.1);
         }
 
         retMsgHandler( InMessage->Return.CommandStr, status, ReturnMsg, vgList, retList );
