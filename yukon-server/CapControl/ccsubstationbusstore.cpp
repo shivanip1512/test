@@ -3279,7 +3279,7 @@ void CtiCCSubstationBusStore::reloadStrategyFromDataBase(long strategyId, map< l
                     currentCCStrategy = CtiCCStrategyPtr(new CtiCCStrategy(rdr));
                     strategy_map->insert(make_pair(currentCCStrategy->getStrategyId(),currentCCStrategy));
                 }
-                reloadTimeOfDayStrategyFromDataBase(strategyId, strategy_map);
+                //reloadTimeOfDayStrategyFromDataBase(strategyId, strategy_map);
 
                 if (strategyId > 0)
                 {    
