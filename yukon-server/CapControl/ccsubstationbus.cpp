@@ -1318,6 +1318,11 @@ CtiCCSubstationBus& CtiCCSubstationBus::setLikeDayFallBack(BOOL flag)
 ---------------------------------------------------------------------------*/
 CtiCCSubstationBus& CtiCCSubstationBus::setIVControlTot(DOUBLE value)
 {
+    if ( _iVControlTot != value)
+    {
+        _dirty = TRUE;
+    }
+
     _iVControlTot = value;
     return *this;
 }
@@ -1328,6 +1333,10 @@ CtiCCSubstationBus& CtiCCSubstationBus::setIVControlTot(DOUBLE value)
 ---------------------------------------------------------------------------*/
 CtiCCSubstationBus& CtiCCSubstationBus::setIVCount(LONG value)
 {
+    if (_iVCount != value)
+    {
+        _dirty = TRUE;
+    }
     _iVCount = value;
     return *this;
 }
@@ -1338,6 +1347,11 @@ CtiCCSubstationBus& CtiCCSubstationBus::setIVCount(LONG value)
 ---------------------------------------------------------------------------*/
 CtiCCSubstationBus& CtiCCSubstationBus::setIWControlTot(DOUBLE value)
 {
+    if (_iWControlTot != value)
+    {
+        _dirty = TRUE;
+    }
+
     _iWControlTot = value;
     return *this;
 }
@@ -1412,6 +1426,10 @@ CtiCCSubstationBus& CtiCCSubstationBus::setPhaseCId(LONG pointid)
 ---------------------------------------------------------------------------*/
 CtiCCSubstationBus& CtiCCSubstationBus::setPhaseAValue(DOUBLE value)
 {
+    if (_phaseAvalue != value)
+    {
+        _dirty = TRUE;
+    }
     _phaseAvalue = value;
     return *this;
 }
@@ -1423,6 +1441,10 @@ CtiCCSubstationBus& CtiCCSubstationBus::setPhaseAValue(DOUBLE value)
 ---------------------------------------------------------------------------*/
 CtiCCSubstationBus& CtiCCSubstationBus::setPhaseBValue(DOUBLE value)
 {
+    if (_phaseBvalue != value)
+    {
+        _dirty = TRUE;
+    }
     _phaseBvalue = value;
     return *this;
 }
@@ -1436,6 +1458,10 @@ CtiCCSubstationBus& CtiCCSubstationBus::setPhaseBValue(DOUBLE value)
 ---------------------------------------------------------------------------*/
 CtiCCSubstationBus& CtiCCSubstationBus::setPhaseCValue(DOUBLE value)
 {
+    if (_phaseCvalue != value)
+    {
+        _dirty = TRUE;
+    }
     _phaseCvalue = value;
     return *this;
 }

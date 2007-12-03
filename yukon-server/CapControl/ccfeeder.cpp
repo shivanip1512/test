@@ -671,6 +671,7 @@ BOOL CtiCCFeeder::getNewPointDataReceivedFlag() const
 ---------------------------------------------------------------------------*/
 const CtiTime& CtiCCFeeder::getLastCurrentVarPointUpdateTime() const
 {
+
     return _lastcurrentvarpointupdatetime;
 }
 
@@ -4798,6 +4799,14 @@ CtiCCFeeder& CtiCCFeeder::setLikeDayFallBack(BOOL flag)
 ---------------------------------------------------------------------------*/
 CtiCCFeeder& CtiCCFeeder::setIVControlTot(DOUBLE value)
 {
+    if( _iVControlTot != value )
+    {
+        /*{
+            CtiLockGuard<CtiLogger> doubt_guard(dout);
+            dout << CtiTime() << " - _dirty = TRUE  " << __FILE__ << " (" << __LINE__ << ")" << endl;
+        }*/
+        _dirty = TRUE;
+    }
     _iVControlTot = value;
     return *this;
 }
@@ -4808,6 +4817,14 @@ CtiCCFeeder& CtiCCFeeder::setIVControlTot(DOUBLE value)
 ---------------------------------------------------------------------------*/
 CtiCCFeeder& CtiCCFeeder::setIVCount(LONG value)
 {
+    if( _iVCount != value )
+    {
+        /*{
+            CtiLockGuard<CtiLogger> doubt_guard(dout);
+            dout << CtiTime() << " - _dirty = TRUE  " << __FILE__ << " (" << __LINE__ << ")" << endl;
+        }*/
+        _dirty = TRUE;
+    }
     _iVCount = value;
     return *this;
 }
@@ -4818,6 +4835,14 @@ CtiCCFeeder& CtiCCFeeder::setIVCount(LONG value)
 ---------------------------------------------------------------------------*/
 CtiCCFeeder& CtiCCFeeder::setIWControlTot(DOUBLE value)
 {
+    if( _iWControlTot != value )
+    {
+        /*{
+            CtiLockGuard<CtiLogger> doubt_guard(dout);
+            dout << CtiTime() << " - _dirty = TRUE  " << __FILE__ << " (" << __LINE__ << ")" << endl;
+        }*/
+        _dirty = TRUE;
+    }
     _iWControlTot = value;
     return *this;
 }
@@ -4828,6 +4853,14 @@ CtiCCFeeder& CtiCCFeeder::setIWControlTot(DOUBLE value)
 ---------------------------------------------------------------------------*/
 CtiCCFeeder& CtiCCFeeder::setIWCount(LONG value)
 {
+    if( _iWCount != value )
+    {
+        /*{
+            CtiLockGuard<CtiLogger> doubt_guard(dout);
+            dout << CtiTime() << " - _dirty = TRUE  " << __FILE__ << " (" << __LINE__ << ")" << endl;
+        }*/
+        _dirty = TRUE;
+    }
     _iWCount = value;
     return *this;
 }
@@ -4838,6 +4871,15 @@ CtiCCFeeder& CtiCCFeeder::setIWCount(LONG value)
 ---------------------------------------------------------------------------*/
 CtiCCFeeder& CtiCCFeeder::setIVControl(DOUBLE value)
 {
+
+    if( _iVControl != value )
+    {
+        /*{
+            CtiLockGuard<CtiLogger> doubt_guard(dout);
+            dout << CtiTime() << " - _dirty = TRUE  " << __FILE__ << " (" << __LINE__ << ")" << endl;
+        }*/
+        _dirty = TRUE;
+    }
     _iVControl = value;
     return *this;
 }/*---------------------------------------------------------------------------
@@ -4847,6 +4889,14 @@ CtiCCFeeder& CtiCCFeeder::setIVControl(DOUBLE value)
 ---------------------------------------------------------------------------*/
 CtiCCFeeder& CtiCCFeeder::setIWControl(DOUBLE value)
 {
+    if( _iWControl != value )
+    {
+        /*{
+            CtiLockGuard<CtiLogger> doubt_guard(dout);
+            dout << CtiTime() << " - _dirty = TRUE  " << __FILE__ << " (" << __LINE__ << ")" << endl;
+        }*/
+        _dirty = TRUE;
+    }
     _iWControl = value;
     return *this;
 }
@@ -4890,6 +4940,14 @@ CtiCCFeeder& CtiCCFeeder::setPhaseCId(LONG pointid)
 ---------------------------------------------------------------------------*/
 CtiCCFeeder& CtiCCFeeder::setPhaseAValue(DOUBLE value)
 {
+    if( _phaseAvalue != value )
+    {
+        /*{
+            CtiLockGuard<CtiLogger> doubt_guard(dout);
+            dout << CtiTime() << " - _dirty = TRUE  " << __FILE__ << " (" << __LINE__ << ")" << endl;
+        }*/
+        _dirty = TRUE;
+    }
     _phaseAvalue = value;
     return *this;
 }
@@ -4900,6 +4958,14 @@ CtiCCFeeder& CtiCCFeeder::setPhaseAValue(DOUBLE value)
 ---------------------------------------------------------------------------*/
 CtiCCFeeder& CtiCCFeeder::setPhaseBValue(DOUBLE value)
 {
+    if( _phaseBvalue != value )
+    {
+        /*{
+            CtiLockGuard<CtiLogger> doubt_guard(dout);
+            dout << CtiTime() << " - _dirty = TRUE  " << __FILE__ << " (" << __LINE__ << ")" << endl;
+        }*/
+        _dirty = TRUE;
+    }
     _phaseBvalue = value;
     return *this;
 }
@@ -4910,6 +4976,14 @@ CtiCCFeeder& CtiCCFeeder::setPhaseBValue(DOUBLE value)
 ---------------------------------------------------------------------------*/
 CtiCCFeeder& CtiCCFeeder::setPhaseCValue(DOUBLE value)
 {
+    if( _phaseCvalue != value )
+    {
+        /*{
+            CtiLockGuard<CtiLogger> doubt_guard(dout);
+            dout << CtiTime() << " - _dirty = TRUE  " << __FILE__ << " (" << __LINE__ << ")" << endl;
+        }*/
+        _dirty = TRUE;
+    }
     _phaseCvalue = value;
     return *this;
 }
