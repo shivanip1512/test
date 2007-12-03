@@ -8,8 +8,8 @@
 *
 * PVCS KEYWORDS:
 * ARCHIVE      :  $Archive:   Z:/SOFTWAREARCHIVES/YUKON/RTDB/dev_mct.cpp-arc  $
-* REVISION     :  $Revision: 1.123 $
-* DATE         :  $Date: 2007/11/12 17:06:18 $
+* REVISION     :  $Revision: 1.124 $
+* DATE         :  $Date: 2007/12/03 21:43:22 $
 *
 * Copyright (c) 1999, 2000 Cannon Technologies Inc. All rights reserved.
 *-----------------------------------------------------------------------------*/
@@ -882,6 +882,7 @@ INT CtiDeviceMCT::ModelDecode(INMESS *InMessage, CtiTime &TimeNow, list< CtiMess
         case Emetcon::PutConfig_Intervals:
         case Emetcon::PutConfig_DemandInterval:
         case Emetcon::PutConfig_LoadProfileInterval:
+        case Emetcon::PutConfig_OutageThreshold:
         case Emetcon::PutConfig_ChannelSetup:
         case Emetcon::PutConfig_IEDClass:
         case Emetcon::PutConfig_IEDScan:
@@ -3603,6 +3604,7 @@ INT CtiDeviceMCT::decodePutConfig(INMESS *InMessage, CtiTime &TimeNow, list< Cti
             case Emetcon::PutConfig_Intervals:                  resultString = getName() + " / Intervals sent";         break;
             case Emetcon::PutConfig_DemandInterval:             resultString = getName() + " / Demand interval sent";   break;
             case Emetcon::PutConfig_LoadProfileInterval:        resultString = getName() + " / Load profile interval sent"; break;
+            case Emetcon::PutConfig_OutageThreshold:            resultString = getName() + " / Outage threshold sent";  break;
             case Emetcon::PutConfig_ChannelSetup:               resultString = getName() + " / Channel config sent";    break;
             case Emetcon::PutConfig_IEDClass:                   resultString = getName() + " / IED class info sent";    break;
             case Emetcon::PutConfig_IEDScan:                    resultString = getName() + " / IED scan rate sent";     break;
