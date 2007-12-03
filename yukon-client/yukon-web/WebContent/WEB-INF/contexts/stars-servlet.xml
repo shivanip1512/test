@@ -13,7 +13,6 @@
 				<prop key="/servlet/WorkOrderManager">workOrderManager</prop>
 				<prop key="/servlet/StarsPWordRequest">starsPWordRequest</prop>
 				<prop key="/servlet/ImportManager">importManager</prop>
-				<prop key="/home">homeServletController</prop>
 				<prop key="/hardware/deviceactivation">deviceActivationController</prop>
                 <prop key="/hardware/deviceverification">deviceVerificationController</prop>
 			</props>
@@ -52,8 +51,6 @@
 	<bean id="importManager" class="com.cannontech.web.stars.StarsActionController">
 		<property name="prefix"><value>importmanager</value></property>
 	</bean>
-	
-	<bean id="homeServletController" class="com.cannontech.web.stars.HomeServletController"/>
 
 	<bean id="deviceActivationController" class="com.cannontech.web.stars.dr.hardware.DeviceActivationController">
 		<property name="deviceActivationService" ref="deviceActivationService"/>

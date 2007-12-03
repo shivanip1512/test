@@ -8,6 +8,7 @@
         <property name="mappings">
             <props>
                 <prop key="/index.jsp">indexController</prop>
+                <prop key="/home">indexController</prop>
                 <prop key="controller">loginController</prop>
                 <prop key="/login.jsp">loginController</prop>
                 <prop key="/servlet/LoginController">

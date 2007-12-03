@@ -780,6 +780,11 @@
         <servlet-name>login</servlet-name>
         <url-pattern>/index.jsp</url-pattern>
     </servlet-mapping>
+    
+    <servlet-mapping>
+        <servlet-name>login</servlet-name>
+        <url-pattern>/home</url-pattern>
+    </servlet-mapping>
 
 	<servlet-mapping>
 		<servlet-name>deviceConfiguration</servlet-name>
@@ -886,11 +891,6 @@
 		<url-pattern>/servlet/StarsPWordRequest</url-pattern>
 	</servlet-mapping>
 
-	<servlet-mapping>
-		<servlet-name>stars</servlet-name>
-		<url-pattern>/home</url-pattern>
-	</servlet-mapping>
-	
 	<servlet-mapping>
 		<servlet-name>multispeak</servlet-name>
 		<url-pattern>/spring/multispeak/*</url-pattern>
