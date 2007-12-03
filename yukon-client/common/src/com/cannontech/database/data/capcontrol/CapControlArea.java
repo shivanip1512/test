@@ -12,6 +12,7 @@ import com.cannontech.common.util.CtiUtilities;
 import com.cannontech.common.util.SqlStatementBuilder;
 import com.cannontech.core.dao.DaoFactory;
 import com.cannontech.core.dao.PaoDao;
+import com.cannontech.core.dao.SeasonScheduleDao;
 import com.cannontech.database.JdbcTemplateHelper;
 import com.cannontech.database.PoolManager;
 import com.cannontech.database.data.pao.PAOGroups;
@@ -51,6 +52,9 @@ public class CapControlArea extends CapControlYukonPAOBase implements EditorPane
 
         // delete(Point.TABLE_NAME, Point.SETTER_COLUMNS[2],
         // getCapControlPAOID());
+        
+        SeasonScheduleDao ssDao = DaoFactory.getSeasonSchedule();
+        ssDao.deleteStrategyAssigment(getCapControlPAOID());
 
         getCapControlArea().delete();
         super.delete();
@@ -74,6 +78,8 @@ public class CapControlArea extends CapControlYukonPAOBase implements EditorPane
         for (int i = 0; i < getChildList().size(); i++) {
             getChildList().get(i).add();
         }
+        SeasonScheduleDao ssDao = DaoFactory.getSeasonSchedule();
+        ssDao.saveDefaultSeasonStrategyAssigment(getCapControlPAOID());
 
     }
 

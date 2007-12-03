@@ -3,7 +3,7 @@
 
 <beans>
 
-  <bean id="seasonScheduleDao" class="com.cannontech.cbc.dao.impl.SeasonScheduleDaoImpl">
+  <bean id="seasonScheduleDao" class="com.cannontech.core.dao.impl.SeasonScheduleDaoImpl">
       <property name="jdbcTemplate" ref="simpleJdbcTemplate"/>
   </bean>
   

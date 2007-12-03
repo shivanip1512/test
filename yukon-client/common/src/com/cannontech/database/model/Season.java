@@ -1,4 +1,4 @@
-package com.cannontech.cbc.model;
+package com.cannontech.database.model;
 
 public class Season {
     

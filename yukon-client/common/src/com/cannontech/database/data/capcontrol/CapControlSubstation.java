@@ -9,6 +9,7 @@ import com.cannontech.common.editor.EditorPanel;
 import com.cannontech.common.util.CtiUtilities;
 import com.cannontech.core.dao.DaoFactory;
 import com.cannontech.core.dao.PaoDao;
+import com.cannontech.core.dao.SeasonScheduleDao;
 import com.cannontech.database.PoolManager;
 import com.cannontech.database.data.pao.PAOGroups;
 import com.cannontech.database.db.capcontrol.CCSubstationSubBusList;
@@ -39,6 +40,7 @@ public class CapControlSubstation extends CapControlYukonPAOBase implements Edit
         com.cannontech.database.db.capcontrol.CCSubstationSubBusList.deleteCCSubBusFromSubstationList(getSubstationID(), null, getDbConnection());
         // Delete from all dynamic objects
         delete("DynamicCCSubstation", "substationID", getSubstationID());
+        
         getCapControlSubstation().delete();
         super.delete();
     }
@@ -57,6 +59,7 @@ public class CapControlSubstation extends CapControlYukonPAOBase implements Edit
         for (int i = 0; i < getChildList().size(); i++) {
             getChildList().get(i).add();
         }
+        
     }
 
     public com.cannontech.database.db.capcontrol.CapControlSubstation getCapControlSubstation() {

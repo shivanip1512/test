@@ -134,5 +134,9 @@
   <bean id="addressDao" class="com.cannontech.core.dao.impl.AddressDaoImpl">
       <property name="simpleJdbcTemplate" ref="simpleJdbcTemplate" />
   </bean>
+  
+  <bean id="seasonScheduleDao" class="com.cannontech.core.dao.impl.SeasonScheduleDaoImpl">
+      <property name="jdbcTemplate" ref="simpleJdbcTemplate"/>
+  </bean>
     
 </beans>

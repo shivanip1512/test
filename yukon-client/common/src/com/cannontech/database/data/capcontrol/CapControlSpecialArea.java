@@ -12,6 +12,7 @@ import com.cannontech.common.util.CtiUtilities;
 import com.cannontech.common.util.SqlStatementBuilder;
 import com.cannontech.core.dao.DaoFactory;
 import com.cannontech.core.dao.PaoDao;
+import com.cannontech.core.dao.SeasonScheduleDao;
 import com.cannontech.database.JdbcTemplateHelper;
 import com.cannontech.database.PoolManager;
 import com.cannontech.database.data.pao.PAOGroups;
@@ -44,6 +45,8 @@ public class CapControlSpecialArea extends CapControlYukonPAOBase implements Edi
 
         // remove all the associations of Subs to this Area
         com.cannontech.database.db.capcontrol.CCSubSpecialAreaAssignment.deleteSubs(getAreaID(), null, getDbConnection());
+        SeasonScheduleDao ssDao = DaoFactory.getSeasonSchedule();
+        ssDao.deleteStrategyAssigment(getCapControlPAOID());
         getCapControlSpecialArea().delete();
         super.delete();
     }
@@ -66,6 +69,8 @@ public class CapControlSpecialArea extends CapControlYukonPAOBase implements Edi
         for (int i = 0; i < getChildList().size(); i++) {
             getChildList().get(i).add();
         }
+        SeasonScheduleDao ssDao = DaoFactory.getSeasonSchedule();
+        ssDao.saveDefaultSeasonStrategyAssigment(getCapControlPAOID());
 
     }
 

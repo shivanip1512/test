@@ -1,9 +1,9 @@
-package com.cannontech.cbc.dao;
+package com.cannontech.core.dao;
 
 import java.util.List;
 import java.util.Map;
 
-import com.cannontech.cbc.model.Season;
+import com.cannontech.database.model.Season;
 import com.cannontech.database.db.season.SeasonSchedule;
 
 public interface SeasonScheduleDao {
@@ -17,5 +17,7 @@ public interface SeasonScheduleDao {
     public SeasonSchedule getScheduleForPao(int paoId);
     
     public void saveDefaultSeasonStrategyAssigment(int paoId);
+    
+    public void deleteStrategyAssigment(int paoId);
 
 }

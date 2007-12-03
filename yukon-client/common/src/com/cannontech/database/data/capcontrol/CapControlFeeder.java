@@ -4,12 +4,14 @@ import java.sql.SQLException;
 import java.util.ArrayList;
 import java.util.List;
 
+import com.cannontech.core.dao.SeasonScheduleDao;
 import com.cannontech.core.dao.DaoFactory;
 import com.cannontech.core.dao.PaoDao;
 import com.cannontech.database.data.lite.LiteFactory;
 import com.cannontech.database.data.lite.LitePoint;
 import com.cannontech.database.data.pao.PAOGroups;
 import com.cannontech.database.data.point.PointBase;
+import com.cannontech.spring.YukonSpringHook;
 
 /**
  * This type was created in VisualAge.
@@ -61,6 +63,8 @@ public void add() throws java.sql.SQLException
 		((com.cannontech.database.db.capcontrol.CCFeederBankList) getChildList().get(i)).add();
 	}
 	
+	SeasonScheduleDao ssDao = DaoFactory.getSeasonSchedule();
+    ssDao.saveDefaultSeasonStrategyAssigment(getCapControlPAOID());
 }
 /**
  * This method was created in VisualAge.
@@ -80,6 +84,9 @@ public void delete() throws java.sql.SQLException
 	delete("DynamicCCFeeder", "FeederID", getCapControlPAOID() );
     deleteAllPoints();
     //delete(Point.TABLE_NAME, Point.SETTER_COLUMNS[2], getCapControlPAOID());
+    
+    SeasonScheduleDao ssDao = DaoFactory.getSeasonSchedule();
+    ssDao.deleteStrategyAssigment(getCapControlPAOID());
 
 	getCapControlFeeder().delete();
 
@@ -202,8 +209,5 @@ public void update() throws java.sql.SQLException
 	for( int i = 0; i < getChildList().size(); i++ )
 		((com.cannontech.database.db.capcontrol.CCFeederBankList) getChildList().get(i)).add();
 }
-
-
-
 
 }

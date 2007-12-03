@@ -119,4 +119,9 @@ public class DaoFactory {
     public static CBCDao getCapControlDao () {
         return  (CBCDao) YukonSpringHook.getBean("capControlDao");
     }
+    
+    public static SeasonScheduleDao getSeasonSchedule () {
+        return  (SeasonScheduleDao) YukonSpringHook.getBean("seasonScheduleDao");
+    }
+
 }

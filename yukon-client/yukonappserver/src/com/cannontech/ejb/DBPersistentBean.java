@@ -13,7 +13,6 @@ import java.util.Vector;
 
 import org.apache.log4j.Level;
 import org.apache.log4j.Logger;
-import org.apache.log4j.MDC;
 import org.apache.log4j.NDC;
 import org.springframework.jdbc.support.JdbcUtils;
 import org.springframework.transaction.TransactionDefinition;

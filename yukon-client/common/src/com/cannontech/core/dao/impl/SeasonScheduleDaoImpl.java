@@ -1,4 +1,4 @@
-package com.cannontech.cbc.dao.impl;
+package com.cannontech.core.dao.impl;
 
 import java.sql.Connection;
 import java.sql.ResultSet;
@@ -11,8 +11,8 @@ import org.springframework.dao.EmptyResultDataAccessException;
 import org.springframework.jdbc.core.simple.ParameterizedRowMapper;
 import org.springframework.jdbc.core.simple.SimpleJdbcOperations;
 
-import com.cannontech.cbc.dao.SeasonScheduleDao;
-import com.cannontech.cbc.model.Season;
+import com.cannontech.core.dao.SeasonScheduleDao;
+import com.cannontech.database.model.Season;
 import com.cannontech.clientutils.CTILogger;
 import com.cannontech.common.util.CtiUtilities;
 import com.cannontech.database.PoolManager;
@@ -137,6 +137,12 @@ public class SeasonScheduleDaoImpl implements SeasonScheduleDao{
 
     public void setJdbcTemplate(SimpleJdbcOperations jdbcTemplate) {
         this.jdbcTemplate = jdbcTemplate;
+    }
+
+    @Override
+    public void deleteStrategyAssigment(int paoId) {
+        String sql = "Delete From CCSeasonStrategyAssignment Where PaobjectId = ?";
+        jdbcTemplate.update(sql, paoId);
     }
     
 }

@@ -9,6 +9,7 @@ import org.springframework.jdbc.core.JdbcOperations;
 import com.cannontech.common.util.SqlStatementBuilder;
 import com.cannontech.core.dao.DaoFactory;
 import com.cannontech.core.dao.PaoDao;
+import com.cannontech.core.dao.SeasonScheduleDao;
 import com.cannontech.database.JdbcTemplateHelper;
 import com.cannontech.database.data.lite.LiteFactory;
 import com.cannontech.database.data.lite.LitePoint;
@@ -62,6 +63,9 @@ public void add() throws java.sql.SQLException
 	{
 		((com.cannontech.database.db.capcontrol.CCFeederSubAssignment) getChildList().get(i)).add();
 	}
+	
+	SeasonScheduleDao ssDao = DaoFactory.getSeasonSchedule();
+    ssDao.saveDefaultSeasonStrategyAssigment(getCapControlPAOID());
 }
 /**
  * This method was created in VisualAge.
@@ -81,7 +85,8 @@ public void delete() throws java.sql.SQLException
 	//there should be a constraint on pointid in point table
     deleteAllPoints();
     //delete(Point.TABLE_NAME, Point.SETTER_COLUMNS[2], getCapControlPAOID());
-	
+    SeasonScheduleDao ssDao = DaoFactory.getSeasonSchedule();
+    ssDao.deleteStrategyAssigment(getCapControlPAOID());
     getCapControlSubstationBus().delete();
 
 	super.delete();
