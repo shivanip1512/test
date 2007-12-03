@@ -9,8 +9,8 @@
 *
 * PVCS KEYWORDS:
 * ARCHIVE      :  $Archive:   Z:/SOFTWAREARCHIVES/YUKON/PROTOCOL/INCLUDE/prot_emetcon.h-arc  $
-* REVISION     :  $Revision: 1.46 $
-* DATE         :  $Date: 2007/11/12 16:47:15 $
+* REVISION     :  $Revision: 1.47 $
+* DATE         :  $Date: 2007/12/03 21:42:20 $
 *
 * Copyright (c) 1999, 2000 Cannon Technologies Inc. All rights reserved.
 *-----------------------------------------------------------------------------*/
@@ -141,6 +141,7 @@ public:
         GetConfig_Role,  //  only for repeaters
         GetConfig_Raw,
         GetConfig_Intervals,
+        GetConfig_Thresholds,
         GetConfig_ChannelSetup,
         GetConfig_LoadProfileInterval,
         GetConfig_LongLoadProfile,
@@ -187,6 +188,7 @@ public:
         PutConfig_Holiday,
         PutConfig_Options,
         PutConfig_Outage,
+        PutConfig_OutageThreshold,
         PutConfig_TimeAdjustTolerance,
         PutConfig_TimeZoneOffset,
         PutConfig_TOU,  //  this may need to be removed in light of the new config install commands
