@@ -48,7 +48,6 @@ import org.springframework.util.FileCopyUtils;
 import com.cannontech.clientutils.CTILogger;
 import com.cannontech.common.login.ClientSession;
 import com.cannontech.common.version.VersionTools;
-import com.cannontech.core.dao.NotFoundException;
 import com.cannontech.database.data.lite.LiteComparators;
 
 public final class CtiUtilities 
@@ -1732,7 +1731,7 @@ public static double convertTemperature(double temperature, String fromUnit, Str
         if (fileList != null && fileList.length > 0) {
             return fileList[0].getName();
         }
-        throw new NotFoundException("JRE Installer file missing!");
+        return null;
     }
     
     private static String getJvmInputArgs() {
