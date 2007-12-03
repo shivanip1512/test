@@ -6,20 +6,17 @@
 *
 * PVCS KEYWORDS:
 * ARCHIVE      :  $Archive:   Z:/SOFTWAREARCHIVES/YUKON/DEVICECONFIGURATION/mgr_config.cpp-arc  $
-* REVISION     :  $Revision: 1.15 $
-* DATE         :  $Date: 2006/10/19 15:57:54 $
+* REVISION     :  $Revision: 1.16 $
+* DATE         :  $Date: 2007/12/03 22:19:41 $
 *
 * Copyright (c) 2005 Cannon Technologies Inc. All rights reserved.
 *-----------------------------------------------------------------------------*/
 #include "yukon.h"
 
+#include "mgr_config.h"
 #include <rw/db/db.h>
 #include "dbaccess.h"
 #include "config_device.h"
-#include "config_parts.h"
-#include "config_base.h"
-#include "config_resolvers.h"
-#include "mgr_config.h"
 #include "rwutil.h"
 
 using std::string;
@@ -39,17 +36,10 @@ void CtiConfigManager::refreshConfigurations()
 {
     CtiTime start, stop;
 
-    _typeConfig.removeAll(NULL,0);
     _deviceConfig.removeAll(NULL,0);
-    {
-        LockGuard map_guard(_mapMux);
-        _categoryToConfig.clear();
-        _configToCategory.clear();
-    }
-
-    loadCategories();
 
     loadConfigs();
+    loadData();
 
     //ok, so in theory right now my 2 maps are built up.. although I should only need one of them
     //Now I want to give the device configs to the devices themselves
@@ -69,221 +59,31 @@ void CtiConfigManager::initialize(CtiDeviceManager &mgr)
     }
 }
 
-string CtiConfigManager::getConfigurationCategoryTableName()
+string CtiConfigManager::getConfigTableName()
 {
-    return "DCConfigurationCategory";
+    return "DeviceConfiguration";
 }
 
-string CtiConfigManager::getConfigDeviceTableName()
+string CtiConfigManager::getConfigItemTableName()
 {
-    return "DCDeviceConfiguration";
+    return "DeviceConfigurationItem";
 }
 
-string CtiConfigManager::getItemValuesTableName()
+string CtiConfigManager::getConfigToDeviceMapTableName()
 {
-    return "DCCategoryItem";
+    return "DeviceConfigurationDeviceMap";
 }
 
-string CtiConfigManager::getCategoryTypeTableName()
+bool CtiConfigManager::insertValueIntoConfig(CtiConfigDeviceSPtr config, const string &value, const string &valueid)
 {
-    return "DCCategoryType";
-}
-
-string CtiConfigManager::getItemTypeTableName()
-{
-    return "DCItemType";
-}
-
-string CtiConfigManager::getCategoryTableName()
-{
-    return "DCCategory";
-}
-
-BaseSPtr CtiConfigManager::createConfigByType(const int type)
-{   //This function MUST set the type variable in config_base.
-    BaseSPtr tempBasePtr;
-    try
-    {
-        
-        switch(type)
-        {
-            using namespace MCT;
-            case ConfigTypeMCTTOU:
-            {
-                tempBasePtr.reset(CTIDBG_new ConfigurationPart<MCT_TOU>());
-                break;
-            }
-            case ConfigTypeMCTTOURateSchedule:
-            {
-                tempBasePtr.reset(CTIDBG_new ConfigurationPart<MCT_TOU_Rate_Schedule>());
-                break;
-            }
-            case ConfigTypeMCTAddressing:
-            {
-                tempBasePtr.reset(CTIDBG_new ConfigurationPart<MCTAddressing>());
-                break;
-            }
-            case ConfigTypeMCTOptions:
-            {
-                tempBasePtr.reset(CTIDBG_new ConfigurationPart<MCTOptions>());
-                break;
-            }
-            case ConfigTypeMCTDemandLP:
-            {
-                tempBasePtr.reset(CTIDBG_new ConfigurationPart<MCTDemandLoadProfile>());
-                break;
-            }
-            case ConfigTypeMCTDST:
-            {
-                tempBasePtr.reset(CTIDBG_new ConfigurationPart<MCT_DST>());
-                break;
-            }
-            case ConfigTypeMCTVThreshold:
-            {
-                tempBasePtr.reset(CTIDBG_new ConfigurationPart<MCTVThreshold>());
-                break;
-            }
-            case ConfigTypeMCTDisconnect:
-            {
-                tempBasePtr.reset(CTIDBG_new ConfigurationPart<MCTDisconnect>());
-                break;
-            }
-            case ConfigTypeMCTLongLoadProfile:
-            {
-                tempBasePtr.reset(CTIDBG_new ConfigurationPart<MCTLongLoadProfile>());
-                break;
-            }
-            case ConfigTypeMCTHoliday:
-            {
-                tempBasePtr.reset(CTIDBG_new ConfigurationPart<MCTHoliday>());
-                break;
-            }
-            case ConfigTypeMCTLoadProfileChannels:
-            {
-                tempBasePtr.reset(CTIDBG_new ConfigurationPart<MCTLoadProfileChannels>());
-                break;
-            }
-            case ConfigTypeMCTRelays:
-            {
-                tempBasePtr.reset(CTIDBG_new ConfigurationPart<MCTRelays>());
-                break;
-            }
-            case ConfigTypeMCTPrecannedTable:
-            {
-                tempBasePtr.reset(CTIDBG_new ConfigurationPart<MCTPrecannedTable>());
-                break;
-            }
-            case ConfigTypeMCTSystemOptions:
-            {
-                tempBasePtr.reset(CTIDBG_new ConfigurationPart<MCTSystemOptions>());
-                break;
-            }
-            case ConfigTypeMCTCentron:
-            {
-                tempBasePtr.reset(CTIDBG_new ConfigurationPart<MCTCentron>());
-                break;
-            }
-            case ConfigTypeMCTDNP:
-            {
-                tempBasePtr.reset(CTIDBG_new ConfigurationPart<MCT_DNP>());
-                break;
-            }
-            using namespace CBC;
-            case ConfigTypeCBCVoltage:
-            {
-                tempBasePtr.reset(CTIDBG_new ConfigurationPart<CBCVoltage>());
-                break;
-            }
-            case ConfigTypeCBCCommsLost:
-            {
-                tempBasePtr.reset(CTIDBG_new ConfigurationPart<CBCCommsLost>());
-                break;
-            }
-            case ConfigTypeCBCNeutralCurrent:
-            {
-                tempBasePtr.reset(CTIDBG_new ConfigurationPart<CBCNeutralCurrent>());
-                break;
-            }
-            case ConfigTypeCBCFaultDetection:
-            {
-                tempBasePtr.reset(CTIDBG_new ConfigurationPart<CBCFaultDetection>());
-                break;
-            }
-            case ConfigTypeCBCSeason1TimeAndTemp:
-            {
-                tempBasePtr.reset(CTIDBG_new ConfigurationPart<CBCSeason1TimeAndTemp>());
-                break;
-            }
-            case ConfigTypeCBCSeason2TimeAndTemp:
-            {
-                tempBasePtr.reset(CTIDBG_new ConfigurationPart<CBCSeason2TimeAndTemp>());
-                break;
-            }
-            case ConfigTypeCBCControlTimes:
-            {
-                tempBasePtr.reset(CTIDBG_new ConfigurationPart<CBCControlTimes>());
-                break;
-            }
-            case ConfigTypeCBCDataLogging:
-            {
-                tempBasePtr.reset(CTIDBG_new ConfigurationPart<CBCDataLogging>());
-                break;
-            }
-            case ConfigTypeCBCAddressing:
-            {
-                tempBasePtr.reset(CTIDBG_new ConfigurationPart<CBCAddressing>());
-                break;
-            }
-            case ConfigTypeCBC_DNP:
-            {
-                tempBasePtr.reset(CTIDBG_new ConfigurationPart<CBC_DNP>());
-                break;
-            }
-            case ConfigTypeCBC_UDP:
-            {
-                tempBasePtr.reset(CTIDBG_new ConfigurationPart<CBC_UDP>());
-                break;
-            }
-            default:
-            {
-                {
-                    CtiLockGuard<CtiLogger> doubt_guard(dout);
-                    dout << CtiTime() << "*** CHECKPOINT *** " << " No constructor for config type "<<type<< " in " << __FILE__ << " (" << __LINE__ << ")" << endl;
-                }
-                break;
-            }
-        }
-        return tempBasePtr;
-    }
-    catch(...)
+    if(!config)
     {
         CtiLockGuard<CtiLogger> doubt_guard(dout);
-        dout << CtiTime() << "*** CHECKPOINT *** " << " Exception thrown in " << __FILE__ << " (" << __LINE__ << ")" << endl;
-        return  tempBasePtr;
-    }
-}
-
-bool CtiConfigManager::insertValueIntoConfigMap(const long categoryID, const string &value, const string &valueid)
-{
-    BaseSPtr    pTempCtiConfigBase;
-
-    pTempCtiConfigBase = _typeConfig.find(categoryID);
-
-    if(!pTempCtiConfigBase)
-    {
-        CtiLockGuard<CtiLogger> doubt_guard(dout);
-        dout << CtiTime() << "*** CHECKPOINT *** " << " No config loaded with categoryID "<<categoryID<< " in " << __FILE__ << " (" << __LINE__ << ")" << endl;
+        dout << CtiTime() << "*** CHECKPOINT *** " << " No config loaded " << __FILE__ << " (" << __LINE__ << ")" << endl;
     }
     else
     {
-        int resolvedKey = pTempCtiConfigBase->getProtectedResolvedKey(valueid);
-        if(resolvedKey == 0)
-        {
-            CtiLockGuard<CtiLogger> doubt_guard(dout);
-            dout << CtiTime() << "*** CHECKPOINT *** "<< " No resolver for " << valueid<<" in " << __FILE__ << " (" << __LINE__ << ")" << endl;
-            return false;
-        }
-        return pTempCtiConfigBase->setProtectedValueWithKey(value,resolvedKey);
+        return config->insertValue(valueid, value);
     }
     return false;
 
@@ -299,6 +99,7 @@ CtiConfigDeviceSPtr CtiConfigManager::getDeviceConfigFromID(long configID)
 {
     CtiConfigDeviceSPtr tempSPtr;
     tempSPtr = _deviceConfig.find(configID);
+
     if(tempSPtr)//This key is in the map
     {
         return tempSPtr;
@@ -324,6 +125,7 @@ void CtiConfigManager::processDBUpdate(LONG identifier, string category, string 
                 {
                     removeFromMaps(identifier);
                     loadConfigs(identifier);
+                    loadData(identifier);
                     updateDeviceConfigs(identifier);
                     break;
                 }
@@ -364,40 +166,6 @@ void CtiConfigManager::processDBUpdate(LONG identifier, string category, string 
                 }
             }
         }
-        else if( objectType == "category" )
-        {
-            if( updateType == ChangeTypeUpdate )
-            {
-                //Load the new data
-                loadCategories(identifier);
-
-                //Then find out which devices we need to update..
-                {
-                    LockGuard map_guard(_mapMux);
-                    ConfigTypeToDeviceMap::iterator iter = _categoryToConfig.find(identifier);
-                    if( iter != _categoryToConfig.end() )
-                    {
-                        std::set<long>::iterator setIter = iter->second.begin();
-                        for( ; setIter != iter->second.end(); setIter++ )
-                        {
-                            loadConfigs(*setIter);
-                        }
-                    }
-                }
-                
-                //Since it is more efficient, we will just send out all of the device configs again
-                updateDeviceConfigs();
-            }
-            else if( updateType == ChangeTypeDelete )
-            {
-                removeFromMaps(0,identifier);
-                _typeConfig.remove(identifier);
-            }
-            else if( updateType == ChangeTypeAdd )
-            {
-                loadCategories(identifier);
-            }
-        }
     }
     else if( category == "config" && identifier == 0 )
     {
@@ -405,14 +173,9 @@ void CtiConfigManager::processDBUpdate(LONG identifier, string category, string 
     }
 }
 
-void CtiConfigManager::loadCategories(long categoryID)
+void CtiConfigManager::loadData(long configID)
 {
     CtiTime start, stop;
-
-    if( categoryID != 0 )
-    {
-        _typeConfig.remove(categoryID);//Give us a fresh start
-    }
 
     start = start.now();
     {   
@@ -421,73 +184,47 @@ void CtiConfigManager::loadCategories(long categoryID)
     
         RWDBSelector selector = db.selector();
 
-        //Warning!!! Due to problems with roguewave and the selector I am using direct location
-        //reads from the RWDBReader. Be careful changing the selector/reading order
-
-        RWDBTable itemValTbl = db.table( string2RWCString(getItemValuesTableName()) );
-        selector << itemValTbl["categoryid"]//0
-            << itemValTbl["itemtypeid"]//1
-            << itemValTbl["value"];  //2
+        RWDBTable itemValTbl = db.table( string2RWCString(getConfigItemTableName()) );
+        selector //<< itemValTbl["deviceconfigurationitemid"]
+            << itemValTbl["deviceconfigurationid"]
+            << itemValTbl["fieldname"]
+            << itemValTbl["value"];
         selector.from(itemValTbl);
 
-        RWDBTable categoryTypeTbl = db.table(string2RWCString(getCategoryTypeTableName()) );
-        selector << categoryTypeTbl["categorytypeid"]//3
-            << categoryTypeTbl["name"];//4
-        selector.from(categoryTypeTbl);
-
-        RWDBTable itemTbl = db.table( string2RWCString(getItemTypeTableName()) );
-        selector << itemTbl["itemtypeid"]//5
-            << itemTbl["name"];//6
-        selector.from(itemTbl);
-
-        RWDBTable categoryTbl = db.table(string2RWCString(getCategoryTableName()) );
-        selector << categoryTbl["categoryid"]//7
-            << categoryTbl["categorytypeid"]//8
-            << categoryTbl["name"];//9
-        selector.from(categoryTbl);
-       
-        selector.where(itemTbl["itemtypeid"] == itemValTbl["itemtypeid"] && categoryTbl["categoryid"] == itemValTbl["categoryid"]);
-        selector.where(categoryTypeTbl["categorytypeid"] == categoryTbl["categorytypeid"] && selector.where());
-        if( categoryID != 0 )
+        if( configID != 0 )
         {
-            selector.where(categoryTbl["categoryid"] == categoryID && selector.where());
+            selector.where(itemValTbl["deviceconfigurationid"] == configID && selector.where());
         }
+        selector.orderBy(itemValTbl["deviceconfigurationid"]); //This should make loading faster.
+
         RWDBReader rdr = selector.reader(conn);
+        long oldDeviceConfigID = 0;
+        CtiConfigDeviceSPtr config;
+        long deviceConfigID;
+        string value,valueName;
 
         while( (rdr.status().errorCode() == RWDBStatus::ok) && rdr() )
         {
-            long categoryID;
-            CtiConfig_type type;
-            string tempType,value,valueName;
-    
-            rdr[categoryTypeTbl["categoryid"]]>>categoryID;
-            rdr[4] >>tempType; //categoryTypeTbl["name"]
-                
-            rdr[itemValTbl["value"]] >> value;
-            rdr[6] >> valueName;//itemTbl["name"]
-    
-            if( !_typeConfig.find(categoryID) )//This key is not in the map yet
-            {
-                type = resolveConfigType(tempType);
-                if( type != ConfigTypeInvalid )
-                {
-                    BaseSPtr config = createConfigByType(type);
-                    if( config )
-                    {
-                        _typeConfig.insert(categoryID,config);//Should I remember this pointer and not do the next lookup? I dont think it is too expensive
-                    }
-                }
-            }
+            //rdr["deviceconfigurationitemid"] >> itemID;
+            rdr["deviceconfigurationid"] >> deviceConfigID;
+            rdr["fieldname"] >> valueName;
+            rdr["value"] >> value;
 
             if(!valueName.empty() && !value.empty())
             {
-                try{
-                    insertValueIntoConfigMap(categoryID, value, valueName);
+                try
+                {
+                    if( oldDeviceConfigID != deviceConfigID )
+                    {
+                        config = _deviceConfig.find(deviceConfigID);
+                        oldDeviceConfigID = deviceConfigID;
+                    }
+                    insertValueIntoConfig(config, value, valueName);
                 }
                 catch(...)
                 {
                     CtiLockGuard<CtiLogger> doubt_guard(dout);
-                    dout << CtiTime() << "*** CHECKPOINT *** " << " Exception Thrown, type "<<type<< " probably is invalid " << __FILE__ << " (" << __LINE__ << ")" << endl;
+                    dout << CtiTime() << "*** CHECKPOINT *** " << " Exception Thrown " << __FILE__ << " (" << __LINE__ << ")" << endl;
                     dout << CtiTime() << "*** CHECKPOINT *** " << " Configs will NOT be properly loaded " << __FILE__ << " (" << __LINE__ << ")" << endl;
                 }
             }
@@ -517,78 +254,36 @@ void CtiConfigManager::loadConfigs(long configID)
     
         RWDBSelector selector = db.selector();
     
-        RWDBTable typeTbl = db.table( string2RWCString(getConfigurationCategoryTableName()) );
+        RWDBTable configTbl = db.table( string2RWCString(getConfigTableName()) );
     
-        selector << typeTbl["configid"]
-            << typeTbl["categoryid"];
+        selector << configTbl["deviceconfigurationid"]
+            << configTbl["name"]
+            << configTbl["type"];;
     
-        selector.from(typeTbl);
+        selector.from(configTbl);
         if( configID != 0 )
         {
-            selector.where( typeTbl["configid"] == configID && selector.where() );
+            selector.where( configTbl["deviceconfigurationid"] == configID && selector.where() );
         }
        
         RWDBReader rdr = selector.reader(conn);
 
         while( (rdr.status().errorCode() == RWDBStatus::ok) && rdr() )
         {
-            long categoryID, configID;
+            long configID;
+            string name, type;
     
-            rdr["configid"] >>configID;
-            rdr["categoryid"]>>categoryID;
-
-            {
-                LockGuard map_guard(_mapMux);
-                ConfigTypeToDeviceMap::iterator iter = _categoryToConfig.find(categoryID);
-                if( iter != _categoryToConfig.end() )
-                {
-                    iter->second.insert(configID);
-                }
-                else
-                {
-                    set<long> insertSet;
-                    insertSet.insert(configID);
-                    _categoryToConfig.insert(ConfigTypeToDeviceMap::value_type(categoryID, insertSet));
-                }
-    
-                iter = _configToCategory.find(configID);
-                if( iter != _configToCategory.end() )
-                {
-                    iter->second.insert(categoryID);
-                }
-                else
-                {
-                    set<long> insertSet;
-                    insertSet.insert(categoryID);
-                    _configToCategory.insert(ConfigTypeToDeviceMap::value_type(configID, insertSet));
-                }
-            }
+            rdr["deviceconfigurationid"] >> configID;
+            rdr["name"] >> name;
+            rdr["type"] >> type;
 
             CtiConfigDeviceSPtr configDevSPtr = _deviceConfig.find(configID);
 
             if( !configDevSPtr )//This key is not in the map yet
             {
-                CtiConfigDeviceSPtr devPtr(CTIDBG_new CtiConfigDevice());
+                CtiConfigDeviceSPtr devPtr(CTIDBG_new CtiConfigDevice(configID, name, type));
                 ConfigDeviceMap::insert_pair tempPair = _deviceConfig.insert(configID,devPtr);
                 configDevSPtr = tempPair.first->second;
-            }
-
-            BaseSPtr categorySPtr;
-            if( (categorySPtr = _typeConfig.find(categoryID)) && configDevSPtr )
-            {
-                configDevSPtr->insertConfig(categorySPtr);
-            }
-
-            if( (configDevSPtr = _deviceConfig.find(configID)) && categorySPtr )//This is debugging code and could be removed.
-            {
-                if( configDevSPtr->getConfigFromType(categorySPtr->getType()) == categorySPtr )
-                {
-                }
-                else
-                {
-                    CtiLockGuard<CtiLogger> doubt_guard(dout);
-                    dout << CtiTime() << " PartID "<< categoryID<<" was NOT correctly added to ConfigID "<<configID<< endl;
-                }
             }
         }
 
@@ -613,15 +308,15 @@ void CtiConfigManager::updateDeviceConfigs(long configID, long deviceID)
     
         RWDBSelector selector = db.selector();
     
-        RWDBTable typeTbl = db.table(string2RWCString(getConfigDeviceTableName()) );
+        RWDBTable typeTbl = db.table(string2RWCString(getConfigToDeviceMapTableName()) );
     
         selector << typeTbl["deviceid"]
-            << typeTbl["configid"];
+            << typeTbl["deviceconfigurationid"];
     
         selector.from(typeTbl);
         if( configID != 0 )
         {
-            selector.where(typeTbl["configid"] == configID && selector.where());
+            selector.where(typeTbl["deviceconfigurationid"] == configID && selector.where());
         }
         else if( deviceID != 0 )
         {
@@ -639,7 +334,7 @@ void CtiConfigManager::updateDeviceConfigs(long configID, long deviceID)
             {
                 long devID, configID;
     
-                rdr["configid"] >>configID;
+                rdr["deviceconfigurationid"] >>configID;
                 rdr["deviceid"]>>devID;
     
                 CtiDeviceSPtr pDev = _devMgr->getEqual(devID);
@@ -653,6 +348,7 @@ void CtiConfigManager::updateDeviceConfigs(long configID, long deviceID)
             }
             else
             {
+                //This is a delete!
                 CtiDeviceSPtr pDev = _devMgr->getEqual(deviceID);
                 if( pDev )
                 {
@@ -667,7 +363,7 @@ void CtiConfigManager::updateDeviceConfigs(long configID, long deviceID)
             {
                 long devID, configID;
         
-                rdr["configid"] >>configID;
+                rdr["deviceconfigurationid"] >>configID;
                 rdr["deviceid"]>>devID;
     
                 CtiDeviceSPtr pDev = _devMgr->getEqual(devID);
@@ -689,52 +385,10 @@ void CtiConfigManager::updateDeviceConfigs(long configID, long deviceID)
     }
 }
 
-void CtiConfigManager::removeFromMaps(long configID, long categoryID)
+void CtiConfigManager::removeFromMaps(long configID)
 {
     if( configID )
     {
-        LockGuard map_guard(_mapMux);
-        ConfigTypeToDeviceMap::iterator categoryIter;
-
-        //First erase all the entries in the category map
-        ConfigTypeToDeviceMap::iterator configIter = _configToCategory.find(configID);
-        if( configIter != _configToCategory.end() )
-        {
-            std::set<long>::iterator setIter = configIter->second.begin();
-            for( ; setIter != configIter->second.end(); setIter++ )
-            {
-                categoryIter = _categoryToConfig.find(*setIter);
-                if( categoryIter != _categoryToConfig.end() )
-                {
-                    categoryIter->second.erase(configID);
-                }
-            }
-
-            _configToCategory.erase(configID);
-        }
-
-    }
-
-    if( categoryID )
-    {
-        LockGuard map_guard(_mapMux);
-        ConfigTypeToDeviceMap::iterator configIter;
-
-        //First erase all the entries in the category map
-        ConfigTypeToDeviceMap::iterator categoryIter = _categoryToConfig.find(categoryID);
-        if( categoryIter != _categoryToConfig.end() )
-        {
-            std::set<long>::iterator setIter = categoryIter->second.begin();
-            for( ; setIter != categoryIter->second.end(); setIter++ )
-            {
-                configIter = _configToCategory.find(*setIter);
-                if( configIter != _configToCategory.end() )
-                {
-                    configIter->second.erase(categoryID);
-                }
-            }
-
-            _categoryToConfig.erase(categoryID);
-        }
+        _deviceConfig.remove(configID);
     }
 }

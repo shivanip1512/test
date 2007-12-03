@@ -9,8 +9,8 @@
 *
 * PVCS KEYWORDS:
 * ARCHIVE      :  $Archive:   Z:/SOFTWAREARCHIVES/YUKON/RTDB/INCLUDE/dev_mct.h-arc  $
-* REVISION     :  $Revision: 1.59 $
-* DATE         :  $Date: 2007/10/09 19:24:00 $
+* REVISION     :  $Revision: 1.60 $
+* DATE         :  $Date: 2007/12/03 22:19:41 $
 *
 * Copyright (c) 1999, 2000 Cannon Technologies Inc. All rights reserved.
 *-----------------------------------------------------------------------------*/
@@ -20,7 +20,6 @@
 
 #include "dev_carrier.h"
 #include "pt_numeric.h"
-#include "config_parts.h"
 #include "prot_emetcon.h"
 
 
@@ -148,6 +147,7 @@ protected:
         DebugLevel_Scanrates   = 1 << 1,
         DebugLevel_LoadProfile = 1 << 2,
         DebugLevel_DynamicInfo = 1 << 3,
+        DebugLevel_Configs     = 1 << 4,
     };
 
     enum Memory

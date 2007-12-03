@@ -6,8 +6,8 @@
 *
 * PVCS KEYWORDS:
 * ARCHIVE      :  $Archive:   Z:/SOFTWAREARCHIVES/YUKON/DEVICECONFIGURATION/include/config_device.h-arc  $
-* REVISION     :  $Revision: 1.5 $
-* DATE         :  $Date: 2007/02/09 20:57:18 $
+* REVISION     :  $Revision: 1.6 $
+* DATE         :  $Date: 2007/12/03 22:15:20 $
 *
 * Copyright (c) 2005 Cannon Technologies Inc. All rights reserved.
 *-----------------------------------------------------------------------------*/
@@ -19,32 +19,44 @@
 #include "boost/shared_ptr.hpp"
 using boost::shared_ptr;
 
-
 #include "logger.h"
 #include "dllbase.h"
-#include "config_base.h"
+#include "hashkey.h"
 #include <map>
+#include <string>
+
+class CtiConfigManager;
 
 namespace Cti {
 namespace Config {
 
 class IM_EX_CONFIG CtiConfigDevice
 {
+    friend class CtiConfigManager;
 protected:
-    typedef CtiLockGuard<CtiMutex> LockGuard;//This must be used in every class that sets the value with key, or returns values.
-    mutable CtiMutex    _mux;
+    bool insertValue(std::string identifier, const std::string& value);
+
+    //virtual int getProtectedResolvedKey(string key);
+    //virtual bool setProtectedValueWithKey(const string &value, const int key);
 
 private:
-    typedef map <int,Cti::Config::BaseSPtr> BasePointerMap;
+    typedef std::map<CtiHashKey, std::string> ConfigValueMap;
+    ConfigValueMap _configurationValues;
 
-    BasePointerMap _baseConfigurations;
+    long _id;
+    string _name;
+    string _type;
 public:
 
-    CtiConfigDevice();
+    CtiConfigDevice( long ID, string& name, string& type);
     ~CtiConfigDevice();
-    BaseSPtr getConfigFromType(CtiConfig_type type);
-    void insertConfig(BaseSPtr configuration);//Type should be set in this pointer, so its not necessary
-    string getAllOutputStrings();//Returns strings from every base configuration
+
+    bool getValue(std::string key, std::string& value);
+    string getValueFromKey(std::string key);
+    bool getLongValue(std::string key, long& value);
+    long getLongValueFromKey(std::string key);
+    double getFloatValueFromKey(std::string key);
+    bool checkValues(string stringArray[], unsigned int arrayLen);
 };
 
 typedef shared_ptr< CtiConfigDevice > CtiConfigDeviceSPtr;

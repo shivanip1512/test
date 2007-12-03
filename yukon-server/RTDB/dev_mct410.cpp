@@ -8,8 +8,8 @@
 *
 * PVCS KEYWORDS:
 * ARCHIVE      :  $Archive:   Z:/SOFTWAREARCHIVES/YUKON/RTDB/dev_mct310.cpp-arc  $
-* REVISION     :  $Revision: 1.149 $
-* DATE         :  $Date: 2007/12/03 21:44:50 $
+* REVISION     :  $Revision: 1.150 $
+* DATE         :  $Date: 2007/12/03 22:19:41 $
 *
 * Copyright (c) 1999, 2000 Cannon Technologies Inc. All rights reserved.
 *-----------------------------------------------------------------------------*/
@@ -39,7 +39,6 @@ using namespace std;
 
 using namespace Cti;
 using namespace Config;
-using namespace MCT;
 
 using Protocol::Emetcon;
 
@@ -516,8 +515,7 @@ CtiDeviceMCT410::CommandSet CtiDeviceMCT410::initCommandStore()
     cs.insert(CommandStore(Emetcon::GetConfig_LongLoadProfile,  Emetcon::IO_Function_Read,  FuncRead_LLPStatusPos,          FuncRead_LLPStatusLen));
 
     cs.insert(CommandStore(Emetcon::PutConfig_DST,              Emetcon::IO_Write,          Memory_DSTBeginPos,             Memory_DSTBeginLen
-                                                                                                                            + Memory_DSTEndLen
-                                                                                                                            + Memory_TimeZoneOffsetLen));
+                                                                                                                            + Memory_DSTEndLen));
 
     cs.insert(CommandStore(Emetcon::PutConfig_VThreshold,       Emetcon::IO_Write,          Memory_OverVThresholdPos,       Memory_OverVThresholdLen +
                                                                                                                             Memory_UnderVThresholdLen));
@@ -1919,7 +1917,7 @@ INT CtiDeviceMCT410::executeGetConfig( CtiRequestMsg              *pReq,
 }
 
 
-int CtiDeviceMCT410::executePutConfigDemandLP(CtiRequestMsg *pReq,CtiCommandParser &parse,OUTMESS *&OutMessage,list< CtiMessage* >&vgList,list< CtiMessage* >&retList,list< OUTMESS* >   &outList)
+/*int CtiDeviceMCT410::executePutConfigDemandLP(CtiRequestMsg *pReq,CtiCommandParser &parse,OUTMESS *&OutMessage,list< CtiMessage* >&vgList,list< CtiMessage* >&retList,list< OUTMESS* >   &outList)
 {
     int nRet = NORMAL;
     long value;
@@ -2355,7 +2353,7 @@ int CtiDeviceMCT410::executePutConfigOptions(CtiRequestMsg *pReq,CtiCommandParse
         nRet = NoConfigData;
 
     return nRet;
-}
+}*/
 
 
 INT CtiDeviceMCT410::decodeGetValueKWH(INMESS *InMessage, CtiTime &TimeNow, list< CtiMessage* > &vgList, list< CtiMessage* > &retList, list< OUTMESS* > &outList)

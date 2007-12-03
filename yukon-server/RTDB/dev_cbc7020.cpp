@@ -6,8 +6,8 @@
 *
 * PVCS KEYWORDS:
 * ARCHIVE      :  $Archive:   Z:/SOFTWAREARCHIVES/YUKON/RTDB/dev_cbc.cpp-arc  $
-* REVISION     :  $Revision: 1.2 $
-* DATE         :  $Date: 2006/04/20 17:05:53 $
+* REVISION     :  $Revision: 1.3 $
+* DATE         :  $Date: 2007/12/03 22:19:41 $
 *
 * Copyright (c) 2002 Cannon Technologies Inc. All rights reserved.
 *-----------------------------------------------------------------------------*/
@@ -24,7 +24,6 @@
 using namespace std;
 using namespace Cti::Device;
 using namespace Cti::Config;
-using namespace Cti::Config::CBC;
 
 const char *CBC7020::PutConfigPart_all             = "all";
 const char *CBC7020::PutConfigPart_comms_lost      = "commslost";
@@ -82,10 +81,10 @@ INT CBC7020::ExecuteRequest(CtiRequestMsg *pReq, CtiCommandParser &parse, OUTMES
         //    i need to seal the deal with a new parse
         nRet = Inherited::ExecuteRequest(pReq, new_parse, OutMessage, vgList, retList, outList);
     }
-    else if( parse.getCommand() == PutConfigRequest && parse.isKeyValid("install") )
+    /*else if( parse.getCommand() == PutConfigRequest && parse.isKeyValid("install") )
     {
         nRet = executePutConfig( pReq, parse, OutMessage, vgList, retList, outList );
-    }
+    }*/
     else
     {
         nRet = Inherited::ExecuteRequest(pReq, parse, OutMessage, vgList, retList, outList);
@@ -94,7 +93,7 @@ INT CBC7020::ExecuteRequest(CtiRequestMsg *pReq, CtiCommandParser &parse, OUTMES
     return nRet;
 }
 
-INT CBC7020::executePutConfig(CtiRequestMsg                  *pReq,
+/*INT CBC7020::executePutConfig(CtiRequestMsg                  *pReq,
                                    CtiCommandParser               &parse,
                                    OUTMESS                        *&OutMessage,
                                    list< CtiMessage* >      &vgList,
@@ -290,7 +289,7 @@ int CBC7020::executePutConfigSingle(CtiRequestMsg         *pReq,
 
 // ExecutePutConfigVoltage
 // Put the voltage configuration on the device. Simple.
-int CBC7020::executePutConfigVoltage(CtiRequestMsg *pReq,CtiCommandParser &parse,OUTMESS *&OutMessage,list< CtiMessage* >&vgList,list< CtiMessage* >&retList,list< OUTMESS* >   &outList)
+/*int CBC7020::executePutConfigVoltage(CtiRequestMsg *pReq,CtiCommandParser &parse,OUTMESS *&OutMessage,list< CtiMessage* >&vgList,list< CtiMessage* >&retList,list< OUTMESS* >   &outList)
 {
     OUTMESS *tempOutMess;
     
@@ -496,7 +495,7 @@ int CBC7020::executePutConfigNeutralCurrent(CtiRequestMsg *pReq,CtiCommandParser
 
             if( faultCurrentSetPt        == numeric_limits<long>::min()
              || stateChangeSetPt         == numeric_limits<long>::min()
-             /*|| neutralCurrentRetryCount == numeric_limits<long>::min()*/ )
+             /*|| neutralCurrentRetryCount == numeric_limits<long>::min()*/ /* )
             {
                 CtiLockGuard<CtiLogger> doubt_guard(dout);
                 dout << CtiTime() << " **** Checkpoint - no or bad value stored **** " << __FILE__ << " (" << __LINE__ << ")" << endl;
@@ -1071,7 +1070,7 @@ int CBC7020::executePutConfigUDP(CtiRequestMsg *pReq,CtiCommandParser &parse,OUT
     }
 
     return nRet;
-}
+}*/
 
 int CBC7020::sendPutValueAnalog(int outputPt, double value, CtiRequestMsg *pReq, OUTMESS *&OutMessage, list< CtiMessage* >&vgList, list< CtiMessage* >&retList, list< OUTMESS* >   &outList)
 {

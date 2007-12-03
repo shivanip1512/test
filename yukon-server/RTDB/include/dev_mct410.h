@@ -9,8 +9,8 @@
 *
 * PVCS KEYWORDS:
 * ARCHIVE      :  $Archive:   Z:/SOFTWAREARCHIVES/YUKON/RTDB/INCLUDE/dev_MCT410.h-arc  $
-* REVISION     :  $Revision: 1.61 $
-* DATE         :  $Date: 2007/12/03 21:45:16 $
+* REVISION     :  $Revision: 1.62 $
+* DATE         :  $Date: 2007/12/03 22:19:41 $
 *
 * Copyright (c) 1999, 2000 Cannon Technologies Inc. All rights reserved.
 *-----------------------------------------------------------------------------*/
@@ -307,11 +307,11 @@ protected:
 
     CtiDeviceMCT4xx::ConfigPartsList getPartsList();
 
-    int executePutConfigDemandLP  ( CtiRequestMsg *pReq, CtiCommandParser &parse, OUTMESS *&OutMessage, list< CtiMessage * >&vgList, list< CtiMessage * >&retList, list< OUTMESS * > &outList );
+    /*int executePutConfigDemandLP  ( CtiRequestMsg *pReq, CtiCommandParser &parse, OUTMESS *&OutMessage, list< CtiMessage * >&vgList, list< CtiMessage * >&retList, list< OUTMESS * > &outList );
     int executePutConfigDisconnect( CtiRequestMsg *pReq, CtiCommandParser &parse, OUTMESS *&OutMessage, list< CtiMessage * >&vgList, list< CtiMessage * >&retList, list< OUTMESS * > &outList );
     int executePutConfigOptions   ( CtiRequestMsg *pReq, CtiCommandParser &parse, OUTMESS *&OutMessage, list< CtiMessage * >&vgList, list< CtiMessage * >&retList, list< OUTMESS * > &outList );
     int executePutConfigCentron   ( CtiRequestMsg *pReq, CtiCommandParser &parse, OUTMESS *&OutMessage, list< CtiMessage * >&vgList, list< CtiMessage * >&retList, list< OUTMESS * > &outList );
-
+*/
     virtual INT ModelDecode( INMESS *InMessage, CtiTime &TimeNow, list< CtiMessage * > &vgList, list< CtiMessage * > &retList, list< OUTMESS * > &outList );
     virtual INT ErrorDecode( INMESS *InMessage, CtiTime &TimeNow, list< CtiMessage * > &vgList, list< CtiMessage * > &retList, list< OUTMESS * > &outList );
 

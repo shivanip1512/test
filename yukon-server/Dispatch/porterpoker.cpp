@@ -10,8 +10,8 @@
 * Author: Corey G. Plender
 *
 * CVS KEYWORDS:
-* REVISION     :  $Revision: 1.6 $
-* DATE         :  $Date: 2007/10/30 21:33:04 $
+* REVISION     :  $Revision: 1.7 $
+* DATE         :  $Date: 2007/12/03 22:19:41 $
 *
 * Copyright (c) 2002 Cannon Technologies Inc. All rights reserved.
 *-----------------------------------------------------------------------------*/
@@ -122,6 +122,8 @@ void main(int argc, char **argv)
             dout << "         0x02 0xXXXXXXXX - Set Porter's DBDEBUGLEVEL" << endl;
             dout << "         0x03 0xXXXXXXXX - Send DISPATCH a device DBChange" << endl;
             dout << "         0x04 0xXXXXXXXX - Send DISPATCH a point DBChange" << endl;
+            dout << "         0x05 0xXXXXXXXX - Send DISPATCH a config config DBChange" << endl;
+            dout << "         0x06 0xXXXXXXXX - Send DISPATCH a config device DBChange" << endl;
         }
     }
 
@@ -148,7 +150,7 @@ void main(int argc, char **argv)
             CtiPointRegistrationMsg    *PtRegMsg = CTIDBG_new CtiPointRegistrationMsg(REG_NOTHING);
             Connect.WriteConnQue(PtRegMsg);
 
-            if( !(command == 0x03 || command == 0x04) )
+            if( !(command == 0x03 || command == 0x04 || command == 0x05 || command == 0x06) )
             {
                 CtiCommandMsg *pCmd = new CtiCommandMsg(CtiCommandMsg::PorterConsoleInput, 15);
     
@@ -189,6 +191,17 @@ void main(int argc, char **argv)
                 else if( command == 0x04 )
                 {
                     CtiDBChangeMsg *chg = new CtiDBChangeMsg(dblvl, ChangePointDb, "point", "", ChangeTypeUpdate);
+                    Connect.WriteConnQue(chg);
+                }
+                else if( command == 0x05 )
+                {
+                    CtiDBChangeMsg *chg = new CtiDBChangeMsg(dblvl, ChangeConfigDb, "device config", "config", ChangeTypeUpdate);
+                    
+                    Connect.WriteConnQue(chg);
+                }
+                else if( command == 0x06 )
+                {
+                    CtiDBChangeMsg *chg = new CtiDBChangeMsg(dblvl, ChangeConfigDb, "device config", "device", ChangeTypeUpdate);
                     Connect.WriteConnQue(chg);
                 }
             }

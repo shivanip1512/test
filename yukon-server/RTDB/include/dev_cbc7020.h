@@ -9,8 +9,8 @@
 *
 * PVCS KEYWORDS:
 * ARCHIVE      :  $Archive:   Z:/SOFTWAREARCHIVES/YUKON/RTDB/INCLUDE/dev_cbc.h-arc  $
-* REVISION     :  $Revision: 1.4 $
-* DATE         :  $Date: 2007/09/24 19:59:43 $
+* REVISION     :  $Revision: 1.5 $
+* DATE         :  $Date: 2007/12/03 22:19:41 $
 *
 * Copyright (c) 2002 Cannon Technologies Inc. All rights reserved.
 *-----------------------------------------------------------------------------*/
@@ -20,9 +20,8 @@
 #include "yukon.h"
 
 #include "dev_dnp.h"
-#include "config_base.h"
+#include "config_data_cbc.h"
 #include "config_device.h"
-#include "config_parts.h"
 
 namespace Cti       {
 namespace Device    {
@@ -37,7 +36,7 @@ public:
     //  also, we now need to allow configs to be sent out.
     virtual INT ExecuteRequest(CtiRequestMsg *pReq, CtiCommandParser &parse, OUTMESS *&OutMessage, list< CtiMessage* > &vgList, list< CtiMessage* > &retList, list< OUTMESS* > &outList);
 
-    virtual INT executePutConfig(CtiRequestMsg *pReq, CtiCommandParser &parse, OUTMESS *&OutMessage, list< CtiMessage* >&vgList, list< CtiMessage* >&retList, list< OUTMESS* >&outList);
+    //virtual INT executePutConfig(CtiRequestMsg *pReq, CtiCommandParser &parse, OUTMESS *&OutMessage, list< CtiMessage* >&vgList, list< CtiMessage* >&retList, list< OUTMESS* >&outList);
 
 private:
 

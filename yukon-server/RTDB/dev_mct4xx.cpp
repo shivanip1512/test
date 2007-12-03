@@ -8,8 +8,8 @@
 *
 * PVCS KEYWORDS:
 * ARCHIVE      :  $Archive:   Z:/SOFTWAREARCHIVES/YUKON/RTDB/dev_mct4xx-arc  $
-* REVISION     :  $Revision: 1.70 $
-* DATE         :  $Date: 2007/12/03 17:23:32 $
+* REVISION     :  $Revision: 1.71 $
+* DATE         :  $Date: 2007/12/03 22:19:41 $
 *
 * Copyright (c) 2005 Cannon Technologies Inc. All rights reserved.
 *-----------------------------------------------------------------------------*/
@@ -28,17 +28,21 @@
 #include "numstr.h"
 #include "pt_status.h"   //  for valueReport()'s use of CtiPointStatus
 #include "dllyukon.h"    //  for ResolveStateName()
+#include "config_data_mct.h"
 
 #include "ctidate.h"
 
 using Cti::Protocol::Emetcon;
 
+const char *CtiDeviceMCT4xx::PutConfigPart_basic           = "basic";
 const char *CtiDeviceMCT4xx::PutConfigPart_all             = "all";
 const char *CtiDeviceMCT4xx::PutConfigPart_tou             = "tou";
 const char *CtiDeviceMCT4xx::PutConfigPart_dst             = "dst";
+const char *CtiDeviceMCT4xx::PutConfigPart_timezone        = "timezone";
 const char *CtiDeviceMCT4xx::PutConfigPart_vthreshold      = "vthreshold";
 const char *CtiDeviceMCT4xx::PutConfigPart_demand_lp       = "demandlp";
 const char *CtiDeviceMCT4xx::PutConfigPart_options         = "options";
+const char *CtiDeviceMCT4xx::PutConfigPart_configbyte      = "configbyte";
 const char *CtiDeviceMCT4xx::PutConfigPart_addressing      = "addressing";
 const char *CtiDeviceMCT4xx::PutConfigPart_disconnect      = "disconnect";
 const char *CtiDeviceMCT4xx::PutConfigPart_holiday         = "holiday";
@@ -145,6 +149,10 @@ CtiDeviceMCT4xx::ConfigPartsList CtiDeviceMCT4xx::getPartsList()
     return _config_parts;
 }
 
+CtiDeviceMCT4xx::ConfigPartsList CtiDeviceMCT4xx::getBasicPartsList()
+{
+    return ConfigPartsList();
+}
 
 CtiDeviceMCT4xx::CommandSet CtiDeviceMCT4xx::initCommandStore()
 {
@@ -1164,55 +1172,36 @@ INT CtiDeviceMCT4xx::executePutConfig(CtiRequestMsg         *pReq,
         if( parse.getsValue("installvalue") == PutConfigPart_all )
         {
             ConfigPartsList tempList = getPartsList();
-            if(!tempList.empty())
+            executePutConfigMultiple(tempList, pReq, parse, OutMessage, vgList, retList, outList);
+        }
+        else if( parse.getsValue("installvalue") == PutConfigPart_basic )
+        {
+            ConfigPartsList tempList = getBasicPartsList();
+
+            executePutConfigMultiple(tempList, pReq, parse, OutMessage, vgList, retList, outList);
+
+            CtiRequestMsg *tempReq = CTIDBG_new CtiRequestMsg(*pReq);
+            string tempString = "putconfig timesync noqueue";
+            tempReq->setCommandString(tempString);
+            tempReq->setConnectionHandle(pReq->getConnectionHandle());
+            CtiCommandParser parseSingle(tempReq->CommandString());
+            sRet = executePutConfig(tempReq, parseSingle, OutMessage, vgList, retList, outList);
+
+            tempString = "getconfig model";
+            if( parse.isKeyValid("noqueue") )
             {
-                CtiRequestMsg *tempReq = CTIDBG_new CtiRequestMsg(*pReq);
-
-                // Load all the other stuff that is needed
-                OutMessage->DeviceID  = getID();
-                OutMessage->TargetID  = getID();
-                OutMessage->Port      = getPortID();
-                OutMessage->Remote    = getAddress();
-                OutMessage->Priority  = MAXPRIORITY-4;//standard seen in rest of devices.
-                OutMessage->TimeOut   = 2;
-                OutMessage->Retry     = 2;
-                OutMessage->Sequence = Cti::Protocol::Emetcon::PutConfig_Install;  //  this will be handled by the putconfig decode - basically, a no-op
-                OutMessage->Request.RouteID   = getRouteID();
-
-                for(CtiDeviceMCT4xx::ConfigPartsList::const_iterator tempItr = tempList.begin();tempItr != tempList.end();tempItr++)
-                {
-                    if( tempReq != NULL && *tempItr != PutConfigPart_all)//_all == infinite loop == unhappy program == very unhappy jess
-                    {
-                        string tempString = pReq->CommandString();
-                        string replaceString = " ";
-                        replaceString += *tempItr; //FIX_ME Consider not keeping the old string but just creating a new, internal string.
-                        replaceString += " ";
-
-                        CtiToLower(tempString);
-
-                        CtiString ts_tempString = tempString;
-                        boost::regex re (" all($| )");
-                        ts_tempString.replace( re,replaceString );
-                        tempString = ts_tempString;
-
-                        tempReq->setCommandString(tempString);
-
-                        tempReq->setConnectionHandle(pReq->getConnectionHandle());
-
-                        CtiCommandParser parseSingle(tempReq->CommandString());
-
-                        sRet = executePutConfigSingle(tempReq, parseSingle, OutMessage, vgList, retList, outList);
-                    }
-                }
-
-                if(tempReq!=NULL)
-                {
-                    delete tempReq;
-                    tempReq = NULL;
-                }
-
+                tempString += " noqueue";
             }
+            tempReq->setCommandString(tempString);
+            tempReq->setConnectionHandle(pReq->getConnectionHandle());
+            CtiCommandParser parseGetConfig(tempReq->CommandString());
+            sRet = executeGetConfig(tempReq, parseGetConfig, OutMessage, vgList, retList, outList);
 
+            if(tempReq!=NULL)
+            {
+                delete tempReq;
+                tempReq = NULL;
+            }
         }
         else
         {
@@ -1714,6 +1703,55 @@ INT CtiDeviceMCT4xx::executePutValue(CtiRequestMsg         *pReq,
 
 }
 
+int CtiDeviceMCT4xx::executePutConfigMultiple(ConfigPartsList       &partsList,
+                                              CtiRequestMsg         *pReq,
+                                              CtiCommandParser      &parse,
+                                              OUTMESS               *&OutMessage,
+                                              list< CtiMessage* >   &vgList,
+                                              list< CtiMessage* >   &retList,
+                                              list< OUTMESS* >      &outList)
+{
+    int ret = NoMethod;
+    if(!partsList.empty())
+    {
+        ret = NoError;
+        CtiRequestMsg *tempReq = CTIDBG_new CtiRequestMsg(*pReq);
+
+        // Load all the other stuff that is needed
+        OutMessage->DeviceID  = getID();
+        OutMessage->TargetID  = getID();
+        OutMessage->Port      = getPortID();
+        OutMessage->Remote    = getAddress();
+        OutMessage->Priority  = MAXPRIORITY-4;//standard seen in rest of devices.
+        OutMessage->TimeOut   = 2;
+        OutMessage->Retry     = 2;
+        OutMessage->Sequence = Cti::Protocol::Emetcon::PutConfig_Install;  //  this will be handled by the putconfig decode - basically, a no-op
+        OutMessage->Request.RouteID   = getRouteID();
+
+        for(CtiDeviceMCT4xx::ConfigPartsList::const_iterator tempItr = partsList.begin();tempItr != partsList.end();tempItr++)
+        {
+            if( tempReq != NULL && *tempItr != PutConfigPart_all)//_all == infinite loop == unhappy program == very unhappy jess
+            {
+                string tempString = "putconfig install ";
+                tempString += *tempItr;
+                tempReq->setCommandString(tempString);
+                tempReq->setConnectionHandle(pReq->getConnectionHandle());
+
+                CtiCommandParser parseSingle(tempReq->CommandString());
+                executePutConfigSingle(tempReq, parseSingle, OutMessage, vgList, retList, outList);
+            }
+        }
+
+        if(tempReq!=NULL)
+        {
+            delete tempReq;
+            tempReq = NULL;
+        }
+    }
+
+    return ret;
+}
+
 int CtiDeviceMCT4xx::executePutConfigSingle(CtiRequestMsg         *pReq,
                                    CtiCommandParser               &parse,
                                    OUTMESS                        *&OutMessage,
@@ -1735,21 +1773,22 @@ int CtiDeviceMCT4xx::executePutConfigSingle(CtiRequestMsg         *pReq,
     string installValue = parse.getsValue("installvalue");
 
     int nRet = NORMAL;
-    if(      installValue == PutConfigPart_tou )              nRet = executePutConfigTOU               (pReq,parse,OutMessage,vgList,retList,outList);
-    else if( installValue == PutConfigPart_dst )              nRet = executePutConfigDst               (pReq,parse,OutMessage,vgList,retList,outList);
-    else if( installValue == PutConfigPart_vthreshold )       nRet = executePutConfigVThreshold        (pReq,parse,OutMessage,vgList,retList,outList);
+    //if(      installValue == PutConfigPart_tou )              nRet = executePutConfigTOU               (pReq,parse,OutMessage,vgList,retList,outList);
+    if( installValue == PutConfigPart_timezone )                nRet = executePutConfigTimezone          (pReq,parse,OutMessage,vgList,retList,outList);
+    //else if( installValue == PutConfigPart_vthreshold )       nRet = executePutConfigVThreshold        (pReq,parse,OutMessage,vgList,retList,outList);
     else if( installValue == PutConfigPart_demand_lp )        nRet = executePutConfigDemandLP          (pReq,parse,OutMessage,vgList,retList,outList);
-    else if( installValue == PutConfigPart_options )          nRet = executePutConfigOptions           (pReq,parse,OutMessage,vgList,retList,outList);
-    else if( installValue == PutConfigPart_addressing )       nRet = executePutConfigAddressing        (pReq,parse,OutMessage,vgList,retList,outList);
-    else if( installValue == PutConfigPart_disconnect )       nRet = executePutConfigDisconnect        (pReq,parse,OutMessage,vgList,retList,outList);
-    else if( installValue == PutConfigPart_holiday )          nRet = executePutConfigHoliday           (pReq,parse,OutMessage,vgList,retList,outList);
-    else if( installValue == PutConfigPart_usage )            nRet = executePutConfigUsage             (pReq,parse,OutMessage,vgList,retList,outList);
-    else if( installValue == PutConfigPart_llp )              nRet = executePutConfigLongLoadProfile   (pReq,parse,OutMessage,vgList,retList,outList);
+    //else if( installValue == PutConfigPart_options )          nRet = executePutConfigOptions           (pReq,parse,OutMessage,vgList,retList,outList);
+    //else if( installValue == PutConfigPart_addressing )       nRet = executePutConfigAddressing        (pReq,parse,OutMessage,vgList,retList,outList);
+    //else if( installValue == PutConfigPart_disconnect )       nRet = executePutConfigDisconnect        (pReq,parse,OutMessage,vgList,retList,outList);
+    //else if( installValue == PutConfigPart_holiday )          nRet = executePutConfigHoliday           (pReq,parse,OutMessage,vgList,retList,outList);
+    //else if( installValue == PutConfigPart_usage )            nRet = executePutConfigUsage             (pReq,parse,OutMessage,vgList,retList,outList);
+    //else if( installValue == PutConfigPart_llp )              nRet = executePutConfigLongLoadProfile   (pReq,parse,OutMessage,vgList,retList,outList);
     else if( installValue == PutConfigPart_lpchannel )        nRet = executePutConfigLoadProfileChannel(pReq,parse,OutMessage,vgList,retList,outList);
-    else if( installValue == PutConfigPart_relays )           nRet = executePutConfigRelays            (pReq,parse,OutMessage,vgList,retList,outList);
-    else if( installValue == PutConfigPart_precanned_table )  nRet = executePutConfigPrecannedTable    (pReq,parse,OutMessage,vgList,retList,outList);
-    else if( installValue == PutConfigPart_centron )          nRet = executePutConfigCentron           (pReq,parse,OutMessage,vgList,retList,outList);
-    else if( installValue == PutConfigPart_dnp )              nRet = executePutConfigDNP               (pReq,parse,OutMessage,vgList,retList,outList);
+    else if( installValue == PutConfigPart_configbyte )       nRet = executePutConfigConfigurationByte (pReq,parse,OutMessage,vgList,retList,outList);
+    //else if( installValue == PutConfigPart_relays )           nRet = executePutConfigRelays            (pReq,parse,OutMessage,vgList,retList,outList);
+    //else if( installValue == PutConfigPart_precanned_table )  nRet = executePutConfigPrecannedTable    (pReq,parse,OutMessage,vgList,retList,outList);
+    //else if( installValue == PutConfigPart_centron )          nRet = executePutConfigCentron           (pReq,parse,OutMessage,vgList,retList,outList);
+    //else if( installValue == PutConfigPart_dnp )              nRet = executePutConfigDNP               (pReq,parse,OutMessage,vgList,retList,outList);
     else
     {   //Not sure if this is correct, this could just return NoMethod. This is here
         //just in case anyone wants to use a putconfig install  for anything but configs.
@@ -1929,9 +1968,133 @@ INT CtiDeviceMCT4xx::decodePutConfig(INMESS *InMessage, CtiTime &TimeNow, list< 
 
 using namespace Cti;
 using namespace Config;
-using namespace MCT;
+
+int CtiDeviceMCT4xx::executePutConfigDemandLP          (CtiRequestMsg *pReq, CtiCommandParser &parse, OUTMESS *&OutMessage, list< CtiMessage * > &vgList, list< CtiMessage * > &retList, list< OUTMESS * > &outList)    {   return NoMethod;    }
+int CtiDeviceMCT4xx::executePutConfigLoadProfileChannel(CtiRequestMsg *pReq, CtiCommandParser &parse, OUTMESS *&OutMessage, list< CtiMessage * > &vgList, list< CtiMessage * > &retList, list< OUTMESS * > &outList)    {   return NoMethod;    }
+
+int CtiDeviceMCT4xx::executePutConfigTimezone(CtiRequestMsg *pReq, CtiCommandParser &parse, OUTMESS *&OutMessage, list< CtiMessage* >&vgList, list< CtiMessage* >&retList, list< OUTMESS * > &outList)
+{
+    int nRet = NORMAL;
+    CtiConfigDeviceSPtr deviceConfig = getDeviceConfig();
+
+    if(deviceConfig)
+    {
+        long timezoneOffset;
+        USHORT function, length, io;
+        timezoneOffset = deviceConfig->getLongValueFromKey(MCTStrings::TimeZoneOffset);
+
+        if(!getOperation(Emetcon::PutConfig_TimeZoneOffset, OutMessage->Buffer.BSt))
+        {
+            CtiLockGuard<CtiLogger> doubt_guard(dout);
+            dout << CtiTime() << " **** Checkpoint - Operation PutConfig_TimeZoneOffset not found **** " << __FILE__ << " (" << __LINE__ << ")" << endl;
+            nRet = NoConfigData;
+        }
+        else
+        if(timezoneOffset == std::numeric_limits<long>::min())
+        {
+            CtiLockGuard<CtiLogger> doubt_guard(dout);
+            dout << CtiTime() << " **** Checkpoint - no or bad value stored **** " << __FILE__ << " (" << __LINE__ << ")" << endl;
+            nRet = NoConfigData;
+        }
+        else
+        {
+            timezoneOffset = timezoneOffset * 4; //The timezone offset in the mct is in 15 minute increments.
+            if(parse.isKeyValid("force")
+               || CtiDeviceBase::getDynamicInfo(CtiTableDynamicPaoInfo::Key_MCT_TimeZoneOffset) != timezoneOffset)
+            {
+                if( !parse.isKeyValid("verify") )
+                {
+                    //  the bstruct IO is set above by getOperation()
+
+                    OutMessage->Buffer.BSt.Message[0] = (timezoneOffset);
 
 
+                    outList.push_back( CTIDBG_new OUTMESS(*OutMessage) );
+
+                    OutMessage->Buffer.BSt.IO         = Emetcon::IO_Read;
+                    OutMessage->Priority             -= 1;//decrease for read. Only want read after a successful write.
+                    outList.push_back( CTIDBG_new OUTMESS(*OutMessage) );
+                    OutMessage->Priority             += 1;//return to normal
+
+                    nRet = NORMAL;
+                }
+                else
+                {
+                    nRet = ConfigNotCurrent;
+                }
+            }
+            else
+            {
+                nRet = ConfigCurrent;
+            }
+        }
+    }
+    else
+        nRet = NoConfigData;
+
+    return nRet;
+}
+
+int CtiDeviceMCT4xx::executePutConfigConfigurationByte(CtiRequestMsg *pReq, CtiCommandParser &parse, OUTMESS *&OutMessage, list< CtiMessage* >&vgList, list< CtiMessage* >&retList, list< OUTMESS * > &outList)
+{
+    int nRet = NORMAL;
+    CtiConfigDeviceSPtr deviceConfig = getDeviceConfig();
+
+    if(deviceConfig)
+    {
+        long configuration;
+        configuration = deviceConfig->getLongValueFromKey(MCTStrings::Configuration);
+
+        if(configuration == std::numeric_limits<long>::min())
+        {
+            CtiLockGuard<CtiLogger> doubt_guard(dout);
+            dout << CtiTime() << " **** Checkpoint - no or bad value stored **** " << __FILE__ << " (" << __LINE__ << ")" << endl;
+            nRet = NoConfigData;
+        }
+        else
+        {
+            if(parse.isKeyValid("force")
+               || CtiDeviceBase::getDynamicInfo(CtiTableDynamicPaoInfo::Key_MCT_Configuration) != configuration)
+            {
+                if( !parse.isKeyValid("verify") )
+                {
+                    //  the bstruct IO is set above by getOperation()
+
+                    OutMessage->Buffer.BSt.Message[0] = (configuration);
+
+                    OutMessage->Buffer.BSt.Function = FuncWrite_ConfigAlarmMaskPos;
+                    OutMessage->Buffer.BSt.Length = 1; //We are only writing a single byte, the command supports more.
+                    OutMessage->Buffer.BSt.IO       = Emetcon::IO_Function_Write;
+
+                    outList.push_back( CTIDBG_new OUTMESS(*OutMessage) );
+
+                    OutMessage->Buffer.BSt.IO         = Emetcon::IO_Read;
+                    OutMessage->Buffer.BSt.Function   = Memory_ConfigurationPos;
+                    OutMessage->Buffer.BSt.Length     = Memory_ConfigurationLen;
+                    OutMessage->Priority             -= 1;//decrease for read. Only want read after a successful write.
+                    outList.push_back( CTIDBG_new OUTMESS(*OutMessage) );
+                    OutMessage->Priority             += 1;//return to normal
+
+                    nRet = NORMAL;
+                }
+                else
+                {
+                    nRet = ConfigNotCurrent;
+                }
+            }
+            else
+            {
+                nRet = ConfigCurrent;
+            }
+        }
+    }
+    else
+        nRet = NoConfigData;
+
+    return nRet;
+}
+
+/*
 int CtiDeviceMCT4xx::executePutConfigVThreshold(CtiRequestMsg *pReq, CtiCommandParser &parse, OUTMESS *&OutMessage, list< CtiMessage * > &vgList, list< CtiMessage * > &retList, list< OUTMESS * > &outList)
 {
     int nRet = NORMAL;
@@ -2002,10 +2165,9 @@ int CtiDeviceMCT4xx::executePutConfigVThreshold(CtiRequestMsg *pReq, CtiCommandP
 
     return nRet;
 }
+*/
 
-int CtiDeviceMCT4xx::executePutConfigDemandLP          (CtiRequestMsg *pReq, CtiCommandParser &parse, OUTMESS *&OutMessage, list< CtiMessage * > &vgList, list< CtiMessage * > &retList, list< OUTMESS * > &outList)    {   return NoMethod;    }
-int CtiDeviceMCT4xx::executePutConfigLoadProfileChannel(CtiRequestMsg *pReq, CtiCommandParser &parse, OUTMESS *&OutMessage, list< CtiMessage * > &vgList, list< CtiMessage * > &retList, list< OUTMESS * > &outList)    {   return NoMethod;    }
-int CtiDeviceMCT4xx::executePutConfigRelays            (CtiRequestMsg *pReq, CtiCommandParser &parse, OUTMESS *&OutMessage, list< CtiMessage * > &vgList, list< CtiMessage * > &retList, list< OUTMESS * > &outList)    {   return NoMethod;    }
+/*int CtiDeviceMCT4xx::executePutConfigRelays            (CtiRequestMsg *pReq, CtiCommandParser &parse, OUTMESS *&OutMessage, list< CtiMessage * > &vgList, list< CtiMessage * > &retList, list< OUTMESS * > &outList)    {   return NoMethod;    }
 int CtiDeviceMCT4xx::executePutConfigPrecannedTable    (CtiRequestMsg *pReq, CtiCommandParser &parse, OUTMESS *&OutMessage, list< CtiMessage * > &vgList, list< CtiMessage * > &retList, list< OUTMESS * > &outList)    {   return NoMethod;    }
 int CtiDeviceMCT4xx::executePutConfigOptions           (CtiRequestMsg *pReq, CtiCommandParser &parse, OUTMESS *&OutMessage, list< CtiMessage * > &vgList, list< CtiMessage * > &retList, list< OUTMESS * > &outList)    {   return NoMethod;    }
 int CtiDeviceMCT4xx::executePutConfigCentron           (CtiRequestMsg *pReq, CtiCommandParser &parse, OUTMESS *&OutMessage, list< CtiMessage * > &vgList, list< CtiMessage * > &retList, list< OUTMESS * > &outList)    {   return NoMethod;    }
@@ -2389,72 +2551,64 @@ int CtiDeviceMCT4xx::executePutConfigDst(CtiRequestMsg *pReq, CtiCommandParser &
 
     if(deviceConfig)
     {
-        BaseSPtr tempBasePtr = deviceConfig->getConfigFromType(ConfigTypeMCTDST);
+        long dstBegin, dstEnd, timezoneOffset;
+        USHORT function, length, io;
+        dstBegin = deviceConfig->getLongValueFromKey(MCTStrings::DstBegin);
+        dstEnd = deviceConfig->getLongValueFromKey(MCTStrings::DstEnd);
+        timezoneOffset = deviceConfig->getLongValueFromKey(MCTStrings::TimeZoneOffset);
 
-        if(tempBasePtr && tempBasePtr->getType() == ConfigTypeMCTDST)
+        if(!getOperation(Emetcon::PutConfig_DST, OutMessage->Buffer.BSt))
         {
-            long dstBegin, dstEnd, timezoneOffset;
-            USHORT function, length, io;
-            MCT_DST_SPtr dstConfig = boost::static_pointer_cast< ConfigurationPart<MCT_DST> >(tempBasePtr);
-            dstBegin = dstConfig->getLongValueFromKey(DstBegin);
-            dstEnd = dstConfig->getLongValueFromKey(DstEnd);
-            timezoneOffset = dstConfig->getLongValueFromKey(TimeZoneOffset);
-
-            if(!getOperation(Emetcon::PutConfig_DST, OutMessage->Buffer.BSt))
+            CtiLockGuard<CtiLogger> doubt_guard(dout);
+            dout << CtiTime() << " **** Checkpoint - Operation PutConfig_DST not found **** " << __FILE__ << " (" << __LINE__ << ")" << endl;
+            nRet = NoConfigData;
+        }
+        else
+        if(dstBegin == std::numeric_limits<long>::min() || dstEnd == std::numeric_limits<long>::min() || timezoneOffset == std::numeric_limits<long>::min())
+        {
+            CtiLockGuard<CtiLogger> doubt_guard(dout);
+            dout << CtiTime() << " **** Checkpoint - no or bad value stored **** " << __FILE__ << " (" << __LINE__ << ")" << endl;
+            nRet = NoConfigData;
+        }
+        else
+        {
+            if(parse.isKeyValid("force") || CtiDeviceBase::getDynamicInfo(CtiTableDynamicPaoInfo::Key_MCT_DSTStartTime) != dstBegin
+               || CtiDeviceBase::getDynamicInfo(CtiTableDynamicPaoInfo::Key_MCT_DSTEndTime) != dstEnd
+               || CtiDeviceBase::getDynamicInfo(CtiTableDynamicPaoInfo::Key_MCT_TimeZoneOffset) != timezoneOffset)
             {
-                CtiLockGuard<CtiLogger> doubt_guard(dout);
-                dout << CtiTime() << " **** Checkpoint - Operation PutConfig_DST not found **** " << __FILE__ << " (" << __LINE__ << ")" << endl;
-                nRet = NoConfigData;
-            }
-            else
-            if(dstBegin == std::numeric_limits<long>::min() || dstEnd == std::numeric_limits<long>::min() || timezoneOffset == std::numeric_limits<long>::min())
-            {
-                CtiLockGuard<CtiLogger> doubt_guard(dout);
-                dout << CtiTime() << " **** Checkpoint - no or bad value stored **** " << __FILE__ << " (" << __LINE__ << ")" << endl;
-                nRet = NoConfigData;
-            }
-            else
-            {
-                if(parse.isKeyValid("force") || CtiDeviceBase::getDynamicInfo(CtiTableDynamicPaoInfo::Key_MCT_DSTStartTime) != dstBegin
-                   || CtiDeviceBase::getDynamicInfo(CtiTableDynamicPaoInfo::Key_MCT_DSTEndTime) != dstEnd
-                   || CtiDeviceBase::getDynamicInfo(CtiTableDynamicPaoInfo::Key_MCT_TimeZoneOffset) != timezoneOffset)
+                if( !parse.isKeyValid("verify") )
                 {
-                    if( !parse.isKeyValid("verify") )
-                    {
-                        //  the bstruct IO is set above by getOperation()
-                        OutMessage->Buffer.BSt.Message[0] = (dstBegin>>24);
-                        OutMessage->Buffer.BSt.Message[1] = (dstBegin>>16);
-                        OutMessage->Buffer.BSt.Message[2] = (dstBegin>>8);
-                        OutMessage->Buffer.BSt.Message[3] = (dstBegin);
-                        OutMessage->Buffer.BSt.Message[4] = (dstEnd>>24);
-                        OutMessage->Buffer.BSt.Message[5] = (dstEnd>>16);
-                        OutMessage->Buffer.BSt.Message[6] = (dstEnd>>8);
-                        OutMessage->Buffer.BSt.Message[7] = (dstEnd);
-                        OutMessage->Buffer.BSt.Message[8] = (timezoneOffset);
+                    //  the bstruct IO is set above by getOperation()
+                    OutMessage->Buffer.BSt.Message[0] = (dstBegin>>24);
+                    OutMessage->Buffer.BSt.Message[1] = (dstBegin>>16);
+                    OutMessage->Buffer.BSt.Message[2] = (dstBegin>>8);
+                    OutMessage->Buffer.BSt.Message[3] = (dstBegin);
+                    OutMessage->Buffer.BSt.Message[4] = (dstEnd>>24);
+                    OutMessage->Buffer.BSt.Message[5] = (dstEnd>>16);
+                    OutMessage->Buffer.BSt.Message[6] = (dstEnd>>8);
+                    OutMessage->Buffer.BSt.Message[7] = (dstEnd);
+                    OutMessage->Buffer.BSt.Message[8] = (timezoneOffset);
 
 
-                        outList.push_back( CTIDBG_new OUTMESS(*OutMessage) );
+                    outList.push_back( CTIDBG_new OUTMESS(*OutMessage) );
 
-                        OutMessage->Buffer.BSt.IO         = Emetcon::IO_Read;
-                        OutMessage->Priority             -= 1;//decrease for read. Only want read after a successful write.
-                        outList.push_back( CTIDBG_new OUTMESS(*OutMessage) );
-                        OutMessage->Priority             += 1;//return to normal
+                    OutMessage->Buffer.BSt.IO         = Emetcon::IO_Read;
+                    OutMessage->Priority             -= 1;//decrease for read. Only want read after a successful write.
+                    outList.push_back( CTIDBG_new OUTMESS(*OutMessage) );
+                    OutMessage->Priority             += 1;//return to normal
 
-                        nRet = NORMAL;
-                    }
-                    else
-                    {
-                        nRet = ConfigNotCurrent;
-                    }
+                    nRet = NORMAL;
                 }
                 else
                 {
-                    nRet = ConfigCurrent;
+                    nRet = ConfigNotCurrent;
                 }
             }
+            else
+            {
+                nRet = ConfigCurrent;
+            }
         }
-        else
-            nRet = NoConfigData;
     }
     else
         nRet = NoConfigData;
@@ -2650,7 +2804,7 @@ int CtiDeviceMCT4xx::executePutConfigLongLoadProfile(CtiRequestMsg *pReq,CtiComm
 
     return nRet;
 }
-
+*/
 
 INT CtiDeviceMCT4xx::decodeGetConfigTime(INMESS *InMessage, CtiTime &TimeNow, list< CtiMessage * > &vgList, list< CtiMessage * > &retList, list< OUTMESS * > &outList)
 {
