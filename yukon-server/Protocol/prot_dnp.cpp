@@ -8,8 +8,8 @@
 *
 * PVCS KEYWORDS:
 * ARCHIVE      :  $Archive$
-* REVISION     :  $Revision: 1.38 $
-* DATE         :  $Date: 2007/03/13 19:57:39 $
+* REVISION     :  $Revision: 1.39 $
+* DATE         :  $Date: 2007/12/03 15:20:11 $
 *
 * Copyright (c) 2002 Cannon Technologies Inc. All rights reserved.
 *-----------------------------------------------------------------------------*/
@@ -840,7 +840,7 @@ void DNPInterface::getInboundStrings( stringlist_t &strings )
 }
 
 
-bool DNPInterface::isTransactionComplete( void )
+bool DNPInterface::isTransactionComplete( void ) const
 {
     //  ACH: factor in application layer retries... ?
 
