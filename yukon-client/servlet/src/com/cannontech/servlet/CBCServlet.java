@@ -39,6 +39,7 @@ import com.cannontech.servlet.xml.DynamicUpdate;
 import com.cannontech.servlet.xml.ResultXML;
 import com.cannontech.spring.YukonSpringHook;
 import com.cannontech.util.ParamUtil;
+import com.cannontech.web.navigation.CtiNavObject;
 import com.cannontech.yukon.cbc.CBCArea;
 import com.cannontech.yukon.cbc.CBCSpecialArea;
 import com.cannontech.yukon.cbc.CapBankDevice;
@@ -274,8 +275,14 @@ public void doGet(HttpServletRequest req, HttpServletResponse resp) throws javax
                 //Code to memorize the position of the page we are at.
 				//We want to stop calling setNavigation when entering jsf pages
 				//this sets them up so on the return we end up where we left jsp land.
-				CBCNavigationUtil.bookmarkThisLocationCCSpecial(session);
-                
+				
+				CtiNavObject navObject = (CtiNavObject) session.getAttribute("CtiNavObject");
+				navObject.setModuleExitPage(navObject.getCurrentPage());
+				//Hack to preserve an address that will normally fall off our 2 page history.
+				navObject.setPreservedAddress(navObject.getPreviousPage());
+				navObject.setNavigation(redirectURL);
+				
+				
                 String val = ParamUtil.getString(req, "itemid", null);
                 if( val != null){
                     session.setAttribute("lastAccessed", val);

@@ -28,29 +28,30 @@ public class CtiNavActionListener implements ActionListener {
 			VariableResolver vr = context.getApplication().getVariableResolver();
 			CtiNavObject ctiNav = (CtiNavObject)vr.resolveVariable(context, "CtiNavObject");
 
-			if( ctiNav != null ) {
+			if ( ctiNav != null ) {
 				
 				String red = "";
 				HttpSession session = (HttpSession) context.getExternalContext().getSession(false);
                 
 			    red = CBCNavigationUtil.goBack(session);
-				if (!red.equalsIgnoreCase("")) {
-                    //Tweaking the NavObject so that when the ReferrerPageFilter 
-				    //Catches the page load, it puts the page we want into the Previous Page
-				    ctiNav.setCurrentPage(ctiNav.getCurrentPage());
-                }
-                else if( ctiNav.getModuleRedirectPage() != null ) 
-                {
+
+			    
+			    if (ctiNav.getModuleRedirectPage() != null) {
                     //redirect to our module redirect page first, if it set, else
                     // we return to the module exit page
                     red = ctiNav.getModuleRedirectPage();
                     ctiNav.setModuleRedirectPage( null );
-				}
-				else 
-				{
+				} else if (red.equalsIgnoreCase("") ) {
 					red = ctiNav.getModuleExitPage();
 				}
 
+				if (red.equalsIgnoreCase(ctiNav.getModuleExitPage()) && ctiNav.getPreservedAddress() != null) {
+                    //This is here for when we are switching in and out of JSF pages, 
+				    // it preserves the return point since it will fall off of our 2 page history in CtiNav
+				    ctiNav.setCurrentPage(ctiNav.getPreservedAddress());
+                    ctiNav.setPreservedAddress(null);
+                }
+			    
 				context.getExternalContext().redirect( red );
                 context.responseComplete();
 			}

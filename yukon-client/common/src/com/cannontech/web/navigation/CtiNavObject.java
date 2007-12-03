@@ -15,7 +15,7 @@ public class CtiNavObject
 	private String moduleExitPage;
 	private String moduleRedirectPage;
 	private String moduleLabel;
-	
+	private String preservedAddress;
 	
 	/**
 	 * This field is for use only in STARS.
@@ -127,6 +127,14 @@ public class CtiNavObject
 
     public void setInternalLogin(boolean internalLogin) {
         this.internalLogin = internalLogin;
+    }
+
+    public String getPreservedAddress() {
+        return preservedAddress;
+    }
+
+    public void setPreservedAddress(String preservedAddress) {
+        this.preservedAddress = preservedAddress;
     }
 
 }

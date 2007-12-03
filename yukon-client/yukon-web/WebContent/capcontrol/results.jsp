@@ -22,6 +22,7 @@
 	psp.setLinkedToEditors(true);
 	CtiNavObject nav = (CtiNavObject) request.getSession(false).getAttribute(ServletUtil.NAVIGATE);
 	String returnURL = nav.getPreviousPage();
+	
 	if( srchCriteria == null )
 		srchCriteria = ccSession.getLastSearchCriteria();
 
@@ -110,7 +111,13 @@ for( int i = 0; i < items.length; i++ )
             </table>
         </div>
 <br/>        
-<input type="button" value="Back" onclick="javascript:location.href='<%=returnURL %>'">
+
+<%	if( !returnURL.contains("results.jsp") ) { %>
+<input id="BackButton" type="button" value="Back" onclick="javascript:location.href='<%=returnURL %>'">
+<%} else {%>
+<input id="BackButton" type="button" value="Back" disabled>
+<% } %>
+
 </form>
 <script type="text/javascript">
 Event.observe(window, 'load', function() { new CtiNonScrollTable('resTable','headerTable');    }, false);

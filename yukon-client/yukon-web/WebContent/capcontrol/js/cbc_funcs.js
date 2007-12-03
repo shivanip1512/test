@@ -466,7 +466,7 @@ function editorPost()
         alert ("You can only edit 1 item at a time");
 	}else{
         window.location =
-            getUrlType(validElems) + '&itemid=' + validElems[0].getAttribute('value');
+          getUrlType(validElems) + '&itemid=' + validElems[0].getAttribute('value') + '&ignoreBookmark=true';
     }
 }
 
