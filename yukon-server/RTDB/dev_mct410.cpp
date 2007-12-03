@@ -8,8 +8,8 @@
 *
 * PVCS KEYWORDS:
 * ARCHIVE      :  $Archive:   Z:/SOFTWAREARCHIVES/YUKON/RTDB/dev_mct310.cpp-arc  $
-* REVISION     :  $Revision: 1.148 $
-* DATE         :  $Date: 2007/12/03 16:08:44 $
+* REVISION     :  $Revision: 1.149 $
+* DATE         :  $Date: 2007/12/03 21:44:50 $
 *
 * Copyright (c) 1999, 2000 Cannon Technologies Inc. All rights reserved.
 *-----------------------------------------------------------------------------*/
@@ -27,8 +27,6 @@
 #include "dev_mct410.h"
 #include "tbl_ptdispatch.h"
 #include "tbl_dyn_paoinfo.h"
-
-#include "mgr_point.h"
 #include "pt_status.h"
 
 //#include "porter.h"
@@ -497,6 +495,8 @@ CtiDeviceMCT410::CommandSet CtiDeviceMCT410::initCommandStore()
     cs.insert(CommandStore(Emetcon::PutConfig_TimeZoneOffset,   Emetcon::IO_Write,          Memory_TimeZoneOffsetPos,       Memory_TimeZoneOffsetLen));
     cs.insert(CommandStore(Emetcon::PutConfig_Intervals,        Emetcon::IO_Function_Write, FuncWrite_IntervalsPos,         FuncWrite_IntervalsLen));
     cs.insert(CommandStore(Emetcon::GetConfig_Intervals,        Emetcon::IO_Read,           Memory_IntervalsPos,            Memory_IntervalsLen));
+    cs.insert(CommandStore(Emetcon::PutConfig_OutageThreshold,  Emetcon::IO_Write,          Memory_OutageCyclesPos,         Memory_OutageCyclesLen));
+    cs.insert(CommandStore(Emetcon::GetConfig_Thresholds,       Emetcon::IO_Read,           Memory_ThresholdsPos,           Memory_ThresholdsLen));
     cs.insert(CommandStore(Emetcon::GetValue_PFCount,           Emetcon::IO_Read,           Memory_PowerfailCountPos,       Memory_PowerfailCountLen));
     cs.insert(CommandStore(Emetcon::PutStatus_Reset,            Emetcon::IO_Write,          Command_Reset,                  0));
     cs.insert(CommandStore(Emetcon::PutStatus_FreezeOne,        Emetcon::IO_Write,          Command_FreezeOne,              0));
@@ -970,6 +970,8 @@ INT CtiDeviceMCT410::ModelDecode(INMESS *InMessage, CtiTime &TimeNow, list< CtiM
 
         case Emetcon::GetConfig_Intervals:          status = decodeGetConfigIntervals(InMessage, TimeNow, vgList, retList, outList);    break;
 
+        case Emetcon::GetConfig_Thresholds:         status = decodeGetConfigThresholds(InMessage, TimeNow, vgList, retList, outList);   break;
+
         case Emetcon::GetConfig_Model:              status = decodeGetConfigModel(InMessage, TimeNow, vgList, retList, outList);        break;
 
         case Emetcon::GetConfig_Multiplier:
@@ -1337,6 +1339,31 @@ INT CtiDeviceMCT410::executePutConfig( CtiRequestMsg              *pReq,
                 OutMessage->Buffer.BSt.Message[6] = disconnect_minutes & 0xff;
                 OutMessage->Buffer.BSt.Message[7] = connect_minutes    & 0xff;
             }
+        }
+    }
+    else if( parse.isKeyValid("outage_threshold") )
+    {
+        int threshold;
+
+        function = Emetcon::PutConfig_OutageThreshold;
+        found    = getOperation(function, OutMessage->Buffer.BSt);
+
+        threshold = parse.getiValue("outage_threshold");
+
+        if( threshold && (threshold < 15 ||
+                          threshold > 60) )
+        {
+            found = false;
+            nRet  = NoMethod;
+
+            returnErrorMessage(NoMethod, OutMessage, retList,
+                               "Invalid outage threshold (" + CtiNumStr(threshold) + ") for device \"" + getName() + "\", not sending");
+        }
+        else
+        {
+            OutMessage->Sequence = function;
+
+            OutMessage->Buffer.BSt.Message[0] = threshold;
         }
     }
     else
@@ -1814,6 +1841,12 @@ INT CtiDeviceMCT410::executeGetConfig( CtiRequestMsg              *pReq,
         {
             OutMessage->Buffer.BSt.Length += 2;
         }
+    }
+    else if( parse.isKeyValid("thresholds") )
+    {
+        found = getOperation(Emetcon::GetConfig_Thresholds, OutMessage->Buffer.BSt);
+
+        OutMessage->Sequence = Emetcon::GetConfig_Thresholds;
     }
     else if( parse.isKeyValid("address_unique") )
     {
@@ -3627,6 +3660,55 @@ INT CtiDeviceMCT410::decodeGetConfigIntervals(INMESS *InMessage, CtiTime &TimeNo
         resultString += "\n";
 
         resultString += getName() + " / Voltage Profile Interval: " + CtiNumStr(DSt->Message[3]) + string(" minutes\n");
+
+        if((ReturnMsg = CTIDBG_new CtiReturnMsg(getID(), InMessage->Return.CommandStr)) == NULL)
+        {
+            CtiLockGuard<CtiLogger> doubt_guard(dout);
+            dout << CtiTime() << " Could NOT allocate memory " << __FILE__ << " (" << __LINE__ << ") " << endl;
+
+            return MEMORY;
+        }
+
+        ReturnMsg->setUserMessageId(InMessage->Return.UserID);
+        ReturnMsg->setResultString(resultString);
+
+        retMsgHandler( InMessage->Return.CommandStr, status, ReturnMsg, vgList, retList );
+    }
+
+    return status;
+}
+
+INT CtiDeviceMCT410::decodeGetConfigThresholds(INMESS *InMessage, CtiTime &TimeNow, list< CtiMessage* > &vgList, list< CtiMessage* > &retList, list< OUTMESS* > &outList)
+{
+    INT status = NORMAL;
+
+    INT ErrReturn  = InMessage->EventCode & 0x3fff;
+    DSTRUCT *DSt   = &InMessage->Buffer.DSt;
+
+    if(!(status = decodeCheckErrorReturn(InMessage, retList, outList)))
+    {
+        // No error occured, we must do a real decode!
+
+        CtiReturnMsg *ReturnMsg = NULL;    // Message sent to VanGogh, inherits from Multi
+        string resultString;
+
+        float ov = (DSt->Message[0]) << 8 | DSt->Message[1],
+              uv = (DSt->Message[2]) << 8 | DSt->Message[3];
+
+        ov /= 10.0;
+        uv /= 10.0;
+
+        resultString  = getName() + " / Over Voltage Threshold: " + CtiNumStr(ov, 1) + string(" volts\n");
+        resultString += getName() + " / Under Voltage Threshold: " + CtiNumStr(uv, 1) + string(" volts\n");
+
+        if( DSt->Message[4] )
+        {
+            resultString += getName() + " / Outage threshold: " + CtiNumStr(DSt->Message[4]) + " cycles\n";
+        }
+        else
+        {
+            resultString += getName() + " / Outage threshold: disabled\n";
+        }
 
         if((ReturnMsg = CTIDBG_new CtiReturnMsg(getID(), InMessage->Return.CommandStr)) == NULL)
         {
