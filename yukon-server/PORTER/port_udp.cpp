@@ -7,8 +7,8 @@
 * Author: Matt Fisher
 *
 * CVS KEYWORDS:
-* REVISION     :  $Revision: 1.18 $
-* DATE         :  $Date: 2007/11/15 17:50:53 $
+* REVISION     :  $Revision: 1.19 $
+* DATE         :  $Date: 2007/12/03 15:21:32 $
 *
 * Copyright (c) 2004 Cannon Technologies Inc. All rights reserved.
 *-----------------------------------------------------------------------------*/
@@ -2106,37 +2106,40 @@ void UDPInterface::sendResults( void )
 
         if( dr && dr->device )
         {
-            //  we may be done with this transaction, but do we have anyone to send it back to?
-            if( dr->device->isTransactionComplete() && !dr->work.outbound.empty() )
+            if( dr->device->isTransactionComplete() )
             {
-                if( dr->work.outbound.front() )
+                dr->device->sendDispatchResults(VanGoghConnection);
+
+				//  we may be done with this transaction, but do we have anyone to send it back to?
+                if( !dr->work.outbound.empty() )
                 {
-                    dr->device->sendDispatchResults(VanGoghConnection);
+					if( dr->work.outbound.front() )
+					{
+						im.EventCode = dr->work.status;
 
-                    im.EventCode = dr->work.status;
+						OUTMESS *om = dr->work.outbound.front();
 
-                    OUTMESS *om = dr->work.outbound.front();
+						bool commFailed = (dr->work.status == NORMAL);
 
-                    bool commFailed = (dr->work.status == NORMAL);
+						if( dr->device->adjustCommCounts(commFailed, om->Retry > 0) )
+						{
+							commFail(boost::static_pointer_cast<CtiDeviceBase>(dr->device));
+						}
 
-                    if( dr->device->adjustCommCounts(commFailed, om->Retry > 0) )
-                    {
-                        commFail(boost::static_pointer_cast<CtiDeviceBase>(dr->device));
-                    }
+						statisticsNewCompletion( om->Port, om->DeviceID, om->TargetID, dr->work.status, om->MessageFlags );
 
-                    statisticsNewCompletion( om->Port, om->DeviceID, om->TargetID, dr->work.status, om->MessageFlags );
+						OutEchoToIN(dr->work.outbound.front(), &im);
 
-                    OutEchoToIN(dr->work.outbound.front(), &im);
+						dr->device->sendCommResult(&im);
 
-                    dr->device->sendCommResult(&im);
-
-                    //  This method may delete the om!
-                    ReturnResultMessage(dr->work.status, &im, dr->work.outbound.front());
+						//  This method may delete the om!
+						ReturnResultMessage(dr->work.status, &im, dr->work.outbound.front());
+					}
 
                     delete dr->work.outbound.front();
-                }
 
-                dr->work.outbound.pop();
+					dr->work.outbound.pop();
+                }
             }
         }
         else if( gConfigParms.getValueAsULong("PORTER_UDP_DEBUGLEVEL", 0, 16) & 0x00000001 )
