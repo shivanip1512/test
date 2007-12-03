@@ -175,9 +175,28 @@ public class LMHardwareControlInformationServiceImpl implements LMHardwareContro
         Validate.notNull(accountId, "AccountID cannot be null");
         Validate.notNull(start, "Start Date cannot be null");
         Validate.notNull(stop, "Stop Date cannot be null");
+        Validate.notNull(currentUser, "CurrentUser cannot be null");
         
         try {
             return new Date().getTime();
+        } catch (DataRetrievalFailureException e) {
+            return 0;
+        }
+    }
+    
+    public long getTotalOptOutHoursForRange(int loadGroupId, int accountId, Date start, Date stop, LiteYukonUser currentUser) {
+        Validate.notNull(loadGroupId, "LoadGroupID cannot be null");
+        Validate.notNull(accountId, "AccountID cannot be null");
+        Validate.notNull(start, "Start Date cannot be null");
+        Validate.notNull(stop, "Stop Date cannot be null");
+        Validate.notNull(currentUser, "CurrentUser cannot be null");
+        
+        //on control history pages will have to return whether an opt our or enrollment occurred for each segment shown?
+        List<LMHardwareControlGroup> controlInformationList;
+        try {
+            controlInformationList = lmHardwareControlGroupDao.getByOptOutStartDateRange(start, stop);
+            //TODO: return and subtract from the total control hours amount at the getControlHistory level in ServletUtils
+            return 900000;
         } catch (DataRetrievalFailureException e) {
             return 0;
         }

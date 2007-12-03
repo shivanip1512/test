@@ -2,7 +2,6 @@ package com.cannontech.stars.util;
 
 import java.util.ArrayList;
 import java.util.Calendar;
-import java.util.Collections;
 import java.util.Date;
 import java.util.Enumeration;
 import java.util.List;
@@ -17,7 +16,6 @@ import org.apache.commons.fileupload.DiskFileUpload;
 import org.apache.commons.fileupload.FileItem;
 import org.apache.commons.fileupload.FileUploadException;
 
-import com.cannontech.clientutils.CTILogger;
 import com.cannontech.common.exception.NotLoggedInException;
 import com.cannontech.core.dao.DaoFactory;
 import com.cannontech.database.Transaction;
@@ -31,6 +29,8 @@ import com.cannontech.message.dispatch.message.DBChangeMsg;
 import com.cannontech.roles.consumer.ResidentialCustomerRole;
 import com.cannontech.roles.operator.ConsumerInfoRole;
 import com.cannontech.roles.yukon.EnergyCompanyRole;
+import com.cannontech.spring.YukonSpringHook;
+import com.cannontech.stars.dr.hardware.service.LMHardwareControlInformationService;
 import com.cannontech.stars.web.StarsYukonUser;
 import com.cannontech.stars.xml.serialize.ContactNotification;
 import com.cannontech.stars.xml.serialize.ControlSummary;
@@ -236,7 +236,12 @@ public class ServletUtils {
 	public static StarsLMControlHistory getControlHistory(StarsLMProgram program, StarsAppliances appliances,
 		StarsCtrlHistPeriod period, LiteStarsEnergyCompany energyCompany)
 	{
-		Date startDate = LMControlHistoryUtil.getPeriodStartTime( period, energyCompany.getDefaultTimeZone() );
+        // New enrollment, opt out, and control history tracking
+        //-------------------------------------------------------------------------------
+        LMHardwareControlInformationService lmHardwareControlInformationService = (LMHardwareControlInformationService) YukonSpringHook.getBean("lmHardwareControlInformationService");
+        //-------------------------------------------------------------------------------
+        
+        Date startDate = LMControlHistoryUtil.getPeriodStartTime( period, energyCompany.getDefaultTimeZone() );
 		
 		String trackHwAddr = energyCompany.getEnergyCompanySetting( EnergyCompanyRole.TRACK_HARDWARE_ADDRESSING );
 		if (trackHwAddr != null && Boolean.valueOf(trackHwAddr).booleanValue()) {
@@ -269,6 +274,12 @@ public class ServletUtils {
 				StarsLMControlHistory ctrlHist = LMControlHistoryUtil.getStarsLMControlHistory(
 						((Integer)groupIDs.get(i)).intValue(), startDate, energyCompany.getDefaultTimeZone() );
 				
+                //TODO: finish adding this
+				//New enrollment, opt out, and control history tracking
+                //-------------------------------------------------------------------------------
+                //lmHardwareControlInformationService.getTotalOptOutHoursForRange(i, i, startDate, startDate, currentUser);
+                //-------------------------------------------------------------------------------
+                
 				for (int j = 0, k = 0; j < ctrlHist.getControlHistoryCount(); j++) {
 					while (k < lmCtrlHist.getControlHistoryCount()
 						&& !lmCtrlHist.getControlHistory(k).getStartDateTime().after( ctrlHist.getControlHistory(j).getStartDateTime() ))
@@ -281,10 +292,13 @@ public class ServletUtils {
 				if (ctrlHist.getControlSummary() != null) {
 					lmCtrlHist.getControlSummary().setDailyTime(
 							lmCtrlHist.getControlSummary().getDailyTime() + ctrlHist.getControlSummary().getDailyTime() );
-					lmCtrlHist.getControlSummary().setMonthlyTime(
+					//calculate with opt out hours
+                    lmCtrlHist.getControlSummary().setMonthlyTime(
 							lmCtrlHist.getControlSummary().getMonthlyTime() + ctrlHist.getControlSummary().getMonthlyTime() );
+                    //calculate with opt out hours
 					lmCtrlHist.getControlSummary().setSeasonalTime(
 							lmCtrlHist.getControlSummary().getSeasonalTime() + ctrlHist.getControlSummary().getSeasonalTime() );
+					//calculate with opt out hours
 					lmCtrlHist.getControlSummary().setAnnualTime(
 							lmCtrlHist.getControlSummary().getAnnualTime() + ctrlHist.getControlSummary().getAnnualTime() );
 				}

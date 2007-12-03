@@ -235,11 +235,11 @@
 		
 		// New enrollment, opt out, and control history tracking
 	    //-------------------------------------------------------------------------------
+	    LMHardwareControlInformationService lmHardwareControlInformationService = (LMHardwareControlInformationService) YukonSpringHook.getBean("lmHardwareControlInformationService");
 		List<LiteStarsAppliance> currentAppList = currentLiteAcctInfo.getAppliances();
 		partialOptOutMap = new HashMap<Integer, List<Integer>>();
 		for(int x = 0; x < currentAppList.size(); x++) {
 			LiteStarsAppliance currentApp = (LiteStarsAppliance)currentAppList.get(x);
-	        LMHardwareControlInformationService lmHardwareControlInformationService = (LMHardwareControlInformationService) YukonSpringHook.getBean("lmHardwareControlInformationService");
 	        List<Integer> inventoryNotOptedOut = lmHardwareControlInformationService.getInventoryNotOptedOut(currentApp.getInventoryID(), currentApp.getAddressingGroupID(), account.getAccountID());
 	        for(Integer invenId : inventoryNotOptedOut) {
 	        	if(currentApp.getInventoryID() == invenId) {
