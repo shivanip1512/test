@@ -4972,6 +4972,16 @@ void CtiCCPointDataMsgExecutor::Execute()
                             currentCapBank->setCurrentDailyOperations((LONG) value);
                             currentCapBank->setLastStatusChangeTime(timestamp);
 
+                            if ( currentCapBank->getMaxDailyOps() > 0)
+                            {
+                                if (value  < currentCapBank->getMaxDailyOps())
+                                {
+                                    currentCapBank->setMaxDailyOpsHitFlag(FALSE);
+                                }
+                            }
+                            else
+                                currentCapBank->setMaxDailyOpsHitFlag(FALSE);
+
                             char tempchar[80] = "";
                             string text = "CapBank: ";
                             text+= currentCapBank->getPAOName();
