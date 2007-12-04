@@ -879,6 +879,12 @@ void CtiCalculateThread::baselineThread( void )
                 baselineID = calcPoint->getBaselineId();
                 baselinePercentID = calcPoint->getBaselinePercentId();
 
+                if( _CALC_DEBUG & CALC_DEBUG_BASELINE)
+                {
+                    CtiLockGuard<CtiLogger> doubt_guard(dout);
+                    dout << CtiTime( ) << " Baseline beginning for " << pointID << " with baseline: " << baselineID << " and percent: " << baselinePercentID << endl;
+                }
+
                 if( (dbTimeMapIter = dbTimeMap.find( pointID )) != dbTimeMap.end() )//Entry is in the database
                 {
                     lastTime = dbTimeMapIter->second;
@@ -952,6 +958,11 @@ void CtiCalculateThread::baselineThread( void )
                     if( lastIter->first.seconds() <= lastTime.seconds() )
                     {
                         //we are checking to see if we have a time that is far enough along to do a full calc
+                        if( _CALC_DEBUG & CALC_DEBUG_BASELINE)
+                        {
+                            CtiLockGuard<CtiLogger> doubt_guard(dout);
+                            dout << CtiTime( ) << " Baseline not enough time to calculate on. " << __FILE__ << __LINE__ << endl;
+                        }
                         break;
                     }
 
@@ -969,6 +980,11 @@ void CtiCalculateThread::baselineThread( void )
                         //If not, decrement day
                         if( holidayManager.isHoliday(curTime.date(), baselineDataPtr->holidays) )
                         {
+                            if( _CALC_DEBUG & CALC_DEBUG_BASELINE)
+                            {
+                                CtiLockGuard<CtiLogger> doubt_guard(dout);
+                                dout << CtiTime( ) << " Today is a holiday. " << curTime.date() << endl;
+                            }
                             curTime.addDays(-1);
                             continue;//while loop
                         }
@@ -976,11 +992,21 @@ void CtiCalculateThread::baselineThread( void )
                                  (baselineDataPtr->excludedWeekDays[curTime.date().weekDay()] == 'Y' ||
                                   baselineDataPtr->excludedWeekDays[curTime.date().weekDay()] == 'y') )//Sunday = 0
                         {
+                            if( _CALC_DEBUG & CALC_DEBUG_BASELINE)
+                            {
+                                CtiLockGuard<CtiLogger> doubt_guard(dout);
+                                dout << CtiTime( ) << " Today is a excluded. " << curTime.date() << endl;
+                            }
                             curTime.addDays(-1);
                             continue;
                         }
                         else if( curtailedDates.find(curTime.date()) != curtailedDates.end() )
                         {
+                            if( _CALC_DEBUG & CALC_DEBUG_BASELINE)
+                            {
+                                CtiLockGuard<CtiLogger> doubt_guard(dout);
+                                dout << CtiTime( ) << " Today is a curtailed date. " << curTime.date() << endl;
+                            }
                             curTime.addDays(-1);
                             continue;
                         }
@@ -991,7 +1017,20 @@ void CtiCalculateThread::baselineThread( void )
                             if( processDay(baselineID, curTime, data, percentData, baselineDataPtr->percent, results) )
                             {
                                 //If data is ok, store data and decrement day
+                                if( _CALC_DEBUG & CALC_DEBUG_BASELINE)
+                                {
+                                    CtiLockGuard<CtiLogger> doubt_guard(dout);
+                                    dout << CtiTime( ) << " Today was ACCEPTED. " << curTime.date() << endl;
+                                }
                                 dayValues.push_back(results);
+                            }
+                            else
+                            {
+                                if( _CALC_DEBUG & CALC_DEBUG_BASELINE)
+                                {
+                                    CtiLockGuard<CtiLogger> doubt_guard(dout);
+                                    dout << CtiTime( ) << " Today was NOT accepted. " << curTime.date() << endl;
+                                }
                             }
                             curTime.addDays(-1);
                         }
@@ -1029,7 +1068,7 @@ void CtiCalculateThread::baselineThread( void )
                                 dout << CtiTime( ) << "  Sending to point id " << pointID << " and time " << pointTime << endl;
                             }
                         }
-                        else if( iter != unlistedPoints.end() )
+                        else if( (iter = unlistedPoints.find(pointID)) != unlistedPoints.end() )
                         {
                             iter->second = pointTime;
 
@@ -2234,20 +2273,37 @@ bool CtiCalculateThread::processDay(long baselineID, CtiTime curTime, DynamicTab
         }
         else
         {
+            if( _CALC_DEBUG & CALC_DEBUG_BASELINE)
+            {
+                CtiLockGuard<CtiLogger> doubt_guard(dout);
+                dout << CtiTime( ) << " No data found at all for day. " << curTime.date() << endl;
+            }
             retVal = false;
         }
     }
 
     if( percent > 0 && retVal != false )
     {
+        if( _CALC_DEBUG & CALC_DEBUG_BASELINE)
+        {
+            CtiLockGuard<CtiLogger> doubt_guard(dout);
+            dout << CtiTime( ) << " Percent processing beginning on day " << curTime.date() << endl;
+            dout << "BaselineData     BaselinePercentData" << endl;
+        }
         HourlyValues percentResults;
         float decimalPercent = (float)percent/100;
         //we need to compare to values in the percent baseline component
         processDay(baselineID, startTime, percentData, percentData, 0, percentResults); //get percentResults for use
         for( int i = 0; i < 24; i++ )
         {
-            if( results[i] < decimalPercent*percentResults[i] || results[i] > (float)percentResults[i]/decimalPercent );
+            if( (results[i] < (decimalPercent*percentResults[i])) ||
+                (results[i] > ((float)percentResults[i]/decimalPercent)) )
             {
+                if( _CALC_DEBUG & CALC_DEBUG_BASELINE)
+                {
+                    CtiLockGuard<CtiLogger> doubt_guard(dout);
+                    dout << " Baseline Percent Failed, percent, results, percentResults: " << decimalPercent << " " << results[i] << " " << percentResults[i] << endl;
+                }
                 retVal = false;
             }
         }
