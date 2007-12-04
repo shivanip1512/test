@@ -1,7 +1,7 @@
 /*==============================================================*/
 /* Database name:  YukonDatabase                                */
 /* DBMS name:      ORACLE Version 9i                            */
-/* Created on:     12/3/2007 10:32:58 PM                        */
+/* Created on:     12/4/2007 2:54:06 PM                         */
 /*==============================================================*/
 
 
@@ -2471,7 +2471,7 @@ create table DEVICEGROUP  (
 )
 ;
 
-insert into DeviceGroup values (0,'',null,'Y','STATIC');
+insert into DeviceGroup values (0,' ',null,'Y','STATIC');
 insert into DeviceGroup values (1,'Meters',0,'Y','STATIC');
 insert into DeviceGroup values (2,'Billing',1,'Y','STATIC');
 insert into DeviceGroup values (3,'Collection',1,'Y','STATIC');
@@ -6407,10 +6407,10 @@ create table TOUATTRIBUTEMAPPING  (
 )
 ;
 
-INSERT INTO TouAttributeMapping (displayname, peakattribute, usageattribute) VALUES ('A', 'TOU_RATE_A_PEAK_DEMAND', 'TOU_RATE_A_USAGE');
-INSERT INTO TouAttributeMapping (displayname, peakattribute, usageattribute) VALUES ('B', 'TOU_RATE_B_PEAK_DEMAND', 'TOU_RATE_B_USAGE');
-INSERT INTO TouAttributeMapping (displayname, peakattribute, usageattribute) VALUES ('C', 'TOU_RATE_C_PEAK_DEMAND', 'TOU_RATE_C_USAGE');
-INSERT INTO TouAttributeMapping (displayname, peakattribute, usageattribute) VALUES ('D', 'TOU_RATE_D_PEAK_DEMAND', 'TOU_RATE_D_USAGE');
+INSERT INTO TouAttributeMapping (displayname, peakattribute, usageattribute) VALUES (1, 'A', 'TOU_RATE_A_PEAK_DEMAND', 'TOU_RATE_A_USAGE');
+INSERT INTO TouAttributeMapping (displayname, peakattribute, usageattribute) VALUES (2, 'B', 'TOU_RATE_B_PEAK_DEMAND', 'TOU_RATE_B_USAGE');
+INSERT INTO TouAttributeMapping (displayname, peakattribute, usageattribute) VALUES (3, 'C', 'TOU_RATE_C_PEAK_DEMAND', 'TOU_RATE_C_USAGE');
+INSERT INTO TouAttributeMapping (displayname, peakattribute, usageattribute) VALUES (4, 'D', 'TOU_RATE_D_PEAK_DEMAND', 'TOU_RATE_D_USAGE');
 
 /*==============================================================*/
 /* Table: TOUDay                                                */

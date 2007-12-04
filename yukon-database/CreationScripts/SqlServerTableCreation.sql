@@ -1,7 +1,7 @@
 /*==============================================================*/
 /* Database name:  YukonDatabase                                */
 /* DBMS name:      Microsoft SQL Server 2000                    */
-/* Created on:     12/3/2007 10:31:59 PM                        */
+/* Created on:     12/4/2007 2:53:18 PM                         */
 /*==============================================================*/
 
 
@@ -3580,7 +3580,7 @@ create table DEVICEGROUP (
 )
 go
 
-insert into DeviceGroup values (0,'',null,'Y','STATIC');
+insert into DeviceGroup values (0,' ',null,'Y','STATIC');
 insert into DeviceGroup values (1,'Meters',0,'Y','STATIC');
 insert into DeviceGroup values (2,'Billing',1,'Y','STATIC');
 insert into DeviceGroup values (3,'Collection',1,'Y','STATIC');
@@ -7503,7 +7503,7 @@ insert into templatecolumns values( 3, 'State', 13, 5, 80 );
 /* Table: TOUATTRIBUTEMAPPING                                   */
 /*==============================================================*/
 create table TOUATTRIBUTEMAPPING (
-   touid                numeric(6)           identity,
+   touid                numeric(6)           not null,
    displayname          varchar(50)          not null,
    peakAttribute        varchar(50)          not null,
    usageAttribute       varchar(50)          not null,
@@ -7511,10 +7511,10 @@ create table TOUATTRIBUTEMAPPING (
 )
 go
 
-INSERT INTO TouAttributeMapping (displayname, peakattribute, usageattribute) VALUES ('A', 'TOU_RATE_A_PEAK_DEMAND', 'TOU_RATE_A_USAGE');
-INSERT INTO TouAttributeMapping (displayname, peakattribute, usageattribute) VALUES ('B', 'TOU_RATE_B_PEAK_DEMAND', 'TOU_RATE_B_USAGE');
-INSERT INTO TouAttributeMapping (displayname, peakattribute, usageattribute) VALUES ('C', 'TOU_RATE_C_PEAK_DEMAND', 'TOU_RATE_C_USAGE');
-INSERT INTO TouAttributeMapping (displayname, peakattribute, usageattribute) VALUES ('D', 'TOU_RATE_D_PEAK_DEMAND', 'TOU_RATE_D_USAGE');
+INSERT INTO TouAttributeMapping (displayname, peakattribute, usageattribute) VALUES (1, 'A', 'TOU_RATE_A_PEAK_DEMAND', 'TOU_RATE_A_USAGE');
+INSERT INTO TouAttributeMapping (displayname, peakattribute, usageattribute) VALUES (2, 'B', 'TOU_RATE_B_PEAK_DEMAND', 'TOU_RATE_B_USAGE');
+INSERT INTO TouAttributeMapping (displayname, peakattribute, usageattribute) VALUES (3, 'C', 'TOU_RATE_C_PEAK_DEMAND', 'TOU_RATE_C_USAGE');
+INSERT INTO TouAttributeMapping (displayname, peakattribute, usageattribute) VALUES (4, 'D', 'TOU_RATE_D_PEAK_DEMAND', 'TOU_RATE_D_USAGE');
 
 /*==============================================================*/
 /* Table: TOUDay                                                */
