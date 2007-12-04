@@ -2296,8 +2296,7 @@ bool CtiCalculateThread::processDay(long baselineID, CtiTime curTime, DynamicTab
         processDay(baselineID, startTime, percentData, percentData, 0, percentResults); //get percentResults for use
         for( int i = 0; i < 24; i++ )
         {
-            if( (results[i] < (decimalPercent*percentResults[i])) ||
-                (results[i] > ((float)percentResults[i]/decimalPercent)) )
+            if( results[i] < (decimalPercent*percentResults[i]) )
             {
                 if( _CALC_DEBUG & CALC_DEBUG_BASELINE)
                 {
