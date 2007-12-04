@@ -2,13 +2,6 @@
 /**** SQLServer 2000 DBupdates         ****/
 /******************************************/
 
-create table dynamicccarea ( AreaID numeric not null, additionalflags varchar(20) not null );
-
-alter table dynamicccarea
-   add constraint FK_ccarea_Dynccarea foreign key (areaID)
-      references Capcontrolarea (areaID);
-
-insert into dynamicccarea (areaid, additionalflags) select areaid, 'NNNNNNNNNNNNNNNNNNNN' from capcontrolarea; 
 
 /*==============================================================*/
 /* Table: DYNAMICBILLINGFIELD                                   */
@@ -21,7 +14,7 @@ create table DYNAMICBILLINGFIELD (
    FieldFormat          varchar(50)          null,
    MaxLength            numeric              not null,
    constraint PK_DYNAMICBILLINGFIELD primary key (id)
-)
+);
 go
 
  create table DynamicBillingFormat (
@@ -31,7 +24,7 @@ go
 	 Footer varchar(255),
 	 primary key (FormatID),
 	 Foreign key (FormatID) REFERENCES BillingFileFormats (FormatID)
- )
+ );
 go 
 alter table BillingFileFormats ALTER COLUMN FormatType varchar(100);
 go
@@ -40,9 +33,9 @@ alter table BillingFileFormats ADD SystemFormat bit;
 go
 
 update BillingFileFormats SET SystemFormat=1;
-
+go
 insert into sequenceNumber values (100, 'BillingFileFormats');
-
+go
 /* Start YUK-4744 */
 insert into billingfileformats values( 31, 'STANDARD',1);
 update billingFileFormats set formatID = -100 where formattype = 'INVALID'; 
@@ -77,9 +70,6 @@ insert into DynamicBillingField values(22, 21, 'rateBDemand - reading', 12, '##0
 insert into DynamicBillingField values(23, 21, 'rateBDemand - timestamp', 13, 'HH:mm', 0);
 insert into DynamicBillingField values(24, 21, 'rateBDemand - timestamp', 14, 'MM/dd/yyyy', 0); 
 /* End YUK-4744 */
-alter table DYNAMICBILLINGFIELD
-   add constraint PK_DYNAMICBILLINGFIELD primary key (id)
-go
 
 update yukonpaobject set type = 'MCT-430SL' where type = 'MCT-430SN' or type = 'MCT430SN';
 update devicetypecommand set devicetype = 'MCT-430SL' where devicetype = 'MCT-430SN' or devicetype = 'MCT430SN';
@@ -91,12 +81,33 @@ insert into SeasonSchedule values (-1,'No Season');
 insert into DateOfSeason values(-1, 'Default', 1,1,12,31);
 go
 
-create table CCSeasonStrategyAssignment (
-	PaobjectId numeric not null,
-	SeasonScheduleId numeric not null,
-	SeasonName varchar(20) not null,
-	StrategyId numeric not null
-);
+create table CCSEASONSTRATEGYASSIGNMENT (
+   paobjectid           numeric              not null,
+   seasonscheduleid     numeric              not null,
+   seasonname           varchar(20)          not null,
+   strategyid           numeric              not null,
+   constraint PK_CCSEASONSTRATEGYASSIGNMENT primary key (paobjectid)
+)
+go
+
+alter table CCSEASONSTRATEGYASSIGNMENT
+   add constraint FK_CCSSA_PAOID foreign key (paobjectid)
+      references YukonPAObject (PAObjectID)
+go
+
+alter table CCSEASONSTRATEGYASSIGNMENT
+   add constraint FK_CCSSA_SCHEDID foreign key (seasonscheduleid)
+      references SeasonSchedule (ScheduleID)
+go
+
+alter table CCSEASONSTRATEGYASSIGNMENT
+   add constraint FK_ccssa_season foreign key (seasonscheduleid, seasonname)
+      references DateOfSeason (SeasonScheduleID, SeasonName)
+go
+
+alter table CCSEASONSTRATEGYASSIGNMENT
+   add constraint FK_CCSEASON_REFERENCE_CAPCONTR foreign key (strategyid)
+      references CapControlStrategy (StrategyID)
 go
 
 alter table CapControlArea  drop constraint FK_CAPCONTAREA_CAPCONTRSTRAT;
@@ -136,15 +147,15 @@ alter table CCSubSpecialAreaAssignment
       references CapControlSubstationBus (SubstationBusId)
 go
 
-create table DynamicCCSpecialArea (
+create table DYNAMICCCAREA (
    AreaID               numeric              not null,
-   Additionalflags      varchar(20)          not null
+   additionalflags      varchar(20)          not null,
+   constraint PK_DYNAMICCCAREA primary key (AreaID)
 )
 go
-
-alter table DynamicCCSpecialArea
-   add constraint FK_ccspecialarea_Dynccspecialarea foreign key (AreaID)
-      references CapControlSpecialArea (AreaID)
+alter table CCSUBAREAASSIGNMENT
+   add constraint FK_CCSUBARE_REFERENCE_DYNAMICC foreign key (AreaID)
+      references DYNAMICCCAREA (AreaID)
 go
 
 insert into DynamicCCSpecialArea (AreaId, Additionalflags) select areaid, 'NNNNNNNNNNNNNNNNNNNN' from CapControlSpecialArea;
@@ -269,8 +280,6 @@ alter table ccfeederbanklist alter column triporder float;
 update command set label = 'Turn Off Test Light' where commandid = -65;
 update command set label = 'Clear Comm Loss Counter' where commandid = -67;
 
-insert into seasonSchedule values (-1,'No Season');
-insert into dateOfSeason values(-1, 'Default', 1,1,12,31);
 
 /* @error ignore-begin */
 insert into yukonroleproperty values (-100011,-1000, 'Daily/Max Operation Count', 'true', 'is Daily/Max Operation stat displayed');
@@ -356,8 +365,8 @@ go
 create table DEVICECONFIGURATIONDEVICEMAP (
    DeviceConfigurationId numeric              not null,
    DeviceID             numeric              not null,
-   constraint PK_DEVICECONFIGURATIONDEVICEMA primary key (DeviceConfigurationId);
-)
+   constraint PK_DEVICECONFIGURATIONDEVICEMA primary key (DeviceConfigurationId)
+);
 go
 
 alter table DEVICECONFIGURATIONDEVICEMAP
@@ -380,8 +389,8 @@ create table DEVICECONFIGURATION (
    DeviceConfigurationID numeric              not null,
    Name                 varchar(30)          not null,
    Type                 varchar(30)          not null,
-   constraint PK_DEVICECONFIGURATION primary key (DeviceConfigurationID);
-)
+   constraint PK_DEVICECONFIGURATION primary key (DeviceConfigurationID)
+);
 go
 
 alter table DEVICECONFIGURATION
@@ -599,8 +608,8 @@ from
 alter table ccsubareaassignment drop constraint FK_CCSUBARE_CAPSUBAREAASSGN;
 alter table CCSUBAREAASSIGNMENT
    add constraint FK_CCSUBARE_CAPSUBAREAASSGN foreign key (SubstationBusID)
-      references CAPCONTROLSUBSTATION (SubstationID);
-
+      references CAPCONTROLSUBSTATION (SubstationID)
+         on update cascade on delete cascade;
 update 
 	ccsubareaassignment
 set 
@@ -666,12 +675,6 @@ go
 alter table CCSUBSPECIALAREAASSIGNMENT
    add constraint FK_CCSUBSPE_REFERENCE_CAPCONTR foreign key (AreaID)
       references CAPCONTROLSPECIALAREA (AreaID);
-go
-
-alter table CCSUBAREAASSIGNMENT
-   add constraint FK_CCSUBARE_CAPSUBAREAASSGN foreign key (SubstationBusID)
-      references CAPCONTROLSUBSTATION (SubstationID)
-         on delete cascade;
 go
 
 alter table CCSUBSPECIALAREAASSIGNMENT
@@ -905,15 +908,14 @@ alter table JOBSTATUS
 go
 
 /* Begin YUK-4771 (formerly YUK-4716) */
-drop table CCSTRATEGYTIMEOFDAY cascade constraints;
 
 /*==============================================================*/
 /* Table: CCSTRATEGYTIMEOFDAY                                   */
 /*==============================================================*/
 create table CCSTRATEGYTIMEOFDAY  (
-   StrategyID           NUMBER                          not null,
-   StartTimeSeconds     NUMBER                          not null,
-   PercentClose         NUMBER                          not null,
+   StrategyID           numeric                          not null,
+   StartTimeSeconds     numeric                          not null,
+   PercentClose         numeric                          not null,
    constraint PK_STRAT_TOD primary key (StrategyID, StartTimeSeconds)
 );
 

@@ -1,16 +1,9 @@
 /*==============================================================*/
 /* Database name:  YukonDatabase                                */
 /* DBMS name:      Microsoft SQL Server 2000                    */
-/* Created on:     12/3/2007 1:34:29 PM                         */
+/* Created on:     12/3/2007 5:38:55 PM                         */
 /*==============================================================*/
 
-
-if exists (select 1
-          from sysobjects
-          where id = object_id('TRIGGER_1')
-          and type = 'TR')
-   drop trigger TRIGGER_1
-go
 
 if exists (select 1
           from sysobjects
@@ -4135,7 +4128,8 @@ insert into DynamicBillingFormat values( 21, ',' ,'' ,'');
 /*==============================================================*/
 create table DYNAMICCCAREA (
    AreaID               numeric              not null,
-   additionalflags      varchar(20)          not null
+   additionalflags      varchar(20)          not null,
+   constraint PK_DYNAMICCCAREA primary key (AreaID)
 )
 go
 
@@ -4422,7 +4416,7 @@ create table DeviceTypeCommand (
    DisplayOrder         numeric              not null,
    VisibleFlag          char(1)              not null,
    CommandGroupID       numeric              not null,
-   constraint PK_DEVICETYPECOMMAND primary key nonclustered (DeviceCommandID, CommandGroupID)
+   constraint PK_DEVICETYPECOMMAND primary key (DeviceCommandID, CommandGroupID)
 )
 go
 
@@ -10210,6 +10204,11 @@ alter table CCSEASONSTRATEGYASSIGNMENT
       references DateOfSeason (SeasonScheduleID, SeasonName)
 go
 
+alter table CCSEASONSTRATEGYASSIGNMENT
+   add constraint FK_CCSEASON_REFERENCE_CAPCONTR foreign key (strategyid)
+      references CapControlStrategy (StrategyID)
+go
+
 alter table CCSTRATEGYTIMEOFDAY
    add constraint FK_STRAT_TOD_CCSTRAT foreign key (StrategyID)
       references CapControlStrategy (StrategyID)
@@ -10219,6 +10218,11 @@ alter table CCSUBAREAASSIGNMENT
    add constraint FK_CCSUBARE_CAPSUBAREAASSGN foreign key (SubstationBusID)
       references CAPCONTROLSUBSTATION (SubstationID)
          on delete cascade
+go
+
+alter table CCSUBAREAASSIGNMENT
+   add constraint FK_CCSUBARE_REFERENCE_DYNAMICC foreign key (AreaID)
+      references DYNAMICCCAREA (AreaID)
 go
 
 alter table CCSUBSPECIALAREAASSIGNMENT
@@ -10431,11 +10435,6 @@ go
 alter table CapControlFeeder
    add constraint FK_PAObj_CCFeed foreign key (FeederID)
       references YukonPAObject (PAObjectID)
-go
-
-alter table CapControlStrategy
-   add constraint FK_ccssa_strat foreign key (StrategyID)
-      references CCSEASONSTRATEGYASSIGNMENT (paobjectid)
 go
 
 alter table CarrierRoute
@@ -10736,11 +10735,6 @@ go
 alter table DYNAMICBILLINGFORMAT
    add constraint FK_DYNAMICB_REF_BILLI_BILLINGF foreign key (FormatID)
       references BillingFileFormats (FormatID)
-go
-
-alter table DYNAMICCCAREA
-   add constraint FK_ccarea_Dynccarea foreign key (AreaID)
-      references CCSUBAREAASSIGNMENT (AreaID)
 go
 
 alter table DYNAMICCCTWOWAYCBC

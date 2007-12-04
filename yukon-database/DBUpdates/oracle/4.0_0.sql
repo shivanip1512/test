@@ -2,14 +2,6 @@
 /**** Oracle DBupdates   		       ****/
 /******************************************/
 
-create table dynamicccarea ( AreaID number not null, additionalflags varchar2(20) not null );
-
-alter table dynamicccarea
-   add constraint FK_ccarea_Dynccarea foreign key (areaID)
-      references Capcontrolarea (areaID);
-
-insert into dynamicccarea (areaid, additionalflags) select areaid, 'NNNNNNNNNNNNNNNNNNNN' from capcontrolarea; 
-
 /*==============================================================*/
 /* Table: DYNAMICBILLINGFORMAT                                  */
 /*==============================================================*/
@@ -85,9 +77,6 @@ insert into DynamicBillingField values(24, 21, 'rateBDemand - timestamp', 14, 'M
 
 /* End YUK-4744 */
 
-alter table DYNAMICBILLINGFIELD
-   add constraint PK_DYNAMICBILLINGFIELD primary key (id)
-;
 
 update yukonpaobject set type = 'MCT-430SL' where type = 'MCT-430SN' or type = 'MCT430SN';
 update devicetypecommand set devicetype = 'MCT-430SL' where devicetype = 'MCT-430SN' or devicetype = 'MCT430SN';
@@ -98,12 +87,29 @@ update devicetypecommand set devicetype = 'MCT-430SL' where devicetype = 'MCT-43
 insert into SeasonSchedule values (-1,'No Season');
 insert into DateOfSeason values(-1, 'Default', 1,1,12,31);
 
-create table CCSeasonStrategyAssignment (
-	PaobjectId number not null,
-	SeasonScheduleId number not null,
-	SeasonName varchar2(20) not null,
-	StrategyId number not null
+create table CCSEASONSTRATEGYASSIGNMENT  (
+   paobjectid           NUMBER                          not null,
+   seasonscheduleid     NUMBER                          not null,
+   seasonname           VARCHAR2(20)                    not null,
+   strategyid           NUMBER                          not null,
+   constraint PK_CCSEASONSTRATEGYASSIGNMENT primary key (paobjectid)
 );
+
+alter table CCSEASONSTRATEGYASSIGNMENT
+   add constraint FK_CCSSA_PAOID foreign key (paobjectid)
+      references YukonPAObject (PAObjectID);
+
+alter table CCSEASONSTRATEGYASSIGNMENT
+   add constraint FK_CCSSA_SCHEDID foreign key (seasonscheduleid)
+      references SeasonSchedule (ScheduleID);
+
+alter table CCSEASONSTRATEGYASSIGNMENT
+   add constraint FK_ccssa_season foreign key (seasonscheduleid, seasonname)
+      references DateOfSeason (SeasonScheduleID, SeasonName);
+
+alter table CCSEASONSTRATEGYASSIGNMENT
+   add constraint FK_CCSEASON_REFERENCE_CAPCONTR foreign key (strategyid)
+      references CapControlStrategy (StrategyID);
 
 alter table CapControlArea  drop constraint FK_CAPCONTAREA_CAPCONTRSTRAT;
 alter table CapControlArea drop column StrategyId;
@@ -135,14 +141,15 @@ alter table CCSubSpecialAreaAssignment
    add constraint FK_CCSubSpecialArea_CapSubAreaAssgn foreign key (SubstationBusId)
       references CapControlSubstationBus (SubstationBusId);
 
-create table DynamicCCSpecialArea (
-   AreaID               number              not null,
-   Additionalflags      varchar2(20)          not null
+create table DYNAMICCCAREA  (
+   AreaID               NUMBER                          not null,
+   additionalflags      VARCHAR2(20)                    not null,
+   constraint PK_DYNAMICCCAREA primary key (AreaID)
 );
 
-alter table DynamicCCSpecialArea
-   add constraint FK_ccspecialarea_Dynccspecialarea foreign key (AreaID)
-      references CapControlSpecialArea (AreaID);
+alter table CCSUBAREAASSIGNMENT
+   add constraint FK_CCSUBARE_REFERENCE_DYNAMICC foreign key (AreaID)
+      references DYNAMICCCAREA (AreaID);
 
 insert into DynamicCCSpecialArea (AreaId, Additionalflags) select areaid, 'NNNNNNNNNNNNNNNNNNNN' from CapControlSpecialArea;
 
@@ -250,9 +257,6 @@ alter table ccfeederbanklist modify triporder float;
 
 update command set label = 'Turn Off Test Light' where commandid = -65;
 update command set label = 'Clear Comm Loss Counter' where commandid = -67;
-
-insert into seasonSchedule values (-1,'No Season');
-insert into dateOfSeason values(-1, 'Default', 1,1,12,31);
 
 /* @error ignore-begin */
 insert into yukonroleproperty values (-100011,-1000, 'Daily/Max Operation Count', 'true', 'is Daily/Max Operation stat displayed');
@@ -433,43 +437,56 @@ create table ccsubstationsubbuslist
 	displayorder number not null
 );
 
+Create global temporary table mySubstation
+(
+	SubBusName varchar2(60),
+	subbusId number,
+	CCsubStationName varchar2(60)
+);
+insert into
+	mySubstation
 select
-	paoname as SubBusName,
-	paobjectid as subbusId,
-	paoname as CCsubStationName
-into
-	 #mySubstation
+	paoname,
+	paobjectid,
+	paoname
 from
 	yukonpaobject
 where
 	type = 'CCSUBBUS';
 
+/* @start-block */
+declare 
+v_paoid number(6);
+v_ccsubstationname varchar2(60);
 
-declare @ccsubstationname varchar2(60);
-
-declare substation_curs cursor for (select distinct(CCsubStationName) from #mySubstation);
+cursor substation_curs is select distinct(CCSubStationName) from mySubstation;
+begin
+select max(paobjectid) into v_paoid from yukonpaobject;
+v_paoid := v_paoid + 1;
 open substation_curs;
-fetch substation_curs into @ccsubstationname;
+fetch substation_curs into v_ccsubstationname;
 
-while (@@fetch_status = 0)
-	begin
+while (substation_curs%found)
+	loop
 		insert into yukonpaobject (paobjectid, category, paoclass, paoname, type, description, disableflag, paostatistics)
 		select 
-			Max(paobjectid) + 1,
+			v_paoid,
 			'CAPCONTROL',
 			'CAPCONTROL',
-			@ccsubstationname,
+			v_ccsubstationname,
 			'CCSUBSTATION',
 			'(none)',
 			'N',
 			'-----' 
 		from 
 			yukonpaobject;
-		fetch substation_curs into @ccsubstationname;
-	end
+		v_paoid := v_paoid + 1;
+		fetch substation_curs into v_ccsubstationname;
+	end loop;
 close substation_curs;
-deallocate substation_curs;
-
+end;
+/
+/* @end-block */
 select 
 	s.*
 	, yp.paobjectid as Substationid
@@ -497,7 +514,7 @@ into
 	#mySubstation3
 from
 	yukonpaobject yp
-	, #mySubstation s
+	, mySubstation s
 	, yukonpaobject yp1
 	, ccsubspecialareaassignment sa
 where
