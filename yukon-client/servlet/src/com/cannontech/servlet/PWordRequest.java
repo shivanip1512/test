@@ -26,7 +26,8 @@ public class PWordRequest extends javax.servlet.http.HttpServlet
 	 * @exception javax.servlet.ServletException The exception description.
 	 * @exception java.io.IOException The exception description.
 	 */
-	public void service(HttpServletRequest req, HttpServletResponse resp) throws javax.servlet.ServletException, java.io.IOException 
+	@Override
+    public void service(HttpServletRequest req, HttpServletResponse resp) throws javax.servlet.ServletException, java.io.IOException 
 	{
 		String userName = ServletUtil.getParameter( req, "USERNAME");
 		String email = ServletUtil.getParameter( req, "EMAIL");

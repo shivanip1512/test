@@ -1,5 +1,6 @@
 package com.cannontech.servlet.logic;
 
+import java.util.List;
 import java.util.Vector;
 
 import com.cannontech.clientutils.CTILogger;
@@ -26,9 +27,6 @@ import com.cannontech.tools.email.EmailMessage;
 public class RequestPword
 {
 	private static final String CR = System.getProperty("line.separator");
-	private String INVALID_URI = null;
-	private String SUCCESS_URI = null;
-	
 	private String userName = null;
 	private String email = null;
 	private String fName = null;
@@ -39,17 +37,15 @@ public class RequestPword
 	private int state = RET_FAILED;
 	private String resultString = "";
 
-
 	//allow sub classes access to these attributes
 	protected String[] allParams = null;
 	protected String masterMail = null;
 	protected String subject = "Password Request";
-	protected Vector foundData = new Vector(8);
+	protected List<String> foundData = new Vector<String>(8);
 
 
 	public static final int RET_FAILED = 0;
 	public static final int RET_SUCCESS = 1;
-
 
 	/**
 	 * 
@@ -141,154 +137,8 @@ public class RequestPword
 
     }
 
-    private void handleFName()
-    {
-        if( fName != null )
-        {
-            //we may continue after this, remove all the stored data
-            foundData.clear();
-            
-            LiteContact[] lConts = DaoFactory.getContactDao().getContactsByFName( fName );
-            if( lConts.length == 1 )
-            {
-                //if we also have a last name, try to match BOTH names
-                if( lName != null )
-                {
-                    if( lName.equalsIgnoreCase(lConts[0].getContLastName()) )
-                    {
-                        foundData.add( " Contact Name: " + lConts[0].getContFirstName() + " " + lConts[0].getContLastName() );                  
-                        foundData.add( " User Name: " + DaoFactory.getYukonUserDao().getLiteYukonUser(lConts[0].getLoginID()).getUsername() );
-                        
-                        LiteEnergyCompany[] cmps = processContact( lConts[0] );
-                        processEnergyCompanies( cmps );                                 
-                    }
-                    else
-                    {
-                        setState( RET_FAILED, "Name not found, try again" );
-                    }
-                    
-                }
-                else
-                {
-                    foundData.add( " Contact Name: " + lConts[0].getContFirstName() + " " + lConts[0].getContLastName() );                  
-                    foundData.add( " User Name: " + DaoFactory.getYukonUserDao().getLiteYukonUser(lConts[0].getLoginID()).getUsername() );
-
-                    LiteEnergyCompany[] cmps = processContact( lConts[0] );                 
-                    processEnergyCompanies( cmps );
-                }
-            }
-            else if( lConts.length < 1 )
-            {
-                setState( RET_FAILED, "First name not found, try again" );
-            }
-            else //many contacts found to have this same first name
-            {
-                //if we also have a last name, try to match BOTH names
-                if( lName != null )
-                {
-                    for( int i = 0; i < lConts.length; i++ )
-                    {
-                        if( lName.equalsIgnoreCase(lConts[i].getContLastName()) )
-                        {
-                            foundData.add( " Contact Name: " + lConts[i].getContFirstName() + " " + lConts[i].getContLastName() );                  
-                            foundData.add( " User Name: " + DaoFactory.getYukonUserDao().getLiteYukonUser(lConts[i].getLoginID()).getUsername() );
-                            
-                            LiteEnergyCompany[] cmps = processContact( lConts[i] );
-                            processEnergyCompanies( cmps );                                 
-                        }
-                    }
-                }
-                else
-                {
-                    setState( RET_FAILED, "More than one first name found, forwarding request onto the WebMaster" );
-                    subject = "WebMaster: " + subject;
-                    foundData.add( " " + getResultString() );
-                    foundData.add( " Number of Contacts for this First Name: " + lConts.length );
-                    for( int i = 0; i < lConts.length; i++ )
-                        foundData.add( "   Contacts " + i + ": " + lConts[i].toString() );
-
-                    sendEmails( new String[] { masterMail }, genBody() );
-                }
-                    
-            }
-
-        }
-
-    }
 
     
-    private void handleLName()
-    {
-        if( lName != null )
-        {
-            //we may continue after this, remove all the stored data
-            foundData.clear();
-            
-            LiteContact[] lConts = DaoFactory.getContactDao().getContactsByLName( lName );
-            if( lConts.length == 1 )
-            {
-                //if we also have a first name, try to match BOTH names
-                if( fName != null )
-                {
-                    if( fName.equalsIgnoreCase(lConts[0].getContFirstName()) )
-                    {
-                        foundData.add( " Contact Name: " + lConts[0].getContFirstName() + " " + lConts[0].getContLastName() );                  
-                        foundData.add( " User Name: " + DaoFactory.getYukonUserDao().getLiteYukonUser(lConts[0].getLoginID()).getUsername() );
-                        LiteEnergyCompany[] cmps = processContact( lConts[0] );
-                        processEnergyCompanies( cmps );                                 
-                    }
-                    else
-                    {
-                        setState( RET_FAILED, "Name not found, try again" );
-                    }                    
-                }
-                else
-                {
-                    foundData.add( " Contact Name: " + lConts[0].getContFirstName() + " " + lConts[0].getContLastName() );                  
-                    foundData.add( " User Name: " + DaoFactory.getYukonUserDao().getLiteYukonUser(lConts[0].getLoginID()).getUsername() );
-                    
-                    LiteEnergyCompany[] cmps = processContact( lConts[0] );                 
-                    processEnergyCompanies( cmps );
-                }
-            }
-            else if( lConts.length < 1 )
-            {
-                setState( RET_FAILED, "Last name not found, try again" );
-            }
-            else //many contacts found to have this same first name
-            {
-                //if we also have a first name, try to match BOTH names
-                if( fName != null )
-                {
-                    for( int i = 0; i < lConts.length; i++ )
-                    {
-                        if( fName.equalsIgnoreCase(lConts[i].getContFirstName()) )
-                        {
-                            foundData.add( " Contact Name: " + lConts[i].getContFirstName() + " " + lConts[i].getContLastName() );                  
-                            foundData.add( " User Name: " + DaoFactory.getYukonUserDao().getLiteYukonUser(lConts[i].getLoginID()).getUsername() );
-
-                            LiteEnergyCompany[] cmps = processContact( lConts[i] );                 
-                            processEnergyCompanies( cmps );                                 
-                        }
-                    }
-                }
-                else
-                {                       
-                    setState( RET_FAILED, "More than one last name found, forwarding request onto the WebMaster" );
-                    subject = "WebMaster: " + subject;
-                    foundData.add( " " + getResultString() );
-                    foundData.add( " Number of Contacts for this Last Name: " + lConts.length );
-                    for( int i = 0; i < lConts.length; i++ )
-                        foundData.add( "   Contacts " + i + ": " + lConts[i].toString() );
-
-                    sendEmails( new String[] { masterMail }, genBody() );
-                }
-            }
-                
-                
-        }
-
-    }
     
 	public void doRequest()
 	{
@@ -327,7 +177,6 @@ public class RequestPword
 		}
 
 	}
-	
 	
 	protected LiteEnergyCompany[] processContact( LiteContact lCont_ )
 	{
