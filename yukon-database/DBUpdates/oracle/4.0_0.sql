@@ -2,6 +2,11 @@
 /**** Oracle DBupdates   		       ****/
 /******************************************/
 
+create table DYNAMICCCSPECIALAREA  (
+   AreaID               NUMBER                          not null,
+   additionalflags      VARCHAR2(20)                    not null
+);
+
 /*==============================================================*/
 /* Table: DYNAMICBILLINGFORMAT                                  */
 /*==============================================================*/
@@ -141,11 +146,9 @@ alter table CCSubSpecialAreaAssignment
    add constraint FK_CCSubSpecialArea_CapSubAreaAssgn foreign key (SubstationBusId)
       references CapControlSubstationBus (SubstationBusId);
 
-create table DYNAMICCCAREA  (
-   AreaID               NUMBER                          not null,
-   additionalflags      VARCHAR2(20)                    not null,
-   constraint PK_DYNAMICCCAREA primary key (AreaID)
-);
+alter table DYNAMICCCAREA
+   add constraint PK_DYNAMICCCAREA primary key nonclustered (AreaId)
+go
 
 alter table CCSUBAREAASSIGNMENT
    add constraint FK_CCSUBARE_REFERENCE_DYNAMICC foreign key (AreaID)

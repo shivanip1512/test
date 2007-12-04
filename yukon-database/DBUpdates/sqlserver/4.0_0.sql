@@ -1,6 +1,11 @@
 /******************************************/
 /**** SQLServer 2000 DBupdates         ****/
 /******************************************/
+create table DYNAMICCCSPECIALAREA (
+   AreaID               numeric              not null,
+   additionalflags      varchar(20)          not null
+);
+go
 
 
 /*==============================================================*/
@@ -147,12 +152,10 @@ alter table CCSubSpecialAreaAssignment
       references CapControlSubstationBus (SubstationBusId)
 go
 
-create table DYNAMICCCAREA (
-   AreaID               numeric              not null,
-   additionalflags      varchar(20)          not null,
-   constraint PK_DYNAMICCCAREA primary key (AreaID)
-)
+alter table DYNAMICCCAREA
+   add constraint PK_DYNAMICCCAREA primary key nonclustered (AreaId)
 go
+
 alter table CCSUBAREAASSIGNMENT
    add constraint FK_CCSUBARE_REFERENCE_DYNAMICC foreign key (AreaID)
       references DYNAMICCCAREA (AreaID)
