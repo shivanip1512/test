@@ -88,8 +88,7 @@ public class DBPersistentDaoImpl implements DBPersistentDao
                 
                 for( int i = 0; i < dbChange.length; i++)
                 {
-                    cacheDBChangeListener.handleDBChangeMessage(dbChange[i]);
-                    connToDispatch.queue(dbChange[i]);
+                    processDBChange(connToDispatch, dbChange[i]);
                 }
             }
         }
@@ -98,6 +97,16 @@ public class DBPersistentDaoImpl implements DBPersistentDao
             throw new PersistenceException("Unable to save DBPersistent (item=" + 
                                            item + ", transactionType=" + transactionType + ")", e);
         }
+    }
+    
+    public void processDBChange(DBChangeMsg dbChange) {
+        IServerConnection dispatchConn = ConnPool.getInstance().getDefDispatchConn();
+        this.processDBChange(dispatchConn, dbChange);
+    }
+
+    private void processDBChange(IServerConnection connToDispatch, DBChangeMsg dbChange) {
+        cacheDBChangeListener.handleDBChangeMessage(dbChange);
+        connToDispatch.queue(dbChange);
     }
     
     /* (non-Javadoc)

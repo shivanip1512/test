@@ -119,12 +119,12 @@ public class DeviceGroupEditorDaoImpl implements DeviceGroupEditorDao, DeviceGro
         // we're going to let the database ignore the parent group because we can do it easier in code
         // on second thought, we'll exclude the parent, but otherwise ignore!
         SqlStatementBuilder sql = new SqlStatementBuilder();
-        sql.append("select dg.*");
-        sql.append("from DeviceGroup dg");
-        sql.append("where dg.Type = 'STATIC'");
+        sql.append("select *");
+        sql.append("from DeviceGroup");
+        sql.append("where Type = ?");
         sql.append("and DeviceGroupId != ?");
         PartialDeviceGroupRowMapper mapper = new PartialDeviceGroupRowMapper();
-        List<PartialDeviceGroup> groups = jdbcTemplate.query(sql.toString(), mapper, group.getId());
+        List<PartialDeviceGroup> groups = jdbcTemplate.query(sql.toString(), mapper, "STATIC", group.getId());
         
         PartialGroupResolver resolver = new PartialGroupResolver(this);
         resolver.addKnownGroups(group);

@@ -23,8 +23,10 @@ import com.cannontech.common.device.config.model.ConfigurationBase;
 import com.cannontech.common.device.config.model.ConfigurationTemplate;
 import com.cannontech.common.device.groups.editor.dao.impl.YukonDeviceRowMapper;
 import com.cannontech.common.util.SqlStatementBuilder;
+import com.cannontech.core.dao.DBPersistentDao;
 import com.cannontech.database.data.pao.PaoGroupsWrapper;
 import com.cannontech.database.incrementer.NextValueHelper;
+import com.cannontech.message.dispatch.message.DBChangeMsg;
 import com.cannontech.web.input.InputBeanWrapperImpl;
 import com.cannontech.web.input.InputRoot;
 import com.cannontech.web.input.InputSource;
@@ -35,10 +37,13 @@ import com.cannontech.web.input.type.InputType;
  */
 public class DeviceConfigurationDaoImpl implements DeviceConfigurationDao {
 
+    public static final String DB_CHANGE_OBJECT_TYPE = "config";
+
     private SimpleJdbcTemplate simpleJdbcTemplate = null;
     private NextValueHelper nextValueHelper = null;
 
     private PaoGroupsWrapper paoGroupsWrapper;
+    private DBPersistentDao dbPersistentDao = null;
 
     private List<ConfigurationTemplate> configurationTemplateList = null;
 
@@ -52,6 +57,10 @@ public class DeviceConfigurationDaoImpl implements DeviceConfigurationDao {
 
     public void setPaoGroupsWrapper(PaoGroupsWrapper paoGroupsWrapper) {
         this.paoGroupsWrapper = paoGroupsWrapper;
+    }
+
+    public void setDbPersistentDao(DBPersistentDao dbPersistentDao) {
+        this.dbPersistentDao = dbPersistentDao;
     }
 
     public List<ConfigurationTemplate> getConfigurationTemplateList() {
@@ -82,6 +91,7 @@ public class DeviceConfigurationDaoImpl implements DeviceConfigurationDao {
     public void save(ConfigurationBase configuration) {
 
         String sql = null;
+        int typeOfChange = DBChangeMsg.CHANGE_TYPE_ADD;
         if (configuration.getId() == null) {
 
             // Insert new configuration
@@ -95,6 +105,7 @@ public class DeviceConfigurationDaoImpl implements DeviceConfigurationDao {
             // Update configuration
             sql = "UPDATE DeviceConfiguration set Name = ?, Type = ? WHERE DeviceConfigurationId = ?";
 
+            typeOfChange = DBChangeMsg.CHANGE_TYPE_UPDATE;
         }
 
         // Save Configuration
@@ -137,6 +148,15 @@ public class DeviceConfigurationDaoImpl implements DeviceConfigurationDao {
                                           value);
             }
         }
+
+        DBChangeMsg dbChange = new DBChangeMsg(configuration.getId(),
+                                               DBChangeMsg.CHANGE_CONFIG_DB,
+                                               DBChangeMsg.CAT_DEVICE_CONFIG,
+                                               DB_CHANGE_OBJECT_TYPE,
+                                               typeOfChange);
+
+        dbPersistentDao.processDBChange(dbChange);
+
     }
 
     public ConfigurationBase getConfiguration(int id) {
@@ -179,6 +199,13 @@ public class DeviceConfigurationDaoImpl implements DeviceConfigurationDao {
         String sql = "DELETE FROM DeviceConfiguration WHERE DeviceConfigurationId = ?";
         simpleJdbcTemplate.update(sql, id);
 
+        DBChangeMsg dbChange = new DBChangeMsg(id,
+                                               DBChangeMsg.CHANGE_CONFIG_DB,
+                                               DBChangeMsg.CAT_DEVICE_CONFIG,
+                                               DB_CHANGE_OBJECT_TYPE,
+                                               DBChangeMsg.CHANGE_TYPE_DELETE);
+
+        dbPersistentDao.processDBChange(dbChange);
     }
 
     public List<YukonDevice> getAssignedDevices(ConfigurationBase configuration) {
@@ -207,6 +234,8 @@ public class DeviceConfigurationDaoImpl implements DeviceConfigurationDao {
             typeList.add(type);
         }
 
+        List<DBChangeMsg> dbChangeList = new ArrayList<DBChangeMsg>();
+
         for (YukonDevice device : devices) {
 
             // Clean out any assigned configs - device can only be assigned one
@@ -230,6 +259,20 @@ public class DeviceConfigurationDaoImpl implements DeviceConfigurationDao {
                     // ignore - tried to insert duplicate
                 }
             }
+
+            // TODO add objecttype
+            DBChangeMsg dbChange = new DBChangeMsg(device.getDeviceId(),
+                                                   DBChangeMsg.CHANGE_CONFIG_DB,
+                                                   DBChangeMsg.CAT_DEVICE_CONFIG,
+                                                   "",
+                                                   DBChangeMsg.CHANGE_TYPE_UPDATE);
+            dbChangeList.add(dbChange);
+
+        }
+
+        // Send DBChangeMsgs
+        for (DBChangeMsg msg : dbChangeList) {
+            dbPersistentDao.processDBChange(msg);
         }
 
     }
@@ -239,6 +282,14 @@ public class DeviceConfigurationDaoImpl implements DeviceConfigurationDao {
         // Remove any assigned configuration mappings
         String sql = "DELETE FROM DeviceConfigurationDeviceMap WHERE DeviceId = ?";
         simpleJdbcTemplate.update(sql, deviceId);
+
+        // TODO add objecttype
+        DBChangeMsg dbChange = new DBChangeMsg(deviceId,
+                                               DBChangeMsg.CHANGE_CONFIG_DB,
+                                               DBChangeMsg.CAT_DEVICE_CONFIG,
+                                               "",
+                                               DBChangeMsg.CHANGE_TYPE_UPDATE);
+        dbPersistentDao.processDBChange(dbChange);
     }
 
     /**

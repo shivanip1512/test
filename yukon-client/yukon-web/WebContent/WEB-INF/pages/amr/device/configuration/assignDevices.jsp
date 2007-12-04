@@ -200,7 +200,7 @@
 	<div style="float: left; margin-right: .75em; margin-bottom: .5em; width: 700px;">	
 		<tags:boxContainer title="Assign configuration to multiple devices by file upload" hideEnabled="false">
 			<div>
-				<form method="post" action="/spring/deviceConfiguration?assignConfigByFileUpload" enctype="multipart/form-data" onsubmit="return assignDevicesByFile()">
+				<form method="post" action="/spring/deviceConfiguration" enctype="multipart/form-data" onsubmit="return assignDevicesByFile()">
 					<input type="hidden" id="configuration" name="configuration" value="${configuration.id}" />
 					Select the type of data included in the upload file:
 					<select id="uploadType" name="uploadType" onchange="updateFileNote()">
@@ -215,6 +215,7 @@
 					<span id="fileNote" style="font-size: .7em; color: blue;">Note: The file must contain 1 valid Physical Address per line.</span>
 					<br/><br/>
 					<input type="submit" name="assignConfigByFileUpload" value="Assign Configuration" onclick="return assignDevicesByFile();" />
+					<input type="submit" name="assignConfigByGroup" value="assignConfigByGroup" onclick="return assignDevicesByFile();" />
 				</form>
 			</div>
 		</tags:boxContainer>

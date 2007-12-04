@@ -7,13 +7,13 @@ import com.cannontech.common.device.config.dao.ConfigurationType;
 // import com.cannontech.common.device.config.model.tou.Tou;
 
 /**
- * Backing bean for mct 470 device configurations
+ * Backing bean for mct 430 device configurations
  */
-public class MCT470Configuration extends ConfigurationBase {
+public class MCT430Configuration extends ConfigurationBase {
 
     @Override
     public ConfigurationType getType() {
-        return ConfigurationType.MCT470;
+        return ConfigurationType.MCT430;
     }
 
     // Addressing

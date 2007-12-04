@@ -2,8 +2,10 @@ package com.cannontech.common.device.config.dao;
 
 import com.cannontech.common.device.config.model.ConfigurationBase;
 import com.cannontech.common.device.config.model.MCT410Configuration;
+import com.cannontech.common.device.config.model.MCT430Configuration;
 import com.cannontech.common.device.config.model.MCT470Configuration;
 import com.cannontech.common.search.criteria.MCT410Criteria;
+import com.cannontech.common.search.criteria.MCT430Criteria;
 import com.cannontech.common.search.criteria.MCT470Criteria;
 
 /**
@@ -26,6 +28,23 @@ public enum ConfigurationType {
 
         public String[] getSupportedDeviceTypeList() {
             return MCT470Criteria.MCT_470_TYPES;
+        }
+    },
+    MCT430 {
+        public ConfigurationBase getConfigurationClass() {
+            return new MCT430Configuration();
+        }
+
+        public String getConfigurationTemplateName() {
+            return "MCT 430 Configuration";
+        }
+
+        public Class getCriteria() {
+            return MCT430Criteria.class;
+        }
+
+        public String[] getSupportedDeviceTypeList() {
+            return MCT430Criteria.MCT_430_TYPES;
         }
     },
     MCT410 {
