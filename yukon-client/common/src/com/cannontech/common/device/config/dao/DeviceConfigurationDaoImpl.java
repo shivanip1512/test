@@ -264,7 +264,7 @@ public class DeviceConfigurationDaoImpl implements DeviceConfigurationDao {
             DBChangeMsg dbChange = new DBChangeMsg(device.getDeviceId(),
                                                    DBChangeMsg.CHANGE_CONFIG_DB,
                                                    DBChangeMsg.CAT_DEVICE_CONFIG,
-                                                   "",
+                                                   "device",
                                                    DBChangeMsg.CHANGE_TYPE_UPDATE);
             dbChangeList.add(dbChange);
 
@@ -287,7 +287,7 @@ public class DeviceConfigurationDaoImpl implements DeviceConfigurationDao {
         DBChangeMsg dbChange = new DBChangeMsg(deviceId,
                                                DBChangeMsg.CHANGE_CONFIG_DB,
                                                DBChangeMsg.CAT_DEVICE_CONFIG,
-                                               "",
+                                               "device",
                                                DBChangeMsg.CHANGE_TYPE_UPDATE);
         dbPersistentDao.processDBChange(dbChange);
     }
