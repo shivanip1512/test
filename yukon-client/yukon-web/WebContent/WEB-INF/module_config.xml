@@ -400,7 +400,7 @@
             <link>SelectDevice.jsp?SortBy=1000</link>
           </option>
           <option id="group" name="Group">
-            <link>/spring/command/configure</link>
+            <link>/spring/group/groupProcessing</link>
           </option>
         </sublinks>
       </option>
