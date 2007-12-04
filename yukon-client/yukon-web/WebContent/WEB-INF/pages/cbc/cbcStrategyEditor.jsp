@@ -195,7 +195,7 @@
             <f:verbatim>
             </td>
             </tr>
-            <tr
+            <tr>
             <td>
             </f:verbatim>
 			
