@@ -113,7 +113,7 @@
                             </div>
                         </cti:isStarsExist>
                         <input type="hidden" name="REDIRECTED_FROM"
-                            value="${redirectedfrom}" />
+                            value="${param.REDIRECTED_FROM}" />
                         <input type="hidden" name="ACTION" value="LOGIN">
                     </form>
 

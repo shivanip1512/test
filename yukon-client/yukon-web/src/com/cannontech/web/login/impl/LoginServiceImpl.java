@@ -1,13 +1,9 @@
 package com.cannontech.web.login.impl;
 
-import java.io.IOException;
-import java.security.GeneralSecurityException;
 import java.util.Enumeration;
 import java.util.List;
 import java.util.Properties;
-import java.util.Random;
 
-import javax.servlet.http.Cookie;
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
 import javax.servlet.http.HttpSession;
@@ -21,7 +17,6 @@ import com.cannontech.common.exception.BadAuthenticationException;
 import com.cannontech.common.exception.NotLoggedInException;
 import com.cannontech.common.util.Pair;
 import com.cannontech.core.authentication.service.AuthenticationService;
-import com.cannontech.core.authentication.service.CryptoService;
 import com.cannontech.core.dao.AuthDao;
 import com.cannontech.core.dao.ContactDao;
 import com.cannontech.core.dao.YukonUserDao;
@@ -35,10 +30,7 @@ import com.cannontech.web.login.SessionInitializer;
 import com.cannontech.web.navigation.CtiNavObject;
 
 public class LoginServiceImpl implements LoginService {
-    private static final Random rand = new Random();
-    private static final String delimiter = ":";
     private static final String INVALID_PARAMS = "failed=true";
-    private static final String INVALID_URI = "/login.jsp?failed=true";
     private static final String INVALID_INBOUND_URI = "/voice/inboundLogin.jsp";
     private static final String VOICE_ROOT = "/voice";
     private static final String PHONE_NUMBER = "PHONE";
@@ -59,79 +51,31 @@ public class LoginServiceImpl implements LoginService {
     private AuthDao authDao;
     private ContactDao contactDao;
     private YukonUserDao yukonUserDao;
-    private CryptoService cryptoService;
     private List<SessionInitializer> sessionInitializers;
 
-    public boolean login(HttpServletRequest request, HttpServletResponse response, Cookie cookie) throws Exception {
-        try {
-            String cryptValue = cookie.getValue();
-            String value = cryptoService.decrypt(cryptValue);
 
-            String[] split = value.split(delimiter);
-            if (split.length < 3) return false;
-
-            final String username = split[1];
-            final String password = split[2];
-            
-            return this.login(request, response, username, password, false);
-        } catch (GeneralSecurityException e) {
-            CTILogger.warn(e);
-            return false;
-        }
-    }
-
-    public boolean login(HttpServletRequest request, HttpServletResponse response, String username, String password, 
-            boolean createRememberMeCookie) throws Exception {
+    @Override
+    public boolean login(HttpServletRequest request, String username, String password) throws Exception {
         try {
             final LiteYukonUser user = authenticationService.login(username, password);
-            createSession(request, response, user);
-            
-            if (createRememberMeCookie) createRememberMeCookie(request, response, username, password);
-            
+            createSession(request, user);
+
             ActivityLogger.logEvent(user.getUserID(), LOGIN_WEB_ACTIVITY_ACTION, "User " + user.getUsername() + " (userid=" + user.getUserID() + ") has logged in from " + request.getRemoteAddr());
             return true;
         } catch (BadAuthenticationException e) {
-            handleBadAuthentication(request, response, username);
+            ActivityLogger.logEvent(LOGIN_FAILED_ACTIVITY_LOG, "Login attempt as " + username + " failed from " + request.getRemoteAddr());
             return false;
         }
     }
     
-    private void handleBadAuthentication(HttpServletRequest request, HttpServletResponse response, String username) throws IOException {
-        ActivityLogger.logEvent(LOGIN_FAILED_ACTIVITY_LOG, "Login attempt as " + username + " failed from " + request.getRemoteAddr());
-        ServletUtil.deleteAllCookies(request, response);
-        String redirect = request.getContextPath() + INVALID_URI;
-        response.sendRedirect(redirect);
-    }
-    
-    private void createRememberMeCookie(final HttpServletRequest request, HttpServletResponse response, 
-            String username, String password) {
-        try {
-            String value = createCookieValue(username, password);
-            String cryptValue = cryptoService.encrypt(value);
-            ServletUtil.createCookie(request, response, LoginController.REMEMBER_ME_COOKIE, cryptValue);
-        } catch (GeneralSecurityException e) {
-            CTILogger.warn("Creation of RememberMeCookie Failed!", e);
-        }    
-    }
-
-    private String createCookieValue(final String username, final String password) {
-        final String randomString = Long.toString(Math.abs(rand.nextLong()));
-        final StringBuilder sb = new StringBuilder();
-        sb.append(randomString);
-        sb.append(delimiter);
-        sb.append(username);
-        sb.append(delimiter);
-        sb.append(password);
-        return sb.toString();
-    }
-    
-    private void createSession(HttpServletRequest request, HttpServletResponse response, LiteYukonUser user) {
+    private void createSession(HttpServletRequest request, LiteYukonUser user) {
         HttpSession session = request.getSession(false);
         if (session != null) session.invalidate();
         session = request.getSession(true);
         initSession(user, session);
     }
     
+    @Override
     public void clientLogin(HttpServletRequest request, HttpServletResponse response) throws Exception {
         String username = ServletRequestUtils.getRequiredStringParameter(request, USERNAME);
         String password = ServletRequestUtils.getRequiredStringParameter(request, PASSWORD);
@@ -147,6 +91,7 @@ public class LoginServiceImpl implements LoginService {
         }
     }
 
+    @Override
     @SuppressWarnings("unchecked")
     public void logout(HttpServletRequest request, HttpServletResponse response) throws Exception {
         String redirect = this.getRedirect(request);
@@ -179,6 +124,7 @@ public class LoginServiceImpl implements LoginService {
         response.sendRedirect(redirect);
     }
 
+    @Override
     public void inboundVoiceLogin(HttpServletRequest request, HttpServletResponse response) throws Exception {
         String phone = request.getParameter(PHONE_NUMBER); // phone number
         String pin = request.getParameter(PIN); // pin
@@ -215,6 +161,7 @@ public class LoginServiceImpl implements LoginService {
         }
     }
 
+    @Override
     public void outboundVoiceLogin(HttpServletRequest request, HttpServletResponse response) throws Exception {
         String username = request.getParameter(USERNAME);  //contactid
         String password = request.getParameter(PASSWORD);  //pin    
@@ -258,7 +205,7 @@ public class LoginServiceImpl implements LoginService {
                         redirect += "?" + INVALID_PARAMS;    
                 }
                 else {
-                    redirect = request.getContextPath() + VOICE_ROOT + INVALID_URI;
+                    redirect = request.getContextPath() + VOICE_ROOT + LoginController.INVALID_URI;
                 }
             }
             ActivityLogger.logEvent(LOGIN_FAILED_ACTIVITY_LOG, "VOICE Login attempt for contact " + lContact.toString() + " failed from " + request.getRemoteAddr());
@@ -266,6 +213,8 @@ public class LoginServiceImpl implements LoginService {
         }
     }
     
+    @SuppressWarnings("unchecked")
+    @Override
     public LiteYukonUser internalLogin(HttpServletRequest request, HttpSession session, String username, boolean saveCurrentUser) {
         LiteYukonUser user = yukonUserDao.getLiteYukonUser(username);
         if (user == null || authDao.getRolePropertyValue(user,WebClientRole.HOME_URL) == null)
@@ -336,10 +285,6 @@ public class LoginServiceImpl implements LoginService {
 
     public void setSessionInitializers(List<SessionInitializer> sessionInitializers) {
         this.sessionInitializers = sessionInitializers;
-    }
-
-    public void setCryptoService(CryptoService cryptoService) {
-        this.cryptoService = cryptoService;
     }
 
     public void setAuthenticationService(AuthenticationService authenticationService) {

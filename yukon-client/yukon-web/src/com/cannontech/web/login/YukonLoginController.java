@@ -16,12 +16,11 @@ import com.cannontech.util.ServletUtil;
 public class YukonLoginController extends MultiActionController {
     private LoginService loginService;
     private AuthDao authDao;
-
+    private LoginCookieHelper loginCookieHelper;
+    
     public ModelAndView view(final HttpServletRequest request, final HttpServletResponse response) throws Exception {
-        final String redirectedFrom = ServletRequestUtils.getStringParameter(request, LoginController.REDIRECTED_FROM);
         final ModelAndView mav = new ModelAndView();
         mav.setViewName("login.jsp");
-        mav.addObject("redirectedfrom", redirectedFrom);
         return mav;
     }
 
@@ -31,16 +30,25 @@ public class YukonLoginController extends MultiActionController {
         final Boolean createRememberMeCookie = ServletRequestUtils.getBooleanParameter(request, "rememberme", false);
         final String redirectedFrom = ServletRequestUtils.getStringParameter(request, LoginController.REDIRECTED_FROM);
 
-        boolean success = loginService.login(request, response, username, password, createRememberMeCookie);
-        if (!success) return null;
-      
         String redirect;
-        if (redirectedFrom != null && !redirectedFrom.equals("")) {
-            redirect = redirectedFrom; 
+
+        boolean success = loginService.login(request, username, password);
+        if (success) {
+            if (createRememberMeCookie) {
+                String value = loginCookieHelper.createCookieValue(username, password);
+                ServletUtil.createCookie(request, response, LoginController.REMEMBER_ME_COOKIE, value);
+            }
+
+            if (redirectedFrom != null && !redirectedFrom.equals("")) {
+                redirect = redirectedFrom;
+            } else {
+                LiteYukonUser user = ServletUtil.getYukonUser(request);
+                String homeUrl = authDao.getRolePropertyValue(user, WebClientRole.HOME_URL);
+                redirect = ServletUtil.createSafeUrl(request, homeUrl);
+            }
         } else {
-            LiteYukonUser user = ServletUtil.getYukonUser(request);
-            String homeUrl = authDao.getRolePropertyValue(user, WebClientRole.HOME_URL);
-            redirect = ServletUtil.createSafeUrl(request, homeUrl);
+            ServletUtil.deleteAllCookies(request, response);
+            redirect = ServletUtil.createSafeUrl(request, LoginController.INVALID_URI);
         }
         return new ModelAndView("redirect:" + redirect);
     }
@@ -69,6 +77,10 @@ public class YukonLoginController extends MultiActionController {
         this.loginService = loginService;
     }
     
+    public void setLoginCookieHelper(LoginCookieHelper loginCookieHelper) {
+        this.loginCookieHelper = loginCookieHelper;
+    }
+
     public void setAuthDao(AuthDao authDao) {
         this.authDao = authDao;
     }

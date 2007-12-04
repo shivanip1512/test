@@ -3,6 +3,7 @@ package com.cannontech.web.login;
 import java.io.IOException;
 import java.io.UnsupportedEncodingException;
 import java.net.URLEncoder;
+import java.security.GeneralSecurityException;
 
 import javax.servlet.Filter;
 import javax.servlet.FilterChain;
@@ -29,13 +30,14 @@ public class LoginFilter implements Filter {
     private static final String[] exclusionFileTypes;
     private WebApplicationContext context;
     private LoginService loginService;
-    
+    private LoginCookieHelper loginCookieHelper;
+
     static {
-        exclusionServletNames = new String[]{"/servlet/LoginController"};
+        exclusionServletNames = new String[]{"/servlet/LoginController", "/soap/"};
         exclusionFileNames = new String[]{LoginController.LOGIN_URL, "setup.jsp", "prototype.js", "CtiMenu.js"};
-        exclusionFileTypes = new String[]{".css", ".png", ".gif", ".jpg"};
+        exclusionFileTypes = new String[]{".css", ".png", ".gif", ".jpg", ".html"};
     }
-    
+
     @Override
     public void doFilter(ServletRequest req, ServletResponse resp,
             FilterChain chain) throws IOException, ServletException {
@@ -48,7 +50,7 @@ public class LoginFilter implements Filter {
             chain.doFilter(req, resp);
             return;
         }
-        
+
         boolean excludedRequest = isExcludedRequest(request);
         if (excludedRequest) {
             chain.doFilter(req, resp);
@@ -56,61 +58,70 @@ public class LoginFilter implements Filter {
         }
 
         try {
-            Cookie rememberMeCookie = ServletUtil.getCookie(request, LoginController.REMEMBER_ME_COOKIE); 
-            if (rememberMeCookie == null) {
-                
-                boolean ajaxRequest = ServletUtil.isAjaxRequest(req);
-                if (ajaxRequest) {
-                    response.sendError(HttpServletResponse.SC_INTERNAL_SERVER_ERROR, "Not Authenticated!");
-                    return;
-                }
-                
-                String username = ServletRequestUtils.getStringParameter(request, LoginController.USERNAME);
-                String password = ServletRequestUtils.getStringParameter(request, LoginController.PASSWORD);
-                if (username != null && password != null) {
-                    boolean success = loginService.login(request, response, username, password, false);
+            // first, try to use the remember me cookie
+            Cookie rememberMeCookie = ServletUtil.getCookie(request, LoginController.REMEMBER_ME_COOKIE);
+            if (rememberMeCookie != null) {
+                try {
+                    String encryptedValue = rememberMeCookie.getValue();
+                    UserPasswordHolder holder = loginCookieHelper.decodeCookieValue(encryptedValue);
+
+                    boolean success = loginService.login(request, holder.getUsername(), holder.getPassword());
                     if (success) {
                         chain.doFilter(req, resp);
+                        return;
                     }
-                    return;
+                    
+                    //cookie login failed, remove cookie and go on to second try.
+                    ServletUtil.deleteAllCookies(request, response);
+                } catch (GeneralSecurityException e) {
+                    CTILogger.error("Unable to decrypt cookie value", e);
+                    ServletUtil.deleteAllCookies(request, response);
                 }
-                
-                sendLoginRedirect(request, response);
-                return;
             }
 
-            boolean success = loginService.login(request, response, rememberMeCookie);
-            if (success) {
-                chain.doFilter(req, resp);
+            // second try the username/password parameters
+            String username = ServletRequestUtils.getStringParameter(request, LoginController.USERNAME);
+            String password = ServletRequestUtils.getStringParameter(request, LoginController.PASSWORD);
+            if (username != null && password != null) {
+                boolean success = loginService.login(request, username, password);
+                if (success) {
+                    chain.doFilter(req, resp);
+                    return;
+                }
             }
+
+            // okay, if we got here, they weren't authenticated
+            boolean ajaxRequest = ServletUtil.isAjaxRequest(req);
+            if (ajaxRequest) {
+                response.sendError(HttpServletResponse.SC_INTERNAL_SERVER_ERROR, "Not Authenticated!");
+            } else {
+                sendLoginRedirect(request, response);
+            }
+            return;
         } catch (Exception e) {
-            CTILogger.warn(e);
+            CTILogger.warn("Received unknown exception while processing LoginFilter, redirecting", e);
             sendLoginRedirect(request, response);
         } 
     }
 
     private boolean isExcludedRequest(HttpServletRequest request) {
-        String requestUrl = request.getRequestURL().toString();
-        boolean matched = requestUrl.matches("^.+\\.\\w{2,3}$");
-        
-        if (matched) {
-            for (final String fileName : exclusionFileNames) {
-                if (requestUrl.endsWith(fileName)) return true;
-            }
-            
-            for (final String fileType : exclusionFileTypes) {
-                if (requestUrl.endsWith(fileType)) return true;
-            }    
-            return false;
+        final String requestUrl = request.getRequestURL().toString();
+
+        for (final String fileName : exclusionFileNames) {
+            if (requestUrl.endsWith(fileName)) return true;
         }
 
+        for (final String fileType : exclusionFileTypes) {
+            if (requestUrl.endsWith(fileType)) return true;
+        }    
+
         for (final String servletName : exclusionServletNames) {
-            if (requestUrl.endsWith(servletName)) return true;
+            if (requestUrl.contains(servletName)) return true;
         }
 
         return false;
     }
-    
+
     private String getRedirectedFrom(HttpServletRequest request) {
         String url = request.getRequestURL().toString();
         String urlParams = request.getQueryString();
@@ -122,13 +133,13 @@ public class LoginFilter implements Filter {
             throw new RuntimeException(e);
         }
     }
-    
+
     private void sendLoginRedirect(HttpServletRequest request, HttpServletResponse response) throws IOException{
         String navUrl = getRedirectedFrom(request);
         String redirectURL = LoginController.LOGIN_URL + "?" + LoginController.REDIRECTED_FROM + "=" + navUrl;
         response.sendRedirect(redirectURL);
     }
-    
+
     private boolean isLoggedIn(ServletRequest request) {
         try {
             ServletUtil.getYukonUser(request);
@@ -137,15 +148,16 @@ public class LoginFilter implements Filter {
             return false;
         }
     }
-    
+
     @Override
     public void init(FilterConfig filterConfig) throws ServletException {
         context = WebApplicationContextUtils.getWebApplicationContext(filterConfig.getServletContext());
         loginService = (LoginService) context.getBean("loginService", LoginService.class);
+        loginCookieHelper = (LoginCookieHelper) context.getBean("loginCookieHelper", LoginCookieHelper.class);
     }
 
     @Override
     public void destroy() {
     }
-    
+
 }
