@@ -1,7 +1,7 @@
 /*==============================================================*/
 /* Database name:  YukonDatabase                                */
 /* DBMS name:      ORACLE Version 9i                            */
-/* Created on:     12/3/2007 5:26:18 PM                         */
+/* Created on:     12/3/2007 10:32:58 PM                        */
 /*==============================================================*/
 
 
@@ -3019,7 +3019,8 @@ insert into DynamicBillingFormat values( 21, ',' ,'' ,'');
 /*==============================================================*/
 create table DYNAMICCCAREA  (
    AreaID               NUMBER                          not null,
-   additionalflags      VARCHAR2(20)                    not null
+   additionalflags      VARCHAR2(20)                    not null,
+   constraint PK_DYNAMICCCAREA primary key (AreaID)
 )
 ;
 
@@ -3295,6 +3296,11 @@ create table DeviceTNPPSettings  (
    constraint PK_DEVICETNPPSETTINGS primary key (DeviceID)
 )
 ;
+
+create cluster  C_DeviceTypeCommand (
+   DeviceCommandID		NUMBER, 
+   CommandGroupID		NUMBER
+);
 
 /*==============================================================*/
 /* Table: DeviceTypeCommand                                     */
@@ -3714,7 +3720,6 @@ INSERT INTO DEVICETYPECOMMAND VALUES (-399, -106, 'MCT-410CL', 17, 'Y', -1);
 INSERT INTO DEVICETYPECOMMAND VALUES (-400, -107, 'MCT-410CL', 18, 'Y', -1);
 INSERT INTO DEVICETYPECOMMAND VALUES (-401, -108, 'MCT-410CL', 19, 'Y', -1);
 INSERT INTO DEVICETYPECOMMAND VALUES (-402, -109, 'All MCT-4xx Series', 20, 'Y', -1);
-INSERT INTO DEVICETYPECOMMAND VALUES (-403, -110, 'MCT-410CL', 21, 'Y', -1);
 INSERT INTO DEVICETYPECOMMAND VALUES (-404, -111, 'MCT-410CL', 22, 'Y', -1);
 INSERT INTO DEVICETYPECOMMAND VALUES (-405, -112, 'All MCT-4xx Series', 23, 'Y', -1);
 INSERT INTO DEVICETYPECOMMAND VALUES (-406, -113, 'All MCT-4xx Series', 24, 'Y', -1);
@@ -3833,7 +3838,6 @@ INSERT INTO DEVICETYPECOMMAND VALUES (-521, -106, 'MCT-410FL', 17, 'Y', -1);
 INSERT INTO DEVICETYPECOMMAND VALUES (-522, -107, 'MCT-410FL', 18, 'Y', -1);
 INSERT INTO DEVICETYPECOMMAND VALUES (-523, -108, 'MCT-410FL', 19, 'Y', -1);
 INSERT INTO DEVICETYPECOMMAND VALUES (-524, -109, 'All MCT-4xx Series', 20, 'Y', -1);
-INSERT INTO DEVICETYPECOMMAND VALUES (-525, -110, 'MCT-410FL', 21, 'Y', -1);
 INSERT INTO DEVICETYPECOMMAND VALUES (-526, -111, 'MCT-410FL', 22, 'Y', -1);
 INSERT INTO DEVICETYPECOMMAND VALUES (-527, -112, 'All MCT-4xx Series', 23, 'Y', -1);
 INSERT INTO DEVICETYPECOMMAND VALUES (-528, -113, 'All MCT-4xx Series', 24, 'Y', -1);
@@ -3859,7 +3863,6 @@ INSERT INTO DEVICETYPECOMMAND VALUES (-546, -106, 'MCT-410GL', 17, 'Y', -1);
 INSERT INTO DEVICETYPECOMMAND VALUES (-547, -107, 'MCT-410GL', 18, 'Y', -1);
 INSERT INTO DEVICETYPECOMMAND VALUES (-548, -108, 'MCT-410GL', 19, 'Y', -1);
 INSERT INTO DEVICETYPECOMMAND VALUES (-549, -109, 'All MCT-4xx Series', 20, 'Y', -1);
-INSERT INTO DEVICETYPECOMMAND VALUES (-550, -110, 'MCT-410GL', 21, 'Y', -1);
 INSERT INTO DEVICETYPECOMMAND VALUES (-551, -111, 'MCT-410GL', 22, 'Y', -1);
 INSERT INTO DEVICETYPECOMMAND VALUES (-552, -112, 'All MCT-4xx Series', 23, 'Y', -1);
 INSERT INTO DEVICETYPECOMMAND VALUES (-553, -113, 'All MCT-4xx Series', 24, 'Y', -1);
@@ -9094,6 +9097,11 @@ alter table CCSUBAREAASSIGNMENT
       on delete cascade
 ;
 
+alter table CCSUBAREAASSIGNMENT
+   add constraint FK_CCSUBARE_REFERENCE_DYNAMICC foreign key (AreaID)
+      references DYNAMICCCAREA (AreaID)
+;
+
 alter table CCSUBSPECIALAREAASSIGNMENT
    add constraint FK_CCSUBSPE_CAPCONTR2 foreign key (SubstationBusID)
       references CAPCONTROLSUBSTATION (SubstationID)
@@ -9604,11 +9612,6 @@ alter table DYNAMICBILLINGFIELD
 alter table DYNAMICBILLINGFORMAT
    add constraint FK_DYNAMICB_REF_BILLI_BILLINGF foreign key (FormatID)
       references BillingFileFormats (FormatID)
-;
-
-alter table DYNAMICCCAREA
-   add constraint FK_ccarea_Dynccarea foreign key (AreaID)
-      references CCSUBAREAASSIGNMENT (AreaID)
 ;
 
 alter table DYNAMICCCTWOWAYCBC
