@@ -10,16 +10,11 @@ import com.amdswireless.messages.rx.AppMessageType1;
 import com.amdswireless.messages.rx.AppMessageType22;
 import com.amdswireless.messages.rx.AppMessageType5;
 import com.amdswireless.messages.rx.DataMessage;
-import com.cannontech.clientutils.YukonLogManager;
-import com.cannontech.common.util.CtiUtilities;
 
 public class CvsFileProcessor extends SensusMessageHandlerBase {
-    private Logger log = YukonLogManager.getLogger(CvsFileProcessor.class);
+    private Logger log = Logger.getLogger(CvsFileProcessor.class);
     
     protected void processStatusMessage(AppMessageType22 message) {
-        int repId = message.getRepId();
-        log.debug("Processing message for repId=" + repId + ": " + message);
-        
         String csvStr = dataMessageToCSVString(message) + ", " + message.toCSV();
         log.info(csvStr);
         writeCvsStringToFile("0x22", csvStr, getFileHeaders(message.getAppCode()));
@@ -27,10 +22,6 @@ public class CvsFileProcessor extends SensusMessageHandlerBase {
 
     protected void processBindingMessage(AppMessageType5 message) {
         String iconSerialNumber = message.getIconSerialNumber();
-        if (!iconSerialNumber.matches(getBindingKeyRegEx())) {
-            return;
-        }
-
         String csvStr = dataMessageToCSVString(message);
         csvStr += ", " + iconSerialNumber + 
         ", " + message.getLatitude() + 
@@ -42,7 +33,7 @@ public class CvsFileProcessor extends SensusMessageHandlerBase {
     }
 
     protected void processSetupMessage(AppMessageType1 message) {
-        int deviceType = message.getDeviceType();
+        // int deviceType = message.getDeviceType();	// deviceType == 12 is the FCI!  Using only SN ranges to do this though.
 
         int txOpMode = message.getTransmitOperationalMode();
         int supTxMult = message.getSupervisoryTransmitMultiple();
@@ -52,14 +43,12 @@ public class CvsFileProcessor extends SensusMessageHandlerBase {
       	", \"" + getSuprRate(supTxMult) + "\"" +
     	", " + DataMessage.cleanHex(message.getRawMessage());
   
-        if (deviceType == 12) {
-            log.info(csvStr);
-            writeCvsStringToFile("0x01", csvStr, getFileHeaders(message.getAppCode()));
-        }
+        log.info(csvStr);
+        writeCvsStringToFile("0x01", csvStr, getFileHeaders(message.getAppCode()));        
     }
 
 	private void writeCvsStringToFile(String file, String text, String header) {
-        String fileName = CtiUtilities.getYukonBase() + "/Server/Log/" + getNameOfAppInstance() + "_AppCode_" + file + ".log";
+        String fileName = getLogFilePath() + getNameOfAppInstance() + "_AppCode_" + file + ".log";
         File tempFile = new File(fileName);
         
         if(header != null && !tempFile.exists()) {
