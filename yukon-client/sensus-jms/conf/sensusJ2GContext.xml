@@ -7,9 +7,15 @@
     <property name="connectionFactory" ref="sensusJmsFactory"/>
   </bean>
 
+  <!-- EDIT: specify one url and port location for the JMS server. -->
   <bean id="sensusJmsFactory" class="org.apache.activemq.ActiveMQConnectionFactory">
     <property name="brokerURL">
-      <value>failover:tcp://s1.139.usamr.amdswireless.com:61616</value>
+      <!--  There can be only one of these criters in here.  Uncomment or add one below -->
+      <!-- <value>failover:tcp://nc.123.usamr.amdswireless.com:61616</value> -->
+      <!-- <value>failover:tcp://nc.102.usamr.amdswireless.com:61616</value> -->
+      <!-- <value>failover:tcp://nc.106.usamr.amdswireless.com:61616</value> -->
+      <!-- <value>failover:tcp://s1.139.usamr.amdswireless.com:61616</value> -->
+      <value>failover:tcp://nc.102.usamr.amdswireless.com:61616</value>
     </property>
   </bean>
 
@@ -23,12 +29,14 @@
   </bean>
 
   <!-- this is the Message Driven POJO (MDP) -->
+  <!-- Specifies the Message Processors.  Comment out cvsFile Processor if desired. -->
   <bean id="sensusMessageListener" class="com.cannontech.sensus.SensusMessageListener">
+    <property name="minRepId" value="0"/>  <!-- EDIT: The minimum RadioID that will process through the system 30000000 default (set lower to pick up more activity) -->
+    <property name="maxRepId" value="31000000"/>  <!-- EDIT: The maximum RadioID that will process through the system 31000000 default -->
     <property name="sensusMessageHandlerSet">
         <set>
         	<ref bean="sensusToGPUFFProcessor" />
         	<ref bean="cvsFileProcessor" />
-<!--        	<ref bean="setupMessageProcessor" />  -->
 	    </set>
   </property>
   </bean>
@@ -50,20 +58,21 @@
     <property name="messageListener" ref="sensusMessageListener" />
   </bean>
   
+  
   <bean id="appInstanceInfo" class="com.cannontech.sensus.SensusMessageHandlerBase" abstract="true">
       <property name="messageEncoder"><bean class="com.amdswireless.common.MessageEncoder"/></property>
       <property name="bindingKeyRegEx" value="^CPS.*"/>
       <property name="ignoreEventBit" value="true"/>
-      <property name="nameOfAppInstance" value="AppCode"/>
-      <property name="logFilePath" value="c:/yukon/server/log"/>    <!-- This must aim at a valid path for log output -->
+      <property name="nameOfAppInstance" value="J2G"/>
+      <property name="logFilePath" value="c:/temp/"/>    <!-- This must aim at a valid path for log output -->
       <property name="handlerTimeZone" value="UTC"/>
       <property name="customerId" value="0"/>      
   </bean>
   
   <bean id="sensusToGPUFFProcessor" class="com.cannontech.sensus.SensusToGPUFFProcessor" parent="appInstanceInfo">
-
       <property name="udpTargetAddressSet">
               <set>    
+              <!-- EDIT: Add one or more IP/port combinations below this line. -->
                   <value>http://127.0.0.1:10000</value>
                   <value>http://127.0.0.1:10001</value>
               </set>

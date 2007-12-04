@@ -1,10 +1,11 @@
 package com.cannontech.sensus;
 
 import java.util.Enumeration;
-import java.util.Iterator;
+import java.util.HashMap;
+import java.util.Map;
+import java.util.Set;
 import java.util.Timer;
 import java.util.TimerTask;
-import java.util.Set;
 
 import javax.jms.JMSException;
 import javax.jms.Message;
@@ -15,12 +16,14 @@ import org.apache.commons.lang.math.NumberUtils;
 import org.apache.log4j.Logger;
 import org.springframework.beans.factory.InitializingBean;
 
-import com.cannontech.clientutils.YukonLogManager;
-
 public class SensusMessageListener implements MessageListener, InitializingBean {
-    private Logger log = YukonLogManager.getLogger(SensusMessageListener.class);
+    private Logger log = Logger.getLogger(SensusMessageListener.class);
     Set<SensusMessageHandler> sensusMessageHandlerSet;
     int messageCount = 0;
+	private Integer minRepId;
+	private Integer maxRepId;
+
+	private Map<Integer, Integer>  repIdSeqMap = new HashMap<Integer, Integer>();
 
     public void onMessage(Message msg) {
         try {
@@ -32,20 +35,34 @@ public class SensusMessageListener implements MessageListener, InitializingBean 
                 if (m instanceof char[]) {
                     char[] bytes = (char[])m;
                     String repIdObj = om.getStringProperty("RepId");
-                    if (!NumberUtils.isDigits(repIdObj)) {
-                        log.warn("Got message with non-numeric RepId: " + repIdObj);
+                    String appCodeObj = om.getStringProperty("AppCode");
+                    String sequenceObj = om.getStringProperty("RfSeq");
+
+                    if (!NumberUtils.isDigits(repIdObj) || !NumberUtils.isDigits(appCodeObj) || !NumberUtils.isDigits(sequenceObj) ) {
+                    	// if(messageCount < 1000) logOutProperties(om);
                         return;
                     }
-                    String appCodeObj = om.getStringProperty("AppCode");
-                    if (!NumberUtils.isDigits(appCodeObj)) {
-                        log.warn("Got message with non-numeric AppCode: " + appCodeObj);
-                    }
+
                     int repId = Integer.parseInt(repIdObj);
-                    int appCode = Integer.parseInt(appCodeObj);
-                    
-                    for (SensusMessageHandler handler : sensusMessageHandlerSet) {
-                    	handler.processMessage(repId, appCode, bytes);                    	
-                    }
+                	int appCode = Integer.parseInt(appCodeObj);
+                	int sequence = Integer.parseInt(sequenceObj);
+
+                	if(isMessageInteresting(appCode) && getMinRepId() <= repId && repId <= getMaxRepId()) {		// Only process this range of radio Id.			
+
+                		boolean isSequenceNew = isMessageSequenceNumberNew(repId, sequence);
+
+                		if (appCode == 0x22) {
+                			log.debug("Received a status message for repid: " + repId);
+                		} else if (appCode == 0x05) {
+                			log.debug("Received a binding message for repid: " + repId);
+                		} else if (appCode == 0x01) { 
+                			log.debug("Received a configuration/setup message for repid: " + repId);
+                		}
+                		
+                		for (SensusMessageHandler handler : sensusMessageHandlerSet) {
+                			handler.processMessage(repId, appCode, isSequenceNew, bytes);                    	
+                		}                    	
+                	}
                 } else {
                     log.info("payload wasn't a char[]");
                 }
@@ -80,4 +97,58 @@ public class SensusMessageListener implements MessageListener, InitializingBean 
         }, 5000, 300000);
         
     }
+
+    public static boolean isMessageInteresting(int appCode) {
+    	boolean interested = false;
+    	
+    	switch (appCode) {
+    	case 0x01:
+    	case 0x05:
+    	case 0x22:
+    		interested = true;
+    		break;
+    	default:
+    	}
+
+    	return interested;
+    }
+
+    public boolean isMessageSequenceNumberNew(int repId, int sequence) {
+    	boolean newSequence = false;		// Determine if this sequence has already been through the system for this repId?
+    	Integer lastSeq = repIdSeqMap.get(repId);
+
+    	if(lastSeq == null) {
+    		// Unknown repId.  Add it to the list with this sequence
+    		newSequence = true;
+    		repIdSeqMap.put(repId, sequence);
+    	} else if(lastSeq.intValue() < sequence) {
+    		// it is a new sequence number. Update the repId to this sequence.
+    		newSequence = true;
+    		repIdSeqMap.put(repId, sequence);
+    	} else {
+    		// We've already processed this sequence once.
+    		log.debug("Sequence number " + sequence + " already processed for repId " + repId);
+    	}
+    	
+    	return newSequence;
+    }
+
+	public Integer getMaxRepId() {
+		return maxRepId;
+	}
+
+	public void setMaxRepId(Integer maxRepId) {
+		this.maxRepId = maxRepId;
+	}
+
+	public Integer getMinRepId() {
+		return minRepId;
+	}
+
+	public void setMinRepId(Integer minRepId) {
+		this.minRepId = minRepId;
+	}
+
 }
+
+

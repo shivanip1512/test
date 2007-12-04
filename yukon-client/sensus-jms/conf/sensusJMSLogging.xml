@@ -1,0 +1,39 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!DOCTYPE log4j:configuration SYSTEM "log4j.dtd">
+
+<log4j:configuration debug="false" 
+                     xmlns:log4j='http://jakarta.apache.org/log4j/'>
+
+  <!-- Appends messages to the console. To change the layout format, see -->
+  <!-- log4j documents for conversion/format character definitions -->
+  <appender name="consoleAppender" class="org.apache.log4j.ConsoleAppender">
+    <layout class="org.apache.log4j.PatternLayout">
+      <param name="ConversionPattern" value="%d [%t] %-5p %c - %m%n"/>
+    </layout>
+  </appender>
+  
+  <!-- package level loggers -->
+  <!-- Adjust the following logger levels to fine-tune logging output -->
+  <!-- To turn of logging for any package use: level value="off"  -->
+  <!-- Possible levels: OFF, FATAL, ERROR, WARN, INFO, DEBUG, OFF -->
+  
+  <logger name="com.cannontech" >
+  	<level value="info"/>
+  </logger>
+
+  <!-- 
+  <logger name="org.apache.activemq.ActiveMQmessageConsumer" >
+  	<level value="debug"/>
+  </logger>
+  -->  
+   
+  <logger name="org.springframework">
+  	<level value="warn"/>
+  </logger>
+  
+  <!-- root logger -->
+  <root>
+    <level value ="info"/>
+    <appender-ref ref="consoleAppender" />
+  </root>  
+</log4j:configuration>
