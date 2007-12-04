@@ -21,11 +21,9 @@
 
     <bean id="moveInMoveOutController"
         class="com.cannontech.web.moveInMoveOut.MoveInMoveOutController">
-        <property name="attributeService" ref="attributeService" />
         <property name="dateFormattingService"
             ref="dateFormattingService" />
         <property name="meterDao" ref="meterDao" />
-        <property name="meterReadService" ref="meterReadService" />
         <property name="moveInMoveOutEmailService"
             ref="moveInMoveOutEmailService" />
         <property name="moveInMoveOutService"

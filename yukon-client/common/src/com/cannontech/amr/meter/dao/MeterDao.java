@@ -24,6 +24,6 @@ public interface MeterDao extends StandardDaoOperations<Meter> {
     
     public Comparator<Meter> getMeterComparator();
     
-    public void update(Meter prevMeterInfo, Meter newMeterInfo);
+    public void update(Meter newMeterInfo);
     
 }

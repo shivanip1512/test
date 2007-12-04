@@ -11,19 +11,18 @@
                     reading for ${newMeter.name} is scheduled for
                     ${beginDate} </span><br /><br />
 
+                <c:if test="${prevMeter.name != newMeter.name}">
+                    <span class="internalSectionHeader"> Device
+                        Name ${prevMeter.name} is scheduled to
+                        be ${newMeter.name} </span>
+                    <br />
+                </c:if>
 
                 <c:if
                     test="${prevMeter.meterNumber != newMeter.meterNumber}">
                     <span class="internalSectionHeader"> Meter
                         Number ${prevMeter.meterNumber} is scheduled to
                         be ${newMeter.meterNumber}</span>
-                    <br />
-                </c:if>
-
-                <c:if test="${prevMeter.name != newMeter.name}">
-                    <span class="internalSectionHeader"> Device
-                        Name ${prevMeter.name} is scheduled to
-                        be ${newMeter.name} </span>
                     <br />
                     <br />
                 </c:if>
@@ -70,18 +69,19 @@
                 </c:if>
                 <br />
                 <br />
+                
+                <c:if test="${prevMeter.name != newMeter.name}">
+                    <span class="internalSectionHeader"> Device
+                        Name ${prevMeter.name} was updated to
+                        ${newMeter.name} </span>
+                    <br />
+                </c:if>
+                
                 <c:if
                     test="${prevMeter.meterNumber != newMeter.meterNumber}">
                     <span class="internalSectionHeader"> Meter
                         Number ${prevMeter.meterNumber} was updated to
                         ${newMeter.meterNumber}</span>
-                    <br />
-                </c:if>
-
-                <c:if test="${prevMeter.name != newMeter.name}">
-                    <span class="internalSectionHeader"> Device
-                        Name ${prevMeter.name} was updated to
-                        ${newMeter.name} </span>
                     <br />
                     <br />
                 </c:if>

@@ -35,8 +35,10 @@
 
     <bean id="meterDao"
         class="com.cannontech.amr.meter.dao.impl.MeterDaoImpl">
+        <property name="dbPersistentDao" ref="dbPersistentDao" />
         <property name="simpleJdbcTemplate" ref="simpleJdbcTemplate" />
         <property name="meterRowMapper" ref="meterRowMapper" />
+        <property name="paoDao" ref="paoDao" />
         <property name="roleDao" ref="roleDao" />
         <property name="jdbcOps" ref="jdbcTemplate" />
         <property name="deviceGroupProviderDao" ref="deviceGroupDao" />
@@ -58,7 +60,6 @@
         <property name="commandExecutor" ref="commandRequestExecutor" />
         <property name="commandAuthorizationService" ref="paoCommandAuthorizationService" />
         <property name="paoDao" ref="paoDao"/>
-        <property name="rphDao" ref="rphDao" />
     </bean>
 
     <bean id="peakReportService"
@@ -72,6 +73,15 @@
         <property name="meterDao" ref="meterDao" />
         <property name="peakReportDao" ref="peakReportDao" />
     </bean>
+
+
+    <bean id="calculatedPointService"
+        class="com.cannontech.amr.deviceread.dao.impl.CalculatedPointServiceImpl">
+        <property name="attributeService" ref="attributeService" />
+        <property name="meterReadService" ref="meterReadService" />
+        <property name="peakReportService" ref="peakReportService" />
+    </bean>
+
 
     <bean id="touDao"
         class="com.cannontech.amr.tou.dao.impl.TouDaoImpl">

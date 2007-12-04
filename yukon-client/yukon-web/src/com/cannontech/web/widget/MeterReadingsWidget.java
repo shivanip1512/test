@@ -66,7 +66,7 @@ public class MeterReadingsWidget extends WidgetControllerBase {
         Map<Attribute, Boolean> existingAttributes = convertSetToMap(allExistingAttributes);
         mav.addObject("existingAttributes", existingAttributes);
         LitePoint lp = attributeService.getPointForAttribute(meter, BuiltInAttribute.USAGE);
-        meterReadService.fillInPreviousReadings(mav, lp, "VALUE");
+        fillInPreviousReadings(mav, lp, "VALUE");
         
         allExistingAttributes.retainAll(attributesToShow);
         LiteYukonUser user = ServletUtil.getYukonUser(request);
@@ -126,9 +126,54 @@ public class MeterReadingsWidget extends WidgetControllerBase {
         this.attributeService = attributeService;
     }
     
+	/**
+     * Sets up the mav object to support the previous readings include.
+     * 
+     * @param mav
+     * @param lp
+     */
+	public void fillInPreviousReadings(ModelAndView mav, LitePoint lp,
+			String optionValue) {
+
+		// ask for six months, with a max of 36 results
+		Date today = new Date();
+
+		// first 36 hours - all points
+		Date sixMonthsAgo = DateUtils.addMonths(today, -6);
+		List<PointValueHolder> previous36 = rphDao.getPointData(
+				lp.getPointID(), today, sixMonthsAgo, 36);
+
+		List<PointValueHolder> previous3Months = Collections.emptyList();
+		if (previous36.size() == 36) {
+			// great, let's go get some more
+			PointValueHolder lastPvhOfThe36 = previous36.get(36 - 1);
+			Date lastDateOfThe36 = lastPvhOfThe36.getPointDataTimeStamp();
+			Date beforeDate = DateUtils
+					.truncate(lastDateOfThe36, Calendar.DATE);
+			beforeDate = DateUtils.addSeconds(beforeDate, -1);
+			mav.addObject("previousReadings_CutoffDate", beforeDate);
+			// ask for daily readings from 93 days ago to "before"
+			Date today1 = new Date();
+
+			Date ninetyThreeDaysAgo = DateUtils.addDays(today1, -93);
+
+			if (!beforeDate.before(ninetyThreeDaysAgo)) {
+				previous3Months = rphDao.getIntervalPointData(lp.getPointID(),
+						beforeDate, ninetyThreeDaysAgo,
+						ChartInterval.DAY_MIDNIGHT,
+						RawPointHistoryDao.Mode.HIGHEST);
+			}
+		} else {
+			mav.addObject("previousReadings_CutoffDate", sixMonthsAgo);
+		}
+		mav.addObject("previousReadings_All", previous36);
+		mav.addObject("previousReadings_Daily", previous3Months);
+		mav.addObject("previousReadings_Cutoff", !previous3Months.isEmpty());
+		mav.addObject("previousReadings_OptionValue", optionValue);
+	}
+
     @Required
     public void setRphDao(RawPointHistoryDao rphDao) {
         this.rphDao = rphDao;
     }
-
 }

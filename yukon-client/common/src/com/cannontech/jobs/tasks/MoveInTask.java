@@ -36,6 +36,7 @@ public class MoveInTask implements YukonTask {
     }
     
     private void startTask(){
+        logger.info("Starting move in task.");
         MoveInFormObj moveInFormObj = new MoveInFormObj();
         moveInFormObj.setEmailAddress(emailAddress);
         moveInFormObj.setLiteYukonUser(liteYukonUser);

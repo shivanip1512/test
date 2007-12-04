@@ -1,22 +1,16 @@
 package com.cannontech.amr.deviceread.dao.impl;
 
 import java.util.ArrayList;
-import java.util.Calendar;
-import java.util.Collections;
-import java.util.Date;
 import java.util.HashSet;
 import java.util.List;
 import java.util.Set;
 
-import org.apache.commons.lang.time.DateUtils;
 import org.apache.log4j.Logger;
 import org.springframework.beans.factory.annotation.Required;
-import org.springframework.web.servlet.ModelAndView;
 
 import com.cannontech.amr.deviceread.dao.MeterReadService;
 import com.cannontech.amr.meter.model.Meter;
 import com.cannontech.clientutils.YukonLogManager;
-import com.cannontech.common.chart.model.ChartInterval;
 import com.cannontech.common.device.attribute.model.Attribute;
 import com.cannontech.common.device.commands.CommandRequest;
 import com.cannontech.common.device.commands.CommandRequestExecutor;
@@ -28,9 +22,6 @@ import com.cannontech.common.exception.MeterReadRequestException;
 import com.cannontech.core.authorization.exception.PaoAuthorizationException;
 import com.cannontech.core.authorization.service.PaoCommandAuthorizationService;
 import com.cannontech.core.dao.PaoDao;
-import com.cannontech.core.dao.RawPointHistoryDao;
-import com.cannontech.core.dynamic.PointValueHolder;
-import com.cannontech.database.data.lite.LitePoint;
 import com.cannontech.database.data.lite.LiteYukonPAObject;
 import com.cannontech.database.data.lite.LiteYukonUser;
 
@@ -38,7 +29,6 @@ public class MeterReadServiceImpl implements MeterReadService {
     private Logger log = YukonLogManager.getLogger(MeterReadServiceImpl.class);
     private DeviceDefinitionDao deviceDefinitionDao;
     private CommandRequestExecutor commandExecutor;
-    private RawPointHistoryDao rphDao;
     private PaoCommandAuthorizationService commandAuthorizationService;
     private PaoDao paoDao;
     
@@ -184,47 +174,5 @@ public class MeterReadServiceImpl implements MeterReadService {
     public void setPaoDao(PaoDao paoDao) {
 		this.paoDao = paoDao;
 	}
-
-    public void fillInPreviousReadings(ModelAndView mav, 
-                                       LitePoint lp,
-                                       String optionValue) {
-        
-        // ask for six months, with a max of 36 results
-        Date today = new Date();
-        
-        // first 36 hours - all points
-        Date sixMonthsAgo = DateUtils.addMonths(today, -6);
-        List<PointValueHolder> previous36 = rphDao.getPointData(lp.getPointID(), today, sixMonthsAgo, 36);
-        
-        List<PointValueHolder> previous3Months = Collections.emptyList();
-        if (previous36.size() == 36) {
-            // great, let's go get some more 
-            PointValueHolder lastPvhOfThe36 = previous36.get(36 - 1);
-            Date lastDateOfThe36 = lastPvhOfThe36.getPointDataTimeStamp();
-            Date beforeDate = DateUtils.truncate(lastDateOfThe36, Calendar.DATE);
-            beforeDate = DateUtils.addSeconds(beforeDate, -1);
-            mav.addObject("previousReadings_CutoffDate", beforeDate);
-            // ask for daily readings from 93 days ago to "before"
-            Date today1 = new Date();
-            
-            Date ninetyThreeDaysAgo = DateUtils.addDays(today1, -93);
-            
-            if (!beforeDate.before(ninetyThreeDaysAgo)) {
-                previous3Months = rphDao.getIntervalPointData(lp.getPointID(), beforeDate, ninetyThreeDaysAgo,
-                                                              ChartInterval.DAY_MIDNIGHT, RawPointHistoryDao.Mode.HIGHEST);
-            }
-        } else {
-            mav.addObject("previousReadings_CutoffDate", sixMonthsAgo);
-        }
-        mav.addObject("previousReadings_All", previous36);
-        mav.addObject("previousReadings_Daily", previous3Months);
-        mav.addObject("previousReadings_Cutoff", !previous3Months.isEmpty());
-        mav.addObject("previousReadings_OptionValue", optionValue);
-    }
-
-    @Required
-    public void setRphDao(RawPointHistoryDao rphDao) {
-        this.rphDao = rphDao;
-    }
 
 }

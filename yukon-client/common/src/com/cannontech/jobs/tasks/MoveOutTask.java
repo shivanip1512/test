@@ -12,8 +12,6 @@ import com.cannontech.amr.moveInMoveOut.bean.MoveOutResultObj;
 import com.cannontech.amr.moveInMoveOut.service.MoveInMoveOutEmailService;
 import com.cannontech.amr.moveInMoveOut.service.MoveInMoveOutService;
 import com.cannontech.clientutils.YukonLogManager;
-import com.cannontech.core.dao.RawPointHistoryDao;
-import com.cannontech.core.dynamic.PointValueHolder;
 import com.cannontech.database.data.lite.LiteYukonUser;
 import com.cannontech.jobs.support.YukonTask;
 
@@ -30,13 +28,13 @@ public class MoveOutTask implements YukonTask {
     // Injected services and daos
     private MoveInMoveOutService moveInMoveOutService = null;
     private MoveInMoveOutEmailService moveInMoveOutEmailService = null;
-    private RawPointHistoryDao rphDao = null;
 
     public void start() {
         startTask();
     }
 
     private void startTask() {
+        logger.info("Starting move out task.");
         MoveOutFormObj moveOutFormObj = new MoveOutFormObj();
         moveOutFormObj.setEmailAddress(emailAddress);
         moveOutFormObj.setLiteYukonUser(liteYukonUser);
@@ -100,11 +98,6 @@ public class MoveOutTask implements YukonTask {
     public void setMoveInMoveOutService(
             MoveInMoveOutService moveInMoveOutService) {
         this.moveInMoveOutService = moveInMoveOutService;
-    }
-
-    @Required
-    public void setRphDao(RawPointHistoryDao rphDao) {
-        this.rphDao = rphDao;
     }
 
 }

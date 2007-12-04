@@ -17,7 +17,6 @@ import org.springframework.web.bind.ServletRequestUtils;
 import org.springframework.web.servlet.ModelAndView;
 import org.springframework.web.servlet.mvc.multiaction.MultiActionController;
 
-import com.cannontech.amr.deviceread.dao.MeterReadService;
 import com.cannontech.amr.meter.dao.MeterDao;
 import com.cannontech.amr.meter.model.Meter;
 import com.cannontech.amr.moveInMoveOut.bean.MoveInFormObj;
@@ -26,12 +25,9 @@ import com.cannontech.amr.moveInMoveOut.bean.MoveOutFormObj;
 import com.cannontech.amr.moveInMoveOut.bean.MoveOutResultObj;
 import com.cannontech.amr.moveInMoveOut.service.MoveInMoveOutEmailService;
 import com.cannontech.amr.moveInMoveOut.service.MoveInMoveOutService;
-import com.cannontech.common.device.attribute.model.BuiltInAttribute;
-import com.cannontech.common.device.attribute.service.AttributeService;
 import com.cannontech.core.dao.NotFoundException;
 import com.cannontech.core.service.DateFormattingService;
 import com.cannontech.core.service.DateFormattingService.DateFormatEnum;
-import com.cannontech.database.data.lite.LitePoint;
 import com.cannontech.database.data.lite.LiteYukonUser;
 import com.cannontech.util.ServletUtil;
 
@@ -45,10 +41,8 @@ public class MoveInMoveOutController extends MultiActionController {
     public static final String ACTIVATED_MOVE_IN_DESC = "<br />A meter reading is being calculated based on usage since ${endDate}." + "<br />" + ACTIVATED_EMAIL_LISTED;
     public static final String ACTIVATED_MOVE_OUT_DESC = "<br />An usage reading is being calculated based on the consumption since the usage read selected." + "<br />" + ACTIVATED_EMAIL_LISTED;
 
-    private AttributeService attributeService = null;
     private DateFormattingService dateFormattingService = null;
     private MeterDao meterDao = null;
-    private MeterReadService meterReadService = null;
     private MoveInMoveOutEmailService moveInMoveOutEmailService = null;
     private MoveInMoveOutService moveInMoveOutService = null;
 
@@ -182,11 +176,7 @@ public class MoveInMoveOutController extends MultiActionController {
         String currentDateFormatted = dateFormattingService.formatDate(currentDate,
                                                                        DateFormattingService.DateFormatEnum.DATE,
                                                                        liteYukonUser);
-
-        LitePoint lp = attributeService.getPointForAttribute(meter,
-                                                             BuiltInAttribute.USAGE);
-        meterReadService.fillInPreviousReadings(mav, lp, "DATE");
-
+        
         // Adds the group to the mav object
         mav.addObject("meter", meter);
         mav.addObject("deviceId", meter.getDeviceId());
@@ -405,16 +395,6 @@ public class MoveInMoveOutController extends MultiActionController {
     public void setDateFormattingService(
             DateFormattingService dateFormattingService) {
         this.dateFormattingService = dateFormattingService;
-    }
-
-    @Required
-    public void setAttributeService(AttributeService attributeService) {
-        this.attributeService = attributeService;
-    }
-
-    @Required
-    public void setMeterReadService(MeterReadService meterReadService) {
-        this.meterReadService = meterReadService;
     }
 
     @Required

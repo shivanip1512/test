@@ -2,12 +2,9 @@ package com.cannontech.amr.deviceread.dao;
 
 import java.util.Set;
 
-import org.springframework.web.servlet.ModelAndView;
-
 import com.cannontech.amr.meter.model.Meter;
 import com.cannontech.common.device.attribute.model.Attribute;
 import com.cannontech.common.device.commands.CommandResultHolder;
-import com.cannontech.database.data.lite.LitePoint;
 import com.cannontech.database.data.lite.LiteYukonUser;
 
 /**
@@ -37,13 +34,4 @@ public interface MeterReadService {
      */
     public boolean isReadable(Meter device, Set<? extends Attribute> attributes, LiteYukonUser user);
     
-    /**
-     * Sets up the mav object to support the previous readings include.
-     * 
-     * @param mav
-     * @param lp
-     */
-    public void fillInPreviousReadings(ModelAndView mav, 
-                                       LitePoint lp,
-                                       String optionValue);
 }

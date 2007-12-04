@@ -14,7 +14,6 @@ import com.cannontech.web.input.validate.InputValidator;
 
 public class MeterType implements InputType<Meter> {
 
-    private Meter meter = null;
     private MeterDao meterDao = null;
     private String renderer = null;
 
@@ -32,14 +31,6 @@ public class MeterType implements InputType<Meter> {
 
     public void setRenderer(String renderer) {
         this.renderer = renderer;
-    }
-
-    public Meter getMeterValue() {
-        return meter;
-    }
-
-    public void setMeterValue(Meter meter) {
-        this.meter = meter;
     }
 
     public Class<Meter> getTypeClass() {

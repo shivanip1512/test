@@ -1,6 +1,7 @@
 package com.cannontech.amr.moveInMoveOut.bean;
 
 import java.util.ArrayList;
+import java.util.Date;
 import java.util.List;
 
 import com.cannontech.amr.errors.model.DeviceErrorDescription;
@@ -9,6 +10,7 @@ import com.cannontech.common.device.groups.model.DeviceGroup;
 import com.cannontech.core.dynamic.PointValueHolder;
 
 public class MoveOutResultObj{
+    private Date moveOutDate;
     private PointValueHolder calculatedReading;
     private PointValueHolder currentReading;
     private PointValueHolder calculatedDifference;
@@ -72,5 +74,11 @@ public class MoveOutResultObj{
     }
     public void setDeviceGroupsAdded(List<DeviceGroup> deviceGroupsAdded) {
         this.deviceGroupsAdded = deviceGroupsAdded;
+    }
+    public Date getMoveOutDate() {
+        return moveOutDate;
+    }
+    public void setMoveOutDate(Date moveOutDate) {
+        this.moveOutDate = moveOutDate;
     }   
 }

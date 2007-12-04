@@ -17,16 +17,14 @@
         <property name="moveInDefinition" ref="moveInJob" />
         <property name="moveOutDefinition" ref="moveOutJob" />
 
-        <property name="attributeService" ref="attributeService" />
         <property name="authDao" ref="authDao" />
+        <property name="calculatedPointService" ref="calculatedPointService" />
         <property name="deviceGroupDao" ref="deviceGroupDao" />
         <property name="deviceGroupEditorDao" ref="deviceGroupEditorDao" />
         <property name="deviceGroupMemberEditorDao" ref="deviceGroupMemberEditorDao" />
         <property name="dynamicDataSource" ref="dynamicDataSource" />
         <property name="jdbcTemplate" ref="simpleJdbcTemplate" />
         <property name="meterDao" ref="meterDao" />
-        <property name="meterReadService" ref="meterReadService" />
-        <property name="peakReportService" ref="peakReportService" />
     </bean>
 
 </beans>

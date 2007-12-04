@@ -152,7 +152,6 @@
     <bean id="moveOutTask" class="com.cannontech.jobs.tasks.MoveOutTask">
         <property name="moveInMoveOutService" ref="moveInMoveOutService" />
         <property name="moveInMoveOutEmailService" ref="moveInMoveOutEmailService" />
-        <property name="rphDao" ref="rphDao" />
     </bean>
 
 
