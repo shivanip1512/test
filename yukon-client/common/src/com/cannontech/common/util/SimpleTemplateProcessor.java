@@ -5,8 +5,10 @@ import java.text.DecimalFormat;
 import java.text.NumberFormat;
 import java.text.SimpleDateFormat;
 import java.util.Calendar;
+import java.util.Collections;
 import java.util.Date;
 import java.util.HashMap;
+import java.util.Iterator;
 import java.util.Locale;
 import java.util.Map;
 import java.util.Stack;
@@ -17,12 +19,15 @@ import java.util.regex.Pattern;
 import org.apache.commons.lang.StringUtils;
 import org.apache.commons.lang.Validate;
 
+import com.cannontech.clientutils.CTILogger;
+
 public class SimpleTemplateProcessor implements TemplateProcessor {
-    private static Pattern pattern = Pattern.compile("\\{([^}|]+)(\\|([^}]+))?\\}");
+    private static Pattern templateExtraPattern = Pattern.compile("\\{([^|]+)(\\|(.+))?\\}");
+    private static Pattern collectionExtraPattern = Pattern.compile("([^|]+)\\|([^|]+)\\|(.+)");
     private Locale locale = Locale.getDefault();
     private TimeZone timeZone = TimeZone.getDefault();
     private static Map<String, SimpleDateFormat> dateFormatCache = new HashMap<String, SimpleDateFormat>();
-    
+
     /* (non-Javadoc)
      * @see com.cannontech.common.util.TemplateProcessor#process(java.lang.CharSequence, java.util.Map)
      */
@@ -31,7 +36,7 @@ public class SimpleTemplateProcessor implements TemplateProcessor {
         outputStack.push(new StringBuilder());
         int currentPos = 0;
         boolean inEscape = false;
-        
+
         for (; currentPos < template.length(); ++currentPos) {
             char c = template.charAt(currentPos);
             if (inEscape) {
@@ -62,10 +67,16 @@ public class SimpleTemplateProcessor implements TemplateProcessor {
 
         StringBuilder result = outputStack.pop();
         Validate.isTrue(outputStack.empty(), "unbalanced braces (too many opening)");
-        
+
         return result.toString();
     }
-    
+
+    /**
+     * Returns a shared date formatter. When using result, one must synchronize
+     * on the whole class.
+     * @param format
+     * @return
+     */
     private SimpleDateFormat getDateFormatter(String format) {
         SimpleDateFormat simpleDateFormat = dateFormatCache.get(format);
         if (simpleDateFormat == null) {
@@ -74,50 +85,91 @@ public class SimpleTemplateProcessor implements TemplateProcessor {
         }
         return simpleDateFormat;
     }
-    
+
     private CharSequence processToken(CharSequence token, Map<String, ? extends Object> values) {
         // This is synchronized because it uses shared SimpleDateFormat objects. My thinking
         // is that synchronizing is faster than constructing these things.
-        synchronized (SimpleTemplateProcessor.class) {
-            Matcher matcher = pattern.matcher(token);
-            CharSequence result = token;
-            if (matcher.matches()) {
-                String key = matcher.group(1);
-                Object value = values.get(key);
-                if (value != null) {
-                    String extra = matcher.group(3);
-                    if (StringUtils.isNotBlank(extra)) {
-                        if (value instanceof Number) {
-                            NumberFormat format = new DecimalFormat(extra);
-                            result = format.format(value);
-                        } else if (value instanceof Date) {
+        Matcher matcher = templateExtraPattern.matcher(token);
+        CharSequence result = token;
+        if (matcher.matches()) {
+            String key = matcher.group(1);
+            Object value = values.get(key);
+            if (value != null) {
+                String extra = matcher.group(3);
+                if (StringUtils.isNotBlank(extra)) {
+                    if (value instanceof Number) {
+                        NumberFormat format = new DecimalFormat(extra);
+                        result = format.format(value);
+                    } else if (value instanceof Date) {
+                        synchronized (SimpleTemplateProcessor.class) {
                             DateFormat format = getDateFormatter(extra);
                             format.setTimeZone(timeZone);
                             result = format.format(value);
-                        } else if (value instanceof Calendar) {
+                        }
+                    } else if (value instanceof Calendar) {
+                        synchronized (SimpleTemplateProcessor.class) {
                             Calendar valueCal = (Calendar) value;
                             DateFormat format = getDateFormatter(extra);
                             format.setCalendar(valueCal);
                             result = format.format(valueCal.getTime());
-                        } else if (value instanceof Boolean) {
-                            boolean showFirst = (Boolean) value;
-                            // split extra on the | character
-                            String[] strings = extra.split("\\|", 2);
-                            if (showFirst) {
-                                result = strings[0];
-                            } else {
-                                result = strings[1];
-                            }
-                        } else {
-                            result = "???";
                         }
+                    } else if (value instanceof Boolean) {
+                        boolean showFirst = (Boolean) value;
+                        // split extra on the | character
+                        String[] strings = extra.split("\\|", 2);
+                        if (showFirst) {
+                            result = strings[0];
+                        } else {
+                            result = strings[1];
+                        }
+                    } else if (value instanceof Iterable) {
+                        Iterable<?> iterableValue = (Iterable<?>) value;
+                        result = handleIterableToken(iterableValue, extra);
                     } else {
-                        result = value.toString();
+                        result = "???Unkown data type???";
+                        CTILogger.debug("Unknown data type: " + value.getClass());
                     }
+                } else {
+                    result = value.toString();
                 }
             }
-            return result;
         }
+        return result;
+    }
+
+    private CharSequence handleIterableToken(Iterable<?> iterableValue,
+            String extra) {
+        CharSequence result;
+        // split extra on the | character
+        String[] strings = extra.split("\\|");
+        if (strings.length == 1) {
+            result = StringUtils.join(iterableValue.iterator(), extra);
+        } else {
+            Matcher extraMatcher = collectionExtraPattern.matcher(extra);
+            if (extraMatcher.matches()) {
+                String separator = extraMatcher.group(1);
+                String variableName = extraMatcher.group(2);
+                String nestedTemplate = extraMatcher.group(3);
+                StringBuilder resultBuilder = new StringBuilder();
+                boolean first = true;
+                Iterator<?> iterator = iterableValue.iterator();
+                while (iterator.hasNext()) {
+                    if (!first) {
+                        resultBuilder.append(separator);
+                    }
+                    first = false;
+                    Object thisValue = iterator.next();
+                    Map<String, Object> itMap = Collections.singletonMap(variableName, thisValue);
+                    CharSequence subValue = process(nestedTemplate, itMap);
+                    resultBuilder.append(subValue);
+                }
+                result = resultBuilder.toString();
+            } else {
+                result = "???Bad Iterable Format???";
+                CTILogger.debug("Unable to parse extra string for iterable: " + extra);
+            }
+        }
+        return result;
     }
 
     public boolean contains(CharSequence template, String key) {
@@ -125,11 +177,11 @@ public class SimpleTemplateProcessor implements TemplateProcessor {
         boolean result = template.toString().contains(searchKey);
         return result;
     }
-    
+
     public void setDefaultLocale(Locale locale) {
         this.locale = locale;
     }
-    
+
     public void setDefaultTimeZone(TimeZone timeZone) {
         this.timeZone  = timeZone;
     }
