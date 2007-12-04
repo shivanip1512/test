@@ -228,7 +228,7 @@ div.roundedContainer .roundedContainer_title table {
 	border-collapse: collapse;
 }
 
-div.roundedContainer .roundedContainer_title {
+div.roundedContainer .roundedContainer_titleBar {
 	padding: 0px 9px 6px 9px;
 	background: #0066CC;
 	font-weight: bold;
@@ -294,17 +294,6 @@ div.roundedContainer .bottomBar{
 	height: 1px;
     overflow: hidden; 
     background: #0066CC;
-}
-
-div.styledContainer .title, div.styledContainer .rop span, div.styledContainer .lbottom span, 
-div.styledContainer .rbottom span {
-	background-color: #06C !important;
-	color: #fff !important;
-}
-
-div.styledContainer .content
-{
-	border-color: #06C !important;
 }
 
 /* Widget styles */

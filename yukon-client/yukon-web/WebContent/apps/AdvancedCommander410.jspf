@@ -137,7 +137,7 @@
 <% 
 	if ( com.cannontech.database.data.device.DeviceTypesFuncs.isMCT410(liteYukonPao.getType()) ) { 
 %>			
-		<cti:titledContainer styleClass="styledContainer">
+		<cti:titledContainer>
 	  		
 			<jsp:attribute name="title">
 			
@@ -230,7 +230,7 @@
 	}
 %>	 		
 	 	<br/>
-	 	<cti:titledContainer styleClass="styledContainer">
+	 	<cti:titledContainer>
 	  		
 			<jsp:attribute name="title">
 			
@@ -369,7 +369,7 @@ for (int i = 0; i < 60; i=i+5) {
   		</cti:titledContainer>
   		
   		<br/>
-  		<cti:titledContainer styleClass="styledContainer">
+  		<cti:titledContainer>
 	  		
 			<jsp:attribute name="title">
 			

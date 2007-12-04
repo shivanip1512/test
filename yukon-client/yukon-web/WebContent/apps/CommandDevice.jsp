@@ -121,7 +121,7 @@
 		<div id="sideMenu">
 		
 			<div class="commanderHeader">&nbsp;</div>
-			<cti:titledContainer title="Navigation" styleClass="styledContainer">
+			<cti:titledContainer title="Navigation">
 
 			<div class="header">Go To...</div>
 			

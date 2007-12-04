@@ -66,7 +66,7 @@ function setCommand(cmd)
 	  	<input id="referrer" type="hidden" name="REFERRER" value="<%= referrer%>">
   
 	<div>
-		  <cti:titledContainer styleClass="styledContainer">
+		  <cti:titledContainer>
 	  		
 			<jsp:attribute name="title">
 				<table width="100%" class="titleTable">
@@ -130,7 +130,7 @@ function setCommand(cmd)
 	List scheds = cache.getAllTOUSchedules();
 	if( scheds != null && scheds.size() > 0) {
 %>
-		  <cti:titledContainer styleClass="styledContainer">
+		  <cti:titledContainer>
 	  		
 			<jsp:attribute name="title">
 			

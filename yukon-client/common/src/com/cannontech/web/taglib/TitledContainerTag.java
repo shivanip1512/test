@@ -19,7 +19,7 @@ public class TitledContainerTag extends TagSupport {
 
     public int doStartTag() throws JspException {
         try {
-            pageContext.getOut().print("<div class=\"roundedContainer " + getStyleClass() + "\" "
+            pageContext.getOut().print("<div class=\"titledContainer roundedContainer " + getStyleClass() + "\" "
                     + ((id != null) ? "id=\"" + id + "\"" : "") + ">\n"
                     + "           <span class=\"top\">\n"
                     + "             <span class=\"t1\"></span>\n"

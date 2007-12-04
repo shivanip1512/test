@@ -1,5 +1,6 @@
 <%@ taglib uri="http://cannontech.com/tags/cti" prefix="cti"%>
 <%@ taglib uri="http://java.sun.com/jsp/jstl/core" prefix="c"%>
+<%@ taglib prefix="ct" tagdir="/WEB-INF/tags"%>
 
 <!DOCTYPE HTML PUBLIC "-//W3C//DTD HTML 4.01 Transitional//EN" "http://www.w3.org/TR/html4/loose.dtd">
 <html>
@@ -57,8 +58,8 @@
             </div>
 
             <div class="loginMainSection">
-                <cti:titledContainer title="Login"
-                    styleClass="styledContainer">
+                <ct:abstractContainer title="Login"
+                    type="rounded">
                     <c:if test="${!empty param.failed}">
                         <div class="loginErrorMsg">
                             * Invalid username/password
@@ -94,7 +95,7 @@
                             <tr>
                                 <td colspan="2" align="center">
                                     <input type="checkbox"
-                                        name="rememberme" />
+                                        name="rememberme">
                                     Remember me
                                 </td>
                             </tr>
@@ -113,11 +114,11 @@
                             </div>
                         </cti:isStarsExist>
                         <input type="hidden" name="REDIRECTED_FROM"
-                            value="${param.REDIRECTED_FROM}" />
+                            value="${param.REDIRECTED_FROM}">
                         <input type="hidden" name="ACTION" value="LOGIN">
                     </form>
 
-                </cti:titledContainer>
+                </ct:abstractContainer>
             </div>
         </div>
 
