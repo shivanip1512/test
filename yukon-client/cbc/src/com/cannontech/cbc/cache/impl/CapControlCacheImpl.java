@@ -322,7 +322,8 @@ public class CapControlCacheImpl implements MessageListener, CapControlCache {
         List<SubBus> buses = new ArrayList<SubBus>();
         int[] busIds = sub.getSubBusIds();
         for(int i = 0; i < busIds.length; i++) {
-            buses.add(subBusMap.get(busIds[i]));
+            SubBus subBus = subBusMap.get(busIds[i]); 
+            if (subBus != null) buses.add(subBus);
         }
         return buses;
     }
