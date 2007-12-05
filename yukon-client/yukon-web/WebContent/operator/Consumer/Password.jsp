@@ -146,15 +146,19 @@ function deleteLogin(form) {
               <br>
                 <table width="400" border="0" cellspacing="0" cellpadding="5" align="center" bgcolor="#FFFFFF">
                   <tr> 
-                    <td width="40%" align="right"> 
-                      <input type="submit" name="Submit" value="Save">
-                    </td>
+                    <cti:checkProperty property="ConsumerInfoRole.ALLOW_ACCOUNT_EDITING">
+	                    <td width="40%" align="right"> 
+	                      <input type="submit" name="Submit" value="Save">
+	                    </td>
+	                </cti:checkProperty>
                     <td width="20%" align="center"> 
                       <input type="reset" name="Reset" value="Reset" onclick="setContentChanged(false)">
                     </td>
-                    <td width="40%">
-                      <input type="button" name="Delete" value="Delete" onclick="deleteLogin(this.form)" <% if (userLogin == null) { %>disabled<% } %>>
-                    </td>
+                    <cti:checkProperty property="ConsumerInfoRole.ALLOW_ACCOUNT_EDITING">
+	                    <td width="40%">
+	                      <input type="button" name="Delete" value="Delete" onclick="deleteLogin(this.form)" <% if (userLogin == null) { %>disabled<% } %>>
+	                    </td>
+	                </cti:checkProperty>
                   </tr>
                 </table>
 			</form>

@@ -111,9 +111,11 @@ function checkCallNo(form) {
                 <br>
                 <table width="150" border="0">
                 <tr>
-                  <td align = "center" width = "50%"> 
-                    <input type="submit" name="Submit" value="Save" onclick="return checkCallNo(this.form)">
-                  </td>
+                  <cti:checkProperty property="ConsumerInfoRole.ALLOW_ACCOUNT_EDITING">
+	                  <td align = "center" width = "50%"> 
+	                    <input type="submit" name="Submit" value="Save" onclick="return checkCallNo(this.form)">
+	                  </td>
+	              </cti:checkProperty>
                   <td width = "50%"> 
                     <input type="reset" name="Reset" value="Reset" onclick="setContentChanged(false)">
                   </td>

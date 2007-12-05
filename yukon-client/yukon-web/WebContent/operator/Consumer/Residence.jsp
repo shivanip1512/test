@@ -272,11 +272,13 @@
             </table>
             <table width="400" border="0" cellspacing="0" cellpadding="5" align="center" bgcolor="#FFFFFF">
               <tr> 
+              	<cti:checkProperty property="ConsumerInfoRole.ALLOW_ACCOUNT_EDITING">
                   <td width="186"> 
                     <div align="right"> 
                       <input type="submit" name="Save2" value="Save">
                     </div>
                   </td>
+                </cti:checkProperty>
                   <td width="194"> 
                     <div align="left"> 
                       <input type="reset" name="Reset" value="Reset" onclick="setContentChanged(false)">

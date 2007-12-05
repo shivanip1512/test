@@ -741,9 +741,11 @@ function showAdditionalAppInfo(index)
             <br>
                 <table width="150" border="0">
                 <tr>
-                  <td align = "center" width = "50%"> 
-                    <input type="submit" name="Submit" value="Save">
-                  </td>
+                	<cti:checkProperty property="ConsumerInfoRole.ALLOW_ACCOUNT_EDITING">	
+		                  <td align = "center" width = "50%"> 
+		                    <input type="submit" name="Submit" value="Save">
+		                  </td>
+		            </cti:checkProperty>
                   <td> 
                     <input type="reset" name="Reset" value="Reset" onclick="location.reload()">
                   </td>

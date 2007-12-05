@@ -126,13 +126,15 @@
                         </td>
                       </tr>
                     </table>
-                    <table width="400" border="0" cellspacing="0" cellpadding="2" align="center">
-                      <tr>
-                        <td align="center">
-                          <input type="submit" name="Command" value="Update">
-                        </td>
-                      </tr>
-                    </table>
+                    <cti:checkProperty property="ConsumerInfoRole.ALLOW_ACCOUNT_EDITING">
+	                    <table width="400" border="0" cellspacing="0" cellpadding="2" align="center">
+	                      <tr>
+	                        <td align="center">
+	                          <input type="submit" name="Command" value="Update">
+	                        </td>
+	                      </tr>
+	                    </table>
+	                </cti:checkProperty>
                   </td>
                 </tr>
               </table>
@@ -220,16 +222,18 @@
                         </td>
                       </tr>
                     </table>
-                    <table width="400" border="0" cellspacing="0" cellpadding="2" align="center">
-                      <tr> 
-                        <td align="right"> 
-                          <input type="submit" name="Command" value="Update">
-                        </td>
-                        <td> 
-                          <input type="submit" name="Command" value="Delete" onclick="return confirm('Are you sure you want to delete this contact?')">
-                        </td>
-                      </tr>
-                    </table>
+                  	<cti:checkProperty property="ConsumerInfoRole.ALLOW_ACCOUNT_EDITING">
+	                    <table width="400" border="0" cellspacing="0" cellpadding="2" align="center">
+	                      <tr> 
+	                        <td align="right"> 
+	                          <input type="submit" name="Command" value="Update">
+	                        </td>
+	                        <td> 
+	                          <input type="submit" name="Command" value="Delete" onclick="return confirm('Are you sure you want to delete this contact?')">
+	                        </td>
+	                      </tr>
+	                    </table>
+	                </cti:checkProperty>
                   </td>
                 </tr>
               </table>
@@ -240,68 +244,70 @@
 			<form method="POST" action="<%= request.getContextPath() %>/servlet/SOAPClient">
 			  <input type="hidden" name="action" value="UpdateContacts">
 			  <input type="hidden" name="ContactID" value="-1">
-              <table width="610" border="0" cellspacing="0" cellpadding="0" align="center">
-                <tr>
-                  <td><span class="SubtitleHeader">NEW CONTACT</span> 
-                    <hr>
-                    <table width="610" border="0" cellspacing="0" cellpadding="0">
-                      <tr>
-                        <td>
-                          <table width="300" border="0" cellspacing="0" cellpadding="2" align="center" class="TableCell">
-                            <tr>
-                              <td width="100" align="right">Last Name:</td>
-                              <td width="192">
-                                <input type="text" name="LastName" size="24" onchange="setContentChanged(true)">
-                              </td>
-                            </tr>
-                            <tr>
-                              <td width="100" align="right">First Name:</td>
-                              <td width="192">
-                                <input type="text" name="FirstName" size="24" onchange="setContentChanged(true)">
-                              </td>
-                            </tr>
-                          </table>
-                        </td>
-                        <td>
-                          <table width="300" border="0" cellspacing="0" cellpadding="2" align="center" class="TableCell">
-<%
-	for (int i = 0; i < 6; i++) {
-%>
-                            <tr> 
-                              <td width="146" align="right"> 
-                                <select name="NotifCat" onchange="setContentChanged(true)">
-                                  <option value="0">(none)</option>
-<%
-		for (int j = 0; j < contactTypeList.size(); j++) {
-			YukonListEntry entry = (YukonListEntry) contactTypeList.get(j);
-%>
-                                  <option value="<%= entry.getEntryID() %>"><%= entry.getEntryText() %></option>
-<%
+              <cti:checkProperty property="ConsumerInfoRole.ALLOW_ACCOUNT_EDITING">
+	              <table width="610" border="0" cellspacing="0" cellpadding="0" align="center">
+	                <tr>
+	                  <td><span class="SubtitleHeader">NEW CONTACT</span> 
+	                    <hr>
+	                    <table width="610" border="0" cellspacing="0" cellpadding="0">
+	                      <tr>
+	                        <td>
+	                          <table width="300" border="0" cellspacing="0" cellpadding="2" align="center" class="TableCell">
+	                            <tr>
+	                              <td width="100" align="right">Last Name:</td>
+	                              <td width="192">
+	                                <input type="text" name="LastName" size="24" onchange="setContentChanged(true)">
+	                              </td>
+	                            </tr>
+	                            <tr>
+	                              <td width="100" align="right">First Name:</td>
+	                              <td width="192">
+	                                <input type="text" name="FirstName" size="24" onchange="setContentChanged(true)">
+	                              </td>
+	                            </tr>
+	                          </table>
+	                        </td>
+	                        <td>
+	                          <table width="300" border="0" cellspacing="0" cellpadding="2" align="center" class="TableCell">
+	<%
+		for (int i = 0; i < 6; i++) {
+	%>
+	                            <tr> 
+	                              <td width="146" align="right"> 
+	                                <select name="NotifCat" onchange="setContentChanged(true)">
+	                                  <option value="0">(none)</option>
+	<%
+			for (int j = 0; j < contactTypeList.size(); j++) {
+				YukonListEntry entry = (YukonListEntry) contactTypeList.get(j);
+	%>
+	                                  <option value="<%= entry.getEntryID() %>"><%= entry.getEntryText() %></option>
+	<%
+			}
+	%>
+	                                </select>
+	                              </td>
+	                              <td width="146"> 
+	                                <input type="text" name="Notification" size="24" onchange="setContentChanged(true)">
+	                              </td>
+	                            </tr>
+	<%
 		}
-%>
-                                </select>
-                              </td>
-                              <td width="146"> 
-                                <input type="text" name="Notification" size="24" onchange="setContentChanged(true)">
-                              </td>
-                            </tr>
-<%
-	}
-%>
-                          </table>
-                        </td>
-                      </tr>
-                    </table>
-                    <table width="400" border="0" cellspacing="0" cellpadding="2" align="center">
-                      <tr> 
-                        <td align="center"> 
-                          <input type="submit" name="Command" value="New">
-                        </td>
-                      </tr>
-                    </table>
-                  </td>
-                </tr>
-              </table>
+	%>
+	                          </table>
+	                        </td>
+	                      </tr>
+	                    </table>
+	                    <table width="400" border="0" cellspacing="0" cellpadding="2" align="center">
+	                      <tr> 
+	                        <td align="center"> 
+	                          <input type="submit" name="Command" value="New">
+	                        </td>
+	                      </tr>
+	                    </table>
+	                  </td>
+	                </tr>
+	              </table>
+	        	</cti:checkProperty>
             </form> 
             <p>&nbsp;</p>
           </td>

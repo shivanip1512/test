@@ -690,9 +690,11 @@ are present in page, session, etc. as an attribute. -->
 </cti:checkProperty>
             <table width="200" border="0" cellspacing="0" cellpadding="5" align="center">
               <tr> 
-                <td width="50%" align="center"> 
-                  <input type="submit" name="Submit" value="Done">
-                </td>
+             	<cti:checkProperty property="ConsumerInfoRole.ALLOW_ACCOUNT_EDITING">
+	                <td width="50%" align="center"> 
+	                  <input type="submit" name="Submit" value="Done">
+	                </td>
+	            </cti:checkProperty>
                 <td width="50%" align="center"> 
                   <input type="button" name="Cancel" value="Cancel" onclick="confirmCancel()">
                 </td>

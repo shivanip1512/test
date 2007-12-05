@@ -226,32 +226,34 @@ function changeProgSelection(chkBox) {
                 </table>
 <% } %>
                 <br>
-                <table width="400" border="0" cellspacing="0" cellpadding="0">
-                  <tr>
-                    <td align="center"> 
-<% if (configurable) { %>
-                      <%
-					  	if(!configBean.isWriteToFileAllowed()) 
-					  	{%> 
-                      <input type="submit" name="Config" value="Config">
-                      <% } %>
-                      <input type="button" name="SaveBatch" value="Save To Batch" onclick="saveToBatch(this.form)">
+                	<cti:checkProperty property="ConsumerInfoRole.ALLOW_ACCOUNT_EDITING">
+		                <table width="400" border="0" cellspacing="0" cellpadding="0">
+		                  <tr>
+		                    <td align="center"> 
+		<% if (configurable) { %>
+		                      <%
+							  	if(!configBean.isWriteToFileAllowed()) 
+							  	{%> 
+		                      <input type="submit" name="Config" value="Config">
+		                      <% } %>
+		                      <input type="button" name="SaveBatch" value="Save To Batch" onclick="saveToBatch(this.form)">
+		<% } %>
+							  <input type="button" name="SaveConfig" value="Save Config Only" onclick="saveConfigOnly(this.form)">
+		                    </td>
+		                  </tr>
+		                </table>
+		<% if (configurable) { %>
+		                <br>
+		                <table width="300" border="0" cellspacing="0" cellpadding="0">
+		                  <tr> 
+		                    <td align="center"> 
+		                      <input type="button" id="Disable" value="Disable" onclick="sendCommand('DisableLMHardware')">
+		                      <input type="button" id="Reenable" value="Reenable" onclick="sendCommand('EnableLMHardware')">
+		                    </td>
+		                  </tr>
+		                </table>
 <% } %>
-					  <input type="button" name="SaveConfig" value="Save Config Only" onclick="saveConfigOnly(this.form)">
-                    </td>
-                  </tr>
-                </table>
-<% if (configurable) { %>
-                <br>
-                <table width="300" border="0" cellspacing="0" cellpadding="0">
-                  <tr> 
-                    <td align="center"> 
-                      <input type="button" id="Disable" value="Disable" onclick="sendCommand('DisableLMHardware')">
-                      <input type="button" id="Reenable" value="Reenable" onclick="sendCommand('EnableLMHardware')">
-                    </td>
-                  </tr>
-                </table>
-<% } %>
+					</cti:checkProperty>
               </form>
             </div>
             <hr>

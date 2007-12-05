@@ -215,11 +215,13 @@
 	}
 %>
 		  </cti:checkProperty>
-		  <cti:checkProperty propertyid="<%= ConsumerInfoRole.CONSUMER_INFO_APPLIANCES_CREATE %>"> 
-          <tr>
-            <td width="10" valign="top"><%= ((String[]) links.get("CreateAppliances.jsp"))[0] %></td>
-            <td style="padding:1"><%= ((String[]) links.get("CreateAppliances.jsp"))[1] %></td>
-          </tr>
+		  <cti:checkProperty property="ConsumerInfoRole.ALLOW_ACCOUNT_EDITING">
+			  <cti:checkProperty propertyid="<%= ConsumerInfoRole.CONSUMER_INFO_APPLIANCES_CREATE %>"> 
+	          <tr>
+	            <td width="10" valign="top"><%= ((String[]) links.get("CreateAppliances.jsp"))[0] %></td>
+	            <td style="padding:1"><%= ((String[]) links.get("CreateAppliances.jsp"))[1] %></td>
+	          </tr>
+			  </cti:checkProperty>
 		  </cti:checkProperty>
         </table>
 	  </div>
@@ -396,11 +398,13 @@
 	}
 %>
 		  </cti:checkProperty>
-		  <cti:checkProperty propertyid="<%= ConsumerInfoRole.CONSUMER_INFO_HARDWARES_CREATE %>"> 
-          <tr>
-            <td width="10"><%= ((String[]) links.get("CreateHardware.jsp"))[0] %></td>
-            <td style="padding:1"><%= ((String[]) links.get("CreateHardware.jsp"))[1] %></td>
-          </tr>
+		  <cti:checkProperty property="ConsumerInfoRole.ALLOW_ACCOUNT_EDITING">
+			  <cti:checkProperty propertyid="<%= ConsumerInfoRole.CONSUMER_INFO_HARDWARES_CREATE %>"> 
+	          <tr>
+	            <td width="10"><%= ((String[]) links.get("CreateHardware.jsp"))[0] %></td>
+	            <td style="padding:1"><%= ((String[]) links.get("CreateHardware.jsp"))[1] %></td>
+	          </tr>
+			  </cti:checkProperty>
 		  </cti:checkProperty>
         </table>
       </div>

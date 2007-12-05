@@ -971,19 +971,23 @@ function deleteAppliance(form) {
               </table>
               <table width="250" border="0" cellspacing="0" cellpadding="5" align="center" bgcolor="#FFFFFF">
                 <tr>
-                  <td width="33%" align = "right"> 
-                    <input type="button" name="Submit" value="Save" onclick="document.form1.submit()">
-                  </td>
+                	<cti:checkProperty property="ConsumerInfoRole.ALLOW_ACCOUNT_EDITING">
+	                  <td width="33%" align = "right"> 
+	                    <input type="button" name="Submit" value="Save" onclick="document.form1.submit()">
+	                  </td>
+	                </cti:checkProperty>
                     <td width="33%" align = "center"> 
                       <div>
                         <input type="button" name="Reset" value="Reset" onclick="document.form1.reset();setContentChanged(false);">
                       </div>
                     </td>
+                    <cti:checkProperty property="ConsumerInfoRole.ALLOW_ACCOUNT_EDITING">
                     <td width="33%"> 
                       <div align="left"> 
                         <input type="button" name="Delete" value="Delete" onclick="deleteAppliance(document.form1)">
                       </div>
                     </td>
+                    </cti:checkProperty>
                 </tr>
               </table>
               <hr>

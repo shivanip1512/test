@@ -526,27 +526,30 @@ function setCommercial() {
                         </td>
                       </tr>
                     </table>
-                    
                   </td>
               </tr>
             </table>
             <table width="400" border="0" cellspacing="0" cellpadding="5" align="center" bgcolor="#FFFFFF">
                 <tr> 
-                  <td width="42%"> 
-                    <div align="right"> 
-                      <input type="submit" name="Save" value="Save">
-                    </div>
-                  </td>
-                  <td width="15%"> 
-                    <div align="center"> 
-                      <input type="reset" name="Reset" value="Reset" onclick="setContentChanged(false)">
-                    </div>
-                  </td>
-                  <td width="43%">
-                    <div align="left"> 
-                      <input type="button" name="Delete" value="Delete" onclick="deleteAccount(this.form)">
-                    </div>
-				  </td>
+	             	<cti:checkProperty property="ConsumerInfoRole.ALLOW_ACCOUNT_EDITING">     
+	                	<td width="42%"> 
+	                    	<div align="right"> 
+	                      		<input type="submit" name="Save" value="Save">
+	                    	</div> 
+	                  	</td> 
+	                </cti:checkProperty>
+                  	<td width="15%"> 
+                    	<div align="center"> 
+                      		<input type="reset" name="Reset" value="Reset" onclick="setContentChanged(false)">
+                    	</div>
+                  	</td>
+                  	<cti:checkProperty property="ConsumerInfoRole.ALLOW_ACCOUNT_EDITING">
+	                	<td width="43%">
+	                    	<div align="left"> 
+	                      		<input type="button" name="Delete" value="Delete" onclick="deleteAccount(this.form)">
+	                    	</div>
+					  	</td>
+				  	</cti:checkProperty>  
                 </tr>
             </table>
 			</form>

@@ -488,15 +488,19 @@ function revealLog() {
               
             <table width="400" border="0" cellspacing="0" cellpadding="3" bgcolor="#FFFFFF">
               <tr> 
-                  <td width="42%" align="right"> 
-                    <input type="submit" name="Submit" value="Save">
-                  </td>
+              	  <cti:checkProperty property="ConsumerInfoRole.ALLOW_ACCOUNT_EDITING">
+	                  <td width="42%" align="right"> 
+	                    <input type="submit" name="Submit" value="Save">
+	                  </td>
+		          </cti:checkProperty>
                   <td width="15%" align="center"> 
                     <input type="reset" name="Reset" value="Reset" onclick="setContentChanged(false)">
                   </td>
-                  <td width="43%" align="left"> 
-                    <input type="button" name="Delete" value="Delete" onclick="deleteHardware(this.form)">
-                  </td>
+                  <cti:checkProperty property="ConsumerInfoRole.ALLOW_ACCOUNT_EDITING">
+	                  <td width="43%" align="left"> 
+	                    <input type="button" name="Delete" value="Delete" onclick="deleteHardware(this.form)">
+	                  </td>
+	              </cti:checkProperty>
               </tr>
             </table>
             </form>
