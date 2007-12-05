@@ -1,7 +1,7 @@
 /*==============================================================*/
 /* Database name:  YukonDatabase                                */
 /* DBMS name:      Microsoft SQL Server 2000                    */
-/* Created on:     12/5/2007 4:24:32 PM                         */
+/* Created on:     12/5/2007 4:39:59 PM                         */
 /*==============================================================*/
 
 
@@ -3158,6 +3158,7 @@ insert into command values(-134, 'putconfig xcom data ''?''Text Message'''' port
 insert into command values(-135, 'control xcom backlight cycles 20 duty 30 bperiod 10', 'Thermostat Display Blink', 'ExpresscomSerial');
 
 insert into command values(-136, 'putconfig emetcon timezone ?''Enter Timezone (et|ct|mt|pt OR #offset)''', 'Write Timezone to Meter', 'MCT-430A'); 
+insert into command values(-137, 'putconfig emetcon outage ?''Enter number of cycles before outage is recorded''', 'Write Threshold (number of cycles before outage recorded) to Meter', 'MCT-410IL');
 
 /*==============================================================*/
 /* Table: CommandGroup                                          */
@@ -5141,6 +5142,10 @@ insert into devicetypecommand values(-690, -136, 'MCT-410FL', 30, 'N', -1);
 insert into devicetypecommand values(-691, -136, 'MCT-410GL', 30, 'N', -1);
 insert into devicetypecommand values(-692, -136, 'MCT-410IL', 30, 'N', -1);
 insert into devicetypecommand values(-693, -136, 'MCT-470', 32, 'N', -1); 
+insert into devicetypecommand values(-694, -137, 'MCT-410CL', 31, 'N', -1);
+insert into devicetypecommand values(-695, -137, 'MCT-410FL', 31, 'N', -1);
+insert into devicetypecommand values(-696, -137, 'MCT-410GL', 31, 'N', -1);
+insert into devicetypecommand values(-697, -137, 'MCT-410IL', 31, 'N', -1);
 
 /*==============================================================*/
 /* Index: Indx_DevTypeCmd_GroupID                               */

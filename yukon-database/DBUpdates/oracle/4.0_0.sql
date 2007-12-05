@@ -1009,6 +1009,14 @@ insert into YukonRoleProperty values(-20163,-201,'Allow Account Editing','true',
 insert into YukonRoleProperty values(-90008,-900,'Allow Gear Change for Stop','false','Activates the ability to change gears as part of manually stopping a load program'); 
 /* End YUK-4837 */
 
+/* Start YUK-4825 */
+insert into command values(-137, 'putconfig emetcon outage ?''Enter number of cycles before outage is recorded''', 'Write Threshold (number of cycles before outage recorded) to Meter', 'MCT-410IL');
+insert into devicetypecommand values(-694, -137, 'MCT-410CL', 31, 'N', -1);
+insert into devicetypecommand values(-695, -137, 'MCT-410FL', 31, 'N', -1);
+insert into devicetypecommand values(-696, -137, 'MCT-410GL', 31, 'N', -1);
+insert into devicetypecommand values(-697, -137, 'MCT-410IL', 31, 'N', -1);
+/* End YUK-4825 */
+
 /**************************************************************/
 /* VERSION INFO                                               */
 /*   Automatically gets inserted from build script            */
