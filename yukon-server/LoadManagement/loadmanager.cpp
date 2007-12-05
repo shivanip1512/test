@@ -120,7 +120,7 @@ void CtiLoadManager::stop()
 {
     try
     {
-        if( _loadManagerThread.isValid() && _loadManagerThread.requestCancellation() == RW_THR_ABORTED )
+        if( _loadManagerThread.isValid() && _loadManagerThread.requestCancellation(20000) == RW_THR_ABORTED )
         {
             _loadManagerThread.terminate();
 
@@ -132,8 +132,8 @@ void CtiLoadManager::stop()
         }
         else
         {
-            _loadManagerThread.requestCancellation();
-            _loadManagerThread.join();
+            _loadManagerThread.requestCancellation(30000);
+            _loadManagerThread.join(20000);
         }
     }
     catch( ... )

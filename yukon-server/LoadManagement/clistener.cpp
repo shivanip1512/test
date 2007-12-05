@@ -111,8 +111,8 @@ void CtiLMClientListener::stop()
             delete _socketListener;
             _socketListener = NULL;
 
-            _listenerthr.join();
-            _checkthr.join();
+            _listenerthr.join(30000);
+            _checkthr.join(30000);
         }
     }
     catch(RWxmsg& msg)

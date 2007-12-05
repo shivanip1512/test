@@ -6,8 +6,8 @@
 *
 * PVCS KEYWORDS:
 * ARCHIVE      :  $Archive:   Z:/SOFTWAREARCHIVES/YUKON/DISPATCH/ctivangogh.cpp-arc  $
-* REVISION     :  $Revision: 1.173 $
-* DATE         :  $Date: 2007/10/24 14:51:29 $
+* REVISION     :  $Revision: 1.174 $
+* DATE         :  $Date: 2007/12/05 15:41:54 $
 *
 * Copyright (c) 1999, 2000, 2001 Cannon Technologies Inc. All rights reserved.
 *-----------------------------------------------------------------------------*/
@@ -7823,6 +7823,7 @@ void CtiVanGogh::stopDispatch()
 
     shutdown();                   // Shutdown the server object.
 
+    PointMgr.storeDirtyRecords();
     // Interrupt the CtiThread based threads.
     _pendingOpThread.interrupt(CtiThread::SHUTDOWN);
     ThreadMonitor.interrupt(CtiThread::SHUTDOWN);
@@ -7878,9 +7879,7 @@ void CtiVanGogh::stopDispatch()
     }
     ThreadMonitor.join();
 
-    PointMgr.storeDirtyRecords();
     PointMgr.DeleteList();
-
 }
 
 CtiConnection* CtiVanGogh::getNotificationConnection()
