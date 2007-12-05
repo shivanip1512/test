@@ -37,11 +37,7 @@ create table DYNAMICBILLINGFIELD  (
 ;
 
 alter table BillingFileFormats modify FormatType varchar2(100);
-go
-
 alter table BillingFileFormats ADD SystemFormat bit;
-go
-
 update BillingFileFormats SET SystemFormat=1;
 
 insert into sequenceNumber values (100, 'BillingFileFormats');
@@ -147,8 +143,7 @@ alter table CCSubSpecialAreaAssignment
       references CapControlSubstationBus (SubstationBusId);
 
 alter table DYNAMICCCAREA
-   add constraint PK_DYNAMICCCAREA primary key nonclustered (AreaId)
-go
+   add constraint PK_DYNAMICCCAREA primary key nonclustered (AreaId);
 
 alter table CCSUBAREAASSIGNMENT
    add constraint FK_CCSUBARE_REFERENCE_DYNAMICC foreign key (AreaID)
@@ -318,9 +313,7 @@ alter table TOUATTRIBUTEMAPPING
    add constraint PK_TOUATTRIBUTEMAPPING primary key (touID);
 
 alter table cceventlog add actionId number;
-go
 update cceventlog set actionId = -1;
-go
 alter table cceventlog modify actionId number not null;
 
 /* Begin YUK-4785 */
@@ -643,30 +636,25 @@ drop table ccssaa_backup;
 alter table CAPCONTROLSUBSTATION
    add constraint FK_CAPCONTR_REFERENCE_YUKONPAO foreign key (SubstationID)
       references YukonPAObject (PAObjectID)
-         on update cascade on delete cascade;
-go
+         on delete cascade;
 
 alter table CCSUBSPECIALAREAASSIGNMENT
    add constraint FK_CCSUBSPE_REFERENCE_CAPCONTR foreign key (AreaID)
       references CAPCONTROLSPECIALAREA (AreaID);
-go
 
 alter table CCSUBAREAASSIGNMENT
    add constraint FK_CCSUBARE_CAPSUBAREAASSGN foreign key (SubstationBusID)
       references CAPCONTROLSUBSTATION (SubstationID)
          on delete cascade;
-go
 
 alter table CCSUBSPECIALAREAASSIGNMENT
    add constraint FK_CCSUBSPE_CAPCONTR2 foreign key (SubstationBusID)
       references CAPCONTROLSUBSTATION (SubstationID)
-         on update cascade on delete cascade;
-go
+         on delete cascade;
 
 alter table CAPCONTROLSPECIALAREA
    add constraint FK_CAPCONTR_YUKONPAO2 foreign key (AreaID)
       references YukonPAObject (PAObjectID);
-go
 
 ALTER TABLE CCSUBSTATIONSUBBUSLIST 
 	ADD  CONSTRAINT PK_CCSUBSTATIONSUBBUSLIST PRIMARY KEY CLUSTERED 
@@ -678,12 +666,10 @@ ALTER TABLE CCSUBSTATIONSUBBUSLIST
 alter table CCSUBSTATIONSUBBUSLIST
    add constraint FK_CCSUBSTA_CAPCONTR foreign key (SubStationID)
       references CAPCONTROLSUBSTATION (SubstationID);
-go
 
 alter table CCSUBSTATIONSUBBUSLIST
    add constraint FK_CCSUBSTA_REFERENCE_CAPCONTR foreign key (SubStationBusID)
       references CAPCONTROLSUBSTATIONBUS (SubstationBusID);
-go
 /* End YUK-4707 */
 
 create or replace view CCINVENTORY_VIEW(Region, SubName, FeederName, subId, substationid, fdrId, CBCName, cbcId, capbankname, bankId, CapBankSize, Sequence, ControlStatus, SWMfgr, SWType, ControlType, Protocol, IPADDRESS, SlaveAddress, LAT, LON, DriveDirection, OpCenter, TA) as
@@ -891,19 +877,19 @@ alter table CCSTRATEGYTIMEOFDAY
 /* End YUK-4716 */
 
 /* Start YUK-4763 */
-alter table DynamicCCFeeder add LastWattPointTime datetime;
+alter table DynamicCCFeeder add LastWattPointTime date;
 update DynamicCCFeeder set LastWattPointTime = '1990-01-01 00:00:00';
-alter table DynamicCCFeeder modify LastWattPointTime datetime not null;
-alter table DynamicCCFeeder add LastVoltPointTime datetime;
+alter table DynamicCCFeeder modify LastWattPointTime date not null;
+alter table DynamicCCFeeder add LastVoltPointTime date;
 update DynamicCCFeeder set LastVoltPointTime = '1990-01-01 00:00:00';
-alter table DynamicCCFeeder modify LastVoltPointTime datetime not null;
+alter table DynamicCCFeeder modify LastVoltPointTime date not null;
 
-alter table DynamicCCSubstationbus add LastWattPointTime datetime;
+alter table DynamicCCSubstationbus add LastWattPointTime date;
 update DynamicCCSubstationbus set LastWattPointTime = '1990-01-01 00:00:00';
-alter table DynamicCCSubstationbus modify LastWattPointTime datetime not null;
-alter table DynamicCCSubstationbus add LastVoltPointTime datetime;
+alter table DynamicCCSubstationbus modify LastWattPointTime date not null;
+alter table DynamicCCSubstationbus add LastVoltPointTime date;
 update DynamicCCSubstationbus set LastVoltPointTime = '1990-01-01 00:00:00';
-alter table DynamicCCSubstationbus modify LastVoltPointTime datetime not null;
+alter table DynamicCCSubstationbus modify LastVoltPointTime date not null;
 
 alter table capcontrolstrategy add likeDayFallBack char(1);
 update capcontrolstrategy set likeDayFallBack = 'N';
