@@ -209,9 +209,11 @@
             	<a href="${hardwarePage}">Inventory</a>
             </tags:sectionLink>
         </cti:checkProperty>
-        <tags:sectionLink>
-        	<a href="Hardware/PurchaseTrack.jsp">Purchasing</a>
-        </tags:sectionLink>
+        <cti:checkProperty property="InventoryRole.PURCHASING_ACCESS"> 
+	        <tags:sectionLink>
+	        	<a href="Hardware/PurchaseTrack.jsp">Purchasing</a>
+	        </tags:sectionLink>
+	    </cti:checkProperty>
         
         <!-- Hardware search form -->
 		<div class="sectionForm">
