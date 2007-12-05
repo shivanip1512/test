@@ -1096,6 +1096,10 @@ insert into YukonRoleProperty values (-100205, -1002, 'Capbank Fixed/Static Text
 insert into YukonRoleProperty values(-20909,-209,'Purchasing Access','false','Activates the purchasing section of the inventory module.'); 
 /* End YUK-4846 */
 
+/* Start YUK-4839 */
+insert into YukonRoleProperty values(-20163,-201,'Allow Account Editing','true','Can be used to disable the ability to edit and delete customer account information.');
+/* End YUK-4839 */
+
 /**************************************************************/
 /* VERSION INFO                                               */
 /*   Automatically gets inserted from build script            */
