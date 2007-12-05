@@ -1,7 +1,7 @@
 /*==============================================================*/
 /* Database name:  YukonDatabase                                */
 /* DBMS name:      ORACLE Version 9i                            */
-/* Created on:     12/4/2007 2:54:06 PM                         */
+/* Created on:     12/4/2007 8:16:26 PM                         */
 /*==============================================================*/
 
 
@@ -859,10 +859,6 @@ drop user Yukon
 /*==============================================================*/
 create user Yukon identified by ''
 ;
-
-create cluster  C_ActivityLog (
-   ActivityLogID		NUMBER
-);
 
 /*==============================================================*/
 /* Table: ActivityLog                                           */
@@ -2062,10 +2058,6 @@ create unique index AK_KEY_CmdGrp_Name on CommandGroup (
 )
 ;
 
-create cluster  C_Contact (
-   ContactID		NUMBER
-);
-
 /*==============================================================*/
 /* Table: Contact                                               */
 /*==============================================================*/
@@ -2142,10 +2134,6 @@ create index Indx_CntNotif_CntId on ContactNotification (
    ContactID ASC
 )
 ;
-
-create cluster  C_Customer (
-   CustomerID		NUMBER
-);
 
 /*==============================================================*/
 /* Table: Customer                                              */
@@ -3296,11 +3284,6 @@ create table DeviceTNPPSettings  (
    constraint PK_DEVICETNPPSETTINGS primary key (DeviceID)
 )
 ;
-
-create cluster  C_DeviceTypeCommand (
-   DeviceCommandID		NUMBER, 
-   CommandGroupID		NUMBER
-);
 
 /*==============================================================*/
 /* Table: DeviceTypeCommand                                     */
@@ -6407,10 +6390,10 @@ create table TOUATTRIBUTEMAPPING  (
 )
 ;
 
-INSERT INTO TouAttributeMapping (displayname, peakattribute, usageattribute) VALUES (1, 'A', 'TOU_RATE_A_PEAK_DEMAND', 'TOU_RATE_A_USAGE');
-INSERT INTO TouAttributeMapping (displayname, peakattribute, usageattribute) VALUES (2, 'B', 'TOU_RATE_B_PEAK_DEMAND', 'TOU_RATE_B_USAGE');
-INSERT INTO TouAttributeMapping (displayname, peakattribute, usageattribute) VALUES (3, 'C', 'TOU_RATE_C_PEAK_DEMAND', 'TOU_RATE_C_USAGE');
-INSERT INTO TouAttributeMapping (displayname, peakattribute, usageattribute) VALUES (4, 'D', 'TOU_RATE_D_PEAK_DEMAND', 'TOU_RATE_D_USAGE');
+INSERT INTO TouAttributeMapping VALUES (1, 'A', 'TOU_RATE_A_PEAK_DEMAND', 'TOU_RATE_A_USAGE');
+INSERT INTO TouAttributeMapping VALUES (2, 'B', 'TOU_RATE_B_PEAK_DEMAND', 'TOU_RATE_B_USAGE');
+INSERT INTO TouAttributeMapping VALUES (3, 'C', 'TOU_RATE_C_PEAK_DEMAND', 'TOU_RATE_C_USAGE');
+INSERT INTO TouAttributeMapping VALUES (4, 'D', 'TOU_RATE_D_PEAK_DEMAND', 'TOU_RATE_D_USAGE');
 
 /*==============================================================*/
 /* Table: TOUDay                                                */
@@ -8769,7 +8752,7 @@ FROM CAPBANK cb INNER JOIN
                       DeviceAddress da ON da.DeviceID = cb.CONTROLDEVICEID INNER JOIN
                       PORTTERMINALSERVER pts ON pts.PORTID = ddcs.PORTID INNER JOIN
                       DeviceCBC cbc ON cbc.DEVICEID = cb.CONTROLDEVICEID INNER JOIN
-                      capbankadditional capa on capa.deviceid = cb.deviceid;
+                      capbankadditional capa on capa.deviceid = cb.deviceid
 ;
 
 /*==============================================================*/
@@ -8816,9 +8799,9 @@ GROUP BY op.LogID) OpConf INNER JOIN
         (SELECT EntryID, PAObjectID, Owner, InfoKey, Value, UpdateTime
         FROM DynamicPAOInfo WHERE (InfoKey LIKE '%udp ip%')) 
         p ON p.PAObjectID = cb.CONTROLDEVICEID LEFT OUTER JOIN
-        ccsubstationsubbuslist as ssl on ssl.substationbusid = el.subid  LEFT OUTER JOIN
-        ccsubareaassignment as csa on csa.substationbusid = ssl.substationid left outer join 
-        YukonPAObject AS yp4 ON yp4.paobjectid = csa.areaid;
+        ccsubstationsubbuslist ssl on ssl.substationbusid = el.subid  LEFT OUTER JOIN
+        ccsubareaassignment csa on csa.substationbusid = ssl.substationid left outer join 
+        YukonPAObject yp4 ON yp4.paobjectid = csa.areaid
 ;
 
 /*==============================================================*/
