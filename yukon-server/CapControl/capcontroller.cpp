@@ -360,13 +360,13 @@ void CtiCapController::controlLoop()
                         if (currentArea != NULL && !currentArea->getDisableFlag()) 
                         {
                             //currentSubstationBus->isPeakTime(currentDateTime);//put here to make sure the peak time flag is set correctly
-                            if (currentSubstationBus->getLikeDayFallBack())
+                            /*if (currentSubstationBus->getLikeDayFallBack())
                             {
                                 if (currentSubstationBus->isDataOldAndFallBackNecessary())
                                     currentSubstationBus->setLikeDayControlFlag(TRUE);
                                 else
                                     currentSubstationBus->setLikeDayControlFlag(FALSE);
-                            }
+                            }  */
 
                             if (currentSubstationBus->isMultiVoltBusAnalysisNeeded(currentDateTime))
                             {                      
