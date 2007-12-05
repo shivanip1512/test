@@ -344,10 +344,6 @@ INSERT INTO TouAttributeMapping VALUES (2, 'B', 'TOU_RATE_B_PEAK_DEMAND', 'TOU_R
 INSERT INTO TouAttributeMapping VALUES (3, 'C', 'TOU_RATE_C_PEAK_DEMAND', 'TOU_RATE_C_USAGE');
 INSERT INTO TouAttributeMapping VALUES (4, 'D', 'TOU_RATE_D_PEAK_DEMAND', 'TOU_RATE_D_USAGE');
 
-alter table TOUATTRIBUTEMAPPING
-   add constraint PK_TOUATTRIBUTEMAPPING primary key (touID)
-go
-
 alter table cceventlog add actionId numeric;
 go
 update cceventlog set actionId = -1;
