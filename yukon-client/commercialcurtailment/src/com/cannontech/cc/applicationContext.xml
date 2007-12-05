@@ -1,9 +1,16 @@
 <?xml version="1.0" encoding="UTF-8"?>
-<!DOCTYPE beans PUBLIC "-//SPRING//DTD BEAN//EN" "http://www.springframework.org/dtd/spring-beans.dtd">
+<beans xmlns="http://www.springframework.org/schema/beans"
+       xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+       xmlns:aop="http://www.springframework.org/schema/aop"
+       xmlns:tx="http://www.springframework.org/schema/tx"
+       xsi:schemaLocation="
+       http://www.springframework.org/schema/beans http://www.springframework.org/schema/beans/spring-beans-2.0.xsd
+       http://www.springframework.org/schema/tx http://www.springframework.org/schema/tx/spring-tx-2.0.xsd
+       http://www.springframework.org/schema/aop http://www.springframework.org/schema/aop/spring-aop-2.0.xsd">
 
-<beans>
+    <tx:annotation-driven/>
 
-  <bean id="programService" class="com.cannontech.cc.service.ProgramServiceImpl" singleton="true" dependency-check="objects">
+  <bean id="programService" class="com.cannontech.cc.service.ProgramServiceImpl" scope="singleton" dependency-check="objects">
     <property name="energyCompanyDao" ref="energyCompanyDao"/>
     <property name="baseEventDao" ref="baseEventDao"/>
     <property name="programDao" ref="programDao"/>
@@ -13,14 +20,14 @@
     <property name="availableProgramGroupDao" ref="availableProgramGroupDao"/>
     <property name="programNotificationGroupDao" ref="programNotificationGroupDao"/>
   </bean>
-  <bean id="groupService" class="com.cannontech.cc.service.GroupServiceImpl" singleton="true" dependency-check="objects">
+  <bean id="groupService" class="com.cannontech.cc.service.GroupServiceImpl" scope="singleton" dependency-check="objects">
     <property name="customerStubDao" ref="customerStubDao"/>
     <property name="groupCustomerNotifDao" ref="groupCustomerNotifDao"/>
     <property name="pointTypeHelper" ref="customerPointTypeHelper"/>
     <property name="energyCompanyDao" ref="energyCompanyDao"/>
     <property name="groupDao" ref="groupDao"/>
   </bean>
-  <bean id="eventService" class="com.cannontech.cc.service.EventService" singleton="true" dependency-check="objects">
+  <bean id="eventService" class="com.cannontech.cc.service.EventService" scope="singleton" dependency-check="objects">
     <property name="baseEventDao" ref="baseEventDao"/>
     <property name="strategyFactory" ref="strategyFactory"/>
   </bean>
@@ -151,7 +158,7 @@
   
   
   <bean id="customerPointTypeLookup" class="com.cannontech.support.CustomerPointTypeLookup" 
-   singleton="false" autowire="byType">
+   scope="prototype" autowire="byType">
    <property name="applicablePointLookup">
      <map>
        <entry key="ISOC">
@@ -173,7 +180,7 @@
    </property>
   </bean>
   
-  <bean id="isocCommonStrategy" class="com.cannontech.cc.service.IsocCommonStrategy" singleton="true" autowire="byType">
+  <bean id="isocCommonStrategy" class="com.cannontech.cc.service.IsocCommonStrategy" scope="singleton" autowire="byType">
     <property name="strategyKeys">
       <set>
         <value>isocSameDay</value>
