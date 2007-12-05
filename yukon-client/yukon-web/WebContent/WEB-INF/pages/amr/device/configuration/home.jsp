@@ -1,5 +1,6 @@
 <%@ taglib uri="http://java.sun.com/jsp/jstl/core" prefix="c" %>
 <%@ taglib uri="http://cannontech.com/tags/cti" prefix="cti" %>
+<%@ taglib uri="http://java.sun.com/jsp/jstl/functions" prefix="fn" %>
 <%@ taglib uri="http://www.springframework.org/tags" prefix="spring" %>
 <%@ taglib prefix="tags" tagdir="/WEB-INF/tags" %>
 
@@ -9,6 +10,15 @@
 	<cti:crumbLink url="/operator/Operations.jsp" title="Operations Home"  />
     &gt; Device Configuration Home
 </cti:breadCrumbs>
+
+	<script type="text/javascript">
+	
+		function deleteConfig(){
+			var confirmDelete = confirm("Are you sure you want to permanently delete this configuration?  This configuration cannot be recovered after it is removed.");
+			return confirmDelete;
+		}
+	
+	</script>
 
 	<c:set var="editConfig" scope="page">
 		<cti:getProperty property="AdministratorRole.ADMIN_EDIT_CONFIG"/>
@@ -35,22 +45,31 @@
 		</form>
 	</c:if>
 	
+	
 	<h4>${editConfig ? 'Manage' : 'View'} existing configurations</h4>
-	<form name="configForm" action="/spring/deviceConfiguration">
-	
-		<select id="configuration" name="configuration">
-			<c:forEach var="config" items="${existingConfigs}">
-				<option value="${config.id}">${config.name}</option>	
-			</c:forEach>
-		</select>
-		
-		<input type="submit" name="editConfig" value="${editConfig ? 'Edit' : 'View'}"/>
-		<c:if test="${editConfig}">
-			<input type="submit" name="removeConfig" value="Delete"/>
-			<input type="submit" name="cloneConfig" value="Clone"/>
-		</c:if>
-		<input type="submit" name="assignDevices" value="Assign to Devices"/>
-	
-	</form>
+
+	<c:choose>
+		<c:when test="${fn:length(existingConfigs) > 0}">
+			<form name="configForm" action="/spring/deviceConfiguration">
+			
+				<select id="configuration" name="configuration">
+					<c:forEach var="config" items="${existingConfigs}">
+						<option value="${config.id}">${config.name}</option>	
+					</c:forEach>
+				</select>
+				
+				<input type="submit" name="editConfig" value="${editConfig ? 'Edit' : 'View'}"/>
+				<c:if test="${editConfig}">
+					<input type="submit" name="removeConfig" value="Delete" onclick="return deleteConfig()"/>
+					<input type="submit" name="cloneConfig" value="Clone"/>
+					<input type="submit" name="assignDevices" value="Assign to Devices"/>
+				</c:if>
+			
+			</form>
+		</c:when>
+		<c:otherwise>
+			There are no existing configurations.
+		</c:otherwise>
+	</c:choose>
 	
 </cti:standardPage>

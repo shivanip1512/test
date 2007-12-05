@@ -215,7 +215,6 @@
 					<span id="fileNote" style="font-size: .7em; color: blue;">Note: The file must contain 1 valid Physical Address per line.</span>
 					<br/><br/>
 					<input type="submit" name="assignConfigByFileUpload" value="Assign Configuration" onclick="return assignDevicesByFile();" />
-					<input type="submit" name="assignConfigByGroup" value="assignConfigByGroup" onclick="return assignDevicesByFile();" />
 				</form>
 			</div>
 		</tags:boxContainer>
