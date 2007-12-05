@@ -1,7 +1,7 @@
 /*==============================================================*/
 /* Database name:  YukonDatabase                                */
 /* DBMS name:      Microsoft SQL Server 2000                    */
-/* Created on:     12/5/2007 4:39:59 PM                         */
+/* Created on:     12/5/2007 5:01:25 PM                         */
 /*==============================================================*/
 
 
@@ -10222,7 +10222,7 @@ go
 alter table CCSUBAREAASSIGNMENT
    add constraint FK_CCSUBARE_CAPSUBAREAASSGN foreign key (SubstationBusID)
       references CAPCONTROLSUBSTATION (SubstationID)
-         on delete cascade
+         on update cascade on delete cascade
 go
 
 alter table CCSUBAREAASSIGNMENT
@@ -10658,7 +10658,7 @@ go
 alter table DEVICEGROUPMEMBER
    add constraint FK_DeviceGroupMember_DEVICE foreign key (YukonPaoId)
       references DEVICE (DEVICEID)
-         on delete cascade
+         on update cascade on delete cascade
 go
 
 alter table DEVICEIDLCREMOTE
@@ -10951,7 +10951,7 @@ go
 alter table DynamicPAOStatistics
    add constraint FK_PASt_YkPA foreign key (PAOBjectID)
       references YukonPAObject (PAObjectID)
-         on delete cascade
+         on update cascade on delete cascade
 go
 
 alter table DynamicPointAlarming
@@ -11068,7 +11068,7 @@ go
 alter table JOBSCHEDULEDONETIME
    add constraint FK_JobScheduledOneTime_Job foreign key (JobID)
       references JOB (JobID)
-         on delete cascade
+         on update cascade on delete cascade
 go
 
 alter table JOBSCHEDULEDREPEATING
@@ -11181,13 +11181,13 @@ go
 alter table LMEnergyExchangeCustomerReply
    add constraint FK_LMENERGY_REFEXCSTR_LMENERGY foreign key (OfferID, RevisionNumber)
       references LMEnergyExchangeOfferRevision (OfferID, RevisionNumber)
-         on delete cascade
+         on update cascade on delete cascade
 go
 
 alter table LMEnergyExchangeHourlyCustomer
    add constraint FK_ExHrCs_ExCsRp foreign key (CustomerID, OfferID, RevisionNumber)
       references LMEnergyExchangeCustomerReply (CustomerID, OfferID, RevisionNumber)
-         on delete cascade
+         on update cascade on delete cascade
 go
 
 alter table LMEnergyExchangeHourlyOffer
@@ -11378,7 +11378,7 @@ go
 alter table LMProgramCurtailCustomerList
    add constraint FK_LMPrgCrt_LMPrCstLst foreign key (ProgramID)
       references LMProgramCurtailment (DeviceID)
-         on delete cascade
+         on update cascade on delete cascade
 go
 
 alter table LMProgramCurtailment
