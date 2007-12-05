@@ -547,7 +547,7 @@ while (@@fetch_status = 0)
 			Max(paobjectid) + 1,
 			'CAPCONTROL',
 			'CAPCONTROL',
-			@ccsubstationname,
+			'S: ' + @ccsubstationname,
 			'CCSUBSTATION',
 			'(none)',
 			'N',
@@ -572,7 +572,7 @@ from
 	, yukonpaobject yp1
 	, ccsubareaassignment sa
 where
-	yp.paoname = s.ccsubstationname
+	yp.paoname = 'S: ' + s.ccsubstationname
 	and yp.type = 'CCSUBSTATION'
 	and s.subbusid = sa.substationbusid
 	and sa.areaid = yp1.paobjectid;
@@ -590,7 +590,7 @@ from
 	, yukonpaobject yp1
 	, ccsubspecialareaassignment sa
 where
-	yp.paoname = s.ccsubstationname
+	yp.paoname = 'S: ' + s.ccsubstationname
 	and yp.type = 'CCSUBSTATION'
 	and s.subbusid = sa.substationbusid
 	and sa.areaid = yp1.paobjectid;

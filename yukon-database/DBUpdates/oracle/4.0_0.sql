@@ -471,7 +471,7 @@ disableflag, paostatistics)
 			v_paoid,
 			'CAPCONTROL',
 			'CAPCONTROL',
-			v_ccsubstationname,
+			concat('S: ',v_ccsubstationname),
 			'CCSUBSTATION',
 			'(none)',
 			'N',
@@ -508,7 +508,7 @@ from
 	, yukonpaobject yp1
 	, ccsubareaassignment sa
 where
-	yp.paoname = s.ccsubstationname
+	yp.paoname = concat('S: ',s.ccsubstationname)
 	and yp.type = 'CCSUBSTATION'
 	and s.subbusid = sa.substationbusid
 	and sa.areaid = yp1.paobjectid;
@@ -535,7 +535,7 @@ from
 	, yukonpaobject yp1
 	, ccsubspecialareaassignment sa
 where
-	yp.paoname = s.ccsubstationname
+	yp.paoname = concat('S: ',s.ccsubstationname)
 	and yp.type = 'CCSUBSTATION'
 	and s.subbusid = sa.substationbusid
 	and sa.areaid = yp1.paobjectid;
