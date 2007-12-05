@@ -1,7 +1,7 @@
 /*==============================================================*/
 /* Database name:  YukonDatabase                                */
 /* DBMS name:      Microsoft SQL Server 2000                    */
-/* Created on:     12/4/2007 2:53:18 PM                         */
+/* Created on:     12/5/2007 3:59:08 PM                         */
 /*==============================================================*/
 
 
@@ -1994,7 +1994,7 @@ create table ActivityLog (
    PaoID                numeric              null,
    Action               varchar(80)          not null,
    Description          varchar(240)         null,
-   constraint PK_ACTIVITYLOG primary key (ActivityLogID)
+   constraint PK_ACTIVITYLOG primary key nonclustered (ActivityLogID)
 )
 go
 
@@ -3188,7 +3188,7 @@ create table Contact (
    ContLastName         varchar(32)          not null,
    LogInID              numeric              not null,
    AddressID            numeric              not null,
-   constraint PK_CONTACT primary key (ContactID)
+   constraint PK_CONTACT primary key nonclustered (ContactID)
 )
 go
 
@@ -3268,7 +3268,7 @@ create table Customer (
    RateScheduleID       numeric              not null,
    AltTrackNum          varchar(64)          not null,
    TemperatureUnit      char(1)              not null,
-   constraint PK_CUSTOMER primary key (CustomerID)
+   constraint PK_CUSTOMER primary key nonclustered (CustomerID)
 )
 go
 
@@ -4416,7 +4416,7 @@ create table DeviceTypeCommand (
    DisplayOrder         numeric              not null,
    VisibleFlag          char(1)              not null,
    CommandGroupID       numeric              not null,
-   constraint PK_DEVICETYPECOMMAND primary key (DeviceCommandID, CommandGroupID)
+   constraint PK_DEVICETYPECOMMAND primary key nonclustered (DeviceCommandID, CommandGroupID)
 )
 go
 
@@ -7511,10 +7511,10 @@ create table TOUATTRIBUTEMAPPING (
 )
 go
 
-INSERT INTO TouAttributeMapping (displayname, peakattribute, usageattribute) VALUES (1, 'A', 'TOU_RATE_A_PEAK_DEMAND', 'TOU_RATE_A_USAGE');
-INSERT INTO TouAttributeMapping (displayname, peakattribute, usageattribute) VALUES (2, 'B', 'TOU_RATE_B_PEAK_DEMAND', 'TOU_RATE_B_USAGE');
-INSERT INTO TouAttributeMapping (displayname, peakattribute, usageattribute) VALUES (3, 'C', 'TOU_RATE_C_PEAK_DEMAND', 'TOU_RATE_C_USAGE');
-INSERT INTO TouAttributeMapping (displayname, peakattribute, usageattribute) VALUES (4, 'D', 'TOU_RATE_D_PEAK_DEMAND', 'TOU_RATE_D_USAGE');
+INSERT INTO TouAttributeMapping VALUES (1, 'A', 'TOU_RATE_A_PEAK_DEMAND', 'TOU_RATE_A_USAGE');
+INSERT INTO TouAttributeMapping VALUES (2, 'B', 'TOU_RATE_B_PEAK_DEMAND', 'TOU_RATE_B_USAGE');
+INSERT INTO TouAttributeMapping VALUES (3, 'C', 'TOU_RATE_C_PEAK_DEMAND', 'TOU_RATE_C_USAGE');
+INSERT INTO TouAttributeMapping VALUES (4, 'D', 'TOU_RATE_D_PEAK_DEMAND', 'TOU_RATE_D_USAGE');
 
 /*==============================================================*/
 /* Table: TOUDay                                                */
@@ -9398,6 +9398,7 @@ insert into YukonRoleProperty values(-20905,-209,'Create Hardware','true','Contr
 insert into YukonRoleProperty values(-20906,-209,'Expresscom Restore First','false','Controls whether an opt out command should also contain a restore');
 insert into YukonRoleProperty values(-20907,-209,'Allow Designation Codes','false','Toggles on or off the ability utilize service company zip codes.');
 insert into YukonRoleProperty values(-20908,-209,'Multiple Warehouses','false','Allows for inventory to be assigned to multiple user-created warehouses instead of a single generic warehouse.');
+insert into YukonRoleProperty values(-20909,-209,'Purchasing Access','false','Activates the purchasing section of the inventory module.'); 
 
 /* operator work order management role properties */
 insert into YukonRoleProperty values(-21000,-210,'Show All Work Orders','true','Controls whether to allow showing all work orders');
@@ -9874,7 +9875,7 @@ FROM CAPBANK cb INNER JOIN
                       DeviceAddress da ON da.DeviceID = cb.CONTROLDEVICEID INNER JOIN
                       PORTTERMINALSERVER pts ON pts.PORTID = ddcs.PORTID INNER JOIN
                       DeviceCBC cbc ON cbc.DEVICEID = cb.CONTROLDEVICEID INNER JOIN
-                      capbankadditional capa on capa.deviceid = cb.deviceid;
+                      capbankadditional capa on capa.deviceid = cb.deviceid
 go
 
 /*==============================================================*/
@@ -9922,9 +9923,9 @@ GROUP BY op.LogID) OpConf INNER JOIN
         (SELECT EntryID, PAObjectID, Owner, InfoKey, Value, UpdateTime
         FROM DynamicPAOInfo WHERE (InfoKey LIKE '%udp ip%')) 
         p ON p.PAObjectID = cb.CONTROLDEVICEID LEFT OUTER JOIN
-        ccsubstationsubbuslist as ssl on ssl.substationbusid = el.subid  LEFT OUTER JOIN
-        ccsubareaassignment as csa on csa.substationbusid = ssl.substationid left outer join 
-        YukonPAObject AS yp4 ON yp4.paobjectid = csa.areaid;
+        ccsubstationsubbuslist ssl on ssl.substationbusid = el.subid  LEFT OUTER JOIN
+        ccsubareaassignment csa on csa.substationbusid = ssl.substationid left outer join 
+        YukonPAObject yp4 ON yp4.paobjectid = csa.areaid
 go
 
 /*==============================================================*/

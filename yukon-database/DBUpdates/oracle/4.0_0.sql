@@ -997,6 +997,10 @@ create table DEVICEEVENT  (
 insert into YukonRoleProperty values (-100205, -1002, 'Capbank Fixed/Static Text', 'Fixed', 'The text to display for fixed/static capbanks');
 /* End YUK-4815 */
 
+/* Start YUK-4846 */
+insert into YukonRoleProperty values(-20909,-209,'Purchasing Access','false','Activates the purchasing section of the inventory module.'); 
+/* End YUK-4846 */
+
 /**************************************************************/
 /* VERSION INFO                                               */
 /*   Automatically gets inserted from build script            */
