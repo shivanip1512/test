@@ -6,6 +6,7 @@ import java.util.Iterator;
 import java.util.List;
 import java.util.Set;
 
+import org.apache.commons.lang.Validate;
 import org.springframework.beans.factory.annotation.Required;
 import org.springframework.dao.DataIntegrityViolationException;
 import org.springframework.jdbc.core.simple.SimpleJdbcOperations;
@@ -21,6 +22,7 @@ import com.cannontech.common.device.groups.editor.model.StoredDeviceGroup;
 import com.cannontech.common.device.groups.util.YukonDeviceToIdMapper;
 import com.cannontech.common.util.MappingList;
 import com.cannontech.common.util.SqlStatementBuilder;
+import com.cannontech.database.SqlUtils;
 import com.cannontech.database.data.pao.PaoGroupsWrapper;
 import com.cannontech.database.incrementer.NextValueHelper;
 
@@ -163,12 +165,14 @@ public class DeviceGroupEditorDaoImpl implements DeviceGroupEditorDao, DeviceGro
     }
     
     public StoredDeviceGroup getGroupByName(StoredDeviceGroup parent, String groupName) {
+        String rawName = SqlUtils.convertStringToDbValue(groupName);
+
         SqlStatementBuilder sql = new SqlStatementBuilder();
         sql.append("select dg.*");
         sql.append("from DeviceGroup dg");
         sql.append("where dg.parentdevicegroupid = ? and dg.groupname = ?");
         PartialDeviceGroupRowMapper mapper = new PartialDeviceGroupRowMapper();
-        PartialDeviceGroup group = jdbcTemplate.queryForObject(sql.toString(), mapper, parent.getId(), groupName);
+        PartialDeviceGroup group = jdbcTemplate.queryForObject(sql.toString(), mapper, parent.getId(), rawName);
         PartialGroupResolver resolver = new PartialGroupResolver(this);
         resolver.addKnownGroups(parent);
         StoredDeviceGroup resolvedGroup = resolver.resolvePartial(group);
@@ -183,7 +187,9 @@ public class DeviceGroupEditorDaoImpl implements DeviceGroupEditorDao, DeviceGro
         sql.append("values");
         sql.append("(?, ?, ?, ?, ?)");
         
-        jdbcTemplate.update(sql.toString(), nextValue, groupName, group.getId(), "N", type.name());
+        String rawName = SqlUtils.convertStringToDbValue(groupName);
+
+        jdbcTemplate.update(sql.toString(), nextValue, rawName, group.getId(), "N", type.name());
         StoredDeviceGroup result = new StoredDeviceGroup();
         result.setId(nextValue);
         result.setName(groupName);
@@ -194,6 +200,8 @@ public class DeviceGroupEditorDaoImpl implements DeviceGroupEditorDao, DeviceGro
     }
 
     public void updateGroup(StoredDeviceGroup group) {
+        Validate.isTrue(!group.isSystemGroup(), "System groups cannot be updated.");
+        Validate.isTrue(group.getParent() != null, "The root group cannot be updated.");
 
         SqlStatementBuilder sql = new SqlStatementBuilder();
         sql.append("UPDATE DeviceGroup");
@@ -201,11 +209,15 @@ public class DeviceGroupEditorDaoImpl implements DeviceGroupEditorDao, DeviceGro
         sql.append("WHERE");
         sql.append("DeviceGroupId = ?");
         
-        jdbcTemplate.update(sql.toString(), group.getName(), group.getId());
+        String rawName = SqlUtils.convertStringToDbValue(group.getName());
+        
+        jdbcTemplate.update(sql.toString(), rawName, group.getId());
     }
 
     @Transactional
     public void removeGroup(StoredDeviceGroup group) {
+        Validate.isTrue(!group.isSystemGroup(), "System groups cannot be deleted.");
+        Validate.isTrue(group.getParent() != null, "The root group cannot be deleted.");
         
         List<StoredDeviceGroup> childGroups = getChildGroups(group);
         for(StoredDeviceGroup childGroup : childGroups){
@@ -221,6 +233,9 @@ public class DeviceGroupEditorDaoImpl implements DeviceGroupEditorDao, DeviceGro
     }
 
     public void moveGroup(StoredDeviceGroup group, StoredDeviceGroup parentGroup) {
+        Validate.isTrue(!group.isSystemGroup(), "System groups cannot be moved.");
+        Validate.isTrue(group.getParent() != null, "The root group cannot be moved.");
+        
         String sql = "UPDATE DeviceGroup SET ParentDeviceGroupId = ? WHERE DeviceGroupId = ?";
         jdbcTemplate.update(sql, parentGroup.getId(), group.getId());
     }
@@ -280,7 +295,7 @@ public class DeviceGroupEditorDaoImpl implements DeviceGroupEditorDao, DeviceGro
     @Transactional(propagation=Propagation.REQUIRED)
     public Set<StoredDeviceGroup> getGroupMembership(StoredDeviceGroup base, YukonDevice device) {
         // The thinking behind this implementation is that no matter how popular
-        // a device is, it is likely to only be in a few groups. Therefor, we
+        // a device is, it is likely to only be in a few groups. Therefore, we
         // might as well retrieve all of those groups and then filter out the groups
         // which are not descendants of base (also, in most cases this is called with
         // base being the root group, so we handle that as a special case).

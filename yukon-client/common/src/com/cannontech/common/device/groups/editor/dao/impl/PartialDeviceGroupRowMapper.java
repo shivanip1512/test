@@ -7,6 +7,7 @@ import org.springframework.jdbc.core.simple.ParameterizedRowMapper;
 
 import com.cannontech.common.device.groups.dao.DeviceGroupType;
 import com.cannontech.common.device.groups.editor.model.StoredDeviceGroup;
+import com.cannontech.database.SqlUtils;
 
 /**
  * This is a cheater class so that we can map rows into an object that fully represents
@@ -25,7 +26,7 @@ public class PartialDeviceGroupRowMapper implements ParameterizedRowMapper<Parti
         int id = rs.getInt("devicegroupid");
         group.setId(id);
         
-        String groupName = rs.getString("groupname");
+        String groupName = SqlUtils.convertDbValueToString(rs, "groupname");
         group.setName(groupName);
         
         int parentId = rs.getInt("parentdevicegroupid");

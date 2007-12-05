@@ -63,7 +63,7 @@ public class DeviceGroupProviderDaoMain implements DeviceGroupProviderDao {
     
     public synchronized DeviceGroup getGroup(DeviceGroup base, String groupName) {
         // check cache
-        String presumedName = base.getFullName() + groupName;
+        String presumedName = getGroupFullName(base, groupName);
         DeviceGroup deviceGroup = systemGroupCache.get(presumedName);
         if (deviceGroup != null) {
             return deviceGroup;
@@ -80,6 +80,14 @@ public class DeviceGroupProviderDaoMain implements DeviceGroupProviderDao {
             }
         }
         return group;
+    }
+
+    private String getGroupFullName(DeviceGroup base, String groupName) {
+        if (base.getParent() == null) {
+            return "/" + groupName;
+        } else {
+            return base.getFullName() + "/" + groupName;
+        }
     }
     
     public DeviceGroup getRootGroup() {
