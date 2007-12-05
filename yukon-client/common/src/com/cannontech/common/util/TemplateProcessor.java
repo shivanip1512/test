@@ -2,6 +2,7 @@ package com.cannontech.common.util;
 
 import java.util.Map;
 
+@Deprecated
 public interface TemplateProcessor {
 
     public abstract String process(CharSequence template,

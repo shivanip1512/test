@@ -16,7 +16,7 @@ public class SimpleTemplateProcessorTest {
     
     @Test
     public void testBasic() {
-        TemplateProcessor tp = new SimpleTemplateProcessor();
+        SimpleTemplateProcessor tp = new SimpleTemplateProcessor();
         String template = "{name}";
         
         Map<String, Object> data = new HashMap<String, Object>();
@@ -30,7 +30,7 @@ public class SimpleTemplateProcessorTest {
 
     @Test
     public void testTwoPart() {
-        TemplateProcessor tp = new SimpleTemplateProcessor();
+        SimpleTemplateProcessor tp = new SimpleTemplateProcessor();
         String template = "{name} is {age}";
         
         Map<String, Object> data = new HashMap<String, Object>();
@@ -45,7 +45,7 @@ public class SimpleTemplateProcessorTest {
     
     @Test
     public void testNumberFormat() {
-        TemplateProcessor tp = new SimpleTemplateProcessor();
+        SimpleTemplateProcessor tp = new SimpleTemplateProcessor();
         String template = "{name} is {age|####.000#}";
         
         Map<String, Object> data = new HashMap<String, Object>();
@@ -60,7 +60,7 @@ public class SimpleTemplateProcessorTest {
     
     @Test
     public void testDateFormat() throws ParseException {
-        TemplateProcessor tp = new SimpleTemplateProcessor();
+        SimpleTemplateProcessor tp = new SimpleTemplateProcessor();
         String template = "{name} was born {birthDate|M/d/yyyy}";
         
         Map<String, Object> data = new HashMap<String, Object>();
@@ -75,7 +75,7 @@ public class SimpleTemplateProcessorTest {
     
     @Test
     public void testListJoin() {
-        TemplateProcessor tp = new SimpleTemplateProcessor();
+        SimpleTemplateProcessor tp = new SimpleTemplateProcessor();
         String template = "{name} needs {groceryList|, }";
         
         Map<String, Object> data = new HashMap<String, Object>();
@@ -94,7 +94,7 @@ public class SimpleTemplateProcessorTest {
     
     @Test
     public void testListJoinAdvanced() {
-        TemplateProcessor tp = new SimpleTemplateProcessor();
+        SimpleTemplateProcessor tp = new SimpleTemplateProcessor();
         String template = "{name} needs {groceryList|, |it|<b>{it}</b>}";
         
         Map<String, Object> data = new HashMap<String, Object>();
@@ -113,7 +113,7 @@ public class SimpleTemplateProcessorTest {
     
     @Test
     public void testListJoinAdvanced2() throws ParseException {
-        TemplateProcessor tp = new SimpleTemplateProcessor();
+        SimpleTemplateProcessor tp = new SimpleTemplateProcessor();
         String template = "{name}'s favorite days are {dayList|, |it|{it|M/d/yy}}";
         
         Map<String, Object> data = new HashMap<String, Object>();
@@ -127,5 +127,24 @@ public class SimpleTemplateProcessorTest {
         String result = tp.process(template, data);
         
         Assert.assertEquals("Tom Mack's favorite days are 3/7/78, 3/25/80", result);
+    }
+    
+    @Test
+    public void testListJoinAdvanced3() throws ParseException {
+        SimpleTemplateProcessor tp = new SimpleTemplateProcessor();
+        String template = "{name}'s favorite days are\n{dayList|\n|it|  {it|M/d/yy}}";
+        
+        Map<String, Object> data = new HashMap<String, Object>();
+        
+        data.put("name", "Tom Mack");
+        ArrayList<Date> dayList = new ArrayList<Date>();
+        dayList.add(dateTimeInstance.parse("3/7/1978"));
+        dayList.add(dateTimeInstance.parse("3/25/1980"));
+        data.put("dayList", dayList);
+        
+        String result = tp.process(template, data);
+        System.out.println(result);
+        
+        Assert.assertEquals("Tom Mack's favorite days are\n  3/7/78\n  3/25/80", result);
     }
 }

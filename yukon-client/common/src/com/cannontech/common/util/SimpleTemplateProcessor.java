@@ -1,5 +1,8 @@
 package com.cannontech.common.util;
 
+import java.io.IOException;
+import java.io.InputStream;
+import java.io.InputStreamReader;
 import java.text.DateFormat;
 import java.text.DecimalFormat;
 import java.text.NumberFormat;
@@ -18,16 +21,25 @@ import java.util.regex.Pattern;
 
 import org.apache.commons.lang.StringUtils;
 import org.apache.commons.lang.Validate;
+import org.springframework.core.io.Resource;
+import org.springframework.util.FileCopyUtils;
 
 import com.cannontech.clientutils.CTILogger;
 
 public class SimpleTemplateProcessor implements TemplateProcessor {
-    private static Pattern templateExtraPattern = Pattern.compile("\\{([^|]+)(\\|(.+))?\\}");
-    private static Pattern collectionExtraPattern = Pattern.compile("([^|]+)\\|([^|]+)\\|(.+)");
+    private static Pattern templateExtraPattern = Pattern.compile("\\{([^|]+)(\\|(.+))?\\}", Pattern.DOTALL);
+    private static Pattern collectionExtraPattern = Pattern.compile("([^|]+)\\|([^|]+)\\|(.+)", Pattern.DOTALL);
     private Locale locale = Locale.getDefault();
     private TimeZone timeZone = TimeZone.getDefault();
     private static Map<String, SimpleDateFormat> dateFormatCache = new HashMap<String, SimpleDateFormat>();
 
+    public String process(Resource template, Map<String, ? extends Object> values) throws IOException {
+        InputStream inputStream = template.getInputStream();
+        InputStreamReader inputStreamReader = new InputStreamReader(inputStream);
+        String templateStr = FileCopyUtils.copyToString(inputStreamReader);
+        return process(templateStr, values);
+    }
+    
     /* (non-Javadoc)
      * @see com.cannontech.common.util.TemplateProcessor#process(java.lang.CharSequence, java.util.Map)
      */
