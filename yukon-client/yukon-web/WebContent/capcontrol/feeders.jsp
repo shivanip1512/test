@@ -544,7 +544,8 @@ for( int i = 0; i < capBanks.size(); i++ ) {
                     <input id="showFlip_<%=capBank.getCcId()%>" type="hidden" value="<%=showFlip%>"/>
                     <input id="is701x_<%=capBank.getCcId()%>" type="hidden" value="<%=CBCUtils.is701xDevice(obj)%>"/>
                     <a href="javascript:void(0);"
-                    <%=popupEvent%> ="getCapBankMenu('<%=capBank.getCcId()%>');">
+                    <%=popupEvent%> ="getCapBankMenu('<%=capBank.getCcId()%>');" 
+                    onmouseout = "hidePopupHiLite('tr_cap_<%=capBank.getCcId()%>', '<%=rowColor%>');">
                     	<%=CBCUtils.CBC_DISPLAY.getCapBankValueAt(capBank, CBCDisplay.CB_NAME_COLUMN, user)%>
 					</a>
 					<%
