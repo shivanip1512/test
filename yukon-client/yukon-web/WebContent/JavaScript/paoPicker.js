@@ -61,9 +61,8 @@ PaoPicker.prototype = Object.extend(new ItemPicker(), {
 	    // the onClick function, instead it generates the onClick function.
 	    /////////////////////////////////////////////////////////////////////////////
 	    this.outputCols = [
-	        {"title": "Type", "field": "type", "link": null},
-	        {"title": "Pao Id", "field": "paoId", "link": null},
-	        {"title": "Pao", "field": "paoName", "link": createItemLink}
+	        {"title": "Device Name", "field": "paoName", "link": createItemLink},
+	        {"title": "Type", "field": "type", "link": null}
 	      ];
 	    
 	    return this.renderTableResults(json, this.processRowForRender.bind(this));
