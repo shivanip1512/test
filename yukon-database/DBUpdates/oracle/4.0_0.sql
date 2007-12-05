@@ -471,7 +471,9 @@ fetch substation_curs into v_ccsubstationname;
 
 while (substation_curs%found)
 	loop
-		insert into yukonpaobject (paobjectid, category, paoclass, paoname, type, description, disableflag, paostatistics)
+		insert into yukonpaobject (paobjectid, category, paoclass, paoname, type, description, 
+
+disableflag, paostatistics)
 		select 
 			v_paoid,
 			'CAPCONTROL',
@@ -490,16 +492,26 @@ close substation_curs;
 end;
 /
 /* @end-block */
+
+Create global temporary table mySubstation2
+(
+	SubBusName varchar2(60),
+	subbusId number,
+	CCsubStationName varchar2(60),
+	Substationid number,
+	areaname varchar2(60),
+	areaid number
+);
+insert into
+	mySubstation2
 select 
 	s.*
-	, yp.paobjectid as Substationid
-	, yp1.paoname as areaname
-	, yp1.paobjectid as areaId
-into 
-	#mySubstation2
+	, yp.paobjectid
+	, yp1.paoname
+	, yp1.paobjectid
 from
 	yukonpaobject yp
-	, #mySubstation s
+	, mySubstation s
 	, yukonpaobject yp1
 	, ccsubareaassignment sa
 where
@@ -508,13 +520,22 @@ where
 	and s.subbusid = sa.substationbusid
 	and sa.areaid = yp1.paobjectid;
 
+Create global temporary table mySubstation3
+(
+	SubBusName varchar2(60),
+	subbusId number,
+	CCsubStationName varchar2(60),
+	Substationid number,
+	areaname varchar2(60),
+	areaid number
+);
+insert into
+	mySubstation3
 select 
 	s.*
 	, yp.paobjectid as Substationid
 	, yp1.paoname as areaname
 	, yp1.paobjectid as areaId
-into 
-	#mySubstation3
 from
 	yukonpaobject yp
 	, mySubstation s
@@ -526,17 +547,29 @@ where
 	and s.subbusid = sa.substationbusid
 	and sa.areaid = yp1.paobjectid;
 
+create global temporary table ccsa_backup
+(
+   AreaID               NUMBER                          not null,
+   SubstationBusID      NUMBER                          not null,
+   DisplayOrder         NUMBER                          not null
+);
+
+insert into 
+	ccsa_backup
 select 
 	*
-into
-	#ccsubareaassignment_backup
 from 
 	ccsubareaassignment;
 
+create global temporary table ccssaa_backup  (
+   AreaID               NUMBER                          not null,
+   SubstationBusID      NUMBER                          not null,
+   DisplayOrder         NUMBER                          not null
+);
+insert into
+	ccssaa_backup
 select 
 	*
-into
-	#ccsubspecialareaassignment_backup
 from 
 	ccsubspecialareaassignment;
 
@@ -546,60 +579,66 @@ alter table CCSUBAREAASSIGNMENT
       references CAPCONTROLSUBSTATION (SubstationID);
 
 update 
-	ccsubareaassignment
+	ccsubareaassignment a
 set 
-	ccsubareaassignment.substationbusid=#mySubstation2.substationid
-from 
-	ccsubareaassignment
-	, #mySubstation2
-where 
-	ccsubareaassignment.substationbusid = #mySubstation2.subbusid;
+	a.substationbusid = (
+	select
+		mySubstation2.substationid
+	from 
+		mySubstation2
+	where 
+		a.substationbusid = mySubstation2.subbusid);
 
 update 
-	ccsubspecialareaassignment
+	ccsubspecialareaassignment a
 set 
-	ccsubspecialareaassignment.substationbusid = #mySubstation3.substationid
-from 
-	ccsubspecialareaassignment
-	, #mySubstation3
-where 
-	ccsubspecialareaassignment.substationbusid = #mySubstation3.subbusid;
+	a.substationbusid = (
+	select
+		mySubstation3.substationid
+	from 
+		mySubstation3
+	where 
+		a.substationbusid = mySubstation3.subbusid);
+/
+/* @start-block */
+declare 
+	v_ccsubbusid		mysubstation2.subbusid%TYPE;
+	v_lastsubstationid 	mysubstation2.substationid%TYPE;
+	v_index 		number(6) := 1;
+	v_ccsubstationid 	mysubstation2.substationid%TYPE;
+cursor substation_curs2 is select subbusid, substationid from mySubstation2;
+begin
+open substation_curs2; 
+fetch substation_curs2 into v_ccsubbusid, v_ccsubstationid;
 
-
-declare @ccsubstationid number;
-declare @lastsubstationid number;
-declare @ccsubbusid number;
-declare @index number;
-
-declare substation_curs cursor for (select subbusid, substationid from #mySubstation2);
-open substation_curs;
-fetch substation_curs into @ccsubbusid, @ccsubstationid;
-set @index = 1;
-while (@@fetch_status = 0)
-    begin
+while (substation_curs2%found)
+	loop
 		insert into ccsubstationsubbuslist (substationid,substationbusid, displayorder)
 		select 
-			@ccsubstationid
-			, @ccsubbusid
-			, @index ;
-		set @lastsubstationid = @ccsubstationid;
-		fetch substation_curs into @ccsubbusid, @ccsubstationid;
-		if (@lastsubstationid = @ccsubstationid)
-			set @index = @index + 1;
+			v_ccsubstationid,
+			v_ccsubbusid, 
+			v_index 
+		from
+			dual;
+		v_lastsubstationid := v_ccsubstationid;
+		fetch substation_curs2 into v_ccsubbusid, v_ccsubstationid;
+		if (v_lastsubstationid = v_ccsubstationid) then
+			v_index := v_index + 1;
 		else
-			set @index = 1;
-	end
+			v_index := 1;
+		end if;
+	end loop;
+close substation_curs2;
+end;
 
-close substation_curs;
-deallocate substation_curs;
+/
+/* @end-block */
 
-insert into capcontrolsubstation (substationid) select paobjectid from yukonpaobject where type = 'CCSUBSTATION';
-
-drop table #mySubstation;
-drop table #mySubstation2;
-drop table #mySubstation3;
-drop table #ccsubareaassignment_backup;
-drop table #ccsubspecialareaassignment_backup;
+drop table mySubstation;
+drop table mySubstation2;
+drop table mySubstation3;
+drop table ccsa_backup;
+drop table ccssaa_backup;
 
 alter table CAPCONTROLSUBSTATION
    add constraint FK_CAPCONTR_REFERENCE_YUKONPAO foreign key (SubstationID)
