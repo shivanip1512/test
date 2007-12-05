@@ -1,7 +1,7 @@
 /*==============================================================*/
 /* Database name:  YukonDatabase                                */
 /* DBMS name:      Microsoft SQL Server 2000                    */
-/* Created on:     12/5/2007 4:03:50 PM                         */
+/* Created on:     12/5/2007 4:09:33 PM                         */
 /*==============================================================*/
 
 
@@ -9530,6 +9530,7 @@ insert into YukonRoleProperty values(-90004,-900,'Constraint Check','true','Allo
 insert into YukonRoleProperty values(-90005,-900,'Constraint Observe','true','Allow load management program constraints to be OBSERVED before starting');
 insert into YukonRoleProperty values(-90006,-900,'Constraint Override','true','Allow load management program constraints to be OVERRIDDEN before starting');
 insert into YukonRoleProperty values(-90007,-900,'Constraint Default','Check','The default program constraint selection prior to starting a program');
+insert into YukonRoleProperty values(-90008,-900,'Allow Gear Change for Stop','false','Activates the ability to change gears as part of manually stopping a load program'); 
 
 /* Capacitor Control role properties cont...*/
 insert into YukonRoleProperty values(-100000, -1000, 'Target', 'true', 'display Target settings');

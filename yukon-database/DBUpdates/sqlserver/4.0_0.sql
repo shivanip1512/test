@@ -1100,6 +1100,10 @@ insert into YukonRoleProperty values(-20909,-209,'Purchasing Access','false','Ac
 insert into YukonRoleProperty values(-20163,-201,'Allow Account Editing','true','Can be used to disable the ability to edit and delete customer account information.');
 /* End YUK-4839 */
 
+/* Start YUK-4837 */
+insert into YukonRoleProperty values(-90008,-900,'Allow Gear Change for Stop','false','Activates the ability to change gears as part of manually stopping a load program'); 
+/* End YUK-4837 */
+
 /**************************************************************/
 /* VERSION INFO                                               */
 /*   Automatically gets inserted from build script            */
