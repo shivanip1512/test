@@ -17,5 +17,7 @@ public interface ScheduledOneTimeJobDao {
      * @param oneTimeJob
      */
     public void save(ScheduledOneTimeJob oneTimeJob);
+    
+    public Set<ScheduledOneTimeJob> getAllUnstarted();
 
 }

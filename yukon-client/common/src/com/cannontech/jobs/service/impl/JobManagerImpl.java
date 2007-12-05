@@ -102,20 +102,20 @@ public class JobManagerImpl implements JobManager {
         }
 
         // get all jobs
-        Set<ScheduledOneTimeJob> allOneTimeJobs = scheduledOneTimeJobDao.getAll();
+        Set<ScheduledOneTimeJob> allUnstartedOneTimeJobs = scheduledOneTimeJobDao.getAllUnstarted();
 
         // check current job state table to see if anything needs to be restarted
         Set<JobStatus<ScheduledOneTimeJob>> unFinishedOneTimeJobs = scheduledOneTimeJobDao.getAllUnfinished();
         for (final JobStatus<ScheduledOneTimeJob> status : unFinishedOneTimeJobs) {
-            boolean gotIt = allOneTimeJobs.remove(status.getJob());
+            boolean gotIt = allUnstartedOneTimeJobs.remove(status.getJob());
             if (!gotIt) {
-                log.warn("tried to restart a one time job status that wasn't in the all set: " + status);
+                log.warn("tried to restart a one time job status that wasn't in the unstarted set: " + status);
                 continue;
             }
             if (status.getJob().isDisabled()) {
                 handleDisabledRestart(status);
             } else {
-                // we want to rerun this immediately and when it's done, schedule its next run
+                // we want to schedule this immediately
                 final RunnableRetryJob runnable = new RunnableRetryJob(status);
                 Date nextStartupTime = getNextStartupTime();
                 doSchedule(status.getJob(), runnable, nextStartupTime);
@@ -123,7 +123,7 @@ public class JobManagerImpl implements JobManager {
             }
         }
 
-        for (ScheduledOneTimeJob job : allOneTimeJobs) {
+        for (ScheduledOneTimeJob job : allUnstartedOneTimeJobs) {
             if (!job.isDisabled()) {
                 doScheduleOneTimeJob(job);
             } else {

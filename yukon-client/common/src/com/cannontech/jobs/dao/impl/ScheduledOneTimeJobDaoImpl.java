@@ -90,6 +90,21 @@ public class ScheduledOneTimeJobDaoImpl extends JobDaoBase implements ScheduledO
             new HashSet<JobStatus<ScheduledOneTimeJob>>(resultList);
         return resultSet;
     }
+    
+    @Override
+    public Set<ScheduledOneTimeJob> getAllUnstarted() {
+        SqlStatementBuilder sql = new SqlStatementBuilder();
+        sql.append("select distinct j.*, jso.*");
+        sql.append("from JobScheduledOneTime jso");
+        sql.append("join Job j on jso.jobid = j.jobid");
+        sql.append("left join JobStatus js on js.jobid = j.jobid");
+        sql.append("where js.jobid is null");
+        List<ScheduledOneTimeJob> resultList =
+            jdbcTemplate.query(sql.toString(), jobRowMapper);
+        HashSet<ScheduledOneTimeJob> resultSet =
+            new HashSet<ScheduledOneTimeJob>(resultList);
+        return resultSet;
+    }
 
     public ScheduledOneTimeJob getById(int id) {
         throw new UnsupportedOperationException();
