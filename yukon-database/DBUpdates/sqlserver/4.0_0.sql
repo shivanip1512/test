@@ -630,6 +630,7 @@ from
 where 
 	ccsubspecialareaassignment.substationbusid = #mySubstation3.subbusid;
 
+insert into capcontrolsubstation (substationid) select paobjectid from yukonpaobject where type = 'CCSUBSTATION';
 
 declare @ccsubstationid numeric;
 declare @lastsubstationid numeric;
@@ -658,7 +659,6 @@ while (@@fetch_status = 0)
 close substation_curs;
 deallocate substation_curs;
 
-insert into capcontrolsubstation (substationid) select paobjectid from yukonpaobject where type = 'CCSUBSTATION';
 
 drop table #mySubstation;
 drop table #mySubstation2;

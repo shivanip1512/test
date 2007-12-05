@@ -486,6 +486,8 @@ end;
 /
 /* @end-block */
 
+insert into capcontrolsubstation (substationid) select paobjectid from yukonpaobject where type = 'CCSUBSTATION';
+
 Create global temporary table mySubstation2
 (
 	SubBusName varchar2(60),
