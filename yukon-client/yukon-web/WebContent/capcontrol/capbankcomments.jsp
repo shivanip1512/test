@@ -13,7 +13,6 @@
 <cti:standardMenu/>
 
 <c:url var="commentUpdatePage" value="/capcontrol/commentUpdate.jsp"/>
-<c:url var="commentDisplayPage" value="/capcontrol/commentDisplay.jsp"/>
 
 <%@include file="cbc_inc.jspf"%>
 
@@ -59,12 +58,6 @@ function updateUpdateField()
     new Ajax.Updater('ChangeDiv', '${commentUpdatePage}', {method: 'post', parameters: params});
 }
 
-function updateDisplayField()
-{
-	var params = {'capbankID': getPaoId()};
-    new Ajax.Updater('DisplayDiv', '${commentDisplayPage}', {method: 'post', parameters: params});
-}
-
 function selectComment( id ){
 	setCommentValue(id);
 	updateUpdateField();
@@ -95,6 +88,18 @@ function setCommentValue( i )
 	$("selectedComment").value = i;
 }
 
+function highlightRow( id ){
+	unHighlightAllRows();
+	$(id).style.backgroundColor = 'yellow';
+}
+
+function unHighlightAllRows(){
+	var rows = $$('#innerTable tr');
+	for( var i = 2; i < rows.length; i++){
+		rows[i].style.backgroundColor = 'white';
+	}
+}
+
 </script>
 
 <cti:breadCrumbs>
@@ -122,8 +127,8 @@ function setCommentValue( i )
 						<td>Time</td>
 						<td>Altered</td>
 					</tr>
-					<tr class="altTableCell" >
-						<td><img src="/editor/images/edit_item.gif" border="0" height="15" width="15" onclick="selectComment(-1);"/></td>
+					<tr class="altTableCell" id="addCommentRow" >
+						<td><img src="/editor/images/edit_item.gif" border="0" height="15" width="15" onclick="selectComment(-1);unHighlightAllRows();"/></td>
 						<td>Select to add a new comment.</td>
 						<td/>
 						<td/>
@@ -131,8 +136,8 @@ function setCommentValue( i )
 					</tr>
 					<!-- Loops for each comment here. -->
 					<% for( CapbankComment c : comments ){ %>
-					<tr>
-						<td><img src="/editor/images/edit_item.gif" border="0" height="15" width="15"  onclick="selectComment(<%=c.getId() %>);"/>
+					<tr id="commentRow_<%= c.getId() %>" >
+						<td><img src="/editor/images/edit_item.gif" border="0" height="15" width="15"  onclick="selectComment(<%=c.getId() %>);highlightRow('commentRow_<%= c.getId() %>');"/>
 						<img src="/editor/images/delete_item.gif" border="0" height="15" width="15" onclick="setCommentValue(<%=c.getId() %>);setDelete(1);submit();" /></td>
 						<td><%= c.getComment() %></td>
 						<td><%= yukonUserDao.getLiteYukonUser(c.getUserId()).getUsername() %></td>

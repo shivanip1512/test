@@ -120,7 +120,11 @@ public class CtiNavObject
             history = new Stack<String>();
         return history;
     }
-
+    
+    public void clearHistory() {
+        getHistory().clear();
+    }
+    
     public boolean isInternalLogin() {
         return internalLogin;
     }

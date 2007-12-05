@@ -443,11 +443,22 @@ function generateCommentField( spanName, comments )
 {
 	str = "";
 	var strList = comments.split(";");
-	for( var i = 0 ; i < strList.length; i++)
-	{
+	for (var i = 0 ; i < strList.length; i++) {
+		var str2;
+		
+		if( strList[i].length < 1 )
+			break;
+		
+		if (strList[i].length < 18) {
+			str2 = strList[i];
+		}else {
+			str2 = strList[i].substring( 0, 15 );
+			str2 += "...";
+		}
+			
 		str += "<span id=\"" + spanName + "_" + i;
-		str += "\" style=\"display: inline\">";
-		str += strList[i];
+		str += "\" style=\"display: inline\">" + (i+1) + ") ";
+		str += str2;
 		str += "</span></br>";
 	}
 	return str;

@@ -43,6 +43,7 @@ public class CtiNavActionListener implements ActionListener {
                     ctiNav.setModuleRedirectPage( null );
 				} else if (red.equalsIgnoreCase("") ) {
 					red = ctiNav.getModuleExitPage();
+					ctiNav.setModuleExitPage( null );
 				}
 
 				if (red.equalsIgnoreCase(ctiNav.getModuleExitPage()) && ctiNav.getPreservedAddress() != null) {

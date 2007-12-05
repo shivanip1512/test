@@ -108,7 +108,7 @@ Event.observe(window, 'load', updateFeederBankInfo );
       <div style="margin-left: 10%; margin-right: 10%;" >
 <cti:titledContainer title="Feeders Eligible for the Move" >
 
-
+<div style=" height: 275px; overflow: auto">
 <%
 String css = "altTableCell";
 int z = 0;
@@ -169,7 +169,7 @@ for( CBCArea area : allAreas )
 <% z++;
 	} %>
 	
-	
+	</div>
 	    </cti:titledContainer>
     </div>
 

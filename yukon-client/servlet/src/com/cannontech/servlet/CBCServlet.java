@@ -281,7 +281,7 @@ public void doGet(HttpServletRequest req, HttpServletResponse resp) throws javax
 				//Hack to preserve an address that will normally fall off our 2 page history.
 				navObject.setPreservedAddress(navObject.getPreviousPage());
 				navObject.setNavigation(redirectURL);
-				
+				navObject.clearHistory();
 				
                 String val = ParamUtil.getString(req, "itemid", null);
                 if( val != null){
