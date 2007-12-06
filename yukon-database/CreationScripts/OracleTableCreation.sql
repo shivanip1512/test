@@ -1,7 +1,7 @@
 /*==============================================================*/
 /* Database name:  YukonDatabase                                */
 /* DBMS name:      ORACLE Version 9i                            */
-/* Created on:     12/6/2007 2:26:01 PM                         */
+/* Created on:     12/6/2007 2:45:22 PM                         */
 /*==============================================================*/
 
 
@@ -2053,6 +2053,8 @@ insert into command values(-135, 'control xcom backlight cycles 20 duty 30 bperi
 
 insert into command values(-136, 'putconfig emetcon timezone ?''Enter Timezone (et|ct|mt|pt OR #offset)''', 'Write Timezone to Meter', 'MCT-430A'); 
 insert into command values(-137, 'putconfig emetcon outage ?''Enter number of cycles before outage is recorded''', 'Write Threshold (number of cycles before outage recorded) to Meter', 'MCT-410IL');
+insert into command values(-138, 'getvalue peak channel 2', 'Read Peak (Channel 2)', 'MCT-410IL');
+insert into command values(-139, 'getvalue peak channel 3', 'Read Peak (Channel 2)', 'MCT-410IL'); 
 
 /*==============================================================*/
 /* Table: CommandGroup                                          */
@@ -4051,6 +4053,14 @@ insert into devicetypecommand values(-694, -137, 'MCT-410CL', 31, 'N', -1);
 insert into devicetypecommand values(-695, -137, 'MCT-410FL', 31, 'N', -1);
 insert into devicetypecommand values(-696, -137, 'MCT-410GL', 31, 'N', -1);
 insert into devicetypecommand values(-697, -137, 'MCT-410IL', 31, 'N', -1);
+insert into devicetypecommand values(-698, -138, 'MCT-410CL', 32, 'N', -1);
+insert into devicetypecommand values(-699, -138, 'MCT-410FL', 32, 'N', -1);
+insert into devicetypecommand values(-700, -138, 'MCT-410GL', 32, 'N', -1);
+insert into devicetypecommand values(-701, -138, 'MCT-410IL', 32, 'N', -1);
+insert into devicetypecommand values(-702, -139, 'MCT-410CL', 32, 'N', -1);
+insert into devicetypecommand values(-703, -139, 'MCT-410FL', 32, 'N', -1);
+insert into devicetypecommand values(-704, -139, 'MCT-410GL', 32, 'N', -1);
+insert into devicetypecommand values(-705, -139, 'MCT-410IL', 32, 'N', -1); 
 
 /*==============================================================*/
 /* Index: Indx_DevTypeCmd_GroupID                               */

@@ -1080,6 +1080,22 @@ create table PEAKREPORT (
 go
 /* End YUK-4858 */
 
+/* Start YUK-4860 */
+insert into command values(-138, 'getvalue peak channel 2', 'Read Peak (Channel 2)', 'MCT-410IL');
+insert into command values(-139, 'getvalue peak channel 3', 'Read Peak (Channel 2)', 'MCT-410IL');
+
+insert into devicetypecommand values(-698, -138, 'MCT-410CL', 32, 'N', -1);
+insert into devicetypecommand values(-699, -138, 'MCT-410FL', 32, 'N', -1);
+insert into devicetypecommand values(-700, -138, 'MCT-410GL', 32, 'N', -1);
+insert into devicetypecommand values(-701, -138, 'MCT-410IL', 32, 'N', -1);
+
+insert into devicetypecommand values(-702, -139, 'MCT-410CL', 32, 'N', -1);
+insert into devicetypecommand values(-703, -139, 'MCT-410FL', 32, 'N', -1);
+insert into devicetypecommand values(-704, -139, 'MCT-410GL', 32, 'N', -1);
+insert into devicetypecommand values(-705, -139, 'MCT-410IL', 32, 'N', -1); 
+/* End YUK-4860 */
+
+
 /**************************************************************/
 /* VERSION INFO                                               */
 /*   Automatically gets inserted from build script            */
