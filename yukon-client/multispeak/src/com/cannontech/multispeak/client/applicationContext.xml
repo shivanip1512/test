@@ -73,6 +73,7 @@
     <property name="deviceGroupService" ref="deviceGroupService"/>
 	<property name="deviceGroupMemberEditorDao" ref="deviceGroupMemberEditorDao"/>
     <property name="meterDao" ref="meterDao"/>
+    <property name="mspObjectDao" ref="mspObjectDao"/>
   </bean>   
   
   <bean id="multispeakDao" class="com.cannontech.multispeak.dao.impl.MultispeakDaoImpl">

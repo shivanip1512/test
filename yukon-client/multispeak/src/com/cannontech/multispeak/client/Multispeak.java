@@ -32,6 +32,7 @@ import com.cannontech.common.device.groups.service.FixedDeviceGroups;
 import com.cannontech.common.util.CtiUtilities;
 import com.cannontech.core.dao.DBPersistentDao;
 import com.cannontech.core.dao.DeviceDao;
+import com.cannontech.core.dao.NotFoundException;
 import com.cannontech.core.dao.PaoDao;
 import com.cannontech.database.Transaction;
 import com.cannontech.database.TransactionException;
@@ -307,7 +308,7 @@ public class Multispeak implements MessageListener {
 				getEventsMap().put(new Long(id), event);
 				writePilRequest(meter, "ping", id, 13); 
 
-			} catch (IncorrectResultSizeDataAccessException e) {
+			} catch (NotFoundException e) {
 
 				ErrorObject err = multispeakFuncs.getErrorObject(meterNumber, 
                        "MeterNumber: " + meterNumber + " - Was NOT found in Yukon.",
@@ -351,7 +352,7 @@ public class Multispeak implements MessageListener {
 // 	            pilRequest.setCommandString("getvalue demand");
 // 	            porterConnection.write(pilRequest);
  	        } 
-            catch (IncorrectResultSizeDataAccessException e) {
+            catch (NotFoundException e) {
  	               
             	ErrorObject err = multispeakFuncs.getErrorObject(meterNumber, 
                         "MeterNumber: " + meterNumber + " - Was NOT found in Yukon.",
@@ -415,7 +416,7 @@ public class Multispeak implements MessageListener {
                     writePilRequest(meter, commandStr, id, 13);
                 }
             } 
-            catch (IncorrectResultSizeDataAccessException e) {
+            catch (NotFoundException e) {
  	               
                 ErrorObject err = multispeakFuncs.getErrorObject(meterNumber, 
                         "MeterNumber: " + meterNumber + " - Was NOT found in Yukon.",
@@ -471,7 +472,7 @@ public class Multispeak implements MessageListener {
  	                errorObjects.add(err);
  	            }
             } 
-            catch (IncorrectResultSizeDataAccessException e) {
+            catch (NotFoundException e) {
  	               
                 ErrorObject err = multispeakFuncs.getErrorObject(meterNumber,
 						 "MeterNumber (" + meterNumber + ") - Invalid Yukon MeterNumber.",
@@ -560,7 +561,7 @@ public class Multispeak implements MessageListener {
             try {
  	           meter = multispeakFuncs.getMeter(mspVendor.getUniqueKey(), meterNo);
             } 
-            catch (IncorrectResultSizeDataAccessException e) {
+            catch (NotFoundException e) {
             	//Do nothing, its okay (almost better) if one doesn't exist
             }
             
@@ -924,7 +925,7 @@ public class Multispeak implements MessageListener {
                     }
                 }
             } 
-            catch (IncorrectResultSizeDataAccessException e) {
+            catch (NotFoundException e) {
  	               
             	ErrorObject err = multispeakFuncs.getErrorObject(meterNo, 
                         "Error: MeterNumber(" + meterNo + ") - Meter was NOT found in Yukon. No updates were made.",
@@ -1124,7 +1125,7 @@ public class Multispeak implements MessageListener {
                    errorObjects.add(err);
                } 
            } 
-           catch (IncorrectResultSizeDataAccessException e) {
+           catch (NotFoundException e) {
 	               
                ErrorObject err = multispeakFuncs.getErrorObject(meterNo, 
                        "MeterNumber: " + meterNo + " - Was NOT found in Yukon.",
@@ -1151,7 +1152,7 @@ public class Multispeak implements MessageListener {
 	           meter = multispeakFuncs.getMeter(mspVendor.getUniqueKey(), meterNo);
                meters.add(meter);
            } 
-           catch (IncorrectResultSizeDataAccessException e) {
+           catch (NotFoundException e) {
 	               
                ErrorObject err = multispeakFuncs.getErrorObject(meterNo, 
                                                                 "MeterNumber: " + meterNo + " - Was NOT found in Yukon.",
