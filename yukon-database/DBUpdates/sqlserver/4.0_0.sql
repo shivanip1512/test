@@ -489,25 +489,55 @@ go
 
 
 /* Start YUK-4707 */
-create table CAPCONTROLSUBSTATION (
-   SubstationID         numeric              not null,
-   constraint PK_CAPCONTROLSUBSTATION primary key nonclustered (SubstationID)
+/*==============================================================*/
+/* Table: CAPCONTROLSUBSTATION                                  */
+/*==============================================================*/
+create table CAPCONTROLSUBSTATION  (
+   SubstationID         numeric                          not null,
+   constraint PK_CAPCONTROLSUBSTATION primary key (SubstationID)
 );
 
-create table dynamicccsubstation
-(
-	substationid numeric not null,
-	additionalflags varchar(20) not null,
-	saenabledid numeric not null
+/*==============================================================*/
+/* Table: DYNAMICCCSUBSTATION                                   */
+/*==============================================================*/
+create table DYNAMICCCSUBSTATION  (
+   SubStationID         numeric                          not null,
+   AdditionalFlags      VARCHAR(20)                    not null,
+   SAEnabledID          numeric                          not null,
+   constraint PK_DYNAMICCCSUBSTATION primary key (SubStationID)
 );
 
-
-create table ccsubstationsubbuslist
-(
-	substationid numeric not null,
-	substationbusid numeric not null,
-	displayorder numeric not null
+/*==============================================================*/
+/* Table: CCSUBSTATIONSUBBUSLIST                                */
+/*==============================================================*/
+create table CCSUBSTATIONSUBBUSLIST  (
+   SubStationID         numeric                          not null,
+   SubStationBusID      numeric                          not null,
+   DisplayOrder         numeric                          not null,
+   constraint PK_CCSUBSTATIONSUBBUSLIST primary key (SubStationID, SubStationBusID)
 );
+
+/* @error ignore-begin */
+/*==============================================================*/
+/* Table: CAPCONTROLAREA                                        */
+/*==============================================================*/
+create table CAPCONTROLAREA  (
+   AreaID               numeric                          not null,
+   constraint PK_CAPCONTROLAREA primary key (AreaID)
+);
+
+alter table CAPCONTROLAREA
+   add constraint FK_CAPCONTR_REFERENCE_YUKONPAO foreign key (AreaID)
+      references YukonPAObject (PAObjectID);
+
+alter table CAPCONTROLAREA
+   add constraint FK_CAPCONTR_REFERENCE_DYNAMICC foreign key (AreaID)
+      references DYNAMICCCAREA (AreaID);
+
+alter table CCSUBAREAASSIGNMENT
+   add constraint FK_CCSUBARE_REFERENCE_CAPCONTR foreign key (AreaID)
+      references CAPCONTROLAREA (AreaID);
+/* @error ignore-end */
 
 select
 	paoname as SubBusName,
@@ -666,6 +696,10 @@ drop table #mySubstation2;
 drop table #mySubstation3;
 drop table #ccsubareaassignment_backup;
 drop table #ccsubspecialareaassignment_backup;
+
+alter table DYNAMICCCSUBSTATION
+   add constraint FK_DYNAMICC_REFERENCE_CAPCONTR foreign key (SubStationID)
+      references CAPCONTROLSUBSTATION (SubstationID);
 
 alter table CAPCONTROLSUBSTATION
    add constraint FK_CAPCONTR_REFERENCE_YUKONPAO foreign key (SubstationID)

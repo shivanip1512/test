@@ -420,25 +420,55 @@ update lmthermostatgear set RampRate = 0;
 alter table lmthermostatgear modify RampRate not null;
 
 /* Start YUK-4707 */
-create table CAPCONTROLSUBSTATION (
-   SubstationID         number              not null,
-   constraint PK_CAPCONTROLSUBSTATION primary key nonclustered (SubstationID)
+/*==============================================================*/
+/* Table: CAPCONTROLSUBSTATION                                  */
+/*==============================================================*/
+create table CAPCONTROLSUBSTATION  (
+   SubstationID         NUMBER                          not null,
+   constraint PK_CAPCONTROLSUBSTATION primary key (SubstationID)
 );
 
-create table dynamicccsubstation
-(
-	substationid number not null,
-	additionalflags varchar2(20) not null,
-	saenabledid number not null
+/*==============================================================*/
+/* Table: DYNAMICCCSUBSTATION                                   */
+/*==============================================================*/
+create table DYNAMICCCSUBSTATION  (
+   SubStationID         NUMBER                          not null,
+   AdditionalFlags      VARCHAR2(20)                    not null,
+   SAEnabledID          number                          not null,
+   constraint PK_DYNAMICCCSUBSTATION primary key (SubStationID)
 );
 
-
-create table ccsubstationsubbuslist
-(
-	substationid number not null,
-	substationbusid number not null,
-	displayorder number not null
+/*==============================================================*/
+/* Table: CCSUBSTATIONSUBBUSLIST                                */
+/*==============================================================*/
+create table CCSUBSTATIONSUBBUSLIST  (
+   SubStationID         NUMBER                          not null,
+   SubStationBusID      NUMBER                          not null,
+   DisplayOrder         NUMBER                          not null,
+   constraint PK_CCSUBSTATIONSUBBUSLIST primary key (SubStationID, SubStationBusID)
 );
+
+/* @error ignore-begin */
+/*==============================================================*/
+/* Table: CAPCONTROLAREA                                        */
+/*==============================================================*/
+create table CAPCONTROLAREA  (
+   AreaID               number                          not null,
+   constraint PK_CAPCONTROLAREA primary key (AreaID)
+);
+
+alter table CAPCONTROLAREA
+   add constraint FK_CAPCONTR_REFERENCE_YUKONPAO foreign key (AreaID)
+      references YukonPAObject (PAObjectID);
+
+alter table CAPCONTROLAREA
+   add constraint FK_CAPCONTR_REFERENCE_DYNAMICC foreign key (AreaID)
+      references DYNAMICCCAREA (AreaID);
+
+alter table CCSUBAREAASSIGNMENT
+   add constraint FK_CCSUBARE_REFERENCE_CAPCONTR foreign key (AreaID)
+      references CAPCONTROLAREA (AreaID);
+/* @error ignore-end */
 
 Create global temporary table mySubstation
 (
@@ -641,6 +671,9 @@ drop table mySubstation2;
 drop table mySubstation3;
 drop table ccsa_backup;
 drop table ccssaa_backup;
+alter table DYNAMICCCSUBSTATION
+   add constraint FK_DYNAMICC_REFERENCE_CAPCONTR foreign key (SubStationID)
+      references CAPCONTROLSUBSTATION (SubstationID);
 
 alter table CAPCONTROLSUBSTATION
    add constraint FK_CAPCONTR_REFERENCE_YUKONPAO foreign key (SubstationID)

@@ -1,7 +1,7 @@
 /*==============================================================*/
 /* Database name:  YukonDatabase                                */
 /* DBMS name:      Microsoft SQL Server 2000                    */
-/* Created on:     12/6/2007 10:08:11 AM                        */
+/* Created on:     12/6/2007 10:49:56 AM                        */
 /*==============================================================*/
 
 
@@ -196,18 +196,17 @@ go
 
 if exists (select 1
             from  sysobjects
-           where  id = object_id('CAPCONTROLSPECIALAREA')
-            and   type = 'U')
-   drop table CAPCONTROLSPECIALAREA
-go
-
-if exists (select 1
-            from  sysobjects
            where  id = object_id('CAPCONTROLAREA')
             and   type = 'U')
    drop table CAPCONTROLAREA
 go
 
+if exists (select 1
+            from  sysobjects
+           where  id = object_id('CAPCONTROLSPECIALAREA')
+            and   type = 'U')
+   drop table CAPCONTROLSPECIALAREA
+go
 
 if exists (select 1
             from  sysobjects
@@ -837,6 +836,13 @@ if exists (select 1
            where  id = object_id('DYNAMICCCSPECIALAREA')
             and   type = 'U')
    drop table DYNAMICCCSPECIALAREA
+go
+
+if exists (select 1
+            from  sysobjects
+           where  id = object_id('DYNAMICCCSUBSTATION')
+            and   type = 'U')
+   drop table DYNAMICCCSUBSTATION
 go
 
 if exists (select 1
@@ -2289,20 +2295,20 @@ create table CAPBANKCOMMENT (
 go
 
 /*==============================================================*/
+/* Table: CAPCONTROLAREA                                        */
+/*==============================================================*/
+create table CAPCONTROLAREA (
+   AreaID               numeric              not null,
+   constraint PK_CAPCONTROLAREA primary key nonclustered (AreaID)
+)
+go
+
+/*==============================================================*/
 /* Table: CAPCONTROLSPECIALAREA                                 */
 /*==============================================================*/
 create table CAPCONTROLSPECIALAREA (
    AreaID               numeric              not null,
    constraint PK_CapControlSpecialArea primary key (AreaID)
-)
-go
-
-/*==============================================================*/
-/* Table: CAPCONTROLAREA                                 */
-/*==============================================================*/
-create table CAPCONTROLAREA (
-   AreaID               numeric              not null,
-   constraint PK_CapControlArea primary key (AreaID)
 )
 go
 
@@ -4157,6 +4163,17 @@ go
 create table DYNAMICCCSPECIALAREA (
    AreaID               numeric              not null,
    additionalflags      varchar(20)          not null
+)
+go
+
+/*==============================================================*/
+/* Table: DYNAMICCCSUBSTATION                                   */
+/*==============================================================*/
+create table DYNAMICCCSUBSTATION (
+   SubStationID         numeric              not null,
+   AdditionalFlags      varchar(20)          not null,
+   SAEnabledID          numeric              not null,
+   constraint PK_DYNAMICCCSUBSTATION primary key nonclustered (SubStationID)
 )
 go
 
@@ -10145,18 +10162,23 @@ alter table CAPBANKADDITIONAL
       references CAPBANK (DEVICEID)
 go
 
+alter table CAPCONTROLAREA
+   add constraint FK_CAPCONTR_REFERENCE_YUKONPAO foreign key (AreaID)
+      references YukonPAObject (PAObjectID)
+go
+
+alter table CAPCONTROLAREA
+   add constraint FK_CAPCONTR_REFERENCE_DYNAMICC foreign key (AreaID)
+      references DYNAMICCCAREA (AreaID)
+go
+
 alter table CAPCONTROLSPECIALAREA
    add constraint FK_CAPCONTR_YUKONPAO2 foreign key (AreaID)
       references YukonPAObject (PAObjectID)
 go
 
-alter table CAPCONTROLAREA
-   add constraint FK_CAPCONTR_YUKONPAO_AREA foreign key (AreaID)
-      references YukonPAObject (PAObjectID)
-go
-
 alter table CAPCONTROLSUBSTATION
-   add constraint FK_CAPCONTR_REFERENCE_YUKONPAO foreign key (SubstationID)
+   add constraint FK_CAPCONTR_REF_YUKONPA2 foreign key (SubstationID)
       references YukonPAObject (PAObjectID)
          on update cascade on delete cascade
 go
@@ -10248,8 +10270,8 @@ alter table CCSUBAREAASSIGNMENT
 go
 
 alter table CCSUBAREAASSIGNMENT
-   add constraint FK_CCSUBARE_REFERENCE_DYNAMICC foreign key (AreaID)
-      references DYNAMICCCAREA (AreaID)
+   add constraint FK_CCSUBARE_REFERENCE_CAPCONTR foreign key (AreaID)
+      references CAPCONTROLAREA (AreaID)
 go
 
 alter table CCSUBSPECIALAREAASSIGNMENT
@@ -10646,19 +10668,19 @@ go
 
 alter table DEVICECONFIGURATIONDEVICEMAP
    add constraint FK_DEVICECO_REFERENCE_DEVICECO foreign key (DeviceConfigurationId)
-      references DEVICECONFIGURATION (DeviceConfigurationID);
+      references DEVICECONFIGURATION (DeviceConfigurationID)
 go
 
 alter table DEVICECONFIGURATIONDEVICEMAP
    add constraint FK_DEVICECO_REFERENCE_YUKONPAO foreign key (DeviceID)
       references YukonPAObject (PAObjectID)
-         on update cascade on delete cascade;
+         on update cascade on delete cascade
 go
 
 alter table DEVICECONFIGURATIONITEM
    add constraint FK_DEVICECO_REF_DEVICEC2 foreign key (DeviceConfigurationID)
       references DEVICECONFIGURATION (DeviceConfigurationID)
-         on update cascade on delete cascade;
+         on update cascade on delete cascade
 go
 
 alter table DEVICEDIALUPSETTINGS
@@ -10761,6 +10783,11 @@ go
 alter table DYNAMICBILLINGFORMAT
    add constraint FK_DYNAMICB_REF_BILLI_BILLINGF foreign key (FormatID)
       references BillingFileFormats (FormatID)
+go
+
+alter table DYNAMICCCSUBSTATION
+   add constraint FK_DYNAMICC_REFERENCE_CAPCONTR foreign key (SubStationID)
+      references CAPCONTROLSUBSTATION (SubstationID)
 go
 
 alter table DYNAMICCCTWOWAYCBC
