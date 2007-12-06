@@ -203,6 +203,14 @@ go
 
 if exists (select 1
             from  sysobjects
+           where  id = object_id('CAPCONTROLAREA')
+            and   type = 'U')
+   drop table CAPCONTROLAREA
+go
+
+
+if exists (select 1
+            from  sysobjects
            where  id = object_id('CAPCONTROLSUBSTATION')
             and   type = 'U')
    drop table CAPCONTROLSUBSTATION
@@ -2286,6 +2294,15 @@ go
 create table CAPCONTROLSPECIALAREA (
    AreaID               numeric              not null,
    constraint PK_CapControlSpecialArea primary key (AreaID)
+)
+go
+
+/*==============================================================*/
+/* Table: CAPCONTROLAREA                                 */
+/*==============================================================*/
+create table CAPCONTROLAREA (
+   AreaID               numeric              not null,
+   constraint PK_CapControlArea primary key (AreaID)
 )
 go
 
@@ -10130,6 +10147,11 @@ go
 
 alter table CAPCONTROLSPECIALAREA
    add constraint FK_CAPCONTR_YUKONPAO2 foreign key (AreaID)
+      references YukonPAObject (PAObjectID)
+go
+
+alter table CAPCONTROLAREA
+   add constraint FK_CAPCONTR_YUKONPAO_AREA foreign key (AreaID)
       references YukonPAObject (PAObjectID)
 go
 

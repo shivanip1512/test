@@ -92,6 +92,9 @@ drop table CAPBANKCOMMENT cascade constraints
 drop table CAPCONTROLSPECIALAREA cascade constraints
 ;
 
+drop table CAPCONTROLAREA cascade constraints
+;
+
 drop table CAPCONTROLSUBSTATION cascade constraints
 ;
 
@@ -1168,6 +1171,14 @@ create table CAPCONTROLSPECIALAREA  (
 )
 ;
 
+/*==============================================================*/
+/* Table: CAPCONTROLAREA                                 */
+/*==============================================================*/
+create table CAPCONTROLAREA  (
+   AreaID               NUMBER                          not null,
+   constraint PK_CapControlArea primary key (AreaID)
+)
+;
 /*==============================================================*/
 /* Table: CAPCONTROLSUBSTATION                                  */
 /*==============================================================*/
@@ -8996,6 +9007,10 @@ alter table CAPCONTROLSPECIALAREA
       references YukonPAObject (PAObjectID)
 ;
 
+alter table CAPCONTROLAREA
+   add constraint FK_CAPCONTR_YUKONPAO_AREA foreign key (AreaID)
+      references YukonPAObject (PAObjectID)
+; 
 alter table CAPCONTROLSUBSTATION
    add constraint FK_CAPCONTR_REFERENCE_YUKONPAO foreign key (SubstationID)
       references YukonPAObject (PAObjectID)
