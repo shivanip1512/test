@@ -1,7 +1,7 @@
 /*==============================================================*/
 /* Database name:  YukonDatabase                                */
 /* DBMS name:      Microsoft SQL Server 2000                    */
-/* Created on:     12/5/2007 5:01:25 PM                         */
+/* Created on:     12/6/2007 10:08:11 AM                        */
 /*==============================================================*/
 
 
@@ -3542,9 +3542,9 @@ go
 /* Table: DEVICECONFIGURATIONDEVICEMAP                          */
 /*==============================================================*/
 create table DEVICECONFIGURATIONDEVICEMAP (
-   DeviceConfigurationId numeric              not null,
    DeviceID             numeric              not null,
-   constraint PK_DEVICECONFIGURATIONDEVICEMA primary key (DeviceConfigurationId)
+   DeviceConfigurationId numeric              not null,
+   constraint PK_DEVICECONFIGURATIONDEVICEMA primary key (DeviceID)
 )
 go
 
@@ -10644,22 +10644,21 @@ alter table DEVICECARRIERSETTINGS
       references DEVICE (DEVICEID)
 go
 
-alter table DEVICECONFIGURATION
-   add constraint FK_DEVICECO_REF_DEVICECO2 foreign key (DeviceConfigurationID)
-      references DEVICECONFIGURATIONDEVICEMAP (DeviceConfigurationId)
-         on update cascade on delete cascade
+alter table DEVICECONFIGURATIONDEVICEMAP
+   add constraint FK_DEVICECO_REFERENCE_DEVICECO foreign key (DeviceConfigurationId)
+      references DEVICECONFIGURATION (DeviceConfigurationID);
 go
 
 alter table DEVICECONFIGURATIONDEVICEMAP
    add constraint FK_DEVICECO_REFERENCE_YUKONPAO foreign key (DeviceID)
       references YukonPAObject (PAObjectID)
-         on update cascade on delete cascade
+         on update cascade on delete cascade;
 go
 
 alter table DEVICECONFIGURATIONITEM
-   add constraint FK_DEVICECO_REFERENCE_DEVICECO foreign key (DeviceConfigurationID)
+   add constraint FK_DEVICECO_REF_DEVICEC2 foreign key (DeviceConfigurationID)
       references DEVICECONFIGURATION (DeviceConfigurationID)
-         on update cascade on delete cascade
+         on update cascade on delete cascade;
 go
 
 alter table DEVICEDIALUPSETTINGS

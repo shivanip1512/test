@@ -363,17 +363,12 @@ go
 /* Table: DEVICECONFIGURATIONDEVICEMAP                          */
 /*==============================================================*/
 create table DEVICECONFIGURATIONDEVICEMAP (
-   DeviceConfigurationId numeric              not null,
    DeviceID             numeric              not null,
-   constraint PK_DEVICECONFIGURATIONDEVICEMA primary key (DeviceConfigurationId)
+   DeviceConfigurationId numeric              not null,
+   constraint PK_DEVICECONFIGURATIONDEVICEMA primary key (DeviceID)
 );
 go
 
-alter table DEVICECONFIGURATIONDEVICEMAP
-   add constraint FK_DEVICECO_REFERENCE_YUKONPAO foreign key (DeviceID)
-      references YukonPAObject (PAObjectID)
-         on update cascade on delete cascade;
-go
 
 if exists (select 1
             from  sysobjects
@@ -392,13 +387,6 @@ create table DEVICECONFIGURATION (
    constraint PK_DEVICECONFIGURATION primary key (DeviceConfigurationID)
 );
 go
-
-alter table DEVICECONFIGURATION
-   add constraint FK_DEVICECO_REF_DEVICECO2 foreign key (DeviceConfigurationID)
-      references DEVICECONFIGURATIONDEVICEMAP (DeviceConfigurationId)
-         on update cascade on delete cascade;
-go
-
 
 if exists (select 1
             from  sysobjects
@@ -419,11 +407,24 @@ create table DEVICECONFIGURATIONITEM (
 );
 go
 
-alter table DEVICECONFIGURATIONITEM
-   add constraint FK_DEVICECO_REFERENCE_DEVICECO foreign key (DeviceConfigurationID)
+alter table DEVICECONFIGURATIONDEVICEMAP
+   add constraint FK_DEVICECO_REFERENCE_DEVICECO foreign key (DeviceConfigurationId)
       references DEVICECONFIGURATION (DeviceConfigurationID)
-         on update cascade on delete cascade;
 go
+
+alter table DEVICECONFIGURATIONDEVICEMAP
+   add constraint FK_DEVICECO_REFERENCE_YUKONPAO foreign key (DeviceID)
+      references YukonPAObject (PAObjectID)
+         on update cascade on delete cascade
+go
+
+alter table DEVICECONFIGURATIONITEM
+   add constraint FK_DEVICECO_REF_DEVICEC2 foreign key (DeviceConfigurationID)
+      references DEVICECONFIGURATION (DeviceConfigurationID)
+         on update cascade on delete cascade
+go
+
+
 /* End YUK-4785 */
 insert into YukonRoleProperty values(-20013,-200,'Edit Device Config','false','Controls the ability to edit and create device configurations');
 insert into YukonRoleProperty values(-20014,-200,'View Device Config','true','Controls the ability to view existing device configurations');
