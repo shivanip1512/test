@@ -1,7 +1,7 @@
 /*==============================================================*/
 /* Database name:  YukonDatabase                                */
 /* DBMS name:      Microsoft SQL Server 2000                    */
-/* Created on:     12/6/2007 2:44:05 PM                         */
+/* Created on:     12/6/2007 3:35:51 PM                         */
 /*==============================================================*/
 
 
@@ -10178,11 +10178,6 @@ alter table CAPCONTROLAREA
       references YukonPAObject (PAObjectID)
 go
 
-alter table CAPCONTROLAREA
-   add constraint FK_CAPCONTR_REFERENCE_DYNAMICC foreign key (AreaID)
-      references DYNAMICCCAREA (AreaID)
-go
-
 alter table CAPCONTROLSPECIALAREA
    add constraint FK_CAPCONTR_YUKONPAO2 foreign key (AreaID)
       references YukonPAObject (PAObjectID)
@@ -10794,6 +10789,11 @@ go
 alter table DYNAMICBILLINGFORMAT
    add constraint FK_DYNAMICB_REF_BILLI_BILLINGF foreign key (FormatID)
       references BillingFileFormats (FormatID)
+go
+
+alter table DYNAMICCCAREA
+   add constraint FK_DYNAMICC_REF_CAPCONTR foreign key (AreaID)
+      references CAPCONTROLAREA (AreaID)
 go
 
 alter table DYNAMICCCSUBSTATION
