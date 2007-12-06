@@ -108,11 +108,13 @@
 	        	<a href="Metering/Metering.jsp">All Trends</a>
 	        </tags:sectionLink>
         </cti:checkRole>
-		<cti:checkProperty property="operator.MeteringRole.IMPORTER_ENABLED">
-			<tags:sectionLink>
-	        	<a href="../bulk/importer.jsp">Bulk Importer</a>
-	        </tags:sectionLink>
-        </cti:checkProperty>
+        <cti:checkRole role="MeteringRole.ROLEID">
+			<cti:isPropertyTrue property="operator.MeteringRole.IMPORTER_ENABLED">
+				<tags:sectionLink>
+		        	<a href="../bulk/importer.jsp">Bulk Importer</a>
+		        </tags:sectionLink>
+	        </cti:isPropertyTrue>
+        </cti:checkRole>
         <cti:checkMultiRole roles="operator.MeteringRole.ROLEID,BillingRole.ROLEID,SchedulerRole.ROLEID,CommanderRole.ROLEID">
 			<tags:sectionLink>
     	    	<a href="<c:url value="/spring/csr/search"/>">Metering</a>
