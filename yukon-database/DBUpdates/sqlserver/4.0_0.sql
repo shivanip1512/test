@@ -1143,6 +1143,10 @@ insert into devicetypecommand values(-696, -137, 'MCT-410GL', 31, 'N', -1);
 insert into devicetypecommand values(-697, -137, 'MCT-410IL', 31, 'N', -1);
 /* End YUK-4825 */
 
+/* Start YUK-4810 */
+insert into YukonRoleProperty values(-20208,-202,'Enable Move In Move Out Wizard','true','Allows a user to calculate a readings for a meter that is being moving in or out of service');
+/* End YUK-4810 */
+
 /**************************************************************/
 /* VERSION INFO                                               */
 /*   Automatically gets inserted from build script            */

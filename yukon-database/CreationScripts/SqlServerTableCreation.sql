@@ -1,7 +1,7 @@
 /*==============================================================*/
 /* Database name:  YukonDatabase                                */
 /* DBMS name:      Microsoft SQL Server 2000                    */
-/* Created on:     12/6/2007 10:49:56 AM                        */
+/* Created on:     12/6/2007 2:19:14 PM                         */
 /*==============================================================*/
 
 
@@ -9355,6 +9355,7 @@ insert into YukonRoleProperty values(-20204,-202,'Enable Tou','true','Allows acc
 insert into YukonRoleProperty values(-20205,-202,'Enable Device Group','true','Allows access to change device groups for a device');  
 insert into YukonRoleProperty values(-20206,-202,'Enable Profile Request','true','Access to perform profile data request');
 insert into YukonRoleProperty values(-20207,-202,'Enable Auto Archiving','true','Allows a user to setup automatic archiving on their yukon system pertaining to the move in/move out interface');
+insert into YukonRoleProperty values(-20208,-202,'Enable Move In Move Out Wizard','true','Allows a user to calculate a readings for a meter that is being moving in or out of service');
 
 /* Operator Esubstation Drawings Role Properties */
 insert into YukonRoleProperty values(-20600,-206,'View Drawings','true','Controls viewing of Esubstations drawings');
