@@ -15,6 +15,7 @@ import javax.faces.event.ActionEvent;
 import javax.faces.event.ValueChangeEvent;
 import javax.faces.model.SelectItem;
 
+import org.springframework.dao.EmptyResultDataAccessException;
 import org.springframework.jdbc.core.JdbcOperations;
 
 import com.cannontech.cbc.dao.CapbankDao;
@@ -191,7 +192,7 @@ public class CapBankEditorForm extends DBEditorForm {
         try{
             fdrId = dao.getParentFeederId(capBank.getPAObjectID().intValue());
         }
-        catch( NotFoundException e)
+        catch( EmptyResultDataAccessException e)
         {
             CTILogger.warn("Feeder " + capBank.getPAObjectID().intValue() + " not found.", e);
         }
