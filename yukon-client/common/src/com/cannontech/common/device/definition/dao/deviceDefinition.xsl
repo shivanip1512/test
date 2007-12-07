@@ -25,6 +25,10 @@
     margin-bottom: .2em;
     margin-left: 1em;
   }
+  h4 {
+    margin-top: .75em;
+    margin-bottom: .1em;
+  }
   
   .deviceBody {
     margin-left: 2em;
@@ -60,10 +64,10 @@
               </xsl:if>
 
               <xsl:if test="count(./points/point) > 0">
+                <h4>Points</h4>
                 <table class="pointTable">
                   <tr>
                     <th>Name</th>
-                    <th>Attribute</th>
                     <th>Type</th>
                     <th>Offset</th>
                     <th>Multiplier</th>
@@ -78,9 +82,6 @@
                         <xsl:if test="@init = 'true'">
                           <xsl:text>*</xsl:text>
                         </xsl:if>
-                      </td>
-                      <td>
-                        <xsl:value-of select="attribute/@name" />
                       </td>
                       <td>
                         <xsl:value-of select="@type" />
@@ -103,7 +104,7 @@
               </xsl:if>
               
               <h4>
-                <xsl:value-of select="./displayName/@value" /> - Attributes
+                Attributes
               </h4>
 			  <xsl:if test="count(./attributes/attribute) > 0">
                 <table class="pointTable">
@@ -159,7 +160,7 @@
               </xsl:if>
               
               <h4>
-                <xsl:value-of select="./displayName/@value" /> - Commands
+                Commands
               </h4>
 			  <xsl:if test="count(./commands/command) > 0">
                 <table class="pointTable">
