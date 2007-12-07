@@ -1152,16 +1152,17 @@ insert into YukonRoleProperty values(-20208,-202,'Enable Move In Move Out Wizard
 /*==============================================================*/
 /* Table: PEAKREPORT                                            */
 /*==============================================================*/
-create table PEAKREPORT  (
-   resultID             INTEGER                         not null,
-   deviceID             NUMBER,
-   channel              INTEGER,
-   peakType             VARCHAR2(50),
-   runType              VARCHAR2(50),
-   runDate              DATE,
-   resultString         VARCHAR2(1500),
+create table PEAKREPORT (
+   resultID             int                  not null,
+   deviceID             numeric              not null,
+   channel              int                  not null,
+   peakType             varchar(50)          not null,
+   runType              varchar(50)          not null,
+   runDate              datetime             not null,
+   resultString         varchar(1500)        not null,
    constraint PK_PEAKREPORT primary key (resultID)
 );
+go
 /* End YUK-4858 */
 
 /* Start YUK-4860 */
