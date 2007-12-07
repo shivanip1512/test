@@ -92,27 +92,27 @@ create table CCSEASONSTRATEGYASSIGNMENT (
    seasonname           varchar(20)          not null,
    strategyid           numeric              not null,
    constraint PK_CCSEASONSTRATEGYASSIGNMENT primary key (paobjectid)
-)
+);
 go
 
 alter table CCSEASONSTRATEGYASSIGNMENT
    add constraint FK_CCSSA_PAOID foreign key (paobjectid)
-      references YukonPAObject (PAObjectID)
+      references YukonPAObject (PAObjectID);
 go
 
 alter table CCSEASONSTRATEGYASSIGNMENT
    add constraint FK_CCSSA_SCHEDID foreign key (seasonscheduleid)
-      references SeasonSchedule (ScheduleID)
+      references SeasonSchedule (ScheduleID);
 go
 
 alter table CCSEASONSTRATEGYASSIGNMENT
    add constraint FK_ccssa_season foreign key (seasonscheduleid, seasonname)
-      references DateOfSeason (SeasonScheduleID, SeasonName)
+      references DateOfSeason (SeasonScheduleID, SeasonName);
 go
 
 alter table CCSEASONSTRATEGYASSIGNMENT
    add constraint FK_CCSEASON_REFERENCE_CAPCONTR foreign key (strategyid)
-      references CapControlStrategy (StrategyID)
+      references CapControlStrategy (StrategyID);
 go
 
 alter table CapControlArea  drop constraint FK_CAPCONTAREA_CAPCONTRSTRAT;
@@ -127,7 +127,7 @@ create table CapControlSpecialArea( AreaID numeric not null );
 go
 
 alter table CapControlSpecialArea
-   add constraint PK_CapControlSpecialArea primary key clustered (AreaID)
+   add constraint PK_CapControlSpecialArea primary key clustered (AreaID);
 go
 
 create table CCSubSpecialAreaAssignment (
@@ -139,26 +139,21 @@ create table CCSubSpecialAreaAssignment (
 );
 
 alter table CCSubSpecialAreaAssignment
-   add constraint PK_CCSubSpecialAreaAssignment primary key nonclustered (AreaId, SubstationBusId)
+   add constraint PK_CCSubSpecialAreaAssignment primary key nonclustered (AreaId, SubstationBusId);
 go
 
 alter table CCSubSpecialAreaAssignment
    add constraint FK_CCSubSpecialArea_CapContr foreign key (AreaID)
-      references CapControlSpecialArea (AreaID)
+      references CapControlSpecialArea (AreaID);
 go
 
 alter table CCSubSpecialAreaAssignment
    add constraint FK_CCSubSpecialArea_CapSubAreaAssgn foreign key (SubstationBusId)
-      references CapControlSubstationBus (SubstationBusId)
+      references CapControlSubstationBus (SubstationBusId);
 go
 
 alter table DYNAMICCCAREA
-   add constraint PK_DYNAMICCCAREA primary key nonclustered (AreaId)
-go
-
-alter table CCSUBAREAASSIGNMENT
-   add constraint FK_CCSUBARE_REFERENCE_DYNAMICC foreign key (AreaID)
-      references DYNAMICCCAREA (AreaID)
+   add constraint PK_DYNAMICCCAREA primary key nonclustered (AreaId);
 go
 
 insert into DynamicCCSpecialArea (AreaId, Additionalflags) select areaid, 'NNNNNNNNNNNNNNNNNNNN' from CapControlSpecialArea;
@@ -295,17 +290,17 @@ insert into yukonroleproperty values (-100105,-1001, 'Target', 'true', 'is targe
 update yukonroleproperty set DefaultValue = 'false' where rolepropertyid = -100008;
 update yukonroleproperty set DefaultValue = 'false' where rolepropertyid = -100007;
 
-insert into YukonRoleProperty values(-1308,-4,'LDAP DN','dc=example,dc=com','LDAP Distinguished Name')
-insert into YukonRoleProperty values(-1309,-4,'LDAP User Suffix','ou=users','LDAP User Suffix')
-insert into YukonRoleProperty values(-1310,-4,'LDAP User Prefix','uid=','LDAP User Prefix')
-insert into YukonRoleProperty values(-1311,-4,'LDAP Server Address','127.0.0.1','LDAP Server Address')
-insert into YukonRoleProperty values(-1312,-4,'LDAP Server Port','389','LDAP Server Port')
-insert into YukonRoleProperty values(-1313,-4,'LDAP Server Timeout','30','LDAP Server Timeout (in seconds)')
+insert into YukonRoleProperty values(-1308,-4,'LDAP DN','dc=example,dc=com','LDAP Distinguished Name');
+insert into YukonRoleProperty values(-1309,-4,'LDAP User Suffix','ou=users','LDAP User Suffix');
+insert into YukonRoleProperty values(-1310,-4,'LDAP User Prefix','uid=','LDAP User Prefix');
+insert into YukonRoleProperty values(-1311,-4,'LDAP Server Address','127.0.0.1','LDAP Server Address');
+insert into YukonRoleProperty values(-1312,-4,'LDAP Server Port','389','LDAP Server Port');
+insert into YukonRoleProperty values(-1313,-4,'LDAP Server Timeout','30','LDAP Server Timeout (in seconds)');
 
-insert into YukonRoleProperty values(-1314,-4,'Active Directory Server Address','127.0.0.1','Active Directory Server Address')
-insert into YukonRoleProperty values(-1315,-4,'Active Directory Server Port','389','Active Directory Server Port')
-insert into YukonRoleProperty values(-1316,-4,'Active Directory Server Timeout','30','Active Directory Server Timeout (in seconds)')
-insert into YukonRoleProperty values(-1317,-4,'Active Directory NT Domain Name','(none)','Active Directory NT DOMAIN NAME')
+insert into YukonRoleProperty values(-1314,-4,'Active Directory Server Address','127.0.0.1','Active Directory Server Address');
+insert into YukonRoleProperty values(-1315,-4,'Active Directory Server Port','389','Active Directory Server Port');
+insert into YukonRoleProperty values(-1316,-4,'Active Directory Server Timeout','30','Active Directory Server Timeout (in seconds)');
+insert into YukonRoleProperty values(-1317,-4,'Active Directory NT Domain Name','(none)','Active Directory NT DOMAIN NAME');
 
 insert into YukonGroupRole values(-50,-1,-4,-1308,'(none)');
 insert into YukonGroupRole values(-51,-1,-4,-1309,'(none)');
@@ -324,7 +319,7 @@ if exists (select 1
             from  sysobjects
            where  id = object_id('TOUATTRIBUTEMAPPING')
             and   type = 'U')
-   drop table TOUATTRIBUTEMAPPING
+   drop table TOUATTRIBUTEMAPPING;
 go
 
 /*==============================================================*/
@@ -336,7 +331,7 @@ create table TOUATTRIBUTEMAPPING (
    peakAttribute        varchar(50)          not null,
    usageAttribute       varchar(50)          not null,
    constraint PK_TOUATTRIBUTEMAPPING primary key (touid)
-)
+);
 go
 
 INSERT INTO TouAttributeMapping VALUES (1, 'A', 'TOU_RATE_A_PEAK_DEMAND', 'TOU_RATE_A_USAGE');
@@ -409,19 +404,19 @@ go
 
 alter table DEVICECONFIGURATIONDEVICEMAP
    add constraint FK_DEVICECO_REFERENCE_DEVICECO foreign key (DeviceConfigurationId)
-      references DEVICECONFIGURATION (DeviceConfigurationID)
+      references DEVICECONFIGURATION (DeviceConfigurationID);
 go
 
 alter table DEVICECONFIGURATIONDEVICEMAP
    add constraint FK_DEVICECO_REFERENCE_YUKONPAO foreign key (DeviceID)
       references YukonPAObject (PAObjectID)
-         on update cascade on delete cascade
+         on update cascade on delete cascade;
 go
 
 alter table DEVICECONFIGURATIONITEM
    add constraint FK_DEVICECO_REF_DEVICEC2 foreign key (DeviceConfigurationID)
       references DEVICECONFIGURATION (DeviceConfigurationID)
-         on update cascade on delete cascade
+         on update cascade on delete cascade;
 go
 
 
@@ -535,6 +530,9 @@ alter table DYNAMICCCAREA
       references CAPCONTROLAREA (AreaID);
 go
 
+alter table CCSUBAREAASSIGNMENT drop constraint FK_CCSUBARE_CAPCONTR;
+go
+
 alter table CCSUBAREAASSIGNMENT
    add constraint FK_CCSUBARE_REFERENCE_CAPCONTR foreign key (AreaID)
       references CAPCONTROLAREA (AreaID);
@@ -580,6 +578,11 @@ while (@@fetch_status = 0)
 			'(none)',
 			'N',
 			'-----' 
+		from 
+			yukonpaobject;
+		insert into capcontrolsubstation (substationid)
+		select
+			Max(paobjectid)
 		from 
 			yukonpaobject;
 		fetch substation_curs into @ccsubstationname;
@@ -639,10 +642,7 @@ from
 	ccsubspecialareaassignment;
 
 alter table ccsubareaassignment drop constraint FK_CCSUBARE_CAPSUBAREAASSGN;
-alter table CCSUBAREAASSIGNMENT
-   add constraint FK_CCSUBARE_CAPSUBAREAASSGN foreign key (SubstationBusID)
-      references CAPCONTROLSUBSTATION (SubstationID)
-         on update cascade on delete cascade;
+
 update 
 	ccsubareaassignment
 set 
@@ -663,7 +663,6 @@ from
 where 
 	ccsubspecialareaassignment.substationbusid = #mySubstation3.subbusid;
 
-insert into capcontrolsubstation (substationid) select paobjectid from yukonpaobject where type = 'CCSUBSTATION';
 
 /* @start-block */
 declare @ccsubstationid numeric;
@@ -694,6 +693,11 @@ close substation_curs;
 deallocate substation_curs;
 /* @end-block */
 
+alter table CCSUBAREAASSIGNMENT
+   add constraint FK_CCSUBARE_CAPSUBAREAASSGN foreign key (SubstationBusID)
+      references CAPCONTROLSUBSTATION (SubstationID)
+         on update cascade on delete cascade;
+         
 drop table #mySubstation;
 drop table #mySubstation2;
 drop table #mySubstation3;
@@ -705,7 +709,7 @@ alter table DYNAMICCCSUBSTATION
       references CAPCONTROLSUBSTATION (SubstationID);
 
 alter table CAPCONTROLSUBSTATION
-   add constraint FK_CAPCONTR_REFERENCE_YUKONPAO foreign key (SubstationID)
+   add constraint FK_CAPCONTR_REF_YUKONPA2 foreign key (SubstationID)
       references YukonPAObject (PAObjectID)
          on update cascade on delete cascade;
 go
@@ -726,12 +730,6 @@ alter table CAPCONTROLSPECIALAREA
       references YukonPAObject (PAObjectID);
 go
 
-ALTER TABLE CCSUBSTATIONSUBBUSLIST 
-	ADD  CONSTRAINT PK_CCSUBSTATIONSUBBUSLIST PRIMARY KEY CLUSTERED 
-(
-	SubStationID ASC,
-	SubStationBusID ASC
-);
 
 alter table CCSUBSTATIONSUBBUSLIST
    add constraint FK_CCSUBSTA_CAPCONTR foreign key (SubStationID)
@@ -827,7 +825,7 @@ if exists (select 1
             from  sysobjects
            where  id = object_id('JOB')
             and   type = 'U')
-   drop table JOB
+   drop table JOB;
 go
 
 /*==============================================================*/
@@ -839,19 +837,19 @@ create table JOB (
    Disabled             char(1)              not null,
    UserID               numeric              not null,
    constraint PK_JOB primary key nonclustered (JobID)
-)
+);
 go
 
 alter table JOB
    add constraint FK_Job_YukonUser foreign key (UserID)
-      references YukonUser (UserID)
+      references YukonUser (UserID);
 go
 
 if exists (select 1
             from  sysobjects
            where  id = object_id('JOBPROPERTY')
             and   type = 'U')
-   drop table JOBPROPERTY
+   drop table JOBPROPERTY;
 go
 
 /*==============================================================*/
@@ -863,20 +861,20 @@ create table JOBPROPERTY (
    name                 text                 not null,
    value                text                 not null,
    constraint PK_JOBPROPERTY primary key (JobProperty)
-)
+);
 go
 
 alter table JOBPROPERTY
    add constraint FK_JobProperty_Job foreign key (JobID)
       references JOB (JobID)
-         on update cascade on delete cascade
+         on update cascade on delete cascade;
 go
 
 if exists (select 1
             from  sysobjects
            where  id = object_id('JOBSCHEDULEDONETIME')
             and   type = 'U')
-   drop table JOBSCHEDULEDONETIME
+   drop table JOBSCHEDULEDONETIME;
 go
 
 /*==============================================================*/
@@ -886,20 +884,20 @@ create table JOBSCHEDULEDONETIME (
    JobID                int                  not null,
    StartTime            datetime             not null,
    constraint PK_JOBSCHEDULEDONETIME primary key nonclustered (JobID)
-)
+);
 go
 
 alter table JOBSCHEDULEDONETIME
    add constraint FK_JobScheduledOneTime_Job foreign key (JobID)
       references JOB (JobID)
-         on delete cascade
+         on delete cascade;
 go
 
 if exists (select 1
             from  sysobjects
            where  id = object_id('JOBSCHEDULEDREPEATING')
             and   type = 'U')
-   drop table JOBSCHEDULEDREPEATING
+   drop table JOBSCHEDULEDREPEATING;
 go
 
 /*==============================================================*/
@@ -909,20 +907,20 @@ create table JOBSCHEDULEDREPEATING (
    JobID                int                  not null,
    CronString           text                 not null,
    constraint PK_JobScheduledRepeating primary key (JobID)
-)
+);
 go
 
 alter table JOBSCHEDULEDREPEATING
    add constraint FK_JOBSCHED_REFERENCE_JOB foreign key (JobID)
       references JOB (JobID)
-         on update cascade on delete cascade
+         on update cascade on delete cascade;
 go
 
 if exists (select 1
             from  sysobjects
            where  id = object_id('JOBSTATUS')
             and   type = 'U')
-   drop table JOBSTATUS
+   drop table JOBSTATUS;
 go
 
 /*==============================================================*/
@@ -936,13 +934,13 @@ create table JOBSTATUS (
    JobState             varchar(50)          null,
    message              text                 null,
    constraint PK_JOBSTATUS primary key (JobStatusID)
-)
+);
 go
 
 alter table JOBSTATUS
    add constraint FK_JobStatus_Job foreign key (JobID)
       references JOB (JobID)
-         on update cascade on delete cascade
+         on update cascade on delete cascade;
 go
 
 /* Begin YUK-4771 (formerly YUK-4716) */
@@ -1080,7 +1078,7 @@ if exists (select 1
             from  sysobjects
            where  id = object_id('CAPBANKCOMMENT')
             and   type = 'U')
-   drop table CAPBANKCOMMENT
+   drop table CAPBANKCOMMENT;
 go
 
 /*==============================================================*/
@@ -1094,7 +1092,7 @@ create table CAPBANKCOMMENT (
    Comment              varchar(500)         not null,
    Altered              varchar(3)           not null,
    constraint PK_CAPBANKCOMMENT primary key (CommentID)
-)
+);
 go
 
 insert into sequencenumber values ( 1, 'CapbankComment');
@@ -1107,7 +1105,7 @@ if exists (select 1
             from  sysobjects
            where  id = object_id('DEVICEEVENT')
             and   type = 'U')
-   drop table DEVICEEVENT
+   drop table DEVICEEVENT;
 go
 
 /*==============================================================*/
@@ -1188,3 +1186,4 @@ insert into devicetypecommand values(-705, -139, 'MCT-410IL', 32, 'N', -1);
 /*   Automatically gets inserted from build script            */
 /**************************************************************/
 /* __YUKON_VERSION__ */
+insert into CTIDatabase values('4.0', 'David', '07-Dec-2007', 'Latest Update', 0 );

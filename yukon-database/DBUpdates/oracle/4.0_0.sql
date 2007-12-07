@@ -145,9 +145,6 @@ alter table CCSubSpecialAreaAssignment
 alter table DYNAMICCCAREA
    add constraint PK_DYNAMICCCAREA primary key nonclustered (AreaId);
 
-alter table CCSUBAREAASSIGNMENT
-   add constraint FK_CCSUBARE_REFERENCE_DYNAMICC foreign key (AreaID)
-      references DYNAMICCCAREA (AreaID);
 
 insert into DynamicCCSpecialArea (AreaId, Additionalflags) select areaid, 'NNNNNNNNNNNNNNNNNNNN' from CapControlSpecialArea;
 
@@ -267,17 +264,17 @@ insert into yukonroleproperty values (-100105,-1001, 'Target', 'true', 'is targe
 update yukonroleproperty set DefaultValue = 'false' where rolepropertyid = -100008;
 update yukonroleproperty set DefaultValue = 'false' where rolepropertyid = -100007;
 
-insert into YukonRoleProperty values(-1308,-4,'LDAP DN','dc=example,dc=com','LDAP Distinguished Name')
-insert into YukonRoleProperty values(-1309,-4,'LDAP User Suffix','ou=users','LDAP User Suffix')
-insert into YukonRoleProperty values(-1310,-4,'LDAP User Prefix','uid=','LDAP User Prefix')
-insert into YukonRoleProperty values(-1311,-4,'LDAP Server Address','127.0.0.1','LDAP Server Address')
-insert into YukonRoleProperty values(-1312,-4,'LDAP Server Port','389','LDAP Server Port')
-insert into YukonRoleProperty values(-1313,-4,'LDAP Server Timeout','30','LDAP Server Timeout (in seconds)')
+insert into YukonRoleProperty values(-1308,-4,'LDAP DN','dc=example,dc=com','LDAP Distinguished Name');
+insert into YukonRoleProperty values(-1309,-4,'LDAP User Suffix','ou=users','LDAP User Suffix');
+insert into YukonRoleProperty values(-1310,-4,'LDAP User Prefix','uid=','LDAP User Prefix');
+insert into YukonRoleProperty values(-1311,-4,'LDAP Server Address','127.0.0.1','LDAP Server Address');
+insert into YukonRoleProperty values(-1312,-4,'LDAP Server Port','389','LDAP Server Port');
+insert into YukonRoleProperty values(-1313,-4,'LDAP Server Timeout','30','LDAP Server Timeout (in seconds)');
 
-insert into YukonRoleProperty values(-1314,-4,'Active Directory Server Address','127.0.0.1','Active Directory Server Address')
-insert into YukonRoleProperty values(-1315,-4,'Active Directory Server Port','389','Active Directory Server Port')
-insert into YukonRoleProperty values(-1316,-4,'Active Directory Server Timeout','30','Active Directory Server Timeout (in seconds)')
-insert into YukonRoleProperty values(-1317,-4,'Active Directory NT Domain Name','(none)','Active Directory NT DOMAIN NAME')
+insert into YukonRoleProperty values(-1314,-4,'Active Directory Server Address','127.0.0.1','Active Directory Server Address');
+insert into YukonRoleProperty values(-1315,-4,'Active Directory Server Port','389','Active Directory Server Port');
+insert into YukonRoleProperty values(-1316,-4,'Active Directory Server Timeout','30','Active Directory Server Timeout (in seconds)');
+insert into YukonRoleProperty values(-1317,-4,'Active Directory NT Domain Name','(none)','Active Directory NT DOMAIN NAME');
 
 insert into YukonGroupRole values(-50,-1,-4,-1308,'(none)');
 insert into YukonGroupRole values(-51,-1,-4,-1309,'(none)');
@@ -466,6 +463,8 @@ alter table DYNAMICCCAREA
       references CAPCONTROLAREA (AreaID)
 ;
 
+alter table CCSUBAREAASSIGNMENT drop constraint FK_CCSUBARE_CAPCONTR;
+
 alter table CCSUBAREAASSIGNMENT
    add constraint FK_CCSUBARE_REFERENCE_CAPCONTR foreign key (AreaID)
       references CAPCONTROLAREA (AreaID);
@@ -516,6 +515,11 @@ disableflag, paostatistics)
 			'-----' 
 		from 
 			yukonpaobject;
+		insert into capcontrolsubstation (substationid)
+		select
+			v_paoid
+		from 
+			yukonpaobject;
 		v_paoid := v_paoid + 1;
 		fetch substation_curs into v_ccsubstationname;
 	end loop;
@@ -523,8 +527,6 @@ close substation_curs;
 end;
 /
 /* @end-block */
-
-insert into capcontrolsubstation (substationid) select paobjectid from yukonpaobject where type = 'CCSUBSTATION';
 
 Create global temporary table mySubstation2
 (
@@ -607,9 +609,6 @@ from
 	ccsubspecialareaassignment;
 
 alter table ccsubareaassignment drop constraint FK_CCSUBARE_CAPSUBAREAASSGN;
-alter table CCSUBAREAASSIGNMENT
-   add constraint FK_CCSUBARE_CAPSUBAREAASSGN foreign key (SubstationBusID)
-      references CAPCONTROLSUBSTATION (SubstationID);
 
 update 
 	ccsubareaassignment a
@@ -667,6 +666,10 @@ end;
 /
 /* @end-block */
 
+alter table CCSUBAREAASSIGNMENT
+   add constraint FK_CCSUBARE_CAPSUBAREAASSGN foreign key (SubstationBusID)
+      references CAPCONTROLSUBSTATION (SubstationID);
+
 drop table mySubstation;
 drop table mySubstation2;
 drop table mySubstation3;
@@ -677,18 +680,13 @@ alter table DYNAMICCCSUBSTATION
       references CAPCONTROLSUBSTATION (SubstationID);
 
 alter table CAPCONTROLSUBSTATION
-   add constraint FK_CAPCONTR_REFERENCE_YUKONPAO foreign key (SubstationID)
+   add constraint FK_CAPCONTR_REF_YUKONPA2 foreign key (SubstationID)
       references YukonPAObject (PAObjectID)
          on delete cascade;
 
 alter table CCSUBSPECIALAREAASSIGNMENT
    add constraint FK_CCSUBSPE_REFERENCE_CAPCONTR foreign key (AreaID)
       references CAPCONTROLSPECIALAREA (AreaID);
-
-alter table CCSUBAREAASSIGNMENT
-   add constraint FK_CCSUBARE_CAPSUBAREAASSGN foreign key (SubstationBusID)
-      references CAPCONTROLSUBSTATION (SubstationID)
-         on delete cascade;
 
 alter table CCSUBSPECIALAREAASSIGNMENT
    add constraint FK_CCSUBSPE_CAPCONTR2 foreign key (SubstationBusID)
@@ -698,13 +696,6 @@ alter table CCSUBSPECIALAREAASSIGNMENT
 alter table CAPCONTROLSPECIALAREA
    add constraint FK_CAPCONTR_YUKONPAO2 foreign key (AreaID)
       references YukonPAObject (PAObjectID);
-
-ALTER TABLE CCSUBSTATIONSUBBUSLIST 
-	ADD  CONSTRAINT PK_CCSUBSTATIONSUBBUSLIST PRIMARY KEY CLUSTERED 
-(
-	SubStationID ASC,
-	SubStationBusID ASC
-);
 
 alter table CCSUBSTATIONSUBBUSLIST
    add constraint FK_CCSUBSTA_CAPCONTR foreign key (SubStationID)
@@ -1101,3 +1092,4 @@ insert into devicetypecommand values(-705, -139, 'MCT-410IL', 32, 'N', -1);
 /*   Automatically gets inserted from build script            */
 /**************************************************************/
 /* __YUKON_VERSION__ */
+insert into CTIDatabase values('4.0', 'David', '07-Dec-2007', 'Latest Update', 0 );
