@@ -9,7 +9,7 @@
 *    PURPOSE: CCU Simulator
 *
 *    DESCRIPTION: Simulate the behavior of CCU 711s
-*    
+*
 *    Copyright (C) 2007 Cannon Technologies, Inc.  All rights reserved.
 *****************************************************************************/
 #ifndef  __CCU710_H__
@@ -28,7 +28,7 @@ public:
     //Destructor
 
     enum WordTypes
-    {   
+    {
         DEFAULT    = 0,
         INPUT      = 0,
         RESETREQ   = 1,
@@ -90,9 +90,11 @@ public:
     //  Return the number of repeaters
     int getRepeaters();
     //  Return the number of words coming in
-    int getWordsInbound(); 
+    int getWordsInbound();
     //  Allows CCU711 and serverNexus to set the current strategy
     void setStrategy(int strategy);
+    //  helper function to tell which strategy or strategies to exexute at the current time
+    int activeStrategy();
 
 private:
     //Storage for sockets

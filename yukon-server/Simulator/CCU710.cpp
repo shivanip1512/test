@@ -449,7 +449,7 @@ void CCU710::CreateMessage(int MsgType, int WrdFnc, int mctNumber, int ccuNumber
             if((_strategy==0)||(_strategy==2)) {
                 Ctr = newWord.InsertWord(D_WORD,  _outmessageData, Function, mctNumber, Ctr, (getRepeaters()));
             }
-            else if(_strategy==1) {
+            else if(activeStrategy()==1) {
                 Ctr = newWord.InsertWord(X_WORD,  _outmessageData, Function, mctNumber, Ctr, (getRepeaters()));
             }
             _words[0]=newWord;
@@ -632,6 +632,10 @@ void CCU710::setStrategy(int strategy)
     _strategy = strategy;
 }
 
+int CCU710::activeStrategy()
+{
+    return _strategy;
+}
 
 int CCU710::getWordFunction(int wordNum)    {   return _words[wordNum].getWordFunction();   }
 int CCU710::getWordsRequested()             {   return _wordsRequested;                     }
