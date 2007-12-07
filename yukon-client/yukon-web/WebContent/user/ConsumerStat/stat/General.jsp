@@ -71,7 +71,7 @@
 			StarsApplianceCategory category = null;
 			String ctrlOdds = null;
 			
-			StarsLMControlHistory todayCtrlHist = ServletUtils.getControlHistory(program, appliances, StarsCtrlHistPeriod.PASTDAY, liteEC);
+			StarsLMControlHistory todayCtrlHist = ServletUtils.getControlHistory(program, appliances, StarsCtrlHistPeriod.PASTDAY, liteEC, lYukonUser);
 			
 			for (int j = 0; j < categories.getStarsApplianceCategoryCount(); j++) {
 				StarsApplianceCategory appCat = categories.getStarsApplianceCategory(j);

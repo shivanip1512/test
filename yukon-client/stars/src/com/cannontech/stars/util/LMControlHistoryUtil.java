@@ -11,11 +11,14 @@ import com.cannontech.clientutils.CTILogger;
 import com.cannontech.common.util.CtiUtilities;
 import com.cannontech.database.SqlStatement;
 import com.cannontech.database.cache.StarsDatabaseCache;
+import com.cannontech.database.data.lite.LiteYukonUser;
 import com.cannontech.database.data.lite.stars.LiteLMConfiguration;
 import com.cannontech.database.data.lite.stars.LiteLMControlHistory;
 import com.cannontech.database.data.lite.stars.LiteStarsLMControlHistory;
 import com.cannontech.database.data.lite.stars.StarsLiteFactory;
 import com.cannontech.database.db.pao.LMControlHistory;
+import com.cannontech.spring.YukonSpringHook;
+import com.cannontech.stars.dr.hardware.service.LMHardwareControlInformationService;
 import com.cannontech.stars.util.task.LMCtrlHistTimerTask;
 import com.cannontech.stars.xml.serialize.ControlHistory;
 import com.cannontech.stars.xml.serialize.ControlSummary;
@@ -466,7 +469,7 @@ public class LMControlHistoryUtil {
 		return ids;
 	}
 	
-	public static StarsLMControlHistory getStarsLMControlHistory(int groupID, Date startDate, TimeZone tz) {
+	public static StarsLMControlHistory getStarsLMControlHistory(int groupID, Date startDate, TimeZone tz, LiteYukonUser currentUser) {
 		StarsLMControlHistory starsCtrlHist = new StarsLMControlHistory();
 		
 		LiteStarsLMControlHistory liteCtrlHist = getActiveControlHistory( groupID );
@@ -475,7 +478,20 @@ public class LMControlHistoryUtil {
 			addActiveControlHistory( liteCtrlHist );
 		}
 		
-		
+//       New enrollment, opt out, and control history tracking
+        //-------------------------------------------------------------------------------
+        LMHardwareControlInformationService lmHardwareControlInformationService = (LMHardwareControlInformationService) YukonSpringHook.getBean("lmHardwareControlInformationService");
+        //-------------------------------------------------------------------------------
+        
+        //TODO: finish adding this
+        //New enrollment, opt out, and control history tracking
+        //-------------------------------------------------------------------------------
+        //lmHardwareControlInformationService.getTotalOptOutHoursForRange(i, i, startDate, startDate, currentUser);
+        //Also need to consider enrollment timings.
+        //Each control history STARS object should then be calculated through these hours returned before
+        //being added to the control history list.
+        //-------------------------------------------------------------------------------
+        
 		ControlHistory hist = null;
 		Date lastStartTime = null;
 		Date lastStopTime = null;

@@ -7,7 +7,7 @@
 	if (progNoStr != null) progNo = Integer.parseInt( progNoStr );
 	
 	StarsLMProgram program = programs.getStarsLMProgram( progNo );
-	StarsLMControlHistory ctrlHist = ServletUtils.getControlHistory( program, appliances, StarsCtrlHistPeriod.NONE, liteEC );
+	StarsLMControlHistory ctrlHist = ServletUtils.getControlHistory( program, appliances, StarsCtrlHistPeriod.NONE, liteEC, lYukonUser );
 	ControlSummary summary = ctrlHist.getControlSummary();
 	
 	StarsApplianceCategory category = null;

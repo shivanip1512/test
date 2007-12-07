@@ -23,6 +23,7 @@ import com.cannontech.database.data.customer.Customer;
 import com.cannontech.database.data.customer.CustomerFactory;
 import com.cannontech.database.data.lite.LiteCustomer;
 import com.cannontech.database.data.lite.LiteYukonGroup;
+import com.cannontech.database.data.lite.LiteYukonUser;
 import com.cannontech.database.data.lite.stars.LiteStarsEnergyCompany;
 import com.cannontech.database.data.lite.stars.LiteStarsLMHardware;
 import com.cannontech.message.dispatch.message.DBChangeMsg;
@@ -234,13 +235,8 @@ public class ServletUtils {
 	}
 	
 	public static StarsLMControlHistory getControlHistory(StarsLMProgram program, StarsAppliances appliances,
-		StarsCtrlHistPeriod period, LiteStarsEnergyCompany energyCompany)
+		StarsCtrlHistPeriod period, LiteStarsEnergyCompany energyCompany, LiteYukonUser currentUser)
 	{
-        // New enrollment, opt out, and control history tracking
-        //-------------------------------------------------------------------------------
-        LMHardwareControlInformationService lmHardwareControlInformationService = (LMHardwareControlInformationService) YukonSpringHook.getBean("lmHardwareControlInformationService");
-        //-------------------------------------------------------------------------------
-        
         Date startDate = LMControlHistoryUtil.getPeriodStartTime( period, energyCompany.getDefaultTimeZone() );
 		
 		String trackHwAddr = energyCompany.getEnergyCompanySetting( EnergyCompanyRole.TRACK_HARDWARE_ADDRESSING );
@@ -272,14 +268,8 @@ public class ServletUtils {
 			
 			for (int i = 0; i < groupIDs.size(); i++) {
 				StarsLMControlHistory ctrlHist = LMControlHistoryUtil.getStarsLMControlHistory(
-						((Integer)groupIDs.get(i)).intValue(), startDate, energyCompany.getDefaultTimeZone() );
+						((Integer)groupIDs.get(i)).intValue(), startDate, energyCompany.getDefaultTimeZone(), currentUser );
 				
-                //TODO: finish adding this
-				//New enrollment, opt out, and control history tracking
-                //-------------------------------------------------------------------------------
-                //lmHardwareControlInformationService.getTotalOptOutHoursForRange(i, i, startDate, startDate, currentUser);
-                //-------------------------------------------------------------------------------
-                
 				for (int j = 0, k = 0; j < ctrlHist.getControlHistoryCount(); j++) {
 					while (k < lmCtrlHist.getControlHistoryCount()
 						&& !lmCtrlHist.getControlHistory(k).getStartDateTime().after( ctrlHist.getControlHistory(j).getStartDateTime() ))
@@ -307,7 +297,7 @@ public class ServletUtils {
 			return lmCtrlHist;
 		}
 		else {
-			return LMControlHistoryUtil.getStarsLMControlHistory( program.getGroupID(), startDate, energyCompany.getDefaultTimeZone() );
+			return LMControlHistoryUtil.getStarsLMControlHistory( program.getGroupID(), startDate, energyCompany.getDefaultTimeZone(), currentUser );
 		}
 	}
 	
