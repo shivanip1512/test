@@ -8,7 +8,7 @@ import com.cannontech.database.data.lite.LiteYukonUser;
 
 public interface LoginService {
 
-    public boolean login(HttpServletRequest request, String username, String password) throws Exception;
+    public boolean login(HttpServletRequest request, String username, String password);
     
     public void logout(HttpServletRequest request, HttpServletResponse response) throws Exception;
     

@@ -55,7 +55,7 @@ public class LoginServiceImpl implements LoginService {
 
 
     @Override
-    public boolean login(HttpServletRequest request, String username, String password) throws Exception {
+    public boolean login(HttpServletRequest request, String username, String password) {
         try {
             final LiteYukonUser user = authenticationService.login(username, password);
             createSession(request, user);

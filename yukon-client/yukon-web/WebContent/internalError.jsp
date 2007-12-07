@@ -2,14 +2,13 @@
 <%@page import="com.cannontech.core.dao.DaoFactory" %>
 <%@page import="com.cannontech.util.ServletUtil"%>
 <%@page import="com.cannontech.roles.yukon.SystemRole"%>
-<%@page import="java.io.PrintWriter"%>
-<%@page import="java.io.StringWriter"%>
+<%@page import="com.cannontech.database.data.lite.LiteYukonUser"%>
+<%@page import="com.cannontech.common.exception.NotLoggedInException"%>
 <%@page import="org.apache.commons.lang.ObjectUtils"%>
 <%@page import="com.cannontech.common.util.CtiUtilities"%>
 <jsp:directive.page import="com.cannontech.common.version.VersionTools"/>
 <jsp:directive.page import="com.cannontech.roles.application.WebClientRole"/>
 <jsp:directive.page import="org.apache.commons.lang.BooleanUtils"/>
-<jsp:directive.page import="org.apache.commons.lang.exception.ExceptionUtils"/>
 <jsp:directive.page import="com.cannontech.servlet.filter.ErrorHelperFilter"/>
 <%@ taglib uri="http://java.sun.com/jsp/jstl/core" prefix="c" %>
 <%@page isErrorPage="true" %>
@@ -17,6 +16,13 @@
 <%
 String logo = "/" +
 	DaoFactory.getRoleDao().getGlobalPropertyValue( SystemRole.WEB_LOGO_URL );
+
+String homeUrl = "/";
+try {
+    LiteYukonUser user = ServletUtil.getYukonUser(request);
+    homeUrl = ServletUtil.createSafeUrl(request, DaoFactory.getAuthDao().getRolePropertyValue(user, WebClientRole.HOME_URL));
+} catch (NotLoggedInException ignore) { }    
+
 
 Throwable throwable = (Throwable)request.getAttribute("javax.servlet.error.exception");
 // if the above returned null, this page was probably called via the JSP exception handler
@@ -97,7 +103,7 @@ function showStack( chkBox ) {
 
 <body>
 <div id="error">
-<div id="errorImg"><img src="<%=request.getContextPath()%><%= logo %>"></div>
+<div id="errorImg"><a href="<%=homeUrl%>"><img style="border:none;" src="<%=request.getContextPath()%><%= logo %>"></a></div>
 <% if (friendlyExceptionMessage != null) { %>
 <br/>
 <div id="errorFriendly"><%=friendlyExceptionMessage %></div>

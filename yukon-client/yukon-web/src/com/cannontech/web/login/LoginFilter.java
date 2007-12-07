@@ -57,51 +57,46 @@ public class LoginFilter implements Filter {
             return;
         }
 
-        try {
-            // first, try to use the remember me cookie
-            Cookie rememberMeCookie = ServletUtil.getCookie(request, LoginController.REMEMBER_ME_COOKIE);
-            if (rememberMeCookie != null) {
-                try {
-                    String encryptedValue = rememberMeCookie.getValue();
-                    UserPasswordHolder holder = loginCookieHelper.decodeCookieValue(encryptedValue);
+        // first, try to use the remember me cookie
+        Cookie rememberMeCookie = ServletUtil.getCookie(request, LoginController.REMEMBER_ME_COOKIE);
+        if (rememberMeCookie != null) {
+            try {
+                String encryptedValue = rememberMeCookie.getValue();
+                UserPasswordHolder holder = loginCookieHelper.decodeCookieValue(encryptedValue);
 
-                    boolean success = loginService.login(request, holder.getUsername(), holder.getPassword());
-                    if (success) {
-                        chain.doFilter(req, resp);
-                        return;
-                    }
-                    
-                    //cookie login failed, remove cookie and go on to second try.
-                    ServletUtil.deleteAllCookies(request, response);
-                } catch (GeneralSecurityException e) {
-                    CTILogger.error("Unable to decrypt cookie value", e);
-                    ServletUtil.deleteAllCookies(request, response);
-                }
-            }
-
-            // second try the username/password parameters
-            String username = ServletRequestUtils.getStringParameter(request, LoginController.USERNAME);
-            String password = ServletRequestUtils.getStringParameter(request, LoginController.PASSWORD);
-            if (username != null && password != null) {
-                boolean success = loginService.login(request, username, password);
+                boolean success = loginService.login(request, holder.getUsername(), holder.getPassword());
                 if (success) {
                     chain.doFilter(req, resp);
                     return;
                 }
-            }
 
-            // okay, if we got here, they weren't authenticated
-            boolean ajaxRequest = ServletUtil.isAjaxRequest(req);
-            if (ajaxRequest) {
-                response.sendError(HttpServletResponse.SC_INTERNAL_SERVER_ERROR, "Not Authenticated!");
-            } else {
-                sendLoginRedirect(request, response);
+                //cookie login failed, remove cookie and go on to second try.
+                ServletUtil.deleteAllCookies(request, response);
+            } catch (GeneralSecurityException e) {
+                CTILogger.error("Unable to decrypt cookie value", e);
+                ServletUtil.deleteAllCookies(request, response);
             }
-            return;
-        } catch (Exception e) {
-            CTILogger.warn("Received unknown exception while processing LoginFilter, redirecting", e);
+        }
+
+        // second try the username/password parameters
+        String username = ServletRequestUtils.getStringParameter(request, LoginController.USERNAME);
+        String password = ServletRequestUtils.getStringParameter(request, LoginController.PASSWORD);
+        if (username != null && password != null) {
+            boolean success = loginService.login(request, username, password);
+            if (success) {
+                chain.doFilter(req, resp);
+                return;
+            }
+        }
+
+        // okay, if we got here, they weren't authenticated
+        boolean ajaxRequest = ServletUtil.isAjaxRequest(req);
+        if (ajaxRequest) {
+            response.sendError(HttpServletResponse.SC_INTERNAL_SERVER_ERROR, "Not Authenticated!");
+        } else {
             sendLoginRedirect(request, response);
-        } 
+        }
+        return;
     }
 
     private boolean isExcludedRequest(HttpServletRequest request) {
