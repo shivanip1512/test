@@ -446,10 +446,10 @@ void CCU710::CreateMessage(int MsgType, int WrdFnc, int mctNumber, int ccuNumber
 
             EmetconWord newWord;
             int Function = 0;
-            if((_strategy==0)||(_strategy==2)) {
+            if((activeStrategy()==DEFAULT)||(_strategy==2)) {
                 Ctr = newWord.InsertWord(D_WORD,  _outmessageData, Function, mctNumber, Ctr, (getRepeaters()));
             }
-            else if(activeStrategy()==1) {
+            else if(activeStrategy()==BAD_D_WORD) {
                 Ctr = newWord.InsertWord(X_WORD,  _outmessageData, Function, mctNumber, Ctr, (getRepeaters()));
             }
             _words[0]=newWord;
