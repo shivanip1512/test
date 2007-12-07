@@ -561,7 +561,7 @@ from
 where
 	type = 'CCSUBBUS';
 
-
+/* @start-block */
 declare @ccsubstationname varchar(60);
 
 declare substation_curs cursor for (select distinct(CCsubStationName) from #mySubstation);
@@ -586,6 +586,7 @@ while (@@fetch_status = 0)
 	end
 close substation_curs;
 deallocate substation_curs;
+/* @end-block */
 
 select 
 	s.*
@@ -664,6 +665,7 @@ where
 
 insert into capcontrolsubstation (substationid) select paobjectid from yukonpaobject where type = 'CCSUBSTATION';
 
+/* @start-block */
 declare @ccsubstationid numeric;
 declare @lastsubstationid numeric;
 declare @ccsubbusid numeric;
@@ -690,7 +692,7 @@ while (@@fetch_status = 0)
 
 close substation_curs;
 deallocate substation_curs;
-
+/* @end-block */
 
 drop table #mySubstation;
 drop table #mySubstation2;
