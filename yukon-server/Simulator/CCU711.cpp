@@ -61,7 +61,7 @@ int CCU711::ReceiveMsg(unsigned char ReadBuffer[], int &setccuNumber)
 }
 
 //Listen for and store an incoming message
-void CCU711::ReceiveMore(unsigned char ReadBuffer[], int counter)
+void CCU711::ReceiveMore(unsigned char ReadBuffer[], int counter, mctStruct structArray[])
 {
     int setccuNumber = 0;
     SET_FOREGROUND_WHITE;
@@ -86,7 +86,7 @@ void CCU711::ReceiveMore(unsigned char ReadBuffer[], int counter)
     }
     else if(_commandType==LGRPQ)
     {
-        CreateQueuedMsg();
+        CreateQueuedMsg(0);////   <--- Use struct kwhvalue HERE !!!!!!
     }
 }
 
@@ -703,7 +703,7 @@ int CCU711::DecodeFunction(int WordType, unsigned char Data[]){
 }
 
 
-void CCU711::CreateQueuedMsg()
+void CCU711::CreateQueuedMsg(int DBValue)
 {
     int Offset = _messageData[6];
     int Length = _messageData[3];
@@ -781,14 +781,14 @@ void CCU711::CreateQueuedMsg()
         //RTE_TYPCON;
     
         _messageQueue.push_back(newMessage);
-        CreateQueuedResponse();
+        CreateQueuedResponse(DBValue);
         Offset = _messageData[6 + Offset];
     }
 }
 
 
 
-void CCU711::CreateQueuedResponse()
+void CCU711::CreateQueuedResponse(int DBValue)
 {
     if(!_messageQueue.empty())
     {
@@ -816,7 +816,7 @@ void CCU711::CreateQueuedResponse()
                 Data[ctr++] = 0x00; // "  "
                 long int mctAddress = _messageQueue.back().getmctAddress();
 
-                getData(mctAddress, _messageQueue.back().getFunction(), _messageQueue.back().getioType(), _messageQueue.back().getbytesToReturn());
+                getData(DBValue, _messageQueue.back().getFunction(), _messageQueue.back().getioType(), _messageQueue.back().getbytesToReturn());
                 for(int i = 0; i<_messageQueue.back().getbytesToReturn(); i++)
                 {
                     Data[ctr++] = _data[i]; //Data
@@ -841,7 +841,7 @@ void CCU711::CreateQueuedResponse()
                 Data[ctr++] = 0x00; // TS
                 Data[ctr++] = 0x00; // "  "
                 long int mctAddress = _messageQueue.back().getmctAddress();
-                getData(mctAddress, _messageQueue.back().getFunction(), _messageQueue.back().getioType(), _messageQueue.back().getbytesToReturn());
+                getData(DBValue, _messageQueue.back().getFunction(), _messageQueue.back().getioType(), _messageQueue.back().getbytesToReturn());
                 for(int i = 0; i<_messageQueue.back().getbytesToReturn(); i++)
                 {
                     Data[ctr++] = _data[i]; //Data
@@ -866,7 +866,7 @@ void CCU711::CreateQueuedResponse()
                 Data[ctr++] = 0x00; // TS
                 Data[ctr++] = 0x00; // "  "
                 long int mctAddress = _messageQueue.back().getmctAddress();
-                getData(mctAddress, _messageQueue.back().getFunction(), _messageQueue.back().getioType(), _messageQueue.back().getbytesToReturn());
+                getData(DBValue, _messageQueue.back().getFunction(), _messageQueue.back().getioType(), _messageQueue.back().getbytesToReturn());
                 for(int i = 0; i<_messageQueue.back().getbytesToReturn(); i++)
                 {
                     Data[ctr++] = _data[i]; //Data
@@ -1120,11 +1120,24 @@ unsigned char CCU711::getFrame(int frameCount)
 }
 
 
-void CCU711::getData(long int mctAddress, int function, int ioType, int bytesToReturn)
+void CCU711::getNeededAddresses(int addressArray[])
 {
-    srand ( time(NULL) );
-    int random = rand() % 10 + 1;
-    _data[1]= (mctAddress >> 6) + random;
+    //Insert the needed addresses
+    deque <_queueMessage> ::iterator itr;
+    int i = 0;
+    for (itr=_messageQueue.begin(); itr!=_messageQueue.end(); itr++) {
+        _queueMessage temp = *itr;
+        _qmessagesReady += temp.isReady();
+        if (temp.isReady()) {
+            addressArray[i] = temp.getmctAddress();
+        }
+    }
+
+}
+
+void CCU711::getData(long int DBValue, int function, int ioType, int bytesToReturn)
+{
+    _data[1]= (DBValue);
 }
 
 void CCU711::setStrategy(int strategy)

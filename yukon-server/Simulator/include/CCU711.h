@@ -18,6 +18,7 @@
 #include <iostream>
 #include "CCU710.h"
 #include "ctiTime.h"
+#include "mctStruct.h"
 #include <queue>
 
 
@@ -115,7 +116,7 @@ public:
     //Listen for and store an incoming message
     int ReceiveMsg(unsigned char ReadBuffer[], int &setccuNumber);
     //Listen for and store the rest of the message
-    void ReceiveMore(unsigned char ReadBuffer[], int counter);
+    void ReceiveMore(unsigned char ReadBuffer[], int counter, mctStruct structArray[]);
     //Print the incoming message information to the screen
     void PrintInput();
     //Output the outgoing message information to the screen
@@ -145,7 +146,7 @@ public:
     //  Determine what function the word specifies
     int DecodeFunction(int WordType, unsigned char Data[]);
     //  Build a message to store in the queue
-    void CreateQueuedMsg();
+    void CreateQueuedMsg(int DBValue);
     //  Create a response for immediate use (not to put into the queue)
     void CreateResponse(int command);
     //  Copy the message from the queue into the 711 outgoing message storage
@@ -153,13 +154,15 @@ public:
     //  Return the correct RLEN plus 14
     unsigned char getRLEN();
     //  Create a response to a message that has been received and store it in the array of a queue message struct
-    void CreateQueuedResponse();
+    void CreateQueuedResponse(int DBValue);
     //  Decode the information contained in an incoming message 
     void decodeForQueueMessage(int & type, int & iotype, int & function, unsigned char & address, long int & mctaddress,int & bytesToReturn, int offset);
     //  Returns number of data bytes to be sent to poerter at an index and fills the data array
     void getData(long int mctAddress, int function, int ioType, int bytesToReturn);
     //  Allows serverNexus to set the current strategy
     void setStrategy(int strategy);
+    //  Return the mct addresses from the current message group
+    void getNeededAddresses(int addressArray[]);
 
 
 
