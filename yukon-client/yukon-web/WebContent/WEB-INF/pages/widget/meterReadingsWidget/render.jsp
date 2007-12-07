@@ -20,7 +20,7 @@
 
                     <c:if test="${attribute == 'USAGE'}">
 
-                        <ct:nameValue name="Previous Usage">
+                        <ct:nameValue name="Previous Reading">
                             <select
                                 onChange="${widgetParameters.widgetId}_usageSelection()"
                                 id="${widgetParameters.widgetId}_prevSelect">
