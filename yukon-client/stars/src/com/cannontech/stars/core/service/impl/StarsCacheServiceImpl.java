@@ -26,7 +26,7 @@ public class StarsCacheServiceImpl implements StarsCacheService {
     
     private void updateInventoryCustomerAccount(final LiteStarsEnergyCompany energyCompany, final CustomerAccount customerAccount) {
         final LiteStarsCustAccountInformation accountInformation = energyCompany.getCustAccountInformation(customerAccount.getAccountId(), false);
-        energyCompany.deleteCustAccountInformation(accountInformation);
+        if (accountInformation != null) energyCompany.deleteCustAccountInformation(accountInformation);
         energyCompany.deleteStarsCustAccountInformation(customerAccount.getAccountId());
     }
 

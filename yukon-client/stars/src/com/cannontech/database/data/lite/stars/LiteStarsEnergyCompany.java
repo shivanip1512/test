@@ -2371,6 +2371,8 @@ public class LiteStarsEnergyCompany extends LiteBase {
     }
 
     public void deleteCustAccountInformation(LiteStarsCustAccountInformation liteAcctInfo) {
+        if (liteAcctInfo == null) return;
+        
         // Remove from opt out event queue
         OptOutEventQueue.getInstance().removeEvents( liteAcctInfo.getAccountID() );
         
