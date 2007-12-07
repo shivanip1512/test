@@ -52,13 +52,14 @@ public:
         FUNCWRITE  = 47,
         ACKACK     = 51,
         INCOMING   = 0 ,
-        OUTGOING   = 1 ,
+        OUTGOING   = 1
     };
 
     enum Strategies
     {
-        BAD_D_WORD = 1,
+        BAD_D_WORD = 1
     };
+
     //Send the message back to porter
     int SendMsg(unsigned char SendData[]);
     //Build a new message
