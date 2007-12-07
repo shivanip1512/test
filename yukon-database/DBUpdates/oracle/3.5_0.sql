@@ -350,7 +350,6 @@ alter table dynamicccarea
    add constraint FK_ccarea_Dynccarea foreign key (areaID)
       references Capcontrolarea (areaID);
 
-insert into dynamicccarea (areaid, additionalflags) select areaid, 'NNNNNNNNNNNNNNNNNNNN' from capcontrolarea; 
 /* @error ignore-end */
 
 delete from LMThermostatSeasonEntry where SeasonID in (select SeasonID from LMThermostatSeason where ScheduleID in (select ScheduleID from LMThermostatSchedule where ThermostatTypeID in (select EntryID from YukonListEntry where YukonDefinitionID = 3100)));

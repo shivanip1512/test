@@ -414,7 +414,6 @@ alter table dynamicccarea
    add constraint FK_ccarea_Dynccarea foreign key (areaID)
       references Capcontrolarea (areaID);
 go
-insert into dynamicccarea (areaid, additionalflags) select areaid, 'NNNNNNNNNNNNNNNNNNNN' from capcontrolarea; 
 /* @error ignore-end */
 
 
