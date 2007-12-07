@@ -81,7 +81,7 @@ function setRedirect(form) {
 		List<Integer> inventoryIds = partialOptOutMap.get(program.getProgramID());
 		String programStatus = program.getStatus();
 		boolean partialOutOfService = false;
-		if(inventoryIds.size() > 0 && program.getStatus().equalsIgnoreCase(ServletUtils.OUT_OF_SERVICE)) { 
+		if(inventoryIds != null && inventoryIds.size() > 0 && program.getStatus().equalsIgnoreCase(ServletUtils.OUT_OF_SERVICE)) { 
 			programStatus = "Partially out of service.  Still active for " + inventoryIds.size() + (inventoryIds.size() == 1 ? " device." : " devices.");
 			partialOutOfService = true;
 		}

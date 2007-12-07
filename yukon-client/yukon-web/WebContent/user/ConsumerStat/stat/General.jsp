@@ -133,7 +133,7 @@
 			// New enrollment, opt out, and control history tracking
     		//-------------------------------------------------------------------------------
 			List<Integer> inventoryIds = partialOptOutMap.get(program.getProgramID());
-			if(inventoryIds.size() > 0) {
+			if(inventoryIds != null && inventoryIds.size() > 0) {
 %>
 											<div align="left">Partially out of service.  Still active for <%= inventoryIds.size() %> <%=(inventoryIds.size() == 1 ? "device" : "devices")%>.
 <%			//-------------------------------------------------------------------------------
