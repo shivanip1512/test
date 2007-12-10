@@ -4,6 +4,8 @@ import java.util.List;
 import java.util.Map;
 import java.util.Set;
 
+import org.springframework.core.io.Resource;
+
 import com.cannontech.common.device.YukonDevice;
 import com.cannontech.common.device.attribute.model.Attribute;
 import com.cannontech.common.device.definition.model.CommandDefinition;
@@ -108,5 +110,12 @@ public interface DeviceDefinitionDao {
     public Set<CommandDefinition> getAffected(YukonDevice device, Set<? extends DevicePointIdentifier> pointSet);
     
     public String getPointLegendHtml(String displayGroup);
+    
+    /**
+     * Method to get the resource that is currently being used as the
+     * deviceDefinition.xml file.
+     * @return The resource
+     */
+    public Resource getCurrentDefinitionResource();
 
 }

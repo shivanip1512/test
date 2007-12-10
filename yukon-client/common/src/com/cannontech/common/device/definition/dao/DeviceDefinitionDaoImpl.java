@@ -1,7 +1,6 @@
 package com.cannontech.common.device.definition.dao;
 
 import java.io.File;
-import java.io.FileInputStream;
 import java.io.IOException;
 import java.io.InputStreamReader;
 import java.io.StringWriter;
@@ -24,6 +23,7 @@ import javax.xml.transform.stream.StreamSource;
 
 import org.apache.log4j.Logger;
 import org.exolab.castor.xml.Unmarshaller;
+import org.springframework.core.io.FileSystemResource;
 import org.springframework.core.io.Resource;
 import org.springframework.dao.DataAccessException;
 
@@ -96,6 +96,8 @@ public class DeviceDefinitionDaoImpl implements DeviceDefinitionDao {
 
     // Map<DeviceType, Set<CommandDefinition>
     private Map<Integer, Set<CommandDefinition>> deviceCommandMap = null;
+    
+    private Resource currentDefinitionResource;
 
     public void setInputFile(Resource inputFile) {
         this.inputFile = inputFile;
@@ -104,7 +106,7 @@ public class DeviceDefinitionDaoImpl implements DeviceDefinitionDao {
     public void setCustomInputFile(File customInputFile) {
         this.customInputFile = customInputFile;
     }
-
+    
     public void setPaoGroupsWrapper(PaoGroupsWrapper paoGroupsWrapper) {
         this.paoGroupsWrapper = paoGroupsWrapper;
     }
@@ -249,13 +251,14 @@ public class DeviceDefinitionDaoImpl implements DeviceDefinitionDao {
         this.deviceAttributeAttrDefinitionMap = new HashMap<Integer, Map<Attribute, AttributeLookup>>();
         this.deviceCommandMap = new HashMap<Integer, Set<CommandDefinition>>();
 
-        InputStreamReader reader = null;
-        
         if (customInputFile != null && customInputFile.exists()) {
-            reader = new InputStreamReader(new FileInputStream(customInputFile));
+            currentDefinitionResource = new FileSystemResource(customInputFile);
+
         } else {
-            reader = new InputStreamReader(inputFile.getInputStream());
+            currentDefinitionResource = inputFile;
         }
+
+        InputStreamReader reader = new InputStreamReader(currentDefinitionResource.getInputStream());
         
         try {
 
@@ -613,5 +616,9 @@ public class DeviceDefinitionDaoImpl implements DeviceDefinitionDao {
             log.warn("Unable to translate deviceDefinition.xml file for displayGroup=" + displayGroup, e);
             return "Error rendering point legends: " + e.toString();
         }
+    }
+
+    public Resource getCurrentDefinitionResource() {
+        return currentDefinitionResource;
     }
 }

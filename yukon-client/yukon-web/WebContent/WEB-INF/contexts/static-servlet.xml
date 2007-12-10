@@ -5,7 +5,7 @@
     <bean class="org.springframework.web.servlet.handler.SimpleUrlHandlerMapping">
         <property name="mappings">
             <value>
-                /deviceDefinition.xml=deviceBaseController
+                /deviceDefinition.xml=deviceDefinitionXmlController
                 /deviceDefinition.xsl=deviceBaseController
                 /error-code.xml=friendlyErrorBaseController
                 /porter_error.xsl=friendlyErrorBaseController
@@ -29,6 +29,12 @@
           <bean class="org.springframework.web.util.UrlPathHelper">
             <property name="urlDecode" value="false"/> <!-- changing this might open a security hole -->
           </bean>
+        </property>
+    </bean>
+    
+    <bean id="deviceDefinitionXmlController" class="com.cannontech.web.util.StaticResourceController">
+        <property name="resource">
+        	<bean factory-bean="deviceDefinitionDao" factory-method="getCurrentDefinitionResource" />
         </property>
     </bean>
     
