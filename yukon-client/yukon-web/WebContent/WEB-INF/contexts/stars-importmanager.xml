@@ -36,5 +36,7 @@
 
 	<bean id="importmanagerImportDSM" class="com.cannontech.web.stars.action.importmanager.ImportDSMController" 
           parent="starsImportManagerController"/>
-
+          
+    <bean id="importmanagerMigrateEnrollment" class="com.cannontech.web.stars.action.importmanager.MigrateEnrollmentController"
+          parent="starsImportManagerController"/>
 </beans>

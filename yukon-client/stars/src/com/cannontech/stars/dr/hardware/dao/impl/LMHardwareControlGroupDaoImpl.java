@@ -103,8 +103,8 @@ public class LMHardwareControlGroupDaoImpl implements LMHardwareControlGroupDao,
     }
     
     @Transactional(readOnly = true, propagation = Propagation.SUPPORTS)
-    public LMHardwareControlGroup getById(final int inventoryId) throws DataAccessException {
-        LMHardwareControlGroup hardwareControlGroup = simpleJdbcTemplate.queryForObject(selectById, rowMapper, inventoryId);
+    public LMHardwareControlGroup getById(final int controlEntryId) throws DataAccessException {
+        LMHardwareControlGroup hardwareControlGroup = simpleJdbcTemplate.queryForObject(selectById, rowMapper, controlEntryId);
         return hardwareControlGroup;
     }
     
@@ -223,7 +223,7 @@ public class LMHardwareControlGroupDaoImpl implements LMHardwareControlGroupDao,
                 LMHardwareControlGroup hardwareControlGroup = new LMHardwareControlGroup();
                 hardwareControlGroup.setControlEntryId(rs.getInt("ControlEntryID"));
                 hardwareControlGroup.setInventoryId(rs.getInt("InventoryID"));
-                hardwareControlGroup.setLMGroupId(rs.getInt("LMGroupID"));
+                hardwareControlGroup.setLmGroupId(rs.getInt("LMGroupID"));
                 hardwareControlGroup.setAccountId(rs.getInt("AccountID"));
                 hardwareControlGroup.setGroupEnrollStart(rs.getTimestamp("GroupEnrollStart"));
                 hardwareControlGroup.setGroupEnrollStop(rs.getTimestamp("GroupEnrollStop"));
@@ -256,7 +256,7 @@ public class LMHardwareControlGroupDaoImpl implements LMHardwareControlGroupDao,
     private FieldMapper<LMHardwareControlGroup> controlGroupFieldMapper = new FieldMapper<LMHardwareControlGroup>() {
         public void extractValues(MapSqlParameterSource p, LMHardwareControlGroup controlInfo) {
             p.addValue("inventoryId", controlInfo.getInventoryId());
-            p.addValue("lmGroupId", controlInfo.getLMGroupId());
+            p.addValue("lmGroupId", controlInfo.getLmGroupId());
             p.addValue("accountId", controlInfo.getAccountId());
             p.addValue("groupEnrollStart", controlInfo.getGroupEnrollStart(), Types.TIMESTAMP);
             p.addValue("groupEnrollStop", controlInfo.getGroupEnrollStop(), Types.TIMESTAMP);

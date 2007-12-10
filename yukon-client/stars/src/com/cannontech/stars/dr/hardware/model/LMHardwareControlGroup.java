@@ -62,14 +62,6 @@ public class LMHardwareControlGroup {
         this.inventoryId = inventoryId;
     }
 
-    public int getLMGroupId() {
-        return lmGroupId;
-    }
-
-    public void setLMGroupId(int groupId) {
-        lmGroupId = groupId;
-    }
-
     public int getAccountId() {
         return accountId;
     }

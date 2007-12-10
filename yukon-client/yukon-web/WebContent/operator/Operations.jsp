@@ -56,24 +56,23 @@
 			<cti:getProperty property="ConsumerInfoRole.IMPORT_CUSTOMER_ACCOUNT"/>
 		</c:set>
 		<c:choose>
-			<c:when test="${cti:equalsIgnoreCase(pageScope.importID, 'STARS')}">
-				<c:set var="importUri" scope="page" value="ImportSTARS.jsp"/>
-				<c:set var="importLabel" scope="page" value="Import STARS"/>
-			</c:when> 
-			<c:when test="${cti:equalsIgnoreCase(pageScope.importID, 'DSM')}">
-				<c:set var="importUri" scope="page" value="ImportDSM.jsp"/>
-				<c:set var="importLabel" scope="page" value="Import DSM"/>
-			</c:when> 
-			<c:when test="${cti:equalsIgnoreCase(pageScope.importID, 'upload')}">
-				<c:set var="importUri" scope="page" value="GenericUpload.jsp"/>
-				<c:set var="importLabel" scope="page" value="Upload File"/>
-			</c:when>
 			<c:when test="${cti:equalsIgnoreCase(pageScope.importID, 'true')}">
 				<c:set var="importUri" scope="page" value="ImportAccount.jsp"/>
 				<c:set var="importLabel" scope="page" value="Import Account"/>
 				<tags:sectionLink>
 		        	<a href="Consumer/${pageScope.importUri}">${pageScope.importLabel}</a>
 		        </tags:sectionLink>
+			</c:when>
+			<c:when test="${cti:equalsIgnoreCase(pageScope.importID, 'EnrollMigration')}">
+				<c:set var="importUri" scope="page" value="MigrateEnrollment.jsp"/>
+				<c:set var="importLabel" scope="page" value="Migrate Enrollment Information"/>
+				<tags:sectionLink>
+		        	<a href="Consumer/${pageScope.importUri}">${pageScope.importLabel}</a>
+		        </tags:sectionLink>
+			</c:when> 
+			<c:when test="${cti:equalsIgnoreCase(pageScope.importID, 'upload')}">
+				<c:set var="importUri" scope="page" value="GenericUpload.jsp"/>
+				<c:set var="importLabel" scope="page" value="Upload File"/>
 			</c:when>
 		</c:choose>
 		
