@@ -33,7 +33,7 @@ public class LoginFilter implements Filter {
     private LoginCookieHelper loginCookieHelper;
 
     static {
-        exclusionServletNames = new String[]{"/servlet/LoginController", "/soap/", "/servlet/PWordRequest"};
+        exclusionServletNames = new String[]{"/servlet/LoginController", "/servlet/SetupServlet", "/soap/", "/servlet/PWordRequest"};
         exclusionFileNames = new String[]{LoginController.LOGIN_URL, "setup.jsp", "pwordreq.jsp", "prototype.js", "CtiMenu.js"};
         exclusionFileTypes = new String[]{".css", ".png", ".gif", ".jpg", ".html"};
     }
