@@ -90,7 +90,8 @@ private:
     void Flip7010Device();
     void SendSystemStatus();
     void SendAllCapBankCommands();
-    
+    void SendTimeSync();
+
     CtiCCCommand* _command;
 };
 

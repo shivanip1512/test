@@ -3010,7 +3010,7 @@ void CtiCCSubstationBus::regularSubstationBusControl(DOUBLE lagLevel, DOUBLE lea
                             DOUBLE controlValue = ( !stringCompareIgnoreCase(_controlunits, CtiCCSubstationBus::VoltControlUnits) ? getCurrentVoltLoadPointValue() : getCurrentVarLoadPointValue());
                             string text = currentFeeder->createTextString(getControlMethod(), CtiCCCapBank::Close, controlValue,  getCurrentVarLoadPointValue()) ;
 
-                            request = currentFeeder->createDecreaseVarRequest(capBank, pointChanges, ccEvents, text,  getIVControl());
+                            request = currentFeeder->createDecreaseVarRequest(capBank, pointChanges, ccEvents, text,  getCurrentVarLoadPointValue());
                         }
                     }
                 }
@@ -3397,7 +3397,7 @@ void CtiCCSubstationBus::regularSubstationBusControl(DOUBLE lagLevel, DOUBLE lea
             setLastFeederControlledPAOId(currentFeeder->getPAOId());
             setLastFeederControlledPosition(currentPosition);
             ((CtiCCFeeder*)_ccfeeders.at(currentPosition))->setLastOperationTime(currentDateTime);
-            setVarValueBeforeControl( getIVControl() );
+            setVarValueBeforeControl( getCurrentVarLoadPointValue() );  
             setCurrentDailyOperations(getCurrentDailyOperations() + 1);
             figureEstimatedVarLoadPointValue();
             if( getEstimatedVarLoadPointId() > 0 )
@@ -3908,7 +3908,7 @@ void CtiCCSubstationBus::optimizedSubstationBusControl(DOUBLE lagLevel, DOUBLE l
             setLastFeederControlledPAOId(lastFeederControlled->getPAOId());
             setLastFeederControlledPosition(positionLastFeederControlled);
             lastFeederControlled->setLastOperationTime(currentDateTime);
-            setVarValueBeforeControl( getIVControl());
+            setVarValueBeforeControl( getCurrentVarLoadPointValue() );
             setCurrentDailyOperations(getCurrentDailyOperations() + 1);
             figureEstimatedVarLoadPointValue();
             if( getEstimatedVarLoadPointId() > 0 )

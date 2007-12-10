@@ -161,6 +161,9 @@ void CtiCCCommandExecutor::Execute()
     case CtiCCCommand::SEND_ALL_SCAN_2WAY_DEVICE:
         SendAllCapBankCommands(); 
         break;
+    case CtiCCCommand::SEND_TIME_SYNC:
+        SendTimeSync(); 
+        break;
         
     default:
         {
@@ -1023,6 +1026,17 @@ void CtiCCCommandExecutor::DisableOvUv()
             dout << CtiTime() << " - ControlDeviceID: "<<controlID<<" - Could not create Porter Request Message in: " << __FILE__ << " at: " << __LINE__ << endl;
         }
     }
+
+}
+void CtiCCCommandExecutor::SendTimeSync()
+{
+    CtiCCSubstationBusStore* store = CtiCCSubstationBusStore::getInstance();
+    RWRecursiveLock<RWMutexLock>::LockGuard  guard(store->getMux());
+
+    LONG paoId = _command->getId();
+    LONG controlID = 0;
+    BOOL found = FALSE;
+    return;
 
 }
 
