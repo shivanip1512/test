@@ -6,8 +6,8 @@
 *
 * PVCS KEYWORDS:
 * ARCHIVE      :  $Archive$
-* REVISION     :  $Revision: 1.52 $
-* DATE         :  $Date: 2007/07/23 15:36:40 $
+* REVISION     :  $Revision: 1.53 $
+* DATE         :  $Date: 2007/12/10 19:41:43 $
 *
 * Copyright (c) 1999, 2000, 2001 Cannon Technologies Inc. All rights reserved.
 *-----------------------------------------------------------------------------*/
@@ -377,7 +377,7 @@ VOID ConnectionThread (VOID *Arg)
         }
     } /* and do it all again */
 
-    if(MyNexus) delete MyNexus;
+    if(MyNexus && MyNexus != &PorterToPil) delete MyNexus;
 
     if(OutMessage != NULL)
     {

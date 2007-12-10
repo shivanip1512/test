@@ -6,8 +6,8 @@
 *
 * PVCS KEYWORDS:
 * ARCHIVE      :  $Archive:   Z:/SOFTWAREARCHIVES/YUKON/MESSAGE/connection.cpp-arc  $
-* REVISION     :  $Revision: 1.44 $
-* DATE         :  $Date: 2007/10/23 17:03:07 $
+* REVISION     :  $Revision: 1.45 $
+* DATE         :  $Date: 2007/12/10 19:41:43 $
 *
 * Copyright (c) 1999, 2000, 2001 Cannon Technologies Inc. All rights reserved.
 *-----------------------------------------------------------------------------*/
@@ -41,9 +41,10 @@ CtiConnection::~CtiConnection()
     }
     catch(...)
     {
+        string whoStr = who();
         {
-            CtiLockGuard<CtiLogger> doubt_guard(dout);
-            dout << CtiTime() << " Error cleaning the connection " << who() << " " << __FILE__ << " (" << __LINE__ << ")" << endl;
+            CtiLockGuard<CtiLogger> doubt_guard(dout, 10000);
+            dout << CtiTime() << " Error cleaning the connection " << whoStr << " " << __FILE__ << " (" << __LINE__ << ")" << endl;
         }
     }
 }
@@ -57,7 +58,7 @@ void CtiConnection::cleanConnection()
     catch(...)
     {
         {
-            CtiLockGuard<CtiLogger> doubt_guard(dout);
+            CtiLockGuard<CtiLogger> doubt_guard(dout, 10000);
             dout << CtiTime() << " **** EXCEPTION Checkpoint **** " << __FILE__ << " (" << __LINE__ << ")" << endl;
         }
     }
@@ -110,17 +111,19 @@ void CtiConnection::cleanConnection()
     }
     catch( RWxmsg &e )
     {
+        string whoStr = who();
         {
             CtiLockGuard<CtiLogger> doubt_guard(dout);
-            dout << CtiTime() << " Error cleaning the outbound queue for connection " << who() << " " << __FILE__ << " (" << __LINE__ << ")" << endl;
+            dout << CtiTime() << " Error cleaning the outbound queue for connection " << whoStr << " " << __FILE__ << " (" << __LINE__ << ")" << endl;
             dout << e.why() << endl;
         }
     }
     catch(...)
     {
+        string whoStr = who();
         {
             CtiLockGuard<CtiLogger> doubt_guard(dout);
-            dout << CtiTime() << " Error cleaning the outbound queue for connection " << who() << " " << __FILE__ << " (" << __LINE__ << ")" << endl;
+            dout << CtiTime() << " Error cleaning the outbound queue for connection " << whoStr << " " << __FILE__ << " (" << __LINE__ << ")" << endl;
         }
     }
 }
@@ -133,18 +136,20 @@ int CtiConnection::WriteConnQue(CtiMessage *QEnt, unsigned timeout, bool cleanif
 
     if(outQueue.isFull())
     {
+        string whoStr = who();
         {
             CtiLockGuard<CtiLogger> doubt_guard(dout);
-            dout << CtiTime() << " " << "OutThread  : " << who() << " queue is full.  Will BLOCK " << endl;
+            dout << CtiTime() << " " << "OutThread  : " << whoStr << " queue is full.  Will BLOCK " << endl;
         }
     }
 
     if( (verify = verifyConnection()) != NORMAL )
     {
+        string whoStr = who();
         status = verify;     // don't want to reset it unless there is a real problem.
         {
             CtiLockGuard<CtiLogger> doubt_guard(dout);
-            dout << CtiTime() << " Connection error (" << status << "), message was NOT able to be queued to " << who() << "." << endl;
+            dout << CtiTime() << " Connection error (" << status << "), message was NOT able to be queued to " << whoStr << "." << endl;
         }
 
         // autopsy( __FILE__, __LINE__ );
@@ -157,11 +162,12 @@ int CtiConnection::WriteConnQue(CtiMessage *QEnt, unsigned timeout, bool cleanif
         {
             if( !outQueue.putQueue(QEnt, timeout) )
             {
+                string whoStr = who();
                 // WAS NOT QUEUED!!!
                 {
                     CtiLockGuard<CtiLogger> doubt_guard(dout);
                     dout << CtiTime() << " **** Checkpoint **** " << __FILE__ << " (" << __LINE__ << ")" << endl;
-                    dout << "  Message was NOT able to be queued to " << who() << " within " << timeout << " millis" << endl;
+                    dout << "  Message was NOT able to be queued to " << whoStr << " within " << timeout << " millis" << endl;
                 }
 
                 if(cleaniftimedout) delete QEnt;
@@ -243,14 +249,17 @@ void CtiConnection::InThread()
 
     if(getDebugLevel() & DEBUGLEVEL_CONNECTION)
     {
-        CtiLockGuard<CtiLogger> doubt_guard(dout);
-        if(_port >= 0)
+        string whoStr = who();
         {
-            dout << CtiTime() << " InThread  : " << who() << " has begun operations " << endl;
-        }
-        else
-        {
-            dout << CtiTime() << " InThread  : " << who() << " has begun operations " << " Server Connection" << endl;
+            CtiLockGuard<CtiLogger> doubt_guard(dout);
+            if(_port >= 0)
+            {
+                dout << CtiTime() << " InThread  : " << whoStr << " has begun operations " << endl;
+            }
+            else
+            {
+                dout << CtiTime() << " InThread  : " << whoStr << " has begun operations " << " Server Connection" << endl;
+            }
         }
     }
 
@@ -293,10 +302,11 @@ void CtiConnection::InThread()
                 }
                 catch( ... )
                 {
+                    string whoStr = who();
                     _bQuit = TRUE;
                     {
                         CtiLockGuard<CtiLogger> doubt_guard(dout);
-                        dout << CtiTime() << " Terminating Connection with: " << who() << endl;
+                        dout << CtiTime() << " Terminating Connection with: " << whoStr << endl;
                     }
                     continue;
                 }
@@ -312,8 +322,11 @@ void CtiConnection::InThread()
                     {
                         if(getDebugLevel() & DEBUGLEVEL_CONNECTION)
                         {
-                            CtiLockGuard<CtiLogger> doubt_guard(dout);
-                            dout << CtiTime() << " Received a null message from " << who() <<", shutting down the connection." << endl;
+                            string whoStr = who();
+                            {
+                                CtiLockGuard<CtiLogger> doubt_guard(dout);
+                                dout << CtiTime() << " Received a null message from " << whoStr <<", shutting down the connection." << endl;
+                            }
                         }
                         _bQuit = TRUE;
                     }
@@ -321,8 +334,11 @@ void CtiConnection::InThread()
                     {
                         if(getDebugLevel() & DEBUGLEVEL_CONNECTION)
                         {
-                            CtiLockGuard<CtiLogger> doubt_guard(dout);
-                            dout << "**** Resetting the connection **** " << who() << endl;
+                            string whoStr = who();
+                            {
+                                CtiLockGuard<CtiLogger> doubt_guard(dout);
+                                dout << "**** Resetting the connection **** " << whoStr << endl;
+                            }
                         }
                         cleanExchange();      // Make us prepare for reconnect or die trying...
                     }
@@ -356,9 +372,10 @@ void CtiConnection::InThread()
                             {
                                 if(inQueue->isFull())
                                 {
+                                    string whoStr = who();
                                     {
                                         CtiLockGuard<CtiLogger> doubt_guard(dout);
-                                        dout << NowTime << " InThread  : " << who() << " queue is full.  Will BLOCK. It allows " << (INT)inQueue->size() << " entries" << endl;
+                                        dout << NowTime << " InThread  : " << whoStr << " queue is full.  Will BLOCK. It allows " << (INT)inQueue->size() << " entries" << endl;
                                     }
                                 }
 
@@ -366,9 +383,10 @@ void CtiConnection::InThread()
                             }
                             catch(...)
                             {
+                                string whoStr = who();
                                 {
                                     CtiLockGuard<CtiLogger> doubt_guard(dout);
-                                    dout << NowTime << " InThread  : " << who() << " queue is full.  Will BLOCK. It allows " << (INT)inQueue->size() << " entries" << endl;
+                                    dout << NowTime << " InThread  : " << whoStr << " queue is full.  Will BLOCK. It allows " << (INT)inQueue->size() << " entries" << endl;
                                 }
                             }
 
@@ -411,9 +429,10 @@ void CtiConnection::InThread()
         }
         catch( ... )
         {
+            string whoStr = who();
             {
                 CtiLockGuard<CtiLogger> doubt_guard(dout);
-                dout << "**** EXCEPTION **** " << __FILE__ << " (" << __LINE__ << ") " << who() << endl;
+                dout << "**** EXCEPTION **** " << __FILE__ << " (" << __LINE__ << ") " << whoStr << endl;
             }
             _bQuit = TRUE;
             break;
@@ -422,14 +441,17 @@ void CtiConnection::InThread()
 
     if((getDebugLevel() & DEBUGLEVEL_CONNECTION))
     {
-        CtiLockGuard<CtiLogger> doubt_guard(dout);
-        if(_port >= 0)
+        string whoStr = who();
         {
-            dout << NowTime << " InThread  : " << who() << " is terminating...." << endl;
-        }
-        else
-        {
-            dout << NowTime << " InThread  : " << who() << " is terminating...." << endl;
+            CtiLockGuard<CtiLogger> doubt_guard(dout);
+            if(_port >= 0)
+            {
+                dout << NowTime << " InThread  : " << whoStr << " is terminating...." << endl;
+            }
+            else
+            {
+                dout << NowTime << " InThread  : " << whoStr << " is terminating...." << endl;
+            }
         }
     }
 
@@ -449,14 +471,17 @@ void CtiConnection::OutThread()
 
     if(getDebugLevel() & DEBUGLEVEL_CONNECTION)
     {
-        CtiLockGuard<CtiLogger> doubt_guard(dout);
-        if(_port >= 0)
+        string whoStr = who();
         {
-            dout << CtiTime() << " OutThread : " << who() << " has begun operations " << endl;
-        }
-        else
-        {
-            dout << CtiTime() << " OutThread : " << who() << " has begun operations " << " Server Connection" << endl;
+            CtiLockGuard<CtiLogger> doubt_guard(dout);
+            if(_port >= 0)
+            {
+                dout << CtiTime() << " OutThread : " << whoStr << " has begun operations " << endl;
+            }
+            else
+            {
+                dout << CtiTime() << " OutThread : " << whoStr << " has begun operations " << " Server Connection" << endl;
+            }
         }
     }
 
@@ -482,9 +507,10 @@ void CtiConnection::OutThread()
             }
             catch(...)
             {
+                string whoStr = who();
                 {
                     CtiLockGuard<CtiLogger> doubt_guard(dout);
-                    dout << "**** EXCEPTION **** " << __FILE__ << " (" << __LINE__ << ") " << who() << endl;
+                    dout << "**** EXCEPTION **** " << __FILE__ << " (" << __LINE__ << ") " << whoStr << endl;
                 }
             }
 
@@ -558,9 +584,10 @@ void CtiConnection::OutThread()
                 {
                     if(!_bQuit)
                     {
+                        string whoStr = who();
                         {
                             CtiLockGuard<CtiLogger> doubt_guard(dout);
-                            dout << CtiTime() << " Attempting a connection reset with " << who() << endl;
+                            dout << CtiTime() << " Attempting a connection reset with " << whoStr << endl;
                         }
                         cleanExchange();
                     }
@@ -598,14 +625,17 @@ void CtiConnection::OutThread()
 
     if(getDebugLevel() & DEBUGLEVEL_CONNECTION)
     {
-        CtiLockGuard<CtiLogger> doubt_guard(dout);
-        if( _port >= 0 )
+        string whoStr = who();
         {
-            dout << CtiTime() << " OutThread : " << who() << " is terminating...." << endl;
-        }
-        else
-        {
-            dout << CtiTime() << " OutThread : " << who() << " Server Connection is terminating...." << endl;
+            CtiLockGuard<CtiLogger> doubt_guard(dout);
+            if( _port >= 0 )
+            {
+                dout << CtiTime() << " OutThread : " << whoStr << " is terminating...." << endl;
+            }
+            else
+            {
+                dout << CtiTime() << " OutThread : " << whoStr << " Server Connection is terminating...." << endl;
+            }
         }
     }
 }
@@ -735,9 +765,10 @@ INT CtiConnection::ConnectPortal()
 
                         if( _regMsg != NULL ) // I know who I am....
                         {
+                            string whoStr = who();
                             {
                                 CtiLockGuard<CtiLogger> doubt_guard(dout);
-                                dout << CtiTime() << " InThread  : " << who() << " re-registering connection " << endl;
+                                dout << CtiTime() << " InThread  : " << whoStr << " re-registering connection " << endl;
                             }
 
                             WriteConnQue( _regMsg->replicateMessage() );
@@ -776,9 +807,10 @@ void CtiConnection::ShutdownConnection()
 
             while(outQueue.entries() > 0 && _valid)
             {
+                string whoStr = who();
                 {
                     CtiLockGuard<CtiLogger> doubt_guard(dout);
-                    dout << CtiTime() << " Waiting for outbound Queue " << who() << " to flush " << outQueue.entries() << " entries" << endl;
+                    dout << CtiTime() << " Waiting for outbound Queue " << whoStr << " to flush " << outQueue.entries() << " entries" << endl;
                 }
 
                 Sleep(1000);
@@ -800,14 +832,16 @@ void CtiConnection::ShutdownConnection()
             {
                 if( outthread_.requestCancellation(2000)  == RW_THR_TIMEOUT )
                 {
+                    string whoStr = who();
                     CtiLockGuard<CtiLogger> doubt_guard(dout);
-                    dout << "OutThread refuses to cancel after 2 seconds. " << who() << endl;
+                    dout << "OutThread refuses to cancel after 2 seconds. " << whoStr << endl;
                 }
                 if(outthread_.join(2000) == RW_THR_TIMEOUT)
                 {
+                    string whoStr = who();
                     {
                         CtiLockGuard<CtiLogger> doubt_guard(dout);
-                        dout << "OutThread refuses to join   after 2 seconds. " << who() << endl;
+                        dout << "OutThread refuses to join   after 2 seconds. " << whoStr << endl;
                     }
                     // 20051201 CGP... NOT GOOD // outthread_.terminate();
                 }
@@ -822,14 +856,18 @@ void CtiConnection::ShutdownConnection()
             {
                 if( inthread_.requestCancellation(2000)  == RW_THR_TIMEOUT )
                 {
-                    CtiLockGuard<CtiLogger> doubt_guard(dout);
-                    dout << "InThread refuses to close after 2 seconds. " << who() << endl;
+                    string whoStr = who();
+                    {
+                        CtiLockGuard<CtiLogger> doubt_guard(dout);
+                        dout << "InThread refuses to close after 2 seconds. " << whoStr << endl;
+                    }
                 }
                 if(inthread_.join(2000) == RW_THR_TIMEOUT)
                 {
+                    string whoStr = who();
                     {
                         CtiLockGuard<CtiLogger> doubt_guard(dout);
-                        dout << "InThread refuses to join  after 2 seconds. " << who() << endl;
+                        dout << "InThread refuses to join  after 2 seconds. " << whoStr << endl;
                     }
                     // 20051201 CGP... NOT GOOD // inthread_.terminate();
                 }
@@ -837,16 +875,19 @@ void CtiConnection::ShutdownConnection()
 
             if(getDebugLevel() & DEBUGLEVEL_CONNECTION)
             {
-                CtiLockGuard<CtiLogger> doubt_guard(dout);
-                if( _port >= 0 )
+                string whoStr = who();
                 {
                     CtiLockGuard<CtiLogger> doubt_guard(dout);
-                    dout << CtiTime() << " ShutdownConnection() " << who() << endl;
-                }
-                else
-                {
-                    CtiLockGuard<CtiLogger> doubt_guard(dout);
-                    dout << CtiTime() << " ShutdownConnection() " << who() << endl;
+                    if( _port >= 0 )
+                    {
+                        CtiLockGuard<CtiLogger> doubt_guard(dout);
+                        dout << CtiTime() << " ShutdownConnection() " << whoStr << endl;
+                    }
+                    else
+                    {
+                        CtiLockGuard<CtiLogger> doubt_guard(dout);
+                        dout << CtiTime() << " ShutdownConnection() " << whoStr << endl;
+                    }
                 }
             }
         }
@@ -863,8 +904,11 @@ void CtiConnection::ResetConnection()
 {
     if(getDebugLevel() & DEBUGLEVEL_CONNECTION)
     {
-        CtiLockGuard<CtiLogger> doubt_guard(dout);
-        dout << "**** Resetting the connection **** " << who() << endl;
+        string whoStr = who();
+        {
+            CtiLockGuard<CtiLogger> doubt_guard(dout);
+            dout << "**** Resetting the connection **** " << whoStr << endl;
+        }
     }
 
     cleanExchange();
@@ -882,14 +926,17 @@ INT CtiConnection::verifyConnection()
         {
             if(getDebugLevel() & DEBUGLEVEL_CONNECTION)
             {
-                CtiLockGuard<CtiLogger> doubt_guard(dout);
-                dout << CtiTime() << " InThread " << who() << " has exited with a completion state of " << status;
-                if(!_serverConnection)
+                string whoStr = who();
                 {
-                    dout << ". May restart";
+                    CtiLockGuard<CtiLogger> doubt_guard(dout);
+                    dout << CtiTime() << " InThread " << whoStr << " has exited with a completion state of " << status;
+                    if(!_serverConnection)
+                    {
+                        dout << ". May restart";
+                    }
+    
+                    dout << endl;
                 }
-
-                dout << endl;
             }
 
             if(!_serverConnection)
@@ -908,15 +955,18 @@ INT CtiConnection::verifyConnection()
         {
             if(getDebugLevel() & DEBUGLEVEL_CONNECTION)
             {
-                CtiLockGuard<CtiLogger> doubt_guard(dout);
-                dout << CtiTime() << " OutThread " << who() << " has exited with a completion state of " << status;
-
-                if(!_serverConnection)
+                string whoStr = who();
                 {
-                    dout << ". May restart";
+                    CtiLockGuard<CtiLogger> doubt_guard(dout);
+                    dout << CtiTime() << " OutThread " << whoStr << " has exited with a completion state of " << status;
+    
+                    if(!_serverConnection)
+                    {
+                        dout << ". May restart";
+                    }
+    
+                    dout << endl;
                 }
-
-                dout << endl;
             }
 
             if(!_serverConnection)
@@ -1017,8 +1067,11 @@ INT CtiConnection::establishConnection(INT freq)
 
         if( !(++sleepCount % 60) )      // once per minute....
         {
-            CtiLockGuard<CtiLogger> doubt_guard(dout);
-            dout << CtiTime() << " InThread  : " << who() << " connection is not valid. " << endl;
+            string whoStr = who();
+            {
+                CtiLockGuard<CtiLogger> doubt_guard(dout);
+                dout << CtiTime() << " InThread  : " << whoStr << " connection is not valid. " << endl;
+            }
         }
 
         checkCancellation();
@@ -1047,8 +1100,11 @@ INT CtiConnection::waitForConnect()
     {
         if( !(++waitCount % 60) )
         {
-            CtiLockGuard<CtiLogger> doubt_guard(dout);
-            dout << CtiTime() << " OutThread : " << who() << " connection is not valid. " << endl;
+            string whoStr = who();
+            {
+                CtiLockGuard<CtiLogger> doubt_guard(dout);
+                dout << CtiTime() << " OutThread : " << whoStr << " connection is not valid. " << endl;
+            }
         }
 
         // Sleep for about 1 second while looking for a cancellation.
@@ -1084,8 +1140,11 @@ INT CtiConnection::checkCancellation(INT mssleep)
     {
         if(getDebugLevel() & DEBUGLEVEL_CONNECTION)
         {
-            CtiLockGuard<CtiLogger> doubt_guard(dout);
-            dout << CtiTime() << " Connection Thread : " << who() << " canceled " << endl;
+            string whoStr = who();
+            {
+                CtiLockGuard<CtiLogger> doubt_guard(dout);
+                dout << CtiTime() << " Connection Thread : " << whoStr << " canceled " << endl;
+            }
         }
 
         status = NOTNORMAL;
