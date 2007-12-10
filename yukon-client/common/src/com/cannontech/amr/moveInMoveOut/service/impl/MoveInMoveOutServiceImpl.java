@@ -15,18 +15,20 @@ import com.cannontech.amr.deviceread.CalculatedPointResults;
 import com.cannontech.amr.deviceread.dao.CalculatedPointService;
 import com.cannontech.amr.meter.dao.MeterDao;
 import com.cannontech.amr.meter.model.Meter;
-import com.cannontech.amr.moveInMoveOut.bean.MoveInFormObj;
-import com.cannontech.amr.moveInMoveOut.bean.MoveInResultObj;
-import com.cannontech.amr.moveInMoveOut.bean.MoveOutFormObj;
-import com.cannontech.amr.moveInMoveOut.bean.MoveOutResultObj;
+import com.cannontech.amr.moveInMoveOut.bean.MoveInForm;
+import com.cannontech.amr.moveInMoveOut.bean.MoveInResult;
+import com.cannontech.amr.moveInMoveOut.bean.MoveOutForm;
+import com.cannontech.amr.moveInMoveOut.bean.MoveOutResult;
 import com.cannontech.amr.moveInMoveOut.service.MoveInMoveOutService;
+import com.cannontech.amr.moveInMoveOut.tasks.MoveInTask;
+import com.cannontech.amr.moveInMoveOut.tasks.MoveOutTask;
 import com.cannontech.clientutils.YukonLogManager;
 import com.cannontech.common.device.DeviceEventEnum;
 import com.cannontech.common.device.groups.dao.DeviceGroupProviderDao;
-import com.cannontech.common.device.groups.editor.dao.DeviceGroupEditorDao;
 import com.cannontech.common.device.groups.editor.dao.DeviceGroupMemberEditorDao;
 import com.cannontech.common.device.groups.editor.dao.SystemGroupEnum;
 import com.cannontech.common.device.groups.editor.model.StoredDeviceGroup;
+import com.cannontech.common.device.groups.service.DeviceGroupService;
 import com.cannontech.common.util.CtiUtilities;
 import com.cannontech.core.dao.AuthDao;
 import com.cannontech.core.dynamic.DynamicDataSource;
@@ -35,8 +37,6 @@ import com.cannontech.database.data.lite.LiteYukonUser;
 import com.cannontech.database.data.point.PointQualities;
 import com.cannontech.jobs.service.JobManager;
 import com.cannontech.jobs.support.YukonJobDefinition;
-import com.cannontech.jobs.tasks.MoveInTask;
-import com.cannontech.jobs.tasks.MoveOutTask;
 import com.cannontech.message.dispatch.message.PointData;
 import com.cannontech.roles.operator.MeteringRole;
 
@@ -49,55 +49,55 @@ public class MoveInMoveOutServiceImpl implements MoveInMoveOutService {
     private YukonJobDefinition<MoveOutTask> moveOutDefinition = null;
     private AuthDao authDao;
     private CalculatedPointService calculatedPointService;
+    private DeviceGroupService deviceGroupService;
     private DeviceGroupProviderDao deviceGroupDao;
-    private DeviceGroupEditorDao deviceGroupEditorDao;
     private DeviceGroupMemberEditorDao deviceGroupMemberEditorDao;
     private DynamicDataSource dynamicDataSource;
     private MeterDao meterDao;
     private SimpleJdbcOperations jdbcTemplate = null;
 
-    public MoveInResultObj moveIn(MoveInFormObj moveInFormObj) {
+    public MoveInResult moveIn(MoveInForm moveInFormObj) {
 
-        MoveInResultObj moveInResultObj = new MoveInResultObj();
+        MoveInResult moveInResult = new MoveInResult();
 
-        transferMoveInFormToMoveInResults(moveInFormObj, moveInResultObj);
-        moveInResultObj.setPreviousMeter(moveInFormObj.getPreviousMeter());
-        moveInResultObj.setMoveInDate(moveInFormObj.getMoveInDate());
-        moveInResultObj.setSubmissionType("moveIn");
+        transferMoveInFormToMoveInResults(moveInFormObj, moveInResult);
+        moveInResult.setPreviousMeter(moveInFormObj.getPreviousMeter());
+        moveInResult.setMoveInDate(moveInFormObj.getMoveInDate());
+        moveInResult.setSubmissionType("moveIn");
 
-        CalculatedPointResults resultHolder = calculatedPointService.calculatePoint(moveInResultObj.getPreviousMeter(),
+        CalculatedPointResults resultHolder = calculatedPointService.calculatePoint(moveInResult.getPreviousMeter(),
                                                                                     moveInFormObj.getMoveInDate(),
                                                                                     moveInFormObj.getLiteYukonUser());
 
         if (!resultHolder.getErrors().isEmpty()) {
-            logger.info("Move in for " + moveInResultObj.getPreviousMeter()
-                                                        .toString() + " failed. " + moveInResultObj.getErrors());
-            moveInResultObj.setErrors(resultHolder.getErrors());
-            return moveInResultObj;
+            logger.info("Move in for " + moveInResult.getPreviousMeter()
+                                                        .toString() + " failed. " + moveInResult.getErrors());
+            moveInResult.setErrors(resultHolder.getErrors());
+            return moveInResult;
         }
         
-        moveInResultObj.setCurrentReading(resultHolder.getCurrentPVH());
-        moveInResultObj.setCalculatedDifference(resultHolder.getDifferencePVH());
-        moveInResultObj.setCalculatedPreviousReading(resultHolder.getCalculatedPVH());
+        moveInResult.setCurrentReading(resultHolder.getCurrentPVH());
+        moveInResult.setCalculatedDifference(resultHolder.getDifferencePVH());
+        moveInResult.setCalculatedPreviousReading(resultHolder.getCalculatedPVH());
 
         // Adds this point to rawPointHistory since it is calculated
-        insertDataPoint(moveInResultObj.getCurrentReading(),
-                        moveInResultObj.getCalculatedPreviousReading()
+        insertDataPoint(moveInResult.getCurrentReading(),
+                        moveInResult.getCalculatedPreviousReading()
                                        .getValue(),
                         moveInFormObj.getMoveInDate());
 
-        archiveDataMoveIn(moveInResultObj, moveInFormObj.getLiteYukonUser());
+        archiveDataMoveIn(moveInResult, moveInFormObj.getLiteYukonUser());
         updateMeter(moveInFormObj.getPreviousMeter(),
-                    moveInResultObj.getNewMeter());
-        removeServiceDeviceGroups(moveInResultObj);
-        logger.info("Move in for " + moveInResultObj.getPreviousMeter()
+                    moveInResult.getNewMeter());
+        removeServiceDeviceGroups(moveInResult);
+        logger.info("Move in for " + moveInResult.getPreviousMeter()
                                                     .toString() + " successful.");
 
-        return moveInResultObj;
+        return moveInResult;
     }
 
-    public MoveInResultObj scheduleMoveIn(MoveInFormObj moveInFormObj) {
-        MoveInResultObj moveInResultObj = new MoveInResultObj();
+    public MoveInResult scheduleMoveIn(MoveInForm moveInFormObj) {
+        MoveInResult moveInResultObj = new MoveInResult();
         transferMoveInFormToMoveInResults(moveInFormObj, moveInResultObj);
         moveInResultObj.setSubmissionType("moveIn");
         moveInResultObj.setScheduled(true);
@@ -121,9 +121,9 @@ public class MoveInMoveOutServiceImpl implements MoveInMoveOutService {
         return moveInResultObj;
     }
 
-    public MoveOutResultObj moveOut(MoveOutFormObj moveOutFormObj) {
+    public MoveOutResult moveOut(MoveOutForm moveOutFormObj) {
 
-        MoveOutResultObj moveOutResultObj = new MoveOutResultObj();
+        MoveOutResult moveOutResultObj = new MoveOutResult();
         moveOutResultObj.setEmailAddress(moveOutFormObj.getEmailAddress());
         moveOutResultObj.setPreviousMeter(moveOutFormObj.getMeter());
         moveOutResultObj.setMoveOutDate(moveOutFormObj.getMoveOutDate());
@@ -159,8 +159,8 @@ public class MoveInMoveOutServiceImpl implements MoveInMoveOutService {
 
     }
 
-    public MoveOutResultObj scheduleMoveOut(MoveOutFormObj moveOutFormObj) {
-        MoveOutResultObj moveOutResultObj = new MoveOutResultObj();
+    public MoveOutResult scheduleMoveOut(MoveOutForm moveOutFormObj) {
+        MoveOutResult moveOutResultObj = new MoveOutResult();
         moveOutResultObj.setPreviousMeter(moveOutFormObj.getMeter());
         moveOutResultObj.setEmailAddress(moveOutFormObj.getEmailAddress());
         moveOutResultObj.setSubmissionType("moveOut");
@@ -209,28 +209,27 @@ public class MoveInMoveOutServiceImpl implements MoveInMoveOutService {
         }
     }
 
-    private void transferMoveInFormToMoveInResults(MoveInFormObj moveInFormObj,
-            MoveInResultObj moveInResultObj) {
+    private void transferMoveInFormToMoveInResults(MoveInForm moveInFormObj,
+            MoveInResult moveInResultObj) {
         moveInResultObj.setPreviousMeter(moveInFormObj.getPreviousMeter());
-        moveInResultObj.setNewMeter((Meter) moveInFormObj.getPreviousMeter()
-                                                         .clone());
+        moveInResultObj.setNewMeter(meterDao.getForId(moveInFormObj.getPreviousMeter().getDeviceId()));
         moveInResultObj.getNewMeter().setName(moveInFormObj.getMeterName());
         moveInResultObj.getNewMeter()
                        .setMeterNumber(moveInFormObj.getMeterNumber());
         moveInResultObj.setEmailAddress(moveInFormObj.getEmailAddress());
     }
 
-    private void removeServiceDeviceGroups(MoveInResultObj moveInResultObj) {
+    private void removeServiceDeviceGroups(MoveInResult moveInResultObj) {
 
         Meter newMeter = moveInResultObj.getNewMeter();
 
-        StoredDeviceGroup disconnectGroup = deviceGroupEditorDao.getGroup(SystemGroupEnum.DISCONNECTSTATUS);
+        StoredDeviceGroup disconnectGroup = deviceGroupService.getGroup(SystemGroupEnum.DISCONNECTSTATUS);
         if (deviceGroupDao.isDeviceInGroup(disconnectGroup, newMeter)) {
             deviceGroupMemberEditorDao.removeDevices(disconnectGroup, newMeter);
             moveInResultObj.getDeviceGroupsRemoved().add(disconnectGroup);
         }
 
-        StoredDeviceGroup usageMonitoringGroup = deviceGroupEditorDao.getGroup(SystemGroupEnum.USAGEMONITORING);
+        StoredDeviceGroup usageMonitoringGroup = deviceGroupService.getGroup(SystemGroupEnum.USAGEMONITORING);
         if (deviceGroupDao.isDeviceInGroup(usageMonitoringGroup, newMeter)) {
             deviceGroupMemberEditorDao.removeDevices(usageMonitoringGroup,
                                                      newMeter);
@@ -238,17 +237,16 @@ public class MoveInMoveOutServiceImpl implements MoveInMoveOutService {
         }
     }
 
-    private void addServiceDeviceGroups(
-            MoveOutResultObj moveOutResultObj) {
+    private void addServiceDeviceGroups(MoveOutResult moveOutResultObj) {
         Meter oldMeter = moveOutResultObj.getPreviousMeter();
 
-        StoredDeviceGroup disconnectGroup = deviceGroupEditorDao.getGroup(SystemGroupEnum.DISCONNECTSTATUS);
+        StoredDeviceGroup disconnectGroup = deviceGroupService.getGroup(SystemGroupEnum.DISCONNECTSTATUS);
         if (!deviceGroupDao.isDeviceInGroup(disconnectGroup, oldMeter)) {
             deviceGroupMemberEditorDao.addDevices(disconnectGroup, oldMeter);
             moveOutResultObj.getDeviceGroupsAdded().add(disconnectGroup);
         }
 
-        StoredDeviceGroup usageMonitoringGroup = deviceGroupEditorDao.getGroup(SystemGroupEnum.USAGEMONITORING);
+        StoredDeviceGroup usageMonitoringGroup = deviceGroupService.getGroup(SystemGroupEnum.USAGEMONITORING);
         if (!deviceGroupDao.isDeviceInGroup(usageMonitoringGroup, oldMeter)) {
             deviceGroupMemberEditorDao.addDevices(usageMonitoringGroup,
                                                   oldMeter);
@@ -257,7 +255,7 @@ public class MoveInMoveOutServiceImpl implements MoveInMoveOutService {
 
     }
 
-    private void archiveDataMoveIn(MoveInResultObj moveInResultObj,
+    private void archiveDataMoveIn(MoveInResult moveInResultObj,
             LiteYukonUser liteYukonUser) {
         addArchiveEntryDatabase(moveInResultObj.getPreviousMeter(),
                                 moveInResultObj.getCalculatedPreviousReading()
@@ -274,7 +272,7 @@ public class MoveInMoveOutServiceImpl implements MoveInMoveOutService {
 
     }
 
-    private void archiveDataMoveOut(MoveOutResultObj moveOutResultObj,
+    private void archiveDataMoveOut(MoveOutResult moveOutResultObj,
             LiteYukonUser liteYukonUser) {
         addArchiveEntryDatabase(moveOutResultObj.getPreviousMeter(),
                                 moveOutResultObj.getCalculatedReading()
@@ -360,12 +358,6 @@ public class MoveInMoveOutServiceImpl implements MoveInMoveOutService {
     }
 
     @Required
-    public void setDeviceGroupEditorDao(
-            DeviceGroupEditorDao deviceGroupEditorDao) {
-        this.deviceGroupEditorDao = deviceGroupEditorDao;
-    }
-
-    @Required
     public void setDeviceGroupMemberEditorDao(
             DeviceGroupMemberEditorDao deviceGroupMemberEditorDao) {
         this.deviceGroupMemberEditorDao = deviceGroupMemberEditorDao;
@@ -407,6 +399,11 @@ public class MoveInMoveOutServiceImpl implements MoveInMoveOutService {
     public void setCalculatedPointService(
             CalculatedPointService calculatedPointService) {
         this.calculatedPointService = calculatedPointService;
+    }
+
+    @Required
+    public void setDeviceGroupService(DeviceGroupService deviceGroupService) {
+        this.deviceGroupService = deviceGroupService;
     }
 
 }

@@ -5,9 +5,20 @@
 
     <bean id="moveInMoveOutEmailService"
         class="com.cannontech.amr.moveInMoveOut.service.impl.MoveInMoveOutEmailServiceImpl">
-        <property name="dateFormattingService" ref="dateFormattingService"/>
-        <property name="emailService" ref="emailService"/>
-        <property name="pointFormattingService" ref="pointFormattingService"/>
+        <property name="dateFormattingService"
+            ref="dateFormattingService" />
+        <property name="emailService" ref="emailService" />
+        <property name="pointFormattingService"
+            ref="pointFormattingService" />
+            
+        <property name="moveInSuccessEmail" value="classpath:com/cannontech/amr/moveInMoveOut/service/templates/moveInSuccessEmail.tmp" />
+        <property name="moveInScheduledEmail" value="classpath:com/cannontech/amr/moveInMoveOut/service/templates/moveInScheduledEmail.tmp" />
+        <property name="moveInFailedEmail" value="classpath:com/cannontech/amr/moveInMoveOut/service/templates/moveInFailedEmail.tmp" />
+
+        <property name="moveOutSuccessEmail" value="classpath:com/cannontech/amr/moveInMoveOut/service/templates/moveOutSuccessEmail.tmp" />
+        <property name="moveOutScheduledEmail" value="classpath:com/cannontech/amr/moveInMoveOut/service/templates/moveOutScheduledEmail.tmp" />
+        <property name="moveOutFailedEmail" value="classpath:com/cannontech/amr/moveInMoveOut/service/templates/moveOutFailedEmail.tmp" />
+           
     </bean>
 
     <bean id="moveInMoveOutService"
@@ -18,13 +29,150 @@
         <property name="moveOutDefinition" ref="moveOutJob" />
 
         <property name="authDao" ref="authDao" />
-        <property name="calculatedPointService" ref="calculatedPointService" />
+        <property name="calculatedPointService"
+            ref="calculatedPointService" />
+        <property name="deviceGroupService" ref="deviceGroupService" />
         <property name="deviceGroupDao" ref="deviceGroupDao" />
-        <property name="deviceGroupEditorDao" ref="deviceGroupEditorDao" />
-        <property name="deviceGroupMemberEditorDao" ref="deviceGroupMemberEditorDao" />
+        <property name="deviceGroupMemberEditorDao"
+            ref="deviceGroupMemberEditorDao" />
         <property name="dynamicDataSource" ref="dynamicDataSource" />
         <property name="jdbcTemplate" ref="simpleJdbcTemplate" />
         <property name="meterDao" ref="meterDao" />
+    </bean>
+
+    <!-- Moving JobDefinitions -->
+    <bean id="moveInJob"
+        class="com.cannontech.jobs.support.SimpleYukonJobDefinition">
+        <property name="taskName">
+            <idref local="moveInTask" />
+        </property>
+        <property name="title" value="Move In Job" />
+        <property name="inputs">
+            <bean class="com.cannontech.web.input.InputRoot">
+                <property name="inputList">
+                    <list>
+                        <bean
+                            class="com.cannontech.web.input.InputBase">
+                            <property name="field" value="meter" />
+                            <property name="displayName" value="Meter" />
+                            <property name="type">
+                                <bean
+                                    class="com.cannontech.web.input.type.MeterType">
+                                    <property name="meterDao"
+                                        ref="meterDao" />
+                                </bean>
+                            </property>
+                        </bean>
+                        <bean
+                            class="com.cannontech.web.input.InputBase">
+                            <property name="field"
+                                value="newMeterNumber" />
+                            <property name="displayName"
+                                value="New Meter Number" />
+                            <property name="type">
+                                <bean
+                                    class="com.cannontech.web.input.type.StringType" />
+                            </property>
+                        </bean>
+                        <bean
+                            class="com.cannontech.web.input.InputBase">
+                            <property name="field" value="newMeterName" />
+                            <property name="displayName"
+                                value="New Meter Name" />
+                            <property name="type">
+                                <bean
+                                    class="com.cannontech.web.input.type.StringType" />
+                            </property>
+                        </bean>
+                        <bean
+                            class="com.cannontech.web.input.InputBase">
+                            <property name="field" value="emailAddress" />
+                            <property name="displayName"
+                                value="Email Address" />
+                            <property name="type">
+                                <bean
+                                    class="com.cannontech.web.input.type.StringType" />
+                            </property>
+                        </bean>
+                        <bean
+                            class="com.cannontech.web.input.InputBase">
+                            <property name="field" value="moveInDate" />
+                            <property name="displayName"
+                                value="Move In Date" />
+                            <property name="type">
+                                <bean
+                                    class="com.cannontech.web.input.type.DateType" />
+                            </property>
+                        </bean>
+                    </list>
+                </property>
+            </bean>
+        </property>
+    </bean>
+
+    <bean id="moveOutJob"
+        class="com.cannontech.jobs.support.SimpleYukonJobDefinition">
+        <property name="taskName">
+            <idref local="moveOutTask" />
+        </property>
+        <property name="title" value="Move Out Job" />
+        <property name="inputs">
+            <bean class="com.cannontech.web.input.InputRoot">
+                <property name="inputList">
+                    <list>
+                        <bean
+                            class="com.cannontech.web.input.InputBase">
+                            <property name="field" value="meter" />
+                            <property name="displayName" value="Meter" />
+                            <property name="type">
+                                <bean
+                                    class="com.cannontech.web.input.type.MeterType">
+                                    <property name="meterDao"
+                                        ref="meterDao" />
+                                </bean>
+                            </property>
+                        </bean>
+                        <bean
+                            class="com.cannontech.web.input.InputBase">
+                            <property name="field" value="emailAddress" />
+                            <property name="displayName"
+                                value="Email Address" />
+                            <property name="type">
+                                <bean
+                                    class="com.cannontech.web.input.type.StringType" />
+                            </property>
+                        </bean>
+                        <bean
+                            class="com.cannontech.web.input.InputBase">
+                            <property name="field" value="moveOutDate" />
+                            <property name="displayName"
+                                value="Move Out Date" />
+                            <property name="type">
+                                <bean
+                                    class="com.cannontech.web.input.type.DateType" />
+                            </property>
+                        </bean>
+                    </list>
+                </property>
+            </bean>
+        </property>
+    </bean>
+
+    <!--  Moving Tasks -->
+    <bean id="moveInTask"
+        class="com.cannontech.amr.moveInMoveOut.tasks.MoveInTask">
+        <property name="moveInMoveOutService"
+            ref="moveInMoveOutService" />
+        <property name="moveInMoveOutEmailService"
+            ref="moveInMoveOutEmailService" />
+    </bean>
+
+    <bean id="moveOutTask"
+        class="com.cannontech.amr.moveInMoveOut.tasks.MoveOutTask">
+        <property name="moveInMoveOutService"
+            ref="moveInMoveOutService" />
+        <property name="moveInMoveOutEmailService"
+            ref="moveInMoveOutEmailService" />
     </bean>
 
 </beans>

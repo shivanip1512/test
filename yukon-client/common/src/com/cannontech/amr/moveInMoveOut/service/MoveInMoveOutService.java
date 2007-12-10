@@ -1,9 +1,9 @@
 package com.cannontech.amr.moveInMoveOut.service;
 
-import com.cannontech.amr.moveInMoveOut.bean.MoveInFormObj;
-import com.cannontech.amr.moveInMoveOut.bean.MoveInResultObj;
-import com.cannontech.amr.moveInMoveOut.bean.MoveOutFormObj;
-import com.cannontech.amr.moveInMoveOut.bean.MoveOutResultObj;
+import com.cannontech.amr.moveInMoveOut.bean.MoveInForm;
+import com.cannontech.amr.moveInMoveOut.bean.MoveInResult;
+import com.cannontech.amr.moveInMoveOut.bean.MoveOutForm;
+import com.cannontech.amr.moveInMoveOut.bean.MoveOutResult;
 
 public interface MoveInMoveOutService {
 
@@ -11,25 +11,25 @@ public interface MoveInMoveOutService {
      * @param moveInFormObj
      * @return
      */
-    public MoveInResultObj moveIn(MoveInFormObj moveInFormObj);
+    public MoveInResult moveIn(MoveInForm moveInFormObj);
 
     /**
      * @param moveOutFormObj
      * @return
      */
-    public MoveOutResultObj moveOut(MoveOutFormObj moveOutFormObj);
+    public MoveOutResult moveOut(MoveOutForm moveOutFormObj);
 
     /**
      * @param moveInFormObj
      * @return
      */
-    public MoveInResultObj scheduleMoveIn(MoveInFormObj moveInFormObj);
+    public MoveInResult scheduleMoveIn(MoveInForm moveInFormObj);
 
     /**
      * @param moveInFormObj
      * @param moveInDefinition
      * @return
      */
-    public MoveOutResultObj scheduleMoveOut(MoveOutFormObj moveOutFormObj);
+    public MoveOutResult scheduleMoveOut(MoveOutForm moveOutFormObj);
 
 }

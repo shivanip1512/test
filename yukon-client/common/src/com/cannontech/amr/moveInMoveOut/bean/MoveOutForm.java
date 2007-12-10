@@ -5,7 +5,7 @@ import java.util.Date;
 import com.cannontech.amr.meter.model.Meter;
 import com.cannontech.database.data.lite.LiteYukonUser;
 
-public class MoveOutFormObj{
+public class MoveOutForm{
     private String emailAddress;
     private LiteYukonUser liteYukonUser;
     private Meter meter;

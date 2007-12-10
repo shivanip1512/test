@@ -16,23 +16,12 @@ import org.springframework.beans.factory.annotation.Required;
 
 import com.cannontech.core.dao.RoleDao;
 import com.cannontech.roles.yukon.SystemRole;
-import com.cannontech.tools.email.DefaultEmailMessage;
 import com.cannontech.tools.email.EmailMessageHolder;
 import com.cannontech.tools.email.EmailService;
 
 public class EmailServiceImpl implements EmailService {
     private RoleDao roleDao;
 
-    public DefaultEmailMessage getEmailer(String email, String subject, String body){
-        
-        DefaultEmailMessage emailer = new DefaultEmailMessage();
-        emailer.setRecipient(email);
-        emailer.setSubject(subject);
-        emailer.setBody(body);
-        
-        return emailer;
-    }
-    
     public void sendMessage(EmailMessageHolder holder) throws MessagingException {
         
         MimeMessage _message = prepareMessage(holder);

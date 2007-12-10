@@ -1,14 +1,13 @@
-package com.cannontech.jobs.tasks;
+package com.cannontech.amr.moveInMoveOut.tasks;
 
 import java.util.Date;
 
-import org.apache.commons.lang.StringUtils;
 import org.apache.log4j.Logger;
 import org.springframework.beans.factory.annotation.Required;
 
 import com.cannontech.amr.meter.model.Meter;
-import com.cannontech.amr.moveInMoveOut.bean.MoveInFormObj;
-import com.cannontech.amr.moveInMoveOut.bean.MoveInResultObj;
+import com.cannontech.amr.moveInMoveOut.bean.MoveInForm;
+import com.cannontech.amr.moveInMoveOut.bean.MoveInResult;
 import com.cannontech.amr.moveInMoveOut.service.MoveInMoveOutEmailService;
 import com.cannontech.amr.moveInMoveOut.service.MoveInMoveOutService;
 import com.cannontech.clientutils.YukonLogManager;
@@ -37,7 +36,7 @@ public class MoveInTask implements YukonTask {
     
     private void startTask(){
         logger.info("Starting move in task.");
-        MoveInFormObj moveInFormObj = new MoveInFormObj();
+        MoveInForm moveInFormObj = new MoveInForm();
         moveInFormObj.setEmailAddress(emailAddress);
         moveInFormObj.setLiteYukonUser(liteYukonUser);
         moveInFormObj.setMeterName(newMeterName);
@@ -45,17 +44,10 @@ public class MoveInTask implements YukonTask {
         moveInFormObj.setMoveInDate(moveInDate);
         moveInFormObj.setPreviousMeter(meter);
 
-        MoveInResultObj moveInResultObj = null;
+        MoveInResult moveInResult = null;
 
-        moveInResultObj = moveInMoveOutService.moveIn(moveInFormObj);
-        if (StringUtils.isNotBlank(moveInFormObj.getEmailAddress())) {
-            if (moveInResultObj.getErrors().isEmpty()) {
-                moveInMoveOutEmailService.createMoveInSuccessEmail(moveInResultObj,
-                                                                   liteYukonUser);
-            } else {
-                moveInMoveOutEmailService.createMoveInFailureEmail(moveInResultObj, liteYukonUser);
-            }
-        }
+        moveInResult = moveInMoveOutService.moveIn(moveInFormObj);
+        moveInMoveOutEmailService.createMoveInEmail(moveInResult, liteYukonUser);
     }
 
     public void stop() throws UnsupportedOperationException {

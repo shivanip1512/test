@@ -357,11 +357,6 @@ public class DeviceGroupEditorDaoImpl implements DeviceGroupEditorDao, DeviceGro
         return result;
     }
 
-    
-    public StoredDeviceGroup getGroup(SystemGroupEnum group) {
-        return getGroupById(group.getId());
-    }
-    
     @Required
     public void setJdbcTemplate(SimpleJdbcOperations jdbcTemplate) {
         this.jdbcTemplate = jdbcTemplate;

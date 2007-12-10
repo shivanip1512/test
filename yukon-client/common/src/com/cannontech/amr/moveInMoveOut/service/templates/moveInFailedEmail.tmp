@@ -1,0 +1,4 @@
+The system was not able to process the move in request for {prevMeterName} for the following reasons.
+
+
+{errors}

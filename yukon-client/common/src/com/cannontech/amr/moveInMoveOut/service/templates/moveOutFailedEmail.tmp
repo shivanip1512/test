@@ -1,0 +1,3 @@
+The system was not able to process the move out request for {prevMeterName} for the following reasons.
+
+{errors}

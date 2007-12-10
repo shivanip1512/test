@@ -45,7 +45,5 @@ public interface DeviceGroupEditorDao {
 
     public StoredDeviceGroup getGroupById(int groupId);
     
-    public StoredDeviceGroup getGroup(SystemGroupEnum group);
-
     public void updateGroup(StoredDeviceGroup group);
 }

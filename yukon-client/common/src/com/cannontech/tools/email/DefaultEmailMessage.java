@@ -6,6 +6,14 @@ public class DefaultEmailMessage implements EmailMessageHolder {
     private String recipient = "";
     private String subject = "";
 
+    public DefaultEmailMessage(){}
+    
+    public DefaultEmailMessage(String recipient, String subject,String body){
+        this.recipient = recipient;
+        this.subject = subject;
+        this.body = body;
+    }
+    
     public void setBody(String body) {
         this.body = body;
     }

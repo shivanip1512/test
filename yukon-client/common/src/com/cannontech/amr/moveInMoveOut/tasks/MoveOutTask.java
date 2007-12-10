@@ -1,14 +1,13 @@
-package com.cannontech.jobs.tasks;
+package com.cannontech.amr.moveInMoveOut.tasks;
 
 import java.util.Date;
 
-import org.apache.commons.lang.StringUtils;
 import org.apache.log4j.Logger;
 import org.springframework.beans.factory.annotation.Required;
 
 import com.cannontech.amr.meter.model.Meter;
-import com.cannontech.amr.moveInMoveOut.bean.MoveOutFormObj;
-import com.cannontech.amr.moveInMoveOut.bean.MoveOutResultObj;
+import com.cannontech.amr.moveInMoveOut.bean.MoveOutForm;
+import com.cannontech.amr.moveInMoveOut.bean.MoveOutResult;
 import com.cannontech.amr.moveInMoveOut.service.MoveInMoveOutEmailService;
 import com.cannontech.amr.moveInMoveOut.service.MoveInMoveOutService;
 import com.cannontech.clientutils.YukonLogManager;
@@ -35,23 +34,16 @@ public class MoveOutTask implements YukonTask {
 
     private void startTask() {
         logger.info("Starting move out task.");
-        MoveOutFormObj moveOutFormObj = new MoveOutFormObj();
+        MoveOutForm moveOutFormObj = new MoveOutForm();
         moveOutFormObj.setEmailAddress(emailAddress);
         moveOutFormObj.setLiteYukonUser(liteYukonUser);
         moveOutFormObj.setMeter(meter);
         moveOutFormObj.setMoveOutDate(moveOutDate);
         
-        MoveOutResultObj moveOutResultObj = null;
-
-        moveOutResultObj = moveInMoveOutService.moveOut(moveOutFormObj);
-        if (StringUtils.isNotBlank(moveOutFormObj.getEmailAddress())) {
-            if (moveOutResultObj.getErrors().isEmpty()) {
-                moveInMoveOutEmailService.createMoveOutSuccessEmail(moveOutResultObj,
-                                                                    liteYukonUser);
-            } else {
-                moveInMoveOutEmailService.createMoveOutFailureEmail(moveOutResultObj, liteYukonUser);
-            }
-        }
+        MoveOutResult moveOutResult = null;
+        
+        moveOutResult = moveInMoveOutService.moveOut(moveOutFormObj);
+        moveInMoveOutEmailService.createMoveOutEmail(moveOutResult, liteYukonUser);
     }
 
     public void stop() throws UnsupportedOperationException {

@@ -9,7 +9,7 @@ import com.cannontech.amr.meter.model.Meter;
 import com.cannontech.common.device.groups.model.DeviceGroup;
 import com.cannontech.core.dynamic.PointValueHolder;
 
-public class MoveOutResultObj{
+public class MoveOutResult{
     private Date moveOutDate;
     private PointValueHolder calculatedReading;
     private PointValueHolder currentReading;
