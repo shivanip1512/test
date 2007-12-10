@@ -339,12 +339,6 @@
                 <multiplier value="0.01"/>
                 <unitofmeasure value="kVAr"/>
             </point>
-			<point init="true" type="Analog">
-                <name>Outages</name>
-                <offset value="100"/>
-                <multiplier value="1.0"/>
-                <unitofmeasure value="Seconds"/>
-            </point>
             
             <point type="Status">
                 <name>Comm Status</name>
@@ -477,12 +471,6 @@
         		<pointRef name="Blink Count"/>
         	</command>
         	
-			<command name="Read Outage Log (6 most recent)">
-				<cmd text="getvalue outage 1"/>
-				<cmd text="getvalue outage 3"/>
-				<cmd text="getvalue outage 5"/>
-				<pointRef name="Outages"/>
-			</command>
 			<command name="Read Total kWh">
 				<cmd text="getvalue ied kwht"/>
 				<pointRef name="Total kWh"/>
@@ -572,9 +560,6 @@
         	</attribute>
         	<attribute name="KVARH">
         		<basicLookup point="Rate A kVArh" />
-        	</attribute>
-        	<attribute name="OUTAGE_LOG">
-        		<basicLookup point="Outages" />
         	</attribute>
         	<attribute name="LOAD_PROFILE">
         		<basicLookup point="kW-LP" />
@@ -757,12 +742,6 @@
                 <multiplier value="0.01"/>
                 <unitofmeasure value="kVAr"/>
             </point>
-            <point init="true" type="Analog">
-                <name>Outages</name>
-                <offset value="100"/>
-                <multiplier value="1.0"/>
-                <unitofmeasure value="Seconds"/>
-            </point>
             <point init="true" type="DemandAccumulator">
                 <name>kW-LP</name>
                 <offset value="101"/>
@@ -816,12 +795,6 @@
         		<pointRef name="Blink Count"/>
         	</command>
         	
-			<command name="Read Outage Log (6 most recent)">
-				<cmd text="getvalue outage 1"/>
-				<cmd text="getvalue outage 3"/>
-				<cmd text="getvalue outage 5"/>
-				<pointRef name="Outages"/>
-			</command>
 			<command name="Read Total kWh">
 				<cmd text="getvalue ied kwht"/>
 				<pointRef name="Total kWh"/>
@@ -910,9 +883,6 @@
         	</attribute>
         	<attribute name="KVARH">
         		<basicLookup point="Rate A kVArh" />
-        	</attribute>
-        	<attribute name="OUTAGE_LOG">
-        		<basicLookup point="Outages" />
         	</attribute>
         	<attribute name="LOAD_PROFILE">
         		<basicLookup point="kW-LP" />
@@ -1089,12 +1059,6 @@
                 <multiplier value="1.0"/>
                 <unitofmeasure value="Volts"/>
             </point>
-            <point init="true" type="Analog">
-                <name>Outages</name>
-                <offset value="100"/>
-                <multiplier value="1.0"/>
-                <unitofmeasure value="Seconds"/>
-            </point>
             <point init="true" type="DemandAccumulator">
                 <name>kW-LP</name>
                 <offset value="101"/>
@@ -1148,12 +1112,6 @@
         		<pointRef name="Blink Count"/>
         	</command>
         	
-			<command name="Read Outage Log (6 most recent)">
-				<cmd text="getvalue outage 1"/>
-				<cmd text="getvalue outage 3"/>
-				<cmd text="getvalue outage 5"/>
-				<pointRef name="Outages"/>
-			</command>
 			<command name="Read Total kWh">
 				<cmd text="getvalue ied kwht"/>
 				<pointRef name="Total kWh"/>
@@ -1242,9 +1200,6 @@
         	</attribute>
         	<attribute name="KVARH">
         		<basicLookup point="Rate A kVArh" />
-        	</attribute>
-        	<attribute name="OUTAGE_LOG">
-        		<basicLookup point="Outages" />
         	</attribute>
         	<attribute name="LOAD_PROFILE">
         		<basicLookup point="kW-LP" />
@@ -1421,12 +1376,6 @@
                 <multiplier value="1.0"/>
                 <unitofmeasure value="Volts"/>
             </point>
-            <point init="true" type="Analog">
-                <name>Outages</name>
-                <offset value="100"/>
-                <multiplier value="1.0"/>
-                <unitofmeasure value="Seconds"/>
-            </point>
             <point init="true" type="DemandAccumulator">
                 <name>kW-LP</name>
                 <offset value="101"/>
@@ -1480,12 +1429,6 @@
         		<pointRef name="Blink Count"/>
         	</command>
         	
-			<command name="Read Outage Log (6 most recent)">
-				<cmd text="getvalue outage 1"/>
-				<cmd text="getvalue outage 3"/>
-				<cmd text="getvalue outage 5"/>
-				<pointRef name="Outages"/>
-			</command>
 			<command name="Read Total kWh">
 				<cmd text="getvalue ied kwht"/>
 				<pointRef name="Total kWh"/>
@@ -1574,9 +1517,6 @@
         	</attribute>
         	<attribute name="KVARH">
         		<basicLookup point="Rate A kVArh" />
-        	</attribute>
-        	<attribute name="OUTAGE_LOG">
-        		<basicLookup point="Outages" />
         	</attribute>
         	<attribute name="LOAD_PROFILE">
         		<basicLookup point="kW-LP" />
