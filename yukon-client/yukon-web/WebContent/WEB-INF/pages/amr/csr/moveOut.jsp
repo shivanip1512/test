@@ -2,9 +2,9 @@
 <%@ taglib uri="http://cannontech.com/tags/cti" prefix="cti"%>
 <%@ taglib uri="http://java.sun.com/jsp/jstl/core" prefix="c"%>
 <c:url var="moveOutFormUrl"
-    value="/WEB-INF/pages/moveInMoveOut/moveOutForm.jsp" />
+    value="/WEB-INF/pages/amr/csr/moveOutForm.jsp" />
 <c:url var="moveOutResultsUrl"
-    value="/WEB-INF/pages/moveInMoveOut/moveOutResults.jsp" />
+    value="/WEB-INF/pages/amr/csr/moveOutResults.jsp" />
 
 <cti:standardPage title="Move Out Page" module="amr">
     <cti:standardMenu menuSelection="deviceselection" />

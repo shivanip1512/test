@@ -37,6 +37,11 @@
 		<property name="roleDao" ref="roleDao"/>
 		<property name="csrService" ref="csrService" />
 		<property name="attributeService" ref="attributeService" />
+        <property name="moveInMoveOutService" ref="moveInMoveOutService" />
+        <property name="moveInMoveOutEmailService" ref="moveInMoveOutEmailService" />
+        <property name="meterDao" ref="meterDao" />
+        <property name="dateFormattingService" ref="dateFormattingService" />
+        
     </bean>
     
 </beans>

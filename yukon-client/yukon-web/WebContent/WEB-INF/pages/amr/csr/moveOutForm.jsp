@@ -1,8 +1,6 @@
 <%@ taglib tagdir="/WEB-INF/tags" prefix="ct"%>
 <%@ taglib uri="http://cannontech.com/tags/cti" prefix="cti"%>
 <%@ taglib uri="http://java.sun.com/jsp/jstl/core" prefix="c"%>
-<c:url var="previousReadingOptionsUrl"
-    value="/WEB-INF/pages/point/previousReadingsOptions.jsp" />
 
 <c:forEach items="${validationErrors}" var="error">
     <span class="internalSectionHeader" style>${error}</span>
@@ -10,7 +8,7 @@
 </c:forEach>
 
 
-<form action="/spring/moveInMoveOut/moveOutRequest?deviceId=${meter.deviceId}" id="moveOutForm"
+<form action="/spring/csr/moveOutRequest?deviceId=${meter.deviceId}" id="moveOutForm"
     method="post">
     <input name="deviceId" type="hidden" value="${meter.deviceId}" />
 

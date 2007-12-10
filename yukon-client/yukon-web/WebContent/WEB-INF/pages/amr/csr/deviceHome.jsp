@@ -52,29 +52,36 @@
 				<ct:boxContainer title="Actions">
                 
                     <!-- Actions: High Bill Complaint -->
-					<c:choose>
-						<c:when test="${highBillSupported}">
-                            <c:url var="moveInUrl" value="/spring/moveInMoveOut/moveIn">
+                    <c:choose>
+                        <c:when test="${moveSupported}">
+                            <c:url var="moveInUrl" value="/spring/csr/moveIn">
                                 <c:param name="deviceId" value="${deviceId}" />
                             </c:url>
                             <a href="${moveInUrl}">Move In</a> <br />
 
-                            <c:url var="moveOutUrl" value="/spring/moveInMoveOut/moveOut">
+                            <c:url var="moveOutUrl" value="/spring/csr/moveOut">
                                 <c:param name="deviceId" value="${deviceId}" />
                             </c:url>
                             <a href="${moveOutUrl}">Move Out</a> <br />
-
-							<c:url var="highBillUrl" value="/spring/csr/highBill">
-								<c:param name="deviceId" value="${deviceId}" />
-							</c:url>
-							<a href="${highBillUrl}">High Bill Complaint</a>
-						</c:when>
-						<c:otherwise>
-                        Customer Move In (not supported) <br />
-                        Customer Move Out (not supported) <br />
-						High Bill Complaint (not supported)
-						</c:otherwise>
-					</c:choose>
+                        </c:when>
+                        <c:otherwise>
+                        Move In (not supported) <br />
+                        Move Out (not supported) <br />
+                        </c:otherwise>
+                    </c:choose>
+                    
+                    <c:choose>
+                        <c:when test="${highBillSupported}">
+                            <c:url var="highBillUrl" value="/spring/csr/highBill">
+                                <c:param name="deviceId" value="${deviceId}" />
+                            </c:url>
+                            <a href="${highBillUrl}">High Bill Complaint</a>
+                        </c:when>
+                        <c:otherwise>
+                        High Bill Complaint (not supported)
+                        </c:otherwise>
+                    </c:choose>
+                    
                     <br/>
 					<cti:checkRole role="CommanderRole.ROLEID">
                         
