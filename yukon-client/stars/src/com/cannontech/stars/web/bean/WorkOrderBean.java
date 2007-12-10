@@ -178,9 +178,8 @@ public class WorkOrderBean {
 	private Date startDate = null;
 	private Date stopDate = null;
 	
-	private int numberOfRecords = 0;
 	private boolean viewAllResults = false;
-	private ArrayList<FilterWrapper> filters = null;
+	private List<FilterWrapper> filters = null;
 	private int sortBy = CtiUtilities.NONE_ZERO_ID;
 	private int sortOrder = SORT_ORDER_ASCENDING;
 	private int filterBy = CtiUtilities.NONE_ZERO_ID;
@@ -192,7 +191,7 @@ public class WorkOrderBean {
 	private int energyCompanyID = 0;
 	private int htmlStyle = HTML_STYLE_WORK_ORDERS;
 	private String referer = null;
-	private ArrayList searchResults = null;
+	private List<Object> searchResults = null;
 	
 	private boolean sortByChanged = false;
 	private boolean sortOrderChanged = false;
@@ -295,14 +294,6 @@ public class WorkOrderBean {
 	}
 	
 	public String getHTML(HttpServletRequest req) {
-		StarsYukonUser user = (StarsYukonUser) req.getSession().getAttribute( ServletUtils.ATT_STARS_YUKON_USER );
-		
-		/*setManageMembers(false);
-        if(DaoFactory.getAuthDao().checkRoleProperty( user.getYukonUser(), AdministratorRole.ADMIN_MANAGE_MEMBERS ) && 
-        		(getEnergyCompany().getChildren().size() > 0)){
-                setManageMembers(true);
-		}*/		
-		
         List<LiteWorkOrderBase> soList = getWorkOrderList();
 		if (soList == null || soList.size() == 0)
 			return "<p class='ErrorMsg'>No service order found.</p>";
@@ -595,11 +586,11 @@ public class WorkOrderBean {
         }
 	}
 
-	public ArrayList<FilterWrapper> getFilters() {
+	public List<FilterWrapper> getFilters() {
 		return filters;
 	}
 
-	public void setFilters(ArrayList<FilterWrapper> newFilters) {
+	public void setFilters(List<FilterWrapper> newFilters) {
 		if( newFilters == null || !(newFilters.equals(filters)) )
 		{
 			this.filters = newFilters;
@@ -613,7 +604,7 @@ public class WorkOrderBean {
 		//TODO Need to tweak so we don't load all the WorkOrders multiple times. 
 //        setHtmlStyle(HTML_STYLE_FILTERED_INVENTORY_SUMMARY);
         
-        setFilters((ArrayList<FilterWrapper>) req.getSession().getAttribute(ServletUtil.FILTER_WORKORDER_LIST));
+        setFilters((List<FilterWrapper>) req.getSession().getAttribute(ServletUtil.FILTER_WORKORDER_LIST));
         String hardwareNum = getHTML(req);
 //        setHtmlStyle(HTML_STYLE_LIST_INVENTORY);
 //        numberOfRecords = hardwareNum;

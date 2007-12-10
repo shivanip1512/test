@@ -131,18 +131,49 @@
                 </td>
               </tr>
               <tr>
-  			    <td align="right" width="47%"><INPUT type="checkbox" name="enableStart" onclick="enableStartDate(this.form, this.checked);"/>Start Date: 
-				<div id='startDateDiv' disabled="true">
-                <input id="startCal" type="text" name="start" value="<%= datePart.format(ServletUtil.getToday()) %>" size="8">
+                <%
+                    Date startDate;
+                    Date stopDate;
+                    String startDateSelected;
+                    String stopDateSelected;
+                    String startDateDivDisabled;
+                    String stopDateDivDisabled;
+                    
+                    if (workOrderBean.getStartDate() != null) {
+                        startDate = workOrderBean.getStartDate();
+                        startDateSelected = "checked";
+                        startDateDivDisabled = "";
+                    } else { 
+                        startDate = ServletUtil.getToday();
+                        startDateSelected = "";
+                        startDateDivDisabled = "disabled";
+                    }
+                    
+                    if (workOrderBean.getStopDate() != null) {
+                        stopDate = workOrderBean.getStopDate();
+                        stopDateSelected = "checked";
+                        stopDateDivDisabled = "";
+                    } else {
+                        stopDate = ServletUtil.getYesterday();
+                        stopDateSelected = "";
+                        stopDateDivDisabled = "disabled";
+                    }
+                    
+                    String formattedStartDate = datePart.format(startDate);
+                    String formattedStopDate = datePart.format(stopDate);
+                %>
+  			    <td align="right" width="47%"><INPUT id="enableStart" type="checkbox" name="enableStart" onclick="enableStartDate('<%=formattedStartDate%>');" <%=startDateSelected%>/>Start Date: 
+				<div id='startDateDiv' <%=startDateDivDisabled%>>
+                <input id="startCal" type="text" name="start" value="<%=formattedStartDate%>" size="8">
                   <a id="startCalHRef" href="javascript:;" style="cursor:default"
                       onMouseOver="window.status='Start Date Calendar';return true;"
 			          onMouseOut="window.status='';return true;"> 
                 <img src="<%=request.getContextPath()%>/WebConfig/yukon/Icons/StartCalendar.gif" width="20" height="15" align="ABSMIDDLE" border="0">
                 </a></div></td>
                 <td>&nbsp;</td>
-                <td width="47%"><INPUT type="checkbox" name="enableStop" onclick="enableStopDate(this.form, this.checked);"/>Stop Date: 
-   				<div id='stopDateDiv' disabled="true"> 
-                <input id="stopCal" type="text" name="stop" value="<%= datePart.format(ServletUtil.getTomorrow()) %>" size="8">
+                <td width="47%"><INPUT id="enableStop" type="checkbox" name="enableStop" onclick="enableStopDate('<%=formattedStopDate%>');" <%=stopDateSelected%>/>Stop Date: 
+   				<div id='stopDateDiv' <%=stopDateDivDisabled%>> 
+                <input id="stopCal" type="text" name="stop" value="<%=formattedStopDate%>" size="8">
                   <a id="stopCalHRef" href="javascript:;" style="cursor:default"
                       onMouseOver="window.status='Stop Date Calendar';return true;"
 			          onMouseOut="window.status='';return true;"> 
@@ -369,36 +400,38 @@
 			}
 		}
 
-        function enableStartDate(form, isChecked)
-		{
-			if( isChecked)
-			{
-				document.getElementById("startCalHRef").style.cursor = 'pointer';
-				document.getElementById("startCalHRef").href = 'javascript:openCalendar(document.MForm.startCal)'
-				form.startCal.value = '<%= datePart.format(ServletUtil.getToday()) %>';
-			}
-			else
-			{
-				document.getElementById("startCalHRef").style.cursor = 'default';
-				document.getElementById("startCalHRef").href = 'javascript:;'
-				form.startCal.value = '<%= datePart.format(ServletUtil.getToday()) %>';
-			}
-			document.getElementById('startDateDiv').disabled = !isChecked;
+        function enableStartDate(startDateValue) {
+            var startCalHRef = $("startCalHRef");
+            var isChecked = $("enableStart").checked;
+            var cursor = 'default';
+            var href = 'javascript:void();';
+
+            if (isChecked) {
+                cursor = 'hand';
+                href = 'javascript:openCalendar(document.MForm.startCal);';
+            }
+            
+            $("startDateDiv").disabled = !isChecked;
+            $("startCal").value = startDateValue;
+            startCalHRef.style.cursor = cursor;
+            startCalHRef.href = href; 
 		}
-        function enableStopDate(form, isChecked)
-		{
-			if( isChecked)
-			{
-				document.getElementById("stopCalHRef").style.cursor = 'pointer';
-				document.getElementById("stopCalHRef").href = 'javascript:openCalendar(document.MForm.stopCal)'
-			}
-			else
-			{
-				document.getElementById("stopCalHRef").style.cursor = 'default';
-				document.getElementById("stopCalHRef").href = 'javascript:;'
-				form.stopCal.value = '<%= datePart.format(ServletUtil.getTomorrow()) %>';
-			}
-			document.getElementById('stopDateDiv').disabled = !isChecked;
+        
+        function enableStopDate(stopDateValue) {
+            var stopCalHRef = $("stopCalHRef");
+            var isChecked = $("enableStop").checked;
+            var cursor = 'default';
+            var href = 'javascript:void();';
+
+            if (isChecked) {
+                cursor = 'hand';
+                href = 'javascript:openCalendar(document.MForm.stopCal);';
+            }
+            
+            $("stopDateDiv").disabled = !isChecked;
+            $("stopCal").value = stopDateValue;
+            stopCalHRef.style.cursor = cursor;
+            stopCalHRef.href = href; 
 		}
 		
 	</script>

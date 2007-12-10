@@ -34,7 +34,7 @@ public class FilterBean
     private List<Warehouse> availableWarehouses;
     private YukonSelectionList availableDeviceStates;
     private List<LiteApplianceCategory> availableApplianceCategories;
-    private ArrayList<Pair> availableCustomerTypes;	//Integer(entryID),String(text)
+    private ArrayList<Pair<Integer,String>> availableCustomerTypes;	//Integer(entryID),String(text)
    
     private YukonSelectionList availableServiceTypes;
     private YukonSelectionList availableServiceStatuses;
@@ -46,11 +46,9 @@ public class FilterBean
     
     private String noneString = CtiUtilities.STRING_NONE;
 
-	private class CodeComparator implements Comparator, Serializable
+	private class CodeComparator implements Comparator<ServiceCompanyDesignationCode>, Serializable
 	{
-		public int compare(Object o1, Object o2){
-	        ServiceCompanyDesignationCode code1 = (ServiceCompanyDesignationCode)o1;
-	        ServiceCompanyDesignationCode code2 = (ServiceCompanyDesignationCode)o2;
+		public int compare(ServiceCompanyDesignationCode code1, ServiceCompanyDesignationCode code2){
 		    String thisVal = code1.getDesignationCodeValue();
 		    String anotherVal = code2.getDesignationCodeValue();
 			return (thisVal.compareToIgnoreCase(anotherVal));
@@ -201,20 +199,20 @@ public class FilterBean
         this.availableApplianceCategories = availableApplianceCategories;
     }
 
-	public ArrayList<Pair>getAvailableCustomerTypes() {
+	public ArrayList<Pair<Integer,String>>getAvailableCustomerTypes() {
         if(availableCustomerTypes == null)
         {
-            availableCustomerTypes = new ArrayList<Pair>();
+            availableCustomerTypes = new ArrayList<Pair<Integer,String>>();
             YukonSelectionList ciCustTypes = energyCompany.getYukonSelectionList(YukonSelectionListDefs.YUK_LIST_NAME_CI_CUST_TYPE, true, true);
                
-        	availableCustomerTypes.add(new Pair(new Integer(-1), new String("Residential")));	//we'll use -1 as Residential
+        	availableCustomerTypes.add(new Pair<Integer,String>(new Integer(-1), new String("Residential")));	//we'll use -1 as Residential
         	
             if(ciCustTypes != null)
             {
                 for(int i = 0; i < ciCustTypes.getYukonListEntries().size(); i++)
             	{
-            		YukonListEntry entry = (YukonListEntry)ciCustTypes.getYukonListEntries().get(i);
-            		availableCustomerTypes.add(new Pair(new Integer(entry.getEntryID()), entry.getEntryText()));
+            		YukonListEntry entry = ciCustTypes.getYukonListEntries().get(i);
+            		availableCustomerTypes.add(new Pair<Integer,String>(new Integer(entry.getEntryID()), entry.getEntryText()));
             	}
             }
         }
