@@ -6,8 +6,8 @@
 *
 * PVCS KEYWORDS:
 * ARCHIVE      :  $Archive:   Z:/SOFTWAREARCHIVES/YUKON/MACS/INCLUDE/clistener.h-arc  $
-* REVISION     :  $Revision: 1.6 $
-* DATE         :  $Date: 2006/03/17 23:37:55 $
+* REVISION     :  $Revision: 1.7 $
+* DATE         :  $Date: 2007/12/10 23:02:57 $
 *
 * Copyright (c) 1999, 2000, 2001 Cannon Technologies Inc. All rights reserved.
 *-----------------------------------------------------------------------------*/
@@ -68,7 +68,7 @@ public:
     // If this is set then all the messages
     // collected from the connections will
     // be put into this queue.. a little hackish but oh well
-    void setQueue(CtiQueue< CtiMessage, less<CtiMessage> >* queue );
+    void setQueue(CtiQueue< CtiMessage, std::greater<CtiMessage> >* queue );
 
     friend ostream& operator<<( ostream& ostrm, CtiMCClientListener& listener );
 
@@ -88,7 +88,7 @@ private:
     // broadcast to all the connections
     CtiPCPtrQueue< RWCollectable > _broadcast_queue;
 
-    CtiQueue< CtiMessage, less<CtiMessage> >* _conn_in_queue;
+    CtiQueue< CtiMessage, std::greater<CtiMessage> >* _conn_in_queue;
 
     bool removeInvalidConnections(CtiMCConnection& conn);
 };

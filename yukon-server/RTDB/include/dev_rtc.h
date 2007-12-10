@@ -8,10 +8,16 @@
 * Author: Corey G. Plender
 *
 * CVS KEYWORDS:
-* REVISION     :  $Revision: 1.13 $
-* DATE         :  $Date: 2006/09/21 21:31:39 $
+* REVISION     :  $Revision: 1.14 $
+* DATE         :  $Date: 2007/12/10 23:02:57 $
 * HISTORY      :
 * $Log: dev_rtc.h,v $
+* Revision 1.14  2007/12/10 23:02:57  jotteson
+* YUK-4788 Point data ordering issue
+* Fix to queues that were not ordering incoming data the way we wanted.
+* CtiMessage's ordering operators now do what you would expect and queue
+* now uses the ordering operators.
+*
 * Revision 1.13  2006/09/21 21:31:39  mfisher
 * privatized Inherited typedef
 *
@@ -87,7 +93,7 @@ protected:
 
     CtiTableDeviceRTC _rtcTable;
 
-    CtiQueue< CtiOutMessage, less<CtiOutMessage> > _workQueue;
+    CtiQueue< CtiOutMessage, std::greater<CtiOutMessage> > _workQueue;
 
     CtiTime _repeatTime;                                             // This is the time assigned to any OM placed on the list!
     CtiRepeatCol _repeatList;

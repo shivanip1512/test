@@ -22,24 +22,73 @@ using std::string;
 
 
 // Template Queuing class
+// This now uses class C as the sorting operator, and guarantees fifo and priority operation
+// What this means is when using class C (a <(C compare)> b) == true, a will come off the list first.
+// If a and b are identical (a<C>b and b<C>a == false) then the ordering is depending on insertion order
 template <class T,  class C>
 class IM_EX_CTIBASE CtiQueue
 {
+public:
+    struct QueueDataStruct
+    {
+        unsigned long insertOrder;
+        T* dataPointer;
+
+        //Although this says > it is really doing whatever the user gives us...
+        bool operator>(const QueueDataStruct &rhs) const
+        {
+            bool retVal = false;
+            C compare;
+            if( dataPointer != NULL && rhs.dataPointer != NULL )
+            {
+                if( compare(*dataPointer, *(rhs.dataPointer)) )
+                {
+                    retVal = true;
+                }
+                else if( compare(*(rhs.dataPointer), *dataPointer) )
+                {
+                    retVal = false;
+                }
+                else
+                {
+                    //The operator wasnt able to decide (they are probably ==)
+                    if( insertOrder < rhs.insertOrder )
+                    {
+                        retVal = true;
+                    }
+                    else
+                        retVal = false;
+                }
+            }
+            return retVal;
+        }
+    };
 private:
     boost::condition           dataAvailable;
     mutable boost::timed_mutex mux;
-    std::list<T*>              *_col;
-    string                     _name;
+    
+    std::list<QueueDataStruct> *_col;
+    string                      _name;
+    unsigned int                _insertValue;
 
-    struct boost::xtime xt_eot;
+    boost::xtime xt_eot;
 
 
-    std::list<T*> & getCollection()
+    std::list<QueueDataStruct> & getCollection()
     {
         if(!_col)
-            _col = new std::list<T*>;
+            _col = new std::list<struct QueueDataStruct>;
 
         return *_col;
+    }
+
+    unsigned int getNextInsertValue()
+    {
+        if( size() == 0 )
+        {
+            _insertValue = 0;
+        }
+        return _insertValue++;
     }
 
 public:
@@ -79,7 +128,10 @@ public:
 
                 try
                 {
-                    getCollection().push_back(pt);
+                    QueueDataStruct tempStruct;
+                    tempStruct.dataPointer = pt;
+                    tempStruct.insertOrder = getNextInsertValue();
+                    getCollection().push_back(tempStruct);
                 }
                 catch(...)
                 {
@@ -93,7 +145,7 @@ public:
                 {
                     try
                     {
-                        getCollection().sort( std::greater<T*>() );
+                        getCollection().sort( std::greater<struct QueueDataStruct>() );
                     }
                     catch(...)
                     {
@@ -118,6 +170,7 @@ public:
     T* getQueue()
     {
         T *pval = NULL;
+        QueueDataStruct data;
         try
         {
             boost::timed_mutex::scoped_timed_lock scoped_lock(mux, xt_eot);
@@ -126,7 +179,8 @@ public:
                 dataAvailable.wait(scoped_lock);
             }
 
-            pval = getCollection().front();
+            data = getCollection().front();
+            pval = data.dataPointer;
             getCollection().pop_front();
 
             // cerr << "Number of entries " << getCollection().entries() << endl;
@@ -142,6 +196,7 @@ public:
     T* getQueue(unsigned time)
     {
         T *pval = NULL;
+        QueueDataStruct data;
         try
         {
             bool wRes = false;
@@ -159,13 +214,15 @@ public:
                     // thread must have been signalled AND mutex reacquired to reach here OR RW_THR_TIMEOUT
                     if(wRes == true && !getCollection().empty())
                     {
-                        pval = getCollection().front();
+                        data = getCollection().front();
+                        pval = data.dataPointer;
                         getCollection().pop_front();
                     }
                 }
                 else
                 {
-                    pval = getCollection().front();
+                    data = getCollection().front();
+                    pval = data.dataPointer;
                     getCollection().pop_front();
                 }
             }
@@ -187,17 +244,23 @@ public:
             {
                 boost::timed_mutex::scoped_timed_lock scoped_lock(mux, xt_eot);
                 {
-                    getCollection().push_back(pt);
+                    QueueDataStruct data;
+                    data.insertOrder = getNextInsertValue();
+                    data.dataPointer = pt;
+                    getCollection().push_back(data);
                     dataAvailable.notify_one();
                     putWasDone = true;
 
-                    try
+                    if(!gConfigParms.isTrue("YUKON_NOSORT_QUEUES"))
                     {
-                        getCollection().sort( std::greater<T*>() );
-                    }
-                    catch(...)
-                    {
-                        cerr << " **** EXCEPTION Checkpoint **** " << __FILE__ << " (" << __LINE__ << ")" << endl;
+                        try
+                        {
+                            getCollection().sort( std::greater<struct QueueDataStruct>() );
+                        }
+                        catch(...)
+                        {
+                            cerr << " **** EXCEPTION Checkpoint **** " << __FILE__ << " (" << __LINE__ << ")" << endl;
+                        }
                     }
                 }
             }
@@ -252,17 +315,18 @@ public:
         _name = str;
         return *this;
     }
-    template<class _II, class _Fn> inline
-    void ts_for_each(_II _F, _II _L, _Fn _Op, void* d)
+
+    template<class input_iterator_t, class function_t> inline
+    void operand_for_each(input_iterator_t first, input_iterator_t last, function_t operation,  void *parameter)
     {
-        for(; _F != _L; ++_F)
-            _Op(*_F, d);
+        for(; first != last; ++first)
+            operation((*first).dataPointer, parameter);
 
     }
     void apply(void (*fn)(T*&,void*), void* d)
     {
         boost::timed_mutex::scoped_timed_lock scoped_lock(mux, xt_eot);
-        ts_for_each(getCollection().begin(),getCollection().end(),fn,d);
+        operand_for_each(getCollection().begin(),getCollection().end(),fn,d);
     }
 
     void resetCollection()
@@ -311,13 +375,15 @@ public:
 
     inline void delete_list( )
     {
+        QueueDataStruct data;
         try
         {
             if(_col)
             {
                 while(!_col->empty())
                 {
-                    T *pval = _col->front();
+                    data = _col->front();
+                    T *pval = data.dataPointer;
                     _col->pop_front();
                     delete pval;
                 }

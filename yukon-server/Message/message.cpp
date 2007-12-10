@@ -6,8 +6,8 @@
 *
 * PVCS KEYWORDS:
 * ARCHIVE      :  $Archive:   Z:/SOFTWAREARCHIVES/YUKON/MESSAGE/message.cpp-arc  $
-* REVISION     :  $Revision: 1.12 $
-* DATE         :  $Date: 2007/06/21 16:27:09 $
+* REVISION     :  $Revision: 1.13 $
+* DATE         :  $Date: 2007/12/10 23:02:57 $
 *
 * Copyright (c) 1999, 2000, 2001 Cannon Technologies Inc. All rights reserved.
 *-----------------------------------------------------------------------------*/
@@ -157,22 +157,22 @@ RWBoolean CtiMessage::operator==(const CtiMessage &aRef) const
 
 RWBoolean CtiMessage::operator<(const CtiMessage& aRef) const
 {
-   RWBoolean bRet(TRUE);
+   RWBoolean bRet(FALSE);
 
-   if(MessagePriority > aRef.getMessagePriority())
+   if(MessagePriority < aRef.getMessagePriority())
    {
-      bRet = RWBoolean(FALSE);   // Higher priority is "less".  Sorts ahead of lower priority.
+      bRet = RWBoolean(TRUE);   // Higher priority is "less".  Sorts ahead of lower priority.
    }
    return bRet;
 }
 
 RWBoolean CtiMessage::operator>(const CtiMessage& aRef) const
 {
-   RWBoolean bRet(TRUE);
+   RWBoolean bRet(FALSE);
 
-   if(MessagePriority < aRef.getMessagePriority())
+   if(MessagePriority > aRef.getMessagePriority())
    {
-      bRet = RWBoolean(FALSE);   // Lower priority sorts behind greater.  Lower == is "more" in the lists.
+      bRet = RWBoolean(TRUE);   // Lower priority sorts behind greater.  Lower == is "more" in the lists.
    }
 
    return bRet;

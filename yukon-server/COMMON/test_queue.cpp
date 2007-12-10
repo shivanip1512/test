@@ -6,8 +6,8 @@
 *
 * PVCS KEYWORDS:
 * ARCHIVE      :  $Archive:   Z:/SOFTWAREARCHIVES/YUKON/COMMON/INCLUDE/test_queue.cpp-arc  $
-* REVISION     :  $Revision: 1.3 $
-* DATE         :  $Date: 2007/10/09 15:54:49 $
+* REVISION     :  $Revision: 1.4 $
+* DATE         :  $Date: 2007/12/10 23:02:57 $
 *
 * Copyright (c) 2007 Cannon Technologies Inc. All rights reserved.
 *-----------------------------------------------------------------------------*/
@@ -94,4 +94,185 @@ BOOST_AUTO_UNIT_TEST(test_fifo_queue_timing)
     //  The end time must be between 0.10 and 0.15 seconds past the start time
     BOOST_CHECK( (start_seconds + 0.10) <= end_seconds );
     BOOST_CHECK( (start_seconds + 0.15) >  end_seconds );
+}
+
+struct queueTestStruct
+{
+    long value, insertOrder;
+
+    bool operator>(const queueTestStruct& rhs) const
+    {
+        if( value > rhs.value )
+        {
+            return true;
+        }
+        else
+            return false;
+    }
+
+    bool operator<(const queueTestStruct& rhs) const
+    {
+        if( value < rhs.value )
+        {
+            return true;
+        }
+        else
+            return false;
+    }
+};
+
+void applySetInsertOrderToInt(queueTestStruct *&dataStruct, void* d)
+{
+    dataStruct->insertOrder = (int)d;
+}
+
+BOOST_AUTO_UNIT_TEST(test_cti_queue_sort)
+{
+    CtiQueue<struct queueTestStruct, greater<struct queueTestStruct> > greaterQueue;
+    CtiQueue<struct queueTestStruct, less<struct queueTestStruct> > lessQueue;
+
+    queueTestStruct *tempMsg = CTIDBG_new queueTestStruct();
+    tempMsg->value = 1;
+    tempMsg->insertOrder = 1;
+    greaterQueue.putQueue(tempMsg);
+
+    tempMsg = CTIDBG_new queueTestStruct();
+    tempMsg->value = 1;
+    tempMsg->insertOrder = 2;
+    greaterQueue.putQueue(tempMsg);
+
+    tempMsg = CTIDBG_new queueTestStruct();
+    tempMsg->value = 1;
+    tempMsg->insertOrder = 3;
+    greaterQueue.putQueue(tempMsg);
+
+    tempMsg = CTIDBG_new queueTestStruct();
+    tempMsg->value = 2;
+    tempMsg->insertOrder = 1;
+    greaterQueue.putQueue(tempMsg);
+
+    tempMsg = CTIDBG_new queueTestStruct();
+    tempMsg->value = 1;
+    tempMsg->insertOrder = 4;
+    greaterQueue.putQueue(tempMsg);
+
+    //  This object is meant to sort by >, so 3's should come off first.
+    tempMsg = greaterQueue.getQueue();
+    BOOST_CHECK_EQUAL(tempMsg->value, 2);
+    //std::cout << "value, insertorder: " << tempMsg->value << " " << tempMsg->insertOrder << "\n";
+    delete tempMsg;
+    tempMsg = greaterQueue.getQueue();
+    BOOST_CHECK_EQUAL(tempMsg->value, 1);
+    BOOST_CHECK_EQUAL(tempMsg->insertOrder, 1);
+    //std::cout << "value, insertorder: " << tempMsg->value << " " << tempMsg->insertOrder << "\n";
+    delete tempMsg;
+    tempMsg = greaterQueue.getQueue();
+    BOOST_CHECK_EQUAL(tempMsg->value, 1);
+    BOOST_CHECK_EQUAL(tempMsg->insertOrder, 2);
+    //std::cout << "value, insertorder: " << tempMsg->value << " " << tempMsg->insertOrder << "\n";
+    delete tempMsg;
+    tempMsg = greaterQueue.getQueue();
+    BOOST_CHECK_EQUAL(tempMsg->value, 1);
+    BOOST_CHECK_EQUAL(tempMsg->insertOrder, 3);
+    //std::cout << "value, insertorder: " << tempMsg->value << " " << tempMsg->insertOrder << "\n";
+    delete tempMsg;
+    tempMsg = greaterQueue.getQueue();
+    BOOST_CHECK_EQUAL(tempMsg->value, 1);
+    BOOST_CHECK_EQUAL(tempMsg->insertOrder, 4);
+    //std::cout << "value, insertorder: " << tempMsg->value << " " << tempMsg->insertOrder << "\n";
+    delete tempMsg;
+
+
+    // Do the lessQueue
+
+    tempMsg = CTIDBG_new queueTestStruct();
+    tempMsg->value = 1;
+    tempMsg->insertOrder = 1;
+    lessQueue.putQueue(tempMsg);
+
+    tempMsg = CTIDBG_new queueTestStruct();
+    tempMsg->value = 1;
+    tempMsg->insertOrder = 2;
+    lessQueue.putQueue(tempMsg);
+
+    tempMsg = CTIDBG_new queueTestStruct();
+    tempMsg->value = 1;
+    tempMsg->insertOrder = 3;
+    lessQueue.putQueue(tempMsg);
+
+    tempMsg = CTIDBG_new queueTestStruct();
+    tempMsg->value = 2;
+    tempMsg->insertOrder = 1;
+    lessQueue.putQueue(tempMsg);
+
+    tempMsg = CTIDBG_new queueTestStruct();
+    tempMsg->value = 1;
+    tempMsg->insertOrder = 4;
+    lessQueue.putQueue(tempMsg);
+
+    //  This object is meant to sort by <, so 1's should come off first.
+    tempMsg = lessQueue.getQueue();
+    BOOST_CHECK_EQUAL(tempMsg->value, 1);
+    BOOST_CHECK_EQUAL(tempMsg->insertOrder, 1);
+    //std::cout << "value, insertorder: " << tempMsg->value << " " << tempMsg->insertOrder << "\n";
+    delete tempMsg;
+    tempMsg = lessQueue.getQueue();
+    BOOST_CHECK_EQUAL(tempMsg->value, 1);
+    BOOST_CHECK_EQUAL(tempMsg->insertOrder, 2);
+    //std::cout << "value, insertorder: " << tempMsg->value << " " << tempMsg->insertOrder << "\n";
+    delete tempMsg;
+    tempMsg = lessQueue.getQueue();
+    BOOST_CHECK_EQUAL(tempMsg->value, 1);
+    BOOST_CHECK_EQUAL(tempMsg->insertOrder, 3);
+    //std::cout << "value, insertorder: " << tempMsg->value << " " << tempMsg->insertOrder << "\n";
+    delete tempMsg;
+    tempMsg = lessQueue.getQueue();
+    BOOST_CHECK_EQUAL(tempMsg->value, 1);
+    BOOST_CHECK_EQUAL(tempMsg->insertOrder, 4);
+    //std::cout << "value, insertorder: " << tempMsg->value << " " << tempMsg->insertOrder << "\n";
+    delete tempMsg;
+    tempMsg = lessQueue.getQueue();
+    BOOST_CHECK_EQUAL(tempMsg->value, 2);
+    //std::cout << "value, insertorder: " << tempMsg->value << " " << tempMsg->insertOrder << "\n";
+    delete tempMsg;
+}
+
+BOOST_AUTO_UNIT_TEST(test_cti_queue_apply)
+{
+    CtiQueue<struct queueTestStruct, greater<struct queueTestStruct> > greaterQueue;
+
+    queueTestStruct *tempMsg = CTIDBG_new queueTestStruct();
+    tempMsg->value = 1;
+    tempMsg->insertOrder = 1;
+    greaterQueue.putQueue(tempMsg);
+
+    tempMsg = CTIDBG_new queueTestStruct();
+    tempMsg->value = 1;
+    tempMsg->insertOrder = 2;
+    greaterQueue.putQueue(tempMsg);
+
+    tempMsg = CTIDBG_new queueTestStruct();
+    tempMsg->value = 1;
+    tempMsg->insertOrder = 3;
+    greaterQueue.putQueue(tempMsg);
+
+    tempMsg = CTIDBG_new queueTestStruct();
+    tempMsg->value = 1;
+    tempMsg->insertOrder = 4;
+    greaterQueue.putQueue(tempMsg);
+
+    greaterQueue.apply(applySetInsertOrderToInt, (void *)5);
+
+    tempMsg = greaterQueue.getQueue();
+    BOOST_CHECK_EQUAL(tempMsg->insertOrder, 5);
+    delete tempMsg;
+    tempMsg = greaterQueue.getQueue();
+    BOOST_CHECK_EQUAL(tempMsg->insertOrder, 5);
+    delete tempMsg;
+    tempMsg = greaterQueue.getQueue();
+    BOOST_CHECK_EQUAL(tempMsg->insertOrder, 5);
+    delete tempMsg;
+    tempMsg = greaterQueue.getQueue();
+    BOOST_CHECK_EQUAL(tempMsg->insertOrder, 5);
+    delete tempMsg;
 }

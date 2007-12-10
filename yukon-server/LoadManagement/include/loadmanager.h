@@ -87,7 +87,7 @@ private:
     static CtiLoadManager* _instance;
     RWThread _loadManagerThread;
 
-    CtiQueue< CtiMessage, less< CtiMessage > > _main_queue;
+    CtiQueue< CtiMessage, std::greater< CtiMessage > > _main_queue;
     
     CtiConnection* _pilConnection;
     CtiConnection* _dispatchConnection;

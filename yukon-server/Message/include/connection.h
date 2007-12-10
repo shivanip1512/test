@@ -8,8 +8,8 @@
 *
 * PVCS KEYWORDS:
 * ARCHIVE      :  $Archive:   Z:/SOFTWAREARCHIVES/YUKON/MESSAGE/INCLUDE/connection.h-arc  $
-* REVISION     :  $Revision: 1.17 $
-* DATE         :  $Date: 2007/10/23 17:03:07 $
+* REVISION     :  $Revision: 1.18 $
+* DATE         :  $Date: 2007/12/10 23:02:57 $
 *
 * Copyright (c) 1999, 2000, 2001 Cannon Technologies Inc. All rights reserved.
 *-----------------------------------------------------------------------------*/
@@ -36,14 +36,13 @@
 #include "queue.h"
 
 using std::string;
-using std::less;
 
 
 class IM_EX_MSG CtiConnection
 {
 public:
 
-    typedef  CtiQueue<CtiMessage, less<CtiMessage> > Que_t;
+    typedef  CtiQueue<CtiMessage, std::greater<CtiMessage> > Que_t;
     // typedef  CtiFIFOQueue<CtiMessage> Que_t;
 
 protected:

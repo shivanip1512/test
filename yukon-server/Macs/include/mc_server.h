@@ -9,8 +9,8 @@
 *
 * PVCS KEYWORDS:
 * ARCHIVE      :  $Archive:   Z:/SOFTWAREARCHIVES/YUKON/MACS/INCLUDE/mc_server.h-arc  $
-* REVISION     :  $Revision: 1.10 $
-* DATE         :  $Date: 2007/08/07 21:04:32 $
+* REVISION     :  $Revision: 1.11 $
+* DATE         :  $Date: 2007/12/10 23:02:57 $
 *
 * Copyright (c) 1999, 2000, 2001 Cannon Technologies Inc. All rights reserved.
 *-----------------------------------------------------------------------------*/
@@ -82,7 +82,7 @@ private:
 
     // All of the client messages are put into here
     // and processed in the macs main thread.
-    CtiQueue< CtiMessage, less<CtiMessage> > _main_queue;
+    CtiQueue< CtiMessage, std::greater<CtiMessage> > _main_queue;
 
     // Keeps track of running script type schedules
     std::map< long, CtiInterpreter* > _running_scripts;

@@ -7,8 +7,8 @@
 * Author: Corey G. Plender
 *
 * CVS KEYWORDS:
-* REVISION     :  $Revision: 1.18 $
-* DATE         :  $Date: 2007/04/11 15:34:50 $
+* REVISION     :  $Revision: 1.19 $
+* DATE         :  $Date: 2007/12/10 23:02:57 $
 *
 * Copyright (c) 2002 Cannon Technologies Inc. All rights reserved.
 *-----------------------------------------------------------------------------*/
@@ -56,7 +56,7 @@ typedef map< SOCKET, CtiDeviceGateway* > GWMAP_t;
 
 static GWMAP_t gwMap;
 
-CtiQueue< CtiOutMessage, less<CtiOutMessage> > GatewayOutMessageQueue;
+CtiQueue< CtiOutMessage, std::greater<CtiOutMessage> > GatewayOutMessageQueue;
 
 // The stat stores most temps as hundreths of a degree C
 // This routine converts to degree F for display

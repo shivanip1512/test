@@ -9,8 +9,8 @@
 *
 * PVCS KEYWORDS:
 * ARCHIVE      :  $Archive:   Z:/SOFTWAREARCHIVES/YUKON/MACS/clistener.cpp-arc  $
-* REVISION     :  $Revision: 1.9 $
-* DATE         :  $Date: 2006/02/24 20:30:43 $
+* REVISION     :  $Revision: 1.10 $
+* DATE         :  $Date: 2007/12/10 23:02:57 $
 *
 * Copyright (c) 1999, 2000, 2001 Cannon Technologies Inc. All rights reserved.
 *-----------------------------------------------------------------------------*/
@@ -268,7 +268,7 @@ void CtiMCClientListener::run()
     }
 }
 
-void CtiMCClientListener::setQueue(CtiQueue< CtiMessage, less<CtiMessage> >* queue )
+void CtiMCClientListener::setQueue(CtiQueue< CtiMessage, std::greater<CtiMessage> >* queue )
 {
     _conn_in_queue = queue;
 }

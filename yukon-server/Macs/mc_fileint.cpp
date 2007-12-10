@@ -6,8 +6,8 @@
 *
 * PVCS KEYWORDS:
 * ARCHIVE      :  $Archive:   Z:/SOFTWAREARCHIVES/YUKON/MACS/mc_fileint.cpp-arc  $
-* REVISION     :  $Revision: 1.9 $
-* DATE         :  $Date: 2007/08/07 21:04:32 $
+* REVISION     :  $Revision: 1.10 $
+* DATE         :  $Date: 2007/12/10 23:02:57 $
 *
 * Copyright (c) 1999, 2000, 2001 Cannon Technologies Inc. All rights reserved.
 *-----------------------------------------------------------------------------*/
@@ -167,7 +167,7 @@ void CtiMCFileInterface::handleFile(const string& filename )
 
   Messages will be put on this queue for procssing when they are generated
 ----------------------------------------------------------------------------*/
-void CtiMCFileInterface::setQueue( CtiQueue< CtiMessage, less<CtiMessage> >* q )
+void CtiMCFileInterface::setQueue( CtiQueue< CtiMessage, std::greater<CtiMessage> >* q )
 {
     _message_queue = q;
 }
