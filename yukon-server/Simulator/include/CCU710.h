@@ -57,7 +57,8 @@ public:
 
     enum Strategies
     {
-        BAD_D_WORD = 1
+        BAD_D_WORD = 1,
+        GARBAGE = 4
     };
 
     //Send the message back to porter

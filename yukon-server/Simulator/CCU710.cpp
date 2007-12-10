@@ -222,7 +222,18 @@ void CCU710::CreateMsg(int ccuNumber, int mctNumber){
 int CCU710::SendMsg(unsigned char SendData[]){
     int MsgSize = _outindexOfEnd;
 
+    if(activeStrategy()==4)
+    {
+        for(int i = 0; i<100; i++)
+        {
+            if(_outmessageData[i]!=0)
+            {
+                _outmessageData[i]=i;
+            }
+        }
+    }
     memcpy(SendData, _outmessageData, 100);
+
 
     return MsgSize;
 }
