@@ -6,8 +6,8 @@
 *
 * PVCS KEYWORDS:
 * ARCHIVE      :  $Archive:   Z:/SOFTWAREARCHIVES/YUKON/PIL/pilserver.cpp-arc  $
-* REVISION     :  $Revision: 1.98 $
-* DATE         :  $Date: 2007/11/02 19:06:32 $
+* REVISION     :  $Revision: 1.99 $
+* DATE         :  $Date: 2007/12/10 19:44:12 $
 *
 * Copyright (c) 1999, 2000, 2001 Cannon Technologies Inc. All rights reserved.
 *-----------------------------------------------------------------------------*/
@@ -1682,9 +1682,11 @@ INT CtiPILServer::analyzeWhiteRabbits(CtiRequestMsg& Req, CtiCommandParser &pars
                     getDeviceGroupMembers(groupname, members);
                 }
 
-                while( !members.empty() )
+                vector<long>::iterator itr, members_end = members.end();
+
+                for( itr = members.begin(); itr != members_end; itr++ )
                 {
-                    CtiDeviceManager::ptr_type device = DeviceManager->getEqual(members.front());
+                    CtiDeviceManager::ptr_type device = DeviceManager->getEqual(*itr);
 
                     if( device )
                     {
