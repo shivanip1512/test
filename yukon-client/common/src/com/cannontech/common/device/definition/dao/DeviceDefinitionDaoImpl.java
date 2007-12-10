@@ -1,5 +1,7 @@
 package com.cannontech.common.device.definition.dao;
 
+import java.io.File;
+import java.io.FileInputStream;
 import java.io.IOException;
 import java.io.InputStreamReader;
 import java.io.StringWriter;
@@ -49,6 +51,7 @@ import com.cannontech.common.device.definition.model.castor.MctIedTouLookup;
 import com.cannontech.common.device.definition.model.castor.Point;
 import com.cannontech.common.device.definition.model.castor.PointRef;
 import com.cannontech.common.device.definition.model.castor.TouMapping;
+import com.cannontech.common.util.CtiUtilities;
 import com.cannontech.core.dao.NotFoundException;
 import com.cannontech.core.dao.StateDao;
 import com.cannontech.core.dao.UnitMeasureDao;
@@ -66,6 +69,7 @@ import com.cannontech.util.ReflectivePropertySearcher;
 public class DeviceDefinitionDaoImpl implements DeviceDefinitionDao {
 
     private Resource inputFile = null;
+    private File customInputFile = new File(CtiUtilities.getYukonBase() + "\\Server\\Config\\deviceDefinition.xml");
     private Resource pointLegendFile = null;
     private PaoGroupsWrapper paoGroupsWrapper = null;
     private String javaConstantClassName = null;
@@ -95,6 +99,10 @@ public class DeviceDefinitionDaoImpl implements DeviceDefinitionDao {
 
     public void setInputFile(Resource inputFile) {
         this.inputFile = inputFile;
+    }
+    
+    public void setCustomInputFile(File customInputFile) {
+        this.customInputFile = customInputFile;
     }
 
     public void setPaoGroupsWrapper(PaoGroupsWrapper paoGroupsWrapper) {
@@ -242,9 +250,14 @@ public class DeviceDefinitionDaoImpl implements DeviceDefinitionDao {
         this.deviceCommandMap = new HashMap<Integer, Set<CommandDefinition>>();
 
         InputStreamReader reader = null;
-        try {
-
+        
+        if (customInputFile != null && customInputFile.exists()) {
+            reader = new InputStreamReader(new FileInputStream(customInputFile));
+        } else {
             reader = new InputStreamReader(inputFile.getInputStream());
+        }
+        
+        try {
 
             // Use castor to parse the xml file
             DeviceDefinitions definition = (DeviceDefinitions) Unmarshaller.unmarshal(DeviceDefinitions.class,

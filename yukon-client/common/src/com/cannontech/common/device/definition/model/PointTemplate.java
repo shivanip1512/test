@@ -1,5 +1,7 @@
 package com.cannontech.common.device.definition.model;
 
+import org.apache.commons.lang.builder.ToStringBuilder;
+
 import com.cannontech.database.data.point.PointUnits;
 import com.cannontech.database.db.state.StateGroupUtils;
 
@@ -128,6 +130,11 @@ public class PointTemplate implements Comparable<PointTemplate> {
         } else if (!name.equals(other.name))
             return false;
         return true;
+    }
+    
+    @Override
+    public String toString() {
+        return ToStringBuilder.reflectionToString(this);
     }
 
 }

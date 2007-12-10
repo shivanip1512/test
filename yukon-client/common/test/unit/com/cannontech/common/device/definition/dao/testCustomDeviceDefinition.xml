@@ -1,0 +1,35 @@
+<?xml version="1.0"?>
+<?xml-stylesheet type="text/xsl" href="deviceDefinition.xsl"?>
+
+<!--
+This file contains a custom device definition.
+-->
+
+<deviceDefinition>
+    
+    <device>
+        <type value="1019" javaConstant="MCT310" changeGroup="customChange1" />
+        <displayName value="Custom Device 1"/>
+        <displayGroup value="customDisplay1"/>
+        <points>
+            <point init="true" type="PulseAccumulator">
+                <name>customPulse1</name>
+                <offset value="2"/>
+                <multiplier value="1.0"/>
+                <unitofmeasure value="measure1"/>
+            </point>
+        </points>
+        <commands>
+        	<command name="customCommand1">
+        		<cmd text="do custom command1" />
+        		<pointRef name="customPulse1"/>
+        	</command>
+        </commands>
+		<attributes>
+        	<attribute name="USAGE">
+        		<basicLookup point="customPulse1" />
+        	</attribute>
+        </attributes>      
+    </device>
+
+</deviceDefinition>

@@ -1,5 +1,7 @@
 package com.cannontech.common.device.definition.dao;
 
+import java.io.File;
+import java.net.URL;
 import java.util.ArrayList;
 import java.util.Collections;
 import java.util.HashSet;
@@ -44,6 +46,8 @@ public class DeviceDefinitionDaoImplTest extends TestCase {
         ((DeviceDefinitionDaoImpl) dao).setInputFile(new InputStreamResource(dao.getClass()
                                                         .getClassLoader()
                                                         .getResourceAsStream("com/cannontech/common/device/definition/dao/testDeviceDefinition.xml")));
+        
+        ((DeviceDefinitionDaoImpl) dao).setCustomInputFile(null);
         ((DeviceDefinitionDaoImpl) dao).setPaoGroupsWrapper(new DeviceDefinitionDaoImplTest().new MockPaoGroups());
         ((DeviceDefinitionDaoImpl) dao).setJavaConstantClassName(DeviceTypes.class.getName());
         ((DeviceDefinitionDaoImpl) dao).setStateDao(new DeviceDefinitionDaoImplTest().new MockStateDao());
@@ -336,6 +340,88 @@ public class DeviceDefinitionDaoImplTest extends TestCase {
         assertEquals("Expected 2 commands", expectedCommandSet, actualCommands);
 
     }
+    
+    /**
+     * Test Custom Definition file
+     * @throws Exception 
+     */
+    public void testCustomDefinition() throws Exception {
+        
+
+        // Set up the device definition dao with both an inputFile and a customInputFile
+        DeviceDefinitionDaoImpl dao = new DeviceDefinitionDaoImpl();
+        ((DeviceDefinitionDaoImpl) dao).setInputFile(new InputStreamResource(dao.getClass()
+                                                                                .getClassLoader()
+                                                                                .getResourceAsStream("com/cannontech/common/device/definition/dao/testDeviceDefinition.xml")));
+
+        URL customFileUrl = dao.getClass()
+                               .getClassLoader()
+                               .getResource("com/cannontech/common/device/definition/dao/testCustomDeviceDefinition.xml");
+
+        ((DeviceDefinitionDaoImpl) dao).setCustomInputFile(new File(customFileUrl.getFile()));
+        ((DeviceDefinitionDaoImpl) dao).setPaoGroupsWrapper(new DeviceDefinitionDaoImplTest().new MockPaoGroups());
+        ((DeviceDefinitionDaoImpl) dao).setJavaConstantClassName(DeviceTypes.class.getName());
+        ((DeviceDefinitionDaoImpl) dao).setStateDao(new DeviceDefinitionDaoImplTest().new MockStateDao());
+        ((DeviceDefinitionDaoImpl) dao).setUnitMeasureDao(new DeviceDefinitionDaoImplTest().new MockUnitMeasureDao());
+        ((DeviceDefinitionDaoImpl) dao).initialize();
+        
+        
+        // Test that the point templates are custom
+        
+        // Test with supported device type
+        Set<PointTemplate> expectedTemplates = new HashSet<PointTemplate>();
+        expectedTemplates.add(new PointTemplate("customPulse1",
+                                                2,
+                                                2,
+                                                1.0,
+                                                1,
+                                                0,
+                                                true));
+
+        Set<PointTemplate> actualTemplates = dao.getAllPointTemplates(device);
+        assertEquals("Expected custom all point templates did not match: ",
+                     this.getSortedList(expectedTemplates),
+                     this.getSortedList(actualTemplates));
+
+        // Test with unsupported device type
+        try {
+            device.setType(-1);
+            dao.getAvailableAttributes(device);
+            fail("Exception should be thrown for invalid device type");
+        } catch (IllegalArgumentException e) {
+            // expected exception
+        } catch (Exception e) {
+            fail("Threw wrong type of exception: " + e.getClass());
+        }
+        
+        
+        // Test that device definition is custom
+        
+        // Test with supported device type
+        device.setType(1019);
+        DeviceDefinition expectedDefinition = new DeviceDefinitionImpl(1019,
+                                                                       "Custom Device 1",
+                                                                       "customDisplay1",
+                                                                       "MCT310",
+                                                                       "customChange1");
+        assertEquals("device1 definition is not as expected",
+                     expectedDefinition,
+                     dao.getDeviceDefinition(device));
+
+        // Test with unsupported device type
+        try {
+            device.setType(-1);
+            dao.getDeviceDefinition(device);
+            fail("Exception should be thrown for invalid device type");
+        } catch (IllegalArgumentException e) {
+            // expected exception
+        } catch (Exception e) {
+            fail("Threw wrong type of exception: " + e.getClass());
+        }
+        
+        
+    }
+    
 
     /**
      * Helper method to get the set of init point templates for device1
