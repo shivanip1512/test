@@ -2,34 +2,26 @@
 <%@ taglib uri="http://java.sun.com/jsf/core" prefix="f"%>
 <%@ taglib uri="http://myfaces.apache.org/tomahawk" prefix="x"%>
 <%@ taglib uri="http://cannontech.com/tags/cti" prefix="cti"%>
-<jsp:directive.page import="com.cannontech.servlet.nav.CBCNavigationUtil"/>
-<%
-//String currentPageURL = request.getRequestURL().toString();
-//CBCNavigationUtil.setNavigation(currentPageURL, session);
-//CBCNavigationUtil.bookmarkThisLocation(session);
- %>
 <f:view>
 <cti:standardPage title="CapControl Wizard" module="capcontrol">
 <script type="text/javascript">
-<!--
     var submitAllowed = true;
     function submitCheck() {
         if( !submitAllowed ) {
             submitAllowed = true;
             return false;
-        }
-        else
+        } else {
             return true;
+        }
     }
 
     function confirmDelete( schedName ) {
         if( confirm("Are you sure you want to delete '" + schedName + "'") ) {
             submitAllowed = true;
-        }
-        else
+        } else {
             submitAllowed = false;
+        }
     }
--->
 </script>
 
     <x:panelLayout id="page" styleClass="pageLayout" headerClass="pageHeader"

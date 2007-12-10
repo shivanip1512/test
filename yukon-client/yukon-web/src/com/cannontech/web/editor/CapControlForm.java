@@ -18,6 +18,7 @@ import javax.faces.context.FacesContext;
 import javax.faces.event.ActionEvent;
 import javax.faces.event.ValueChangeEvent;
 import javax.faces.model.SelectItem;
+import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpSession;
 
 import org.apache.commons.lang.Validate;
@@ -90,6 +91,7 @@ import com.cannontech.web.editor.model.CapControlStrategyModel;
 import com.cannontech.web.editor.model.DataModelFactory;
 import com.cannontech.web.editor.point.PointLists;
 import com.cannontech.web.exceptions.AltBusNeedsSwitchPointException;
+import com.cannontech.web.navigation.CtiNavObject;
 import com.cannontech.web.util.CBCDBUtil;
 import com.cannontech.web.util.CBCSelectionLists;
 import com.cannontech.web.util.JSFParamUtil;
@@ -1919,9 +1921,15 @@ public class CapControlForm extends DBEditorForm implements ICapControlModel{
         Map<Integer, String> paramMap = context.getExternalContext().getRequestParameterMap();
         int elemID = Integer.parseInt( paramMap.get("stratID") );
         HttpSession session = (HttpSession) context.getExternalContext().getSession(false);
-        CBCNavigationUtil.bookmarkThisLocation(session);
+        CtiNavObject navObject = (CtiNavObject) session.getAttribute("CtiNavObject");
+        navObject.getHistory().push(navObject.getCurrentPage());
+        HttpServletRequest req = (HttpServletRequest)context.getExternalContext().getRequest();
+        String currentPage = req.getRequestURL().toString();
+        navObject.setPreviousPage(currentPage);
+        navObject.getHistory().push(currentPage);
+        String location = "/editor/cbcBase.jsf?type=5&itemid="+elemID;
+        navObject.setCurrentPage(location);
         try {
-            String location = "/editor/cbcBase.jsf?type=5&itemid="+elemID;
             context.getExternalContext().redirect(location);
         } catch (IOException e) {
             CTILogger.error(e);
