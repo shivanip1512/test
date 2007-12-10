@@ -1696,6 +1696,18 @@
                 <unitofmeasure value="kW"/>
             </point>
             <point init="true" type="DemandAccumulator">
+                <name>Peak kW (Channel 2)</name>
+                <offset value="12"/>
+                <multiplier value="0.1"/>
+                <unitofmeasure value="kW"/>
+            </point>
+            <point init="true" type="DemandAccumulator">
+                <name>Peak kW (Channel 3)</name>
+                <offset value="13"/>
+                <multiplier value="0.1"/>
+                <unitofmeasure value="kW"/>
+            </point>            
+            <point init="true" type="DemandAccumulator">
                 <name>Max Volts</name>
                 <offset value="14"/>
                 <multiplier value="0.1"/>
@@ -1817,11 +1829,32 @@
         		<pointRef name="Peak kW"/>
         		<pointRef name="kWh"/>
         	</command>
-<!-- 			<command name="Read Peak (Frozen)">
-        		<cmd text="getvalue peak frozen"/>
-        		<pointRef name="Peak kW"/>
-        		<pointRef name="kWh"/>
-        	</command> -->
+            <command name="Read Peak (Channel 2)">
+                <cmd text="getvalue peak channel 2"/>
+                <pointRef name="Peak kW (Channel 2)"/>
+                <pointRef name="kWh (Channel 2)"/>
+            </command>
+            <command name="Read Peak (Channel 3)">
+                <cmd text="getvalue peak channel 3"/>
+                <pointRef name="Peak kW (Channel 3)"/>
+                <pointRef name="kWh (Channel 3)"/>
+            </command>
+<!--            <command name="Read Peak (Frozen)">
+                <cmd text="getvalue peak frozen"/>
+                <pointRef name="Peak kW"/>
+                <pointRef name="kWh"/>
+            </command> 
+            <command name="Read Peak (Frozen Channel 2)">
+                <cmd text="getvalue peak frozen channel 2"/>
+                <pointRef name="Peak kW (Channel 2)"/>
+                <pointRef name="kWh (Channel 2)"/>
+            </command>
+            <command name="Read Peak (Channel 3)">
+                <cmd text="getvalue peak channel 3"/>
+                <pointRef name="Peak kW (Channel 3)"/>
+                <pointRef name="kWh (Channel 3)"/>
+            </command>
+            -->
 			<command name="Read Min/Max Voltage">
         		<cmd text="getvalue voltage"/>
         		<pointRef name="Max Volts"/>
@@ -2054,6 +2087,18 @@
                 <unitofmeasure value="kW"/>
             </point>
             <point init="true" type="DemandAccumulator">
+                <name>Peak kW (Channel 2)</name>
+                <offset value="12"/>
+                <multiplier value="0.1"/>
+                <unitofmeasure value="kW"/>
+            </point>
+            <point init="true" type="DemandAccumulator">
+                <name>Peak kW (Channel 3)</name>
+                <offset value="13"/>
+                <multiplier value="0.1"/>
+                <unitofmeasure value="kW"/>
+            </point>
+            <point init="true" type="DemandAccumulator">
                 <name>Max Volts</name>
                 <offset value="14"/>
                 <multiplier value="0.1"/>
@@ -2175,11 +2220,32 @@
         		<pointRef name="Peak kW"/>
         		<pointRef name="kWh"/>
         	</command>
+            <command name="Read Peak (Channel 2)">
+                <cmd text="getvalue peak channel 2"/>
+                <pointRef name="Peak kW (Channel 2)"/>
+                <pointRef name="kWh (Channel 2)"/>
+            </command>
+            <command name="Read Peak (Channel 3)">
+                <cmd text="getvalue peak channel 3"/>
+                <pointRef name="Peak kW (Channel 3)"/>
+                <pointRef name="kWh (Channel 3)"/>
+            </command>
 <!-- 			<command name="Read Peak (Frozen)">
         		<cmd text="getvalue peak frozen"/>
         		<pointRef name="Peak kW"/>
         		<pointRef name="kWh"/>
-        	</command> -->
+        	</command> 
+            <command name="Read Peak (Frozen Channel 2)">
+                <cmd text="getvalue peak frozen channel 2"/>
+                <pointRef name="Peak kW (Channel 2)"/>
+                <pointRef name="kWh (Channel 2)"/>
+            </command>
+            <command name="Read Peak (Channel 3)">
+                <cmd text="getvalue peak channel 3"/>
+                <pointRef name="Peak kW (Channel 3)"/>
+                <pointRef name="kWh (Channel 3)"/>
+            </command>
+        	-->
 			<command name="Read Min/Max Voltage">
         		<cmd text="getvalue voltage"/>
         		<pointRef name="Max Volts"/>
@@ -2412,6 +2478,18 @@
                 <unitofmeasure value="kW"/>
             </point>
             <point init="true" type="DemandAccumulator">
+                <name>Peak kW (Channel 2)</name>
+                <offset value="12"/>
+                <multiplier value="0.1"/>
+                <unitofmeasure value="kW"/>
+            </point>
+            <point init="true" type="DemandAccumulator">
+                <name>Peak kW (Channel 3)</name>
+                <offset value="13"/>
+                <multiplier value="0.1"/>
+                <unitofmeasure value="kW"/>
+            </point>
+            <point init="true" type="DemandAccumulator">
                 <name>Max Volts</name>
                 <offset value="14"/>
                 <multiplier value="0.1"/>
@@ -2533,11 +2611,32 @@
         		<pointRef name="Peak kW"/>
         		<pointRef name="kWh"/>
         	</command>
-<!-- 			<command name="Read Peak (Frozen)">
-        		<cmd text="getvalue peak frozen"/>
-        		<pointRef name="Peak kW"/>
-        		<pointRef name="kWh"/>
-        	</command> -->
+            <command name="Read Peak (Channel 2)">
+                <cmd text="getvalue peak channel 2"/>
+                <pointRef name="Peak kW (Channel 2)"/>
+                <pointRef name="kWh (Channel 2)"/>
+            </command>
+            <command name="Read Peak (Channel 3)">
+                <cmd text="getvalue peak channel 3"/>
+                <pointRef name="Peak kW (Channel 3)"/>
+                <pointRef name="kWh (Channel 3)"/>
+            </command>
+<!--            <command name="Read Peak (Frozen)">
+                <cmd text="getvalue peak frozen"/>
+                <pointRef name="Peak kW"/>
+                <pointRef name="kWh"/>
+            </command> 
+            <command name="Read Peak (Frozen Channel 2)">
+                <cmd text="getvalue peak frozen channel 2"/>
+                <pointRef name="Peak kW (Channel 2)"/>
+                <pointRef name="kWh (Channel 2)"/>
+            </command>
+            <command name="Read Peak (Channel 3)">
+                <cmd text="getvalue peak channel 3"/>
+                <pointRef name="Peak kW (Channel 3)"/>
+                <pointRef name="kWh (Channel 3)"/>
+            </command>
+            -->
 			<command name="Read Min/Max Voltage">
         		<cmd text="getvalue voltage"/>
         		<pointRef name="Max Volts"/>
@@ -2771,6 +2870,18 @@
                 <unitofmeasure value="kW"/>
             </point>
             <point init="true" type="DemandAccumulator">
+                <name>Peak kW (Channel 2)</name>
+                <offset value="12"/>
+                <multiplier value="0.1"/>
+                <unitofmeasure value="kW"/>
+            </point>
+            <point init="true" type="DemandAccumulator">
+                <name>Peak kW (Channel 3)</name>
+                <offset value="13"/>
+                <multiplier value="0.1"/>
+                <unitofmeasure value="kW"/>
+            </point>
+            <point init="true" type="DemandAccumulator">
                 <name>Max Volts</name>
                 <offset value="14"/>
                 <multiplier value="0.1"/>
@@ -2892,12 +3003,32 @@
         		<pointRef name="Peak kW"/>
         		<pointRef name="kWh"/>
         	</command>
---><!-- 			<command name="Read Peak (Frozen)">
-        		<cmd text="getvalue peak frozen"/>
-        		<pointRef name="Peak kW"/>
-        		<pointRef name="kWh"/>
-        	</command> -->
-<!-- 
+            <command name="Read Peak (Channel 2)">
+                <cmd text="getvalue peak channel 2"/>
+                <pointRef name="Peak kW (Channel 2)"/>
+                <pointRef name="kWh (Channel 2)"/>
+            </command>
+            <command name="Read Peak (Channel 3)">
+                <cmd text="getvalue peak channel 3"/>
+                <pointRef name="Peak kW (Channel 3)"/>
+                <pointRef name="kWh (Channel 3)"/>
+            </command> -->
+<!--            <command name="Read Peak (Frozen)">
+                <cmd text="getvalue peak frozen"/>
+                <pointRef name="Peak kW"/>
+                <pointRef name="kWh"/>
+            </command> 
+            <command name="Read Peak (Frozen Channel 2)">
+                <cmd text="getvalue peak frozen channel 2"/>
+                <pointRef name="Peak kW (Channel 2)"/>
+                <pointRef name="kWh (Channel 2)"/>
+            </command>
+            <command name="Read Peak (Channel 3)">
+                <cmd text="getvalue peak channel 3"/>
+                <pointRef name="Peak kW (Channel 3)"/>
+                <pointRef name="kWh (Channel 3)"/>
+            </command>
+            --><!-- 
 			<command name="Read Min/Max Voltage">
         		<cmd text="getvalue voltage"/>
         		<pointRef name="Max Volts"/>
