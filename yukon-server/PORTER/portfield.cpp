@@ -6,8 +6,8 @@
 *
 * PVCS KEYWORDS:
 * ARCHIVE      :  $Archive$
-* REVISION     :  $Revision: 1.212 $
-* DATE         :  $Date: 2007/11/21 20:54:57 $
+* REVISION     :  $Revision: 1.213 $
+* DATE         :  $Date: 2007/12/11 21:33:12 $
 *
 * Copyright (c) 1999, 2000, 2001 Cannon Technologies Inc. All rights reserved.
 *-----------------------------------------------------------------------------*/
@@ -1831,7 +1831,7 @@ INT CommunicateDevice(CtiPortSPtr Port, INMESS *InMessage, OUTMESS *OutMessage, 
                             if( IED->getHandshakesRemaining() <= 0 )
                             {
                                 IED->setLogOnNeeded(TRUE);      // We did not come through it cleanly, let's kill this connection.
-                                Port->setConnectedDevice(0);
+                                Port->setShouldDisconnect();
                                 IED->resetHandshakesRemaining();
                             }
                             else

@@ -9,8 +9,8 @@
 *
 * PVCS KEYWORDS:
 * ARCHIVE      :  $Archive:   Z:/SOFTWAREARCHIVES/YUKON/DATABASE/INCLUDE/tbl_alm_nloc.h-arc  $
-* REVISION     :  $Revision: 1.12 $
-* DATE         :  $Date: 2007/10/15 22:24:11 $
+* REVISION     :  $Revision: 1.13 $
+* DATE         :  $Date: 2007/12/11 21:33:12 $
 *
 * Copyright (c) 1999 Cannon Technologies Inc. All rights reserved.
 *-----------------------------------------------------------------------------*/
@@ -187,7 +187,8 @@ public:
         _currentState(StateHandshakeInitialize),
         _previousState(StateHandshakeInitialize),
         _attemptsRemaining (7),  //schlumberger spec ??
-        _currentCommand(CmdScanData)
+        _currentCommand(CmdScanData),
+        _handshakesRemaining(3)
     {}
 
     CtiDeviceIED(const CtiDeviceIED& aRef)
@@ -378,7 +379,7 @@ public:
     virtual string getPassword() const       { return getIED().getPassword(); }
 
     int getHandshakesRemaining() const { return _handshakesRemaining; }
-    void resetHandshakesRemaining() { _handshakesRemaining = gConfigParms.getValueAsInt(TAP_HANDSHAKE_CPARM, 4); }
+    void resetHandshakesRemaining() { _handshakesRemaining = gConfigParms.getValueAsInt(TAP_HANDSHAKE_CPARM, 3); }
     void decreaseHandshakesRemaining() { _handshakesRemaining--; }
 
 };
