@@ -1130,6 +1130,10 @@ FROM
 	left outer join capbankadditional capa on capa.deviceid = cb.deviceid;
 /* End YUK-4859 */
 
+/* Start YUK-4862 */
+insert into YukonRoleProperty values(-20205,-202,'Enable Device Group','true','Allows access to change device groups for a device');
+/* End YUK-4862 */
+
 /**************************************************************/
 /* VERSION INFO                                               */
 /*   Automatically gets inserted from build script            */
