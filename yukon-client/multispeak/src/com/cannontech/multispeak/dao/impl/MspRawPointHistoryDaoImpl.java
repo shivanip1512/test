@@ -26,7 +26,6 @@ import com.cannontech.database.db.point.RawPointHistory;
 import com.cannontech.database.db.point.UnitMeasure;
 import com.cannontech.multispeak.block.Block;
 import com.cannontech.multispeak.block.YukonFormattedBlock;
-import com.cannontech.multispeak.client.MultispeakDefines;
 import com.cannontech.multispeak.dao.MspRawPointHistoryDao;
 import com.cannontech.multispeak.data.MeterReadFactory;
 import com.cannontech.multispeak.data.ReadableDevice;
@@ -42,7 +41,8 @@ public class MspRawPointHistoryDaoImpl implements MspRawPointHistoryDao
      * @param endDate
      * @return
      */
-    public MeterRead[] retrieveMeterReads(ReadBy readBy, String readByValue, Date startDate, Date endDate, String lastReceived) {
+    public MeterRead[] retrieveMeterReads(ReadBy readBy, String readByValue, Date startDate, 
+            Date endDate, String lastReceived, int maxRecords) {
         Date timerStart = new Date();
         
         MeterRead[] meterReadArray = new MeterRead[0];
@@ -114,7 +114,7 @@ public class MspRawPointHistoryDaoImpl implements MspRawPointHistoryDao
                         if( device != null && device.isPopulated())
                             meterReadList.add(device.getMeterRead());
                         device = null;
-                        if( lastPaoID != paobjectID && meterReadList.size() >= MultispeakDefines.MAX_RETURN_RECORDS)
+                        if( lastPaoID != paobjectID && meterReadList.size() >= maxRecords)
                             break;
                     }
 
@@ -257,7 +257,8 @@ public class MspRawPointHistoryDaoImpl implements MspRawPointHistoryDao
         return block.createFormattedBlock(blockList);
     }
     
-    public FormattedBlock retrieveBlockByMeterNo(YukonFormattedBlock<Block> block, Date startDate, Date endDate, String meterNumber) {
+    public FormattedBlock retrieveBlockByMeterNo(YukonFormattedBlock<Block> block, Date startDate, 
+                                                Date endDate, String meterNumber, int maxRecords) {
         Date timerStart = new Date();
         
         List<Block> blockList = new ArrayList<Block>();
@@ -328,7 +329,7 @@ public class MspRawPointHistoryDaoImpl implements MspRawPointHistoryDao
                         if( b.hasData())
                             blockList.add(b);
                         b = null;
-                        if( lastPaoID != paobjectID && blockList.size() >= MultispeakDefines.MAX_RETURN_RECORDS)
+                        if( lastPaoID != paobjectID && blockList.size() >= maxRecords)
                             break;
                     }
 

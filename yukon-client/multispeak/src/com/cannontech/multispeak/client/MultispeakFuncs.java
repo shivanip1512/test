@@ -150,14 +150,14 @@ public class MultispeakFuncs
      * @param lastReceived
      * @return
      */
-    public List<Meter> getMeters(String key, String lastReceived) {
+    public List<Meter> getMeters(String key, String lastReceived, int maxRecords) {
         List<Meter> meters;
         if( key.toLowerCase().startsWith("device") || 
                 key.toLowerCase().startsWith("pao"))
-            meters = meterDao.getMetersByPaoName(lastReceived, MultispeakDefines.MAX_RETURN_RECORDS);
+            meters = meterDao.getMetersByPaoName(lastReceived, maxRecords);
         
         else //if(key.toLowerCase().startsWith("meternum"))
-            meters = meterDao.getMetersByMeterNumber(lastReceived, MultispeakDefines.MAX_RETURN_RECORDS);
+            meters = meterDao.getMetersByMeterNumber(lastReceived, maxRecords);
         return meters;
     }
 	/**

@@ -226,10 +226,10 @@ public class Multispeak implements MessageListener {
             				mspVendor.getCompanyName());    
 
             synchronized (event) {
-                boolean timeout = !waitOnEvent(event);
+                boolean timeout = !waitOnEvent(event, mspVendor.getRequestMessageTimeout());
                 if( timeout ) {
                     
-                    event.setResultMessage("Reading Timed out after " + (MultispeakDefines.REQUEST_MESSAGE_TIMEOUT/1000)+ " seconds.");
+                    event.setResultMessage("Reading Timed out after " + (mspVendor.getRequestMessageTimeout()/1000)+ " seconds.");
                     logMSPActivity("getCDMeterState", "Reading Timed out after 2 minutes.  No reading collected.", mspVendor.getCompanyName());
                     if(event.getLoadActionCode() == null)
                         event.setLoadActionCode(LoadActionCode.Unknown);
@@ -267,10 +267,10 @@ public class Multispeak implements MessageListener {
 						mspVendor.getCompanyName());
 
         synchronized (event) {
-            boolean timeout = !waitOnEvent(event);
+            boolean timeout = !waitOnEvent(event, mspVendor.getRequestMessageTimeout());
             if( timeout ) {
                 logMSPActivity("getLatestReadingByMeterNo", "MeterNumber (" + meterNumber + ") - Reading Timed out after " + 
-                               (MultispeakDefines.REQUEST_MESSAGE_TIMEOUT/1000) + 
+                               (mspVendor.getRequestMessageTimeout()/1000) + 
                                " seconds.  No reading collected.", mspVendor.getCompanyName());
             }
         }
@@ -494,14 +494,14 @@ public class Multispeak implements MessageListener {
     }
     
     /**
-     * Returns true if event processes without timeing out, false if event times out.
+     * Returns true if event processes without timing out, false if event times out.
      * @param event
      * @return
      */
-    public boolean waitOnEvent(MultispeakEvent event) {
+    public boolean waitOnEvent(MultispeakEvent event, long timeout) {
         
         long millisTimeOut = 0; //
-        while (!event.isPopulated() && millisTimeOut < MultispeakDefines.REQUEST_MESSAGE_TIMEOUT)  //quit after timeout
+        while (!event.isPopulated() && millisTimeOut < timeout)  //quit after timeout
         {
             try {
                 Thread.sleep(1000);
@@ -510,7 +510,7 @@ public class Multispeak implements MessageListener {
                 CTILogger.error(e);
             }
         }
-        if( millisTimeOut >= MultispeakDefines.REQUEST_MESSAGE_TIMEOUT) {// this broke the loop, more than likely, have to kill it sometime
+        if( millisTimeOut >= timeout) {// this broke the loop, more than likely, have to kill it sometime
             return false;
         }
         return true;
@@ -636,7 +636,7 @@ public class Multispeak implements MessageListener {
                                                mspVendor.getCompanyName());
                                 
 //                                  Find a valid Template!
-                                String templateName = getMeterTemplate(mspMeter);
+                                String templateName = getMeterTemplate(mspMeter, mspVendor.getTemplateNameDefault());
                                 
                                 //Find template object in Yukon
                                 LiteYukonPAObject liteYukonPaobjectTemplate = deviceDao.getLiteYukonPaobjectByDeviceName(templateName);
@@ -759,7 +759,7 @@ public class Multispeak implements MessageListener {
                 List liteYukonPaoByAddressList = paoDao.getLiteYukonPaobjectsByAddress(new Integer(mspAddress).intValue());
                 if (liteYukonPaoByAddressList.isEmpty()) {  //New Hardware
                     //Find a valid Template!
-                	String templateName = getMeterTemplate(mspMeter);
+                	String templateName = getMeterTemplate(mspMeter, mspVendor.getTemplateNameDefault());
 
                     LiteYukonPAObject liteYukonPaobjectTemplate = deviceDao.getLiteYukonPaobjectByDeviceName(templateName);
                     if( liteYukonPaobjectTemplate == null){ 
@@ -1029,8 +1029,8 @@ public class Multispeak implements MessageListener {
     }
     
   
-   private String getMeterTemplate(Meter mspMeter) {
-       String templateName = MultispeakDefines.TEMPLATE_NAME_DEFAULT;
+   private String getMeterTemplate(Meter mspMeter, String defaultTemplateName) {
+       String templateName = defaultTemplateName;
        boolean loaded = false;
        
        if( mspMeter.getAMRDeviceType() != null) {

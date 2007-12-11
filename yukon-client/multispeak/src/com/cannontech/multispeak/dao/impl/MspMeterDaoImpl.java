@@ -43,7 +43,7 @@ public final class MspMeterDaoImpl implements MspMeterDao
         this.jdbcOps = jdbcOps;
     }
     
-    public List<Meter> getAMRSupportedMeters(String lastReceived, String key) {
+    public List<Meter> getAMRSupportedMeters(String lastReceived, String key, int maxRecords) {
         try {
             String uniqueKey = "METERNUMBER";
             if( key.toLowerCase().startsWith("device") || key.toLowerCase().startsWith("pao"))
@@ -61,14 +61,14 @@ public final class MspMeterDaoImpl implements MspMeterDao
                          " AND " + uniqueKey + " > ? ORDER BY " + uniqueKey; 
             List<Meter> mspMeters = new ArrayList<Meter>();
             ListRowCallbackHandler lrcHandler = new ListRowCallbackHandler(mspMeters, mspMeterRowMapper);
-            jdbcOps.query(sql, new Object[]{lastReceived}, new MaxRowCalbackHandlerRse(lrcHandler, MultispeakDefines.MAX_RETURN_RECORDS));
+            jdbcOps.query(sql, new Object[]{lastReceived}, new MaxRowCalbackHandlerRse(lrcHandler, maxRecords));
             return mspMeters;
         } catch (IncorrectResultSizeDataAccessException e) {
             throw new NotFoundException("No results found >= objectID " + lastReceived + ".");
         }
     }
 
-    public List<Meter> getCDSupportedMeters(String lastReceived, String key) {
+    public List<Meter> getCDSupportedMeters(String lastReceived, String key, int maxRecords) {
         try {
             String uniqueKey = "METERNUMBER";
             if( key.toLowerCase().startsWith("device") || key.toLowerCase().startsWith("pao"))
@@ -91,7 +91,7 @@ public final class MspMeterDaoImpl implements MspMeterDao
           
             List<Meter> mspMeters = new ArrayList<Meter>();
             ListRowCallbackHandler lrcHandler = new ListRowCallbackHandler(mspMeters, mspCDMeterRowMapper);
-            jdbcOps.query(sql, new Object[]{lastReceived}, new MaxRowCalbackHandlerRse(lrcHandler, MultispeakDefines.MAX_RETURN_RECORDS));
+            jdbcOps.query(sql, new Object[]{lastReceived}, new MaxRowCalbackHandlerRse(lrcHandler, maxRecords));
             return mspMeters;
         } catch (IncorrectResultSizeDataAccessException e) {
         	throw new NotFoundException("No results found >= objectID " + lastReceived + ".");

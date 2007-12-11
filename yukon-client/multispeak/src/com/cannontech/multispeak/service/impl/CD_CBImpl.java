@@ -5,8 +5,6 @@ import java.rmi.RemoteException;
 import java.util.Date;
 import java.util.List;
 
-import org.springframework.dao.IncorrectResultSizeDataAccessException;
-
 import com.cannontech.clientutils.CTILogger;
 import com.cannontech.core.dao.NotFoundException;
 import com.cannontech.multispeak.client.Multispeak;
@@ -82,7 +80,7 @@ public class CD_CBImpl implements CD_CBSoap_PortType
         List<Meter> meterList = null;
         Date timerStart = new Date();
         try {
-            meterList = mspMeterDao.getCDSupportedMeters(lastReceived, vendor.getUniqueKey());
+            meterList = mspMeterDao.getCDSupportedMeters(lastReceived, vendor.getUniqueKey(), vendor.getMaxReturnRecords());
         } catch(NotFoundException nfe) {
             //Not an error, it could happen that there are no more entries.
         }
@@ -91,7 +89,7 @@ public class CD_CBImpl implements CD_CBSoap_PortType
         meterList.toArray(arrayOfMeters);
         CTILogger.info("Returning " + arrayOfMeters.length + " CD Supported Meters. (" + (new Date().getTime() - timerStart.getTime())*.001 + " secs)");             
         //TODO = need to get the true number of meters remaining
-        int numRemaining = (arrayOfMeters.length <= MultispeakDefines.MAX_RETURN_RECORDS ? 0:1); //at least one item remaining, bad assumption.
+        int numRemaining = (arrayOfMeters.length <= vendor.getMaxReturnRecords() ? 0:1); //at least one item remaining, bad assumption.
         multispeakFuncs.getResponseHeader().setObjectsRemaining(new BigInteger(String.valueOf(numRemaining)));
         return new ArrayOfMeter(arrayOfMeters);
     }

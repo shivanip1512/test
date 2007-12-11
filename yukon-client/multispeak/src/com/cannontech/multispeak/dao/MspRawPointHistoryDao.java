@@ -20,10 +20,10 @@ public interface MspRawPointHistoryDao
      * @param endDate
      * @return
      */
-    public MeterRead[] retrieveMeterReads(ReadBy readBy, String readByValue, Date startDate, Date endDate, String lastReceived);
+    public MeterRead[] retrieveMeterReads(ReadBy readBy, String readByValue, Date startDate, Date endDate, String lastReceived, int maxRecords);
 
     public FormattedBlock retrieveBlock(YukonFormattedBlock<Block> block, Date startDate, Date endDate, String lastReceived);
 
-    public FormattedBlock retrieveBlockByMeterNo(YukonFormattedBlock<Block> block, Date startDate, Date endDate, String meterNumber);
+    public FormattedBlock retrieveBlockByMeterNo(YukonFormattedBlock<Block> block, Date startDate, Date endDate, String meterNumber, int maxRecords);
 }
 
