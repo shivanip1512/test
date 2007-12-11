@@ -1,16 +1,9 @@
 /*==============================================================*/
 /* Database name:  YukonDatabase                                */
 /* DBMS name:      Microsoft SQL Server 2000                    */
-/* Created on:     12/6/2007 3:35:51 PM                         */
+/* Created on:     12/10/2007 4:58:53 PM                        */
 /*==============================================================*/
 
-
-if exists (select 1
-          from sysobjects
-          where  id = object_id('RenCol')
-          and type = 'P')
-   drop procedure RenCol
-go
 
 if exists (select 1
             from  sysobjects
@@ -122,6 +115,546 @@ if exists (select 1
            where  id = object_id('CCINVENTORY_VIEW')
             and   type = 'V')
    drop view CCINVENTORY_VIEW
+go
+
+if exists (select 1
+            from  sysindexes
+           where  id    = object_id('CALCBASE')
+            and   name  = 'Indx_ClcBaseUpdTyp'
+            and   indid > 0
+            and   indid < 255)
+   drop index CALCBASE.Indx_ClcBaseUpdTyp
+go
+
+if exists (select 1
+            from  sysindexes
+           where  id    = object_id('CALCCOMPONENT')
+            and   name  = 'Indx_CalcCmpCmpType'
+            and   indid > 0
+            and   indid < 255)
+   drop index CALCCOMPONENT.Indx_CalcCmpCmpType
+go
+
+if exists (select 1
+            from  sysindexes
+           where  id    = object_id('CAPCONTROLSUBSTATIONBUS')
+            and   name  = 'Indx_CSUBVPT'
+            and   indid > 0
+            and   indid < 255)
+   drop index CAPCONTROLSUBSTATIONBUS.Indx_CSUBVPT
+go
+
+if exists (select 1
+            from  sysindexes
+           where  id    = object_id('CCurtCEParticipant')
+            and   name  = 'INDX_CCURTCEPART_EVTID_CUSTID'
+            and   indid > 0
+            and   indid < 255)
+   drop index CCurtCEParticipant.INDX_CCURTCEPART_EVTID_CUSTID
+go
+
+if exists (select 1
+            from  sysindexes
+           where  id    = object_id('CCurtEEParticipantSelection')
+            and   name  = 'INDX_CCURTEEPARTSEL_CCURTEEPR'
+            and   indid > 0
+            and   indid < 255)
+   drop index CCurtEEParticipantSelection.INDX_CCURTEEPARTSEL_CCURTEEPR
+go
+
+if exists (select 1
+            from  sysindexes
+           where  id    = object_id('CCurtEEParticipantWindow')
+            and   name  = 'INDX_CCRTEEPRTWIN_PWNID_PSID'
+            and   indid > 0
+            and   indid < 255)
+   drop index CCurtEEParticipantWindow.INDX_CCRTEEPRTWIN_PWNID_PSID
+go
+
+if exists (select 1
+            from  sysindexes
+           where  id    = object_id('CCurtEEPricing')
+            and   name  = 'INDX_CCURTECONSVTID_REV'
+            and   indid > 0
+            and   indid < 255)
+   drop index CCurtEEPricing.INDX_CCURTECONSVTID_REV
+go
+
+if exists (select 1
+            from  sysindexes
+           where  id    = object_id('CCurtEEPricingWindow')
+            and   name  = 'INDX_CCURTEEPRWIN'
+            and   indid > 0
+            and   indid < 255)
+   drop index CCurtEEPricingWindow.INDX_CCURTEEPRWIN
+go
+
+if exists (select 1
+            from  sysindexes
+           where  id    = object_id('CCurtGroup')
+            and   name  = 'INDX_CCURTGROUP_ECID_GRPNM'
+            and   indid > 0
+            and   indid < 255)
+   drop index CCurtGroup.INDX_CCURTGROUP_ECID_GRPNM
+go
+
+if exists (select 1
+            from  sysindexes
+           where  id    = object_id('CCurtGroupCustomerNotif')
+            and   name  = 'INDX_CCRTGRPCSTNOTIF_GID_CID'
+            and   indid > 0
+            and   indid < 255)
+   drop index CCurtGroupCustomerNotif.INDX_CCRTGRPCSTNOTIF_GID_CID
+go
+
+if exists (select 1
+            from  sysindexes
+           where  id    = object_id('CCurtProgram')
+            and   name  = 'INDX_CCURTPGM_PRGNM_PRGTYPEID'
+            and   indid > 0
+            and   indid < 255)
+   drop index CCurtProgram.INDX_CCURTPGM_PRGNM_PRGTYPEID
+go
+
+if exists (select 1
+            from  sysindexes
+           where  id    = object_id('CCurtProgramGroup')
+            and   name  = 'INDX_CCURTPRGGRP_GRPID_PRGID'
+            and   indid > 0
+            and   indid < 255)
+   drop index CCurtProgramGroup.INDX_CCURTPRGGRP_GRPID_PRGID
+go
+
+if exists (select 1
+            from  sysindexes
+           where  id    = object_id('CCurtProgramNotifGroup')
+            and   name  = 'INDX_CCURPNG_PRGNM_PRGTYPEID'
+            and   indid > 0
+            and   indid < 255)
+   drop index CCurtProgramNotifGroup.INDX_CCURPNG_PRGNM_PRGTYPEID
+go
+
+if exists (select 1
+            from  sysindexes
+           where  id    = object_id('CCurtProgramParameter')
+            and   name  = 'INDX_CCRTPRGPRM_PGID_PMKEY'
+            and   indid > 0
+            and   indid < 255)
+   drop index CCurtProgramParameter.INDX_CCRTPRGPRM_PGID_PMKEY
+go
+
+if exists (select 1
+            from  sysindexes
+           where  id    = object_id('CapControlFeeder')
+            and   name  = 'Indx_CPCNFDVARPT'
+            and   indid > 0
+            and   indid < 255)
+   drop index CapControlFeeder.Indx_CPCNFDVARPT
+go
+
+if exists (select 1
+            from  sysindexes
+           where  id    = object_id('CapControlStrategy')
+            and   name  = 'Indx_CapCntrlStrat_name_UNQ'
+            and   indid > 0
+            and   indid < 255)
+   drop index CapControlStrategy.Indx_CapCntrlStrat_name_UNQ
+go
+
+if exists (select 1
+            from  sysindexes
+           where  id    = object_id('CommandGroup')
+            and   name  = 'AK_KEY_CmdGrp_Name'
+            and   indid > 0
+            and   indid < 255)
+   drop index CommandGroup.AK_KEY_CmdGrp_Name
+go
+
+if exists (select 1
+            from  sysindexes
+           where  id    = object_id('Contact')
+            and   name  = 'INDX_CONTID_LNAME'
+            and   indid > 0
+            and   indid < 255)
+   drop index Contact.INDX_CONTID_LNAME
+go
+
+if exists (select 1
+            from  sysindexes
+           where  id    = object_id('Contact')
+            and   name  = 'INDX_CONTID_LNAME_FNAME'
+            and   indid > 0
+            and   indid < 255)
+   drop index Contact.INDX_CONTID_LNAME_FNAME
+go
+
+if exists (select 1
+            from  sysindexes
+           where  id    = object_id('Contact')
+            and   name  = 'Indx_ContLstName'
+            and   indid > 0
+            and   indid < 255)
+   drop index Contact.Indx_ContLstName
+go
+
+if exists (select 1
+            from  sysindexes
+           where  id    = object_id('ContactNotification')
+            and   name  = 'Indx_CntNotif_CntId'
+            and   indid > 0
+            and   indid < 255)
+   drop index ContactNotification.Indx_CntNotif_CntId
+go
+
+if exists (select 1
+            from  sysindexes
+           where  id    = object_id('Customer')
+            and   name  = 'INDX_CUSTID_PCONTID'
+            and   indid > 0
+            and   indid < 255)
+   drop index Customer.INDX_CUSTID_PCONTID
+go
+
+if exists (select 1
+            from  sysindexes
+           where  id    = object_id('Customer')
+            and   name  = 'Indx_Cstmr_PcId'
+            and   indid > 0
+            and   indid < 255)
+   drop index Customer.Indx_Cstmr_PcId
+go
+
+if exists (select 1
+            from  sysindexes
+           where  id    = object_id('DISPLAY')
+            and   name  = 'Indx_DISPLAYNAME'
+            and   indid > 0
+            and   indid < 255)
+   drop index DISPLAY.Indx_DISPLAYNAME
+go
+
+if exists (select 1
+            from  sysindexes
+           where  id    = object_id('DeviceTypeCommand')
+            and   name  = 'Indx_DevTypeCmd_GroupID'
+            and   indid > 0
+            and   indid < 255)
+   drop index DeviceTypeCommand.Indx_DevTypeCmd_GroupID
+go
+
+if exists (select 1
+            from  sysindexes
+           where  id    = object_id('DynamicVerification')
+            and   name  = 'Index_DYNVER_CS'
+            and   indid > 0
+            and   indid < 255)
+   drop index DynamicVerification.Index_DYNVER_CS
+go
+
+if exists (select 1
+            from  sysindexes
+           where  id    = object_id('DynamicVerification')
+            and   name  = 'Indx_DYNV_TIME'
+            and   indid > 0
+            and   indid < 255)
+   drop index DynamicVerification.Indx_DYNV_TIME
+go
+
+if exists (select 1
+            from  sysindexes
+           where  id    = object_id('EnergyCompany')
+            and   name  = 'Indx_EnCmpName'
+            and   indid > 0
+            and   indid < 255)
+   drop index EnergyCompany.Indx_EnCmpName
+go
+
+if exists (select 1
+            from  sysindexes
+           where  id    = object_id('FDRTRANSLATION')
+            and   name  = 'Indx_FdrTransIntTyp'
+            and   indid > 0
+            and   indid < 255)
+   drop index FDRTRANSLATION.Indx_FdrTransIntTyp
+go
+
+if exists (select 1
+            from  sysindexes
+           where  id    = object_id('FDRTRANSLATION')
+            and   name  = 'Indx_FdrTrnsIntTypDir'
+            and   indid > 0
+            and   indid < 255)
+   drop index FDRTRANSLATION.Indx_FdrTrnsIntTypDir
+go
+
+if exists (select 1
+            from  sysindexes
+           where  id    = object_id('GRAPHDATASERIES')
+            and   name  = 'Indx_GrpDSerPtID'
+            and   indid > 0
+            and   indid < 255)
+   drop index GRAPHDATASERIES.Indx_GrpDSerPtID
+go
+
+if exists (select 1
+            from  sysindexes
+           where  id    = object_id('HolidaySchedule')
+            and   name  = 'Indx_HolSchName'
+            and   indid > 0
+            and   indid < 255)
+   drop index HolidaySchedule.Indx_HolSchName
+go
+
+if exists (select 1
+            from  sysindexes
+           where  id    = object_id('LMCONTROLAREATRIGGER')
+            and   name  = 'INDX_UNQ_LMCNTRTR_TRID'
+            and   indid > 0
+            and   indid < 255)
+   drop index LMCONTROLAREATRIGGER.INDX_UNQ_LMCNTRTR_TRID
+go
+
+if exists (select 1
+            from  sysindexes
+           where  id    = object_id('LMControlHistory')
+            and   name  = 'Indx_Start'
+            and   indid > 0
+            and   indid < 255)
+   drop index LMControlHistory.Indx_Start
+go
+
+if exists (select 1
+            from  sysindexes
+           where  id    = object_id('LMCurtailCustomerActivity')
+            and   name  = 'Index_LMCrtCstAckSt'
+            and   indid > 0
+            and   indid < 255)
+   drop index LMCurtailCustomerActivity.Index_LMCrtCstAckSt
+go
+
+if exists (select 1
+            from  sysindexes
+           where  id    = object_id('LMCurtailCustomerActivity')
+            and   name  = 'Index_LMCrtCstActID'
+            and   indid > 0
+            and   indid < 255)
+   drop index LMCurtailCustomerActivity.Index_LMCrtCstActID
+go
+
+if exists (select 1
+            from  sysindexes
+           where  id    = object_id('LMCurtailProgramActivity')
+            and   name  = 'Indx_LMCrtPrgActStTime'
+            and   indid > 0
+            and   indid < 255)
+   drop index LMCurtailProgramActivity.Indx_LMCrtPrgActStTime
+go
+
+if exists (select 1
+            from  sysindexes
+           where  id    = object_id('NotificationGroup')
+            and   name  = 'Indx_NOTIFGRPNme'
+            and   indid > 0
+            and   indid < 255)
+   drop index NotificationGroup.Indx_NOTIFGRPNme
+go
+
+if exists (select 1
+            from  sysindexes
+           where  id    = object_id('PAOExclusion')
+            and   name  = 'Indx_PAOExclus'
+            and   indid > 0
+            and   indid < 255)
+   drop index PAOExclusion.Indx_PAOExclus
+go
+
+if exists (select 1
+            from  sysindexes
+           where  id    = object_id('PAOSchedule')
+            and   name  = 'Indx_SchedName'
+            and   indid > 0
+            and   indid < 255)
+   drop index PAOSchedule.Indx_SchedName
+go
+
+if exists (select 1
+            from  sysindexes
+           where  id    = object_id('POINT')
+            and   name  = 'INDX_PAOBJECTID'
+            and   indid > 0
+            and   indid < 255)
+   drop index POINT.INDX_PAOBJECTID
+go
+
+if exists (select 1
+            from  sysindexes
+           where  id    = object_id('POINT')
+            and   name  = 'INDX_PAOBJECTID_POFFSET'
+            and   indid > 0
+            and   indid < 255)
+   drop index POINT.INDX_PAOBJECTID_POFFSET
+go
+
+if exists (select 1
+            from  sysindexes
+           where  id    = object_id('POINT')
+            and   name  = 'INDX_PAOBJECTID_POINTID'
+            and   indid > 0
+            and   indid < 255)
+   drop index POINT.INDX_PAOBJECTID_POINTID
+go
+
+if exists (select 1
+            from  sysindexes
+           where  id    = object_id('POINT')
+            and   name  = 'INDX_POFFSET_POINTTYPE'
+            and   indid > 0
+            and   indid < 255)
+   drop index POINT.INDX_POFFSET_POINTTYPE
+go
+
+if exists (select 1
+            from  sysindexes
+           where  id    = object_id('POINT')
+            and   name  = 'Indx_PointStGrpID'
+            and   indid > 0
+            and   indid < 255)
+   drop index POINT.Indx_PointStGrpID
+go
+
+if exists (select 1
+            from  sysindexes
+           where  id    = object_id('POINTUNIT')
+            and   name  = 'INDX_UOMID_POINTID'
+            and   indid > 0
+            and   indid < 255)
+   drop index POINTUNIT.INDX_UOMID_POINTID
+go
+
+if exists (select 1
+            from  sysindexes
+           where  id    = object_id('RAWPOINTHISTORY')
+            and   name  = 'Index_PointID'
+            and   indid > 0
+            and   indid < 255)
+   drop index RAWPOINTHISTORY.Index_PointID
+go
+
+if exists (select 1
+            from  sysindexes
+           where  id    = object_id('RAWPOINTHISTORY')
+            and   name  = 'Indx_RwPtHisPtIDTst'
+            and   indid > 0
+            and   indid < 255)
+   drop index RAWPOINTHISTORY.Indx_RwPtHisPtIDTst
+go
+
+if exists (select 1
+            from  sysindexes
+           where  id    = object_id('RAWPOINTHISTORY')
+            and   name  = 'Indx_TimeStamp'
+            and   indid > 0
+            and   indid < 255)
+   drop index RAWPOINTHISTORY.Indx_TimeStamp
+go
+
+if exists (select 1
+            from  sysindexes
+           where  id    = object_id('Route')
+            and   name  = 'Indx_RouteDevID'
+            and   indid > 0
+            and   indid < 255)
+   drop index Route.Indx_RouteDevID
+go
+
+if exists (select 1
+            from  sysindexes
+           where  id    = object_id('STATE')
+            and   name  = 'Indx_StateRaw'
+            and   indid > 0
+            and   indid < 255)
+   drop index STATE.Indx_StateRaw
+go
+
+if exists (select 1
+            from  sysindexes
+           where  id    = object_id('STATEGROUP')
+            and   name  = 'Indx_STATEGRP_Nme'
+            and   indid > 0
+            and   indid < 255)
+   drop index STATEGROUP.Indx_STATEGRP_Nme
+go
+
+if exists (select 1
+            from  sysindexes
+           where  id    = object_id('SYSTEMLOG')
+            and   name  = 'INDX_SYSLG_PTID_TS'
+            and   indid > 0
+            and   indid < 255)
+   drop index SYSTEMLOG.INDX_SYSLG_PTID_TS
+go
+
+if exists (select 1
+            from  sysindexes
+           where  id    = object_id('SYSTEMLOG')
+            and   name  = 'Indx_SYSLG_Date'
+            and   indid > 0
+            and   indid < 255)
+   drop index SYSTEMLOG.Indx_SYSLG_Date
+go
+
+if exists (select 1
+            from  sysindexes
+           where  id    = object_id('SYSTEMLOG')
+            and   name  = 'Indx_SYSLG_PtId'
+            and   indid > 0
+            and   indid < 255)
+   drop index SYSTEMLOG.Indx_SYSLG_PtId
+go
+
+if exists (select 1
+            from  sysindexes
+           where  id    = object_id('TOUDayRateSwitches')
+            and   name  = 'Indx_todsw_idoff'
+            and   indid > 0
+            and   indid < 255)
+   drop index TOUDayRateSwitches.Indx_todsw_idoff
+go
+
+if exists (select 1
+            from  sysindexes
+           where  id    = object_id('YukonListEntry')
+            and   name  = 'Indx_YkLstDefID'
+            and   indid > 0
+            and   indid < 255)
+   drop index YukonListEntry.Indx_YkLstDefID
+go
+
+if exists (select 1
+            from  sysindexes
+           where  id    = object_id('YukonPAObject')
+            and   name  = 'Indx_PAO'
+            and   indid > 0
+            and   indid < 255)
+   drop index YukonPAObject.Indx_PAO
+go
+
+if exists (select 1
+            from  sysindexes
+           where  id    = object_id('YukonRole')
+            and   name  = 'Indx_YukRol_Nm'
+            and   indid > 0
+            and   indid < 255)
+   drop index YukonRole.Indx_YukRol_Nm
+go
+
+if exists (select 1
+            from  sysindexes
+           where  id    = object_id('YukonUser')
+            and   name  = 'Indx_YkUsIDNm'
+            and   indid > 0
+            and   indid < 255)
+   drop index YukonUser.Indx_YkUsIDNm
 go
 
 if exists (select 1
@@ -2253,6 +2786,13 @@ create table CAPBANK (
 )
 go
 
+declare @CmtCAPBANK varchar(128)
+select @CmtCAPBANK = user_name()
+execute sp_addextendedproperty 'MS_Description', 
+   'This a test comment for the CapBank table.',
+   'user', @CmtCAPBANK, 'table', 'CAPBANK'
+go
+
 /*==============================================================*/
 /* Table: CAPBANKADDITIONAL                                     */
 /*==============================================================*/
@@ -2301,6 +2841,13 @@ create table CAPCONTROLAREA (
    AreaID               numeric              not null,
    constraint PK_CAPCONTROLAREA primary key nonclustered (AreaID)
 )
+go
+
+declare @CmtCAPCONTROLAREA varchar(128)
+select @CmtCAPCONTROLAREA = user_name()
+execute sp_addextendedproperty 'MS_Description', 
+   'This is a CapControlArea comment for the data dictionary.',
+   'user', @CmtCAPCONTROLAREA, 'table', 'CAPCONTROLAREA'
 go
 
 /*==============================================================*/
@@ -3621,10 +4168,6 @@ insert into DeviceGroup values (11,'UsageMonitoring',8,'Y','STATIC');
 INSERT INTO DeviceGroup values (12,'System',0,'Y','STATIC');
 INSERT INTO DeviceGroup values (13,'Routes',12,'Y','ROUTE');
 INSERT INTO DeviceGroup values (14,'Device Types',12,'Y','DEVICETYPE'); 
-
-alter table DEVICEGROUP
-   add constraint AK_DEVICEGR_PDG_GN unique (GroupName, ParentDeviceGroupId)
-go
 
 /*==============================================================*/
 /* Table: DEVICEGROUPMEMBER                                     */
@@ -5517,10 +6060,6 @@ create table DynamicPAOInfo (
 )
 go
 
-alter table DynamicPAOInfo
-   add constraint AK_DYNPAO_OWNKYUQ unique (PAObjectID, Owner, InfoKey)
-go
-
 /*==============================================================*/
 /* Table: DynamicPAOStatistics                                  */
 /*==============================================================*/
@@ -5837,10 +6376,6 @@ create table GRAPHDEFINITION (
 )
 go
 
-alter table GRAPHDEFINITION
-   add constraint AK_GRNMUQ_GRAPHDEF unique (NAME)
-go
-
 /*==============================================================*/
 /* Table: GatewayEndDevice                                      */
 /*==============================================================*/
@@ -5887,10 +6422,6 @@ create table GroupPaoPermission (
    Allow                varchar(5)           not null default 'Allow',
    constraint PK_GROUPPAOPERMISSION primary key nonclustered (GroupPaoPermissionID)
 )
-go
-
-alter table GroupPaoPermission
-   add constraint AK_GRPPAOPERM unique (GroupID, PaoID, Permission)
 go
 
 /*==============================================================*/
@@ -6584,10 +7115,6 @@ create table LMProgramDirectGear (
 )
 go
 
-alter table LMProgramDirectGear
-   add constraint AK_AKEY_LMPRGDIRG_LMPROGRA unique (DeviceID, GearNumber)
-go
-
 /*==============================================================*/
 /* Table: LMProgramDirectGroup                                  */
 /*==============================================================*/
@@ -6896,12 +7423,12 @@ go
 /*==============================================================*/
 create table PEAKREPORT (
    resultID             int                  not null,
-   deviceID             numeric              null,
-   channel              int                  null,
-   peakType             varchar(50)          null,
-   runType              varchar(50)          null,
-   runDate              datetime             null,
-   resultString         varchar(1500)        null,
+   deviceID             numeric              not null,
+   channel              int                  not null,
+   peakType             varchar(50)          not null,
+   runType              varchar(50)          not null,
+   runDate              datetime             not null,
+   resultString         varchar(1500)        not null,
    constraint PK_PEAKREPORT primary key (resultID)
 )
 go
@@ -6944,10 +7471,6 @@ INSERT into point values( -10, 'System', 'Load Management' , 0, 'Default', 0, 'N
 INSERT into point values( -100, 'System', 'Threshold' , 0, 'Default', 0, 'N', 'N', 'S', 10 ,'None', 0);
 insert into point values( 100,'Analog','Porter Work Count',0,'Default',0,'N','N','R',1500,'None',0);
 INSERT into point values( -110, 'System', 'Multispeak' , 0, 'Default', 0, 'N', 'N', 'S', 110 ,'None', 0);
-
-alter table POINT
-   add constraint AK_KEY_PTNM_YUKPAOID unique (POINTNAME, PAObjectID)
-go
 
 /*==============================================================*/
 /* Index: Indx_PointStGrpID                                     */
@@ -7750,10 +8273,6 @@ create table UserPaoPermission (
    Allow                varchar(5)           not null default 'Allow',
    constraint PK_USERPAOPERMISSION primary key nonclustered (UserPaoPermissionID)
 )
-go
-
-alter table UserPaoPermission
-   add constraint AK_USRPAOPERM unique (UserID, PaoID, Permission)
 go
 
 /*==============================================================*/
@@ -11820,67 +12339,5 @@ go
 alter table YukonUserRole
    add constraint FK_YkUsRlr_YkUsr foreign key (UserID)
       references YukonUser (UserID)
-go
-
-
-create or replace procedure RenCol(
-  User in varchar2,       -- name of the schema. 
-  Table_Name in varchar2, -- name of the table. 
-  Old_Name in varchar2,   -- name of the column to be renamed. 
-  New_Name in varchar2    -- new name of the column. 
-) 
-As
-declare
-  obj_id number; 
-  col_id number; 
-  cursor_name1 INTEGER; 
-  cursor_name2 INTEGER; 
-  ret1 INTEGER; 
-  ret2 INTEGER; 
-
-begin
-  Select object_id 
-  Into obj_id 
-  From dba_objects 
-  Where object_name=UPPER(table_name) 
-  And owner=UPPER(user) 
-  And object_type='TABLE'; 
-
-  --DBMS_OutPut.put_line(obj_id); 
-
-  Select col# 
-  Into col_id 
-  From col$ 
-  Where obj#=obj_id 
-  And name=UPPER(old_name); 
-
-  --DBMS_OutPut.put_line(col_id); 
-
-  Update col$ 
-  Set name=UPPER(new_name) 
-  Where obj#=obj_id 
-  And col#=col_id; 
-
-  Commit; 
-
-  cursor_name1 := DBMS_Sql.Open_Cursor; 
-  DBMS_Sql.Parse(cursor_name1, 'ALTER SYSTEM FLUSH SHARED_POOL',DBMS_Sql.Native); 
-  ret1 := DBMS_Sql.Execute(cursor_name1); 
-  DBMS_Sql.Close_Cursor(cursor_name1); 
-
-  cursor_name2:= DBMS_Sql.Open_Cursor; 
-  DBMS_Sql.Parse(cursor_name2, 'ALTER SYSTEM CHECKPOINT',DBMS_Sql.Native); 
-  ret2:= DBMS_Sql.Execute(cursor_name2); 
-  DBMS_Sql.Close_Cursor(cursor_name2); 
-end;
-/**************************************************************************************/
-/* Example of use:                                                                    */
-/*  SQL> Exec RenCol( 'username', 'tablename', 'old col name', 'new col name' );      */
-/*                                                                                    */
-/**************************************************************************************/
-/
-
-alter procedure RenCol compile
-/
 go
 
