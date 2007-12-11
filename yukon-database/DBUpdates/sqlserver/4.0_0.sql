@@ -1228,6 +1228,28 @@ go;
 insert into YukonRoleProperty values(-20205,-202,'Enable Device Group','true','Allows access to change device groups for a device');
 /* End YUK-4862 */
 
+/* Start YUK-4866 */
+delete from
+	DeviceGroup
+where
+	devicegroupid in (
+	select
+		a.devicegroupid
+	from
+		DeviceGroup a left outer join DeviceGroupMember b on a.devicegroupid = b.devicegroupid
+	where
+		a.devicegroupid in (5,6,7)
+		and b.devicegroupid is null
+		and a.devicegroupid not in (
+			select distinct
+				z.parentdevicegroupid 
+			from 
+				devicegroup z 
+			where 
+				z.parentdevicegroupid in (5,6,7))
+	);
+/* End YUK-4866 */
+
 /**************************************************************/
 /* VERSION INFO                                               */
 /*   Automatically gets inserted from build script            */

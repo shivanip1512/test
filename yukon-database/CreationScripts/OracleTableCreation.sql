@@ -1,7 +1,7 @@
 /*==============================================================*/
 /* Database name:  YukonDatabase                                */
 /* DBMS name:      ORACLE Version 9i                            */
-/* Created on:     12/11/2007 11:24:09 AM                       */
+/* Created on:     12/11/2007 11:45:42 AM                       */
 /*==============================================================*/
 
 
@@ -2217,9 +2217,6 @@ insert into DeviceGroup values (1,'Meters',0,'Y','STATIC');
 insert into DeviceGroup values (2,'Billing',1,'Y','STATIC');
 insert into DeviceGroup values (3,'Collection',1,'Y','STATIC');
 insert into DeviceGroup values (4,'Alternate',1,'Y','STATIC');
-insert into DeviceGroup values (5,'CustomGroup1',1,'Y','STATIC');
-insert into DeviceGroup values (6,'CustomGroup2',1,'Y','STATIC');
-insert into DeviceGroup values (7,'CustomGroup3',1,'Y','STATIC');
 insert into DeviceGroup values (8,'Flags',1,'Y','STATIC');
 insert into DeviceGroup values (9,'Inventory',8,'Y','STATIC');
 insert into DeviceGroup values (10,'DisconnectedStatus',8,'Y','STATIC');
