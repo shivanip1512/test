@@ -12,9 +12,13 @@ package com.cannontech.multispeak.client;
  */
 public class MultispeakDefines
 {
+    @Deprecated
     public static final int MAX_RETURN_RECORDS = 10000;
+    @Deprecated
     public static final long REQUEST_MESSAGE_TIMEOUT = 120000;
+    @Deprecated
     public static final long MAX_INITIATE_REQUEST_OBJECTS = 15;
+    @Deprecated
     public static final String TEMPLATE_NAME_DEFAULT = "*Default Template";
     
 	public static final String AMR_VENDOR = "Cannon";

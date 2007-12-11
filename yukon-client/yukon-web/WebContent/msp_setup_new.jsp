@@ -54,7 +54,7 @@ function vendorChanged(vendor)
 </script>
     
 <br>
-  <h2 class="setup">Welcome to</h2>
+  <h2 class="setup" style="width:-50px">Welcome to</h2>
   <h3 class="setup">Yukon MultiSpeak Interface Setup</h3>
   <h4 class='ErrorMsg'><c:out value="${sessionScope.ERROR_MESSAGE}" default=""/></h4>
 
@@ -100,6 +100,30 @@ function vendorChanged(vendor)
     <td onMouseOver="dispStatusMsg('Enter the Password for Outgoing Yukon messags');return document.statVal" onMouseOut="dispStatusMsg('');return document.statVal">Password</td>
     <td>
       <input type="text" name="outPassword">
+    </td>
+  </tr>
+  <tr>
+    <td colspan="2" onMouseOver="dispStatusMsg('Enter the Max Return Records');return document.statVal" onMouseOut="dispStatusMsg('');return document.statVal">MSP Max Return Records</td>
+    <td>
+      <input type="text" name="mspMaxReturnRecords">
+    </td>
+  </tr>
+  <tr>
+    <td colspan="2" onMouseOver="dispStatusMsg('Enter the Request Message Timeout');return document.statVal" onMouseOut="dispStatusMsg('');return document.statVal">MSP Request Message Timeout</td>
+    <td>
+      <input type="text" name="mspRequestMessageTimeout">
+    </td>
+  </tr>
+  <tr>
+    <td colspan="2" onMouseOver="dispStatusMsg('Enter the Max Initiate Request Objects');return document.statVal" onMouseOut="dispStatusMsg('');return document.statVal">MSP Max Initiate Request Objects</td>
+    <td>
+      <input type="text" name="mspMaxInitiateRequestObjects">
+    </td>
+  </tr>
+    <tr>
+    <td colspan="2" onMouseOver="dispStatusMsg('Enter the Template Name Default');return document.statVal" onMouseOut="dispStatusMsg('');return document.statVal">MSP Template Name Default</td>
+    <td>
+      <input type="text" name="mspTemplateNameDefault">
     </td>
   </tr>
   <tr>

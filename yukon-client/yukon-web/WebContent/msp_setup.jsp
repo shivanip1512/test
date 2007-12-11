@@ -114,12 +114,9 @@ function vendorChanged(vendor)
     </td>
   </tr>
   <tr>
-    <td colspan="2" onMouseOver="dispStatusMsg('Enter the unique key');return document.statVal" onMouseOut="dispStatusMsg('');return document.statVal">MSP Unique Key</td>
+    <td colspan="2" onMouseOver="dispStatusMsg('Enter the Max Return Records');return document.statVal" onMouseOut="dispStatusMsg('');return document.statVal">MSP Max Return Records</td>
     <td>
-      <select name="mspUniqueKey">
-        <option value="meterNumber" <c:if test="${multispeakBean.selectedMspVendor.uniqueKey == 'meterNumber'}">selected</c:if>>meterNumber</option>
-        <option value="deviceName" <c:if test="${multispeakBean.selectedMspVendor.uniqueKey == 'deviceName'}">selected</c:if>>deviceName</option>
-      </SELECT>                     
+      <input type="text" name="mspMaxReturnRecords" value='<c:out value="${multispeakBean.selectedMspVendor.maxReturnRecords}"/>'>
     </td>
     <c:if test="${param.vendor == null or param.vendor == 1}">
     <td onMouseOver="dispStatusMsg('Select the Primary CIS vendor');return document.statVal" onMouseOut="dispStatusMsg('');return document.statVal">Primary CIS</td>
@@ -134,17 +131,44 @@ function vendorChanged(vendor)
   </c:if>
   </tr>
   <tr>
-    <td colspan="3">&nbsp;</td>
-    <c:if test="${param.vendor == null or param.vendor == 1}">
-    <td onMouseOver="dispStatusMsg('Select the DeviceName Alias field');return document.statVal" onMouseOut="dispStatusMsg('');return document.statVal">DeviceName Alias</td>
+    <td colspan="2" onMouseOver="dispStatusMsg('Enter the Request Message Timeout');return document.statVal" onMouseOut="dispStatusMsg('');return document.statVal">MSP Request Message Timeout</td>
     <td>
-      <select name="mspPaoNameAlias">
-      <c:forEach var="mspPaoNameAliasEntry" items="${multispeakBean.selectedMspVendor.paoNameAliasStrings}" varStatus="status">
-        <option <c:if test="${status.index == multispeakBean.paoNameAlias}">selected</c:if> value='<c:out value="${status.index}"/>'> <c:out value="${mspPaoNameAliasEntry}"/></option>
-      </c:forEach>
-      </SELECT>
+      <input type="text" name="mspRequestMessageTimeout" value='<c:out value="${multispeakBean.selectedMspVendor.requestMessageTimeout}"/>'>
     </td>
-  </c:if>
+    <c:if test="${param.vendor == null or param.vendor == 1}">
+      <td onMouseOver="dispStatusMsg('Select the DeviceName Alias field');return document.statVal" onMouseOut="dispStatusMsg('');return document.statVal">DeviceName Alias</td>
+      <td>
+        <select name="mspPaoNameAlias">
+        <c:forEach var="mspPaoNameAliasEntry" items="${multispeakBean.selectedMspVendor.paoNameAliasStrings}" varStatus="status">
+            <option <c:if test="${status.index == multispeakBean.paoNameAlias}">selected</c:if> value='<c:out value="${status.index}"/>'> <c:out value="${mspPaoNameAliasEntry}"/></option>
+        </c:forEach>
+        </SELECT>
+      </td>
+    </c:if>
+  </tr>
+  <tr>
+    <td colspan="2" onMouseOver="dispStatusMsg('Enter the Max Initiate Request Objects');return document.statVal" onMouseOut="dispStatusMsg('');return document.statVal">MSP Max Initiate Request Objects</td>
+    <td>
+      <input type="text" name="mspMaxInitiateRequestObjects" value='<c:out value="${multispeakBean.selectedMspVendor.maxInitiateRequestObjects}"/>'>
+    </td>
+  </tr>
+    <tr>
+    <td colspan="2" onMouseOver="dispStatusMsg('Enter the Template Name Default');return document.statVal" onMouseOut="dispStatusMsg('');return document.statVal">MSP Template Name Default</td>
+    <td>
+      <input type="text" name="mspTemplateNameDefault" value='<c:out value="${multispeakBean.selectedMspVendor.templateNameDefault}"/>'>
+    </td>
+  </tr>
+  <tr>
+    <td colspan="2" onMouseOver="dispStatusMsg('Enter the unique key');return document.statVal" onMouseOut="dispStatusMsg('');return document.statVal">MSP Unique Key</td>
+    <td>
+      <select name="mspUniqueKey">
+        <option value="meterNumber" <c:if test="${multispeakBean.selectedMspVendor.uniqueKey == 'meterNumber'}">selected</c:if>>meterNumber</option>
+        <option value="deviceName" <c:if test="${multispeakBean.selectedMspVendor.uniqueKey == 'deviceName'}">selected</c:if>>deviceName</option>
+      </SELECT>                     
+    </td>
+  </tr>
+  <tr>
+    <td colspan="3">&nbsp;</td>
   </tr>
   <tr height="40" valign="bottom">
     <td colspan="2" style="text-align:right"><u>Interfaces</u>

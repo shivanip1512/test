@@ -37,6 +37,11 @@ public class MultispeakVendor
     //Valid values are meternumber | devicename
     private String uniqueKey = "meternumber";
 
+    private int maxReturnRecords = 10000;
+    private long requestMessageTimeout = 120000;
+    private long maxInitiateRequestObjects = 15;
+    private String templateNameDefault = "*Default Template";
+    
 	public int DEFAULT_TIMEOUT = 60000;	//TODO Added this to the MultispeakRole
 
 	public static final int DEFAULT_PAONAME = 0;
@@ -71,7 +76,8 @@ public class MultispeakVendor
     
     public MultispeakVendor(Integer vendorID, String companyName, String appName, String userName, 
             String password, String outUserName, String outPassword, String uniqueKey,  
-            int timeout, String url) {
+            int maxReturnRecords, long requestMessageTimeout, long maxInitiateRequestObjects, 
+            String templateNameDefault, int timeout, String url) {
         super();
         // TODO Auto-generated constructor stub
         this.vendorID = vendorID;
@@ -82,6 +88,10 @@ public class MultispeakVendor
         this.outUserName = outUserName;
         this.outPassword = outPassword;
         this.uniqueKey = uniqueKey;
+        this.maxReturnRecords = maxReturnRecords;
+        this.requestMessageTimeout = requestMessageTimeout;
+        this.maxInitiateRequestObjects = maxInitiateRequestObjects;
+        this.templateNameDefault = templateNameDefault;
         setTimeout(timeout);
         this.url = url;
     }
@@ -292,4 +302,46 @@ public class MultispeakVendor
         header.setPrefix("");	//Trying to eliminate "ns1" prefix for the namespace showing up.  Exceleron had problems with this.
         return header;
     }
+
+
+    public long getMaxInitiateRequestObjects() {
+        return maxInitiateRequestObjects;
+    }
+
+
+    public void setMaxInitiateRequestObjects(long maxInitiateRequestObjects) {
+        this.maxInitiateRequestObjects = maxInitiateRequestObjects;
+    }
+
+
+    public int getMaxReturnRecords() {
+        return maxReturnRecords;
+    }
+
+
+    public void setMaxReturnRecords(int maxReturnRecords) {
+        this.maxReturnRecords = maxReturnRecords;
+    }
+
+
+    public long getRequestMessageTimeout() {
+        return requestMessageTimeout;
+    }
+
+
+    public void setRequestMessageTimeout(long requestMessageTimeout) {
+        this.requestMessageTimeout = requestMessageTimeout;
+    }
+
+
+    public String getTemplateNameDefault() {
+        return templateNameDefault;
+    }
+
+
+    public void setTemplateNameDefault(String templateNameDefault) {
+        this.templateNameDefault = templateNameDefault;
+    }
+
+
 }

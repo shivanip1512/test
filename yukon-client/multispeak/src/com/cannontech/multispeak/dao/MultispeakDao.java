@@ -4,7 +4,6 @@ import java.util.List;
 
 import com.cannontech.multispeak.client.MultispeakVendor;
 import com.cannontech.multispeak.db.MultispeakInterface;
-import com.cannontech.multispeak.service.Meter;
 
 public interface MultispeakDao
 {

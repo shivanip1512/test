@@ -5,6 +5,7 @@ package com.cannontech.servlet;
 
 import java.io.IOException;
 import java.rmi.RemoteException;
+import java.text.ParseException;
 import java.util.ArrayList;
 import java.util.List;
 
@@ -118,12 +119,23 @@ public class MultispeakServlet extends HttpServlet
 		String uniqueKey = req.getParameter("mspUniqueKey");
 		String password = req.getParameter("mspPassword");
 		String username = req.getParameter("mspUserName");
+        int maxReturnRecords = 10000;
+        long requestMessageTimeout = 120000;
+        long maxInitiateRequestObjects = 15;
+        try{
+            maxReturnRecords = Integer.parseInt(req.getParameter("mspMaxReturnRecords"));
+            requestMessageTimeout = Long.parseLong(req.getParameter("mspRequestMessageTimeout"));
+            maxInitiateRequestObjects = Long.parseLong(req.getParameter("mspMaxInitiateRequestObjects"));
+        } catch (NumberFormatException nfe) {
+            CTILogger.error("Error found while trying to parse multispeak form",nfe);
+        }
+        String templateNameDefault = req.getParameter("mspTemplateNameDefault");
         String outPassword = req.getParameter("outPassword");
         String outUsername = req.getParameter("outUserName");
 		String mspURL = req.getParameter("mspURL");
 		String[] mspInterfaces = req.getParameterValues("mspInterface");
 		String[] mspEndpoints = req.getParameterValues("mspEndpoint");
-//        load action parameters from req
+		// load action parameters from req
         String mspService = req.getParameter("actionService");
         String mspEndpoint = req.getParameter("actionEndpoint");
         int mspPrimaryCIS = multispeakFuncs.getPrimaryCIS();
@@ -140,7 +152,9 @@ public class MultispeakServlet extends HttpServlet
             mspBean.setSelectedVendorID(vendorID.intValue());
         MultispeakVendor mspVendor = new MultispeakVendor(vendorID,companyName, appName, 
                                                           username, password, outUsername, outPassword, 
-                                                          uniqueKey, 0, mspURL);
+                                                          uniqueKey, maxReturnRecords, requestMessageTimeout,
+                                                          maxInitiateRequestObjects, templateNameDefault, 
+                                                          0, mspURL);
 
         List<MultispeakInterface> mspInterfaceList = new ArrayList<MultispeakInterface>();
         if( mspInterfaces != null) {
