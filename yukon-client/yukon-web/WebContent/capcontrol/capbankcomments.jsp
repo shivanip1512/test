@@ -43,7 +43,7 @@
 	}
 	
 	String currentURL = nav.getCurrentPage();
-	
+	java.text.SimpleDateFormat formatter = new java.text.SimpleDateFormat ("dd/MM/yyyy HH:mm:ss");
 %>
 
 <script type="text/javascript"> 
@@ -129,7 +129,7 @@ function unHighlightAllRows(){
 					</tr>
 					<tr class="altTableCell" id="addCommentRow" >
 						<td><img src="/editor/images/edit_item.gif" border="0" height="15" width="15" onclick="selectComment(-1);unHighlightAllRows();"/></td>
-						<td>Select to add a new comment.</td>
+						<td>Click the edit button to add or edit a comment.</td>
 						<td/>
 						<td/>
 						<td/>
@@ -141,7 +141,7 @@ function unHighlightAllRows(){
 						<img src="/editor/images/delete_item.gif" border="0" height="15" width="15" onclick="setCommentValue(<%=c.getId() %>);setDelete(1);submit();" /></td>
 						<td><%= c.getComment() %></td>
 						<td><%= yukonUserDao.getLiteYukonUser(c.getUserId()).getUsername() %></td>
-						<td><%= c.getTime().toString() %></td>
+						<td><%= formatter.format(c.getTime()) %></td>
 						<td><%= c.isAltered() %></td>
 					</tr>
 					<% } %>
