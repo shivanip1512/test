@@ -1180,6 +1180,50 @@ insert into devicetypecommand values(-704, -139, 'MCT-410GL', 32, 'N', -1);
 insert into devicetypecommand values(-705, -139, 'MCT-410IL', 32, 'N', -1); 
 /* End YUK-4860 */
 
+/* Start YUK-4859 */
+/*==============================================================*/
+/* View: CCCAP_INVENTORY_VIEW                                   */
+/*==============================================================*/
+go;
+create view CCCAP_INVENTORY_VIEW as
+SELECT
+	yp4.paoname AS region
+	, cb.maplocationid AS opCenter
+	, yp5.paoname as substationName
+	, yp3.PAOName AS subName
+	, yp2.PAOName AS feederName
+	, yp1.PAOName AS Capbankname
+	, cb.BANKSIZE
+	, capa.latitude AS lat
+	, capa.longitude AS lon
+	, capa.driveDirections AS driveDirection
+	, cb.OPERATIONALSTATE AS ControlType
+	, cb.SwitchManufacture AS SWMfgr
+	, cb.TypeOfSwitch AS SWType
+	, yp.PAOName AS cbcname
+	, p.Value AS ipaddress
+	, da.SlaveAddress
+	, capa.maintenanceareaid AS TA
+FROM
+	CAPBANK cb
+	INNER JOIN YukonPAObject yp1 ON yp1.PAObjectID = cb.DEVICEID
+	LEFT OUTER JOIN YukonPAObject yp ON cb.CONTROLDEVICEID = yp.PAObjectID AND cb.CONTROLDEVICEID > 0
+	LEFT OUTER JOIN CCFeederBankList fb ON fb.DeviceID = cb.DEVICEID
+	LEFT OUTER JOIN YukonPAObject yp2 ON yp2.PAObjectID = fb.FeederID
+	LEFT OUTER JOIN CCFeederSubAssignment sf ON fb.FeederID = sf.FeederID
+	LEFT OUTER JOIN YukonPAObject yp3 ON yp3.PAObjectID = sf.SubStationBusID
+	LEFT OUTER JOIN ccsubstationsubbuslist ss on ss.substationbusid = yp3.paobjectid
+	LEFT OUTER JOIN YukonPAObject yp5 ON yp5.PAObjectID = ss.SubStationID
+	left outer join ccsubareaassignment sa on ss.substationid = sa.substationbusid
+	left outer join YukonPAObject yp4 on yp4.paobjectid = sa.areaid
+	LEFT OUTER JOIN DeviceAddress da ON da.DeviceID = cb.CONTROLDEVICEID
+	LEFT OUTER JOIN (SELECT EntryID, PAObjectID, Owner, InfoKey, Value, UpdateTime
+					  FROM DynamicPAOInfo
+					  WHERE (InfoKey LIKE '%udp ip%')) p ON p.PAObjectID = yp.PAObjectID
+	left outer join capbankadditional capa on capa.deviceid = cb.deviceid
+go;
+/* End YUK-4859 */
+
 
 /**************************************************************/
 /* VERSION INFO                                               */
