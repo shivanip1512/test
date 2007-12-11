@@ -37,7 +37,7 @@ if (allowCtlVal!=null) {
 	} 
 	}
 	%>    
-<cti:titledContainer title="Special Substation Bus Areas" id="last_titled_container">
+<cti:titledContainer title="Special Substation Areas" id="last_titled_container">
 	<form id="areaForm" action="substations.jsp" method="post">
 		<input type="hidden" name="<%=CCSessionInfo.STR_CC_AREA%>" />
 		<input type="hidden" name="<%=CCSessionInfo.STR_CC_AREAID%>" />
