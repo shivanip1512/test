@@ -13,10 +13,7 @@ import java.util.Calendar;
 import java.util.Date;
 import java.util.List;
 
-import org.apache.axis.AxisFault;
-
 import com.cannontech.clientutils.CTILogger;
-import com.cannontech.common.util.CtiUtilities;
 import com.cannontech.core.dao.NotFoundException;
 import com.cannontech.core.dynamic.exception.DynamicDataAccessException;
 import com.cannontech.multispeak.client.Multispeak;
@@ -148,25 +145,29 @@ public class MR_CBImpl implements MR_CBSoap_PortType{
 
         MultispeakVendor vendor = multispeakFuncs.getMultispeakVendorFromHeader();
         if( meterNo != null && meterNo.length() > 0) {
-            com.cannontech.amr.meter.model.Meter meter = multispeakFuncs.getMeter(vendor.getUniqueKey(), meterNo);
-            if( meter != null) {
-                CTILogger.info("MSP: MeterNumber: " + meterNo + " isAMRMeter(), returning true." );
-                return true;
-            }                   
-        }       
-        CTILogger.info("MSP: MeterNumber: " + meterNo + " isAMRMeter() NOT found, returning false." );
+            try {
+                com.cannontech.amr.meter.model.Meter meter = multispeakFuncs.getMeter(vendor.getUniqueKey(), meterNo);
+                if( meter != null) {
+                    CTILogger.info("MSP: MeterNumber: " + meterNo + " isAMRMeter(), returning true." );
+                    return true;
+                }
+            }catch (NotFoundException e){
+                CTILogger.info("MSP: MeterNumber: " + meterNo + " isAMRMeter() NOT found, returning false." );
+                return false;
+            }
+        }
         return false;
     }
     
     public ArrayOfMeterRead getReadingsByDate(java.util.Calendar startDate, java.util.Calendar endDate, java.lang.String lastReceived) throws java.rmi.RemoteException {
         init();
-        throw new AxisFault("Method getReadingsByDate(startDate, endDate, lastReceived) is NOT supported.");
+        throw new RemoteException("Method getReadingsByDate(startDate, endDate, lastReceived) is NOT supported.");
     }
     
     public ArrayOfMeterRead getReadingsByMeterNo(java.lang.String meterNo, java.util.Calendar startDate, java.util.Calendar endDate) throws java.rmi.RemoteException {
     //      init(); //init is already performed on the call to isAMRMeter()
         if( ! isAMRMeter(meterNo))
-            throw new AxisFault( "Meter Number (" + meterNo + "): NOT Found.");
+            throw new RemoteException( "Meter Number (" + meterNo + "): NOT Found.");
         
         MeterRead[] meterReads = mspRawPointHistoryDao.retrieveMeterReads(ReadBy.METER_NUMBER, meterNo, startDate.getTime(), endDate.getTime(), null);
         ArrayOfMeterRead arrayOfMeterReads = new ArrayOfMeterRead(meterReads);
@@ -181,18 +182,24 @@ public class MR_CBImpl implements MR_CBSoap_PortType{
             throw new RemoteException( "Meter Number (" + meterNo + "): NOT Found.");
         
         MultispeakVendor vendor = multispeakFuncs.getMultispeakVendorFromHeader();
+        com.cannontech.amr.meter.model.Meter meter;
+        
+        try {
+            meter = multispeakFuncs.getMeter(vendor.getUniqueKey(), meterNo);
+        }catch (NotFoundException e) {
+            throw new RemoteException( "Meter Number (" + meterNo + "): NOT Found.");
+        }
         
         //Custom hack put in only for SEDC.  Performs an actual meter read instead of simply replying from the database.
         if ( vendor.getCompanyName().equalsIgnoreCase("SEDC") ) {
-        	return multispeak.getLatestReadingInterrogate(vendor, meterNo);
+        	return multispeak.getLatestReadingInterrogate(vendor, meter);
         } else	{ //THIS SHOULD BE WHERE EVERYONE ELSE GOES!!!
             try {
-    	        com.cannontech.amr.meter.model.Meter meter = multispeakFuncs.getMeter(vendor.getUniqueKey(), meterNo);
     	        ReadableDevice device = MeterReadFactory.createMeterReadObject(meter);
     	        device.populateWithPointData(meter.getDeviceId());
     	        return device.getMeterRead();
             } catch (DynamicDataAccessException e) {
-                throw new AxisFault("Connection to dispatch is invalid");
+                throw new RemoteException("Connection to dispatch is invalid");
             }
         }
     }
@@ -209,7 +216,7 @@ public class MR_CBImpl implements MR_CBSoap_PortType{
         ArrayOfMeterRead arrayOfMeterReads = new ArrayOfMeterRead(meterReads);
         return arrayOfMeterReads;
         */
-        throw new AxisFault("Method getReadingsByBillingCycle(java.lang.String billingCycle, java.util.Calendar billingDate, int kWhLookBack, int kWLookBack, int kWLookForward, java.lang.String lastReceived) is NOT supported.");
+        throw new RemoteException("Method getReadingsByBillingCycle(java.lang.String billingCycle, java.util.Calendar billingDate, int kWhLookBack, int kWLookBack, int kWLookForward, java.lang.String lastReceived) is NOT supported.");
     }
     
     public ArrayOfHistoryLog getHistoryLogByMeterNo(java.lang.String meterNo, java.util.Calendar startDate, java.util.Calendar endDate) throws java.rmi.RemoteException {
@@ -276,12 +283,9 @@ public class MR_CBImpl implements MR_CBSoap_PortType{
         ErrorObject[] errorObjects = new ErrorObject[0];
         
         MultispeakVendor vendor = multispeakFuncs.getMultispeakVendorFromHeader();
-        String url = (vendor != null ? vendor.getUrl() : "(none)");
-        if( url == null || url.equalsIgnoreCase(CtiUtilities.STRING_NONE)) {
-            throw new AxisFault("Vendor unknown.  Please contact Yukon administrator to setup a Multispeak Interface Vendor in Yukon.");
-        }
-        else if ( ! porterConnection.isValid() ) {
-            throw new AxisFault("Connection to 'Yukon Port Control Service' is not valid.  Please contact your Yukon Administrator.");
+
+        if ( ! porterConnection.isValid() ) {
+            throw new RemoteException("Connection to 'Yukon Port Control Service' is not valid.  Please contact your Yukon Administrator.");
         }
 
         errorObjects = multispeak.MeterReadEvent(vendor, meterNos.getString());

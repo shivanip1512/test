@@ -16,10 +16,8 @@ import java.util.List;
 import java.util.Map;
 import java.util.Vector;
 
-import org.apache.axis.AxisFault;
 import org.apache.commons.lang.StringUtils;
 import org.springframework.dao.DataAccessException;
-import org.springframework.dao.IncorrectResultSizeDataAccessException;
 
 import com.cannontech.amr.meter.dao.MeterDao;
 import com.cannontech.clientutils.CTILogger;
@@ -205,17 +203,16 @@ public class Multispeak implements MessageListener {
 		}
 	}
     
-    public LoadActionCode CDMeterState(MultispeakVendor mspVendor, String meterNumber) throws RemoteException
+    public LoadActionCode CDMeterState(MultispeakVendor mspVendor, com.cannontech.amr.meter.model.Meter meter) throws RemoteException
     {
         if ( ! porterConnection.isValid() ) {
-            throw new AxisFault("Connection to 'Yukon Port Control Service' is not valid.  Please contact your Yukon Administrator.");
+            throw new RemoteException("Connection to 'Yukon Port Control Service' is not valid.  Please contact your Yukon Administrator.");
         }
 
-        com.cannontech.amr.meter.model.Meter meter = 
-            multispeakFuncs.getMeter(mspVendor.getUniqueKey(), meterNumber);
         long id = generateMessageID();
         CDStatusEvent event = new CDStatusEvent(mspVendor, id);
         
+        final String meterNumber = meter.getMeterNumber();
         if (meter != null) {
             event.setMeterNumber(meterNumber);
             getEventsMap().put(new Long(id), event);
@@ -252,10 +249,8 @@ public class Multispeak implements MessageListener {
      * @return
      * @throws RemoteException
      */
-    public MeterRead getLatestReadingInterrogate(MultispeakVendor mspVendor, String meterNumber)
+    public MeterRead getLatestReadingInterrogate(MultispeakVendor mspVendor, com.cannontech.amr.meter.model.Meter meter)
     {
-        com.cannontech.amr.meter.model.Meter meter =
-            multispeakFuncs.getMeter(mspVendor.getUniqueKey(), meterNumber);
     	long id = generateMessageID();      
         MeterReadEvent event = new MeterReadEvent(mspVendor, id, meter);
         
@@ -264,6 +259,7 @@ public class Multispeak implements MessageListener {
         if( DeviceTypesFuncs.isMCT4XX(meter.getType()) )
             commandStr = "getvalue peak";    // getvalue peak returns the peak kW and the total kWh
         
+        final String meterNumber = meter.getMeterNumber();
         CTILogger.info("Received " + meterNumber + " for LatestReadingInterrogate from " + mspVendor.getCompanyName());
         writePilRequest(meter, commandStr, id, 15);
         logMSPActivity("getLatestReadingByMeterNo",

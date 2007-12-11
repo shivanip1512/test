@@ -1,10 +1,10 @@
 package com.cannontech.multispeak.service.impl;
 
 import java.math.BigInteger;
+import java.rmi.RemoteException;
 import java.util.Date;
 import java.util.List;
 
-import org.apache.axis.AxisFault;
 import org.springframework.dao.IncorrectResultSizeDataAccessException;
 
 import com.cannontech.clientutils.CTILogger;
@@ -103,15 +103,16 @@ public class CD_CBImpl implements CD_CBSoap_PortType
 
     public LoadActionCode getCDMeterState(java.lang.String meterNo) throws java.rmi.RemoteException {
         init();
-        MultispeakVendor vendor = null;
+        MultispeakVendor vendor = multispeakFuncs.getMultispeakVendorFromHeader();
+        com.cannontech.amr.meter.model.Meter meter;
         
         try {
-            vendor = multispeakFuncs.getMultispeakVendorFromHeader();
-        }catch (IncorrectResultSizeDataAccessException e) {
-            throw new AxisFault("Vendor unknown.  Please contact Yukon administrator to setup a Multispeak Interface Vendor in Yukon.");
+            meter = multispeakFuncs.getMeter(vendor.getUniqueKey(), meterNo);
+        }catch (NotFoundException e) {
+            throw new RemoteException( "Meter Number (" + meterNo + "): NOT Found.");
         }
 
-        LoadActionCode loadActionCode = multispeak.CDMeterState(vendor, meterNo);
+        LoadActionCode loadActionCode = multispeak.CDMeterState(vendor, meter);
         return loadActionCode;
     }
 
@@ -119,13 +120,7 @@ public class CD_CBImpl implements CD_CBSoap_PortType
         init();
         ErrorObject[] errorObjects = new ErrorObject[0];
         
-        MultispeakVendor vendor = null;
-        try {
-            vendor = multispeakFuncs.getMultispeakVendorFromHeader();
-        }catch (IncorrectResultSizeDataAccessException e) {
-            throw new AxisFault("Vendor unknown.  Please contact Yukon administrator to setup a Multispeak Interface Vendor in Yukon.");
-        }
-        
+        MultispeakVendor vendor = multispeakFuncs.getMultispeakVendorFromHeader();
         errorObjects = multispeak.CDEvent(vendor, cdEvents.getConnectDisconnectEvent());
         
         multispeakFuncs.logArrayOfErrorObjects(MultispeakDefines.CD_CB_STR, "initiateConnectDisconnect", errorObjects);

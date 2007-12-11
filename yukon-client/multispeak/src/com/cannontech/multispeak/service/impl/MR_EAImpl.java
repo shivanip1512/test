@@ -8,11 +8,10 @@ import java.util.List;
 import java.util.Map;
 import java.util.Set;
 
-import org.apache.axis.AxisFault;
-
 import com.cannontech.amr.meter.model.Meter;
 import com.cannontech.clientutils.CTILogger;
 import com.cannontech.common.util.CtiUtilities;
+import com.cannontech.core.dao.NotFoundException;
 import com.cannontech.multispeak.block.Block;
 import com.cannontech.multispeak.block.YukonFormattedBlock;
 import com.cannontech.multispeak.client.Multispeak;
@@ -187,9 +186,15 @@ public class MR_EAImpl implements MR_EASoap_PortType
     }
 
     public FormattedBlock getLatestReadingByMeterNoAndType(String meterNo, String readingType) throws RemoteException {
-        
+
         MultispeakVendor vendor = multispeakFuncs.getMultispeakVendorFromHeader();
-        Meter meter = multispeakFuncs.getMeter(vendor.getUniqueKey(), meterNo);
+        Meter meter;
+        try {
+            meter = multispeakFuncs.getMeter(vendor.getUniqueKey(), meterNo);
+        } catch (NotFoundException e) {
+            throw new RemoteException( "Meter Number (" + meterNo + "): NOT Found.");
+        }
+
         return readingTypesMap.get(readingType).getFormattedBlock(meter);
     }
 
@@ -207,7 +212,7 @@ public class MR_EAImpl implements MR_EASoap_PortType
         
         YukonFormattedBlock<Block> formattedBlock = readingTypesMap.get(readingType);
         if( formattedBlock == null)
-            throw new AxisFault(readingType + " is NOT a supported ReadingType.");
+            throw new RemoteException(readingType + " is NOT a supported ReadingType.");
         
         FormattedBlock mspBlock = mspRawPointHistoryDao.retrieveBlock(formattedBlock, startDate.getTime(), endDate.getTime(), lastReceived);
         ArrayOfFormattedBlock arrayOfFormattedBlock = new ArrayOfFormattedBlock(new FormattedBlock[]{mspBlock});
@@ -217,11 +222,11 @@ public class MR_EAImpl implements MR_EASoap_PortType
 
     public ArrayOfFormattedBlock getReadingsByMeterNoAndType(String meterNo, Calendar startDate, Calendar endDate, String readingType, String lastReceived) throws RemoteException {
         if( ! mr_cb.isAMRMeter(meterNo))
-            throw new AxisFault( "Meter Number (" + meterNo + "): NOT Found.");
+            throw new RemoteException( "Meter Number (" + meterNo + "): NOT Found.");
         
         YukonFormattedBlock<Block> formattedBlock = readingTypesMap.get(readingType);
         if( formattedBlock == null)
-            throw new AxisFault(readingType + " is NOT a supported ReadingType.");
+            throw new RemoteException(readingType + " is NOT a supported ReadingType.");
         
         FormattedBlock mspBlock = mspRawPointHistoryDao.retrieveBlockByMeterNo(formattedBlock, startDate.getTime(), endDate.getTime(), meterNo);
         ArrayOfFormattedBlock arrayOfFormattedBlock = new ArrayOfFormattedBlock(new FormattedBlock[]{mspBlock});
@@ -243,21 +248,18 @@ public class MR_EAImpl implements MR_EASoap_PortType
         ErrorObject[] errorObjects = new ErrorObject[0];
         
         MultispeakVendor vendor = multispeakFuncs.getMultispeakVendorFromHeader();
-        String url = (vendor != null ? vendor.getUrl() : "(none)");
-        if( url == null || url.equalsIgnoreCase(CtiUtilities.STRING_NONE)) {
-            throw new AxisFault("Vendor unknown.  Please contact Yukon administrator to setup a Multispeak Interface Vendor in Yukon.");
-        }
-        else if ( ! porterConnection.isValid() ) {
-            throw new AxisFault("Connection to 'Yukon Port Control Service' is not valid.  Please contact your Yukon Administrator.");
+
+        if ( ! porterConnection.isValid() ) {
+            throw new RemoteException("Connection to 'Yukon Port Control Service' is not valid.  Please contact your Yukon Administrator.");
         }
         
         if( meterNos.getString().length >= MultispeakDefines.MAX_INITIATE_REQUEST_OBJECTS){
-            throw new AxisFault("Maximum number of MeterNos initiated exceeds limit.  Initiate request cancelled.  Limit set to " + MultispeakDefines.MAX_INITIATE_REQUEST_OBJECTS);
+            throw new RemoteException("Maximum number of MeterNos initiated exceeds limit.  Initiate request cancelled.  Limit set to " + MultispeakDefines.MAX_INITIATE_REQUEST_OBJECTS);
         }
         
         YukonFormattedBlock<Block> formattedBlock = readingTypesMap.get(readingType);
         if( formattedBlock == null)
-            throw new AxisFault(readingType + " is NOT a supported ReadingType.");
+            throw new RemoteException(readingType + " is NOT a supported ReadingType.");
         errorObjects = multispeak.BlockMeterReadEvent(vendor, meterNos.getString(), formattedBlock);
 
         multispeakFuncs.logArrayOfErrorObjects(MultispeakDefines.MR_CB_STR, "initiateMeterReadByMeterNumberRequest", errorObjects);
