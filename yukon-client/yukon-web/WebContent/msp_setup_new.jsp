@@ -54,7 +54,7 @@ function vendorChanged(vendor)
 </script>
     
 <br>
-  <h2 class="setup" style="width:-50px">Welcome to</h2>
+  <h2 class="setup">Welcome to</h2>
   <h3 class="setup">Yukon MultiSpeak Interface Setup</h3>
   <h4 class='ErrorMsg'><c:out value="${sessionScope.ERROR_MESSAGE}" default=""/></h4>
 
