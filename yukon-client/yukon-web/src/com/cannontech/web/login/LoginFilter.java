@@ -15,9 +15,12 @@ import javax.servlet.http.Cookie;
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
 
+import org.springframework.util.AntPathMatcher;
+import org.springframework.util.PathMatcher;
 import org.springframework.web.bind.ServletRequestUtils;
 import org.springframework.web.context.WebApplicationContext;
 import org.springframework.web.context.support.WebApplicationContextUtils;
+import org.springframework.web.util.UrlPathHelper;
 
 import com.cannontech.clientutils.CTILogger;
 import com.cannontech.common.constants.LoginController;
@@ -25,17 +28,31 @@ import com.cannontech.common.exception.NotLoggedInException;
 import com.cannontech.util.ServletUtil;
 
 public class LoginFilter implements Filter {
-    private static final String[] exclusionServletNames;
-    private static final String[] exclusionFileNames;
-    private static final String[] exclusionFileTypes;
+    private static final String[] excludedFilePaths;
     private WebApplicationContext context;
     private LoginService loginService;
     private LoginCookieHelper loginCookieHelper;
+    private PathMatcher pathMatcher = new AntPathMatcher();
+    private UrlPathHelper urlPathHelper = new UrlPathHelper();
 
     static {
-        exclusionServletNames = new String[]{"/servlet/LoginController", "/soap/", "/servlet/PWordRequest"};
-        exclusionFileNames = new String[]{LoginController.LOGIN_URL, "pwordreq.jsp", "prototype.js", "CtiMenu.js"};
-        exclusionFileTypes = new String[]{".css", ".png", ".gif", ".jpg", ".html"};
+        // setup ant-style paths that should be processed even if the 
+        // user is not logged in
+        // all paths should start with a slash because that's just the way it works
+        excludedFilePaths = new String[] {
+            LoginController.LOGIN_URL, // aka /login.jsp
+            "/servlet/LoginController", 
+            "/soap/**", 
+            "/servlet/PWordRequest",
+            "/pwordreq.jsp", 
+            "/**/prototype.js", 
+            "/**/CtiMenu.js",
+            "/**/*.css", 
+            "/**/*.png", 
+            "/**/*.gif", 
+            "/**/*.jpg", 
+            "/**/*.html",
+            "/jws/*.jar"};
     }
 
     @Override
@@ -100,18 +117,12 @@ public class LoginFilter implements Filter {
     }
 
     private boolean isExcludedRequest(HttpServletRequest request) {
-        final String requestUrl = request.getRequestURL().toString();
-
-        for (final String fileName : exclusionFileNames) {
-            if (requestUrl.endsWith(fileName)) return true;
-        }
-
-        for (final String fileType : exclusionFileTypes) {
-            if (requestUrl.endsWith(fileType)) return true;
-        }    
-
-        for (final String servletName : exclusionServletNames) {
-            if (requestUrl.contains(servletName)) return true;
+        String pathWithinApplication = urlPathHelper.getPathWithinApplication(request);
+        
+        for (String pattern : excludedFilePaths) {
+            if (pathMatcher.match(pattern, pathWithinApplication)) {
+                return true;
+            }
         }
 
         return false;
