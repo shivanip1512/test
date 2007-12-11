@@ -20,7 +20,7 @@
 <div id="overDiv" style="position:absolute; visibility:hidden; z-index:1000;"></div>
 <cti:standardMenu/>
 <cti:breadCrumbs>
-    <cti:crumbLink url="subareas.jsp" title="SubBus Areas" />
+    <cti:crumbLink url="subareas.jsp" title="Substation Areas" />
 
 </cti:breadCrumbs>
 <%

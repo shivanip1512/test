@@ -17,7 +17,7 @@
 <%@include file="cbc_inc.jspf"%>
 
 <cti:breadCrumbs>
-    <cti:crumbLink url="subareas.jsp" title="SubBus Areas" />
+    <cti:crumbLink url="subareas.jsp" title="Substation Areas" />
     <cti:crumbLink url="<%=ServletUtil.getFullURL(request)%>" title="Events" />
 </cti:breadCrumbs>
 
