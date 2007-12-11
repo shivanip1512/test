@@ -45,6 +45,8 @@ public class CapControlSpecialArea extends CapControlYukonPAOBase implements Edi
 
         // remove all the associations of Subs to this Area
         com.cannontech.database.db.capcontrol.CCSubSpecialAreaAssignment.deleteSubs(getAreaID(), null, getDbConnection());
+        // Delete from all dynamic objects
+        delete("DynamicCCSpecialArea", "AreaID", getAreaID());
         SeasonScheduleDao ssDao = DaoFactory.getSeasonSchedule();
         ssDao.deleteStrategyAssigment(getCapControlPAOID());
         getCapControlSpecialArea().delete();
