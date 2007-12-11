@@ -112,10 +112,10 @@ for( int i = 0; i < items.length; i++ )
         </div>
 <br/>        
 
-<%	if( !returnURL.contains("results.jsp") ) { %>
-<input id="BackButton" type="button" value="Back" onclick="javascript:location.href='<%=returnURL %>'">
-<%} else {%>
+<%	if( returnURL.contains("results.jsp") || returnURL.contains(".jsf")) { %>
 <input id="BackButton" type="button" value="Back" disabled>
+<%} else {%>
+<input id="BackButton" type="button" value="Back" onclick="javascript:location.href='<%=returnURL %>'">
 <% } %>
 
 </form>
