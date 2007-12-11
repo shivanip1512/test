@@ -172,13 +172,8 @@ void CtiCCClientConnection::write(RWCollectable* msg)
 void CtiCCClientConnection::_sendthr()
 {
     RWCollectable* out;
-    ThreadMonitor.start(); 
     try
     {   
-        CtiTime rwnow;
-        CtiTime announceTime((unsigned long) 0);
-        CtiTime tickleTime((unsigned long) 0);
-
 
         {
             CtiCCSubstationBusStore* store = CtiCCSubstationBusStore::getInstance();
@@ -193,8 +188,6 @@ void CtiCCClientConnection::_sendthr()
             executor->Execute();
             delete executor;
         }
-
-
         do
         {
             rwRunnable().serviceCancellation();
@@ -252,31 +245,9 @@ void CtiCCClientConnection::_sendthr()
                 CtiLockGuard<CtiLogger> logger_guard(dout);
                 dout << CtiTime() << " - Caught '...' in: " << __FILE__ << " at:" << __LINE__ << endl;
             }
-            rwnow = rwnow.now();
-            if(rwnow.seconds() > tickleTime.seconds())
-            {
-                tickleTime = nextScheduledTimeAlignedOnRate( rwnow, CtiThreadMonitor::StandardTickleTime );
-                if( rwnow.seconds() > announceTime.seconds() )
-                {
-                    announceTime = nextScheduledTimeAlignedOnRate( rwnow, CtiThreadMonitor::StandardMonitorTime );
-                    CtiLockGuard<CtiLogger> doubt_guard(dout);
-                    dout << CtiTime() << " CapControl _sendThr. TID: " << rwThreadId() << endl;
-                }
-
-               /* if(!_shutdownOnThreadTimeout)
-                {*/
-                    ThreadMonitor.tickle( CTIDBG_new CtiThreadRegData( rwThreadId(), "CapControl _sendThr", CtiThreadRegData::Action, CtiThreadMonitor::StandardMonitorTime, &CtiCCSubstationBusStore::periodicComplain, 0) );
-                /*}
-                else
-                {   
-                    ThreadMonitor.tickle( CTIDBG_new CtiThreadRegData( rwThreadId(), "CapControl _sendThr", CtiThreadRegData::Action, CtiThreadMonitor::StandardMonitorTime, &CtiCCSubstationBusStore::sendUserQuit, CTIDBG_new string("CapControl _sendThr")) );
-                //}*/
-            }  
-
         }
         while ( isValid() && oStream->good() );
-
-        ThreadMonitor.tickle( CTIDBG_new CtiThreadRegData( rwThreadId(), "CapControl _sendThr", CtiThreadRegData::LogOut ) );
+       
     }
     catch(RWCancellation& )
     {
@@ -314,12 +285,6 @@ void CtiCCClientConnection::_recvthr()
 
     try
     {
-      //  rwRunnable().serviceCancellation();
-      // 
-        CtiTime rwnow;
-        CtiTime announceTime((unsigned long) 0);
-        CtiTime tickleTime((unsigned long) 0);
-
         do
         {
             rwRunnable().serviceCancellation();
@@ -350,32 +315,9 @@ void CtiCCClientConnection::_recvthr()
                     dout << CtiTime() << " - Caught '...' in: " << __FILE__ << " at:" << __LINE__ << endl;
                 }
             }
-            rwnow = rwnow.now();
-            if(rwnow.seconds() > tickleTime.seconds())
-            {
-                tickleTime = nextScheduledTimeAlignedOnRate( rwnow, CtiThreadMonitor::StandardTickleTime );
-                if( rwnow.seconds() > announceTime.seconds() )
-                {
-                    announceTime = nextScheduledTimeAlignedOnRate( rwnow, CtiThreadMonitor::StandardMonitorTime );
-                    CtiLockGuard<CtiLogger> doubt_guard(dout);
-                    dout << CtiTime() << " CapControl _recvThr. TID: " << rwThreadId() << endl;
-                }
-
-               /* if(!_shutdownOnThreadTimeout)
-                {*/
-                    ThreadMonitor.tickle( CTIDBG_new CtiThreadRegData( rwThreadId(), "CapControl _recvThr", CtiThreadRegData::Action, CtiThreadMonitor::StandardMonitorTime, &CtiCCSubstationBusStore::periodicComplain, 0) );
-               /* }
-                else
-                {   
-                    ThreadMonitor.tickle( CTIDBG_new CtiThreadRegData( rwThreadId(), "CapControl _recvThr", CtiThreadRegData::Action, CtiThreadMonitor::StandardMonitorTime, &CtiCCSubstationBusStore::sendUserQuit, CTIDBG_new string("CapControl _recvThr")) );
-                //}*/
-            }  
-
 
         }
         while ( isValid()  && iStream->good() );
-
-        ThreadMonitor.tickle( CTIDBG_new CtiThreadRegData( rwThreadId(), "CapControl _recvThr", CtiThreadRegData::LogOut ) );
     }
     catch(RWCancellation& )
     {
