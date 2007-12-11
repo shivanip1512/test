@@ -1,7 +1,7 @@
 /*==============================================================*/
 /* Database name:  YukonDatabase                                */
 /* DBMS name:      Microsoft SQL Server 2000                    */
-/* Created on:     12/11/2007 2:57:46 PM                        */
+/* Created on:     12/11/2007 3:38:54 PM                        */
 /*==============================================================*/
 
 
@@ -7304,10 +7304,10 @@ create table MSPVendor (
    AppName              varchar(64)          not null,
    OutUserName          varchar(64)          not null,
    OutPassword          varchar(64)          not null,
-   MaxReturnRecords     int                  not null default 10000,
-   RequestMessageTimeout int                  not null default 120000,
-   MaxInitiateRequestObjects int                  not null default 15,
-   TemplateNameDefault  varchar(50)          not null default '*Default Template',
+   MaxReturnRecords     int                  not null,
+   RequestMessageTimeout int                  not null,
+   MaxInitiateRequestObjects int                  not null,
+   TemplateNameDefault  varchar(50)          not null,
    constraint PK_MSPVENDOR primary key nonclustered (VendorID)
 )
 go

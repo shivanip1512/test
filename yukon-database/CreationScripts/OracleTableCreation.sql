@@ -1,7 +1,7 @@
 /*==============================================================*/
 /* Database name:  YukonDatabase                                */
 /* DBMS name:      ORACLE Version 9i                            */
-/* Created on:     12/11/2007 2:56:27 PM                        */
+/* Created on:     12/11/2007 3:41:03 PM                        */
 /*==============================================================*/
 
 
@@ -5218,10 +5218,10 @@ create table MSPVendor  (
    AppName              VARCHAR2(64)                    not null,
    OutUserName          VARCHAR2(64)                    not null,
    OutPassword          VARCHAR2(64)                    not null,
-   MaxReturnRecords     INTEGER                        default 10000 not null,
-   RequestMessageTimeout INTEGER                        default 120000 not null,
-   MaxInitiateRequestObjects INTEGER                        default 15 not null,
-   TemplateNameDefault  VARCHAR2(50)                   default '*Default Template' not null,
+   MaxReturnRecords     INTEGER                         not null,
+   RequestMessageTimeout INTEGER                         not null,
+   MaxInitiateRequestObjects INTEGER                         not null,
+   TemplateNameDefault  VARCHAR2(50)                    not null,
    constraint PK_MSPVENDOR primary key (VendorID)
 );
 
