@@ -4,11 +4,12 @@
 <beans>
     <bean class="org.springframework.web.servlet.handler.SimpleUrlHandlerMapping">
         <property name="mappings">
-            <value>
-            	/*=CsrController
-            </value>
+            <props>
+                <prop key="/move*">MoveInMoveOutController</prop>
+                <prop key="/*">CsrController</prop>
+            </props>
         </property>
-    </bean>    
+    </bean>
     
     <bean id="viewResolver"
       class="org.springframework.web.servlet.view.UrlBasedViewResolver">
@@ -37,11 +38,13 @@
 		<property name="roleDao" ref="roleDao"/>
 		<property name="csrService" ref="csrService" />
 		<property name="attributeService" ref="attributeService" />
+    </bean>
+    
+    <bean id="MoveInMoveOutController" class="com.cannontech.web.moveInMoveOut.MoveInMoveOutController" >
         <property name="moveInMoveOutService" ref="moveInMoveOutService" />
         <property name="moveInMoveOutEmailService" ref="moveInMoveOutEmailService" />
         <property name="meterDao" ref="meterDao" />
         <property name="dateFormattingService" ref="dateFormattingService" />
+    </bean>    
         
-    </bean>
-    
 </beans>
