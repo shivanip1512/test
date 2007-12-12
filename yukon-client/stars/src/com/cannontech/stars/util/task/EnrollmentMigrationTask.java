@@ -47,11 +47,13 @@ public class EnrollmentMigrationTask extends TimeConsumingTask {
              * only for the current energy company, this will save resources at a place like Xcel where
              * we don't want to load ALL accounts all at once
 			 */
+            //TODO: Should pull the db transactions out of the loops.  Will speed things up and is much cleaner.
             List<LiteStarsCustAccountInformation> custAcctInfoList = energyCompany.getAllCustAccountInformation();
             for(LiteStarsCustAccountInformation liteAcctInformation : custAcctInfoList) {
-                List<LiteStarsAppliance> appList = liteAcctInformation.getAppliances();
+                LiteStarsCustAccountInformation extendedAcctInformation = energyCompany.limitedExtendCustAccountInfo(liteAcctInformation);
+                List<LiteStarsAppliance> appList = extendedAcctInformation.getAppliances();
                 for(LiteStarsAppliance app : appList) {
-                    if(app.getProgramID() > 0 && app.getInventoryID() > 0) {
+                    if(app.getProgramID() > 0 && app.getInventoryID() > 0 && app.getAccountID() > 0) {
                         LMHardwareControlGroup controlGroup = new LMHardwareControlGroup();
                         controlGroup.setInventoryId(app.getInventoryID());
                         int groupId = app.getAddressingGroupID();

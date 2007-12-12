@@ -2218,6 +2218,33 @@ public class LiteStarsEnergyCompany extends LiteBase {
         addCustAccountInformation( liteStarsCustAccountInfo);
     }
 
+    /*Have to use Yao's idea of extending customer account information but I don't want all of 
+     * it, just appliances and inventory.
+     */
+    public LiteStarsCustAccountInformation limitedExtendCustAccountInfo(LiteStarsCustAccountInformation liteAcctInfo) {
+        try {
+            List<LiteStarsAppliance> appliances = liteAcctInfo.getAppliances();
+            for (int i = 0; i < appliances.size(); i++) {
+                LiteStarsAppliance liteApp = appliances.get(i);
+                
+                com.cannontech.database.data.stars.appliance.ApplianceBase appliance =
+                        new com.cannontech.database.data.stars.appliance.ApplianceBase();
+                appliance.setApplianceID( new Integer(liteApp.getApplianceID()) );
+                
+                appliance = (com.cannontech.database.data.stars.appliance.ApplianceBase)
+                        Transaction.createTransaction( Transaction.RETRIEVE, appliance ).execute();
+                
+                liteApp = StarsLiteFactory.createLiteStarsAppliance( appliance, this );
+                appliances.set(i, liteApp);
+            }
+        }
+        catch (Exception e) {
+            CTILogger.error( e.getMessage(), e );
+        }
+        
+        return liteAcctInfo;
+    }
+    
     private void extendCustAccountInfo(LiteStarsCustAccountInformation liteAcctInfo) {
         try {
             com.cannontech.database.db.stars.customer.CustomerResidence residence =
