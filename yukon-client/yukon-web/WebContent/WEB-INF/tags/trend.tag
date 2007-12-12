@@ -7,6 +7,7 @@
 <%@ attribute name="converterType" required="true"%>
 
 <%@ taglib uri="http://java.sun.com/jsp/jstl/core" prefix="c" %>
+<%@ taglib uri="http://cannontech.com/tags/cti" prefix="cti" %>
 
 <%--<!--  Set name of amCharts program to use (amline or amcolumn) use to form name of swf and jsp to be used -->--%>
 <c:choose>
@@ -51,9 +52,8 @@
 </c:url>
 
 
-<c:url var="swfObjectSrc" scope="page" value="/JavaScript/swfobject.js" />
 <c:url var="expressInstallSrc" scope="page" value="/JavaScript/expressinstall.swf" />
-<script type="text/javascript" src="${swfObjectSrc}"></script>
+<cti:includeScript link="/JavaScript/swfobject.js"/>
 
 <div id="flashcontent">
     <div style="width:90%;text-align:center;">
