@@ -51,13 +51,26 @@
 </c:url>
 
 
-<object type="application/x-shockwave-flash"
-	data="<c:out value="${amSrc}"/>" width="100%" height="90%"
-	align="middle">
-	<param name="allowScriptAccess" value="sameDomain" />
-	<param name="movie" value="<c:out value="${amSrc}"/>" />
-	<param name="scale" value="noscale" />
-	<param name="salign" value="lt" />
-	<param name="bgcolor" value="#FFFFFF" />
-	<param name="wmode" value="transparent" />
-</object>
+<c:url var="swfObjectSrc" scope="page" value="/JavaScript/swfobject.js" />
+<c:url var="expressInstallSrc" scope="page" value="/JavaScript/expressinstall.swf" />
+<script type="text/javascript" src="${swfObjectSrc}"></script>
+
+<div id="flashcontent">
+    <div style="width:90%;text-align:center;">
+        <br>
+        <br>
+        <h4>The Adobe Flash Player is required to view this graph.</h4>
+        <br>
+        Please download the latest version of the Flash Player by following the link below.
+        <br>
+        <br>
+        <a href="http://www.adobe.com" target="_blank"><img border="0" src="<c:url value="/WebConfig/yukon/Icons/visitadobe.gif"/>" /></a>
+        <br>
+    </div>
+</div>
+
+<script type="text/javascript">
+   var so = new SWFObject("${amSrc}", "dataGraph", "100%", "100%", "8", "#FFFFFF");
+   so.useExpressInstall('${expressInstallSrc}');
+   so.write("flashcontent");
+</script>
