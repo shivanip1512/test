@@ -2,7 +2,7 @@ package com.cannontech.common.device.attribute.model;
 
 public enum BuiltInAttribute implements Attribute {
     LOAD_PROFILE("Load Profile"), 
-    USAGE("Usage"), 
+    USAGE("Energy Reading"), 
     TOU_RATE_A_USAGE("Tou Rate A Usage"), 
     TOU_RATE_B_USAGE("Tou Rate B Usage"), 
     TOU_RATE_C_USAGE("Tou Rate C Usage"), 
