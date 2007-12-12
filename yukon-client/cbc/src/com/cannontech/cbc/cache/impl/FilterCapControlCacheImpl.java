@@ -250,12 +250,17 @@ public class FilterCapControlCacheImpl implements CapControlCache {
 	}
 
 	public List<SubBus> getSubBusesBySubStation(SubStation sub) {
-		int id = cache.getParentAreaID(sub.getCcId());
-		CBCArea area = cache.getCBCArea(id);
-		if ( filter.valid(area) )
-			return cache.getSubBusesBySubStation(sub);
-		else
-			return new ArrayList<SubBus>();	
+		if(sub != null) {
+    		int id = cache.getParentAreaID(sub.getCcId());
+    		CBCArea area = cache.getCBCArea(id);
+    		if ( filter.valid(area) ) {
+    			return cache.getSubBusesBySubStation(sub);
+    		} else {
+    			return new ArrayList<SubBus>();
+    		}
+		}else {
+		    return new ArrayList<SubBus>();
+		}
 	}
 
 	public SubStation getSubstation(Integer subId) {
