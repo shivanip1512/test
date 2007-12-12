@@ -47,7 +47,7 @@ if (allowCtlVal!=null) {
                 <td>State</td>
                 <td>Setup</td>
                 <td>Available<br/> kVARS</td>
-                <td>Disabled <br/>kVARS</td>
+                <td>Unavailable <br/>kVARS</td>
                 <td>Closed <br/>kVARS</td>
                 <td>Tripped <br/>kVARS</td>
                 <td>PFactor/Est.</td>
