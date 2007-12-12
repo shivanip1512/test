@@ -26,6 +26,7 @@ import com.cannontech.billing.device.base.BillingData;
 import com.cannontech.billing.device.base.BillingDeviceBase;
 import com.cannontech.billing.device.base.DeviceData;
 import com.cannontech.billing.format.dynamic.DynamicBillingFormatter;
+import com.cannontech.common.device.definition.model.DevicePointIdentifier;
 import com.cannontech.common.dynamicBilling.Channel;
 import com.cannontech.common.dynamicBilling.ReadingType;
 import com.cannontech.common.dynamicBilling.dao.DynamicBillingFileDao;
@@ -319,11 +320,19 @@ public class DynamicBillingController extends MultiActionController {
 		BillingDeviceBase device = new BillingDeviceBase() {
 
 			@Override
-			public void populate(String ptType, int offSet,
+			public void populate(DevicePointIdentifier devicePointIdentifier,
 					Timestamp timestamp, double value, int unitOfMeasure,
 					String pointName, DeviceData meterData) {
 				throw new NotImplementedException();
 			}
+			@Override
+            public boolean isEnergy(DevicePointIdentifier devicePointIdentifier) {
+                throw new NotImplementedException();
+            }
+			@Override
+            public boolean isDemand(DevicePointIdentifier devicePointIdentifier) {
+                throw new NotImplementedException();
+            }
 		};
 
 		// Add meter data to channel one
