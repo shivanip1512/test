@@ -25,6 +25,10 @@ import org.apache.log4j.Logger;
 import com.cannontech.clientutils.CTILogger;
 import com.cannontech.clientutils.YukonLogManager;
 import com.cannontech.common.device.YukonDevice;
+import com.cannontech.common.device.groups.editor.dao.DeviceGroupMemberEditorDao;
+import com.cannontech.common.device.groups.editor.dao.SystemGroupEnum;
+import com.cannontech.common.device.groups.editor.model.StoredDeviceGroup;
+import com.cannontech.common.device.groups.service.DeviceGroupService;
 import com.cannontech.common.device.groups.service.FixedDeviceGroupingHack;
 import com.cannontech.common.device.groups.service.FixedDeviceGroups;
 import com.cannontech.common.login.ClientSession;
@@ -232,8 +236,14 @@ public void runImport(List<ImportData> imps) {
 	Connection conn = null;
     boolean notUpdate = true;
     boolean usingSub = false;
-    FixedDeviceGroupingHack hacker = (FixedDeviceGroupingHack) YukonSpringHook.getBean("fixedDeviceGroupingHack");
-	
+
+    DeviceGroupService deviceGroupService = (DeviceGroupService) YukonSpringHook.getBean("deviceGroupService");
+    DeviceGroupMemberEditorDao deviceGroupMemberEditorDao = (DeviceGroupMemberEditorDao) YukonSpringHook.getBean("deviceGroupMemberEditorDao");
+    
+    StoredDeviceGroup alternateGroup = deviceGroupService.getGroup(SystemGroupEnum.ALTERNATE);
+    StoredDeviceGroup billingGroup = deviceGroupService.getGroup(SystemGroupEnum.BILLING);
+    StoredDeviceGroup collectionGroup = deviceGroupService.getGroup(SystemGroupEnum.COLLECTION);
+
 	for(int j = 0; j < imps.size(); j++) {
 		updateDeviceID = null;
         currentEntry = imps.get(j);
@@ -262,7 +272,7 @@ public void runImport(List<ImportData> imps) {
 		badEntry = false;
 		
 		if (StringUtils.isBlank(address)) {
-			log.info("No address entered.");
+			log.error("No address entered.");
 			badEntry = true;
 			errorMsg.append("No address entered.");
 		}else{
@@ -271,7 +281,7 @@ public void runImport(List<ImportData> imps) {
 				Double doubleAddress = Double.parseDouble(address);				
 				updateDeviceID = DBFuncs.getDeviceIDByAddress(doubleAddress.toString());
 			} catch (NumberFormatException nfe) {
-				log.info("Address has to be a numeric value ("+address+")");
+				log.error("Address has to be a numeric value ("+address+")");
 				badEntry = true;
 				errorMsg.append("Address has to be a numeric value. ("+address+")");
 			}
@@ -451,17 +461,11 @@ public void runImport(List<ImportData> imps) {
                 
                 //update device groups if they changed
                 YukonDevice yukonDevice = DaoFactory.getDeviceDao().getYukonDevice(pao.getPaObjectID());
-                String oldBillingGroup = hacker.getGroupForDevice(FixedDeviceGroups.BILLINGGROUP, yukonDevice);
-                String oldAlternateGroup = hacker.getGroupForDevice(FixedDeviceGroups.TESTCOLLECTIONGROUP, yukonDevice);
-                String oldCollectionGroup = hacker.getGroupForDevice(FixedDeviceGroups.COLLECTIONGROUP, yukonDevice);
+
+                deviceGroupMemberEditorDao.addDevices(alternateGroup, yukonDevice);
+                deviceGroupMemberEditorDao.addDevices(billingGroup, yukonDevice);
+                deviceGroupMemberEditorDao.addDevices(collectionGroup, yukonDevice);
                 
-                if(!StringUtils.isBlank(collectionGrp) && ! collectionGrp.equals(oldCollectionGroup))
-                    hacker.setGroup(FixedDeviceGroups.COLLECTIONGROUP, yukonDevice, collectionGrp);
-                if(!StringUtils.isBlank(altGrp) && ! altGrp.equals(oldAlternateGroup))
-                    hacker.setGroup(FixedDeviceGroups.TESTCOLLECTIONGROUP, yukonDevice, altGrp);
-                if(!StringUtils.isBlank(billGrp) && ! billGrp.equals(oldBillingGroup))
-                    hacker.setGroup(FixedDeviceGroups.BILLINGGROUP, yukonDevice, billGrp);
-        
 				//update the deviceRoutes table if the routeID has changed.
 				if(routeID.intValue() != -12) {
                     DeviceRoutes dr = new DeviceRoutes();
@@ -547,10 +551,11 @@ public void runImport(List<ImportData> imps) {
                 }
 				
                 YukonDevice yukonDevice = DaoFactory.getDeviceDao().getYukonDevice(deviceID);
-                hacker.setGroup(FixedDeviceGroups.COLLECTIONGROUP, yukonDevice, collectionGrp);
-                hacker.setGroup(FixedDeviceGroups.TESTCOLLECTIONGROUP, yukonDevice, altGrp);
-                hacker.setGroup(FixedDeviceGroups.BILLINGGROUP, yukonDevice, billGrp);
                 
+                deviceGroupMemberEditorDao.addDevices(alternateGroup, yukonDevice);
+                deviceGroupMemberEditorDao.addDevices(billingGroup, yukonDevice);
+                deviceGroupMemberEditorDao.addDevices(collectionGroup, yukonDevice);
+
                 //write pending communication entry for porter thread to pick up
                 Transaction.createTransaction(Transaction.INSERT, pc).execute();
                 
