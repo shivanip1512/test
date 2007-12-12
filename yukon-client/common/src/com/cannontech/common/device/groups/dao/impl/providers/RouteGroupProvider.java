@@ -147,13 +147,31 @@ public class RouteGroupProvider extends DeviceGroupProviderBase {
 
 	@Override
 	public String getChildDeviceGroupSqlWhereClause(DeviceGroup group, String identifier) {
-
-		RouteDeviceGroup routeGroup = (RouteDeviceGroup) group;
-        int routeId = routeGroup.routeId;
-        String whereString = identifier + " IN ( " +
-        					" SELECT dr_dg.deviceid " +
-                            " FROM DeviceRoutes dr_dg " + 
-        					" WHERE dr_dg.routeid = " + routeId + ") "; 
-        return whereString;
+	    
+	    if (group instanceof RouteDeviceGroup) {
+    		RouteDeviceGroup routeGroup = (RouteDeviceGroup) group;
+            int routeId = routeGroup.routeId;
+            String whereString = identifier + " IN ( " +
+            					" SELECT dr_dg.deviceid " +
+                                " FROM DeviceRoutes dr_dg " + 
+            					" WHERE dr_dg.routeid = " + routeId + ") "; 
+            return whereString;
+	    }
+	    else {
+	        // because there are no child devices under this dynamic group
+            return "0 = 1";
+	    }
 	}
+	
+	@Override
+    public String getDeviceGroupSqlWhereClause(DeviceGroup group, String identifier) {
+        
+        if (group instanceof RouteDeviceGroup) {
+            return super.getDeviceGroupSqlWhereClause(group, identifier);
+        }
+        else {
+            // because the nature of this group is that it contains all devices
+            return "1=1";
+        }
+    }
 }

@@ -130,13 +130,31 @@ public class RolodexGroupProvider extends DeviceGroupProviderBase {
 
 	@Override
 	public String getChildDeviceGroupSqlWhereClause(DeviceGroup group, String identifier) {
-
-		RolodexLetterDeviceGroup rolodexGroup = (RolodexLetterDeviceGroup) group;
-        // return devices that start with some leter
-        String matcher = Character.toUpperCase(rolodexGroup.firstLetter) + "%";
-        String whereString = identifier + " IN ( " +
-        					" SELECT DISTINCT PAO.PAOBJECTID FROM YUKONPAOBJECT PAO " + 
-        					" WHERE UPPER(PAO.PAONAME) like '" + matcher + "') "; 
-        return whereString;
+	    
+	    if (group instanceof RolodexLetterDeviceGroup) {
+    		RolodexLetterDeviceGroup rolodexGroup = (RolodexLetterDeviceGroup) group;
+            // return devices that start with some leter
+            String matcher = Character.toUpperCase(rolodexGroup.firstLetter) + "%";
+            String whereString = identifier + " IN ( " +
+            					" SELECT DISTINCT PAO.PAOBJECTID FROM YUKONPAOBJECT PAO " + 
+            					" WHERE UPPER(PAO.PAONAME) like '" + matcher + "') "; 
+            return whereString;
+	    }
+	    else {
+	        // because there are no child devices under this dynamic group
+	        return "0 = 1";
+	    }
 	}
+	
+	@Override
+    public String getDeviceGroupSqlWhereClause(DeviceGroup group, String identifier) {
+        
+        if (group instanceof RolodexLetterDeviceGroup) {
+            return super.getDeviceGroupSqlWhereClause(group, identifier);
+        }
+        else {
+            // because the nature of this group is that it contains all devices
+            return "1=1";
+        }
+    }
 }
