@@ -72,13 +72,7 @@ if (allowCtlVal!=null) {
 		String trippedVars = CBCUtils.format( CBCUtils.calcVarsTrippedForCapBanks(areaCapBanks, user) );
 		String currPF = CBCDisplay.getPowerFactorText(CBCUtils.calcAvgPF(areaStations), true);
 		String estPF = CBCDisplay.getPowerFactorText(CBCUtils.calcAvgEstPF(areaStations), true);
-		Boolean b = (Boolean)(filterCapControlCache.getSpecialAreaStateMap().get(area.getPaoName()));
-		String areaState;
-		if( b == null ){// was here, this shouldn't ever appear
-			areaState = "UNKNOWN";
-		} else {
-			areaState = (b.booleanValue()?"ENABLED":"DISABLED");
-		}
+		String areaState = (area.getDisableFlag()) ? "DISABLED" : "ENABLED";
 		if( area.getOvUvDisabledFlag() ) {
 			areaState += "-V";
 		}

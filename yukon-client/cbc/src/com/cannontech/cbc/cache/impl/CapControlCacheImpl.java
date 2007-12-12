@@ -12,13 +12,17 @@ import java.util.HashMap;
 import java.util.Hashtable;
 import java.util.Iterator;
 import java.util.List;
+import java.util.Map;
 import java.util.Vector;
 import java.util.concurrent.TimeUnit;
 
 import org.apache.commons.lang.Validate;
 
 import com.cannontech.cbc.cache.CapControlCache;
-import com.cannontech.cbc.dao.*;
+import com.cannontech.cbc.dao.CapbankDao;
+import com.cannontech.cbc.dao.CcSubstationDao;
+import com.cannontech.cbc.dao.FeederDao;
+import com.cannontech.cbc.dao.SubstationBusDao;
 import com.cannontech.cbc.util.CBCUtils;
 import com.cannontech.cbc.web.CBCWebUpdatedObjectMap;
 import com.cannontech.clientutils.CTILogger;
@@ -63,10 +67,8 @@ public class CapControlCacheImpl implements MessageListener, CapControlCache {
     private Hashtable<Integer, CapBankDevice> capBankMap = new Hashtable<Integer, CapBankDevice> ();
     private HashMap<Integer, int[]> subToBankMap = new HashMap<Integer, int[]>();
     private CBCWebUpdatedObjectMap updatedObjMap = null;
-    private List<CBCArea> cbcAreas = new ArrayList<CBCArea>();
-    private List<CBCSpecialArea> cbcSpecialAreas = new ArrayList<CBCSpecialArea>();
-    private HashMap<String, Boolean> areaStateMap = new HashMap<String, Boolean>();
-    private HashMap<String, Boolean> specialAreaStateMap = new HashMap<String, Boolean>();
+    private Map<Integer, CBCArea> cbcAreaMap = Collections.synchronizedMap(new HashMap<Integer, CBCArea>());
+    private Map<Integer, CBCSpecialArea> cbcSpecialAreaMap = Collections.synchronizedMap(new HashMap<Integer, CBCSpecialArea>());
     private Boolean systemStatusOn = Boolean.TRUE;
     private IServerConnection defCapControlConn;
 
@@ -107,33 +109,6 @@ public class CapControlCacheImpl implements MessageListener, CapControlCache {
         return subStationMap.get( subId );
     }
     
-    /**
-     * @return Area
-     */
-    public synchronized CBCSpecialArea getSpecialArea( Integer areaId ) {
-        for (CBCSpecialArea a : cbcSpecialAreas) {
-            if (a.getCcId() == areaId) {
-                return a;
-            }
-        }
-        return null;
-    }
-    
-    /**
-     * @return Area
-     */
-    public synchronized CBCArea getArea( Integer areaId )
-    {
-    	for ( CBCArea a : cbcAreas )
-    	{
-    		if( a.getCcId() == areaId )
-    		{
-    			return a;
-    		}
-    	}
-    	return null;
-    }
-    
     public String getSubBusNameForFeeder(Feeder fdr) {
         Integer parentId = fdr.getParentID();
         if(parentId > 0) {
@@ -143,12 +118,10 @@ public class CapControlCacheImpl implements MessageListener, CapControlCache {
     }
     
     /**
-     * Returs the base object type for a SubBus, Feeder or CapBankDevice
+     * Returns the base object type for a SubBus, Feeder or CapBankDevice
      */
     public StreamableCapObject getCapControlPAO( Integer paoID ) {
-        StreamableCapObject retObj = null;
-    
-        if( retObj == null ) retObj = getSubBus(paoID);
+        StreamableCapObject retObj = getSubBus(paoID);
         if( retObj == null ) retObj = getFeeder(paoID);
         if( retObj == null ) retObj = getCapBankDevice(paoID);
         
@@ -231,37 +204,42 @@ public class CapControlCacheImpl implements MessageListener, CapControlCache {
      * Instant lookup to check if this paoID is used by a SubBus
      * 
      */
-    public boolean isArea( int id ) {
-        return getArea( new Integer(id) ) != null;
+    public boolean isArea(int id) {
+        boolean result = getCBCArea(id) != null;
+        return result;
     }    
     /**
      * Instant lookup to check if this paoID is used by a SubBus
      * 
      */
-    public boolean isSubBus( int id ) {
-        return getSubBus( new Integer(id) ) != null;
+    public boolean isSubBus(int id) {
+        boolean result = getSubBus(id) != null;
+        return result;
     }
     /**
      * Instant lookup to check if this paoID is used by a SubBus
      * 
      */
-    public boolean isSubstation( int id ) {
-        return getSubstation( new Integer(id) ) != null;
+    public boolean isSubstation(int id) {
+        boolean result = getSubstation(id) != null;
+        return result;
     }    
     /**
      * Instant lookup to check if this paoID is used by a Feeder
      * 
      */
-    public boolean isFeeder( int id ) {
-        return getFeeder( new Integer(id) ) != null;
+    public boolean isFeeder(int id) {
+        boolean result = getFeeder(id) != null;
+        return result;
     }
     
     /**
      * Instant lookup to check if this paoID is used by a CapBankDevice
      * 
      */
-    public boolean isCapBank( int id ) {
-        return getCapBankDevice( new Integer(id) ) != null;
+    public boolean isCapBank(int id) {
+        boolean result = getCapBankDevice(id) != null;
+        return result;
     }
     
     
@@ -454,7 +432,9 @@ public class CapControlCacheImpl implements MessageListener, CapControlCache {
      * @return List
      */
     public List<CBCArea> getCbcAreas() {
-        return cbcAreas;
+        List<CBCArea> list = new ArrayList<CBCArea>(cbcAreaMap.values());
+        Collections.sort(list, CBCUtils.CBC_AREA_COMPARATOR);
+        return list;
     }
     
     /**
@@ -462,7 +442,9 @@ public class CapControlCacheImpl implements MessageListener, CapControlCache {
      * @return List
      */
     public List<CBCSpecialArea> getSpecialCbcAreas() {
-        return cbcSpecialAreas;
+        List<CBCSpecialArea> list = new ArrayList<CBCSpecialArea>(cbcSpecialAreaMap.values());
+        Collections.sort(list, CBCUtils.CBC_SPECIAL_AREA_COMPARATOR);
+        return list;
     }
     
     /**
@@ -507,79 +489,29 @@ public class CapControlCacheImpl implements MessageListener, CapControlCache {
         }
     }    
     /**
-    * Stores all areas in memory. 
     * @param CBCSubAreas
     */
     private synchronized void handleSpecialAreaList(CBCSubSpecialAreas areas) {
-        //for every area in the currently in cache
-        List<CBCSpecialArea> cachedSpecialAreas = getSpecialCbcAreas();
-        List<CBCSpecialArea> workCopy = new Vector<CBCSpecialArea>();
-        workCopy.addAll(cachedSpecialAreas);
-        for (CBCSpecialArea area : cachedSpecialAreas) {
-            List<CBCSpecialArea> allAreas = areas.getAreas();
-            //if current cache has an area and sent object doesn't 
-            //discard the cached object
-            if (!allAreas.contains(area)) {
-                workCopy.remove(area);
-            }
-            //if the object is cached currently - then replace the object
-            else if (allAreas.contains(area)) {
-                int idx = workCopy.indexOf(area);
-                workCopy.set(idx, allAreas.get(allAreas.indexOf(area)));
-            }
+        cbcSpecialAreaMap.clear();
+        
+        List<CBCSpecialArea> list = areas.getAreas();
+        for (final CBCSpecialArea area : list) {
+            Integer areaId = area.getPaoID();
+            cbcSpecialAreaMap.put(areaId, area);
         }
-        cachedSpecialAreas.clear();
-        cachedSpecialAreas.addAll(workCopy);
-        //if the object is not in cache add it to cache
-        List<CBCSpecialArea> sentAreas = areas.getAreas();
-        for (CBCSpecialArea area : sentAreas) {
-            if (!cachedSpecialAreas.contains(area)) {
-                cachedSpecialAreas.add(area);
-            }
-        }
-    
-        Collections.sort(getSpecialCbcAreas(), CBCUtils.CBC_SPECIAL_AREA_COMPARATOR);
-    
-        resetSpecialAreaStateMap();
     }
     
     /**
-    * Stores all areas in memory. 
-    * 
     * @param CBCSubAreas
     */
     private synchronized void handleAreaList(CBCSubAreas areas) {
-        //for every area in the currently in cache
-        List<CBCArea> cachedAreas = getCbcAreas();
-        List<CBCArea> workCopy = new Vector<CBCArea>();
-        workCopy.addAll(cachedAreas);
-        for (CBCArea area : cachedAreas) {
-            List<CBCArea> allAreas = areas.getAreas();
-            //if current cache has an area and sent object doesn't 
-            //discard the cached object
-            if (!allAreas.contains(area)) {
-                workCopy.remove(area);
-            }
-            //if the object is cached currently - then replace the object
-            else if (allAreas.contains(area)) {
-                int idx = workCopy.indexOf(area);
-                workCopy.set(idx, allAreas.get( allAreas.indexOf(area)));
-            }
-            
+        cbcAreaMap.clear();
+        
+        List<CBCArea> list = areas.getAreas();
+        for (final CBCArea area : list) {
+            Integer areaId = area.getPaoID();
+            cbcAreaMap.put(areaId, area);
         }
-        cachedAreas.clear();
-        cachedAreas.addAll(workCopy);
-        //if the object is not in cache add it to cache
-        List<CBCArea> sentAreas = areas.getAreas();
-        for (CBCArea area : sentAreas) {
-            if (!cachedAreas.contains(area)) {
-                cachedAreas.add(area);
-            }
-        }
-    
-        Collections.sort(cbcAreas, CBCUtils.CBC_AREA_COMPARATOR);
-    
-        resetAreaStateMap();
     }
     
     /**
@@ -703,47 +635,21 @@ public class CapControlCacheImpl implements MessageListener, CapControlCache {
     }
     
     private void handleDeleteArea(int deviceID) {
-        synchronized (cbcAreas) {
-            List<CBCArea> cachedAreas = getCbcAreas();
-            List<CBCArea> workCopy = new Vector<CBCArea>();
-            workCopy.addAll(cachedAreas);
-            for (Iterator<CBCArea> iter = cachedAreas.iterator(); iter.hasNext();) {
-                CBCArea area = iter.next();
-                if (area.getPaoID().intValue() == deviceID) {
-                    workCopy.remove(area);
-                }
-            }
-            cachedAreas.clear();
-            cachedAreas.addAll(workCopy);
+        synchronized (cbcAreaMap) {
+            cbcAreaMap.remove(deviceID);
         }
     }
     
     private void handleDeleteSpecialArea(int deviceID) {
-        synchronized (getSpecialCbcAreas()) {
-            List<CBCSpecialArea> cachedSpecialAreas = getSpecialCbcAreas();
-            List<CBCSpecialArea> workCopy = new Vector<CBCSpecialArea>();
-            workCopy.addAll(cachedSpecialAreas);
-            for (Iterator<CBCSpecialArea> iter = cachedSpecialAreas.iterator(); iter.hasNext();) {
-                CBCSpecialArea area = iter.next();
-                if (area.getPaoID().intValue() == deviceID) {
-                    workCopy.remove(area);
-                }
-            }
-            cachedSpecialAreas.clear();
-            cachedSpecialAreas.addAll(workCopy);
+        synchronized (cbcSpecialAreaMap) {
+            cbcSpecialAreaMap.remove(deviceID);
         }
     }
     
     public boolean isCBCArea(int deviceID) {
-        synchronized (cbcAreas) {
-            for (Iterator<CBCArea> iter = cbcAreas.iterator(); iter.hasNext();) {
-                CBCArea area = iter.next();
-                if (area.getPaoID().intValue() == deviceID) {
-                    return true;
-                }
-            }
-            return false;
-        }
+        CBCArea area = cbcAreaMap.get(deviceID);
+        boolean result = area != null;
+        return result;
     }
     
     public boolean isSpecialCBCArea(int deviceID) {
@@ -883,67 +789,19 @@ public class CapControlCacheImpl implements MessageListener, CapControlCache {
     
     
     public CBCArea getCBCArea(int id) {
-        for (CBCArea area : cbcAreas) {
-            if (area.getPaoID().intValue() == id) {
-                return area;
-            }
-        }
-        return null;
+        CBCArea area = cbcAreaMap.get(id);
+        return area;
     }
     
-    public CBCSpecialArea getCBCSpecialArea(int id) {
-        for (CBCSpecialArea area : cbcSpecialAreas ) {
-            if (area.getPaoID().intValue() == id) {
-                return area;
-            }
-        }
-        return null;
+    public CBCSpecialArea getCBCSpecialArea(int areaId) {
+        CBCSpecialArea area = cbcSpecialAreaMap.get(areaId);
+        return area;
     }
     
     public CBCWebUpdatedObjectMap getUpdatedObjMap() {
         if (updatedObjMap == null)
             updatedObjMap = new CBCWebUpdatedObjectMap();
         return updatedObjMap;
-    }
-    
-    public HashMap getAreaStateMap() {    
-        if (areaStateMap.isEmpty()) { //init the our map
-            initAreaStateMap();
-        }
-        return areaStateMap;
-    }
-    
-    public HashMap getSpecialAreaStateMap() {    
-        if (specialAreaStateMap.isEmpty()) { //init the our map
-            initSpecialAreaStateMap();
-        }
-        return specialAreaStateMap;
-    }
-    
-    private void initAreaStateMap() {
-        List areaNames = getCbcAreas();
-        for (Iterator iter = areaNames.iterator(); iter.hasNext();) {
-            CBCArea area = (CBCArea) iter.next();
-            areaStateMap.put(area.getPaoName(), !area.getDisableFlag());
-        }
-    }
-    
-    private void initSpecialAreaStateMap() {
-        List<CBCSpecialArea> areaNames = getSpecialCbcAreas();
-        for (Iterator<CBCSpecialArea> iter = areaNames.iterator(); iter.hasNext();) {
-            CBCSpecialArea area = iter.next();
-            specialAreaStateMap.put(area.getPaoName(), !area.getDisableFlag());
-        }
-    }
-    
-    private void resetAreaStateMap() {
-        areaStateMap = new HashMap<String, Boolean>();
-        getAreaStateMap();
-    }
-    
-    private void resetSpecialAreaStateMap() {
-        specialAreaStateMap = new HashMap<String, Boolean>();
-        getSpecialAreaStateMap();
     }
     
     public Boolean getSystemStatusOn() {

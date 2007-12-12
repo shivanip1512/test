@@ -2,7 +2,6 @@ package com.cannontech.cbc.cache.impl;
 
 import java.util.ArrayList;
 import java.util.Collections;
-import java.util.HashMap;
 import java.util.List;
 
 import com.cannontech.cbc.cache.CapControlCache;
@@ -50,16 +49,11 @@ public class FilterCapControlCacheImpl implements CapControlCache {
 		for( int i = 0; i < aList.length ; i++ ){
 			SubBus a = aList[i];
 			int id = cache.getParentAreaID(a.getCcId());
-			CBCArea area = cache.getArea(id);
+			CBCArea area = cache.getCBCArea(id);
 			if ( filter.valid(area) )
 				retList[j] = a;
 		}
 		return retList;
-	}
-
-	public HashMap getAreaStateMap() {
-		// TODO Auto-generated method stub
-		return cache.getAreaStateMap();
 	}
 
 	public CBCArea getCBCArea(int id) {
@@ -216,11 +210,6 @@ public class FilterCapControlCacheImpl implements CapControlCache {
 			return CtiUtilities.NONE_ZERO_ID;
 	}
 
-	public HashMap getSpecialAreaStateMap() {
-		// TODO Auto-generated method stub
-		return cache.getSpecialAreaStateMap();
-	}
-
 	public List<CBCSpecialArea> getSpecialCbcAreas() {
 		List<CBCSpecialArea> aList = cache.getSpecialCbcAreas();
 		List<CBCSpecialArea> retList = new ArrayList<CBCSpecialArea>(aList.size());
@@ -301,10 +290,6 @@ public class FilterCapControlCacheImpl implements CapControlCache {
 		return cache.isSubBus(id);
 	}
 
-    public CBCArea getArea(Integer areaId) {
-        return cache.getArea(areaId);
-    }
-
     public int getParentAreaID(int childID) {
         return cache.getParentAreaID(childID);
     }
@@ -321,10 +306,6 @@ public class FilterCapControlCacheImpl implements CapControlCache {
         return cache.getUpdatedObjMap();
     }
 
-    public CBCSpecialArea getSpecialArea(Integer areaId) {
-        return cache.getSpecialArea(areaId);
-    }
-    
     public List<CapBankDevice> getCapBanksBySpecialArea(Integer areaID) {
         CBCSpecialArea area = cache.getCBCSpecialArea(areaID);
         if ( filter.valid(area) )

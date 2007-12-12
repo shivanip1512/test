@@ -1,6 +1,5 @@
 package com.cannontech.cbc.cache;
 
-import java.util.HashMap;
 import java.util.List;
 
 import com.cannontech.cbc.web.CBCWebUpdatedObjectMap;
@@ -21,11 +20,7 @@ public interface CapControlCache {
     
     public List<SubStation> getSubstationsBySpecialArea(Integer areaId);
     
-    public CBCSpecialArea getSpecialArea(Integer areaId);
-    
     public int getParentAreaID( int childID );
-    
-    public CBCArea getArea( Integer areaId);
     
     public CBCArea getCBCArea(int id);
     
@@ -206,7 +201,4 @@ public interface CapControlCache {
 	 */
 	public abstract int getParentSubBusID(int childID);
 
-    public HashMap getSpecialAreaStateMap();
-
-    public HashMap getAreaStateMap();
 }

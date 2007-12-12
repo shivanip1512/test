@@ -66,7 +66,7 @@ if (allowCtlVal!=null) {
 		String varsUnavailable =  CBCUtils.format (CBCUtils.calcVarsUnavailableForSubStations(areaStations, user) );
 		String closedVars = CBCUtils.format( CBCUtils.calcVarsClosedForCapBanks(areaCapBanks, user) );
 		String trippedVars = CBCUtils.format( CBCUtils.calcVarsTrippedForCapBanks(areaCapBanks, user) );
-		String areaState = ((Boolean)(filterCapControlCache.getAreaStateMap().get(area.getPaoName())))?"ENABLED":"DISABLED";
+		String areaState = (area.getDisableFlag()) ? "DISABLED" : "ENABLED";
 		if( area.getOvUvDisabledFlag() ){
 			areaState += "-V";
 		}
