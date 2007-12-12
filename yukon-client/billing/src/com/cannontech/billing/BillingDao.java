@@ -26,11 +26,13 @@ import com.cannontech.billing.device.base.DeviceData;
 import com.cannontech.billing.format.ExtendedTOURecordFormatter;
 import com.cannontech.billing.mainprograms.BillingFileDefaults;
 import com.cannontech.clientutils.CTILogger;
+import com.cannontech.common.device.definition.model.DevicePointIdentifier;
 import com.cannontech.common.device.groups.model.DeviceGroup;
 import com.cannontech.common.device.groups.service.DeviceGroupService;
 import com.cannontech.common.util.CtiUtilities;
 import com.cannontech.database.PoolManager;
 import com.cannontech.database.SqlUtils;
+import com.cannontech.database.data.point.PointTypes;
 import com.cannontech.spring.YukonSpringHook;
 
 /**
@@ -151,11 +153,15 @@ public class BillingDao {
 
                     double reading = rset.getDouble(7) / multiplier;
                     currentDeviceID = rset.getInt(8);
-                    String type = rset.getString(9);
+                    String paoType = rset.getString(9);
                     String category = rset.getString(10);
                     int unitOfMeasure = rset.getInt(11);
                     String paoName = rset.getString(12);
                     int address = rset.getInt(13);
+
+                    int pointType = PointTypes.getType(ptType);
+                    DevicePointIdentifier devicePointIdentifier = new DevicePointIdentifier(pointType, ptOffset);
+                    java.util.Date tsDate = new java.util.Date(ts.getTime());
                     
                     String accountNumber = (accountNumberMap == null ? paoName : accountNumberMap.get(meterNumber));
 
@@ -165,43 +171,50 @@ public class BillingDao {
                         if (currentDeviceID == lastDeviceID) {
 
                             if (device != null) {
+                                
+                                if( (device.isEnergy(devicePointIdentifier) &&  !tsDate.before(defaults.getEnergyStartDate()) )  || 
+                                    (device.isDemand(devicePointIdentifier) &&  !tsDate.before(defaults.getDemandStartDate()) ) ) { 
+                                    
+                                    DeviceData meterData = new DeviceData(meterNumber,
+                                                                          getMeterPositionNumber(meterPositionNumberMap,
+                                                                                                 accountNumber),
+                                                                          String.valueOf(address),
+                                                                          accountNumber,
+                                                                          paoName);
+                                    device.populate(devicePointIdentifier,
+                                                    ts,
+                                                    reading,
+                                                    unitOfMeasure,
+                                                    pointName,
+                                                    meterData);
+                                }                                    
 
-                                DeviceData meterData = new DeviceData(meterNumber,
-                                                                      getMeterPositionNumber(meterPositionNumberMap,
-                                                                                             accountNumber),
-                                                                      String.valueOf(address),
-                                                                      accountNumber,
-                                                                      paoName);
-                                device.populate(ptType,
-                                                ptOffset,
-                                                ts,
-                                                reading,
-                                                unitOfMeasure,
-                                                pointName,
-                                                meterData);
                             }
 
                         } else {
-                            device = BillableDeviceFactory.createBillableDevice(category, type);
+                            device = BillableDeviceFactory.createBillableDevice(category, paoType);
 
                             if (device != null) {
-
-                                DeviceData meterData = new DeviceData(meterNumber,
-                                                                      getMeterPositionNumber(meterPositionNumberMap,
-                                                                                             accountNumber),
-                                                                      String.valueOf(address),
-                                                                      accountNumber,
-                                                                      paoName);
-                                device.populate(ptType,
-                                                ptOffset,
-                                                ts,
-                                                reading,
-                                                unitOfMeasure,
-                                                pointName,
-                                                meterData);
-
-                                lastDeviceID = currentDeviceID;
-                                deviceList.add(device);
+                                
+                                if( (device.isEnergy(devicePointIdentifier) &&  !tsDate.before(defaults.getEnergyStartDate()) )  || 
+                                    (device.isDemand(devicePointIdentifier) &&  !tsDate.before(defaults.getDemandStartDate()) ) ) { 
+    
+                                    DeviceData meterData = new DeviceData(meterNumber,
+                                                                          getMeterPositionNumber(meterPositionNumberMap,
+                                                                                                 accountNumber),
+                                                                          String.valueOf(address),
+                                                                          accountNumber,
+                                                                          paoName);
+                                    device.populate(devicePointIdentifier,
+                                                    ts,
+                                                    reading,
+                                                    unitOfMeasure,
+                                                    pointName,
+                                                    meterData);
+    
+                                    lastDeviceID = currentDeviceID;
+                                    deviceList.add(device);
+                                }
                             }
                         }
                     }
@@ -210,16 +223,7 @@ public class BillingDao {
         } catch (SQLException e) {
             CTILogger.error(e);
         } finally {
-            try {
-                if (rset != null)
-                    rset.close();
-                if (stmt != null)
-                    stmt.close();
-                if (con != null)
-                    con.close();
-            } catch (SQLException e2) {
-                CTILogger.error(e2);
-            }
+            SqlUtils.close(rset, stmt, con );
         }
         CTILogger.info("@" + BillingDao.class.toString() + " Data Collection : Took "
                 + (System.currentTimeMillis() - timer));

@@ -5,6 +5,7 @@ import java.sql.Timestamp;
 import com.cannontech.billing.device.base.BillingData;
 import com.cannontech.billing.device.base.BillingDeviceBase;
 import com.cannontech.billing.device.base.DeviceData;
+import com.cannontech.common.device.definition.model.DevicePointIdentifier;
 import com.cannontech.common.dynamicBilling.Channel;
 import com.cannontech.common.dynamicBilling.ReadingType;
 import com.cannontech.common.dynamicBilling.model.BillableField;
@@ -15,7 +16,7 @@ import com.cannontech.database.data.point.PointTypes;
  */
 public class MCT370 extends BillingDeviceBase {
 
-    public void populate(String ptType, int offSet, Timestamp timestamp, double value,
+    public void populate(DevicePointIdentifier devicePointIdentifier, Timestamp timestamp, double value,
             int unitOfMeasure, String pointName, DeviceData deviceData) {
 
         addMeterData(Channel.ONE, deviceData);
@@ -27,13 +28,12 @@ public class MCT370 extends BillingDeviceBase {
         data.setTimestamp(timestamp);
 
         ReadingType readingType = getReadingType(unitOfMeasure);
-        int type = PointTypes.getType(ptType);
 
-        switch (type) {
+        switch (devicePointIdentifier.getType()) {
 
         case PointTypes.ANALOG_POINT:
 
-            switch (offSet) {
+            switch (devicePointIdentifier.getOffset()) {
 
             // Electric
 
@@ -154,7 +154,7 @@ public class MCT370 extends BillingDeviceBase {
 
         case PointTypes.PULSE_ACCUMULATOR_POINT:
 
-            switch (offSet) {
+            switch (devicePointIdentifier.getOffset()) {
 
             case 1: // Total Consumption - channel 1
                 addData(Channel.ONE, readingType, BillableField.totalConsumption, data);
@@ -178,7 +178,7 @@ public class MCT370 extends BillingDeviceBase {
 
         case PointTypes.DEMAND_ACCUMULATOR_POINT:
 
-            switch (offSet) {
+            switch (devicePointIdentifier.getOffset()) {
 
             case 10: // Rate A Demand - channel 1
                 addData(Channel.ONE, readingType, BillableField.rateADemand, data);
@@ -216,4 +216,101 @@ public class MCT370 extends BillingDeviceBase {
         }
     }
 
+    @Override
+    public boolean isEnergy(DevicePointIdentifier devicePointIdentifier) {
+        switch (devicePointIdentifier.getType()) {
+
+        case PointTypes.ANALOG_POINT:
+
+            switch (devicePointIdentifier.getOffset()) {
+
+            // Electric
+            case 1: // KWh
+            case 3: // Rate A KWh
+            case 5: // Rate B KWh
+            case 7: // Rate C KWh
+            case 9: // Rate D KWh
+
+            // kVar
+            case 11: // Total Kvarh
+            case 13: // Rate A Kvarh
+            case 15: // Rate B Kvarh
+            case 17: // Rate C Kvarh
+            case 19: // Rate D Kvarh
+
+            // kVa
+            case 21: // Total Kvah
+            case 23: // Rate A Kvah
+            case 25: // Rate B Kvah
+            case 27: // Rate C Kvah
+            case 29: // Rate D Kvah
+                return true;
+            }
+
+            break;
+
+        case PointTypes.PULSE_ACCUMULATOR_POINT:
+
+            switch (devicePointIdentifier.getOffset()) {
+
+            case 1: // Total Consumption - channel 1
+            case 2: // Total Consumption - channel 2
+            case 3: // Total Consumption - channel 3
+                return true;
+            }
+
+            break;
+
+        }
+        return false;
+    }
+    
+    @Override
+    public boolean isDemand(DevicePointIdentifier devicePointIdentifier) {
+        switch (devicePointIdentifier.getType()) {
+
+        case PointTypes.ANALOG_POINT:
+
+            switch (devicePointIdentifier.getOffset()) {
+
+            // Electric
+
+            case 2: // Rate A KW
+            case 4: // Rate B KW
+            case 6: // Rate C KW
+            case 8: // Rate D KW
+
+            // kVar
+            case 12: // Rate A Kvar
+            case 14: // Rate B Kvar
+            case 16: // Rate C Kvar
+            case 18: // Rate D Kvar
+
+            // kVa
+            case 22: // Rate A Kva
+            case 24: // Rate B Kva
+            case 26: // Rate C Kva
+            case 28: // Rate D Kva
+                return true;
+            }
+
+            break;
+
+        case PointTypes.DEMAND_ACCUMULATOR_POINT:
+
+            switch (devicePointIdentifier.getOffset()) {
+
+            case 10: // Rate A Demand - channel 1
+            case 11: // Rate B Demand - channel 1
+            case 12: // Rate A Demand - channel 2
+            case 13: // Rate B Demand - channel 2
+            case 14: // Rate A Demand - channel 3
+            case 15: // Rate B Demand - channel 3
+                return true;
+            }
+
+            break;
+        }
+        return false;
+    }
 }

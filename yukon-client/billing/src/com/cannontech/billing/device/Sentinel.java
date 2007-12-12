@@ -5,6 +5,7 @@ import java.sql.Timestamp;
 import com.cannontech.billing.device.base.BillingData;
 import com.cannontech.billing.device.base.BillingDeviceBase;
 import com.cannontech.billing.device.base.DeviceData;
+import com.cannontech.common.device.definition.model.DevicePointIdentifier;
 import com.cannontech.common.dynamicBilling.Channel;
 import com.cannontech.common.dynamicBilling.ReadingType;
 import com.cannontech.common.dynamicBilling.model.BillableField;
@@ -15,7 +16,7 @@ import com.cannontech.database.data.point.PointTypes;
  */
 public class Sentinel extends BillingDeviceBase {
 
-    public void populate(String ptType, int offSet, Timestamp timestamp, double value,
+    public void populate(DevicePointIdentifier devicePointIdentifier, Timestamp timestamp, double value,
             int unitOfMeasure, String pointName, DeviceData deviceData) {
 
         addMeterData(Channel.ONE, deviceData);
@@ -27,13 +28,12 @@ public class Sentinel extends BillingDeviceBase {
         data.setTimestamp(timestamp);
 
         ReadingType readingType = getReadingType(unitOfMeasure);
-        int type = PointTypes.getType(ptType);
 
-        switch (type) {
+        switch (devicePointIdentifier.getType()) {
 
         case PointTypes.ANALOG_POINT:
 
-            switch (offSet) {
+            switch (devicePointIdentifier.getOffset()) {
 
             // Electric
 
@@ -255,7 +255,7 @@ public class Sentinel extends BillingDeviceBase {
 
         case PointTypes.PULSE_ACCUMULATOR_POINT:
 
-            switch (offSet) {
+            switch (devicePointIdentifier.getOffset()) {
 
             case 1: // Total Consumption - channel 1
                 addData(Channel.ONE, readingType, BillableField.totalConsumption, data);
@@ -285,7 +285,7 @@ public class Sentinel extends BillingDeviceBase {
 
         case PointTypes.DEMAND_ACCUMULATOR_POINT:
 
-            switch (offSet) {
+            switch (devicePointIdentifier.getOffset()) {
 
             case 11: // Total Peak Demand - channel 1
                 addData(Channel.ONE, readingType, BillableField.totalPeakDemand, data);
@@ -313,4 +313,99 @@ public class Sentinel extends BillingDeviceBase {
         }
     }
 
+    @Override
+    public boolean isEnergy(DevicePointIdentifier devicePointIdentifier) {
+        switch (devicePointIdentifier.getType()) {
+
+        case PointTypes.ANALOG_POINT:
+
+            switch (devicePointIdentifier.getOffset()) {
+
+            // Electric
+            case 1: // KWh
+            case 3: // Rate A KWh
+            case 5: // Rate B KWh
+            case 7: // Rate C KWh
+            case 9: // Rate D KWh
+
+            //kVar
+            case 21: // Total kVarh
+            case 23: // Rate A kVarh
+            case 25: // Rate B kVarh
+            case 27: // Rate C kVarh
+            case 29: // Rate D kVarh
+
+            //kVa
+            case 41: // Total kVah
+            case 43: // Rate A kVah
+            case 45: // Rate B kVah
+            case 47: // Rate C kVah
+            case 49: // Rate D kVah
+                return true;
+            }
+
+            break;
+
+        case PointTypes.PULSE_ACCUMULATOR_POINT:
+
+            switch (devicePointIdentifier.getOffset()) {
+
+            case 1: // Total Consumption - channel 1
+            case 2: // Total Consumption - channel 2
+            case 3: // Total Consumption - channel 3
+            case 4: // Total Consumption - channel 4
+                return true;
+            }
+
+            break;
+        }
+        return false;
+    }
+    
+    @Override
+    public boolean isDemand(DevicePointIdentifier devicePointIdentifier) {
+        switch (devicePointIdentifier.getType()) {
+
+        case PointTypes.ANALOG_POINT:
+
+            switch (devicePointIdentifier.getOffset()) {
+
+            // Electric
+            case 2: // Rate A KW
+            case 4: // Rate B KW
+            case 6: // Rate C KW
+            case 8: // Rate D KW
+
+            //kVar
+            case 22: // Rate A kVar
+            case 24: // Rate B kVar
+            case 26: // Rate C kVar
+            case 28: // Rate D kVar
+
+            //kVa
+            case 42: // Rate A kVa
+            case 44: // Rate B kVa
+            case 46: // Rate C kVa
+            case 48: // Rate D kVa
+
+                return true;
+            }
+
+            break;
+
+        case PointTypes.DEMAND_ACCUMULATOR_POINT:
+
+            switch (devicePointIdentifier.getOffset()) {
+
+            case 11: // Total Peak Demand - channel 1
+            case 12: // Total Peak Demand - channel 2
+            case 13: // Total Peak Demand - channel 3
+            case 14: // Total Peak Demand - channel 4
+                return true;
+            }
+
+            break;
+        }
+        return false;
+    }
 }

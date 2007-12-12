@@ -385,8 +385,4 @@ public abstract class BillingDeviceBase implements BillableDevice {
         return returnData;
 
     }
-
-    abstract public void populate(String ptType, int offSet, Timestamp timestamp, double value,
-            int unitOfMeasure, String pointName, DeviceData meterData);
-
 }
