@@ -105,25 +105,25 @@ function vendorChanged(vendor)
   <tr>
     <td colspan="2" onMouseOver="dispStatusMsg('Enter the Max Return Records');return document.statVal" onMouseOut="dispStatusMsg('');return document.statVal">MSP Max Return Records</td>
     <td>
-      <input type="text" name="mspMaxReturnRecords">
+      <input type="text" name="mspMaxReturnRecords" value="10000">
     </td>
   </tr>
   <tr>
     <td colspan="2" onMouseOver="dispStatusMsg('Enter the Request Message Timeout');return document.statVal" onMouseOut="dispStatusMsg('');return document.statVal">MSP Request Message Timeout</td>
     <td>
-      <input type="text" name="mspRequestMessageTimeout">
+      <input type="text" name="mspRequestMessageTimeout" value="120000">
     </td>
   </tr>
   <tr>
     <td colspan="2" onMouseOver="dispStatusMsg('Enter the Max Initiate Request Objects');return document.statVal" onMouseOut="dispStatusMsg('');return document.statVal">MSP Max Initiate Request Objects</td>
     <td>
-      <input type="text" name="mspMaxInitiateRequestObjects">
+      <input type="text" name="mspMaxInitiateRequestObjects" value="15">
     </td>
   </tr>
     <tr>
     <td colspan="2" onMouseOver="dispStatusMsg('Enter the Template Name Default');return document.statVal" onMouseOut="dispStatusMsg('');return document.statVal">MSP Template Name Default</td>
     <td>
-      <input type="text" name="mspTemplateNameDefault">
+      <input type="text" name="mspTemplateNameDefault" value="*Default Template">
     </td>
   </tr>
   <tr>
