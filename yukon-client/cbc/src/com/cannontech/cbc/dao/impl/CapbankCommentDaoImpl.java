@@ -49,7 +49,7 @@ public class CapbankCommentDaoImpl implements CapbankCommentDao {
                 comment.setId(rs.getInt("CommentID"));
                 comment.setPaoId(rs.getInt("PaoId"));
                 comment.setUserId(rs.getInt("UserId"));
-                comment.setTime(rs.getDate("commentTime"));
+                comment.setTime(rs.getTimestamp("commentTime"));
                 comment.setComment(rs.getString("comment"));
                 String str = rs.getString("Altered");
                 boolean b = ((str.charAt(0) == 'Y') || (str.charAt(0) == 'y') || (str.charAt(0) == '1'))? true:false;
