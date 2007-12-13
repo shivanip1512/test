@@ -25,7 +25,7 @@ var REF_LABELS = {
 					otrCmnts:"Other Comments:",
 					opTmCmnts:"Op Team Comments:",
 					cbcInsDt:"CBC Install Date:",
-					address:"Cab Bank Map Address",
+					address:"Cap Bank Map Address",
 					dir:"Driving Directions:"
 				};
 
