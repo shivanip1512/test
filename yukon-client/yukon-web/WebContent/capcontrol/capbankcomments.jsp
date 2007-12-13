@@ -17,7 +17,7 @@
 <%@include file="cbc_inc.jspf"%>
 
 <%
-	LiteYukonUser user = (LiteYukonUser) request.getSession(false).getAttribute(LoginController.YUKON_USER);
+    LiteYukonUser user = (LiteYukonUser) request.getSession(false).getAttribute(LoginController.YUKON_USER);
     FilterCacheFactory cacheFactory = YukonSpringHook.getBean("filterCacheFactory", FilterCacheFactory.class);
 	CapControlCache filterCapControlCache = cacheFactory.createUserAccessFilteredCache(user);
 
@@ -26,10 +26,10 @@
 	CapBankDevice bank = filterCapControlCache.getCapBankDevice(paoId);
 	String name = bank.getCcName();
 	
-	CapbankCommentDao dao = (CapbankCommentDao) YukonSpringHook.getBean("capbankCommentDao");
+	CapControlCommentDao dao = YukonSpringHook.getBean("capbankCommentDao", CapControlCommentDao.class);
 	YukonUserDao yukonUserDao = (YukonUserDao) YukonSpringHook.getBean("yukonUserDao");
 	
-	List<CapbankComment> comments = dao.getAllCommentsByPao(paoId);
+	List<CapControlComment> comments = dao.getAllCommentsByPao(paoId);
 	
 	CtiNavObject nav = (CtiNavObject) request.getSession(false).getAttribute(ServletUtil.NAVIGATE);
 	
@@ -104,14 +104,14 @@ function unHighlightAllRows(){
 
 <cti:breadCrumbs>
     <cti:crumbLink url="subareas.jsp" title="SubBus Areas" />
-    <cti:crumbLink url="<%=returnURL %>" title="Return" />
+    <cti:crumbLink url="<%=returnURL%>" title="Return" />
 </cti:breadCrumbs>
 
 <form id="" action="/servlet/CBCServlet" method="post">
-	<input type="hidden" name="redirectURL" value="<%=currentURL %>" id="redirectURL"/>
+	<input type="hidden" name="redirectURL" value="<%=currentURL%>" id="redirectURL"/>
 	<input type="hidden" name="selectedComment" value="-1" id="selectedComment"/>
 	<input type="hidden" name="comment" id="comment" value=""/>
-	<input type="hidden" name="paoID" value="<%=paoId %>" id="paoID"/>
+	<input type="hidden" name="paoID" value="<%=paoId%>" id="paoID"/>
 	<input type="hidden" name="delete" value="-1" id="delete"/>
 	
 	<div style="margin-left: 10%; margin-right: 10%;" >
@@ -135,7 +135,9 @@ function unHighlightAllRows(){
 						<td/>
 					</tr>
 					<!-- Loops for each comment here. -->
-					<% for( CapbankComment c : comments ){ %>
+					<%
+					    for( CapControlComment c : comments ){
+					%>
 					<tr id="commentRow_<%= c.getId() %>" >
 						<td><img src="/editor/images/edit_item.gif" border="0" height="15" width="15"  onclick="selectComment(<%=c.getId() %>);highlightRow('commentRow_<%= c.getId() %>');"/>
 						<img src="/editor/images/delete_item.gif" border="0" height="15" width="15" onclick="setCommentValue(<%=c.getId() %>);setDelete(1);submit();" /></td>

@@ -13,7 +13,7 @@
 	int commentId = ParamUtil.getInteger(request,"commentID",-1);
 	int paoId = ParamUtil.getInteger(request,"paoID",-1);
 	
-	CapbankCommentDao dao = (CapbankCommentDao) YukonSpringHook.getBean("capbankCommentDao");
+	CapControlCommentDao dao = YukonSpringHook.getBean("capbankCommentDao", CapControlCommentDao.class);
 
 	//set time and comment right before executing.
 %>
@@ -24,7 +24,7 @@
 		<input type="submit" value="Add" onclick="setComment()">
 	</cti:titledContainer>
 <%}else{ 
-	CapbankComment comment = dao.getById(commentId);
+	CapControlComment comment = dao.getById(commentId);
 %>
 	<cti:titledContainer title="Change Comment" >
 		<input type="text" name="commentTextBox" id="commentTextBox" value="<%=comment.getComment() %>"/>

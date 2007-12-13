@@ -2,58 +2,63 @@ package com.cannontech.cbc.dao.impl;
 
 import java.sql.ResultSet;
 import java.sql.SQLException;
-import java.util.*;
+import java.util.ArrayList;
+import java.util.List;
 
 import org.springframework.jdbc.core.simple.ParameterizedRowMapper;
 import org.springframework.jdbc.core.simple.SimpleJdbcTemplate;
 
-import com.cannontech.cbc.dao.CapbankCommentDao;
-import com.cannontech.cbc.model.CapbankComment;
-import com.cannontech.core.dao.NotFoundException;
+import com.cannontech.cbc.dao.CapControlCommentDao;
+import com.cannontech.cbc.model.CapControlComment;
 import com.cannontech.database.incrementer.NextValueHelper;
 
 
-public class CapbankCommentDaoImpl implements CapbankCommentDao {
+public class CapControlCommentDaoImpl implements CapControlCommentDao {
     private static final String insertSql;
     private static final String removeSql;
     private static final String updateSql;
     private static final String selectAllSql;
     private static final String selectByIdSql;
     
-    private static final ParameterizedRowMapper<CapbankComment> rowMapper;
+    private static final ParameterizedRowMapper<CapControlComment> rowMapper;
     private SimpleJdbcTemplate simpleJdbcTemplate;
     private NextValueHelper nextValueHelper;
     
     static {
-            insertSql = "INSERT INTO capbankcomment (commentid,paoid,userid," + 
-            "commentTime,comment,altered) VALUES (?,?,?,?,?,?)";
+            insertSql = "INSERT INTO CapControlComment (commentid,paoid,userid,Action" + 
+            "commentTime,comment,altered) VALUES (?,?,?,?,?,?,?)";
             
-            removeSql = "DELETE FROM capbankcomment WHERE commentid = ?";
+            removeSql = "DELETE FROM CapControlComment WHERE commentid = ?";
             
-            updateSql = "UPDATE capbankcomment SET paoid = ?," + 
-            "userid = ?,commentTime = ?,comment = ?, " + 
+            updateSql = "UPDATE CapControlComment SET paoid = ?," + 
+            "userid = ?,commentTime = ?, Action = ?, comment = ?, " + 
             "altered = ? WHERE commentid = ?";
             
-            selectAllSql = "SELECT commentid,paoid,userid,commentTime," + 
-            "comment,altered FROM capbankcomment";
+            selectAllSql = "SELECT commentid,paoid,userid,Action,commentTime," + 
+            "comment,altered FROM CapControlComment";
             
             selectByIdSql = selectAllSql + " WHERE commentid = ?";
             
-            rowMapper = CapbankCommentDaoImpl.createRowMapper();
+            rowMapper = CapControlCommentDaoImpl.createRowMapper();
         }
 
-    private static final ParameterizedRowMapper<CapbankComment> createRowMapper() {
-        ParameterizedRowMapper<CapbankComment> rowMapper = new ParameterizedRowMapper<CapbankComment>() {
-            public CapbankComment mapRow(ResultSet rs, int rowNum) throws SQLException {
-                CapbankComment comment = new CapbankComment();
+    private static final ParameterizedRowMapper<CapControlComment> createRowMapper() {
+        ParameterizedRowMapper<CapControlComment> rowMapper = new ParameterizedRowMapper<CapControlComment>() {
+            public CapControlComment mapRow(ResultSet rs, int rowNum) throws SQLException {
+                CapControlComment comment = new CapControlComment();
                 comment.setId(rs.getInt("CommentID"));
                 comment.setPaoId(rs.getInt("PaoId"));
                 comment.setUserId(rs.getInt("UserId"));
+                comment.setAction(rs.getString("Action"));
                 comment.setTime(rs.getTimestamp("commentTime"));
                 comment.setComment(rs.getString("comment"));
                 String str = rs.getString("Altered");
-                boolean b = ((str.charAt(0) == 'Y') || (str.charAt(0) == 'y') || (str.charAt(0) == '1'))? true:false;
-                comment.setAltered(b);
+                if (str != null) {
+                    char c = str.charAt(0);
+                    boolean altered = (c == 'Y' || c == 'y' || c == '1');
+                    comment.setAltered(altered);
+                    
+                }
                 return comment;
             }
         };
@@ -68,25 +73,27 @@ public class CapbankCommentDaoImpl implements CapbankCommentDao {
         this.nextValueHelper = nextValueHelper;
     }
     
-    public boolean add( CapbankComment comment ){
+    public boolean add( CapControlComment comment ){
         int id = nextValueHelper.getNextValue("CapbankComment");
         int rowsAffected = simpleJdbcTemplate.update(insertSql, id,
                                                      comment.getPaoId(),
                                                      comment.getUserId(),
+                                                     comment.getAction(),
                                                      comment.getTime(),
                                                      comment.getComment(),
                                                      comment.isAltered());
         return (rowsAffected == 1);
     }
     
-    public boolean remove( CapbankComment comment ){
+    public boolean remove( CapControlComment comment ){
         int rowsAffected = simpleJdbcTemplate.update(removeSql, comment.getId());
         return (rowsAffected == 1);
     }
     
-    public boolean update( CapbankComment comment ){
+    public boolean update( CapControlComment comment ){
         int rowsAffected = simpleJdbcTemplate.update(updateSql, comment.getPaoId(),
                                                      comment.getUserId(),
+                                                     comment.getAction(),
                                                      comment.getTime(),
                                                      comment.getComment(),
                                                      comment.isAltered(),
@@ -94,14 +101,14 @@ public class CapbankCommentDaoImpl implements CapbankCommentDao {
         return (rowsAffected == 1);
     }
     
-    public CapbankComment getById( int id )
+    public CapControlComment getById( int id )
     {
-        CapbankComment c = simpleJdbcTemplate.queryForObject(selectByIdSql, rowMapper, id);
+        CapControlComment c = simpleJdbcTemplate.queryForObject(selectByIdSql, rowMapper, id);
         return c;
     }
     
     public List<String> getLastFiveByPaoId( int paoId ){       
-        List<CapbankComment> list = simpleJdbcTemplate.query(selectAllSql + " WHERE paoId = ? ORDER BY commentTime desc ", rowMapper, paoId);
+        List<CapControlComment> list = simpleJdbcTemplate.query(selectAllSql + " WHERE paoId = ? ORDER BY commentTime desc ", rowMapper, paoId);
         List<String> tsTemp = new ArrayList<String>();
         for( int i = 0; i < list.size(); i++ )
         {        
@@ -112,10 +119,10 @@ public class CapbankCommentDaoImpl implements CapbankCommentDao {
         return tsTemp;
     }
     
-    public List<CapbankComment> getAllCommentsByPao( int paoId ) { 
+    public List<CapControlComment> getAllCommentsByPao( int paoId ) { 
         String sql = selectAllSql + " WHERE paoId = ? ORDER BY commentTime desc";
         
-        List<CapbankComment> list = simpleJdbcTemplate.query(sql, rowMapper, paoId);
+        List<CapControlComment> list = simpleJdbcTemplate.query(sql, rowMapper, paoId);
         
         return list;
     }

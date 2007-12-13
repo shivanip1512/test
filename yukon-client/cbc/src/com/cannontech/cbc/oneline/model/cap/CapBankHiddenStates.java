@@ -2,7 +2,7 @@ package com.cannontech.cbc.oneline.model.cap;
 
 import java.util.List;
 
-import com.cannontech.cbc.dao.CapbankCommentDao;
+import com.cannontech.cbc.dao.CapControlCommentDao;
 import com.cannontech.cbc.oneline.elements.HiddenTextElement;
 import com.cannontech.cbc.oneline.model.HiddenStates;
 import com.cannontech.cbc.oneline.model.OnelineObject;
@@ -68,7 +68,7 @@ public class CapBankHiddenStates extends LxAbstractView implements HiddenStates 
 
         /*Start*************************/
             //Adding The last 5 comments to the Pop-up.
-        CapbankCommentDao ccDao = (CapbankCommentDao) YukonSpringHook.getBean("capbankCommentDao");
+        CapControlCommentDao ccDao = YukonSpringHook.getBean("capCommentDao", CapControlCommentDao.class);
         List<String> lastFive = ccDao.getLastFiveByPaoId( parent.getPaoId() );
         
         

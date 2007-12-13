@@ -1,18 +1,19 @@
 package com.cannontech.cbc.model;
 
-import java.util.Date;
+import java.sql.Timestamp;
 
-public class CapbankComment {
+public class CapControlComment {
+    private int id;
+    private int paoId;
+    private int userId;
+    private Timestamp time;
+    private String comment;
+    private boolean altered;
+    private String action;
     
-    int id;
-    int paoId;
-    int userId;
-    Date time;
-    String comment;
-    boolean altered;
-    
-    public CapbankComment()
-    {}
+    public CapControlComment() {
+        
+    }
 
     public int getId() {
         return id;
@@ -38,11 +39,11 @@ public class CapbankComment {
         this.userId = userId;
     }
 
-    public Date getTime() {
+    public Timestamp getTime() {
         return time;
     }
 
-    public void setTime(Date time) {
+    public void setTime(Timestamp time) {
         this.time = time;
     }
 
@@ -54,10 +55,28 @@ public class CapbankComment {
         this.comment = comment;
     }
 
+    public boolean isAltered() {
+        return altered;
+    }
+    
+    public void setAltered(boolean altered){
+        this.altered = altered;
+    }
+    
+    public String getAction() {
+        return action;
+    }
+
+    public void setAction(String action) {
+        this.action = action;
+    }
+    
     @Override
     public int hashCode() {
         final int prime = 31;
         int result = 1;
+        result = prime * result + ((action == null) ? 0 : action.hashCode());
+        result = prime * result + (altered ? 1231 : 1237);
         result = prime * result + ((comment == null) ? 0 : comment.hashCode());
         result = prime * result + id;
         result = prime * result + paoId;
@@ -74,7 +93,14 @@ public class CapbankComment {
             return false;
         if (getClass() != obj.getClass())
             return false;
-        final CapbankComment other = (CapbankComment) obj;
+        final CapControlComment other = (CapControlComment) obj;
+        if (action == null) {
+            if (other.action != null)
+                return false;
+        } else if (!action.equals(other.action))
+            return false;
+        if (altered != other.altered)
+            return false;
         if (comment == null) {
             if (other.comment != null)
                 return false;
@@ -94,13 +120,4 @@ public class CapbankComment {
         return true;
     }
 
-    public boolean isAltered() {
-        return altered;
-    }
-
-    public void setAltered(boolean altered){
-        this.altered = altered;
-    }
-    
-    
 }

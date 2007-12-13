@@ -30,7 +30,7 @@
     <property name="simpleJdbcTemplate" ref="simpleJdbcTemplate"/>
   </bean>
   
-  <bean id="capbankCommentDao" class="com.cannontech.cbc.dao.impl.CapbankCommentDaoImpl">
+  <bean id="capCommentDao" class="com.cannontech.cbc.dao.impl.CapControlCommentDaoImpl">
     <property name="nextValueHelper" ref="nextValueHelper"/>
     <property name="simpleJdbcTemplate" ref="simpleJdbcTemplate"/>
   </bean>
