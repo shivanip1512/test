@@ -18,7 +18,10 @@ import org.apache.ecs.html.Script;
 import org.apache.ecs.html.Select;
 import org.apache.ecs.html.Span;
 
+import com.cannontech.core.dao.DaoFactory;
 import com.cannontech.database.data.lite.LiteYukonUser;
+import com.cannontech.roles.application.WebClientRole;
+import com.cannontech.roles.capcontrol.CBCOnelineSettingsRole;
 import com.cannontech.util.ServletUtil;
 
 /**
@@ -165,6 +168,8 @@ public class StandardMenuRenderer implements MenuRenderer {
     }
     
     private Div buildTopRightSide() {
+        
+        String homeurl = DaoFactory.getAuthDao().getRolePropertyValue(yukonUser, WebClientRole.HOME_URL);
         Div right = new Div();
         right.setPrettyPrint(true);
         right.setClass("stdhdr_rightSide");
@@ -182,7 +187,7 @@ public class StandardMenuRenderer implements MenuRenderer {
         }
 
         right.addElement("&nbsp;&nbsp;");
-        right.addElement(new A(buildUrl("/operator/Operations.jsp"), "Home").setClass("stdhdr_menuLink"));
+        right.addElement(new A(buildUrl(homeurl), "Home").setClass("stdhdr_menuLink"));
         right.addElement(" ");
         right.addElement(new A(buildUrl("/servlet/LoginController?ACTION=LOGOUT"), "Log Out").setClass("stdhdr_menuLink"));
         right.addElement(" ");
