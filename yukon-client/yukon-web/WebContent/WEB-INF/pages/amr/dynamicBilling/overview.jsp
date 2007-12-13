@@ -23,14 +23,14 @@ function deleteButton(){
 	document.begin.submit();
 }
 
-function cloneButton(){
-	$("begin").action = "clone";
+function copyButton(){
+	$("begin").action = "copy";
 	document.begin.submit();
 }
 
 function unfreeze(){ //used to enable or disable buttons
 	if($('availableFormat').selectedIndex >= 0 ) {
-		$("clone").disabled = false; //able to clone any format
+		$("copy").disabled = false; //able to copy any format
 		if ($($("availableFormat").options[$("availableFormat").selectedIndex]).readAttribute('isSystem') == "true"){
 			$("edit").disabled = true; //disable edit and delete if it is system format
 			$("delete").disabled = true;
@@ -42,7 +42,7 @@ function unfreeze(){ //used to enable or disable buttons
 	}
 	else{
 		$("edit").disabled = true; //disable
-		$("clone").disabled = true;
+		$("copy").disabled = true;
 		$("delete").disabled = true;
 	}
 }
@@ -72,7 +72,7 @@ function unfreeze(){ //used to enable or disable buttons
 		  <td width="100px" valign="top">
 			<input type="button" id="create" name="create" value="Create" onclick="createButton();"  > <br/>
 			<input type="button" id="edit" name="edit" value="Edit" onclick="editButton();" disabled="disabled" > <br />
-			<input type="button" id="clone" name="clone" value="Clone" onclick="cloneButton();" disabled="disabled"> <br />
+			<input type="button" id="copy" name="copy" value="Copy" onclick="copyButton();" disabled="disabled"> <br />
 			<input type="button" id="delete" name="delete" value="Delete" onclick="deleteButton();" disabled="disabled" > <br />
 		  </td>
 

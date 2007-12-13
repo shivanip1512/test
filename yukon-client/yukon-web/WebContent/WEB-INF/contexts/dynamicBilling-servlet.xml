@@ -14,7 +14,7 @@
 	<bean id="viewResolver"
       class="org.springframework.web.servlet.view.UrlBasedViewResolver">
         <property name="viewClass" value="org.springframework.web.servlet.view.JstlView"/>
-        <property name="prefix" value="/WEB-INF/pages/spring/dynamicBilling/"/>
+        <property name="prefix" value="/WEB-INF/pages/amr/dynamicBilling/"/>
     </bean>
     
     <bean id="controller" class="com.cannontech.web.dynamicBilling.DynamicBillingController" >

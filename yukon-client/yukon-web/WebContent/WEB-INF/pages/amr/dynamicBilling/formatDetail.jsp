@@ -2,13 +2,17 @@
 <%@ taglib uri="http://java.sun.com/jsp/jstl/core" prefix="c" %>
 <%@ taglib prefix="x" uri="http://java.sun.com/jstl/xml" %>
 
-<cti:standardPage title="Create Bill Format -Format creation and edit" module="amr">
+<cti:standardPage title="Create Billing Format - Format creation and edit" module="amr">
+<cti:standardMenu menuSelection="billing|setup"/>
+<cti:breadCrumbs>
+    <cti:crumbLink url="/operator/Operations.jsp" title="Operations Home" />
+    <cti:crumbLink url="/spring/dynamicBilling/overview" title="Billing Setup" />
+    &gt; ${title}
+</cti:breadCrumbs>
 
 <cti:includeScript link="/JavaScript/yukonGeneral.js"/>
 <cti:includeScript link="/JavaScript/dynamicBillingFileGenerator.js"/>
 <cti:includeScript link="/JavaScript/scriptaculous/effects.js"/>
-
-<cti:standardMenu/>
 
 <h2>${title}</h2> <br> 
 <br />
@@ -17,9 +21,8 @@
 		<input type="text" name="formatName" style="width:300px" id="formatName" value="<c:out value="${format.name}"/>" >
 		<input type="button" value="Save" onclick="saveButton();" /> 
 		<input type="button" value="Cancel" onclick="cancelButton();" />
-		<input type="button" value="Delete" onclick="deleteButton();" />
 		<br /> 
-		<font size="1">Remember to save the changes before leaving or refreshing the page</font>
+		<font size="1">* The Save button must be clicked or changes will be lost when page is refreshed.</font>
 		<br />
 		<div id="errorMsg" style="color:red;">&nbsp;</div>
 	
