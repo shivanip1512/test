@@ -22,4 +22,8 @@
     	<property name="deviceConfigurationDao" ref="deviceConfigurationDao" />
     </bean>
     
+    <bean id="bulkImportDataDao" class="com.cannontech.common.bulk.importdata.dao.impl.BulkImportDataDaoImpl">
+        <property name="jdbcTemplate" ref="simpleJdbcTemplate"/>
+    </bean>
+    
 </beans>

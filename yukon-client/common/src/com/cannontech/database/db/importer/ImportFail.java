@@ -17,7 +17,7 @@ import com.cannontech.database.db.NestedDBPersistent;
  * To change the template for this generated type comment go to
  * Window&gt;Preferences&gt;Java&gt;Code Generation&gt;Code and Comments
  */
-public class ImportFail extends NestedDBPersistent 
+public class ImportFail extends NestedDBPersistent implements ImportDataBase
 {
 	private String address;
 	private String name;

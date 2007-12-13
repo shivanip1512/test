@@ -110,7 +110,7 @@
         <cti:checkRole role="MeteringRole.ROLEID">
 			<cti:isPropertyTrue property="operator.MeteringRole.IMPORTER_ENABLED">
 				<tags:sectionLink>
-		        	<a href="../bulk/importer.jsp">Bulk Importer</a>
+		        	<a href="/spring/amr/bulkimporter/home">Bulk Importer</a>
 		        </tags:sectionLink>
 	        </cti:isPropertyTrue>
         </cti:checkRole>

@@ -304,6 +304,14 @@
 	</servlet>
 
 	<servlet>
+		<servlet-name>amr</servlet-name>
+		<servlet-class>
+			com.cannontech.servlet.CannonDispatcherServlet
+		</servlet-class>
+		<load-on-startup>1</load-on-startup>
+	</servlet>
+	
+	<servlet>
 		<servlet-name>csr</servlet-name>
 		<servlet-class>
 			com.cannontech.servlet.CannonDispatcherServlet
@@ -813,6 +821,11 @@
 		<url-pattern>/spring/dynamicBilling/* </url-pattern>
 	</servlet-mapping>
 
+	<servlet-mapping>
+		<servlet-name>amr</servlet-name>
+		<url-pattern>/spring/amr/*</url-pattern>
+	</servlet-mapping>
+	
 	<servlet-mapping>
 		<servlet-name>csr</servlet-name>
 		<url-pattern>/spring/csr/*</url-pattern>

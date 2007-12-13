@@ -1,0 +1,48 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE beans PUBLIC "-//SPRING//DTD BEAN//EN" "http://www.springframework.org/dtd/spring-beans.dtd">
+
+<beans>
+    <bean class="org.springframework.web.servlet.handler.SimpleUrlHandlerMapping">
+        <property name="mappings">
+            <props>
+                <prop key="/bulkimporter/upload">BulkImporterUploadController</prop>
+                <prop key="/bulkimporter/refreshResults">BulkImporterRefreshController</prop>
+                <prop key="/bulkimporter/home">BulkImporterHomeController</prop>
+            </props>
+        </property>
+    </bean>
+    
+    <bean id="viewResolver"
+      class="org.springframework.web.servlet.view.UrlBasedViewResolver">
+        <property name="viewClass" value="org.springframework.web.servlet.view.JstlView"/>
+        <property name="prefix" value="/WEB-INF/pages/amr/"/>
+    </bean>
+    
+    <bean id="multipartResolver" class="org.springframework.web.multipart.commons.CommonsMultipartResolver"/>
+    
+    <bean id="BulkImporterUploadController" class="com.cannontech.web.bulkimporter.BulkImporterUploadController">
+    
+        <property name="bulkImportDataDao" ref="bulkImportDataDao"/>
+        
+        <property name="methodNameResolver">
+            <bean id="methodNameResolver" class="org.springframework.web.servlet.mvc.multiaction.ParameterMethodNameResolver">
+                 <property name="methodParamNames">
+                     <list>
+                         <value>importFile</value>
+                         <value>forceManualImportEvent</value>
+                         <value>clearImports</value>
+                     </list>
+                 </property>
+            </bean>
+        </property>
+    </bean>
+    
+    <bean id="BulkImporterRefreshController" class="com.cannontech.web.bulkimporter.BulkImporterRefreshController">
+        <property name="dateFormattingService" ref="dateFormattingService"/>
+        <property name="bulkImportDataDao" ref="bulkImportDataDao"/>
+    </bean>
+    
+    <bean id="BulkImporterHomeController" class="com.cannontech.web.bulkimporter.BulkImporterHomeController">
+    </bean>
+        
+</beans>

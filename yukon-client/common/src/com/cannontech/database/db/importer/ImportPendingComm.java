@@ -11,7 +11,7 @@ import com.cannontech.database.db.NestedDBPersistent;
  * To change the template for this generated type comment go to
  * Window&gt;Preferences&gt;Java&gt;Code Generation&gt;Code and Comments
  */
-public class ImportPendingComm extends NestedDBPersistent {
+public class ImportPendingComm extends NestedDBPersistent implements ImportDataBase {
 	private Integer deviceID;
     private String address;
 	private String name;

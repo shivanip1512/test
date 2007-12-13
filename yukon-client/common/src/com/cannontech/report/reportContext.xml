@@ -299,6 +299,7 @@
    <bean id="groupDevicesModel" class="com.cannontech.analysis.tablemodel.GroupDevicesModel"
          scope="prototype">
         <property name="deviceGroupService" ref="deviceGroupService"/>
+        <property name="deviceGroupDao" ref="deviceGroupDao"/>
         <property name="meterDao" ref="meterDao"/>
     </bean>
     
@@ -315,11 +316,33 @@
                       <bean class="com.cannontech.web.input.type.StringType"/>
                     </property>
                 </bean>
+              </list>
+            </property>
+          </bean>
+        </property>
+        <property name="reportLayoutData">
+            <bean class="com.cannontech.simplereport.reportlayoutdata.GroupDevicesReportLayoutData"/>
+        </property>
+    </bean>
+    
+    <!-- Failed Bulk Imports -->
+   <bean id="bulkImportResultsModel" class="com.cannontech.analysis.tablemodel.BulkImportResultsModel"
+         scope="prototype">
+         <property name="dateFormattingService" ref="dateFormattingService"/>
+         <property name="bulkImportDataDao" ref="bulkImportDataDao"/>
+    </bean>
+    
+    <bean id="bulkImportResultsDefinition" class="com.cannontech.simplereport.SimpleYukonReportDefinition">
+        <property name="reportModelName"><idref local="bulkImportResultsModel"/></property>
+        <property name="inputs">
+          <bean class="com.cannontech.web.input.InputRoot">
+            <property name="inputList">
+              <list>
                 <bean class="com.cannontech.web.input.InputBase">
-                    <property name="field" value="includeSubGroups"/>
-                    <property name="displayName" value="Include Sub Groups"/>
+                    <property name="field" value="reportType"/>
+                    <property name="displayName" value="Report Type"/>
                     <property name="type">
-                      <bean class="com.cannontech.web.input.type.BooleanType"/>
+                      <bean class="com.cannontech.web.input.type.StringType"/>
                     </property>
                 </bean>
               </list>
@@ -327,7 +350,7 @@
           </bean>
         </property>
         <property name="reportLayoutData">
-            <bean class="com.cannontech.simplereport.reportlayoutdata.GroupDevicesReportLayoutData"/>
+            <bean class="com.cannontech.simplereport.reportlayoutdata.BulkImportResultsReportLayoutData"/>
         </property>
     </bean>
     

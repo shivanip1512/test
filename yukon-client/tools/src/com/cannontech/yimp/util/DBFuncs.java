@@ -176,7 +176,7 @@ public class DBFuncs {
 	public static boolean writeNextImportTime(Date nextImport, boolean currentlyRunning) {
 		String next;
 		if(currentlyRunning)
-			next = "CURRENTLY RUNNING..";
+			next = "Currently Running...";
 		else
 			next = nextImport.toString();
 
