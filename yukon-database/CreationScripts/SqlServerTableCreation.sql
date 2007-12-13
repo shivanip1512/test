@@ -1,7 +1,7 @@
 /*==============================================================*/
 /* Database name:  YukonDatabase                                */
 /* DBMS name:      Microsoft SQL Server 2000                    */
-/* Created on:     12/12/2007 11:09:25 PM                       */
+/* Created on:     12/13/2007 10:47:50 AM                       */
 /*==============================================================*/
 
 
@@ -5741,6 +5741,10 @@ insert into devicetypecommand values(-702, -139, 'MCT-410CL', 32, 'N', -1);
 insert into devicetypecommand values(-703, -139, 'MCT-410FL', 32, 'N', -1);
 insert into devicetypecommand values(-704, -139, 'MCT-410GL', 32, 'N', -1);
 insert into devicetypecommand values(-705, -139, 'MCT-410IL', 32, 'N', -1); 
+INSERT INTO DEVICETYPECOMMAND VALUES (-706, -52, 'Repeater 902', 1, 'Y', -1);
+INSERT INTO DEVICETYPECOMMAND VALUES (-707, -3, 'Repeater 902', 2, 'Y', -1);
+INSERT INTO DEVICETYPECOMMAND VALUES (-708, -53, 'Repeater 902', 3, 'Y', -1);
+INSERT INTO DEVICETYPECOMMAND VALUES (-709, -54, 'Repeater 902', 4, 'Y', -1); 
 
 /*==============================================================*/
 /* Index: Indx_DevTypeCmd_GroupID                               */

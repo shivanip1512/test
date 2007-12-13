@@ -1,7 +1,7 @@
 /*==============================================================*/
 /* Database name:  YukonDatabase                                */
 /* DBMS name:      ORACLE Version 9i                            */
-/* Created on:     12/12/2007 11:07:30 PM                       */
+/* Created on:     12/13/2007 10:49:53 AM                       */
 /*==============================================================*/
 
 
@@ -1304,10 +1304,6 @@ create table CAPBANK  (
 )
 ;
 
-comment on table CAPBANK is
-'This a test comment for the CapBank table.'
-;
-
 /*==============================================================*/
 /* Table: CAPBANKADDITIONAL                                     */
 /*==============================================================*/
@@ -1356,10 +1352,6 @@ create table CAPCONTROLAREA  (
    AreaID               NUMBER                          not null,
    constraint PK_CAPCONTROLAREA primary key (AreaID)
 )
-;
-
-comment on table CAPCONTROLAREA is
-'This is a CapControlArea comment for the data dictionary.'
 ;
 
 /*==============================================================*/
@@ -4246,6 +4238,10 @@ insert into devicetypecommand values(-702, -139, 'MCT-410CL', 32, 'N', -1);
 insert into devicetypecommand values(-703, -139, 'MCT-410FL', 32, 'N', -1);
 insert into devicetypecommand values(-704, -139, 'MCT-410GL', 32, 'N', -1);
 insert into devicetypecommand values(-705, -139, 'MCT-410IL', 32, 'N', -1); 
+INSERT INTO DEVICETYPECOMMAND VALUES (-706, -52, 'Repeater 902', 1, 'Y', -1);
+INSERT INTO DEVICETYPECOMMAND VALUES (-707, -3, 'Repeater 902', 2, 'Y', -1);
+INSERT INTO DEVICETYPECOMMAND VALUES (-708, -53, 'Repeater 902', 3, 'Y', -1);
+INSERT INTO DEVICETYPECOMMAND VALUES (-709, -54, 'Repeater 902', 4, 'Y', -1); 
 
 /*==============================================================*/
 /* Index: Indx_DevTypeCmd_GroupID                               */

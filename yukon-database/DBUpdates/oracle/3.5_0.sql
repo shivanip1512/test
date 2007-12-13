@@ -453,6 +453,13 @@ alter table MSPVendor add TemplateNameDefault varchar2(50);
 update MSPVendor set TemplateNameDefault = '*Default Template';
 alter table MSPVendor modify TemplateNameDefault varchar2(50) not null;
 /* End YUK-4906 */
+
+/* Start YUK-4876 */
+INSERT INTO DEVICETYPECOMMAND VALUES (-706, -52, 'Repeater 902', 1, 'Y', -1);
+INSERT INTO DEVICETYPECOMMAND VALUES (-707, -3, 'Repeater 902', 2, 'Y', -1);
+INSERT INTO DEVICETYPECOMMAND VALUES (-708, -53, 'Repeater 902', 3, 'Y', -1);
+INSERT INTO DEVICETYPECOMMAND VALUES (-709, -54, 'Repeater 902', 4, 'Y', -1); 
+/* End YUK-4876 */
  
 /******************************************************************************/
 /* Run the Stars Update if needed here */
