@@ -8,8 +8,12 @@ import com.cannontech.analysis.tablemodel.CapBankMaxOpsAlarmsModel;
 public class CapBankMaxOpsAlarmsReport extends SimpleYukonReportBase {
     
     private static final ColumnLayoutData bodyColumns[] = new ColumnLayoutData[] {
-        new ColumnLayoutData("CapBank Name", "capBankName", 80),
+        
+    	new ColumnLayoutData("Area Name", "areaName", 80),
+        new ColumnLayoutData("Substation Name", "substationName", 80),
+        new ColumnLayoutData("Substation Bus Name", "subBusName", 80),
         new ColumnLayoutData("Feeder Name", "feederName", 80),
+    	new ColumnLayoutData("CapBank Name", "capBankName", 80),
         new ColumnLayoutData("Max Daily Ops", "maxDailyOps", 80)
     };
 

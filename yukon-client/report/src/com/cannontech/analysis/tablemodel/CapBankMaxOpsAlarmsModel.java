@@ -28,8 +28,11 @@ public class CapBankMaxOpsAlarmsModel extends BareReportModelBase<CapBankMaxOpsA
     }
     
     static public class ModelRow {
+    	public String areaName;
+    	public String substationName;
+    	public String subBusName;
+    	public String feederName;
         public String capBankName;
-        public String feederName;
         public String maxDailyOps;
     }
     
@@ -60,9 +63,11 @@ public class CapBankMaxOpsAlarmsModel extends BareReportModelBase<CapBankMaxOpsA
             public void processRow(ResultSet rs) throws SQLException {
                 
                 CapBankMaxOpsAlarmsModel.ModelRow row = new CapBankMaxOpsAlarmsModel.ModelRow();
-
-                row.capBankName = rs.getString("capBankName");
+                row.areaName = rs.getString("Area");
+                row.substationName = rs.getString("Substation");
+                row.subBusName = rs.getString("subBus");
                 row.feederName = rs.getString("feederName");
+                row.capBankName = rs.getString("capBankName");
                 row.maxDailyOps = rs.getString("maxDailyOps");
                 
                 data.add(row);
@@ -73,10 +78,14 @@ public class CapBankMaxOpsAlarmsModel extends BareReportModelBase<CapBankMaxOpsA
     }
     
     public StringBuffer buildSQLStatement() {
-        StringBuffer sql = new StringBuffer ("select yp.paoname as capBankName, yp1.paoname as feederName, c.maxdailyops, c.maxopDisable, ");
+        StringBuffer sql = new StringBuffer ("select yp4.paoname as Area,  yp3.paoname as Substation, yp2.paoname as subBus, ");
+        sql.append("yp1.paoname as feederName, yp.paoname as capBankName, c.maxdailyops, c.maxopDisable, ");
         sql.append("substring(dcb.additionalflags, 7, 1) as maxOpHitFlag ");
         sql.append("from yukonpaobject yp, ");
         sql.append("yukonpaobject yp1, ");
+        sql.append("yukonpaobject yp2, ");
+        sql.append("yukonpaobject yp3, ");
+        sql.append("yukonpaobject yp4, ");
         sql.append("dynamiccccapbank dcb, ");
         sql.append("capbank c,  ");
         sql.append("ccfeederbanklist fb, ");
@@ -86,6 +95,10 @@ public class CapBankMaxOpsAlarmsModel extends BareReportModelBase<CapBankMaxOpsA
         sql.append("where yp.paobjectid = dcb.capbankid ");
         sql.append("and sa.substationbusid = ss.substationid ");
         sql.append("and ss.substationbusid = fs.substationbusid ");
+        sql.append("and sa.substationbusid = ss.substationid ");
+        sql.append("and yp2.paobjectid = ss.substationbusid ");
+        sql.append("and yp3.paobjectid = ss.substationid ");
+        sql.append("and yp4.paobjectid = sa.areaid ");
         sql.append("and fs.feederid = fb.feederid ");
         sql.append("and yp1.paobjectid = fb.feederid ");
         sql.append("and c.deviceid = fb.deviceid ");
