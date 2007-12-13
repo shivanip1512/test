@@ -1,7 +1,7 @@
 /*==============================================================*/
 /* Database name:  YukonDatabase                                */
 /* DBMS name:      Microsoft SQL Server 2000                    */
-/* Created on:     12/12/2007 10:18:07 PM                       */
+/* Created on:     12/12/2007 11:09:25 PM                       */
 /*==============================================================*/
 
 
@@ -4173,6 +4173,10 @@ INSERT INTO DeviceGroup values (12,'System',0,'Y','STATIC');
 INSERT INTO DeviceGroup values (13,'Routes',12,'Y','ROUTE');
 INSERT INTO DeviceGroup values (14,'Device Types',12,'Y','DEVICETYPE'); 
 
+alter table DEVICEGROUP
+   add constraint AK_DEVICEGR_PDG_GN unique (GroupName, ParentDeviceGroupId)
+go
+
 /*==============================================================*/
 /* Table: DEVICEGROUPMEMBER                                     */
 /*==============================================================*/
@@ -6064,6 +6068,10 @@ create table DynamicPAOInfo (
 )
 go
 
+alter table DynamicPAOInfo
+   add constraint AK_DYNPAO_OWNKYUQ unique (PAObjectID, Owner, InfoKey)
+go
+
 /*==============================================================*/
 /* Table: DynamicPAOStatistics                                  */
 /*==============================================================*/
@@ -6380,6 +6388,10 @@ create table GRAPHDEFINITION (
 )
 go
 
+alter table GRAPHDEFINITION
+   add constraint AK_GRNMUQ_GRAPHDEF unique (NAME)
+go
+
 /*==============================================================*/
 /* Table: GatewayEndDevice                                      */
 /*==============================================================*/
@@ -6426,6 +6438,10 @@ create table GroupPaoPermission (
    Allow                varchar(5)           not null default 'Allow',
    constraint PK_GROUPPAOPERMISSION primary key nonclustered (GroupPaoPermissionID)
 )
+go
+
+alter table GroupPaoPermission
+   add constraint AK_GRPPAOPERM unique (GroupID, PaoID, Permission)
 go
 
 /*==============================================================*/
@@ -7119,6 +7135,10 @@ create table LMProgramDirectGear (
 )
 go
 
+alter table LMProgramDirectGear
+   add constraint AK_AKEY_LMPRGDIRG_LMPROGRA unique (DeviceID, GearNumber)
+go
+
 /*==============================================================*/
 /* Table: LMProgramDirectGroup                                  */
 /*==============================================================*/
@@ -7479,6 +7499,10 @@ INSERT into point values( -10, 'System', 'Load Management' , 0, 'Default', 0, 'N
 INSERT into point values( -100, 'System', 'Threshold' , 0, 'Default', 0, 'N', 'N', 'S', 10 ,'None', 0);
 insert into point values( 100,'Analog','Porter Work Count',0,'Default',0,'N','N','R',1500,'None',0);
 INSERT into point values( -110, 'System', 'Multispeak' , 0, 'Default', 0, 'N', 'N', 'S', 110 ,'None', 0);
+
+alter table POINT
+   add constraint AK_KEY_PTNM_YUKPAOID unique (POINTNAME, PAObjectID)
+go
 
 /*==============================================================*/
 /* Index: Indx_PointStGrpID                                     */
@@ -8281,6 +8305,10 @@ create table UserPaoPermission (
    Allow                varchar(5)           not null default 'Allow',
    constraint PK_USERPAOPERMISSION primary key nonclustered (UserPaoPermissionID)
 )
+go
+
+alter table UserPaoPermission
+   add constraint AK_USRPAOPERM unique (UserID, PaoID, Permission)
 go
 
 /*==============================================================*/
@@ -12389,5 +12417,67 @@ go
 alter table YukonUserRole
    add constraint FK_YkUsRlr_YkUsr foreign key (UserID)
       references YukonUser (UserID)
+go
+
+
+create or replace procedure RenCol(
+  User in varchar2,       -- name of the schema. 
+  Table_Name in varchar2, -- name of the table. 
+  Old_Name in varchar2,   -- name of the column to be renamed. 
+  New_Name in varchar2    -- new name of the column. 
+) 
+As
+declare
+  obj_id number; 
+  col_id number; 
+  cursor_name1 INTEGER; 
+  cursor_name2 INTEGER; 
+  ret1 INTEGER; 
+  ret2 INTEGER; 
+
+begin
+  Select object_id 
+  Into obj_id 
+  From dba_objects 
+  Where object_name=UPPER(table_name) 
+  And owner=UPPER(user) 
+  And object_type='TABLE'; 
+
+  --DBMS_OutPut.put_line(obj_id); 
+
+  Select col# 
+  Into col_id 
+  From col$ 
+  Where obj#=obj_id 
+  And name=UPPER(old_name); 
+
+  --DBMS_OutPut.put_line(col_id); 
+
+  Update col$ 
+  Set name=UPPER(new_name) 
+  Where obj#=obj_id 
+  And col#=col_id; 
+
+  Commit; 
+
+  cursor_name1 := DBMS_Sql.Open_Cursor; 
+  DBMS_Sql.Parse(cursor_name1, 'ALTER SYSTEM FLUSH SHARED_POOL',DBMS_Sql.Native); 
+  ret1 := DBMS_Sql.Execute(cursor_name1); 
+  DBMS_Sql.Close_Cursor(cursor_name1); 
+
+  cursor_name2:= DBMS_Sql.Open_Cursor; 
+  DBMS_Sql.Parse(cursor_name2, 'ALTER SYSTEM CHECKPOINT',DBMS_Sql.Native); 
+  ret2:= DBMS_Sql.Execute(cursor_name2); 
+  DBMS_Sql.Close_Cursor(cursor_name2); 
+end;
+/**************************************************************************************/
+/* Example of use:                                                                    */
+/*  SQL> Exec RenCol( 'username', 'tablename', 'old col name', 'new col name' );      */
+/*                                                                                    */
+/**************************************************************************************/
+/
+
+alter procedure RenCol compile
+/
 go
 
