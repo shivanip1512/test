@@ -44,7 +44,7 @@
 <jsp:directive.page import="com.cannontech.spring.YukonSpringHook"/>
 <jsp:directive.page import="com.cannontech.stars.dr.hardware.service.LMHardwareControlInformationService"/>
 <jsp:directive.page import="com.cannontech.database.data.lite.stars.LiteStarsCustAccountInformation"/>
-<jsp:directive.page import="com.cannontech.database.data.lite.stars.LiteStarsAppliance"/>s
+<jsp:directive.page import="com.cannontech.database.data.lite.stars.LiteStarsAppliance"/>
  
 <%
 	LiteYukonUser lYukonUser = (LiteYukonUser) session.getAttribute(ServletUtils.ATT_YUKON_USER);
