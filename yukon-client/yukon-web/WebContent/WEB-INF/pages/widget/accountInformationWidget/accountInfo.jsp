@@ -1,13 +1,16 @@
+<%@ taglib tagdir="/WEB-INF/tags" prefix="ct" %>
 <%@ taglib uri="http://java.sun.com/jsp/jstl/core" prefix="c"%>
 <%@ taglib prefix="tags" tagdir="/WEB-INF/tags" %>
 
 <div>
     <div class="widgetInternalSectionHeader">
-        Customer Information
+        <c:out value="Customer Information"/>
     </div>
-    <div class="widgetInternalSection">
-            <tags:nameValueContainer altRowOn="true">
-            <tags:nameValue name="Name">
+    <c:choose>
+    	<c:when test="${empty customerInfoError}" >
+    		<div class="widgetInternalSection">
+            	<tags:nameValueContainer altRowOn="true">
+            	<tags:nameValue name="Name">
         <c:if test='${info.firstName != null && info.firstName != null}'>
             ${info.firstName} ${info.lastName} <br>
         </c:if>
@@ -25,14 +28,29 @@
 	        </c:if>
 -->
 	    </c:if>
-	    </tags:nameValue>
-	    </tags:nameValueContainer>
-    </div>
+	    		</tags:nameValue>
+	    		</tags:nameValueContainer>
+    		</div>
+    	</c:when>
+    	<c:otherwise>
+    		<div id="customerInfoError">
+    		<ct:hideReveal title="<span class=\"internalSectionHeader\">Information not available.</span>"
+                showInitially="false">
+                <span class="internalSectionHeader">${customerInfoError}</span><br>
+                <span class="internalSectionHeader">Please view ${logName} for more information.</span>
+            </ct:hideReveal>
+            <br>
+    		</div>
+    	</c:otherwise>
+    </c:choose>
+    <br>
     <div class="widgetInternalSectionHeader">
-        Service Location
+  		<c:out value="Service Location" />
     </div>
-    <div class="widgetInternalSection">
-        <tags:nameValueContainer altRowOn="true">
+    <c:choose>
+    	<c:when test="${empty serviceLocationError}" >
+		    <div class="widgetInternalSection">
+        		<tags:nameValueContainer altRowOn="true">
             <c:if test='${serviceInfo.customerNumber != null}'>
                 <tags:nameValue name="Customer Number">${serviceInfo.customerNumber}</tags:nameValue>
             </c:if>
@@ -55,7 +73,20 @@
 	        </c:if>
 -->
 	    </c:if>
-	    </tags:nameValue>
-        </tags:nameValueContainer>
-    </div>
+			    </tags:nameValue>
+		        </tags:nameValueContainer>
+		    </div>
+	    </c:when>
+       	<c:otherwise>
+    		<div id="customerInfoError">
+    		<ct:hideReveal title="<span class=\"internalSectionHeader\">Information not available.</span>"
+                showInitially="false">
+                <span class="internalSectionHeader">${serviceLocationError}</span><br>
+                <span class="internalSectionHeader">Please view ${logName} for more information.</span>
+                <br>
+            </ct:hideReveal>
+            <br>
+    		</div>
+    	</c:otherwise>
+  	</c:choose>
 </div>

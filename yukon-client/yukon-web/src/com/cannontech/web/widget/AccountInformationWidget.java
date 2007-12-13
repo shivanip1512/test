@@ -1,5 +1,9 @@
 package com.cannontech.web.widget;
 
+import java.rmi.RemoteException;
+import java.util.Calendar;
+import java.util.Date;
+
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
 
@@ -10,6 +14,7 @@ import com.cannontech.amr.account.dao.AccountInfoDao;
 import com.cannontech.amr.account.model.AccountInfo;
 import com.cannontech.amr.account.model.Address;
 import com.cannontech.amr.account.model.ServiceLocation;
+import com.cannontech.clientutils.CTILogger;
 import com.cannontech.web.widget.support.WidgetControllerBase;
 import com.cannontech.web.widget.support.WidgetParameterHelper;
 
@@ -22,20 +27,31 @@ public class AccountInformationWidget extends WidgetControllerBase{
         
         try {
             final AccountInfo info = accountInfoDao.getAccount(deviceId);
-            final ServiceLocation serviceInfo = accountInfoDao.getServiceLocation(deviceId);
-            
-            mav.addObject("deviceId", deviceId);
             mav.addObject("info", info);
-            mav.addObject("serviceInfo", serviceInfo);
             mav.addObject("infoMapURL", getMapURL(info.getAddress()));
-            mav.addObject("serviceInfoMapURL", getMapURL(serviceInfo.getAddress()));
-            mav.setViewName("accountInformationWidget/accountInfo.jsp");
-            return mav;
-        } catch (Exception e) {
-            mav.addObject("error", e.getMessage());
-            mav.setViewName("accountInformationWidget/mspError.jsp");
-            return mav;
+            
+        } catch (RemoteException re) {
+            mav.addObject("customerInfoError", re.getMessage());
+            CTILogger.error("The Account Information Widget has thrown a remoteException, while processing customer information", re);
         }
+        
+        try {
+            final ServiceLocation serviceInfo = accountInfoDao.getServiceLocation(deviceId);
+            mav.addObject("serviceInfo", serviceInfo);
+            mav.addObject("serviceInfoMapURL", getMapURL(serviceInfo.getAddress()));
+
+        } catch (RemoteException re) {
+            mav.addObject("serviceLocationError", re.getMessage());
+            CTILogger.error("The Account Information Widget has thrown a remoteException, while processing service location", re);
+        }
+        
+        mav.addObject("deviceId", deviceId);
+        int dayOfMonth = Calendar.getInstance().get(Calendar.DAY_OF_MONTH);
+        String logName = "Webserver_"+dayOfMonth+".log";
+        mav.addObject("logName", logName);
+        mav.setViewName("accountInformationWidget/accountInfo.jsp");
+        
+        return mav;
     }
     
     private String getMapURL(Address address) {

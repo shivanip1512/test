@@ -1,5 +1,7 @@
 package com.cannontech.multispeak.dao.impl;
 
+import java.rmi.RemoteException;
+
 import com.cannontech.amr.account.dao.AccountInfoDao;
 import com.cannontech.amr.account.model.AccountInfo;
 import com.cannontech.amr.account.model.Address;
@@ -34,14 +36,14 @@ public class MspAccountInfoDaoImpl implements AccountInfoDao {
         this.meterDao = meterDao;
     }
     
-    public AccountInfo getAccount(int deviceId) throws Exception { 
+    public AccountInfo getAccount(int deviceId) throws RemoteException { 
         MultispeakVendor mspVendor = multispeakDao.getMultispeakVendor(multispeakFuncs.getPrimaryCIS());
         Meter meter = meterDao.getForId(deviceId);
         com.cannontech.multispeak.service.Customer mspCustomer = mspObjectDao.getMspCustomer(meter, mspVendor);
         return mapToAccountInfo(mspCustomer);
     }
     
-    public ServiceLocation getServiceLocation(int deviceId) throws Exception {
+    public ServiceLocation getServiceLocation(int deviceId) throws RemoteException {
         MultispeakVendor mspVendor = multispeakDao.getMultispeakVendor(multispeakFuncs.getPrimaryCIS());
         Meter meter = meterDao.getForId(deviceId);
         com.cannontech.multispeak.service.ServiceLocation mspServLoc = mspObjectDao.getMspServiceLocation(meter, mspVendor);
