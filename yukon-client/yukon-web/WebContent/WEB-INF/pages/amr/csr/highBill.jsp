@@ -22,7 +22,7 @@
         <tr>
             <td>
                 <h2 style="display: inline;">
-                    <cti:deviceName deviceId="${deviceId}"></cti:deviceName>
+                    High Bill Complaint
                 </h2>
             </td>
             <td align="right">
@@ -40,7 +40,7 @@
                 <c:choose>
                 
                     <c:when test="${lmPointExists}">
-                        <ct:widget bean="meterInformationWidget" width="400px" identify="false" deviceId="${deviceId}" hideEnabled="false" />
+                        <ct:widget bean="meterInformationWidget" width="500px" identify="false" deviceId="${deviceId}" hideEnabled="false" />
                         <ct:widget bean="profilePeakWidget"  width="700px" identify="false" deviceId="${deviceId}" collectLPVisible="true" highlight="usage,averageUsage" loadProfileRequestOrigin="HBC"  hideEnabled="false"/>
                     </c:when>
                     
