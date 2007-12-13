@@ -71,8 +71,6 @@ public void enableTimer(boolean enable)
  */
 public void generateFile(java.io.OutputStream out) throws java.io.IOException
 {
-	setBillingFormatter(getBillingDefaults().getFormatID());
-
 	// Gather new billing defaults and write them to the properties file.
 	//FormatID, demandDays, energyDays, collectionGrpVector, outputFile, inputFile
 	BillingFileDefaults defaults = new BillingFileDefaults(
@@ -90,6 +88,7 @@ public void generateFile(java.io.OutputStream out) throws java.io.IOException
 		return;
 		
 	setBillingDefaults(defaults);
+    setBillingFormatter(defaults.getFormatID());
 
 	if( getBillingFormatter() != null || getFileFormatBase() != null )
 	{
