@@ -8,14 +8,14 @@
 	<cti:breadCrumbs>
 		<cti:crumbLink url="/operator/Operations.jsp" title="Operations Home" />
 		<cti:crumbLink url="/spring/csr/search" title="Device Selection" />
-    &gt; Device Detail
+    	&gt; <cti:deviceName deviceId="${deviceId}"></cti:deviceName>
 </cti:breadCrumbs>
 
 	<table class="widgetColumns">
 		<tr>
 			<td class="widgetColumnCell" valign="top">
 				<h2>
-					<cti:deviceName deviceId="${deviceId}"></cti:deviceName>
+					Device Detail
 				</h2>
 			</td>
 			<td  class="widgetColumnCell" align="right">
@@ -42,7 +42,7 @@
 				<ct:widget bean="meterReadingsWidget" />
 
 				<c:if test="${mspSupported}">
-					<ct:widget height="185px" bean="accountInformationWidget" />
+					<ct:widget bean="accountInformationWidget" />
 				</c:if>
 
                 <c:if test="${deviceGroupsSupported}">
@@ -88,9 +88,8 @@
                         <!-- Actions: Profile -->
                         <c:choose>
                             <c:when test="${lpSupported && lpEnabled}">
-        						<c:url var="profileUrl" value="/apps/CommandDevice2.jsp">
-        							<c:param name="deviceID" value="${deviceId}" />
-        							<c:param name="lp" value="" />
+        						<c:url var="profileUrl" value="/spring/csr/profile">
+        							<c:param name="deviceId" value="${deviceId}" />
         						</c:url>
                                 <a href="${profileUrl}">Profile</a>
                             </c:when>
@@ -100,12 +99,11 @@
                         </c:choose>
                         <br/>
                         
-                        <!-- Actions: Voltage & TOU -->
+						<!-- Actions: Voltage & TOU -->
                         <c:choose>
                             <c:when test="${isMCT4XX}">
-        						<c:url var="voltageTouUrl" value="/apps/CommandDevice2.jsp">
-        							<c:param name="deviceID" value="${deviceId}" />
-        							<c:param name="command" value="null" />
+        						<c:url var="voltageTouUrl" value="/spring/csr/voltageAndTou">
+        							<c:param name="deviceId" value="${deviceId}" />
         						</c:url>
         						<a href="${voltageTouUrl}">Voltage &amp; TOU</a>
                             </c:when>
@@ -116,10 +114,8 @@
                         <br/>
                         
                         <!-- Actions: >Manual Commander -->
-						<c:url var="commanderUrl" value="/apps/CommandDevice.jsp">
-							<c:param name="deviceID" value="${deviceId}" />
-							<c:param name="manual" value="" />
-							<c:param name="command" value="null" />
+						<c:url var="commanderUrl" value="/spring/csr/manualCommand">
+							<c:param name="deviceId" value="${deviceId}" />
 						</c:url>
 						<a href="${commanderUrl}">Manual Commander</a>
 						<br>
@@ -135,14 +131,6 @@
 			</td>
 			<td class="widgetColumnCell" valign="top">
 
-				<c:if test="${peakReportSupported}">
-					<ct:widget bean="peakReportWidget" />
-				</c:if>
-				
-				<c:if test="${lpSupported && lpEnabled}">
-					<ct:widget bean="profileWidget" />
-				</c:if>
-				
 				<ct:widget bean="trendWidget" />
 				
 				<c:if test="${disconnectSupported}">

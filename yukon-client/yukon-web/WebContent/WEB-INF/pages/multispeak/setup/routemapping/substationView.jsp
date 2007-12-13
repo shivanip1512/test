@@ -4,10 +4,7 @@
 <c:url var="subUrl"
     value="/spring/multispeak/setup/routemapping/substation" />
 
-<h2>
-    Substation Name
-</h2>
-
+Substation Name
 <form name="subform" action="${subUrl}" method="post">
     <div>
         <select id="subSelectList" name="selection_list" size="10"

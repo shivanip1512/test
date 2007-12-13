@@ -3,6 +3,7 @@ package com.cannontech.web.amr.csr;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.Set;
+import java.util.Vector;
 
 import javax.servlet.ServletException;
 import javax.servlet.http.HttpServletRequest;
@@ -25,13 +26,23 @@ import com.cannontech.common.device.attribute.model.BuiltInAttribute;
 import com.cannontech.common.device.attribute.service.AttributeService;
 import com.cannontech.common.search.SearchResult;
 import com.cannontech.core.dao.AuthDao;
+import com.cannontech.core.dao.CommandDao;
 import com.cannontech.core.dao.DeviceDao;
+import com.cannontech.core.dao.PaoDao;
 import com.cannontech.core.dao.RoleDao;
+import com.cannontech.database.cache.DefaultDatabaseCache;
 import com.cannontech.database.data.device.DeviceTypesFuncs;
+import com.cannontech.database.data.lite.LiteCommand;
+import com.cannontech.database.data.lite.LiteDeviceTypeCommand;
+import com.cannontech.database.data.lite.LiteTOUSchedule;
+import com.cannontech.database.data.lite.LiteYukonPAObject;
 import com.cannontech.database.data.lite.LiteYukonUser;
+import com.cannontech.database.data.point.PointTypes;
+import com.cannontech.message.dispatch.message.PointData;
 import com.cannontech.roles.operator.MeteringRole;
 import com.cannontech.roles.yukon.MultispeakRole;
 import com.cannontech.util.ServletUtil;
+import com.cannontech.yc.bean.YCBean;
 
 /**
  * Spring controller class for csr
@@ -43,6 +54,8 @@ public class CsrController extends MultiActionController {
     private CsrService csrService = null;
     private AttributeService attributeService = null;
     private DeviceDao deviceDao = null;
+    private PaoDao paoDao = null;
+    private CommandDao commandDao = null;
 
     public CsrController() {
         super();
@@ -68,6 +81,14 @@ public class CsrController extends MultiActionController {
         this.deviceDao = deviceDao;
     }
 
+    public void setPaoDao(PaoDao paoDao) {
+        this.paoDao = paoDao;
+    }
+
+    public void setCommandDao(CommandDao commandDao) {
+        this.commandDao = commandDao;
+    }
+
     public ModelAndView search(HttpServletRequest request, HttpServletResponse response)
             throws ServletException {
 
@@ -84,7 +105,7 @@ public class CsrController extends MultiActionController {
         if (request.getParameter("Filter") != null) {
             startIndex = 0;
         }
-        
+
         // Get the search result count
         int count = ServletRequestUtils.getIntParameter(request, "count", 25);
 
@@ -147,45 +168,48 @@ public class CsrController extends MultiActionController {
 
         mav.addObject("deviceId", deviceId);
         mav.addObject("highBillSupported", highBillSupported);
-        
+
         Set<Attribute> availableAttributes = attributeService.getAvailableAttributes(device);
-        
-        boolean outageSupported = (availableAttributes.contains(BuiltInAttribute.OUTAGE_LOG) ||
-        		availableAttributes.contains(BuiltInAttribute.BLINK_COUNT));
+
+        boolean outageSupported = (availableAttributes.contains(BuiltInAttribute.OUTAGE_LOG) || availableAttributes.contains(BuiltInAttribute.BLINK_COUNT));
         mav.addObject("outageSupported", outageSupported);
-        
+
         mav.addObject("mspSupported",
                       Integer.valueOf(roleDao.getGlobalPropertyValue(MultispeakRole.MSP_PRIMARY_CB_VENDORID))
                              .intValue() > 0);
 
         boolean disconnectSupported = DeviceTypesFuncs.isDisconnectEnabled(device);
         mav.addObject("disconnectSupported", disconnectSupported);
-        
+
         LiteYukonUser user = ServletUtil.getYukonUser(request);
 
-        boolean deviceGroupEnabled = Boolean.parseBoolean(authDao.getRolePropertyValue(user, MeteringRole.DEVICE_GROUP_ENABLED));
+        boolean deviceGroupEnabled = Boolean.parseBoolean(authDao.getRolePropertyValue(user,
+                                                                                       MeteringRole.DEVICE_GROUP_ENABLED));
         mav.addObject("deviceGroupsSupported", deviceGroupEnabled);
 
         boolean touSupported = DeviceTypesFuncs.isTouEnabled(device);
-        boolean touEnabled = Boolean.parseBoolean(authDao.getRolePropertyValue(user, MeteringRole.TOU_ENABLED));
+        boolean touEnabled = Boolean.parseBoolean(authDao.getRolePropertyValue(user,
+                                                                               MeteringRole.TOU_ENABLED));
         mav.addObject("touSupported", (touSupported && touEnabled));
 
-        boolean moveSupported = DeviceTypesFuncs.isMCT410(device.getType());  
-        boolean moveEnabled = Boolean.parseBoolean(authDao.getRolePropertyValue(user, MeteringRole.MOVE_IN_MOVE_OUT_ENABLED));  
+        boolean moveSupported = DeviceTypesFuncs.isMCT410(device.getType());
+        boolean moveEnabled = Boolean.parseBoolean(authDao.getRolePropertyValue(user,
+                                                                                MeteringRole.MOVE_IN_MOVE_OUT_ENABLED));
         mav.addObject("moveSupported", (moveSupported && moveEnabled));
-        
+
         boolean lpSupported = DeviceTypesFuncs.isMCT4XX(device.getType());
         mav.addObject("lpSupported", lpSupported);
 
-        boolean lpEnabled = Boolean.parseBoolean(authDao.getRolePropertyValue(user, MeteringRole.PROFILE_REQUEST_ENABLED));
+        boolean lpEnabled = Boolean.parseBoolean(authDao.getRolePropertyValue(user,
+                                                                              MeteringRole.PROFILE_REQUEST_ENABLED));
         mav.addObject("lpEnabled", lpEnabled);
-        
+
         boolean peakReportSupported = DeviceTypesFuncs.isMCT410(device.getType());
         mav.addObject("peakReportSupported", peakReportSupported);
-        
+
         boolean isMCT4XX = DeviceTypesFuncs.isMCT4XX(device.getType());
         mav.addObject("isMCT4XX", isMCT4XX);
-        
+
         return mav;
     }
 
@@ -209,6 +233,125 @@ public class CsrController extends MultiActionController {
         boolean lmPointExists = attributeService.pointExistsForAttribute(device,
                                                                          BuiltInAttribute.LOAD_PROFILE);
         mav.addObject("lmPointExists", lmPointExists);
+
+        return mav;
+    }
+
+    public ModelAndView profile(HttpServletRequest request, HttpServletResponse response)
+            throws ServletException {
+
+        ModelAndView mav = new ModelAndView("profile.jsp");
+
+        int deviceId = ServletRequestUtils.getRequiredIntParameter(request, "deviceId");
+        mav.addObject("deviceId", deviceId);
+
+        return mav;
+    }
+
+    public ModelAndView voltageAndTou(HttpServletRequest request, HttpServletResponse response)
+            throws ServletException {
+
+        ModelAndView mav = new ModelAndView("voltageAndTou.jsp");
+
+        int deviceId = ServletRequestUtils.getRequiredIntParameter(request, "deviceId");
+        mav.addObject("deviceId", deviceId);
+
+        // Get or create the YCBean and put it into the session
+        YCBean ycBean = (YCBean) request.getSession().getAttribute("YC_BEAN");
+        if (ycBean == null) {
+            ycBean = new YCBean();
+        }
+        request.getSession().setAttribute("YC_BEAN", ycBean);
+
+        LiteYukonUser user = ServletUtil.getYukonUser(request);
+
+        ycBean.setUserID(user.getUserID());
+        ycBean.setDeviceID(deviceId);
+
+        LiteYukonPAObject device = paoDao.getLiteYukonPAO(deviceId);
+        mav.addObject("device", device);
+
+        // Get the point data for the page
+        PointData data = ycBean.getRecentPointData(deviceId, 4, PointTypes.DEMAND_ACCUMULATOR_POINT);
+        String lastIntervalTime = ycBean.getFormattedTimestamp(data, "---");
+        mav.addObject("lastIntervalTime", lastIntervalTime);
+        String lastIntervalValue = ycBean.getFormattedValue(data, "#0.000", "&nbsp;");
+        mav.addObject("lastIntervalValue", lastIntervalValue);
+
+        data = (PointData) ycBean.getRecentPointData(deviceId,
+                                                     15,
+                                                     PointTypes.DEMAND_ACCUMULATOR_POINT);
+        String minimumTime = ycBean.getFormattedTimestamp(data, "---");
+        mav.addObject("minimumTime", minimumTime);
+        String minimumValue = ycBean.getFormattedValue(data, "#0.000", "&nbsp;");
+        mav.addObject("minimumValue", minimumValue);
+
+        data = (PointData) ycBean.getRecentPointData(deviceId,
+                                                     14,
+                                                     PointTypes.DEMAND_ACCUMULATOR_POINT);
+        String maximumTime = ycBean.getFormattedTimestamp(data, "---");
+        mav.addObject("maximumTime", maximumTime);
+        String maximumValue = ycBean.getFormattedValue(data, "#0.000", "&nbsp;");
+        mav.addObject("maximumValue", maximumValue);
+
+        List<LiteTOUSchedule> schedules = DefaultDatabaseCache.getInstance().getAllTOUSchedules();
+        mav.addObject("schedules", schedules);
+
+        String errorMsg = ServletRequestUtils.getStringParameter(request, "errorMsg");
+        if (errorMsg == null && ycBean.getErrorMsg() != null) {
+            errorMsg = ycBean.getErrorMsg();
+            ycBean.setErrorMsg("");
+        }
+
+        mav.addObject("errorMsg", errorMsg);
+
+        return mav;
+    }
+
+    @SuppressWarnings("unchecked")
+    public ModelAndView manualCommand(HttpServletRequest request, HttpServletResponse response)
+            throws ServletException {
+
+        ModelAndView mav = new ModelAndView("manualCommand.jsp");
+
+        int deviceId = ServletRequestUtils.getRequiredIntParameter(request, "deviceId");
+        mav.addObject("deviceId", deviceId);
+
+        // Get or create the YCBean and put it into the session
+        YCBean ycBean = (YCBean) request.getSession().getAttribute("YC_BEAN");
+        if (ycBean == null) {
+            ycBean = new YCBean();
+        }
+        request.getSession().setAttribute("YC_BEAN", ycBean);
+
+        LiteYukonUser user = ServletUtil.getYukonUser(request);
+        ycBean.setUserID(user.getUserID());
+        ycBean.setDeviceID(deviceId);
+        ycBean.setDeviceType(deviceId);
+
+        LiteYukonPAObject device = paoDao.getLiteYukonPAO(deviceId);
+        mav.addObject("device", device);
+        mav.addObject("deviceType", ycBean.getDeviceType());
+
+        // Get the list of commands
+        Vector<LiteDeviceTypeCommand> commands = ycBean.getLiteDeviceTypeCommandsVector();
+        List<LiteCommand> commandList = new ArrayList<LiteCommand>();
+        for (LiteDeviceTypeCommand ldtc : commands) {
+
+            LiteCommand command = commandDao.getCommand(ldtc.getCommandID());
+            if (ldtc.isVisible() && ycBean.isAllowCommand(command.getCommand(), user, device)) {
+                commandList.add(command);
+            }
+        }
+        mav.addObject("commandList", commandList);
+
+        String errorMsg = ServletRequestUtils.getStringParameter(request, "errorMsg");
+        if (errorMsg == null && ycBean.getErrorMsg() != null) {
+            errorMsg = ycBean.getErrorMsg();
+            ycBean.setErrorMsg("");
+        }
+
+        mav.addObject("errorMsg", errorMsg);
 
         return mav;
     }

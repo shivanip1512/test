@@ -770,12 +770,12 @@ public class CommandDeviceBean implements DBChangeLiteListener
 		html += "  <tr>" + LINE_SEPARATOR;
 		html += "    <td>" + LINE_SEPARATOR;
        
-		html += "      <table width=\'100%\' border=\'1\' cellspacing=\'0\' cellpadding=\'3\'>" + LINE_SEPARATOR;
+		html += "      <table width=\'100%\' class=\"resultsTable\">" + LINE_SEPARATOR;
 		html += "        <tr>" + LINE_SEPARATOR;
 		String [] columns = getColumnStrings();
 		for (int i = 0; i < columns.length; i++)
 		{
-			html += "          <td class=\'HeaderCell\' width=\'"+ getColumnWidth(columns[i]) +"%\'>" + columns[i] +"</td>" + LINE_SEPARATOR;
+			html += "          <th width=\'"+ getColumnWidth(columns[i]) +"%\'>" + columns[i] +"</th>" + LINE_SEPARATOR;
 		}
 
 		html += "        </tr>" + LINE_SEPARATOR;
@@ -786,7 +786,7 @@ public class CommandDeviceBean implements DBChangeLiteListener
 			html += "        <tr>" + LINE_SEPARATOR;
 			for (int j = 0; j < columns.length; j++)
 			{
-				html += "          <td class=\'TableCell\' width=\'"+getColumnWidth(columns[j])+"%\'>";
+				html += "          <td width=\'"+getColumnWidth(columns[j])+"%\'>";
 				if ( j == 0)
 					html += "<a method='post' href='CommandDevice.jsp?deviceID=" + lPao.getYukonID() +"'>" + getDeviceAttributeValue(columns[j], lPao) + "</a>";
 				else

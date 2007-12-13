@@ -16,7 +16,7 @@
 	var progressUpdaters = new Array();
 
 </script>
-<%--CHANNLES PROFILING--%>
+<%--CHANNElS PROFILING--%>
 
 <table class="compactResultsTable">
 
@@ -27,8 +27,8 @@
 	  <th>Action</th>
 	</tr>
 	
-	<tr>
-		<td>Channel 1 (Load)</td>
+	<tr align="center">
+		<td align="left">Channel 1 (Load)</td>
 		<td>${chan1Interval}</td>
 		<c:choose>
 			<c:when test="${chan1CollectionOn}">
@@ -42,8 +42,8 @@
 		</c:choose>
 	</tr>
 	
-	<tr class="last">
-		<td>Channel 4 (Voltage)</td>
+	<tr class="last" align="center">
+		<td align="left">Channel 4 (Voltage)</td>
 		<td>${chan4Interval}</td>
 		<c:choose>
 			<c:when test="${chan4CollectionOn}">

@@ -120,17 +120,17 @@ public class DynamicBillingController extends MultiActionController {
 		}
 		mav.addObject("selectedFields", selectedFields);
 
-		mav.addObject("title", "Edit Bill Format");
+		mav.addObject("title", "Edit Format");
 
 		return mav;
 	}
 
 	/**
-	 * Clone the selected format. the selected format will still remain and the
-	 * saved cloned format will have a different fid
+	 * Copy the selected format. the selected format will still remain and the
+	 * saved copied format will have a different fid
 	 * 
 	 */
-	public ModelAndView clone(HttpServletRequest request,
+	public ModelAndView copy(HttpServletRequest request,
 			HttpServletResponse response) throws ServletException {
 
 		ModelAndView mav = new ModelAndView("formatDetail.jsp");
@@ -139,7 +139,7 @@ public class DynamicBillingController extends MultiActionController {
 		fID = ServletRequestUtils.getIntParameter(request, "availableFormat");
 
 		// retrieve the format information, 
-		// assert that this is a clone into the name
+		// assert that this is a copy into the name
 		DynamicFormat formatSelected = dynamicBillingFileDao.retrieve(fID);
 		formatSelected.setName(formatSelected.getName()
 				+ " (copy)");
@@ -165,7 +165,7 @@ public class DynamicBillingController extends MultiActionController {
 		}
 		mav.addObject("selectedFields", selectedFields);
 
-		mav.addObject("title", "Edit Bill Format");
+		mav.addObject("title", "Edit Format");
 
 		return mav;
 	}

@@ -368,6 +368,6 @@
 	
 	</div>
 	
-	<br style="clear: both">
+	<div style="clear: both" />
 
 </cti:standardPage>

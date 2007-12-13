@@ -43,6 +43,7 @@
 	</script>
 	
 	<h2>Group: <a href="${homeUrl}">${fn:escapeXml(group.fullName)}</a></h2>
+	<br><br>
 	
 	<c:if test="${not empty param.errorMessage}">
 		<div style="color: red">

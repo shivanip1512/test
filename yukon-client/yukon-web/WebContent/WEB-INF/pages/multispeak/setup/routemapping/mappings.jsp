@@ -11,7 +11,9 @@
     <cti:includeScript link="/JavaScript/mspmappings.js" />
     <cti:includeScript link="/JavaScript/yukonGeneral.js"/>
 
-    <table style="margin: auto" cellpadding="25px">
+	<h2>Substation To Route Mapping</h2>
+
+    <table cellpadding="25px">
         <tr>
             <td valign="top">
                 <div id="sub_element">

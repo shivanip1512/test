@@ -17,25 +17,26 @@
         &gt; Move Out
     </cti:breadCrumbs>
 
-    <body>
-        <c:choose>
-            <c:when test="${not (submissionType eq 'moveOut')}">
-                
-                <div id="meterinfo" style="width: 400px">
-                    <ct:widget bean="meterInformationWidget"
-                        identify="false" deviceId="${deviceId}"
-                        hideEnabled="false" />
-                </div>
-                
-                <div id="moveout">
-                    <jsp:include page="${moveOutFormUrl}" />
-                </div>
-            </c:when>
-            <c:otherwise>
-                <div id="results">
-                    <jsp:include page="${moveOutResultsUrl}" />
-                </div>
-            </c:otherwise>
-        </c:choose>
-    </body>
+    <h2>Move Out</h2>
+    <br><br>
+	<c:choose>
+	    <c:when test="${not (submissionType eq 'moveOut')}">
+	        
+	        <div id="meterinfo" style="width: 400px">
+	            <ct:widget bean="meterInformationWidget"
+	                identify="false" deviceId="${deviceId}"
+	                hideEnabled="false" />
+	        
+		        <div id="moveout">
+		            <jsp:include page="${moveOutFormUrl}" />
+		        </div>
+	        </div>
+	    </c:when>
+	    <c:otherwise>
+	        <div id="results">
+	            <jsp:include page="${moveOutResultsUrl}" />
+	        </div>
+	    </c:otherwise>
+	</c:choose>
+	
 </cti:standardPage>

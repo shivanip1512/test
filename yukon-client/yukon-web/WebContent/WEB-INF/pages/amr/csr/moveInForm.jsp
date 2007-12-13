@@ -9,28 +9,34 @@
 
 
 <form action="/spring/csr/moveInRequest?deviceId=${meter.deviceId}" id="moveInForm" method="post">
+    
     <input name="deviceId" type="hidden" value="${meter.deviceId}" />
     <input name="meterNumberOld" type="hidden"
         value="${meter.meterNumber}" />
     <input name="deviceNameOld" type="hidden" value="${meter.name}" />
 
-    <span class="internalSectionHeader"> Meter Number: </span>
-    <input name="meterNumber" size="10" type="text"
-        value="${meter.meterNumber}" />
-    <br />
+	<ct:boxContainer title="Move In" hideEnabled="false">
 
-    <span class="internalSectionHeader"> Device Name: </span>
-    <input name="deviceName" size="30" type="text" value="${meter.name}" />
-    <br />
-
-    <span class="internalSectionHeader"> Move In Date: </span>
-    <ct:dateInputCalendar fieldName="moveInDate"
-        fieldValue="${currentDate}" />
-    <br />
-
-    <span class="internalSectionHeader"> Email Notification: </span>
-    <input name="emailAddress" type="text" />
-    <br /><br />
-
-    <ct:slowInput myFormId="moveInForm" label="Move In" labelBusy="Moving In" description="A meter reading is being calculated based on usage for the date supplied" />
+		<ct:nameValueContainer>
+		
+			<ct:nameValue name="Meter Number">
+				<input name="meterNumber" size="10" type="text" value="${meter.meterNumber}" />
+			</ct:nameValue>
+			<ct:nameValue name="Device Name">
+			    <input name="deviceName" size="30" type="text" value="${meter.name}" />
+			</ct:nameValue>
+			<ct:nameValue name="Move In Date">
+				<ct:dateInputCalendar fieldName="moveInDate" fieldValue="${currentDate}" />
+			</ct:nameValue>
+			<ct:nameValue name="Email Notification">
+			    <input name="emailAddress" type="text" />
+			</ct:nameValue>
+		
+		</ct:nameValueContainer>
+	
+	    <br><br>
+	
+	    <ct:slowInput myFormId="moveInForm" label="Move In" labelBusy="Moving In" description="A meter reading is being calculated based on usage for the date supplied" />
+	    
+	</ct:boxContainer>
 </form>

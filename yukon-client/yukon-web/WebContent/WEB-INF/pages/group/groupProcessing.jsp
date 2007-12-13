@@ -32,13 +32,12 @@
 		<c:set var="errorMsg" value="" scope="request"/>
 	</c:if>
 	
-	<form action="<c:url value="/spring/group/executeCommand" />">
-		<table>
-			<tr>
-				<td>
-					Select group:
-				</td>
-				<td>
+	<br>
+	<div style="width: 700px;">
+		<form action="<c:url value="/spring/group/executeCommand" />">
+			
+			<ct:nameValueContainer altRowOn="true">
+				<ct:nameValue name="Select group">
 					<c:set var="selected" value="" scope="page"></c:set>
 					<select id="groupSelect" name="groupSelect" onchange="selectEmailSubject()">
 						<c:forEach var="groupOption" items="${groups}">
@@ -53,16 +52,9 @@
 							<option value="${fn:escapeXml(groupOption.fullName)}" ${selected}> ${fn:escapeXml(groupOption.fullName)}</option>
 						</c:forEach>
 					</select>
-				</td>
-			</tr>
-			<tr>
-				<td colspan="2">&nbsp;</td>
-			</tr>
-			<tr>
-				<td>		
-					Select command: 
-				</td>
-				<td>
+				</ct:nameValue>
+	
+				<ct:nameValue name="Select command">
 					<select id="commandSelect" name="commandSelect" onchange="selectCommand();selectEmailSubject()">
 						<c:forEach var="commandOption" items="${commands}">
 						
@@ -76,42 +68,25 @@
 							<option value="${commandOption.command}" ${selected}> ${commandOption.label}</option>
 						</c:forEach>
 					</select>
-				</td>
-			</tr>
-			<tr>
-				<td>&nbsp;</td>		
-				<td>
-					<input type="text" id="commandString" name="commandString" <cti:isPropertyFalse property="CommanderRole.EXECUTE_MANUAL_COMMAND">readonly</cti:isPropertyFalse> size="40" />
-				</td>
-			</tr>
-			<tr>
-				<td colspan="2">&nbsp;</td>
-			</tr>
-			<tr>	
-				<td>	
-					Email results to: 
-				</td>
-				<td>
+					<br>
+					<input style="margin-top: .25em;" type="text" id="commandString" name="commandString" <cti:isPropertyFalse property="CommanderRole.EXECUTE_MANUAL_COMMAND">readonly</cti:isPropertyFalse> size="40" />
+				</ct:nameValue>
+	
+				<ct:nameValue name="Email results to">
 					<input type="text" id="emailAddresses" name="emailAddresses" value="${emailAddresses}" size="40" />
-				</td>
-			</tr>
-			<tr>
-				<td>&nbsp;</td>		
-				<td>
+					<br>
 					ex: support@cannontech.com,help@cannontech.com
-				</td>
-			</tr>
-			<tr>	
-				<td>	
-					Email subject: 
-				</td>
-				<td>
+				</ct:nameValue>
+	
+				<ct:nameValue name="Email subject">
 					<input type="text" id="emailSubject" name="emailSubject" value="${emailSubject}" size="80" />
-				</td>
-			</tr>
-		</table>
-		<br/><br/>
-		<input type="submit" name="execute" value="Execute" />
-	</form>
+				</ct:nameValue>
+	
+			</ct:nameValueContainer>
+			<br>
+			<input type="submit" name="execute" value="Execute" />
+			
+		</form>
+	</div>
 	
 </cti:standardPage>

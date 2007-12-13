@@ -1,93 +1,72 @@
-<%@ taglib uri="http://java.sun.com/jsp/jstl/core" prefix="c" %>
-<%@ include file="include/billing_header.jsp" %>
 <%@ page import="com.cannontech.database.cache.DefaultDatabaseCache"%>
 <%@ page import="com.cannontech.yukon.IDatabaseCache"%>
 <%@ page import="com.cannontech.billing.FileFormatTypes"%>
 
+<%@ include file="include/billing_header.jsp" %>
+
+<%@ taglib uri="http://java.sun.com/jsp/jstl/core" prefix="c" %>
+<%@ taglib prefix="tags" tagdir="/WEB-INF/tags" %>
+
 <cti:standardPage module="amr" title="Billing">
-<cti:standardMenu menuSelection="billing|generation"/>
-<cti:breadCrumbs>
-    <cti:crumbLink url="/operator/Operations.jsp" title="Operations Home" />
-    &gt; Billing
-</cti:breadCrumbs>
-<cti:includeScript link="/JavaScript/calendar.js"/>
+	<cti:standardMenu menuSelection="billing|generation"/>
+	<cti:breadCrumbs>
+	    <cti:crumbLink url="/operator/Operations.jsp" title="Operations Home" />
+	    &gt; Billing
+	</cti:breadCrumbs>
+	
+	<cti:includeScript link="/JavaScript/calendarControl.js"/>
+	<cti:includeCss link="/WebConfig/yukon/styles/calendarControl.css"/>
+	
+	<h2>Billing</h2>
+	<br><br>
+	
+	<c:set var="formatMap" value="<%=FileFormatTypes.getValidFormats()%>"></c:set>
+	<c:set var="origEndDate" value="<%= datePart.format(billingBean.getEndDate()) %>"></c:set>
 
-<h2>Billing</h2>
+	<form name = "MForm" action="<c:url value="/servlet/BillingServlet" />" method="post">
+	
+		<div style="width: 700px">
+			<tags:nameValueContainer>
+					
+				<tags:nameValue name="File Format">
+		            <select name="fileFormat">
+		            	<c:forEach var="format" items="${formatMap}">
+		            		<option value="${format.key}" ${(format.key == BILLING_BEAN.fileFormat)?'selected':''}>${format.value}</option>
+		            	</c:forEach>
+		            </select>
+				</tags:nameValue>
+				<tags:nameValue name="Billing End Date">
+		        	<tags:dateInputCalendar fieldName="endDate" fieldValue="${origEndDate}"></tags:dateInputCalendar>
+				</tags:nameValue>
+				<tags:nameValue name="Demand Days Previous">
+		        	<input type="text" name="demandDays" value="${BILLING_BEAN.demandDaysPrev}" size = "8">
+				</tags:nameValue>
+				<tags:nameValue name="Energy Days Previous">
+		        	<input type="text" name="energyDays" value="${BILLING_BEAN.energyDaysPrev}" size = "8">
+				</tags:nameValue>
+				<tags:nameValue name="Remove Multiplier">
+		        	<input type="checkbox" name="removeMultiplier" ${(BILLING_BEAN.removeMult)? 'checked':''} >
+				</tags:nameValue>
+				<tags:nameValue name="Billing Group">
+		        	<c:set value="${true}" var="isFirst"/>
+			        <select name="billGroup" size="10" multiple>
+			        	<c:forEach items="${BILLING_BEAN.availableGroups}" var="item">
+			           		<c:choose>
+				           		<c:when test="${isFirst}">
+				            		<option selected>${item}</option>
+				           		</c:when>
+				           		<c:otherwise>
+				            		<option>${item}</option>
+				           		</c:otherwise>
+			           		</c:choose>
+			           		<c:set value="${false}" var="isFirst"/>
+			         	</c:forEach>
+			        </select>
+				</tags:nameValue>
+				
+			</tags:nameValueContainer>
+			<input type="submit" name="generate" value="Generate">
+		</div>
 
-<form name = "MForm" action="<%=request.getContextPath()%>/servlet/BillingServlet" method="post">
-
-<table width="80%" border="0" cellspacing="0" cellpadding="2" class = "TableCell">
-    <tr> 
-        <td width="20%" align="right" >File Format: </td>
-        <td width="80%"> 
-            <select name="fileFormat">
-                <% /* Fill in the possible file format types*/
-                int selectedFormat = billingBean.getFileFormat();
-                java.util.Map<Integer,String> validFormats = FileFormatTypes.getValidFormats();
-                for (final Integer key : validFormats.keySet()) {
-                    if (key.equals(selectedFormat)) {
-                        out.println("<OPTION VALUE='" + key + "' SELECTED>" + validFormats.get(key));        
-                    } else {
-                        out.println("<OPTION VALUE='" + key + "'>" + validFormats.get(key));
-                    }
-                }
-                %>
-            </select>
-        </td>
-    </tr>
-    <tr> 
-        <td align="right">Billing End Date:</td>
-        <td >
-            <input id="cal" type="text" name="endDate" value="<%= datePart.format(billingBean.getEndDate()) %>" size="8">
-                <A HREF="javascript:openCalendar(document.getElementById('MForm').cal, 74, 0)"
-                  onMouseOver="window.status='Select Billing End Date';return true;"
-                  onMouseOut="window.status='';return true;">
-                  <IMG SRC="<%=request.getContextPath()%>/WebConfig/yukon/Icons/StartCalendar.gif" WIDTH="20" HEIGHT="15" ALIGN="ABSMIDDLE" BORDER="0">
-                </A>
-        </td>
-    </tr>
-    <tr> 
-        <td  align="right">Demand Days Previous:</td>
-        <td > 
-            <input type="text" name="demandDays" value="<%=billingBean.getDemandDaysPrev()%>" size = "8">
-        </td>
-    </tr>
-    <tr> 
-        <td align="right">Energy Days Previous:</td>
-        <td> 
-            <input type="text" name="energyDays" value="<%=billingBean.getEnergyDaysPrev()%>" size = "8">
-        </td>
-    </tr>
-    <tr> 
-        <td align="right">Remove Multiplier</td>
-        <td> 
-            <input type="checkbox" name="removeMultiplier" <%=(billingBean.getRemoveMult()?"checked":"")%> >
-        </td>
-    </tr>
-    <tr> 
-    <td align="right" valign="top">Billing Group:</td>
-      <td> 
-        <c:set value="${true}" var="isFirst"/>
-        <select name="billGroup" size="10" multiple>
-         <c:forEach items="${BILLING_BEAN.availableGroups}" var="item">
-           <c:if test="${isFirst}">
-            <option selected>${item}</option>
-           </c:if>
-           <c:if test="${!isFirst}">
-            <option>${item}</option>
-           </c:if>
-           <c:set value="${false}" var="isFirst"/>
-         </c:forEach>
-        </select>
-      </td>
-    </tr>
-    <tr> 
-      <td  align = "right"> 
-      <input type="submit" name="generate" value="Generate">
-      </td>
-      <td  align = "right"> 
-      </td>
-    </tr>
-</table>
-</form>
+	</form>
 </cti:standardPage>

@@ -2,10 +2,7 @@
 <c:url var="routeUrl"
     value="/spring/multispeak/setup/routemapping/route" />
 
-<h2>
-    Assigned Routes
-</h2>
-
+Assigned Routes
 <form name="routeform" action="${routeUrl}" method="post">
     <table>
         <tr>
@@ -44,9 +41,7 @@
         </tr>
         <tr>
             <td>
-                <H3>
-                    Available Routes
-                </H3>
+                Available Routes<br>
                 <select id="avRoutesSelectList" name="avroutes"
                     style="width:185px">
                     <c:forEach var="avroute" items="${avlist}">
