@@ -1925,6 +1925,7 @@ create table CTIDatabase  (
 ;
 
 /* __YUKON_VERSION__ */
+insert into CTIDatabase values('4.0', 'David', '13-Dec-2007', 'Latest Update', 0 );
 
 /*==============================================================*/
 /* Table: CalcPointBaseline                                     */
