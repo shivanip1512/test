@@ -357,7 +357,7 @@ RWDECLARE_COLLECTABLE( CtiCCSubstationBus )
     CtiCCSubstationBus& setCurrentVerificationCapBankState(LONG status);
 
     CtiCCSubstationBus& addAllSubPointsToMsg(CtiCommandMsg *pointAddMsg);
-
+    CtiCCSubstationBus& verifyControlledStatusFlags();
 
     list <LONG>* getPointIds() {return &_pointIds;};
 

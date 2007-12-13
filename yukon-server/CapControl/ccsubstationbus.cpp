@@ -8547,6 +8547,32 @@ BOOL CtiCCSubstationBus::isDataOldAndFallBackNecessary()
 }
 
 
+CtiCCSubstationBus& CtiCCSubstationBus::verifyControlledStatusFlags()
+{
+
+    for(LONG j=0;j<getCCFeeders().size();j++)
+    {
+        CtiCCFeeder* currentFeeder = getCCFeeders().at(j);
+        CtiCCCapBank_SVector& ccCapBanks = currentFeeder->getCCCapBanks();
+
+        for(LONG k=0;k<ccCapBanks.size();k++)
+        {
+            CtiCCCapBankPtr currentCapBank = (CtiCCCapBankPtr)ccCapBanks[k];
+            if (currentCapBank->getControlStatus() == CtiCCCapBank::OpenPending || 
+                currentCapBank->getControlStatus() == CtiCCCapBank::ClosePending )
+            {
+                setRecentlyControlledFlag(TRUE);
+                currentFeeder->setRecentlyControlledFlag(TRUE);
+                setLastFeederControlledPAOId(currentFeeder->getPAOId());
+                currentFeeder->setLastCapBankControlledDeviceId(currentCapBank->getPAOId());
+                j = getCCFeeders().size();
+                k = ccCapBanks.size();
+            }
+        }
+    }
+    return *this;
+}
+
 CtiCCSubstationBus& CtiCCSubstationBus::addAllSubPointsToMsg(CtiCommandMsg *pointAddMsg)
 {
 

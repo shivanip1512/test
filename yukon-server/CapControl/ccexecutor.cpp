@@ -1279,9 +1279,9 @@ void CtiCCCommandExecutor::SendAllCapBankCommands()
 
             pointChanges.push_back(new CtiSignalMsg(SYS_PID_CAPCONTROL,1,text1,additional1,CapControlLogType,SignalEvent,_command->getUser()));
             if (_command->getCommand() == CtiCCCommand::SEND_ALL_ENABLE_OVUV) 
-                currentArea->setOvUvDisabledFlag(FALSE);
+                currentStation->setOvUvDisabledFlag(FALSE);
             if (_command->getCommand() == CtiCCCommand::SEND_ALL_DISABLE_OVUV) 
-                currentArea->setOvUvDisabledFlag(TRUE);
+                currentStation->setOvUvDisabledFlag(TRUE);
             
             list <LONG>::const_iterator iterBus = currentStation->getCCSubIds()->begin();
             while (iterBus  != currentStation->getCCSubIds()->end())
@@ -1538,7 +1538,7 @@ void CtiCCCommandExecutor::SendAllCapBankCommands()
     else
     {
         delete actionMulti;
-    }
+    } 
     CtiCCExecutorFactory f;
     CtiCCExecutor* executor = f.createExecutor(new CtiCCGeoAreasMsg(ccAreas));
     executor->Execute();
@@ -1564,6 +1564,7 @@ void CtiCCCommandExecutor::SendAllCapBankCommands()
         delete eventMulti;
 
 }
+
 
 
 /*---------------------------------------------------------------------------
@@ -1789,6 +1790,7 @@ void CtiCCCommandExecutor::OpenCapBank()
                             {
                                 doConfirmImmediately(currentSubstationBus,pointChanges, ccEvents, bankID);
                             }
+                            currentSubstationBus->verifyControlledStatusFlags();
                             break;
                         }
                         else
@@ -2062,6 +2064,8 @@ void CtiCCCommandExecutor::CloseCapBank()
                             {
                                 doConfirmImmediately(currentSubstationBus,pointChanges, ccEvents, bankID);
                             }
+
+                            currentSubstationBus->verifyControlledStatusFlags();
                             break;
                         }
                         else
@@ -3029,8 +3033,10 @@ void CtiCCCommandExecutor::ConfirmSub()
                     }
                 }
             }
+            currentSubstationBus->verifyControlledStatusFlags();
         }
     }
+    
     if (multi->getCount() > 0 || multiPilMsg->getCount() > 0)
         CtiCapController::getInstance()->confirmCapBankControl(multiPilMsg, multi);
     else
