@@ -7,13 +7,12 @@
 <c:url var="viewUrl" value="/spring/macsscheduler/schedules/view" />
 <c:url var="toggleUrl" value="/spring/macsscheduler/schedules/toggleState" />
 
-    <h2>Scheduled Scripts</h2>
-    <div id="schedules" style="margin-left: 5%; margin-right: 5%;">
+    <h2>Scheduled Scripts</h2><BR>
+    <div id="schedules">
         <table class="resultsTable">
         <tr>
             <th id="Schedule Name">
-                <form id="form_scheduleName" action="${viewUrl}" style="margin: 0px; padding: 0px;"
-                    method="POST">
+                <form id="form_scheduleName" action="${viewUrl}" method="POST">
                     <a
                         href="javascript:document.getElementById('form_scheduleName').submit();">Schedule
                         Name</a>
@@ -42,8 +41,7 @@
                 </form>
             </th>
             <th id="Category Name">
-                <form id="form_categoryName" action="${viewUrl}" style="margin: 0px; padding: 0px;"
-                    method="POST">
+                <form id="form_categoryName" action="${viewUrl}" method="POST">
                     <a
                         href="javascript:document.getElementById('form_categoryName').submit();">Category
                         Name</a>
@@ -72,8 +70,7 @@
                 </form>
             </th>
             <th id="Current State">
-                <form id="form_currentState" action="${viewUrl}" style="margin: 0px; padding: 0px;"
-                    method="POST">
+                <form id="form_currentState" action="${viewUrl}" method="POST">
                     <a
                         href="javascript:document.getElementById('form_currentState').submit();">Current
                         State</a>
@@ -102,8 +99,7 @@
                 </form>
             </th>
             <th id="Start Date/Time">
-                <form id="form_startDate" action="${viewUrl}" style="margin: 0px; padding: 0px;"
-                    method="POST">
+                <form id="form_startDate" action="${viewUrl}" method="POST">
                     <a
                         href="javascript:document.getElementById('form_startDate').submit();">Start
                         Date/Time</a>
@@ -132,8 +128,7 @@
                 </form>
             </th>
             <th id="Stop Date/Time">
-                <form id="form_stopDate" action="${viewUrl}" style="margin: 0px; padding: 0px;"
-                    method="POST">
+                <form id="form_stopDate" action="${viewUrl}" method="POST">
                     <a
                         href="javascript:document.getElementById('form_stopDate').submit();">Stop
                         Date/Time</a>
@@ -191,8 +186,7 @@
                     <c:when
                         test="${scheduleInfo.showControllable}">
                         <form id="controlform_${scheduleInfo.schedule.id}"
-                            action="${controlUrl}" method="POST"
-                            style="margin: 0px; padding: 0px;">
+                            action="${controlUrl}" method="POST">
                             <a
                                 href="javascript:document.getElementById('controlform_${scheduleInfo.schedule.id}').submit();">${scheduleInfo.schedule.scheduleName}</a>
                             <input type="hidden" name="id"
@@ -234,8 +228,7 @@
             <td style="background-color: white">
                 <c:if test="${scheduleInfo.showToggleButton}">
                     <form id="toggleform_${scheduleInfo.schedule.id }"
-                        action="${toggleUrl}" method="POST"
-                        style="margin: 0px; padding: 0px;">
+                        action="${toggleUrl}" method="POST">
                         <button
                         	onclick="javascript:document.getElementById('toggleform_${scheduleInfo.schedule.id}').submit();">
                         	<c:choose>

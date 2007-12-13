@@ -20,7 +20,7 @@
     });
 </script>
 
-<div id="main" style="margin-left: 5%; margin-right: 5%;">
+<div id="main">
     <jsp:include page="${url}"/>
 </div>
     
