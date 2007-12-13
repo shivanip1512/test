@@ -52,7 +52,7 @@
 	
 	</script>
 	
-	<h2>Group: <a href="${homeUrl}">${group.fullName}</a></h2>
+	<h2>Group: <a href="${homeUrl}">${fn:escapeXml(group.fullName)}</a></h2>
 	
 	<c:if test="${not empty param.errorMessage}">
 		<div style="color: red">
@@ -64,7 +64,7 @@
 		<tags:boxContainer title="Add Multiple Devices by file" hideEnabled="false">
 			<div>
 				<form method="post" action="/spring/group/addDevicesByFile" enctype="multipart/form-data" onsubmit="return addDevicesByFile()">
-					<input type="hidden" name="groupName" value="${group.fullName}" />
+					<input type="hidden" name="groupName" value="${fn:escapeXml(group.fullName)}" />
 					Select the type of data included in the upload file:
 					<select id="uploadType" name="uploadType" onchange="updateFileNote()">
 						<option value="ADDRESS">Physical Address</option>

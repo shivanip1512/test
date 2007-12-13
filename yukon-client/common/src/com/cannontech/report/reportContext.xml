@@ -299,7 +299,6 @@
    <bean id="groupDevicesModel" class="com.cannontech.analysis.tablemodel.GroupDevicesModel"
          scope="prototype">
         <property name="deviceGroupService" ref="deviceGroupService"/>
-        <property name="deviceGroupDao" ref="deviceGroupDao"/>
         <property name="meterDao" ref="meterDao"/>
     </bean>
     

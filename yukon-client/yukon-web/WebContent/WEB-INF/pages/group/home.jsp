@@ -107,6 +107,7 @@
 		<br/><br/>
 	</c:if>
 
+    <%-- GROUPS HIERARCHY BOX --%>
 	<div style="float: left; margin-right: .75em; margin-bottom: .5em; width: 350px">
 
 		<tags:boxContainer title="Groups" hideEnabled="false">
@@ -127,6 +128,7 @@
 		</tags:boxContainer>
 	</div>
 	
+    <%-- OPERATIONS BOX --%>
 	<div style="float: left; margin-right: .75em; margin-bottom: 10px; width: 450px;">
 		
 		<tags:boxContainer hideEnabled="false">
@@ -138,7 +140,7 @@
 							Operations:&nbsp;&nbsp;
 						</td>
 						<td valign="top">
-							${(empty group.name)? '[ Top Level ]' : group.fullName}
+							${fn:escapeXml((empty group.name)? '[ Top Level ]' : group.fullName)}
 						</td>
 					</tr>
 				</table>
@@ -147,24 +149,31 @@
 			<jsp:body>
 				<div style="font-size: .75em;">
 				
+                    <%-- EDIT GROUP --%>
                     <h4>Edit Group</h4>
 					<c:choose>
 						<c:when test="${group.editable}">
+                        
+                            <%-- EDIT NAME --%>
 							<a title="Click to edit group name" href="javascript:showGroupPopup('editGroupNameDiv', 'newGroupName');">Edit Group Name</a>
 							<div id="editGroupNameDiv" class="popUpDiv" style="width: 330px; display: none; background-color: white; border: 1px solid black;padding: 10px 10px;">
 								<div style="width: 100%; text-align: right;margin-bottom: 10px;">
 									<a href="javascript:showGroupPopup('editGroupNameDiv');">cancel</a>
 								</div>
 								<form method="post" action="/spring/group/updateGroupName" onsubmit="return changeGroupName();">
-									New Group Name: <input id="newGroupName" name="newGroupName" type="text" value="${group.name}" />
-									<input type="hidden" name="groupName" value="${group.fullName}" />
-									<input type="submit" value="Save" onclick="return changeGroupName();" />
+									New Group Name: <input id="newGroupName" name="newGroupName" type="text" value="${fn:escapeXml(group.name)}" />
+									<input type="hidden" name="groupName" value="${fn:escapeXml(group.fullName)}">
+									<input type="submit" value="Save" onclick="return changeGroupName();">
 								</form>
 							</div>
+                            
+                            <%-- REMOVE --%>
                             <form id="removeGroupForm" action="/spring/group/removeGroup" method="post">
-                                <input type="hidden" name="removeGroupName" value="${group.fullName}" />
+                                <input type="hidden" name="removeGroupName" value="${fn:escapeXml(group.fullName)}">
                                 <a title="Click to delete this group" href="javascript:removeGroup('removeGroupForm')">Delete Group</a>
                             </form>
+                            
+                            <%-- MOVE --%>
                             <div>
                             <a title="Click to move this group" href="javascript:showGroupPopup('moveGroup');">Move Group</a>
                             <div id="moveGroup" class="popUpDiv" style="width: 310px; display: none; background-color: white; border: 1px solid black;padding: 10px 10px;">
@@ -176,8 +185,8 @@
                                     Select Parent Group:
                                     <tags:groupSelect groupList="${moveGroups}" onSelect="moveGroup"/>
                                     
-                                    <input type="hidden" name="groupName" value="${group.fullName}" />
-                                    <input type="hidden" id="parentGroupName" name="parentGroupName" />
+                                    <input type="hidden" name="groupName" value="${fn:escapeXml(group.fullName)}">
+                                    <input type="hidden" id="parentGroupName" name="parentGroupName">
                                 </form>
                             </div>
                             </div>
@@ -187,7 +196,7 @@
 						</c:otherwise>
 					</c:choose>
 					
-                    
+                    <%-- ADD GROUPS --%>
                     <h4>Add Groups</h4>
                     <c:choose>
                         <c:when test="${group.modifiable}">
@@ -199,7 +208,7 @@
                                 <form id="addSubGroupForm" method="post"  action="/spring/group/addChild" onsubmit="return addSubGroup()">
                                     Sub Group Name: <input id="childGroupName" name="childGroupName" type="text" />
                                     <input type="submit" value="Save" onclick="return addSubGroup();" >
-                                    <input type="hidden" name="groupName" value="${group.fullName}">
+                                    <input type="hidden" name="groupName" value="${fn:escapeXml(group.fullName)}">
                                 </form>
                             </div>
                         </c:when>
@@ -207,28 +216,31 @@
                             <span>Cannot add sub groups to this group</span>
                         </c:otherwise>
                     </c:choose>
-        
+            
+                    <%-- ADD DEVICES --%>
 					<h4>Add Devices</h4>
 		
 					<c:choose>
 						<c:when test="${group.modifiable and group.parent != null}">
-							<div>
-								
+							
+                            <%-- BY SELECTING DEVICE --%>
+                            <div>
 								<form id="addDeviceForm" method="post" action="/spring/group/addDevice">
-									<input type="hidden" name="groupName" value="${group.fullName}" />
+									<input type="hidden" name="groupName" value="${fn:escapeXml(group.fullName)}" />
 									<input type="hidden" name="showDevices" value="true" />
 									<input type="hidden" id="deviceToAdd" name="deviceId" />
 								</form>
 								<cti:multiPaoPicker pickerId="devicePickerId" paoIdField="deviceToAdd" constraint="com.cannontech.common.search.criteria.DeviceCriteria" finalTriggerAction="addDevice" selectionLinkName="Add Devices to Group" excludeIds="${deviceIdsInGroup}"><span title="Click to select devices to add">Select Devices</span></cti:multiPaoPicker>
 							</div>
-				
+				            
+                            <%-- BY FILE UPLOAD --%>
 							<c:url var="addByFileUrl" value="/spring/group/showAddDevicesByFile">
 								<c:param name="groupName" value="${group.fullName}" />
 							</c:url>
 							<a title="Click to add multiple devices via file upload" href="${addByFileUrl}">By File Upload</a>
-							
 							<br>
 							
+                            <%-- BY PHYSICAL RANGE --%>
 							<c:url var="addByAddressUrl" value="/spring/group/showAddDevicesByAddress">
 								<c:param name="groupName" value="${group.fullName}" />
 							</c:url>
@@ -239,6 +251,7 @@
 						</c:otherwise>
 					</c:choose>
                     
+                    <%-- GENERATE REPORTS --%>
                     <h4>Generate Report</h4>
                     <c:choose>
                         <c:when test="${deviceCount > 0}">
@@ -260,6 +273,7 @@
 		</tags:boxContainer>
 	</div>
 	
+    <%-- MEMBERS BOX --%>
 	<div style="float: left; margin-right: .75em; margin-bottom: .5em; width: 450px">
 	
 		<tags:boxContainer hideEnabled="false">
@@ -271,7 +285,7 @@
 							Members:
 						</td>
 						<td valign="top">
-							${(empty group.name)? '[ Top Level ]' : group.fullName}
+							${fn:escapeXml((empty group.name)? '[ Top Level ]' : group.fullName)}
 						</td>
 					</tr>
 				</table>
@@ -280,6 +294,7 @@
 			<jsp:body>
 				<div style="overflow: auto; height: 353px;">
 	
+                    <%-- MEMBER SUBGROUPS --%>
 					<table style="width: 95%; border-bottom: 1px dotted black;padding-bottom: 10px; margin-bottom: 10px;" >
 						<c:choose>
 							<c:when test="${fn:length(subGroups) > 0}">
@@ -290,8 +305,8 @@
 												<c:param name="groupName" value="${subGroup.fullName}" />
 											</c:url>
 										
-											<span title="${subGroup.fullName}">
-												<a href="${homeUrl}">${subGroup.name}</a>
+											<span title="${fn:escapeXml(subGroup.fullName)}">
+												<a href="${homeUrl}"><c:out value="${subGroup.name}"/></a>
 											</span>
 										</td>
 										<td style="border: none; width: 15px;text-align: center;">
@@ -300,13 +315,13 @@
 										
 													<cti:uniqueIdentifier prefix="subGroup_" var="subId"/>
 													<form style="display: inline;" id="${subId}removeSubGroupForm" action="/spring/group/removeGroup" method="post">
-														<input type="hidden" name="removeGroupName" value="${subGroup.fullName}" />
-														<input type="hidden" name="groupName" value="${group.fullName}" />
-														<input type="image" title="Delete Group" class="cssicon" src="<c:url value="/WebConfig/yukon/Icons/clearbits/close.gif"/>" onClick="return removeGroup()" />
+														<input type="hidden" name="removeGroupName" value="${fn:escapeXml(subGroup.fullName)}">
+														<input type="hidden" name="groupName" value="${fn:escapeXml(group.fullName)}">
+														<input type="image" title="Delete Group" class="cssicon" src="<c:url value="/WebConfig/yukon/Icons/clearbits/close.gif"/>" onClick="return removeGroup()">
 													</form>
 												</c:when>
 												<c:otherwise>
-													<img class="graycssicon" title="Cannot Delete Group" src="<c:url value="/WebConfig/yukon/Icons/clearbits/close.gif"/>" />
+													<img class="graycssicon" title="Cannot Delete Group" src="<c:url value="/WebConfig/yukon/Icons/clearbits/close.gif"/>" >
 												</c:otherwise>
 											</c:choose>
 										</td>
@@ -323,6 +338,7 @@
 						</c:choose>
 					</table>
 				
+                    <%-- MEMBER DEVICES --%>
 					<div id="deviceMembers">
 						<c:choose>
 							<c:when test="${deviceCount > 15 && (showDevices == false )}">

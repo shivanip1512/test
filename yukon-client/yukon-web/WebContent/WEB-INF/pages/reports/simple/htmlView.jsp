@@ -1,4 +1,5 @@
 <%@ taglib uri="http://java.sun.com/jsp/jstl/core" prefix="c"%>
+<%@ taglib uri="http://java.sun.com/jsp/jstl/functions" prefix="fn" %>
 <%@ taglib uri="http://cannontech.com/tags/cti" prefix="cti"%>
 <%@ taglib prefix="tags" tagdir="/WEB-INF/tags" %>
 
@@ -19,7 +20,7 @@ ${xurl}
     <br/>
     <tags:nameValueContainer style="width:40%;">
         <c:forEach var="metaInfo" items="${metaInfo}">
-            <tags:nameValue name="${metaInfo.key}">${metaInfo.value}</tags:nameValue>
+            <tags:nameValue name="${metaInfo.key}">${fn:escapeXml(metaInfo.value)}</tags:nameValue>
         </c:forEach>
     </tags:nameValueContainer>
 </c:if>

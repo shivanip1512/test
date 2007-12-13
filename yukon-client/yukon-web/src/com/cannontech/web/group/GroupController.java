@@ -213,6 +213,7 @@ public class GroupController extends MultiActionController {
         String newGroupName = ServletRequestUtils.getStringParameter(request, "newGroupName");
 
         // Make sure a new name was entered and doesn't contain slashes
+        newGroupName = newGroupName.trim();
         if (StringUtils.isEmpty(newGroupName) || (newGroupName.contains("\\")) || (newGroupName.contains("/"))) {
             mav.addObject("errorMessage",
                           "You must enter a New Group Name.  Group names may not contain slashes.");
@@ -244,6 +245,7 @@ public class GroupController extends MultiActionController {
                                                                            "childGroupName");
 
             // Make sure a new name was entered and doesn't contain slashes
+            childGroupName = childGroupName.trim();
             if (StringUtils.isEmpty(childGroupName) || (childGroupName.contains("\\")) || (childGroupName.contains("/"))) {
                 mav.addObject("errorMessage",
                               "You must enter a Sub Group Name.  Group names may not contain slashes.");

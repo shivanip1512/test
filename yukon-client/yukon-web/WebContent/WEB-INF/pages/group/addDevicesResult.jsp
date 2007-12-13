@@ -16,7 +16,7 @@
 	    &gt; Bulk Device add to Group result
 	</cti:breadCrumbs>
 	
-	<h2>Group: <a href="${homeUrl}">${group.fullName}</a></h2>
+	<h2>Group: <a href="${homeUrl}">${fn:escapeXml(group.fullName)}</a></h2>
 
 	<div>
 		${resultInfo}

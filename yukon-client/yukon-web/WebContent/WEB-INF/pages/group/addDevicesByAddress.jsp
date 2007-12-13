@@ -42,7 +42,7 @@
 	
 	</script>
 	
-	<h2>Group: <a href="${homeUrl}">${group.fullName}</a></h2>
+	<h2>Group: <a href="${homeUrl}">${fn:escapeXml(group.fullName)}</a></h2>
 	
 	<c:if test="${not empty param.errorMessage}">
 		<div style="color: red">
@@ -55,7 +55,7 @@
 		
 		<tags:boxContainer title="Add Multiple Devices by physical address range" hideEnabled="false">
 			<form id="addByAddressForm" method="post" action="/spring/group/addDevicesByAddressRange">
-				<input type="hidden" name="groupName" value="${group.fullName}" />
+				<input type="hidden" name="groupName" value="${fn:escapeXml(group.fullName)}" />
 				Start of Range: <input type="text" id="startRange" name="startRange" />
 				<br/><br/>
 				End of Range: <input type="text" id="endRange" name="endRange" />

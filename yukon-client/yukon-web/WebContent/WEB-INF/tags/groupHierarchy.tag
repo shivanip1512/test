@@ -3,6 +3,7 @@
 <%@ attribute name="indentLevel" required="false" type="java.lang.Integer"%>
 
 <%@ taglib uri="http://java.sun.com/jsp/jstl/core" prefix="c" %>
+<%@ taglib prefix="fn" uri="http://java.sun.com/jsp/jstl/functions" %>
 <%@ taglib prefix="cti" uri="http://cannontech.com/tags/cti" %>
 <%@ taglib prefix="tags" tagdir="/WEB-INF/tags" %>
 
@@ -14,10 +15,10 @@
 	
 <tr class="<tags:alternateRow odd="" even="altRow"/> ${(hierarchy.group.fullName == selectedGroup)?'highlighted':''}">
 	<td style="border: none;">
-		<div title="${hierarchy.group.fullName}" style="padding-left: ${indentLevel * 12}px">
+		<div title="${fn:escapeXml(hierarchy.group.fullName)}" style="padding-left: ${indentLevel * 12}px">
 			<div style="float: left;">
 				<c:if test="${not empty hierarchy.group.name}">
-					<img src="<c:url value="/WebConfig/yukon/Icons/arrow_down_right.gif"/>" />
+					<img src="<c:url value="/WebConfig/yukon/Icons/arrow_down_right.gif"/>">
 				</c:if>
 			</div>
 			<div style="float: left;margin-left: 5px;">
@@ -27,7 +28,7 @@
 				</c:url>
 			
 				<c:if test="${empty hierarchy.group.name}">[</c:if>
-				<a href="${homeUrl}">${(empty hierarchy.group.name)? 'Top Level' : hierarchy.group.name}</a>
+				<a href="${homeUrl}"><c:out value="${(empty hierarchy.group.name)? 'Top Level' : hierarchy.group.name}"/></a>
 				<c:if test="${empty hierarchy.group.name}">]</c:if>
 			</div>
 		</div>
@@ -37,11 +38,10 @@
 <c:url var="tagUrl" value="/WEB-INF/pages/group/groupHierarchyTag.jsp" />
 <c:if test="${hierarchy.childGroupsPresent}">
 	<c:forEach var="childHierarchy" items="${hierarchy.childGroupList}">
-	
-		<!-- 
+		<%-- 
 			Hack for precompiling jsps - precompilation fails for recursive tags
 			jsp:include allows for the recursion and precompilation
-		 -->
+		 --%>
 		<c:set var="hierarchy" value="${childHierarchy}" scope="request" />
 		<c:set var="selectedGroup" value="${selectedGroup}" scope="request" />
 		<c:set var="indentLevel" value="${indentLevel + 1}" scope="request" />

@@ -50,7 +50,7 @@
 								<c:set var="selected" value="" scope="page"></c:set>
 							</c:if>
 						
-							<option value="${groupOption.fullName}" ${selected}> ${groupOption.fullName}</option>
+							<option value="${fn:escapeXml(groupOption.fullName)}" ${selected}> ${fn:escapeXml(groupOption.fullName)}</option>
 						</c:forEach>
 					</select>
 				</td>

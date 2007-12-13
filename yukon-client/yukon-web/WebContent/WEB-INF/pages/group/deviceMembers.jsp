@@ -23,7 +23,7 @@
 									<cti:uniqueIdentifier prefix="groupHierarchy_" var="thisId"/>
 									<form style="display: inline;" id="${thisId}_removeDevice" action="/spring/group/removeDevice" method="post">
 										<input type="hidden" name="deviceId" value="${device.deviceId}" />
-										<input type="hidden" name="groupName" value="${group.fullName}" />
+										<input type="hidden" name="groupName" value="${fn:escapeXml(group.fullName)}" />
 										<input type="hidden" name="showDevices" value="true" />
 										<input type="image" title="Remove device from group" class="cssicon" src="<c:url value="/WebConfig/yukon/Icons/clearbits/close.gif"/>" />
 									</form>
