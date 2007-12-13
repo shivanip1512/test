@@ -4243,7 +4243,7 @@ void CtiCCCommandExecutor::ResetDailyOperations()
                     for(LONG k=0;k<ccCapBanks.size();k++)
                     {
                         CtiCCCapBank* currentCapBank = (CtiCCCapBank*)ccCapBanks[k];
-                        if( currentCapBank->getOperationAnalogPointId() > 0 )
+                        /*if( currentCapBank->getOperationAnalogPointId() > 0 )
                         {
                             pointChanges.push_back(new CtiPointDataMsg(currentCapBank->getOperationAnalogPointId(),0,ManualQuality,AnalogPointType,"Forced ccServer Update", TAG_POINT_FORCE_UPDATE));
              
@@ -4257,7 +4257,7 @@ void CtiCCCommandExecutor::ResetDailyOperations()
                         else
                         {
                             currentCapBank->setTotalOperations(0);
-                        }
+                        } */
                         currentCapBank->setCurrentDailyOperations(0);
                         currentCapBank->setMaxDailyOpsHitFlag(FALSE);
                     }
@@ -4265,12 +4265,26 @@ void CtiCCCommandExecutor::ResetDailyOperations()
                     currentFeeder->setMaxDailyOpsHitFlag(FALSE);
                 }
                 currentSubstationBus->setCurrentDailyOperations(0);
+                INT seqId = CCEventSeqIdGen();
+                currentSubstationBus->setEventSequence(seqId);
+                if (currentSubstationBus->getDailyOperationsAnalogPointId() > 0)
+                    ccEvents.push_back(new CtiCCEventLogMsg(0,currentSubstationBus->getDailyOperationsAnalogPointId(), currentSubstationBus->getPAOId(), 0, capControlSetOperationCount, currentSubstationBus->getEventSequence(), currentSubstationBus->getCurrentDailyOperations(), "opCount adjustment", _command->getUser()));
+                else
+                    ccEvents.push_back(new CtiCCEventLogMsg(0,SYS_PID_CAPCONTROL, currentSubstationBus->getPAOId(), 0, capControlSetOperationCount, currentSubstationBus->getEventSequence(), currentSubstationBus->getCurrentDailyOperations(), "opCount adjustment", _command->getUser()));
+
                 currentSubstationBus->setMaxDailyOpsHitFlag(FALSE);
                 currentSubstationBus->setBusUpdatedFlag(TRUE);
                 found = TRUE;
             }
             iterBus++;
         }
+        string text1 = string("Reset Daily Operations");
+        string additional1 = string("Substation: ");
+        additional1 += currentStation->getPAOName();
+
+        pointChanges.push_back(new CtiSignalMsg(SYS_PID_CAPCONTROL,1,text1,additional1,CapControlLogType,SignalEvent,_command->getUser()));
+
+
 
     }
     else
@@ -4289,7 +4303,7 @@ void CtiCCCommandExecutor::ResetDailyOperations()
                 for(LONG k=0;k<ccCapBanks.size();k++)
                 {
                     CtiCCCapBank* currentCapBank = (CtiCCCapBank*)ccCapBanks[k];
-                    if( currentCapBank->getOperationAnalogPointId() > 0 )
+                    /*if( currentCapBank->getOperationAnalogPointId() > 0 )
                     {
                         pointChanges.push_back(new CtiPointDataMsg(currentCapBank->getOperationAnalogPointId(),0,ManualQuality,AnalogPointType,"Forced ccServer Update", TAG_POINT_FORCE_UPDATE));
       
@@ -4303,7 +4317,7 @@ void CtiCCCommandExecutor::ResetDailyOperations()
                     else
                     {
                         currentCapBank->setTotalOperations(0);
-                    }
+                    } */
                     currentCapBank->setCurrentDailyOperations(0);
                     currentCapBank->setMaxDailyOpsHitFlag(FALSE);
                 }
@@ -4311,6 +4325,20 @@ void CtiCCCommandExecutor::ResetDailyOperations()
                 currentFeeder->setMaxDailyOpsHitFlag(FALSE);
             }
             currentSubstationBus->setCurrentDailyOperations(0);
+
+            INT seqId = CCEventSeqIdGen();
+            currentSubstationBus->setEventSequence(seqId);
+            if (currentSubstationBus->getDailyOperationsAnalogPointId() > 0)
+                ccEvents.push_back(new CtiCCEventLogMsg(0,currentSubstationBus->getDailyOperationsAnalogPointId(), currentSubstationBus->getPAOId(), 0, capControlSetOperationCount, currentSubstationBus->getEventSequence(), currentSubstationBus->getCurrentDailyOperations(), "opCount adjustment", _command->getUser()));
+            else
+                ccEvents.push_back(new CtiCCEventLogMsg(0,SYS_PID_CAPCONTROL, currentSubstationBus->getPAOId(), 0, capControlSetOperationCount, currentSubstationBus->getEventSequence(), currentSubstationBus->getCurrentDailyOperations(), "opCount adjustment", _command->getUser()));
+
+
+            string text1 = string("Reset Daily Operations");
+            string additional1 = string("Substation Bus: ");
+            additional1 += currentSubstationBus->getPAOName();
+
+            pointChanges.push_back(new CtiSignalMsg(SYS_PID_CAPCONTROL,1,text1,additional1,CapControlLogType,SignalEvent,_command->getUser()));
             currentSubstationBus->setMaxDailyOpsHitFlag(FALSE);
             currentSubstationBus->setBusUpdatedFlag(TRUE);
             found = TRUE;
@@ -4327,7 +4355,7 @@ void CtiCCCommandExecutor::ResetDailyOperations()
                 for(LONG k=0;k<ccCapBanks.size();k++)
                 {
                     CtiCCCapBank* currentCapBank = (CtiCCCapBank*)ccCapBanks[k];
-                    if( currentCapBank->getOperationAnalogPointId() > 0 )
+                    /*if( currentCapBank->getOperationAnalogPointId() > 0 )
                     {
                         pointChanges.push_back(new CtiPointDataMsg(currentCapBank->getOperationAnalogPointId(),0,ManualQuality,AnalogPointType,"Forced ccServer Update", TAG_POINT_FORCE_UPDATE));
       
@@ -4341,14 +4369,32 @@ void CtiCCCommandExecutor::ResetDailyOperations()
                     else
                     {
                         currentCapBank->setTotalOperations(0);
-                    }
+                    } */
                     currentCapBank->setCurrentDailyOperations(0);
                     currentCapBank->setMaxDailyOpsHitFlag(FALSE);
                 }
       
                 currentFeeder->setCurrentDailyOperations(0);
+
+                INT seqId = CCEventSeqIdGen();
+                if (currentFeeder->getDailyOperationsAnalogPointId() > 0)
+                    ccEvents.push_back(new CtiCCEventLogMsg(0,currentFeeder->getDailyOperationsAnalogPointId(), currentFeeder->getParentId(), currentFeeder->getPAOId(), capControlSetOperationCount, seqId, currentFeeder->getCurrentDailyOperations(), "opCount adjustment", _command->getUser()));
+                else
+                    ccEvents.push_back(new CtiCCEventLogMsg(0,SYS_PID_CAPCONTROL, currentFeeder->getParentId(), currentFeeder->getPAOId(), capControlSetOperationCount, seqId, currentFeeder->getCurrentDailyOperations(), "opCount adjustment", _command->getUser()));
+
+                string text1 = string("Reset Daily Operations");
+                string additional1 = string("Feeder: ");
+                additional1 += currentFeeder->getPAOName();
+
+                pointChanges.push_back(new CtiSignalMsg(SYS_PID_CAPCONTROL,1,text1,additional1,CapControlLogType,SignalEvent,_command->getUser()));
+
                 currentFeeder->setMaxDailyOpsHitFlag(FALSE);
-                currentSubstationBus->setBusUpdatedFlag(TRUE);
+                currentSubstationBus = store->findSubBusByPAObjectID(currentFeeder->getParentId());
+
+                if (currentSubstationBus != NULL)
+                {
+                    currentSubstationBus->setBusUpdatedFlag(TRUE);
+                }
                 found = TRUE;
       
             }
@@ -4356,24 +4402,36 @@ void CtiCCCommandExecutor::ResetDailyOperations()
             {
                 CtiCCCapBank* currentCapBank = store->findCapBankByPAObjectID(paoId);
                 if( currentCapBank != NULL )
-                {
-                    if( currentCapBank->getOperationAnalogPointId() > 0 )
+                {   
+                    currentFeeder = store->findFeederByPAObjectID(currentCapBank->getParentId());
+                    currentSubstationBus = store->findSubBusByPAObjectID(currentFeeder->getParentId());
+
+                    if (currentSubstationBus != NULL && currentFeeder != NULL)
                     {
-                        pointChanges.push_back(new CtiPointDataMsg(currentCapBank->getOperationAnalogPointId(),0,ManualQuality,AnalogPointType,"Forced ccServer Update", TAG_POINT_FORCE_UPDATE));
-      
-                        INT seqId = CCEventSeqIdGen();
-                        currentSubstationBus->setEventSequence(seqId);
-                        ccEvents.push_back(new CtiCCEventLogMsg(0, currentCapBank->getOperationAnalogPointId(), currentSubstationBus->getPAOId(), currentFeeder->getPAOId(), capControlSetOperationCount, currentSubstationBus->getEventSequence(), currentCapBank->getTotalOperations(), "opCount adjustment", _command->getUser()));
+                        if( currentCapBank->getOperationAnalogPointId() > 0 )
+                        {
+                            pointChanges.push_back(new CtiPointDataMsg(currentCapBank->getOperationAnalogPointId(),0,ManualQuality,AnalogPointType,"Forced ccServer Update", TAG_POINT_FORCE_UPDATE));
+                       
+                            INT seqId = CCEventSeqIdGen();
+                            ccEvents.push_back(new CtiCCEventLogMsg(0, currentCapBank->getOperationAnalogPointId(), currentSubstationBus->getPAOId(), currentFeeder->getPAOId(), capControlSetOperationCount, currentSubstationBus->getEventSequence(), currentCapBank->getTotalOperations(), "opCount adjustment", _command->getUser()));
+                        }
+                        else
+                        {
+                            currentCapBank->setTotalOperations(0);
+                        }
+                        currentCapBank->setCurrentDailyOperations(0);
+                        currentCapBank->setMaxDailyOpsHitFlag(FALSE);
+                       
+                        string text1 = string("Reset Daily Operations");
+                        string additional1 = string("CapBank: ");
+                        additional1 += currentCapBank->getPAOName();
+                       
+                        pointChanges.push_back(new CtiSignalMsg(SYS_PID_CAPCONTROL,1,text1,additional1,CapControlLogType,SignalEvent,_command->getUser()));
+                       
+                       
+                        currentSubstationBus->setBusUpdatedFlag(TRUE);
+                        found = TRUE;
                     }
-                    else
-                    {
-                        currentCapBank->setTotalOperations(0);
-                    }
-                    currentCapBank->setCurrentDailyOperations(0);
-                    currentCapBank->setMaxDailyOpsHitFlag(FALSE);
-      
-                    currentSubstationBus->setBusUpdatedFlag(TRUE);
-                    found = TRUE;
                 }
             }
       
