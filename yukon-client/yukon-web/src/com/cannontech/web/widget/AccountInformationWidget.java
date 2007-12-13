@@ -1,7 +1,8 @@
 package com.cannontech.web.widget;
 
 import java.rmi.RemoteException;
-import java.util.Calendar;
+import java.text.DateFormat;
+import java.text.SimpleDateFormat;
 import java.util.Date;
 
 import javax.servlet.http.HttpServletRequest;
@@ -46,7 +47,8 @@ public class AccountInformationWidget extends WidgetControllerBase{
         }
         
         mav.addObject("deviceId", deviceId);
-        int dayOfMonth = Calendar.getInstance().get(Calendar.DAY_OF_MONTH);
+        DateFormat df = new SimpleDateFormat("dd");
+        String dayOfMonth = df.format(new Date());
         String logName = "Webserver_"+dayOfMonth+".log";
         mav.addObject("logName", logName);
         mav.setViewName("accountInformationWidget/accountInfo.jsp");
