@@ -9042,6 +9042,8 @@ void CtiCCSubstationBus::restore(RWDBReader& rdr)
     setKVARSolution(0.0);
     setEstimatedPowerFactorValue(-1000000.0);
     setCurrentVarPointQuality(NormalQuality);
+    setCurrentVoltPointQuality(NormalQuality);
+    setCurrentWattPointQuality(NormalQuality);
     setWaiveControlFlag(FALSE);
 
     _additionalFlags = string("NNNNNNNNNNNNNNNNNNNN");
