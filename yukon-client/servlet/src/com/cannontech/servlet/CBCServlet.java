@@ -8,6 +8,7 @@ package com.cannontech.servlet;
  */ 
 import java.io.IOException;
 import java.io.Writer;
+import java.sql.Timestamp;
 import java.util.Date;
 
 import javax.servlet.ServletConfig;
@@ -20,8 +21,8 @@ import org.springframework.web.context.WebApplicationContext;
 import org.springframework.web.context.support.WebApplicationContextUtils;
 
 import com.cannontech.cbc.cache.CapControlCache;
-import com.cannontech.cbc.dao.CapbankCommentDao;
-import com.cannontech.cbc.model.CapbankComment;
+import com.cannontech.cbc.dao.CapControlCommentDao;
+import com.cannontech.cbc.model.CapControlComment;
 import com.cannontech.cbc.oneline.OnelineCBCBroker;
 import com.cannontech.cbc.util.CBCDisplay;
 import com.cannontech.cbc.util.CBCUtils;
@@ -176,12 +177,12 @@ public class CBCServlet extends ErrorAwareInitializingServlet
         if( comment == null ){
             throw new Exception("Parameter Required for processComment: comment ");
         }
-        CapbankCommentDao dao = (CapbankCommentDao) YukonSpringHook.getBean("capbankCommentDao");
+        CapControlCommentDao dao = YukonSpringHook.getBean("capCommentDao", CapControlCommentDao.class);
         if( cid == -1){//adding new
-            CapbankComment c = new CapbankComment();
+            CapControlComment c = new CapControlComment();
             c.setAltered(false);
             c.setPaoId(paoId);
-            c.setTime(new Date());
+            c.setTime(new Timestamp(System.currentTimeMillis()));
             c.setUserId(user.getUserID());
             c.setComment(comment);
 
@@ -192,16 +193,16 @@ public class CBCServlet extends ErrorAwareInitializingServlet
                 throw new Exception("Parameter Required for processComment: delete ");
             }
             if( delete == -1 ){//edit
-                CapbankComment c = dao.getById(cid);
+                CapControlComment c = dao.getById(cid);
                 c.setComment(comment);
                 c.setUserId(user.getUserID());
                 c.setAltered(true);
-                c.setTime(new Date());
+                c.setTime(new Timestamp(System.currentTimeMillis()));
 
                 dao.update(c);
 
             }else if( delete == 1){//delete
-                CapbankComment c = dao.getById(cid);
+                CapControlComment c = dao.getById(cid);
                 dao.remove(c);
             }else{
                 throw new Exception("Parameter Value incorrect for processComment: delete ");
