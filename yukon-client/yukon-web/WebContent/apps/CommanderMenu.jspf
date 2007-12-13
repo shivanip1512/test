@@ -29,4 +29,12 @@
 		    menuSelection = "capcontrol|capcontrolsub";
 		    break;
 	}
+	
+	if( request.getParameter("xcom") != null) {
+	   menuSelection = "lm|xcom";
+	}
+	if( request.getParameter("vcom") != null) {
+       menuSelection = "lm|vcom";
+    }
+	
 %>

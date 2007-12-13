@@ -62,9 +62,7 @@ div.scroll { font-size: 12px;
 %>
 
 
-	<div class="commanderHeader"> 
-		<center>Control Commands:&nbsp;&nbsp;<%=name%></center>
-	</div>
+<h3>Control Commands:&nbsp;&nbsp;<%=name%></h3>
 
 <% 
 	if (errorMsg != null && errorMsg.length() != 0) {
@@ -84,24 +82,24 @@ div.scroll { font-size: 12px;
 	    <input id="redirect" type="hidden" name="REDIRECT" value="<%= redirect %>">
 	    <input id="referrer" type="hidden" name="REFERRER" value="<%= redirect %>">
 					
-		<table align="center">
+		<table class="nameValueContainer">
 	    	<tr> 
-	          	<td class="SubtitleHeader" align="right">Type:</td>
-	              <td class="tableCell" colspan="2"><%=YC_BEAN.getDeviceType()%></td>
+	          	<td class="name">Type:</td>
+	            <td class="value"><%=YC_BEAN.getDeviceType()%></td>
 	        </tr>
 		
 <% 
 	if( serialType.length() > 0) {
 %>
 			<tr> 
-               	<td class="SubtitleHeader" align="right">Serial Number:</td>
-               	<td class="tableCell" colspan="2">
+               	<td class="name">Serial Number:</td>
+               	<td class="value">
                 	<input type="text" name="serialNumber" size="20" value="<%=serialNum%>">
                	</td>
 			</tr>
             <tr> 
-                <td class="SubtitleHeader" height="2" align="right">Route:</td>
-                <td class="tableCell" colspan="2" height="2"> 
+                <td class="name">Route:</td>
+                <td class="value"> 
                 	<select id="routeID" name="routeID">
                    		<option VALUE="-1">Select a Route
 <%
@@ -119,8 +117,8 @@ div.scroll { font-size: 12px;
 	}
 %>
 			<tr> 
-	        	<td class="SubtitleHeader" align="right">Common Commands:</td>
-	            <td class="tableCell" colspan="2">
+	        	<td class="name">Common Commands:</td>
+	            <td class="value">
 	            	<select name="commonCommand" onChange="loadCommand()" onInit="loadCommand()">
 	                	<option value="">Select a Command</option>                
 <%
@@ -146,10 +144,13 @@ div.scroll { font-size: 12px;
 				</td>
 			</tr>
 	        <tr> 
-	        	<td class="SubtitleHeader" align="right">Execute Command:</td>
-	            <td class="tableCell">
+	        	<td class="name">Execute Command:</td>
+	            <td class="value">
 	            	<input type="text" name="command" <cti:isPropertyFalse property="CommanderRole.EXECUTE_MANUAL_COMMAND">readonly</cti:isPropertyFalse> size="40" value="<%=YC_BEAN.getCommandString()%>">
 	            </td>
+	        </tr>
+	        <tr>
+	            <td></td>
 	            <td>
 	            	<input type="submit" name="execute" value="Execute" onClick="disableButton(this)">
 	            </td>

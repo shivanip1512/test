@@ -58,7 +58,7 @@
 	
 	<div class="mainFull">
 		
-		<div class="formHeader">COMMAND - Device Selection</div>
+		<h2>Device Selection</h2>
 	
 		<!-- Order / Filter by form -->
 		<form name="MForm" method="post" action="">
@@ -68,7 +68,7 @@
 	
 			<!-- Order by section -->
 			<div class="formSection">
-		        <span class="smallText">Order by:<span>
+		        Order by:
 		        <span class="selection">
 					<select name="OrderBy">
 						<c:set var="count" scope="page" value="0" />
@@ -94,8 +94,7 @@
 							  currentSortBy == cti:constantValue('com.cannontech.database.data.pao.DeviceClasses.CARRIER') ||
 							  currentSortBy == cti:constantValue('com.cannontech.database.data.pao.DeviceClasses.TRANSMITTER') ||
 							  currentSortBy == cti:constantValue('com.cannontech.database.data.pao.PAOGroups.CAT_CAPCONTROL')}">
-						
-						<span class="smallText">Filter by:<span>
+						Filter by:
 				</c:if>
 			
 				<!-- Filter by drop down -->
@@ -173,7 +172,7 @@
 				
 				<!-- Search form -->
 				<div class="searchForm">
-					<span class="smallText">Find specific device:<span>
+					Find specific device:
 					<form name="SearchForm" method="POST" action="">
 						<select name="SearchBy">
 							<c:set var="count" scope="page" value="0" />
