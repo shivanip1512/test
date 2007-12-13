@@ -292,7 +292,7 @@ alter table PROFILEPEAKRESULT
 alter table PROFILEPEAKRESULT
    add constraint FK_PROFILEPKRSLT_DEVICE foreign key (DeviceId)
       references DEVICE (DEVICEID)
-         on update cascade on delete cascade;      
+         on delete cascade;      
 
 drop index Indx_PAO;
       
