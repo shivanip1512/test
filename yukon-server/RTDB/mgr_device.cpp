@@ -6,8 +6,8 @@
 *
 * PVCS KEYWORDS:
 * ARCHIVE      :  $Archive:   Z:/SOFTWAREARCHIVES/YUKON/RTDB/mgr_device.cpp-arc  $
-* REVISION     :  $Revision: 1.93 $
-* DATE         :  $Date: 2007/11/21 19:55:47 $
+* REVISION     :  $Revision: 1.94 $
+* DATE         :  $Date: 2007/12/13 16:00:21 $
 *
 * Copyright (c) 1999, 2000, 2001 Cannon Technologies Inc. All rights reserved.
 *-----------------------------------------------------------------------------*/
@@ -201,17 +201,17 @@ bool removeExclusionDevice(CtiDeviceSPtr &Device, void *lptrid)
     return bstatus;
 }
 
-inline RWBoolean isDeviceIdStaticId(CtiDeviceSPtr &pDevice, void* d)
+inline bool isDeviceIdStaticId(CtiDeviceSPtr &pDevice, void* d)
 {
     CtiDeviceBase *pSp = (CtiDeviceBase *)d;
 
-    return(pDevice->getID() == pSp->getID());
+    return pDevice->getID() == pSp->getID();
 }
 
-inline RWBoolean isDeviceNotUpdated(CtiDeviceSPtr &pDevice, void* d)
+inline bool isDeviceNotUpdated(CtiDeviceSPtr &pDevice, void* d)
 {
     // Return TRUE if it is NOT SET
-    return(RWBoolean(!pDevice->getUpdatedFlag()));
+    return !pDevice->getUpdatedFlag();
 }
 
 
@@ -1237,6 +1237,7 @@ void CtiDeviceManager::refreshList(CtiDeviceBase* (*Factory)(RWDBReader &), bool
                         CtiDeviceDLCBase().getSQL( db, keyTable, selector );
 
                         selector.where( (rwdbUpper(keyTable["type"]) == RWDBExpr("REPEATER 921") ||
+                                         rwdbUpper(keyTable["type"]) == RWDBExpr("REPEATER 902") ||
                                          rwdbUpper(keyTable["type"]) == RWDBExpr("REPEATER 801") ||
                                          rwdbUpper(keyTable["type"]) == RWDBExpr("REPEATER 800") ||
                                          rwdbUpper(keyTable["type"]) == RWDBExpr("REPEATER")) && selector.where() );   // Need to attach a few conditions!
