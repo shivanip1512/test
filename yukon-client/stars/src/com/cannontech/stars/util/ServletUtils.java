@@ -238,7 +238,7 @@ public class ServletUtils {
 		StarsCtrlHistPeriod period, LiteStarsEnergyCompany energyCompany, LiteYukonUser currentUser)
 	{
         Date startDate = LMControlHistoryUtil.getPeriodStartTime( period, energyCompany.getDefaultTimeZone() );
-		
+		int accountId = -1;
 		String trackHwAddr = energyCompany.getEnergyCompanySetting( EnergyCompanyRole.TRACK_HARDWARE_ADDRESSING );
 		if (trackHwAddr != null && Boolean.valueOf(trackHwAddr).booleanValue()) {
 			ArrayList groupIDs = new ArrayList();
@@ -247,7 +247,7 @@ public class ServletUtils {
 				StarsAppliance app = appliances.getStarsAppliance(i);
 				if (app.getProgramID() == program.getProgramID() && app.getInventoryID() > 0) {
 					LiteStarsLMHardware liteHw = (LiteStarsLMHardware) energyCompany.getInventory( app.getInventoryID(), true );
-					
+					accountId = liteHw.getAccountID();
 					int[] grpIDs = null;
 					if (liteHw.getLMConfiguration() != null)
 						grpIDs = LMControlHistoryUtil.getControllableGroupIDs( liteHw.getLMConfiguration(), app.getLoadNumber() );
@@ -265,10 +265,10 @@ public class ServletUtils {
 			
 			StarsLMControlHistory lmCtrlHist = new StarsLMControlHistory();
 			lmCtrlHist.setControlSummary( new ControlSummary() );
-			
+            
 			for (int i = 0; i < groupIDs.size(); i++) {
 				StarsLMControlHistory ctrlHist = LMControlHistoryUtil.getStarsLMControlHistory(
-						((Integer)groupIDs.get(i)).intValue(), startDate, energyCompany.getDefaultTimeZone(), currentUser );
+						((Integer)groupIDs.get(i)).intValue(), accountId, startDate, energyCompany.getDefaultTimeZone(), currentUser );
 				
 				for (int j = 0, k = 0; j < ctrlHist.getControlHistoryCount(); j++) {
 					while (k < lmCtrlHist.getControlHistoryCount()
@@ -297,7 +297,7 @@ public class ServletUtils {
 			return lmCtrlHist;
 		}
 		else {
-			return LMControlHistoryUtil.getStarsLMControlHistory( program.getGroupID(), startDate, energyCompany.getDefaultTimeZone(), currentUser );
+			return LMControlHistoryUtil.getStarsLMControlHistory( program.getGroupID(), accountId, startDate, energyCompany.getDefaultTimeZone(), currentUser );
 		}
 	}
 	

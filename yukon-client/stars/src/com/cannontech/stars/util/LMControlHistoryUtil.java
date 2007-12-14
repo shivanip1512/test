@@ -5,7 +5,10 @@ import java.util.Calendar;
 import java.util.Date;
 import java.util.Hashtable;
 import java.util.Iterator;
+import java.util.List;
 import java.util.TimeZone;
+
+import org.apache.commons.lang.Validate;
 
 import com.cannontech.clientutils.CTILogger;
 import com.cannontech.common.util.CtiUtilities;
@@ -18,7 +21,8 @@ import com.cannontech.database.data.lite.stars.LiteStarsLMControlHistory;
 import com.cannontech.database.data.lite.stars.StarsLiteFactory;
 import com.cannontech.database.db.pao.LMControlHistory;
 import com.cannontech.spring.YukonSpringHook;
-import com.cannontech.stars.dr.hardware.service.LMHardwareControlInformationService;
+import com.cannontech.stars.dr.hardware.dao.LMHardwareControlGroupDao;
+import com.cannontech.stars.dr.hardware.model.LMHardwareControlGroup;
 import com.cannontech.stars.util.task.LMCtrlHistTimerTask;
 import com.cannontech.stars.xml.serialize.ControlHistory;
 import com.cannontech.stars.xml.serialize.ControlSummary;
@@ -469,7 +473,7 @@ public class LMControlHistoryUtil {
 		return ids;
 	}
 	
-	public static StarsLMControlHistory getStarsLMControlHistory(int groupID, Date startDate, TimeZone tz, LiteYukonUser currentUser) {
+	public static StarsLMControlHistory getStarsLMControlHistory(int groupID, int accountId, Date startDate, TimeZone tz, LiteYukonUser currentUser) {
 		StarsLMControlHistory starsCtrlHist = new StarsLMControlHistory();
 		
 		LiteStarsLMControlHistory liteCtrlHist = getActiveControlHistory( groupID );
@@ -478,18 +482,11 @@ public class LMControlHistoryUtil {
 			addActiveControlHistory( liteCtrlHist );
 		}
 		
-//       New enrollment, opt out, and control history tracking
-        //-------------------------------------------------------------------------------
-        LMHardwareControlInformationService lmHardwareControlInformationService = (LMHardwareControlInformationService) YukonSpringHook.getBean("lmHardwareControlInformationService");
-        //-------------------------------------------------------------------------------
-        
-        //TODO: finish adding this
         //New enrollment, opt out, and control history tracking
         //-------------------------------------------------------------------------------
-        //lmHardwareControlInformationService.getTotalOptOutHoursForRange(i, i, startDate, startDate, currentUser);
-        //Also need to consider enrollment timings.
-        //Each control history STARS object should then be calculated through these hours returned before
-        //being added to the control history list.
+        LMHardwareControlGroupDao lmHardwareControlGroupDao = (LMHardwareControlGroupDao) YukonSpringHook.getBean("lmHardwareControlGroupDao");
+        List<LMHardwareControlGroup> enrollments = lmHardwareControlGroupDao.getByLMGroupIdAndAccountIdAndType(groupID, accountId, LMHardwareControlGroup.ENROLLMENT_ENTRY);
+        List<LMHardwareControlGroup> optOuts = lmHardwareControlGroupDao.getByLMGroupIdAndAccountIdAndType(groupID, accountId, LMHardwareControlGroup.OPT_OUT_ENTRY);
         //-------------------------------------------------------------------------------
         
 		ControlHistory hist = null;
@@ -569,25 +566,50 @@ public class LMControlHistoryUtil {
 		ControlSummary summary = new ControlSummary();
 		LiteLMControlHistory lastCtrlHist = liteCtrlHist.getLastControlHistory();
 		
-		if (lastCtrlHist != null) {
+        /*
+         * Doing a lot of narrowing conversions here from long to int, but for now, need to keep it
+         * up to make sure Yao code stays happy.
+         */
+        
+        if (lastCtrlHist != null) {
 			summary.setSeasonalTime( (int)lastCtrlHist.getCurrentSeasonalTime() );
         	
 			Date date = getPeriodStartTime( StarsCtrlHistPeriod.PASTYEAR, tz );
+            Date now = new Date();
 			if (lastCtrlHist.getStopDateTime() > date.getTime()) {
-				summary.setAnnualTime( (int)lastCtrlHist.getCurrentAnnualTime() );
+				long recordedAnnual = calculateRealControlPeriodTime(lastCtrlHist.getCurrentAnnualTime(), date, now, enrollments, optOuts);
+                summary.setAnnualTime( (int)recordedAnnual );
 				
 				date = getPeriodStartTime( StarsCtrlHistPeriod.PASTMONTH, tz );
+                now = new Date();
 				if (lastCtrlHist.getStopDateTime() > date.getTime()) {
-					summary.setMonthlyTime( (int)lastCtrlHist.getCurrentMonthlyTime() );
+                    long recordedMonthly = calculateRealControlPeriodTime(lastCtrlHist.getCurrentMonthlyTime(), date, now, enrollments, optOuts);
+                    summary.setMonthlyTime( (int)recordedMonthly);
 					
 					date = getPeriodStartTime( StarsCtrlHistPeriod.PASTDAY, tz );
-					if (lastCtrlHist.getStopDateTime() > date.getTime())
-						summary.setDailyTime( (int)lastCtrlHist.getCurrentDailyTime() );
+					if (lastCtrlHist.getStopDateTime() > date.getTime()) {
+						long recordedDaily = calculateRealControlPeriodTime(lastCtrlHist.getCurrentDailyTime(), date, now, enrollments, optOuts);
+                        summary.setDailyTime( (int)recordedDaily);
+                    }
 				}
 			}
 		}
 		
-		starsCtrlHist.setControlSummary( summary );
+        starsCtrlHist.setControlSummary( summary );
+        
+        //New enrollment, opt out, and control history tracking
+        //-------------------------------------------------------------------------------
+        /*
+         * Wait until now to iterate through starsCtrlHist since the totals have already been
+         * calculated from all types of ActiveRestore types
+         */
+        for(int j = 0; j < starsCtrlHist.getControlHistoryCount(); j++) {
+            ControlHistory cntrlHist = starsCtrlHist.getControlHistory(j);
+            Date now = new Date(cntrlHist.getStartDateTime().getTime() + cntrlHist.getControlDuration());
+            int newDuration = (int)calculateRealControlPeriodTime((long)cntrlHist.getControlDuration(), cntrlHist.getStartDateTime(), now, enrollments, optOuts);
+            cntrlHist.setControlDuration(newDuration);
+        }
+        //-------------------------------------------------------------------------------
 		
 		return starsCtrlHist;
 	}
@@ -650,5 +672,29 @@ public class LMControlHistoryUtil {
 			}
 		}
 	}
-
+    
+	//New enrollment, opt out, and control history tracking
+    //-------------------------------------------------------------------------------
+    private static long calculateRealControlPeriodTime(long controlHistoryTotal, Date periodStart, Date now, List<LMHardwareControlGroup> enrollments, List<LMHardwareControlGroup> optOuts) {
+        Validate.notNull(periodStart);
+        Validate.notNull(now);
+        Validate.notNull(enrollments);
+        Validate.notNull(optOuts);
+        
+        for(LMHardwareControlGroup enrollmentEntry : enrollments) {
+            //enrollment started after the beginning of the period, subtract the difference
+            if(enrollmentEntry.getGroupEnrollStart().getTime() > periodStart.getTime()) 
+                controlHistoryTotal = controlHistoryTotal - (enrollmentEntry.getGroupEnrollStart().getTime() - periodStart.getTime());
+            //enrollment stopped before the end of the period, subtract the difference
+            if(enrollmentEntry.getGroupEnrollStop() != null && enrollmentEntry.getGroupEnrollStop().getTime() < now.getTime())
+                controlHistoryTotal = controlHistoryTotal - (now.getTime() - enrollmentEntry.getGroupEnrollStop().getTime());
+        }
+        
+        for(LMHardwareControlGroup optOutEntry : optOuts) {
+            //opt falls cleanly in the period of time
+        }
+        
+        return controlHistoryTotal;
+    }
+    //-------------------------------------------------------------------------------
 }

@@ -17,8 +17,4 @@ public interface LMHardwareControlInformationService {
     public boolean stopOptOut(int inventoryId, int loadGroupID, int accountId, LiteYukonUser currentUser);
     
     public List<Integer> getInventoryNotOptedOut(int inventoryId, int loadGroupId, int accountId);
-    
-    public long calculateControlHistory(int loadGroupID, int accountId, Date start, Date stop, LiteYukonUser currentUser);
-    
-    public long getTotalOptOutHoursForRange(int loadGroupId, int accountId, Date start, Date stop, LiteYukonUser currentUser);
 }
