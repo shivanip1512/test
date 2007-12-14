@@ -525,7 +525,7 @@ void CCUThread(const int& s, const int& strtgy)
             }
 
         }
-        else if( TempBuffer[0] & 0x04 )
+        else if( TempBuffer[0] != 0x00) //& 0x04 )
         {   //  It's a 710 message
             CtiTime AboutToRead;
             unsigned char ReadBuffer[300];
@@ -612,7 +612,57 @@ void CCUThread(const int& s, const int& strtgy)
                     aCCU710.PrintMessage();
                 }
             }
+            else
+            {
+                unsigned char SendData[300];
+
+                int MsgSize = aCCU710.SendMsg(SendData);
+
+                if( MsgSize>0 )
+                {
+                    int napTime = ((MsgSize*8)/1200)*2*1000;  //  Delay at 1200 baud in both directions
+                    CTISleep(napTime);
+                    unsigned long bytesWritten = 0;
+                    newSocket->CTINexusWrite(&SendData, MsgSize, &bytesWritten, 15);
+
+                    CtiTime DateSent;
+                    {
+                        boost::mutex::scoped_lock lock(io_mutex);
+                        SET_FOREGROUND_BRIGHT_YELLOW;
+                        cout<<DateSent.asString();
+                        SET_FOREGROUND_BRIGHT_CYAN;
+                        cout<<" OUT:"<<endl;
+                    }
+                    SET_FOREGROUND_BRIGHT_MAGNETA;
+
+                    for( int byteitr = 0; byteitr < bytesWritten; byteitr++ )
+                    {
+                        boost::mutex::scoped_lock lock(io_mutex);
+                        cout <<string(CtiNumStr(SendData[byteitr]).hex().zpad(2))<<' ';
+                    }
+
+                    cout<<endl;
+                    aCCU710.PrintMessage();
+                }
+            }
+
+
         }
+        /*else if(TempBuffer[0]!=0x00)
+        {
+                cout<<"\nNot a 710 or 711 message on port "<<portNumber<<":  "<<string(CtiNumStr(TempBuffer[0]).hex().zpad(2))<<" "<<string(CtiNumStr(TempBuffer[1]).hex().zpad(2))<<endl;
+                unsigned char ReadBuffer[300];
+                int BytesToFollow;
+                int counter = 0;
+                bytesRead=0;
+                BytesToFollow = 3;
+                //  Read first few bytes
+                while( bytesRead < BytesToFollow )
+                {
+                    newSocket->CTINexusRead(ReadBuffer + counter  ,1, &bytesRead, 15);
+                    counter ++;
+                }
+        }*/
         CTISleep(250);
 
     }

@@ -119,13 +119,15 @@ int CCU710::ReceiveMsg(unsigned char Data[], int &setccuNumber)
 
         _indexOfEnd = Ctr;
     }
-    else if(_messageType == PING) {
-        int Ctr = 0;
-        _messageData[Ctr++] = 0xc3;
-        _messageData[Ctr++] = 0xc3;
-        _messageData[Ctr++] = 0xf5;
-        _messageData[Ctr++] = 0x55;
-        _indexOfEnd = Ctr;
+    else if(_bytesToFollow == 0);  //_messageType == PING
+    {
+            int Ctr = 0;
+            _outmessageData[Ctr++] = 0xc3;
+            _outmessageData[Ctr++] = 0xc3;
+            _outmessageData[Ctr++] = 0xf5;
+            _outmessageData[Ctr++] = 0x55;
+
+            _outindexOfEnd = Ctr;  //  Set the out index since no more bytes will be added to outbound message
     }
     return _bytesToFollow;
 }
