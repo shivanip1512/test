@@ -34,16 +34,15 @@
     	</c:when>
     	<c:otherwise>
     		<div id="customerInfoError">
-    		<ct:hideReveal title="<span class=\"internalSectionHeader\">Information not available.</span>"
+    		<ct:hideReveal styleClass="titledContainerOverride" title="<span class=\"internalSectionHeader\">Information not available.</span>"
                 showInitially="false">
                 <span class="internalSectionHeader">${customerInfoError}</span><br>
                 <span class="internalSectionHeader">Please view ${logName} for more information.</span>
             </ct:hideReveal>
-            <br>
     		</div>
     	</c:otherwise>
     </c:choose>
-    <br>
+
     <div class="widgetInternalSectionHeader">
   		<c:out value="Service Location" />
     </div>
@@ -79,13 +78,11 @@
 	    </c:when>
        	<c:otherwise>
     		<div id="customerInfoError">
-    		<ct:hideReveal title="<span class=\"internalSectionHeader\">Information not available.</span>"
+    		  <ct:hideReveal styleClass="titledContainerOverride" title="<span class=\"internalSectionHeader\">Information not available.</span>"
                 showInitially="false">
                 <span class="internalSectionHeader">${serviceLocationError}</span><br>
                 <span class="internalSectionHeader">Please view ${logName} for more information.</span>
-                <br>
-            </ct:hideReveal>
-            <br>
+              </ct:hideReveal>
     		</div>
     	</c:otherwise>
   	</c:choose>
