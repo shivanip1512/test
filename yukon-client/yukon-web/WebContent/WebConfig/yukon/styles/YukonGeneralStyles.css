@@ -343,6 +343,15 @@ div.widgetPopup {
 	background-color: yellow;	
 }
 
+.disabled {
+	background-color: #F0F0F0;
+	color: gray;
+}
+
+.disabled a:link {
+	color: gray;
+}
+
 .popUpDiv {
     position: absolute;
     z-index: 100;

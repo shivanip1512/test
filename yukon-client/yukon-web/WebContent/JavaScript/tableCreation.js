@@ -44,9 +44,12 @@ function createHtmlTableFromJson(dataArray, outputCols, rowCallback) {
               node = link;
               tableCell.appendChild(link);
               var linkFuncGenerate = outputCols[col].link;
-              link.setAttribute("href", "javascript:nothing()");
               var linkFunc = linkFuncGenerate(dataArray[i], link);
-              Event.observe(link,'click',linkFunc);
+              
+              if(linkFunc != null) {
+              	  link.setAttribute("href", "javascript:nothing()");
+	              Event.observe(link,'click',linkFunc);
+              }
           }
           
           //in case we want to display static text but maintain a value

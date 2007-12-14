@@ -14,7 +14,6 @@ public class MultiPaoPickerTag extends ItemPickerTag {
 
     private String selectionLinkName = "Done";
     private String excludeIds = "";
-    private boolean showExcluded = false;
 
     public MultiPaoPickerTag() {
         super();
@@ -35,7 +34,7 @@ public class MultiPaoPickerTag extends ItemPickerTag {
 
         PageContext pageContext = (PageContext) getJspContext();
         HttpServletRequest request = (HttpServletRequest) pageContext.getRequest();
-        String initString = "\'" + itemIdField + "\','" + constraint + "','" + extraMappingString + "','" + pickerId + "','" + request.getContextPath() + "'," + finalTriggerAction + ",'" + selectionLinkName + "','" + excludeIds + "','" + showExcluded + "'";
+        String initString = "\'" + itemIdField + "\','" + constraint + "','" + extraMappingString + "','" + pickerId + "','" + request.getContextPath() + "'," + finalTriggerAction + ",'" + selectionLinkName + "','" + excludeIds + "'";
         getJspContext().getOut()
                        .println("<script type=\"text/javascript\"> " + pickerId + " = new MultiPaoPicker(" + initString + ");");
         getJspContext().getOut().println("</script> ");
@@ -77,7 +76,4 @@ public class MultiPaoPickerTag extends ItemPickerTag {
         this.excludeIds = excludeIds;
     }
 
-    public void setShowExcluded(boolean showExcluded) {
-        this.showExcluded = showExcluded;
-    }
 }

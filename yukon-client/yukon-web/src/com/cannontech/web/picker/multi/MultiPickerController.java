@@ -18,8 +18,6 @@ public class MultiPickerController extends PaoPickerController {
         ModelAndView mav = new ModelAndView("multiInner");
         String pickerId = ServletRequestUtils.getStringParameter(request, "pickerId", "");
         mav.addObject("pickerId", pickerId);
-        String sameItemLink = ServletRequestUtils.getStringParameter(request, "sameItemLink", "");
-        mav.addObject("sameItemLink", sameItemLink);
 
         String selectionLinkName = ServletRequestUtils.getStringParameter(request, "selectionLinkName", "Done");
         mav.addObject("selectionLinkName", selectionLinkName);
