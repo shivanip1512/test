@@ -18,7 +18,7 @@
 		</c:choose>
 		<c:set var="altRow" value="${!altRow}" scope="request"/>
 
-			<td class="name">${name}:</td>
+			<td class="name">${name}${(not empty name)? ':':'&nbsp;'}</td>
 			<td class="value"><jsp:doBody/></td>
 		</tr>
 	</c:when>
