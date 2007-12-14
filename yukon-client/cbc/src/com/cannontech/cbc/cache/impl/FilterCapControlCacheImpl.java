@@ -123,12 +123,17 @@ public class FilterCapControlCacheImpl implements CapControlCache {
 	}
 
 	public List<CapBankDevice> getCapBanksBySubStation(SubStation sub) {
-		int id = cache.getParentAreaID(sub.getCcId());
-		CBCArea area = cache.getCBCArea(id);
-		if ( filter.valid(area) )
-			return cache.getCapBanksBySubStation(sub);
-		else
-			return new ArrayList<CapBankDevice>();
+	    if(sub != null) {
+    		int id = cache.getParentAreaID(sub.getCcId());
+    		CBCArea area = cache.getCBCArea(id);
+    		if ( filter.valid(area) ) {
+    			return cache.getCapBanksBySubStation(sub);
+    		} else {
+    			return new ArrayList<CapBankDevice>();
+    		}
+	    } else {
+	        return new ArrayList<CapBankDevice>();
+	    }
 	}
 
 	public StreamableCapObject getCapControlPAO(Integer paoID) {
@@ -174,12 +179,17 @@ public class FilterCapControlCacheImpl implements CapControlCache {
 	}
 
 	public List<Feeder> getFeedersBySubStation(SubStation sub) {
-		int id = cache.getParentAreaID(sub.getCcId());
-		CBCArea area = cache.getCBCArea(id);
-		if ( filter.valid(area) )
-			return cache.getFeedersBySubStation(sub);
-		else
-			return new ArrayList<Feeder>();
+	    if(sub != null) {
+    		int id = cache.getParentAreaID(sub.getCcId());
+    		CBCArea area = cache.getCBCArea(id);
+    		if ( filter.valid(area) ) {
+    			return cache.getFeedersBySubStation(sub);
+    		} else {
+    			return new ArrayList<Feeder>();
+    		}
+    	} else {
+    	    return new ArrayList<Feeder>();
+	    }
 	}
 
 	public LiteWrapper[] getOrphanedCBCs() {
