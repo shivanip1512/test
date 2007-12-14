@@ -240,7 +240,10 @@ public class ServletUtils {
         Date startDate = LMControlHistoryUtil.getPeriodStartTime( period, energyCompany.getDefaultTimeZone() );
 		int accountId = -1;
 		String trackHwAddr = energyCompany.getEnergyCompanySetting( EnergyCompanyRole.TRACK_HARDWARE_ADDRESSING );
-		if (trackHwAddr != null && Boolean.valueOf(trackHwAddr).booleanValue()) {
+		/*
+         * GRE and similar systems
+		 */
+        if (trackHwAddr != null && Boolean.valueOf(trackHwAddr).booleanValue()) {
 			ArrayList groupIDs = new ArrayList();
 			
 			for (int i = 0; i < appliances.getStarsApplianceCount(); i++) {
@@ -282,13 +285,13 @@ public class ServletUtils {
 				if (ctrlHist.getControlSummary() != null) {
 					lmCtrlHist.getControlSummary().setDailyTime(
 							lmCtrlHist.getControlSummary().getDailyTime() + ctrlHist.getControlSummary().getDailyTime() );
-					//calculate with opt out hours
+					//TODO: calculate with opt out hours and enrollment periods?
                     lmCtrlHist.getControlSummary().setMonthlyTime(
 							lmCtrlHist.getControlSummary().getMonthlyTime() + ctrlHist.getControlSummary().getMonthlyTime() );
-                    //calculate with opt out hours
+//                  TODO: calculate with opt out hours and enrollment periods?
 					lmCtrlHist.getControlSummary().setSeasonalTime(
 							lmCtrlHist.getControlSummary().getSeasonalTime() + ctrlHist.getControlSummary().getSeasonalTime() );
-					//calculate with opt out hours
+//                  TODO: calculate with opt out hours and enrollment periods?
 					lmCtrlHist.getControlSummary().setAnnualTime(
 							lmCtrlHist.getControlSummary().getAnnualTime() + ctrlHist.getControlSummary().getAnnualTime() );
 				}

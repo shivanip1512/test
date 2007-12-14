@@ -63,7 +63,7 @@
                 <td valign="top" bgcolor="#FFFFFF"> 
                   <table width="450" border="0" cellspacing="0" cellpadding="0" align="center">
                     <tr> 
-                      <td width="107" valign="top"> 
+                      <td width="50" valign="top"> 
                         <div align="center">
 <% if (!category.getStarsWebConfig().getLogoLocation().equals("")) { %>
 						  <img src="../../WebConfig/<%= category.getStarsWebConfig().getLogoLocation() %>"><br>
@@ -72,12 +72,11 @@
                         </div>
 						<br>
                       </td>
-                      <td width="343" valign="top"> 
-                        <table width="325" border="1" cellspacing="0" cellpadding="3">
+                      <td width="400" valign="top"> 
+                        <table width="400" border="1" cellspacing="0" cellpadding="3">
                           <tr> 
-                            <td class="HeaderCell" width="110">Start</td>
-                            <td class="HeaderCell" width="110"> Stop</td>
-                            <td class="HeaderCell" width="79"> Duration</td>
+                            <td class="HeaderCell" width="200">Program Event Start</td>
+                            <td class="HeaderCell" width="200">Control Time For This Account</td>
                           </tr>
                           <%
 	int totalSec = 0;
@@ -90,18 +89,17 @@
 		Date stopTime = new Date(hist.getStartDateTime().getTime() + durationSec * 1000);
 %>
                           <tr> 
-                            <td class="TableCell" width="110"><%= histDateFormat.format(hist.getStartDateTime()) %></td>
-                            <td class="TableCell" width="110"><%= histDateFormat.format(stopTime) %></td>
-                            <td class="TableCell" width="79"><%= ServletUtils.getDurationFromSeconds(durationSec) %></td>
+                            <td class="TableCell" width="120"><%= histDateFormat.format(hist.getStartDateTime()) %></td>
+                            <td class="TableCell" width="120"><%= ServletUtils.getDurationFromSeconds(durationSec) %></td>
                           </tr>
                           <%
 	}
 %>
                           <tr> 
-                            <td class="TableCell" colspan="2"> 
+                            <td class="TableCell" colspan="1"> 
                               <div align="right">Total:</div>
                             </td>
-                            <td class="TableCell" width="79"><%= ServletUtils.getDurationFromSeconds(totalSec) %></td>
+                            <td class="TableCell" width="120"><%= ServletUtils.getDurationFromSeconds(totalSec) %></td>
                           </tr>
                         </table>
                       </td>
