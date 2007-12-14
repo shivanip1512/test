@@ -38,7 +38,6 @@
       <td class="cellImgFill lAlign" background="images/Side_left.gif"></td>
       <td colSpan="2">
       
-      <div class="scrollHuge">
         <table id="innerTable" width="100%" border="1" cellspacing="0" cellpadding="0">
 <%
     if( graphs.size() == 0 ) {
@@ -52,6 +51,11 @@
 		</tr>
 <%
     } else{ 
+    %>
+    <tr><td>
+    <div class="scrollHuge">
+    <table>
+    <%
         for( int i = 0; i < graphs.size() && i < MAX_TRENDS; i++ ) {
             if( graphs.get(i) != null ) {
 %>
@@ -78,9 +82,13 @@
 <%
             }
 		}
-	} %>
+		%>
+		</table>
+		</div>
+		</td>
+		</tr>
+<%	} %>
         </table>
-    </div>
 
       </td>
       <td class="cellImgFill rAlign" background="images/Side_right.gif"></td>
