@@ -436,6 +436,11 @@ alter table MCTConfigMapping
       references DEVICE (DEVICEID)
       on delete cascade;
  
+ /* Start YUK-4745 */
+insert into YukonRole values(-211,'CI Curtailment','Operator','Operator access to C&I Curtailment');
+insert into YukonRoleProperty values(-21100,-211,'CI Curtailment Label','CI Curtailment','The operator specific name for C&I Curtailment');
+/* End YUK-4745 */
+ 
  /* Start YUK-4906 */
 alter table MSPVendor add MaxReturnRecords int;
 update MSPVendor set MaxReturnRecords = 10000;

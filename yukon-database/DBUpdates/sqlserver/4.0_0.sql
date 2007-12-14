@@ -1045,12 +1045,42 @@ insert into devicetypecommand values(-692, -136, 'MCT-410IL', 30, 'N', -1);
 insert into devicetypecommand values(-693, -136, 'MCT-470', 32, 'N', -1); 
 /* End YUK-4638 */
 
-/* Start YUK-4745 */
 /* @error ignore-begin */
-insert into YukonRole values(-211,'CI Curtailment','Operator','Operator access to C&I Curtailment');
-insert into YukonRoleProperty values(-21100,-211,'CI Curtailment Label','CI Curtailment','The operator specific name for C&I Curtailment');
+	/* Start YUK-4745 */
+	insert into YukonRole values(-211,'CI Curtailment','Operator','Operator access to C&I Curtailment');
+	insert into YukonRoleProperty values(-21100,-211,'CI Curtailment Label','CI Curtailment','The operator specific name for C&I Curtailment');
+	/* End YUK-4745 */
+	
+	/* Start YUK-4906 */
+	alter table MSPVendor add MaxReturnRecords int;
+	go
+	update MSPVendor set MaxReturnRecords = 10000;
+	go
+	alter table MSPVendor alter column MaxReturnRecords int not null;
+	go
+	
+	alter table MSPVendor add RequestMessageTimeout int;
+	go
+	update MSPVendor set RequestMessageTimeout = 120000;
+	go
+	alter table MSPVendor alter column RequestMessageTimeout int not null;
+	go
+	
+	alter table MSPVendor add MaxInitiateRequestObjects int;
+	go
+	update MSPVendor set MaxInitiateRequestObjects = 15;
+	go
+	alter table MSPVendor alter column MaxInitiateRequestObjects int not null;
+	go
+	
+	alter table MSPVendor add TemplateNameDefault varchar(50);
+	go
+	update MSPVendor set TemplateNameDefault = '*Default Template';
+	go
+	alter table MSPVendor alter column TemplateNameDefault varchar(50) not null;
+	go
+	/* End YUK-4906 */
 /* @error ignore-end */
-/* End YUK-4745 */
 
 /* Start YUK-4733 */
 delete yukongrouprole where rolepropertyID = -10308;
