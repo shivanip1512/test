@@ -584,23 +584,17 @@ public class LMControlHistoryUtil {
 				long recordedAnnual = calculateRealControlPeriodTime(lastCtrlHist.getCurrentAnnualTime(), date, now, enrollments, optOuts);
                 summary.setAnnualTime( (int)recordedAnnual );
 				
-                date = getPeriodStartTime( StarsCtrlHistPeriod.PASTSEASON, tz );
-                if (lastCtrlHist.getStopDateTime() > date.getTime()) {
-                    long recordedSeasonal = calculateRealControlPeriodTime(lastCtrlHist.getCurrentSeasonalTime(), date, now, enrollments, optOuts);
-                    summary.setSeasonalTime( (int)recordedSeasonal);
-                
-    				date = getPeriodStartTime( StarsCtrlHistPeriod.PASTMONTH, tz );
-    				if (lastCtrlHist.getStopDateTime() > date.getTime()) {
-                        long recordedMonthly = calculateRealControlPeriodTime(lastCtrlHist.getCurrentMonthlyTime(), date, now, enrollments, optOuts);
-                        summary.setMonthlyTime( (int)recordedMonthly);
-    					
-    					date = getPeriodStartTime( StarsCtrlHistPeriod.PASTDAY, tz );
-    					if (lastCtrlHist.getStopDateTime() > date.getTime()) {
-    						long recordedDaily = calculateRealControlPeriodTime(lastCtrlHist.getCurrentDailyTime(), date, now, enrollments, optOuts);
-                            summary.setDailyTime( (int)recordedDaily);
-                        }
-    				}
-                }
+				date = getPeriodStartTime( StarsCtrlHistPeriod.PASTMONTH, tz );
+				if (lastCtrlHist.getStopDateTime() > date.getTime()) {
+                    long recordedMonthly = calculateRealControlPeriodTime(lastCtrlHist.getCurrentMonthlyTime(), date, now, enrollments, optOuts);
+                    summary.setMonthlyTime( (int)recordedMonthly);
+					
+					date = getPeriodStartTime( StarsCtrlHistPeriod.PASTDAY, tz );
+					if (lastCtrlHist.getStopDateTime() > date.getTime()) {
+						long recordedDaily = calculateRealControlPeriodTime(lastCtrlHist.getCurrentDailyTime(), date, now, enrollments, optOuts);
+                        summary.setDailyTime( (int)recordedDaily);
+                    }
+				}
 			}
 		}
 		
