@@ -1,7 +1,7 @@
 /*==============================================================*/
 /* Database name:  YukonDatabase                                */
 /* DBMS name:      ORACLE Version 9i                            */
-/* Created on:     12/17/2007 4:11:24 PM                        */
+/* Created on:     12/17/2007 5:11:24 PM                        */
 /*==============================================================*/
 
 
@@ -8961,40 +8961,40 @@ insert into YukonWebConfiguration values(0,'(none)','(none)','(none)','(none)');
 /*==============================================================*/
 create or replace view CCCAP_INVENTORY_VIEW as
 SELECT
-	yp4.paoname AS region
-	, cb.maplocationid AS opCenter
-	, yp5.paoname as substationName
-	, yp3.PAOName AS subName
-	, yp2.PAOName AS feederName
-	, yp1.PAOName AS Capbankname
-	, cb.BANKSIZE
-	, capa.latitude AS lat
-	, capa.longitude AS lon
-	, capa.driveDirections AS driveDirection
-	, cb.OPERATIONALSTATE AS ControlType
-	, cb.SwitchManufacture AS SWMfgr
-	, cb.TypeOfSwitch AS SWType
-	, yp.PAOName AS cbcname
-	, p.Value AS ipaddress
-	, da.SlaveAddress
-	, capa.maintenanceareaid AS TA
+	yp4.paoname AS REGION
+	, cb.maplocationid AS OP_CENTER
+	, capa.maintenanceareaid AS TA_AREA
+	, yp5.paoname as SUBSTATION_NAME
+	, yp3.PAOName AS SUBSTATION_BANK_NAME
+	, yp2.PAOName AS BREAKER_NUMBER
+	, yp1.PAOName AS BANK_NAME
+	, cb.BANKSIZE AS BANK_SIZE
+	, cb.OPERATIONALSTATE AS CONTROL_TYPE
+	, cb.SwitchManufacture AS SWITCH_MANUFACTURER
+	, cb.TypeOfSwitch AS SWITCH_TYPE
+	, yp.PAOName AS CBC_NAME
+	, p.Value AS IP_ADDRESS
+	, da.SlaveAddress AS DNP_ADDRESS
+	, capa.driveDirections AS DRIVE_DIRECTION
+	, capa.latitude AS LATITUDE
+	, capa.longitude AS LONGITUDE
 FROM
-	CAPBANK cb
-	INNER JOIN YukonPAObject yp1 ON yp1.PAObjectID = cb.DEVICEID
-	LEFT OUTER JOIN YukonPAObject yp ON cb.CONTROLDEVICEID = yp.PAObjectID AND cb.CONTROLDEVICEID > 0
-	LEFT OUTER JOIN CCFeederBankList fb ON fb.DeviceID = cb.DEVICEID
-	LEFT OUTER JOIN YukonPAObject yp2 ON yp2.PAObjectID = fb.FeederID
-	LEFT OUTER JOIN CCFeederSubAssignment sf ON fb.FeederID = sf.FeederID
-	LEFT OUTER JOIN YukonPAObject yp3 ON yp3.PAObjectID = sf.SubStationBusID
-	LEFT OUTER JOIN ccsubstationsubbuslist ss on ss.substationbusid = yp3.paobjectid
-	LEFT OUTER JOIN YukonPAObject yp5 ON yp5.PAObjectID = ss.SubStationID
-	left outer join ccsubareaassignment sa on ss.substationid = sa.substationbusid
-	left outer join YukonPAObject yp4 on yp4.paobjectid = sa.areaid
-	LEFT OUTER JOIN DeviceAddress da ON da.DeviceID = cb.CONTROLDEVICEID
+	dbo.CAPBANK cb
+	INNER JOIN dbo.YukonPAObject yp1 ON yp1.PAObjectID = cb.DEVICEID
+	LEFT OUTER JOIN dbo.YukonPAObject yp ON cb.CONTROLDEVICEID = yp.PAObjectID AND cb.CONTROLDEVICEID > 0
+	LEFT OUTER JOIN dbo.CCFeederBankList fb ON fb.DeviceID = cb.DEVICEID
+	LEFT OUTER JOIN dbo.YukonPAObject yp2 ON yp2.PAObjectID = fb.FeederID
+	LEFT OUTER JOIN dbo.CCFeederSubAssignment sf ON fb.FeederID = sf.FeederID
+	LEFT OUTER JOIN dbo.YukonPAObject yp3 ON yp3.PAObjectID = sf.SubStationBusID
+	LEFT OUTER JOIN dbo.ccsubstationsubbuslist ss on ss.substationbusid = yp3.paobjectid
+	LEFT OUTER JOIN dbo.YukonPAObject yp5 ON yp5.PAObjectID = ss.SubStationID
+	left outer join dbo.ccsubareaassignment sa on ss.substationid = sa.substationbusid
+	left outer join dbo.YukonPAObject yp4 on yp4.paobjectid = sa.areaid
+	LEFT OUTER JOIN dbo.DeviceAddress da ON da.DeviceID = cb.CONTROLDEVICEID
 	LEFT OUTER JOIN (SELECT EntryID, PAObjectID, Owner, InfoKey, Value, UpdateTime
-					  FROM DynamicPAOInfo
+					  FROM dbo.DynamicPAOInfo
 					  WHERE (InfoKey LIKE '%udp ip%')) p ON p.PAObjectID = yp.PAObjectID
-	left outer join capbankadditional capa on capa.deviceid = cb.deviceid
+	left outer join dbo.capbankadditional capa on capa.deviceid = cb.deviceid
 ;
 
 /*==============================================================*/
