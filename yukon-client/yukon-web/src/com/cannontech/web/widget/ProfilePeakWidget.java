@@ -118,15 +118,15 @@ public class ProfilePeakWidget extends WidgetControllerBase {
         mav.addObject("readable", readable);
 
         // Get the report type for the commands
-        String reportType = ServletRequestUtils.getRequiredStringParameter(request,
+        String reportType = WidgetParameterHelper.getRequiredStringParameter(request,
                                                                            "reportType");
         mav.addObject("reportType", reportType);
 
         // Calculate the times and days for each command
-        String startDateStr = ServletRequestUtils.getRequiredStringParameter(request,
+        String startDateStr = WidgetParameterHelper.getRequiredStringParameter(request,
                                                                              "startDate");
         mav.addObject("startDate", startDateStr);
-        String stopDateStr = ServletRequestUtils.getRequiredStringParameter(request, "stopDate");
+        String stopDateStr = WidgetParameterHelper.getRequiredStringParameter(request, "stopDate");
         mav.addObject("stopDate", stopDateStr);
 
         Date preCommandStartDate = null;
