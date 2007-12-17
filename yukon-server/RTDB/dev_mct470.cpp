@@ -8,8 +8,8 @@
 *
 * PVCS KEYWORDS:
 * ARCHIVE      :  $Archive:   Z:/SOFTWAREARCHIVES/YUKON/RTDB/dev_mct310.cpp-arc  $
-* REVISION     :  $Revision: 1.110 $
-* DATE         :  $Date: 2007/12/03 22:19:41 $
+* REVISION     :  $Revision: 1.111 $
+* DATE         :  $Date: 2007/12/17 17:11:07 $
 *
 * Copyright (c) 2005 Cannon Technologies Inc. All rights reserved.
 *-----------------------------------------------------------------------------*/
@@ -1583,7 +1583,7 @@ INT CtiDeviceMCT470::executeGetValue( CtiRequestMsg        *pReq,
                     found = getOperation(function, OutMessage->Buffer.BSt);
 
                     OutMessage->Buffer.BSt.Function = FuncRead_IED_Precanned_Base + (i-1) + MCT470_DNP_Analog_Precanned_Offset;
-                    if( OutMessage->Buffer.BSt.Function >= FuncRead_IED_Precanned_Base + MCT470_DNP_Counter_Precanned_Offset )
+                    if( i > (MCT470_DNP_Counter_Precanned_Offset - MCT470_DNP_Analog_Precanned_Offset) || i < 1 )
                     {
                         nRet = BADRANGE;
                         found = false;
@@ -1595,7 +1595,7 @@ INT CtiDeviceMCT470::executeGetValue( CtiRequestMsg        *pReq,
                     found = getOperation(function, OutMessage->Buffer.BSt);
 
                     OutMessage->Buffer.BSt.Function = FuncRead_IED_Precanned_Base + (i-1) + MCT470_DNP_Counter_Precanned_Offset;
-                    if( i > MCT470_DNP_Counter_Precanned_Reads ) //only 8 reads possible.
+                    if( i > MCT470_DNP_Counter_Precanned_Reads || i < 1 ) //only 8 reads possible.
                     {
                         nRet = BADRANGE;
                         found = false;
