@@ -112,6 +112,20 @@ alter table CCSEASONSTRATEGYASSIGNMENT
    add constraint FK_CCSEASON_REFERENCE_CAPCONTR foreign key (strategyid)
       references CapControlStrategy (StrategyID);
 
+/* Start YUK-4905 */
+insert into ccseasonstrategyassignment
+(paobjectid, seasonscheduleid, seasonname, strategyid)
+select substationbusid, -1,'Default',strategyid from capcontrolsubstationbus;
+
+insert into ccseasonstrategyassignment
+(paobjectid, seasonscheduleid, seasonname, strategyid)
+select feederid, -1, 'Default',strategyid from capcontrolfeeder;
+
+insert into ccseasonstrategyassignment
+(paobjectid, seasonscheduleid, seasonname, strategyid)
+select areaid, -1, 'Default',strategyid from capcontrolarea; 
+/* End YUK-4905 */
+
 alter table CapControlArea  drop constraint FK_CAPCONTAREA_CAPCONTRSTRAT;
 alter table CapControlArea drop column StrategyId;
 alter table CapControlSubstationbus  drop constraint FK_CCSUBB_CCSTR;
