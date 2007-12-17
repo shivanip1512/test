@@ -97,9 +97,9 @@ public class CapControlAssetAvailabilityModel extends BareDatedReportModelBase<C
         sql.append("from yukonpaobject yp,yukonpaobject yp1,yukonpaobject yp2,yukonpaobject yp3, ");
         sql.append("ccsubareaassignment sa, ccsubstationsubbuslist ss, ccfeedersubassignment fs, ");
         sql.append("(select count(*) as subcount, subid, feederid from cceventlog ");
-        sql.append("where text like '%Cannot Increase%' and datetime > ? and datetime < ? group by subid, feederid) as els, ");
+        sql.append("where text like '%Cannot Decrease%' and datetime > ? and datetime < ? group by subid, feederid) as els, ");
         sql.append("(select count(*) as feedcount, feederid from cceventlog ");
-        sql.append("where text like '%Cannot Increase%' and datetime > ? and datetime < ? group by feederid) as elf ");
+        sql.append("where text like '%Cannot Decrease%' and datetime > ? and datetime < ? group by feederid) as elf ");
         sql.append("where ");
         sql.append("yp.paobjectid = sa.areaid ");
         sql.append("and yp1.paobjectid = sa.substationbusid ");

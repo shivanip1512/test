@@ -2,6 +2,7 @@ package com.cannontech.analysis.tablemodel;
 
 import java.sql.ResultSet;
 import java.sql.SQLException;
+import java.sql.Timestamp;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.Set;
@@ -64,7 +65,7 @@ public class CapControlVarChangeModel extends BareDatedReportModelBase<CapContro
         StringBuffer sql = buildSQLStatement();
         CTILogger.info(sql.toString()); 
         
-        jdbcOps.query(sql.toString(), new Integer[] {queryPercent}, new RowCallbackHandler() {
+        jdbcOps.query(sql.toString(), new Object[] {new Timestamp(getStartDate().getTime()), new Timestamp(getStopDate().getTime()), queryPercent}, new RowCallbackHandler() {
             public void processRow(ResultSet rs) throws SQLException {
                 
                 CapControlVarChangeModel.ModelRow row = new CapControlVarChangeModel.ModelRow();
@@ -99,7 +100,7 @@ public class CapControlVarChangeModel extends BareDatedReportModelBase<CapContro
         sql.append("yp3.paoname as Substation, ");
         sql.append("yp4.paoname as SubBus, ");
         sql.append("yp5.paoname as Feeder ");
-        sql.append("from cceventlog el, ");
+        sql.append("from (select * from cceventlog where datetime >= ? and datetime < ? ) el, ");
         sql.append("capbank c, yukonpaobject yp, yukonpaobject yp1, ");
         sql.append("yukonpaobject yp2, yukonpaobject yp3, ");
         sql.append("yukonpaobject yp4, yukonpaobject yp5, ");
