@@ -1141,9 +1141,6 @@ public void setValue(Object val)
     String billingGroup = hacker.getGroupForDevice(FixedDeviceGroups.BILLINGGROUP, yukonDevice);
     String alternateGroup = hacker.getGroupForDevice(FixedDeviceGroups.TESTCOLLECTIONGROUP, yukonDevice);
     String collectionGroup = hacker.getGroupForDevice(FixedDeviceGroups.COLLECTIONGROUP, yukonDevice);
-    String customGroup1 = hacker.getGroupForDevice(FixedDeviceGroups.CUSTOM1GROUP, yukonDevice);
-    String customGroup2 = hacker.getGroupForDevice(FixedDeviceGroups.CUSTOM2GROUP, yukonDevice);
-    String customGroup3 = hacker.getGroupForDevice(FixedDeviceGroups.CUSTOM3GROUP, yukonDevice);
 	getCycleGroupComboBox().setSelectedItem( collectionGroup );
 	getAlternateGroupComboBox().setSelectedItem( alternateGroup );
 	getJComboBoxBillingGroup().setSelectedItem( billingGroup );
