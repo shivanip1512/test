@@ -105,8 +105,8 @@ if (allowCtlVal!=null) {
 				<td><%=currPF%> / <%=estPF%></td>
 			</tr>
 			<tr>
-				<td>
-					<table id="allAreas<%=area.getPaoID()%>">
+				<td colspan ="8">
+					<table id="allAreas<%=area.getPaoID()%>" width="100%" border="0" cellspacing="0" cellpadding="0">
 <%
 	if (areaStations.size() > 0) {		
 	for( int j = 0; j < areaStations.size(); j++ ) {
@@ -116,11 +116,8 @@ if (allowCtlVal!=null) {
 		cssSub = ("tableCell".equals(cssSub) ? "altTableCell" : "tableCell");
 %>
 				        <tr class="<%=cssSub%>" style="display: none;">
-							<td><font class="lIndent"><%=CBCUtils.CBC_DISPLAY.getSubstationValueAt(substation, CBCDisplay.SUB_NAME_COLUMN)%></font></td>
-							<td><%=subFeeders.size()%> Feeder(s), <%=subCapBanks.size()%> Bank(s)</td>
-							<td></td>
-							<td></td>
-							<td></td>
+							<td width="20%"><font class="lIndent"><%=CBCUtils.CBC_DISPLAY.getSubstationValueAt(substation, CBCDisplay.SUB_NAME_COLUMN)%></font></td>
+							<td align="left"><%=subFeeders.size()%> Feeder(s), <%=subCapBanks.size()%> Bank(s)</td>
 						</tr>
 		<%}%>
 	<%}%>
