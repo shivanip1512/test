@@ -66,8 +66,8 @@
     	<td colspan="4">
 			  <div id="${thisId}_errors" class="formErrorSummary"></div>
 			  <div id="${thisId}_pendingHolder" style="display:none">
-			  <tags:hideReveal styleClass="smallText" title="Pending requests in progress" showInitially="true">
-			  	<ol id="${thisId}_pendingList" style="margin: 0 0 10px 0; padding: 0 0 0 40px" class="smallText"></ol>
+			  <tags:hideReveal title="Pending requests in progress" showInitially="true">
+			  	<ol id="${thisId}_pendingList" style="margin: 0 0 10px 0; padding: 0 0 0 40px" ></ol>
 			  </tags:hideReveal>
 			  </div>
     	</td>
