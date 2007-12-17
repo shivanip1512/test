@@ -1,10 +1,9 @@
 package com.cannontech.common.bulk.importdata.dao.impl;
 
+import java.text.ParseException;
 import java.util.List;
 
 import org.springframework.beans.factory.annotation.Required;
-import org.springframework.dao.DataAccessException;
-import org.springframework.jdbc.core.JdbcOperations;
 import org.springframework.jdbc.core.simple.SimpleJdbcOperations;
 
 import com.cannontech.common.bulk.importdata.dao.BulkImportDataDao;
@@ -16,7 +15,6 @@ import com.cannontech.database.db.importer.ImportPendingComm;
 public class BulkImportDataDaoImpl implements BulkImportDataDao {
 
     private SimpleJdbcOperations jdbcTemplate;
-    
     
     // GETS
     public List<ImportFail> getAllDataFailures() {
@@ -65,83 +63,45 @@ public class BulkImportDataDaoImpl implements BulkImportDataDao {
     // DELETES
     public boolean deleteAllDataFailures() {
         
-        JdbcOperations jdbcOps = jdbcTemplate.getJdbcOperations();
-        
         SqlStatementBuilder sql = new SqlStatementBuilder();
         sql.append("DELETE FROM " + ImportFail.TABLE_NAME);
-        sql.append("WHERE FailType != '" + FailType.FAIL_COMMUNICATION.getErrorString() + "'");
+        sql.append("WHERE FailType != ?");
        
-        try {
-            jdbcOps.execute(sql.toString());
-        }
-        catch (DataAccessException e) {
-            throw e;
-        }
+        jdbcTemplate.update(sql.toString(), FailType.FAIL_COMMUNICATION.getErrorString());
+        
         return true;
     }
     
     public boolean deleteAllPending() {
         
-        JdbcOperations jdbcOps = jdbcTemplate.getJdbcOperations();
-        
         SqlStatementBuilder sql = new SqlStatementBuilder();
         sql.append("DELETE FROM " + ImportPendingComm.TABLE_NAME);
-       
-        try {
-            jdbcOps.execute(sql.toString());
-        }
-        catch (DataAccessException e) {
-            throw e;
-        }
+        jdbcTemplate.update(sql.toString());
+        
         return true;
     }
     
-    public boolean deleteAllCommunicationFailures() {
-        
-        JdbcOperations jdbcOps = jdbcTemplate.getJdbcOperations();
+    public boolean deleteAllCommunicationFailures()  {
         
         SqlStatementBuilder sql = new SqlStatementBuilder();
         sql.append("DELETE FROM " + ImportFail.TABLE_NAME);
-        sql.append("WHERE FailType = '" + FailType.FAIL_COMMUNICATION.getErrorString() + "'");
-       
-        try {
-            jdbcOps.execute(sql.toString());
-        }
-        catch (DataAccessException e) {
-            throw e;
-        }
+        sql.append("WHERE FailType = ?");
+        jdbcTemplate.update(sql.toString(), FailType.FAIL_COMMUNICATION.getErrorString());
+
         return true;
     }
     
-    public String getLastImportTime() throws Exception
-    {
-        String lastImportTime = new String("------------");
+    public String getLastImportTime() throws ParseException{
         
-        com.cannontech.database.SqlStatement stmt =
-            new com.cannontech.database.SqlStatement("SELECT LASTIMPORTTIME FROM DYNAMICIMPORTSTATUS WHERE ENTRY = 'SYSTEMVALUE'",
-                                                    "yukon" );
-
-        stmt.execute();
-        if( stmt.getRowCount() > 0 )
-        {
-            lastImportTime = stmt.getRow(0)[0].toString();
-        }
+        String lastImportTime = jdbcTemplate.queryForObject("SELECT LASTIMPORTTIME FROM DYNAMICIMPORTSTATUS WHERE ENTRY = 'SYSTEMVALUE'", 
+                                                            String.class);
         return lastImportTime;
     }
     
-    public String getNextImportTime() throws Exception
+    public String getNextImportTime() throws ParseException
     {
-        String nextImportTime = new String("------------");
-        
-        com.cannontech.database.SqlStatement stmt =
-            new com.cannontech.database.SqlStatement("SELECT NEXTIMPORTTIME FROM DYNAMICIMPORTSTATUS WHERE ENTRY = 'SYSTEMVALUE'",
-                                                    "yukon" );
-
-        stmt.execute();
-        if( stmt.getRowCount() > 0 )
-        {
-            nextImportTime = stmt.getRow(0)[0].toString();
-        }
+        String nextImportTime = jdbcTemplate.queryForObject("SELECT NEXTIMPORTTIME FROM DYNAMICIMPORTSTATUS WHERE ENTRY = 'SYSTEMVALUE'", 
+                                                               String.class);
         return nextImportTime;
     }
 
@@ -149,5 +109,4 @@ public class BulkImportDataDaoImpl implements BulkImportDataDao {
     public void setJdbcTemplate(SimpleJdbcOperations jdbcTemplate) {
         this.jdbcTemplate = jdbcTemplate;
     }
-    
 }
