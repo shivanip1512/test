@@ -17,22 +17,21 @@ public class WidgetInterceptor extends HandlerInterceptorAdapter {
     @SuppressWarnings("unchecked")
     public boolean preHandle(HttpServletRequest request, HttpServletResponse response,
                              Object handler) throws Exception {
-        
-        Map<String, String> existingParams = (Map<String, String>) request.getAttribute("widgetParameters");
-        if (existingParams == null) {
-            existingParams = new HashMap<String, String>();
+        // we want to use the request parameters if widgetParameters is not set
+        // widgetParameters will be set whenever we come from the widget.tag, but
+        // will not be set when doing a refresh or some other Ajax action
+        Map<String, String> widgetParameters = (Map<String, String>) request.getAttribute("widgetParameters");
+        if (widgetParameters == null) {
+            Map<String,String> reqParams = new HashMap<String, String>();
+            Enumeration parameterNames = request.getParameterNames();
+            while (parameterNames.hasMoreElements()) {
+                String name = (String) parameterNames.nextElement();
+                String value = request.getParameter(name);
+                reqParams.put(name, value);
+            }
+
+            request.setAttribute("widgetParameters", reqParams);
         }
-        
-        Map<String,String> reqParams = new HashMap<String, String>();
-        Enumeration parameterNames = request.getParameterNames();
-        while (parameterNames.hasMoreElements()) {
-            String name = (String) parameterNames.nextElement();
-            String value = request.getParameter(name);
-            reqParams.put(name, value);
-        }
-        
-        Map<String, String> newParams = WidgetUtils.combineParameters(reqParams, existingParams);
-        request.setAttribute("widgetParameters", newParams);
         return true;
     }
     
