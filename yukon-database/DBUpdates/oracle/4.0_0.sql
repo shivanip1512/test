@@ -93,7 +93,7 @@ create table CCSEASONSTRATEGYASSIGNMENT  (
    seasonscheduleid     NUMBER                          not null,
    seasonname           VARCHAR2(20)                    not null,
    strategyid           NUMBER                          not null,
-   constraint PK_CCSEASONSTRATEGYASSIGNMENT primary key (paobjectid)
+   constraint PK_CCSEASONSTRATEGYASSIGNMENT primary key (paobjectid,seasonscheduleid, seasonname)
 );
 
 alter table CCSEASONSTRATEGYASSIGNMENT

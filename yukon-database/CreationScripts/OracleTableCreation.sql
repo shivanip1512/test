@@ -1,7 +1,7 @@
 /*==============================================================*/
 /* Database name:  YukonDatabase                                */
 /* DBMS name:      ORACLE Version 9i                            */
-/* Created on:     12/17/2007 3:46:07 PM                        */
+/* Created on:     12/17/2007 4:11:24 PM                        */
 /*==============================================================*/
 
 
@@ -1471,7 +1471,7 @@ create table CCSEASONSTRATEGYASSIGNMENT  (
    seasonscheduleid     NUMBER                          not null,
    seasonname           VARCHAR2(20)                    not null,
    strategyid           NUMBER                          not null,
-   constraint PK_CCSEASONSTRATEGYASSIGNMENT primary key (paobjectid)
+   constraint PK_CCSEASONSTRATEGYASSIGNMENT primary key (paobjectid, seasonscheduleid, seasonname)
 )
 ;
 

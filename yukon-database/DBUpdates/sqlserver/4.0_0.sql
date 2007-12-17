@@ -91,7 +91,7 @@ create table CCSEASONSTRATEGYASSIGNMENT (
    seasonscheduleid     numeric              not null,
    seasonname           varchar(20)          not null,
    strategyid           numeric              not null,
-   constraint PK_CCSEASONSTRATEGYASSIGNMENT primary key (paobjectid)
+   constraint PK_CCSEASONSTRATEGYASSIGNMENT primary key (paobjectid,seasonscheduleid, seasonname)
 );
 go
 

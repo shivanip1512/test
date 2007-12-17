@@ -1,7 +1,7 @@
 /*==============================================================*/
 /* Database name:  YukonDatabase                                */
 /* DBMS name:      Microsoft SQL Server 2000                    */
-/* Created on:     12/17/2007 3:47:23 PM                        */
+/* Created on:     12/17/2007 4:09:06 PM                        */
 /*==============================================================*/
 
 
@@ -2960,7 +2960,7 @@ create table CCSEASONSTRATEGYASSIGNMENT (
    seasonscheduleid     numeric              not null,
    seasonname           varchar(20)          not null,
    strategyid           numeric              not null,
-   constraint PK_CCSEASONSTRATEGYASSIGNMENT primary key (paobjectid)
+   constraint PK_CCSEASONSTRATEGYASSIGNMENT primary key (paobjectid, seasonscheduleid, seasonname)
 )
 go
 
