@@ -8,9 +8,5 @@
 		<property name="timer"><ref bean="globalTimer"/></property>
 		<property name="multiplier" value="1"/>
 	</bean>
-    
-    <bean id="bulkMeterDeleter" class="com.cannontech.tools.bulk.BulkMeterDeleter">
-		<property name="bMDS" ref="bulkMeterDeleterService"/>
-	</bean>
 
 </beans>
