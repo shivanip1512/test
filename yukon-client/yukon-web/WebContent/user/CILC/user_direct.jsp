@@ -1,3 +1,4 @@
+
 <%@ include file="../include/user_header.jsp" %>
 <html>
 <head>
@@ -8,7 +9,7 @@
 </head>
 <html>
 <%@ page import="com.cannontech.message.macs.message.Schedule" %>
-<%@ page import="com.cannontech.loadcontrol.data.LMProgramDirect" %>
+<%@ page import="com.cannontech.loadcontrol.data.LMProgramBase" %>
 <%@ page import="com.cannontech.servlet.LCConnectionServlet" %>
 <%@ page import="com.cannontech.web.loadcontrol.LoadcontrolCache" %>
 
@@ -35,7 +36,7 @@
 
     long[] programIDs = com.cannontech.database.db.web.LMDirectCustomerList.getProgramIDs( customerID );    
     java.util.Arrays.sort(programIDs);
-    LMProgramDirect[] allPrograms = cache.getDirectPrograms(); 
+    LMProgramBase[] allPrograms = cache.getDirectPrograms(); 
 
     // Match our program ids with the actual programs in the cache so we know what to display
     for( int i = 0; i < allPrograms.length; i++ )

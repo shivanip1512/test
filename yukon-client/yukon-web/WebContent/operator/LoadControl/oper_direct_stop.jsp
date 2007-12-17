@@ -1,5 +1,6 @@
 <%@ include file="include/oper_header.jspf" %>
 <%@ include file="include/oper_trendingheader.jspf" %>
+<%@ page import="com.cannontech.loadcontrol.data.LMProgramBase" %>
 <%@ page import="com.cannontech.loadcontrol.data.LMProgramDirect" %>
 <%@ page import="java.util.Calendar" %>
 <%@ taglib uri="/WEB-INF/struts.tld" prefix="struts" %>
@@ -116,13 +117,13 @@
 		}
 	}
 
-    LMProgramDirect[] allPrograms = cache.getDirectPrograms();
+    LMProgramBase[] allPrograms = cache.getDirectPrograms();
 
     for( int i = 0; i < allPrograms.length; i++ )
     {
         if( allPrograms[i].getYukonID().intValue() == programID )
         {
-            program = allPrograms[i];
+            program = (LMProgramDirect)allPrograms[i];
             break;
         }
     }

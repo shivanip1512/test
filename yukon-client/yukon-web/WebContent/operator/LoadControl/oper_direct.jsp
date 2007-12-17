@@ -14,6 +14,7 @@
 <%@ include file="include/oper_header.jspf" %>  
 
 <%@ page import="com.cannontech.message.macs.message.Schedule" %>
+<%@ page import="com.cannontech.loadcontrol.data.LMProgramBase" %>
 <%@ page import="com.cannontech.loadcontrol.data.LMProgramDirect" %>
 <%@ page import="com.cannontech.yukon.IMACSConnection" %>
 
@@ -45,22 +46,27 @@
                             
     // list to put this customers programs in, contains LMProgramDirect and Schedule objects
     ArrayList ourPrograms = new ArrayList();
+	PaoPermissionService pService = (PaoPermissionService) YukonSpringHook.getBean("paoPermissionService");
+    Set<Integer> permittedPaoIDs = pService.getPaoIdsForUserPermission(user, Permission.LM_VISIBLE);
 
 	/*
 	 * Determine which lm programs we need to display
 	 */
-
-    LMProgramDirect[] allPrograms = cache.getDirectPrograms(); 
-	System.out.println(allPrograms.length);
+    LMProgramBase[] allPrograms = cache.getDirectPrograms();
+    boolean progsFoundInPermissions = false; 
     // Match our program ids with the actual programs in the cache so we know what to display
     for( int i = 0; i < allPrograms.length; i++ )
     {
-        int id = allPrograms[i].getYukonID().intValue();
-        if( DaoFactory.getAuthDao().hasExlusiveAccess(user, id) )
-        {
-            // found one
-            ourPrograms.add(allPrograms[i]);
+        if(permittedPaoIDs.contains(allPrograms[i].getYukonID())) {
+        	progsFoundInPermissions = true;
+        	ourPrograms.add(allPrograms[i]);
         }
+    }
+    
+    if(!progsFoundInPermissions) {
+    	for( int j = 0; j < allPrograms.length; j++ ) {
+    		ourPrograms.add(allPrograms[j]);
+    	}
     }
 
 	/*
@@ -68,8 +74,6 @@
 	 */
     Class[] types2 = { Integer.class  };
     String sql = new String();
-    PaoPermissionService pService = (PaoPermissionService) YukonSpringHook.getBean("paoPermissionService");
-    Set<Integer> permittedPaoIDs = pService.getPaoIdsForUserPermission(user, Permission.LM_VISIBLE);
     if(permittedPaoIDs.isEmpty()) {
     	sql = "SELECT scheduleid FROM MACSchedule ORDER BY scheduleid";
     }

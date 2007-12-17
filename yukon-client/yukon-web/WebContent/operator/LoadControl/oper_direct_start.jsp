@@ -1,5 +1,6 @@
 <%@ include file="include/oper_header.jspf" %>
 <%@ include file="include/oper_trendingheader.jspf" %>
+<%@ page import="com.cannontech.loadcontrol.data.LMProgramBase" %>
 <%@ page import="com.cannontech.loadcontrol.data.LMProgramDirect" %>
 <%@ page import="com.cannontech.loadcontrol.data.LMProgramDirectGear" %>
 <%@ page import="java.util.Calendar" %>
@@ -107,13 +108,13 @@
         String gearName = request.getParameter("gear");
         int gearIndex = -1;
 
-        LMProgramDirect[] allPrograms = cache.getDirectPrograms();
+        LMProgramBase[] allPrograms = cache.getDirectPrograms();
 
         for( int i = 0; i < allPrograms.length; i++ )
         {
             if( allPrograms[i].getYukonID().intValue() == programID )
             {
-                java.util.Vector gVec = allPrograms[i].getDirectGearVector();
+                java.util.Vector gVec = ((LMProgramDirect)allPrograms[i]).getDirectGearVector();
 
                 for( int j = 0; j < gVec.size(); j++ )
                 {
@@ -164,13 +165,13 @@
 		}
 	}
 
-    LMProgramDirect[] allPrograms = cache.getDirectPrograms();
+    LMProgramBase[] allPrograms = cache.getDirectPrograms();
 
     for( int i = 0; i < allPrograms.length; i++ )
     {
         if( allPrograms[i].getYukonID().intValue() == programID )
         {
-            program = allPrograms[i];
+            program = (LMProgramDirect)allPrograms[i];
 
             // Find all the gears for this program
             gears = program.getDirectGearVector();

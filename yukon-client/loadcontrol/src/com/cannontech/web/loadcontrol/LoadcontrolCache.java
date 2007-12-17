@@ -350,11 +350,12 @@ public java.lang.String getDbAlias() {
  * Creation date: (7/24/2001 11:23:41 AM)
  * @return com.cannontech.loadcontrol.data.LMProgramDirect[]
  */
-public LMProgramDirect[] getDirectPrograms() {
-	LMProgramDirect[] p = new LMProgramDirect[directPrograms.size()];
-	directPrograms.toArray(p);
-
-	return p;
+public LMProgramBase[] getDirectPrograms() {
+	//LMProgramDirect[] p = new LMProgramDirect[directPrograms.size()];
+    //directPrograms.toArray(p);
+    LMProgramBase[] p = new LMProgramBase[lcConn.getPrograms().size()];
+    lcConn.getPrograms().values().toArray( p );
+    return p;
 }
 
 /**

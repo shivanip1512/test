@@ -1,3 +1,4 @@
+
 <%@ include file="../include/user_header.jsp" %>
 <html>
 <head>
@@ -24,7 +25,7 @@
   //End hiding script -->
   </SCRIPT>
 </head>
-<%@ page import="com.cannontech.loadcontrol.data.LMProgramDirect" %>
+<%@ page import="com.cannontech.loadcontrol.data.LMProgramBase" %>
 <%@ page import="com.cannontech.servlet.LCConnectionServlet" %>
 <%@ page import="com.cannontech.web.loadcontrol.LoadcontrolCache" %>
 <%@ page import="java.util.Calendar" %>
@@ -141,7 +142,7 @@
 		}
 	}
 
-    LMProgramDirect[] allPrograms = cache.getDirectPrograms();
+    LMProgramBase[] allPrograms = cache.getDirectPrograms();
 
     for( int i = 0; i < allPrograms.length; i++ )
     {
