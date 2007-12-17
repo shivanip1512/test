@@ -14,13 +14,13 @@
 	<br>
 	
 	<div style="width: 50%;">
-		
+		<ct:widgetContainer deviceId="${deviceId}">
 		<ct:widget bean="meterInformationWidget" />
 		
 		<ct:widget bean="profileWidget" />
 		
 		<ct:widget bean="peakReportWidget" />
-		
+		</ct:widgetContainer>
 	</div>
 
 </cti:standardPage>

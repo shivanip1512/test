@@ -23,8 +23,9 @@
 	</c:if>
 	
 	<div style="width: 50%;">
-	
+	  <tags:widgetContainer deviceId="${deviceId}">
 		<tags:widget bean="meterInformationWidget" />
+      </tags:widgetContainer>
 		
 		<form name="commandForm" method="POST" action="/servlet/CommanderServlet">
 

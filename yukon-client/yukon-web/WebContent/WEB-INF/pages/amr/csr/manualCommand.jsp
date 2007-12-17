@@ -42,7 +42,9 @@
 	
 	<div style="width: 600px">
 	
+      <tags:widgetContainer deviceId="${deviceId}">
 		<tags:widget bean="meterInformationWidget" />
+      </tags:widgetContainer>
 	
 		<tags:boxContainer title="Execute Command" hideEnabled="false">
 			<form name="commandForm" method="POST" action="/servlet/CommanderServlet">
