@@ -1,6 +1,9 @@
 package com.cannontech.analysis.tablemodel;
 
+import java.sql.Connection;
+import java.sql.PreparedStatement;
 import java.sql.ResultSet;
+import java.sql.SQLException;
 import java.sql.Timestamp;
 import java.util.Collections;
 import java.util.Comparator;
@@ -8,13 +11,14 @@ import java.util.Date;
 
 import javax.servlet.http.HttpServletRequest;
 
-import org.apache.commons.lang.StringUtils;
+import org.springframework.dao.DataRetrievalFailureException;
 
 import com.cannontech.amr.meter.model.Meter;
 import com.cannontech.analysis.ColumnProperties;
 import com.cannontech.analysis.data.device.MeterAndPointData;
 import com.cannontech.clientutils.CTILogger;
 import com.cannontech.common.util.CtiUtilities;
+import com.cannontech.common.util.SqlStatementBuilder;
 import com.cannontech.database.PoolManager;
 import com.cannontech.database.SqlUtils;
 import com.cannontech.database.data.pao.PAOGroups;
@@ -37,20 +41,16 @@ public class MeterReadModel extends ReportModelBase<MeterAndPointData> implement
 	public final static int DEVICE_NAME_COLUMN = 0;
 	public final static int METER_NUMBER_COLUMN = 1;
 	public final static int PHYSICAL_ADDRESS_COLUMN = 2;
-	public final static int POINT_NAME_COLUMN = 3;
-	public final static int ROUTE_NAME_COLUMN = 4;
-	public final static int TIMESTAMP_COLUMN = 5;
-	public final static int VALUE_COLUMN = 6;
+	public final static int ROUTE_NAME_COLUMN = 3;
+	public final static int TIMESTAMP_COLUMN = 4;
 	//Alternate columns for a successful meter report
 
 	/** String values for column representation */
 	public final static String DEVICE_NAME_STRING = "Device Name";
 	public final static String METER_NUMBER_STRING = "Meter Number";
 	public final static String PHYSICAL_ADDRESS_STRING = "Address";
-	public final static String POINT_NAME_STRING = "Point Name";
 	public final static String ROUTE_NAME_STRING = "Route Name";
 	public final static String TIMESTAMP_STRING= "Timestamp";
-	public final static String VALUE_STRING = "Value";
 	
 	/** Class fields */
 	public final static int MISSED_METER_READ_TYPE = 2;
@@ -116,43 +116,40 @@ public class MeterReadModel extends ReportModelBase<MeterAndPointData> implement
 		try {
             Meter meter = new Meter();
             
-            int paobjectID = rset.getInt(1);
+            int paobjectID = rset.getInt("paobjectId");
             meter.setDeviceId(paobjectID);
-            String paoName = rset.getString(2);
+            String paoName = rset.getString("paoName");
             meter.setName(paoName);
-            String type = rset.getString(3);
+            String type = rset.getString("type");
             int deviceType = PAOGroups.getDeviceType(type);
             meter.setType(deviceType);
             meter.setTypeStr(type);
-            String disabledStr = rset.getString(4);
+            String disabledStr = rset.getString("disableFlag");
             boolean disabled = CtiUtilities.isTrue(disabledStr);
             meter.setDisabled(disabled);
-            String meterNumber = rset.getString(5);
+            String meterNumber = rset.getString("meterNumber");
             meter.setMeterNumber(meterNumber);
-            String address = rset.getString(6);
+            String address = rset.getString("address");
             meter.setAddress(address);
-            int routeID = rset.getInt(7);
+            int routeID = rset.getInt("routeId");
             meter.setRouteId(routeID);
-            String routeName = rset.getString(8);
+            String routeName = rset.getString("routeName");
             meter.setRoute(routeName);
-            int pointID = rset.getInt(9);
-            String pointName = rset.getString(10);
             
 			Date ts = null;
 			Double value = null;
 			if (getMeterReadType()== SUCCESS_METER_READ_TYPE)
 			{
-			    Timestamp timestamp = rset.getTimestamp(11);
+			    Timestamp timestamp = rset.getTimestamp("timestamp");
 			    ts = new Date(timestamp.getTime());
-			    value = new Double(rset.getDouble(12));
 			}
-			MeterAndPointData mpData = new MeterAndPointData(meter, pointID, pointName, ts, value);
+			MeterAndPointData mpData = new MeterAndPointData(meter, ts);
 
 			getData().add(mpData);
 		}
-		catch(java.sql.SQLException e)
+		catch(SQLException e)
 		{
-			e.printStackTrace();
+			throw new DataRetrievalFailureException("Unable to addDataRow", e);
 		}
 	}
 
@@ -160,54 +157,57 @@ public class MeterReadModel extends ReportModelBase<MeterAndPointData> implement
 	 * Build the SQL statement to retrieve MissedMeter data.
 	 * @return StringBuffer  an sqlstatement
 	 */
-	public StringBuffer buildSQLStatement() {
-        
-        StringBuffer sql = new StringBuffer("SELECT DISTINCT PAO.PAOBJECTID, PAO.PAONAME, PAO.TYPE, PAO.DISABLEFLAG, " +
-                                            " DMG.METERNUMBER, DCS.ADDRESS, ROUTE.PAOBJECTID, ROUTE.PAONAME, " +
-                                            " P.POINTID, P.POINTNAME "); 
+	public String buildSQLStatement() {
+        SqlStatementBuilder sql = new SqlStatementBuilder();
+        sql.append("SELECT");
+        sql.append("  PAO.PAOBJECTID, PAO.PAONAME, PAO.TYPE, PAO.DISABLEFLAG, DMG.METERNUMBER, DCS.ADDRESS,");
+        sql.append("  ROUTE.PAOBJECTID as routeId, ROUTE.PAONAME as routeName");
 
-		if( getMeterReadType() == SUCCESS_METER_READ_TYPE)
-		    sql.append(", TIMESTAMP, VALUE ");
-
-        sql.append(" FROM YUKONPAOBJECT PAO, DEVICEMETERGROUP DMG, DEVICECARRIERSETTINGS DCS, DEVICEROUTES DR, YUKONPAOBJECT ROUTE, POINT P " );
-        
-        if( getMeterReadType() == SUCCESS_METER_READ_TYPE)
-            sql.append(", RAWPOINTHISTORY RPH1");
-        
-        sql.append(" WHERE PAO.PAOBJECTID = DMG.DEVICEID " + 
-                    " AND PAO.PAOBJECTID = DCS.DEVICEID " + 
-                    " AND PAO.PAOBJECTID = DR.DEVICEID " +
-                    " AND ROUTE.PAOBJECTID = DR.ROUTEID " + 
-                    " AND PAO.PAOBJECTID = P.PAOBJECTID "); 
-
-		//CHANGED TO GET ALL POINTS...NO LIMITS
-//		Use paoIDs in query if they exist			
-		if( getPaoIDs() != null && getPaoIDs().length > 0) {
-            StringBuilder sb = new StringBuilder();
-            for (final int i : getPaoIDs()) {
-                sb.append(i + ",");
-            }
-			sql.append(" AND PAO.PAOBJECTID IN (" + StringUtils.chop(sb.toString()) + ") ");
-		}
-		
-        if( getBillingGroups() != null && getBillingGroups().length > 0) {
-            String deviceGroupSqlWhereClause = getGroupSqlWhereClause("PAO.PAOBJECTID");
-            sql.append(" AND " + deviceGroupSqlWhereClause);
+		if( getMeterReadType() == SUCCESS_METER_READ_TYPE) {
+            sql.append(", RPH.maxTime as TIMESTAMP");
         }
 
-		if( getMeterReadType() == SUCCESS_METER_READ_TYPE)
-		    sql.append( " AND RPH1.POINTID = P.POINTID " +
-		    		" AND RPH1.TIMESTAMP = (SELECT MAX(RPH2.TIMESTAMP) FROM RAWPOINTHISTORY RPH2" +
-		    		" WHERE RPH1.POINTID = RPH2.POINTID " +
-		    		" AND TIMESTAMP > ? AND TIMESTAMP <= ?)" +
-		    		" AND RPH1.POINTID = P.POINTID ");
-		    		 
-		else if (getMeterReadType() == MISSED_METER_READ_TYPE)
-		    sql.append(" AND P.POINTID " + getInclusiveSQLString() +
-				" (SELECT DISTINCT POINTID FROM RAWPOINTHISTORY WHERE TIMESTAMP > ? AND TIMESTAMP <= ? )");
-		
-		return sql;
+        sql.append("FROM YukonPaObject PAO");
+        sql.append("  JOIN DeviceMeterGroup DMG on PAO.PAOBJECTID = DMG.DEVICEID");
+        sql.append("  JOIN DeviceCarrierSettings DCS on PAO.PAOBJECTID = DCS.DEVICEID");
+        sql.append("  JOIN DeviceRoutes DR on PAO.PAOBJECTID = DR.DEVICEID");
+        sql.append("  JOIN YukonPaObject ROUTE on ROUTE.PAOBJECTID = DR.ROUTEID");
+        
+        if( getMeterReadType() == SUCCESS_METER_READ_TYPE) {
+            sql.append("  JOIN (");
+            sql.append("    SELECT sP.paobjectid, max(sRPH.timestamp) maxTime");
+            sql.append("    FROM RawPointHistory sRPH");
+            sql.append("      JOIN Point sP on sRPH.pointId = sP.pointId");
+            sql.append("    WHERE timestamp > ? AND timestamp <= ?");
+            sql.append("      ", buildWhereClause("sP.paobjectId"));
+            sql.append("    GROUP BY sP.paobjectid");
+            sql.append("  ) RPH on RPH.paobjectid = PAO.paobjectid");
+        } else {
+            sql.append("WHERE  ");
+            sql.append("  PAO.PAOBJECTID NOT IN (");
+            sql.append("    SELECT distinct sP.paobjectid " );
+            sql.append("    FROM RawPointHistory sRPH" );
+            sql.append("      JOIN Point sP on sRPH.pointId = sP.pointId" );
+            sql.append("    WHERE timestamp > ? AND timestamp <= ? ");
+            sql.append("  )");
+            sql.append("  ", buildWhereClause("pao.paobjectid"));
+        }
+        
+		return sql.toString();
 	}
+
+    private SqlStatementBuilder buildWhereClause(String columnName) {
+        SqlStatementBuilder sqlWhere = new SqlStatementBuilder();
+        if (getPaoIDs() != null && getPaoIDs().length > 0) {
+            sqlWhere.append(" AND ",columnName, "IN (", getPaoIDs(), ") ");
+        }
+        
+        if (getBillingGroups() != null && getBillingGroups().length > 0) {
+            String deviceGroupSqlWhereClause = getGroupSqlWhereClause(columnName);
+            sqlWhere.append(" AND " + deviceGroupSqlWhereClause);
+        }
+        return sqlWhere;
+    }
 	
 	@Override
 	public void collectData()
@@ -215,12 +215,12 @@ public class MeterReadModel extends ReportModelBase<MeterAndPointData> implement
 		//Reset all objects, new data being collected!
 		setData(null);
 				
-		StringBuffer sql = buildSQLStatement();
+		String sql = buildSQLStatement();
 		CTILogger.info("SQL for MeterReadModel: " + sql.toString());
 		
-		java.sql.Connection conn = null;
-		java.sql.PreparedStatement pstmt = null;
-		java.sql.ResultSet rset = null;
+		Connection conn = null;
+		PreparedStatement pstmt = null;
+		ResultSet rset = null;
 
 		try
 		{
@@ -231,7 +231,7 @@ public class MeterReadModel extends ReportModelBase<MeterAndPointData> implement
 			    CTILogger.error(getClass() + ":  Error getting database connection.");
 			    return;
 			}
-			pstmt = conn.prepareStatement(sql.toString());
+			pstmt = conn.prepareStatement(sql);
 			pstmt.setTimestamp(1, new java.sql.Timestamp( getStartDate().getTime() ));
 			pstmt.setTimestamp(2, new java.sql.Timestamp( getStopDate().getTime() ));				
 			CTILogger.info("START DATE >= " + getStartDate() + " - STOP DATE < " + getStopDate());
@@ -250,7 +250,7 @@ public class MeterReadModel extends ReportModelBase<MeterAndPointData> implement
 			}
 		}
 			
-		catch( java.sql.SQLException e )
+		catch( SQLException e )
 		{
 			throw new RuntimeException("Unable to collect data", e);
 		}
@@ -262,18 +262,6 @@ public class MeterReadModel extends ReportModelBase<MeterAndPointData> implement
 		return;
 	}
 	 
-	 private String getInclusiveSQLString()
-	 {
-	 	switch (getMeterReadType())
-		{
-			case SUCCESS_METER_READ_TYPE:
-				return " IN ";
-			case MISSED_METER_READ_TYPE:
-			default :
-				return " NOT IN";
-		}
-	 }
-
 	/* (non-Javadoc)
 	 * @see com.cannontech.analysis.Reportable#getAttribute(int, java.lang.Object)
 	 */
@@ -294,9 +282,6 @@ public class MeterReadModel extends ReportModelBase<MeterAndPointData> implement
 				case PHYSICAL_ADDRESS_COLUMN:
 				    return mpData.getMeter().getAddress();
 				    
-				case POINT_NAME_COLUMN:
-					return mpData.getPointName();
-	
 				case ROUTE_NAME_COLUMN:
 					return mpData.getMeter().getRoute();
 					
@@ -306,13 +291,6 @@ public class MeterReadModel extends ReportModelBase<MeterAndPointData> implement
 				        return mpData.getTimeStamp();
 				        
                     return null;
-				}				    
-				case VALUE_COLUMN:
-				{
-				    if (getMeterReadType()== SUCCESS_METER_READ_TYPE)
-				        return mpData.getValue();
-				    
-				    return null;
 				}				    
 			}
 		}
@@ -326,8 +304,6 @@ public class MeterReadModel extends ReportModelBase<MeterAndPointData> implement
 	{
 		if( columnNames == null)
 		{
-		   
-		    
 		    //Reupdate the string values if success meter model
 		    if( getMeterReadType() == SUCCESS_METER_READ_TYPE)
 		    {
@@ -335,17 +311,14 @@ public class MeterReadModel extends ReportModelBase<MeterAndPointData> implement
                         DEVICE_NAME_STRING,
                         METER_NUMBER_STRING,
                         PHYSICAL_ADDRESS_STRING,
-                        POINT_NAME_STRING,
                         ROUTE_NAME_STRING, 
                         TIMESTAMP_STRING, 
-                        VALUE_STRING
                     };      
 		    } else {
                 columnNames = new String[]{
                         DEVICE_NAME_STRING,
                         METER_NUMBER_STRING,
                         PHYSICAL_ADDRESS_STRING,
-                        POINT_NAME_STRING,
                         ROUTE_NAME_STRING
                     };      
             }
@@ -368,15 +341,12 @@ public class MeterReadModel extends ReportModelBase<MeterAndPointData> implement
 					String.class,
 					String.class,
 					String.class,
-					String.class,
 					Date.class,
-					Double.class
 				};
 		    }
 		    else
 		    {
 				columnTypes = new Class[]{
-						String.class,
 						String.class,
 						String.class,
 						String.class,
@@ -401,10 +371,8 @@ public class MeterReadModel extends ReportModelBase<MeterAndPointData> implement
 					new ColumnProperties(0, 1, 150, null),
 					new ColumnProperties(150, 1, 75, null),
 					new ColumnProperties(225, 1, 75, null),
-					new ColumnProperties(300, 1, 100, null),
-					new ColumnProperties(400, 1, 150, null),
-					new ColumnProperties(550, 1, 92, "MM/dd/yyyy HH:mm:ss"),
-					new ColumnProperties(642, 1, 75, "0.000")
+					new ColumnProperties(300, 1, 200, null),
+					new ColumnProperties(500, 1, 92, "MM/dd/yyyy HH:mm:ss"),
 				};
 		    }
 		    else
@@ -414,8 +382,7 @@ public class MeterReadModel extends ReportModelBase<MeterAndPointData> implement
                     new ColumnProperties(0, 1, 250, null),
                     new ColumnProperties(250, 1, 75, null),
                     new ColumnProperties(325, 1, 75, null),
-                    new ColumnProperties(400, 1, 150, null),
-                    new ColumnProperties(550, 1, 150, null),
+                    new ColumnProperties(400, 1, 200, null),
 				};
 			}
 		}
@@ -433,13 +400,7 @@ public class MeterReadModel extends ReportModelBase<MeterAndPointData> implement
 		else if( getMeterReadType() ==  MISSED_METER_READ_TYPE)
     	    title += "Missed ";
 	    	    
-		title += "Meter Data - ";
-		if( getFilterModelType().equals(ReportFilter.GROUPS) &&
-                getBillingGroups() != null) {
-            for (String group : getBillingGroups()) {
-                title += group;
-            }
-        }
+		title += "Meter Data";
 		return title;
 	}
 	

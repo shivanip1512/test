@@ -110,13 +110,12 @@ public class MeterReadReport extends YukonReportBase
 	private Group createDeviceGroup()
 	{
 		final Group devGrpGroup = new Group();
-		devGrpGroup.setName(MeterReadModel.DEVICE_NAME_STRING + ReportFactory.NAME_GROUP);
-		devGrpGroup.addField(MeterReadModel.DEVICE_NAME_STRING);
+		devGrpGroup.setName("Column Heading");
 		  
 		GroupHeader header = ReportFactory.createGroupHeaderDefault();
 
 		LabelElementFactory factory;
-		for (int i = MeterReadModel.DEVICE_NAME_COLUMN; i < getModel().getColumnCount(); i++)
+		for (int i = 0; i < getModel().getColumnCount(); i++)
 		{
 		    factory = ReportFactory.createGroupLabelElementDefault(getModel(), i);
 		    header.addElement(factory.createElement());
@@ -133,8 +132,7 @@ public class MeterReadReport extends YukonReportBase
 		
 		return devGrpGroup;
 	}
-
-
+	
 	/**
 	 * Creates the function collection. The xml definition for this construct:
 	 * @return the functions.

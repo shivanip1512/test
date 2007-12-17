@@ -3,6 +3,8 @@
  */
 package com.cannontech.analysis.data.device;
 
+import java.util.Date;
+
 import com.cannontech.amr.meter.model.Meter;
 import com.cannontech.core.dao.DaoFactory;
 import com.cannontech.database.data.lite.LiteDeviceMeterNumber;
@@ -48,6 +50,11 @@ public class MeterAndPointData
         pointName = pointName_;
         timeStamp = timeStamp_;
         value = value_;         
+    }
+    
+    public MeterAndPointData(Meter meter, Date ts) {
+        this.meter = meter;
+        this.timeStamp = ts;
     }
     
     public MeterAndPointData(Meter meter_)  {
