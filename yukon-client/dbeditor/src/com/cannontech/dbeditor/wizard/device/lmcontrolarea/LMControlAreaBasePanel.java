@@ -22,6 +22,7 @@ public class LMControlAreaBasePanel extends com.cannontech.common.gui.util.DataI
 	private javax.swing.JLabel ivjJLabelTime2 = null;
 	private javax.swing.JLabel ivjJLabelStartTime = null;
 	private javax.swing.JLabel ivjJLabelStopTime = null;
+	private javax.swing.JLabel ivjJLabelWarning = null;
 	private com.cannontech.common.gui.util.JTextFieldTimeEntry ivjJTextFieldTimeEntryStart = null;
 	private com.cannontech.common.gui.util.JTextFieldTimeEntry ivjJTextFieldTimeEntryStop = null;
 	private javax.swing.JComboBox ivjJComboBoxControlInterval = null;
@@ -501,6 +502,28 @@ private javax.swing.JLabel getJLabelTime2() {
 	return ivjJLabelTime2;
 }
 /**
+ * Return the JLabelDailyStartTime property value.
+ * @return javax.swing.JLabel
+ */
+/* WARNING: THIS METHOD WILL BE REGENERATED. */
+private javax.swing.JLabel getJLabelWarning() {
+	if (ivjJLabelWarning == null) {
+		try {
+			ivjJLabelWarning = new javax.swing.JLabel();
+			ivjJLabelWarning.setName("JLabelWarning");
+			ivjJLabelWarning.setFont(new java.awt.Font("dialog", 0, 12));
+			ivjJLabelWarning.setText("Control Window changes take effect at midnight");
+			// user code begin {1}
+			// user code end
+		} catch (java.lang.Throwable ivjExc) {
+			// user code begin {2}
+			// user code end
+			handleException(ivjExc);
+		}
+	}
+	return ivjJLabelWarning;
+}
+/**
  * Return the JPanelOptional property value.
  * @return javax.swing.JPanel
  */
@@ -516,7 +539,8 @@ private javax.swing.JPanel getJPanelOptional() {
 			ivjJPanelOptional.setName("JPanelOptional");
 			ivjJPanelOptional.setBorder(ivjLocalBorder);
 			ivjJPanelOptional.setLayout(new java.awt.GridBagLayout());
-
+			
+				
 			java.awt.GridBagConstraints constraintsJLabelStartTime = new java.awt.GridBagConstraints();
 			constraintsJLabelStartTime.gridx = 1; constraintsJLabelStartTime.gridy = 1;
 			constraintsJLabelStartTime.anchor = java.awt.GridBagConstraints.WEST;
@@ -565,8 +589,17 @@ private javax.swing.JPanel getJPanelOptional() {
 			constraintsJTextFieldTimeEntryStart.ipadx = 131;
 			constraintsJTextFieldTimeEntryStart.insets = new java.awt.Insets(26, 0, 10, 4);
 			getJPanelOptional().add(getJTextFieldTimeEntryStart(), constraintsJTextFieldTimeEntryStart);
-			// user code begin {1}
-			// user code end
+			
+			java.awt.GridBagConstraints constraintsJLabelWarning = new java.awt.GridBagConstraints();
+			constraintsJLabelWarning.gridx = 1; constraintsJLabelWarning.gridy = 3;
+			constraintsJLabelWarning.fill = java.awt.GridBagConstraints.HORIZONTAL;
+			constraintsJLabelWarning.anchor = java.awt.GridBagConstraints.WEST;
+			constraintsJLabelWarning.weightx = 1.0;
+			constraintsJLabelWarning.gridwidth = 3;
+			constraintsJLabelWarning.ipadx = 131;
+			constraintsJLabelWarning.insets = new java.awt.Insets(10, 17, 34, 0);
+            getJPanelOptional().add(getJLabelWarning(), constraintsJLabelWarning);
+            
 		} catch (java.lang.Throwable ivjExc) {
 			// user code begin {2}
 			// user code end
