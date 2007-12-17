@@ -1,7 +1,7 @@
 /*==============================================================*/
 /* Database name:  YukonDatabase                                */
 /* DBMS name:      ORACLE Version 9i                            */
-/* Created on:     12/13/2007 10:49:53 AM                       */
+/* Created on:     12/17/2007 3:46:07 PM                        */
 /*==============================================================*/
 
 
@@ -1925,7 +1925,6 @@ create table CTIDatabase  (
 ;
 
 /* __YUKON_VERSION__ */
-insert into CTIDatabase values('4.0', 'David', '13-Dec-2007', 'Latest Update', 0 );
 
 /*==============================================================*/
 /* Table: CalcPointBaseline                                     */

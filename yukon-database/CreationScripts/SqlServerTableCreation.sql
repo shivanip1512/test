@@ -1,7 +1,7 @@
 /*==============================================================*/
 /* Database name:  YukonDatabase                                */
 /* DBMS name:      Microsoft SQL Server 2000                    */
-/* Created on:     12/13/2007 10:47:50 AM                       */
+/* Created on:     12/17/2007 3:47:23 PM                        */
 /*==============================================================*/
 
 
@@ -2793,13 +2793,6 @@ create table CAPBANK (
 )
 go
 
-declare @CmtCAPBANK varchar(128)
-select @CmtCAPBANK = user_name()
-execute sp_addextendedproperty 'MS_Description', 
-   'This a test comment for the CapBank table.',
-   'user', @CmtCAPBANK, 'table', 'CAPBANK'
-go
-
 /*==============================================================*/
 /* Table: CAPBANKADDITIONAL                                     */
 /*==============================================================*/
@@ -2848,13 +2841,6 @@ create table CAPCONTROLAREA (
    AreaID               numeric              not null,
    constraint PK_CAPCONTROLAREA primary key nonclustered (AreaID)
 )
-go
-
-declare @CmtCAPCONTROLAREA varchar(128)
-select @CmtCAPCONTROLAREA = user_name()
-execute sp_addextendedproperty 'MS_Description', 
-   'This is a CapControlArea comment for the data dictionary.',
-   'user', @CmtCAPCONTROLAREA, 'table', 'CAPCONTROLAREA'
 go
 
 /*==============================================================*/
@@ -3428,8 +3414,6 @@ create table CTIDatabase (
 go
 
 /* __YUKON_VERSION__ */
-insert into CTIDatabase values('4.0', 'David', '13-Dec-2007', 'Latest Update', 0 );
-
 
 /*==============================================================*/
 /* Table: CalcPointBaseline                                     */
@@ -12426,4 +12410,64 @@ alter table YukonUserRole
 go
 
 
+create or replace procedure RenCol(
+  User in varchar2,       -- name of the schema. 
+  Table_Name in varchar2, -- name of the table. 
+  Old_Name in varchar2,   -- name of the column to be renamed. 
+  New_Name in varchar2    -- new name of the column. 
+) 
+As
+declare
+  obj_id number; 
+  col_id number; 
+  cursor_name1 INTEGER; 
+  cursor_name2 INTEGER; 
+  ret1 INTEGER; 
+  ret2 INTEGER; 
+
+begin
+  Select object_id 
+  Into obj_id 
+  From dba_objects 
+  Where object_name=UPPER(table_name) 
+  And owner=UPPER(user) 
+  And object_type='TABLE'; 
+
+  --DBMS_OutPut.put_line(obj_id); 
+
+  Select col# 
+  Into col_id 
+  From col$ 
+  Where obj#=obj_id 
+  And name=UPPER(old_name); 
+
+  --DBMS_OutPut.put_line(col_id); 
+
+  Update col$ 
+  Set name=UPPER(new_name) 
+  Where obj#=obj_id 
+  And col#=col_id; 
+
+  Commit; 
+
+  cursor_name1 := DBMS_Sql.Open_Cursor; 
+  DBMS_Sql.Parse(cursor_name1, 'ALTER SYSTEM FLUSH SHARED_POOL',DBMS_Sql.Native); 
+  ret1 := DBMS_Sql.Execute(cursor_name1); 
+  DBMS_Sql.Close_Cursor(cursor_name1); 
+
+  cursor_name2:= DBMS_Sql.Open_Cursor; 
+  DBMS_Sql.Parse(cursor_name2, 'ALTER SYSTEM CHECKPOINT',DBMS_Sql.Native); 
+  ret2:= DBMS_Sql.Execute(cursor_name2); 
+  DBMS_Sql.Close_Cursor(cursor_name2); 
+end;
+/**************************************************************************************/
+/* Example of use:                                                                    */
+/*  SQL> Exec RenCol( 'username', 'tablename', 'old col name', 'new col name' );      */
+/*                                                                                    */
+/**************************************************************************************/
+/
+
+alter procedure RenCol compile
+/
+go
 
