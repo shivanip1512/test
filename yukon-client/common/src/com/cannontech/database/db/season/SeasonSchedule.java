@@ -168,13 +168,15 @@ public static SeasonSchedule[] getAllCBCSchedules() {
             rset = pstmt.executeQuery();
 
             while( rset.next() ) {
-                SeasonSchedule cbcSS = new SeasonSchedule();
-
-                cbcSS.setScheduleID( new Integer(rset.getInt(1)) );
-                cbcSS.setScheduleName( rset.getString(2) );
-                vect.add( cbcSS );               
+                Integer scheduleId = new Integer (rset.getInt(1));
+                if(scheduleId != 0) {  // ignore the 'Empty Schedule' schedule for capcontrol purposes
+                    SeasonSchedule cbcSS = new SeasonSchedule();
+    
+                    cbcSS.setScheduleID( scheduleId );
+                    cbcSS.setScheduleName( rset.getString(2) );
+                    vect.add( cbcSS );  
+                }
             }
-
         }       
     }
     catch( java.sql.SQLException e ) {
