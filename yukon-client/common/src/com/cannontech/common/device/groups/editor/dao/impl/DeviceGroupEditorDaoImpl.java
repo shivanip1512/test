@@ -9,6 +9,7 @@ import java.util.Set;
 import org.apache.commons.lang.Validate;
 import org.springframework.beans.factory.annotation.Required;
 import org.springframework.dao.DataIntegrityViolationException;
+import org.springframework.dao.EmptyResultDataAccessException;
 import org.springframework.jdbc.core.simple.SimpleJdbcOperations;
 import org.springframework.transaction.annotation.Propagation;
 import org.springframework.transaction.annotation.Transactional;
@@ -17,11 +18,11 @@ import com.cannontech.common.device.YukonDevice;
 import com.cannontech.common.device.groups.dao.DeviceGroupType;
 import com.cannontech.common.device.groups.editor.dao.DeviceGroupEditorDao;
 import com.cannontech.common.device.groups.editor.dao.DeviceGroupMemberEditorDao;
-import com.cannontech.common.device.groups.editor.dao.SystemGroupEnum;
 import com.cannontech.common.device.groups.editor.model.StoredDeviceGroup;
 import com.cannontech.common.device.groups.util.YukonDeviceToIdMapper;
 import com.cannontech.common.util.MappingList;
 import com.cannontech.common.util.SqlStatementBuilder;
+import com.cannontech.core.dao.NotFoundException;
 import com.cannontech.database.SqlUtils;
 import com.cannontech.database.data.pao.PaoGroupsWrapper;
 import com.cannontech.database.incrementer.NextValueHelper;
@@ -164,7 +165,8 @@ public class DeviceGroupEditorDaoImpl implements DeviceGroupEditorDao, DeviceGro
         return rootGroupCache;
     }
     
-    public StoredDeviceGroup getGroupByName(StoredDeviceGroup parent, String groupName) {
+    public StoredDeviceGroup getGroupByName(StoredDeviceGroup parent, 
+            String groupName) throws NotFoundException{
         String rawName = SqlUtils.convertStringToDbValue(groupName);
 
         SqlStatementBuilder sql = new SqlStatementBuilder();
@@ -172,7 +174,12 @@ public class DeviceGroupEditorDaoImpl implements DeviceGroupEditorDao, DeviceGro
         sql.append("from DeviceGroup dg");
         sql.append("where dg.parentdevicegroupid = ? and dg.groupname = ?");
         PartialDeviceGroupRowMapper mapper = new PartialDeviceGroupRowMapper();
-        PartialDeviceGroup group = jdbcTemplate.queryForObject(sql.toString(), mapper, parent.getId(), rawName);
+        PartialDeviceGroup group = null;
+        try{
+            group = jdbcTemplate.queryForObject(sql.toString(), mapper, parent.getId(), rawName);
+        } catch (EmptyResultDataAccessException erdae) {
+            throw new NotFoundException(parent.getFullName()+"/"+groupName);
+        }
         PartialGroupResolver resolver = new PartialGroupResolver(this);
         resolver.addKnownGroups(parent);
         StoredDeviceGroup resolvedGroup = resolver.resolvePartial(group);
