@@ -1,5 +1,5 @@
 
-%@ include file="../include/user_header.jsp" %>
+<%@ include file="../include/user_header.jsp" %>
 <html>
 <head>
 <title>Consumer Energy Services</title>
