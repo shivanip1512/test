@@ -393,6 +393,8 @@ public class CapControlForm extends DBEditorForm implements ICapControlModel{
         }
 		if (getDbPersistent() instanceof CapControlFeeder) {
 			((CapControlFeeder) getDbPersistent()).getCapControlFeeder().setCurrentVarLoadPointID(new Integer(val));
+			((CapControlFeeder) getDbPersistent()).getCapControlFeeder().setPhaseB(new Integer(val));
+			((CapControlFeeder) getDbPersistent()).getCapControlFeeder().setPhaseC(new Integer(val));
         } else if (getDbPersistent() instanceof CapControlSubBus) {
 			((CapControlSubBus) getDbPersistent()).getCapControlSubstationBus().setCurrentVarLoadPointID(new Integer(val));
             ((CapControlSubBus) getDbPersistent()).getCapControlSubstationBus().setPhaseB(new Integer(val));
@@ -452,7 +454,7 @@ public class CapControlForm extends DBEditorForm implements ICapControlModel{
     }
 
 	public void wattPtTeeClick(ActionEvent ae) {
-		String val = (String) FacesContext.getCurrentInstance().getExternalContext().getRequestParameterMap().get("ptID");
+		String val = (String) FacesContext.getCurrentInstance().getExternalContext().getRequestParameterMap().get("ptId");
 		if (val == null) {
 			return;
         }
@@ -465,7 +467,7 @@ public class CapControlForm extends DBEditorForm implements ICapControlModel{
 	}
 
 	public void voltPtTeeClick(ActionEvent ae) {
-		String val = (String) FacesContext.getCurrentInstance().getExternalContext().getRequestParameterMap().get("ptID");
+		String val = (String) FacesContext.getCurrentInstance().getExternalContext().getRequestParameterMap().get("ptId");
 		if (val == null) {
 			return;
         }
@@ -1762,7 +1764,6 @@ public class CapControlForm extends DBEditorForm implements ICapControlModel{
             int voltPoint = getControlPoint (PointUnits.UOMID_KVOLTS);
             int wattPoint = getControlPoint (PointUnits.UOMID_KW);
             int switchPointID = PointTypes.SYS_PID_SYSTEM;
-            pointNameMap.put(switchPointID, "(none)");
             if (getDbPersistent() instanceof CapControlSubBus) {
                 CapControlSubBus sub = (CapControlSubBus) getDbPersistent();
                 CapControlSubstationBus subBus = sub.getCapControlSubstationBus();
@@ -1782,10 +1783,10 @@ public class CapControlForm extends DBEditorForm implements ICapControlModel{
             pointNameMap.put(varPoint, pointDao.getPointName(varPoint));
             pointNameMap.put(wattPoint, pointDao.getPointName(wattPoint));            
             pointNameMap.put(voltPoint, pointDao.getPointName(voltPoint));
-            pointNameMap.put(0, pointDao.getPointName(0));
             if (switchPointID != PointTypes.SYS_PID_SYSTEM) {
                 pointNameMap.put(switchPointID, pointDao.getPointName(switchPointID));
             }
+            pointNameMap.put(0, "(none)");
         }
         return pointNameMap;
      }
@@ -1819,6 +1820,7 @@ public class CapControlForm extends DBEditorForm implements ICapControlModel{
                 paoNameMap.put(phaseBPoint, paoDao.getYukonPAOName(pointDao.getLitePoint(phaseBPoint).getPaobjectID()));
                 paoNameMap.put(phaseCPoint, paoDao.getYukonPAOName(pointDao.getLitePoint(phaseCPoint).getPaobjectID()));
             }
+            paoNameMap.put(0, "(none)");
         }
         return paoNameMap;
      }

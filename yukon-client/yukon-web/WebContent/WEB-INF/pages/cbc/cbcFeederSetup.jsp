@@ -172,7 +172,7 @@
     <x:commandLink id="wattPointSetNone" title="Do not use a point for the WATT value" 
     	styleClass="medStaticLabel"
         value="No WATT Point" actionListener="#{capControlForm.wattPtTeeClick}">
-    <f:param name="ptID" value="0"/>
+    <f:param name="ptId" value="0"/>
     </x:commandLink>
     <f:verbatim>
     </fieldset>
@@ -204,7 +204,7 @@
     <x:commandLink id="voltPointSetNone" title="Do not use a point for the VOLT value" 
     	styleClass="medStaticLabel"
     	value="No VOLT Point" actionListener="#{capControlForm.voltPtTeeClick}">
-    <f:param name="ptID" value="0"/>
+    <f:param name="ptId" value="0"/>
     </x:commandLink>
     <f:verbatim>
     </fieldset>
