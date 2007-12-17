@@ -85,15 +85,24 @@ public class CBCDaoImpl  implements CBCDao{
             }
             else 
             {
-                Double analogVal = new Double ( pointData.getValue() );
-                
-                ScalarPoint persPoint = (ScalarPoint) LiteFactory.convertLiteToDBPers(point);
-                Integer decimalPlaces = persPoint.getPointUnit().getDecimalPlaces();
-                
-                DecimalFormat formater = new DecimalFormat();
-                formater.setMaximumFractionDigits(decimalPlaces);
-                String format = formater.format(analogVal.doubleValue());
-                pointTimestamp.setValue(format);
+                if(point.getPointOffset() != 20001 ) {
+                    Double analogVal = new Double ( pointData.getValue() );
+                    
+                    ScalarPoint persPoint = (ScalarPoint) LiteFactory.convertLiteToDBPers(point);
+                    Integer decimalPlaces = persPoint.getPointUnit().getDecimalPlaces();
+                    
+                    DecimalFormat formater = new DecimalFormat();
+                    formater.setMaximumFractionDigits(decimalPlaces);
+                    String format = formater.format(analogVal.doubleValue());
+                    pointTimestamp.setValue(format);
+                }else {
+                    //handle ip address differently
+                    Double pvalue = new Double( pointData.getValue() ); 
+                    Long plong = 0l;
+                    plong = new Long(pvalue.longValue());
+                    String ipaddress = convertToOctalIp(plong);
+                    pointTimestamp.setValue(ipaddress);
+                }
             }
             
             if (!pointData.getPointDataTimeStamp().equals( CommonUtils.getDefaultStartTime()) )
@@ -102,6 +111,21 @@ public class CBCDaoImpl  implements CBCDao{
         }
         return pointList;
         }
+   
+    public String convertToOctalIp(long ipvalue){
+        
+        StringBuilder sb = new StringBuilder();
+        int temp = (int) ((ipvalue >> 24) & 0xFF);
+        sb.append(Integer.toString(temp, 10) + ".");
+        temp = (int) ((ipvalue >> 16) & 0xFF);
+        sb.append(Integer.toString(temp, 10) + ".");
+        temp = (int) ((ipvalue >> 8) & 0xFF);
+        sb.append(Integer.toString(temp, 10) + ".");
+        temp = (int) (ipvalue & 0xFF);
+        sb.append(Integer.toString(temp, 10));
+       
+        return sb.toString();
+    }
     
     /* (non-Javadoc)
      * @see com.cannontech.cbc.daoimpl.CBCDao#getAllSubsForUser(com.cannontech.database.data.lite.LiteYukonUser)
