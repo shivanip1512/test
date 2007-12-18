@@ -28,10 +28,6 @@
 		session.setAttribute(ServletUtils.ATT_LAST_SUBMITTED_REQUEST, savedReq);
 		session.removeAttribute(InventoryManagerUtil.DEVICE_SELECTED);
 	}
-	else if (request.getParameter("Reset") != null) {
-		// Request from the same page when the "Reset" or "Clear" button is clicked
-		session.removeAttribute(InventoryManagerUtil.DEVICE_SELECTED);
-	}
 	
 	Properties savedReq = (Properties) session.getAttribute(ServletUtils.ATT_LAST_SUBMITTED_REQUEST);
 	if (savedReq == null) savedReq = new Properties();
@@ -84,7 +80,7 @@ function changeMember(form) {
 function validate(form) {
 	if (form.DeviceName.value == "") {
 		if (form.DeviceID.value == -1) {
-			alert("You must either enter device name for a new MCT, or select a meter from the list of all MCTs");
+			alert("You must select a meter from the list of all MCTs");
 			return false;
 		}
 	}
@@ -127,7 +123,7 @@ function validate(form) {
           <td width="1" bgcolor="#000000"><img src="../../WebConfig/yukon/Icons/VerticalRule.gif" width="1"></td>
           <td width="657" valign="top" bgcolor="#FFFFFF"> 
             <div align="center"> 
-              <% String header = "CREATE NEW MCT"; %>
+              <% String header = "ADD YUKON MCT"; %>
               <%@ include file="include/SearchBar.jspf" %>
 			  <% if (errorMsg != null) out.write("<span class=\"ErrorMsg\">* " + errorMsg + "</span><br>"); %>
 			  
@@ -161,109 +157,49 @@ function validate(form) {
                     <td width="300" valign="top" bgcolor="#FFFFFF"> 
                       <table width="300" border="0" cellspacing="0" cellpadding="0" align="center">
                         <tr> 
-                          <td><span class="SubtitleHeader">MCT</span> 
+                          <td><span class="SubtitleHeader">Yukon MCT</span> 
                             <hr>
-                            <span class="MainText">Create a new MCT: <br>
                             <br>
-                            </span> 
-                            <table width="300" border="0" cellspacing="0" cellpadding="1" class="TableCell">
-                              <tr> 
-                                <td align="right" width="88" class="SubtitleHeader">*Type:</td>
-                                <td width="210"> 
-                                  <select name="MCTType" onchange="setContentChanged(true)" <%= disabled %>>
-                                    <%
-	int savedMCTType = 0;
-	if (savedReq.getProperty("MCTType") != null)
-		savedMCTType = Integer.parseInt(savedReq.getProperty("MCTType"));
-	
-	for (int i = 0; i < InventoryManagerUtil.MCT_TYPES.length; i++) {
-		int mctType = PAOGroups.getDeviceType(InventoryManagerUtil.MCT_TYPES[i]);
-		String selected = (mctType == savedMCTType)? "selected" : "";
-%>
-                                    <option value="<%= mctType %>" <%= selected %>><%= InventoryManagerUtil.MCT_TYPES[i] %></option>
-                                    <%
-	}
-%>
-                                  </select>
-                                </td>
-                              </tr>
-                              <tr> 
-                                <td align="right" width="88" class="SubtitleHeader">*Device 
-                                  Name:</td>
-                                <td width="210"> 
-                                  <input type="text" name="DeviceName" size="24" onchange="setContentChanged(true)" <%= disabled %> value="<%= StarsUtils.forceNotNull(savedReq.getProperty("DeviceName")) %>">
-                                </td>
-                              </tr>
-                              <tr> 
-                                <td align="right" width="88" class="SubtitleHeader">*Physical 
-                                  Addr:</td>
-                                <td width="210"> 
-                                  <input type="text" name="PhysicalAddr" size="24" onblur="setDefaultMeterNumber(this.form)" onchange="setContentChanged(true)" <%= disabled %> value="<%= StarsUtils.forceNotNull(savedReq.getProperty("PhysicalAddr")) %>">
-                                </td>
-                              </tr>
-                              <tr> 
-                                <td align="right" width="88" class="SubtitleHeader">*Meter 
-                                  Number:</td>
-                                <td width="210"> 
-                                  <input type="text" name="MeterNumber" size="24" onchange="setContentChanged(true)" <%= disabled %> value="<%= StarsUtils.forceNotNull(savedReq.getProperty("MeterNumber")) %>">
-                                </td>
-                              </tr>
-                              <tr> 
-                                <td align="right" width="88" class="SubtitleHeader">*Route:</td>
-                                <td width="210"> 
-                                  <select name="MCTRoute" onchange="setContentChanged(true)" <%= disabled %>>
-                                    <%
-	int savedMCTRoute = 0;
-	if (savedReq.getProperty("MCTRoute") != null)
-		savedMCTRoute = Integer.parseInt(savedReq.getProperty("MCTRoute"));
-	
-	LiteYukonPAObject[] routes = member.getAllRoutes();
-	for (int i = 0; i < routes.length; i++) {
-		if (routes[i].getType() == RouteTypes.ROUTE_CCU || routes[i].getType() == RouteTypes.ROUTE_MACRO) {
-			String selected = (routes[i].getYukonID() == savedMCTRoute)? "selected" : "";
-%>
-                                    <option value="<%= routes[i].getYukonID() %>" <%= selected %>><%= routes[i].getPaoName() %></option>
-                                    <%
-		}
-	}
-%>
-                                  </select>
-                                </td>
-                              </tr>
-                            </table>
                           </td>
                         </tr>
                       </table>
-                      <script language="JavaScript">setContentChanged(<%= request.getParameter("selected") != null %>);</script>
-                      <table width="300" border="0" cellspacing="0" cellpadding="0" align="center">
-                        <tr> 
-                          <td> <span class="SubtitleHeader"><br>
-                            </span><span class="MainText">Or select from the list 
-                            of all MCTs:</span><br>
-<% if (selectedMCT != null) { %>
-                            <br>
-                            <table width="300" border="0" cellspacing="0" cellpadding="3" class="TableCell">
-                              <tr> 
-                                <td align="right" width="88">Type:</td>
-                                <td width="210"><%= deviceType %></td>
-                              </tr>
-                              <tr> 
-                                <td align="right" width="88">Device Name:</td>
-                                <td width="210"><%= deviceName %></td>
-                              </tr>
-                            </table>
-                            <br>
-                            <input type="button" name="ChangeMCT" value="Change" onClick="selectMCT(this.form)">
-                            <input type="button" name="ClearMCT" value="Clear" onClick="location.href = 'CreateMCT.jsp?Reset'">
-<% } else { %>
-                            <p> 
-                              <input type="button" name="SelectMCT" value="Select Meter" onClick="selectMCT(this.form)">
-                            </p>
-<% } %>
-                          </td>
-                        </tr>
-                      </table>
+                      <div id="SelectMCTDiv">
+	                      <script language="JavaScript">setContentChanged(<%= request.getParameter("Selected") != null %>);</script>
+	                      <table width="300" border="0" cellspacing="0" cellpadding="0" align="center">
+	                        <tr> 
+	                          <td> <br>
+	                          	<div align="center">
+                            		<span class="MainText">Select from the list of all Yukon MCTs: </span>
+                           		</div> 
+	<% if (selectedMCT != null) { %>
+	                            <br>
+	                            <table width="300" border="0" cellspacing="0" cellpadding="3" class="TableCell">
+	                              <tr> 
+	                                <td align="right" width="88">Type:</td>
+	                                <td width="210"><%= deviceType %></td>
+	                              </tr>
+	                              <tr> 
+	                                <td align="right" width="88">Device Name:</td>
+	                                <td width="210"><%= deviceName %></td>
+	                              </tr>
+	                            </table>
+	                            <br>
+	                            <div align="center">
+	                            	<input type="button" name="ChangeMCT" value="Change" onClick="selectMCT(this.form)">
+	                           	</div>
+	<% } else { %>
+	                            <div align="center">
+		                            <p> 
+		                              <input type="button" name="SelectMCT" value="Choose Yukon MCT" onClick="selectMCT(this.form)">
+		                            </p>
+		                        </div>
+	<% } %>
+	                          </td>
+	                        </tr>
+	                      </table>
+	                	</div>
                     </td>
+                    <%boolean alreadySelectedMCT = request.getParameter("Selected") != null; %>
                     <td width="300" valign="top" bgcolor="#FFFFFF"> 
                       <table width="300" border="0" cellspacing="0" cellpadding="0" align="center">
                         <tr> 
@@ -275,7 +211,7 @@ function validate(form) {
                                   <div align="right">Label:</div>
                                 </td>
                                 <td width="210"> 
-                                  <input type="text" name="DeviceLabel" maxlength="30" size="24" value="<%= StarsUtils.forceNotNull(savedReq.getProperty("DeviceLabel")) %>" onChange="setContentChanged(true)">
+                                  <input type="text" name="DeviceLabel" maxlength="30" size="24" <%=alreadySelectedMCT ? "" : "disabled"%> value="<%= StarsUtils.forceNotNull(savedReq.getProperty("DeviceLabel")) %>" onChange="setContentChanged(true)">
                                 </td>
                               </tr>
                               <tr> 
@@ -283,7 +219,7 @@ function validate(form) {
                                   <div align="right">Alt Tracking #:</div>
                                 </td>
                                 <td width="210"> 
-                                  <input type="text" name="AltTrackNo" maxlength="30" size="24" value="<%= StarsUtils.forceNotNull(savedReq.getProperty("AltTrackNo")) %>" onChange="setContentChanged(true)">
+                                  <input type="text" name="AltTrackNo" maxlength="30" size="24" <%=alreadySelectedMCT ? "" : "disabled"%> value="<%= StarsUtils.forceNotNull(savedReq.getProperty("AltTrackNo")) %>" onChange="setContentChanged(true)">
                                 </td>
                               </tr>
                               <tr> 
@@ -291,7 +227,7 @@ function validate(form) {
                                   <div align="right">Field Date Received:</div>
                                 </td>
                                 <td width="210"> 
-                                  <input type="text" name="fieldReceiveDate" maxlength="30" size="24" value="<%= StarsUtils.forceNotNull(savedReq.getProperty("fieldReceiveDate")) %>" onChange="setContentChanged(true)">
+                                  <input type="text" name="fieldReceiveDate" maxlength="30" size="24" <%=alreadySelectedMCT ? "" : "disabled"%> value="<%= StarsUtils.forceNotNull(savedReq.getProperty("fieldReceiveDate")) %>" onChange="setContentChanged(true)">
                                 </td>
                               </tr>
                               <tr> 
@@ -299,7 +235,7 @@ function validate(form) {
                                   <div align="right">Voltage:</div>
                                 </td>
                                 <td width="210"> 
-                                  <select name="Voltage" onChange="setContentChanged(true)">
+                                  <select name="Voltage" <%=alreadySelectedMCT ? "" : "disabled"%> onChange="setContentChanged(true)">
                                     <%
 	int savedVoltage = 0;
 	if (savedReq.getProperty("Voltage") != null)
@@ -321,7 +257,7 @@ function validate(form) {
                                 <td width="88" class="TableCell" align="right">Service 
                                   Company: </td>
                                 <td width="210">
-                                  <select name="ServiceCompany">
+                                  <select name="ServiceCompany" <%=alreadySelectedMCT ? "" : "disabled"%> >
                                     <%
 	int savedServiceCompany = 0;
 	if (savedReq.getProperty("ServiceCompany") != null)
@@ -344,7 +280,7 @@ function validate(form) {
                                   <div align="right">Notes:</div>
                                 </td>
                                 <td width="210"> 
-                                  <textarea name="Notes" rows="3" wrap="soft" cols="28" class = "TableCell" onChange="setContentChanged(true)"><%= StarsUtils.forceNotNull(savedReq.getProperty("Notes")) %></textarea>
+                                  <textarea name="Notes" rows="3" wrap="soft" cols="28" class = "TableCell" <%=alreadySelectedMCT ? "" : "disabled"%> onChange="setContentChanged(true)"><%= StarsUtils.forceNotNull(savedReq.getProperty("Notes")) %></textarea>
                                 </td>
                               </tr>
                             </table>
@@ -356,11 +292,8 @@ function validate(form) {
                 </table>
                 <table width="300" border="0" cellspacing="0" cellpadding="5" align="center" bgcolor="#FFFFFF">
                   <tr> 
-                    <td align="right"> 
-                      <input type="submit" name="Save" value="Save">
-                    </td>
-                    <td> 
-                      <input type="reset" name="Reset" value="Reset" onclick="setContentChanged(false)">
+                    <td align="center"> 
+                      <input type="submit" name="Save" <%=alreadySelectedMCT ? "" : "disabled"%> value="Save">
                     </td>
                   </tr>
                 </table>

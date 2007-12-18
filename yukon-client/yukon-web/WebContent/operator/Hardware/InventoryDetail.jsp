@@ -599,9 +599,11 @@ function revealLog() {
                     <td align="center" width="15%"> 
                       <input type="reset" name="Reset" value="Reset" onClick="setContentChanged(false)">
                     </td>
-                    <td align="center" width="15%"> 
-                      <input type="button" name="Copy" value="Copy" onClick="if (warnUnsavedChanges()) copyHardware(this.form);">
-                    </td>
+                    <%if(!isMCT) { %>
+		                <td align="center" width="15%"> 
+		                	<input type="button" name="Copy" value="Copy" onClick="if (warnUnsavedChanges()) copyHardware(this.form);">
+		                </td>
+		            <%} %>
                     <td width="35%"> 
                       <input type="button" name="Delete" value="Delete" onClick="deleteHardware(this.form)">
                     </td>
