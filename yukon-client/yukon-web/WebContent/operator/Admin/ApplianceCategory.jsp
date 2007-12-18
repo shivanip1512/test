@@ -2,6 +2,7 @@
 <%@ page import="com.cannontech.servlet.LCConnectionServlet" %>
 <%@ page import="com.cannontech.web.loadcontrol.LoadcontrolCache" %>
 <%@ page import="com.cannontech.loadcontrol.data.LMProgramDirect" %>
+<%@ page import="com.cannontech.loadcontrol.data.LMProgramBase" %>
 <%@ page import="com.cannontech.core.dao.NotFoundException" %>
 <%
 	StarsApplianceCategory category = null;
@@ -20,7 +21,7 @@
 	}
 
     LCConnectionServlet cs = (LCConnectionServlet) application.getAttribute(LCConnectionServlet.SERVLET_CONTEXT_ID);
-    LMProgramDirect[] allPrograms;
+    LMProgramBase[] allPrograms;
     if(cs != null)
     {
         LoadcontrolCache cache = cs.getCache();
@@ -28,11 +29,11 @@
     }
     else
     {
-        allPrograms = new LMProgramDirect[0];
+        allPrograms = new LMProgramBase[0];
     }
 
     // list to put available programs in, contains LMProgramDirect objects
-    ArrayList availPrograms = new ArrayList();
+    List<LMProgramDirect> availPrograms = new ArrayList<LMProgramDirect>();
 	for (int i = 0; i < allPrograms.length; i++) {
 		boolean programFound = false;
 		for (int j = 0; j < categories.getStarsApplianceCategoryCount(); j++) {
@@ -46,7 +47,7 @@
 			if (programFound) break;
 		}
 		
-		if (!programFound) availPrograms.add( allPrograms[i] );
+		if (!programFound) availPrograms.add( (LMProgramDirect)allPrograms[i] );
 	}
 	
 	String viewOnly = category.getInherited()? "disabled" : "";
@@ -153,7 +154,7 @@ var yukonDescription = new Array();
 	yukonDescription[0] = "";
 <%
 	for (int i = 0; i < availPrograms.size(); i++) {
-		LMProgramDirect program = (LMProgramDirect) availPrograms.get(i);
+		LMProgramDirect program = availPrograms.get(i);
 %>
 	yukonProgID[<%= i+1 %>] = -1;
 	yukonDeviceID[<%= i+1 %>] = <%= program.getYukonID() %>;
@@ -551,7 +552,7 @@ function init() {
                                         <option value="0">&lt;New virtual program&gt;</option>
 <%
 	for (int i = 0; i < availPrograms.size(); i++) {
-		LMProgramDirect program = (LMProgramDirect) availPrograms.get(i);
+		LMProgramDirect program = availPrograms.get(i);
 %>
                                         <option value="<%= i+1 %>"><%= program.getYukonName() %></option>
 <%
