@@ -97,8 +97,6 @@ public enum ReportTypes {
 	STARS_LM_DETAIL("STARS Load Management Detail", StarsLMDetailModel.class, ReportGroup.STARS),
 	//TODO  STARS_AMR_SUMMARY("STARS AMR Summary", StarsAMRSummaryModel.class, ReportGroup.STARS),
 	STARS_AMR_DETAIL("STARS AMR Detail", StarsAMRDetailModel.class, ReportGroup.STARS),
-    STARS_CONTROL_HISTORY_SUMMARY("STARS Control History Summary", StarsLMControlHistorySummaryModel.class, ReportGroup.STARS),
-    STARS_CONTROL_HISTORY_DETAIL("STARS Control History Detail", StarsLMControlHistoryDetailModel.class, ReportGroup.STARS),
 	
     // commercial curtailment
     CCURT_EVENT_SUMMARY("Event Summary", CurtailmentEventSummaryController.class, ReportGroup.CCURT),
