@@ -1126,22 +1126,22 @@ SELECT
 	, capa.latitude AS LATITUDE
 	, capa.longitude AS LONGITUDE
 FROM
-	dbo.CAPBANK cb
-	INNER JOIN dbo.YukonPAObject yp1 ON yp1.PAObjectID = cb.DEVICEID
-	LEFT OUTER JOIN dbo.YukonPAObject yp ON cb.CONTROLDEVICEID = yp.PAObjectID AND cb.CONTROLDEVICEID > 0
-	LEFT OUTER JOIN dbo.CCFeederBankList fb ON fb.DeviceID = cb.DEVICEID
-	LEFT OUTER JOIN dbo.YukonPAObject yp2 ON yp2.PAObjectID = fb.FeederID
-	LEFT OUTER JOIN dbo.CCFeederSubAssignment sf ON fb.FeederID = sf.FeederID
-	LEFT OUTER JOIN dbo.YukonPAObject yp3 ON yp3.PAObjectID = sf.SubStationBusID
-	LEFT OUTER JOIN dbo.ccsubstationsubbuslist ss on ss.substationbusid = yp3.paobjectid
-	LEFT OUTER JOIN dbo.YukonPAObject yp5 ON yp5.PAObjectID = ss.SubStationID
-	left outer join dbo.ccsubareaassignment sa on ss.substationid = sa.substationbusid
-	left outer join dbo.YukonPAObject yp4 on yp4.paobjectid = sa.areaid
-	LEFT OUTER JOIN dbo.DeviceAddress da ON da.DeviceID = cb.CONTROLDEVICEID
+	CAPBANK cb
+	INNER JOIN YukonPAObject yp1 ON yp1.PAObjectID = cb.DEVICEID
+	LEFT OUTER JOIN YukonPAObject yp ON cb.CONTROLDEVICEID = yp.PAObjectID AND cb.CONTROLDEVICEID > 0
+	LEFT OUTER JOIN CCFeederBankList fb ON fb.DeviceID = cb.DEVICEID
+	LEFT OUTER JOIN YukonPAObject yp2 ON yp2.PAObjectID = fb.FeederID
+	LEFT OUTER JOIN CCFeederSubAssignment sf ON fb.FeederID = sf.FeederID
+	LEFT OUTER JOIN YukonPAObject yp3 ON yp3.PAObjectID = sf.SubStationBusID
+	LEFT OUTER JOIN ccsubstationsubbuslist ss on ss.substationbusid = yp3.paobjectid
+	LEFT OUTER JOIN YukonPAObject yp5 ON yp5.PAObjectID = ss.SubStationID
+	left outer join ccsubareaassignment sa on ss.substationid = sa.substationbusid
+	left outer join YukonPAObject yp4 on yp4.paobjectid = sa.areaid
+	LEFT OUTER JOIN DeviceAddress da ON da.DeviceID = cb.CONTROLDEVICEID
 	LEFT OUTER JOIN (SELECT EntryID, PAObjectID, Owner, InfoKey, Value, UpdateTime
-					  FROM dbo.DynamicPAOInfo
+					  FROM DynamicPAOInfo
 					  WHERE (InfoKey LIKE '%udp ip%')) p ON p.PAObjectID = yp.PAObjectID
-	left outer join dbo.capbankadditional capa on capa.deviceid = cb.deviceid; 
+	left outer join capbankadditional capa on capa.deviceid = cb.deviceid; 
 /* End YUK-4859 */
 
 /* Start YUK-4862 */
