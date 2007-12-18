@@ -319,59 +319,61 @@ public class MR_CBImpl implements MR_CBSoap_PortType{
     }
 
     public ArrayOfErrorObject meterRemoveNotification(ArrayOfMeter removedMeters) throws java.rmi.RemoteException {
+        init();
         MultispeakVendor vendor = multispeakFuncs.getMultispeakVendorFromHeader();
         ErrorObject[] errorObject = multispeak.removeMeterObject(vendor, removedMeters.getMeter());
         return new ArrayOfErrorObject(errorObject);
     }
 
     public ArrayOfErrorObject meterAddNotification(ArrayOfMeter addedMeters) throws java.rmi.RemoteException {
+        init();
         MultispeakVendor vendor = multispeakFuncs.getMultispeakVendorFromHeader();
         ErrorObject[] errorObject = multispeak.addMeterObject(vendor, addedMeters.getMeter());
         return new ArrayOfErrorObject(errorObject);
     }
 
     public ErrorObject deleteMeterGroup(String meterGroupID) throws RemoteException {
-        // TODO Auto-generated method stub
+        init();
         return null;
     }
 
     public ArrayOfErrorObject establishMeterGroup(MeterGroup meterGroup) throws RemoteException {
-        // TODO Auto-generated method stub
+        init();
         return null;
     }
 
     public FormattedBlock getLatestMeterReadingsByMeterGroup(String meterGroupID) throws RemoteException {
-        // TODO Auto-generated method stub
+        init();
         return null;
     }
 
     public ArrayOfErrorObject initiateGroupMeterRead(String meterGroupName, String responseURL) throws RemoteException {
-        // TODO Auto-generated method stub
+        init();
         return null;
     }
 
     public ArrayOfErrorObject insertMeterInMeterGroup(ArrayOfString meterNumbers, String meterGroupID) throws RemoteException {
-        // TODO Auto-generated method stub
+        init();
         return null;
     }
 
     public ArrayOfErrorObject meterExchangeNotification(ArrayOfMeterExchange meterChangeout) throws RemoteException {
-        // TODO Auto-generated method stub
+        init();
         return null;
     }
 
     public ArrayOfErrorObject meterRetireNotification(ArrayOfMeter retiredMeters) throws RemoteException {
-        // TODO Auto-generated method stub
+        init();
         return null;
     }
 
     public ArrayOfErrorObject removeMetersFromMeterGroup(ArrayOfString meterNumbers, String meterGroupID) throws RemoteException {
-        // TODO Auto-generated method stub
+        init();
         return null;
     }
 
     public ArrayOfErrorObject scheduleGroupMeterRead(String meterGroupName, Calendar timeToRead, String responseURL) throws RemoteException {
-        // TODO Auto-generated method stub
+        init();
         return null;
     }
 }

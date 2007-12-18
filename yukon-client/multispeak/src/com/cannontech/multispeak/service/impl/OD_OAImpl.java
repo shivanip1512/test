@@ -113,12 +113,12 @@ public class OD_OAImpl implements OD_OASoap_PortType
     }
 
     public ArrayOfErrorObject initiateODEventRequestByObject(String objectName, String nounType, PhaseCd phaseCode, Calendar requestDate, String responseURL) throws RemoteException {
-        // TODO Auto-generated method stub
+        init();
         return null;
     }
 
     public ArrayOfErrorObject initiateODMonitoringRequestByObject(String objectName, String nounType, PhaseCd phaseCode, int periodicity, Calendar requestDate, String responseURL) throws RemoteException {
-        // TODO Auto-generated method stub
+        init();
         return null;
     }
 }

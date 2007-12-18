@@ -187,7 +187,7 @@ public class MR_EAImpl implements MR_EASoap_PortType
     }
 
     public FormattedBlock getLatestReadingByMeterNoAndType(String meterNo, String readingType) throws RemoteException {
-
+        init();
         MultispeakVendor vendor = multispeakFuncs.getMultispeakVendorFromHeader();
         Meter meter;
         try {
@@ -200,7 +200,7 @@ public class MR_EAImpl implements MR_EASoap_PortType
     }
 
     public ArrayOfFormattedBlock getLatestReadingByType(String readingType, String lastReceived) throws RemoteException {
-        
+        init();
         MultispeakVendor vendor = multispeakFuncs.getMultispeakVendorFromHeader();
         List<com.cannontech.amr.meter.model.Meter> meters = multispeakFuncs.getMeters(vendor.getUniqueKey(), 
                                                                                       lastReceived,
@@ -212,7 +212,7 @@ public class MR_EAImpl implements MR_EASoap_PortType
     }
 
     public ArrayOfFormattedBlock getReadingsByDateAndType(Calendar startDate, Calendar endDate, String readingType, String lastReceived) throws RemoteException {
-        
+        init();
         YukonFormattedBlock<Block> formattedBlock = readingTypesMap.get(readingType);
         if( formattedBlock == null)
             throw new RemoteException(readingType + " is NOT a supported ReadingType.");
@@ -224,6 +224,7 @@ public class MR_EAImpl implements MR_EASoap_PortType
     }
 
     public ArrayOfFormattedBlock getReadingsByMeterNoAndType(String meterNo, Calendar startDate, Calendar endDate, String readingType, String lastReceived) throws RemoteException {
+//        init();   //already handled in isAMRMeter
         if( ! mr_cb.isAMRMeter(meterNo))
             throw new RemoteException( "Meter Number (" + meterNo + "): NOT Found.");
         
