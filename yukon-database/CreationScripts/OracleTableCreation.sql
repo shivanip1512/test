@@ -1,7 +1,7 @@
 /*==============================================================*/
 /* Database name:  YukonDatabase                                */
 /* DBMS name:      ORACLE Version 9i                            */
-/* Created on:     12/18/2007 10:13:08 AM                       */
+/* Created on:     12/18/2007 10:30:58 AM                       */
 /*==============================================================*/
 
 
@@ -6530,7 +6530,6 @@ insert into SequenceNumber values (1,'DeviceReadLog');
 insert into SequenceNumber values (1,'DeviceReadRequestLog');
 insert into SequenceNumber values (1,'DeviceReadJobLog');
 insert into sequenceNumber values (100, 'BillingFileFormats');
-insert into sequencenumber values (1, 'CapbankComment');
 
 /*==============================================================*/
 /* Table: SettlementConfig                                      */

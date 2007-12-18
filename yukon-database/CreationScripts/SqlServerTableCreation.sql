@@ -1,7 +1,7 @@
 /*==============================================================*/
 /* Database name:  YukonDatabase                                */
 /* DBMS name:      Microsoft SQL Server 2000                    */
-/* Created on:     12/18/2007 10:10:36 AM                       */
+/* Created on:     12/18/2007 10:32:33 AM                       */
 /*==============================================================*/
 
 
@@ -8019,7 +8019,6 @@ insert into SequenceNumber values (1,'DeviceReadLog');
 insert into SequenceNumber values (1,'DeviceReadRequestLog');
 insert into SequenceNumber values (1,'DeviceReadJobLog');
 insert into sequenceNumber values (100, 'BillingFileFormats');
-insert into sequencenumber values (1, 'CapbankComment');
 
 /*==============================================================*/
 /* Table: SettlementConfig                                      */

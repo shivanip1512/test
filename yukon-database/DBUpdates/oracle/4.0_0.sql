@@ -1021,8 +1021,6 @@ create table CAPBANKCOMMENT  (
    Altered              VARCHAR2(3)                     not null,
    constraint PK_CAPBANKCOMMENT primary key (CommentID)
 );
-
-insert into sequencenumber values ( 1, 'CapbankComment');
 /* End YUK-4762 */
 
 /* Start YUK-4810 */

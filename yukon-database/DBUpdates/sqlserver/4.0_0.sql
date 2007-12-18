@@ -1139,7 +1139,6 @@ create table CAPBANKCOMMENT (
 );
 go
 
-insert into sequencenumber values ( 1, 'CapbankComment');
 /* End YUK 4762 */
 
 /* Start YUK-4810 */
