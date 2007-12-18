@@ -2098,9 +2098,21 @@ public boolean isInputValid()
 	}
 
 
-	if( getPhysicalAddressTextField().isVisible() )
-		address = Integer.parseInt( getPhysicalAddressTextField().getText() );
-
+	if( getPhysicalAddressTextField().isVisible() ) {
+        String error = com.cannontech.device.range.DeviceAddressRange.getRangeMessage( getDeviceType() );
+        try{
+            address = Integer.parseInt( getPhysicalAddressTextField().getText() );
+            if( !com.cannontech.device.range.DeviceAddressRange.isValidRange( getDeviceType(), address ) )
+            {
+               setErrorString(error);
+               return false;
+            }
+        } catch (NumberFormatException nfe) {
+            setErrorString(error);
+            return false;
+        }
+    }
+    
    	if( !DeviceAddressRange.isValidRange( getDeviceType(), address ) )
    	{
       	setErrorString( DeviceAddressRange.getRangeMessage( getDeviceType() ) );
