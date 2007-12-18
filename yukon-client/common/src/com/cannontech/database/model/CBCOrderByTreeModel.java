@@ -12,7 +12,7 @@ public class CBCOrderByTreeModel extends CheckBoxDBTreeModel
 	{
 		"Order by CapBank",
 		"Order by Feeder",
-		"Order by Substation",
+		"Order by Substation Bus",
 		"Order by Size"
 	};	
 	

@@ -34,7 +34,7 @@ public class CapBankListModel extends ReportModelBase
 	public final static String CBC_TYPE_STRING = "Type";
 	public final static String CB_SERIAL_NAME_STRING = "Serial #";
 	public final static String FEEDER_NAME_STRING = "Feeder";
-	public final static String SUB_NAME_STRING = "Sub";
+	public final static String SUB_NAME_STRING = "Subbus";
 
 	private String orderBy = null;
 
@@ -145,7 +145,7 @@ public class CapBankListModel extends ReportModelBase
 		if( CBCOrderByTreeModel.ORDER_TYPE_STRINGS[1].equals(getOrderBy()) )
 			sql.append(" order by yfdr.paoname" );	
 		else if( CBCOrderByTreeModel.ORDER_TYPE_STRINGS[2].equals(getOrderBy()) )
-			sql.append(" order by ysub.paoname" );	
+			sql.append(" order by ysubbus.paoname" );	
 		else if( CBCOrderByTreeModel.ORDER_TYPE_STRINGS[3].equals(getOrderBy()) )
 			sql.append(" order by c.banksize" );	
 		else
