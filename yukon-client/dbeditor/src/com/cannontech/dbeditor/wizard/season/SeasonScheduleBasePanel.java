@@ -666,13 +666,13 @@ public boolean isInputValid()
 			//If the next season starts before this one ends, or if it is
 			//a December to January jump, then make sure there is no overlap
 			if((nextStartMonth < endMonth && endMonth <= nextEndMonth) 
-				|| (startMonth < nextEndMonth && nextEndMonth <= endMonth))
+				|| (startMonth < nextEndMonth && nextEndMonth <= endMonth && startMonth > 1))
 			{
 				setErrorString("Rows " + (i + 1) + " and " + (j+ 1) + " contain seasons that overlap.  Seasons can't overlap in a season schedule." );
 				return false;
 			}
-			if((endMonth == nextStartMonth && !(endDay < nextStartDay)) 
-				|| (nextEndMonth == startMonth && !(nextEndDay < startDay)))
+			if((endMonth == nextStartMonth && endDay >= nextStartDay )
+				|| (nextEndMonth == startMonth && startDay >= nextEndDay))
 			{
 				setErrorString("Rows " + (i + 1) + " and " + (j+ 1) + " contain seasons that overlap.  Seasons can't overlap in a season schedule." );
 				return false;
