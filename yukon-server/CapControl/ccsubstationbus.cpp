@@ -2595,8 +2595,8 @@ CtiCCSubstationBus& CtiCCSubstationBus::checkForAndProvideNeededControl(const Ct
         {
             setDisableFlag(TRUE);
             setBusUpdatedFlag(TRUE);
+            CtiCCSubstationBusStore::getInstance()->UpdateBusDisableFlagInDB(this);
             setSolution("  Sub Disabled. Automatic Control Inhibited.");
-            //store->UpdateSubstation(currentSubstationBus);
             string text = string("Substation Bus Disabled");
             string additional = string("Bus: ");
             additional += getPAOName();
@@ -2642,7 +2642,7 @@ CtiCCSubstationBus& CtiCCSubstationBus::checkForAndProvideNeededControl(const Ct
                 setDisableFlag(TRUE);
                 setBusUpdatedFlag(TRUE);
                 setSolution("  Sub Disabled. Automatic Control Inhibited.");
-                //store->UpdateSubstation(currentSubstationBus);
+                CtiCCSubstationBusStore::getInstance()->UpdateBusDisableFlagInDB(this);
                 string text = string("Substation Bus Disabled");
                 string additional = string("Bus: ");
                 additional += getPAOName();

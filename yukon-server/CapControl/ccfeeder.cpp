@@ -1929,6 +1929,8 @@ CtiCCCapBank* CtiCCFeeder::findCapBankToChangeVars(DOUBLE kvarSolution)
                     if( currentCapBank->getMaxOpsDisableFlag() )
                     {
                         currentCapBank->setDisableFlag(TRUE);
+                        CtiCCSubstationBusStore::getInstance()->UpdateCapBankDisableFlagInDB(currentCapBank);
+
                    //     setBusUpdatedFlag(TRUE);
                         string text = string("CapBank Disabled");
                         string additional = string("CapBank: ");
@@ -2011,6 +2013,7 @@ CtiCCCapBank* CtiCCFeeder::findCapBankToChangeVars(DOUBLE kvarSolution)
                     if( currentCapBank->getMaxOpsDisableFlag() )
                     {
                         currentCapBank->setDisableFlag(TRUE);
+                        CtiCCSubstationBusStore::getInstance()->UpdateCapBankDisableFlagInDB(currentCapBank);
                    //     setBusUpdatedFlag(TRUE);
                         string text = string("CapBank Disabled");
                         string additional = string("CapBank: ");
@@ -6681,6 +6684,7 @@ BOOL CtiCCFeeder::checkMaxDailyOpCountExceeded()
                 additional += ")";
             }
             CtiCapController::getInstance()->sendMessageToDispatch(new CtiSignalMsg(SYS_PID_CAPCONTROL,0,text,additional,CapControlLogType,SignalAlarm0, "cap control"));
+            CtiCCSubstationBusStore::getInstance()->UpdateFeederDisableFlagInDB(this);
 
             retVal = FALSE;
         }
@@ -6715,6 +6719,8 @@ BOOL CtiCCFeeder::checkMaxDailyOpCountExceeded()
                     additional += ")";
                 }
                 CtiCapController::getInstance()->sendMessageToDispatch(new CtiSignalMsg(SYS_PID_CAPCONTROL,0,text,additional,CapControlLogType,SignalAlarm0, "cap control"));
+                CtiCCSubstationBusStore::getInstance()->UpdateFeederDisableFlagInDB(this);
+
 
                 retVal = FALSE;
             }
