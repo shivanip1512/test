@@ -67,6 +67,7 @@ public class CapControlSubstationBus extends com.cannontech.database.db.DBPersis
      */
     public void delete() throws java.sql.SQLException {
     	handleAltSubIdOnDelete (getSubstationBusID());
+    	handleSubStationAssignmentDelete(getSubstationBusID());
     	delete( TABLE_NAME, CONSTRAINT_COLUMNS[0], getSubstationBusID() );	
     }
     
@@ -293,6 +294,14 @@ public class CapControlSubstationBus extends com.cannontech.database.db.DBPersis
     
     	JdbcOperations yukonTemplate = JdbcTemplateHelper.getYukonTemplate();
     	yukonTemplate.update(query, new Integer[]{subBusDeletedId});
+    }
+    
+    private void handleSubStationAssignmentDelete (Integer subBusDeletedId) {
+        String query =  "delete from ccsubstationsubbuslist " +
+                        "where substationbusid = ? ";    
+    
+        JdbcOperations yukonTemplate = JdbcTemplateHelper.getYukonTemplate();
+        yukonTemplate.update(query, new Integer[]{subBusDeletedId});
     }
 
     public Integer getPhaseB() {
