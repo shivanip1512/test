@@ -23,6 +23,8 @@
 #include "connection.h"
 #include "observe.h"
 
+using boost::shared_ptr;
+
 class CtiCCState : public RWCollectable
 {
 
@@ -60,4 +62,7 @@ private:
 
     void restore(RWDBReader& rdr);
 };
+
+//typedef shared_ptr<CtiCCState> CtiCCStatePtr; 
+typedef CtiCCState* CtiCCStatePtr; 
 #endif

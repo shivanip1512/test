@@ -138,6 +138,6 @@ RWDECLARE_COLLECTABLE( CtiCCSubstation )
     
 };
 
-
+//typedef shared_ptr<CtiCCSubstation> CtiCCSubstationPtr;
 typedef CtiCCSubstation* CtiCCSubstationPtr;
 #endif

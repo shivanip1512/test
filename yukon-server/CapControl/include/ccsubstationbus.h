@@ -17,6 +17,7 @@
 
 #include <list>
 using std::list;
+using boost::shared_ptr;
 
 #include <rw/collect.h>
 #include <rw/vstream.h>
@@ -37,7 +38,7 @@ using std::list;
 #include "ccstrategy.h"
 #include "ccmonitorpoint.h"
 
-typedef std::vector<CtiCCFeeder*> CtiFeeder_vec;
+typedef std::vector<CtiCCFeederPtr> CtiFeeder_vec;
 
 enum CtiCCMultiBusState 
 {

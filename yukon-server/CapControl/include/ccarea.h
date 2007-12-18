@@ -39,7 +39,7 @@ using std::list;
 #include "ccstrategy.h"
 #include "ccmonitorpoint.h"
 
-typedef std::vector<CtiCCSubstationBus*> CtiCCSubstationBus_vec;
+typedef std::vector<CtiCCSubstationBusPtr> CtiCCSubstationBus_vec;
 
               
 class CtiCCArea : public RWCollectable

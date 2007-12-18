@@ -614,7 +614,7 @@ void CtiCCSubstationBusStore::dumpAllDynamicData()
 void CtiCCSubstationBusStore::reset()
 {
     //RWRecursiveLock<RWMutexLock>::LockGuard  guard(mutex());
-
+    
     bool wasAlreadyRunning = false;
     try
     {                                
@@ -662,398 +662,315 @@ void CtiCCSubstationBusStore::reset()
         {
             CtiLockGuard<CtiSemaphore> cg(gDBAccessSema);
             RWDBConnection conn = getConnection();
+
+            if ( !conn.isValid() )
             {
-                //if( _CC_DEBUG )
-                {
-                    CtiLockGuard<CtiLogger> logger_guard(dout);
-                    dout << CtiTime() << " - Obtained connection to the database..." << endl;
-                    dout << CtiTime() << " - Resetting substation buses from database..." << endl;
-                }
-
-                if ( conn.isValid() )
-                {   
-                    RWRecursiveLock<RWMutexLock>::LockGuard  guard(mutex());
-
-                    
-                    if ( _ccSubstationBuses->size() > 0 )
-                    {
-                        dumpAllDynamicData();
-
-                        wasAlreadyRunning = true;
-                    }
-                    if ( _ccSubstations->size() > 0 )
-                    {
-                        delete_vector( _ccSubstations );
-                        _ccSubstations->clear();
-                    }
-                    if ( _ccCapBankStates->size() > 0 )
-                    {
-                        delete_vector( _ccCapBankStates );
-                        _ccCapBankStates->clear();
-                    }
-                    if ( _ccGeoAreas->size() > 0 )
-                    {
-                        delete_vector(_ccGeoAreas);
-                        _ccGeoAreas->clear();     
-                    }
-                    if (_ccSpecialAreas->size() > 0) 
-                    {
-                        delete_vector(_ccSpecialAreas);
-                        _ccSpecialAreas->clear();
-                    }
-                    
-
-                    CtiTime currentDateTime;
-                    /************************************************************* 
-                    ******  Loading Strategies                              ****** 
-                    **************************************************************/ 
-                    if ( _CC_DEBUG & CC_DEBUG_DATABASE )
-                    {
-                        CtiLockGuard<CtiLogger> logger_guard(dout);
-                        dout << CtiTime() << " - DataBase Reload Begin - " << endl;
-                    }
-
-                    
-                    reloadStrategyFromDataBase(-1, &temp_strategyid_strategy_map);
-                    
-
-                    /***********************************************************
-                    *******  Loading Areas                               *******
-                    ************************************************************/
-                    reloadSpecialAreaFromDatabase(0, &temp_strategyid_strategy_map, &temp_paobject_specialarea_map, &temp_point_specialarea_map, &tempCCSpecialAreas);
-
-                    reloadAreaFromDatabase(0, &temp_strategyid_strategy_map, &temp_paobject_area_map, &temp_point_area_map, &tempCCGeoAreas);
-
-                    /***********************************************************
-                    *******  Loading Substations                         *******
-                    ************************************************************/
-
-                    reloadSubstationFromDatabase(0, &temp_paobject_substation_map, &temp_paobject_area_map, &temp_paobject_specialarea_map, 
-                                                 &temp_substation_area_map, &temp_substation_specialarea_map, &tempCCSubstations);
-
-                    try
-                    {
-                        if (!_strategyid_strategy_map.empty())
-                        {
-                            map <long, CtiCCStrategyPtr>::iterator iter = _strategyid_strategy_map.begin();
-                            while (iter != _strategyid_strategy_map.end())
-                            {
-                                CtiCCStrategyPtr strat = iter->second;
-                                iter++;
-                                if (strat != NULL)
-                                {
-                                    delete strat;
-                                }
-                       
-                            }
-                       
-                            if (!_strategyid_strategy_map.empty())
-                                _strategyid_strategy_map.clear();
-                        }
-
-                        if (!_paobject_area_map.empty())
-                            _paobject_area_map.clear();
-                        if (!_paobject_specialarea_map.empty())
-                            _paobject_specialarea_map.clear();
-                        if (!_paobject_substation_map.empty())
-                            _paobject_substation_map.clear();
-                        
-                        _paobject_area_map = temp_paobject_area_map;
-                        _paobject_specialarea_map = temp_paobject_specialarea_map;
-                        _paobject_substation_map = temp_paobject_substation_map;
-                        _strategyid_strategy_map = temp_strategyid_strategy_map;
-                    }
-                    catch (...)
-                    {
-                        CtiLockGuard<CtiLogger> logger_guard(dout);
-                        dout << CtiTime() << " - Caught '...' in: " << __FILE__ << " at:" << __LINE__ << endl;
-                    }
-
-                    /***********************************************************
-                    *******  Loading SubBuses                            *******
-                    ************************************************************/
-
-                    reloadSubBusFromDatabase(0, &temp_strategyid_strategy_map, &temp_paobject_subbus_map, & temp_paobject_substation_map,
-                                             &temp_point_subbus_map, &temp_altsub_sub_idmap, &temp_subbus_substation_map, &tempCCSubstationBuses);
-
-                    /***********************************************************
-                    *******  Loading Feeders                             *******
-                    ************************************************************/
-
-                    if (tempCCSubstationBuses.size() > 0)
-                    {
-                        {   
-                            reloadFeederFromDatabase(0, &temp_strategyid_strategy_map, &temp_paobject_feeder_map,
-                                                     &temp_paobject_subbus_map, &temp_point_feeder_map, 
-                                                     &temp_feeder_subbus_map);//, &temp_feeder_area_map );
-                        }
-
-                       /************************************************************
-                        ********    Loading Cap Banks                       ********
-                        ************************************************************/
-                        {
-                            reloadCapBankFromDatabase(0, &temp_paobject_capbank_map, &temp_paobject_feeder_map, &temp_paobject_subbus_map,
-                                                  &temp_point_capbank_map, &temp_capbank_subbus_map,
-                                                  &temp_capbank_feeder_map, &temp_feeder_subbus_map, &temp_cbc_capbank_map );
-                        }
-
-                        /************************************************************
-                        ********    Loading Monitor Points                   ********
-                        ************************************************************/
-                        {
-                            reloadMonitorPointsFromDatabase(0, &temp_paobject_capbank_map, &temp_paobject_feeder_map, &temp_paobject_subbus_map,
-                                                  &temp_point_capbank_map);
-                        }
-
-
-                    }
-                    else
-                    {
-                        CtiLockGuard<CtiLogger> logger_guard(dout);
-                        dout << CtiTime() << " - No Substations in: " << __FILE__ << " at: " << __LINE__ << endl;
-                    }
-                  /************************************************************
-                   ********    Loading Cap Banks States                ********
-                   ************************************************************/
-                    {
-                        reloadCapBankStatesFromDatabase();
-                    }
-                  /************************************************************
-                   ********    Loading Geo Areas                       ********
-                   ************************************************************/
-                   {
-                   //    reloadGeoAreasFromDatabase();
-                   }
-
-                   {
-                       reloadClientLinkStatusPointFromDatabase();
-                   }
-                   /************************************************************
-                    ********    Loading Orphans                         ********
-                    ************************************************************/
-                   try
-                   {
-                       locateOrphans(&orphanCaps, &orphanFeeders, temp_paobject_capbank_map, temp_paobject_feeder_map,
-                                     temp_capbank_feeder_map, temp_feeder_subbus_map);
-                   }
-                   catch (...)
-                    {
-                        CtiLockGuard<CtiLogger> logger_guard(dout);
-                        dout << CtiTime() << " - Caught '...' in: " << __FILE__ << " at:" << __LINE__ << endl;
-                    }
-                   
-                    if ( _CC_DEBUG & CC_DEBUG_DATABASE )
-                    {
-                        CtiLockGuard<CtiLogger> logger_guard(dout);
-                        dout << CtiTime() << " - DataBase Reload End - " << endl;
-                    }
-
-
-                    try
-                    {   
-                        //THIS IS WHERE CAPCONTROL IS BREAKING!!!!!!!!!!!!!!!!!!!!!!!!!!!!
-                        if (_ccSubstationBuses->size() > 0)
-                        {                                   
-                            _ccSubstationBuses->clear();
-                        }
-                    }
-                    catch (...)
-                    {
-                        CtiLockGuard<CtiLogger> logger_guard(dout);
-                        dout << CtiTime() << " - Caught '...' in: " << __FILE__ << " at:" << __LINE__ << endl;
-                    }
-                    
-                    
-                    try
-                    {
-                        if (!_orphanedFeeders.empty())
-                        {
-                            while (!_orphanedFeeders.empty())
-                            {
-                                long feederId = _orphanedFeeders.front();
-                                _orphanedFeeders.pop_front();
-                                CtiCCFeederPtr feeder = findFeederByPAObjectID(feederId);
-                                if (feeder != NULL)
-                                {
-                                    delete feeder;
-                                }
-                            }
-                        }
-                    }
-                    catch (...)
-                    {
-                        CtiLockGuard<CtiLogger> logger_guard(dout);
-                        dout << CtiTime() << " - Caught '...' in: " << __FILE__ << " at:" << __LINE__ << endl;
-                    }
-                    try
-                    {
-
-                        if (!_orphanedCapBanks.empty())
-                        {
-                            while (!_orphanedCapBanks.empty())
-                            {
-                                long capId = _orphanedCapBanks.front();
-                                _orphanedCapBanks.pop_front();
-
-                                CtiCCCapBankPtr cap = findCapBankByPAObjectID(capId);
-                                if (cap != NULL)
-                                {
-                                    delete cap;
-                                }
-                            }
-                        }
-                    }
-                    catch (...)
-                    {
-                        CtiLockGuard<CtiLogger> logger_guard(dout);
-                        dout << CtiTime() << " - Caught '...' in: " << __FILE__ << " at:" << __LINE__ << endl;
-                    }
-                    
-
-                    
-                    if (!_paobject_subbus_map.empty())
-                        _paobject_subbus_map.clear();
-
-                    if (!_paobject_feeder_map.empty())
-                        _paobject_feeder_map.clear();
-
-                    if (!_paobject_capbank_map.empty())
-                        _paobject_capbank_map.clear();
-
-
-                    if (!_pointid_subbus_map.empty())
-                       _pointid_subbus_map.clear();
-                    if (!_pointid_feeder_map.empty())
-                       _pointid_feeder_map.clear();
-                    if (!_pointid_capbank_map.empty())
-                       _pointid_capbank_map.clear();
-
-                    
-                    if (!_substation_area_map.empty())
-                        _substation_area_map.clear();
-                    if (!_subbus_substation_map.empty())
-                        _subbus_substation_map.clear();
-                    if (!_substation_specialarea_map.empty())
-                        _substation_specialarea_map.clear();
-                    if (!_feeder_subbus_map.empty())
-                        _feeder_subbus_map.clear();
-                    if (!_capbank_subbus_map.empty())
-                        _capbank_subbus_map.clear();
-                    if (!_capbank_feeder_map.empty())
-                        _capbank_feeder_map.clear();
-
-                    if (!_altsub_sub_idmap.empty())
-                        _altsub_sub_idmap.clear();
-
-                    if (_cbc_capbank_map.empty())
-                        _cbc_capbank_map.clear();
-
-
-                    try
-                    {
-                        _altsub_sub_idmap = temp_altsub_sub_idmap;
-                        _paobject_subbus_map = temp_paobject_subbus_map;
-                        _paobject_feeder_map = temp_paobject_feeder_map;
-                        _paobject_capbank_map = temp_paobject_capbank_map;
-
-                    }
-                    catch (...)
-                    {
-                        CtiLockGuard<CtiLogger> logger_guard(dout);
-                        dout << CtiTime() << " - Caught '...' in: " << __FILE__ << " at:" << __LINE__ << endl;
-                    }
-                    
-                    try
-                    {
-                        _pointid_subbus_map = temp_point_subbus_map;
-                        _pointid_feeder_map = temp_point_feeder_map;
-                        _pointid_capbank_map = temp_point_capbank_map;
-                    }
-                    catch(...)
-                    {
-                        CtiLockGuard<CtiLogger> logger_guard(dout);
-                        dout << CtiTime() << " - Caught '...' in: " << __FILE__ << " at:" << __LINE__ << endl;
-                    }
-                    try
-                    {
-                        _subbus_substation_map = temp_subbus_substation_map;
-                        _substation_area_map = temp_substation_area_map;
-                        _substation_specialarea_map = temp_substation_specialarea_map;
-                    }
-                    catch (...)
-                    {
-                        CtiLockGuard<CtiLogger> logger_guard(dout);
-                        dout << CtiTime() << " - Caught '...' in: " << __FILE__ << " at:" << __LINE__ << endl;
-                    }
-                    try
-                    {
-                        _feeder_subbus_map = temp_feeder_subbus_map;
-                    }
-                    catch (...)
-                    {
-                        CtiLockGuard<CtiLogger> logger_guard(dout);
-                        dout << CtiTime() << " - Caught '...' in: " << __FILE__ << " at:" << __LINE__ << endl;
-                    }
-                    try
-                    {
-                        _capbank_subbus_map = temp_capbank_subbus_map;
-                    }
-                    catch (...)
-                    {
-                        CtiLockGuard<CtiLogger> logger_guard(dout);
-                        dout << CtiTime() << " - Caught '...' in: " << __FILE__ << " at:" << __LINE__ << endl;
-                    }
-                    try
-                    {
-                        _capbank_feeder_map = temp_capbank_feeder_map;
-                    }
-                    catch (...)
-                    {
-                        CtiLockGuard<CtiLogger> logger_guard(dout);
-                        dout << CtiTime() << " - Caught '...' in: " << __FILE__ << " at:" << __LINE__ << endl;
-                    }
-                    try
-                    {
-                        _cbc_capbank_map = temp_cbc_capbank_map;
-                    }
-                    catch (...)
-                    {
-                        CtiLockGuard<CtiLogger> logger_guard(dout);
-                        dout << CtiTime() << " - Caught '...' in: " << __FILE__ << " at:" << __LINE__ << endl;
-                    }
-                    try
-                    {
-                        _orphanedCapBanks = orphanCaps;
-                        _orphanedFeeders = orphanFeeders;
-                    }
-                    catch (...)
-                    {
-                        CtiLockGuard<CtiLogger> logger_guard(dout);
-                        dout << CtiTime() << " - Caught '...' in: " << __FILE__ << " at:" << __LINE__ << endl;
-                    }
-
-                    try
-                    {
-                        *_ccSubstationBuses = tempCCSubstationBuses;
-                        *_ccSubstations = tempCCSubstations;
-                        *_ccGeoAreas = tempCCGeoAreas;
-                        *_ccSpecialAreas = tempCCSpecialAreas;
-                    }
-                    catch (...)
-                    {
-                        CtiLockGuard<CtiLogger> logger_guard(dout);
-                        dout << CtiTime() << " - Caught '...' in: " << __FILE__ << " at:" << __LINE__ << endl;
-                    }
-                    
-                }
-                else
-                {
-                    CtiLockGuard<CtiLogger> logger_guard(dout);
-                    dout << CtiTime() << " - Unable to get valid database connection." << endl;
-                    _isvalid = FALSE;
-                    return;
-                }
+                CtiLockGuard<CtiLogger> logger_guard(dout);
+                dout << CtiTime() << " - Unable to get valid database connection." << endl;
+                _isvalid = FALSE;
+                return;
             }
+
+            {
+                CtiLockGuard<CtiLogger> logger_guard(dout);
+                dout << CtiTime() << " - Obtained connection to the database..." << endl;
+                dout << CtiTime() << " - Resetting substation buses from database..." << endl;
+            }   
+            RWRecursiveLock<RWMutexLock>::LockGuard  guard(mutex());
+            try
+            {
+                map <long, CtiCCStrategyPtr>::iterator iter = _strategyid_strategy_map.begin();
+                while (iter != _strategyid_strategy_map.end())
+                {
+                    CtiCCStrategyPtr strat = iter->second;
+                    iter++;
+                    if (strat != NULL)
+                    {
+                        delete strat;
+                    }
+                }
+           
+                _strategyid_strategy_map.clear();
+
+                _paobject_area_map.clear();
+                _paobject_specialarea_map.clear();
+                _paobject_substation_map.clear();
+
+                while (!_orphanedFeeders.empty())
+                {
+                    long feederId = _orphanedFeeders.front();
+                    _orphanedFeeders.pop_front();
+                    CtiCCFeederPtr feeder = findFeederByPAObjectID(feederId);
+                    if (feeder != NULL)
+                    {
+                        delete feeder;
+                    }
+                }
+
+                while (!_orphanedCapBanks.empty())
+                {
+                    long capId = _orphanedCapBanks.front();
+                    _orphanedCapBanks.pop_front();
+
+                    CtiCCCapBankPtr cap = findCapBankByPAObjectID(capId);
+                    if (cap != NULL)
+                    {
+                        delete cap;
+                    }
+                }
+
+                _paobject_subbus_map.clear();
+                _paobject_feeder_map.clear();
+                _paobject_capbank_map.clear();
+                _pointid_subbus_map.clear();
+                _pointid_feeder_map.clear();
+                _pointid_capbank_map.clear();
+                _substation_area_map.clear();
+
+                _subbus_substation_map.clear();
+                _substation_specialarea_map.clear();
+                _feeder_subbus_map.clear();
+                _capbank_subbus_map.clear();
+                _capbank_feeder_map.clear();
+                _altsub_sub_idmap.clear();
+                _cbc_capbank_map.clear();
+
+                if ( _ccSubstationBuses->size() > 0 )
+                {
+                    dumpAllDynamicData();
+                    wasAlreadyRunning = true;
+                }
+                delete_vector( _ccSubstationBuses );
+                _ccSubstationBuses->clear();
+                delete_vector( _ccSubstations );
+                _ccSubstations->clear();
+                delete_vector( _ccCapBankStates );
+                _ccCapBankStates->clear();
+                delete_vector(_ccGeoAreas);
+                _ccGeoAreas->clear();     
+                delete_vector(_ccSpecialAreas);
+                _ccSpecialAreas->clear();
+            }
+            catch( ... )
+            {
+                CtiLockGuard<CtiLogger> logger_guard(dout);
+                dout << CtiTime() << " - Exception clearing old data for reload. Location: " << __FILE__ << " at:" << __LINE__ << endl;
+            }
+
+            CtiTime currentDateTime;
+            /************************************************************* 
+            ******  Loading Strategies                              ****** 
+            **************************************************************/ 
+            if ( _CC_DEBUG )
+            {
+                CtiLockGuard<CtiLogger> logger_guard(dout);
+                dout << CtiTime() << " - DataBase Reload Begin - " << endl;
+            }
+            
+            reloadStrategyFromDataBase(-1, &temp_strategyid_strategy_map);
+
+            /***********************************************************
+            *******  Loading Areas                               *******
+            ************************************************************/
+            reloadSpecialAreaFromDatabase(0, &temp_strategyid_strategy_map, &temp_paobject_specialarea_map, &temp_point_specialarea_map, &tempCCSpecialAreas);
+
+            reloadAreaFromDatabase(0, &temp_strategyid_strategy_map, &temp_paobject_area_map, &temp_point_area_map, &tempCCGeoAreas);
+
+            /***********************************************************
+            *******  Loading Substations                         *******
+            ************************************************************/
+
+            reloadSubstationFromDatabase(0, &temp_paobject_substation_map, &temp_paobject_area_map, &temp_paobject_specialarea_map, 
+                                         &temp_substation_area_map, &temp_substation_specialarea_map, &tempCCSubstations);
+
+            try
+            {
+                _paobject_area_map = temp_paobject_area_map;
+                _paobject_specialarea_map = temp_paobject_specialarea_map;
+                _paobject_substation_map = temp_paobject_substation_map;
+                _strategyid_strategy_map = temp_strategyid_strategy_map;
+            }
+            catch (...)
+            {
+                CtiLockGuard<CtiLogger> logger_guard(dout);
+                dout << CtiTime() << " - Caught '...' in: " << __FILE__ << " at:" << __LINE__ << endl;
+            }
+
+            /***********************************************************
+            *******  Loading SubBuses                            *******
+            ************************************************************/
+
+            reloadSubBusFromDatabase(0, &temp_strategyid_strategy_map, &temp_paobject_subbus_map, & temp_paobject_substation_map,
+                                     &temp_point_subbus_map, &temp_altsub_sub_idmap, &temp_subbus_substation_map, &tempCCSubstationBuses);
+
+            /***********************************************************
+            *******  Loading Feeders                             *******
+            ************************************************************/
+
+            if (tempCCSubstationBuses.size() > 0)
+            {
+                {   
+                    reloadFeederFromDatabase(0, &temp_strategyid_strategy_map, &temp_paobject_feeder_map,
+                                             &temp_paobject_subbus_map, &temp_point_feeder_map, 
+                                             &temp_feeder_subbus_map);//, &temp_feeder_area_map );
+                }
+
+               /************************************************************
+                ********    Loading Cap Banks                       ********
+                ************************************************************/
+                {
+                    reloadCapBankFromDatabase(0, &temp_paobject_capbank_map, &temp_paobject_feeder_map, &temp_paobject_subbus_map,
+                                          &temp_point_capbank_map, &temp_capbank_subbus_map,
+                                          &temp_capbank_feeder_map, &temp_feeder_subbus_map, &temp_cbc_capbank_map );
+                }
+
+                /************************************************************
+                ********    Loading Monitor Points                   ********
+                ************************************************************/
+                {
+                    reloadMonitorPointsFromDatabase(0, &temp_paobject_capbank_map, &temp_paobject_feeder_map, &temp_paobject_subbus_map,
+                                          &temp_point_capbank_map);
+                }
+
+
+            }
+            else
+            {
+                CtiLockGuard<CtiLogger> logger_guard(dout);
+                dout << CtiTime() << " - No Substations in: " << __FILE__ << " at: " << __LINE__ << endl;
+            }
+            /************************************************************
+             ********    Loading Cap Banks States                ********
+             ************************************************************/
+            {
+                reloadCapBankStatesFromDatabase();
+            }
+
+            {
+               reloadClientLinkStatusPointFromDatabase();
+            }
+            /************************************************************
+             ********    Loading Orphans                         ********
+             ************************************************************/
+            try
+            {
+               locateOrphans(&orphanCaps, &orphanFeeders, temp_paobject_capbank_map, temp_paobject_feeder_map,
+                             temp_capbank_feeder_map, temp_feeder_subbus_map);
+            }
+            catch (...)
+            {
+                CtiLockGuard<CtiLogger> logger_guard(dout);
+                dout << CtiTime() << " - Caught '...' in: " << __FILE__ << " at:" << __LINE__ << endl;
+            }
+           
+            if ( _CC_DEBUG )
+            {
+                CtiLockGuard<CtiLogger> logger_guard(dout);
+                dout << CtiTime() << " - DataBase Reload End - " << endl;
+                dout << CtiTime() << " - Loading values into capctonrol - " << endl;
+            }                   
+
+            try
+            {
+                _altsub_sub_idmap = temp_altsub_sub_idmap;
+                _paobject_subbus_map = temp_paobject_subbus_map;
+                _paobject_feeder_map = temp_paobject_feeder_map;
+                _paobject_capbank_map = temp_paobject_capbank_map;
+
+            }
+            catch (...)
+            {
+                CtiLockGuard<CtiLogger> logger_guard(dout);
+                dout << CtiTime() << " - Caught '...' in: " << __FILE__ << " at:" << __LINE__ << endl;
+            }
+            
+            try
+            {
+                _pointid_subbus_map = temp_point_subbus_map;
+                _pointid_feeder_map = temp_point_feeder_map;
+                _pointid_capbank_map = temp_point_capbank_map;
+            }
+            catch(...)
+            {
+                CtiLockGuard<CtiLogger> logger_guard(dout);
+                dout << CtiTime() << " - Caught '...' in: " << __FILE__ << " at:" << __LINE__ << endl;
+            }
+            try
+            {
+                _subbus_substation_map = temp_subbus_substation_map;
+                _substation_area_map = temp_substation_area_map;
+                _substation_specialarea_map = temp_substation_specialarea_map;
+            }
+            catch (...)
+            {
+                CtiLockGuard<CtiLogger> logger_guard(dout);
+                dout << CtiTime() << " - Caught '...' in: " << __FILE__ << " at:" << __LINE__ << endl;
+            }
+            try
+            {
+                _feeder_subbus_map = temp_feeder_subbus_map;
+            }
+            catch (...)
+            {
+                CtiLockGuard<CtiLogger> logger_guard(dout);
+                dout << CtiTime() << " - Caught '...' in: " << __FILE__ << " at:" << __LINE__ << endl;
+            }
+            try
+            {
+                _capbank_subbus_map = temp_capbank_subbus_map;
+            }
+            catch (...)
+            {
+                CtiLockGuard<CtiLogger> logger_guard(dout);
+                dout << CtiTime() << " - Caught '...' in: " << __FILE__ << " at:" << __LINE__ << endl;
+            }
+            try
+            {
+                _capbank_feeder_map = temp_capbank_feeder_map;
+            }
+            catch (...)
+            {
+                CtiLockGuard<CtiLogger> logger_guard(dout);
+                dout << CtiTime() << " - Caught '...' in: " << __FILE__ << " at:" << __LINE__ << endl;
+            }
+            try
+            {
+                _cbc_capbank_map = temp_cbc_capbank_map;
+            }
+            catch (...)
+            {
+                CtiLockGuard<CtiLogger> logger_guard(dout);
+                dout << CtiTime() << " - Caught '...' in: " << __FILE__ << " at:" << __LINE__ << endl;
+            }
+            try
+            {
+                _orphanedCapBanks = orphanCaps;
+                _orphanedFeeders = orphanFeeders;
+            }
+            catch (...)
+            {
+                CtiLockGuard<CtiLogger> logger_guard(dout);
+                dout << CtiTime() << " - Caught '...' in: " << __FILE__ << " at:" << __LINE__ << endl;
+            }
+
+            try
+            {
+                *_ccSubstationBuses = tempCCSubstationBuses;
+                *_ccSubstations = tempCCSubstations;
+                *_ccGeoAreas = tempCCGeoAreas;
+                *_ccSpecialAreas = tempCCSpecialAreas;
+            }
+            catch (...)
+            {
+                CtiLockGuard<CtiLogger> logger_guard(dout);
+                dout << CtiTime() << " - Caught '...' in: " << __FILE__ << " at:" << __LINE__ << endl;
+            }
+
+            if ( _CC_DEBUG )
+            {
+                CtiLockGuard<CtiLogger> logger_guard(dout);
+                dout << CtiTime() << " - Done Loading values into capctonrol - " << endl;
+            }       
         }
 
         _isvalid = TRUE;
@@ -1139,6 +1056,11 @@ void CtiCCSubstationBusStore::reset()
     {
         CtiLockGuard<CtiLogger> logger_guard(dout);
         dout << CtiTime() << " - Caught '...' in: " << __FILE__ << " at:" << __LINE__ << endl;
+    }
+    if( _CC_DEBUG )
+    {
+        CtiLockGuard<CtiLogger> logger_guard(dout);
+        dout << CtiTime() << " - reset complete - " << endl;
     }
 }
 
@@ -8844,7 +8766,6 @@ long CtiCCSubstationBusStore::isKVARAvailable( long kvarNeeded )
         return true;
     return false;
 }
-
 
 /* Private Static members */
 const string CtiCCSubstationBusStore::m3iAMFMInterfaceString = "M3I";

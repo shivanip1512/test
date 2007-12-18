@@ -31,6 +31,8 @@
 #include "ctitime.h"
 #include "ctidate.h"
 
+using boost::shared_ptr;
+
 typedef enum
 {
     CC_Normal = 0,

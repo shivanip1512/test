@@ -26,11 +26,12 @@
 #include "ccstate.h"
 //#include "rwutil.h"
 
-typedef std::vector<CtiCCSubstation*> CtiCCSubstation_vec;
-typedef std::vector<CtiCCArea*> CtiCCArea_vec;
-typedef std::vector<CtiCCSpecial*> CtiCCSpArea_vec;
-typedef std::vector<CtiCCSubstationBus*> CtiCCSubstationBus_vec;
-typedef std::vector<CtiCCState*> CtiCCState_vec;
+typedef std::vector<CtiCCSubstationPtr> CtiCCSubstation_vec;
+typedef std::vector<CtiCCAreaPtr> CtiCCArea_vec;
+typedef std::vector<CtiCCSpecialPtr> CtiCCSpArea_vec;
+typedef std::vector<CtiCCSubstationBusPtr> CtiCCSubstationBus_vec;
+typedef std::vector<CtiCCStatePtr> CtiCCState_vec;
+
 enum CtiCCEventType_t
 {
     capBankStateUpdate = 0,

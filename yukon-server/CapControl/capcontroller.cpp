@@ -276,7 +276,7 @@ void CtiCapController::controlLoop()
                     {
                         for(LONG i=0;i<ccSubstationBuses.size();i++)
                         {
-                            CtiCCSubstationBus* currentSubstationBus = (CtiCCSubstationBus*)ccSubstationBuses[i];
+                            CtiCCSubstationBusPtr currentSubstationBus = ccSubstationBuses[i];
                             CtiFeeder_vec& ccFeeders = currentSubstationBus->getCCFeeders();
 
                             BOOL peakFlag = currentSubstationBus->isPeakTime(currentDateTime);
@@ -345,7 +345,7 @@ void CtiCapController::controlLoop()
 
                 for(LONG i=0; i < ccSubstationBuses.size();i++)
                 {
-                    CtiCCSubstationBus* currentSubstationBus = (CtiCCSubstationBus*)ccSubstationBuses[i];
+                    CtiCCSubstationBusPtr currentSubstationBus = ccSubstationBuses[i];
                     CtiCCArea* currentArea = NULL;
                     CtiCCSubstation* currentStation = NULL;
 
@@ -1291,7 +1291,7 @@ void CtiCapController::updateAllPointQualities(long quality, ULONG secondsFrom19
 
     for(LONG i=0;i<ccSubstationBuses.size();i++)
     {
-        CtiCCSubstationBus* currentSubstationBus = (CtiCCSubstationBus*)ccSubstationBuses[i];
+        CtiCCSubstationBusPtr currentSubstationBus = ccSubstationBuses[i];
 
         if( currentSubstationBus->getCurrentVarLoadPointId() > 0 )
         {

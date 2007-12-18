@@ -7,8 +7,8 @@
 *
 * PVCS KEYWORDS:
 * ARCHIVE      :  $Archive:   Z:/SOFTWAREARCHIVES/YUKON/common/INCLUDE/utility.h-arc  $
-* REVISION     :  $Revision: 1.44 $
-* DATE         :  $Date: 2007/10/11 14:29:39 $
+* REVISION     :  $Revision: 1.45 $
+* DATE         :  $Date: 2007/12/18 19:51:37 $
 *
 * Copyright (c) 1999, 2000, 2001 Cannon Technologies Inc. All rights reserved.
 *-----------------------------------------------------------------------------*/
@@ -297,6 +297,7 @@ inline void delete_vector( std::vector<T> V )
 
    for (std::vector<T>::iterator itr = V.begin(); itr != V.end(); itr++) {
         delete *itr;
+        *itr = NULL;
    }
 }
 //For Standard Vectors, this will go through and release the memory in a vector of pointers
@@ -306,6 +307,7 @@ inline void delete_vector( std::vector<T> *V )
 
    for (std::vector<T>::iterator itr = V->begin(); itr != V->end(); itr++) {
         delete *itr;
+        *itr = NULL;
    }
 }
 //For Sorted Vectors
@@ -318,6 +320,7 @@ inline void delete_vector( codeproject::sorted_vector<K,bNoDuplicates,Pr,A> V )
         itr++)
    {
         delete *itr;
+        *itr = NULL;
    }
 }
 template<class K, bool bNoDuplicates,class Pr, class A >
@@ -329,6 +332,7 @@ inline void delete_vector( codeproject::sorted_vector<K,bNoDuplicates,Pr,A> *V )
         itr++)
    {
         delete *itr;
+        *itr = NULL;
    }
 }
 template < class T >
@@ -337,6 +341,7 @@ inline void delete_list( std::list<T> V )
 
    for (std::list<T>::iterator itr = V.begin(); itr != V.end(); itr++) {
         delete *itr;
+        *itr = NULL;
    }
 }
 template < class T >
@@ -345,6 +350,7 @@ inline void delete_list( std::list<T> *V )
 
    for (std::list<T>::iterator itr = V->begin(); itr != V->end(); itr++) {
         delete *itr;
+        *itr = NULL;
    }
 }
 template < class T >
@@ -375,7 +381,11 @@ inline void delete_map( std::map<K,T> V )
 {
 
    for (std::map<K,T>::iterator itr = V.begin(); itr != V.end(); itr++) {
-        delete (*itr).second;
+       if( (*itr).second != NULL )
+       {
+           delete (*itr).second;
+           (*itr).second = NULL;
+       }
    }
 }
 template < class K, class T >
@@ -383,7 +393,24 @@ inline void delete_map( std::map<K,T> *V )
 {
 
    for (std::map<K,T>::iterator itr = V->begin(); itr != V->end(); itr++) {
-        delete (*itr).second;
+       if( (*itr).second != NULL )
+       {
+           delete (*itr).second;
+           (*itr).second = NULL;
+       }
+   }
+}
+
+template < class K, class T >
+inline void delete_multimap( std::multimap<K,T> V )
+{
+
+   for (std::multimap<K,T>::iterator itr = V.begin(); itr != V.end(); itr++) {
+       if( (*itr).second != NULL )
+       {
+           delete (*itr).second;
+           (*itr).second = NULL;
+       }
    }
 }
 #endif // #ifndef __UTILITY_H__
