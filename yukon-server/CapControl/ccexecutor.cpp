@@ -709,8 +709,6 @@ void CtiCCCommandExecutor::EnableCapBank()
                         {
                             CtiCapController::getInstance()->sendMessageToDispatch(new CtiSignalMsg(currentCapBank->getStatusPointId(),0,text,additional,CapControlLogType,SignalEvent,_command->getUser()));
 
-                            CtiCapController::getInstance()->sendMessageToDispatch(new CtiPointDataMsg(currentCapBank->getStatusPointId(),currentCapBank->getControlStatus(),NormalQuality,StatusPointType,_command->getUser(), TAG_POINT_FORCE_UPDATE));
-
                             INT seqId = CCEventSeqIdGen();
                             currentSubstationBus->setEventSequence(seqId);
                             CtiCapController::getInstance()->getCCEventMsgQueueHandle().write(new CtiCCEventLogMsg(0, SYS_PID_CAPCONTROL, currentSubstationBus->getPAOId(), currentFeeder->getPAOId(), capControlEnable, currentSubstationBus->getEventSequence(), 1, text, _command->getUser()));
@@ -722,10 +720,6 @@ void CtiCCCommandExecutor::EnableCapBank()
                                           << " PAOID: " << currentCapBank->getPAOId() << " doesn't have a status point!" << endl;
 
                             CtiCapController::getInstance()->sendMessageToDispatch(new CtiSignalMsg(SYS_PID_CAPCONTROL,0,text,additional,CapControlLogType,SignalEvent,_command->getUser()));
-                        }
-                        if( currentCapBank->getOperationAnalogPointId() > 0 )
-                        {
-                            CtiCapController::getInstance()->sendMessageToDispatch(new CtiPointDataMsg(currentCapBank->getOperationAnalogPointId(),currentCapBank->getTotalOperations(),NormalQuality,StatusPointType,_command->getUser(), TAG_POINT_FORCE_UPDATE));
                         }
                     }
                     else
@@ -1036,6 +1030,270 @@ void CtiCCCommandExecutor::SendTimeSync()
     LONG paoId = _command->getId();
     LONG controlID = 0;
     BOOL found = FALSE;
+    CtiMultiMsg* multi = new CtiMultiMsg();
+    CtiMultiMsg* multiPilMsg = new CtiMultiMsg();
+    CtiMultiMsg* eventMulti = new CtiMultiMsg();
+    CtiMultiMsg_vec& pilMessages = multiPilMsg->getData();
+    CtiMultiMsg_vec& pointChanges = multi->getData();
+    CtiMultiMsg_vec& ccEvents = eventMulti->getData();
+
+
+    CtiCCSpecial* currentSpArea = store->findSpecialAreaByPAObjectID(paoId);
+    CtiCCAreaPtr currentArea = store->findAreaByPAObjectID(paoId);
+    CtiCCSubstationPtr currentStation = store->findSubstationByPAObjectID(paoId);
+    CtiCCSubstationBusPtr currentSubstationBus = store->findSubBusByPAObjectID(paoId);
+    CtiCCFeederPtr currentFeeder = store->findFeederByPAObjectID(paoId);
+    CtiCCCapBankPtr currentCapBank = store->findCapBankByPAObjectID(paoId);
+    if (currentCapBank != NULL) 
+    {
+        controlID = currentCapBank->getControlDeviceId();
+        if (controlID > 0)
+        {   
+            pilMessages.push_back(new CtiRequestMsg(controlID,"putconfig timesync"));
+        }
+    }
+    else if (currentFeeder != NULL)
+    {
+        currentSubstationBus = store->findSubBusByPAObjectID(currentFeeder->getParentId());
+
+        if (currentSubstationBus != NULL)
+        {
+            string text1 = string("Feeder: ");
+            text1 += currentFeeder->getPAOName();
+            text1 += string(" TimeSync All CapBanks");
+            string additional1 = string("Feeder: ");
+            additional1 += currentFeeder->getPAOName();
+            
+            pointChanges.push_back(new CtiSignalMsg(SYS_PID_CAPCONTROL,1,text1,additional1,CapControlLogType,SignalEvent,_command->getUser()));
+            currentSubstationBus->setEventSequence(currentSubstationBus->getEventSequence() +1);
+            ccEvents.push_back(new CtiCCEventLogMsg(0, SYS_PID_CAPCONTROL, currentSubstationBus->getPAOId(), currentFeeder->getPAOId(), capControlManualCommand, currentSubstationBus->getEventSequence(), 0, text1, _command->getUser()));
+            
+            CtiCCCapBank_SVector& ccCapBanks = currentFeeder->getCCCapBanks();
+            
+            for(LONG k=0;k<ccCapBanks.size();k++)
+            {
+                CtiCCCapBankPtr currentCapBank = (CtiCCCapBankPtr)ccCapBanks[k];
+                {
+                    controlID = currentCapBank->getControlDeviceId();
+                    if (controlID > 0)
+                    {   
+                        pilMessages.push_back(new CtiRequestMsg(controlID,"putconfig timesync"));
+                    }
+                }
+            }
+            //modifiedSubsList.push_back(currentSubstationBus);
+        }
+    }
+    else if (currentSubstationBus != NULL)
+    {
+        string text1 = string("SubBus: ");
+        text1 += currentSubstationBus->getPAOName();
+        text1 += string(" TimeSync All CapBanks");
+        string additional1 = string("SubBus: ");
+        additional1 += currentSubstationBus->getPAOName();
+        
+        pointChanges.push_back(new CtiSignalMsg(SYS_PID_CAPCONTROL,1,text1,additional1,CapControlLogType,SignalEvent,_command->getUser()));
+        currentSubstationBus->setEventSequence(currentSubstationBus->getEventSequence() +1);
+        ccEvents.push_back(new CtiCCEventLogMsg(0, SYS_PID_CAPCONTROL, currentSubstationBus->getPAOId(), 0, capControlManualCommand, currentSubstationBus->getEventSequence(), 0, text1, _command->getUser()));
+        
+        CtiFeeder_vec& ccFeeders = currentSubstationBus->getCCFeeders();
+
+        for(LONG j=0;j<ccFeeders.size();j++)
+        {
+            CtiCCFeeder* currentFeeder = (CtiCCFeeder*)ccFeeders.at(j);
+            CtiCCCapBank_SVector& ccCapBanks = currentFeeder->getCCCapBanks();
+
+
+            for(LONG k=0;k<ccCapBanks.size();k++)
+            {
+                CtiCCCapBankPtr currentCapBank = (CtiCCCapBankPtr)ccCapBanks[k];
+                {
+                    controlID = currentCapBank->getControlDeviceId();
+                    if (controlID > 0)
+                    {   
+                        pilMessages.push_back(new CtiRequestMsg(controlID,"putconfig timesync"));
+                    }
+                }
+            }
+        }
+        //modifiedSubsList.push_back(currentSubstationBus);
+
+    }
+    else if (currentStation != NULL)
+    {
+
+        string text1 = string("Substation: ");
+        text1 += currentStation->getPAOName();
+        text1 += string(" TimeSync All CapBanks");
+        string additional1 = string("Substation: ");
+        additional1 += currentStation->getPAOName();
+        pointChanges.push_back(new CtiSignalMsg(SYS_PID_CAPCONTROL,1,text1,additional1,CapControlLogType,SignalEvent,_command->getUser()));
+
+        list <LONG>::const_iterator iterBus = currentStation->getCCSubIds()->begin();
+        while (iterBus  != currentStation->getCCSubIds()->end())
+        { 
+            LONG busId = *iterBus;
+            CtiCCSubstationBus* currentSubstationBus = store->findSubBusByPAObjectID(busId);
+            if (currentSubstationBus != NULL)
+            {
+                currentSubstationBus->setEventSequence(currentSubstationBus->getEventSequence() +1);
+                ccEvents.push_back(new CtiCCEventLogMsg(0, SYS_PID_CAPCONTROL, currentSubstationBus->getPAOId(), 0, capControlManualCommand, currentSubstationBus->getEventSequence(), 0, text1, _command->getUser()));
+                
+                CtiFeeder_vec& ccFeeders = currentSubstationBus->getCCFeeders();
+               
+                for(LONG j=0;j<ccFeeders.size();j++)
+                {
+                    CtiCCFeeder* currentFeeder = (CtiCCFeeder*)ccFeeders.at(j);
+                    CtiCCCapBank_SVector& ccCapBanks = currentFeeder->getCCCapBanks();
+               
+               
+                    for(LONG k=0;k<ccCapBanks.size();k++)
+                    {
+                        CtiCCCapBankPtr currentCapBank = (CtiCCCapBankPtr)ccCapBanks[k];
+                        {
+                            controlID = currentCapBank->getControlDeviceId();
+                            if (controlID > 0)
+                            {   
+                                pilMessages.push_back(new CtiRequestMsg(controlID,"putconfig timesync"));
+                            }
+                        }
+                    }
+                }
+                //modifiedSubsList.push_back(currentSubstationBus);
+            }
+            iterBus++;
+        }
+    }
+    else if (currentArea != NULL)
+    {
+        
+        string text1 = string("Area: ");
+        text1 += currentArea->getPAOName();
+        text1 += string(" TimeSync All CapBanks");
+        string additional1 = string("Area: ");
+        additional1 += currentArea->getPAOName();
+       
+        pointChanges.push_back(new CtiSignalMsg(SYS_PID_CAPCONTROL,1,text1,additional1,CapControlLogType,SignalEvent,_command->getUser()));
+        std::list <long>::iterator subIter = currentArea->getSubStationList()->begin();
+       
+        while (subIter != currentArea->getSubStationList()->end())
+        {
+            currentStation = store->findSubstationByPAObjectID(*subIter);
+            subIter++;
+       
+            if (currentStation != NULL)
+            {
+                list <LONG>::const_iterator iterBus = currentStation->getCCSubIds()->begin();
+                while (iterBus  != currentStation->getCCSubIds()->end())
+                { 
+                    LONG busId = *iterBus;
+                    CtiCCSubstationBus* currentSubstationBus = store->findSubBusByPAObjectID(busId);
+                    if (currentSubstationBus != NULL)
+                    {
+                        currentSubstationBus->setEventSequence(currentSubstationBus->getEventSequence() +1);
+                        ccEvents.push_back(new CtiCCEventLogMsg(0, SYS_PID_CAPCONTROL, currentSubstationBus->getPAOId(), 0, capControlManualCommand, currentSubstationBus->getEventSequence(), 0, text1, _command->getUser()));
+                        
+                        CtiFeeder_vec& ccFeeders = currentSubstationBus->getCCFeeders();
+                       
+                        for(LONG j=0;j<ccFeeders.size();j++)
+                        {
+                            CtiCCFeeder* currentFeeder = (CtiCCFeeder*)ccFeeders.at(j);
+                            CtiCCCapBank_SVector& ccCapBanks = currentFeeder->getCCCapBanks();
+                       
+                       
+                            for(LONG k=0;k<ccCapBanks.size();k++)
+                            {
+                                CtiCCCapBankPtr currentCapBank = (CtiCCCapBankPtr)ccCapBanks[k];
+                                {
+                                    controlID = currentCapBank->getControlDeviceId();
+                                    if (controlID > 0)
+                                    {   
+                                        pilMessages.push_back(new CtiRequestMsg(controlID,"putconfig timesync"));
+                                    }
+                                }
+                            }
+                        }
+                        //modifiedSubsList.push_back(currentSubstationBus);
+                    }
+                    iterBus++;
+                }
+            }
+        }
+    }
+    else if (currentSpArea != NULL)
+    {
+        string text1 = string("Special Area: ");
+        text1 += currentSpArea->getPAOName();
+        text1 += string(" TimeSync All CapBanks");
+        string additional1 = string("Special Area: ");
+        additional1 += currentSpArea->getPAOName();
+       
+        pointChanges.push_back(new CtiSignalMsg(SYS_PID_CAPCONTROL,1,text1,additional1,CapControlLogType,SignalEvent,_command->getUser()));
+        std::list <long>::iterator subIter = currentSpArea->getSubstationIds()->begin();
+       
+        while (subIter != currentSpArea->getSubstationIds()->end())
+        {
+            currentStation = store->findSubstationByPAObjectID(*subIter);
+            subIter++;
+       
+            if (currentStation != NULL)
+            {
+                list <LONG>::const_iterator iterBus = currentStation->getCCSubIds()->begin();
+                while (iterBus  != currentStation->getCCSubIds()->end())
+                { 
+                    LONG busId = *iterBus;
+                    CtiCCSubstationBus* currentSubstationBus = store->findSubBusByPAObjectID(busId);
+                    if (currentSubstationBus != NULL)
+                    {
+                        currentSubstationBus->setEventSequence(currentSubstationBus->getEventSequence() +1);
+                        ccEvents.push_back(new CtiCCEventLogMsg(0, SYS_PID_CAPCONTROL, currentSubstationBus->getPAOId(), 0, capControlManualCommand, currentSubstationBus->getEventSequence(), 0, text1, _command->getUser()));
+                        
+                        CtiFeeder_vec& ccFeeders = currentSubstationBus->getCCFeeders();
+                       
+                        for(LONG j=0;j<ccFeeders.size();j++)
+                        {
+                            CtiCCFeeder* currentFeeder = (CtiCCFeeder*)ccFeeders.at(j);
+                            CtiCCCapBank_SVector& ccCapBanks = currentFeeder->getCCCapBanks();
+                       
+                       
+                            for(LONG k=0;k<ccCapBanks.size();k++)
+                            {
+                                CtiCCCapBankPtr currentCapBank = (CtiCCCapBankPtr)ccCapBanks[k];
+                                {
+                                    controlID = currentCapBank->getControlDeviceId();
+                                    if (controlID > 0)
+                                    {   
+                                        pilMessages.push_back(new CtiRequestMsg(controlID,"putconfig timesync"));
+                                    }
+                                }
+                            }
+                        }
+                        //modifiedSubsList.push_back(currentSubstationBus);
+                    }
+                    iterBus++;
+                }
+            }
+        }
+    }
+    else
+    {
+        //nothing.
+    }
+
+    if (multi->getCount() > 0 || multiPilMsg->getCount() > 0 )
+    {
+        CtiCapController::getInstance()->confirmCapBankControl( multiPilMsg, multi );
+    }
+    else
+    {
+        delete multiPilMsg;
+        delete multi;
+    }
+
+    if (eventMulti->getCount() > 0)
+        CtiCapController::getInstance()->getCCEventMsgQueueHandle().write(eventMulti);
+    else
+        delete eventMulti;
     return;
 
 }

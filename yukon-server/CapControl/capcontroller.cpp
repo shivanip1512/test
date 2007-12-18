@@ -2931,6 +2931,8 @@ void CtiCapController::manualCapBankControl( CtiRequestMsg* pilRequest, CtiMulti
         getPILConnection()->WriteConnQue(pilRequest);
         if( multiMsg->getCount() > 0 )
             getDispatchConnection()->WriteConnQue(multiMsg);
+        else
+            delete multiMsg;
     }
     catch(...)
     {
@@ -2953,8 +2955,12 @@ void CtiCapController::confirmCapBankControl( CtiMultiMsg* pilMultiMsg, CtiMulti
     {
         if (pilMultiMsg->getCount() > 0) 
             getPILConnection()->WriteConnQue(pilMultiMsg);
+        else
+            delete pilMultiMsg;
         if( multiMsg->getCount() > 0 )
             getDispatchConnection()->WriteConnQue(multiMsg);
+        else
+            delete multiMsg;
     }
     catch(...)
     {
