@@ -63,11 +63,13 @@ public class BulkImporterRefreshController implements Controller  {
         List<Map<String, String>> failedComms = new ArrayList<Map<String, String>>();
         
         for (ImportFail failure : failuresList) {
-            Map<String, String> item = new HashMap<String, String>();
-            item.put("failName", failure.getName());
-            item.put("errorString", failure.getErrorMsg());
-            item.put("failTime", dateFormattingService.formatDate(failure.getDateTime(), DateFormattingService.DateFormatEnum.BOTH, user));
-            failures.add(item);
+            for (String error: failure.getErrorMsg().split("<br>")) {
+                Map<String, String> item = new HashMap<String, String>();
+                item.put("failName", failure.getName());
+                item.put("errorString", error);
+                item.put("failTime", dateFormattingService.formatDate(failure.getDateTime(), DateFormattingService.DateFormatEnum.BOTH, user));
+                failures.add(item);
+            }
         }
         
         for (ImportPendingComm pendingComm : pendingCommsList) {

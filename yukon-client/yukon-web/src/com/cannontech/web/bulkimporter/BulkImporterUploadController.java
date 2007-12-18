@@ -160,6 +160,11 @@ public class BulkImporterUploadController extends MultiActionController  {
         List<ImportData> goodEntries = new ArrayList<ImportData>();
         boolean errorOccurred = false;
         
+        if (!dataFile.getOriginalFilename().endsWith("csv")) {
+            badMsgs.add(dataFile.getOriginalFilename()+" is not a correct csv format, fix and try again. No Meters Added.");
+            errorOccurred = true;
+        } else {
+            
         try {
             
             int lineNo = 0;
@@ -176,7 +181,7 @@ public class BulkImporterUploadController extends MultiActionController  {
 
                 String[] columns = StarsUtils.splitString( line, "," );
                 if (columns.length < ImportData.SETTER_COLUMNS.length - 2) {
-                    badMsgs.add("Incorrect number of fields on line " + lineNo + ", try and try again. No Meters Added.");
+                    badMsgs.add("Incorrect number of fields on line " + lineNo + ", fix and try again. No Meters Added.");
                     errorOccurred = true;
                     break;
                 }
@@ -214,7 +219,7 @@ public class BulkImporterUploadController extends MultiActionController  {
             badMsgs.add("Unable to read file.");
             errorOccurred = true;
         }
-        
+        }
         
         // IF THERE WAS AN ERROR, BACKOUT ALL METERS THAT WERE ADDED
         if (errorOccurred) {
