@@ -7,8 +7,8 @@
 * Author: Corey G. Plender
 *
 * CVS KEYWORDS:
-* REVISION     :  $Revision: 1.26 $
-* DATE         :  $Date: 2007/06/29 19:17:26 $
+* REVISION     :  $Revision: 1.27 $
+* DATE         :  $Date: 2007/12/18 21:21:55 $
 *
 * Copyright (c) 2002 Cannon Technologies Inc. All rights reserved.
 *-----------------------------------------------------------------------------*/
@@ -250,7 +250,8 @@ int CtiStatistics::newHour(const CtiTime &newtime, CtiStatisticsCounters_t count
         _dirtyCounter[ HourNo ] = true;
     }
 
-    if(lastdate.day() != newdate.day())
+    CtiDate currentDayCounter(_startStopTimePairs[Daily].first);
+    if(currentDayCounter.day() != newdate.day())
     {
         // Copy current to previous. Write out a report.
         copyCounter(Yesterday, Daily);
@@ -266,7 +267,8 @@ int CtiStatistics::newHour(const CtiTime &newtime, CtiStatisticsCounters_t count
         _doHistInsert = true;
     }
 
-    if(lastdate.month() != newdate.month())
+    CtiDate currentMonthCounter(_startStopTimePairs[Monthly].first);
+    if(currentMonthCounter.month() != newdate.month())
     {
         // Copy current to previous.
         copyCounter( LastMonth, Monthly );
