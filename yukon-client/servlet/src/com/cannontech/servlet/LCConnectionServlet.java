@@ -506,7 +506,7 @@ private Hashtable getOptionalParams( HttpServletRequest req )
 	if( req.getParameter("startTime1") != null )
 	{
 		if( req.getParameter("startTime1").length() <= 0 )
-			optionalProps.put("starttime", new Integer(LMControlArea.INVAID_INT));
+			optionalProps.put("starttime", new Integer(LMControlArea.INVALID_INT));
 		else
 		{
 			optionalProps.put("starttime",
@@ -518,7 +518,7 @@ private Hashtable getOptionalParams( HttpServletRequest req )
 	if( req.getParameter("stopTime1") != null )
 	{
 		if( req.getParameter("stopTime1").length() <= 0 )
-			optionalProps.put( "stoptime", new Integer(LMControlArea.INVAID_INT) );
+			optionalProps.put( "stoptime", new Integer(LMControlArea.INVALID_INT) );
 		else
 		{
 			optionalProps.put( "stoptime",

@@ -371,7 +371,7 @@ public final class LMCmdMsgFactory
 				Multi multi = new Multi();
 				
 				//send a message to the server telling it to change the START time
-				if( starttime.intValue() != LMControlArea.INVAID_INT )
+				if( starttime.intValue() != LMControlArea.INVALID_INT )
 					multi.getVector().add(
 							new LMCommand( LMCommand.CHANGE_CURRENT_START_TIME,
 											lmCntrArea.getYukonID().intValue(),
@@ -379,7 +379,7 @@ public final class LMCmdMsgFactory
 											(double)starttime.intValue()) );
 
 				//send a message to the server telling it to change the STOP time
-				if( stoptime.intValue() != LMControlArea.INVAID_INT )
+				if( stoptime.intValue() != LMControlArea.INVALID_INT )
 					multi.getVector().add(
 								new LMCommand( LMCommand.CHANGE_CURRENT_STOP_TIME,
 											lmCntrArea.getYukonID().intValue(),

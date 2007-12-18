@@ -677,8 +677,8 @@ pageContext.setAttribute("nowDate", nowStartOrStop);%>
 		int winStartInt = LCUtils.decodeStartWindow(cntrlArea);
 		int winStopInt = LCUtils.decodeStopWindow(cntrlArea);
 
-		String winStart = (winStartInt == LMControlArea.INVAID_INT ? "08:00" : CtiUtilities.decodeSecondsToTime(winStartInt) );
-		String winStop = (winStopInt == LMControlArea.INVAID_INT ? "15:00" : CtiUtilities.decodeSecondsToTime(winStopInt) );
+		String winStart = (winStartInt == LMControlArea.INVALID_INT ? "08:00" : CtiUtilities.decodeSecondsToTime(winStartInt) );
+		String winStop = (winStopInt == LMControlArea.INVALID_INT ? "15:00" : CtiUtilities.decodeSecondsToTime(winStopInt) );
 %>
 	<div class="TableCell"> 
 	  <div align="center">Select the new window Start and Stop times:</div>

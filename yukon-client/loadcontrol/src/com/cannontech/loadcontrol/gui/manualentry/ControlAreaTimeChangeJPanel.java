@@ -220,7 +220,7 @@ public int getStartTime()
 	if( getJCheckBoxStartTime().isSelected() )
 		return getTimeComboStart().getTimeInSeconds();
 	else
-		return LMControlArea.INVAID_INT;
+		return LMControlArea.INVALID_INT;
 }
 /**
  * Insert the method's description here.
@@ -231,7 +231,7 @@ public int getStopTime()
 	if( getJCheckBoxStopTime().isSelected() )
 		return getTimeComboStop().getTimeInSeconds();
 	else
-		return LMControlArea.INVAID_INT;
+		return LMControlArea.INVALID_INT;
 }
 /**
  * Return the TimeComboStart property value.
@@ -371,20 +371,20 @@ private void initialize() {
  */
 private boolean isNewDailyTimeValid() 
 {
-	if( getStartTime() == LMControlArea.INVAID_INT 
-		 && getStopTime() == LMControlArea.INVAID_INT )
+	if( getStartTime() == LMControlArea.INVALID_INT 
+		 && getStopTime() == LMControlArea.INVALID_INT )
 		return true;
 
 	//we only have a stop time selected and that stop time >= DefDailStartTime
-	if( getStartTime() == LMControlArea.INVAID_INT
-	    && getStopTime() != LMControlArea.INVAID_INT )
+	if( getStartTime() == LMControlArea.INVALID_INT
+	    && getStopTime() != LMControlArea.INVALID_INT )
 	{
 		return getStopTime() >= getLmControlArea().getDefDailyStartTime().intValue();
 	}
 
 	//we only have a start time selected and that start time >= DefDailStopTime
-	if( getStopTime() == LMControlArea.INVAID_INT
-		 && getStartTime() != LMControlArea.INVAID_INT )
+	if( getStopTime() == LMControlArea.INVALID_INT
+		 && getStartTime() != LMControlArea.INVALID_INT )
 	{
 		 return getStartTime() <= getLmControlArea().getDefDailyStopTime().intValue();
 	}
@@ -401,9 +401,9 @@ private boolean isTimeValid()
 	//if the start or stop time == -1, then make sure the startTime > stopTime
 	return ( getStartTime() < getStopTime()
 		 		||
-		 		getStartTime() == LMControlArea.INVAID_INT
+		 		getStartTime() == LMControlArea.INVALID_INT
 		 	   || 
-		 	   getStopTime() == LMControlArea.INVAID_INT );
+		 	   getStopTime() == LMControlArea.INVALID_INT );
 
 }
 /**

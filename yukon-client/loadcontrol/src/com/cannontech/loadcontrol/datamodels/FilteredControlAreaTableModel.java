@@ -14,7 +14,7 @@ import com.cannontech.loadcontrol.data.LMControlArea;
  */
 public class FilteredControlAreaTableModel extends ControlAreaTableModel
 {
-	private int[] filteredStates = new int[] { LMControlArea.INVAID_INT };
+	private int[] filteredStates = new int[] { LMControlArea.INVALID_INT };
  
 
 	/**

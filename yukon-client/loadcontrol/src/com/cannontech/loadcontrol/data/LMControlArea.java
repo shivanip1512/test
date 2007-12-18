@@ -7,7 +7,7 @@ package com.cannontech.loadcontrol.data;
  */
 public class LMControlArea implements ILMData
 {
-	public static final int INVAID_INT = -1;
+	public static final int INVALID_INT = -1;
 	
 	public static final int STATE_INACTIVE = 0;
 	public static final int STATE_ACTIVE = 1;

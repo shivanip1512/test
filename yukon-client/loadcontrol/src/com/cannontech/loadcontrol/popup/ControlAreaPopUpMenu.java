@@ -535,7 +535,7 @@ private void jMenuItemDailyTime_ActionPerformed(java.awt.event.ActionEvent actio
 				com.cannontech.message.dispatch.message.Multi multi = new com.cannontech.message.dispatch.message.Multi();
 				
 				//send a message to the server telling it to change the START time
-				if( panel.getStartTime() != LMControlArea.INVAID_INT )
+				if( panel.getStartTime() != LMControlArea.INVALID_INT )
 					multi.getVector().add(
 							new LMCommand( LMCommand.CHANGE_CURRENT_START_TIME,
 							 				getLoadControlArea().getYukonID().intValue(),
@@ -543,7 +543,7 @@ private void jMenuItemDailyTime_ActionPerformed(java.awt.event.ActionEvent actio
 							 				(double)panel.getStartTime()) );
 
 				//send a message to the server telling it to change the STOP time
-				if( panel.getStopTime() != LMControlArea.INVAID_INT )
+				if( panel.getStopTime() != LMControlArea.INVALID_INT )
 					multi.getVector().add(
 								new LMCommand( LMCommand.CHANGE_CURRENT_STOP_TIME,
 							 				getLoadControlArea().getYukonID().intValue(),

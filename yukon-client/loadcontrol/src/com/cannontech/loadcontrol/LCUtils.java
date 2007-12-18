@@ -426,19 +426,19 @@ public class LCUtils
 					getTimeString(
 							lmCntrArea,
 							(lmCntrArea.getDefDailyStartTime() == null 
-								? LMControlArea.INVAID_INT
+								? LMControlArea.INVALID_INT
 								: lmCntrArea.getDefDailyStartTime().intValue()),
 							(lmCntrArea.getCurrentDailyStartTime() == null
-								? LMControlArea.INVAID_INT
+								? LMControlArea.INVALID_INT
 								: lmCntrArea.getCurrentDailyStartTime().intValue()) ) +
 					" - " +
 					getTimeString(
 							lmCntrArea,
 							(lmCntrArea.getDefDailyStopTime() == null 
-								? LMControlArea.INVAID_INT
+								? LMControlArea.INVALID_INT
 								: lmCntrArea.getDefDailyStopTime().intValue()),
 							(lmCntrArea.getCurrentDailyStopTime() == null
-								? LMControlArea.INVAID_INT
+								? LMControlArea.INVALID_INT
 								: lmCntrArea.getCurrentDailyStopTime().intValue()) ); 
 					 
 			}
@@ -479,7 +479,7 @@ public class LCUtils
 			retStr = CtiUtilities.STRING_DASH_LINE;
 		else
 		{					
-			if( defSecs <= LMControlArea.INVAID_INT && currSecs <= LMControlArea.INVAID_INT )
+			if( defSecs <= LMControlArea.INVALID_INT && currSecs <= LMControlArea.INVALID_INT )
 			{
 				retStr = CtiUtilities.STRING_DASH_LINE;
 			}
@@ -488,7 +488,7 @@ public class LCUtils
 				//set our time to todays date
 				currTime.setTime( new java.util.Date() );
 										
-				if( defSecs == currSecs || currSecs <= LMControlArea.INVAID_INT )
+				if( defSecs == currSecs || currSecs <= LMControlArea.INVALID_INT )
 				{
 					currTime.set( GregorianCalendar.HOUR_OF_DAY, 0 ); 
 					currTime.set( GregorianCalendar.MINUTE, 0 );
@@ -539,12 +539,12 @@ public class LCUtils
 	public static synchronized int decodeStartWindow( LMControlArea cntrlArea )
 	{		
 		if( cntrlArea == null )
-			return LMControlArea.INVAID_INT;
+			return LMControlArea.INVALID_INT;
 		else
 			return 
 				(cntrlArea.getCurrentDailyStartTime() == null 
 					? (cntrlArea.getDefDailyStartTime() == null
-						? LMControlArea.INVAID_INT
+						? LMControlArea.INVALID_INT
 						: cntrlArea.getDefDailyStartTime().intValue())
 					: cntrlArea.getCurrentDailyStartTime().intValue() );
 	}
@@ -552,12 +552,12 @@ public class LCUtils
 	public static synchronized int decodeStopWindow( LMControlArea cntrlArea )
 	{		
 		if( cntrlArea == null )
-			return LMControlArea.INVAID_INT;
+			return LMControlArea.INVALID_INT;
 		else
 			return
 				(cntrlArea.getCurrentDailyStopTime() == null 
 					? (cntrlArea.getDefDailyStopTime() == null
-						? LMControlArea.INVAID_INT
+						? LMControlArea.INVALID_INT
 						: cntrlArea.getDefDailyStopTime().intValue())
 					: cntrlArea.getCurrentDailyStopTime().intValue() );
 	}
