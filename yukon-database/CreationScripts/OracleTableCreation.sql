@@ -1,7 +1,7 @@
 /*==============================================================*/
 /* Database name:  YukonDatabase                                */
 /* DBMS name:      ORACLE Version 9i                            */
-/* Created on:     12/18/2007 10:30:58 AM                       */
+/* Created on:     12/18/2007 11:28:51 PM                       */
 /*==============================================================*/
 
 
@@ -6610,15 +6610,15 @@ create table TOUATTRIBUTEMAPPING  (
    touid                NUMBER(6)                       not null,
    displayname          VARCHAR2(50)                    not null,
    peakAttribute        VARCHAR2(50)                    not null,
-   usageAttribute       VARCHAR2(50)                    not null,
+   energyAttribute      VARCHAR2(50)                    not null,
    constraint PK_TOUATTRIBUTEMAPPING primary key (touid)
 )
 ;
 
-INSERT INTO TouAttributeMapping VALUES (1, 'A', 'TOU_RATE_A_PEAK_DEMAND', 'TOU_RATE_A_USAGE');
-INSERT INTO TouAttributeMapping VALUES (2, 'B', 'TOU_RATE_B_PEAK_DEMAND', 'TOU_RATE_B_USAGE');
-INSERT INTO TouAttributeMapping VALUES (3, 'C', 'TOU_RATE_C_PEAK_DEMAND', 'TOU_RATE_C_USAGE');
-INSERT INTO TouAttributeMapping VALUES (4, 'D', 'TOU_RATE_D_PEAK_DEMAND', 'TOU_RATE_D_USAGE');
+INSERT INTO TouAttributeMapping VALUES (1, 'A', 'TOU_RATE_A_PEAK_DEMAND', 'TOU_RATE_A_ENERGY');
+INSERT INTO TouAttributeMapping VALUES (2, 'B', 'TOU_RATE_B_PEAK_DEMAND', 'TOU_RATE_B_ENERGY');
+INSERT INTO TouAttributeMapping VALUES (3, 'C', 'TOU_RATE_C_PEAK_DEMAND', 'TOU_RATE_C_ENERGY');
+INSERT INTO TouAttributeMapping VALUES (4, 'D', 'TOU_RATE_D_PEAK_DEMAND', 'TOU_RATE_D_ENERGY');
 
 /*==============================================================*/
 /* Table: TOUDay                                                */

@@ -303,6 +303,7 @@ insert into YukonGroupRole values(-58,-1,-4,-1316,'(none)');
 insert into YukonGroupRole values(-59,-1,-4,-1317,'(none)');
 insert into YukonGroupRole values(-92,-1,-4,-1307,'(none)');
 
+/* Start YUK-4982 */
 drop table TOUATTRIBUTEMAPPING cascade constraints;
 
 /*==============================================================*/
@@ -312,20 +313,22 @@ create table TOUATTRIBUTEMAPPING  (
    touID                NUMBER(6)                       not null,
    displayname          VARCHAR2(50)                    not null,
    peakAttribute        VARCHAR2(50)                    not null,
-   usageAttribute       VARCHAR2(50)                    not null
+   energyAttribute      VARCHAR2(50)                    not null
 );
 
-INSERT INTO TouAttributeMapping VALUES (1, 'A', 'TOU_RATE_A_PEAK_DEMAND', 'TOU_RATE_A_USAGE');
-INSERT INTO TouAttributeMapping VALUES (2, 'B', 'TOU_RATE_B_PEAK_DEMAND', 'TOU_RATE_B_USAGE');
-INSERT INTO TouAttributeMapping VALUES (3, 'C', 'TOU_RATE_C_PEAK_DEMAND', 'TOU_RATE_C_USAGE');
-INSERT INTO TouAttributeMapping VALUES (4, 'D', 'TOU_RATE_D_PEAK_DEMAND', 'TOU_RATE_D_USAGE');
+INSERT INTO TouAttributeMapping VALUES (1, 'A', 'TOU_RATE_A_PEAK_DEMAND', 'TOU_RATE_A_ENERGY');
+INSERT INTO TouAttributeMapping VALUES (2, 'B', 'TOU_RATE_B_PEAK_DEMAND', 'TOU_RATE_B_ENERGY');
+INSERT INTO TouAttributeMapping VALUES (3, 'C', 'TOU_RATE_C_PEAK_DEMAND', 'TOU_RATE_C_ENERGY');
+INSERT INTO TouAttributeMapping VALUES (4, 'D', 'TOU_RATE_D_PEAK_DEMAND', 'TOU_RATE_D_ENERGY');
 
 alter table TOUATTRIBUTEMAPPING
    add constraint PK_TOUATTRIBUTEMAPPING primary key (touID);
+/* End YUK-4982 */
 
 alter table cceventlog add actionId number;
 update cceventlog set actionId = -1;
 alter table cceventlog modify actionId number not null;
+
 
 /* Begin YUK-4785 */
 drop table DEVICECONFIGURATIONDEVICEMAP cascade constraints;
