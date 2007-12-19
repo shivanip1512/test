@@ -53,7 +53,7 @@ public class AttributeServiceImplTest extends TestCase {
 
         // Test for existing device / attribute
         LitePoint expectedPoint = pointDao.getLitePoint(1);
-        LitePoint actualPoint = service.getPointForAttribute(device, BuiltInAttribute.USAGE);
+        LitePoint actualPoint = service.getPointForAttribute(device, BuiltInAttribute.ENERGY);
 
         assertEquals("Attribute point isn't as expected", expectedPoint, actualPoint);
 
@@ -87,7 +87,7 @@ public class AttributeServiceImplTest extends TestCase {
 
         // Test for existing device with existing attributes
         Set<Attribute> expectedAtributes = new HashSet<Attribute>();
-        expectedAtributes.add(BuiltInAttribute.USAGE);
+        expectedAtributes.add(BuiltInAttribute.ENERGY);
         expectedAtributes.add(BuiltInAttribute.DEMAND);
         expectedAtributes.add(BuiltInAttribute.LOAD_PROFILE);
 

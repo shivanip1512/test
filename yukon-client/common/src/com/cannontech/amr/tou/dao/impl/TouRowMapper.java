@@ -20,9 +20,9 @@ public class TouRowMapper implements ParameterizedRowMapper<TouAttributeMapping>
         String displayName = rs.getString("displayName");
         tou.setDisplayName(displayName);
 
-        String usageAttribute = rs.getString("usageAttribute");
-        Attribute usage = BuiltInAttribute.valueOf(usageAttribute);
-        tou.setUsage(usage);
+        String energyAttribute = rs.getString("energyAttribute");
+        Attribute energy = BuiltInAttribute.valueOf(energyAttribute);
+        tou.setEnergy(energy);
         
         String peakAttribute = rs.getString("peakAttribute");
         Attribute peak = BuiltInAttribute.valueOf(peakAttribute);

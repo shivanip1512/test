@@ -72,7 +72,7 @@ public class DeviceDefinitionDaoImplTest extends TestCase {
 
         // Test with supported device type
         Set<Attribute> expectedAttributes = new HashSet<Attribute>();
-        expectedAttributes.add(BuiltInAttribute.USAGE);
+        expectedAttributes.add(BuiltInAttribute.ENERGY);
         expectedAttributes.add(BuiltInAttribute.DEMAND);
         expectedAttributes.add(BuiltInAttribute.LOAD_PROFILE);
 
@@ -103,7 +103,7 @@ public class DeviceDefinitionDaoImplTest extends TestCase {
                                                                0,
                                                                true);
 
-        PointTemplate actualTemplate = dao.getPointTemplateForAttribute(device, BuiltInAttribute.USAGE);
+        PointTemplate actualTemplate = dao.getPointTemplateForAttribute(device, BuiltInAttribute.ENERGY);
 
         assertEquals("Expected point template did not match: ", expectedTemplate, actualTemplate);
 
@@ -121,7 +121,7 @@ public class DeviceDefinitionDaoImplTest extends TestCase {
         // Test with unsupported device type
         try {
             device.setType(-1);
-            dao.getPointTemplateForAttribute(device, BuiltInAttribute.USAGE);
+            dao.getPointTemplateForAttribute(device, BuiltInAttribute.ENERGY);
             fail("Exception should be thrown for invalid device type");
         } catch (IllegalArgumentException e) {
             // expected exception

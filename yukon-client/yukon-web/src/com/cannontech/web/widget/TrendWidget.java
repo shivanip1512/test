@@ -89,7 +89,7 @@ public class TrendWidget extends WidgetControllerBase {
             if (existingAttributes.contains(agt.getAttribute())) {
                 availableAttributeGraphs.add(agt);
 
-                if (selectedAttributeGraph == null || (!graphSelected && agt.getAttribute() == BuiltInAttribute.USAGE)) {
+                if (selectedAttributeGraph == null || (!graphSelected && agt.getAttribute() == BuiltInAttribute.ENERGY)) {
                     selectedAttributeGraph = agt;
                 }
 

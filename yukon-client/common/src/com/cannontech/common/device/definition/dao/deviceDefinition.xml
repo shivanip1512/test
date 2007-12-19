@@ -533,7 +533,7 @@
         	</command>
         </commands>
 		<attributes>
-        	<attribute name="USAGE">
+        	<attribute name="ENERGY">
         		<mct4xxLookup>
         			<!-- When connect to an IED -->
         			<mapping type="T" point="Total kWh"/>
@@ -567,25 +567,25 @@
         	<attribute name="BLINK_COUNT">
         		<basicLookup point="Blink Count" />
         	</attribute>
-        	<attribute name="TOU_RATE_A_USAGE">
+        	<attribute name="TOU_RATE_A_ENERGY">
         		<mctIedTouLookup>
         			<touMapping type="ied" point="Rate A kWh" default="true"/>
         			<touMapping type="mct" point="TOU Rate A (Channel 1)" />
         		</mctIedTouLookup>
         	</attribute>
-        	<attribute name="TOU_RATE_B_USAGE">
+        	<attribute name="TOU_RATE_B_ENERGY">
         		<mctIedTouLookup>
         			<touMapping type="ied" point="Rate B kWh" default="true"/>
         			<touMapping type="mct" point="TOU Rate B (Channel 1)" />
         		</mctIedTouLookup>
         	</attribute>
-        	<attribute name="TOU_RATE_C_USAGE">
+        	<attribute name="TOU_RATE_C_ENERGY">
         		<mctIedTouLookup>
         			<touMapping type="ied" point="Rate C kWh" default="true"/>
         			<touMapping type="mct" point="TOU Rate C (Channel 1)" />
         		</mctIedTouLookup>
         	</attribute>
-        	<attribute name="TOU_RATE_D_USAGE">
+        	<attribute name="TOU_RATE_D_ENERGY">
         		<mctIedTouLookup>
         			<touMapping type="ied" point="Rate D kWh" default="true"/>
         			<touMapping type="mct" point="TOU Rate D (Channel 1)" />
@@ -857,7 +857,7 @@
         	</command>
         </commands>
 		<attributes>
-        	<attribute name="USAGE">
+        	<attribute name="ENERGY">
         		<mct4xxLookup>
         			<mapping type="T" point="Total kWh"/>
         			<mapping type="A" point="Rate A kWh" default="true"/>
@@ -890,16 +890,16 @@
         	<attribute name="BLINK_COUNT">
         		<basicLookup point="Blink Count" />
         	</attribute>
-			<attribute name="TOU_RATE_A_USAGE">
+			<attribute name="TOU_RATE_A_ENERGY">
         		<basicLookup point="Rate A kWh" />
         	</attribute>
-        	<attribute name="TOU_RATE_B_USAGE">
+        	<attribute name="TOU_RATE_B_ENERGY">
         		<basicLookup point="Rate B kWh" />
         	</attribute>
-        	<attribute name="TOU_RATE_C_USAGE">
+        	<attribute name="TOU_RATE_C_ENERGY">
         		<basicLookup point="Rate C kWh" />
         	</attribute>
-        	<attribute name="TOU_RATE_D_USAGE">
+        	<attribute name="TOU_RATE_D_ENERGY">
         		<basicLookup point="Rate D kWh" />
         	</attribute>
         	<attribute name="TOU_RATE_A_PEAK_DEMAND">
@@ -1174,7 +1174,7 @@
         	</command>
         </commands>
 		<attributes>
-        	<attribute name="USAGE">
+        	<attribute name="ENERGY">
         		<mct4xxLookup>
         			<mapping type="T" point="Total kWh"/>
         			<mapping type="A" point="Rate A kWh" default="true"/>
@@ -1207,16 +1207,16 @@
         	<attribute name="BLINK_COUNT">
         		<basicLookup point="Blink Count" />
         	</attribute>
-        	<attribute name="TOU_RATE_A_USAGE">
+        	<attribute name="TOU_RATE_A_ENERGY">
         		<basicLookup point="Rate A kWh" />
         	</attribute>
-        	<attribute name="TOU_RATE_B_USAGE">
+        	<attribute name="TOU_RATE_B_ENERGY">
         		<basicLookup point="Rate B kWh" />
         	</attribute>
-        	<attribute name="TOU_RATE_C_USAGE">
+        	<attribute name="TOU_RATE_C_ENERGY">
         		<basicLookup point="Rate C kWh" />
         	</attribute>
-        	<attribute name="TOU_RATE_D_USAGE">
+        	<attribute name="TOU_RATE_D_ENERGY">
         		<basicLookup point="Rate D kWh" />
         	</attribute>
         	<attribute name="TOU_RATE_A_PEAK_DEMAND">
@@ -1491,7 +1491,7 @@
         	</command>
         </commands>
 		<attributes>
-        	<attribute name="USAGE">
+        	<attribute name="ENERGY">
         		<mct4xxLookup>
         			<mapping type="T" point="Total kWh"/>
         			<mapping type="A" point="Rate A kWh" default="true"/>
@@ -1524,16 +1524,16 @@
         	<attribute name="BLINK_COUNT">
         		<basicLookup point="Blink Count" />
         	</attribute>
-        	<attribute name="TOU_RATE_A_USAGE">
+        	<attribute name="TOU_RATE_A_ENERGY">
         		<basicLookup point="Rate A kWh" />
         	</attribute>
-        	<attribute name="TOU_RATE_B_USAGE">
+        	<attribute name="TOU_RATE_B_ENERGY">
         		<basicLookup point="Rate B kWh" />
         	</attribute>
-        	<attribute name="TOU_RATE_C_USAGE">
+        	<attribute name="TOU_RATE_C_ENERGY">
         		<basicLookup point="Rate C kWh" />
         	</attribute>
-        	<attribute name="TOU_RATE_D_USAGE">
+        	<attribute name="TOU_RATE_D_ENERGY">
         		<basicLookup point="Rate D kWh" />
         	</attribute>
         	<attribute name="TOU_RATE_A_PEAK_DEMAND">
@@ -1889,7 +1889,7 @@
         	</command>
         </commands>
 		<attributes>
-        	<attribute name="USAGE">
+        	<attribute name="ENERGY">
         		<basicLookup point="kWh" />
         	</attribute>
         	<attribute name="PEAK_DEMAND">
@@ -1916,16 +1916,16 @@
         	<attribute name="DISCONNECT_STATUS">
         		<basicLookup point="Disconnect Status" />
         	</attribute>
-			<attribute name="TOU_RATE_A_USAGE">
+			<attribute name="TOU_RATE_A_ENERGY">
         		<basicLookup point="Rate A kWh" />
         	</attribute>
-        	<attribute name="TOU_RATE_B_USAGE">
+        	<attribute name="TOU_RATE_B_ENERGY">
         		<basicLookup point="Rate B kWh" />
         	</attribute>
-        	<attribute name="TOU_RATE_C_USAGE">
+        	<attribute name="TOU_RATE_C_ENERGY">
         		<basicLookup point="Rate C kWh" />
         	</attribute>
-        	<attribute name="TOU_RATE_D_USAGE">
+        	<attribute name="TOU_RATE_D_ENERGY">
         		<basicLookup point="Rate D kWh" />
         	</attribute>
         	<attribute name="TOU_RATE_A_PEAK_DEMAND">
@@ -2280,7 +2280,7 @@
         	</command>
         </commands>
 		<attributes>
-        	<attribute name="USAGE">
+        	<attribute name="ENERGY">
         		<basicLookup point="kWh" />
         	</attribute>
         	<attribute name="PEAK_DEMAND">
@@ -2307,16 +2307,16 @@
         	<attribute name="DISCONNECT_STATUS">
         		<basicLookup point="Disconnect Status" />
         	</attribute>
-			<attribute name="TOU_RATE_A_USAGE">
+			<attribute name="TOU_RATE_A_ENERGY">
         		<basicLookup point="Rate A kWh" />
         	</attribute>
-        	<attribute name="TOU_RATE_B_USAGE">
+        	<attribute name="TOU_RATE_B_ENERGY">
         		<basicLookup point="Rate B kWh" />
         	</attribute>
-        	<attribute name="TOU_RATE_C_USAGE">
+        	<attribute name="TOU_RATE_C_ENERGY">
         		<basicLookup point="Rate C kWh" />
         	</attribute>
-        	<attribute name="TOU_RATE_D_USAGE">
+        	<attribute name="TOU_RATE_D_ENERGY">
         		<basicLookup point="Rate D kWh" />
         	</attribute>
         	<attribute name="TOU_RATE_A_PEAK_DEMAND">
@@ -2671,7 +2671,7 @@
         	</command>
         </commands>
         <attributes>
-        	<attribute name="USAGE">
+        	<attribute name="ENERGY">
         		<basicLookup point="kWh" />
         	</attribute>
         	<attribute name="PEAK_DEMAND">
@@ -2698,16 +2698,16 @@
         	<attribute name="DISCONNECT_STATUS">
         		<basicLookup point="Disconnect Status" />
         	</attribute>
-			<attribute name="TOU_RATE_A_USAGE">
+			<attribute name="TOU_RATE_A_ENERGY">
         		<basicLookup point="Rate A kWh" />
         	</attribute>
-        	<attribute name="TOU_RATE_B_USAGE">
+        	<attribute name="TOU_RATE_B_ENERGY">
         		<basicLookup point="Rate B kWh" />
         	</attribute>
-        	<attribute name="TOU_RATE_C_USAGE">
+        	<attribute name="TOU_RATE_C_ENERGY">
         		<basicLookup point="Rate C kWh" />
         	</attribute>
-        	<attribute name="TOU_RATE_D_USAGE">
+        	<attribute name="TOU_RATE_D_ENERGY">
         		<basicLookup point="Rate D kWh" />
         	</attribute>
         	<attribute name="TOU_RATE_A_PEAK_DEMAND">
@@ -3064,7 +3064,7 @@
         	</command>
         </commands>
         <attributes>
-        	<attribute name="USAGE">
+        	<attribute name="ENERGY">
         		<basicLookup point="kWh" />
         	</attribute>
         	<attribute name="PEAK_DEMAND">
@@ -3091,16 +3091,16 @@
         	<attribute name="DISCONNECT_STATUS">
         		<basicLookup point="Disconnect Status" />
         	</attribute>
-			<attribute name="TOU_RATE_A_USAGE">
+			<attribute name="TOU_RATE_A_ENERGY">
         		<basicLookup point="Rate A kWh" />
         	</attribute>
-        	<attribute name="TOU_RATE_B_USAGE">
+        	<attribute name="TOU_RATE_B_ENERGY">
         		<basicLookup point="Rate B kWh" />
         	</attribute>
-        	<attribute name="TOU_RATE_C_USAGE">
+        	<attribute name="TOU_RATE_C_ENERGY">
         		<basicLookup point="Rate C kWh" />
         	</attribute>
-        	<attribute name="TOU_RATE_D_USAGE">
+        	<attribute name="TOU_RATE_D_ENERGY">
         		<basicLookup point="Rate D kWh" />
         	</attribute>
         	<attribute name="TOU_RATE_A_PEAK_DEMAND">
@@ -3485,7 +3485,7 @@
         	</command>
        	</commands>
        	<attributes>
-        	<attribute name="USAGE">
+        	<attribute name="ENERGY">
         		<basicLookup point="Rate A kWh" />
         	</attribute>
         	<attribute name="PEAK_DEMAND">
@@ -3530,7 +3530,7 @@
                 <unitofmeasure value="kW"/>
             </point>
             <point init="true" type="Analog">
-            	<!--<attribute name="USAGE"/>-->
+            	<!--<attribute name="ENERGY"/>-->
                 <name>Rate A kWh</name>
                 <offset value="3"/>
                 <multiplier value="1.0"/>
@@ -3765,7 +3765,7 @@
         	</command>
        	</commands>
        	<attributes>
-        	<attribute name="USAGE">
+        	<attribute name="ENERGY">
         		<basicLookup point="Rate A kWh" />
         	</attribute>
         	<attribute name="PEAK_DEMAND">
@@ -3956,7 +3956,7 @@
         	</command>
        	</commands>
        	<attributes>
-	        <attribute name="USAGE">
+	        <attribute name="ENERGY">
         		<basicLookup point="kWh" />
         	</attribute>
         	<attribute name="DEMAND">
@@ -4149,7 +4149,7 @@
         	</command>
        	</commands>
        	<attributes>
-	        <attribute name="USAGE">
+	        <attribute name="ENERGY">
         		<basicLookup point="kWh" />
         	</attribute>
         	<attribute name="DEMAND">
@@ -4222,7 +4222,7 @@
         	</command>
        	</commands>
         <attributes>
-	        <attribute name="USAGE">
+	        <attribute name="ENERGY">
         		<basicLookup point="kWh" />
         	</attribute>
         	<attribute name="DEMAND">
@@ -4298,7 +4298,7 @@
         	</command>
        	</commands>
        	<attributes>
-	        <attribute name="USAGE">
+	        <attribute name="ENERGY">
         		<basicLookup point="kWh" />
         	</attribute>
         	<attribute name="DEMAND">
@@ -4383,7 +4383,7 @@
         	</command>
        	</commands>
        	<attributes>
-	        <attribute name="USAGE">
+	        <attribute name="ENERGY">
         		<basicLookup point="kWh" />
         	</attribute>
         	<attribute name="DEMAND">
@@ -4519,7 +4519,7 @@
         	</command>
        	</commands>
        	<attributes>
-	        <attribute name="USAGE">
+	        <attribute name="ENERGY">
         		<basicLookup point="kWh" />
         	</attribute>
         	<attribute name="DEMAND">
@@ -4635,7 +4635,7 @@
         	</command>
        	</commands>
        	<attributes>
-	        <attribute name="USAGE">
+	        <attribute name="ENERGY">
         		<basicLookup point="kWh" />
         	</attribute>
         	<attribute name="DEMAND">
@@ -4695,7 +4695,7 @@
         	</command>
        	</commands>
         <attributes>
-	        <attribute name="USAGE">
+	        <attribute name="ENERGY">
         		<basicLookup point="kWh" />
         	</attribute>
         	<attribute name="BLINK_COUNT">
@@ -4804,7 +4804,7 @@
         	</command>
        	</commands>
         <attributes>
-	        <attribute name="USAGE">
+	        <attribute name="ENERGY">
         		<basicLookup point="kWh" />
         	</attribute>
         	<attribute name="DEMAND">
@@ -4905,7 +4905,7 @@
         	</command>
        	</commands>
         <attributes>
-	        <attribute name="USAGE">
+	        <attribute name="ENERGY">
         		<basicLookup point="kWh" />
         	</attribute>
         	<attribute name="DEMAND">
@@ -5001,7 +5001,7 @@
         	</command>
        	</commands>
         <attributes>
-	        <attribute name="USAGE">
+	        <attribute name="ENERGY">
         		<basicLookup point="kWh" />
         	</attribute>
         	<attribute name="DEMAND">
@@ -5080,7 +5080,7 @@
         	</command>
        	</commands>
         <attributes>
-	        <attribute name="USAGE">
+	        <attribute name="ENERGY">
         		<basicLookup point="kWh" />
         	</attribute>
         	<attribute name="DEMAND">
@@ -5150,7 +5150,7 @@
         	</command>
        	</commands>
         <attributes>
-	        <attribute name="USAGE">
+	        <attribute name="ENERGY">
         		<basicLookup point="kWh" />
         	</attribute>
         	<attribute name="DEMAND">
@@ -6118,7 +6118,7 @@
         	</command>
         </commands>
         <attributes>
-	        <attribute name="USAGE">
+	        <attribute name="ENERGY">
         		<basicLookup point="Total kWh" />
         	</attribute>
         	<attribute name="PEAK_DEMAND">
@@ -6469,7 +6469,7 @@
         	</command>
         </commands>
         <attributes>
-	        <attribute name="USAGE">
+	        <attribute name="ENERGY">
         		<basicLookup point="Total kWh" />
         	</attribute>
         	<attribute name="PEAK_DEMAND">
@@ -6820,7 +6820,7 @@
         	</command>
         </commands>
         <attributes>
-	        <attribute name="USAGE">
+	        <attribute name="ENERGY">
         		<basicLookup point="Total kWh" />
         	</attribute>
         	<attribute name="PEAK_DEMAND">
@@ -7219,7 +7219,7 @@
         	</command>
         </commands>
         <attributes>
-	        <attribute name="USAGE">
+	        <attribute name="ENERGY">
         		<basicLookup point="Total kWh" />
         	</attribute>
         	<attribute name="PEAK_DEMAND">
@@ -7570,7 +7570,7 @@
         	</command>
         </commands>
         <attributes>
-	        <attribute name="USAGE">
+	        <attribute name="ENERGY">
         		<basicLookup point="Total kWh" />
         	</attribute>
         	<attribute name="PEAK_DEMAND">
@@ -7950,7 +7950,7 @@
         	</command>
         </commands>
         <attributes>
-	        <attribute name="USAGE">
+	        <attribute name="ENERGY">
         		<basicLookup point="Total kWh" />
         	</attribute>
         	<attribute name="PEAK_DEMAND">
@@ -8301,7 +8301,7 @@
         	</command>
         </commands>
         <attributes>
-	        <attribute name="USAGE">
+	        <attribute name="ENERGY">
         		<basicLookup point="Total kWh" />
         	</attribute>
         	<attribute name="PEAK_DEMAND">
@@ -8652,7 +8652,7 @@
         	</command>
         </commands>
         <attributes>
-	        <attribute name="USAGE">
+	        <attribute name="ENERGY">
         		<basicLookup point="Total kWh" />
         	</attribute>
         	<attribute name="PEAK_DEMAND">
@@ -9003,7 +9003,7 @@
         	</command>
         </commands>
         <attributes>
-	        <attribute name="USAGE">
+	        <attribute name="ENERGY">
         		<basicLookup point="Total kWh" />
         	</attribute>
         	<attribute name="PEAK_DEMAND">
@@ -9354,7 +9354,7 @@
         	</command>
         </commands>
         <attributes>
-	        <attribute name="USAGE">
+	        <attribute name="ENERGY">
         		<basicLookup point="Total kWh" />
         	</attribute>
         	<attribute name="PEAK_DEMAND">
@@ -9705,7 +9705,7 @@
         	</command>
         </commands>
         <attributes>
-	        <attribute name="USAGE">
+	        <attribute name="ENERGY">
         		<basicLookup point="Total kWh" />
         	</attribute>
         	<attribute name="PEAK_DEMAND">
@@ -9745,7 +9745,7 @@
         	</command>
         </commands>
         <attributes>
-	        <attribute name="USAGE">
+	        <attribute name="ENERGY">
         		<basicLookup point="Total kWh" />
         	</attribute>
         	<attribute name="PEAK_DEMAND">
@@ -10090,7 +10090,7 @@
         	</command>
         </commands>
         <attributes>
-	        <attribute name="USAGE">
+	        <attribute name="ENERGY">
         		<basicLookup point="Total kWh" />
         	</attribute>
         	<attribute name="PEAK_DEMAND">

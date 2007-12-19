@@ -42,10 +42,10 @@ public class MspMeterReadDaoImpl implements MspMeterReadDao {
         } catch (IllegalArgumentException e) {}
 
         try {
-            PointValueHolder usage = attrDynamicDataSource.getPointValue(meter, BuiltInAttribute.USAGE);
-            meterRead.setPosKWh(new BigInteger(String.valueOf(new Double(usage.getValue()).intValue())));
+            PointValueHolder energy = attrDynamicDataSource.getPointValue(meter, BuiltInAttribute.ENERGY);
+            meterRead.setPosKWh(new BigInteger(String.valueOf(new Double(energy.getValue()).intValue())));
             GregorianCalendar cal = new GregorianCalendar();
-            cal.setTime(usage.getPointDataTimeStamp());
+            cal.setTime(energy.getPointDataTimeStamp());
             meterRead.setReadingDate(cal);
         } catch (IllegalArgumentException e) {}
         

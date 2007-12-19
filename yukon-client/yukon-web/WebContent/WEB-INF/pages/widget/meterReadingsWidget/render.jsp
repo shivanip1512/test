@@ -18,7 +18,7 @@
                     <ct:attributeValue device="${device}"
                         attribute="${attribute}" />
 
-                    <c:if test="${attribute == 'USAGE'}">
+                    <c:if test="${attribute == 'ENERGY'}">
 
                         <ct:nameValue name="Previous Energy Reading">
                             <select
@@ -44,7 +44,7 @@
 
 
 <div style="display:none" id="${widgetParameters.widgetId}_currentUsage">
-    <cti:attributeResolver device="${device}" attributeName="USAGE"
+    <cti:attributeResolver device="${device}" attributeName="ENERGY"
         var="pointId" />
     <cti:pointValue format="{value}" pointId="${pointId}" />
 </div>
