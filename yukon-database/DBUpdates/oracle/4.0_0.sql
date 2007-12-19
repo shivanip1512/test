@@ -1207,6 +1207,9 @@ INSERT INTO DEVICETYPECOMMAND VALUES (-709, -54, 'Repeater 902', 4, 'Y', -1);
 
 /* @error ignore-end */
 
+/* Start YUK-4962 */
+insert into YukonRoleProperty values(-20204,-202,'Enable TOU','true','Allows access to TOU(Time of use) data'); 
+/* End YUK-4962 */
 
 /**************************************************************/
 /* VERSION INFO                                               */
