@@ -230,7 +230,7 @@
 									<input type="hidden" name="showDevices" value="true" />
 									<input type="hidden" id="deviceToAdd" name="deviceId" />
 								</form>
-								<cti:multiPaoPicker pickerId="devicePickerId" paoIdField="deviceToAdd" constraint="com.cannontech.common.search.criteria.DeviceCriteria" finalTriggerAction="addDevice" selectionLinkName="Add Devices to Group" excludeIds="${deviceIdsInGroup}"><span title="Click to select devices to add">Select Devices</span></cti:multiPaoPicker>
+								<cti:multiPaoPicker pickerId="devicePickerId" paoIdField="deviceToAdd" constraint="com.cannontech.common.search.criteria.MeterCriteria" finalTriggerAction="addDevice" selectionLinkName="Add Devices to Group" excludeIds="${deviceIdsInGroup}"><span title="Click to select devices to add">Select Devices</span></cti:multiPaoPicker>
 							</div>
 				            
                             <%-- BY FILE UPLOAD --%>

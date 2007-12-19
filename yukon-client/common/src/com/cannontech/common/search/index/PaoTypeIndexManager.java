@@ -24,7 +24,7 @@ public class PaoTypeIndexManager extends AbstractIndexManager {
     }
 
     protected int getIndexVersion() {
-        return 3;
+        return 4;
     }
 
     protected Analyzer getAnalyzer() {
@@ -32,10 +32,11 @@ public class PaoTypeIndexManager extends AbstractIndexManager {
     }
 
     protected String getDocumentQuery() {
-        String query = "select ypo.*, d.deviceid "
+        String query = "select ypo.*, d.deviceid, dmg.meternumber "
                 + " from"
                 + "  yukonpaobject ypo "
-                + "  left join device d on d.deviceid = ypo.paobjectid ";
+                + "  left join device d on d.deviceid = ypo.paobjectid "
+        		+ "  left join devicemetergroup dmg on dmg.deviceid = ypo.paobjectid ";
         return query;
     }
 
@@ -68,6 +69,10 @@ public class PaoTypeIndexManager extends AbstractIndexManager {
         String isDeviceVal = rs.getString("deviceId");
         String isDevice = new Boolean(!StringUtils.isEmpty(isDeviceVal)).toString();
         doc.add(new Field("isDevice", isDevice, Field.Store.NO, Field.Index.UN_TOKENIZED));
+
+        String isMeterVal = rs.getString("meternumber");
+        String isMeter = new Boolean(!StringUtils.isEmpty(isMeterVal)).toString();
+        doc.add(new Field("isMeter", isMeter, Field.Store.NO, Field.Index.UN_TOKENIZED));
 
         return doc;
     }
