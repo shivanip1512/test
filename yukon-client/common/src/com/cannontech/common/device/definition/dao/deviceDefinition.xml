@@ -339,6 +339,12 @@
                 <multiplier value="0.01"/>
                 <unitofmeasure value="kVAr"/>
             </point>
+            <point init="true" type="Analog">
+                <name>IED Blink Count</name>
+                <offset value="40"/>
+                <multiplier value="1.0"/>
+                <unitofmeasure value="Counts"/>
+            </point>
             
             <point type="Status">
                 <name>Comm Status</name>
@@ -531,6 +537,10 @@
 			<command name="Read rates for Demand, LP, Volt Demand, and Volt Profile">
         		<cmd text="getconfig intervals"/>
         	</command>
+            <command name="Read IED Blink Count">
+                <cmd text="getvalue ied powerfail"/>
+                <pointRef name="IED Blink Count"/>
+            </command>
         </commands>
 		<attributes>
         	<attribute name="ENERGY">
@@ -565,7 +575,7 @@
         		<basicLookup point="kW-LP" />
         	</attribute>
         	<attribute name="BLINK_COUNT">
-        		<basicLookup point="Blink Count" />
+        		<basicLookup point="IED Blink Count" />
         	</attribute>
         	<attribute name="TOU_RATE_A_ENERGY">
         		<mctIedTouLookup>
@@ -742,6 +752,12 @@
                 <multiplier value="0.01"/>
                 <unitofmeasure value="kVAr"/>
             </point>
+            <point init="true" type="Analog">
+                <name>IED Blink Count</name>
+                <offset value="40"/>
+                <multiplier value="1.0"/>
+                <unitofmeasure value="Counts"/>
+            </point>
             <point init="true" type="DemandAccumulator">
                 <name>kW-LP</name>
                 <offset value="101"/>
@@ -855,6 +871,10 @@
 			<command name="Read rates for Demand, LP, Volt Demand, and Volt Profile">
         		<cmd text="getconfig intervals"/>
         	</command>
+            <command name="Read IED Blink Count">
+                <cmd text="getvalue ied powerfail"/>
+                <pointRef name="IED Blink Count"/>
+            </command>
         </commands>
 		<attributes>
         	<attribute name="ENERGY">
@@ -888,7 +908,7 @@
         		<basicLookup point="kW-LP" />
         	</attribute>
         	<attribute name="BLINK_COUNT">
-        		<basicLookup point="Blink Count" />
+        		<basicLookup point="IED Blink Count" />
         	</attribute>
 			<attribute name="TOU_RATE_A_ENERGY">
         		<basicLookup point="Rate A kWh" />
@@ -1041,6 +1061,12 @@
                 <multiplier value="0.01"/>
                 <unitofmeasure value="kVAr"/>
             </point>
+            <point init="true" type="Analog">
+                <name>IED Blink Count</name>
+                <offset value="40"/>
+                <multiplier value="1.0"/>
+                <unitofmeasure value="Counts"/>
+            </point>
             <point type="Analog">
                 <name>Voltage Phase A</name>
                 <offset value="41"/>
@@ -1172,6 +1198,10 @@
 			<command name="Read rates for Demand, LP, Volt Demand, and Volt Profile">
         		<cmd text="getconfig intervals"/>
         	</command>
+            <command name="Read IED Blink Count">
+                <cmd text="getvalue ied powerfail"/>
+                <pointRef name="IED Blink Count"/>
+            </command>
         </commands>
 		<attributes>
         	<attribute name="ENERGY">
@@ -1205,7 +1235,7 @@
         		<basicLookup point="kW-LP" />
         	</attribute>
         	<attribute name="BLINK_COUNT">
-        		<basicLookup point="Blink Count" />
+        		<basicLookup point="IED Blink Count" />
         	</attribute>
         	<attribute name="TOU_RATE_A_ENERGY">
         		<basicLookup point="Rate A kWh" />
@@ -1358,6 +1388,12 @@
                 <multiplier value="0.01"/>
                 <unitofmeasure value="kVAr"/>
             </point>
+            <point init="true" type="Analog">
+                <name>IED Blink Count</name>
+                <offset value="40"/>
+                <multiplier value="1.0"/>
+                <unitofmeasure value="Counts"/>
+            </point>
             <point type="Analog">
                 <name>Voltage Phase A</name>
                 <offset value="41"/>
@@ -1489,6 +1525,10 @@
 			<command name="Read rates for Demand, LP, Volt Demand, and Volt Profile">
         		<cmd text="getconfig intervals"/>
         	</command>
+            <command name="Read IED Blink Count">
+                <cmd text="getvalue ied powerfail"/>
+                <pointRef name="IED Blink Count"/>
+            </command>
         </commands>
 		<attributes>
         	<attribute name="ENERGY">
@@ -1522,7 +1562,7 @@
         		<basicLookup point="kW-LP" />
         	</attribute>
         	<attribute name="BLINK_COUNT">
-        		<basicLookup point="Blink Count" />
+        		<basicLookup point="IED Blink Count" />
         	</attribute>
         	<attribute name="TOU_RATE_A_ENERGY">
         		<basicLookup point="Rate A kWh" />
