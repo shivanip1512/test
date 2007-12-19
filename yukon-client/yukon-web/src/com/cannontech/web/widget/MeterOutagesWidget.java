@@ -135,9 +135,11 @@ public class MeterOutagesWidget extends WidgetControllerBase {
 
         LiteYukonUser user = ServletUtil.getYukonUser(request);
         CommandResultHolder result = meterReadService.readMeter(meter, allExistingAttributes, user);
-        PerishableOutageData data = addOutageData(meter, result.getValues());
         
-        mav.addObject("data", data);
+        if( allExistingAttributes.contains(BuiltInAttribute.OUTAGE_LOG)) {
+            PerishableOutageData data = addOutageData(meter, result.getValues());
+            mav.addObject("data", data);
+        }
 
         mav.addObject("isRead", true);
 
