@@ -10,7 +10,6 @@
 <html>
 <%@ page import="com.cannontech.message.macs.message.Schedule" %>
 <%@ page import="com.cannontech.loadcontrol.data.LMProgramBase" %>
-<%@ page import="com.cannontech.loadcontrol.data.LMProgramDirect" %>
 <%@ page import="com.cannontech.servlet.LCConnectionServlet" %>
 <%@ page import="com.cannontech.web.loadcontrol.LoadcontrolCache" %>
 
@@ -30,7 +29,7 @@
     session = request.getSession(false);
                            
     // list to put this customers programs in, contains LMProgramDirect objects
-    ArrayList ourPrograms = new ArrayList();
+    ArrayList<LMProgramBase> ourPrograms = new ArrayList<LMProgramBase>();
 
     LCConnectionServlet cs = (LCConnectionServlet) application.getAttribute(LCConnectionServlet.SERVLET_CONTEXT_ID);
     LoadcontrolCache cache = cs.getCache();
@@ -161,10 +160,10 @@
                         actionUrl = "stop_schedule.jsp?id=" + sched.getId();
                   else                    
                         actionUrl = "schedule_summary.jsp";                    */
-            Iterator iter = ourPrograms.iterator();
+            Iterator<LMProgramBase> iter = ourPrograms.iterator();
             while( iter.hasNext() )
             {
-                LMProgramDirect p = (LMProgramDirect) iter.next();
+                LMProgramBase p = iter.next();
 
                 String status = p.getProgramStatusString( p.getProgramStatus().intValue());
 	            String startStr = "-";               

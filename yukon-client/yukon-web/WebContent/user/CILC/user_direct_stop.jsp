@@ -41,7 +41,7 @@
 */
    java.text.SimpleDateFormat timeFormat = new java.text.SimpleDateFormat("HH:mm");
 
-   LMProgramDirect program = null;
+   LMProgramBase program = null;
    java.util.Date now = new java.util.Date();
       
     //What program are we dealing with?
@@ -240,15 +240,16 @@
      
       <p>&nbsp;</p></td>
   </tr>
-</table>
-<P>
 
 <INPUT NAME="SUBMITTED" TYPE="hidden" VALUE="true">
 <INPUT NAME="ID" TYPE="hidden" VALUE="<%= programID %>">
 <INPUT NAME="ACTION" TYPE="hidden" VALUE="STOP">
 <struts:hidden property="STARTAT" value="-1"/> <struts:hidden property="STOPAT" value="0"/> 
 <INPUT NAME="URL" TYPE="hidden" VALUE="<%=request.getContextPath()%>/user/CILC/user_direct.jsp?pending=true">
-</struts:form> 
+</struts:form>
+</table>
+<P>
+
           </td>
 		  
         <td width="1" bgcolor="#000000"><img src="../../WebConfig/yukon/Icons/VerticalRule.gif" width="1"></td>

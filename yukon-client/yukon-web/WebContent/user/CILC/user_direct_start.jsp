@@ -27,7 +27,6 @@
   </SCRIPT>
 </head>
 <%@ page import="com.cannontech.loadcontrol.data.LMProgramBase" %>
-<%@ page import="com.cannontech.loadcontrol.data.LMProgramDirect" %>
 <%@ page import="com.cannontech.servlet.LCConnectionServlet" %>
 <%@ page import="com.cannontech.web.loadcontrol.LoadcontrolCache" %>
 <%@ page import="java.util.Calendar" %>
@@ -44,7 +43,7 @@
 */
    java.text.SimpleDateFormat timeFormat = new java.text.SimpleDateFormat("HH:mm");
 
-   LMProgramDirect program = null;  
+   LMProgramBase program = null;  
    java.util.Date now = new java.util.Date();
       
     //What program are we dealing with?
@@ -172,7 +171,7 @@
     {
         if( allPrograms[i].getYukonID().intValue() == programID )
         {
-            program = (LMProgramDirect)allPrograms[i];
+            program = allPrograms[i];
             break;
         }
     }
@@ -278,9 +277,6 @@
       <p>&nbsp;</p>
     </td>
   </tr>
-</table>
-<P>
-
 <INPUT NAME="SUBMITTED" TYPE="hidden" VALUE="true">
 <INPUT NAME="ID" TYPE="hidden" VALUE="<%= programID %>"> 
 <INPUT NAME="ACTION" TYPE="hidden" VALUE="STARTSTOP">
@@ -288,7 +284,8 @@
 <struts:hidden property="STOPAT" value="0"/>
 <INPUT NAME="URL" TYPE="hidden" VALUE="<%=request.getContextPath()%>/user/CILC/user_direct.jsp?pending=true">
 </struts:form>
-
+</table>
+<P>
 
               </div>
                 </div>
