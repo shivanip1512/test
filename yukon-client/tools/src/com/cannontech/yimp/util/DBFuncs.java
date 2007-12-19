@@ -6,10 +6,8 @@
  */
 package com.cannontech.yimp.util;
 
-import java.sql.Connection;
 import java.sql.ResultSet;
 import java.sql.SQLException;
-import java.util.ArrayList;
 import java.util.Date;
 import java.util.List;
 import java.util.Vector;
@@ -19,14 +17,9 @@ import org.springframework.dao.IncorrectResultSizeDataAccessException;
 import org.springframework.jdbc.core.JdbcOperations;
 import org.springframework.jdbc.core.RowMapper;
 
-import com.cannontech.clientutils.CTILogger;
 import com.cannontech.clientutils.YukonLogManager;
-import com.cannontech.common.util.CtiUtilities;
 import com.cannontech.core.dao.DaoFactory;
-import com.cannontech.core.dao.NotFoundException;
 import com.cannontech.database.JdbcTemplateHelper;
-import com.cannontech.database.PoolManager;
-import com.cannontech.database.SqlStatement;
 import com.cannontech.database.Transaction;
 import com.cannontech.database.TransactionException;
 import com.cannontech.database.data.device.MCT400SeriesBase;
@@ -34,12 +27,9 @@ import com.cannontech.database.data.lite.LiteFactory;
 import com.cannontech.database.data.lite.LitePoint;
 import com.cannontech.database.data.point.PointBase;
 import com.cannontech.database.db.device.DeviceCarrierSettings;
-import com.cannontech.database.db.importer.ImportData;
 import com.cannontech.database.db.importer.ImportFail;
 import com.cannontech.database.db.importer.ImportPendingComm;
-import com.cannontech.database.db.point.Point;
 import com.cannontech.message.dispatch.message.DBChangeMsg;
-import com.cannontech.spring.YukonSpringHook;
 import com.cannontech.yimp.importer.BulkImporter;
 import com.cannontech.yukon.IServerConnection;
 
@@ -53,7 +43,7 @@ public class DBFuncs {
     
     private static final RowMapper routeNameRowMapper = new RowMapper() {
         public Object mapRow(ResultSet rs, int rowNum) throws SQLException {
-            String name = rs.getString("Name").trim();
+            String name = rs.getString("PaoName").trim();
             return name;
         };
     };
