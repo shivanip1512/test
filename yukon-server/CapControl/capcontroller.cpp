@@ -2093,11 +2093,6 @@ void CtiCapController::pointDataMsg( long pointID, double value, unsigned qualit
                     {
                         currentSubstationBus->setNewPointDataReceivedFlag(TRUE);
 
-                        if( _CC_DEBUG & CC_DEBUG_OPTIONALPOINT )
-                        {
-                            CtiLockGuard<CtiLogger> logger_guard(dout);
-                            dout << CtiTime() << " - 3-Phase DEVELOPMENT NEEDED! " << pointID << " on SUB: " << currentSubstationBus->getPAOName() << endl;
-                        }
                         if (currentSubstationBus->getPhaseBId() == pointID) 
                         {
                             if (currentSubstationBus->getPhaseBValue() != value) 
@@ -2130,7 +2125,7 @@ void CtiCapController::pointDataMsg( long pointID, double value, unsigned qualit
                              currentSubstationBus->getDailyOperationsAnalogPointId()  == pointID||
                              currentSubstationBus->getPowerFactorPointId() == pointID ) 
                     {
-                        if( _CC_DEBUG & CC_DEBUG_RIDICULOUS )
+                        if( _CC_DEBUG & CC_DEBUG_OPTIONALPOINT )
                         {
                             CtiLockGuard<CtiLogger> logger_guard(dout);
                             dout << CtiTime() << " - Optional POINT data message received for: " << pointID << " on SUB: " << currentSubstationBus->getPAOName() << endl;
@@ -2376,12 +2371,6 @@ void CtiCapController::pointDataMsg( long pointID, double value, unsigned qualit
                         {
                             currentFeeder->setNewPointDataReceivedFlag(TRUE);
 
-                            if( _CC_DEBUG & CC_DEBUG_RIDICULOUS )
-                            {
-                                CtiLockGuard<CtiLogger> logger_guard(dout);
-                                dout << CtiTime() << " - 3-Phase DEVELOPMENT NEEDED! " << pointID << " on FEEDER: " << currentFeeder->getPAOName() << endl;
-
-                            }
                             if (currentFeeder->getPhaseBId() == pointID) 
                             {
                                 if (currentFeeder->getPhaseBValue() != value) 
@@ -2558,7 +2547,7 @@ void CtiCapController::pointDataMsg( long pointID, double value, unsigned qualit
 
                                     store->set2wayFlagUpdate(TRUE);
                                 }
-                                if( _CC_DEBUG & CC_DEBUG_POINT_DATA )
+                                if( _CC_DEBUG & CC_DEBUG_OPTIONALPOINT )
                                 {
                                     CtiLockGuard<CtiLogger> logger_guard(dout);
                                     dout << CtiTime() << " - Set a cbc 2 way status point..."<< endl;
@@ -2611,7 +2600,7 @@ void CtiCapController::pointDataMsg( long pointID, double value, unsigned qualit
                                     currentCapBank->setIgnoredReason(value);
                                     currentSubstationBus->setBusUpdatedFlag(TRUE);
                                 }
-                                if( _CC_DEBUG & CC_DEBUG_POINT_DATA )
+                                if( _CC_DEBUG & CC_DEBUG_OPTIONALPOINT )
                                 {
                                     CtiLockGuard<CtiLogger> logger_guard(dout);
                                     dout << CtiTime() << " - Set a cbc 2 way Analog point..."<< endl;
@@ -2619,7 +2608,7 @@ void CtiCapController::pointDataMsg( long pointID, double value, unsigned qualit
                             }
                             else if (twoWayPts->setTwoWayPulseAccumulatorPointValue(pointID, value))
                             {
-                                if( _CC_DEBUG & CC_DEBUG_POINT_DATA )
+                                if( _CC_DEBUG & CC_DEBUG_OPTIONALPOINT )
                                 {
                                     CtiLockGuard<CtiLogger> logger_guard(dout);
                                     dout << CtiTime() << " - Set a cbc 2 way Pulse Accumulator point..."<< endl;

@@ -7905,6 +7905,7 @@ void CtiCCSubstationBusStore::checkDBReloadList()
                                     }
                     
                                 }
+                                modifiedStationsList.push_back(tempStation);
                                 
                             }
                             else
@@ -7927,6 +7928,7 @@ void CtiCCSubstationBusStore::checkDBReloadList()
                                     }
                     
                                 }
+                                modifiedStationsList.push_back(tempStation);
                             }
                         }
                         break;
