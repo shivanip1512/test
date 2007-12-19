@@ -2901,7 +2901,6 @@ bool CtiCCSubstationBusStore::UpdateFeederDisableFlagInDB(CtiCCFeeder* feeder)
 bool CtiCCSubstationBusStore::UpdateCapBankDisableFlagInDB(CtiCCCapBank* capbank)
 {
     RWRecursiveLock<RWMutexLock>::LockGuard  guard(mutex());
-
     {
         CtiLockGuard<CtiSemaphore> cg(gDBAccessSema);
         RWDBConnection conn = getConnection();
@@ -2914,6 +2913,43 @@ bool CtiCCSubstationBusStore::UpdateCapBankDisableFlagInDB(CtiCCCapBank* capbank
             updater.where( yukonPAObjectTable["paobjectid"] == capbank->getPAOId() );
 
             updater << yukonPAObjectTable["disableflag"].assign( (capbank->getDisableFlag()?"Y":"N") );
+
+            updater.execute( conn );
+
+            CtiDBChangeMsg* dbChange = new CtiDBChangeMsg(capbank->getPAOId(), ChangePAODb,
+                                                          capbank->getPAOCategory(),
+                                                          capbank->getPAOType(),
+                                                          ChangeTypeUpdate);
+            dbChange->setSource(CAP_CONTROL_DBCHANGE_MSG_SOURCE);
+            CtiCapController::getInstance()->sendMessageToDispatch(dbChange);
+
+            return updater.status().isValid();
+        }
+    }
+    return false;
+}
+
+/*---------------------------------------------------------------------------
+    UpdateCapBankOperationalStateInDB
+
+    Updates the operational state in the yukonpaobject table in the database for
+    the cap bank.
+---------------------------------------------------------------------------*/
+bool CtiCCSubstationBusStore::UpdateCapBankOperationalStateInDB(CtiCCCapBank* capbank)
+{
+    RWRecursiveLock<RWMutexLock>::LockGuard  guard(mutex());
+    {
+        CtiLockGuard<CtiSemaphore> cg(gDBAccessSema);
+        RWDBConnection conn = getConnection();
+
+        if (conn.isValid()) 
+        {
+            RWDBTable yukonPAObjectTable = getDatabase().table("capbank");
+            RWDBUpdater updater = yukonPAObjectTable.updater();
+
+            updater.where( yukonPAObjectTable["deviceid"] == capbank->getPAOId() );
+
+            updater << yukonPAObjectTable["operationalstate"].assign( capbank->getOperationalState().c_str() );
 
             updater.execute( conn );
 

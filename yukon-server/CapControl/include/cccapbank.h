@@ -43,7 +43,17 @@ typedef enum
     CC_CommFail = 5,
     CC_NoControl = 6
 } CtiCCControlStatusQaulity;
-                
+
+namespace capcontrol
+{
+    enum CapbankOperationalStates
+    {
+        FIXED,
+        SWITCHED,
+        STANDALONE,
+        UNINSTALLED
+    };
+}
 class CtiCCCapBank : public RWCollectable
 {
 
@@ -143,6 +153,7 @@ public:
     CtiCCCapBank& setMaxOpsDisableFlag(BOOL maxopsdisable);
     CtiCCCapBank& setDeviceClass(const string& deviceclass);
     CtiCCCapBank& setOperationalState(const string& operational);
+    CtiCCCapBank& setOperationalState(int value);
     CtiCCCapBank& setControllerType(const string& controllertype);
     CtiCCCapBank& setControlDeviceId(LONG controldevice);
     CtiCCCapBank& setControlPointId(LONG controlpoint);
@@ -253,6 +264,8 @@ public:
     */
 
 private:
+
+    const string& convertOperationalState( int num );
 
     LONG _paoid;
     string _paocategory;

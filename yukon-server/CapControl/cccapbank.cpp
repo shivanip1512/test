@@ -785,6 +785,17 @@ CtiCCCapBank& CtiCCCapBank::setOperationalState(const string& operational)
 }
 
 /*---------------------------------------------------------------------------
+    setOperationalState
+
+    Sets the operational state of the capbank
+---------------------------------------------------------------------------*/
+CtiCCCapBank& CtiCCCapBank::setOperationalState(int value)
+{
+    _operationalstate = convertOperationalState(value);
+
+    return *this;
+}
+/*---------------------------------------------------------------------------
     setControllerType
 
     Sets the controller type of the capbank
@@ -2119,10 +2130,6 @@ void CtiCCCapBank::restore(RWDBReader& rdr)
     setPercentChangeString("none");
 
     _insertDynamicDataFlag = TRUE;
-    /*{
-        CtiLockGuard<CtiLogger> doubt_guard(dout);
-        dout << CtiTime() << " - _dirty = TRUE  " << __FILE__ << " (" << __LINE__ << ")" << endl;
-    }*/
     _dirty = TRUE;
 
 }
@@ -2242,20 +2249,6 @@ void CtiCCCapBank::dumpDynamicData(RWDBConnection& conn, CtiTime& currentDateTim
         RWDBTable dynamicCCCapBankTable = getDatabase().table( "dynamiccccapbank" );
         if( !_insertDynamicDataFlag )
         {
-            /*for (int i = 0; i < _monitorPoint.size(); i++)
-            {
-                if (((CtiCCMonitorPointPtr)_monitorPoint[i])->isDirty())
-                {   
-                    ((CtiCCMonitorPointPtr)_monitorPoint[i])->dumpDynamicData(conn, currentDateTime);
-                }
-            }
-            for (i = 0; i < _pointResponses.size(); i++)
-            {
-                if (((CtiCCPointResponsePtr)_pointResponses[i])->isDirty())
-                {   
-                    ((CtiCCPointResponsePtr)_pointResponses[i])->dumpDynamicData(conn, currentDateTime);
-                }
-            }*/ 
 
             unsigned char addFlags[] = {'N','N','N','N','N','N','N','N','N','N','N','N','N','N','N','N','N','N','N','N'};
             addFlags[0] = (_verificationFlag?'Y':'N');
@@ -2309,10 +2302,7 @@ void CtiCCCapBank::dumpDynamicData(RWDBConnection& conn, CtiTime& currentDateTim
             << dynamicCCCapBankTable["beforevar"].assign( string2RWCString(_sBeforeVars) )
             << dynamicCCCapBankTable["aftervar"].assign( string2RWCString(_sAfterVars) )
             << dynamicCCCapBankTable["changevar"].assign( string2RWCString(_sPercentChange) );
-            /*{
-                CtiLockGuard<CtiLogger> logger_guard(dout);
-                dout << CtiTime() << " - " << updater.asString().c_str() << endl;
-            }*/
+
             updater.execute( conn );
 
             if(updater.status().errorCode() == RWDBStatus::ok)    // No error occured!
@@ -2321,10 +2311,6 @@ void CtiCCCapBank::dumpDynamicData(RWDBConnection& conn, CtiTime& currentDateTim
             }
             else
             {
-                /*{
-                    CtiLockGuard<CtiLogger> doubt_guard(dout);
-                    dout << CtiTime() << " - _dirty = TRUE  " << __FILE__ << " (" << __LINE__ << ")" << endl;
-                }*/
                 _dirty = TRUE;
                 {
                     CtiLockGuard<CtiLogger> doubt_guard(dout);
@@ -2340,20 +2326,6 @@ void CtiCCCapBank::dumpDynamicData(RWDBConnection& conn, CtiTime& currentDateTim
                 dout << CtiTime() << " - Inserted Cap Bank into DynamicCCCapBank: " << getPAOName() << endl;
             }
 
-           /* for (int i = 0; i < _monitorPoint.size(); i++)
-            {
-                //if (((CtiCCMonitorPointPtr)_monitorPoint[i])->isDirty())
-                {   
-                    ((CtiCCMonitorPointPtr)_monitorPoint[i])->dumpDynamicData(conn, currentDateTime);
-                }
-            }
-            for (i = 0; i < _pointResponses.size(); i++)
-            {
-                //if (((CtiCCPointResponsePtr)_pointResponses[i])->isDirty())
-                {   
-                    ((CtiCCPointResponsePtr)_pointResponses[i])->dumpDynamicData(conn, currentDateTime);
-                }
-            }  */
             string addFlags ="NNNNNNNNNNNNNNNNNNNN";
 
             RWDBInserter inserter = dynamicCCCapBankTable.inserter();
@@ -2392,10 +2364,6 @@ void CtiCCCapBank::dumpDynamicData(RWDBConnection& conn, CtiTime& currentDateTim
             }
             else
             {
-                /*{
-                    CtiLockGuard<CtiLogger> doubt_guard(dout);
-                    dout << CtiTime() << " - _dirty = TRUE  " << __FILE__ << " (" << __LINE__ << ")" << endl;
-                }*/
                 _dirty = TRUE;
                 {
                     CtiLockGuard<CtiLogger> doubt_guard(dout);
@@ -2406,12 +2374,38 @@ void CtiCCCapBank::dumpDynamicData(RWDBConnection& conn, CtiTime& currentDateTim
         }
     }
 }
+const string& CtiCCCapBank::convertOperationalState( int num )
+{
+    switch( num )
+    {
+        case capcontrol::FIXED:
+        {
+            return FixedOperationalState;
+        }
+        case capcontrol::SWITCHED:
+        {
+            return SwitchedOperationalState;
+        }
+        case capcontrol::UNINSTALLED:
+        {
+            return UninstalledState;
+        }
+        case capcontrol::STANDALONE:
+        {
+            return StandAloneState;
+        }
+        default:
+        {
+            return SwitchedOperationalState;
+        }
+    }
+}
 
 /* Public Static members */
 const string CtiCCCapBank::SwitchedOperationalState = "Switched";
 const string CtiCCCapBank::FixedOperationalState = "Fixed";
 const string CtiCCCapBank::UninstalledState = "Uninstalled";
-const string CtiCCCapBank::StandAloneState = "Standalone";
+const string CtiCCCapBank::StandAloneState = "StandAlone";
 
 const int CtiCCCapBank::Open = STATEZERO;
 const int CtiCCCapBank::Close = STATEONE;

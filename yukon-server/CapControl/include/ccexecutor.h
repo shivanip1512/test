@@ -91,7 +91,7 @@ private:
     void SendSystemStatus();
     void SendAllCapBankCommands();
     void SendTimeSync();
-
+    void changeBankOperationalState();
     CtiCCCommand* _command;
 };
 

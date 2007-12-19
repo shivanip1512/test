@@ -109,6 +109,7 @@ public:
     bool UpdateBusVerificationFlagsInDB(CtiCCSubstationBus* bus);
     bool UpdateFeederDisableFlagInDB(CtiCCFeeder* feeder);
     bool UpdateCapBankDisableFlagInDB(CtiCCCapBank* capbank);
+    bool UpdateCapBankOperationalStateInDB(CtiCCCapBank* capbank);
     bool UpdateCapBankInDB(CtiCCCapBank* capbank);
     bool UpdateFeederBankListInDB(CtiCCFeeder* feeder);
 
