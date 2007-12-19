@@ -1103,7 +1103,7 @@ private void showWizardPanel(WizardPanel wizard)
 	wizard.addWizardPanelListener(this);	
 	javax.swing.JFrame frame = getAvailableFrame();
 	frame.setContentPane( wizard );
-	frame.setSize(450,600);
+	frame.setSize(450,700);
     
 	//frame.setLocationRelativeTo( getCreateScheduleButton() );
 	frame.setLocation( getCreateScheduleButton().getLocation() );
