@@ -83,27 +83,34 @@ public class SaveAsJFileChooser extends javax.swing.JFileChooser implements com.
 		setSelectedFile(new java.io.File(getCurrentPathAndFilename()));
 		addPropertyChangeListener(this);
 			
-		int status = showSaveDialog(this);
-        if (status == APPROVE_OPTION) {
-            // Set the selectedFile one more time in case the extension has been
-            // removed from the filename
-            setSelectedFile(new java.io.File(getCurrentPathAndFilename()));
+        while(true){
+            int status = showSaveDialog(this);
+            if (status == APPROVE_OPTION) {
+                // Set the selectedFile one more time in case the extension has been
+                // removed from the filename
+                setSelectedFile(new java.io.File(getCurrentPathAndFilename()));
             
-            file = getSelectedFile();
-            if (file.exists()) {
-                int exitStatus = JOptionPane.showConfirmDialog(this,
-                                                               file.toString() + "\n Do you want to overwrite this file?");
-                if (exitStatus == APPROVE_OPTION) {
+                file = getSelectedFile();
+                if (file.exists()) {
+                    int exitStatus = JOptionPane.showConfirmDialog(this,
+                                                                   file.toString() + "\n Do you want to overwrite this file?");
+                    if (exitStatus == APPROVE_OPTION) {
+                        eDataFile.writeFile(file);
+                        break;
+                    } else {
+                        continue;
+                    }
+                } else {
                     eDataFile.writeFile(file);
-                 }
+                    break;
+                }
             } else {
-                eDataFile.writeFile(file);
+                break;
             }
         }
-		return;
-	
 	}
-	public void propertyChange(java.beans.PropertyChangeEvent event)
+
+    public void propertyChange(java.beans.PropertyChangeEvent event)
 	{
 		if (event.getPropertyName() == JFileChooser.FILE_FILTER_CHANGED_PROPERTY)
 		{
