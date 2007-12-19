@@ -12,6 +12,8 @@ import java.util.List;
 import com.cannontech.clientutils.CTILogger;
 import com.cannontech.clientutils.commonutils.ModifiedDate;
 import com.cannontech.common.util.CtiUtilities;
+import com.cannontech.core.service.DateFormattingService;
+import com.cannontech.database.data.lite.LiteYukonUser;
 import com.cannontech.loadcontrol.data.IGearProgram;
 import com.cannontech.loadcontrol.data.ILMGroup;
 import com.cannontech.loadcontrol.data.LMControlArea;
@@ -31,6 +33,7 @@ import com.cannontech.loadcontrol.messages.LMManualControlResponse;
 import com.cannontech.message.server.ServerResponseMsg;
 import com.cannontech.message.util.ServerRequest;
 import com.cannontech.message.util.ServerRequestImpl;
+import com.cannontech.spring.YukonSpringHook;
 import com.cannontech.util.ServletUtil;
 
 
@@ -45,11 +48,6 @@ public class LCUtils
 	public static final SimpleDateFormat TIME_FORMATTER = new SimpleDateFormat("HH:mm");
 	public static final SimpleDateFormat DATE_FORMATTER = new SimpleDateFormat("MM/dd/yyyy");
 	public static final SimpleDateFormat TEMPORAL_FORMATTER = new SimpleDateFormat("MM:dd:yyyy:HH:mm:ss");
-
-
-	private static final GregorianCalendar currTime = new GregorianCalendar();
-	private static final GregorianCalendar tempTime = new GregorianCalendar();
-
 
 	public static final Color[] CELL_COLORS =
 	{
@@ -397,8 +395,9 @@ public class LCUtils
 
 	/**
 	 * getValueAt method comment.
+	 * @param currentUser TODO
 	 */
-	public static synchronized Object getControlAreaValueAt(LMControlArea lmCntrArea, int col) 
+	public static synchronized Object getControlAreaValueAt(LMControlArea lmCntrArea, int col, LiteYukonUser currentUser) 
 	{
 	
 		switch( col )
@@ -430,7 +429,7 @@ public class LCUtils
 								: lmCntrArea.getDefDailyStartTime().intValue()),
 							(lmCntrArea.getCurrentDailyStartTime() == null
 								? LMControlArea.INVALID_INT
-								: lmCntrArea.getCurrentDailyStartTime().intValue()) ) +
+								: lmCntrArea.getCurrentDailyStartTime().intValue()), currentUser ) +
 					" - " +
 					getTimeString(
 							lmCntrArea,
@@ -439,7 +438,7 @@ public class LCUtils
 								: lmCntrArea.getDefDailyStopTime().intValue()),
 							(lmCntrArea.getCurrentDailyStopTime() == null
 								? LMControlArea.INVALID_INT
-								: lmCntrArea.getCurrentDailyStopTime().intValue()) ); 
+								: lmCntrArea.getCurrentDailyStopTime().intValue()), currentUser ); 
 					 
 			}
 			
@@ -471,9 +470,13 @@ public class LCUtils
 	}
 
 
-	private static synchronized String getTimeString( LMControlArea row, int defSecs, int currSecs )
+	private static synchronized String getTimeString( LMControlArea row, int defSecs, int currSecs, LiteYukonUser currentUser )
 	{
-		String retStr = null;
+        DateFormattingService dateFormattingService = (DateFormattingService) YukonSpringHook.getBean("dateFormattingService");
+        String retStr = null;
+		GregorianCalendar currTime = null;
+        GregorianCalendar tempTime = null;
+
 		
 		if( row == null || row.getDisableFlag().booleanValue() )
 			retStr = CtiUtilities.STRING_DASH_LINE;
@@ -486,7 +489,16 @@ public class LCUtils
 			else
 			{
 				//set our time to todays date
-				currTime.setTime( new java.util.Date() );
+                if(currentUser != null) {
+                    currTime = (GregorianCalendar)dateFormattingService.getCalendar(currentUser);
+                    tempTime = (GregorianCalendar)dateFormattingService.getCalendar(currentUser);
+                }
+                else {
+                    currTime = new GregorianCalendar();
+                    tempTime = new GregorianCalendar();
+                }    
+                
+                currTime.setTime( new java.util.Date() );
 										
 				if( defSecs == currSecs || currSecs <= LMControlArea.INVALID_INT )
 				{

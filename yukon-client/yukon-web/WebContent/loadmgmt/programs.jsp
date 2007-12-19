@@ -139,7 +139,7 @@ else
 	                  					 ? " selected" : "" );
 						  %>                      
                         <option value="programs.jsp?areaID=<%= tempArea.getYukonID() %>" <%= s %>>
-                        	<%= LCUtils.getControlAreaValueAt(tempArea, ControlAreaTableModel.AREA_NAME) %>
+                        	<%= LCUtils.getControlAreaValueAt(tempArea, ControlAreaTableModel.AREA_NAME, null) %>
                         </option>
 							<%
 							}
@@ -174,12 +174,12 @@ else
                     <tr valign="top">
                       <td width="111" class="TableCell">
                         <div name = "subPopup" align = "left" > 
-                          <%= LCUtils.getControlAreaValueAt(lmCntrArea, ControlAreaTableModel.AREA_NAME) %></div>
+                          <%= LCUtils.getControlAreaValueAt(lmCntrArea, ControlAreaTableModel.AREA_NAME, null) %></div>
                       </td>
                       <td width="47" class="TableCell">
                       <div name = "areastatus" class="lm_tip_cell" onMouseOver="itemid=<%= lmCntrArea.getYukonID() %>;menuAppear(event, 'areaMenu')" onMouseOut="menuDisappear(event, 'areaMenu')" >
                       	<font color="<%= LCUtils.getFgColor(lmCntrArea) %>"> 
-                        <%= LCUtils.getControlAreaValueAt(lmCntrArea, ControlAreaTableModel.CURRENT_STATE) %> 
+                        <%= LCUtils.getControlAreaValueAt(lmCntrArea, ControlAreaTableModel.CURRENT_STATE, null) %> 
                        </font></div></td>
 					  
                       <td width="67" class="TableCell" align="center">
@@ -193,19 +193,11 @@ else
 					  </td>					  
 
                       <td width="40" class="TableCell" align="center">
-							<%= LCUtils.getControlAreaValueAt(lmCntrArea, ControlAreaTableModel.PRIORITY) %>
+							<%= LCUtils.getControlAreaValueAt(lmCntrArea, ControlAreaTableModel.PRIORITY, null) %>
 					  </td>
-					  <%pageContext.setAttribute("controlAreaTimeWindow", LCUtils.getControlAreaValueAt(lmCntrArea, ControlAreaTableModel.TIME_WINDOW));%>
+					  <%pageContext.setAttribute("controlAreaTimeWindow", LCUtils.getControlAreaValueAt(lmCntrArea, ControlAreaTableModel.TIME_WINDOW, (LiteYukonUser) session.getAttribute(ServletUtil.ATT_YUKON_USER)));%>
                       <td width="75" class="TableCell" align="center"> 
-					  		<c:choose>
-					  			<c:when test="${controlAreaTimeWindow == noTimeWindow}">
-					  				${controlAreaTimeWindow}
-					  			</c:when>
-								<c:otherwise>	
-					  				<cti:formatDate value="${controlAreaTimeWindow}" type="BOTH" var="formattedControlAreaTimeWindow" />
-	                  				${formattedControlAreaTimeWindow} 	
-	                  			</c:otherwise>	
-	                  		</c:choose>
+							${controlAreaTimeWindow}
 					  </td> 
 					  
 <!--					  

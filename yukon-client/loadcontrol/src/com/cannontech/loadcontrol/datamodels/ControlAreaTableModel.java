@@ -266,7 +266,7 @@ public class ControlAreaTableModel extends com.cannontech.tdc.observe.Observable
 		if( row < getRowCount() && row >= 0 )
 		{
 			LMControlArea lmCntrArea = getRowAt(row);
-			return LCUtils.getControlAreaValueAt( lmCntrArea, col );					
+			return LCUtils.getControlAreaValueAt( lmCntrArea, col, null );					
 		}
 		else
 			return null;
