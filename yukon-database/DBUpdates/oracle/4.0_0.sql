@@ -1211,6 +1211,30 @@ INSERT INTO DEVICETYPECOMMAND VALUES (-709, -54, 'Repeater 902', 4, 'Y', -1);
 insert into YukonRoleProperty values(-20204,-202,'Enable TOU','true','Allows access to TOU(Time of use) data'); 
 /* End YUK-4962 */
 
+/* Start YUK-4977 */
+update YukonRoleProperty
+	set KeyName = replace(KeyName,'ardwares','ardware')
+where
+	(KeyName like '%Hardwares%'
+	or KeyName like '%hardwares%')
+	and RolePropertyID < 0;
+
+update YukonRoleProperty
+	set DefaultValue = replace(DefaultValue,'ardwares','ardware')
+where
+	(DefaultValue like '%Hardwares%'
+	or DefaultValue like '%hardwares%')
+	and RolePropertyID < 0;
+
+update YukonRoleProperty
+	set Description = replace(Description,'ardwares','ardware')
+where
+	(Description like '%Hardwares%'
+	or Description like '%hardwares%')
+	and RolePropertyID < 0;
+
+/* End YUK-4977 */
+
 /**************************************************************/
 /* VERSION INFO                                               */
 /*   Automatically gets inserted from build script            */

@@ -1,7 +1,7 @@
 /*==============================================================*/
 /* Database name:  YukonDatabase                                */
 /* DBMS name:      Microsoft SQL Server 2000                    */
-/* Created on:     12/18/2007 11:46:21 PM                       */
+/* Created on:     12/19/2007 12:16:41 AM                       */
 /*==============================================================*/
 
 
@@ -9863,9 +9863,9 @@ insert into YukonRoleProperty values(-20107,-201,'Programs Enrollment','true','C
 insert into YukonRoleProperty values(-20108,-201,'Programs Opt Out','true','Controls whether to enable the program opt out/reenable feature');
 insert into YukonRoleProperty values(-20109,-201,'Appliances','true','Controls whether to show the appliance information');
 insert into YukonRoleProperty values(-20110,-201,'Appliances Create','true','Controls whether to enable the appliance creation feature');
-insert into YukonRoleProperty values(-20111,-201,'Hardwares','true','Controls whether to show the hardware information');
-insert into YukonRoleProperty values(-20112,-201,'Hardwares Create','true','Controls whether to enable the hardware creation feature');
-insert into YukonRoleProperty values(-20113,-201,'Hardwares Thermostat','true','Controls whether to enable the thermostat programming feature');
+insert into YukonRoleProperty values(-20111,-201,'Hardware','true','Controls whether to show the hardware information');
+insert into YukonRoleProperty values(-20112,-201,'Hardware Create','true','Controls whether to enable the hardware creation feature');
+insert into YukonRoleProperty values(-20113,-201,'Hardware Thermostat','true','Controls whether to enable the thermostat programming feature');
 insert into YukonRoleProperty values(-20114,-201,'Work Orders','false','Controls whether to enable the service request feature');
 insert into YukonRoleProperty values(-20115,-201,'Admin Change Login','true','Controls whether to enable the changing customer login feature');
 insert into YukonRoleProperty values(-20116,-201,'Admin FAQ','false','Controls whether to show customer FAQs');
@@ -9971,7 +9971,7 @@ insert into YukonRoleProperty values(-20880,-201,'Heading Account','Account','He
 insert into YukonRoleProperty values(-20881,-201,'Heading Metering','Metering','Heading of the metering links');
 insert into YukonRoleProperty values(-20882,-201,'Heading Programs','Programs','Heading of the program links');
 insert into YukonRoleProperty values(-20883,-201,'Heading Appliances','Appliances','Heading of the appliance links');
-insert into YukonRoleProperty values(-20884,-201,'Heading Hardwares','Hardwares','Heading of the hardware links');
+insert into YukonRoleProperty values(-20884,-201,'Heading Hardware','Hardware','Heading of the hardware links');
 insert into YukonRoleProperty values(-20885,-201,'Heading Work Orders','Work Orders','Heading of the work order links');
 insert into YukonRoleProperty values(-20886,-201,'Heading Administration','Administration','Heading of the administration links');
 insert into YukonRoleProperty values(-20887,-201,'Sub-Heading Switches','Switches','Sub-heading of the switch links');
@@ -9985,10 +9985,10 @@ insert into YukonRoleProperty values(-20894,-201,'Opt Out Today Only','false','P
 
 /* Operator Hardware Inventory Role Properties */
 insert into YukonRoleProperty values(-20900,-209,'Show All Inventory','true','Controls whether to allow showing all inventory');
-insert into YukonRoleProperty values(-20901,-209,'Add SN Range','true','Controls whether to allow adding hardwares by serial number range');
-insert into YukonRoleProperty values(-20902,-209,'Update SN Range','true','Controls whether to allow updating hardwares by serial number range');
-insert into YukonRoleProperty values(-20903,-209,'Config SN Range','true','Controls whether to allow configuring hardwares by serial number range');
-insert into YukonRoleProperty values(-20904,-209,'Delete SN Range','true','Controls whether to allow deleting hardwares by serial number range');
+insert into YukonRoleProperty values(-20901,-209,'Add SN Range','true','Controls whether to allow adding hardware by serial number range');
+insert into YukonRoleProperty values(-20902,-209,'Update SN Range','true','Controls whether to allow updating hardware by serial number range');
+insert into YukonRoleProperty values(-20903,-209,'Config SN Range','true','Controls whether to allow configuring hardware by serial number range');
+insert into YukonRoleProperty values(-20904,-209,'Delete SN Range','true','Controls whether to allow deleting hardware by serial number range');
 insert into YukonRoleProperty values(-20905,-209,'Create Hardware','true','Controls whether to allow creating new hardware');
 insert into YukonRoleProperty values(-20906,-209,'Expresscom Restore First','false','Controls whether an opt out command should also contain a restore');
 insert into YukonRoleProperty values(-20907,-209,'Allow Designation Codes','false','Toggles on or off the ability utilize service company zip codes.');
@@ -10025,7 +10025,7 @@ insert into YukonRoleProperty values(-40002,-400,'Metering Usage','false','Contr
 insert into YukonRoleProperty values(-40003,-400,'Programs Control History','true','Controls whether to show the program control history');
 insert into YukonRoleProperty values(-40004,-400,'Programs Enrollment','true','Controls whether to enable the program enrollment feature');
 insert into YukonRoleProperty values(-40005,-400,'Programs Opt Out','true','Controls whether to enable the program opt out/reenable feature');
-insert into YukonRoleProperty values(-40006,-400,'Hardwares Thermostat','true','Controls whether to enable the thermostat programming feature');
+insert into YukonRoleProperty values(-40006,-400,'Hardware Thermostat','true','Controls whether to enable the thermostat programming feature');
 insert into YukonRoleProperty values(-40007,-400,'Questions Utility','true','Controls whether to show the contact information of the energy company');
 insert into YukonRoleProperty values(-40008,-400,'Questions FAQ','true','Controls whether to show customer FAQs');
 insert into YukonRoleProperty values(-40009,-400,'Admin Change Login','true','Controls whether to allow customers to change their own login');
