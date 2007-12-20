@@ -40,7 +40,7 @@ ${xurl}
 
 
 <%-- REPORT TABLE --%>
-<table class="compactResultsTable">
+<table class="resultsTable">
 
     <!-- COLUMN HEADER -->
     <tr>

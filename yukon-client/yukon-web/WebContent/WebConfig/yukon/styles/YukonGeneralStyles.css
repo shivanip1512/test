@@ -78,11 +78,14 @@ table.resultsTable {
 }
 
 table.resultsTable th {
-	background: #E5E5E5;
+	background: #FFFFFF;
 	padding: .3em .5em;
   	border: 1px solid #ccc;
 	color: 	#06C;
 	font-size: 14px;
+	background-image: url(../Icons/boxContainerBg26px.gif);
+	background-position: left bottom;
+	background-repeat:repeat-x;
 }
 
 table.resultsTable td {
@@ -117,11 +120,14 @@ table.miniResultsTable {
 }
 
 table.miniResultsTable th {
-	background: #E5E5E5;
+	background: #FFFFFF;
 	padding: .2em .5em;
   	border: 1px solid #ccc;
 	color: 	#06C;
 	font-size: 12px;
+	background-image: url(../Icons/boxContainerBg19px.gif);
+	background-position: left bottom;
+	background-repeat:repeat-x;
 }
 
 table.miniResultsTable td {
@@ -398,9 +404,12 @@ div.boxContainer{
 }
 
 div.boxContainer .boxContainer_titleBar { 
-	background-color: #F0F0F0;
+	background-color: #FFFFFF;
 	border: 1px solid #BBBBBB;
 	padding: .25em .5em; 
+	background-image: url(../Icons/boxContainerBg26px.gif);
+	background-position: left bottom;
+	background-repeat:repeat-x;
 }
 
 div.boxContainer .boxContainer_titleBar .boxContainer_title { 
