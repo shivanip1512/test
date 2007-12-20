@@ -8,10 +8,13 @@ import javax.faces.model.SelectItem;
 
 import com.cannontech.common.util.CtiUtilities;
 import com.cannontech.common.util.StringUtils;
+import com.cannontech.core.dao.AuthDao;
+import com.cannontech.core.dao.DaoFactory;
 import com.cannontech.database.cache.DefaultDatabaseCache;
 import com.cannontech.database.data.capcontrol.CapBank;
 import com.cannontech.database.data.lite.LiteComparators;
 import com.cannontech.database.data.lite.LiteYukonPAObject;
+import com.cannontech.database.data.lite.LiteYukonUser;
 import com.cannontech.database.data.pao.DBEditorTypes;
 import com.cannontech.database.data.pao.DeviceTypes;
 import com.cannontech.database.data.pao.PAOGroups;
@@ -19,6 +22,7 @@ import com.cannontech.database.data.point.PointTypes;
 import com.cannontech.database.db.capcontrol.CapControlStrategy;
 import com.cannontech.database.db.point.PointAlarming;
 import com.cannontech.database.db.point.calculation.CalcComponentTypes;
+import com.cannontech.roles.capcontrol.CBCOnelineSettingsRole;
 import com.cannontech.yukon.IDatabaseCache;
 
 /**
@@ -44,6 +48,8 @@ public class CBCSelectionLists {
 	private static final String dateOnly = "MM-dd-yyyy";
 	private static final String dateTime = "MM-dd-yyyy HH:mm:ss";
 	private static final String dateTimeNoSeconds = "MM-dd-yyyy HH:mm";
+	
+	private LiteYukonUser yukonUser;
 
     private static final SelectItem[] pTypes = {
       new SelectItem(new Integer (PointTypes.ANALOG_POINT), "Analog"),
@@ -146,7 +152,7 @@ public class CBCSelectionLists {
 
     };
 
-	private static final SelectItem[] capBankOpStates =  {
+	private static SelectItem[] capBankOpStates =  {
 		new SelectItem(CapBank.FIXED_OPSTATE, CapBank.FIXED_OPSTATE),
 		new SelectItem(CapBank.STANDALONE_OPSTATE, CapBank.STANDALONE_OPSTATE),
 		new SelectItem(CapBank.SWITCHED_OPSTATE, CapBank.SWITCHED_OPSTATE),
@@ -315,6 +321,9 @@ public class CBCSelectionLists {
 	 * @return SelectItem[]
 	 */
 	public SelectItem[] getCapBankOpStates() {
+	    AuthDao authdao = DaoFactory.getAuthDao();
+	    String fixedText = authdao.getRolePropertyValue(yukonUser, CBCOnelineSettingsRole.CAP_BANK_FIXED_TEXT);
+	    capBankOpStates[0] = new SelectItem(fixedText, fixedText);
 		return capBankOpStates;
 	}
 
@@ -543,5 +552,13 @@ public class CBCSelectionLists {
     public TimeZone getTimeZone () {
         TimeZone timeZone = TimeZone.getDefault();
         return timeZone;
+    }
+    
+    public LiteYukonUser getYukonUser() {
+        return yukonUser;
+    }
+
+    public void setYukonUser(LiteYukonUser yukonUser) {
+        this.yukonUser = yukonUser;
     }
 }

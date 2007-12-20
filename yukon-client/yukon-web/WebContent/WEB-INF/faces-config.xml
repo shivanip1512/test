@@ -22,7 +22,11 @@
     <managed-bean>
         <managed-bean-name>selLists</managed-bean-name>
         <managed-bean-class>com.cannontech.web.util.CBCSelectionLists</managed-bean-class>
-        <managed-bean-scope>application</managed-bean-scope>
+        <managed-bean-scope>session</managed-bean-scope>
+        <managed-property>
+            <property-name>yukonUser</property-name>
+            <value>#{sessionScope.YUKON_USER}</value>
+        </managed-property>
     </managed-bean>
 
 

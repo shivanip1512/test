@@ -222,7 +222,13 @@ public void setMapLocationID(String newMapLocationID) {
  * @param newOperationalState java.lang.String
  */
 public void setOperationalState(java.lang.String newOperationalState) {
-	operationalState = newOperationalState;
+    if(!(newOperationalState.equalsIgnoreCase(com.cannontech.database.data.capcontrol.CapBank.SWITCHED_OPSTATE) ||
+       newOperationalState.equalsIgnoreCase(com.cannontech.database.data.capcontrol.CapBank.STANDALONE_OPSTATE) ||
+       newOperationalState.equalsIgnoreCase(com.cannontech.database.data.capcontrol.CapBank.UNINSTALLED_OPSTATE))) {
+        operationalState = com.cannontech.database.data.capcontrol.CapBank.FIXED_OPSTATE;
+    }else {
+        operationalState = newOperationalState;
+    }
 }
 /**
  * Insert the method's description here.
