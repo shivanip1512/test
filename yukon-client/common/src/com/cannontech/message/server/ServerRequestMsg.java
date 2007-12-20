@@ -3,6 +3,8 @@
  */
 package com.cannontech.message.server;
 
+import org.springframework.core.style.ToStringCreator;
+
 import com.cannontech.message.util.Message;
 
 /**
@@ -37,6 +39,14 @@ public class ServerRequestMsg extends Message {
 	 */
 	public void setId(int i) {
 		_id = i;
+	}
+	
+	@Override
+	public String toString() {
+	    ToStringCreator toStringCreator = new ToStringCreator(this);
+	    toStringCreator.append("id", _id);
+	    toStringCreator.append("payload", _payload);
+	    return toStringCreator.toString();
 	}
 
 	/**

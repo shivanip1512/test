@@ -3,6 +3,8 @@ package com.cannontech.message.util;
 import java.util.ArrayList;
 import java.util.List;
 
+import org.springframework.core.style.ToStringCreator;
+
 /**
  * This type was created in VisualAge.
  */
@@ -103,5 +105,14 @@ public void setOperation(int operation) {
  */
 public void setOpString(java.lang.String newOpString) {
 	opString = newOpString;
+}
+
+@Override
+public String toString() {
+    ToStringCreator toStringCreator = new ToStringCreator(this);
+    toStringCreator.append("operation", operation);
+    toStringCreator.append("opString", opString);
+    toStringCreator.append("opArgList", opArgList);
+    return toStringCreator.toString();
 }
 }

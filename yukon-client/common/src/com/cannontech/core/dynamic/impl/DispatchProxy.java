@@ -1,9 +1,21 @@
 package com.cannontech.core.dynamic.impl;
 
-import java.util.*;
+import java.util.ArrayList;
+import java.util.Collection;
+import java.util.Collections;
+import java.util.HashMap;
+import java.util.HashSet;
+import java.util.List;
+import java.util.Map;
+import java.util.Set;
+import java.util.Vector;
 
-import com.cannontech.clientutils.CTILogger;
+import org.apache.commons.lang.Validate;
+import org.apache.log4j.Logger;
+
+import com.cannontech.clientutils.YukonLogManager;
 import com.cannontech.common.util.CtiUtilities;
+import com.cannontech.core.dynamic.exception.DispatchNotConnectedException;
 import com.cannontech.core.dynamic.exception.DynamicDataAccessException;
 import com.cannontech.message.dispatch.message.Multi;
 import com.cannontech.message.dispatch.message.PointData;
@@ -24,7 +36,8 @@ import com.cannontech.yukon.IServerConnection;
  */
 class DispatchProxy {
     private IServerConnection dispatchConnection;
-    private ServerRequest serverRequest;      
+    private ServerRequest serverRequest;   
+    private Logger log = YukonLogManager.getLogger(DispatchProxy.class);
         
     /**
      * Get the current PointData for a single point
@@ -33,7 +46,13 @@ class DispatchProxy {
      */
     PointData getPointData(int pointId) {
         Multi m = getPointDataMulti(CtiUtilities.asSet(pointId));
-        return (PointData) m.getVector().iterator().next();
+        List<PointData> pointData = new ArrayList<PointData>(1);
+        extractPointData(pointData, m);
+        Validate.isTrue(pointData.size() != 0, "Returned multi was empty: ", pointData.size());
+        if (pointData.size() > 1) {
+            log.warn("Returned multi was bigger than expected, ignoring other elements: " + pointData.subList(1, pointData.size()));
+        }
+        return (PointData) pointData.get(0);
     }
     
     /**
@@ -96,14 +115,10 @@ class DispatchProxy {
     }
     
     void putPointData(Set<PointData> pointData) {
-        if(!dispatchConnection.isValid()) {
-            throw new DynamicDataAccessException("Invalid connection to dispatch");
-        }
-        else {
-            Multi multi = new Multi();
-            multi.setVector(new Vector<PointData>(pointData));
-            dispatchConnection.write(multi);
-        }
+        validateDispatchConnection();
+        Multi multi = new Multi();
+        multi.setVector(new Vector<PointData>(pointData));
+        dispatchConnection.write(multi);
     }
     
     /**
@@ -111,9 +126,7 @@ class DispatchProxy {
      * @param pointIds
      */
     public void registerForPointIds(Set<Integer> pointIds) {
-        if(!dispatchConnection.isValid()) {
-            throw new DynamicDataAccessException("Connection to dispatch is invalid");
-        }
+        validateDispatchConnection();
         PointRegistration pReg = new PointRegistration();
         pReg.setRegFlags(PointRegistration.REG_ADD_POINTS);
         pReg.setPointIds(pointIds);
@@ -127,13 +140,19 @@ class DispatchProxy {
      * @return
      */
     private Multi getPointDataMulti(Set<Integer> pointIds) {
-        Command cmd = makeCommandMsg(Command.POINT_DATA_REQUEST, pointIds);
-        Multi m = (Multi) makeRequest(cmd);
-        registerForPointIds(pointIds);
+        if (log.isDebugEnabled()) {
+            log.debug("Making getPointDataMulti request for: " + pointIds);
+        }
+        Multi m;
+        try {
+            Command cmd = makeCommandMsg(Command.POINT_DATA_REQUEST, pointIds);
+            m = (Multi) makeRequest(cmd);
+            registerForPointIds(pointIds);
+        } catch (DynamicDataAccessException e) {
+            throw new DynamicDataAccessException("There was an error retreiving the value for pointIds: " + pointIds, e);
+        }
         return m;
     }
-    
-    
     
     /**
      * Handles sending a request to dispatch and waiting for a response
@@ -142,16 +161,20 @@ class DispatchProxy {
      * @return
      */
     private Object makeRequest(Command cmd) {
-        if(!dispatchConnection.isValid()) {
-            throw new DynamicDataAccessException("Connection to dispatch is invalid");
-        }
+        validateDispatchConnection();
         ServerResponseMsg resp = serverRequest.makeServerRequest(dispatchConnection,cmd);
         if(resp.getStatus() == ServerResponseMsg.STATUS_ERROR) {
-            CTILogger.error(resp.getMessage());
-            throw new DynamicDataAccessException(resp.getStatusStr());
+            log.error("Dispatch returned the following message: " + resp.getMessage());
+            throw new DynamicDataAccessException("Dispatch returned error status in response: " + resp.getStatusStr());
         }        
         // returns multi of signals??
         return resp.getPayload();
+    }
+
+    private void validateDispatchConnection() {
+        if(!dispatchConnection.isValid()) {
+            throw new DispatchNotConnectedException();
+        }
     }
     
     /**
@@ -183,13 +206,15 @@ class DispatchProxy {
      * @param pointData
      * @param m
      */
-    private void extractPointData(Set<PointData> pointData, Multi m) {
-        for(Object o : m.getVector()) {
-            if(o instanceof PointData) {
-                pointData.add((PointData)o);
-            }
-            else if(o instanceof Multi) {
+    private void extractPointData(Collection<PointData> pointData, Multi m) {
+        for (Object o : m.getVector()) {
+            if (o instanceof PointData) {
+                pointData.add((PointData) o);
+            } else if (o instanceof Multi) {
                 extractPointData(pointData, (Multi) o);
+            } else {
+                log.info("Received unknown type in multi (expecting PointData): " 
+                               + o.getClass());
             }
         }
     }
@@ -224,13 +249,14 @@ class DispatchProxy {
      * @param m
      */
     private void extractSignals(Set<Signal> signals, Multi m) {
-        for(Object o : m.getVector()) {
-            if(o instanceof Signal) {
+        for (Object o : m.getVector()) {
+            if (o instanceof Signal) {
                 Signal signal = (Signal) o;
                 signals.add(signal);
-            }
-            else if(o instanceof Multi) {
+            } else if (o instanceof Multi) {
                 extractSignals(signals, (Multi) o);
+            } else {
+                log.info("Received unknown type in multi (expecting Signal): " + o.getClass());
             }
         }
     }

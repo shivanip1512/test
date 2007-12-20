@@ -5,6 +5,9 @@ package com.cannontech.message.util;
 
 import java.util.Random;
 
+import org.apache.log4j.Logger;
+
+import com.cannontech.clientutils.YukonLogManager;
 import com.cannontech.message.server.ServerRequestMsg;
 import com.cannontech.message.server.ServerResponseMsg;
 import com.cannontech.yukon.IServerConnection;
@@ -45,6 +48,8 @@ import com.cannontech.yukon.IServerConnection;
  */
 public class ServerRequestImpl implements ServerRequest 
 {
+    private Logger log = YukonLogManager.getLogger(ServerRequestImpl.class);
+    
 	private static int MIN_RESERVED_ID = 0;
     private static int MAX_RESERVED_ID = 10;
 	
@@ -79,6 +84,9 @@ public class ServerRequestImpl implements ServerRequest
                 //Add this as a listener so we can look for a response
                 _connection.addMessageListener(this);
                 _connection.write(_requestMsg);
+                if (log.isDebugEnabled()) {
+                    log.debug("Server Request execute; request=" + _requestMsg + ", this=" + this);
+                }
                 wait(timeout);
             }
             catch(InterruptedException ie) {
@@ -91,9 +99,11 @@ public class ServerRequestImpl implements ServerRequest
             // Did we get a response that matched our request id?
             if(_responseMsg == null) {
                 _responseMsg = ServerResponseMsg.createTimeoutResp();
+                log.debug("Server response was a timeout");
                 //throw new TimeoutException("Timed out waiting for response message with id: " + _requestID);
             }
             
+            log.debug("Server Request execute complete");
             return _responseMsg;
         }
         
@@ -104,9 +114,17 @@ public class ServerRequestImpl implements ServerRequest
             Message msg = e.getMessage();
             if(msg instanceof ServerResponseMsg) {
                 ServerResponseMsg responseMsg = (ServerResponseMsg) msg;
+                if (log.isDebugEnabled()) {
+                    log.debug("Received response; response=" + responseMsg + ", this=" + this);
+                }
                 if(responseMsg.getId() == _requestMsg.getId() ) {
                     _responseMsg = responseMsg;
+                    log.debug("Received matching response");
                     notify(); //score! we found matching response, let the blocked thread know
+                }
+            } else {
+                if (log.isDebugEnabled()) {
+                    log.debug("Received unknown response; response=" + msg + ", this=" + this);
                 }
             }
         }

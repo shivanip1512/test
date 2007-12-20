@@ -36,6 +36,6 @@ public class MessageEvent extends EventObject {
 	 * @see java.lang.Object#toString()
 	 */
 	public String toString() {
-		return this.getClass().getName() + ":" + message.getClass().getName();
+		return this.getClass().getName() + ": " + message.getClass().getName();
 	}
 }

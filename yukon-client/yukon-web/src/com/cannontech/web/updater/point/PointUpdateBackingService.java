@@ -1,8 +1,10 @@
 package com.cannontech.web.updater.point;
 
+import java.util.Collections;
 import java.util.HashSet;
 import java.util.Iterator;
 import java.util.LinkedHashMap;
+import java.util.Map;
 import java.util.Set;
 import java.util.regex.Matcher;
 import java.util.regex.Pattern;
@@ -24,10 +26,11 @@ public class PointUpdateBackingService implements UpdateBackingService, PointDat
     private PointFormattingService pointFormattingService;
     private int maxCacheSize = 1000;
     private int maxOverSize = maxCacheSize / 20;
-    private LinkedHashMap<Integer, DatedPointValue> cache = new LinkedHashMap<Integer, DatedPointValue>(maxCacheSize, .75f, true);
+    private Map<Integer, DatedPointValue> cache = 
+        Collections.synchronizedMap(new LinkedHashMap<Integer, DatedPointValue>(maxCacheSize, .75f, true));
     private Pattern idSplitter = Pattern.compile("^([^/]+)/(.+)$");
 
-    public synchronized String getLatestValue(String identifier, long afterDate, LiteYukonUser user) {
+    public String getLatestValue(String identifier, long afterDate, LiteYukonUser user) {
         Matcher m = idSplitter.matcher(identifier);
         if (m.matches() && m.groupCount() != 2) {
             throw new RuntimeException("identifier string isn't well formed: " + identifier);
@@ -90,7 +93,7 @@ public class PointUpdateBackingService implements UpdateBackingService, PointDat
         long receivedTime;
     }
 
-    public synchronized void pointDataReceived(PointValueHolder pointData) {
+    public void pointDataReceived(PointValueHolder pointData) {
         trimCache();
         DatedPointValue value = createWrapper(pointData);
         cache.put(pointData.getId(), value);

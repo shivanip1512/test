@@ -563,8 +563,14 @@ protected void fireMessageEvent(Message msg) {
 	}
 
 	MessageEvent e = new MessageEvent(this, msg);	
+	if (logger.isDebugEnabled()) {
+	    logger.debug("sending MessageEvent to " + messageListeners.size() + " listeners: " + e);
+	}
 	for(int i = messageListeners.size()-1; i >= 0; i--) {
 		MessageListener ml = (MessageListener) messageListeners.get(i);
+		if (logger.isDebugEnabled()) {
+		    logger.debug("sending MessageEvent to " + ml);
+		}
 		ml.messageReceived(e);
 	}
 }
