@@ -8031,7 +8031,7 @@ void CtiCCSubstationBusStore::checkDBReloadList()
                     {
                         if (reloadTemp.action == ChangeTypeDelete)
                         {
-                            deleteArea(reloadTemp.objectId); 
+                            deleteSpecialArea(reloadTemp.objectId); 
 
                             CtiCCExecutorFactory f;
                             CtiCCExecutor* executor = f.createExecutor(new CtiCCCommand(CtiCCCommand::DELETE_ITEM, reloadTemp.objectId));
