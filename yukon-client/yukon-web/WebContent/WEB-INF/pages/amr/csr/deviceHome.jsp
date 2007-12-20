@@ -88,7 +88,7 @@
                         <!-- Actions: Profile -->
                         <c:choose>
                             <c:when test="${lpSupported && lpEnabled}">
-        						<c:url var="profileUrl" value="/spring/csr/profile">
+        						<c:url var="profileUrl" value="/spring/amr/profile/home">
         							<c:param name="deviceId" value="${deviceId}" />
         						</c:url>
                                 <a href="${profileUrl}">Profile</a>
@@ -102,7 +102,7 @@
 						<!-- Actions: Voltage & TOU -->
                         <c:choose>
                             <c:when test="${isMCT4XX}">
-        						<c:url var="voltageTouUrl" value="/spring/csr/voltageAndTou">
+        						<c:url var="voltageTouUrl" value="/spring/amr/voltageAndTou/home">
         							<c:param name="deviceId" value="${deviceId}" />
         						</c:url>
         						<a href="${voltageTouUrl}">Voltage &amp; TOU</a>
@@ -114,7 +114,7 @@
                         <br/>
                         
                         <!-- Actions: >Manual Commander -->
-						<c:url var="commanderUrl" value="/spring/csr/manualCommand">
+						<c:url var="commanderUrl" value="/spring/amr/manualCommand/home">
 							<c:param name="deviceId" value="${deviceId}" />
 						</c:url>
 						<a href="${commanderUrl}">Manual Commander</a>

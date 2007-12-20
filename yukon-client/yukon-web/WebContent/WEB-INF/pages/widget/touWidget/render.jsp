@@ -35,8 +35,8 @@
 				</table>
 			</c:when>
 			<c:otherwise>
-			Tou Widget not configured.
-		</c:otherwise>
+				Tou Widget not configured.
+			</c:otherwise>
 		</c:choose>
 	</div>
 </div>

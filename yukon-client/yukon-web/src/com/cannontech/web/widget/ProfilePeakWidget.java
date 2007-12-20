@@ -12,7 +12,6 @@ import javax.servlet.http.HttpServletResponse;
 import org.apache.commons.lang.time.DateUtils;
 import org.springframework.beans.factory.annotation.Required;
 import org.springframework.web.bind.ServletRequestBindingException;
-import org.springframework.web.bind.ServletRequestUtils;
 import org.springframework.web.servlet.ModelAndView;
 
 import com.cannontech.amr.meter.dao.MeterDao;
@@ -35,7 +34,6 @@ import com.cannontech.web.widget.support.WidgetParameterHelper;
 public class ProfilePeakWidget extends WidgetControllerBase {
 
     private static final SimpleDateFormat COMMAND_FORMAT = new SimpleDateFormat("MM/dd/yyyy");
-//    private static final SimpleDateFormat DISPLAY_FORMAT = new SimpleDateFormat("MM/dd/yyyy HH:mm:ss");
 
     private PeakReportService peakReportService = null;
     private DateFormattingService dateFormattingService = null;

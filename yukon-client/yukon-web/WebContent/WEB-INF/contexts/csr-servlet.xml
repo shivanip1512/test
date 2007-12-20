@@ -38,8 +38,6 @@
 		<property name="roleDao" ref="roleDao"/>
 		<property name="csrService" ref="csrService" />
 		<property name="attributeService" ref="attributeService" />
-		<property name="paoDao" ref="paoDao" />
-		<property name="commandDao" ref="commandDao" />
     </bean>
     
     <bean id="MoveInMoveOutController" class="com.cannontech.web.moveInMoveOut.MoveInMoveOutController" >

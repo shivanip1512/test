@@ -32,8 +32,8 @@
 		  	<input type="hidden" name="deviceID" value="${deviceId}">
 		  	<input type="hidden" name="command" value="getvalue voltage & getvalue demand">
 		  	<input type="hidden" name="timeOut" value="8000">
-		  	<input id="redirect" type="hidden" name="REDIRECT" value="/spring/csr/voltageAndTou?deviceId=${deviceId}">
-		  	<input id="referrer" type="hidden" name="REFERRER" value="/spring/csr/voltageAndTou?deviceId=${deviceId}">
+		  	<input id="redirect" type="hidden" name="REDIRECT" value="/spring/amr/voltageAndTou/home?deviceId=${deviceId}">
+		  	<input id="referrer" type="hidden" name="REFERRER" value="/spring/amr/voltageAndTou/home?deviceId=${deviceId}">
 	
 			<tags:boxContainer title="Voltage" hideEnabled="false">
 				
@@ -76,8 +76,8 @@
 		  	<input type="hidden" name="deviceID" value="${deviceId}">
 		  	<input type="hidden" name="command" value="putconfig tou ">
 		  	<input type="hidden" name="timeOut" value="8000">
-		  	<input id="redirect" type="hidden" name="REDIRECT" value="/spring/csr/voltageAndTou?deviceId=${deviceId}">
-		  	<input id="referrer" type="hidden" name="REFERRER" value="/spring/csr/voltageAndTou?deviceId=${deviceId}">
+		  	<input id="redirect" type="hidden" name="REDIRECT" value="/spring/amr/voltageAndTou/home?deviceId=${deviceId}">
+		  	<input id="referrer" type="hidden" name="REFERRER" value="/spring/amr/voltageAndTou/home?deviceId=${deviceId}">
 	
 	
 			<c:if test="${not empty schedules && fn:length(schedules) > 0}">
