@@ -34,8 +34,10 @@ go
 alter table BillingFileFormats ALTER COLUMN FormatType varchar(100);
 go
 
-alter table BillingFileFormats ADD SystemFormat bit;
+/* Start YUK-4920 */
+alter table BillingFileFormats ADD SystemFormat smallint;
 go
+/* End YUK-4920 */
 
 update BillingFileFormats SET SystemFormat=1;
 go

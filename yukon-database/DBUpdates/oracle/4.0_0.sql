@@ -37,7 +37,9 @@ create table DYNAMICBILLINGFIELD  (
 ;
 
 alter table BillingFileFormats modify FormatType varchar2(100);
-alter table BillingFileFormats ADD SystemFormat bit;
+/* Start YUK-4920 */
+alter table BillingFileFormats ADD SystemFormat smallint;
+/* End YUK-4920 */
 update BillingFileFormats SET SystemFormat=1;
 
 insert into sequenceNumber values (100, 'BillingFileFormats');
