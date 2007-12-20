@@ -96,7 +96,14 @@ JsWidgetObject.prototype = {
     for (var i = 0; i < widgetInputs.length; i += 1) {
       var el = $(widgetInputs[i]);
       if (el.name) {
-        theseParameters[el.name] = $F(el);
+        if (el.type != 'radio') {
+            theseParameters[el.name] = $F(el);
+        }
+        else {
+            if (el.checked) {
+                theseParameters[el.name] = $F(el);
+            }
+        }
       }
     }
     var widgetInputs = container.getElementsByTagName('select');

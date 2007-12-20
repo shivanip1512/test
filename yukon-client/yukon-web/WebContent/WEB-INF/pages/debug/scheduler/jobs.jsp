@@ -57,7 +57,7 @@
         <td title="${job.id}">${job.beanName}</td>
         <td>${job.runAsUser.username}</td>
         <td>${job.startTime}</td>
-        <td></td>
+        <td>${job.disabled ? "Disabled" : "Enabled"}</td>
       </tr>
     </c:forEach>
   </table>

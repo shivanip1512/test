@@ -19,6 +19,8 @@ import com.cannontech.jobs.dao.ScheduledOneTimeJobDao;
 import com.cannontech.jobs.model.JobState;
 import com.cannontech.jobs.model.JobStatus;
 import com.cannontech.jobs.model.ScheduledOneTimeJob;
+import com.cannontech.jobs.support.YukonJobDefinition;
+import com.cannontech.jobs.support.YukonTask;
 import com.cannontech.spring.SeparableRowMapper;
 
 public class ScheduledOneTimeJobDaoImpl extends JobDaoBase implements ScheduledOneTimeJobDao {
@@ -75,6 +77,19 @@ public class ScheduledOneTimeJobDaoImpl extends JobDaoBase implements ScheduledO
 
         return jobSet;
     }
+    
+    public Set<ScheduledOneTimeJob> getJobsByDefinition(YukonJobDefinition<? extends YukonTask> definition) {
+        String sql =
+            "select * " + 
+            "from JobScheduledOneTime jsr " + 
+            "join Job on Job.jobId = jsr.jobId " +
+            "where Job.beanName = ?";
+
+        List<ScheduledOneTimeJob> jobList = jdbcTemplate.query(sql, jobRowMapper, definition.getName());
+        Set<ScheduledOneTimeJob> jobSet = new HashSet<ScheduledOneTimeJob>(jobList);
+        
+        return jobSet;
+    }
 
     public Set<JobStatus<ScheduledOneTimeJob>> getAllUnfinished() {
         SqlStatementBuilder sql = new SqlStatementBuilder();
@@ -107,7 +122,26 @@ public class ScheduledOneTimeJobDaoImpl extends JobDaoBase implements ScheduledO
     }
 
     public ScheduledOneTimeJob getById(int id) {
-        throw new UnsupportedOperationException();
+
+        SeparableRowMapper<ScheduledOneTimeJob> mapper = new SeparableRowMapper<ScheduledOneTimeJob>(yukonJobBaseRowMapper) {
+            protected ScheduledOneTimeJob createObject(ResultSet rs) throws SQLException {
+                ScheduledOneTimeJob job = new ScheduledOneTimeJob();
+                return job;
+            }
+
+            protected void mapRow(ResultSet rs, ScheduledOneTimeJob job) throws SQLException {
+                job.setStartTime(rs.getTimestamp("startTime"));
+            }
+        };
+        
+        String sql = 
+            "SELECT * " +
+            "FROM JobScheduledOneTime jso " +
+            "JOIN Job ON Job.jobId = jso.jobId " +
+            "WHERE Job.jobId = ?";
+        ScheduledOneTimeJob job = jdbcTemplate.queryForObject(sql, mapper, id);
+        
+        return job;
     }
 
     @Transactional(propagation = Propagation.REQUIRED)

@@ -4,12 +4,15 @@ import java.util.Set;
 
 import com.cannontech.jobs.model.JobStatus;
 import com.cannontech.jobs.model.ScheduledOneTimeJob;
+import com.cannontech.jobs.support.YukonJobDefinition;
+import com.cannontech.jobs.support.YukonTask;
 
 public interface ScheduledOneTimeJobDao {
     
     public ScheduledOneTimeJob getById(int id);
     public Set<ScheduledOneTimeJob> getAll();
     public Set<JobStatus<ScheduledOneTimeJob>> getAllUnfinished();
+    public Set<ScheduledOneTimeJob> getJobsByDefinition(YukonJobDefinition<? extends YukonTask> definition);
     
     /**
      * Saves the job and its properties. When it completes, its id

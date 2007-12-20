@@ -14,58 +14,64 @@
 	}
 	
 	var progressUpdaters = new Array();
-
+    
+    function toggleChanPopup(chanId) {
+        $(chanId).toggle();
+    }
 </script>
+
+<%-- ERROR MSG --%>
+<c:if test="${not empty errorMsg}">
+    <div style="font-weight:bold;color:#BB0000">${errorMsg}</div>
+    <br>
+</c:if>
+
 <%--CHANNElS PROFILING--%>
-
 <table class="compactResultsTable">
-
-	<tr>
-	  <th>Channel (Type)</th>
+	<tr align="left">
+	  <th align="left">Channel (Type)</th>
 	  <th>Interval</th>
 	  <th>Scan</th>
+      <th>Scheduled</th>
 	  <th>Action</th>
 	</tr>
-	
-	<tr align="center">
-		<td align="left">Channel 1 (Load)</td>
-		<td>${chan1Interval}</td>
-		<c:choose>
-			<c:when test="${chan1CollectionOn}">
-				<td style="font-weight:bold;color:#339900">On</td>
-				<td><tags:widgetActionRefresh method="toggleProfiling" label="Stop" labelBusy="Stop" toggleChannel1ProfilingOn="false" /></td>
-			</c:when>
-			<c:otherwise>
-				<td style="font-weight:bold;color:#BB0000">Off</td>
-				<td><tags:widgetActionRefresh method="toggleProfiling" label="Start" labelBusy="Start" toggleChannel1ProfilingOn="true" /></td>
-			</c:otherwise>
-		</c:choose>
-	</tr>
-	
-	<tr class="last" align="center">
-		<td align="left">Channel 4 (Voltage)</td>
-		<td>${chan4Interval}</td>
-		<c:choose>
-			<c:when test="${chan4CollectionOn}">
-				<td style="font-weight:bold;color:#339900">On</td>
-				<td><tags:widgetActionRefresh method="toggleProfiling" label="Stop" labelBusy="Stop" toggleChannel4ProfilingOn="false" /></td>
-			</c:when>
-			<c:otherwise>
-				<td style="font-weight:bold;color:#BB0000">Off</td>
-				<td><tags:widgetActionRefresh method="toggleProfiling" label="Start" labelBusy="Start" toggleChannel4ProfilingOn="true" /></td>
-			</c:otherwise>
-		</c:choose>
-	</tr>
-	
+    
+    <c:forEach var="c" items="${availableChannels}">
+    
+        <c:if test="${c.channelProfilingOn}">
+            <c:set var="actionDesc" value="Stop"/>
+            <c:set var="scanTd" value='<td style="font-weight:bold;color:#339900">On</td>'></c:set>
+        </c:if>
+        <c:if test="${not c.channelProfilingOn}">
+            <c:set var="actionDesc" value="Start"/>
+            <c:set var="scanTd" value='<td style="font-weight:bold;color:#BB0000">Off</td>'></c:set>
+        </c:if>
+    
+        <tr align="left">
+            <td>${c.channelDescription}</td>
+            <td>${c.channelProfileRate}</td>
+            ${scanTd}
+            <td>
+                <c:if test="${empty c.jobInfo}">
+                    No
+                </c:if>
+                <c:if test="${not empty c.jobInfo}">
+                    <cti:formatDate value="${c.jobInfo.startTime}" type="DATEHM" var="formattedScheduleDate" />
+                    ${actionDesc} ${formattedScheduleDate}
+                </c:if>
+            </td>
+            
+            <td><tags:toggleProfilingPopup channelNum="${c.channelNumber}" newToggleVal="${not c.channelProfilingOn}"/></td>
+        </tr>
+    </c:forEach>
 </table>
-	
-	
+
 <br/>
 	
 <%--PAST PROFILES--%>
 <table class="compactResultsTable">
 	<tr>
-		<th colspan="3">Request Past Profile:</th>
+		<th colspan="3" align="left">Request Past Profile:</th>
 	</tr>
 
 	<tr>

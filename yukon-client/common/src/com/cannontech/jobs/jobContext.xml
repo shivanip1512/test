@@ -30,7 +30,8 @@
     <bean id="yukonJobDao" class="com.cannontech.jobs.dao.impl.YukonJobDaoImpl">
         <property name="jdbcTemplate" ref="simpleJdbcTemplate"/>
         <property name="nextValueHelper" ref="nextValueHelper"/>
-        <property name="yukonJobMapper" ref="yukonJobBaseRowMapper"/>
+        <property name="scheduledRepeatingJobDao" ref="scheduledRepeatingJobDao"/>
+        <property name="scheduledOneTimeJobDao" ref="scheduledOneTimeJobDao"/>
     </bean>
     
     <bean id="scheduledRepeatingJobDao" class="com.cannontech.jobs.dao.impl.ScheduledRepeatingJobDaoImpl">

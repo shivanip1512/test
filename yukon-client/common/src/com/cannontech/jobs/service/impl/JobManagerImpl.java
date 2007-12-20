@@ -146,6 +146,28 @@ public class JobManagerImpl implements JobManager {
         return time;
     }
 
+    public YukonJob getJob(int jobId) {
+        return yukonJobDao.getById(jobId);
+    }
+    
+    public Set<ScheduledOneTimeJob> getOneTimeJobsByDefinition(YukonJobDefinition<? extends YukonTask> definition) {
+        
+        Set<ScheduledOneTimeJob> defJobs =  scheduledOneTimeJobDao.getJobsByDefinition(definition);
+
+        // these are NOT necessarily un-run.. needs add functionality to JobStatusDao to make this easier to determine
+        return defJobs;
+        
+    }
+    
+    public Set<ScheduledRepeatingJob> getRepeatingJobsByDefinition(YukonJobDefinition<? extends YukonTask> definition) {
+        
+        Set<ScheduledRepeatingJob> defJobs = scheduledRepeatingJobDao.getJobsByDefinition(definition);
+        
+        // these are NOT necessarily un-run.. needs add functionality to JobStatusDao to make this easier to determine
+        return defJobs;
+    }
+    
+    
     public void scheduleJob(YukonJobDefinition<?> jobDefinition, YukonTask task, Date time) {
         LiteYukonUser liteYukonUser = yukonUserDao.getLiteYukonUser(-2);
         scheduleJob(jobDefinition, task, time, liteYukonUser);
@@ -335,7 +357,7 @@ public class JobManagerImpl implements JobManager {
         });
     }
 
-    private YukonTask instantiateTask(YukonJob job) {
+    public YukonTask instantiateTask(YukonJob job) {
         YukonJobDefinition<? extends YukonTask> jobDefinition = job.getJobDefinition();
 
         log.info("instantiating task for " + jobDefinition);

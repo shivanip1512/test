@@ -345,4 +345,4 @@ function changeCalendarControlMonth(change) {
 }
 
 document.write("<iframe id='CalendarControlIFrame' src='javascript:false;' frameBorder='0' scrolling='no'></iframe>");
-document.write("<div id='CalendarControl'></div>");
+document.write("<div style='z-index:500;' id='CalendarControl'></div>");

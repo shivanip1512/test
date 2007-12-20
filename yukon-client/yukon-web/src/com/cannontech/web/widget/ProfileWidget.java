@@ -5,8 +5,8 @@ import java.text.DecimalFormat;
 import java.text.ParseException;
 import java.text.SimpleDateFormat;
 import java.util.ArrayList;
+import java.util.Calendar;
 import java.util.Collection;
-import java.util.Collections;
 import java.util.Date;
 import java.util.HashMap;
 import java.util.List;
@@ -23,11 +23,11 @@ import org.springframework.web.servlet.ModelAndView;
 import com.cannontech.amr.errors.dao.DeviceErrorTranslatorDao;
 import com.cannontech.amr.meter.dao.MeterDao;
 import com.cannontech.amr.meter.model.Meter;
+import com.cannontech.amr.toggleProfiling.service.ToggleProfilingService;
 import com.cannontech.common.device.attribute.model.Attribute;
 import com.cannontech.common.device.attribute.model.BuiltInAttribute;
 import com.cannontech.common.device.attribute.service.AttributeService;
 import com.cannontech.core.dao.ContactDao;
-import com.cannontech.core.dao.DBPersistentDao;
 import com.cannontech.core.dao.DeviceDao;
 import com.cannontech.core.dao.PaoDao;
 import com.cannontech.core.dao.YukonUserDao;
@@ -35,15 +35,12 @@ import com.cannontech.core.service.DateFormattingService;
 import com.cannontech.core.service.LongLoadProfileService;
 import com.cannontech.core.service.LongLoadProfileService.ProfileRequestInfo;
 import com.cannontech.core.service.impl.LongLoadProfileServiceEmailCompletionCallbackImpl;
-import com.cannontech.database.data.device.MCTBase;
 import com.cannontech.database.data.lite.LiteContact;
 import com.cannontech.database.data.lite.LiteDeviceMeterNumber;
 import com.cannontech.database.data.lite.LitePoint;
 import com.cannontech.database.data.lite.LiteYukonPAObject;
 import com.cannontech.database.data.lite.LiteYukonUser;
-import com.cannontech.database.data.pao.YukonPAObject;
 import com.cannontech.database.db.device.DeviceLoadProfile;
-import com.cannontech.message.dispatch.message.DBChangeMsg;
 import com.cannontech.simplereport.SimpleReportService;
 import com.cannontech.tools.email.EmailService;
 import com.cannontech.util.ServletUtil;
@@ -61,13 +58,13 @@ public class ProfileWidget extends WidgetControllerBase {
     private PaoDao paoDao = null;
     private DeviceDao deviceDao = null;
     private MeterDao meterDao = null;
-    private DBPersistentDao dbPersistentDao = null;
     private DateFormattingService dateFormattingService = null;
     private DeviceErrorTranslatorDao deviceErrorTranslatorDao = null;
     private AttributeService attributeService = null;
     private YukonUserDao yukonUserDao = null;
     private ContactDao contactDao = null;
     private SimpleReportService simpleReportService = null;
+    private ToggleProfilingService toggleProfilingService = null;
     
     private static DateFormat dateFormat = new SimpleDateFormat("MM/dd/yy hh:mma");
     /*
@@ -102,26 +99,54 @@ public class ProfileWidget extends WidgetControllerBase {
         LiteYukonPAObject device = paoDao.getLiteYukonPAO(deviceId);
         Meter meter = meterDao.getForId(deviceId);
         
-        // get heavy device
-        YukonPAObject yukonPaobject = (YukonPAObject)dbPersistentDao.retrieveDBPersistent(device);
-        
-        
         // get load profile
-        DeviceLoadProfile deviceLoadProfile = ((MCTBase)yukonPaobject).getDeviceLoadProfile();
+        DeviceLoadProfile deviceLoadProfile = toggleProfilingService.getDeviceLoadProfile(deviceId);
         
-        // set profile intervals
-        int loadProfileDemandRate = deviceLoadProfile.getLoadProfileDemandRate();
-        int voltageDemandRate = deviceLoadProfile.getVoltageDmdRate();
+        // ALL Channel Names / Attributes
+        // - for all possible channels
+        Integer channelNums[] = {1, 4};
+        Map<Integer, String> channelDisplayNames = new HashMap<Integer, String>();
+        Map<Integer, Attribute> channelAttributes = new HashMap<Integer, Attribute>();
+        Map<Integer, Integer> channelProfileRates = new HashMap<Integer, Integer>();
+        Map<Integer, Boolean> channelProfilingOn = new HashMap<Integer, Boolean>();
+        Map<Integer, Map<String, Object>> channelJobInfo = new HashMap<Integer, Map<String, Object>>();
+        for (Integer channelNum : channelNums) {
+            if (channelNum == 1) {
+                channelDisplayNames.put(channelNum, "Channel 1 (Usage)");
+                channelAttributes.put(channelNum, BuiltInAttribute.LOAD_PROFILE);
+                channelProfileRates.put(channelNum, deviceLoadProfile.getLoadProfileDemandRate() / 60);
+                channelProfilingOn.put(channelNum, toggleProfilingService.getToggleValueForDevice(deviceId, channelNum));
+                channelJobInfo.put(channelNum, toggleProfilingService.getToggleJobInfo(deviceId, channelNum));
+            }
+            else if (channelNum == 4) {
+                channelDisplayNames.put(channelNum, "Channel 4 (Voltage)");
+                channelAttributes.put(channelNum, BuiltInAttribute.VOLTAGE_PROFILE);
+                channelProfileRates.put(channelNum, deviceLoadProfile.getVoltageDmdRate() / 60);
+                channelProfilingOn.put(channelNum, toggleProfilingService.getToggleValueForDevice(deviceId, channelNum));
+                channelJobInfo.put(channelNum, toggleProfilingService.getToggleJobInfo(deviceId, channelNum));
+            }
+        }
         
-        mav.addObject("chan1Interval", loadProfileDemandRate / 60);
-        mav.addObject("chan4Interval", voltageDemandRate / 60);
-
-        // set collection on flags
-        boolean chan1CollectionOn = deviceLoadProfile.loadProfileIsOnForChannel(1);
-        boolean chan4CollectionOn = deviceLoadProfile.loadProfileIsOnForChannel(4);
         
-        mav.addObject("chan1CollectionOn", chan1CollectionOn);
-        mav.addObject("chan4CollectionOn", chan4CollectionOn);
+        // AVAILABLE channel infos
+        // - only channels which are supported by this device
+        // - this list of channels info is order by channel number
+        List<Map<String, Object>> availableChannels = new ArrayList<Map<String, Object>>();
+        for(Integer channelNum : channelNums){
+            
+            if(attributeService.isAttributeSupported(meter, channelAttributes.get(channelNum))){
+                
+                Map<String, Object> channelInfo = new HashMap<String, Object>();
+                channelInfo.put("channelNumber", channelNum.toString());
+                channelInfo.put("channelDescription", channelDisplayNames.get(channelNum));
+                channelInfo.put("channelProfileRate", channelProfileRates.get(channelNum));
+                channelInfo.put("channelProfilingOn", channelProfilingOn.get(channelNum));
+                channelInfo.put("jobInfo", toggleProfilingService.getToggleJobInfo(deviceId, channelNum));
+                availableChannels.add(channelInfo);
+            }
+        }
+        mav.addObject("availableChannels", availableChannels);
+        
         
         // initialize past profile dates
         if (StringUtils.isBlank(startDateStr) && StringUtils.isBlank(stopDateStr)) {
@@ -137,31 +162,21 @@ public class ProfileWidget extends WidgetControllerBase {
         }
 
         
-        
-        
-        // available channels
-        Map<Integer, Attribute> channelAttributes = new HashMap<Integer, Attribute>();
-        channelAttributes.put(1,BuiltInAttribute.LOAD_PROFILE);
-        channelAttributes.put(4,BuiltInAttribute.VOLTAGE_PROFILE);
-        
-        Map<Integer, String> channelDisplayNames = new HashMap<Integer, String>();
-        channelDisplayNames.put(1,"Channel 1 (Usage)");
-        channelDisplayNames.put(4,"Channel 4 (Voltage)");
-        
-        List<Integer> channelsNumbers = new ArrayList<Integer>(channelDisplayNames.keySet());
-        Collections.sort(channelsNumbers);
-        List<Map<String, String>> availableChannels = new ArrayList<Map<String, String>>();
-        for(Integer channel : channelsNumbers){
-            
-            if(attributeService.isAttributeSupported(meter, channelAttributes.get(channel))){
-                
-                Map<String, String> channelInfo = new HashMap<String, String>();
-                channelInfo.put("channelNumber",channel.toString());
-                channelInfo.put("channelDescription",channelDisplayNames.get(channel));
-                availableChannels.add(channelInfo);
-            }
-        }
-        mav.addObject("availableChannels", availableChannels);
+        // init furture schedule date
+        mav.addObject("futureScheduleDate",
+                      dateFormattingService.formatDate(DateUtils.addDays(new Date(),
+                                                                         7),
+                                                       DateFormattingService.DateFormatEnum.DATE,
+                                                       user));
+        List<String> hours = new ArrayList<String>();
+        List<String> minutes = new ArrayList<String>();
+        DecimalFormat df = new DecimalFormat("00");
+        for (int i = 0; i <= 23; i++)
+            hours.add(df.format(i));
+        for (int i = 0; i <= 59; i++)
+            minutes.add(df.format(i));
+        mav.addObject("hours", hours);
+        mav.addObject("minutes", minutes);
         
         // user email address
         LiteContact contact = yukonUserDao.getLiteContact(user.getUserID());
@@ -357,42 +372,59 @@ public class ProfileWidget extends WidgetControllerBase {
     public ModelAndView toggleProfiling(HttpServletRequest request,
             HttpServletResponse response) throws Exception {
 
-        ModelAndView mav = render(request, response);
-
-        // get toggle to channel, value
-        String toggleChannel1ProfilingOn = WidgetParameterHelper.getStringParameter(request,
-                                                                                    "toggleChannel1ProfilingOn", null);
-        String toggleChannel4ProfilingOn = WidgetParameterHelper.getStringParameter(request,
-                                                                                    "toggleChannel4ProfilingOn", null);
+        String errorMsg = null;
+        LiteYukonUser user = ServletUtil.getYukonUser(request);
+        
+        // get parameters
+        int channelNum = WidgetParameterHelper.getRequiredIntParameter(request, "channelNum");
+        boolean newToggleVal = WidgetParameterHelper.getRequiredBooleanParameter(request, "newToggleVal");
+        String scheduleType = WidgetParameterHelper.getRequiredStringParameter(request, "toggleRadio" + channelNum);
+        String toggleOnDateStr = WidgetParameterHelper.getRequiredStringParameter(request, "toggleOnDate" + channelNum);
+        int toggleOnHour = WidgetParameterHelper.getRequiredIntParameter(request, "toggleOnHour" + channelNum);
+        int toggleOnMinute = WidgetParameterHelper.getRequiredIntParameter(request, "toggleOnMinute" + channelNum);
         
         // get device
         int deviceId = WidgetParameterHelper.getRequiredIntParameter(request, "deviceId");
         
-        LiteYukonPAObject device = paoDao.getLiteYukonPAO(deviceId);
-        YukonPAObject yukonPaobject = (YukonPAObject)dbPersistentDao.retrieveDBPersistent(device);
-        
-        // get load profile collection of device
-        DeviceLoadProfile deviceLoadProfile = ((MCTBase)yukonPaobject).getDeviceLoadProfile();
-        
-        
-        // only toggle to channel whose button was pushed
-        if(toggleChannel1ProfilingOn != null){
-            deviceLoadProfile.setLoadProfileIsOnForChannel(1, (new Boolean(toggleChannel1ProfilingOn)).booleanValue());
-        }
-
-        if(toggleChannel4ProfilingOn != null){
-            deviceLoadProfile.setLoadProfileIsOnForChannel(4, (new Boolean(toggleChannel4ProfilingOn)).booleanValue());
+        // toggle now
+        if (scheduleType.equalsIgnoreCase("now")) {
+            
+            // already scheduled? cancel it
+            toggleProfilingService.disableScheduledJob(deviceId, channelNum);
+            toggleProfilingService.toggleProfilingForDevice(deviceId, channelNum, newToggleVal);
         }
         
-        // persist change
-        dbPersistentDao.performDBChange(yukonPaobject, DBChangeMsg.CHANGE_TYPE_UPDATE);
+        // toggle later
+        else if (scheduleType.equalsIgnoreCase("future")) {
+            
+            // validate schedule date
+            Date toggleDate = null;
+            Date today = DateUtils.round(new Date(), Calendar.MINUTE);
+            try {
+                toggleDate = dateFormattingService.flexibleDateParser(toggleOnDateStr, DateFormattingService.DateOnlyMode.START_OF_DAY, user);
+                toggleDate = DateUtils.addHours(toggleDate, toggleOnHour);
+                toggleDate = DateUtils.addMinutes(toggleDate, toggleOnMinute);
+                if (toggleDate == null) {
+                    errorMsg = "Future Date Required";
+                } 
+                else if (toggleDate.compareTo(today) <= 0) {
+                    errorMsg = "Future Date Must Be After Today";
+                }
+            } catch (ParseException e) {
+                errorMsg = "Unable To Parse Future Date: " + e.getMessage();
+            }
+            
+            // schedule it!, already scheduled? cancel it
+            if (errorMsg == null) {
+                toggleProfilingService.disableScheduledJob(deviceId, channelNum);
+                toggleProfilingService.scheduleToggleProfilingForDevice(deviceId, channelNum, newToggleVal, toggleDate, user);
+            }
+            
+        }
         
-        // re-set collection on flags
-        boolean chan1CollectionOn = deviceLoadProfile.loadProfileIsOnForChannel(1);
-        boolean chan4CollectionOn = deviceLoadProfile.loadProfileIsOnForChannel(4);
-        
-        mav.addObject("chan1CollectionOn", chan1CollectionOn);
-        mav.addObject("chan4CollectionOn", chan4CollectionOn);
+        // re-load page values into mav, add any error from scheduling
+        ModelAndView mav = render(request, response);
+        mav.addObject("errorMsg", errorMsg);
         
         return mav;
      
@@ -472,11 +504,6 @@ public class ProfileWidget extends WidgetControllerBase {
     }
 
     @Required
-    public void setDbPersistentDao(DBPersistentDao dbPersistentDao) {
-        this.dbPersistentDao = dbPersistentDao;
-    }
-
-    @Required
     public DeviceDao getDeviceDao() {
         return deviceDao;
     }
@@ -521,5 +548,11 @@ public class ProfileWidget extends WidgetControllerBase {
     @Required
     public void setSimpleReportService(SimpleReportService simpleReportService) {
         this.simpleReportService = simpleReportService;
+    }
+
+    @Required
+    public void setToggleProfilingService(
+            ToggleProfilingService toggleProfilingService) {
+        this.toggleProfilingService = toggleProfilingService;
     }
 }

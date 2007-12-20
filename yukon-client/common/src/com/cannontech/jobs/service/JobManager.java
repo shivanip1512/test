@@ -2,8 +2,11 @@ package com.cannontech.jobs.service;
 
 import java.util.Collection;
 import java.util.Date;
+import java.util.Set;
 
 import com.cannontech.database.data.lite.LiteYukonUser;
+import com.cannontech.jobs.model.ScheduledOneTimeJob;
+import com.cannontech.jobs.model.ScheduledRepeatingJob;
 import com.cannontech.jobs.model.YukonJob;
 import com.cannontech.jobs.support.YukonJobDefinition;
 import com.cannontech.jobs.support.YukonTask;
@@ -20,5 +23,11 @@ public interface JobManager {
     public void disableJob(YukonJob job);
     public boolean abortJob(YukonJob job);
     public Collection<YukonJob> getCurrentlyExecuting();
+    public YukonTask instantiateTask(YukonJob job);
+    
+    public YukonJob getJob(int jobId);
+    
+    public Set<ScheduledOneTimeJob> getOneTimeJobsByDefinition(YukonJobDefinition<? extends YukonTask> definition);
+    public Set<ScheduledRepeatingJob> getRepeatingJobsByDefinition(YukonJobDefinition<? extends YukonTask> definition);
 
 }

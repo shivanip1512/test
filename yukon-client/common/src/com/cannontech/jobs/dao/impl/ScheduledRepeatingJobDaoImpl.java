@@ -19,6 +19,8 @@ import com.cannontech.jobs.dao.ScheduledRepeatingJobDao;
 import com.cannontech.jobs.model.JobState;
 import com.cannontech.jobs.model.JobStatus;
 import com.cannontech.jobs.model.ScheduledRepeatingJob;
+import com.cannontech.jobs.support.YukonJobDefinition;
+import com.cannontech.jobs.support.YukonTask;
 import com.cannontech.spring.SeparableRowMapper;
 
 public class ScheduledRepeatingJobDaoImpl extends JobDaoBase implements ScheduledRepeatingJobDao, InitializingBean {
@@ -73,6 +75,19 @@ public class ScheduledRepeatingJobDaoImpl extends JobDaoBase implements Schedule
         
         return jobSet;
     }
+    
+    public Set<ScheduledRepeatingJob> getJobsByDefinition(YukonJobDefinition<? extends YukonTask> definition) {
+        String sql = 
+            "select * " +
+            "from JobScheduledRepeating jsr " +
+            "join Job on Job.jobId = jsr.jobId " +
+            "where Job.beanName = ?";
+        
+        List<ScheduledRepeatingJob> jobList = jdbcTemplate.query(sql, jobRowMapper, definition.getName());
+        Set<ScheduledRepeatingJob> jobSet = new HashSet<ScheduledRepeatingJob>(jobList);
+        
+        return jobSet;
+    }
 
     public Set<JobStatus<ScheduledRepeatingJob>> getAllUnfinished() {
         SqlStatementBuilder sql = new SqlStatementBuilder();
@@ -89,7 +104,26 @@ public class ScheduledRepeatingJobDaoImpl extends JobDaoBase implements Schedule
     }
 
     public ScheduledRepeatingJob getById(int id) {
-        throw new UnsupportedOperationException();
+
+        SeparableRowMapper<ScheduledRepeatingJob> mapper = new SeparableRowMapper<ScheduledRepeatingJob>(yukonJobBaseRowMapper) {
+            protected ScheduledRepeatingJob createObject(ResultSet rs) throws SQLException {
+                ScheduledRepeatingJob job = new ScheduledRepeatingJob();
+                return job;
+            }
+
+            protected void mapRow(ResultSet rs, ScheduledRepeatingJob job) throws SQLException {
+                job.setCronString(rs.getString("cronString"));
+            }
+        };
+        
+        String sql = 
+            "SELECT * " +
+            "FROM JobScheduledRepeating jsr " +
+            "JOIN Job ON Job.jobId = jsr.jobId" +
+            "WHERE Job.jobId = ?";
+        ScheduledRepeatingJob job = jdbcTemplate.queryForObject(sql, mapper, id);
+        
+        return job;
     }
     
     @Transactional(propagation=Propagation.REQUIRED)
