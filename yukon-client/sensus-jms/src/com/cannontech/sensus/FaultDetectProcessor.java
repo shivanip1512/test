@@ -46,7 +46,15 @@ public class FaultDetectProcessor extends SensusMessageHandlerBase {
             int sigNoise = message.getSigNoise();
             LiteYukonPAObject device = yukonDeviceLookup.getDeviceForRepId(repId);
             Date toi = message.getTimestampOfIntercept();
+            Date tooOldDate = new Date();
+            tooOldDate.setTime( tooOldDate.getTime() - (86400 * 1000) );
 
+            if(toi.compareTo(tooOldDate) < 0) {
+            	// toi is too old.
+                log.info("Got an event message for " + repId + " which is in the past: " + toi);
+                return;
+            }
+            
             log.info("Device=" + device + ", repId=" + repId + ": S/N=" + sigNoise + " Sig=" + sigStrength);        
 
             if ((message.isStatusEventTransBit() || isIgnoreEventBit()) && message.getLastEvent().isPopulated()) {
@@ -105,7 +113,7 @@ public class FaultDetectProcessor extends SensusMessageHandlerBase {
         String iconSerialNumber = message.getIconSerialNumber();
         if (!iconSerialNumber.matches(getBindingKeyRegEx())) {
             log.debug("Ignoring binding message with iconSerialNumber='" + iconSerialNumber + "'");
-            return;
+            // return;
         }
         int repId = message.getRepId();
         LiteYukonPAObject device = yukonDeviceLookup.getDeviceForRepId(repId);

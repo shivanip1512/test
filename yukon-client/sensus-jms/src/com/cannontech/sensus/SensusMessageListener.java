@@ -20,8 +20,8 @@ public class SensusMessageListener implements MessageListener, InitializingBean 
     private Logger log = Logger.getLogger(SensusMessageListener.class);
     Set<SensusMessageHandler> sensusMessageHandlerSet;
     int messageCount = 0;
-	private Integer minRepId;
-	private Integer maxRepId;
+	private Integer minRepId = 30000000;
+	private Integer maxRepId = 31000000;
 
 	private Map<Integer, Integer>  repIdSeqMap = new HashMap<Integer, Integer>();
 

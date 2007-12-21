@@ -47,6 +47,7 @@ public class GPUFFProtocol {
 	private byte dvStatus = 0;
 	private Date dvTime = new Date();
 	private float dvBattery = 0.0f;
+	private short dvTemp = 0; 
 
 	{
 		bBuf.put(len++, (byte) 0xa5); // header
@@ -89,10 +90,11 @@ public class GPUFFProtocol {
 	public void buildDeviceValuesMessage(boolean fault, boolean event, boolean noAC) {
 		// 13 bytes are pre-populated.
 		put((byte) 0x01); 	// This is the START of the GPUFF - FPLD block.  Device Values is a 0x01
-		put((byte) 0x30);	// FLAGS: Time & Voltage included.
+		put((byte) 0x34);	// FLAGS: Time & Voltage included.
 		put((byte)((fault ? 0x80 : 0x00) | (event ? 0x40 : 0x00) | (noAC? 0x40 : 0x00)));
 		put(dvTime.getTime()/1000);
 		put((int)(getDvBattery() * DEFAULT_SCALING));
+		put(getDvTemp());
 		
 		return;
 	}
@@ -296,5 +298,13 @@ public class GPUFFProtocol {
 		this.cid = cid;
 		bBuf.put(CID_OFFSET,   (byte)((0x0000ff00 & cid) >> 8 ));
 		bBuf.put(CID_OFFSET+1, (byte) (0x000000ff & cid));
+	}
+
+	short getDvTemp() {
+		return dvTemp;
+	}
+
+	void setDvTemp(short dvTemp) {
+		this.dvTemp = dvTemp;
 	}
 }

@@ -36,6 +36,7 @@ public class SensusToGPUFFProcessor extends SensusMessageHandlerBase {
 		prot.setSequence((short) message.getAppSeq());
 		prot.setDvBattery(lastBatteryVoltage);
 		prot.setDvTime(toi);
+		prot.setDvTemp((short)(100 * message.getCurrentDeviceTemperature()));
 		prot.buildDeviceValuesMessage(fault, event, no60);
 
 		writePacket(prot.getBytes());
@@ -45,7 +46,7 @@ public class SensusToGPUFFProcessor extends SensusMessageHandlerBase {
 		int repId = message.getRepId();
 
 		GPUFFProtocol prot = new GPUFFProtocol();
-		prot.setDeviceType(GPUFFProtocol.DEVICE_TYPE_FCI);
+		prot.setDeviceType(GPUFFProtocol.DEVICE_TYPE_SENSUSFCI);
 		prot.setSerialNumber(repId);
 		prot.setCid(getCustomerId());								// This is pulled in from the configuration file
 		prot.setSequence((short) message.getAppSeq());
