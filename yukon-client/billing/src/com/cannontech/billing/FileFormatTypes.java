@@ -110,33 +110,17 @@ public final class FileFormatTypes {
                 EXTENDED_TOU_STRING
         };
     }
-    /**
-     * This method was created in VisualAge.
-     * @return int
-     * @param typeStr java.lang.String
-     */
+
     public final static int getFormatID(String typeStr) {
         final String sql = "SELECT FORMATID FROM BillingFileFormats WHERE FORMATTYPE = ?";
-        try {
-            int formatId = jdbcTemplate.queryForInt(sql, typeStr);
-            return formatId;
-        } catch (DataAccessException e) {
-            throw new DataRetrievalFailureException("FileFormatTypes::getFormatID(String) - Unrecognized type: " + typeStr);
-        }
+        int formatId = jdbcTemplate.queryForInt(sql, typeStr);
+        return formatId;
     }
-    
-    /**
-     * Insert the method's description here.
-     * Creation date: (5/18/00 2:34:54 PM)
-     */
+
     public final static String getFormatType(int typeEnum) {
         final String sql = "SELECT FORMATTYPE FROM BillingFileFormats WHERE FORMATID = ?";
-        try {
-            String formatType = jdbcTemplate.queryForObject(sql, String.class, typeEnum);
-            return formatType;
-        } catch (DataAccessException e) {
-            throw new DataRetrievalFailureException("FileFormatTypes::getFormatType(int) - received unknown type: " + typeEnum );
-        }
+        String formatType = jdbcTemplate.queryForObject(sql, String.class, typeEnum);
+        return formatType;
     }
 
     /**
