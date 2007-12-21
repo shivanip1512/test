@@ -328,22 +328,7 @@ function checkDates(){
           <cti:titledContainer title="Filter">
 			<SCRIPT>
 
-        function selectAllFilter(booleanValue, element){
-            var options = $("selectFilterValues").options;
-            for (var x = 0; x < options.length; x++) {
-                options[x].selected = booleanValue;
-            }
-        }
-        
         function changeFilter(filterBy) {
-          if( document.getElementById('selectAll') != null) {
-	          document.getElementById('selectAll').disabled = (filterBy == -1);
-	          var filterModelValues = document.reportForm.filterValues;
-    	      for (var i = 0; i < filterModelValues.length; i++) {
-        	    filterModelValues[i].selectedIndex = -1;
-	          }
-	      }
-	      
         <%
         //Create a local instance of the map.
         Map<ReportFilter,List<? extends Object>> filterObjectsMap = REPORT_BEAN.getFilterObjectsMap();
@@ -399,9 +384,6 @@ function checkDates(){
                         	</select>
                 			<BR><span class='NavText'>* Hold &lt;CTRL&gt; key down to select multiple values</span><br>
                 			<span class='NavText'>* Hold &lt;Shift&gt; key down to select range of values</span>
-                      		<div id='DivSelectAll' style='display:true'>
-                        	<input type='checkbox' name='selectAll' value='selectAll' onclick='selectAllFilter(this.checked);'>Select All
-                      		</div>
                       	</div>
             			<% } %>
             		<% isFirst++; %>
