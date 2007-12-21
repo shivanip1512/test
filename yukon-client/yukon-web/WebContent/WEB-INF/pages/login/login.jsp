@@ -49,11 +49,8 @@
         <div class="loginMain">
 
             <div class="loginTopSection">
-                <div class="loginTitleIntroText">
-                    Welcome to
-                </div>
                 <div class="loginTitleText">
-                    Energy Services Operations Center
+                    <img src="/WebConfig/yukon/CannonPlain.gif" />
                 </div>
             </div>
 
@@ -120,6 +117,13 @@
 
                 </ct:abstractContainer>
             </div>
+            <div class="loginTopSection">
+                <div class="loginTitleText">
+                    <img src="/WebConfig/yukon/CooperTransparent.gif" />
+                </div>
+            </div>
+            
+            
         </div>
 
         <div class="loginCopyright">
