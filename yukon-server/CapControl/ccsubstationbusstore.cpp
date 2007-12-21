@@ -5621,16 +5621,15 @@ void CtiCCSubstationBusStore::reloadFeederFromDatabase(long feederId, map< long,
                                                  CtiCCSpecialPtr spArea = findSpecialAreaByPAObjectID(currentStation->getSaEnabledId());
                                                   if (spArea != NULL)
                                                       currentCCStrategy =  strategy_map->find(spArea->getStrategyId())->second;
-                                            }
+                                             }
                                              else
                                              {
-                                                 if (feederId > 0)
+                                                 if (stratId != 0 )
                                                      currentCCStrategy = findStrategyByStrategyID(stratId);
                                                  else
                                                  {
-                                                     currentCCStrategy = strategy_map->find(stratId)->second;
+                                                     currentCCStrategy = findStrategyByStrategyID(currentSubBus->getStrategyId());
                                                  }
-
                                              }
                                          }
 
@@ -5641,7 +5640,11 @@ void CtiCCSubstationBusStore::reloadFeederFromDatabase(long feederId, map< long,
                                          currentCCStrategy = findStrategyByStrategyID(0);
                                      }
                                      currentCCFeeder->setStrategyValues(currentCCStrategy);
-
+                                     if (stratId == 0)
+                                     {
+                                         currentCCFeeder->setStrategyId(0);
+                                         currentCCFeeder->setStrategyName("(none)");
+                                     }
                                  }
                              }
                          }
