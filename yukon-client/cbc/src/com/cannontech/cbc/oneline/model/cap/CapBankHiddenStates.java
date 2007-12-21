@@ -2,21 +2,19 @@ package com.cannontech.cbc.oneline.model.cap;
 
 import java.util.List;
 
-import com.cannontech.cbc.dao.CapControlCommentDao;
+import com.cannontech.cbc.dao.CommentAction;
+import com.cannontech.cbc.model.CapControlComment;
 import com.cannontech.cbc.oneline.elements.HiddenTextElement;
-import com.cannontech.cbc.oneline.model.HiddenStates;
+import com.cannontech.cbc.oneline.model.AbstractHiddenStates;
 import com.cannontech.cbc.oneline.model.OnelineObject;
-import com.cannontech.cbc.oneline.tag.CBCTagHandler;
-import com.cannontech.cbc.oneline.tag.OnelineTags;
 import com.cannontech.cbc.util.CBCUtils;
 import com.cannontech.core.dao.DaoFactory;
 import com.cannontech.database.data.lite.LiteYukonPAObject;
-import com.cannontech.spring.YukonSpringHook;
-import com.loox.jloox.LxAbstractView;
+import com.cannontech.database.data.pao.CapControlTypes;
 import com.loox.jloox.LxGraph;
 
 @SuppressWarnings("serial")
-public class CapBankHiddenStates extends LxAbstractView implements HiddenStates {
+public class CapBankHiddenStates extends AbstractHiddenStates {
 
     LxGraph graph;
     OnelineCap parent;
@@ -41,24 +39,24 @@ public class CapBankHiddenStates extends LxAbstractView implements HiddenStates 
     }
 
     public void addStateInfo() {
-        String elementID = "CapState_" + getCurrentCapIdFromMessage();
-        String disableReason = CBCTagHandler.getReason(OnelineTags.TAGGRP_ENABLEMENT,
-                                                       getCurrentCapIdFromMessage(), parent.getPointCache());
-        String disableCapOVUVReason = CBCTagHandler.getReason(OnelineTags.TAGGRP_OVUV_ENABLEMENT,
-                                                              getCurrentCapIdFromMessage(), parent.getPointCache());
-        String standAloneReason = CBCTagHandler.getReason(OnelineTags.TAGGRP_CB_OPERATIONAL_STATE,
-                                                          getCurrentCapIdFromMessage(), parent.getPointCache());
+        final int paoId = getCurrentCapIdFromMessage();
 
-        HiddenTextElement stateInfo = new HiddenTextElement("HiddenTextElement",
-                                                            elementID);
+        String elementID = "CapState_" + paoId;
+        HiddenTextElement stateInfo = new HiddenTextElement("HiddenTextElement", elementID);
         stateInfo.addProperty("isDisable", isDisabled().toString());
-        boolean ovuvDisabled = isOVUVDisabled();
-        stateInfo.addProperty("isOVUVDis", String.valueOf(ovuvDisabled));
-        boolean standalone = isStandalone();
-        stateInfo.addProperty("isStandalone", String.valueOf(standalone));
-        stateInfo.addProperty("standAloneReason", standAloneReason);
+        stateInfo.addProperty("isOVUVDis", Boolean.toString(isOVUVDisabled()));
+        stateInfo.addProperty("isStandalone", Boolean.toString(isStandalone()));
+        stateInfo.addProperty("isFixed", Boolean.toString(isFixed()));
+        stateInfo.addProperty("isSwitched", Boolean.toString(isSwitched()));
+        
+        String disableReason = getReason(paoId, CommentAction.DISABLED);
         stateInfo.addProperty("disableCapReason", disableReason);
+        
+        String disableCapOVUVReason = getReason(paoId, CommentAction.DISABLED_OVUV, CapControlTypes.CAP_CONTROL_CAPBANK);
         stateInfo.addProperty("disableCapOVUVReason", disableCapOVUVReason);
+        
+        String standAloneReason = getReason(paoId, CommentAction.STANDALONE_REASON);
+        stateInfo.addProperty("standAloneReason", standAloneReason);
 
         stateInfo.addProperty("paoName", parent.getStreamable().getCcName());
         Integer id = parent.getStreamable().getControlDeviceID();
@@ -68,21 +66,17 @@ public class CapBankHiddenStates extends LxAbstractView implements HiddenStates 
 
         /*Start*************************/
             //Adding The last 5 comments to the Pop-up.
-        CapControlCommentDao ccDao = YukonSpringHook.getBean("capCommentDao", CapControlCommentDao.class);
-        List<String> lastFive = ccDao.getLastFiveByPaoId( parent.getPaoId() );
+        List<CapControlComment> lastFive = commentDao.getUserCommentsByPaoId(parent.getPaoId(), 5);
         
-        
-        
-        String fiveToAdd = "";
-        for( String str : lastFive )
-        {
-            //TODO going to want to use a delimeter and escapes... later.
-            //TODO If more than ...  30 characters replace the rest with ...
-            fiveToAdd += str + ";";
+        StringBuilder fiveToAdd = new StringBuilder("");
+        for (final CapControlComment comment : lastFive) {
+            String text = comment.getComment();
+            fiveToAdd.append(text);
+          //TODO going to want to use a delimeter and escapes... later.
+            fiveToAdd.append(";");
         }
         
-        
-        stateInfo.addProperty("capbankComments", fiveToAdd);
+        stateInfo.addProperty("capbankComments", fiveToAdd.toString());
         /*End*************************/
         
         graph.add(stateInfo);
@@ -114,6 +108,7 @@ public class CapBankHiddenStates extends LxAbstractView implements HiddenStates 
         return parent.getCurrentCapIdFromMessage();
     }
 
+    @Override
     public LxGraph getGraph() {
         return graph;
     }

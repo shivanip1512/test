@@ -22,6 +22,7 @@
 					<ref bean="checkCapPoint" />
 				</entry>
                 <entry key="/oneline/legend"><ref bean="onelineLegendController"/></entry>
+                <entry key="/capcontrol/oneline/CBCReasonUpdaterServlet"><ref bean="onelineCommentController"/></entry>
 			</map>
 		</property>
 	</bean>
@@ -90,6 +91,10 @@
         <property name="yukonImageDao" ref="yukonImageDao"/>
     </bean>
 	
+    <bean id="onelineCommentController" class="com.cannontech.web.cbc.OnelineCommentController">
+        <property name="commentDao" ref="capCommentDao"/>
+    </bean>
+    
 	<!-- Method name resolvers -->
 	<bean id="methodNameResolver"
 		class="org.springframework.web.servlet.mvc.multiaction.ParameterMethodNameResolver">

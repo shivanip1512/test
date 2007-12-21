@@ -5,6 +5,7 @@ import java.util.ArrayList;
 import java.util.Iterator;
 import java.util.List;
 
+import com.cannontech.capcontrol.CapBankOperationalState;
 import com.cannontech.database.db.capcontrol.CCMonitorBankList;
 
 /**
@@ -12,10 +13,10 @@ import com.cannontech.database.db.capcontrol.CCMonitorBankList;
  */
 public class CapBank extends CapControlDeviceBase {
     // OPStates that a CapBank can be in
-    public final static String SWITCHED_OPSTATE = "Switched";
-    public final static String FIXED_OPSTATE = "Fixed";
-    public final static String UNINSTALLED_OPSTATE = "Uninstalled";
-    public final static String STANDALONE_OPSTATE = "Stand Alone";
+    public final static String SWITCHED_OPSTATE = CapBankOperationalState.Switched.name();
+    public final static String FIXED_OPSTATE = CapBankOperationalState.Fixed.name();
+    public final static String UNINSTALLED_OPSTATE = CapBankOperationalState.Uninstalled.name();
+    public final static String STANDALONE_OPSTATE = CapBankOperationalState.StandAlone.name();
 
     public final static String[] OPSTATES = { SWITCHED_OPSTATE, FIXED_OPSTATE,
             UNINSTALLED_OPSTATE, STANDALONE_OPSTATE };

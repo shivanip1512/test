@@ -7,11 +7,11 @@ var REF_TABLE = {ALL_CAP_CMDS:"cap",ALL_FDR_CMDS:"feeder",ALL_SUB_CMDS:"sub", AL
 var ALL_CMD_TYPES = {sub:"sub", feeder:"feeder", cap:"cap", tag:"tag"};
 var ALL_SUB_CMDS = {confirm_close:9, enable_sub:0, disable_sub:1, reset_op_cnt:12, send_all_open:29, send_all_close:30, send_all_enable_ovuv:31, send_all_disable_ovuv:32, send_all_2way_scan:33, v_all_banks:40, v_fq_banks:41, v_failed_banks:42, v_question_banks:43, v_disable_verify:44, v_standalone_banks:46};
 var ALL_FDR_CMDS = {enable_fdr:2, disable_fdr:3, reset_op_cnt:12, send_all_open:29, send_all_close:30, send_all_enable_ovuv:31, send_all_disable_ovuv:32, send_all_2way_scan:33};
-var ALL_CAP_CMDS = {confirm_open:8, open_capbank:6, close_capbank:7, bank_enable_ovuv:17, bank_disable_ovuv:18, enable_capbank:4, disable_capbank:5, reset_op_cnt:12, scan_2way_dev:24};
+var ALL_CAP_CMDS = {confirm_open:8, open_capbank:6, close_capbank:7, bank_enable_ovuv:17, bank_disable_ovuv:18, enable_capbank:4, disable_capbank:5, reset_op_cnt:12, scan_2way_dev:24, operational_state:35};
 
 
 //same as CapBank constants
-var ALL_TAG_CMDS = {standalone:"Stand Alone", switched:"Switched", 
+var ALL_TAG_CMDS = {standalone:"StandAlone", switched:"Switched", 
 					capEnabled:"capEnabled", capDisabled:"capDisabled", 
 					feederEnabled:"feederEnabled", feederDisabled:"feederDisabled",
 					subEnabled:"subEnabled", subDisabled:"subDisabled",
@@ -24,26 +24,17 @@ var ALL_TAG_CMDS = {standalone:"Stand Alone", switched:"Switched",
 					
 
 function executeCommand(string) {
-	args = string.split("_");
-	//say(string);
-	if (args.length == 3) {
-		var comm = new Command(args[1], args[2], args[0]);
-		comm.execute();
-	} else {
-		var comm;
-		if ((args.length == 4) && (args[0] == ALL_CMD_TYPES.cap)) {
-			comm = new Command(args[1], args[2], args[0], true);
-		} else {
-			if ((args.length == 4) && (args[0] == ALL_CMD_TYPES.tag)) {
-				comm = new Command(args[1], args[2], args[0]);
-				comm.reason = args[3];
-			}
-		}
-		if (comm) {
-			comm.execute();
-		}
-	}
+	var args = string.split("_");
+    if (args.length < 3) return;
+
+    var type = args[0];
+    var paoId = args[1];
+    var cmdId = args[2];
+    var isMan = (args.length == 4) ? true : false;
+    var command = new Command(paoId, cmdId, type, isMan);
+    command.execute();   
 }
+
 function Command(pId, cId, t, isMan, n) {
 	this.paoID = pId;
 	this.cmdID = cId;
@@ -58,31 +49,38 @@ function Command(pId, cId, t, isMan, n) {
 	}
 }
 function Command_execute() {
-	if (this.type == ALL_CMD_TYPES.sub) {
-		executeSubCommand(this.paoID, this.cmdID, "");
-	} else {
-		if (this.type == ALL_CMD_TYPES.feeder) {
-			executeFeederCommand(this.paoID, this.cmdID, "");
-		} else {
-			if (this.type == ALL_CMD_TYPES.tag) {
-				executeReasonUpdate(this.paoID, this.cmdID, this.reason);
-			} else {
-				if (this.type == ALL_CMD_TYPES.cap) {
-					if (this.cmdID == ALL_CAP_CMDS.reset_op_cnt) {
-						var newOpcntVal = prompt("What is the new value for opcount?", "0");
-						executeCapBankCommand(this.paoID, this.cmdID, newOpcntVal);
-					} else {
-						if (this.isManual) {						
-							executeCapBankCommand(this.paoID, this.cmdID, "", true);
-						} else {
-							executeCapBankCommand(this.paoID, this.cmdID, "");
-						}
-					}
-				}
-			}
-		}
-	}
+    switch (this.type) {
+    
+        case ALL_CMD_TYPES.sub :
+            executeSubCommand(this.paoID, this.cmdID, "");
+            break;
+                
+        case ALL_CMD_TYPES.feeder :
+            executeFeederCommand(this.paoID, this.cmdID, "");
+            break;
+            
+        case ALL_CMD_TYPES.cap :
+            if (this.cmdID == ALL_CAP_CMDS.reset_op_cnt) {
+                var newOpcntVal = prompt("What is the new value for opcount?", "0");
+                executeCapBankCommand(this.paoID, this.cmdID, newOpcntVal);
+            } else {
+                var operationalState;
+                var operationalStateArray = this.cmdID.split('#');
+                if (operationalStateArray.length == 2) {
+                    this.cmdID = operationalStateArray[0];
+                    operationalState = operationalStateArray[1];
+                }
+                
+                if (this.isManual) {                        
+                    executeCapBankCommand(this.paoID, this.cmdID, "", true, operationalState);
+                } else {
+                    executeCapBankCommand(this.paoID, this.cmdID, "", false , operationalState);
+                }
+            }           
+            break;
+    }
 }
+
 function Command_createName() {
 	name = this.type + "_" + this.paoID + "_" + this.cmdID;
 	if (this.isManual) {
@@ -99,7 +97,7 @@ function Command_createName() {
 //disable_capbank
 function getCommandVerbal (str) {
 	var type = str.split("_")[0];
-	var cmdID = str.split("_")[2];
+	var cmdID = stripOperationalState(str.split("_")[2]);
 	var obj = reflect (REF_TABLE, type);
 	obj = eval (obj);
 	return reflect (obj, cmdID);	

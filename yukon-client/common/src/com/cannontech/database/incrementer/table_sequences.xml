@@ -5,7 +5,7 @@
     -->
   <sequencetable name="SequenceNumber" valuecolumn="lastValue" keycolumn="sequenceName">
       <sequence name="general">
-      	<table name="CapbankComment" identitycolumn="commentid" initsequence="true"/>
+      	<table name="CapControlComment" identitycolumn="commentid" initsequence="true"/>
         <table name="LMCustomerEventBase" identitycolumn="EventID" initsequence="true"/>
         <table name="Warehouse" identitycolumn="WarehouseID"/>
       	<table name="InventoryBase" identitycolumn="InventoryID"/>

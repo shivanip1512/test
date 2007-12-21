@@ -1,5 +1,7 @@
 package com.cannontech.cbc.web;
 
+import java.util.Date;
+
 import com.cannontech.cbc.cache.CapControlCache;
 import com.cannontech.database.data.point.PointQualities;
 import com.cannontech.database.data.point.PointTypes;
@@ -19,6 +21,7 @@ import com.cannontech.yukon.cbc.CapBankDevice;
  */
 public class CBCCommandExec
 {
+    public static final int defaultOperationalState = -1;
 	private CapControlCache cbcCache = null;
 	private String userName = null;
 
@@ -33,13 +36,12 @@ public class CBCCommandExec
 		userName = _userName;
 	}
     
-    public boolean execute_SubAreaCmd (int _cmdID, int _paoID) {
+    public void execute_SubAreaCmd (int _cmdID, int _paoID) {
         CBCCommand cmd = new CBCCommand (_cmdID, _paoID);    
         cbcCache.getConnection().write(cmd);
-        return true;
     }
     
-    public boolean execute_SubstationCmd( int _cmdID, int _paoID ) {
+    public void execute_SubstationCmd( int _cmdID, int _paoID ) {
         if( _cmdID == CBCCommand.CONFIRM_CLOSE || _cmdID == CBCCommand.CONFIRM_OPEN ) {
             _executeConfirmSubstation( _paoID );
         }
@@ -53,10 +55,9 @@ public class CBCCommandExec
         } else {
             executeCommand( _paoID, _cmdID );           
         }
-        return true;
     }
 
-    public boolean execute_SubCmd( int _cmdID, int _paoID )
+    public void execute_SubCmd( int _cmdID, int _paoID )
 	{
 		if( _cmdID == CBCCommand.CONFIRM_CLOSE 
 			 || _cmdID == CBCCommand.CONFIRM_OPEN )
@@ -78,8 +79,6 @@ public class CBCCommandExec
 				_paoID,
 				_cmdID );			
 		}
-	  
-		return true;
 	}
     
     private void _executeVerifySubstation(int _paoid, int _cmdid) {
@@ -100,118 +99,164 @@ public class CBCCommandExec
 		cbcCache.getConnection().write(msg);
 	}
 
-	public boolean execute_FeederCmd( int _cmdID, int _paoID )
+	public void execute_FeederCmd( int _cmdID, int _paoID )
 	{
 		executeCommand( 
 			_paoID,
 			_cmdID );			
-
-		return true;
 	}
 
+	public void execute_CapBankCmd(int _cmdID, int _paoID, float[] _optionalParams) {
+	    execute_CapBankCmd(_cmdID, _paoID, _optionalParams, defaultOperationalState);
+	}
+	
+	public void execute_CapBankCmd(int cmdId, int paoId, float[] optionalParams, int operationalState) {
+	    switch (cmdId) {
+	        case CBCCommand.CONFIRM_CLOSE : {
+	            executeCapBankCmdConfirm(paoId, defaultOperationalState);
+	            break;
+	        }
+	        case CBCCommand.CONFIRM_OPEN : {
+	            executeCapBankCmdConfirm(paoId, defaultOperationalState);
+                break;
+	        }
+	        case CBCCommand.CLOSE_CAPBANK : {
+	            executeCapBankCmdByCmdId(paoId, cmdId, defaultOperationalState);
+	            break;
+	        }
+	        case CBCCommand.OPEN_CAPBANK : {
+	            executeCapBankCmdByCmdId(paoId, cmdId, defaultOperationalState);
+                break;
+	        }
+	        case CBCCommand.BANK_DISABLE_OVUV : {
+	            executeCapBankCmdByCmdId(paoId, cmdId, defaultOperationalState);
+                break;
+	        }
+	        case CBCCommand.BANK_ENABLE_OVUV : {
+	            executeCapBankCmdByCmdId(paoId, cmdId, defaultOperationalState);
+                break;
+	        }
+	        case CBCCommand.SCAN_2WAY_DEV : {
+	            executeCapBankCmdByCmdId(paoId, cmdId, defaultOperationalState);
+                break;
+	        }
+	        case CBCCommand.CMD_MANUAL_ENTRY : {
+	            if (optionalParams.length == 0) {
+	                executeCapBankDefault(paoId, cmdId, defaultOperationalState);
+	                break;
+	            }
+	            executeCapBankCmdManualEntry(paoId, optionalParams);
+	            break;
+	        }
+	        case CBCCommand.RESET_OPCOUNT : {
+	            executeCapBankCmdResetOpCount(paoId, optionalParams);
+	            break;
+	        }
+	        case CBCCommand.CMD_BANK_TEMP_MOVE : {
+	            if (optionalParams.length < 5) {
+	                executeCapBankDefault(paoId, cmdId, defaultOperationalState);
+                    break;
+	            }
+	            executeCapBankCmdTempMove(paoId, optionalParams);
+	            break;
+	        }
+	        case CBCCommand.DISABLE_CAPBANK : {
+	            executeCapBankDefault(paoId, cmdId, operationalState);
+                break;
+	        }
+	        case CBCCommand.ENABLE_CAPBANK : {
+	            executeCapBankDefault(paoId, cmdId, operationalState);
+                break;
+	        }
+	        case CBCCommand.OPERATIONAL_STATECHANGE : {
+	            executeCapBankDefault(paoId, cmdId, operationalState);
+	            break;
+	        }
+	    }
+	}
+	
+	private void executeCapBankDefault(final int paoId, final int cmdId, final int operationalState) {
+	    boolean isValidCommand = _isValidBankCmd(paoId, cmdId);
+	    if (isValidCommand) executeCommand(paoId, cmdId, operationalState);
+	}
+	
+	private void executeCapBankCmdTempMove(final int paoId, final float[] optionalParams) {
+	    CBCTempMoveCapBank msg = new CBCTempMoveCapBank(
+	                                                    (int)optionalParams[0], // original feeder ID
+	                                                    (int)optionalParams[1], // new feeder ID
+	                                                    paoId,
+	                                                    optionalParams[2], // order of control
+	                                                    optionalParams[3],
+	                                                    optionalParams[4],
+	                                                    false );
+	    cbcCache.getConnection().write( msg );
+	}
+	
+	private void executeCapBankCmdResetOpCount(final int paoId, final float[] optionalParams) {
+        // Build up the reset opcount message here
+        CapBankDevice bank = cbcCache.getCapBankDevice(paoId);
 
-	public boolean execute_CapBankCmd( int _cmdID, int _paoID, float[] _optionalParams )
-	{
-		if( _cmdID == CBCCommand.CONFIRM_CLOSE 
-			 || _cmdID == CBCCommand.CONFIRM_OPEN )
-		{
-			CapBankDevice bank = cbcCache.getCapBankDevice( new Integer(_paoID) );
-			
-			if( CapBankDevice.isInAnyOpenState(bank) )
-			{
-				executeCommand( bank.getControlDeviceID().intValue(), CBCCommand.CONFIRM_OPEN );
-			}
-			else if( CapBankDevice.isInAnyCloseState(bank) )
-			{
-				executeCommand( bank.getControlDeviceID().intValue(), CBCCommand.CONFIRM_CLOSE );
-			}
-		}
-		else if( _cmdID == CBCCommand.CLOSE_CAPBANK 
-			 	 || _cmdID == CBCCommand.OPEN_CAPBANK
-				 || _cmdID == CBCCommand.BANK_DISABLE_OVUV 
-				 || _cmdID == CBCCommand.BANK_ENABLE_OVUV 
-                 || _cmdID == CBCCommand.SCAN_2WAY_DEV)
-		{
-			CapBankDevice bank = cbcCache.getCapBankDevice( new Integer(_paoID) );
-			
-			executeCommand( 
-				bank.getControlDeviceID().intValue(),
-				_cmdID );			
-		}
-		else if( _cmdID == CBCCommand.CMD_MANUAL_ENTRY
-					&& _optionalParams.length >= 1 )
-		{
-			// Build up the manaual change message here
-			//   params[0] = new state ID
-			CapBankDevice bank = cbcCache.getCapBankDevice( new Integer(_paoID) );
-			
-			// Send new point Here
-			PointData pt = new PointData();
+        final Date now = new Date();
+        
+        // Send new point Here
+        PointData pt = new PointData();
+        pt.setId( bank.getOperationAnalogPointID().intValue() );
+        pt.setQuality( PointQualities.MANUAL_QUALITY );
+        pt.setStr("Capacitor Bank OP_COUNT change from CBC Client");
+        pt.setTime(now);
+        pt.setTimeStamp(now);
+        pt.setType( PointTypes.ANALOG_POINT );
+        pt.setUserName( _getUserName() );
 
-			pt.setId( bank.getStatusPointID().intValue() );
-			pt.setQuality( PointQualities.MANUAL_QUALITY );
-			pt.setStr("Manual change occurred using CBC Web Client");
-			pt.setTime( new java.util.Date() );
-			pt.setTimeStamp( new java.util.Date() );
-			pt.setType( PointTypes.STATUS_POINT );
-			pt.setUserName( _getUserName() );
+        //the actual new value for the selected state
+        float pointValue = (optionalParams.length > 0) ? optionalParams[0] : 0.0f;
+        pt.setValue(pointValue);
+        
+        cbcCache.getConnection().write( pt );    
+	}
+	
+	private void executeCapBankCmdManualEntry(final int paoId, final float[] optionalParams) {
+	    // Build up the manaual change message here, params[0] = new state ID
+        CapBankDevice bank = cbcCache.getCapBankDevice(paoId);
+        
+        final Date now = new Date();
+        
+        // Send new point Here
+        PointData pt = new PointData();
+        pt.setId( bank.getStatusPointID().intValue() );
+        pt.setQuality( PointQualities.MANUAL_QUALITY );
+        pt.setStr("Manual change occurred using CBC Web Client");
+        pt.setTime(now);
+        pt.setTimeStamp(now);
+        pt.setType( PointTypes.STATUS_POINT );
+        pt.setUserName( _getUserName() );
 
-			//the actual new value for the selected state 
-			pt.setValue( _optionalParams[0] );
+        // the actual new value for the selected state 
+        pt.setValue( optionalParams[0] );
 
-			cbcCache.getConnection().write( pt );
-		}
-        else if( _cmdID == CBCCommand.RESET_OPCOUNT )
-        {
-            // Build up the reset opcount message here
-            CapBankDevice bank = cbcCache.getCapBankDevice( new Integer(_paoID) );
-            
-            // Send new point Here
-            PointData pt = new PointData();
-
-            pt.setId( bank.getOperationAnalogPointID().intValue() );
-            pt.setQuality( PointQualities.MANUAL_QUALITY );
-            pt.setStr("Capacitor Bank OP_COUNT change from CBC Client");
-            pt.setTime( new java.util.Date() );
-            pt.setTimeStamp( new java.util.Date() );
-            pt.setType( PointTypes.ANALOG_POINT );
-            pt.setUserName( _getUserName() );
-
-            //the actual new value for the selected state 
-            pt.setValue( _optionalParams[0] );
-            
-            cbcCache.getConnection().write( pt );
-        }        
-		else if( _cmdID == CBCCommand.CMD_BANK_TEMP_MOVE
-				 && _optionalParams.length >= 5 )
-		{
-			// Build up  the move message here
-			//   params[0] = original feeder ID
-			//   params[1] = new feeder ID
-			//   params[2] = order of control
-			CBCTempMoveCapBank msg = new CBCTempMoveCapBank(
-				(int)_optionalParams[0],
-				(int)_optionalParams[1],
-				_paoID,
-				_optionalParams[2],
-                _optionalParams[3],
-                _optionalParams[4],
-				false );
-			
-			cbcCache.getConnection().write( msg );
-		}
-		else
-		{
-			//be sure we are not sending any commands that would not matter
-			// to the capbank
-			if( _isValidBankCmd(_paoID, _cmdID) )
-				executeCommand( 
-					_paoID,
-					_cmdID );
-		}
-							
-
-		return true;
+        cbcCache.getConnection().write( pt );
+	}
+	
+	private void executeCapBankCmdByCmdId(final int paoId, final int cmdId, final int operationalState) {
+	    CapBankDevice bank = cbcCache.getCapBankDevice(paoId);
+	    if (bank == null) return;
+        int deviceId = bank.getControlDeviceID(); 
+        executeCommand(deviceId, cmdId, operationalState); 
+	}
+	
+	private void executeCapBankCmdConfirm(final int paoId, final int operationalState) {
+	    CapBankDevice bank = cbcCache.getCapBankDevice(paoId);
+	    int deviceId = bank.getControlDeviceID();
+	    
+	    if (CapBankDevice.isInAnyOpenState(bank)) {
+	        executeCommand(deviceId, CBCCommand.CONFIRM_OPEN, operationalState);
+	        return;
+	    }
+	    
+	    if (CapBankDevice.isInAnyCloseState(bank)) {
+	        executeCommand(deviceId, CBCCommand.CONFIRM_CLOSE, operationalState);
+	        return;
+	    }
 	}
 	
 	private boolean _isValidBankCmd( int _paoID, int _cmdID )
@@ -239,36 +284,36 @@ public class CBCCommandExec
 		return userName;
 	}
 
-	private void _executeConfirmSub( int _paoID )
-	{
-		Multi multi = new Multi();
-		CBCCommand command = new CBCCommand (CBCCommand.CONFIRM_SUB, _paoID);
+	private void _executeConfirmSub(int paoId) {
+		Multi<CBCCommand> multi = new Multi<CBCCommand>();
+		CBCCommand command = new CBCCommand (CBCCommand.CONFIRM_SUB, paoId);
 		command.setUserName(userName);
-		multi.getVector().add ( command );
-		if( multi.getVector().size() > 0 )
-			cbcCache.getConnection().write( multi );		
+		multi.getVector().add(command);
+		if (multi.getVector().size() > 0) {
+			cbcCache.getConnection().write(multi);
+		}	
 	}
 	
-    private void _executeConfirmSubstation( int _paoID ) {
-        Multi multi = new Multi();
-        CBCCommand command = new CBCCommand (CBCCommand.CONFIRM_SUBSTATION, _paoID);
+    private void _executeConfirmSubstation(int paoId) {
+        Multi<CBCCommand> multi = new Multi<CBCCommand>();
+        CBCCommand command = new CBCCommand (CBCCommand.CONFIRM_SUBSTATION, paoId);
         command.setUserName(userName);
-        multi.getVector().add ( command );
-        if( multi.getVector().size() > 0 ) {
-            cbcCache.getConnection().write( multi );
+        multi.getVector().add(command);
+        if (multi.getVector().size() > 0) {
+            cbcCache.getConnection().write(multi);
         }
     }
 
-	/**
-	 * Used to send a command to the CBC server.
-	 * @param int, int
-	 */
-	public void executeCommand(int _paoID, int _cmdOperation )
-	{
+    public void executeCommand(int paoId, int cmdOperation) {
+        executeCommand(paoId, cmdOperation, CBCCommandExec.defaultOperationalState);
+    }
+    
+	public void executeCommand(int _paoID, int _cmdOperation, int operationalState) {
 		CBCCommand cmd = new CBCCommand();
 		cmd.setDeviceID( _paoID );
 		cmd.setCommand( _cmdOperation );
 		cmd.setUserName( _getUserName() );
+		cmd.setToken(operationalState);
 		
 		cbcCache.getConnection().sendCommand( cmd );
 	}

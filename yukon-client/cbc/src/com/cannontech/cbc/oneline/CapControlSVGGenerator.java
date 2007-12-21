@@ -1,5 +1,8 @@
 package com.cannontech.cbc.oneline;
 
+import java.util.Map;
+import java.util.Set;
+
 import org.apache.batik.dom.svg.SVGDOMImplementation;
 import org.apache.commons.lang.StringUtils;
 import org.w3c.dom.CDATASection;
@@ -31,19 +34,27 @@ public class CapControlSVGGenerator extends BaseSVGGenerator {
 
             HiddenTextElement text = (HiddenTextElement) comp;
             Element textElem = doc.createElementNS(svgNS, "text");
-            for (String key : text.getProperties().keySet()) {
-                textElem.setAttributeNS(null, key, text.getProperties().get(key));
+
+            Map<String,String> properties = text.getProperties();
+            Set<String> keys = properties.keySet();
+            for (final String key : keys) {
+                String value = properties.get(key);
+                textElem.setAttributeNS(null, key, value);
             }
-            textElem.setAttributeNS(null, "id", text.getName());
-            textElem.setAttributeNS(null, "elementID", text.getElementID());
+
+            String id = text.getName();
+            textElem.setAttributeNS(null, "id", id);
+
+            String elementId = text.getElementID();
+            textElem.setAttributeNS(null, "elementID", elementId);
             textElem.setAttributeNS(null, "style", "display: none");
 
             return textElem;
-        } else
-
-            return super.createElement(doc, comp);
+        }     
+        return super.createElement(doc, comp);
     }
 
+    @Override
     public CDATASection createCDATASection(SVGDocument doc) {
         getJsGenerator().addOnload("initCC();");
         String script = getJsGenerator().getScript();
@@ -221,6 +232,7 @@ public class CapControlSVGGenerator extends BaseSVGGenerator {
 
     }
 
+    @Override
     public DrawingUpdater initDrawingUpdater(Drawing d) {
         if (drawingUpdater == null) {
             drawingUpdater = new CapControlDrawingUpdater(d);

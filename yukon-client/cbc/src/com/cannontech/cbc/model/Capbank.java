@@ -1,9 +1,10 @@
 package com.cannontech.cbc.model;
 
+import com.cannontech.capcontrol.CapBankOperationalState;
+
 public class Capbank {
- 
     private int id;
-    private String operationalState;
+    private CapBankOperationalState operationalState;
     private String controllerType;
     private int controlDeviceId;
     private int controlPointId;
@@ -63,10 +64,10 @@ public class Capbank {
     public void setMaxOpDisable(char maxOpDisable) {
         this.maxOpDisable = maxOpDisable;
     }
-    public String getOperationalState() {
+    public CapBankOperationalState getOperationalState() {
         return operationalState;
     }
-    public void setOperationalState(String operationalState) {
+    public void setOperationalState(CapBankOperationalState operationalState) {
         this.operationalState = operationalState;
     }
     public int getRecloseDelay() {
@@ -89,20 +90,25 @@ public class Capbank {
     }
     @Override
     public int hashCode() {
-        final int PRIME = 31;
+        final int prime = 31;
         int result = 1;
-        result = PRIME * result + bankSize;
-        result = PRIME * result + controlDeviceId;
-        result = PRIME * result + controlPointId;
-        result = PRIME * result + ((controllerType == null) ? 0 : controllerType.hashCode());
-        result = PRIME * result + id;
-        result = PRIME * result + ((mapLocationId == null) ? 0 : mapLocationId.hashCode());
-        result = PRIME * result + maxDailyOps;
-        result = PRIME * result + maxOpDisable;
-        result = PRIME * result + ((operationalState == null) ? 0 : operationalState.hashCode());
-        result = PRIME * result + recloseDelay;
-        result = PRIME * result + ((switchManufacturer == null) ? 0 : switchManufacturer.hashCode());
-        result = PRIME * result + ((typeOfSwitch == null) ? 0 : typeOfSwitch.hashCode());
+        result = prime * result + bankSize;
+        result = prime * result + controlDeviceId;
+        result = prime * result + controlPointId;
+        result = prime * result + ((controllerType == null) ? 0
+                : controllerType.hashCode());
+        result = prime * result + id;
+        result = prime * result + ((mapLocationId == null) ? 0
+                : mapLocationId.hashCode());
+        result = prime * result + maxDailyOps;
+        result = prime * result + maxOpDisable;
+        result = prime * result + ((operationalState == null) ? 0
+                : operationalState.hashCode());
+        result = prime * result + recloseDelay;
+        result = prime * result + ((switchManufacturer == null) ? 0
+                : switchManufacturer.hashCode());
+        result = prime * result + ((typeOfSwitch == null) ? 0
+                : typeOfSwitch.hashCode());
         return result;
     }
     @Override
@@ -155,4 +161,5 @@ public class Capbank {
             return false;
         return true;
     }
+    
 }

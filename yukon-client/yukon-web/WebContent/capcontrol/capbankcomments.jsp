@@ -26,7 +26,7 @@
 	CapBankDevice bank = filterCapControlCache.getCapBankDevice(paoId);
 	String name = bank.getCcName();
 	
-	CapControlCommentDao dao = YukonSpringHook.getBean("capbankCommentDao", CapControlCommentDao.class);
+	CapControlCommentDao dao = YukonSpringHook.getBean("capCommentDao", CapControlCommentDao.class);
 	YukonUserDao yukonUserDao = (YukonUserDao) YukonSpringHook.getBean("yukonUserDao");
 	
 	List<CapControlComment> comments = dao.getAllCommentsByPao(paoId);

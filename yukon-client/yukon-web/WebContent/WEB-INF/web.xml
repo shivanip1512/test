@@ -598,12 +598,6 @@
 			com.cannontech.servlet.OnelineCBCServlet
 		</servlet-class>
 	</servlet>
-	<servlet>
-		<servlet-name>CBCReasonUpdaterServlet</servlet-name>
-		<servlet-class>
-			com.cannontech.servlet.CBCReasonUpdaterServlet
-		</servlet-class>
-	</servlet>
 	
 	<!-- End CapControl specific configs -->
 	<!-- esub specific servlets -->
@@ -996,7 +990,7 @@
 		<url-pattern>/capcontrol/oneline/OnelineCBCServlet</url-pattern>
 	</servlet-mapping>
 	<servlet-mapping>
-		<servlet-name>CBCReasonUpdaterServlet</servlet-name>
+		<servlet-name>capcontrol</servlet-name>
 		<url-pattern>
 			/capcontrol/oneline/CBCReasonUpdaterServlet
 		</url-pattern>

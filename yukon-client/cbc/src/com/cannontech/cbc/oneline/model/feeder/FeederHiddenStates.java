@@ -1,16 +1,15 @@
 package com.cannontech.cbc.oneline.model.feeder;
 
+import com.cannontech.cbc.dao.CommentAction;
 import com.cannontech.cbc.oneline.elements.HiddenTextElement;
-import com.cannontech.cbc.oneline.model.HiddenStates;
+import com.cannontech.cbc.oneline.model.AbstractHiddenStates;
 import com.cannontech.cbc.oneline.model.OnelineObject;
-import com.cannontech.cbc.oneline.tag.CBCTagHandler;
-import com.cannontech.cbc.oneline.tag.OnelineTags;
+import com.cannontech.database.data.pao.CapControlTypes;
 import com.cannontech.yukon.cbc.Feeder;
-import com.loox.jloox.LxAbstractView;
 import com.loox.jloox.LxGraph;
 
 @SuppressWarnings("serial")
-public class FeederHiddenStates extends LxAbstractView implements HiddenStates {
+public class FeederHiddenStates extends AbstractHiddenStates {
 
     private LxGraph graph;
     private OnelineFeeder parent;
@@ -21,19 +20,20 @@ public class FeederHiddenStates extends LxAbstractView implements HiddenStates {
     }
 
     public void addStateInfo() {
-        String name = "FeederState_" + getCurrentFeederIdFromMessage();
-        HiddenTextElement stateInfo = new HiddenTextElement("HiddenTextElement",
-                                                            name);
+        final int paoId = getCurrentFeederIdFromMessage();
+        
+        String name = "FeederState_" + paoId;
+        HiddenTextElement stateInfo = new HiddenTextElement("HiddenTextElement", name);
         stateInfo.addProperty("isDisable", isDisabled().toString() );
         stateInfo.addProperty("isOVUVDis", isOVUVDisabled().toString() );
-        String disableReason = CBCTagHandler.getReason(OnelineTags.TAGGRP_ENABLEMENT,
-                                                       getCurrentFeederIdFromMessage(), parent.getPointCache());
-        String disableOVUVReason = CBCTagHandler.getReason(OnelineTags.TAGGRP_OVUV_ENABLEMENT,
-                                                       getCurrentFeederIdFromMessage(), parent.getPointCache());
-        stateInfo.addProperty("disableFdrReason", disableReason);
-        stateInfo.addProperty("disableOVUVFdrReason", disableOVUVReason);
-        graph.add(stateInfo);
 
+        String disableReason = getReason(paoId, CommentAction.DISABLED);
+        stateInfo.addProperty("disableFdrReason", disableReason);
+
+        String disableOVUVReason = getReason(paoId, CommentAction.DISABLED_OVUV, CapControlTypes.CAP_CONTROL_FEEDER);
+        stateInfo.addProperty("disableOVUVFdrReason", disableOVUVReason);
+
+        graph.add(stateInfo);
     }
 
     public Boolean isDisabled() {
@@ -69,6 +69,7 @@ public class FeederHiddenStates extends LxAbstractView implements HiddenStates {
 
     }
 
+    @Override
     public LxGraph getGraph() {
         return graph;
 

@@ -146,244 +146,205 @@ function createCapInfoMenu (capID) {
 }
 
 function createFeederTagMenu(feederID) {
-	//state var
+    //Disable
+    var allFdrCmds;
+    var feederState;
 	var isDis = getState("FeederState_" + feederID, "isDisable");
-	var disFeederTag;
-	var disableOVUVReason = "";
-	var disableReason = "";
-	if (isDis == "true")
-	{
-
-		disableFeeder = new Command (feederID, ALL_FDR_CMDS.enable_fdr, ALL_CMD_TYPES.feeder);
-		disFeederTag = new Command (feederID, "feederEnabled", ALL_CMD_TYPES.tag);
-		disableReason = escape(getState("FeederState_" + feederID, "disableFdrReason"));
-
+    
+    if (isDis == "true") {
+        allFdrCmds = ALL_FDR_CMDS.enable_fdr;
+        feederState = "feederEnabled";
+	} else {
+        allFdrCmds = ALL_FDR_CMDS.disable_fdr;
+        feederState = "feederDisabled";
 	}
-	else
-	{
-		disableFeeder = new Command (feederID, ALL_FDR_CMDS.disable_fdr, ALL_CMD_TYPES.feeder);
-		disFeederTag = new Command (feederID, "feederDisabled", ALL_CMD_TYPES.tag);
-		
-	}
-	//////////////////////////
+    
+    var disableFeeder = new Command (feederID, allFdrCmds, ALL_CMD_TYPES.feeder);
+    var disFeederTag = new Command (feederID, feederState, ALL_CMD_TYPES.tag);
+    var disableReason = escape(getState("FeederState_" + feederID, "disableFdrReason"));
+    
+    //Disable OVUV
+    var allFdrCmdsOVUV;
+    var feederStateOVUV;
 	var isOVUVDis = getState("FeederState_" + feederID, "isOVUVDis");
-	var disFeederOVUV;
-	var disFeederOVUVTag;
-	if (isOVUVDis == "true")
-	{
-		disFeederOVUV = new Command (feederID, ALL_FDR_CMDS.send_all_enable_ovuv, ALL_CMD_TYPES.feeder);
-		disFeederOVUVTag = new Command (feederID, ALL_TAG_CMDS.feederOVUVEnabled, ALL_CMD_TYPES.tag);
-		disableOVUVReason = escape(getState("FeederState_" + feederID, "disableOVUVFdrReason"));
+    
+	if (isOVUVDis == "true") {
+        allFdrCmdsOVUV = ALL_FDR_CMDS.send_all_enable_ovuv;
+        feederStateOVUV = ALL_TAG_CMDS.feederOVUVEnabled;
+	} else {
+        allFdrCmdsOVUV = ALL_FDR_CMDS.send_all_disable_ovuv;
+        feederStateOVUV = ALL_TAG_CMDS.feederOVUVDisabled;
 	}
-	else 
-	{
-		disFeederOVUV = new Command (feederID, ALL_FDR_CMDS.send_all_disable_ovuv, ALL_CMD_TYPES.feeder);
-		disFeederOVUVTag = new Command (feederID, ALL_TAG_CMDS.feederOVUVDisabled, ALL_CMD_TYPES.tag);	
-	}
-	
-	var str='';
-	str += '<html>';
-	str+='<body style="background-color:black">';
-	str+='	<table >';
-	str+='		<tr>';
-	str+='			<td>';
-	str+='				<span id="fdrTagSpan_';
-	str+= 				feederID;
-	str+='">';
-	str+='				<input type="hidden" id="executeQueue_' + feederID + '" val=""/>';
-	
-	str+='				<input type="checkbox" name="'  ;
-	str+= 			disableFeeder.createName() + '"';
-	str+= ' 		        onclick="addCommand(this); addCommand(\'' + disFeederTag.createName() +'\'); setReason(\'' + disFeederTag.createName() + '\', \'' + disableReason + '\', this);"';
+    
+	var disFeederOVUV = new Command (feederID, allFdrCmdsOVUV, ALL_CMD_TYPES.feeder);
+	var disFeederOVUVTag = new Command (feederID, feederStateOVUV, ALL_CMD_TYPES.tag);
+    var disableOVUVReason = escape(getState("FeederState_" + feederID, "disableOVUVFdrReason"));
+    
+    //PopupWindow
+	var str = '';
+	str += '<html>\n';
+	str += '<body style="background-color:black">\n';
+	str += '<table >\n';
+    str += '    <tr>\n'
+    str += '        <td><div style="float: right;"><a href="javascript:void(0)" style="color=gray" title="Click To Close" onclick="closePopupWindow();"> x <\/a></div></td>\n';
+    str += '    </tr>\n';
+	str += '    <tr>\n';
+	str += '	    <td>';
+	str += '		    <span id="fdrTagSpan_' + feederID + '">';
+	str += '				<input type="hidden" id="executeQueue_' + feederID + '" val=""/>';
+	str += '				<input type="checkbox" name="' + disableFeeder.createName() + '" onclick="addCommand(this); addCommand(\'' + disFeederTag.createName() +'\'); setReason(\'' + disFeederTag.createName() + '\', \'' + disableReason + '\', this);"';
 	if (isDis == "true")
 			str+= ' checked ';
-	str+='> <font color="white">Disable<\/font><\/><\/br>';
-	str+='				<\/span>';
-	str+='			<\/td>';
-	str+='			<td align="right" valign="top" id = "popupplaceholder">';
-	str+='				<a   href="javascript:void(0)" style="color=gray" title="Click To Close" onclick="closePopupWindow();"> x <\/a>';
-	str+='			<\/td>';
-	str+='		<\/tr>';
-	str+='		<tr>';
-	str+= 			'<td>';
-	str += 				generateReasonSpan ((isDis == "true"), disFeederTag.createName() + 'ReasonSpan', disableReason);
-	str+='			<\/td>';
-	str+='		<\/tr>';
-	
-	str+='		<tr>';
-	str+='			<td>';	
-	str+='				<input type="checkbox"  name = "'; 
-	str+= 				disFeederOVUV.createName() + '" ';
-	str+=' 				onclick="addCommand(this); '; 
-	str+= ' 				 	 addCommand(\'' + disFeederOVUVTag.createName() +'\'); setReason(\'' + disFeederOVUVTag.createName() + '\', \'' + disableReason + '\', this);"';
+	str += '>\n';
+    str += '                <font color="white">Disable<\/font><\/><\/br>';
+	str += generateReasonSpan ((isDis == "true"), disFeederTag.createName() + 'ReasonSpan', disableReason);
+	str += '				<input type="checkbox"  name = "' + disFeederOVUV.createName() + '" onclick="addCommand(this); addCommand(\'' + disFeederOVUVTag.createName() +'\'); setReason(\'' + disFeederOVUVTag.createName() + '\', \'' + disableOVUVReason + '\', this);"';
 	if (isOVUVDis == "true")
 		str+= ' checked ';
 	str+='>'; 	
-	str+='				<font color="white">Disable OVUV<\/font><\/><\/br>';
-	str+='			<\/td>';
-	str+='		<\/tr>';
-	str+='		<tr>';
-	str+= 			'<td>';
-	str += 				generateReasonSpan ((isOVUVDis == "true"), disFeederOVUVTag.createName() + 'ReasonSpan', disableOVUVReason);
-	str+='			<\/td>';
-	str+='		<\/tr>';	
-	
+	str+='				    <font color="white">Disable OVUV<\/font><\/><\/br>';
+	str += generateReasonSpan ((isOVUVDis == "true"), disFeederOVUVTag.createName() + 'ReasonSpan', disableOVUVReason);
+    str += '            </span>\n';
+	str+='			</td>';
+	str+='		</tr>';	
 	str+='		<tr>';
 	str+='			<td>';
 	str+='				<input  type="submit" name="execute" value="Execute" onclick="disableAll(); executeMultipleCommands(\'fdrTagSpan_\','+feederID+'); reset(this); disableAllCheckedReasons(\'fdrTagSpan_\','+feederID+')"\/>';
-	str+='			<\/td>';
-	str+='		<\/tr>';
-	str+='	<\/table>';
-	str+='	<\/body>';
+	str+='			</td>';
+	str+='		</tr>';
+	str+='	</table>';
+	str+='	</body>';
 	str += '</html>';
-
-return str;
+    return str;
 
 }
 
 function createSubTagMenu() {
-	//state var
-	paoId = getSubId();
-	var disSubTag;
+	var paoId = getSubId();
+
+	//Disable
+	var allSubCmds;
+    var subState;
 	var isDis = getState("SubState_" + paoId, "isDisable");
-	//say (paoId +","+isDis);
-	if (isDis == "true")
-	{
-		disableSub = new Command (paoId, ALL_SUB_CMDS.enable_sub, ALL_CMD_TYPES.sub);
-		disSubTag = new Command (paoId, "subEnabled", ALL_CMD_TYPES.tag);
-		var disableReason = getState("SubState_" + paoId, "subDisableReason");
-		
+	
+    if (isDis == "true") {
+        allSubCmds = ALL_SUB_CMDS.enable_sub;
+        subState = "subEnabled";
+	} else {
+        allSubCmds = ALL_SUB_CMDS.disable_sub;
+        subState = "subDisabled";
 	}
-	else
-	{
-		disableSub = new Command (paoId, ALL_SUB_CMDS.disable_sub, ALL_CMD_TYPES.sub);
-		disSubTag = new Command (paoId, "subDisabled", ALL_CMD_TYPES.tag);
-		
-	}
-	//////////////////////////
+    
+    var disableSub = new Command (paoId, allSubCmds, ALL_CMD_TYPES.sub);
+    var disSubTag = new Command (paoId, subState, ALL_CMD_TYPES.tag);
+    var disableReason = escape(getState("SubState_" + paoId, "subDisableReason"));
+    
+	//Disable OVUV
+    var allSubCmdsOVUV;
+    var subStateOVUV;
 	var isOVUVDis = getState("SubState_" + paoId, "isOVUVDis");
-	var disSubOVUV;
-	var disSubOVUVTag;
-	if (isOVUVDis == "true")
-	{
-		disSubOVUV = new Command (paoId, ALL_SUB_CMDS.send_all_enable_ovuv, ALL_CMD_TYPES.sub);
-		disSubOVUVTag = new Command (paoId, ALL_TAG_CMDS.subOVUVEnabled, ALL_CMD_TYPES.tag);
+	
+    if (isOVUVDis == "true") {
+        allSubCmdsOVUV = ALL_SUB_CMDS.send_all_enable_ovuv;
+        subStateOVUV = ALL_TAG_CMDS.subOVUVEnabled;
+	} else {
+        allSubCmdsOVUV = ALL_SUB_CMDS.send_all_disable_ovuv;
+        subStateOVUV = ALL_TAG_CMDS.subOVUVDisabled;
 	}
-	else 
-	{
-		disSubOVUV = new Command (paoId, ALL_SUB_CMDS.send_all_disable_ovuv, ALL_CMD_TYPES.sub);
-		disSubOVUVTag = new Command (paoId, ALL_TAG_CMDS.subOVUVDisabled, ALL_CMD_TYPES.tag);	
-	}
+    
+    var disSubOVUV = new Command (paoId, allSubCmdsOVUV, ALL_CMD_TYPES.sub);
+    var disSubOVUVTag = new Command (paoId, subStateOVUV, ALL_CMD_TYPES.tag);
+    var disableOVUVReason = escape(getState("SubState_" + paoId, "subDisableOVUVReason"));
+    
+    //PopupWindow
 	var str='';
-	str += '<html>';
-	str+='<body style="background-color:black">';
-	str+='	<table>';
-	str+='		<tr>';
-	str+='			<td>';
-	str+='				<span id="subTagSpan_';
-	str+= 				paoId;
-	str+='">';
-	str+='				<input type="hidden" id="executeQueue_' + paoId + '" val=""/>';
-	str+='				<input type="checkbox"  name = "'; 
-	str+= 				disableSub.createName() + '" ';
-	str+=' 				onclick="addCommand(this); '; 
-	str+= ' 				 	 addCommand(\'' + disSubTag.createName() +'\'); setReason(\'' + disSubTag.createName() + '\', \'' + disableReason + '\', this);"';
-	if (isDis == "true")
-		str+= ' checked ';
-	str+='>'; 	
-	str+='				<font color="white">Disable<\/font><\/><\/br>';
-	str+='			<td align="right" valign="top" id = "popupplaceholder">';
-	str+='				<a   href="javascript:void(0)" style="color=gray" title="Click To Close" onclick="closePopupWindow();">  x <\/a>';
-	str+='			<\/td>';
-	str+='		<\/tr>';
-	str+='		<tr>';
-	str+= 			'<td>';
-	str += 				generateReasonSpan ((isDis == "true"), disSubTag.createName() + 'ReasonSpan', disableReason);
-	str+='			<\/td>';
-	str+='		<\/tr>';
-	
-	str+='		<tr>';
-	str+='			<td>';	
-	str+='				<input type="checkbox"  name = "'; 
-	str+= 				disSubOVUV.createName() + '" ';
-	str+=' 				onclick="addCommand(this); '; 
-	str+= ' 				 	 addCommand(\'' + disSubOVUVTag.createName() +'\'); setReason(\'' + disSubOVUVTag.createName() + '\', \'' + disableReason + '\', this);"';
-	if (isOVUVDis == "true")
-		str+= ' checked ';
-	str+='>'; 	
-	str+='				<font color="white">Disable OVUV<\/font><\/><\/br>';
-	str+='			<\/td>';
-	str+='		<\/tr>';
-	str+='		<tr>';
-	str+= 			'<td>';
-	str += 				generateReasonSpan ((isOVUVDis == "true"), disSubOVUVTag.createName() + 'ReasonSpan', disableReason);
-	str+='			<\/td>';
-	str+='		<\/tr>';
-	
-		
-	str+='		<tr>';
-	str+='			<td>';
-	str+='				<input  type="submit" name="execute" value="Execute" onclick="disableAll(); executeMultipleCommands(\'subTagSpan_\','+paoId+'); reset(this); disableAllCheckedReasons(\'subTagSpan_\','+paoId+')"\/>';
-	str+='			<\/td>';
-	str+='		<\/tr>';
-	str+='	<\/table>';
-	str+='	<\/body>';
+	str += '<html>\n';
+	str += '<body style="background-color:black">\n';
+	str += '<table>\n';
+    str += '   <tr>\n';
+    str += '   <td><div style="float: right;"><a href="javascript:void(0)" style="color=gray" title="Click To Close" onclick="closePopupWindow();">  x <\/a></div></td>\n';
+    str += '   </tr>\n';
+	str += '   <tr>\n';
+	str += '       <td>\n';
+	str += '           <span id="subTagSpan_' + paoId + '">\n';
+	str += '               <input type="hidden" id="executeQueue_' + paoId + '" val=""/>\n';
+	str += '               <input type="checkbox"  name = "' + disableSub.createName() + '" onclick="addCommand(this); addCommand(\'' + disSubTag.createName() +'\'); setReason(\'' + disSubTag.createName() + '\', \'' + disableReason + '\', this);"';
+	if (isDis == "true") {
+	   str += ' checked ';
+    }    
+	str += '>\n';
+	str += '               <font color="white">Disable<\/font>\n'
+    str += '               <\/br>\n';
+	str += generateReasonSpan ((isDis == "true"), disSubTag.createName() + 'ReasonSpan', disableReason);
+	str += '               <input type="checkbox"  name = "' + disSubOVUV.createName() + '" onclick="addCommand(this); addCommand(\'' + disSubOVUVTag.createName() +'\'); setReason(\'' + disSubOVUVTag.createName() + '\', \'' + disableOVUVReason + '\', this);"';
+	if (isOVUVDis == "true") {
+		str += ' checked ';
+    }    
+	str += '>'; 	
+	str += '               <font color="white">Disable OVUV<\/font><\/br>';
+	str += generateReasonSpan ((isOVUVDis == "true"), disSubOVUVTag.createName() + 'ReasonSpan', disableOVUVReason);
+    str += '           <\/span>\n';
+	str += '       <\/td>\n';
+	str += '   <\/tr>\n';
+	str += '   <tr>\n';
+	str += '       <td>\n';
+	str += '           <input  type="submit" name="execute" value="Execute" onclick="disableAll(); executeMultipleCommands(\'subTagSpan_\','+paoId+'); reset(this); disableAllCheckedReasons(\'subTagSpan_\','+paoId+')"\/>\n';
+	str += '	   <\/td>\n';
+	str += '   <\/tr>\n';
+	str += '<\/table>';
+	str += '<\/body>';
 	str += '</html>';
-	
 	return str;
 }
 
 function createCapTagMenu (paoID) {
 	//state var	
 	var comments = getState("CapState_" + paoID, "capbankComments");
-	//variables pushed from the server
+	
+    //variables pushed from the server
 	var paoName = getState("CapState_" + paoID, "paoName"); //name of the capbank
-	//capbank states
+	
+    //capbank states
 	var isDis = getState("CapState_" + paoID, "isDisable");
 	var isOVUVDis = getState("CapState_" + paoID, "isOVUVDis");
 	var isStandalone = getState("CapState_" + paoID, "isStandalone");
-	//reasons
+    var isFixed = getState("CapState_" + paoID, "isFixed");
+    var isSwitched = getState("CapState_" + paoID, "isSwitched");
+    
+    //reasons
 	var disableCapReason = escape(getState("CapState_" + paoID, "disableCapReason"));
 	var disableCapOVUVReason = escape(getState("CapState_" + paoID, "disableCapOVUVReason"));
 	var aloneReason = escape(getState("CapState_" + paoID, "standAloneReason"));
-	
-	//variables used to hold command information
-	//we need to for enablement and ovuv because it is
-	//a tag as well a command
-	var disableCap;
-	var disCapTag;
-	var disCapOVUV;
-	var disCapOVUVTag;
-	
-	if (isDis == "true")
-	{
-		disableCap = new Command (paoID, ALL_CAP_CMDS.enable_capbank, ALL_CMD_TYPES.cap);
-		disCapTag = new Command (paoID, ALL_TAG_CMDS.capEnabled, ALL_CMD_TYPES.tag);
+    
+    var allCapCmds;
+    var allCapCmdsOVUV;
+    var allTagCmds;
+    var allTagCmdsOVUV;
+    var allTagCmdsStandAlone;
+    
+	if (isDis == "true") {
+        allCapCmds = ALL_CAP_CMDS.enable_capbank;
+        allTagCmds = ALL_TAG_CMDS.capEnabled;
+	} else {
+        allCapCmds = ALL_CAP_CMDS.disable_capbank;
+        allTagCmds = ALL_TAG_CMDS.capDisabled;
 	}
-	else 
-	{
-		disableCap = new Command (paoID, ALL_CAP_CMDS.disable_capbank, ALL_CMD_TYPES.cap);
-		disCapTag = new Command (paoID, ALL_TAG_CMDS.capDisabled, ALL_CMD_TYPES.tag);	
+    
+	if (isOVUVDis == "true") {
+        allCapCmdsOVUV = ALL_CAP_CMDS.bank_enable_ovuv;
+        allTagCmdsOVUV = ALL_TAG_CMDS.capOVUVEnabled;
+	} else {
+        allCapCmdsOVUV = ALL_CAP_CMDS.bank_disable_ovuv;
+        allTagCmdsOVUV = ALL_TAG_CMDS.capOVUVDisabled;
 	}
-	if (isOVUVDis == "true")
-	{
-		disCapOVUV = new Command (paoID, ALL_CAP_CMDS.bank_enable_ovuv, ALL_CMD_TYPES.cap);
-		disCapOVUVTag = new Command (paoID, ALL_TAG_CMDS.capOVUVEnabled, ALL_CMD_TYPES.tag);
-	}
-	else 
-	{
-		disCapOVUV = new Command (paoID, ALL_CAP_CMDS.bank_disable_ovuv, ALL_CMD_TYPES.cap);
-		disCapOVUVTag = new Command (paoID, ALL_TAG_CMDS.capOVUVDisabled, ALL_CMD_TYPES.tag);	
-	}
-	
-	if (isStandalone == "true")
-	{
-		aloneCap = new Command (paoID, ALL_TAG_CMDS.switched, ALL_CMD_TYPES.tag);
-	}
-	else
-	{
-		aloneCap = new Command (paoID, ALL_TAG_CMDS.standalone, ALL_CMD_TYPES.tag);
-	}	
+    
+    var disableCap = new Command (paoID, allCapCmds, ALL_CMD_TYPES.cap);
+    var disCapTag = new Command (paoID, allTagCmds, ALL_CMD_TYPES.tag);   
+    var disCapOVUV = new Command (paoID, allCapCmdsOVUV, ALL_CMD_TYPES.cap);
+    var disCapOVUVTag = new Command (paoID, allTagCmdsOVUV, ALL_CMD_TYPES.tag);
+    var aloneCap = new Command (paoID, ALL_CAP_CMDS.operational_state, ALL_CMD_TYPES.cap);
+    var aloneCapTag = new Command (paoID, ALL_CAP_CMDS.operational_state, ALL_CMD_TYPES.tag);
+    	
 	var str='';
 	str += '<html>';
 	str+='<body style="background-color:black">';
@@ -410,7 +371,7 @@ function createCapTagMenu (paoID) {
 	str+=' addCommand (this); addCommand(\'' + disCapTag.createName() +'\'); setReason(\'' + disCapTag.createName() + '\', \'' + disableCapReason + '\', this)"';
 	if (isDis == "true")
 	str+=					' checked ';
-	str+='> <font color="white">Disable<\/font><\/><\/br>';
+	str+='> <font color="white">Disable<\/font><\/br>';
 	str += generateReasonSpan((isDis == "true"),  disCapTag.createName() + 'ReasonSpan' , disableCapReason);
 	//***********OV/UV***********//
 	str+='					<input name="';
@@ -419,41 +380,47 @@ function createCapTagMenu (paoID) {
 	str+=' addCommand(this); addCommand(\'' + disCapOVUVTag.createName() +'\'); setReason(\'' + disCapOVUVTag.createName() + '\', \'' + disableCapOVUVReason + '\', this)"';
 	if (isOVUVDis == "true")
 	str+=					' checked ';
-	str+='> <font color="white">Disable OVUV<\/font><\/><\/br>';
+	str+='> <font color="white">Disable OVUV<\/font></br>';
 	str += generateReasonSpan((isOVUVDis == "true"),  disCapOVUVTag.createName() + 'ReasonSpan' , disableCapOVUVReason);
 	
 	//***********STANDALONE****************//
-	str+='					<input   name="';
-	str+=					aloneCap.createName();
-	str+='" type="checkbox" onclick="addCommand(this);addCommand(\'' + aloneCap.createName() +'\'); setReason(this, \'' + aloneReason + '\')"';
-	if (isStandalone == "true")
-			str+=					' checked';
-	str+='> <font color="white">Standalone<\/font><\/><\/br>';
-		str += generateReasonSpan ((isStandalone == "true"), aloneCap.createName() + 'ReasonSpan', aloneReason);
+    str += '<font color="white">Operational State</font>\n';
+    str += '                <select name="' + aloneCap.createName() + '" size="1" onchange="addCommand(this); setReason(\'' + aloneCapTag.createName() + '\', \'' + aloneReason + '\', this)">\n';
+    str += '                    <option value="Fixed"';
+    if (isFixed == 'true') str += ' selected';
+    str += '>Fixed</option>';
+    str += '                    <option value="StandAlone"';
+    if (isStandalone == 'true') str += 'selected';
+    str += '>StandAlone</option>';
+    str += '                    <option value="Switched"';
+    if (isSwitched == 'true') str += ' selected';
+    str += '>Switched</option>';
+    str += '                </select>';
+    str += '                <br>';
+    str += '                <br>';
+    str += generateReasonSpan (true, aloneCapTag.createName() + 'ReasonSpan', aloneReason);
 
 	//***********COMMENTS****************//
 	str+='<a href="/capcontrol/capbankcomments.jsp?capbankID=' + paoID + '&returnURL=' + window.location +'"  ><font color="white"><B>Comments</B><\/font></a><\/><\/br>';
 	str+='<font color="white">';
 	str+= generateCommentField("commentField_" + paoID, comments );	//str += generateReasonSpan ((isStandalone == "true"), aloneCap.createName() + 'ReasonSpan', aloneReason);
 	str+='</font>';
-	
+	str += '<br>';
 	//************************	
-	str+='<\/span><\/br>';
-	str+='				<\/span>';
-	str+='			<\/td>';
-	str+='		<\/tr>';
+	str+='				</span>';
+	str+='			</td>';
+	str+='		</tr>';
 	str+='		<tr>';
 	str+='			<td>';
 	str+='				<input  type="submit" name="execute" value="Execute" onclick="disableAll(); executeMultipleCommands(\'capTagSpan_\','+paoID+'); reset(this); disableAllCheckedReasons(\'capTagSpan_\','+paoID+')"\/>';
-	str+='			<\/td>';
-	str+='		<\/tr>';
-	str+='	<\/table>';
-	str+='	<\/body>';
+	str+='			</td>';
+	str+='		</tr>';
+	str+='	</table>';
+	str+='	</body>';
 	str += '</html>';
-
-return str;
-
+    return str;
 }
+
 function createCapBankMenu(paoID) {
 	var open = new Command (paoID, ALL_CAP_CMDS.open_capbank, ALL_CMD_TYPES.cap);
 	var close = new Command (paoID, ALL_CAP_CMDS.close_capbank, ALL_CMD_TYPES.cap);
@@ -672,7 +639,6 @@ function submit(obj) {
 	if (obj.tagName == "SELECT") {
 		option = obj.options[obj.selectedIndex];
 		executeCommand(option.value);
-		
 	}
 	else {
 		executeCommand(obj.name);
@@ -713,14 +679,11 @@ function submitWithConfirm(obj) {
 	if (confirm("Are you sure you want to execute " + cmdStr + "?"))
 	{
 		//response = prompt("Reason:", "");
-		
 		var paoID = name.split("_")[1];
 		var tagDesc = name.split("_")[0];
 		executeReasonUpdate(paoID, tagDesc, ""); 
 		submit(obj);
 	}
-	
-	
 }
 
 function closePopupWindow() {

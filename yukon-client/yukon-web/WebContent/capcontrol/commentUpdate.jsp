@@ -13,7 +13,7 @@
 	int commentId = ParamUtil.getInteger(request,"commentID",-1);
 	int paoId = ParamUtil.getInteger(request,"paoID",-1);
 	
-	CapControlCommentDao dao = YukonSpringHook.getBean("capbankCommentDao", CapControlCommentDao.class);
+	CapControlCommentDao dao = YukonSpringHook.getBean("capCommentDao", CapControlCommentDao.class);
 
 	//set time and comment right before executing.
 %>

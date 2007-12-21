@@ -5,6 +5,9 @@ import java.awt.Dimension;
 import java.awt.Font;
 import java.awt.Point;
 import java.awt.geom.Point2D;
+import java.io.File;
+import java.io.FileWriter;
+import java.io.IOException;
 import java.util.ArrayList;
 import java.util.Iterator;
 import java.util.List;
@@ -12,6 +15,12 @@ import java.util.Vector;
 
 import org.apache.commons.lang.StringUtils;
 
+import com.cannontech.cbc.oneline.CapControlDrawingUpdater;
+import com.cannontech.cbc.oneline.CapControlSVGGenerator;
+import com.cannontech.cbc.oneline.OnelineHTMLGenerator;
+import com.cannontech.cbc.oneline.view.CapControlOnelineCanvas;
+import com.cannontech.cbc.oneline.view.OneLineDrawing;
+import com.cannontech.clientutils.CTILogger;
 import com.cannontech.core.dao.DaoFactory;
 import com.cannontech.core.dao.StateDao;
 import com.cannontech.database.data.lite.LiteState;
@@ -19,7 +28,11 @@ import com.cannontech.database.data.lite.LiteStateGroup;
 import com.cannontech.database.data.lite.LiteYukonImage;
 import com.cannontech.database.data.pao.PAOGroups;
 import com.cannontech.database.db.state.StateGroupUtils;
+import com.cannontech.esub.Drawing;
 import com.cannontech.esub.element.StaticText;
+import com.cannontech.esub.svg.SVGOptions;
+import com.cannontech.esub.util.HTMLOptions;
+import com.cannontech.esub.util.ImageExporter;
 import com.cannontech.yukon.cbc.CapBankDevice;
 import com.cannontech.yukon.cbc.Feeder;
 import com.cannontech.yukon.cbc.StreamableCapObject;
@@ -253,6 +266,100 @@ public class OnelineUtil {
             return PAOGroups.CAPBANK;
         }
         return 0;
+    }
+    
+    public static void createHTMLFile(String dirAndFileExt,
+            CapControlOnelineCanvas canvas) {
+        int retries = 3;
+        Drawing drawing = canvas.getDrawing().getDrawing();
+
+        drawing.setFileName(dirAndFileExt);
+        do {
+            try {
+                writeJLX(dirAndFileExt, drawing);
+                writeSVG(dirAndFileExt, canvas);
+                writeHTML(dirAndFileExt, drawing);
+                String parent = new File(dirAndFileExt).getParent();
+                writeImages(drawing, parent);
+                break;
+            } catch (Exception e) {
+                CTILogger.debug(e.getMessage());
+            }
+        } while (retries-- > 0);
+    }
+
+    private static void writeImages(Drawing ccSubBusDrawing, String parent) {
+        ImageExporter ie = new ImageExporter(ccSubBusDrawing);
+        ie.exportImages(parent);
+        ie.exportAllImages(parent, OnelineUtil.getAdditionalImages());
+    }
+
+
+    private static void writeJLX(String dirAndFileExt, Drawing ccSubBusDrawing) {
+        String jlxFileName = dirAndFileExt;
+
+        if (!jlxFileName.endsWith(".jlx")) {
+            jlxFileName = jlxFileName.concat(".jlx");
+        }
+
+        ccSubBusDrawing.getLxGraph().save(jlxFileName);
+    }
+
+    private static void writeSVG(String dirAndFileExt, CapControlOnelineCanvas canvas) {
+        String svgFileName = dirAndFileExt;
+        if (svgFileName.endsWith(".jlx")) {
+            svgFileName = svgFileName.substring(0, svgFileName.length() - 4);
+        }
+
+        svgFileName = svgFileName.concat(".svg");
+
+        try {
+            SVGOptions svgOptions = new SVGOptions();
+            svgOptions.setControlEnabled(true);
+            svgOptions.setEditEnabled(false);
+            svgOptions.setScriptingEnabled(true);
+            svgOptions.setStaticSVG(false);
+
+            OneLineDrawing onelineDrawing = canvas.getDrawing();
+            Drawing drawing = onelineDrawing.getDrawing();
+            SubBus subBusMsg = onelineDrawing.getSub().getSubBusMsg();
+
+            CapControlSVGGenerator gen = new CapControlSVGGenerator(svgOptions,
+                                                                    drawing);
+            gen.getDrawingUpdater().setSubBusMsg(subBusMsg);
+
+            FileWriter fw = new FileWriter(svgFileName);
+            CapControlDrawingUpdater drawingUpdater = gen.getDrawingUpdater();
+            drawingUpdater.setOnelineDrawing(onelineDrawing);
+            gen.generate(fw, drawing);
+            fw.close();
+
+        } catch (IOException e) {
+            e.printStackTrace();
+        }
+    }
+
+    private static void writeHTML(String dirAndFileExt, Drawing ccSubBusDrawing) {
+        String htmlFileName = dirAndFileExt;
+
+        if (htmlFileName.endsWith(".jlx")) {
+            htmlFileName = htmlFileName.substring(0, htmlFileName.length() - 4);
+        }
+
+        htmlFileName = htmlFileName.concat(".html");
+
+        try {
+            OnelineHTMLGenerator gen = new OnelineHTMLGenerator();
+
+            FileWriter fw = new FileWriter(htmlFileName);
+            HTMLOptions options = new HTMLOptions();
+            options.setStaticHTML(false);
+            gen.setGenOptions(options);
+            gen.generate(fw, ccSubBusDrawing);
+            fw.close();
+        } catch (IOException e) {
+            e.printStackTrace();
+        }
     }
 
 }

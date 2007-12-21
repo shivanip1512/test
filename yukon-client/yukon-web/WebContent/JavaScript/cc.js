@@ -29,82 +29,85 @@ var REF_LABELS = {
 					dir:"Driving Directions:"
 				};
 
+function startsWith(string, pattern) {
+    return string.indexOf(pattern) === 0;
+}
 
+function endsWith(string, pattern) {
+    var d = string.length - pattern.length;
+    return d >= 0 && string.lastIndexOf(pattern) === d;
+}
 
-function batchExecute (cmdStr) {
+function chop(string) {
+    string = string.substring(0, string.length - 1);
+    return string;
+}
+
+function batchExecute(listofCommandsArray) {
 	var tags = new Array();
 	var cmds = new Array();
 	var execute = false;
-	if( cmdStr != "" ){
-		execute = true;
-		all = cmdStr.toString().split(",");
-		question = "The following will be executed: ";
-		//split the command into arrays by command type:
-		//commands and tags
-		//then execute commands first and tags second
-		//NOTE: if command failes tag will still be executed and might change
-			for(var i=0; i < all.length; i++) {
-				var str = all[i];
-				if (str)
-				{
-					if (str.split("_")[0] == "tag")
-					{
-						if (!isQueued (str, tags))
-						{
-							tags.push (str);
-							question += "tagged as " + getCommandVerbal (str);
-							question += ".";
-						}
-					}
-					else
-					{
-						if (!(isQueued (str, cmds)))
-						{
-							cmds.push (str);
-							question += getCommandVerbal (str);
-							question += ",";
-						}
-					}	
-				
-				}
-				
-			}
-			
-	
-		question += ". Is this OK?";
-	}else{
-		question = "No Change Was Made.";
+    var question;
+    
+    var commandsLength = listofCommandsArray.length;
+    
+    if (commandsLength > 0) {
+        execute = true;
+        question = 'The following will be executed: ';
+        
+        for (var x = 0; x < commandsLength; x++) {
+            var command = listofCommandsArray[x];
+            var isTag = startsWith(command, 'tag');
+            if (isTag) {
+                if (!isQueued(command, tags)) {
+                    tags.push(command);
+                }    
+            } else {
+                if (!isQueued(command, cmds)) {
+                    cmds.push(command);
+                    question += getCommandVerbal(command) + ',';
+                }
+            }        
+        }
+        if (endsWith(question, ',')) question = chop(question);
+        question += '. Is this OK?';
+    } else {
+        question = 'No Change Was Made.';
+    }
+    
+	if (confirm(question) && execute) {
+		for (var i=0; i < cmds.length; i++) {
+		  executeCommand (cmds[i]);
+		}	
+		for (var i=0; i < tags.length; i++) {
+            executeTag(tags[i]);        
+		}
 	}
-	if (confirm(question))
-	{
-		if( execute ){
-			for (var i=0; i<cmds.length; i++) {
-				executeCommand (cmds[i]);
-			}	
-			
-			for (var i=0; i<tags.length; i++) {
-				executeCommand (tags[i]);
-			}	
-		}		
-	}
-
 }
 
-function isQueued (str, queue) {
-	for (var i=0; i < queue.length; i++)
-	{
-		if (str == queue[i])
-			return true;	
-	}
-	
-	return false;
+function isQueued(str, queue) {
+    var index = queue.indexOf(str);
+    var result = index != -1;
+    return result;
+}
+
+function executeTag(tag) {
+    var array = tag.split('_');
+    if (array.length != 4) return;
+
+    var paoId = array[1];
+    var reason = array[3];
+
+    var operationalStateSplit = array[2].split('#');
+    var tagDesc = (operationalStateSplit.length == 2) ? operationalStateSplit[1] : array[2];
+    executeReasonUpdate(paoId, tagDesc, reason);
 } 
 
-function executeReasonUpdate(paoID, tagDesc, reason) {
+function executeReasonUpdate(paoId, tagDesc, reason) {
 	new Ajax.Request("/capcontrol/oneline/CBCReasonUpdaterServlet", 
 		{
 			method:"post", 
-			parameters:"id=" + paoID + "&tagDesc=" + tagDesc + "&reason=" + reason, 
+			parameters:"id=" + paoId + "&tagDesc=" + tagDesc + "&reason=" + reason, 
 			asynchronous:true,
 			onSuccess: function () { display_status(cmd_name, "Command sent successfully", "green")},
 			onFailure: function () { display_status(cmd_name, "Command submission failed", "red"); }
@@ -130,7 +133,7 @@ function executeFeederCommand(paoId, command, cmd_name) {
 			onFailure: function () { display_status(cmd_name, "Command submission failed", "red"); }
 			});
 }
-function executeCapBankCommand(paoId, command, cmd_name, is_manual_state) {
+function executeCapBankCommand(paoId, command, cmd_name, is_manual_state, operationalState) {
 	var RESET_OP_CNT = 12;
 	if (is_manual_state) {
 		new Ajax.Request("/servlet/CBCServlet", 
@@ -148,7 +151,7 @@ function executeCapBankCommand(paoId, command, cmd_name, is_manual_state) {
 			new Ajax.Request("/servlet/CBCServlet", 
 			{
 			method:"post", 
-			parameters:"cmdID=" + command + "&paoID=" + paoId + "&controlType=CAPBANK_TYPE", 
+			parameters:"cmdID=" + command + "&paoID=" + paoId + "&controlType=CAPBANK_TYPE" + "&operationalState=" + operationalState, 
 			asynchronous:true,
 			onSuccess: function () { display_status(cmd_name, "Command sent successfully", "green")},
 			onFailure: function () { display_status(cmd_name, "Command submission failed", "red"); }
@@ -236,7 +239,7 @@ function updateCaps(xml) {
 		capBankInfo.push (key);
 	}
 	updateHiddenTextElements("CapHiddenInfo", xml, capBankInfo);
-	updateHiddenTextElements("CapState", xml, ["isDisable", "isOVUVDis", "isStandalone", "standAloneReason", "disableCapReason", "paoName"]);
+	updateHiddenTextElements("CapState", xml, ["isDisable", "isOVUVDis", "isStandalone", "isFixed", "isSwitched", "standAloneReason", "disableCapReason", "disableCapOVUVReason", "paoName"]);
 	updateVisibleText("CapStat", xml);
 	updateVisibleText("CapTag", xml);
 
@@ -279,32 +282,33 @@ function getSubId() {
 //update utils
 function updateHiddenTextElements(grpName, xml, attrs) {
 	var textEls = document.getElementsByTagName("text");
+    var xmlDynamicEls = xml.getElementsByTagName("text");
 	for (var i = 0; i < textEls.length; i++) {
 		txtNode = textEls.item(i);
 		id = txtNode.getAttribute("id");
 		if ((id.split("_")[0] == grpName) && txtNode.getAttribute("elementID") == "HiddenTextElement") {
-			xmlDynamicEls = xml.getElementsByTagName("text");
-				xmlText = xmlDynamicEls.item(i);
-				xmlID = xmlText.getAttribute("id");
-				if ((xmlID == id) && xmlText.getAttribute("elementID") == "HiddenTextElement") {
-					if (attrs == null) {
-						txtNode.getFirstChild().setData(xmlText.text);
-						aElement = txtNode.getParentNode();
-						xmlAElement = xmlText.parentNode;
-						link = xmlAElement.getAttribute("xlink:href");
-						aElement.setAttribute("xlink:href", link);
-						style = xmlText.getAttribute("style");
-						txtNode.setAttribute("style", style);
-					} else {
-						for (k = 0; k < attrs.length; k++) {
-							val = xmlText.getAttribute(attrs[k]);
-							txtNode.setAttribute(attrs[k], val);
-						}
+            xmlText = xmlDynamicEls.item(i);
+			xmlID = xmlText.getAttribute("id");
+			if ((xmlID == id) && xmlText.getAttribute("elementID") == "HiddenTextElement") {
+				if (attrs == null) {
+					txtNode.getFirstChild().setData(xmlText.text);
+					aElement = txtNode.getParentNode();
+					xmlAElement = xmlText.parentNode;
+					link = xmlAElement.getAttribute("xlink:href");
+					aElement.setAttribute("xlink:href", link);
+					style = xmlText.getAttribute("style");
+					txtNode.setAttribute("style", style);
+				} else {
+					for (k = 0; k < attrs.length; k++) {
+						val = xmlText.getAttribute(attrs[k]);
+						txtNode.setAttribute(attrs[k], val);
 					}
 				}
+			}
 		}
 	}
 }
+
 function updateImages(images, xml) {
 	for (i = 0; i < images.length; i++) {
 		update_Image(images[i], xml);
@@ -389,10 +393,11 @@ function isValidOpcount(number) {
 }
 //function that will toggle the reason span based on cb state
 function toggleCB(spanID, cb, reason) {
-	span = document.getElementById(spanID);
-	if (cb.type == "checkbox" && cb.checked) {
-		str = "";
-		str = "<font style='color:gray'>Reason: <textarea style='vertical-align: bottom' rows=\"2\">";
+	var htmlTagName = cb.tagName;
+    var span = document.getElementById(spanID);
+    
+	if ((cb.type == "checkbox" && cb.checked) || (htmlTagName == 'SELECT')) {
+		var str = "<font style='color:gray'>Reason: <textarea style='vertical-align: bottom' rows=\"2\">";
 		if (reason) {
 			str += unescape(reason);
 		}
@@ -403,21 +408,11 @@ function toggleCB(spanID, cb, reason) {
 		span.style.display = "none";
 	}
 }
-function setReason(obj, reason, prntCB) {
-	var name = "";
-	var cb;
-	if (obj.name && obj.type == "checkbox") {
-		name = obj.name;
-		cb = obj;
-	} else {
-		if (obj && (prntCB.name && prntCB.type == "checkbox")) {
-			name = obj;
-			cb = prntCB;
-		}
-	}
-	spanID = name + "ReasonSpan";
+function setReason(name, reason, cb) {
+	var spanID = name + "ReasonSpan";
 	toggleCB(spanID, cb, reason);
 }
+
 function generateReasonText(reason) {
 	var str = "";
 	str += "\" style=\"display: inline\" >";
@@ -482,21 +477,42 @@ function disableAllCheckedReasons(spanPrefix, id) {
 //object is a checkbox with a name that has it's id in it
 //ex: tag_paoID_cmdID
 function addCommand(obj) {
+    var htmlTagName = obj.tagName;
 
-	if (obj.name) 
-	{ //this is a checkbox
+    if (htmlTagName == 'INPUT') {
 		var paoID = paoID = obj.name.split("_")[1];
 		var executeQueue = document.getElementById("executeQueue_" + paoID);
 		executeQueue.value += obj.name;
 		executeQueue.value += ":";
+        return;
+    }
+    
+    if (htmlTagName == 'SELECT') {
+        var index = obj.selectedIndex;
+        var option = obj.options[index];
+        var operationState = option.value;
+        var nameWithState = obj.name + '#' + operationState;
+        
+        //command        
+        var paoID = paoID = obj.name.split("_")[1];
+        var executeQueue = document.getElementById("executeQueue_" + paoID);
+        executeQueue.value += nameWithState;
+        executeQueue.value += ":";
+        
+        //tag
+        var array = nameWithState.split("_");
+        array[0] = 'tag';
+        var stringCommand = array.join('_');
+        addStringCommand(stringCommand);
+        return;
+    }
 
-	} else {
-		if (obj) {
-			addStringCommand(obj);
-		}
-		
-	}
+    //obj == String
+	if (obj) {
+	   addStringCommand(obj);
+    }
 }
+
 function findCommand(obj, val)
 {
 	var result = obj.value.split(";");
@@ -547,6 +563,7 @@ function addStringCommand(obj) {
 		}
 	}
 }
+
 function findTagSpanForCB(name, allIds) {
 	for (var i = 0; i < allIds.length; i= i+1) {
 		if ((allIds[i].split("_")[1] == name.split("_")[1]) && (allIds[i].split("_")[0] == ALL_CMD_TYPES.tag)) {
@@ -559,52 +576,45 @@ function findTagSpanForCB(name, allIds) {
 //All commands are piled into an executeQueue that exists for every element
 //all execute queues are located in a span to separate executeQueue for feeder and executeQueue for capbank
 function executeMultipleCommands(spanPrefix, id) {
-	//get the span
 	var span = document.getElementById(spanPrefix + id);
-	//get the executeQueue
 	var executeQueue = document.getElementById("executeQueue_" + id);
-	allIds = executeQueue.value.split(";");
-	var listofCommands = new Array();
-	var z = 0;
+    
+    //example: sub_3514_32:tag_3514_subOVUVDisabled;sub_3514_31:tag_3514_subDisabled
+    var allGroupedCommands = executeQueue.value.split(";");  
 	executeQueue.value = "";
-	allTags = span.getElementsByTagName("input");
-	var checkedCount = 0;
-	//every checkbox has a reasonSpan attached to it. ReasonSpan contains the text area for the user input reason.
-	//we need to find the reasonSpan based on the name of the checkbox (in the executeQueue)
-	//get the text value in the span and construct a new command that will contain the reason so that
-	//it will get passed to the servlet.
-	//ex: tag_1622_capDisable_Testing%20Cap%20Bank
-	//tag - command type
-	//1622 - paoID
-	//capDisable - tag attach
-	//Testing%20Cap%20Bank - reason for attaching this tag
-	if( !((allIds.length == 1) && (allIds[0] == "")) )
-	{
-		for (var j = 0; j < allIds.length; j++) {
-			var allIds2 = allIds[j].split(":");
-			listofCommands[z] = allIds2[0]; z++;
-			listofCommands[z] = allIds2[1]; z++;
-		}
-	}//else means its just a null string, ignore it.
-	for (var i = 0; i < allTags.length; i++) {
-		if (allTags[i].type == "checkbox" && allTags[i].checked) {
-			spanID = findTagSpanForCB(allTags[i].name, listofCommands);
-			reasonSpan = document.getElementById(spanID);
-				
-			if (reasonSpan) {
-				for (var j = 0; j < listofCommands.length; j++) {
-					
-					if ((listofCommands[j] + "ReasonSpan") == reasonSpan.id) {
-						listofCommands[j] = listofCommands[j] + "_" + reasonSpan.getElementsByTagName("textarea")[0].value;
-					}
-				}
-			}
-		}
-	}
+    
+    var listofCommands = new Array();
+    for (var x = 0; x < allGroupedCommands.length; x++) {
+        var group = allGroupedCommands[x];
+        if (group == "") continue;
+        var commands = group.split(':');
+        for (var y = 0; y < commands.length; y++) {
+            var command = commands[y];
+            var isTag = startsWith(command, 'tag');
+            if (isTag) {
+                var spanId = stripOperationalState(command) + 'ReasonSpan';
+                var reasonSpan = document.getElementById(spanId);
+                if (reasonSpan != null) {
+                    var textAreaArray = reasonSpan.getElementsByTagName("textarea");
+                    if (textAreaArray.length > 0) {
+                        var comment = textAreaArray[0].value;
+                        if (comment == "") comment = 'EMPTY';
+                        command += '_' + comment;
+                    }  
+                }       
+            }
+            listofCommands.push(command);    
+        }         
+    }
+
 	batchExecute(listofCommands);
-				
 }
 
+function stripOperationalState(string) {
+    var array = string.split('#');
+    if (array.length > 0) return array[0];
+    return string;
+}
 
 function reflect (obj, value) {
 	for (var key in obj)

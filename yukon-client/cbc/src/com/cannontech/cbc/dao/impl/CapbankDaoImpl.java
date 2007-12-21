@@ -4,16 +4,15 @@ import java.sql.ResultSet;
 import java.sql.SQLException;
 import java.util.List;
 
-
 import org.springframework.dao.EmptyResultDataAccessException;
 import org.springframework.jdbc.core.simple.ParameterizedRowMapper;
 import org.springframework.jdbc.core.simple.SimpleJdbcTemplate;
 import org.springframework.transaction.annotation.Propagation;
 import org.springframework.transaction.annotation.Transactional;
 
+import com.cannontech.capcontrol.CapBankOperationalState;
 import com.cannontech.cbc.dao.CapbankDao;
 import com.cannontech.cbc.model.Capbank;
-import com.cannontech.core.dao.NotFoundException;
 import com.cannontech.util.Validator;
 
 public class CapbankDaoImpl implements CapbankDao {
@@ -52,7 +51,7 @@ public class CapbankDaoImpl implements CapbankDao {
             public Capbank mapRow(ResultSet rs, int rowNum) throws SQLException {
                 Capbank bank = new Capbank();
                 bank.setId(rs.getInt("DeviceID"));
-                bank.setOperationalState(rs.getString("OperationalState"));
+                bank.setOperationalState(CapBankOperationalState.valueOf(rs.getString("OperationalState")));
                 bank.setControllerType(rs.getString("ControllerType"));
                 bank.setControlDeviceId(rs.getInt("ControlDeviceID"));
                 bank.setControlPointId(rs.getInt("ControlPointID"));
@@ -79,7 +78,7 @@ public class CapbankDaoImpl implements CapbankDao {
     @Transactional(readOnly = false, propagation = Propagation.REQUIRED)
     public boolean add(Capbank bank) {
         int rowsAffected = simpleJdbcTemplate.update(insertSql, bank.getId(),
-                                                                bank.getOperationalState(),
+                                                                bank.getOperationalState().name(),
                                                                 bank.getControllerType(),
                                                                 bank.getControlDeviceId(),
                                                                 bank.getControlPointId(),
@@ -101,7 +100,7 @@ public class CapbankDaoImpl implements CapbankDao {
     }
     @Transactional(readOnly = false, propagation = Propagation.REQUIRED)
     public boolean update(Capbank bank) {
-        int rowsAffected = simpleJdbcTemplate.update(updateSql,bank.getOperationalState(),
+        int rowsAffected = simpleJdbcTemplate.update(updateSql,bank.getOperationalState().name(),
                                                      bank.getControllerType(),
                                                      bank.getControlDeviceId(),
                                                      bank.getControlPointId(),

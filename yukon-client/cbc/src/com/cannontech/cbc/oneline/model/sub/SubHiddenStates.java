@@ -1,17 +1,15 @@
 package com.cannontech.cbc.oneline.model.sub;
 
+import com.cannontech.cbc.dao.CommentAction;
 import com.cannontech.cbc.oneline.elements.HiddenTextElement;
-import com.cannontech.cbc.oneline.model.HiddenStates;
+import com.cannontech.cbc.oneline.model.AbstractHiddenStates;
 import com.cannontech.cbc.oneline.model.OnelineObject;
-import com.cannontech.cbc.oneline.tag.CBCTagHandler;
-import com.cannontech.cbc.oneline.tag.OnelineTags;
+import com.cannontech.database.data.pao.CapControlTypes;
 import com.cannontech.yukon.cbc.SubBus;
-import com.loox.jloox.LxAbstractView;
 import com.loox.jloox.LxGraph;
 
 @SuppressWarnings("serial")
-public class SubHiddenStates extends LxAbstractView implements HiddenStates {
-
+public class SubHiddenStates extends AbstractHiddenStates {
     private SubBus subBusMsg;
     private LxGraph graph;
     private OnelineSub parent;
@@ -23,18 +21,20 @@ public class SubHiddenStates extends LxAbstractView implements HiddenStates {
     }
 
     public void addStateInfo() {
-        String name = "SubState_" + subBusMsg.getCcId();
+        final int paoId = subBusMsg.getCcId();
+        
+        String name = "SubState_" + paoId;
         HiddenTextElement stateInfo = new HiddenTextElement ("HiddenTextElement", name);
         stateInfo.addProperty("isOVUVDis", isOVUVDisabled().toString() );
         stateInfo.addProperty("isDisable", isDisabled().toString() );
         stateInfo.addProperty("isVerify", subBusMsg.getVerificationFlag().toString());
-        String disableReason = CBCTagHandler.getReason(OnelineTags.TAGGRP_ENABLEMENT,
-                                                                                 subBusMsg.getCcId(), parent.getPointCache());
-        String disableOVUVReason = CBCTagHandler.getReason(OnelineTags.TAGGRP_OVUV_ENABLEMENT,
-                                                       subBusMsg.getCcId(), parent.getPointCache());
+        
+        String disableReason = getReason(paoId, CommentAction.DISABLED);
         stateInfo.addProperty("subDisableReason", disableReason);
+        
+        String disableOVUVReason = getReason(paoId, CommentAction.DISABLED_OVUV, CapControlTypes.CAP_CONTROL_SUBBUS);
         stateInfo.addProperty("subDisableOVUVReason", disableOVUVReason);
-
+        
         graph.add( stateInfo);
 
     }
@@ -62,6 +62,8 @@ public class SubHiddenStates extends LxAbstractView implements HiddenStates {
     public void setParentOnelineObject(OnelineObject p) {
         parent = (OnelineSub) p;
     }
+    
+    @Override
     public LxGraph getGraph() {
         return graph;
         

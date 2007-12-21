@@ -17,13 +17,15 @@ import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
 import javax.servlet.http.HttpSession;
 
+import org.springframework.web.bind.ServletRequestBindingException;
+import org.springframework.web.bind.ServletRequestUtils;
 import org.springframework.web.context.WebApplicationContext;
 import org.springframework.web.context.support.WebApplicationContextUtils;
 
+import com.cannontech.capcontrol.CapBankOperationalState;
 import com.cannontech.cbc.cache.CapControlCache;
 import com.cannontech.cbc.dao.CapControlCommentDao;
 import com.cannontech.cbc.model.CapControlComment;
-import com.cannontech.cbc.oneline.OnelineCBCBroker;
 import com.cannontech.cbc.util.CBCDisplay;
 import com.cannontech.cbc.util.CBCUtils;
 import com.cannontech.cbc.web.CBCCommandExec;
@@ -66,7 +68,7 @@ public class CBCServlet extends ErrorAwareInitializingServlet
     public static final String TYPE_FEEDER = "FEEDER_TYPE";
     public static final String TYPE_CAPBANK = "CAPBANK_TYPE";
     public static final String TYPE_AREA = "AREA_TYPE";
-    
+
     private CapControlCache cbcCache;
 
     /**
@@ -89,20 +91,7 @@ public class CBCServlet extends ErrorAwareInitializingServlet
     public void doInit(ServletConfig config) throws ServletException {
         WebApplicationContext context = WebApplicationContextUtils.getWebApplicationContext(config.getServletContext());
         cbcCache = (CapControlCache) context.getBean("cbcCache", CapControlCache.class);
-
-        //create first set of html files for all subs
-        String absPath = config.getServletContext().getRealPath(CBCWebUtils.ONE_LINE_DIR);
-        generateOnelineHtml(absPath);
-
     }
-
-    private void generateOnelineHtml(String absPath) {
-        OnelineCBCBroker oneLine = new OnelineCBCBroker();
-        oneLine.setDirBase(absPath);
-        oneLine.setStaticMode(true);
-        oneLine.start();
-    }	
-
 
     /**
      * 
@@ -224,11 +213,11 @@ public class CBCServlet extends ErrorAwareInitializingServlet
 
     private void updateSubSpecialAreaMenu(Integer areaId, Writer writer) throws IOException {
         CBCSpecialArea area = cbcCache.getCBCSpecialArea(areaId);
-        
+
         String msg = area.getPaoName() + ":" + areaId + ":";
         msg += (area.getDisableFlag())? "DISABLED" : "ENABLED";
         if (area.getOvUvDisabledFlag()) msg += "-V";
-        
+
         writer.write (msg);
         writer.flush();
     }
@@ -530,6 +519,7 @@ public class CBCServlet extends ErrorAwareInitializingServlet
      * 
      * /servlet/CBCServlet?type=nav&pageType=editor&modType=capcontrol
      */
+    @SuppressWarnings("static-access")
     private String createNavigation( HttpServletRequest req ) {
 
         String pageType = ParamUtil.getString( req, "pageType" );
@@ -563,25 +553,24 @@ public class CBCServlet extends ErrorAwareInitializingServlet
     /**
      * Allows the execution of commands to the cbc server for all
      * CBC object types.
+     * @throws ServletRequestBindingException 
      */
-    private synchronized void executeCommand( HttpServletRequest req, String userName ) {
+    private synchronized void executeCommand( HttpServletRequest req, String userName ) throws ServletRequestBindingException {
 
-        int cmdID = ParamUtil.getInteger( req, "cmdID" );
-        int paoID = ParamUtil.getInteger( req, "paoID" );
-        String controlType = ParamUtil.getString( req, "controlType" );
-        float[] optParams = StringUtils.toFloatArray( ParamUtil.getStrings(req, "opt") );
+        int cmdID = ServletRequestUtils.getIntParameter(req, "cmdID", 0);
+        int paoID = ServletRequestUtils.getIntParameter(req, "paoID", 0);
+        String controlType = ServletRequestUtils.getStringParameter(req, "controlType", "");
+        float[] optParams = StringUtils.toFloatArray(ServletRequestUtils.getStringParameters(req, "opt"));
+        String operationalState = ServletRequestUtils.getStringParameter(req, "operationalState");
 
         CTILogger.debug(req.getServletPath() +
                         "	  cmdID = " + cmdID +
                         ", controlType = " + controlType +
                         ", paoID = " + paoID +
-                        ", opt = " + optParams  );
+                        ", opt = " + optParams +
+                        ", operationalState = " + operationalState);
 
-        //Creates a new command executor and gives it a reference to
-        // the cache.
         final CBCCommandExec cbcExecutor = new CBCCommandExec(cbcCache, userName );
-
-
         //send the command with the id, type, paoid
         if( CBCServlet.TYPE_SUBSTATION.equals(controlType) ) {
             cbcExecutor.execute_SubstationCmd( cmdID, paoID );
@@ -593,10 +582,21 @@ public class CBCServlet extends ErrorAwareInitializingServlet
             cbcExecutor.execute_FeederCmd( cmdID, paoID );
         }
         if( CBCServlet.TYPE_CAPBANK.equals(controlType) ) {
-            cbcExecutor.execute_CapBankCmd( cmdID, paoID, optParams );
+            int operationalStateValue = getOperationalState(operationalState);
+            cbcExecutor.execute_CapBankCmd( cmdID, paoID, optParams, operationalStateValue);
         }
         if ( CBCServlet.TYPE_AREA.equals (controlType) ) { 
             cbcExecutor.execute_SubAreaCmd(cmdID, paoID);
+        }
+    }
+
+    private int getOperationalState(String value) {
+        if (value == null) return CBCCommandExec.defaultOperationalState;
+        try {
+            int operationalState = CapBankOperationalState.valueOf(value).ordinal();
+            return operationalState;
+        } catch (IllegalArgumentException e) {
+            return CBCCommandExec.defaultOperationalState;
         }
     }
 
