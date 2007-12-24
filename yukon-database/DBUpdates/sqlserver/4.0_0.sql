@@ -1133,17 +1133,17 @@ create table CAPBANKCOMMENT (
    Comment              varchar(500)         not null,
    Altered              varchar(3)           not null,
    constraint PK_CAPBANKCOMMENT primary key (CommentID)
-)
+);
 go
 
 alter table CAPBANKCOMMENT
    add constraint FK_CAPBANKC_REFERENCE_YUKONPAO foreign key (PaoID)
-      references YukonPAObject (PAObjectID)
+      references YukonPAObject (PAObjectID);
 go
 
 alter table CAPBANKCOMMENT
    add constraint FK_CAPBANKC_REFERENCE_YUKONUSE foreign key (UserID)
-      references YukonUser (UserID)
+      references YukonUser (UserID);
 go
 /* End YUK 4762, YUK-4969 */
 
