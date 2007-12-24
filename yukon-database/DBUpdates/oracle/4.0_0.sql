@@ -138,7 +138,7 @@ alter table CapControlFeeder drop column StrategyId;
 create table CapControlSpecialArea( AreaID number not null );
 
 alter table CapControlSpecialArea
-   add constraint PK_CapControlSpecialArea primary key nonclustered (AreaID);
+   add constraint PK_CapControlSpecialArea primary key (AreaID);
 
 create table CCSubSpecialAreaAssignment (
 
@@ -148,7 +148,7 @@ create table CCSubSpecialAreaAssignment (
 );
 
 alter table CCSubSpecialAreaAssignment
-   add constraint PK_CCSubSpecialAreaAssignment primary key nonclustered (AreaId, SubstationBusId);
+   add constraint PK_CCSubSpecialAreaAssignment primary key (AreaId, SubstationBusId);
 
 alter table CCSubSpecialAreaAssignment
    add constraint FK_CCSubSpecialArea_CapContr foreign key (AreaID)
@@ -159,7 +159,7 @@ alter table CCSubSpecialAreaAssignment
       references CapControlSubstationBus (SubstationBusId);
 
 alter table DYNAMICCCAREA
-   add constraint PK_DYNAMICCCAREA primary key nonclustered (AreaId);
+   add constraint PK_DYNAMICCCAREA primary key (AreaId);
 
 
 insert into DynamicCCSpecialArea (AreaId, Additionalflags) select areaid, 'NNNNNNNNNNNNNNNNNNNN' from CapControlSpecialArea;
