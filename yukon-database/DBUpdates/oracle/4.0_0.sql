@@ -1242,6 +1242,10 @@ where
 
 /* End YUK-4977 */
 
+/* Start YUK-4997 */
+update capbank set operationalstate = 'StandAlone' where lower(operationalstate) = 'stand alone'; 
+/* End YUK-4997 */
+
 /**************************************************************/
 /* VERSION INFO                                               */
 /*   Automatically gets inserted from build script            */
