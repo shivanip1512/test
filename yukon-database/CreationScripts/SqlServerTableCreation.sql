@@ -1,7 +1,7 @@
 /*==============================================================*/
 /* Database name:  YukonDatabase                                */
 /* DBMS name:      Microsoft SQL Server 2000                    */
-/* Created on:     12/24/2007 12:15:13 PM                       */
+/* Created on:     12/24/2007 2:22:53 PM                        */
 /*==============================================================*/
 
 
@@ -12415,67 +12415,5 @@ go
 alter table YukonUserRole
    add constraint FK_YkUsRlr_YkUsr foreign key (UserID)
       references YukonUser (UserID)
-go
-
-
-create or replace procedure RenCol(
-  User in varchar2,       -- name of the schema. 
-  Table_Name in varchar2, -- name of the table. 
-  Old_Name in varchar2,   -- name of the column to be renamed. 
-  New_Name in varchar2    -- new name of the column. 
-) 
-As
-declare
-  obj_id number; 
-  col_id number; 
-  cursor_name1 INTEGER; 
-  cursor_name2 INTEGER; 
-  ret1 INTEGER; 
-  ret2 INTEGER; 
-
-begin
-  Select object_id 
-  Into obj_id 
-  From dba_objects 
-  Where object_name=UPPER(table_name) 
-  And owner=UPPER(user) 
-  And object_type='TABLE'; 
-
-  --DBMS_OutPut.put_line(obj_id); 
-
-  Select col# 
-  Into col_id 
-  From col$ 
-  Where obj#=obj_id 
-  And name=UPPER(old_name); 
-
-  --DBMS_OutPut.put_line(col_id); 
-
-  Update col$ 
-  Set name=UPPER(new_name) 
-  Where obj#=obj_id 
-  And col#=col_id; 
-
-  Commit; 
-
-  cursor_name1 := DBMS_Sql.Open_Cursor; 
-  DBMS_Sql.Parse(cursor_name1, 'ALTER SYSTEM FLUSH SHARED_POOL',DBMS_Sql.Native); 
-  ret1 := DBMS_Sql.Execute(cursor_name1); 
-  DBMS_Sql.Close_Cursor(cursor_name1); 
-
-  cursor_name2:= DBMS_Sql.Open_Cursor; 
-  DBMS_Sql.Parse(cursor_name2, 'ALTER SYSTEM CHECKPOINT',DBMS_Sql.Native); 
-  ret2:= DBMS_Sql.Execute(cursor_name2); 
-  DBMS_Sql.Close_Cursor(cursor_name2); 
-end;
-/**************************************************************************************/
-/* Example of use:                                                                    */
-/*  SQL> Exec RenCol( 'username', 'tablename', 'old col name', 'new col name' );      */
-/*                                                                                    */
-/**************************************************************************************/
-/
-
-alter procedure RenCol compile
-/
 go
 
