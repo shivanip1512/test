@@ -154,11 +154,11 @@ alter table CCSubSpecialAreaAssignment
    add constraint FK_CCSubSpecialArea_CapContr foreign key (AreaID)
       references CapControlSpecialArea (AreaID);
 
-/* Start YUK-4928 */
+/* Start YUK-4746 */
 alter table CCSUBSPECIALAREAASSIGNMENT
    add constraint FK_CCSUBSPE_CAPCONTR2 foreign key (SubstationBusID)
       references CAPCONTROLSUBSTATION (SubstationID);
-/* End YUK-4928 */
+/* End YUK-4746 */
 
 alter table DYNAMICCCAREA
    add constraint PK_DYNAMICCCAREA primary key (AreaId);
