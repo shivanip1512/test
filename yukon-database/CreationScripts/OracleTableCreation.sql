@@ -1,7 +1,7 @@
 /*==============================================================*/
 /* Database name:  YukonDatabase                                */
 /* DBMS name:      ORACLE Version 9i                            */
-/* Created on:     12/24/2007 9:45:09 AM                        */
+/* Created on:     12/24/2007 10:12:44 AM                       */
 /*==============================================================*/
 
 
@@ -9374,7 +9374,6 @@ alter table CCSUBAREAASSIGNMENT
 alter table CCSUBSPECIALAREAASSIGNMENT
    add constraint FK_CCSUBSPE_CAPCONTR2 foreign key (SubstationBusID)
       references CAPCONTROLSUBSTATION (SubstationID)
-      on delete cascade
 ;
 
 alter table CCSUBSPECIALAREAASSIGNMENT

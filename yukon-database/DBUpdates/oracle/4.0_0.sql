@@ -707,10 +707,11 @@ alter table CCSUBSPECIALAREAASSIGNMENT
    add constraint FK_CCSUBSPE_REFERENCE_CAPCONTR foreign key (AreaID)
       references CAPCONTROLSPECIALAREA (AreaID);
 
+/* Start YUK-4746 */
 alter table CCSUBSPECIALAREAASSIGNMENT
    add constraint FK_CCSUBSPE_CAPCONTR2 foreign key (SubstationBusID)
-      references CAPCONTROLSUBSTATION (SubstationID)
-         on delete cascade;
+      references CAPCONTROLSUBSTATION (SubstationID);
+/* End YUK-4746 */
 
 alter table CAPCONTROLSPECIALAREA
    add constraint FK_CAPCONTR_YUKONPAO2 foreign key (AreaID)
