@@ -407,19 +407,19 @@ insert into YukonRoleProperty values(-70015,-700,'Definition Tripped','Open,Open
 insert into YukonRoleProperty values(-70016,-700,'Definition Closed','Close,CloseFail,CloseQuestionable,ClosePending','Capbank sized in these states will be added to the closed sum.');
 insert into YukonRoleProperty VALUES(-100204, -1002, 'Daily/Total Operation Count', 'true', 'is Daily/Total Operation Count displayed');
 
-/* Start YUK-4752 */
+/* Start YUK-4752, YUK-5006 */
 INSERT INTO DeviceGroup
 (DeviceGroupId,GroupName,ParentDeviceGroupId,SystemGroup,Type)
-SELECT MAX(DeviceGroupID)+1,'System',0,'Y','STATIC' FROM DeviceGroup WHERE DeviceGroupId<100;
+SELECT MAX(DeviceGroupID)+1,'System',0,'Y','STATIC' FROM DeviceGroup WHERE DeviceGroupId<100 group by 2,3,4,5;
 
 INSERT INTO DeviceGroup
 (DeviceGroupId,GroupName,ParentDeviceGroupId,SystemGroup,Type)
-SELECT MAX(DeviceGroupID)+1,'Routes',(SELECT MAX(DeviceGroupID) from DeviceGroup WHERE DeviceGroupId<100),'Y','ROUTE' FROM DeviceGroup WHERE DeviceGroupId<100;
+SELECT MAX(DeviceGroupID)+1,'Routes',(SELECT MAX(DeviceGroupID) from DeviceGroup WHERE DeviceGroupId<100),'Y','ROUTE' FROM DeviceGroup WHERE DeviceGroupId<100 group by 2,3,4,5;
 
 INSERT INTO DeviceGroup
 (DeviceGroupId,GroupName,ParentDeviceGroupId,SystemGroup,Type)
-SELECT MAX(DeviceGroupID)+1,'Device Types',(SELECT MAX(DeviceGroupID) -1 from DeviceGroup WHERE DeviceGroupId<100),'Y','DEVICETYPE' FROM DeviceGroup WHERE DeviceGroupId<100; 
-/* End YUK-4752 */
+SELECT MAX(DeviceGroupID)+1,'Device Types',(SELECT MAX(DeviceGroupID) -1 from DeviceGroup WHERE DeviceGroupId<100),'Y','DEVICETYPE' FROM DeviceGroup WHERE DeviceGroupId<100 group by 2,3,4,5; 
+/* End YUK-4752, YUK-5006 */
 
 alter table dynamiccccapbank add beforeVar varchar2(32);
 update dynamiccccapbank set beforeVar = '---';
