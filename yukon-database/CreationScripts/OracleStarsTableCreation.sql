@@ -1,7 +1,10 @@
 /*==============================================================*/
 /* DBMS name:      ORACLE Version 9i                            */
-/* Created on:     11/26/2007 10:30:01 AM                       */
+/* Created on:     12/24/2007 3:22:00 PM                        */
 /*==============================================================*/
+
+
+set define off;
 
 
 drop index CstSrvCstProp_FK;
@@ -107,6 +110,8 @@ drop table LMCustomerEventBase cascade constraints;
 drop table LMHardwareBase cascade constraints;
 
 drop table LMHardwareConfiguration cascade constraints;
+
+drop table LMHardwareControlGroup cascade constraints;
 
 drop table LMHardwareEvent cascade constraints;
 
@@ -907,6 +912,27 @@ create index LmHrd_LmHrdCfg_FK on LMHardwareConfiguration (
 create index CstLdIn_LMHrdCfg_FK on LMHardwareConfiguration (
    ApplianceID ASC
 );
+
+/*==============================================================*/
+/* Table: LMHardwareControlGroup                                */
+/*==============================================================*/
+create table LMHardwareControlGroup  (
+   ControlEntryID       INTEGER                         not null,
+   InventoryID          INTEGER                         not null,
+   LMGroupID            INTEGER                         not null,
+   AccountID            INTEGER                         not null,
+   GroupEnrollStart     DATE,
+   GroupEnrollStop      DATE,
+   OptOutStart          DATE,
+   OptOutStop           DATE,
+   Type                 INTEGER                         not null,
+   Relay                INTEGER                         not null,
+   UserIDFirstAction    INTEGER                         not null,
+   UserIDSecondAction   INTEGER                         not null
+);
+
+alter table LMHardwareControlGroup
+   add constraint PK_LMHARDWARECONTROLGROUP primary key (ControlEntryID);
 
 /*==============================================================*/
 /* Table: LMHardwareEvent                                       */
