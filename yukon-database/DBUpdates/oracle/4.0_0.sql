@@ -1011,22 +1011,26 @@ update cceventlog set capbankstateinfo = 'N/A';
 alter table cceventlog modify capbankstateinfo varchar2(20) not null ;
 /* End YUK-4813 */
 
-/* Start YUK-4762 */
-drop table CAPBANKCOMMENT cascade constraints;
-
-/*==============================================================*/
-/* Table: CAPBANKCOMMENT                                        */
-/*==============================================================*/
+/* Start YUK-4762, YUK-4969 */
 create table CAPBANKCOMMENT  (
    CommentID            INTEGER                         not null,
    PaoID                INTEGER                         not null,
    UserID               INTEGER                         not null,
+   Action               VARCHAR2(50)                    not null,
    CommentTime          DATE                            not null,
    "Comment"            VARCHAR2(500)                   not null,
    Altered              VARCHAR2(3)                     not null,
    constraint PK_CAPBANKCOMMENT primary key (CommentID)
 );
-/* End YUK-4762 */
+
+alter table CAPBANKCOMMENT
+   add constraint FK_CAPBANKC_REFERENCE_YUKONPAO foreign key (PaoID)
+      references YukonPAObject (PAObjectID);
+
+alter table CAPBANKCOMMENT
+   add constraint FK_CAPBANKC_REFERENCE_YUKONUSE foreign key (UserID)
+      references YukonUser (UserID);
+/* End YUK-4762, YUK-4969 */
 
 /* Start YUK-4810 */
 insert into YukonRoleProperty values(-20207,-202,'Enable Auto Archiving','true','Allows a user to setup automatic archiving on their yukon system pertaining to the move in/move out interface');

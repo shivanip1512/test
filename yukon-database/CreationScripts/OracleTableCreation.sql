@@ -1,7 +1,7 @@
 /*==============================================================*/
 /* Database name:  YukonDatabase                                */
 /* DBMS name:      ORACLE Version 9i                            */
-/* Created on:     12/20/2007 4:37:05 PM                        */
+/* Created on:     12/24/2007 9:45:09 AM                        */
 /*==============================================================*/
 
 
@@ -1338,6 +1338,7 @@ create table CAPBANKCOMMENT  (
    CommentID            INTEGER                         not null,
    PaoID                INTEGER                         not null,
    UserID               INTEGER                         not null,
+   Action               VARCHAR2(50)                    not null,
    CommentTime          DATE                            not null,
    "Comment"            VARCHAR2(500)                   not null,
    Altered              VARCHAR2(3)                     not null,
@@ -9251,6 +9252,16 @@ alter table CAPBANK
 alter table CAPBANKADDITIONAL
    add constraint FK_CAPBANKA_CAPBANK foreign key (DeviceID)
       references CAPBANK (DEVICEID)
+;
+
+alter table CAPBANKCOMMENT
+   add constraint FK_CAPBANKC_REFERENCE_YUKONPAO foreign key (PaoID)
+      references YukonPAObject (PAObjectID)
+;
+
+alter table CAPBANKCOMMENT
+   add constraint FK_CAPBANKC_REFERENCE_YUKONUSE foreign key (UserID)
+      references YukonUser (UserID)
 ;
 
 alter table CAPCONTROLAREA

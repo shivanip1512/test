@@ -1,7 +1,7 @@
 /*==============================================================*/
 /* Database name:  YukonDatabase                                */
 /* DBMS name:      Microsoft SQL Server 2000                    */
-/* Created on:     12/20/2007 4:35:52 PM                        */
+/* Created on:     12/24/2007 9:46:31 AM                        */
 /*==============================================================*/
 
 
@@ -2827,6 +2827,7 @@ create table CAPBANKCOMMENT (
    CommentID            int                  not null,
    PaoID                int                  not null,
    UserID               int                  not null,
+   Action               varchar(50)          not null,
    CommentTime          datetime             not null,
    Comment              varchar(500)         not null,
    Altered              varchar(3)           not null,
@@ -10757,6 +10758,16 @@ go
 alter table CAPBANKADDITIONAL
    add constraint FK_CAPBANKA_CAPBANK foreign key (DeviceID)
       references CAPBANK (DEVICEID)
+go
+
+alter table CAPBANKCOMMENT
+   add constraint FK_CAPBANKC_REFERENCE_YUKONPAO foreign key (PaoID)
+      references YukonPAObject (PAObjectID)
+go
+
+alter table CAPBANKCOMMENT
+   add constraint FK_CAPBANKC_REFERENCE_YUKONUSE foreign key (UserID)
+      references YukonUser (UserID)
 go
 
 alter table CAPCONTROLAREA

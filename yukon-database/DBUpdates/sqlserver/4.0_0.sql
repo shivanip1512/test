@@ -1121,29 +1121,29 @@ alter table cceventlog alter column capbankstateinfo varchar(20) not null ;
 go
 /* End YUK-4813 */
 
-/* Start YUK-4762 */
-if exists (select 1
-            from  sysobjects
-           where  id = object_id('CAPBANKCOMMENT')
-            and   type = 'U')
-   drop table CAPBANKCOMMENT;
-go
-
-/*==============================================================*/
-/* Table: CAPBANKCOMMENT                                        */
-/*==============================================================*/
+/* Start YUK-4762, YUK-4969 */
 create table CAPBANKCOMMENT (
    CommentID            int                  not null,
    PaoID                int                  not null,
    UserID               int                  not null,
+   Action               varchar(50)          not null,
    CommentTime          datetime             not null,
    Comment              varchar(500)         not null,
    Altered              varchar(3)           not null,
    constraint PK_CAPBANKCOMMENT primary key (CommentID)
-);
+)
 go
 
-/* End YUK 4762 */
+alter table CAPBANKCOMMENT
+   add constraint FK_CAPBANKC_REFERENCE_YUKONPAO foreign key (PaoID)
+      references YukonPAObject (PAObjectID)
+go
+
+alter table CAPBANKCOMMENT
+   add constraint FK_CAPBANKC_REFERENCE_YUKONUSE foreign key (UserID)
+      references YukonUser (UserID)
+go
+/* End YUK 4762, YUK-4969 */
 
 /* Start YUK-4810 */
 insert into YukonRoleProperty values(-20207,-202,'Enable Auto Archiving','true','Allows a user to setup automatic archiving on their yukon system pertaining to the move in/move out interface');
