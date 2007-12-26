@@ -509,43 +509,44 @@ where
 	type = 'CCSUBBUS';
 
 /* @start-block */
-declare 
-v_paoid number(6);
-v_ccsubstationname varchar2(60);
+DECLARE
+   v_paoid      NUMBER (6);
+   v_areaname   VARCHAR2 (60);
 
-cursor substation_curs is select distinct(CCSubStationName) from mySubstation;
-begin
-select max(paobjectid) into v_paoid from yukonpaobject;
-v_paoid := v_paoid + 1;
-open substation_curs;
-fetch substation_curs into v_ccsubstationname;
+   CURSOR c_areaname
+   IS
+      SELECT DISTINCT description AS areaname
+                 FROM yukonpaobject
+                WHERE TYPE = 'CCSUBBUS';
+BEGIN
+   SELECT MAX (paobjectid)
+     INTO v_paoid
+     FROM yukonpaobject;
 
-while (substation_curs%found)
-	loop
-		insert into yukonpaobject (paobjectid, category, paoclass, paoname, type, description, 
+   v_paoid := v_paoid + 1;
 
-disableflag, paostatistics)
-		select 
-			v_paoid,
-			'CAPCONTROL',
-			'CAPCONTROL',
-			concat('S: ',v_ccsubstationname),
-			'CCSUBSTATION',
-			'(none)',
-			'N',
-			'-----' 
-		from 
-			yukonpaobject;
-		insert into capcontrolsubstation (substationid)
-		select
-			v_paoid
-		from 
-			yukonpaobject;
-		v_paoid := v_paoid + 1;
-		fetch substation_curs into v_ccsubstationname;
-	end loop;
-close substation_curs;
-end;
+   OPEN c_areaname;
+
+   FETCH c_areaname
+    INTO v_areaname;
+
+   WHILE (c_areaname%FOUND)
+   LOOP
+      INSERT INTO yukonpaobject
+                  (paobjectid, CATEGORY, paoclass, paoname, TYPE,
+                   description, disableflag, paostatistics)
+         SELECT MAX (paobjectid) + 1, 'CAPCONTROL', 'CAPCONTROL', v_areaname,
+                'CCAREA', '(none)', 'N', '-----'
+           FROM yukonpaobject;
+
+      v_paoid := v_paoid + 1;
+
+      FETCH c_areaname
+       INTO v_areaname;
+   END LOOP;
+
+   CLOSE c_areaname;
+END;
 /
 /* @end-block */
 
