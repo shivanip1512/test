@@ -5,7 +5,7 @@
 This file contains a custom device definition.
 -->
 
-<deviceDefinition>
+<deviceDefinitions>
     
     <device>
         <type value="1019" javaConstant="MCT310" changeGroup="customChange1" />
@@ -32,4 +32,4 @@ This file contains a custom device definition.
         </attributes>      
     </device>
 
-</deviceDefinition>
+</deviceDefinitions>

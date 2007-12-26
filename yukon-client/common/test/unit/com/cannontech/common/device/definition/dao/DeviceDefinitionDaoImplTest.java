@@ -11,7 +11,7 @@ import java.util.Set;
 
 import junit.framework.TestCase;
 
-import org.springframework.core.io.InputStreamResource;
+import org.springframework.core.io.UrlResource;
 
 import com.cannontech.common.device.YukonDevice;
 import com.cannontech.common.device.attribute.model.Attribute;
@@ -43,16 +43,19 @@ public class DeviceDefinitionDaoImplTest extends TestCase {
         DeviceDefinitionDaoImpl dao = new DeviceDefinitionDaoImpl();
 
         // Use testDeviceDefinition.xml for testing
-        ((DeviceDefinitionDaoImpl) dao).setInputFile(new InputStreamResource(dao.getClass()
-                                                        .getClassLoader()
-                                                        .getResourceAsStream("com/cannontech/common/device/definition/dao/testDeviceDefinition.xml")));
-        
-        ((DeviceDefinitionDaoImpl) dao).setCustomInputFile(null);
-        ((DeviceDefinitionDaoImpl) dao).setPaoGroupsWrapper(new DeviceDefinitionDaoImplTest().new MockPaoGroups());
-        ((DeviceDefinitionDaoImpl) dao).setJavaConstantClassName(DeviceTypes.class.getName());
-        ((DeviceDefinitionDaoImpl) dao).setStateDao(new DeviceDefinitionDaoImplTest().new MockStateDao());
-        ((DeviceDefinitionDaoImpl) dao).setUnitMeasureDao(new DeviceDefinitionDaoImplTest().new MockUnitMeasureDao());
-        ((DeviceDefinitionDaoImpl) dao).initialize();
+        ClassLoader classLoader = dao.getClass().getClassLoader();
+        URL inputResource = classLoader.getResource("com/cannontech/common/device/definition/dao/testDeviceDefinition.xml");
+        dao.setInputFile(new UrlResource(inputResource));
+
+        URL schemaResource = classLoader.getResource("com/cannontech/common/device/definition/dao/deviceDefinition.xsd");
+        dao.setSchemaFile(new UrlResource(schemaResource));
+
+        dao.setCustomInputFile(null);
+        dao.setPaoGroupsWrapper(new DeviceDefinitionDaoImplTest().new MockPaoGroups());
+        dao.setJavaConstantClassName(DeviceTypes.class.getName());
+        dao.setStateDao(new DeviceDefinitionDaoImplTest().new MockStateDao());
+        dao.setUnitMeasureDao(new DeviceDefinitionDaoImplTest().new MockUnitMeasureDao());
+        dao.initialize();
 
         return dao;
     }
@@ -346,24 +349,23 @@ public class DeviceDefinitionDaoImplTest extends TestCase {
      * @throws Exception 
      */
     public void testCustomDefinition() throws Exception {
-        
+        ClassLoader classLoader = dao.getClass().getClassLoader();
 
         // Set up the device definition dao with both an inputFile and a customInputFile
         DeviceDefinitionDaoImpl dao = new DeviceDefinitionDaoImpl();
-        ((DeviceDefinitionDaoImpl) dao).setInputFile(new InputStreamResource(dao.getClass()
-                                                                                .getClassLoader()
-                                                                                .getResourceAsStream("com/cannontech/common/device/definition/dao/testDeviceDefinition.xml")));
+        URL inputResource = classLoader.getResource("com/cannontech/common/device/definition/dao/testDeviceDefinition.xml");
+        dao.setInputFile(new UrlResource(inputResource));
+        URL customFileUrl = classLoader.getResource("com/cannontech/common/device/definition/dao/testCustomDeviceDefinition.xml");
+        
+        URL schemaResource = classLoader.getResource("com/cannontech/common/device/definition/dao/deviceDefinition.xsd");
+        dao.setSchemaFile(new UrlResource(schemaResource));
 
-        URL customFileUrl = dao.getClass()
-                               .getClassLoader()
-                               .getResource("com/cannontech/common/device/definition/dao/testCustomDeviceDefinition.xml");
-
-        ((DeviceDefinitionDaoImpl) dao).setCustomInputFile(new File(customFileUrl.getFile()));
-        ((DeviceDefinitionDaoImpl) dao).setPaoGroupsWrapper(new DeviceDefinitionDaoImplTest().new MockPaoGroups());
-        ((DeviceDefinitionDaoImpl) dao).setJavaConstantClassName(DeviceTypes.class.getName());
-        ((DeviceDefinitionDaoImpl) dao).setStateDao(new DeviceDefinitionDaoImplTest().new MockStateDao());
-        ((DeviceDefinitionDaoImpl) dao).setUnitMeasureDao(new DeviceDefinitionDaoImplTest().new MockUnitMeasureDao());
-        ((DeviceDefinitionDaoImpl) dao).initialize();
+        dao.setCustomInputFile(new File(customFileUrl.getFile()));
+        dao.setPaoGroupsWrapper(new DeviceDefinitionDaoImplTest().new MockPaoGroups());
+        dao.setJavaConstantClassName(DeviceTypes.class.getName());
+        dao.setStateDao(new DeviceDefinitionDaoImplTest().new MockStateDao());
+        dao.setUnitMeasureDao(new DeviceDefinitionDaoImplTest().new MockUnitMeasureDao());
+        dao.initialize();
         
         
         // Test that the point templates are custom

@@ -5,7 +5,7 @@
 This file contains default device and point information for all of the devices in Yukon.
 -->
 
-<deviceDefinition>
+<deviceDefinitions>
     
     <!-- Group 1 -->
     <device>
@@ -56,7 +56,7 @@ This file contains default device and point information for all of the devices i
         	<command name="command2">
         		<cmd text="do command2" />
         		<cmd text="continue command2" />
-        		<pointRef name="pulse1" expectedMsgs="2"/>
+        		<pointRef name="pulse1"/>
         		<pointRef name="pulse2"/>
         	</command>
         </commands>
@@ -115,4 +115,4 @@ This file contains default device and point information for all of the devices i
         </points>
     </device>
     
-</deviceDefinition>
+</deviceDefinitions>
