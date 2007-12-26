@@ -2,7 +2,7 @@
  * This class was automatically generated with 
  * <a href="http://www.castor.org">Castor 0.9.7</a>, using an XML
  * Schema.
- * $Id: AttributesType.java,v 1.1 2007/10/12 14:44:59 stacey Exp $
+ * $Id: AttributesType.java,v 1.2 2007/12/26 17:53:34 tmack Exp $
  */
 
 package com.cannontech.common.device.definition.model.castor;
@@ -19,7 +19,7 @@ import org.exolab.castor.xml.Unmarshaller;
 /**
  * Class AttributesType.
  * 
- * @version $Revision: 1.1 $ $Date: 2007/10/12 14:44:59 $
+ * @version $Revision: 1.2 $ $Date: 2007/12/26 17:53:34 $
  */
 public class AttributesType implements java.io.Serializable {
 

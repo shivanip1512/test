@@ -49,5 +49,6 @@ public abstract class AttributeLookup {
         return tsc.toString();
     }
 
+    // this probably isn't sufficient for what this was designed for, probably needs to return a LitePoint/pointId
     public abstract String getPointRefName(YukonDevice device);
 }

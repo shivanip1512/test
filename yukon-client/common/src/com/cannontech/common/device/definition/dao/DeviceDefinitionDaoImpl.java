@@ -2,9 +2,11 @@ package com.cannontech.common.device.definition.dao;
 
 import java.io.File;
 import java.io.IOException;
+import java.io.InputStream;
 import java.io.InputStreamReader;
 import java.io.StringWriter;
 import java.io.Writer;
+import java.net.URL;
 import java.util.ArrayList;
 import java.util.Collections;
 import java.util.HashMap;
@@ -14,18 +16,29 @@ import java.util.List;
 import java.util.Map;
 import java.util.Set;
 
+import javax.xml.XMLConstants;
+import javax.xml.parsers.ParserConfigurationException;
+import javax.xml.parsers.SAXParser;
+import javax.xml.parsers.SAXParserFactory;
 import javax.xml.transform.Result;
 import javax.xml.transform.Source;
 import javax.xml.transform.Transformer;
 import javax.xml.transform.TransformerFactory;
 import javax.xml.transform.stream.StreamResult;
 import javax.xml.transform.stream.StreamSource;
+import javax.xml.validation.Schema;
+import javax.xml.validation.SchemaFactory;
 
 import org.apache.log4j.Logger;
 import org.exolab.castor.xml.Unmarshaller;
 import org.springframework.core.io.FileSystemResource;
 import org.springframework.core.io.Resource;
 import org.springframework.dao.DataAccessException;
+import org.xml.sax.ErrorHandler;
+import org.xml.sax.InputSource;
+import org.xml.sax.SAXException;
+import org.xml.sax.SAXParseException;
+import org.xml.sax.XMLReader;
 
 import com.cannontech.clientutils.YukonLogManager;
 import com.cannontech.common.device.YukonDevice;
@@ -33,8 +46,6 @@ import com.cannontech.common.device.attribute.model.Attribute;
 import com.cannontech.common.device.attribute.model.BuiltInAttribute;
 import com.cannontech.common.device.definition.attribute.lookup.AttributeLookup;
 import com.cannontech.common.device.definition.attribute.lookup.BasicLookupAttrDef;
-import com.cannontech.common.device.definition.attribute.lookup.Mct4xxLookupAttrDef;
-import com.cannontech.common.device.definition.attribute.lookup.MctIedTouLookupAttrDef;
 import com.cannontech.common.device.definition.model.CommandDefinition;
 import com.cannontech.common.device.definition.model.DeviceDefinition;
 import com.cannontech.common.device.definition.model.DeviceDefinitionImpl;
@@ -45,12 +56,8 @@ import com.cannontech.common.device.definition.model.castor.Cmd;
 import com.cannontech.common.device.definition.model.castor.Command;
 import com.cannontech.common.device.definition.model.castor.Device;
 import com.cannontech.common.device.definition.model.castor.DeviceDefinitions;
-import com.cannontech.common.device.definition.model.castor.Mapping;
-import com.cannontech.common.device.definition.model.castor.Mct4xxLookup;
-import com.cannontech.common.device.definition.model.castor.MctIedTouLookup;
 import com.cannontech.common.device.definition.model.castor.Point;
 import com.cannontech.common.device.definition.model.castor.PointRef;
-import com.cannontech.common.device.definition.model.castor.TouMapping;
 import com.cannontech.common.util.CtiUtilities;
 import com.cannontech.core.dao.NotFoundException;
 import com.cannontech.core.dao.StateDao;
@@ -69,6 +76,7 @@ import com.cannontech.util.ReflectivePropertySearcher;
 public class DeviceDefinitionDaoImpl implements DeviceDefinitionDao {
 
     private Resource inputFile = null;
+    private Resource schemaFile = null;
     private File customInputFile = new File(CtiUtilities.getYukonBase() + "\\Server\\Config\\deviceDefinition.xml");
     private Resource pointLegendFile = null;
     private PaoGroupsWrapper paoGroupsWrapper = null;
@@ -101,6 +109,10 @@ public class DeviceDefinitionDaoImpl implements DeviceDefinitionDao {
 
     public void setInputFile(Resource inputFile) {
         this.inputFile = inputFile;
+    }
+    
+    public void setSchemaFile(Resource schemaFile) {
+        this.schemaFile = schemaFile;
     }
     
     public void setCustomInputFile(File customInputFile) {
@@ -257,6 +269,9 @@ public class DeviceDefinitionDaoImpl implements DeviceDefinitionDao {
         } else {
             currentDefinitionResource = inputFile;
         }
+        
+        // make sure the file validates
+        validateXmlSchema(currentDefinitionResource);
 
         InputStreamReader reader = new InputStreamReader(currentDefinitionResource.getInputStream());
         
@@ -280,6 +295,42 @@ public class DeviceDefinitionDaoImpl implements DeviceDefinitionDao {
                 // Do nothing - tried to close
             }
         }
+    }
+    
+    public void validateXmlSchema(Resource currentDefinitionResource) throws IOException, SAXException, ParserConfigurationException {
+        InputStream is = currentDefinitionResource.getInputStream();
+        URL schemaUrl = schemaFile.getURL();
+        SAXParserFactory factory = SAXParserFactory.newInstance();
+        factory.setValidating(false); // this is for DTD, so we want it off
+        factory.setNamespaceAware(true);
+        SchemaFactory schemaFactory = SchemaFactory.newInstance(XMLConstants.W3C_XML_SCHEMA_NS_URI);
+        Schema schema = schemaFactory.newSchema(schemaUrl);
+        factory.setSchema(schema);
+
+        SAXParser saxParser = factory.newSAXParser();
+
+        XMLReader xmlReader = saxParser.getXMLReader();
+        xmlReader.setErrorHandler(new ErrorHandler() {
+
+            @Override
+            public void error(SAXParseException exception) throws SAXException {
+                throw exception;
+            }
+
+            @Override
+            public void fatalError(SAXParseException exception) throws SAXException {
+                throw exception;
+            }
+
+            @Override
+            public void warning(SAXParseException exception) throws SAXException {
+                throw exception;
+            }
+        });
+        
+        
+        xmlReader.parse(new InputSource(is));
+        is.close();
     }
 
     private PointTemplate getPointTemplate(Integer deviceType, String pointName) {
@@ -452,61 +503,23 @@ public class DeviceDefinitionDaoImpl implements DeviceDefinitionDao {
      * @param choiceLookup - The choice object from the attribute lookup
      * @return The AttributeLookup definition representing the castor CHOICE lookup
      */
-	private AttributeLookup createAttributeDefinition(String attributeName, Object choiceLookup) {
-	    
-		AttributeLookup attributeDefinition = null;
-		Attribute attribute = BuiltInAttribute.valueOf(attributeName);
-		
-		if ( choiceLookup instanceof Mct4xxLookup) {
-			Mct4xxLookup lookup = (Mct4xxLookup)choiceLookup;
-			attributeDefinition = new Mct4xxLookupAttrDef(attribute);
-			
-	    	List<Mct4xxLookupAttrDef.Mapping> mappingList = new ArrayList<Mct4xxLookupAttrDef.Mapping>();
-			
-	    	Mapping[] mappings = lookup.getMapping();
-			for (Mapping mapping : mappings) {
-				Mct4xxLookupAttrDef.Mapping lookupMapping = 
-					((Mct4xxLookupAttrDef)attributeDefinition).new Mapping(
-																	mapping.getType(),
-																	mapping.getPoint(),
-																	mapping.getDefault());
-				
-				mappingList.add(lookupMapping);
-			}
-			
-			((Mct4xxLookupAttrDef)attributeDefinition).setMapping(mappingList);
-		
-		} else if ( choiceLookup instanceof MctIedTouLookup) {
-			MctIedTouLookup lookup = (MctIedTouLookup)choiceLookup;
-			attributeDefinition = new MctIedTouLookupAttrDef(attribute);
-			
-	    	List<MctIedTouLookupAttrDef.Mapping> mappingList = new ArrayList<MctIedTouLookupAttrDef.Mapping>();
-			
-	    	TouMapping[] mappings = lookup.getTouMapping();
-			for (TouMapping mapping : mappings) {
-				MctIedTouLookupAttrDef.Mapping lookupMapping = 
-					((MctIedTouLookupAttrDef)attributeDefinition).new Mapping(
-																	mapping.getType(),
-																	mapping.getPoint(),
-																	mapping.getDefault());
-				mappingList.add(lookupMapping);
-			}
-			
-			((MctIedTouLookupAttrDef)attributeDefinition).setMapping(mappingList);
+	private AttributeLookup createAttributeDefinition(String attributeName,
+            Object choiceLookup) {
 
-		}else if ( choiceLookup instanceof BasicLookup) {
-			BasicLookup lookup = (BasicLookup)choiceLookup;
-			attributeDefinition = new BasicLookupAttrDef(attribute);
-			((BasicLookupAttrDef)attributeDefinition).setPointName(lookup.getPoint());
-		}
-		
-		if( attributeDefinition != null)
-			return attributeDefinition;
-		
-		throw new IllegalArgumentException("Attribute Choice '" + choiceLookup.toString() + 
-											"' is not supported.");
-                
-	}
+        AttributeLookup attributeDefinition = null;
+        Attribute attribute = BuiltInAttribute.valueOf(attributeName);
+
+        if (choiceLookup instanceof BasicLookup) {
+            BasicLookup lookup = (BasicLookup) choiceLookup;
+            attributeDefinition = new BasicLookupAttrDef(attribute);
+            ((BasicLookupAttrDef) attributeDefinition).setPointName(lookup.getPoint());
+        }
+
+        if (attributeDefinition != null)
+            return attributeDefinition;
+
+        throw new IllegalArgumentException("Attribute Choice '" + choiceLookup.toString() + "' is not supported.");
+    }
 	
     /**
      * Helper method to convert a castor command to a command definition

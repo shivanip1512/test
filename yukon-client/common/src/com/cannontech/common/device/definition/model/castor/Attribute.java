@@ -41,16 +41,6 @@ public class Attribute implements java.io.Serializable {
      */
     private com.cannontech.common.device.definition.model.castor.BasicLookup _basicLookup;
 
-    /**
-     * Field _mctIedTouLookup
-     */
-    private com.cannontech.common.device.definition.model.castor.MctIedTouLookup _mctIedTouLookup;
-
-    /**
-     * Field _mct4xxLookup
-     */
-    private com.cannontech.common.device.definition.model.castor.Mct4xxLookup _mct4xxLookup;
-
 
       //----------------/
      //- Constructors -/
@@ -89,28 +79,6 @@ public class Attribute implements java.io.Serializable {
     {
         return this._choiceValue;
     } //-- java.lang.Object getChoiceValue() 
-
-    /**
-     * Returns the value of field 'mct4xxLookup'.
-     * 
-     * @return Mct4xxLookup
-     * @return the value of field 'mct4xxLookup'.
-     */
-    public com.cannontech.common.device.definition.model.castor.Mct4xxLookup getMct4xxLookup()
-    {
-        return this._mct4xxLookup;
-    } //-- com.cannontech.common.device.definition.model.castor.Mct4xxLookup getMct4xxLookup() 
-
-    /**
-     * Returns the value of field 'mctIedTouLookup'.
-     * 
-     * @return MctIedTouLookup
-     * @return the value of field 'mctIedTouLookup'.
-     */
-    public com.cannontech.common.device.definition.model.castor.MctIedTouLookup getMctIedTouLookup()
-    {
-        return this._mctIedTouLookup;
-    } //-- com.cannontech.common.device.definition.model.castor.MctIedTouLookup getMctIedTouLookup() 
 
     /**
      * Returns the value of field 'name'.
@@ -179,28 +147,6 @@ public class Attribute implements java.io.Serializable {
         this._basicLookup = basicLookup;
         this._choiceValue = basicLookup;
     } //-- void setBasicLookup(com.cannontech.common.device.definition.model.castor.BasicLookup) 
-
-    /**
-     * Sets the value of field 'mct4xxLookup'.
-     * 
-     * @param mct4xxLookup the value of field 'mct4xxLookup'.
-     */
-    public void setMct4xxLookup(com.cannontech.common.device.definition.model.castor.Mct4xxLookup mct4xxLookup)
-    {
-        this._mct4xxLookup = mct4xxLookup;
-        this._choiceValue = mct4xxLookup;
-    } //-- void setMct4xxLookup(com.cannontech.common.device.definition.model.castor.Mct4xxLookup) 
-
-    /**
-     * Sets the value of field 'mctIedTouLookup'.
-     * 
-     * @param mctIedTouLookup the value of field 'mctIedTouLookup'.
-     */
-    public void setMctIedTouLookup(com.cannontech.common.device.definition.model.castor.MctIedTouLookup mctIedTouLookup)
-    {
-        this._mctIedTouLookup = mctIedTouLookup;
-        this._choiceValue = mctIedTouLookup;
-    } //-- void setMctIedTouLookup(com.cannontech.common.device.definition.model.castor.MctIedTouLookup) 
 
     /**
      * Sets the value of field 'name'.

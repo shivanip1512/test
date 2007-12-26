@@ -2,7 +2,7 @@
  * This class was automatically generated with 
  * <a href="http://www.castor.org">Castor 0.9.7</a>, using an XML
  * Schema.
- * $Id: CommandDescriptor.java,v 1.3 2007/10/12 14:44:59 stacey Exp $
+ * $Id: CommandDescriptor.java,v 1.4 2007/12/26 17:53:34 tmack Exp $
  */
 
 package com.cannontech.common.device.definition.model.castor;
@@ -16,7 +16,7 @@ import org.exolab.castor.xml.validators.StringValidator;
 /**
  * Class CommandDescriptor.
  * 
- * @version $Revision: 1.3 $ $Date: 2007/10/12 14:44:59 $
+ * @version $Revision: 1.4 $ $Date: 2007/12/26 17:53:34 $
  */
 public class CommandDescriptor extends org.exolab.castor.xml.util.XMLClassDescriptorImpl {
 
@@ -88,11 +88,13 @@ public class CommandDescriptor extends org.exolab.castor.xml.util.XMLClassDescri
             }
         };
         desc.setHandler(handler);
+        desc.setRequired(true);
         desc.setMultivalued(false);
         addFieldDescriptor(desc);
         
         //-- validation code for: _name
         fieldValidator = new org.exolab.castor.xml.FieldValidator();
+        fieldValidator.setMinOccurs(1);
         { //-- local scope
             StringValidator typeValidator = new StringValidator();
             typeValidator.setWhiteSpace("preserve");

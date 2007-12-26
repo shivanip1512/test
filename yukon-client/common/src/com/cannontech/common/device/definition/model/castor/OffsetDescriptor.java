@@ -75,11 +75,9 @@ public class OffsetDescriptor extends org.exolab.castor.xml.util.XMLClassDescrip
             {
                 try {
                     Offset target = (Offset) object;
-                    // if null, use delete method for optional primitives 
-                    if (value == null) {
-                        target.deleteValue();
-                        return;
-                    }
+                    // ignore null values for non optional primitives
+                    if (value == null) return;
+                    
                     target.setValue( ((java.lang.Integer)value).intValue());
                 }
                 catch (java.lang.Exception ex) {
@@ -91,11 +89,13 @@ public class OffsetDescriptor extends org.exolab.castor.xml.util.XMLClassDescrip
             }
         };
         desc.setHandler(handler);
+        desc.setRequired(true);
         desc.setMultivalued(false);
         addFieldDescriptor(desc);
         
         //-- validation code for: _value
         fieldValidator = new org.exolab.castor.xml.FieldValidator();
+        fieldValidator.setMinOccurs(1);
         { //-- local scope
             IntegerValidator typeValidator = new IntegerValidator();
             typeValidator.setMinInclusive(1);

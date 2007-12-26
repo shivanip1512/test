@@ -10,7 +10,9 @@
         - The stateGroup value is from the stateGroup table, Name column
 -->
 
-<deviceDefinition>
+<deviceDefinitions 
+    xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+    xsi:noNamespaceSchemaLocation="deviceDefinition.xsd">
     
     <!-- MCTs -->
     <device>
@@ -544,23 +546,10 @@
         </commands>
 		<attributes>
         	<attribute name="ENERGY">
-        		<mct4xxLookup>
-        			<!-- When connect to an IED -->
-        			<mapping type="T" point="Total kWh"/>
-        			<mapping type="A" point="Rate A kWh" default="true"/>
-        			<mapping type="B" point="Rate B kWh"/>
-        			<mapping type="C" point="Rate C kWh"/>
-        			<mapping type="D" point="Rate D kWh"/>
-				</mct4xxLookup>
+        		<basicLookup point="Rate A kWh" />
         	</attribute>
         	<attribute name="PEAK_DEMAND">
-         		<mct4xxLookup>
-<!--        			<mapping type="T" point="Peak kW (Rate A kW)"/>-->
-        			<mapping type="A" point="Peak kW (Rate A kW)" default="true"/>
-        			<mapping type="B" point="Peak kW (Rate B kW)"/>
-        			<mapping type="C" point="Peak kW (Rate C kW)"/>
-        			<mapping type="D" point="Peak kW (Rate D kW)"/>
-				</mct4xxLookup>
+         		<basicLookup point="Peak kW (Rate A kW)" />
         	</attribute>
         	<attribute name="DEMAND">
         		<basicLookup point="Last Interval kW" />
@@ -578,52 +567,28 @@
         		<basicLookup point="IED Blink Count" />
         	</attribute>
         	<attribute name="TOU_RATE_A_ENERGY">
-        		<mctIedTouLookup>
-        			<touMapping type="ied" point="Rate A kWh" default="true"/>
-        			<touMapping type="mct" point="TOU Rate A (Channel 1)" />
-        		</mctIedTouLookup>
+        		<basicLookup point="Rate A kWh"/>
         	</attribute>
         	<attribute name="TOU_RATE_B_ENERGY">
-        		<mctIedTouLookup>
-        			<touMapping type="ied" point="Rate B kWh" default="true"/>
-        			<touMapping type="mct" point="TOU Rate B (Channel 1)" />
-        		</mctIedTouLookup>
+        		<basicLookup point="Rate B kWh"/>
         	</attribute>
         	<attribute name="TOU_RATE_C_ENERGY">
-        		<mctIedTouLookup>
-        			<touMapping type="ied" point="Rate C kWh" default="true"/>
-        			<touMapping type="mct" point="TOU Rate C (Channel 1)" />
-        		</mctIedTouLookup>
+        		<basicLookup point="Rate C kWh"/>
         	</attribute>
         	<attribute name="TOU_RATE_D_ENERGY">
-        		<mctIedTouLookup>
-        			<touMapping type="ied" point="Rate D kWh" default="true"/>
-        			<touMapping type="mct" point="TOU Rate D (Channel 1)" />
-        		</mctIedTouLookup>
+        		<basicLookup point="Rate D kWh"/>
         	</attribute>
         	<attribute name="TOU_RATE_A_PEAK_DEMAND">
-        		<mctIedTouLookup>
-        			<touMapping type="ied" point="Peak kW (Rate A kW)" default="true"/>
-        			<touMapping type="mct" point="TOU Rate A - Peak kW (Channel 1)" />
-        		</mctIedTouLookup>
+        		<basicLookup point="Peak kW (Rate A kW)"/>
         	</attribute>
         	<attribute name="TOU_RATE_B_PEAK_DEMAND">
-        		<mctIedTouLookup>
-        			<touMapping type="ied" point="Peak kW (Rate B kW)" default="true"/>
-        			<touMapping type="mct" point="TOU Rate B - Peak kW (Channel 1)" />
-        		</mctIedTouLookup>
+        		<basicLookup point="Peak kW (Rate B kW)"/>
         	</attribute>
         	<attribute name="TOU_RATE_C_PEAK_DEMAND">
-        		<mctIedTouLookup>
-        			<touMapping type="ied" point="Peak kW (Rate C kW)" default="true"/>
-        			<touMapping type="mct" point="TOU Rate C - Peak kW (Channel 1)" />
-        		</mctIedTouLookup>
+        		<basicLookup point="Peak kW (Rate C kW)"/>
         	</attribute>
         	<attribute name="TOU_RATE_D_PEAK_DEMAND">
-        		<mctIedTouLookup>
-        			<touMapping type="ied" point="Peak kW (Rate D kW)" default="true"/>
-        			<touMapping type="mct" point="TOU Rate D - Peak kW (Channel 1)" />
-        		</mctIedTouLookup>
+        		<basicLookup point="Peak kW (Rate D kW)"/>
         	</attribute>
         </attributes>        
     </device>
@@ -878,22 +843,10 @@
         </commands>
 		<attributes>
         	<attribute name="ENERGY">
-        		<mct4xxLookup>
-        			<mapping type="T" point="Total kWh"/>
-        			<mapping type="A" point="Rate A kWh" default="true"/>
-        			<mapping type="B" point="Rate B kWh"/>
-        			<mapping type="C" point="Rate C kWh"/>
-        			<mapping type="D" point="Rate D kWh"/>
-				</mct4xxLookup>
+        		<basicLookup point="Total kWh"/>
         	</attribute>
         	<attribute name="PEAK_DEMAND">
-         		<mct4xxLookup>
-<!--        			<mapping type="T" point="Peak kW (Rate A kW)"/>-->
-        			<mapping type="A" point="Peak kW (Rate A kW)" default="true"/>
-        			<mapping type="B" point="Peak kW (Rate B kW)"/>
-        			<mapping type="C" point="Peak kW (Rate C kW)"/>
-        			<mapping type="D" point="Peak kW (Rate D kW)"/>
-				</mct4xxLookup>
+         		<basicLookup point="Peak kW (Rate A kW)"/>
         	</attribute>
         	<attribute name="DEMAND">
         		<basicLookup point="Last Interval kW" />
@@ -1205,22 +1158,10 @@
         </commands>
 		<attributes>
         	<attribute name="ENERGY">
-        		<mct4xxLookup>
-        			<mapping type="T" point="Total kWh"/>
-        			<mapping type="A" point="Rate A kWh" default="true"/>
-        			<mapping type="B" point="Rate B kWh"/>
-        			<mapping type="C" point="Rate C kWh"/>
-        			<mapping type="D" point="Rate D kWh"/>
-				</mct4xxLookup>
+        		<basicLookup point="Total kWh"/>
         	</attribute>
         	<attribute name="PEAK_DEMAND">
-         		<mct4xxLookup>
-<!--        			<mapping type="T" point="Peak kW (Rate A kW)"/>-->
-        			<mapping type="A" point="Peak kW (Rate A kW)" default="true"/>
-        			<mapping type="B" point="Peak kW (Rate B kW)"/>
-        			<mapping type="C" point="Peak kW (Rate C kW)"/>
-        			<mapping type="D" point="Peak kW (Rate D kW)"/>
-				</mct4xxLookup>
+         		<basicLookup point="Peak kW (Rate A kW)"/>
         	</attribute>
         	<attribute name="DEMAND">
         		<basicLookup point="Last Interval kW" />
@@ -1532,22 +1473,10 @@
         </commands>
 		<attributes>
         	<attribute name="ENERGY">
-        		<mct4xxLookup>
-        			<mapping type="T" point="Total kWh"/>
-        			<mapping type="A" point="Rate A kWh" default="true"/>
-        			<mapping type="B" point="Rate B kWh"/>
-        			<mapping type="C" point="Rate C kWh"/>
-        			<mapping type="D" point="Rate D kWh"/>
-				</mct4xxLookup>
+        		<basicLookup point="Rate A kWh"/>
         	</attribute>
         	<attribute name="PEAK_DEMAND">
-         		<mct4xxLookup>
-<!--        			<mapping type="T" point="Peak kW (Rate A kW)"/>-->
-        			<mapping type="A" point="Peak kW (Rate A kW)" default="true"/>
-        			<mapping type="B" point="Peak kW (Rate B kW)"/>
-        			<mapping type="C" point="Peak kW (Rate C kW)"/>
-        			<mapping type="D" point="Peak kW (Rate D kW)"/>
-				</mct4xxLookup>
+         		<basicLookup point="Peak kW (Rate A kW)"/>
         	</attribute>
         	<attribute name="DEMAND">
         		<basicLookup point="Last Interval kW" />
@@ -10427,4 +10356,4 @@
         <displayName value="CBC Expresscom"/>
     </device>
     
-</deviceDefinition>
+</deviceDefinitions>

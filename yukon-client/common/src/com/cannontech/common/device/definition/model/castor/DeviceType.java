@@ -62,14 +62,14 @@ public class DeviceType implements java.io.Serializable {
     private com.cannontech.common.device.definition.model.castor.Points _points;
 
     /**
-     * Field _attributes
-     */
-    private com.cannontech.common.device.definition.model.castor.Attributes _attributes;
-
-    /**
      * Field _commands
      */
     private com.cannontech.common.device.definition.model.castor.Commands _commands;
+
+    /**
+     * Field _attributes
+     */
+    private com.cannontech.common.device.definition.model.castor.Attributes _attributes;
 
 
       //----------------/

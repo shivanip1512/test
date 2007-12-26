@@ -2,7 +2,7 @@
  * This class was automatically generated with 
  * <a href="http://www.castor.org">Castor 0.9.7</a>, using an XML
  * Schema.
- * $Id: CommandsTypeDescriptor.java,v 1.3 2007/10/12 14:44:59 stacey Exp $
+ * $Id: CommandsTypeDescriptor.java,v 1.4 2007/12/26 17:53:34 tmack Exp $
  */
 
 package com.cannontech.common.device.definition.model.castor;
@@ -15,7 +15,7 @@ package com.cannontech.common.device.definition.model.castor;
 /**
  * Class CommandsTypeDescriptor.
  * 
- * @version $Revision: 1.3 $ $Date: 2007/10/12 14:44:59 $
+ * @version $Revision: 1.4 $ $Date: 2007/12/26 17:53:34 $
  */
 public class CommandsTypeDescriptor extends org.exolab.castor.xml.util.XMLClassDescriptorImpl {
 
