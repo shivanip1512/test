@@ -1329,6 +1329,8 @@ public static Date roundToMinute(Date toRound) {
         if (cookies == null) return;
         for (final Cookie cookie : cookies) {
             cookie.setMaxAge(0);
+            cookie.setValue("");
+            cookie.setPath("/" + request.getContextPath());
             response.addCookie(cookie);
         }
     }

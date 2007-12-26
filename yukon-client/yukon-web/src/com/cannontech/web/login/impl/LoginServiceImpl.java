@@ -116,6 +116,8 @@ public class LoginServiceImpl implements LoginService {
                     String attName = (String) attNames.nextElement();
                     session.setAttribute( attName, oldContext.get(attName) );
                 }
+            } else {
+                ServletUtil.deleteAllCookies(request, response);
             }
         } catch (NotLoggedInException e) {
             redirect = ServletUtil.createSafeUrl(request, LoginController.LOGIN_URL);
