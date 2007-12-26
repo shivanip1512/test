@@ -422,6 +422,7 @@ div.boxContainer .boxContainer_titleBar .boxContainer_title {
 
 div.boxContainer .boxContainer_titleBar .controls { 
 	float: right;
+	padding-top: 1px;
 	text-align: center;
 	cursor: pointer;
 }
@@ -432,7 +433,7 @@ div.boxContainer .boxContainer_titleBar .controls .minMax {
 	height: 16px;
 	width: 16px;
   	background-repeat: no-repeat;
-  	background-image: url(../Icons/clearbits/bg_rounded.gif);
+  	/*background-image: url(../Icons/clearbits/bg_rounded.gif);*/
 	cursor: pointer;
 }
 
