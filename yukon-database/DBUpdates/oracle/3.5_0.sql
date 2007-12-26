@@ -468,6 +468,47 @@ INSERT INTO DEVICETYPECOMMAND VALUES (-708, -53, 'Repeater 902', 3, 'Y', -1);
 INSERT INTO DEVICETYPECOMMAND VALUES (-709, -54, 'Repeater 902', 4, 'Y', -1); 
 /* End YUK-4876 */
  
+ /* Start YUK-4984 */
+/* @start-block */
+declare
+v_capid number;
+cursor c_capid is select deviceid as capid from capbank;
+begin
+	open c_capid;
+	fetch c_capid into v_capid;
+	while (c_capid%found)
+	  loop
+	    insert into capbankadditional
+		select 
+			v_capid,
+			0,
+			0,
+			'(none)',
+			0.0,
+			0.0,
+			'(none)',
+			'(none)',
+			0,
+			'N',
+			'(none)',
+			'01-JAN-1900',
+			'01-JAN-1900',
+			'01-JAN-1900',
+			'(none)',
+			'N',
+			'(none)',
+			'(none)',
+			'01-JAN-1900'
+		from 
+			dual;
+	  fetch c_capid into v_capid;
+	  end loop;
+	close c_capid;
+end;
+/ 
+/* @end-block */
+/* End YUK-4984 */
+ 
 /******************************************************************************/
 /* Run the Stars Update if needed here */
 /* Note: DBUpdate application will ignore this if STARS is not present */
