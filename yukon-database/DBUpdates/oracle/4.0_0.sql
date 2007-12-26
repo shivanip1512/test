@@ -491,6 +491,7 @@ alter table CCSUBAREAASSIGNMENT
       references CAPCONTROLAREA (AreaID);
 /* @error ignore-end */
 
+/* @start-block */
 Create global temporary table mySubstation
 (
 	SubBusName varchar2(60),
@@ -508,7 +509,7 @@ from
 where
 	type = 'CCSUBBUS';
 
-/* @start-block */
+--/* @start-block */
 DECLARE
    v_paoid      NUMBER (6);
    v_areaname   VARCHAR2 (60);
@@ -548,7 +549,7 @@ BEGIN
    CLOSE c_areaname;
 END;
 /
-/* @end-block */
+--/* @end-block */
 
 Create global temporary table mySubstation2
 (
@@ -654,7 +655,7 @@ set
 	where 
 		a.substationbusid = mySubstation3.subbusid);
 /
-/* @start-block */
+--/* @start-block */
 declare 
 	v_ccsubbusid		mysubstation2.subbusid%TYPE;
 	v_lastsubstationid 	mysubstation2.substationid%TYPE;
@@ -686,7 +687,7 @@ close substation_curs2;
 end;
 
 /
-/* @end-block */
+--/* @end-block */
 
 alter table CCSUBAREAASSIGNMENT
    add constraint FK_CCSUBARE_CAPSUBAREAASSGN foreign key (SubstationBusID)
@@ -697,6 +698,8 @@ drop table mySubstation2;
 drop table mySubstation3;
 drop table ccsa_backup;
 drop table ccssaa_backup;
+/* @end-block */
+
 alter table DYNAMICCCSUBSTATION
    add constraint FK_DYNAMICC_REFERENCE_CAPCONTR foreign key (SubStationID)
       references CAPCONTROLSUBSTATION (SubstationID);
