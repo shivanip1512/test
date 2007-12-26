@@ -856,7 +856,7 @@ create table JOB (
    BeanName             varchar(250)         not null,
    Disabled             char(1)              not null,
    UserID               numeric              not null,
-   constraint PK_JOB primary key nonclustered (JobID)
+   constraint PK_JOB primary key (JobID)
 );
 go
 
@@ -876,11 +876,11 @@ go
 /* Table: JOBPROPERTY                                           */
 /*==============================================================*/
 create table JOBPROPERTY (
-   JobProperty          numeric              not null,
+   JobPropertyID          numeric              not null,
    JobID                int                  not null,
    name                 text                 not null,
    value                text                 not null,
-   constraint PK_JOBPROPERTY primary key (JobProperty)
+   constraint PK_JOBPROPERTY primary key (JobPropertyID)
 );
 go
 
@@ -903,7 +903,7 @@ go
 create table JOBSCHEDULEDONETIME (
    JobID                int                  not null,
    StartTime            datetime             not null,
-   constraint PK_JOBSCHEDULEDONETIME primary key nonclustered (JobID)
+   constraint PK_JOBSCHEDULEDONETIME primary key (JobID)
 );
 go
 
@@ -962,6 +962,7 @@ alter table JOBSTATUS
       references JOB (JobID)
          on update cascade on delete cascade;
 go
+/* End YUK-4730 */
 
 /* Begin YUK-4771 (formerly YUK-4716) */
 

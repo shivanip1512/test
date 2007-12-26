@@ -1,7 +1,7 @@
 /*==============================================================*/
 /* Database name:  YukonDatabase                                */
 /* DBMS name:      Microsoft SQL Server 2000                    */
-/* Created on:     12/24/2007 2:22:53 PM                        */
+/* Created on:     12/26/2007 11:16:45 AM                       */
 /*==============================================================*/
 
 
@@ -6518,7 +6518,7 @@ create table JOB (
    BeanName             varchar(250)         not null,
    Disabled             char(1)              not null,
    UserID               numeric              not null,
-   constraint PK_JOB primary key nonclustered (JobID)
+   constraint PK_JOB primary key (JobID)
 )
 go
 
@@ -6526,11 +6526,11 @@ go
 /* Table: JOBPROPERTY                                           */
 /*==============================================================*/
 create table JOBPROPERTY (
-   JobProperty          numeric              not null,
+   JobPropertyID        numeric              not null,
    JobID                int                  not null,
    name                 text                 not null,
    value                text                 not null,
-   constraint PK_JOBPROPERTY primary key (JobProperty)
+   constraint PK_JOBPROPERTY primary key (JobPropertyID)
 )
 go
 
@@ -6540,7 +6540,7 @@ go
 create table JOBSCHEDULEDONETIME (
    JobID                int                  not null,
    StartTime            datetime             not null,
-   constraint PK_JOBSCHEDULEDONETIME primary key nonclustered (JobID)
+   constraint PK_JOBSCHEDULEDONETIME primary key (JobID)
 )
 go
 

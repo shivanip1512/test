@@ -825,11 +825,11 @@ drop table JOBPROPERTY cascade constraints;
 /* Table: JOBPROPERTY                                           */
 /*==============================================================*/
 create table JOBPROPERTY  (
-   JobProperty          NUMBER                          not null,
+   JobPropertyID          NUMBER                          not null,
    JobID                INTEGER                         not null,
    name                 CLOB                            not null,
    value                CLOB                            not null,
-   constraint PK_JOBPROPERTY primary key (JobProperty)
+   constraint PK_JOBPROPERTY primary key (JobPropertyID)
 );
 
 alter table JOBPROPERTY
