@@ -125,9 +125,3 @@ function yukonGeneral_addOtpionToTopOfSelect(selectObj,optValue,optText) {
 
 }
 
-function yukonGeneral_updatePrevious(idPrefix, currentUsage) {
-  var previousVal = $(idPrefix + '_prevSelect').value;
-  var totalUsage = currentUsage - previousVal;
-  
-  $(idPrefix + '_totalConsumption').innerHTML = totalUsage.toFixed(3);
-}

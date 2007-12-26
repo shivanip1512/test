@@ -16,6 +16,7 @@ import com.cannontech.web.taglib.YukonTagSupport;
 @Configurable("dataUpdaterCallbackTagPrototype")
 public class DataUpdaterCallbackTag extends YukonTagSupport implements DynamicAttributes {
     private String function;
+    private boolean initialize = false;
     private DataUpdaterService dataUpdaterService;
     private Map<String,Object> identifierAttributes = new HashMap<String,Object>();
     
@@ -32,7 +33,8 @@ public class DataUpdaterCallbackTag extends YukonTagSupport implements DynamicAt
         JspWriter out = getJspContext().getOut();
         out.print("<script type=\"text/javascript\">");
         
-        out.print("\n\tcannonDataUpdateRegistration(" + function + ",{");
+        // print out a call to register the callback function
+        out.print("\ncannonDataUpdateRegistration(" + function + ",{");
         boolean firstId = true;
         for(String identifierName : identifierAttributes.keySet()) {
             
@@ -42,9 +44,25 @@ public class DataUpdaterCallbackTag extends YukonTagSupport implements DynamicAt
             out.print("'" + identifierName + "':'" + identifierAttributes.get(identifierName) + "'");
             firstId = false;
         }
-        out.print("});");
+        out.print("});\n");
         
-        out.print("\n\n</script>");
+        if (initialize) {
+            // now actually print out a call to the function
+            out.print(function + "({");
+
+            firstId = true;
+            for(String identifierName : identifierAttributes.keySet()) {
+
+                if(!firstId) {
+                    out.print(",");
+                }
+                out.print("'" + identifierName + "':'" + identifierValues.get(identifierName) + "'");
+                firstId = false;
+            }
+            out.print("});");
+        }
+        
+        out.print("\n</script>");
     }
     
     public void setDynamicAttribute(String uri, String localName, Object value) throws JspException {
@@ -57,6 +75,10 @@ public class DataUpdaterCallbackTag extends YukonTagSupport implements DynamicAt
 
     public void setFunction(String function) {
         this.function = function;
+    }
+    
+    public void setInitialize(boolean initialize) {
+        this.initialize = initialize;
     }
     
     public void setRegistrationService(DataUpdaterService dataUpdaterService) {

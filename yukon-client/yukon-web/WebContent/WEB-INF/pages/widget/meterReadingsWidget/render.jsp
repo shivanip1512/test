@@ -29,8 +29,7 @@
                         </ct:nameValue>
 
                         <ct:nameValue name="Total Consumption">
-                            <div
-                                id="${widgetParameters.widgetId}_totalConsumption" />
+                            <div id="${widgetParameters.widgetId}_totalConsumption"></div>
                         </ct:nameValue>
 
                     </c:if>
@@ -43,47 +42,46 @@
 
 
 
-<div style="display:none" id="${widgetParameters.widgetId}_currentUsage">
-    <cti:attributeResolver device="${device}" attributeName="ENERGY"
-        var="pointId" />
-    <cti:pointValue format="{value}" pointId="${pointId}" />
-</div>
-
 <script type="text/javascript">
 <%--
   The following sets up a global variable (with a unique name) to hold the current usage value.
   This variable is updated by the <widgetId>_usageUpdate function which is registered with the
   dataUpdaterCallback tag to be called whenever the point's value changes. It simply updates the 
   global variable and then calls the yukonGeneral_updatePrevious function. Similarily, 
-  <widgetId>_currentSelection is registered as a change callback on the drop down and as the 
-  page load callback. This method creates a closure around the <widgetId>_currentUsage variable
-  so that its value can always be passed to the yukonGeneral_updatePrevious function. This is 
-  the function that actually does the subtraction and updates the screen elements.
+  <widgetId>_usageSelection is registered as a change callback on the drop down.
 --%>
 var ${widgetParameters.widgetId}_currentUsage = null;
 function ${widgetParameters.widgetId}_usageSelection() {
-  yukonGeneral_updatePrevious('${widgetParameters.widgetId}', ${widgetParameters.widgetId}_currentUsage);
+  ${widgetParameters.widgetId}_updatePrevious(${widgetParameters.widgetId}_currentUsage);
 }
 function ${widgetParameters.widgetId}_usageUpdate(allIdentifierValues) {
 
-	// get formatted results
-	var valueIdentifier = allIdentifierValues['valueIdentifier'];
+    // get formatted results
+    var valueIdentifier = allIdentifierValues['valueIdentifier'];
     var fullIdentifier = allIdentifierValues['fullIdentifier'];
-    
-    // adjust the drop down
+
+    // adjust the drop down (won't add duplicates)
     yukonGeneral_addOtpionToTopOfSelect($('${widgetParameters.widgetId}'+'_prevSelect'),valueIdentifier,fullIdentifier);
-	
+
     // reset current usage
     ${widgetParameters.widgetId}_currentUsage = valueIdentifier;
-    
+
     // update previous
-  	yukonGeneral_updatePrevious('${widgetParameters.widgetId}', ${widgetParameters.widgetId}_currentUsage);
-    
+    ${widgetParameters.widgetId}_updatePrevious(${widgetParameters.widgetId}_currentUsage);
 }
-Event.observe(window,"load", ${widgetParameters.widgetId}_usageSelection);
+
+function ${widgetParameters.widgetId}_updatePrevious(currentUsage) {
+  var previousVal = $('${widgetParameters.widgetId}_prevSelect').value;
+  var totalUsage = currentUsage - previousVal;
+  
+  $('${widgetParameters.widgetId}_totalConsumption').innerHTML = totalUsage.toFixed(3);
+}
 </script>
+<cti:attributeResolver device="${device}" attributeName="ENERGY"
+        var="pointId" />
 <cti:dataUpdaterCallback
     function="${widgetParameters.widgetId}_usageUpdate"
+    initialize="true"
     valueIdentifier="POINT/${pointId}/{value}"
     fullIdentifier="POINT/${pointId}/FULL" />
 

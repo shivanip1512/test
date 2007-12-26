@@ -54,8 +54,6 @@ function initiateCannonDataUpdate(url, delayMs) {
     var doUpdate = function() {
         // get all elements that have the cannonUpdater attribute on them
         var updatableElements = $$('span[cannonUpdater]');
-        // trim down to removed duplicates (there probably won't be any)
-        updatableElements = updatableElements.uniq();
         // if none exist on this page, get out
         // build up JS object to be used for request
         var requestData = $H();
@@ -69,8 +67,12 @@ function initiateCannonDataUpdate(url, delayMs) {
         cannonDataUpdateRegistrations.each(function(it) {
         
         	var idMap = it['identifierMap'];
-        	requestData.data = requestData.data.concat(idMap.values);
+        	requestData.data = requestData.data.concat(idMap.values());
         });
+        
+        // trim down to removed duplicates (there probably won't be any)
+        requestData.data = requestData.data.uniq();
+        
         
         if (updatableElements.length == 0) {
             return;
@@ -99,10 +101,9 @@ var cannonDataUpdateRegistrations = $A();
 function cannonDataUpdateRegistration(callback, identifierMap) {
   // callback will include the formatted string as its one argument
   var theData = $H();
-  theData['identifierMap'] = identifierMap;
+  theData['identifierMap'] = $H(identifierMap);
   theData['callback'] = callback;
   
-  cannonDataUpdateRegistrations.push(theData)
-    
+  cannonDataUpdateRegistrations.push(theData);    
 }
 
