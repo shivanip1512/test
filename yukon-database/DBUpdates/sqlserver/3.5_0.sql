@@ -183,7 +183,7 @@ create table DEVICEGROUP (
 );
 go
 
-insert into DeviceGroup values (0,'',null,'Y','STATIC');
+insert into DeviceGroup values (0,' ',null,'Y','STATIC');
 insert into DeviceGroup values (1,'Meters',0,'Y','STATIC');
 insert into DeviceGroup values (2,'Billing',1,'Y','STATIC');
 insert into DeviceGroup values (3,'Collection',1,'Y','STATIC');

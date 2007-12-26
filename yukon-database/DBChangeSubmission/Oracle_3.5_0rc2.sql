@@ -62,3 +62,7 @@ end;
 / 
 /* @end-block */
 /* End YUK-4984 */
+
+/* Start YUK-4844 */
+update DeviceGroup set GroupName = ' ' where GroupName is null;
+/* End YUK-4844 */

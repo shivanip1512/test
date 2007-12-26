@@ -34,3 +34,6 @@ alter table MSPVendor alter column TemplateNameDefault varchar(50) not null;
 go
 /* End YUK-4906 */
 
+/* Start YUK-4844 */
+update DeviceGroup set GroupName = ' ' where GroupName is null or GroupName = '';
+/* End YUK-4844 */
