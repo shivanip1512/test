@@ -1,9 +1,15 @@
 <%@ attribute name="channelNum" required="true" type="java.lang.String"%>
 <%@ attribute name="newToggleVal" required="true" type="java.lang.Boolean"%>
 
-<%@ taglib uri="http://cannontech.com/tags/cti" prefix="cti" %>
 <%@ taglib uri="http://java.sun.com/jsp/jstl/core" prefix="c" %>
+<%@ taglib uri="http://cannontech.com/tags/cti" prefix="cti" %>
 <%@ taglib prefix="tags" tagdir="/WEB-INF/tags" %>
+
+<script type="text/javascript"> 
+    function toggleChanPopup(chanId) {
+        $(chanId).toggle();
+    }
+</script>
 
 <%-- SET POPUP VAR NAMES --%>
 <c:set var="popupName" scope="page" value="togglePopupDiv${channelNum}"/>
@@ -57,6 +63,5 @@
     </div>
     
     <%-- TOGGLE BUTTON --%>
-    <tags:widgetActionRefresh method="toggleProfiling" label="${toggleDesc} Profiling" labelBusy="${toggleDesc} Profiling" channelNum="${channelNum}" newToggleVal="${newToggleVal}"></tags:widgetActionRefresh>
-    
+    <input type="button" id="toggleButton${channelNum}" name="toggleButton${channelNum}" value="${toggleDesc} Profiling" onClick="javascript:doToggleScanning('${channelNum}', '${newToggleVal}');">
 </div>

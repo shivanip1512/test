@@ -76,31 +76,11 @@ public class ProfileWidget extends WidgetControllerBase {
 
     final long MS_IN_A_DAY = 1000 * 60 * 60 * 24;
 
-
-    public ModelAndView render(HttpServletRequest request,
-            HttpServletResponse response) throws Exception {
-
-        ModelAndView mav = new ModelAndView("profileWidget/render.jsp");
-
-        LiteYukonUser user = ServletUtil.getYukonUser(request);
-
-        int deviceId = WidgetParameterHelper.getRequiredIntParameter(request,
-                                                                     "deviceId");
-        String startDateStr = WidgetParameterHelper.getStringParameter(request,
-                                                                       "pastProfile_start",
-                                                                       "");
-        String stopDateStr = WidgetParameterHelper.getStringParameter(request,
-                                                                    "pastProfile_stop",
-                                                                    "");
-
-        
-       
-        // get lite device, set name
-        LiteYukonPAObject device = paoDao.getLiteYukonPAO(deviceId);
-        Meter meter = meterDao.getForId(deviceId);
+    private List<Map<String, Object>> getAvailableChannelInfo(int deviceId) {
         
         // get load profile
         DeviceLoadProfile deviceLoadProfile = toggleProfilingService.getDeviceLoadProfile(deviceId);
+        Meter meter = meterDao.getForId(deviceId);
         
         // ALL Channel Names / Attributes
         // - for all possible channels
@@ -145,24 +125,12 @@ public class ProfileWidget extends WidgetControllerBase {
                 availableChannels.add(channelInfo);
             }
         }
-        mav.addObject("availableChannels", availableChannels);
         
+        return availableChannels;
+    }
+    
+    private void addFutureScheduleDateToMav(ModelAndView mav, LiteYukonUser user) {
         
-        // initialize past profile dates
-        if (StringUtils.isBlank(startDateStr) && StringUtils.isBlank(stopDateStr)) {
-            mav.addObject("startDateStr",
-                          dateFormattingService.formatDate(DateUtils.addDays(new Date(),
-                                                                             -5),
-                                                           DateFormattingService.DateFormatEnum.DATE,
-                                                           user));
-            mav.addObject("stopDateStr",
-                          dateFormattingService.formatDate(new Date(),
-                                                           DateFormattingService.DateFormatEnum.DATE,
-                                                           user));
-        }
-
-        
-        // init furture schedule date
         mav.addObject("futureScheduleDate",
                       dateFormattingService.formatDate(DateUtils.addDays(new Date(),
                                                                          7),
@@ -178,6 +146,48 @@ public class ProfileWidget extends WidgetControllerBase {
         mav.addObject("hours", hours);
         mav.addObject("minutes", minutes);
         
+    }
+    
+    public ModelAndView render(HttpServletRequest request,
+            HttpServletResponse response) throws Exception {
+
+        ModelAndView mav = new ModelAndView("profileWidget/render.jsp");
+
+        LiteYukonUser user = ServletUtil.getYukonUser(request);
+
+        int deviceId = WidgetParameterHelper.getRequiredIntParameter(request,
+                                                                     "deviceId");
+        String startDateStr = WidgetParameterHelper.getStringParameter(request,
+                                                                       "pastProfile_start",
+                                                                       "");
+        String stopDateStr = WidgetParameterHelper.getStringParameter(request,
+                                                                    "pastProfile_stop",
+                                                                    "");
+       
+        // get lite device, set name
+        LiteYukonPAObject device = paoDao.getLiteYukonPAO(deviceId);
+        
+        
+        // get info about each channels scanning status
+        List<Map<String, Object>> availableChannels = getAvailableChannelInfo(deviceId);
+        mav.addObject("availableChannels", availableChannels);
+        
+        // initialize past profile dates
+        if (StringUtils.isBlank(startDateStr) && StringUtils.isBlank(stopDateStr)) {
+            mav.addObject("startDateStr",
+                          dateFormattingService.formatDate(DateUtils.addDays(new Date(),
+                                                                             -5),
+                                                           DateFormattingService.DateFormatEnum.DATE,
+                                                           user));
+            mav.addObject("stopDateStr",
+                          dateFormattingService.formatDate(new Date(),
+                                                           DateFormattingService.DateFormatEnum.DATE,
+                                                           user));
+        }
+
+        // init furture schedule date
+        addFutureScheduleDateToMav(mav, user);
+        
         // user email address
         LiteContact contact = yukonUserDao.getLiteContact(user.getUserID());
         String email = "";
@@ -192,7 +202,9 @@ public class ProfileWidget extends WidgetControllerBase {
         // pending requests
         List<Map<String, String>> pendingRequests = getPendingRequests(device, user);
         mav.addObject("pendingRequests", pendingRequests);
-
+        
+        mav.addObject("deviceId", deviceId);
+        
         return mav;
     }
 
@@ -430,6 +442,21 @@ public class ProfileWidget extends WidgetControllerBase {
      
     }
     
+    public ModelAndView refreshChannelScanningInfo(HttpServletRequest request, HttpServletResponse response) throws Exception {
+
+        ModelAndView mav = new ModelAndView("profileWidget/channelScanning.jsp");
+        
+        int deviceId = WidgetParameterHelper.getRequiredIntParameter(request, "deviceId");
+        
+        // get info about each channels scanning status
+        List<Map<String, Object>> availableChannels = getAvailableChannelInfo(deviceId);
+        mav.addObject("availableChannels", availableChannels);
+        
+        LiteYukonUser user = ServletUtil.getYukonUser(request);
+        addFutureScheduleDateToMav(mav, user);
+        
+        return mav;
+    }
     
     private List<Map<String, String>> getPendingRequests(LiteYukonPAObject device,  LiteYukonUser user){
     

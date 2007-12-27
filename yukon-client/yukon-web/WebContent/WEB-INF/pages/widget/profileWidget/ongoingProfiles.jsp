@@ -56,7 +56,7 @@
 								<td>
 									<div id="profileStatusBar${pendingRequest.requestId}" style="vertical-align: top"></div>
 
-									<script language="JavaScript">
+									<script type="text/javascript">
 										progressUpdaters[${pendingRequest.requestId}] = new Ajax.PeriodicalUpdater('profileStatusBar${pendingRequest.requestId}', '/spring/widget/profileWidget/percentDoneProgressBarHTML?requestId=${pendingRequest.requestId}', {method: 'post', frequency: 2});
 									</script>
 
