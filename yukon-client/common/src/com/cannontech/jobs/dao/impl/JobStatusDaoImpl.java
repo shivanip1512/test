@@ -6,6 +6,7 @@ import java.util.List;
 
 import org.springframework.beans.factory.InitializingBean;
 import org.springframework.beans.factory.annotation.Required;
+import org.springframework.dao.EmptyResultDataAccessException;
 import org.springframework.jdbc.core.namedparam.MapSqlParameterSource;
 import org.springframework.jdbc.core.simple.SimpleJdbcOperations;
 
@@ -73,6 +74,23 @@ public class JobStatusDaoImpl implements JobStatusDao, InitializingBean {
         JobStatusRowMapper<YukonJob> jobStatusRowMapper = new JobStatusRowMapper<YukonJob>(yukonJobBaseRowMapper);
         List<JobStatus<YukonJob>> resultList = jdbcTemplate.query(sql.toString(), jobStatusRowMapper, lateLimit, earlyLimit);
         return resultList;
+    }
+    
+    public JobStatus<YukonJob> getStatusByJobId(int jobId) {
+        
+        JobStatus<YukonJob> result = null;
+        try {
+            SqlStatementBuilder sql = new SqlStatementBuilder();
+            sql.append("select *");
+            sql.append("from JobStatus js");
+            sql.append("join Job j on js.jobid = j.jobid");
+            sql.append("where js.jobid = ?");
+            JobStatusRowMapper<YukonJob> jobStatusRowMapper = new JobStatusRowMapper<YukonJob>(yukonJobBaseRowMapper);
+            result = jdbcTemplate.queryForObject(sql.toString(), jobStatusRowMapper, jobId);
+        } catch (EmptyResultDataAccessException e) {
+            return null;
+        }
+        return result;
     }
     
     public void afterPropertiesSet() throws Exception {

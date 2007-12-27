@@ -182,7 +182,6 @@
         <property name="paoDao" ref="paoDao" />
         <property name="dbPersistentDao" ref="dbPersistentDao" />
         <property name="jobManager" ref="jobManager" />
-        <property name="jobStatusDao" ref="jobStatusDao" />
         <property name="toggleProfilingDefinition" ref="toggleProfilingJob" />
         
     </bean>

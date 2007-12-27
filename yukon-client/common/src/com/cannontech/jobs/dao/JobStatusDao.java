@@ -19,5 +19,16 @@ public interface JobStatusDao {
      * @return
      */
     public List<JobStatus<YukonJob>> getAllStatus(Date start, Date end);
+    
+    /**
+     * Get JobStatus for givin jobId. 
+     * 
+     * NOTE: Assumes valid jobId. If no status is found for jobId, assumption
+     * will be made that the job has not run yet.
+     * 
+     * @param jobId
+     * @return
+     */
+    public JobStatus<YukonJob> getStatusByJobId(int jobId);
 
 }

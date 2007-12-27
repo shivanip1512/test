@@ -27,7 +27,7 @@ public interface JobManager {
     
     public YukonJob getJob(int jobId);
     
-    public Set<ScheduledOneTimeJob> getOneTimeJobsByDefinition(YukonJobDefinition<? extends YukonTask> definition);
-    public Set<ScheduledRepeatingJob> getRepeatingJobsByDefinition(YukonJobDefinition<? extends YukonTask> definition);
+    public Set<ScheduledOneTimeJob> getUnRunOneTimeJobsByDefinition(YukonJobDefinition<? extends YukonTask> definition);
+    public Set<ScheduledRepeatingJob> getUnRunRepeatingJobsByDefinition(YukonJobDefinition<? extends YukonTask> definition);
 
 }

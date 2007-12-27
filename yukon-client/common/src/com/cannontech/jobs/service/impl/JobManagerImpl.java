@@ -4,6 +4,7 @@ import java.text.ParseException;
 import java.util.Collection;
 import java.util.Date;
 import java.util.HashMap;
+import java.util.HashSet;
 import java.util.Set;
 import java.util.TimeZone;
 import java.util.concurrent.ConcurrentHashMap;
@@ -150,23 +151,42 @@ public class JobManagerImpl implements JobManager {
         return yukonJobDao.getById(jobId);
     }
     
-    public Set<ScheduledOneTimeJob> getOneTimeJobsByDefinition(YukonJobDefinition<? extends YukonTask> definition) {
+    public Set<ScheduledOneTimeJob> getUnRunOneTimeJobsByDefinition(YukonJobDefinition<? extends YukonTask> definition) {
         
         Set<ScheduledOneTimeJob> defJobs =  scheduledOneTimeJobDao.getJobsByDefinition(definition);
-
-        // these are NOT necessarily un-run.. needs add functionality to JobStatusDao to make this easier to determine
-        return defJobs;
         
+        Set<ScheduledOneTimeJob> unrunJobs = new HashSet<ScheduledOneTimeJob>();
+        for (ScheduledOneTimeJob j : defJobs) {
+            if(isJobStillRunnable(j)) {
+                unrunJobs.add(j);
+            }
+        }
+        return unrunJobs;
     }
     
-    public Set<ScheduledRepeatingJob> getRepeatingJobsByDefinition(YukonJobDefinition<? extends YukonTask> definition) {
+    public Set<ScheduledRepeatingJob> getUnRunRepeatingJobsByDefinition(YukonJobDefinition<? extends YukonTask> definition) {
         
         Set<ScheduledRepeatingJob> defJobs = scheduledRepeatingJobDao.getJobsByDefinition(definition);
         
-        // these are NOT necessarily un-run.. needs add functionality to JobStatusDao to make this easier to determine
-        return defJobs;
+        Set<ScheduledRepeatingJob> unrunJobs = new HashSet<ScheduledRepeatingJob>();
+        for (ScheduledRepeatingJob j : defJobs) {
+            if(isJobStillRunnable(j)) {
+                unrunJobs.add(j);
+            }
+        }
+        return unrunJobs;
     }
     
+    private boolean isJobStillRunnable(YukonJob job) {
+        if (!job.isDisabled()) {
+            int jobId = job.getId();
+            JobStatus<YukonJob> jobStatus = jobStatusDao.getStatusByJobId(jobId);
+            if (jobStatus == null || jobStatus.getJobState() == JobState.RESTARTED) {
+                return true;
+            }
+        }
+        return false;
+    }
     
     public void scheduleJob(YukonJobDefinition<?> jobDefinition, YukonTask task, Date time) {
         LiteYukonUser liteYukonUser = yukonUserDao.getLiteYukonUser(-2);
