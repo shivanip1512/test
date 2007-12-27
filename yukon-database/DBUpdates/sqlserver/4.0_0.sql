@@ -158,17 +158,6 @@ alter table CCSubSpecialAreaAssignment
    add constraint PK_CCSubSpecialAreaAssignment primary key nonclustered (AreaId, SubstationBusId);
 go
 
-alter table CCSubSpecialAreaAssignment
-   add constraint FK_CCSubSpecialArea_CapContr foreign key (AreaID)
-      references CapControlSpecialArea (AreaID);
-go
-
-/* Start YUK-4746 */
-alter table CCSUBSPECIALAREAASSIGNMENT
-   add constraint FK_CCSUBSPE_CAPCONTR2 foreign key (SubstationBusID)
-      references CAPCONTROLSUBSTATION (SubstationID);
-go
-/* End YUK-4746 */
 
 alter table DYNAMICCCAREA
    add constraint PK_DYNAMICCCAREA primary key nonclustered (AreaId);
@@ -1362,6 +1351,17 @@ alter table LMHardwareControlGroup
 go
 /* End YUK-4116, YUK-4936 */
 
+alter table CCSubSpecialAreaAssignment
+   add constraint FK_CCSubSpecialArea_CapContr foreign key (AreaID)
+      references CapControlSpecialArea (AreaID);
+go
+
+/* Start YUK-4746 */
+alter table CCSUBSPECIALAREAASSIGNMENT
+   add constraint FK_CCSUBSPE_CAPCONTR2 foreign key (SubstationBusID)
+      references CAPCONTROLSUBSTATION (SubstationID);
+go
+/* End YUK-4746 */
 /**************************************************************/
 /* VERSION INFO                                               */
 /*   Automatically gets inserted from build script            */

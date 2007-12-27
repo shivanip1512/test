@@ -1,7 +1,7 @@
 /*==============================================================*/
 /* Database name:  YukonDatabase                                */
 /* DBMS name:      ORACLE Version 9i                            */
-/* Created on:     12/26/2007 11:22:37 AM                       */
+/* Created on:     12/27/2007 10:36:53 AM                       */
 /*==============================================================*/
 
 
@@ -694,13 +694,6 @@ drop table YukonUserRole cascade constraints;
 
 drop table YukonWebConfiguration cascade constraints;
 
-drop user Yukon;
-
-/*==============================================================*/
-/* User: Yukon                                                  */
-/*==============================================================*/
-create user Yukon identified by '';
-
 /*==============================================================*/
 /* Table: ActivityLog                                           */
 /*==============================================================*/
@@ -980,8 +973,8 @@ create table CAPBANKADDITIONAL  (
 /*==============================================================*/
 create table CAPBANKCOMMENT  (
    CommentID            INTEGER                         not null,
-   PaoID                INTEGER                         not null,
-   UserID               INTEGER                         not null,
+   PaoID                NUMBER                          not null,
+   UserID               NUMBER                          not null,
    Action               VARCHAR2(50)                    not null,
    CommentTime          DATE                            not null,
    "Comment"            VARCHAR2(500)                   not null,

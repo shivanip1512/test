@@ -1,6 +1,6 @@
 /*==============================================================*/
 /* DBMS name:      Microsoft SQL Server 2000                    */
-/* Created on:     12/24/2007 3:20:33 PM                        */
+/* Created on:     12/27/2007 1:30:28 PM                        */
 /*==============================================================*/
 
 
@@ -673,7 +673,7 @@ create table ApplianceDualStageAirCond (
 go
 
 alter table ApplianceDualStageAirCond
-   add constraint PK_APPLIANCEDUALSTAGEAIRCOND primary key (ApplianceID)
+   add constraint PK_APPLIANCEDUALSTAGEAIRCOND primary key nonclustered (ApplianceID)
 go
 
 /*==============================================================*/
@@ -808,7 +808,7 @@ go
 INSERT INTO CustomerAccount VALUES (0,0,'(none)',-1,0,'(none)');
 
 alter table CustomerAccount
-   add constraint PK_CUSTOMERACCOUNT primary key (AccountID)
+   add constraint PK_CUSTOMERACCOUNT primary key nonclustered (AccountID)
 go
 
 /*==============================================================*/

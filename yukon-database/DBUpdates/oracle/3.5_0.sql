@@ -98,10 +98,8 @@ GROUP BY op.LogID) OpConf INNER JOIN
         ccsubareaassignment csa on csa.substationbusid = el.SubID left outer join 
         YukonPAObject yp4 ON yp4.paobjectid = csa.areaid
 ;
-
 insert into FDRInterface values (25, 'TRISTATESUB', 'Receive', 'f' );
 insert into FDRInterfaceOption values(25, 'Point', 1, 'Combo', 'Nucla 115/69 Xfmr.,Happy Canyon 661Idarado,Cascade 115/69 (T2),Ames Generation,Dallas Creek MW,Dallas Creek MV' );
-
 insert into YukonRoleProperty values(-10814, -108,'Suppress Error Page Details', 'false', 'Disable stack traces for this user.');
 
 insert into BillingFileFormats values(-25,'Itron Register Readings Export');
@@ -318,13 +316,11 @@ insert into DeviceTypeCommand values (-673, -133, 'Expresscom Group', 3, 'Y', -1
 insert into DeviceTypeCommand values (-674, -134, 'Expresscom Group', 4, 'Y', -1);
 insert into DeviceTypeCommand values (-675, -135, 'Expresscom Group', 5, 'Y', -1);
 
-drop index INDX_PAOBJECTID;
-
 /*==============================================================*/
 /* Index: INDX_PAOBJECTID                                       */
 /*==============================================================*/
 create index INDX_PAOBJECTID on POINT (
-   "PAObjectID" ASC
+   PAObjectID ASC
 );
 
 insert into YukonRole values(-212,'Scheduler','Operator','Operator access to Scheduler'); 
@@ -505,7 +501,6 @@ begin
 	  end loop;
 	close c_capid;
 end;
-/ 
 /* @end-block */
 /* End YUK-4984 */
  

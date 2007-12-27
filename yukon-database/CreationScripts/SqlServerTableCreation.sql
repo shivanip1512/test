@@ -1,7 +1,7 @@
 /*==============================================================*/
 /* Database name:  YukonDatabase                                */
 /* DBMS name:      Microsoft SQL Server 2000                    */
-/* Created on:     12/26/2007 11:16:45 AM                       */
+/* Created on:     12/27/2007 10:38:08 AM                       */
 /*==============================================================*/
 
 
@@ -2526,15 +2526,6 @@ if exists (select 1
    drop table YukonWebConfiguration
 go
 
-execute sp_revokedbaccess Yukon
-go
-
-/*==============================================================*/
-/* User: Yukon                                                  */
-/*==============================================================*/
-execute sp_grantdbaccess Yukon
-go
-
 /*==============================================================*/
 /* Table: ActivityLog                                           */
 /*==============================================================*/
@@ -2825,8 +2816,8 @@ go
 /*==============================================================*/
 create table CAPBANKCOMMENT (
    CommentID            int                  not null,
-   PaoID                int                  not null,
-   UserID               int                  not null,
+   PaoID                numeric              not null,
+   UserID               numeric              not null,
    Action               varchar(50)          not null,
    CommentTime          datetime             not null,
    Comment              varchar(500)         not null,

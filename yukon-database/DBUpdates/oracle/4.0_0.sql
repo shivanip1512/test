@@ -150,15 +150,6 @@ create table CCSubSpecialAreaAssignment (
 alter table CCSubSpecialAreaAssignment
    add constraint PK_CCSubSpecialAreaAssignment primary key (AreaId, SubstationBusId);
 
-alter table CCSubSpecialAreaAssignment
-   add constraint FK_CCSubSpecialArea_CapContr foreign key (AreaID)
-      references CapControlSpecialArea (AreaID);
-
-/* Start YUK-4746 */
-alter table CCSUBSPECIALAREAASSIGNMENT
-   add constraint FK_CCSUBSPE_CAPCONTR2 foreign key (SubstationBusID)
-      references CAPCONTROLSUBSTATION (SubstationID);
-/* End YUK-4746 */
 
 alter table DYNAMICCCAREA
    add constraint PK_DYNAMICCCAREA primary key (AreaId);
@@ -217,23 +208,6 @@ alter table CapControlSubstationbus modify PhaseC number not null;
 /************************************* 
 	END CAPCONTROL 4.0 CHANGES 
 *************************************/
-
-/*==============================================================*/
-/* Table: CAPCONTROLSPECIALAREA                                 */
-/*==============================================================*/
-create table CAPCONTROLSPECIALAREA  (
-   AreaID               NUMBER                          not null
-)
-;
-/*==============================================================*/
-/* Table: CCSUBSPECIALAREAASSIGNMENT                            */
-/*==============================================================*/
-create table CCSUBSPECIALAREAASSIGNMENT  (
-   AreaID               NUMBER                          not null,
-   SubstationBusID      NUMBER                          not null,
-   DisplayOrder         NUMBER                          not null
-)
-;
 
 delete from LMThermostatSeasonEntry where SeasonID in (select SeasonID from LMThermostatSeason where ScheduleID in (select ScheduleID from LMThermostatSchedule where ThermostatTypeID in (select EntryID from YukonListEntry where YukonDefinitionID = 3100)));
 delete from LMThermostatSeason where ScheduleID in (select ScheduleID from LMThermostatSchedule where ThermostatTypeID in (select EntryID from YukonListEntry where YukonDefinitionID = 3100));
@@ -308,8 +282,6 @@ insert into YukonGroupRole values(-59,-1,-4,-1317,'(none)');
 insert into YukonGroupRole values(-92,-1,-4,-1307,'(none)');
 
 /* Start YUK-4982 */
-drop table TOUATTRIBUTEMAPPING cascade constraints;
-
 /*==============================================================*/
 /* Table: TOUATTRIBUTEMAPPING                                   */
 /*==============================================================*/
@@ -335,8 +307,6 @@ alter table cceventlog modify actionId number not null;
 
 
 /* Begin YUK-4785 */
-drop table DEVICECONFIGURATIONDEVICEMAP cascade constraints;
-
 /*==============================================================*/
 /* Table: DEVICECONFIGURATIONDEVICEMAP                          */
 /*==============================================================*/
@@ -348,8 +318,6 @@ create table DEVICECONFIGURATIONDEVICEMAP  (
 ;
 
 
-drop table DEVICECONFIGURATION cascade constraints;
-
 /*==============================================================*/
 /* Table: DEVICECONFIGURATION                                   */
 /*==============================================================*/
@@ -360,8 +328,6 @@ create table DEVICECONFIGURATION  (
    constraint PK_DEVICECONFIGURATION primary key (DeviceConfigurationID)
 )
 ;
-
-drop table DEVICECONFIGURATIONITEM cascade constraints;
 
 /*==============================================================*/
 /* Table: DEVICECONFIGURATIONITEM                               */
@@ -805,8 +771,6 @@ GROUP BY op.LogID) OpConf INNER JOIN
 ;
 
 /* Start YUK-4730 */
-drop table JOB cascade constraints;
-
 /*==============================================================*/
 /* Table: JOB                                                   */
 /*==============================================================*/
@@ -821,8 +785,6 @@ create table JOB  (
 alter table JOB
    add constraint FK_Job_YukonUser foreign key (UserID)
       references YukonUser (UserID);
-
-drop table JOBPROPERTY cascade constraints;
 
 /*==============================================================*/
 /* Table: JOBPROPERTY                                           */
@@ -840,8 +802,6 @@ alter table JOBPROPERTY
       references JOB (JobID)
       on delete cascade;
 
-drop table JOBSCHEDULEDONETIME cascade constraints;
-
 /*==============================================================*/
 /* Table: JOBSCHEDULEDONETIME                                   */
 /*==============================================================*/
@@ -856,8 +816,6 @@ alter table JOBSCHEDULEDONETIME
       references JOB (JobID)
       on delete cascade;
 
-drop table JOBSCHEDULEDREPEATING cascade constraints;
-
 /*==============================================================*/
 /* Table: JOBSCHEDULEDREPEATING                                 */
 /*==============================================================*/
@@ -871,8 +829,6 @@ alter table JOBSCHEDULEDREPEATING
    add constraint FK_JOBSCHED_REFERENCE_JOB foreign key (JobID)
       references JOB (JobID)
       on delete cascade;
-
-drop table JOBSTATUS cascade constraints;
 
 /*==============================================================*/
 /* Table: JOBSTATUS                                             */
@@ -895,8 +851,6 @@ alter table JOBSTATUS
 alter table JOBSTATUS
    add constraint FK_JobStatus_JobStatus foreign key (JobStatusID)
       references JOBSTATUS (JobStatusID);
-
-drop table JOBSTATUS cascade constraints;
 
 /*==============================================================*/
 /* Table: JOBSTATUS                                             */
@@ -1041,8 +995,6 @@ alter table CAPBANKCOMMENT
 
 /* Start YUK-4810 */
 insert into YukonRoleProperty values(-20207,-202,'Enable Auto Archiving','true','Allows a user to setup automatic archiving on their yukon system pertaining to the move in/move out interface');
-
-drop table DEVICEEVENT cascade constraints;
 
 /*==============================================================*/
 /* Table: DEVICEEVENT                                           */
@@ -1272,6 +1224,14 @@ alter table LMHardwareControlGroup
    add constraint PK_LMHARDWARECONTROLGROUP primary key (ControlEntryID);
 /* End YUK-4116, YUK-4936 */
 
+
+alter table CCSubSpecialAreaAssignment
+   add constraint FK_CCSubSpecialArea_CapContr foreign key (AreaID)
+      references CapControlSpecialArea (AreaID);
+
+alter table CCSUBSPECIALAREAASSIGNMENT
+   add constraint FK_CCSUBSPE_CAPCONTR2 foreign key (SubstationBusID)
+      references CAPCONTROLSUBSTATION (SubstationID);
 /**************************************************************/
 /* VERSION INFO                                               */
 /*   Automatically gets inserted from build script            */

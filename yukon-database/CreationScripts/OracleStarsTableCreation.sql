@@ -1,6 +1,6 @@
 /*==============================================================*/
 /* DBMS name:      ORACLE Version 9i                            */
-/* Created on:     12/24/2007 3:22:00 PM                        */
+/* Created on:     12/27/2007 1:29:52 PM                        */
 /*==============================================================*/
 
 
@@ -264,10 +264,6 @@ create table ApplianceDualFuel  (
 alter table ApplianceDualFuel
    add constraint PK_APPLIANCEDUALFUEL primary key (ApplianceID);
 
-create cluster  C_ApplianceDualStageAirCond (
-   ApplianceID		NUMBER
-);
-
 /*==============================================================*/
 /* Table: ApplianceDualStageAirCond                             */
 /*==============================================================*/
@@ -382,10 +378,6 @@ create table CallReportBase  (
 
 alter table CallReportBase
    add constraint PK_CALLREPORTBASE primary key (CallID);
-
-create cluster  C_CustomerAccount (
-   AccountID		NUMBER
-);
 
 /*==============================================================*/
 /* Table: CustomerAccount                                       */
