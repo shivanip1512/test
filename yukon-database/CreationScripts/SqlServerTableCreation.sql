@@ -1,7 +1,7 @@
 /*==============================================================*/
 /* Database name:  YukonDatabase                                */
 /* DBMS name:      Microsoft SQL Server 2000                    */
-/* Created on:     12/27/2007 10:38:08 AM                       */
+/* Created on:     12/28/2007 10:22:40 AM                       */
 /*==============================================================*/
 
 
@@ -2984,7 +2984,8 @@ go
 create table CCSUBSPECIALAREAASSIGNMENT (
    AreaID               numeric              not null,
    SubstationBusID      numeric              not null,
-   DisplayOrder         numeric              not null
+   DisplayOrder         numeric              not null,
+   constraint PK_CCSUBSPECIALAREAASSIGNMENT primary key (AreaID, SubstationBusID)
 )
 go
 

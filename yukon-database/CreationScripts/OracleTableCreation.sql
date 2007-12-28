@@ -1,7 +1,7 @@
 /*==============================================================*/
 /* Database name:  YukonDatabase                                */
 /* DBMS name:      ORACLE Version 9i                            */
-/* Created on:     12/27/2007 10:36:53 AM                       */
+/* Created on:     12/28/2007 10:24:11 AM                       */
 /*==============================================================*/
 
 
@@ -1128,7 +1128,8 @@ create table CCSUBAREAASSIGNMENT  (
 create table CCSUBSPECIALAREAASSIGNMENT  (
    AreaID               NUMBER                          not null,
    SubstationBusID      NUMBER                          not null,
-   DisplayOrder         NUMBER                          not null
+   DisplayOrder         NUMBER                          not null,
+   constraint PK_CCSUBSPECIALAREAASSIGNMENT primary key (AreaID, SubstationBusID)
 );
 
 /*==============================================================*/
