@@ -8,8 +8,8 @@
 *
 * PVCS KEYWORDS:
 * ARCHIVE      :  $Archive:   Z:/SOFTWAREARCHIVES/YUKON/RTDB/dev_mct310.cpp-arc  $
-* REVISION     :  $Revision: 1.150 $
-* DATE         :  $Date: 2007/12/03 22:19:41 $
+* REVISION     :  $Revision: 1.151 $
+* DATE         :  $Date: 2007/12/28 14:50:34 $
 *
 * Copyright (c) 1999, 2000 Cannon Technologies Inc. All rights reserved.
 *-----------------------------------------------------------------------------*/
@@ -2448,76 +2448,79 @@ INT CtiDeviceMCT410::decodeGetValueKWH(INMESS *InMessage, CtiTime &TimeNow, list
         {
             int offset = (i * 3);
 
-            if( InMessage->Sequence == Cti::Protocol::Emetcon::Scan_Accum ||
-                InMessage->Sequence == Cti::Protocol::Emetcon::GetValue_KWH )
+            if( !i || getDevicePointOffsetTypeEqual(i + 1, PulseAccumulatorPointType) )
             {
-                //  normal KWH read, nothing too special
-                tags = TAG_POINT_MUST_ARCHIVE;
-
-                pi = CtiDeviceMCT4xx::getData(DSt->Message + offset, 3, ValueType_Accumulator);
-
-                pointTime -= pointTime.seconds() % 60;
-            }
-            else if( InMessage->Sequence == Cti::Protocol::Emetcon::GetValue_FrozenKWH )
-            {
-                //  but this is where the action is - frozen decode
-                tags = 0;
-
-                if( i ) offset++;  //  so that, for the frozen read, it goes 0, 4, 7 to step past the freeze counter in position 3
-
-                pi = CtiDeviceMCT4xx::getData(DSt->Message + offset, 3, ValueType_FrozenAccumulator);
-
-                if( pi.freeze_bit == _expected_freeze )  //  low-order bit indicates which freeze caused the value to be stored
+                if( InMessage->Sequence == Cti::Protocol::Emetcon::Scan_Accum ||
+                    InMessage->Sequence == Cti::Protocol::Emetcon::GetValue_KWH )
                 {
-                    //  assign time from the last freeze time, if the lower bit of dp.first matches the last freeze
-                    //    and the freeze counter (DSt->Message[3]) is what we expect
-                    //  also, archive the received freeze and the freeze counter into the dynamicpaoinfo table
+                    //  normal KWH read, nothing too special
+                    tags = TAG_POINT_MUST_ARCHIVE;
 
-                    if( hasDynamicInfo(Keys::Key_DemandFreezeTimestamp) )
+                    pi = CtiDeviceMCT4xx::getData(DSt->Message + offset, 3, ValueType_Accumulator);
+
+                    pointTime -= pointTime.seconds() % 60;
+                }
+                else if( InMessage->Sequence == Cti::Protocol::Emetcon::GetValue_FrozenKWH )
+                {
+                    //  but this is where the action is - frozen decode
+                    tags = 0;
+
+                    if( i ) offset++;  //  so that, for the frozen read, it goes 0, 4, 7 to step past the freeze counter in position 3
+
+                    pi = CtiDeviceMCT4xx::getData(DSt->Message + offset, 3, ValueType_FrozenAccumulator);
+
+                    if( pi.freeze_bit == _expected_freeze )  //  low-order bit indicates which freeze caused the value to be stored
                     {
-                        pointTime  = CtiTime(getDynamicInfo(Keys::Key_DemandFreezeTimestamp));
-                        pointTime -= pointTime.seconds() % 60;
+                        //  assign time from the last freeze time, if the lower bit of dp.first matches the last freeze
+                        //    and the freeze counter (DSt->Message[3]) is what we expect
+                        //  also, archive the received freeze and the freeze counter into the dynamicpaoinfo table
+
+                        if( hasDynamicInfo(Keys::Key_DemandFreezeTimestamp) )
+                        {
+                            pointTime  = CtiTime(getDynamicInfo(Keys::Key_DemandFreezeTimestamp));
+                            pointTime -= pointTime.seconds() % 60;
+                        }
+                        else
+                        {
+                            {
+                                CtiLockGuard<CtiLogger> doubt_guard(dout);
+                                dout << CtiTime() << " **** Checkpoint - device \"" << getName() << "\" does not have a freeze timestamp for KWH timestamp, defaulting to current time **** " << __FILE__ << " (" << __LINE__ << ")" << endl;
+                            }
+
+                            pointTime -= pointTime.seconds() % 60;
+                        }
                     }
                     else
                     {
                         {
                             CtiLockGuard<CtiLogger> doubt_guard(dout);
-                            dout << CtiTime() << " **** Checkpoint - device \"" << getName() << "\" does not have a freeze timestamp for KWH timestamp, defaulting to current time **** " << __FILE__ << " (" << __LINE__ << ")" << endl;
+                            dout << CtiTime() << " **** Checkpoint - incoming freeze parity bit (" << pi.freeze_bit <<
+                                                ") does not match expected freeze bit (" << _expected_freeze <<
+                                                ") on device \"" << getName() << "\", not sending data **** " << __FILE__ << " (" << __LINE__ << ")" << endl;
                         }
 
-                        pointTime -= pointTime.seconds() % 60;
+                        valid_data = false;
+                        ReturnMsg->setResultString("Freeze parity check failed (" + CtiNumStr(pi.freeze_bit) + ") != (" + CtiNumStr(_expected_freeze) + "), last recorded freeze sent at " + CtiTime(getDynamicInfo(Keys::Key_DemandFreezeTimestamp)).asString());
+                        status = NOTNORMAL;
                     }
                 }
-                else
+
+                if( valid_data )
                 {
+                    string point_name;
+                    bool reported = false;
+
+                    if( !i )    point_name = "Meter Reading";
+
+                    //  if kWh was returned as units, we could get rid of the default multiplier - it's messy
+                    insertPointDataReport(PulseAccumulatorPointType, i + 1,
+                                          ReturnMsg, pi, point_name, pointTime, 0.1, tags);
+
+                    //  if the quality's invalid, throw the status to abnormal if it's the first channel OR there's a point defined
+                    if( pi.quality == InvalidQuality && (!i || getDevicePointOffsetTypeEqual(i + 1, PulseAccumulatorPointType)) )
                     {
-                        CtiLockGuard<CtiLogger> doubt_guard(dout);
-                        dout << CtiTime() << " **** Checkpoint - incoming freeze parity bit (" << pi.freeze_bit <<
-                                            ") does not match expected freeze bit (" << _expected_freeze <<
-                                            ") on device \"" << getName() << "\", not sending data **** " << __FILE__ << " (" << __LINE__ << ")" << endl;
+                        status = NOTNORMAL;
                     }
-
-                    valid_data = false;
-                    ReturnMsg->setResultString("Freeze parity check failed (" + CtiNumStr(pi.freeze_bit) + ") != (" + CtiNumStr(_expected_freeze) + "), last recorded freeze sent at " + CtiTime(getDynamicInfo(Keys::Key_DemandFreezeTimestamp)).asString());
-                    status = NOTNORMAL;
-                }
-            }
-
-            if( valid_data )
-            {
-                string point_name;
-                bool reported = false;
-
-                if( !i )    point_name = "Meter Reading";
-
-                //  if kWh was returned as units, we could get rid of the default multiplier - it's messy
-                insertPointDataReport(PulseAccumulatorPointType, i + 1,
-                                      ReturnMsg, pi, point_name, pointTime, 0.1, tags);
-
-                //  if the quality's invalid, throw the status to abnormal if it's the first channel OR there's a point defined
-                if( pi.quality == InvalidQuality && (!i || getDevicePointOffsetTypeEqual(i + 1, PulseAccumulatorPointType)) )
-                {
-                    status = NOTNORMAL;
                 }
             }
         }
