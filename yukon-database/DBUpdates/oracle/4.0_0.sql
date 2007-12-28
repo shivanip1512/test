@@ -658,6 +658,7 @@ end;
 alter table CCSUBAREAASSIGNMENT
    add constraint FK_CCSUBARE_CAPSUBAREAASSGN foreign key (SubstationBusID)
       references CAPCONTROLSUBSTATION (SubstationID);
+      on delete cascade;
 
 drop table mySubstation;
 drop table mySubstation2;
