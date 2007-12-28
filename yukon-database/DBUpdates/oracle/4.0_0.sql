@@ -1232,6 +1232,30 @@ alter table CCSubSpecialAreaAssignment
 alter table CCSUBSPECIALAREAASSIGNMENT
    add constraint FK_CCSUBSPE_CAPCONTR2 foreign key (SubstationBusID)
       references CAPCONTROLSUBSTATION (SubstationID);
+
+/* Start YUK-5017 */
+	/* @error ignore-begin */
+		alter table ScheduleTimePeriod
+		drop constraint FK_SCHDTMPRD_REF_DS;
+		
+		alter table ScheduleShipmentMapping
+		drop constraint FK_SCHDSHPMNTMAP_DS;
+		
+		ALTER TABLE deliveryschedule
+		drop CONSTRAINT pk_deliverysched;
+		
+		alter table deliveryschedule
+		add constraint pk_deliveryschedule primary key (ScheduleID);
+		
+		alter table ScheduleShipmentMapping
+		   add constraint FK_SCHDSHPMNTMAP_DS foreign key (ScheduleID)
+		      references DeliverySchedule (ScheduleID);
+		
+		alter table ScheduleTimePeriod
+		   add constraint FK_SCHDTMPRD_REF_DS foreign key (ScheduleID)
+		      references DeliverySchedule (ScheduleID);
+	/* @error ignore-end */
+/* End YUK-5017 */
 /**************************************************************/
 /* VERSION INFO                                               */
 /*   Automatically gets inserted from build script            */
