@@ -1,7 +1,7 @@
 /*==============================================================*/
 /* Database name:  YukonDatabase                                */
 /* DBMS name:      Microsoft SQL Server 2000                    */
-/* Created on:     12/28/2007 10:22:40 AM                       */
+/* Created on:     12/28/2007 4:37:52 PM                        */
 /*==============================================================*/
 
 
@@ -11379,7 +11379,7 @@ alter table DYNAMICBILLINGFORMAT
 go
 
 alter table DYNAMICCCAREA
-   add constraint FK_DYNAMICC_REF_CAPCONTR foreign key (AreaID)
+   add constraint FK_ccarea_Dynccarea foreign key (AreaID)
       references CAPCONTROLAREA (AreaID)
 go
 

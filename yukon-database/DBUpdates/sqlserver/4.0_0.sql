@@ -534,10 +534,12 @@ alter table CAPCONTROLAREA
    add constraint FK_CAPCONTR_REFERENCE_YUKONPAO foreign key (AreaID)
       references YukonPAObject (PAObjectID);
 
-alter table DYNAMICCCAREA
-   add constraint FK_DYNAMICC_REF_CAPCONTR foreign key (AreaID)
-      references CAPCONTROLAREA (AreaID);
+/* Start YUK-5021 */
+alter table dynamicccarea
+   add constraint FK_ccarea_Dynccarea foreign key (areaID)
+      references Capcontrolarea (areaID);
 go
+/* End YUK-5021 */
 
 alter table CCSUBAREAASSIGNMENT drop constraint FK_CCSUBARE_CAPCONTR;
 go

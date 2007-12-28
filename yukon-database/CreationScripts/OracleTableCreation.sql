@@ -1,7 +1,7 @@
 /*==============================================================*/
 /* Database name:  YukonDatabase                                */
 /* DBMS name:      ORACLE Version 9i                            */
-/* Created on:     12/28/2007 10:24:11 AM                       */
+/* Created on:     12/28/2007 4:35:57 PM                        */
 /*==============================================================*/
 
 
@@ -9048,7 +9048,7 @@ alter table DYNAMICBILLINGFORMAT
       references BillingFileFormats (FormatID);
 
 alter table DYNAMICCCAREA
-   add constraint FK_DYNAMICC_REF_CAPCONTR foreign key (AreaID)
+   add constraint FK_ccarea_Dynccarea foreign key (AreaID)
       references CAPCONTROLAREA (AreaID);
 
 alter table DYNAMICCCSUBSTATION
