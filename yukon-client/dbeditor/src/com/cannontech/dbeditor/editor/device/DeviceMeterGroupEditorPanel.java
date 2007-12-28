@@ -209,7 +209,7 @@ if (customGroupsDirectionsLabel == null) {
   try {
       customGroupsDirectionsLabel = new javax.swing.JTextArea();
       customGroupsDirectionsLabel.setName("CustomGroupsDirections");
-      customGroupsDirectionsLabel.setText("* To manage all Groups for this device, go to the Device Details page in the Yukon Web Application. Log in to Yukon Web, then enter into the Metering portal. Select the device you wish to manage and use the Device Groupings widget to add or remove this device to or from other Groups.");
+      customGroupsDirectionsLabel.setText("* To further manage the groupings for this device, please log into the Yukon Web operations client. Once there, enter the Metering section and proceed to the Device Details page to update the device's assigned groups.");
       customGroupsDirectionsLabel.setFont(new Font("dialog", 0, 13));
       customGroupsDirectionsLabel.setLineWrap( true );
       customGroupsDirectionsLabel.setWrapStyleWord( true );
