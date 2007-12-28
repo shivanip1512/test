@@ -21,12 +21,12 @@
 					class="minMax" 
 					id="${thisId}_minusImg" 
                     alt="hide"
-					src="<c:url value="/WebConfig/yukon/Icons/clearbits/subtract.gif"/>">	
+					src="<c:url value="/WebConfig/yukon/Icons/collapse.gif"/>">	
 				<img 
 					class="minMax" 
 					id="${thisId}_plusImg" 
                     alt="show"
-					src="<c:url value="/WebConfig/yukon/Icons/clearbits/add.gif"/>">
+					src="<c:url value="/WebConfig/yukon/Icons/expand.gif"/>">
 		      </div>
 			</c:if>
 		<div class="title boxContainer_title">
