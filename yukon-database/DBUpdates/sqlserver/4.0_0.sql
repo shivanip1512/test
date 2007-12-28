@@ -1387,6 +1387,15 @@ go
 	/* @error ignore-end */
 /* End YUK-5017 */
 
+/* Start YUK-5020 */
+	alter table DeviceTypeCommand
+	drop constraint "FK_DevCmd_Grp ";
+	
+	alter table DeviceTypeCommand
+	   add constraint FK_DevCmd_Grp foreign key (CommandGroupID)
+	      references CommandGroup (CommandGroupID);
+/* End YUK-5020 */
+
 /**************************************************************/
 /* VERSION INFO                                               */
 /*   Automatically gets inserted from build script            */
