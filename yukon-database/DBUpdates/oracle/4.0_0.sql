@@ -1286,6 +1286,15 @@ alter table CCSUBSPECIALAREAASSIGNMENT
 	   POINTID ASC
 	);
 /* End YUK-5027 */
+
+/* Start YUK-5028 */
+	/* @error ignore-begin */
+	    alter table ScheduleTimePeriod
+	        drop constraint pk_schedtimeperiod;
+	    alter table ScheduleTimePeriod
+	       add constraint PK_SCHEDULETIMEPERIOD primary key (TimePeriodID);
+	/* @error ignore-end */
+/* End YUK-5028 */
 /**************************************************************/
 /* VERSION INFO                                               */
 /*   Automatically gets inserted from build script            */
