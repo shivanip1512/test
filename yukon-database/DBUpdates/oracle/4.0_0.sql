@@ -850,29 +850,6 @@ alter table JOBSTATUS
    add constraint FK_JobStatus_Job foreign key (JobID)
       references JOB (JobID)
       on delete cascade;
-
-alter table JOBSTATUS
-   add constraint FK_JobStatus_JobStatus foreign key (JobStatusID)
-      references JOBSTATUS (JobStatusID);
-
-/*==============================================================*/
-/* Table: JOBSTATUS                                             */
-/*==============================================================*/
-create table JOBSTATUS  (
-   JobStatusID          INTEGER                         not null,
-   JobID                INTEGER                         not null,
-   StartTime            DATE                            not null,
-   StopTime             DATE,
-   JobState             VARCHAR2(50),
-   message              CLOB,
-   constraint PK_JOBSTATUS primary key (JobStatusID)
-);
-
-alter table JOBSTATUS
-   add constraint FK_JobStatus_Job foreign key (JobID)
-      references JOB (JobID)
-      on delete cascade;
-
 /* End YUK-4730 */
 
 /* Begin YUK-4771 (formerly YUK-4716) */
