@@ -1118,8 +1118,8 @@ go
 /* Start YUK-4762, YUK-4969 */
 create table CAPBANKCOMMENT (
    CommentID            int                  not null,
-   PaoID                int                  not null,
-   UserID               int                  not null,
+   PaoID                numeric                  not null,
+   UserID               numeric                  not null,
    Action               varchar(50)          not null,
    CommentTime          datetime             not null,
    Comment              varchar(500)         not null,

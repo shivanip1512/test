@@ -955,8 +955,8 @@ alter table cceventlog modify capbankstateinfo varchar2(20) not null ;
 /* Start YUK-4762, YUK-4969 */
 create table CAPBANKCOMMENT  (
    CommentID            INTEGER                         not null,
-   PaoID                INTEGER                         not null,
-   UserID               INTEGER                         not null,
+   PaoID                NUMBER                         not null,
+   UserID               NUMBER                         not null,
    Action               VARCHAR2(50)                    not null,
    CommentTime          DATE                            not null,
    "Comment"            VARCHAR2(500)                   not null,
