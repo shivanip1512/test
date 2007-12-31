@@ -1,7 +1,7 @@
 /*==============================================================*/
 /* Database name:  YukonDatabase                                */
 /* DBMS name:      Microsoft SQL Server 2000                    */
-/* Created on:     12/31/2007 11:40:03 AM                       */
+/* Created on:     12/31/2007 11:50:50 AM                       */
 /*==============================================================*/
 
 
@@ -2866,9 +2866,9 @@ create table CAPCONTROLSUBSTATIONBUS (
    SwitchPointID        numeric              not null,
    DualBusEnabled       char(1)              not null,
    MultiMonitorControl  char(1)              not null,
-   usephasedata         char(1)              not null default '0',
-   phaseb               numeric              not null default 0,
-   phasec               numeric              not null default 0,
+   usephasedata         char(1)              not null,
+   phaseb               numeric              not null,
+   phasec               numeric              not null,
    constraint SYS_C0013476 primary key nonclustered (SubstationBusID)
 )
 go

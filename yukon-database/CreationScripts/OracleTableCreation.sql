@@ -1,7 +1,7 @@
 /*==============================================================*/
 /* Database name:  YukonDatabase                                */
 /* DBMS name:      ORACLE Version 9i                            */
-/* Created on:     12/31/2007 11:42:30 AM                       */
+/* Created on:     12/31/2007 11:49:41 AM                       */
 /*==============================================================*/
 
 
@@ -1019,9 +1019,9 @@ create table CAPCONTROLSUBSTATIONBUS  (
    SwitchPointID        NUMBER                          not null,
    DualBusEnabled       CHAR(1)                         not null,
    MultiMonitorControl  CHAR(1)                         not null,
-   usephasedata         CHAR(1)                        default '0' not null,
-   phaseb               NUMBER                         default 0 not null,
-   phasec               NUMBER                         default 0 not null,
+   usephasedata         CHAR(1)                         not null,
+   phaseb               NUMBER                          not null,
+   phasec               NUMBER                          not null,
    constraint SYS_C0013476 primary key (SubstationBusID)
 );
 
