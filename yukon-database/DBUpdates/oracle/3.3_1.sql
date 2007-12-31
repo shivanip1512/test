@@ -118,15 +118,15 @@ drop table DCItemValue;
 /* Table: DCItemType                                            */
 /*==============================================================*/
 create table DCItemType (
-   ItemTypeID           numeric              not null,
-   Name                 varchar(40)          not null,
-   DisplayName          varchar(40)          not null,
-   ValidationType       varchar(40)          null,
+   ItemTypeID           number              not null,
+   Name                 varchar2(40)          not null,
+   DisplayName          varchar2(40)          not null,
+   ValidationType       varchar2(40)          null,
    Required             char(1)              not null,
-   MinLength            numeric              not null,
-   MaxLengh             numeric              not null,
-   DefaultValue         varchar(40)          null,
-   Description          varchar(320)         null
+   MinLength            number              not null,
+   MaxLengh             number              not null,
+   DefaultValue         varchar2(40)          null,
+   Description          varchar2(320)         null
 );
 
 alter table DCItemType
@@ -136,9 +136,9 @@ alter table DCItemType
 /* Table: DCItemValue                                           */
 /*==============================================================*/
 create table DCItemValue (
-   ItemTypeID           numeric              not null,
-   Value                varchar(40)          not null,
-   ValueOrder           numeric              not null
+   ItemTypeID           number              not null,
+   Value                varchar2(40)          not null,
+   ValueOrder           number              not null
 );
 
 alter table DCItemValue
@@ -152,12 +152,12 @@ alter table DCItemValue
 /* Table: DCCategoryType                                        */
 /*==============================================================*/
 create table DCCategoryType (
-   CategoryTypeID       numeric              not null,
-   Name                 varchar(40)          not null,
-   DisplayName          varchar(40)          not null,
-   CategoryGroup        varchar(40)          null,
-   CategoryTypeLevel    varchar(40)          not null,
-   Description          varchar(320)         null
+   CategoryTypeID       number              not null,
+   Name                 varchar2(40)          not null,
+   DisplayName          varchar2(40)          not null,
+   CategoryGroup        varchar2(40)          null,
+   CategoryTypeLevel    varchar2(40)          not null,
+   Description          varchar2(320)         null
 );
 
 alter table DCCategoryType
@@ -167,8 +167,8 @@ alter table DCCategoryType
 /* Table: DCCategoryItemType                                    */
 /*==============================================================*/
 create table DCCategoryItemType (
-   CategoryTypeID       numeric              not null,
-   ItemTypeID           numeric              not null
+   CategoryTypeID       number              not null,
+   ItemTypeID           number              not null
 );
 
 alter table DCCategoryItemType
@@ -186,9 +186,9 @@ alter table DCCategoryItemType
 /* Table: DCCategory                                            */
 /*==============================================================*/
 create table DCCategory (
-   CategoryID           numeric              not null,
-   CategoryTypeID       numeric              not null,
-   Name                 varchar(40)          not null
+   CategoryID           number              not null,
+   CategoryTypeID       number              not null,
+   Name                 varchar2(40)          not null
 );
 
 alter table DCCategory
@@ -202,9 +202,9 @@ alter table DCCategory
 /* Table: DCCategoryItem                                        */
 /*==============================================================*/
 create table DCCategoryItem (
-   CategoryID           numeric              not null,
-   ItemTypeID           numeric              not null,
-   Value                varchar(40)          not null
+   CategoryID           number              not null,
+   ItemTypeID           number              not null,
+   Value                varchar2(40)          not null
 );
 
 alter table DCCategoryItem
@@ -222,10 +222,10 @@ alter table DCCategoryItem
 /* Table: DCConfigurationType                                   */
 /*==============================================================*/
 create table DCConfigurationType (
-   ConfigTypeID         numeric              not null,
-   Name                 varchar(40)          not null,
-   DisplayName          varchar(40)          not null,
-   Description          varchar(320)         null
+   ConfigTypeID         number              not null,
+   Name                 varchar2(40)          not null,
+   DisplayName          varchar2(40)          not null,
+   Description          varchar2(320)         null
 );
 
 alter table DCConfigurationType
@@ -235,8 +235,8 @@ alter table DCConfigurationType
 /* Table: DCConfigurationCategoryType                           */
 /*==============================================================*/
 create table DCConfigurationCategoryType (
-   ConfigTypeID         numeric              not null,
-   CategoryTypeID       numeric              not null
+   ConfigTypeID         number              not null,
+   CategoryTypeID       number              not null
 );
 
 alter table DCConfigurationCategoryType
@@ -254,9 +254,9 @@ alter table DCConfigurationCategoryType
 /* Table: DCConfiguration                                       */
 /*==============================================================*/
 create table DCConfiguration (
-   ConfigID             numeric              not null,
-   ConfigTypeID         numeric              not null,
-   Name                 varchar(40)          not null
+   ConfigID             number              not null,
+   ConfigTypeID         number              not null,
+   Name                 varchar2(40)          not null
 );
 
 alter table DCConfiguration
@@ -270,8 +270,8 @@ alter table DCConfiguration
 /* Table: DCConfigurationCategory                               */
 /*==============================================================*/
 create table DCConfigurationCategory (
-   ConfigID             numeric              not null,
-   CategoryID           numeric              not null
+   ConfigID             number              not null,
+   CategoryID           number              not null
 );
 
 alter table DCConfigurationCategory
@@ -289,8 +289,8 @@ alter table DCConfigurationCategory
 /* Table: DCDeviceConfiguration                                 */
 /*==============================================================*/
 create table DCDeviceConfiguration (
-   DeviceID             numeric              not null,
-   ConfigID             numeric              not null
+   DeviceID             number              not null,
+   ConfigID             number              not null
 );
 
 alter table DCDeviceConfiguration
@@ -308,8 +308,8 @@ alter table DCDeviceConfiguration
 /* Table: DCDeviceConfigurationType                             */
 /*==============================================================*/
 create table DCDeviceConfigurationType (
-   ConfigTypeID         numeric              not null,
-   DeviceType           varchar(30)          not null
+   ConfigTypeID         number              not null,
+   DeviceType           varchar2(30)          not null
 );
 
 alter table DCDeviceConfigurationType
