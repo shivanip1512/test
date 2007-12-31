@@ -3,10 +3,10 @@
 /***************************************************/
 
 
-alter table InventoryBase modify Notes Varchar(500);
-alter table AccountSite modify PropertyNotes Varchar(300);
-alter table ApplianceBase modify Notes Varchar(500);
-alter table CustomerResidence modify Notes Varchar(300);
+alter table InventoryBase modify Notes Varchar2(500);
+alter table AccountSite modify PropertyNotes Varchar2(300);
+alter table ApplianceBase modify Notes Varchar2(500);
+alter table CustomerResidence modify Notes Varchar2(300);
 
 alter table ApplianceHeatPump add PumpSizeID number;
 alter table ApplianceHeatPump

@@ -80,8 +80,8 @@ create unique index INDX_SYSLG_PTID_TS on SYSTEMLOG (
 );
 
 create table EsubDisplayIndex (
-   SearchKey            varchar(500)         not null,
-   DisplayUrl           varchar(500)         not null
+   SearchKey            varchar2(500)         not null,
+   DisplayUrl           varchar2(500)         not null
 );
 
 

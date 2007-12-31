@@ -3544,8 +3544,8 @@ create table CCEventLog  (
    EventType            NUMBER                          not null,
    SeqID                NUMBER                          not null,
    Value                NUMBER                          not null,
-   Text                 VARCHAR(120)                    not null,
-   UserName             VARCHAR(64)                     not null
+   Text                 VARCHAR2(120)                    not null,
+   UserName             VARCHAR2(64)                     not null
 );
 
 alter table CCEventLog

@@ -2,7 +2,7 @@
 /**** Oracle 9.2 DBupdates             ****/
 /******************************************/
 
-alter table dynamiclmprogramdirect add additionalinfo varchar(80) default '(none)' not null;
+alter table dynamiclmprogramdirect add additionalinfo varchar2(80) default '(none)' not null;
 
 insert into fdrinterfaceoption values(12,'DrivePath',2,'Text','(none)');
 insert into fdrinterfaceoption values(12,'Filename',3,'Text','(none)');

@@ -214,9 +214,9 @@ insert into YukonRoleProperty values(-20846,-201,'Label Alt Tracking #','Alt Tra
 insert into yukongrouprole values (-2146,-303,-201,-20846,'(none)');
 insert into yukongrouprole values (-846,-301,-201,-20846,'(none)');
 
-alter table Customer add AltTrackNum varchar(64);
+alter table Customer add AltTrackNum varchar2(64);
 update Customer set AltTrackNum = '(none)';
-alter table Customer modify AltTrackNum varchar(64) not null;
+alter table Customer modify AltTrackNum varchar2(64) not null;
 
 update yukonservices set serviceclass = 'com.cannontech.notif.server.NotificationServer' where serviceid = -1 or serviceid = 1;
 

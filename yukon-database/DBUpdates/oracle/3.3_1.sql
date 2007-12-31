@@ -2,9 +2,9 @@
 /**** Oracle 9.2 DBupdates             ****/
 /******************************************/
 /* @error ignore-begin */
-alter table DeviceMeterGroup modify CollectionGroup varchar(50) not null;
-alter table DeviceMeterGroup modify TestCollectionGroup varchar(50) not null;
-alter table DeviceMeterGroup modify BillingGroup varchar(50) not null;
+alter table DeviceMeterGroup modify CollectionGroup varchar2(50) not null;
+alter table DeviceMeterGroup modify TestCollectionGroup varchar2(50) not null;
+alter table DeviceMeterGroup modify BillingGroup varchar2(50) not null;
 /* @error ignore-end */
 
 delete MSPInterface where vendorid = 1 and interface = 'CB_MR';

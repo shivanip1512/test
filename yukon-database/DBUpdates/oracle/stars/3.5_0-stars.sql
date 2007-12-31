@@ -1,3 +1,3 @@
-alter table Invoice add AuthorizedNumber varchar(60);
+alter table Invoice add AuthorizedNumber varchar2(60);
 update Invoice set AuthorizedNumber = '';
-alter table Invoice modify AuthorizedNumber varchar(60) not null;
+alter table Invoice modify AuthorizedNumber varchar2(60) not null;

@@ -272,15 +272,15 @@ insert into DynamicPAOStatistics select distinct paobjectid, 'Lifetime', 0, 0, 0
 create table PROFILEPEAKRESULT  (
    ResultId           number                          not null,
    DeviceId           number                          not null,
-   ResultFrom         varchar(30)                     not null,
-   ResultTo           varchar(30)                     not null,
-   RunDate            varchar(30)                     not null,
-   PeakDay            varchar(30)                     not null,
-   Usage              varchar(25)                     not null,
-   Demand             varchar(25)                     not null,
-   AverageDailyUsage  varchar(25)                     not null,
-   TotalUsage         varchar(25)                     not null,
-   ResultType         varchar(5)                      not null,
+   ResultFrom         varchar2(30)                     not null,
+   ResultTo           varchar2(30)                     not null,
+   RunDate            varchar2(30)                     not null,
+   PeakDay            varchar2(30)                     not null,
+   Usage              varchar2(25)                     not null,
+   Demand             varchar2(25)                     not null,
+   AverageDailyUsage  varchar2(25)                     not null,
+   TotalUsage         varchar2(25)                     not null,
+   ResultType         varchar2(5)                      not null,
    Days               number                          not null
 );
 
@@ -340,7 +340,7 @@ insert into yukonroleproperty values (-100106,-1001, 'Feeder Last Update Timesta
 insert into yukonroleproperty values (-100203,-1002, 'CapBank Last Update Timestamp', 'true', 'is last update timestamp shown for capbanks');
 insert into yukonroleproperty values (-100105,-1001, 'Target', 'true', 'is target stat displayed');
 
-create table dynamicccarea ( AreaID numeric not null, additionalflags varchar(20) not null );
+create table dynamicccarea ( AreaID numeric not null, additionalflags varchar2(20) not null );
 
 alter table dynamicccarea
    add constraint FK_ccarea_Dynccarea foreign key (areaID)

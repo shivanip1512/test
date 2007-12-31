@@ -17,7 +17,7 @@ update yukonroleproperty set DefaultValue = 'false' where rolepropertyid = -1000
 
 insert into billingfileformats values(-26, 'SIMPLE_TOU_DeviceName');
 
-create table dynamicccarea ( AreaID numeric not null, additionalflags varchar(20) not null );
+create table dynamicccarea ( AreaID numeric not null, additionalflags varchar2(20) not null );
 
 alter table dynamicccarea
    add constraint FK_ccarea_Dynccarea foreign key (areaID)
