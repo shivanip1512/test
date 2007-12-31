@@ -1,7 +1,7 @@
 /*==============================================================*/
 /* Database name:  YukonDatabase                                */
 /* DBMS name:      Microsoft SQL Server 2000                    */
-/* Created on:     12/28/2007 4:37:52 PM                        */
+/* Created on:     12/31/2007 11:12:45 AM                       */
 /*==============================================================*/
 
 
@@ -2538,7 +2538,7 @@ create table ActivityLog (
    CustomerID           numeric              null,
    PaoID                numeric              null,
    Action               varchar(80)          not null,
-   Description          varchar(240)         null,
+   Description          varchar(240)         not null,
    constraint PK_ACTIVITYLOG primary key nonclustered (ActivityLogID)
 )
 go

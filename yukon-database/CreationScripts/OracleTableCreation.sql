@@ -1,7 +1,7 @@
 /*==============================================================*/
 /* Database name:  YukonDatabase                                */
 /* DBMS name:      ORACLE Version 9i                            */
-/* Created on:     12/28/2007 4:35:57 PM                        */
+/* Created on:     12/31/2007 11:13:59 AM                       */
 /*==============================================================*/
 
 
@@ -706,7 +706,7 @@ create table ActivityLog  (
    CustomerID           NUMBER,
    PaoID                NUMBER,
    Action               VARCHAR2(80)                    not null,
-   Description          VARCHAR2(240),
+   Description          VARCHAR2(240)                   not null,
    constraint PK_ACTIVITYLOG primary key (ActivityLogID)
 );
 
