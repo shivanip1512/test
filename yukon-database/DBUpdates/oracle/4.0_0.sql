@@ -1269,6 +1269,15 @@ alter table CCSUBSPECIALAREAASSIGNMENT
 	      references CommandGroup (CommandGroupID);
 /* End YUK-5020 */
 
+/* Start YUK-5022 */
+	alter table DYNAMICBILLINGFIELD
+	   add constraint FK_DBF_REF_BFF foreign key (FormatID)
+	      references BillingFileFormats (FormatID)
+	      on delete cascade;
+	alter table DYNAMICBILLINGFORMAT
+	   add constraint FK_DYNAMICB_REF_BILLI_BILLINGF foreign key (FormatID)
+	      references BillingFileFormats (FormatID);
+/* End YUK-5022 */
 /**************************************************************/
 /* VERSION INFO                                               */
 /*   Automatically gets inserted from build script            */
