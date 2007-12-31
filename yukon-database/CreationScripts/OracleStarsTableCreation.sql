@@ -1,6 +1,6 @@
 /*==============================================================*/
 /* DBMS name:      ORACLE Version 9i                            */
-/* Created on:     12/27/2007 1:29:52 PM                        */
+/* Created on:     12/31/2007 10:08:19 AM                       */
 /*==============================================================*/
 
 
@@ -1675,6 +1675,10 @@ alter table LMCustomerEventBase
 alter table LMCustomerEventBase
    add constraint FK_CsLsE_LCstE_a foreign key (ActionID)
       references YukonListEntry (EntryID);
+
+alter table LMHardwareBase
+   add constraint FK_LMHrdB_Rt foreign key (RouteID)
+      references Route (RouteID);
 
 alter table LMHardwareBase
    add constraint FK_LMHARDWA_REF_CSTLS_YUKONLIS foreign key (LMHardwareTypeID)

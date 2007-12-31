@@ -1,6 +1,6 @@
 /*==============================================================*/
 /* DBMS name:      Microsoft SQL Server 2000                    */
-/* Created on:     12/27/2007 1:30:28 PM                        */
+/* Created on:     12/31/2007 10:07:46 AM                       */
 /*==============================================================*/
 
 
@@ -2299,6 +2299,11 @@ go
 alter table LMCustomerEventBase
    add constraint FK_CsLsE_LCstE_a foreign key (ActionID)
       references YukonListEntry (EntryID)
+go
+
+alter table LMHardwareBase
+   add constraint FK_LMHrdB_Rt foreign key (RouteID)
+      references Route (RouteID)
 go
 
 alter table LMHardwareBase
