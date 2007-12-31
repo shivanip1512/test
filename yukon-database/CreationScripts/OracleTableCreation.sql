@@ -1,7 +1,7 @@
 /*==============================================================*/
 /* Database name:  YukonDatabase                                */
 /* DBMS name:      ORACLE Version 9i                            */
-/* Created on:     12/31/2007 11:13:59 AM                       */
+/* Created on:     12/31/2007 11:22:55 AM                       */
 /*==============================================================*/
 
 
@@ -861,7 +861,7 @@ insert into baseline values (1, 'Default Baseline', 30, 75, 5, 'YNNNNNY', 0);
 create table BillingFileFormats  (
    FormatID             NUMBER                          not null,
    FormatType           VARCHAR2(100)                   not null,
-   SystemFormat         SMALLINT                       default 1,
+   SystemFormat         SMALLINT,
    constraint PK_BILLINGFILEFORMATS primary key (FormatID)
 );
 

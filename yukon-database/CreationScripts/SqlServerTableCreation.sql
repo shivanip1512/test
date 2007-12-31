@@ -1,7 +1,7 @@
 /*==============================================================*/
 /* Database name:  YukonDatabase                                */
 /* DBMS name:      Microsoft SQL Server 2000                    */
-/* Created on:     12/31/2007 11:12:45 AM                       */
+/* Created on:     12/31/2007 11:24:06 AM                       */
 /*==============================================================*/
 
 
@@ -2697,7 +2697,7 @@ insert into baseline values (1, 'Default Baseline', 30, 75, 5, 'YNNNNNY', 0);
 create table BillingFileFormats (
    FormatID             numeric              not null,
    FormatType           varchar(100)         not null,
-   SystemFormat         smallint             null default 1,
+   SystemFormat         smallint             null,
    constraint PK_BILLINGFILEFORMATS primary key nonclustered (FormatID)
 )
 go
