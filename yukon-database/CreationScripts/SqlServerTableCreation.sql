@@ -1,7 +1,7 @@
 /*==============================================================*/
 /* Database name:  YukonDatabase                                */
 /* DBMS name:      Microsoft SQL Server 2000                    */
-/* Created on:     12/31/2007 11:24:06 AM                       */
+/* Created on:     12/31/2007 11:40:03 AM                       */
 /*==============================================================*/
 
 
@@ -3428,9 +3428,9 @@ create table CapControlFeeder (
    MapLocationID        varchar(64)          not null,
    CurrentVoltLoadPointID numeric              not null,
    MultiMonitorControl  char(1)              not null,
-   usephasedata         char(1)              not null default '0',
-   phaseb               numeric              not null default 0,
-   phasec               numeric              not null default 0,
+   usephasedata         char(1)              not null,
+   phaseb               numeric              not null,
+   phasec               numeric              not null,
    constraint PK_CAPCONTROLFEEDER primary key nonclustered (FeederID)
 )
 go

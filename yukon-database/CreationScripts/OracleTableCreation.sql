@@ -1,7 +1,7 @@
 /*==============================================================*/
 /* Database name:  YukonDatabase                                */
 /* DBMS name:      ORACLE Version 9i                            */
-/* Created on:     12/31/2007 11:22:55 AM                       */
+/* Created on:     12/31/2007 11:42:30 AM                       */
 /*==============================================================*/
 
 
@@ -1535,9 +1535,9 @@ create table CapControlFeeder  (
    MapLocationID        VARCHAR2(64)                    not null,
    CurrentVoltLoadPointID NUMBER                          not null,
    MultiMonitorControl  CHAR(1)                         not null,
-   usephasedata         CHAR(1)                        default '0' not null,
-   phaseb               NUMBER                         default 0 not null,
-   phasec               NUMBER                         default 0 not null,
+   usephasedata         CHAR(1)                         not null,
+   phaseb               NUMBER                          not null,
+   phasec               NUMBER                          not null,
    constraint PK_CAPCONTROLFEEDER primary key (FeederID)
 );
 
