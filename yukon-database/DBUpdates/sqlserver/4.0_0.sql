@@ -1436,6 +1436,14 @@ go
 	);
 	go
 /* End YUK-5025 */
+
+/* Start YUK-5027 */
+	create index INDX_UOMID_POINTID on POINTUNIT (
+		UOMID ASC,
+		POINTID ASC
+	);
+	go
+/* End YUK-5027 */
 /**************************************************************/
 /* VERSION INFO                                               */
 /*   Automatically gets inserted from build script            */

@@ -1279,6 +1279,13 @@ alter table CCSUBSPECIALAREAASSIGNMENT
 	   POINTTYPE ASC
 	);
 /* End YUK-5026 */
+
+/* Start YUK-5027 */
+	create index INDX_UOMID_POINTID on POINTUNIT (
+	   UOMID ASC,
+	   POINTID ASC
+	);
+/* End YUK-5027 */
 /**************************************************************/
 /* VERSION INFO                                               */
 /*   Automatically gets inserted from build script            */
