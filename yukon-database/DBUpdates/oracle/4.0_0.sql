@@ -1264,6 +1264,21 @@ alter table CCSUBSPECIALAREAASSIGNMENT
 		      add constraint PK_EVENTWORKORDER primary key (EventID);
 	/* @error ignore-end */
 /* End YUK-5023 */
+
+/* Start YUK-5026 */
+	create index INDX_PAOBJECTID_POFFSET on POINT (
+	   PAObjectID ASC,
+	   POINTOFFSET ASC
+	);
+	create index INDX_PAOBJECTID_POINTID on POINT (
+	   PAObjectID ASC,
+	   POINTID ASC
+	);
+	create index INDX_POFFSET_POINTTYPE on POINT (
+	   POINTOFFSET ASC,
+	   POINTTYPE ASC
+	);
+/* End YUK-5026 */
 /**************************************************************/
 /* VERSION INFO                                               */
 /*   Automatically gets inserted from build script            */

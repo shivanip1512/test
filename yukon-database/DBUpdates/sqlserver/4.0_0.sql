@@ -1418,6 +1418,24 @@ go
 		      add constraint PK_EVENTWORKORDER primary key (EventID);
 	/* @error ignore-end */
 /* End YUK-5023 */
+
+/* Start YUK-5026 */
+	create index INDX_PAOBJECTID_POFFSET on POINT (
+		PAObjectID ASC,
+		POINTOFFSET ASC
+	);
+	go
+	create index INDX_PAOBJECTID_POINTID on POINT (
+		PAObjectID ASC,
+		POINTID ASC
+	);
+	go
+	create index INDX_POFFSET_POINTTYPE on POINT (
+		POINTOFFSET ASC,
+		POINTTYPE ASC
+	);
+	go
+/* End YUK-5025 */
 /**************************************************************/
 /* VERSION INFO                                               */
 /*   Automatically gets inserted from build script            */
