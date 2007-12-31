@@ -1,7 +1,7 @@
 /*==============================================================*/
 /* Database name:  YukonDatabase                                */
 /* DBMS name:      Microsoft SQL Server 2000                    */
-/* Created on:     12/31/2007 11:50:50 AM                       */
+/* Created on:     12/31/2007 11:54:38 AM                       */
 /*==============================================================*/
 
 
@@ -2899,8 +2899,8 @@ create table CCEventLog (
    KVARAfter            float                not null,
    KVARChange           float                not null,
    AdditionalInfo       varchar(20)          not null,
-   actionId             numeric              not null default -1,
-   CapBankStateInfo     varchar(20)          not null default 'N/A',
+   actionId             numeric              not null,
+   CapBankStateInfo     varchar(20)          not null,
    constraint PK_CCEventLog primary key nonclustered (LogID)
 )
 go
