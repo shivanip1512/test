@@ -1,7 +1,7 @@
 /*==============================================================*/
 /* Database name:  YukonDatabase                                */
 /* DBMS name:      Microsoft SQL Server 2000                    */
-/* Created on:     12/31/2007 11:54:38 AM                       */
+/* Created on:     12/31/2007 12:10:19 PM                       */
 /*==============================================================*/
 
 
@@ -10876,7 +10876,6 @@ go
 alter table CCSUBSPECIALAREAASSIGNMENT
    add constraint FK_CCSUBSPE_REFERENCE_CAPCONTR foreign key (AreaID)
       references CAPCONTROLSPECIALAREA (AreaID)
-         on update cascade on delete cascade
 go
 
 alter table CCSUBSTATIONSUBBUSLIST

@@ -1,7 +1,7 @@
 /*==============================================================*/
 /* Database name:  YukonDatabase                                */
 /* DBMS name:      ORACLE Version 9i                            */
-/* Created on:     12/31/2007 11:55:43 AM                       */
+/* Created on:     12/31/2007 12:07:31 PM                       */
 /*==============================================================*/
 
 
@@ -8644,8 +8644,7 @@ alter table CCSUBSPECIALAREAASSIGNMENT
 
 alter table CCSUBSPECIALAREAASSIGNMENT
    add constraint FK_CCSUBSPE_REFERENCE_CAPCONTR foreign key (AreaID)
-      references CAPCONTROLSPECIALAREA (AreaID)
-      on delete cascade;
+      references CAPCONTROLSPECIALAREA (AreaID);
 
 alter table CCSUBSTATIONSUBBUSLIST
    add constraint FK_CCSUBSTA_CAPCONTR foreign key (SubStationID)
