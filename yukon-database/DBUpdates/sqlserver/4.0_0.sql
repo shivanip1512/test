@@ -1409,6 +1409,15 @@ go
 	      references BillingFileFormats (FormatID);
 	go
 /* End YUK-5022 */
+
+/* Start YUK-5023 */
+	/* @error ignore-begin */
+		alter table EventWorkOrder
+		      drop constraint pk_eventwrkordr;
+		alter table EventWorkOrder
+		      add constraint PK_EVENTWORKORDER primary key (EventID);
+	/* @error ignore-end */
+/* End YUK-5023 */
 /**************************************************************/
 /* VERSION INFO                                               */
 /*   Automatically gets inserted from build script            */
