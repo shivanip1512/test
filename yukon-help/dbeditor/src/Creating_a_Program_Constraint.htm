@@ -12,24 +12,26 @@
 
 <!--(Meta)==========================================================-->
 
+<meta http-equiv=content-type content="text/html; charset=windows-1252">
+<meta name=date content="05 24, 2005 12:14:07 PM">
+<meta name=topic-status content="In Progress">
+<meta name=topic-priority content=0>
+<meta name=topic-time-estimate content=0>
+<meta name=topic-comment content>
+<meta name=topic-id content="Creating a Program Constraint">
+<meta name=topic-check-list content="Ran Smart Index">
 <meta name=generator content="RoboHELP by eHelp Corporation - www.ehelp.com">
 <meta name=generator-major-version content=0.1>
 <meta name=generator-minor-version content=1>
 <meta name=filetype content=kadov>
 <meta name=filetype-version content=1>
 <meta name=page-count content=1>
-<meta name=layout-height content=578>
-<meta name=layout-width content=744>
-<meta name=date content="05 24, 2005 12:14:07 PM">
+<meta name=layout-height content=714>
+<meta name=layout-width content=972>
 <meta name=x-ignored-words content="MCT;Config;config;Ke;Mp;Kh;Min;KYZ;DNP;SOE;comm;Login;IED;EMETCOM;MCTs;KWH;Y-intercept;kW;kWh;SEDC;CADP;CTI-CSV;OPU;Owatonna;DAFRON;XL-Plus;Inc;DAFFRON;config.properties;billing_wiz_activate=;NCDC;NISC-Turtle;NISC-NCDC;Daffron;RTU;CBC;kVAr;KVAR;KVar;KW;KQ;KVa;COS;ArcTan;Q;Arctangent;QCosine;Y;C;A-B|;B-C|;C-A|;XOR;Geq;Leq;deadband;Deadband;LCR;Versacom;VERSACOM;TimeRefresh;SmartCycle;MasterCycle;Cnt;setpoint;Fahren;Abs;F;TA;TC;TE;TF;INET;ACS;VALMET;CYGMET;PointID;STEC;RCCS;TRISTATE;RDEX;TELGYR;TELEGYR;Clck;CBC's;Comm;ExpressCom;Dialup;CCU;IDLC;RTUs;TCUs;LCUs;DCD;IP;Telenetics;Sportster;dialup;SCADA;ILEX;Tx;RTS;ReEnable;downline;Dialback;Dialout;WCTP;LCU;TCU;Transponders;kVar;PortServer;ClassicBoard;Digi;Xyplex;e;Vars;LMT;EMETCON;IndividualFeeder;SubstationBus;BusOptimizedFeeder;Ctrl;login;FeederEditor;LM;ManualOnly;LastControlled;AlwaysFirstGroup;LeastControlTime;e-mails;Ack;d;CCUs;w;Failover;thumbwheel;SBO;RTU-WELCO;RTU-ILEX;Readmeter;xxx;TimeOut;support@cannontech.com.;requeuing;Requeue;e-mail;dialout;ExpressStat;T-STAT;Golay;username;Ops">
 
 
- <meta name="topic-status" content="In Progress">
- <meta name="topic-priority" content="0">
- <meta name="topic-time-estimate" content="0">
- <meta name="topic-comment" content="">
- <meta name="topic-id" content="Creating a Program Constraint">
- <meta name="topic-check-list" content="Ran Smart Index"><!--(Links)=========================================================-->
+<!--(Links)=========================================================-->
 
 <link rel=StyleSheet href=default.css>
 
@@ -67,28 +69,31 @@
 	
 	<li class=kadov-p><p style="margin-bottom: 9pt;">Enter the maximum 
  number of seconds that a load group can run in the <span style="font-weight: bold;">Max 
- - Activate</span> text box.</p></li>
+ - Activate</span> text box. This constraint is reset when the load program 
+ becomes inactive.</p></li>
 	
 	<li class=kadov-p><p style="margin-bottom: 9pt;">Enter the maximum 
  number of times a load group can run in one day in the <span style="font-weight: bold;">Max 
- - Daily Ops</span> text box.</p></li>
+ - Daily Ops</span> text box. This constraint is reset at the end of the 
+ day.</p></li>
 	
 	<li class=kadov-p><p style="margin-bottom: 9pt;">Enter the minimum 
  number of seconds that a load group must run before it can be stopped 
- in the <span style="font-weight: bold;">Min - Activate</span> text box.</p></li>
+ in the <span style="font-weight: bold;">Min - Activate</span> text box. 
+ This constraint is reset after the load group stops.</p></li>
 	
 	<li class=kadov-p><p style="margin-bottom: 9pt;">Enter the minimum 
  number of seconds to wait after a load group stops before the load group 
  can run again in the <span style="font-weight: bold;">Min - Restart</span> 
- text box.</p></li>
+ text box. This constraint is reset when the load program becomes inactive.</p></li>
 	
 	<li class=kadov-p><p style="margin-bottom: 9pt;">Select the check boxes 
  for which days of the week the load program is available under the <span 
  style="font-weight: bold;">Day Selection</span> area</p></li>
 	
-	<li class=kadov-p><p style="margin-bottom: 9pt;">A holiday schedule 
- can be selected from the <span style="font-weight: bold;">Holiday Schedule</span> 
- drop-down list.</p></li>
+	<li class=kadov-p><p style="margin-bottom: 9pt;">Select a holiday schedule 
+ from the <span style="font-weight: bold;">Holiday Schedule</span> drop-down 
+ list.</p></li>
 	
 	<li class=kadov-p><p><span style="margin-bottom: 9pt;">I</span>f a 
  holiday schedule is selected, select what to do on holidays in the <span 

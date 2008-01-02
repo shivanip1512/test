@@ -11,8 +11,6 @@
   </object>
   <li><object type="text/sitemap">
     <param name="Name" value="Add">
-    <param name="Name" value="Direct Control">
-    <param name="Local" value="Direct_Control.htm">
     <param name="Name" value="Creating a Customer">
     <param name="Local" value="Creating_a_Customer.htm">
     <param name="Name" value="Editing a Notification Group">
@@ -127,7 +125,7 @@
   <li><object type="text/sitemap">
     <param name="Name" value="Always First Group">
     <param name="Name" value="Time Refresh Rotation">
-    <param name="Local" value="Time_Refresh_Rotation.htm">
+    <param name="Local" value="Time_Refresh_Gear.htm">
   </object>
   <li><object type="text/sitemap">
     <param name="Name" value="Analog">
@@ -207,8 +205,6 @@
   </object>
   <li><object type="text/sitemap">
     <param name="Name" value="Available list">
-    <param name="Name" value="Direct Control">
-    <param name="Local" value="Direct_Control.htm">
     <param name="Name" value="Editing a Notification Group">
     <param name="Local" value="Editing_a_Contact.htm">
     <param name="Name" value="Editing a Route">
@@ -286,6 +282,8 @@
       <param name="Name" value="Updating">
       <param name="Name" value="Editing a Core Database Point">
       <param name="Local" value="Editing_a_Point.htm">
+      <param name="Name" value="Updating a Calculation">
+      <param name="Local" value="Updating_a_Calculation.htm">
     </object>
     </ul>
   <li><object type="text/sitemap">
@@ -301,16 +299,16 @@
   <li><object type="text/sitemap">
     <param name="Name" value="Change Duration">
     <param name="Name" value="Master Cycle Smart Cycle True Cycle">
-    <param name="Local" value="Master_Cycle_Smart_Cycle_True_Cycle.htm">
+    <param name="Local" value="Cycle_Gears.htm">
     <param name="Name" value="Time Refresh Rotation">
-    <param name="Local" value="Time_Refresh_Rotation.htm">
+    <param name="Local" value="Time_Refresh_Gear.htm">
   </object>
   <li><object type="text/sitemap">
     <param name="Name" value="Change Priority">
     <param name="Name" value="Master Cycle Smart Cycle True Cycle">
-    <param name="Local" value="Master_Cycle_Smart_Cycle_True_Cycle.htm">
+    <param name="Local" value="Cycle_Gears.htm">
     <param name="Name" value="Time Refresh Rotation">
-    <param name="Local" value="Time_Refresh_Rotation.htm">
+    <param name="Local" value="Time_Refresh_Gear.htm">
   </object>
   <li><object type="text/sitemap">
     <param name="Name" value="Clear">
@@ -423,6 +421,8 @@
       <param name="Name" value="Local Serial Port">
       <param name="Name" value="Creating a Comm Channel">
       <param name="Local" value="Creating_a_Comm_Channel.htm">
+      <param name="Name" value="Local Serial Port">
+      <param name="Local" value="Local_Serial_Port.htm">
     </object>
     <li><object type="text/sitemap">
       <param name="Name" value="Low Performance Alarm">
@@ -480,17 +480,27 @@
       <param name="Local" value="Editing_a_Comm_Channel.htm">
     </object>
     <li><object type="text/sitemap">
+      <param name="Name" value="TCP Terminal Server">
+      <param name="Name" value="TCP Terminal Server">
+      <param name="Local" value="TCP_Terminal_Server.htm">
+    </object>
+    <li><object type="text/sitemap">
       <param name="Name" value="Terminal Server">
       <param name="Name" value="Creating a Comm Channel">
       <param name="Local" value="Creating_a_Comm_Channel.htm">
+    </object>
+    <li><object type="text/sitemap">
+      <param name="Name" value="UDP Terminal Server">
+      <param name="Name" value="UDP Terminal Server">
+      <param name="Local" value="UDP_Terminal_Server.htm">
     </object>
     </ul>
   <li><object type="text/sitemap">
     <param name="Name" value="Command Resend Rate">
     <param name="Name" value="Master Cycle Smart Cycle True Cycle">
-    <param name="Local" value="Master_Cycle_Smart_Cycle_True_Cycle.htm">
+    <param name="Local" value="Cycle_Gears.htm">
     <param name="Name" value="Time Refresh Rotation">
-    <param name="Local" value="Time_Refresh_Rotation.htm">
+    <param name="Local" value="Time_Refresh_Gear.htm">
   </object>
   <li><object type="text/sitemap">
     <param name="Name" value="Communication Route">
@@ -596,6 +606,8 @@
       <param name="Name" value="Program Association">
       <param name="Name" value="Editing a Control Area">
       <param name="Local" value="Editing_a_Control_Area.htm">
+      <param name="Name" value="Removing a Program">
+      <param name="Local" value="Removing_a_Program.htm">
     </object>
     <li><object type="text/sitemap">
       <param name="Name" value="Require All Triggers Active">
@@ -645,14 +657,14 @@
   <li><object type="text/sitemap">
     <param name="Name" value="Control Area’s Trigger">
     <param name="Name" value="Master Cycle Smart Cycle True Cycle">
-    <param name="Local" value="Master_Cycle_Smart_Cycle_True_Cycle.htm">
+    <param name="Local" value="Cycle_Gears.htm">
     <param name="Name" value="Time Refresh Rotation">
-    <param name="Local" value="Time_Refresh_Rotation.htm">
+    <param name="Local" value="Time_Refresh_Gear.htm">
   </object>
   <li><object type="text/sitemap">
     <param name="Name" value="Control Percent">
     <param name="Name" value="Master Cycle Smart Cycle True Cycle">
-    <param name="Local" value="Master_Cycle_Smart_Cycle_True_Cycle.htm">
+    <param name="Local" value="Cycle_Gears.htm">
   </object>
   <li><object type="text/sitemap">
     <param name="Name" value="Control Scenario">
@@ -824,7 +836,7 @@
   <li><object type="text/sitemap">
     <param name="Name" value="Count Down">
     <param name="Name" value="Master Cycle Smart Cycle True Cycle">
-    <param name="Local" value="Master_Cycle_Smart_Cycle_True_Cycle.htm">
+    <param name="Local" value="Cycle_Gears.htm">
   </object>
   <li><object type="text/sitemap">
     <param name="Name" value="Create menu">
@@ -855,8 +867,6 @@
   </object>
   <li><object type="text/sitemap">
     <param name="Name" value="Creating">
-    <param name="Name" value="Direct Control">
-    <param name="Local" value="Direct_Control.htm">
     <param name="Name" value="Creating a Customer">
     <param name="Local" value="Creating_a_Customer.htm">
     <param name="Name" value="Creating a Notification Group">
@@ -894,11 +904,11 @@
     <param name="Name" value="Creating a Billing File">
     <param name="Local" value="Creating_a_Billing_File.htm">
     <param name="Name" value="Master Cycle Smart Cycle True Cycle">
-    <param name="Local" value="Master_Cycle_Smart_Cycle_True_Cycle.htm">
+    <param name="Local" value="Cycle_Gears.htm">
     <param name="Name" value="Latching">
     <param name="Local" value="Latching.htm">
     <param name="Name" value="Time Refresh Rotation">
-    <param name="Local" value="Time_Refresh_Rotation.htm">
+    <param name="Local" value="Time_Refresh_Gear.htm">
     <param name="Name" value="Creating a Control Scenario">
     <param name="Local" value="Creating_a_Control_Scenario.htm">
     <param name="Name" value="Creating a Dialout Pool">
@@ -960,8 +970,6 @@
     </object>
     <li><object type="text/sitemap">
       <param name="Name" value="Gear">
-      <param name="Name" value="Direct Control">
-      <param name="Local" value="Direct_Control.htm">
       <param name="Name" value="Editing a Load Program">
       <param name="Local" value="Editing_a_Load_Program.htm">
     </object>
@@ -1010,7 +1018,7 @@
     <li><object type="text/sitemap">
       <param name="Name" value="Master Cycle">
       <param name="Name" value="Master Cycle Smart Cycle True Cycle">
-      <param name="Local" value="Master_Cycle_Smart_Cycle_True_Cycle.htm">
+      <param name="Local" value="Cycle_Gears.htm">
     </object>
     <li><object type="text/sitemap">
       <param name="Name" value="Notification Group">
@@ -1037,7 +1045,7 @@
     <li><object type="text/sitemap">
       <param name="Name" value="Rotation">
       <param name="Name" value="Time Refresh Rotation">
-      <param name="Local" value="Time_Refresh_Rotation.htm">
+      <param name="Local" value="Time_Refresh_Gear.htm">
     </object>
     <li><object type="text/sitemap">
       <param name="Name" value="Route">
@@ -1057,7 +1065,7 @@
     <li><object type="text/sitemap">
       <param name="Name" value="Smart Cycle">
       <param name="Name" value="Master Cycle Smart Cycle True Cycle">
-      <param name="Local" value="Master_Cycle_Smart_Cycle_True_Cycle.htm">
+      <param name="Local" value="Cycle_Gears.htm">
     </object>
     <li><object type="text/sitemap">
       <param name="Name" value="State Group">
@@ -1072,7 +1080,7 @@
     <li><object type="text/sitemap">
       <param name="Name" value="Time Refresh">
       <param name="Name" value="Time Refresh Rotation">
-      <param name="Local" value="Time_Refresh_Rotation.htm">
+      <param name="Local" value="Time_Refresh_Gear.htm">
     </object>
     <li><object type="text/sitemap">
       <param name="Name" value="TOU Schedule">
@@ -1082,7 +1090,7 @@
     <li><object type="text/sitemap">
       <param name="Name" value="True Cycle">
       <param name="Name" value="Master Cycle Smart Cycle True Cycle">
-      <param name="Local" value="Master_Cycle_Smart_Cycle_True_Cycle.htm">
+      <param name="Local" value="Cycle_Gears.htm">
     </object>
     <li><object type="text/sitemap">
       <param name="Name" value="Unowned Meters">
@@ -1295,12 +1303,12 @@
   <li><object type="text/sitemap">
     <param name="Name" value="Cycle Count Send Type">
     <param name="Name" value="Master Cycle Smart Cycle True Cycle">
-    <param name="Local" value="Master_Cycle_Smart_Cycle_True_Cycle.htm">
+    <param name="Local" value="Cycle_Gears.htm">
   </object>
   <li><object type="text/sitemap">
     <param name="Name" value="Cycle Period">
     <param name="Name" value="Master Cycle Smart Cycle True Cycle">
-    <param name="Local" value="Master_Cycle_Smart_Cycle_True_Cycle.htm">
+    <param name="Local" value="Cycle_Gears.htm">
   </object>
   <li><object type="text/sitemap">
     <param name="Name" value="Daily Operations">
@@ -1370,9 +1378,9 @@
     <param name="Name" value="Editing a Device">
     <param name="Local" value="Editing_a_Device.htm">
     <param name="Name" value="Master Cycle Smart Cycle True Cycle">
-    <param name="Local" value="Master_Cycle_Smart_Cycle_True_Cycle.htm">
+    <param name="Local" value="Cycle_Gears.htm">
     <param name="Name" value="Time Refresh Rotation">
-    <param name="Local" value="Time_Refresh_Rotation.htm">
+    <param name="Local" value="Time_Refresh_Gear.htm">
     <param name="Name" value="Editing a Tag">
     <param name="Local" value="Editing_a_Tag.htm">
   </object>
@@ -1597,8 +1605,6 @@
     </ul>
   <li><object type="text/sitemap">
     <param name="Name" value="Direct Control">
-    <param name="Name" value="Direct Control">
-    <param name="Local" value="Direct_Control.htm">
     <param name="Name" value="Editing a Load Program">
     <param name="Local" value="Editing_a_Load_Program.htm">
     <param name="Name" value="Creating a Load Program">
@@ -1608,16 +1614,24 @@
   </object>
   <ul>
     <li><object type="text/sitemap">
-      <param name="Name" value="Last Control Method">
-      <param name="Name" value="Direct Control">
-      <param name="Local" value="Direct_Control.htm">
+      <param name="Name" value="Cycle Gears">
+      <param name="Name" value="Cycle Gears">
+      <param name="Local" value="Cycle_Gears.htm">
     </object>
     <li><object type="text/sitemap">
-      <param name="Name" value="Least Control Time">
-      <param name="Name" value="Direct Control">
-      <param name="Local" value="Direct_Control.htm">
-      <param name="Name" value="Editing a Load Program">
-      <param name="Local" value="Editing_a_Load_Program.htm">
+      <param name="Name" value="Latching Gear">
+      <param name="Name" value="Latching">
+      <param name="Local" value="Latching.htm">
+    </object>
+    <li><object type="text/sitemap">
+      <param name="Name" value="Thermostat Gear">
+      <param name="Name" value="Thermostat">
+      <param name="Local" value="Thermostat.htm">
+    </object>
+    <li><object type="text/sitemap">
+      <param name="Name" value="Time Refresh Gear">
+      <param name="Name" value="Time Refresh Gear">
+      <param name="Local" value="Time_Refresh_Gear.htm">
     </object>
     </ul>
   <li><object type="text/sitemap">
@@ -1633,11 +1647,11 @@
     <param name="Name" value="Creating a Load Program">
     <param name="Local" value="Creating_a_Load_Program.htm">
     <param name="Name" value="Master Cycle Smart Cycle True Cycle">
-    <param name="Local" value="Master_Cycle_Smart_Cycle_True_Cycle.htm">
+    <param name="Local" value="Cycle_Gears.htm">
     <param name="Name" value="Creating a Program Constraint">
     <param name="Local" value="Creating_a_Program_Constraint.htm">
     <param name="Name" value="Time Refresh Rotation">
-    <param name="Local" value="Time_Refresh_Rotation.htm">
+    <param name="Local" value="Time_Refresh_Gear.htm">
   </object>
   <ul>
     <li><object type="text/sitemap">
@@ -1675,14 +1689,14 @@
   <li><object type="text/sitemap">
     <param name="Name" value="Duration">
     <param name="Name" value="Master Cycle Smart Cycle True Cycle">
-    <param name="Local" value="Master_Cycle_Smart_Cycle_True_Cycle.htm">
+    <param name="Local" value="Cycle_Gears.htm">
     <param name="Name" value="Time Refresh Rotation">
-    <param name="Local" value="Time_Refresh_Rotation.htm">
+    <param name="Local" value="Time_Refresh_Gear.htm">
   </object>
   <li><object type="text/sitemap">
     <param name="Name" value="Dynamic">
     <param name="Name" value="Time Refresh Rotation">
-    <param name="Local" value="Time_Refresh_Rotation.htm">
+    <param name="Local" value="Time_Refresh_Gear.htm">
   </object>
   <li><object type="text/sitemap">
     <param name="Name" value="E-mail">
@@ -1767,15 +1781,15 @@
     <param name="Name" value="Editing a Login Group">
     <param name="Local" value="Editing_a_Login_Group.htm">
     <param name="Name" value="Editing Thermostat">
-    <param name="Local" value="Editing_Thermostat.htm">
+    <param name="Local" value="Editing_a_Thermostat_Gear.htm">
     <param name="Name" value="Editing Latching">
-    <param name="Local" value="Editing_Latching.htm">
+    <param name="Local" value="Editing_a_Latching_Gear.htm">
     <param name="Name" value="Editing a Season Schedule">
     <param name="Local" value="Editing_a_Season_Schedule.htm">
     <param name="Name" value="Editing a TOU Schedule">
     <param name="Local" value="Editing_a_TOU_Schedule.htm">
     <param name="Name" value="Editing Master Cycle Smart Cycle TrueCycle">
-    <param name="Local" value="Editing_Master_Cycle_Smart_Cycle_TrueCycle.htm">
+    <param name="Local" value="Editing_Cycle_Gears.htm">
     <param name="Name" value="Editing a Control Scenario">
     <param name="Local" value="Editing_a_Control_Scenario.htm">
   </object>
@@ -1837,7 +1851,7 @@
     <li><object type="text/sitemap">
       <param name="Name" value="Latching">
       <param name="Name" value="Editing Latching">
-      <param name="Local" value="Editing_Latching.htm">
+      <param name="Local" value="Editing_a_Latching_Gear.htm">
     </object>
     <li><object type="text/sitemap">
       <param name="Name" value="Load Group">
@@ -1876,7 +1890,7 @@
     <li><object type="text/sitemap">
       <param name="Name" value="Master Cycle">
       <param name="Name" value="Editing Master Cycle Smart Cycle TrueCycle">
-      <param name="Local" value="Editing_Master_Cycle_Smart_Cycle_TrueCycle.htm">
+      <param name="Local" value="Editing_Cycle_Gears.htm">
     </object>
     <li><object type="text/sitemap">
       <param name="Name" value="Notification Group">
@@ -1916,7 +1930,7 @@
     <li><object type="text/sitemap">
       <param name="Name" value="Thermostat Ramping">
       <param name="Name" value="Editing Thermostat">
-      <param name="Local" value="Editing_Thermostat.htm">
+      <param name="Local" value="Editing_a_Thermostat_Gear.htm">
     </object>
     <li><object type="text/sitemap">
       <param name="Name" value="TOU Day">
@@ -1949,26 +1963,26 @@
   <li><object type="text/sitemap">
     <param name="Name" value="Enabling">
     <param name="Name" value="Time Refresh Rotation">
-    <param name="Local" value="Time_Refresh_Rotation.htm">
+    <param name="Local" value="Time_Refresh_Gear.htm">
     <param name="Name" value="Creating a Login">
     <param name="Local" value="Creating_a_Login.htm">
   </object>
   <ul>
     <li><object type="text/sitemap">
-      <param name="Name" value="login">
+      <param name="Name" value="Login">
       <param name="Name" value="Creating a Login">
       <param name="Local" value="Creating_a_Login.htm">
     </object>
     <li><object type="text/sitemap">
       <param name="Name" value="Ramp In">
       <param name="Name" value="Time Refresh Rotation">
-      <param name="Local" value="Time_Refresh_Rotation.htm">
+      <param name="Local" value="Time_Refresh_Gear.htm">
     </object>
     </ul>
   <li><object type="text/sitemap">
     <param name="Name" value="ExpressCom">
     <param name="Name" value="Master Cycle Smart Cycle True Cycle">
-    <param name="Local" value="Master_Cycle_Smart_Cycle_True_Cycle.htm">
+    <param name="Local" value="Cycle_Gears.htm">
     <param name="Name" value="Creating a Load Group">
     <param name="Local" value="Creating_a_Load_Group.htm">
   </object>
@@ -1987,19 +2001,19 @@
   <li><object type="text/sitemap">
     <param name="Name" value="First In First Out">
     <param name="Name" value="Master Cycle Smart Cycle True Cycle">
-    <param name="Local" value="Master_Cycle_Smart_Cycle_True_Cycle.htm">
+    <param name="Local" value="Cycle_Gears.htm">
     <param name="Name" value="Time Refresh Rotation">
-    <param name="Local" value="Time_Refresh_Rotation.htm">
+    <param name="Local" value="Time_Refresh_Gear.htm">
   </object>
   <li><object type="text/sitemap">
     <param name="Name" value="Fixed Count">
     <param name="Name" value="Master Cycle Smart Cycle True Cycle">
-    <param name="Local" value="Master_Cycle_Smart_Cycle_True_Cycle.htm">
+    <param name="Local" value="Cycle_Gears.htm">
   </object>
   <li><object type="text/sitemap">
     <param name="Name" value="Fixed Shed Time">
     <param name="Name" value="Time Refresh Rotation">
-    <param name="Local" value="Time_Refresh_Rotation.htm">
+    <param name="Local" value="Time_Refresh_Gear.htm">
   </object>
   <li><object type="text/sitemap">
     <param name="Name" value="Foreign Data Routing">
@@ -2015,6 +2029,8 @@
       <param name="Local" value="Editing_a_Load_Management_Point.htm">
       <param name="Name" value="Editing a Core Database Point">
       <param name="Local" value="Editing_a_Point.htm">
+      <param name="Name" value="Setting Up Foreign Data Routing">
+      <param name="Local" value="Setting_Up_Foreign_Data_Routing.htm">
     </object>
     <li><object type="text/sitemap">
       <param name="Name" value="Deleting">
@@ -2022,6 +2038,8 @@
       <param name="Local" value="Editing_a_Load_Management_Point.htm">
       <param name="Name" value="Editing a Core Database Point">
       <param name="Local" value="Editing_a_Point.htm">
+      <param name="Name" value="Removing a Foreign Data Routing Entry">
+      <param name="Local" value="Removing_Foreign_Data_Routing.htm">
     </object>
     <li><object type="text/sitemap">
       <param name="Name" value="Updating">
@@ -2029,20 +2047,20 @@
       <param name="Local" value="Editing_a_Load_Management_Point.htm">
       <param name="Name" value="Editing a Core Database Point">
       <param name="Local" value="Editing_a_Point.htm">
+      <param name="Name" value="Updating a Foreign Data Routing Entry">
+      <param name="Local" value="Updating_Foreign_Data_Routing.htm">
+      <param name="Name" value="Setting Up Foreign Data Routing">
+      <param name="Local" value="Setting_Up_Foreign_Data_Routing.htm">
     </object>
     </ul>
   <li><object type="text/sitemap">
     <param name="Name" value="Gear">
-    <param name="Name" value="Direct Control">
-    <param name="Local" value="Direct_Control.htm">
     <param name="Name" value="Editing a Load Program">
     <param name="Local" value="Editing_a_Load_Program.htm">
   </object>
   <ul>
     <li><object type="text/sitemap">
       <param name="Name" value="Creating">
-      <param name="Name" value="Direct Control">
-      <param name="Local" value="Direct_Control.htm">
       <param name="Name" value="Editing a Load Program">
       <param name="Local" value="Editing_a_Load_Program.htm">
     </object>
@@ -2051,16 +2069,12 @@
       <param name="Name" value="Editing a Load Program">
       <param name="Local" value="Editing_a_Load_Program.htm">
     </object>
+    <li><object type="text/sitemap">
+      <param name="Name" value="Removing">
+      <param name="Name" value="Removing a Gear">
+      <param name="Local" value="Removing_a_Gear.htm">
+    </object>
     </ul>
-  <li><object type="text/sitemap">
-    <param name="Name" value="Gear Type">
-    <param name="Name" value="Master Cycle Smart Cycle True Cycle">
-    <param name="Local" value="Master_Cycle_Smart_Cycle_True_Cycle.htm">
-    <param name="Name" value="Latching">
-    <param name="Local" value="Latching.htm">
-    <param name="Name" value="Time Refresh Rotation">
-    <param name="Local" value="Time_Refresh_Rotation.htm">
-  </object>
   <li><object type="text/sitemap">
     <param name="Name" value="General">
     <param name="Name" value="Editing Alarm Categories">
@@ -2110,23 +2124,23 @@
   <li><object type="text/sitemap">
     <param name="Name" value="Group Capacity Reduction">
     <param name="Name" value="Master Cycle Smart Cycle True Cycle">
-    <param name="Local" value="Master_Cycle_Smart_Cycle_True_Cycle.htm">
+    <param name="Local" value="Cycle_Gears.htm">
     <param name="Name" value="Latching">
     <param name="Local" value="Latching.htm">
     <param name="Name" value="Time Refresh Rotation">
-    <param name="Local" value="Time_Refresh_Rotation.htm">
+    <param name="Local" value="Time_Refresh_Gear.htm">
   </object>
   <li><object type="text/sitemap">
     <param name="Name" value="Group Selection Method">
     <param name="Name" value="Master Cycle Smart Cycle True Cycle">
-    <param name="Local" value="Master_Cycle_Smart_Cycle_True_Cycle.htm">
+    <param name="Local" value="Cycle_Gears.htm">
     <param name="Name" value="Time Refresh Rotation">
-    <param name="Local" value="Time_Refresh_Rotation.htm">
+    <param name="Local" value="Time_Refresh_Gear.htm">
   </object>
   <li><object type="text/sitemap">
     <param name="Name" value="Groups Each Time">
     <param name="Name" value="Time Refresh Rotation">
-    <param name="Local" value="Time_Refresh_Rotation.htm">
+    <param name="Local" value="Time_Refresh_Gear.htm">
   </object>
   <li><object type="text/sitemap">
     <param name="Name" value="Holiday">
@@ -2188,6 +2202,11 @@
       <param name="Local" value="Editing_a_Holiday_Schedule.htm">
     </object>
     <li><object type="text/sitemap">
+      <param name="Name" value="Removing">
+      <param name="Name" value="Removing a Holiday">
+      <param name="Local" value="Removing_a_Holiday.htm">
+    </object>
+    <li><object type="text/sitemap">
       <param name="Name" value="Holiday Dates">
       <param name="Name" value="Creating a Holiday Schedule">
       <param name="Local" value="Creating_a_Holiday_Schedule.htm">
@@ -2206,13 +2225,13 @@
   <li><object type="text/sitemap">
     <param name="Name" value="How">
     <param name="Name" value="Time Refresh Rotation">
-    <param name="Local" value="Time_Refresh_Rotation.htm">
+    <param name="Local" value="Time_Refresh_Gear.htm">
   </object>
   <ul>
     <li><object type="text/sitemap">
       <param name="Name" value="Stop Control">
       <param name="Name" value="Time Refresh Rotation">
-      <param name="Local" value="Time_Refresh_Rotation.htm">
+      <param name="Local" value="Time_Refresh_Gear.htm">
     </object>
     </ul>
   <li><object type="text/sitemap">
@@ -2233,25 +2252,20 @@
   <li><object type="text/sitemap">
     <param name="Name" value="Last Controlled">
     <param name="Name" value="Time Refresh Rotation">
-    <param name="Local" value="Time_Refresh_Rotation.htm">
+    <param name="Local" value="Time_Refresh_Gear.htm">
   </object>
   <li><object type="text/sitemap">
     <param name="Name" value="Latching">
-    <param name="Name" value="Editing Latching">
-    <param name="Local" value="Editing_Latching.htm">
+    <param name="Name" value="Latching">
+    <param name="Local" value="Latching.htm">
   </object>
   <ul>
     <li><object type="text/sitemap">
       <param name="Name" value="Editing">
-      <param name="Name" value="Editing Latching">
-      <param name="Local" value="Editing_Latching.htm">
+      <param name="Name" value="Editing a Latching Gear">
+      <param name="Local" value="Editing_a_Latching_Gear.htm">
     </object>
     </ul>
-  <li><object type="text/sitemap">
-    <param name="Name" value="Latching gear">
-    <param name="Name" value="Latching">
-    <param name="Local" value="Latching.htm">
-  </object>
   <li><object type="text/sitemap">
     <param name="Name" value="LCR 1000">
     <param name="Name" value="Creating a Load Group">
@@ -2305,12 +2319,12 @@
   <li><object type="text/sitemap">
     <param name="Name" value="Least Control Time">
     <param name="Name" value="Time Refresh Rotation">
-    <param name="Local" value="Time_Refresh_Rotation.htm">
+    <param name="Local" value="Time_Refresh_Gear.htm">
   </object>
   <li><object type="text/sitemap">
     <param name="Name" value="Limited Count Down">
     <param name="Name" value="Master Cycle Smart Cycle True Cycle">
-    <param name="Local" value="Master_Cycle_Smart_Cycle_True_Cycle.htm">
+    <param name="Local" value="Cycle_Gears.htm">
   </object>
   <li><object type="text/sitemap">
     <param name="Name" value="Load Group">
@@ -2321,11 +2335,11 @@
     <param name="Name" value="Load Management">
     <param name="Local" value="Load_Management.htm">
     <param name="Name" value="Master Cycle Smart Cycle True Cycle">
-    <param name="Local" value="Master_Cycle_Smart_Cycle_True_Cycle.htm">
+    <param name="Local" value="Cycle_Gears.htm">
     <param name="Name" value="Creating a Program Constraint">
     <param name="Local" value="Creating_a_Program_Constraint.htm">
     <param name="Name" value="Time Refresh Rotation">
-    <param name="Local" value="Time_Refresh_Rotation.htm">
+    <param name="Local" value="Time_Refresh_Gear.htm">
   </object>
   <ul>
     <li><object type="text/sitemap">
@@ -2361,6 +2375,10 @@
       <param name="Name" value="Ripple Group">
       <param name="Name" value="Editing a Load Group">
       <param name="Local" value="Editing_a_Load_Group.htm">
+      <param name="Name" value="Ripple">
+      <param name="Local" value="Ripple.htm">
+      <param name="Name" value="Ripple Group Message Tab">
+      <param name="Local" value="Ripple_Group_Addressing_Tab.htm">
     </object>
     <li><object type="text/sitemap">
       <param name="Name" value="VERSACOM Group">
@@ -2496,8 +2514,6 @@
     </ul>
   <li><object type="text/sitemap">
     <param name="Name" value="Load Program">
-    <param name="Name" value="Direct Control">
-    <param name="Local" value="Direct_Control.htm">
     <param name="Name" value="Editing a Load Program">
     <param name="Local" value="Editing_a_Load_Program.htm">
     <param name="Name" value="Creating a Load Program">
@@ -2593,8 +2609,6 @@
     </object>
     <li><object type="text/sitemap">
       <param name="Name" value="Least Control Time">
-      <param name="Name" value="Direct Control">
-      <param name="Local" value="Direct_Control.htm">
       <param name="Name" value="Editing a Load Program">
       <param name="Local" value="Editing_a_Load_Program.htm">
     </object>
@@ -2644,6 +2658,13 @@
       <param name="Name" value="Editing a Load Program">
       <param name="Local" value="Editing_a_Load_Program.htm">
     </object>
+    <li><object type="text/sitemap">
+      <param name="Name" value="VERSACOM">
+      <param name="Name" value="Versacom">
+      <param name="Local" value="Versacom.htm">
+      <param name="Name" value="VERSACOM Addressing Tab">
+      <param name="Local" value="VERSACOM_Group_Addressing_Tab.htm">
+    </object>
     </ul>
   <li><object type="text/sitemap">
     <param name="Name" value="Login">
@@ -2689,42 +2710,35 @@
     <param name="Name" value="Macro">
     <param name="Name" value="Creating a Load Group">
     <param name="Local" value="Creating_a_Load_Group.htm">
-    <param name="Name" value="Editing a Macro Route">
-    <param name="Local" value="Editing_a_Macro_Route.htm">
     <param name="Name" value="Creating a Macro Route">
     <param name="Local" value="Macro_Route.htm">
   </object>
   <ul>
     <li><object type="text/sitemap">
-      <param name="Name" value="Creating">
-      <param name="Name" value="Creating a Macro Route">
-      <param name="Local" value="Macro_Route.htm">
-    </object>
-    <li><object type="text/sitemap">
       <param name="Name" value="Editing">
       <param name="Name" value="Editing a Macro Route">
       <param name="Local" value="Editing_a_Macro_Route.htm">
+      <param name="Name" value="Editing a Macro Load Group">
+      <param name="Local" value="Editing_a_Macro_Load_Group.htm">
     </object>
     </ul>
   <li><object type="text/sitemap">
     <param name="Name" value="Manually Only">
     <param name="Name" value="Master Cycle Smart Cycle True Cycle">
-    <param name="Local" value="Master_Cycle_Smart_Cycle_True_Cycle.htm">
+    <param name="Local" value="Cycle_Gears.htm">
     <param name="Name" value="Time Refresh Rotation">
-    <param name="Local" value="Time_Refresh_Rotation.htm">
+    <param name="Local" value="Time_Refresh_Gear.htm">
   </object>
   <li><object type="text/sitemap">
-    <param name="Name" value="Master Cycle">
-    <param name="Name" value="Master Cycle Smart Cycle True Cycle">
-    <param name="Local" value="Master_Cycle_Smart_Cycle_True_Cycle.htm">
-    <param name="Name" value="Editing Master Cycle Smart Cycle TrueCycle">
-    <param name="Local" value="Editing_Master_Cycle_Smart_Cycle_TrueCycle.htm">
+    <param name="Name" value="Master Cycle Gear">
+    <param name="Name" value="Master Cycle Gear">
+    <param name="Local" value="Master_Cycle_Gear.htm">
   </object>
   <ul>
     <li><object type="text/sitemap">
       <param name="Name" value="Editing">
-      <param name="Name" value="Editing Master Cycle Smart Cycle TrueCycle">
-      <param name="Local" value="Editing_Master_Cycle_Smart_Cycle_TrueCycle.htm">
+      <param name="Name" value="Editing a Master Cycle Gear">
+      <param name="Local" value="Editing_a_Master_Cycle_Gear.htm">
     </object>
     </ul>
   <li><object type="text/sitemap">
@@ -2735,7 +2749,7 @@
   <li><object type="text/sitemap">
     <param name="Name" value="Max Cycle Cnt">
     <param name="Name" value="Master Cycle Smart Cycle True Cycle">
-    <param name="Local" value="Master_Cycle_Smart_Cycle_True_Cycle.htm">
+    <param name="Local" value="Cycle_Gears.htm">
   </object>
   <li><object type="text/sitemap">
     <param name="Name" value="Max Hour Allowance">
@@ -2745,7 +2759,7 @@
   <li><object type="text/sitemap">
     <param name="Name" value="Max Shed Time">
     <param name="Name" value="Time Refresh Rotation">
-    <param name="Local" value="Time_Refresh_Rotation.htm">
+    <param name="Local" value="Time_Refresh_Gear.htm">
   </object>
   <li><object type="text/sitemap">
     <param name="Name" value="MCT Broadcast">
@@ -2829,10 +2843,17 @@
     <param name="Local" value="Creating_a_Point.htm">
   </object>
   <li><object type="text/sitemap">
-    <param name="Name" value="No Ramp">
-    <param name="Name" value="Master Cycle Smart Cycle True Cycle">
-    <param name="Local" value="Master_Cycle_Smart_Cycle_True_Cycle.htm">
+    <param name="Name" value="No Control Gear">
+    <param name="Name" value="No Control">
+    <param name="Local" value="No_Control.htm">
   </object>
+  <ul>
+    <li><object type="text/sitemap">
+      <param name="Name" value="Editing">
+      <param name="Name" value="Editing a No Control Gear">
+      <param name="Local" value="Editing_a_No_Control_Gear.htm">
+    </object>
+    </ul>
   <li><object type="text/sitemap">
     <param name="Name" value="Notification Group">
     <param name="Name" value="Creating a Notification Group">
@@ -2973,6 +2994,16 @@
       <param name="Name" value="Editing a Load Management Point">
       <param name="Local" value="Editing_a_Load_Management_Point.htm">
     </object>
+    <li><object type="text/sitemap">
+      <param name="Name" value="Point Limits Tab">
+      <param name="Name" value="Point Limits Tab">
+      <param name="Local" value="Point_Limits_Tab.htm">
+    </object>
+    <li><object type="text/sitemap">
+      <param name="Name" value="Point Alarms Tab">
+      <param name="Name" value="Point Alarms Tab">
+      <param name="Local" value="Point_Alarms_Tab.htm">
+    </object>
     </ul>
   <li><object type="text/sitemap">
     <param name="Name" value="Primary Contact">
@@ -2982,9 +3013,9 @@
   <li><object type="text/sitemap">
     <param name="Name" value="Priority Change">
     <param name="Name" value="Master Cycle Smart Cycle True Cycle">
-    <param name="Local" value="Master_Cycle_Smart_Cycle_True_Cycle.htm">
+    <param name="Local" value="Cycle_Gears.htm">
     <param name="Name" value="Time Refresh Rotation">
-    <param name="Local" value="Time_Refresh_Rotation.htm">
+    <param name="Local" value="Time_Refresh_Gear.htm">
   </object>
   <li><object type="text/sitemap">
     <param name="Name" value="Program's Start Gear">
@@ -3006,11 +3037,13 @@
     <param name="Name" value="Creating a Program Constraint">
     <param name="Local" value="Creating_a_Program_Constraint.htm">
   </object>
-  <li><object type="text/sitemap">
-    <param name="Name" value="Program Constraint Editor">
-    <param name="Name" value="Creating a Program Constraint">
-    <param name="Local" value="Creating_a_Program_Constraint.htm">
-  </object>
+  <ul>
+    <li><object type="text/sitemap">
+      <param name="Name" value="Editing">
+      <param name="Name" value="Editing a Program Constraint">
+      <param name="Local" value="Editing_a_Program_Constraint.htm">
+    </object>
+    </ul>
   <li><object type="text/sitemap">
     <param name="Name" value="Programs">
     <param name="Name" value="Editing a Control Area">
@@ -3033,58 +3066,58 @@
   <li><object type="text/sitemap">
     <param name="Name" value="Ramp In">
     <param name="Name" value="Master Cycle Smart Cycle True Cycle">
-    <param name="Local" value="Master_Cycle_Smart_Cycle_True_Cycle.htm">
+    <param name="Local" value="Cycle_Gears.htm">
     <param name="Name" value="Time Refresh Rotation">
-    <param name="Local" value="Time_Refresh_Rotation.htm">
+    <param name="Local" value="Time_Refresh_Gear.htm">
   </object>
   <ul>
     <li><object type="text/sitemap">
       <param name="Name" value="Enabling">
       <param name="Name" value="Time Refresh Rotation">
-      <param name="Local" value="Time_Refresh_Rotation.htm">
+      <param name="Local" value="Time_Refresh_Gear.htm">
     </object>
     </ul>
   <li><object type="text/sitemap">
     <param name="Name" value="Ramp In Interval">
     <param name="Name" value="Master Cycle Smart Cycle True Cycle">
-    <param name="Local" value="Master_Cycle_Smart_Cycle_True_Cycle.htm">
+    <param name="Local" value="Cycle_Gears.htm">
     <param name="Name" value="Time Refresh Rotation">
-    <param name="Local" value="Time_Refresh_Rotation.htm">
+    <param name="Local" value="Time_Refresh_Gear.htm">
   </object>
   <li><object type="text/sitemap">
     <param name="Name" value="Ramp In Percent">
     <param name="Name" value="Master Cycle Smart Cycle True Cycle">
-    <param name="Local" value="Master_Cycle_Smart_Cycle_True_Cycle.htm">
+    <param name="Local" value="Cycle_Gears.htm">
     <param name="Name" value="Time Refresh Rotation">
-    <param name="Local" value="Time_Refresh_Rotation.htm">
+    <param name="Local" value="Time_Refresh_Gear.htm">
   </object>
   <li><object type="text/sitemap">
     <param name="Name" value="Ramp Out Interval">
     <param name="Name" value="Master Cycle Smart Cycle True Cycle">
-    <param name="Local" value="Master_Cycle_Smart_Cycle_True_Cycle.htm">
+    <param name="Local" value="Cycle_Gears.htm">
     <param name="Name" value="Time Refresh Rotation">
-    <param name="Local" value="Time_Refresh_Rotation.htm">
+    <param name="Local" value="Time_Refresh_Gear.htm">
   </object>
   <li><object type="text/sitemap">
     <param name="Name" value="Ramp Out Percent">
     <param name="Name" value="Master Cycle Smart Cycle True Cycle">
-    <param name="Local" value="Master_Cycle_Smart_Cycle_True_Cycle.htm">
+    <param name="Local" value="Cycle_Gears.htm">
     <param name="Name" value="Time Refresh Rotation">
-    <param name="Local" value="Time_Refresh_Rotation.htm">
+    <param name="Local" value="Time_Refresh_Gear.htm">
   </object>
   <li><object type="text/sitemap">
     <param name="Name" value="Ramp Out/Restore">
     <param name="Name" value="Master Cycle Smart Cycle True Cycle">
-    <param name="Local" value="Master_Cycle_Smart_Cycle_True_Cycle.htm">
+    <param name="Local" value="Cycle_Gears.htm">
     <param name="Name" value="Time Refresh Rotation">
-    <param name="Local" value="Time_Refresh_Rotation.htm">
+    <param name="Local" value="Time_Refresh_Gear.htm">
   </object>
   <li><object type="text/sitemap">
     <param name="Name" value="Ramp Out/Time In">
     <param name="Name" value="Master Cycle Smart Cycle True Cycle">
-    <param name="Local" value="Master_Cycle_Smart_Cycle_True_Cycle.htm">
+    <param name="Local" value="Cycle_Gears.htm">
     <param name="Name" value="Time Refresh Rotation">
-    <param name="Local" value="Time_Refresh_Rotation.htm">
+    <param name="Local" value="Time_Refresh_Gear.htm">
   </object>
   <li><object type="text/sitemap">
     <param name="Name" value="Rate">
@@ -3105,12 +3138,12 @@
   <li><object type="text/sitemap">
     <param name="Name" value="Refresh Shed Type">
     <param name="Name" value="Time Refresh Rotation">
-    <param name="Local" value="Time_Refresh_Rotation.htm">
+    <param name="Local" value="Time_Refresh_Gear.htm">
   </object>
   <li><object type="text/sitemap">
     <param name="Name" value="Refresh/Resend Rate">
     <param name="Name" value="Time Refresh Rotation">
-    <param name="Local" value="Time_Refresh_Rotation.htm">
+    <param name="Local" value="Time_Refresh_Gear.htm">
   </object>
   <li><object type="text/sitemap">
     <param name="Name" value="Remove">
@@ -3199,13 +3232,20 @@
   <li><object type="text/sitemap">
     <param name="Name" value="Rotation">
     <param name="Name" value="Time Refresh Rotation">
-    <param name="Local" value="Time_Refresh_Rotation.htm">
+    <param name="Local" value="Time_Refresh_Gear.htm">
   </object>
   <li><object type="text/sitemap">
     <param name="Name" value="Rotation Gear">
-    <param name="Name" value="Time Refresh Rotation">
-    <param name="Local" value="Time_Refresh_Rotation.htm">
+    <param name="Name" value="Rotation Gear">
+    <param name="Local" value="Rotation_Gear.htm">
   </object>
+  <ul>
+    <li><object type="text/sitemap">
+      <param name="Name" value="Editing">
+      <param name="Name" value="Editing a Rotation Gear">
+      <param name="Local" value="Editing_a_Rotation_Gear.htm">
+    </object>
+    </ul>
   <li><object type="text/sitemap">
     <param name="Name" value="Route">
     <param name="Name" value="Editing a Route">
@@ -3220,6 +3260,8 @@
       <param name="Name" value="Advanced Repeater Setup">
       <param name="Name" value="Editing a Route">
       <param name="Local" value="Editing_a_Route.htm">
+      <param name="Name" value="Route Repeater Setup Tab">
+      <param name="Local" value="Route_Repeater_Setup_Tab.htm">
     </object>
     <li><object type="text/sitemap">
       <param name="Name" value="Alt w/Failover">
@@ -3260,6 +3302,8 @@
       <param name="Name" value="Editing">
       <param name="Name" value="Editing a Route">
       <param name="Local" value="Editing_a_Route.htm">
+      <param name="Name" value="Route General Tab">
+      <param name="Local" value="Route_General_Tab.htm">
     </object>
     <li><object type="text/sitemap">
       <param name="Name" value="Macro Route">
@@ -3310,19 +3354,19 @@
   </object>
   <li><object type="text/sitemap">
     <param name="Name" value="Season">
-    <param name="Name" value="Editing a Season Schedule">
-    <param name="Local" value="Editing_a_Season_Schedule.htm">
+    <param name="Name" value="Creating a Season">
+    <param name="Local" value="Creating_a_Season.htm">
   </object>
   <ul>
     <li><object type="text/sitemap">
-      <param name="Name" value="Creating">
-      <param name="Name" value="Editing a Season Schedule">
-      <param name="Local" value="Editing_a_Season_Schedule.htm">
+      <param name="Name" value="Editing">
+      <param name="Name" value="Editing a Season">
+      <param name="Local" value="Editing_a_Season.htm">
     </object>
     <li><object type="text/sitemap">
-      <param name="Name" value="Editing">
-      <param name="Name" value="Editing a Season Schedule">
-      <param name="Local" value="Editing_a_Season_Schedule.htm">
+      <param name="Name" value="Removing">
+      <param name="Name" value="Removing a Season">
+      <param name="Local" value="Removing_a_Season.htm">
     </object>
     </ul>
   <li><object type="text/sitemap">
@@ -3333,9 +3377,6 @@
     <param name="Local" value="Editing_a_Season_Schedule.htm">
   </object>
   <ul>
-    <li><object type="text/sitemap">
-      <param name="Name" value="Creating">
-    </object>
     <li><object type="text/sitemap">
       <param name="Name" value="Editing">
       <param name="Name" value="Editing a Season Schedule">
@@ -3472,18 +3513,25 @@
   <li><object type="text/sitemap">
     <param name="Name" value="Shed Time">
     <param name="Name" value="Time Refresh Rotation">
-    <param name="Local" value="Time_Refresh_Rotation.htm">
+    <param name="Local" value="Time_Refresh_Gear.htm">
   </object>
   <li><object type="text/sitemap">
     <param name="Name" value="Signal Transmitter">
-    <param name="Name" value="Creating a Device">
-    <param name="Local" value="Creating_a_Device.htm">
+    <param name="Name" value="Creating a Signal Transmitter">
+    <param name="Local" value="Creating_a_Signal_Transmitter.htm">
   </object>
   <li><object type="text/sitemap">
-    <param name="Name" value="Smart Cycle">
-    <param name="Name" value="Master Cycle Smart Cycle True Cycle">
-    <param name="Local" value="Master_Cycle_Smart_Cycle_True_Cycle.htm">
+    <param name="Name" value="Smart Cycle Gear">
+    <param name="Name" value="Cycle Gears">
+    <param name="Local" value="Cycle_Gears.htm">
   </object>
+  <ul>
+    <li><object type="text/sitemap">
+      <param name="Name" value="Editing">
+      <param name="Name" value="Editing Cycle Gears">
+      <param name="Local" value="Editing_Cycle_Gears.htm">
+    </object>
+    </ul>
   <li><object type="text/sitemap">
     <param name="Name" value="SNPP Terminal">
     <param name="Name" value="Core Database">
@@ -3528,7 +3576,7 @@
   <li><object type="text/sitemap">
     <param name="Name" value="Starting Period Count">
     <param name="Name" value="Master Cycle Smart Cycle True Cycle">
-    <param name="Local" value="Master_Cycle_Smart_Cycle_True_Cycle.htm">
+    <param name="Local" value="Cycle_Gears.htm">
   </object>
   <li><object type="text/sitemap">
     <param name="Name" value="State Group">
@@ -3547,6 +3595,8 @@
       <param name="Name" value="Editing">
       <param name="Name" value="Editing a State Group">
       <param name="Local" value="Editing_a_State_Group.htm">
+      <param name="Name" value="State Group General Tab">
+      <param name="Local" value="State_Group_General_Tab.htm">
     </object>
     <li><object type="text/sitemap">
       <param name="Name" value="Foreground Color">
@@ -3557,14 +3607,14 @@
   <li><object type="text/sitemap">
     <param name="Name" value="Stop Cycle">
     <param name="Name" value="Master Cycle Smart Cycle True Cycle">
-    <param name="Local" value="Master_Cycle_Smart_Cycle_True_Cycle.htm">
+    <param name="Local" value="Cycle_Gears.htm">
   </object>
   <li><object type="text/sitemap">
     <param name="Name" value="Stop Order">
     <param name="Name" value="Master Cycle Smart Cycle True Cycle">
-    <param name="Local" value="Master_Cycle_Smart_Cycle_True_Cycle.htm">
+    <param name="Local" value="Cycle_Gears.htm">
     <param name="Name" value="Time Refresh Rotation">
-    <param name="Local" value="Time_Refresh_Rotation.htm">
+    <param name="Local" value="Time_Refresh_Gear.htm">
   </object>
   <li><object type="text/sitemap">
     <param name="Name" value="Stop Priority">
@@ -3623,48 +3673,41 @@
     <param name="Local" value="Creating_a_Load_Group.htm">
   </object>
   <li><object type="text/sitemap">
-    <param name="Name" value="Thermostat Ramping">
-    <param name="Name" value="Editing Thermostat">
-    <param name="Local" value="Editing_Thermostat.htm">
+    <param name="Name" value="Thermostat Gear">
+    <param name="Name" value="Thermostat">
+    <param name="Local" value="Thermostat.htm">
   </object>
   <ul>
     <li><object type="text/sitemap">
       <param name="Name" value="Editing">
       <param name="Name" value="Editing Thermostat">
-      <param name="Local" value="Editing_Thermostat.htm">
+      <param name="Local" value="Editing_a_Thermostat_Gear.htm">
     </object>
     </ul>
   <li><object type="text/sitemap">
     <param name="Name" value="Time In">
     <param name="Name" value="Master Cycle Smart Cycle True Cycle">
-    <param name="Local" value="Master_Cycle_Smart_Cycle_True_Cycle.htm">
+    <param name="Local" value="Cycle_Gears.htm">
     <param name="Name" value="Time Refresh Rotation">
-    <param name="Local" value="Time_Refresh_Rotation.htm">
+    <param name="Local" value="Time_Refresh_Gear.htm">
   </object>
   <li><object type="text/sitemap">
-    <param name="Name" value="Time Refresh">
-    <param name="Name" value="Time Refresh Rotation">
-    <param name="Local" value="Time_Refresh_Rotation.htm">
-    <param name="Name" value="Editing Time Resfresh Rotation">
-    <param name="Local" value="Editing_Time_Resfresh_Rotation.htm">
-  </object>
-  <ul>
-    <li><object type="text/sitemap">
-      <param name="Name" value="Editing">
-      <param name="Name" value="Editing Time Resfresh Rotation">
-      <param name="Local" value="Editing_Time_Resfresh_Rotation.htm">
-    </object>
-    </ul>
-  <li><object type="text/sitemap">
-    <param name="Name" value="Time Refresh gear">
-    <param name="Name" value="Editing Time Resfresh Rotation">
-    <param name="Local" value="Editing_Time_Resfresh_Rotation.htm">
+    <param name="Name" value="Time Refresh Gear">
+    <param name="Name" value="Time Refresh Gear">
+    <param name="Local" value="Time_Refresh_Gear.htm">
   </object>
   <li><object type="text/sitemap">
     <param name="Name" value="TOU Editor">
     <param name="Name" value="Creating a TOU Schedule">
     <param name="Local" value="Creating_a_TOU_Schedule.htm">
   </object>
+  <ul>
+    <li><object type="text/sitemap">
+      <param name="Name" value="Editing">
+      <param name="Name" value="Editing a Time Refresh Gear">
+      <param name="Local" value="Editing_a_Time_Refresh_Gear.htm">
+    </object>
+    </ul>
   <li><object type="text/sitemap">
     <param name="Name" value="TOU Schedule">
     <param name="Name" value="Editing a TOU Schedule">
@@ -3687,18 +3730,18 @@
   <li><object type="text/sitemap">
     <param name="Name" value="Trigger Offset">
     <param name="Name" value="Master Cycle Smart Cycle True Cycle">
-    <param name="Local" value="Master_Cycle_Smart_Cycle_True_Cycle.htm">
+    <param name="Local" value="Cycle_Gears.htm">
     <param name="Name" value="Time Refresh Rotation">
-    <param name="Local" value="Time_Refresh_Rotation.htm">
+    <param name="Local" value="Time_Refresh_Gear.htm">
   </object>
   <li><object type="text/sitemap">
     <param name="Name" value="Triggers">
     <param name="Name" value="Editing a Control Area">
     <param name="Local" value="Editing_a_Control_Area.htm">
     <param name="Name" value="Master Cycle Smart Cycle True Cycle">
-    <param name="Local" value="Master_Cycle_Smart_Cycle_True_Cycle.htm">
+    <param name="Local" value="Cycle_Gears.htm">
     <param name="Name" value="Time Refresh Rotation">
-    <param name="Local" value="Time_Refresh_Rotation.htm">
+    <param name="Local" value="Time_Refresh_Gear.htm">
   </object>
   <ul>
     <li><object type="text/sitemap">
@@ -3707,18 +3750,28 @@
       <param name="Local" value="Editing_a_Control_Area.htm">
     </object>
     <li><object type="text/sitemap">
+      <param name="Name" value="Editing">
+      <param name="Name" value="Editing a Trigger">
+      <param name="Local" value="Editing_a_Trigger.htm">
+    </object>
+    <li><object type="text/sitemap">
       <param name="Name" value="Removing">
       <param name="Name" value="Editing a Control Area">
       <param name="Local" value="Editing_a_Control_Area.htm">
     </object>
     </ul>
   <li><object type="text/sitemap">
-    <param name="Name" value="TrueCycle">
-    <param name="Name" value="Master Cycle Smart Cycle True Cycle">
-    <param name="Local" value="Master_Cycle_Smart_Cycle_True_Cycle.htm">
-    <param name="Name" value="Editing Master Cycle Smart Cycle TrueCycle">
-    <param name="Local" value="Editing_Master_Cycle_Smart_Cycle_TrueCycle.htm">
+    <param name="Name" value="TrueCycle Gear">
+    <param name="Name" value="Cycle Gears">
+    <param name="Local" value="Cycle_Gears.htm">
   </object>
+  <ul>
+    <li><object type="text/sitemap">
+      <param name="Name" value="Editing">
+      <param name="Name" value="Editing Cycle Gears">
+      <param name="Local" value="Editing_Cycle_Gears.htm">
+    </object>
+    </ul>
   <li><object type="text/sitemap">
     <param name="Name" value="View Menu">
     <param name="Name" value="Creating a Customer">

@@ -26,8 +26,8 @@
 <meta name=filetype content=kadov>
 <meta name=filetype-version content=1>
 <meta name=page-count content=1>
-<meta name=layout-height content=524>
-<meta name=layout-width content=692>
+<meta name=layout-height content=755>
+<meta name=layout-width content=634>
 <meta name=x-ignored-words content="LM;ManualOnly;LastControlled;AlwaysFirstGroup;LeastControlTime;e-mails;Min;Ack">
 
 
@@ -65,6 +65,14 @@ if( typeof( kadovInitEffects ) != 'function' ) kadovInitEffects = new Function()
 
 <h1>Editing a Load Program</h1>
 
+<p>One or more Load Programs can be defined in the database. A Load Program 
+ defines how the load is controlled, the load groups to control, and the 
+ customers to notify. When a Load Program is created, a status point is 
+ automatically added to the load program. The status point keeps track 
+ of when the load program is controlling and when it is stopped.</p>
+
+<p>&nbsp;</p>
+
 <p>To edit a Load Program:</p>
 
 <p>&nbsp;</p>
@@ -87,18 +95,143 @@ kadovFilePopupInit('a4');
 //--></script><!--}}end!kadov--> 
  tab of the Load Program Editor.</p></li>
 	
-	<li class=kadov-p><p style="margin-bottom: 9pt;">To edit the information 
- in the Gears, Control Window, Groups, and Notification tabs; see <a href="javascript:BSSCPopup('Editing_a_Direct_Control_Program.htm');"
-	id=a1>Editing a Direct Control Program</a><!--begin!kadov{{--><script 
+	<li class=kadov-p><p style="margin-bottom: 9pt;">Click the <span style="font-weight: bold;">Gears 
+ </span>tab to display the Gears tabbed page. <span style="margin-left: 40px;">Gears 
+ define the different rates at which a load program can controls loads. 
+ Different gear ratios result in different amounts of reduction.</span></p></li>
+	
+	<ul style="list-style: disc;"
+		type=disc>
+		
+		<li class=kadov-p><p>To add a gear, c<span style="margin-left: 0px;">lick 
+ the </span><span style="margin-left: 0px; font-weight: bold;">Add </span><span 
+ style="margin-left: 0px;">button. </span>To edit a gear, s<span style="margin-bottom: 9pt;">elect 
+ the gear to edit from the </span><span style="margin-bottom: 9pt; font-weight: bold;">Gear</span><span 
+ style="margin-bottom: 9pt;"> drop-down list. </span><span style="margin-left: 40px;">The 
+ control gears that can be added or edited are:</span></p></li>
+		
+		<ul style="list-style: disc;"
+			type=disc>
+			
+			<li class=kadov-p><p style="font-weight: normal;"><a href="javascript:BSSCPopup('Editing_a_Time_Refresh_Gear.htm');"
+	id=a1>Time Refresh</a><!--begin!kadov{{--><script type="text/javascript"
+														language=JavaScript1.2><!--
+kadovFilePopupInit('a1');
+//--></script><!--}}end!kadov--> 
+ - timed commands are sent repeatedly to control.</p></li>
+			
+			<li class=kadov-p><p style="font-weight: normal;"><a href="javascript:BSSCPopup('Editing_a_Rotation_Gear.htm');"
+	id=a2>Rotation</a><!--begin!kadov{{--><script type="text/javascript"
+													language=JavaScript1.2><!--
+kadovFilePopupInit('a2');
+//--></script><!--}}end!kadov--> 
+ - the gear rotates through a list of groups to control.</p></li>
+			
+			<li class=kadov-p><p style="font-weight: normal;"><a href="javascript:BSSCPopup('Editing_a_Master_Cycle_Gear.htm');"
+	id=a5>Master Cycle</a><!--begin!kadov{{--><script type="text/javascript"
+														language=JavaScript1.2><!--
+kadovFilePopupInit('a5');
+//--></script><!--}}end!kadov--> 
+ - the Master Station sends commands to the LCR to perform cycling.</p></li>
+			
+			<li class=kadov-p><p style="font-weight: normal;"><a href="javascript:BSSCPopup('Editing_Cycle_Gears.htm');" id="a6">Smart Cycle</a><!--begin!kadov{{--><script type="text/javascript"
+													language=JavaScript1.2><!--
+kadovFilePopupInit('a6');
+//--></script><!--}}end!kadov--> 
+ - the LCR hardware performs cycling.</p></li>
+			
+			<li class=kadov-p><p style="font-weight: normal;"><a href="javascript:BSSCPopup('Editing_Cycle_Gears.htm');" id="a7">TrueCycle</a><!--begin!kadov{{--><script type="text/javascript"
+													language=JavaScript1.2><!--
+kadovFilePopupInit('a7');
+//--></script><!--}}end!kadov--> 
+ - the LCR uses an algorithm to perform cycling.</p></li>
+			
+			<li class=kadov-p><p style="font-weight: normal;"><a href="javascript:BSSCPopup('Editing_Cycle_Gears.htm');" id="a8">Magnitude Cycle</a><!--begin!kadov{{--><script type="text/javascript"
+														language=JavaScript1.2><!--
+kadovFilePopupInit('a8');
+//--></script><!--}}end!kadov--> 
+ - uses an algorithm to perform cycling, which targets a percentage of 
+ the max current the field device draws.</p></li>
+			
+			<li class=kadov-p><p style="font-weight: normal;"><a href="javascript:BSSCPopup('Editing_Cycle_Gears.htm');" id="a9">Target Cycle</a><!--begin!kadov{{--><script type="text/javascript"
+														language=JavaScript1.2><!--
+kadovFilePopupInit('a9');
+//--></script><!--}}end!kadov--> 
+ - control is targeted to a specific amount of kW reduction.</p></li>
+			
+			<li class=kadov-p><p style="font-weight: normal;"><a href="javascript:BSSCPopup('Editing_a_Latching_Gear.htm');"
+	id=a10>Latching</a><!--begin!kadov{{--><script type="text/javascript"
+													language=JavaScript1.2><!--
+kadovFilePopupInit('a10');
+//--></script><!--}}end!kadov--> 
+ - one command is sent to open and another command is sent to close.</p></li>
+			
+			<li class=kadov-p><p><a href="javascript:BSSCPopup('Editing_a_Thermostat_Gear.htm');"
+									id=a11>Thermostat Ramping</a><!--begin!kadov{{--><script 
  type="text/javascript"
 	language=JavaScript1.2><!--
-kadovFilePopupInit('a1');
-//--></script><!--}}end!kadov-->. 
- </p></li>
+kadovFilePopupInit('a11');
+//--></script><!--}}end!kadov--> 
+ - used to perform thermostat temperature ramping.</p></li>
+			
+			<li class=kadov-p><p style="margin-bottom: 9pt; font-weight: normal;"><a 
+ href="javascript:BSSCPopup('Editing_a_No_Control_Gear.htm');"
+	id=a12>No Control</a><!--begin!kadov{{--><script type="text/javascript"
+													language=JavaScript1.2><!--
+kadovFilePopupInit('a12');
+//--></script><!--}}end!kadov--> 
+ - no control command is sent.</p></li>
+		</ul>
+		
+		<li class=kadov-p><p style="margin-bottom: 9pt;">To remove a gear, 
+ see <span style="margin-bottom: 9pt;"><a href="javascript:BSSCPopup('Removing_a_Gear.htm');"
+											id=a3>Removing a Gear</a><!--begin!kadov{{--><script 
+ type="text/javascript"
+	language=JavaScript1.2><!--
+kadovFilePopupInit('a3');
+//--></script><!--}}end!kadov-->.</span></p></li>
+	</ul>
+	
+	<li class=kadov-p><p style="margin-bottom: 9pt;">Click the <span style="font-weight: bold;">Control 
+ Window</span> tab to display the <a href="javascript:BSSCPopup('Load_Program_Control_Window_Tab.htm');"
+									id=a13>Control Window</a><!--begin!kadov{{--><script 
+ type="text/javascript"
+	language=JavaScript1.2><!--
+kadovFilePopupInit('a13');
+//--></script><!--}}end!kadov--> 
+ tabbed page.</p></li>
+	
+	<li class=kadov-p><p style="margin-bottom: 9pt;">Click the <span style="font-weight: bold;">Groups 
+ </span>tab to display the <a href="javascript:BSSCPopup('Load_Program_Groups_Tab.htm');"
+								id=a14>Groups</a><!--begin!kadov{{--><script 
+ type="text/javascript"
+	language=JavaScript1.2><!--
+kadovFilePopupInit('a14');
+//--></script><!--}}end!kadov--> 
+ tabbed page.</p></li>
+	
+	<li class=kadov-p><p style="margin-bottom: 9pt;">Click the <span style="font-weight: bold;">Notification</span> 
+ tab to display the <a href="javascript:BSSCPopup('Load_Program_Notification_Tab.htm');"
+						id=a15>Notification</a><!--begin!kadov{{--><script 
+ type="text/javascript"
+	language=JavaScript1.2><!--
+kadovFilePopupInit('a15');
+//--></script><!--}}end!kadov--> 
+ tabbed page.</p></li>
+	
+	<li class=kadov-p><p style="margin-bottom: 9pt;">If the Allow Member 
+ Programs role property is enabled within the Database Editor role, click 
+ the <span style="font-weight: bold;">Member Control</span> tab to display 
+ the <a href="javascript:BSSCPopup('Load_Program_Member_Control_Tab.htm');"
+		id=a16>Member Control</a><!--begin!kadov{{--><script type="text/javascript"
+															language=JavaScript1.2><!--
+kadovFilePopupInit('a16');
+//--></script><!--}}end!kadov--> 
+ tabbed page.</p></li>
 	
 	<li class=kadov-p><p style="margin-bottom: 9pt;">Click <span style="font-weight: bold;">Apply</span> 
  to save the changes or <span style="font-weight: bold;">OK</span> to save 
- the changes and close the dialog box.</p></li>
+ the changes and close the Load Program Editor.</p></li>
 </ol>
 
 &nbsp; 
@@ -127,13 +260,12 @@ kadovFilePopupInit('a1');
 <param name="Items" value="Creating a Customer;Creating_a_Customer.htm$$**$$Creating a Load Group;Creating_a_Load_Group.htm$$**$$Creating a Load Program;Creating_a_Load_Program.htm$$**$$Editing a Customer;Editing_a_Customer.htm$$**$$Editing a Load Group;Editing_a_Load_Group.htm$$**$$" >
 <param name="Image" value="" >
 <param name="FontInfo" value="MS Sans Serif,8,0,," >
-<param name="_CURRENTFILEPATH" value="C:\working\help\head\yukon-help\dbeditor\src\Editing_a_Load_Program.htm" >
+<param name="_CURRENTFILEPATH" value="C:\Working\head\yukon-help\dbeditor\src\Editing_a_Load_Program.htm" >
 <param name="_ID" value="RelatedTopics" >
 <param name="UseMenu" value="-1" >
 <param name="Frame" value="" >
 <param name="Window" value="" >
-</object>-->
-<OBJECT
+</object>--><OBJECT
   CLASSID="clsid:ADB880A6-D8FF-11CF-9377-00AA003B7A11"
   ID="RelatedTopics"  TYPE="application/x-oleobject" >
   <PARAM  NAME="Command"  VALUE="Related Topics,MENU">
@@ -145,7 +277,6 @@ kadovFilePopupInit('a1');
   <PARAM  NAME="Item4"  VALUE="Editing a Customer;Editing_a_Customer.htm">
   <PARAM  NAME="Item5"  VALUE="Editing a Load Group;Editing_a_Load_Group.htm">
 </OBJECT>
-
 <!--Metadata type="DesignerControl" endspan-->
  </p>
 

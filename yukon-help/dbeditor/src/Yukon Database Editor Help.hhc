@@ -36,20 +36,20 @@
         <param name="Local" value="Creating_a_Route.htm">
       </object>
       <li><object type="text/sitemap">
-        <param name="Name" value="Creating a Point">
-        <param name="Local" value="Creating_a_Point.htm">
-      </object>
-      <li><object type="text/sitemap">
-        <param name="Name" value="Creating a State Group">
-        <param name="Local" value="Creating_a_State_Group.htm">
+        <param name="Name" value="Creating an MCT Config">
+        <param name="Local" value="Creating_an_MCT_Config.htm">
       </object>
       <li><object type="text/sitemap">
         <param name="Name" value="Creating a Billing File">
         <param name="Local" value="Creating_a_Billing_File.htm">
       </object>
       <li><object type="text/sitemap">
-        <param name="Name" value="Creating an MCT Config">
-        <param name="Local" value="Creating_an_MCT_Config.htm">
+        <param name="Name" value="Creating a State Group">
+        <param name="Local" value="Creating_a_State_Group.htm">
+      </object>
+      <li><object type="text/sitemap">
+        <param name="Name" value="Creating a Point">
+        <param name="Local" value="Creating_a_Point.htm">
       </object>
       </ul>
     <li><object type="text/sitemap">
@@ -73,16 +73,16 @@
         <param name="Local" value="Editing_a_Route.htm">
       </object>
       <li><object type="text/sitemap">
-        <param name="Name" value="Editing a Point">
-        <param name="Local" value="Editing_a_Point.htm">
+        <param name="Name" value="Editing an MCT Config">
+        <param name="Local" value="Editing_an_MCT_Config.htm">
       </object>
       <li><object type="text/sitemap">
         <param name="Name" value="Editing a State Group">
         <param name="Local" value="Editing_a_State_Group.htm">
       </object>
       <li><object type="text/sitemap">
-        <param name="Name" value="Editing an MCT Config">
-        <param name="Local" value="Editing_an_MCT_Config.htm">
+        <param name="Name" value="Editing a Point">
+        <param name="Local" value="Editing_a_Point.htm">
       </object>
       </ul>
     </ul>

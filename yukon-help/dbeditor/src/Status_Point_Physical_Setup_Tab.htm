@@ -25,8 +25,8 @@
 <meta name=filetype content=kadov>
 <meta name=filetype-version content=1>
 <meta name=page-count content=1>
-<meta name=layout-height content=649>
-<meta name=layout-width content=692>
+<meta name=layout-height content=729>
+<meta name=layout-width content=634>
 <meta name=x-ignored-words content="MCT;Config;config;Ke;Mp;Kh;Min;KYZ;DNP;SOE;comm;Login;IED;EMETCOM;MCTs;KWH;Y-intercept;kW;kWh;RTU;CBC;kVAr;KVAR;KVar;KW;KQ;KVa;COS;ArcTan;Q;Arctangent;QCosine;Y;C;A-B|;B-C|;C-A|;XOR;deadband;Deadband;LCR;Versacom;VERSACOM;TimeRefresh;SmartCycle;MasterCycle;Cnt;setpoint;Fahren;Abs;F;TA;TC;TE;TF;INET;ACS;VALMET;CYGMET;PointID;STEC;RCCS;TRISTATE;RDEX;TELGYR;TELEGYR;Clck;config.properties;billing_wiz_activate=;CBC's;Comm;ExpressCom;Dialup;CCU;IDLC;RTUs;TCUs;LCUs;DCD;IP;Telenetics;Sportster;dialup;SCADA;ILEX;Tx;RTS;ReEnable;downline;Dialback;Dialout;WCTP;LCU;TCU;SEDC;CADP;CTI-CSV;OPU;Owatonna;DAFRON;XL-Plus;Inc;DAFFRON;NCDC;NISC-Turtle;NISC-NCDC;Daffron;kVar;PortServer;ClassicBoard;Digi;Xyplex;e;Vars;LMT;EMETCON;IndividualFeeder;SubstationBus;BusOptimizedFeeder;Ctrl;login;FeederEditor;LM;ManualOnly;LastControlled;AlwaysFirstGroup;LeastControlTime;e-mails;Ack;d;CCUs;w;Failover;thumbwheel;SBO;RTU-WELCO;RTU-ILEX;Readmeter;xxx;TimeOut;support@cannontech.com.;requeuing;Requeue;e-mail;dialout;ExpressStat;T-STAT;username;CCU's;dialback;edicated;LSF;kickup;ATKU;RTU-DNP;SIXNET;Eventlog;putconfig;RTU-DART;Landis;Gyr;KV;TrueCycle;CBCs;CapBanks;LMGroup;EMTECON;setpoints;Fahrenh;SPID;GEO;PROG;logins;TOU;otification;fixVar;deselect;CTRL;LODESTAR_ENH;LOADSTAR_STD;TEXTEXPORT;TEXTIMPORT;ACSMULTI;BEPC;LIVEDATA;DrivePath;XA;IVR;Geq;Leq;arctangent;modulo;Modulo;Transponders;NCDC-Handheld;Handheld;NISC;kVarH;Golay;Ops;RTU-MODBUS;contact(s;Emails;Timeout;Esub;Esubstation;Grp;E-mail;epeaters">
 
 
@@ -59,9 +59,10 @@
  this option if the system obtains physical settings from a location other 
  than the hardware. Clear this option if this is a pseudo point.</p></li>
 	
-	<li class=kadov-p><p style="margin-bottom: 9pt;">The point offset can 
- be changed in the <span style="font-weight: bold;">Point Offset</span> 
- spin box. This is the physical relay used for wiring.</p></li>
+	<li class=kadov-p><p style="margin-bottom: 9pt;">If the <span style="font-weight: bold;">Physical 
+ Point Offset</span> check box is selected, the point offset can be changed 
+ in the <span style="font-weight: bold;">Point Offset</span> spin box. 
+ This is the physical field wired input.</p></li>
 	
 	<li class=kadov-p><p>A different control type can be selected from 
  the <span style="font-weight: bold;">Control Type</span> drop-down list. 
@@ -83,12 +84,13 @@
  controls require a second command to return to the original state.</p></li>
 		
 		<li class=kadov-p><p style="margin-bottom: 0px;"><span style="font-weight: bold;">Normal</span> 
- – <!--kadov_tag{{<ignored>}}-->normal<!--kadov_tag{{</ignored>}}--> controls 
- are temporary or held only for a discrete number of milliseconds.</p></li>
+ – <!--kadov_tag{{<ignored>}}-->Normal<!--kadov_tag{{</ignored>}}--> controls 
+ are temporary or held only for a discrete number of milliseconds. The 
+ control is a dual relay Select Before Operate (SBO). </p></li>
 		
 		<li class=kadov-p><p style="margin-bottom: 0px;"><span style="font-weight: bold;">Pseudo</span> 
  – the point is controlled by another system. Pseudo controls do not have 
- a physical status point to indicate if control has completed.</p></li>
+ a physical status point.</p></li>
 		
 		<li class=kadov-p><p style="margin-bottom: 0px;"><span style="font-weight: bold;">SBO 
  Latch</span> - Select Before Operate latch command.</p></li>
@@ -97,9 +99,10 @@
  Pulse</span> - Select Before Operate pulse (normal) command.</p></li>
 	</ul>
 	
-	<li class=kadov-p><p style="margin-bottom: 9pt;">If a control type 
- other than <span style="font-weight: bold;">None</span> or <span style="font-weight: bold;">Pseudo</span> 
- is selected:</p></li>
+	<li class=kadov-p><p style="margin-bottom: 9pt;">If the control type 
+ selected is <span style="font-weight: bold;">Latch</span>, <span style="font-weight: bold;">Normal</span>, 
+ <span style="font-weight: bold;">SBO Latch</span>, or <span style="font-weight: bold;">SBO 
+ Pulse</span>:</p></li>
 	
 	<ol style="list-style: lower-alpha;"
 		type=a>
@@ -107,7 +110,7 @@
 		<li class=kadov-p><p style="margin-bottom: 9pt;">The control point 
  offset can be changed in the <span style="font-weight: bold;">Control 
  Point Offset</span> spin box. This specifies the physical location used 
- for wiring the relay point.</p></li>
+ for wiring the control point.</p></li>
 		
 		<li class=kadov-p><p style="margin-bottom: 9pt;">The close times 
  can be changed in the <span style="font-weight: bold;">Close Time 1</span> 
@@ -120,14 +123,14 @@
  the point. Clear this check box to enable control of the point.</p></li>
 		
 		<li class=kadov-p><p style="margin-bottom: 9pt;">The command strings 
- can be changed in <span style="font-weight: bold;">Open</span> and <span 
- style="font-weight: bold;">Closed</span> text boxes under <span style="font-weight: bold;">Command 
- Strings</span>. These are the commands that are sent when Yukon controls 
- the point.</p></li>
+ can be changed in the text boxes with the Command Strings area. These 
+ are the commands that are sent when Yukon controls the point.</p></li>
 		
 		<li class=kadov-p><p style="margin-bottom: 9pt;">The command time-out 
  can be changed in the <span style="font-weight: bold;">Command TimeOut</span> 
- minutes and seconds spin boxes.</p></li>
+ minutes and seconds spin boxes. This specifies the length of time to use 
+ the alternate scan rate to scan for a state change following control. 
+ If a state change is not detected, an alarm occurs.</p></li>
 	</ol>
 </ol>
 
@@ -159,7 +162,7 @@
 <param name="Items" value="Editing a Core Database Point;Editing_a_Point.htm$$**$$Editing a Load Management Point;Editing_a_Load_Management_Point.htm$$**$$" >
 <param name="Image" value="" >
 <param name="FontInfo" value="MS Sans Serif,8,0,," >
-<param name="_CURRENTFILEPATH" value="C:\working\help\head\yukon-help\dbeditor\src\Status_Point_Physical_Setup_Tab.htm" >
+<param name="_CURRENTFILEPATH" value="C:\Working\head\yukon-help\dbeditor\src\Status_Point_Physical_Setup_Tab.htm" >
 <param name="_ID" value="RelatedTopics" >
 <param name="UseMenu" value="-1" >
 <param name="Frame" value="_top" >

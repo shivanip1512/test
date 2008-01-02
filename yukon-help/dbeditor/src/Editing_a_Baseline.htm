@@ -12,22 +12,24 @@
 
 <!--(Meta)==========================================================-->
 
+<meta http-equiv=content-type content="text/html; charset=windows-1252">
+<meta name=date content="03 15, 2005 11:15:26 AM">
+<meta name=topic-status content="In Progress">
+<meta name=topic-priority content=0>
+<meta name=topic-time-estimate content=0>
+<meta name=topic-comment content>
+<meta name=topic-id content="Editing a Baseline">
 <meta name=generator content="RoboHELP by eHelp Corporation - www.ehelp.com">
 <meta name=generator-major-version content=0.1>
 <meta name=generator-minor-version content=1>
 <meta name=filetype content=kadov>
 <meta name=filetype-version content=1>
 <meta name=page-count content=1>
-<meta name=layout-height content=501>
-<meta name=layout-width content=740>
-<meta name=date content="03 15, 2005 11:15:26 AM">
+<meta name=layout-height content=678>
+<meta name=layout-width content=634>
 
 
- <meta name="topic-status" content="In Progress">
- <meta name="topic-priority" content="0">
- <meta name="topic-time-estimate" content="0">
- <meta name="topic-comment" content="">
- <meta name="topic-id" content="Editing a Baseline"><!--(Links)=========================================================-->
+<!--(Links)=========================================================-->
 
 <link rel=StyleSheet href=default.css>
 
@@ -42,7 +44,13 @@
 
 <h1>Editing a Baseline</h1>
 
-<p style="margin-bottom: 9pt;">To modify a baseline:</p>
+<p>A baseline is a known value that is used for comparison with current 
+ values. For example, the average usage can be made a baseline and can 
+ be compared to the current usage.</p>
+
+<p>&nbsp;</p>
+
+<p style="margin-bottom: 9pt;">To edit a baseline:</p>
 
 <ol style="list-style: decimal;"
 	type=1>
@@ -53,33 +61,41 @@
 	<li class=kadov-p><p style="margin-bottom: 9pt;">From the <span style="font-weight: bold;">Sort 
  By</span> list, select <span style="font-weight: bold;">Baseline</span>.</p></li>
 	
-	<li class=kadov-p><p style="margin-bottom: 0px;">Double-click on the 
+	<li class=kadov-p><p style="margin-bottom: 9pt;">Double-click on the 
  baseline to modify. This opens the <span style="font-weight: bold;">General</span> 
- tabbed page of the Baseline editor. The following changes can be made:</p></li>
+ tabbed page of the Baseline editor, from which the following changes can 
+ be made:</p></li>
 	
 	<ol style="list-style: lower-alpha;"
 		type=a>
 		
-		<li class=kadov-p><p style="margin-bottom: 0px;">The name of the 
+		<li class=kadov-p><p style="margin-bottom: 9pt;">The name of the 
  baseline can be changed in the <span style="font-weight: bold;">Name</span> 
  text box.</p></li>
 		
-		<li class=kadov-p><p style="margin-bottom: 0px;">The number of 
+		<li class=kadov-p><p style="margin-bottom: 9pt;">The number of 
  previous days used can be changed in the <span style="font-weight: bold;">Previous 
- Days Used</span> text box. This is the number of days back the base line 
- data can come from.</p></li>
+ Days Used</span> text box. This is the number of days back to look for 
+ valid dates. Yukon looks at the specified number days from the current 
+ date to check if a day contains valid baseline data. A valid date is a 
+ non-curtailed date; a non-holiday (if a holiday schedule is selected), 
+ and a non-excluded day (if any excluded days are selected).</p></li>
 		
-		<li class=kadov-p><p style="margin-bottom: 0px;">The load percentage 
+		<li class=kadov-p><p style="margin-bottom: 9pt;">The load percentage 
  can be changed in the <span style="font-weight: bold;">Load Percent</span> 
- text box. If the days calculated load is a specified percentage less than 
- the base line, then that days calculated load is ignored.</p></li>
+ text box. This is the percentage of validity for an interval value to 
+ be considered valid data. If a load percentage greater than zero is entered, 
+ all interval readings must exceed this percentage calculated against another 
+ point’s readings. This other point is often another baseline point that 
+ is calculated with a load percent of zero. The load percent of zero is 
+ used to create average data readings.</p></li>
 		
-		<li class=kadov-p><p style="margin-bottom: 0px;">The number of 
+		<li class=kadov-p><p style="margin-bottom: 9pt;">The number of 
  days in the calculation can be changed in the <span style="font-weight: bold;">Days 
- in Calculation</span> text box. This is the number of days used in the 
- base line calculation.</p></li>
+ in Calculation</span> text box. This is the minimum number of valid days 
+ needed to calculate the baseline..</p></li>
 		
-		<li class=kadov-p><p style="margin-bottom: 0px;">A different holiday 
+		<li class=kadov-p><p style="margin-bottom: 9pt;">A different holiday 
  schedule can be selected from the <span style="font-weight: bold;">Holiday</span> 
  drop-down list. This prevents holidays from being used in the base line 
  calculation.</p></li>
@@ -93,7 +109,7 @@
 	
 	<li class=kadov-p><p>Click <span style="font-weight: bold;">Apply</span> 
  to save the changes or <span style="font-weight: bold;">OK</span> to save 
- the changes and close the dialog box.</p></li>
+ the changes and close the Baseline Editor.</p></li>
 </ol>
 
 <p>&nbsp;</p>
@@ -111,23 +127,24 @@
 				margin-right: 0px;
 				vertical-align: baseline;"
 		align=bottom>
-<param name=_Version value="65536" >
-<param name=_ExtentX value="2117" >
-<param name=_ExtentY value="556" >
-<param name=_StockProps value="13" >
-<param name=ForeColor value="0" >
-<param name=BackColor value="13160660" >
-<param name=UseButton value="-1" >
-<param name=ControlLabel value="Related Topics" >
-<param name=UseIcon value="0" >
-<param name=Items value="Creating a Baseline;Creating_a_Baseline.htm$$**$$" >
-<param name=Image value="" >
-<param name=FontInfo value="MS Sans Serif,8,0,," >
-<param name=_CURRENTFILEPATH value="C:\working\docs\Help\Yukon Database Editor Help\Editing_a_Baseline.htm" >
-<param name=_ID value="RelatedTopics" >
-<param name=UseMenu value="-1" >
-<param name=Frame value="" >
-<param name=Window value="" >
+<param name="_Version" value="65536" >
+<param name="_ExtentX" value="2117" >
+<param name="_ExtentY" value="556" >
+<param name="_StockProps" value="13" >
+<param name="ForeColor" value="0" >
+<param name="BackColor" value="13160660" >
+<param name="UseButton" value="-1" >
+<param name="UseText" value="0" >
+<param name="ControlLabel" value="Related Topics" >
+<param name="UseIcon" value="0" >
+<param name="Items" value="Creating a Baseline;Creating_a_Baseline.htm$$**$$" >
+<param name="Image" value="" >
+<param name="FontInfo" value="MS Sans Serif,8,0,," >
+<param name="_CURRENTFILEPATH" value="C:\Working\head\yukon-help\dbeditor\src\Editing_a_Baseline.htm" >
+<param name="_ID" value="RelatedTopics" >
+<param name="UseMenu" value="-1" >
+<param name="Frame" value="" >
+<param name="Window" value="" >
 </object>-->
 <OBJECT
   CLASSID="clsid:ADB880A6-D8FF-11CF-9377-00AA003B7A11"
@@ -139,7 +156,7 @@
 </OBJECT>
 
 <!--Metadata type="DesignerControl" endspan-->
-</p>
+ </p>
 
 </body>
 

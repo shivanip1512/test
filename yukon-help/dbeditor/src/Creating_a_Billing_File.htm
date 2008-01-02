@@ -26,9 +26,9 @@
 <meta name=filetype content=kadov>
 <meta name=filetype-version content=1>
 <meta name=page-count content=1>
-<meta name=layout-height content=826>
-<meta name=layout-width content=692>
-<meta name=x-ignored-words content="MCT;Config;config;Ke;Mp;Kh;Min;KYZ;DNP;SOE;comm;Login;IED;EMETCOM;MCTs;KWH;Y-intercept;kW;kWh;RTU;CBC;kVAr;KVAR;KVar;KW;KQ;KVa;COS;ArcTan;Q;Arctangent;QCosine;Y;C;A-B|;B-C|;C-A|;XOR;deadband;Deadband;LCR;Versacom;VERSACOM;TimeRefresh;SmartCycle;MasterCycle;Cnt;setpoint;Fahren;Abs;F;TA;TC;TE;TF;INET;ACS;VALMET;CYGMET;PointID;STEC;RCCS;TRISTATE;RDEX;TELGYR;TELEGYR;Clck;config.properties;billing_wiz_activate=;CBC's;Comm;ExpressCom;Dialup;CCU;IDLC;RTUs;TCUs;LCUs;DCD;IP;Telenetics;Sportster;dialup;SCADA;ILEX;Tx;RTS;ReEnable;downline;Dialback;Dialout;WCTP;LCU;TCU;SEDC;CADP;CTI-CSV;OPU;Owatonna;DAFRON;XL-Plus;Inc;DAFFRON;NCDC;NISC-Turtle;NISC-NCDC;Daffron;kVar;PortServer;ClassicBoard;Digi;Xyplex;e;Vars;LMT;EMETCON;IndividualFeeder;SubstationBus;BusOptimizedFeeder;Ctrl;login;FeederEditor;LM;ManualOnly;LastControlled;AlwaysFirstGroup;LeastControlTime;e-mails;Ack;d;CCUs;w;Failover;thumbwheel;SBO;RTU-WELCO;RTU-ILEX;Readmeter;xxx;TimeOut;support@cannontech.com.;requeuing;Requeue;e-mail;dialout;ExpressStat;T-STAT;username;CCU's;dialback;edicated;LSF;kickup;ATKU;RTU-DNP;SIXNET;Eventlog;putconfig;RTU-DART;Landis;Gyr;KV;TrueCycle;CBCs;CapBanks;LMGroup;EMTECON;setpoints;Fahrenh;SPID;GEO;PROG;logins;Geq;Leq;arctangent;modulo;Modulo;Transponders;NCDC-Handheld;Handheld;NISC;TOU;kVarH;SIMPLE_TOU;EXTENDED_TOU;NISC's">
+<meta name=layout-height content=894>
+<meta name=layout-width content=972>
+<meta name=x-ignored-words content="MCT;Config;config;Ke;Mp;Kh;Min;KYZ;DNP;SOE;comm;Login;IED;EMETCOM;MCTs;KWH;Y-intercept;kW;kWh;RTU;CBC;kVAr;KVAR;KVar;KW;KQ;KVa;COS;ArcTan;Q;Arctangent;QCosine;Y;C;A-B|;B-C|;C-A|;XOR;deadband;Deadband;LCR;Versacom;VERSACOM;TimeRefresh;SmartCycle;MasterCycle;Cnt;setpoint;Fahren;Abs;F;TA;TC;TE;TF;INET;ACS;VALMET;CYGMET;PointID;STEC;RCCS;TRISTATE;RDEX;TELGYR;TELEGYR;Clck;config.properties;billing_wiz_activate=;CBC's;Comm;ExpressCom;Dialup;CCU;IDLC;RTUs;TCUs;LCUs;DCD;IP;Telenetics;Sportster;dialup;SCADA;ILEX;Tx;RTS;ReEnable;downline;Dialback;Dialout;WCTP;LCU;TCU;SEDC;CADP;CTI-CSV;OPU;Owatonna;DAFRON;XL-Plus;Inc;DAFFRON;NCDC;NISC-Turtle;NISC-NCDC;Daffron;kVar;PortServer;ClassicBoard;Digi;Xyplex;e;Vars;LMT;EMETCON;IndividualFeeder;SubstationBus;BusOptimizedFeeder;Ctrl;login;FeederEditor;LM;ManualOnly;LastControlled;AlwaysFirstGroup;LeastControlTime;e-mails;Ack;d;CCUs;w;Failover;thumbwheel;SBO;RTU-WELCO;RTU-ILEX;Readmeter;xxx;TimeOut;support@cannontech.com.;requeuing;Requeue;e-mail;dialout;ExpressStat;T-STAT;username;CCU's;dialback;edicated;LSF;kickup;ATKU;RTU-DNP;SIXNET;Eventlog;putconfig;RTU-DART;Landis;Gyr;KV;TrueCycle;CBCs;CapBanks;LMGroup;EMTECON;setpoints;Fahrenh;SPID;GEO;PROG;logins;Geq;Leq;arctangent;modulo;Modulo;Transponders;NCDC-Handheld;Handheld;NISC;TOU;kVarH;SIMPLE_TOU;EXTENDED_TOU;NISC's;group(s;meter(s">
 
 
 <!--(Links)=========================================================-->
@@ -129,8 +129,8 @@
  up to four TOU/TOD rates</span></p></li>
 	</ul>
 	
-	<li class=kadov-p><p style="margin-bottom: 9pt;">Select an end date 
- for the billing file from the <span style="font-weight: bold;">Billing 
+	<li class=kadov-p><p style="margin-bottom: 9pt;">Select the last day 
+ of the billing period from the <span style="font-weight: bold;">Billing 
  End Date</span> drop-down calendar.</p></li>
 	
 	<li class=kadov-p><p style="margin-bottom: 9pt;">Enter the number of 
@@ -141,23 +141,74 @@
  previous days to search for energy readings in the <span style="font-weight: bold;">Energy 
  Days Previous</span> text box.</p></li>
 	
-	<li class=kadov-p><p style="margin-bottom: 0px;">Select a billing group 
- type from the <span style="font-weight: bold;">Billing Group Type</span> 
- drop-down list. The billing group types are:</p></li>
+	<li class=kadov-p><p style="margin-bottom: 0px;">To select a billing 
+ group:</p></li>
 	
-	<ul style="list-style: disc;"
-		type=disc>
+	<ol style="list-style: lower-alpha;"
+		type=a>
 		
-		<li class=kadov-p><p style="margin-bottom: 0px;">Collection Group</p></li>
+		<li class=kadov-p><p style="margin-bottom: 0px;">Click the + next 
+ to Meters folder to display the types of billing groups.</p></li>
 		
-		<li class=kadov-p><p style="margin-bottom: 0px;">Alternate Group</p></li>
+		<ul>
+			
+			<li style="list-style: disc;"
+				type=disc
+				class=kadov-p><p style="margin-bottom: 0px; font-weight: bold;">Alternate</p></li>
+		</ul>
 		
-		<li class=kadov-p><p style="margin-bottom: 9pt;">Billing Group</p></li>
-	</ul>
-	
-	<li class=kadov-p><p style="margin-bottom: 9pt;">Depending on the billing 
- group type selected, select a group from the list below Billing Group 
- Type. The groups are defined on the Metering tabbed page of MCTs.</p></li>
+		<ul style="list-style: lower-alpha;"
+			type=a>
+			
+			<li style="list-style: disc;"
+				type=disc
+				class=kadov-p><p style="margin-bottom: 0px; font-weight: bold;">Billing</p></li>
+		</ul>
+		
+		<ul style="list-style: lower-alpha;"
+			type=a>
+			
+			<li style="list-style: disc;"
+				type=disc
+				class=kadov-p><p style="margin-bottom: 0px; font-weight: bold;">Collection</p></li>
+		</ul>
+		
+		<ul style="list-style: lower-alpha;"
+			type=a>
+			
+			<li style="list-style: disc;"
+				type=disc
+				class=kadov-p><p style="margin-bottom: 0px; font-weight: bold;">CustomGroup1</p></li>
+		</ul>
+		
+		<ul style="list-style: lower-alpha;"
+			type=a>
+			
+			<li style="list-style: disc;"
+				type=disc
+				class=kadov-p><p style="margin-bottom: 0px; font-weight: bold;">CustomGroup2</p></li>
+		</ul>
+		
+		<ul style="list-style: lower-alpha;"
+			type=a>
+			
+			<li style="list-style: disc;"
+				type=disc
+				class=kadov-p><p style="font-weight: bold;">CustomGroup3</p></li>
+		</ul>
+		
+		<li class=kadov-p><p>Click the + next to a billing group type folder 
+ to display the billing groups.</p></li>
+		
+		<li class=kadov-p><p style="margin-bottom: 9pt;">Select the billing 
+ group(s) of the meter(s) to include in the billing file.<br>
+		To select more than one group, hold down the Ctrl key while selecting 
+ groups.<br>
+		<span style="margin-bottom: 9pt;">To select all of the groups within 
+ a billing group type, select the billing group type folder.<br>
+		To select all of the billing groups, select every billing group 
+ type folder or select just the Meters folder.</span></p></li>
+	</ol>
 	
 	<li class=kadov-p><p style="margin-bottom: 9pt;">If necessary, change 
  the output directory path in the <span style="font-weight: bold;">Output 

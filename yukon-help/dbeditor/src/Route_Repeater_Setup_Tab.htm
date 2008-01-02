@@ -12,23 +12,25 @@
 
 <!--(Meta)==========================================================-->
 
+<meta http-equiv=content-type content="text/html; charset=windows-1252">
+<meta name=date content="03 14, 2005 3:22:08 PM">
+<meta name=topic-status content="In Progress">
+<meta name=topic-priority content=0>
+<meta name=topic-time-estimate content=0>
+<meta name=topic-comment content>
+<meta name=topic-id content="Route Repeater Setup Tab">
 <meta name=generator content="RoboHELP by eHelp Corporation - www.ehelp.com">
 <meta name=generator-major-version content=0.1>
 <meta name=generator-minor-version content=1>
 <meta name=filetype content=kadov>
 <meta name=filetype-version content=1>
 <meta name=page-count content=1>
-<meta name=layout-height content=595>
-<meta name=layout-width content=757>
-<meta name=date content="03 14, 2005 3:22:08 PM">
+<meta name=layout-height content=716>
+<meta name=layout-width content=634>
 <meta name=x-ignored-words content="comm;Login;IED;EMETCOM;MCTs;MCT;KWH;Y-intercept;kW;kWh;TimeRefresh;SmartCycle;MasterCycle;LCR;Cnt;setpoint;Fahren;Min;Abs;F;TA;TC;TE;TF;INET;ACS;VALMET;CYGMET;PointID;STEC;RCCS;TRISTATE;RDEX;TELGYR;TELEGYR;Clck;deadband;Deadband;config.properties;billing_wiz_activate=;kVAr;RTU;CBC;DNP;KYZ;VERSACOM;Comm;Dialup;CCU;IDLC;RTUs;TCUs;LCUs;DCD;IP;SCADA;ILEX;Tx;RTS;ReEnable;downline;SEDC;CADP;CTI-CSV;OPU;Owatonna;DAFRON;XL-Plus;Inc;DAFFRON;KVAR;kVar;PortServer;ClassicBoard;Digi;Xyplex;e;Vars;LMT;EMETCON;IndividualFeeder;SubstationBus;BusOptimizedFeeder;Ctrl;login;FeederEditor;LM;ManualOnly;LastControlled;AlwaysFirstGroup;LeastControlTime;e-mails;Ack;d;CCUs;TCU;w;Failover;dialup;thumbwheel;SBO;RTU-WELCO;RTU-ILEX;Readmeter;KW;C;xxx;LCU;TimeOut;support@cannontech.com.;Versacom;ExpressStat;ExpressCom;WCTP;KQ;SIXNET;RTU-DNP;CapBanks;LMGroup;SPID;GEO;PROG;otification;fixVar;epeaters">
 
 
- <meta name="topic-status" content="In Progress">
- <meta name="topic-priority" content="0">
- <meta name="topic-time-estimate" content="0">
- <meta name="topic-comment" content="">
- <meta name="topic-id" content="Route Repeater Setup Tab"><!--(Links)=========================================================-->
+<!--(Links)=========================================================-->
 
 <link rel=StyleSheet href=default.css>
 
@@ -67,63 +69,56 @@
  <span style="font-weight: bold;">Add</span>. To select more than one repeater, 
  hold Ctrl key on the keyboard while clicking additional repeaters.</p></li>
 		
-		<li class=kadov-p><p style="margin-bottom: 9pt;">To unassign a 
- repeater, select the repeater from the <span style="font-weight: bold;">Assigned</span> 
- list and click <span style="font-weight: bold;">Remove</span>. To select 
- more than one repeater, hold the Ctrl key on the keyboard while clicking 
- additional repeater.</p></li>
+		<li class=kadov-p><p>To unassign a repeater, select the repeater 
+ from the <span style="font-weight: bold;">Assigned</span> list and click 
+ <span style="font-weight: bold;">Remove</span>. To select more than one 
+ repeater, hold the Ctrl key on the keyboard while clicking additional 
+ repeater.</p></li>
+		
+		<li class=kadov-p><p>To rearrange the order of the assigned repeaters, 
+ click and drag a repeater to move it up or down in the list. The repeater 
+ physically closest to the CCU should be at the top of the Assigned list. 
+ The repeater physically farthest from the CCU should be at the bottom 
+ of the Assigned list.</p></li>
+		
+		<li class=kadov-p><p style="margin-bottom: 9pt;">To save the changes 
+ to the list of assigned repeaters and to enable the Advanced Setup button, 
+ click the Apply button.</p></li>
 	</ul>
 	
-	<li class=kadov-p><p>To calculate the fixed and variable bits of the 
- CCU and repeater, select <span style="font-weight: bold;">Advanced Setup</span>. 
- The fixed bits and variable bits are automatically calculated by the Yukon 
- software.<br>
+	<li class=kadov-p><p style="margin-bottom: 9pt;">To configure the fixed 
+ and variable bits of the CCU and repeater(s), click the <span style="font-weight: bold;">Advanced 
+ Setup </span>button. The fixed bits and variable bits are automatically 
+ calculated by the Yukon software.<br>
+	<span style="font-weight: bold;">Note:</span> Do not edit the Advanced 
+ Setup settings unless instructed to do so by Cannon Technologies support.</p></li>
+	
+	<li class=kadov-p><p style="margin-bottom: 9pt;">If another CCU is 
+ using the same fixed or variable bits, that CCU appears in the <span style="font-weight: bold;">Other 
+ CCUs using these bit roles</span> area.<br>
 	<br>
-	If you assigned a repeater or unassigned a repeater without applying 
- the change, a dialog box appears asking if you want to apply the changes.</p></li>
+	To exclude the fixed and variable bits of a CCU from future suggestions, 
+ select the check box of the CCU to exclude.</p></li>
 	
-	<ul style="list-style: disc;"
-		type=disc>
-		
-		<li class=kadov-p><p>Click <span style="font-weight: bold;">Yes</span> 
- to permanently apply the changes and allow the software to update the 
- fixed and variable bits.</p></li>
-		
-		<li class=kadov-p><p style="margin-bottom: 9pt;">Click <span style="font-weight: bold;">No</span> 
- to not apply the changes and to not allow the software to update the fixed 
- and variable bits.</p></li>
-	</ul>
+	<li class=kadov-p><p style="margin-bottom: 9pt;">To display suggested 
+ values for the fixed and variable bits, click the <span style="font-weight: bold;">Get 
+ Suggestion</span> button.<br>
+	<br>
+	<span style="margin-bottom: 9pt;">If another CCU is using the suggested 
+ fixed or variable bits, that </span><span style="margin-bottom: 9pt; font-weight: bold;">CCU 
+ appears in the CCUs using suggested bit roles</span><span style="margin-bottom: 9pt;"> 
+ area.</span></p></li>
 	
-	<li class=kadov-p><p style="margin-bottom: 9pt;">To keep the bits from 
- changing during regeneration, select the <span style="font-weight: bold;">Do 
- not allow auto bit change (Lock)</span> check box.</p></li>
+	<li class=kadov-p><p style="margin-bottom: 9pt;">To use the suggested 
+ values for the fixed and variable bits, click the <span style="font-weight: bold;">Use 
+ Suggestion</span> button.</p></li>
 	
-	<li class=kadov-p><p style="margin-bottom: 9pt;">To select the route 
- for bit recalculation during regeneration, select the <span style="font-weight: bold;">Recalculate 
- fixVar bits (Reset)</span> check box.</p></li>
+	<li class=kadov-p><p>To prevent a user from modifying the repeaters 
+ assigned the route, select the <span style="font-weight: bold;">User Locked</span> 
+ check box.<br>&nbsp;</p></li>
 	
 	<li class=kadov-p><p style="margin-bottom: 9pt;">Click <span style="font-weight: bold;">OK</span> 
- to save the changes.</p></li>
-	
-	<li class=kadov-p><p style="margin-bottom: 9pt;">To regenerate route 
- bits, select <span style="font-weight: bold;">Regenerate Route Roles</span> 
- from the <span style="font-weight: bold;">Tools</span> menu. Do not use 
- the Route tools unless instructed to by Cannon Technologies support.</p></li>
-	
-	<ol style="list-style: lower-alpha;"
-		type=a>
-		
-		<li class=kadov-p><p style="margin-bottom: 9pt;">To regenerate 
- only the selected route roles, select the <span style="font-weight: bold;">Regenerate 
- selected route <!--kadov_tag{{<ignored>}}-->role(s<!--kadov_tag{{</ignored>}}-->)</span> 
- check box.</p></li>
-		
-		<li class=kadov-p><p style="margin-bottom: 9pt;">To regenerate 
- all route roles, select the <span style="font-weight: bold;">Regenerate 
- all route roles</span> check box.</p></li>
-	</ol>
-	
-	<li class=kadov-p><p style="margin-bottom: 9pt;">Click <span style="font-weight: bold;">OK</span>.</p></li>
+ to save changes to the Advanced Route Setup panel.</p></li>
 </ol>
 
 &nbsp; 
@@ -139,23 +134,24 @@
 				margin-right: 0px;
 				vertical-align: baseline;"
 		align=bottom>
-<param name=_Version value="65536" >
-<param name=_ExtentX value="2117" >
-<param name=_ExtentY value="556" >
-<param name=_StockProps value="13" >
-<param name=ForeColor value="0" >
-<param name=BackColor value="13160660" >
-<param name=UseButton value="-1" >
-<param name=ControlLabel value="Related Topics" >
-<param name=UseIcon value="0" >
-<param name=Items value="Editing a Route;Editing_a_Route.htm$$**$$" >
-<param name=Image value="" >
-<param name=FontInfo value="MS Sans Serif,8,0,," >
-<param name=_CURRENTFILEPATH value="C:\working\docs\Help\Yukon Database Editor Help\Route_Repeater_Setup_Tab.htm" >
-<param name=_ID value="RelatedTopics" >
-<param name=UseMenu value="-1" >
-<param name=Frame value="_top" >
-<param name=Window value="" >
+<param name="_Version" value="65536" >
+<param name="_ExtentX" value="2117" >
+<param name="_ExtentY" value="556" >
+<param name="_StockProps" value="13" >
+<param name="ForeColor" value="0" >
+<param name="BackColor" value="13160660" >
+<param name="UseButton" value="-1" >
+<param name="UseText" value="0" >
+<param name="ControlLabel" value="Related Topics" >
+<param name="UseIcon" value="0" >
+<param name="Items" value="Editing a Route;Editing_a_Route.htm$$**$$" >
+<param name="Image" value="" >
+<param name="FontInfo" value="MS Sans Serif,8,0,," >
+<param name="_CURRENTFILEPATH" value="C:\Working\head\yukon-help\dbeditor\src\Route_Repeater_Setup_Tab.htm" >
+<param name="_ID" value="RelatedTopics" >
+<param name="UseMenu" value="-1" >
+<param name="Frame" value="_top" >
+<param name="Window" value="" >
 </object>-->
 <OBJECT
   CLASSID="clsid:ADB880A6-D8FF-11CF-9377-00AA003B7A11"
@@ -168,7 +164,7 @@
 </OBJECT>
 
 <!--Metadata type="DesignerControl" endspan-->
-</p>
+ </p>
 
 </body>
 

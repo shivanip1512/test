@@ -25,9 +25,9 @@
 <meta name=filetype content=kadov>
 <meta name=filetype-version content=1>
 <meta name=page-count content=1>
-<meta name=layout-height content=1034>
-<meta name=layout-width content=713>
-<meta name=x-ignored-words content="MCT;CCU;comm;RTU-DNP;SIXNET;CCUs;EMETCOM;MCTs;RTU-DART;dialup;dialback;Config;RTU-MODBUS">
+<meta name=layout-height content=938>
+<meta name=layout-width content=974>
+<meta name=x-ignored-words content="MCT;Config;config;Ke;Mp;Kh;Min;KYZ;DNP;SOE;comm;Login;IED;EMETCOM;MCTs;KWH;Y-intercept;kW;kWh;RTU;CBC;kVAr;KVAR;KVar;KW;KQ;KVa;COS;ArcTan;Q;Arctangent;QCosine;Y;C;A-B|;B-C|;C-A|;XOR;deadband;Deadband;LCR;Versacom;VERSACOM;TimeRefresh;SmartCycle;MasterCycle;Cnt;setpoint;Fahren;Abs;F;TA;TC;TE;TF;INET;ACS;VALMET;CYGMET;PointID;STEC;RCCS;TRISTATE;RDEX;TELGYR;TELEGYR;Clck;config.properties;billing_wiz_activate=;CBC's;Comm;ExpressCom;Dialup;CCU;IDLC;RTUs;TCUs;LCUs;DCD;IP;Telenetics;Sportster;dialup;SCADA;ILEX;Tx;RTS;ReEnable;downline;Dialback;Dialout;WCTP;LCU;TCU;SEDC;CADP;CTI-CSV;OPU;Owatonna;DAFRON;XL-Plus;Inc;DAFFRON;NCDC;NISC-Turtle;NISC-NCDC;Daffron;kVar;PortServer;ClassicBoard;Digi;Xyplex;e;Vars;LMT;EMETCON;IndividualFeeder;SubstationBus;BusOptimizedFeeder;Ctrl;login;FeederEditor;LM;ManualOnly;LastControlled;AlwaysFirstGroup;LeastControlTime;e-mails;Ack;d;CCUs;w;Failover;thumbwheel;SBO;RTU-WELCO;RTU-ILEX;Readmeter;xxx;TimeOut;support@cannontech.com.;requeuing;Requeue;e-mail;dialout;ExpressStat;T-STAT;username;CCU's;dialback;edicated;LSF;kickup;ATKU;RTU-DNP;SIXNET;Eventlog;putconfig;RTU-DART;Landis;Gyr;KV;TrueCycle;CBCs;CapBanks;LMGroup;EMTECON;setpoints;Fahrenh;SPID;GEO;PROG;logins;TOU;otification;fixVar;deselect;CTRL;LODESTAR_ENH;LOADSTAR_STD;TEXTEXPORT;TEXTIMPORT;ACSMULTI;BEPC;LIVEDATA;DrivePath;XA;IVR;Geq;Leq;arctangent;modulo;Modulo;Golay;C&amp;I;CurrentLoad;ContractIntLoad;MinimumNotice;InterruptHours;AdvBuyThrough$;AdvBuyThroughkW;ContractFrmDemand;Curtailable;Transponders;NCDC-Handheld;Handheld;NISC;kVarH;Ops;RTU-MODBUS;contact(s;Emails;LSW;MSW;SchedName;TRISTATESUB;FileName;c;Yukon\Server\Export\;control.txt;Timeout;Esub;Esubstation;Grp;E-mail;epeaters;SNPP;RTC;RTU-LMI;Logins;TCP;UDP;Calc;FDR;MACS;TDC;repeater(s;timeout;Tue;Thu;SIMPLE_TOU;EXTENDED_TOU;NISC's;group(s;meter(s;ss;VECTRON">
 
 
 <!--(Links)=========================================================-->
@@ -64,12 +64,13 @@
  can be changed in the <span style="font-weight: bold;">Physical Address</span> 
  text box. This text box only appears for certain devices. The <span style="font-weight: bold;">Physical 
  Address</span> text box is replaced by a <span style="font-weight: bold;">Master 
- Address</span> text box for RTU-DART, RTU-DNP, and RTU-MODBUS devices.<br>
+ Address</span> text box, which is the DNP address of the master station 
+ for RTU-DART, RTU-DNP, RTU-MODBUS, and ION devices.<br>
 	<br>
 	The physical address is the factory-supplied address as labeled on 
- the device. For MCTs, this number is the serial number on the faceplate, 
- minus the leading 1 and 0s. For instance, if the faceplate number on an 
- MCT 310 is 100020464, enter 20464 in this field.</p></li>
+ the device. For MCTs, this is the number on the faceplate, minus the leading 
+ 1 and 0s. For instance, if the faceplate number on an MCT 310 is 100020464, 
+ enter 20464 in this field.</p></li>
 	
 	<li style="list-style: decimal;"
 		type=1
@@ -98,71 +99,92 @@
 		class=kadov-p><p style="margin-bottom: 9pt;">The number of milliseconds 
  to wait can be changed in the <span style="font-weight: bold;">Post Communication 
  Wait</span> spin box. The post communication wait defines the length of 
- time to wait before this device can be communicated with again.</p></li>
+ time to wait after communication before this device can be communicated 
+ with again.</p></li>
 	
 	<li style="list-style: decimal;"
 		type=1
 		class=kadov-p><p style="margin-bottom: 9pt;">For RTU-DART, RTU-DNP, 
- RTU-MODBUS, and ION devices, the slave address can be changed in the <span 
- style="font-weight: bold;">Slave Address</span> text box.</p></li>
+ RTU-MODBUS, and ION devices, the DNP slave address can be changed in the 
+ <span style="font-weight: bold;">Slave Address</span> text box.</p></li>
 	
 	<li style="list-style: decimal;"
 		type=1
 		class=kadov-p><p style="margin-bottom: 0px;">For CCUs, a different 
- amp card usage can be selected from the <span style="font-weight: bold;">CCU 
- Amp Use Type</span> drop-down list. This defines how the amp cards are 
- used by the route. The amp use options are:</p></li>
+ power amplifier card usage can be selected from the <span style="font-weight: bold;">CCU 
+ Amp Use Type</span> drop-down list. This defines how the amplifier cards 
+ are used by the communication routes. The amp card use options are:</p></li>
 	
 	<ul style="list-style: disc;"
 		type=disc>
 		
-		<li class=kadov-p><p style="margin-bottom: 0px;">Amp1</p></li>
+		<li class=kadov-p><p style="margin-bottom: 0px;"><span style="font-weight: bold;">Amp1</span> 
+ - Use amp card 1.</p></li>
 		
-		<li class=kadov-p><p style="margin-bottom: 0px;">Amp2</p></li>
+		<li class=kadov-p><p style="margin-bottom: 0px;"><span style="font-weight: bold;">Amp2</span> 
+ - Use amp card 2.</p></li>
 		
-		<li class=kadov-p><p style="margin-bottom: 0px;">Alternating</p></li>
+		<li class=kadov-p><p style="margin-bottom: 0px;"><span style="font-weight: bold;">Alternating</span> 
+ - Alternate between using amp card 1 and amp card 2 after each transmission.</p></li>
 		
-		<li class=kadov-p><p style="margin-bottom: 0px;">Default 1 Fail 
- 2</p></li>
+		<li class=kadov-p><p style="margin-bottom: 0px;"><span style="font-weight: bold;">Default 
+ 1 Fail 2</span> - Use amp card 1 by default and switch to amp card 2 if 
+ amp card 1 fails.</p></li>
 		
-		<li class=kadov-p><p style="margin-bottom: 0px;">Default 2 Fail 
- 1</p></li>
+		<li class=kadov-p><p style="margin-bottom: 0px;"><span style="font-weight: bold;">Default 
+ 2 Fail 1</span> - Use amp card 2 by default and switch to amp card 1 if 
+ amp card 2 fails.</p></li>
 		
-		<li class=kadov-p><p style="margin-bottom: 9pt;">Alt w/Failover</p></li>
+		<li class=kadov-p><p style="margin-bottom: 9pt;"><span style="font-weight: bold;">Alt 
+ w/Failover</span> - Alternate between using amp card 1 and amp card 2 
+ after each transmission, and switch to the other amp card if one of amp 
+ cards fail.</p></li>
 	</ul>
 	
 	<li style="list-style: decimal;"
 		type=1
-		class=kadov-p><p style="margin-bottom: 0px;">For certain electronic 
- meters, a different slave address can be selected from the <span style="font-weight: bold;">Slave 
- Address</span> drop-down list. The slave address defines the behavior 
- of dial-up devices in terms of master/slave relationships. For example, 
- some devices may act as a communication gateway for other slave devices. 
- The slave address options are:</p></li>
+		class=kadov-p><p style="margin-bottom: 0px;">For the FULCRUM and 
+ VECTRON meters, a master/slave relationship can be selected from the <span 
+ style="font-weight: bold;">Slave Address</span> drop-down list. For example, 
+ one meter may act as a communication gateway for other meters. The slave 
+ address options are:</p></li>
 	
 	<ul style="list-style: disc;"
 		type=disc>
 		
-		<li class=kadov-p><p style="margin-bottom: 0px;">Standalone</p></li>
+		<li class=kadov-p><p style="margin-bottom: 0px;"><span style="font-weight: bold;">Standalone</span> 
+ - the meter is a stand-alone device.</p></li>
 		
-		<li class=kadov-p><p style="margin-bottom: 0px;">Master</p></li>
+		<li class=kadov-p><p style="margin-bottom: 0px;"><span style="font-weight: bold;">Master</span> 
+ - the meter is a master device and can initiate a read or write command 
+ with any slave device.</p></li>
 		
-		<li class=kadov-p><p style="margin-bottom: 0px;">Slave 1</p></li>
+		<li class=kadov-p><p style="margin-bottom: 0px;"><span style="font-weight: bold;">Slave 
+ 1</span> - the meter is slave 1 and can receive a read or write command 
+ from the master meter.</p></li>
 		
-		<li class=kadov-p><p style="margin-bottom: 0px;">Slave 2</p></li>
+		<li class=kadov-p><p style="margin-bottom: 0px;"><span style="font-weight: bold;">Slave 
+ 2</span> - the meter is slave 2 and can receive a read or write command 
+ from the master meter.</p></li>
 		
-		<li class=kadov-p><p style="margin-bottom: 0px;">Slave 3</p></li>
+		<li class=kadov-p><p style="margin-bottom: 0px;"><span style="font-weight: bold;">Slave 
+ 3</span> - the meter is slave 3 and can receive a read or write command 
+ from the master meter.</p></li>
 		
-		<li class=kadov-p><p style="margin-bottom: 9pt;">Slave 4</p></li>
+		<li class=kadov-p><p style="margin-bottom: 9pt;"><span style="font-weight: bold;">Slave 
+ 4</span> - the meter is slave 4 and can receive a read or write command 
+ from the master meter.</p></li>
 	</ul>
 	
 	<li style="list-style: decimal;"
 		type=1
 		class=kadov-p><p style="margin-bottom: 9pt;">For SIXNET meters, 
  the name of the SIXNET log file can be changed in the <span style="font-weight: bold;">Log 
- File</span> text box The name of the log file must include the <span style="font-style: italic;">.6dl</span> 
- extension. In addition, the station address can be changed in the <span 
- style="font-weight: bold;">Station Address</span> in the text box.</p></li>
+ File</span> text box. The name of the log file must include the <span 
+ style="font-style: italic;">.6dl</span> extension. In addition, the destination 
+ station address can be changed in the <span style="font-weight: bold;">Station 
+ Address</span> in the text box. This is the receiving station number and 
+ is required to communicate with the meter.</p></li>
 	
 	<li style="list-style: decimal;"
 		type=1
@@ -221,13 +243,12 @@
 <param name="Items" value="Editing a Device;Editing_a_Device.htm$$**$$" >
 <param name="Image" value="" >
 <param name="FontInfo" value="MS Sans Serif,8,0,," >
-<param name="_CURRENTFILEPATH" value="C:\working\docs\Help\Yukon 3.2 Database Editor Help\Device_General_Tab.htm" >
+<param name="_CURRENTFILEPATH" value="C:\Working\head\yukon-help\dbeditor\src\Device_General_Tab.htm" >
 <param name="_ID" value="RelatedTopics" >
 <param name="UseMenu" value="-1" >
 <param name="Frame" value="_top" >
 <param name="Window" value="" >
-</object>-->
-<OBJECT
+</object>--><OBJECT
   CLASSID="clsid:ADB880A6-D8FF-11CF-9377-00AA003B7A11"
   ID="RelatedTopics"  TYPE="application/x-oleobject" >
   <PARAM  NAME="Command"  VALUE="Related Topics,MENU">
@@ -236,7 +257,6 @@
   <PARAM  NAME="Frame"  VALUE="_top">
   <PARAM  NAME="Item1"  VALUE="Editing a Device;Editing_a_Device.htm">
 </OBJECT>
-
 <!--Metadata type="DesignerControl" endspan-->
  </p>
 

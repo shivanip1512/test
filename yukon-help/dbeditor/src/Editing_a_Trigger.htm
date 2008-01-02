@@ -12,23 +12,25 @@
 
 <!--(Meta)==========================================================-->
 
+<meta http-equiv=content-type content="text/html; charset=windows-1252">
+<meta name=date content="03 14, 2005 2:40:50 PM">
+<meta name=topic-status content="In Progress">
+<meta name=topic-priority content=0>
+<meta name=topic-time-estimate content=0>
+<meta name=topic-comment content>
+<meta name=topic-id content="Editing a Trigger">
 <meta name=generator content="RoboHELP by eHelp Corporation - www.ehelp.com">
 <meta name=generator-major-version content=0.1>
 <meta name=generator-minor-version content=1>
 <meta name=filetype content=kadov>
 <meta name=filetype-version content=1>
 <meta name=page-count content=1>
-<meta name=layout-height content=820>
-<meta name=layout-width content=757>
-<meta name=date content="03 14, 2005 2:40:50 PM">
+<meta name=layout-height content=915>
+<meta name=layout-width content=634>
 <meta name=x-ignored-words content="Min;kickup">
 
 
- <meta name="topic-status" content="In Progress">
- <meta name="topic-priority" content="0">
- <meta name="topic-time-estimate" content="0">
- <meta name="topic-comment" content="">
- <meta name="topic-id" content="Editing a Trigger"><!--(Links)=========================================================-->
+<!--(Links)=========================================================-->
 
 <link rel=StyleSheet href=default.css>
 
@@ -43,6 +45,41 @@
 
 <h4>Editing a Trigger</h4>
 
+<p style="margin-bottom: 0px;">Up to two triggers can be defined per control 
+ area.</p>
+
+<p style="margin-bottom: 0px;">&nbsp;</p>
+
+<ul>
+	
+	<li style="list-style: disc;"
+		type=disc
+		class=kadov-p><p style="margin-bottom: 0px;">If only one threshold 
+ trigger exists and the threshold value is surpassed, control is performed 
+ on the next priority level.</p></li>
+	
+	<li style="list-style: disc;"
+		type=disc
+		class=kadov-p><p style="margin-bottom: 0px;">If only one status 
+ trigger exists and the status changes, control is performed on the all 
+ of the priority levels.</p></li>
+	
+	<li style="list-style: disc;"
+		type=disc
+		class=kadov-p><p style="margin-bottom: 0px;">If both a threshold 
+ and status trigger exist, and the <span style="font-weight: bold;">Require 
+ All Triggers Active</span> check box is selected, then control is performed 
+ only if the threshold is surpassed and the status changes. Control is 
+ performed on the next priority level.</p></li>
+	
+	<li style="list-style: disc;"
+		type=disc
+		class=kadov-p><p style="margin-bottom: 9pt;">If both a threshold 
+ and status trigger exist, and the <span style="font-weight: bold;">Require 
+ All Triggers Active</span> check box is not selected, then control is 
+ performed if either the threshold is surpassed or the status changes.</p></li>
+</ul>
+
 <p>The following changes can be made to a trigger:</p>
 
 <p>&nbsp;</p>
@@ -54,15 +91,24 @@
  to edit from the <span style="font-weight: bold;">Trigger</span> drop-down 
  list.</p></li>
 	
-	<li class=kadov-p><p style="margin-bottom: 9pt;">A different type of 
- trigger can be selected from the <span style="font-weight: bold;">Type</span> 
- drop-down list. A <span style="font-weight: bold;">Threshold</span> trigger 
- is the level that the load must be below before any programs can be stopped. 
- The <span style="font-weight: bold;">Status</span> trigger is the normal 
- state of the control area.</p></li>
+	<li class=kadov-p><p>A different type of trigger can be selected from 
+ the <span style="font-weight: bold;">Type</span> drop-down list.</p></li>
+	
+	<ul>
+		
+		<li style="list-style: disc;"
+			type=disc
+			class=kadov-p><p><span style="font-weight: bold;">Status</span> 
+ - control occurs on a status change.</p></li>
+		
+		<li style="list-style: disc;"
+			type=disc
+			class=kadov-p><p style="margin-bottom: 9pt;"><span style="font-weight: bold;">Threshold</span> 
+ - control occurs when the threshold is surpassed.</p></li>
+	</ul>
 	
 	<li class=kadov-p><p style="margin-bottom: 9pt;">A different device 
- to use for this trigger can be selected from the <span style="font-weight: bold;">Device</span> 
+ on which the trigger point is located can be selected from the <span style="font-weight: bold;">Device</span> 
  drop-down list.</p></li>
 	
 	<li class=kadov-p><p style="margin-bottom: 9pt;">A different point 
@@ -107,8 +153,7 @@
 	<li class=kadov-p><p style="margin-bottom: 0px;">To setup trigger data 
  projection, click the <span style="font-weight: bold;">Projection</span> 
  button. This projects the value of the trigger after a set number of minutes. 
- If the projected value is above the threshold, <span style="font-style: italic;">Yukon</span> 
- starts to control.</p></li>
+ If the projected value is above the threshold, Yukon starts to control.</p></li>
 	
 	<ol style="list-style: lower-alpha;"
 		type=a>
@@ -118,8 +163,9 @@
  list. The types are (none) or LSF (Least Squared Fit).</p></li>
 		
 		<li class=kadov-p><p style="margin-bottom: 0px;">Select the number 
- of samples to use in the LSF projection from the <span style="font-weight: bold;">Samples</span> 
- drop-down list.</p></li>
+ of trigger values to use in the LSF projection from the <span style="font-weight: bold;">Samples</span> 
+ drop-down list. If the trigger values in the projection are older than 
+ one hour, the current trigger value is used.</p></li>
 		
 		<li class=kadov-p><p style="margin-bottom: 0px;">Select how far 
  ahead in time to project from the <span style="font-weight: bold;">Ahead</span> 
@@ -129,39 +175,8 @@
  to save the control area projection.</p></li>
 	</ol>
 	
-	<li class=kadov-p><p style="margin-bottom: 9pt;">Click <span style="font-weight: bold;">Apply</span> 
- to save the changes or <span style="font-weight: bold;">OK</span> to save 
- the changes and close the dialog box.</p></li>
-	
-	<ul>
-		
-		<li style="list-style: disc;"
-			type=disc
-			class=kadov-p><p style="margin-bottom: 9pt;">If only one threshold 
- trigger exists and the threshold value is surpassed, control is performed 
- on the next priority level.</p></li>
-		
-		<li style="list-style: disc;"
-			type=disc
-			class=kadov-p><p style="margin-bottom: 9pt;">If only one status 
- trigger exists and the status changes, control is performed on the all 
- of the priority levels.</p></li>
-		
-		<li style="list-style: disc;"
-			type=disc
-			class=kadov-p><p style="margin-bottom: 9pt;">If both a threshold 
- and status trigger exist, and the <span style="font-weight: bold;">Require 
- All Triggers Active</span> check box is selected, then control is performed 
- only if the threshold is surpassed and the status changes. Control is 
- performed on the next priority level.</p></li>
-		
-		<li style="list-style: disc;"
-			type=disc
-			class=kadov-p><p style="margin-bottom: 9pt;">If both a threshold 
- and status trigger exist, and the <span style="font-weight: bold;">Require 
- All Triggers Active</span> check box is not selected, then control is 
- performed if either the threshold is surpassed or the status changes.</p></li>
-	</ul>
+	<li class=kadov-p><p style="margin-bottom: 9pt;">Click <span style="font-weight: bold;">OK</span> 
+ to save the changes.</p></li>
 </ol>
 
 <p style="margin-bottom: 9pt;">&nbsp;</p>
@@ -177,23 +192,24 @@
 				margin-right: 0px;
 				vertical-align: baseline;"
 		align=bottom>
-<param name=_Version value="65536" >
-<param name=_ExtentX value="2117" >
-<param name=_ExtentY value="556" >
-<param name=_StockProps value="13" >
-<param name=ForeColor value="0" >
-<param name=BackColor value="13160660" >
-<param name=UseButton value="-1" >
-<param name=ControlLabel value="Related Topics" >
-<param name=UseIcon value="0" >
-<param name=Items value="Adding a Program;Adding_a_Program.htm$$**$$Editing a Control Area;Editing_a_Control_Area.htm$$**$$Editing a Program;Editing_a_Program.htm$$**$$" >
-<param name=Image value="" >
-<param name=FontInfo value="MS Sans Serif,8,0,," >
-<param name=_CURRENTFILEPATH value="C:\working\docs\Help\Yukon Database Editor Help\Editing_a_Trigger.htm" >
-<param name=_ID value="RelatedTopics" >
-<param name=UseMenu value="-1" >
-<param name=Frame value="_top" >
-<param name=Window value="" >
+<param name="_Version" value="65536" >
+<param name="_ExtentX" value="2117" >
+<param name="_ExtentY" value="556" >
+<param name="_StockProps" value="13" >
+<param name="ForeColor" value="0" >
+<param name="BackColor" value="13160660" >
+<param name="UseButton" value="-1" >
+<param name="UseText" value="0" >
+<param name="ControlLabel" value="Related Topics" >
+<param name="UseIcon" value="0" >
+<param name="Items" value="Adding a Program;Adding_a_Program.htm$$**$$Editing a Control Area;Editing_a_Control_Area.htm$$**$$Editing a Program;Editing_a_Program.htm$$**$$" >
+<param name="Image" value="" >
+<param name="FontInfo" value="MS Sans Serif,8,0,," >
+<param name="_CURRENTFILEPATH" value="C:\Working\head\yukon-help\dbeditor\src\Editing_a_Trigger.htm" >
+<param name="_ID" value="RelatedTopics" >
+<param name="UseMenu" value="-1" >
+<param name="Frame" value="_top" >
+<param name="Window" value="" >
 </object>-->
 <OBJECT
   CLASSID="clsid:ADB880A6-D8FF-11CF-9377-00AA003B7A11"
@@ -208,7 +224,7 @@
 </OBJECT>
 
 <!--Metadata type="DesignerControl" endspan-->
-</p>
+ </p>
 
 </body>
 

@@ -20,8 +20,8 @@
 <meta name=filetype content=kadov>
 <meta name=filetype-version content=1>
 <meta name=page-count content=1>
-<meta name=layout-height content=854>
-<meta name=layout-width content=692>
+<meta name=layout-height content=766>
+<meta name=layout-width content=634>
 <meta name=x-ignored-words content="MCT;Config;config;Ke;Mp;Kh;Min;KYZ;DNP;SOE;comm;Login;IED;EMETCOM;MCTs;KWH;Y-intercept;kW;kWh;RTU;CBC;kVAr;KVAR;KVar;KW;KQ;KVa;COS;ArcTan;Q;Arctangent;QCosine;Y;C;A-B|;B-C|;C-A|;XOR;deadband;Deadband;LCR;Versacom;VERSACOM;TimeRefresh;SmartCycle;MasterCycle;Cnt;setpoint;Fahren;Abs;F;TA;TC;TE;TF;INET;ACS;VALMET;CYGMET;PointID;STEC;RCCS;TRISTATE;RDEX;TELGYR;TELEGYR;Clck;config.properties;billing_wiz_activate=;CBC's;Comm;ExpressCom;Dialup;CCU;IDLC;RTUs;TCUs;LCUs;DCD;IP;Telenetics;Sportster;dialup;SCADA;ILEX;Tx;RTS;ReEnable;downline;Dialback;Dialout;WCTP;LCU;TCU;SEDC;CADP;CTI-CSV;OPU;Owatonna;DAFRON;XL-Plus;Inc;DAFFRON;NCDC;NISC-Turtle;NISC-NCDC;Daffron;kVar;PortServer;ClassicBoard;Digi;Xyplex;e;Vars;LMT;EMETCON;IndividualFeeder;SubstationBus;BusOptimizedFeeder;Ctrl;login;FeederEditor;LM;ManualOnly;LastControlled;AlwaysFirstGroup;LeastControlTime;e-mails;Ack;d;CCUs;w;Failover;thumbwheel;SBO;RTU-WELCO;RTU-ILEX;Readmeter;xxx;TimeOut;support@cannontech.com.;requeuing;Requeue;e-mail;dialout;ExpressStat;T-STAT;username;CCU's;dialback;edicated;LSF;kickup;ATKU;RTU-DNP;SIXNET;Eventlog;putconfig;RTU-DART;Landis;Gyr;KV;TrueCycle;CBCs;CapBanks;LMGroup;EMTECON;setpoints;Fahrenh;SPID;GEO;PROG;logins;TOU;otification;fixVar;deselect;CTRL;LODESTAR_ENH;LOADSTAR_STD;TEXTEXPORT;TEXTIMPORT;ACSMULTI;BEPC;LIVEDATA;DrivePath;XA;IVR;Geq;Leq;arctangent;modulo;Modulo;Transponders;NCDC-Handheld;Handheld;NISC;kVarH;Golay;Ops;RTU-MODBUS;contact(s;Emails;Timeout;Esub;Esubstation;Grp;E-mail;epeaters;RTC;RTU-LMI;SNPP;Logins;TCP;UDP;Calc;FDR;MACS;TDC">
 
 
@@ -73,52 +73,37 @@
 
 <p>&nbsp;</p>
 
-<p>Alarms can be assigned to the system points by performing the steps 
- below. If a system point goes into an alarm condition, an alarm appears 
- in the Yukon TDC application. The following changes can be made to the 
- alarm settings:</p>
+<p>In addition, alarms can be assigned to the system points. If a system 
+ point goes into an alarm condition, an alarm appears in the Yukon TDC 
+ application.</p>
+
+<p>&nbsp;</p>
+
+<p>To assign an alarm to a system point, complete the following steps on 
+ the Alarms tab of a system point:</p>
 
 <p>&nbsp;</p>
 
 <ol style="list-style: decimal;"
 	type=1>
 	
-	<li class=kadov-p><p style="margin-bottom: 9pt;">A different notification 
- group can be selected from the <span style="font-weight: bold;">Group</span> 
+	<li class=kadov-p><p style="margin-bottom: 9pt;">A notification group 
+ can be selected from the <span style="font-weight: bold;">Group</span> 
  drop-down list. This is the group that is notified of all alarm conditions.</p></li>
-	
-	<li class=kadov-p><p style="margin-bottom: 9pt;">A different customer 
- contact can be selected from the <span style="font-weight: bold;">Contact</span> 
- drop-down list. This is the contact who is notified of all alarm conditions.</p></li>
-	
-	<li class=kadov-p><p>To create a new contact, click the <span style="font-weight: bold;">Create 
- new</span> button.</p></li>
-	
-	<ol style="list-style: lower-alpha;"
-		type=a>
-		
-		<li class=kadov-p><p><span style="margin-bottom: 9pt;">E</span>nter 
- the name and e-mail address of the new contact in the <span style="font-weight: bold;">First 
- Name</span>, <span style="font-weight: bold;">Last Name</span>, and <span 
- style="font-weight: bold;">E-mail Address</span> text boxes.</p></li>
-		
-		<li class=kadov-p><p style="margin-bottom: 9pt;">Click <span style="font-weight: bold;">OK</span> 
- to save the new contact and return to the Alarms tabbed page.</p></li>
-	</ol>
 	
 	<li class=kadov-p><p style="margin-bottom: 9pt;">The option to be notified 
  when an alarm is acknowledged can be enabled or disabled by selecting 
  or clearing the <span style="font-weight: bold;">Acknowledge</span> check 
- box. If this check box is selected, the notification group and contact 
- receive a message when an alarm is acknowledged.</p></li>
+ box. If this check box is selected, the notification group receives a 
+ message when an alarm is acknowledged.</p></li>
 	
 	<li class=kadov-p><p style="margin-bottom: 9pt;">The option to be notified 
  when an alarm is cleared can be enabled or disabled by selecting or clearing 
  the <span style="font-weight: bold;">Clear</span> check box. If this check 
- box is selected, the notification group and contact receive a message 
- when an alarm is cleared.</p></li>
+ box is selected, the notification group receives a message when an alarm 
+ is cleared.</p></li>
 	
-	<li class=kadov-p><p style="margin-bottom: 9pt;">Different alarm categories 
+	<li class=kadov-p><p style="margin-bottom: 9pt;">An alarm categories 
  for each alarm condition can be selected from the drop-down lists in the 
  <span style="font-weight: bold;">Category</span> column. <a href="Editing_Alarm_Categories.htm">Alarm 
  categories</a> can be edited in the System view of the Database Editor.</p></li>
