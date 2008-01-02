@@ -8,9 +8,6 @@ create table DYNAMICCCSPECIALAREA (
 go
 
 
-/*==============================================================*/
-/* Table: DYNAMICBILLINGFIELD                                   */
-/*==============================================================*/
 create table DYNAMICBILLINGFIELD (
    id                   numeric              not null,
    FormatID             numeric              not null,
@@ -81,9 +78,6 @@ insert into DynamicBillingField values(24, 21, 'rateBDemand - timestamp', 14, 'M
 update yukonpaobject set type = 'MCT-430SL' where type = 'MCT-430SN' or type = 'MCT430SN';
 update devicetypecommand set devicetype = 'MCT-430SL' where devicetype = 'MCT-430SN' or devicetype = 'MCT430SN';
 
-/************************************* 
-	START CAPCONTROL 4.0 CHANGES 
-*************************************/
 insert into SeasonSchedule values (-1,'No Season');
 insert into DateOfSeason values(-1, 'Default', 1,1,12,31);
 go
@@ -240,9 +234,6 @@ update CapControlSubstationbus set PhaseC = 0;
 go
 alter table CapControlSubstationbus alter column PhaseC numeric not null;
 
-/************************************* 
-	END CAPCONTROL 4.0 CHANGES 
-*************************************/
 
 delete from LMThermostatSeasonEntry where SeasonID in (select SeasonID from LMThermostatSeason where ScheduleID in (select ScheduleID from LMThermostatSchedule where ThermostatTypeID in (select EntryID from YukonListEntry where YukonDefinitionID = 3100)));
 go
@@ -263,8 +254,6 @@ set text = 'Normal'
 where 
 	stategroupid = -1 
 	and text = 'AnalogText';
--- the following inserts will be in the creation scripts starting with 4.0 but 
--- still needed for upgrading clients
 /* @error ignore-begin */
 INSERT INTO State VALUES(-1, 1, 'Non-update', 1, 6 , 0);
 INSERT INTO State VALUES(-1, 2, 'Rate of Change', 2, 6 , 0);
@@ -330,9 +319,6 @@ if exists (select 1
    drop table TOUATTRIBUTEMAPPING;
 go
 
-/*==============================================================*/
-/* Table: TOUATTRIBUTEMAPPING                                   */
-/*==============================================================*/
 create table TOUATTRIBUTEMAPPING (
    touid                numeric(6)           not null,
    displayname          varchar(50)          not null,
@@ -363,9 +349,6 @@ if exists (select 1
    drop table DEVICECONFIGURATIONDEVICEMAP;
 go
 
-/*==============================================================*/
-/* Table: DEVICECONFIGURATIONDEVICEMAP                          */
-/*==============================================================*/
 create table DEVICECONFIGURATIONDEVICEMAP (
    DeviceID             numeric              not null,
    DeviceConfigurationId numeric              not null,
@@ -381,9 +364,6 @@ if exists (select 1
    drop table DEVICECONFIGURATION;
 go
 
-/*==============================================================*/
-/* Table: DEVICECONFIGURATION                                   */
-/*==============================================================*/
 create table DEVICECONFIGURATION (
    DeviceConfigurationID numeric              not null,
    Name                 varchar(30)          not null,
@@ -399,9 +379,6 @@ if exists (select 1
    drop table DEVICECONFIGURATIONITEM;
 go
 
-/*==============================================================*/
-/* Table: DEVICECONFIGURATIONITEM                               */
-/*==============================================================*/
 create table DEVICECONFIGURATIONITEM (
    DEVICECONFIGURATIONITEMID numeric              not null,
    DeviceConfigurationID numeric              not null,
@@ -493,17 +470,11 @@ go
 
 
 /* Start YUK-4707 */
-/*==============================================================*/
-/* Table: CAPCONTROLSUBSTATION                                  */
-/*==============================================================*/
 create table CAPCONTROLSUBSTATION  (
    SubstationID         numeric                          not null,
    constraint PK_CAPCONTROLSUBSTATION primary key (SubstationID)
 );
 
-/*==============================================================*/
-/* Table: DYNAMICCCSUBSTATION                                   */
-/*==============================================================*/
 create table DYNAMICCCSUBSTATION  (
    SubStationID         numeric                          not null,
    AdditionalFlags      VARCHAR(20)                    not null,
@@ -511,9 +482,6 @@ create table DYNAMICCCSUBSTATION  (
    constraint PK_DYNAMICCCSUBSTATION primary key (SubStationID)
 );
 
-/*==============================================================*/
-/* Table: CCSUBSTATIONSUBBUSLIST                                */
-/*==============================================================*/
 create table CCSUBSTATIONSUBBUSLIST  (
    SubStationID         numeric                          not null,
    SubStationBusID      numeric                          not null,
@@ -522,9 +490,6 @@ create table CCSUBSTATIONSUBBUSLIST  (
 );
 
 /* @error ignore-begin */
-/*==============================================================*/
-/* Table: CAPCONTROLAREA                                        */
-/*==============================================================*/
 create table CAPCONTROLAREA  (
    AreaID               numeric                          not null,
    constraint PK_CAPCONTROLAREA primary key (AreaID)
@@ -725,17 +690,6 @@ alter table CAPCONTROLSUBSTATION
          on update cascade on delete cascade;
 go
 
-alter table CCSUBSPECIALAREAASSIGNMENT
-   add constraint FK_CCSUBSPE_REFERENCE_CAPCONTR foreign key (AreaID)
-      references CAPCONTROLSPECIALAREA (AreaID);
-go
-
-alter table CCSUBSPECIALAREAASSIGNMENT
-   add constraint FK_CCSUBSPE_CAPCONTR2 foreign key (SubstationBusID)
-      references CAPCONTROLSUBSTATION (SubstationID)
-         on update cascade on delete cascade;
-go
-
 alter table CAPCONTROLSPECIALAREA
    add constraint FK_CAPCONTR_YUKONPAO2 foreign key (AreaID)
       references YukonPAObject (PAObjectID);
@@ -839,9 +793,6 @@ if exists (select 1
    drop table JOB;
 go
 
-/*==============================================================*/
-/* Table: JOB                                                   */
-/*==============================================================*/
 create table JOB (
    JobID                int                  not null,
    BeanName             varchar(250)         not null,
@@ -863,9 +814,6 @@ if exists (select 1
    drop table JOBPROPERTY;
 go
 
-/*==============================================================*/
-/* Table: JOBPROPERTY                                           */
-/*==============================================================*/
 create table JOBPROPERTY (
    JobPropertyID          numeric              not null,
    JobID                int                  not null,
@@ -888,9 +836,6 @@ if exists (select 1
    drop table JOBSCHEDULEDONETIME;
 go
 
-/*==============================================================*/
-/* Table: JOBSCHEDULEDONETIME                                   */
-/*==============================================================*/
 create table JOBSCHEDULEDONETIME (
    JobID                int                  not null,
    StartTime            datetime             not null,
@@ -911,9 +856,6 @@ if exists (select 1
    drop table JOBSCHEDULEDREPEATING;
 go
 
-/*==============================================================*/
-/* Table: JOBSCHEDULEDREPEATING                                 */
-/*==============================================================*/
 create table JOBSCHEDULEDREPEATING (
    JobID                int                  not null,
    CronString           text                 not null,
@@ -934,9 +876,6 @@ if exists (select 1
    drop table JOBSTATUS;
 go
 
-/*==============================================================*/
-/* Table: JOBSTATUS                                             */
-/*==============================================================*/
 create table JOBSTATUS (
    JobStatusID          int                  not null,
    JobID                int                  not null,
@@ -957,9 +896,6 @@ go
 
 /* Begin YUK-4771 (formerly YUK-4716) */
 
-/*==============================================================*/
-/* Table: CCSTRATEGYTIMEOFDAY                                   */
-/*==============================================================*/
 create table CCSTRATEGYTIMEOFDAY  (
    StrategyID           numeric                          not null,
    StartTimeSeconds     numeric                          not null,
@@ -1058,40 +994,40 @@ insert into devicetypecommand values(-693, -136, 'MCT-470', 32, 'N', -1);
 /* End YUK-4638 */
 
 /* @error ignore-begin */
-	/* Start YUK-4745 */
-	insert into YukonRole values(-211,'CI Curtailment','Operator','Operator access to C&I Curtailment');
-	insert into YukonRoleProperty values(-21100,-211,'CI Curtailment Label','CI Curtailment','The operator specific name for C&I Curtailment');
-	/* End YUK-4745 */
-	
-	/* Start YUK-4906 */
-	alter table MSPVendor add MaxReturnRecords int;
-	go
-	update MSPVendor set MaxReturnRecords = 10000;
-	go
-	alter table MSPVendor alter column MaxReturnRecords int not null;
-	go
-	
-	alter table MSPVendor add RequestMessageTimeout int;
-	go
-	update MSPVendor set RequestMessageTimeout = 120000;
-	go
-	alter table MSPVendor alter column RequestMessageTimeout int not null;
-	go
-	
-	alter table MSPVendor add MaxInitiateRequestObjects int;
-	go
-	update MSPVendor set MaxInitiateRequestObjects = 15;
-	go
-	alter table MSPVendor alter column MaxInitiateRequestObjects int not null;
-	go
-	
-	alter table MSPVendor add TemplateNameDefault varchar(50);
-	go
-	update MSPVendor set TemplateNameDefault = '*Default Template';
-	go
-	alter table MSPVendor alter column TemplateNameDefault varchar(50) not null;
-	go
-	/* End YUK-4906 */
+/* Start YUK-4745 */
+insert into YukonRole values(-211,'CI Curtailment','Operator','Operator access to C&I Curtailment');
+insert into YukonRoleProperty values(-21100,-211,'CI Curtailment Label','CI Curtailment','The operator specific name for C&I Curtailment');
+/* End YUK-4745 */
+
+/* Start YUK-4906 */
+alter table MSPVendor add MaxReturnRecords int;
+go
+update MSPVendor set MaxReturnRecords = 10000;
+go
+alter table MSPVendor alter column MaxReturnRecords int not null;
+go
+
+alter table MSPVendor add RequestMessageTimeout int;
+go
+update MSPVendor set RequestMessageTimeout = 120000;
+go
+alter table MSPVendor alter column RequestMessageTimeout int not null;
+go
+
+alter table MSPVendor add MaxInitiateRequestObjects int;
+go
+update MSPVendor set MaxInitiateRequestObjects = 15;
+go
+alter table MSPVendor alter column MaxInitiateRequestObjects int not null;
+go
+
+alter table MSPVendor add TemplateNameDefault varchar(50);
+go
+update MSPVendor set TemplateNameDefault = '*Default Template';
+go
+alter table MSPVendor alter column TemplateNameDefault varchar(50) not null;
+go
+/* End YUK-4906 */
 /* @error ignore-end */
 
 /* Start YUK-4733 */
@@ -1149,9 +1085,6 @@ if exists (select 1
    drop table DEVICEEVENT;
 go
 
-/*==============================================================*/
-/* Table: DEVICEEVENT                                           */
-/*==============================================================*/
 create table DEVICEEVENT (
    DeviceID             numeric              not null,
    TimeStamp            datetime             not null,
@@ -1190,9 +1123,6 @@ insert into YukonRoleProperty values(-20208,-202,'Enable Move In Move Out Wizard
 /* End YUK-4810 */
 
 /* Start YUK-4858 */
-/*==============================================================*/
-/* Table: PEAKREPORT                                            */
-/*==============================================================*/
 create table PEAKREPORT (
    resultID             int                  not null,
    deviceID             numeric              not null,
@@ -1222,9 +1152,6 @@ insert into devicetypecommand values(-705, -139, 'MCT-410IL', 32, 'N', -1);
 /* End YUK-4860 */
 
 /* Start YUK-4859 */
-/*==============================================================*/
-/* View: CCCAP_INVENTORY_VIEW                                   */
-/*==============================================================*/
 go
 create view CCCAP_INVENTORY_VIEW as
 SELECT
@@ -1353,9 +1280,9 @@ alter table LMHardwareControlGroup
 go
 /* End YUK-4116, YUK-4936 */
 
-alter table CCSubSpecialAreaAssignment
-   add constraint FK_CCSubSpecialArea_CapContr foreign key (AreaID)
-      references CapControlSpecialArea (AreaID);
+alter table CCSUBSPECIALAREAASSIGNMENT
+   add constraint FK_CCSUBSPE_REFERENCE_CAPCONTR foreign key (AreaID)
+      references CAPCONTROLSPECIALAREA (AreaID);
 go
 
 /* Start YUK-4746 */
@@ -1366,92 +1293,92 @@ go
 /* End YUK-4746 */
 
 /* Start YUK-5017 */
-	/* @error ignore-begin */
-		alter table ScheduleTimePeriod
-		drop constraint FK_SCHDTMPRD_REF_DS;
-		
-		alter table ScheduleShipmentMapping
-		drop constraint FK_SCHDSHPMNTMAP_DS;
-		
-		ALTER TABLE deliveryschedule
-		drop CONSTRAINT pk_deliverysched;
-		
-		alter table deliveryschedule
-		add constraint pk_deliveryschedule primary key (ScheduleID);
-		
-		alter table ScheduleShipmentMapping
-		   add constraint FK_SCHDSHPMNTMAP_DS foreign key (ScheduleID)
-		      references DeliverySchedule (ScheduleID);
-		
-		alter table ScheduleTimePeriod
-		   add constraint FK_SCHDTMPRD_REF_DS foreign key (ScheduleID)
-		      references DeliverySchedule (ScheduleID);
-	/* @error ignore-end */
+/* @error ignore-begin */
+alter table ScheduleTimePeriod
+drop constraint FK_SCHDTMPRD_REF_DS;
+
+alter table ScheduleShipmentMapping
+drop constraint FK_SCHDSHPMNTMAP_DS;
+
+ALTER TABLE deliveryschedule
+drop CONSTRAINT pk_deliverysched;
+
+alter table deliveryschedule
+add constraint pk_deliveryschedule primary key (ScheduleID);
+
+alter table ScheduleShipmentMapping
+   add constraint FK_SCHDSHPMNTMAP_DS foreign key (ScheduleID)
+      references DeliverySchedule (ScheduleID);
+
+alter table ScheduleTimePeriod
+   add constraint FK_SCHDTMPRD_REF_DS foreign key (ScheduleID)
+      references DeliverySchedule (ScheduleID);
+/* @error ignore-end */
 /* End YUK-5017 */
 
 /* Start YUK-5020 */
-	alter table DeviceTypeCommand
-	drop constraint "FK_DevCmd_Grp ";
-	
-	alter table DeviceTypeCommand
-	   add constraint FK_DevCmd_Grp foreign key (CommandGroupID)
-	      references CommandGroup (CommandGroupID);
+alter table DeviceTypeCommand
+drop constraint "FK_DevCmd_Grp ";
+
+alter table DeviceTypeCommand
+   add constraint FK_DevCmd_Grp foreign key (CommandGroupID)
+      references CommandGroup (CommandGroupID);
 /* End YUK-5020 */
 
 /* Start YUK-5022 */
-	alter table DYNAMICBILLINGFIELD
-	   add constraint FK_DBF_REF_BFF foreign key (FormatID)
-	      references BillingFileFormats (FormatID)
-	         on update cascade on delete cascade;
-	go
-	alter table DYNAMICBILLINGFORMAT
-	   add constraint FK_DYNAMICB_REF_BILLI_BILLINGF foreign key (FormatID)
-	      references BillingFileFormats (FormatID);
-	go
+alter table DYNAMICBILLINGFIELD
+   add constraint FK_DBF_REF_BFF foreign key (FormatID)
+      references BillingFileFormats (FormatID)
+         on update cascade on delete cascade;
+go
+alter table DYNAMICBILLINGFORMAT
+   add constraint FK_DYNAMICB_REF_BILLI_BILLINGF foreign key (FormatID)
+      references BillingFileFormats (FormatID);
+go
 /* End YUK-5022 */
 
 /* Start YUK-5023 */
-	/* @error ignore-begin */
-		alter table EventWorkOrder
-		      drop constraint pk_eventwrkordr;
-		alter table EventWorkOrder
-		      add constraint PK_EVENTWORKORDER primary key (EventID);
-	/* @error ignore-end */
+/* @error ignore-begin */
+alter table EventWorkOrder
+     drop constraint pk_eventwrkordr;
+alter table EventWorkOrder
+     add constraint PK_EVENTWORKORDER primary key (EventID);
+/* @error ignore-end */
 /* End YUK-5023 */
 
 /* Start YUK-5026 */
-	create index INDX_PAOBJECTID_POFFSET on POINT (
-		PAObjectID ASC,
-		POINTOFFSET ASC
-	);
-	go
-	create index INDX_PAOBJECTID_POINTID on POINT (
-		PAObjectID ASC,
-		POINTID ASC
-	);
-	go
-	create index INDX_POFFSET_POINTTYPE on POINT (
-		POINTOFFSET ASC,
-		POINTTYPE ASC
-	);
-	go
+create index INDX_PAOBJECTID_POFFSET on POINT (
+	PAObjectID ASC,
+	POINTOFFSET ASC
+);
+go
+create index INDX_PAOBJECTID_POINTID on POINT (
+	PAObjectID ASC,
+	POINTID ASC
+);
+go
+create index INDX_POFFSET_POINTTYPE on POINT (
+	POINTOFFSET ASC,
+	POINTTYPE ASC
+);
+go
 /* End YUK-5025 */
 
 /* Start YUK-5027 */
-	create index INDX_UOMID_POINTID on POINTUNIT (
-		UOMID ASC,
-		POINTID ASC
-	);
-	go
+create index INDX_UOMID_POINTID on POINTUNIT (
+	UOMID ASC,
+	POINTID ASC
+);
+go
 /* End YUK-5027 */
 
 /* Start YUK-5028 */
-	/* @error ignore-begin */
-	    alter table ScheduleTimePeriod
-	        drop constraint pk_schedtimeperiod;
-	    alter table ScheduleTimePeriod
-	       add constraint PK_SCHEDULETIMEPERIOD primary key (TimePeriodID);
-	/* @error ignore-end */
+/* @error ignore-begin */
+alter table ScheduleTimePeriod
+    drop constraint pk_schedtimeperiod;
+alter table ScheduleTimePeriod
+   add constraint PK_SCHEDULETIMEPERIOD primary key (TimePeriodID);
+/* @error ignore-end */
 /* End YUK-5028 */
 
 /**************************************************************/
