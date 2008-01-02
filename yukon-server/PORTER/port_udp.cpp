@@ -7,8 +7,8 @@
 * Author: Matt Fisher
 *
 * CVS KEYWORDS:
-* REVISION     :  $Revision: 1.20 $
-* DATE         :  $Date: 2008/01/02 21:10:05 $
+* REVISION     :  $Revision: 1.21 $
+* DATE         :  $Date: 2008/01/02 21:59:26 $
 *
 * Copyright (c) 2004 Cannon Technologies Inc. All rights reserved.
 *-----------------------------------------------------------------------------*/
@@ -691,7 +691,10 @@ bool UDPInterface::getPackets( int wait )
                                             string device_name;
 
                                             device_name.assign((char *)p->data + pos, 128);
-                                            device_name.erase(device_name.find_first_of('\0'));
+                                            if( device_name.find('\0') != string::npos )
+                                            {
+                                                device_name.erase(device_name.find_first_of('\0'));
+                                            }
 
                                             add_to_csv_summary(keys, values, "device name", device_name);
 
@@ -1009,7 +1012,10 @@ bool UDPInterface::getPackets( int wait )
                                             string device_name;
 
                                             device_name.assign((char *)p->data + pos, 128);
-                                            device_name.erase(device_name.find_first_of('\0'));
+                                            if( device_name.find('\0') != string::npos )
+                                            {
+                                                device_name.erase(device_name.find_first_of('\0'));
+                                            }
 
                                             {
                                                 CtiLockGuard<CtiLogger> doubt_guard(dout);
@@ -1614,7 +1620,10 @@ void UDPInterface::processInbounds( void )
                                                 string device_name;
 
                                                 device_name.assign((char *)p->data + pos, 128);
-                                                device_name.erase(device_name.find_first_of('\0'));
+                                                if( device_name.find('\0') != string::npos )
+                                                {
+                                                    device_name.erase(device_name.find_first_of('\0'));
+                                                }
 
                                                 {
                                                     CtiLockGuard<CtiLogger> doubt_guard(dout);
@@ -1777,7 +1786,7 @@ void UDPInterface::processInbounds( void )
                                             }
                                             case 0x04:
                                             {
-                                                int index, port, len;
+                                                int index, port, hostname_len;
 
                                                 string hostname;
 
@@ -1785,9 +1794,12 @@ void UDPInterface::processInbounds( void )
 
                                                 port = convertBytes( p->data, pos, 2);
 
-                                                len = convertBytes( p->data, pos, 2);
+                                                hostname_len = convertBytes( p->data, pos, 2);
 
-                                                hostname.assign((char *)p->data + pos, len);
+                                                if( (pos + hostname_len) < (len - (crc_included * 2)) )
+                                                {
+                                                    hostname.assign((char *)p->data + pos, hostname_len);
+                                                }
 
                                                 {
                                                     CtiLockGuard<CtiLogger> doubt_guard(dout);
@@ -1911,7 +1923,10 @@ void UDPInterface::processInbounds( void )
                                                 string device_name;
 
                                                 device_name.assign((char *)p->data + pos, 128);
-                                                device_name.erase(device_name.find_first_of('\0'));
+                                                if( device_name.find('\0') != string::npos )
+                                                {
+                                                    device_name.erase(device_name.find_first_of('\0'));
+                                                }
 
                                                 {
                                                     CtiLockGuard<CtiLogger> doubt_guard(dout);
