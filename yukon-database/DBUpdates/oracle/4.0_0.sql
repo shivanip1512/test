@@ -725,7 +725,7 @@ FROM CAPBANK cb INNER JOIN
                       PORTTERMINALSERVER pts ON pts.PORTID = ddcs.PORTID INNER JOIN
                       DeviceCBC cbc ON cbc.DEVICEID = cb.CONTROLDEVICEID INNER JOIN
                       capbankadditional capa on capa.deviceid = cb.deviceid;
-;
+
 
 create or replace view CCOPERATIONS_VIEW(cbcName, capbankname, opTime, operation, confTime, confStatus, feederName, feederId, subName, subBusId, substationid, region, BANKSIZE, protocol, ipAddress, serialNum, SlaveAddress, kvarAfter, kvarChange, kvarBefore) as
 SELECT 
@@ -771,7 +771,7 @@ GROUP BY op.LogID) OpConf INNER JOIN
         ccsubstationsubbuslist as ssl on ssl.substationbusid = el.subid  LEFT OUTER JOIN
         ccsubareaassignment as csa on csa.substationbusid = ssl.substationid left outer join 
         YukonPAObject AS yp4 ON yp4.paobjectid = csa.areaid;
-;
+
 
 /* Start YUK-4730 */
 /*==============================================================*/
