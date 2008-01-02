@@ -853,8 +853,6 @@ alter table JOBSTATUS
 /* End YUK-4730 */
 
 /* Begin YUK-4771 (formerly YUK-4716) */
-drop table CCSTRATEGYTIMEOFDAY cascade constraints;
-
 /*==============================================================*/
 /* Table: CCSTRATEGYTIMEOFDAY                                   */
 /*==============================================================*/
