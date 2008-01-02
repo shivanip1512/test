@@ -49,7 +49,7 @@
                     <ct:widget bean="deviceGroupWidget" />
                 </c:if>
 
-				<ct:boxContainer title="Actions">
+				<ct:boxContainer title="Actions" styleClass="widgetContainer">
                 
                     <!-- Actions: High Bill Complaint -->
                     <c:choose>

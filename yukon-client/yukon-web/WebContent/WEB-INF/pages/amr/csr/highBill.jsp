@@ -41,6 +41,7 @@
                 
                     <c:when test="${lmPointExists}">
                         <ct:widget bean="meterInformationWidget" width="500px" identify="false" deviceId="${deviceId}" hideEnabled="false" />
+                        <br/>
                         <ct:widget bean="profilePeakWidget"  width="700px" identify="false" deviceId="${deviceId}" collectLPVisible="true" highlight="usage,averageUsage" loadProfileRequestOrigin="HBC"  hideEnabled="false"/>
                     </c:when>
                     

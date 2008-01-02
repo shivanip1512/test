@@ -302,8 +302,12 @@ div.roundedContainer .bottomBar{
 	font-size: .75em;
 }
 
-.widgetColumns td.widgetColumnCell .titledContainer {
-  margin: 18px 9px;
+.widgetColumns {
+    border-collapse: collapse; /* removes an extra pixel from the center */
+}
+
+.widgetColumns td.widgetColumnCell .widgetContainer {
+  padding: 9px;
 }
 .widgetColumns td.widgetColumnCell {
   padding: 0;
@@ -396,11 +400,6 @@ th.widgetInternalSectionSubHeader {
 
 div.triangleContainer .triangleContainer_titleBar .controls { 
     cursor: pointer;
-}
-
-
-div.boxContainer{ 
-	margin-bottom: 10px;
 }
 
 div.boxContainer .boxContainer_titleBar { 

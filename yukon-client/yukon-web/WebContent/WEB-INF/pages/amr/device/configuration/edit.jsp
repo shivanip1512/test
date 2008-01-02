@@ -4,34 +4,34 @@
 <%@ taglib prefix="tags" tagdir="/WEB-INF/tags" %>
 
 <cti:standardPage title="Device Configuration Page" module="amr">
-<cti:standardMenu menuSelection="deviceselection"/>
-<cti:breadCrumbs>
-	<cti:crumbLink url="/operator/Operations.jsp" title="Operations Home"  />
-    <cti:crumbLink url="/spring/deviceConfiguration?home" title="Device Configuration Home"  />
-    &gt; Device Configuration
-</cti:breadCrumbs>
-
-<script type="text/javascript">
-	<!-- Focus on the name field on page load -->
-	Event.observe(window, 'load', function() {
-		var name = $('name');
-	 	if(name){
-	  		name.focus();
-	  	}
-	});
+	<cti:standardMenu menuSelection="deviceselection"/>
+	<cti:breadCrumbs>
+		<cti:crumbLink url="/operator/Operations.jsp" title="Operations Home"  />
+	    <cti:crumbLink url="/spring/deviceConfiguration?home" title="Device Configuration Home"  />
+	    &gt; Device Configuration
+	</cti:breadCrumbs>
 	
-	function saveConfig(){
-
-		var confirmSave = confirm("Are you sure you want to change this configuration?  This change will affect *ALL* devices that have been assigned this configuration.");
-		return confirmSave;
-	}
-
-	function cancel(){
-		window.location = '/spring/deviceConfiguration?home';
-		window.event.returnValue = false;
-	}
+	<script type="text/javascript">
+		<!-- Focus on the name field on page load -->
+		Event.observe(window, 'load', function() {
+			var name = $('name');
+		 	if(name){
+		  		name.focus();
+		  	}
+		});
+		
+		function saveConfig(){
 	
-</script>
+			var confirmSave = confirm("Are you sure you want to change this configuration?  This change will affect *ALL* devices that have been assigned this configuration.");
+			return confirmSave;
+		}
+	
+		function cancel(){
+			window.location = '/spring/deviceConfiguration?home';
+			window.event.returnValue = false;
+		}
+		
+	</script>
 
 	<c:set var="editConfig" scope="page">
 		<cti:getProperty property="AdministratorRole.ADMIN_EDIT_CONFIG"/>
@@ -71,6 +71,8 @@
 						<cti:renderInput input="${name}" />
 					</div>
 				</tags:boxContainer>
+				
+				<br/>
 	
 				<c:forEach var="category" items="${configurationTemplate.categoryList}">
 				
@@ -81,6 +83,7 @@
 							</div>
 						</c:forEach>
 					</tags:boxContainer>
+					<br/>
 	
 				</c:forEach>
 	
