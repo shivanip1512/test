@@ -27,7 +27,6 @@ update YukonRole set RoleName = 'MultiSpeak', RoleDescription='MultiSpeak web se
 update YukonRoleProperty set KeyName = 'MultiSpeak Setup', Description='Controls access to configure the Multispeak Interfaces.' where RolePropertyID = -20011;
 /* @error ignore-end */
 
-drop view ccinventory_view;
 create or replace view CCINVENTORY_VIEW as
 SELECT yp4.paoname AS Region, yp3.PAOName AS SubName, yp2.PAOName AS FeederName, yp3.PAObjectID AS subId, yp2.PAObjectID AS fdrId, 
                       yp.PAOName AS CBCName, yp.PAObjectID AS cbcId, yp1.PAOName AS capbankname, yp1.PAObjectID AS bankId, cb.BANKSIZE AS CapBankSize, 
@@ -53,7 +52,6 @@ FROM CAPBANK cb INNER JOIN
                       capbankadditional capa on capa.deviceid = cb.deviceid
 ;
 
-drop view CCOPERATIONS_VIEW;
 create or replace view CCOPERATIONS_VIEW as
 SELECT 
 	yp3.PAOName AS cbcName, yp.PAOName AS capbankname, el.DateTime AS opTime, el.Text AS operation, 

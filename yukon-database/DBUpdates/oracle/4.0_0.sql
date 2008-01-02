@@ -1047,8 +1047,6 @@ insert into devicetypecommand values(-705, -139, 'MCT-410IL', 32, 'N', -1);
 /* End YUK-4860 */
 
 /* Start YUK-4859 */
-drop view CCCAP_INVENTORY_VIEW;
-
 /*==============================================================*/
 /* View: CCCAP_INVENTORY_VIEW                                   */
 /*==============================================================*/
