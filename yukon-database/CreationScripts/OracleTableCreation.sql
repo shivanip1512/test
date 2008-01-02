@@ -1,7 +1,7 @@
 /*==============================================================*/
 /* Database name:  YukonDatabase                                */
 /* DBMS name:      ORACLE Version 9i                            */
-/* Created on:     1/2/2008 4:26:44 PM                          */
+/* Created on:     1/2/2008 5:18:04 PM                          */
 /*==============================================================*/
 
 
@@ -3838,9 +3838,9 @@ create table DynamicCCFeeder  (
    iVCount              NUMBER                          not null,
    iWControlTot         FLOAT                           not null,
    iWCount              NUMBER                          not null,
-   phaseavalue          FLOAT                          default 0 not null,
-   phasebvalue          FLOAT                          default 0 not null,
-   phasecvalue          FLOAT                          default 0 not null,
+   phaseavalue          FLOAT                           not null,
+   phasebvalue          FLOAT                           not null,
+   phasecvalue          FLOAT                           not null,
    LastWattPointTime    DATE                            not null,
    LastVoltPointTime    DATE                            not null,
    constraint PK_DYNAMICCCFEEDER primary key (FeederID)
@@ -3910,9 +3910,9 @@ create table DynamicCCSubstationBus  (
    iVCount              NUMBER                          not null,
    iWControlTot         FLOAT                           not null,
    iWCount              NUMBER                          not null,
-   phaseavalue          FLOAT                          default 0 not null,
-   phasebvalue          FLOAT                          default 0 not null,
-   phasecvalue          FLOAT                          default 0 not null,
+   phaseavalue          FLOAT                           not null,
+   phasebvalue          FLOAT                           not null,
+   phasecvalue          FLOAT                           not null,
    LastWattPointTime    DATE                            not null,
    LastVoltPointTime    DATE                            not null,
    constraint PK_DYNAMICCCSUBSTATIONBUS primary key (SubstationBusID)

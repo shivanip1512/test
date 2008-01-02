@@ -1,7 +1,7 @@
 /*==============================================================*/
 /* Database name:  YukonDatabase                                */
 /* DBMS name:      Microsoft SQL Server 2000                    */
-/* Created on:     1/2/2008 4:25:39 PM                          */
+/* Created on:     1/2/2008 5:19:21 PM                          */
 /*==============================================================*/
 
 
@@ -5819,9 +5819,9 @@ create table DynamicCCFeeder (
    iVCount              numeric              not null,
    iWControlTot         float                not null,
    iWCount              numeric              not null,
-   phaseavalue          float                not null default 0,
-   phasebvalue          float                not null default 0,
-   phasecvalue          float                not null default 0,
+   phaseavalue          float                not null,
+   phasebvalue          float                not null,
+   phasecvalue          float                not null,
    LastWattPointTime    datetime             not null,
    LastVoltPointTime    datetime             not null,
    constraint PK_DYNAMICCCFEEDER primary key nonclustered (FeederID)
@@ -5894,9 +5894,9 @@ create table DynamicCCSubstationBus (
    iVCount              numeric              not null,
    iWControlTot         float                not null,
    iWCount              numeric              not null,
-   phaseavalue          float                not null default 0,
-   phasebvalue          float                not null default 0,
-   phasecvalue          float                not null default 0,
+   phaseavalue          float                not null,
+   phasebvalue          float                not null,
+   phasecvalue          float                not null,
    LastWattPointTime    datetime             not null,
    LastVoltPointTime    datetime             not null,
    constraint PK_DYNAMICCCSUBSTATIONBUS primary key nonclustered (SubstationBusID)
