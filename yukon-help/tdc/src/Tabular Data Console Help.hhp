@@ -39,8 +39,8 @@ Changing_the_Display_Font.htm
 Displaying_Grid_Lines.htm
 Starting_a_Program.htm
 Print_Preview.htm
-Performing_a_Search.htm
 Adding_and_Removing_Bookmarks.htm
+Performing_a_Search.htm
 Exporting_a_Display_to_SQL.htm
 Custom_Displays.htm
 All_Alarms_and_Alarm_Categories.htm
@@ -51,22 +51,21 @@ GETCONFIG_Command_Details.htm
 PUTCONFIG_Command_Details.htm
 LOOP_Command_Details.htm
 CONTROL_Command_Details.htm
-Yukon_Servers.htm
 Toolbar.htm
 Menu_Bar.htm
 GETVALUE_Command_Details.htm
 GETSTATUS_Command_Details.htm
 PUTVALUE_Command_Details.htm
+View_List.htm
 Point_Qualities.htm
 Message_Log.htm
 Data_Window.htm
 Print_Date_(Time)_Range.htm
 View_Date.htm
-Stopping_a_Control_Scenario.htm
+Starting_a_Control_Scenario.htm
 Creating_a_Script_Schedule_without_a_Script_Template.htm
 Load_Management.htm
-View_List.htm
-Starting_a_Control_Scenario.htm
+Stopping_a_Control_Scenario.htm
 eHelp.xml
 RoboHHRE.lng
 

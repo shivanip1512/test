@@ -26,8 +26,8 @@
 <meta name=filetype content=kadov>
 <meta name=filetype-version content=1>
 <meta name=page-count content=1>
-<meta name=layout-height content=938>
-<meta name=layout-width content=692>
+<meta name=layout-height content=1076>
+<meta name=layout-width content=974>
 <meta name=x-ignored-words content="Min;kW;kVar;kWh;kVarh">
 
 
@@ -60,8 +60,9 @@
  menu, select <span style="font-weight: bold;">Edit</span>. This displays 
  the Yukon Trending Reports Editor dialog box.</p></li>
 	
-	<li class=kadov-p><p style="margin-bottom: 9pt;">The <span style="font-weight: bold;">Name</span> 
- text box displays the name entered during trend creation. Modify as necessary.</p></li>
+	<li class=kadov-p><p style="margin-bottom: 9pt;">The name of the trend 
+ can be modified in the <span style="font-weight: bold;">Name</span> text 
+ box.</p></li>
 	
 	<li class=kadov-p><p>The <span style="font-weight: bold;">Left Axis</span> 
  and <span style="font-weight: bold;">Right Axis</span> areas display the 
@@ -76,12 +77,12 @@
 		
 		<li class=kadov-p><p>Enter a new minimum scaling value in the <span 
  style="font-weight: bold;">Min</span> text box.<br>
-		This defines the low graph values for display on the axis selected.</p></li>
+		This defines the minimum graph values for display on the axis selected.</p></li>
 		
 		<li class=kadov-p><p style="margin-bottom: 9pt;">Enter a new maximum 
  scaling value in the <span style="font-weight: bold;">Max</span> text 
  box.<br>
-		This defines the high graph values for display on axis selected.</p></li>
+		This defines the maximum graph values for display on axis selected.</p></li>
 	</ol>
 	
 	<li class=kadov-p><p style="margin-bottom: 9pt;">Select either <span 
@@ -89,8 +90,7 @@
  Points</span> from the <span style="font-weight: bold;">Sort By</span> 
  drop-down list.</p></li>
 	
-	<li class=kadov-p><p>The lower right of the dialog box displays the 
- points selected during trend creation. Modify as necessary.</p></li>
+	<li class=kadov-p><p>Add or remove points to display in the trend.</p></li>
 	
 	<ul style="list-style: disc;"
 		type=disc>
@@ -157,9 +157,43 @@
  column and enter a new value for the multiplier. A multiplier alters point 
  values to make them more visible on a graph.</p></li>
 	
-	<li class=kadov-p><p style="margin-bottom: 9pt;">To change the how 
- the data is point displayed, select a display type from the <span style="font-weight: bold;">Renderer</span> 
+	<li class=kadov-p><p>To change the how the data is point displayed, 
+ select a display type from the <span style="font-weight: bold;">Renderer</span> 
  drop-down list.</p></li>
+	
+	<ul style="list-style: disc;"
+		type=disc>
+		
+		<li class=kadov-p><p style="margin-bottom: 0px;"><span style="font-weight: bold;">Line</span> 
+ - displays the trend data as a line graph.</p></li>
+		
+		<li class=kadov-p><p style="margin-bottom: 0px;"><span style="font-weight: bold;">Line/Shapes</span> 
+ - displays the trend data as a line graph and displays the points.</p></li>
+		
+		<li class=kadov-p><p style="margin-bottom: 0px;"><span style="font-weight: bold;">Line/Area</span> 
+ - displays the trend data as a line graph and displays the area.</p></li>
+		
+		<li class=kadov-p><p style="margin-bottom: 0px;"><span style="font-weight: bold;">Line/Area/Shapes</span> 
+ - displays the trend data as a line graph and displays the area and points.</p></li>
+		
+		<li class=kadov-p><p style="margin-bottom: 0px;"><span style="font-weight: bold;">Step</span> 
+ - displays the trend data as a step graph.</p></li>
+		
+		<li class=kadov-p><p style="margin-bottom: 0px;"><span style="font-weight: bold;">Step/Shapes</span> 
+ - displays the trend data as a step graph and displays the points.</p></li>
+		
+		<li class=kadov-p><p style="margin-bottom: 0px;"><span style="font-weight: bold;">Step/Area</span> 
+ - displays the trend data as a step graph and displays the area.</p></li>
+		
+		<li class=kadov-p><p style="margin-bottom: 0px;"><span style="font-weight: bold;">Step/Area/Shapes</span> 
+ - displays the trend data as a step graph and displays the area and points.</p></li>
+		
+		<li class=kadov-p><p style="margin-bottom: 0px;"><span style="font-weight: bold;">Bar</span> 
+ - displays the trend data as a bar graph.</p></li>
+		
+		<li class=kadov-p><p style="margin-bottom: 9pt;"><span style="font-weight: bold;">3D 
+ Bar</span> - displays the trend data as a 3D bar graph.</p></li>
+	</ul>
 	
 	<li class=kadov-p><p>To add a value marker to the trend, click the 
  <span style="font-weight: bold;">Add Value Marker </span>button.</p></li>
@@ -170,7 +204,7 @@
 		<li class=kadov-p><p>Enter a value for marker in the text box.<span 
  style="margin-bottom: 9pt;"><br>
 		The marker value must fall within the trend data values or the 
- min and max axis values to be visible in a graph.</span></p></li>
+ Min and Max axis values to be visible in a graph.</span></p></li>
 		
 		<li class=kadov-p><p style="margin-bottom: 9pt;">Click <span style="font-weight: bold;">OK</span> 
  to add the value marker to the trend.</p></li>
@@ -184,6 +218,52 @@
 	
 	<li class=kadov-p><p style="margin-bottom: 9pt;">Click <span style="font-weight: bold;">OK</span>.</p></li>
 </ol>
+
+<p style="margin-bottom: 9pt;">
+<!--Metadata type="DesignerControl" startspan
+<object CLASSID="clsid:FF80F713-5DC6-11d0-A7B4-00AADC53E937"
+		ID=RelatedTopics
+		BORDER=0
+		style="margin-top: 0px;
+				margin-bottom: 0px;
+				margin-left: 0px;
+				margin-right: 0px;
+				vertical-align: baseline;"
+		align=bottom>
+<param name="_Version" value="65536" >
+<param name="_ExtentX" value="2408" >
+<param name="_ExtentY" value="609" >
+<param name="_StockProps" value="13" >
+<param name="ForeColor" value="0" >
+<param name="BackColor" value="14215660" >
+<param name="UseButton" value="-1" >
+<param name="UseText" value="0" >
+<param name="ControlLabel" value="Related Topics" >
+<param name="UseIcon" value="0" >
+<param name="Items" value="Creating a Trend;Creating_a_Trend.htm$$**$$Deleting a Trend;Deleting_a_Trend.htm$$**$$Viewing a Graphical Trend;Viewing_a_Graphical_Trend.htm$$**$$Viewing a Summary Trend;Viewing_a_Summary_Trend.htm$$**$$Viewing a Tabular Trend;Viewing_a_Tabular_Trend.htm$$**$$" >
+<param name="Image" value="" >
+<param name="FontInfo" value="Arial,8,0,," >
+<param name="_CURRENTFILEPATH" value="C:\Working\head\yukon-help\trending\src\Editing_a_Trend.htm" >
+<param name="_ID" value="RelatedTopics" >
+<param name="UseMenu" value="0" >
+<param name="Frame" value="" >
+<param name="Window" value="" >
+</object>-->
+<OBJECT
+  CLASSID="clsid:ADB880A6-D8FF-11CF-9377-00AA003B7A11"
+  ID="RelatedTopics"  TYPE="application/x-oleobject" >
+  <PARAM  NAME="Command"  VALUE="Related Topics">
+  <PARAM  NAME="Button"  VALUE="Text:Related Topics">
+  <PARAM  NAME="Font"  VALUE="Arial,8,0,,">
+  <PARAM  NAME="Item1"  VALUE="Creating a Trend;Creating_a_Trend.htm">
+  <PARAM  NAME="Item2"  VALUE="Deleting a Trend;Deleting_a_Trend.htm">
+  <PARAM  NAME="Item3"  VALUE="Viewing a Graphical Trend;Viewing_a_Graphical_Trend.htm">
+  <PARAM  NAME="Item4"  VALUE="Viewing a Summary Trend;Viewing_a_Summary_Trend.htm">
+  <PARAM  NAME="Item5"  VALUE="Viewing a Tabular Trend;Viewing_a_Tabular_Trend.htm">
+</OBJECT>
+
+<!--Metadata type="DesignerControl" endspan-->
+ </p>
 
 </body>
 

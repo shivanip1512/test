@@ -133,14 +133,5 @@
       <param name="Local" value="Load_Management.htm">
     </object>
     </ul>
-  <li><object type="text/sitemap">
-    <param name="Name" value="Yukon Servers">
-  </object>
-  <ul>
-    <li><object type="text/sitemap">
-      <param name="Name" value="Yukon Servers">
-      <param name="Local" value="Yukon_Servers.htm">
-    </object>
-    </ul>
 </ul>
 </html>

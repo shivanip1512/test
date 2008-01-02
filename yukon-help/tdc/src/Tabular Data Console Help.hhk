@@ -53,18 +53,6 @@
     </object>
     </ul>
   <li><object type="text/sitemap">
-    <param name="Name" value="Check">
-    <param name="Name" value="Creating a Script Schedule">
-    <param name="Local" value="Creating_a_Script_Schedule.htm">
-  </object>
-  <ul>
-    <li><object type="text/sitemap">
-      <param name="Name" value="Tcl">
-      <param name="Name" value="Creating a Script Schedule">
-      <param name="Local" value="Creating_a_Script_Schedule.htm">
-    </object>
-    </ul>
-  <li><object type="text/sitemap">
     <param name="Name" value="Clear Alarm">
     <param name="Name" value="Viewing Custom Displays">
     <param name="Local" value="Custom_Displays.htm">
@@ -930,20 +918,6 @@
     <param name="Name" value="Copying a Display">
     <param name="Local" value="Copying_a_Display.htm">
   </object>
-  <li><object type="text/sitemap">
-    <param name="Name" value="Tcl">
-    <param name="Name" value="Creating a Script Schedule">
-    <param name="Local" value="Creating_a_Script_Schedule.htm">
-    <param name="Name" value="Yukon Command Language Summary">
-    <param name="Local" value="Yukon_Command_Language_Summary.htm">
-  </object>
-  <ul>
-    <li><object type="text/sitemap">
-      <param name="Name" value="check">
-      <param name="Name" value="Creating a Script Schedule">
-      <param name="Local" value="Creating_a_Script_Schedule.htm">
-    </object>
-    </ul>
   <li><object type="text/sitemap">
     <param name="Name" value="TDC">
     <param name="Name" value="Viewing Custom Displays">

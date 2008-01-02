@@ -25,8 +25,8 @@
 <meta name=filetype content=kadov>
 <meta name=filetype-version content=1>
 <meta name=page-count content=1>
-<meta name=layout-height content=1428>
-<meta name=layout-width content=692>
+<meta name=layout-height content=1448>
+<meta name=layout-width content=974>
 <meta name=x-ignored-words content="Tcl;PUTSTATUS;VERSACOM;cmd;cmd_parameters;PUTCONFIG;getvalue;GETVALUE;PUTVALUE;GETSTATUS;GETCONFIG;Ack;nn;TDC;Unsilence;MACS;HH;MW;IEDSCAN;IED;PLC;ss;ddddd;MCT;PFCOUNT;kWh;kW;kvarh;kvar;KWH;KVARH;KVAH;ABCD;TOU;N;putconfig;fp;guid;positionally;aux;spec;MSB;u#;a#;s#;in|out;t;y|n;LEDs;y;reset_counters;rtc;lf;cl;LUF;rn;n;prop_time;cold_load;uninterpreted;putstatus;PutStatus;prop[agation;disp[lay;term[inate;inc[rement;rl;rrrrr;nnnn;LM;xxxx;LCR;altgroup;KYZ;powerfail;CVD;CCU;Unmute;Program(s;ReEnable;ACK;Unacked;SOE;DNP;SubBus;OpenQuestionable;CloseQuestionable;OpenFail;CloseFail;OpenPending;ClosePending;KVAR;renables;Unwaive;setpoint;maxrate;bfallback;afallback;afallbak;F;waypoint;xcom;noramp;restore|terminate;open|close|connect|disconnect;celsius;heat|cool|both;min;ExpressCom;CBC;RTU;dsd;hh;tcycle;ctrl;dsb;ta;tb;tc;te;tf;dsf;UofM;Ctrl;Timeout;iedscan;getconfig;lp|li;kyz;ied;lp;rolenum;func;rawfunc;group|uniq;intervals|interval;lp|disconnect|internal|external|ied;getstatus;lp|disconnect|internal|external;pfcount;lp|disconnect|internal|external|errors|pfcount|ied;eventlog;eventlog|update;errors|pfcount||offset|eventlog|update;errors|pfcount|offset;lp|disc|internal|external|ied;internal|external;a|b|c|d|t;kwh;kwh|kvark|kvah;kw|demand|kva|kvar;kwh|kvarh|kvah;kvh;kw;kvah;kva;kw|kva|kvar|demand|peak;kwh|kvar|kvah;minmax;minmax|peak;TDCs;locate|count;count|locate;ping[count;alarmable;uninitialized;timestamp;Uninit;Unintialized;FDR;IDLC;Part-Int;Dev-Fill;Unr;Min;display|terminate|increment;xcproptest;FisherPierce;on|off|auto;off|heat|cool|emheat;in|out|enable|disable;noclp|noled|bitP|bitL|cancel|;vdata;fromutility;fromutility|fromsect|fromclass|fromdivsion;fromsect;fromclass;fromdivsion;relaymask;assign|address;fromtility;EMETCON;fromdivision;C;setstate;timeout;timesync;spid;geo;uda;relay|load;offhours;emheat;noclp|noled|offhours;noclp;noled;timsync;li|lp;fixb;outb;inb;multi_role;fn;von;stfn;delay|class;enable|disable;SPEC;g;f;z;r;Spid;suBstation;splinteR;mult;onnoffpeak;onoffpeak|minmax;disconnect|connect;onoffpeak;RSSI;OverVoltage;rssi;zero|one;ovuv;UnderVoltage;one|two;on|off;putvalue;reset|reading;powerfail|ied;CapBank;CSV;freezecount;kw|kva|kvar|demand|peak|voltage;dnp;status|analog;day|hour|interval;yyyy;feeezecount;kVa;kVar;status|;c;kwha">
 
 
@@ -53,13 +53,15 @@
 
 <p>&nbsp;</p>
 
+<p style="font-weight: bold;">getvalue daily read [channel (1|2|3)] mm/dd/yyyy 
+ [mm/dd/yyyy]</p>
+
 <p style="font-weight: bold;">getvalue [[ied] (kwh|kvarh|kvah)[a|b|c|d|t] 
  [update]] [frozen] [rate (a|b|c|d|t)] [update]]</p>
 
 <p style="font-weight: bold;">getvalue [[ied] (kwh|kvarh|kvah) [rate (a|b|c|d|t)] 
  [channel <span style="font-style: italic; font-weight: normal;"><!--kadov_tag{{<ignored>}}-->channel<!--kadov_tag{{</ignored>}}--></span>] 
- [update]] [frozen]getvalue [lp channel (1|4) <span style="font-style: italic;">date</span> 
- <span style="font-style: italic;">time</span>]</p>
+ [update]] [frozen]</p>
 
 <p style="font-weight: bold;">getvalue [[ied] (kw|kva|kvar|demand|peak|voltage) 
  [offset <span style="font-style: italic; font-weight: normal;">channel</span>] 
@@ -135,6 +137,52 @@
 	bgcolor=#000080
 	width=77.538%>
 <p style="color: #ffffff; font-weight: bold;">Description </td></tr>
+
+<tr style="x-cell-content-align: top;"
+	valign=top>
+<td colspan=1
+	rowspan=1
+	style="width: 22.462%;
+			background-color: #c0c0c0;
+			border-left-color: #ffffff;
+			border-left-style: Solid;
+			border-left-width: 2px;
+			border-right-color: #ffffff;
+			border-right-style: Solid;
+			border-right-width: 2px;
+			border-bottom-width: 2px;
+			border-bottom-style: Solid;
+			border-bottom-color: #ffffff;
+			padding-right: 10px;
+			padding-left: 10px;"
+	bgcolor=#C0C0C0
+	width=22.462%>
+<p>daily read</td>
+<td colspan=1
+	rowspan=1
+	style="width: 77.538%;
+			background-color: #c0c0c0;
+			border-right-color: #ffffff;
+			border-right-style: Solid;
+			border-right-width: 2px;
+			border-bottom-width: 2px;
+			border-bottom-style: Solid;
+			border-bottom-color: #ffffff;
+			padding-right: 10px;
+			padding-left: 10px;"
+	bgcolor=#C0C0C0
+	width=77.538%>
+<p>Collects daily self-read data from a field device for a date or a date 
+ range that is within the past 3 months. If a date range is specified, 
+ only the consumption values for the range are returned. Defaults to channel 
+ 1 if a channel is not specified.</p>
+<p><!--kadov_tag{{<spaces>}}-->&nbsp;&nbsp;<!--kadov_tag{{</spaces>}}-->Channel 
+ 1: kWh at day end, peak kW, daily min./max. voltage</p>
+<p><!--kadov_tag{{<spaces>}}-->&nbsp;&nbsp;<!--kadov_tag{{</spaces>}}-->Channel 
+ 2: consumption (if defined), peak daily demand (if defined), power outages 
+ to date</p>
+<p><!--kadov_tag{{<spaces>}}-->&nbsp;&nbsp;<!--kadov_tag{{</spaces>}}-->Channel 
+ 3: consumption (if defined), peak daily demand (if defined)</td></tr>
 
 <tr style="x-cell-content-align: top;"
 	valign=top>
@@ -353,42 +401,6 @@
 	width=77.538%>
 <p>Specifies the pulse input channel from which to collect data. Defaults 
  to channel 1 if no channel is specified.</td></tr>
-
-<tr style="x-cell-content-align: top;"
-	valign=top>
-<td colspan=1
-	rowspan=1
-	style="width: 22.462%;
-			background-color: #c0c0c0;
-			border-left-color: #ffffff;
-			border-left-style: Solid;
-			border-left-width: 2px;
-			border-right-color: #ffffff;
-			border-right-style: Solid;
-			border-right-width: 2px;
-			border-bottom-width: 2px;
-			border-bottom-style: Solid;
-			border-bottom-color: #ffffff;
-			padding-right: 10px;
-			padding-left: 10px;"
-	bgcolor=#C0C0C0
-	width=22.462%>
-<p>offset <span style="font-style: italic;">channel</span></td>
-<td colspan=1
-	rowspan=1
-	style="width: 77.538%;
-			background-color: #c0c0c0;
-			border-right-color: #ffffff;
-			border-right-style: Solid;
-			border-right-width: 2px;
-			border-bottom-width: 2px;
-			border-bottom-style: Solid;
-			border-bottom-color: #ffffff;
-			padding-right: 10px;
-			padding-left: 10px;"
-	bgcolor=#C0C0C0
-	width=77.538%>
-<p>Specifies the pulse input channel from which to read.</td></tr>
 
 <tr style="x-cell-content-align: top;"
 	valign=top>
@@ -677,6 +689,42 @@
 	bgcolor=#C0C0C0
 	width=77.538%>
 <p>Collects the minimum and maximum voltage readings from a field device.</td></tr>
+
+<tr style="x-cell-content-align: top;"
+	valign=top>
+<td colspan=1
+	rowspan=1
+	style="width: 22.462%;
+			background-color: #c0c0c0;
+			border-left-color: #ffffff;
+			border-left-style: Solid;
+			border-left-width: 2px;
+			border-right-color: #ffffff;
+			border-right-style: Solid;
+			border-right-width: 2px;
+			border-bottom-width: 2px;
+			border-bottom-style: Solid;
+			border-bottom-color: #ffffff;
+			padding-right: 10px;
+			padding-left: 10px;"
+	bgcolor=#C0C0C0
+	width=22.462%>
+<p>offset <span style="font-style: italic;">channel</span></td>
+<td colspan=1
+	rowspan=1
+	style="width: 77.538%;
+			background-color: #c0c0c0;
+			border-right-color: #ffffff;
+			border-right-style: Solid;
+			border-right-width: 2px;
+			border-bottom-width: 2px;
+			border-bottom-style: Solid;
+			border-bottom-color: #ffffff;
+			padding-right: 10px;
+			padding-left: 10px;"
+	bgcolor=#C0C0C0
+	width=77.538%>
+<p>Specifies the channel from which to collect data.</td></tr>
 
 <tr style="x-cell-content-align: top;"
 	valign=top>

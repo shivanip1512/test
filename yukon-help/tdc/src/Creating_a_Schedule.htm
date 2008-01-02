@@ -12,23 +12,25 @@
 
 <!--(Meta)==========================================================-->
 
+<meta http-equiv=content-type content="text/html; charset=windows-1252">
+<meta name=date content="01 24, 2006 11:00:31 AM">
+<meta name=topic-status content="In Progress">
+<meta name=topic-priority content=0>
+<meta name=topic-time-estimate content=0>
+<meta name=topic-comment content>
+<meta name=topic-id content="Creating a Schedule">
 <meta name=generator content="RoboHELP by eHelp Corporation - www.ehelp.com">
 <meta name=generator-major-version content=0.1>
 <meta name=generator-minor-version content=1>
 <meta name=filetype content=kadov>
 <meta name=filetype-version content=1>
 <meta name=page-count content=1>
-<meta name=layout-height content=767>
-<meta name=layout-width content=687>
-<meta name=date content="01 24, 2006 11:00:31 AM">
-<meta name=x-ignored-words content="Ack;TDC;Unsilence;MACS;HH">
+<meta name=layout-height content=770>
+<meta name=layout-width content=974>
+<meta name=x-ignored-words content="Ack;nn;setpoint;maxrate;bfallback;afallback;afallbak;F;waypoint;xcom;noramp;restore|terminate;open|close|connect|disconnect;celsius;heat|cool|both;min;ExpressCom;CBC;RTU;MCT;dsd;hh;tcycle;ctrl;dsb;ta;tb;tc;te;tf;dsf;Tcl;PUTSTATUS;VERSACOM;cmd;cmd_parameters;PUTCONFIG;getvalue;GETVALUE;PUTVALUE;GETSTATUS;GETCONFIG;TDC;Unsilence;MACS;HH;MW;IEDSCAN;IED;PLC;ss;ddddd;PFCOUNT;kWh;kW;kvarh;kvar;KWH;KVARH;KVAH;ABCD;TOU;N;putconfig;fp;guid;positionally;aux;spec;MSB;u#;a#;s#;in|out;t;y|n;LEDs;y;reset_counters;rtc;lf;cl;LUF;rn;n;prop_time;cold_load;uninterpreted;putstatus;PutStatus;prop[agation;disp[lay;term[inate;inc[rement;rl;rrrrr;nnnn;LM;xxxx;LCR;altgroup;KYZ;powerfail;CVD;CCU;Unmute;Program(s;ReEnable;ACK;Unacked;SOE;DNP;SubBus;OpenQuestionable;CloseQuestionable;OpenFail;CloseFail;OpenPending;ClosePending;KVAR;renables;Unwaive;UofM;Ctrl;Timeout;iedscan;getconfig;lp|li;kyz;ied;lp;rolenum;func;rawfunc;group|uniq;intervals|interval;lp|disconnect|internal|external|ied;getstatus;lp|disconnect|internal|external;pfcount;lp|disconnect|internal|external|errors|pfcount|ied;eventlog;eventlog|update;errors|pfcount||offset|eventlog|update;errors|pfcount|offset;lp|disc|internal|external|ied;internal|external;a|b|c|d|t;kwh;kwh|kvark|kvah;kw|demand|kva|kvar;kwh|kvarh|kvah;kvh;kw;kvah;kva;kw|kva|kvar|demand|peak;kwh|kvar|kvah;minmax;minmax|peak;TDCs;locate|count;count|locate;ping[count;alarmable;uninitialized;timestamp;Uninit;Unintialized;FDR;IDLC;Part-Int;Dev-Fill;Unr;Min;display|terminate|increment;xcproptest;FisherPierce;on|off|auto;off|heat|cool|emheat;in|out|enable|disable;noclp|noled|bitP|bitL|cancel|;vdata;fromutility;fromutility|fromsect|fromclass|fromdivsion;fromsect;fromclass;fromdivsion;relaymask;assign|address;fromtility;EMETCON;fromdivision;C;setstate;timeout;timesync;spid;geo;uda;relay|load;offhours;emheat;noclp|noled|offhours;noclp;noled;timsync;li|lp;fixb;outb;inb;multi_role;fn;von;stfn;delay|class;enable|disable;SPEC;g;f;z;r;Spid;suBstation;splinteR;mult;onnoffpeak;onoffpeak|minmax;disconnect|connect;onoffpeak;RSSI;OverVoltage;rssi;zero|one;ovuv;UnderVoltage;one|two;on|off;putvalue;reset|reading;powerfail|ied;CapBank;CSV;freezecount;kw|kva|kvar|demand|peak|voltage;dnp;status|analog;day|hour|interval;yyyy;feeezecount;kVa;kVar;status|;c;kwha;IEDs">
 
 
- <meta name="topic-status" content="In Progress">
- <meta name="topic-priority" content="0">
- <meta name="topic-time-estimate" content="0">
- <meta name="topic-comment" content="">
- <meta name="topic-id" content="Creating a Schedule"><!--(Links)=========================================================-->
+<!--(Links)=========================================================-->
 
 <link rel=StyleSheet href=default.css>
 
@@ -75,13 +77,13 @@ if( typeof( kadovInitEffects ) != 'function' ) kadovInitEffects = new Function()
 	<li class=kadov-p><p style="margin-bottom: 9pt;">Enter a name for the 
  schedule in the <span style="font-weight: bold;">Name</span> text box. 
  This is the name that appears in the <span style="font-weight: bold;">Schedule 
- Name</span> column of the MACS table.</p></li>
+ Name</span> column of the Metering and Control Scheduler table.</p></li>
 	
-	<li class=kadov-p><p style="margin-bottom: 9pt;">Type the name of the 
- category in the <span style="font-weight: bold;">Category</span> list 
- or select a previously entered category. This is the name that appears 
- in the <span style="font-weight: bold;">Category Name</span> column of 
- the MACS table.</p></li>
+	<li class=kadov-p><p style="margin-bottom: 9pt;">Enter the name for 
+ the schedule category in the <span style="font-weight: bold;">Category</span> 
+ list or select a previously entered schedule category from the drop-down 
+ list. This is the name that appears in the <span style="font-weight: bold;">Category 
+ Name</span> column of the Metering and Control Scheduler table.</p></li>
 	
 	<li class=kadov-p><p>Select either <span style="font-weight: bold;">Simple</span> 
  or <span style="font-weight: bold;">Script</span> from the <span style="font-weight: bold;">Type</span> 
@@ -98,10 +100,37 @@ if( typeof( kadovInitEffects ) != 'function' ) kadovInitEffects = new Function()
  if you do not need to modify the underlying code of the schedule.</p></li>
 	</ul>
 	
-	<li class=kadov-p><p style="margin-bottom: 9pt;">If you selected <span 
- style="font-weight: bold;">Script</span> as the schedule type, you can 
- select a script template to use from the <span style="font-weight: bold;">Template</span> 
- drop-down list.</p></li>
+	<li class=kadov-p><p>If you selected <span style="font-weight: bold;">Script</span> 
+ as the schedule type, you can select a script template to use from the 
+ <span style="font-weight: bold;">Template</span> drop-down list.</p></li>
+	
+	<ul style="list-style: disc;"
+		type=disc>
+		
+		<li class=kadov-p><p style="margin-bottom: 0px;"><span style="font-weight: bold;">No 
+ Template</span> - no template.</p></li>
+		
+		<li class=kadov-p><p style="margin-bottom: 0px;"><span style="font-weight: bold;">Meter 
+ Read</span> - template for reading usage information from meters.</p></li>
+		
+		<li class=kadov-p><p style="margin-bottom: 0px;"><span style="font-weight: bold;">Meter 
+ Read Retry</span> - template for reading usage information from meters 
+ that were missed by the Meter Read script.</p></li>
+		
+		<li class=kadov-p><p style="margin-bottom: 0px;"><span style="font-weight: bold;">IED 
+ Meter Read</span> - template for reading usage information from IEDs attached 
+ to meters.</p></li>
+		
+		<li class=kadov-p><p style="margin-bottom: 0px;"><span style="font-weight: bold;">IED 
+ Meter Read Retry</span> - template for reading usage information from 
+ IEDs attached to meters that were missed by the IED Meter Read script.</p></li>
+		
+		<li class=kadov-p><p style="margin-bottom: 0px;"><span style="font-weight: bold;">Outages 
+ Meter Read</span> - template for reading outage information from meters.</p></li>
+		
+		<li class=kadov-p><p style="margin-bottom: 9pt;"><span style="font-weight: bold;">Voltage 
+ Meter Read</span> - template for reading voltage information from meters.</p></li>
+	</ul>
 	
 	<li class=kadov-p><p>Under the <span style="font-weight: bold;">Start 
  Policy</span>, select a start policy from the <span style="font-weight: bold;">Start 
@@ -201,25 +230,25 @@ kadovFilePopupInit('a3');
 				margin-right: 0px;
 				vertical-align: baseline;"
 		align=bottom>
-<param name=_Version value="65536" >
-<param name=_ExtentX value="2117" >
-<param name=_ExtentY value="556" >
-<param name=_StockProps value="13" >
-<param name=ForeColor value="0" >
-<param name=BackColor value="13160660" >
-<param name=UseButton value="-1" >
-<param name=ControlLabel value="Related Topics" >
-<param name=UseIcon value="0" >
-<param name=Items value="Editing a MACS Schedule;Editing_a_Schedule.htm$$**$$Using Metering and Control Scheduler;Metering_and_Control_Scheduler.htm$$**$$" >
-<param name=Image value="" >
-<param name=FontInfo value="MS Sans Serif,8,0,," >
-<param name=_CURRENTFILEPATH value="C:\working\docs\Help\Yukon 3.2 Tabular Data Console Help\Creating_a_Schedule.htm" >
-<param name=_ID value="RelatedTopics" >
-<param name=UseMenu value="-1" >
-<param name=Frame value="_top" >
-<param name=Window value="" >
-</object>-->
-<OBJECT
+<param name="_Version" value="65536" >
+<param name="_ExtentX" value="2117" >
+<param name="_ExtentY" value="556" >
+<param name="_StockProps" value="13" >
+<param name="ForeColor" value="0" >
+<param name="BackColor" value="13160660" >
+<param name="UseButton" value="-1" >
+<param name="UseText" value="0" >
+<param name="ControlLabel" value="Related Topics" >
+<param name="UseIcon" value="0" >
+<param name="Items" value="Editing a MACS Schedule;Editing_a_Schedule.htm$$**$$Using Metering and Control Scheduler;Metering_and_Control_Scheduler.htm$$**$$" >
+<param name="Image" value="" >
+<param name="FontInfo" value="MS Sans Serif,8,0,," >
+<param name="_CURRENTFILEPATH" value="C:\Working\head\yukon-help\tdc\src\Creating_a_Schedule.htm" >
+<param name="_ID" value="RelatedTopics" >
+<param name="UseMenu" value="-1" >
+<param name="Frame" value="_top" >
+<param name="Window" value="" >
+</object>--><OBJECT
   CLASSID="clsid:ADB880A6-D8FF-11CF-9377-00AA003B7A11"
   ID="RelatedTopics"  TYPE="application/x-oleobject" >
   <PARAM  NAME="Command"  VALUE="Related Topics,MENU">
@@ -229,9 +258,8 @@ kadovFilePopupInit('a3');
   <PARAM  NAME="Item1"  VALUE="Editing a MACS Schedule;Editing_a_Schedule.htm">
   <PARAM  NAME="Item2"  VALUE="Using Metering and Control Scheduler;Metering_and_Control_Scheduler.htm">
 </OBJECT>
-
 <!--Metadata type="DesignerControl" endspan-->
-</p>
+ </p>
 
 </body>
 
