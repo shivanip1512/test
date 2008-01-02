@@ -29,7 +29,7 @@
 
 <div id="CopyRight">
 Yukon Version ${ctiYukonVersion}. 
-Copyright &copy; 2002-2007, 
+Copyright &copy; 2002-2008, 
   Cannon Technologies. All rights reserved.
 </div>
 
