@@ -1,7 +1,7 @@
 /*==============================================================*/
 /* Database name:  YukonDatabase                                */
 /* DBMS name:      Microsoft SQL Server 2000                    */
-/* Created on:     1/2/2008 3:21:02 PM                          */
+/* Created on:     1/2/2008 4:25:39 PM                          */
 /*==============================================================*/
 
 
@@ -10860,7 +10860,6 @@ go
 alter table CCSUBAREAASSIGNMENT
    add constraint FK_CCSUBARE_CAPSUBAREAASSGN foreign key (SubstationBusID)
       references CAPCONTROLSUBSTATION (SubstationID)
-         on update cascade on delete cascade
 go
 
 alter table CCSUBAREAASSIGNMENT

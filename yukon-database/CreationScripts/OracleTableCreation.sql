@@ -1,7 +1,7 @@
 /*==============================================================*/
 /* Database name:  YukonDatabase                                */
 /* DBMS name:      ORACLE Version 9i                            */
-/* Created on:     1/2/2008 3:19:51 PM                          */
+/* Created on:     1/2/2008 4:26:44 PM                          */
 /*==============================================================*/
 
 
@@ -8631,8 +8631,7 @@ alter table CCSTRATEGYTIMEOFDAY
 
 alter table CCSUBAREAASSIGNMENT
    add constraint FK_CCSUBARE_CAPSUBAREAASSGN foreign key (SubstationBusID)
-      references CAPCONTROLSUBSTATION (SubstationID)
-      on delete cascade;
+      references CAPCONTROLSUBSTATION (SubstationID);
 
 alter table CCSUBAREAASSIGNMENT
    add constraint FK_CCSUBARE_REFERENCE_CAPCONTR foreign key (AreaID)
