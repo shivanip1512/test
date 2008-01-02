@@ -1,7 +1,7 @@
 /*==============================================================*/
 /* Database name:  YukonDatabase                                */
 /* DBMS name:      ORACLE Version 9i                            */
-/* Created on:     1/2/2008 3:08:05 PM                          */
+/* Created on:     1/2/2008 3:19:51 PM                          */
 /*==============================================================*/
 
 
@@ -4400,7 +4400,7 @@ create table GroupPaoPermission  (
    GroupID              NUMBER                          not null,
    PaoID                NUMBER                          not null,
    Permission           VARCHAR2(50)                    not null,
-   Allow                VARCHAR2(5)                    default 'Allow' not null,
+   Allow                VARCHAR2(5)                     not null,
    constraint PK_GROUPPAOPERMISSION primary key (GroupPaoPermissionID)
 );
 

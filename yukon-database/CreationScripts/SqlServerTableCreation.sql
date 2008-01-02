@@ -1,7 +1,7 @@
 /*==============================================================*/
 /* Database name:  YukonDatabase                                */
 /* DBMS name:      Microsoft SQL Server 2000                    */
-/* Created on:     1/2/2008 3:06:58 PM                          */
+/* Created on:     1/2/2008 3:21:02 PM                          */
 /*==============================================================*/
 
 
@@ -6418,7 +6418,7 @@ create table GroupPaoPermission (
    GroupID              numeric              not null,
    PaoID                numeric              not null,
    Permission           varchar(50)          not null,
-   Allow                varchar(5)           not null default 'Allow',
+   Allow                varchar(5)           not null,
    constraint PK_GROUPPAOPERMISSION primary key nonclustered (GroupPaoPermissionID)
 )
 go
