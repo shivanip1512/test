@@ -1,7 +1,7 @@
 /*==============================================================*/
 /* Database name:  YukonDatabase                                */
 /* DBMS name:      ORACLE Version 9i                            */
-/* Created on:     12/31/2007 12:07:31 PM                       */
+/* Created on:     1/2/2008 3:08:05 PM                          */
 /*==============================================================*/
 
 
@@ -6139,7 +6139,7 @@ create table UserPaoPermission  (
    UserID               NUMBER                          not null,
    PaoID                NUMBER                          not null,
    Permission           VARCHAR2(50)                    not null,
-   Allow                VARCHAR2(5)                    default 'Allow' not null,
+   Allow                VARCHAR2(5)                     not null,
    constraint PK_USERPAOPERMISSION primary key (UserPaoPermissionID)
 );
 

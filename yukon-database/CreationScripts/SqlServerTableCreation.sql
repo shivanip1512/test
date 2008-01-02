@@ -1,7 +1,7 @@
 /*==============================================================*/
 /* Database name:  YukonDatabase                                */
 /* DBMS name:      Microsoft SQL Server 2000                    */
-/* Created on:     12/31/2007 12:10:19 PM                       */
+/* Created on:     1/2/2008 3:06:58 PM                          */
 /*==============================================================*/
 
 
@@ -8284,7 +8284,7 @@ create table UserPaoPermission (
    UserID               numeric              not null,
    PaoID                numeric              not null,
    Permission           varchar(50)          not null,
-   Allow                varchar(5)           not null default 'Allow',
+   Allow                varchar(5)           not null,
    constraint PK_USERPAOPERMISSION primary key nonclustered (UserPaoPermissionID)
 )
 go
