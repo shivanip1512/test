@@ -6,8 +6,8 @@
 *
 * PVCS KEYWORDS:
 * ARCHIVE      :  $Archive:   Z:/SOFTWAREARCHIVES/YUKON/DISPATCH/ctivangogh.cpp-arc  $
-* REVISION     :  $Revision: 1.174 $
-* DATE         :  $Date: 2007/12/05 15:41:54 $
+* REVISION     :  $Revision: 1.175 $
+* DATE         :  $Date: 2008/01/02 20:59:08 $
 *
 * Copyright (c) 1999, 2000, 2001 Cannon Technologies Inc. All rights reserved.
 *-----------------------------------------------------------------------------*/
@@ -1473,16 +1473,29 @@ int CtiVanGogh::postDBChange(const CtiDBChangeMsg &Msg)
             {
                 CtiServerExclusion guard(_server_exclusion);
                 CtiServer::spiterator itr;
+                CtiServer::ptr_type MgrToRemove;
 
                 for(itr = mConnectionTable.getMap().begin(); itr != mConnectionTable.getMap().end(); itr++)
                 {
                     Mgr = itr->second;
-                    Mgr->WriteConnQue( Msg.replicateMessage(), 2500 );        // Send a copy of DBCHANGE on to each clients.
+
+                    if( Mgr->WriteConnQue( Msg.replicateMessage(), 2500 ) )        // Send a copy of DBCHANGE on to each clients.
+                    {
+                        MgrToRemove = Mgr;
+
+                        CtiLockGuard<CtiLogger> doubt_guard(dout);
+                        dout << CtiTime() << " Connection is not viable : " << Mgr->getClientName() << " / " << Mgr->getClientAppId() << endl;
+                    }
 
                     if(((CtiVanGoghConnectionManager*)Mgr.get())->getEvent()) // If the client cares about events...
                     {
                         Mgr->WriteConnQue(pSig->replicateMessage(), 2500);    // Copy pSig out to any event registered client
                     }
+                }
+
+                if( MgrToRemove ) //This connection is invalid, get rid of it!
+                {
+                    clientShutdown(MgrToRemove);
                 }
             }
 
@@ -1926,7 +1939,10 @@ INT CtiVanGogh::processMessageData( CtiMessage *pMsg )
                 messageDump(pMsg);
                 const CtiPointRegistrationMsg &aReg = *((CtiPointRegistrationMsg*)(pMsg));
                 CtiServer::ptr_type sptrCM = mConnectionTable.find((long)pMsg->getConnectionHandle());
-                registration(sptrCM, aReg);
+                if( sptrCM )
+                {
+                    registration(sptrCM, aReg);
+                }
                 break;
             }
         case MSG_REGISTER:
