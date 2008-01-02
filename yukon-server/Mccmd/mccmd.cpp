@@ -6,8 +6,8 @@
 *
 * PVCS KEYWORDS:
 * ARCHIVE      :  $Archive:   Z:/SOFTWAREARCHIVES/YUKON/MCCMD/mccmd.cpp-arc  $
-* REVISION     :  $Revision: 1.70 $
-* DATE         :  $Date: 2007/10/17 19:53:49 $
+* REVISION     :  $Revision: 1.71 $
+* DATE         :  $Date: 2008/01/02 17:44:18 $
 *
 * Copyright (c) 1999, 2000, 2001 Cannon Technologies Inc. All rights reserved.
 *-----------------------------------------------------------------------------*/
@@ -272,7 +272,7 @@ int Mccmd_Connect(ClientData clientData, Tcl_Interp* interp, int argc, char* arg
 
     string notification_host;
     int notification_port;
-    
+
     {
         CtiLockGuard< CtiLogger > guard(dout);
         dout << CtiTime() << " MCCMD loading cparms:" << endl;
@@ -301,7 +301,7 @@ int Mccmd_Connect(ClientData clientData, Tcl_Interp* interp, int argc, char* arg
         CtiLockGuard< CtiLogger > guard(dout);
         dout << " Connecting to notification server, host: " << notification_host << ", port: " << notification_port << endl;
     }
-    
+
     gPagingConfigRouteID = gConfigParms.getValueAsInt("PAGING_CONFIG_ROUTE_ID", -1);
     gFMConfigRouteID = gConfigParms.getValueAsInt("FM_CONFIG_ROUTE_ID", -1);
     fm_config_range = gConfigParms.getValueAsString("FM_CONFIG_SERIAL_RANGE", "");
@@ -387,7 +387,7 @@ int Mccmd_Connect(ClientData clientData, Tcl_Interp* interp, int argc, char* arg
     VanGoghConnection->WriteConnQue( reg2 );
 
     NotificationConnection = new CtiConnection( notification_port, notification_host.c_str() );
-    
+
     RWThreadFunction thr_func = rwMakeThreadFunction( _MessageThrFunc );
     thr_func.start();
 
@@ -422,7 +422,7 @@ int Mccmd_Disconnect(ClientData clientData, Tcl_Interp* interp, int argc, char* 
     }
 
     NotificationConnection->ShutdownConnection();
-    
+
     delete PILConnection;
     PILConnection = 0;
 
@@ -431,7 +431,7 @@ int Mccmd_Disconnect(ClientData clientData, Tcl_Interp* interp, int argc, char* 
 
     delete NotificationConnection;
     NotificationConnection = 0;
-    
+
     return 0;
 
 }
@@ -547,7 +547,7 @@ int Mccmd_Init(Tcl_Interp* interp)
 
     Tcl_CreateCommand( interp, "createProcess", CTICreateProcess, NULL, NULL);
     Tcl_CreateCommand( interp, "CREATEPROCESS", CTICreateProcess, NULL, NULL);
-    Tcl_CreateCommand( interp, "createprocess", CTICreateProcess, NULL, NULL);    
+    Tcl_CreateCommand( interp, "createprocess", CTICreateProcess, NULL, NULL);
 
     /* Load up the initialization script */
     string init_script;
@@ -1213,7 +1213,7 @@ bool FileAppendAndDelete(const string &toFileName, const string &fromFileName)
 
     if( toFileName != fromFileName )
     {
-    
+
         // create or open file of the day
         toFileHandle = CreateFile (toFileName.c_str(),
                                      GENERIC_READ | GENERIC_WRITE,
@@ -1244,7 +1244,7 @@ bool FileAppendAndDelete(const string &toFileName, const string &fromFileName)
             else
                 break;
         }
-    
+
         // if we tried for 30 seconds, log that we failed to log the file
         if (cnt >= 30)
         {
@@ -1256,8 +1256,8 @@ bool FileAppendAndDelete(const string &toFileName, const string &fromFileName)
             FILE* fromfileptr;
             char workString[500];  // not real sure how long each line possibly is
             vector<string> aCmdVector;
-                                       
-            // open file               
+
+            // open file
             if( (fromfileptr = fopen( fromFileName.c_str(), "r")) == NULL )
             {
                 retVal = false;
@@ -1271,12 +1271,12 @@ bool FileAppendAndDelete(const string &toFileName, const string &fromFileName)
                     aCmdVector.push_back (entry);
                 }
             }
-    
+
             // loop the vector and append to the file
             int     totalLines = aCmdVector.size();
             int     lineCnt = 0;
             int     retCode = 0;
-    
+
             while (lineCnt < totalLines)
             {
                 // move to end of file and write
@@ -1284,7 +1284,7 @@ bool FileAppendAndDelete(const string &toFileName, const string &fromFileName)
                 retCode=SetEndOfFile (toFileHandle);
                 memset (workString, '\0',500);
                 strcpy (workString,aCmdVector[lineCnt].c_str());
-    
+
                 if (workString[aCmdVector[lineCnt].length()-1] == '\n')
                 {
                     workString[aCmdVector[lineCnt].length()-1] = '\r';
@@ -1299,7 +1299,7 @@ bool FileAppendAndDelete(const string &toFileName, const string &fromFileName)
                 }
                 lineCnt++;
             }
-    
+
             CloseHandle (toFileHandle);
             fclose(fromfileptr);
             DeleteFile (fromFileName.c_str());
@@ -1691,7 +1691,7 @@ static int DoRequest(Tcl_Interp* interp, string& cmd_line, long timeout, bool tw
     CtiTime lastPorterCountTime;
     //We will poll this in 60 seconds
     lastPorterCountTime = lastPorterCountTime - PORT_COUNT_REQUEST_SECONDS + 60;
-    
+
     // Some structures to sort the responses
     PILReturnMap device_map;
     PILReturnMap good_map;
@@ -1780,9 +1780,9 @@ static int DoRequest(Tcl_Interp* interp, string& cmd_line, long timeout, bool tw
                 info += " Sending cancel message to porter";
                 PILConnection->WriteConnQue(CTIDBG_new CtiRequestMsg(0, "system message request cancel", msgid, 0, 0, 0, 0, msgid));
             }
-            
+
             WriteOutput(info.c_str());
-            
+
             break;
         }
 
@@ -1925,7 +1925,7 @@ void HandleReturnMessage(CtiReturnMsg* msg,
         }
         else if( msg->ExpectMore() )
         {
-      device_map.insert(PILReturnMap::value_type(dev_id, msg));
+            device_map.insert(PILReturnMap::value_type(dev_id, msg));
             if( msg->Status() != NORMAL )
             {
                 CtiTableMeterReadLog result(0, msg->DeviceId(), 0, msg->Status(), msg->getMessageTime());
@@ -1936,25 +1936,25 @@ void HandleReturnMessage(CtiReturnMsg* msg,
         {
             CtiTableMeterReadLog result(0, msg->DeviceId(), msg->UserMessageId(), msg->Status(), msg->getMessageTime());
             resultQueue.push_back(result);
-      PILReturnMap::iterator pos;
+            PILReturnMap::iterator pos;
             if( msg->Status() == 0 )
             {
-            pos = bad_map.find(dev_id);
+                pos = bad_map.find(dev_id);
                 if(pos != bad_map.end())
                 {
                     string warn("moved device from bad list to good list, id: ");
                     warn += CtiNumStr(dev_id);
                     WriteOutput(warn.c_str());
-            delete pos->second;
-            bad_map.erase(pos);
+                    delete pos->second;
+                    bad_map.erase(pos);
                 }
 
-        pos = device_map.find(dev_id);
-        if(pos != device_map.end())
-        {
-          delete pos->second;
-          device_map.erase(pos);
-        }
+                pos = device_map.find(dev_id);
+                if(pos != device_map.end())
+                {
+                    delete pos->second;
+                    device_map.erase(pos);
+                }
 
                 if( !good_map.insert(PILReturnMap::value_type(dev_id,msg)).second )
                 {
@@ -1965,12 +1965,12 @@ void HandleReturnMessage(CtiReturnMsg* msg,
             }
             else
             {
-          pos = device_map.find(dev_id);
-          if(pos != device_map.end())
-          {
-        delete pos->second;
-        device_map.erase(pos);
-          }
+                pos = device_map.find(dev_id);
+                if(pos != device_map.end())
+                {
+                    delete pos->second;
+                    device_map.erase(pos);
+                }
 
                 if( !bad_map.insert(PILReturnMap::value_type(dev_id,msg)).second)
                 {
@@ -2127,7 +2127,7 @@ void BuildRequestSet(Tcl_Interp* interp, string& cmd_line_b, RWSet& req_set)
     boost::regex select_list_regex = ".*select[ ]+list[ ]+";
     boost::regex select_id_regex = ".*select[ ]+[^ ]+[ ]+id";
     boost::regex select_regex = ".*select[ ]+[^ ]+[ ]+";
-    
+
     if( cmd_line.index(select_list_regex, end_index) != string::npos )
     {
         int list_len;
@@ -2138,7 +2138,7 @@ void BuildRequestSet(Tcl_Interp* interp, string& cmd_line_b, RWSet& req_set)
         boost::regex e2 = "select.*";
         cmd_line = boost::regex_replace(cmd_line, e1, " ", boost::match_default | boost::format_all | boost::format_first_only);
         cmd_line = boost::regex_replace(cmd_line, e2, "", boost::match_default | boost::format_all | boost::format_first_only);
-        
+
 
         if( list_len > 0 )
         {
@@ -2169,7 +2169,7 @@ void BuildRequestSet(Tcl_Interp* interp, string& cmd_line_b, RWSet& req_set)
     }
     else //dont add quotes if it is an id
     if( cmd_line.index(select_id_regex, end_index) != string::npos )
-    {   
+    {
         CtiRequestMsg *msg = new CtiRequestMsg();
         msg->setDeviceId(0);
         msg->setCommandString(cmd_line);
@@ -2247,7 +2247,7 @@ int CTICreateProcess(ClientData clientData, Tcl_Interp* interp, int argc, char* 
     {
         cmd += argv[i];
         cmd += " ";
-    } 
+    }
 
     DWORD exitcode = -1;
     STARTUPINFO si;
@@ -2272,7 +2272,7 @@ int CTICreateProcess(ClientData clientData, Tcl_Interp* interp, int argc, char* 
                       FORMAT_MESSAGE_IGNORE_INSERTS,NULL,GetLastError(),MAKELANGID(LANG_NEUTRAL,
                                                                                    SUBLANG_DEFAULT),(LPTSTR)&lpMsgBuf,0,NULL);
         printf("Error creating job object: %s\n",(char*)lpMsgBuf);
-        LocalFree(lpMsgBuf);    
+        LocalFree(lpMsgBuf);
         return TCL_ERROR;
     }
     CloseHandle(pi.hThread);
