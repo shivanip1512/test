@@ -1,6 +1,7 @@
 package com.cannontech.amr.toggleProfiling.service;
 
 import java.util.Date;
+import java.util.List;
 import java.util.Map;
 
 import com.cannontech.database.data.lite.LiteYukonUser;
@@ -18,7 +19,7 @@ public interface ToggleProfilingService {
     
     public DeviceLoadProfile getDeviceLoadProfile(int deviceId);
     
-    public Map<String, Object> getToggleJobInfo(int deviceId, int channel);
-    public void disableScheduledJob(int deviceId, int channel);
+    public List<Map<String, Object>> getToggleJobInfos(int deviceId, int channel);
+    public void disableScheduledJob(int deviceId, int channel, boolean newToggleVal);
 
 }

@@ -5,19 +5,15 @@
 <%@ taglib uri="http://cannontech.com/tags/cti" prefix="cti" %>
 <%@ taglib prefix="tags" tagdir="/WEB-INF/tags" %>
 
-<script type="text/javascript"> 
-    function toggleChanPopup(chanId) {
-        $(chanId).toggle();
-    }
-</script>
-
 <%-- SET POPUP VAR NAMES --%>
 <c:set var="popupName" scope="page" value="togglePopupDiv${channelNum}"/>
-<c:set var="radioName" scope="page" value="toggleRadio${channelNum}"/>
-<c:set var="toggleOnDate" scope="page" value="toggleOnDate${channelNum}"/>
-<c:set var="toggleOnHour" scope="page" value="toggleOnHour${channelNum}"/>
-<c:set var="toggleOnMinute" scope="page" value="toggleOnMinute${channelNum}"/>
-<c:set var="toggleParamName" scope="page" value="toggleChannel${channelNum}ProfilingOn"/>
+<c:set var="startRadio" scope="page" value="startRadio${channelNum}"/>
+<c:set var="stopRadio" scope="page" value="stopRadio${channelNum}"/>
+<c:set var="startDate" scope="page" value="startDate${channelNum}"/>
+<c:set var="startHour" scope="page" value="startHour${channelNum}"/>
+<c:set var="stopDate" scope="page" value="stopDate${channelNum}"/>
+<c:set var="stopHour" scope="page" value="stopHour${channelNum}"/>
+
 <c:choose>
     <c:when test="${newToggleVal}">
         <c:set var="toggleDesc" scope="page" value="Start"/>
@@ -35,33 +31,94 @@
         <a href="javascript:toggleChanPopup('${popupName}');">cancel</a>
     </div>
     
-    <%-- NOW OR FUTURE RADIOS --%>
+    
     <div style="width: 100%; text-align: left;margin-bottom: 10px;">
+    <c:choose>
+    
+    <%-- START --%>
+    <c:when test="${newToggleVal}">
+    
         <table>
             <tr>
-                <td><input type="radio" name="${radioName}" id="radio" value="now" checked></td>
+                <td colspan="3"><div style="font-weight:bold;">Schedule Start</div></td>
+            </tr>
+            <tr>
+                <td><input type="radio" name="${startRadio}" value="now" checked></td>
                 <td colspan="2">Now</td>
             </tr>
             <tr>
-                <td><input type="radio" name="${radioName}" id="radio" value="future"></td>
-                <td>Future</td>
+                <td><input type="radio" name="${startRadio}" value="future"></td>
+                <td>Date</td>
                 <td>
-                    <tags:dateInputCalendar fieldName="${toggleOnDate}" fieldValue="${futureScheduleDate}"/> 
-                    <select name="${toggleOnHour}">
+                    <tags:dateInputCalendar fieldName="${startDate}" fieldValue="${futureScheduleDate}"/> 
+                    <select name="${startHour}">
                         <c:forEach var="hour" items="${hours}">
-                            <option value="${hour}">${hour}</option>
-                        </c:forEach>
-                    </select> : 
-                    <select name="${toggleOnMinute}">
-                        <c:forEach var="minute" items="${minutes}">
-                            <option value="${minute}">${minute}</option>
+                            <option value="${hour.val}">${hour.display}</option>
                         </c:forEach>
                     </select>
                 </td>
             </tr>
         </table>
+        
+        <br>
+        
+        <table>
+            <tr>
+                <td colspan="3"><div style="font-weight:bold;">Schedule Stop</div></td>
+            </tr>
+            <tr>
+                <td><input type="radio" name="${stopRadio}" id="radio" value="now" checked></td>
+                <td colspan="2">Never Stop</td>
+            </tr>
+            <tr>
+                <td><input type="radio" name="${stopRadio}" id="radio" value="future"></td>
+                <td>Date</td>
+                <td>
+                    <tags:dateInputCalendar fieldName="${stopDate}" fieldValue="${futureScheduleDate}"/> 
+                    <select name="${stopHour}">
+                        <c:forEach var="hour" items="${hours}">
+                            <option value="${hour.val}">${hour.display}</option>
+                        </c:forEach>
+                    </select>
+                </td>
+            </tr>
+        </table>
+    
+        
+    </c:when>
+        
+    <%-- STOP --%>
+    <c:otherwise>
+    
+        <table>
+            <tr>
+                <td colspan="3"><div style="font-weight:bold;">Schedule Stop</div></td>
+            </tr>
+            <tr>
+                <td><input type="radio" name="${stopRadio}" id="radio" value="now" checked></td>
+                <td colspan="2">Now</td>
+            </tr>
+            <tr>
+                <td><input type="radio" name="${stopRadio}" id="radio" value="future"></td>
+                <td>Date</td>
+                <td>
+                    <tags:dateInputCalendar fieldName="${stopDate}" fieldValue="${futureScheduleDate}"/> 
+                    <select name="${stopHour}">
+                        <c:forEach var="hour" items="${hours}">
+                            <option value="${hour.val}">${hour.display}</option>
+                        </c:forEach>
+                    </select>
+                </td>
+            </tr>
+        </table>
+     
+    </c:otherwise>
+    </c:choose>
+        
     </div>
+
+
     
     <%-- TOGGLE BUTTON --%>
-    <input type="button" id="toggleButton${channelNum}" name="toggleButton${channelNum}" value="${toggleDesc} Profiling" onClick="javascript:doToggleScanning('${channelNum}', '${newToggleVal}');">
+    <input type="button" id="toggleButton${channelNum}" name="toggleButton${channelNum}" value="${toggleDesc}" onClick="javascript:doToggleScanning('${channelNum}', '${newToggleVal}');">
 </div>

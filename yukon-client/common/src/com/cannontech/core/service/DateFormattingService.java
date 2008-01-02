@@ -10,7 +10,7 @@ import com.cannontech.database.data.lite.LiteYukonUser;
 public interface DateFormattingService {
 
     static public enum DateFormatEnum {
-        TIME("HH:mm"), DATE("MM/dd/yyyy"), BOTH("MM/dd/yyyy HH:mm:ss z"), DATEHM("MM/dd/yyyy HH:mm z");
+        TIME("HH:mm"), DATE("MM/dd/yyyy"), BOTH("MM/dd/yyyy HH:mm:ss z"), DATEHM("MM/dd/yyyy HH:mm z"), DATEH_AP("MM/dd/yyyy ha z");
 
         private final String format;
 

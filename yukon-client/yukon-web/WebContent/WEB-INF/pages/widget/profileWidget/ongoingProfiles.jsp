@@ -4,9 +4,10 @@
 
 <%@ taglib prefix="tags" tagdir="/WEB-INF/tags" %>
 
+
 <c:if test="${! empty dateErrorMessage}">
     <br/>
-    <div style="color:#FF0000;font-weight:bold;">${dateErrorMessage}</div>
+    <div style="font-weight:bold;color:#BB0000">${dateErrorMessage}</div>
     <br/>
 </c:if>
 

@@ -1,7 +1,9 @@
 package com.cannontech.amr.toggleProfiling.service.impl;
 
+import java.util.ArrayList;
 import java.util.Date;
 import java.util.HashMap;
+import java.util.List;
 import java.util.Map;
 import java.util.Set;
 
@@ -90,14 +92,14 @@ public class ToggleProfilingServiceImpl implements ToggleProfilingService {
         return deviceLoadProfile;
     }
 
-    private ScheduledOneTimeJob findScheduledJob(int deviceId, int channel) {
+    private ScheduledOneTimeJob findScheduledJob(int deviceId, int channel, boolean newToggleVal) {
         
         ScheduledOneTimeJob myJob = null;
         Set<ScheduledOneTimeJob> jobs = jobManager.getUnRunOneTimeJobsByDefinition(toggleProfilingDefinition);
         for (ScheduledOneTimeJob job : jobs) {
             
             ToggleProfilingTask tempTask = (ToggleProfilingTask)jobManager.instantiateTask(job);
-            if (tempTask.getDeviceId() == deviceId && tempTask.getChannelNum() == channel) {
+            if (tempTask.getDeviceId() == deviceId && tempTask.getChannelNum() == channel && tempTask.getNewToggleVal() == newToggleVal) {
                 myJob = job;
                 break;
             }
@@ -105,25 +107,36 @@ public class ToggleProfilingServiceImpl implements ToggleProfilingService {
         return myJob;
     }
     
-    public Map<String, Object> getToggleJobInfo(int deviceId, int channel) {
+    public List<Map<String, Object>> getToggleJobInfos(int deviceId, int channel) {
         
-        Map<String, Object> myJobInfo = null;
-        ScheduledOneTimeJob job = findScheduledJob(deviceId, channel);
+        List<Map<String, Object>> myJobInfos = new ArrayList<Map<String, Object>>();
         
+        // toggle on job
+        ScheduledOneTimeJob job = findScheduledJob(deviceId, channel, true);
         if (job != null) {
             ToggleProfilingTask tempTask = (ToggleProfilingTask)jobManager.instantiateTask(job);
-            myJobInfo = new HashMap<String, Object>();
+            Map<String, Object> myJobInfo = new HashMap<String, Object>();
             myJobInfo.put("startTime", job.getStartTime());
             myJobInfo.put("newToggleVal", tempTask.getNewToggleVal());
-            return myJobInfo;
+            myJobInfos.add(myJobInfo);
         }
         
-        return myJobInfo;
+        // toggle off job
+        job = findScheduledJob(deviceId, channel, false);
+        if (job != null) {
+            ToggleProfilingTask tempTask = (ToggleProfilingTask)jobManager.instantiateTask(job);
+            Map<String, Object> myJobInfo = new HashMap<String, Object>();
+            myJobInfo.put("startTime", job.getStartTime());
+            myJobInfo.put("newToggleVal", tempTask.getNewToggleVal());
+            myJobInfos.add(myJobInfo);
+        }
+        
+        return myJobInfos;
     }
     
-    public void disableScheduledJob(int deviceId, int channel) {
+    public void disableScheduledJob(int deviceId, int channel, boolean newToggleVal) {
         
-        ScheduledOneTimeJob job = findScheduledJob(deviceId, channel);
+        ScheduledOneTimeJob job = findScheduledJob(deviceId, channel, newToggleVal);
         if (job != null) {
             // abort it just in case its running, then disable it
             jobManager.abortJob(job);

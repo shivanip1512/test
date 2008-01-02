@@ -75,6 +75,29 @@ public class ProfileWidget extends WidgetControllerBase {
      */
 
     final long MS_IN_A_DAY = 1000 * 60 * 60 * 24;
+    
+    private String calcIntervalStr(int secs) {
+        
+        String iStr = "";
+        
+        int hrs = 0;
+        int mins = secs / 60;
+        
+        if (mins >= 60) {
+            hrs = mins / 60;
+            mins = mins % 60;
+        }
+        
+        if (hrs >= 1 ) {
+            iStr += hrs + " hr ";
+        }
+       
+        if (mins >= 1) {
+            iStr += mins + " min";
+        }
+        
+        return iStr;
+    }
 
     private List<Map<String, Object>> getAvailableChannelInfo(int deviceId) {
         
@@ -85,25 +108,26 @@ public class ProfileWidget extends WidgetControllerBase {
         // ALL Channel Names / Attributes
         // - for all possible channels
         Integer channelNums[] = {1, 4};
+        Map<Integer, Boolean> channelProfilingOn = new HashMap<Integer, Boolean>();
+        Map<Integer, List<Map<String, Object>>> channelJobInfos = new HashMap<Integer, List<Map<String, Object>>>();
         Map<Integer, String> channelDisplayNames = new HashMap<Integer, String>();
         Map<Integer, Attribute> channelAttributes = new HashMap<Integer, Attribute>();
-        Map<Integer, Integer> channelProfileRates = new HashMap<Integer, Integer>();
-        Map<Integer, Boolean> channelProfilingOn = new HashMap<Integer, Boolean>();
-        Map<Integer, Map<String, Object>> channelJobInfo = new HashMap<Integer, Map<String, Object>>();
+        Map<Integer, String> channelProfileRates = new HashMap<Integer, String>();
+        
         for (Integer channelNum : channelNums) {
+            
+            channelProfilingOn.put(channelNum, toggleProfilingService.getToggleValueForDevice(deviceId, channelNum));
+            channelJobInfos.put(channelNum, toggleProfilingService.getToggleJobInfos(deviceId, channelNum));
+            
             if (channelNum == 1) {
-                channelDisplayNames.put(channelNum, "Channel 1 (Usage)");
+                channelDisplayNames.put(channelNum, "Load Profile");
                 channelAttributes.put(channelNum, BuiltInAttribute.LOAD_PROFILE);
-                channelProfileRates.put(channelNum, deviceLoadProfile.getLoadProfileDemandRate() / 60);
-                channelProfilingOn.put(channelNum, toggleProfilingService.getToggleValueForDevice(deviceId, channelNum));
-                channelJobInfo.put(channelNum, toggleProfilingService.getToggleJobInfo(deviceId, channelNum));
+                channelProfileRates.put(channelNum, calcIntervalStr(deviceLoadProfile.getLoadProfileDemandRate()));
             }
             else if (channelNum == 4) {
-                channelDisplayNames.put(channelNum, "Channel 4 (Voltage)");
+                channelDisplayNames.put(channelNum, "Voltage Profile");
                 channelAttributes.put(channelNum, BuiltInAttribute.VOLTAGE_PROFILE);
-                channelProfileRates.put(channelNum, deviceLoadProfile.getVoltageDmdRate() / 60);
-                channelProfilingOn.put(channelNum, toggleProfilingService.getToggleValueForDevice(deviceId, channelNum));
-                channelJobInfo.put(channelNum, toggleProfilingService.getToggleJobInfo(deviceId, channelNum));
+                channelProfileRates.put(channelNum, calcIntervalStr(deviceLoadProfile.getVoltageDmdRate()));
             }
         }
         
@@ -117,11 +141,12 @@ public class ProfileWidget extends WidgetControllerBase {
             if(attributeService.isAttributeSupported(meter, channelAttributes.get(channelNum))){
                 
                 Map<String, Object> channelInfo = new HashMap<String, Object>();
+                channelInfo.put("channelProfilingOn", channelProfilingOn.get(channelNum));
+                channelInfo.put("jobInfos", channelJobInfos.get(channelNum));
                 channelInfo.put("channelNumber", channelNum.toString());
                 channelInfo.put("channelDescription", channelDisplayNames.get(channelNum));
                 channelInfo.put("channelProfileRate", channelProfileRates.get(channelNum));
-                channelInfo.put("channelProfilingOn", channelProfilingOn.get(channelNum));
-                channelInfo.put("jobInfo", toggleProfilingService.getToggleJobInfo(deviceId, channelNum));
+                
                 availableChannels.add(channelInfo);
             }
         }
@@ -136,15 +161,24 @@ public class ProfileWidget extends WidgetControllerBase {
                                                                          7),
                                                        DateFormattingService.DateFormatEnum.DATE,
                                                        user));
-        List<String> hours = new ArrayList<String>();
-        List<String> minutes = new ArrayList<String>();
-        DecimalFormat df = new DecimalFormat("00");
-        for (int i = 0; i <= 23; i++)
-            hours.add(df.format(i));
-        for (int i = 0; i <= 59; i++)
-            minutes.add(df.format(i));
+        List<Map<String, String>> hours = new ArrayList<Map<String, String>>();
+        for (Integer i = 1; i <= 24; i++) {
+            
+            Map<String, String> h = new HashMap<String, String>();
+            
+            String dispval = "";
+            if (i <= 12) {
+                dispval= i + ":00 AM";
+            }
+            else {
+                dispval = (i - 12) + ":00 PM";
+            }
+            
+            h.put("display", StringUtils.leftPad(dispval,8));
+            h.put("val", i.toString());
+            hours.add(h);
+        }
         mav.addObject("hours", hours);
-        mav.addObject("minutes", minutes);
         
     }
     
@@ -373,7 +407,7 @@ public class ProfileWidget extends WidgetControllerBase {
             }
 
         } catch (ParseException e) {
-            dateErrorMessage = "Unable to parse: " + e.getMessage();
+            dateErrorMessage = "Invalid Date: " + e.getMessage();
         }
 
         mav.addObject("dateErrorMessage", dateErrorMessage);
@@ -384,59 +418,164 @@ public class ProfileWidget extends WidgetControllerBase {
     public ModelAndView toggleProfiling(HttpServletRequest request,
             HttpServletResponse response) throws Exception {
 
-        String errorMsg = null;
+        String toggleErrorMsg = null;
         LiteYukonUser user = ServletUtil.getYukonUser(request);
         
         // get parameters
         int channelNum = WidgetParameterHelper.getRequiredIntParameter(request, "channelNum");
         boolean newToggleVal = WidgetParameterHelper.getRequiredBooleanParameter(request, "newToggleVal");
-        String scheduleType = WidgetParameterHelper.getRequiredStringParameter(request, "toggleRadio" + channelNum);
-        String toggleOnDateStr = WidgetParameterHelper.getRequiredStringParameter(request, "toggleOnDate" + channelNum);
-        int toggleOnHour = WidgetParameterHelper.getRequiredIntParameter(request, "toggleOnHour" + channelNum);
-        int toggleOnMinute = WidgetParameterHelper.getRequiredIntParameter(request, "toggleOnMinute" + channelNum);
+        
+        String startRadio = WidgetParameterHelper.getStringParameter(request, "startRadio" + channelNum);
+        String stopRadio = WidgetParameterHelper.getRequiredStringParameter(request, "stopRadio" + channelNum);
+        
+        String startDate = WidgetParameterHelper.getStringParameter(request, "startDate" + channelNum);
+        String stopDate = WidgetParameterHelper.getRequiredStringParameter(request, "stopDate" + channelNum);
+        
+        Integer startHour = WidgetParameterHelper.getIntParameter(request, "startHour" + channelNum);
+        Integer stopHour = WidgetParameterHelper.getRequiredIntParameter(request, "stopHour" + channelNum);
         
         // get device
         int deviceId = WidgetParameterHelper.getRequiredIntParameter(request, "deviceId");
         
-        // toggle now
-        if (scheduleType.equalsIgnoreCase("now")) {
+        
+        // START
+        // - start now or later
+        // - with option to schedule stop later
+        if (newToggleVal == true) {
             
-            // already scheduled? cancel it
-            toggleProfilingService.disableScheduledJob(deviceId, channelNum);
-            toggleProfilingService.toggleProfilingForDevice(deviceId, channelNum, newToggleVal);
+            boolean scheduledStartOk = false;
+            Date scheduledStartDate = null;
+            Date scheduledStopDate = null;
+            
+            // start now
+            if (startRadio.equalsIgnoreCase("now")) {
+                
+                // already scheduled to start? cancel it
+                toggleProfilingService.disableScheduledJob(deviceId, channelNum, true);
+                toggleProfilingService.toggleProfilingForDevice(deviceId, channelNum, true);
+            }
+            
+            // start later
+            else if (startRadio.equalsIgnoreCase("future")) {
+                
+                // validate scheduled start date
+                Date today = DateUtils.round(new Date(), Calendar.MINUTE);
+                try {
+                    scheduledStartDate = dateFormattingService.flexibleDateParser(startDate, DateFormattingService.DateOnlyMode.START_OF_DAY, user);
+                    scheduledStartDate = DateUtils.addHours(scheduledStartDate, startHour);
+                    scheduledStartDate = DateUtils.addMinutes(scheduledStartDate, 0);
+                    if (scheduledStartDate == null) {
+                        toggleErrorMsg = "Start Date Required";
+                    } 
+                    else if (scheduledStartDate.compareTo(today) <= 0) {
+                        toggleErrorMsg = "Start Date Must Be After Today";
+                    }
+                } catch (ParseException e) {
+                    toggleErrorMsg = "Invalid Start Date: " + e.getMessage();
+                }
+                
+                // schedule it!, already scheduled? cancel it
+                if (toggleErrorMsg == null) {
+                    toggleProfilingService.disableScheduledJob(deviceId, channelNum, true);
+                    toggleProfilingService.scheduleToggleProfilingForDevice(deviceId, channelNum, true, scheduledStartDate, user);
+                    scheduledStartOk = true;
+                }
+            }
+            
+            // stop now?
+            // - kill any scheduled stops
+            if (stopRadio.equalsIgnoreCase("now")) {
+                toggleProfilingService.disableScheduledJob(deviceId, channelNum, false);
+            }
+            
+            // stop later?
+            // - don't bother if there was an error scheduling the start date
+            else if (toggleErrorMsg == null && stopRadio.equalsIgnoreCase("future")) {
+                
+                // validate schedule date
+                Date today = DateUtils.round(new Date(), Calendar.MINUTE);
+                try {
+                    scheduledStopDate = dateFormattingService.flexibleDateParser(stopDate, DateFormattingService.DateOnlyMode.START_OF_DAY, user);
+                    scheduledStopDate = DateUtils.addHours(scheduledStopDate, stopHour);
+                    scheduledStopDate = DateUtils.addMinutes(scheduledStopDate, 0);
+                    if (scheduledStopDate == null) {
+                        toggleErrorMsg = "Stop Date Required";
+                    } 
+                    else if (scheduledStopDate.compareTo(today) <= 0) {
+                        toggleErrorMsg = "Stop Date Date Must Be After Today";
+                    }
+                } catch (ParseException e) {
+                    toggleErrorMsg = "Invalid Stop Date: " + e.getMessage();
+                }
+                
+                // was starting scheduled for later as well? make sure its before this scheduled stop date
+                if (startRadio.equalsIgnoreCase("future") && scheduledStartOk && toggleErrorMsg == null) {
+                    if (scheduledStopDate.compareTo(scheduledStartDate) <= 0) {
+                        toggleErrorMsg = "Stop Date Date Must Be After Start Date";
+                    }
+                }
+                
+                
+                // schedule it!, already scheduled? cancel it
+                if (toggleErrorMsg == null) {
+                    toggleProfilingService.disableScheduledJob(deviceId, channelNum, false);
+                    toggleProfilingService.scheduleToggleProfilingForDevice(deviceId, channelNum, false, scheduledStopDate, user);
+                }
+                
+            }
+            
+            
+        }
+           
+        // STOP
+        // - stop now or later
+        // - no option to start
+        else{
+            
+            Date scheduledStopDate = null;
+            
+            // stop now
+            if (stopRadio.equalsIgnoreCase("now")) {
+                
+                // already scheduled to start? cancel it
+                toggleProfilingService.disableScheduledJob(deviceId, channelNum, false);
+                toggleProfilingService.toggleProfilingForDevice(deviceId, channelNum, false);
+            }
+            
+            // stop later
+            else if (stopRadio.equalsIgnoreCase("future")) {
+                
+                // validate schedule date
+                Date today = DateUtils.round(new Date(), Calendar.MINUTE);
+                try {
+                    scheduledStopDate = dateFormattingService.flexibleDateParser(stopDate, DateFormattingService.DateOnlyMode.START_OF_DAY, user);
+                    scheduledStopDate = DateUtils.addHours(scheduledStopDate, stopHour);
+                    scheduledStopDate = DateUtils.addMinutes(scheduledStopDate, 0);
+                    if (scheduledStopDate == null) {
+                        toggleErrorMsg = "Stop Date Required";
+                    } 
+                    else if (scheduledStopDate.compareTo(today) <= 0) {
+                        toggleErrorMsg = "Stop Date Must Be After Today";
+                    }
+                } catch (ParseException e) {
+                    toggleErrorMsg = "Invalid Stop Date: " + e.getMessage();
+                }
+                
+                // schedule it!, already scheduled? cancel it
+                if (toggleErrorMsg == null) {
+                    toggleProfilingService.disableScheduledJob(deviceId, channelNum, false);
+                    toggleProfilingService.scheduleToggleProfilingForDevice(deviceId, channelNum, false, scheduledStopDate, user);
+                }
+            }
+            
         }
         
-        // toggle later
-        else if (scheduleType.equalsIgnoreCase("future")) {
-            
-            // validate schedule date
-            Date toggleDate = null;
-            Date today = DateUtils.round(new Date(), Calendar.MINUTE);
-            try {
-                toggleDate = dateFormattingService.flexibleDateParser(toggleOnDateStr, DateFormattingService.DateOnlyMode.START_OF_DAY, user);
-                toggleDate = DateUtils.addHours(toggleDate, toggleOnHour);
-                toggleDate = DateUtils.addMinutes(toggleDate, toggleOnMinute);
-                if (toggleDate == null) {
-                    errorMsg = "Future Date Required";
-                } 
-                else if (toggleDate.compareTo(today) <= 0) {
-                    errorMsg = "Future Date Must Be After Today";
-                }
-            } catch (ParseException e) {
-                errorMsg = "Unable To Parse Future Date: " + e.getMessage();
-            }
-            
-            // schedule it!, already scheduled? cancel it
-            if (errorMsg == null) {
-                toggleProfilingService.disableScheduledJob(deviceId, channelNum);
-                toggleProfilingService.scheduleToggleProfilingForDevice(deviceId, channelNum, newToggleVal, toggleDate, user);
-            }
-            
-        }
+        
         
         // re-load page values into mav, add any error from scheduling
         ModelAndView mav = render(request, response);
-        mav.addObject("errorMsg", errorMsg);
+        //ModelAndView mav = refreshChannelScanningInfo(request, response);
+        mav.addObject("toggleErrorMsg", toggleErrorMsg);
         
         return mav;
      

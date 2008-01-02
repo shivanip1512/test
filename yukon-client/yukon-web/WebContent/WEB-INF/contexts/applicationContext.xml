@@ -236,7 +236,7 @@
     
     <bean id="profileWidget"
     	class="com.cannontech.web.widget.ProfileWidget">
-    	<property name="title" value="Profile"/>
+    	<property name="title" value="Profile Collection"/>
         <property name="identityPath" value="common/deviceIdentity.jsp" />
         <property name="inputs">
            <set>

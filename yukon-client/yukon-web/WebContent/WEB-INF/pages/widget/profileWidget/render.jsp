@@ -6,7 +6,22 @@
 <cti:includeCss link="/WebConfig/yukon/styles/calendarControl.css"/>
 
 <script type="text/javascript"> 
+
 	var progressUpdaters = new Array();
+    var scanningUpdater = null;
+    
+    function toggleChanPopup(popupDivName) {
+        
+        $(popupDivName).toggle();
+        
+        // stop the ajax so it doesn't reload the popup as we're using it
+        if ($(popupDivName).visible()) {
+            scanningUpdater.stop();
+        }
+        else {
+            scanningUpdater.start();
+        }
+    }
     
     function doToggleScanning(channelNum, newToggleVal) {
         $('channelNum').value = channelNum;
@@ -16,13 +31,15 @@
     
 </script>
 
+
 <%-- CHANNEL SCANNING --%>
-<div id="${widgetParameters.widgetId}_channelScanning">
-    <c:url var="channelScanningUrl" value="/WEB-INF/pages/widget/profileWidget/channelScanning.jsp" />
-    <jsp:include page="${channelScanningUrl}" />
-</div>
+<c:if test="${not empty toggleErrorMsg}">
+    <div style="font-weight:bold;color:#BB0000">${toggleErrorMsg}</div>
+    <br>
+</c:if>
+<div id="${widgetParameters.widgetId}_channelScanning"></div>
 <script type="text/javascript"> 
-    new Ajax.PeriodicalUpdater('${widgetParameters.widgetId}_channelScanning', '/spring/widget/profileWidget/refreshChannelScanningInfo?deviceId=${deviceId}', {method: 'post', frequency: 90});
+    scanningUpdater = new Ajax.PeriodicalUpdater('${widgetParameters.widgetId}_channelScanning', '/spring/widget/profileWidget/refreshChannelScanningInfo?deviceId=${deviceId}', {method: 'post', frequency: 15});
 </script>
 <br/>
 
