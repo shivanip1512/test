@@ -8,10 +8,7 @@ package com.cannontech.device.range;
  */
 public interface IValidRange
 {
-
    boolean isValidRange( Number num );
-   
-   boolean isValidRange( String txt );
    
    String getRangeDescription();
 }

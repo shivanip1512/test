@@ -9,6 +9,7 @@ import com.cannontech.database.data.config.ConfigTwoWay;
 import com.cannontech.database.data.device.*;
 import com.cannontech.database.data.lite.LiteYukonPAObject;
 import com.cannontech.database.data.pao.DeviceClasses;
+import com.cannontech.database.data.pao.DeviceTypes;
 import com.cannontech.database.data.pao.PAOGroups;
 import com.cannontech.database.db.device.DeviceCarrierSettings;
 import com.cannontech.database.db.device.DeviceDialupSettings;
@@ -1690,9 +1691,9 @@ public Object getValue(Object val)
 			if( val instanceof com.cannontech.database.data.device.CarrierBase )
 			{
 
-				if( devType == PAOGroups.REPEATER || devType == PAOGroups.REPEATER_902) //val instanceof Repeater900
+				if( devType == DeviceTypes.REPEATER ) //val instanceof Repeater900
 				{
-					((CarrierBase) val).getDeviceCarrierSettings().setAddress( new Integer(address.intValue() + 4190000) );
+					((CarrierBase) val).getDeviceCarrierSettings().setAddress( new Integer(address.intValue() + Repeater900.ADDRESS_OFFSET) );
 				}
 				else
 				{
@@ -2179,8 +2180,8 @@ private void setCarrierBaseValue( CarrierBase cBase )
 {
 	Integer address = cBase.getDeviceCarrierSettings().getAddress();
 
-	if( cBase instanceof Repeater900 || cBase instanceof Repeater902 )
-		address = new Integer( address.intValue() - 4190000 );
+	if( cBase instanceof Repeater900)
+		address = new Integer( address.intValue() - Repeater900.ADDRESS_OFFSET );
       
    if( cBase instanceof com.cannontech.database.data.device.MCT_Broadcast )
       getPhysicalAddressLabel().setText("Lead Address:");

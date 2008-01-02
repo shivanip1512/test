@@ -455,9 +455,8 @@ public Object getValue(Object val)
    }
    else if( val instanceof CarrierBase )
 	{
-		if( val instanceof Repeater900 || val instanceof Repeater902 )
-		{
-			//special case, we must add 4190000 to every address for Repeater900
+		if( val instanceof Repeater900 ) {
+			//special case, we must add ADDRESS_OFFSET to every address for Repeater900
 			((CarrierBase)device).getDeviceCarrierSettings().setAddress( 
                   new Integer(address.intValue() + Repeater900.ADDRESS_OFFSET) );
 		}		

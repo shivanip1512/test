@@ -555,8 +555,8 @@ private javax.swing.JTextField getJTextFieldPhoneNumber() {
 			else if (val instanceof CarrierBase)
 			{
 				 Integer addressHolder = new Integer(getAddressTextField().getText());
-				 if(val instanceof Repeater900 || val instanceof Repeater902)
-				  	addressHolder = new Integer(addressHolder.intValue() + 4190000);
+				 if(val instanceof Repeater900)
+				  	addressHolder = new Integer(addressHolder.intValue() + Repeater900.ADDRESS_OFFSET);
 				 ((CarrierBase) val).getDeviceCarrierSettings().setAddress(addressHolder);
 				 
 				if( DeviceTypesFuncs.isMCT(getDeviceType()) )
@@ -907,8 +907,8 @@ private javax.swing.JTextField getJTextFieldPhoneNumber() {
       if( val instanceof CarrierBase )
       {
       	 addressHolder = new Integer(((CarrierBase)val).getDeviceCarrierSettings().getAddress().toString());
-         if(val instanceof Repeater900 || val instanceof Repeater902)
-         	addressHolder = new Integer(addressHolder.intValue() - 4190000);
+         if(val instanceof Repeater900)
+         	addressHolder = new Integer(addressHolder.intValue() - Repeater900.ADDRESS_OFFSET);
          getAddressTextField().setText( addressHolder.toString() );
       }
       if( val instanceof IDLCBase )

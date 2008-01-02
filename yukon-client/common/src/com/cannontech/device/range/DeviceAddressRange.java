@@ -6,7 +6,6 @@ package com.cannontech.device.range;
  * 
  * A undefined generated comment
  */
-import com.cannontech.database.data.device.DeviceTypesFuncs;
 import com.cannontech.database.data.pao.DeviceTypes;
 
 public class DeviceAddressRange
@@ -14,74 +13,67 @@ public class DeviceAddressRange
 	private static final RangeBase RANGE_DEFAULT = new RangeBase();
    
 	private static final RangeBase RANGE_MCT470 = 
-		new RangeBase( 100000, 2796201, "Valid range for MCT470 addresses is 100000 to 2796201");
-		// and can not be 1398101" );
+		new RangeBase( 100000, 2796201, DeviceTypes.MCT470);
+	
     private static final RangeBase RANGE_MCT430A = 
-        new RangeBase( 100000, 2796201, "Valid range for MCT430A addresses is 100000 to 2796201");
-        // and can not be 1398101" );
+        new RangeBase( 100000, 2796201, DeviceTypes.MCT430A);
     
     private static final RangeBase RANGE_MCT430S4 = 
-        new RangeBase( 100000, 2796201, "Valid range for MCT430S4 addresses is 100000 to 2796201");
-        // and can not be 1398101" );
+        new RangeBase( 100000, 2796201, DeviceTypes.MCT430S4);
 
     private static final RangeBase RANGE_MCT430SL = 
-        new RangeBase( 100000, 2796201, "Valid range for MCT430SL addresses is 100000 to 2796201");
+        new RangeBase( 100000, 2796201, DeviceTypes.MCT430SL);
    	
 	private static final RangeBase RANGE_MCT410CL = 
-		new RangeBase( 0, 2796201, "Valid range for MCT410CL addresses is 0 to 2796201");
-		// and can not be 1398101" ); 
+		new RangeBase( 0, 2796201, DeviceTypes.MCT410CL); 
    	
    	private static final RangeBase RANGE_MCT410IL = 
-		new RangeBase( 1000000, 2796201, "Valid range for MCT410IL addresses is 1000000 to 2796201");
-		// and can not be 1398101" );   
+		new RangeBase( 1000000, 2796201, DeviceTypes.MCT410IL);   
    	
    	private static final RangeBase RANGE_MCT410FL = 
-   	    new RangeBase( 0, 2796201, "Valid range for MCT410FL addresses is 0 to 2796201");
+   	    new RangeBase( 0, 2796201, DeviceTypes.MCT410FL);
    	
    	private static final RangeBase RANGE_MCT410GL = 
-   	    new RangeBase( 0, 2796201, "Valid range for MCT410GL addresses is 0 to 2796201");
-   
-   	private static final RangeBase RANGE_MCT = 
-    	new RangeBase( 0, 2796201, "Valid range for MCT addresses is 0 to 2796201");
-        // and can not be 1398101" );
+   	    new RangeBase( 0, 2796201, DeviceTypes.MCT410GL);
 
    	private static final RangeBase RANGE_MCT_BROADCAST = 
-        new RangeBase( 1, 4096, "Valid range for MCT Broadcast addresses is 1 to 4096" );
+        new RangeBase( 1, 4096, DeviceTypes.MCTBROADCAST);
 
    	private static final RangeBase RANGE_REPEATER900 = 
-        new RangeBase( 464, 4302, "Valid range for " + DeviceTypes.STRING_REPEATER[0] + " addresses is 464 to 4302" );
+        new RangeBase( 464, 4302, DeviceTypes.REPEATER);
 
    	private static final RangeBase RANGE_REPEATER902 = 
-   		new RangeBase( 464, 4302, "Valid range for " + DeviceTypes.STRING_REPEATER_902[0] + " addresses is 464 to 4302" );
+   		new RangeBase( 800450, 809900, DeviceTypes.REPEATER_902);
 
    	private static final RangeBase RANGE_CCU711 = 
-        new RangeBase( 0, 127, "Valid range for " + DeviceTypes.STRING_CCU_711[0] + " addresses is 0 to 127" );
+        new RangeBase( 0, 127, DeviceTypes.CCU711);
    	
    	private static final RangeBase RANGE_CCU721 = 
-   	    new RangeBase( 0, 127, "Valid range for " + DeviceTypes.STRING_CCU_721[0] + " addresses is 0 to 127" );
+   	    new RangeBase( 0, 127, DeviceTypes.CCU721);
 
    	private static final RangeBase RANGE_RTU_WELCO = 
-        new RangeBase( 0, 127, "Valid range for " + DeviceTypes.STRING_RTU_WELCO[0] + " addresses is 0 to 127" );
+        new RangeBase( 0, 127, DeviceTypes.RTUWELCO);
 
    	private static final RangeBase RANGE_VERSACOM = 
-        new RangeBase( 0, 999999999, "Valid range for " + DeviceTypes.STRING_VERSACOM_SERIAL_NUMBER[0] + " is 0 to 999999999" );
+        new RangeBase( 0, 999999999, DeviceTypes.EDITABLEVERSACOMSERIAL);
          
+    private static final RangeBase RANGE_CAPBANKCONTROLLER = 
+        new RangeBase( 0, 999999999, DeviceTypes.CAPBANKCONTROLLER);
+
+    private static final RangeBase RANGE_CBC_FP_2800 = 
+        new RangeBase( 0, 999999999, DeviceTypes.CBC_FP_2800);
+
+    private static final RangeBase RANGE_DNP_CBC_6510 = 
+        new RangeBase( 0, 999999999, DeviceTypes.DNP_CBC_6510);
+
    	private static final RangeBase RANGE_SERIES_5_LMI = 
-		new RangeBase( 0, 127, "Valid range for " + DeviceTypes.STRING_SERIES_5_LMI[0] + " addresses is 0 to 127" );
+		new RangeBase( 0, 127, DeviceTypes.SERIES_5_LMI);
 
    	private static final RangeBase RANGE_RTC = 
-		new RangeBase( 0, 15, "Valid range for " + DeviceTypes.STRING_RTC[0] + " addresses is 0 to 15" );
+		new RangeBase( 0, 15, DeviceTypes.RTC);
    
    	private static final RangeBase RANGE_RTM = 
-		new RangeBase( 0, 15, "Valid range for " + DeviceTypes.STRING_RTM[0] + " addresses is 0 to 15" );
-
-   	//build any extra params into the RangeBase appropriate intsances
-   	static
-   	{
-   		//NOT USED ANYMORE AS OF 12-23-2002
-      	//long[] excludedValues = { 1398101 }; 
-      	//RANGE_MCT.setExcludedValues( excludedValues );            
-   	}
+		new RangeBase( 0, 15, DeviceTypes.RTM);
 
 	/**
 	 * Constructor for DeviceAddressRange.
@@ -93,91 +85,74 @@ public class DeviceAddressRange
    
    	private static RangeBase getRangeBase( int deviceType_ )
    	{
-   		if( deviceType_ == DeviceTypesFuncs.MCT470)
-		{
-	   		return RANGE_MCT470;	
-		}
+   	    switch (deviceType_) {
+            case DeviceTypes.MCT470:
+                return RANGE_MCT470;
+                
+            case DeviceTypes.MCT430A:
+                return RANGE_MCT430A;    
+                
+            case DeviceTypes.MCT430S4:
+                return RANGE_MCT430S4;    
+            
+            case DeviceTypes.MCT430SL:
+                return RANGE_MCT430SL;    
         
-        if(deviceType_ == DeviceTypesFuncs.MCT430A)
-        {
-            return RANGE_MCT430A;    
-        }
-        
-        if(deviceType_ == DeviceTypesFuncs.MCT430S4)
-        {
-            return RANGE_MCT430S4;    
-        }
-        
-        if(deviceType_ == DeviceTypesFuncs.MCT430SL)
-        {
-            return RANGE_MCT430SL;    
-        }
+            case DeviceTypes.MCT410CL:
+                return RANGE_MCT410CL;
+		
+            case DeviceTypes.MCT410IL:
+                return RANGE_MCT410IL;
+                
+            case DeviceTypes.MCT410FL:
+                return RANGE_MCT410FL;
+                
+            case DeviceTypes.MCT410GL:
+                return RANGE_MCT410GL;
+            
+            case DeviceTypes.REPEATER:
+                return RANGE_REPEATER900;
+            
+            case DeviceTypes.REPEATER_902:
+                return RANGE_REPEATER902;
+                
+            case DeviceTypes.CCU711:
+                return RANGE_CCU711;
+                
+            case DeviceTypes.CCU721:
+                return RANGE_CCU721;
+                
+            case DeviceTypes.MCTBROADCAST:
+                return RANGE_MCT_BROADCAST;
 
-		if( deviceType_ == DeviceTypesFuncs.MCT410CL )
-		{
-			return RANGE_MCT410CL;
-		}
-      	if( deviceType_ == DeviceTypesFuncs.MCT410IL )
-      	{
-        	return RANGE_MCT410IL;
-      	}
-      	if( deviceType_ == DeviceTypesFuncs.MCT410FL )
-      	{
-      	    return RANGE_MCT410FL;
-      	}
-      	if( deviceType_ == DeviceTypesFuncs.MCT410GL )
-      	{
-      	    return RANGE_MCT410GL;
-      	}
-      	else if( com.cannontech.database.data.device.DeviceTypesFuncs.isMCT(deviceType_) )
-      	{
-         	return RANGE_MCT;
-      	}
-      	else if( DeviceTypes.REPEATER == deviceType_)
-      	{
-         	return RANGE_REPEATER900;
-      	}
-      	else if( DeviceTypes.REPEATER_902 == deviceType_)
-      	{
-      		return RANGE_REPEATER902;
-      	}
-      	else if( DeviceTypes.CCU711 == deviceType_ )
-      	{
-        	return RANGE_CCU711;
-      	}
-      	else if( DeviceTypes.CCU721 == deviceType_ )
-      	{
-      	    return RANGE_CCU721;
-      	}
-      	else if( DeviceTypes.MCTBROADCAST == deviceType_ )
-      	{
-         	return RANGE_MCT_BROADCAST;
-      	}
-      	else if( DeviceTypes.RTUWELCO == deviceType_ )
-      	{
-         	return RANGE_RTU_WELCO;
-      	}
-      	else if( DeviceTypes.SERIES_5_LMI == deviceType_ )
-	  	{
-	  	 	return RANGE_SERIES_5_LMI;
-	  	}
-	  	else if( DeviceTypes.RTC == deviceType_ )
-	  	{
-	     	return RANGE_RTC;
-	  	}
-	  	else if( DeviceTypes.RTM == deviceType_ )
-	  	{
-	  	 	return RANGE_RTM;
-	  	}
-      	else if( DeviceTypes.CAPBANKCONTROLLER == deviceType_
-               || DeviceTypes.CBC_FP_2800 == deviceType_
-               || DeviceTypes.DNP_CBC_6510 == deviceType_ )
-      	{
-         	return RANGE_VERSACOM;
-      	}
-      	else
-         	return RANGE_DEFAULT;
-   	}
+            case DeviceTypes.RTUWELCO:
+                return RANGE_RTU_WELCO;
+                
+            case DeviceTypes.SERIES_5_LMI:
+                return RANGE_SERIES_5_LMI;
+                
+            case DeviceTypes.RTC:
+                return RANGE_RTC;
+            
+            case DeviceTypes.RTM:
+                return RANGE_RTM;
+                
+            case DeviceTypes.CAPBANKCONTROLLER:
+                return RANGE_CAPBANKCONTROLLER;
+                
+            case DeviceTypes.CBC_FP_2800:
+                return RANGE_CBC_FP_2800;
+            
+            case DeviceTypes.DNP_CBC_6510:
+                return RANGE_DNP_CBC_6510;
+
+            case DeviceTypes.EDITABLEVERSACOMSERIAL:
+                return RANGE_VERSACOM;
+                
+            default:
+            return RANGE_DEFAULT;
+        }
+  	}
    
    	public synchronized static String getRangeMessage( int deviceType_ )
    	{

@@ -6,10 +6,10 @@ package com.cannontech.database.data.device;
 public class Repeater900 extends RepeaterBase {
     
     public static final int ADDRESS_OFFSET = 4190000;
-/**
- * Repeater constructor comment.
- */
-public Repeater900() {
-	super();
-}
+    /**
+     * Repeater constructor comment.
+     */
+    public Repeater900() {
+    	super();
+    }
 }

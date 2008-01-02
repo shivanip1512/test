@@ -1,16 +1,14 @@
 package com.cannontech.device.range;
 
-/**
- * @author rneuharth
- * Sep 5, 2002 at 4:18:31 PM
- * 
- * A undefined generated comment
- */
+import com.cannontech.database.data.pao.PAOGroups;
+
+
 public class RangeBase implements IValidRange
 {
    private long lowRange = Long.MIN_VALUE;
    private long upperRange = Long.MAX_VALUE;
    private long[] excludedValues = new long[0];
+   private int deviceType = 0;
    private String rangeDescription = null;
 
 	/**
@@ -21,27 +19,41 @@ public class RangeBase implements IValidRange
       super();
    }
 
-	public RangeBase( long lowRange_, long upperRange_, String desc_, 
-                      long[] excludedValues_ )   
-	{
+	public RangeBase( long lowRange_, long upperRange_, int deviceType_, String desc_, 
+                      long[] excludedValues_ ) {
 		super();
-      lowRange = lowRange_;
-      upperRange = upperRange_;
-      rangeDescription = desc_;
-      excludedValues = excludedValues_;
+		lowRange = lowRange_;
+		upperRange = upperRange_;
+		deviceType = deviceType_;
+		rangeDescription = desc_;
+		excludedValues = excludedValues_;
 	}
 
-   public RangeBase( long lowRange_, long upperRange_, String desc_ )
+	public RangeBase( long lowRange_, long upperRange_, int deviceType_) {
+      super();
+      lowRange = lowRange_;
+      upperRange = upperRange_;
+      deviceType = deviceType_;
+   }
+
+   public RangeBase( long lowRange_, long upperRange_, int deviceType_, String desc_ )
    {
       super();
       lowRange = lowRange_;
       upperRange = upperRange_;
+      deviceType = deviceType_;
       rangeDescription = desc_;
    }
-
+   
    public String getRangeDescription()
    {
-      return rangeDescription;
+       if( rangeDescription == null) {
+           rangeDescription = "Valid range for " + 
+                               PAOGroups.getPAOTypeString(deviceType) + 
+                               " addresses is " + lowRange +
+                               " to " + upperRange;
+       }
+       return rangeDescription;
    }
    
    public void setExcludedValues( long[] values )
@@ -68,13 +80,4 @@ public class RangeBase implements IValidRange
       
       return false;
    }
-
-   /**
-    * @see com.cannontech.dbeditor.range.ValidRange#isValidRange(String)
-    */
-   public boolean isValidRange(String txt)
-   {
-      return false;
-   }   
-   
 }
