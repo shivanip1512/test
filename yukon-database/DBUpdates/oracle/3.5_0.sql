@@ -431,13 +431,13 @@ alter table MCTConfigMapping
       on delete cascade;
  
 /* @error ignore-begin */
-	 /* Start YUK-4745 */
-	insert into YukonRole values(-211,'CI Curtailment','Operator','Operator access to C&I Curtailment');
-	insert into YukonRoleProperty values(-21100,-211,'CI Curtailment Label','CI Curtailment','The operator specific name for C&I Curtailment');
-	/* End YUK-4745 */
+/* Start YUK-4745 */
+insert into YukonRole values(-211,'CI Curtailment','Operator','Operator access to C&I Curtailment');
+insert into YukonRoleProperty values(-21100,-211,'CI Curtailment Label','CI Curtailment','The operator specific name for C&I Curtailment');
+/* End YUK-4745 */
 /* @error ignore-end */
  
- /* Start YUK-4906 */
+/* Start YUK-4906 */
 alter table MSPVendor add MaxReturnRecords int;
 update MSPVendor set MaxReturnRecords = 10000;
 alter table MSPVendor modify MaxReturnRecords int not null;
@@ -462,7 +462,7 @@ INSERT INTO DEVICETYPECOMMAND VALUES (-708, -53, 'Repeater 902', 3, 'Y', -1);
 INSERT INTO DEVICETYPECOMMAND VALUES (-709, -54, 'Repeater 902', 4, 'Y', -1); 
 /* End YUK-4876 */
  
- /* Start YUK-4984 */
+/* Start YUK-4984 */
 /* @start-block */
 declare
 v_capid number;
@@ -509,6 +509,74 @@ update Invoice set AuthorizedNumber = '';
 alter table Invoice modify AuthorizedNumber varchar2(60) not null;
 /* @error ignore-end */
 /* End YUK-5042 */
+
+/* Start YUK-5036 */
+/* @error ignore-begin */
+ALTER TABLE DCCATEGORY
+MODIFY(CATEGORYID NUMBER);
+
+ALTER TABLE DCCATEGORY
+MODIFY(CATEGORYTYPEID NUMBER);
+
+ALTER TABLE DCCATEGORYITEM
+MODIFY(CATEGORYID NUMBER);
+
+ALTER TABLE DCCATEGORYITEM
+MODIFY(ITEMTYPEID NUMBER);
+
+ALTER TABLE DCCATEGORYITEMTYPE
+MODIFY(CATEGORYTYPEID NUMBER);
+
+ALTER TABLE DCCATEGORYITEMTYPE
+MODIFY(ITEMTYPEID NUMBER);
+
+ALTER TABLE DCCONFIGURATION
+MODIFY(CONFIGID NUMBER);
+
+ALTER TABLE DCCONFIGURATION
+MODIFY(CONFIGTYPEID NUMBER);
+
+ALTER TABLE DCCONFIGURATIONCATEGORY
+MODIFY(CONFIGID NUMBER);
+
+ALTER TABLE DCCONFIGURATIONCATEGORY
+MODIFY(CATEGORYID NUMBER);
+
+ALTER TABLE DCCONFIGURATIONCATEGORYTYPE
+MODIFY(CONFIGTYPEID NUMBER);
+
+ALTER TABLE DCCONFIGURATIONCATEGORYTYPE
+MODIFY(CATEGORYTYPEID NUMBER);
+
+ALTER TABLE DCCONFIGURATIONTYPE
+MODIFY(CONFIGTYPEID NUMBER);
+
+ALTER TABLE DCDEVICECONFIGURATION
+MODIFY(DEVICEID NUMBER);
+
+ALTER TABLE DCDEVICECONFIGURATION
+MODIFY(CONFIGID NUMBER);
+
+ALTER TABLE DCDEVICECONFIGURATIONTYPE
+MODIFY(CONFIGTYPEID NUMBER);
+
+ALTER TABLE DCITEMTYPE
+MODIFY(ITEMTYPEID NUMBER);
+
+ALTER TABLE DCITEMTYPE
+MODIFY(MINVALUE NUMBER);
+
+ALTER TABLE DCITEMTYPE
+MODIFY(MAXVALUE NUMBER);
+
+ALTER TABLE DCITEMVALUE
+MODIFY(ITEMTYPEID NUMBER);
+
+ALTER TABLE DCITEMVALUE
+MODIFY(VALUEORDER NUMBER);
+/* @error ignore-end */
+/* End YUK-5036 */
+
 /******************************************************************************/
 /* Run the Stars Update if needed here */
 /* Note: DBUpdate application will ignore this if STARS is not present */
