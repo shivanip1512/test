@@ -9,8 +9,8 @@
 *
 * PVCS KEYWORDS:
 * ARCHIVE      :  $Archive:   Z:/SOFTWAREARCHIVES/YUKON/RTDB/INCLUDE/port_base.h-arc  $
-* REVISION     :  $Revision: 1.9 $
-* DATE         :  $Date: 2007/10/05 13:42:42 $
+* REVISION     :  $Revision: 1.10 $
+* DATE         :  $Date: 2008/01/02 21:10:05 $
 *
 * Copyright (c) 2006 Cannon Technologies Inc. All rights reserved.
 *-----------------------------------------------------------------------------*/
@@ -82,6 +82,7 @@ protected:
         om_queue      outbound;
         packet_queue  inbound;
         bool          pending_decode;
+        bool          active;
         CtiXfer       xfer;
         int           status;
         unsigned long timeout;

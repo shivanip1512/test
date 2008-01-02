@@ -7,8 +7,8 @@
 * Author: Matt Fisher
 *
 * CVS KEYWORDS:
-* REVISION     :  $Revision: 1.19 $
-* DATE         :  $Date: 2007/12/03 15:21:32 $
+* REVISION     :  $Revision: 1.20 $
+* DATE         :  $Date: 2008/01/02 21:10:05 $
 *
 * Copyright (c) 2004 Cannon Technologies Inc. All rights reserved.
 *-----------------------------------------------------------------------------*/
@@ -639,7 +639,7 @@ bool UDPInterface::getPackets( int wait )
                                  << ((p->ip >> 16) & 0xff) << "."
                                  << ((p->ip >>  8) & 0xff) << "."
                                  << ((p->ip >>  0) & 0xff) << ":" << p->port << ": " << endl;
-    
+
                             dout << "LEN  : " << len << endl;
                             dout << "CRC? : " << crc_included << endl;
                             dout << "ACK? : " << ack_required << endl;
@@ -975,7 +975,7 @@ bool UDPInterface::getPackets( int wait )
                                     dout << keys   << endl;
                                     dout << values << endl;
                                 }
-                                
+
 
                                 break;
                             }
@@ -1315,6 +1315,8 @@ void UDPInterface::generateOutbounds( void )
                     {
                         dr->device->recvCommRequest(dr->work.outbound.front());
 
+                        dr->work.active = true;
+
                         dr->work.pending_decode = false;
                     }
                     else
@@ -1332,6 +1334,8 @@ void UDPInterface::generateOutbounds( void )
                     shared_ptr<Cti::Device::DNP> dev = boost::static_pointer_cast<Cti::Device::DNP>(dr->device);
 
                     dev->initUnsolicited();
+
+                    dr->work.active = true;
 
                     dr->work.pending_decode = false;
                 }
@@ -1453,7 +1457,7 @@ void UDPInterface::processInbounds( void )
 {
     dr_id_map::iterator itr = _devices.begin();
 
-    for( ; itr !=  _devices.end(); itr++ )
+    for( ; itr != _devices.end(); itr++ )
     {
         device_record *dr = itr->second;
 
@@ -2106,39 +2110,41 @@ void UDPInterface::sendResults( void )
 
         if( dr && dr->device )
         {
-            if( dr->device->isTransactionComplete() )
+            if( dr->work.active && dr->device->isTransactionComplete() )
             {
                 dr->device->sendDispatchResults(VanGoghConnection);
 
-				//  we may be done with this transaction, but do we have anyone to send it back to?
+                dr->work.active = false;
+
+                //  we may be done with this transaction, but do we have anyone to send it back to?
                 if( !dr->work.outbound.empty() )
                 {
-					if( dr->work.outbound.front() )
-					{
-						im.EventCode = dr->work.status;
+                    if( dr->work.outbound.front() )
+                    {
+                        im.EventCode = dr->work.status;
 
-						OUTMESS *om = dr->work.outbound.front();
+                        OUTMESS *om = dr->work.outbound.front();
 
-						bool commFailed = (dr->work.status == NORMAL);
+                        bool commFailed = (dr->work.status == NORMAL);
 
-						if( dr->device->adjustCommCounts(commFailed, om->Retry > 0) )
-						{
-							commFail(boost::static_pointer_cast<CtiDeviceBase>(dr->device));
-						}
+                        if( dr->device->adjustCommCounts(commFailed, om->Retry > 0) )
+                        {
+                            commFail(boost::static_pointer_cast<CtiDeviceBase>(dr->device));
+                        }
 
-						statisticsNewCompletion( om->Port, om->DeviceID, om->TargetID, dr->work.status, om->MessageFlags );
+                        statisticsNewCompletion( om->Port, om->DeviceID, om->TargetID, dr->work.status, om->MessageFlags );
 
-						OutEchoToIN(dr->work.outbound.front(), &im);
+                        OutEchoToIN(dr->work.outbound.front(), &im);
 
-						dr->device->sendCommResult(&im);
+                        dr->device->sendCommResult(&im);
 
-						//  This method may delete the om!
-						ReturnResultMessage(dr->work.status, &im, dr->work.outbound.front());
-					}
+                        //  This method may delete the om!
+                        ReturnResultMessage(dr->work.status, &im, dr->work.outbound.front());
+                    }
 
                     delete dr->work.outbound.front();
 
-					dr->work.outbound.pop();
+                    dr->work.outbound.pop();
                 }
             }
         }
