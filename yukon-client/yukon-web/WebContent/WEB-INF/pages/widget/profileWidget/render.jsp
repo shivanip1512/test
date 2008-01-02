@@ -39,7 +39,7 @@
 </c:if>
 <div id="${widgetParameters.widgetId}_channelScanning"></div>
 <script type="text/javascript"> 
-    scanningUpdater = new Ajax.PeriodicalUpdater('${widgetParameters.widgetId}_channelScanning', '/spring/widget/profileWidget/refreshChannelScanningInfo?deviceId=${deviceId}', {method: 'post', frequency: 15});
+    scanningUpdater = new Ajax.PeriodicalUpdater('${widgetParameters.widgetId}_channelScanning', '/spring/widget/profileWidget/refreshChannelScanningInfo?deviceId=${deviceId}', {method: 'post', frequency: 90});
 </script>
 <br/>
 
