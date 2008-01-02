@@ -502,6 +502,13 @@ end;
 /* @end-block */
 /* End YUK-4984 */
  
+/* Start YUK-5042 */
+/* @error ignore-begin */
+alter table Invoice add AuthorizedNumber varchar2(60);
+update Invoice set AuthorizedNumber = '';
+alter table Invoice modify AuthorizedNumber varchar2(60) not null;
+/* @error ignore-end */
+/* End YUK-5042 */
 /******************************************************************************/
 /* Run the Stars Update if needed here */
 /* Note: DBUpdate application will ignore this if STARS is not present */
