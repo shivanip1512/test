@@ -223,8 +223,9 @@
 			}
 			else
 			{
-				selectedFilter += document.getElementById(comboID).options[0].text;
-				selectedFilterID = document.getElementById(comboID).options[0].value; 
+                var index = document.getElementById(comboID).selectedIndex;
+				selectedFilter += document.getElementById(comboID).options[index].text;
+				selectedFilterID = document.getElementById(comboID).options[index].value; 
 			}
 			
 		}
