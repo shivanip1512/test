@@ -1279,6 +1279,11 @@ ALTER TABLE DCITEMVALUE
 MODIFY(VALUEORDER NUMBER);
 /* @error ignore-end */
 /* End YUK-5036 */
+
+/* Start YUK-5049 */
+ALTER TABLE DYNAMICCCAREA
+MODIFY(AREAID NUMBER);
+/* End YUK-5049 */
 /**************************************************************/
 /* VERSION INFO                                               */
 /*   Automatically gets inserted from build script            */

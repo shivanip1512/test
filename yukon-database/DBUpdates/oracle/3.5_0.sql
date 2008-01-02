@@ -338,7 +338,7 @@ insert into yukonroleproperty values (-100106,-1001, 'Feeder Last Update Timesta
 insert into yukonroleproperty values (-100203,-1002, 'CapBank Last Update Timestamp', 'true', 'is last update timestamp shown for capbanks');
 insert into yukonroleproperty values (-100105,-1001, 'Target', 'true', 'is target stat displayed');
 
-create table dynamicccarea ( AreaID numeric not null, additionalflags varchar2(20) not null );
+create table dynamicccarea ( AreaID number not null, additionalflags varchar2(20) not null );
 
 alter table dynamicccarea
    add constraint FK_ccarea_Dynccarea foreign key (areaID)
