@@ -87,7 +87,7 @@ public class OnelineCommentController implements Controller {
         } else if (tagDesc.equalsIgnoreCase(CapBankOperationalState.StandAlone.name())) {
             action = CommentAction.STANDALONE_REASON;
         } else {
-            throw new RuntimeException("Unsupported Action!");
+            throw new RuntimeException("Unsupported Action: " + tagDesc);
         }
         
         String actionToString = action.toString();
