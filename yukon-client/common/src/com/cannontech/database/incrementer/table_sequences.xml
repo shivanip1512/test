@@ -84,10 +84,10 @@
         <table name="PeakReport" identitycolumn="resultId" initsequence="true"/>
       </sequence>
       <sequence name="BillingFileFormats">
-        <table name="BillingFileFormats" identitycolumn="FormatID" initsequence="false" />
+        <table name="BillingFileFormats" identitycolumn="FormatId" initsequence="false" />
       </sequence>
       <sequence name="DynamicBillingFormat">
-        <table name="DynamicBillingFormat" identitycolumn="id" initsequence="true"/>
+        <table name="DynamicBillingFormat" identitycolumn="FormatId" initsequence="true"/>
       </sequence>
       <sequence name="DynamicBillingField">
         <table name="DynamicBillingField" identitycolumn="id" initsequence="true"/>
