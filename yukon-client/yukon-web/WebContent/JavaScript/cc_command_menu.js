@@ -124,8 +124,8 @@ function generateSubstationMenu (id, state, opts) {
 	 	reset_op_cnt:12,
 	 	send_all_open:29, 
 	 	send_all_close:30, 
-	 	send_all_enable_ovuv:17, 
-	 	send_all_disable_ovuv:18,
+	 	send_all_enable_ovuv:31, 
+	 	send_all_disable_ovuv:32,
 	 	send_all_2way_scan:33,
 	 	send_timesync:34
 	 }
