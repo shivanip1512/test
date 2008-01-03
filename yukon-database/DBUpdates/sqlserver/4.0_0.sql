@@ -1061,7 +1061,6 @@ go
 /* End YUK-4813 */
 
 /* Start YUK-4762, YUK-4969 */
-drop table capbankcomment; 
 create table CAPCONTROLCOMMENT  (
    CommentID            int                  not null,
    PaoID                numeric              not null,

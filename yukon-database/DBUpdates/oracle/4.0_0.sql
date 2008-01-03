@@ -899,7 +899,6 @@ alter table cceventlog modify capbankstateinfo varchar2(20) not null ;
 /* End YUK-4813 */
 
 /* Start YUK-4762, YUK-4969 */
-drop table capbankcomment; 
 create table CAPCONTROLCOMMENT  (
    CommentID            INTEGER                         not null,
    PaoID                NUMBER                         not null,
