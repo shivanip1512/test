@@ -10,16 +10,34 @@
 	    &gt; Profile
 	</cti:breadCrumbs>
 	
-	<h2>Profile</h2>
-	<br>
+	<table class="widgetColumns">
+        <tr>
+            <td>
+                <h2 style="display: inline;">
+                    Profile
+                </h2>
+            </td>
+            <td align="right">
+                &nbsp; <!-- quick search? -->
+            </td>
+        </tr>
+    </table>
+    
+    <br>
 	
 	<div style="width: 50%;">
 		<ct:widgetContainer deviceId="${deviceId}">
-			<ct:widget bean="meterInformationWidget" />
-			
-			<ct:widget bean="profileWidget" />
-			
-			<ct:widget bean="peakReportWidget" />
+        
+            <div class="widgetColumns">
+        
+    			<ct:widget bean="meterInformationWidget" />
+    			<br>
+    			<ct:widget bean="profileWidget" />
+    			<br>
+    			<ct:widget bean="peakReportWidget" />
+                
+            </div>
+                
 		</ct:widgetContainer>
 	</div>
 
