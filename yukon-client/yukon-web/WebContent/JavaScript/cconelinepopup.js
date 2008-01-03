@@ -479,6 +479,8 @@ function createFeederMenu(paoID) {
 	var enableOvUvFdr = new Command (paoID, ALL_FDR_CMDS.send_all_enable_ovuv, ALL_CMD_TYPES.feeder);
 	var disableOvUvFdr = new Command (paoID, ALL_FDR_CMDS.send_all_disable_ovuv, ALL_CMD_TYPES.feeder);
 	var sendAll2WayFdr = new Command (paoID, ALL_FDR_CMDS.send_all_2way_scan, ALL_CMD_TYPES.feeder);
+	var sendTimeSyncFdr = new Command (paoID, ALL_FDR_CMDS.send_timesync, ALL_CMD_TYPES.feeder);
+	
 	
 	var str='';
 	str+='<html>';
@@ -513,7 +515,11 @@ function createFeederMenu(paoID) {
 	str+='" style="color: white"> Disable OvUv<\/option>';
 	str+='							<option  value="';
 	str+=							sendAll2WayFdr.createName();
-	str+='" style="color: white"> Scan All 2way CapBanks<\/option>';
+	str+='" style="color: white"> Scan All 2way CBCs<\/option>';
+	str+='							<option  value="';
+	str+=							sendTimeSyncFdr.createName();
+	str+='" style="color: white"> Send All TimeSync<\/option>';
+	
 	str+='						<\/select>';
 	str+='				<\/td>';
 	str+='			<\/tr>';
@@ -539,6 +545,7 @@ function createSubMenu() {
 	var enableOvUvSub = new Command (paoId, ALL_SUB_CMDS.send_all_enable_ovuv, ALL_CMD_TYPES.sub);
 	var disableOvUvSub = new Command (paoId, ALL_SUB_CMDS.send_all_disable_ovuv, ALL_CMD_TYPES.sub);
 	var sendAll2WaySub = new Command (paoId, ALL_SUB_CMDS.send_all_2way_scan, ALL_CMD_TYPES.sub);
+	var sendTimeSyncSub = new Command (paoId, ALL_SUB_CMDS.send_timesync, ALL_CMD_TYPES.sub);
 
 	var verifyAll = new Command (paoId, ALL_SUB_CMDS.v_all_banks, ALL_CMD_TYPES.sub);
 	var verifyFQ = new Command (paoId, ALL_SUB_CMDS.v_fq_banks, ALL_CMD_TYPES.sub);
@@ -585,7 +592,10 @@ function createSubMenu() {
 	str+='" style="color: white"> Disable OvUv<\/option>';
 	str+='							<option  value="';
 	str+=							sendAll2WaySub.createName();
-	str+='" style="color: white"> Scan All 2way CapBanks<\/option>';
+	str+='" style="color: white"> Scan All 2way CBCs<\/option>';
+	str+='							<option  value="';
+	str+=							sendTimeSyncSub.createName();
+	str+='" style="color: white"> Send All TimeSync<\/option>';
 
 	if (isV != "true") {
 		str+='							<option  value="';
@@ -700,6 +710,7 @@ function say(word) {
 function createCapbankMaint(paoID, disScan) {
 var scan = new Command (paoID, ALL_CAP_CMDS.scan_2way_dev, ALL_CMD_TYPES.cap);
 var ovUVEn = new Command (paoID, ALL_CAP_CMDS.bank_enable_ovuv, ALL_CMD_TYPES.cap);
+var sendTimeSync = new Command (paoID, ALL_CAP_CMDS.send_timesync, ALL_CMD_TYPES.cap);
 var str='';
 str+='<html>';
 str+='	<body style="background-color: black">';
@@ -722,6 +733,13 @@ str+='			<td>';
 str+='				<input type="submit"  name="';
 str+=			ovUVEn.createName();		
 str+='" value="Enable OV\/UV" onclick="disableAll(); submit(this); reset(this)"\/>';
+str+='			<\/td>';
+str+='		<\/tr>';
+str+='		<tr>';
+str+='			<td>';
+str+='				<input type="submit"  name="';
+str+=			sendTimeSync.createName();		
+str+='" value="Send TimeSync" onclick="disableAll(); submit(this); reset(this)"\/>';
 str+='			<\/td>';
 str+='		<\/tr>';
 str+='	<\/table>';

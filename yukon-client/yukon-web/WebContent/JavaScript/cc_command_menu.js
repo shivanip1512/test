@@ -126,7 +126,8 @@ function generateSubstationMenu (id, state, opts) {
 	 	send_all_close:30, 
 	 	send_all_enable_ovuv:17, 
 	 	send_all_disable_ovuv:18,
-	 	send_all_2way_scan:33
+	 	send_all_2way_scan:33,
+	 	send_timesync:34
 	 }
 	 var enableOvUv = opts[2];
 	var table_footer = "</table>";
@@ -148,7 +149,8 @@ function generateSubstationMenu (id, state, opts) {
 	 		table_body += add_AJAX_Function('substation', id, ALL_SUBSTATION_CMDS.send_all_enable_ovuv, 'Enable_OV/UV');
 			table_body += add_AJAX_Function('substation', id, ALL_SUBSTATION_CMDS.send_all_disable_ovuv, 'Disable_OV/UV');
 		}
-		table_body += add_AJAX_Function('substation', id, ALL_SUBSTATION_CMDS.send_all_2way_scan, 'Scan_All_2way_Scans');
+		table_body += add_AJAX_Function('substation', id, ALL_SUBSTATION_CMDS.send_all_2way_scan, 'Scan_All_2way_CBCs');
+		table_body += add_AJAX_Function('substation', id, ALL_SUBSTATION_CMDS.send_timesync, 'Send_All_TimeSync');
  	}
 	table_body+= table_footer;
 	return table_body;
@@ -167,6 +169,7 @@ function generateSubMenu (id, state, opts) {
 	 	send_all_enable_ovuv:31, 
 	 	send_all_disable_ovuv:32,
 	 	send_all_2way_scan:33,
+	 	send_timesync:34,
 	 	v_all_banks:40,
 	 	v_fq_banks:41,
 	 	v_failed_banks:42,
@@ -194,7 +197,8 @@ function generateSubMenu (id, state, opts) {
             table_body += add_AJAX_Function('sub', id, ALL_SUB_CMDS.send_all_enable_ovuv, 'Enable_OV/UV');
             table_body += add_AJAX_Function('sub', id, ALL_SUB_CMDS.send_all_disable_ovuv, 'Disable_OV/UV');
         }
-		table_body += add_AJAX_Function('sub', id, ALL_SUB_CMDS.send_all_2way_scan, 'Scan_All_2way_Scans');
+		table_body += add_AJAX_Function('sub', id, ALL_SUB_CMDS.send_all_2way_scan, 'Scan_All_2way_CBCs');
+		table_body += add_AJAX_Function('sub', id, ALL_SUB_CMDS.send_timesync, 'Send_All_TimeSync');
 		if (!opts[0]){
 	 		table_body += add_AJAX_Function('sub', id, ALL_SUB_CMDS.v_all_banks, 'Verify_All_Banks');
 	 		table_body += add_AJAX_Function('sub', id, ALL_SUB_CMDS.v_fq_banks, 'Verify_Failed_And_Questionable_Banks');
@@ -220,7 +224,8 @@ function generateFeederMenu (id, state, opts) {
 		send_all_close:30, 
 		send_all_enable_ovuv:31, 
 		send_all_disable_ovuv:32,
-		send_all_2way_scan:33
+		send_all_2way_scan:33,
+	 	send_timesync:34	
 	}
     var enableOvUv = opts[2];
     var table_footer = "</table>";
@@ -240,7 +245,8 @@ function generateFeederMenu (id, state, opts) {
             table_body += add_AJAX_Function('feeder', id, ALL_FDR_CMDS.send_all_enable_ovuv, 'Enable_OV/UV');
             table_body += add_AJAX_Function('feeder', id, ALL_FDR_CMDS.send_all_disable_ovuv, 'Disable_OV/UV');
         }
-	   table_body += add_AJAX_Function('feeder', id, ALL_FDR_CMDS.send_all_2way_scan, 'Scan_All_2way_CapBanks');
+	    table_body += add_AJAX_Function('feeder', id, ALL_FDR_CMDS.send_all_2way_scan, 'Scan_All_2way_CBCs');
+	    table_body += add_AJAX_Function('feeder', id, ALL_FDR_CMDS.send_timesync, 'Send_All_TimeSync');
     }
 	table_body+= table_footer;
 	return table_body;
@@ -296,7 +302,8 @@ function generateAreaMenu (id, name, enable) {
  	table_body += add_AJAX_Function('area', id, 30, 'Close_All_CapBanks');
  	table_body += add_AJAX_Function('area', id, 31, 'Enable_OV/UV');
 	table_body += add_AJAX_Function('area', id, 32, 'Disable_OV/UV');
-	table_body += add_AJAX_Function('area', id, 33, 'Scan_All_2way_Scans');
+	table_body += add_AJAX_Function('area', id, 33, 'Scan_All_2way_CBCs');
+	table_body += add_AJAX_Function('area', id, 34, 'Send_All_TimeSync');
      
      table_body+= table_footer;
      //append table to the div
@@ -319,7 +326,8 @@ function generateCapBankMenu (id, state, opts) {
  	disable_capbank:5,
  	reset_op_cnt:12,
     scan_2way_dev:24,
-    flip_7010: 27
+    flip_7010: 27,
+    send_timesync:34
  	}
  var table_footer = "</table>";
  var table_body = "<table >";
@@ -337,6 +345,7 @@ function generateCapBankMenu (id, state, opts) {
            if (opts[5] == 'true')
             {
                 table_body += add_AJAX_Function('cap', id, ALL_CAP_CMDS.scan_2way_dev, 'Init_Scan', false);
+                table_body += add_AJAX_Function('cap', id, ALL_CAP_CMDS.send_timesync, 'Send_TimeSync', false);
             }
 		
 		if (allow_ovuv == 'true') {

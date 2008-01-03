@@ -5,9 +5,9 @@
 var REF_TABLE = {ALL_CAP_CMDS:"cap",ALL_FDR_CMDS:"feeder",ALL_SUB_CMDS:"sub", ALL_TAG_CMDS:"tag"};
 
 var ALL_CMD_TYPES = {sub:"sub", feeder:"feeder", cap:"cap", tag:"tag"};
-var ALL_SUB_CMDS = {confirm_close:9, enable_sub:0, disable_sub:1, reset_op_cnt:12, send_all_open:29, send_all_close:30, send_all_enable_ovuv:31, send_all_disable_ovuv:32, send_all_2way_scan:33, v_all_banks:40, v_fq_banks:41, v_failed_banks:42, v_question_banks:43, v_disable_verify:44, v_standalone_banks:46};
-var ALL_FDR_CMDS = {enable_fdr:2, disable_fdr:3, reset_op_cnt:12, send_all_open:29, send_all_close:30, send_all_enable_ovuv:31, send_all_disable_ovuv:32, send_all_2way_scan:33};
-var ALL_CAP_CMDS = {confirm_open:8, open_capbank:6, close_capbank:7, bank_enable_ovuv:17, bank_disable_ovuv:18, enable_capbank:4, disable_capbank:5, reset_op_cnt:12, scan_2way_dev:24, operational_state:35};
+var ALL_SUB_CMDS = {confirm_close:9, enable_sub:0, disable_sub:1, reset_op_cnt:12, send_all_open:29, send_all_close:30, send_all_enable_ovuv:31, send_all_disable_ovuv:32, send_all_2way_scan:33, send_timesync:34, v_all_banks:40, v_fq_banks:41, v_failed_banks:42, v_question_banks:43, v_disable_verify:44, v_standalone_banks:46};
+var ALL_FDR_CMDS = {enable_fdr:2, disable_fdr:3, reset_op_cnt:12, send_all_open:29, send_all_close:30, send_all_enable_ovuv:31, send_all_disable_ovuv:32, send_all_2way_scan:33, send_timesync:34};
+var ALL_CAP_CMDS = {confirm_open:8, open_capbank:6, close_capbank:7, bank_enable_ovuv:17, bank_disable_ovuv:18, enable_capbank:4, disable_capbank:5, reset_op_cnt:12, scan_2way_dev:24, send_timesync:34, operational_state:35};
 
 
 //same as CapBank constants
@@ -19,7 +19,8 @@ var ALL_TAG_CMDS = {standalone:"StandAlone", switched:"Switched",
 					subOVUVEnabled:"subOVUVEnabled", subOVUVDisabled:"subOVUVDisabled",
 					feederOVUVEnabled:"feederOVUVEnabled", feederOVUVDisabled:"feederOVUVDisabled",
 					send_all_open:"SendAllOpen", send_all_close:"SendAllClose", 
-					send_all_enable_ovuv:"SendAllEnableOvUv", send_all_disable_ovuv:"SendAllDisableOvUv"
+					send_all_enable_ovuv:"SendAllEnableOvUv", send_all_disable_ovuv:"SendAllDisableOvUv",
+					send_timesync:"SendTimeSync"
 					};
 					
 
