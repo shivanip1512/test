@@ -1,7 +1,7 @@
 /*==============================================================*/
 /* Database name:  YukonDatabase                                */
 /* DBMS name:      ORACLE Version 9i                            */
-/* Created on:     1/2/2008 5:18:04 PM                          */
+/* Created on:     1/2/2008 9:45:28 PM                          */
 /*==============================================================*/
 
 
@@ -5094,7 +5094,7 @@ create table LMThermoStatGear  (
    ValueTd              NUMBER                          not null,
    ValueTe              NUMBER                          not null,
    ValueTf              NUMBER                          not null,
-   RampRate             FLOAT                          default 0 not null,
+   RampRate             FLOAT                           not null,
    constraint PK_LMTHERMOSTATGEAR primary key (GearID)
 );
 

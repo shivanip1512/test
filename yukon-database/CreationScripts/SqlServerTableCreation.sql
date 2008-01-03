@@ -1,7 +1,7 @@
 /*==============================================================*/
 /* Database name:  YukonDatabase                                */
 /* DBMS name:      Microsoft SQL Server 2000                    */
-/* Created on:     1/2/2008 5:19:21 PM                          */
+/* Created on:     1/2/2008 9:44:03 PM                          */
 /*==============================================================*/
 
 
@@ -7166,7 +7166,7 @@ create table LMThermoStatGear (
    ValueTd              numeric              not null,
    ValueTe              numeric              not null,
    ValueTf              numeric              not null,
-   RampRate             float                not null default 0,
+   RampRate             float                not null,
    constraint PK_LMTHERMOSTATGEAR primary key nonclustered (GearID)
 )
 go
