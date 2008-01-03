@@ -1293,6 +1293,17 @@ MODIFY(VALUEORDER NUMBER);
 ALTER TABLE DYNAMICCCAREA
 MODIFY(AREAID NUMBER);
 /* End YUK-5049 */
+
+/* Start YUK-5047 */
+UPDATE YUKONROLEPROPERTY
+SET    
+       ROLEID         = -700,
+       KEYNAME        = 'Allow OV/UV',
+       DEFAULTVALUE   = 'false',
+       DESCRIPTION    = 'Allows users to toggle OV/UV usage for capbanks, substations, subs, and feeders.'
+WHERE  ROLEPROPERTYID = -70008
+;
+/* End YUK-5047 */
 /**************************************************************/
 /* VERSION INFO                                               */
 /*   Automatically gets inserted from build script            */
