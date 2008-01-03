@@ -50,9 +50,6 @@ public class DeviceGroupMember extends DBPersistent {
         hacker.setGroup(FixedDeviceGroups.BILLINGGROUP, yukonDevice, billingGroup);
         hacker.setGroup(FixedDeviceGroups.COLLECTIONGROUP, yukonDevice, collectionGroup);
         hacker.setGroup(FixedDeviceGroups.TESTCOLLECTIONGROUP, yukonDevice, alternateGroup);
-        hacker.setGroup(FixedDeviceGroups.CUSTOM1GROUP, yukonDevice, customGroup1);
-        hacker.setGroup(FixedDeviceGroups.CUSTOM2GROUP, yukonDevice, customGroup2);
-        hacker.setGroup(FixedDeviceGroups.CUSTOM3GROUP, yukonDevice, customGroup3);
     }
 
     @SuppressWarnings("deprecation")
@@ -62,9 +59,6 @@ public class DeviceGroupMember extends DBPersistent {
         hacker.setGroup(FixedDeviceGroups.BILLINGGROUP, yukonDevice, null);
         hacker.setGroup(FixedDeviceGroups.COLLECTIONGROUP, yukonDevice, null);
         hacker.setGroup(FixedDeviceGroups.TESTCOLLECTIONGROUP, yukonDevice, null);
-        hacker.setGroup(FixedDeviceGroups.CUSTOM1GROUP, yukonDevice, null);
-        hacker.setGroup(FixedDeviceGroups.CUSTOM2GROUP, yukonDevice, null);
-        hacker.setGroup(FixedDeviceGroups.CUSTOM3GROUP, yukonDevice, null);
     }
 
     @Override

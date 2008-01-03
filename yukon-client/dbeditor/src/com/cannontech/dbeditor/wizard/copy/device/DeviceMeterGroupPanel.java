@@ -10,6 +10,7 @@ import java.util.List;
 
 import javax.swing.JComboBox;
 import javax.swing.JLabel;
+import javax.swing.JTextArea;
 
 import com.cannontech.common.device.YukonDevice;
 import com.cannontech.common.device.groups.service.FixedDeviceGroupingHack;
@@ -30,16 +31,11 @@ public class DeviceMeterGroupPanel extends com.cannontech.common.gui.util.DataIn
     
     private javax.swing.JLabel ivjAreaCodeGroupLabel = null;
     private javax.swing.JLabel ivjCycleGroupLabel = null;
+    private JTextArea customGroupsDirectionsLabel = null;
     private javax.swing.JComboBox alternateGroupComboBox = null;
     private javax.swing.JComboBox ivjCycleGroupComboBox = null;
     private javax.swing.JComboBox ivjJComboBoxBillingGroup = null;
-    private JComboBox customGroup1ComboBox = null;
-    private JComboBox customGroup2ComboBox = null;
-    private JComboBox customGroup3ComboBox = null;
     private javax.swing.JLabel ivjJLabelBillingGroup = null;
-    private JLabel customGroup1Label = null;
-    private JLabel customGroup2Label = null;
-    private JLabel customGroup3Label = null;
     
     FixedDeviceGroupingHack hacker = (FixedDeviceGroupingHack) YukonSpringHook.getBean("fixedDeviceGroupingHack"); 
     
@@ -108,109 +104,20 @@ public class DeviceMeterGroupPanel extends com.cannontech.common.gui.util.DataIn
             constraintsJComboBoxBillingGroup.insets = new java.awt.Insets(3, 1, 3, 21);
             add(getJComboBoxBillingGroup(), constraintsJComboBoxBillingGroup);
             
-            java.awt.GridBagConstraints constraintsCustomGroup1Label = new java.awt.GridBagConstraints();
-            constraintsCustomGroup1Label.gridx = 1; constraintsCustomGroup1Label.gridy = 5;
-            constraintsCustomGroup1Label.anchor = java.awt.GridBagConstraints.WEST;
-            constraintsCustomGroup1Label.ipadx = 9;
-            constraintsCustomGroup1Label.ipady = 2;
-            constraintsCustomGroup1Label.insets = new java.awt.Insets(7, 16, 3, 0);
-            add(getCustomGroup1Label(), constraintsCustomGroup1Label);
-
-            java.awt.GridBagConstraints constraintsCustomGroup1ComboBox = new java.awt.GridBagConstraints();
-            constraintsCustomGroup1ComboBox.gridx = 2; constraintsCustomGroup1ComboBox.gridy = 5;
-            constraintsCustomGroup1ComboBox.fill = java.awt.GridBagConstraints.HORIZONTAL;
-            constraintsCustomGroup1ComboBox.anchor = java.awt.GridBagConstraints.WEST;
-            constraintsCustomGroup1ComboBox.weightx = 1.0;
-            constraintsCustomGroup1ComboBox.insets = new java.awt.Insets(3, 1, 3, 21);
-            add(getCustomGroup1ComboBox(), constraintsCustomGroup1ComboBox);
-            
-            java.awt.GridBagConstraints constraintsCustomGroup2Label = new java.awt.GridBagConstraints();
-            constraintsCustomGroup2Label.gridx = 1; constraintsCustomGroup2Label.gridy = 6;
-            constraintsCustomGroup2Label.anchor = java.awt.GridBagConstraints.WEST;
-            constraintsCustomGroup2Label.ipadx = 9;
-            constraintsCustomGroup2Label.ipady = 2;
-            constraintsCustomGroup2Label.insets = new java.awt.Insets(7, 16, 3, 0);
-            add(getCustomGroup2Label(), constraintsCustomGroup2Label);
-
-            java.awt.GridBagConstraints constraintsCustomGroup2ComboBox = new java.awt.GridBagConstraints();
-            constraintsCustomGroup2ComboBox.gridx = 2; constraintsCustomGroup2ComboBox.gridy = 6;
-            constraintsCustomGroup2ComboBox.fill = java.awt.GridBagConstraints.HORIZONTAL;
-            constraintsCustomGroup2ComboBox.anchor = java.awt.GridBagConstraints.WEST;
-            constraintsCustomGroup2ComboBox.weightx = 1.0;
-            constraintsCustomGroup2ComboBox.insets = new java.awt.Insets(3, 1, 3, 21);
-            add(getCustomGroup2ComboBox(), constraintsCustomGroup2ComboBox);
-            
-            java.awt.GridBagConstraints constraintsCustomGroup3Label = new java.awt.GridBagConstraints();
-            constraintsCustomGroup3Label.gridx = 1; constraintsCustomGroup3Label.gridy = 7;
-            constraintsCustomGroup3Label.anchor = java.awt.GridBagConstraints.WEST;
-            constraintsCustomGroup3Label.ipadx = 9;
-            constraintsCustomGroup3Label.ipady = 2;
-            constraintsCustomGroup3Label.insets = new java.awt.Insets(7, 16, 3, 0);
-            add(getCustomGroup3Label(), constraintsCustomGroup3Label);
-
-            java.awt.GridBagConstraints constraintsCustomGroup3ComboBox = new java.awt.GridBagConstraints();
-            constraintsCustomGroup3ComboBox.gridx = 2; constraintsCustomGroup3ComboBox.gridy = 7;
-            constraintsCustomGroup3ComboBox.fill = java.awt.GridBagConstraints.HORIZONTAL;
-            constraintsCustomGroup3ComboBox.anchor = java.awt.GridBagConstraints.WEST;
-            constraintsCustomGroup3ComboBox.weightx = 1.0;
-            constraintsCustomGroup3ComboBox.insets = new java.awt.Insets(3, 1, 3, 21);
-            add(getCustomGroup3ComboBox(), constraintsCustomGroup3ComboBox);
+            java.awt.GridBagConstraints constraintsCustomGroupsDirectionsLabel = new java.awt.GridBagConstraints();
+            constraintsCustomGroupsDirectionsLabel.gridx = 1; constraintsCustomGroupsDirectionsLabel.gridy = 5;
+            constraintsCustomGroupsDirectionsLabel.fill = java.awt.GridBagConstraints.HORIZONTAL;
+            constraintsCustomGroupsDirectionsLabel.anchor = java.awt.GridBagConstraints.CENTER;
+            constraintsCustomGroupsDirectionsLabel.gridwidth  = 2;
+            constraintsCustomGroupsDirectionsLabel.ipadx = 2;
+            constraintsCustomGroupsDirectionsLabel.ipady = 2;
+            constraintsCustomGroupsDirectionsLabel.insets = new java.awt.Insets(7, 10, 3, 10);
+            add(getCustomGroupsDirectionsLabel(), constraintsCustomGroupsDirectionsLabel);
 
             
         } catch (java.lang.Throwable ivjExc) {
             handleException(ivjExc);
         }
-    }
-    
-    private JLabel getCustomGroup1Label() {
-        if (customGroup1Label == null) {
-            try {
-                customGroup1Label = new javax.swing.JLabel();
-                customGroup1Label.setName("CustomGroup1Label");
-                customGroup1Label.setText("Custom Group 1:");
-                customGroup1Label.setMaximumSize(new Dimension(114, 16));
-                customGroup1Label.setPreferredSize(new Dimension(114, 16));
-                customGroup1Label.setFont(new Font("dialog", 0, 14));
-                customGroup1Label.setMinimumSize(new Dimension(114, 16));
-            } catch (java.lang.Throwable ivjExc) {
-                handleException(ivjExc);
-            }
-        }
-        return customGroup1Label;
-    }
-
-    private JLabel getCustomGroup2Label() {
-        if (customGroup2Label == null) {
-            try {
-                customGroup2Label = new javax.swing.JLabel();
-                customGroup2Label.setName("CustomGroup2Label");
-                customGroup2Label.setText("Custom Group 2:");
-                customGroup2Label.setMaximumSize(new Dimension(114, 16));
-                customGroup2Label.setPreferredSize(new Dimension(114, 16));
-                customGroup2Label.setFont(new Font("dialog", 0, 14));
-                customGroup2Label.setMinimumSize(new Dimension(114, 16));
-            } catch (java.lang.Throwable ivjExc) {
-                handleException(ivjExc);
-            }
-        }
-        return customGroup2Label;
-    }
-
-    private JLabel getCustomGroup3Label() {
-        if (customGroup3Label == null) {
-            try {
-                customGroup3Label = new javax.swing.JLabel();
-                customGroup3Label.setName("CustomGroup3Label");
-                customGroup3Label.setText("Custom Group 3:");
-                customGroup3Label.setMaximumSize(new Dimension(114, 16));
-                customGroup3Label.setPreferredSize(new Dimension(114, 16));
-                customGroup3Label.setFont(new Font("dialog", 0, 14));
-                customGroup3Label.setMinimumSize(new Dimension(114, 16));
-            } catch (java.lang.Throwable ivjExc) {
-                handleException(ivjExc);
-            }
-        }
-        return customGroup3Label;
     }
     
     /**
@@ -315,68 +222,6 @@ public class DeviceMeterGroupPanel extends com.cannontech.common.gui.util.DataIn
         return alternateGroupComboBox;
     }
     
-    private JComboBox getCustomGroup1ComboBox() {
-        if (customGroup1ComboBox == null) {
-            try {
-                customGroup1ComboBox = new JComboBox();
-                customGroup1ComboBox.setName("CustomGroup1ComboBox");
-                customGroup1ComboBox.setPreferredSize(new Dimension(200, 25));
-                customGroup1ComboBox.setEditable(true);
-                customGroup1ComboBox.setMinimumSize(new Dimension(200, 25));
-
-                List<String> availableCustom1Groups = hacker.getGroups(FixedDeviceGroups.CUSTOM1GROUP);
-                Iterator<String> iter = availableCustom1Groups.iterator();
-                while(iter.hasNext()) {
-                    customGroup1ComboBox.addItem(iter.next());
-                }
-
-            } catch (java.lang.Throwable ivjExc) {
-                handleException(ivjExc);
-            }
-        }
-        return customGroup1ComboBox;
-    }
-
-    private JComboBox getCustomGroup2ComboBox() {
-        if (customGroup2ComboBox == null) {
-            try {
-                customGroup2ComboBox = new JComboBox();
-                customGroup2ComboBox.setName("CustomGroup2ComboBox");
-                customGroup2ComboBox.setPreferredSize(new Dimension(200, 25));
-                customGroup2ComboBox.setEditable(true);
-                customGroup2ComboBox.setMinimumSize(new Dimension(200, 25));
-                List<String> availableCustom2Groups = hacker.getGroups(FixedDeviceGroups.CUSTOM2GROUP);
-                Iterator<String> iter = availableCustom2Groups.iterator();
-                while(iter.hasNext()) {
-                    customGroup2ComboBox.addItem(iter.next());
-                }
-            } catch (java.lang.Throwable ivjExc) {
-                handleException(ivjExc);
-            }
-        }
-        return customGroup2ComboBox;
-    }
-
-    private JComboBox getCustomGroup3ComboBox() {
-        if (customGroup3ComboBox == null) {
-            try {
-                customGroup3ComboBox = new JComboBox();
-                customGroup3ComboBox.setName("CustomGroup3ComboBox");
-                customGroup3ComboBox.setPreferredSize(new Dimension(200, 25));
-                customGroup3ComboBox.setEditable(true);
-                customGroup3ComboBox.setMinimumSize(new Dimension(200, 25));
-                List<String> availableCustom3Groups = hacker.getGroups(FixedDeviceGroups.CUSTOM3GROUP);
-                Iterator<String> iter = availableCustom3Groups.iterator();
-                while(iter.hasNext()) {
-                    customGroup3ComboBox.addItem(iter.next());
-                }
-            } catch (java.lang.Throwable ivjExc) {
-                handleException(ivjExc);
-            }
-        }
-        return customGroup3ComboBox;
-    }
-    
     /**
      * Return the JLabelBillingGroup property value.
      * @return javax.swing.JLabel
@@ -428,6 +273,23 @@ public class DeviceMeterGroupPanel extends com.cannontech.common.gui.util.DataIn
         return ivjJComboBoxBillingGroup;
     }
     
+    private JTextArea getCustomGroupsDirectionsLabel() {
+        if (customGroupsDirectionsLabel == null) {
+          try {
+              customGroupsDirectionsLabel = new javax.swing.JTextArea();
+              customGroupsDirectionsLabel.setName("CustomGroupsDirections");
+              customGroupsDirectionsLabel.setText("* To further manage the groupings for this device, please log into the Yukon Web operations client. Once there, enter the Metering section and proceed to the Device Details page to update the device's assigned groups.");
+              customGroupsDirectionsLabel.setFont(new Font("dialog", 0, 13));
+              customGroupsDirectionsLabel.setLineWrap( true );
+              customGroupsDirectionsLabel.setWrapStyleWord( true );
+              customGroupsDirectionsLabel.setBackground( null );
+          } catch (java.lang.Throwable ivjExc) {
+              handleException(ivjExc);
+          }
+        }
+        return customGroupsDirectionsLabel;
+    }
+    
     /**
      * Called whenever the part throws an exception.
      * @param exception java.lang.Throwable
@@ -458,11 +320,8 @@ public class DeviceMeterGroupPanel extends com.cannontech.common.gui.util.DataIn
         String cycleGroup = (String)getCycleGroupComboBox().getSelectedItem();
         String alternateGroup = (String)getAlternateGroupComboBox().getSelectedItem();
         String billingGroup = (String)getJComboBoxBillingGroup().getSelectedItem();
-        String customGroup1 = (String)getCustomGroup1ComboBox().getSelectedItem();
-        String customGroup2 = (String)getCustomGroup2ComboBox().getSelectedItem();
-        String customGroup3 = (String)getCustomGroup3ComboBox().getSelectedItem();
         
-        DeviceGroupMember dgm = new DeviceGroupMember(yd, billingGroup, cycleGroup, alternateGroup, customGroup1, customGroup2, customGroup3);
+        DeviceGroupMember dgm = new DeviceGroupMember(yd, billingGroup, cycleGroup, alternateGroup, null, null, null);
         ((MultiDBPersistent) val).getDBPersistentVector().add(dgm);
         
         return val;
@@ -490,15 +349,9 @@ public class DeviceMeterGroupPanel extends com.cannontech.common.gui.util.DataIn
         String billingGroup = hacker.getGroupForDevice(FixedDeviceGroups.BILLINGGROUP, yd);
         String alternateGroup = hacker.getGroupForDevice(FixedDeviceGroups.TESTCOLLECTIONGROUP, yd);
         String collectionGroup = hacker.getGroupForDevice(FixedDeviceGroups.COLLECTIONGROUP, yd);
-        String customGroup1 = hacker.getGroupForDevice(FixedDeviceGroups.CUSTOM1GROUP, yd);
-        String customGroup2 = hacker.getGroupForDevice(FixedDeviceGroups.CUSTOM2GROUP, yd);
-        String customGroup3 = hacker.getGroupForDevice(FixedDeviceGroups.CUSTOM3GROUP, yd);
         getCycleGroupComboBox().setSelectedItem( collectionGroup );
         getAlternateGroupComboBox().setSelectedItem( alternateGroup );
         getJComboBoxBillingGroup().setSelectedItem( billingGroup );
-        getCustomGroup1ComboBox().setSelectedItem(customGroup1);
-        getCustomGroup2ComboBox().setSelectedItem(customGroup2);
-        getCustomGroup3ComboBox().setSelectedItem(customGroup3);
     }
     
     public void setFirstFocus() 
