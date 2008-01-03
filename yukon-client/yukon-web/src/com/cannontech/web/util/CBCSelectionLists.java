@@ -80,6 +80,9 @@ public class CBCSelectionLists {
         new SelectItem(new Integer(PAOGroups.CBC_7024), PAOGroups.getPAOTypeString(PAOGroups.CBC_7024) )
     };
     
+    private static final SelectItem[] typeListDNP = {
+        new SelectItem(new Integer(PAOGroups.CBC_DNP), PAOGroups.getPAOTypeString(PAOGroups.CBC_DNP) )
+    };
 	private static final SelectItem[] wizardCBCTypes =  {
 		//value, label
 		new SelectItem(new Integer(PAOGroups.CBC_EXPRESSCOM), PAOGroups.getPAOTypeString(PAOGroups.CBC_EXPRESSCOM) ),
@@ -454,6 +457,10 @@ public class CBCSelectionLists {
 		return typeList702X;
 	}
 	
+	public  SelectItem[] getTypeListDNP() {
+        return typeListDNP;
+    }
+   
 	public SelectItem[] getTimeInterval() {
 
 		return TIME_INTERVAL;

@@ -23,6 +23,11 @@
 	        >
 			<f:selectItems value="#{selLists.typeList701X}"/>	        
 	        </x:selectOneMenu>
+	        <x:selectOneMenu id = "Select_DNPCBC_PAOType" value="#{capControlForm.CBControllerEditor.deviceType}" 
+	        rendered="#{capControlForm.CBControllerEditor.deviceDNP && capControlForm.PAOBase.PAOType != 'CAP BANK'}"
+	        >
+			<f:selectItems value="#{selLists.typeListDNP}"/>	        
+	        </x:selectOneMenu>
 			<f:verbatim><br/></f:verbatim>
 	        <x:outputText value="Class: " title="System specific class of CapControl object" />
 	        <x:outputText value="#{capControlForm.PAOBase.PAOClass}" styleClass="staticLabel"/>
