@@ -226,49 +226,53 @@ function createURLreq( elems, initialURL, attrib ) {
 // -------------------------------------------
 function updateHTML( result) {
     if( result != null ) {
+    
+        var map = createResultMap(result);
         var elems = $$('*[name="cti_dyn"]');
-        for (var i = 0; i < result.length; i++) {
-            var xmlID = getElementTextNS(result[i], 0, 'id');
 
-            for( var j = 0; j < elems.length; j++ ) {
-                if( elems[j].getAttribute('id') == xmlID ) {
-                    var elemType = elems[j].getAttribute('type');
-                    switch( elemType ) {
-                    
-                        case 'warning':
-                            var image = getElementTextNS(result[i],0,'warning');
-                            var warningID = "warning_alert_"+xmlID;
-                            var okId = "warning_ok_"+xmlID;
-                            if( image == "true" ){
-                               if( !$(warningID).visible() )
-                               		$(warningID).toggle();
-                               if( $(okId).visible() )
-                               		$(okId).toggle();
-                            } else {
-                               if( $(warningID).visible() ){
-                               		$(warningID).toggle();
-                               	} 
-                               	if( !$(okId).visible() ){
-                               		$(okId).toggle();      
-                               	} 
-                            }
-                        break;
-                        
-                        //special case since 2 elements are involved with 1 TAG
-                        case 'state':
-                            var xmlColor = getElementTextNS(result[i], 0, 'param0');                            
-                            elems[j].style.color = xmlColor;
-                            elems[j].innerHTML = getElementTextNS(result[i], 0, elemType);
-						    break;
-                        
-                        //most of this time this will suffice
-                        default:
-                            elems[j].innerHTML = getElementTextNS(result[i], 0, elemType);
-                            break;
+        for (var j = 0; j < elems.length; j++) {
+            var element = elems[j];
+            var xmlId = element.getAttribute('id');
+            var value = map[xmlId];
+            if (value == null) continue;
+            
+            var elemType = element.getAttribute('type');
+            switch (elemType) {
+                case 'warning':
+                    var image = getElementTextNS(value,0,'warning');
+                    var warningID = "warning_alert_" + xmlId;
+                    var okId = "warning_ok_" + xmlId;
+                    if (image == "true") {
+                        if (!$(warningID).visible()) {
+                            $(warningID).toggle();
+                        }    
+                        if ($(okId).visible()) {
+                            $(okId).toggle();
+                        }    
+                    } else {
+                        if ($(warningID).visible()) {
+                            $(warningID).toggle();
+                        } 
+                        if (!$(okId).visible()) {
+                            $(okId).toggle();      
+                        } 
                     }
-                }
+                    break;
+                        
+                //special case since 2 elements are involved with 1 TAG
+                case 'state':
+                    var xmlColor = getElementTextNS(value, 0, 'param0');                            
+                    element.style.color = xmlColor;
+                    element.innerHTML = getElementTextNS(value, 0, elemType);
+                    break;
+                        
+                //most of this time this will suffice
+                default:
+                    element.innerHTML = getElementTextNS(value, 0, elemType);
+                    break;
             }
         }
+
         updateCommandMenu(result);
         var lastUpdate = document.getElementById('lastUpdate');
         if (lastUpdate){
@@ -276,6 +280,16 @@ function updateHTML( result) {
         }
         setTimeout('callBack()', clientRefresh );
     }
+}
+
+function createResultMap(result) {
+    var map = new Hash();
+    for (var x = 0; x < result.length; x++) {
+        var value = result[x];
+        var key = getElementTextNS(result[x], 0, 'id');
+        map[key] = value;
+    }
+    return map;
 }
 
 // -------------------------------------------
