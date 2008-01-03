@@ -153,7 +153,7 @@ update YukonRoleProperty set DefaultValue = 'Curtailment' where RolePropertyID =
 
 create table DEVICEGROUP  (
    DeviceGroupId      NUMBER(18,0)                    not null,
-   GroupName          VARCHAR2(255),                   
+   GroupName          VARCHAR2(255)						not null,                   
    ParentDeviceGroupId NUMBER(18,0),
    SystemGroup        CHAR(1)                         not null,
    Type               VARCHAR2(255)                   not null
