@@ -14,6 +14,7 @@ import java.util.Date;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
+import java.util.Set;
 import java.util.Vector;
 
 import org.apache.commons.lang.StringUtils;
@@ -21,7 +22,10 @@ import org.springframework.dao.DataAccessException;
 
 import com.cannontech.amr.meter.dao.MeterDao;
 import com.cannontech.clientutils.CTILogger;
+import com.cannontech.common.device.YukonDevice;
+import com.cannontech.common.device.groups.dao.DeviceGroupProviderDao;
 import com.cannontech.common.device.groups.editor.dao.DeviceGroupMemberEditorDao;
+import com.cannontech.common.device.groups.editor.dao.SystemGroupEnum;
 import com.cannontech.common.device.groups.editor.model.StoredDeviceGroup;
 import com.cannontech.common.device.groups.model.DeviceGroup;
 import com.cannontech.common.device.groups.service.DeviceGroupService;
@@ -91,6 +95,7 @@ public class Multispeak implements MessageListener {
     private MspObjectDao mspObjectDao;
     private DeviceGroupService deviceGroupService;
     private DeviceGroupMemberEditorDao deviceGroupMemberEditorDao;
+    private DeviceGroupProviderDao deviceGroupDao;
     private MeterDao meterDao;
     private SystemLogHelper _systemLogHelper = null;
         
@@ -137,6 +142,10 @@ public class Multispeak implements MessageListener {
     public void setDeviceGroupMemberEditorDao(
             DeviceGroupMemberEditorDao deviceGroupMemberEditorDao) {
         this.deviceGroupMemberEditorDao = deviceGroupMemberEditorDao;
+    }
+
+    public void setDeviceGroupDao(DeviceGroupProviderDao deviceGroupDao) {
+        this.deviceGroupDao = deviceGroupDao;
     }
     
     public void setDeviceGroupService(DeviceGroupService deviceGroupService) {
@@ -620,7 +629,7 @@ public class Multispeak implements MessageListener {
                         if( disabled ) {        //Disabled Meter found
 
                             //Lookup meter by mspAddress
-                            List liteYukonPaoByAddressList = paoDao.getLiteYukonPaobjectsByAddress(new Integer(mspAddress).intValue());
+                            List<LiteYukonPAObject> liteYukonPaoByAddressList = paoDao.getLiteYukonPaobjectsByAddress(new Integer(mspAddress).intValue());
                             
                             if (liteYukonPaoByAddressList.isEmpty()) {  //New Hardware
                                 //Need to "remove" the existing (disabled) Meter Number
@@ -654,13 +663,13 @@ public class Multispeak implements MessageListener {
                                 	mspServiceLocation = mspObjectDao.getMspServiceLocation(meterNo, mspVendor);
                                     //Find a valid substation
                                     if( mspMeter.getUtilityInfo() == null || mspMeter.getUtilityInfo().getSubstationName()== null){
-                                        addImportData(mspMeter, mspServiceLocation, templateName, "");
+                                        addImportData(mspMeter, mspVendor, mspServiceLocation, liteYukonPaobjectTemplate, "");
                                         logMSPActivity("MeterAddNotification",
                                                        "MeterNumber(" + meterNo + ") - Meter inserted into ImportData for processing.", 
                                                        mspVendor.getCompanyName());
                                     } else {
                                         String substationName = mspMeter.getUtilityInfo().getSubstationName();
-                                        List routeNames = DBFuncs.getRouteNamesFromSubstationName(substationName);
+                                        List<String> routeNames = DBFuncs.getRouteNamesFromSubstationName(substationName);
                                         if( routeNames.isEmpty()){
                                             ErrorObject err = multispeakFuncs.getErrorObject(meterNo, 
                                                                                              "Error: MeterNumber(" + meterNo + ") - SubstationName(" + substationName + ") - no RouteMappings found in Yukon.  Meter was NOT added",
@@ -671,7 +680,7 @@ public class Multispeak implements MessageListener {
                                                            mspVendor.getCompanyName());
                                         }
                                         else {
-                                            addImportData(mspMeter, mspServiceLocation, templateName, substationName);
+                                            addImportData(mspMeter, mspVendor, mspServiceLocation, liteYukonPaobjectTemplate, substationName);
                                             logMSPActivity("MeterAddNotification",
                                                            "MeterNumber(" + meterNo + ") - Meter inserted into ImportData for processing.", 
                                                            mspVendor.getCompanyName());
@@ -680,7 +689,7 @@ public class Multispeak implements MessageListener {
                                 }                                    
                                 
                             } else {    //Meter Number and Address both exist...on different objects! 
-                                LiteYukonPAObject liteYukonPaoByAddress = (LiteYukonPAObject)liteYukonPaoByAddressList.get(0);
+                                LiteYukonPAObject liteYukonPaoByAddress = liteYukonPaoByAddressList.get(0);
                                 YukonPAObject yukonPaobjectByAddress = (YukonPAObject)dbPersistentDao.retrieveDBPersistent(liteYukonPaoByAddress);
                                 
                                 if (yukonPaobjectByAddress.isDisabled()) {  //Address object is disabled, so we can update and activate the Meter Number object
@@ -756,7 +765,7 @@ public class Multispeak implements MessageListener {
                 }
             }else { //Meter Number not currently found in Yukon
                 //Lookup meter by mspAddress
-                List liteYukonPaoByAddressList = paoDao.getLiteYukonPaobjectsByAddress(new Integer(mspAddress).intValue());
+                List<LiteYukonPAObject> liteYukonPaoByAddressList = paoDao.getLiteYukonPaobjectsByAddress(new Integer(mspAddress).intValue());
                 if (liteYukonPaoByAddressList.isEmpty()) {  //New Hardware
                     //Find a valid Template!
                 	String templateName = getMeterTemplate(mspMeter, mspVendor.getTemplateNameDefault());
@@ -776,13 +785,13 @@ public class Multispeak implements MessageListener {
                     	mspServiceLocation = mspObjectDao.getMspServiceLocation(meterNo, mspVendor);
                         //Find a valid substation
                         if( mspMeter.getUtilityInfo() == null || mspMeter.getUtilityInfo().getSubstationName()== null){
-                            addImportData(mspMeter, mspServiceLocation, templateName, "");
+                            addImportData(mspMeter, mspVendor, mspServiceLocation, liteYukonPaobjectTemplate, "");
                             logMSPActivity("MeterAddNotification",
                                            "MeterNumber(" + meterNo + ") - Meter inserted into ImportData for processing.",
                                            mspVendor.getCompanyName());
                         } else {
                             String substationName = mspMeter.getUtilityInfo().getSubstationName();
-                            List routeNames = DBFuncs.getRouteNamesFromSubstationName(substationName);
+                            List<String> routeNames = DBFuncs.getRouteNamesFromSubstationName(substationName);
                             if( routeNames.isEmpty()){
                                 ErrorObject err = multispeakFuncs.getErrorObject(meterNo, 
                                                                                  "Error: MeterNumber(" + meterNo + ") - SubstationName(" + substationName + ") - no RouteMappings found in Yukon.  Meter was NOT added",
@@ -793,7 +802,7 @@ public class Multispeak implements MessageListener {
                                                mspVendor.getCompanyName());
                             }
                             else {
-                                addImportData(mspMeter, mspServiceLocation, templateName, substationName);
+                                addImportData(mspMeter, mspVendor, mspServiceLocation, liteYukonPaobjectTemplate, substationName);
                                 logMSPActivity("MeterAddNotification",
                                                "MeterNumber(" + meterNo + ") - Meter inserted into ImportData for processing.", 
                                                mspVendor.getCompanyName());
@@ -801,7 +810,7 @@ public class Multispeak implements MessageListener {
                         }
                     }
                 } else { // mspAddress already exists in Yukon 
-                    LiteYukonPAObject liteYukonPaoByAddress = (LiteYukonPAObject)liteYukonPaoByAddressList.get(0);
+                    LiteYukonPAObject liteYukonPaoByAddress = liteYukonPaoByAddressList.get(0);
                     YukonPAObject yukonPaobjectByAddress = (YukonPAObject)dbPersistentDao.retrieveDBPersistent(liteYukonPaoByAddress);
                     if (yukonPaobjectByAddress.isDisabled()) {  //Address object is disabled, so we can update and activate the Address object
                         //TODO deleteRawPointHistory(yukonPaobject);
@@ -1007,21 +1016,58 @@ public class Multispeak implements MessageListener {
         return _systemLogHelper;
     }
     
-    private void addImportData(Meter mspMeter, ServiceLocation mspServiceLocation, String templateName, String substationName){
+    private void addImportData(Meter mspMeter, MultispeakVendor mspVendor, ServiceLocation mspServiceLocation, 
+                                LiteYukonPAObject templatePaobject, String substationName){
+        
         String address = mspMeter.getNameplate().getTransponderID();
         String meterNumber = mspMeter.getMeterNo();
+        String templateName = templatePaobject.getPaoName();
         String billingGroup = StringUtils.isBlank(mspServiceLocation.getBillingCycle())? "":mspServiceLocation.getBillingCycle();
 
+        // get the Collection Group value...returns a set...just pick one I guess.
+        String collectionGroup = getSystemGroup(mspVendor, templatePaobject, SystemGroupEnum.COLLECTION);
+            
+        // get the Alternate Group value...returns a set...just pick one I guess.
+        String alternateGroup = getSystemGroup(mspVendor, templatePaobject, SystemGroupEnum.ALTERNATE);
+        
         final int paoAlias = multispeakFuncs.getPaoNameAlias();
         String paoName = getPaoNameFromMspMeter(mspMeter, paoAlias, meterNumber);
 
         ImportData importData = new ImportData(address, paoName, "", meterNumber, 
-                                               "Default", "Default", templateName, billingGroup, substationName);
+                                               collectionGroup, alternateGroup, 
+                                               templateName, billingGroup, substationName);
         try {
             Transaction.createTransaction(Transaction.INSERT, importData).execute();
         } catch (TransactionException e) {
             CTILogger.error(e);
         }
+    }
+
+    private String getSystemGroup(MultispeakVendor mspVendor, LiteYukonPAObject templatePaobject, 
+            SystemGroupEnum groupEnum) {
+        
+        YukonDevice templateYukonDevice = new YukonDevice(templatePaobject.getYukonID(), templatePaobject.getType());
+
+        String groupName = "Default";
+        StoredDeviceGroup deviceGroup = deviceGroupService.getGroup(groupEnum);
+        Set<? extends DeviceGroup> deviceGroups = deviceGroupDao.getGroupMembership(deviceGroup, templateYukonDevice);
+        if( deviceGroups.isEmpty())
+            logMSPActivity("addImportData", "Template '" + templatePaobject.getPaoName() + 
+                           "' is not a member of " + groupEnum.getFullPath()+ 
+                           ".  'Default' will be assigned", mspVendor.getUserName());
+        else if( deviceGroups.size() > 1)
+            logMSPActivity("addImportData", "Template '" + templatePaobject.getPaoName() + 
+                           "' is a member of more than one " + groupEnum.getFullPath()+ 
+                           ".  '" + deviceGroups.iterator().next() + "' will be assigned.", mspVendor.getUserName());
+        else if( deviceGroups.size() == 1)
+            logMSPActivity("addImportData", "Template '" + templatePaobject.getPaoName() + 
+                           "' is a member of " + groupEnum.getFullPath()+ 
+                           ".  '" + deviceGroups.iterator().next() + "' will be assigned.", mspVendor.getUserName());
+        
+        if( deviceGroups.size() > 0)
+            groupName = deviceGroups.iterator().next().getName();
+        
+        return groupName;
     }
     
     private void logMSPActivity(String method, String description, String userName) {
@@ -1175,27 +1221,6 @@ public class Multispeak implements MessageListener {
            return errors;
        }
        return new ErrorObject[0];
-   }
-       /**
-    * Returns a serviceLocation for the meterNo.
-    * If the interface/method is not supported by mspVendor, or if no object is found, an empty ServiceLocation object is returned.
-    * @param mspVendor
-    * @param meterNo
-    * @return
-    */
-   private ServiceLocation getServiceLocation(MultispeakVendor mspVendor, String meterNo) {
-	   // Load the CIS serviceLocation.
-   		ServiceLocation mspServiceLocation = new ServiceLocation();
-   		String endpointURL = mspVendor.getEndpointURL(MultispeakDefines.CB_MR_STR);
-    	try {
-    		CB_MRSoap_BindingStub port = MultispeakPortFactory.getCB_MRPort(mspVendor);
-   			mspServiceLocation =  port.getServiceLocationByMeterNo(meterNo);
-    	} catch (RemoteException e) {
-    		CTILogger.error("TargetService: " + endpointURL + " - getServiceLocationByMeterNo (" + mspVendor.getCompanyName() + ")");
-			CTILogger.error("RemoteExceptionDetail: "+e.getMessage());
-			CTILogger.info("A default(empty) is being used for ServiceLocation");
-       }
-       return mspServiceLocation;
    }
    
 	private static String getPaoNameFromMspMeter(Meter mspMeter, int paoNameAlias, String defaultValue) {
