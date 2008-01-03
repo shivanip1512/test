@@ -133,7 +133,7 @@ public class RolodexGroupProvider extends DeviceGroupProviderBase {
 	    
 	    if (group instanceof RolodexLetterDeviceGroup) {
     		RolodexLetterDeviceGroup rolodexGroup = (RolodexLetterDeviceGroup) group;
-            // return devices that start with some leter
+            // return devices that start with some letter
             String matcher = Character.toUpperCase(rolodexGroup.firstLetter) + "%";
             String whereString = identifier + " IN ( " +
             					" SELECT DISTINCT PAO.PAOBJECTID FROM YUKONPAOBJECT PAO " + 
@@ -150,7 +150,7 @@ public class RolodexGroupProvider extends DeviceGroupProviderBase {
     public String getDeviceGroupSqlWhereClause(DeviceGroup group, String identifier) {
         
         if (group instanceof RolodexLetterDeviceGroup) {
-            return super.getDeviceGroupSqlWhereClause(group, identifier);
+            return getChildDeviceGroupSqlWhereClause(group, identifier);
         }
         else {
             // because the nature of this group is that it contains all devices

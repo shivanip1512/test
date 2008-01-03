@@ -176,7 +176,7 @@ public class DeviceTypeGroupProvider extends DeviceGroupProviderBase {
 	public String getDeviceGroupSqlWhereClause(DeviceGroup group, String identifier) {
 	    
 	    if (group instanceof DeviceTypeDeviceGroup) {
-	        return super.getDeviceGroupSqlWhereClause(group, identifier);
+	        return getChildDeviceGroupSqlWhereClause(group, identifier);
 	    }
 	    else {
 	        // because the nature of this group is that it contains all devices

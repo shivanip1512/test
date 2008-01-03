@@ -47,6 +47,7 @@ public class StaticDeviceGroupProvider extends DeviceGroupProviderBase {
 
         // now get the non static ones
         List<StoredDeviceGroup> nonStaticGroups = deviceGroupEditorDao.getNonStaticGroups(sdg);
+        result.addAll(nonStaticGroups);
         for (StoredDeviceGroup nonStaticGroup : nonStaticGroups) {
             List<DeviceGroup> tempGroups = getMainDelegator().getGroups(nonStaticGroup);
             result.addAll(tempGroups);
