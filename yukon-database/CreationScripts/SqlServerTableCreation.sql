@@ -1,7 +1,7 @@
 /*==============================================================*/
 /* Database name:  YukonDatabase                                */
 /* DBMS name:      Microsoft SQL Server 2000                    */
-/* Created on:     1/3/2008 11:36:38 AM                         */
+/* Created on:     1/3/2008 12:14:12 PM                         */
 /*==============================================================*/
 
 
@@ -8008,9 +8008,6 @@ create table SequenceNumber (
 )
 go
 
-insert into SequenceNumber values (1,'DeviceReadLog');
-insert into SequenceNumber values (1,'DeviceReadRequestLog');
-insert into SequenceNumber values (1,'DeviceReadJobLog');
 insert into sequenceNumber values (100, 'BillingFileFormats');
 
 /*==============================================================*/
