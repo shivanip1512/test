@@ -342,6 +342,11 @@ update UserPaoPermission set Allow = 'ALLOW';
 alter table groupPaoPermission add Allow varchar2(5);
 update GroupPaoPermission set Allow = 'ALLOW';
 
+/* Start YUK-5048 */
+ALTER TABLE GROUPPAOPERMISSION
+MODIFY(ALLOW  NOT NULL);
+/* End YUK-5048 */
+
 insert into YukonRoleProperty values(-70013,-700,'Definition Available','Open,OpenQuestionable,OpenPending','Capbank sized in these states will be added to the available sum.');
 insert into YukonRoleProperty values(-70014,-700,'Definition Unavailable','Close,CloseQuestionable,CloseFail,ClosePending,OpenFail','Capbank sized in these states will be added to the unavailable sum.');
 insert into YukonRoleProperty values(-70015,-700,'Definition Tripped','Open,OpenFail,OpenPending,OpenQuestionable','Capbank sized in these states will be added to the tripped sum.');
