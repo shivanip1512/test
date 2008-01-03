@@ -1,7 +1,7 @@
 /*==============================================================*/
 /* Database name:  YukonDatabase                                */
 /* DBMS name:      Microsoft SQL Server 2000                    */
-/* Created on:     1/3/2008 12:14:12 PM                         */
+/* Created on:     1/3/2008 4:09:01 PM                          */
 /*==============================================================*/
 
 
@@ -729,16 +729,16 @@ go
 
 if exists (select 1
             from  sysobjects
-           where  id = object_id('CAPBANKCOMMENT')
+           where  id = object_id('CAPCONTROLAREA')
             and   type = 'U')
-   drop table CAPBANKCOMMENT
+   drop table CAPCONTROLAREA
 go
 
 if exists (select 1
             from  sysobjects
-           where  id = object_id('CAPCONTROLAREA')
+           where  id = object_id('CAPCONTROLCOMMENT')
             and   type = 'U')
-   drop table CAPCONTROLAREA
+   drop table CAPCONTROLCOMMENT
 go
 
 if exists (select 1
@@ -2812,9 +2812,18 @@ create table CAPBANKADDITIONAL (
 go
 
 /*==============================================================*/
-/* Table: CAPBANKCOMMENT                                        */
+/* Table: CAPCONTROLAREA                                        */
 /*==============================================================*/
-create table CAPBANKCOMMENT (
+create table CAPCONTROLAREA (
+   AreaID               numeric              not null,
+   constraint PK_CAPCONTROLAREA primary key nonclustered (AreaID)
+)
+go
+
+/*==============================================================*/
+/* Table: CAPCONTROLCOMMENT                                     */
+/*==============================================================*/
+create table CAPCONTROLCOMMENT (
    CommentID            int                  not null,
    PaoID                numeric              not null,
    UserID               numeric              not null,
@@ -2822,16 +2831,7 @@ create table CAPBANKCOMMENT (
    CommentTime          datetime             not null,
    Comment              varchar(500)         not null,
    Altered              varchar(3)           not null,
-   constraint PK_CAPBANKCOMMENT primary key (CommentID)
-)
-go
-
-/*==============================================================*/
-/* Table: CAPCONTROLAREA                                        */
-/*==============================================================*/
-create table CAPCONTROLAREA (
-   AreaID               numeric              not null,
-   constraint PK_CAPCONTROLAREA primary key nonclustered (AreaID)
+   constraint PK_CAPCONTROLCOMMENT primary key (CommentID)
 )
 go
 
@@ -10748,19 +10748,19 @@ alter table CAPBANKADDITIONAL
       references CAPBANK (DEVICEID)
 go
 
-alter table CAPBANKCOMMENT
-   add constraint FK_CAPBANKC_REFERENCE_YUKONPAO foreign key (PaoID)
-      references YukonPAObject (PAObjectID)
-go
-
-alter table CAPBANKCOMMENT
-   add constraint FK_CAPBANKC_REFERENCE_YUKONUSE foreign key (UserID)
-      references YukonUser (UserID)
-go
-
 alter table CAPCONTROLAREA
    add constraint FK_CAPCONTR_REFERENCE_YUKONPAO foreign key (AreaID)
       references YukonPAObject (PAObjectID)
+go
+
+alter table CAPCONTROLCOMMENT
+   add constraint FK_CAPCONTR_REFERENCE_YUKONPA2 foreign key (PaoID)
+      references YukonPAObject (PAObjectID)
+go
+
+alter table CAPCONTROLCOMMENT
+   add constraint FK_CAPCONTR_REFERENCE_YUKONUSE foreign key (UserID)
+      references YukonUser (UserID)
 go
 
 alter table CAPCONTROLSPECIALAREA

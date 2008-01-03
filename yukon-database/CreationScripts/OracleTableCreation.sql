@@ -1,7 +1,7 @@
 /*==============================================================*/
 /* Database name:  YukonDatabase                                */
 /* DBMS name:      ORACLE Version 9i                            */
-/* Created on:     1/3/2008 12:15:27 PM                         */
+/* Created on:     1/3/2008 4:07:41 PM                          */
 /*==============================================================*/
 
 
@@ -180,9 +180,9 @@ drop table CAPBANK cascade constraints;
 
 drop table CAPBANKADDITIONAL cascade constraints;
 
-drop table CAPBANKCOMMENT cascade constraints;
-
 drop table CAPCONTROLAREA cascade constraints;
+
+drop table CAPCONTROLCOMMENT cascade constraints;
 
 drop table CAPCONTROLSPECIALAREA cascade constraints;
 
@@ -969,9 +969,17 @@ create table CAPBANKADDITIONAL  (
 );
 
 /*==============================================================*/
-/* Table: CAPBANKCOMMENT                                        */
+/* Table: CAPCONTROLAREA                                        */
 /*==============================================================*/
-create table CAPBANKCOMMENT  (
+create table CAPCONTROLAREA  (
+   AreaID               NUMBER                          not null,
+   constraint PK_CAPCONTROLAREA primary key (AreaID)
+);
+
+/*==============================================================*/
+/* Table: CAPCONTROLCOMMENT                                     */
+/*==============================================================*/
+create table CAPCONTROLCOMMENT  (
    CommentID            INTEGER                         not null,
    PaoID                NUMBER                          not null,
    UserID               NUMBER                          not null,
@@ -979,15 +987,7 @@ create table CAPBANKCOMMENT  (
    CommentTime          DATE                            not null,
    "Comment"            VARCHAR2(500)                   not null,
    Altered              VARCHAR2(3)                     not null,
-   constraint PK_CAPBANKCOMMENT primary key (CommentID)
-);
-
-/*==============================================================*/
-/* Table: CAPCONTROLAREA                                        */
-/*==============================================================*/
-create table CAPCONTROLAREA  (
-   AreaID               NUMBER                          not null,
-   constraint PK_CAPCONTROLAREA primary key (AreaID)
+   constraint PK_CAPCONTROLCOMMENT primary key (CommentID)
 );
 
 /*==============================================================*/
@@ -8541,17 +8541,17 @@ alter table CAPBANKADDITIONAL
    add constraint FK_CAPBANKA_CAPBANK foreign key (DeviceID)
       references CAPBANK (DEVICEID);
 
-alter table CAPBANKCOMMENT
-   add constraint FK_CAPBANKC_REFERENCE_YUKONPAO foreign key (PaoID)
-      references YukonPAObject (PAObjectID);
-
-alter table CAPBANKCOMMENT
-   add constraint FK_CAPBANKC_REFERENCE_YUKONUSE foreign key (UserID)
-      references YukonUser (UserID);
-
 alter table CAPCONTROLAREA
    add constraint FK_CAPCONTR_REFERENCE_YUKONPAO foreign key (AreaID)
       references YukonPAObject (PAObjectID);
+
+alter table CAPCONTROLCOMMENT
+   add constraint FK_CAPCONTR_REFERENCE_YUKONPA2 foreign key (PaoID)
+      references YukonPAObject (PAObjectID);
+
+alter table CAPCONTROLCOMMENT
+   add constraint FK_CAPCONTR_REFERENCE_YUKONUSE foreign key (UserID)
+      references YukonUser (UserID);
 
 alter table CAPCONTROLSPECIALAREA
    add constraint FK_CAPCONTR_YUKONPAO2 foreign key (AreaID)

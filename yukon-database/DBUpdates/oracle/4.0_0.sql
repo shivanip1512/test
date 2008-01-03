@@ -899,7 +899,8 @@ alter table cceventlog modify capbankstateinfo varchar2(20) not null ;
 /* End YUK-4813 */
 
 /* Start YUK-4762, YUK-4969 */
-create table CAPBANKCOMMENT  (
+drop table capbankcomment; 
+create table CAPCONTROLCOMMENT  (
    CommentID            INTEGER                         not null,
    PaoID                NUMBER                         not null,
    UserID               NUMBER                         not null,
@@ -907,14 +908,14 @@ create table CAPBANKCOMMENT  (
    CommentTime          DATE                            not null,
    "Comment"            VARCHAR2(500)                   not null,
    Altered              VARCHAR2(3)                     not null,
-   constraint PK_CAPBANKCOMMENT primary key (CommentID)
+   constraint PK_CAPCONTROLCOMMENT  primary key (CommentID)
 );
 
-alter table CAPBANKCOMMENT
+alter table CAPCONTROLCOMMENT 
    add constraint FK_CAPBANKC_REFERENCE_YUKONPAO foreign key (PaoID)
       references YukonPAObject (PAObjectID);
 
-alter table CAPBANKCOMMENT
+alter table CAPCONTROLCOMMENT 
    add constraint FK_CAPBANKC_REFERENCE_YUKONUSE foreign key (UserID)
       references YukonUser (UserID);
 /* End YUK-4762, YUK-4969 */

@@ -1061,24 +1061,25 @@ go
 /* End YUK-4813 */
 
 /* Start YUK-4762, YUK-4969 */
-create table CAPBANKCOMMENT (
+drop table capbankcomment; 
+create table CAPCONTROLCOMMENT  (
    CommentID            int                  not null,
-   PaoID                numeric                  not null,
-   UserID               numeric                  not null,
+   PaoID                numeric              not null,
+   UserID               numeric              not null,
    Action               varchar(50)          not null,
    CommentTime          datetime             not null,
    Comment              varchar(500)         not null,
    Altered              varchar(3)           not null,
-   constraint PK_CAPBANKCOMMENT primary key (CommentID)
+   constraint PK_CAPCONTROLCOMMENT primary key (CommentID)
 );
 go
 
-alter table CAPBANKCOMMENT
+alter table CAPCONTROLCOMMENT 
    add constraint FK_CAPBANKC_REFERENCE_YUKONPAO foreign key (PaoID)
       references YukonPAObject (PAObjectID);
 go
 
-alter table CAPBANKCOMMENT
+alter table CAPCONTROLCOMMENT 
    add constraint FK_CAPBANKC_REFERENCE_YUKONUSE foreign key (UserID)
       references YukonUser (UserID);
 go
