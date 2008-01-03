@@ -408,25 +408,6 @@ alter table MSPInterface
    add constraint FK_Intrfc_Vend foreign key (VendorID)
       references MSPVendor (VendorID);
       
-/* Start YUK-5001 */
-create table LMHardwareToMeterMapping
- (
-   LMHardwareInventoryID numeric not null,
-   MeterInventoryID numeric not null
-);
-
-alter table LMHardwareToMeterMapping
-   add constraint FK_LMMETMAP_LMHARDBASE foreign key (LMHardwareInventoryID)
-      references LMHardwareBase (InventoryID);
-
-alter table LMHardwareToMeterMapping
-   add constraint FK_LMMETMAP_METERHARDBASE foreign key (MeterInventoryID)
-      references MeterHardwareBase (InventoryID);
-/* End YUK-5001 */
-
-alter table LMHardwareToMeterMapping
-   add constraint PK_LMHARDWARETOMETERMAPPING primary key (LMHardwareInventoryID, MeterInventoryID);
-
 alter table ImportData
 	modify SubstationName varchar2(64) not null;
 
