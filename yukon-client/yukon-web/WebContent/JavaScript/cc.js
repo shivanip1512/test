@@ -189,24 +189,42 @@ function callback() {
 	setTimeout("updateDrawing()", UPDATE_EVERY);
 }
 function updateHTML(xml) {
-    updateBackgroundColor();
-
-	updateSub(xml);
-//	say("after sub");
-	updateFeeders(xml);
-//	say("after feeder");
-	updateCaps(xml);
-//	say("after caps");
-
-}
-
-function updateBackgroundColor() {
     var back = document.getElementById('backgroundRect');
     if (printableView) {
         back.setAttribute('style', 'fill:white;');
+        updatePrintText();
     } else {
         back.setAttribute('style', 'fill:black;');
+    	updateSub(xml);
+	    updateFeeders(xml);
+	    updateCaps(xml);
+    }   
+}
+
+function updatePrintText() {
+    var textElements = document.getElementsByTagName("text");
+    for (var x = 0; x < textElements.length; x++) {
+        var element = textElements.item(x);
+        var styleAttribute = element.getAttribute("style");
+        
+        var match1 = startsWith(styleAttribute, 'fill:rgb(192,192,192);');
+        var match2 = startsWith(styleAttribute, 'fill:rgb(255,255,255);');
+        if (match1 || match2) {
+            applyBlackStyle(element);
+        }        
     }
+    
+    var legendElement = document.getElementById('legend');
+    applyBlackStyle(legendElement);
+    
+    var printElement = document.getElementById('print');
+    applyBlackStyle(printElement);       
+}
+
+function applyBlackStyle(element) {
+    var currentStyle = element.getAttribute('style');
+    currentStyle += ';fill:rgb(0,0,0)';
+    element.setAttribute("style", currentStyle);
 }
 
 function updateSub(xml) {

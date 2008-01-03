@@ -46,8 +46,7 @@ public class OnelineHTMLGenerator extends HTMLGenerator {
         sb.append("var printableView = false;" + NEW_LINE);
         sb.append("function togglePrintableView() {" + NEW_LINE);
         sb.append("    if (printableView) {" + NEW_LINE);
-        sb.append("        document.body.style.backgroundColor = 'black';" + NEW_LINE);
-        sb.append("        printableView = false;" + NEW_LINE);
+        sb.append("        window.location.reload();" + NEW_LINE);
         sb.append("    } else {" + NEW_LINE);
         sb.append("        document.body.style.backgroundColor = 'white';" + NEW_LINE);
         sb.append("        printableView = true;" + NEW_LINE);
