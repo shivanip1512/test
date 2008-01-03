@@ -2438,6 +2438,115 @@ CtiRequestMsg* CtiCCFeeder::createDecreaseVarRequest(CtiCCCapBank* capBank, CtiM
 }
 
 /*---------------------------------------------------------------------------
+    createDecreaseVarRequest
+
+    Creates a CtiRequestMsg to close the next cap bank to decrease the
+    var level for a strategy.
+---------------------------------------------------------------------------*/
+CtiRequestMsg* CtiCCFeeder::createLikeDayVarRequest(CtiCCCapBank* capBank, CtiMultiMsg_vec& pointChanges, CtiMultiMsg_vec& ccEvents, int action)
+{
+    CtiRequestMsg* reqMsg = NULL;
+    if( capBank == NULL )
+        return reqMsg;
+
+    //Determine if we are at max KVAR and don't create the request if we are.
+    if( checkForMaxKvar(capBank->getPAOId(), capBank->getBankSize() ) == false )
+    {
+        CtiLockGuard<CtiLogger> logger_guard(dout);
+        dout << CtiTime() << " Exceeded Max Kvar of "<< _MAX_KVAR<< ", not doing control on bank: "<< capBank->getPAOName() << ". "  << endl;
+        return reqMsg;
+    }
+
+    setLastCapBankControlledDeviceId(capBank->getPAOId());
+    string textInfo = "";
+    if (action == CtiCCCapBank::Close ||
+        action == CtiCCCapBank::ClosePending ||
+        action == CtiCCCapBank::CloseQuestionable ||
+        action == CtiCCCapBank::CloseFail )
+    {
+        capBank->setControlStatus(CtiCCCapBank::Close);
+        textInfo += "Close sent, LikeDay Control";
+    }
+    else
+    {
+        capBank->setControlStatus(CtiCCCapBank::Open);
+        textInfo += "Open sent, LikeDay Control";
+    }
+    capBank->setControlStatusQuality(CC_AbnormalQuality);
+    _currentdailyoperations++;
+    capBank->setTotalOperations(capBank->getTotalOperations() + 1);
+    capBank->setCurrentDailyOperations(capBank->getCurrentDailyOperations() + 1);
+
+
+    capBank->setBeforeVarsString(textInfo);
+    capBank->setAfterVarsString(" --- ");
+    capBank->setPercentChangeString(" --- ");
+
+    if( capBank->getStatusPointId() > 0 )
+    {
+        string additional;
+        additional = ("Sub: ");
+        additional += getParentName();
+        additional += " /Feeder: ";
+        additional += getPAOName();
+        if (_LOG_MAPID_INFO) 
+        {
+            additional += " MapID: ";
+            additional += getMapLocationId();
+            additional += " (";
+            additional += getPAODescription();
+            additional += ")";
+        }
+        pointChanges.push_back(new CtiSignalMsg(capBank->getStatusPointId(),0,textInfo,additional,CapControlLogType,SignalEvent, "cap control"));
+        ((CtiPointDataMsg*)pointChanges[pointChanges.size()-1])->setSOE(1);
+        pointChanges.push_back(new CtiPointDataMsg(capBank->getStatusPointId(),capBank->getControlStatus(),NormalQuality,StatusPointType, capBank->getPAOName()));
+        ((CtiPointDataMsg*)pointChanges[pointChanges.size()-1])->setSOE(2);
+        capBank->setLastStatusChangeTime(CtiTime());
+    
+        //setEventSequence(getEventSequence() + 1);
+        INT actionId = CCEventActionIdGen(capBank->getStatusPointId()) + 1;
+        string stateInfo = capBank->getControlStatusQualityString();
+        ccEvents.push_back(new CtiCCEventLogMsg(0, capBank->getStatusPointId(), getParentId(), getPAOId(), capControlCommandSent, getEventSequence(), capBank->getControlStatus(), textInfo, "cap control", getCurrentVarLoadPointValue(), getCurrentVarLoadPointValue(), 0, capBank->getIpAddress(), actionId, stateInfo));
+    }
+    else
+    {
+        CtiLockGuard<CtiLogger> logger_guard(dout);
+        dout << CtiTime() << " - Cap Bank: " << capBank->getPAOName()
+        << " DeviceID: " << capBank->getPAOId() << " doesn't have a status point!" << endl;
+    }
+    
+    if( capBank->getOperationAnalogPointId() > 0 )
+    {
+        pointChanges.push_back(new CtiPointDataMsg(capBank->getOperationAnalogPointId(),capBank->getTotalOperations(),NormalQuality,AnalogPointType));
+        ((CtiPointDataMsg*)pointChanges[pointChanges.size()-1])->setSOE(3);
+    
+        //setEventSequence(getEventSequence() + 1);
+        ccEvents.push_back(new CtiCCEventLogMsg(0, capBank->getOperationAnalogPointId(), getParentId(), getPAOId(), capControlSetOperationCount, getEventSequence(), capBank->getTotalOperations(), "opCount adjustment", "cap control"));
+    }
+    
+    if  (capBank->getTwoWayPoints() != NULL) 
+    {
+        if (capBank->getTwoWayPoints()->getCapacitorBankStateId() > 0) 
+        { 
+            CtiLMControlHistoryMsg *hist = CTIDBG_new CtiLMControlHistoryMsg ( capBank->getControlDeviceId(), capBank->getTwoWayPoints()->getCapacitorBankStateId(), capBank->getControlStatus(), CtiTime(), -1, 100 );
+            hist->setMessagePriority( hist->getMessagePriority() + 2 );
+            pointChanges.push_back( hist );
+            ((CtiPointDataMsg*)pointChanges[pointChanges.size()-1])->setSOE(4);
+        }
+    }
+    if (capBank->getControlStatus() == CtiCCCapBank::Close )
+    {
+        reqMsg = new CtiRequestMsg( capBank->getControlDeviceId(),"control close" );
+    }
+    else
+        reqMsg = new CtiRequestMsg( capBank->getControlDeviceId(),"control open" );
+
+    reqMsg->setSOE(4);
+
+    return reqMsg;
+}
+
+/*---------------------------------------------------------------------------
     figureEstimatedVarLoadPointValue
 
     Figures out the estimated var point value according to the states
@@ -6998,7 +7107,67 @@ CtiCCCapBank* CtiCCFeeder::getMonitorPointParentBank(CtiCCMonitorPoint* point)
     return NULL;
 }
 
+BOOL CtiCCFeeder::checkForAndProvideNeededFallBackControl(const CtiTime& currentDateTime, 
+                        CtiMultiMsg_vec& pointChanges, CtiMultiMsg_vec& ccEvents, CtiMultiMsg_vec& pilMessages)
+{   
+    BOOL retVal = FALSE;
+    CtiRequestMsg* request = NULL;
+    
+    map <long, long> controlid_action_map;
+    controlid_action_map.clear();
 
+    CtiTime lastSendTime = getLastOperationTime();
+    if (getLastOperationTime() < getLastCurrentVarPointUpdateTime())
+    {
+        lastSendTime = getLastCurrentVarPointUpdateTime();
+        setLastOperationTime(currentDateTime);
+    }
+    int fallBackConst = 86400;
+    //if (currentDateTime.tm_wday)
+    {
+        struct tm *ctm= new struct tm();
+        currentDateTime.extract(ctm);
+        if (ctm->tm_wday == 0 || ctm->tm_wday == 6)
+        {
+            fallBackConst = 604800;
+        }
+        else if (ctm->tm_wday == 1)
+        {
+            fallBackConst = 259200;
+        }
+        else
+            fallBackConst = 86400;
+        delete ctm;
+
+    }
+    CtiCCSubstationBusStore::getInstance()->reloadMapOfBanksToControlByLikeDay(0, getPAOId(), &controlid_action_map,lastSendTime, fallBackConst);
+    std::map <long, long>::iterator iter = controlid_action_map.begin();
+    while (iter != controlid_action_map.end())
+    {   
+        {
+            int capCount = 0;
+            CtiCCCapBankPtr bank = CtiCCSubstationBusStore::getInstance()->findCapBankByPointID(iter->first, capCount)->second;;
+            if (bank != NULL)
+            {
+                if (bank->getParentId() == getPAOId())
+                {
+                    request = createLikeDayVarRequest(bank, pointChanges, ccEvents, iter->second);
+
+                    if( request != NULL )
+                    {
+                        retVal = TRUE;
+                        pilMessages.push_back(request);
+                        setLastOperationTime(currentDateTime);
+                        setCurrentDailyOperations(getCurrentDailyOperations() + 1);
+                    }
+                }
+            }
+        }
+        controlid_action_map.erase(iter);
+    }
+
+    return retVal;
+}
 
 BOOL CtiCCFeeder::isDataOldAndFallBackNecessary(string controlUnits)
 {

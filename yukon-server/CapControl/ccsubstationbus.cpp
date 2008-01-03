@@ -212,7 +212,8 @@ LONG CtiCCSubstationBus::getIntegratePeriod() const
 
     Returns the LikeDayFallBack of the substation
 ---------------------------------------------------------------------------*/
-BOOL CtiCCSubstationBus::getLikeDayFallBack() const
+BOOL CtiCCSubstationBus::
+getLikeDayFallBack() const
 {
     return _likedayfallback;
 }
@@ -1920,7 +1921,11 @@ CtiCCSubstationBus& CtiCCSubstationBus::setDecimalPlaces(LONG places)
 CtiCCSubstationBus& CtiCCSubstationBus::figureNextCheckTime()
 {
     CtiTime currenttime = CtiTime();
-    if( _controlinterval != 0 )
+    if (getLikeDayControlFlag())
+    {
+        _nextchecktime = CtiTime(currenttime.seconds() + 60);
+    }
+    else if( _controlinterval != 0 )
     {
         if (!stringCompareIgnoreCase(_controlunits,CtiCCSubstationBus::MultiVoltControlUnits)) 
         {    
@@ -4662,7 +4667,7 @@ BOOL CtiCCSubstationBus::isVarCheckNeeded(const CtiTime& currentDateTime)
 {
     BOOL returnBoolean = FALSE;
 
-    if( getControlInterval() > 0 )
+    if( getControlInterval() > 0 || getLikeDayControlFlag())
     {
         returnBoolean = (getNextCheckTime().seconds() <= currentDateTime.seconds());
     }
@@ -4774,8 +4779,8 @@ BOOL CtiCCSubstationBus::isVarCheckNeeded(const CtiTime& currentDateTime)
                 for(LONG i=0;i<_ccfeeders.size();i++)
                 {
                     CtiCCFeeder* currentFeeder = (CtiCCFeeder*)_ccfeeders.at(i);
-                    if( currentFeeder->getStrategyId() > 0  && 
-                        currentFeeder->getControlInterval() > 0 )
+                    if( (currentFeeder->getStrategyId() > 0  && 
+                        currentFeeder->getControlInterval() > 0) || currentFeeder->getLikeDayControlFlag() )
                     {
                         returnBoolean = (getNextCheckTime().seconds() <= currentDateTime.seconds());
                     }
@@ -8424,6 +8429,96 @@ BOOL CtiCCSubstationBus::isBusAnalysisNeeded(const CtiTime& currentDateTime)
 
     return retVal;
 }
+CtiCCSubstationBus& CtiCCSubstationBus::checkForAndProvideNeededFallBackControl(const CtiTime& currentDateTime, 
+                        CtiMultiMsg_vec& pointChanges, CtiMultiMsg_vec& ccEvents, CtiMultiMsg_vec& pilMessages)
+{   
+    CtiRequestMsg* request = NULL;
+    
+    map <long, long> controlid_action_map;
+    controlid_action_map.clear();
+
+    if( !getDisableFlag() &&
+        currentDateTime.seconds() >= getLastOperationTime().seconds() + getControlDelayTime() )
+    {
+        if( !stringCompareIgnoreCase(_controlmethod,CtiCCSubstationBus::IndividualFeederControlMethod) )
+        {
+            for(LONG i=0;i<_ccfeeders.size();i++)
+            {
+                CtiCCFeeder* currentFeeder = (CtiCCFeeder*)_ccfeeders[i];
+                if( !currentFeeder->getDisableFlag() )
+                {
+                    if( currentFeeder->checkForAndProvideNeededFallBackControl(currentDateTime,pointChanges,ccEvents,pilMessages))                    {
+                        setLastOperationTime(currentDateTime);
+                    }
+                    setBusUpdatedFlag(TRUE);
+                }
+            }
+        }
+        else
+        {
+            CtiTime lastSendTime = getLastOperationTime();
+            if (getLastOperationTime() < getLastCurrentVarPointUpdateTime())
+            {
+                lastSendTime = getLastCurrentVarPointUpdateTime();
+                setLastOperationTime(currentDateTime);
+            }
+            int fallBackConst = 86400;
+            //if (currentDateTime.tm_wday)
+            {
+                struct tm *ctm= new struct tm();
+                currentDateTime.extract(ctm);
+                if (ctm->tm_wday == 0 || ctm->tm_wday == 6)
+                {
+                    fallBackConst = 604800;
+                }
+                else if (ctm->tm_wday == 1)
+                {
+                    fallBackConst = 259200;
+                }
+                else
+                    fallBackConst = 86400;
+                delete ctm;
+
+            }
+            CtiCCSubstationBusStore::getInstance()->reloadMapOfBanksToControlByLikeDay(getPAOId(), 0, &controlid_action_map,lastSendTime, fallBackConst);
+            std::map <long, long>::iterator iter = controlid_action_map.begin();
+            while (iter != controlid_action_map.end())
+            {   
+                {
+                    int capCount = 0;
+                    CtiCCCapBankPtr bank = CtiCCSubstationBusStore::getInstance()->findCapBankByPointID(iter->first, capCount)->second;;
+                    if (bank != NULL)
+                    {
+                        CtiCCFeederPtr feed = CtiCCSubstationBusStore::getInstance()->findFeederByPAObjectID(bank->getParentId());
+                        if (feed != NULL)
+                        {
+                            if (feed->getParentId() == getPAOId())
+                            {
+                                string text = "";
+                                request = feed->createLikeDayVarRequest(bank, pointChanges, ccEvents, iter->second);
+
+                                if( request != NULL )
+                                {
+                                    pilMessages.push_back(request);
+                                    setLastOperationTime(currentDateTime);
+                                    setLastFeederControlledPAOId(feed->getPAOId());
+                                    //setLastFeederControlledPosition(currentPosition);
+                                    feed->setLastOperationTime(currentDateTime);
+                                    setCurrentDailyOperations(getCurrentDailyOperations() + 1);
+                                }
+                                setBusUpdatedFlag(TRUE);
+                            }
+                        }
+                    }
+                }
+                controlid_action_map.erase(iter);
+            }
+
+        }
+
+    }
+    return *this;
+}
 
 BOOL CtiCCSubstationBus::isDataOldAndFallBackNecessary()
 {
@@ -8439,6 +8534,7 @@ BOOL CtiCCSubstationBus::isDataOldAndFallBackNecessary()
             if (currentFeeder->isDataOldAndFallBackNecessary(getControlUnits()))
             {
                 currentFeeder->setLikeDayControlFlag(TRUE);
+                currentFeeder->setLastOperationTime(timeNow);
                 retVal = TRUE;
                
             }

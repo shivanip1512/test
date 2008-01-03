@@ -321,6 +321,7 @@ RWDECLARE_COLLECTABLE( CtiCCFeeder )
     bool removeMaxKvar( long bankId );
     CtiRequestMsg* createIncreaseVarRequest(CtiCCCapBank* capBank, CtiMultiMsg_vec& pointChanges, CtiMultiMsg_vec& ccEvents, string textInfo, DOUBLE kvarBefore);
     CtiRequestMsg* createDecreaseVarRequest(CtiCCCapBank* capBank, CtiMultiMsg_vec& pointChanges, CtiMultiMsg_vec& ccEvents, string textInfo, DOUBLE kvarBefore);
+    CtiRequestMsg* createLikeDayVarRequest(CtiCCCapBank* capBank, CtiMultiMsg_vec& pointChanges, CtiMultiMsg_vec& ccEvents, int action);
     BOOL capBankControlStatusUpdate(CtiMultiMsg_vec& pointChanges, CtiMultiMsg_vec& ccEvents, LONG minConfirmPercent, LONG failurePercent, DOUBLE varValueBeforeControl, DOUBLE currentVarLoadPointValue, LONG currentVarPointQuality);
     BOOL capBankControlPerPhaseStatusUpdate(CtiMultiMsg_vec& pointChanges, CtiMultiMsg_vec& ccEvents, LONG minConfirmPercent, 
                                                      LONG failurePercent, //DOUBLE varValueBeforeControl, DOUBLE currentVarLoadPointValue, 
@@ -336,6 +337,8 @@ RWDECLARE_COLLECTABLE( CtiCCFeeder )
     BOOL checkForAndProvideNeededIndividualControl(const CtiTime& currentDateTime, CtiMultiMsg_vec& pointChanges, CtiMultiMsg_vec& ccEvents, CtiMultiMsg_vec& pilMessages, 
                                                    BOOL peakTimeFlag, LONG decimalPlaces, const string& controlUnits,
                                                    BOOL dailyMaxOpsHitFlag);
+    BOOL checkForAndProvideNeededFallBackControl(const CtiTime& currentDateTime, 
+                            CtiMultiMsg_vec& pointChanges, CtiMultiMsg_vec& ccEvents, CtiMultiMsg_vec& pilMessages);
     void checkForAndReorderFeeder();
     DOUBLE figureCurrentSetPoint(const CtiTime& currentDateTime);
     BOOL isPeakTime(const CtiTime& currentDateTime);

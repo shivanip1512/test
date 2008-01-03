@@ -360,13 +360,15 @@ void CtiCapController::controlLoop()
                         if (currentArea != NULL && !currentArea->getDisableFlag()) 
                         {
                             //currentSubstationBus->isPeakTime(currentDateTime);//put here to make sure the peak time flag is set correctly
-                            /*if (currentSubstationBus->getLikeDayFallBack())
+                            if (currentSubstationBus->getLikeDayFallBack())
                             {
                                 if (currentSubstationBus->isDataOldAndFallBackNecessary())
+                                {
                                     currentSubstationBus->setLikeDayControlFlag(TRUE);
+                                }
                                 else
                                     currentSubstationBus->setLikeDayControlFlag(FALSE);
-                            }  */
+                            }  
 
                             if (currentSubstationBus->isMultiVoltBusAnalysisNeeded(currentDateTime))
                             {                      
@@ -626,12 +628,19 @@ void CtiCapController::controlLoop()
                                     try
                                     {
                                         if( !currentSubstationBus->getDisableFlag() &&
+                                            currentSubstationBus->getLikeDayControlFlag() &&
+                                            stringCompareIgnoreCase(currentSubstationBus->getControlMethod(),CtiCCSubstationBus::ManualOnlyControlMethod) )//intentionally left the ! off
+                                        {
+                                            currentSubstationBus->checkForAndProvideNeededFallBackControl(currentDateTime, pointChanges, ccEvents, pilMessages);
+                                        }
+                                        else if( !currentSubstationBus->getDisableFlag() &&
                                             !currentSubstationBus->getWaiveControlFlag() &&
                                             stringCompareIgnoreCase(currentSubstationBus->getControlMethod(),CtiCCSubstationBus::ManualOnlyControlMethod) )//intentionally left the ! off
                                         {
                                             currentSubstationBus->checkForAndProvideNeededControl(currentDateTime, pointChanges, ccEvents, pilMessages);
                                         }
                                     }
+
                                     catch(...)
                                     {
                                         CtiLockGuard<CtiLogger> logger_guard(dout);

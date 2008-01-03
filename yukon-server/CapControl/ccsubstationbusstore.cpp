@@ -6869,6 +6869,106 @@ void CtiCCSubstationBusStore::reloadClientLinkStatusPointFromDatabase()
 }
 
 
+void CtiCCSubstationBusStore::reloadMapOfBanksToControlByLikeDay(long subbusId, long feederId,  
+                                  map< long, long> *controlid_action_map,
+                                  CtiTime &lastSendTime, int fallBackConstant)
+{
+    try
+    {   
+        RWRecursiveLock<RWMutexLock>::LockGuard  guard(mutex());
+        CtiLockGuard<CtiSemaphore> cg(gDBAccessSema);
+        {
+
+            RWDBConnection conn = getConnection();
+            {
+                if ( conn.isValid() )
+                {   
+                    RWDBDatabase db = getDatabase();
+                    RWDBTable ccEventLogTable = db.table("cceventlog");
+                    CtiTime timeNow = CtiTime();
+
+                    RWDBSelector selector = db.selector();
+                    selector << ccEventLogTable["pointid"]
+                    << ccEventLogTable["datetime"]
+                    << ccEventLogTable["subid"]
+                    << ccEventLogTable["feederid"]
+                    << ccEventLogTable["eventtype"]
+                    << ccEventLogTable["value"]
+                    << ccEventLogTable["text"];
+
+                    selector.from(ccEventLogTable);
+
+                    if (subbusId != 0)
+                    {
+                        selector.where( (ccEventLogTable["text"].like("Open sent%") || 
+                                    ccEventLogTable["text"].like("Close sent%") ) && 
+                                    ccEventLogTable["subid"]==subbusId  && 
+                                    (ccEventLogTable["datetime"] > toRWDBDT(lastSendTime - fallBackConstant) && 
+                                    ccEventLogTable["datetime"] <= toRWDBDT(timeNow - fallBackConstant) ) );
+                    }
+                    else
+                    {
+                        selector.where( (ccEventLogTable["text"].like("Open sent%") || 
+                                    ccEventLogTable["text"].like("Close sent%") ) && 
+                                    ccEventLogTable["feederid"]==feederId  && 
+                                    (ccEventLogTable["datetime"] > toRWDBDT(lastSendTime - fallBackConstant) && 
+                                    ccEventLogTable["datetime"] <= toRWDBDT(timeNow - fallBackConstant) ) );
+                    }
+
+                    selector.orderBy(ccEventLogTable["datetime"]);
+
+
+
+                    if ( _CC_DEBUG & CC_DEBUG_DATABASE )
+                    {
+                        CtiLockGuard<CtiLogger> logger_guard(dout);
+                        dout << CtiTime() << " - " << selector.asString().data() << endl;
+                    }
+
+                    RWDBReader rdr = selector.reader(conn);
+                    
+                    while ( rdr() )
+                    {
+                        long pointId;
+                        CtiTime controlTime;
+                        long controlValue;
+                        
+                        rdr["pointid"] >> pointId;
+                        rdr["datetime"] >> controlTime;
+                        rdr["value"] >> controlValue;
+
+                        if (controlValue == CtiCCCapBank::ClosePending ||
+                            controlValue == CtiCCCapBank::CloseFail ||
+                            controlValue == CtiCCCapBank::CloseQuestionable ||
+                            controlValue == CtiCCCapBank::CloseFail )
+                        {
+                            controlValue = CtiCCCapBank::Close;
+                        }
+                        else
+                        {
+                            controlValue = CtiCCCapBank::Open;
+
+                        }
+                        if (controlTime < timeNow - 86400)
+                        {
+                            controlid_action_map->insert(make_pair(pointId,controlValue)); 
+                        }
+                        lastSendTime = controlTime;
+                    }
+                }
+            }
+        
+        }
+
+    }
+    catch(...)
+    {
+        CtiLockGuard<CtiLogger> logger_guard(dout);
+        dout << CtiTime() << " - Caught '...' in: " << __FILE__ << " at:" << __LINE__ << endl;
+    }
+
+    return;
+}
 
 void CtiCCSubstationBusStore::locateOrphans(list<long> *orphanCaps, list<long> *orphanFeeders, map<long, CtiCCCapBankPtr> paobject_capbank_map,
                        map<long, CtiCCFeederPtr> paobject_feeder_map, map<long, long> capbank_feeder_map, map<long, long> feeder_subbus_map)

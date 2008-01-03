@@ -195,6 +195,9 @@ public:
     void reloadCapBankStatesFromDatabase();
     void reloadGeoAreasFromDatabase();
     void reloadClientLinkStatusPointFromDatabase();
+    void reloadMapOfBanksToControlByLikeDay(long subbusId, long feederId,  
+                                      map< long, long> *controlid_action_map,
+                                      CtiTime &lastSendTime, int fallBackConstant);
     void locateOrphans(list<long> *orphanCaps, list<long> *orphanFeeders, map<long, CtiCCCapBankPtr> paobject_capbank_map,
                        map<long, CtiCCFeederPtr> paobject_feeder_map, map<long, long> capbank_feeder_map, map<long, long> feeder_subbus_map);
     BOOL isCapBankOrphan(long capBankId);
