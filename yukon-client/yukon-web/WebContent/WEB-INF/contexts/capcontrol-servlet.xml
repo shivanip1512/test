@@ -89,6 +89,12 @@
     <bean id="onelineLegendController" class="com.cannontech.web.cbc.OnelineLegendController">
         <property name="stateDao" ref="stateDao"/>
         <property name="yukonImageDao" ref="yukonImageDao"/>
+        <property name="excludeStateList">
+            <list>
+                <value>Verify All</value>
+                <value>Verify Stop</value>
+            </list>
+        </property>
     </bean>
 	
     <bean id="onelineCommentController" class="com.cannontech.web.cbc.OnelineCommentController">

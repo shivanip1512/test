@@ -21,6 +21,7 @@ import com.cannontech.yukon.cbc.CapControlConst;
 public class OnelineLegendController implements Controller {
     private StateDao stateDao;
     private YukonImageDao yukonImageDao;
+    private String[] excludeStateList;
 
     @SuppressWarnings("unchecked")
     @Override
@@ -38,6 +39,8 @@ public class OnelineLegendController implements Controller {
         LiteStateGroup onelineVerifyStateGroupList = stateDao.getLiteStateGroup(CapControlConst.ONELINE_VERIFY_STATEGROUP_ID);
         if (onelineVerifyStateGroupList != null) onelineStateList.addAll(onelineVerifyStateGroupList.getStatesList());
 
+        onelineStateList = cleanStateList(onelineStateList);
+        
         Map<Integer,String> imageNameMap = createImageNameMap(capBankStateList, onelineStateList);
         
         mav.addObject("imageNameMap", imageNameMap);
@@ -60,12 +63,32 @@ public class OnelineLegendController implements Controller {
         return imageNameMap;
     }
     
+    private List<LiteState> cleanStateList(final List<LiteState> onelineStateList) {
+        final List<LiteState> tempList = new ArrayList<LiteState>(onelineStateList.size());
+        for (final LiteState state : onelineStateList) {
+            String stateText = state.getStateText();
+            if (!isExcluded(stateText)) tempList.add(state);
+        }
+        return tempList;
+    }
+    
+    private boolean isExcluded(final String stateText) {
+        for (final String excludeName : excludeStateList) {
+            if (excludeName.equalsIgnoreCase(stateText)) return true;
+        }
+        return false;
+    }
+    
     public void setStateDao(StateDao stateDao) {
         this.stateDao = stateDao;
     }
     
     public void setYukonImageDao(YukonImageDao yukonImageDao) {
         this.yukonImageDao = yukonImageDao;
+    }
+
+    public void setExcludeStateList(String[] excludeStateList) {
+        this.excludeStateList = excludeStateList;
     }
 
 }
