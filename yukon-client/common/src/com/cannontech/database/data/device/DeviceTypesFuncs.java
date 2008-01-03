@@ -9,9 +9,7 @@ import com.cannontech.common.util.CtiUtilities;
 import com.cannontech.core.dao.DaoFactory;
 import com.cannontech.database.Transaction;
 import com.cannontech.database.TransactionException;
-import com.cannontech.database.data.capcontrol.CapBankController;
-import com.cannontech.database.data.capcontrol.CapBankController702x;
-import com.cannontech.database.data.capcontrol.ICapBankController;
+import com.cannontech.database.data.capcontrol.*;
 import com.cannontech.database.data.device.lm.IGroupRoute;
 import com.cannontech.database.data.lite.LiteFactory;
 import com.cannontech.database.data.lite.LitePoint;
@@ -1129,7 +1127,7 @@ public static Object changeType (String newType,
 		}
 		
 		//support for the 702x devices - wasn't in the old device change type panel
-		if (val instanceof CapBankController702x) {
+		if (val instanceof CapBankController702x ) {
 			CapBankController702x device702 = (CapBankController702x) val;
 			DeviceCBC deviceCBC = ((CapBankController702x) oldDevice).getDeviceCBC();		
 			DeviceAddress deviceAddress = ((CapBankController702x) oldDevice).getDeviceAddress();
@@ -1137,6 +1135,14 @@ public static Object changeType (String newType,
 			device702.setDeviceCBC( deviceCBC);	
 		}
 		
+        if (val instanceof CapBankControllerDNP ) {
+            CapBankControllerDNP device702 = (CapBankControllerDNP) val;
+            DeviceCBC deviceCBC = ((CapBankControllerDNP) oldDevice).getDeviceCBC();       
+            DeviceAddress deviceAddress = ((CapBankControllerDNP) oldDevice).getDeviceAddress();
+            device702.setDeviceAddress( deviceAddress);         
+            device702.setDeviceCBC( deviceCBC); 
+        }
+        		
 		if( val instanceof MCT410IL)
 		{
 			Integer[] insertedIDs = new Integer[10];

@@ -10,8 +10,7 @@ import javax.swing.JLabel;
 import javax.swing.JPanel;
 
 import com.cannontech.common.util.CtiUtilities;
-import com.cannontech.database.data.capcontrol.CapBankController6510;
-import com.cannontech.database.data.capcontrol.CapBankController702x;
+import com.cannontech.database.data.capcontrol.*;
 import com.cannontech.database.data.device.CCUBase;
 import com.cannontech.database.data.device.DNPBase;
 import com.cannontech.database.data.device.DeviceBase;
@@ -1585,6 +1584,7 @@ public Object getValue(Object device)
 				|| (val instanceof LCUBase)
             || (val instanceof CapBankController6510)
             || (val instanceof CapBankController702x)
+            || (val instanceof CapBankControllerDNP)
             || (val instanceof DNPBase)
             || (val instanceof Series5Base) )
 	{
@@ -2125,6 +2125,7 @@ public void setValue(Object val)
 				|| (val instanceof LCUBase)
             || (val instanceof CapBankController6510)
             || (val instanceof CapBankController702x)
+            || (val instanceof CapBankControllerDNP)
             || (val instanceof DNPBase)
             || (val instanceof Series5Base) )
 	{

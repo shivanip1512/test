@@ -25,10 +25,7 @@ import com.cannontech.core.dao.*;
 import com.cannontech.database.JdbcTemplateHelper;
 import com.cannontech.database.PoolManager;
 import com.cannontech.database.TransactionException;
-import com.cannontech.database.data.capcontrol.CapBank;
-import com.cannontech.database.data.capcontrol.CapBankController;
-import com.cannontech.database.data.capcontrol.CapBankController702x;
-import com.cannontech.database.data.capcontrol.CapControlFeeder;
+import com.cannontech.database.data.capcontrol.*;
 import com.cannontech.database.data.device.DeviceBase;
 import com.cannontech.database.data.device.TwoWayDevice;
 import com.cannontech.database.data.lite.LiteFactory;
@@ -341,7 +338,7 @@ public class CapBankEditorForm extends DBEditorForm {
         int controllerID = resetController(capBank);
         // need to make sure that controller is synched with assigned points
         // make sure that all the points that are defined in assigned and
-        // unassined lists
+        // unassigned lists
         // are the points available for the given controller
         if (controller instanceof CapBankController) {
             handleMonitorPointsForController(controllerID);
@@ -350,7 +347,12 @@ public class CapBankEditorForm extends DBEditorForm {
             unassignedPoints = null;
             getUnassignedPoints();
             Collections.sort(assignedPoints, JSFComparators.monitorPointDisplayOrderComparator);
-        }
+        } else if (controller instanceof CapBankControllerDNP) {
+            assignedPoints = pointDao.getCapBankMonitorPoints(capBank);
+            unassignedPoints = null;
+            getUnassignedPoints();
+            Collections.sort(assignedPoints, JSFComparators.monitorPointDisplayOrderComparator);
+        } 
     }
 
     /**

@@ -9,11 +9,7 @@ import javax.swing.JOptionPane;
 import com.cannontech.common.wizard.CancelInsertException;
 import com.cannontech.core.dao.DaoFactory;
 import com.cannontech.core.dao.PaoDao;
-import com.cannontech.database.data.capcontrol.CapBank;
-import com.cannontech.database.data.capcontrol.CapBankController;
-import com.cannontech.database.data.capcontrol.CapBankController6510;
-import com.cannontech.database.data.capcontrol.CapBankController702x;
-import com.cannontech.database.data.capcontrol.ICapBankController;
+import com.cannontech.database.data.capcontrol.*;
 import com.cannontech.database.data.device.CarrierBase;
 import com.cannontech.database.data.device.DNPBase;
 import com.cannontech.database.data.device.DeviceBase;
@@ -962,7 +958,7 @@ private javax.swing.JTextField getJTextFieldPhoneNumber() {
          	getPhysicalAddressLabel().setText(
             (val instanceof CapBankController ? "Serial Number:"
              : ((val instanceof CapBankController6510 || 
-             	val instanceof CapBankController702x)? "Master Address:" : "Address:")) );
+             	val instanceof CapBankController702x || val instanceof CapBankControllerDNP)? "Master Address:" : "Address:")) );
    
          getAddressTextField().setText( 
             ((ICapBankController)val).getAddress().toString() );            

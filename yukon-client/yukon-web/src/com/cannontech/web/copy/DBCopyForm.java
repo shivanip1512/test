@@ -9,8 +9,7 @@ import javax.servlet.http.HttpSession;
 import com.cannontech.cbc.exceptions.CBCExceptionMessages;
 import com.cannontech.clientutils.CTILogger;
 import com.cannontech.database.TransactionException;
-import com.cannontech.database.data.capcontrol.CapBankController;
-import com.cannontech.database.data.capcontrol.CapBankController702x;
+import com.cannontech.database.data.capcontrol.*;
 import com.cannontech.database.data.pao.YukonPAObject;
 import com.cannontech.database.data.point.PointBase;
 import com.cannontech.database.db.DBPersistent;
@@ -86,6 +85,13 @@ public class DBCopyForm extends DBEditorForm {
                         CBCCopyUtils.copyAllPointsForPAO(((CapBankController702x) origObject).getPAObjectID(),
                                                          ((CapBankController702x) copyObject).getPAObjectID());
                     routeToEditor(((CapBankController702x) copyObject).getPAObjectID()
+                                                                      .intValue());
+                }
+                if (copyObject instanceof CapBankControllerDNP) {
+                    if (copyPoints)
+                        CBCCopyUtils.copyAllPointsForPAO(((CapBankControllerDNP) origObject).getPAObjectID(),
+                                                         ((CapBankControllerDNP) copyObject).getPAObjectID());
+                    routeToEditor(((CapBankControllerDNP) copyObject).getPAObjectID()
                                                                       .intValue());
                 }
                 if (copyObject instanceof PointBase) {

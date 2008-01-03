@@ -26,9 +26,7 @@ import com.cannontech.clientutils.CTILogger;
 import com.cannontech.core.dao.DaoFactory;
 import com.cannontech.database.Transaction;
 import com.cannontech.database.TransactionException;
-import com.cannontech.database.data.capcontrol.CapBankController;
-import com.cannontech.database.data.capcontrol.CapBankController702x;
-import com.cannontech.database.data.capcontrol.ICapBankController;
+import com.cannontech.database.data.capcontrol.*;
 import com.cannontech.database.data.device.DeviceTypesFuncs;
 import com.cannontech.database.data.device.TwoWayDevice;
 import com.cannontech.database.data.lite.LitePoint;
@@ -89,12 +87,14 @@ public class CBControllerEditor implements ICBControllerModel {
         	}
         else {
         	
-        	if (deviceCBC instanceof CapBankController702x) {          
-        		
+        	if (deviceCBC instanceof CapBankController702x) {
         		setSerialNumber ( ((CapBankController702x)deviceCBC).getSerialNumber().longValue());
-            
         	}
-        	
+	
+            if (deviceCBC instanceof CapBankControllerDNP) {          
+                setSerialNumber ( ((CapBankControllerDNP)deviceCBC).getSerialNumber().longValue());
+            }
+            
         	if (deviceCBC instanceof CapBankController) {
         		setSerialNumber ( ((CapBankController)deviceCBC).getDeviceCBC().getSerialNumber().longValue());           
         	}
@@ -365,13 +365,19 @@ public class CBControllerEditor implements ICBControllerModel {
          the same master/slave address combination for a different device on the same communication port
          b.  Show a warning if the user uses the same master/slave address for a 
          device on a different communication port*/
-        if (getPaoCBC() instanceof CapBankController702x) {
+        if (getPaoCBC() instanceof CapBankController702x || getPaoCBC() instanceof CapBankControllerDNP ) {
 
-            DeviceAddress currentDeviceAddress = ((CapBankController702x) getPaoCBC()).getDeviceAddress();
-            Integer commPortId = ((CapBankController702x) getPaoCBC()).getDeviceDirectCommSettings()
-                                                                      .getPortID();
-
-
+            DeviceAddress currentDeviceAddress;
+            Integer commPortId;
+            
+            if( getPaoCBC() instanceof CapBankController702x ){
+                currentDeviceAddress= ((CapBankController702x) getPaoCBC()).getDeviceAddress();
+                commPortId = ((CapBankController702x) getPaoCBC()).getDeviceDirectCommSettings().getPortID();
+            }else {
+                currentDeviceAddress = ((CapBankControllerDNP) getPaoCBC()).getDeviceAddress();
+                commPortId = ((CapBankControllerDNP) getPaoCBC()).getDeviceDirectCommSettings().getPortID();
+            }
+            
             List devicesWithSameAddress = DaoFactory.getDeviceDao().getDevicesByDeviceAddress(currentDeviceAddress.getMasterAddress(),
                                                                                 currentDeviceAddress.getSlaveAddress());
             List devicesByPort = DaoFactory.getDeviceDao().getDevicesByPort(commPortId.intValue());         
@@ -401,6 +407,7 @@ public class CBControllerEditor implements ICBControllerModel {
                 throw new SameMasterSlaveCombinationException(litePAO.getPaoName());
             }
         }
+        
     }
 
 
@@ -422,6 +429,10 @@ public class CBControllerEditor implements ICBControllerModel {
 					CapBankController702x controller = (CapBankController702x) deviceCBC;
 					paos = DeviceCBC.isSerialNumberUnique(getSerialNumber(), controller.getDevice().getDeviceID());
 				}
+				else if (deviceCBC instanceof CapBankControllerDNP) {
+                    CapBankControllerDNP controller = (CapBankControllerDNP) deviceCBC;
+                    paos = DeviceCBC.isSerialNumberUnique(getSerialNumber(), controller.getDevice().getDeviceID());
+                }
 				//if serial was unique then paos would be empty
 				//throw an exception to the calling class to indicate
 				if (paos != null && paos.length > 0) {
@@ -443,6 +454,10 @@ public class CBControllerEditor implements ICBControllerModel {
 					CapBankController702x cbc = (CapBankController702x) getPaoCBC();
 					cbc.getDeviceCBC().setSerialNumber(new Integer ( (String.valueOf (getSerialNumber()))));
 				}
+				else if (getPaoCBC() instanceof CapBankControllerDNP) {
+				    CapBankControllerDNP cbc = (CapBankControllerDNP) getPaoCBC();
+                    cbc.getDeviceCBC().setSerialNumber(new Integer ( (String.valueOf (getSerialNumber()))));
+                }
 			}
 	}
 
@@ -463,7 +478,10 @@ public class CBControllerEditor implements ICBControllerModel {
 		else if (deviceCBC instanceof CapBankController702x) {
 			CapBankController702x controller = (CapBankController702x) deviceCBC;
 			paos = DeviceCBC.isSerialNumberUnique(getSerialNumber(), controller.getDevice().getDeviceID());
-		}
+		}else if (deviceCBC instanceof CapBankControllerDNP) {
+		    CapBankControllerDNP controller = (CapBankControllerDNP) deviceCBC;
+            paos = DeviceCBC.isSerialNumberUnique(getSerialNumber(), controller.getDevice().getDeviceID());
+        }
 		
 		if (paos != null && paos.length > 0) {
 			String paosWithSameSerialNumber = "";
@@ -641,11 +659,11 @@ public class CBControllerEditor implements ICBControllerModel {
 	public void resetSerialNumber () {  	
     	if (deviceCBC != null) {
 			if (deviceCBC instanceof CapBankController702x) {          
-	    		
 	    		setSerialNumber ( ((CapBankController702x)deviceCBC).getSerialNumber().longValue());
-	        
 	    	}
-	    	
+            if (deviceCBC instanceof CapBankControllerDNP) {          
+                setSerialNumber ( ((CapBankControllerDNP)deviceCBC).getSerialNumber().longValue());
+            }
 	    	if (deviceCBC instanceof CapBankController) {
 	    		setSerialNumber ( ((CapBankController)deviceCBC).getDeviceCBC().getSerialNumber().longValue());           
 	    	}

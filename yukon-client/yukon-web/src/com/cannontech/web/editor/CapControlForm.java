@@ -818,12 +818,12 @@ public class CapControlForm extends DBEditorForm implements ICapControlModel{
                     String errorString = e.getMessage();
                     facesMsg.setDetail(errorString);
                     facesMsg.setSeverity(FacesMessage.SEVERITY_WARN);
-                } 
+                }
                 //if the editing occured outside CBCEditor i.e Cap Bank Editor then update DB with the changes made
                 DBPersistent dbPers = getCBControllerEditor().getPaoCBC();
                //creates 2 db change messages - so comment this out updateDBObject(dbPers, facesMsg); if the editing did occur in the CBC Editor then
                 //make sure the object is not overwritten later
-                if ((getDbPersistent() instanceof CapBankController702x) || (getDbPersistent() instanceof CapBankController)) {
+                if ((getDbPersistent() instanceof CapBankController702x)|| (getDbPersistent() instanceof CapBankControllerDNP) || (getDbPersistent() instanceof CapBankController)) {
                     YukonPAObject thisObj = (YukonPAObject)getDbPersistent();
                     DeviceBase deviceBase = (DeviceBase)dbPers;
                     deviceBase.setPAOName(thisObj.getPAOName());
@@ -1666,7 +1666,7 @@ public class CapControlForm extends DBEditorForm implements ICapControlModel{
 
     public int getSelectedPanelIndex() {
         if (isEditingController()) {
-           if (getDbPersistent() instanceof CapBankController || getDbPersistent() instanceof CapBankController702x) {
+           if (getDbPersistent() instanceof CapBankController || getDbPersistent() instanceof CapBankController702x || getDbPersistent() instanceof CapBankControllerDNP) {
                return CBCSelectionLists.CapBankControllerSetup;
            }
         } else if (getDbPersistent() instanceof CapBank) {

@@ -138,4 +138,9 @@ public class MockCBControllerEditor implements ICBControllerModel {
 
     }
 
+    @Override
+    public boolean isDeviceDNP() {
+        return false;
+    }
+
 }

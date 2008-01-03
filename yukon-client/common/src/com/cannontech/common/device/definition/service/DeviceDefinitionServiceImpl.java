@@ -17,8 +17,7 @@ import com.cannontech.common.util.CtiUtilities;
 import com.cannontech.core.dao.NotFoundException;
 import com.cannontech.database.Transaction;
 import com.cannontech.database.TransactionException;
-import com.cannontech.database.data.capcontrol.CapBankController;
-import com.cannontech.database.data.capcontrol.CapBankController702x;
+import com.cannontech.database.data.capcontrol.*;
 import com.cannontech.database.data.device.CarrierBase;
 import com.cannontech.database.data.device.DeviceBase;
 import com.cannontech.database.data.device.DeviceFactory;
@@ -176,7 +175,13 @@ public class DeviceDefinitionServiceImpl implements DeviceDefinitionService {
             ((CapBankController702x) newDevice).setDeviceAddress(((CapBankController702x) oldDevice).getDeviceAddress());
             ((CapBankController702x) newDevice).setDeviceCBC(((CapBankController702x) oldDevice).getDeviceCBC());
         }
-
+        
+        if (newDevice instanceof CapBankControllerDNP
+                && oldDevice instanceof CapBankControllerDNP) {
+            ((CapBankControllerDNP) newDevice).setDeviceAddress(((CapBankControllerDNP) oldDevice).getDeviceAddress());
+            ((CapBankControllerDNP) newDevice).setDeviceCBC(((CapBankControllerDNP) oldDevice).getDeviceCBC());
+        }
+        
         if (newDevice instanceof MCT410IL) {
 
             boolean loadProfileExists = false;

@@ -5,9 +5,7 @@ import java.util.List;
 import com.cannontech.clientutils.CTILogger;
 import com.cannontech.core.dao.DaoFactory;
 import com.cannontech.database.TransactionException;
-import com.cannontech.database.data.capcontrol.CapBankController;
-import com.cannontech.database.data.capcontrol.CapBankController702x;
-import com.cannontech.database.data.capcontrol.ICapBankController;
+import com.cannontech.database.data.capcontrol.*;
 import com.cannontech.database.data.device.DeviceFactory;
 import com.cannontech.database.data.lite.LiteBase;
 import com.cannontech.database.data.lite.LitePoint;
@@ -73,7 +71,9 @@ public class CBCCopyUtils {
 	private static DBPersistent copyCBC(ICapBankController controller) {
 		if (controller instanceof CapBankController702x)
 			return handleCBC702x((CapBankController702x) controller);
-		if (controller instanceof CapBankController)
+        if (controller instanceof CapBankControllerDNP)
+            return handleCBCDNP((CapBankControllerDNP) controller);
+        if (controller instanceof CapBankController)
 			return handleCBC((CapBankController) controller);
 		return null;
 	}
@@ -101,7 +101,17 @@ public class CBCCopyUtils {
 		cbc702.setPAOName(controller.getPAOName());
 		return cbc702;
 	}
-
+    private static DBPersistent handleCBCDNP(CapBankControllerDNP controller) {
+        CapBankControllerDNP cbcDNP = null;
+        cbcDNP = (CapBankControllerDNP) DeviceFactory.createDevice(PAOGroups
+                .getDeviceType(controller.getPAOType()));
+        cbcDNP.setAddress(controller.getAddress());
+        cbcDNP.setCommID(controller.getCommID());
+        cbcDNP.setSchedules(controller.getSchedules());
+        cbcDNP.setDisabled(controller.isDisabled());
+        cbcDNP.setPAOName(controller.getPAOName());
+        return cbcDNP;
+    }
 	public static boolean isPoint(DBPersistent origObject) {
 		if (origObject instanceof PointBase)
 			return true;

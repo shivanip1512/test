@@ -66,6 +66,8 @@ public interface ICBControllerModel {
     public abstract boolean isDevice702X();
 
     public abstract boolean isDevice701X();
+    
+    public abstract boolean isDeviceDNP();
 
     public abstract int getDeviceType();
 

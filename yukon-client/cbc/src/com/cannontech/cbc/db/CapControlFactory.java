@@ -11,11 +11,7 @@ import com.cannontech.clientutils.CTILogger;
 import com.cannontech.core.dao.DaoFactory;
 import com.cannontech.core.dao.PaoDao;
 import com.cannontech.database.TransactionException;
-import com.cannontech.database.data.capcontrol.CCYukonPAOFactory;
-import com.cannontech.database.data.capcontrol.CapBank;
-import com.cannontech.database.data.capcontrol.CapBankController;
-import com.cannontech.database.data.capcontrol.CapBankController702x;
-import com.cannontech.database.data.capcontrol.ICapBankController;
+import com.cannontech.database.data.capcontrol.*;
 import com.cannontech.database.data.device.DeviceBase;
 import com.cannontech.database.data.device.DeviceTypesFuncs;
 import com.cannontech.database.data.multi.MultiDBPersistent;
@@ -152,7 +148,7 @@ public class CapControlFactory {
                 ((CapBank) dbObj).getCapBank()
                                  .setControlDeviceID(pao.getPAObjectID());
                 StatusPoint statusPt;
-                if (pao instanceof CapBankController702x) {
+                if (pao instanceof CapBankController702x || pao instanceof CapBankControllerDNP) {
                     MultiDBPersistent pointVector = CBCPointFactory.createPointsForCBCDevice(pao);
                     try {
                         PointUtil.insertIntoDB(pointVector);
@@ -266,11 +262,10 @@ public class CapControlFactory {
             // the cache
             initItem(itemID, editorType);
             // create points for the CBC702x device
-            if (dbObj instanceof CapBankController702x) {
+            if (dbObj instanceof CapBankController702x || dbObj instanceof CapBankControllerDNP) {
                 DBPersistent pointVector = CBCPointFactory.createPointsForCBCDevice((YukonPAObject) dbObj);
                 PointUtil.insertIntoDB(pointVector);
             }
-
             // redirect to this form as the editor for this new DB object
 
         } catch (TransactionException te) {} catch (PAODoesntHaveNameException e) {
