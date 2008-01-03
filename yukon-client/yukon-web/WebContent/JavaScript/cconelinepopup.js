@@ -688,10 +688,8 @@ function submitWithConfirm(obj) {
 	}
 	if (confirm("Are you sure you want to execute " + cmdStr + "?"))
 	{
-		//response = prompt("Reason:", "");
 		var paoID = name.split("_")[1];
 		var tagDesc = name.split("_")[0];
-		executeReasonUpdate(paoID, tagDesc, ""); 
 		submit(obj);
 	}
 }
