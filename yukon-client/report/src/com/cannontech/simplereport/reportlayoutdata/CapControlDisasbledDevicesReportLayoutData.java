@@ -9,7 +9,9 @@ public class CapControlDisasbledDevicesReportLayoutData implements ReportLayoutD
     public CapControlDisasbledDevicesReportLayoutData() {
         
         this.bodyColumns = new ColumnLayoutData[] {
-            new ColumnLayoutData("Device Name", "deviceName", 200)
+            new ColumnLayoutData("Device Name", "deviceName", 200),
+            new ColumnLayoutData("Device Type", "deviceType", 200),
+            new ColumnLayoutData("Device Parent", "deviceParent", 330)
         };
         
     }
