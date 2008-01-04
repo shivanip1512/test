@@ -6,8 +6,8 @@
 *
 * PVCS KEYWORDS:
 * ARCHIVE      :  $Archive:   Z:/SOFTWAREARCHIVES/YUKON/COMMON/INCLUDE/test_queue.cpp-arc  $
-* REVISION     :  $Revision: 1.4 $
-* DATE         :  $Date: 2007/12/10 23:02:57 $
+* REVISION     :  $Revision: 1.5 $
+* DATE         :  $Date: 2008/01/04 21:27:45 $
 *
 * Copyright (c) 2007 Cannon Technologies Inc. All rights reserved.
 *-----------------------------------------------------------------------------*/
@@ -275,4 +275,31 @@ BOOST_AUTO_UNIT_TEST(test_cti_queue_apply)
     tempMsg = greaterQueue.getQueue();
     BOOST_CHECK_EQUAL(tempMsg->insertOrder, 5);
     delete tempMsg;
+}
+
+//This inserts many many objects into a queue and makes sure it does not take
+//an unreasonable amount of time
+BOOST_AUTO_UNIT_TEST(test_cti_queue_sort_speed)
+{
+    CtiQueue<struct queueTestStruct, greater<struct queueTestStruct> > greaterQueue;
+
+    queueTestStruct *tempMsg = CTIDBG_new queueTestStruct();
+    tempMsg->value = 1;
+    tempMsg->insertOrder = 1;
+    greaterQueue.putQueue(tempMsg);
+
+    CtiTime start;
+    for( int a = 1; a<=100;a++ )
+    {
+        for( int i=0; i<1000; i++ )
+        {
+            tempMsg = CTIDBG_new queueTestStruct();
+            tempMsg->value = 1;
+            tempMsg->insertOrder = 1;
+            greaterQueue.putQueue(tempMsg);
+        }
+    }
+    CtiTime stop;
+    BOOST_CHECK(stop.seconds() < (start.seconds() + 4));//4 is quite a while actually.
+
 }

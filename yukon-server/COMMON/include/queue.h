@@ -33,6 +33,7 @@ public:
     {
         unsigned long insertOrder;
         T* dataPointer;
+        QueueDataStruct() : dataPointer(NULL), insertOrder(0){};
 
         //Although this says > it is really doing whatever the user gives us...
         bool operator>(const QueueDataStruct &rhs) const
@@ -67,17 +68,17 @@ private:
     boost::condition           dataAvailable;
     mutable boost::timed_mutex mux;
     
-    std::list<QueueDataStruct> *_col;
+    std::set<QueueDataStruct, std::greater<struct QueueDataStruct> > *_col;
     string                      _name;
     unsigned int                _insertValue;
 
     boost::xtime xt_eot;
 
 
-    std::list<QueueDataStruct> & getCollection()
+    std::set<QueueDataStruct, std::greater<struct QueueDataStruct> > & getCollection()
     {
         if(!_col)
-            _col = new std::list<struct QueueDataStruct>;
+            _col = new std::set<QueueDataStruct, std::greater<struct QueueDataStruct> >;
 
         return *_col;
     }
@@ -131,7 +132,7 @@ public:
                     QueueDataStruct tempStruct;
                     tempStruct.dataPointer = pt;
                     tempStruct.insertOrder = getNextInsertValue();
-                    getCollection().push_back(tempStruct);
+                    getCollection().insert(tempStruct);
                 }
                 catch(...)
                 {
@@ -141,7 +142,7 @@ public:
                     }
                 }
 
-                if(!gConfigParms.isTrue("YUKON_NOSORT_QUEUES"))
+                /*if(!gConfigParms.isTrue("YUKON_NOSORT_QUEUES"))
                 {
                     try
                     {
@@ -155,7 +156,7 @@ public:
                         }
                         resetCollection();     // Dump the queue?
                     }
-                }
+                }*/
 
                 // mutex automatically released in LockGuard destructor
             }
@@ -179,9 +180,9 @@ public:
                 dataAvailable.wait(scoped_lock);
             }
 
-            data = getCollection().front();
+            data = *(getCollection().begin());
             pval = data.dataPointer;
-            getCollection().pop_front();
+            getCollection().erase(getCollection().begin());
 
             // cerr << "Number of entries " << getCollection().entries() << endl;
         }
@@ -214,16 +215,16 @@ public:
                     // thread must have been signalled AND mutex reacquired to reach here OR RW_THR_TIMEOUT
                     if(wRes == true && !getCollection().empty())
                     {
-                        data = getCollection().front();
+                        data = *(getCollection().begin());
                         pval = data.dataPointer;
-                        getCollection().pop_front();
+                        getCollection().erase(getCollection().begin());
                     }
                 }
                 else
                 {
-                    data = getCollection().front();
+                    data = *(getCollection().begin());
                     pval = data.dataPointer;
-                    getCollection().pop_front();
+                    getCollection().erase(getCollection().begin());
                 }
             }
             // mutex automatically released in LockGuard destructor
@@ -247,11 +248,11 @@ public:
                     QueueDataStruct data;
                     data.insertOrder = getNextInsertValue();
                     data.dataPointer = pt;
-                    getCollection().push_back(data);
+                    getCollection().insert(data);
                     dataAvailable.notify_one();
                     putWasDone = true;
 
-                    if(!gConfigParms.isTrue("YUKON_NOSORT_QUEUES"))
+                    /*if(!gConfigParms.isTrue("YUKON_NOSORT_QUEUES"))
                     {
                         try
                         {
@@ -261,7 +262,7 @@ public:
                         {
                             cerr << " **** EXCEPTION Checkpoint **** " << __FILE__ << " (" << __LINE__ << ")" << endl;
                         }
-                    }
+                    }*/
                 }
             }
         }
@@ -382,9 +383,9 @@ public:
             {
                 while(!_col->empty())
                 {
-                    data = _col->front();
+                    data = *(_col->begin());
                     T *pval = data.dataPointer;
-                    _col->pop_front();
+                    _col->erase(_col->begin());
                     delete pval;
                 }
             }
