@@ -51,7 +51,7 @@ public class DBPersistentUtils {
 
             for (int i = 0; i < dbChange.length; i++) {
 
-                dbChange[i].setUserName("test user");
+                dbChange[i].setUserName("unknown");
                 DefaultDatabaseCache.getInstance()
                                     .handleDBChangeMessage(dbChange[i]);
                 ConnPool.getInstance().getDefDispatchConn().write(dbChange[i]);

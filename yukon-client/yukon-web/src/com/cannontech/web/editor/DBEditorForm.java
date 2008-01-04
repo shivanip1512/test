@@ -218,7 +218,7 @@ public abstract class DBEditorForm
 	 * Insert the method's description here.
 	 * Creation date: (10/9/2001 1:49:24 PM)
 	 */
-	private void generateDBChangeMsg( DBPersistent object, int changeType  ) 
+	protected void generateDBChangeMsg( DBPersistent object, int changeType  ) 
 	{
 		if( object instanceof CTIDbChange )
 		{

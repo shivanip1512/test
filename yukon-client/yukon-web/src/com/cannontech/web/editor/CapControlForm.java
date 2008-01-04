@@ -1035,9 +1035,9 @@ public class CapControlForm extends DBEditorForm implements ICapControlModel{
             }
 
             if(!(paoType == DBEditorTypes.EDITOR_STRATEGY)) {
-                DBPersistentUtils.generateDBChangeMsg(dbObj, DBChangeMsg.CHANGE_TYPE_UPDATE);
+                generateDBChangeMsg(dbObj, DBChangeMsg.CHANGE_TYPE_UPDATE);
             }else {
-                DBPersistentUtils.generateDBChangeMsg(strategy, DBChangeMsg.CHANGE_TYPE_UPDATE);
+                generateDBChangeMsg(strategy, DBChangeMsg.CHANGE_TYPE_UPDATE);
             }
             
             // redirect to this form as the editor for this new DB object
