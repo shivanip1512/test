@@ -1114,26 +1114,6 @@ where
 update capbank set operationalstate = 'StandAlone' where lower(operationalstate) = 'stand alone'; 
 /* End YUK-4997 */
 
-/* Start YUK-4116, YUK-4936 */
-create table LMHardwareControlGroup  (
-   ControlEntryID       INTEGER                         not null,
-   InventoryID          INTEGER                         not null,
-   LMGroupID            INTEGER                         not null,
-   AccountID            INTEGER                         not null,
-   GroupEnrollStart     DATE,
-   GroupEnrollStop      DATE,
-   OptOutStart          DATE,
-   OptOutStop           DATE,
-   Type                 INTEGER                         not null,
-   Relay                INTEGER                         not null,
-   UserIDFirstAction    INTEGER                         not null,
-   UserIDSecondAction   INTEGER                         not null
-);
-
-alter table LMHardwareControlGroup
-   add constraint PK_LMHARDWARECONTROLGROUP primary key (ControlEntryID);
-/* End YUK-4116, YUK-4936 */
-
 /* Start YUK-5017 */
 /* @error ignore-begin */
 alter table ScheduleTimePeriod
