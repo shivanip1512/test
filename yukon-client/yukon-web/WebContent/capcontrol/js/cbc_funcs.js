@@ -497,8 +497,7 @@ function copyPost()
     var elemPoints = document.getElementsByName('cti_chkbxPoints');
 
     if ( elemAreas.length > 0 ){
-		//Cannot Copy area's forwarding to the creation wizard.
-    	window.location = '/editor/cbcWizBase.jsf?type=4002';
+    	alert('Area\'s cannot be copied, please use the creation tool.');
     	return;
     }
     
