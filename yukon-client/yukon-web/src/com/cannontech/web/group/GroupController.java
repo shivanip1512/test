@@ -49,6 +49,7 @@ import com.cannontech.common.util.MappingList;
 import com.cannontech.common.util.ObjectMapper;
 import com.cannontech.core.authorization.exception.PaoAuthorizationException;
 import com.cannontech.core.dao.CommandDao;
+import com.cannontech.core.dao.DuplicateException;
 import com.cannontech.core.dao.PaoDao;
 import com.cannontech.database.data.lite.LiteCommand;
 import com.cannontech.database.data.lite.LiteYukonPAObject;
@@ -222,7 +223,13 @@ public class GroupController extends MultiActionController {
 
         DeviceGroup group = deviceGroupService.resolveGroupName(groupName);
         group.setName(newGroupName.trim());
-        deviceGroupEditorDao.updateGroup((StoredDeviceGroup) group);
+        
+        try {
+            deviceGroupEditorDao.updateGroup((StoredDeviceGroup) group);
+        } catch (DuplicateException e){
+            mav.addObject("errorMessage", e.getMessage());
+            return mav;
+        }
 
         mav.addObject("groupName", group.getFullName());
 
@@ -252,9 +259,14 @@ public class GroupController extends MultiActionController {
                 return mav;
             }
 
-            deviceGroupEditorDao.addGroup((StoredDeviceGroup) group,
-                                          DeviceGroupType.STATIC,
-                                          childGroupName);
+            try {
+                deviceGroupEditorDao.addGroup((StoredDeviceGroup) group,
+                                              DeviceGroupType.STATIC,
+                                              childGroupName);
+            } catch (DuplicateException e) {
+                mav.addObject("errorMessage", e.getMessage());
+                return mav;
+            }
 
         } else {
             mav.addObject("errorMessage", "Cannot add sub group to " + group.getFullName());
