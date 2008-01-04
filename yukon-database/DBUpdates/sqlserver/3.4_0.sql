@@ -895,13 +895,6 @@ sp_rename 'DCItemType.MaxLengh', 'MaxValue', 'COLUMN';
 go
 
 insert into YukonRoleProperty values(-1020,-1,'stars_activation','false','Specifies whether STARS functionality should be allowed in this web deployment.');
-/* @start-block */
-if 1 < (select count(*) from ApplianceCategory)
-begin
-   insert into YukonGroupRole values (-20, -1, -1, -1020, 'true');
-end;
-/* @end-block */
-go
 
 insert into YukonRoleProperty values (-20012,-200,'LM User Assignment','false','Controls visibility of LM objects for 3-tier and direct control, based off assignment of users.');
 go
