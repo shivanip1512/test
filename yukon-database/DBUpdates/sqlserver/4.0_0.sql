@@ -1064,12 +1064,12 @@ create table CAPCONTROLCOMMENT  (
 go
 
 alter table CAPCONTROLCOMMENT 
-   add constraint FK_CAPBANKC_REFERENCE_YUKONPAO foreign key (PaoID)
+   add constraint FK_CAPCONTR_REFERENCE_YUKONPA2 foreign key (PaoID)
       references YukonPAObject (PAObjectID);
 go
 
 alter table CAPCONTROLCOMMENT 
-   add constraint FK_CAPBANKC_REFERENCE_YUKONUSE foreign key (UserID)
+   add constraint FK_CAPCONTR_REFERENCE_YUKONUSE foreign key (UserID)
       references YukonUser (UserID);
 go
 /* End YUK 4762, YUK-4969 */
