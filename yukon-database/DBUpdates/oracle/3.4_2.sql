@@ -12,28 +12,18 @@ update State set Text = 'Active' where StateGroupID = -8 and RawState = 1;
 declare
 v_paoid number(6);
 v_areaname varchar2(60);
-cursor c_areaname is select distinct description  as areaname from yukonpaobject where type = 'CCSUBBUS';
-begin
-select max(paobjectid) into v_paoid from yukonpaobject;
+cursor c_areaname is select distinct description as areaname from yukonpaobject where type = 'CCSUBBUS';
+begin select max(paobjectid) into v_paoid from yukonpaobject;
 v_paoid := v_paoid + 1;
-open c_areaname;
+open c_areaname; fetch c_areaname into v_areaname;
+while(c_areaname%found)
+loop
+insert into yukonpaobject(paobjectid, category, paoclass, paoname, type, description, disableflag, paostatistics)
+select max(paobjectid) + 1,
+'CAPCONTROL','CAPCONTROL', v_areaname,'CCAREA', '(none)', 'N','-----' from yukonpaobject;
+v_paoid := v_paoid + 1;
 fetch c_areaname into v_areaname;
-          
-   while(c_areaname%found)
-      loop
-          insert into yukonpaobject(paobjectid, category, paoclass, paoname, type, description, disableflag, paostatistics)
-                  select v_paoid,
-                   'CAPCONTROL',
-                   'CAPCONTROL',
-                   v_areaname,
-                   'CCAREA',
-                   '(none)',
-                   'N',
-                   '-----' from yukonpaobject;
-            v_paoid := v_paoid + 1;
-			fetch c_areaname into v_areaname;
-         
-     end loop;
+end loop;
 close c_areaname;
 end;
 /* @end-block */
