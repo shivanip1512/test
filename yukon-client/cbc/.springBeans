@@ -6,11 +6,11 @@
 		<configSuffix><![CDATA[xml]]></configSuffix>
 	</configSuffixes>
 	<configs>
-		<config>src/com/cannontech/cc/applicationContext.xml</config>
+		<config>src/com/cannontech/cbc/cbcContext.xml</config>
 	</configs>
 	<configSets>
 		<configSet>
-			<name><![CDATA[Commercial Curtailment config set]]></name>
+			<name><![CDATA[CBC config set]]></name>
 			<allowBeanDefinitionOverriding>true</allowBeanDefinitionOverriding>
 			<incomplete>false</incomplete>
 			<configs>
@@ -28,8 +28,7 @@
 				<config>/common/src/com/cannontech/core/dynamic/applicationContext.xml</config>
 				<config>/common/src/com/cannontech/core/service/applicationContext.xml</config>
 				<config>/common/src/com/cannontech/mainContext.xml</config>
-				<config>/loadcontrol/src/com/cannontech/loadcontrol/applicationContext.xml</config>
-				<config>src/com/cannontech/cc/applicationContext.xml</config>
+				<config>src/com/cannontech/cbc/cbcContext.xml</config>
 				<config>/common/src/com/cannontech/hibernate/hibernateContext.xml</config>
 				<config>/common/src/com/cannontech/jobs/jobContext.xml</config>
 				<config>/common/src/com/cannontech/report/reportContext.xml</config>
