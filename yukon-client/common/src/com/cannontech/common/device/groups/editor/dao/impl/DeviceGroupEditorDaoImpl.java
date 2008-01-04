@@ -22,6 +22,7 @@ import com.cannontech.common.device.groups.editor.model.StoredDeviceGroup;
 import com.cannontech.common.device.groups.util.YukonDeviceToIdMapper;
 import com.cannontech.common.util.MappingList;
 import com.cannontech.common.util.SqlStatementBuilder;
+import com.cannontech.core.dao.DuplicateException;
 import com.cannontech.core.dao.NotFoundException;
 import com.cannontech.database.SqlUtils;
 import com.cannontech.database.data.pao.PaoGroupsWrapper;
@@ -196,7 +197,12 @@ public class DeviceGroupEditorDaoImpl implements DeviceGroupEditorDao, DeviceGro
         
         String rawName = SqlUtils.convertStringToDbValue(groupName);
 
-        jdbcTemplate.update(sql.toString(), nextValue, rawName, group.getId(), "N", type.name());
+        try {
+            jdbcTemplate.update(sql.toString(), nextValue, rawName, group.getId(), "N", type.name());
+        } catch (DataIntegrityViolationException e) {
+            throw new DuplicateException("Cannot create group with the same name as an existing group with the same parent.", e);
+        }
+        
         StoredDeviceGroup result = new StoredDeviceGroup();
         result.setId(nextValue);
         result.setName(groupName);
@@ -218,7 +224,11 @@ public class DeviceGroupEditorDaoImpl implements DeviceGroupEditorDao, DeviceGro
         
         String rawName = SqlUtils.convertStringToDbValue(group.getName());
         
-        jdbcTemplate.update(sql.toString(), rawName, group.getId());
+        try {
+            jdbcTemplate.update(sql.toString(), rawName, group.getId());
+        } catch (DataIntegrityViolationException e) {
+            throw new DuplicateException("Cannot change group name to the same name as an existing group with the same parent.", e);
+        }
     }
 
     @Transactional
