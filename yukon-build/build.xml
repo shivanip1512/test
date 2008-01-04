@@ -418,7 +418,7 @@
     
     <target name="branch-build" depends="init">
 		<property name="branch.name" value="BR${DSTAMP}_${cleaninternal}_${TSTAMP}"/>
-        <property name="tag.name" value="TG${DSTAMP}_${cleaninternal}_${cleanexternal}_${TSTAMP}"/>
+        <property name="tag.name" value="TG${DSTAMP}_${cleanexternal}_${TSTAMP}"/>
         
         <input
           message="branch: ${branch.name}	tag: ${tag.name}	continue?"
