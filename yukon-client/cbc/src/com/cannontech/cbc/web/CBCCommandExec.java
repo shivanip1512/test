@@ -172,6 +172,10 @@ public class CBCCommandExec
 	            executeCapBankDefault(paoId, cmdId, operationalState);
 	            break;
 	        }
+	        case CBCCommand.RETURN_BANK_TO_FEEDER : {
+	        	executeCapBankDefault(paoId, cmdId, operationalState);
+	        	break;
+	        }
 	    }
 	}
 	

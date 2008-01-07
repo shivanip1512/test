@@ -139,7 +139,11 @@ if(special){
    		overlib(html, FULLHTML, STICKY);
    		hiLiteTRow ('tr_cap_'+id , 'yellow');
    	}
-   	
+   	   	
+   	function getCapBankTempMoveBack(id){
+   		var html = new String($F('cmd_cap_move_back_' + id));
+   		overlib(html, FULLHTML, STICKY);
+   	}
  </script>
 <%
 String css = "tableCell";
@@ -604,11 +608,12 @@ for( int i = 0; i < capBanks.size(); i++ ) {
 				</td>
 				<td><%=CBCUtils.CBC_DISPLAY.getCapBankValueAt(capBank, CBCDisplay.CB_BANK_SIZE_COLUMN, user)%></td>
                 <td>
-                    <input id="cmd_cap_move_back_<%=capBank.getCcId()%>" type="hidden" value= "" />
+                    <input id="cmd_cap_move_back_<%=capBank.getCcId()%>" type="hidden" value="" />
                     <a href="javascript:void(0);"
                     <% if( capBank.isBankMoved() ) { %>
 	                    class="warning" 
-	                    <%=popupEvent%>="return overlib($F('cmd_cap_move_back_<%=capBank.getCcId()%>'),STICKY, WIDTH,155, HEIGHT,50, OFFSETX,-15,OFFSETY,-15, FULLHTML);" onmouseout = <%=nd%> 
+	                    <%=popupEvent%>="getCapBankTempMoveBack('<%=capBank.getCcId()%>');" 
+	                    onmouseout = <%=nd%> 
                     <% } else { %>
                         onmouseover="statusMsg(this, 'Click here to temporarily move this CapBank from it\'s current parent feeder');"
                         onclick="return GB_show('CapBank Temp Move Target (Pick feeder by clicking on name)','tempmove.jsp?bankid='+<%=capBank.getCcId()%>, 500, 700, onGreyBoxClose);"

@@ -260,7 +260,7 @@ function generate_CB_Move_Back (id, name, red) {
 	 var div_start_tag = "<HTML><BODY><div id='cb_move_back_" + id + "' ";
 	 var div_end_tag = " </div></BODY></HTML>";
 	 //css for the div
-	 div_start_tag += " style='background:white; height:1cm; width:1cm; border:1px solid black;'>";
+	 div_start_tag += " style='background:white; border:1px solid black;'>";
 	 //init return variable
 	 var html = div_start_tag;
 	 //generate the table
