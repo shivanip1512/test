@@ -12,7 +12,8 @@ public enum Permission {
     OTHER_COMMAND("Unrecognized device command", false), 
     LM_VISIBLE("allow LM visibility", false), 
     ALLOWED_COMMAND("Allowed Command", false),
-    PAO_VISIBLE("Pao visibility", true);
+    PAO_VISIBLE("Pao visibility", true),
+    DEFAULT_ROUTE("Default Route", false);
 
     private final String description;
     private final Boolean defaultAuth;

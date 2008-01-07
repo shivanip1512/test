@@ -107,7 +107,10 @@ public class StarsAdminUtil {
 	
 	public static void updateDefaultRoute(LiteStarsEnergyCompany energyCompany, int routeID) throws Exception {
 		if (energyCompany.getDefaultRouteID() != routeID) {
-			if (energyCompany.getDefaultRouteID() == LiteStarsEnergyCompany.INVALID_ROUTE_ID) {
+			if(routeID == LiteStarsEnergyCompany.INVALID_ROUTE_ID) {
+			    removeDefaultRoute(energyCompany);
+            }
+		    else if (energyCompany.getDefaultRouteID() == LiteStarsEnergyCompany.INVALID_ROUTE_ID) {
 				// Assign the default route to the energy company
 				LMGroupExpressCom grpDftRoute = (LMGroupExpressCom) LMFactory.createLoadManagement( DeviceTypes.LM_GROUP_EXPRESSCOMM );
 				grpDftRoute.setPAOName( energyCompany.getName() + " Default Route" );
@@ -126,13 +129,13 @@ public class StarsAdminUtil {
 				ServerUtils.handleDBChangeMsg( grpSerial.getDBChangeMsgs(DBChangeMsg.CHANGE_TYPE_ADD)[0] );
                 
                 PaoPermissionService pService = (PaoPermissionService) YukonSpringHook.getBean("paoPermissionService");
-                pService.addPermission(new LiteYukonUser(energyCompany.getUserID()), new LiteYukonPAObject(grpSerial.getPAObjectID().intValue()), Permission.LM_VISIBLE, true);
+                pService.addPermission(new LiteYukonUser(energyCompany.getUserID()), new LiteYukonPAObject(grpSerial.getPAObjectID().intValue()), Permission.DEFAULT_ROUTE, true);
 			}
 			else if (routeID > 0 || energyCompany.getDefaultRouteID() > 0) {
 				if (routeID < 0) routeID = 0;
 				
                 PaoPermissionService pService = (PaoPermissionService) YukonSpringHook.getBean("paoPermissionService");
-                Set<Integer> permittedPaoIDs = pService.getPaoIdsForUserPermission(new LiteYukonUser(energyCompany.getUserID()), Permission.LM_VISIBLE);
+                Set<Integer> permittedPaoIDs = pService.getPaoIdsForUserPermission(new LiteYukonUser(energyCompany.getUserID()), Permission.DEFAULT_ROUTE);
                 if(! permittedPaoIDs.isEmpty()) {
                     String sql = "SELECT exc.LMGroupID, FROM LMGroupExpressCom exc, GenericMacro macro " +
                         "WHERE macro.MacroType = '" + MacroTypes.GROUP + "' AND macro.ChildID = exc.LMGroupID AND exc.SerialNumber = '0'";
@@ -168,7 +171,7 @@ public class StarsAdminUtil {
 	
 	public static void removeDefaultRoute(LiteStarsEnergyCompany energyCompany) throws Exception {
         PaoPermissionService pService = (PaoPermissionService) YukonSpringHook.getBean("paoPermissionService");
-        Set<Integer> permittedPaoIDs = pService.getPaoIdsForUserPermission(new LiteYukonUser(energyCompany.getUserID()), Permission.LM_VISIBLE);
+        Set<Integer> permittedPaoIDs = pService.getPaoIdsForUserPermission(new LiteYukonUser(energyCompany.getUserID()), Permission.DEFAULT_ROUTE);
         if(! permittedPaoIDs.isEmpty()) {
             String sql = "SELECT exc.LMGroupID, macro.OwnerID FROM LMGroupExpressCom exc, GenericMacro macro " +
 				"WHERE macro.MacroType = '" + MacroTypes.GROUP + "' AND macro.ChildID = exc.LMGroupID AND exc.SerialNumber = '0'";
@@ -190,7 +193,7 @@ public class StarsAdminUtil {
                 /*Load groups are only assigned to users, so for now we only have to worry about removing from
                  * the user.
                  */
-                pService.removePermission(new LiteYukonUser(energyCompany.getUserID()), new LiteYukonPAObject(serialGrpID), Permission.LM_VISIBLE);
+                pService.removePermission(new LiteYukonUser(energyCompany.getUserID()), new LiteYukonPAObject(serialGrpID), Permission.DEFAULT_ROUTE);
     			stmt.setSQLString( sql );
     			stmt.execute();
     			

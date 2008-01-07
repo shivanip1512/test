@@ -313,7 +313,7 @@ public class LiteStarsEnergyCompany extends LiteBase {
             String dbAlias = com.cannontech.common.util.CtiUtilities.getDatabaseAlias();
             
             PaoPermissionService pService = (PaoPermissionService) YukonSpringHook.getBean("paoPermissionService");
-            Set<Integer> permittedPaoIDs = pService.getPaoIdsForUserPermission(new LiteYukonUser(getUserID()), Permission.LM_VISIBLE);
+            Set<Integer> permittedPaoIDs = pService.getPaoIdsForUserPermission(new LiteYukonUser(getUserID()), Permission.DEFAULT_ROUTE);
             if(! permittedPaoIDs.isEmpty()) {
                 String sql = "SELECT exc.LMGroupID, macro.OwnerID FROM LMGroupExpressCom exc, GenericMacro macro " +
                     "WHERE macro.MacroType = '" + MacroTypes.GROUP + "' AND macro.ChildID = exc.LMGroupID AND exc.SerialNumber = '0'";
