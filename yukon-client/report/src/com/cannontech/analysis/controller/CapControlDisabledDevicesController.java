@@ -1,6 +1,9 @@
 package com.cannontech.analysis.controller;
 
+import java.util.HashMap;
 import java.util.HashSet;
+import java.util.List;
+import java.util.Map;
 
 import javax.servlet.http.HttpServletRequest;
 
@@ -125,5 +128,10 @@ public class CapControlDisabledDevicesController extends CapControlReportControl
         html += "</tr>" + LINE_SEPARATOR;
         html += "</table>" + LINE_SEPARATOR;
         return html;
+    }
+    
+    public Map<ReportFilter,List<? extends Object>> getFilterObjectsMap() {
+        HashMap<ReportFilter, List<? extends Object>> result = new HashMap<ReportFilter, List<? extends Object>>();
+        return result;
     }
 }
