@@ -5,9 +5,11 @@ import java.sql.PreparedStatement;
 import java.sql.ResultSet;
 import java.sql.SQLException;
 import java.sql.Timestamp;
+import java.util.ArrayList;
 import java.util.Collections;
 import java.util.Comparator;
 import java.util.Date;
+import java.util.List;
 
 import javax.servlet.http.HttpServletRequest;
 
@@ -199,7 +201,16 @@ public class MeterReadModel extends ReportModelBase<MeterAndPointData> implement
     private SqlStatementBuilder buildWhereClause(String columnName) {
         SqlStatementBuilder sqlWhere = new SqlStatementBuilder();
         if (getPaoIDs() != null && getPaoIDs().length > 0) {
-            sqlWhere.append(" AND ",columnName, "IN (", getPaoIDs(), ") ");
+
+            // primitive arrays don't work with SqlStatementBuilder
+            // no easy way to to convert to List without looping..
+            int[] intIDs = getPaoIDs();
+            List<Integer> integerIDs = new ArrayList<Integer>();
+            for (int idIdx = 0; idIdx < intIDs.length; idIdx++) {
+                integerIDs.add(intIDs[idIdx]);
+            }
+            
+            sqlWhere.append(" AND ",columnName, "IN (", integerIDs, ") ");
         }
         
         if (getBillingGroups() != null && getBillingGroups().length > 0) {
