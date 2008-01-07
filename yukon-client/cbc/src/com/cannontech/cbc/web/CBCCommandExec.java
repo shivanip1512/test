@@ -173,9 +173,12 @@ public class CBCCommandExec
 	            break;
 	        }
 	        case CBCCommand.RETURN_BANK_TO_FEEDER : {
-	        	executeCapBankDefault(paoId, cmdId, operationalState);
-	        	break;
-	        }
+                executeCapBankDefault(paoId, cmdId, operationalState);
+                break;
+            }
+            default: {
+                throw new UnsupportedOperationException("Cap Bank Command, " + cmdId + ", not supported." );
+            }
 	    }
 	}
 	
