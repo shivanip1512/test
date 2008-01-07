@@ -215,7 +215,7 @@ private javax.swing.JEditorPane getJEditorPaneDesc() {
 			// user code begin {1}
 			
 			ivjJEditorPaneDesc.setText("A user created role group");
-
+			
 			// user code end
 		} catch (java.lang.Throwable ivjExc) {
 			// user code begin {2}
@@ -529,7 +529,8 @@ private void initialize() {
 		handleException(ivjExc);
 	}
 	// user code begin {2}
-	getJEditorPaneDesc().setFocusable(false);
+	    // Disable editing login group descriptions:
+	    // getJEditorPaneDesc().setFocusable(false);
 	// user code end
 }
 /**
