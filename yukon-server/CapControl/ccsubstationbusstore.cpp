@@ -48,6 +48,7 @@
 extern ULONG _CC_DEBUG;
 extern ULONG _DB_RELOAD_WAIT;
 extern ULONG _MAX_KVAR;
+extern ULONG _MAX_KVAR_TIMEOUT;
 
 using namespace std;
 
@@ -8880,7 +8881,9 @@ bool CtiCCSubstationBusStore::addKVAROperation( long capbankId, long kvar )
 {
     if( !isKVARAvailable( kvar ) )
         return false;
-    maxKvarMap.insert( make_pair(capbankId,kvar) );
+    
+    MaxKvarObject obj(kvar,capbankId,CtiTime());
+    maxKvarMap.insert( make_pair(capbankId, obj ) );
 
     return true;
 }
@@ -8899,9 +8902,22 @@ long CtiCCSubstationBusStore::isKVARAvailable( long kvarNeeded )
         return true;
 
     long kvarInList = 0;
-    for( std::map<long,long>::iterator itr = maxKvarMap.begin(); itr != maxKvarMap.end(); itr++ )
+    for( std::map<long,MaxKvarObject>::iterator itr = maxKvarMap.begin(); itr != maxKvarMap.end();  )
     {
-        kvarInList += (*itr).second;
+        MaxKvarObject obj = (*itr).second;
+        CtiTime now;
+        ctitime_t deltaTime = now.seconds() - obj.getTimestamp().seconds();
+        if( deltaTime > _MAX_KVAR_TIMEOUT)
+        {
+            CtiLockGuard<CtiLogger> logger_guard(dout);
+            dout << CtiTime() << " Expired kvar request, removing: " << obj.getPaoId() << endl;
+            maxKvarMap.erase(itr++);
+        }
+        else
+        {
+            kvarInList += obj.getValue();
+            itr++;
+        }
     }
     if( (kvarInList + kvarNeeded) < _MAX_KVAR )
         return true;

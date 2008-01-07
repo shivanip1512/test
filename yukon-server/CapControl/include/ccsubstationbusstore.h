@@ -44,6 +44,53 @@ struct CC_DBRELOAD_INFO
    unsigned char filler:2;
 };
 
+class MaxKvarObject
+{
+public:
+    MaxKvarObject()
+    {
+        value = 0;
+        paoid = 0;
+        timestamp = CtiTime();
+    };
+    MaxKvarObject(long v, long i, CtiTime t)
+    {
+        value = v;
+        paoid = i;
+        timestamp = t;
+    };
+
+    void setValue( long v )
+    {
+        value = v;
+    };
+    long getValue()
+    {
+        return value;
+    };
+    void setPaoId( long i )
+    {
+        paoid = i;
+    };
+    long getPaoId()
+    {
+        return paoid;
+    };
+    void setTimestamp( CtiTime t )
+    {
+        timestamp = t;
+    };
+    CtiTime getTimestamp()
+    {
+        return timestamp;
+    };
+
+private:
+    long value;
+    long paoid;
+    CtiTime timestamp;
+};
+
 class CtiCCSubstationBusStore : public RWMonitor< RWRecursiveLock< RWMutexLock > >
 {
 public:   
@@ -343,7 +390,7 @@ private:
     list <long> _orphanedCapBanks;
     list <long> _orphanedFeeders;
 
-    map< long, long > maxKvarMap;
+    map< long, MaxKvarObject > maxKvarMap;
 
     //mutable RWRecursiveLock<RWMutexLock> _storemutex;
 };

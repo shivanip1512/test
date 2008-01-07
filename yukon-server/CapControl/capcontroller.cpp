@@ -69,6 +69,7 @@ extern ULONG _SCAN_WAIT_EXPIRE;
 extern BOOL _RETRY_FAILED_BANKS;
 extern BOOL _END_DAY_ON_TRIP;
 extern ULONG _MAX_KVAR;
+extern ULONG _MAX_KVAR_TIMEOUT;
 extern BOOL _LOG_MAPID_INFO;
 
 
@@ -3244,7 +3245,12 @@ void CtiCapController::refreshCParmGlobals(bool force)
             CtiLockGuard<CtiLogger> logger_guard(dout);
             dout << CtiTime() << " - CAP_CONTROL_MAX_KVAR: " << _MAX_KVAR << endl;
         }
-
+        _MAX_KVAR_TIMEOUT = gConfigParms.getValueAsULong("CAP_CONTROL_MAX_KVAR_TIMEOUT", 300);
+        if ( _CC_DEBUG & CC_DEBUG_STANDARD)
+        {
+            CtiLockGuard<CtiLogger> logger_guard(dout);
+            dout << CtiTime() << " - CAP_CONTROL_MAX_KVAR_TIMEOUT: " << _MAX_KVAR_TIMEOUT << endl;
+        }
         _LOG_MAPID_INFO = FALSE;
 
         strcpy(var, "CAP_CONTROL_LOG_MAPID_INFO");
