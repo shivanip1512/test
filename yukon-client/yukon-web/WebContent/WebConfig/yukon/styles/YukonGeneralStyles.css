@@ -78,7 +78,7 @@ table.resultsTable {
 }
 
 table.resultsTable th {
-	background: #FFFFFF;
+	background: #F7F7F7;
 	padding: .3em .5em;
   	border: 1px solid #ccc;
 	color: 	#06C;
@@ -120,7 +120,7 @@ table.miniResultsTable {
 }
 
 table.miniResultsTable th {
-	background: #FFFFFF;
+	background: #F7F7F7;
 	padding: .2em .5em;
   	border: 1px solid #ccc;
 	color: 	#06C;
@@ -403,7 +403,7 @@ div.triangleContainer .triangleContainer_titleBar .controls {
 }
 
 div.boxContainer .boxContainer_titleBar { 
-	background-color: #FFFFFF;
+	background-color: #F7F7F7;
 	border: 1px solid #BBBBBB;
 	padding: .25em .5em; 
 	background-image: url(../Icons/boxContainerBg26px.gif);
