@@ -24,6 +24,7 @@
 
 #include "cticalls.h"
 #include "ctinexus.h"
+#include "configparms.h"
 #include "dsm2.h"
 #include "color.h"
 #include "ctiTime.h"
@@ -42,7 +43,7 @@ boost::mutex io_mutex;
 
 void CCUThread(const int& s, const int& strtgy);
 
-/* CtrlHandler handles is used to catch ctrl-c when run in a console */
+// CtrlHandler handles is used to catch ctrl-c when run in a console
 BOOL CtrlHandler(DWORD fdwCtrlType)
 {
     switch( fdwCtrlType )
@@ -175,12 +176,64 @@ void CCUThread(const int& s, const int& strtgy)
 //CHANGE THIS TO getConnection(0) !!!
 /////////////////////////////////////////////
 
-    //InitYukonBaseGlobals();                            // Load up the config file.
+        InitYukonBaseGlobals();                            // Load up the config file.
 
     // Set default database connection params
-    setDatabaseParams(0, "msq15d.dll", "mn1db02\\server2005", "erooney", "erooney");   // *** THIS NEEDS TO BE CHANGED FOR ALL USERS !!!!!!!!
+        char var[128];
+        string dbDll = "none";
+        string dbName = "none";
+        string dbUser = "none";
+        string dbPassword = "none";
+        string str = "none";
 
-    /*
+        strcpy(var, "DB_RWDBDLL");
+        if( !(str = gConfigParms.getValueAsString(var)).empty() )
+        {
+            dbDll = str.c_str();
+        }
+        else
+        {
+            cout << CtiTime() << " - Unable to obtain '" << var << "' value from cparms." << endl;
+        }
+
+        strcpy(var, "DB_SQLSERVER");
+        if( !(str = gConfigParms.getValueAsString(var)).empty() )
+        {
+            dbName = str.c_str();
+        }
+        else
+        {
+            cout << CtiTime() << " - Unable to obtain '" << var << "' value from cparms." << endl;
+        }
+
+        strcpy(var, "DB_USERNAME");
+        if( !(str = gConfigParms.getValueAsString(var)).empty() )
+        {
+            dbUser = str.c_str();
+        }
+        else
+        {
+            cout << CtiTime() << " - Unable to obtain '" << var << "' value from cparms." << endl;
+        }
+
+        strcpy(var, "DB_PASSWORD");
+        if( !(str = gConfigParms.getValueAsString(var)).empty() )
+        {
+            dbPassword = str.c_str();
+        }
+        else
+        {
+            cout << CtiTime() << " - Unable to obtain '" << var << "' value from cparms." << endl;
+        }
+
+
+        if( dbDll != "none" && dbName != "none" && dbUser != "none" && dbPassword != "none" )
+        {
+            cout << CtiTime() << " - Obtaining connection to the database..." << endl;
+            setDatabaseParams(0,dbDll,dbName,dbUser,dbPassword);
+        }
+
+    ////////////////////////////////COMMENT THIS SECTION OUT UNTIL DB WORKS//////////////////////////////////
     RWDBConnection conn = getConnection();
     RWDBDatabase   db   = conn.database();
     if( !db.isValid() )
@@ -189,7 +242,6 @@ void CCUThread(const int& s, const int& strtgy)
     }
     else
     {
-
         cout << "Connected to database."<<endl;
     }
     RWDBTable    table     = db.table("METERDATA");
@@ -240,7 +292,7 @@ void CCUThread(const int& s, const int& strtgy)
     //deleter.where(autoParts["name"] == "hubcap" &&
     //              autoParts["color"] == "red");
     deleter.execute();
-*/
+
 //**************************************DONE CREATING TABLE***************************************
 
 
@@ -388,7 +440,13 @@ void CCUThread(const int& s, const int& strtgy)
                         i++;
                     }
 
-                    /*RWDBSelector selector  = db.selector();
+                    // This will be used to store the mct data tuples from the DB
+                    mctStruct structArray[100];
+                    int structCounter = 0;
+
+  ////////////  COMMENT THIS SECTION OUT UNTIL DB WORKS /////////////////////////
+
+                    RWDBSelector selector  = db.selector();
 
                     selector << table["MCTADDRESS"] << table["KWHVALUE"]<< table["TIMESTAMP"];
 
@@ -399,8 +457,9 @@ void CCUThread(const int& s, const int& strtgy)
                     RWDBReader  rdr = selector.reader( conn );
 
                     int readMCTaddress = 0;
-                    int readKWHvalue = 0;
+                    double readKWHvalue = 0;
                     RWDBDateTime readTimestamp;
+                    readTimestamp.now();
 
                     if( !rdr.isValid() )
                     {
@@ -425,21 +484,45 @@ void CCUThread(const int& s, const int& strtgy)
                                 }
                                 i++;
                             }
+                            //If the address is already in the DB
                             if( matchAtIndex!=-1 )
                             {
-                                //cout<<"\nCrossing off match: "<<mctAddressArray[matchAtIndex]<<endl;
+                                //Update the kwh value and timestamp if the mct is already in the DB
+                                RWDBUpdater updater = table.updater();
+
+                                RWDBColumn kwhvalue = table["KWHVALUE"];
+                                RWDBColumn timestamp = table["TIMESTAMP"];
+                                //Add ~7kwh per hour since last timestamp to the value
+                                RWDBDateTime currentTime;
+                                currentTime.now();
+                                cout<<"\nTime difference "<<(currentTime-readTimestamp).asMinutes()<<endl;
+                                int timeDifference = (currentTime-readTimestamp).asMinutes();
+                                int addKwh = 0;
+                                addKwh = (timeDifference/60);  //  Add 7 kwh per hour
+                                updater << kwhvalue.assign(kwhvalue + (.28*addKwh));//(.28*addKwh));
+                                if( addKwh>0 )
+                                {
+                                    updater << timestamp.assign(currentTime);
+                                }
+                                updater.where(table["MCTADDRESS"] == mctAddressArray[matchAtIndex]);
+                                updater.execute(conn);
+
+                                //Crossing off match
                                 mctAddressArray[matchAtIndex]=-1;
                             }
+
+                            //Store the tuple of mct data just read from the DB into an array of structs to be passed to CCU-711
+                            mctStruct tempStruct;
+                            tempStruct.setKwhValue(readKWHvalue);
+                            tempStruct.setmctAddress(readMCTaddress);
+                            tempStruct.setTime(readTimestamp);
+                            structArray[structCounter]=tempStruct;
+                            structCounter++;
                         }
 
                     }
 
-                    RWDBUpdater updater = table.updater();
 
-                    RWDBColumn kwhvalue = table["KWHVALUE"];
-                    updater << kwhvalue.assign(kwhvalue + 7);
-                    //updater.where(table["MCTADDRESS"] == 2);
-                    updater.execute(conn);
 
                     //RWDBDeleter deleter = table.deleter();
                     //deleter.where(autoParts["name"] == "hubcap" &&
@@ -449,17 +532,18 @@ void CCUThread(const int& s, const int& strtgy)
                     RWDBInserter inserter  = table.inserter();
 
                     RWDBStatus::ErrorCode err;
-*/
-                 /*   i = 0;
+
+                    i = 0;
                     while( (mctAddressArray[i] != 0) )
                     {
+                        //If the address was not crossed off as a match with -1, insert it into the Db
                         if( mctAddressArray[i]!=-1 )
                         {
                             // initialize random seed:
                             CtiTime seedValue;
                             srand ( seedValue.second() );
                             // generate secret number:
-                            int inKWHvalue = rand() % 100 + 1 ;
+                            double inKWHvalue = (rand() % 100)/4 ;
                             RWDBDateTime inTimestamp;
                             inserter<<mctAddressArray[i]<<inKWHvalue<<inTimestamp;
                             if( err =  ExecuteInserter(conn,inserter,__FILE__,__LINE__).errorCode() )
@@ -471,10 +555,7 @@ void CCUThread(const int& s, const int& strtgy)
                         }
                         i++;
                     }
-*/
-                    mctStruct testStruct;
-                    mctStruct structArray[100];
-                    structArray[0]=testStruct;
+/////////////////////////  DB SECTION ENDS HERE  /////////////////////////////////////////////
                     aCCU711->ReceiveMore(ReadBuffer, counter, structArray);
                     aCCU711->PrintInput();
                 }
