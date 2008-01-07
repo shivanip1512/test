@@ -278,7 +278,7 @@ private javax.swing.JPanel getDeadbandPanel() {
 			com.cannontech.common.gui.util.TitleBorder ivjLocalBorder;
 			ivjLocalBorder = new com.cannontech.common.gui.util.TitleBorder();
 			ivjLocalBorder.setTitleFont(new java.awt.Font("dialog.bold", 1, 14));
-			ivjLocalBorder.setTitle("Deadband");
+			ivjLocalBorder.setTitle("Deadband (Welco RTUs Only)");
 			ivjDeadbandPanel = new javax.swing.JPanel();
 			ivjDeadbandPanel.setName("DeadbandPanel");
 			ivjDeadbandPanel.setBorder(ivjLocalBorder);
@@ -320,7 +320,7 @@ private com.klg.jclass.field.JCSpinField getDeadbandSpinner() {
 			ivjDeadbandSpinner.setMinimumSize(new java.awt.Dimension(60, 22));
 			// user code begin {1}
 			ivjDeadbandSpinner.setDataProperties(new com.klg.jclass.field.DataProperties(new com.klg.jclass.field.validate.JCIntegerValidator(null, new Integer(-1), new Integer(1000), null, true, null, new Integer(1), "#,##0.###;-#,##0.###", false, false, false, null, new Integer(0)), new com.klg.jclass.util.value.MutableValueModel(java.lang.Integer.class, new Integer(0)), new com.klg.jclass.field.JCInvalidInfo(true, 2, new java.awt.Color(0, 0, 0, 255), new java.awt.Color(255, 255, 255, 255))));
-			ivjDeadbandSpinner.setValidator(new com.klg.jclass.field.validate.JCIntegerValidator(null, new Integer(0), new Integer(100000), null, true, null, new Integer(1), "#,##0.###;-#,##0.###", false, false, false, null, new Integer(0)));
+			ivjDeadbandSpinner.setValidator(new com.klg.jclass.field.validate.JCIntegerValidator(null, new Integer(-1), new Integer(100000), null, true, null, new Integer(1), "#,##0.###;-#,##0.###", false, false, false, null, new Integer(0)));
 
 			//ivjDeadbandSpinner.setValue( new Integer(-1) );
 
@@ -646,6 +646,8 @@ public Object getValue(Object val)
 
 	if( getDeadbandCheckBox().isSelected() )
 		point.getPointAnalog().setDeadband( deadband );
+	else
+		point.getPointAnalog().setDeadband(-1.0);
 	
 	if( point.getPoint().getPseudoFlag().equals(com.cannontech.database.db.point.Point.PSEUDOFLAG_PSEUDO) )
 		point.getPointAnalog().setTransducerType("Pseudo");
