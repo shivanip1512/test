@@ -11,9 +11,12 @@ package com.cannontech.clientutils;
  * see @WebUpdatedPAObjectMap class for the implementation
  */
 import java.util.Date;
+import java.util.List;
 
-public interface WebUpdatedDAO {
+public interface WebUpdatedDAO<E> {
 
-	public String[] getUpdatedIdsSince(String[] ids, Date timeStamp);
+    public List<E> getUpdatedIdsSince(Date timeStamp, E... ids);
+    
+    public void manualUpdate(E id, Date date);
 
 }

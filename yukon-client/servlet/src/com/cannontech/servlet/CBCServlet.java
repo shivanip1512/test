@@ -10,6 +10,7 @@ import java.io.IOException;
 import java.io.Writer;
 import java.sql.Timestamp;
 import java.util.Date;
+import java.util.List;
 
 import javax.servlet.ServletConfig;
 import javax.servlet.ServletException;
@@ -260,7 +261,15 @@ public class CBCServlet extends ErrorAwareInitializingServlet {
             resp.sendRedirect( resp.encodeRedirectURL(req.getContextPath() + redirectURL) );
         }
     }
-
+    
+    private Integer[] toIntegerArray(String[] array) {
+        Integer[] result = new Integer[array.length];
+        for (int x = 0; x < array.length; x++) {
+            result[x] = Integer.valueOf(array[x]);
+        }
+        return result;
+    }
+    
     /**
      * Forms the response for an XML request of data
      */
@@ -270,33 +279,37 @@ public class CBCServlet extends ErrorAwareInitializingServlet {
         resp.setHeader("Pragma", "no-cache");
         resp.setHeader("Expires", "0");
         resp.setHeader("Cache-Control", "no-store");
+        
         String type = ParamUtil.getString( req, "type" );
         String method = ParamUtil.getString( req, "method" );
         String[] allIds = ParamUtil.getStrings( req, "id" );
         Date timeFrame = new Date(ParamUtil.getLong(req, "lastUpdate"));
-        //ParamUtil.getInts( req, "id");
-        //filter the ids into the ones that has been updated by the server 
-        //since the last update
-        WebUpdatedDAO updatedObjMap = cbcCache.getUpdatedObjMap();
-        String[] updatedIds = updatedObjMap.getUpdatedIdsSince (allIds, timeFrame);
+        
         user = getUser(req);
         ovuvEnabled = getOvUvEnabled(user);
+
+        // Only add content into the XML response message that has changed since "lastUpdate".
+        WebUpdatedDAO<Integer> updatedObjMap = cbcCache.getUpdatedObjMap();
+        List<Integer> updatedIds = updatedObjMap.getUpdatedIdsSince(timeFrame, toIntegerArray(allIds));
         
         try {
-            ResultXML[] xmlMsgs = new ResultXML[ updatedIds.length ];
+            ResultXML[] xmlMsgs = new ResultXML[updatedIds.size()];
+
             //check to see if the id was updated
-            for( int i = 0; i < updatedIds.length; i++) {
+            for( int i = 0; i < updatedIds.size(); i++) {
+                
+                final String updatedId = updatedIds.get(i).toString();
                 //go get the XML data for the specific type of element
-                if(handleSubstationGET(updatedIds[i], xmlMsgs, i)){
+                if(handleSubstationGET(updatedId, xmlMsgs, i)){
                     continue;
                 }
-                if(handleSubGET(updatedIds[i], xmlMsgs, i)) {
+                if(handleSubGET(updatedId, xmlMsgs, i)) {
                     continue;
                 }
-                if (handleFeederGET(updatedIds[i], xmlMsgs, i)) {
+                if (handleFeederGET(updatedId, xmlMsgs, i)) {
                     continue;
                 }
-                if (handleCapBankGET(updatedIds[i], xmlMsgs, i)) {
+                if (handleCapBankGET(updatedId, xmlMsgs, i)) {
                     continue;
                 }
             }

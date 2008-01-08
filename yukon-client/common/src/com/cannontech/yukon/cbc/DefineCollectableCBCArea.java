@@ -21,6 +21,7 @@ public class DefineCollectableCBCArea extends
      * This method is called from CollectableStreamer to create a new instance
      * of Schedule.
      */
+    @Override
     public Object create(com.roguewave.vsj.VirtualInputStream vstr)
             throws java.io.IOException {
         return new CBCArea();
@@ -29,6 +30,7 @@ public class DefineCollectableCBCArea extends
     /**
      * getCxxClassId method comment.
      */
+    @Override
     public int getCxxClassId() {
         return CTI_CCAREA_ID;
     }
@@ -36,6 +38,7 @@ public class DefineCollectableCBCArea extends
     /**
      * getCxxStringId method comment.
      */
+    @Override
     public String getCxxStringId() {
         return DefineCollectable.NO_STRINGID;
     }
@@ -43,7 +46,8 @@ public class DefineCollectableCBCArea extends
     /**
      * getJavaClass method comment.
      */
-    public Class getJavaClass() {
+    @Override
+    public Class<CBCArea> getJavaClass() {
         return CBCArea.class;
     }
 
@@ -51,15 +55,19 @@ public class DefineCollectableCBCArea extends
      * restoreGuts method comment.
      */
 
+    @Override
     public void restoreGuts(Object obj,
             com.roguewave.vsj.VirtualInputStream vstr,
             com.roguewave.vsj.CollectableStreamer polystr)
             throws java.io.IOException {
+        
         //super.restoreGuts(obj, vstr, polystr);
 
         CBCArea area = (CBCArea) obj;
 
-        area.setPaoID(new Integer((int) vstr.extractUnsignedInt()));
+        int paoId = (int) vstr.extractUnsignedInt();
+        area.setPaoID(paoId);
+        area.setCcId(paoId);
         area.setPaoCategory((String) vstr.restoreObject(SimpleMappings.CString));
         area.setPaoClass((String) vstr.restoreObject(SimpleMappings.CString));
         area.setPaoName((String) vstr.restoreObject(SimpleMappings.CString));
@@ -75,6 +83,7 @@ public class DefineCollectableCBCArea extends
     /**
      * saveGuts method comment.
      */
+    @Override
     public void saveGuts(Object obj,
             com.roguewave.vsj.VirtualOutputStream vstr,
             com.roguewave.vsj.CollectableStreamer polystr)

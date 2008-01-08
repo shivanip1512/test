@@ -494,10 +494,13 @@ public class CapControlCacheImpl implements MessageListener, CapControlCache {
     private synchronized void handleSpecialAreaList(CBCSubSpecialAreas areas) {
         cbcSpecialAreaMap.clear();
         
+        final Date date = new Date();
+        
         List<CBCSpecialArea> list = areas.getAreas();
         for (final CBCSpecialArea area : list) {
             Integer areaId = area.getPaoID();
             cbcSpecialAreaMap.put(areaId, area);
+            getUpdatedObjMap().handleCBCChangeEvent(area, date);
         }
     }
     
@@ -507,10 +510,13 @@ public class CapControlCacheImpl implements MessageListener, CapControlCache {
     private synchronized void handleAreaList(CBCSubAreas areas) {
         cbcAreaMap.clear();
         
+        final Date date = new Date();
+        
         List<CBCArea> list = areas.getAreas();
         for (final CBCArea area : list) {
             Integer areaId = area.getPaoID();
             cbcAreaMap.put(areaId, area);
+            getUpdatedObjMap().handleCBCChangeEvent(area, date);
         }
     }
     

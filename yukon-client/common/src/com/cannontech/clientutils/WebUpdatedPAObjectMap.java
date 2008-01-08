@@ -11,55 +11,51 @@ package com.cannontech.clientutils;
 import java.util.ArrayList;
 import java.util.Date;
 import java.util.HashMap;
+import java.util.List;
+import java.util.Map;
 
+import org.apache.commons.lang.Validate;
 
-public abstract class WebUpdatedPAObjectMap implements WebUpdatedDAO {
-
-	//<Integer> <Date>
-	private HashMap timestampMap = new HashMap();
-
+public abstract class WebUpdatedPAObjectMap<E> implements WebUpdatedDAO<E> {
+	private Map<E,Date> timestampMap = new HashMap<E,Date>();
 
 	public WebUpdatedPAObjectMap() {
-		super();
 	}
+	
+    @Override
+    public List<E> getUpdatedIdsSince(Date timeStamp, E... keyList) {
+        final List<E> updatedIds = new ArrayList<E>();
+        for (final E key : keyList) {
+            if (hasObjectBeenUpdatedSince(key, timeStamp)) updatedIds.add(key);
+        }
+        return updatedIds;
+    }
 
-	/* (non-Javadoc)
-	 * @see com.cannontech.cbc.web.WebUpdatedDAO#getUpdatedIdsSince(java.lang.String[], java.util.Date)
-	 */
-	public String[] getUpdatedIdsSince(String[] ids, Date timeStamp) {
-		ArrayList updatedIds = new ArrayList();	
-		for (int i = 0; i < ids.length; i++) {
-			String id = ids[i];
-			if ( hasObjectBeenUpdatedSince(id, timeStamp)){
-				updatedIds.add(id);
-			}				
-		}	
-		return (String[]) updatedIds.toArray(new String [updatedIds.size()]);
-	}
+    @Override
+    public void manualUpdate(E e, Date date) {
+        Validate.notNull(e, "First parameter cannot be null!");
+        Validate.notNull(date, "Second parameter cannot be null!");
+        updateMap(e, date);
+    }
 
-	/**
-	 * mechanism to determine if object has been updated 
-	 * @param id
-	 * @param timeStamp
-	 * @return
-	 */
-	private boolean hasObjectBeenUpdatedSince(String id, Date timeStamp) {
-		//see if the timestamp of the object was updated 
-		if  (id != null && id.length() > 0) {
-			Date date = ((Date)timestampMap.get(new Integer (id )));
-			if (date != null) {
-				if (date.after(timeStamp))
-					return true;
-			}
-		}
+	private boolean hasObjectBeenUpdatedSince(E e, Date timeStamp) {
+	    if (e == null) return false;
+	    
+	    Date date = timestampMap.get(e);
+	    if (date != null) {
+	        boolean result = date.after(timeStamp);
+	        return result;
+	    }
+	    
 		return false;
 	}
 
-	private HashMap getTimestampMap() {
+    protected void updateMap(E e, Date date) {
+        getTimestampMap().put(e, date);                                     
+    }
+
+	private Map<E,Date> getTimestampMap() {
 		return timestampMap;
 	}
 
-	protected void updateMap(Integer id, Date date) {
-		getTimestampMap().put(id, date);										
-	}
 }
