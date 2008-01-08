@@ -55,6 +55,28 @@ public:
         FCI_Accum_MomentaryCount =   1,
     };
 
+    enum CBNMPoints
+    {
+        //CBNM_Status_Fault      = 1,
+        CBNM_Status_NoPower    = 2,
+        CBNM_Status_BatteryLow = 3,      // per YUK-4101
+        CBNM_Status_Momentary  = 4,      //
+        CBNM_Status_CurrentSurveyEnabled = 101,
+        CBNM_Status_UDPAck               = 102,
+
+        CBNM_Analog_NominalAmps    =   1,
+        CBNM_Analog_PeakAmps       =   2,
+        CBNM_Analog_Phase          =   3,
+        CBNM_Analog_Temperature    =   4,
+        CBNM_Analog_BatteryVoltage =   5,
+        CBNM_Analog_Latitude       =  11,
+        CBNM_Analog_Longitude      =  12,
+        CBNM_Analog_CurrentSurvey  =  31,
+        CBNM_Analog_UDPRepeats     = 101,
+
+        CBNM_Accum_MomentaryCount =   1,
+    };
+
     CtiDeviceGridAdvisor();
     CtiDeviceGridAdvisor(const CtiDeviceGridAdvisor& aRef);
 

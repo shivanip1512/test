@@ -7,8 +7,8 @@
 * Author: Matt Fisher
 *
 * CVS KEYWORDS:
-* REVISION     :  $Revision: 1.21 $
-* DATE         :  $Date: 2008/01/02 21:59:26 $
+* REVISION     :  $Revision: 1.22 $
+* DATE         :  $Date: 2008/01/08 22:05:30 $
 *
 * Copyright (c) 2004 Cannon Technologies Inc. All rights reserved.
 *-----------------------------------------------------------------------------*/
@@ -855,12 +855,21 @@ bool UDPInterface::getPackets( int wait )
 
                                             time = convertBytes( p->data, pos, 4);
 
-                                            if( flags & 0x80 && time )
+                                            if( flags & 0x80 )
                                             {
                                                 time = CtiTime::now().seconds() - time;
                                             }
 
-                                            rate  =  (p->data[pos  ] & 0xf8) >> 3;
+                                            switch( (p->data[pos  ] & 0xf8) >> 3 )
+                                            {
+                                                case 0:  rate =  60 * 60;  break;
+                                                case 1:  rate =  30 * 60;  break;
+                                                case 2:  rate =  15 * 60;  break;
+                                                case 3:  rate =   5 * 60;  break;
+                                                case 4:  rate = 120 * 60;  break;
+                                                case 5:  rate = 240 * 60;  break;
+                                            }
+
                                             count = (((int)(p->data[pos++]) & 0x07) << 8) | (int)(p->data[pos++]);
 
                                             for( int i = 0; i < count; i++ )
@@ -1068,13 +1077,21 @@ bool UDPInterface::getPackets( int wait )
 
                                             time = convertBytes( p->data, pos, 4);
 
-                                            if( flags & 0x80 && time )
+                                            if( flags & 0x80 )
                                             {
                                                 time = CtiTime::now().seconds() - time;
                                             }
 
-                                            rate  = (p->data[pos  ] & 0xc0) >> 6;
-                                            count = ((int)(p->data[pos++] & 0x3f)) << 8 | (int)(p->data[pos++]);
+                                            switch( (p->data[pos  ] & 0xc0) >> 6 )
+                                            {
+                                                case 0:  rate = 60 * 60;  break;
+                                                case 1:  rate = 30 * 60;  break;
+                                                case 2:  rate = 15 * 60;  break;
+                                                case 3:  rate =  5 * 60;  break;
+                                            }
+
+                                            count  = (p->data[pos++] & 0x3f) << 8;
+                                            count |=  p->data[pos++];
 
                                             for( int i = 0; i < count; i++ )
                                             {
@@ -1765,12 +1782,21 @@ void UDPInterface::processInbounds( void )
 
                                                 time = convertBytes( p->data, pos, 4);
 
-                                                if( flags & 0x80 && time )
+                                                if( flags & 0x80 )
                                                 {
                                                     time = CtiTime::now().seconds() - time;
                                                 }
 
-                                                rate  = (p->data[pos  ] & 0xf8) >> 3;
+                                                switch( (p->data[pos  ] & 0xf8) >> 3 )
+                                                {
+                                                    case 0:  rate =  60 * 60;  break;
+                                                    case 1:  rate =  30 * 60;  break;
+                                                    case 2:  rate =  15 * 60;  break;
+                                                    case 3:  rate =   5 * 60;  break;
+                                                    case 4:  rate = 120 * 60;  break;
+                                                    case 5:  rate = 240 * 60;  break;
+                                                }
+
                                                 count = (int)(p->data[pos++] & 0x07) << 8 | (int)(p->data[pos++]);
 
                                                 for( int i = 0; i < count; i++ )
@@ -1978,19 +2004,45 @@ void UDPInterface::processInbounds( void )
 
                                                 time = convertBytes( p->data, pos, 4);
 
-                                                if( flags & 0x80 && time )
+                                                if( flags & 0x80 )
                                                 {
                                                     time = CtiTime::now().seconds() - time;
                                                 }
 
-                                                rate  = (p->data[pos  ] & 0xc0) >> 6;
-                                                count = (int)(p->data[pos++] & 0x3f) << 8 | (int)(p->data[pos++]);
-
-                                                for( int i = 0; i < count; i++ )
+                                                if( !(rate = gConfigParms.getValueAsULong("CBNM_CURRENT_SURVEY_RATE", 0)) )
                                                 {
-                                                    reading = convertBytes( p->data, pos, 2);
+                                                    switch( (p->data[pos  ] & 0xc0) >> 6 )
+                                                    {
+                                                        case 0:  rate = 60 * 60;  break;
+                                                        case 1:  rate = 30 * 60;  break;
+                                                        case 2:  rate = 15 * 60;  break;
+                                                        case 3:  rate =  5 * 60;  break;
+                                                    }
+                                                }
 
-                                                    time -= rate;
+                                                count  = (p->data[pos++] & 0x3f) << 8;
+                                                count |=  p->data[pos++];
+
+                                                CtiPointSPtr point;
+
+                                                if( point = dr->device->getDevicePointOffsetTypeEqual(CtiDeviceGridAdvisor::CBNM_Analog_CurrentSurvey, AnalogPointType) )
+                                                {
+                                                    CtiPointDataMsg *pdm = CTIDBG_new CtiPointDataMsg(point->getID(), 0.0, NormalQuality, AnalogPointType, "", TAG_POINT_MUST_ARCHIVE);
+
+                                                    for( int i = count - 1; i >= 0; i-- )
+                                                    {
+                                                        reading = p->data[pos + (i * 2)] << 8 |
+                                                                  p->data[pos + (i * 2) + 1];
+
+                                                        pdm->setValue(reading);
+                                                        pdm->setTime(time - (rate * i));
+
+                                                        m->insert(pdm->replicateMessage());
+                                                    }
+
+                                                    pos += count * 2;
+
+                                                    delete pdm;
                                                 }
 
                                                 break;
