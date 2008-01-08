@@ -32,10 +32,12 @@ public abstract class WebUpdatedPAObjectMap<E> implements WebUpdatedDAO<E> {
     }
 
     @Override
-    public void manualUpdate(E e, Date date) {
-        Validate.notNull(e, "First parameter cannot be null!");
-        Validate.notNull(date, "Second parameter cannot be null!");
-        updateMap(e, date);
+    public void manualUpdate(Date timeStamp, E... ids) {
+        for (final E e : ids) {
+            Validate.notNull(e, "First parameter cannot be null!");
+            Validate.notNull(timeStamp, "Second parameter cannot be null!");
+            updateMap(e, timeStamp);
+        }    
     }
 
 	private boolean hasObjectBeenUpdatedSince(E e, Date timeStamp) {

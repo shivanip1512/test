@@ -17,6 +17,6 @@ public interface WebUpdatedDAO<E> {
 
     public List<E> getUpdatedIdsSince(Date timeStamp, E... ids);
     
-    public void manualUpdate(E id, Date date);
+    public void manualUpdate(Date timeStamp, E... ids);
 
 }
