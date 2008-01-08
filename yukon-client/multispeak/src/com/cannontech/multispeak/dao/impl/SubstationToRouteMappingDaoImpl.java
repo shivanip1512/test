@@ -48,7 +48,7 @@ public class SubstationToRouteMappingDaoImpl implements SubstationToRouteMapping
 
         selectBySubIdSql = new SqlStatementBuilder();
         selectBySubIdSql.append("SELECT PAObjectID,PAOName,Ordering");
-        selectBySubIdSql.append("FROM YukonPAObject as pao,SubstationToRouteMapping as stm,Route");
+        selectBySubIdSql.append("FROM YukonPAObject pao, SubstationToRouteMapping stm, Route");
         selectBySubIdSql.append("WHERE pao.PAObjectID = stm.RouteID");
         selectBySubIdSql.append("AND Route.RouteID = stm.RouteID AND stm.SubstationID = ?");
         selectBySubIdSql.append("ORDER BY stm.Ordering");
