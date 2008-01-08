@@ -201,16 +201,7 @@ public class MeterReadModel extends ReportModelBase<MeterAndPointData> implement
     private SqlStatementBuilder buildWhereClause(String columnName) {
         SqlStatementBuilder sqlWhere = new SqlStatementBuilder();
         if (getPaoIDs() != null && getPaoIDs().length > 0) {
-
-            // primitive arrays don't work with SqlStatementBuilder
-            // no easy way to to convert to List without looping..
-            int[] intIDs = getPaoIDs();
-            List<Integer> integerIDs = new ArrayList<Integer>();
-            for (int idIdx = 0; idIdx < intIDs.length; idIdx++) {
-                integerIDs.add(intIDs[idIdx]);
-            }
-            
-            sqlWhere.append(" AND ",columnName, "IN (", integerIDs, ") ");
+            sqlWhere.append(" AND ",columnName, "IN (", getPaoIDs(), ") ");
         }
         
         if (getBillingGroups() != null && getBillingGroups().length > 0) {

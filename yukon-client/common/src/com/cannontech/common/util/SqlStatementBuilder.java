@@ -1,7 +1,9 @@
 package com.cannontech.common.util;
 
+import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.Collection;
+import java.util.List;
 
 import org.apache.commons.lang.StringUtils;
 
@@ -31,12 +33,39 @@ public class SqlStatementBuilder {
     public SqlStatementBuilder append(Object... args) {
         for (int i = 0; i < args.length; i++) {
             Object object = args[i];
-            if (object.getClass().isArray()) {
+
+            // must check for primitive arrays before the .isArray() check (because it will pass - then fail later)
+            // convert to corresponding Object type and rebuild list before calling appendList()
+            if (object instanceof int[]) {
+                int[] primitiveIDs = (int[])object;
+                List<Integer> objIDs = new ArrayList<Integer>();
+                for (int idIdx = 0; idIdx < primitiveIDs.length; idIdx++) {
+                    objIDs.add(primitiveIDs[idIdx]);
+                }
+                appendList(objIDs);
+            } else if (object instanceof long[]) {
+                long[] primitiveIDs = (long[])object;
+                List<Long> objIDs = new ArrayList<Long>();
+                for (int idIdx = 0; idIdx < primitiveIDs.length; idIdx++) {
+                    objIDs.add(primitiveIDs[idIdx]);
+                }
+                appendList(objIDs);
+            } else if (object instanceof byte[] || 
+                        object instanceof short[] || 
+                        object instanceof float[] || 
+                        object instanceof double[] || 
+                        object instanceof boolean[] ||
+                        object instanceof char[]) {
+                
+                throw new RuntimeException("Primitive arrays of type (" + object.getClass().getName() + ") are not supported by SqlStatementBuilder.");
+                
+            // non-primitives
+            } else if (object.getClass().isArray()) {
                 // is this the right assumption?
                 appendList((Object[]) object);
             } else if (object instanceof Collection) {
                 // is this the right assumption?
-                appendList((Collection)object);
+                appendList((Collection)object);            
             } else {
                 statement.append(object.toString());
                 appendSpace();
