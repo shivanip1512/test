@@ -569,6 +569,25 @@ MODIFY(VALUEORDER NUMBER);
 /* @error ignore-end */
 /* End YUK-5036 */
 
+/* Start YUK-5067 */
+update 
+	UserPaoPermission 
+set 
+	Permission = 'DEFAULT_ROUTE' 
+where 
+	paoID in (
+		SELECT 
+			macro.OwnerID 
+		FROM 
+			LMGroupExpressCom exc
+			, GenericMacro macro 
+		WHERE 
+			macro.MacroType = 'GROUP' 
+			AND macro.ChildID = exc.LMGroupID 
+			AND exc.SerialNumber = '0'
+		); 
+/* End YUK-5067 */
+
 /******************************************************************************/
 /* Run the Stars Update if needed here */
 /* Note: DBUpdate application will ignore this if STARS is not present */

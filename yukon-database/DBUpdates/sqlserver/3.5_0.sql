@@ -535,6 +535,26 @@ INSERT INTO DEVICETYPECOMMAND VALUES (-707, -3, 'Repeater 902', 2, 'Y', -1);
 INSERT INTO DEVICETYPECOMMAND VALUES (-708, -53, 'Repeater 902', 3, 'Y', -1);
 INSERT INTO DEVICETYPECOMMAND VALUES (-709, -54, 'Repeater 902', 4, 'Y', -1); 
 /* End YUK-4876 */
+
+/* Start YUK-5067 */
+update 
+	UserPaoPermission 
+set 
+	Permission = 'DEFAULT_ROUTE' 
+where 
+	paoID in (
+		SELECT 
+			macro.OwnerID 
+		FROM 
+			LMGroupExpressCom exc
+			, GenericMacro macro 
+		WHERE 
+			macro.MacroType = 'GROUP' 
+			AND macro.ChildID = exc.LMGroupID 
+			AND exc.SerialNumber = '0'
+		); 
+/* End YUK-5067 */
+
 /******************************************************************************/
 /* Run the Stars Update if needed here */
 /* Note: DBUpdate application will ignore this if STARS is not present */
