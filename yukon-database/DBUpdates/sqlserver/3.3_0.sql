@@ -686,6 +686,11 @@ alter table CCurtProgramParameter
       references CCurtProgram (CCurtProgramID);
 go
 /* @error ignore-end */ 
+
+/* Start YUK-5057 */
+insert into YukonRole values(-211,'CI Curtailment','Operator','Operator access to C&I Curtailment'); 
+/* End YUK-5057 */
+
 /******************************************************************************/
 /* Run the Stars Update if needed here */
 /* Note: DBUpdate application will ignore this if STARS is not present */
