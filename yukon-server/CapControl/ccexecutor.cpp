@@ -1666,7 +1666,11 @@ void CtiCCCommandExecutor::SendAllCapBankCommands()
 
                 if (currentStation != NULL)
                 {
-                
+                    if (_command->getCommand() == CtiCCCommand::SEND_ALL_ENABLE_OVUV) 
+                        currentStation->setOvUvDisabledFlag(FALSE);
+                    if (_command->getCommand() == CtiCCCommand::SEND_ALL_DISABLE_OVUV) 
+                        currentStation->setOvUvDisabledFlag(TRUE);
+
                     CtiCCSubstationBus_vec& ccSubstationBuses = *store->getCCSubstationBuses(CtiTime().seconds());
                     for(LONG i=0;i<ccSubstationBuses.size();i++)
                     {
