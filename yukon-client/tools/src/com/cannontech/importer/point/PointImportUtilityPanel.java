@@ -1,5 +1,7 @@
 package com.cannontech.importer.point;
 
+import java.io.IOException;
+
 /**
  * Insert the type's description here.
  * Creation date: (11/19/2003 2:42:51 PM)
@@ -52,7 +54,11 @@ public PointImportUtilityPanel() {
  */
 public void analogImportJButton_ActionPerformed(java.awt.event.ActionEvent actionEvent) {
 	String fileName = getAnalogJTextField().getText();
-	analogSuccess = com.cannontech.importer.point.PointImportUtility.processAnalogPoints(fileName);
+	try {
+		analogSuccess = PointImportUtility.processAnalogPoints(fileName);
+	}catch( IOException e ) {
+		analogSuccess = false;
+	}
 	if(analogSuccess)
 	{
 		javax.swing.JOptionPane.showMessageDialog(
@@ -611,7 +617,13 @@ public static void main(java.lang.String[] args) {
  */
 public void statusImportJButton_ActionPerformed(java.awt.event.ActionEvent actionEvent) {
 	String fileName = getStatusJTextField().getText();
-	statusSuccess = com.cannontech.importer.point.PointImportUtility.processStatusPoints(fileName);
+	
+	try {
+		statusSuccess = PointImportUtility.processStatusPoints(fileName);
+	}catch( IOException e ) {
+		statusSuccess = false;
+	}
+
 	if(statusSuccess)
 	{
 	javax.swing.JOptionPane.showMessageDialog(
@@ -642,7 +654,13 @@ public void StatusjTextField_ActionPerformed(java.awt.event.ActionEvent actionEv
  */
 public void AccumulatorImportJButton_ActionPerformed(java.awt.event.ActionEvent actionEvent) {
     String fileName = getAccumulatorJTextField().getText();
-    accumulatorSuccess = com.cannontech.importer.point.PointImportUtility.processAccumulatorPoints(fileName);
+    
+	try {
+		accumulatorSuccess = PointImportUtility.processAccumulatorPoints(fileName);
+	}catch( IOException e ) {
+		accumulatorSuccess = false;
+	}
+	
     if(accumulatorSuccess)
     {
         javax.swing.JOptionPane.showMessageDialog(

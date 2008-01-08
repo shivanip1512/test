@@ -63,7 +63,12 @@ public class ProgressTranslatedPoint {
         
         tok = st.nextToken();
         uom = tok;
-        pointName += new String(" " + tok);
+        String rest = tok;
+        while( st.hasMoreTokens() )
+        {
+        	rest += " " + st.nextToken();
+        }
+        pointName += new String(" " + rest);
      
         deviceName = new String("dunno");
         

@@ -8,7 +8,6 @@ import com.cannontech.clientutils.CTILogger;
 import com.cannontech.core.dao.DaoFactory;
 import com.cannontech.database.PoolManager;
 import com.cannontech.database.data.lite.LitePoint;
-import com.cannontech.database.data.lite.LiteYukonPAObject;
 import com.cannontech.importer.point.PointImportUtility;
 import com.cannontech.yukon.IDatabaseCache;
 
@@ -30,8 +29,12 @@ public class ProgressImporter {
         return false;
     }
     
-    private static void createCSV( ProgressPointList p )throws IOException {
-        BufferedWriter out = new BufferedWriter(new FileWriter("c:\\ProgressImport.csv"));
+    private static byte[] generateCSV( ProgressPointList p )throws IOException {
+    	ByteArrayOutputStream ret = new ByteArrayOutputStream();
+        OutputStreamWriter strWriter = new OutputStreamWriter( ret );
+    	
+    	Writer tout = new BufferedWriter(strWriter);
+        
         int i = 1;
         Iterator itr = p.iterator();
         ProgressTranslatedPoint point;
@@ -52,25 +55,14 @@ public class ProgressImporter {
                             highestOffset = p2.getPointOffset();
                     }
                     
-                    
-                    if( pnts == null )
-                        System.out.print("true ");
-                    else
-                        System.out.print("false ");
-                    
-                    if( !PointinList(pnts, point) )
-                        System.out.print(" || true \n");
-                    else
-                        System.out.print(" || false \n");
-                    
                     if( pnts == null || !PointinList(pnts, point) )
                     {
                         if( curDevice.compareTo(point.getPaoName()) != 0 ){
                             curDevice = point.getPaoName();
                             i = highestOffset+1;
                         }
-                        out.write(point.getPointName() + ",Analog," + point.getPaoName() + "," + i + "," + point.getUoM()  );
-                        out.write(",1,0,0,1,,,,,,,NONE,,,,(none),,\n");
+                        tout.write(point.getPointName() + ",Analog," + point.getPaoName() + "," + i + "," + point.getUoM()  );
+                        tout.write(",1,0,0,1,,,,,,,NONE,,,,(none),,\n");
                         i++;
                     }else
                         System.out.println("Skipped");
@@ -80,8 +72,9 @@ public class ProgressImporter {
                     System.out.println("Device NULL:" + point.getPaoName() );
                 }
             }
-            out.close();
         }
+        tout.flush();
+        return ret.toByteArray();
     }
         
 
@@ -113,12 +106,15 @@ public class ProgressImporter {
             //create add the virtual devices to the database  
             //If devices are already in place, the fdrtranslation portion will fail
             p.addDevicesToDatabase();
-            
+
             //create CSV file for PointImportUtility
-            createCSV(p);
+            byte[] b = generateCSV(p);
+            BufferedReader buffReader = new BufferedReader( new InputStreamReader( new ByteArrayInputStream(b)) );            
+            
             //run point importer
-            boolean analogSuccess = com.cannontech.importer.point.PointImportUtility.processAnalogPoints("c:\\ProgressImport.csv");
-            //add fdr translations to the points in the database.
+            PointImportUtility.processAnalogPoints(buffReader);
+
+            //add FDR translations to the points in the database.
             p.addTranslationToPoints();
             
         }catch( Exception e ){

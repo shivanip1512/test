@@ -12,15 +12,23 @@ package com.cannontech.importer.point;
  * To change the template for this generated type comment go to
  * Window>Preferences>Java>Code Generation>Code and Comments
  */
+
+import java.io.BufferedReader;
+import java.io.FileInputStream;
+import java.io.IOException;
+import java.io.InputStreamReader;
+import java.util.ArrayList;
 import java.util.HashMap;
+import java.util.List;
 
 import com.cannontech.clientutils.CTILogger;
-import com.cannontech.common.util.CtiUtilities;
+
 import com.cannontech.core.dao.DaoFactory;
 import com.cannontech.database.SqlUtils;
-import com.cannontech.database.data.point.AccumulatorPoint;
+import com.cannontech.database.data.lite.LiteAlarmCategory;
 import com.cannontech.database.data.point.CalculatedPoint;
 import com.cannontech.database.db.point.PointAlarming;
+import com.cannontech.database.db.point.PointLimit;
 import com.cannontech.database.db.point.calculation.CalcComponent;
 import com.cannontech.yukon.IDatabaseCache;
 
@@ -41,12 +49,27 @@ public class PointImportUtility
     public static final int ACCUMULATOR_PT_TYPE = 3;
     public static final int CALC_PT_TYPE = 4;
 
-    
-	public static boolean processAnalogPoints(String fileLocation) 
+	public static boolean processAnalogPoints(String fileLocation) throws IOException{
+		FileInputStream f = null;
+		boolean ret = true;
+		try{
+			f = new FileInputStream( fileLocation );
+			processAnalogPoints( new BufferedReader(new InputStreamReader(f)) );
+		}catch( IOException e )
+		{
+			ret = false;
+		}finally{
+			if( f != null )f.close();
+		}
+		
+		return ret;
+	}
+	
+    public static boolean processAnalogPoints(BufferedReader reader)
 	{
 		CTILogger.info("Starting analog point file process...");
 			
-		java.util.ArrayList lines = preprocessTokenStrings(readFile(fileLocation), ANALOG_PT_TOKEN_COUNT, ANALOG_PT_TYPE);
+		ArrayList<String> lines = preprocessTokenStrings(readFile(reader), ANALOG_PT_TOKEN_COUNT, ANALOG_PT_TYPE);
 
 		if( lines == null )
 			return true; //continue the process
@@ -321,7 +344,7 @@ public class PointImportUtility
 			}
 			
 			// make a vector for the repeaters
-			HashMap limitMap = new HashMap();
+			HashMap<Integer,PointLimit> limitMap = new HashMap<Integer,PointLimit>();
 				
 			int limitCount = 0;
 			com.cannontech.database.db.point.PointLimit myPointLimit = null;
@@ -404,7 +427,7 @@ public class PointImportUtility
 			IDatabaseCache cache = com.cannontech.database.cache.DefaultDatabaseCache.getInstance();
 			synchronized( cache )	
 			{
-				java.util.List liteAlarms = cache.getAllAlarmCategories();
+				List<LiteAlarmCategory> liteAlarms = cache.getAllAlarmCategories();
 				
 				int alarmCategoryID = com.cannontech.database.db.point.PointAlarming.NONE_NOTIFICATIONID;
 				
@@ -466,11 +489,27 @@ public class PointImportUtility
 		return success;
 	}
     
-    public static boolean processAccumulatorPoints(String fileLocation) 
+	public static boolean processAccumulatorPoints(String fileLocation) throws IOException{
+		FileInputStream f = null;
+		boolean ret = true;
+		try{
+			f = new FileInputStream( fileLocation );
+			processAccumulatorPoints( new BufferedReader(new InputStreamReader(f)) );
+		}catch( IOException e )
+		{
+			ret = false;
+		}finally{
+			if( f != null )f.close();
+		}
+		
+		return ret;
+	}
+	
+    public static boolean processAccumulatorPoints(BufferedReader fileLocation) 
     {
         CTILogger.info("Starting analog point file process...");
             
-        java.util.ArrayList lines = preprocessTokenStrings(readFile(fileLocation), ACCUMULATOR_PT_TOKEN_COUNT, ACCUMULATOR_PT_TYPE);
+        ArrayList<String> lines = preprocessTokenStrings(readFile(fileLocation), ACCUMULATOR_PT_TOKEN_COUNT, ACCUMULATOR_PT_TYPE);
 
         if( lines == null )
             return true; //continue the process
@@ -721,7 +760,7 @@ public class PointImportUtility
             accumulatorPoint.getPointUnit().setDecimalPlaces(new Integer(decimalPlaces));
                       
             // make a vector for the repeaters
-            HashMap limitMap = new HashMap();
+            HashMap<Integer,PointLimit> limitMap = new HashMap<Integer,PointLimit>();
                 
             int limitCount = 0;
             com.cannontech.database.db.point.PointLimit myPointLimit = null;
@@ -804,7 +843,7 @@ public class PointImportUtility
             IDatabaseCache cache = com.cannontech.database.cache.DefaultDatabaseCache.getInstance();
             synchronized( cache )   
             {
-                java.util.List liteAlarms = cache.getAllAlarmCategories();
+                List<LiteAlarmCategory> liteAlarms = cache.getAllAlarmCategories();
                 
                 int alarmCategoryID = com.cannontech.database.db.point.PointAlarming.NONE_NOTIFICATIONID;
                 
@@ -865,12 +904,28 @@ public class PointImportUtility
     
         return success;
     }
-
-    public static boolean processCalcPoints(String fileLocation)
+    
+	public static boolean processCalcPoints(String fileLocation) throws IOException{
+		FileInputStream f = null;
+		boolean ret = true;
+		try{
+			f = new FileInputStream( fileLocation );
+			processCalcPoints( new BufferedReader(new InputStreamReader(f)) );
+		}catch( IOException e )
+		{
+			ret = false;
+		}finally{
+			if( f != null )f.close();
+		}
+		
+		return ret;
+	}
+	
+    public static boolean processCalcPoints(BufferedReader fileLocation) 
     {
         CTILogger.info("Starting calc point file process...");
             
-        java.util.ArrayList lines = preprocessTokenStrings(readFile(fileLocation), CALC_PT_TOKEN_COUNT, CALC_PT_TYPE);
+        ArrayList<String> lines = preprocessTokenStrings(readFile(fileLocation), CALC_PT_TOKEN_COUNT, CALC_PT_TYPE);
 
         if( lines == null )
             return true; //continue the process
@@ -1123,7 +1178,7 @@ public class PointImportUtility
             calcPoint.getPointUnit().setDecimalPlaces(new Integer(decimalPlaces));
                       
             // make a vector for the repeaters
-            HashMap limitMap = new HashMap();
+            HashMap<Integer,PointLimit> limitMap = new HashMap<Integer,PointLimit>();
                 
             int limitCount = 0;
             com.cannontech.database.db.point.PointLimit myPointLimit = null;
@@ -1206,7 +1261,7 @@ public class PointImportUtility
             IDatabaseCache cache = com.cannontech.database.cache.DefaultDatabaseCache.getInstance();
             synchronized( cache )   
             {
-                java.util.List liteAlarms = cache.getAllAlarmCategories();
+                List<LiteAlarmCategory> liteAlarms = cache.getAllAlarmCategories();
                 
                 int alarmCategoryID = com.cannontech.database.db.point.PointAlarming.NONE_NOTIFICATIONID;
 
@@ -1332,11 +1387,27 @@ public class PointImportUtility
         return success;
     }    
     
-	public static boolean processStatusPoints(String fileLocation)
+	public static boolean processStatusPoints(String fileLocation) throws IOException{
+		FileInputStream f = null;
+		boolean ret = true;
+		try{
+			f = new FileInputStream( fileLocation );
+			processStatusPoints( new BufferedReader(new InputStreamReader(f)) );
+		}catch( IOException e )
+		{
+			ret = false;
+		}finally{
+			if( f != null )f.close();
+		}
+		
+		return ret;
+	}
+	
+    public static boolean processStatusPoints(BufferedReader fileLocation) 
 	{
 		CTILogger.info("Starting status point file process...");
 			
-		java.util.ArrayList lines = preprocessTokenStrings(readFile(fileLocation), STATUS_PT_TOKEN_COUNT, STATUS_PT_TYPE);
+		ArrayList<String> lines = preprocessTokenStrings(readFile(fileLocation), STATUS_PT_TOKEN_COUNT, STATUS_PT_TYPE);
 
 		if( lines == null )
 			return true; //continue the process
@@ -1488,7 +1559,7 @@ public class PointImportUtility
 			IDatabaseCache cache = com.cannontech.database.cache.DefaultDatabaseCache.getInstance();
 			synchronized( cache )	
 			{
-				java.util.List liteAlarms = cache.getAllAlarmCategories();
+				List<LiteAlarmCategory> liteAlarms = cache.getAllAlarmCategories();
 				
 				int alarmCategoryID = com.cannontech.database.db.point.PointAlarming.NONE_NOTIFICATIONID;
 				
@@ -1506,9 +1577,9 @@ public class PointImportUtility
 					{
 						alarmCategoryID = com.cannontech.database.db.point.PointAlarming.NONE_NOTIFICATIONID;
 						
-						if(((com.cannontech.database.data.lite.LiteAlarmCategory)liteAlarms.get(j)).getCategoryName().compareTo(alarmCategory) == 0)
+						if(((LiteAlarmCategory)liteAlarms.get(j)).getCategoryName().compareTo(alarmCategory) == 0)
 						{
-							alarmCategoryID = ((com.cannontech.database.data.lite.LiteAlarmCategory)liteAlarms.get(j)).getAlarmStateID();
+							alarmCategoryID = ((LiteAlarmCategory)liteAlarms.get(j)).getAlarmStateID();
 							break;
 						}
 					}
@@ -1550,28 +1621,23 @@ public class PointImportUtility
 		return success;
 	}
 	
-	
-	
-	private static java.util.ArrayList readFile(String fileName) 
+	private static ArrayList<String> readFile(BufferedReader reader) 
 	{
-		java.io.File file = new java.io.File(fileName);
 
-		if( file.exists() )
+		if( reader != null )
 		{
 			try
 			{
-				java.io.RandomAccessFile fileReader = new java.io.RandomAccessFile(file, "r");
-				java.util.ArrayList lines = new java.util.ArrayList();
+				ArrayList<String> lines = new ArrayList<String>();
 
-				while( fileReader.getFilePointer() < fileReader.length() )
+				while( reader.ready() )
 				{
-					String line = fileReader.readLine();
+					String line = reader.readLine();
 
 					if( line != null && line.length() > 0 )
 						lines.add( line );
-				}	
+				}
 
-				fileReader.close();
 				return lines;  //file open/closed and read successfully
 			}
 			catch( java.io.IOException e)
@@ -1579,14 +1645,6 @@ public class PointImportUtility
 				CTILogger.error( e.getMessage(), e );
 				return null;
 			}
-		}
-		else
-		{
-			CTILogger.info( "Unable to find file '" + fileName +"'" );
-			javax.swing.JOptionPane.showMessageDialog(
-			PointImportWarningBox.getWarningFrame(), 
-				"Unable to find file '" + fileName + "'" ,"File Not Found",
-				javax.swing.JOptionPane.WARNING_MESSAGE );
 		}
 		return null;
 	}
@@ -1758,10 +1816,10 @@ public class PointImportUtility
 	}
 	
 	//Oh the hackishness...
-	private static java.util.ArrayList preprocessTokenStrings(java.util.ArrayList inputLines, int pointTypeTotalFields, int pointType)
+	private static ArrayList<String> preprocessTokenStrings( ArrayList<String> inputLines, int pointTypeTotalFields, int pointType)
 	{
         boolean success = true;
-		java.util.ArrayList alteredInput = new java.util.ArrayList();		
+		ArrayList<String> alteredInput = new ArrayList<String>();		
 		for( int i = 0; i < inputLines.size(); i++ )
 		{
 					
@@ -1785,7 +1843,7 @@ public class PointImportUtility
 				{
 					currentNewLine += nextToken + ",";
 					//move past that extra token (the delimiter itself)
-					Object holder = tokenizer.nextElement();
+					tokenizer.nextElement();
 					
 					if(tokenizer.countTokens() != 0){
 						nextToken = tokenizer.nextElement().toString();	
@@ -1823,7 +1881,7 @@ public class PointImportUtility
                     {
                         currentNewLine += nextToken + ",";
                         //move past that extra token (the delimiter itself)
-                        Object holder = tokenizer.nextElement();
+                        tokenizer.nextElement();
                         if(tokenizer.countTokens() != 0)
                             nextToken = tokenizer.nextElement().toString();
                         else
