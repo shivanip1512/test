@@ -494,10 +494,12 @@ alter table MCTConfigMapping
 
 /* @error ignore-end */
 
+/* @error ignore-begin */
 /* Start YUK-4745 */
 insert into YukonRole values(-211,'CI Curtailment','Operator','Operator access to C&I Curtailment');
 insert into YukonRoleProperty values(-21100,-211,'CI Curtailment Label','CI Curtailment','The operator specific name for C&I Curtailment');
 /* End YUK-4745 */
+/* @error ignore-end */
 
 /* Start YUK-4906 */
 alter table MSPVendor add MaxReturnRecords int;
