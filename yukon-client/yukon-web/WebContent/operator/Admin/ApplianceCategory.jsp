@@ -4,6 +4,7 @@
 <%@ page import="com.cannontech.loadcontrol.data.LMProgramDirect" %>
 <%@ page import="com.cannontech.loadcontrol.data.LMProgramBase" %>
 <%@ page import="com.cannontech.core.dao.NotFoundException" %>
+
 <%
 	StarsApplianceCategory category = null;
 	int catIdx = Integer.parseInt( request.getParameter("Category") );
@@ -19,6 +20,9 @@
 		cfg.setDescription("");
 		category.setStarsWebConfig( cfg );
 	}
+    
+	final List<StarsEnrLMProgram> programList = Arrays.asList(category.getStarsEnrLMProgram());
+    Collections.sort(programList, StarsUtils.createLMProgramComparator(liteEC));
 
     LCConnectionServlet cs = (LCConnectionServlet) application.getAttribute(LCConnectionServlet.SERVLET_CONTEXT_ID);
     LMProgramBase[] allPrograms;
@@ -113,8 +117,8 @@ var iconNameSavings = new Array();
 var iconNameControl = new Array();
 var iconNameEnvrn = new Array();
 <%
-	for (int i = 0; i < category.getStarsEnrLMProgramCount(); i++) {
-		StarsEnrLMProgram program = category.getStarsEnrLMProgram(i);
+	for (int i = 0; i < programList.size(); i++) {
+		StarsEnrLMProgram program = programList.get(i);
 		String progName = "(none)";
 		if (program.getDeviceID() > 0)
         {
@@ -387,26 +391,14 @@ function showProgramConfig(form) {
 	}
 }
 
-function moveUp(form) {
-	var assgnProgList = document.getElementById("ProgramsAssigned");
-	var idx = assgnProgList.selectedIndex;
-	if (idx > 0) {
-		var oOption = assgnProgList.options[idx];
-		assgnProgList.options.remove(idx);
-		assgnProgList.options.add(oOption, idx-1);
-		setContentChanged(true);
-	}
+function moveUp(selectElement) {
+    yukonGeneral_moveOptionPositionInSelect(selectElement, -1);
+    setContentChanged(true);
 }
 
-function moveDown(form) {
-	var assgnProgList = document.getElementById("ProgramsAssigned");
-	var idx = assgnProgList.selectedIndex;
-	if (idx >= 0 && idx < assgnProgList.length - 1) {
-		var oOption = assgnProgList.options[idx];
-		assgnProgList.options.remove(idx);
-		assgnProgList.options.add(oOption, idx+1);
-		setContentChanged(true);
-	}
+function moveDown(selectElement) {
+    yukonGeneral_moveOptionPositionInSelect(selectElement, 1);
+    setContentChanged(true);
 }
 
 function prepareSubmit(form) {
@@ -417,27 +409,24 @@ function prepareSubmit(form) {
 	}
 	
 	var assgnProgList = document.getElementById("ProgramsAssigned");
+    var fullHtml = "";
+    
 	for (i = 0; i < assgnProgList.options.length; i++) {
 		var idx = assgnProgList.options[i].value;
-		
-		var html = '<input type="hidden" name="ProgIDs" value="' + progID[idx] + '">';
-		form.insertAdjacentHTML("beforeEnd", html);
-		html = '<input type="hidden" name="DeviceIDs" value="' + deviceID[idx] + '">';
-		form.insertAdjacentHTML("beforeEnd", html);
-		html = '<input type="hidden" name="ProgDispNames" value="' + dispName[idx].replace(/"/g, '&amp;quot;') + '">';
-		form.insertAdjacentHTML("beforeEnd", html);
-		html = '<input type="hidden" name="ProgShortNames" value="' + shortName[idx].replace(/"/g, '&amp;quot;') + '">';
-		form.insertAdjacentHTML("beforeEnd", html);
-		html = '<input type="hidden" name="ProgDescriptions" value="' + description[idx].replace(/"/g, '&amp;quot;') + '">';
-		form.insertAdjacentHTML("beforeEnd", html);
-		html = '<input type="hidden" name="ProgDescFiles" value="' + descFile[idx] + '">';
-		form.insertAdjacentHTML("beforeEnd", html);
-		html = '<input type="hidden" name="ProgChanceOfCtrls" value="' + ctrlOdds[idx] + '">';
-		form.insertAdjacentHTML("beforeEnd", html);
 		var iconNames = iconNameSavings[idx] + "," + iconNameControl[idx] + "," + iconNameEnvrn[idx];
-		html = '<input type="hidden" name="ProgIconNames" value="' + iconNames + '">';
-		form.insertAdjacentHTML("beforeEnd", html);
+
+        var html = "";
+		html += '<input type="hidden" name="ProgIDs" value="' + progID[idx] + '">\n';
+		html += '<input type="hidden" name="DeviceIDs" value="' + deviceID[idx] + '">\n';
+		html += '<input type="hidden" name="ProgDispNames" value="' + dispName[idx].replace(/"/g, '&amp;quot;') + '">\n';
+		html += '<input type="hidden" name="ProgShortNames" value="' + shortName[idx].replace(/"/g, '&amp;quot;') + '">\n';
+		html += '<input type="hidden" name="ProgDescriptions" value="' + description[idx].replace(/"/g, '&amp;quot;') + '">\n';
+		html += '<input type="hidden" name="ProgDescFiles" value="' + descFile[idx] + '">\n';
+		html += '<input type="hidden" name="ProgChanceOfCtrls" value="' + ctrlOdds[idx] + '">\n';
+		html += '<input type="hidden" name="ProgIconNames" value="' + iconNames + '">\n';
+        fullHtml += html + '\n';
 	}
+    form.insertAdjacentHTML("beforeEnd", fullHtml);
 	
 	return true;
 <% } else { %>
@@ -568,8 +557,8 @@ function init() {
                                     <td width="175" valign="top"> Assigned Programs:<br>
                                       <select id="ProgramsAssigned" name="ProgramsAssigned" size="5" style="width:165">
 <%
-	for (int i = 0; i < category.getStarsEnrLMProgramCount(); i++) {
-		StarsEnrLMProgram program = category.getStarsEnrLMProgram(i);
+    for (int i = 0; i < programList.size(); i++) {
+        StarsEnrLMProgram program = programList.get(i);
 		String progName = program.getYukonName();
 		if (program.getDeviceID() == 0) progName = "*" + ServletUtils.getProgramDisplayNames(program)[0];
 %>
@@ -582,9 +571,9 @@ function init() {
                                       * means virtual program<br>
                                     </td>
                                     <td align="center"> 
-                                      <input type="button" name="MoveUp" value="Move Up" onclick="moveUp(this.form)" <%= viewOnly %>>
+                                      <input type="button" name="MoveUp" value="Move Up" onclick="moveUp(ProgramsAssigned)" <%= viewOnly %>>
                                       <br>
-                                      <input type="button" name="MoveDown" value="Move Down" onclick="moveDown(this.form)" <%= viewOnly %>>
+                                      <input type="button" name="MoveDown" value="Move Down" onclick="moveDown(ProgramsAssigned)" <%= viewOnly %>>
                                     </td>
                                   </tr>
                                 </table>
