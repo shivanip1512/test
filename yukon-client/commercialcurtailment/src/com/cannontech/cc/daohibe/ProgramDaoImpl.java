@@ -50,7 +50,7 @@ public class ProgramDaoImpl extends YukonBaseHibernateDao implements ProgramDao 
 
     @SuppressWarnings("unchecked")
     public List<Program> getProgramsForType(ProgramType programType) {
-        return getHibernateTemplate().find("select p from Program as p where p.programType = ?", programType);
+        return getHibernateTemplate().find("select p from Program p where p.programType = ?", programType);
     }
     
     @Transactional(propagation=Propagation.MANDATORY)
