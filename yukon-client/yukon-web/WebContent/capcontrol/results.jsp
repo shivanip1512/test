@@ -60,6 +60,7 @@
 <cti:standardMenu/>
 
 <cti:breadCrumbs>
+  <cti:crumbLink url="subareas.jsp" title="Home" />
   <cti:crumbLink url="subareas.jsp" title="Substation Areas"/>
   <cti:crumbLink url="results.jsp" title="Results"/>
 </cti:breadCrumbs>
