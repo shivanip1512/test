@@ -37,5 +37,6 @@ public interface CBCSettingsRole
     public static final int UNAVAILABLE_DEFINITION = ApplicationRoleDefs.CBC_PROPERTYID_BASE - 14;
     public static final int TRIPPED_DEFINITION = ApplicationRoleDefs.CBC_PROPERTYID_BASE - 15;
     public static final int CLOSED_DEFINITION = ApplicationRoleDefs.CBC_PROPERTYID_BASE - 16;
-    
+    public static final int ADD_COMMENTS = ApplicationRoleDefs.CBC_PROPERTYID_BASE - 17;
+    public static final int MODIFY_COMMENTS = ApplicationRoleDefs.CBC_PROPERTYID_BASE - 18;
 }

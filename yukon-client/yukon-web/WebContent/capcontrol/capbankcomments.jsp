@@ -46,14 +46,19 @@
 	java.text.SimpleDateFormat formatter = new java.text.SimpleDateFormat ("dd/MM/yyyy HH:mm:ss");
 	
 	boolean modifyPermission = false;
+	boolean addPermission = false;
 	//role property   'database editing' determines this.
 	AuthDao authDao = YukonSpringHook.getBean("authDao", AuthDao.class);
-	LiteYukonRoleProperty liteProp = authDao.getRoleProperty(CBCSettingsRole.CBC_DATABASE_EDIT);
+	LiteYukonRoleProperty modifyProp = authDao.getRoleProperty(CBCSettingsRole.MODIFY_COMMENTS);
+	LiteYukonRoleProperty addProp = authDao.getRoleProperty(CBCSettingsRole.ADD_COMMENTS);
+	String modValue = authDao.getRolePropertyValue(user,modifyProp.getRolePropertyID() );
+	String addValue2 = authDao.getRolePropertyValue(user,addProp.getRolePropertyID() );
 	
-	String value = authDao.getRolePropertyValue(user,liteProp.getRolePropertyID() );
-	
-	if( value.compareToIgnoreCase("true") == 0 ){		
+	if( modValue.compareToIgnoreCase("true") == 0 ){		
 		modifyPermission = true;
+	}
+	if( addValue2.compareToIgnoreCase("true") == 0 ){		
+		addPermission = true;
 	}
 %>
 
@@ -132,7 +137,7 @@ function unHighlightAllRows(){
 		
 				<table id="innerTable" width="100%" border="0" cellspacing="0" cellpadding="0">
 					<tr class="columnHeader lAlign">
-						<% if ( modifyPermission ) { %>
+						<% if ( modifyPermission || addPermission ) { %>
 						<td>Edit</td>
 						<% } %>
 						<td>Comment</td>
@@ -140,7 +145,7 @@ function unHighlightAllRows(){
 						<td>Time</td>
 						<td>Altered</td>
 					</tr>
-					<% if ( modifyPermission ) { %>
+					<% if ( addPermission || modifyPermission) { %>
 					<tr class="altTableCell" id="addCommentRow" >
 						<td>
 						
@@ -164,9 +169,9 @@ function unHighlightAllRows(){
 				    			style = "onelineTableCell";
 					%>
 					<tr id="commentRow_<%= c.getId() %>" class=<%=style %>>
-						<% if ( modifyPermission ) { %>
+						<% if ( modifyPermission || addPermission ) { %>
 						<td>
-							<% if ( b ) { %>
+							<% if ( b && modifyPermission) { %>
 							<img src="/editor/images/edit_item.gif" border="0" height="15" width="15"  onclick="selectComment(<%=c.getId() %>);highlightRow('commentRow_<%= c.getId() %>');"/>
 							<img src="/editor/images/delete_item.gif" border="0" height="15" width="15" onclick="setCommentValue(<%=c.getId() %>);setDelete(1);submit();" />
 							<% } %>
