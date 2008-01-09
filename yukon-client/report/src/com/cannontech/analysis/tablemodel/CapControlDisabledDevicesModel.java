@@ -93,14 +93,14 @@ public class CapControlDisabledDevicesModel extends BareReportModelBase<CapContr
         String substationQuery ="select yp.paoname as devicename, yp.type as deviceType, pInfo.parent as deviceParent from yukonpaobject yp, ";
         substationQuery += "(select ypa.paoname as PARENT , yps.paobjectid from yukonpaobject ypa , yukonpaobject yps, ";
         substationQuery += "ccsubareaassignment sa, ccsubstationsubbuslist ss where yps.paobjectid = ss.substationid ";
-        substationQuery += "and sa.substationbusid = ss.substationid and sa.areaid = ypa.paobjectid and yps.type like 'CCSUBSTATION') as pInfo ";
+        substationQuery += "and sa.substationbusid = ss.substationid and sa.areaid = ypa.paobjectid and yps.type like 'CCSUBSTATION') pInfo ";
         substationQuery += "where type = 'CCSUBSTATION' and disableflag = 'Y' and yp.paobjectid = pInfo.paobjectid order by type ";
         
         String subBusQuery = "select yp.paoname as devicename, yp.type as deviceType, pInfo.parent as deviceParent from yukonpaobject yp, ";
         subBusQuery += "(select ypa.paoname + '->' + yps.paoname as PARENT, ypsb.paobjectid from yukonpaobject ypa, yukonpaobject yps, ";
         subBusQuery += "yukonpaobject ypsb, ccsubareaassignment sa, ccsubstationsubbuslist ss where ypsb.paobjectid = ss.substationbusid ";
         subBusQuery += "and yps.paobjectid = ss.substationid and sa.substationbusid = ss.substationid and sa.areaid = ypa.paobjectid ";
-        subBusQuery += "and ypsb.type like 'CCSUBBUS') as pInfo where type = 'CCSUBBUS' and disableflag = 'Y' ";
+        subBusQuery += "and ypsb.type like 'CCSUBBUS') pInfo where type = 'CCSUBBUS' and disableflag = 'Y' ";
         subBusQuery += "and yp.paobjectid = pInfo.paobjectid order by type ";
         
         String feederQuery = "select yp.paoname as devicename, yp.type as deviceType, pInfo.parent as deviceParent from yukonpaobject yp, ";
@@ -108,7 +108,7 @@ public class CapControlDisabledDevicesModel extends BareReportModelBase<CapContr
         feederQuery += "yukonpaobject yps, yukonpaobject ypsb, yukonpaobject ypf, ccsubareaassignment sa, ccsubstationsubbuslist ss, ";
         feederQuery += "ccfeedersubassignment fs where ypf.paobjectid = fs.feederid and ypsb.paobjectid = fs.substationbusid ";
         feederQuery += "and yps.paobjectid = ss.substationid and fs.substationbusid = ss.substationbusid and sa.substationbusid = ss.substationid ";
-        feederQuery += "and sa.areaid = ypa.paobjectid and ypf.type like 'CCFEEDER') as pInfo where type = 'CCFEEDER' and disableflag = 'Y' ";
+        feederQuery += "and sa.areaid = ypa.paobjectid and ypf.type like 'CCFEEDER') pInfo where type = 'CCFEEDER' and disableflag = 'Y' ";
         feederQuery += "and yp.paobjectid = pInfo.paobjectid order by type ";
         
         String capBankQuery = "select yp.paoname as devicename, yp.type as deviceType, pInfo.parent as deviceParent from yukonpaobject yp, ";
@@ -117,7 +117,7 @@ public class CapControlDisabledDevicesModel extends BareReportModelBase<CapContr
         capBankQuery += "ccsubareaassignment sa, ccsubstationsubbuslist ss, ccfeedersubassignment fs, ccfeederbanklist fb, capbank c ";
         capBankQuery += "where ypc.paobjectid = c.deviceid and fb.deviceid = c.deviceid and fb.feederid = fs.feederid and ypf.paobjectid = fb.feederid ";
         capBankQuery += "and ypsb.paobjectid = fs.substationbusid and yps.paobjectid = ss.substationid and fs.substationbusid = ss.substationbusid ";
-        capBankQuery += "and sa.substationbusid = ss.substationid and sa.areaid = ypa.paobjectid and ypc.type like 'CAP BANK') as pInfo ";
+        capBankQuery += "and sa.substationbusid = ss.substationid and sa.areaid = ypa.paobjectid and ypc.type like 'CAP BANK') pInfo ";
         capBankQuery += "where type = 'CAP BANK' and disableflag = 'Y' and pInfo.paobjectid = yp.paobjectid order by type ";
         
         String cbcQuery = "select yp.paoname as devicename, yp.type as deviceType, pInfo.parent as deviceParent from yukonpaobject yp, (select ypa.paoname + '->' + yps.paoname + '->' ";
@@ -126,7 +126,7 @@ public class CapControlDisabledDevicesModel extends BareReportModelBase<CapContr
         cbcQuery += "ccfeedersubassignment fs, ccfeederbanklist fb, capbank c where yp.paobjectid = c.controldeviceid and ypc.paobjectid = c.deviceid ";
         cbcQuery += "and fb.deviceid = c.deviceid and fb.feederid = fs.feederid and ypf.paobjectid = fb.feederid and ypsb.paobjectid = fs.substationbusid ";
         cbcQuery += "and yps.paobjectid = ss.substationid and fs.substationbusid = ss.substationbusid and sa.substationbusid = ss.substationid ";
-        cbcQuery += "and sa.areaid = ypa.paobjectid and yp.type like 'CBC%') as pInfo where type = 'CBC %' and disableflag = 'Y' ";
+        cbcQuery += "and sa.areaid = ypa.paobjectid and yp.type like 'CBC%') pInfo where type = 'CBC %' and disableflag = 'Y' ";
         cbcQuery += "and yp.paobjectid = pInfo.paobjectid order by type ";
         
         if(type.equalsIgnoreCase("CBC")) {

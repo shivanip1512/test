@@ -91,7 +91,7 @@ public class CapControlRetriesModel extends BareDatedReportModelBase<CapControlR
         sql.append("from (select pointid, count(*) as ct from cceventlog where text like '%resending%' ");
         sql.append("and datetime > ? ");
         sql.append("and datetime <= ? ");
-        sql.append("group by pointid) as el ");
+        sql.append("group by pointid) el ");
         sql.append("join point p on p.pointid = el.pointid ");
         sql.append("join capbank cb on p.paobjectid = cb.deviceid ");
         sql.append("join yukonpaobject yp4 on yp4.paobjectid = cb.controldeviceid ");
@@ -105,7 +105,7 @@ public class CapControlRetriesModel extends BareDatedReportModelBase<CapControlR
         sql.append("join ccsubstationsubbus ssb on ssb.substationbusid = fs.substationbusid ");
         sql.append("join ccsubareaassignment sa on sa.substationbusid = ssb.substationid ");
         sql.append("join  yukonpaobject yp on yp.paobjectid = sa.areaid ");
-        sql.append("left outer join (select paobjectid from yukonpaobject where type ='ccarea' ) as ca on ca.paobjectid = sa.areaid ");
+        sql.append("left outer join (select paobjectid from yukonpaobject where type ='ccarea' ) ca on ca.paobjectid = sa.areaid ");
         
         String result = null;
         

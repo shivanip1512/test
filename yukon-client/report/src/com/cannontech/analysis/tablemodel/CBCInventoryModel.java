@@ -112,9 +112,9 @@ public class CBCInventoryModel extends BareReportModelBase<CBCInventoryModel.Mod
         StringBuffer sql = new StringBuffer ("select yp.paoname as cbcName, p.value as ipAddress, da.slaveaddress as slaveAddress, cb.controllertype as protocol, ");
         sql.append("ca.paoname as region, yp3.paoName as subName, yp2.paoName as feederName, yp1.paoName as capbankName, cb.bankSize as bankSize, ");
         sql.append("cb.operationalstate as controlType,  yp1.description as driveDirections ");
-        sql.append("from (select paobjectid, paoname from yukonpaobject where type like '%CBC%') as yp ");
-        sql.append("left outer join capbank as cb on cb.controldeviceid = yp.paobjectid ");
-        sql.append("left outer join yukonpaobject as yp1 on cb.deviceid = yp1.paobjectid ");
+        sql.append("from (select paobjectid, paoname from yukonpaobject where type like '%CBC%') yp ");
+        sql.append("left outer join capbank cb on cb.controldeviceid = yp.paobjectid ");
+        sql.append("left outer join yukonpaobject yp1 on cb.deviceid = yp1.paobjectid ");
         sql.append("left outer join ccfeederbanklist fb on fb.deviceid = cb.deviceid ");
         sql.append("left outer join yukonpaobject yp2 on yp2.paobjectid = fb.feederid ");
         sql.append("left outer join ccfeedersubassignment sf on fb.feederid = sf.feederid ");
@@ -122,10 +122,10 @@ public class CBCInventoryModel extends BareReportModelBase<CBCInventoryModel.Mod
         sql.append("left outer join ccsubstationsubbuslist ss on sf.substationbusid  = ss.substationbusid ");
         sql.append("left outer join yukonpaobject yp4 on yp4.paobjectid = ss.substationid ");
         sql.append("left outer join deviceaddress da on da.deviceid = cb.controldeviceid ");
-        sql.append("left outer join (select * from dynamicpaoinfo where infokey like '%udp ip%') as p on p.paobjectid = yp.paobjectid ");
+        sql.append("left outer join (select * from dynamicpaoinfo where infokey like '%udp ip%') p on p.paobjectid = yp.paobjectid ");
         sql.append("left outer join ccsubstationsubbuslist ssb on ssb.substationbusid = sf.substationbusid ");
  	 	sql.append("left outer join ccsubareaassignment saa on saa.substationbusid = ssb.substationid ");
- 	 	sql.append("left outer join (select paobjectid, paoname from yukonpaobject where type ='ccarea' ) as ca on ca.paobjectid = saa.areaid ");
+ 	 	sql.append("left outer join (select paobjectid, paoname from yukonpaobject where type ='ccarea' ) ca on ca.paobjectid = saa.areaid ");
         
         String result = null;
         

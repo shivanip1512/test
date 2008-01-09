@@ -4,7 +4,6 @@ import java.sql.ResultSet;
 import java.sql.SQLException;
 import java.sql.Timestamp;
 import java.util.ArrayList;
-import java.util.Arrays;
 import java.util.List;
 import java.util.Set;
 
@@ -118,7 +117,7 @@ public class CapControlOperationsModel extends BareDatedReportModelBase<CapContr
         sql.append("and b.logid > a.logid group by a.logid) el3 on el3.aid = el.logid ");
         sql.append("where (el.text like '%Close sent,%'  or el.text like '%Open sent,%') and el2.text like 'Var: %' ");
         sql.append("and el2.logid > el.logid and (el2.logid < el3.next_aid  or el3.next_aid is null) ");
-        sql.append("group by el.logid ) aaa on op.logid = aaa.opid group by op.logid ) as OpConf ");
+        sql.append("group by el.logid ) aaa on op.logid = aaa.opid group by op.logid ) OpConf ");
         sql.append("join cceventlog el on el.logid = opConf.oid left join cceventlog el2 on el2.logid = opConf.cid ");
         sql.append("join point on point.pointid = el.pointid ");
         sql.append("join dynamiccccapbank on dynamiccccapbank.capbankid = point.paobjectid ");
@@ -132,7 +131,7 @@ public class CapControlOperationsModel extends BareDatedReportModelBase<CapContr
         sql.append("left join deviceaddress da on da.deviceid = cb.controldeviceid ");
         sql.append("join yukonpaobject yp3 on yp3.paobjectid = cb.controldeviceid ");
         sql.append("left join devicecbc cbc on cbc.deviceid = cb.controldeviceid ");
-        sql.append("left outer join (select * from dynamicpaoinfo where infokey like '%udp ip%') as p ");
+        sql.append("left outer join (select * from dynamicpaoinfo where infokey like '%udp ip%') p ");
         sql.append("on p.paobjectid = cb.controldeviceid ");
         sql.append("left outer join ccsubstationsubbuslist sbb on sbb.substationbusid = yp2.paobjectid ");
         sql.append("left outer join ccsubareaassignment saa on saa.substationbusid = sbb.substationid  ");

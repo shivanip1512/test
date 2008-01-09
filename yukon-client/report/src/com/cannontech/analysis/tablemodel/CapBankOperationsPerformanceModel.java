@@ -92,7 +92,7 @@ public class CapBankOperationsPerformanceModel extends BareDatedReportModelBase<
     public StringBuffer buildSQLStatement()
     {
         StringBuffer sql = new StringBuffer ("select d.capbankname, cbcname,  feedername, subname, region, '" + queryType+"' as text, qCount, totCount, qPercent from (select tot.capbankname, q.qCount, tot.totCount, cast(q.qCount as float) / cast(tot.totCount as float) * 100 as qPercent from ");
-        sql.append("(select capbankname, count(*) as totCount from ccoperations_view where operation like '%Sent, %'  and opTime > ? and opTime <= ? group by capbankname) as tot ");
+        sql.append("(select capbankname, count(*) as totCount from ccoperations_view where operation like '%Sent, %'  and opTime > ? and opTime <= ? group by capbankname) tot ");
         sql.append("left outer join (select capbankname, count(*) as qCount from ccoperations_view where ");
         if(queryType.equalsIgnoreCase("Success")) {
             sql.append("(confstatus like '%, Close' or confstatus like '%, Closed' or confstatus like '%, Open') ");
@@ -103,15 +103,15 @@ public class CapBankOperationsPerformanceModel extends BareDatedReportModelBase<
         }else if (queryType.equalsIgnoreCase("Failed-Questionable")) {
             sql.append("(confstatus like '%Questionable%' or confstatus like '%Failed%') ");
         }
-        sql.append("and opTime > ? and opTime <= ? group by capbankname) as q on tot.capbankname = q.capbankname ) as abc ");
+        sql.append("and opTime > ? and opTime <= ? group by capbankname) q on tot.capbankname = q.capbankname ) abc ");
         sql.append("left outer join (select yp.paoname, yp.paobjectid, s.text as text from dynamiccccapbank dcb ");
         sql.append("join state s on s.rawstate = dcb.controlstatus and s.stategroupid = 3 ");
-        sql.append("join yukonpaobject yp on yp.paobjectid = dcb.capbankid) as status on status.paoname = abc.capbankname ");
+        sql.append("join yukonpaobject yp on yp.paobjectid = dcb.capbankid) status on status.paoname = abc.capbankname ");
         sql.append("join (select distinct (capbankname), cbcname, feedername, feederid, subname, subbusid, region from ccoperations_view ");
-        sql.append("where  operation like '%Sent, %'  and opTime > ? and opTime <= ?) as d on abc.capbankname = d.capbankname ");
+        sql.append("where  operation like '%Sent, %'  and opTime > ? and opTime <= ?) d on abc.capbankname = d.capbankname ");
         sql.append("left outer join ccsubstationsubbuslist ssb on ssb.substationbusid = d.subbusid ");
  	 	sql.append("left outer join ccsubareaassignment saa on saa.substationbusid = ssb.substationid ");
- 	 	sql.append("left outer join (select paobjectid from yukonpaobject where type ='ccarea' ) as ca on ca.paobjectid = saa.areaid ");
+ 	 	sql.append("left outer join (select paobjectid from yukonpaobject where type ='ccarea' ) ca on ca.paobjectid = saa.areaid ");
         sql.append("where abc.qPercent >= " + queryPercent + " ");
         
         String result = null;
