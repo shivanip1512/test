@@ -26,6 +26,7 @@ import org.springframework.web.context.support.WebApplicationContextUtils;
 import com.cannontech.capcontrol.CapBankOperationalState;
 import com.cannontech.cbc.cache.CapControlCache;
 import com.cannontech.cbc.dao.CapControlCommentDao;
+import com.cannontech.cbc.dao.CommentAction;
 import com.cannontech.cbc.model.CapControlComment;
 import com.cannontech.cbc.util.CBCDisplay;
 import com.cannontech.cbc.util.CBCUtils;
@@ -160,6 +161,7 @@ public class CBCServlet extends ErrorAwareInitializingServlet {
         if( cid == -1){//adding new
             CapControlComment c = new CapControlComment();
             c.setAltered(false);
+            c.setAction( CommentAction.USER_COMMENT.toString() );
             c.setPaoId(paoId);
             c.setTime(new Timestamp(System.currentTimeMillis()));
             c.setUserId(user.getUserID());
@@ -173,6 +175,7 @@ public class CBCServlet extends ErrorAwareInitializingServlet {
             if( delete == -1 ){//edit
                 CapControlComment c = dao.getById(cid);
                 c.setComment(comment);
+                c.setAction( CommentAction.USER_COMMENT.toString() );
                 c.setUserId(user.getUserID());
                 c.setAltered(true);
                 c.setTime(new Timestamp(System.currentTimeMillis()));
