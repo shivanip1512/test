@@ -97,7 +97,7 @@
     </f:verbatim>
 	<x:inputHidden id="var_point" forceId="true" value="#{capControlForm.PAOBase.capControlSubstationBus.currentVarLoadPointID }" />
     <x:outputLabel for="sub_Var_Device" value="Selected Point: " title="Data Point used for the current VAR value" styleClass="medStaticLabel"rendered="#{!capControlForm.PAOBase.capControlSubstationBus.usePhaseDataBoolean}"/>
-    <x:outputLabel for="sub_Var_Device" value="Selected PhaseA Point: " title="Data Point used for the current VAR value" styleClass="medStaticLabel"rendered="#{capControlForm.PAOBase.capControlSubstationBus.usePhaseDataBoolean}"/>
+    <x:outputLabel for="sub_Var_Device" value="Selected Phase A Point: " title="Data Point used for the current VAR value" styleClass="medStaticLabel"rendered="#{capControlForm.PAOBase.capControlSubstationBus.usePhaseDataBoolean}"/>
     <x:outputText id="sub_Var_Device" forceId="true" value="#{capControlForm.paoNameMap[capControlForm.PAOBase.capControlSubstationBus.currentVarLoadPointID]}"/> 
     <x:outputText id="sub_Var_Device_Point_Seperator" forceId="true" value=" : " />
     <x:outputText id="sub_Var_Point" forceId="true" value="#{capControlForm.pointNameMap[capControlForm.PAOBase.capControlSubstationBus.currentVarLoadPointID]}" /> 
@@ -107,8 +107,8 @@
 	</f:verbatim>
     
     <h:outputLink  value="javascript:sub_Var_PointPicker.showPicker()" >
-    <h:outputText value="Select point..." rendered="#{!capControlForm.PAOBase.capControlSubstationBus.usePhaseDataBoolean}"/>
-    <h:outputText value="Select point for Phase A..." rendered="#{capControlForm.PAOBase.capControlSubstationBus.usePhaseDataBoolean}"/>
+    <h:outputText value="Select point" rendered="#{!capControlForm.PAOBase.capControlSubstationBus.usePhaseDataBoolean}"/>
+    <h:outputText value="Select point for Phase A" rendered="#{capControlForm.PAOBase.capControlSubstationBus.usePhaseDataBoolean}"/>
 	</h:outputLink>
                  
     <f:verbatim>
