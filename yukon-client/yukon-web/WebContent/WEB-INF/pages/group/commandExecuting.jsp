@@ -8,7 +8,7 @@
 <cti:standardMenu menuSelection="devicegroups|commander"/>
    	<cti:breadCrumbs>
 	    <cti:crumbLink url="/operator/Operations.jsp" title="Operations Home" />
-   	    <cti:crumbLink url="/spring/command/configure" title="Group Processing" />
+   	    <cti:crumbLink url="/spring/group/groupProcessing" title="Group Processing" />
 	    &gt; Command Executing
 	</cti:breadCrumbs>
 
