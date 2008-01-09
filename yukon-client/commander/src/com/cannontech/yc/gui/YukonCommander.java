@@ -70,6 +70,7 @@ import com.cannontech.database.model.LiteBaseTreeModel;
 import com.cannontech.database.model.ModelFactory;
 import com.cannontech.message.dispatch.message.DBChangeMsg;
 import com.cannontech.roles.application.CommanderRole;
+import com.cannontech.roles.application.DBEditorRole;
 import com.cannontech.spring.YukonSpringHook;
 import com.cannontech.yc.MessageType;
 import com.cannontech.yc.gui.menu.YCCommandMenu;
@@ -1511,17 +1512,23 @@ public class YukonCommander extends JFrame implements DBChangeLiteListener, Acti
 			final SplashWindow splash = SplashWindow.createYukonSplash(null);
 	
 			final ClientSession session = ClientSession.getInstance(); 
-			if(!session.establishSession(null)) {
-				System.exit(-1);			
-			}
-		
-			if(!session.checkRole(CommanderRole.ROLEID)) {
-              javax.swing.SwingUtilities.invokeLater(new Runnable() {
-                 public void run() {
-                     JOptionPane.showMessageDialog(null, "User: '" + session.getUser().getUsername() + "' is not authorized to use this application, exiting.", "Access Denied", JOptionPane.WARNING_MESSAGE);
-                     System.exit(-1);
-                 }
-              });
+			boolean loggingIn = true;
+			while(loggingIn){
+				if(!session.establishSession(null)){
+					System.exit(-1);			
+				}
+				  
+				if(session == null) 
+				{
+				    System.exit(-1);
+				}
+				  
+				if(!session.checkRole(CommanderRole.ROLEID)) {
+					JOptionPane.showMessageDialog(null, "User: '" + session.getUser().getUsername() + "' is not authorized to use this application. Please log in as a different user.", "Access Denied", JOptionPane.WARNING_MESSAGE);				
+					session.closeSession();
+				} else {
+					loggingIn = false;
+				}
 			}
 	
 			final YukonCommander ycClient = new YukonCommander();

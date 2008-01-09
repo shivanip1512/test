@@ -2225,20 +2225,25 @@ public static void main(String[] args) {
       f.setIconImage(java.awt.Toolkit.getDefaultToolkit().getImage(DBEDITOR_GIF));
 			
 	  ClientSession session = ClientSession.getInstance(); 
-	  if(!session.establishSession(f)){
-		  System.exit(-1);			
+	  boolean loggingIn = true;
+	  while(loggingIn){
+		  if(!session.establishSession(f)){
+			  System.exit(-1);			
+		  }
+		  
+		  if(session == null) 
+		  {
+			  System.exit(-1);
+		  }
+		  
+		  if(!session.checkRole(DBEditorRole.ROLEID)) {
+			  JOptionPane.showMessageDialog(null, "User: '" + session.getUser().getUsername() + "' is not authorized to use this application. Please log in as a different user.", "Access Denied", JOptionPane.WARNING_MESSAGE);				
+			  session.closeSession();
+		  } else {
+			  loggingIn = false;
+		  }
 	  }
-	  	
-	  if(session == null) 
-	  {
-		  System.exit(-1);
-	  }
-	
-	  if(!session.checkRole(DBEditorRole.ROLEID)) {
-	  	JOptionPane.showMessageDialog(null, "User: '" + session.getUser().getUsername() + "' is not authorized to use this application, exiting.", "Access Denied", JOptionPane.WARNING_MESSAGE);
-		System.exit(-1);				
-	  }
-			  
+	  
 	  if(session.getUser().getUserID() == com.cannontech.user.UserUtils.USER_ADMIN_ID)
 	  	isSuperuser = true;	
       /* Cache loads as needed, do not load it all here!! --RWN */

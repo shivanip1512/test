@@ -37,6 +37,7 @@ import com.cannontech.message.util.Command;
 import com.cannontech.message.util.Message;
 import com.cannontech.message.util.MessageEvent;
 import com.cannontech.message.util.MessageListener;
+import com.cannontech.roles.application.DBEditorRole;
 import com.cannontech.roles.application.TDCRole;
 import com.cannontech.tdc.bookmark.BookMarkBase;
 import com.cannontech.tdc.commandevents.AckAlarm;
@@ -4169,22 +4170,24 @@ public static void main(final java.lang.String[] args)
 
       
 		ClientSession session = ClientSession.getInstance(); 
-
-		if(!session.establishSession(null))
-		{
-			System.exit(-1);			
-		}
-	  	
-		if(session == null) 
-		{
-			System.exit(-1);
-		}
-			 
-		if(!session.checkRole(TDCRole.ROLEID)) 
-		{
-		  JOptionPane.showMessageDialog(null, "User: '" + session.getUser().getUsername() + "' is not authorized to use this application, exiting.", "Access Denied", JOptionPane.WARNING_MESSAGE);
-		  System.exit(-1);				
-		}
+		boolean loggingIn = true;
+		while(loggingIn){
+			  if(!session.establishSession(null)){
+				  System.exit(-1);			
+			  }
+			  
+			  if(session == null) 
+			  {
+				  System.exit(-1);
+			  }
+			  
+			  if(!session.checkRole(TDCRole.ROLEID)) {
+				  JOptionPane.showMessageDialog(null, "User: '" + session.getUser().getUsername() + "' is not authorized to use this application. Please log in as a different user.", "Access Denied", JOptionPane.WARNING_MESSAGE);				
+				  session.closeSession();
+			  } else {
+				  loggingIn = false;
+			  }
+		  }
 		
 		javax.swing.ToolTipManager.sharedInstance().setDismissDelay(2000);
 

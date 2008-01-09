@@ -57,6 +57,7 @@ import com.cannontech.esub.element.StaticText;
 import com.cannontech.esub.util.ESubDrawingUpdater;
 import com.cannontech.message.dispatch.ClientConnection;
 import com.cannontech.message.util.Command;
+import com.cannontech.roles.application.DBEditorRole;
 import com.cannontech.roles.application.EsubEditorRole;
 import com.cannontech.yukon.conns.ConnPool;
 import com.loox.jloox.LxComponent;
@@ -548,24 +549,25 @@ public class Editor extends JPanel {
 		frame.setIconImage(java.awt.Toolkit.getDefaultToolkit().getImage(ESUBEDITOR_GIF));
 
 		final ClientSession session = ClientSession.getInstance(); 
-		if(!session.establishSession(frame)) {
-			System.exit(-1);			
+		boolean loggingIn = true;
+		while(loggingIn){
+			if(!session.establishSession(frame)){
+				System.exit(-1);			
+			}
+			  
+			if(session == null) 
+			{
+				System.exit(-1);
+			}
+			  
+			if(!session.checkRole(EsubEditorRole.ROLEID)) {
+				JOptionPane.showMessageDialog(null, "User: '" + session.getUser().getUsername() + "' is not authorized to use this application. Please log in as a different user.", "Access Denied", JOptionPane.WARNING_MESSAGE);				
+				session.closeSession();
+			} else {
+				loggingIn = false;
+			}
 		}
-	  	
-		if(session == null) {
-			System.exit(-1);
-		}
-		
-		if(!session.checkRole(EsubEditorRole.ROLEID)) {
-            javax.swing.SwingUtilities.invokeLater(new Runnable() {
-                public void run() {
-                    JOptionPane.showMessageDialog(null, "User: '" + session.getUser().getUsername() + "' is not authorized to use this application, exiting.", "Access Denied", JOptionPane.WARNING_MESSAGE);
-                    System.exit(-1);                        
-                }
-            });
-			
-		}
-		
+				
 		Editor editor = new Editor();
 
 		frame.getContentPane().add(editor);

@@ -68,6 +68,7 @@ import com.cannontech.graph.model.TrendModel;
 import com.cannontech.graph.model.TrendProperties;
 import com.cannontech.jfreechart.chart.YukonChartPanel;
 import com.cannontech.message.dispatch.message.DBChangeMsg;
+import com.cannontech.roles.application.DBEditorRole;
 import com.cannontech.roles.application.TrendingRole;
 import com.cannontech.spring.YukonSpringHook;
 import com.cannontech.util.ServletUtil;
@@ -2116,16 +2117,23 @@ public static void main(String[] args)
         SplashWindow.createYukonSplash(mainFrame);
         
 		ClientSession session = ClientSession.getInstance(); 
-		if(!session.establishSession(mainFrame))
-			System.exit(-1);			
-	  	
-		if(session == null) 		
-			System.exit(-1);
-				
-		if(!session.checkRole(TrendingRole.ROLEID)) 
-		{
-		  JOptionPane.showMessageDialog(null, "User: '" + session.getUser().getUsername() + "' is not authorized to use this application, exiting.", "Access Denied", JOptionPane.WARNING_MESSAGE);
-		  System.exit(-1);				
+		boolean loggingIn = true;
+		while(loggingIn){
+			if(!session.establishSession(mainFrame)){
+				System.exit(-1);			
+			}
+			  
+			if(session == null) 
+			{
+				System.exit(-1);
+			}
+			  
+			if(!session.checkRole(TrendingRole.ROLEID)) {
+				JOptionPane.showMessageDialog(null, "User: '" + session.getUser().getUsername() + "' is not authorized to use this application. Please log in as a different user.", "Access Denied", JOptionPane.WARNING_MESSAGE);				
+				session.closeSession();
+			} else {
+				loggingIn = false;
+			}
 		}
 			
         java.awt.Dimension d = java.awt.Toolkit.getDefaultToolkit().getScreenSize();
