@@ -79,7 +79,8 @@
     <br/>
     </f:verbatim>
     <x:inputHidden id="varPoint" forceId="true" value="#{capControlForm.PAOBase.capControlFeeder.currentVarLoadPointID }" />      
-    <x:outputLabel for="feederVarDevice" value="Selected Point: " title="Data Point used for the current VAR value" styleClass="medStaticLabel"/>
+    <x:outputLabel for="feederVarDevice" value="Selected Point: " title="Data Point used for the current VAR value" rendered="#{!capControlForm.PAOBase.capControlFeeder.usePhaseDataBoolean}" styleClass="medStaticLabel"/>
+    <x:outputLabel for="feederVarDevice" value="Selected PhaseA Point: " title="Data Point used for the current VAR value" rendered="#{capControlForm.PAOBase.capControlFeeder.usePhaseDataBoolean}" styleClass="medStaticLabel"/>
     <x:outputText id="feederVarDevice" forceId="true" value="#{capControlForm.paoNameMap[capControlForm.PAOBase.capControlFeeder.currentVarLoadPointID]}"/> 
     <x:outputText id="feederVarPointSeperator" forceId="true" value=" : " />
     <x:outputText id="feederVarPoint" forceId="true" value="#{capControlForm.pointNameMap[capControlForm.PAOBase.capControlFeeder.currentVarLoadPointID]}" /> 
@@ -89,7 +90,8 @@
     </f:verbatim>
     
     <h:outputLink  value="javascript:feederVarPointPicker.showPicker()" >
-    <h:outputText value="Select point..."/>
+    <h:outputText value="Select point for Phase A..." rendered="#{capControlForm.PAOBase.capControlFeeder.usePhaseDataBoolean}"/>
+    <h:outputText value="Select point..." rendered="#{!capControlForm.PAOBase.capControlFeeder.usePhaseDataBoolean}"/>
     </h:outputLink>
     
     <f:verbatim>
