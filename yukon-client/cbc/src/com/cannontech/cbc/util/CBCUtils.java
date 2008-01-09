@@ -137,42 +137,6 @@ public final class CBCUtils {
     public static final boolean isPowerFactorControlled(String controlUnits) {
         return (CalcComponentTypes.PFACTOR_KW_KVAR_FUNCTION.equalsIgnoreCase(controlUnits) || CalcComponentTypes.PFACTOR_KW_KQ_FUNCTION.equalsIgnoreCase(controlUnits));
     }
-
-    /**
-     * Calculates the summation of VARS for an array of CapBankDevices that are
-     * in a open state.
-     */
-    public static final int calcVarsTrippedForCapBanks(List<CapBankDevice> capBanks, LiteYukonUser user) {
-        int returnVal = 0;
-        if (capBanks == null) {
-            return returnVal;
-        }
-        List<Integer> trippedStates = getTrippedStatesList(user); 
-        for (CapBankDevice capBank : capBanks) {
-            if(trippedStates.contains(capBank.getControlStatus())){
-                returnVal += capBank.getBankSize();
-            }
-        }
-        return returnVal;
-    }
-    
-    /**
-     * Calculates the summation of VARS for an array of CapBankDevices that are
-     * in a closed state.
-     */
-    public static final int calcVarsClosedForCapBanks(List<CapBankDevice> capBanks, LiteYukonUser user) {
-        int returnVal = 0;
-        if (capBanks == null) {
-            return returnVal;
-        }
-        List<Integer> closedStates = getClosedStatesList(user); 
-        for (CapBankDevice capBank : capBanks) {
-            if(closedStates.contains(capBank.getControlStatus())){
-                returnVal += capBank.getBankSize();
-            }
-        }
-        return returnVal;
-    }
     
     /**
      * Calculates the average PowerFactor for an array of SubBuses that have
@@ -404,9 +368,13 @@ public final class CBCUtils {
     public static double calcVarsAvailableForFeeder(Feeder feeder, LiteYukonUser user) {
         double returnVal = 0.0;
         List<CapBankDevice> capBanks = new ArrayList<CapBankDevice>(feeder.getCcCapBanks());
-        List<Integer> availableStates = getAvailableStatesList(user); 
+        List<String> availableStates = getAvailableStatesList(user);
+        String[] controlStatusStrings = CapControlConst.CONTROL_STATUS_STRINGS_ARRAY;
         for (CapBankDevice capBank : capBanks) {
-            if(availableStates.contains(capBank.getControlStatus())){
+            Integer controlStatus = capBank.getControlStatus();
+            String operationalState = capBank.getOperationalState();
+            String typeAndState = operationalState + ":" + controlStatusStrings[controlStatus];
+            if(availableStates.contains(typeAndState)){
                 returnVal += capBank.getBankSize();
             }
         }
@@ -416,9 +384,57 @@ public final class CBCUtils {
     public static double calcVarsUnavailableForFeeder(Feeder feeder, LiteYukonUser user) {
         double returnVal = 0.0;
         List<CapBankDevice> capBanks = new ArrayList<CapBankDevice>(feeder.getCcCapBanks());
-        List<Integer> unavailableStates = getUnavailableStatesList(user); 
+        List<String> unavailableStates = getUnavailableStatesList(user); 
+        String[] controlStatusStrings = CapControlConst.CONTROL_STATUS_STRINGS_ARRAY;
         for (CapBankDevice capBank : capBanks) {
-            if(unavailableStates.contains(capBank.getControlStatus())){
+            Integer controlStatus = capBank.getControlStatus();
+            String operationalState = capBank.getOperationalState();
+            String typeAndState = operationalState + ":" + controlStatusStrings[controlStatus];
+            if(unavailableStates.contains(typeAndState)){
+                returnVal += capBank.getBankSize();
+            }
+        }
+        return returnVal;
+    }
+    
+    /**
+     * Calculates the summation of VARS for an array of CapBankDevices that are
+     * in a open state.
+     */
+    public static final int calcVarsTrippedForCapBanks(List<CapBankDevice> capBanks, LiteYukonUser user) {
+        int returnVal = 0;
+        if (capBanks == null) {
+            return returnVal;
+        }
+        List<String> trippedStates = getTrippedStatesList(user); 
+        String[] controlStatusStrings = CapControlConst.CONTROL_STATUS_STRINGS_ARRAY;
+        for (CapBankDevice capBank : capBanks) {
+            Integer controlStatus = capBank.getControlStatus();
+            String operationalState = capBank.getOperationalState();
+            String typeAndState = operationalState + ":" + controlStatusStrings[controlStatus];
+            if(trippedStates.contains(typeAndState)){
+                returnVal += capBank.getBankSize();
+            }
+        }
+        return returnVal;
+    }
+    
+    /**
+     * Calculates the summation of VARS for an array of CapBankDevices that are
+     * in a closed state.
+     */
+    public static final int calcVarsClosedForCapBanks(List<CapBankDevice> capBanks, LiteYukonUser user) {
+        int returnVal = 0;
+        if (capBanks == null) {
+            return returnVal;
+        }
+        List<String> closedStates = getClosedStatesList(user); 
+        String[] controlStatusStrings = CapControlConst.CONTROL_STATUS_STRINGS_ARRAY;
+        for (CapBankDevice capBank : capBanks) {
+            Integer controlStatus = capBank.getControlStatus();
+            String operationalState = capBank.getOperationalState();
+            String typeAndState = operationalState + ":" + controlStatusStrings[controlStatus];
+            if(closedStates.contains(typeAndState)){
                 returnVal += capBank.getBankSize();
             }
         }
@@ -426,135 +442,35 @@ public final class CBCUtils {
     }
     
     // must be a better way to do this
-    public static List<Integer> getAvailableStatesList(LiteYukonUser user){
-        ArrayList<Integer> availableStates = new ArrayList<Integer>();
+    public static List<String> getAvailableStatesList(LiteYukonUser user){
         String availableStatesString = authDao.getRolePropertyValue(user, CBCSettingsRole.AVAILABLE_DEFINITION);
         String[] array = availableStatesString.split(",");
         List<String> list = Arrays.asList(array);
-        if(list.contains(CapControlConst.STRING_BANK_CLOSE)) {
-            availableStates.add(CapControlConst.BANK_CLOSE);
-        }
-        if(list.contains(CapControlConst.STRING_BANK_CLOSE_FAIL)) {
-            availableStates.add(CapControlConst.BANK_CLOSE_FAIL);
-        }
-        if(list.contains(CapControlConst.STRING_BANK_CLOSE_PENDING)) {
-            availableStates.add(CapControlConst.BANK_CLOSE_PENDING);
-        }
-        if(list.contains(CapControlConst.STRING_BANK_CLOSEQUESTIONABLE)) {
-            availableStates.add(CapControlConst.BANK_CLOSE_QUESTIONABLE);
-        }
-        if(list.contains(CapControlConst.STRING_BANK_OPEN)) {
-            availableStates.add(CapControlConst.BANK_OPEN);
-        }
-        if(list.contains(CapControlConst.STRING_BANK_OPEN_FAIL)) {
-            availableStates.add(CapControlConst.BANK_OPEN_FAIL);
-        }
-        if(list.contains(CapControlConst.STRING_BANK_OPEN_PENDING)) {
-            availableStates.add(CapControlConst.BANK_OPEN_PENDING);
-        }
-        if(list.contains(CapControlConst.STRING_BANK_OPEN_QUESTIONABLE)) {
-            availableStates.add(CapControlConst.BANK_OPEN_QUESTIONABLE);
-        }
-        return availableStates;
+        return list;
     }
     
 //  must be a better way to do this
-    public static List<Integer> getUnavailableStatesList(LiteYukonUser user){
-        ArrayList<Integer> unavailableStates = new ArrayList<Integer>();
+    public static List<String> getUnavailableStatesList(LiteYukonUser user){
         String unavailableStatesString = authDao.getRolePropertyValue(user, CBCSettingsRole.UNAVAILABLE_DEFINITION);
         String[] array = unavailableStatesString.split(",");
         List<String> list = Arrays.asList(array);
-        if(list.contains(CapControlConst.STRING_BANK_CLOSE)) {
-            unavailableStates.add(CapControlConst.BANK_CLOSE);
-        }
-        if(list.contains(CapControlConst.STRING_BANK_CLOSE_FAIL)) {
-            unavailableStates.add(CapControlConst.BANK_CLOSE_FAIL);
-        }
-        if(list.contains(CapControlConst.STRING_BANK_CLOSE_PENDING)) {
-            unavailableStates.add(CapControlConst.BANK_CLOSE_PENDING);
-        }
-        if(list.contains(CapControlConst.STRING_BANK_CLOSEQUESTIONABLE)) {
-            unavailableStates.add(CapControlConst.BANK_CLOSE_QUESTIONABLE);
-        }
-        if(list.contains(CapControlConst.STRING_BANK_OPEN)) {
-            unavailableStates.add(CapControlConst.BANK_OPEN);
-        }
-        if(list.contains(CapControlConst.STRING_BANK_OPEN_FAIL)) {
-            unavailableStates.add(CapControlConst.BANK_OPEN_FAIL);
-        }
-        if(list.contains(CapControlConst.STRING_BANK_OPEN_PENDING)) {
-            unavailableStates.add(CapControlConst.BANK_OPEN_PENDING);
-        }
-        if(list.contains(CapControlConst.STRING_BANK_OPEN_QUESTIONABLE)) {
-            unavailableStates.add(CapControlConst.BANK_OPEN_QUESTIONABLE);
-        }
-        return unavailableStates;
+        return list;
     }
     
 //  must be a better way to do this
-    public static List<Integer> getClosedStatesList(LiteYukonUser user){
-        ArrayList<Integer> closedStates = new ArrayList<Integer>();
+    public static List<String> getClosedStatesList(LiteYukonUser user){
         String closedStatesString = authDao.getRolePropertyValue(user, CBCSettingsRole.CLOSED_DEFINITION);
         String[] array = closedStatesString.split(",");
         List<String> list = Arrays.asList(array);
-        if(list.contains(CapControlConst.STRING_BANK_CLOSE)) {
-            closedStates.add(CapControlConst.BANK_CLOSE);
-        }
-        if(list.contains(CapControlConst.STRING_BANK_CLOSE_FAIL)) {
-            closedStates.add(CapControlConst.BANK_CLOSE_FAIL);
-        }
-        if(list.contains(CapControlConst.STRING_BANK_CLOSE_PENDING)) {
-            closedStates.add(CapControlConst.BANK_CLOSE_PENDING);
-        }
-        if(list.contains(CapControlConst.STRING_BANK_CLOSEQUESTIONABLE)) {
-            closedStates.add(CapControlConst.BANK_CLOSE_QUESTIONABLE);
-        }
-        if(list.contains(CapControlConst.STRING_BANK_OPEN)) {
-            closedStates.add(CapControlConst.BANK_OPEN);
-        }
-        if(list.contains(CapControlConst.STRING_BANK_OPEN_FAIL)) {
-            closedStates.add(CapControlConst.BANK_OPEN_FAIL);
-        }
-        if(list.contains(CapControlConst.STRING_BANK_OPEN_PENDING)) {
-            closedStates.add(CapControlConst.BANK_OPEN_PENDING);
-        }
-        if(list.contains(CapControlConst.STRING_BANK_OPEN_QUESTIONABLE)) {
-            closedStates.add(CapControlConst.BANK_OPEN_QUESTIONABLE);
-        }
-        return closedStates;
+        return list;
     }
     
 //  must be a better way to do this
-    public static List<Integer> getTrippedStatesList(LiteYukonUser user){
-        ArrayList<Integer> trippedStates = new ArrayList<Integer>();
+    public static List<String> getTrippedStatesList(LiteYukonUser user){
         String trippedStatesString = authDao.getRolePropertyValue(user, CBCSettingsRole.CLOSED_DEFINITION);
         String[] array = trippedStatesString.split(",");
         List<String> list = Arrays.asList(array);
-        if(list.contains(CapControlConst.STRING_BANK_CLOSE)) {
-            trippedStates.add(CapControlConst.BANK_CLOSE);
-        }
-        if(list.contains(CapControlConst.STRING_BANK_CLOSE_FAIL)) {
-            trippedStates.add(CapControlConst.BANK_CLOSE_FAIL);
-        }
-        if(list.contains(CapControlConst.STRING_BANK_CLOSE_PENDING)) {
-            trippedStates.add(CapControlConst.BANK_CLOSE_PENDING);
-        }
-        if(list.contains(CapControlConst.STRING_BANK_CLOSEQUESTIONABLE)) {
-            trippedStates.add(CapControlConst.BANK_CLOSE_QUESTIONABLE);
-        }
-        if(list.contains(CapControlConst.STRING_BANK_OPEN)) {
-            trippedStates.add(CapControlConst.BANK_OPEN);
-        }
-        if(list.contains(CapControlConst.STRING_BANK_OPEN_FAIL)) {
-            trippedStates.add(CapControlConst.BANK_OPEN_FAIL);
-        }
-        if(list.contains(CapControlConst.STRING_BANK_OPEN_PENDING)) {
-            trippedStates.add(CapControlConst.BANK_OPEN_PENDING);
-        }
-        if(list.contains(CapControlConst.STRING_BANK_OPEN_QUESTIONABLE)) {
-            trippedStates.add(CapControlConst.BANK_OPEN_QUESTIONABLE);
-        }
-        return trippedStates;
+        return list;
     }
     
     /**
