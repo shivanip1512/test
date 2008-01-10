@@ -1,5 +1,5 @@
 alter table Invoice add AuthorizedNumber varchar(60);
-update Invoice set AuthorizedNumber = '';
+update Invoice set AuthorizedNumber = ' ';
 alter table Invoice alter column AuthorizedNumber varchar(60) not null;
 
 /* Start YUK-5001 */

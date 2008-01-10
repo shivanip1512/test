@@ -1,6 +1,11 @@
+/* Start YUK-5042 */
+/* @error ignore-begin */
 alter table Invoice add AuthorizedNumber varchar2(60);
-update Invoice set AuthorizedNumber = '';
+update Invoice set AuthorizedNumber = ' ';
 alter table Invoice modify AuthorizedNumber varchar2(60) not null;
+/* @error ignore-end */
+/* End YUK-5042 */
+
 
 /* Start YUK-5001 */
 alter table LMHardwareToMeterMapping
