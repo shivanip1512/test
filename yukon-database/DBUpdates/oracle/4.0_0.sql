@@ -1270,5 +1270,4 @@ update DeviceGroup set GroupName = ' ' where GroupName is null or GroupName = ''
 /* VERSION INFO                                               */
 /*   Automatically gets inserted from build script            */
 /**************************************************************/
-/* __YUKON_VERSION__ */
 insert into CTIDatabase values('4.0', 'David', '07-Dec-2007', 'Latest Update', 0 );
