@@ -6,17 +6,22 @@ import java.util.Comparator;
 import java.util.Date;
 
 import javax.servlet.http.HttpServletRequest;
+import javax.servlet.http.HttpSession;
 
 import com.cannontech.analysis.ColumnProperties;
 import com.cannontech.analysis.data.device.capcontrol.CapControlStatusData;
 import com.cannontech.clientutils.CTILogger;
+import com.cannontech.common.constants.LoginController;
 import com.cannontech.common.util.CtiUtilities;
+import com.cannontech.core.dao.AuthDao;
 import com.cannontech.core.dao.DaoFactory;
 import com.cannontech.database.PoolManager;
 import com.cannontech.database.SqlUtils;
 import com.cannontech.database.data.lite.LiteState;
 import com.cannontech.database.data.lite.LiteYukonPAObject;
+import com.cannontech.database.data.lite.LiteYukonUser;
 import com.cannontech.database.db.state.StateGroupUtils;
+import com.cannontech.roles.capcontrol.CBCOnelineSettingsRole;
 
 /**
  * Created on Nov 11, 2005
@@ -67,6 +72,8 @@ public class CapControlCurrentStatusModel extends ReportModelBase
 	
 	/** A string for the title of the data */
 	private static String title = "Current Bank Status Report";
+	private AuthDao authDao = DaoFactory.getAuthDao();
+	LiteYukonUser user = null;
 		
 	public Comparator ccStatusDataComparator = new java.util.Comparator()
 	{
@@ -146,6 +153,9 @@ public class CapControlCurrentStatusModel extends ReportModelBase
 			Integer controlStatus = new Integer(rset.getInt(4));
 			java.sql.Timestamp lastChangedateTime = rset.getTimestamp(5);
             String operationalState = rset.getString(6);
+            if(operationalState.equalsIgnoreCase("Fixed") && user != null) {
+                operationalState = authDao.getRolePropertyValue(user, CBCOnelineSettingsRole.CAP_BANK_FIXED_TEXT);
+            }
 			Integer controlOrder = new Integer(rset.getInt(7));
             LiteYukonPAObject lite = DaoFactory.getPaoDao().getLiteYukonPAO(capBankPaoID.intValue());
             String disableFlag = lite.getDisableFlag();
@@ -439,12 +449,26 @@ public class CapControlCurrentStatusModel extends ReportModelBase
 		html += "</table>" + LINE_SEPARATOR;
 		return html;
 	}
+	
+	/*
+     * Get the current lite yukon user.
+     */
+    private LiteYukonUser getUser(HttpServletRequest req) {
+        HttpSession session = req.getSession( false );
+        LiteYukonUser user = new LiteYukonUser();
+        if (session != null) {
+            user = (LiteYukonUser) session.getAttribute(LoginController.YUKON_USER);
+        }
+        return user;
+    }
+	
 	@Override
 	public void setParameters( HttpServletRequest req )
 	{
 	    super.setParameters(req);
 		if( req != null)
 		{
+		    user = getUser(req);
 			String param = req.getParameter(ATT_All_CAP_CONTROL_STATE);
 			if( param != null)
 				setControlStates(null);	//ALL Of them!
