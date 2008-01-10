@@ -1262,6 +1262,10 @@ insert into yukonroleproperty values(-70017,-700, 'Add Comments', 'false', 'Allo
 insert into yukonroleproperty values(-70018,-700, 'Modify Comments', 'false', 'Allows the user to Modify comments on Cap Bank objects.');
 /* End YUK-5086 */
 
+/* Start YUK-4844, YUK-5114 */
+update DeviceGroup set GroupName = ' ' where GroupName is null or GroupName = '' or DeviceGroupID = 0;
+/* End YUK-4844, YUK-5114 */
+
 /**************************************************************/
 /* VERSION INFO                                               */
 /*   Automatically gets inserted from build script            */
