@@ -9,6 +9,7 @@ import org.springframework.web.servlet.mvc.multiaction.MultiActionController;
 
 import com.cannontech.common.constants.LoginController;
 import com.cannontech.core.dao.AuthDao;
+import com.cannontech.database.cache.StarsDatabaseCache;
 import com.cannontech.database.data.lite.LiteYukonUser;
 import com.cannontech.roles.application.WebClientRole;
 import com.cannontech.util.ServletUtil;
@@ -17,6 +18,7 @@ public class YukonLoginController extends MultiActionController {
     private LoginService loginService;
     private AuthDao authDao;
     private LoginCookieHelper loginCookieHelper;
+    private StarsDatabaseCache starsDatabaseCache;
     
     public ModelAndView view(final HttpServletRequest request, final HttpServletResponse response) throws Exception {
         final ModelAndView mav = new ModelAndView();
@@ -39,18 +41,25 @@ public class YukonLoginController extends MultiActionController {
                 ServletUtil.createCookie(request, response, LoginController.REMEMBER_ME_COOKIE, value);
             }
 
+            final LiteYukonUser user = ServletUtil.getYukonUser(request);
+            
             if (redirectedFrom != null && !redirectedFrom.equals("")) {
-                redirect = redirectedFrom;
+                boolean isStarsUser = starsDatabaseCache.isStarsUser(user);
+                redirect = (!isStarsUser) ? redirectedFrom : getHomeUrl(request, user);
             } else {
-                LiteYukonUser user = ServletUtil.getYukonUser(request);
-                String homeUrl = authDao.getRolePropertyValue(user, WebClientRole.HOME_URL);
-                redirect = ServletUtil.createSafeUrl(request, homeUrl);
+                redirect = getHomeUrl(request, user);
             }
         } else {
             ServletUtil.deleteAllCookies(request, response);
             redirect = ServletUtil.createSafeUrl(request, LoginController.INVALID_URI);
         }
         return new ModelAndView("redirect:" + redirect);
+    }
+    
+    private String getHomeUrl(HttpServletRequest request, LiteYukonUser user) {
+        String homeUrl = authDao.getRolePropertyValue(user, WebClientRole.HOME_URL);
+        String safeHomeUrl = ServletUtil.createSafeUrl(request, homeUrl);
+        return safeHomeUrl;
     }
 
     public ModelAndView logout(HttpServletRequest request, HttpServletResponse response) throws Exception {
@@ -83,6 +92,10 @@ public class YukonLoginController extends MultiActionController {
 
     public void setAuthDao(AuthDao authDao) {
         this.authDao = authDao;
+    }
+
+    public void setStarsDatabaseCache(StarsDatabaseCache starsDatabaseCache) {
+        this.starsDatabaseCache = starsDatabaseCache;
     }
 
 }

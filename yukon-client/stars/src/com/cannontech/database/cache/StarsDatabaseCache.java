@@ -332,6 +332,15 @@ public class StarsDatabaseCache implements DBChangeLiteListener {
 		
 		return null;
 	}
+	
+	public boolean isStarsUser(final LiteYukonUser yukonUser) {
+	    final Map<Integer,StarsYukonUser> starsUsers = getAllStarsYukonUsers();
+	    synchronized (starsUsers) {
+	        StarsYukonUser user = starsUsers.get(yukonUser.getUserID());
+	        boolean result = user != null;
+	        return result;
+	    }
+	}
 
 	public StarsYukonUser getStarsYukonUser(LiteYukonUser yukonUser) {
         Map<Integer,StarsYukonUser> starsUsers = getAllStarsYukonUsers();

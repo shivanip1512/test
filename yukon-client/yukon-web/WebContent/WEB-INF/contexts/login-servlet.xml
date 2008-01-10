@@ -35,6 +35,7 @@
         <property name="loginService" ref="loginService"/>
         <property name="loginCookieHelper" ref="loginCookieHelper"/>
         <property name="authDao" ref="authDao"/>
+        <property name="starsDatabaseCache" ref="starsDatabaseCache"/>
     </bean>
 
     <bean id="methodNameResolver"
