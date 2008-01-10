@@ -1,7 +1,7 @@
 /*==============================================================*/
 /* Database name:  YukonDatabase                                */
 /* DBMS name:      Microsoft SQL Server 2000                    */
-/* Created on:     1/9/2008 11:00:23 PM                         */
+/* Created on:     1/10/2008 4:03:23 PM                         */
 /*==============================================================*/
 
 
@@ -8897,6 +8897,10 @@ INSERT into point values( -110, 'System', 'Multispeak' , 0, 'Default', 0, 'N', '
 
 alter table POINT
    add constraint AK_KEY_PTNM_YUKPAOID unique (POINTNAME, PAObjectID)
+go
+
+alter table POINT
+   add constraint AK_KEY_3_POINT unique (POINTTYPE, PAObjectID, POINTOFFSET)
 go
 
 /*==============================================================*/

@@ -1356,6 +1356,12 @@ insert into yukonroleproperty values(-70018,-700, 'Modify Comments', 'false', 'A
 update DeviceGroup set GroupName = ' ' where GroupName is null or GroupName = '' or DeviceGroupID = 0;
 /* End YUK-4844, YUK-5114 */
 
+/* Start YUK-5113 */
+alter table POINT
+   add constraint AK_KEY_3_POINT unique (POINTTYPE, PAObjectID, POINTOFFSET);
+go
+/* End YUK-5113 */
+
 /**************************************************************/
 /* VERSION INFO                                               */
 /*   Automatically gets inserted from build script            */
