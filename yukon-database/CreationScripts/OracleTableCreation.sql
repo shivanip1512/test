@@ -1,7 +1,7 @@
 /*==============================================================*/
 /* Database name:  YukonDatabase                                */
 /* DBMS name:      ORACLE Version 9i                            */
-/* Created on:     1/7/2008 1:58:22 PM                          */
+/* Created on:     1/9/2008 9:41:06 PM                          */
 /*==============================================================*/
 
 
@@ -4754,9 +4754,9 @@ create table EsubDisplayIndex  (
 /* Table: EventAccount                                          */
 /*==============================================================*/
 create table EventAccount  (
-   EventID              NUMBER                          not null,
+   EVENTID              NUMBER                          not null,
    AccountID            NUMBER                          not null,
-   constraint PK_EVENTACCOUNT primary key (EventID)
+   constraint PK_EVENTACCOUNT primary key (EVENTID)
 );
 
 /*==============================================================*/
@@ -10696,7 +10696,7 @@ alter table EventAccount
       references CustomerAccount (AccountID);
 
 alter table EventAccount
-   add constraint FK_EVENTACCT_EVNTBSE foreign key (EventID)
+   add constraint FK_EVENTACCT_EVNTBSE foreign key (EVENTID)
       references EventBase (EventID);
 
 alter table EventBase

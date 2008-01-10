@@ -2817,9 +2817,7 @@ order by grantee
 <a:Name>CreateCluster</a:Name>
 <a:TextTargetItem.Value>create cluster  [%QUALIFIER%]C_%TCODE% (
    %CLUSTERCOLUMNS%
-)
-
-</a:TextTargetItem.Value>
+)</a:TextTargetItem.Value>
 <a:TargetCategory.Type>1</a:TargetCategory.Type>
 </o:TextTargetItem>
 <o:TextTargetItem Id="o82">
