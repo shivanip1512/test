@@ -326,7 +326,7 @@ create table PROFILEPEAKRESULT (
 go
 
 alter table PROFILEPEAKRESULT
-   add constraint PK_PROFILEPEAKRESULT primary key nonclustered (ResultId);
+   add constraint PK_PROFILEPEAKRESULT primary key  (ResultId);
 go
 
 alter table PROFILEPEAKRESULT

@@ -1,7 +1,7 @@
 /*==============================================================*/
 /* Database name:  YukonDatabase                                */
 /* DBMS name:      Microsoft SQL Server 2000                    */
-/* Created on:     1/7/2008 1:56:18 PM                          */
+/* Created on:     1/9/2008 9:19:01 PM                          */
 /*==============================================================*/
 
 
@@ -3068,7 +3068,7 @@ create table AccountSite (
    PropertyNotes        varchar(300)         null,
    CustomerStatus       varchar(1)           not null,
    CustAtHome           varchar(1)           not null,
-   constraint PK_ACCOUNTSITE primary key nonclustered (AccountSiteID)
+   constraint PK_ACCOUNTSITE primary key (AccountSiteID)
 )
 go
 
@@ -3095,7 +3095,7 @@ create table ActivityLog (
    PaoID                numeric              null,
    Action               varchar(80)          not null,
    Description          varchar(240)         not null,
-   constraint PK_ACTIVITYLOG primary key nonclustered (ActivityLogID)
+   constraint PK_ACTIVITYLOG primary key (ActivityLogID)
 )
 go
 
@@ -3110,7 +3110,7 @@ create table Address (
    StateCode            char(2)              not null,
    ZipCode              varchar(12)          not null,
    County               varchar(30)          not null,
-   constraint PK_ADDRESS primary key nonclustered (AddressID)
+   constraint PK_ADDRESS primary key (AddressID)
 )
 go
 
@@ -3123,7 +3123,7 @@ create table AlarmCategory (
    AlarmCategoryID      numeric              not null,
    CategoryName         varchar(40)          not null,
    NotificationGroupID  numeric              not null,
-   constraint PK_ALARMCATEGORYID primary key nonclustered (AlarmCategoryID)
+   constraint PK_ALARMCATEGORYID primary key (AlarmCategoryID)
 )
 go
 
@@ -3237,7 +3237,7 @@ create table ApplianceAirConditioner (
    ApplianceID          numeric              not null,
    TonnageID            numeric              null,
    TypeID               numeric              null,
-   constraint PK_APPLIANCEAIRCONDITIONER primary key nonclustered (ApplianceID)
+   constraint PK_APPLIANCEAIRCONDITIONER primary key (ApplianceID)
 )
 go
 
@@ -3256,7 +3256,7 @@ create table ApplianceBase (
    EfficiencyRating     float                null,
    Notes                varchar(500)         null,
    ModelNumber          varchar(40)          not null,
-   constraint PK_APPLIANCEBASE primary key nonclustered (ApplianceID)
+   constraint PK_APPLIANCEBASE primary key (ApplianceID)
 )
 go
 
@@ -3284,7 +3284,7 @@ create table ApplianceCategory (
    Description          varchar(40)          null,
    CategoryID           numeric              null,
    WebConfigurationID   numeric              null,
-   constraint PK_APPLIANCECATEGORY primary key nonclustered (ApplianceCategoryID)
+   constraint PK_APPLIANCECATEGORY primary key (ApplianceCategoryID)
 )
 go
 
@@ -3297,7 +3297,7 @@ create table ApplianceChiller (
    ApplianceID          numeric              not null,
    TonnageID            numeric              null,
    TypeID               numeric              null,
-   constraint PK_APPLIANCECHILLER primary key nonclustered (ApplianceID)
+   constraint PK_APPLIANCECHILLER primary key (ApplianceID)
 )
 go
 
@@ -3309,7 +3309,7 @@ create table ApplianceDualFuel (
    SwitchOverTypeID     numeric              not null,
    SecondaryKWCapacity  numeric              not null,
    SecondaryEnergySourceID numeric              not null,
-   constraint PK_APPLIANCEDUALFUEL primary key nonclustered (ApplianceID)
+   constraint PK_APPLIANCEDUALFUEL primary key (ApplianceID)
 )
 go
 
@@ -3321,7 +3321,7 @@ create table ApplianceDualStageAirCond (
    StageOneTonnageID    numeric              null,
    StageTwoTonnageID    numeric              null,
    TypeID               numeric              null,
-   constraint PK_APPLIANCEDUALSTAGEAIRCOND primary key nonclustered (ApplianceID)
+   constraint PK_APPLIANCEDUALSTAGEAIRCOND primary key (ApplianceID)
 )
 go
 
@@ -3335,7 +3335,7 @@ create table ApplianceGenerator (
    PeakKWCapacity       numeric              not null,
    FuelCapGallons       numeric              not null,
    StartDelaySeconds    numeric              not null,
-   constraint PK_APPLIANCEGENERATOR primary key nonclustered (ApplianceID)
+   constraint PK_APPLIANCEGENERATOR primary key (ApplianceID)
 )
 go
 
@@ -3349,7 +3349,7 @@ create table ApplianceGrainDryer (
    BlowerEnergySourceID numeric              not null,
    BlowerHorsePowerID   numeric              not null,
    BlowerHeatSourceID   numeric              not null,
-   constraint PK_APPLIANCEGRAINDRYER primary key nonclustered (ApplianceID)
+   constraint PK_APPLIANCEGRAINDRYER primary key (ApplianceID)
 )
 go
 
@@ -3362,7 +3362,7 @@ create table ApplianceHeatPump (
    StandbySourceID      numeric              not null,
    SecondsDelayToRestart numeric              not null,
    PumpSizeID           numeric              not null,
-   constraint PK_APPLIANCEHEATPUMP primary key nonclustered (ApplianceID)
+   constraint PK_APPLIANCEHEATPUMP primary key (ApplianceID)
 )
 go
 
@@ -3377,7 +3377,7 @@ create table ApplianceIrrigation (
    SoilTypeID           numeric              not null,
    MeterLocationID      numeric              not null,
    MeterVoltageID       numeric              not null,
-   constraint PK_APPLIANCEIRRIGATION primary key nonclustered (ApplianceID)
+   constraint PK_APPLIANCEIRRIGATION primary key (ApplianceID)
 )
 go
 
@@ -3389,7 +3389,7 @@ create table ApplianceStorageHeat (
    StorageTypeID        numeric              not null,
    PeakKWCapacity       numeric              not null,
    HoursToRecharge      numeric              not null,
-   constraint PK_APPLIANCESTORAGEHEAT primary key nonclustered (ApplianceID)
+   constraint PK_APPLIANCESTORAGEHEAT primary key (ApplianceID)
 )
 go
 
@@ -3401,7 +3401,7 @@ create table ApplianceWaterHeater (
    NumberOfGallonsID    numeric              null,
    EnergySourceID       numeric              not null,
    NumberOfElements     numeric              not null,
-   constraint PK_APPLIANCEWATERHEATER primary key nonclustered (ApplianceID)
+   constraint PK_APPLIANCEWATERHEATER primary key (ApplianceID)
 )
 go
 
@@ -3416,7 +3416,7 @@ create table BaseLine (
    CalcDays             numeric              not null,
    ExcludedWeekDays     char(7)              not null,
    HolidaysUsed         numeric              not null,
-   constraint PK_BASELINE primary key nonclustered (BaselineID)
+   constraint PK_BASELINE primary key (BaselineID)
 )
 go
 
@@ -3429,7 +3429,7 @@ create table BillingFileFormats (
    FormatID             numeric              not null,
    FormatType           varchar(100)         not null,
    SystemFormat         smallint             null,
-   constraint PK_BILLINGFILEFORMATS primary key nonclustered (FormatID)
+   constraint PK_BILLINGFILEFORMATS primary key (FormatID)
 )
 go
 
@@ -3460,7 +3460,7 @@ create table CALCBASE (
    UPDATETYPE           varchar(16)          not null,
    PERIODICRATE         numeric              not null,
    QualityFlag          char(1)              not null,
-   constraint PK_CALCBASE primary key nonclustered (POINTID)
+   constraint PK_CALCBASE primary key (POINTID)
 )
 go
 
@@ -3483,7 +3483,7 @@ create table CALCCOMPONENT (
    OPERATION            varchar(10)          null,
    CONSTANT             float                not null,
    FUNCTIONNAME         varchar(20)          null,
-   constraint PK_CALCCOMPONENT primary key nonclustered (PointID, COMPONENTORDER)
+   constraint PK_CALCCOMPONENT primary key (PointID, COMPONENTORDER)
 )
 go
 
@@ -3511,7 +3511,7 @@ create table CAPBANK (
    RecloseDelay         numeric              not null,
    MaxDailyOps          numeric              not null,
    MaxOpDisable         char(1)              not null,
-   constraint PK_CAPBANK primary key nonclustered (DEVICEID)
+   constraint PK_CAPBANK primary key (DEVICEID)
 )
 go
 
@@ -3538,7 +3538,7 @@ create table CAPBANKADDITIONAL (
    OtherComments        varchar(150)         not null,
    OpTeamComments       varchar(150)         not null,
    CBCBattInstallDate   datetime             not null,
-   constraint PK_CAPBANKADDITIONAL primary key nonclustered (DeviceID)
+   constraint PK_CAPBANKADDITIONAL primary key (DeviceID)
 )
 go
 
@@ -3547,7 +3547,7 @@ go
 /*==============================================================*/
 create table CAPCONTROLAREA (
    AreaID               numeric              not null,
-   constraint PK_CAPCONTROLAREA primary key nonclustered (AreaID)
+   constraint PK_CAPCONTROLAREA primary key (AreaID)
 )
 go
 
@@ -3580,7 +3580,7 @@ go
 /*==============================================================*/
 create table CAPCONTROLSUBSTATION (
    SubstationID         numeric              not null,
-   constraint PK_CAPCONTROLSUBSTATION primary key nonclustered (SubstationID)
+   constraint PK_CAPCONTROLSUBSTATION primary key (SubstationID)
 )
 go
 
@@ -3600,7 +3600,7 @@ create table CAPCONTROLSUBSTATIONBUS (
    usephasedata         char(1)              not null,
    phaseb               numeric              not null,
    phasec               numeric              not null,
-   constraint SYS_C0013476 primary key nonclustered (SubstationBusID)
+   constraint SYS_C0013476 primary key (SubstationBusID)
 )
 go
 
@@ -3632,7 +3632,7 @@ create table CCEventLog (
    AdditionalInfo       varchar(20)          not null,
    actionId             numeric              not null,
    CapBankStateInfo     varchar(20)          not null,
-   constraint PK_CCEventLog primary key nonclustered (LogID)
+   constraint PK_CCEventLog primary key (LogID)
 )
 go
 
@@ -3645,7 +3645,7 @@ create table CCFeederBankList (
    ControlOrder         float                not null,
    CloseOrder           float                not null,
    TripOrder            float                not null,
-   constraint PK_CCFEEDERBANKLIST primary key nonclustered (FeederID, DeviceID)
+   constraint PK_CCFEEDERBANKLIST primary key (FeederID, DeviceID)
 )
 go
 
@@ -3656,7 +3656,7 @@ create table CCFeederSubAssignment (
    SubStationBusID      numeric              not null,
    FeederID             numeric              not null,
    DisplayOrder         numeric              not null,
-   constraint PK_CCFEEDERSUBASSIGNMENT primary key nonclustered (SubStationBusID, FeederID)
+   constraint PK_CCFEEDERSUBASSIGNMENT primary key (SubStationBusID, FeederID)
 )
 go
 
@@ -3671,7 +3671,7 @@ create table CCMONITORBANKLIST (
    NINAvg               numeric              not null,
    UpperBandwidth       float                not null,
    LowerBandwidth       float                not null,
-   constraint PK_CCMONITORBANKLIST primary key nonclustered (BankID, PointID)
+   constraint PK_CCMONITORBANKLIST primary key (BankID, PointID)
 )
 go
 
@@ -3705,7 +3705,7 @@ create table CCSUBAREAASSIGNMENT (
    AreaID               numeric              not null,
    SubstationBusID      numeric              not null,
    DisplayOrder         numeric              not null,
-   constraint PK_CCSUBAREAASSIGNMENT primary key nonclustered (AreaID, SubstationBusID)
+   constraint PK_CCSUBAREAASSIGNMENT primary key (AreaID, SubstationBusID)
 )
 go
 
@@ -3741,7 +3741,7 @@ create table CCURTACCTEVENT (
    Reason               varchar(255)         not null,
    StartTime            datetime             not null,
    Identifier           numeric              not null,
-   constraint PK_CCURTACCTEVENT primary key nonclustered (CCurtAcctEventID)
+   constraint PK_CCURTACCTEVENT primary key (CCurtAcctEventID)
 )
 go
 
@@ -3752,7 +3752,7 @@ create table CCURTACCTEVENTPARTICIPANT (
    CCurtAcctEventParticipantID numeric              not null,
    CustomerID           numeric              not null,
    CCurtAcctEventID     numeric              not null,
-   constraint PK_CCURTACCTEVENTPARTICIPANT primary key nonclustered (CCurtAcctEventParticipantID)
+   constraint PK_CCURTACCTEVENTPARTICIPANT primary key (CCurtAcctEventParticipantID)
 )
 go
 
@@ -3766,7 +3766,7 @@ create table CCurtCENotif (
    State                varchar(10)          not null,
    Reason               varchar(10)          not null,
    CCurtCEParticipantID numeric              not null,
-   constraint PK_CCURTCENOTIF primary key nonclustered (CCurtCENotifID)
+   constraint PK_CCURTCENOTIF primary key (CCurtCENotifID)
 )
 go
 
@@ -3778,7 +3778,7 @@ create table CCurtCEParticipant (
    NotifAttribs         varchar(256)         not null,
    CustomerID           numeric              not null,
    CCurtCurtailmentEventID numeric              not null,
-   constraint PK_CCURTCEPARTICIPANT primary key nonclustered (CCurtCEParticipantID)
+   constraint PK_CCURTCEPARTICIPANT primary key (CCurtCEParticipantID)
 )
 go
 
@@ -3816,7 +3816,7 @@ create table CCurtEEParticipant (
    NotifAttribs         varchar(255)         not null,
    CustomerID           numeric              not null,
    CCurtEconomicEventID numeric              not null,
-   constraint PK_CCURTEEPARTICIPANT primary key nonclustered (CCurtEEParticipantID)
+   constraint PK_CCURTEEPARTICIPANT primary key (CCurtEEParticipantID)
 )
 go
 
@@ -3830,7 +3830,7 @@ create table CCurtEEParticipantSelection (
    State                varchar(255)         not null,
    CCurtEEParticipantID numeric              not null,
    CCurtEEPricingID     numeric              not null,
-   constraint PK_CCURTEEPARTICIPANTSELECTION primary key nonclustered (CCurtEEParticipantSelectionID)
+   constraint PK_CCURTEEPARTICIPANTSELECTION primary key (CCurtEEParticipantSelectionID)
 )
 go
 
@@ -3872,7 +3872,7 @@ create table CCurtEEPricing (
    Revision             numeric              not null,
    CreationTime         datetime             not null,
    CCurtEconomicEventID numeric              not null,
-   constraint PK_CCURTEEPRICING primary key nonclustered (CCurtEEPricingID)
+   constraint PK_CCURTEEPRICING primary key (CCurtEEPricingID)
 )
 go
 
@@ -3918,7 +3918,7 @@ create table CCurtEconomicEvent (
    CCurtProgramID       numeric              not null,
    InitialEventID       numeric              null,
    Identifier           numeric              not null,
-   constraint PK_CCURTECONOMICEVENT primary key nonclustered (CCurtEconomicEventID)
+   constraint PK_CCURTECONOMICEVENT primary key (CCurtEconomicEventID)
 )
 go
 
@@ -3933,7 +3933,7 @@ create table CCurtEconomicEventNotif (
    Reason               varchar(10)          not null,
    CCurtEEPricingID     numeric              not null,
    CCurtEconomicParticipantID numeric              not null,
-   constraint PK_CCURTECONOMICEVENTNOTIF primary key nonclustered (CCurtEconomicEventNotifID)
+   constraint PK_CCURTECONOMICEVENTNOTIF primary key (CCurtEconomicEventNotifID)
 )
 go
 
@@ -3987,7 +3987,7 @@ create table CCurtProgram (
    CCurtProgramTypeID   numeric              null,
    LastIdentifier       numeric              not null,
    IdentifierPrefix     varchar(32)          not null,
-   constraint PK_CCURTPROGRAM primary key nonclustered (CCurtProgramID)
+   constraint PK_CCURTPROGRAM primary key (CCurtProgramID)
 )
 go
 
@@ -4046,7 +4046,7 @@ create table CCurtProgramParameter (
    ParameterValue       varchar(255)         not null,
    ParameterKey         varchar(255)         not null,
    CCurtProgramID       numeric              null,
-   constraint PK_CCURTPROGRAMPARAMETER primary key nonclustered (CCurtProgramParameterID)
+   constraint PK_CCURTPROGRAMPARAMETER primary key (CCurtProgramParameterID)
 )
 go
 
@@ -4067,7 +4067,7 @@ create table CCurtProgramType (
    EnergyCompanyID      numeric              null,
    CCurtProgramTypeStrategy varchar(255)         null,
    CCurtProgramTypeName varchar(255)         null,
-   constraint PK_CCURTPROGRAMTYPE primary key nonclustered (CCurtProgramTypeID)
+   constraint PK_CCURTPROGRAMTYPE primary key (CCurtProgramTypeID)
 )
 go
 
@@ -4079,7 +4079,7 @@ create table CICUSTOMERPOINTDATA (
    PointID              numeric              not null,
    Type                 varchar(16)          not null,
    OptionalLabel        varchar(32)          not null,
-   constraint PK_CICUSTOMERPOINTDATA primary key nonclustered (CustomerID, Type)
+   constraint PK_CICUSTOMERPOINTDATA primary key (CustomerID, Type)
 )
 go
 
@@ -4094,7 +4094,7 @@ create table CICustomerBase (
    CurtailAmount        float                not null,
    CompanyName          varchar(80)          not null,
    CiCustType           numeric              not null,
-   constraint PK_CICUSTOMERBASE primary key nonclustered (CustomerID)
+   constraint PK_CICUSTOMERBASE primary key (CustomerID)
 )
 go
 
@@ -4104,7 +4104,7 @@ go
 create table COLUMNTYPE (
    TYPENUM              numeric              not null,
    NAME                 varchar(20)          not null,
-   constraint SYS_C0013414 primary key nonclustered (TYPENUM)
+   constraint SYS_C0013414 primary key (TYPENUM)
 )
 go
 
@@ -4133,7 +4133,7 @@ create table CTIDatabase (
    DateApplied          datetime             null,
    Notes                varchar(300)         null,
    Build                numeric              not null,
-   constraint PK_CTIDATABASE primary key nonclustered (Version, Build)
+   constraint PK_CTIDATABASE primary key (Version, Build)
 )
 go
 
@@ -4145,7 +4145,7 @@ go
 create table CalcPointBaseline (
    PointID              numeric              not null,
    BaselineID           numeric              not null,
-   constraint PK_CalcBsPt primary key nonclustered (PointID)
+   constraint PK_CalcBsPt primary key (PointID)
 )
 go
 
@@ -4160,7 +4160,7 @@ create table CallReportBase (
    TakenBy              varchar(30)          null,
    Description          varchar(300)         null,
    AccountID            numeric              null,
-   constraint PK_CALLREPORTBASE primary key nonclustered (CallID)
+   constraint PK_CALLREPORTBASE primary key (CallID)
 )
 go
 
@@ -4177,7 +4177,7 @@ create table CapControlFeeder (
    usephasedata         char(1)              not null,
    phaseb               numeric              not null,
    phasec               numeric              not null,
-   constraint PK_CAPCONTROLFEEDER primary key nonclustered (FeederID)
+   constraint PK_CAPCONTROLFEEDER primary key (FeederID)
 )
 go
 
@@ -4221,7 +4221,7 @@ create table CapControlStrategy (
    IntegrateFlag        char(1)              not null,
    IntegratePeriod      numeric              not null,
    LikeDayFallBack      char(1)              not null,
-   constraint PK_CAPCONTROLSTRAT primary key nonclustered (StrategyID)
+   constraint PK_CAPCONTROLSTRAT primary key (StrategyID)
 )
 go
 
@@ -4245,7 +4245,7 @@ create table CarrierRoute (
    CCUVARIABLEBITS      numeric              not null,
    UserLocked           char(1)              not null,
    ResetRptSettings     char(1)              not null,
-   constraint PK_CARRIERROUTE primary key nonclustered (ROUTEID)
+   constraint PK_CARRIERROUTE primary key (ROUTEID)
 )
 go
 
@@ -4262,7 +4262,7 @@ create table CommErrorHistory (
    Command              varchar(50)          not null,
    OutMessage           varchar(160)         not null,
    InMessage            varchar(160)         not null,
-   constraint PK_COMMERRORHISTORY primary key nonclustered (CommErrorID)
+   constraint PK_COMMERRORHISTORY primary key (CommErrorID)
 )
 go
 
@@ -4277,7 +4277,7 @@ create table CommPort (
    PERFORMANCEALARM     varchar(1)           not null,
    SharedPortType       varchar(20)          not null,
    SharedSocketNumber   numeric              not null,
-   constraint SYS_C0013112 primary key nonclustered (PORTID)
+   constraint SYS_C0013112 primary key (PORTID)
 )
 go
 
@@ -4289,7 +4289,7 @@ create table Command (
    Command              varchar(256)         not null,
    Label                varchar(256)         not null,
    Category             varchar(32)          not null,
-   constraint PK_COMMAND primary key nonclustered (CommandID)
+   constraint PK_COMMAND primary key (CommandID)
 )
 go
 
@@ -4470,7 +4470,7 @@ insert into command values(-139, 'getvalue peak channel 3', 'Read Peak (Channel 
 create table CommandGroup (
    CommandGroupID       numeric              not null,
    CommandGroupName     varchar(60)          not null,
-   constraint PK_COMMANDGROUP primary key nonclustered (CommandGroupID)
+   constraint PK_COMMANDGROUP primary key (CommandGroupID)
 )
 go
 
@@ -4493,7 +4493,7 @@ create table Contact (
    ContLastName         varchar(32)          not null,
    LogInID              numeric              not null,
    AddressID            numeric              not null,
-   constraint PK_CONTACT primary key nonclustered (ContactID)
+   constraint PK_CONTACT primary key (ContactID)
 )
 go
 
@@ -4533,7 +4533,7 @@ create table ContactNotifGroupMap (
    ContactID            numeric              not null,
    NotificationGroupID  numeric              not null,
    Attribs              char(16)             not null,
-   constraint PK_CONTACTNOTIFGROUPMAP primary key nonclustered (ContactID, NotificationGroupID)
+   constraint PK_CONTACTNOTIFGROUPMAP primary key (ContactID, NotificationGroupID)
 )
 go
 
@@ -4547,7 +4547,7 @@ create table ContactNotification (
    DisableFlag          char(1)              not null,
    Notification         varchar(130)         not null,
    Ordering             numeric              not null,
-   constraint PK_CONTACTNOTIFICATION primary key nonclustered (ContactNotifID)
+   constraint PK_CONTACTNOTIFICATION primary key (ContactNotifID)
 )
 go
 
@@ -4573,7 +4573,7 @@ create table Customer (
    RateScheduleID       numeric              not null,
    AltTrackNum          varchar(64)          not null,
    TemperatureUnit      char(1)              not null,
-   constraint PK_CUSTOMER primary key nonclustered (CustomerID)
+   constraint PK_CUSTOMER primary key (CustomerID)
 )
 go
 
@@ -4606,7 +4606,7 @@ create table CustomerAccount (
    CustomerID           numeric              not null,
    BillingAddressID     numeric              null,
    AccountNotes         varchar(200)         null,
-   constraint PK_CUSTOMERACCOUNT primary key nonclustered (AccountID)
+   constraint PK_CUSTOMERACCOUNT primary key (AccountID)
 )
 go
 
@@ -4644,7 +4644,7 @@ create table CustomerAdditionalContact (
    CustomerID           numeric              not null,
    ContactID            numeric              not null,
    Ordering             numeric              not null,
-   constraint PK_CUSTOMERADDITIONALCONTACT primary key nonclustered (ContactID, CustomerID)
+   constraint PK_CUSTOMERADDITIONALCONTACT primary key (ContactID, CustomerID)
 )
 go
 
@@ -4654,7 +4654,7 @@ go
 create table CustomerBaseLinePoint (
    CustomerID           numeric              not null,
    PointID              numeric              not null,
-   constraint PK_CUSTOMERBASELINEPOINT primary key nonclustered (CustomerID, PointID)
+   constraint PK_CUSTOMERBASELINEPOINT primary key (CustomerID, PointID)
 )
 go
 
@@ -4666,7 +4666,7 @@ create table CustomerFAQ (
    SubjectID            numeric              null,
    Question             varchar(200)         null,
    Answer               varchar(500)         null,
-   constraint PK_CUSTOMERFAQ primary key nonclustered (QuestionID)
+   constraint PK_CUSTOMERFAQ primary key (QuestionID)
 )
 go
 
@@ -4684,7 +4684,7 @@ insert into CustomerFAQ values(7,1233,'How much credit do I receive if I opt out
 create table CustomerLoginSerialGroup (
    LoginID              numeric              not null,
    LMGroupID            numeric              not null,
-   constraint PK_CUSTOMERLOGINSERIALGROUP primary key nonclustered (LoginID, LMGroupID)
+   constraint PK_CUSTOMERLOGINSERIALGROUP primary key (LoginID, LMGroupID)
 )
 go
 
@@ -4695,7 +4695,7 @@ create table CustomerNotifGroupMap (
    CustomerID           numeric              not null,
    NotificationGroupID  numeric              not null,
    Attribs              char(16)             not null,
-   constraint PK_CUSTOMERNOTIFGROUPMAP primary key nonclustered (CustomerID, NotificationGroupID)
+   constraint PK_CUSTOMERNOTIFGROUPMAP primary key (CustomerID, NotificationGroupID)
 )
 go
 
@@ -4716,7 +4716,7 @@ create table CustomerResidence (
    OwnershipTypeID      numeric              not null,
    MainFuelTypeID       numeric              not null,
    Notes                varchar(300)         null,
-   constraint PK_CUSTOMERRESIDENCE primary key nonclustered (AccountSiteID)
+   constraint PK_CUSTOMERRESIDENCE primary key (AccountSiteID)
 )
 go
 
@@ -4727,7 +4727,7 @@ create table DCCategory (
    CategoryID           numeric              not null,
    CategoryTypeID       numeric              not null,
    Name                 varchar(40)          not null,
-   constraint PK_DCCATEGORY primary key nonclustered (CategoryID)
+   constraint PK_DCCATEGORY primary key (CategoryID)
 )
 go
 
@@ -4738,7 +4738,7 @@ create table DCCategoryItem (
    CategoryID           numeric              not null,
    ItemTypeID           numeric              not null,
    Value                varchar(40)          not null,
-   constraint PK_DCCATEGORYITEM primary key nonclustered (CategoryID, ItemTypeID)
+   constraint PK_DCCATEGORYITEM primary key (CategoryID, ItemTypeID)
 )
 go
 
@@ -4748,7 +4748,7 @@ go
 create table DCCategoryItemType (
    CategoryTypeID       numeric              not null,
    ItemTypeID           numeric              not null,
-   constraint PK_DCCATEGORYITEMTYPE primary key nonclustered (CategoryTypeID, ItemTypeID)
+   constraint PK_DCCATEGORYITEMTYPE primary key (CategoryTypeID, ItemTypeID)
 )
 go
 
@@ -4762,7 +4762,7 @@ create table DCCategoryType (
    CategoryGroup        varchar(40)          null,
    CategoryTypeLevel    varchar(40)          not null,
    Description          varchar(320)         null,
-   constraint PK_DCCATEGORYTYPE primary key nonclustered (CategoryTypeID)
+   constraint PK_DCCATEGORYTYPE primary key (CategoryTypeID)
 )
 go
 
@@ -4773,7 +4773,7 @@ create table DCConfiguration (
    ConfigID             numeric              not null,
    ConfigTypeID         numeric              not null,
    Name                 varchar(40)          not null,
-   constraint PK_DCCONFIGURATION primary key nonclustered (ConfigID)
+   constraint PK_DCCONFIGURATION primary key (ConfigID)
 )
 go
 
@@ -4783,7 +4783,7 @@ go
 create table DCConfigurationCategory (
    ConfigID             numeric              not null,
    CategoryID           numeric              not null,
-   constraint PK_DCCONFIGURATIONCATEGORY primary key nonclustered (ConfigID, CategoryID)
+   constraint PK_DCCONFIGURATIONCATEGORY primary key (ConfigID, CategoryID)
 )
 go
 
@@ -4793,7 +4793,7 @@ go
 create table DCConfigurationCategoryType (
    ConfigTypeID         numeric              not null,
    CategoryTypeID       numeric              not null,
-   constraint PK_DCCONFIGURATIONCATEGORYTYPE primary key nonclustered (ConfigTypeID, CategoryTypeID)
+   constraint PK_DCCONFIGURATIONCATEGORYTYPE primary key (ConfigTypeID, CategoryTypeID)
 )
 go
 
@@ -4805,7 +4805,7 @@ create table DCConfigurationType (
    Name                 varchar(40)          not null,
    DisplayName          varchar(40)          not null,
    Description          varchar(320)         null,
-   constraint PK_DCCONFIGURATIONTYPE primary key nonclustered (ConfigTypeID)
+   constraint PK_DCCONFIGURATIONTYPE primary key (ConfigTypeID)
 )
 go
 
@@ -4815,7 +4815,7 @@ go
 create table DCDeviceConfiguration (
    DeviceID             numeric              not null,
    ConfigID             numeric              not null,
-   constraint PK_DCDEVICECONFIGURATION primary key nonclustered (DeviceID, ConfigID)
+   constraint PK_DCDEVICECONFIGURATION primary key (DeviceID, ConfigID)
 )
 go
 
@@ -4825,7 +4825,7 @@ go
 create table DCDeviceConfigurationType (
    ConfigTypeID         numeric              not null,
    DeviceType           varchar(30)          not null,
-   constraint PK_DCDEVICECONFIGURATIONTYPE primary key nonclustered (ConfigTypeID, DeviceType)
+   constraint PK_DCDEVICECONFIGURATIONTYPE primary key (ConfigTypeID, DeviceType)
 )
 go
 
@@ -4842,7 +4842,7 @@ create table DCItemType (
    MaxValue             numeric              not null,
    DefaultValue         varchar(40)          null,
    Description          varchar(320)         null,
-   constraint PK_DCITEMTYPE primary key nonclustered (ItemTypeID)
+   constraint PK_DCITEMTYPE primary key (ItemTypeID)
 )
 go
 
@@ -4853,7 +4853,7 @@ create table DCItemValue (
    ItemTypeID           numeric              not null,
    Value                varchar(40)          not null,
    ValueOrder           numeric              not null,
-   constraint PK_DCITEMVALUE primary key nonclustered (ItemTypeID, ValueOrder)
+   constraint PK_DCITEMVALUE primary key (ItemTypeID, ValueOrder)
 )
 go
 
@@ -4864,7 +4864,7 @@ create table DEVICE (
    DEVICEID             numeric              not null,
    ALARMINHIBIT         varchar(1)           not null,
    CONTROLINHIBIT       varchar(1)           not null,
-   constraint PK_DEV_DEVICEID2 primary key nonclustered (DEVICEID)
+   constraint PK_DEV_DEVICEID2 primary key (DEVICEID)
 )
 go
 
@@ -4882,7 +4882,7 @@ create table DEVICE2WAYFLAGS (
    PERFORMANCETHRESHOLD numeric              not null,
    PERFORMANCEALARM     varchar(1)           not null,
    PERFORMANCETWENTYFOURALARM varchar(1)           not null,
-   constraint PK_DEVICE2WAYFLAGS primary key nonclustered (DEVICEID)
+   constraint PK_DEVICE2WAYFLAGS primary key (DEVICEID)
 )
 go
 
@@ -4892,7 +4892,7 @@ go
 create table DEVICECARRIERSETTINGS (
    DEVICEID             numeric              not null,
    ADDRESS              numeric              not null,
-   constraint PK_DEVICECARRIERSETTINGS primary key nonclustered (DEVICEID)
+   constraint PK_DEVICECARRIERSETTINGS primary key (DEVICEID)
 )
 go
 
@@ -4939,7 +4939,7 @@ create table DEVICEDIALUPSETTINGS (
    MAXCONNECTTIME       numeric              not null,
    LINESETTINGS         varchar(8)           not null,
    BaudRate             numeric              not null,
-   constraint PK_DEVICEDIALUPSETTINGS primary key nonclustered (DEVICEID)
+   constraint PK_DEVICEDIALUPSETTINGS primary key (DEVICEID)
 )
 go
 
@@ -5002,7 +5002,7 @@ create table DEVICEIDLCREMOTE (
    ADDRESS              numeric              not null,
    POSTCOMMWAIT         numeric              not null,
    CCUAmpUseType        varchar(20)          not null,
-   constraint PK_DEVICEIDLCREMOTE primary key nonclustered (DEVICEID)
+   constraint PK_DEVICEIDLCREMOTE primary key (DEVICEID)
 )
 go
 
@@ -5013,7 +5013,7 @@ create table DEVICEIED (
    DEVICEID             numeric              not null,
    PASSWORD             varchar(20)          not null,
    SLAVEADDRESS         varchar(20)          not null,
-   constraint PK_DEVICEIED primary key nonclustered (DEVICEID)
+   constraint PK_DEVICEIED primary key (DEVICEID)
 )
 go
 
@@ -5027,7 +5027,7 @@ create table DEVICELOADPROFILE (
    LOADPROFILECOLLECTION varchar(4)           not null,
    VoltageDmdInterval   numeric              not null,
    VoltageDmdRate       numeric              not null,
-   constraint PK_DEVICELOADPROFILE primary key nonclustered (DEVICEID)
+   constraint PK_DEVICELOADPROFILE primary key (DEVICEID)
 )
 go
 
@@ -5042,7 +5042,7 @@ create table DEVICEMCTIEDPORT (
    DEFAULTDATAOFFSET    numeric              not null,
    PASSWORD             varchar(6)           not null,
    REALTIMESCAN         varchar(1)           not null,
-   constraint PK_DEVICEMCTIEDPORT primary key nonclustered (DEVICEID)
+   constraint PK_DEVICEMCTIEDPORT primary key (DEVICEID)
 )
 go
 
@@ -5052,7 +5052,7 @@ go
 create table DEVICEMETERGROUP (
    DEVICEID             numeric              not null,
    METERNUMBER          varchar(50)          not null,
-   constraint PK_DEVICEMETERGROUP primary key nonclustered (DEVICEID)
+   constraint PK_DEVICEMETERGROUP primary key (DEVICEID)
 )
 go
 
@@ -5064,7 +5064,7 @@ create table DEVICEREADJOBLOG (
    ScheduleID           numeric              not null,
    StartTime            datetime             not null,
    StopTime             datetime             not null,
-   constraint PK_DEVICEREADJOBLOG primary key nonclustered (DeviceReadJobLogID)
+   constraint PK_DEVICEREADJOBLOG primary key (DeviceReadJobLogID)
 )
 go
 
@@ -5077,7 +5077,7 @@ create table DEVICEREADLOG (
    Timestamp            datetime             not null,
    StatusCode           smallint             not null,
    DeviceReadRequestLogID numeric              not null,
-   constraint PK_DEVICEREADLOG primary key nonclustered (DeviceReadLogID)
+   constraint PK_DEVICEREADLOG primary key (DeviceReadLogID)
 )
 go
 
@@ -5091,7 +5091,7 @@ create table DEVICEREADREQUESTLOG (
    StartTime            datetime             not null,
    StopTime             datetime             not null,
    DeviceReadJobLogID   numeric              not null,
-   constraint PK_DEVICEREADREQUESTLOG primary key nonclustered (DeviceReadRequestLogID)
+   constraint PK_DEVICEREADREQUESTLOG primary key (DeviceReadRequestLogID)
 )
 go
 
@@ -5104,7 +5104,7 @@ create table DEVICESCANRATE (
    INTERVALRATE         numeric              not null,
    SCANGROUP            numeric              not null,
    AlternateRate        numeric              not null,
-   constraint PK_DEVICESCANRATE primary key nonclustered (DEVICEID, SCANTYPE)
+   constraint PK_DEVICESCANRATE primary key (DEVICEID, SCANTYPE)
 )
 go
 
@@ -5117,7 +5117,7 @@ create table DEVICETAPPAGINGSETTINGS (
    Sender               varchar(64)          not null,
    SecurityCode         varchar(64)          not null,
    POSTPath             varchar(64)          not null,
-   constraint PK_DEVICETAPPAGINGSETTINGS primary key nonclustered (DEVICEID)
+   constraint PK_DEVICETAPPAGINGSETTINGS primary key (DEVICEID)
 )
 go
 
@@ -5130,7 +5130,7 @@ create table DISPLAY (
    TYPE                 varchar(40)          not null,
    TITLE                varchar(30)          null,
    DESCRIPTION          varchar(200)         null,
-   constraint SYS_C0013412 primary key nonclustered (DISPLAYNUM)
+   constraint SYS_C0013412 primary key (DISPLAYNUM)
 )
 go
 
@@ -5196,7 +5196,7 @@ create table DISPLAY2WAYDATA (
    DISPLAYNUM           numeric              not null,
    ORDERING             numeric              not null,
    POINTID              numeric              not null,
-   constraint PK_DISPLAY2WAYDATA primary key nonclustered (DISPLAYNUM, ORDERING)
+   constraint PK_DISPLAY2WAYDATA primary key (DISPLAYNUM, ORDERING)
 )
 go
 
@@ -5209,7 +5209,7 @@ create table DISPLAYCOLUMNS (
    TYPENUM              numeric              not null,
    ORDERING             numeric              not null,
    WIDTH                numeric              not null,
-   constraint PK_DISPLAYCOLUMNS primary key nonclustered (DISPLAYNUM, TITLE)
+   constraint PK_DISPLAYCOLUMNS primary key (DISPLAYNUM, TITLE)
 )
 go
 
@@ -5447,7 +5447,7 @@ create table DYNAMICACCUMULATOR (
    POINTID              numeric              not null,
    PREVIOUSPULSES       numeric              not null,
    PRESENTPULSES        numeric              not null,
-   constraint PK_DYNAMICACCUMULATOR primary key nonclustered (POINTID)
+   constraint PK_DYNAMICACCUMULATOR primary key (POINTID)
 )
 go
 
@@ -5533,7 +5533,7 @@ create table DYNAMICCCSUBSTATION (
    SubStationID         numeric              not null,
    AdditionalFlags      varchar(20)          not null,
    SAEnabledID          numeric              not null,
-   constraint PK_DYNAMICCCSUBSTATION primary key nonclustered (SubStationID)
+   constraint PK_DYNAMICCCSUBSTATION primary key (SubStationID)
 )
 go
 
@@ -5576,7 +5576,7 @@ create table DYNAMICCCTWOWAYCBC (
    NeutralCurrentAlarmSetPoint numeric              not null,
    IPAddress            numeric              not null,
    UDPPort              numeric              not null,
-   constraint PK_DYNAMICCCTWOWAYCBC primary key nonclustered (DeviceID)
+   constraint PK_DYNAMICCCTWOWAYCBC primary key (DeviceID)
 )
 go
 
@@ -5594,7 +5594,7 @@ create table DYNAMICDEVICESCANDATA (
    NEXTSCAN1            datetime             not null,
    NEXTSCAN2            datetime             not null,
    NEXTSCAN3            datetime             not null,
-   constraint PK_DYNAMICDEVICESCANDATA primary key nonclustered (DEVICEID)
+   constraint PK_DYNAMICDEVICESCANDATA primary key (DEVICEID)
 )
 go
 
@@ -5627,7 +5627,7 @@ create table DYNAMICPOINTDISPATCH (
    STALECOUNT           numeric              not null,
    LastAlarmLogID       numeric              not null,
    millis               smallint             not null,
-   constraint PK_DYNAMICPOINTDISPATCH primary key nonclustered (POINTID)
+   constraint PK_DYNAMICPOINTDISPATCH primary key (POINTID)
 )
 go
 
@@ -5640,7 +5640,7 @@ create table DateOfHoliday (
    HolidayMonth         numeric              not null,
    HolidayDay           numeric              not null,
    HolidayYear          numeric              not null,
-   constraint PK_DATEOFHOLIDAY primary key nonclustered (HolidayScheduleID, HolidayName)
+   constraint PK_DATEOFHOLIDAY primary key (HolidayScheduleID, HolidayName)
 )
 go
 
@@ -5654,7 +5654,7 @@ create table DateOfSeason (
    SeasonStartDay       numeric              not null,
    SeasonEndMonth       numeric              not null,
    SeasonEndDay         numeric              not null,
-   constraint PK_DATEOFSEASON primary key nonclustered (SeasonScheduleID, SeasonName)
+   constraint PK_DATEOFSEASON primary key (SeasonScheduleID, SeasonName)
 )
 go
 
@@ -5671,7 +5671,7 @@ create table DeliverySchedule (
    StyleNumber          varchar(60)          not null,
    OrderNumber          varchar(60)          not null,
    QuotedPricePerUnit   float                not null,
-   constraint PK_DELIVERYSCHEDULE primary key nonclustered (ScheduleID)
+   constraint PK_DELIVERYSCHEDULE primary key (ScheduleID)
 )
 go
 
@@ -5683,7 +5683,7 @@ create table DeviceAddress (
    MasterAddress        numeric              not null,
    SlaveAddress         numeric              not null,
    PostCommWait         numeric              not null,
-   constraint PK_DEVICEADDRESS primary key nonclustered (DeviceID)
+   constraint PK_DEVICEADDRESS primary key (DeviceID)
 )
 go
 
@@ -5694,7 +5694,7 @@ create table DeviceCBC (
    DEVICEID             numeric              not null,
    SERIALNUMBER         numeric              not null,
    ROUTEID              numeric              not null,
-   constraint PK_DEVICECBC primary key nonclustered (DEVICEID)
+   constraint PK_DEVICECBC primary key (DEVICEID)
 )
 go
 
@@ -5704,7 +5704,7 @@ go
 create table DeviceCustomerList (
    CustomerID           numeric              not null,
    DeviceID             numeric              not null,
-   constraint PK_DEVICECUSTOMERLIST primary key nonclustered (DeviceID, CustomerID)
+   constraint PK_DEVICECUSTOMERLIST primary key (DeviceID, CustomerID)
 )
 go
 
@@ -5714,7 +5714,7 @@ go
 create table DeviceDirectCommSettings (
    DEVICEID             numeric              not null,
    PORTID               numeric              not null,
-   constraint PK_DEVICEDIRECTCOMMSETTINGS primary key nonclustered (DEVICEID)
+   constraint PK_DEVICEDIRECTCOMMSETTINGS primary key (DEVICEID)
 )
 go
 
@@ -5725,7 +5725,7 @@ create table DeviceMCT400Series (
    DeviceID             numeric              not null,
    DisconnectAddress    numeric              not null,
    TOUScheduleID        numeric              not null,
-   constraint PK_DEV400S primary key nonclustered (DeviceID)
+   constraint PK_DEV400S primary key (DeviceID)
 )
 go
 
@@ -5751,7 +5751,7 @@ create table DevicePagingReceiverSettings (
    CapCode15            numeric              not null,
    CapCode16            numeric              not null,
    Frequency            float                not null,
-   constraint PK_DEVICEPAGINGRECEIVERSETTING primary key nonclustered (DeviceID)
+   constraint PK_DEVICEPAGINGRECEIVERSETTING primary key (DeviceID)
 )
 go
 
@@ -5764,7 +5764,7 @@ create table DeviceRTC (
    Response             varchar(1)           not null,
    LBTMode              numeric              not null,
    DisableVerifies      varchar(1)           not null,
-   constraint PK_DEVICERTC primary key nonclustered (DeviceID)
+   constraint PK_DEVICERTC primary key (DeviceID)
 )
 go
 
@@ -5774,7 +5774,7 @@ go
 create table DeviceRoutes (
    DEVICEID             numeric              not null,
    ROUTEID              numeric              not null,
-   constraint PK_DEVICEROUTES primary key nonclustered (DEVICEID, ROUTEID)
+   constraint PK_DEVICEROUTES primary key (DEVICEID, ROUTEID)
 )
 go
 
@@ -5793,7 +5793,7 @@ create table DeviceSeries5RTU (
    StartCode            numeric              not null,
    StopCode             numeric              not null,
    Retries              numeric              not null,
-   constraint PK_DEVICESERIES5RTU primary key nonclustered (DeviceID)
+   constraint PK_DEVICESERIES5RTU primary key (DeviceID)
 )
 go
 
@@ -5812,7 +5812,7 @@ create table DeviceTNPPSettings (
    Zone                 char(1)              not null,
    FunctionCode         char(1)              not null,
    PagerID              numeric              not null,
-   constraint PK_DEVICETNPPSETTINGS primary key nonclustered (DeviceID)
+   constraint PK_DEVICETNPPSETTINGS primary key (DeviceID)
 )
 go
 
@@ -5826,7 +5826,7 @@ create table DeviceTypeCommand (
    DisplayOrder         numeric              not null,
    VisibleFlag          char(1)              not null,
    CommandGroupID       numeric              not null,
-   constraint PK_DEVICETYPECOMMAND primary key nonclustered (DeviceCommandID, CommandGroupID)
+   constraint PK_DEVICETYPECOMMAND primary key (DeviceCommandID, CommandGroupID)
 )
 go
 
@@ -6584,7 +6584,7 @@ create table DeviceVerification (
    TransmitterID        numeric              not null,
    ResendOnFail         char(1)              not null,
    Disable              char(1)              not null,
-   constraint PK_DEVICEVERIFICATION primary key nonclustered (ReceiverID, TransmitterID)
+   constraint PK_DEVICEVERIFICATION primary key (ReceiverID, TransmitterID)
 )
 go
 
@@ -6598,7 +6598,7 @@ create table DeviceWindow (
    WinClose             numeric              not null,
    AlternateOpen        numeric              not null,
    AlternateClose       numeric              not null,
-   constraint PK_DEVICEWINDOW primary key nonclustered (DeviceID, Type)
+   constraint PK_DEVICEWINDOW primary key (DeviceID, Type)
 )
 go
 
@@ -6624,7 +6624,7 @@ create table DynamicCCCapBank (
    beforeVar            varchar(32)          not null,
    afterVar             varchar(32)          not null,
    changeVar            varchar(32)          not null,
-   constraint PK_DYNAMICCCCAPBANK primary key nonclustered (CapBankID)
+   constraint PK_DYNAMICCCCAPBANK primary key (CapBankID)
 )
 go
 
@@ -6667,7 +6667,7 @@ create table DynamicCCFeeder (
    phasecvalue          float                not null,
    LastWattPointTime    datetime             not null,
    LastVoltPointTime    datetime             not null,
-   constraint PK_DYNAMICCCFEEDER primary key nonclustered (FeederID)
+   constraint PK_DYNAMICCCFEEDER primary key (FeederID)
 )
 go
 
@@ -6680,7 +6680,7 @@ create table DynamicCCMonitorBankHistory (
    Value                float                not null,
    DateTime             datetime             not null,
    ScanInProgress       char(1)              not null,
-   constraint PK_DYNAMICCCMONITORBANKHISTORY primary key nonclustered (BankID, PointID)
+   constraint PK_DYNAMICCCMONITORBANKHISTORY primary key (BankID, PointID)
 )
 go
 
@@ -6692,7 +6692,7 @@ create table DynamicCCMonitorPointResponse (
    PointID              numeric              not null,
    PreOpValue           float                not null,
    Delta                float                not null,
-   constraint PK_DYNAMICCCMONITORPOINTRESPON primary key nonclustered (BankID, PointID)
+   constraint PK_DYNAMICCCMONITORPOINTRESPON primary key (BankID, PointID)
 )
 go
 
@@ -6742,7 +6742,7 @@ create table DynamicCCSubstationBus (
    phasecvalue          float                not null,
    LastWattPointTime    datetime             not null,
    LastVoltPointTime    datetime             not null,
-   constraint PK_DYNAMICCCSUBSTATIONBUS primary key nonclustered (SubstationBusID)
+   constraint PK_DYNAMICCCSUBSTATIONBUS primary key (SubstationBusID)
 )
 go
 
@@ -6752,7 +6752,7 @@ go
 create table DynamicCalcHistorical (
    PointID              numeric              not null,
    LastUpdate           datetime             not null,
-   constraint PK_DYNAMICCALCHISTORICAL primary key nonclustered (PointID)
+   constraint PK_DYNAMICCALCHISTORICAL primary key (PointID)
 )
 go
 
@@ -6766,7 +6766,7 @@ create table DynamicImportStatus (
    TotalSuccesses       varchar(32)          not null,
    TotalAttempts        varchar(32)          not null,
    ForceImport          char(1)              not null,
-   constraint PK_DYNAMICIMPORTSTATUS primary key nonclustered (Entry)
+   constraint PK_DYNAMICIMPORTSTATUS primary key (Entry)
 )
 go
 
@@ -6785,7 +6785,7 @@ create table DynamicLMControlArea (
    TimeStamp            datetime             not null,
    CurrentDailyStartTime numeric              not null,
    CurrentDailyStopTime numeric              not null,
-   constraint PK_DYNAMICLMCONTROLAREA primary key nonclustered (DeviceID)
+   constraint PK_DYNAMICLMCONTROLAREA primary key (DeviceID)
 )
 go
 
@@ -6800,7 +6800,7 @@ create table DynamicLMControlAreaTrigger (
    PeakPointValue       float                not null,
    LastPeakPointValueTimeStamp datetime             not null,
    TriggerID            numeric              not null,
-   constraint PK_DYNAMICLMCONTROLAREATRIGGER primary key nonclustered (DeviceID, TriggerNumber)
+   constraint PK_DYNAMICLMCONTROLAREATRIGGER primary key (DeviceID, TriggerNumber)
 )
 go
 
@@ -6821,7 +6821,7 @@ create table DynamicLMControlHistory (
    ActiveRestore        char(1)              not null,
    ReductionValue       float                not null,
    StopDateTime         datetime             not null,
-   constraint PK_DYNLMCONTROLHISTORY primary key nonclustered (PAObjectID)
+   constraint PK_DYNLMCONTROLHISTORY primary key (PAObjectID)
 )
 go
 
@@ -6842,7 +6842,7 @@ create table DynamicLMGroup (
    NextControlTime      datetime             not null,
    InternalState        numeric              not null,
    dailyops             smallint             not null,
-   constraint PK_DYNAMICLMGROUP primary key nonclustered (DeviceID)
+   constraint PK_DYNAMICLMGROUP primary key (DeviceID)
 )
 go
 
@@ -6857,7 +6857,7 @@ create table DynamicLMProgram (
    LastControlSent      datetime             not null,
    ManualControlReceivedFlag char(1)              not null,
    TimeStamp            datetime             not null,
-   constraint PK_DYNAMICLMPROGRAM primary key nonclustered (DeviceID)
+   constraint PK_DYNAMICLMPROGRAM primary key (DeviceID)
 )
 go
 
@@ -6876,7 +6876,7 @@ create table DynamicLMProgramDirect (
    NotifyInactiveTime   datetime             not null,
    ConstraintOverride   char(1)              not null,
    AdditionalInfo       varchar(80)          not null,
-   constraint PK_DYNAMICLMPROGRAMDIRECT primary key nonclustered (DeviceID)
+   constraint PK_DYNAMICLMPROGRAMDIRECT primary key (DeviceID)
 )
 go
 
@@ -6890,7 +6890,7 @@ create table DynamicPAOInfo (
    InfoKey              varchar(128)         not null,
    Value                varchar(128)         not null,
    UpdateTime           datetime             not null,
-   constraint PK_DYNPAOINFO primary key nonclustered (EntryID)
+   constraint PK_DYNPAOINFO primary key (EntryID)
 )
 go
 
@@ -6912,7 +6912,7 @@ create table DynamicPAOStatistics (
    SystemErrors         numeric              not null,
    StartDateTime        datetime             not null,
    StopDateTime         datetime             not null,
-   constraint PK_DYNAMICPAOSTATISTICS primary key nonclustered (PAOBjectID, StatisticType)
+   constraint PK_DYNAMICPAOSTATISTICS primary key (PAOBjectID, StatisticType)
 )
 go
 
@@ -6931,7 +6931,7 @@ create table DynamicPointAlarming (
    SOE_TAG              numeric              not null,
    Type                 numeric              not null,
    UserName             varchar(64)          not null,
-   constraint PK_DYNAMICPOINTALARMING primary key nonclustered (PointID, AlarmCondition)
+   constraint PK_DYNAMICPOINTALARMING primary key (PointID, AlarmCondition)
 )
 go
 
@@ -6948,7 +6948,7 @@ create table DynamicTags (
    TagTime              datetime             not null,
    RefStr               varchar(60)          not null,
    ForStr               varchar(60)          not null,
-   constraint PK_DYNAMICTAGS primary key nonclustered (InstanceID)
+   constraint PK_DYNAMICTAGS primary key (InstanceID)
 )
 go
 
@@ -6965,7 +6965,7 @@ create table DynamicVerification (
    CodeSequence         numeric              not null,
    Received             char(1)              not null,
    CodeStatus           varchar(32)          not null,
-   constraint PK_DYNAMICVERIFICATION primary key nonclustered (LogID)
+   constraint PK_DYNAMICVERIFICATION primary key (LogID)
 )
 go
 
@@ -6991,7 +6991,7 @@ go
 create table ECToAccountMapping (
    EnergyCompanyID      numeric              not null,
    AccountID            numeric              not null,
-   constraint PK_ECTOACCOUNTMAPPING primary key nonclustered (EnergyCompanyID, AccountID)
+   constraint PK_ECTOACCOUNTMAPPING primary key (EnergyCompanyID, AccountID)
 )
 go
 
@@ -7001,7 +7001,7 @@ go
 create table ECToCallReportMapping (
    EnergyCompanyID      numeric              not null,
    CallReportID         numeric              not null,
-   constraint PK_ECTOCALLREPORTMAPPING primary key nonclustered (EnergyCompanyID, CallReportID)
+   constraint PK_ECTOCALLREPORTMAPPING primary key (EnergyCompanyID, CallReportID)
 )
 go
 
@@ -7012,7 +7012,7 @@ create table ECToGenericMapping (
    EnergyCompanyID      numeric              not null,
    ItemID               numeric              not null,
    MappingCategory      varchar(40)          not null,
-   constraint PK_ECTOGENERICMAPPING primary key nonclustered (EnergyCompanyID, ItemID, MappingCategory)
+   constraint PK_ECTOGENERICMAPPING primary key (EnergyCompanyID, ItemID, MappingCategory)
 )
 go
 
@@ -7093,7 +7093,7 @@ Insert into ECToGenericMapping values (-1, 1071, 'YukonSelectionList');
 create table ECToInventoryMapping (
    EnergyCompanyID      numeric              not null,
    InventoryID          numeric              not null,
-   constraint PK_ECTOINVENTORYMAPPING primary key nonclustered (EnergyCompanyID, InventoryID)
+   constraint PK_ECTOINVENTORYMAPPING primary key (EnergyCompanyID, InventoryID)
 )
 go
 
@@ -7103,7 +7103,7 @@ go
 create table ECToLMCustomerEventMapping (
    EnergyCompanyID      numeric              not null,
    EventID              numeric              not null,
-   constraint PK_ECTOLMCUSTOMEREVENTMAPPING primary key nonclustered (EnergyCompanyID, EventID)
+   constraint PK_ECTOLMCUSTOMEREVENTMAPPING primary key (EnergyCompanyID, EventID)
 )
 go
 
@@ -7113,7 +7113,7 @@ go
 create table ECToWorkOrderMapping (
    EnergyCompanyID      numeric              not null,
    WorkOrderID          numeric              not null,
-   constraint PK_ECTOWORKORDERMAPPING primary key nonclustered (EnergyCompanyID, WorkOrderID)
+   constraint PK_ECTOWORKORDERMAPPING primary key (EnergyCompanyID, WorkOrderID)
 )
 go
 
@@ -7125,7 +7125,7 @@ create table EnergyCompany (
    Name                 varchar(60)          not null,
    PrimaryContactID     numeric              not null,
    UserID               numeric              not null,
-   constraint PK_ENERGYCOMPANY primary key nonclustered (EnergyCompanyID)
+   constraint PK_ENERGYCOMPANY primary key (EnergyCompanyID)
 )
 go
 
@@ -7145,7 +7145,7 @@ go
 create table EnergyCompanyCustomerList (
    EnergyCompanyID      numeric              not null,
    CustomerID           numeric              not null,
-   constraint PK_ENERGYCOMPANYCUSTOMERLIST primary key nonclustered (EnergyCompanyID, CustomerID)
+   constraint PK_ENERGYCOMPANYCUSTOMERLIST primary key (EnergyCompanyID, CustomerID)
 )
 go
 
@@ -7155,7 +7155,7 @@ go
 create table EnergyCompanyOperatorLoginList (
    EnergyCompanyID      numeric              not null,
    OperatorLoginID      numeric              not null,
-   constraint PK_ENERGYCOMPANYOPERATORLOGINL primary key nonclustered (EnergyCompanyID, OperatorLoginID)
+   constraint PK_ENERGYCOMPANYOPERATORLOGINL primary key (EnergyCompanyID, OperatorLoginID)
 )
 go
 
@@ -7167,7 +7167,7 @@ INSERT INTO EnergyCompanyOperatorLoginList VALUES (-1,-100);
 create table EsubDisplayIndex (
    SearchKey            varchar(500)         not null,
    DisplayUrl           varchar(500)         not null,
-   constraint PK_ESUBDISPLAYINDEX primary key nonclustered (SearchKey)
+   constraint PK_ESUBDISPLAYINDEX primary key (SearchKey)
 )
 go
 
@@ -7175,9 +7175,9 @@ go
 /* Table: EventAccount                                          */
 /*==============================================================*/
 create table EventAccount (
-   EventID              numeric              not null,
+   EVENTID              numeric              not null,
    AccountID            numeric              not null,
-   constraint PK_EVENTACCOUNT primary key nonclustered (EventID)
+   constraint PK_EVENTACCOUNT primary key (EVENTID)
 )
 go
 
@@ -7190,7 +7190,7 @@ create table EventBase (
    SystemCategoryID     numeric              not null,
    ActionID             numeric              not null,
    EventTimestamp       datetime             not null,
-   constraint PK_EVENTBASE primary key nonclustered (EventID)
+   constraint PK_EVENTBASE primary key (EventID)
 )
 go
 
@@ -7202,7 +7202,7 @@ insert into eventbase values (-1, -9999, 0, 0, '01-JAN-1970');
 create table EventInventory (
    EventID              numeric              not null,
    InventoryID          numeric              not null,
-   constraint PK_EVENTINVENTORY primary key nonclustered (EventID)
+   constraint PK_EVENTINVENTORY primary key (EventID)
 )
 go
 
@@ -7212,7 +7212,7 @@ go
 create table EventWorkOrder (
    EventID              numeric              not null,
    OrderID              numeric              not null,
-   constraint PK_EVENTWORKORDER primary key nonclustered (EventID)
+   constraint PK_EVENTWORKORDER primary key (EventID)
 )
 go
 
@@ -7224,7 +7224,7 @@ create table FDRInterface (
    InterfaceName        varchar(30)          not null,
    PossibleDirections   varchar(100)         not null,
    hasDestination       char(1)              not null,
-   constraint PK_FDRINTERFACE primary key nonclustered (InterfaceID)
+   constraint PK_FDRINTERFACE primary key (InterfaceID)
 )
 go
 
@@ -7262,7 +7262,7 @@ create table FDRInterfaceOption (
    Ordering             numeric              not null,
    OptionType           varchar(8)           not null,
    OptionValues         varchar(256)         not null,
-   constraint PK_FDRINTERFACEOPTION primary key nonclustered (InterfaceID, Ordering)
+   constraint PK_FDRINTERFACEOPTION primary key (InterfaceID, Ordering)
 )
 go
 
@@ -7324,7 +7324,7 @@ create table FDRTRANSLATION (
    InterfaceType        varchar(20)          not null,
    DESTINATION          varchar(20)          not null,
    TRANSLATION          varchar(200)         not null,
-   constraint PK_FDRTrans primary key nonclustered (POINTID, DIRECTIONTYPE, InterfaceType, TRANSLATION)
+   constraint PK_FDRTrans primary key (POINTID, DIRECTIONTYPE, InterfaceType, TRANSLATION)
 )
 go
 
@@ -7359,7 +7359,7 @@ create table GRAPHDATASERIES (
    Multiplier           float                not null,
    Renderer             smallint             not null,
    MoreData             varchar(100)         not null,
-   constraint SYS_GrphDserID primary key nonclustered (GRAPHDATASERIESID)
+   constraint SYS_GrphDserID primary key (GRAPHDATASERIESID)
 )
 go
 
@@ -7387,7 +7387,7 @@ create table GRAPHDEFINITION (
    RightMin             float                not null,
    RightMax             float                not null,
    Type                 char(1)              not null,
-   constraint SYS_C0015109 primary key nonclustered (GRAPHDEFINITIONID)
+   constraint SYS_C0015109 primary key (GRAPHDEFINITIONID)
 )
 go
 
@@ -7403,7 +7403,7 @@ create table GatewayEndDevice (
    HardwareType         numeric              not null,
    DataType             numeric              not null,
    DataValue            varchar(100)         null,
-   constraint PK_GATEWAYENDDEVICE primary key nonclustered (SerialNumber, HardwareType, DataType)
+   constraint PK_GATEWAYENDDEVICE primary key (SerialNumber, HardwareType, DataType)
 )
 go
 
@@ -7415,7 +7415,7 @@ create table GenericMacro (
    ChildID              numeric              not null,
    ChildOrder           numeric              not null,
    MacroType            varchar(20)          not null,
-   constraint PK_GENERICMACRO primary key nonclustered (OwnerID, ChildOrder, MacroType)
+   constraint PK_GENERICMACRO primary key (OwnerID, ChildOrder, MacroType)
 )
 go
 
@@ -7426,7 +7426,7 @@ create table GraphCustomerList (
    GraphDefinitionID    numeric              not null,
    CustomerID           numeric              not null,
    CustomerOrder        numeric              not null,
-   constraint PK_GRAPHCUSTOMERLIST primary key nonclustered (GraphDefinitionID, CustomerID)
+   constraint PK_GRAPHCUSTOMERLIST primary key (GraphDefinitionID, CustomerID)
 )
 go
 
@@ -7439,7 +7439,7 @@ create table GroupPaoPermission (
    PaoID                numeric              not null,
    Permission           varchar(50)          not null,
    Allow                varchar(5)           not null,
-   constraint PK_GROUPPAOPERMISSION primary key nonclustered (GroupPaoPermissionID)
+   constraint PK_GROUPPAOPERMISSION primary key (GroupPaoPermissionID)
 )
 go
 
@@ -7453,7 +7453,7 @@ go
 create table HolidaySchedule (
    HolidayScheduleID    numeric              not null,
    HolidayScheduleName  varchar(40)          not null,
-   constraint PK_HOLIDAYSCHEDULE primary key nonclustered (HolidayScheduleID)
+   constraint PK_HOLIDAYSCHEDULE primary key (HolidayScheduleID)
 )
 go
 
@@ -7480,7 +7480,7 @@ create table ImportData (
    TemplateName         varchar(64)          not null,
    BillGrp              varchar(64)          not null,
    SubstationName       varchar(64)          not null,
-   constraint PK_IMPORTDATA primary key nonclustered (Address)
+   constraint PK_IMPORTDATA primary key (Address)
 )
 go
 
@@ -7500,7 +7500,7 @@ create table ImportFail (
    BillGrp              varchar(64)          not null,
    SubstationName       varchar(64)          not null,
    FailType             varchar(64)          not null,
-   constraint PK_IMPORTFAIL primary key nonclustered (Address)
+   constraint PK_IMPORTFAIL primary key (Address)
 )
 go
 
@@ -7518,7 +7518,7 @@ create table ImportPendingComm (
    TemplateName         varchar(64)          not null,
    BillGrp              varchar(64)          not null,
    SubstationName       varchar(64)          not null,
-   constraint PK_IMPORTPENDINGCOMM primary key nonclustered (DeviceID)
+   constraint PK_IMPORTPENDINGCOMM primary key (DeviceID)
 )
 go
 
@@ -7533,7 +7533,7 @@ create table InterviewQuestion (
    DisplayOrder         numeric              null,
    AnswerType           numeric              null,
    ExpectedAnswer       numeric              null,
-   constraint PK_INTERVIEWQUESTION primary key nonclustered (QuestionID)
+   constraint PK_INTERVIEWQUESTION primary key (QuestionID)
 )
 go
 
@@ -7554,7 +7554,7 @@ create table InventoryBase (
    DeviceID             numeric              null,
    DeviceLabel          varchar(60)          null,
    CurrentStateID       numeric              not null,
-   constraint PK_INVENTORYBASE primary key nonclustered (InventoryID)
+   constraint PK_INVENTORYBASE primary key (InventoryID)
 )
 go
 
@@ -7582,7 +7582,7 @@ go
 create table InventoryToWarehouseMapping (
    WarehouseID          numeric              not null,
    InventoryID          numeric              not null,
-   constraint PK_INVENTORYTOWAREHOUSEMAPPING primary key nonclustered (WarehouseID, InventoryID)
+   constraint PK_INVENTORYTOWAREHOUSEMAPPING primary key (WarehouseID, InventoryID)
 )
 go
 
@@ -7600,7 +7600,7 @@ create table Invoice (
    DatePaid             datetime             not null,
    TotalQuantity        numeric              not null,
    AuthorizedNumber     varchar(60)          not null,
-   constraint PK_INVOICE primary key nonclustered (InvoiceID)
+   constraint PK_INVOICE primary key (InvoiceID)
 )
 go
 
@@ -7610,7 +7610,7 @@ go
 create table InvoiceShipmentMapping (
    InvoiceID            numeric              not null,
    ShipmentID           numeric              not null,
-   constraint PK_INVOICESHIPMENTMAPPING primary key nonclustered (InvoiceID, ShipmentID)
+   constraint PK_INVOICESHIPMENTMAPPING primary key (InvoiceID, ShipmentID)
 )
 go
 
@@ -7680,7 +7680,7 @@ create table LMCONTROLAREAPROGRAM (
    LMPROGRAMDEVICEID    numeric              not null,
    StartPriority        numeric              not null,
    StopPriority         numeric              not null,
-   constraint PK_LMCONTROLAREAPROGRAM primary key nonclustered (DEVICEID, LMPROGRAMDEVICEID)
+   constraint PK_LMCONTROLAREAPROGRAM primary key (DEVICEID, LMPROGRAMDEVICEID)
 )
 go
 
@@ -7701,7 +7701,7 @@ create table LMCONTROLAREATRIGGER (
    MINRESTOREOFFSET     float                not null,
    PEAKPOINTID          numeric              not null,
    TriggerID            numeric              not null,
-   constraint PK_LMCONTROLAREATRIGGER primary key nonclustered (DEVICEID, TRIGGERNUMBER)
+   constraint PK_LMCONTROLAREATRIGGER primary key (DEVICEID, TRIGGERNUMBER)
 )
 go
 
@@ -7720,7 +7720,7 @@ create table LMConfigurationBase (
    ConfigurationID      numeric              not null,
    ColdLoadPickup       varchar(128)         not null,
    TamperDetect         varchar(128)         not null,
-   constraint PK_LMCONFIGURATIONBASE primary key nonclustered (ConfigurationID)
+   constraint PK_LMCONFIGURATIONBASE primary key (ConfigurationID)
 )
 go
 
@@ -7739,7 +7739,7 @@ create table LMConfigurationExpressCom (
    UserAddress          numeric              not null,
    Program              varchar(80)          not null,
    Splinter             varchar(80)          not null,
-   constraint PK_LMCONFIGURATIONEXPRESSCOM primary key nonclustered (ConfigurationID)
+   constraint PK_LMCONFIGURATIONEXPRESSCOM primary key (ConfigurationID)
 )
 go
 
@@ -7754,7 +7754,7 @@ create table LMConfigurationSA205 (
    Slot4                numeric              not null,
    Slot5                numeric              not null,
    Slot6                numeric              not null,
-   constraint PK_LMCONFIGURATIONSA205 primary key nonclustered (ConfigurationID)
+   constraint PK_LMCONFIGURATIONSA205 primary key (ConfigurationID)
 )
 go
 
@@ -7770,7 +7770,7 @@ create table LMConfigurationSA305 (
    RateFamily           numeric              not null,
    RateMember           numeric              not null,
    RateHierarchy        numeric              not null,
-   constraint PK_LMCONFIGURATIONSA305 primary key nonclustered (ConfigurationID)
+   constraint PK_LMCONFIGURATIONSA305 primary key (ConfigurationID)
 )
 go
 
@@ -7780,7 +7780,7 @@ go
 create table LMConfigurationSASimple (
    ConfigurationID      numeric              not null,
    OperationalAddress   numeric              not null,
-   constraint PK_LMCONFIGURATIONSASIMPLE primary key nonclustered (ConfigurationID)
+   constraint PK_LMCONFIGURATIONSASIMPLE primary key (ConfigurationID)
 )
 go
 
@@ -7793,7 +7793,7 @@ create table LMConfigurationVersacom (
    Section              numeric              not null,
    ClassAddress         numeric              not null,
    DivisionAddress      numeric              not null,
-   constraint PK_LMCONFIGURATIONVERSACOM primary key nonclustered (ConfigurationID)
+   constraint PK_LMCONFIGURATIONVERSACOM primary key (ConfigurationID)
 )
 go
 
@@ -7808,7 +7808,7 @@ create table LMControlArea (
    DEFDAILYSTARTTIME    numeric              not null,
    DEFDAILYSTOPTIME     numeric              not null,
    REQUIREALLTRIGGERSACTIVEFLAG varchar(1)           not null,
-   constraint PK_LMCONTROLAREA primary key nonclustered (DEVICEID)
+   constraint PK_LMCONTROLAREA primary key (DEVICEID)
 )
 go
 
@@ -7829,7 +7829,7 @@ create table LMControlHistory (
    ActiveRestore        char(1)              not null,
    ReductionValue       float                not null,
    StopDateTime         datetime             not null,
-   constraint PK_LMCONTROLHISTORY primary key nonclustered (LMCtrlHistID)
+   constraint PK_LMCONTROLHISTORY primary key (LMCtrlHistID)
 )
 go
 
@@ -7850,7 +7850,7 @@ create table LMControlScenarioProgram (
    StartOffset          numeric              not null,
    StopOffset           numeric              not null,
    StartGear            numeric              not null,
-   constraint PK_LMCONTROLSCENARIOPROGRAM primary key nonclustered (ScenarioID, ProgramID)
+   constraint PK_LMCONTROLSCENARIOPROGRAM primary key (ScenarioID, ProgramID)
 )
 go
 
@@ -7868,7 +7868,7 @@ create table LMCurtailCustomerActivity (
    CurtailmentNotes     varchar(120)         not null,
    CurrentPDL           float                not null,
    AckLateFlag          char(1)              not null,
-   constraint PK_LMCURTAILCUSTOMERACTIVITY primary key nonclustered (CustomerID, CurtailReferenceID)
+   constraint PK_LMCURTAILCUSTOMERACTIVITY primary key (CustomerID, CurtailReferenceID)
 )
 go
 
@@ -7900,7 +7900,7 @@ create table LMCurtailProgramActivity (
    CurtailmentStopTime  datetime             not null,
    RunStatus            varchar(20)          not null,
    AdditionalInfo       varchar(100)         not null,
-   constraint PK_LMCURTAILPROGRAMACTIVITY primary key nonclustered (CurtailReferenceID)
+   constraint PK_LMCURTAILPROGRAMACTIVITY primary key (CurtailReferenceID)
 )
 go
 
@@ -7922,7 +7922,7 @@ create table LMCustomerEventBase (
    EventDateTime        datetime             null,
    Notes                varchar(100)         null,
    AuthorizedBy         varchar(40)          null,
-   constraint PK_LMCUSTOMEREVENTBASE primary key nonclustered (EventID)
+   constraint PK_LMCUSTOMEREVENTBASE primary key (EventID)
 )
 go
 
@@ -7932,7 +7932,7 @@ go
 create table LMDirectCustomerList (
    ProgramID            numeric              not null,
    CustomerID           numeric              not null,
-   constraint PK_LMDIRECTCUSTOMERLIST primary key nonclustered (ProgramID, CustomerID)
+   constraint PK_LMDIRECTCUSTOMERLIST primary key (ProgramID, CustomerID)
 )
 go
 
@@ -7942,7 +7942,7 @@ go
 create table LMDirectNotifGrpList (
    ProgramID            numeric              not null,
    NotificationGrpID    numeric              not null,
-   constraint PK_LMDIRECTNOTIFGRPLIST primary key nonclustered (ProgramID, NotificationGrpID)
+   constraint PK_LMDIRECTNOTIFGRPLIST primary key (ProgramID, NotificationGrpID)
 )
 go
 
@@ -7953,7 +7953,7 @@ create table LMEnergyExchangeCustomerList (
    ProgramID            numeric              not null,
    CustomerID           numeric              not null,
    CustomerOrder        numeric              not null,
-   constraint PK_LMENERGYEXCHANGECUSTOMERLIS primary key nonclustered (ProgramID, CustomerID)
+   constraint PK_LMENERGYEXCHANGECUSTOMERLIS primary key (ProgramID, CustomerID)
 )
 go
 
@@ -7970,7 +7970,7 @@ create table LMEnergyExchangeCustomerReply (
    UserIDName           varchar(40)          not null,
    NameOfAcceptPerson   varchar(40)          not null,
    EnergyExchangeNotes  varchar(120)         not null,
-   constraint PK_LMENERGYEXCHANGECUSTOMERREP primary key nonclustered (CustomerID, OfferID, RevisionNumber)
+   constraint PK_LMENERGYEXCHANGECUSTOMERREP primary key (CustomerID, OfferID, RevisionNumber)
 )
 go
 
@@ -7983,7 +7983,7 @@ create table LMEnergyExchangeHourlyCustomer (
    RevisionNumber       numeric              not null,
    Hour                 numeric              not null,
    AmountCommitted      float                not null,
-   constraint PK_LMENERGYEXCHANGEHOURLYCUSTO primary key nonclustered (CustomerID, OfferID, RevisionNumber, Hour)
+   constraint PK_LMENERGYEXCHANGEHOURLYCUSTO primary key (CustomerID, OfferID, RevisionNumber, Hour)
 )
 go
 
@@ -7996,7 +7996,7 @@ create table LMEnergyExchangeHourlyOffer (
    Hour                 numeric              not null,
    Price                numeric              not null,
    AmountRequested      float                not null,
-   constraint PK_LMENERGYEXCHANGEHOURLYOFFER primary key nonclustered (OfferID, RevisionNumber, Hour)
+   constraint PK_LMENERGYEXCHANGEHOURLYOFFER primary key (OfferID, RevisionNumber, Hour)
 )
 go
 
@@ -8010,7 +8010,7 @@ create table LMEnergyExchangeOfferRevision (
    NotificationDateTime datetime             not null,
    OfferExpirationDateTime datetime             not null,
    AdditionalInfo       varchar(100)         not null,
-   constraint PK_LMENERGYEXCHANGEOFFERREVISI primary key nonclustered (OfferID, RevisionNumber)
+   constraint PK_LMENERGYEXCHANGEOFFERREVISI primary key (OfferID, RevisionNumber)
 )
 go
 
@@ -8022,7 +8022,7 @@ create table LMEnergyExchangeProgramOffer (
    OfferID              numeric              not null,
    RunStatus            varchar(20)          not null,
    OfferDate            datetime             not null,
-   constraint PK_LMENERGYEXCHANGEPROGRAMOFFE primary key nonclustered (OfferID)
+   constraint PK_LMENERGYEXCHANGEPROGRAMOFFE primary key (OfferID)
 )
 go
 
@@ -8032,7 +8032,7 @@ go
 create table LMGroup (
    DeviceID             numeric              not null,
    KWCapacity           float                not null,
-   constraint PK_LMGROUP primary key nonclustered (DeviceID)
+   constraint PK_LMGROUP primary key (DeviceID)
 )
 go
 
@@ -8048,7 +8048,7 @@ create table LMGroupEmetcon (
    ADDRESSUSAGE         char(1)              not null,
    RELAYUSAGE           char(1)              not null,
    ROUTEID              numeric              not null,
-   constraint PK_LMGROUPEMETCON primary key nonclustered (DEVICEID)
+   constraint PK_LMGROUPEMETCON primary key (DEVICEID)
 )
 go
 
@@ -8069,7 +8069,7 @@ create table LMGroupExpressCom (
    SplinterID           numeric              not null,
    AddressUsage         varchar(10)          not null,
    RelayUsage           char(15)             not null,
-   constraint PK_LMGROUPEXPRESSCOM primary key nonclustered (LMGroupID)
+   constraint PK_LMGROUPEXPRESSCOM primary key (LMGroupID)
 )
 go
 
@@ -8081,7 +8081,7 @@ create table LMGroupExpressComAddress (
    AddressType          varchar(20)          not null,
    Address              numeric              not null,
    AddressName          varchar(30)          not null,
-   constraint PK_LMGROUPEXPRESSCOMADDRESS primary key nonclustered (AddressID)
+   constraint PK_LMGROUPEXPRESSCOMADDRESS primary key (AddressID)
 )
 go
 
@@ -8097,7 +8097,7 @@ create table LMGroupMCT (
    RelayUsage           char(7)              not null,
    RouteID              numeric              not null,
    MCTDeviceID          numeric              not null,
-   constraint PK_LMGrpMCTPK primary key nonclustered (DeviceID)
+   constraint PK_LMGrpMCTPK primary key (DeviceID)
 )
 go
 
@@ -8109,7 +8109,7 @@ create table LMGroupPoint (
    DeviceIDUsage        numeric              not null,
    PointIDUsage         numeric              not null,
    StartControlRawState numeric              not null,
-   constraint PK_LMGROUPPOINT primary key nonclustered (DEVICEID)
+   constraint PK_LMGROUPPOINT primary key (DEVICEID)
 )
 go
 
@@ -8122,7 +8122,7 @@ create table LMGroupRipple (
    ShedTime             numeric              not null,
    ControlValue         char(50)             not null,
    RestoreValue         char(50)             not null,
-   constraint PK_LMGROUPRIPPLE primary key nonclustered (DeviceID)
+   constraint PK_LMGROUPRIPPLE primary key (DeviceID)
 )
 go
 
@@ -8134,7 +8134,7 @@ create table LMGroupSA205105 (
    RouteID              numeric              not null,
    OperationalAddress   numeric              not null,
    LoadNumber           varchar(64)          not null,
-   constraint PK_LMGROUPSA205105 primary key nonclustered (GroupID)
+   constraint PK_LMGROUPSA205105 primary key (GroupID)
 )
 go
 
@@ -8154,7 +8154,7 @@ create table LMGroupSA305 (
    RateMember           numeric              not null,
    RateHierarchy        numeric              not null,
    LoadNumber           varchar(8)           not null,
-   constraint PK_LMGROUPSA305 primary key nonclustered (GroupID)
+   constraint PK_LMGROUPSA305 primary key (GroupID)
 )
 go
 
@@ -8168,7 +8168,7 @@ create table LMGroupSASimple (
    NominalTimeout       numeric              not null,
    MarkIndex            numeric              not null,
    SpaceIndex           numeric              not null,
-   constraint PK_LMGROUPSASIMPLE primary key nonclustered (GroupID)
+   constraint PK_LMGROUPSASIMPLE primary key (GroupID)
 )
 go
 
@@ -8185,7 +8185,7 @@ create table LMGroupVersacom (
    ADDRESSUSAGE         char(4)              not null,
    RELAYUSAGE           char(7)              not null,
    SerialAddress        varchar(15)          not null,
-   constraint PK_LMGROUPVERSACOM primary key nonclustered (DEVICEID)
+   constraint PK_LMGROUPVERSACOM primary key (DEVICEID)
 )
 go
 
@@ -8210,7 +8210,7 @@ create table LMHardwareConfiguration (
    ApplianceID          numeric              not null,
    AddressingGroupID    numeric              null,
    LoadNumber           numeric              null,
-   constraint PK_LMHARDWARECONFIGURATION primary key nonclustered (InventoryID, ApplianceID)
+   constraint PK_LMHARDWARECONFIGURATION primary key (InventoryID, ApplianceID)
 )
 go
 
@@ -8256,7 +8256,7 @@ go
 create table LMHardwareEvent (
    EventID              numeric              not null,
    InventoryID          numeric              not null,
-   constraint PK_LMHARDWAREEVENT primary key nonclustered (EventID)
+   constraint PK_LMHARDWAREEVENT primary key (EventID)
 )
 go
 
@@ -8266,7 +8266,7 @@ go
 create table LMHardwareToMeterMapping (
    LMHardwareInventoryID numeric              not null,
    MeterInventoryID     numeric              not null,
-   constraint PK_LMHARDWARETOMETERMAPPING primary key nonclustered (LMHardwareInventoryID, MeterInventoryID)
+   constraint PK_LMHARDWARETOMETERMAPPING primary key (LMHardwareInventoryID, MeterInventoryID)
 )
 go
 
@@ -8277,7 +8277,7 @@ create table LMMacsScheduleCustomerList (
    ScheduleID           numeric              not null,
    LMCustomerDeviceID   numeric              not null,
    CustomerOrder        numeric              not null,
-   constraint PK_LMMACSSCHEDULECUSTOMERLIST primary key nonclustered (ScheduleID, LMCustomerDeviceID)
+   constraint PK_LMMACSSCHEDULECUSTOMERLIST primary key (ScheduleID, LMCustomerDeviceID)
 )
 go
 
@@ -8288,7 +8288,7 @@ create table LMPROGRAM (
    DeviceID             numeric              not null,
    ControlType          varchar(20)          not null,
    ConstraintID         numeric              not null,
-   constraint PK_LMPROGRAM primary key nonclustered (DeviceID)
+   constraint PK_LMPROGRAM primary key (DeviceID)
 )
 go
 
@@ -8311,7 +8311,7 @@ create table LMProgramConstraints (
    MaxActivateTime      numeric              not null,
    HolidayScheduleID    numeric              not null,
    SeasonScheduleID     numeric              not null,
-   constraint PK_PRGCONSTR primary key nonclustered (ConstraintID)
+   constraint PK_PRGCONSTR primary key (ConstraintID)
 )
 go
 
@@ -8325,7 +8325,7 @@ create table LMProgramControlWindow (
    WindowNumber         numeric              not null,
    AvailableStartTime   numeric              not null,
    AvailableStopTime    numeric              not null,
-   constraint PK_LMPROGRAMCONTROLWINDOW primary key nonclustered (DeviceID, WindowNumber)
+   constraint PK_LMPROGRAMCONTROLWINDOW primary key (DeviceID, WindowNumber)
 )
 go
 
@@ -8337,7 +8337,7 @@ create table LMProgramCurtailCustomerList (
    CustomerID           numeric              not null,
    CustomerOrder        numeric              not null,
    RequireAck           char(1)              not null,
-   constraint PK_LMPROGRAMCURTAILCUSTOMERLIS primary key nonclustered (CustomerID, ProgramID)
+   constraint PK_LMPROGRAMCURTAILCUSTOMERLIS primary key (CustomerID, ProgramID)
 )
 go
 
@@ -8353,7 +8353,7 @@ create table LMProgramCurtailment (
    AckTimeLimit         numeric              not null,
    CanceledMsg          varchar(80)          not null,
    StoppedEarlyMsg      varchar(80)          not null,
-   constraint PK_LMPROGRAMCURTAILMENT primary key nonclustered (DeviceID)
+   constraint PK_LMPROGRAMCURTAILMENT primary key (DeviceID)
 )
 go
 
@@ -8369,7 +8369,7 @@ create table LMProgramDirect (
    TriggerOffset        float                not null,
    RestoreOffset        float                not null,
    NotifyInactiveOffset numeric              not null,
-   constraint PK_LMPROGRAMDIRECT primary key nonclustered (DeviceID)
+   constraint PK_LMPROGRAMDIRECT primary key (DeviceID)
 )
 go
 
@@ -8405,7 +8405,7 @@ create table LMProgramDirectGear (
    BackRampOption       varchar(80)          not null,
    BackRampTime         numeric              not null,
    KWReduction          float                not null,
-   constraint PK_LMPROGRAMDIRECTGEAR primary key nonclustered (GearID)
+   constraint PK_LMPROGRAMDIRECTGEAR primary key (GearID)
 )
 go
 
@@ -8420,7 +8420,7 @@ create table LMProgramDirectGroup (
    DeviceID             numeric              not null,
    LMGroupDeviceID      numeric              not null,
    GroupOrder           numeric              not null,
-   constraint PK_LMPROGRAMDIRECTGROUP primary key nonclustered (DeviceID, GroupOrder)
+   constraint PK_LMPROGRAMDIRECTGROUP primary key (DeviceID, GroupOrder)
 )
 go
 
@@ -8435,7 +8435,7 @@ create table LMProgramEnergyExchange (
    MessageFooter        varchar(160)         not null,
    CanceledMsg          varchar(80)          not null,
    StoppedEarlyMsg      varchar(80)          not null,
-   constraint PK_LMPROGRAMENERGYEXCHANGE primary key nonclustered (DeviceID)
+   constraint PK_LMPROGRAMENERGYEXCHANGE primary key (DeviceID)
 )
 go
 
@@ -8446,7 +8446,7 @@ create table LMProgramEvent (
    EventID              numeric              not null,
    AccountID            numeric              not null,
    ProgramID            numeric              null,
-   constraint PK_LMPROGRAMEVENT primary key nonclustered (EventID)
+   constraint PK_LMPROGRAMEVENT primary key (EventID)
 )
 go
 
@@ -8460,7 +8460,7 @@ create table LMProgramWebPublishing (
    ChanceOfControlID    numeric              null,
    ProgramOrder         numeric              null,
    ProgramID            numeric              not null,
-   constraint PK_LMPROGRAMWEBPUBLISHING primary key nonclustered (ProgramID)
+   constraint PK_LMPROGRAMWEBPUBLISHING primary key (ProgramID)
 )
 go
 
@@ -8485,7 +8485,7 @@ create table LMThermoStatGear (
    ValueTe              numeric              not null,
    ValueTf              numeric              not null,
    RampRate             float                not null,
-   constraint PK_LMTHERMOSTATGEAR primary key nonclustered (GearID)
+   constraint PK_LMTHERMOSTATGEAR primary key (GearID)
 )
 go
 
@@ -8499,7 +8499,7 @@ create table LMThermostatManualEvent (
    HoldTemperature      varchar(1)           null,
    OperationStateID     numeric              null,
    FanOperationID       numeric              null,
-   constraint PK_LMTHERMOSTATMANUALEVENT primary key nonclustered (EventID)
+   constraint PK_LMTHERMOSTATMANUALEVENT primary key (EventID)
 )
 go
 
@@ -8512,7 +8512,7 @@ create table LMThermostatSchedule (
    ThermostatTypeID     numeric              not null,
    AccountID            numeric              not null,
    InventoryID          numeric              not null,
-   constraint PK_LMTHERMOSTATSCHEDULE primary key nonclustered (ScheduleID)
+   constraint PK_LMTHERMOSTATSCHEDULE primary key (ScheduleID)
 )
 go
 
@@ -8527,7 +8527,7 @@ create table LMThermostatSeason (
    WebConfigurationID   numeric              null,
    StartDate            datetime             null,
    DisplayOrder         numeric              null,
-   constraint PK_LMTHERMOSTATSEASON primary key nonclustered (SeasonID)
+   constraint PK_LMTHERMOSTATSEASON primary key (SeasonID)
 )
 go
 
@@ -8543,7 +8543,7 @@ create table LMThermostatSeasonEntry (
    TimeOfWeekID         numeric              not null,
    StartTime            numeric              not null,
    Temperature          numeric              null,
-   constraint PK_LMTHERMOSTATSEASONENTRY primary key nonclustered (EntryID)
+   constraint PK_LMTHERMOSTATSEASONENTRY primary key (EntryID)
 )
 go
 
@@ -8581,7 +8581,7 @@ create table LOGIC (
    PERIODICRATE         numeric              not null,
    STATEFLAG            varchar(10)          not null,
    SCRIPTNAME           varchar(20)          not null,
-   constraint SYS_C0013445 primary key nonclustered (LOGICID)
+   constraint SYS_C0013445 primary key (LOGICID)
 )
 go
 
@@ -8592,7 +8592,7 @@ create table MACROROUTE (
    ROUTEID              numeric              not null,
    SINGLEROUTEID        numeric              not null,
    ROUTEORDER           numeric              not null,
-   constraint PK_MACROROUTE primary key nonclustered (ROUTEID, ROUTEORDER)
+   constraint PK_MACROROUTE primary key (ROUTEID, ROUTEORDER)
 )
 go
 
@@ -8619,7 +8619,7 @@ create table MACSchedule (
    ManualStartTime      datetime             null,
    ManualStopTime       datetime             null,
    Template             numeric              null,
-   constraint PK_MACSCHEDULE primary key nonclustered (ScheduleID)
+   constraint PK_MACSCHEDULE primary key (ScheduleID)
 )
 go
 
@@ -8632,7 +8632,7 @@ create table MACSimpleSchedule (
    StartCommand         varchar(120)         null,
    StopCommand          varchar(120)         null,
    RepeatInterval       numeric              null,
-   constraint PK_MACSIMPLESCHEDULE primary key nonclustered (ScheduleID)
+   constraint PK_MACSIMPLESCHEDULE primary key (ScheduleID)
 )
 go
 
@@ -8643,7 +8643,7 @@ create table MCTBroadCastMapping (
    MCTBroadCastID       numeric              not null,
    MctID                numeric              not null,
    Ordering             numeric              not null,
-   constraint PK_MCTBROADCASTMAPPING primary key nonclustered (MCTBroadCastID, MctID)
+   constraint PK_MCTBROADCASTMAPPING primary key (MCTBroadCastID, MctID)
 )
 go
 
@@ -8662,7 +8662,7 @@ create table MCTConfig (
    MCTWire3             numeric              not null,
    Ke3                  float                not null,
    DisplayDigits        numeric              not null,
-   constraint PK_MCTCONFIG primary key nonclustered (ConfigID)
+   constraint PK_MCTCONFIG primary key (ConfigID)
 )
 go
 
@@ -8672,7 +8672,7 @@ go
 create table MCTConfigMapping (
    MctID                numeric              not null,
    ConfigID             numeric              not null,
-   constraint PK_MCTCONFIGMAPPING primary key nonclustered (MctID, ConfigID)
+   constraint PK_MCTCONFIGMAPPING primary key (MctID, ConfigID)
 )
 go
 
@@ -8712,7 +8712,7 @@ create table MSPVendor (
    RequestMessageTimeout int                  not null,
    MaxInitiateRequestObjects int                  not null,
    TemplateNameDefault  varchar(50)          not null,
-   constraint PK_MSPVENDOR primary key nonclustered (VendorID)
+   constraint PK_MSPVENDOR primary key (VendorID)
 )
 go
 
@@ -8725,7 +8725,7 @@ create table MeterHardwareBase (
    InventoryID          numeric              not null,
    MeterNumber          varchar(30)          not null,
    MeterTypeID          numeric              not null,
-   constraint PK_METERHARDWAREBASE primary key nonclustered (InventoryID)
+   constraint PK_METERHARDWAREBASE primary key (InventoryID)
 )
 go
 
@@ -8736,7 +8736,7 @@ create table NotificationDestination (
    NotificationGroupID  numeric              not null,
    RecipientID          numeric              not null,
    Attribs              char(16)             not null,
-   constraint PKey_NotDestID primary key nonclustered (NotificationGroupID, RecipientID)
+   constraint PKey_NotDestID primary key (NotificationGroupID, RecipientID)
 )
 go
 
@@ -8747,7 +8747,7 @@ create table NotificationGroup (
    NotificationGroupID  numeric              not null,
    GroupName            varchar(40)          not null,
    DisableFlag          char(1)              not null,
-   constraint PK_NOTIFICATIONGROUP primary key nonclustered (NotificationGroupID)
+   constraint PK_NOTIFICATIONGROUP primary key (NotificationGroupID)
 )
 go
 
@@ -8767,7 +8767,7 @@ go
 create table OperatorLoginGraphList (
    OperatorLoginID      numeric              not null,
    GraphDefinitionID    numeric              not null,
-   constraint PK_OPERATORLOGINGRAPHLIST primary key nonclustered (OperatorLoginID, GraphDefinitionID)
+   constraint PK_OPERATORLOGINGRAPHLIST primary key (OperatorLoginID, GraphDefinitionID)
 )
 go
 
@@ -8784,7 +8784,7 @@ create table PAOExclusion (
    FuncName             varchar(100)         not null,
    FuncRequeue          numeric              not null,
    FuncParams           varchar(200)         not null,
-   constraint PK_PAOEXCLUSION primary key nonclustered (ExclusionID)
+   constraint PK_PAOEXCLUSION primary key (ExclusionID)
 )
 go
 
@@ -8807,7 +8807,7 @@ create table PAOSchedule (
    IntervalRate         numeric              not null,
    ScheduleName         varchar(64)          not null,
    Disabled             char(1)              not null,
-   constraint PK_PAOSCHEDULE primary key nonclustered (ScheduleID)
+   constraint PK_PAOSCHEDULE primary key (ScheduleID)
 )
 go
 
@@ -8827,7 +8827,7 @@ create table PAOScheduleAssignment (
    ScheduleID           numeric              not null,
    PaoID                numeric              not null,
    Command              varchar(128)         not null,
-   constraint PK_PAOSCHEDULEASSIGNMENT primary key nonclustered (EventID)
+   constraint PK_PAOSCHEDULEASSIGNMENT primary key (EventID)
 )
 go
 
@@ -8837,7 +8837,7 @@ go
 create table PAOowner (
    OwnerID              numeric              not null,
    ChildID              numeric              not null,
-   constraint PK_PAOOWNER primary key nonclustered (OwnerID, ChildID)
+   constraint PK_PAOOWNER primary key (OwnerID, ChildID)
 )
 go
 
@@ -8872,7 +8872,7 @@ create table POINT (
    POINTOFFSET          numeric              not null,
    ARCHIVETYPE          varchar(12)          not null,
    ARCHIVEINTERVAL      numeric              not null,
-   constraint Key_PT_PTID primary key nonclustered (POINTID)
+   constraint Key_PT_PTID primary key (POINTID)
 )
 go
 
@@ -8949,7 +8949,7 @@ create table POINTACCUMULATOR (
    POINTID              numeric              not null,
    MULTIPLIER           float                not null,
    DATAOFFSET           float                not null,
-   constraint PK_POINTACCUMULATOR primary key nonclustered (POINTID)
+   constraint PK_POINTACCUMULATOR primary key (POINTID)
 )
 go
 
@@ -8962,7 +8962,7 @@ create table POINTANALOG (
    TRANSDUCERTYPE       varchar(14)          not null,
    MULTIPLIER           float                not null,
    DATAOFFSET           float                not null,
-   constraint PK_POINTANALOG primary key nonclustered (POINTID)
+   constraint PK_POINTANALOG primary key (POINTID)
 )
 go
 
@@ -8977,7 +8977,7 @@ create table POINTLIMITS (
    HIGHLIMIT            float                not null,
    LOWLIMIT             float                not null,
    LIMITDURATION        numeric              not null,
-   constraint PK_POINTLIMITS primary key nonclustered (POINTID, LIMITNUMBER)
+   constraint PK_POINTLIMITS primary key (POINTID, LIMITNUMBER)
 )
 go
 
@@ -8995,7 +8995,7 @@ create table POINTSTATUS (
    StateZeroControl     varchar(100)         not null,
    StateOneControl      varchar(100)         not null,
    CommandTimeOut       numeric              not null,
-   constraint PK_PtStatus primary key nonclustered (POINTID)
+   constraint PK_PtStatus primary key (POINTID)
 )
 go
 
@@ -9018,7 +9018,7 @@ create table POINTTRIGGER (
    VerificationDeadband float                not null,
    CommandTimeout       numeric              not null,
    Parameters           varchar(40)          not null,
-   constraint PK_POINTTRIGGER primary key nonclustered (PointID)
+   constraint PK_POINTTRIGGER primary key (PointID)
 )
 go
 
@@ -9032,7 +9032,7 @@ create table POINTUNIT (
    HighReasonabilityLimit float                not null,
    LowReasonabilityLimit float                not null,
    DecimalDigits        numeric              not null,
-   constraint PK_POINTUNITID primary key nonclustered (POINTID)
+   constraint PK_POINTUNITID primary key (POINTID)
 )
 go
 
@@ -9056,7 +9056,7 @@ create table PORTDIALUPMODEM (
    INITIALIZATIONSTRING varchar(50)          not null,
    PREFIXNUMBER         varchar(10)          not null,
    SUFFIXNUMBER         varchar(10)          not null,
-   constraint PK_PORTDIALUPMODEM primary key nonclustered (PORTID)
+   constraint PK_PORTDIALUPMODEM primary key (PORTID)
 )
 go
 
@@ -9066,7 +9066,7 @@ go
 create table PORTLOCALSERIAL (
    PORTID               numeric              not null,
    PHYSICALPORT         varchar(8)           not null,
-   constraint PK_PORTLOCALSERIAL primary key nonclustered (PORTID)
+   constraint PK_PORTLOCALSERIAL primary key (PORTID)
 )
 go
 
@@ -9079,7 +9079,7 @@ create table PORTRADIOSETTINGS (
    RTSTOTXWAITDIFFD     numeric              not null,
    RADIOMASTERTAIL      numeric              not null,
    REVERSERTS           numeric              not null,
-   constraint PK_PORTRADIOSETTINGS primary key nonclustered (PORTID)
+   constraint PK_PORTRADIOSETTINGS primary key (PORTID)
 )
 go
 
@@ -9091,7 +9091,7 @@ create table PORTSETTINGS (
    BAUDRATE             numeric              not null,
    CDWAIT               numeric              not null,
    LINESETTINGS         varchar(8)           not null,
-   constraint PK_PORTSETTINGS primary key nonclustered (PORTID)
+   constraint PK_PORTSETTINGS primary key (PORTID)
 )
 go
 
@@ -9102,7 +9102,7 @@ create table PORTTERMINALSERVER (
    PORTID               numeric              not null,
    IPADDRESS            varchar(64)          not null,
    SOCKETPORTNUMBER     numeric              not null,
-   constraint PK_PORTTERMINALSERVER primary key nonclustered (PORTID)
+   constraint PK_PORTTERMINALSERVER primary key (PORTID)
 )
 go
 
@@ -9122,7 +9122,7 @@ create table PROFILEPEAKRESULT (
    TotalUsage           varchar(25)          not null,
    ResultType           varchar(5)           not null,
    Days                 numeric              not null,
-   constraint PK_PROFILEPEAKRESULT primary key nonclustered (ResultId)
+   constraint PK_PROFILEPEAKRESULT primary key (ResultId)
 )
 go
 
@@ -9136,7 +9136,7 @@ create table PointAlarming (
    NotifyOnAcknowledge  char(1)              not null,
    NotificationGroupID  numeric              not null,
    RecipientID          numeric              not null,
-   constraint PK_POINTALARMING primary key nonclustered (PointID)
+   constraint PK_POINTALARMING primary key (PointID)
 )
 go
 
@@ -9157,7 +9157,7 @@ create table PortTiming (
    POSTTXWAIT           numeric              not null,
    RECEIVEDATAWAIT      numeric              not null,
    EXTRATIMEOUT         numeric              not null,
-   constraint PK_PORTTIMING primary key nonclustered (PORTID)
+   constraint PK_PORTTIMING primary key (PORTID)
 )
 go
 
@@ -9171,7 +9171,7 @@ create table PurchasePlan (
    PODesignation        varchar(40)          not null,
    AccountingCode       varchar(30)          not null,
    TimePeriod           datetime             not null,
-   constraint PK_PURCHASEPLAN primary key nonclustered (PurchaseID)
+   constraint PK_PURCHASEPLAN primary key (PurchaseID)
 )
 go
 
@@ -9185,7 +9185,7 @@ create table RAWPOINTHISTORY (
    QUALITY              numeric              not null,
    VALUE                float                not null,
    millis               smallint             not null,
-   constraint SYS_C0013322 primary key nonclustered (CHANGEID)
+   constraint SYS_C0013322 primary key (CHANGEID)
 )
 go
 
@@ -9222,7 +9222,7 @@ create table RepeaterRoute (
    DEVICEID             numeric              not null,
    VARIABLEBITS         numeric              not null,
    REPEATERORDER        numeric              not null,
-   constraint PK_REPEATERROUTE primary key nonclustered (ROUTEID, DEVICEID)
+   constraint PK_REPEATERROUTE primary key (ROUTEID, DEVICEID)
 )
 go
 
@@ -9233,7 +9233,7 @@ create table Route (
    RouteID              numeric              not null,
    DeviceID             numeric              not null,
    DefaultRoute         char(1)              not null,
-   constraint SYS_RoutePK primary key nonclustered (RouteID)
+   constraint SYS_RoutePK primary key (RouteID)
 )
 go
 
@@ -9258,7 +9258,7 @@ create table STATE (
    FOREGROUNDCOLOR      numeric              not null,
    BACKGROUNDCOLOR      numeric              not null,
    ImageID              numeric              not null,
-   constraint PK_STATE primary key nonclustered (STATEGROUPID, RAWSTATE)
+   constraint PK_STATE primary key (STATEGROUPID, RAWSTATE)
 )
 go
 
@@ -9339,7 +9339,7 @@ create table STATEGROUP (
    STATEGROUPID         numeric              not null,
    NAME                 varchar(20)          not null,
    GroupType            varchar(20)          not null,
-   constraint SYS_C0013128 primary key nonclustered (STATEGROUPID)
+   constraint SYS_C0013128 primary key (STATEGROUPID)
 )
 go
 
@@ -9381,7 +9381,7 @@ create table SYSTEMLOG (
    DESCRIPTION          varchar(120)         null,
    USERNAME             varchar(64)          null,
    millis               smallint             not null,
-   constraint SYS_C0013407 primary key nonclustered (LOGID)
+   constraint SYS_C0013407 primary key (LOGID)
 )
 go
 
@@ -9417,7 +9417,7 @@ go
 create table ScheduleShipmentMapping (
    ScheduleID           numeric              not null,
    ShipmentID           numeric              not null,
-   constraint PK_SCHEDULESHIPMENTMAPPING primary key nonclustered (ScheduleID, ShipmentID)
+   constraint PK_SCHEDULESHIPMENTMAPPING primary key (ScheduleID, ShipmentID)
 )
 go
 
@@ -9430,7 +9430,7 @@ create table ScheduleTimePeriod (
    TimePeriodName       varchar(60)          not null,
    Quantity             numeric              not null,
    PredictedShipDate    datetime             not null,
-   constraint PK_SCHEDULETIMEPERIOD primary key nonclustered (TimePeriodID)
+   constraint PK_SCHEDULETIMEPERIOD primary key (TimePeriodID)
 )
 go
 
@@ -9440,7 +9440,7 @@ go
 create table SeasonSchedule (
    ScheduleID           numeric              not null,
    ScheduleName         varchar(40)          not null,
-   constraint PK_SEASONSCHEDULE primary key nonclustered (ScheduleID)
+   constraint PK_SEASONSCHEDULE primary key (ScheduleID)
 )
 go
 
@@ -9453,7 +9453,7 @@ insert into seasonSchedule values (-1,'No Season');
 create table SequenceNumber (
    LastValue            numeric              not null,
    SequenceName         varchar(20)          not null,
-   constraint PK_SEQUENCENUMBER primary key nonclustered (SequenceName)
+   constraint PK_SEQUENCENUMBER primary key (SequenceName)
 )
 go
 
@@ -9470,7 +9470,7 @@ create table ServiceCompany (
    MainFaxNumber        varchar(14)          null,
    PrimaryContactID     numeric              null,
    HIType               varchar(40)          null,
-   constraint PK_SERVICECOMPANY primary key nonclustered (CompanyID)
+   constraint PK_SERVICECOMPANY primary key (CompanyID)
 )
 go
 
@@ -9483,7 +9483,7 @@ create table ServiceCompanyDesignationCode (
    DesignationCodeID    numeric              not null,
    DesignationCodeValue varchar(60)          not null,
    ServiceCompanyID     numeric              not null,
-   constraint PK_SERVICECOMPANYDESIGNATIONCO primary key nonclustered (DesignationCodeID)
+   constraint PK_SERVICECOMPANYDESIGNATIONCO primary key (DesignationCodeID)
 )
 go
 
@@ -9499,7 +9499,7 @@ create table SettlementConfig (
    Description          varchar(128)         not null,
    EntryID              numeric              not null,
    RefEntryID           numeric              not null,
-   constraint PK_SETTLEMENTCONFIG primary key nonclustered (ConfigID)
+   constraint PK_SETTLEMENTCONFIG primary key (ConfigID)
 )
 go
 
@@ -9530,7 +9530,7 @@ create table Shipment (
    AmountPaid           float                not null,
    OrderedDate          datetime             not null,
    ReceivedDate         datetime             not null,
-   constraint PK_SHIPMENT primary key nonclustered (ShipmentID)
+   constraint PK_SHIPMENT primary key (ShipmentID)
 )
 go
 
@@ -9544,7 +9544,7 @@ create table SiteInformation (
    TransformerSize      varchar(20)          null,
    ServiceVoltage       varchar(20)          null,
    SubstationID         numeric              null,
-   constraint PK_SITEINFORMATION primary key nonclustered (SiteID)
+   constraint PK_SITEINFORMATION primary key (SiteID)
 )
 go
 
@@ -9557,7 +9557,7 @@ create table Substation (
    SubstationID         numeric              not null,
    SubstationName       varchar(50)          null,
    LMRouteID            numeric              null,
-   constraint PK_SUBSTATION primary key nonclustered (SubstationID)
+   constraint PK_SUBSTATION primary key (SubstationID)
 )
 go
 
@@ -9570,7 +9570,7 @@ create table SubstationToRouteMapping (
    SubstationID         numeric              not null,
    RouteID              numeric              not null,
    Ordering             numeric              not null,
-   constraint PK_SUBSTATIONTOROUTEMAPPING primary key nonclustered (SubstationID, RouteID)
+   constraint PK_SUBSTATIONTOROUTEMAPPING primary key (SubstationID, RouteID)
 )
 go
 
@@ -9581,7 +9581,7 @@ create table TEMPLATE (
    TEMPLATENUM          numeric              not null,
    NAME                 varchar(40)          not null,
    DESCRIPTION          varchar(200)         null,
-   constraint SYS_C0013425 primary key nonclustered (TEMPLATENUM)
+   constraint SYS_C0013425 primary key (TEMPLATENUM)
 )
 go
 
@@ -9598,7 +9598,7 @@ create table TEMPLATECOLUMNS (
    TYPENUM              numeric              not null,
    ORDERING             numeric              not null,
    WIDTH                numeric              not null,
-   constraint PK_TEMPLATECOLUMNS primary key nonclustered (TEMPLATENUM, TITLE)
+   constraint PK_TEMPLATECOLUMNS primary key (TEMPLATENUM, TITLE)
 )
 go
 
@@ -9644,7 +9644,7 @@ INSERT INTO TouAttributeMapping VALUES (4, 'D', 'TOU_RATE_D_PEAK_DEMAND', 'TOU_R
 create table TOUDay (
    TOUDayID             numeric              not null,
    TOUDayName           varchar(32)          not null,
-   constraint PK_TOUDAY primary key nonclustered (TOUDayID)
+   constraint PK_TOUDAY primary key (TOUDayID)
 )
 go
 
@@ -9655,7 +9655,7 @@ create table TOUDayMapping (
    TOUScheduleID        numeric              not null,
    TOUDayID             numeric              not null,
    TOUDayOffset         numeric              not null,
-   constraint PK_TOUDAYMAPPING primary key nonclustered (TOUScheduleID, TOUDayOffset)
+   constraint PK_TOUDAYMAPPING primary key (TOUScheduleID, TOUDayOffset)
 )
 go
 
@@ -9667,7 +9667,7 @@ create table TOUDayRateSwitches (
    SwitchRate           varchar(4)           not null,
    SwitchOffset         numeric              not null,
    TOUDayID             numeric              not null,
-   constraint PK_TOURATESWITCH primary key nonclustered (TOURateSwitchID)
+   constraint PK_TOURATESWITCH primary key (TOURateSwitchID)
 )
 go
 
@@ -9687,7 +9687,7 @@ create table TOUSchedule (
    TOUScheduleID        numeric              not null,
    TOUScheduleName      varchar(32)          not null,
    TOUDefaultRate       varchar(4)           not null,
-   constraint PK_TOUSCHEDULE primary key nonclustered (TOUScheduleID)
+   constraint PK_TOUSCHEDULE primary key (TOUScheduleID)
 )
 go
 
@@ -9707,7 +9707,7 @@ create table TagLog (
    TagTime              datetime             not null,
    RefStr               varchar(60)          not null,
    ForStr               varchar(60)          not null,
-   constraint PK_TAGLOG primary key nonclustered (LogID)
+   constraint PK_TAGLOG primary key (LogID)
 )
 go
 
@@ -9721,7 +9721,7 @@ create table Tags (
    Inhibit              char(1)              not null,
    ColorID              numeric              not null,
    ImageID              numeric              not null,
-   constraint PK_TAGS primary key nonclustered (TagID)
+   constraint PK_TAGS primary key (TagID)
 )
 go
 
@@ -9737,7 +9737,7 @@ insert into tags values (-5, 'OVUV Enablement State', 1, 'N', 0, 0);
 create table TemplateDisplay (
    DisplayNum           numeric              not null,
    TemplateNum          numeric              not null,
-   constraint PK_TEMPLATEDISPLAY primary key nonclustered (DisplayNum)
+   constraint PK_TEMPLATEDISPLAY primary key (DisplayNum)
 )
 go
 
@@ -9750,7 +9750,7 @@ create table UNITMEASURE (
    CalcType             numeric              not null,
    LongName             varchar(40)          not null,
    Formula              varchar(80)          not null,
-   constraint SYS_C0013344 primary key nonclustered (UOMID)
+   constraint SYS_C0013344 primary key (UOMID)
 )
 go
 
@@ -9821,7 +9821,7 @@ create table UserPaoPermission (
    PaoID                numeric              not null,
    Permission           varchar(50)          not null,
    Allow                varchar(5)           not null,
-   constraint PK_USERPAOPERMISSION primary key nonclustered (UserPaoPermissionID)
+   constraint PK_USERPAOPERMISSION primary key (UserPaoPermissionID)
 )
 go
 
@@ -9840,7 +9840,7 @@ create table VersacomRoute (
    DIVISIONADDRESS      numeric              not null,
    BUSNUMBER            numeric              not null,
    AMPCARDSET           numeric              not null,
-   constraint PK_VERSACOMROUTE primary key nonclustered (ROUTEID)
+   constraint PK_VERSACOMROUTE primary key (ROUTEID)
 )
 go
 
@@ -9853,7 +9853,7 @@ create table Warehouse (
    AddressID            numeric              not null,
    Notes                varchar(300)         null,
    EnergyCompanyID      numeric              not null,
-   constraint PK_WAREHOUSE primary key nonclustered (WarehouseID)
+   constraint PK_WAREHOUSE primary key (WarehouseID)
 )
 go
 
@@ -9874,7 +9874,7 @@ create table WorkOrderBase (
    ActionTaken          varchar(200)         null,
    AccountID            numeric              null,
    AdditionalOrderNumber varchar(24)          null,
-   constraint PK_WORKORDERBASE primary key nonclustered (OrderID)
+   constraint PK_WORKORDERBASE primary key (OrderID)
 )
 go
 
@@ -9885,7 +9885,7 @@ create table YukonGroup (
    GroupID              numeric              not null,
    GroupName            varchar(120)         not null,
    GroupDescription     varchar(200)         not null,
-   constraint PK_YUKONGROUP primary key nonclustered (GroupID)
+   constraint PK_YUKONGROUP primary key (GroupID)
 )
 go
 
@@ -9909,7 +9909,7 @@ create table YukonGroupRole (
    RoleID               numeric              not null,
    RolePropertyID       numeric              not null,
    Value                varchar(1000)        not null,
-   constraint PK_YUKONGRPROLE primary key nonclustered (GroupRoleID)
+   constraint PK_YUKONGRPROLE primary key (GroupRoleID)
 )
 go
 
@@ -10576,7 +10576,7 @@ create table YukonImage (
    ImageCategory        varchar(20)          not null,
    ImageName            varchar(80)          not null,
    ImageValue           image                null,
-   constraint PK_YUKONIMAGE primary key nonclustered (ImageID)
+   constraint PK_YUKONIMAGE primary key (ImageID)
 )
 go
 
@@ -10591,7 +10591,7 @@ create table YukonListEntry (
    EntryOrder           numeric              not null,
    EntryText            varchar(50)          not null,
    YukonDefinitionID    numeric              not null,
-   constraint PK_YUKONLISTENTRY primary key nonclustered (EntryID)
+   constraint PK_YUKONLISTENTRY primary key (EntryID)
 )
 go
 
@@ -11095,7 +11095,7 @@ create table YukonPAObject (
    Description          varchar(60)          not null,
    DisableFlag          char(1)              not null,
    PAOStatistics        varchar(10)          not null,
-   constraint PK_YUKONPAOBJECT primary key nonclustered (PAObjectID)
+   constraint PK_YUKONPAOBJECT primary key (PAObjectID)
 )
 go
 
@@ -11119,7 +11119,7 @@ create table YukonRole (
    RoleName             varchar(120)         not null,
    Category             varchar(60)          not null,
    RoleDescription      varchar(200)         not null,
-   constraint PK_YUKONROLE primary key nonclustered (RoleID)
+   constraint PK_YUKONROLE primary key (RoleID)
 )
 go
 
@@ -11206,7 +11206,7 @@ create table YukonRoleProperty (
    KeyName              varchar(100)         not null,
    DefaultValue         varchar(1000)        not null,
    Description          varchar(1000)        not null,
-   constraint PK_YUKONROLEPROPERTY primary key nonclustered (RolePropertyID)
+   constraint PK_YUKONROLEPROPERTY primary key (RolePropertyID)
 )
 go
 
@@ -11728,7 +11728,7 @@ create table YukonSelectionList (
    WhereIsList          varchar(100)         not null,
    ListName             varchar(40)          not null,
    UserUpdateAvailable  varchar(1)           not null,
-   constraint PK_YUKONSELECTIONLIST primary key nonclustered (ListID)
+   constraint PK_YUKONSELECTIONLIST primary key (ListID)
 )
 go
 
@@ -11818,7 +11818,7 @@ create table YukonServices (
    ServiceClass         varchar(100)         not null,
    ParamNames           varchar(300)         not null,
    ParamValues          varchar(300)         not null,
-   constraint PK_YUKSER primary key nonclustered (ServiceID)
+   constraint PK_YUKSER primary key (ServiceID)
 )
 go
 
@@ -11837,7 +11837,7 @@ create table YukonUser (
    Password             varchar(64)          not null,
    Status               varchar(20)          not null,
    AuthType             varchar(16)          not null,
-   constraint PK_YUKONUSER primary key nonclustered (UserID)
+   constraint PK_YUKONUSER primary key (UserID)
 )
 go
 
@@ -11860,7 +11860,7 @@ go
 create table YukonUserGroup (
    UserID               numeric              not null,
    GroupID              numeric              not null,
-   constraint PK_YUKONUSERGROUP primary key nonclustered (UserID, GroupID)
+   constraint PK_YUKONUSERGROUP primary key (UserID, GroupID)
 )
 go
 
@@ -11877,7 +11877,7 @@ create table YukonUserRole (
    RoleID               numeric              not null,
    RolePropertyID       numeric              not null,
    Value                varchar(1000)        not null,
-   constraint PK_YKONUSRROLE primary key nonclustered (UserRoleID)
+   constraint PK_YKONUSRROLE primary key (UserRoleID)
 )
 go
 
@@ -11998,7 +11998,7 @@ create table YukonWebConfiguration (
    Description          varchar(500)         null,
    AlternateDisplayName varchar(100)         null,
    URL                  varchar(100)         null,
-   constraint PK_YUKONWEBCONFIGURATION primary key nonclustered (ConfigurationID)
+   constraint PK_YUKONWEBCONFIGURATION primary key (ConfigurationID)
 )
 go
 
@@ -13619,7 +13619,7 @@ alter table EventAccount
 go
 
 alter table EventAccount
-   add constraint FK_EVENTACCT_EVNTBSE foreign key (EventID)
+   add constraint FK_EVENTACCT_EVNTBSE foreign key (EVENTID)
       references EventBase (EventID)
 go
 

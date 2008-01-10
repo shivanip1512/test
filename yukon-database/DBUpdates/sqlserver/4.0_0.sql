@@ -149,12 +149,12 @@ create table CCSubSpecialAreaAssignment (
 );
 
 alter table CCSubSpecialAreaAssignment
-   add constraint PK_CCSubSpecialAreaAssignment primary key nonclustered (AreaId, SubstationBusId);
+   add constraint PK_CCSubSpecialAreaAssignment primary key  (AreaId, SubstationBusId);
 go
 
 
 alter table DYNAMICCCAREA
-   add constraint PK_DYNAMICCCAREA primary key nonclustered (AreaId);
+   add constraint PK_DYNAMICCCAREA primary key  (AreaId);
 go
 
 insert into DynamicCCSpecialArea (AreaId, Additionalflags) select areaid, 'NNNNNNNNNNNNNNNNNNNN' from CapControlSpecialArea;
