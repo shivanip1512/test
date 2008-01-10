@@ -1580,6 +1580,9 @@ public class LiteStarsEnergyCompany extends LiteBase {
     
     public LiteInventoryBase getInventoryBrief(int inventoryID, boolean autoLoad) {
         LiteInventoryBase liteInv = getInventoryMap().get( new Integer(inventoryID) );
+        /*
+         * Should never return for non-Yukon meters.  Will always go to the db.
+         */
         if (liteInv != null) return liteInv;
         
         if (autoLoad) {
@@ -1606,6 +1609,10 @@ public class LiteStarsEnergyCompany extends LiteBase {
                     liteInv = new LiteStarsLMHardware();
                     StarsLiteFactory.setLiteStarsLMHardware( (LiteStarsLMHardware)liteInv, hardware );
                 }
+                /*
+                 * Should always get here for a non yukon meter.  They are not loaded into cache
+                 * with other inventory.
+                 */
                 else if (InventoryUtils.isNonYukonMeter( invDB.getCategoryID().intValue()))
                 {
                     MeterHardwareBase mhbDB = new MeterHardwareBase();

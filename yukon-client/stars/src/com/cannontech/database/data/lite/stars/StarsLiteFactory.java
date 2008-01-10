@@ -1843,19 +1843,6 @@ public class StarsLiteFactory {
 			
 			starsInv.setLMHardware( hw );
 		}
-/*		else if (liteInv instanceof LiteMeterHardwareBase ) {	//TODO - Not sure how to handle this in Stars XML objects!  SN 03/24/2006
-			LiteMeterHardwareBase liteHw = (LiteMeterHardwareBase) liteInv;
-//			starsInv.setDeviceType( (DeviceType)StarsFactory.newStarsCustListEntry(
-//					DaoFactory.getYukonListDao().getYukonListEntry(liteHw.getLmHardwareTypeID()),
-//					DeviceType.class) );
-			
-			LMHardware hw = new LMHardware();
-			hw.setRouteID( liteHw.getRouteID() );
-			hw.setManufacturerSerialNumber( StarsUtils.forceNotNull(((LiteStarsLMHardware)liteInv).getManufacturerSerialNumber()) );
-			
-			starsInv.setLMHardware( hw );
-		}
-		*/		
 		else if (InventoryUtils.isMCT( liteInv.getCategoryID() )) {
 			starsInv.setDeviceType( (DeviceType)StarsFactory.newStarsCustListEntry(
 					energyCompany.getYukonListEntry(YukonListEntryTypes.YUK_DEF_ID_DEV_TYPE_MCT),

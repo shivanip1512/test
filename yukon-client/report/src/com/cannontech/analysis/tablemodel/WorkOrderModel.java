@@ -578,6 +578,13 @@ public class WorkOrderModel extends ReportModelBase {
                     for (int k = 0; k < liteAcctInfo.getInventories().size(); k++) {
                         int invID = ((Integer) liteAcctInfo.getInventories().get(k)).intValue();
                         LiteInventoryBase liteInvBase = liteStarsEC.getInventoryBrief(invID, true);
+                        /*
+                         * TODO: Now that non yukon meters have been removed from cache, need to make sure
+                         * that this section is still properly obtaining meters for this account.
+                         * It appears that using the getBriefCustAccountInfo call will do this, leaving
+                         * the load for getInventoryBrief, which will load a non Yukon meter from the db
+                         * when it doesn't find it in cache.
+                         */
                         if (liteInvBase instanceof LiteMeterHardwareBase) {
                             if( !ignoreMeterNumbers.contains(((LiteMeterHardwareBase)liteInvBase).getMeterNumber()))
                             {   //Only add unassigned meternumbers to the data object

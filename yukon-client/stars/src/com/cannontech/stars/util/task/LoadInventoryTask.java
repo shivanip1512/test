@@ -43,7 +43,6 @@ public class LoadInventoryTask extends TimeConsumingTask {
     private static final PlatformTransactionManager transactionManager;
     private static final String selectLmEventSql;
     private static final String selectLmHardwareSql;
-    private static final String selectMeterHardwareSql;
     private static final String selectInventoryBaseSql;
     private static final ParameterizedRowMapper<LiteLMHardwareEvent> hardwareEventRowMapper;
 	private final LiteStarsEnergyCompany energyCompany;
@@ -75,19 +74,14 @@ public class LoadInventoryTask extends TimeConsumingTask {
                               "AND map.InventoryID >= 0 " +
                               "AND map.InventoryID = lmb.InventoryID";
         
-        selectMeterHardwareSql = "SELECT mhb.InventoryID, MeterNumber, MeterTypeID " +
-                                 "FROM MeterHardwareBase mhb, ECToInventoryMapping map " +
-                                 "WHERE map.EnergyCompanyID = ? " +
-                                 "AND map.InventoryID >= 0 " +
-                                 "AND map.InventoryID = mhb.InventoryID";
-        
         selectInventoryBaseSql = "SELECT inv.InventoryID, AccountID, InstallationCompanyID, CategoryID, " +
                                     "ReceiveDate, InstallDate, RemoveDate, AlternateTrackingNumber, VoltageID, " +
                                     "Notes, DeviceID, DeviceLabel, CurrentStateID " +
                                  "FROM InventoryBase inv, ECToInventoryMapping map " +
                                  "WHERE map.EnergyCompanyID = ? " +
                                  "AND map.InventoryID >= 0 " +
-                                 "AND map.InventoryID = inv.InventoryID";
+                                 "AND map.InventoryID = inv.InventoryID" +
+                                 " AND inv.InventoryID not in (select InventoryID from MeterHardwareBase)";
         
         hardwareEventRowMapper = createHardwareEventRowMapper();
         
@@ -179,22 +173,9 @@ public class LoadInventoryTask extends TimeConsumingTask {
 	            }
 	        });
 
-	        //Now do MeterHardwareBase and put them in the inventory map
-	        jdbcTemplate.query(selectMeterHardwareSql,
-	                           new Object[]{energyCompanyId},
-	                           new RowCallbackHandler() {
-	            public void processRow(ResultSet rs) throws SQLException {
-	                if (isCanceled) {
-	                    status = STATUS_CANCELED;
-	                    return;
-	                }
-	                loadMeterHardwareInventory(rs);
-	            }
-	        });
-
 	        /*
 	         * Now make sure everybody both in the inventory map and 
-	         * MCTs, etc, get their inventoryBase information.  Either will be
+	         * MCTs, LMhardware, get their inventoryBase information.  Either will be
 	         * populated into the map or the current map value will be changed.
 	         */
 	        jdbcTemplate.query(selectInventoryBaseSql,
@@ -242,23 +223,6 @@ public class LoadInventoryTask extends TimeConsumingTask {
         liteStarsLMHardware.setLmHardwareTypeID(rs.getInt("LMHardwareTypeID"));
         liteStarsLMHardware.setRouteID(rs.getInt("RouteID"));
         liteStarsLMHardware.setConfigurationID(rs.getInt("ConfigurationID"));
-    }
-    
-    private void loadMeterHardwareInventory(ResultSet rs) throws SQLException {
-        final int inventoryId = rs.getInt("InventoryID");
-        LiteInventoryBase liteInv = energyCompany.getInventoryFromMap(inventoryId);
-        
-        if (liteInv == null) {
-            liteInv = new LiteMeterHardwareBase();
-            liteInv.setInventoryID(inventoryId);
-            energyCompany.addInventory( liteInv );
-        }
-        
-        if (!(liteInv instanceof LiteMeterHardwareBase)) return;
-        
-        LiteMeterHardwareBase liteMeterHardwareBase = (LiteMeterHardwareBase) liteInv;
-        liteMeterHardwareBase.setMeterNumber(rs.getString( "MeterNumber"));
-        liteMeterHardwareBase.setMeterTypeID(rs.getInt("MeterTypeID"));
     }
     
     private void loadInventoryBase(ResultSet rs) throws SQLException {
