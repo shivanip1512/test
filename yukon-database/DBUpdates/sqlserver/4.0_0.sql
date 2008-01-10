@@ -1343,6 +1343,12 @@ SET
        DESCRIPTION    = 'Allows users to toggle OV/UV usage for capbanks, substations, subs, and feeders.'
 WHERE  ROLEPROPERTYID = -70008
 ;
+
+/* Start YUK-5086 */
+insert into yukonroleproperty values(-70017,-700, 'Add Comments', 'false', 'Allows the user to Add comments to Cap Bank objects.');
+insert into yukonroleproperty values(-70018,-700, 'Modify Comments', 'false', 'Allows the user to Modify comments on Cap Bank objects.');
+/* End YUK-5086 */
+
 /* End YUK-5047 */
 /**************************************************************/
 /* VERSION INFO                                               */
