@@ -1,15 +1,6 @@
 /******************************************/
-/**** SQLServer 2000 DBupdates         ****/
+/**** Oracle DBupdates   		       ****/
 /******************************************/
-
-/* Start YUK-5107 */
-if exists (select 1
-            from  sysobjects
-           where  id = object_id('MeterReadLog')
-            and   type = 'U')
-   drop table MeterReadLog;
-go
-/* End YUK-5107 */
 
 /* Start YUK-5103 */
 /* @error ignore-begin */
@@ -18,11 +9,12 @@ insert into pointalarming(pointid, alarmstates, excludenotifystates, notifyonack
 	'',
 	'NNNNNNNNNNNNNNNNNNNNNNNNNNNNNNNN',
 	'N',
-	1, 0;
+	1, 0  from dual;
 /* @error ignore-end */ 
 /* End YUK-5103*/
 
 /**************************************************************/
 /* VERSION INFO                                               */
+/*   Automatically gets inserted from build script            */
 /**************************************************************/
-insert into CTIDatabase values('4.1', 'David', '07-Dec-2007', 'Latest Update', 0 );
+insert into CTIDatabase values('4.0', 'David', '07-Dec-2007', 'Latest Update', 0 );
