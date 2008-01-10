@@ -11,6 +11,9 @@
 	}
 %>
 <%
+
+    final Comparator<StarsEnrLMProgram> programComparator = StarsUtils.createLMProgramComparator(liteEC);
+
 	com.cannontech.database.data.lite.LiteYukonGroup[] custGroups = liteEC.getResidentialCustomerGroups();
 	
 	boolean canMembersChangeLogins = false; 
@@ -335,8 +338,10 @@ function deleteWarehouse(form, warehouseId) {
 %>
                                       <table width="100%" border="0" cellspacing="3" cellpadding="0">
                                         <%
-		for (int j = 0; j < category.getStarsEnrLMProgramCount(); j++) {
-			StarsEnrLMProgram program = category.getStarsEnrLMProgram(j);
+        final List<StarsEnrLMProgram> programList = Arrays.asList(category.getStarsEnrLMProgram());
+        Collections.sort(programList, programComparator);                                
+		for (int j = 0; j < programList.size(); j++) {
+			StarsEnrLMProgram program = programList.get(j);
 			String[] dispNames = StarsUtils.splitString(program.getStarsWebConfig().getAlternateDisplayName(), ",");
 			
 			String progName = program.getYukonName();

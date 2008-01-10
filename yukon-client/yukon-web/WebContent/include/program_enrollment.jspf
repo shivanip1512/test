@@ -236,9 +236,11 @@ function confirmCancel() {
 			/* If more than one program under this category, show the program list */
 %>
 <%
-			for (int j = 0; j < category.getStarsEnrLMProgramCount(); j++) {
+            final List<StarsEnrLMProgram> programList = Arrays.asList(category.getStarsEnrLMProgram());
+            Collections.sort(programList, StarsUtils.createLMProgramComparator(liteEC));
+			for (int j = 0; j < programList.size(); j++) {
 				/* Each row is a program in this category */
-				StarsEnrLMProgram prog = category.getStarsEnrLMProgram(j);
+				StarsEnrLMProgram prog = programList.get(j);
 				String checked = "";
 				if (program != null && prog.getProgramID() == program.getProgramID())
 					checked = "checked";
