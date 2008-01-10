@@ -420,10 +420,12 @@ ALTER TABLE USERPAOPERMISSION
 alter column ALLOW varchar(5) NOT NULL;
 /* End YUK-5046 */
 
-insert into YukonRoleProperty values(-70013,-700,'Definition Available','Open,OpenQuestionable,OpenPending','Capbank sized in these states will be added to the available sum.');
-insert into YukonRoleProperty values(-70014,-700,'Definition Unavailable','Close,CloseQuestionable,CloseFail,ClosePending,OpenFail','Capbank sized in these states will be added to the unavailable sum.');
-insert into YukonRoleProperty values(-70015,-700,'Definition Tripped','Open,OpenFail,OpenPending,OpenQuestionable','Capbank sized in these states will be added to the tripped sum.');
-insert into YukonRoleProperty values(-70016,-700,'Definition Closed','Close,CloseFail,CloseQuestionable,ClosePending','Capbank sized in these states will be added to the closed sum.');
+/* Start YUK-5095 */
+insert into YukonRoleProperty values(-70013,-700,'Definition Available','Switched:Open,Switched:OpenQuestionable,Switched:OpenPending,Standalone:Open,Standalone:OpenQuestionable,Standalone:OpenPending','Capbank sized in these states will be added to the available sum.');
+insert into YukonRoleProperty values(-70014,-700,'Definition Unavailable','Switched:Close,Switched:CloseQuestionable,Switched:CloseFail,Switched:ClosePending,Switched:OpenFail,Standalone:Close,Standalone:CloseQuestionable,Standalone:CloseFail,Standalone:ClosePending,Standalone:OpenFail,Fixed-Open,Disabled-Open','Capbank sized in these states will be added to the unavailable sum.');
+insert into YukonRoleProperty values(-70015,-700,'Definition Tripped','Switched:Open,Switched:OpenFail,Switched:OpenPending,Switched:OpenQuestionable,Standalone:Open,Standalone:OpenFail,Standalone:OpenPending,Standalone:OpenQuestionable','Capbank sized in these states will be added to the tripped sum.');
+insert into YukonRoleProperty values(-70016,-700,'Definition Closed','Switched:Close,Switched:CloseFail,Switched:CloseQuestionable,Switched:ClosePending,Standalone:Close,Standalone:CloseFail,Standalone:CloseQuestionable,Standalone:ClosePending,Fixed:Close,Fixed:CloseFail,Fixed:CloseQuestionable,Fixed:ClosePending,Disabled:Close,Disabled:CloseFail,Disabled:CloseQuestionable,Disabled:ClosePending','Capbank sized in these states will be added to the closed sum.'); /* Start YUK-5086 */
+/* End YUK-5095 */
 insert into YukonRoleProperty VALUES(-100204, -1002, 'Daily/Total Operation Count', 'true', 'is Daily/Total Operation Count displayed');
 
 /* Start YUK-4752 */
