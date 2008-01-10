@@ -47,7 +47,7 @@ public class JnlpController extends AbstractController {
         Document doc = new Document();
         Element jnlpElem = new Element("jnlp");
         doc.addContent(jnlpElem);
-        jnlpElem.setAttribute("spec", "1.5+");
+        //jnlpElem.setAttribute("spec", "1.5+");
         // determine code base
         String url = request.getRequestURL().toString();
         String codebase = url.substring(0, url.lastIndexOf("/"));
@@ -73,8 +73,8 @@ public class JnlpController extends AbstractController {
         Element resourcesElem = new Element("resources");
         jnlpElem.addContent(resourcesElem);
         Element j2seElem = new Element("j2se");
-        j2seElem.setAttribute("href", "http://java.sun.com/products/autodl/j2se");
-        j2seElem.setAttribute("version", "1.5+");
+        //j2seElem.setAttribute("href", "http://java.sun.com/products/autodl/j2se");
+        j2seElem.setAttribute("version", "1.6");
         resourcesElem.addContent(j2seElem);        
         
         // add main class jar
