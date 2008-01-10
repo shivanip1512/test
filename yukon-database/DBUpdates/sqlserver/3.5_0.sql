@@ -557,15 +557,6 @@ where
 		); 
 /* End YUK-5067 */
 
-/* Start YUK-5107 */
-if exists (select 1
-            from  sysobjects
-           where  id = object_id('MeterReadLog')
-            and   type = 'U')
-   drop table MeterReadLog;
-go
-/* End YUK-5107 */
-
 /******************************************************************************/
 /* Run the Stars Update if needed here */
 /* Note: DBUpdate application will ignore this if STARS is not present */
