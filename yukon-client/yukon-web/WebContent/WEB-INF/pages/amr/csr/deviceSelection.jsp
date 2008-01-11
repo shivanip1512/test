@@ -41,6 +41,9 @@
 	
 </script>
 	
+	<h2>Device Selection</h2>
+	<br>
+	
 	<b>
 	<c:choose>
 		<c:when test="${results.hitCount == 0}">
